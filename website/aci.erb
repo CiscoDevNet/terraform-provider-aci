@@ -1,0 +1,119 @@
+<% wrap_layout :inner do %>
+    <% content_for :sidebar do %>
+      <div class="docs-sidebar hidden-print affix-top" role="complementary">
+        <ul class="nav docs-sidenav">
+          <li<%= sidebar_current("docs-home") %>>
+          <a href="/docs/providers/index.html">All Providers</a>
+          </li>
+  
+          <li<%= sidebar_current("docs-aci-index") %>>
+          <a href="/docs/providers/aci/index.html">ACI Provider</a>
+          </li>
+  
+
+  
+          <li<%= sidebar_current("docs-aci-resource") %>>
+          <a href="#">Resources</a>
+                  <ul class="nav nav-visible">
+                      <li<%= sidebar_current("docs-aci-resource-interface_fc_policy") %>>
+                        <a href="/docs/providers/aci/r/fcifpol.html">aci_app_profileaci_interface_fc_policy</a>
+                      </li>
+                      <li<%= sidebar_current("docs-aci-resource-application_epg") %>>
+                        <a href="/docs/providers/aci/r/fvaepg.html">aci_application_epg</a>
+                      </li>
+                      <li<%= sidebar_current("docs-aci-resource-application_profile") %>>
+                        <a href="/docs/providers/aci/r/fvap.html">aci_application_profile</a>
+                      </li>
+                      <li<%= sidebar_current("docs-aci-resource-bridge_domain") %>>
+                        <a href="/docs/providers/aci/r/fvbd.html">aci_bridge_domain</a>
+                      </li>
+                      <li<%= sidebar_current("docs-aci-resource-vrf") %>>
+                        <a href="/docs/providers/aci/r/fvctx.html">aci_vrf</a>
+                      </li>
+                      <li<%= sidebar_current("docs-aci-resource-end_point_retention_policy") %>>
+                        <a href="/docs/providers/aci/r/fvepretpol.html">aci_end_point_retention_policy</a>
+                      </li>
+                      <li<%= sidebar_current("docs-aci-resource-subnet") %>>
+                        <a href="/docs/providers/aci/r/fvsubnet.html">aci_subnet</a>
+                      </li>
+                      <li<%= sidebar_current("docs-aci-resource-tenant") %>>
+                        <a href="/docs/providers/aci/r/fvtenant.html">aci_tenant</a>
+                      </li>
+                      <li<%= sidebar_current("docs-aci-resource-ap") %>>
+                        <a href="/docs/providers/aci/r/infraaccbndlgrp.html">aci_pcvpc_interface_policy_group</a>
+                      </li>
+                      <li<%= sidebar_current("docs-aci-resource-leaf_access_port_policy_group") %>>
+                        <a href="/docs/providers/aci/r/infraaccportgrp.html">aci_leaf_access_port_policy_group</a>
+                      </li>
+                      <li<%= sidebar_current("docs-aci-resource-leaf_interface_profile") %>>
+                      <a href="/docs/providers/aci/r/infraaccportp.html">aci_leaf_interface_profile</a>
+                      </li> 
+                      <li<%= sidebar_current("docs-aci-resource-attachable_access_entity_profile") %>>
+                        <a href="/docs/providers/aci/r/infraattentityp.html">aci_attachable_access_entity_profile</a>
+                      </li>
+                      <li<%= sidebar_current("docs-aci-resource-access_port_selector") %>>
+                        <a href="/docs/providers/aci/r/infrahports.html">aci_access_port_selector</a>
+                      </li>
+                      <li<%= sidebar_current("docs-aci-resource-leaf_profile") %>>
+                        <a href="/docs/providers/aci/r/infranodep.html">aci_leaf_profile</a>
+                      </li>
+                      <li<%= sidebar_current("docs-aci-resource-access_port_block") %>>
+                        <a href="/docs/providers/aci/r/infraportblk.html">aci_access_port_block</a>
+                      </li>
+                      <li<%= sidebar_current("docs-aci-resource-vlan_encapsulationfor_vxlan_traffic") %>>
+                        <a href="/docs/providers/aci/r/infraprovacc.html">aci_vlan_encapsulationfor_vxlan_traffic</a>
+                      </li>
+                      <li<%= sidebar_current("docs-aci-resource-l2_interface_policy") %>>
+                        <a href="/docs/providers/aci/r/l2ifpol.html">aci_l2_interface_policy</a>
+                      </li>
+                      <li<%= sidebar_current("docs-aci-resource-port_security_policy") %>>
+                        <a href="/docs/providers/aci/r/l2portsecuritypol.html">aci_port_security_policy</a>
+                      </li>
+                      <li<%= sidebar_current("docs-aci-resource-external_network_instance_profile") %>>
+                        <a href="/docs/providers/aci/r/l3extinstp.html">aci_external_network_instance_profile</a>
+                      </li>
+                      <li<%= sidebar_current("docs-aci-resource-l3_outside") %>>
+                        <a href="/docs/providers/aci/r/l3extout.html">aci_l3_outside</a>
+                      </li>
+                      <li<%= sidebar_current("docs-aci-resource-lacp_policy") %>>
+                        <a href="/docs/providers/aci/r/lacplagpol.html">aci_lacp_policy</a>
+                      </li>
+                      <li<%= sidebar_current("docs-aci-resource-lldp_interface_policy") %>>
+                        <a href="/docs/providers/aci/r/lldpifpol.html">aci_lldp_interface_policy</a>
+                      </li>
+                      <li<%= sidebar_current("docs-aci-resource-miscabling_protocol_interface_policy") %>>
+                        <a href="/docs/providers/aci/r/mcpifpol.html">aci_miscabling_protocol_interface_policy</a>
+                      </li>
+                      <li<%= sidebar_current("docs-aci-resource-ospf_interface_policy") %>>
+                        <a href="/docs/providers/aci/r/ospfifpol.html">aci_ospf_interface_policy</a>
+                      </li>
+                      <li<%= sidebar_current("docs-aci-resource-vmm_domain") %>>
+                        <a href="/docs/providers/aci/r/vmmdomp.html">aci_vmm_domain</a>
+                      </li>
+                      <li<%= sidebar_current("docs-aci-resource-any") %>>
+                        <a href="/docs/providers/aci/r/vzany.html">aci_any</a>
+                      </li>
+                      <li<%= sidebar_current("docs-aci-resource-contract") %>>
+                        <a href="/docs/providers/aci/r/vzbrc.html">aci_contract</a>
+                      </li>
+                      <li<%= sidebar_current("docs-aci-resource-filter_entry") %>>
+                        <a href="/docs/providers/aci/r/vzentry.html">aci_filter_entry</a>
+                      </li>
+                      <li<%= sidebar_current("docs-aci-resource-filter") %>>
+                        <a href="/docs/providers/aci/r/vzfilter.html">aci_filter</a>
+                      </li>
+                      <li<%= sidebar_current("docs-aci-resource-contract_subject") %>>
+                        <a href="/docs/providers/aci/r/vzsubj.html">aci_contract_subject</a>
+                      </li>
+                      <li<%= sidebar_current("docs-aci-index") %>>
+                        <a href="/docs/providers/aci/r/index.html">ACI</a>
+                      </li>
+                     
+                  </ul>
+          </li>
+        </ul>
+      </div>
+    <% end %>
+  
+    <%= yield %>
+    <% end %>

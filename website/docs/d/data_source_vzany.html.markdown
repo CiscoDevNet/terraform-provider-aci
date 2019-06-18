@@ -1,0 +1,30 @@
+---
+layout: "aci"
+page_title: "ACI: aci_any"
+sidebar_current: "docs-aci-data-source-any"
+description: |-
+  Data source for ACI Any
+---
+
+# aci_any #
+Data source for ACI Any
+
+## Example Usage ##
+
+```hcl
+data "aci_any" "example" {
+  vrf_dn  = "${aci_vrf.example.id}"
+}
+```
+## Argument Reference ##
+* `vrf_dn` - (Required) Distinguished name of parent VRF object.
+
+
+
+## Attribute Reference
+
+* `id` - Attribute id set to the Dn of the Any.
+* `annotation` - (Optional) annotation for object any.
+* `match_t` - (Optional) Represents the provider label match criteria.
+* `name_alias` - (Optional) name_alias for object any.
+* `pref_gr_memb` - (Optional) Represents parameter used to determine if EPgs can be divided in a the context can be divided in two subgroups.
