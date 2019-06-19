@@ -38,9 +38,13 @@ func TestAccAciCloudAWSProvider_Basic(t *testing.T) {
 
 func testAccCheckAciCloudAWSProviderConfig_basic(description string) string {
 	return fmt.Sprintf(`
+	resource "aci_tenant" "footenant" {
+		description = "Tenant created while acceptance testing"
+		name        = "demo_tenant"
+	}
 
 	resource "aci_cloud_aws_provider" "foocloud_aws_provider" {
-		tenant_dn         = "${aci_tenant.example.id}"
+		tenant_dn         = "${aci_tenant.footenant.id}"
 		description       = "%s"
 		access_key_id     = "%s"
 		account_id        = "310368696476"

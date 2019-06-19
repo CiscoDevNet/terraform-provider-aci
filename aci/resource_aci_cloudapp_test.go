@@ -64,9 +64,13 @@ func TestAccAciCloudApplicationcontainer_update(t *testing.T) {
 
 func testAccCheckAciCloudApplicationcontainerConfig_basic(description, name_alias string) string {
 	return fmt.Sprintf(`
+	resource "aci_tenant" "footenant" {
+		description = "Tenant created while acceptance testing"
+		name        = "demo_tenant"
+	}
 
 	resource "aci_cloud_applicationcontainer" "foocloud_applicationcontainer" {
-		tenant_dn   = "${aci_tenant.example.id}"
+		tenant_dn   = "${aci_tenant.footenant.id}"
 		description = "%s"
 		name        = "demo_app"
 		annotation  = "tag_app"
