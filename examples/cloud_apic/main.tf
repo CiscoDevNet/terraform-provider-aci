@@ -10,9 +10,9 @@ resource "aci_vrf" "vrf1" {
 resource "aci_cloud_aws_provider" "cloud_apic_provider" {
   name              = "aws"
   tenant_dn         = "${aci_tenant.terraform_ten.id}"
-  access_key_id     = "AKIAIS7DSB427SANBFNQ"
-  secret_access_key = "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"
-  account_id        = "068341877661"
+  access_key_id     = ""
+  secret_access_key = ""
+  account_id        = ""
   is_trusted        = "no"
 }
 
