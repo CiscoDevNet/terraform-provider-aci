@@ -14,7 +14,7 @@ Manages ACI Bridge Domain
 ```hcl
 	resource "aci_bridge_domain" "foobridge_domain" {
 		tenant_dn                   = "${aci_tenant.tenant_for_bd.id}"
-		description                 = "%s"
+		description                 = "sample bridge domain"
 		name                        = "demo_bd"
 		optimize_wan_bandwidth      = "no"
 		annotation                  = "tag_bd"

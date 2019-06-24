@@ -13,13 +13,12 @@ Note: This resource is supported in Cloud APIC only.
 
 ```hcl
 resource "aci_cloud_applicationcontainer" "example" {
-
   tenant_dn  = "${aci_tenant.example.id}"
-
-  name  = "example"
-  annotation  = "example"
-  name_alias  = "example"
+  name       = "demo_cloud_app"
+  annotation = "tag_cloud_app"
+  name_alias = "alias_app"
 }
+
 ```
 ## Argument Reference ##
 * `tenant_dn` - (Required) Distinguished name of parent Tenant object.

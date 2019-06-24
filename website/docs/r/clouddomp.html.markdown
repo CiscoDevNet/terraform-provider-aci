@@ -12,17 +12,17 @@ Note: This resource is supported in Cloud APIC only.
 ## Example Usage ##
 
 ```hcl
-resource "aci_cloud_domain_profile" "example" {
-
-  annotation  = "example"
-  name_alias  = "example"
-  site_id  = "example"
+resource "aci_cloud_domain_profile" "foocloud_domain_profile" {
+  annotation  = "tag_domp"
+  name_alias  = "alias_domp"
+  site_id     = "0"
 }
+
 ```
 ## Argument Reference ##
 * `annotation` - (Optional) annotation for object cloud_domain_profile.
 * `name_alias` - (Optional) name_alias for object cloud_domain_profile.
-* `site_id` - (Optional) site_id for object cloud_domain_profile.
+* `site_id` - (Optional) site_id for object cloud_domain_profile. Allowed value range is "0" to "1000". Default is "0".
 
 
 

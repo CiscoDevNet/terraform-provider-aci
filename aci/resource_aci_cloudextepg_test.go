@@ -64,9 +64,20 @@ func TestAccAciCloudExternalEPg_update(t *testing.T) {
 
 func testAccCheckAciCloudExternalEPgConfig_basic(description, match_t string) string {
 	return fmt.Sprintf(`
+	
+	resource "aci_tenant" "footenant" {
+		description = "Tenant created while acceptance testing"
+		name        = "demo_tenant"
+	}
+
+	resource "aci_cloud_applicationcontainer" "foocloud_applicationcontainer" {
+		tenant_dn   = "${aci_tenant.footenant.id}"
+		name        = "demo_app"
+		annotation  = "tag_app"
+	}
 
 	resource "aci_cloud_external_e_pg" "foocloud_external_e_pg" {
-		cloud_applicationcontainer_dn = "${aci_cloud_applicationcontainer.example.id}"
+		cloud_applicationcontainer_dn = "${aci_cloud_applicationcontainer.foocloud_applicationcontainer.id}"
 		description                   = "%s"
 		name                          = "cloud_ext_epg"
 		annotation                    = "tag_ext_epg"

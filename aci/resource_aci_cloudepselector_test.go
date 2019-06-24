@@ -64,9 +64,25 @@ func TestAccAciCloudEndpointSelector_update(t *testing.T) {
 
 func testAccCheckAciCloudEndpointSelectorConfig_basic(description, match_expression string) string {
 	return fmt.Sprintf(`
+	
+	resource "aci_tenant" "footenant" {
+		description = "Tenant created while acceptance testing"
+		name        = "demo_tenant"
+	}
+
+	resource "aci_cloud_applicationcontainer" "foocloud_applicationcontainer" {
+		tenant_dn   = "${aci_tenant.footenant.id}"
+		name        = "demo_app"
+		annotation  = "tag_app"
+	}
+
+	resource "aci_cloud_e_pg" "foocloud_e_pg" {
+		cloud_applicationcontainer_dn = "${aci_cloud_applicationcontainer.foocloud_applicationcontainer.id}"
+		name                          = "cloud_epg"
+	}
 
 	resource "aci_cloud_endpoint_selector" "foocloud_endpoint_selector" {
-		cloud_e_pg_dn    = "${aci_cloud_e_pg.example.id}"
+		cloud_e_pg_dn    = "${aci_cloud_e_pg.foocloud_e_pg.id}"
 		description      = "%s"
 		name             = "ep_select"
 		annotation       = "tag_ep"

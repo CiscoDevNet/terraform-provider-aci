@@ -12,35 +12,29 @@ Note: This resource is supported in Cloud APIC only.
 ## Example Usage ##
 
 ```hcl
-resource "aci_cloud_aws_provider" "example" {
-
-  tenant_dn  = "${aci_tenant.example.id}"
-  access_key_id  = "example"
-  account_id  = "example"
-  annotation  = "example"
-  email  = "example"
-  http_proxy  = "example"
-  is_account_in_org  = "example"
-  is_trusted  = "example"
-  name_alias  = "example"
-  provider_id  = "example"
-  region  = "example"
-  secret_access_key  = "example"
-}
+	resource "aci_cloud_aws_provider" "foocloud_aws_provider" {
+		tenant_dn         = "${aci_tenant.footenant.id}"
+		description       = "aws account config"
+		access_key_id     = "access_key"
+		account_id        = "310368696476"
+		annotation        = "tag_aws"
+		region            = "us-west-2"
+		secret_access_key = "secret_key"
+	}
 ```
 ## Argument Reference ##
 * `tenant_dn` - (Required) Distinguished name of parent Tenant object.
-* `access_key_id` - (Optional) access_key_id for object cloud_aws_provider.
-* `account_id` - (Optional) account_id for object cloud_aws_provider.
+* `access_key_id` - (Optional) access_key_id for the AWS account provided in the account_id field.
+* `account_id` - (Optional) AWS account-id to manage with cloud APIC.
 * `annotation` - (Optional) annotation for object cloud_aws_provider.
-* `email` - (Optional) email address of the local user
+* `email` - (Optional) email address of the local user.
 * `http_proxy` - (Optional) http_proxy for object cloud_aws_provider.
-* `is_account_in_org` - (Optional) is_account_in_org for object cloud_aws_provider.
-* `is_trusted` - (Optional) is_trusted for object cloud_aws_provider.
+* `is_account_in_org` - (Optional) Flag to decide whether the account is in the organization or not.
+* `is_trusted` - (Optional) Whether the account is trusted with Tenant infra account.
 * `name_alias` - (Optional) name_alias for object cloud_aws_provider.
 * `provider_id` - (Optional) provider_id for object cloud_aws_provider.
-* `region` - (Optional) region for object cloud_aws_provider.
-* `secret_access_key` - (Optional) secret_access_key for object cloud_aws_provider.
+* `region` - (Optional) which AWS region to manage.
+* `secret_access_key` - (Optional) secret_access_key for the AWS account provided in the account_id field.
 
 
 

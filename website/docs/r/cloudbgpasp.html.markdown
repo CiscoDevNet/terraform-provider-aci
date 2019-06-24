@@ -12,16 +12,16 @@ Manages ACI Autonomous System Profile
 ## Example Usage ##
 
 ```hcl
-resource "aci_autonomous_system_profile" "example" {
-
-  annotation  = "example"
-  asn  = "example"
-  name_alias  = "example"
-}
+	resource "aci_autonomous_system_profile" "fooautonomous_system_profile" {
+		description = "sample autonomous profile"
+		annotation  = "tag_system"
+		asn         = "121"
+		name_alias  = "alias_sys_prof"
+	} 
 ```
 ## Argument Reference ##
 * `annotation` - (Optional) annotation for object autonomous_system_profile.
-* `asn` - (Optional) autonomous system number
+* `asn` - (Optional) A number that uniquely identifies an autonomous system. 
 * `name_alias` - (Optional) name_alias for object autonomous_system_profile.
 
 

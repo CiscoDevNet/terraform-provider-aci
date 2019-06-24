@@ -26,7 +26,7 @@ func TestAccAciCloudContextProfile_Basic(t *testing.T) {
 				Config: testAccCheckAciCloudContextProfileConfig_basic(fv_tenant_name, cloud_ctx_profile_name),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckAciCloudContextProfileExists("aci_cloud_context_profile.foocloud_context_profile", &cloud_context_profile),
-					testAccCheckAciCloudContextProfileAttributes(fv_tenant_name, cloud_ctx_profile_name, description, &cloud_context_profile),
+					testAccCheckAciCloudContextProfileAttributes(cloud_ctx_profile_name, description, &cloud_context_profile),
 				),
 			},
 		},
@@ -42,10 +42,18 @@ func testAccCheckAciCloudContextProfileConfig_basic(fv_tenant_name, cloud_ctx_pr
 
 	}
 
-	resource "aci_cloud_context_profile" "foocloud_context_profile" {
-		name 		= "%s"
-		description = "cloud_context_profile created while acceptance testing"
+	resource "aci_vrf" "vrf1" {
 		tenant_dn = "${aci_tenant.footenant.id}"
+		name      = "acc-vrf"
+	}
+
+	resource "aci_cloud_context_profile" "foocloud_context_profile" {
+		name 		             = "%s"
+		description              = "cloud_context_profile created while acceptance testing"
+		tenant_dn                = "${aci_tenant.footenant.id}"
+		primary_cidr             = "10.230.231.1/16"
+		region                   = "us-west-1"
+		relation_cloud_rs_to_ctx = "${aci_vrf.vrf1.name}"
 	}
 
 	`, fv_tenant_name, cloud_ctx_profile_name)
@@ -99,18 +107,23 @@ func testAccCheckAciCloudContextProfileDestroy(s *terraform.State) error {
 	return nil
 }
 
-func testAccCheckAciCloudContextProfileAttributes(fv_tenant_name, cloud_ctx_profile_name, description string, cloud_context_profile *models.CloudContextProfile) resource.TestCheckFunc {
+func testAccCheckAciCloudContextProfileAttributes(cloud_ctx_profile_name, description string, cloud_context_profile *models.CloudContextProfile) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 
 		if cloud_ctx_profile_name != GetMOName(cloud_context_profile.DistinguishedName) {
 			return fmt.Errorf("Bad cloud_ctx_profile %s", GetMOName(cloud_context_profile.DistinguishedName))
 		}
 
-		if fv_tenant_name != GetMOName(GetParentDn(cloud_context_profile.DistinguishedName)) {
-			return fmt.Errorf(" Bad fv_tenant %s", GetMOName(GetParentDn(cloud_context_profile.DistinguishedName)))
-		}
 		if description != cloud_context_profile.Description {
 			return fmt.Errorf("Bad cloud_context_profile Description %s", cloud_context_profile.Description)
+		}
+
+		if "us-west-1" != cloud_context_profile.Region {
+			return fmt.Errorf("Bad cloud_context_profile region %s", cloud_context_profile.Region)
+		}
+
+		if "10.230.231.1/16" != cloud_context_profile.PrimaryCIDR {
+			return fmt.Errorf("Bad cloud_context_profile Primary CIDR %s", cloud_context_profile.PrimaryCIDR)
 		}
 
 		return nil

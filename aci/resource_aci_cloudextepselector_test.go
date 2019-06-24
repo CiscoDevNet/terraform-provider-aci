@@ -65,8 +65,24 @@ func TestAccAciCloudEndpointSelectorforExternalEPgs_update(t *testing.T) {
 func testAccCheckAciCloudEndpointSelectorforExternalEPgsConfig_basic(description, subnet string) string {
 	return fmt.Sprintf(`
 
+	resource "aci_tenant" "footenant" {
+		description = "Tenant created while acceptance testing"
+		name        = "demo_tenant"
+	}
+
+	resource "aci_cloud_applicationcontainer" "foocloud_applicationcontainer" {
+		tenant_dn   = "${aci_tenant.footenant.id}"
+		name        = "demo_app"
+		annotation  = "tag_app"
+	}
+
+	resource "aci_cloud_external_e_pg" "foocloud_external_e_pg" {
+		cloud_applicationcontainer_dn = "${aci_cloud_applicationcontainer.foocloud_applicationcontainer.id}"
+		name                          = "cloud_ext_epg"
+	}
+
 	resource "aci_cloud_endpoint_selectorfor_external_e_pgs" "foocloud_endpoint_selectorfor_external_e_pgs" {
-		cloud_external_e_pg_dn = "${aci_cloud_external_e_pg.example.id}"
+		cloud_external_e_pg_dn = "${aci_cloud_external_e_pg.foocloud_external_e_pg.id}"
 		description            = "%s"
 		name                   = "ext_ep_selector"
 		annotation             = "tag_ext_selector"
