@@ -12,18 +12,17 @@ Note: This resource is supported in Cloud APIC only.
 ## Example Usage ##
 
 ```hcl
-resource "aci_cloud_availability_zone" "example" {
-
-  cloud_providers_region_dn  = "${aci_cloud_providers_region.example.id}"
-
-  name  = "example"
-  annotation  = "example"
-  name_alias  = "example"
-}
+	resource "aci_cloud_availability_zone" "foocloud_availability_zone" {
+		cloud_providers_region_dn = "${aci_cloud_providers_region.example.id}"
+		description               = "sample aws availability zone"
+		name                      = "us-east-1a"
+		annotation                = "tag_zone_a"
+		name_alias                = "alias_zone"
+	}
 ```
 ## Argument Reference ##
 * `cloud_providers_region_dn` - (Required) Distinguished name of parent CloudProvidersRegion object.
-* `name` - (Required) name of Object cloud_availability_zone.
+* `name` - (Required) name of Object cloud_availability_zone. Should match the Availability zone name in AWS cloud.
 * `annotation` - (Optional) annotation for object cloud_availability_zone.
 * `name_alias` - (Optional) name_alias for object cloud_availability_zone.
 

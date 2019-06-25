@@ -12,32 +12,31 @@ Note: This resource is supported in Cloud APIC only.
 ## Example Usage ##
 
 ```hcl
-resource "aci_cloud_external_e_pg" "example" {
-
-  cloud_applicationcontainer_dn  = "${aci_cloud_applicationcontainer.example.id}"
-
-  name  = "example"
-  annotation  = "example"
-  exception_tag  = "example"
-  flood_on_encap  = "example"
-  match_t  = "example"
-  name_alias  = "example"
-  pref_gr_memb  = "example"
-  prio  = "example"
-  route_reachability  = "example"
-}
+	resource "aci_cloud_external_e_pg" "foocloud_external_e_pg" {
+		cloud_applicationcontainer_dn = "${aci_cloud_applicationcontainer.foocloud_applicationcontainer.id}"
+		description                   = "sample cloud external epg"
+		name                          = "cloud_ext_epg"
+		annotation                    = "tag_ext_epg"
+		exception_tag                 = "0"
+		flood_on_encap                = "disabled"
+		match_t                       = "All"
+		name_alias                    = "alias_ext"
+		pref_gr_memb                  = "exclude"
+		prio                          = "unspecified"
+		route_reachability            = "inter-site"
+	}
 ```
 ## Argument Reference ##
 * `cloud_applicationcontainer_dn` - (Required) Distinguished name of parent CloudApplicationcontainer object.
 * `name` - (Required) name of Object cloud_external_e_pg.
 * `annotation` - (Optional) annotation for object cloud_external_e_pg.
-* `exception_tag` - (Optional) exception_tag for object cloud_external_e_pg.
-* `flood_on_encap` - (Optional) flood_on_encap for object cloud_external_e_pg.
-* `match_t` - (Optional) match criteria
+* `exception_tag` - (Optional) exception_tag for object cloud_external_e_pg. Allowed value range is "0" to "512".
+* `flood_on_encap` - (Optional) Control at EPG level if the traffic L2 Multicast/Broadcast and Link Local Layer should be flooded only on ENCAP or based on bridg-domain settings. Allowed values are "disabled" and "enabled". Default is "disabled".
+* `match_t` - (Optional) The provider label match criteria. Allowed values are "All", "AtleastOne", "AtmostOne" and "None". Default values is "AtleastOne". 
 * `name_alias` - (Optional) name_alias for object cloud_external_e_pg.
-* `pref_gr_memb` - (Optional) pref_gr_memb for object cloud_external_e_pg.
-* `prio` - (Optional) qos priority class id
-* `route_reachability` - (Optional) route_reachability for object cloud_external_e_pg.
+* `pref_gr_memb` - (Optional) Represents parameter used to determine if EPg is part of a group that does not a contract for communication. Allowed values are "include" and "exclude". Default is "exclude".
+* `prio` - (Optional) qos priority class id. Allowed values are "unspecified", "level1", "level2", "level3", "level4", "level5" and "level6". Default is "unspecified.
+* `route_reachability` - (Optional) Route reachability for this EPG. Allowed values are "unspecified", "inter-site", "internet" and "inter-site-ext".Default is "inter-site".
 
 * `relation_fv_rs_sec_inherited` - (Optional) Relation to class fvEPg. Cardinality - N_TO_M. Type - Set of String.
                 

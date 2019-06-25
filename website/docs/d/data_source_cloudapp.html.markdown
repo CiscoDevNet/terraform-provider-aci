@@ -13,10 +13,8 @@ Note: This resource is supported in Cloud APIC only.
 
 ```hcl
 data "aci_cloud_applicationcontainer" "example" {
-
   tenant_dn  = "${aci_tenant.example.id}"
-
-  name  = "example"
+  name       = "example"
 }
 ```
 ## Argument Reference ##

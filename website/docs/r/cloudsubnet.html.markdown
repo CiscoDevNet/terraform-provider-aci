@@ -12,25 +12,23 @@ Note: This resource is supported in Cloud APIC only.
 ## Example Usage ##
 
 ```hcl
-resource "aci_cloud_subnet" "example" {
-
-  cloud_cidr_pool_dn  = "${aci_cloud_cidr_pool.example.id}"
-
-  ip  = "example"
-  annotation  = "example"
-  name_alias  = "example"
-  scope  = "example"
-  usage  = "example"
-}
+	resource "aci_cloud_subnet" "foocloud_subnet" {
+		cloud_cidr_pool_dn = "${aci_cloud_cidr_pool.example.id}"
+		description        = "sample cloud subnet"
+		ip                 = "14.12.0.0/28"
+		annotation         = "tag_subnet"
+		name_alias         = "alias_subnet"
+		scope              = "public"
+		usage              = "user"
+	}
 ```
 ## Argument Reference ##
 * `cloud_cidr_pool_dn` - (Required) Distinguished name of parent CloudCIDRPool object.
-* `ip` - (Required) ip of Object cloud_subnet.
+* `ip` - (Required) CIDR block of Object cloud_subnet.
 * `annotation` - (Optional) annotation for object cloud_subnet.
-* `ip` - (Optional) ip address
 * `name_alias` - (Optional) name_alias for object cloud_subnet.
-* `scope` - (Optional) capability domain
-* `usage` - (Optional) usage of the port
+* `scope` - (Optional) The domain applicable to the capability. Allowed values are "public", "private" and "shared". Default is "private".
+* `usage` - (Optional) The usage of the port. This property shows how the port is used. Allowed values are "user" and "infra-router". Default is "user".	
 
 * `relation_cloud_rs_zone_attach` - (Optional) Relation to class cloudZone. Cardinality - N_TO_ONE. Type - String.
                 

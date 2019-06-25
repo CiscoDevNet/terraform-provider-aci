@@ -12,20 +12,17 @@ Note: This resource is supported in Cloud APIC only.
 ## Example Usage ##
 
 ```hcl
-resource "aci_cloud_providers_region" "example" {
-
-  cloud_provider_profile_dn  = "${aci_cloud_provider_profile.example.id}"
-
-  name  = "example"
-  admin_st  = "example"
-  annotation  = "example"
-  name_alias  = "example"
-}
+	resource "aci_cloud_providers_region" "foocloud_providers_region" {
+		cloud_provider_profile_dn = "${aci_cloud_provider_profile.example.id}"
+		description               = "aws region"
+		name                      = "us-east-1"
+		annotation                = "tag_region"
+		name_alias                = "default_reg"
+	}
 ```
 ## Argument Reference ##
 * `cloud_provider_profile_dn` - (Required) Distinguished name of parent CloudProviderProfile object.
 * `name` - (Required) name of Object cloud_providers_region.
-* `admin_st` - (Optional) administrative state of the object or policy
 * `annotation` - (Optional) annotation for object cloud_providers_region.
 * `name_alias` - (Optional) name_alias for object cloud_providers_region.
 

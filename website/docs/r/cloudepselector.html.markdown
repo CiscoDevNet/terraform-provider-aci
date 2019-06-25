@@ -12,21 +12,20 @@ Note: This resource is supported in Cloud APIC only.
 ## Example Usage ##
 
 ```hcl
-resource "aci_cloud_endpoint_selector" "example" {
-
-  cloud_e_pg_dn  = "${aci_cloud_e_pg.example.id}"
-
-  name  = "example"
-  annotation  = "example"
-  match_expression  = "example"
-  name_alias  = "example"
-}
+	resource "aci_cloud_endpoint_selector" "foocloud_endpoint_selector" {
+		cloud_e_pg_dn    = "${aci_cloud_e_pg.foocloud_e_pg.id}"
+		description      = "sample ep selector"
+		name             = "ep_select"
+		annotation       = "tag_ep"
+		match_expression = "custom:Name=='admin-ep2'"
+		name_alias       = "alias_ep"
+	}
 ```
 ## Argument Reference ##
 * `cloud_e_pg_dn` - (Required) Distinguished name of parent CloudEPg object.
 * `name` - (Required) name of Object cloud_endpoint_selector.
 * `annotation` - (Optional) annotation for object cloud_endpoint_selector.
-* `match_expression` - (Optional) match_expression for object cloud_endpoint_selector.
+* `match_expression` - (Optional) Match expression for the endpoint selector to select EP on criteria.
 * `name_alias` - (Optional) name_alias for object cloud_endpoint_selector.
 
 

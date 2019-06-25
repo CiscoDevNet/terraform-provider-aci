@@ -12,17 +12,15 @@ Note: This resource is supported in Cloud APIC only.
 ## Example Usage ##
 
 ```hcl
-resource "aci_cloud_provider_profile" "example" {
-
-
-  vendor  = "example"
-  annotation  = "example"
-}
+	resource "aci_cloud_provider_profile" "foocloud_provider_profile" {
+		description = "cloud provider profile"
+		vendor      = "aws"
+		annotation  = "tag_aws_prof"
+	}
 ```
 ## Argument Reference ##
-* `vendor` - (Required) vendor of Object cloud_provider_profile.
+* `vendor` - (Required) vendor of Object cloud_provider_profile. Currently only supported vendor is "aws".
 * `annotation` - (Optional) annotation for object cloud_provider_profile.
-* `vendor` - (Optional) vendor of the controller
 
 
 

@@ -12,26 +12,23 @@ Note: This resource is supported in Cloud APIC only.
 ## Example Usage ##
 
 ```hcl
-resource "aci_cloud_endpoint_selectorfor_external_e_pgs" "example" {
-
-  cloud_external_e_pg_dn  = "${aci_cloud_external_e_pg.example.id}"
-
-  name  = "example"
-  annotation  = "example"
-  is_shared  = "example"
-  match_expression  = "example"
-  name_alias  = "example"
-  subnet  = "example"
-}
+	resource "aci_cloud_endpoint_selectorfor_external_e_pgs" "foocloud_endpoint_selectorfor_external_e_pgs" {
+		cloud_external_e_pg_dn = "${aci_cloud_external_e_pg.foocloud_external_e_pg.id}"
+		description            = "sample external ep selector"
+		name                   = "ext_ep_selector"
+		annotation             = "tag_ext_selector"
+		is_shared              = "yes"
+		name_alias             = "alias_select"
+		subnet                 = "0.0.0.0/0"
+	}
 ```
 ## Argument Reference ##
 * `cloud_external_e_pg_dn` - (Required) Distinguished name of parent CloudExternalEPg object.
 * `name` - (Required) name of Object cloud_endpoint_selectorfor_external_e_pgs.
 * `annotation` - (Optional) annotation for object cloud_endpoint_selectorfor_external_e_pgs.
-* `is_shared` - (Optional) is_shared for object cloud_endpoint_selectorfor_external_e_pgs.
-* `match_expression` - (Optional) match_expression for object cloud_endpoint_selectorfor_external_e_pgs.
+* `is_shared` - (Optional) For Selectors set the shared route control. Allowed values are "yes" and "no". Default value is "yes".
 * `name_alias` - (Optional) name_alias for object cloud_endpoint_selectorfor_external_e_pgs.
-* `subnet` - (Optional) subnet for object cloud_endpoint_selectorfor_external_e_pgs.
+* `subnet` - (Optional) Subnet from which EP to select. Any valid CIDR block is allowed here.
 
 
 

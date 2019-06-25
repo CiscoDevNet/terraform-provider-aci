@@ -13,7 +13,6 @@ Note: This resource is supported in Cloud APIC only.
 
 ```hcl
 data "aci_cloud_aws_provider" "example" {
-
   tenant_dn  = "${aci_tenant.example.id}"
 }
 ```
