@@ -4,7 +4,7 @@ resource "aci_tenant" "terraform_ten" {
 
 resource "aci_vrf" "vrf1" {
   tenant_dn = "${aci_tenant.terraform_ten.id}"
-  name      = "devnet-admin-vrftf"
+  name      = "devnet--vrftf"
 }
 
 resource "aci_cloud_aws_provider" "cloud_apic_provider" {
@@ -42,7 +42,7 @@ resource "aci_cloud_e_pg" "cloud_apic_epg" {
 resource "aci_cloud_endpoint_selector" "cloud_ep_selector" {
   cloud_e_pg_dn    = "${aci_cloud_e_pg.cloud_apic_epg.id}"
   name             = "devnet-ep-select"
-  match_expression = "custom:Name=='admin-ep2'"
+  match_expression = "custom:Name=='-ep2'"
 }
 
 resource "aci_contract" "contract_epg1_epg2" {
@@ -86,7 +86,7 @@ resource "aci_filter_entry" "icmp" {
 
 resource "aci_cloud_external_e_pg" "cloud_epic_ext_epg" {
   cloud_applicationcontainer_dn    = "${aci_cloud_applicationcontainer.app1.id}"
-  name                             = "devnet-admin-inet"
+  name                             = "devnet--inet"
   relation_fv_rs_prov              = ["${aci_contract.contract_epg1_epg2.name}"]
   relation_fv_rs_cons              = ["${aci_contract.contract_epg1_epg2.name}"]
   relation_cloud_rs_cloud_e_pg_ctx = "${aci_vrf.vrf1.name}"
@@ -99,7 +99,7 @@ resource "aci_cloud_endpoint_selectorfor_external_e_pgs" "ext_ep_selector" {
 }
 
 resource "aci_cloud_context_profile" "context_profile" {
-  name                     = "devnet-admin-cloud-ctx-profile"
+  name                     = "devnet--cloud-ctx-profile"
   description              = "context provider created with terraform"
   tenant_dn                = "${aci_tenant.terraform_ten.id}"
   primary_cidr             = "10.230.231.1/16"

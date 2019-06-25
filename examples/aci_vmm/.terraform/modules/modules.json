@@ -1,1 +1,0 @@
-{"Modules":[{"Source":"./aci_resources","Key":"1.aci;./aci_resources","Version":"","Dir":".terraform/modules/2d2e3cc254b7e8eac388b35803347327","Root":""},{"Source":"./vmware_resources","Key":"1.vcenter;./vmware_resources","Version":"","Dir":".terraform/modules/61316724c871136cd479168bc946818d","Root":""}]}

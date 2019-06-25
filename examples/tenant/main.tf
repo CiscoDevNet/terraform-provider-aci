@@ -1,15 +1,15 @@
 # provider "aci" {
-#   username = "admin"
-#   password = "cisco123"
-#   url      = "https://192.168.10.102"
+#   username = ""
+#   password = ""
+#   url      = ""
 #   insecure = true
 # }
 
 provider "aci" {
   username    = "nirav"
-  private_key = "/Users/crest/go/src/github.com/ciscoecosystem/certdir/admin.key"
-  cert_name   = "test.crt"
-  url         = "https://192.168.10.102"
+  private_key = "/Users/crest/go/src/github.com/ciscoecosystem/certdir/.key"
+  cert_name   = ""
+  url         = ""
   insecure    = true
 }
 

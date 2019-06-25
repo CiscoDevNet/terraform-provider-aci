@@ -1,5 +1,5 @@
 provider "aci" {
-  username = "admin"
+  username = ""
   password = ""
   url      = ""
   insecure = true

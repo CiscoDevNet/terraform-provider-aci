@@ -39,6 +39,6 @@ resource "aws_instance" "web" {
   associate_public_ip_address = true
 
   tags = {
-    Name = "admin-ep2"
+    Name = "-ep2"
   }
 }
