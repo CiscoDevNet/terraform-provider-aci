@@ -1,7 +1,7 @@
 provider "aci" {
   username = "admin"
-  password = "Cisco!123"
-  url      = "https://10.23.248.85"
+  password = ""
+  url      = ""
   insecure = true
 }
 
