@@ -12,23 +12,21 @@ Manages ACI Cloud Context Profile
 ## Example Usage ##
 
 ```hcl
-resource "aci_cloud_context_profile" "example" {
-
-  tenant_dn  = "${aci_tenant.example.id}"
-
-    name  = "example"
-
-  annotation  = "example"
-  name_alias  = "example"
-  type  = "example"
-}
+	resource "aci_cloud_context_profile" "foocloud_context_profile" {
+		name 		                 = "%s"
+		description              = "cloud_context_profile created while acceptance testing"
+		tenant_dn                = "${aci_tenant.footenant.id}"
+		primary_cidr             = "10.230.231.1/16"
+		region                   = "us-west-1"
+		relation_cloud_rs_to_ctx = "${aci_vrf.vrf1.name}"
+	}
 ```
 ## Argument Reference ##
 * `tenant_dn` - (Required) Distinguished name of parent Tenant object.
 * `name` - (Required) name of Object cloud_context_profile.
 * `annotation` - (Optional) annotation for object cloud_context_profile.
 * `name_alias` - (Optional) name_alias for object cloud_context_profile.
-* `type` - (Optional) component type
+* `type` - (Optional) The specific type of the object or component. Allowed values are "regular" and "shadow". Default is "regular".
 
 * `relation_cloud_rs_ctx_to_flow_log` - (Optional) Relation to class cloudAwsFlowLogPol. Cardinality - N_TO_ONE. Type - String.
                 
