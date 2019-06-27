@@ -12,8 +12,8 @@ Data source for ACI Leaf Access Port Policy Group
 ## Example Usage ##
 
 ```hcl
-data "aci_leaf_access_port_policy_group" "example" {
-  name  = "example"
+data "aci_leaf_access_port_policy_group" "dev_leaf_port" {
+  name  = "foo_leaf_port"
 }
 ```
 ## Argument Reference ##

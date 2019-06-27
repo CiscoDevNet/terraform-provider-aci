@@ -7,16 +7,15 @@ description: |-
 ---
 
 # aci_cloud_providers_region #
-Data source for ACI Cloud Providers Region
-Note: This resource is supported in Cloud APIC only.
+Data source for ACI Cloud Providers Region  
+<b>Note: This resource is supported in Cloud APIC only.</b>
 ## Example Usage ##
 
 ```hcl
-data "aci_cloud_providers_region" "example" {
+data "aci_cloud_providers_region" "region_aws" {
 
-  cloud_provider_profile_dn  = "${aci_cloud_provider_profile.example.id}"
-
-  name  = "example"
+  cloud_provider_profile_dn  = "${aci_cloud_provider_profile.aws_prov.id}"
+  name                       = "us-east-1"
 }
 ```
 ## Argument Reference ##

@@ -7,15 +7,13 @@ description: |-
 ---
 
 # aci_cloud_provider_profile #
-Data source for ACI Cloud Provider Profile
-Note: This resource is supported in Cloud APIC only.
+Data source for ACI Cloud Provider Profile  
+<b>Note: This resource is supported in Cloud APIC only.</b>
 ## Example Usage ##
 
 ```hcl
-data "aci_cloud_provider_profile" "example" {
-
-
-  vendor  = "example"
+data "aci_cloud_provider_profile" "aws_prof" {
+  vendor  = "aws"
 }
 ```
 ## Argument Reference ##
@@ -27,4 +25,3 @@ data "aci_cloud_provider_profile" "example" {
 
 * `id` - Attribute id set to the Dn of the Cloud Provider Profile.
 * `annotation` - (Optional) annotation for object cloud_provider_profile.
-* `vendor` - (Optional) vendor of the controller

@@ -12,9 +12,9 @@ Data source for ACI Subnet
 ## Example Usage ##
 
 ```hcl
-data "aci_subnet" "example" {
+data "aci_subnet" "dev_subnet" {
   bridge_domain_dn  = "${aci_bridge_domain.example.id}"
-  ip  = "example"
+  ip                = "10.0.3.28/27"
 }
 ```
 ## Argument Reference ##

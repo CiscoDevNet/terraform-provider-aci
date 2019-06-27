@@ -7,16 +7,15 @@ description: |-
 ---
 
 # aci_cloud_availability_zone #
-Data source for ACI Cloud Availability Zone
-Note: This resource is supported in Cloud APIC only.
+Data source for ACI Cloud Availability Zone  
+<b>Note: This resource is supported in Cloud APIC only.</b>
 ## Example Usage ##
 
 ```hcl
-data "aci_cloud_availability_zone" "example" {
+data "aci_cloud_availability_zone" "az_us_east_1_aws" {
 
-  cloud_providers_region_dn  = "${aci_cloud_providers_region.example.id}"
-
-  name  = "example"
+  cloud_providers_region_dn  = "${aci_cloud_providers_region.region_aws.id}"
+  name                       = "us-east-1a"
 }
 ```
 ## Argument Reference ##

@@ -8,7 +8,7 @@ description: |-
 
 # aci_cloud_providers_region #
 Manages ACI Cloud Providers Region
-Note: This resource is supported in Cloud APIC only.
+<b>Note: This resource is supported in Cloud APIC only.</b>
 ## Example Usage ##
 
 ```hcl

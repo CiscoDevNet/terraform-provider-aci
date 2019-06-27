@@ -13,7 +13,7 @@ Manages ACI Application Profile
 
 ```hcl
 resource "aci_application_profile" "test_ap" {
-  tenant_dn  = "${aci_tenant.example.id}"
+  tenant_dn  = "${aci_tenant.dev_tenant.id}"
   name       = "demo_ap"
   annotation = "tag1,tag2"
   name_alias = "test_ap"

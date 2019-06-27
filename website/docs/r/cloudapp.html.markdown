@@ -12,8 +12,8 @@ Note: This resource is supported in Cloud APIC only.
 ## Example Usage ##
 
 ```hcl
-resource "aci_cloud_applicationcontainer" "example" {
-  tenant_dn  = "${aci_tenant.example.id}"
+resource "aci_cloud_applicationcontainer" "foo_clou_app" {
+  tenant_dn  = "${aci_tenant.dev_tenant.id}"
   name       = "demo_cloud_app"
   annotation = "tag_cloud_app"
   name_alias = "alias_app"

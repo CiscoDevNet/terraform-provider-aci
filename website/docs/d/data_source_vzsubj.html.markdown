@@ -12,9 +12,9 @@ Data source for ACI Contract Subject
 ## Example Usage ##
 
 ```hcl
-data "aci_contract_subject" "example" {
+data "aci_contract_subject" "dev_subject" {
   contract_dn  = "${aci_contract.example.id}"
-  name         = "example"
+  name         = "foo_subject"
 }
 ```
 ## Argument Reference ##

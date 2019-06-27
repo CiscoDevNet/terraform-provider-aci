@@ -12,8 +12,8 @@ Data source for ACI Leaf Profile
 ## Example Usage ##
 
 ```hcl
-data "aci_leaf_profile" "example" {
-  name  = "example"
+data "aci_leaf_profile" "dev_leaf_prof" {
+  name  = "foo_leaf_prof"
 }
 ```
 ## Argument Reference ##

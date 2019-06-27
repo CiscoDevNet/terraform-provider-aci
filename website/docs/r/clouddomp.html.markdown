@@ -8,7 +8,7 @@ description: |-
 
 # aci_cloud_domain_profile #
 Manages ACI Cloud Domain Profile
-Note: This resource is supported in Cloud APIC only.
+<b>Note: This resource is supported in Cloud APIC only.</b>
 ## Example Usage ##
 
 ```hcl

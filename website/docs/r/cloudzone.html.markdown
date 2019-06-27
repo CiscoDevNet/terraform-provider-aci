@@ -8,7 +8,7 @@ description: |-
 
 # aci_cloud_availability_zone #
 Manages ACI Cloud Availability Zone
-Note: This resource is supported in Cloud APIC only.
+<b>Note: This resource is supported in Cloud APIC only.</b>
 ## Example Usage ##
 
 ```hcl

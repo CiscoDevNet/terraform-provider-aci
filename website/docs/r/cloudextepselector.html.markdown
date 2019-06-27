@@ -8,7 +8,7 @@ description: |-
 
 # aci_cloud_endpoint_selectorfor_external_e_pgs #
 Manages ACI Cloud Endpoint Selector for External EPgs
-Note: This resource is supported in Cloud APIC only.
+<b>Note: This resource is supported in Cloud APIC only.</b>
 ## Example Usage ##
 
 ```hcl

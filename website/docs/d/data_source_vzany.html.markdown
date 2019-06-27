@@ -12,8 +12,8 @@ Data source for ACI Any
 ## Example Usage ##
 
 ```hcl
-data "aci_any" "example" {
-  vrf_dn  = "${aci_vrf.example.id}"
+data "aci_any" "dev_any" {
+  vrf_dn  = "${aci_vrf.dev_vrf.id}"
 }
 ```
 ## Argument Reference ##

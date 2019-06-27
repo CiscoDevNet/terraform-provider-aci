@@ -12,9 +12,9 @@ Data source for ACI VRF
 ## Example Usage ##
 
 ```hcl
-data "aci_vrf" "example" {
-  tenant_dn  = "${aci_tenant.example.id}"
-  name  = "example"
+data "aci_vrf" "dev_ctx" {
+  tenant_dn  = "${aci_tenant.dev_tenant.id}"
+  name       = "foo_ctx"
 }
 ```
 ## Argument Reference ##

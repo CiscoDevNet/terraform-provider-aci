@@ -7,21 +7,20 @@ description: |-
 ---
 
 # aci_cloud_subnet #
-Data source for ACI Cloud Subnet
-Note: This resource is supported in Cloud APIC only.
+Data source for ACI Cloud Subnet  
+<b>Note: This resource is supported in Cloud APIC only.</b>
 ## Example Usage ##
 
 ```hcl
-data "aci_cloud_subnet" "example" {
+data "aci_cloud_subnet" "dev_subnet" {
 
-  cloud_cidr_pool_dn  = "${aci_cloud_cidr_pool.example.id}"
-
-  ip  = "example"
+  cloud_cidr_pool_dn  = "${aci_cloud_cidr_pool.dev_cidr_pool.id}"
+  ip                  = "14.12.0.0/28"
 }
 ```
 ## Argument Reference ##
 * `cloud_cidr_pool_dn` - (Required) Distinguished name of parent CloudCIDRPool object.
-* `ip` - (Required) ip of Object cloud_subnet.
+* `ip` - (Required) CIDR block of Object cloud_subnet.
 
 
 
@@ -29,7 +28,6 @@ data "aci_cloud_subnet" "example" {
 
 * `id` - Attribute id set to the Dn of the Cloud Subnet.
 * `annotation` - (Optional) annotation for object cloud_subnet.
-* `ip` - (Optional) ip address
 * `name_alias` - (Optional) name_alias for object cloud_subnet.
-* `scope` - (Optional) capability domain
-* `usage` - (Optional) usage of the port
+* `scope` - (Optional) The domain applicable to the capability.
+* `usage` - (Optional) The usage of the port. This property shows how the port is used.

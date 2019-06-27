@@ -8,7 +8,7 @@ description: |-
 
 # aci_cloud_provider_profile #
 Manages ACI Cloud Provider Profile
-Note: This resource is supported in Cloud APIC only.
+<b>Note: This resource is supported in Cloud APIC only.</b>
 ## Example Usage ##
 
 ```hcl

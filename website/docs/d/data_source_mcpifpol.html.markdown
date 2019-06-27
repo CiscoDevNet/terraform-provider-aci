@@ -12,8 +12,8 @@ Data source for ACI Mis-cabling Protocol Interface Policy
 ## Example Usage ##
 
 ```hcl
-data "aci_miscabling_protocol_interface_policy" "example" {
-  name  = "example"
+data "aci_miscabling_protocol_interface_policy" "dev_miscable_pol" {
+  name  = "foo_miscable_pol"
 }
 ```
 ## Argument Reference ##

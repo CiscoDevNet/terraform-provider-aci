@@ -12,11 +12,10 @@ Data source for ACI Application EPG
 ## Example Usage ##
 
 ```hcl
-data "aci_application_epg" "example" {
+data "aci_application_epg" "foo_epg" {
 
-  application_profile_dn  = "${aci_application_profile.example.id}"
-
-  name                    = "example"
+  application_profile_dn  = "${aci_application_profile.foo_app.id}"
+  name                    = "dev_app_epg"
 }
 ```
 ## Argument Reference ##

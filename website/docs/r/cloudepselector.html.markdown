@@ -8,7 +8,7 @@ description: |-
 
 # aci_cloud_endpoint_selector #
 Manages ACI Cloud Endpoint Selector
-Note: This resource is supported in Cloud APIC only.
+<b>Note: This resource is supported in Cloud APIC only.</b>
 ## Example Usage ##
 
 ```hcl

@@ -7,18 +7,17 @@ description: |-
 ---
 
 # aci_cloud_domain_profile #
-Data source for ACI Cloud Domain Profile
-Note: This resource is supported in Cloud APIC only.
+Data source for ACI Cloud Domain Profile  
+<b>Note: This resource is supported in Cloud APIC only.</b>
 ## Example Usage ##
 
 ```hcl
-data "aci_cloud_domain_profile" "example" {
+data "aci_cloud_domain_profile" "default_domp" {
 
 }
 ```
 ## Argument Reference ##
-
-
+This data source doesn't require any arguments.
 
 ## Attribute Reference
 

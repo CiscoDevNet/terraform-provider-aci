@@ -12,8 +12,8 @@ Data source for ACI Leaf Interface Profile
 ## Example Usage ##
 
 ```hcl
-data "aci_leaf_interface_profile" "example" {
-  name  = "example"
+data "aci_leaf_interface_profile" "dev_leaf_int_prof" {
+  name  = "foo_leaf_int_prof"
 }
 ```
 ## Argument Reference ##

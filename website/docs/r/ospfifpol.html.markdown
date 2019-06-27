@@ -13,7 +13,7 @@ Manages ACI OSPF Interface Policy
 
 ```hcl
 	resource "aci_ospf_interface_policy" "fooospf_interface_policy" {
-		tenant_dn    = "${aci_tenant.example.id}"
+		tenant_dn    = "${aci_tenant.dev_tenant.id}"
 		description  = "%s"
 		name         = "demo_ospfpol"
 		annotation   = "tag_ospf"

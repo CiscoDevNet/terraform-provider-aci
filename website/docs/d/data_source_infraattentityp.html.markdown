@@ -12,8 +12,8 @@ Data source for ACI Attachable Access Entity Profile
 ## Example Usage ##
 
 ```hcl
-data "aci_attachable_access_entity_profile" "example" {
-  name  = "example"
+data "aci_attachable_access_entity_profile" "dev_ent_prof" {
+  name  = "foo_ent_prof"
 }
 ```
 ## Argument Reference ##

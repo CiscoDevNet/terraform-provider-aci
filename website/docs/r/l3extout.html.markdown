@@ -13,7 +13,7 @@ Manages ACI L3 Outside
 
 ```hcl
 	resource "aci_l3_outside" "fool3_outside" {
-		tenant_dn      = "${aci_tenant.example.id}"
+		tenant_dn      = "${aci_tenant.dev_tenant.id}"
 		description    = "%s"
 		name           = "demo_l3out"
 		annotation     = "tag_l3out"

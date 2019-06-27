@@ -12,8 +12,8 @@ Data source for ACI L2 Interface Policy
 ## Example Usage ##
 
 ```hcl
-data "aci_l2_interface_policy" "example" {
-  name  = "example"
+data "aci_l2_interface_policy" "dev_l2_int_pol" {
+  name  = "foo_l2_int_pol"
 }
 ```
 ## Argument Reference ##

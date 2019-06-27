@@ -7,14 +7,14 @@ description: |-
 ---
 
 # aci_cloud_applicationcontainer #
-Data source for ACI Cloud Application container
-Note: This resource is supported in Cloud APIC only.
+Data source for ACI Cloud Application container  
+<b>Note: This resource is supported in Cloud APIC only. </b>
 ## Example Usage ##
 
 ```hcl
-data "aci_cloud_applicationcontainer" "example" {
-  tenant_dn  = "${aci_tenant.example.id}"
-  name       = "example"
+data "aci_cloud_applicationcontainer" "sample_app" {
+  tenant_dn  = "${aci_tenant.dev_tenant.id}"
+  name       = "demo_cloud_app"
 }
 ```
 ## Argument Reference ##

@@ -13,7 +13,7 @@ Manages ACI Contract
 
 ```hcl
 	resource "aci_contract" "foocontract" {
-		tenant_dn   = "${aci_tenant.example.id}"
+		tenant_dn   = "${aci_tenant.dev_tenant.id}"
 		description = "%s"
 		name        = "demo_contract"
 		annotation  = "tag_contract"

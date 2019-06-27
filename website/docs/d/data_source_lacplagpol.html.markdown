@@ -12,10 +12,8 @@ Data source for ACI LACP Policy
 ## Example Usage ##
 
 ```hcl
-data "aci_lacp_policy" "example" {
-
-
-  name  = "example"
+data "aci_lacp_policy" "dev_lacp_pol" {
+  name  = "foo_lacp_pol"
 }
 ```
 ## Argument Reference ##

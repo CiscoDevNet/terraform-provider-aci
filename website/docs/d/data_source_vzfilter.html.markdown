@@ -12,9 +12,9 @@ Data source for ACI Filter
 ## Example Usage ##
 
 ```hcl
-data "aci_filter" "example" {
-  tenant_dn  = "${aci_tenant.example.id}"
-  name       = "example"
+data "aci_filter" "allow_http" {
+  tenant_dn  = "${aci_tenant.dev_tenant.id}"
+  name       = "http_flt"
 }
 ```
 ## Argument Reference ##

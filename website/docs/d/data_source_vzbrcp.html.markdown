@@ -13,7 +13,7 @@ Data source for ACI Contract
 
 ```hcl
 data "aci_contract" "example" {
-  tenant_dn  = "${aci_tenant.example.id}"
+  tenant_dn  = "${aci_tenant.dev_tenant.id}"
   name       = "contract_name"
 }
 ```

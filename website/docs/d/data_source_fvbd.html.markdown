@@ -12,9 +12,9 @@ Data source for ACI Bridge Domain
 ## Example Usage ##
 
 ```hcl
-data "aci_bridge_domain" "example" {
-  tenant_dn  = "${aci_tenant.example.id}"
-  name       = "example"
+data "aci_bridge_domain" "dev_bd" {
+  tenant_dn  = "${aci_tenant.dev_tenant.id}"
+  name       = "foo_bd"
 }
 ```
 ## Argument Reference ##

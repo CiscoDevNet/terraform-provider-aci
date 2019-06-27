@@ -12,7 +12,7 @@ Data source for ACI VMM Domain
 ## Example Usage ##
 
 ```hcl
-data "aci_vmm_domain" "example" {
+data "aci_vmm_domain" "dev_vmmdom" {
   provider_profile_dn  = "${aci_provider_profile.example.id}"
   name                 = "demo_vmmdomp"
 }

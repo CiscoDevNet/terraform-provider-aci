@@ -12,10 +12,10 @@ Data source for ACI Access Port Selector
 ## Example Usage ##
 
 ```hcl
-data "aci_access_port_selector" "example" {
+data "aci_access_port_selector" "dev_acc_port_select" {
   leaf_interface_profile_dn  = "${aci_leaf_interface_profile.example.id}"
-  name                       = "example"
-  access_port_selector_type  = "example"
+  name                       = "foo_acc_port_select"
+  access_port_selector_type  = "ALL"
 }
 ```
 ## Argument Reference ##

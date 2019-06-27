@@ -7,7 +7,8 @@ description: |-
 ---
 
 # aci_end_point_retention_policy #
-Manages ACI End Point Retention Policy
+Manage End Point (EP) retention protocol policies
+
 
 ## Example Usage ##
 

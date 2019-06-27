@@ -12,9 +12,9 @@ Data source for ACI Application Profile
 ## Example Usage ##
 
 ```hcl
-data "aci_application_profile" "example" {
-  tenant_dn  = "${aci_tenant.example.id}"
-  name       = "example"
+data "aci_application_profile" "dev_apps" {
+  tenant_dn  = "${aci_tenant.dev_tenant.id}"
+  name       = "foo_app"
 }
 ```
 ## Argument Reference ##

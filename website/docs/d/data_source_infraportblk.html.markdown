@@ -12,9 +12,9 @@ Data source for ACI Access Port Block
 ## Example Usage ##
 
 ```hcl
-data "aci_access_port_block" "example" {
+data "aci_access_port_block" "dev_port_blk" {
   access_port_selector_dn  = "${aci_access_port_selector.example.id}"
-  name                     = "example"
+  name                     = "foo_port_blk"
 }
 ```
 ## Argument Reference ##

@@ -8,7 +8,7 @@ description: |-
 
 # aci_cloud_aws_provider #
 Manages ACI Cloud AWS Provider
-Note: This resource is supported in Cloud APIC only.
+<b>Note: This resource is supported in Cloud APIC only.</b>
 ## Example Usage ##
 
 ```hcl
@@ -16,7 +16,7 @@ Note: This resource is supported in Cloud APIC only.
 		tenant_dn         = "${aci_tenant.footenant.id}"
 		description       = "aws account config"
 		access_key_id     = "access_key"
-		account_id        = "310368696476"
+		account_id        = "acc_id"
 		annotation        = "tag_aws"
 		region            = "us-west-2"
 		secret_access_key = "secret_key"

@@ -13,7 +13,7 @@ Data source for ACI Tenant
 
 ```hcl
 data "aci_tenant" "example" {
-  name  = "example"
+  name  = "dev_ten"
 }
 ```
 ## Argument Reference ##

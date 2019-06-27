@@ -12,8 +12,8 @@ Data source for ACI LLDP Interface Policy
 ## Example Usage ##
 
 ```hcl
-data "aci_lldp_interface_policy" "example" {
-  name  = "example"
+data "aci_lldp_interface_policy" "dev_lldp_pol" {
+  name  = "foo_lldp_pol"
 }
 ```
 ## Argument Reference ##

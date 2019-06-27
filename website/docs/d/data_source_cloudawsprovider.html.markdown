@@ -7,13 +7,13 @@ description: |-
 ---
 
 # aci_cloud_aws_provider #
-Data source for ACI Cloud AWS Provider
-Note: This resource is supported in Cloud APIC only.
+Data source for ACI Cloud AWS Provider  
+<b>Note: This resource is supported in Cloud APIC only.</b>
 ## Example Usage ##
 
 ```hcl
-data "aci_cloud_aws_provider" "example" {
-  tenant_dn  = "${aci_tenant.example.id}"
+data "aci_cloud_aws_provider" "aws_prov" {
+  tenant_dn  = "${aci_tenant.dev_tenant.id}"
 }
 ```
 ## Argument Reference ##

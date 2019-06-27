@@ -12,8 +12,8 @@ Data source for ACI PC/VPC Interface Policy Group
 ## Example Usage ##
 
 ```hcl
-data "aci_pcvpc_interface_policy_group" "example" {
-  name  = "example"
+data "aci_pcvpc_interface_policy_group" "dev_pol_grp" {
+  name  = "foo_pol_grp"
 }
 ```
 ## Argument Reference ##

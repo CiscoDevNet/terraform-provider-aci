@@ -12,9 +12,9 @@ Data source for ACI Filter Entry
 ## Example Usage ##
 
 ```hcl
-data "aci_filter_entry" "example" {
-  filter_dn  = "${aci_filter.example.id}"
-  name       = "example"
+data "aci_filter_entry" "http" {
+  filter_dn  = "${aci_filter.http_flt.id}"
+  name       = "http"
 }
 ```
 ## Argument Reference ##

@@ -12,10 +12,8 @@ Data source for ACI Port Security Policy
 ## Example Usage ##
 
 ```hcl
-data "aci_port_security_policy" "example" {
-
-
-  name  = "example"
+data "aci_port_security_policy" "dev_port_sec_pol" {
+  name  = "foo_port_sec_pol"
 }
 ```
 ## Argument Reference ##

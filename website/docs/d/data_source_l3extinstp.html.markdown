@@ -12,9 +12,9 @@ Data source for ACI External Network Instance Profile
 ## Example Usage ##
 
 ```hcl
-data "aci_external_network_instance_profile" "example" {
+data "aci_external_network_instance_profile" "dev_ext_net_prof" {
   l3_outside_dn  = "${aci_l3_outside.example.id}"
-  name           = "example"
+  name           = "foo_ext_net_prof"
 }
 ```
 ## Argument Reference ##

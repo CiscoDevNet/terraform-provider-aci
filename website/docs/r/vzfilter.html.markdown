@@ -13,7 +13,7 @@ Manages ACI Filter
 
 ```hcl
 	resource "aci_filter" "foofilter" {
-		tenant_dn   = "${aci_tenant.example.id}"
+		tenant_dn   = "${aci_tenant.dev_tenant.id}"
 		description = "%s"
 		name        = "demo_filter"
 		annotation  = "tag_filter"

@@ -12,9 +12,9 @@ Data source for ACI OSPF Interface Policy
 ## Example Usage ##
 
 ```hcl
-data "aci_ospf_interface_policy" "example" {
-  tenant_dn  = "${aci_tenant.example.id}"
-  name       = "example"
+data "aci_ospf_interface_policy" "dev_ospf_pol" {
+  tenant_dn  = "${aci_tenant.dev_tenant.id}"
+  name       = "foo_ospf_pol"
 }
 ```
 ## Argument Reference ##

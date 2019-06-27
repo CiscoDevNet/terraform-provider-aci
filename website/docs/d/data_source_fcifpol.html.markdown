@@ -12,8 +12,8 @@ Data source for ACI Interface FC Policy
 ## Example Usage ##
 
 ```hcl
-data "aci_interface_fc_policy" "example" {
-  name  = "example"
+data "aci_interface_fc_policy" "test_pol" {
+  name  = "demo_int_policy"
 }
 ```
 ## Argument Reference ##

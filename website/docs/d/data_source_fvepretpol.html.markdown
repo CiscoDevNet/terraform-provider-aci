@@ -12,9 +12,9 @@ Data source for ACI End Point Retention Policy
 ## Example Usage ##
 
 ```hcl
-data "aci_end_point_retention_policy" "example" {
-  tenant_dn  = "${aci_tenant.example.id}"
-  name       = "example"
+data "aci_end_point_retention_policy" "dev_ret_pol" {
+  tenant_dn  = "${aci_tenant.dev_tenant.id}"
+  name       = "foo_ret_pol"
 }
 ```
 ## Argument Reference ##

@@ -12,9 +12,9 @@ Data source for ACI L3 Outside
 ## Example Usage ##
 
 ```hcl
-data "aci_l3_outside" "example" {
-  tenant_dn  = "${aci_tenant.example.id}"
-  name       = "example"
+data "aci_l3_outside" "dev_l3_out" {
+  tenant_dn  = "${aci_tenant.dev_tenant.id}"
+  name       = "foo_l3_out"
 }
 ```
 ## Argument Reference ##

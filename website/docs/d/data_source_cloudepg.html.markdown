@@ -7,16 +7,14 @@ description: |-
 ---
 
 # aci_cloud_e_pg #
-Data source for ACI Cloud EPg
-Note: This resource is supported in Cloud APIC only.
+Data source for ACI Cloud EPg  
+<b>Note: This resource is supported in Cloud APIC only.</b>
 ## Example Usage ##
 
 ```hcl
-data "aci_cloud_e_pg" "example" {
-
-  cloud_applicationcontainer_dn  = "${aci_cloud_applicationcontainer.example.id}"
-
-  name  = "example"
+data "aci_cloud_e_pg" "dev_epg" {
+  cloud_applicationcontainer_dn  = "${aci_cloud_applicationcontainer.sample_app.id}"
+  name                           = "cloud_dev_epg"
 }
 ```
 ## Argument Reference ##
@@ -30,8 +28,8 @@ data "aci_cloud_e_pg" "example" {
 * `id` - Attribute id set to the Dn of the Cloud EPg.
 * `annotation` - (Optional) annotation for object cloud_e_pg.
 * `exception_tag` - (Optional) exception_tag for object cloud_e_pg.
-* `flood_on_encap` - (Optional) flood_on_encap for object cloud_e_pg.
-* `match_t` - (Optional) match criteria
+* `flood_on_encap` - (Optional) Control at EPG level if the traffic L2 Multicast/Broadcast and Link Local Layer should be flooded only on ENCAP or based on bridg-domain settings.
+* `match_t` - (Optional) The provider label match criteria.
 * `name_alias` - (Optional) name_alias for object cloud_e_pg.
-* `pref_gr_memb` - (Optional) pref_gr_memb for object cloud_e_pg.
-* `prio` - (Optional) qos priority class id
+* `pref_gr_memb` - (Optional) Represents parameter used to determine if EPg is part of a group that does not a contract for communication.
+* `prio` - (Optional) qos priority class id.
