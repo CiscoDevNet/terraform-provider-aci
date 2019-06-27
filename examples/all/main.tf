@@ -5,13 +5,6 @@ provider "aci" {
   insecure = true
 }
 
-# provider "aci" {
-#   username    = ""
-#   private_key = ""
-#   cert_name   = ""
-#   url         = ""
-#   insecure    = true
-# }
 
 resource "aci_tenant" "madebytf2" {
   name        = "madebytf2"
