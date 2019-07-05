@@ -88,6 +88,7 @@ func Provider() terraform.ResourceProvider {
 			"aci_vlan_encapsulationfor_vxlan_traffic":  resourceAciVlanEncapsulationforVxlanTraffic(),
 			"aci_logical_node_profile":                 resourceAciLogicalNodeProfile(),
 			"aci_logical_interface_profile":            resourceAciLogicalInterfaceProfile(),
+			"aci_l3_ext_subnet":                        resourceAciL3ExtSubnet(),
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
@@ -122,6 +123,7 @@ func Provider() terraform.ResourceProvider {
 			"aci_vlan_encapsulationfor_vxlan_traffic":  dataSourceAciVlanEncapsulationforVxlanTraffic(),
 			"aci_logical_node_profile":                 dataSourceAciLogicalNodeProfile(),
 			"aci_logical_interface_profile":            dataSourceAciLogicalInterfaceProfile(),
+			"aci_l3_ext_subnet":                        dataSourceAciL3ExtSubnet(),
 		},
 
 		ConfigureFunc: configureClient,
