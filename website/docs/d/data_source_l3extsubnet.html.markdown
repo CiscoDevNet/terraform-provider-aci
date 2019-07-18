@@ -15,8 +15,7 @@ Data source for ACI Subnet
 data "aci_l3_ext_subnet" "example" {
 
   external_network_instance_profile_dn  = "${aci_external_network_instance_profile.example.id}"
-
-  ip  = "example"
+  ip                                    = "10.0.3.28/27"
 }
 ```
 ## Argument Reference ##
@@ -28,8 +27,7 @@ data "aci_l3_ext_subnet" "example" {
 ## Attribute Reference
 
 * `id` - Attribute id set to the Dn of the Subnet.
-* `aggregate` - (Optional) aggregate for object subnet.
+* `aggregate` - (Optional) Aggregate Routes for Subnet.
 * `annotation` - (Optional) annotation for object subnet.
-* `ip` - (Optional) ip address
 * `name_alias` - (Optional) name_alias for object subnet.
-* `scope` - (Optional) capability domain
+* `scope` - (Optional) The domain applicable to the capability.
