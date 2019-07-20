@@ -34,8 +34,9 @@ The Provider supports authentication with Cisco APIC in 2 ways:
  2. Signature Based authentication.  
     * x509 certificate has been created and added it to the user in Cisco APIC.
     * With the help of private key that has been used to calculate the certificate, a signature has been calculated and passed with request. This signature will be used to authenticate the user.  
-    example.
-    ```hcl
+    example.  
+
+```
     provider "aci" {
         # cisco-aci user name
         username = "admin"
@@ -47,7 +48,7 @@ The Provider supports authentication with Cisco APIC in 2 ways:
         url      = "https://my-cisco-aci.com"
         insecure = true
     }
-    ```
+```
 
 ### How to add Certificate to the Cisco APIC local user ###
 
