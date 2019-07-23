@@ -7,6 +7,16 @@ description: |-
   The provider needs to be configured with the proper credentials before it can be used.
 ---
 
+Application Centric Infrastructure (ACI)
+-----------------------------------------  
+The Cisco Application Centric Infrastructure (ACI) allows application requirements to define the network. This architecture simplifies, optimizes, and accelerates the entire application deployment life cycle.  
+
+Application Policy Infrastructure Controller (APIC)
+--------------------------------------------------
+The APIC manages the scalable ACI multi-tenant fabric. The APIC provides a unified point of automation and management, policy programming, application deployment, and health monitoring for the fabric. The APIC, which is implemented as a replicated synchronized clustered controller, optimizes performance, supports any application anywhere, and provides unified operation of the physical and virtual infrastructure.
+The APIC enables network administrators to easily define the optimal network for applications. Data center operators can clearly see how applications consume network resources, easily isolate and troubleshoot application and infrastructure problems, and monitor and profile resource usage patterns.
+The Cisco Application Policy Infrastructure Controller (APIC) API enables applications to directly connect with a secure, shared, high-performance resource pool that includes network, compute, and storage capabilities.
+
 Cisco ACI Provider
 ------------
 The Cisco ACI terraform provider is used to interact with resources provided by Cisco APIC. The provider needs to be configured with proper credentials to authenticate with Cisco APIC.
