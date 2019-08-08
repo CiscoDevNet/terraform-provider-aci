@@ -24,13 +24,15 @@ Manages ACI Cloud Context Profile
 ## Argument Reference ##
 * `tenant_dn` - (Required) Distinguished name of parent Tenant object.
 * `name` - (Required) name of Object cloud_context_profile.
+* `primary_cidr` - (Required) Primary CIDR block of Cloud Context profile. 
+* `region` - (Required) AWS region in which profile is created.
 * `annotation` - (Optional) annotation for object cloud_context_profile.
 * `name_alias` - (Optional) name_alias for object cloud_context_profile.
 * `type` - (Optional) The specific type of the object or component. Allowed values are "regular" and "shadow". Default is "regular".
 
 * `relation_cloud_rs_ctx_to_flow_log` - (Optional) Relation to class cloudAwsFlowLogPol. Cardinality - N_TO_ONE. Type - String.
                 
-* `relation_cloud_rs_to_ctx` - (Optional) Relation to class fvCtx. Cardinality - N_TO_ONE. Type - String.
+* `relation_cloud_rs_to_ctx` - (Required) Relation to class fvCtx. Cardinality - N_TO_ONE. Type - String.
                 
 * `relation_cloud_rs_ctx_profile_to_region` - (Optional) Relation to class cloudRegion. Cardinality - N_TO_ONE. Type - String.
                 
