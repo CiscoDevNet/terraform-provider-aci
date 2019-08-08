@@ -3,11 +3,13 @@ layout: "aci"
 page_title: "Provider: ACI"
 sidebar_current: "docs-aci-index"
 description: |-
-  The Heroku provider is used to interact with the resources supported by Heroku. The provider needs to be configured with the proper credentials before it can be used.
+  The Cisco ACI provider is used to interact with the resources provided by Cisco APIC.
+  The provider needs to be configured with the proper credentials before it can be used.
 ---
+
 Cisco ACI Provider
 ------------
-The Cisoc ACI terraform provider is used to interact with resources provided by Cisco APIC.Provider needed to be configured with proper credentials to authenticate with Cisco APIC.
+The Cisco ACI terraform provider is used to interact with resources provided by Cisco APIC. The provider needs to be configured with proper credentials to authenticate with Cisco APIC.
 
 Authentication
 --------------
@@ -28,12 +30,12 @@ The Provider supports authentication with Cisco APIC in 2 ways:
 }
  ```
 
- In this method it will obtain authentication token from Cisco APIC and will use that token to authenticate. Limitation with this approach is APIC counts the request to authenticate and threshold it to avoid DOS attack.After too many attempts this authentication method may fail as threshold will be exceeded.  
- To avoid above mentioned problem Cisco APIC supports signature based authentication.  
+ In this method, it will obtain an authentication token from Cisco APIC and will use that token to authenticate. A limitation with this approach is APIC counts the request to authenticate and threshold it to avoid DOS attack. After too many attempts this authentication method may fail as the threshold will be exceeded.  
+ To avoid the above-mentioned problem Cisco APIC supports signature-based authentication.  
 
  2. Signature Based authentication.  
     * x509 certificate has been created and added it to the user in Cisco APIC.
-    * With the help of private key that has been used to calculate the certificate, a signature has been calculated and passed with request. This signature will be used to authenticate the user.  
+    * With the help of private key that has been used to calculate the certificate, a signature has been calculated and passed with the request. This signature will be used to authenticate the user.  
     example.  
 
 ```
@@ -60,7 +62,7 @@ $ openssl req -new -newkey rsa:1024 -days 36500 -nodes -x509 -keyout admin.key -
 
 * Add the X.509 certificate to your ACI AAA local user at ADMIN » AAA.
 
-* Click AAA Authentication.Check that in the Authentication field the Realm field displays Local.
+* Click AAA Authentication. Check that in the Authentication field the Realm field displays Local.
 
 * Expand Security Management » Local Users
 Click the name of the user you want to add a certificate to, in the User Certificates area
@@ -98,9 +100,9 @@ Argument Reference
 Following arguments are supported with Cisco ACI terraform provider.
 
  * `username` - (Required) This is the Cisco APIC username, which is required to authenticate with CISCO APIC.
- * `password` - (Optional) Password of the user mentioned in username argument. It is required when you want to use token based authentication.
+ * `password` - (Optional) Password of the user mentioned in username argument. It is required when you want to use token-based authentication.
  * `private-key` - (Optional) Path to the private key for which x509 certificate has been calculated for the user mentioned in `username`.
  * `url` - (Required) URL for CISCO APIC.
  * `insecure` - (Optional) This determines whether to use insecure HTTP connection or not. Default value is `true`.  
 
-~> NOTE : `password` or `private-key` either of one is required.
+~> NOTE: `password` or `private-key` either of one is required.
