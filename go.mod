@@ -1,4 +1,4 @@
-module github.com/ciscoecosystem/terraform-provider-aci
+module github.com/terraform-providers/terraform-provider-aci
 
 go 1.12
 
