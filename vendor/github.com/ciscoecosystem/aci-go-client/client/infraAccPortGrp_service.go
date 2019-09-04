@@ -1246,16 +1246,16 @@ func (sm *ServiceManager) ReadRelationinfraRsQosEgressDppIfPolFromLeafAccessPort
 
 
 }
-func (sm *ServiceManager) CreateRelationinfraRsAttEntPFromLeafAccessPortPolicyGroup( parentDn, tnInfraAttEntityPName string) error {
+func (sm *ServiceManager) CreateRelationinfraRsAttEntPFromLeafAccessPortPolicyGroup( parentDn, tDn string) error {
 	dn := fmt.Sprintf("%s/rsattEntP", parentDn)
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tnInfraAttEntityPName": "%s"
+				"dn": "%s","tDn": "%s"
 								
 			}
 		}
-	}`, "infraRsAttEntP", dn,tnInfraAttEntityPName))
+	}`, "infraRsAttEntP", dn,tDn))
 
 	jsonPayload, err := container.ParseJSON(containerJSON)
 	if err != nil {
@@ -1289,7 +1289,7 @@ func (sm *ServiceManager) ReadRelationinfraRsAttEntPFromLeafAccessPortPolicyGrou
 	contList := models.ListFromContainer(cont,"infraRsAttEntP")
 	
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnInfraAttEntityPName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil,err
