@@ -11,13 +11,13 @@ import (
 
 func resourceAciL3ExtSubnet() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciSubnetCreate,
-		Update: resourceAciSubnetUpdate,
-		Read:   resourceAciSubnetRead,
-		Delete: resourceAciSubnetDelete,
+		Create: resourceAciL3ExtSubnetCreate,
+		Update: resourceAciL3ExtSubnetUpdate,
+		Read:   resourceAciL3ExtSubnetRead,
+		Delete: resourceAciL3ExtSubnetDelete,
 
 		Importer: &schema.ResourceImporter{
-			State: resourceAciSubnetImport,
+			State: resourceAciL3ExtSubnetImport,
 		},
 
 		SchemaVersion: 1,
@@ -323,7 +323,7 @@ func resourceAciL3ExtSubnetRead(d *schema.ResourceData, m interface{}) error {
 	return nil
 }
 
-func resourceAciSubnetL3ExtDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciL3ExtSubnetDelete(d *schema.ResourceData, m interface{}) error {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
