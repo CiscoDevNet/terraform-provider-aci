@@ -82,3 +82,11 @@ func ListFromContainer(cont *container.Container, klass string) []*container.Con
 	return arr
 
 }
+
+func CurlyBraces(value string) string {
+	if value == "{}" {
+		return ""
+	} else {
+		return value
+	}
+}
