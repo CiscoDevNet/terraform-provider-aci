@@ -1,4 +1,8 @@
 ## 0.1.2 (Unreleased)
+
+BUG FIXES:
+
+- Fixed issue of hanging sessions with Terraform 0.12.
 ## 0.1.1 (September 19, 2019)
 
 IMPROVEMENTS:

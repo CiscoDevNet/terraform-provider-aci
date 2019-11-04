@@ -11,7 +11,6 @@ import (
 	"net/url"
 	"strconv"
 	"strings"
-	"sync"
 	"time"
 
 	"github.com/ciscoecosystem/aci-go-client/container"
@@ -25,8 +24,6 @@ const authPayload = `{
 		}
 	}
 }`
-
-var lock sync.Mutex
 
 const DefaultMOURL = "/api/node/mo"
 
@@ -231,8 +228,6 @@ func StrtoInt(s string, startIndex int, bitSize int) (int64, error) {
 
 }
 func (c *Client) Do(req *http.Request) (*container.Container, *http.Response, error) {
-	lock.Lock()
-	defer lock.Unlock()
 	resp, err := c.httpClient.Do(req)
 	if err != nil {
 		return nil, nil, err
