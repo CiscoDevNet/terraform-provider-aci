@@ -157,12 +157,16 @@ func (c *Client) MakeRestRequest(method string, path string, body *container.Con
 	}
 
 	fURL := c.BaseURL.ResolveReference(url)
-
-	req, err := http.NewRequest(method, fURL.String(), bytes.NewBuffer(body.Bytes()))
-
+	var req *http.Request
+	if method == "GET" {
+		req, err = http.NewRequest(method, fURL.String(), nil)
+	} else {
+		req, err = http.NewRequest(method, fURL.String(), bytes.NewBuffer((body.Bytes())))
+	}
 	if err != nil {
 		return nil, err
 	}
+	log.Printf("HTTP request %s %s %v", method, path, req)
 
 	if authenticated {
 
@@ -232,20 +236,21 @@ func (c *Client) Do(req *http.Request) (*container.Container, *http.Response, er
 	if err != nil {
 		return nil, nil, err
 	}
-
-	fmt.Printf("\nHTTP Request: %s %s \n", req.Method, req.URL.String())
-	fmt.Printf("\nHTTP Response: %d %s \n", resp.StatusCode, resp.Status)
+	log.Printf("\n\n\n HTTP request: %v", req.Body)
+	log.Printf("\nHTTP Request: %s %s", req.Method, req.URL.String())
+	log.Printf("nHTTP Response: %d %s %v", resp.StatusCode, resp.Status, resp)
 
 	decoder := json.NewDecoder(resp.Body)
 	obj, err := container.ParseJSONDecoder(decoder)
-	resp.Body.Close()
+	defer resp.Body.Close()
 
 	if err != nil {
 		fmt.Println("Error occurred.")
 		return nil, resp, err
 	}
-
+	log.Printf("[DEBUG] Exit from do method")
 	return obj, resp, err
+
 }
 
 func stripQuotes(word string) string {
