@@ -1,4 +1,8 @@
-## 0.1.2 (Unreleased)
+## 0.1.3 (Unreleased)
+BUG FIXES:
+
+- Fixed issue of having 405 errors from APIC nginx.
+
 ## 0.1.2 (November 04, 2019)
 
 BUG FIXES:
