@@ -32,7 +32,6 @@ func (sm *ServiceManager) Get(dn string) (*container.Container, error) {
 	}
 
 	obj, _, err := sm.client.Do(req)
-	fmt.Println(obj)
 	if err != nil {
 		return nil, err
 	}
