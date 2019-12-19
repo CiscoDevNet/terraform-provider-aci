@@ -11,6 +11,7 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"time"
 )
@@ -42,7 +43,7 @@ func (t *Auth) estimateExpireTime() int64 {
 }
 
 func (client *Client) InjectAuthenticationHeader(req *http.Request, path string) (*http.Request, error) {
-
+	log.Printf("[DEBUG] Begin Injection")
 	if client.password != "" {
 		if client.AuthToken == nil || !client.AuthToken.IsValid() {
 			fmt.Println(client)
@@ -59,11 +60,14 @@ func (client *Client) InjectAuthenticationHeader(req *http.Request, path string)
 		})
 		return req, nil
 	} else if client.privatekey != "" && client.adminCert != "" {
-		buffer, _ := ioutil.ReadAll(req.Body)
-		rdr2 := ioutil.NopCloser(bytes.NewBuffer(buffer))
+		var bodyStr string
+		if req.Method != "GET" {
+			buffer, _ := ioutil.ReadAll(req.Body)
+			rdr2 := ioutil.NopCloser(bytes.NewBuffer(buffer))
 
-		req.Body = rdr2
-		bodyStr := string(buffer)
+			req.Body = rdr2
+			bodyStr = string(buffer)
+		}
 		contentStr := ""
 		if bodyStr != "{}" {
 			contentStr = fmt.Sprintf("%s%s%s", req.Method, path, bodyStr)
@@ -71,11 +75,11 @@ func (client *Client) InjectAuthenticationHeader(req *http.Request, path string)
 			contentStr = fmt.Sprintf("%s%s", req.Method, path)
 
 		}
-		fmt.Println("Content " + contentStr)
+		log.Printf("Content %s", contentStr)
 		content := []byte(contentStr)
 
 		signature, err := createSignature(content, client.privatekey)
-		fmt.Println("sig" + signature)
+		log.Printf("signature %s" + signature)
 		if err != nil {
 			return req, err
 		}
@@ -95,7 +99,7 @@ func (client *Client) InjectAuthenticationHeader(req *http.Request, path string)
 			Name:  "APIC-Certificate-DN",
 			Value: fmt.Sprintf("uni/userext/user-%s/usercert-%s", client.username, client.adminCert),
 		})
-
+		log.Printf("[DEBUG] finished signature creation")
 		return req, nil
 
 	} else {
@@ -107,31 +111,53 @@ func (client *Client) InjectAuthenticationHeader(req *http.Request, path string)
 }
 
 func createSignature(content []byte, keypath string) (string, error) {
+	log.Printf("[DEBUG] Begin Create signature")
 	hasher := sha256.New()
 	hasher.Write(content)
+	log.Printf("[DEBUG] Begin Read private key inside createsignature")
+
 	privkey, err := loadPrivateKey(keypath)
+	log.Printf("[DEBUG] finish read private key inside Create signature")
+
 	if err != nil {
 		return "", err
 	}
+	log.Printf("[DEBUG] Begin signing signature")
+
 	signedData, err := rsa.SignPKCS1v15(nil, privkey, crypto.SHA256, hasher.Sum(nil))
+	log.Printf("[DEBUG] finish signing signature")
+
 	if err != nil {
 		return "", err
 	}
+	log.Printf("[DEBUG] Begin final encoding signature")
 
 	signature := base64.StdEncoding.EncodeToString(signedData)
+	log.Printf("[DEBUG] finish final signature")
+
 	return signature, nil
 }
 
 func loadPrivateKey(path string) (*rsa.PrivateKey, error) {
+	log.Printf("[DEBUG] Begin load private key inside loadPrivateKey")
+
 	data, err := ioutil.ReadFile(path)
+	log.Printf("[DEBUG] priavte key read finish  inside loadPrivateKey")
+
 	if err != nil {
 		return nil, err
 	}
+	log.Printf("[DEBUG] finish load private key inside loadPrivateKey")
+
 	return parsePrivateKey(data)
 }
 
 func parsePrivateKey(pemBytes []byte) (*rsa.PrivateKey, error) {
+	log.Printf("[DEBUG] Begin parse private key inside parsePrivateKey")
+
 	block, _ := pem.Decode(pemBytes)
+	log.Printf("[DEBUG] pem decode finish parse private key inside parsePrivateKey")
+
 	if block == nil {
 		return nil, errors.New("ssh: no key found")
 	}
@@ -139,16 +165,22 @@ func parsePrivateKey(pemBytes []byte) (*rsa.PrivateKey, error) {
 	switch block.Type {
 	case "RSA PRIVATE KEY":
 		privkey, err := x509.ParsePKCS1PrivateKey(block.Bytes)
+		log.Printf("[DEBUG] x509 parsing  private key inside parsePrivateKey")
+
 		if err != nil {
 			return nil, err
 		}
 		return privkey, err
 	case "PRIVATE KEY":
 		parsedresult, err := x509.ParsePKCS8PrivateKey(block.Bytes)
+		log.Printf("[DEBUG] x509 parsing private key inside parsePrivateKey")
+
 		if err != nil {
 			return nil, err
 		}
 		privkey := parsedresult.(*rsa.PrivateKey)
+		log.Printf("[DEBUG] finish private parse private key inside parsePrivateKey")
+
 		return privkey, nil
 	default:
 		return nil, fmt.Errorf("ssh: unsupported key type %q", block.Type)

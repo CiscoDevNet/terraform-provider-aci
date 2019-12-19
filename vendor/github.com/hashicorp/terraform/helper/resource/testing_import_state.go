@@ -11,7 +11,7 @@ import (
 	"github.com/hashicorp/hcl2/hcl/hclsyntax"
 
 	"github.com/hashicorp/terraform/addrs"
-	"github.com/hashicorp/terraform/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	"github.com/hashicorp/terraform/states"
 	"github.com/hashicorp/terraform/terraform"
 )

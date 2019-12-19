@@ -3,6 +3,7 @@ package client
 import (
 	"errors"
 	"fmt"
+	"log"
 	"strconv"
 
 	"github.com/ciscoecosystem/aci-go-client/container"
@@ -140,7 +141,7 @@ func (sm *ServiceManager) GetViaURL(url string) (*container.Container, error) {
 	}
 
 	obj, _, err := sm.client.Do(req)
-	fmt.Println(obj)
+	log.Printf("Getvia url %+v", obj)
 	if err != nil {
 		return nil, err
 	}
