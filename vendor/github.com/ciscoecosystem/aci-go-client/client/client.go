@@ -3,9 +3,9 @@ package client
 import (
 	"bytes"
 	"crypto/tls"
-	"encoding/json"
 	"errors"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"net/url"
@@ -175,6 +175,7 @@ func (c *Client) MakeRestRequest(method string, path string, body *container.Con
 			return req, err
 		}
 	}
+	log.Printf("HTTP request after injection %s %s %v", method, path, req)
 
 	return req, nil
 }
@@ -232,6 +233,7 @@ func StrtoInt(s string, startIndex int, bitSize int) (int64, error) {
 
 }
 func (c *Client) Do(req *http.Request) (*container.Container, *http.Response, error) {
+	log.Printf("[DEBUG] Begining DO method %s", req.URL.String())
 	resp, err := c.httpClient.Do(req)
 	if err != nil {
 		return nil, nil, err
@@ -240,12 +242,15 @@ func (c *Client) Do(req *http.Request) (*container.Container, *http.Response, er
 	log.Printf("\nHTTP Request: %s %s", req.Method, req.URL.String())
 	log.Printf("nHTTP Response: %d %s %v", resp.StatusCode, resp.Status, resp)
 
-	decoder := json.NewDecoder(resp.Body)
-	obj, err := container.ParseJSONDecoder(decoder)
-	defer resp.Body.Close()
+	bodyBytes, err := ioutil.ReadAll(resp.Body)
+	bodyStr := string(bodyBytes)
+	resp.Body.Close()
+	log.Printf("\n HTTP response unique string %s %s %s", req.Method, req.URL.String(), bodyStr)
+	obj, err := container.ParseJSON(bodyBytes)
 
 	if err != nil {
 		fmt.Println("Error occurred.")
+		log.Printf("Error occured while json parsing %+v", err)
 		return nil, resp, err
 	}
 	log.Printf("[DEBUG] Exit from do method")

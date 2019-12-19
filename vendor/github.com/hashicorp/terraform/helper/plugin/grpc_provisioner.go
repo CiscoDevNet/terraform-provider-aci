@@ -3,7 +3,7 @@ package plugin
 import (
 	"log"
 
-	"github.com/hashicorp/terraform/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	proto "github.com/hashicorp/terraform/internal/tfplugin5"
 	"github.com/hashicorp/terraform/plugin/convert"
 	"github.com/hashicorp/terraform/terraform"
