@@ -11,7 +11,7 @@ import (
 	"github.com/hashicorp/terraform/helper/schema"
 
 	"github.com/hashicorp/terraform/states"
-	"github.com/hashicorp/terraform/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/terraform"
 )
 
 // shimState takes a new *states.State and reverts it to a legacy state for the provider ACC tests

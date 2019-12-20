@@ -17,7 +17,7 @@ import (
 	proto "github.com/hashicorp/terraform/internal/tfplugin5"
 	"github.com/hashicorp/terraform/plans/objchange"
 	"github.com/hashicorp/terraform/plugin/convert"
-	"github.com/hashicorp/terraform/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/terraform"
 )
 
 const newExtraKey = "_new_extra_shim"

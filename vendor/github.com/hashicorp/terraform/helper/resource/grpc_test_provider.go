@@ -9,7 +9,7 @@ import (
 	proto "github.com/hashicorp/terraform/internal/tfplugin5"
 	tfplugin "github.com/hashicorp/terraform/plugin"
 	"github.com/hashicorp/terraform/providers"
-	"github.com/hashicorp/terraform/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/terraform"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/test/bufconn"
 )

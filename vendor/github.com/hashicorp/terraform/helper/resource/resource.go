@@ -2,7 +2,7 @@ package resource
 
 import (
 	"github.com/hashicorp/terraform/helper/config"
-	"github.com/hashicorp/terraform/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/terraform"
 )
 
 type Resource struct {

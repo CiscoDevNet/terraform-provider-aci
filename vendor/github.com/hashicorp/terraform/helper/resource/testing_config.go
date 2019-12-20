@@ -15,7 +15,7 @@ import (
 
 	"github.com/hashicorp/errwrap"
 	"github.com/hashicorp/terraform/plans"
-	"github.com/hashicorp/terraform/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/terraform"
 	"github.com/hashicorp/terraform/tfdiags"
 )
 

@@ -8,7 +8,7 @@ import (
 
 	"github.com/hashicorp/terraform/config/hcl2shim"
 	"github.com/hashicorp/terraform/configs/configschema"
-	"github.com/hashicorp/terraform/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/terraform"
 )
 
 // DiffFromValues takes the current state and desired state as cty.Values and

@@ -12,7 +12,7 @@ import (
 	"github.com/hashicorp/terraform/configs/configschema"
 	"github.com/hashicorp/terraform/plans"
 	"github.com/hashicorp/terraform/states"
-	"github.com/hashicorp/terraform/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/terraform"
 	"github.com/mitchellh/colorstring"
 )
 

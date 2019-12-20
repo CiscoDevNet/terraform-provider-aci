@@ -9,7 +9,7 @@ import (
 
 	"github.com/hashicorp/terraform/config/hcl2shim"
 	"github.com/hashicorp/terraform/configs/configschema"
-	"github.com/hashicorp/terraform/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/terraform"
 	ctyconvert "github.com/zclconf/go-cty/cty/convert"
 )
 

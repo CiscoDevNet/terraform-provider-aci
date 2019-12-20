@@ -7,7 +7,7 @@ import (
 	"strconv"
 
 	"github.com/hashicorp/terraform/config"
-	"github.com/hashicorp/terraform/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/terraform"
 	"github.com/zclconf/go-cty/cty"
 )
 

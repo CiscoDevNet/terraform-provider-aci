@@ -13,7 +13,7 @@ import (
 	"github.com/hashicorp/terraform/addrs"
 	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/hashicorp/terraform/states"
-	"github.com/hashicorp/terraform/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/terraform"
 )
 
 // testStepImportState runs an imort state test step

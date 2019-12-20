@@ -29,7 +29,7 @@ import (
 	"github.com/hashicorp/terraform/internal/initwd"
 	"github.com/hashicorp/terraform/providers"
 	"github.com/hashicorp/terraform/states"
-	"github.com/hashicorp/terraform/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/terraform"
 	"github.com/hashicorp/terraform/tfdiags"
 )
 

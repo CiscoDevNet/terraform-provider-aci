@@ -145,8 +145,8 @@ github.com/hashicorp/hil/scanner
 github.com/hashicorp/logutils
 # github.com/hashicorp/terraform v0.12.5
 github.com/hashicorp/terraform/helper/acctest
-github.com/hashicorp/terraform/helper/resource
-github.com/hashicorp/terraform/terraform
+github.com/hashicorp/terraform-plugin-sdk/helper/resource
+github.com/hashicorp/terraform-plugin-sdk/terraform
 github.com/hashicorp/terraform/addrs
 github.com/hashicorp/terraform/command/format
 github.com/hashicorp/terraform/config/hcl2shim
