@@ -1,4 +1,11 @@
 ## 0.1.4 (Unreleased)
+BUG FIXES:
+
+- Fixed crashing of Terraform while using cert based authentication.
+
+IMPROVEMENTS:
+
+- Switched to terraform-plugin-sdk instead of legacy terraform package. 
 ## 0.1.3 (December 18, 2019)
 BUG FIXES:
 
