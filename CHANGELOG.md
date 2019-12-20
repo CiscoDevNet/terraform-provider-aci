@@ -1,4 +1,4 @@
-## 0.1.4 (Unreleased)
+## 0.1.4 (December 20, 2019)
 BUG FIXES:
 
 - Fixed crashing of Terraform while using cert based authentication.
