@@ -101,15 +101,15 @@ func initClient(clientUrl, username string, options ...Option) *Client {
 		option(client)
 	}
 
-	if client.insecure {
-		transport = client.useInsecureHTTPClient()
-	}
+	transport = client.useInsecureHTTPClient(client.insecure)
 	if client.proxyUrl != "" {
 		transport = client.configProxy(transport)
 	}
+
 	client.httpClient = &http.Client{
 		Transport: transport,
 	}
+
 	client.ServiceManager = NewServiceManager(client.MOURL, client)
 	return client
 }
@@ -130,7 +130,7 @@ func (c *Client) configProxy(transport *http.Transport) *http.Transport {
 	return transport
 
 }
-func (c *Client) useInsecureHTTPClient() *http.Transport {
+func (c *Client) useInsecureHTTPClient(insecure bool) *http.Transport {
 	// proxyUrl, _ := url.Parse("http://10.0.1.167:3128")
 	transport := &http.Transport{
 		TLSClientConfig: &tls.Config{
@@ -139,7 +139,7 @@ func (c *Client) useInsecureHTTPClient() *http.Transport {
 				tls.TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA,
 			},
 			PreferServerCipherSuites: true,
-			InsecureSkipVerify:       true,
+			InsecureSkipVerify:       insecure,
 			MinVersion:               tls.VersionTLS11,
 			MaxVersion:               tls.VersionTLS11,
 		},

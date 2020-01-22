@@ -1,4 +1,8 @@
 ## 0.1.5 (Unreleased)
+
+IMPROVEMENTS:
+
+- Added logic to handle panics and show proper error messages.
 ## 0.1.4 (December 20, 2019)
 BUG FIXES:
 
