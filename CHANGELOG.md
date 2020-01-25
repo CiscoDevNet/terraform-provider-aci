@@ -1,4 +1,4 @@
-## 0.1.6 (Unreleased)
+## 0.1.6 (January 25, 2020)
 
 IMPROVEMENTS:
 - Added support for new cipher suites and TLS version for the new release of cloud APIC.
