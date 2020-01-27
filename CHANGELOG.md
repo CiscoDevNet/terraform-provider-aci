@@ -1,4 +1,4 @@
-## 0.1.7 (Unreleased)
+## 0.1.7 (January 27, 2020)
 BUG FIXES:
 
 - Fixed the issue with new Rn format for CloudExtEpgSelector class.
