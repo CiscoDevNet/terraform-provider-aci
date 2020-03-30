@@ -7,6 +7,7 @@ func GetBaseAttrSchema() map[string]*schema.Schema {
 		"description": &schema.Schema{
 			Type:     schema.TypeString,
 			Optional: true,
+			Computed: true,
 		},
 	}
 }

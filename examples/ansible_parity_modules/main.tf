@@ -1,7 +1,7 @@
 provider "aci" {
-  username = ""
-  password = ""
-  url      = ""
+  username = "admin"
+  password = "ins3965!ins3965!"
+  url      = "https://173.36.219.26/"
   insecure = true
 }
 
@@ -145,8 +145,8 @@ resource "aci_access_sub_port_block" "fooaccess_sub_port_block" {
 
 resource "aci_vpc_explicit_protection_group" "foovpc_explicit_protection_group" {
   name = "FabricExplicitGrp1"
-  switch1 = "101"
-  switch2 = "201"
+  switch1 = "145"
+  switch2 = "123"
   vpc_explicit_protection_group_id = "10"
 }
 

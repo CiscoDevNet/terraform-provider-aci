@@ -69,11 +69,11 @@ func VPCExplicitProtectionGroupFromContainerList(cont *container.Container, inde
 	Switch2 := ""
 	VpcDomainPolicy := ""
 	for _, childCont := range ChildContList {
-		if childCont.Exists("fabricNodePEp") && Switch1 == "" {
-			Switch1 = G(childCont.S("fabricNodePEp", "attributes"), "id")
-
-		} else if childCont.Exists("fabricNodePEp") && Switch2 == "" {
+		if childCont.Exists("fabricNodePEp") && Switch2 == "" {
 			Switch2 = G(childCont.S("fabricNodePEp", "attributes"), "id")
+
+		} else if childCont.Exists("fabricNodePEp") && Switch1 == "" {
+			Switch1 = G(childCont.S("fabricNodePEp", "attributes"), "id")
 		} else if childCont.Exists("fabricRsVpcInstPol") {
 			VpcDomainPolicy = G(childCont.S("fabricRsVpcInstPol", "attributes"), "tnVpcInstPolName")
 		}
