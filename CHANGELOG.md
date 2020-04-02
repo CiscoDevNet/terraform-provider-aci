@@ -1,4 +1,4 @@
-## 0.1.8 (Unreleased)
+## 0.1.8 (April 02, 2020)
 
 IMPROVEMENTS:
 - Added new modules for managing fabric and APIC management objects.
