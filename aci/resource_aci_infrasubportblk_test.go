@@ -1,0 +1,178 @@
+package aci
+
+import (
+	"fmt"
+	"testing"
+
+	"github.com/ciscoecosystem/aci-go-client/client"
+	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+)
+
+func TestAccAciAccessSubPortBlock_Basic(t *testing.T) {
+	var access_sub_port_block models.AccessSubPortBlock
+	description := "access_sub_port_block created while acceptance testing"
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testAccProviders,
+		CheckDestroy: testAccCheckAciAccessSubPortBlockDestroy,
+		Steps: []resource.TestStep{
+			{
+				Config: testAccCheckAciAccessSubPortBlockConfig_basic(description),
+				Check: resource.ComposeTestCheckFunc(
+					testAccCheckAciAccessSubPortBlockExists("aci_access_sub_port_block.fooaccess_sub_port_block", &access_sub_port_block),
+					testAccCheckAciAccessSubPortBlockAttributes(description, &access_sub_port_block),
+				),
+			},
+			{
+				ResourceName:      "aci_access_sub_port_block",
+				ImportState:       true,
+				ImportStateVerify: true,
+			},
+		},
+	})
+}
+
+func TestAccAciAccessSubPortBlock_update(t *testing.T) {
+	var access_sub_port_block models.AccessSubPortBlock
+	description := "access_sub_port_block created while acceptance testing"
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testAccProviders,
+		CheckDestroy: testAccCheckAciAccessSubPortBlockDestroy,
+		Steps: []resource.TestStep{
+			{
+				Config: testAccCheckAciAccessSubPortBlockConfig_basic(description),
+				Check: resource.ComposeTestCheckFunc(
+					testAccCheckAciAccessSubPortBlockExists("aci_access_sub_port_block.fooaccess_sub_port_block", &access_sub_port_block),
+					testAccCheckAciAccessSubPortBlockAttributes(description, &access_sub_port_block),
+				),
+			},
+			{
+				Config: testAccCheckAciAccessSubPortBlockConfig_basic(description),
+				Check: resource.ComposeTestCheckFunc(
+					testAccCheckAciAccessSubPortBlockExists("aci_access_sub_port_block.fooaccess_sub_port_block", &access_sub_port_block),
+					testAccCheckAciAccessSubPortBlockAttributes(description, &access_sub_port_block),
+				),
+			},
+		},
+	})
+}
+
+func testAccCheckAciAccessSubPortBlockConfig_basic(description string) string {
+	return fmt.Sprintf(`
+
+	resource "aci_access_sub_port_block" "fooaccess_sub_port_block" {
+		  access_port_selector_dn  = "${aci_access_port_selector.example.id}"
+		description = "%s"
+		
+		name  = "example"
+		  annotation  = "example"
+		  from_card  = "example"
+		  from_port  = "example"
+		  from_sub_port  = "example"
+		  name_alias  = "example"
+		  to_card  = "example"
+		  to_port  = "example"
+		  to_sub_port  = "example"
+		}
+	`, description)
+}
+
+func testAccCheckAciAccessSubPortBlockExists(name string, access_sub_port_block *models.AccessSubPortBlock) resource.TestCheckFunc {
+	return func(s *terraform.State) error {
+		rs, ok := s.RootModule().Resources[name]
+
+		if !ok {
+			return fmt.Errorf("Access Sub Port Block %s not found", name)
+		}
+
+		if rs.Primary.ID == "" {
+			return fmt.Errorf("No Access Sub Port Block dn was set")
+		}
+
+		client := testAccProvider.Meta().(*client.Client)
+
+		cont, err := client.Get(rs.Primary.ID)
+		if err != nil {
+			return err
+		}
+
+		access_sub_port_blockFound := models.AccessSubPortBlockFromContainer(cont)
+		if access_sub_port_blockFound.DistinguishedName != rs.Primary.ID {
+			return fmt.Errorf("Access Sub Port Block %s not found", rs.Primary.ID)
+		}
+		*access_sub_port_block = *access_sub_port_blockFound
+		return nil
+	}
+}
+
+func testAccCheckAciAccessSubPortBlockDestroy(s *terraform.State) error {
+	client := testAccProvider.Meta().(*client.Client)
+
+	for _, rs := range s.RootModule().Resources {
+
+		if rs.Type == "aci_access_sub_port_block" {
+			cont, err := client.Get(rs.Primary.ID)
+			access_sub_port_block := models.AccessSubPortBlockFromContainer(cont)
+			if err == nil {
+				return fmt.Errorf("Access Sub Port Block %s Still exists", access_sub_port_block.DistinguishedName)
+			}
+
+		} else {
+			continue
+		}
+	}
+
+	return nil
+}
+
+func testAccCheckAciAccessSubPortBlockAttributes(description string, access_sub_port_block *models.AccessSubPortBlock) resource.TestCheckFunc {
+	return func(s *terraform.State) error {
+
+		if description != access_sub_port_block.Description {
+			return fmt.Errorf("Bad access_sub_port_block Description %s", access_sub_port_block.Description)
+		}
+
+		if "example" != access_sub_port_block.Name {
+			return fmt.Errorf("Bad access_sub_port_block name %s", access_sub_port_block.Name)
+		}
+
+		if "example" != access_sub_port_block.Annotation {
+			return fmt.Errorf("Bad access_sub_port_block annotation %s", access_sub_port_block.Annotation)
+		}
+
+		if "example" != access_sub_port_block.FromCard {
+			return fmt.Errorf("Bad access_sub_port_block from_card %s", access_sub_port_block.FromCard)
+		}
+
+		if "example" != access_sub_port_block.FromPort {
+			return fmt.Errorf("Bad access_sub_port_block from_port %s", access_sub_port_block.FromPort)
+		}
+
+		if "example" != access_sub_port_block.FromSubPort {
+			return fmt.Errorf("Bad access_sub_port_block from_sub_port %s", access_sub_port_block.FromSubPort)
+		}
+
+		if "example" != access_sub_port_block.NameAlias {
+			return fmt.Errorf("Bad access_sub_port_block name_alias %s", access_sub_port_block.NameAlias)
+		}
+
+		if "example" != access_sub_port_block.ToCard {
+			return fmt.Errorf("Bad access_sub_port_block to_card %s", access_sub_port_block.ToCard)
+		}
+
+		if "example" != access_sub_port_block.ToPort {
+			return fmt.Errorf("Bad access_sub_port_block to_port %s", access_sub_port_block.ToPort)
+		}
+
+		if "example" != access_sub_port_block.ToSubPort {
+			return fmt.Errorf("Bad access_sub_port_block to_sub_port %s", access_sub_port_block.ToSubPort)
+		}
+
+		return nil
+	}
+}

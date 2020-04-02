@@ -26,6 +26,7 @@ func resourceAciVlanEncapsulationforVxlanTraffic() *schema.Resource {
 			"attachable_access_entity_profile_dn": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
+				ForceNew: true,
 			},
 
 			"annotation": &schema.Schema{

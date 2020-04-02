@@ -26,11 +26,13 @@ func resourceAciSubnet() *schema.Resource {
 			"bridge_domain_dn": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
+				ForceNew: true,
 			},
 
 			"ip": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
+				ForceNew: true,
 			},
 
 			"annotation": &schema.Schema{

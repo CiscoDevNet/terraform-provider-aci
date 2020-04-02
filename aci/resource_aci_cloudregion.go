@@ -26,11 +26,13 @@ func resourceAciCloudProvidersRegion() *schema.Resource {
 			"cloud_provider_profile_dn": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
+				ForceNew: true,
 			},
 
 			"name": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
+				ForceNew: true,
 			},
 
 			"admin_st": &schema.Schema{

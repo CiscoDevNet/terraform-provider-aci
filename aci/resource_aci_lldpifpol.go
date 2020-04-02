@@ -27,6 +27,7 @@ func resourceAciLLDPInterfacePolicy() *schema.Resource {
 			"name": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
+				ForceNew: true,
 			},
 
 			"admin_rx_st": &schema.Schema{

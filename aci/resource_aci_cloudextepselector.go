@@ -26,6 +26,7 @@ func resourceAciCloudEndpointSelectorforExternalEPgs() *schema.Resource {
 			"cloud_external_e_pg_dn": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
+				ForceNew: true,
 			},
 
 			"name": &schema.Schema{
@@ -59,8 +60,8 @@ func resourceAciCloudEndpointSelectorforExternalEPgs() *schema.Resource {
 
 			"subnet": &schema.Schema{
 				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
+				Required: true,
+				ForceNew: true,
 			},
 		}),
 	}

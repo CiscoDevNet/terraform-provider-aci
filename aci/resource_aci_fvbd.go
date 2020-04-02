@@ -26,11 +26,13 @@ func resourceAciBridgeDomain() *schema.Resource {
 			"tenant_dn": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
+				ForceNew: true,
 			},
 
 			"name": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
+				ForceNew: true,
 			},
 
 			"optimize_wan_bandwidth": &schema.Schema{

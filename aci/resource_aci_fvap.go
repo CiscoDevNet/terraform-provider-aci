@@ -26,11 +26,13 @@ func resourceAciApplicationProfile() *schema.Resource {
 			"tenant_dn": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
+				ForceNew: true,
 			},
 
 			"name": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
+				ForceNew: true,
 			},
 
 			"annotation": &schema.Schema{
