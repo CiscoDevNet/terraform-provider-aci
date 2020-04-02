@@ -26,11 +26,13 @@ func resourceAciSPANSourcedestinationGroupMatchLabel() *schema.Resource {
 			"span_source_group_dn": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
+				ForceNew: true,
 			},
 
 			"name": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
+				ForceNew: true,
 			},
 
 			"annotation": &schema.Schema{

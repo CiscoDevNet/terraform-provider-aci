@@ -26,6 +26,7 @@ func resourceAciAny() *schema.Resource {
 			"vrf_dn": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
+				ForceNew: true,
 			},
 
 			"annotation": &schema.Schema{

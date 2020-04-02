@@ -26,6 +26,7 @@ func resourceAciCloudAWSProvider() *schema.Resource {
 			"tenant_dn": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
+				ForceNew: true,
 			},
 
 			"access_key_id": &schema.Schema{

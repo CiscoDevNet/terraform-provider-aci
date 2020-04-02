@@ -26,11 +26,13 @@ func resourceAciCloudSubnet() *schema.Resource {
 			"cloud_cidr_pool_dn": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
+				ForceNew: true,
 			},
 
 			"ip": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
+				ForceNew: true,
 			},
 
 			"annotation": &schema.Schema{

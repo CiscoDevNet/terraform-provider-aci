@@ -27,6 +27,7 @@ func resourceAciLocalUser() *schema.Resource {
 			"name": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
+				ForceNew: true,
 			},
 
 			"account_status": &schema.Schema{

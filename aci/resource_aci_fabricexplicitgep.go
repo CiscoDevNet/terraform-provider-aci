@@ -27,6 +27,7 @@ func resourceAciVPCExplicitProtectionGroup() *schema.Resource {
 			"name": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
+				ForceNew: true,
 			},
 			"switch1": &schema.Schema{
 				Type:     schema.TypeString,

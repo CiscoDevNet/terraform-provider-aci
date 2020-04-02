@@ -26,11 +26,13 @@ func resourceAciCloudCIDRPool() *schema.Resource {
 			"cloud_context_profile_dn": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
+				ForceNew: true,
 			},
 
 			"addr": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
+				ForceNew: true,
 			},
 
 			"annotation": &schema.Schema{

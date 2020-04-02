@@ -27,6 +27,7 @@ func resourceAciConfigurationExportPolicy() *schema.Resource {
 			"name": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
+				ForceNew: true,
 			},
 
 			"admin_st": &schema.Schema{
