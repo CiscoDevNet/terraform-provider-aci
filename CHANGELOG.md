@@ -1,4 +1,4 @@
-## 0.2.0 (Unreleased)
+## 0.2.0 (April 07, 2020)
 
 BUG FIXES:
 
