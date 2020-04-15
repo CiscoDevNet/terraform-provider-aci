@@ -1,4 +1,4 @@
-## 0.2.1 (Unreleased)
+## 0.2.1 (April 15, 2020)
 
 IMPROVEMENTS:
 - Added new resources for static leaf attachment, l3out profile, aci_any.
