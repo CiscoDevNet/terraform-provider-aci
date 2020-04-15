@@ -3,34 +3,20 @@ package client
 import (
 	"fmt"
 
-	"github.com/ciscoecosystem/aci-go-client/models"
 	"github.com/ciscoecosystem/aci-go-client/container"
-
-
-
-	
-
-
+	"github.com/ciscoecosystem/aci-go-client/models"
 )
 
-
-
-
-
-
-
-
-
-func (sm *ServiceManager) CreateFirmwareGroup(name string , description string, firmwareFwGrpattr models.FirmwareGroupAttributes) (*models.FirmwareGroup, error) {	
-	rn := fmt.Sprintf("fabric/fwgrp-%s",name)
+func (sm *ServiceManager) CreateFirmwareGroup(name string, description string, firmwareFwGrpattr models.FirmwareGroupAttributes) (*models.FirmwareGroup, error) {
+	rn := fmt.Sprintf("fabric/fwgrp-%s", name)
 	parentDn := fmt.Sprintf("uni")
 	firmwareFwGrp := models.NewFirmwareGroup(rn, parentDn, description, firmwareFwGrpattr)
 	err := sm.Save(firmwareFwGrp)
 	return firmwareFwGrp, err
 }
 
-func (sm *ServiceManager) ReadFirmwareGroup(name string ) (*models.FirmwareGroup, error) {
-	dn := fmt.Sprintf("uni/fabric/fwgrp-%s", name )    
+func (sm *ServiceManager) ReadFirmwareGroup(name string) (*models.FirmwareGroup, error) {
+	dn := fmt.Sprintf("uni/fabric/fwgrp-%s", name)
 	cont, err := sm.Get(dn)
 	if err != nil {
 		return nil, err
@@ -40,17 +26,17 @@ func (sm *ServiceManager) ReadFirmwareGroup(name string ) (*models.FirmwareGroup
 	return firmwareFwGrp, nil
 }
 
-func (sm *ServiceManager) DeleteFirmwareGroup(name string ) error {
-	dn := fmt.Sprintf("uni/fabric/fwgrp-%s", name )
+func (sm *ServiceManager) DeleteFirmwareGroup(name string) error {
+	dn := fmt.Sprintf("uni/fabric/fwgrp-%s", name)
 	return sm.DeleteByDn(dn, models.FirmwarefwgrpClassName)
 }
 
-func (sm *ServiceManager) UpdateFirmwareGroup(name string  ,description string, firmwareFwGrpattr models.FirmwareGroupAttributes) (*models.FirmwareGroup, error) {
-	rn := fmt.Sprintf("fabric/fwgrp-%s",name)
+func (sm *ServiceManager) UpdateFirmwareGroup(name string, description string, firmwareFwGrpattr models.FirmwareGroupAttributes) (*models.FirmwareGroup, error) {
+	rn := fmt.Sprintf("fabric/fwgrp-%s", name)
 	parentDn := fmt.Sprintf("uni")
 	firmwareFwGrp := models.NewFirmwareGroup(rn, parentDn, description, firmwareFwGrpattr)
 
-    firmwareFwGrp.Status = "modified"
+	firmwareFwGrp.Status = "modified"
 	err := sm.Save(firmwareFwGrp)
 	return firmwareFwGrp, err
 
@@ -58,16 +44,16 @@ func (sm *ServiceManager) UpdateFirmwareGroup(name string  ,description string, 
 
 func (sm *ServiceManager) ListFirmwareGroup() ([]*models.FirmwareGroup, error) {
 
-	baseurlStr := "/api/node/class"	
-	dnUrl := fmt.Sprintf("%s/uni/firmwareFwGrp.json", baseurlStr )
-    
-    cont, err := sm.GetViaURL(dnUrl)
+	baseurlStr := "/api/node/class"
+	dnUrl := fmt.Sprintf("%s/uni/firmwareFwGrp.json", baseurlStr)
+
+	cont, err := sm.GetViaURL(dnUrl)
 	list := models.FirmwareGroupListFromContainer(cont)
 
 	return list, err
 }
 
-func (sm *ServiceManager) CreateRelationfirmwareRsFwgrppFromFirmwareGroup( parentDn, tnFirmwareFwPName string) error {
+func (sm *ServiceManager) CreateRelationfirmwareRsFwgrppFromFirmwareGroup(parentDn, tnFirmwareFwPName string) error {
 	dn := fmt.Sprintf("%s/rsfwgrpp", parentDn)
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
@@ -76,7 +62,7 @@ func (sm *ServiceManager) CreateRelationfirmwareRsFwgrppFromFirmwareGroup( paren
 								
 			}
 		}
-	}`, "firmwareRsFwgrpp", dn,tnFirmwareFwPName))
+	}`, "firmwareRsFwgrpp", dn, tnFirmwareFwPName))
 
 	jsonPayload, err := container.ParseJSON(containerJSON)
 	if err != nil {
@@ -88,33 +74,26 @@ func (sm *ServiceManager) CreateRelationfirmwareRsFwgrppFromFirmwareGroup( paren
 		return err
 	}
 
-	cont, _, err := sm.client.Do(req)
+	_, _, err = sm.client.Do(req)
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
 
 	return nil
 }
 
-func (sm *ServiceManager) ReadRelationfirmwareRsFwgrppFromFirmwareGroup( parentDn string) (interface{},error) {
-	baseurlStr := "/api/node/class"	
-	dnUrl := fmt.Sprintf("%s/%s/%s.json",baseurlStr,parentDn,"firmwareRsFwgrpp")
+func (sm *ServiceManager) ReadRelationfirmwareRsFwgrppFromFirmwareGroup(parentDn string) (interface{}, error) {
+	baseurlStr := "/api/node/class"
+	dnUrl := fmt.Sprintf("%s/%s/%s.json", baseurlStr, parentDn, "firmwareRsFwgrpp")
 	cont, err := sm.GetViaURL(dnUrl)
 
-	contList := models.ListFromContainer(cont,"firmwareRsFwgrpp")
-	
+	contList := models.ListFromContainer(cont, "firmwareRsFwgrpp")
+
 	if len(contList) > 0 {
 		dat := models.G(contList[0], "tnFirmwareFwPName")
 		return dat, err
 	} else {
-		return nil,err
+		return nil, err
 	}
-		
-
-
-
-
 
 }
-

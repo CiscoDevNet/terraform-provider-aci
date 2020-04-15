@@ -1,4 +1,8 @@
-## 0.3.0 (Unreleased)
+## 0.2.1 (Unreleased)
+
+IMPROVEMENTS:
+- Added new resources for static leaf attachment, l3out profile, aci_any.
+- Added support for inline private key for authentication.
 ## 0.2.0 (April 07, 2020)
 
 BUG FIXES:

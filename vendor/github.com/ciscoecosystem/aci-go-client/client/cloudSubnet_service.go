@@ -74,11 +74,10 @@ func (sm *ServiceManager) CreateRelationcloudRsZoneAttachFromCloudSubnet(parentD
 		return err
 	}
 
-	cont, _, err := sm.client.Do(req)
+	_, _, err = sm.client.Do(req)
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
 
 	return nil
 }
@@ -124,11 +123,10 @@ func (sm *ServiceManager) CreateRelationcloudRsSubnetToFlowLogFromCloudSubnet(pa
 		return err
 	}
 
-	cont, _, err := sm.client.Do(req)
+	_, _, err = sm.client.Do(req)
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
 
 	return nil
 }

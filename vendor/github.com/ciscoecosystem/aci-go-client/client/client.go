@@ -193,7 +193,6 @@ func (c *Client) Authenticate() error {
 		return err
 	}
 
-	fmt.Println(body.String())
 	req, err := c.MakeRestRequest(method, path, body, false)
 	obj, _, err := c.Do(req)
 
@@ -252,7 +251,7 @@ func (c *Client) Do(req *http.Request) (*container.Container, *http.Response, er
 	obj, err := container.ParseJSON(bodyBytes)
 
 	if err != nil {
-		fmt.Println("Error occurred.")
+
 		log.Printf("Error occured while json parsing %+v", err)
 		return nil, resp, err
 	}

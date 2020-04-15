@@ -71,9 +71,7 @@ Manages ACI Application EPG
 * `relation_fv_rs_prov_def` - (Optional) Relation to class vzCtrctEPgCont. Cardinality - N_TO_M. Type - Set of String.
                 
 * `relation_fv_rs_trust_ctrl` - (Optional) Relation to class fhsTrustCtrlPol. Cardinality - N_TO_ONE. Type - String.
-                
-* `relation_fv_rs_path_att` - (Optional) Relation to class fabricPathEp. Cardinality - N_TO_M. Type - Set of String.
-                
+                                
 * `relation_fv_rs_prot_by` - (Optional) Relation to class vzTaboo. Cardinality - N_TO_M. Type - Set of String.
                 
 * `relation_fv_rs_ae_pg_mon_pol` - (Optional) Relation to class monEPGPol. Cardinality - N_TO_ONE. Type - String.

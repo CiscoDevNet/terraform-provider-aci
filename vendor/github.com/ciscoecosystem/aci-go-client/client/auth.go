@@ -13,6 +13,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
 	"sync"
 	"time"
 )
@@ -143,8 +144,14 @@ func createSignature(content []byte, keypath string) (string, error) {
 
 func loadPrivateKey(path string) (*rsa.PrivateKey, error) {
 	log.Printf("[DEBUG] Begin load private key inside loadPrivateKey")
-
-	data, err := ioutil.ReadFile(path)
+	isFile := fileExists(path)
+	var data []byte
+	var err error
+	if isFile {
+		data, err = ioutil.ReadFile(path)
+	} else {
+		data = []byte(path)
+	}
 	log.Printf("[DEBUG] priavte key read finish  inside loadPrivateKey")
 
 	if err != nil {
@@ -188,4 +195,12 @@ func parsePrivateKey(pemBytes []byte) (*rsa.PrivateKey, error) {
 	default:
 		return nil, fmt.Errorf("ssh: unsupported key type %q", block.Type)
 	}
+}
+
+func fileExists(filename string) bool {
+	info, err := os.Stat(filename)
+	if os.IsNotExist(err) {
+		return false
+	}
+	return !info.IsDir()
 }

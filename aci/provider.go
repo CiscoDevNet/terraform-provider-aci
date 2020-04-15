@@ -133,6 +133,9 @@ func Provider() terraform.ResourceProvider {
 			"aci_ranges":                                    resourceAciRanges(),
 			"aci_l3_domain_profile":                         resourceAciL3DomainProfile(),
 			"aci_x509_certificate":                          resourceAciX509Certificate(),
+			"aci_epg_to_static_path":                        resourceAciStaticPath(),
+			"aci_logical_node_to_fabric_node":               resourceAciFabricNode(),
+			"aci_any":                                       resourceAciAny(),
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
@@ -212,6 +215,9 @@ func Provider() terraform.ResourceProvider {
 			"aci_ranges":                                    dataSourceAciRanges(),
 			"aci_l3_domain_profile":                         dataSourceAciL3DomainProfile(),
 			"aci_x509_certificate":                          dataSourceAciX509Certificate(),
+			"aci_epg_to_static_path":                        dataSourceAciStaticPath(),
+			"aci_logical_node_to_fabric_node":               dataSourceAciFabricNode(),
+			"aci_any":                                       dataSourceAciAny(),
 		},
 
 		ConfigureFunc: configureClient,

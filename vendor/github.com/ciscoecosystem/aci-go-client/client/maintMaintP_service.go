@@ -74,11 +74,10 @@ func (sm *ServiceManager) CreateRelationmaintRsPolSchedulerFromMaintenancePolicy
 		return err
 	}
 
-	cont, _, err := sm.client.Do(req)
+	_, _, err = sm.client.Do(req)
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
 
 	return nil
 }
@@ -119,11 +118,10 @@ func (sm *ServiceManager) CreateRelationmaintRsPolNotifFromMaintenancePolicy(par
 		return err
 	}
 
-	cont, _, err := sm.client.Do(req)
+	_, _, err = sm.client.Do(req)
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
 
 	return nil
 }
@@ -169,11 +167,10 @@ func (sm *ServiceManager) CreateRelationtrigRsTriggerableFromMaintenancePolicy(p
 		return err
 	}
 
-	cont, _, err := sm.client.Do(req)
+	_, _, err = sm.client.Do(req)
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
 
 	return nil
 }
