@@ -64,13 +64,6 @@ func resourceAciLogicalNodeProfile() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
-
-			"relation_l3ext_rs_node_l3_out_att": &schema.Schema{
-				Type:     schema.TypeSet,
-				Elem:     &schema.Schema{Type: schema.TypeString},
-				Optional: true,
-				Set:      schema.HashString,
-			},
 		}),
 	}
 }

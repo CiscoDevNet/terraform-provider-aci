@@ -3,36 +3,21 @@ package client
 import (
 	"fmt"
 
-	"github.com/ciscoecosystem/aci-go-client/models"
 	"github.com/ciscoecosystem/aci-go-client/container"
+	"github.com/ciscoecosystem/aci-go-client/models"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	
-
-
-
-	
-
-
 )
 
-
-
-
-
-
-
-
-
-func (sm *ServiceManager) CreateVRF(name string ,tenant string , description string, fvCtxattr models.VRFAttributes) (*models.VRF, error) {	
-	rn := fmt.Sprintf("ctx-%s",name)
-	parentDn := fmt.Sprintf("uni/tn-%s", tenant )
+func (sm *ServiceManager) CreateVRF(name string, tenant string, description string, fvCtxattr models.VRFAttributes) (*models.VRF, error) {
+	rn := fmt.Sprintf("ctx-%s", name)
+	parentDn := fmt.Sprintf("uni/tn-%s", tenant)
 	fvCtx := models.NewVRF(rn, parentDn, description, fvCtxattr)
 	err := sm.Save(fvCtx)
 	return fvCtx, err
 }
 
-func (sm *ServiceManager) ReadVRF(name string ,tenant string ) (*models.VRF, error) {
-	dn := fmt.Sprintf("uni/tn-%s/ctx-%s", tenant ,name )    
+func (sm *ServiceManager) ReadVRF(name string, tenant string) (*models.VRF, error) {
+	dn := fmt.Sprintf("uni/tn-%s/ctx-%s", tenant, name)
 	cont, err := sm.Get(dn)
 	if err != nil {
 		return nil, err
@@ -42,34 +27,34 @@ func (sm *ServiceManager) ReadVRF(name string ,tenant string ) (*models.VRF, err
 	return fvCtx, nil
 }
 
-func (sm *ServiceManager) DeleteVRF(name string ,tenant string ) error {
-	dn := fmt.Sprintf("uni/tn-%s/ctx-%s", tenant ,name )
+func (sm *ServiceManager) DeleteVRF(name string, tenant string) error {
+	dn := fmt.Sprintf("uni/tn-%s/ctx-%s", tenant, name)
 	return sm.DeleteByDn(dn, models.FvctxClassName)
 }
 
-func (sm *ServiceManager) UpdateVRF(name string ,tenant string  ,description string, fvCtxattr models.VRFAttributes) (*models.VRF, error) {
-	rn := fmt.Sprintf("ctx-%s",name)
-	parentDn := fmt.Sprintf("uni/tn-%s", tenant )
+func (sm *ServiceManager) UpdateVRF(name string, tenant string, description string, fvCtxattr models.VRFAttributes) (*models.VRF, error) {
+	rn := fmt.Sprintf("ctx-%s", name)
+	parentDn := fmt.Sprintf("uni/tn-%s", tenant)
 	fvCtx := models.NewVRF(rn, parentDn, description, fvCtxattr)
 
-    fvCtx.Status = "modified"
+	fvCtx.Status = "modified"
 	err := sm.Save(fvCtx)
 	return fvCtx, err
 
 }
 
-func (sm *ServiceManager) ListVRF(tenant string ) ([]*models.VRF, error) {
+func (sm *ServiceManager) ListVRF(tenant string) ([]*models.VRF, error) {
 
-	baseurlStr := "/api/node/class"	
-	dnUrl := fmt.Sprintf("%s/uni/tn-%s/fvCtx.json", baseurlStr , tenant )
-    
-    cont, err := sm.GetViaURL(dnUrl)
+	baseurlStr := "/api/node/class"
+	dnUrl := fmt.Sprintf("%s/uni/tn-%s/fvCtx.json", baseurlStr, tenant)
+
+	cont, err := sm.GetViaURL(dnUrl)
 	list := models.VRFListFromContainer(cont)
 
 	return list, err
 }
 
-func (sm *ServiceManager) CreateRelationfvRsOspfCtxPolFromVRF( parentDn, tnOspfCtxPolName string) error {
+func (sm *ServiceManager) CreateRelationfvRsOspfCtxPolFromVRF(parentDn, tnOspfCtxPolName string) error {
 	dn := fmt.Sprintf("%s/rsospfCtxPol", parentDn)
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
@@ -78,7 +63,7 @@ func (sm *ServiceManager) CreateRelationfvRsOspfCtxPolFromVRF( parentDn, tnOspfC
 								
 			}
 		}
-	}`, "fvRsOspfCtxPol", dn,tnOspfCtxPolName))
+	}`, "fvRsOspfCtxPol", dn, tnOspfCtxPolName))
 
 	jsonPayload, err := container.ParseJSON(containerJSON)
 	if err != nil {
@@ -90,36 +75,30 @@ func (sm *ServiceManager) CreateRelationfvRsOspfCtxPolFromVRF( parentDn, tnOspfC
 		return err
 	}
 
-	cont, _, err := sm.client.Do(req)
+	_, _, err = sm.client.Do(req)
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
 
 	return nil
 }
 
-func (sm *ServiceManager) ReadRelationfvRsOspfCtxPolFromVRF( parentDn string) (interface{},error) {
-	baseurlStr := "/api/node/class"	
-	dnUrl := fmt.Sprintf("%s/%s/%s.json",baseurlStr,parentDn,"fvRsOspfCtxPol")
+func (sm *ServiceManager) ReadRelationfvRsOspfCtxPolFromVRF(parentDn string) (interface{}, error) {
+	baseurlStr := "/api/node/class"
+	dnUrl := fmt.Sprintf("%s/%s/%s.json", baseurlStr, parentDn, "fvRsOspfCtxPol")
 	cont, err := sm.GetViaURL(dnUrl)
 
-	contList := models.ListFromContainer(cont,"fvRsOspfCtxPol")
-	
+	contList := models.ListFromContainer(cont, "fvRsOspfCtxPol")
+
 	if len(contList) > 0 {
 		dat := models.G(contList[0], "tnOspfCtxPolName")
 		return dat, err
 	} else {
-		return nil,err
+		return nil, err
 	}
-		
-
-
-
-
 
 }
-func (sm *ServiceManager) CreateRelationfvRsVrfValidationPolFromVRF( parentDn, tnL3extVrfValidationPolName string) error {
+func (sm *ServiceManager) CreateRelationfvRsVrfValidationPolFromVRF(parentDn, tnL3extVrfValidationPolName string) error {
 	dn := fmt.Sprintf("%s/rsvrfValidationPol", parentDn)
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
@@ -128,7 +107,7 @@ func (sm *ServiceManager) CreateRelationfvRsVrfValidationPolFromVRF( parentDn, t
 								
 			}
 		}
-	}`, "fvRsVrfValidationPol", dn,tnL3extVrfValidationPolName))
+	}`, "fvRsVrfValidationPol", dn, tnL3extVrfValidationPolName))
 
 	jsonPayload, err := container.ParseJSON(containerJSON)
 	if err != nil {
@@ -140,36 +119,30 @@ func (sm *ServiceManager) CreateRelationfvRsVrfValidationPolFromVRF( parentDn, t
 		return err
 	}
 
-	cont, _, err := sm.client.Do(req)
+	_, _, err = sm.client.Do(req)
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
 
 	return nil
 }
 
-func (sm *ServiceManager) ReadRelationfvRsVrfValidationPolFromVRF( parentDn string) (interface{},error) {
-	baseurlStr := "/api/node/class"	
-	dnUrl := fmt.Sprintf("%s/%s/%s.json",baseurlStr,parentDn,"fvRsVrfValidationPol")
+func (sm *ServiceManager) ReadRelationfvRsVrfValidationPolFromVRF(parentDn string) (interface{}, error) {
+	baseurlStr := "/api/node/class"
+	dnUrl := fmt.Sprintf("%s/%s/%s.json", baseurlStr, parentDn, "fvRsVrfValidationPol")
 	cont, err := sm.GetViaURL(dnUrl)
 
-	contList := models.ListFromContainer(cont,"fvRsVrfValidationPol")
-	
+	contList := models.ListFromContainer(cont, "fvRsVrfValidationPol")
+
 	if len(contList) > 0 {
 		dat := models.G(contList[0], "tnL3extVrfValidationPolName")
 		return dat, err
 	} else {
-		return nil,err
+		return nil, err
 	}
-		
-
-
-
-
 
 }
-func (sm *ServiceManager) CreateRelationfvRsCtxMcastToFromVRF( parentDn, tDn string) error {
+func (sm *ServiceManager) CreateRelationfvRsCtxMcastToFromVRF(parentDn, tDn string) error {
 	dn := fmt.Sprintf("%s/rsctxMcastTo-[%s]", parentDn, tDn)
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
@@ -189,39 +162,33 @@ func (sm *ServiceManager) CreateRelationfvRsCtxMcastToFromVRF( parentDn, tDn str
 		return err
 	}
 
-	cont, _, err := sm.client.Do(req)
+	_, _, err = sm.client.Do(req)
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
 
 	return nil
 }
 
-func (sm *ServiceManager) ReadRelationfvRsCtxMcastToFromVRF( parentDn string) (interface{},error) {
-	baseurlStr := "/api/node/class"	
-	dnUrl := fmt.Sprintf("%s/%s/%s.json",baseurlStr,parentDn,"fvRsCtxMcastTo")
+func (sm *ServiceManager) ReadRelationfvRsCtxMcastToFromVRF(parentDn string) (interface{}, error) {
+	baseurlStr := "/api/node/class"
+	dnUrl := fmt.Sprintf("%s/%s/%s.json", baseurlStr, parentDn, "fvRsCtxMcastTo")
 	cont, err := sm.GetViaURL(dnUrl)
 
-	contList := models.ListFromContainer(cont,"fvRsCtxMcastTo")
-	
+	contList := models.ListFromContainer(cont, "fvRsCtxMcastTo")
+
 	st := &schema.Set{
 		F: schema.HashString,
 	}
-	for _, contItem := range contList{
+	for _, contItem := range contList {
 		dat := models.G(contItem, "tDn")
 		st.Add(dat)
 	}
 	return st, err
-			
-
-
-
-
 
 }
-func (sm *ServiceManager) CreateRelationfvRsCtxToEigrpCtxAfPolFromVRF( parentDn, tnEigrpCtxAfPolName,af string) error {
-	dn := fmt.Sprintf("%s/rsctxToEigrpCtxAfPol-[%s]-%s", parentDn, tnEigrpCtxAfPolName,af)
+func (sm *ServiceManager) CreateRelationfvRsCtxToEigrpCtxAfPolFromVRF(parentDn, tnEigrpCtxAfPolName, af string) error {
+	dn := fmt.Sprintf("%s/rsctxToEigrpCtxAfPol-[%s]-%s", parentDn, tnEigrpCtxAfPolName, af)
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
@@ -240,48 +207,42 @@ func (sm *ServiceManager) CreateRelationfvRsCtxToEigrpCtxAfPolFromVRF( parentDn,
 		return err
 	}
 
-	cont, _, err := sm.client.Do(req)
+	_, _, err = sm.client.Do(req)
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
 
 	return nil
 }
 
-func (sm *ServiceManager) DeleteRelationfvRsCtxToEigrpCtxAfPolFromVRF(parentDn , tnEigrpCtxAfPolName,af string) error{
-	dn := fmt.Sprintf("%s/rsctxToEigrpCtxAfPol-[%s]-%s", parentDn, tnEigrpCtxAfPolName,af)
-	return sm.DeleteByDn(dn , "fvRsCtxToEigrpCtxAfPol")
+func (sm *ServiceManager) DeleteRelationfvRsCtxToEigrpCtxAfPolFromVRF(parentDn, tnEigrpCtxAfPolName, af string) error {
+	dn := fmt.Sprintf("%s/rsctxToEigrpCtxAfPol-[%s]-%s", parentDn, tnEigrpCtxAfPolName, af)
+	return sm.DeleteByDn(dn, "fvRsCtxToEigrpCtxAfPol")
 }
 
-func (sm *ServiceManager) ReadRelationfvRsCtxToEigrpCtxAfPolFromVRF( parentDn string) (interface{},error) {
-	baseurlStr := "/api/node/class"	
-	dnUrl := fmt.Sprintf("%s/%s/%s.json",baseurlStr,parentDn,"fvRsCtxToEigrpCtxAfPol")
+func (sm *ServiceManager) ReadRelationfvRsCtxToEigrpCtxAfPolFromVRF(parentDn string) (interface{}, error) {
+	baseurlStr := "/api/node/class"
+	dnUrl := fmt.Sprintf("%s/%s/%s.json", baseurlStr, parentDn, "fvRsCtxToEigrpCtxAfPol")
 	cont, err := sm.GetViaURL(dnUrl)
 
-	contList := models.ListFromContainer(cont,"fvRsCtxToEigrpCtxAfPol")
-	
-			
+	contList := models.ListFromContainer(cont, "fvRsCtxToEigrpCtxAfPol")
+
 	st := make([]map[string]string, 0)
 
-	for _, contItem := range contList{
+	for _, contItem := range contList {
 		paramMap := make(map[string]string)
 		paramMap["tnEigrpCtxAfPolName"] = models.G(contItem, "tnEigrpCtxAfPolName")
 		paramMap["af"] = models.G(contItem, "af")
-		
+
 		st = append(st, paramMap)
 
 	}
 
 	return st, err
 
-
-
-
-
 }
-func (sm *ServiceManager) CreateRelationfvRsCtxToOspfCtxPolFromVRF( parentDn, tnOspfCtxPolName,af string) error {
-	dn := fmt.Sprintf("%s/rsctxToOspfCtxPol-[%s]-%s", parentDn, tnOspfCtxPolName,af)
+func (sm *ServiceManager) CreateRelationfvRsCtxToOspfCtxPolFromVRF(parentDn, tnOspfCtxPolName, af string) error {
+	dn := fmt.Sprintf("%s/rsctxToOspfCtxPol-[%s]-%s", parentDn, tnOspfCtxPolName, af)
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
@@ -300,47 +261,41 @@ func (sm *ServiceManager) CreateRelationfvRsCtxToOspfCtxPolFromVRF( parentDn, tn
 		return err
 	}
 
-	cont, _, err := sm.client.Do(req)
+	_, _, err = sm.client.Do(req)
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
 
 	return nil
 }
 
-func (sm *ServiceManager) DeleteRelationfvRsCtxToOspfCtxPolFromVRF(parentDn , tnOspfCtxPolName,af string) error{
-	dn := fmt.Sprintf("%s/rsctxToOspfCtxPol-[%s]-%s", parentDn, tnOspfCtxPolName,af)
-	return sm.DeleteByDn(dn , "fvRsCtxToOspfCtxPol")
+func (sm *ServiceManager) DeleteRelationfvRsCtxToOspfCtxPolFromVRF(parentDn, tnOspfCtxPolName, af string) error {
+	dn := fmt.Sprintf("%s/rsctxToOspfCtxPol-[%s]-%s", parentDn, tnOspfCtxPolName, af)
+	return sm.DeleteByDn(dn, "fvRsCtxToOspfCtxPol")
 }
 
-func (sm *ServiceManager) ReadRelationfvRsCtxToOspfCtxPolFromVRF( parentDn string) (interface{},error) {
-	baseurlStr := "/api/node/class"	
-	dnUrl := fmt.Sprintf("%s/%s/%s.json",baseurlStr,parentDn,"fvRsCtxToOspfCtxPol")
+func (sm *ServiceManager) ReadRelationfvRsCtxToOspfCtxPolFromVRF(parentDn string) (interface{}, error) {
+	baseurlStr := "/api/node/class"
+	dnUrl := fmt.Sprintf("%s/%s/%s.json", baseurlStr, parentDn, "fvRsCtxToOspfCtxPol")
 	cont, err := sm.GetViaURL(dnUrl)
 
-	contList := models.ListFromContainer(cont,"fvRsCtxToOspfCtxPol")
-	
-			
+	contList := models.ListFromContainer(cont, "fvRsCtxToOspfCtxPol")
+
 	st := make([]map[string]string, 0)
 
-	for _, contItem := range contList{
+	for _, contItem := range contList {
 		paramMap := make(map[string]string)
 		paramMap["tnOspfCtxPolName"] = models.G(contItem, "tnOspfCtxPolName")
 		paramMap["af"] = models.G(contItem, "af")
-		
+
 		st = append(st, paramMap)
 
 	}
 
 	return st, err
 
-
-
-
-
 }
-func (sm *ServiceManager) CreateRelationfvRsCtxToEpRetFromVRF( parentDn, tnFvEpRetPolName string) error {
+func (sm *ServiceManager) CreateRelationfvRsCtxToEpRetFromVRF(parentDn, tnFvEpRetPolName string) error {
 	dn := fmt.Sprintf("%s/rsctxToEpRet", parentDn)
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
@@ -349,7 +304,7 @@ func (sm *ServiceManager) CreateRelationfvRsCtxToEpRetFromVRF( parentDn, tnFvEpR
 								
 			}
 		}
-	}`, "fvRsCtxToEpRet", dn,tnFvEpRetPolName))
+	}`, "fvRsCtxToEpRet", dn, tnFvEpRetPolName))
 
 	jsonPayload, err := container.ParseJSON(containerJSON)
 	if err != nil {
@@ -361,36 +316,30 @@ func (sm *ServiceManager) CreateRelationfvRsCtxToEpRetFromVRF( parentDn, tnFvEpR
 		return err
 	}
 
-	cont, _, err := sm.client.Do(req)
+	_, _, err = sm.client.Do(req)
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
 
 	return nil
 }
 
-func (sm *ServiceManager) ReadRelationfvRsCtxToEpRetFromVRF( parentDn string) (interface{},error) {
-	baseurlStr := "/api/node/class"	
-	dnUrl := fmt.Sprintf("%s/%s/%s.json",baseurlStr,parentDn,"fvRsCtxToEpRet")
+func (sm *ServiceManager) ReadRelationfvRsCtxToEpRetFromVRF(parentDn string) (interface{}, error) {
+	baseurlStr := "/api/node/class"
+	dnUrl := fmt.Sprintf("%s/%s/%s.json", baseurlStr, parentDn, "fvRsCtxToEpRet")
 	cont, err := sm.GetViaURL(dnUrl)
 
-	contList := models.ListFromContainer(cont,"fvRsCtxToEpRet")
-	
+	contList := models.ListFromContainer(cont, "fvRsCtxToEpRet")
+
 	if len(contList) > 0 {
 		dat := models.G(contList[0], "tnFvEpRetPolName")
 		return dat, err
 	} else {
-		return nil,err
+		return nil, err
 	}
-		
-
-
-
-
 
 }
-func (sm *ServiceManager) CreateRelationfvRsBgpCtxPolFromVRF( parentDn, tnBgpCtxPolName string) error {
+func (sm *ServiceManager) CreateRelationfvRsBgpCtxPolFromVRF(parentDn, tnBgpCtxPolName string) error {
 	dn := fmt.Sprintf("%s/rsbgpCtxPol", parentDn)
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
@@ -399,7 +348,7 @@ func (sm *ServiceManager) CreateRelationfvRsBgpCtxPolFromVRF( parentDn, tnBgpCtx
 								
 			}
 		}
-	}`, "fvRsBgpCtxPol", dn,tnBgpCtxPolName))
+	}`, "fvRsBgpCtxPol", dn, tnBgpCtxPolName))
 
 	jsonPayload, err := container.ParseJSON(containerJSON)
 	if err != nil {
@@ -411,36 +360,30 @@ func (sm *ServiceManager) CreateRelationfvRsBgpCtxPolFromVRF( parentDn, tnBgpCtx
 		return err
 	}
 
-	cont, _, err := sm.client.Do(req)
+	_, _, err = sm.client.Do(req)
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
 
 	return nil
 }
 
-func (sm *ServiceManager) ReadRelationfvRsBgpCtxPolFromVRF( parentDn string) (interface{},error) {
-	baseurlStr := "/api/node/class"	
-	dnUrl := fmt.Sprintf("%s/%s/%s.json",baseurlStr,parentDn,"fvRsBgpCtxPol")
+func (sm *ServiceManager) ReadRelationfvRsBgpCtxPolFromVRF(parentDn string) (interface{}, error) {
+	baseurlStr := "/api/node/class"
+	dnUrl := fmt.Sprintf("%s/%s/%s.json", baseurlStr, parentDn, "fvRsBgpCtxPol")
 	cont, err := sm.GetViaURL(dnUrl)
 
-	contList := models.ListFromContainer(cont,"fvRsBgpCtxPol")
-	
+	contList := models.ListFromContainer(cont, "fvRsBgpCtxPol")
+
 	if len(contList) > 0 {
 		dat := models.G(contList[0], "tnBgpCtxPolName")
 		return dat, err
 	} else {
-		return nil,err
+		return nil, err
 	}
-		
-
-
-
-
 
 }
-func (sm *ServiceManager) CreateRelationfvRsCtxMonPolFromVRF( parentDn, tnMonEPGPolName string) error {
+func (sm *ServiceManager) CreateRelationfvRsCtxMonPolFromVRF(parentDn, tnMonEPGPolName string) error {
 	dn := fmt.Sprintf("%s/rsCtxMonPol", parentDn)
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
@@ -449,7 +392,7 @@ func (sm *ServiceManager) CreateRelationfvRsCtxMonPolFromVRF( parentDn, tnMonEPG
 								
 			}
 		}
-	}`, "fvRsCtxMonPol", dn,tnMonEPGPolName))
+	}`, "fvRsCtxMonPol", dn, tnMonEPGPolName))
 
 	jsonPayload, err := container.ParseJSON(containerJSON)
 	if err != nil {
@@ -461,41 +404,35 @@ func (sm *ServiceManager) CreateRelationfvRsCtxMonPolFromVRF( parentDn, tnMonEPG
 		return err
 	}
 
-	cont, _, err := sm.client.Do(req)
+	_, _, err = sm.client.Do(req)
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
 
 	return nil
 }
 
-func (sm *ServiceManager) DeleteRelationfvRsCtxMonPolFromVRF(parentDn string) error{
+func (sm *ServiceManager) DeleteRelationfvRsCtxMonPolFromVRF(parentDn string) error {
 	dn := fmt.Sprintf("%s/rsCtxMonPol", parentDn)
-	return sm.DeleteByDn(dn , "fvRsCtxMonPol")
+	return sm.DeleteByDn(dn, "fvRsCtxMonPol")
 }
 
-func (sm *ServiceManager) ReadRelationfvRsCtxMonPolFromVRF( parentDn string) (interface{},error) {
-	baseurlStr := "/api/node/class"	
-	dnUrl := fmt.Sprintf("%s/%s/%s.json",baseurlStr,parentDn,"fvRsCtxMonPol")
+func (sm *ServiceManager) ReadRelationfvRsCtxMonPolFromVRF(parentDn string) (interface{}, error) {
+	baseurlStr := "/api/node/class"
+	dnUrl := fmt.Sprintf("%s/%s/%s.json", baseurlStr, parentDn, "fvRsCtxMonPol")
 	cont, err := sm.GetViaURL(dnUrl)
 
-	contList := models.ListFromContainer(cont,"fvRsCtxMonPol")
-	
+	contList := models.ListFromContainer(cont, "fvRsCtxMonPol")
+
 	if len(contList) > 0 {
 		dat := models.G(contList[0], "tnMonEPGPolName")
 		return dat, err
 	} else {
-		return nil,err
+		return nil, err
 	}
-		
-
-
-
-
 
 }
-func (sm *ServiceManager) CreateRelationfvRsCtxToExtRouteTagPolFromVRF( parentDn, tnL3extRouteTagPolName string) error {
+func (sm *ServiceManager) CreateRelationfvRsCtxToExtRouteTagPolFromVRF(parentDn, tnL3extRouteTagPolName string) error {
 	dn := fmt.Sprintf("%s/rsctxToExtRouteTagPol", parentDn)
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
@@ -504,7 +441,7 @@ func (sm *ServiceManager) CreateRelationfvRsCtxToExtRouteTagPolFromVRF( parentDn
 								
 			}
 		}
-	}`, "fvRsCtxToExtRouteTagPol", dn,tnL3extRouteTagPolName))
+	}`, "fvRsCtxToExtRouteTagPol", dn, tnL3extRouteTagPolName))
 
 	jsonPayload, err := container.ParseJSON(containerJSON)
 	if err != nil {
@@ -516,37 +453,31 @@ func (sm *ServiceManager) CreateRelationfvRsCtxToExtRouteTagPolFromVRF( parentDn
 		return err
 	}
 
-	cont, _, err := sm.client.Do(req)
+	_, _, err = sm.client.Do(req)
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
 
 	return nil
 }
 
-func (sm *ServiceManager) ReadRelationfvRsCtxToExtRouteTagPolFromVRF( parentDn string) (interface{},error) {
-	baseurlStr := "/api/node/class"	
-	dnUrl := fmt.Sprintf("%s/%s/%s.json",baseurlStr,parentDn,"fvRsCtxToExtRouteTagPol")
+func (sm *ServiceManager) ReadRelationfvRsCtxToExtRouteTagPolFromVRF(parentDn string) (interface{}, error) {
+	baseurlStr := "/api/node/class"
+	dnUrl := fmt.Sprintf("%s/%s/%s.json", baseurlStr, parentDn, "fvRsCtxToExtRouteTagPol")
 	cont, err := sm.GetViaURL(dnUrl)
 
-	contList := models.ListFromContainer(cont,"fvRsCtxToExtRouteTagPol")
-	
+	contList := models.ListFromContainer(cont, "fvRsCtxToExtRouteTagPol")
+
 	if len(contList) > 0 {
 		dat := models.G(contList[0], "tnL3extRouteTagPolName")
 		return dat, err
 	} else {
-		return nil,err
+		return nil, err
 	}
-		
-
-
-
-
 
 }
-func (sm *ServiceManager) CreateRelationfvRsCtxToBgpCtxAfPolFromVRF( parentDn, tnBgpCtxAfPolName,af string) error {
-	dn := fmt.Sprintf("%s/rsctxToBgpCtxAfPol-[%s]-%s", parentDn, tnBgpCtxAfPolName,af)
+func (sm *ServiceManager) CreateRelationfvRsCtxToBgpCtxAfPolFromVRF(parentDn, tnBgpCtxAfPolName, af string) error {
+	dn := fmt.Sprintf("%s/rsctxToBgpCtxAfPol-[%s]-%s", parentDn, tnBgpCtxAfPolName, af)
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
@@ -565,44 +496,37 @@ func (sm *ServiceManager) CreateRelationfvRsCtxToBgpCtxAfPolFromVRF( parentDn, t
 		return err
 	}
 
-	cont, _, err := sm.client.Do(req)
+	_, _, err = sm.client.Do(req)
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
 
 	return nil
 }
 
-func (sm *ServiceManager) DeleteRelationfvRsCtxToBgpCtxAfPolFromVRF(parentDn , tnBgpCtxAfPolName,af string) error{
-	dn := fmt.Sprintf("%s/rsctxToBgpCtxAfPol-[%s]-%s", parentDn, tnBgpCtxAfPolName,af)
-	return sm.DeleteByDn(dn , "fvRsCtxToBgpCtxAfPol")
+func (sm *ServiceManager) DeleteRelationfvRsCtxToBgpCtxAfPolFromVRF(parentDn, tnBgpCtxAfPolName, af string) error {
+	dn := fmt.Sprintf("%s/rsctxToBgpCtxAfPol-[%s]-%s", parentDn, tnBgpCtxAfPolName, af)
+	return sm.DeleteByDn(dn, "fvRsCtxToBgpCtxAfPol")
 }
 
-func (sm *ServiceManager) ReadRelationfvRsCtxToBgpCtxAfPolFromVRF( parentDn string) (interface{},error) {
-	baseurlStr := "/api/node/class"	
-	dnUrl := fmt.Sprintf("%s/%s/%s.json",baseurlStr,parentDn,"fvRsCtxToBgpCtxAfPol")
+func (sm *ServiceManager) ReadRelationfvRsCtxToBgpCtxAfPolFromVRF(parentDn string) (interface{}, error) {
+	baseurlStr := "/api/node/class"
+	dnUrl := fmt.Sprintf("%s/%s/%s.json", baseurlStr, parentDn, "fvRsCtxToBgpCtxAfPol")
 	cont, err := sm.GetViaURL(dnUrl)
 
-	contList := models.ListFromContainer(cont,"fvRsCtxToBgpCtxAfPol")
-	
-			
+	contList := models.ListFromContainer(cont, "fvRsCtxToBgpCtxAfPol")
+
 	st := make([]map[string]string, 0)
 
-	for _, contItem := range contList{
+	for _, contItem := range contList {
 		paramMap := make(map[string]string)
 		paramMap["tnBgpCtxAfPolName"] = models.G(contItem, "tnBgpCtxAfPolName")
 		paramMap["af"] = models.G(contItem, "af")
-		
+
 		st = append(st, paramMap)
 
 	}
 
 	return st, err
 
-
-
-
-
 }
-

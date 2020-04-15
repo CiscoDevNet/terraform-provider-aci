@@ -74,11 +74,10 @@ func (sm *ServiceManager) CreateRelationconfigRsImportSourceFromConfigurationImp
 		return err
 	}
 
-	cont, _, err := sm.client.Do(req)
+	_, _, err = sm.client.Do(req)
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
 
 	return nil
 }
@@ -124,11 +123,10 @@ func (sm *ServiceManager) CreateRelationtrigRsTriggerableFromConfigurationImport
 		return err
 	}
 
-	cont, _, err := sm.client.Do(req)
+	_, _, err = sm.client.Do(req)
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
 
 	return nil
 }
@@ -169,11 +167,10 @@ func (sm *ServiceManager) CreateRelationconfigRsRemotePathFromConfigurationImpor
 		return err
 	}
 
-	cont, _, err := sm.client.Do(req)
+	_, _, err = sm.client.Do(req)
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
 
 	return nil
 }

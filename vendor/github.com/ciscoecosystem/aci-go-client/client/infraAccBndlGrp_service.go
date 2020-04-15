@@ -3,36 +3,21 @@ package client
 import (
 	"fmt"
 
-	"github.com/ciscoecosystem/aci-go-client/models"
 	"github.com/ciscoecosystem/aci-go-client/container"
+	"github.com/ciscoecosystem/aci-go-client/models"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	
-
-
-
-	
-
-
 )
 
-
-
-
-
-
-
-
-
-func (sm *ServiceManager) CreatePCVPCInterfacePolicyGroup(name string , description string, infraAccBndlGrpattr models.PCVPCInterfacePolicyGroupAttributes) (*models.PCVPCInterfacePolicyGroup, error) {	
-	rn := fmt.Sprintf("infra/funcprof/accbundle-%s",name)
+func (sm *ServiceManager) CreatePCVPCInterfacePolicyGroup(name string, description string, infraAccBndlGrpattr models.PCVPCInterfacePolicyGroupAttributes) (*models.PCVPCInterfacePolicyGroup, error) {
+	rn := fmt.Sprintf("infra/funcprof/accbundle-%s", name)
 	parentDn := fmt.Sprintf("uni")
 	infraAccBndlGrp := models.NewPCVPCInterfacePolicyGroup(rn, parentDn, description, infraAccBndlGrpattr)
 	err := sm.Save(infraAccBndlGrp)
 	return infraAccBndlGrp, err
 }
 
-func (sm *ServiceManager) ReadPCVPCInterfacePolicyGroup(name string ) (*models.PCVPCInterfacePolicyGroup, error) {
-	dn := fmt.Sprintf("uni/infra/funcprof/accbundle-%s", name )    
+func (sm *ServiceManager) ReadPCVPCInterfacePolicyGroup(name string) (*models.PCVPCInterfacePolicyGroup, error) {
+	dn := fmt.Sprintf("uni/infra/funcprof/accbundle-%s", name)
 	cont, err := sm.Get(dn)
 	if err != nil {
 		return nil, err
@@ -42,17 +27,17 @@ func (sm *ServiceManager) ReadPCVPCInterfacePolicyGroup(name string ) (*models.P
 	return infraAccBndlGrp, nil
 }
 
-func (sm *ServiceManager) DeletePCVPCInterfacePolicyGroup(name string ) error {
-	dn := fmt.Sprintf("uni/infra/funcprof/accbundle-%s", name )
+func (sm *ServiceManager) DeletePCVPCInterfacePolicyGroup(name string) error {
+	dn := fmt.Sprintf("uni/infra/funcprof/accbundle-%s", name)
 	return sm.DeleteByDn(dn, models.InfraaccbndlgrpClassName)
 }
 
-func (sm *ServiceManager) UpdatePCVPCInterfacePolicyGroup(name string  ,description string, infraAccBndlGrpattr models.PCVPCInterfacePolicyGroupAttributes) (*models.PCVPCInterfacePolicyGroup, error) {
-	rn := fmt.Sprintf("infra/funcprof/accbundle-%s",name)
+func (sm *ServiceManager) UpdatePCVPCInterfacePolicyGroup(name string, description string, infraAccBndlGrpattr models.PCVPCInterfacePolicyGroupAttributes) (*models.PCVPCInterfacePolicyGroup, error) {
+	rn := fmt.Sprintf("infra/funcprof/accbundle-%s", name)
 	parentDn := fmt.Sprintf("uni")
 	infraAccBndlGrp := models.NewPCVPCInterfacePolicyGroup(rn, parentDn, description, infraAccBndlGrpattr)
 
-    infraAccBndlGrp.Status = "modified"
+	infraAccBndlGrp.Status = "modified"
 	err := sm.Save(infraAccBndlGrp)
 	return infraAccBndlGrp, err
 
@@ -60,16 +45,16 @@ func (sm *ServiceManager) UpdatePCVPCInterfacePolicyGroup(name string  ,descript
 
 func (sm *ServiceManager) ListPCVPCInterfacePolicyGroup() ([]*models.PCVPCInterfacePolicyGroup, error) {
 
-	baseurlStr := "/api/node/class"	
-	dnUrl := fmt.Sprintf("%s/uni/infraAccBndlGrp.json", baseurlStr )
-    
-    cont, err := sm.GetViaURL(dnUrl)
+	baseurlStr := "/api/node/class"
+	dnUrl := fmt.Sprintf("%s/uni/infraAccBndlGrp.json", baseurlStr)
+
+	cont, err := sm.GetViaURL(dnUrl)
 	list := models.PCVPCInterfacePolicyGroupListFromContainer(cont)
 
 	return list, err
 }
 
-func (sm *ServiceManager) CreateRelationinfraRsSpanVSrcGrpFromPCVPCInterfacePolicyGroup( parentDn, tnSpanVSrcGrpName string) error {
+func (sm *ServiceManager) CreateRelationinfraRsSpanVSrcGrpFromPCVPCInterfacePolicyGroup(parentDn, tnSpanVSrcGrpName string) error {
 	dn := fmt.Sprintf("%s/rsspanVSrcGrp-%s", parentDn, tnSpanVSrcGrpName)
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
@@ -89,43 +74,37 @@ func (sm *ServiceManager) CreateRelationinfraRsSpanVSrcGrpFromPCVPCInterfacePoli
 		return err
 	}
 
-	cont, _, err := sm.client.Do(req)
+	_, _, err = sm.client.Do(req)
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
 
 	return nil
 }
 
-func (sm *ServiceManager) DeleteRelationinfraRsSpanVSrcGrpFromPCVPCInterfacePolicyGroup(parentDn , tnSpanVSrcGrpName string) error{
+func (sm *ServiceManager) DeleteRelationinfraRsSpanVSrcGrpFromPCVPCInterfacePolicyGroup(parentDn, tnSpanVSrcGrpName string) error {
 	dn := fmt.Sprintf("%s/rsspanVSrcGrp-%s", parentDn, tnSpanVSrcGrpName)
-	return sm.DeleteByDn(dn , "infraRsSpanVSrcGrp")
+	return sm.DeleteByDn(dn, "infraRsSpanVSrcGrp")
 }
 
-func (sm *ServiceManager) ReadRelationinfraRsSpanVSrcGrpFromPCVPCInterfacePolicyGroup( parentDn string) (interface{},error) {
-	baseurlStr := "/api/node/class"	
-	dnUrl := fmt.Sprintf("%s/%s/%s.json",baseurlStr,parentDn,"infraRsSpanVSrcGrp")
+func (sm *ServiceManager) ReadRelationinfraRsSpanVSrcGrpFromPCVPCInterfacePolicyGroup(parentDn string) (interface{}, error) {
+	baseurlStr := "/api/node/class"
+	dnUrl := fmt.Sprintf("%s/%s/%s.json", baseurlStr, parentDn, "infraRsSpanVSrcGrp")
 	cont, err := sm.GetViaURL(dnUrl)
 
-	contList := models.ListFromContainer(cont,"infraRsSpanVSrcGrp")
-	
+	contList := models.ListFromContainer(cont, "infraRsSpanVSrcGrp")
+
 	st := &schema.Set{
 		F: schema.HashString,
 	}
-	for _, contItem := range contList{
+	for _, contItem := range contList {
 		dat := models.G(contItem, "tnSpanVSrcGrpName")
 		st.Add(dat)
 	}
 	return st, err
-			
-
-
-
-
 
 }
-func (sm *ServiceManager) CreateRelationinfraRsAccBndlGrpToAggrIfFromPCVPCInterfacePolicyGroup( parentDn, tDn string) error {
+func (sm *ServiceManager) CreateRelationinfraRsAccBndlGrpToAggrIfFromPCVPCInterfacePolicyGroup(parentDn, tDn string) error {
 	dn := fmt.Sprintf("%s/rsaccBndlGrpToAggrIf-[%s]", parentDn, tDn)
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
@@ -145,38 +124,32 @@ func (sm *ServiceManager) CreateRelationinfraRsAccBndlGrpToAggrIfFromPCVPCInterf
 		return err
 	}
 
-	cont, _, err := sm.client.Do(req)
+	_, _, err = sm.client.Do(req)
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
 
 	return nil
 }
 
-func (sm *ServiceManager) ReadRelationinfraRsAccBndlGrpToAggrIfFromPCVPCInterfacePolicyGroup( parentDn string) (interface{},error) {
-	baseurlStr := "/api/node/class"	
-	dnUrl := fmt.Sprintf("%s/%s/%s.json",baseurlStr,parentDn,"infraRsAccBndlGrpToAggrIf")
+func (sm *ServiceManager) ReadRelationinfraRsAccBndlGrpToAggrIfFromPCVPCInterfacePolicyGroup(parentDn string) (interface{}, error) {
+	baseurlStr := "/api/node/class"
+	dnUrl := fmt.Sprintf("%s/%s/%s.json", baseurlStr, parentDn, "infraRsAccBndlGrpToAggrIf")
 	cont, err := sm.GetViaURL(dnUrl)
 
-	contList := models.ListFromContainer(cont,"infraRsAccBndlGrpToAggrIf")
-	
+	contList := models.ListFromContainer(cont, "infraRsAccBndlGrpToAggrIf")
+
 	st := &schema.Set{
 		F: schema.HashString,
 	}
-	for _, contItem := range contList{
+	for _, contItem := range contList {
 		dat := models.G(contItem, "tDn")
 		st.Add(dat)
 	}
 	return st, err
-			
-
-
-
-
 
 }
-func (sm *ServiceManager) CreateRelationinfraRsStormctrlIfPolFromPCVPCInterfacePolicyGroup( parentDn, tnStormctrlIfPolName string) error {
+func (sm *ServiceManager) CreateRelationinfraRsStormctrlIfPolFromPCVPCInterfacePolicyGroup(parentDn, tnStormctrlIfPolName string) error {
 	dn := fmt.Sprintf("%s/rsstormctrlIfPol", parentDn)
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
@@ -185,7 +158,7 @@ func (sm *ServiceManager) CreateRelationinfraRsStormctrlIfPolFromPCVPCInterfaceP
 								
 			}
 		}
-	}`, "infraRsStormctrlIfPol", dn,tnStormctrlIfPolName))
+	}`, "infraRsStormctrlIfPol", dn, tnStormctrlIfPolName))
 
 	jsonPayload, err := container.ParseJSON(containerJSON)
 	if err != nil {
@@ -197,36 +170,30 @@ func (sm *ServiceManager) CreateRelationinfraRsStormctrlIfPolFromPCVPCInterfaceP
 		return err
 	}
 
-	cont, _, err := sm.client.Do(req)
+	_, _, err = sm.client.Do(req)
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
 
 	return nil
 }
 
-func (sm *ServiceManager) ReadRelationinfraRsStormctrlIfPolFromPCVPCInterfacePolicyGroup( parentDn string) (interface{},error) {
-	baseurlStr := "/api/node/class"	
-	dnUrl := fmt.Sprintf("%s/%s/%s.json",baseurlStr,parentDn,"infraRsStormctrlIfPol")
+func (sm *ServiceManager) ReadRelationinfraRsStormctrlIfPolFromPCVPCInterfacePolicyGroup(parentDn string) (interface{}, error) {
+	baseurlStr := "/api/node/class"
+	dnUrl := fmt.Sprintf("%s/%s/%s.json", baseurlStr, parentDn, "infraRsStormctrlIfPol")
 	cont, err := sm.GetViaURL(dnUrl)
 
-	contList := models.ListFromContainer(cont,"infraRsStormctrlIfPol")
-	
+	contList := models.ListFromContainer(cont, "infraRsStormctrlIfPol")
+
 	if len(contList) > 0 {
 		dat := models.G(contList[0], "tnStormctrlIfPolName")
 		return dat, err
 	} else {
-		return nil,err
+		return nil, err
 	}
-		
-
-
-
-
 
 }
-func (sm *ServiceManager) CreateRelationinfraRsLldpIfPolFromPCVPCInterfacePolicyGroup( parentDn, tnLldpIfPolName string) error {
+func (sm *ServiceManager) CreateRelationinfraRsLldpIfPolFromPCVPCInterfacePolicyGroup(parentDn, tnLldpIfPolName string) error {
 	dn := fmt.Sprintf("%s/rslldpIfPol", parentDn)
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
@@ -235,7 +202,7 @@ func (sm *ServiceManager) CreateRelationinfraRsLldpIfPolFromPCVPCInterfacePolicy
 								
 			}
 		}
-	}`, "infraRsLldpIfPol", dn,tnLldpIfPolName))
+	}`, "infraRsLldpIfPol", dn, tnLldpIfPolName))
 
 	jsonPayload, err := container.ParseJSON(containerJSON)
 	if err != nil {
@@ -247,36 +214,30 @@ func (sm *ServiceManager) CreateRelationinfraRsLldpIfPolFromPCVPCInterfacePolicy
 		return err
 	}
 
-	cont, _, err := sm.client.Do(req)
+	_, _, err = sm.client.Do(req)
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
 
 	return nil
 }
 
-func (sm *ServiceManager) ReadRelationinfraRsLldpIfPolFromPCVPCInterfacePolicyGroup( parentDn string) (interface{},error) {
-	baseurlStr := "/api/node/class"	
-	dnUrl := fmt.Sprintf("%s/%s/%s.json",baseurlStr,parentDn,"infraRsLldpIfPol")
+func (sm *ServiceManager) ReadRelationinfraRsLldpIfPolFromPCVPCInterfacePolicyGroup(parentDn string) (interface{}, error) {
+	baseurlStr := "/api/node/class"
+	dnUrl := fmt.Sprintf("%s/%s/%s.json", baseurlStr, parentDn, "infraRsLldpIfPol")
 	cont, err := sm.GetViaURL(dnUrl)
 
-	contList := models.ListFromContainer(cont,"infraRsLldpIfPol")
-	
+	contList := models.ListFromContainer(cont, "infraRsLldpIfPol")
+
 	if len(contList) > 0 {
 		dat := models.G(contList[0], "tnLldpIfPolName")
 		return dat, err
 	} else {
-		return nil,err
+		return nil, err
 	}
-		
-
-
-
-
 
 }
-func (sm *ServiceManager) CreateRelationinfraRsMacsecIfPolFromPCVPCInterfacePolicyGroup( parentDn, tnMacsecIfPolName string) error {
+func (sm *ServiceManager) CreateRelationinfraRsMacsecIfPolFromPCVPCInterfacePolicyGroup(parentDn, tnMacsecIfPolName string) error {
 	dn := fmt.Sprintf("%s/rsmacsecIfPol", parentDn)
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
@@ -285,7 +246,7 @@ func (sm *ServiceManager) CreateRelationinfraRsMacsecIfPolFromPCVPCInterfacePoli
 								
 			}
 		}
-	}`, "infraRsMacsecIfPol", dn,tnMacsecIfPolName))
+	}`, "infraRsMacsecIfPol", dn, tnMacsecIfPolName))
 
 	jsonPayload, err := container.ParseJSON(containerJSON)
 	if err != nil {
@@ -297,36 +258,30 @@ func (sm *ServiceManager) CreateRelationinfraRsMacsecIfPolFromPCVPCInterfacePoli
 		return err
 	}
 
-	cont, _, err := sm.client.Do(req)
+	_, _, err = sm.client.Do(req)
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
 
 	return nil
 }
 
-func (sm *ServiceManager) ReadRelationinfraRsMacsecIfPolFromPCVPCInterfacePolicyGroup( parentDn string) (interface{},error) {
-	baseurlStr := "/api/node/class"	
-	dnUrl := fmt.Sprintf("%s/%s/%s.json",baseurlStr,parentDn,"infraRsMacsecIfPol")
+func (sm *ServiceManager) ReadRelationinfraRsMacsecIfPolFromPCVPCInterfacePolicyGroup(parentDn string) (interface{}, error) {
+	baseurlStr := "/api/node/class"
+	dnUrl := fmt.Sprintf("%s/%s/%s.json", baseurlStr, parentDn, "infraRsMacsecIfPol")
 	cont, err := sm.GetViaURL(dnUrl)
 
-	contList := models.ListFromContainer(cont,"infraRsMacsecIfPol")
-	
+	contList := models.ListFromContainer(cont, "infraRsMacsecIfPol")
+
 	if len(contList) > 0 {
 		dat := models.G(contList[0], "tnMacsecIfPolName")
 		return dat, err
 	} else {
-		return nil,err
+		return nil, err
 	}
-		
-
-
-
-
 
 }
-func (sm *ServiceManager) CreateRelationinfraRsQosDppIfPolFromPCVPCInterfacePolicyGroup( parentDn, tnQosDppPolName string) error {
+func (sm *ServiceManager) CreateRelationinfraRsQosDppIfPolFromPCVPCInterfacePolicyGroup(parentDn, tnQosDppPolName string) error {
 	dn := fmt.Sprintf("%s/rsqosDppIfPol", parentDn)
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
@@ -335,7 +290,7 @@ func (sm *ServiceManager) CreateRelationinfraRsQosDppIfPolFromPCVPCInterfacePoli
 								
 			}
 		}
-	}`, "infraRsQosDppIfPol", dn,tnQosDppPolName))
+	}`, "infraRsQosDppIfPol", dn, tnQosDppPolName))
 
 	jsonPayload, err := container.ParseJSON(containerJSON)
 	if err != nil {
@@ -347,36 +302,30 @@ func (sm *ServiceManager) CreateRelationinfraRsQosDppIfPolFromPCVPCInterfacePoli
 		return err
 	}
 
-	cont, _, err := sm.client.Do(req)
+	_, _, err = sm.client.Do(req)
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
 
 	return nil
 }
 
-func (sm *ServiceManager) ReadRelationinfraRsQosDppIfPolFromPCVPCInterfacePolicyGroup( parentDn string) (interface{},error) {
-	baseurlStr := "/api/node/class"	
-	dnUrl := fmt.Sprintf("%s/%s/%s.json",baseurlStr,parentDn,"infraRsQosDppIfPol")
+func (sm *ServiceManager) ReadRelationinfraRsQosDppIfPolFromPCVPCInterfacePolicyGroup(parentDn string) (interface{}, error) {
+	baseurlStr := "/api/node/class"
+	dnUrl := fmt.Sprintf("%s/%s/%s.json", baseurlStr, parentDn, "infraRsQosDppIfPol")
 	cont, err := sm.GetViaURL(dnUrl)
 
-	contList := models.ListFromContainer(cont,"infraRsQosDppIfPol")
-	
+	contList := models.ListFromContainer(cont, "infraRsQosDppIfPol")
+
 	if len(contList) > 0 {
 		dat := models.G(contList[0], "tnQosDppPolName")
 		return dat, err
 	} else {
-		return nil,err
+		return nil, err
 	}
-		
-
-
-
-
 
 }
-func (sm *ServiceManager) CreateRelationinfraRsHIfPolFromPCVPCInterfacePolicyGroup( parentDn, tnFabricHIfPolName string) error {
+func (sm *ServiceManager) CreateRelationinfraRsHIfPolFromPCVPCInterfacePolicyGroup(parentDn, tnFabricHIfPolName string) error {
 	dn := fmt.Sprintf("%s/rshIfPol", parentDn)
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
@@ -385,7 +334,7 @@ func (sm *ServiceManager) CreateRelationinfraRsHIfPolFromPCVPCInterfacePolicyGro
 								
 			}
 		}
-	}`, "infraRsHIfPol", dn,tnFabricHIfPolName))
+	}`, "infraRsHIfPol", dn, tnFabricHIfPolName))
 
 	jsonPayload, err := container.ParseJSON(containerJSON)
 	if err != nil {
@@ -397,37 +346,31 @@ func (sm *ServiceManager) CreateRelationinfraRsHIfPolFromPCVPCInterfacePolicyGro
 		return err
 	}
 
-	cont, _, err := sm.client.Do(req)
+	_, _, err = sm.client.Do(req)
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
 
 	return nil
 }
 
-func (sm *ServiceManager) ReadRelationinfraRsHIfPolFromPCVPCInterfacePolicyGroup( parentDn string) (interface{},error) {
-	baseurlStr := "/api/node/class"	
-	dnUrl := fmt.Sprintf("%s/%s/%s.json",baseurlStr,parentDn,"infraRsHIfPol")
+func (sm *ServiceManager) ReadRelationinfraRsHIfPolFromPCVPCInterfacePolicyGroup(parentDn string) (interface{}, error) {
+	baseurlStr := "/api/node/class"
+	dnUrl := fmt.Sprintf("%s/%s/%s.json", baseurlStr, parentDn, "infraRsHIfPol")
 	cont, err := sm.GetViaURL(dnUrl)
 
-	contList := models.ListFromContainer(cont,"infraRsHIfPol")
-	
+	contList := models.ListFromContainer(cont, "infraRsHIfPol")
+
 	if len(contList) > 0 {
 		dat := models.G(contList[0], "tnFabricHIfPolName")
 		return dat, err
 	} else {
-		return nil,err
+		return nil, err
 	}
-		
-
-
-
-
 
 }
-func (sm *ServiceManager) CreateRelationinfraRsNetflowMonitorPolFromPCVPCInterfacePolicyGroup( parentDn, tnNetflowMonitorPolName,fltType string) error {
-	dn := fmt.Sprintf("%s/rsnetflowMonitorPol-[%s]-%s", parentDn, tnNetflowMonitorPolName,fltType)
+func (sm *ServiceManager) CreateRelationinfraRsNetflowMonitorPolFromPCVPCInterfacePolicyGroup(parentDn, tnNetflowMonitorPolName, fltType string) error {
+	dn := fmt.Sprintf("%s/rsnetflowMonitorPol-[%s]-%s", parentDn, tnNetflowMonitorPolName, fltType)
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
@@ -446,47 +389,41 @@ func (sm *ServiceManager) CreateRelationinfraRsNetflowMonitorPolFromPCVPCInterfa
 		return err
 	}
 
-	cont, _, err := sm.client.Do(req)
+	_, _, err = sm.client.Do(req)
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
 
 	return nil
 }
 
-func (sm *ServiceManager) DeleteRelationinfraRsNetflowMonitorPolFromPCVPCInterfacePolicyGroup(parentDn , tnNetflowMonitorPolName,fltType string) error{
-	dn := fmt.Sprintf("%s/rsnetflowMonitorPol-[%s]-%s", parentDn, tnNetflowMonitorPolName,fltType)
-	return sm.DeleteByDn(dn , "infraRsNetflowMonitorPol")
+func (sm *ServiceManager) DeleteRelationinfraRsNetflowMonitorPolFromPCVPCInterfacePolicyGroup(parentDn, tnNetflowMonitorPolName, fltType string) error {
+	dn := fmt.Sprintf("%s/rsnetflowMonitorPol-[%s]-%s", parentDn, tnNetflowMonitorPolName, fltType)
+	return sm.DeleteByDn(dn, "infraRsNetflowMonitorPol")
 }
 
-func (sm *ServiceManager) ReadRelationinfraRsNetflowMonitorPolFromPCVPCInterfacePolicyGroup( parentDn string) (interface{},error) {
-	baseurlStr := "/api/node/class"	
-	dnUrl := fmt.Sprintf("%s/%s/%s.json",baseurlStr,parentDn,"infraRsNetflowMonitorPol")
+func (sm *ServiceManager) ReadRelationinfraRsNetflowMonitorPolFromPCVPCInterfacePolicyGroup(parentDn string) (interface{}, error) {
+	baseurlStr := "/api/node/class"
+	dnUrl := fmt.Sprintf("%s/%s/%s.json", baseurlStr, parentDn, "infraRsNetflowMonitorPol")
 	cont, err := sm.GetViaURL(dnUrl)
 
-	contList := models.ListFromContainer(cont,"infraRsNetflowMonitorPol")
-	
-			
+	contList := models.ListFromContainer(cont, "infraRsNetflowMonitorPol")
+
 	st := make([]map[string]string, 0)
 
-	for _, contItem := range contList{
+	for _, contItem := range contList {
 		paramMap := make(map[string]string)
 		paramMap["tnNetflowMonitorPolName"] = models.G(contItem, "tnNetflowMonitorPolName")
 		paramMap["fltType"] = models.G(contItem, "fltType")
-		
+
 		st = append(st, paramMap)
 
 	}
 
 	return st, err
 
-
-
-
-
 }
-func (sm *ServiceManager) CreateRelationinfraRsL2PortAuthPolFromPCVPCInterfacePolicyGroup( parentDn, tnL2PortAuthPolName string) error {
+func (sm *ServiceManager) CreateRelationinfraRsL2PortAuthPolFromPCVPCInterfacePolicyGroup(parentDn, tnL2PortAuthPolName string) error {
 	dn := fmt.Sprintf("%s/rsl2PortAuthPol", parentDn)
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
@@ -495,7 +432,7 @@ func (sm *ServiceManager) CreateRelationinfraRsL2PortAuthPolFromPCVPCInterfacePo
 								
 			}
 		}
-	}`, "infraRsL2PortAuthPol", dn,tnL2PortAuthPolName))
+	}`, "infraRsL2PortAuthPol", dn, tnL2PortAuthPolName))
 
 	jsonPayload, err := container.ParseJSON(containerJSON)
 	if err != nil {
@@ -507,36 +444,30 @@ func (sm *ServiceManager) CreateRelationinfraRsL2PortAuthPolFromPCVPCInterfacePo
 		return err
 	}
 
-	cont, _, err := sm.client.Do(req)
+	_, _, err = sm.client.Do(req)
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
 
 	return nil
 }
 
-func (sm *ServiceManager) ReadRelationinfraRsL2PortAuthPolFromPCVPCInterfacePolicyGroup( parentDn string) (interface{},error) {
-	baseurlStr := "/api/node/class"	
-	dnUrl := fmt.Sprintf("%s/%s/%s.json",baseurlStr,parentDn,"infraRsL2PortAuthPol")
+func (sm *ServiceManager) ReadRelationinfraRsL2PortAuthPolFromPCVPCInterfacePolicyGroup(parentDn string) (interface{}, error) {
+	baseurlStr := "/api/node/class"
+	dnUrl := fmt.Sprintf("%s/%s/%s.json", baseurlStr, parentDn, "infraRsL2PortAuthPol")
 	cont, err := sm.GetViaURL(dnUrl)
 
-	contList := models.ListFromContainer(cont,"infraRsL2PortAuthPol")
-	
+	contList := models.ListFromContainer(cont, "infraRsL2PortAuthPol")
+
 	if len(contList) > 0 {
 		dat := models.G(contList[0], "tnL2PortAuthPolName")
 		return dat, err
 	} else {
-		return nil,err
+		return nil, err
 	}
-		
-
-
-
-
 
 }
-func (sm *ServiceManager) CreateRelationinfraRsMcpIfPolFromPCVPCInterfacePolicyGroup( parentDn, tnMcpIfPolName string) error {
+func (sm *ServiceManager) CreateRelationinfraRsMcpIfPolFromPCVPCInterfacePolicyGroup(parentDn, tnMcpIfPolName string) error {
 	dn := fmt.Sprintf("%s/rsmcpIfPol", parentDn)
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
@@ -545,7 +476,7 @@ func (sm *ServiceManager) CreateRelationinfraRsMcpIfPolFromPCVPCInterfacePolicyG
 								
 			}
 		}
-	}`, "infraRsMcpIfPol", dn,tnMcpIfPolName))
+	}`, "infraRsMcpIfPol", dn, tnMcpIfPolName))
 
 	jsonPayload, err := container.ParseJSON(containerJSON)
 	if err != nil {
@@ -557,36 +488,30 @@ func (sm *ServiceManager) CreateRelationinfraRsMcpIfPolFromPCVPCInterfacePolicyG
 		return err
 	}
 
-	cont, _, err := sm.client.Do(req)
+	_, _, err = sm.client.Do(req)
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
 
 	return nil
 }
 
-func (sm *ServiceManager) ReadRelationinfraRsMcpIfPolFromPCVPCInterfacePolicyGroup( parentDn string) (interface{},error) {
-	baseurlStr := "/api/node/class"	
-	dnUrl := fmt.Sprintf("%s/%s/%s.json",baseurlStr,parentDn,"infraRsMcpIfPol")
+func (sm *ServiceManager) ReadRelationinfraRsMcpIfPolFromPCVPCInterfacePolicyGroup(parentDn string) (interface{}, error) {
+	baseurlStr := "/api/node/class"
+	dnUrl := fmt.Sprintf("%s/%s/%s.json", baseurlStr, parentDn, "infraRsMcpIfPol")
 	cont, err := sm.GetViaURL(dnUrl)
 
-	contList := models.ListFromContainer(cont,"infraRsMcpIfPol")
-	
+	contList := models.ListFromContainer(cont, "infraRsMcpIfPol")
+
 	if len(contList) > 0 {
 		dat := models.G(contList[0], "tnMcpIfPolName")
 		return dat, err
 	} else {
-		return nil,err
+		return nil, err
 	}
-		
-
-
-
-
 
 }
-func (sm *ServiceManager) CreateRelationinfraRsL2PortSecurityPolFromPCVPCInterfacePolicyGroup( parentDn, tnL2PortSecurityPolName string) error {
+func (sm *ServiceManager) CreateRelationinfraRsL2PortSecurityPolFromPCVPCInterfacePolicyGroup(parentDn, tnL2PortSecurityPolName string) error {
 	dn := fmt.Sprintf("%s/rsl2PortSecurityPol", parentDn)
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
@@ -595,7 +520,7 @@ func (sm *ServiceManager) CreateRelationinfraRsL2PortSecurityPolFromPCVPCInterfa
 								
 			}
 		}
-	}`, "infraRsL2PortSecurityPol", dn,tnL2PortSecurityPolName))
+	}`, "infraRsL2PortSecurityPol", dn, tnL2PortSecurityPolName))
 
 	jsonPayload, err := container.ParseJSON(containerJSON)
 	if err != nil {
@@ -607,36 +532,30 @@ func (sm *ServiceManager) CreateRelationinfraRsL2PortSecurityPolFromPCVPCInterfa
 		return err
 	}
 
-	cont, _, err := sm.client.Do(req)
+	_, _, err = sm.client.Do(req)
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
 
 	return nil
 }
 
-func (sm *ServiceManager) ReadRelationinfraRsL2PortSecurityPolFromPCVPCInterfacePolicyGroup( parentDn string) (interface{},error) {
-	baseurlStr := "/api/node/class"	
-	dnUrl := fmt.Sprintf("%s/%s/%s.json",baseurlStr,parentDn,"infraRsL2PortSecurityPol")
+func (sm *ServiceManager) ReadRelationinfraRsL2PortSecurityPolFromPCVPCInterfacePolicyGroup(parentDn string) (interface{}, error) {
+	baseurlStr := "/api/node/class"
+	dnUrl := fmt.Sprintf("%s/%s/%s.json", baseurlStr, parentDn, "infraRsL2PortSecurityPol")
 	cont, err := sm.GetViaURL(dnUrl)
 
-	contList := models.ListFromContainer(cont,"infraRsL2PortSecurityPol")
-	
+	contList := models.ListFromContainer(cont, "infraRsL2PortSecurityPol")
+
 	if len(contList) > 0 {
 		dat := models.G(contList[0], "tnL2PortSecurityPolName")
 		return dat, err
 	} else {
-		return nil,err
+		return nil, err
 	}
-		
-
-
-
-
 
 }
-func (sm *ServiceManager) CreateRelationinfraRsCoppIfPolFromPCVPCInterfacePolicyGroup( parentDn, tnCoppIfPolName string) error {
+func (sm *ServiceManager) CreateRelationinfraRsCoppIfPolFromPCVPCInterfacePolicyGroup(parentDn, tnCoppIfPolName string) error {
 	dn := fmt.Sprintf("%s/rscoppIfPol", parentDn)
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
@@ -645,7 +564,7 @@ func (sm *ServiceManager) CreateRelationinfraRsCoppIfPolFromPCVPCInterfacePolicy
 								
 			}
 		}
-	}`, "infraRsCoppIfPol", dn,tnCoppIfPolName))
+	}`, "infraRsCoppIfPol", dn, tnCoppIfPolName))
 
 	jsonPayload, err := container.ParseJSON(containerJSON)
 	if err != nil {
@@ -657,36 +576,30 @@ func (sm *ServiceManager) CreateRelationinfraRsCoppIfPolFromPCVPCInterfacePolicy
 		return err
 	}
 
-	cont, _, err := sm.client.Do(req)
+	_, _, err = sm.client.Do(req)
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
 
 	return nil
 }
 
-func (sm *ServiceManager) ReadRelationinfraRsCoppIfPolFromPCVPCInterfacePolicyGroup( parentDn string) (interface{},error) {
-	baseurlStr := "/api/node/class"	
-	dnUrl := fmt.Sprintf("%s/%s/%s.json",baseurlStr,parentDn,"infraRsCoppIfPol")
+func (sm *ServiceManager) ReadRelationinfraRsCoppIfPolFromPCVPCInterfacePolicyGroup(parentDn string) (interface{}, error) {
+	baseurlStr := "/api/node/class"
+	dnUrl := fmt.Sprintf("%s/%s/%s.json", baseurlStr, parentDn, "infraRsCoppIfPol")
 	cont, err := sm.GetViaURL(dnUrl)
 
-	contList := models.ListFromContainer(cont,"infraRsCoppIfPol")
-	
+	contList := models.ListFromContainer(cont, "infraRsCoppIfPol")
+
 	if len(contList) > 0 {
 		dat := models.G(contList[0], "tnCoppIfPolName")
 		return dat, err
 	} else {
-		return nil,err
+		return nil, err
 	}
-		
-
-
-
-
 
 }
-func (sm *ServiceManager) CreateRelationinfraRsSpanVDestGrpFromPCVPCInterfacePolicyGroup( parentDn, tnSpanVDestGrpName string) error {
+func (sm *ServiceManager) CreateRelationinfraRsSpanVDestGrpFromPCVPCInterfacePolicyGroup(parentDn, tnSpanVDestGrpName string) error {
 	dn := fmt.Sprintf("%s/rsspanVDestGrp-%s", parentDn, tnSpanVDestGrpName)
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
@@ -706,43 +619,37 @@ func (sm *ServiceManager) CreateRelationinfraRsSpanVDestGrpFromPCVPCInterfacePol
 		return err
 	}
 
-	cont, _, err := sm.client.Do(req)
+	_, _, err = sm.client.Do(req)
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
 
 	return nil
 }
 
-func (sm *ServiceManager) DeleteRelationinfraRsSpanVDestGrpFromPCVPCInterfacePolicyGroup(parentDn , tnSpanVDestGrpName string) error{
+func (sm *ServiceManager) DeleteRelationinfraRsSpanVDestGrpFromPCVPCInterfacePolicyGroup(parentDn, tnSpanVDestGrpName string) error {
 	dn := fmt.Sprintf("%s/rsspanVDestGrp-%s", parentDn, tnSpanVDestGrpName)
-	return sm.DeleteByDn(dn , "infraRsSpanVDestGrp")
+	return sm.DeleteByDn(dn, "infraRsSpanVDestGrp")
 }
 
-func (sm *ServiceManager) ReadRelationinfraRsSpanVDestGrpFromPCVPCInterfacePolicyGroup( parentDn string) (interface{},error) {
-	baseurlStr := "/api/node/class"	
-	dnUrl := fmt.Sprintf("%s/%s/%s.json",baseurlStr,parentDn,"infraRsSpanVDestGrp")
+func (sm *ServiceManager) ReadRelationinfraRsSpanVDestGrpFromPCVPCInterfacePolicyGroup(parentDn string) (interface{}, error) {
+	baseurlStr := "/api/node/class"
+	dnUrl := fmt.Sprintf("%s/%s/%s.json", baseurlStr, parentDn, "infraRsSpanVDestGrp")
 	cont, err := sm.GetViaURL(dnUrl)
 
-	contList := models.ListFromContainer(cont,"infraRsSpanVDestGrp")
-	
+	contList := models.ListFromContainer(cont, "infraRsSpanVDestGrp")
+
 	st := &schema.Set{
 		F: schema.HashString,
 	}
-	for _, contItem := range contList{
+	for _, contItem := range contList {
 		dat := models.G(contItem, "tnSpanVDestGrpName")
 		st.Add(dat)
 	}
 	return st, err
-			
-
-
-
-
 
 }
-func (sm *ServiceManager) CreateRelationinfraRsLacpPolFromPCVPCInterfacePolicyGroup( parentDn, tnLacpLagPolName string) error {
+func (sm *ServiceManager) CreateRelationinfraRsLacpPolFromPCVPCInterfacePolicyGroup(parentDn, tnLacpLagPolName string) error {
 	dn := fmt.Sprintf("%s/rslacpPol", parentDn)
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
@@ -751,7 +658,7 @@ func (sm *ServiceManager) CreateRelationinfraRsLacpPolFromPCVPCInterfacePolicyGr
 								
 			}
 		}
-	}`, "infraRsLacpPol", dn,tnLacpLagPolName))
+	}`, "infraRsLacpPol", dn, tnLacpLagPolName))
 
 	jsonPayload, err := container.ParseJSON(containerJSON)
 	if err != nil {
@@ -763,36 +670,30 @@ func (sm *ServiceManager) CreateRelationinfraRsLacpPolFromPCVPCInterfacePolicyGr
 		return err
 	}
 
-	cont, _, err := sm.client.Do(req)
+	_, _, err = sm.client.Do(req)
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
 
 	return nil
 }
 
-func (sm *ServiceManager) ReadRelationinfraRsLacpPolFromPCVPCInterfacePolicyGroup( parentDn string) (interface{},error) {
-	baseurlStr := "/api/node/class"	
-	dnUrl := fmt.Sprintf("%s/%s/%s.json",baseurlStr,parentDn,"infraRsLacpPol")
+func (sm *ServiceManager) ReadRelationinfraRsLacpPolFromPCVPCInterfacePolicyGroup(parentDn string) (interface{}, error) {
+	baseurlStr := "/api/node/class"
+	dnUrl := fmt.Sprintf("%s/%s/%s.json", baseurlStr, parentDn, "infraRsLacpPol")
 	cont, err := sm.GetViaURL(dnUrl)
 
-	contList := models.ListFromContainer(cont,"infraRsLacpPol")
-	
+	contList := models.ListFromContainer(cont, "infraRsLacpPol")
+
 	if len(contList) > 0 {
 		dat := models.G(contList[0], "tnLacpLagPolName")
 		return dat, err
 	} else {
-		return nil,err
+		return nil, err
 	}
-		
-
-
-
-
 
 }
-func (sm *ServiceManager) CreateRelationinfraRsCdpIfPolFromPCVPCInterfacePolicyGroup( parentDn, tnCdpIfPolName string) error {
+func (sm *ServiceManager) CreateRelationinfraRsCdpIfPolFromPCVPCInterfacePolicyGroup(parentDn, tnCdpIfPolName string) error {
 	dn := fmt.Sprintf("%s/rscdpIfPol", parentDn)
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
@@ -801,7 +702,7 @@ func (sm *ServiceManager) CreateRelationinfraRsCdpIfPolFromPCVPCInterfacePolicyG
 								
 			}
 		}
-	}`, "infraRsCdpIfPol", dn,tnCdpIfPolName))
+	}`, "infraRsCdpIfPol", dn, tnCdpIfPolName))
 
 	jsonPayload, err := container.ParseJSON(containerJSON)
 	if err != nil {
@@ -813,36 +714,30 @@ func (sm *ServiceManager) CreateRelationinfraRsCdpIfPolFromPCVPCInterfacePolicyG
 		return err
 	}
 
-	cont, _, err := sm.client.Do(req)
+	_, _, err = sm.client.Do(req)
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
 
 	return nil
 }
 
-func (sm *ServiceManager) ReadRelationinfraRsCdpIfPolFromPCVPCInterfacePolicyGroup( parentDn string) (interface{},error) {
-	baseurlStr := "/api/node/class"	
-	dnUrl := fmt.Sprintf("%s/%s/%s.json",baseurlStr,parentDn,"infraRsCdpIfPol")
+func (sm *ServiceManager) ReadRelationinfraRsCdpIfPolFromPCVPCInterfacePolicyGroup(parentDn string) (interface{}, error) {
+	baseurlStr := "/api/node/class"
+	dnUrl := fmt.Sprintf("%s/%s/%s.json", baseurlStr, parentDn, "infraRsCdpIfPol")
 	cont, err := sm.GetViaURL(dnUrl)
 
-	contList := models.ListFromContainer(cont,"infraRsCdpIfPol")
-	
+	contList := models.ListFromContainer(cont, "infraRsCdpIfPol")
+
 	if len(contList) > 0 {
 		dat := models.G(contList[0], "tnCdpIfPolName")
 		return dat, err
 	} else {
-		return nil,err
+		return nil, err
 	}
-		
-
-
-
-
 
 }
-func (sm *ServiceManager) CreateRelationinfraRsQosPfcIfPolFromPCVPCInterfacePolicyGroup( parentDn, tnQosPfcIfPolName string) error {
+func (sm *ServiceManager) CreateRelationinfraRsQosPfcIfPolFromPCVPCInterfacePolicyGroup(parentDn, tnQosPfcIfPolName string) error {
 	dn := fmt.Sprintf("%s/rsqosPfcIfPol", parentDn)
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
@@ -851,7 +746,7 @@ func (sm *ServiceManager) CreateRelationinfraRsQosPfcIfPolFromPCVPCInterfacePoli
 								
 			}
 		}
-	}`, "infraRsQosPfcIfPol", dn,tnQosPfcIfPolName))
+	}`, "infraRsQosPfcIfPol", dn, tnQosPfcIfPolName))
 
 	jsonPayload, err := container.ParseJSON(containerJSON)
 	if err != nil {
@@ -863,36 +758,30 @@ func (sm *ServiceManager) CreateRelationinfraRsQosPfcIfPolFromPCVPCInterfacePoli
 		return err
 	}
 
-	cont, _, err := sm.client.Do(req)
+	_, _, err = sm.client.Do(req)
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
 
 	return nil
 }
 
-func (sm *ServiceManager) ReadRelationinfraRsQosPfcIfPolFromPCVPCInterfacePolicyGroup( parentDn string) (interface{},error) {
-	baseurlStr := "/api/node/class"	
-	dnUrl := fmt.Sprintf("%s/%s/%s.json",baseurlStr,parentDn,"infraRsQosPfcIfPol")
+func (sm *ServiceManager) ReadRelationinfraRsQosPfcIfPolFromPCVPCInterfacePolicyGroup(parentDn string) (interface{}, error) {
+	baseurlStr := "/api/node/class"
+	dnUrl := fmt.Sprintf("%s/%s/%s.json", baseurlStr, parentDn, "infraRsQosPfcIfPol")
 	cont, err := sm.GetViaURL(dnUrl)
 
-	contList := models.ListFromContainer(cont,"infraRsQosPfcIfPol")
-	
+	contList := models.ListFromContainer(cont, "infraRsQosPfcIfPol")
+
 	if len(contList) > 0 {
 		dat := models.G(contList[0], "tnQosPfcIfPolName")
 		return dat, err
 	} else {
-		return nil,err
+		return nil, err
 	}
-		
-
-
-
-
 
 }
-func (sm *ServiceManager) CreateRelationinfraRsQosSdIfPolFromPCVPCInterfacePolicyGroup( parentDn, tnQosSdIfPolName string) error {
+func (sm *ServiceManager) CreateRelationinfraRsQosSdIfPolFromPCVPCInterfacePolicyGroup(parentDn, tnQosSdIfPolName string) error {
 	dn := fmt.Sprintf("%s/rsqosSdIfPol", parentDn)
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
@@ -901,7 +790,7 @@ func (sm *ServiceManager) CreateRelationinfraRsQosSdIfPolFromPCVPCInterfacePolic
 								
 			}
 		}
-	}`, "infraRsQosSdIfPol", dn,tnQosSdIfPolName))
+	}`, "infraRsQosSdIfPol", dn, tnQosSdIfPolName))
 
 	jsonPayload, err := container.ParseJSON(containerJSON)
 	if err != nil {
@@ -913,36 +802,30 @@ func (sm *ServiceManager) CreateRelationinfraRsQosSdIfPolFromPCVPCInterfacePolic
 		return err
 	}
 
-	cont, _, err := sm.client.Do(req)
+	_, _, err = sm.client.Do(req)
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
 
 	return nil
 }
 
-func (sm *ServiceManager) ReadRelationinfraRsQosSdIfPolFromPCVPCInterfacePolicyGroup( parentDn string) (interface{},error) {
-	baseurlStr := "/api/node/class"	
-	dnUrl := fmt.Sprintf("%s/%s/%s.json",baseurlStr,parentDn,"infraRsQosSdIfPol")
+func (sm *ServiceManager) ReadRelationinfraRsQosSdIfPolFromPCVPCInterfacePolicyGroup(parentDn string) (interface{}, error) {
+	baseurlStr := "/api/node/class"
+	dnUrl := fmt.Sprintf("%s/%s/%s.json", baseurlStr, parentDn, "infraRsQosSdIfPol")
 	cont, err := sm.GetViaURL(dnUrl)
 
-	contList := models.ListFromContainer(cont,"infraRsQosSdIfPol")
-	
+	contList := models.ListFromContainer(cont, "infraRsQosSdIfPol")
+
 	if len(contList) > 0 {
 		dat := models.G(contList[0], "tnQosSdIfPolName")
 		return dat, err
 	} else {
-		return nil,err
+		return nil, err
 	}
-		
-
-
-
-
 
 }
-func (sm *ServiceManager) CreateRelationinfraRsMonIfInfraPolFromPCVPCInterfacePolicyGroup( parentDn, tnMonInfraPolName string) error {
+func (sm *ServiceManager) CreateRelationinfraRsMonIfInfraPolFromPCVPCInterfacePolicyGroup(parentDn, tnMonInfraPolName string) error {
 	dn := fmt.Sprintf("%s/rsmonIfInfraPol", parentDn)
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
@@ -951,7 +834,7 @@ func (sm *ServiceManager) CreateRelationinfraRsMonIfInfraPolFromPCVPCInterfacePo
 								
 			}
 		}
-	}`, "infraRsMonIfInfraPol", dn,tnMonInfraPolName))
+	}`, "infraRsMonIfInfraPol", dn, tnMonInfraPolName))
 
 	jsonPayload, err := container.ParseJSON(containerJSON)
 	if err != nil {
@@ -963,36 +846,30 @@ func (sm *ServiceManager) CreateRelationinfraRsMonIfInfraPolFromPCVPCInterfacePo
 		return err
 	}
 
-	cont, _, err := sm.client.Do(req)
+	_, _, err = sm.client.Do(req)
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
 
 	return nil
 }
 
-func (sm *ServiceManager) ReadRelationinfraRsMonIfInfraPolFromPCVPCInterfacePolicyGroup( parentDn string) (interface{},error) {
-	baseurlStr := "/api/node/class"	
-	dnUrl := fmt.Sprintf("%s/%s/%s.json",baseurlStr,parentDn,"infraRsMonIfInfraPol")
+func (sm *ServiceManager) ReadRelationinfraRsMonIfInfraPolFromPCVPCInterfacePolicyGroup(parentDn string) (interface{}, error) {
+	baseurlStr := "/api/node/class"
+	dnUrl := fmt.Sprintf("%s/%s/%s.json", baseurlStr, parentDn, "infraRsMonIfInfraPol")
 	cont, err := sm.GetViaURL(dnUrl)
 
-	contList := models.ListFromContainer(cont,"infraRsMonIfInfraPol")
-	
+	contList := models.ListFromContainer(cont, "infraRsMonIfInfraPol")
+
 	if len(contList) > 0 {
 		dat := models.G(contList[0], "tnMonInfraPolName")
 		return dat, err
 	} else {
-		return nil,err
+		return nil, err
 	}
-		
-
-
-
-
 
 }
-func (sm *ServiceManager) CreateRelationinfraRsFcIfPolFromPCVPCInterfacePolicyGroup( parentDn, tnFcIfPolName string) error {
+func (sm *ServiceManager) CreateRelationinfraRsFcIfPolFromPCVPCInterfacePolicyGroup(parentDn, tnFcIfPolName string) error {
 	dn := fmt.Sprintf("%s/rsfcIfPol", parentDn)
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
@@ -1001,7 +878,7 @@ func (sm *ServiceManager) CreateRelationinfraRsFcIfPolFromPCVPCInterfacePolicyGr
 								
 			}
 		}
-	}`, "infraRsFcIfPol", dn,tnFcIfPolName))
+	}`, "infraRsFcIfPol", dn, tnFcIfPolName))
 
 	jsonPayload, err := container.ParseJSON(containerJSON)
 	if err != nil {
@@ -1013,36 +890,30 @@ func (sm *ServiceManager) CreateRelationinfraRsFcIfPolFromPCVPCInterfacePolicyGr
 		return err
 	}
 
-	cont, _, err := sm.client.Do(req)
+	_, _, err = sm.client.Do(req)
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
 
 	return nil
 }
 
-func (sm *ServiceManager) ReadRelationinfraRsFcIfPolFromPCVPCInterfacePolicyGroup( parentDn string) (interface{},error) {
-	baseurlStr := "/api/node/class"	
-	dnUrl := fmt.Sprintf("%s/%s/%s.json",baseurlStr,parentDn,"infraRsFcIfPol")
+func (sm *ServiceManager) ReadRelationinfraRsFcIfPolFromPCVPCInterfacePolicyGroup(parentDn string) (interface{}, error) {
+	baseurlStr := "/api/node/class"
+	dnUrl := fmt.Sprintf("%s/%s/%s.json", baseurlStr, parentDn, "infraRsFcIfPol")
 	cont, err := sm.GetViaURL(dnUrl)
 
-	contList := models.ListFromContainer(cont,"infraRsFcIfPol")
-	
+	contList := models.ListFromContainer(cont, "infraRsFcIfPol")
+
 	if len(contList) > 0 {
 		dat := models.G(contList[0], "tnFcIfPolName")
 		return dat, err
 	} else {
-		return nil,err
+		return nil, err
 	}
-		
-
-
-
-
 
 }
-func (sm *ServiceManager) CreateRelationinfraRsQosIngressDppIfPolFromPCVPCInterfacePolicyGroup( parentDn, tnQosDppPolName string) error {
+func (sm *ServiceManager) CreateRelationinfraRsQosIngressDppIfPolFromPCVPCInterfacePolicyGroup(parentDn, tnQosDppPolName string) error {
 	dn := fmt.Sprintf("%s/rsQosIngressDppIfPol", parentDn)
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
@@ -1051,7 +922,7 @@ func (sm *ServiceManager) CreateRelationinfraRsQosIngressDppIfPolFromPCVPCInterf
 								
 			}
 		}
-	}`, "infraRsQosIngressDppIfPol", dn,tnQosDppPolName))
+	}`, "infraRsQosIngressDppIfPol", dn, tnQosDppPolName))
 
 	jsonPayload, err := container.ParseJSON(containerJSON)
 	if err != nil {
@@ -1063,36 +934,30 @@ func (sm *ServiceManager) CreateRelationinfraRsQosIngressDppIfPolFromPCVPCInterf
 		return err
 	}
 
-	cont, _, err := sm.client.Do(req)
+	_, _, err = sm.client.Do(req)
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
 
 	return nil
 }
 
-func (sm *ServiceManager) ReadRelationinfraRsQosIngressDppIfPolFromPCVPCInterfacePolicyGroup( parentDn string) (interface{},error) {
-	baseurlStr := "/api/node/class"	
-	dnUrl := fmt.Sprintf("%s/%s/%s.json",baseurlStr,parentDn,"infraRsQosIngressDppIfPol")
+func (sm *ServiceManager) ReadRelationinfraRsQosIngressDppIfPolFromPCVPCInterfacePolicyGroup(parentDn string) (interface{}, error) {
+	baseurlStr := "/api/node/class"
+	dnUrl := fmt.Sprintf("%s/%s/%s.json", baseurlStr, parentDn, "infraRsQosIngressDppIfPol")
 	cont, err := sm.GetViaURL(dnUrl)
 
-	contList := models.ListFromContainer(cont,"infraRsQosIngressDppIfPol")
-	
+	contList := models.ListFromContainer(cont, "infraRsQosIngressDppIfPol")
+
 	if len(contList) > 0 {
 		dat := models.G(contList[0], "tnQosDppPolName")
 		return dat, err
 	} else {
-		return nil,err
+		return nil, err
 	}
-		
-
-
-
-
 
 }
-func (sm *ServiceManager) CreateRelationinfraRsQosEgressDppIfPolFromPCVPCInterfacePolicyGroup( parentDn, tnQosDppPolName string) error {
+func (sm *ServiceManager) CreateRelationinfraRsQosEgressDppIfPolFromPCVPCInterfacePolicyGroup(parentDn, tnQosDppPolName string) error {
 	dn := fmt.Sprintf("%s/rsQosEgressDppIfPol", parentDn)
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
@@ -1101,7 +966,7 @@ func (sm *ServiceManager) CreateRelationinfraRsQosEgressDppIfPolFromPCVPCInterfa
 								
 			}
 		}
-	}`, "infraRsQosEgressDppIfPol", dn,tnQosDppPolName))
+	}`, "infraRsQosEgressDppIfPol", dn, tnQosDppPolName))
 
 	jsonPayload, err := container.ParseJSON(containerJSON)
 	if err != nil {
@@ -1113,36 +978,30 @@ func (sm *ServiceManager) CreateRelationinfraRsQosEgressDppIfPolFromPCVPCInterfa
 		return err
 	}
 
-	cont, _, err := sm.client.Do(req)
+	_, _, err = sm.client.Do(req)
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
 
 	return nil
 }
 
-func (sm *ServiceManager) ReadRelationinfraRsQosEgressDppIfPolFromPCVPCInterfacePolicyGroup( parentDn string) (interface{},error) {
-	baseurlStr := "/api/node/class"	
-	dnUrl := fmt.Sprintf("%s/%s/%s.json",baseurlStr,parentDn,"infraRsQosEgressDppIfPol")
+func (sm *ServiceManager) ReadRelationinfraRsQosEgressDppIfPolFromPCVPCInterfacePolicyGroup(parentDn string) (interface{}, error) {
+	baseurlStr := "/api/node/class"
+	dnUrl := fmt.Sprintf("%s/%s/%s.json", baseurlStr, parentDn, "infraRsQosEgressDppIfPol")
 	cont, err := sm.GetViaURL(dnUrl)
 
-	contList := models.ListFromContainer(cont,"infraRsQosEgressDppIfPol")
-	
+	contList := models.ListFromContainer(cont, "infraRsQosEgressDppIfPol")
+
 	if len(contList) > 0 {
 		dat := models.G(contList[0], "tnQosDppPolName")
 		return dat, err
 	} else {
-		return nil,err
+		return nil, err
 	}
-		
-
-
-
-
 
 }
-func (sm *ServiceManager) CreateRelationinfraRsL2IfPolFromPCVPCInterfacePolicyGroup( parentDn, tnL2IfPolName string) error {
+func (sm *ServiceManager) CreateRelationinfraRsL2IfPolFromPCVPCInterfacePolicyGroup(parentDn, tnL2IfPolName string) error {
 	dn := fmt.Sprintf("%s/rsl2IfPol", parentDn)
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
@@ -1151,7 +1010,7 @@ func (sm *ServiceManager) CreateRelationinfraRsL2IfPolFromPCVPCInterfacePolicyGr
 								
 			}
 		}
-	}`, "infraRsL2IfPol", dn,tnL2IfPolName))
+	}`, "infraRsL2IfPol", dn, tnL2IfPolName))
 
 	jsonPayload, err := container.ParseJSON(containerJSON)
 	if err != nil {
@@ -1163,36 +1022,30 @@ func (sm *ServiceManager) CreateRelationinfraRsL2IfPolFromPCVPCInterfacePolicyGr
 		return err
 	}
 
-	cont, _, err := sm.client.Do(req)
+	_, _, err = sm.client.Do(req)
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
 
 	return nil
 }
 
-func (sm *ServiceManager) ReadRelationinfraRsL2IfPolFromPCVPCInterfacePolicyGroup( parentDn string) (interface{},error) {
-	baseurlStr := "/api/node/class"	
-	dnUrl := fmt.Sprintf("%s/%s/%s.json",baseurlStr,parentDn,"infraRsL2IfPol")
+func (sm *ServiceManager) ReadRelationinfraRsL2IfPolFromPCVPCInterfacePolicyGroup(parentDn string) (interface{}, error) {
+	baseurlStr := "/api/node/class"
+	dnUrl := fmt.Sprintf("%s/%s/%s.json", baseurlStr, parentDn, "infraRsL2IfPol")
 	cont, err := sm.GetViaURL(dnUrl)
 
-	contList := models.ListFromContainer(cont,"infraRsL2IfPol")
-	
+	contList := models.ListFromContainer(cont, "infraRsL2IfPol")
+
 	if len(contList) > 0 {
 		dat := models.G(contList[0], "tnL2IfPolName")
 		return dat, err
 	} else {
-		return nil,err
+		return nil, err
 	}
-		
-
-
-
-
 
 }
-func (sm *ServiceManager) CreateRelationinfraRsStpIfPolFromPCVPCInterfacePolicyGroup( parentDn, tnStpIfPolName string) error {
+func (sm *ServiceManager) CreateRelationinfraRsStpIfPolFromPCVPCInterfacePolicyGroup(parentDn, tnStpIfPolName string) error {
 	dn := fmt.Sprintf("%s/rsstpIfPol", parentDn)
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
@@ -1201,7 +1054,7 @@ func (sm *ServiceManager) CreateRelationinfraRsStpIfPolFromPCVPCInterfacePolicyG
 								
 			}
 		}
-	}`, "infraRsStpIfPol", dn,tnStpIfPolName))
+	}`, "infraRsStpIfPol", dn, tnStpIfPolName))
 
 	jsonPayload, err := container.ParseJSON(containerJSON)
 	if err != nil {
@@ -1213,36 +1066,30 @@ func (sm *ServiceManager) CreateRelationinfraRsStpIfPolFromPCVPCInterfacePolicyG
 		return err
 	}
 
-	cont, _, err := sm.client.Do(req)
+	_, _, err = sm.client.Do(req)
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
 
 	return nil
 }
 
-func (sm *ServiceManager) ReadRelationinfraRsStpIfPolFromPCVPCInterfacePolicyGroup( parentDn string) (interface{},error) {
-	baseurlStr := "/api/node/class"	
-	dnUrl := fmt.Sprintf("%s/%s/%s.json",baseurlStr,parentDn,"infraRsStpIfPol")
+func (sm *ServiceManager) ReadRelationinfraRsStpIfPolFromPCVPCInterfacePolicyGroup(parentDn string) (interface{}, error) {
+	baseurlStr := "/api/node/class"
+	dnUrl := fmt.Sprintf("%s/%s/%s.json", baseurlStr, parentDn, "infraRsStpIfPol")
 	cont, err := sm.GetViaURL(dnUrl)
 
-	contList := models.ListFromContainer(cont,"infraRsStpIfPol")
-	
+	contList := models.ListFromContainer(cont, "infraRsStpIfPol")
+
 	if len(contList) > 0 {
 		dat := models.G(contList[0], "tnStpIfPolName")
 		return dat, err
 	} else {
-		return nil,err
+		return nil, err
 	}
-		
-
-
-
-
 
 }
-func (sm *ServiceManager) CreateRelationinfraRsAttEntPFromPCVPCInterfacePolicyGroup( parentDn, tnInfraAttEntityPName string) error {
+func (sm *ServiceManager) CreateRelationinfraRsAttEntPFromPCVPCInterfacePolicyGroup(parentDn, tnInfraAttEntityPName string) error {
 	dn := fmt.Sprintf("%s/rsattEntP", parentDn)
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
@@ -1251,7 +1098,7 @@ func (sm *ServiceManager) CreateRelationinfraRsAttEntPFromPCVPCInterfacePolicyGr
 								
 			}
 		}
-	}`, "infraRsAttEntP", dn,tnInfraAttEntityPName))
+	}`, "infraRsAttEntP", dn, tnInfraAttEntityPName))
 
 	jsonPayload, err := container.ParseJSON(containerJSON)
 	if err != nil {
@@ -1263,41 +1110,35 @@ func (sm *ServiceManager) CreateRelationinfraRsAttEntPFromPCVPCInterfacePolicyGr
 		return err
 	}
 
-	cont, _, err := sm.client.Do(req)
+	_, _, err = sm.client.Do(req)
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
 
 	return nil
 }
 
-func (sm *ServiceManager) DeleteRelationinfraRsAttEntPFromPCVPCInterfacePolicyGroup(parentDn string) error{
+func (sm *ServiceManager) DeleteRelationinfraRsAttEntPFromPCVPCInterfacePolicyGroup(parentDn string) error {
 	dn := fmt.Sprintf("%s/rsattEntP", parentDn)
-	return sm.DeleteByDn(dn , "infraRsAttEntP")
+	return sm.DeleteByDn(dn, "infraRsAttEntP")
 }
 
-func (sm *ServiceManager) ReadRelationinfraRsAttEntPFromPCVPCInterfacePolicyGroup( parentDn string) (interface{},error) {
-	baseurlStr := "/api/node/class"	
-	dnUrl := fmt.Sprintf("%s/%s/%s.json",baseurlStr,parentDn,"infraRsAttEntP")
+func (sm *ServiceManager) ReadRelationinfraRsAttEntPFromPCVPCInterfacePolicyGroup(parentDn string) (interface{}, error) {
+	baseurlStr := "/api/node/class"
+	dnUrl := fmt.Sprintf("%s/%s/%s.json", baseurlStr, parentDn, "infraRsAttEntP")
 	cont, err := sm.GetViaURL(dnUrl)
 
-	contList := models.ListFromContainer(cont,"infraRsAttEntP")
-	
+	contList := models.ListFromContainer(cont, "infraRsAttEntP")
+
 	if len(contList) > 0 {
 		dat := models.G(contList[0], "tnInfraAttEntityPName")
 		return dat, err
 	} else {
-		return nil,err
+		return nil, err
 	}
-		
-
-
-
-
 
 }
-func (sm *ServiceManager) CreateRelationinfraRsL2InstPolFromPCVPCInterfacePolicyGroup( parentDn, tnL2InstPolName string) error {
+func (sm *ServiceManager) CreateRelationinfraRsL2InstPolFromPCVPCInterfacePolicyGroup(parentDn, tnL2InstPolName string) error {
 	dn := fmt.Sprintf("%s/rsl2InstPol", parentDn)
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
@@ -1306,7 +1147,7 @@ func (sm *ServiceManager) CreateRelationinfraRsL2InstPolFromPCVPCInterfacePolicy
 								
 			}
 		}
-	}`, "infraRsL2InstPol", dn,tnL2InstPolName))
+	}`, "infraRsL2InstPol", dn, tnL2InstPolName))
 
 	jsonPayload, err := container.ParseJSON(containerJSON)
 	if err != nil {
@@ -1318,38 +1159,31 @@ func (sm *ServiceManager) CreateRelationinfraRsL2InstPolFromPCVPCInterfacePolicy
 		return err
 	}
 
-	cont, _, err := sm.client.Do(req)
+	_, _, err = sm.client.Do(req)
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
 
 	return nil
 }
 
-func (sm *ServiceManager) DeleteRelationinfraRsL2InstPolFromPCVPCInterfacePolicyGroup(parentDn string) error{
+func (sm *ServiceManager) DeleteRelationinfraRsL2InstPolFromPCVPCInterfacePolicyGroup(parentDn string) error {
 	dn := fmt.Sprintf("%s/rsl2InstPol", parentDn)
-	return sm.DeleteByDn(dn , "infraRsL2InstPol")
+	return sm.DeleteByDn(dn, "infraRsL2InstPol")
 }
 
-func (sm *ServiceManager) ReadRelationinfraRsL2InstPolFromPCVPCInterfacePolicyGroup( parentDn string) (interface{},error) {
-	baseurlStr := "/api/node/class"	
-	dnUrl := fmt.Sprintf("%s/%s/%s.json",baseurlStr,parentDn,"infraRsL2InstPol")
+func (sm *ServiceManager) ReadRelationinfraRsL2InstPolFromPCVPCInterfacePolicyGroup(parentDn string) (interface{}, error) {
+	baseurlStr := "/api/node/class"
+	dnUrl := fmt.Sprintf("%s/%s/%s.json", baseurlStr, parentDn, "infraRsL2InstPol")
 	cont, err := sm.GetViaURL(dnUrl)
 
-	contList := models.ListFromContainer(cont,"infraRsL2InstPol")
-	
+	contList := models.ListFromContainer(cont, "infraRsL2InstPol")
+
 	if len(contList) > 0 {
 		dat := models.G(contList[0], "tnL2InstPolName")
 		return dat, err
 	} else {
-		return nil,err
+		return nil, err
 	}
-		
-
-
-
-
 
 }
-

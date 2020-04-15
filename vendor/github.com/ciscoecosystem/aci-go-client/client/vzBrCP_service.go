@@ -3,34 +3,20 @@ package client
 import (
 	"fmt"
 
-	"github.com/ciscoecosystem/aci-go-client/models"
 	"github.com/ciscoecosystem/aci-go-client/container"
-
-
-
-	
-
-
+	"github.com/ciscoecosystem/aci-go-client/models"
 )
 
-
-
-
-
-
-
-
-
-func (sm *ServiceManager) CreateContract(name string ,tenant string , description string, vzBrCPattr models.ContractAttributes) (*models.Contract, error) {	
-	rn := fmt.Sprintf("brc-%s",name)
-	parentDn := fmt.Sprintf("uni/tn-%s", tenant )
+func (sm *ServiceManager) CreateContract(name string, tenant string, description string, vzBrCPattr models.ContractAttributes) (*models.Contract, error) {
+	rn := fmt.Sprintf("brc-%s", name)
+	parentDn := fmt.Sprintf("uni/tn-%s", tenant)
 	vzBrCP := models.NewContract(rn, parentDn, description, vzBrCPattr)
 	err := sm.Save(vzBrCP)
 	return vzBrCP, err
 }
 
-func (sm *ServiceManager) ReadContract(name string ,tenant string ) (*models.Contract, error) {
-	dn := fmt.Sprintf("uni/tn-%s/brc-%s", tenant ,name )    
+func (sm *ServiceManager) ReadContract(name string, tenant string) (*models.Contract, error) {
+	dn := fmt.Sprintf("uni/tn-%s/brc-%s", tenant, name)
 	cont, err := sm.Get(dn)
 	if err != nil {
 		return nil, err
@@ -40,34 +26,34 @@ func (sm *ServiceManager) ReadContract(name string ,tenant string ) (*models.Con
 	return vzBrCP, nil
 }
 
-func (sm *ServiceManager) DeleteContract(name string ,tenant string ) error {
-	dn := fmt.Sprintf("uni/tn-%s/brc-%s", tenant ,name )
+func (sm *ServiceManager) DeleteContract(name string, tenant string) error {
+	dn := fmt.Sprintf("uni/tn-%s/brc-%s", tenant, name)
 	return sm.DeleteByDn(dn, models.VzbrcpClassName)
 }
 
-func (sm *ServiceManager) UpdateContract(name string ,tenant string  ,description string, vzBrCPattr models.ContractAttributes) (*models.Contract, error) {
-	rn := fmt.Sprintf("brc-%s",name)
-	parentDn := fmt.Sprintf("uni/tn-%s", tenant )
+func (sm *ServiceManager) UpdateContract(name string, tenant string, description string, vzBrCPattr models.ContractAttributes) (*models.Contract, error) {
+	rn := fmt.Sprintf("brc-%s", name)
+	parentDn := fmt.Sprintf("uni/tn-%s", tenant)
 	vzBrCP := models.NewContract(rn, parentDn, description, vzBrCPattr)
 
-    vzBrCP.Status = "modified"
+	vzBrCP.Status = "modified"
 	err := sm.Save(vzBrCP)
 	return vzBrCP, err
 
 }
 
-func (sm *ServiceManager) ListContract(tenant string ) ([]*models.Contract, error) {
+func (sm *ServiceManager) ListContract(tenant string) ([]*models.Contract, error) {
 
-	baseurlStr := "/api/node/class"	
-	dnUrl := fmt.Sprintf("%s/uni/tn-%s/vzBrCP.json", baseurlStr , tenant )
-    
-    cont, err := sm.GetViaURL(dnUrl)
+	baseurlStr := "/api/node/class"
+	dnUrl := fmt.Sprintf("%s/uni/tn-%s/vzBrCP.json", baseurlStr, tenant)
+
+	cont, err := sm.GetViaURL(dnUrl)
 	list := models.ContractListFromContainer(cont)
 
 	return list, err
 }
 
-func (sm *ServiceManager) CreateRelationvzRsGraphAttFromContract( parentDn, tnVnsAbsGraphName string) error {
+func (sm *ServiceManager) CreateRelationvzRsGraphAttFromContract(parentDn, tnVnsAbsGraphName string) error {
 	dn := fmt.Sprintf("%s/rsGraphAtt", parentDn)
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
@@ -76,7 +62,7 @@ func (sm *ServiceManager) CreateRelationvzRsGraphAttFromContract( parentDn, tnVn
 								
 			}
 		}
-	}`, "vzRsGraphAtt", dn,tnVnsAbsGraphName))
+	}`, "vzRsGraphAtt", dn, tnVnsAbsGraphName))
 
 	jsonPayload, err := container.ParseJSON(containerJSON)
 	if err != nil {
@@ -88,38 +74,31 @@ func (sm *ServiceManager) CreateRelationvzRsGraphAttFromContract( parentDn, tnVn
 		return err
 	}
 
-	cont, _, err := sm.client.Do(req)
+	_, _, err = sm.client.Do(req)
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
 
 	return nil
 }
 
-func (sm *ServiceManager) DeleteRelationvzRsGraphAttFromContract(parentDn string) error{
+func (sm *ServiceManager) DeleteRelationvzRsGraphAttFromContract(parentDn string) error {
 	dn := fmt.Sprintf("%s/rsGraphAtt", parentDn)
-	return sm.DeleteByDn(dn , "vzRsGraphAtt")
+	return sm.DeleteByDn(dn, "vzRsGraphAtt")
 }
 
-func (sm *ServiceManager) ReadRelationvzRsGraphAttFromContract( parentDn string) (interface{},error) {
-	baseurlStr := "/api/node/class"	
-	dnUrl := fmt.Sprintf("%s/%s/%s.json",baseurlStr,parentDn,"vzRsGraphAtt")
+func (sm *ServiceManager) ReadRelationvzRsGraphAttFromContract(parentDn string) (interface{}, error) {
+	baseurlStr := "/api/node/class"
+	dnUrl := fmt.Sprintf("%s/%s/%s.json", baseurlStr, parentDn, "vzRsGraphAtt")
 	cont, err := sm.GetViaURL(dnUrl)
 
-	contList := models.ListFromContainer(cont,"vzRsGraphAtt")
-	
+	contList := models.ListFromContainer(cont, "vzRsGraphAtt")
+
 	if len(contList) > 0 {
 		dat := models.G(contList[0], "tnVnsAbsGraphName")
 		return dat, err
 	} else {
-		return nil,err
+		return nil, err
 	}
-		
-
-
-
-
 
 }
-

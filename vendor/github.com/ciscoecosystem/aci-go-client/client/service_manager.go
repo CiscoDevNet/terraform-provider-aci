@@ -40,6 +40,7 @@ func (sm *ServiceManager) Get(dn string) (*container.Container, error) {
 	if obj == nil {
 		return nil, errors.New("Empty response body")
 	}
+	log.Printf("[DEBUG] Exit from GET %s", finalURL)
 	return obj, CheckForErrors(obj, "GET")
 }
 
@@ -61,9 +62,7 @@ func (sm *ServiceManager) Save(obj models.Model) error {
 	if err != nil {
 		return err
 	}
-	fmt.Println("MO" + sm.MOURL)
-	fmt.Println(sm.client)
-	fmt.Println(jsonPayload.String())
+
 	req, err := sm.client.MakeRestRequest("POST", fmt.Sprintf("%s.json", sm.MOURL), jsonPayload, true)
 	if err != nil {
 		return err
@@ -81,6 +80,8 @@ func (sm *ServiceManager) Save(obj models.Model) error {
 func CheckForErrors(cont *container.Container, method string) error {
 	number, err := strconv.Atoi(models.G(cont, "totalCount"))
 	if err != nil {
+		log.Printf("[DEBUG] Exit from errors %v", cont)
+
 		return err
 	}
 	imdata := cont.S("imdata").Index(0)
@@ -89,11 +90,14 @@ func CheckForErrors(cont *container.Container, method string) error {
 		if imdata.Exists("error") {
 
 			if models.StripQuotes(imdata.Path("error.attributes.code").String()) == "103" {
+				log.Printf("[DEBUG] Exit from errors %v", cont)
 				return nil
 			} else {
 				if models.StripQuotes(imdata.Path("error.attributes.text").String()) == "" && models.StripQuotes(imdata.Path("error.attributes.code").String()) == "403" {
+					log.Printf("[DEBUG] Exit from errors %v", cont)
 					return errors.New("Unable to authenticate. Please check your credentials")
 				}
+				log.Printf("[DEBUG] Exit from errors %v", cont)
 
 				return errors.New(models.StripQuotes(imdata.Path("error.attributes.text").String()))
 			}
@@ -102,9 +106,11 @@ func CheckForErrors(cont *container.Container, method string) error {
 	}
 
 	if imdata.String() == "{}" && method == "GET" {
+		log.Printf("[DEBUG] Exit from errors %v", cont)
+
 		return errors.New("Error retriving Object: Object may not exists")
 	}
-
+	log.Printf("[DEBUG] Exit from errors %v", cont)
 	return nil
 }
 
@@ -115,8 +121,6 @@ func (sm *ServiceManager) Delete(obj models.Model) error {
 	if err != nil {
 		return err
 	}
-	fmt.Println(sm.MOURL)
-	fmt.Println(sm.client)
 
 	jsonPayload.Set("deleted", className, "attributes", "status")
 	req, err := sm.client.MakeRestRequest("POST", fmt.Sprintf("%s.json", sm.MOURL), jsonPayload, true)
@@ -124,11 +128,10 @@ func (sm *ServiceManager) Delete(obj models.Model) error {
 		return err
 	}
 
-	cont, _, err := sm.client.Do(req)
+	_, _, err = sm.client.Do(req)
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
 
 	return nil
 }
@@ -173,11 +176,10 @@ func (sm *ServiceManager) DeleteByDn(dn, className string) error {
 		return err
 	}
 
-	cont, _, err := sm.client.Do(req)
+	_, _, err = sm.client.Do(req)
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
 
 	return nil
 

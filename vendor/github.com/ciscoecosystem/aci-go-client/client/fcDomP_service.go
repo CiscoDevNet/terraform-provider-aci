@@ -74,11 +74,10 @@ func (sm *ServiceManager) CreateRelationinfraRsVlanNsFromFCDomain(parentDn, tnFv
 		return err
 	}
 
-	cont, _, err := sm.client.Do(req)
+	_, _, err = sm.client.Do(req)
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
 
 	return nil
 }
@@ -124,11 +123,10 @@ func (sm *ServiceManager) CreateRelationfcRsVsanNsFromFCDomain(parentDn, tnFvnsV
 		return err
 	}
 
-	cont, _, err := sm.client.Do(req)
+	_, _, err = sm.client.Do(req)
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
 
 	return nil
 }
@@ -174,11 +172,10 @@ func (sm *ServiceManager) CreateRelationfcRsVsanAttrFromFCDomain(parentDn, tnFcV
 		return err
 	}
 
-	cont, _, err := sm.client.Do(req)
+	_, _, err = sm.client.Do(req)
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
 
 	return nil
 }
@@ -224,11 +221,10 @@ func (sm *ServiceManager) CreateRelationinfraRsVlanNsDefFromFCDomain(parentDn, t
 		return err
 	}
 
-	cont, _, err := sm.client.Do(req)
+	_, _, err = sm.client.Do(req)
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
 
 	return nil
 }
@@ -269,11 +265,10 @@ func (sm *ServiceManager) CreateRelationinfraRsVipAddrNsFromFCDomain(parentDn, t
 		return err
 	}
 
-	cont, _, err := sm.client.Do(req)
+	_, _, err = sm.client.Do(req)
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
 
 	return nil
 }
@@ -319,11 +314,10 @@ func (sm *ServiceManager) CreateRelationinfraRsDomVxlanNsDefFromFCDomain(parentD
 		return err
 	}
 
-	cont, _, err := sm.client.Do(req)
+	_, _, err = sm.client.Do(req)
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
 
 	return nil
 }
@@ -364,11 +358,10 @@ func (sm *ServiceManager) CreateRelationfcRsVsanAttrDefFromFCDomain(parentDn, tn
 		return err
 	}
 
-	cont, _, err := sm.client.Do(req)
+	_, _, err = sm.client.Do(req)
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
 
 	return nil
 }
@@ -409,11 +402,10 @@ func (sm *ServiceManager) CreateRelationfcRsVsanNsDefFromFCDomain(parentDn, tnFv
 		return err
 	}
 
-	cont, _, err := sm.client.Do(req)
+	_, _, err = sm.client.Do(req)
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
 
 	return nil
 }

@@ -3,11 +3,12 @@ package client
 import (
 	"fmt"
 	"log"
+
 	"github.com/ciscoecosystem/aci-go-client/container"
 	"github.com/ciscoecosystem/aci-go-client/models"
 )
 
-func (sm *ServiceManager) CreateCloudContextProfile(name string, tenant string, description string, cloudCtxProfileattr models.CloudContextProfileAttributes, primaryCidr string, region string,vrf string) (*models.CloudContextProfile, error) {
+func (sm *ServiceManager) CreateCloudContextProfile(name string, tenant string, description string, cloudCtxProfileattr models.CloudContextProfileAttributes, primaryCidr string, region string, vrf string) (*models.CloudContextProfile, error) {
 	rn := fmt.Sprintf("ctxprofile-%s", name)
 	parentDn := tenant
 	cloudCtxProfile := models.NewCloudContextProfile(rn, parentDn, description, cloudCtxProfileattr)
@@ -50,21 +51,20 @@ func (sm *ServiceManager) CreateCloudContextProfile(name string, tenant string, 
 	regionCon, err := container.ParseJSON(regionAttach)
 	vrfCon, err := container.ParseJSON(ctxAttach)
 	if err != nil {
-		return nil,err
+		return nil, err
 	}
 	if err != nil {
-		fmt.Println("error occured in parsing")
-		fmt.Println(err)
+
 	}
 
-	log.Printf("\n\n\n[DEBUG]nknk %v",vrfCon.Data())
+	log.Printf("\n\n\n[DEBUG]nknk %v", vrfCon.Data())
 	jsonPayload.Array(cloudCtxProfile.ClassName, "children")
-	jsonPayload.ArrayAppend(vrfCon.Data(),cloudCtxProfile.ClassName,"children")
+	jsonPayload.ArrayAppend(vrfCon.Data(), cloudCtxProfile.ClassName, "children")
 
 	jsonPayload.ArrayAppend(cidrCon.Data(), cloudCtxProfile.ClassName, "children")
 	jsonPayload.ArrayAppend(regionCon.Data(), cloudCtxProfile.ClassName, "children")
 
-	log.Printf("\n\n\n\n[DEBUG]nkdemo%s\n\n\n\n",jsonPayload.String())
+	log.Printf("\n\n\n\n[DEBUG]nkdemo%s\n\n\n\n", jsonPayload.String())
 	jsonPayload.Set(name, cloudCtxProfile.ClassName, "attributes", "name")
 	req, err := sm.client.MakeRestRequest("POST", fmt.Sprintf("/api/node/mo/%s/%s.json", parentDn, rn), jsonPayload, true)
 	if err != nil {
@@ -141,19 +141,18 @@ func (sm *ServiceManager) UpdateCloudContextProfile(name string, tenant string, 
 	jsonPayload.Array(cloudCtxProfile.ClassName, "children")
 	jsonPayload.ArrayAppend(cidrCon.Data(), cloudCtxProfile.ClassName, "children")
 	jsonPayload.ArrayAppend(regionCon.Data(), cloudCtxProfile.ClassName, "children")
-	jsonPayload.ArrayAppend(vrfCon.Data(),cloudCtxProfile.ClassName,"children")
-	fmt.Println(jsonPayload)
+	jsonPayload.ArrayAppend(vrfCon.Data(), cloudCtxProfile.ClassName, "children")
+
 	jsonPayload.Set(name, cloudCtxProfile.ClassName, "attributes", "name")
 	req, err := sm.client.MakeRestRequest("POST", fmt.Sprintf("/api/node/mo/%s/%s.json", parentDn, rn), jsonPayload, true)
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println("*******payload*******", jsonPayload.String())
+
 	cont, _, err := sm.client.Do(req)
 	if err != nil {
 		return nil, err
 	}
-	fmt.Printf("%+v", cont)
 
 	return cloudCtxProfile, CheckForErrors(cont, "POST")
 
@@ -191,11 +190,10 @@ func (sm *ServiceManager) CreateRelationcloudRsCtxToFlowLogFromCloudContextProfi
 		return err
 	}
 
-	cont, _, err := sm.client.Do(req)
+	_, _, err = sm.client.Do(req)
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
 
 	return nil
 }
@@ -225,11 +223,10 @@ func (sm *ServiceManager) CreateRelationcloudRsToCtxFromCloudContextProfile(pare
 		return err
 	}
 
-	cont, _, err := sm.client.Do(req)
+	_, _, err = sm.client.Do(req)
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
 
 	return nil
 }
@@ -254,11 +251,10 @@ func (sm *ServiceManager) CreateRelationcloudRsCtxProfileToRegionFromCloudContex
 		return err
 	}
 
-	cont, _, err := sm.client.Do(req)
+	_, _, err = sm.client.Do(req)
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
 
 	return nil
 }

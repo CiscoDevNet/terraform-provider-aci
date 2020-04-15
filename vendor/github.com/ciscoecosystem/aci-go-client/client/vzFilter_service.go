@@ -74,11 +74,10 @@ func (sm *ServiceManager) CreateRelationvzRsFiltGraphAttFromFilter(parentDn, tnV
 		return err
 	}
 
-	cont, _, err := sm.client.Do(req)
+	_, _, err = sm.client.Do(req)
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
 
 	return nil
 }
@@ -119,11 +118,10 @@ func (sm *ServiceManager) CreateRelationvzRsFwdRFltPAttFromFilter(parentDn, tnVz
 		return err
 	}
 
-	cont, _, err := sm.client.Do(req)
+	_, _, err = sm.client.Do(req)
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
 
 	return nil
 }
@@ -164,11 +162,10 @@ func (sm *ServiceManager) CreateRelationvzRsRevRFltPAttFromFilter(parentDn, tnVz
 		return err
 	}
 
-	cont, _, err := sm.client.Do(req)
+	_, _, err = sm.client.Do(req)
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
 
 	return nil
 }

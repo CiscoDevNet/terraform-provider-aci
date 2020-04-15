@@ -3,36 +3,21 @@ package client
 import (
 	"fmt"
 
-	"github.com/ciscoecosystem/aci-go-client/models"
 	"github.com/ciscoecosystem/aci-go-client/container"
+	"github.com/ciscoecosystem/aci-go-client/models"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	
-
-
-
-	
-
-
 )
 
-
-
-
-
-
-
-
-
-func (sm *ServiceManager) CreateAny(vrf string ,tenant string , description string, vzAnyattr models.AnyAttributes) (*models.Any, error) {	
+func (sm *ServiceManager) CreateAny(vrf string, tenant string, description string, vzAnyattr models.AnyAttributes) (*models.Any, error) {
 	rn := fmt.Sprintf("any")
-	parentDn := fmt.Sprintf("uni/tn-%s/ctx-%s", tenant ,vrf )
+	parentDn := fmt.Sprintf("uni/tn-%s/ctx-%s", tenant, vrf)
 	vzAny := models.NewAny(rn, parentDn, description, vzAnyattr)
 	err := sm.Save(vzAny)
 	return vzAny, err
 }
 
-func (sm *ServiceManager) ReadAny(vrf string ,tenant string ) (*models.Any, error) {
-	dn := fmt.Sprintf("uni/tn-%s/ctx-%s/any", tenant ,vrf )    
+func (sm *ServiceManager) ReadAny(vrf string, tenant string) (*models.Any, error) {
+	dn := fmt.Sprintf("uni/tn-%s/ctx-%s/any", tenant, vrf)
 	cont, err := sm.Get(dn)
 	if err != nil {
 		return nil, err
@@ -42,34 +27,34 @@ func (sm *ServiceManager) ReadAny(vrf string ,tenant string ) (*models.Any, erro
 	return vzAny, nil
 }
 
-func (sm *ServiceManager) DeleteAny(vrf string ,tenant string ) error {
-	dn := fmt.Sprintf("uni/tn-%s/ctx-%s/any", tenant ,vrf )
+func (sm *ServiceManager) DeleteAny(vrf string, tenant string) error {
+	dn := fmt.Sprintf("uni/tn-%s/ctx-%s/any", tenant, vrf)
 	return sm.DeleteByDn(dn, models.VzanyClassName)
 }
 
-func (sm *ServiceManager) UpdateAny(vrf string ,tenant string  ,description string, vzAnyattr models.AnyAttributes) (*models.Any, error) {
+func (sm *ServiceManager) UpdateAny(vrf string, tenant string, description string, vzAnyattr models.AnyAttributes) (*models.Any, error) {
 	rn := fmt.Sprintf("any")
-	parentDn := fmt.Sprintf("uni/tn-%s/ctx-%s", tenant ,vrf )
+	parentDn := fmt.Sprintf("uni/tn-%s/ctx-%s", tenant, vrf)
 	vzAny := models.NewAny(rn, parentDn, description, vzAnyattr)
 
-    vzAny.Status = "modified"
+	vzAny.Status = "modified"
 	err := sm.Save(vzAny)
 	return vzAny, err
 
 }
 
-func (sm *ServiceManager) ListAny(vrf string ,tenant string ) ([]*models.Any, error) {
+func (sm *ServiceManager) ListAny(vrf string, tenant string) ([]*models.Any, error) {
 
-	baseurlStr := "/api/node/class"	
-	dnUrl := fmt.Sprintf("%s/uni/tn-%s/ctx-%s/vzAny.json", baseurlStr , tenant ,vrf )
-    
-    cont, err := sm.GetViaURL(dnUrl)
+	baseurlStr := "/api/node/class"
+	dnUrl := fmt.Sprintf("%s/uni/tn-%s/ctx-%s/vzAny.json", baseurlStr, tenant, vrf)
+
+	cont, err := sm.GetViaURL(dnUrl)
 	list := models.AnyListFromContainer(cont)
 
 	return list, err
 }
 
-func (sm *ServiceManager) CreateRelationvzRsAnyToConsFromAny( parentDn, tnVzBrCPName string) error {
+func (sm *ServiceManager) CreateRelationvzRsAnyToConsFromAny(parentDn, tnVzBrCPName string) error {
 	dn := fmt.Sprintf("%s/any/rsanyToCons-%s", parentDn, tnVzBrCPName)
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
@@ -89,43 +74,37 @@ func (sm *ServiceManager) CreateRelationvzRsAnyToConsFromAny( parentDn, tnVzBrCP
 		return err
 	}
 
-	cont, _, err := sm.client.Do(req)
+	_, _, err = sm.client.Do(req)
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
 
 	return nil
 }
 
-func (sm *ServiceManager) DeleteRelationvzRsAnyToConsFromAny(parentDn , tnVzBrCPName string) error{
+func (sm *ServiceManager) DeleteRelationvzRsAnyToConsFromAny(parentDn, tnVzBrCPName string) error {
 	dn := fmt.Sprintf("%s/any/rsanyToCons-%s", parentDn, tnVzBrCPName)
-	return sm.DeleteByDn(dn , "vzRsAnyToCons")
+	return sm.DeleteByDn(dn, "vzRsAnyToCons")
 }
 
-func (sm *ServiceManager) ReadRelationvzRsAnyToConsFromAny( parentDn string) (interface{},error) {
-	baseurlStr := "/api/node/class"	
-	dnUrl := fmt.Sprintf("%s/%s/%s.json",baseurlStr,parentDn,"vzRsAnyToCons")
+func (sm *ServiceManager) ReadRelationvzRsAnyToConsFromAny(parentDn string) (interface{}, error) {
+	baseurlStr := "/api/node/class"
+	dnUrl := fmt.Sprintf("%s/%s/%s.json", baseurlStr, parentDn, "vzRsAnyToCons")
 	cont, err := sm.GetViaURL(dnUrl)
 
-	contList := models.ListFromContainer(cont,"vzRsAnyToCons")
-	
+	contList := models.ListFromContainer(cont, "vzRsAnyToCons")
+
 	st := &schema.Set{
 		F: schema.HashString,
 	}
-	for _, contItem := range contList{
+	for _, contItem := range contList {
 		dat := models.G(contItem, "tnVzBrCPName")
 		st.Add(dat)
 	}
 	return st, err
-			
-
-
-
-
 
 }
-func (sm *ServiceManager) CreateRelationvzRsAnyToConsIfFromAny( parentDn, tnVzCPIfName string) error {
+func (sm *ServiceManager) CreateRelationvzRsAnyToConsIfFromAny(parentDn, tnVzCPIfName string) error {
 	dn := fmt.Sprintf("%s/any/rsanyToConsIf-%s", parentDn, tnVzCPIfName)
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
@@ -145,43 +124,37 @@ func (sm *ServiceManager) CreateRelationvzRsAnyToConsIfFromAny( parentDn, tnVzCP
 		return err
 	}
 
-	cont, _, err := sm.client.Do(req)
+	_, _, err = sm.client.Do(req)
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
 
 	return nil
 }
 
-func (sm *ServiceManager) DeleteRelationvzRsAnyToConsIfFromAny(parentDn , tnVzCPIfName string) error{
+func (sm *ServiceManager) DeleteRelationvzRsAnyToConsIfFromAny(parentDn, tnVzCPIfName string) error {
 	dn := fmt.Sprintf("%s/any/rsanyToConsIf-%s", parentDn, tnVzCPIfName)
-	return sm.DeleteByDn(dn , "vzRsAnyToConsIf")
+	return sm.DeleteByDn(dn, "vzRsAnyToConsIf")
 }
 
-func (sm *ServiceManager) ReadRelationvzRsAnyToConsIfFromAny( parentDn string) (interface{},error) {
-	baseurlStr := "/api/node/class"	
-	dnUrl := fmt.Sprintf("%s/%s/%s.json",baseurlStr,parentDn,"vzRsAnyToConsIf")
+func (sm *ServiceManager) ReadRelationvzRsAnyToConsIfFromAny(parentDn string) (interface{}, error) {
+	baseurlStr := "/api/node/class"
+	dnUrl := fmt.Sprintf("%s/%s/%s.json", baseurlStr, parentDn, "vzRsAnyToConsIf")
 	cont, err := sm.GetViaURL(dnUrl)
 
-	contList := models.ListFromContainer(cont,"vzRsAnyToConsIf")
-	
+	contList := models.ListFromContainer(cont, "vzRsAnyToConsIf")
+
 	st := &schema.Set{
 		F: schema.HashString,
 	}
-	for _, contItem := range contList{
+	for _, contItem := range contList {
 		dat := models.G(contItem, "tnVzCPIfName")
 		st.Add(dat)
 	}
 	return st, err
-			
-
-
-
-
 
 }
-func (sm *ServiceManager) CreateRelationvzRsAnyToProvFromAny( parentDn, tnVzBrCPName string) error {
+func (sm *ServiceManager) CreateRelationvzRsAnyToProvFromAny(parentDn, tnVzBrCPName string) error {
 	dn := fmt.Sprintf("%s/any/rsanyToProv-%s", parentDn, tnVzBrCPName)
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
@@ -201,40 +174,33 @@ func (sm *ServiceManager) CreateRelationvzRsAnyToProvFromAny( parentDn, tnVzBrCP
 		return err
 	}
 
-	cont, _, err := sm.client.Do(req)
+	_, _, err = sm.client.Do(req)
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
 
 	return nil
 }
 
-func (sm *ServiceManager) DeleteRelationvzRsAnyToProvFromAny(parentDn , tnVzBrCPName string) error{
+func (sm *ServiceManager) DeleteRelationvzRsAnyToProvFromAny(parentDn, tnVzBrCPName string) error {
 	dn := fmt.Sprintf("%s/any/rsanyToProv-%s", parentDn, tnVzBrCPName)
-	return sm.DeleteByDn(dn , "vzRsAnyToProv")
+	return sm.DeleteByDn(dn, "vzRsAnyToProv")
 }
 
-func (sm *ServiceManager) ReadRelationvzRsAnyToProvFromAny( parentDn string) (interface{},error) {
-	baseurlStr := "/api/node/class"	
-	dnUrl := fmt.Sprintf("%s/%s/%s.json",baseurlStr,parentDn,"vzRsAnyToProv")
+func (sm *ServiceManager) ReadRelationvzRsAnyToProvFromAny(parentDn string) (interface{}, error) {
+	baseurlStr := "/api/node/class"
+	dnUrl := fmt.Sprintf("%s/%s/%s.json", baseurlStr, parentDn, "vzRsAnyToProv")
 	cont, err := sm.GetViaURL(dnUrl)
 
-	contList := models.ListFromContainer(cont,"vzRsAnyToProv")
-	
+	contList := models.ListFromContainer(cont, "vzRsAnyToProv")
+
 	st := &schema.Set{
 		F: schema.HashString,
 	}
-	for _, contItem := range contList{
+	for _, contItem := range contList {
 		dat := models.G(contItem, "tnVzBrCPName")
 		st.Add(dat)
 	}
 	return st, err
-			
-
-
-
-
 
 }
-

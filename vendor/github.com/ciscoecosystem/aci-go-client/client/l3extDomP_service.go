@@ -75,11 +75,10 @@ func (sm *ServiceManager) CreateRelationinfraRsVlanNsFromL3DomainProfile(parentD
 		return err
 	}
 
-	cont, _, err := sm.client.Do(req)
+	_, _, err = sm.client.Do(req)
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
 
 	return nil
 }
@@ -125,11 +124,10 @@ func (sm *ServiceManager) CreateRelationinfraRsVlanNsDefFromL3DomainProfile(pare
 		return err
 	}
 
-	cont, _, err := sm.client.Do(req)
+	_, _, err = sm.client.Do(req)
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
 
 	return nil
 }
@@ -170,11 +168,10 @@ func (sm *ServiceManager) CreateRelationinfraRsVipAddrNsFromL3DomainProfile(pare
 		return err
 	}
 
-	cont, _, err := sm.client.Do(req)
+	_, _, err = sm.client.Do(req)
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
 
 	return nil
 }
@@ -219,11 +216,10 @@ func (sm *ServiceManager) CreateRelationextnwRsOutFromL3DomainProfile(parentDn, 
 		return err
 	}
 
-	cont, _, err := sm.client.Do(req)
+	_, _, err = sm.client.Do(req)
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
 
 	return nil
 }
@@ -266,11 +262,10 @@ func (sm *ServiceManager) CreateRelationinfraRsDomVxlanNsDefFromL3DomainProfile(
 		return err
 	}
 
-	cont, _, err := sm.client.Do(req)
+	_, _, err = sm.client.Do(req)
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
 
 	return nil
 }

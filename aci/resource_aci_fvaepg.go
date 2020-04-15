@@ -181,12 +181,6 @@ func resourceAciApplicationEPG() *schema.Resource {
 
 				Optional: true,
 			},
-			"relation_fv_rs_path_att": &schema.Schema{
-				Type:     schema.TypeSet,
-				Elem:     &schema.Schema{Type: schema.TypeString},
-				Optional: true,
-				Set:      schema.HashString,
-			},
 			"relation_fv_rs_prot_by": &schema.Schema{
 				Type:     schema.TypeSet,
 				Elem:     &schema.Schema{Type: schema.TypeString},
