@@ -1,4 +1,4 @@
-## 0.2.2 (Unreleased)
+## 0.2.2 (May 11, 2020)
 
 BREAKING CHANGES:
 - Renamed the aci_cloud_e_pg, aci_cloud_external_e_pg, aci_cloud_endpoint_selectorfor_external_e_pgs resources, removed an extra `_` in e_pg. New names for these resources will be aci_cloud_epg, aci_cloud_external_epg, aci_cloud_endpoint_selectorfor_external_epgs respectively.
