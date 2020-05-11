@@ -31,7 +31,7 @@ resource "aci_bridge_domain" "bd1" {
   name               = "bd1"
 }
 
-resource "aci_cloud_e_pg" "cloud_apic_epg" {
+resource "aci_cloud_epg" "cloud_apic_epg" {
   name                             = "epg1"
   cloud_applicationcontainer_dn    = "${aci_cloud_applicationcontainer.app1.id}"
   relation_fv_rs_prov              = ["${aci_contract.contract_epg1_epg2.name}"]
@@ -40,7 +40,7 @@ resource "aci_cloud_e_pg" "cloud_apic_epg" {
 }
 
 resource "aci_cloud_endpoint_selector" "cloud_ep_selector" {
-  cloud_e_pg_dn    = "${aci_cloud_e_pg.cloud_apic_epg.id}"
+  cloud_e_pg_dn    = "${aci_cloud_epg.cloud_apic_epg.id}"
   name             = "devnet-ep-select"
   match_expression = "custom:Name=='-ep2'"
 }
@@ -84,7 +84,7 @@ resource "aci_filter_entry" "icmp" {
   stateful  = "yes"
 }
 
-resource "aci_cloud_external_e_pg" "cloud_epic_ext_epg" {
+resource "aci_cloud_external_epg" "cloud_epic_ext_epg" {
   cloud_applicationcontainer_dn    = "${aci_cloud_applicationcontainer.app1.id}"
   name                             = "devnet--inet"
   relation_fv_rs_prov              = ["${aci_contract.contract_epg1_epg2.name}"]
@@ -92,8 +92,8 @@ resource "aci_cloud_external_e_pg" "cloud_epic_ext_epg" {
   relation_cloud_rs_cloud_e_pg_ctx = "${aci_vrf.vrf1.name}"
 }
 
-resource "aci_cloud_endpoint_selectorfor_external_e_pgs" "ext_ep_selector" {
-  cloud_external_e_pg_dn = "${aci_cloud_external_e_pg.cloud_epic_ext_epg.id}"
+resource "aci_cloud_endpoint_selectorfor_external_epgs" "ext_ep_selector" {
+  cloud_external_e_pg_dn = "${aci_cloud_external_epg.cloud_epic_ext_epg.id}"
   name                   = "devnet-ext"
   subnet                 = "0.0.0.0/0"
 }

@@ -1,20 +1,20 @@
 ---
 layout: "aci"
-page_title: "ACI: aci_cloud_endpoint_selectorfor_external_e_pgs"
+page_title: "ACI: aci_cloud_endpoint_selectorfor_external_epgs"
 sidebar_current: "docs-aci-data-source-cloud_endpoint_selectorfor_external_e_pgs"
 description: |-
   Data source for ACI Cloud Endpoint Selector for External EPgs
 ---
 
-# aci_cloud_endpoint_selectorfor_external_e_pgs #
+# aci_cloud_endpoint_selectorfor_external_epgs #
 Data source for ACI Cloud Endpoint Selector for External EPgs  
 <b>Note: This resource is supported in Cloud APIC only.</b>
 ## Example Usage ##
 
 ```hcl
-data "aci_cloud_endpoint_selectorfor_external_e_pgs" "foo_ep_selector" {
+data "aci_cloud_endpoint_selectorfor_external_epgs" "foo_ep_selector" {
 
-  cloud_external_e_pg_dn  = "${aci_cloud_external_e_pg.ext_epg.id}"
+  cloud_external_e_pg_dn  = "${aci_cloud_external_epg.ext_epg.id}"
   name                    = "dev_ext_ep_select"
 }
 ```

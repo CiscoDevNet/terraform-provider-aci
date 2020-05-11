@@ -22,12 +22,12 @@ func TestAccAciCloudEPg_Basic(t *testing.T) {
 			{
 				Config: testAccCheckAciCloudEPgConfig_basic(description, "All"),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAciCloudEPgExists("aci_cloud_e_pg.foocloud_e_pg", &cloud_e_pg),
+					testAccCheckAciCloudEPgExists("aci_cloud_epg.foocloud_e_pg", &cloud_e_pg),
 					testAccCheckAciCloudEPgAttributes(description, "All", &cloud_e_pg),
 				),
 			},
 			{
-				ResourceName:      "aci_cloud_e_pg",
+				ResourceName:      "aci_cloud_epg",
 				ImportState:       true,
 				ImportStateVerify: true,
 			},
@@ -47,14 +47,14 @@ func TestAccAciCloudEPg_update(t *testing.T) {
 			{
 				Config: testAccCheckAciCloudEPgConfig_basic(description, "All"),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAciCloudEPgExists("aci_cloud_e_pg.foocloud_e_pg", &cloud_e_pg),
+					testAccCheckAciCloudEPgExists("aci_cloud_epg.foocloud_e_pg", &cloud_e_pg),
 					testAccCheckAciCloudEPgAttributes(description, "All", &cloud_e_pg),
 				),
 			},
 			{
 				Config: testAccCheckAciCloudEPgConfig_basic(description, "AtleastOne"),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAciCloudEPgExists("aci_cloud_e_pg.foocloud_e_pg", &cloud_e_pg),
+					testAccCheckAciCloudEPgExists("aci_cloud_epg.foocloud_e_pg", &cloud_e_pg),
 					testAccCheckAciCloudEPgAttributes(description, "AtleastOne", &cloud_e_pg),
 				),
 			},
@@ -76,7 +76,7 @@ func testAccCheckAciCloudEPgConfig_basic(description, match_t string) string {
 		annotation  = "tag_app"
 	}
 
-	resource "aci_cloud_e_pg" "foocloud_e_pg" {
+	resource "aci_cloud_epg" "foocloud_e_pg" {
 		cloud_applicationcontainer_dn = "${aci_cloud_applicationcontainer.foocloud_applicationcontainer.id}"
 		description                   = "%s"
 		name                          = "cloud_epg"
@@ -125,7 +125,7 @@ func testAccCheckAciCloudEPgDestroy(s *terraform.State) error {
 
 	for _, rs := range s.RootModule().Resources {
 
-		if rs.Type == "aci_cloud_e_pg" {
+		if rs.Type == "aci_cloud_epg" {
 			cont, err := client.Get(rs.Primary.ID)
 			cloud_e_pg := models.CloudEPgFromContainer(cont)
 			if err == nil {

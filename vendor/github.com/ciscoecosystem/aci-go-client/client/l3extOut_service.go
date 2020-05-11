@@ -251,7 +251,7 @@ func (sm *ServiceManager) CreateRelationl3extRsL3DomAttFromL3Outside(parentDn, t
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tnExtnwDomPName": "%s"
+				"dn": "%s","tDn": "%s"
 								
 			}
 		}
@@ -288,7 +288,7 @@ func (sm *ServiceManager) ReadRelationl3extRsL3DomAttFromL3Outside(parentDn stri
 	contList := models.ListFromContainer(cont, "l3extRsL3DomAtt")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnExtnwDomPName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err

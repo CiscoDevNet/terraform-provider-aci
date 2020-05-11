@@ -22,12 +22,12 @@ func TestAccAciCloudExternalEPg_Basic(t *testing.T) {
 			{
 				Config: testAccCheckAciCloudExternalEPgConfig_basic(description, "All"),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAciCloudExternalEPgExists("aci_cloud_external_e_pg.foocloud_external_e_pg", &cloud_external_e_pg),
+					testAccCheckAciCloudExternalEPgExists("aci_cloud_external_epg.foocloud_external_e_pg", &cloud_external_e_pg),
 					testAccCheckAciCloudExternalEPgAttributes(description, "All", &cloud_external_e_pg),
 				),
 			},
 			{
-				ResourceName:      "aci_cloud_external_e_pg",
+				ResourceName:      "aci_cloud_external_epg",
 				ImportState:       true,
 				ImportStateVerify: true,
 			},
@@ -47,14 +47,14 @@ func TestAccAciCloudExternalEPg_update(t *testing.T) {
 			{
 				Config: testAccCheckAciCloudExternalEPgConfig_basic(description, "All"),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAciCloudExternalEPgExists("aci_cloud_external_e_pg.foocloud_external_e_pg", &cloud_external_e_pg),
+					testAccCheckAciCloudExternalEPgExists("aci_cloud_external_epg.foocloud_external_e_pg", &cloud_external_e_pg),
 					testAccCheckAciCloudExternalEPgAttributes(description, "All", &cloud_external_e_pg),
 				),
 			},
 			{
 				Config: testAccCheckAciCloudExternalEPgConfig_basic(description, "AtleastOne"),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAciCloudExternalEPgExists("aci_cloud_external_e_pg.foocloud_external_e_pg", &cloud_external_e_pg),
+					testAccCheckAciCloudExternalEPgExists("aci_cloud_external_epg.foocloud_external_e_pg", &cloud_external_e_pg),
 					testAccCheckAciCloudExternalEPgAttributes(description, "AtleastOne", &cloud_external_e_pg),
 				),
 			},
@@ -76,7 +76,7 @@ func testAccCheckAciCloudExternalEPgConfig_basic(description, match_t string) st
 		annotation  = "tag_app"
 	}
 
-	resource "aci_cloud_external_e_pg" "foocloud_external_e_pg" {
+	resource "aci_cloud_external_epg" "foocloud_external_e_pg" {
 		cloud_applicationcontainer_dn = "${aci_cloud_applicationcontainer.foocloud_applicationcontainer.id}"
 		description                   = "%s"
 		name                          = "cloud_ext_epg"
@@ -125,7 +125,7 @@ func testAccCheckAciCloudExternalEPgDestroy(s *terraform.State) error {
 
 	for _, rs := range s.RootModule().Resources {
 
-		if rs.Type == "aci_cloud_external_e_pg" {
+		if rs.Type == "aci_cloud_external_epg" {
 			cont, err := client.Get(rs.Primary.ID)
 			cloud_external_e_pg := models.CloudExternalEPgFromContainer(cont)
 			if err == nil {
