@@ -1,18 +1,18 @@
 ---
 layout: "aci"
-page_title: "ACI: aci_cloud_external_e_pg"
+page_title: "ACI: aci_cloud_external_epg"
 sidebar_current: "docs-aci-data-source-cloud_external_e_pg"
 description: |-
   Data source for ACI Cloud External EPg
 ---
 
-# aci_cloud_external_e_pg #
+# aci_cloud_external_epg #
 Data source for ACI Cloud External EPg  
 <b>Note: This resource is supported in Cloud APIC only.</b>
 ## Example Usage ##
 
 ```hcl
-data "aci_cloud_external_e_pg" "foo_ext_epg" {
+data "aci_cloud_external_epg" "foo_ext_epg" {
 
   cloud_applicationcontainer_dn  = "${aci_cloud_applicationcontainer.sample_app.id}" 
   name                           = "dev_ext_epg"

@@ -1,18 +1,18 @@
 ---
 layout: "aci"
-page_title: "ACI: aci_cloud_e_pg"
+page_title: "ACI: aci_cloud_epg"
 sidebar_current: "docs-aci-data-source-cloud_e_pg"
 description: |-
   Data source for ACI Cloud EPg
 ---
 
-# aci_cloud_e_pg #
+# aci_cloud_epg #
 Data source for ACI Cloud EPg  
 <b>Note: This resource is supported in Cloud APIC only.</b>
 ## Example Usage ##
 
 ```hcl
-data "aci_cloud_e_pg" "dev_epg" {
+data "aci_cloud_epg" "dev_epg" {
   cloud_applicationcontainer_dn  = "${aci_cloud_applicationcontainer.sample_app.id}"
   name                           = "cloud_dev_epg"
 }

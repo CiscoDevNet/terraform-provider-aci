@@ -22,12 +22,12 @@ func TestAccAciCloudEndpointSelectorforExternalEPgs_Basic(t *testing.T) {
 			{
 				Config: testAccCheckAciCloudEndpointSelectorforExternalEPgsConfig_basic(description, "0.0.0.0/0"),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAciCloudEndpointSelectorforExternalEPgsExists("aci_cloud_endpoint_selectorfor_external_e_pgs.foocloud_endpoint_selectorfor_external_e_pgs", &cloud_endpoint_selectorfor_external_e_pgs),
+					testAccCheckAciCloudEndpointSelectorforExternalEPgsExists("aci_cloud_endpoint_selectorfor_external_epgs.foocloud_endpoint_selectorfor_external_e_pgs", &cloud_endpoint_selectorfor_external_e_pgs),
 					testAccCheckAciCloudEndpointSelectorforExternalEPgsAttributes(description, "0.0.0.0/0", &cloud_endpoint_selectorfor_external_e_pgs),
 				),
 			},
 			{
-				ResourceName:      "aci_cloud_endpoint_selectorfor_external_e_pgs",
+				ResourceName:      "aci_cloud_endpoint_selectorfor_external_epgs",
 				ImportState:       true,
 				ImportStateVerify: true,
 			},
@@ -47,14 +47,14 @@ func TestAccAciCloudEndpointSelectorforExternalEPgs_update(t *testing.T) {
 			{
 				Config: testAccCheckAciCloudEndpointSelectorforExternalEPgsConfig_basic(description, "0.0.0.0/0"),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAciCloudEndpointSelectorforExternalEPgsExists("aci_cloud_endpoint_selectorfor_external_e_pgs.foocloud_endpoint_selectorfor_external_e_pgs", &cloud_endpoint_selectorfor_external_e_pgs),
+					testAccCheckAciCloudEndpointSelectorforExternalEPgsExists("aci_cloud_endpoint_selectorfor_external_epgs.foocloud_endpoint_selectorfor_external_e_pgs", &cloud_endpoint_selectorfor_external_e_pgs),
 					testAccCheckAciCloudEndpointSelectorforExternalEPgsAttributes(description, "0.0.0.0/0", &cloud_endpoint_selectorfor_external_e_pgs),
 				),
 			},
 			{
 				Config: testAccCheckAciCloudEndpointSelectorforExternalEPgsConfig_basic(description, "10.0.0.0/24"),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAciCloudEndpointSelectorforExternalEPgsExists("aci_cloud_endpoint_selectorfor_external_e_pgs.foocloud_endpoint_selectorfor_external_e_pgs", &cloud_endpoint_selectorfor_external_e_pgs),
+					testAccCheckAciCloudEndpointSelectorforExternalEPgsExists("aci_cloud_endpoint_selectorfor_external_epgs.foocloud_endpoint_selectorfor_external_e_pgs", &cloud_endpoint_selectorfor_external_e_pgs),
 					testAccCheckAciCloudEndpointSelectorforExternalEPgsAttributes(description, "10.0.0.0/24", &cloud_endpoint_selectorfor_external_e_pgs),
 				),
 			},
@@ -76,13 +76,13 @@ func testAccCheckAciCloudEndpointSelectorforExternalEPgsConfig_basic(description
 		annotation  = "tag_app"
 	}
 
-	resource "aci_cloud_external_e_pg" "foocloud_external_e_pg" {
+	resource "aci_cloud_external_epg" "foocloud_external_e_pg" {
 		cloud_applicationcontainer_dn = "${aci_cloud_applicationcontainer.foocloud_applicationcontainer.id}"
 		name                          = "cloud_ext_epg"
 	}
 
-	resource "aci_cloud_endpoint_selectorfor_external_e_pgs" "foocloud_endpoint_selectorfor_external_e_pgs" {
-		cloud_external_e_pg_dn = "${aci_cloud_external_e_pg.foocloud_external_e_pg.id}"
+	resource "aci_cloud_endpoint_selectorfor_external_epgs" "foocloud_endpoint_selectorfor_external_e_pgs" {
+		cloud_external_e_pg_dn = "${aci_cloud_external_epg.foocloud_external_e_pg.id}"
 		description            = "%s"
 		name                   = "ext_ep_selector"
 		annotation             = "tag_ext_selector"
@@ -127,7 +127,7 @@ func testAccCheckAciCloudEndpointSelectorforExternalEPgsDestroy(s *terraform.Sta
 
 	for _, rs := range s.RootModule().Resources {
 
-		if rs.Type == "aci_cloud_endpoint_selectorfor_external_e_pgs" {
+		if rs.Type == "aci_cloud_endpoint_selectorfor_external_epgs" {
 			cont, err := client.Get(rs.Primary.ID)
 			cloud_endpoint_selectorfor_external_e_pgs := models.CloudEndpointSelectorforExternalEPgsFromContainer(cont)
 			if err == nil {

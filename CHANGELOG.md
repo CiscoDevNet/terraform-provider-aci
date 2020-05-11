@@ -1,4 +1,13 @@
-## 0.3.0 (Unreleased)
+## 0.2.2 (Unreleased)
+
+BREAKING CHANGES:
+- Renamed the aci_cloud_e_pg, aci_cloud_external_e_pg, aci_cloud_endpoint_selectorfor_external_e_pgs resources, removed an extra `_` in e_pg. New names for these resources will be aci_cloud_epg, aci_cloud_external_epg, aci_cloud_endpoint_selectorfor_external_epgs respectively.
+
+IMPROVEMENTS:
+- Removed the implicit status insertion for aci_rest resource.
+
+BUG FIXES:
+- Fixed the issue with l3extRsL3DomAtt not attaching properly.
 ## 0.2.1 (April 15, 2020)
 
 IMPROVEMENTS:

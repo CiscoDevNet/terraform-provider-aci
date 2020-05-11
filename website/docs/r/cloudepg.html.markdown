@@ -1,18 +1,18 @@
 ---
 layout: "aci"
-page_title: "ACI: aci_cloud_e_pg"
+page_title: "ACI: aci_cloud_epg"
 sidebar_current: "docs-aci-resource-cloud_e_pg"
 description: |-
   Manages ACI Cloud EPg
 ---
 
-# aci_cloud_e_pg #
+# aci_cloud_epg #
 Manages ACI Cloud EPg
 <b>Note: This resource is supported in Cloud APIC only.</b>
 ## Example Usage ##
 
 ```hcl
-	resource "aci_cloud_e_pg" "foocloud_e_pg" {
+	resource "aci_cloud_epg" "foocloud_e_pg" {
 		cloud_applicationcontainer_dn = "${aci_cloud_applicationcontainer.foocloud_applicationcontainer.id}"
 		description                   = "sample cloud epg"
 		name                          = "cloud_epg"
@@ -67,5 +67,5 @@ An existing Cloud EPg can be [imported][docs-import] into this resource via its 
 
 
 ```
-terraform import aci_cloud_e_pg.example <Dn>
+terraform import aci_cloud_epg.example <Dn>
 ```

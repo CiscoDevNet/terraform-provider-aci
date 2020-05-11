@@ -1,18 +1,18 @@
 ---
 layout: "aci"
-page_title: "ACI: aci_cloud_external_e_pg"
+page_title: "ACI: aci_cloud_external_epg"
 sidebar_current: "docs-aci-resource-cloud_external_e_pg"
 description: |-
   Manages ACI Cloud External EPg
 ---
 
-# aci_cloud_external_e_pg #
+# aci_cloud_external_epg #
 Manages ACI Cloud External EPg
 <b>Note: This resource is supported in Cloud APIC only.</b>
 ## Example Usage ##
 
 ```hcl
-	resource "aci_cloud_external_e_pg" "foocloud_external_e_pg" {
+	resource "aci_cloud_external_epg" "foocloud_external_e_pg" {
 		cloud_applicationcontainer_dn = "${aci_cloud_applicationcontainer.foocloud_applicationcontainer.id}"
 		description                   = "sample cloud external epg"
 		name                          = "cloud_ext_epg"
@@ -68,5 +68,5 @@ An existing Cloud External EPg can be [imported][docs-import] into this resource
 
 
 ```
-terraform import aci_cloud_external_e_pg.example <Dn>
+terraform import aci_cloud_external_epg.example <Dn>
 ```

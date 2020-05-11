@@ -13,7 +13,7 @@ Manages ACI Cloud Endpoint Selector
 
 ```hcl
 	resource "aci_cloud_endpoint_selector" "foocloud_endpoint_selector" {
-		cloud_e_pg_dn    = "${aci_cloud_e_pg.foocloud_e_pg.id}"
+		cloud_e_pg_dn    = "${aci_cloud_epg.foocloud_e_pg.id}"
 		description      = "sample ep selector"
 		name             = "ep_select"
 		annotation       = "tag_ep"

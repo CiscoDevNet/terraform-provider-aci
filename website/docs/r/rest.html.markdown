@@ -18,7 +18,7 @@ resource "aci_tenant" "tenant_for_rest_example" {
 }
 
 resource "aci_rest" "rest_l3_ext_out" {
-  path       = "api/node/mo/${aci_tenant.tenant_for_rest_example.id}/out-test_ext.json"
+  path       = "/api/node/mo/${aci_tenant.tenant_for_rest_example.id}/out-test_ext.json"
   class_name = "l3extOut"
 
   content = {
@@ -33,6 +33,8 @@ resource "aci_rest" "rest_l3_ext_out" {
 * `content` - (Required) Map of key-value pairs those needed to be passed to the Model object as parameters. Make sure the key name matches the name with the object parameter in ACI.
 
 * `dn` - (Optional) Distinguished name of object being managed. 
+
+<strong>NOTE:</strong> We don't set the Status field explicitly, as it creates an issue with the relation objects. If you have requirement to pass the status field, pass it in the content. 
 
 ## Attribute Reference
 

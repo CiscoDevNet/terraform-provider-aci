@@ -1,19 +1,19 @@
 ---
 layout: "aci"
-page_title: "ACI: aci_cloud_endpoint_selectorfor_external_e_pgs"
+page_title: "ACI: aci_cloud_endpoint_selectorfor_external_epgs"
 sidebar_current: "docs-aci-resource-cloud_endpoint_selectorfor_external_e_pgs"
 description: |-
   Manages ACI Cloud Endpoint Selector for External EPgs
 ---
 
-# aci_cloud_endpoint_selectorfor_external_e_pgs #
+# aci_cloud_endpoint_selectorfor_external_epgs #
 Manages ACI Cloud Endpoint Selector for External EPgs
 <b>Note: This resource is supported in Cloud APIC only.</b>
 ## Example Usage ##
 
 ```hcl
-	resource "aci_cloud_endpoint_selectorfor_external_e_pgs" "foocloud_endpoint_selectorfor_external_e_pgs" {
-		cloud_external_e_pg_dn = "${aci_cloud_external_e_pg.foocloud_external_e_pg.id}"
+	resource "aci_cloud_endpoint_selectorfor_external_epgs" "foocloud_endpoint_selectorfor_external_e_pgs" {
+		cloud_external_e_pg_dn = "${aci_cloud_external_epg.foocloud_external_e_pg.id}"
 		description            = "sample external ep selector"
 		name                   = "ext_ep_selector"
 		annotation             = "tag_ext_selector"
@@ -44,5 +44,5 @@ An existing Cloud Endpoint Selector for External EPgs can be [imported][docs-imp
 
 
 ```
-terraform import aci_cloud_endpoint_selectorfor_external_e_pgs.example <Dn>
+terraform import aci_cloud_endpoint_selectorfor_external_epgs.example <Dn>
 ```
