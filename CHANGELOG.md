@@ -1,4 +1,8 @@
-## 0.3.0 (Unreleased)
+## 0.2.3 (Unreleased)
+
+IMPROVEMENTS:
+- Added new resource to manage imported_contracts.
+
 ## 0.2.2 (May 11, 2020)
 
 BREAKING CHANGES:
