@@ -136,6 +136,7 @@ func Provider() terraform.ResourceProvider {
 			"aci_epg_to_static_path":                       resourceAciStaticPath(),
 			"aci_logical_node_to_fabric_node":              resourceAciFabricNode(),
 			"aci_any":                                      resourceAciAny(),
+			"aci_imported_contract":                        resourceAciImportedContract(),
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
@@ -218,6 +219,7 @@ func Provider() terraform.ResourceProvider {
 			"aci_epg_to_static_path":                       dataSourceAciStaticPath(),
 			"aci_logical_node_to_fabric_node":              dataSourceAciFabricNode(),
 			"aci_any":                                      dataSourceAciAny(),
+			"aci_imported_contract":                        dataSourceAciImportedContract(),
 		},
 
 		ConfigureFunc: configureClient,
