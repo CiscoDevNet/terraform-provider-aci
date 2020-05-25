@@ -98,7 +98,7 @@ resource "aci_tenant" "test-tenant" {
   description = "This tenant is created by terraform"
 }
 
-resource "aci_app_profile" "test-app" {
+resource "aci_application_profile" "test-app" {
   tanent_dn   = "${aci_tenant.test-tenant.id}"
   name        = "test-app"
   description = "This app profile is created by terraform"
