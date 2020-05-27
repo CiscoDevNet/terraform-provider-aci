@@ -153,8 +153,6 @@ func setFilterEntryAttributes(vzEntry *models.FilterEntry, d *schema.ResourceDat
 	d.Set("annotation", vzEntryMap["annotation"])
 	d.Set("apply_to_frag", vzEntryMap["applyToFrag"])
 	d.Set("arp_opc", vzEntryMap["arpOpc"])
-	d.Set("d_from_port", vzEntryMap["dFromPort"])
-	d.Set("d_to_port", vzEntryMap["dToPort"])
 	d.Set("ether_t", vzEntryMap["etherT"])
 	d.Set("icmpv4_t", vzEntryMap["icmpv4T"])
 	d.Set("icmpv6_t", vzEntryMap["icmpv6T"])
@@ -166,6 +164,36 @@ func setFilterEntryAttributes(vzEntry *models.FilterEntry, d *schema.ResourceDat
 	d.Set("stateful", vzEntryMap["stateful"])
 	d.Set("tcp_rules", vzEntryMap["tcpRules"])
 	return d
+}
+
+func portConversionCheck(d *schema.ResourceData) *schema.ResourceData {
+	constantPortMapping := map[string]string{
+		"smtp":        "25",
+		"dns":         "53",
+		"http":        "80",
+		"https":       "443",
+		"pop3":        "110",
+		"rtsp":        "554",
+		"ftpData":     "20",
+		"unspecified": "0",
+	}
+
+	DFromPort := d.Get("d_from_port").(string)
+	DToPort := d.Get("d_to_port").(string)
+	DFromPortStr, ok := constantPortMapping[DFromPort]
+	if ok {
+		d.Set("d_from_port", DFromPortStr)
+	} else {
+		d.Set("d_from_port", DFromPort)
+	}
+	DToPortStr, ok := constantPortMapping[DToPort]
+	if ok {
+		d.Set("d_to_port", DToPortStr)
+	} else {
+		d.Set("d_to_port", DToPort)
+	}
+	return d
+
 }
 
 func resourceAciFilterEntryImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -349,6 +377,8 @@ func resourceAciFilterEntryRead(d *schema.ResourceData, m interface{}) error {
 		d.SetId("")
 		return nil
 	}
+	d = portConversionCheck(d)
+
 	setFilterEntryAttributes(vzEntry, d)
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
