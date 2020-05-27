@@ -166,7 +166,7 @@ func setFilterEntryAttributes(vzEntry *models.FilterEntry, d *schema.ResourceDat
 	return d
 }
 
-func portConversionCheck(d *schema.ResourceData) *schema.ResourceData {
+func portConversionCheck(vzEntry *models.FilterEntry, d *schema.ResourceData) *schema.ResourceData {
 	constantPortMapping := map[string]string{
 		"smtp":        "25",
 		"dns":         "53",
@@ -177,20 +177,20 @@ func portConversionCheck(d *schema.ResourceData) *schema.ResourceData {
 		"ftpData":     "20",
 		"unspecified": "0",
 	}
-
-	DFromPort := d.Get("d_from_port").(string)
-	DToPort := d.Get("d_to_port").(string)
-	DFromPortStr, ok := constantPortMapping[DFromPort]
+	vzEntryMap, _ := vzEntry.ToMap()
+	DFromPortVzEntry, ok := constantPortMapping[vzEntryMap["d_from_port"]]
+	DFromPortTf := d.Get("d_from_port").(string)
 	if ok {
-		d.Set("d_from_port", DFromPortStr)
+		d.Set("d_from_port", DFromPortVzEntry)
 	} else {
-		d.Set("d_from_port", DFromPort)
+		d.Set("d_from_port", DFromPortTf)
 	}
-	DToPortStr, ok := constantPortMapping[DToPort]
+	DToPortVzEntry, ok := constantPortMapping[vzEntryMap["d_to_port"]]
+	DToPortTf := d.Get("d_to_port").(string)
 	if ok {
-		d.Set("d_to_port", DToPortStr)
+		d.Set("d_to_port", DToPortVzEntry)
 	} else {
-		d.Set("d_to_port", DToPort)
+		d.Set("d_to_port", DToPortTf)
 	}
 	return d
 
@@ -377,7 +377,7 @@ func resourceAciFilterEntryRead(d *schema.ResourceData, m interface{}) error {
 		d.SetId("")
 		return nil
 	}
-	d = portConversionCheck(d)
+	d = portConversionCheck(vzEntry, d)
 
 	setFilterEntryAttributes(vzEntry, d)
 
