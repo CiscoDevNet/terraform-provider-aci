@@ -147,7 +147,7 @@ func setFilterEntryAttributes(vzEntry *models.FilterEntry, d *schema.ResourceDat
 	d.Set("description", vzEntry.Description)
 	d.Set("filter_dn", GetParentDn(vzEntry.DistinguishedName))
 	vzEntryMap, _ := vzEntry.ToMap()
-
+	log.Println("Check .... :", d.Get("d_from_port"))
 	d.Set("name", vzEntryMap["name"])
 
 	d.Set("annotation", vzEntryMap["annotation"])
@@ -179,23 +179,27 @@ func portConversionCheck(vzEntry *models.FilterEntry, d *schema.ResourceData) *s
 		"unspecified": "0",
 	}
 	vzEntryMap, _ := vzEntry.ToMap()
-	DFromPortVzEntry, ok := constantPortMapping[vzEntryMap["dFromPort"]]
-	DFromPortTf := d.Get("d_from_port").(string)
-	if ok {
-		d.Set("d_from_port", DFromPortVzEntry)
+	if DFromPortTf, ok := d.GetOk("d_from_port"); ok {
+		if DFromPortTf != vzEntryMap["dFromPort"] {
+			if DFromPortTf != constantPortMapping[vzEntryMap["dFromPort"]] {
+				d.Set("d_from_port", vzEntryMap["dFromPort"])
+			} else {
+				d.Set("d_from_port", DFromPortTf)
+			}
+		} else {
+			d.Set("d_from_port", DFromPortTf)
+		}
 	} else {
 		d.Set("d_from_port", vzEntryMap["dFromPort"])
 	}
-	DToPortVzEntry, ok := constantPortMapping[vzEntryMap["dToPort"]]
-	var DToPortTf string
-	if tempToPort, ok := d.GetOk("d_to_port"); ok {
-		DToPortTf = tempToPort.(string)
-	}
 
-	DToPortTf := d.Get("d_to_port").(string)
-	if ok {
-		if DToPortVzEntry == DToPortTf {
-			d.Set("d_to_port", DToPortVzEntry)
+	if DToPortTf, ok := d.GetOk("d_to_port"); ok {
+		if DToPortTf != vzEntryMap["dToPort"] {
+			if DToPortTf != constantPortMapping[vzEntryMap["dToPort"]] {
+				d.Set("d_to_port", vzEntryMap["dToPort"])
+			} else {
+				d.Set("d_to_port", DToPortTf)
+			}
 		} else {
 			d.Set("d_to_port", DToPortTf)
 		}
