@@ -147,14 +147,12 @@ func setFilterEntryAttributes(vzEntry *models.FilterEntry, d *schema.ResourceDat
 	d.Set("description", vzEntry.Description)
 	d.Set("filter_dn", GetParentDn(vzEntry.DistinguishedName))
 	vzEntryMap, _ := vzEntry.ToMap()
-
+	log.Println("Check .... :", d.Get("d_from_port"))
 	d.Set("name", vzEntryMap["name"])
 
 	d.Set("annotation", vzEntryMap["annotation"])
 	d.Set("apply_to_frag", vzEntryMap["applyToFrag"])
 	d.Set("arp_opc", vzEntryMap["arpOpc"])
-	d.Set("d_from_port", vzEntryMap["dFromPort"])
-	d.Set("d_to_port", vzEntryMap["dToPort"])
 	d.Set("ether_t", vzEntryMap["etherT"])
 	d.Set("icmpv4_t", vzEntryMap["icmpv4T"])
 	d.Set("icmpv6_t", vzEntryMap["icmpv6T"])
@@ -166,6 +164,50 @@ func setFilterEntryAttributes(vzEntry *models.FilterEntry, d *schema.ResourceDat
 	d.Set("stateful", vzEntryMap["stateful"])
 	d.Set("tcp_rules", vzEntryMap["tcpRules"])
 	return d
+}
+
+func portConversionCheck(vzEntry *models.FilterEntry, d *schema.ResourceData) *schema.ResourceData {
+	constantPortMapping := map[string]string{
+		"smtp":        "25",
+		"dns":         "53",
+		"http":        "80",
+		"https":       "443",
+		"pop3":        "110",
+		"rtsp":        "554",
+		"ftpData":     "20",
+		"ssh":         "22",
+		"unspecified": "0",
+	}
+	vzEntryMap, _ := vzEntry.ToMap()
+	if DFromPortTf, ok := d.GetOk("d_from_port"); ok {
+		if DFromPortTf != vzEntryMap["dFromPort"] {
+			if DFromPortTf != constantPortMapping[vzEntryMap["dFromPort"]] {
+				d.Set("d_from_port", vzEntryMap["dFromPort"])
+			} else {
+				d.Set("d_from_port", DFromPortTf)
+			}
+		} else {
+			d.Set("d_from_port", DFromPortTf)
+		}
+	} else {
+		d.Set("d_from_port", vzEntryMap["dFromPort"])
+	}
+
+	if DToPortTf, ok := d.GetOk("d_to_port"); ok {
+		if DToPortTf != vzEntryMap["dToPort"] {
+			if DToPortTf != constantPortMapping[vzEntryMap["dToPort"]] {
+				d.Set("d_to_port", vzEntryMap["dToPort"])
+			} else {
+				d.Set("d_to_port", DToPortTf)
+			}
+		} else {
+			d.Set("d_to_port", DToPortTf)
+		}
+	} else {
+		d.Set("d_to_port", vzEntryMap["dToPort"])
+	}
+	return d
+
 }
 
 func resourceAciFilterEntryImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -349,6 +391,8 @@ func resourceAciFilterEntryRead(d *schema.ResourceData, m interface{}) error {
 		d.SetId("")
 		return nil
 	}
+	d = portConversionCheck(vzEntry, d)
+
 	setFilterEntryAttributes(vzEntry, d)
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
