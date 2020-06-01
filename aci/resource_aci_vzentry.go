@@ -175,22 +175,32 @@ func portConversionCheck(vzEntry *models.FilterEntry, d *schema.ResourceData) *s
 		"pop3":        "110",
 		"rtsp":        "554",
 		"ftpData":     "20",
+		"ssh":         "22",
 		"unspecified": "0",
 	}
 	vzEntryMap, _ := vzEntry.ToMap()
-	DFromPortVzEntry, ok := constantPortMapping[vzEntryMap["d_from_port"]]
+	DFromPortVzEntry, ok := constantPortMapping[vzEntryMap["dFromPort"]]
 	DFromPortTf := d.Get("d_from_port").(string)
 	if ok {
 		d.Set("d_from_port", DFromPortVzEntry)
 	} else {
-		d.Set("d_from_port", DFromPortTf)
+		d.Set("d_from_port", vzEntryMap["dFromPort"])
 	}
-	DToPortVzEntry, ok := constantPortMapping[vzEntryMap["d_to_port"]]
+	DToPortVzEntry, ok := constantPortMapping[vzEntryMap["dToPort"]]
+	var DToPortTf string
+	if tempToPort, ok := d.GetOk("d_to_port"); ok {
+		DToPortTf = tempToPort.(string)
+	}
+
 	DToPortTf := d.Get("d_to_port").(string)
 	if ok {
-		d.Set("d_to_port", DToPortVzEntry)
+		if DToPortVzEntry == DToPortTf {
+			d.Set("d_to_port", DToPortVzEntry)
+		} else {
+			d.Set("d_to_port", DToPortTf)
+		}
 	} else {
-		d.Set("d_to_port", DToPortTf)
+		d.Set("d_to_port", vzEntryMap["dToPort"])
 	}
 	return d
 
