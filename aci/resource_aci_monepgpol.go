@@ -65,9 +65,13 @@ func getRemoteMonitoringPolicy(client *client.Client, dn string) (*models.Monito
 }
 
 func setMonitoringPolicyAttributes(monEPGPol *models.MonitoringPolicy, d *schema.ResourceData) *schema.ResourceData {
+	dn := d.Id()
 	d.SetId(monEPGPol.DistinguishedName)
 	d.Set("description", monEPGPol.Description)
-	d.Set("tenant_dn", GetParentDn(monEPGPol.DistinguishedName))
+	// d.Set("tenant_dn", GetParentDn(monEPGPol.DistinguishedName))
+	if dn != monEPGPol.DistinguishedName {
+		d.Set("tenant_dn", "")
+	}
 	monEPGPolMap, _ := monEPGPol.ToMap()
 
 	d.Set("name", monEPGPolMap["name"])

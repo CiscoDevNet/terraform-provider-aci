@@ -81,9 +81,13 @@ func getRemoteFilter(client *client.Client, dn string) (*models.Filter, error) {
 }
 
 func setFilterAttributes(vzFilter *models.Filter, d *schema.ResourceData) *schema.ResourceData {
+	dn := d.Id()
 	d.SetId(vzFilter.DistinguishedName)
 	d.Set("description", vzFilter.Description)
-	d.Set("tenant_dn", GetParentDn(vzFilter.DistinguishedName))
+	// d.Set("tenant_dn", GetParentDn(vzFilter.DistinguishedName))
+	if dn != vzFilter.DistinguishedName {
+		d.Set("tenant_dn", "")
+	}
 	vzFilterMap, _ := vzFilter.ToMap()
 
 	d.Set("name", vzFilterMap["name"])

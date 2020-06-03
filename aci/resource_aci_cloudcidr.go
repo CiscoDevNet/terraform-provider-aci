@@ -71,9 +71,13 @@ func getRemoteCloudCIDRPool(client *client.Client, dn string) (*models.CloudCIDR
 }
 
 func setCloudCIDRPoolAttributes(cloudCidr *models.CloudCIDRPool, d *schema.ResourceData) *schema.ResourceData {
+	dn := d.Id()
 	d.SetId(cloudCidr.DistinguishedName)
 	d.Set("description", cloudCidr.Description)
-	d.Set("cloud_context_profile_dn", GetParentDn(cloudCidr.DistinguishedName))
+	// d.Set("cloud_context_profile_dn", GetParentDn(cloudCidr.DistinguishedName))
+	if dn != cloudCidr.DistinguishedName {
+		d.Set("cloud_context_profile_dn", "")
+	}
 	cloudCidrMap, _ := cloudCidr.ToMap()
 
 	d.Set("addr", cloudCidrMap["addr"])

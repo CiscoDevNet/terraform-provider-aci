@@ -77,9 +77,13 @@ func getRemoteAccessPortSelector(client *client.Client, dn string) (*models.Acce
 }
 
 func setAccessPortSelectorAttributes(infraHPortS *models.AccessPortSelector, d *schema.ResourceData) *schema.ResourceData {
+	dn := d.Id()
 	d.SetId(infraHPortS.DistinguishedName)
 	d.Set("description", infraHPortS.Description)
-	d.Set("leaf_interface_profile_dn", GetParentDn(infraHPortS.DistinguishedName))
+	// d.Set("leaf_interface_profile_dn", GetParentDn(infraHPortS.DistinguishedName))
+	if dn != infraHPortS.DistinguishedName {
+		d.Set("leaf_interface_profile_dn", "")
+	}
 	infraHPortSMap, _ := infraHPortS.ToMap()
 
 	d.Set("name", infraHPortSMap["name"])

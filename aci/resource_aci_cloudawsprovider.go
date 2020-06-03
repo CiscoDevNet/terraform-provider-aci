@@ -113,9 +113,13 @@ func getRemoteCloudAWSProvider(client *client.Client, dn string) (*models.CloudA
 }
 
 func setCloudAWSProviderAttributes(cloudAwsProvider *models.CloudAWSProvider, d *schema.ResourceData) *schema.ResourceData {
+	dn := d.Id()
 	d.SetId(cloudAwsProvider.DistinguishedName)
 	d.Set("description", cloudAwsProvider.Description)
-	d.Set("tenant_dn", GetParentDn(cloudAwsProvider.DistinguishedName))
+	// d.Set("tenant_dn", GetParentDn(cloudAwsProvider.DistinguishedName))
+	if dn != cloudAwsProvider.DistinguishedName {
+		d.Set("tenant_dn", "")
+	}
 	cloudAwsProviderMap, _ := cloudAwsProvider.ToMap()
 
 	d.Set("access_key_id", cloudAwsProviderMap["accessKeyId"])

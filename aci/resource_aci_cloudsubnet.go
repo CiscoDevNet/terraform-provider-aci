@@ -88,9 +88,13 @@ func getRemoteCloudSubnet(client *client.Client, dn string) (*models.CloudSubnet
 }
 
 func setCloudSubnetAttributes(cloudSubnet *models.CloudSubnet, d *schema.ResourceData) *schema.ResourceData {
+	dn := d.Id()
 	d.SetId(cloudSubnet.DistinguishedName)
 	d.Set("description", cloudSubnet.Description)
-	d.Set("cloud_cidr_pool_dn", GetParentDn(cloudSubnet.DistinguishedName))
+	// d.Set("cloud_cidr_pool_dn", GetParentDn(cloudSubnet.DistinguishedName))
+	if dn != cloudSubnet.DistinguishedName {
+		d.Set("cloud_cidr_pool_dn", "")
+	}
 	cloudSubnetMap, _ := cloudSubnet.ToMap()
 
 	d.Set("ip", cloudSubnetMap["ip"])

@@ -180,9 +180,13 @@ func getRemoteVRF(client *client.Client, dn string) (*models.VRF, error) {
 }
 
 func setVRFAttributes(fvCtx *models.VRF, d *schema.ResourceData) *schema.ResourceData {
+	dn := d.Id()
 	d.SetId(fvCtx.DistinguishedName)
 	d.Set("description", fvCtx.Description)
-	d.Set("tenant_dn", GetParentDn(fvCtx.DistinguishedName))
+	// d.Set("tenant_dn", GetParentDn(fvCtx.DistinguishedName))
+	if dn != fvCtx.DistinguishedName {
+		d.Set("tenant_dn", "")
+	}
 	fvCtxMap, _ := fvCtx.ToMap()
 
 	d.Set("name", fvCtxMap["name"])

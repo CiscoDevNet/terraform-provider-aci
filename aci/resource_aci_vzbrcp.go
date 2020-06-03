@@ -89,9 +89,13 @@ func getRemoteContract(client *client.Client, dn string) (*models.Contract, erro
 }
 
 func setContractAttributes(vzBrCP *models.Contract, d *schema.ResourceData) *schema.ResourceData {
+	dn := d.Id()
 	d.SetId(vzBrCP.DistinguishedName)
 	d.Set("description", vzBrCP.Description)
-	d.Set("tenant_dn", GetParentDn(vzBrCP.DistinguishedName))
+	// d.Set("tenant_dn", GetParentDn(vzBrCP.DistinguishedName))
+	if dn != vzBrCP.DistinguishedName {
+		d.Set("tenant_dn", "")
+	}
 	vzBrCPMap, _ := vzBrCP.ToMap()
 
 	d.Set("name", vzBrCPMap["name"])

@@ -65,9 +65,13 @@ func getRemoteCloudApplicationcontainer(client *client.Client, dn string) (*mode
 }
 
 func setCloudApplicationcontainerAttributes(cloudApp *models.CloudApplicationcontainer, d *schema.ResourceData) *schema.ResourceData {
+	dn := d.Id()
 	d.SetId(cloudApp.DistinguishedName)
 	d.Set("description", cloudApp.Description)
-	d.Set("tenant_dn", GetParentDn(cloudApp.DistinguishedName))
+	// d.Set("tenant_dn", GetParentDn(cloudApp.DistinguishedName))
+	if dn != cloudApp.DistinguishedName {
+		d.Set("tenant_dn", "")
+	}
 	cloudAppMap, _ := cloudApp.ToMap()
 
 	d.Set("name", cloudAppMap["name"])

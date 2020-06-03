@@ -148,9 +148,13 @@ func getRemoteCloudExternalEPg(client *client.Client, dn string) (*models.CloudE
 }
 
 func setCloudExternalEPgAttributes(cloudExtEPg *models.CloudExternalEPg, d *schema.ResourceData) *schema.ResourceData {
+	dn := d.Id()
 	d.SetId(cloudExtEPg.DistinguishedName)
 	d.Set("description", cloudExtEPg.Description)
-	d.Set("cloud_applicationcontainer_dn", GetParentDn(cloudExtEPg.DistinguishedName))
+	// d.Set("cloud_applicationcontainer_dn", GetParentDn(cloudExtEPg.DistinguishedName))
+	if dn != cloudExtEPg.DistinguishedName {
+		d.Set("cloud_applicationcontainer_dn", "")
+	}
 	cloudExtEPgMap, _ := cloudExtEPg.ToMap()
 
 	d.Set("name", cloudExtEPgMap["name"])

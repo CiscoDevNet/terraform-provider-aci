@@ -65,9 +65,13 @@ func getRemoteSPANDestinationGroup(client *client.Client, dn string) (*models.SP
 }
 
 func setSPANDestinationGroupAttributes(spanDestGrp *models.SPANDestinationGroup, d *schema.ResourceData) *schema.ResourceData {
+	dn := d.Id()
 	d.SetId(spanDestGrp.DistinguishedName)
 	d.Set("description", spanDestGrp.Description)
-	d.Set("tenant_dn", GetParentDn(spanDestGrp.DistinguishedName))
+	// d.Set("tenant_dn", GetParentDn(spanDestGrp.DistinguishedName))
+	if dn != spanDestGrp.DistinguishedName {
+		d.Set("tenant_dn", "")
+	}
 	spanDestGrpMap, _ := spanDestGrp.ToMap()
 
 	d.Set("name", spanDestGrpMap["name"])

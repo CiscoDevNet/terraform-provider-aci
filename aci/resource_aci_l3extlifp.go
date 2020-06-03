@@ -125,9 +125,13 @@ func getRemoteLogicalInterfaceProfile(client *client.Client, dn string) (*models
 }
 
 func setLogicalInterfaceProfileAttributes(l3extLIfP *models.LogicalInterfaceProfile, d *schema.ResourceData) *schema.ResourceData {
+	dn := d.Id()
 	d.SetId(l3extLIfP.DistinguishedName)
 	d.Set("description", l3extLIfP.Description)
-	d.Set("logical_node_profile_dn", GetParentDn(l3extLIfP.DistinguishedName))
+	// d.Set("logical_node_profile_dn", GetParentDn(l3extLIfP.DistinguishedName))
+	if dn != l3extLIfP.DistinguishedName {
+		d.Set("logical_node_profile_dn", "")
+	}
 	l3extLIfPMap, _ := l3extLIfP.ToMap()
 
 	d.Set("name", l3extLIfPMap["name"])

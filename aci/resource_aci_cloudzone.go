@@ -65,9 +65,13 @@ func getRemoteCloudAvailabilityZone(client *client.Client, dn string) (*models.C
 }
 
 func setCloudAvailabilityZoneAttributes(cloudZone *models.CloudAvailabilityZone, d *schema.ResourceData) *schema.ResourceData {
+	dn := d.Id()
 	d.SetId(cloudZone.DistinguishedName)
 	d.Set("description", cloudZone.Description)
-	d.Set("cloud_providers_region_dn", GetParentDn(cloudZone.DistinguishedName))
+	// d.Set("cloud_providers_region_dn", GetParentDn(cloudZone.DistinguishedName))
+	if dn != cloudZone.DistinguishedName {
+		d.Set("cloud_providers_region_dn", "")
+	}
 	cloudZoneMap, _ := cloudZone.ToMap()
 
 	d.Set("name", cloudZoneMap["name"])

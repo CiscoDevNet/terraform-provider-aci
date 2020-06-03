@@ -71,9 +71,13 @@ func getRemoteSPANSourcedestinationGroupMatchLabel(client *client.Client, dn str
 }
 
 func setSPANSourcedestinationGroupMatchLabelAttributes(spanSpanLbl *models.SPANSourcedestinationGroupMatchLabel, d *schema.ResourceData) *schema.ResourceData {
+	dn := d.Id()
 	d.SetId(spanSpanLbl.DistinguishedName)
 	d.Set("description", spanSpanLbl.Description)
-	d.Set("span_source_group_dn", GetParentDn(spanSpanLbl.DistinguishedName))
+	// d.Set("span_source_group_dn", GetParentDn(spanSpanLbl.DistinguishedName))
+	if dn != spanSpanLbl.DistinguishedName {
+		d.Set("span_source_group_dn", "")
+	}
 	spanSpanLblMap, _ := spanSpanLbl.ToMap()
 
 	d.Set("name", spanSpanLblMap["name"])

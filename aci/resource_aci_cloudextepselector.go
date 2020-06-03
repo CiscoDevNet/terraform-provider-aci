@@ -82,9 +82,13 @@ func getRemoteCloudEndpointSelectorforExternalEPgs(client *client.Client, dn str
 }
 
 func setCloudEndpointSelectorforExternalEPgsAttributes(cloudExtEPSelector *models.CloudEndpointSelectorforExternalEPgs, d *schema.ResourceData) *schema.ResourceData {
+	dn := d.Id()
 	d.SetId(cloudExtEPSelector.DistinguishedName)
 	d.Set("description", cloudExtEPSelector.Description)
-	d.Set("cloud_external_e_pg_dn", GetParentDn(cloudExtEPSelector.DistinguishedName))
+	// d.Set("cloud_external_e_pg_dn", GetParentDn(cloudExtEPSelector.DistinguishedName))
+	if dn != cloudExtEPSelector.DistinguishedName {
+		d.Set("cloud_external_e_pg_dn", "")
+	}
 	cloudExtEPSelectorMap, _ := cloudExtEPSelector.ToMap()
 
 	d.Set("name", cloudExtEPSelectorMap["name"])

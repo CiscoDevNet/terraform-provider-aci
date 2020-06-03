@@ -65,9 +65,13 @@ func getRemoteActionRuleProfile(client *client.Client, dn string) (*models.Actio
 }
 
 func setActionRuleProfileAttributes(rtctrlAttrP *models.ActionRuleProfile, d *schema.ResourceData) *schema.ResourceData {
+	dn := d.Id()
 	d.SetId(rtctrlAttrP.DistinguishedName)
 	d.Set("description", rtctrlAttrP.Description)
-	d.Set("tenant_dn", GetParentDn(rtctrlAttrP.DistinguishedName))
+	// d.Set("tenant_dn", GetParentDn(rtctrlAttrP.DistinguishedName))
+	if dn != rtctrlAttrP.DistinguishedName {
+		d.Set("tenant_dn", "")
+	}
 	rtctrlAttrPMap, _ := rtctrlAttrP.ToMap()
 
 	d.Set("name", rtctrlAttrPMap["name"])

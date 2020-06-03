@@ -169,9 +169,13 @@ func getRemoteExternalNetworkInstanceProfile(client *client.Client, dn string) (
 }
 
 func setExternalNetworkInstanceProfileAttributes(l3extInstP *models.ExternalNetworkInstanceProfile, d *schema.ResourceData) *schema.ResourceData {
+	dn := d.Id()
 	d.SetId(l3extInstP.DistinguishedName)
 	d.Set("description", l3extInstP.Description)
-	d.Set("l3_outside_dn", GetParentDn(l3extInstP.DistinguishedName))
+	// d.Set("l3_outside_dn", GetParentDn(l3extInstP.DistinguishedName))
+	if dn != l3extInstP.DistinguishedName {
+		d.Set("l3_outside_dn", "")
+	}
 	l3extInstPMap, _ := l3extInstP.ToMap()
 
 	d.Set("name", l3extInstPMap["name"])

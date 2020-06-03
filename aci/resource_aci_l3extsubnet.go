@@ -99,9 +99,13 @@ func getRemoteL3ExtSubnet(client *client.Client, dn string) (*models.L3ExtSubnet
 }
 
 func setL3ExtSubnetAttributes(l3extSubnet *models.L3ExtSubnet, d *schema.ResourceData) *schema.ResourceData {
+	dn := d.Id()
 	d.SetId(l3extSubnet.DistinguishedName)
 	d.Set("description", l3extSubnet.Description)
-	d.Set("external_network_instance_profile_dn", GetParentDn(l3extSubnet.DistinguishedName))
+	// d.Set("external_network_instance_profile_dn", GetParentDn(l3extSubnet.DistinguishedName))
+	if dn != l3extSubnet.DistinguishedName {
+		d.Set("external_network_instance_profile_dn", "")
+	}
 	l3extSubnetMap, _ := l3extSubnet.ToMap()
 
 	d.Set("ip", l3extSubnetMap["ip"])

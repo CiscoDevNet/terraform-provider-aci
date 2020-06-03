@@ -259,9 +259,13 @@ func getRemoteBridgeDomain(client *client.Client, dn string) (*models.BridgeDoma
 }
 
 func setBridgeDomainAttributes(fvBD *models.BridgeDomain, d *schema.ResourceData) *schema.ResourceData {
+	dn := d.Id()
 	d.SetId(fvBD.DistinguishedName)
 	d.Set("description", fvBD.Description)
-	d.Set("tenant_dn", GetParentDn(fvBD.DistinguishedName))
+	// d.Set("tenant_dn", GetParentDn(fvBD.DistinguishedName))
+	if dn != fvBD.DistinguishedName {
+		d.Set("tenant_dn", "")
+	}
 	fvBDMap, _ := fvBD.ToMap()
 
 	d.Set("name", fvBDMap["name"])

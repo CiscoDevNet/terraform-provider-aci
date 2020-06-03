@@ -143,9 +143,13 @@ func getRemoteFilterEntry(client *client.Client, dn string) (*models.FilterEntry
 }
 
 func setFilterEntryAttributes(vzEntry *models.FilterEntry, d *schema.ResourceData) *schema.ResourceData {
+	dn := d.Id()
 	d.SetId(vzEntry.DistinguishedName)
 	d.Set("description", vzEntry.Description)
-	d.Set("filter_dn", GetParentDn(vzEntry.DistinguishedName))
+	// d.Set("filter_dn", GetParentDn(vzEntry.DistinguishedName))
+	if dn != vzEntry.DistinguishedName {
+		d.Set("filter_dn", "")
+	}
 	vzEntryMap, _ := vzEntry.ToMap()
 
 	d.Set("name", vzEntryMap["name"])

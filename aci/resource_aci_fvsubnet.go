@@ -106,9 +106,13 @@ func getRemoteSubnet(client *client.Client, dn string) (*models.Subnet, error) {
 }
 
 func setSubnetAttributes(fvSubnet *models.Subnet, d *schema.ResourceData) *schema.ResourceData {
+	dn := d.Id()
 	d.SetId(fvSubnet.DistinguishedName)
 	d.Set("description", fvSubnet.Description)
-	d.Set("bridge_domain_dn", GetParentDn(fvSubnet.DistinguishedName))
+	// d.Set("bridge_domain_dn", GetParentDn(fvSubnet.DistinguishedName))
+	if dn != fvSubnet.DistinguishedName {
+		d.Set("bridge_domain_dn", "")
+	}
 	fvSubnetMap, _ := fvSubnet.ToMap()
 
 	d.Set("ip", fvSubnetMap["ip"])

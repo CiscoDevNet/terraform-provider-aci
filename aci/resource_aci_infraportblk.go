@@ -95,9 +95,13 @@ func getRemoteAccessPortBlock(client *client.Client, dn string) (*models.AccessP
 }
 
 func setAccessPortBlockAttributes(infraPortBlk *models.AccessPortBlock, d *schema.ResourceData) *schema.ResourceData {
+	dn := d.Id()
 	d.SetId(infraPortBlk.DistinguishedName)
 	d.Set("description", infraPortBlk.Description)
-	d.Set("access_port_selector_dn", GetParentDn(infraPortBlk.DistinguishedName))
+	// d.Set("access_port_selector_dn", GetParentDn(infraPortBlk.DistinguishedName))
+	if dn != infraPortBlk.DistinguishedName {
+		d.Set("access_port_selector_dn", "")
+	}
 	infraPortBlkMap, _ := infraPortBlk.ToMap()
 
 	d.Set("name", infraPortBlkMap["name"])
