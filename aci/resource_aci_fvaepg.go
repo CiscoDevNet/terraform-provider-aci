@@ -217,9 +217,13 @@ func getRemoteApplicationEPG(client *client.Client, dn string) (*models.Applicat
 }
 
 func setApplicationEPGAttributes(fvAEPg *models.ApplicationEPG, d *schema.ResourceData) *schema.ResourceData {
+	dn := d.Id()
 	d.SetId(fvAEPg.DistinguishedName)
 	d.Set("description", fvAEPg.Description)
-	d.Set("application_profile_dn", GetParentDn(fvAEPg.DistinguishedName))
+	// d.Set("application_profile_dn", GetParentDn(fvAEPg.DistinguishedName))
+	if dn != fvAEPg.DistinguishedName {
+		d.Set("application_profile_dn", "")
+	}
 	fvAEPgMap, _ := fvAEPg.ToMap()
 
 	d.Set("name", fvAEPgMap["name"])

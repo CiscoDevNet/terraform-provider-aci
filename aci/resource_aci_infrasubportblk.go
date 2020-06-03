@@ -101,9 +101,13 @@ func getRemoteAccessSubPortBlock(client *client.Client, dn string) (*models.Acce
 }
 
 func setAccessSubPortBlockAttributes(infraSubPortBlk *models.AccessSubPortBlock, d *schema.ResourceData) *schema.ResourceData {
+	dn := d.Id()
 	d.SetId(infraSubPortBlk.DistinguishedName)
 	d.Set("description", infraSubPortBlk.Description)
-	d.Set("access_port_selector_dn", GetParentDn(infraSubPortBlk.DistinguishedName))
+	// d.Set("access_port_selector_dn", GetParentDn(infraSubPortBlk.DistinguishedName))
+	if dn != infraSubPortBlk.DistinguishedName {
+		d.Set("access_port_selector_dn", "")
+	}
 	infraSubPortBlkMap, _ := infraSubPortBlk.ToMap()
 
 	d.Set("name", infraSubPortBlkMap["name"])

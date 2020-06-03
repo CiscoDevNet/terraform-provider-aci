@@ -90,9 +90,13 @@ func getRemoteAny(client *client.Client, dn string) (*models.Any, error) {
 }
 
 func setAnyAttributes(vzAny *models.Any, d *schema.ResourceData) *schema.ResourceData {
+	dn := d.Id()
 	d.SetId(vzAny.DistinguishedName)
 	d.Set("description", vzAny.Description)
-	d.Set("vrf_dn", GetParentDn(vzAny.DistinguishedName))
+	// d.Set("vrf_dn", GetParentDn(vzAny.DistinguishedName))
+	if dn != vzAny.DistinguishedName {
+		d.Set("vrf_dn", "")
+	}
 	vzAnyMap, _ := vzAny.ToMap()
 
 	d.Set("annotation", vzAnyMap["annotation"])

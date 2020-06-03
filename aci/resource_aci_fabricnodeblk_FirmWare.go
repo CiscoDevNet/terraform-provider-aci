@@ -77,9 +77,13 @@ func getRemoteNodeBlockFW(client *client.Client, dn string) (*models.NodeBlockFW
 }
 
 func setNodeBlockAttributesFW(fabricNodeBlk *models.NodeBlockFW, d *schema.ResourceData) *schema.ResourceData {
+	dn := d.Id()
 	d.SetId(fabricNodeBlk.DistinguishedName)
 	d.Set("description", fabricNodeBlk.Description)
-	d.Set("firmware_group_dn", GetParentDn(fabricNodeBlk.DistinguishedName))
+	// d.Set("firmware_group_dn", GetParentDn(fabricNodeBlk.DistinguishedName))
+	if dn != fabricNodeBlk.DistinguishedName {
+		d.Set("firmware_group_dn", "")
+	}
 	fabricNodeBlkMap, _ := fabricNodeBlk.ToMap()
 
 	d.Set("name", fabricNodeBlkMap["name"])

@@ -65,9 +65,13 @@ func getRemoteTabooContract(client *client.Client, dn string) (*models.TabooCont
 }
 
 func setTabooContractAttributes(vzTaboo *models.TabooContract, d *schema.ResourceData) *schema.ResourceData {
+	dn := d.Id()
 	d.SetId(vzTaboo.DistinguishedName)
 	d.Set("description", vzTaboo.Description)
-	d.Set("tenant_dn", GetParentDn(vzTaboo.DistinguishedName))
+	// d.Set("tenant_dn", GetParentDn(vzTaboo.DistinguishedName))
+	if dn != vzTaboo.DistinguishedName {
+		d.Set("tenant_dn", "")
+	}
 	vzTabooMap, _ := vzTaboo.ToMap()
 
 	d.Set("name", vzTabooMap["name"])

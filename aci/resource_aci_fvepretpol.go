@@ -101,9 +101,13 @@ func getRemoteEndPointRetentionPolicy(client *client.Client, dn string) (*models
 }
 
 func setEndPointRetentionPolicyAttributes(fvEpRetPol *models.EndPointRetentionPolicy, d *schema.ResourceData) *schema.ResourceData {
+	dn := d.Id()
 	d.SetId(fvEpRetPol.DistinguishedName)
 	d.Set("description", fvEpRetPol.Description)
-	d.Set("tenant_dn", GetParentDn(fvEpRetPol.DistinguishedName))
+	// d.Set("tenant_dn", GetParentDn(fvEpRetPol.DistinguishedName))
+	if dn != fvEpRetPol.DistinguishedName {
+		d.Set("tenant_dn", "")
+	}
 	fvEpRetPolMap, _ := fvEpRetPol.ToMap()
 
 	d.Set("name", fvEpRetPolMap["name"])

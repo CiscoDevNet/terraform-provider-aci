@@ -77,9 +77,13 @@ func getRemoteApplicationProfile(client *client.Client, dn string) (*models.Appl
 }
 
 func setApplicationProfileAttributes(fvAp *models.ApplicationProfile, d *schema.ResourceData) *schema.ResourceData {
+	dn := d.Id()
 	d.SetId(fvAp.DistinguishedName)
 	d.Set("description", fvAp.Description)
-	d.Set("tenant_dn", GetParentDn(fvAp.DistinguishedName))
+	// d.Set("tenant_dn", GetParentDn(fvAp.DistinguishedName))
+	if dn != fvAp.DistinguishedName {
+		d.Set("tenant_dn", "")
+	}
 	fvApMap, _ := fvAp.ToMap()
 
 	d.Set("name", fvApMap["name"])

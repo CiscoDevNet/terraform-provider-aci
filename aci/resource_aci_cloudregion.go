@@ -71,9 +71,13 @@ func getRemoteCloudProvidersRegion(client *client.Client, dn string) (*models.Cl
 }
 
 func setCloudProvidersRegionAttributes(cloudRegion *models.CloudProvidersRegion, d *schema.ResourceData) *schema.ResourceData {
+	dn := d.Id()
 	d.SetId(cloudRegion.DistinguishedName)
 	d.Set("description", cloudRegion.Description)
-	d.Set("cloud_provider_profile_dn", GetParentDn(cloudRegion.DistinguishedName))
+	// d.Set("cloud_provider_profile_dn", GetParentDn(cloudRegion.DistinguishedName))
+	if dn != cloudRegion.DistinguishedName {
+		d.Set("cloud_provider_profile_dn", "")
+	}
 	cloudRegionMap, _ := cloudRegion.ToMap()
 
 	d.Set("name", cloudRegionMap["name"])

@@ -112,9 +112,13 @@ func getRemoteContractSubject(client *client.Client, dn string) (*models.Contrac
 }
 
 func setContractSubjectAttributes(vzSubj *models.ContractSubject, d *schema.ResourceData) *schema.ResourceData {
+	dn := d.Id()
 	d.SetId(vzSubj.DistinguishedName)
 	d.Set("description", vzSubj.Description)
-	d.Set("contract_dn", GetParentDn(vzSubj.DistinguishedName))
+	// d.Set("contract_dn", GetParentDn(vzSubj.DistinguishedName))
+	if dn != vzSubj.DistinguishedName {
+		d.Set("contract_dn", "")
+	}
 	vzSubjMap, _ := vzSubj.ToMap()
 
 	d.Set("name", vzSubjMap["name"])

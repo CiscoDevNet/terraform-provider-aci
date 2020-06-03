@@ -77,9 +77,13 @@ func getRemoteNodeBlockMG(client *client.Client, dn string) (*models.NodeBlockMG
 }
 
 func setNodeBlockAttributesMG(fabricNodeBlk *models.NodeBlockMG, d *schema.ResourceData) *schema.ResourceData {
+	dn := d.Id()
 	d.SetId(fabricNodeBlk.DistinguishedName)
 	d.Set("description", fabricNodeBlk.Description)
-	d.Set("pod_maintenance_group_dn", GetParentDn(fabricNodeBlk.DistinguishedName))
+	// d.Set("pod_maintenance_group_dn", GetParentDn(fabricNodeBlk.DistinguishedName))
+	if dn != fabricNodeBlk.DistinguishedName {
+		d.Set("pod_maintenance_group_dn", "")
+	}
 	fabricNodeBlkMap, _ := fabricNodeBlk.ToMap()
 
 	d.Set("name", fabricNodeBlkMap["name"])

@@ -61,17 +61,17 @@ func GetMOName(dn string) string {
 
 }
 
-func GetParentDn(childDn string) string {
-	arr := strings.Split(childDn, "/")
-	// in case of cidr blocks we have extra / in the ip range so let's catch it and remove. This will have extra part.
-	if strings.Contains(childDn, "]") && strings.Contains(childDn, "[") {
-		dnWithRn := strings.Split(childDn, "[")
+// func GetParentDn(childDn string) string {
+// 	arr := strings.Split(childDn, "/")
+// 	// in case of cidr blocks we have extra / in the ip range so let's catch it and remove. This will have extra part.
+// 	if strings.Contains(childDn, "]") && strings.Contains(childDn, "[") {
+// 		dnWithRn := strings.Split(childDn, "[")
 
-		slashedArr := strings.Split(dnWithRn[0], "/")
-		return strings.Join(slashedArr[:len(slashedArr)-1], "/")
+// 		slashedArr := strings.Split(dnWithRn[0], "/")
+// 		return strings.Join(slashedArr[:len(slashedArr)-1], "/")
 
-	}
+// 	}
 
-	return strings.Join(arr[:len(arr)-1], "/")
+// 	return strings.Join(arr[:len(arr)-1], "/")
 
-}
+// }

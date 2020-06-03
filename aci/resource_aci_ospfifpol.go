@@ -119,9 +119,13 @@ func getRemoteOSPFInterfacePolicy(client *client.Client, dn string) (*models.OSP
 }
 
 func setOSPFInterfacePolicyAttributes(ospfIfPol *models.OSPFInterfacePolicy, d *schema.ResourceData) *schema.ResourceData {
+	dn := d.Id()
 	d.SetId(ospfIfPol.DistinguishedName)
 	d.Set("description", ospfIfPol.Description)
-	d.Set("tenant_dn", GetParentDn(ospfIfPol.DistinguishedName))
+	// d.Set("tenant_dn", GetParentDn(ospfIfPol.DistinguishedName))
+	if dn != ospfIfPol.DistinguishedName {
+		d.Set("tenant_dn", "")
+	}
 	ospfIfPolMap, _ := ospfIfPol.ToMap()
 
 	d.Set("name", ospfIfPolMap["name"])

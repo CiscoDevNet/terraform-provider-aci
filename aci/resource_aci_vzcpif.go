@@ -69,9 +69,13 @@ func getRemoteImportedContract(client *client.Client, dn string) (*models.Import
 }
 
 func setImportedContractAttributes(vzCPIf *models.ImportedContract, d *schema.ResourceData) *schema.ResourceData {
+	dn := d.Id()
 	d.SetId(vzCPIf.DistinguishedName)
 	d.Set("description", vzCPIf.Description)
-	d.Set("tenant_dn", GetParentDn(vzCPIf.DistinguishedName))
+	// d.Set("tenant_dn", GetParentDn(vzCPIf.DistinguishedName))
+	if dn != vzCPIf.DistinguishedName {
+		d.Set("tenant_dn", "")
+	}
 	vzCPIfMap, _ := vzCPIf.ToMap()
 
 	d.Set("name", vzCPIfMap["name"])

@@ -77,9 +77,13 @@ func getRemoteSPANSourceGroup(client *client.Client, dn string) (*models.SPANSou
 }
 
 func setSPANSourceGroupAttributes(spanSrcGrp *models.SPANSourceGroup, d *schema.ResourceData) *schema.ResourceData {
+	dn := d.Id()
 	d.SetId(spanSrcGrp.DistinguishedName)
 	d.Set("description", spanSrcGrp.Description)
-	d.Set("tenant_dn", GetParentDn(spanSrcGrp.DistinguishedName))
+	// d.Set("tenant_dn", GetParentDn(spanSrcGrp.DistinguishedName))
+	if dn != spanSrcGrp.DistinguishedName {
+		d.Set("tenant_dn", "")
+	}
 	spanSrcGrpMap, _ := spanSrcGrp.ToMap()
 
 	d.Set("name", spanSrcGrpMap["name"])

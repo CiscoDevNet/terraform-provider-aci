@@ -71,9 +71,13 @@ func getRemoteCloudEndpointSelector(client *client.Client, dn string) (*models.C
 }
 
 func setCloudEndpointSelectorAttributes(cloudEPSelector *models.CloudEndpointSelector, d *schema.ResourceData) *schema.ResourceData {
+	dn := d.Id()
 	d.SetId(cloudEPSelector.DistinguishedName)
 	d.Set("description", cloudEPSelector.Description)
-	d.Set("cloud_e_pg_dn", GetParentDn(cloudEPSelector.DistinguishedName))
+	// d.Set("cloud_e_pg_dn", GetParentDn(cloudEPSelector.DistinguishedName))
+	if dn != cloudEPSelector.DistinguishedName {
+		d.Set("cloud_e_pg_dn", "")
+	}
 	cloudEPSelectorMap, _ := cloudEPSelector.ToMap()
 
 	d.Set("name", cloudEPSelectorMap["name"])

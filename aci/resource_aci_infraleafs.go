@@ -77,9 +77,13 @@ func getRemoteSwitchAssociation(client *client.Client, dn string) (*models.Switc
 }
 
 func setSwitchAssociationAttributes(infraLeafS *models.SwitchAssociation, d *schema.ResourceData) *schema.ResourceData {
+	dn := d.Id()
 	d.SetId(infraLeafS.DistinguishedName)
 	d.Set("description", infraLeafS.Description)
-	d.Set("leaf_profile_dn", GetParentDn(infraLeafS.DistinguishedName))
+	// d.Set("leaf_profile_dn", GetParentDn(infraLeafS.DistinguishedName))
+	if dn != infraLeafS.DistinguishedName {
+		d.Set("leaf_profile_dn", "")
+	}
 	infraLeafSMap, _ := infraLeafS.ToMap()
 
 	d.Set("name", infraLeafSMap["name"])

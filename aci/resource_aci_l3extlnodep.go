@@ -83,9 +83,13 @@ func getRemoteLogicalNodeProfile(client *client.Client, dn string) (*models.Logi
 }
 
 func setLogicalNodeProfileAttributes(l3extLNodeP *models.LogicalNodeProfile, d *schema.ResourceData) *schema.ResourceData {
+	dn := d.Id()
 	d.SetId(l3extLNodeP.DistinguishedName)
 	d.Set("description", l3extLNodeP.Description)
-	d.Set("l3_outside_dn", GetParentDn(l3extLNodeP.DistinguishedName))
+	// d.Set("l3_outside_dn", GetParentDn(l3extLNodeP.DistinguishedName))
+	if dn != l3extLNodeP.DistinguishedName {
+		d.Set("l3_outside_dn", "")
+	}
 	l3extLNodePMap, _ := l3extLNodeP.ToMap()
 
 	d.Set("name", l3extLNodePMap["name"])

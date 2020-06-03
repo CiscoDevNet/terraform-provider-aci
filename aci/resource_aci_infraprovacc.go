@@ -66,9 +66,13 @@ func getRemoteVlanEncapsulationforVxlanTraffic(client *client.Client, dn string)
 }
 
 func setVlanEncapsulationforVxlanTrafficAttributes(infraProvAcc *models.VlanEncapsulationforVxlanTraffic, d *schema.ResourceData) *schema.ResourceData {
+	dn := d.Id()
 	d.SetId(infraProvAcc.DistinguishedName)
 	d.Set("description", infraProvAcc.Description)
-	d.Set("attachable_access_entity_profile_dn", GetParentDn(infraProvAcc.DistinguishedName))
+	// d.Set("attachable_access_entity_profile_dn", GetParentDn(infraProvAcc.DistinguishedName))
+	if dn != infraProvAcc.DistinguishedName {
+		d.Set("attachable_access_entity_profile_dn", "")
+	}
 	infraProvAccMap, _ := infraProvAcc.ToMap()
 
 	d.Set("annotation", infraProvAccMap["annotation"])

@@ -89,9 +89,13 @@ func getRemoteRanges(client *client.Client, dn string) (*models.Ranges, error) {
 }
 
 func setRangesAttributes(fvnsEncapBlk *models.Ranges, d *schema.ResourceData) *schema.ResourceData {
+	dn := d.Id()
 	d.SetId(fvnsEncapBlk.DistinguishedName)
 	d.Set("description", fvnsEncapBlk.Description)
-	d.Set("vlan_pool_dn", GetParentDn(fvnsEncapBlk.DistinguishedName))
+	// d.Set("vlan_pool_dn", GetParentDn(fvnsEncapBlk.DistinguishedName))
+	if dn != fvnsEncapBlk.DistinguishedName {
+		d.Set("vlan_pool_dn", "")
+	}
 	fvnsEncapBlkMap, _ := fvnsEncapBlk.ToMap()
 
 	d.Set("_from", fvnsEncapBlkMap["from"])

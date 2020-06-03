@@ -107,9 +107,13 @@ func getRemoteCloudContextProfile(client *client.Client, dn string) (*models.Clo
 }
 
 func setCloudContextProfileAttributes(cloudCtxProfile *models.CloudContextProfile, d *schema.ResourceData) *schema.ResourceData {
+	dn := d.Id()
 	d.SetId(cloudCtxProfile.DistinguishedName)
 	d.Set("description", cloudCtxProfile.Description)
-	d.Set("tenant_dn", GetParentDn(cloudCtxProfile.DistinguishedName))
+	// d.Set("tenant_dn", GetParentDn(cloudCtxProfile.DistinguishedName))
+	if dn != cloudCtxProfile.DistinguishedName {
+		d.Set("tenant_dn", "")
+	}
 	cloudCtxProfileMap, _ := cloudCtxProfile.ToMap()
 	d.Set("name", GetMOName(cloudCtxProfile.DistinguishedName))
 

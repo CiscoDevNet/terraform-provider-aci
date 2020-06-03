@@ -142,9 +142,13 @@ func getRemoteCloudEPg(client *client.Client, dn string) (*models.CloudEPg, erro
 }
 
 func setCloudEPgAttributes(cloudEPg *models.CloudEPg, d *schema.ResourceData) *schema.ResourceData {
+	dn := d.Id()
 	d.SetId(cloudEPg.DistinguishedName)
 	d.Set("description", cloudEPg.Description)
-	d.Set("cloud_applicationcontainer_dn", GetParentDn(cloudEPg.DistinguishedName))
+	// d.Set("cloud_applicationcontainer_dn", GetParentDn(cloudEPg.DistinguishedName))
+	if dn != cloudEPg.DistinguishedName {
+		d.Set("cloud_applicationcontainer_dn", "")
+	}
 	cloudEPgMap, _ := cloudEPg.ToMap()
 
 	d.Set("name", cloudEPgMap["name"])

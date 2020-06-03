@@ -71,9 +71,13 @@ func getRemoteX509Certificate(client *client.Client, dn string) (*models.X509Cer
 }
 
 func setX509CertificateAttributes(aaaUserCert *models.X509Certificate, d *schema.ResourceData) *schema.ResourceData {
+	dn := d.Id()
 	d.SetId(aaaUserCert.DistinguishedName)
 	d.Set("description", aaaUserCert.Description)
-	d.Set("local_user_dn", GetParentDn(aaaUserCert.DistinguishedName))
+	// d.Set("local_user_dn", GetParentDn(aaaUserCert.DistinguishedName))
+	if dn != aaaUserCert.DistinguishedName {
+		d.Set("local_user_dn", "")
+	}
 	aaaUserCertMap, _ := aaaUserCert.ToMap()
 
 	d.Set("name", aaaUserCertMap["name"])

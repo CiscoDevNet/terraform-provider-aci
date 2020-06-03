@@ -75,8 +75,12 @@ func getRemoteFabricNode(client *client.Client, dn string) (*models.FabricNode, 
 }
 
 func setFabricNodeAttributes(l3extRsNodeL3OutAtt *models.FabricNode, d *schema.ResourceData) *schema.ResourceData {
+	dn := d.Id()
 	d.SetId(l3extRsNodeL3OutAtt.DistinguishedName)
-	d.Set("logical_node_profile_dn", GetParentDn(l3extRsNodeL3OutAtt.DistinguishedName))
+	// d.Set("logical_node_profile_dn", GetParentDn(l3extRsNodeL3OutAtt.DistinguishedName))
+	if dn != l3extRsNodeL3OutAtt.DistinguishedName {
+		d.Set("logical_node_profile_dn", "")
+	}
 	l3extRsNodeL3OutAttMap, _ := l3extRsNodeL3OutAtt.ToMap()
 
 	d.Set("tdn", l3extRsNodeL3OutAttMap["tDn"])

@@ -115,9 +115,13 @@ func getRemoteL3Outside(client *client.Client, dn string) (*models.L3Outside, er
 }
 
 func setL3OutsideAttributes(l3extOut *models.L3Outside, d *schema.ResourceData) *schema.ResourceData {
+	dn := d.Id()
 	d.SetId(l3extOut.DistinguishedName)
 	d.Set("description", l3extOut.Description)
-	d.Set("tenant_dn", GetParentDn(l3extOut.DistinguishedName))
+	// d.Set("tenant_dn", GetParentDn(l3extOut.DistinguishedName))
+	if dn != l3extOut.DistinguishedName {
+		d.Set("tenant_dn", "")
+	}
 	l3extOutMap, _ := l3extOut.ToMap()
 
 	d.Set("name", l3extOutMap["name"])
