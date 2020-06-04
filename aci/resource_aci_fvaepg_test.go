@@ -6,8 +6,8 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform/helper/resource"
-	"github.com/hashicorp/terraform/terraform"
+	"github.com/hashicorp/terraform-pludin-sdk/helper/resource"
+	"github.com/hashicorp/terraform-pludin-sdk/terraform"
 )
 
 func TestAccAciApplicationEPG_Basic(t *testing.T) {
