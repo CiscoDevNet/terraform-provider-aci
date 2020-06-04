@@ -242,38 +242,39 @@ func (sm *ServiceManager) ReadRelationfvRsFcPathAttFromApplicationEPG(parentDn s
 	return st, err
 
 }
-func (sm *ServiceManager) CreateRelationfvRsProvFromApplicationEPG(parentDn, tnVzBrCPName string) error {
-	dn := fmt.Sprintf("%s/rsprov-%s", parentDn, tnVzBrCPName)
-	containerJSON := []byte(fmt.Sprintf(`{
-		"%s": {
-			"attributes": {
-				"dn": "%s"				
-			}
-		}
-	}`, "fvRsProv", dn))
 
-	jsonPayload, err := container.ParseJSON(containerJSON)
-	if err != nil {
-		return err
-	}
+// func (sm *ServiceManager) CreateRelationfvRsProvFromApplicationEPG(parentDn, tnVzBrCPName string) error {
+// 	dn := fmt.Sprintf("%s/rsprov-%s", parentDn, tnVzBrCPName)
+// 	containerJSON := []byte(fmt.Sprintf(`{
+// 		"%s": {
+// 			"attributes": {
+// 				"dn": "%s"
+// 			}
+// 		}
+// 	}`, "fvRsProv", dn))
 
-	req, err := sm.client.MakeRestRequest("POST", fmt.Sprintf("%s.json", sm.MOURL), jsonPayload, true)
-	if err != nil {
-		return err
-	}
+// 	jsonPayload, err := container.ParseJSON(containerJSON)
+// 	if err != nil {
+// 		return err
+// 	}
 
-	_, _, err = sm.client.Do(req)
-	if err != nil {
-		return err
-	}
+// 	req, err := sm.client.MakeRestRequest("POST", fmt.Sprintf("%s.json", sm.MOURL), jsonPayload, true)
+// 	if err != nil {
+// 		return err
+// 	}
 
-	return nil
-}
+// 	_, _, err = sm.client.Do(req)
+// 	if err != nil {
+// 		return err
+// 	}
 
-func (sm *ServiceManager) DeleteRelationfvRsProvFromApplicationEPG(parentDn, tnVzBrCPName string) error {
-	dn := fmt.Sprintf("%s/rsprov-%s", parentDn, tnVzBrCPName)
-	return sm.DeleteByDn(dn, "fvRsProv")
-}
+// 	return nil
+// }
+
+// func (sm *ServiceManager) DeleteRelationfvRsProvFromApplicationEPG(parentDn, tnVzBrCPName string) error {
+// 	dn := fmt.Sprintf("%s/rsprov-%s", parentDn, tnVzBrCPName)
+// 	return sm.DeleteByDn(dn, "fvRsProv")
+// }
 
 func (sm *ServiceManager) ReadRelationfvRsProvFromApplicationEPG(parentDn string) (interface{}, error) {
 	baseurlStr := "/api/node/class"
@@ -536,38 +537,39 @@ func (sm *ServiceManager) ReadRelationfvRsDppPolFromApplicationEPG(parentDn stri
 	}
 
 }
-func (sm *ServiceManager) CreateRelationfvRsConsFromApplicationEPG(parentDn, tnVzBrCPName string) error {
-	dn := fmt.Sprintf("%s/rscons-%s", parentDn, tnVzBrCPName)
-	containerJSON := []byte(fmt.Sprintf(`{
-		"%s": {
-			"attributes": {
-				"dn": "%s"				
-			}
-		}
-	}`, "fvRsCons", dn))
 
-	jsonPayload, err := container.ParseJSON(containerJSON)
-	if err != nil {
-		return err
-	}
+// func (sm *ServiceManager) CreateRelationfvRsConsFromApplicationEPG(parentDn, tnVzBrCPName string) error {
+// 	dn := fmt.Sprintf("%s/rscons-%s", parentDn, tnVzBrCPName)
+// 	containerJSON := []byte(fmt.Sprintf(`{
+// 		"%s": {
+// 			"attributes": {
+// 				"dn": "%s"
+// 			}
+// 		}
+// 	}`, "fvRsCons", dn))
 
-	req, err := sm.client.MakeRestRequest("POST", fmt.Sprintf("%s.json", sm.MOURL), jsonPayload, true)
-	if err != nil {
-		return err
-	}
+// 	jsonPayload, err := container.ParseJSON(containerJSON)
+// 	if err != nil {
+// 		return err
+// 	}
 
-	_, _, err = sm.client.Do(req)
-	if err != nil {
-		return err
-	}
+// 	req, err := sm.client.MakeRestRequest("POST", fmt.Sprintf("%s.json", sm.MOURL), jsonPayload, true)
+// 	if err != nil {
+// 		return err
+// 	}
 
-	return nil
-}
+// 	_, _, err = sm.client.Do(req)
+// 	if err != nil {
+// 		return err
+// 	}
 
-func (sm *ServiceManager) DeleteRelationfvRsConsFromApplicationEPG(parentDn, tnVzBrCPName string) error {
-	dn := fmt.Sprintf("%s/rscons-%s", parentDn, tnVzBrCPName)
-	return sm.DeleteByDn(dn, "fvRsCons")
-}
+// 	return nil
+// }
+
+// func (sm *ServiceManager) DeleteRelationfvRsConsFromApplicationEPG(parentDn, tnVzBrCPName string) error {
+// 	dn := fmt.Sprintf("%s/rscons-%s", parentDn, tnVzBrCPName)
+// 	return sm.DeleteByDn(dn, "fvRsCons")
+// }
 
 func (sm *ServiceManager) ReadRelationfvRsConsFromApplicationEPG(parentDn string) (interface{}, error) {
 	baseurlStr := "/api/node/class"

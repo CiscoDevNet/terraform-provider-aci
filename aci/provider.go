@@ -137,6 +137,7 @@ func Provider() terraform.ResourceProvider {
 			"aci_logical_node_to_fabric_node":              resourceAciFabricNode(),
 			"aci_any":                                      resourceAciAny(),
 			"aci_imported_contract":                        resourceAciImportedContract(),
+			"aci_contract_consumer_provider":               resourceAciContractProvider(),
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
@@ -220,6 +221,7 @@ func Provider() terraform.ResourceProvider {
 			"aci_logical_node_to_fabric_node":              dataSourceAciFabricNode(),
 			"aci_any":                                      dataSourceAciAny(),
 			"aci_imported_contract":                        dataSourceAciImportedContract(),
+			"aci_contract_consumer_provider":               dataSourceAciContractProvider(),
 		},
 
 		ConfigureFunc: configureClient,
