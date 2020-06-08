@@ -136,6 +136,33 @@ func (sm *ServiceManager) Delete(obj models.Model) error {
 	return nil
 }
 
+func (sm *ServiceManager) PostViaURL(url string, obj models.Model) (*container.Container, error) {
+
+    jsonPayload, _, err := sm.PrepareModel(obj)
+
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := sm.client.MakeRestRequest("POST", url, jsonPayload, true)
+
+	if err != nil {
+		return nil, err
+	}
+
+	cont, _, err := sm.client.Do(req)
+	log.Printf("PostViaUrl %+v", obj)
+	if err != nil {
+		return nil, err
+	}
+
+	if cont == nil {
+		return nil, errors.New("Empty response body")
+	}
+	return cont, CheckForErrors(cont, "POST")
+
+}
+
 func (sm *ServiceManager) GetViaURL(url string) (*container.Container, error) {
 	req, err := sm.client.MakeRestRequest("GET", url, nil, true)
 
