@@ -70,6 +70,50 @@ func resourceAciContract() *schema.Resource {
 
 				Optional: true,
 			},
+
+			"filter": &schema.Schema{
+				Type:     schema.TypeSet,
+				Optional: true,
+				Computed: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"id": &schema.Schema{
+							Type:     schema.TypeString,
+							Computed: true,
+						},
+
+						"filter_name": &schema.Schema{
+							Type:     schema.TypeString,
+							Required: true,
+						},
+
+						"description": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+							Computed: true,
+						},
+
+						"annotation": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+							Computed: true,
+						},
+
+						"name_alias": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+							Computed: true,
+						},
+					},
+				},
+			},
+
+			"filter_ids": &schema.Schema{
+				Type:     schema.TypeList,
+				Optional: true,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Computed: true,
+			},
 		}),
 	}
 }
@@ -86,6 +130,21 @@ func getRemoteContract(client *client.Client, dn string) (*models.Contract, erro
 	}
 
 	return vzBrCP, nil
+}
+
+func getRemoteFilterFromContract(client *client.Client, dn string) (*models.Filter, error) {
+	vzFilterCont, err := client.Get(dn)
+	if err != nil {
+		return nil, err
+	}
+
+	vzFilter := models.FilterFromContainer(vzFilterCont)
+
+	if vzFilter.DistinguishedName == "" {
+		return nil, fmt.Errorf("Filter %s not found", vzFilter.DistinguishedName)
+	}
+
+	return vzFilter, nil
 }
 
 func setContractAttributes(vzBrCP *models.Contract, d *schema.ResourceData) *schema.ResourceData {
@@ -105,6 +164,26 @@ func setContractAttributes(vzBrCP *models.Contract, d *schema.ResourceData) *sch
 	d.Set("prio", vzBrCPMap["prio"])
 	d.Set("scope", vzBrCPMap["scope"])
 	d.Set("target_dscp", vzBrCPMap["targetDscp"])
+	return d
+}
+
+func setFilterAttributesFromContract(vzfilters []*models.Filter, d *schema.ResourceData) *schema.ResourceData {
+	log.Println("Check .... :", vzfilters)
+	filterSet := make([]interface{}, 0, 1)
+	for _, filter := range vzfilters {
+		fMap := make(map[string]interface{})
+		fMap["description"] = filter.Description
+		fMap["id"] = filter.DistinguishedName
+
+		vzFilterMap, _ := filter.ToMap()
+		fMap["filter_name"] = vzFilterMap["name"]
+		fMap["annotation"] = vzFilterMap["annotation"]
+		fMap["name_alias"] = vzFilterMap["nameAlias"]
+
+		filterSet = append(filterSet, fMap)
+	}
+	log.Println("Check ...:", filterSet)
+	d.Set("filter", filterSet)
 	return d
 }
 
@@ -157,6 +236,42 @@ func resourceAciContractCreate(d *schema.ResourceData, m interface{}) error {
 	if err != nil {
 		return err
 	}
+
+	if filters, ok := d.GetOk("filter"); ok {
+		// filterSet := make([]interface{}, 0, 1)
+		filterIDS := make([]string, 0, 1)
+		vzfilters := filters.(*schema.Set).List()
+		for _, val := range vzfilters {
+			vzFilterAttr := models.FilterAttributes{}
+			filter := val.(map[string]interface{})
+
+			name := filter["filter_name"].(string)
+
+			desc := filter["description"].(string)
+
+			if filter["annotation"] != nil {
+				vzFilterAttr.Annotation = filter["annotation"].(string)
+			}
+
+			if filter["name_alias"] != nil {
+				vzFilterAttr.NameAlias = filter["name_alias"].(string)
+			}
+
+			vzFilter := models.NewFilter(fmt.Sprintf("flt-%s", name), TenantDn, desc, vzFilterAttr)
+
+			err := aciClient.Save(vzFilter)
+			if err != nil {
+				return err
+			}
+
+			// fMap := make(map[string]interface{})
+			// fMap["id"] = vzFilter.DistinguishedName
+			filterIDS = append(filterIDS, vzFilter.DistinguishedName)
+		}
+		log.Println("Check ... :", filterIDS)
+		d.Set("filter_ids", filterIDS)
+	}
+
 	d.Partial(true)
 
 	d.SetPartial("name")
@@ -216,6 +331,50 @@ func resourceAciContractUpdate(d *schema.ResourceData, m interface{}) error {
 	if err != nil {
 		return err
 	}
+
+	if d.HasChange("filter") {
+		filter := d.Get("filter_ids").([]interface{})
+		for _, val := range filter {
+			filterDN := val.(string)
+			err := aciClient.DeleteByDn(filterDN, "vzFilter")
+			if err != nil {
+				return err
+			}
+		}
+
+		filters := d.Get("filter")
+		filterIDS := make([]string, 0, 1)
+		vzfilters := filters.(*schema.Set).List()
+		for _, val := range vzfilters {
+			vzFilterAttr := models.FilterAttributes{}
+			filter := val.(map[string]interface{})
+
+			name := filter["filter_name"].(string)
+
+			desc := filter["description"].(string)
+
+			if filter["annotation"] != nil {
+				vzFilterAttr.Annotation = filter["annotation"].(string)
+			}
+
+			if filter["name_alias"] != nil {
+				vzFilterAttr.NameAlias = filter["name_alias"].(string)
+			}
+
+			vzFilter := models.NewFilter(fmt.Sprintf("flt-%s", name), TenantDn, desc, vzFilterAttr)
+
+			// vzFilter.Status = "modified"
+			err := aciClient.Save(vzFilter)
+			if err != nil {
+				return err
+			}
+
+			filterIDS = append(filterIDS, vzFilter.DistinguishedName)
+		}
+
+		d.Set("filter_ids", filterIDS)
+	}
+
 	d.Partial(true)
 
 	d.SetPartial("name")
@@ -259,6 +418,18 @@ func resourceAciContractRead(d *schema.ResourceData, m interface{}) error {
 	}
 	setContractAttributes(vzBrCP, d)
 
+	filters := d.Get("filter_ids").([]interface{})
+	log.Println("Check ... :", filters)
+	vzFilters := make([]*models.Filter, 0, 1)
+	for _, val := range filters {
+		filterDN := val.(string)
+		vzfilter, err := getRemoteFilterFromContract(aciClient, filterDN)
+		if err == nil {
+			vzFilters = append(vzFilters, vzfilter)
+		}
+	}
+	setFilterAttributesFromContract(vzFilters, d)
+
 	vzRsGraphAttData, err := aciClient.ReadRelationvzRsGraphAttFromContract(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation vzRsGraphAtt %v", err)
@@ -280,6 +451,15 @@ func resourceAciContractDelete(d *schema.ResourceData, m interface{}) error {
 	err := aciClient.DeleteByDn(dn, "vzBrCP")
 	if err != nil {
 		return err
+	}
+
+	filters := d.Get("filter_ids").([]interface{})
+	for _, val := range filters {
+		filterDN := val.(string)
+		err := aciClient.DeleteByDn(filterDN, "vzFilter")
+		if err != nil {
+			return err
+		}
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
