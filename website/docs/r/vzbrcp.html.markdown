@@ -50,11 +50,16 @@ Manages ACI Contract
                 
 
 * `filter` - (Optional) to manage filters from the contract resource. It has the attributes like filter_name, annotation, description and name_alias.
+* `filter.filter_name` - (Required) Name of the filter object.
+* `filter.description` - (Optional) Description for the filter object.
+* `filter.annotation` - (Optional) Annotation for filter object.
+* `filter.name_alias` - (Optional) Name alias for filter object.
 
 ## Attribute Reference
 
 The only attribute that this resource exports is the `id`, which is set to the
 Dn of the Contract.
+* `filter.id` - exports this attribute for filter object. Set to the Dn for the filter managed by the contract.
 
 ## Importing ##
 
