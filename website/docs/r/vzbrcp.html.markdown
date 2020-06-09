@@ -21,6 +21,19 @@ Manages ACI Contract
 		prio        = "level1"
 		scope       = "tenant"
 		target_dscp = "unspecified"
+		filter {
+  			filter_name = "example1"
+  			description = "first filter from contract resource"
+  			annotation = "tag_filter"
+  			name_alias = "example1"
+		}
+		filter {
+  			filter_name = "example2"
+  			description = "second filter from contract resource"
+  			annotation = "tag_filter"
+  			name_alias = "example2"
+		}
+
 	}
 ```
 ## Argument Reference ##
@@ -36,11 +49,17 @@ Manages ACI Contract
 * `relation_vz_rs_graph_att` - (Optional) Relation to class vnsAbsGraph. Cardinality - N_TO_ONE. Type - String.
                 
 
+* `filter` - (Optional) to manage filters from the contract resource. It has the attributes like filter_name, annotation, description and name_alias.
+* `filter.filter_name` - (Required) Name of the filter object.
+* `filter.description` - (Optional) Description for the filter object.
+* `filter.annotation` - (Optional) Annotation for filter object.
+* `filter.name_alias` - (Optional) Name alias for filter object.
 
 ## Attribute Reference
 
 The only attribute that this resource exports is the `id`, which is set to the
 Dn of the Contract.
+* `filter.id` - exports this attribute for filter object. Set to the Dn for the filter managed by the contract.
 
 ## Importing ##
 
