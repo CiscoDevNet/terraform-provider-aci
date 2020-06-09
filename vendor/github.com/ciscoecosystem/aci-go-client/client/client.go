@@ -118,9 +118,20 @@ func initClient(clientUrl, username string, options ...Option) *Client {
 func GetClient(clientUrl, username string, options ...Option) *Client {
 	if clientImpl == nil {
 		clientImpl = initClient(clientUrl, username, options...)
+	} else {
+		// making sure it is the same client
+		bUrl, err := url.Parse(clientUrl)
+		if err != nil {
+			// cannot move forward if url is undefined
+			log.Fatal(err)
+		}
+		if bUrl != clientImpl.BaseURL {
+			clientImpl = initClient(clientUrl, username, options...)
+		}
 	}
 	return clientImpl
 }
+
 func (c *Client) configProxy(transport *http.Transport) *http.Transport {
 	pUrl, err := url.Parse(c.proxyUrl)
 	if err != nil {
