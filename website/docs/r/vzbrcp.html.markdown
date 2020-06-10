@@ -22,24 +22,24 @@ Manages ACI Contract
 		scope       = "tenant"
 		target_dscp = "unspecified"
 		filter {
-  			annotation 	= "tag_filter"
+  			annotation  = "tag_filter"
   			description = "first filter from contract resource"
   			filter_entry {
-    			entry_description   = "hello world"
-	  			filter_entry_name 	= "check_entry3"
-    			d_from_port 		= "http"
-    			ether_t       		= "ipv4"
-    			prot 				= "tcp"  
+    				entry_description   = "hello world"
+	  			filter_entry_name   = "check_entry3"
+    				d_from_port 	    = "http"
+    				ether_t       	    = "ipv4"
+    				prot 		    = "tcp"  
   			}
   			filter_entry {
-    			entry_description   = "world"
-	  			filter_entry_name 	= "check_entry1"
-    			d_from_port 		= "443"
-    			ether_t       		= "ipv4"
-    			prot 				= "tcp"  
+    				entry_description   = "world"
+	  			filter_entry_name   = "check_entry1"
+    				d_from_port 	    = "443"
+    				ether_t       	    = "ipv4"
+    				prot 		    = "tcp"  
   			}
-  			filter_name = "abcd"
-  			name_alias 	= "abcd"
+  			filter_name  = "abcd"
+  			name_alias   = "abcd"
 		}
 		filter {
   			filter_name = "example2"
