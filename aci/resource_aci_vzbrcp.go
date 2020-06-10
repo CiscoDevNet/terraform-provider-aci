@@ -73,7 +73,7 @@ func resourceAciContract() *schema.Resource {
 			},
 
 			"filter": &schema.Schema{
-				Type:     schema.TypeSet,
+				Type:     schema.TypeList,
 				Optional: true,
 				Computed: true,
 				Elem: &schema.Resource{
@@ -107,7 +107,7 @@ func resourceAciContract() *schema.Resource {
 						},
 
 						"filter_entry": &schema.Schema{
-							Type:     schema.TypeSet,
+							Type:     schema.TypeList,
 							Optional: true,
 							Computed: true,
 							Elem: &schema.Resource{
@@ -122,13 +122,13 @@ func resourceAciContract() *schema.Resource {
 										Required: true,
 									},
 
-									"description": &schema.Schema{
+									"entry_description": &schema.Schema{
 										Type:     schema.TypeString,
 										Optional: true,
 										Computed: true,
 									},
 
-									"annotation": &schema.Schema{
+									"entry_annotation": &schema.Schema{
 										Type:     schema.TypeString,
 										Optional: true,
 										Computed: true,
@@ -150,6 +150,25 @@ func resourceAciContract() *schema.Resource {
 										Type:     schema.TypeString,
 										Optional: true,
 										Computed: true,
+										DiffSuppressFunc: func(k, old, new string, d *schema.ResourceData) bool {
+											constantPortMapping := map[string]string{
+												"smtp":        "25",
+												"dns":         "53",
+												"http":        "80",
+												"https":       "443",
+												"pop3":        "110",
+												"rtsp":        "554",
+												"ftpData":     "20",
+												"ssh":         "22",
+												"unspecified": "0",
+											}
+											if old != "" {
+												if constantPortMapping[new] == old {
+													return true
+												}
+											}
+											return false
+										},
 									},
 
 									"d_to_port": &schema.Schema{
@@ -182,7 +201,7 @@ func resourceAciContract() *schema.Resource {
 										Computed: true,
 									},
 
-									"name_alias": &schema.Schema{
+									"entry_name_alias": &schema.Schema{
 										Type:     schema.TypeString,
 										Optional: true,
 										Computed: true,
@@ -348,18 +367,18 @@ func setFilterEntryAttributesFromContract(vzentry *models.FilterEntry, d *schema
 		"unspecified": "0",
 	}
 	eMap["id"] = vzentry.DistinguishedName
-	eMap["description"] = vzentry.Description
+	eMap["entry_description"] = vzentry.Description
 
 	vzEntryMap, _ := vzentry.ToMap()
 	eMap["filter_entry_name"] = vzEntryMap["name"]
-	eMap["annotation"] = vzEntryMap["annotation"]
+	eMap["entry_annotation"] = vzEntryMap["annotation"]
 	eMap["apply_to_frag"] = vzEntryMap["applyToFrag"]
 	eMap["arp_opc"] = vzEntryMap["arpOpc"]
 	eMap["ether_t"] = vzEntryMap["etherT"]
 	eMap["icmpv4_t"] = vzEntryMap["icmpv4T"]
 	eMap["icmpv6_t"] = vzEntryMap["icmpv6T"]
 	eMap["match_dscp"] = vzEntryMap["matchDscp"]
-	eMap["name_alias"] = vzEntryMap["nameAlias"]
+	eMap["entry_name_alias"] = vzEntryMap["nameAlias"]
 	eMap["prot"] = vzEntryMap["prot"]
 	eMap["s_from_port"] = vzEntryMap["sFromPort"]
 	eMap["s_to_port"] = vzEntryMap["sToPort"]
@@ -420,11 +439,11 @@ func resourceAciContractCreate(d *schema.ResourceData, m interface{}) error {
 		return err
 	}
 
+	filterIDS := make([]string, 0, 1)
+	filterentryIDS := make([]string, 0, 1)
 	if filters, ok := d.GetOk("filter"); ok {
 		// filterSet := make([]interface{}, 0, 1)
-		filterIDS := make([]string, 0, 1)
-		filterentryIDS := make([]string, 0, 1)
-		vzfilters := filters.(*schema.Set).List()
+		vzfilters := filters.([]interface{})
 		for _, val := range vzfilters {
 			vzFilterAttr := models.FilterAttributes{}
 			filter := val.(map[string]interface{})
@@ -449,21 +468,21 @@ func resourceAciContractCreate(d *schema.ResourceData, m interface{}) error {
 			}
 
 			if filter["filter_entry"] != nil {
-				vzfilterentries := filter["filter_entry"].(*schema.Set).List()
+				vzfilterentries := filter["filter_entry"].([]interface{})
 				log.Println("Filter entries ... :", vzfilterentries)
 				for _, entry := range vzfilterentries {
 					vzEntryAttr := models.FilterEntryAttributes{}
 					vzEntry := entry.(map[string]interface{})
 
 					log.Println("Entries ......... :", vzEntry)
-					entryDesc := vzEntry["description"].(string)
+					entryDesc := vzEntry["entry_description"].(string)
 
 					entryName := vzEntry["filter_entry_name"].(string)
 
 					filterDn := vzFilter.DistinguishedName
 
-					if vzEntry["annotation"] != nil {
-						vzEntryAttr.Annotation = vzEntry["annotation"].(string)
+					if vzEntry["entry_annotation"] != nil {
+						vzEntryAttr.Annotation = vzEntry["entry_annotation"].(string)
 					}
 					if vzEntry["apply_to_frag"] != nil {
 						vzEntryAttr.ApplyToFrag = vzEntry["apply_to_frag"].(string)
@@ -489,8 +508,8 @@ func resourceAciContractCreate(d *schema.ResourceData, m interface{}) error {
 					if vzEntry["match_dscp"] != nil {
 						vzEntryAttr.MatchDscp = vzEntry["match_dscp"].(string)
 					}
-					if vzEntry["name_alias"] != nil {
-						vzEntryAttr.NameAlias = vzEntry["name_alias"].(string)
+					if vzEntry["entry_name_alias"] != nil {
+						vzEntryAttr.NameAlias = vzEntry["entry_name_alias"].(string)
 					}
 					if vzEntry["prot"] != nil {
 						vzEntryAttr.Prot = vzEntry["prot"].(string)
@@ -524,6 +543,9 @@ func resourceAciContractCreate(d *schema.ResourceData, m interface{}) error {
 			filterIDS = append(filterIDS, vzFilter.DistinguishedName)
 		}
 		log.Println("Check ... :", filterIDS)
+		d.Set("filter_ids", filterIDS)
+		d.Set("filter_entry_ids", filterentryIDS)
+	} else {
 		d.Set("filter_ids", filterIDS)
 		d.Set("filter_entry_ids", filterentryIDS)
 	}
@@ -600,7 +622,8 @@ func resourceAciContractUpdate(d *schema.ResourceData, m interface{}) error {
 
 		filters := d.Get("filter")
 		filterIDS := make([]string, 0, 1)
-		vzfilters := filters.(*schema.Set).List()
+		filterentryIDS := make([]string, 0, 1)
+		vzfilters := filters.([]interface{})
 		for _, val := range vzfilters {
 			vzFilterAttr := models.FilterAttributes{}
 			filter := val.(map[string]interface{})
@@ -625,10 +648,81 @@ func resourceAciContractUpdate(d *schema.ResourceData, m interface{}) error {
 				return err
 			}
 
+			if filter["filter_entry"] != nil {
+				vzfilterentries := filter["filter_entry"].([]interface{})
+				log.Println("Filter entries ... :", vzfilterentries)
+				for _, entry := range vzfilterentries {
+					vzEntryAttr := models.FilterEntryAttributes{}
+					vzEntry := entry.(map[string]interface{})
+
+					log.Println("Entries ......... :", vzEntry)
+					entryDesc := vzEntry["entry_description"].(string)
+
+					entryName := vzEntry["filter_entry_name"].(string)
+
+					filterDn := vzFilter.DistinguishedName
+
+					if vzEntry["entry_annotation"] != nil {
+						vzEntryAttr.Annotation = vzEntry["entry_annotation"].(string)
+					}
+					if vzEntry["apply_to_frag"] != nil {
+						vzEntryAttr.ApplyToFrag = vzEntry["apply_to_frag"].(string)
+					}
+					if vzEntry["arp_opc"] != nil {
+						vzEntryAttr.ArpOpc = vzEntry["arp_opc"].(string)
+					}
+					if vzEntry["d_from_port"] != nil {
+						vzEntryAttr.DFromPort = vzEntry["d_from_port"].(string)
+					}
+					if vzEntry["d_to_port"] != nil {
+						vzEntryAttr.DToPort = vzEntry["d_to_port"].(string)
+					}
+					if vzEntry["ether_t"] != nil {
+						vzEntryAttr.EtherT = vzEntry["ether_t"].(string)
+					}
+					if vzEntry["icmpv4_t"] != nil {
+						vzEntryAttr.Icmpv4T = vzEntry["icmpv4_t"].(string)
+					}
+					if vzEntry["icmpv6_t"] != nil {
+						vzEntryAttr.Icmpv6T = vzEntry["icmpv6_t"].(string)
+					}
+					if vzEntry["match_dscp"] != nil {
+						vzEntryAttr.MatchDscp = vzEntry["match_dscp"].(string)
+					}
+					if vzEntry["entry_name_alias"] != nil {
+						vzEntryAttr.NameAlias = vzEntry["entry_name_alias"].(string)
+					}
+					if vzEntry["prot"] != nil {
+						vzEntryAttr.Prot = vzEntry["prot"].(string)
+					}
+					if vzEntry["s_from_port"] != nil {
+						vzEntryAttr.SFromPort = vzEntry["s_from_port"].(string)
+					}
+					if vzEntry["s_to_port"] != nil {
+						vzEntryAttr.SToPort = vzEntry["s_to_port"].(string)
+					}
+					if vzEntry["stateful"] != nil {
+						vzEntryAttr.Stateful = vzEntry["stateful"].(string)
+					}
+					if vzEntry["tcp_rules"] != nil {
+						vzEntryAttr.TcpRules = vzEntry["tcp_rules"].(string)
+					}
+
+					vzFilterEntry := models.NewFilterEntry(fmt.Sprintf("e-%s", entryName), filterDn, entryDesc, vzEntryAttr)
+					err := aciClient.Save(vzFilterEntry)
+					if err != nil {
+						return err
+					}
+
+					filterentryIDS = append(filterentryIDS, vzFilterEntry.DistinguishedName)
+				}
+			}
+
 			filterIDS = append(filterIDS, vzFilter.DistinguishedName)
 		}
 
 		d.Set("filter_ids", filterIDS)
+		d.Set("filter_entry_ids", filterentryIDS)
 	}
 
 	d.Partial(true)
