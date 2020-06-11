@@ -202,7 +202,8 @@ func resourceAciL3OutsideCreate(d *schema.ResourceData, m interface{}) error {
 	}
 	if relationTol3extRsEctx, ok := d.GetOk("relation_l3ext_rs_ectx"); ok {
 		relationParam := relationTol3extRsEctx.(string)
-		err = aciClient.CreateRelationl3extRsEctxFromL3Outside(l3extOut.DistinguishedName, relationParam)
+		relationParamName := GetMOName(relationParam)
+		err = aciClient.CreateRelationl3extRsEctxFromL3Outside(l3extOut.DistinguishedName, relationParamName)
 		if err != nil {
 			return err
 		}
@@ -226,7 +227,8 @@ func resourceAciL3OutsideCreate(d *schema.ResourceData, m interface{}) error {
 	}
 	if relationTol3extRsInterleakPol, ok := d.GetOk("relation_l3ext_rs_interleak_pol"); ok {
 		relationParam := relationTol3extRsInterleakPol.(string)
-		err = aciClient.CreateRelationl3extRsInterleakPolFromL3Outside(l3extOut.DistinguishedName, relationParam)
+		relationParamName := GetMOName(relationParam)
+		err = aciClient.CreateRelationl3extRsInterleakPolFromL3Outside(l3extOut.DistinguishedName, relationParamName)
 		if err != nil {
 			return err
 		}
@@ -237,7 +239,8 @@ func resourceAciL3OutsideCreate(d *schema.ResourceData, m interface{}) error {
 	}
 	if relationTol3extRsL3DomAtt, ok := d.GetOk("relation_l3ext_rs_l3_dom_att"); ok {
 		relationParam := relationTol3extRsL3DomAtt.(string)
-		err = aciClient.CreateRelationl3extRsL3DomAttFromL3Outside(l3extOut.DistinguishedName, relationParam)
+		relationParamName := GetMOName(relationParam)
+		err = aciClient.CreateRelationl3extRsL3DomAttFromL3Outside(l3extOut.DistinguishedName, relationParamName)
 		if err != nil {
 			return err
 		}
@@ -317,7 +320,8 @@ func resourceAciL3OutsideUpdate(d *schema.ResourceData, m interface{}) error {
 	}
 	if d.HasChange("relation_l3ext_rs_ectx") {
 		_, newRelParam := d.GetChange("relation_l3ext_rs_ectx")
-		err = aciClient.CreateRelationl3extRsEctxFromL3Outside(l3extOut.DistinguishedName, newRelParam.(string))
+		newRelParamName := GetMOName(newRelParam.(string))
+		err = aciClient.CreateRelationl3extRsEctxFromL3Outside(l3extOut.DistinguishedName, newRelParamName)
 		if err != nil {
 			return err
 		}
@@ -346,11 +350,12 @@ func resourceAciL3OutsideUpdate(d *schema.ResourceData, m interface{}) error {
 	}
 	if d.HasChange("relation_l3ext_rs_interleak_pol") {
 		_, newRelParam := d.GetChange("relation_l3ext_rs_interleak_pol")
+		newRelParamName := GetMOName(newRelParam.(string))
 		err = aciClient.DeleteRelationl3extRsInterleakPolFromL3Outside(l3extOut.DistinguishedName)
 		if err != nil {
 			return err
 		}
-		err = aciClient.CreateRelationl3extRsInterleakPolFromL3Outside(l3extOut.DistinguishedName, newRelParam.(string))
+		err = aciClient.CreateRelationl3extRsInterleakPolFromL3Outside(l3extOut.DistinguishedName, newRelParamName)
 		if err != nil {
 			return err
 		}
@@ -361,11 +366,12 @@ func resourceAciL3OutsideUpdate(d *schema.ResourceData, m interface{}) error {
 	}
 	if d.HasChange("relation_l3ext_rs_l3_dom_att") {
 		_, newRelParam := d.GetChange("relation_l3ext_rs_l3_dom_att")
+		newRelParamName := GetMOName(newRelParam.(string))
 		err = aciClient.DeleteRelationl3extRsL3DomAttFromL3Outside(l3extOut.DistinguishedName)
 		if err != nil {
 			return err
 		}
-		err = aciClient.CreateRelationl3extRsL3DomAttFromL3Outside(l3extOut.DistinguishedName, newRelParam.(string))
+		err = aciClient.CreateRelationl3extRsL3DomAttFromL3Outside(l3extOut.DistinguishedName, newRelParamName)
 		if err != nil {
 			return err
 		}
@@ -409,7 +415,12 @@ func resourceAciL3OutsideRead(d *schema.ResourceData, m interface{}) error {
 		log.Printf("[DEBUG] Error while reading relation l3extRsEctx %v", err)
 
 	} else {
-		d.Set("relation_l3ext_rs_ectx", l3extRsEctxData)
+		if _, ok := d.GetOk("relation_l3ext_rs_ectx"); ok {
+			tfName := GetMOName(d.Get("relation_l3ext_rs_ectx").(string))
+			if tfName != l3extRsEctxData {
+				d.Set("relation_l3ext_rs_ectx", "")
+			}
+		}
 	}
 
 	l3extRsOutToBDPublicSubnetHolderData, err := aciClient.ReadRelationl3extRsOutToBDPublicSubnetHolderFromL3Outside(dn)
@@ -425,7 +436,12 @@ func resourceAciL3OutsideRead(d *schema.ResourceData, m interface{}) error {
 		log.Printf("[DEBUG] Error while reading relation l3extRsInterleakPol %v", err)
 
 	} else {
-		d.Set("relation_l3ext_rs_interleak_pol", l3extRsInterleakPolData)
+		if _, ok := d.GetOk("relation_l3ext_rs_interleak_pol"); ok {
+			tfName := GetMOName(d.Get("relation_l3ext_rs_interleak_pol").(string))
+			if tfName != l3extRsInterleakPolData {
+				d.Set("relation_l3ext_rs_interleak_pol", "")
+			}
+		}
 	}
 
 	l3extRsL3DomAttData, err := aciClient.ReadRelationl3extRsL3DomAttFromL3Outside(dn)
@@ -433,7 +449,12 @@ func resourceAciL3OutsideRead(d *schema.ResourceData, m interface{}) error {
 		log.Printf("[DEBUG] Error while reading relation l3extRsL3DomAtt %v", err)
 
 	} else {
-		d.Set("relation_l3ext_rs_l3_dom_att", l3extRsL3DomAttData)
+		if _, ok := d.GetOk("relation_l3ext_rs_l3_dom_att"); ok {
+			tfName := GetMOName(d.Get("relation_l3ext_rs_l3_dom_att").(string))
+			if tfName != l3extRsL3DomAttData {
+				d.Set("relation_l3ext_rs_l3_dom_att", "")
+			}
+		}
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())

@@ -133,7 +133,8 @@ func resourceAciFirmwareGroupCreate(d *schema.ResourceData, m interface{}) error
 
 	if relationTofirmwareRsFwgrpp, ok := d.GetOk("relation_firmware_rs_fwgrpp"); ok {
 		relationParam := relationTofirmwareRsFwgrpp.(string)
-		err = aciClient.CreateRelationfirmwareRsFwgrppFromFirmwareGroup(firmwareFwGrp.DistinguishedName, relationParam)
+		relationParamName := GetMOName(relationParam)
+		err = aciClient.CreateRelationfirmwareRsFwgrppFromFirmwareGroup(firmwareFwGrp.DistinguishedName, relationParamName)
 		if err != nil {
 			return err
 		}
@@ -184,7 +185,8 @@ func resourceAciFirmwareGroupUpdate(d *schema.ResourceData, m interface{}) error
 
 	if d.HasChange("relation_firmware_rs_fwgrpp") {
 		_, newRelParam := d.GetChange("relation_firmware_rs_fwgrpp")
-		err = aciClient.CreateRelationfirmwareRsFwgrppFromFirmwareGroup(firmwareFwGrp.DistinguishedName, newRelParam.(string))
+		newRelParamName := GetMOName(newRelParam.(string))
+		err = aciClient.CreateRelationfirmwareRsFwgrppFromFirmwareGroup(firmwareFwGrp.DistinguishedName, newRelParamName)
 		if err != nil {
 			return err
 		}
@@ -220,7 +222,12 @@ func resourceAciFirmwareGroupRead(d *schema.ResourceData, m interface{}) error {
 		log.Printf("[DEBUG] Error while reading relation firmwareRsFwgrpp %v", err)
 
 	} else {
-		d.Set("relation_firmware_rs_fwgrpp", firmwareRsFwgrppData)
+		if _, ok := d.GetOk("relation_firmware_rs_fwgrpp"); ok {
+			tfName := GetMOName(d.Get("relation_firmware_rs_fwgrpp").(string))
+			if tfName != firmwareRsFwgrppData {
+				d.Set("relation_firmware_rs_fwgrpp", "")
+			}
+		}
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())

@@ -193,7 +193,8 @@ func resourceAciConfigurationImportPolicyCreate(d *schema.ResourceData, m interf
 
 	if relationToconfigRsImportSource, ok := d.GetOk("relation_config_rs_import_source"); ok {
 		relationParam := relationToconfigRsImportSource.(string)
-		err = aciClient.CreateRelationconfigRsImportSourceFromConfigurationImportPolicy(configImportP.DistinguishedName, relationParam)
+		relationParamName := GetMOName(relationParam)
+		err = aciClient.CreateRelationconfigRsImportSourceFromConfigurationImportPolicy(configImportP.DistinguishedName, relationParamName)
 		if err != nil {
 			return err
 		}
@@ -204,7 +205,8 @@ func resourceAciConfigurationImportPolicyCreate(d *schema.ResourceData, m interf
 	}
 	if relationTotrigRsTriggerable, ok := d.GetOk("relation_trig_rs_triggerable"); ok {
 		relationParam := relationTotrigRsTriggerable.(string)
-		err = aciClient.CreateRelationtrigRsTriggerableFromConfigurationImportPolicy(configImportP.DistinguishedName, relationParam)
+		relationParamName := GetMOName(relationParam)
+		err = aciClient.CreateRelationtrigRsTriggerableFromConfigurationImportPolicy(configImportP.DistinguishedName, relationParamName)
 		if err != nil {
 			return err
 		}
@@ -215,7 +217,8 @@ func resourceAciConfigurationImportPolicyCreate(d *schema.ResourceData, m interf
 	}
 	if relationToconfigRsRemotePath, ok := d.GetOk("relation_config_rs_remote_path"); ok {
 		relationParam := relationToconfigRsRemotePath.(string)
-		err = aciClient.CreateRelationconfigRsRemotePathFromConfigurationImportPolicy(configImportP.DistinguishedName, relationParam)
+		relationParamName := GetMOName(relationParam)
+		err = aciClient.CreateRelationconfigRsRemotePathFromConfigurationImportPolicy(configImportP.DistinguishedName, relationParamName)
 		if err != nil {
 			return err
 		}
@@ -281,11 +284,12 @@ func resourceAciConfigurationImportPolicyUpdate(d *schema.ResourceData, m interf
 
 	if d.HasChange("relation_config_rs_import_source") {
 		_, newRelParam := d.GetChange("relation_config_rs_import_source")
+		newRelParamName := GetMOName(newRelParam.(string))
 		err = aciClient.DeleteRelationconfigRsImportSourceFromConfigurationImportPolicy(configImportP.DistinguishedName)
 		if err != nil {
 			return err
 		}
-		err = aciClient.CreateRelationconfigRsImportSourceFromConfigurationImportPolicy(configImportP.DistinguishedName, newRelParam.(string))
+		err = aciClient.CreateRelationconfigRsImportSourceFromConfigurationImportPolicy(configImportP.DistinguishedName, newRelParamName)
 		if err != nil {
 			return err
 		}
@@ -296,7 +300,8 @@ func resourceAciConfigurationImportPolicyUpdate(d *schema.ResourceData, m interf
 	}
 	if d.HasChange("relation_trig_rs_triggerable") {
 		_, newRelParam := d.GetChange("relation_trig_rs_triggerable")
-		err = aciClient.CreateRelationtrigRsTriggerableFromConfigurationImportPolicy(configImportP.DistinguishedName, newRelParam.(string))
+		newRelParamName := GetMOName(newRelParam.(string))
+		err = aciClient.CreateRelationtrigRsTriggerableFromConfigurationImportPolicy(configImportP.DistinguishedName, newRelParamName)
 		if err != nil {
 			return err
 		}
@@ -307,11 +312,12 @@ func resourceAciConfigurationImportPolicyUpdate(d *schema.ResourceData, m interf
 	}
 	if d.HasChange("relation_config_rs_remote_path") {
 		_, newRelParam := d.GetChange("relation_config_rs_remote_path")
+		newRelParamName := GetMOName(newRelParam.(string))
 		err = aciClient.DeleteRelationconfigRsRemotePathFromConfigurationImportPolicy(configImportP.DistinguishedName)
 		if err != nil {
 			return err
 		}
-		err = aciClient.CreateRelationconfigRsRemotePathFromConfigurationImportPolicy(configImportP.DistinguishedName, newRelParam.(string))
+		err = aciClient.CreateRelationconfigRsRemotePathFromConfigurationImportPolicy(configImportP.DistinguishedName, newRelParamName)
 		if err != nil {
 			return err
 		}
@@ -347,7 +353,12 @@ func resourceAciConfigurationImportPolicyRead(d *schema.ResourceData, m interfac
 		log.Printf("[DEBUG] Error while reading relation configRsImportSource %v", err)
 
 	} else {
-		d.Set("relation_config_rs_import_source", configRsImportSourceData)
+		if _, ok := d.GetOk("relation_config_rs_import_source"); ok {
+			tfName := GetMOName(d.Get("relation_config_rs_import_source").(string))
+			if tfName != configRsImportSourceData {
+				d.Set("relation_config_rs_import_source", "")
+			}
+		}
 	}
 
 	trigRsTriggerableData, err := aciClient.ReadRelationtrigRsTriggerableFromConfigurationImportPolicy(dn)
@@ -355,7 +366,12 @@ func resourceAciConfigurationImportPolicyRead(d *schema.ResourceData, m interfac
 		log.Printf("[DEBUG] Error while reading relation trigRsTriggerable %v", err)
 
 	} else {
-		d.Set("relation_trig_rs_triggerable", trigRsTriggerableData)
+		if _, ok := d.GetOk("relation_trig_rs_triggerable"); ok {
+			tfName := GetMOName(d.Get("relation_trig_rs_triggerable").(string))
+			if tfName != trigRsTriggerableData {
+				d.Set("relation_trig_rs_triggerable", "")
+			}
+		}
 	}
 
 	configRsRemotePathData, err := aciClient.ReadRelationconfigRsRemotePathFromConfigurationImportPolicy(dn)
@@ -363,7 +379,12 @@ func resourceAciConfigurationImportPolicyRead(d *schema.ResourceData, m interfac
 		log.Printf("[DEBUG] Error while reading relation configRsRemotePath %v", err)
 
 	} else {
-		d.Set("relation_config_rs_remote_path", configRsRemotePathData)
+		if _, ok := d.GetOk("relation_config_rs_remote_path"); ok {
+			tfName := GetMOName(d.Get("relation_config_rs_remote_path").(string))
+			if tfName != configRsRemotePathData {
+				d.Set("relation_config_rs_remote_path", "")
+			}
+		}
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())

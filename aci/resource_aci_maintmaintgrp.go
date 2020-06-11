@@ -143,7 +143,8 @@ func resourceAciPODMaintenanceGroupCreate(d *schema.ResourceData, m interface{})
 
 	if relationTomaintRsMgrpp, ok := d.GetOk("relation_maint_rs_mgrpp"); ok {
 		relationParam := relationTomaintRsMgrpp.(string)
-		err = aciClient.CreateRelationmaintRsMgrppFromPODMaintenanceGroup(maintMaintGrp.DistinguishedName, relationParam)
+		relationParamName := GetMOName(relationParam)
+		err = aciClient.CreateRelationmaintRsMgrppFromPODMaintenanceGroup(maintMaintGrp.DistinguishedName, relationParamName)
 		if err != nil {
 			return err
 		}
@@ -197,7 +198,8 @@ func resourceAciPODMaintenanceGroupUpdate(d *schema.ResourceData, m interface{})
 
 	if d.HasChange("relation_maint_rs_mgrpp") {
 		_, newRelParam := d.GetChange("relation_maint_rs_mgrpp")
-		err = aciClient.CreateRelationmaintRsMgrppFromPODMaintenanceGroup(maintMaintGrp.DistinguishedName, newRelParam.(string))
+		newRelParamName := GetMOName(newRelParam.(string))
+		err = aciClient.CreateRelationmaintRsMgrppFromPODMaintenanceGroup(maintMaintGrp.DistinguishedName, newRelParamName)
 		if err != nil {
 			return err
 		}
@@ -233,7 +235,12 @@ func resourceAciPODMaintenanceGroupRead(d *schema.ResourceData, m interface{}) e
 		log.Printf("[DEBUG] Error while reading relation maintRsMgrpp %v", err)
 
 	} else {
-		d.Set("relation_maint_rs_mgrpp", maintRsMgrppData)
+		if _, ok := d.GetOk("relation_maint_rs_mgrpp"); ok {
+			tfName := GetMOName(d.Get("relation_maint_rs_mgrpp").(string))
+			if tfName != maintRsMgrppData {
+				d.Set("relation_maint_rs_mgrpp", "")
+			}
+		}
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())

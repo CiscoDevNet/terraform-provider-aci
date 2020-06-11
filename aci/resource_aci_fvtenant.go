@@ -142,7 +142,8 @@ func resourceAciTenantCreate(d *schema.ResourceData, m interface{}) error {
 	}
 	if relationTofvRsTenantMonPol, ok := d.GetOk("relation_fv_rs_tenant_mon_pol"); ok {
 		relationParam := relationTofvRsTenantMonPol.(string)
-		err = aciClient.CreateRelationfvRsTenantMonPolFromTenant(fvTenant.DistinguishedName, relationParam)
+		relationParamName := GetMOName(relationParam)
+		err = aciClient.CreateRelationfvRsTenantMonPolFromTenant(fvTenant.DistinguishedName, relationParamName)
 		if err != nil {
 			return err
 		}
@@ -217,7 +218,8 @@ func resourceAciTenantUpdate(d *schema.ResourceData, m interface{}) error {
 	}
 	if d.HasChange("relation_fv_rs_tenant_mon_pol") {
 		_, newRelParam := d.GetChange("relation_fv_rs_tenant_mon_pol")
-		err = aciClient.CreateRelationfvRsTenantMonPolFromTenant(fvTenant.DistinguishedName, newRelParam.(string))
+		newRelParamName := GetMOName(newRelParam.(string))
+		err = aciClient.CreateRelationfvRsTenantMonPolFromTenant(fvTenant.DistinguishedName, newRelParamName)
 		if err != nil {
 			return err
 		}
@@ -261,7 +263,12 @@ func resourceAciTenantRead(d *schema.ResourceData, m interface{}) error {
 		log.Printf("[DEBUG] Error while reading relation fvRsTenantMonPol %v", err)
 
 	} else {
-		d.Set("relation_fv_rs_tenant_mon_pol", fvRsTenantMonPolData)
+		if _, ok := d.GetOk("relation_fv_rs_tenant_mon_pol"); ok {
+			tfName := GetMOName(d.Get("relation_fv_rs_tenant_mon_pol").(string))
+			if tfName != fvRsTenantMonPolData {
+				d.Set("relation_fv_rs_tenant_mon_pol", "")
+			}
+		}
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())

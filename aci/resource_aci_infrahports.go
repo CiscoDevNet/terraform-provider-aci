@@ -151,7 +151,8 @@ func resourceAciAccessPortSelectorCreate(d *schema.ResourceData, m interface{}) 
 
 	if relationToinfraRsAccBaseGrp, ok := d.GetOk("relation_infra_rs_acc_base_grp"); ok {
 		relationParam := relationToinfraRsAccBaseGrp.(string)
-		err = aciClient.CreateRelationinfraRsAccBaseGrpFromAccessPortSelector(infraHPortS.DistinguishedName, relationParam)
+		relationParamName := GetMOName(relationParam)
+		err = aciClient.CreateRelationinfraRsAccBaseGrpFromAccessPortSelector(infraHPortS.DistinguishedName, relationParamName)
 		if err != nil {
 			return err
 		}
@@ -208,11 +209,12 @@ func resourceAciAccessPortSelectorUpdate(d *schema.ResourceData, m interface{}) 
 
 	if d.HasChange("relation_infra_rs_acc_base_grp") {
 		_, newRelParam := d.GetChange("relation_infra_rs_acc_base_grp")
+		newRelParamName := GetMOName(newRelParam.(string))
 		err = aciClient.DeleteRelationinfraRsAccBaseGrpFromAccessPortSelector(infraHPortS.DistinguishedName)
 		if err != nil {
 			return err
 		}
-		err = aciClient.CreateRelationinfraRsAccBaseGrpFromAccessPortSelector(infraHPortS.DistinguishedName, newRelParam.(string))
+		err = aciClient.CreateRelationinfraRsAccBaseGrpFromAccessPortSelector(infraHPortS.DistinguishedName, newRelParamName)
 		if err != nil {
 			return err
 		}
@@ -248,7 +250,12 @@ func resourceAciAccessPortSelectorRead(d *schema.ResourceData, m interface{}) er
 		log.Printf("[DEBUG] Error while reading relation infraRsAccBaseGrp %v", err)
 
 	} else {
-		d.Set("relation_infra_rs_acc_base_grp", infraRsAccBaseGrpData)
+		if _, ok := d.GetOk("relation_infra_rs_acc_base_grp"); ok {
+			tfName := GetMOName(d.Get("relation_infra_rs_acc_base_grp").(string))
+			if tfName != infraRsAccBaseGrpData {
+				d.Set("relation_infra_rs_acc_base_grp", "")
+			}
+		}
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())

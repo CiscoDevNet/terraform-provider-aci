@@ -3,6 +3,8 @@ package aci
 import (
 	"fmt"
 	"log"
+	"reflect"
+	"sort"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
@@ -250,7 +252,8 @@ func resourceAciCloudExternalEPgCreate(d *schema.ResourceData, m interface{}) er
 	if relationTofvRsProv, ok := d.GetOk("relation_fv_rs_prov"); ok {
 		relationParamList := toStringList(relationTofvRsProv.(*schema.Set).List())
 		for _, relationParam := range relationParamList {
-			err = aciClient.CreateRelationfvRsProvFromCloudExternalEPg(cloudExtEPg.DistinguishedName, relationParam)
+			relationParamName := GetMOName(relationParam)
+			err = aciClient.CreateRelationfvRsProvFromCloudExternalEPg(cloudExtEPg.DistinguishedName, relationParamName)
 
 			if err != nil {
 				return err
@@ -263,7 +266,8 @@ func resourceAciCloudExternalEPgCreate(d *schema.ResourceData, m interface{}) er
 	if relationTofvRsConsIf, ok := d.GetOk("relation_fv_rs_cons_if"); ok {
 		relationParamList := toStringList(relationTofvRsConsIf.(*schema.Set).List())
 		for _, relationParam := range relationParamList {
-			err = aciClient.CreateRelationfvRsConsIfFromCloudExternalEPg(cloudExtEPg.DistinguishedName, relationParam)
+			relationParamName := GetMOName(relationParam)
+			err = aciClient.CreateRelationfvRsConsIfFromCloudExternalEPg(cloudExtEPg.DistinguishedName, relationParamName)
 
 			if err != nil {
 				return err
@@ -275,7 +279,8 @@ func resourceAciCloudExternalEPgCreate(d *schema.ResourceData, m interface{}) er
 	}
 	if relationTofvRsCustQosPol, ok := d.GetOk("relation_fv_rs_cust_qos_pol"); ok {
 		relationParam := relationTofvRsCustQosPol.(string)
-		err = aciClient.CreateRelationfvRsCustQosPolFromCloudExternalEPg(cloudExtEPg.DistinguishedName, relationParam)
+		relationParamName := GetMOName(relationParam)
+		err = aciClient.CreateRelationfvRsCustQosPolFromCloudExternalEPg(cloudExtEPg.DistinguishedName, relationParamName)
 		if err != nil {
 			return err
 		}
@@ -287,7 +292,8 @@ func resourceAciCloudExternalEPgCreate(d *schema.ResourceData, m interface{}) er
 	if relationTofvRsCons, ok := d.GetOk("relation_fv_rs_cons"); ok {
 		relationParamList := toStringList(relationTofvRsCons.(*schema.Set).List())
 		for _, relationParam := range relationParamList {
-			err = aciClient.CreateRelationfvRsConsFromCloudExternalEPg(cloudExtEPg.DistinguishedName, relationParam)
+			relationParamName := GetMOName(relationParam)
+			err = aciClient.CreateRelationfvRsConsFromCloudExternalEPg(cloudExtEPg.DistinguishedName, relationParamName)
 
 			if err != nil {
 				return err
@@ -299,7 +305,8 @@ func resourceAciCloudExternalEPgCreate(d *schema.ResourceData, m interface{}) er
 	}
 	if relationTocloudRsCloudEPgCtx, ok := d.GetOk("relation_cloud_rs_cloud_e_pg_ctx"); ok {
 		relationParam := relationTocloudRsCloudEPgCtx.(string)
-		err = aciClient.CreateRelationcloudRsCloudEPgCtxFromCloudExternalEPg(cloudExtEPg.DistinguishedName, relationParam)
+		relationParamName := GetMOName(relationParam)
+		err = aciClient.CreateRelationcloudRsCloudEPgCtxFromCloudExternalEPg(cloudExtEPg.DistinguishedName, relationParamName)
 		if err != nil {
 			return err
 		}
@@ -311,7 +318,8 @@ func resourceAciCloudExternalEPgCreate(d *schema.ResourceData, m interface{}) er
 	if relationTofvRsProtBy, ok := d.GetOk("relation_fv_rs_prot_by"); ok {
 		relationParamList := toStringList(relationTofvRsProtBy.(*schema.Set).List())
 		for _, relationParam := range relationParamList {
-			err = aciClient.CreateRelationfvRsProtByFromCloudExternalEPg(cloudExtEPg.DistinguishedName, relationParam)
+			relationParamName := GetMOName(relationParam)
+			err = aciClient.CreateRelationfvRsProtByFromCloudExternalEPg(cloudExtEPg.DistinguishedName, relationParamName)
 
 			if err != nil {
 				return err
@@ -324,7 +332,8 @@ func resourceAciCloudExternalEPgCreate(d *schema.ResourceData, m interface{}) er
 	if relationTofvRsIntraEpg, ok := d.GetOk("relation_fv_rs_intra_epg"); ok {
 		relationParamList := toStringList(relationTofvRsIntraEpg.(*schema.Set).List())
 		for _, relationParam := range relationParamList {
-			err = aciClient.CreateRelationfvRsIntraEpgFromCloudExternalEPg(cloudExtEPg.DistinguishedName, relationParam)
+			relationParamName := GetMOName(relationParam)
+			err = aciClient.CreateRelationfvRsIntraEpgFromCloudExternalEPg(cloudExtEPg.DistinguishedName, relationParamName)
 
 			if err != nil {
 				return err
@@ -426,7 +435,8 @@ func resourceAciCloudExternalEPgUpdate(d *schema.ResourceData, m interface{}) er
 		relToCreate := toStringList(newRelSet.Difference(oldRelSet).List())
 
 		for _, relDn := range relToDelete {
-			err = aciClient.DeleteRelationfvRsProvFromCloudExternalEPg(cloudExtEPg.DistinguishedName, relDn)
+			relDnName := GetMOName(relDn)
+			err = aciClient.DeleteRelationfvRsProvFromCloudExternalEPg(cloudExtEPg.DistinguishedName, relDnName)
 			if err != nil {
 				return err
 			}
@@ -434,7 +444,8 @@ func resourceAciCloudExternalEPgUpdate(d *schema.ResourceData, m interface{}) er
 		}
 
 		for _, relDn := range relToCreate {
-			err = aciClient.CreateRelationfvRsProvFromCloudExternalEPg(cloudExtEPg.DistinguishedName, relDn)
+			relDnName := GetMOName(relDn)
+			err = aciClient.CreateRelationfvRsProvFromCloudExternalEPg(cloudExtEPg.DistinguishedName, relDnName)
 			if err != nil {
 				return err
 			}
@@ -453,7 +464,8 @@ func resourceAciCloudExternalEPgUpdate(d *schema.ResourceData, m interface{}) er
 		relToCreate := toStringList(newRelSet.Difference(oldRelSet).List())
 
 		for _, relDn := range relToDelete {
-			err = aciClient.DeleteRelationfvRsConsIfFromCloudExternalEPg(cloudExtEPg.DistinguishedName, relDn)
+			relDnName := GetMOName(relDn)
+			err = aciClient.DeleteRelationfvRsConsIfFromCloudExternalEPg(cloudExtEPg.DistinguishedName, relDnName)
 			if err != nil {
 				return err
 			}
@@ -461,7 +473,8 @@ func resourceAciCloudExternalEPgUpdate(d *schema.ResourceData, m interface{}) er
 		}
 
 		for _, relDn := range relToCreate {
-			err = aciClient.CreateRelationfvRsConsIfFromCloudExternalEPg(cloudExtEPg.DistinguishedName, relDn)
+			relDnName := GetMOName(relDn)
+			err = aciClient.CreateRelationfvRsConsIfFromCloudExternalEPg(cloudExtEPg.DistinguishedName, relDnName)
 			if err != nil {
 				return err
 			}
@@ -474,7 +487,8 @@ func resourceAciCloudExternalEPgUpdate(d *schema.ResourceData, m interface{}) er
 	}
 	if d.HasChange("relation_fv_rs_cust_qos_pol") {
 		_, newRelParam := d.GetChange("relation_fv_rs_cust_qos_pol")
-		err = aciClient.CreateRelationfvRsCustQosPolFromCloudExternalEPg(cloudExtEPg.DistinguishedName, newRelParam.(string))
+		newRelParamName := GetMOName(newRelParam.(string))
+		err = aciClient.CreateRelationfvRsCustQosPolFromCloudExternalEPg(cloudExtEPg.DistinguishedName, newRelParamName)
 		if err != nil {
 			return err
 		}
@@ -491,7 +505,8 @@ func resourceAciCloudExternalEPgUpdate(d *schema.ResourceData, m interface{}) er
 		relToCreate := toStringList(newRelSet.Difference(oldRelSet).List())
 
 		for _, relDn := range relToDelete {
-			err = aciClient.DeleteRelationfvRsConsFromCloudExternalEPg(cloudExtEPg.DistinguishedName, relDn)
+			relDnName := GetMOName(relDn)
+			err = aciClient.DeleteRelationfvRsConsFromCloudExternalEPg(cloudExtEPg.DistinguishedName, relDnName)
 			if err != nil {
 				return err
 			}
@@ -499,7 +514,8 @@ func resourceAciCloudExternalEPgUpdate(d *schema.ResourceData, m interface{}) er
 		}
 
 		for _, relDn := range relToCreate {
-			err = aciClient.CreateRelationfvRsConsFromCloudExternalEPg(cloudExtEPg.DistinguishedName, relDn)
+			relDnName := GetMOName(relDn)
+			err = aciClient.CreateRelationfvRsConsFromCloudExternalEPg(cloudExtEPg.DistinguishedName, relDnName)
 			if err != nil {
 				return err
 			}
@@ -512,7 +528,8 @@ func resourceAciCloudExternalEPgUpdate(d *schema.ResourceData, m interface{}) er
 	}
 	if d.HasChange("relation_cloud_rs_cloud_e_pg_ctx") {
 		_, newRelParam := d.GetChange("relation_cloud_rs_cloud_e_pg_ctx")
-		err = aciClient.CreateRelationcloudRsCloudEPgCtxFromCloudExternalEPg(cloudExtEPg.DistinguishedName, newRelParam.(string))
+		newRelParamName := GetMOName(newRelParam.(string))
+		err = aciClient.CreateRelationcloudRsCloudEPgCtxFromCloudExternalEPg(cloudExtEPg.DistinguishedName, newRelParamName)
 		if err != nil {
 			return err
 		}
@@ -529,7 +546,8 @@ func resourceAciCloudExternalEPgUpdate(d *schema.ResourceData, m interface{}) er
 		relToCreate := toStringList(newRelSet.Difference(oldRelSet).List())
 
 		for _, relDn := range relToDelete {
-			err = aciClient.DeleteRelationfvRsProtByFromCloudExternalEPg(cloudExtEPg.DistinguishedName, relDn)
+			relDnName := GetMOName(relDn)
+			err = aciClient.DeleteRelationfvRsProtByFromCloudExternalEPg(cloudExtEPg.DistinguishedName, relDnName)
 			if err != nil {
 				return err
 			}
@@ -537,7 +555,8 @@ func resourceAciCloudExternalEPgUpdate(d *schema.ResourceData, m interface{}) er
 		}
 
 		for _, relDn := range relToCreate {
-			err = aciClient.CreateRelationfvRsProtByFromCloudExternalEPg(cloudExtEPg.DistinguishedName, relDn)
+			relDnName := GetMOName(relDn)
+			err = aciClient.CreateRelationfvRsProtByFromCloudExternalEPg(cloudExtEPg.DistinguishedName, relDnName)
 			if err != nil {
 				return err
 			}
@@ -556,7 +575,8 @@ func resourceAciCloudExternalEPgUpdate(d *schema.ResourceData, m interface{}) er
 		relToCreate := toStringList(newRelSet.Difference(oldRelSet).List())
 
 		for _, relDn := range relToDelete {
-			err = aciClient.DeleteRelationfvRsIntraEpgFromCloudExternalEPg(cloudExtEPg.DistinguishedName, relDn)
+			relDnName := GetMOName(relDn)
+			err = aciClient.DeleteRelationfvRsIntraEpgFromCloudExternalEPg(cloudExtEPg.DistinguishedName, relDnName)
 			if err != nil {
 				return err
 			}
@@ -564,7 +584,8 @@ func resourceAciCloudExternalEPgUpdate(d *schema.ResourceData, m interface{}) er
 		}
 
 		for _, relDn := range relToCreate {
-			err = aciClient.CreateRelationfvRsIntraEpgFromCloudExternalEPg(cloudExtEPg.DistinguishedName, relDn)
+			relDnName := GetMOName(relDn)
+			err = aciClient.CreateRelationfvRsIntraEpgFromCloudExternalEPg(cloudExtEPg.DistinguishedName, relDnName)
 			if err != nil {
 				return err
 			}
@@ -610,7 +631,21 @@ func resourceAciCloudExternalEPgRead(d *schema.ResourceData, m interface{}) erro
 		log.Printf("[DEBUG] Error while reading relation fvRsProv %v", err)
 
 	} else {
-		d.Set("relation_fv_rs_prov", fvRsProvData)
+		if _, ok := d.GetOk("relation_fv_rs_prov"); ok {
+			relationParamList := toStringList(d.Get("relation_fv_rs_prov").(*schema.Set).List())
+			tfList := make([]string, 0, 1)
+			for _, relationParam := range relationParamList {
+				relationParamName := GetMOName(relationParam)
+				tfList = append(tfList, relationParamName)
+			}
+			fvRsProvDataList := toStringList(fvRsProvData.(*schema.Set).List())
+			sort.Strings(tfList)
+			sort.Strings(fvRsProvDataList)
+
+			if !reflect.DeepEqual(tfList, fvRsProvDataList) {
+				d.Set("relation_fv_rs_prov", make([]string, 0, 1))
+			}
+		}
 	}
 
 	fvRsConsIfData, err := aciClient.ReadRelationfvRsConsIfFromCloudExternalEPg(dn)
@@ -618,7 +653,21 @@ func resourceAciCloudExternalEPgRead(d *schema.ResourceData, m interface{}) erro
 		log.Printf("[DEBUG] Error while reading relation fvRsConsIf %v", err)
 
 	} else {
-		d.Set("relation_fv_rs_cons_if", fvRsConsIfData)
+		if _, ok := d.GetOk("relation_fv_rs_cons_if"); ok {
+			relationParamList := toStringList(d.Get("relation_fv_rs_cons_if").(*schema.Set).List())
+			tfList := make([]string, 0, 1)
+			for _, relationParam := range relationParamList {
+				relationParamName := GetMOName(relationParam)
+				tfList = append(tfList, relationParamName)
+			}
+			fvRsConsIfDataList := toStringList(fvRsConsIfData.(*schema.Set).List())
+			sort.Strings(tfList)
+			sort.Strings(fvRsConsIfDataList)
+
+			if !reflect.DeepEqual(tfList, fvRsConsIfDataList) {
+				d.Set("relation_fv_rs_cons_if", make([]string, 0, 1))
+			}
+		}
 	}
 
 	fvRsCustQosPolData, err := aciClient.ReadRelationfvRsCustQosPolFromCloudExternalEPg(dn)
@@ -626,7 +675,12 @@ func resourceAciCloudExternalEPgRead(d *schema.ResourceData, m interface{}) erro
 		log.Printf("[DEBUG] Error while reading relation fvRsCustQosPol %v", err)
 
 	} else {
-		d.Set("relation_fv_rs_cust_qos_pol", fvRsCustQosPolData)
+		if _, ok := d.GetOk("relation_fv_rs_cust_qos_pol"); ok {
+			tfName := GetMOName(d.Get("relation_fv_rs_cust_qos_pol").(string))
+			if tfName != fvRsCustQosPolData {
+				d.Set("relation_fv_rs_cust_qos_pol", "")
+			}
+		}
 	}
 
 	fvRsConsData, err := aciClient.ReadRelationfvRsConsFromCloudExternalEPg(dn)
@@ -634,7 +688,21 @@ func resourceAciCloudExternalEPgRead(d *schema.ResourceData, m interface{}) erro
 		log.Printf("[DEBUG] Error while reading relation fvRsCons %v", err)
 
 	} else {
-		d.Set("relation_fv_rs_cons", fvRsConsData)
+		if _, ok := d.GetOk("relation_fv_rs_cons"); ok {
+			relationParamList := toStringList(d.Get("relation_fv_rs_cons").(*schema.Set).List())
+			tfList := make([]string, 0, 1)
+			for _, relationParam := range relationParamList {
+				relationParamName := GetMOName(relationParam)
+				tfList = append(tfList, relationParamName)
+			}
+			fvRsConsDataList := toStringList(fvRsConsData.(*schema.Set).List())
+			sort.Strings(tfList)
+			sort.Strings(fvRsConsDataList)
+
+			if !reflect.DeepEqual(tfList, fvRsConsDataList) {
+				d.Set("relation_fv_rs_cons", make([]string, 0, 1))
+			}
+		}
 	}
 
 	cloudRsCloudEPgCtxData, err := aciClient.ReadRelationcloudRsCloudEPgCtxFromCloudExternalEPg(dn)
@@ -642,7 +710,12 @@ func resourceAciCloudExternalEPgRead(d *schema.ResourceData, m interface{}) erro
 		log.Printf("[DEBUG] Error while reading relation cloudRsCloudEPgCtx %v", err)
 
 	} else {
-		d.Set("relation_cloud_rs_cloud_e_pg_ctx", cloudRsCloudEPgCtxData)
+		if _, ok := d.GetOk("relation_cloud_rs_cloud_e_pg_ctx"); ok {
+			tfName := GetMOName(d.Get("relation_cloud_rs_cloud_e_pg_ctx").(string))
+			if tfName != cloudRsCloudEPgCtxData {
+				d.Set("relation_cloud_rs_cloud_e_pg_ctx", "")
+			}
+		}
 	}
 
 	fvRsProtByData, err := aciClient.ReadRelationfvRsProtByFromCloudExternalEPg(dn)
@@ -650,7 +723,21 @@ func resourceAciCloudExternalEPgRead(d *schema.ResourceData, m interface{}) erro
 		log.Printf("[DEBUG] Error while reading relation fvRsProtBy %v", err)
 
 	} else {
-		d.Set("relation_fv_rs_prot_by", fvRsProtByData)
+		if _, ok := d.GetOk("relation_fv_rs_prot_by"); ok {
+			relationParamList := toStringList(d.Get("relation_fv_rs_prot_by").(*schema.Set).List())
+			tfList := make([]string, 0, 1)
+			for _, relationParam := range relationParamList {
+				relationParamName := GetMOName(relationParam)
+				tfList = append(tfList, relationParamName)
+			}
+			fvRsProtByDataList := toStringList(fvRsProtByData.(*schema.Set).List())
+			sort.Strings(tfList)
+			sort.Strings(fvRsProtByDataList)
+
+			if !reflect.DeepEqual(tfList, fvRsProtByDataList) {
+				d.Set("relation_fv_rs_prot_by", make([]string, 0, 1))
+			}
+		}
 	}
 
 	fvRsIntraEpgData, err := aciClient.ReadRelationfvRsIntraEpgFromCloudExternalEPg(dn)
@@ -658,7 +745,21 @@ func resourceAciCloudExternalEPgRead(d *schema.ResourceData, m interface{}) erro
 		log.Printf("[DEBUG] Error while reading relation fvRsIntraEpg %v", err)
 
 	} else {
-		d.Set("relation_fv_rs_intra_epg", fvRsIntraEpgData)
+		if _, ok := d.GetOk("relation_fv_rs_intra_epg"); ok {
+			relationParamList := toStringList(d.Get("relation_fv_rs_intra_epg").(*schema.Set).List())
+			tfList := make([]string, 0, 1)
+			for _, relationParam := range relationParamList {
+				relationParamName := GetMOName(relationParam)
+				tfList = append(tfList, relationParamName)
+			}
+			fvRsIntraEpgDataList := toStringList(fvRsIntraEpgData.(*schema.Set).List())
+			sort.Strings(tfList)
+			sort.Strings(fvRsIntraEpgDataList)
+
+			if !reflect.DeepEqual(tfList, fvRsIntraEpgDataList) {
+				d.Set("relation_fv_rs_intra_epg", make([]string, 0, 1))
+			}
+		}
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())

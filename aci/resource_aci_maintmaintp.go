@@ -213,7 +213,8 @@ func resourceAciMaintenancePolicyCreate(d *schema.ResourceData, m interface{}) e
 
 	if relationTomaintRsPolScheduler, ok := d.GetOk("relation_maint_rs_pol_scheduler"); ok {
 		relationParam := relationTomaintRsPolScheduler.(string)
-		err = aciClient.CreateRelationmaintRsPolSchedulerFromMaintenancePolicy(maintMaintP.DistinguishedName, relationParam)
+		relationParamName := GetMOName(relationParam)
+		err = aciClient.CreateRelationmaintRsPolSchedulerFromMaintenancePolicy(maintMaintP.DistinguishedName, relationParamName)
 		if err != nil {
 			return err
 		}
@@ -224,7 +225,8 @@ func resourceAciMaintenancePolicyCreate(d *schema.ResourceData, m interface{}) e
 	}
 	if relationTomaintRsPolNotif, ok := d.GetOk("relation_maint_rs_pol_notif"); ok {
 		relationParam := relationTomaintRsPolNotif.(string)
-		err = aciClient.CreateRelationmaintRsPolNotifFromMaintenancePolicy(maintMaintP.DistinguishedName, relationParam)
+		relationParamName := GetMOName(relationParam)
+		err = aciClient.CreateRelationmaintRsPolNotifFromMaintenancePolicy(maintMaintP.DistinguishedName, relationParamName)
 		if err != nil {
 			return err
 		}
@@ -235,7 +237,8 @@ func resourceAciMaintenancePolicyCreate(d *schema.ResourceData, m interface{}) e
 	}
 	if relationTotrigRsTriggerable, ok := d.GetOk("relation_trig_rs_triggerable"); ok {
 		relationParam := relationTotrigRsTriggerable.(string)
-		err = aciClient.CreateRelationtrigRsTriggerableFromMaintenancePolicy(maintMaintP.DistinguishedName, relationParam)
+		relationParamName := GetMOName(relationParam)
+		err = aciClient.CreateRelationtrigRsTriggerableFromMaintenancePolicy(maintMaintP.DistinguishedName, relationParamName)
 		if err != nil {
 			return err
 		}
@@ -307,7 +310,8 @@ func resourceAciMaintenancePolicyUpdate(d *schema.ResourceData, m interface{}) e
 
 	if d.HasChange("relation_maint_rs_pol_scheduler") {
 		_, newRelParam := d.GetChange("relation_maint_rs_pol_scheduler")
-		err = aciClient.CreateRelationmaintRsPolSchedulerFromMaintenancePolicy(maintMaintP.DistinguishedName, newRelParam.(string))
+		newRelParamName := GetMOName(newRelParam.(string))
+		err = aciClient.CreateRelationmaintRsPolSchedulerFromMaintenancePolicy(maintMaintP.DistinguishedName, newRelParamName)
 		if err != nil {
 			return err
 		}
@@ -318,11 +322,12 @@ func resourceAciMaintenancePolicyUpdate(d *schema.ResourceData, m interface{}) e
 	}
 	if d.HasChange("relation_maint_rs_pol_notif") {
 		_, newRelParam := d.GetChange("relation_maint_rs_pol_notif")
+		newRelParamName := GetMOName(newRelParam.(string))
 		err = aciClient.DeleteRelationmaintRsPolNotifFromMaintenancePolicy(maintMaintP.DistinguishedName)
 		if err != nil {
 			return err
 		}
-		err = aciClient.CreateRelationmaintRsPolNotifFromMaintenancePolicy(maintMaintP.DistinguishedName, newRelParam.(string))
+		err = aciClient.CreateRelationmaintRsPolNotifFromMaintenancePolicy(maintMaintP.DistinguishedName, newRelParamName)
 		if err != nil {
 			return err
 		}
@@ -333,7 +338,8 @@ func resourceAciMaintenancePolicyUpdate(d *schema.ResourceData, m interface{}) e
 	}
 	if d.HasChange("relation_trig_rs_triggerable") {
 		_, newRelParam := d.GetChange("relation_trig_rs_triggerable")
-		err = aciClient.CreateRelationtrigRsTriggerableFromMaintenancePolicy(maintMaintP.DistinguishedName, newRelParam.(string))
+		newRelParamName := GetMOName(newRelParam.(string))
+		err = aciClient.CreateRelationtrigRsTriggerableFromMaintenancePolicy(maintMaintP.DistinguishedName, newRelParamName)
 		if err != nil {
 			return err
 		}
@@ -369,7 +375,12 @@ func resourceAciMaintenancePolicyRead(d *schema.ResourceData, m interface{}) err
 		log.Printf("[DEBUG] Error while reading relation maintRsPolScheduler %v", err)
 
 	} else {
-		d.Set("relation_maint_rs_pol_scheduler", maintRsPolSchedulerData)
+		if _, ok := d.GetOk("relation_maint_rs_pol_scheduler"); ok {
+			tfName := GetMOName(d.Get("relation_maint_rs_pol_scheduler").(string))
+			if tfName != maintRsPolSchedulerData {
+				d.Set("relation_maint_rs_pol_scheduler", "")
+			}
+		}
 	}
 
 	maintRsPolNotifData, err := aciClient.ReadRelationmaintRsPolNotifFromMaintenancePolicy(dn)
@@ -377,7 +388,12 @@ func resourceAciMaintenancePolicyRead(d *schema.ResourceData, m interface{}) err
 		log.Printf("[DEBUG] Error while reading relation maintRsPolNotif %v", err)
 
 	} else {
-		d.Set("relation_maint_rs_pol_notif", maintRsPolNotifData)
+		if _, ok := d.GetOk("relation_maint_rs_pol_notif"); ok {
+			tfName := GetMOName(d.Get("relation_maint_rs_pol_notif").(string))
+			if tfName != maintRsPolNotifData {
+				d.Set("relation_maint_rs_pol_notif", "")
+			}
+		}
 	}
 
 	trigRsTriggerableData, err := aciClient.ReadRelationtrigRsTriggerableFromMaintenancePolicy(dn)
@@ -385,7 +401,12 @@ func resourceAciMaintenancePolicyRead(d *schema.ResourceData, m interface{}) err
 		log.Printf("[DEBUG] Error while reading relation trigRsTriggerable %v", err)
 
 	} else {
-		d.Set("relation_trig_rs_triggerable", trigRsTriggerableData)
+		if _, ok := d.GetOk("relation_trig_rs_triggerable"); ok {
+			tfName := GetMOName(d.Get("relation_trig_rs_triggerable").(string))
+			if tfName != trigRsTriggerableData {
+				d.Set("relation_trig_rs_triggerable", "")
+			}
+		}
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())

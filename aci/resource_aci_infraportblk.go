@@ -175,7 +175,8 @@ func resourceAciAccessPortBlockCreate(d *schema.ResourceData, m interface{}) err
 
 	if relationToinfraRsAccBndlSubgrp, ok := d.GetOk("relation_infra_rs_acc_bndl_subgrp"); ok {
 		relationParam := relationToinfraRsAccBndlSubgrp.(string)
-		err = aciClient.CreateRelationinfraRsAccBndlSubgrpFromAccessPortBlock(infraPortBlk.DistinguishedName, relationParam)
+		relationParamName := GetMOName(relationParam)
+		err = aciClient.CreateRelationinfraRsAccBndlSubgrpFromAccessPortBlock(infraPortBlk.DistinguishedName, relationParamName)
 		if err != nil {
 			return err
 		}
@@ -237,11 +238,12 @@ func resourceAciAccessPortBlockUpdate(d *schema.ResourceData, m interface{}) err
 
 	if d.HasChange("relation_infra_rs_acc_bndl_subgrp") {
 		_, newRelParam := d.GetChange("relation_infra_rs_acc_bndl_subgrp")
+		newRelParamName := GetMOName(newRelParam.(string))
 		err = aciClient.DeleteRelationinfraRsAccBndlSubgrpFromAccessPortBlock(infraPortBlk.DistinguishedName)
 		if err != nil {
 			return err
 		}
-		err = aciClient.CreateRelationinfraRsAccBndlSubgrpFromAccessPortBlock(infraPortBlk.DistinguishedName, newRelParam.(string))
+		err = aciClient.CreateRelationinfraRsAccBndlSubgrpFromAccessPortBlock(infraPortBlk.DistinguishedName, newRelParamName)
 		if err != nil {
 			return err
 		}
@@ -277,7 +279,12 @@ func resourceAciAccessPortBlockRead(d *schema.ResourceData, m interface{}) error
 		log.Printf("[DEBUG] Error while reading relation infraRsAccBndlSubgrp %v", err)
 
 	} else {
-		d.Set("relation_infra_rs_acc_bndl_subgrp", infraRsAccBndlSubgrpData)
+		if _, ok := d.GetOk("relation_infra_rs_acc_bndl_subgrp"); ok {
+			tfName := GetMOName(d.Get("relation_infra_rs_acc_bndl_subgrp").(string))
+			if tfName != infraRsAccBndlSubgrpData {
+				d.Set("relation_infra_rs_acc_bndl_subgrp", "")
+			}
+		}
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
