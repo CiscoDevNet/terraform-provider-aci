@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
+	"github.com/ciscoecosystem/aci-go-client/models"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 )
 
@@ -70,7 +71,7 @@ func dataSourceAciContractProviderRead(d *schema.ResourceData, m interface{}) er
 			return nil
 		}
 
-		setContractProviderAttributes(fvRsProv, d)
+		setContractProviderDataAttributes(fvRsProv, d)
 
 	} else if contractType == "consumer" {
 		rn := fmt.Sprintf("rscons-%s", tnVzBrCPName)
@@ -81,11 +82,37 @@ func dataSourceAciContractProviderRead(d *schema.ResourceData, m interface{}) er
 			return nil
 		}
 
-		setContractConsumerAttributes(fvRsCons, d)
+		setContractConsumerDataAttributes(fvRsCons, d)
 
 	} else {
 		return fmt.Errorf("Contract Type: Value must be from [provider, consumer]")
 	}
 
 	return nil
+}
+
+func setContractConsumerDataAttributes(fvRsCons *models.ContractConsumer, d *schema.ResourceData) *schema.ResourceData {
+	d.SetId(fvRsCons.DistinguishedName)
+
+	// d.Set("application_epg_dn", GetParentDn(fvRsCons.DistinguishedName))
+	fvRsConsMap, _ := fvRsCons.ToMap()
+
+	d.Set("contract_name", fvRsConsMap["tnVzBrCPName"])
+
+	d.Set("annotation", fvRsConsMap["annotation"])
+	d.Set("prio", fvRsConsMap["prio"])
+	return d
+}
+
+func setContractProviderDataAttributes(fvRsProv *models.ContractProvider, d *schema.ResourceData) *schema.ResourceData {
+	d.SetId(fvRsProv.DistinguishedName)
+
+	// d.Set("application_epg_dn", GetParentDn(fvRsProv.DistinguishedName))
+	fvRsProvMap, _ := fvRsProv.ToMap()
+	d.Set("contract_name", fvRsProvMap["tnVzBrCPName"])
+
+	d.Set("annotation", fvRsProvMap["annotation"])
+	d.Set("match_t", fvRsProvMap["matchT"])
+	d.Set("prio", fvRsProvMap["prio"])
+	return d
 }

@@ -187,7 +187,7 @@ func resourceAciContractProviderCreate(d *schema.ResourceData, m interface{}) er
 		if Prio, ok := d.GetOk("prio"); ok {
 			fvRsProvAttr.Prio = Prio.(string)
 		}
-
+		fvRsProvAttr.TnVzBrCPName = tnVzBrCPName
 		fvRsProv := models.NewContractProvider(fmt.Sprintf("rsprov-%s", tnVzBrCPName), ApplicationEPGDn, fvRsProvAttr)
 
 		err := aciClient.Save(fvRsProv)
@@ -212,9 +212,7 @@ func resourceAciContractProviderCreate(d *schema.ResourceData, m interface{}) er
 		if Prio, ok := d.GetOk("prio"); ok {
 			fvRsConsAttr.Prio = Prio.(string)
 		}
-		if TnVzBrCPName, ok := d.GetOk("contract_name"); ok {
-			fvRsConsAttr.TnVzBrCPName = TnVzBrCPName.(string)
-		}
+		fvRsConsAttr.TnVzBrCPName = tnVzBrCPName
 		fvRsCons := models.NewContractConsumer(fmt.Sprintf("rscons-%s", tnVzBrCPName), ApplicationEPGDn, fvRsConsAttr)
 
 		err := aciClient.Save(fvRsCons)
@@ -242,7 +240,7 @@ func resourceAciContractProviderUpdate(d *schema.ResourceData, m interface{}) er
 
 	aciClient := m.(*client.Client)
 
-	tnVzBrCPName := GetMOName(d.Get("contract_name").(string))
+	tnVzBrCPName := GetMOName(d.Get("contract_dn").(string))
 
 	contractType := d.Get("contract_type").(string)
 
@@ -261,7 +259,7 @@ func resourceAciContractProviderUpdate(d *schema.ResourceData, m interface{}) er
 		if Prio, ok := d.GetOk("prio"); ok {
 			fvRsProvAttr.Prio = Prio.(string)
 		}
-
+		fvRsProvAttr.TnVzBrCPName = tnVzBrCPName
 		fvRsProv := models.NewContractProvider(fmt.Sprintf("rsprov-%s", tnVzBrCPName), ApplicationEPGDn, fvRsProvAttr)
 
 		fvRsProv.Status = "modified"
@@ -289,9 +287,7 @@ func resourceAciContractProviderUpdate(d *schema.ResourceData, m interface{}) er
 		if Prio, ok := d.GetOk("prio"); ok {
 			fvRsConsAttr.Prio = Prio.(string)
 		}
-		if TnVzBrCPName, ok := d.GetOk("contract_name"); ok {
-			fvRsConsAttr.TnVzBrCPName = TnVzBrCPName.(string)
-		}
+		fvRsConsAttr.TnVzBrCPName = tnVzBrCPName
 		fvRsCons := models.NewContractConsumer(fmt.Sprintf("rscons-%s", tnVzBrCPName), ApplicationEPGDn, fvRsConsAttr)
 
 		fvRsCons.Status = "modified"
