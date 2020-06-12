@@ -3,6 +3,8 @@ package aci
 import (
 	"fmt"
 	"log"
+	"reflect"
+	"sort"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
@@ -155,7 +157,8 @@ func resourceAciAnyCreate(d *schema.ResourceData, m interface{}) error {
 	if relationTovzRsAnyToCons, ok := d.GetOk("relation_vz_rs_any_to_cons"); ok {
 		relationParamList := toStringList(relationTovzRsAnyToCons.(*schema.Set).List())
 		for _, relationParam := range relationParamList {
-			err = aciClient.CreateRelationvzRsAnyToConsFromAny(vzAny.DistinguishedName, relationParam)
+			relationParamName := GetMOName(relationParam)
+			err = aciClient.CreateRelationvzRsAnyToConsFromAny(vzAny.DistinguishedName, relationParamName)
 
 			if err != nil {
 				return err
@@ -168,7 +171,8 @@ func resourceAciAnyCreate(d *schema.ResourceData, m interface{}) error {
 	if relationTovzRsAnyToConsIf, ok := d.GetOk("relation_vz_rs_any_to_cons_if"); ok {
 		relationParamList := toStringList(relationTovzRsAnyToConsIf.(*schema.Set).List())
 		for _, relationParam := range relationParamList {
-			err = aciClient.CreateRelationvzRsAnyToConsIfFromAny(vzAny.DistinguishedName, relationParam)
+			relationParamName := GetMOName(relationParam)
+			err = aciClient.CreateRelationvzRsAnyToConsIfFromAny(vzAny.DistinguishedName, relationParamName)
 
 			if err != nil {
 				return err
@@ -181,7 +185,8 @@ func resourceAciAnyCreate(d *schema.ResourceData, m interface{}) error {
 	if relationTovzRsAnyToProv, ok := d.GetOk("relation_vz_rs_any_to_prov"); ok {
 		relationParamList := toStringList(relationTovzRsAnyToProv.(*schema.Set).List())
 		for _, relationParam := range relationParamList {
-			err = aciClient.CreateRelationvzRsAnyToProvFromAny(vzAny.DistinguishedName, relationParam)
+			relationParamName := GetMOName(relationParam)
+			err = aciClient.CreateRelationvzRsAnyToProvFromAny(vzAny.DistinguishedName, relationParamName)
 
 			if err != nil {
 				return err
@@ -239,7 +244,8 @@ func resourceAciAnyUpdate(d *schema.ResourceData, m interface{}) error {
 		relToCreate := toStringList(newRelSet.Difference(oldRelSet).List())
 
 		for _, relDn := range relToDelete {
-			err = aciClient.DeleteRelationvzRsAnyToConsFromAny(vzAny.DistinguishedName, relDn)
+			relDnName := GetMOName(relDn)
+			err = aciClient.DeleteRelationvzRsAnyToConsFromAny(vzAny.DistinguishedName, relDnName)
 			if err != nil {
 				return err
 			}
@@ -247,7 +253,8 @@ func resourceAciAnyUpdate(d *schema.ResourceData, m interface{}) error {
 		}
 
 		for _, relDn := range relToCreate {
-			err = aciClient.CreateRelationvzRsAnyToConsFromAny(vzAny.DistinguishedName, relDn)
+			relDnName := GetMOName(relDn)
+			err = aciClient.CreateRelationvzRsAnyToConsFromAny(vzAny.DistinguishedName, relDnName)
 			if err != nil {
 				return err
 			}
@@ -266,7 +273,8 @@ func resourceAciAnyUpdate(d *schema.ResourceData, m interface{}) error {
 		relToCreate := toStringList(newRelSet.Difference(oldRelSet).List())
 
 		for _, relDn := range relToDelete {
-			err = aciClient.DeleteRelationvzRsAnyToConsIfFromAny(vzAny.DistinguishedName, relDn)
+			relDnName := GetMOName(relDn)
+			err = aciClient.DeleteRelationvzRsAnyToConsIfFromAny(vzAny.DistinguishedName, relDnName)
 			if err != nil {
 				return err
 			}
@@ -274,7 +282,8 @@ func resourceAciAnyUpdate(d *schema.ResourceData, m interface{}) error {
 		}
 
 		for _, relDn := range relToCreate {
-			err = aciClient.CreateRelationvzRsAnyToConsIfFromAny(vzAny.DistinguishedName, relDn)
+			relDnName := GetMOName(relDn)
+			err = aciClient.CreateRelationvzRsAnyToConsIfFromAny(vzAny.DistinguishedName, relDnName)
 			if err != nil {
 				return err
 			}
@@ -293,7 +302,8 @@ func resourceAciAnyUpdate(d *schema.ResourceData, m interface{}) error {
 		relToCreate := toStringList(newRelSet.Difference(oldRelSet).List())
 
 		for _, relDn := range relToDelete {
-			err = aciClient.DeleteRelationvzRsAnyToProvFromAny(vzAny.DistinguishedName, relDn)
+			relDnName := GetMOName(relDn)
+			err = aciClient.DeleteRelationvzRsAnyToProvFromAny(vzAny.DistinguishedName, relDnName)
 			if err != nil {
 				return err
 			}
@@ -301,7 +311,8 @@ func resourceAciAnyUpdate(d *schema.ResourceData, m interface{}) error {
 		}
 
 		for _, relDn := range relToCreate {
-			err = aciClient.CreateRelationvzRsAnyToProvFromAny(vzAny.DistinguishedName, relDn)
+			relDnName := GetMOName(relDn)
+			err = aciClient.CreateRelationvzRsAnyToProvFromAny(vzAny.DistinguishedName, relDnName)
 			if err != nil {
 				return err
 			}
@@ -339,7 +350,21 @@ func resourceAciAnyRead(d *schema.ResourceData, m interface{}) error {
 		log.Printf("[DEBUG] Error while reading relation vzRsAnyToCons %v", err)
 
 	} else {
-		d.Set("relation_vz_rs_any_to_cons", vzRsAnyToConsData)
+		if _, ok := d.GetOk("relation_vz_rs_any_to_cons"); ok {
+			relationParamList := toStringList(d.Get("relation_vz_rs_any_to_cons").(*schema.Set).List())
+			tfList := make([]string, 0, 1)
+			for _, relationParam := range relationParamList {
+				relationParamName := GetMOName(relationParam)
+				tfList = append(tfList, relationParamName)
+			}
+			vzRsAnyToConsDataList := toStringList(vzRsAnyToConsData.(*schema.Set).List())
+			sort.Strings(tfList)
+			sort.Strings(vzRsAnyToConsDataList)
+
+			if !reflect.DeepEqual(tfList, vzRsAnyToConsDataList) {
+				d.Set("relation_vz_rs_any_to_cons", make([]string, 0, 1))
+			}
+		}
 	}
 
 	vzRsAnyToConsIfData, err := aciClient.ReadRelationvzRsAnyToConsIfFromAny(dn)
@@ -347,7 +372,21 @@ func resourceAciAnyRead(d *schema.ResourceData, m interface{}) error {
 		log.Printf("[DEBUG] Error while reading relation vzRsAnyToConsIf %v", err)
 
 	} else {
-		d.Set("relation_vz_rs_any_to_cons_if", vzRsAnyToConsIfData)
+		if _, ok := d.GetOk("relation_vz_rs_any_to_cons_if"); ok {
+			relationParamList := toStringList(d.Get("relation_vz_rs_any_to_cons_if").(*schema.Set).List())
+			tfList := make([]string, 0, 1)
+			for _, relationParam := range relationParamList {
+				relationParamName := GetMOName(relationParam)
+				tfList = append(tfList, relationParamName)
+			}
+			vzRsAnyToConsIfDataList := toStringList(vzRsAnyToConsIfData.(*schema.Set).List())
+			sort.Strings(tfList)
+			sort.Strings(vzRsAnyToConsIfDataList)
+
+			if !reflect.DeepEqual(tfList, vzRsAnyToConsIfDataList) {
+				d.Set("relation_vz_rs_any_to_cons_if", make([]string, 0, 1))
+			}
+		}
 	}
 
 	vzRsAnyToProvData, err := aciClient.ReadRelationvzRsAnyToProvFromAny(dn)
@@ -355,7 +394,21 @@ func resourceAciAnyRead(d *schema.ResourceData, m interface{}) error {
 		log.Printf("[DEBUG] Error while reading relation vzRsAnyToProv %v", err)
 
 	} else {
-		d.Set("relation_vz_rs_any_to_prov", vzRsAnyToProvData)
+		if _, ok := d.GetOk("relation_vz_rs_any_to_prov"); ok {
+			relationParamList := toStringList(d.Get("relation_vz_rs_any_to_prov").(*schema.Set).List())
+			tfList := make([]string, 0, 1)
+			for _, relationParam := range relationParamList {
+				relationParamName := GetMOName(relationParam)
+				tfList = append(tfList, relationParamName)
+			}
+			vzRsAnyToProvDataList := toStringList(vzRsAnyToProvData.(*schema.Set).List())
+			sort.Strings(tfList)
+			sort.Strings(vzRsAnyToProvDataList)
+
+			if !reflect.DeepEqual(tfList, vzRsAnyToProvDataList) {
+				d.Set("relation_vz_rs_any_to_prov", make([]string, 0, 1))
+			}
+		}
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())

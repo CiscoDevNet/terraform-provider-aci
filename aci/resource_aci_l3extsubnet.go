@@ -190,7 +190,8 @@ func resourceAciL3ExtSubnetCreate(d *schema.ResourceData, m interface{}) error {
 	}
 	if relationTol3extRsSubnetToRtSumm, ok := d.GetOk("relation_l3ext_rs_subnet_to_rt_summ"); ok {
 		relationParam := relationTol3extRsSubnetToRtSumm.(string)
-		err = aciClient.CreateRelationl3extRsSubnetToRtSummFromL3ExtSubnet(l3extSubnet.DistinguishedName, relationParam)
+		relationParamName := GetMOName(relationParam)
+		err = aciClient.CreateRelationl3extRsSubnetToRtSummFromL3ExtSubnet(l3extSubnet.DistinguishedName, relationParamName)
 		if err != nil {
 			return err
 		}
@@ -273,11 +274,12 @@ func resourceAciL3ExtSubnetUpdate(d *schema.ResourceData, m interface{}) error {
 	}
 	if d.HasChange("relation_l3ext_rs_subnet_to_rt_summ") {
 		_, newRelParam := d.GetChange("relation_l3ext_rs_subnet_to_rt_summ")
+		newRelParamName := GetMOName(newRelParam.(string))
 		err = aciClient.DeleteRelationl3extRsSubnetToRtSummFromL3ExtSubnet(l3extSubnet.DistinguishedName)
 		if err != nil {
 			return err
 		}
-		err = aciClient.CreateRelationl3extRsSubnetToRtSummFromL3ExtSubnet(l3extSubnet.DistinguishedName, newRelParam.(string))
+		err = aciClient.CreateRelationl3extRsSubnetToRtSummFromL3ExtSubnet(l3extSubnet.DistinguishedName, newRelParamName)
 		if err != nil {
 			return err
 		}
@@ -321,7 +323,12 @@ func resourceAciL3ExtSubnetRead(d *schema.ResourceData, m interface{}) error {
 		log.Printf("[DEBUG] Error while reading relation l3extRsSubnetToRtSumm %v", err)
 
 	} else {
-		d.Set("relation_l3ext_rs_subnet_to_rt_summ", l3extRsSubnetToRtSummData)
+		if _, ok := d.GetOk("relation_l3ext_rs_subnet_to_rt_summ"); ok {
+			tfName := GetMOName(d.Get("relation_l3ext_rs_subnet_to_rt_summ").(string))
+			if tfName != l3extRsSubnetToRtSummData {
+				d.Set("relation_l3ext_rs_subnet_to_rt_summ", "")
+			}
+		}
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())

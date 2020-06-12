@@ -3,6 +3,8 @@ package aci
 import (
 	"fmt"
 	"log"
+	"reflect"
+	"sort"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
@@ -403,7 +405,8 @@ func resourceAciBridgeDomainCreate(d *schema.ResourceData, m interface{}) error 
 
 	if relationTofvRsBDToProfile, ok := d.GetOk("relation_fv_rs_bd_to_profile"); ok {
 		relationParam := relationTofvRsBDToProfile.(string)
-		err = aciClient.CreateRelationfvRsBDToProfileFromBridgeDomain(fvBD.DistinguishedName, relationParam)
+		relationParamName := GetMOName(relationParam)
+		err = aciClient.CreateRelationfvRsBDToProfileFromBridgeDomain(fvBD.DistinguishedName, relationParamName)
 		if err != nil {
 			return err
 		}
@@ -414,7 +417,8 @@ func resourceAciBridgeDomainCreate(d *schema.ResourceData, m interface{}) error 
 	}
 	if relationTofvRsMldsn, ok := d.GetOk("relation_fv_rs_mldsn"); ok {
 		relationParam := relationTofvRsMldsn.(string)
-		err = aciClient.CreateRelationfvRsMldsnFromBridgeDomain(fvBD.DistinguishedName, relationParam)
+		relationParamName := GetMOName(relationParam)
+		err = aciClient.CreateRelationfvRsMldsnFromBridgeDomain(fvBD.DistinguishedName, relationParamName)
 		if err != nil {
 			return err
 		}
@@ -425,7 +429,8 @@ func resourceAciBridgeDomainCreate(d *schema.ResourceData, m interface{}) error 
 	}
 	if relationTofvRsABDPolMonPol, ok := d.GetOk("relation_fv_rs_abd_pol_mon_pol"); ok {
 		relationParam := relationTofvRsABDPolMonPol.(string)
-		err = aciClient.CreateRelationfvRsABDPolMonPolFromBridgeDomain(fvBD.DistinguishedName, relationParam)
+		relationParamName := GetMOName(relationParam)
+		err = aciClient.CreateRelationfvRsABDPolMonPolFromBridgeDomain(fvBD.DistinguishedName, relationParamName)
 		if err != nil {
 			return err
 		}
@@ -436,7 +441,8 @@ func resourceAciBridgeDomainCreate(d *schema.ResourceData, m interface{}) error 
 	}
 	if relationTofvRsBDToNdP, ok := d.GetOk("relation_fv_rs_bd_to_nd_p"); ok {
 		relationParam := relationTofvRsBDToNdP.(string)
-		err = aciClient.CreateRelationfvRsBDToNdPFromBridgeDomain(fvBD.DistinguishedName, relationParam)
+		relationParamName := GetMOName(relationParam)
+		err = aciClient.CreateRelationfvRsBDToNdPFromBridgeDomain(fvBD.DistinguishedName, relationParamName)
 		if err != nil {
 			return err
 		}
@@ -460,7 +466,8 @@ func resourceAciBridgeDomainCreate(d *schema.ResourceData, m interface{}) error 
 	}
 	if relationTofvRsBDToFhs, ok := d.GetOk("relation_fv_rs_bd_to_fhs"); ok {
 		relationParam := relationTofvRsBDToFhs.(string)
-		err = aciClient.CreateRelationfvRsBDToFhsFromBridgeDomain(fvBD.DistinguishedName, relationParam)
+		relationParamName := GetMOName(relationParam)
+		err = aciClient.CreateRelationfvRsBDToFhsFromBridgeDomain(fvBD.DistinguishedName, relationParamName)
 		if err != nil {
 			return err
 		}
@@ -471,7 +478,8 @@ func resourceAciBridgeDomainCreate(d *schema.ResourceData, m interface{}) error 
 	}
 	if relationTofvRsBDToRelayP, ok := d.GetOk("relation_fv_rs_bd_to_relay_p"); ok {
 		relationParam := relationTofvRsBDToRelayP.(string)
-		err = aciClient.CreateRelationfvRsBDToRelayPFromBridgeDomain(fvBD.DistinguishedName, relationParam)
+		relationParamName := GetMOName(relationParam)
+		err = aciClient.CreateRelationfvRsBDToRelayPFromBridgeDomain(fvBD.DistinguishedName, relationParamName)
 		if err != nil {
 			return err
 		}
@@ -482,7 +490,8 @@ func resourceAciBridgeDomainCreate(d *schema.ResourceData, m interface{}) error 
 	}
 	if relationTofvRsCtx, ok := d.GetOk("relation_fv_rs_ctx"); ok {
 		relationParam := relationTofvRsCtx.(string)
-		err = aciClient.CreateRelationfvRsCtxFromBridgeDomain(fvBD.DistinguishedName, relationParam)
+		relationParamName := GetMOName(relationParam)
+		err = aciClient.CreateRelationfvRsCtxFromBridgeDomain(fvBD.DistinguishedName, relationParamName)
 		if err != nil {
 			return err
 		}
@@ -508,7 +517,8 @@ func resourceAciBridgeDomainCreate(d *schema.ResourceData, m interface{}) error 
 	}
 	if relationTofvRsIgmpsn, ok := d.GetOk("relation_fv_rs_igmpsn"); ok {
 		relationParam := relationTofvRsIgmpsn.(string)
-		err = aciClient.CreateRelationfvRsIgmpsnFromBridgeDomain(fvBD.DistinguishedName, relationParam)
+		relationParamName := GetMOName(relationParam)
+		err = aciClient.CreateRelationfvRsIgmpsnFromBridgeDomain(fvBD.DistinguishedName, relationParamName)
 		if err != nil {
 			return err
 		}
@@ -519,7 +529,8 @@ func resourceAciBridgeDomainCreate(d *schema.ResourceData, m interface{}) error 
 	}
 	if relationTofvRsBdToEpRet, ok := d.GetOk("relation_fv_rs_bd_to_ep_ret"); ok {
 		relationParam := relationTofvRsBdToEpRet.(string)
-		err = aciClient.CreateRelationfvRsBdToEpRetFromBridgeDomain(fvBD.DistinguishedName, relationParam)
+		relationParamName := GetMOName(relationParam)
+		err = aciClient.CreateRelationfvRsBdToEpRetFromBridgeDomain(fvBD.DistinguishedName, relationParamName)
 		if err != nil {
 			return err
 		}
@@ -531,7 +542,8 @@ func resourceAciBridgeDomainCreate(d *schema.ResourceData, m interface{}) error 
 	if relationTofvRsBDToOut, ok := d.GetOk("relation_fv_rs_bd_to_out"); ok {
 		relationParamList := toStringList(relationTofvRsBDToOut.(*schema.Set).List())
 		for _, relationParam := range relationParamList {
-			err = aciClient.CreateRelationfvRsBDToOutFromBridgeDomain(fvBD.DistinguishedName, relationParam)
+			relationParamName := GetMOName(relationParam)
+			err = aciClient.CreateRelationfvRsBDToOutFromBridgeDomain(fvBD.DistinguishedName, relationParamName)
 
 			if err != nil {
 				return err
@@ -642,11 +654,12 @@ func resourceAciBridgeDomainUpdate(d *schema.ResourceData, m interface{}) error 
 
 	if d.HasChange("relation_fv_rs_bd_to_profile") {
 		_, newRelParam := d.GetChange("relation_fv_rs_bd_to_profile")
+		newRelParamName := GetMOName(newRelParam.(string))
 		err = aciClient.DeleteRelationfvRsBDToProfileFromBridgeDomain(fvBD.DistinguishedName)
 		if err != nil {
 			return err
 		}
-		err = aciClient.CreateRelationfvRsBDToProfileFromBridgeDomain(fvBD.DistinguishedName, newRelParam.(string))
+		err = aciClient.CreateRelationfvRsBDToProfileFromBridgeDomain(fvBD.DistinguishedName, newRelParamName)
 		if err != nil {
 			return err
 		}
@@ -657,7 +670,8 @@ func resourceAciBridgeDomainUpdate(d *schema.ResourceData, m interface{}) error 
 	}
 	if d.HasChange("relation_fv_rs_mldsn") {
 		_, newRelParam := d.GetChange("relation_fv_rs_mldsn")
-		err = aciClient.CreateRelationfvRsMldsnFromBridgeDomain(fvBD.DistinguishedName, newRelParam.(string))
+		newRelParamName := GetMOName(newRelParam.(string))
+		err = aciClient.CreateRelationfvRsMldsnFromBridgeDomain(fvBD.DistinguishedName, newRelParamName)
 		if err != nil {
 			return err
 		}
@@ -668,11 +682,12 @@ func resourceAciBridgeDomainUpdate(d *schema.ResourceData, m interface{}) error 
 	}
 	if d.HasChange("relation_fv_rs_abd_pol_mon_pol") {
 		_, newRelParam := d.GetChange("relation_fv_rs_abd_pol_mon_pol")
+		newRelParamName := GetMOName(newRelParam.(string))
 		err = aciClient.DeleteRelationfvRsABDPolMonPolFromBridgeDomain(fvBD.DistinguishedName)
 		if err != nil {
 			return err
 		}
-		err = aciClient.CreateRelationfvRsABDPolMonPolFromBridgeDomain(fvBD.DistinguishedName, newRelParam.(string))
+		err = aciClient.CreateRelationfvRsABDPolMonPolFromBridgeDomain(fvBD.DistinguishedName, newRelParamName)
 		if err != nil {
 			return err
 		}
@@ -683,7 +698,8 @@ func resourceAciBridgeDomainUpdate(d *schema.ResourceData, m interface{}) error 
 	}
 	if d.HasChange("relation_fv_rs_bd_to_nd_p") {
 		_, newRelParam := d.GetChange("relation_fv_rs_bd_to_nd_p")
-		err = aciClient.CreateRelationfvRsBDToNdPFromBridgeDomain(fvBD.DistinguishedName, newRelParam.(string))
+		newRelParamName := GetMOName(newRelParam.(string))
+		err = aciClient.CreateRelationfvRsBDToNdPFromBridgeDomain(fvBD.DistinguishedName, newRelParamName)
 		if err != nil {
 			return err
 		}
@@ -721,11 +737,12 @@ func resourceAciBridgeDomainUpdate(d *schema.ResourceData, m interface{}) error 
 	}
 	if d.HasChange("relation_fv_rs_bd_to_fhs") {
 		_, newRelParam := d.GetChange("relation_fv_rs_bd_to_fhs")
+		newRelParamName := GetMOName(newRelParam.(string))
 		err = aciClient.DeleteRelationfvRsBDToFhsFromBridgeDomain(fvBD.DistinguishedName)
 		if err != nil {
 			return err
 		}
-		err = aciClient.CreateRelationfvRsBDToFhsFromBridgeDomain(fvBD.DistinguishedName, newRelParam.(string))
+		err = aciClient.CreateRelationfvRsBDToFhsFromBridgeDomain(fvBD.DistinguishedName, newRelParamName)
 		if err != nil {
 			return err
 		}
@@ -736,11 +753,12 @@ func resourceAciBridgeDomainUpdate(d *schema.ResourceData, m interface{}) error 
 	}
 	if d.HasChange("relation_fv_rs_bd_to_relay_p") {
 		_, newRelParam := d.GetChange("relation_fv_rs_bd_to_relay_p")
+		newRelParamName := GetMOName(newRelParam.(string))
 		err = aciClient.DeleteRelationfvRsBDToRelayPFromBridgeDomain(fvBD.DistinguishedName)
 		if err != nil {
 			return err
 		}
-		err = aciClient.CreateRelationfvRsBDToRelayPFromBridgeDomain(fvBD.DistinguishedName, newRelParam.(string))
+		err = aciClient.CreateRelationfvRsBDToRelayPFromBridgeDomain(fvBD.DistinguishedName, newRelParamName)
 		if err != nil {
 			return err
 		}
@@ -751,7 +769,8 @@ func resourceAciBridgeDomainUpdate(d *schema.ResourceData, m interface{}) error 
 	}
 	if d.HasChange("relation_fv_rs_ctx") {
 		_, newRelParam := d.GetChange("relation_fv_rs_ctx")
-		err = aciClient.CreateRelationfvRsCtxFromBridgeDomain(fvBD.DistinguishedName, newRelParam.(string))
+		newRelParamName := GetMOName(newRelParam.(string))
+		err = aciClient.CreateRelationfvRsCtxFromBridgeDomain(fvBD.DistinguishedName, newRelParamName)
 		if err != nil {
 			return err
 		}
@@ -786,7 +805,8 @@ func resourceAciBridgeDomainUpdate(d *schema.ResourceData, m interface{}) error 
 	}
 	if d.HasChange("relation_fv_rs_igmpsn") {
 		_, newRelParam := d.GetChange("relation_fv_rs_igmpsn")
-		err = aciClient.CreateRelationfvRsIgmpsnFromBridgeDomain(fvBD.DistinguishedName, newRelParam.(string))
+		newRelParamName := GetMOName(newRelParam.(string))
+		err = aciClient.CreateRelationfvRsIgmpsnFromBridgeDomain(fvBD.DistinguishedName, newRelParamName)
 		if err != nil {
 			return err
 		}
@@ -797,7 +817,8 @@ func resourceAciBridgeDomainUpdate(d *schema.ResourceData, m interface{}) error 
 	}
 	if d.HasChange("relation_fv_rs_bd_to_ep_ret") {
 		_, newRelParam := d.GetChange("relation_fv_rs_bd_to_ep_ret")
-		err = aciClient.CreateRelationfvRsBdToEpRetFromBridgeDomain(fvBD.DistinguishedName, newRelParam.(string))
+		newRelParamName := GetMOName(newRelParam.(string))
+		err = aciClient.CreateRelationfvRsBdToEpRetFromBridgeDomain(fvBD.DistinguishedName, newRelParamName)
 		if err != nil {
 			return err
 		}
@@ -814,7 +835,8 @@ func resourceAciBridgeDomainUpdate(d *schema.ResourceData, m interface{}) error 
 		relToCreate := toStringList(newRelSet.Difference(oldRelSet).List())
 
 		for _, relDn := range relToDelete {
-			err = aciClient.DeleteRelationfvRsBDToOutFromBridgeDomain(fvBD.DistinguishedName, relDn)
+			relDnName := GetMOName(relDn)
+			err = aciClient.DeleteRelationfvRsBDToOutFromBridgeDomain(fvBD.DistinguishedName, relDnName)
 			if err != nil {
 				return err
 			}
@@ -822,7 +844,8 @@ func resourceAciBridgeDomainUpdate(d *schema.ResourceData, m interface{}) error 
 		}
 
 		for _, relDn := range relToCreate {
-			err = aciClient.CreateRelationfvRsBDToOutFromBridgeDomain(fvBD.DistinguishedName, relDn)
+			relDnName := GetMOName(relDn)
+			err = aciClient.CreateRelationfvRsBDToOutFromBridgeDomain(fvBD.DistinguishedName, relDnName)
 			if err != nil {
 				return err
 			}
@@ -860,7 +883,12 @@ func resourceAciBridgeDomainRead(d *schema.ResourceData, m interface{}) error {
 		log.Printf("[DEBUG] Error while reading relation fvRsBDToProfile %v", err)
 
 	} else {
-		d.Set("relation_fv_rs_bd_to_profile", fvRsBDToProfileData)
+		if _, ok := d.GetOk("relation_fv_rs_bd_to_profile"); ok {
+			tfName := GetMOName(d.Get("relation_fv_rs_bd_to_profile").(string))
+			if tfName != fvRsBDToProfileData {
+				d.Set("relation_fv_rs_bd_to_profile", "")
+			}
+		}
 	}
 
 	fvRsMldsnData, err := aciClient.ReadRelationfvRsMldsnFromBridgeDomain(dn)
@@ -868,7 +896,12 @@ func resourceAciBridgeDomainRead(d *schema.ResourceData, m interface{}) error {
 		log.Printf("[DEBUG] Error while reading relation fvRsMldsn %v", err)
 
 	} else {
-		d.Set("relation_fv_rs_mldsn", fvRsMldsnData)
+		if _, ok := d.GetOk("relation_fv_rs_mldsn"); ok {
+			tfName := GetMOName(d.Get("relation_fv_rs_mldsn").(string))
+			if tfName != fvRsMldsnData {
+				d.Set("relation_fv_rs_mldsn", "")
+			}
+		}
 	}
 
 	fvRsABDPolMonPolData, err := aciClient.ReadRelationfvRsABDPolMonPolFromBridgeDomain(dn)
@@ -876,7 +909,12 @@ func resourceAciBridgeDomainRead(d *schema.ResourceData, m interface{}) error {
 		log.Printf("[DEBUG] Error while reading relation fvRsABDPolMonPol %v", err)
 
 	} else {
-		d.Set("relation_fv_rs_abd_pol_mon_pol", fvRsABDPolMonPolData)
+		if _, ok := d.GetOk("relation_fv_rs_abd_pol_mon_pol"); ok {
+			tfName := GetMOName(d.Get("relation_fv_rs_abd_pol_mon_pol").(string))
+			if tfName != fvRsABDPolMonPolData {
+				d.Set("relation_fv_rs_abd_pol_mon_pol", "")
+			}
+		}
 	}
 
 	fvRsBDToNdPData, err := aciClient.ReadRelationfvRsBDToNdPFromBridgeDomain(dn)
@@ -884,7 +922,12 @@ func resourceAciBridgeDomainRead(d *schema.ResourceData, m interface{}) error {
 		log.Printf("[DEBUG] Error while reading relation fvRsBDToNdP %v", err)
 
 	} else {
-		d.Set("relation_fv_rs_bd_to_nd_p", fvRsBDToNdPData)
+		if _, ok := d.GetOk("relation_fv_rs_bd_to_nd_p"); ok {
+			tfName := GetMOName(d.Get("relation_fv_rs_bd_to_nd_p").(string))
+			if tfName != fvRsBDToNdPData {
+				d.Set("relation_fv_rs_bd_to_nd_p", "")
+			}
+		}
 	}
 
 	fvRsBdFloodToData, err := aciClient.ReadRelationfvRsBdFloodToFromBridgeDomain(dn)
@@ -900,7 +943,12 @@ func resourceAciBridgeDomainRead(d *schema.ResourceData, m interface{}) error {
 		log.Printf("[DEBUG] Error while reading relation fvRsBDToFhs %v", err)
 
 	} else {
-		d.Set("relation_fv_rs_bd_to_fhs", fvRsBDToFhsData)
+		if _, ok := d.GetOk("relation_fv_rs_bd_to_fhs"); ok {
+			tfName := GetMOName(d.Get("relation_fv_rs_bd_to_fhs").(string))
+			if tfName != fvRsBDToFhsData {
+				d.Set("relation_fv_rs_bd_to_fhs", "")
+			}
+		}
 	}
 
 	fvRsBDToRelayPData, err := aciClient.ReadRelationfvRsBDToRelayPFromBridgeDomain(dn)
@@ -908,7 +956,12 @@ func resourceAciBridgeDomainRead(d *schema.ResourceData, m interface{}) error {
 		log.Printf("[DEBUG] Error while reading relation fvRsBDToRelayP %v", err)
 
 	} else {
-		d.Set("relation_fv_rs_bd_to_relay_p", fvRsBDToRelayPData)
+		if _, ok := d.GetOk("relation_fv_rs_bd_to_relay_p"); ok {
+			tfName := GetMOName(d.Get("relation_fv_rs_bd_to_relay_p").(string))
+			if tfName != fvRsBDToRelayPData {
+				d.Set("relation_fv_rs_bd_to_relay_p", "")
+			}
+		}
 	}
 
 	fvRsCtxData, err := aciClient.ReadRelationfvRsCtxFromBridgeDomain(dn)
@@ -916,7 +969,12 @@ func resourceAciBridgeDomainRead(d *schema.ResourceData, m interface{}) error {
 		log.Printf("[DEBUG] Error while reading relation fvRsCtx %v", err)
 
 	} else {
-		d.Set("relation_fv_rs_ctx", fvRsCtxData)
+		if _, ok := d.GetOk("relation_fv_rs_ctx"); ok {
+			tfName := GetMOName(d.Get("relation_fv_rs_ctx").(string))
+			if tfName != fvRsCtxData {
+				d.Set("relation_fv_rs_ctx", "")
+			}
+		}
 	}
 
 	fvRsBDToNetflowMonitorPolData, err := aciClient.ReadRelationfvRsBDToNetflowMonitorPolFromBridgeDomain(dn)
@@ -932,7 +990,12 @@ func resourceAciBridgeDomainRead(d *schema.ResourceData, m interface{}) error {
 		log.Printf("[DEBUG] Error while reading relation fvRsIgmpsn %v", err)
 
 	} else {
-		d.Set("relation_fv_rs_igmpsn", fvRsIgmpsnData)
+		if _, ok := d.GetOk("relation_fv_rs_igmpsn"); ok {
+			tfName := GetMOName(d.Get("relation_fv_rs_igmpsn").(string))
+			if tfName != fvRsIgmpsnData {
+				d.Set("relation_fv_rs_igmpsn", "")
+			}
+		}
 	}
 
 	fvRsBdToEpRetData, err := aciClient.ReadRelationfvRsBdToEpRetFromBridgeDomain(dn)
@@ -940,7 +1003,12 @@ func resourceAciBridgeDomainRead(d *schema.ResourceData, m interface{}) error {
 		log.Printf("[DEBUG] Error while reading relation fvRsBdToEpRet %v", err)
 
 	} else {
-		d.Set("relation_fv_rs_bd_to_ep_ret", fvRsBdToEpRetData)
+		if _, ok := d.GetOk("relation_fv_rs_bd_to_ep_ret"); ok {
+			tfName := GetMOName(d.Get("relation_fv_rs_bd_to_ep_ret").(string))
+			if tfName != fvRsBdToEpRetData {
+				d.Set("relation_fv_rs_bd_to_ep_ret", "")
+			}
+		}
 	}
 
 	fvRsBDToOutData, err := aciClient.ReadRelationfvRsBDToOutFromBridgeDomain(dn)
@@ -948,7 +1016,21 @@ func resourceAciBridgeDomainRead(d *schema.ResourceData, m interface{}) error {
 		log.Printf("[DEBUG] Error while reading relation fvRsBDToOut %v", err)
 
 	} else {
-		d.Set("relation_fv_rs_bd_to_out", fvRsBDToOutData)
+		if _, ok := d.GetOk("relation_fv_rs_bd_to_out"); ok {
+			relationParamList := toStringList(d.Get("relation_fv_rs_bd_to_out").(*schema.Set).List())
+			tfList := make([]string, 0, 1)
+			for _, relationParam := range relationParamList {
+				relationParamName := GetMOName(relationParam)
+				tfList = append(tfList, relationParamName)
+			}
+			fvRsBDToOutDataList := toStringList(fvRsBDToOutData.(*schema.Set).List())
+			sort.Strings(tfList)
+			sort.Strings(fvRsBDToOutDataList)
+
+			if !reflect.DeepEqual(tfList, fvRsBDToOutDataList) {
+				d.Set("relation_fv_rs_bd_to_out", make([]string, 0, 1))
+			}
+		}
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())

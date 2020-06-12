@@ -145,7 +145,8 @@ func resourceAciApplicationProfileCreate(d *schema.ResourceData, m interface{}) 
 
 	if relationTofvRsApMonPol, ok := d.GetOk("relation_fv_rs_ap_mon_pol"); ok {
 		relationParam := relationTofvRsApMonPol.(string)
-		err = aciClient.CreateRelationfvRsApMonPolFromApplicationProfile(fvAp.DistinguishedName, relationParam)
+		relationParamName := GetMOName(relationParam)
+		err = aciClient.CreateRelationfvRsApMonPolFromApplicationProfile(fvAp.DistinguishedName, relationParamName)
 		if err != nil {
 			return err
 		}
@@ -198,11 +199,12 @@ func resourceAciApplicationProfileUpdate(d *schema.ResourceData, m interface{}) 
 
 	if d.HasChange("relation_fv_rs_ap_mon_pol") {
 		_, newRelParam := d.GetChange("relation_fv_rs_ap_mon_pol")
+		newRelParamName := GetMOName(newRelParam.(string))
 		err = aciClient.DeleteRelationfvRsApMonPolFromApplicationProfile(fvAp.DistinguishedName)
 		if err != nil {
 			return err
 		}
-		err = aciClient.CreateRelationfvRsApMonPolFromApplicationProfile(fvAp.DistinguishedName, newRelParam.(string))
+		err = aciClient.CreateRelationfvRsApMonPolFromApplicationProfile(fvAp.DistinguishedName, newRelParamName)
 		if err != nil {
 			return err
 		}
@@ -238,7 +240,12 @@ func resourceAciApplicationProfileRead(d *schema.ResourceData, m interface{}) er
 		log.Printf("[DEBUG] Error while reading relation fvRsApMonPol %v", err)
 
 	} else {
-		d.Set("relation_fv_rs_ap_mon_pol", fvRsApMonPolData)
+		if _, ok := d.GetOk("relation_fv_rs_ap_mon_pol"); ok {
+			tfName := GetMOName(d.Get("relation_fv_rs_ap_mon_pol").(string))
+			if tfName != fvRsApMonPolData {
+				d.Set("relation_fv_rs_ap_mon_pol", "")
+			}
+		}
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())

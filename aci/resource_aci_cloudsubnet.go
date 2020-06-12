@@ -164,7 +164,8 @@ func resourceAciCloudSubnetCreate(d *schema.ResourceData, m interface{}) error {
 
 	if relationTocloudRsZoneAttach, ok := d.GetOk("relation_cloud_rs_zone_attach"); ok {
 		relationParam := relationTocloudRsZoneAttach.(string)
-		err = aciClient.CreateRelationcloudRsZoneAttachFromCloudSubnet(cloudSubnet.DistinguishedName, relationParam)
+		relationParamName := GetMOName(relationParam)
+		err = aciClient.CreateRelationcloudRsZoneAttachFromCloudSubnet(cloudSubnet.DistinguishedName, relationParamName)
 		if err != nil {
 			return err
 		}
@@ -175,7 +176,8 @@ func resourceAciCloudSubnetCreate(d *schema.ResourceData, m interface{}) error {
 	}
 	if relationTocloudRsSubnetToFlowLog, ok := d.GetOk("relation_cloud_rs_subnet_to_flow_log"); ok {
 		relationParam := relationTocloudRsSubnetToFlowLog.(string)
-		err = aciClient.CreateRelationcloudRsSubnetToFlowLogFromCloudSubnet(cloudSubnet.DistinguishedName, relationParam)
+		relationParamName := GetMOName(relationParam)
+		err = aciClient.CreateRelationcloudRsSubnetToFlowLogFromCloudSubnet(cloudSubnet.DistinguishedName, relationParamName)
 		if err != nil {
 			return err
 		}
@@ -234,11 +236,12 @@ func resourceAciCloudSubnetUpdate(d *schema.ResourceData, m interface{}) error {
 
 	if d.HasChange("relation_cloud_rs_zone_attach") {
 		_, newRelParam := d.GetChange("relation_cloud_rs_zone_attach")
+		newRelParamName := GetMOName(newRelParam.(string))
 		err = aciClient.DeleteRelationcloudRsZoneAttachFromCloudSubnet(cloudSubnet.DistinguishedName)
 		if err != nil {
 			return err
 		}
-		err = aciClient.CreateRelationcloudRsZoneAttachFromCloudSubnet(cloudSubnet.DistinguishedName, newRelParam.(string))
+		err = aciClient.CreateRelationcloudRsZoneAttachFromCloudSubnet(cloudSubnet.DistinguishedName, newRelParamName)
 		if err != nil {
 			return err
 		}
@@ -249,11 +252,12 @@ func resourceAciCloudSubnetUpdate(d *schema.ResourceData, m interface{}) error {
 	}
 	if d.HasChange("relation_cloud_rs_subnet_to_flow_log") {
 		_, newRelParam := d.GetChange("relation_cloud_rs_subnet_to_flow_log")
+		newRelParamName := GetMOName(newRelParam.(string))
 		err = aciClient.DeleteRelationcloudRsSubnetToFlowLogFromCloudSubnet(cloudSubnet.DistinguishedName)
 		if err != nil {
 			return err
 		}
-		err = aciClient.CreateRelationcloudRsSubnetToFlowLogFromCloudSubnet(cloudSubnet.DistinguishedName, newRelParam.(string))
+		err = aciClient.CreateRelationcloudRsSubnetToFlowLogFromCloudSubnet(cloudSubnet.DistinguishedName, newRelParamName)
 		if err != nil {
 			return err
 		}
@@ -289,7 +293,12 @@ func resourceAciCloudSubnetRead(d *schema.ResourceData, m interface{}) error {
 		log.Printf("[DEBUG] Error while reading relation cloudRsZoneAttach %v", err)
 
 	} else {
-		d.Set("relation_cloud_rs_zone_attach", cloudRsZoneAttachData)
+		if _, ok := d.GetOk("relation_cloud_rs_zone_attach"); ok {
+			tfName := GetMOName(d.Get("relation_cloud_rs_zone_attach").(string))
+			if tfName != cloudRsZoneAttachData {
+				d.Set("relation_cloud_rs_zone_attach", "")
+			}
+		}
 	}
 
 	cloudRsSubnetToFlowLogData, err := aciClient.ReadRelationcloudRsSubnetToFlowLogFromCloudSubnet(dn)
@@ -297,7 +306,12 @@ func resourceAciCloudSubnetRead(d *schema.ResourceData, m interface{}) error {
 		log.Printf("[DEBUG] Error while reading relation cloudRsSubnetToFlowLog %v", err)
 
 	} else {
-		d.Set("relation_cloud_rs_subnet_to_flow_log", cloudRsSubnetToFlowLogData)
+		if _, ok := d.GetOk("relation_cloud_rs_subnet_to_flow_log"); ok {
+			tfName := GetMOName(d.Get("relation_cloud_rs_subnet_to_flow_log").(string))
+			if tfName != cloudRsSubnetToFlowLogData {
+				d.Set("relation_cloud_rs_subnet_to_flow_log", "")
+			}
+		}
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())

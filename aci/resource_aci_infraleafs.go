@@ -151,7 +151,8 @@ func resourceAciSwitchAssociationCreate(d *schema.ResourceData, m interface{}) e
 
 	if relationToinfraRsAccNodePGrp, ok := d.GetOk("relation_infra_rs_acc_node_p_grp"); ok {
 		relationParam := relationToinfraRsAccNodePGrp.(string)
-		err = aciClient.CreateRelationinfraRsAccNodePGrpFromSwitchAssociation(infraLeafS.DistinguishedName, relationParam)
+		relationParamName := GetMOName(relationParam)
+		err = aciClient.CreateRelationinfraRsAccNodePGrpFromSwitchAssociation(infraLeafS.DistinguishedName, relationParamName)
 		if err != nil {
 			return err
 		}
@@ -208,11 +209,12 @@ func resourceAciSwitchAssociationUpdate(d *schema.ResourceData, m interface{}) e
 
 	if d.HasChange("relation_infra_rs_acc_node_p_grp") {
 		_, newRelParam := d.GetChange("relation_infra_rs_acc_node_p_grp")
+		newRelParamName := GetMOName(newRelParam.(string))
 		err = aciClient.DeleteRelationinfraRsAccNodePGrpFromSwitchAssociation(infraLeafS.DistinguishedName)
 		if err != nil {
 			return err
 		}
-		err = aciClient.CreateRelationinfraRsAccNodePGrpFromSwitchAssociation(infraLeafS.DistinguishedName, newRelParam.(string))
+		err = aciClient.CreateRelationinfraRsAccNodePGrpFromSwitchAssociation(infraLeafS.DistinguishedName, newRelParamName)
 		if err != nil {
 			return err
 		}
@@ -248,7 +250,12 @@ func resourceAciSwitchAssociationRead(d *schema.ResourceData, m interface{}) err
 		log.Printf("[DEBUG] Error while reading relation infraRsAccNodePGrp %v", err)
 
 	} else {
-		d.Set("relation_infra_rs_acc_node_p_grp", infraRsAccNodePGrpData)
+		if _, ok := d.GetOk("relation_infra_rs_acc_node_p_grp"); ok {
+			tfName := GetMOName(d.Get("relation_infra_rs_acc_node_p_grp").(string))
+			if tfName != infraRsAccNodePGrpData {
+				d.Set("relation_infra_rs_acc_node_p_grp", "")
+			}
+		}
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())

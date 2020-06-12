@@ -264,7 +264,8 @@ func resourceAciVRFCreate(d *schema.ResourceData, m interface{}) error {
 
 	if relationTofvRsOspfCtxPol, ok := d.GetOk("relation_fv_rs_ospf_ctx_pol"); ok {
 		relationParam := relationTofvRsOspfCtxPol.(string)
-		err = aciClient.CreateRelationfvRsOspfCtxPolFromVRF(fvCtx.DistinguishedName, relationParam)
+		relationParamName := GetMOName(relationParam)
+		err = aciClient.CreateRelationfvRsOspfCtxPolFromVRF(fvCtx.DistinguishedName, relationParamName)
 		if err != nil {
 			return err
 		}
@@ -275,7 +276,8 @@ func resourceAciVRFCreate(d *schema.ResourceData, m interface{}) error {
 	}
 	if relationTofvRsVrfValidationPol, ok := d.GetOk("relation_fv_rs_vrf_validation_pol"); ok {
 		relationParam := relationTofvRsVrfValidationPol.(string)
-		err = aciClient.CreateRelationfvRsVrfValidationPolFromVRF(fvCtx.DistinguishedName, relationParam)
+		relationParamName := GetMOName(relationParam)
+		err = aciClient.CreateRelationfvRsVrfValidationPolFromVRF(fvCtx.DistinguishedName, relationParamName)
 		if err != nil {
 			return err
 		}
@@ -329,7 +331,8 @@ func resourceAciVRFCreate(d *schema.ResourceData, m interface{}) error {
 	}
 	if relationTofvRsCtxToEpRet, ok := d.GetOk("relation_fv_rs_ctx_to_ep_ret"); ok {
 		relationParam := relationTofvRsCtxToEpRet.(string)
-		err = aciClient.CreateRelationfvRsCtxToEpRetFromVRF(fvCtx.DistinguishedName, relationParam)
+		relationParamName := GetMOName(relationParam)
+		err = aciClient.CreateRelationfvRsCtxToEpRetFromVRF(fvCtx.DistinguishedName, relationParamName)
 		if err != nil {
 			return err
 		}
@@ -340,7 +343,8 @@ func resourceAciVRFCreate(d *schema.ResourceData, m interface{}) error {
 	}
 	if relationTofvRsBgpCtxPol, ok := d.GetOk("relation_fv_rs_bgp_ctx_pol"); ok {
 		relationParam := relationTofvRsBgpCtxPol.(string)
-		err = aciClient.CreateRelationfvRsBgpCtxPolFromVRF(fvCtx.DistinguishedName, relationParam)
+		relationParamName := GetMOName(relationParam)
+		err = aciClient.CreateRelationfvRsBgpCtxPolFromVRF(fvCtx.DistinguishedName, relationParamName)
 		if err != nil {
 			return err
 		}
@@ -351,7 +355,8 @@ func resourceAciVRFCreate(d *schema.ResourceData, m interface{}) error {
 	}
 	if relationTofvRsCtxMonPol, ok := d.GetOk("relation_fv_rs_ctx_mon_pol"); ok {
 		relationParam := relationTofvRsCtxMonPol.(string)
-		err = aciClient.CreateRelationfvRsCtxMonPolFromVRF(fvCtx.DistinguishedName, relationParam)
+		relationParamName := GetMOName(relationParam)
+		err = aciClient.CreateRelationfvRsCtxMonPolFromVRF(fvCtx.DistinguishedName, relationParamName)
 		if err != nil {
 			return err
 		}
@@ -362,7 +367,8 @@ func resourceAciVRFCreate(d *schema.ResourceData, m interface{}) error {
 	}
 	if relationTofvRsCtxToExtRouteTagPol, ok := d.GetOk("relation_fv_rs_ctx_to_ext_route_tag_pol"); ok {
 		relationParam := relationTofvRsCtxToExtRouteTagPol.(string)
-		err = aciClient.CreateRelationfvRsCtxToExtRouteTagPolFromVRF(fvCtx.DistinguishedName, relationParam)
+		relationParamName := GetMOName(relationParam)
+		err = aciClient.CreateRelationfvRsCtxToExtRouteTagPolFromVRF(fvCtx.DistinguishedName, relationParamName)
 		if err != nil {
 			return err
 		}
@@ -442,7 +448,8 @@ func resourceAciVRFUpdate(d *schema.ResourceData, m interface{}) error {
 
 	if d.HasChange("relation_fv_rs_ospf_ctx_pol") {
 		_, newRelParam := d.GetChange("relation_fv_rs_ospf_ctx_pol")
-		err = aciClient.CreateRelationfvRsOspfCtxPolFromVRF(fvCtx.DistinguishedName, newRelParam.(string))
+		newRelParamName := GetMOName(newRelParam.(string))
+		err = aciClient.CreateRelationfvRsOspfCtxPolFromVRF(fvCtx.DistinguishedName, newRelParamName)
 		if err != nil {
 			return err
 		}
@@ -453,7 +460,8 @@ func resourceAciVRFUpdate(d *schema.ResourceData, m interface{}) error {
 	}
 	if d.HasChange("relation_fv_rs_vrf_validation_pol") {
 		_, newRelParam := d.GetChange("relation_fv_rs_vrf_validation_pol")
-		err = aciClient.CreateRelationfvRsVrfValidationPolFromVRF(fvCtx.DistinguishedName, newRelParam.(string))
+		newRelParamName := GetMOName(newRelParam.(string))
+		err = aciClient.CreateRelationfvRsVrfValidationPolFromVRF(fvCtx.DistinguishedName, newRelParamName)
 		if err != nil {
 			return err
 		}
@@ -530,7 +538,8 @@ func resourceAciVRFUpdate(d *schema.ResourceData, m interface{}) error {
 	}
 	if d.HasChange("relation_fv_rs_ctx_to_ep_ret") {
 		_, newRelParam := d.GetChange("relation_fv_rs_ctx_to_ep_ret")
-		err = aciClient.CreateRelationfvRsCtxToEpRetFromVRF(fvCtx.DistinguishedName, newRelParam.(string))
+		newRelParamName := GetMOName(newRelParam.(string))
+		err = aciClient.CreateRelationfvRsCtxToEpRetFromVRF(fvCtx.DistinguishedName, newRelParamName)
 		if err != nil {
 			return err
 		}
@@ -541,7 +550,8 @@ func resourceAciVRFUpdate(d *schema.ResourceData, m interface{}) error {
 	}
 	if d.HasChange("relation_fv_rs_bgp_ctx_pol") {
 		_, newRelParam := d.GetChange("relation_fv_rs_bgp_ctx_pol")
-		err = aciClient.CreateRelationfvRsBgpCtxPolFromVRF(fvCtx.DistinguishedName, newRelParam.(string))
+		newRelParamName := GetMOName(newRelParam.(string))
+		err = aciClient.CreateRelationfvRsBgpCtxPolFromVRF(fvCtx.DistinguishedName, newRelParamName)
 		if err != nil {
 			return err
 		}
@@ -552,11 +562,12 @@ func resourceAciVRFUpdate(d *schema.ResourceData, m interface{}) error {
 	}
 	if d.HasChange("relation_fv_rs_ctx_mon_pol") {
 		_, newRelParam := d.GetChange("relation_fv_rs_ctx_mon_pol")
+		newRelParamName := GetMOName(newRelParam.(string))
 		err = aciClient.DeleteRelationfvRsCtxMonPolFromVRF(fvCtx.DistinguishedName)
 		if err != nil {
 			return err
 		}
-		err = aciClient.CreateRelationfvRsCtxMonPolFromVRF(fvCtx.DistinguishedName, newRelParam.(string))
+		err = aciClient.CreateRelationfvRsCtxMonPolFromVRF(fvCtx.DistinguishedName, newRelParamName)
 		if err != nil {
 			return err
 		}
@@ -567,7 +578,8 @@ func resourceAciVRFUpdate(d *schema.ResourceData, m interface{}) error {
 	}
 	if d.HasChange("relation_fv_rs_ctx_to_ext_route_tag_pol") {
 		_, newRelParam := d.GetChange("relation_fv_rs_ctx_to_ext_route_tag_pol")
-		err = aciClient.CreateRelationfvRsCtxToExtRouteTagPolFromVRF(fvCtx.DistinguishedName, newRelParam.(string))
+		newRelParamName := GetMOName(newRelParam.(string))
+		err = aciClient.CreateRelationfvRsCtxToExtRouteTagPolFromVRF(fvCtx.DistinguishedName, newRelParamName)
 		if err != nil {
 			return err
 		}
@@ -627,7 +639,12 @@ func resourceAciVRFRead(d *schema.ResourceData, m interface{}) error {
 		log.Printf("[DEBUG] Error while reading relation fvRsOspfCtxPol %v", err)
 
 	} else {
-		d.Set("relation_fv_rs_ospf_ctx_pol", fvRsOspfCtxPolData)
+		if _, ok := d.GetOk("relation_fv_rs_ospf_ctx_pol"); ok {
+			tfName := GetMOName(d.Get("relation_fv_rs_ospf_ctx_pol").(string))
+			if tfName != fvRsOspfCtxPolData {
+				d.Set("relation_fv_rs_ospf_ctx_pol", "")
+			}
+		}
 	}
 
 	fvRsVrfValidationPolData, err := aciClient.ReadRelationfvRsVrfValidationPolFromVRF(dn)
@@ -635,7 +652,12 @@ func resourceAciVRFRead(d *schema.ResourceData, m interface{}) error {
 		log.Printf("[DEBUG] Error while reading relation fvRsVrfValidationPol %v", err)
 
 	} else {
-		d.Set("relation_fv_rs_vrf_validation_pol", fvRsVrfValidationPolData)
+		if _, ok := d.GetOk("relation_fv_rs_vrf_validation_pol"); ok {
+			tfName := GetMOName(d.Get("relation_fv_rs_vrf_validation_pol").(string))
+			if tfName != fvRsVrfValidationPolData {
+				d.Set("relation_fv_rs_vrf_validation_pol", "")
+			}
+		}
 	}
 
 	fvRsCtxMcastToData, err := aciClient.ReadRelationfvRsCtxMcastToFromVRF(dn)
@@ -667,7 +689,12 @@ func resourceAciVRFRead(d *schema.ResourceData, m interface{}) error {
 		log.Printf("[DEBUG] Error while reading relation fvRsCtxToEpRet %v", err)
 
 	} else {
-		d.Set("relation_fv_rs_ctx_to_ep_ret", fvRsCtxToEpRetData)
+		if _, ok := d.GetOk("relation_fv_rs_ctx_to_ep_ret"); ok {
+			tfName := GetMOName(d.Get("relation_fv_rs_ctx_to_ep_ret").(string))
+			if tfName != fvRsCtxToEpRetData {
+				d.Set("relation_fv_rs_ctx_to_ep_ret", "")
+			}
+		}
 	}
 
 	fvRsBgpCtxPolData, err := aciClient.ReadRelationfvRsBgpCtxPolFromVRF(dn)
@@ -675,7 +702,12 @@ func resourceAciVRFRead(d *schema.ResourceData, m interface{}) error {
 		log.Printf("[DEBUG] Error while reading relation fvRsBgpCtxPol %v", err)
 
 	} else {
-		d.Set("relation_fv_rs_bgp_ctx_pol", fvRsBgpCtxPolData)
+		if _, ok := d.GetOk("relation_fv_rs_bgp_ctx_pol"); ok {
+			tfName := GetMOName(d.Get("relation_fv_rs_bgp_ctx_pol").(string))
+			if tfName != fvRsBgpCtxPolData {
+				d.Set("relation_fv_rs_bgp_ctx_pol", "")
+			}
+		}
 	}
 
 	fvRsCtxMonPolData, err := aciClient.ReadRelationfvRsCtxMonPolFromVRF(dn)
@@ -683,7 +715,12 @@ func resourceAciVRFRead(d *schema.ResourceData, m interface{}) error {
 		log.Printf("[DEBUG] Error while reading relation fvRsCtxMonPol %v", err)
 
 	} else {
-		d.Set("relation_fv_rs_ctx_mon_pol", fvRsCtxMonPolData)
+		if _, ok := d.GetOk("relation_fv_rs_ctx_mon_pol"); ok {
+			tfName := GetMOName(d.Get("relation_fv_rs_ctx_mon_pol").(string))
+			if tfName != fvRsCtxMonPolData {
+				d.Set("relation_fv_rs_ctx_mon_pol", "")
+			}
+		}
 	}
 
 	fvRsCtxToExtRouteTagPolData, err := aciClient.ReadRelationfvRsCtxToExtRouteTagPolFromVRF(dn)
@@ -691,7 +728,12 @@ func resourceAciVRFRead(d *schema.ResourceData, m interface{}) error {
 		log.Printf("[DEBUG] Error while reading relation fvRsCtxToExtRouteTagPol %v", err)
 
 	} else {
-		d.Set("relation_fv_rs_ctx_to_ext_route_tag_pol", fvRsCtxToExtRouteTagPolData)
+		if _, ok := d.GetOk("relation_fv_rs_ctx_to_ext_route_tag_pol"); ok {
+			tfName := GetMOName(d.Get("relation_fv_rs_ctx_to_ext_route_tag_pol").(string))
+			if tfName != fvRsCtxToExtRouteTagPolData {
+				d.Set("relation_fv_rs_ctx_to_ext_route_tag_pol", "")
+			}
+		}
 	}
 
 	fvRsCtxToBgpCtxAfPolData, err := aciClient.ReadRelationfvRsCtxToBgpCtxAfPolFromVRF(dn)

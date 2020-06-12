@@ -225,7 +225,8 @@ func resourceAciLogicalInterfaceProfileCreate(d *schema.ResourceData, m interfac
 	}
 	if relationTol3extRsEgressQosDppPol, ok := d.GetOk("relation_l3ext_rs_egress_qos_dpp_pol"); ok {
 		relationParam := relationTol3extRsEgressQosDppPol.(string)
-		err = aciClient.CreateRelationl3extRsEgressQosDppPolFromLogicalInterfaceProfile(l3extLIfP.DistinguishedName, relationParam)
+		relationParamName := GetMOName(relationParam)
+		err = aciClient.CreateRelationl3extRsEgressQosDppPolFromLogicalInterfaceProfile(l3extLIfP.DistinguishedName, relationParamName)
 		if err != nil {
 			return err
 		}
@@ -236,7 +237,8 @@ func resourceAciLogicalInterfaceProfileCreate(d *schema.ResourceData, m interfac
 	}
 	if relationTol3extRsIngressQosDppPol, ok := d.GetOk("relation_l3ext_rs_ingress_qos_dpp_pol"); ok {
 		relationParam := relationTol3extRsIngressQosDppPol.(string)
-		err = aciClient.CreateRelationl3extRsIngressQosDppPolFromLogicalInterfaceProfile(l3extLIfP.DistinguishedName, relationParam)
+		relationParamName := GetMOName(relationParam)
+		err = aciClient.CreateRelationl3extRsIngressQosDppPolFromLogicalInterfaceProfile(l3extLIfP.DistinguishedName, relationParamName)
 		if err != nil {
 			return err
 		}
@@ -247,7 +249,8 @@ func resourceAciLogicalInterfaceProfileCreate(d *schema.ResourceData, m interfac
 	}
 	if relationTol3extRsLIfPCustQosPol, ok := d.GetOk("relation_l3ext_rs_l_if_p_cust_qos_pol"); ok {
 		relationParam := relationTol3extRsLIfPCustQosPol.(string)
-		err = aciClient.CreateRelationl3extRsLIfPCustQosPolFromLogicalInterfaceProfile(l3extLIfP.DistinguishedName, relationParam)
+		relationParamName := GetMOName(relationParam)
+		err = aciClient.CreateRelationl3extRsLIfPCustQosPolFromLogicalInterfaceProfile(l3extLIfP.DistinguishedName, relationParamName)
 		if err != nil {
 			return err
 		}
@@ -258,7 +261,8 @@ func resourceAciLogicalInterfaceProfileCreate(d *schema.ResourceData, m interfac
 	}
 	if relationTol3extRsArpIfPol, ok := d.GetOk("relation_l3ext_rs_arp_if_pol"); ok {
 		relationParam := relationTol3extRsArpIfPol.(string)
-		err = aciClient.CreateRelationl3extRsArpIfPolFromLogicalInterfaceProfile(l3extLIfP.DistinguishedName, relationParam)
+		relationParamName := GetMOName(relationParam)
+		err = aciClient.CreateRelationl3extRsArpIfPolFromLogicalInterfaceProfile(l3extLIfP.DistinguishedName, relationParamName)
 		if err != nil {
 			return err
 		}
@@ -269,7 +273,8 @@ func resourceAciLogicalInterfaceProfileCreate(d *schema.ResourceData, m interfac
 	}
 	if relationTol3extRsNdIfPol, ok := d.GetOk("relation_l3ext_rs_nd_if_pol"); ok {
 		relationParam := relationTol3extRsNdIfPol.(string)
-		err = aciClient.CreateRelationl3extRsNdIfPolFromLogicalInterfaceProfile(l3extLIfP.DistinguishedName, relationParam)
+		relationParamName := GetMOName(relationParam)
+		err = aciClient.CreateRelationl3extRsNdIfPolFromLogicalInterfaceProfile(l3extLIfP.DistinguishedName, relationParamName)
 		if err != nil {
 			return err
 		}
@@ -376,7 +381,8 @@ func resourceAciLogicalInterfaceProfileUpdate(d *schema.ResourceData, m interfac
 	}
 	if d.HasChange("relation_l3ext_rs_egress_qos_dpp_pol") {
 		_, newRelParam := d.GetChange("relation_l3ext_rs_egress_qos_dpp_pol")
-		err = aciClient.CreateRelationl3extRsEgressQosDppPolFromLogicalInterfaceProfile(l3extLIfP.DistinguishedName, newRelParam.(string))
+		newRelParamName := GetMOName(newRelParam.(string))
+		err = aciClient.CreateRelationl3extRsEgressQosDppPolFromLogicalInterfaceProfile(l3extLIfP.DistinguishedName, newRelParamName)
 		if err != nil {
 			return err
 		}
@@ -387,7 +393,8 @@ func resourceAciLogicalInterfaceProfileUpdate(d *schema.ResourceData, m interfac
 	}
 	if d.HasChange("relation_l3ext_rs_ingress_qos_dpp_pol") {
 		_, newRelParam := d.GetChange("relation_l3ext_rs_ingress_qos_dpp_pol")
-		err = aciClient.CreateRelationl3extRsIngressQosDppPolFromLogicalInterfaceProfile(l3extLIfP.DistinguishedName, newRelParam.(string))
+		newRelParamName := GetMOName(newRelParam.(string))
+		err = aciClient.CreateRelationl3extRsIngressQosDppPolFromLogicalInterfaceProfile(l3extLIfP.DistinguishedName, newRelParamName)
 		if err != nil {
 			return err
 		}
@@ -398,7 +405,8 @@ func resourceAciLogicalInterfaceProfileUpdate(d *schema.ResourceData, m interfac
 	}
 	if d.HasChange("relation_l3ext_rs_l_if_p_cust_qos_pol") {
 		_, newRelParam := d.GetChange("relation_l3ext_rs_l_if_p_cust_qos_pol")
-		err = aciClient.CreateRelationl3extRsLIfPCustQosPolFromLogicalInterfaceProfile(l3extLIfP.DistinguishedName, newRelParam.(string))
+		newRelParamName := GetMOName(newRelParam.(string))
+		err = aciClient.CreateRelationl3extRsLIfPCustQosPolFromLogicalInterfaceProfile(l3extLIfP.DistinguishedName, newRelParamName)
 		if err != nil {
 			return err
 		}
@@ -409,7 +417,8 @@ func resourceAciLogicalInterfaceProfileUpdate(d *schema.ResourceData, m interfac
 	}
 	if d.HasChange("relation_l3ext_rs_arp_if_pol") {
 		_, newRelParam := d.GetChange("relation_l3ext_rs_arp_if_pol")
-		err = aciClient.CreateRelationl3extRsArpIfPolFromLogicalInterfaceProfile(l3extLIfP.DistinguishedName, newRelParam.(string))
+		newRelParamName := GetMOName(newRelParam.(string))
+		err = aciClient.CreateRelationl3extRsArpIfPolFromLogicalInterfaceProfile(l3extLIfP.DistinguishedName, newRelParamName)
 		if err != nil {
 			return err
 		}
@@ -420,7 +429,8 @@ func resourceAciLogicalInterfaceProfileUpdate(d *schema.ResourceData, m interfac
 	}
 	if d.HasChange("relation_l3ext_rs_nd_if_pol") {
 		_, newRelParam := d.GetChange("relation_l3ext_rs_nd_if_pol")
-		err = aciClient.CreateRelationl3extRsNdIfPolFromLogicalInterfaceProfile(l3extLIfP.DistinguishedName, newRelParam.(string))
+		newRelParamName := GetMOName(newRelParam.(string))
+		err = aciClient.CreateRelationl3extRsNdIfPolFromLogicalInterfaceProfile(l3extLIfP.DistinguishedName, newRelParamName)
 		if err != nil {
 			return err
 		}
@@ -472,7 +482,12 @@ func resourceAciLogicalInterfaceProfileRead(d *schema.ResourceData, m interface{
 		log.Printf("[DEBUG] Error while reading relation l3extRsEgressQosDppPol %v", err)
 
 	} else {
-		d.Set("relation_l3ext_rs_egress_qos_dpp_pol", l3extRsEgressQosDppPolData)
+		if _, ok := d.GetOk("relation_l3ext_rs_egress_qos_dpp_pol"); ok {
+			tfName := GetMOName(d.Get("relation_l3ext_rs_egress_qos_dpp_pol").(string))
+			if tfName != l3extRsEgressQosDppPolData {
+				d.Set("relation_l3ext_rs_egress_qos_dpp_pol", "")
+			}
+		}
 	}
 
 	l3extRsIngressQosDppPolData, err := aciClient.ReadRelationl3extRsIngressQosDppPolFromLogicalInterfaceProfile(dn)
@@ -480,7 +495,12 @@ func resourceAciLogicalInterfaceProfileRead(d *schema.ResourceData, m interface{
 		log.Printf("[DEBUG] Error while reading relation l3extRsIngressQosDppPol %v", err)
 
 	} else {
-		d.Set("relation_l3ext_rs_ingress_qos_dpp_pol", l3extRsIngressQosDppPolData)
+		if _, ok := d.GetOk("relation_l3ext_rs_ingress_qos_dpp_pol"); ok {
+			tfName := GetMOName(d.Get("relation_l3ext_rs_ingress_qos_dpp_pol").(string))
+			if tfName != l3extRsIngressQosDppPolData {
+				d.Set("relation_l3ext_rs_ingress_qos_dpp_pol", "")
+			}
+		}
 	}
 
 	l3extRsLIfPCustQosPolData, err := aciClient.ReadRelationl3extRsLIfPCustQosPolFromLogicalInterfaceProfile(dn)
@@ -488,7 +508,12 @@ func resourceAciLogicalInterfaceProfileRead(d *schema.ResourceData, m interface{
 		log.Printf("[DEBUG] Error while reading relation l3extRsLIfPCustQosPol %v", err)
 
 	} else {
-		d.Set("relation_l3ext_rs_l_if_p_cust_qos_pol", l3extRsLIfPCustQosPolData)
+		if _, ok := d.GetOk("relation_l3ext_rs_l_if_p_cust_qos_pol"); ok {
+			tfName := GetMOName(d.Get("relation_l3ext_rs_l_if_p_cust_qos_pol").(string))
+			if tfName != l3extRsLIfPCustQosPolData {
+				d.Set("relation_l3ext_rs_l_if_p_cust_qos_pol", "")
+			}
+		}
 	}
 
 	l3extRsArpIfPolData, err := aciClient.ReadRelationl3extRsArpIfPolFromLogicalInterfaceProfile(dn)
@@ -496,7 +521,12 @@ func resourceAciLogicalInterfaceProfileRead(d *schema.ResourceData, m interface{
 		log.Printf("[DEBUG] Error while reading relation l3extRsArpIfPol %v", err)
 
 	} else {
-		d.Set("relation_l3ext_rs_arp_if_pol", l3extRsArpIfPolData)
+		if _, ok := d.GetOk("relation_l3ext_rs_arp_if_pol"); ok {
+			tfName := GetMOName(d.Get("relation_l3ext_rs_arp_if_pol").(string))
+			if tfName != l3extRsArpIfPolData {
+				d.Set("relation_l3ext_rs_arp_if_pol", "")
+			}
+		}
 	}
 
 	l3extRsNdIfPolData, err := aciClient.ReadRelationl3extRsNdIfPolFromLogicalInterfaceProfile(dn)
@@ -504,7 +534,12 @@ func resourceAciLogicalInterfaceProfileRead(d *schema.ResourceData, m interface{
 		log.Printf("[DEBUG] Error while reading relation l3extRsNdIfPol %v", err)
 
 	} else {
-		d.Set("relation_l3ext_rs_nd_if_pol", l3extRsNdIfPolData)
+		if _, ok := d.GetOk("relation_l3ext_rs_nd_if_pol"); ok {
+			tfName := GetMOName(d.Get("relation_l3ext_rs_nd_if_pol").(string))
+			if tfName != l3extRsNdIfPolData {
+				d.Set("relation_l3ext_rs_nd_if_pol", "")
+			}
+		}
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())

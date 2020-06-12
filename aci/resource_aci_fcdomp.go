@@ -158,7 +158,8 @@ func resourceAciFCDomainCreate(d *schema.ResourceData, m interface{}) error {
 
 	if relationToinfraRsVlanNs, ok := d.GetOk("relation_infra_rs_vlan_ns"); ok {
 		relationParam := relationToinfraRsVlanNs.(string)
-		err = aciClient.CreateRelationinfraRsVlanNsFromFCDomain(fcDomP.DistinguishedName, relationParam)
+		relationParamName := GetMOName(relationParam)
+		err = aciClient.CreateRelationinfraRsVlanNsFromFCDomain(fcDomP.DistinguishedName, relationParamName)
 		if err != nil {
 			return err
 		}
@@ -169,7 +170,8 @@ func resourceAciFCDomainCreate(d *schema.ResourceData, m interface{}) error {
 	}
 	if relationTofcRsVsanNs, ok := d.GetOk("relation_fc_rs_vsan_ns"); ok {
 		relationParam := relationTofcRsVsanNs.(string)
-		err = aciClient.CreateRelationfcRsVsanNsFromFCDomain(fcDomP.DistinguishedName, relationParam)
+		relationParamName := GetMOName(relationParam)
+		err = aciClient.CreateRelationfcRsVsanNsFromFCDomain(fcDomP.DistinguishedName, relationParamName)
 		if err != nil {
 			return err
 		}
@@ -180,7 +182,8 @@ func resourceAciFCDomainCreate(d *schema.ResourceData, m interface{}) error {
 	}
 	if relationTofcRsVsanAttr, ok := d.GetOk("relation_fc_rs_vsan_attr"); ok {
 		relationParam := relationTofcRsVsanAttr.(string)
-		err = aciClient.CreateRelationfcRsVsanAttrFromFCDomain(fcDomP.DistinguishedName, relationParam)
+		relationParamName := GetMOName(relationParam)
+		err = aciClient.CreateRelationfcRsVsanAttrFromFCDomain(fcDomP.DistinguishedName, relationParamName)
 		if err != nil {
 			return err
 		}
@@ -191,7 +194,8 @@ func resourceAciFCDomainCreate(d *schema.ResourceData, m interface{}) error {
 	}
 	if relationToinfraRsVlanNsDef, ok := d.GetOk("relation_infra_rs_vlan_ns_def"); ok {
 		relationParam := relationToinfraRsVlanNsDef.(string)
-		err = aciClient.CreateRelationinfraRsVlanNsDefFromFCDomain(fcDomP.DistinguishedName, relationParam)
+		relationParamName := GetMOName(relationParam)
+		err = aciClient.CreateRelationinfraRsVlanNsDefFromFCDomain(fcDomP.DistinguishedName, relationParamName)
 		if err != nil {
 			return err
 		}
@@ -202,7 +206,8 @@ func resourceAciFCDomainCreate(d *schema.ResourceData, m interface{}) error {
 	}
 	if relationToinfraRsVipAddrNs, ok := d.GetOk("relation_infra_rs_vip_addr_ns"); ok {
 		relationParam := relationToinfraRsVipAddrNs.(string)
-		err = aciClient.CreateRelationinfraRsVipAddrNsFromFCDomain(fcDomP.DistinguishedName, relationParam)
+		relationParamName := GetMOName(relationParam)
+		err = aciClient.CreateRelationinfraRsVipAddrNsFromFCDomain(fcDomP.DistinguishedName, relationParamName)
 		if err != nil {
 			return err
 		}
@@ -213,7 +218,8 @@ func resourceAciFCDomainCreate(d *schema.ResourceData, m interface{}) error {
 	}
 	if relationToinfraRsDomVxlanNsDef, ok := d.GetOk("relation_infra_rs_dom_vxlan_ns_def"); ok {
 		relationParam := relationToinfraRsDomVxlanNsDef.(string)
-		err = aciClient.CreateRelationinfraRsDomVxlanNsDefFromFCDomain(fcDomP.DistinguishedName, relationParam)
+		relationParamName := GetMOName(relationParam)
+		err = aciClient.CreateRelationinfraRsDomVxlanNsDefFromFCDomain(fcDomP.DistinguishedName, relationParamName)
 		if err != nil {
 			return err
 		}
@@ -224,7 +230,8 @@ func resourceAciFCDomainCreate(d *schema.ResourceData, m interface{}) error {
 	}
 	if relationTofcRsVsanAttrDef, ok := d.GetOk("relation_fc_rs_vsan_attr_def"); ok {
 		relationParam := relationTofcRsVsanAttrDef.(string)
-		err = aciClient.CreateRelationfcRsVsanAttrDefFromFCDomain(fcDomP.DistinguishedName, relationParam)
+		relationParamName := GetMOName(relationParam)
+		err = aciClient.CreateRelationfcRsVsanAttrDefFromFCDomain(fcDomP.DistinguishedName, relationParamName)
 		if err != nil {
 			return err
 		}
@@ -235,7 +242,8 @@ func resourceAciFCDomainCreate(d *schema.ResourceData, m interface{}) error {
 	}
 	if relationTofcRsVsanNsDef, ok := d.GetOk("relation_fc_rs_vsan_ns_def"); ok {
 		relationParam := relationTofcRsVsanNsDef.(string)
-		err = aciClient.CreateRelationfcRsVsanNsDefFromFCDomain(fcDomP.DistinguishedName, relationParam)
+		relationParamName := GetMOName(relationParam)
+		err = aciClient.CreateRelationfcRsVsanNsDefFromFCDomain(fcDomP.DistinguishedName, relationParamName)
 		if err != nil {
 			return err
 		}
@@ -283,11 +291,12 @@ func resourceAciFCDomainUpdate(d *schema.ResourceData, m interface{}) error {
 
 	if d.HasChange("relation_infra_rs_vlan_ns") {
 		_, newRelParam := d.GetChange("relation_infra_rs_vlan_ns")
+		newRelParamName := GetMOName(newRelParam.(string))
 		err = aciClient.DeleteRelationinfraRsVlanNsFromFCDomain(fcDomP.DistinguishedName)
 		if err != nil {
 			return err
 		}
-		err = aciClient.CreateRelationinfraRsVlanNsFromFCDomain(fcDomP.DistinguishedName, newRelParam.(string))
+		err = aciClient.CreateRelationinfraRsVlanNsFromFCDomain(fcDomP.DistinguishedName, newRelParamName)
 		if err != nil {
 			return err
 		}
@@ -298,11 +307,12 @@ func resourceAciFCDomainUpdate(d *schema.ResourceData, m interface{}) error {
 	}
 	if d.HasChange("relation_fc_rs_vsan_ns") {
 		_, newRelParam := d.GetChange("relation_fc_rs_vsan_ns")
+		newRelParamName := GetMOName(newRelParam.(string))
 		err = aciClient.DeleteRelationfcRsVsanNsFromFCDomain(fcDomP.DistinguishedName)
 		if err != nil {
 			return err
 		}
-		err = aciClient.CreateRelationfcRsVsanNsFromFCDomain(fcDomP.DistinguishedName, newRelParam.(string))
+		err = aciClient.CreateRelationfcRsVsanNsFromFCDomain(fcDomP.DistinguishedName, newRelParamName)
 		if err != nil {
 			return err
 		}
@@ -313,11 +323,12 @@ func resourceAciFCDomainUpdate(d *schema.ResourceData, m interface{}) error {
 	}
 	if d.HasChange("relation_fc_rs_vsan_attr") {
 		_, newRelParam := d.GetChange("relation_fc_rs_vsan_attr")
+		newRelParamName := GetMOName(newRelParam.(string))
 		err = aciClient.DeleteRelationfcRsVsanAttrFromFCDomain(fcDomP.DistinguishedName)
 		if err != nil {
 			return err
 		}
-		err = aciClient.CreateRelationfcRsVsanAttrFromFCDomain(fcDomP.DistinguishedName, newRelParam.(string))
+		err = aciClient.CreateRelationfcRsVsanAttrFromFCDomain(fcDomP.DistinguishedName, newRelParamName)
 		if err != nil {
 			return err
 		}
@@ -328,7 +339,8 @@ func resourceAciFCDomainUpdate(d *schema.ResourceData, m interface{}) error {
 	}
 	if d.HasChange("relation_infra_rs_vlan_ns_def") {
 		_, newRelParam := d.GetChange("relation_infra_rs_vlan_ns_def")
-		err = aciClient.CreateRelationinfraRsVlanNsDefFromFCDomain(fcDomP.DistinguishedName, newRelParam.(string))
+		newRelParamName := GetMOName(newRelParam.(string))
+		err = aciClient.CreateRelationinfraRsVlanNsDefFromFCDomain(fcDomP.DistinguishedName, newRelParamName)
 		if err != nil {
 			return err
 		}
@@ -339,11 +351,12 @@ func resourceAciFCDomainUpdate(d *schema.ResourceData, m interface{}) error {
 	}
 	if d.HasChange("relation_infra_rs_vip_addr_ns") {
 		_, newRelParam := d.GetChange("relation_infra_rs_vip_addr_ns")
+		newRelParamName := GetMOName(newRelParam.(string))
 		err = aciClient.DeleteRelationinfraRsVipAddrNsFromFCDomain(fcDomP.DistinguishedName)
 		if err != nil {
 			return err
 		}
-		err = aciClient.CreateRelationinfraRsVipAddrNsFromFCDomain(fcDomP.DistinguishedName, newRelParam.(string))
+		err = aciClient.CreateRelationinfraRsVipAddrNsFromFCDomain(fcDomP.DistinguishedName, newRelParamName)
 		if err != nil {
 			return err
 		}
@@ -354,7 +367,8 @@ func resourceAciFCDomainUpdate(d *schema.ResourceData, m interface{}) error {
 	}
 	if d.HasChange("relation_infra_rs_dom_vxlan_ns_def") {
 		_, newRelParam := d.GetChange("relation_infra_rs_dom_vxlan_ns_def")
-		err = aciClient.CreateRelationinfraRsDomVxlanNsDefFromFCDomain(fcDomP.DistinguishedName, newRelParam.(string))
+		newRelParamName := GetMOName(newRelParam.(string))
+		err = aciClient.CreateRelationinfraRsDomVxlanNsDefFromFCDomain(fcDomP.DistinguishedName, newRelParamName)
 		if err != nil {
 			return err
 		}
@@ -365,7 +379,8 @@ func resourceAciFCDomainUpdate(d *schema.ResourceData, m interface{}) error {
 	}
 	if d.HasChange("relation_fc_rs_vsan_attr_def") {
 		_, newRelParam := d.GetChange("relation_fc_rs_vsan_attr_def")
-		err = aciClient.CreateRelationfcRsVsanAttrDefFromFCDomain(fcDomP.DistinguishedName, newRelParam.(string))
+		newRelParamName := GetMOName(newRelParam.(string))
+		err = aciClient.CreateRelationfcRsVsanAttrDefFromFCDomain(fcDomP.DistinguishedName, newRelParamName)
 		if err != nil {
 			return err
 		}
@@ -376,7 +391,8 @@ func resourceAciFCDomainUpdate(d *schema.ResourceData, m interface{}) error {
 	}
 	if d.HasChange("relation_fc_rs_vsan_ns_def") {
 		_, newRelParam := d.GetChange("relation_fc_rs_vsan_ns_def")
-		err = aciClient.CreateRelationfcRsVsanNsDefFromFCDomain(fcDomP.DistinguishedName, newRelParam.(string))
+		newRelParamName := GetMOName(newRelParam.(string))
+		err = aciClient.CreateRelationfcRsVsanNsDefFromFCDomain(fcDomP.DistinguishedName, newRelParamName)
 		if err != nil {
 			return err
 		}
@@ -412,7 +428,12 @@ func resourceAciFCDomainRead(d *schema.ResourceData, m interface{}) error {
 		log.Printf("[DEBUG] Error while reading relation infraRsVlanNs %v", err)
 
 	} else {
-		d.Set("relation_infra_rs_vlan_ns", infraRsVlanNsData)
+		if _, ok := d.GetOk("relation_infra_rs_vlan_ns"); ok {
+			tfName := GetMOName(d.Get("relation_infra_rs_vlan_ns").(string))
+			if tfName != infraRsVlanNsData {
+				d.Set("relation_infra_rs_vlan_ns", "")
+			}
+		}
 	}
 
 	fcRsVsanNsData, err := aciClient.ReadRelationfcRsVsanNsFromFCDomain(dn)
@@ -420,7 +441,12 @@ func resourceAciFCDomainRead(d *schema.ResourceData, m interface{}) error {
 		log.Printf("[DEBUG] Error while reading relation fcRsVsanNs %v", err)
 
 	} else {
-		d.Set("relation_fc_rs_vsan_ns", fcRsVsanNsData)
+		if _, ok := d.GetOk("relation_fc_rs_vsan_ns"); ok {
+			tfName := GetMOName(d.Get("relation_fc_rs_vsan_ns").(string))
+			if tfName != fcRsVsanNsData {
+				d.Set("relation_fc_rs_vsan_ns", "")
+			}
+		}
 	}
 
 	fcRsVsanAttrData, err := aciClient.ReadRelationfcRsVsanAttrFromFCDomain(dn)
@@ -428,7 +454,12 @@ func resourceAciFCDomainRead(d *schema.ResourceData, m interface{}) error {
 		log.Printf("[DEBUG] Error while reading relation fcRsVsanAttr %v", err)
 
 	} else {
-		d.Set("relation_fc_rs_vsan_attr", fcRsVsanAttrData)
+		if _, ok := d.GetOk("relation_fc_rs_vsan_attr"); ok {
+			tfName := GetMOName(d.Get("relation_fc_rs_vsan_attr").(string))
+			if tfName != fcRsVsanAttrData {
+				d.Set("relation_fc_rs_vsan_attr", "")
+			}
+		}
 	}
 
 	infraRsVlanNsDefData, err := aciClient.ReadRelationinfraRsVlanNsDefFromFCDomain(dn)
@@ -436,7 +467,12 @@ func resourceAciFCDomainRead(d *schema.ResourceData, m interface{}) error {
 		log.Printf("[DEBUG] Error while reading relation infraRsVlanNsDef %v", err)
 
 	} else {
-		d.Set("relation_infra_rs_vlan_ns_def", infraRsVlanNsDefData)
+		if _, ok := d.GetOk("relation_infra_rs_vlan_ns_def"); ok {
+			tfName := GetMOName(d.Get("relation_infra_rs_vlan_ns_def").(string))
+			if tfName != infraRsVlanNsDefData {
+				d.Set("relation_infra_rs_vlan_ns_def", "")
+			}
+		}
 	}
 
 	infraRsVipAddrNsData, err := aciClient.ReadRelationinfraRsVipAddrNsFromFCDomain(dn)
@@ -444,7 +480,12 @@ func resourceAciFCDomainRead(d *schema.ResourceData, m interface{}) error {
 		log.Printf("[DEBUG] Error while reading relation infraRsVipAddrNs %v", err)
 
 	} else {
-		d.Set("relation_infra_rs_vip_addr_ns", infraRsVipAddrNsData)
+		if _, ok := d.GetOk("relation_infra_rs_vip_addr_ns"); ok {
+			tfName := GetMOName(d.Get("relation_infra_rs_vip_addr_ns").(string))
+			if tfName != infraRsVipAddrNsData {
+				d.Set("relation_infra_rs_vip_addr_ns", "")
+			}
+		}
 	}
 
 	infraRsDomVxlanNsDefData, err := aciClient.ReadRelationinfraRsDomVxlanNsDefFromFCDomain(dn)
@@ -452,7 +493,12 @@ func resourceAciFCDomainRead(d *schema.ResourceData, m interface{}) error {
 		log.Printf("[DEBUG] Error while reading relation infraRsDomVxlanNsDef %v", err)
 
 	} else {
-		d.Set("relation_infra_rs_dom_vxlan_ns_def", infraRsDomVxlanNsDefData)
+		if _, ok := d.GetOk("relation_infra_rs_dom_vxlan_ns_def"); ok {
+			tfName := GetMOName(d.Get("relation_infra_rs_dom_vxlan_ns_def").(string))
+			if tfName != infraRsDomVxlanNsDefData {
+				d.Set("relation_infra_rs_dom_vxlan_ns_def", "")
+			}
+		}
 	}
 
 	fcRsVsanAttrDefData, err := aciClient.ReadRelationfcRsVsanAttrDefFromFCDomain(dn)
@@ -460,7 +506,12 @@ func resourceAciFCDomainRead(d *schema.ResourceData, m interface{}) error {
 		log.Printf("[DEBUG] Error while reading relation fcRsVsanAttrDef %v", err)
 
 	} else {
-		d.Set("relation_fc_rs_vsan_attr_def", fcRsVsanAttrDefData)
+		if _, ok := d.GetOk("relation_fc_rs_vsan_attr_def"); ok {
+			tfName := GetMOName(d.Get("relation_fc_rs_vsan_attr_def").(string))
+			if tfName != fcRsVsanAttrDefData {
+				d.Set("relation_fc_rs_vsan_attr_def", "")
+			}
+		}
 	}
 
 	fcRsVsanNsDefData, err := aciClient.ReadRelationfcRsVsanNsDefFromFCDomain(dn)
@@ -468,7 +519,12 @@ func resourceAciFCDomainRead(d *schema.ResourceData, m interface{}) error {
 		log.Printf("[DEBUG] Error while reading relation fcRsVsanNsDef %v", err)
 
 	} else {
-		d.Set("relation_fc_rs_vsan_ns_def", fcRsVsanNsDefData)
+		if _, ok := d.GetOk("relation_fc_rs_vsan_ns_def"); ok {
+			tfName := GetMOName(d.Get("relation_fc_rs_vsan_ns_def").(string))
+			if tfName != fcRsVsanNsDefData {
+				d.Set("relation_fc_rs_vsan_ns_def", "")
+			}
+		}
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())

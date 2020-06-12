@@ -3,6 +3,8 @@ package aci
 import (
 	"fmt"
 	"log"
+	"reflect"
+	"sort"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
@@ -196,7 +198,8 @@ func resourceAciContractSubjectCreate(d *schema.ResourceData, m interface{}) err
 
 	if relationTovzRsSubjGraphAtt, ok := d.GetOk("relation_vz_rs_subj_graph_att"); ok {
 		relationParam := relationTovzRsSubjGraphAtt.(string)
-		err = aciClient.CreateRelationvzRsSubjGraphAttFromContractSubject(vzSubj.DistinguishedName, relationParam)
+		relationParamName := GetMOName(relationParam)
+		err = aciClient.CreateRelationvzRsSubjGraphAttFromContractSubject(vzSubj.DistinguishedName, relationParamName)
 		if err != nil {
 			return err
 		}
@@ -207,7 +210,8 @@ func resourceAciContractSubjectCreate(d *schema.ResourceData, m interface{}) err
 	}
 	if relationTovzRsSdwanPol, ok := d.GetOk("relation_vz_rs_sdwan_pol"); ok {
 		relationParam := relationTovzRsSdwanPol.(string)
-		err = aciClient.CreateRelationvzRsSdwanPolFromContractSubject(vzSubj.DistinguishedName, relationParam)
+		relationParamName := GetMOName(relationParam)
+		err = aciClient.CreateRelationvzRsSdwanPolFromContractSubject(vzSubj.DistinguishedName, relationParamName)
 		if err != nil {
 			return err
 		}
@@ -219,7 +223,8 @@ func resourceAciContractSubjectCreate(d *schema.ResourceData, m interface{}) err
 	if relationTovzRsSubjFiltAtt, ok := d.GetOk("relation_vz_rs_subj_filt_att"); ok {
 		relationParamList := toStringList(relationTovzRsSubjFiltAtt.(*schema.Set).List())
 		for _, relationParam := range relationParamList {
-			err = aciClient.CreateRelationvzRsSubjFiltAttFromContractSubject(vzSubj.DistinguishedName, relationParam)
+			relationParamName := GetMOName(relationParam)
+			err = aciClient.CreateRelationvzRsSubjFiltAttFromContractSubject(vzSubj.DistinguishedName, relationParamName)
 
 			if err != nil {
 				return err
@@ -285,11 +290,12 @@ func resourceAciContractSubjectUpdate(d *schema.ResourceData, m interface{}) err
 
 	if d.HasChange("relation_vz_rs_subj_graph_att") {
 		_, newRelParam := d.GetChange("relation_vz_rs_subj_graph_att")
+		newRelParamName := GetMOName(newRelParam.(string))
 		err = aciClient.DeleteRelationvzRsSubjGraphAttFromContractSubject(vzSubj.DistinguishedName)
 		if err != nil {
 			return err
 		}
-		err = aciClient.CreateRelationvzRsSubjGraphAttFromContractSubject(vzSubj.DistinguishedName, newRelParam.(string))
+		err = aciClient.CreateRelationvzRsSubjGraphAttFromContractSubject(vzSubj.DistinguishedName, newRelParamName)
 		if err != nil {
 			return err
 		}
@@ -300,11 +306,12 @@ func resourceAciContractSubjectUpdate(d *schema.ResourceData, m interface{}) err
 	}
 	if d.HasChange("relation_vz_rs_sdwan_pol") {
 		_, newRelParam := d.GetChange("relation_vz_rs_sdwan_pol")
+		newRelParamName := GetMOName(newRelParam.(string))
 		err = aciClient.DeleteRelationvzRsSdwanPolFromContractSubject(vzSubj.DistinguishedName)
 		if err != nil {
 			return err
 		}
-		err = aciClient.CreateRelationvzRsSdwanPolFromContractSubject(vzSubj.DistinguishedName, newRelParam.(string))
+		err = aciClient.CreateRelationvzRsSdwanPolFromContractSubject(vzSubj.DistinguishedName, newRelParamName)
 		if err != nil {
 			return err
 		}
@@ -321,7 +328,8 @@ func resourceAciContractSubjectUpdate(d *schema.ResourceData, m interface{}) err
 		relToCreate := toStringList(newRelSet.Difference(oldRelSet).List())
 
 		for _, relDn := range relToDelete {
-			err = aciClient.DeleteRelationvzRsSubjFiltAttFromContractSubject(vzSubj.DistinguishedName, relDn)
+			relDnName := GetMOName(relDn)
+			err = aciClient.DeleteRelationvzRsSubjFiltAttFromContractSubject(vzSubj.DistinguishedName, relDnName)
 			if err != nil {
 				return err
 			}
@@ -329,7 +337,8 @@ func resourceAciContractSubjectUpdate(d *schema.ResourceData, m interface{}) err
 		}
 
 		for _, relDn := range relToCreate {
-			err = aciClient.CreateRelationvzRsSubjFiltAttFromContractSubject(vzSubj.DistinguishedName, relDn)
+			relDnName := GetMOName(relDn)
+			err = aciClient.CreateRelationvzRsSubjFiltAttFromContractSubject(vzSubj.DistinguishedName, relDnName)
 			if err != nil {
 				return err
 			}
@@ -367,7 +376,12 @@ func resourceAciContractSubjectRead(d *schema.ResourceData, m interface{}) error
 		log.Printf("[DEBUG] Error while reading relation vzRsSubjGraphAtt %v", err)
 
 	} else {
-		d.Set("relation_vz_rs_subj_graph_att", vzRsSubjGraphAttData)
+		if _, ok := d.GetOk("relation_vz_rs_subj_graph_att"); ok {
+			tfName := GetMOName(d.Get("relation_vz_rs_subj_graph_att").(string))
+			if tfName != vzRsSubjGraphAttData {
+				d.Set("relation_vz_rs_subj_graph_att", "")
+			}
+		}
 	}
 
 	vzRsSdwanPolData, err := aciClient.ReadRelationvzRsSdwanPolFromContractSubject(dn)
@@ -375,7 +389,12 @@ func resourceAciContractSubjectRead(d *schema.ResourceData, m interface{}) error
 		log.Printf("[DEBUG] Error while reading relation vzRsSdwanPol %v", err)
 
 	} else {
-		d.Set("relation_vz_rs_sdwan_pol", vzRsSdwanPolData)
+		if _, ok := d.GetOk("relation_vz_rs_sdwan_pol"); ok {
+			tfName := GetMOName(d.Get("relation_vz_rs_sdwan_pol").(string))
+			if tfName != vzRsSdwanPolData {
+				d.Set("relation_vz_rs_sdwan_pol", "")
+			}
+		}
 	}
 
 	vzRsSubjFiltAttData, err := aciClient.ReadRelationvzRsSubjFiltAttFromContractSubject(dn)
@@ -383,7 +402,21 @@ func resourceAciContractSubjectRead(d *schema.ResourceData, m interface{}) error
 		log.Printf("[DEBUG] Error while reading relation vzRsSubjFiltAtt %v", err)
 
 	} else {
-		d.Set("relation_vz_rs_subj_filt_att", vzRsSubjFiltAttData)
+		if _, ok := d.GetOk("relation_vz_rs_subj_filt_att"); ok {
+			relationParamList := toStringList(d.Get("relation_vz_rs_subj_filt_att").(*schema.Set).List())
+			tfList := make([]string, 0, 1)
+			for _, relationParam := range relationParamList {
+				relationParamName := GetMOName(relationParam)
+				tfList = append(tfList, relationParamName)
+			}
+			vzRsSubjFiltAttDataList := toStringList(vzRsSubjFiltAttData.(*schema.Set).List())
+			sort.Strings(tfList)
+			sort.Strings(vzRsSubjFiltAttDataList)
+
+			if !reflect.DeepEqual(tfList, vzRsSubjFiltAttDataList) {
+				d.Set("relation_vz_rs_subj_filt_att", make([]string, 0, 1))
+			}
+		}
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())

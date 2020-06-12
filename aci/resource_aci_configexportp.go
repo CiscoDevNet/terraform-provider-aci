@@ -198,7 +198,8 @@ func resourceAciConfigurationExportPolicyCreate(d *schema.ResourceData, m interf
 
 	if relationToconfigRsExportDestination, ok := d.GetOk("relation_config_rs_export_destination"); ok {
 		relationParam := relationToconfigRsExportDestination.(string)
-		err = aciClient.CreateRelationconfigRsExportDestinationFromConfigurationExportPolicy(configExportP.DistinguishedName, relationParam)
+		relationParamName := GetMOName(relationParam)
+		err = aciClient.CreateRelationconfigRsExportDestinationFromConfigurationExportPolicy(configExportP.DistinguishedName, relationParamName)
 		if err != nil {
 			return err
 		}
@@ -209,7 +210,8 @@ func resourceAciConfigurationExportPolicyCreate(d *schema.ResourceData, m interf
 	}
 	if relationTotrigRsTriggerable, ok := d.GetOk("relation_trig_rs_triggerable"); ok {
 		relationParam := relationTotrigRsTriggerable.(string)
-		err = aciClient.CreateRelationtrigRsTriggerableFromConfigurationExportPolicy(configExportP.DistinguishedName, relationParam)
+		relationParamName := GetMOName(relationParam)
+		err = aciClient.CreateRelationtrigRsTriggerableFromConfigurationExportPolicy(configExportP.DistinguishedName, relationParamName)
 		if err != nil {
 			return err
 		}
@@ -220,7 +222,8 @@ func resourceAciConfigurationExportPolicyCreate(d *schema.ResourceData, m interf
 	}
 	if relationToconfigRsRemotePath, ok := d.GetOk("relation_config_rs_remote_path"); ok {
 		relationParam := relationToconfigRsRemotePath.(string)
-		err = aciClient.CreateRelationconfigRsRemotePathFromConfigurationExportPolicy(configExportP.DistinguishedName, relationParam)
+		relationParamName := GetMOName(relationParam)
+		err = aciClient.CreateRelationconfigRsRemotePathFromConfigurationExportPolicy(configExportP.DistinguishedName, relationParamName)
 		if err != nil {
 			return err
 		}
@@ -231,7 +234,8 @@ func resourceAciConfigurationExportPolicyCreate(d *schema.ResourceData, m interf
 	}
 	if relationToconfigRsExportScheduler, ok := d.GetOk("relation_config_rs_export_scheduler"); ok {
 		relationParam := relationToconfigRsExportScheduler.(string)
-		err = aciClient.CreateRelationconfigRsExportSchedulerFromConfigurationExportPolicy(configExportP.DistinguishedName, relationParam)
+		relationParamName := GetMOName(relationParam)
+		err = aciClient.CreateRelationconfigRsExportSchedulerFromConfigurationExportPolicy(configExportP.DistinguishedName, relationParamName)
 		if err != nil {
 			return err
 		}
@@ -297,11 +301,12 @@ func resourceAciConfigurationExportPolicyUpdate(d *schema.ResourceData, m interf
 
 	if d.HasChange("relation_config_rs_export_destination") {
 		_, newRelParam := d.GetChange("relation_config_rs_export_destination")
+		newRelParamName := GetMOName(newRelParam.(string))
 		err = aciClient.DeleteRelationconfigRsExportDestinationFromConfigurationExportPolicy(configExportP.DistinguishedName)
 		if err != nil {
 			return err
 		}
-		err = aciClient.CreateRelationconfigRsExportDestinationFromConfigurationExportPolicy(configExportP.DistinguishedName, newRelParam.(string))
+		err = aciClient.CreateRelationconfigRsExportDestinationFromConfigurationExportPolicy(configExportP.DistinguishedName, newRelParamName)
 		if err != nil {
 			return err
 		}
@@ -312,7 +317,8 @@ func resourceAciConfigurationExportPolicyUpdate(d *schema.ResourceData, m interf
 	}
 	if d.HasChange("relation_trig_rs_triggerable") {
 		_, newRelParam := d.GetChange("relation_trig_rs_triggerable")
-		err = aciClient.CreateRelationtrigRsTriggerableFromConfigurationExportPolicy(configExportP.DistinguishedName, newRelParam.(string))
+		newRelParamName := GetMOName(newRelParam.(string))
+		err = aciClient.CreateRelationtrigRsTriggerableFromConfigurationExportPolicy(configExportP.DistinguishedName, newRelParamName)
 		if err != nil {
 			return err
 		}
@@ -323,11 +329,12 @@ func resourceAciConfigurationExportPolicyUpdate(d *schema.ResourceData, m interf
 	}
 	if d.HasChange("relation_config_rs_remote_path") {
 		_, newRelParam := d.GetChange("relation_config_rs_remote_path")
+		newRelParamName := GetMOName(newRelParam.(string))
 		err = aciClient.DeleteRelationconfigRsRemotePathFromConfigurationExportPolicy(configExportP.DistinguishedName)
 		if err != nil {
 			return err
 		}
-		err = aciClient.CreateRelationconfigRsRemotePathFromConfigurationExportPolicy(configExportP.DistinguishedName, newRelParam.(string))
+		err = aciClient.CreateRelationconfigRsRemotePathFromConfigurationExportPolicy(configExportP.DistinguishedName, newRelParamName)
 		if err != nil {
 			return err
 		}
@@ -338,11 +345,12 @@ func resourceAciConfigurationExportPolicyUpdate(d *schema.ResourceData, m interf
 	}
 	if d.HasChange("relation_config_rs_export_scheduler") {
 		_, newRelParam := d.GetChange("relation_config_rs_export_scheduler")
+		newRelParamName := GetMOName(newRelParam.(string))
 		err = aciClient.DeleteRelationconfigRsExportSchedulerFromConfigurationExportPolicy(configExportP.DistinguishedName)
 		if err != nil {
 			return err
 		}
-		err = aciClient.CreateRelationconfigRsExportSchedulerFromConfigurationExportPolicy(configExportP.DistinguishedName, newRelParam.(string))
+		err = aciClient.CreateRelationconfigRsExportSchedulerFromConfigurationExportPolicy(configExportP.DistinguishedName, newRelParamName)
 		if err != nil {
 			return err
 		}
@@ -378,7 +386,12 @@ func resourceAciConfigurationExportPolicyRead(d *schema.ResourceData, m interfac
 		log.Printf("[DEBUG] Error while reading relation configRsExportDestination %v", err)
 
 	} else {
-		d.Set("relation_config_rs_export_destination", configRsExportDestinationData)
+		if _, ok := d.GetOk("relation_config_rs_export_destination"); ok {
+			tfName := GetMOName(d.Get("relation_config_rs_export_destination").(string))
+			if tfName != configRsExportDestinationData {
+				d.Set("relation_config_rs_export_destination", "")
+			}
+		}
 	}
 
 	trigRsTriggerableData, err := aciClient.ReadRelationtrigRsTriggerableFromConfigurationExportPolicy(dn)
@@ -386,7 +399,12 @@ func resourceAciConfigurationExportPolicyRead(d *schema.ResourceData, m interfac
 		log.Printf("[DEBUG] Error while reading relation trigRsTriggerable %v", err)
 
 	} else {
-		d.Set("relation_trig_rs_triggerable", trigRsTriggerableData)
+		if _, ok := d.GetOk("relation_trig_rs_triggerable"); ok {
+			tfName := GetMOName(d.Get("relation_trig_rs_triggerable").(string))
+			if tfName != trigRsTriggerableData {
+				d.Set("relation_trig_rs_triggerable", "")
+			}
+		}
 	}
 
 	configRsRemotePathData, err := aciClient.ReadRelationconfigRsRemotePathFromConfigurationExportPolicy(dn)
@@ -394,7 +412,12 @@ func resourceAciConfigurationExportPolicyRead(d *schema.ResourceData, m interfac
 		log.Printf("[DEBUG] Error while reading relation configRsRemotePath %v", err)
 
 	} else {
-		d.Set("relation_config_rs_remote_path", configRsRemotePathData)
+		if _, ok := d.GetOk("relation_config_rs_remote_path"); ok {
+			tfName := GetMOName(d.Get("relation_config_rs_remote_path").(string))
+			if tfName != configRsRemotePathData {
+				d.Set("relation_config_rs_remote_path", "")
+			}
+		}
 	}
 
 	configRsExportSchedulerData, err := aciClient.ReadRelationconfigRsExportSchedulerFromConfigurationExportPolicy(dn)
@@ -402,7 +425,12 @@ func resourceAciConfigurationExportPolicyRead(d *schema.ResourceData, m interfac
 		log.Printf("[DEBUG] Error while reading relation configRsExportScheduler %v", err)
 
 	} else {
-		d.Set("relation_config_rs_export_scheduler", configRsExportSchedulerData)
+		if _, ok := d.GetOk("relation_config_rs_export_scheduler"); ok {
+			tfName := GetMOName(d.Get("relation_config_rs_export_scheduler").(string))
+			if tfName != configRsExportSchedulerData {
+				d.Set("relation_config_rs_export_scheduler", "")
+			}
+		}
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
