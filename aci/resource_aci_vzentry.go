@@ -210,6 +210,34 @@ func portConversionCheck(vzEntry *models.FilterEntry, d *schema.ResourceData) *s
 	} else {
 		d.Set("d_to_port", vzEntryMap["dToPort"])
 	}
+
+	if SFromPortTf, ok := d.GetOk("s_from_port"); ok {
+		if SFromPortTf != vzEntryMap["sFromPort"] {
+			if SFromPortTf != constantPortMapping[vzEntryMap["sFromPort"]] {
+				d.Set("s_from_port", vzEntryMap["sFromPort"])
+			} else {
+				d.Set("s_from_port", SFromPortTf)
+			}
+		} else {
+			d.Set("s_from_port", SFromPortTf)
+		}
+	} else {
+		d.Set("s_from_port", vzEntryMap["sFromPort"])
+	}
+
+	if SToPortTf, ok := d.GetOk("s_to_port"); ok {
+		if SToPortTf != vzEntryMap["sToPort"] {
+			if SToPortTf != constantPortMapping[vzEntryMap["sToPort"]] {
+				d.Set("s_to_port", vzEntryMap["sToPort"])
+			} else {
+				d.Set("s_to_port", SToPortTf)
+			}
+		} else {
+			d.Set("s_to_port", SToPortTf)
+		}
+	} else {
+		d.Set("s_to_port", vzEntryMap["sToPort"])
+	}
 	return d
 
 }

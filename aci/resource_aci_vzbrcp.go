@@ -236,12 +236,50 @@ func resourceAciContract() *schema.Resource {
 										Type:     schema.TypeString,
 										Optional: true,
 										Computed: true,
+										DiffSuppressFunc: func(k, old, new string, d *schema.ResourceData) bool {
+											constantPortMapping := map[string]string{
+												"smtp":        "25",
+												"dns":         "53",
+												"http":        "80",
+												"https":       "443",
+												"pop3":        "110",
+												"rtsp":        "554",
+												"ftpData":     "20",
+												"ssh":         "22",
+												"unspecified": "0",
+											}
+											if old != "" {
+												if constantPortMapping[new] == old {
+													return true
+												}
+											}
+											return false
+										},
 									},
 
 									"s_to_port": &schema.Schema{
 										Type:     schema.TypeString,
 										Optional: true,
 										Computed: true,
+										DiffSuppressFunc: func(k, old, new string, d *schema.ResourceData) bool {
+											constantPortMapping := map[string]string{
+												"smtp":        "25",
+												"dns":         "53",
+												"http":        "80",
+												"https":       "443",
+												"pop3":        "110",
+												"rtsp":        "554",
+												"ftpData":     "20",
+												"ssh":         "22",
+												"unspecified": "0",
+											}
+											if old != "" {
+												if constantPortMapping[new] == old {
+													return true
+												}
+											}
+											return false
+										},
 									},
 
 									"stateful": &schema.Schema{
