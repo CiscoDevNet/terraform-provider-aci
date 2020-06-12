@@ -133,7 +133,8 @@ func resourceAciImportedContractCreate(d *schema.ResourceData, m interface{}) er
 
 	if relationTovzRsIf, ok := d.GetOk("relation_vz_rs_if"); ok {
 		relationParam := relationTovzRsIf.(string)
-		err = aciClient.CreateRelationvzRsIfFromImportedContract(vzCPIf.DistinguishedName, relationParam)
+		relationParamName := GetMOName(relationParam)
+		err = aciClient.CreateRelationvzRsIfFromImportedContract(vzCPIf.DistinguishedName, relationParamName)
 		if err != nil {
 			return err
 		}
@@ -183,11 +184,12 @@ func resourceAciImportedContractUpdate(d *schema.ResourceData, m interface{}) er
 
 	if d.HasChange("relation_vz_rs_if") {
 		_, newRelParam := d.GetChange("relation_vz_rs_if")
+		newRelParamName := GetMOName(newRelParam.(string))
 		err = aciClient.DeleteRelationvzRsIfFromImportedContract(vzCPIf.DistinguishedName)
 		if err != nil {
 			return err
 		}
-		err = aciClient.CreateRelationvzRsIfFromImportedContract(vzCPIf.DistinguishedName, newRelParam.(string))
+		err = aciClient.CreateRelationvzRsIfFromImportedContract(vzCPIf.DistinguishedName, newRelParamName)
 		if err != nil {
 			return err
 		}
@@ -223,7 +225,12 @@ func resourceAciImportedContractRead(d *schema.ResourceData, m interface{}) erro
 		log.Printf("[DEBUG] Error while reading relation vzRsIf %v", err)
 
 	} else {
-		d.Set("relation_vz_rs_if", vzRsIfData)
+		if _, ok := d.GetOk("relation_vz_rs_if"); ok {
+			tfName := GetMOName(d.Get("relation_vz_rs_if").(string))
+			if tfName != vzRsIfData {
+				d.Set("relation_vz_rs_if", "")
+			}
+		}
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())

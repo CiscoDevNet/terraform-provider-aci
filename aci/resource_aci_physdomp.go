@@ -138,7 +138,8 @@ func resourceAciPhysicalDomainCreate(d *schema.ResourceData, m interface{}) erro
 
 	if relationToinfraRsVlanNs, ok := d.GetOk("relation_infra_rs_vlan_ns"); ok {
 		relationParam := relationToinfraRsVlanNs.(string)
-		err = aciClient.CreateRelationinfraRsVlanNsFromPhysicalDomain(physDomP.DistinguishedName, relationParam)
+		relationParamName := GetMOName(relationParam)
+		err = aciClient.CreateRelationinfraRsVlanNsFromPhysicalDomain(physDomP.DistinguishedName, relationParamName)
 		if err != nil {
 			return err
 		}
@@ -149,7 +150,8 @@ func resourceAciPhysicalDomainCreate(d *schema.ResourceData, m interface{}) erro
 	}
 	if relationToinfraRsVlanNsDef, ok := d.GetOk("relation_infra_rs_vlan_ns_def"); ok {
 		relationParam := relationToinfraRsVlanNsDef.(string)
-		err = aciClient.CreateRelationinfraRsVlanNsDefFromPhysicalDomain(physDomP.DistinguishedName, relationParam)
+		relationParamName := GetMOName(relationParam)
+		err = aciClient.CreateRelationinfraRsVlanNsDefFromPhysicalDomain(physDomP.DistinguishedName, relationParamName)
 		if err != nil {
 			return err
 		}
@@ -160,7 +162,8 @@ func resourceAciPhysicalDomainCreate(d *schema.ResourceData, m interface{}) erro
 	}
 	if relationToinfraRsVipAddrNs, ok := d.GetOk("relation_infra_rs_vip_addr_ns"); ok {
 		relationParam := relationToinfraRsVipAddrNs.(string)
-		err = aciClient.CreateRelationinfraRsVipAddrNsFromPhysicalDomain(physDomP.DistinguishedName, relationParam)
+		relationParamName := GetMOName(relationParam)
+		err = aciClient.CreateRelationinfraRsVipAddrNsFromPhysicalDomain(physDomP.DistinguishedName, relationParamName)
 		if err != nil {
 			return err
 		}
@@ -171,7 +174,8 @@ func resourceAciPhysicalDomainCreate(d *schema.ResourceData, m interface{}) erro
 	}
 	if relationToinfraRsDomVxlanNsDef, ok := d.GetOk("relation_infra_rs_dom_vxlan_ns_def"); ok {
 		relationParam := relationToinfraRsDomVxlanNsDef.(string)
-		err = aciClient.CreateRelationinfraRsDomVxlanNsDefFromPhysicalDomain(physDomP.DistinguishedName, relationParam)
+		relationParamName := GetMOName(relationParam)
+		err = aciClient.CreateRelationinfraRsDomVxlanNsDefFromPhysicalDomain(physDomP.DistinguishedName, relationParamName)
 		if err != nil {
 			return err
 		}
@@ -219,11 +223,12 @@ func resourceAciPhysicalDomainUpdate(d *schema.ResourceData, m interface{}) erro
 
 	if d.HasChange("relation_infra_rs_vlan_ns") {
 		_, newRelParam := d.GetChange("relation_infra_rs_vlan_ns")
+		newRelParamName := GetMOName(newRelParam.(string))
 		err = aciClient.DeleteRelationinfraRsVlanNsFromPhysicalDomain(physDomP.DistinguishedName)
 		if err != nil {
 			return err
 		}
-		err = aciClient.CreateRelationinfraRsVlanNsFromPhysicalDomain(physDomP.DistinguishedName, newRelParam.(string))
+		err = aciClient.CreateRelationinfraRsVlanNsFromPhysicalDomain(physDomP.DistinguishedName, newRelParamName)
 		if err != nil {
 			return err
 		}
@@ -234,7 +239,8 @@ func resourceAciPhysicalDomainUpdate(d *schema.ResourceData, m interface{}) erro
 	}
 	if d.HasChange("relation_infra_rs_vlan_ns_def") {
 		_, newRelParam := d.GetChange("relation_infra_rs_vlan_ns_def")
-		err = aciClient.CreateRelationinfraRsVlanNsDefFromPhysicalDomain(physDomP.DistinguishedName, newRelParam.(string))
+		newRelParamName := GetMOName(newRelParam.(string))
+		err = aciClient.CreateRelationinfraRsVlanNsDefFromPhysicalDomain(physDomP.DistinguishedName, newRelParamName)
 		if err != nil {
 			return err
 		}
@@ -245,11 +251,12 @@ func resourceAciPhysicalDomainUpdate(d *schema.ResourceData, m interface{}) erro
 	}
 	if d.HasChange("relation_infra_rs_vip_addr_ns") {
 		_, newRelParam := d.GetChange("relation_infra_rs_vip_addr_ns")
+		newRelParamName := GetMOName(newRelParam.(string))
 		err = aciClient.DeleteRelationinfraRsVipAddrNsFromPhysicalDomain(physDomP.DistinguishedName)
 		if err != nil {
 			return err
 		}
-		err = aciClient.CreateRelationinfraRsVipAddrNsFromPhysicalDomain(physDomP.DistinguishedName, newRelParam.(string))
+		err = aciClient.CreateRelationinfraRsVipAddrNsFromPhysicalDomain(physDomP.DistinguishedName, newRelParamName)
 		if err != nil {
 			return err
 		}
@@ -260,7 +267,8 @@ func resourceAciPhysicalDomainUpdate(d *schema.ResourceData, m interface{}) erro
 	}
 	if d.HasChange("relation_infra_rs_dom_vxlan_ns_def") {
 		_, newRelParam := d.GetChange("relation_infra_rs_dom_vxlan_ns_def")
-		err = aciClient.CreateRelationinfraRsDomVxlanNsDefFromPhysicalDomain(physDomP.DistinguishedName, newRelParam.(string))
+		newRelParamName := GetMOName(newRelParam.(string))
+		err = aciClient.CreateRelationinfraRsDomVxlanNsDefFromPhysicalDomain(physDomP.DistinguishedName, newRelParamName)
 		if err != nil {
 			return err
 		}
@@ -296,7 +304,12 @@ func resourceAciPhysicalDomainRead(d *schema.ResourceData, m interface{}) error 
 		log.Printf("[DEBUG] Error while reading relation infraRsVlanNs %v", err)
 
 	} else {
-		d.Set("relation_infra_rs_vlan_ns", infraRsVlanNsData)
+		if _, ok := d.GetOk("relation_infra_rs_vlan_ns"); ok {
+			tfName := GetMOName(d.Get("relation_infra_rs_vlan_ns").(string))
+			if tfName != infraRsVlanNsData {
+				d.Set("relation_infra_rs_vlan_ns", "")
+			}
+		}
 	}
 
 	infraRsVlanNsDefData, err := aciClient.ReadRelationinfraRsVlanNsDefFromPhysicalDomain(dn)
@@ -304,7 +317,12 @@ func resourceAciPhysicalDomainRead(d *schema.ResourceData, m interface{}) error 
 		log.Printf("[DEBUG] Error while reading relation infraRsVlanNsDef %v", err)
 
 	} else {
-		d.Set("relation_infra_rs_vlan_ns_def", infraRsVlanNsDefData)
+		if _, ok := d.GetOk("relation_infra_rs_vlan_ns_def"); ok {
+			tfName := GetMOName(d.Get("relation_infra_rs_vlan_ns_def").(string))
+			if tfName != infraRsVlanNsDefData {
+				d.Set("relation_infra_rs_vlan_ns_def", "")
+			}
+		}
 	}
 
 	infraRsVipAddrNsData, err := aciClient.ReadRelationinfraRsVipAddrNsFromPhysicalDomain(dn)
@@ -312,7 +330,12 @@ func resourceAciPhysicalDomainRead(d *schema.ResourceData, m interface{}) error 
 		log.Printf("[DEBUG] Error while reading relation infraRsVipAddrNs %v", err)
 
 	} else {
-		d.Set("relation_infra_rs_vip_addr_ns", infraRsVipAddrNsData)
+		if _, ok := d.GetOk("relation_infra_rs_vip_addr_ns"); ok {
+			tfName := GetMOName(d.Get("relation_infra_rs_vip_addr_ns").(string))
+			if tfName != infraRsVipAddrNsData {
+				d.Set("relation_infra_rs_vip_addr_ns", "")
+			}
+		}
 	}
 
 	infraRsDomVxlanNsDefData, err := aciClient.ReadRelationinfraRsDomVxlanNsDefFromPhysicalDomain(dn)
@@ -320,7 +343,12 @@ func resourceAciPhysicalDomainRead(d *schema.ResourceData, m interface{}) error 
 		log.Printf("[DEBUG] Error while reading relation infraRsDomVxlanNsDef %v", err)
 
 	} else {
-		d.Set("relation_infra_rs_dom_vxlan_ns_def", infraRsDomVxlanNsDefData)
+		if _, ok := d.GetOk("relation_infra_rs_dom_vxlan_ns_def"); ok {
+			tfName := GetMOName(d.Get("relation_infra_rs_dom_vxlan_ns_def").(string))
+			if tfName != infraRsDomVxlanNsDefData {
+				d.Set("relation_infra_rs_dom_vxlan_ns_def", "")
+			}
+		}
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())

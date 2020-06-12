@@ -577,7 +577,8 @@ func resourceAciContractCreate(d *schema.ResourceData, m interface{}) error {
 
 	if relationTovzRsGraphAtt, ok := d.GetOk("relation_vz_rs_graph_att"); ok {
 		relationParam := relationTovzRsGraphAtt.(string)
-		err = aciClient.CreateRelationvzRsGraphAttFromContract(vzBrCP.DistinguishedName, relationParam)
+		relationParamName := GetMOName(relationParam)
+		err = aciClient.CreateRelationvzRsGraphAttFromContract(vzBrCP.DistinguishedName, relationParamName)
 		if err != nil {
 			return err
 		}
@@ -752,11 +753,12 @@ func resourceAciContractUpdate(d *schema.ResourceData, m interface{}) error {
 
 	if d.HasChange("relation_vz_rs_graph_att") {
 		_, newRelParam := d.GetChange("relation_vz_rs_graph_att")
+		newRelParamName := GetMOName(newRelParam.(string))
 		err = aciClient.DeleteRelationvzRsGraphAttFromContract(vzBrCP.DistinguishedName)
 		if err != nil {
 			return err
 		}
-		err = aciClient.CreateRelationvzRsGraphAttFromContract(vzBrCP.DistinguishedName, newRelParam.(string))
+		err = aciClient.CreateRelationvzRsGraphAttFromContract(vzBrCP.DistinguishedName, newRelParamName)
 		if err != nil {
 			return err
 		}
@@ -813,7 +815,12 @@ func resourceAciContractRead(d *schema.ResourceData, m interface{}) error {
 		log.Printf("[DEBUG] Error while reading relation vzRsGraphAtt %v", err)
 
 	} else {
-		d.Set("relation_vz_rs_graph_att", vzRsGraphAttData)
+		if _, ok := d.GetOk("relation_vz_rs_graph_att"); ok {
+			tfName := GetMOName(d.Get("relation_vz_rs_graph_att").(string))
+			if tfName != vzRsGraphAttData {
+				d.Set("relation_vz_rs_graph_att", "")
+			}
+		}
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
