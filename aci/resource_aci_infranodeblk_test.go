@@ -54,8 +54,8 @@ func TestAccAciInfraNodeBlock_update(t *testing.T) {
 			{
 				Config: testAccCheckAciNodeBlockConfig_basic(description),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAciNodeBlockExists("aci_node_block.foonode_block", &node_block),
-					testAccCheckAciNodeBlockAttributes(description, &node_block),
+					testAccCheckAciInfraNodeBlockExists("aci_node_block.foonode_block", &node_block),
+					testAccCheckAciInfraNodeBlockAttributes(description, &node_block),
 				),
 			},
 		},
@@ -97,7 +97,7 @@ func testAccCheckAciInfraNodeBlockExists(name string, node_block *models.NodeBlo
 			return err
 		}
 
-		node_blockFound := models.NodeBlockFromContainer(cont)
+		node_blockFound := models.NodeBlockFromContainerBLK(cont)
 		if node_blockFound.DistinguishedName != rs.Primary.ID {
 			return fmt.Errorf("Node Block %s not found", rs.Primary.ID)
 		}
