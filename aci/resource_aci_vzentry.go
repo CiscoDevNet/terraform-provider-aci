@@ -163,8 +163,6 @@ func setFilterEntryAttributes(vzEntry *models.FilterEntry, d *schema.ResourceDat
 	d.Set("match_dscp", vzEntryMap["matchDscp"])
 	d.Set("name_alias", vzEntryMap["nameAlias"])
 	d.Set("prot", vzEntryMap["prot"])
-	d.Set("s_from_port", vzEntryMap["sFromPort"])
-	d.Set("s_to_port", vzEntryMap["sToPort"])
 	d.Set("stateful", vzEntryMap["stateful"])
 	d.Set("tcp_rules", vzEntryMap["tcpRules"])
 	return d
