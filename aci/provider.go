@@ -138,6 +138,7 @@ func Provider() terraform.ResourceProvider {
 			"aci_any":                                      resourceAciAny(),
 			"aci_imported_contract":                        resourceAciImportedContract(),
 			"aci_epg_to_contract":                          resourceAciContractProvider(),
+			"aci_node_block":                               resourceAciNodeBlock(),
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
@@ -222,6 +223,7 @@ func Provider() terraform.ResourceProvider {
 			"aci_any":                                      dataSourceAciAny(),
 			"aci_imported_contract":                        dataSourceAciImportedContract(),
 			"aci_epg_to_contract":                          dataSourceAciContractProvider(),
+			"aci_node_block":                               dataSourceAciNodeBlock(),
 		},
 
 		ConfigureFunc: configureClient,

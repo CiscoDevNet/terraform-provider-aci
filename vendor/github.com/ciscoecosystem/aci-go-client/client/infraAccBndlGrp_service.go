@@ -1094,7 +1094,7 @@ func (sm *ServiceManager) CreateRelationinfraRsAttEntPFromPCVPCInterfacePolicyGr
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tnInfraAttEntityPName": "%s"
+				"dn": "%s","tDn": "%s"
 								
 			}
 		}
@@ -1131,7 +1131,7 @@ func (sm *ServiceManager) ReadRelationinfraRsAttEntPFromPCVPCInterfacePolicyGrou
 	contList := models.ListFromContainer(cont, "infraRsAttEntP")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnInfraAttEntityPName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
