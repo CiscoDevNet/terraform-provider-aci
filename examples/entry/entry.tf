@@ -22,8 +22,8 @@ resource "aci_filter_entry" "demoentry" {
   icmpv6_t      = "unspecified"
   match_dscp    = "AF11"
   prot          = "tcp"
-  s_from_port   = "22"
-  s_to_port     = "22"
+  s_from_port   = "80"
+  s_to_port     = "443"
   stateful      = "no"
   tcp_rules     = "ack"
 }
