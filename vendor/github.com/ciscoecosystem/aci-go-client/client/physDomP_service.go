@@ -58,7 +58,7 @@ func (sm *ServiceManager) CreateRelationinfraRsVlanNsFromPhysicalDomain(parentDn
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tnFvnsVlanInstPName": "%s"
+				"dn": "%s","tDn": "%s"
 								
 			}
 		}
@@ -95,7 +95,7 @@ func (sm *ServiceManager) ReadRelationinfraRsVlanNsFromPhysicalDomain(parentDn s
 	contList := models.ListFromContainer(cont, "infraRsVlanNs")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnFvnsVlanInstPName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
