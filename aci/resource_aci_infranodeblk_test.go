@@ -10,7 +10,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/terraform"
 )
 
-func TestAccAciNodeBlock_Basic(t *testing.T) {
+func TestAccAciInfraNodeBlock_Basic(t *testing.T) {
 	var node_block models.NodeBlock
 	description := "node_block created while acceptance testing"
 
@@ -20,10 +20,10 @@ func TestAccAciNodeBlock_Basic(t *testing.T) {
 		CheckDestroy: testAccCheckAciNodeBlockDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckAciNodeBlockConfig_basic(description),
+				Config: testAccCheckAciInfraNodeBlockConfig_basic(description),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAciNodeBlockExists("aci_node_block.foonode_block", &node_block),
-					testAccCheckAciNodeBlockAttributes(description, &node_block),
+					testAccCheckAciInfraNodeBlockExists("aci_node_block.foonode_block", &node_block),
+					testAccCheckAciInfraNodeBlockAttributes(description, &node_block),
 				),
 			},
 			{
@@ -35,7 +35,7 @@ func TestAccAciNodeBlock_Basic(t *testing.T) {
 	})
 }
 
-func TestAccAciNodeBlock_update(t *testing.T) {
+func TestAccAciInfraNodeBlock_update(t *testing.T) {
 	var node_block models.NodeBlock
 	description := "node_block created while acceptance testing"
 
@@ -45,10 +45,10 @@ func TestAccAciNodeBlock_update(t *testing.T) {
 		CheckDestroy: testAccCheckAciNodeBlockDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckAciNodeBlockConfig_basic(description),
+				Config: testAccCheckAciInfraNodeBlockConfig_basic(description),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAciNodeBlockExists("aci_node_block.foonode_block", &node_block),
-					testAccCheckAciNodeBlockAttributes(description, &node_block),
+					testAccCheckAciInfraNodeBlockExists("aci_node_block.foonode_block", &node_block),
+					testAccCheckAciInfraNodeBlockAttributes(description, &node_block),
 				),
 			},
 			{
@@ -62,7 +62,7 @@ func TestAccAciNodeBlock_update(t *testing.T) {
 	})
 }
 
-func testAccCheckAciNodeBlockConfig_basic(description string) string {
+func testAccCheckAciInfraNodeBlockConfig_basic(description string) string {
 	return fmt.Sprintf(`
 
 	resource "aci_node_block" "foonode_block" {
@@ -78,7 +78,7 @@ func testAccCheckAciNodeBlockConfig_basic(description string) string {
 	`, description)
 }
 
-func testAccCheckAciNodeBlockExists(name string, node_block *models.NodeBlock) resource.TestCheckFunc {
+func testAccCheckAciInfraNodeBlockExists(name string, node_block *models.NodeBlock) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 		rs, ok := s.RootModule().Resources[name]
 
@@ -106,14 +106,14 @@ func testAccCheckAciNodeBlockExists(name string, node_block *models.NodeBlock) r
 	}
 }
 
-func testAccCheckAciNodeBlockDestroy(s *terraform.State) error {
+func testAccCheckAciInfraNodeBlockDestroy(s *terraform.State) error {
 	client := testAccProvider.Meta().(*client.Client)
 
 	for _, rs := range s.RootModule().Resources {
 
 		if rs.Type == "aci_node_block" {
 			cont, err := client.Get(rs.Primary.ID)
-			node_block := models.NodeBlockFromContainer(cont)
+			node_block := models.NodeBlockFromContainerBLK(cont)
 			if err == nil {
 				return fmt.Errorf("Node Block %s Still exists", node_block.DistinguishedName)
 			}
@@ -126,7 +126,7 @@ func testAccCheckAciNodeBlockDestroy(s *terraform.State) error {
 	return nil
 }
 
-func testAccCheckAciNodeBlockAttributes(description string, node_block *models.NodeBlock) resource.TestCheckFunc {
+func testAccCheckAciInfraNodeBlockAttributes(description string, node_block *models.NodeBlock) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 
 		if description != node_block.Description {
