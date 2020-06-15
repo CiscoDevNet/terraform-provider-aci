@@ -271,6 +271,20 @@ func (c *Client) Do(req *http.Request) (*container.Container, *http.Response, er
 
 }
 
+func (c *Client) DoRaw(req *http.Request) (*http.Response, error) {
+
+        resp, err := c.httpClient.Do(req)
+        if err != nil {
+                return nil, err
+        }
+
+        log.Printf("\n\n\n HTTP request: %v", req.Body)
+        log.Printf("\nHTTP Request: %s %s", req.Method, req.URL.String())
+        log.Printf("nHTTP Response: %d %s %v", resp.StatusCode, resp.Status, resp)
+
+        return resp, err
+}
+
 func stripQuotes(word string) string {
 	if strings.HasPrefix(word, "\"") && strings.HasSuffix(word, "\"") {
 		return strings.TrimSuffix(strings.TrimPrefix(word, "\""), "\"")
