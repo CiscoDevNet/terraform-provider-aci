@@ -24,7 +24,7 @@ resource "aci_epg_to_domain" "example" {
 ```
 ## Argument Reference ##
 * `application_epg_dn` - (Required) Distinguished name of parent ApplicationEPG object.
-* `t_dn` - (Optional) vmm domain instance.
+* `t_dn` - (Required) vmm domain instance.
 * `annotation` - (Optional) annotation for object domain.
 * `binding_type` - (Optional) binding_type for object domain.
 * `class_pref` - (Optional) class_pref for object domain.

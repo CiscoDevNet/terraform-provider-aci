@@ -47,4 +47,3 @@ data "aci_epg_to_domain" "temp" {
 * `res_imedcy` - (Optional) policy resolution
 * `secondary_encap_inner` - (Optional) secondary_encap_inner for object domain.
 * `switching_mode` - (Optional) switching_mode for object domain.
-* `t_dn` - (Optional) vmm domain instance.
