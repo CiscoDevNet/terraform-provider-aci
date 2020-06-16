@@ -15,7 +15,7 @@ Manages ACI epg to Domain
 resource "aci_epg_to_domain" "example" {
 
   application_epg_dn    = "${aci_application_epg.example.id}"
-  tDn                   = "example"
+  t_dn                   = "${aci_fc_domain.example.id}"
   vmm_allow_promiscuous = "accept"
   vmm_forged_transmits  = "reject"
   vmm_mac_changes       = "accept"
