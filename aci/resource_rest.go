@@ -4,10 +4,10 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/ciscoecosystem/aci-go-client/models"
-
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/container"
+	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/ghodss/yaml"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 )
 
@@ -38,11 +38,15 @@ func resourceAciRest() *schema.Resource {
 			},
 			"content": &schema.Schema{
 				Type:     schema.TypeMap,
-				Required: true,
+				Optional: true,
 			},
 			"dn": &schema.Schema{
 				Type:     schema.TypeString,
 				Computed: true,
+			},
+			"payload": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
 			},
 		},
 	}
@@ -122,6 +126,9 @@ func PostAndSetStatus(d *schema.ResourceData, m interface{}, status string) (*co
 		if classNameIntf, ok := d.GetOk("class_name"); ok {
 			className := classNameIntf.(string)
 			cont, err = preparePayload(className, contentStrMap)
+			if status == Deleted {
+				cont.Set(status, className, "attributes", "status")
+			}
 			if err != nil {
 				return nil, err
 			}
@@ -130,6 +137,36 @@ func PostAndSetStatus(d *schema.ResourceData, m interface{}, status string) (*co
 			return nil, errors.New("The className is required when content is provided explicitly")
 		}
 
+	} else if payload, ok := d.GetOk("payload"); ok {
+		payloadStr := payload.(string)
+		if len(payloadStr) == 0 {
+			return nil, fmt.Errorf("Payload cannot be empty string")
+		}
+
+		yamlJsonPayload, err := yaml.YAMLToJSON([]byte(payloadStr))
+
+		if err != nil {
+			// It may be possible that the payload is in JSON
+			jsonPayload, err := container.ParseJSON([]byte(payloadStr))
+			if err != nil {
+				return nil, fmt.Errorf("Invalid format for yaml/JSON payload")
+			}
+			cont = jsonPayload
+		} else {
+			// we have valid yaml payload and we were able to convert it to json
+			cont, err = container.ParseJSON(yamlJsonPayload)
+			if err != nil {
+				return nil, fmt.Errorf("Failed to convert YAML to JSON.")
+			}
+		}
+
+		if err != nil {
+
+			return nil, fmt.Errorf("Unable to parse the payload to JSON. Please check your payload")
+		}
+
+	} else {
+		return nil, fmt.Errorf("Either of payload or content is required")
 	}
 	req, err := aciClient.MakeRestRequest("POST", path, cont, true)
 	if err != nil {
