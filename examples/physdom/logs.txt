@@ -1,0 +1,1309 @@
+2020/06/17 09:58:24 [INFO] Terraform version: 0.12.21  
+2020/06/17 09:58:24 [INFO] Go runtime version: go1.12.13
+2020/06/17 09:58:24 [INFO] CLI args: []string{"/Users/nirav.katarmal/go/bin/terraform", "apply"}
+2020/06/17 09:58:24 [DEBUG] Attempting to open CLI config file: /Users/nirav.katarmal/.terraformrc
+2020/06/17 09:58:24 [DEBUG] File doesn't exist, but doesn't need to. Ignoring.
+2020/06/17 09:58:24 [INFO] CLI command args: []string{"apply"}
+2020/06/17 09:58:24 [TRACE] Meta.Backend: no config given or present on disk, so returning nil config
+2020/06/17 09:58:24 [TRACE] Meta.Backend: backend has not previously been initialized in this working directory
+2020/06/17 09:58:24 [DEBUG] New state was assigned lineage "814101b9-cf62-2a7d-a22b-80f9e9968b29"
+2020/06/17 09:58:24 [TRACE] Meta.Backend: using default local state only (no backend configuration, and no existing initialized backend)
+2020/06/17 09:58:24 [TRACE] Meta.Backend: instantiated backend of type <nil>
+2020/06/17 09:58:24 [DEBUG] checking for provider in "."
+2020/06/17 09:58:24 [DEBUG] checking for provider in "/Users/nirav.katarmal/go/bin"
+2020/06/17 09:58:24 [WARN] found legacy provider "terraform-provider-aci"
+2020/06/17 09:58:24 [WARN] found legacy provider "terraform-provider-acme"
+2020/06/17 09:58:24 [WARN] found legacy provider "terraform-provider-aws"
+2020/06/17 09:58:24 [WARN] found legacy provider "terraform-provider-constellix"
+2020/06/17 09:58:24 [WARN] found legacy provider "terraform-provider-dme"
+2020/06/17 09:58:24 [WARN] found legacy provider "terraform-provider-mso"
+2020/06/17 09:58:24 [DEBUG] checking for provider in ".terraform/plugins/darwin_amd64"
+2020/06/17 09:58:24 [DEBUG] found valid plugin: "aci", "0.0.0", "/Users/nirav.katarmal/go/bin/terraform-provider-aci"
+2020/06/17 09:58:24 [DEBUG] found valid plugin: "acme", "0.0.0", "/Users/nirav.katarmal/go/bin/terraform-provider-acme"
+2020/06/17 09:58:24 [DEBUG] found valid plugin: "aws", "0.0.0", "/Users/nirav.katarmal/go/bin/terraform-provider-aws"
+2020/06/17 09:58:24 [DEBUG] found valid plugin: "constellix", "0.0.0", "/Users/nirav.katarmal/go/bin/terraform-provider-constellix"
+2020/06/17 09:58:24 [DEBUG] found valid plugin: "dme", "0.0.0", "/Users/nirav.katarmal/go/bin/terraform-provider-dme"
+2020/06/17 09:58:24 [DEBUG] found valid plugin: "mso", "0.0.0", "/Users/nirav.katarmal/go/bin/terraform-provider-mso"
+2020/06/17 09:58:24 [DEBUG] checking for provisioner in "."
+2020/06/17 09:58:24 [DEBUG] checking for provisioner in "/Users/nirav.katarmal/go/bin"
+2020/06/17 09:58:24 [DEBUG] checking for provisioner in ".terraform/plugins/darwin_amd64"
+2020/06/17 09:58:24 [TRACE] Meta.Backend: backend <nil> does not support operations, so wrapping it in a local backend
+2020/06/17 09:58:24 [INFO] backend/local: starting Apply operation
+2020/06/17 09:58:24 [TRACE] backend/local: requesting state manager for workspace "default"
+2020/06/17 09:58:24 [TRACE] backend/local: state manager for workspace "default" will:
+ - read initial snapshot from terraform.tfstate
+ - write new snapshots to terraform.tfstate
+ - create any backup at terraform.tfstate.backup
+2020/06/17 09:58:24 [TRACE] backend/local: requesting state lock for workspace "default"
+2020/06/17 09:58:24 [TRACE] statemgr.Filesystem: preparing to manage state snapshots at terraform.tfstate
+2020/06/17 09:58:24 [TRACE] statemgr.Filesystem: existing snapshot has lineage "cf9df4b0-dcd9-9103-2577-c1316e8d718c" serial 6
+2020/06/17 09:58:24 [TRACE] statemgr.Filesystem: locking terraform.tfstate using fcntl flock
+2020/06/17 09:58:24 [TRACE] statemgr.Filesystem: writing lock metadata to .terraform.tfstate.lock.info
+2020/06/17 09:58:24 [TRACE] backend/local: reading remote state for workspace "default"
+2020/06/17 09:58:24 [TRACE] statemgr.Filesystem: reading latest snapshot from terraform.tfstate
+2020/06/17 09:58:24 [TRACE] statemgr.Filesystem: read snapshot with lineage "cf9df4b0-dcd9-9103-2577-c1316e8d718c" serial 6
+2020/06/17 09:58:24 [TRACE] backend/local: retrieving local state snapshot for workspace "default"
+2020/06/17 09:58:24 [TRACE] backend/local: building context for current working directory
+2020/06/17 09:58:24 [TRACE] terraform.NewContext: starting
+2020/06/17 09:58:24 [TRACE] terraform.NewContext: resolving provider version selections
+2020/06/17 09:58:30 [TRACE] terraform.NewContext: loading provider schemas
+2020/06/17 09:58:30 [TRACE] LoadSchemas: retrieving schema for provider type "aci"
+2020-06-17T09:58:30.386+0530 [INFO]  plugin: configuring client automatic mTLS
+2020-06-17T09:58:30.443+0530 [DEBUG] plugin: starting plugin: path=/Users/nirav.katarmal/go/bin/terraform-provider-aci args=[/Users/nirav.katarmal/go/bin/terraform-provider-aci]
+2020-06-17T09:58:30.452+0530 [DEBUG] plugin: plugin started: path=/Users/nirav.katarmal/go/bin/terraform-provider-aci pid=26077
+2020-06-17T09:58:30.452+0530 [DEBUG] plugin: waiting for RPC address: path=/Users/nirav.katarmal/go/bin/terraform-provider-aci
+2020-06-17T09:58:30.514+0530 [INFO]  plugin.terraform-provider-aci: configuring server automatic mTLS: timestamp=2020-06-17T09:58:30.506+0530
+2020-06-17T09:58:30.567+0530 [DEBUG] plugin.terraform-provider-aci: plugin address: address=/var/folders/9r/n9wy2k4n00xgzd3vwwg2dl7572n7lr/T/plugin570634312 network=unix timestamp=2020-06-17T09:58:30.567+0530
+2020-06-17T09:58:30.567+0530 [DEBUG] plugin: using plugin: version=5
+2020/06/17 09:58:30 [TRACE] GRPCProvider: GetSchema
+2020/06/17 09:58:30 [TRACE] GRPCProvider: Close
+2020-06-17T09:58:30.713+0530 [DEBUG] plugin: plugin process exited: path=/Users/nirav.katarmal/go/bin/terraform-provider-aci pid=26077
+2020-06-17T09:58:30.713+0530 [DEBUG] plugin: plugin exited
+2020/06/17 09:58:30 [TRACE] terraform.NewContext: complete
+2020/06/17 09:58:30 [TRACE] backend/local: finished building terraform.Context
+2020/06/17 09:58:30 [TRACE] backend/local: requesting interactive input, if necessary
+2020/06/17 09:58:30 [TRACE] Context.Input: Prompting for provider arguments
+2020/06/17 09:58:30 [TRACE] Context.Input: Provider provider.aci declared at main.tf:3,1-15
+2020/06/17 09:58:30 [TRACE] Context.Input: Input for provider.aci: map[string]cty.Value{}
+2020/06/17 09:58:30 [TRACE] backend/local: running validation operation
+2020/06/17 09:58:30 [INFO] terraform: building graph: GraphTypeValidate
+2020/06/17 09:58:30 [TRACE] Executing graph transform *terraform.ConfigTransformer
+2020/06/17 09:58:30 [TRACE] ConfigTransformer: Starting for path: 
+2020/06/17 09:58:30 [TRACE] Completed graph transform *terraform.ConfigTransformer with new graph:
+  aci_physical_domain.PhyDom - *terraform.NodeValidatableResource
+  aci_vlan_pool.PHYS-VLAN-POOL - *terraform.NodeValidatableResource
+  ------
+2020/06/17 09:58:30 [TRACE] Executing graph transform *terraform.LocalTransformer
+2020/06/17 09:58:30 [TRACE] Completed graph transform *terraform.LocalTransformer (no changes)
+2020/06/17 09:58:30 [TRACE] Executing graph transform *terraform.OutputTransformer
+2020/06/17 09:58:30 [TRACE] Completed graph transform *terraform.OutputTransformer (no changes)
+2020/06/17 09:58:30 [TRACE] Executing graph transform *terraform.OrphanResourceInstanceTransformer
+2020/06/17 09:58:30 [TRACE] Completed graph transform *terraform.OrphanResourceInstanceTransformer (no changes)
+2020/06/17 09:58:30 [TRACE] Executing graph transform *terraform.StateTransformer
+2020/06/17 09:58:30 [TRACE] StateTransformer: state is empty, so nothing to do
+2020/06/17 09:58:30 [TRACE] Completed graph transform *terraform.StateTransformer (no changes)
+2020/06/17 09:58:30 [TRACE] Executing graph transform *terraform.OrphanOutputTransformer
+2020/06/17 09:58:30 [TRACE] Completed graph transform *terraform.OrphanOutputTransformer (no changes)
+2020/06/17 09:58:30 [TRACE] Executing graph transform *terraform.AttachResourceConfigTransformer
+2020/06/17 09:58:30 [TRACE] AttachResourceConfigTransformer: attaching to "aci_vlan_pool.PHYS-VLAN-POOL" (*terraform.NodeValidatableResource) config from main.tf:10,1-42
+2020/06/17 09:58:30 [TRACE] AttachResourceConfigTransformer: attaching to "aci_physical_domain.PhyDom" (*terraform.NodeValidatableResource) config from main.tf:14,1-40
+2020/06/17 09:58:30 [TRACE] Completed graph transform *terraform.AttachResourceConfigTransformer (no changes)
+2020/06/17 09:58:30 [TRACE] Executing graph transform *terraform.AttachStateTransformer
+2020/06/17 09:58:30 [TRACE] Completed graph transform *terraform.AttachStateTransformer (no changes)
+2020/06/17 09:58:30 [TRACE] Executing graph transform *terraform.RootVariableTransformer
+2020/06/17 09:58:30 [TRACE] Completed graph transform *terraform.RootVariableTransformer (no changes)
+2020/06/17 09:58:30 [TRACE] Executing graph transform *terraform.MissingProvisionerTransformer
+2020/06/17 09:58:30 [TRACE] Completed graph transform *terraform.MissingProvisionerTransformer (no changes)
+2020/06/17 09:58:30 [TRACE] Executing graph transform *terraform.ProvisionerTransformer
+2020/06/17 09:58:30 [TRACE] Completed graph transform *terraform.ProvisionerTransformer (no changes)
+2020/06/17 09:58:30 [TRACE] Executing graph transform *terraform.ModuleVariableTransformer
+2020/06/17 09:58:30 [TRACE] Completed graph transform *terraform.ModuleVariableTransformer (no changes)
+2020/06/17 09:58:30 [TRACE] Executing graph transform *terraform.graphTransformerMulti
+2020/06/17 09:58:30 [TRACE] (graphTransformerMulti) Executing graph transform *terraform.ProviderConfigTransformer
+2020/06/17 09:58:30 [TRACE] ProviderConfigTransformer: attaching to "provider.aci" provider configuration from main.tf:3,1-15
+2020/06/17 09:58:30 [TRACE] (graphTransformerMulti) Completed graph transform *terraform.ProviderConfigTransformer with new graph:
+  aci_physical_domain.PhyDom - *terraform.NodeValidatableResource
+  aci_vlan_pool.PHYS-VLAN-POOL - *terraform.NodeValidatableResource
+  provider.aci - *terraform.NodeApplyableProvider
+  ------
+2020/06/17 09:58:30 [TRACE] (graphTransformerMulti) Executing graph transform *terraform.MissingProviderTransformer
+2020/06/17 09:58:30 [TRACE] (graphTransformerMulti) Completed graph transform *terraform.MissingProviderTransformer (no changes)
+2020/06/17 09:58:30 [TRACE] (graphTransformerMulti) Executing graph transform *terraform.ProviderTransformer
+2020/06/17 09:58:30 [TRACE] ProviderTransformer: aci_vlan_pool.PHYS-VLAN-POOL is provided by provider.aci or inherited equivalent
+2020/06/17 09:58:30 [TRACE] ProviderTransformer: aci_physical_domain.PhyDom is provided by provider.aci or inherited equivalent
+2020/06/17 09:58:30 [TRACE] ProviderTransformer: exact match for provider.aci serving aci_vlan_pool.PHYS-VLAN-POOL
+2020/06/17 09:58:30 [DEBUG] ProviderTransformer: "aci_vlan_pool.PHYS-VLAN-POOL" (*terraform.NodeValidatableResource) needs provider.aci
+2020/06/17 09:58:30 [TRACE] ProviderTransformer: exact match for provider.aci serving aci_physical_domain.PhyDom
+2020/06/17 09:58:30 [DEBUG] ProviderTransformer: "aci_physical_domain.PhyDom" (*terraform.NodeValidatableResource) needs provider.aci
+2020/06/17 09:58:30 [TRACE] (graphTransformerMulti) Completed graph transform *terraform.ProviderTransformer with new graph:
+  aci_physical_domain.PhyDom - *terraform.NodeValidatableResource
+    provider.aci - *terraform.NodeApplyableProvider
+  aci_vlan_pool.PHYS-VLAN-POOL - *terraform.NodeValidatableResource
+    provider.aci - *terraform.NodeApplyableProvider
+  provider.aci - *terraform.NodeApplyableProvider
+  ------
+2020/06/17 09:58:30 [TRACE] (graphTransformerMulti) Executing graph transform *terraform.PruneProviderTransformer
+2020/06/17 09:58:30 [TRACE] (graphTransformerMulti) Completed graph transform *terraform.PruneProviderTransformer (no changes)
+2020/06/17 09:58:30 [TRACE] (graphTransformerMulti) Executing graph transform *terraform.ParentProviderTransformer
+2020/06/17 09:58:30 [TRACE] (graphTransformerMulti) Completed graph transform *terraform.ParentProviderTransformer (no changes)
+2020/06/17 09:58:30 [TRACE] Completed graph transform *terraform.graphTransformerMulti with new graph:
+  aci_physical_domain.PhyDom - *terraform.NodeValidatableResource
+    provider.aci - *terraform.NodeApplyableProvider
+  aci_vlan_pool.PHYS-VLAN-POOL - *terraform.NodeValidatableResource
+    provider.aci - *terraform.NodeApplyableProvider
+  provider.aci - *terraform.NodeApplyableProvider
+  ------
+2020/06/17 09:58:30 [TRACE] Executing graph transform *terraform.RemovedModuleTransformer
+2020/06/17 09:58:30 [TRACE] Completed graph transform *terraform.RemovedModuleTransformer (no changes)
+2020/06/17 09:58:30 [TRACE] Executing graph transform *terraform.AttachSchemaTransformer
+2020/06/17 09:58:30 [TRACE] AttachSchemaTransformer: attaching resource schema to aci_vlan_pool.PHYS-VLAN-POOL
+2020/06/17 09:58:30 [TRACE] AttachSchemaTransformer: attaching resource schema to aci_physical_domain.PhyDom
+2020/06/17 09:58:30 [TRACE] AttachSchemaTransformer: attaching provider config schema to provider.aci
+2020/06/17 09:58:30 [TRACE] Completed graph transform *terraform.AttachSchemaTransformer (no changes)
+2020/06/17 09:58:30 [TRACE] Executing graph transform *terraform.ReferenceTransformer
+2020/06/17 09:58:30 [DEBUG] ReferenceTransformer: "aci_vlan_pool.PHYS-VLAN-POOL" references: []
+2020/06/17 09:58:30 [DEBUG] ReferenceTransformer: "aci_physical_domain.PhyDom" references: [aci_vlan_pool.PHYS-VLAN-POOL aci_vlan_pool.PHYS-VLAN-POOL]
+2020/06/17 09:58:30 [DEBUG] ReferenceTransformer: "provider.aci" references: []
+2020/06/17 09:58:30 [TRACE] Completed graph transform *terraform.ReferenceTransformer with new graph:
+  aci_physical_domain.PhyDom - *terraform.NodeValidatableResource
+    aci_vlan_pool.PHYS-VLAN-POOL - *terraform.NodeValidatableResource
+    provider.aci - *terraform.NodeApplyableProvider
+  aci_vlan_pool.PHYS-VLAN-POOL - *terraform.NodeValidatableResource
+    provider.aci - *terraform.NodeApplyableProvider
+  provider.aci - *terraform.NodeApplyableProvider
+  ------
+2020/06/17 09:58:30 [TRACE] Executing graph transform *terraform.CountBoundaryTransformer
+2020/06/17 09:58:30 [TRACE] Completed graph transform *terraform.CountBoundaryTransformer with new graph:
+  aci_physical_domain.PhyDom - *terraform.NodeValidatableResource
+    aci_vlan_pool.PHYS-VLAN-POOL - *terraform.NodeValidatableResource
+    provider.aci - *terraform.NodeApplyableProvider
+  aci_vlan_pool.PHYS-VLAN-POOL - *terraform.NodeValidatableResource
+    provider.aci - *terraform.NodeApplyableProvider
+  meta.count-boundary (EachMode fixup) - *terraform.NodeCountBoundary
+    aci_physical_domain.PhyDom - *terraform.NodeValidatableResource
+    aci_vlan_pool.PHYS-VLAN-POOL - *terraform.NodeValidatableResource
+    provider.aci - *terraform.NodeApplyableProvider
+  provider.aci - *terraform.NodeApplyableProvider
+  ------
+2020/06/17 09:58:30 [TRACE] Executing graph transform *terraform.TargetsTransformer
+2020/06/17 09:58:30 [TRACE] Completed graph transform *terraform.TargetsTransformer (no changes)
+2020/06/17 09:58:30 [TRACE] Executing graph transform *terraform.ForcedCBDTransformer
+2020/06/17 09:58:30 [TRACE] Completed graph transform *terraform.ForcedCBDTransformer (no changes)
+2020/06/17 09:58:30 [TRACE] Executing graph transform *terraform.CloseProviderTransformer
+2020/06/17 09:58:30 [TRACE] Completed graph transform *terraform.CloseProviderTransformer with new graph:
+  aci_physical_domain.PhyDom - *terraform.NodeValidatableResource
+    aci_vlan_pool.PHYS-VLAN-POOL - *terraform.NodeValidatableResource
+    provider.aci - *terraform.NodeApplyableProvider
+  aci_vlan_pool.PHYS-VLAN-POOL - *terraform.NodeValidatableResource
+    provider.aci - *terraform.NodeApplyableProvider
+  meta.count-boundary (EachMode fixup) - *terraform.NodeCountBoundary
+    aci_physical_domain.PhyDom - *terraform.NodeValidatableResource
+    aci_vlan_pool.PHYS-VLAN-POOL - *terraform.NodeValidatableResource
+    provider.aci - *terraform.NodeApplyableProvider
+  provider.aci - *terraform.NodeApplyableProvider
+  provider.aci (close) - *terraform.graphNodeCloseProvider
+    aci_physical_domain.PhyDom - *terraform.NodeValidatableResource
+    aci_vlan_pool.PHYS-VLAN-POOL - *terraform.NodeValidatableResource
+    provider.aci - *terraform.NodeApplyableProvider
+  ------
+2020/06/17 09:58:30 [TRACE] Executing graph transform *terraform.CloseProvisionerTransformer
+2020/06/17 09:58:30 [TRACE] Completed graph transform *terraform.CloseProvisionerTransformer (no changes)
+2020/06/17 09:58:30 [TRACE] Executing graph transform *terraform.RootTransformer
+2020/06/17 09:58:30 [TRACE] Completed graph transform *terraform.RootTransformer with new graph:
+  aci_physical_domain.PhyDom - *terraform.NodeValidatableResource
+    aci_vlan_pool.PHYS-VLAN-POOL - *terraform.NodeValidatableResource
+    provider.aci - *terraform.NodeApplyableProvider
+  aci_vlan_pool.PHYS-VLAN-POOL - *terraform.NodeValidatableResource
+    provider.aci - *terraform.NodeApplyableProvider
+  meta.count-boundary (EachMode fixup) - *terraform.NodeCountBoundary
+    aci_physical_domain.PhyDom - *terraform.NodeValidatableResource
+    aci_vlan_pool.PHYS-VLAN-POOL - *terraform.NodeValidatableResource
+    provider.aci - *terraform.NodeApplyableProvider
+  provider.aci - *terraform.NodeApplyableProvider
+  provider.aci (close) - *terraform.graphNodeCloseProvider
+    aci_physical_domain.PhyDom - *terraform.NodeValidatableResource
+    aci_vlan_pool.PHYS-VLAN-POOL - *terraform.NodeValidatableResource
+    provider.aci - *terraform.NodeApplyableProvider
+  root - terraform.graphNodeRoot
+    meta.count-boundary (EachMode fixup) - *terraform.NodeCountBoundary
+    provider.aci (close) - *terraform.graphNodeCloseProvider
+  ------
+2020/06/17 09:58:30 [TRACE] Executing graph transform *terraform.TransitiveReductionTransformer
+2020/06/17 09:58:30 [TRACE] Completed graph transform *terraform.TransitiveReductionTransformer with new graph:
+  aci_physical_domain.PhyDom - *terraform.NodeValidatableResource
+    aci_vlan_pool.PHYS-VLAN-POOL - *terraform.NodeValidatableResource
+  aci_vlan_pool.PHYS-VLAN-POOL - *terraform.NodeValidatableResource
+    provider.aci - *terraform.NodeApplyableProvider
+  meta.count-boundary (EachMode fixup) - *terraform.NodeCountBoundary
+    aci_physical_domain.PhyDom - *terraform.NodeValidatableResource
+  provider.aci - *terraform.NodeApplyableProvider
+  provider.aci (close) - *terraform.graphNodeCloseProvider
+    aci_physical_domain.PhyDom - *terraform.NodeValidatableResource
+  root - terraform.graphNodeRoot
+    meta.count-boundary (EachMode fixup) - *terraform.NodeCountBoundary
+    provider.aci (close) - *terraform.graphNodeCloseProvider
+  ------
+2020/06/17 09:58:30 [DEBUG] Starting graph walk: walkValidate
+2020/06/17 09:58:30 [TRACE] dag/walk: updating graph
+2020/06/17 09:58:30 [TRACE] dag/walk: added new vertex: "provider.aci"
+2020/06/17 09:58:30 [TRACE] dag/walk: added new vertex: "meta.count-boundary (EachMode fixup)"
+2020/06/17 09:58:30 [TRACE] dag/walk: added new vertex: "provider.aci (close)"
+2020/06/17 09:58:30 [TRACE] dag/walk: added new vertex: "root"
+2020/06/17 09:58:30 [TRACE] dag/walk: added new vertex: "aci_vlan_pool.PHYS-VLAN-POOL"
+2020/06/17 09:58:30 [TRACE] dag/walk: added new vertex: "aci_physical_domain.PhyDom"
+2020/06/17 09:58:30 [TRACE] dag/walk: added edge: "aci_physical_domain.PhyDom" waiting on "aci_vlan_pool.PHYS-VLAN-POOL"
+2020/06/17 09:58:30 [TRACE] dag/walk: added edge: "provider.aci (close)" waiting on "aci_physical_domain.PhyDom"
+2020/06/17 09:58:30 [TRACE] dag/walk: added edge: "root" waiting on "provider.aci (close)"
+2020/06/17 09:58:30 [TRACE] dag/walk: added edge: "root" waiting on "meta.count-boundary (EachMode fixup)"
+2020/06/17 09:58:30 [TRACE] dag/walk: added edge: "aci_vlan_pool.PHYS-VLAN-POOL" waiting on "provider.aci"
+2020/06/17 09:58:30 [TRACE] dag/walk: added edge: "meta.count-boundary (EachMode fixup)" waiting on "aci_physical_domain.PhyDom"
+2020/06/17 09:58:30 [TRACE] dag/walk: dependencies changed for "aci_physical_domain.PhyDom", sending new deps
+2020/06/17 09:58:30 [TRACE] dag/walk: dependencies changed for "provider.aci (close)", sending new deps
+2020/06/17 09:58:30 [TRACE] dag/walk: dependencies changed for "root", sending new deps
+2020/06/17 09:58:30 [TRACE] dag/walk: dependencies changed for "aci_vlan_pool.PHYS-VLAN-POOL", sending new deps
+2020/06/17 09:58:30 [TRACE] dag/walk: dependencies changed for "meta.count-boundary (EachMode fixup)", sending new deps
+2020/06/17 09:58:30 [TRACE] dag/walk: visiting "provider.aci"
+2020/06/17 09:58:30 [TRACE] vertex "provider.aci": starting visit (*terraform.NodeApplyableProvider)
+2020/06/17 09:58:30 [TRACE] vertex "provider.aci": evaluating
+2020/06/17 09:58:30 [TRACE] [walkValidate] Entering eval tree: provider.aci
+2020/06/17 09:58:30 [TRACE] <root>: eval: *terraform.EvalSequence
+2020/06/17 09:58:30 [TRACE] <root>: eval: *terraform.EvalInitProvider
+2020-06-17T09:58:30.716+0530 [INFO]  plugin: configuring client automatic mTLS
+2020-06-17T09:58:30.774+0530 [DEBUG] plugin: starting plugin: path=/Users/nirav.katarmal/go/bin/terraform-provider-aci args=[/Users/nirav.katarmal/go/bin/terraform-provider-aci]
+2020-06-17T09:58:30.783+0530 [DEBUG] plugin: plugin started: path=/Users/nirav.katarmal/go/bin/terraform-provider-aci pid=26078
+2020-06-17T09:58:30.783+0530 [DEBUG] plugin: waiting for RPC address: path=/Users/nirav.katarmal/go/bin/terraform-provider-aci
+2020-06-17T09:58:30.846+0530 [INFO]  plugin.terraform-provider-aci: configuring server automatic mTLS: timestamp=2020-06-17T09:58:30.838+0530
+2020-06-17T09:58:30.902+0530 [DEBUG] plugin: using plugin: version=5
+2020-06-17T09:58:30.902+0530 [DEBUG] plugin.terraform-provider-aci: plugin address: network=unix address=/var/folders/9r/n9wy2k4n00xgzd3vwwg2dl7572n7lr/T/plugin646807269 timestamp=2020-06-17T09:58:30.902+0530
+2020/06/17 09:58:30 [TRACE] BuiltinEvalContext: Initialized "aci" provider for provider.aci
+2020/06/17 09:58:30 [TRACE] <root>: eval: terraform.EvalNoop
+2020/06/17 09:58:30 [TRACE] <root>: eval: *terraform.EvalOpFilter
+2020/06/17 09:58:30 [TRACE] <root>: eval: *terraform.EvalSequence
+2020/06/17 09:58:30 [TRACE] <root>: eval: *terraform.EvalGetProvider
+2020/06/17 09:58:30 [TRACE] <root>: eval: *terraform.EvalValidateProvider
+2020/06/17 09:58:30 [TRACE] buildProviderConfig for provider.aci: using explicit config only
+2020/06/17 09:58:30 [TRACE] GRPCProvider: GetSchema
+2020/06/17 09:58:31 [TRACE] GRPCProvider: PrepareProviderConfig
+2020/06/17 09:58:31 [TRACE] <root>: eval: terraform.EvalNoop
+2020/06/17 09:58:31 [TRACE] <root>: eval: terraform.EvalNoop
+2020/06/17 09:58:31 [TRACE] [walkValidate] Exiting eval tree: provider.aci
+2020/06/17 09:58:31 [TRACE] vertex "provider.aci": visit complete
+2020/06/17 09:58:31 [TRACE] dag/walk: visiting "aci_vlan_pool.PHYS-VLAN-POOL"
+2020/06/17 09:58:31 [TRACE] vertex "aci_vlan_pool.PHYS-VLAN-POOL": starting visit (*terraform.NodeValidatableResource)
+2020/06/17 09:58:31 [TRACE] vertex "aci_vlan_pool.PHYS-VLAN-POOL": evaluating
+2020/06/17 09:58:31 [TRACE] [walkValidate] Entering eval tree: aci_vlan_pool.PHYS-VLAN-POOL
+2020/06/17 09:58:31 [TRACE] <root>: eval: *terraform.EvalSequence
+2020/06/17 09:58:31 [TRACE] <root>: eval: *terraform.EvalGetProvider
+2020/06/17 09:58:31 [TRACE] <root>: eval: *terraform.EvalValidateResource
+2020/06/17 09:58:31 [TRACE] GRPCProvider: ValidateResourceTypeConfig
+2020/06/17 09:58:31 [TRACE] [walkValidate] Exiting eval tree: aci_vlan_pool.PHYS-VLAN-POOL
+2020/06/17 09:58:31 [TRACE] vertex "aci_vlan_pool.PHYS-VLAN-POOL": visit complete
+2020/06/17 09:58:31 [TRACE] dag/walk: visiting "aci_physical_domain.PhyDom"
+2020/06/17 09:58:31 [TRACE] vertex "aci_physical_domain.PhyDom": starting visit (*terraform.NodeValidatableResource)
+2020/06/17 09:58:31 [TRACE] vertex "aci_physical_domain.PhyDom": evaluating
+2020/06/17 09:58:31 [TRACE] [walkValidate] Entering eval tree: aci_physical_domain.PhyDom
+2020/06/17 09:58:31 [TRACE] <root>: eval: *terraform.EvalSequence
+2020/06/17 09:58:31 [TRACE] <root>: eval: *terraform.EvalGetProvider
+2020/06/17 09:58:31 [TRACE] <root>: eval: *terraform.EvalValidateResource
+2020/06/17 09:58:31 [TRACE] GRPCProvider: ValidateResourceTypeConfig
+2020/06/17 09:58:31 [TRACE] [walkValidate] Exiting eval tree: aci_physical_domain.PhyDom
+2020/06/17 09:58:31 [TRACE] vertex "aci_physical_domain.PhyDom": visit complete
+2020/06/17 09:58:31 [TRACE] dag/walk: visiting "provider.aci (close)"
+2020/06/17 09:58:31 [TRACE] vertex "provider.aci (close)": starting visit (*terraform.graphNodeCloseProvider)
+2020/06/17 09:58:31 [TRACE] vertex "provider.aci (close)": evaluating
+2020/06/17 09:58:31 [TRACE] [walkValidate] Entering eval tree: provider.aci (close)
+2020/06/17 09:58:31 [TRACE] <root>: eval: *terraform.EvalCloseProvider
+2020/06/17 09:58:31 [TRACE] GRPCProvider: Close
+2020/06/17 09:58:31 [TRACE] dag/walk: visiting "meta.count-boundary (EachMode fixup)"
+2020/06/17 09:58:31 [TRACE] vertex "meta.count-boundary (EachMode fixup)": starting visit (*terraform.NodeCountBoundary)
+2020/06/17 09:58:31 [TRACE] vertex "meta.count-boundary (EachMode fixup)": evaluating
+2020/06/17 09:58:31 [TRACE] [walkValidate] Entering eval tree: meta.count-boundary (EachMode fixup)
+2020/06/17 09:58:31 [TRACE] <root>: eval: *terraform.EvalCountFixZeroOneBoundaryGlobal
+2020/06/17 09:58:31 [TRACE] [walkValidate] Exiting eval tree: meta.count-boundary (EachMode fixup)
+2020/06/17 09:58:31 [TRACE] vertex "meta.count-boundary (EachMode fixup)": visit complete
+2020-06-17T09:58:31.067+0530 [DEBUG] plugin: plugin process exited: path=/Users/nirav.katarmal/go/bin/terraform-provider-aci pid=26078
+2020-06-17T09:58:31.067+0530 [DEBUG] plugin: plugin exited
+2020/06/17 09:58:31 [TRACE] [walkValidate] Exiting eval tree: provider.aci (close)
+2020/06/17 09:58:31 [TRACE] vertex "provider.aci (close)": visit complete
+2020/06/17 09:58:31 [TRACE] dag/walk: visiting "root"
+2020/06/17 09:58:31 [TRACE] vertex "root": starting visit (terraform.graphNodeRoot)
+2020/06/17 09:58:31 [TRACE] vertex "root": visit complete
+2020/06/17 09:58:31 [INFO] backend/local: apply calling Refresh
+2020/06/17 09:58:31 [INFO] terraform: building graph: GraphTypeRefresh
+2020/06/17 09:58:31 [TRACE] No managed resources in state during refresh; skipping managed resource transformer
+2020/06/17 09:58:31 [TRACE] Executing graph transform *terraform.ConfigTransformer
+2020/06/17 09:58:31 [TRACE] ConfigTransformer: Starting for path: 
+2020/06/17 09:58:31 [TRACE] Completed graph transform *terraform.ConfigTransformer (no changes)
+2020/06/17 09:58:31 [TRACE] Executing graph transform *terraform.OrphanResourceInstanceTransformer
+2020/06/17 09:58:31 [TRACE] Completed graph transform *terraform.OrphanResourceInstanceTransformer (no changes)
+2020/06/17 09:58:31 [TRACE] Executing graph transform *terraform.StateTransformer
+2020/06/17 09:58:31 [TRACE] StateTransformer: state is empty, so nothing to do
+2020/06/17 09:58:31 [TRACE] Completed graph transform *terraform.StateTransformer (no changes)
+2020/06/17 09:58:31 [TRACE] Executing graph transform *terraform.AttachStateTransformer
+2020/06/17 09:58:31 [TRACE] Completed graph transform *terraform.AttachStateTransformer (no changes)
+2020/06/17 09:58:31 [TRACE] Executing graph transform *terraform.AttachResourceConfigTransformer
+2020/06/17 09:58:31 [TRACE] Completed graph transform *terraform.AttachResourceConfigTransformer (no changes)
+2020/06/17 09:58:31 [TRACE] Executing graph transform *terraform.RootVariableTransformer
+2020/06/17 09:58:31 [TRACE] Completed graph transform *terraform.RootVariableTransformer (no changes)
+2020/06/17 09:58:31 [TRACE] Executing graph transform *terraform.LocalTransformer
+2020/06/17 09:58:31 [TRACE] Completed graph transform *terraform.LocalTransformer (no changes)
+2020/06/17 09:58:31 [TRACE] Executing graph transform *terraform.OutputTransformer
+2020/06/17 09:58:31 [TRACE] Completed graph transform *terraform.OutputTransformer (no changes)
+2020/06/17 09:58:31 [TRACE] Executing graph transform *terraform.ModuleVariableTransformer
+2020/06/17 09:58:31 [TRACE] Completed graph transform *terraform.ModuleVariableTransformer (no changes)
+2020/06/17 09:58:31 [TRACE] Executing graph transform *terraform.graphTransformerMulti
+2020/06/17 09:58:31 [TRACE] (graphTransformerMulti) Executing graph transform *terraform.ProviderConfigTransformer
+2020/06/17 09:58:31 [TRACE] ProviderConfigTransformer: attaching to "provider.aci" provider configuration from main.tf:3,1-15
+2020/06/17 09:58:31 [TRACE] (graphTransformerMulti) Completed graph transform *terraform.ProviderConfigTransformer with new graph:
+  provider.aci - *terraform.NodeApplyableProvider
+  ------
+2020/06/17 09:58:31 [TRACE] (graphTransformerMulti) Executing graph transform *terraform.MissingProviderTransformer
+2020/06/17 09:58:31 [TRACE] (graphTransformerMulti) Completed graph transform *terraform.MissingProviderTransformer (no changes)
+2020/06/17 09:58:31 [TRACE] (graphTransformerMulti) Executing graph transform *terraform.ProviderTransformer
+2020/06/17 09:58:31 [TRACE] (graphTransformerMulti) Completed graph transform *terraform.ProviderTransformer (no changes)
+2020/06/17 09:58:31 [TRACE] (graphTransformerMulti) Executing graph transform *terraform.PruneProviderTransformer
+2020/06/17 09:58:31 [DEBUG] pruning unused provider.aci
+2020/06/17 09:58:31 [TRACE] (graphTransformerMulti) Completed graph transform *terraform.PruneProviderTransformer with new graph:
+  ------
+2020/06/17 09:58:31 [TRACE] (graphTransformerMulti) Executing graph transform *terraform.ParentProviderTransformer
+2020/06/17 09:58:31 [TRACE] (graphTransformerMulti) Completed graph transform *terraform.ParentProviderTransformer (no changes)
+2020/06/17 09:58:31 [TRACE] Completed graph transform *terraform.graphTransformerMulti (no changes)
+2020/06/17 09:58:31 [TRACE] Executing graph transform *terraform.AttachSchemaTransformer
+2020/06/17 09:58:31 [TRACE] Completed graph transform *terraform.AttachSchemaTransformer (no changes)
+2020/06/17 09:58:31 [TRACE] Executing graph transform *terraform.ReferenceTransformer
+2020/06/17 09:58:31 [TRACE] Completed graph transform *terraform.ReferenceTransformer (no changes)
+2020/06/17 09:58:31 [TRACE] Executing graph transform *terraform.AttachDependenciesTransformer
+2020/06/17 09:58:31 [TRACE] Completed graph transform *terraform.AttachDependenciesTransformer (no changes)
+2020/06/17 09:58:31 [TRACE] Executing graph transform *terraform.TargetsTransformer
+2020/06/17 09:58:31 [TRACE] Completed graph transform *terraform.TargetsTransformer (no changes)
+2020/06/17 09:58:31 [TRACE] Executing graph transform *terraform.CloseProviderTransformer
+2020/06/17 09:58:31 [TRACE] Completed graph transform *terraform.CloseProviderTransformer (no changes)
+2020/06/17 09:58:31 [TRACE] Executing graph transform *terraform.RootTransformer
+2020/06/17 09:58:31 [TRACE] Completed graph transform *terraform.RootTransformer with new graph:
+  root - terraform.graphNodeRoot
+  ------
+2020/06/17 09:58:31 [TRACE] Executing graph transform *terraform.TransitiveReductionTransformer
+2020/06/17 09:58:31 [TRACE] Completed graph transform *terraform.TransitiveReductionTransformer (no changes)
+2020/06/17 09:58:31 [DEBUG] Starting graph walk: walkRefresh
+2020/06/17 09:58:31 [TRACE] dag/walk: updating graph
+2020/06/17 09:58:31 [TRACE] dag/walk: added new vertex: "root"
+2020/06/17 09:58:31 [TRACE] dag/walk: visiting "root"
+2020/06/17 09:58:31 [TRACE] vertex "root": starting visit (terraform.graphNodeRoot)
+2020/06/17 09:58:31 [TRACE] vertex "root": visit complete
+2020/06/17 09:58:31 [INFO] backend/local: apply calling Plan
+2020/06/17 09:58:31 [INFO] terraform: building graph: GraphTypePlan
+2020/06/17 09:58:31 [TRACE] Executing graph transform *terraform.ConfigTransformer
+2020/06/17 09:58:31 [TRACE] ConfigTransformer: Starting for path: 
+2020/06/17 09:58:31 [TRACE] Completed graph transform *terraform.ConfigTransformer with new graph:
+  aci_physical_domain.PhyDom - *terraform.NodePlannableResource
+  aci_vlan_pool.PHYS-VLAN-POOL - *terraform.NodePlannableResource
+  ------
+2020/06/17 09:58:31 [TRACE] Executing graph transform *terraform.LocalTransformer
+2020/06/17 09:58:31 [TRACE] Completed graph transform *terraform.LocalTransformer (no changes)
+2020/06/17 09:58:31 [TRACE] Executing graph transform *terraform.OutputTransformer
+2020/06/17 09:58:31 [TRACE] Completed graph transform *terraform.OutputTransformer (no changes)
+2020/06/17 09:58:31 [TRACE] Executing graph transform *terraform.OrphanResourceInstanceTransformer
+2020/06/17 09:58:31 [TRACE] Completed graph transform *terraform.OrphanResourceInstanceTransformer (no changes)
+2020/06/17 09:58:31 [TRACE] Executing graph transform *terraform.StateTransformer
+2020/06/17 09:58:31 [TRACE] StateTransformer: state is empty, so nothing to do
+2020/06/17 09:58:31 [TRACE] Completed graph transform *terraform.StateTransformer (no changes)
+2020/06/17 09:58:31 [TRACE] Executing graph transform *terraform.OrphanOutputTransformer
+2020/06/17 09:58:31 [TRACE] Completed graph transform *terraform.OrphanOutputTransformer (no changes)
+2020/06/17 09:58:31 [TRACE] Executing graph transform *terraform.AttachResourceConfigTransformer
+2020/06/17 09:58:31 [TRACE] AttachResourceConfigTransformer: attaching to "aci_vlan_pool.PHYS-VLAN-POOL" (*terraform.NodePlannableResource) config from main.tf:10,1-42
+2020/06/17 09:58:31 [TRACE] AttachResourceConfigTransformer: attaching to "aci_physical_domain.PhyDom" (*terraform.NodePlannableResource) config from main.tf:14,1-40
+2020/06/17 09:58:31 [TRACE] Completed graph transform *terraform.AttachResourceConfigTransformer (no changes)
+2020/06/17 09:58:31 [TRACE] Executing graph transform *terraform.AttachStateTransformer
+2020/06/17 09:58:31 [TRACE] Completed graph transform *terraform.AttachStateTransformer (no changes)
+2020/06/17 09:58:31 [TRACE] Executing graph transform *terraform.RootVariableTransformer
+2020/06/17 09:58:31 [TRACE] Completed graph transform *terraform.RootVariableTransformer (no changes)
+2020/06/17 09:58:31 [TRACE] Executing graph transform *terraform.MissingProvisionerTransformer
+2020/06/17 09:58:31 [TRACE] Completed graph transform *terraform.MissingProvisionerTransformer (no changes)
+2020/06/17 09:58:31 [TRACE] Executing graph transform *terraform.ProvisionerTransformer
+2020/06/17 09:58:31 [TRACE] Completed graph transform *terraform.ProvisionerTransformer (no changes)
+2020/06/17 09:58:31 [TRACE] Executing graph transform *terraform.ModuleVariableTransformer
+2020/06/17 09:58:31 [TRACE] Completed graph transform *terraform.ModuleVariableTransformer (no changes)
+2020/06/17 09:58:31 [TRACE] Executing graph transform *terraform.graphTransformerMulti
+2020/06/17 09:58:31 [TRACE] (graphTransformerMulti) Executing graph transform *terraform.ProviderConfigTransformer
+2020/06/17 09:58:31 [TRACE] ProviderConfigTransformer: attaching to "provider.aci" provider configuration from main.tf:3,1-15
+2020/06/17 09:58:31 [TRACE] (graphTransformerMulti) Completed graph transform *terraform.ProviderConfigTransformer with new graph:
+  aci_physical_domain.PhyDom - *terraform.NodePlannableResource
+  aci_vlan_pool.PHYS-VLAN-POOL - *terraform.NodePlannableResource
+  provider.aci - *terraform.NodeApplyableProvider
+  ------
+2020/06/17 09:58:31 [TRACE] (graphTransformerMulti) Executing graph transform *terraform.MissingProviderTransformer
+2020/06/17 09:58:31 [TRACE] (graphTransformerMulti) Completed graph transform *terraform.MissingProviderTransformer (no changes)
+2020/06/17 09:58:31 [TRACE] (graphTransformerMulti) Executing graph transform *terraform.ProviderTransformer
+2020/06/17 09:58:31 [TRACE] ProviderTransformer: aci_vlan_pool.PHYS-VLAN-POOL is provided by provider.aci or inherited equivalent
+2020/06/17 09:58:31 [TRACE] ProviderTransformer: aci_physical_domain.PhyDom is provided by provider.aci or inherited equivalent
+2020/06/17 09:58:31 [TRACE] ProviderTransformer: exact match for provider.aci serving aci_vlan_pool.PHYS-VLAN-POOL
+2020/06/17 09:58:31 [DEBUG] ProviderTransformer: "aci_vlan_pool.PHYS-VLAN-POOL" (*terraform.NodePlannableResource) needs provider.aci
+2020/06/17 09:58:31 [TRACE] ProviderTransformer: exact match for provider.aci serving aci_physical_domain.PhyDom
+2020/06/17 09:58:31 [DEBUG] ProviderTransformer: "aci_physical_domain.PhyDom" (*terraform.NodePlannableResource) needs provider.aci
+2020/06/17 09:58:31 [TRACE] (graphTransformerMulti) Completed graph transform *terraform.ProviderTransformer with new graph:
+  aci_physical_domain.PhyDom - *terraform.NodePlannableResource
+    provider.aci - *terraform.NodeApplyableProvider
+  aci_vlan_pool.PHYS-VLAN-POOL - *terraform.NodePlannableResource
+    provider.aci - *terraform.NodeApplyableProvider
+  provider.aci - *terraform.NodeApplyableProvider
+  ------
+2020/06/17 09:58:31 [TRACE] (graphTransformerMulti) Executing graph transform *terraform.PruneProviderTransformer
+2020/06/17 09:58:31 [TRACE] (graphTransformerMulti) Completed graph transform *terraform.PruneProviderTransformer (no changes)
+2020/06/17 09:58:31 [TRACE] (graphTransformerMulti) Executing graph transform *terraform.ParentProviderTransformer
+2020/06/17 09:58:31 [TRACE] (graphTransformerMulti) Completed graph transform *terraform.ParentProviderTransformer (no changes)
+2020/06/17 09:58:31 [TRACE] Completed graph transform *terraform.graphTransformerMulti with new graph:
+  aci_physical_domain.PhyDom - *terraform.NodePlannableResource
+    provider.aci - *terraform.NodeApplyableProvider
+  aci_vlan_pool.PHYS-VLAN-POOL - *terraform.NodePlannableResource
+    provider.aci - *terraform.NodeApplyableProvider
+  provider.aci - *terraform.NodeApplyableProvider
+  ------
+2020/06/17 09:58:31 [TRACE] Executing graph transform *terraform.RemovedModuleTransformer
+2020/06/17 09:58:31 [TRACE] Completed graph transform *terraform.RemovedModuleTransformer (no changes)
+2020/06/17 09:58:31 [TRACE] Executing graph transform *terraform.AttachSchemaTransformer
+2020/06/17 09:58:31 [TRACE] AttachSchemaTransformer: attaching resource schema to aci_vlan_pool.PHYS-VLAN-POOL
+2020/06/17 09:58:31 [TRACE] AttachSchemaTransformer: attaching resource schema to aci_physical_domain.PhyDom
+2020/06/17 09:58:31 [TRACE] AttachSchemaTransformer: attaching provider config schema to provider.aci
+2020/06/17 09:58:31 [TRACE] Completed graph transform *terraform.AttachSchemaTransformer (no changes)
+2020/06/17 09:58:31 [TRACE] Executing graph transform *terraform.ReferenceTransformer
+2020/06/17 09:58:31 [DEBUG] ReferenceTransformer: "aci_vlan_pool.PHYS-VLAN-POOL" references: []
+2020/06/17 09:58:31 [DEBUG] ReferenceTransformer: "aci_physical_domain.PhyDom" references: [aci_vlan_pool.PHYS-VLAN-POOL aci_vlan_pool.PHYS-VLAN-POOL]
+2020/06/17 09:58:31 [DEBUG] ReferenceTransformer: "provider.aci" references: []
+2020/06/17 09:58:31 [TRACE] Completed graph transform *terraform.ReferenceTransformer with new graph:
+  aci_physical_domain.PhyDom - *terraform.NodePlannableResource
+    aci_vlan_pool.PHYS-VLAN-POOL - *terraform.NodePlannableResource
+    provider.aci - *terraform.NodeApplyableProvider
+  aci_vlan_pool.PHYS-VLAN-POOL - *terraform.NodePlannableResource
+    provider.aci - *terraform.NodeApplyableProvider
+  provider.aci - *terraform.NodeApplyableProvider
+  ------
+2020/06/17 09:58:31 [TRACE] Executing graph transform *terraform.CountBoundaryTransformer
+2020/06/17 09:58:31 [TRACE] Completed graph transform *terraform.CountBoundaryTransformer with new graph:
+  aci_physical_domain.PhyDom - *terraform.NodePlannableResource
+    aci_vlan_pool.PHYS-VLAN-POOL - *terraform.NodePlannableResource
+    provider.aci - *terraform.NodeApplyableProvider
+  aci_vlan_pool.PHYS-VLAN-POOL - *terraform.NodePlannableResource
+    provider.aci - *terraform.NodeApplyableProvider
+  meta.count-boundary (EachMode fixup) - *terraform.NodeCountBoundary
+    aci_physical_domain.PhyDom - *terraform.NodePlannableResource
+    aci_vlan_pool.PHYS-VLAN-POOL - *terraform.NodePlannableResource
+    provider.aci - *terraform.NodeApplyableProvider
+  provider.aci - *terraform.NodeApplyableProvider
+  ------
+2020/06/17 09:58:31 [TRACE] Executing graph transform *terraform.TargetsTransformer
+2020/06/17 09:58:31 [TRACE] Completed graph transform *terraform.TargetsTransformer (no changes)
+2020/06/17 09:58:31 [TRACE] Executing graph transform *terraform.ForcedCBDTransformer
+2020/06/17 09:58:31 [TRACE] ForcedCBDTransformer: "aci_vlan_pool.PHYS-VLAN-POOL" (*terraform.NodePlannableResource) has no CBD descendent, so skipping
+2020/06/17 09:58:31 [TRACE] ForcedCBDTransformer: "aci_physical_domain.PhyDom" (*terraform.NodePlannableResource) has no CBD descendent, so skipping
+2020/06/17 09:58:31 [TRACE] Completed graph transform *terraform.ForcedCBDTransformer (no changes)
+2020/06/17 09:58:31 [TRACE] Executing graph transform *terraform.CloseProviderTransformer
+2020/06/17 09:58:31 [TRACE] Completed graph transform *terraform.CloseProviderTransformer with new graph:
+  aci_physical_domain.PhyDom - *terraform.NodePlannableResource
+    aci_vlan_pool.PHYS-VLAN-POOL - *terraform.NodePlannableResource
+    provider.aci - *terraform.NodeApplyableProvider
+  aci_vlan_pool.PHYS-VLAN-POOL - *terraform.NodePlannableResource
+    provider.aci - *terraform.NodeApplyableProvider
+  meta.count-boundary (EachMode fixup) - *terraform.NodeCountBoundary
+    aci_physical_domain.PhyDom - *terraform.NodePlannableResource
+    aci_vlan_pool.PHYS-VLAN-POOL - *terraform.NodePlannableResource
+    provider.aci - *terraform.NodeApplyableProvider
+  provider.aci - *terraform.NodeApplyableProvider
+  provider.aci (close) - *terraform.graphNodeCloseProvider
+    aci_physical_domain.PhyDom - *terraform.NodePlannableResource
+    aci_vlan_pool.PHYS-VLAN-POOL - *terraform.NodePlannableResource
+    provider.aci - *terraform.NodeApplyableProvider
+  ------
+2020/06/17 09:58:31 [TRACE] Executing graph transform *terraform.CloseProvisionerTransformer
+2020/06/17 09:58:31 [TRACE] Completed graph transform *terraform.CloseProvisionerTransformer (no changes)
+2020/06/17 09:58:31 [TRACE] Executing graph transform *terraform.RootTransformer
+2020/06/17 09:58:31 [TRACE] Completed graph transform *terraform.RootTransformer with new graph:
+  aci_physical_domain.PhyDom - *terraform.NodePlannableResource
+    aci_vlan_pool.PHYS-VLAN-POOL - *terraform.NodePlannableResource
+    provider.aci - *terraform.NodeApplyableProvider
+  aci_vlan_pool.PHYS-VLAN-POOL - *terraform.NodePlannableResource
+    provider.aci - *terraform.NodeApplyableProvider
+  meta.count-boundary (EachMode fixup) - *terraform.NodeCountBoundary
+    aci_physical_domain.PhyDom - *terraform.NodePlannableResource
+    aci_vlan_pool.PHYS-VLAN-POOL - *terraform.NodePlannableResource
+    provider.aci - *terraform.NodeApplyableProvider
+  provider.aci - *terraform.NodeApplyableProvider
+  provider.aci (close) - *terraform.graphNodeCloseProvider
+    aci_physical_domain.PhyDom - *terraform.NodePlannableResource
+    aci_vlan_pool.PHYS-VLAN-POOL - *terraform.NodePlannableResource
+    provider.aci - *terraform.NodeApplyableProvider
+  root - terraform.graphNodeRoot
+    meta.count-boundary (EachMode fixup) - *terraform.NodeCountBoundary
+    provider.aci (close) - *terraform.graphNodeCloseProvider
+  ------
+2020/06/17 09:58:31 [TRACE] Executing graph transform *terraform.TransitiveReductionTransformer
+2020/06/17 09:58:31 [TRACE] Completed graph transform *terraform.TransitiveReductionTransformer with new graph:
+  aci_physical_domain.PhyDom - *terraform.NodePlannableResource
+    aci_vlan_pool.PHYS-VLAN-POOL - *terraform.NodePlannableResource
+  aci_vlan_pool.PHYS-VLAN-POOL - *terraform.NodePlannableResource
+    provider.aci - *terraform.NodeApplyableProvider
+  meta.count-boundary (EachMode fixup) - *terraform.NodeCountBoundary
+    aci_physical_domain.PhyDom - *terraform.NodePlannableResource
+  provider.aci - *terraform.NodeApplyableProvider
+  provider.aci (close) - *terraform.graphNodeCloseProvider
+    aci_physical_domain.PhyDom - *terraform.NodePlannableResource
+  root - terraform.graphNodeRoot
+    meta.count-boundary (EachMode fixup) - *terraform.NodeCountBoundary
+    provider.aci (close) - *terraform.graphNodeCloseProvider
+  ------
+2020/06/17 09:58:31 [DEBUG] Starting graph walk: walkPlan
+2020/06/17 09:58:31 [TRACE] dag/walk: updating graph
+2020/06/17 09:58:31 [TRACE] dag/walk: added new vertex: "provider.aci (close)"
+2020/06/17 09:58:31 [TRACE] dag/walk: added new vertex: "root"
+2020/06/17 09:58:31 [TRACE] dag/walk: added new vertex: "aci_vlan_pool.PHYS-VLAN-POOL"
+2020/06/17 09:58:31 [TRACE] dag/walk: added new vertex: "aci_physical_domain.PhyDom"
+2020/06/17 09:58:31 [TRACE] dag/walk: added new vertex: "provider.aci"
+2020/06/17 09:58:31 [TRACE] dag/walk: added new vertex: "meta.count-boundary (EachMode fixup)"
+2020/06/17 09:58:31 [TRACE] dag/walk: added edge: "aci_vlan_pool.PHYS-VLAN-POOL" waiting on "provider.aci"
+2020/06/17 09:58:31 [TRACE] dag/walk: added edge: "aci_physical_domain.PhyDom" waiting on "aci_vlan_pool.PHYS-VLAN-POOL"
+2020/06/17 09:58:31 [TRACE] dag/walk: added edge: "meta.count-boundary (EachMode fixup)" waiting on "aci_physical_domain.PhyDom"
+2020/06/17 09:58:31 [TRACE] dag/walk: added edge: "root" waiting on "provider.aci (close)"
+2020/06/17 09:58:31 [TRACE] dag/walk: added edge: "provider.aci (close)" waiting on "aci_physical_domain.PhyDom"
+2020/06/17 09:58:31 [TRACE] dag/walk: added edge: "root" waiting on "meta.count-boundary (EachMode fixup)"
+2020/06/17 09:58:31 [TRACE] dag/walk: dependencies changed for "aci_vlan_pool.PHYS-VLAN-POOL", sending new deps
+2020/06/17 09:58:31 [TRACE] dag/walk: dependencies changed for "aci_physical_domain.PhyDom", sending new deps
+2020/06/17 09:58:31 [TRACE] dag/walk: dependencies changed for "meta.count-boundary (EachMode fixup)", sending new deps
+2020/06/17 09:58:31 [TRACE] dag/walk: dependencies changed for "root", sending new deps
+2020/06/17 09:58:31 [TRACE] dag/walk: dependencies changed for "provider.aci (close)", sending new deps
+2020/06/17 09:58:31 [TRACE] dag/walk: visiting "provider.aci"
+2020/06/17 09:58:31 [TRACE] vertex "provider.aci": starting visit (*terraform.NodeApplyableProvider)
+2020/06/17 09:58:31 [TRACE] vertex "provider.aci": evaluating
+2020/06/17 09:58:31 [TRACE] [walkPlan] Entering eval tree: provider.aci
+2020/06/17 09:58:31 [TRACE] <root>: eval: *terraform.EvalSequence
+2020/06/17 09:58:31 [TRACE] <root>: eval: *terraform.EvalInitProvider
+2020-06-17T09:58:31.074+0530 [INFO]  plugin: configuring client automatic mTLS
+2020-06-17T09:58:31.168+0530 [DEBUG] plugin: starting plugin: path=/Users/nirav.katarmal/go/bin/terraform-provider-aci args=[/Users/nirav.katarmal/go/bin/terraform-provider-aci]
+2020-06-17T09:58:31.178+0530 [DEBUG] plugin: plugin started: path=/Users/nirav.katarmal/go/bin/terraform-provider-aci pid=26079
+2020-06-17T09:58:31.179+0530 [DEBUG] plugin: waiting for RPC address: path=/Users/nirav.katarmal/go/bin/terraform-provider-aci
+2020-06-17T09:58:31.237+0530 [INFO]  plugin.terraform-provider-aci: configuring server automatic mTLS: timestamp=2020-06-17T09:58:31.226+0530
+2020-06-17T09:58:31.305+0530 [DEBUG] plugin: using plugin: version=5
+2020-06-17T09:58:31.305+0530 [DEBUG] plugin.terraform-provider-aci: plugin address: address=/var/folders/9r/n9wy2k4n00xgzd3vwwg2dl7572n7lr/T/plugin102131426 network=unix timestamp=2020-06-17T09:58:31.304+0530
+2020/06/17 09:58:31 [TRACE] BuiltinEvalContext: Initialized "aci" provider for provider.aci
+2020/06/17 09:58:31 [TRACE] <root>: eval: terraform.EvalNoop
+2020/06/17 09:58:31 [TRACE] <root>: eval: terraform.EvalNoop
+2020/06/17 09:58:31 [TRACE] <root>: eval: *terraform.EvalOpFilter
+2020/06/17 09:58:31 [TRACE] <root>: eval: *terraform.EvalSequence
+2020/06/17 09:58:31 [TRACE] <root>: eval: *terraform.EvalGetProvider
+2020/06/17 09:58:31 [TRACE] <root>: eval: *terraform.EvalOpFilter
+2020/06/17 09:58:31 [TRACE] <root>: eval: *terraform.EvalSequence
+2020/06/17 09:58:31 [TRACE] <root>: eval: *terraform.EvalConfigProvider
+2020/06/17 09:58:31 [TRACE] buildProviderConfig for provider.aci: using explicit config only
+2020/06/17 09:58:31 [TRACE] GRPCProvider: GetSchema
+2020/06/17 09:58:31 [TRACE] GRPCProvider: Configure
+2020/06/17 09:58:31 [TRACE] [walkPlan] Exiting eval tree: provider.aci
+2020/06/17 09:58:31 [TRACE] vertex "provider.aci": visit complete
+2020/06/17 09:58:31 [TRACE] dag/walk: visiting "aci_vlan_pool.PHYS-VLAN-POOL"
+2020/06/17 09:58:31 [TRACE] vertex "aci_vlan_pool.PHYS-VLAN-POOL": starting visit (*terraform.NodePlannableResource)
+2020/06/17 09:58:31 [TRACE] vertex "aci_vlan_pool.PHYS-VLAN-POOL": evaluating
+2020/06/17 09:58:31 [TRACE] [walkPlan] Entering eval tree: aci_vlan_pool.PHYS-VLAN-POOL
+2020/06/17 09:58:31 [TRACE] <root>: eval: *terraform.EvalWriteResourceState
+2020/06/17 09:58:31 [TRACE] [walkPlan] Exiting eval tree: aci_vlan_pool.PHYS-VLAN-POOL
+2020/06/17 09:58:31 [TRACE] vertex "aci_vlan_pool.PHYS-VLAN-POOL": expanding dynamic subgraph
+2020/06/17 09:58:31 [TRACE] Executing graph transform *terraform.ResourceCountTransformer
+2020/06/17 09:58:31 [TRACE] Completed graph transform *terraform.ResourceCountTransformer with new graph:
+  aci_vlan_pool.PHYS-VLAN-POOL - *terraform.NodePlannableResourceInstance
+  ------
+2020/06/17 09:58:31 [TRACE] Executing graph transform *terraform.OrphanResourceCountTransformer
+2020/06/17 09:58:31 [TRACE] Completed graph transform *terraform.OrphanResourceCountTransformer (no changes)
+2020/06/17 09:58:31 [TRACE] Executing graph transform *terraform.AttachStateTransformer
+2020/06/17 09:58:31 [DEBUG] Resource instance state not found for node "aci_vlan_pool.PHYS-VLAN-POOL", instance aci_vlan_pool.PHYS-VLAN-POOL
+2020/06/17 09:58:31 [TRACE] Completed graph transform *terraform.AttachStateTransformer (no changes)
+2020/06/17 09:58:31 [TRACE] Executing graph transform *terraform.TargetsTransformer
+2020/06/17 09:58:31 [TRACE] Completed graph transform *terraform.TargetsTransformer (no changes)
+2020/06/17 09:58:31 [TRACE] Executing graph transform *terraform.ReferenceTransformer
+2020/06/17 09:58:31 [DEBUG] ReferenceTransformer: "aci_vlan_pool.PHYS-VLAN-POOL" references: []
+2020/06/17 09:58:31 [TRACE] Completed graph transform *terraform.ReferenceTransformer (no changes)
+2020/06/17 09:58:31 [TRACE] Executing graph transform *terraform.RootTransformer
+2020/06/17 09:58:31 [TRACE] Completed graph transform *terraform.RootTransformer (no changes)
+2020/06/17 09:58:31 [TRACE] vertex "aci_vlan_pool.PHYS-VLAN-POOL": entering dynamic subgraph
+2020/06/17 09:58:31 [TRACE] dag/walk: updating graph
+2020/06/17 09:58:31 [TRACE] dag/walk: added new vertex: "aci_vlan_pool.PHYS-VLAN-POOL"
+2020/06/17 09:58:31 [TRACE] dag/walk: visiting "aci_vlan_pool.PHYS-VLAN-POOL"
+2020/06/17 09:58:31 [TRACE] vertex "aci_vlan_pool.PHYS-VLAN-POOL": starting visit (*terraform.NodePlannableResourceInstance)
+2020/06/17 09:58:31 [TRACE] vertex "aci_vlan_pool.PHYS-VLAN-POOL": evaluating
+2020/06/17 09:58:31 [TRACE] [walkPlan] Entering eval tree: aci_vlan_pool.PHYS-VLAN-POOL
+2020/06/17 09:58:31 [TRACE] <root>: eval: *terraform.EvalSequence
+2020/06/17 09:58:31 [TRACE] <root>: eval: *terraform.EvalGetProvider
+2020/06/17 09:58:31 [TRACE] <root>: eval: *terraform.EvalReadState
+2020/06/17 09:58:31 [TRACE] EvalReadState: reading state for aci_vlan_pool.PHYS-VLAN-POOL
+2020/06/17 09:58:31 [TRACE] EvalReadState: no state present for aci_vlan_pool.PHYS-VLAN-POOL
+2020/06/17 09:58:31 [TRACE] <root>: eval: *terraform.EvalValidateSelfRef
+2020/06/17 09:58:31 [TRACE] <root>: eval: *terraform.EvalDiff
+2020/06/17 09:58:31 [TRACE] Re-validating config for "aci_vlan_pool.PHYS-VLAN-POOL"
+2020/06/17 09:58:31 [TRACE] GRPCProvider: ValidateResourceTypeConfig
+2020/06/17 09:58:31 [TRACE] GRPCProvider: PlanResourceChange
+2020/06/17 09:58:31 [TRACE] <root>: eval: *terraform.EvalCheckPreventDestroy
+2020/06/17 09:58:31 [TRACE] <root>: eval: *terraform.EvalWriteState
+2020/06/17 09:58:31 [TRACE] EvalWriteState: writing current state object for aci_vlan_pool.PHYS-VLAN-POOL
+2020/06/17 09:58:31 [TRACE] <root>: eval: *terraform.EvalWriteDiff
+2020/06/17 09:58:31 [TRACE] EvalWriteDiff: recorded Create change for aci_vlan_pool.PHYS-VLAN-POOL
+2020/06/17 09:58:31 [TRACE] [walkPlan] Exiting eval tree: aci_vlan_pool.PHYS-VLAN-POOL
+2020/06/17 09:58:31 [TRACE] vertex "aci_vlan_pool.PHYS-VLAN-POOL": visit complete
+2020/06/17 09:58:31 [TRACE] vertex "aci_vlan_pool.PHYS-VLAN-POOL": dynamic subgraph completed successfully
+2020/06/17 09:58:31 [TRACE] vertex "aci_vlan_pool.PHYS-VLAN-POOL": visit complete
+2020/06/17 09:58:31 [TRACE] dag/walk: visiting "aci_physical_domain.PhyDom"
+2020/06/17 09:58:31 [TRACE] vertex "aci_physical_domain.PhyDom": starting visit (*terraform.NodePlannableResource)
+2020/06/17 09:58:31 [TRACE] vertex "aci_physical_domain.PhyDom": evaluating
+2020/06/17 09:58:31 [TRACE] [walkPlan] Entering eval tree: aci_physical_domain.PhyDom
+2020/06/17 09:58:31 [TRACE] <root>: eval: *terraform.EvalWriteResourceState
+2020/06/17 09:58:31 [TRACE] [walkPlan] Exiting eval tree: aci_physical_domain.PhyDom
+2020/06/17 09:58:31 [TRACE] vertex "aci_physical_domain.PhyDom": expanding dynamic subgraph
+2020/06/17 09:58:31 [TRACE] Executing graph transform *terraform.ResourceCountTransformer
+2020/06/17 09:58:31 [TRACE] Completed graph transform *terraform.ResourceCountTransformer with new graph:
+  aci_physical_domain.PhyDom - *terraform.NodePlannableResourceInstance
+  ------
+2020/06/17 09:58:31 [TRACE] Executing graph transform *terraform.OrphanResourceCountTransformer
+2020/06/17 09:58:31 [TRACE] Completed graph transform *terraform.OrphanResourceCountTransformer (no changes)
+2020/06/17 09:58:31 [TRACE] Executing graph transform *terraform.AttachStateTransformer
+2020/06/17 09:58:31 [DEBUG] Resource instance state not found for node "aci_physical_domain.PhyDom", instance aci_physical_domain.PhyDom
+2020/06/17 09:58:31 [TRACE] Completed graph transform *terraform.AttachStateTransformer (no changes)
+2020/06/17 09:58:31 [TRACE] Executing graph transform *terraform.TargetsTransformer
+2020/06/17 09:58:31 [TRACE] Completed graph transform *terraform.TargetsTransformer (no changes)
+2020/06/17 09:58:31 [TRACE] Executing graph transform *terraform.ReferenceTransformer
+2020/06/17 09:58:31 [DEBUG] ReferenceTransformer: "aci_physical_domain.PhyDom" references: []
+2020/06/17 09:58:31 [TRACE] Completed graph transform *terraform.ReferenceTransformer (no changes)
+2020/06/17 09:58:31 [TRACE] Executing graph transform *terraform.RootTransformer
+2020/06/17 09:58:31 [TRACE] Completed graph transform *terraform.RootTransformer (no changes)
+2020/06/17 09:58:31 [TRACE] vertex "aci_physical_domain.PhyDom": entering dynamic subgraph
+2020/06/17 09:58:31 [TRACE] dag/walk: updating graph
+2020/06/17 09:58:31 [TRACE] dag/walk: added new vertex: "aci_physical_domain.PhyDom"
+2020/06/17 09:58:31 [TRACE] dag/walk: visiting "aci_physical_domain.PhyDom"
+2020/06/17 09:58:31 [TRACE] vertex "aci_physical_domain.PhyDom": starting visit (*terraform.NodePlannableResourceInstance)
+2020/06/17 09:58:31 [TRACE] vertex "aci_physical_domain.PhyDom": evaluating
+2020/06/17 09:58:31 [TRACE] [walkPlan] Entering eval tree: aci_physical_domain.PhyDom
+2020/06/17 09:58:31 [TRACE] <root>: eval: *terraform.EvalSequence
+2020/06/17 09:58:31 [TRACE] <root>: eval: *terraform.EvalGetProvider
+2020/06/17 09:58:31 [TRACE] <root>: eval: *terraform.EvalReadState
+2020/06/17 09:58:31 [TRACE] EvalReadState: reading state for aci_physical_domain.PhyDom
+2020/06/17 09:58:31 [TRACE] EvalReadState: no state present for aci_physical_domain.PhyDom
+2020/06/17 09:58:31 [TRACE] <root>: eval: *terraform.EvalValidateSelfRef
+2020/06/17 09:58:31 [TRACE] <root>: eval: *terraform.EvalDiff
+2020/06/17 09:58:31 [TRACE] Re-validating config for "aci_physical_domain.PhyDom"
+2020/06/17 09:58:31 [TRACE] GRPCProvider: ValidateResourceTypeConfig
+2020/06/17 09:58:31 [TRACE] GRPCProvider: PlanResourceChange
+2020/06/17 09:58:31 [TRACE] <root>: eval: *terraform.EvalCheckPreventDestroy
+2020/06/17 09:58:31 [TRACE] <root>: eval: *terraform.EvalWriteState
+2020/06/17 09:58:31 [TRACE] EvalWriteState: writing current state object for aci_physical_domain.PhyDom
+2020/06/17 09:58:31 [TRACE] <root>: eval: *terraform.EvalWriteDiff
+2020/06/17 09:58:31 [TRACE] EvalWriteDiff: recorded Create change for aci_physical_domain.PhyDom
+2020/06/17 09:58:31 [TRACE] [walkPlan] Exiting eval tree: aci_physical_domain.PhyDom
+2020/06/17 09:58:31 [TRACE] vertex "aci_physical_domain.PhyDom": visit complete
+2020/06/17 09:58:31 [TRACE] vertex "aci_physical_domain.PhyDom": dynamic subgraph completed successfully
+2020/06/17 09:58:31 [TRACE] vertex "aci_physical_domain.PhyDom": visit complete
+2020/06/17 09:58:31 [TRACE] dag/walk: visiting "meta.count-boundary (EachMode fixup)"
+2020/06/17 09:58:31 [TRACE] dag/walk: visiting "provider.aci (close)"
+2020/06/17 09:58:31 [TRACE] vertex "provider.aci (close)": starting visit (*terraform.graphNodeCloseProvider)
+2020/06/17 09:58:31 [TRACE] vertex "meta.count-boundary (EachMode fixup)": starting visit (*terraform.NodeCountBoundary)
+2020/06/17 09:58:31 [TRACE] vertex "meta.count-boundary (EachMode fixup)": evaluating
+2020/06/17 09:58:31 [TRACE] [walkPlan] Entering eval tree: meta.count-boundary (EachMode fixup)
+2020/06/17 09:58:31 [TRACE] <root>: eval: *terraform.EvalCountFixZeroOneBoundaryGlobal
+2020/06/17 09:58:31 [TRACE] vertex "provider.aci (close)": evaluating
+2020/06/17 09:58:31 [TRACE] [walkPlan] Entering eval tree: provider.aci (close)
+2020/06/17 09:58:31 [TRACE] <root>: eval: *terraform.EvalCloseProvider
+2020/06/17 09:58:31 [TRACE] GRPCProvider: Close
+2020/06/17 09:58:31 [TRACE] [walkPlan] Exiting eval tree: meta.count-boundary (EachMode fixup)
+2020/06/17 09:58:31 [TRACE] vertex "meta.count-boundary (EachMode fixup)": visit complete
+2020-06-17T09:58:31.470+0530 [DEBUG] plugin: plugin process exited: path=/Users/nirav.katarmal/go/bin/terraform-provider-aci pid=26079
+2020-06-17T09:58:31.470+0530 [DEBUG] plugin: plugin exited
+2020/06/17 09:58:31 [TRACE] [walkPlan] Exiting eval tree: provider.aci (close)
+2020/06/17 09:58:31 [TRACE] vertex "provider.aci (close)": visit complete
+2020/06/17 09:58:31 [TRACE] dag/walk: visiting "root"
+2020/06/17 09:58:31 [TRACE] vertex "root": starting visit (terraform.graphNodeRoot)
+2020/06/17 09:58:31 [TRACE] vertex "root": visit complete
+2020/06/17 09:58:31 [DEBUG] command: asking for input: "Do you want to perform these actions?"
+2020/06/17 09:58:36 [INFO] backend/local: apply calling Apply
+2020/06/17 09:58:36 [INFO] terraform: building graph: GraphTypeApply
+2020/06/17 09:58:36 [TRACE] Executing graph transform *terraform.ConfigTransformer
+2020/06/17 09:58:36 [TRACE] ConfigTransformer: Starting for path: 
+2020/06/17 09:58:36 [TRACE] Completed graph transform *terraform.ConfigTransformer with new graph:
+  aci_physical_domain.PhyDom (prepare state) - *terraform.NodeApplyableResource
+  aci_vlan_pool.PHYS-VLAN-POOL (prepare state) - *terraform.NodeApplyableResource
+  ------
+2020/06/17 09:58:36 [TRACE] Executing graph transform *terraform.DiffTransformer
+2020/06/17 09:58:36 [TRACE] DiffTransformer starting
+2020/06/17 09:58:36 [TRACE] DiffTransformer: found Create change for aci_vlan_pool.PHYS-VLAN-POOL 
+2020/06/17 09:58:36 [TRACE] DiffTransformer: aci_vlan_pool.PHYS-VLAN-POOL will be represented by aci_vlan_pool.PHYS-VLAN-POOL
+2020/06/17 09:58:36 [TRACE] DiffTransformer: found Create change for aci_physical_domain.PhyDom 
+2020/06/17 09:58:36 [TRACE] DiffTransformer: aci_physical_domain.PhyDom will be represented by aci_physical_domain.PhyDom
+2020/06/17 09:58:36 [TRACE] DiffTransformer complete
+2020/06/17 09:58:36 [TRACE] Completed graph transform *terraform.DiffTransformer with new graph:
+  aci_physical_domain.PhyDom - *terraform.NodeApplyableResourceInstance
+    aci_physical_domain.PhyDom (prepare state) - *terraform.NodeApplyableResource
+  aci_physical_domain.PhyDom (prepare state) - *terraform.NodeApplyableResource
+  aci_vlan_pool.PHYS-VLAN-POOL - *terraform.NodeApplyableResourceInstance
+    aci_vlan_pool.PHYS-VLAN-POOL (prepare state) - *terraform.NodeApplyableResource
+  aci_vlan_pool.PHYS-VLAN-POOL (prepare state) - *terraform.NodeApplyableResource
+  ------
+2020/06/17 09:58:36 [TRACE] Executing graph transform *terraform.OrphanResourceTransformer
+2020/06/17 09:58:36 [TRACE] Completed graph transform *terraform.OrphanResourceTransformer (no changes)
+2020/06/17 09:58:36 [TRACE] Executing graph transform *terraform.OrphanOutputTransformer
+2020/06/17 09:58:36 [TRACE] Completed graph transform *terraform.OrphanOutputTransformer (no changes)
+2020/06/17 09:58:36 [TRACE] Executing graph transform *terraform.AttachResourceConfigTransformer
+2020/06/17 09:58:36 [TRACE] AttachResourceConfigTransformer: attaching to "aci_vlan_pool.PHYS-VLAN-POOL (prepare state)" (*terraform.NodeApplyableResource) config from main.tf:10,1-42
+2020/06/17 09:58:36 [TRACE] AttachResourceConfigTransformer: attaching to "aci_physical_domain.PhyDom (prepare state)" (*terraform.NodeApplyableResource) config from main.tf:14,1-40
+2020/06/17 09:58:36 [TRACE] AttachResourceConfigTransformer: attaching to "aci_vlan_pool.PHYS-VLAN-POOL" (*terraform.NodeApplyableResourceInstance) config from main.tf:10,1-42
+2020/06/17 09:58:36 [TRACE] AttachResourceConfigTransformer: attaching to "aci_physical_domain.PhyDom" (*terraform.NodeApplyableResourceInstance) config from main.tf:14,1-40
+2020/06/17 09:58:36 [TRACE] Completed graph transform *terraform.AttachResourceConfigTransformer (no changes)
+2020/06/17 09:58:36 [TRACE] Executing graph transform *terraform.AttachStateTransformer
+2020/06/17 09:58:36 [DEBUG] Resource state not found for node "aci_vlan_pool.PHYS-VLAN-POOL", instance aci_vlan_pool.PHYS-VLAN-POOL
+2020/06/17 09:58:36 [DEBUG] Resource state not found for node "aci_physical_domain.PhyDom", instance aci_physical_domain.PhyDom
+2020/06/17 09:58:36 [TRACE] Completed graph transform *terraform.AttachStateTransformer (no changes)
+2020/06/17 09:58:36 [TRACE] Executing graph transform *terraform.MissingProvisionerTransformer
+2020/06/17 09:58:36 [TRACE] Completed graph transform *terraform.MissingProvisionerTransformer (no changes)
+2020/06/17 09:58:36 [TRACE] Executing graph transform *terraform.ProvisionerTransformer
+2020/06/17 09:58:36 [TRACE] Completed graph transform *terraform.ProvisionerTransformer (no changes)
+2020/06/17 09:58:36 [TRACE] Executing graph transform *terraform.RootVariableTransformer
+2020/06/17 09:58:36 [TRACE] Completed graph transform *terraform.RootVariableTransformer (no changes)
+2020/06/17 09:58:36 [TRACE] Executing graph transform *terraform.LocalTransformer
+2020/06/17 09:58:36 [TRACE] Completed graph transform *terraform.LocalTransformer (no changes)
+2020/06/17 09:58:36 [TRACE] Executing graph transform *terraform.OutputTransformer
+2020/06/17 09:58:36 [TRACE] Completed graph transform *terraform.OutputTransformer (no changes)
+2020/06/17 09:58:36 [TRACE] Executing graph transform *terraform.ModuleVariableTransformer
+2020/06/17 09:58:36 [TRACE] Completed graph transform *terraform.ModuleVariableTransformer (no changes)
+2020/06/17 09:58:36 [TRACE] Executing graph transform *terraform.graphTransformerMulti
+2020/06/17 09:58:36 [TRACE] (graphTransformerMulti) Executing graph transform *terraform.ProviderConfigTransformer
+2020/06/17 09:58:36 [TRACE] ProviderConfigTransformer: attaching to "provider.aci" provider configuration from main.tf:3,1-15
+2020/06/17 09:58:36 [TRACE] (graphTransformerMulti) Completed graph transform *terraform.ProviderConfigTransformer with new graph:
+  aci_physical_domain.PhyDom - *terraform.NodeApplyableResourceInstance
+    aci_physical_domain.PhyDom (prepare state) - *terraform.NodeApplyableResource
+  aci_physical_domain.PhyDom (prepare state) - *terraform.NodeApplyableResource
+  aci_vlan_pool.PHYS-VLAN-POOL - *terraform.NodeApplyableResourceInstance
+    aci_vlan_pool.PHYS-VLAN-POOL (prepare state) - *terraform.NodeApplyableResource
+  aci_vlan_pool.PHYS-VLAN-POOL (prepare state) - *terraform.NodeApplyableResource
+  provider.aci - *terraform.NodeApplyableProvider
+  ------
+2020/06/17 09:58:36 [TRACE] (graphTransformerMulti) Executing graph transform *terraform.MissingProviderTransformer
+2020/06/17 09:58:36 [TRACE] (graphTransformerMulti) Completed graph transform *terraform.MissingProviderTransformer (no changes)
+2020/06/17 09:58:36 [TRACE] (graphTransformerMulti) Executing graph transform *terraform.ProviderTransformer
+2020/06/17 09:58:36 [TRACE] ProviderTransformer: aci_physical_domain.PhyDom is provided by provider.aci or inherited equivalent
+2020/06/17 09:58:36 [TRACE] ProviderTransformer: aci_vlan_pool.PHYS-VLAN-POOL (prepare state) is provided by provider.aci or inherited equivalent
+2020/06/17 09:58:36 [TRACE] ProviderTransformer: aci_physical_domain.PhyDom (prepare state) is provided by provider.aci or inherited equivalent
+2020/06/17 09:58:36 [TRACE] ProviderTransformer: aci_vlan_pool.PHYS-VLAN-POOL is provided by provider.aci or inherited equivalent
+2020/06/17 09:58:36 [TRACE] ProviderTransformer: exact match for provider.aci serving aci_physical_domain.PhyDom
+2020/06/17 09:58:36 [DEBUG] ProviderTransformer: "aci_physical_domain.PhyDom" (*terraform.NodeApplyableResourceInstance) needs provider.aci
+2020/06/17 09:58:36 [TRACE] ProviderTransformer: exact match for provider.aci serving aci_vlan_pool.PHYS-VLAN-POOL (prepare state)
+2020/06/17 09:58:36 [DEBUG] ProviderTransformer: "aci_vlan_pool.PHYS-VLAN-POOL (prepare state)" (*terraform.NodeApplyableResource) needs provider.aci
+2020/06/17 09:58:36 [TRACE] ProviderTransformer: exact match for provider.aci serving aci_physical_domain.PhyDom (prepare state)
+2020/06/17 09:58:36 [DEBUG] ProviderTransformer: "aci_physical_domain.PhyDom (prepare state)" (*terraform.NodeApplyableResource) needs provider.aci
+2020/06/17 09:58:36 [TRACE] ProviderTransformer: exact match for provider.aci serving aci_vlan_pool.PHYS-VLAN-POOL
+2020/06/17 09:58:36 [DEBUG] ProviderTransformer: "aci_vlan_pool.PHYS-VLAN-POOL" (*terraform.NodeApplyableResourceInstance) needs provider.aci
+2020/06/17 09:58:36 [TRACE] (graphTransformerMulti) Completed graph transform *terraform.ProviderTransformer with new graph:
+  aci_physical_domain.PhyDom - *terraform.NodeApplyableResourceInstance
+    aci_physical_domain.PhyDom (prepare state) - *terraform.NodeApplyableResource
+    provider.aci - *terraform.NodeApplyableProvider
+  aci_physical_domain.PhyDom (prepare state) - *terraform.NodeApplyableResource
+    provider.aci - *terraform.NodeApplyableProvider
+  aci_vlan_pool.PHYS-VLAN-POOL - *terraform.NodeApplyableResourceInstance
+    aci_vlan_pool.PHYS-VLAN-POOL (prepare state) - *terraform.NodeApplyableResource
+    provider.aci - *terraform.NodeApplyableProvider
+  aci_vlan_pool.PHYS-VLAN-POOL (prepare state) - *terraform.NodeApplyableResource
+    provider.aci - *terraform.NodeApplyableProvider
+  provider.aci - *terraform.NodeApplyableProvider
+  ------
+2020/06/17 09:58:36 [TRACE] (graphTransformerMulti) Executing graph transform *terraform.PruneProviderTransformer
+2020/06/17 09:58:36 [TRACE] (graphTransformerMulti) Completed graph transform *terraform.PruneProviderTransformer (no changes)
+2020/06/17 09:58:36 [TRACE] (graphTransformerMulti) Executing graph transform *terraform.ParentProviderTransformer
+2020/06/17 09:58:36 [TRACE] (graphTransformerMulti) Completed graph transform *terraform.ParentProviderTransformer (no changes)
+2020/06/17 09:58:36 [TRACE] Completed graph transform *terraform.graphTransformerMulti with new graph:
+  aci_physical_domain.PhyDom - *terraform.NodeApplyableResourceInstance
+    aci_physical_domain.PhyDom (prepare state) - *terraform.NodeApplyableResource
+    provider.aci - *terraform.NodeApplyableProvider
+  aci_physical_domain.PhyDom (prepare state) - *terraform.NodeApplyableResource
+    provider.aci - *terraform.NodeApplyableProvider
+  aci_vlan_pool.PHYS-VLAN-POOL - *terraform.NodeApplyableResourceInstance
+    aci_vlan_pool.PHYS-VLAN-POOL (prepare state) - *terraform.NodeApplyableResource
+    provider.aci - *terraform.NodeApplyableProvider
+  aci_vlan_pool.PHYS-VLAN-POOL (prepare state) - *terraform.NodeApplyableResource
+    provider.aci - *terraform.NodeApplyableProvider
+  provider.aci - *terraform.NodeApplyableProvider
+  ------
+2020/06/17 09:58:36 [TRACE] Executing graph transform *terraform.RemovedModuleTransformer
+2020/06/17 09:58:36 [TRACE] Completed graph transform *terraform.RemovedModuleTransformer (no changes)
+2020/06/17 09:58:36 [TRACE] Executing graph transform *terraform.AttachSchemaTransformer
+2020/06/17 09:58:36 [TRACE] AttachSchemaTransformer: attaching resource schema to aci_vlan_pool.PHYS-VLAN-POOL (prepare state)
+2020/06/17 09:58:36 [TRACE] AttachSchemaTransformer: attaching resource schema to aci_physical_domain.PhyDom (prepare state)
+2020/06/17 09:58:36 [TRACE] AttachSchemaTransformer: attaching resource schema to aci_vlan_pool.PHYS-VLAN-POOL
+2020/06/17 09:58:36 [TRACE] AttachSchemaTransformer: attaching resource schema to aci_physical_domain.PhyDom
+2020/06/17 09:58:36 [TRACE] AttachSchemaTransformer: attaching provider config schema to provider.aci
+2020/06/17 09:58:36 [TRACE] Completed graph transform *terraform.AttachSchemaTransformer (no changes)
+2020/06/17 09:58:36 [TRACE] Executing graph transform *terraform.ReferenceTransformer
+2020/06/17 09:58:36 [DEBUG] ReferenceTransformer: "aci_physical_domain.PhyDom (prepare state)" references: []
+2020/06/17 09:58:36 [DEBUG] ReferenceTransformer: "aci_vlan_pool.PHYS-VLAN-POOL" references: []
+2020/06/17 09:58:36 [DEBUG] ReferenceTransformer: "aci_physical_domain.PhyDom" references: [aci_vlan_pool.PHYS-VLAN-POOL aci_vlan_pool.PHYS-VLAN-POOL aci_vlan_pool.PHYS-VLAN-POOL (prepare state) aci_vlan_pool.PHYS-VLAN-POOL aci_vlan_pool.PHYS-VLAN-POOL aci_vlan_pool.PHYS-VLAN-POOL (prepare state)]
+2020/06/17 09:58:36 [DEBUG] ReferenceTransformer: "provider.aci" references: []
+2020/06/17 09:58:36 [DEBUG] ReferenceTransformer: "aci_vlan_pool.PHYS-VLAN-POOL (prepare state)" references: []
+2020/06/17 09:58:36 [TRACE] Completed graph transform *terraform.ReferenceTransformer with new graph:
+  aci_physical_domain.PhyDom - *terraform.NodeApplyableResourceInstance
+    aci_physical_domain.PhyDom (prepare state) - *terraform.NodeApplyableResource
+    aci_vlan_pool.PHYS-VLAN-POOL - *terraform.NodeApplyableResourceInstance
+    aci_vlan_pool.PHYS-VLAN-POOL (prepare state) - *terraform.NodeApplyableResource
+    provider.aci - *terraform.NodeApplyableProvider
+  aci_physical_domain.PhyDom (prepare state) - *terraform.NodeApplyableResource
+    provider.aci - *terraform.NodeApplyableProvider
+  aci_vlan_pool.PHYS-VLAN-POOL - *terraform.NodeApplyableResourceInstance
+    aci_vlan_pool.PHYS-VLAN-POOL (prepare state) - *terraform.NodeApplyableResource
+    provider.aci - *terraform.NodeApplyableProvider
+  aci_vlan_pool.PHYS-VLAN-POOL (prepare state) - *terraform.NodeApplyableResource
+    provider.aci - *terraform.NodeApplyableProvider
+  provider.aci - *terraform.NodeApplyableProvider
+  ------
+2020/06/17 09:58:36 [TRACE] Executing graph transform *terraform.AttachDependenciesTransformer
+2020/06/17 09:58:36 [TRACE] AttachDependenciesTransformer: aci_vlan_pool.PHYS-VLAN-POOL depends on []
+2020/06/17 09:58:36 [TRACE] AttachDependenciesTransformer: aci_physical_domain.PhyDom depends on [aci_vlan_pool.PHYS-VLAN-POOL]
+2020/06/17 09:58:36 [TRACE] Completed graph transform *terraform.AttachDependenciesTransformer (no changes)
+2020/06/17 09:58:36 [TRACE] Executing graph transform *terraform.DestroyEdgeTransformer
+2020/06/17 09:58:36 [TRACE] Completed graph transform *terraform.DestroyEdgeTransformer (no changes)
+2020/06/17 09:58:36 [TRACE] Executing graph transform *terraform.CBDEdgeTransformer
+2020/06/17 09:58:36 [TRACE] Completed graph transform *terraform.CBDEdgeTransformer (no changes)
+2020/06/17 09:58:36 [TRACE] Executing graph transform *terraform.PruneUnusedValuesTransformer
+2020/06/17 09:58:36 [TRACE] Completed graph transform *terraform.PruneUnusedValuesTransformer (no changes)
+2020/06/17 09:58:36 [TRACE] Executing graph transform *terraform.CountBoundaryTransformer
+2020/06/17 09:58:36 [TRACE] Completed graph transform *terraform.CountBoundaryTransformer with new graph:
+  aci_physical_domain.PhyDom - *terraform.NodeApplyableResourceInstance
+    aci_physical_domain.PhyDom (prepare state) - *terraform.NodeApplyableResource
+    aci_vlan_pool.PHYS-VLAN-POOL - *terraform.NodeApplyableResourceInstance
+    aci_vlan_pool.PHYS-VLAN-POOL (prepare state) - *terraform.NodeApplyableResource
+    provider.aci - *terraform.NodeApplyableProvider
+  aci_physical_domain.PhyDom (prepare state) - *terraform.NodeApplyableResource
+    provider.aci - *terraform.NodeApplyableProvider
+  aci_vlan_pool.PHYS-VLAN-POOL - *terraform.NodeApplyableResourceInstance
+    aci_vlan_pool.PHYS-VLAN-POOL (prepare state) - *terraform.NodeApplyableResource
+    provider.aci - *terraform.NodeApplyableProvider
+  aci_vlan_pool.PHYS-VLAN-POOL (prepare state) - *terraform.NodeApplyableResource
+    provider.aci - *terraform.NodeApplyableProvider
+  meta.count-boundary (EachMode fixup) - *terraform.NodeCountBoundary
+    aci_physical_domain.PhyDom - *terraform.NodeApplyableResourceInstance
+    aci_physical_domain.PhyDom (prepare state) - *terraform.NodeApplyableResource
+    aci_vlan_pool.PHYS-VLAN-POOL - *terraform.NodeApplyableResourceInstance
+    aci_vlan_pool.PHYS-VLAN-POOL (prepare state) - *terraform.NodeApplyableResource
+    provider.aci - *terraform.NodeApplyableProvider
+  provider.aci - *terraform.NodeApplyableProvider
+  ------
+2020/06/17 09:58:36 [TRACE] Executing graph transform *terraform.TargetsTransformer
+2020/06/17 09:58:36 [TRACE] Completed graph transform *terraform.TargetsTransformer (no changes)
+2020/06/17 09:58:36 [TRACE] Executing graph transform *terraform.CloseProviderTransformer
+2020/06/17 09:58:36 [TRACE] Completed graph transform *terraform.CloseProviderTransformer with new graph:
+  aci_physical_domain.PhyDom - *terraform.NodeApplyableResourceInstance
+    aci_physical_domain.PhyDom (prepare state) - *terraform.NodeApplyableResource
+    aci_vlan_pool.PHYS-VLAN-POOL - *terraform.NodeApplyableResourceInstance
+    aci_vlan_pool.PHYS-VLAN-POOL (prepare state) - *terraform.NodeApplyableResource
+    provider.aci - *terraform.NodeApplyableProvider
+  aci_physical_domain.PhyDom (prepare state) - *terraform.NodeApplyableResource
+    provider.aci - *terraform.NodeApplyableProvider
+  aci_vlan_pool.PHYS-VLAN-POOL - *terraform.NodeApplyableResourceInstance
+    aci_vlan_pool.PHYS-VLAN-POOL (prepare state) - *terraform.NodeApplyableResource
+    provider.aci - *terraform.NodeApplyableProvider
+  aci_vlan_pool.PHYS-VLAN-POOL (prepare state) - *terraform.NodeApplyableResource
+    provider.aci - *terraform.NodeApplyableProvider
+  meta.count-boundary (EachMode fixup) - *terraform.NodeCountBoundary
+    aci_physical_domain.PhyDom - *terraform.NodeApplyableResourceInstance
+    aci_physical_domain.PhyDom (prepare state) - *terraform.NodeApplyableResource
+    aci_vlan_pool.PHYS-VLAN-POOL - *terraform.NodeApplyableResourceInstance
+    aci_vlan_pool.PHYS-VLAN-POOL (prepare state) - *terraform.NodeApplyableResource
+    provider.aci - *terraform.NodeApplyableProvider
+  provider.aci - *terraform.NodeApplyableProvider
+  provider.aci (close) - *terraform.graphNodeCloseProvider
+    aci_physical_domain.PhyDom - *terraform.NodeApplyableResourceInstance
+    aci_physical_domain.PhyDom (prepare state) - *terraform.NodeApplyableResource
+    aci_vlan_pool.PHYS-VLAN-POOL - *terraform.NodeApplyableResourceInstance
+    aci_vlan_pool.PHYS-VLAN-POOL (prepare state) - *terraform.NodeApplyableResource
+    provider.aci - *terraform.NodeApplyableProvider
+  ------
+2020/06/17 09:58:36 [TRACE] Executing graph transform *terraform.CloseProvisionerTransformer
+2020/06/17 09:58:36 [TRACE] Completed graph transform *terraform.CloseProvisionerTransformer (no changes)
+2020/06/17 09:58:36 [TRACE] Executing graph transform *terraform.RootTransformer
+2020/06/17 09:58:36 [TRACE] Completed graph transform *terraform.RootTransformer with new graph:
+  aci_physical_domain.PhyDom - *terraform.NodeApplyableResourceInstance
+    aci_physical_domain.PhyDom (prepare state) - *terraform.NodeApplyableResource
+    aci_vlan_pool.PHYS-VLAN-POOL - *terraform.NodeApplyableResourceInstance
+    aci_vlan_pool.PHYS-VLAN-POOL (prepare state) - *terraform.NodeApplyableResource
+    provider.aci - *terraform.NodeApplyableProvider
+  aci_physical_domain.PhyDom (prepare state) - *terraform.NodeApplyableResource
+    provider.aci - *terraform.NodeApplyableProvider
+  aci_vlan_pool.PHYS-VLAN-POOL - *terraform.NodeApplyableResourceInstance
+    aci_vlan_pool.PHYS-VLAN-POOL (prepare state) - *terraform.NodeApplyableResource
+    provider.aci - *terraform.NodeApplyableProvider
+  aci_vlan_pool.PHYS-VLAN-POOL (prepare state) - *terraform.NodeApplyableResource
+    provider.aci - *terraform.NodeApplyableProvider
+  meta.count-boundary (EachMode fixup) - *terraform.NodeCountBoundary
+    aci_physical_domain.PhyDom - *terraform.NodeApplyableResourceInstance
+    aci_physical_domain.PhyDom (prepare state) - *terraform.NodeApplyableResource
+    aci_vlan_pool.PHYS-VLAN-POOL - *terraform.NodeApplyableResourceInstance
+    aci_vlan_pool.PHYS-VLAN-POOL (prepare state) - *terraform.NodeApplyableResource
+    provider.aci - *terraform.NodeApplyableProvider
+  provider.aci - *terraform.NodeApplyableProvider
+  provider.aci (close) - *terraform.graphNodeCloseProvider
+    aci_physical_domain.PhyDom - *terraform.NodeApplyableResourceInstance
+    aci_physical_domain.PhyDom (prepare state) - *terraform.NodeApplyableResource
+    aci_vlan_pool.PHYS-VLAN-POOL - *terraform.NodeApplyableResourceInstance
+    aci_vlan_pool.PHYS-VLAN-POOL (prepare state) - *terraform.NodeApplyableResource
+    provider.aci - *terraform.NodeApplyableProvider
+  root - terraform.graphNodeRoot
+    meta.count-boundary (EachMode fixup) - *terraform.NodeCountBoundary
+    provider.aci (close) - *terraform.graphNodeCloseProvider
+  ------
+2020/06/17 09:58:36 [TRACE] Executing graph transform *terraform.TransitiveReductionTransformer
+2020/06/17 09:58:36 [TRACE] Completed graph transform *terraform.TransitiveReductionTransformer with new graph:
+  aci_physical_domain.PhyDom - *terraform.NodeApplyableResourceInstance
+    aci_physical_domain.PhyDom (prepare state) - *terraform.NodeApplyableResource
+    aci_vlan_pool.PHYS-VLAN-POOL - *terraform.NodeApplyableResourceInstance
+  aci_physical_domain.PhyDom (prepare state) - *terraform.NodeApplyableResource
+    provider.aci - *terraform.NodeApplyableProvider
+  aci_vlan_pool.PHYS-VLAN-POOL - *terraform.NodeApplyableResourceInstance
+    aci_vlan_pool.PHYS-VLAN-POOL (prepare state) - *terraform.NodeApplyableResource
+  aci_vlan_pool.PHYS-VLAN-POOL (prepare state) - *terraform.NodeApplyableResource
+    provider.aci - *terraform.NodeApplyableProvider
+  meta.count-boundary (EachMode fixup) - *terraform.NodeCountBoundary
+    aci_physical_domain.PhyDom - *terraform.NodeApplyableResourceInstance
+  provider.aci - *terraform.NodeApplyableProvider
+  provider.aci (close) - *terraform.graphNodeCloseProvider
+    aci_physical_domain.PhyDom - *terraform.NodeApplyableResourceInstance
+  root - terraform.graphNodeRoot
+    meta.count-boundary (EachMode fixup) - *terraform.NodeCountBoundary
+    provider.aci (close) - *terraform.graphNodeCloseProvider
+  ------
+2020/06/17 09:58:36 [DEBUG] Starting graph walk: walkApply
+2020/06/17 09:58:36 [TRACE] dag/walk: updating graph
+2020/06/17 09:58:36 [TRACE] dag/walk: added new vertex: "aci_physical_domain.PhyDom (prepare state)"
+2020/06/17 09:58:36 [TRACE] dag/walk: added new vertex: "aci_vlan_pool.PHYS-VLAN-POOL"
+2020/06/17 09:58:36 [TRACE] dag/walk: added new vertex: "aci_physical_domain.PhyDom"
+2020/06/17 09:58:36 [TRACE] dag/walk: added new vertex: "provider.aci"
+2020/06/17 09:58:36 [TRACE] dag/walk: added new vertex: "meta.count-boundary (EachMode fixup)"
+2020/06/17 09:58:36 [TRACE] dag/walk: added new vertex: "provider.aci (close)"
+2020/06/17 09:58:36 [TRACE] dag/walk: added new vertex: "root"
+2020/06/17 09:58:36 [TRACE] dag/walk: added new vertex: "aci_vlan_pool.PHYS-VLAN-POOL (prepare state)"
+2020/06/17 09:58:36 [TRACE] dag/walk: added edge: "aci_vlan_pool.PHYS-VLAN-POOL (prepare state)" waiting on "provider.aci"
+2020/06/17 09:58:36 [TRACE] dag/walk: added edge: "meta.count-boundary (EachMode fixup)" waiting on "aci_physical_domain.PhyDom"
+2020/06/17 09:58:36 [TRACE] dag/walk: added edge: "provider.aci (close)" waiting on "aci_physical_domain.PhyDom"
+2020/06/17 09:58:36 [TRACE] dag/walk: added edge: "root" waiting on "provider.aci (close)"
+2020/06/17 09:58:36 [TRACE] dag/walk: added edge: "aci_physical_domain.PhyDom" waiting on "aci_physical_domain.PhyDom (prepare state)"
+2020/06/17 09:58:36 [TRACE] dag/walk: added edge: "aci_vlan_pool.PHYS-VLAN-POOL" waiting on "aci_vlan_pool.PHYS-VLAN-POOL (prepare state)"
+2020/06/17 09:58:36 [TRACE] dag/walk: added edge: "aci_physical_domain.PhyDom (prepare state)" waiting on "provider.aci"
+2020/06/17 09:58:36 [TRACE] dag/walk: added edge: "aci_physical_domain.PhyDom" waiting on "aci_vlan_pool.PHYS-VLAN-POOL"
+2020/06/17 09:58:36 [TRACE] dag/walk: added edge: "root" waiting on "meta.count-boundary (EachMode fixup)"
+2020/06/17 09:58:36 [TRACE] dag/walk: dependencies changed for "aci_vlan_pool.PHYS-VLAN-POOL (prepare state)", sending new deps
+2020/06/17 09:58:36 [TRACE] dag/walk: dependencies changed for "meta.count-boundary (EachMode fixup)", sending new deps
+2020/06/17 09:58:36 [TRACE] dag/walk: dependencies changed for "provider.aci (close)", sending new deps
+2020/06/17 09:58:36 [TRACE] dag/walk: dependencies changed for "root", sending new deps
+2020/06/17 09:58:36 [TRACE] dag/walk: dependencies changed for "aci_physical_domain.PhyDom", sending new deps
+2020/06/17 09:58:36 [TRACE] dag/walk: dependencies changed for "aci_vlan_pool.PHYS-VLAN-POOL", sending new deps
+2020/06/17 09:58:36 [TRACE] dag/walk: dependencies changed for "aci_physical_domain.PhyDom (prepare state)", sending new deps
+2020/06/17 09:58:36 [TRACE] dag/walk: visiting "provider.aci"
+2020/06/17 09:58:36 [TRACE] vertex "provider.aci": starting visit (*terraform.NodeApplyableProvider)
+2020/06/17 09:58:36 [TRACE] vertex "provider.aci": evaluating
+2020/06/17 09:58:36 [TRACE] [walkApply] Entering eval tree: provider.aci
+2020/06/17 09:58:36 [TRACE] <root>: eval: *terraform.EvalSequence
+2020/06/17 09:58:36 [TRACE] <root>: eval: *terraform.EvalInitProvider
+2020-06-17T09:58:36.878+0530 [INFO]  plugin: configuring client automatic mTLS
+2020-06-17T09:58:36.923+0530 [DEBUG] plugin: starting plugin: path=/Users/nirav.katarmal/go/bin/terraform-provider-aci args=[/Users/nirav.katarmal/go/bin/terraform-provider-aci]
+2020-06-17T09:58:36.928+0530 [DEBUG] plugin: plugin started: path=/Users/nirav.katarmal/go/bin/terraform-provider-aci pid=26090
+2020-06-17T09:58:36.928+0530 [DEBUG] plugin: waiting for RPC address: path=/Users/nirav.katarmal/go/bin/terraform-provider-aci
+2020-06-17T09:58:36.974+0530 [INFO]  plugin.terraform-provider-aci: configuring server automatic mTLS: timestamp=2020-06-17T09:58:36.969+0530
+2020-06-17T09:58:37.021+0530 [DEBUG] plugin.terraform-provider-aci: plugin address: address=/var/folders/9r/n9wy2k4n00xgzd3vwwg2dl7572n7lr/T/plugin758871561 network=unix timestamp=2020-06-17T09:58:37.021+0530
+2020-06-17T09:58:37.021+0530 [DEBUG] plugin: using plugin: version=5
+2020/06/17 09:58:37 [TRACE] BuiltinEvalContext: Initialized "aci" provider for provider.aci
+2020/06/17 09:58:37 [TRACE] <root>: eval: terraform.EvalNoop
+2020/06/17 09:58:37 [TRACE] <root>: eval: terraform.EvalNoop
+2020/06/17 09:58:37 [TRACE] <root>: eval: *terraform.EvalOpFilter
+2020/06/17 09:58:37 [TRACE] <root>: eval: *terraform.EvalSequence
+2020/06/17 09:58:37 [TRACE] <root>: eval: *terraform.EvalGetProvider
+2020/06/17 09:58:37 [TRACE] <root>: eval: *terraform.EvalOpFilter
+2020/06/17 09:58:37 [TRACE] <root>: eval: *terraform.EvalSequence
+2020/06/17 09:58:37 [TRACE] <root>: eval: *terraform.EvalConfigProvider
+2020/06/17 09:58:37 [TRACE] buildProviderConfig for provider.aci: using explicit config only
+2020/06/17 09:58:37 [TRACE] GRPCProvider: GetSchema
+2020/06/17 09:58:37 [TRACE] GRPCProvider: Configure
+2020/06/17 09:58:37 [TRACE] [walkApply] Exiting eval tree: provider.aci
+2020/06/17 09:58:37 [TRACE] vertex "provider.aci": visit complete
+2020/06/17 09:58:37 [TRACE] dag/walk: visiting "aci_physical_domain.PhyDom (prepare state)"
+2020/06/17 09:58:37 [TRACE] vertex "aci_physical_domain.PhyDom (prepare state)": starting visit (*terraform.NodeApplyableResource)
+2020/06/17 09:58:37 [TRACE] vertex "aci_physical_domain.PhyDom (prepare state)": evaluating
+2020/06/17 09:58:37 [TRACE] dag/walk: visiting "aci_vlan_pool.PHYS-VLAN-POOL (prepare state)"
+2020/06/17 09:58:37 [TRACE] vertex "aci_vlan_pool.PHYS-VLAN-POOL (prepare state)": starting visit (*terraform.NodeApplyableResource)
+2020/06/17 09:58:37 [TRACE] [walkApply] Entering eval tree: aci_physical_domain.PhyDom (prepare state)
+2020/06/17 09:58:37 [TRACE] <root>: eval: *terraform.EvalWriteResourceState
+2020/06/17 09:58:37 [TRACE] vertex "aci_vlan_pool.PHYS-VLAN-POOL (prepare state)": evaluating
+2020/06/17 09:58:37 [TRACE] [walkApply] Exiting eval tree: aci_physical_domain.PhyDom (prepare state)
+2020/06/17 09:58:37 [TRACE] [walkApply] Entering eval tree: aci_vlan_pool.PHYS-VLAN-POOL (prepare state)
+2020/06/17 09:58:37 [TRACE] <root>: eval: *terraform.EvalWriteResourceState
+2020/06/17 09:58:37 [TRACE] vertex "aci_physical_domain.PhyDom (prepare state)": visit complete
+2020/06/17 09:58:37 [TRACE] [walkApply] Exiting eval tree: aci_vlan_pool.PHYS-VLAN-POOL (prepare state)
+2020/06/17 09:58:37 [TRACE] vertex "aci_vlan_pool.PHYS-VLAN-POOL (prepare state)": visit complete
+2020/06/17 09:58:37 [TRACE] dag/walk: visiting "aci_vlan_pool.PHYS-VLAN-POOL"
+2020/06/17 09:58:37 [TRACE] vertex "aci_vlan_pool.PHYS-VLAN-POOL": starting visit (*terraform.NodeApplyableResourceInstance)
+2020/06/17 09:58:37 [TRACE] vertex "aci_vlan_pool.PHYS-VLAN-POOL": evaluating
+2020/06/17 09:58:37 [TRACE] [walkApply] Entering eval tree: aci_vlan_pool.PHYS-VLAN-POOL
+2020/06/17 09:58:37 [TRACE] <root>: eval: *terraform.EvalSequence
+2020/06/17 09:58:37 [TRACE] <root>: eval: *terraform.EvalGetProvider
+2020/06/17 09:58:37 [TRACE] <root>: eval: *terraform.EvalReadDiff
+2020/06/17 09:58:37 [TRACE] EvalReadDiff: Read Create change from plan for aci_vlan_pool.PHYS-VLAN-POOL
+2020/06/17 09:58:37 [TRACE] <root>: eval: *terraform.EvalIf
+2020/06/17 09:58:37 [TRACE] <root>: eval: terraform.EvalNoop
+2020/06/17 09:58:37 [TRACE] <root>: eval: *terraform.EvalIf
+2020/06/17 09:58:37 [TRACE] <root>: eval: *terraform.EvalReadState
+2020/06/17 09:58:37 [TRACE] EvalReadState: reading state for aci_vlan_pool.PHYS-VLAN-POOL
+2020/06/17 09:58:37 [TRACE] EvalReadState: no state present for aci_vlan_pool.PHYS-VLAN-POOL
+2020/06/17 09:58:37 [TRACE] <root>: eval: *terraform.EvalReadDiff
+2020/06/17 09:58:37 [TRACE] EvalReadDiff: Read Create change from plan for aci_vlan_pool.PHYS-VLAN-POOL
+2020/06/17 09:58:37 [TRACE] <root>: eval: *terraform.EvalDiff
+2020/06/17 09:58:37 [TRACE] Re-validating config for "aci_vlan_pool.PHYS-VLAN-POOL"
+2020/06/17 09:58:37 [TRACE] GRPCProvider: ValidateResourceTypeConfig
+2020/06/17 09:58:37 [TRACE] GRPCProvider: PlanResourceChange
+2020/06/17 09:58:37 [TRACE] <root>: eval: *terraform.EvalCheckPlannedChange
+2020/06/17 09:58:37 [TRACE] EvalCheckPlannedChange: Verifying that actual change (action Create) matches planned change (action Create)
+2020/06/17 09:58:37 [TRACE] <root>: eval: *terraform.EvalGetProvider
+2020/06/17 09:58:37 [TRACE] <root>: eval: *terraform.EvalReadState
+2020/06/17 09:58:37 [TRACE] EvalReadState: reading state for aci_vlan_pool.PHYS-VLAN-POOL
+2020/06/17 09:58:37 [TRACE] EvalReadState: no state present for aci_vlan_pool.PHYS-VLAN-POOL
+2020/06/17 09:58:37 [TRACE] <root>: eval: *terraform.EvalReduceDiff
+2020/06/17 09:58:37 [TRACE] <root>: eval: *terraform.EvalIf
+2020/06/17 09:58:37 [TRACE] <root>: eval: terraform.EvalNoop
+2020/06/17 09:58:37 [TRACE] <root>: eval: *terraform.EvalApplyPre
+2020/06/17 09:58:37 [TRACE] <root>: eval: *terraform.EvalApply
+2020/06/17 09:58:37 [DEBUG] aci_vlan_pool.PHYS-VLAN-POOL: applying the planned Create change
+2020/06/17 09:58:37 [TRACE] GRPCProvider: ApplyResourceChange
+2020-06-17T09:58:37.150+0530 [DEBUG] plugin.terraform-provider-aci: 2020/06/17 09:58:37 [DEBUG] VLANPool: Beginning Creation
+2020-06-17T09:58:37.150+0530 [DEBUG] plugin.terraform-provider-aci: 2020/06/17 09:58:37 HTTP request POST /api/node/mo.json &{POST https://192.168.10.102/api/node/mo.json HTTP/1.1 1 1 map[] {{"fvnsVlanInstP":{"attributes":{"dn":"uni/infra/vlanns-[PHYS-VLAN-POOL]-static","status":"created, modified"}}}} 0x1368570 111 [] false 192.168.10.102 map[] map[] <nil> map[]   <nil> <nil> <nil> 0xc0000c0008}
+2020-06-17T09:58:37.150+0530 [DEBUG] plugin.terraform-provider-aci: 2020/06/17 09:58:37 [DEBUG] Begin Injection
+2020-06-17T09:58:37.150+0530 [DEBUG] plugin.terraform-provider-aci: 2020/06/17 09:58:37 HTTP request POST /api/aaaLogin.json &{POST https://192.168.10.102/api/aaaLogin.json HTTP/1.1 1 1 map[] {{"aaaUser":{"attributes":{"name":"admin","pwd":"cisco123"}}}} 0x1368570 60 [] false 192.168.10.102 map[] map[] <nil> map[]   <nil> <nil> <nil> 0xc0000c0008}
+2020-06-17T09:58:37.150+0530 [DEBUG] plugin.terraform-provider-aci: 2020/06/17 09:58:37 HTTP request after injection POST /api/aaaLogin.json &{POST https://192.168.10.102/api/aaaLogin.json HTTP/1.1 1 1 map[] {{"aaaUser":{"attributes":{"name":"admin","pwd":"cisco123"}}}} 0x1368570 60 [] false 192.168.10.102 map[] map[] <nil> map[]   <nil> <nil> <nil> 0xc0000c0008}
+2020-06-17T09:58:37.151+0530 [DEBUG] plugin.terraform-provider-aci: 2020/06/17 09:58:37 [DEBUG] Begining DO method https://192.168.10.102/api/aaaLogin.json
+2020-06-17T09:58:37.343+0530 [DEBUG] plugin.terraform-provider-aci: 2020/06/17 09:58:37 
+2020-06-17T09:58:37.343+0530 [DEBUG] plugin.terraform-provider-aci: 
+2020-06-17T09:58:37.343+0530 [DEBUG] plugin.terraform-provider-aci: 
+2020-06-17T09:58:37.343+0530 [DEBUG] plugin.terraform-provider-aci:  HTTP request: {}
+2020-06-17T09:58:37.343+0530 [DEBUG] plugin.terraform-provider-aci: 2020/06/17 09:58:37 
+2020-06-17T09:58:37.343+0530 [DEBUG] plugin.terraform-provider-aci: HTTP Request: POST https://192.168.10.102/api/aaaLogin.json
+2020-06-17T09:58:37.343+0530 [DEBUG] plugin.terraform-provider-aci: 2020/06/17 09:58:37 nHTTP Response: 200 200 OK &{200 OK 200 HTTP/1.1 1 1 map[Access-Control-Allow-Credentials:[false] Access-Control-Allow-Headers:[Origin, X-Requested-With, Content-Type, Accept, devcookie, APIC-challenge] Access-Control-Allow-Methods:[POST,GET,OPTIONS,DELETE] Access-Control-Allow-Origin:[http://127.0.0.1:8000] Cache-Control:[no-cache="Set-Cookie, Set-Cookie2"] Client-Cert-Enabled:[false] Connection:[keep-alive] Content-Length:[1306] Content-Type:[application/json] Date:[Tue, 16 Jun 2020 19:55:57 GMT] Server:[Cisco APIC] Set-Cookie:[APIC-cookie=rP8AAAAAAAAAAAAAAAAAAOUiXDKCb2Vzv1Am+ITqKDo0EbKVqwfk1rwWd9amdbHPohRAt4/CCxoY/UreHUPMNsFZitgqfYkug2UgY62o+pkf2VbYav7cROfO5ZHYCWsEZ1HqkkkLV0h9EXdgA7mVF6l/lsB3gTCL4o0RZ5+/55LvIKG6o0ox0G7O3BYJJevC80fJMxWL9PztQvUtAfj5ug==; path=/; HttpOnly; HttpOnly; Secure] Strict-Transport-Security:[max-age=31536000; includeSubdomains] X-Frame-Options:[SAMEORIGIN]] 0xc0002ca040 1306 [] false false map[] 0xc00026c300 0xc0000d6a50}
+2020-06-17T09:58:37.343+0530 [DEBUG] plugin.terraform-provider-aci: 2020/06/17 09:58:37 
+2020-06-17T09:58:37.343+0530 [DEBUG] plugin.terraform-provider-aci:  HTTP response unique string POST https://192.168.10.102/api/aaaLogin.json {"totalCount":"1","imdata":[{"aaaLogin":{"attributes":{"token":"rP8AAAAAAAAAAAAAAAAAAOUiXDKCb2Vzv1Am+ITqKDo0EbKVqwfk1rwWd9amdbHPohRAt4/CCxoY/UreHUPMNsFZitgqfYkug2UgY62o+pkf2VbYav7cROfO5ZHYCWsEZ1HqkkkLV0h9EXdgA7mVF6l/lsB3gTCL4o0RZ5+/55LvIKG6o0ox0G7O3BYJJevC80fJMxWL9PztQvUtAfj5ug==","siteFingerprint":"H/z+xNkFig7cF38p","refreshTimeoutSeconds":"600","maximumLifetimeSeconds":"86400","guiIdleTimeoutSeconds":"1200","restTimeoutSeconds":"90","creationTime":"1592337357","firstLoginTime":"1592337357","userName":"admin","remoteUser":"false","unixUserId":"15374","sessionId":"PK2aE/VnTrm1lJ1xCZ6CyA==","lastName":"","firstName":"","changePassword":"no","version":"4.0(2c)","buildTime":"Sun Dec 16 18:59:20 PST 2018","node":"topology/pod-1/node-1"},"children":[{"aaaUserDomain":{"attributes":{"name":"all","rolesR":"admin","rolesW":"admin"},"children":[{"aaaReadRoles":{"attributes":{}}},{"aaaWriteRoles":{"attributes":{},"children":[{"role":{"attributes":{"name":"admin"}}}]}}]}},{"DnDomainMapEntry":{"attributes":{"dn":"uni/tn-infra","readPrivileges":"admin","writePrivileges":"admin"}}},{"DnDomainMapEntry":{"attributes":{"dn":"uni/tn-mgmt","readPrivileges":"admin","writePrivileges":"admin"}}},{"DnDomainMapEntry":{"attributes":{"dn":"uni/tn-common","readPrivileges":"admin","writePrivileges":"admin"}}}]}}]}
+2020-06-17T09:58:37.343+0530 [DEBUG] plugin.terraform-provider-aci: 2020/06/17 09:58:37 [DEBUG] Exit from do method
+2020-06-17T09:58:37.343+0530 [DEBUG] plugin.terraform-provider-aci: 2020/06/17 09:58:37 HTTP request after injection POST /api/node/mo.json &{POST https://192.168.10.102/api/node/mo.json HTTP/1.1 1 1 map[Cookie:[APIC-Cookie=rP8AAAAAAAAAAAAAAAAAAOUiXDKCb2Vzv1Am+ITqKDo0EbKVqwfk1rwWd9amdbHPohRAt4/CCxoY/UreHUPMNsFZitgqfYkug2UgY62o+pkf2VbYav7cROfO5ZHYCWsEZ1HqkkkLV0h9EXdgA7mVF6l/lsB3gTCL4o0RZ5+/55LvIKG6o0ox0G7O3BYJJevC80fJMxWL9PztQvUtAfj5ug==]] {{"fvnsVlanInstP":{"attributes":{"dn":"uni/infra/vlanns-[PHYS-VLAN-POOL]-static","status":"created, modified"}}}} 0x1368570 111 [] false 192.168.10.102 map[] map[] <nil> map[]   <nil> <nil> <nil> 0xc0000c0008}
+2020-06-17T09:58:37.343+0530 [DEBUG] plugin.terraform-provider-aci: 2020/06/17 09:58:37 [DEBUG] Begining DO method https://192.168.10.102/api/node/mo.json
+2020-06-17T09:58:37.483+0530 [DEBUG] plugin.terraform-provider-aci: 2020/06/17 09:58:37 
+2020-06-17T09:58:37.483+0530 [DEBUG] plugin.terraform-provider-aci: 
+2020-06-17T09:58:37.483+0530 [DEBUG] plugin.terraform-provider-aci: 
+2020-06-17T09:58:37.483+0530 [DEBUG] plugin.terraform-provider-aci:  HTTP request: {}
+2020-06-17T09:58:37.483+0530 [DEBUG] plugin.terraform-provider-aci: 2020/06/17 09:58:37 
+2020-06-17T09:58:37.483+0530 [DEBUG] plugin.terraform-provider-aci: HTTP Request: POST https://192.168.10.102/api/node/mo.json
+2020-06-17T09:58:37.483+0530 [DEBUG] plugin.terraform-provider-aci: 2020/06/17 09:58:37 nHTTP Response: 200 200 OK &{200 OK 200 HTTP/1.1 1 1 map[Access-Control-Allow-Credentials:[false] Access-Control-Allow-Headers:[Origin, X-Requested-With, Content-Type, Accept, devcookie, APIC-challenge] Access-Control-Allow-Methods:[POST,GET,OPTIONS,DELETE] Access-Control-Allow-Origin:[http://127.0.0.1:8000] Cache-Control:[no-cache="Set-Cookie, Set-Cookie2"] Client-Cert-Enabled:[false] Connection:[keep-alive] Content-Length:[30] Content-Type:[application/json] Date:[Tue, 16 Jun 2020 19:55:57 GMT] Server:[Cisco APIC] Strict-Transport-Security:[max-age=31536000; includeSubdomains] X-Frame-Options:[SAMEORIGIN]] 0xc0000a64c0 30 [] false false map[] 0xc00026c100 0xc0000d6a50}
+2020-06-17T09:58:37.483+0530 [DEBUG] plugin.terraform-provider-aci: 2020/06/17 09:58:37 
+2020-06-17T09:58:37.483+0530 [DEBUG] plugin.terraform-provider-aci:  HTTP response unique string POST https://192.168.10.102/api/node/mo.json {"totalCount":"0","imdata":[]}
+2020-06-17T09:58:37.483+0530 [DEBUG] plugin.terraform-provider-aci: 2020/06/17 09:58:37 [DEBUG] Exit from do method
+2020-06-17T09:58:37.484+0530 [DEBUG] plugin.terraform-provider-aci: 2020/06/17 09:58:37 [DEBUG] Exit from errors {"imdata":[],"totalCount":"0"}
+2020-06-17T09:58:37.484+0530 [DEBUG] plugin.terraform-provider-aci: 2020/06/17 09:58:37 [DEBUG] uni/infra/vlanns-[PHYS-VLAN-POOL]-static: Creation finished successfully
+2020-06-17T09:58:37.484+0530 [DEBUG] plugin.terraform-provider-aci: 2020/06/17 09:58:37 [DEBUG] uni/infra/vlanns-[PHYS-VLAN-POOL]-static: Beginning Read
+2020-06-17T09:58:37.484+0530 [DEBUG] plugin.terraform-provider-aci: 2020/06/17 09:58:37 HTTP request GET /api/node/mo/uni/infra/vlanns-[PHYS-VLAN-POOL]-static.json &{GET https://192.168.10.102/api/node/mo/uni/infra/vlanns-[PHYS-VLAN-POOL]-static.json HTTP/1.1 1 1 map[] <nil> <nil> 0 [] false 192.168.10.102 map[] map[] <nil> map[]   <nil> <nil> <nil> 0xc0000c0008}
+2020-06-17T09:58:37.484+0530 [DEBUG] plugin.terraform-provider-aci: 2020/06/17 09:58:37 [DEBUG] Begin Injection
+2020-06-17T09:58:37.484+0530 [DEBUG] plugin.terraform-provider-aci: 2020/06/17 09:58:37 HTTP request after injection GET /api/node/mo/uni/infra/vlanns-[PHYS-VLAN-POOL]-static.json &{GET https://192.168.10.102/api/node/mo/uni/infra/vlanns-[PHYS-VLAN-POOL]-static.json HTTP/1.1 1 1 map[Cookie:[APIC-Cookie=rP8AAAAAAAAAAAAAAAAAAOUiXDKCb2Vzv1Am+ITqKDo0EbKVqwfk1rwWd9amdbHPohRAt4/CCxoY/UreHUPMNsFZitgqfYkug2UgY62o+pkf2VbYav7cROfO5ZHYCWsEZ1HqkkkLV0h9EXdgA7mVF6l/lsB3gTCL4o0RZ5+/55LvIKG6o0ox0G7O3BYJJevC80fJMxWL9PztQvUtAfj5ug==]] <nil> <nil> 0 [] false 192.168.10.102 map[] map[] <nil> map[]   <nil> <nil> <nil> 0xc0000c0008}
+2020-06-17T09:58:37.484+0530 [DEBUG] plugin.terraform-provider-aci: 2020/06/17 09:58:37 [DEBUG] Begining DO method https://192.168.10.102/api/node/mo/uni/infra/vlanns-[PHYS-VLAN-POOL]-static.json
+2020-06-17T09:58:37.519+0530 [DEBUG] plugin.terraform-provider-aci: 2020/06/17 09:58:37 
+2020-06-17T09:58:37.519+0530 [DEBUG] plugin.terraform-provider-aci: 
+2020-06-17T09:58:37.519+0530 [DEBUG] plugin.terraform-provider-aci: 
+2020-06-17T09:58:37.519+0530 [DEBUG] plugin.terraform-provider-aci:  HTTP request: <nil>
+2020-06-17T09:58:37.519+0530 [DEBUG] plugin.terraform-provider-aci: 2020/06/17 09:58:37 
+2020-06-17T09:58:37.519+0530 [DEBUG] plugin.terraform-provider-aci: HTTP Request: GET https://192.168.10.102/api/node/mo/uni/infra/vlanns-[PHYS-VLAN-POOL]-static.json
+2020-06-17T09:58:37.519+0530 [DEBUG] plugin.terraform-provider-aci: 2020/06/17 09:58:37 nHTTP Response: 200 200 OK &{200 OK 200 HTTP/1.1 1 1 map[Access-Control-Allow-Credentials:[false] Access-Control-Allow-Headers:[Origin, X-Requested-With, Content-Type, Accept, devcookie, APIC-challenge] Access-Control-Allow-Methods:[POST,GET,OPTIONS,DELETE] Access-Control-Allow-Origin:[http://127.0.0.1:8000] Cache-Control:[no-cache="Set-Cookie, Set-Cookie2"] Client-Cert-Enabled:[false] Connection:[keep-alive] Content-Length:[414] Content-Type:[application/json] Date:[Tue, 16 Jun 2020 19:55:57 GMT] Server:[Cisco APIC] Strict-Transport-Security:[max-age=31536000; includeSubdomains] X-Frame-Options:[SAMEORIGIN]] 0xc0002ca0c0 414 [] false false map[] 0xc00026c400 0xc0000d6a50}
+2020-06-17T09:58:37.519+0530 [DEBUG] plugin.terraform-provider-aci: 2020/06/17 09:58:37 
+2020-06-17T09:58:37.519+0530 [DEBUG] plugin.terraform-provider-aci:  HTTP response unique string GET https://192.168.10.102/api/node/mo/uni/infra/vlanns-[PHYS-VLAN-POOL]-static.json {"totalCount":"1","imdata":[{"fvnsVlanInstP":{"attributes":{"allocMode":"static","annotation":"","childAction":"","configIssues":"missing-encapblk","descr":"","dn":"uni/infra/vlanns-[PHYS-VLAN-POOL]-static","extMngdBy":"","lcOwn":"local","modTs":"2020-06-16T19:55:57.099+00:00","monPolDn":"uni/fabric/monfab-default","name":"PHYS-VLAN-POOL","nameAlias":"","ownerKey":"","ownerTag":"","status":"","uid":"15374"}}}]}
+2020-06-17T09:58:37.519+0530 [DEBUG] plugin.terraform-provider-aci: 2020/06/17 09:58:37 [DEBUG] Exit from do method
+2020-06-17T09:58:37.519+0530 [DEBUG] plugin.terraform-provider-aci: 2020/06/17 09:58:37 [DEBUG] Exit from GET /api/node/mo/uni/infra/vlanns-[PHYS-VLAN-POOL]-static.json
+2020-06-17T09:58:37.519+0530 [DEBUG] plugin.terraform-provider-aci: 2020/06/17 09:58:37 [DEBUG] Exit from errors {"imdata":[{"fvnsVlanInstP":{"attributes":{"allocMode":"static","annotation":"","childAction":"","configIssues":"missing-encapblk","descr":"","dn":"uni/infra/vlanns-[PHYS-VLAN-POOL]-static","extMngdBy":"","lcOwn":"local","modTs":"2020-06-16T19:55:57.099+00:00","monPolDn":"uni/fabric/monfab-default","name":"PHYS-VLAN-POOL","nameAlias":"","ownerKey":"","ownerTag":"","status":"","uid":"15374"}}}],"totalCount":"1"}
+2020-06-17T09:58:37.519+0530 [DEBUG] plugin.terraform-provider-aci: 2020/06/17 09:58:37 [DEBUG] uni/infra/vlanns-[PHYS-VLAN-POOL]-static: Read finished successfully
+2020/06/17 09:58:37 [TRACE] <root>: eval: *terraform.EvalMaybeTainted
+2020/06/17 09:58:37 [TRACE] <root>: eval: *terraform.EvalWriteState
+2020/06/17 09:58:37 [TRACE] EvalWriteState: recording 0 dependencies for aci_vlan_pool.PHYS-VLAN-POOL
+2020/06/17 09:58:37 [TRACE] EvalWriteState: writing current state object for aci_vlan_pool.PHYS-VLAN-POOL
+2020/06/17 09:58:37 [TRACE] <root>: eval: *terraform.EvalApplyProvisioners
+2020/06/17 09:58:37 [TRACE] <root>: eval: *terraform.EvalMaybeTainted
+2020/06/17 09:58:37 [TRACE] <root>: eval: *terraform.EvalWriteState
+2020/06/17 09:58:37 [TRACE] EvalWriteState: recording 0 dependencies for aci_vlan_pool.PHYS-VLAN-POOL
+2020/06/17 09:58:37 [TRACE] EvalWriteState: writing current state object for aci_vlan_pool.PHYS-VLAN-POOL
+2020/06/17 09:58:37 [TRACE] <root>: eval: *terraform.EvalIf
+2020/06/17 09:58:37 [TRACE] <root>: eval: *terraform.EvalIf
+2020/06/17 09:58:37 [TRACE] <root>: eval: *terraform.EvalWriteDiff
+2020/06/17 09:58:37 [TRACE] <root>: eval: *terraform.EvalApplyPost
+2020/06/17 09:58:37 [TRACE] <root>: eval: *terraform.EvalUpdateStateHook
+2020/06/17 09:58:37 [TRACE] statemgr.Filesystem: creating backup snapshot at terraform.tfstate.backup
+2020/06/17 09:58:37 [TRACE] statemgr.Filesystem: state has changed since last snapshot, so incrementing serial to 7
+2020/06/17 09:58:37 [TRACE] statemgr.Filesystem: writing snapshot at terraform.tfstate
+2020/06/17 09:58:37 [TRACE] [walkApply] Exiting eval tree: aci_vlan_pool.PHYS-VLAN-POOL
+2020/06/17 09:58:37 [TRACE] vertex "aci_vlan_pool.PHYS-VLAN-POOL": visit complete
+2020/06/17 09:58:37 [TRACE] dag/walk: visiting "aci_physical_domain.PhyDom"
+2020/06/17 09:58:37 [TRACE] vertex "aci_physical_domain.PhyDom": starting visit (*terraform.NodeApplyableResourceInstance)
+2020/06/17 09:58:37 [TRACE] vertex "aci_physical_domain.PhyDom": evaluating
+2020/06/17 09:58:37 [TRACE] [walkApply] Entering eval tree: aci_physical_domain.PhyDom
+2020/06/17 09:58:37 [TRACE] <root>: eval: *terraform.EvalSequence
+2020/06/17 09:58:37 [TRACE] <root>: eval: *terraform.EvalGetProvider
+2020/06/17 09:58:37 [TRACE] <root>: eval: *terraform.EvalReadDiff
+2020/06/17 09:58:37 [TRACE] EvalReadDiff: Read Create change from plan for aci_physical_domain.PhyDom
+2020/06/17 09:58:37 [TRACE] <root>: eval: *terraform.EvalIf
+2020/06/17 09:58:37 [TRACE] <root>: eval: terraform.EvalNoop
+2020/06/17 09:58:37 [TRACE] <root>: eval: *terraform.EvalIf
+2020/06/17 09:58:37 [TRACE] <root>: eval: *terraform.EvalReadState
+2020/06/17 09:58:37 [TRACE] EvalReadState: reading state for aci_physical_domain.PhyDom
+2020/06/17 09:58:37 [TRACE] EvalReadState: no state present for aci_physical_domain.PhyDom
+2020/06/17 09:58:37 [TRACE] <root>: eval: *terraform.EvalReadDiff
+2020/06/17 09:58:37 [TRACE] EvalReadDiff: Read Create change from plan for aci_physical_domain.PhyDom
+2020/06/17 09:58:37 [TRACE] <root>: eval: *terraform.EvalDiff
+2020/06/17 09:58:37 [TRACE] Re-validating config for "aci_physical_domain.PhyDom"
+2020/06/17 09:58:37 [TRACE] GRPCProvider: ValidateResourceTypeConfig
+2020/06/17 09:58:37 [TRACE] GRPCProvider: PlanResourceChange
+2020/06/17 09:58:37 [TRACE] <root>: eval: *terraform.EvalCheckPlannedChange
+2020/06/17 09:58:37 [TRACE] EvalCheckPlannedChange: Verifying that actual change (action Create) matches planned change (action Create)
+2020/06/17 09:58:37 [TRACE] <root>: eval: *terraform.EvalGetProvider
+2020/06/17 09:58:37 [TRACE] <root>: eval: *terraform.EvalReadState
+2020/06/17 09:58:37 [TRACE] EvalReadState: reading state for aci_physical_domain.PhyDom
+2020/06/17 09:58:37 [TRACE] EvalReadState: no state present for aci_physical_domain.PhyDom
+2020/06/17 09:58:37 [TRACE] <root>: eval: *terraform.EvalReduceDiff
+2020/06/17 09:58:37 [TRACE] <root>: eval: *terraform.EvalIf
+2020/06/17 09:58:37 [TRACE] <root>: eval: terraform.EvalNoop
+2020/06/17 09:58:37 [TRACE] <root>: eval: *terraform.EvalApplyPre
+2020/06/17 09:58:37 [TRACE] <root>: eval: *terraform.EvalApply
+2020/06/17 09:58:37 [DEBUG] aci_physical_domain.PhyDom: applying the planned Create change
+2020/06/17 09:58:37 [TRACE] GRPCProvider: ApplyResourceChange
+2020-06-17T09:58:37.545+0530 [DEBUG] plugin.terraform-provider-aci: 2020/06/17 09:58:37 [DEBUG] PhysicalDomain: Beginning Creation
+2020-06-17T09:58:37.545+0530 [DEBUG] plugin.terraform-provider-aci: 2020/06/17 09:58:37 HTTP request POST /api/node/mo.json &{POST https://192.168.10.102/api/node/mo.json HTTP/1.1 1 1 map[] {{"physDomP":{"attributes":{"dn":"uni/phys-PhyDom","rn":"phys-PhyDom","status":"created, modified"}}}} 0x1368570 100 [] false 192.168.10.102 map[] map[] <nil> map[]   <nil> <nil> <nil> 0xc0000c0008}
+2020-06-17T09:58:37.545+0530 [DEBUG] plugin.terraform-provider-aci: 2020/06/17 09:58:37 [DEBUG] Begin Injection
+2020-06-17T09:58:37.545+0530 [DEBUG] plugin.terraform-provider-aci: 2020/06/17 09:58:37 HTTP request after injection POST /api/node/mo.json &{POST https://192.168.10.102/api/node/mo.json HTTP/1.1 1 1 map[Cookie:[APIC-Cookie=rP8AAAAAAAAAAAAAAAAAAOUiXDKCb2Vzv1Am+ITqKDo0EbKVqwfk1rwWd9amdbHPohRAt4/CCxoY/UreHUPMNsFZitgqfYkug2UgY62o+pkf2VbYav7cROfO5ZHYCWsEZ1HqkkkLV0h9EXdgA7mVF6l/lsB3gTCL4o0RZ5+/55LvIKG6o0ox0G7O3BYJJevC80fJMxWL9PztQvUtAfj5ug==]] {{"physDomP":{"attributes":{"dn":"uni/phys-PhyDom","rn":"phys-PhyDom","status":"created, modified"}}}} 0x1368570 100 [] false 192.168.10.102 map[] map[] <nil> map[]   <nil> <nil> <nil> 0xc0000c0008}
+2020-06-17T09:58:37.545+0530 [DEBUG] plugin.terraform-provider-aci: 2020/06/17 09:58:37 [DEBUG] Begining DO method https://192.168.10.102/api/node/mo.json
+2020-06-17T09:58:37.648+0530 [DEBUG] plugin.terraform-provider-aci: 2020/06/17 09:58:37 
+2020-06-17T09:58:37.648+0530 [DEBUG] plugin.terraform-provider-aci: 
+2020-06-17T09:58:37.648+0530 [DEBUG] plugin.terraform-provider-aci: 
+2020-06-17T09:58:37.648+0530 [DEBUG] plugin.terraform-provider-aci:  HTTP request: {}
+2020-06-17T09:58:37.648+0530 [DEBUG] plugin.terraform-provider-aci: 2020/06/17 09:58:37 
+2020-06-17T09:58:37.648+0530 [DEBUG] plugin.terraform-provider-aci: HTTP Request: POST https://192.168.10.102/api/node/mo.json
+2020-06-17T09:58:37.648+0530 [DEBUG] plugin.terraform-provider-aci: 2020/06/17 09:58:37 nHTTP Response: 200 200 OK &{200 OK 200 HTTP/1.1 1 1 map[Access-Control-Allow-Credentials:[false] Access-Control-Allow-Headers:[Origin, X-Requested-With, Content-Type, Accept, devcookie, APIC-challenge] Access-Control-Allow-Methods:[POST,GET,OPTIONS,DELETE] Access-Control-Allow-Origin:[http://127.0.0.1:8000] Cache-Control:[no-cache="Set-Cookie, Set-Cookie2"] Client-Cert-Enabled:[false] Connection:[keep-alive] Content-Length:[30] Content-Type:[application/json] Date:[Tue, 16 Jun 2020 19:55:57 GMT] Server:[Cisco APIC] Strict-Transport-Security:[max-age=31536000; includeSubdomains] X-Frame-Options:[SAMEORIGIN]] 0xc0000a79c0 30 [] false false map[] 0xc00014c700 0xc0000d6a50}
+2020-06-17T09:58:37.648+0530 [DEBUG] plugin.terraform-provider-aci: 2020/06/17 09:58:37 
+2020-06-17T09:58:37.648+0530 [DEBUG] plugin.terraform-provider-aci:  HTTP response unique string POST https://192.168.10.102/api/node/mo.json {"totalCount":"0","imdata":[]}
+2020-06-17T09:58:37.648+0530 [DEBUG] plugin.terraform-provider-aci: 2020/06/17 09:58:37 [DEBUG] Exit from do method
+2020-06-17T09:58:37.648+0530 [DEBUG] plugin.terraform-provider-aci: 2020/06/17 09:58:37 [DEBUG] Exit from errors {"imdata":[],"totalCount":"0"}
+2020-06-17T09:58:37.648+0530 [DEBUG] plugin.terraform-provider-aci: 2020/06/17 09:58:37 HTTP request POST /api/node/mo.json &{POST https://192.168.10.102/api/node/mo.json HTTP/1.1 1 1 map[] {{"infraRsVlanNs":{"attributes":{"dn":"uni/phys-PhyDom/rsvlanNs","tDn":"[PHYS-VLAN-POOL]-static"}}}} 0x1368570 98 [] false 192.168.10.102 map[] map[] <nil> map[]   <nil> <nil> <nil> 0xc0000c0008}
+2020-06-17T09:58:37.648+0530 [DEBUG] plugin.terraform-provider-aci: 2020/06/17 09:58:37 [DEBUG] Begin Injection
+2020-06-17T09:58:37.648+0530 [DEBUG] plugin.terraform-provider-aci: 2020/06/17 09:58:37 HTTP request after injection POST /api/node/mo.json &{POST https://192.168.10.102/api/node/mo.json HTTP/1.1 1 1 map[Cookie:[APIC-Cookie=rP8AAAAAAAAAAAAAAAAAAOUiXDKCb2Vzv1Am+ITqKDo0EbKVqwfk1rwWd9amdbHPohRAt4/CCxoY/UreHUPMNsFZitgqfYkug2UgY62o+pkf2VbYav7cROfO5ZHYCWsEZ1HqkkkLV0h9EXdgA7mVF6l/lsB3gTCL4o0RZ5+/55LvIKG6o0ox0G7O3BYJJevC80fJMxWL9PztQvUtAfj5ug==]] {{"infraRsVlanNs":{"attributes":{"dn":"uni/phys-PhyDom/rsvlanNs","tDn":"[PHYS-VLAN-POOL]-static"}}}} 0x1368570 98 [] false 192.168.10.102 map[] map[] <nil> map[]   <nil> <nil> <nil> 0xc0000c0008}
+2020-06-17T09:58:37.648+0530 [DEBUG] plugin.terraform-provider-aci: 2020/06/17 09:58:37 [DEBUG] Begining DO method https://192.168.10.102/api/node/mo.json
+2020-06-17T09:58:37.697+0530 [DEBUG] plugin.terraform-provider-aci: 2020/06/17 09:58:37 
+2020-06-17T09:58:37.697+0530 [DEBUG] plugin.terraform-provider-aci: 
+2020-06-17T09:58:37.697+0530 [DEBUG] plugin.terraform-provider-aci: 
+2020-06-17T09:58:37.697+0530 [DEBUG] plugin.terraform-provider-aci:  HTTP request: {}
+2020-06-17T09:58:37.697+0530 [DEBUG] plugin.terraform-provider-aci: 2020/06/17 09:58:37 
+2020-06-17T09:58:37.697+0530 [DEBUG] plugin.terraform-provider-aci: HTTP Request: POST https://192.168.10.102/api/node/mo.json
+2020-06-17T09:58:37.697+0530 [DEBUG] plugin.terraform-provider-aci: 2020/06/17 09:58:37 nHTTP Response: 400 400 Bad Request &{400 Bad Request 400 HTTP/1.1 1 1 map[Connection:[keep-alive] Content-Length:[197] Content-Type:[application/json] Date:[Tue, 16 Jun 2020 19:55:57 GMT] Server:[Cisco APIC]] 0xc0001682c0 197 [] false false map[] 0xc0001ce000 0xc0000d6a50}
+2020-06-17T09:58:37.697+0530 [DEBUG] plugin.terraform-provider-aci: 2020/06/17 09:58:37 
+2020-06-17T09:58:37.697+0530 [DEBUG] plugin.terraform-provider-aci:  HTTP response unique string POST https://192.168.10.102/api/node/mo.json {"totalCount":"1","imdata":[{"error":{"attributes":{"code":"120","text":"unknown property value [PHYS-VLAN-POOL]-static, name tDn, class infraRsVlanNs [(Dn0)] Dn0=uni\/phys-PhyDom\/rsvlanNs, "}}}]}
+2020-06-17T09:58:37.697+0530 [DEBUG] plugin.terraform-provider-aci: 2020/06/17 09:58:37 [DEBUG] Exit from do method
+2020-06-17T09:58:37.697+0530 [DEBUG] plugin.terraform-provider-aci: 2020/06/17 09:58:37 [DEBUG] uni/phys-PhyDom: Creation finished successfully
+2020-06-17T09:58:37.697+0530 [DEBUG] plugin.terraform-provider-aci: 2020/06/17 09:58:37 [DEBUG] uni/phys-PhyDom: Beginning Read
+2020-06-17T09:58:37.697+0530 [DEBUG] plugin.terraform-provider-aci: 2020/06/17 09:58:37 HTTP request GET /api/node/mo/uni/phys-PhyDom.json &{GET https://192.168.10.102/api/node/mo/uni/phys-PhyDom.json HTTP/1.1 1 1 map[] <nil> <nil> 0 [] false 192.168.10.102 map[] map[] <nil> map[]   <nil> <nil> <nil> 0xc0000c0008}
+2020-06-17T09:58:37.697+0530 [DEBUG] plugin.terraform-provider-aci: 2020/06/17 09:58:37 [DEBUG] Begin Injection
+2020-06-17T09:58:37.697+0530 [DEBUG] plugin.terraform-provider-aci: 2020/06/17 09:58:37 HTTP request after injection GET /api/node/mo/uni/phys-PhyDom.json &{GET https://192.168.10.102/api/node/mo/uni/phys-PhyDom.json HTTP/1.1 1 1 map[Cookie:[APIC-Cookie=rP8AAAAAAAAAAAAAAAAAAOUiXDKCb2Vzv1Am+ITqKDo0EbKVqwfk1rwWd9amdbHPohRAt4/CCxoY/UreHUPMNsFZitgqfYkug2UgY62o+pkf2VbYav7cROfO5ZHYCWsEZ1HqkkkLV0h9EXdgA7mVF6l/lsB3gTCL4o0RZ5+/55LvIKG6o0ox0G7O3BYJJevC80fJMxWL9PztQvUtAfj5ug==]] <nil> <nil> 0 [] false 192.168.10.102 map[] map[] <nil> map[]   <nil> <nil> <nil> 0xc0000c0008}
+2020-06-17T09:58:37.697+0530 [DEBUG] plugin.terraform-provider-aci: 2020/06/17 09:58:37 [DEBUG] Begining DO method https://192.168.10.102/api/node/mo/uni/phys-PhyDom.json
+2020-06-17T09:58:37.734+0530 [DEBUG] plugin.terraform-provider-aci: 2020/06/17 09:58:37 
+2020-06-17T09:58:37.734+0530 [DEBUG] plugin.terraform-provider-aci: 
+2020-06-17T09:58:37.734+0530 [DEBUG] plugin.terraform-provider-aci: 
+2020-06-17T09:58:37.734+0530 [DEBUG] plugin.terraform-provider-aci:  HTTP request: <nil>
+2020-06-17T09:58:37.734+0530 [DEBUG] plugin.terraform-provider-aci: 2020/06/17 09:58:37 
+2020-06-17T09:58:37.734+0530 [DEBUG] plugin.terraform-provider-aci: HTTP Request: GET https://192.168.10.102/api/node/mo/uni/phys-PhyDom.json
+2020-06-17T09:58:37.734+0530 [DEBUG] plugin.terraform-provider-aci: 2020/06/17 09:58:37 nHTTP Response: 200 200 OK &{200 OK 200 HTTP/1.1 1 1 map[Access-Control-Allow-Credentials:[false] Access-Control-Allow-Headers:[Origin, X-Requested-With, Content-Type, Accept, devcookie, APIC-challenge] Access-Control-Allow-Methods:[POST,GET,OPTIONS,DELETE] Access-Control-Allow-Origin:[http://127.0.0.1:8000] Cache-Control:[no-cache="Set-Cookie, Set-Cookie2"] Client-Cert-Enabled:[false] Connection:[keep-alive] Content-Length:[328] Content-Type:[application/json] Date:[Tue, 16 Jun 2020 19:55:57 GMT] Server:[Cisco APIC] Strict-Transport-Security:[max-age=31536000; includeSubdomains] X-Frame-Options:[SAMEORIGIN]] 0xc0000a7b80 328 [] false false map[] 0xc0001ce300 0xc0000d6a50}
+2020-06-17T09:58:37.734+0530 [DEBUG] plugin.terraform-provider-aci: 2020/06/17 09:58:37 
+2020-06-17T09:58:37.734+0530 [DEBUG] plugin.terraform-provider-aci:  HTTP response unique string GET https://192.168.10.102/api/node/mo/uni/phys-PhyDom.json {"totalCount":"1","imdata":[{"physDomP":{"attributes":{"annotation":"","childAction":"","configIssues":"","dn":"uni/phys-PhyDom","extMngdBy":"","lcOwn":"local","modTs":"2020-06-16T19:55:57.305+00:00","monPolDn":"uni/fabric/monfab-default","name":"PhyDom","nameAlias":"","ownerKey":"","ownerTag":"","status":"","uid":"15374"}}}]}
+2020-06-17T09:58:37.734+0530 [DEBUG] plugin.terraform-provider-aci: 2020/06/17 09:58:37 [DEBUG] Exit from do method
+2020-06-17T09:58:37.734+0530 [DEBUG] plugin.terraform-provider-aci: 2020/06/17 09:58:37 [DEBUG] Exit from GET /api/node/mo/uni/phys-PhyDom.json
+2020-06-17T09:58:37.734+0530 [DEBUG] plugin.terraform-provider-aci: 2020/06/17 09:58:37 [DEBUG] Exit from errors {"imdata":[{"physDomP":{"attributes":{"annotation":"","childAction":"","configIssues":"","dn":"uni/phys-PhyDom","extMngdBy":"","lcOwn":"local","modTs":"2020-06-16T19:55:57.305+00:00","monPolDn":"uni/fabric/monfab-default","name":"PhyDom","nameAlias":"","ownerKey":"","ownerTag":"","status":"","uid":"15374"}}}],"totalCount":"1"}
+2020-06-17T09:58:37.734+0530 [DEBUG] plugin.terraform-provider-aci: 2020/06/17 09:58:37 HTTP request GET /api/node/class/uni/phys-PhyDom/infraRsVlanNs.json &{GET https://192.168.10.102/api/node/class/uni/phys-PhyDom/infraRsVlanNs.json HTTP/1.1 1 1 map[] <nil> <nil> 0 [] false 192.168.10.102 map[] map[] <nil> map[]   <nil> <nil> <nil> 0xc0000c0008}
+2020-06-17T09:58:37.734+0530 [DEBUG] plugin.terraform-provider-aci: 2020/06/17 09:58:37 [DEBUG] Begin Injection
+2020-06-17T09:58:37.734+0530 [DEBUG] plugin.terraform-provider-aci: 2020/06/17 09:58:37 HTTP request after injection GET /api/node/class/uni/phys-PhyDom/infraRsVlanNs.json &{GET https://192.168.10.102/api/node/class/uni/phys-PhyDom/infraRsVlanNs.json HTTP/1.1 1 1 map[Cookie:[APIC-Cookie=rP8AAAAAAAAAAAAAAAAAAOUiXDKCb2Vzv1Am+ITqKDo0EbKVqwfk1rwWd9amdbHPohRAt4/CCxoY/UreHUPMNsFZitgqfYkug2UgY62o+pkf2VbYav7cROfO5ZHYCWsEZ1HqkkkLV0h9EXdgA7mVF6l/lsB3gTCL4o0RZ5+/55LvIKG6o0ox0G7O3BYJJevC80fJMxWL9PztQvUtAfj5ug==]] <nil> <nil> 0 [] false 192.168.10.102 map[] map[] <nil> map[]   <nil> <nil> <nil> 0xc0000c0008}
+2020-06-17T09:58:37.734+0530 [DEBUG] plugin.terraform-provider-aci: 2020/06/17 09:58:37 [DEBUG] Begining DO method https://192.168.10.102/api/node/class/uni/phys-PhyDom/infraRsVlanNs.json
+2020-06-17T09:58:37.780+0530 [DEBUG] plugin.terraform-provider-aci: 2020/06/17 09:58:37 
+2020-06-17T09:58:37.780+0530 [DEBUG] plugin.terraform-provider-aci: 
+2020-06-17T09:58:37.780+0530 [DEBUG] plugin.terraform-provider-aci: 
+2020-06-17T09:58:37.780+0530 [DEBUG] plugin.terraform-provider-aci:  HTTP request: <nil>
+2020-06-17T09:58:37.780+0530 [DEBUG] plugin.terraform-provider-aci: 2020/06/17 09:58:37 
+2020-06-17T09:58:37.780+0530 [DEBUG] plugin.terraform-provider-aci: HTTP Request: GET https://192.168.10.102/api/node/class/uni/phys-PhyDom/infraRsVlanNs.json
+2020-06-17T09:58:37.780+0530 [DEBUG] plugin.terraform-provider-aci: 2020/06/17 09:58:37 nHTTP Response: 200 200 OK &{200 OK 200 HTTP/1.1 1 1 map[Access-Control-Allow-Credentials:[false] Access-Control-Allow-Headers:[Origin, X-Requested-With, Content-Type, Accept, devcookie, APIC-challenge] Access-Control-Allow-Methods:[POST,GET,OPTIONS,DELETE] Access-Control-Allow-Origin:[http://127.0.0.1:8000] Cache-Control:[no-cache="Set-Cookie, Set-Cookie2"] Client-Cert-Enabled:[false] Connection:[keep-alive] Content-Length:[30] Content-Type:[application/json] Date:[Tue, 16 Jun 2020 19:55:57 GMT] Server:[Cisco APIC] Strict-Transport-Security:[max-age=31536000; includeSubdomains] X-Frame-Options:[SAMEORIGIN]] 0xc00016c1c0 30 [] false false map[] 0xc0001ce600 0xc0000d6a50}
+2020-06-17T09:58:37.780+0530 [DEBUG] plugin.terraform-provider-aci: 2020/06/17 09:58:37 
+2020-06-17T09:58:37.780+0530 [DEBUG] plugin.terraform-provider-aci:  HTTP response unique string GET https://192.168.10.102/api/node/class/uni/phys-PhyDom/infraRsVlanNs.json {"totalCount":"0","imdata":[]}
+2020-06-17T09:58:37.780+0530 [DEBUG] plugin.terraform-provider-aci: 2020/06/17 09:58:37 [DEBUG] Exit from do method
+2020-06-17T09:58:37.780+0530 [DEBUG] plugin.terraform-provider-aci: 2020/06/17 09:58:37 Getvia url {"imdata":[],"totalCount":"0"}
+2020-06-17T09:58:37.780+0530 [DEBUG] plugin.terraform-provider-aci: 2020/06/17 09:58:37 [DEBUG] Exit from errors {"imdata":[],"totalCount":"0"}
+2020-06-17T09:58:37.780+0530 [DEBUG] plugin.terraform-provider-aci: 2020/06/17 09:58:37 [DEBUG] Error while reading relation infraRsVlanNs Error retriving Object: Object may not exists
+2020-06-17T09:58:37.780+0530 [DEBUG] plugin.terraform-provider-aci: 2020/06/17 09:58:37 HTTP request GET /api/node/class/uni/phys-PhyDom/infraRsVlanNsDef.json &{GET https://192.168.10.102/api/node/class/uni/phys-PhyDom/infraRsVlanNsDef.json HTTP/1.1 1 1 map[] <nil> <nil> 0 [] false 192.168.10.102 map[] map[] <nil> map[]   <nil> <nil> <nil> 0xc0000c0008}
+2020-06-17T09:58:37.780+0530 [DEBUG] plugin.terraform-provider-aci: 2020/06/17 09:58:37 [DEBUG] Begin Injection
+2020-06-17T09:58:37.780+0530 [DEBUG] plugin.terraform-provider-aci: 2020/06/17 09:58:37 HTTP request after injection GET /api/node/class/uni/phys-PhyDom/infraRsVlanNsDef.json &{GET https://192.168.10.102/api/node/class/uni/phys-PhyDom/infraRsVlanNsDef.json HTTP/1.1 1 1 map[Cookie:[APIC-Cookie=rP8AAAAAAAAAAAAAAAAAAOUiXDKCb2Vzv1Am+ITqKDo0EbKVqwfk1rwWd9amdbHPohRAt4/CCxoY/UreHUPMNsFZitgqfYkug2UgY62o+pkf2VbYav7cROfO5ZHYCWsEZ1HqkkkLV0h9EXdgA7mVF6l/lsB3gTCL4o0RZ5+/55LvIKG6o0ox0G7O3BYJJevC80fJMxWL9PztQvUtAfj5ug==]] <nil> <nil> 0 [] false 192.168.10.102 map[] map[] <nil> map[]   <nil> <nil> <nil> 0xc0000c0008}
+2020-06-17T09:58:37.780+0530 [DEBUG] plugin.terraform-provider-aci: 2020/06/17 09:58:37 [DEBUG] Begining DO method https://192.168.10.102/api/node/class/uni/phys-PhyDom/infraRsVlanNsDef.json
+2020-06-17T09:58:37.826+0530 [DEBUG] plugin.terraform-provider-aci: 2020/06/17 09:58:37 
+2020-06-17T09:58:37.826+0530 [DEBUG] plugin.terraform-provider-aci: 
+2020-06-17T09:58:37.826+0530 [DEBUG] plugin.terraform-provider-aci: 
+2020-06-17T09:58:37.826+0530 [DEBUG] plugin.terraform-provider-aci:  HTTP request: <nil>
+2020-06-17T09:58:37.826+0530 [DEBUG] plugin.terraform-provider-aci: 2020/06/17 09:58:37 
+2020-06-17T09:58:37.826+0530 [DEBUG] plugin.terraform-provider-aci: HTTP Request: GET https://192.168.10.102/api/node/class/uni/phys-PhyDom/infraRsVlanNsDef.json
+2020-06-17T09:58:37.826+0530 [DEBUG] plugin.terraform-provider-aci: 2020/06/17 09:58:37 nHTTP Response: 200 200 OK &{200 OK 200 HTTP/1.1 1 1 map[Access-Control-Allow-Credentials:[false] Access-Control-Allow-Headers:[Origin, X-Requested-With, Content-Type, Accept, devcookie, APIC-challenge] Access-Control-Allow-Methods:[POST,GET,OPTIONS,DELETE] Access-Control-Allow-Origin:[http://127.0.0.1:8000] Cache-Control:[no-cache="Set-Cookie, Set-Cookie2"] Client-Cert-Enabled:[false] Connection:[keep-alive] Content-Length:[30] Content-Type:[application/json] Date:[Tue, 16 Jun 2020 19:55:57 GMT] Server:[Cisco APIC] Strict-Transport-Security:[max-age=31536000; includeSubdomains] X-Frame-Options:[SAMEORIGIN]] 0xc00022c000 30 [] false false map[] 0xc00026c700 0xc0000d6a50}
+2020-06-17T09:58:37.826+0530 [DEBUG] plugin.terraform-provider-aci: 2020/06/17 09:58:37 
+2020-06-17T09:58:37.826+0530 [DEBUG] plugin.terraform-provider-aci:  HTTP response unique string GET https://192.168.10.102/api/node/class/uni/phys-PhyDom/infraRsVlanNsDef.json {"totalCount":"0","imdata":[]}
+2020-06-17T09:58:37.826+0530 [DEBUG] plugin.terraform-provider-aci: 2020/06/17 09:58:37 [DEBUG] Exit from do method
+2020-06-17T09:58:37.826+0530 [DEBUG] plugin.terraform-provider-aci: 2020/06/17 09:58:37 Getvia url {"imdata":[],"totalCount":"0"}
+2020-06-17T09:58:37.826+0530 [DEBUG] plugin.terraform-provider-aci: 2020/06/17 09:58:37 [DEBUG] Exit from errors {"imdata":[],"totalCount":"0"}
+2020-06-17T09:58:37.826+0530 [DEBUG] plugin.terraform-provider-aci: 2020/06/17 09:58:37 [DEBUG] Error while reading relation infraRsVlanNsDef Error retriving Object: Object may not exists
+2020-06-17T09:58:37.826+0530 [DEBUG] plugin.terraform-provider-aci: 2020/06/17 09:58:37 HTTP request GET /api/node/class/uni/phys-PhyDom/infraRsVipAddrNs.json &{GET https://192.168.10.102/api/node/class/uni/phys-PhyDom/infraRsVipAddrNs.json HTTP/1.1 1 1 map[] <nil> <nil> 0 [] false 192.168.10.102 map[] map[] <nil> map[]   <nil> <nil> <nil> 0xc0000c0008}
+2020-06-17T09:58:37.826+0530 [DEBUG] plugin.terraform-provider-aci: 2020/06/17 09:58:37 [DEBUG] Begin Injection
+2020-06-17T09:58:37.826+0530 [DEBUG] plugin.terraform-provider-aci: 2020/06/17 09:58:37 HTTP request after injection GET /api/node/class/uni/phys-PhyDom/infraRsVipAddrNs.json &{GET https://192.168.10.102/api/node/class/uni/phys-PhyDom/infraRsVipAddrNs.json HTTP/1.1 1 1 map[Cookie:[APIC-Cookie=rP8AAAAAAAAAAAAAAAAAAOUiXDKCb2Vzv1Am+ITqKDo0EbKVqwfk1rwWd9amdbHPohRAt4/CCxoY/UreHUPMNsFZitgqfYkug2UgY62o+pkf2VbYav7cROfO5ZHYCWsEZ1HqkkkLV0h9EXdgA7mVF6l/lsB3gTCL4o0RZ5+/55LvIKG6o0ox0G7O3BYJJevC80fJMxWL9PztQvUtAfj5ug==]] <nil> <nil> 0 [] false 192.168.10.102 map[] map[] <nil> map[]   <nil> <nil> <nil> 0xc0000c0008}
+2020-06-17T09:58:37.826+0530 [DEBUG] plugin.terraform-provider-aci: 2020/06/17 09:58:37 [DEBUG] Begining DO method https://192.168.10.102/api/node/class/uni/phys-PhyDom/infraRsVipAddrNs.json
+2020-06-17T09:58:37.871+0530 [DEBUG] plugin.terraform-provider-aci: 2020/06/17 09:58:37 
+2020-06-17T09:58:37.871+0530 [DEBUG] plugin.terraform-provider-aci: 
+2020-06-17T09:58:37.871+0530 [DEBUG] plugin.terraform-provider-aci: 
+2020-06-17T09:58:37.871+0530 [DEBUG] plugin.terraform-provider-aci:  HTTP request: <nil>
+2020-06-17T09:58:37.871+0530 [DEBUG] plugin.terraform-provider-aci: 2020/06/17 09:58:37 
+2020-06-17T09:58:37.871+0530 [DEBUG] plugin.terraform-provider-aci: HTTP Request: GET https://192.168.10.102/api/node/class/uni/phys-PhyDom/infraRsVipAddrNs.json
+2020-06-17T09:58:37.871+0530 [DEBUG] plugin.terraform-provider-aci: 2020/06/17 09:58:37 nHTTP Response: 200 200 OK &{200 OK 200 HTTP/1.1 1 1 map[Access-Control-Allow-Credentials:[false] Access-Control-Allow-Headers:[Origin, X-Requested-With, Content-Type, Accept, devcookie, APIC-challenge] Access-Control-Allow-Methods:[POST,GET,OPTIONS,DELETE] Access-Control-Allow-Origin:[http://127.0.0.1:8000] Cache-Control:[no-cache="Set-Cookie, Set-Cookie2"] Client-Cert-Enabled:[false] Connection:[keep-alive] Content-Length:[30] Content-Type:[application/json] Date:[Tue, 16 Jun 2020 19:55:57 GMT] Server:[Cisco APIC] Strict-Transport-Security:[max-age=31536000; includeSubdomains] X-Frame-Options:[SAMEORIGIN]] 0xc00016c280 30 [] false false map[] 0xc0001ce900 0xc0000d6a50}
+2020-06-17T09:58:37.871+0530 [DEBUG] plugin.terraform-provider-aci: 2020/06/17 09:58:37 
+2020-06-17T09:58:37.871+0530 [DEBUG] plugin.terraform-provider-aci:  HTTP response unique string GET https://192.168.10.102/api/node/class/uni/phys-PhyDom/infraRsVipAddrNs.json {"totalCount":"0","imdata":[]}
+2020-06-17T09:58:37.871+0530 [DEBUG] plugin.terraform-provider-aci: 2020/06/17 09:58:37 [DEBUG] Exit from do method
+2020-06-17T09:58:37.871+0530 [DEBUG] plugin.terraform-provider-aci: 2020/06/17 09:58:37 Getvia url {"imdata":[],"totalCount":"0"}
+2020-06-17T09:58:37.871+0530 [DEBUG] plugin.terraform-provider-aci: 2020/06/17 09:58:37 [DEBUG] Exit from errors {"imdata":[],"totalCount":"0"}
+2020-06-17T09:58:37.871+0530 [DEBUG] plugin.terraform-provider-aci: 2020/06/17 09:58:37 [DEBUG] Error while reading relation infraRsVipAddrNs Error retriving Object: Object may not exists
+2020-06-17T09:58:37.871+0530 [DEBUG] plugin.terraform-provider-aci: 2020/06/17 09:58:37 HTTP request GET /api/node/class/uni/phys-PhyDom/infraRsDomVxlanNsDef.json &{GET https://192.168.10.102/api/node/class/uni/phys-PhyDom/infraRsDomVxlanNsDef.json HTTP/1.1 1 1 map[] <nil> <nil> 0 [] false 192.168.10.102 map[] map[] <nil> map[]   <nil> <nil> <nil> 0xc0000c0008}
+2020-06-17T09:58:37.871+0530 [DEBUG] plugin.terraform-provider-aci: 2020/06/17 09:58:37 [DEBUG] Begin Injection
+2020-06-17T09:58:37.871+0530 [DEBUG] plugin.terraform-provider-aci: 2020/06/17 09:58:37 HTTP request after injection GET /api/node/class/uni/phys-PhyDom/infraRsDomVxlanNsDef.json &{GET https://192.168.10.102/api/node/class/uni/phys-PhyDom/infraRsDomVxlanNsDef.json HTTP/1.1 1 1 map[Cookie:[APIC-Cookie=rP8AAAAAAAAAAAAAAAAAAOUiXDKCb2Vzv1Am+ITqKDo0EbKVqwfk1rwWd9amdbHPohRAt4/CCxoY/UreHUPMNsFZitgqfYkug2UgY62o+pkf2VbYav7cROfO5ZHYCWsEZ1HqkkkLV0h9EXdgA7mVF6l/lsB3gTCL4o0RZ5+/55LvIKG6o0ox0G7O3BYJJevC80fJMxWL9PztQvUtAfj5ug==]] <nil> <nil> 0 [] false 192.168.10.102 map[] map[] <nil> map[]   <nil> <nil> <nil> 0xc0000c0008}
+2020-06-17T09:58:37.871+0530 [DEBUG] plugin.terraform-provider-aci: 2020/06/17 09:58:37 [DEBUG] Begining DO method https://192.168.10.102/api/node/class/uni/phys-PhyDom/infraRsDomVxlanNsDef.json
+2020-06-17T09:58:37.911+0530 [DEBUG] plugin.terraform-provider-aci: 2020/06/17 09:58:37 
+2020-06-17T09:58:37.911+0530 [DEBUG] plugin.terraform-provider-aci: 
+2020-06-17T09:58:37.911+0530 [DEBUG] plugin.terraform-provider-aci: 
+2020-06-17T09:58:37.911+0530 [DEBUG] plugin.terraform-provider-aci:  HTTP request: <nil>
+2020-06-17T09:58:37.911+0530 [DEBUG] plugin.terraform-provider-aci: 2020/06/17 09:58:37 
+2020-06-17T09:58:37.912+0530 [DEBUG] plugin.terraform-provider-aci: HTTP Request: GET https://192.168.10.102/api/node/class/uni/phys-PhyDom/infraRsDomVxlanNsDef.json
+2020-06-17T09:58:37.912+0530 [DEBUG] plugin.terraform-provider-aci: 2020/06/17 09:58:37 nHTTP Response: 200 200 OK &{200 OK 200 HTTP/1.1 1 1 map[Access-Control-Allow-Credentials:[false] Access-Control-Allow-Headers:[Origin, X-Requested-With, Content-Type, Accept, devcookie, APIC-challenge] Access-Control-Allow-Methods:[POST,GET,OPTIONS,DELETE] Access-Control-Allow-Origin:[http://127.0.0.1:8000] Cache-Control:[no-cache="Set-Cookie, Set-Cookie2"] Client-Cert-Enabled:[false] Connection:[keep-alive] Content-Length:[30] Content-Type:[application/json] Date:[Tue, 16 Jun 2020 19:55:57 GMT] Server:[Cisco APIC] Strict-Transport-Security:[max-age=31536000; includeSubdomains] X-Frame-Options:[SAMEORIGIN]] 0xc00022c0c0 30 [] false false map[] 0xc00026ca00 0xc0000d6a50}
+2020-06-17T09:58:37.912+0530 [DEBUG] plugin.terraform-provider-aci: 2020/06/17 09:58:37 
+2020-06-17T09:58:37.912+0530 [DEBUG] plugin.terraform-provider-aci:  HTTP response unique string GET https://192.168.10.102/api/node/class/uni/phys-PhyDom/infraRsDomVxlanNsDef.json {"totalCount":"0","imdata":[]}
+2020-06-17T09:58:37.912+0530 [DEBUG] plugin.terraform-provider-aci: 2020/06/17 09:58:37 [DEBUG] Exit from do method
+2020-06-17T09:58:37.912+0530 [DEBUG] plugin.terraform-provider-aci: 2020/06/17 09:58:37 Getvia url {"imdata":[],"totalCount":"0"}
+2020-06-17T09:58:37.912+0530 [DEBUG] plugin.terraform-provider-aci: 2020/06/17 09:58:37 [DEBUG] Exit from errors {"imdata":[],"totalCount":"0"}
+2020-06-17T09:58:37.912+0530 [DEBUG] plugin.terraform-provider-aci: 2020/06/17 09:58:37 [DEBUG] Error while reading relation infraRsDomVxlanNsDef Error retriving Object: Object may not exists
+2020-06-17T09:58:37.912+0530 [DEBUG] plugin.terraform-provider-aci: 2020/06/17 09:58:37 [DEBUG] uni/phys-PhyDom: Read finished successfully
+2020/06/17 09:58:37 [TRACE] <root>: eval: *terraform.EvalMaybeTainted
+2020/06/17 09:58:37 [TRACE] <root>: eval: *terraform.EvalWriteState
+2020/06/17 09:58:37 [TRACE] EvalWriteState: recording 1 dependencies for aci_physical_domain.PhyDom
+2020/06/17 09:58:37 [TRACE] EvalWriteState: writing current state object for aci_physical_domain.PhyDom
+2020/06/17 09:58:37 [TRACE] <root>: eval: *terraform.EvalApplyProvisioners
+2020/06/17 09:58:37 [TRACE] <root>: eval: *terraform.EvalMaybeTainted
+2020/06/17 09:58:37 [TRACE] <root>: eval: *terraform.EvalWriteState
+2020/06/17 09:58:37 [TRACE] EvalWriteState: recording 1 dependencies for aci_physical_domain.PhyDom
+2020/06/17 09:58:37 [TRACE] EvalWriteState: writing current state object for aci_physical_domain.PhyDom
+2020/06/17 09:58:37 [TRACE] <root>: eval: *terraform.EvalIf
+2020/06/17 09:58:37 [TRACE] <root>: eval: *terraform.EvalIf
+2020/06/17 09:58:37 [TRACE] <root>: eval: *terraform.EvalWriteDiff
+2020/06/17 09:58:37 [TRACE] <root>: eval: *terraform.EvalApplyPost
+2020/06/17 09:58:37 [TRACE] <root>: eval: *terraform.EvalUpdateStateHook
+2020/06/17 09:58:37 [TRACE] statemgr.Filesystem: have already backed up original terraform.tfstate to terraform.tfstate.backup on a previous write
+2020/06/17 09:58:37 [TRACE] statemgr.Filesystem: state has changed since last snapshot, so incrementing serial to 8
+2020/06/17 09:58:37 [TRACE] statemgr.Filesystem: writing snapshot at terraform.tfstate
+2020/06/17 09:58:37 [TRACE] [walkApply] Exiting eval tree: aci_physical_domain.PhyDom
+2020/06/17 09:58:37 [TRACE] vertex "aci_physical_domain.PhyDom": visit complete
+2020/06/17 09:58:37 [TRACE] dag/walk: visiting "provider.aci (close)"
+2020/06/17 09:58:37 [TRACE] vertex "provider.aci (close)": starting visit (*terraform.graphNodeCloseProvider)
+2020/06/17 09:58:37 [TRACE] vertex "provider.aci (close)": evaluating
+2020/06/17 09:58:37 [TRACE] dag/walk: visiting "meta.count-boundary (EachMode fixup)"
+2020/06/17 09:58:37 [TRACE] vertex "meta.count-boundary (EachMode fixup)": starting visit (*terraform.NodeCountBoundary)
+2020/06/17 09:58:37 [TRACE] vertex "meta.count-boundary (EachMode fixup)": evaluating
+2020/06/17 09:58:37 [TRACE] [walkApply] Entering eval tree: meta.count-boundary (EachMode fixup)
+2020/06/17 09:58:37 [TRACE] <root>: eval: *terraform.EvalCountFixZeroOneBoundaryGlobal
+2020/06/17 09:58:37 [TRACE] [walkApply] Entering eval tree: provider.aci (close)
+2020/06/17 09:58:37 [TRACE] <root>: eval: *terraform.EvalCloseProvider
+2020/06/17 09:58:37 [TRACE] GRPCProvider: Close
+2020/06/17 09:58:37 [TRACE] [walkApply] Exiting eval tree: meta.count-boundary (EachMode fixup)
+2020/06/17 09:58:37 [TRACE] vertex "meta.count-boundary (EachMode fixup)": visit complete
+2020-06-17T09:58:37.932+0530 [DEBUG] plugin: plugin process exited: path=/Users/nirav.katarmal/go/bin/terraform-provider-aci pid=26090
+2020-06-17T09:58:37.932+0530 [DEBUG] plugin: plugin exited
+2020/06/17 09:58:37 [TRACE] [walkApply] Exiting eval tree: provider.aci (close)
+2020/06/17 09:58:37 [TRACE] vertex "provider.aci (close)": visit complete
+2020/06/17 09:58:37 [TRACE] dag/walk: visiting "root"
+2020/06/17 09:58:37 [TRACE] vertex "root": starting visit (terraform.graphNodeRoot)
+2020/06/17 09:58:37 [TRACE] vertex "root": visit complete
+2020/06/17 09:58:37 [TRACE] statemgr.Filesystem: have already backed up original terraform.tfstate to terraform.tfstate.backup on a previous write
+2020/06/17 09:58:37 [TRACE] statemgr.Filesystem: state has changed since last snapshot, so incrementing serial to 9
+2020/06/17 09:58:37 [TRACE] statemgr.Filesystem: writing snapshot at terraform.tfstate
+2020/06/17 09:58:37 [TRACE] statemgr.Filesystem: removing lock metadata file .terraform.tfstate.lock.info
+2020/06/17 09:58:37 [TRACE] statemgr.Filesystem: unlocking terraform.tfstate using fcntl flock
