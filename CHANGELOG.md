@@ -1,4 +1,13 @@
 ## 0.3.0 (Unreleased)
+
+IMPROVEMENTS:
+- Added support for inline creation of filter and filter entry with contract.
+- Added new resource to manage relations from epg to domain and contract with more control.
+- aci_rest now supports more generic YAML/JSON payload.
+- All the relation supports id only.
+
+BUF FIXES:
+- Fixed issues with domain and leaf attachment.
 ## 0.2.3 (May 19, 2020)
 
 IMPROVEMENTS:

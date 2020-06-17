@@ -144,8 +144,7 @@ func resourceAciL3DomainProfileCreate(d *schema.ResourceData, m interface{}) err
 
 	if relationToinfraRsVlanNs, ok := d.GetOk("relation_infra_rs_vlan_ns"); ok {
 		relationParam := relationToinfraRsVlanNs.(string)
-		relationParamName := GetMOName(relationParam)
-		err = aciClient.CreateRelationinfraRsVlanNsFromL3DomainProfile(l3extDomP.DistinguishedName, relationParamName)
+		err = aciClient.CreateRelationinfraRsVlanNsFromL3DomainProfile(l3extDomP.DistinguishedName, relationParam)
 		if err != nil {
 			return err
 		}
@@ -242,12 +241,11 @@ func resourceAciL3DomainProfileUpdate(d *schema.ResourceData, m interface{}) err
 
 	if d.HasChange("relation_infra_rs_vlan_ns") {
 		_, newRelParam := d.GetChange("relation_infra_rs_vlan_ns")
-		newRelParamName := GetMOName(newRelParam.(string))
 		err = aciClient.DeleteRelationinfraRsVlanNsFromL3DomainProfile(l3extDomP.DistinguishedName)
 		if err != nil {
 			return err
 		}
-		err = aciClient.CreateRelationinfraRsVlanNsFromL3DomainProfile(l3extDomP.DistinguishedName, newRelParamName)
+		err = aciClient.CreateRelationinfraRsVlanNsFromL3DomainProfile(l3extDomP.DistinguishedName, newRelParam.(string))
 		if err != nil {
 			return err
 		}
@@ -342,7 +340,7 @@ func resourceAciL3DomainProfileRead(d *schema.ResourceData, m interface{}) error
 
 	} else {
 		if _, ok := d.GetOk("relation_infra_rs_vlan_ns"); ok {
-			tfName := GetMOName(d.Get("relation_infra_rs_vlan_ns").(string))
+			tfName := d.Get("relation_infra_rs_vlan_ns").(string)
 			if tfName != infraRsVlanNsData {
 				d.Set("relation_infra_rs_vlan_ns", "")
 			}

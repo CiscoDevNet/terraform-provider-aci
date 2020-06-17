@@ -350,8 +350,7 @@ func resourceAciVMMDomainCreate(d *schema.ResourceData, m interface{}) error {
 
 	if relationTovmmRsPrefEnhancedLagPol, ok := d.GetOk("relation_vmm_rs_pref_enhanced_lag_pol"); ok {
 		relationParam := relationTovmmRsPrefEnhancedLagPol.(string)
-		relationParamName := GetMOName(relationParam)
-		err = aciClient.CreateRelationvmmRsPrefEnhancedLagPolFromVMMDomain(vmmDomP.DistinguishedName, relationParamName)
+		err = aciClient.CreateRelationvmmRsPrefEnhancedLagPolFromVMMDomain(vmmDomP.DistinguishedName, relationParam)
 		if err != nil {
 			return err
 		}
@@ -597,12 +596,11 @@ func resourceAciVMMDomainUpdate(d *schema.ResourceData, m interface{}) error {
 	}
 	if d.HasChange("relation_infra_rs_vlan_ns") {
 		_, newRelParam := d.GetChange("relation_infra_rs_vlan_ns")
-		newRelParamName := GetMOName(newRelParam.(string))
 		err = aciClient.DeleteRelationinfraRsVlanNsFromVMMDomain(vmmDomP.DistinguishedName)
 		if err != nil {
 			return err
 		}
-		err = aciClient.CreateRelationinfraRsVlanNsFromVMMDomain(vmmDomP.DistinguishedName, newRelParamName)
+		err = aciClient.CreateRelationinfraRsVlanNsFromVMMDomain(vmmDomP.DistinguishedName, newRelParam.(string))
 		if err != nil {
 			return err
 		}
@@ -780,7 +778,7 @@ func resourceAciVMMDomainRead(d *schema.ResourceData, m interface{}) error {
 
 	} else {
 		if _, ok := d.GetOk("relation_infra_rs_vlan_ns"); ok {
-			tfName := GetMOName(d.Get("relation_infra_rs_vlan_ns").(string))
+			tfName := d.Get("relation_infra_rs_vlan_ns").(string)
 			if tfName != infraRsVlanNsData {
 				d.Set("relation_infra_rs_vlan_ns", "")
 			}
