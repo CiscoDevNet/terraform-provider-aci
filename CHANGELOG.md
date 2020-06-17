@@ -1,4 +1,4 @@
-## 0.3.0 (Unreleased)
+## 0.3.0 (June 17, 2020)
 
 IMPROVEMENTS:
 - Added support for inline creation of filter and filter entry with contract.
