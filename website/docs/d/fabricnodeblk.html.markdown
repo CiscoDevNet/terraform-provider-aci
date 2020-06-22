@@ -1,18 +1,18 @@
 ---
 layout: "aci"
-page_title: "ACI: aci_node_block"
-sidebar_current: "docs-aci-data-source-node_block"
+page_title: "ACI: aci_node_block_firmware"
+sidebar_current: "docs-aci-data-source-node_block_firmware"
 description: |-
   Data source for ACI Node Block
 ---
 
-# aci_node_block #
+# aci_node_block_firmware #
 Data source for ACI Node Block
 
 ## Example Usage ##
 
 ```hcl
-data "aci_node_block" "example" {
+data "aci_node_block_firmware" "example" {
 
   firmware_group_dn  = "${aci_firmware_group.example.id}"
 

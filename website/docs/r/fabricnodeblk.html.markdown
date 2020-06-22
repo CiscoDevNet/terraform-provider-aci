@@ -1,18 +1,18 @@
 ---
 layout: "aci"
-page_title: "ACI: aci_node_block"
-sidebar_current: "docs-aci-resource-node_block"
+page_title: "ACI: aci_node_block_firmware"
+sidebar_current: "docs-aci-resource-node_block_firmware"
 description: |-
   Manages ACI Node Block
 ---
 
-# aci_node_block #
+# aci_node_block_firmware #
 Manages ACI Node Block
 
 ## Example Usage ##
 
 ```hcl
-resource "aci_node_block" "example" {
+resource "aci_node_block_firmware" "example" {
 
   firmware_group_dn  = "${aci_firmware_group.example.id}"
 
@@ -45,5 +45,5 @@ An existing Node Block can be [imported][docs-import] into this resource via its
 
 
 ```
-terraform import aci_node_block.example <Dn>
+terraform import aci_node_block_firmware.example <Dn>
 ```
