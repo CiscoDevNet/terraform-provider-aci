@@ -286,8 +286,7 @@ func resourceAciExternalNetworkInstanceProfileCreate(d *schema.ResourceData, m i
 	}
 	if relationTol3extRsL3InstPToDomP, ok := d.GetOk("relation_l3ext_rs_l3_inst_p_to_dom_p"); ok {
 		relationParam := relationTol3extRsL3InstPToDomP.(string)
-		relationParamName := GetMOName(relationParam)
-		err = aciClient.CreateRelationl3extRsL3InstPToDomPFromExternalNetworkInstanceProfile(l3extInstP.DistinguishedName, relationParamName)
+		err = aciClient.CreateRelationl3extRsL3InstPToDomPFromExternalNetworkInstanceProfile(l3extInstP.DistinguishedName, relationParam)
 		if err != nil {
 			return err
 		}
@@ -298,8 +297,7 @@ func resourceAciExternalNetworkInstanceProfileCreate(d *schema.ResourceData, m i
 	}
 	if relationTol3extRsInstPToNatMappingEPg, ok := d.GetOk("relation_l3ext_rs_inst_p_to_nat_mapping_e_pg"); ok {
 		relationParam := relationTol3extRsInstPToNatMappingEPg.(string)
-		relationParamName := GetMOName(relationParam)
-		err = aciClient.CreateRelationl3extRsInstPToNatMappingEPgFromExternalNetworkInstanceProfile(l3extInstP.DistinguishedName, relationParamName)
+		err = aciClient.CreateRelationl3extRsInstPToNatMappingEPgFromExternalNetworkInstanceProfile(l3extInstP.DistinguishedName, relationParam)
 		if err != nil {
 			return err
 		}
@@ -506,8 +504,7 @@ func resourceAciExternalNetworkInstanceProfileUpdate(d *schema.ResourceData, m i
 	}
 	if d.HasChange("relation_l3ext_rs_l3_inst_p_to_dom_p") {
 		_, newRelParam := d.GetChange("relation_l3ext_rs_l3_inst_p_to_dom_p")
-		newRelParamName := GetMOName(newRelParam.(string))
-		err = aciClient.CreateRelationl3extRsL3InstPToDomPFromExternalNetworkInstanceProfile(l3extInstP.DistinguishedName, newRelParamName)
+		err = aciClient.CreateRelationl3extRsL3InstPToDomPFromExternalNetworkInstanceProfile(l3extInstP.DistinguishedName, newRelParam.(string))
 		if err != nil {
 			return err
 		}
@@ -518,12 +515,11 @@ func resourceAciExternalNetworkInstanceProfileUpdate(d *schema.ResourceData, m i
 	}
 	if d.HasChange("relation_l3ext_rs_inst_p_to_nat_mapping_e_pg") {
 		_, newRelParam := d.GetChange("relation_l3ext_rs_inst_p_to_nat_mapping_e_pg")
-		newRelParamName := GetMOName(newRelParam.(string))
 		err = aciClient.DeleteRelationl3extRsInstPToNatMappingEPgFromExternalNetworkInstanceProfile(l3extInstP.DistinguishedName)
 		if err != nil {
 			return err
 		}
-		err = aciClient.CreateRelationl3extRsInstPToNatMappingEPgFromExternalNetworkInstanceProfile(l3extInstP.DistinguishedName, newRelParamName)
+		err = aciClient.CreateRelationl3extRsInstPToNatMappingEPgFromExternalNetworkInstanceProfile(l3extInstP.DistinguishedName, newRelParam.(string))
 		if err != nil {
 			return err
 		}
@@ -742,7 +738,7 @@ func resourceAciExternalNetworkInstanceProfileRead(d *schema.ResourceData, m int
 
 	} else {
 		if _, ok := d.GetOk("relation_l3ext_rs_l3_inst_p_to_dom_p"); ok {
-			tfName := GetMOName(d.Get("relation_l3ext_rs_l3_inst_p_to_dom_p").(string))
+			tfName := d.Get("relation_l3ext_rs_l3_inst_p_to_dom_p").(string)
 			if tfName != l3extRsL3InstPToDomPData {
 				d.Set("relation_fv_rs_nd_pfx_pol", "")
 			}
@@ -755,7 +751,7 @@ func resourceAciExternalNetworkInstanceProfileRead(d *schema.ResourceData, m int
 
 	} else {
 		if _, ok := d.GetOk("relation_l3ext_rs_inst_p_to_nat_mapping_e_pg"); ok {
-			tfName := GetMOName(d.Get("relation_l3ext_rs_inst_p_to_nat_mapping_e_pg").(string))
+			tfName := d.Get("relation_l3ext_rs_inst_p_to_nat_mapping_e_pg").(string)
 			if tfName != l3extRsInstPToNatMappingEPgData {
 				d.Set("relation_l3ext_rs_inst_p_to_nat_mapping_e_pg", "")
 			}

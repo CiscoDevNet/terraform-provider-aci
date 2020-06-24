@@ -108,7 +108,7 @@ func (sm *ServiceManager) CreateRelationvzRsSdwanPolFromContractSubject(parentDn
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tnExtdevSDWanSlaPolName": "%s"
+				"dn": "%s","tDn": "%s"
 								
 			}
 		}
@@ -145,7 +145,7 @@ func (sm *ServiceManager) ReadRelationvzRsSdwanPolFromContractSubject(parentDn s
 	contList := models.ListFromContainer(cont, "vzRsSdwanPol")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnExtdevSDWanSlaPolName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err

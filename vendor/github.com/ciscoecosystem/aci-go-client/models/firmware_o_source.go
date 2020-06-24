@@ -185,6 +185,7 @@ type OSourceAttributes struct {
 	IdentityPrivateKeyContents   string `json:",omitempty"`
 	IdentityPrivateKeyPassphrase string `json:",omitempty"`
 	IdentityPublicKeyContents    string `json:",omitempty"`
+	DnldTaskFlip                 string `json:",omitempty"`
 }
 
 func NewOSource(firmwareOSourceRn, parentDn, description string, firmwareOSourceAttr OSourceAttributes) *OSource {
@@ -218,6 +219,7 @@ func (firmwareOSource *OSource) ToMap() (map[string]string, error) {
 	A(firmwareOSourceMap, "identityPrivateKeyContents", firmwareOSource.IdentityPrivateKeyContents)
 	A(firmwareOSourceMap, "identityPrivateKeyPassphrase", firmwareOSource.IdentityPrivateKeyPassphrase)
 	A(firmwareOSourceMap, "identityPublicKeyContents", firmwareOSource.IdentityPublicKeyContents)
+	A(firmwareOSourceMap, "dnldTaskFlip", firmwareOSource.DnldTaskFlip)
 
 	return firmwareOSourceMap, err
 }
@@ -246,6 +248,7 @@ func OSourceFromContainerList(cont *container.Container, index int) *OSource {
 			IdentityPrivateKeyContents:   G(OSourceCont, "identityPrivateKeyContents"),
 			IdentityPrivateKeyPassphrase: G(OSourceCont, "identityPrivateKeyPassphrase"),
 			IdentityPublicKeyContents:    G(OSourceCont, "identityPublicKeyContents"),
+			DnldTaskFlip:                 G(OSourceCont, "dnldTaskFlip"),
 		},
 	}
 }

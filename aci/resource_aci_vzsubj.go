@@ -210,8 +210,7 @@ func resourceAciContractSubjectCreate(d *schema.ResourceData, m interface{}) err
 	}
 	if relationTovzRsSdwanPol, ok := d.GetOk("relation_vz_rs_sdwan_pol"); ok {
 		relationParam := relationTovzRsSdwanPol.(string)
-		relationParamName := GetMOName(relationParam)
-		err = aciClient.CreateRelationvzRsSdwanPolFromContractSubject(vzSubj.DistinguishedName, relationParamName)
+		err = aciClient.CreateRelationvzRsSdwanPolFromContractSubject(vzSubj.DistinguishedName, relationParam)
 		if err != nil {
 			return err
 		}
@@ -306,12 +305,11 @@ func resourceAciContractSubjectUpdate(d *schema.ResourceData, m interface{}) err
 	}
 	if d.HasChange("relation_vz_rs_sdwan_pol") {
 		_, newRelParam := d.GetChange("relation_vz_rs_sdwan_pol")
-		newRelParamName := GetMOName(newRelParam.(string))
 		err = aciClient.DeleteRelationvzRsSdwanPolFromContractSubject(vzSubj.DistinguishedName)
 		if err != nil {
 			return err
 		}
-		err = aciClient.CreateRelationvzRsSdwanPolFromContractSubject(vzSubj.DistinguishedName, newRelParamName)
+		err = aciClient.CreateRelationvzRsSdwanPolFromContractSubject(vzSubj.DistinguishedName, newRelParam.(string))
 		if err != nil {
 			return err
 		}
@@ -390,7 +388,7 @@ func resourceAciContractSubjectRead(d *schema.ResourceData, m interface{}) error
 
 	} else {
 		if _, ok := d.GetOk("relation_vz_rs_sdwan_pol"); ok {
-			tfName := GetMOName(d.Get("relation_vz_rs_sdwan_pol").(string))
+			tfName := d.Get("relation_vz_rs_sdwan_pol").(string)
 			if tfName != vzRsSdwanPolData {
 				d.Set("relation_vz_rs_sdwan_pol", "")
 			}

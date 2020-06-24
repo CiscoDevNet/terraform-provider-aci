@@ -159,7 +159,7 @@ func (sm *ServiceManager) CreateRelationl3extRsL3InstPToDomPFromExternalNetworkI
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tnExtnwDomPName": "%s"
+				"dn": "%s","tDn": "%s"
 								
 			}
 		}
@@ -191,7 +191,7 @@ func (sm *ServiceManager) ReadRelationl3extRsL3InstPToDomPFromExternalNetworkIns
 	contList := models.ListFromContainer(cont, "l3extRsL3InstPToDomP")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnExtnwDomPName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -203,7 +203,7 @@ func (sm *ServiceManager) CreateRelationl3extRsInstPToNatMappingEPgFromExternalN
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tnFvAEPgName": "%s"
+				"dn": "%s","tDn": "%s"
 								
 			}
 		}
@@ -240,7 +240,7 @@ func (sm *ServiceManager) ReadRelationl3extRsInstPToNatMappingEPgFromExternalNet
 	contList := models.ListFromContainer(cont, "l3extRsInstPToNatMappingEPg")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnFvAEPgName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err

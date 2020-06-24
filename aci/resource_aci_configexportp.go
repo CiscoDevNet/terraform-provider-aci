@@ -210,8 +210,7 @@ func resourceAciConfigurationExportPolicyCreate(d *schema.ResourceData, m interf
 	}
 	if relationTotrigRsTriggerable, ok := d.GetOk("relation_trig_rs_triggerable"); ok {
 		relationParam := relationTotrigRsTriggerable.(string)
-		relationParamName := GetMOName(relationParam)
-		err = aciClient.CreateRelationtrigRsTriggerableFromConfigurationExportPolicy(configExportP.DistinguishedName, relationParamName)
+		err = aciClient.CreateRelationtrigRsTriggerableFromConfigurationExportPolicy(configExportP.DistinguishedName, relationParam)
 		if err != nil {
 			return err
 		}
@@ -317,8 +316,7 @@ func resourceAciConfigurationExportPolicyUpdate(d *schema.ResourceData, m interf
 	}
 	if d.HasChange("relation_trig_rs_triggerable") {
 		_, newRelParam := d.GetChange("relation_trig_rs_triggerable")
-		newRelParamName := GetMOName(newRelParam.(string))
-		err = aciClient.CreateRelationtrigRsTriggerableFromConfigurationExportPolicy(configExportP.DistinguishedName, newRelParamName)
+		err = aciClient.CreateRelationtrigRsTriggerableFromConfigurationExportPolicy(configExportP.DistinguishedName, newRelParam.(string))
 		if err != nil {
 			return err
 		}
@@ -400,7 +398,7 @@ func resourceAciConfigurationExportPolicyRead(d *schema.ResourceData, m interfac
 
 	} else {
 		if _, ok := d.GetOk("relation_trig_rs_triggerable"); ok {
-			tfName := GetMOName(d.Get("relation_trig_rs_triggerable").(string))
+			tfName := d.Get("relation_trig_rs_triggerable").(string)
 			if tfName != trigRsTriggerableData {
 				d.Set("relation_trig_rs_triggerable", "")
 			}

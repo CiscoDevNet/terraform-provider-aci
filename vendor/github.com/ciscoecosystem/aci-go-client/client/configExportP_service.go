@@ -107,7 +107,7 @@ func (sm *ServiceManager) CreateRelationtrigRsTriggerableFromConfigurationExport
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tnTrigTriggerableName": "%s"
+				"dn": "%s","tDn": "%s"
 								
 			}
 		}
@@ -139,7 +139,7 @@ func (sm *ServiceManager) ReadRelationtrigRsTriggerableFromConfigurationExportPo
 	contList := models.ListFromContainer(cont, "trigRsTriggerable")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnTrigTriggerableName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
