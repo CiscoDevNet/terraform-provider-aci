@@ -1,4 +1,4 @@
-## 0.3.1 (Unreleased)
+## 0.3.1 (June 24, 2020)
 
 IMPROVEMENTS:
 - Updated object model for all the relation attributes compatible with new APIC versions.
