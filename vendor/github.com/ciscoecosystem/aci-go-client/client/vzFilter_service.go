@@ -58,7 +58,7 @@ func (sm *ServiceManager) CreateRelationvzRsFiltGraphAttFromFilter(parentDn, tnV
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tnVnsInTermName": "%s"
+				"dn": "%s","graphName": "%s"
 								
 			}
 		}
@@ -90,7 +90,7 @@ func (sm *ServiceManager) ReadRelationvzRsFiltGraphAttFromFilter(parentDn string
 	contList := models.ListFromContainer(cont, "vzRsFiltGraphAtt")
 
 	if len(contList) > 0 {
-		dat := models.CurlyBraces(models.G(contList[0], "tnVnsInTermName"))
+		dat := models.CurlyBraces(models.G(contList[0], "graphName"))
 		return dat, err
 	} else {
 		return nil, err
@@ -102,7 +102,7 @@ func (sm *ServiceManager) CreateRelationvzRsFwdRFltPAttFromFilter(parentDn, tnVz
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tnVzAFilterableUnitName": "%s"
+				"dn": "%s","tDn": "%s"
 								
 			}
 		}
@@ -134,7 +134,7 @@ func (sm *ServiceManager) ReadRelationvzRsFwdRFltPAttFromFilter(parentDn string)
 	contList := models.ListFromContainer(cont, "vzRsFwdRFltPAtt")
 
 	if len(contList) > 0 {
-		dat := models.CurlyBraces(models.G(contList[0], "tnVzAFilterableUnitName"))
+		dat := models.CurlyBraces(models.G(contList[0], "tDn"))
 		return dat, err
 	} else {
 		return nil, err
@@ -146,7 +146,7 @@ func (sm *ServiceManager) CreateRelationvzRsRevRFltPAttFromFilter(parentDn, tnVz
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tnVzAFilterableUnitName": "%s"
+				"dn": "%s","tDn": "%s"
 								
 			}
 		}
@@ -178,7 +178,7 @@ func (sm *ServiceManager) ReadRelationvzRsRevRFltPAttFromFilter(parentDn string)
 	contList := models.ListFromContainer(cont, "vzRsRevRFltPAtt")
 
 	if len(contList) > 0 {
-		dat := models.CurlyBraces(models.G(contList[0], "tnVzAFilterableUnitName"))
+		dat := models.CurlyBraces(models.G(contList[0], "tDn"))
 		return dat, err
 	} else {
 		return nil, err

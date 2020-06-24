@@ -107,7 +107,7 @@ func (sm *ServiceManager) CreateRelationfcRsVsanNsFromFCDomain(parentDn, tnFvnsV
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tnFvnsVsanInstPName": "%s"
+				"dn": "%s","tDn": "%s"
 								
 			}
 		}
@@ -144,7 +144,7 @@ func (sm *ServiceManager) ReadRelationfcRsVsanNsFromFCDomain(parentDn string) (i
 	contList := models.ListFromContainer(cont, "fcRsVsanNs")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnFvnsVsanInstPName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -156,7 +156,7 @@ func (sm *ServiceManager) CreateRelationfcRsVsanAttrFromFCDomain(parentDn, tnFcV
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tnFcVsanAttrPName": "%s"
+				"dn": "%s","tDn": "%s"
 								
 			}
 		}
@@ -193,7 +193,7 @@ func (sm *ServiceManager) ReadRelationfcRsVsanAttrFromFCDomain(parentDn string) 
 	contList := models.ListFromContainer(cont, "fcRsVsanAttr")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnFcVsanAttrPName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -205,7 +205,7 @@ func (sm *ServiceManager) CreateRelationinfraRsVlanNsDefFromFCDomain(parentDn, t
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tnFvnsAInstPName": "%s"
+				"dn": "%s","tDn": "%s"
 								
 			}
 		}
@@ -237,7 +237,7 @@ func (sm *ServiceManager) ReadRelationinfraRsVlanNsDefFromFCDomain(parentDn stri
 	contList := models.ListFromContainer(cont, "infraRsVlanNsDef")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnFvnsAInstPName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -249,7 +249,7 @@ func (sm *ServiceManager) CreateRelationinfraRsVipAddrNsFromFCDomain(parentDn, t
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tnFvnsAddrInstName": "%s"
+				"dn": "%s","tDn": "%s"
 								
 			}
 		}
@@ -286,7 +286,7 @@ func (sm *ServiceManager) ReadRelationinfraRsVipAddrNsFromFCDomain(parentDn stri
 	contList := models.ListFromContainer(cont, "infraRsVipAddrNs")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnFvnsAddrInstName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -298,7 +298,7 @@ func (sm *ServiceManager) CreateRelationinfraRsDomVxlanNsDefFromFCDomain(parentD
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tnFvnsAInstPName": "%s"
+				"dn": "%s","tDn": "%s"
 								
 			}
 		}
@@ -330,7 +330,7 @@ func (sm *ServiceManager) ReadRelationinfraRsDomVxlanNsDefFromFCDomain(parentDn 
 	contList := models.ListFromContainer(cont, "infraRsDomVxlanNsDef")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnFvnsAInstPName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -342,7 +342,7 @@ func (sm *ServiceManager) CreateRelationfcRsVsanAttrDefFromFCDomain(parentDn, tn
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tnFcVsanAttrPName": "%s"
+				"dn": "%s","tDn": "%s"
 								
 			}
 		}
@@ -374,7 +374,7 @@ func (sm *ServiceManager) ReadRelationfcRsVsanAttrDefFromFCDomain(parentDn strin
 	contList := models.ListFromContainer(cont, "fcRsVsanAttrDef")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnFcVsanAttrPName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -386,7 +386,7 @@ func (sm *ServiceManager) CreateRelationfcRsVsanNsDefFromFCDomain(parentDn, tnFv
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tnFvnsAVsanInstPName": "%s"
+				"dn": "%s","tDn": "%s"
 								
 			}
 		}
@@ -418,7 +418,7 @@ func (sm *ServiceManager) ReadRelationfcRsVsanNsDefFromFCDomain(parentDn string)
 	contList := models.ListFromContainer(cont, "fcRsVsanNsDef")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnFvnsAVsanInstPName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err

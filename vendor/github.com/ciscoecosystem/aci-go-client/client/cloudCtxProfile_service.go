@@ -235,7 +235,7 @@ func (sm *ServiceManager) CreateRelationcloudRsCtxProfileToRegionFromCloudContex
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tnCloudRegionName": "%s"
+				"dn": "%s","tDn": "%s"
 								
 			}
 		}

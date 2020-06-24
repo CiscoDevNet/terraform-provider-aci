@@ -183,8 +183,7 @@ func resourceAciCloudContextProfileCreate(d *schema.ResourceData, m interface{})
 	}
 	if relationTocloudRsCtxProfileToRegion, ok := d.GetOk("relation_cloud_rs_ctx_profile_to_region"); ok {
 		relationParam := relationTocloudRsCtxProfileToRegion.(string)
-		relationParamName := GetMOName(relationParam)
-		err = aciClient.CreateRelationcloudRsCtxProfileToRegionFromCloudContextProfile(cloudCtxProfile.DistinguishedName, relationParamName)
+		err = aciClient.CreateRelationcloudRsCtxProfileToRegionFromCloudContextProfile(cloudCtxProfile.DistinguishedName, relationParam)
 		if err != nil {
 			return err
 		}
@@ -242,12 +241,11 @@ func resourceAciCloudContextProfileUpdate(d *schema.ResourceData, m interface{})
 	}
 	if d.HasChange("relation_cloud_rs_ctx_profile_to_region") {
 		_, newRelParam := d.GetChange("relation_cloud_rs_ctx_profile_to_region")
-		newRelParamName := GetMOName(newRelParam.(string))
 		err = aciClient.DeleteRelationcloudRsCtxProfileToRegionFromCloudContextProfile(cloudCtxProfile.DistinguishedName)
 		if err != nil {
 			return err
 		}
-		err = aciClient.CreateRelationcloudRsCtxProfileToRegionFromCloudContextProfile(cloudCtxProfile.DistinguishedName, newRelParamName)
+		err = aciClient.CreateRelationcloudRsCtxProfileToRegionFromCloudContextProfile(cloudCtxProfile.DistinguishedName, newRelParam.(string))
 		if err != nil {
 			return err
 		}

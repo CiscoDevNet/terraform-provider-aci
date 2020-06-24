@@ -58,7 +58,7 @@ func (sm *ServiceManager) CreateRelationvmmRsPrefEnhancedLagPolFromVMMDomain(par
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tnLacpEnhancedLagPolName": "%s"
+				"dn": "%s","tDn": "%s"
 								
 			}
 		}
@@ -95,7 +95,7 @@ func (sm *ServiceManager) ReadRelationvmmRsPrefEnhancedLagPolFromVMMDomain(paren
 	contList := models.ListFromContainer(cont, "vmmRsPrefEnhancedLagPol")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnLacpEnhancedLagPolName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -156,7 +156,7 @@ func (sm *ServiceManager) CreateRelationvmmRsDomMcastAddrNsFromVMMDomain(parentD
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tnFvnsMcastAddrInstPName": "%s"
+				"dn": "%s","tDn": "%s"
 								
 			}
 		}
@@ -193,7 +193,7 @@ func (sm *ServiceManager) ReadRelationvmmRsDomMcastAddrNsFromVMMDomain(parentDn 
 	contList := models.ListFromContainer(cont, "vmmRsDomMcastAddrNs")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnFvnsMcastAddrInstPName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -293,7 +293,7 @@ func (sm *ServiceManager) CreateRelationinfraRsVlanNsDefFromVMMDomain(parentDn, 
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tnFvnsAInstPName": "%s"
+				"dn": "%s","tDn": "%s"
 								
 			}
 		}
@@ -325,7 +325,7 @@ func (sm *ServiceManager) ReadRelationinfraRsVlanNsDefFromVMMDomain(parentDn str
 	contList := models.ListFromContainer(cont, "infraRsVlanNsDef")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnFvnsAInstPName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -337,7 +337,7 @@ func (sm *ServiceManager) CreateRelationinfraRsVipAddrNsFromVMMDomain(parentDn, 
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tnFvnsAddrInstName": "%s"
+				"dn": "%s","tDn": "%s"
 								
 			}
 		}
@@ -374,7 +374,7 @@ func (sm *ServiceManager) ReadRelationinfraRsVipAddrNsFromVMMDomain(parentDn str
 	contList := models.ListFromContainer(cont, "infraRsVipAddrNs")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnFvnsAddrInstName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -474,7 +474,7 @@ func (sm *ServiceManager) CreateRelationinfraRsDomVxlanNsDefFromVMMDomain(parent
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tnFvnsAInstPName": "%s"
+				"dn": "%s","tDn": "%s"
 								
 			}
 		}
@@ -506,7 +506,7 @@ func (sm *ServiceManager) ReadRelationinfraRsDomVxlanNsDefFromVMMDomain(parentDn
 	contList := models.ListFromContainer(cont, "infraRsDomVxlanNsDef")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnFvnsAInstPName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err

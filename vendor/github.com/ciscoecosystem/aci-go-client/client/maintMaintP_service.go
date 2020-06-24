@@ -102,7 +102,7 @@ func (sm *ServiceManager) CreateRelationmaintRsPolNotifFromMaintenancePolicy(par
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tnMaintUserNotifName": "%s"
+				"dn": "%s","tDn": "%s"
 								
 			}
 		}
@@ -139,7 +139,7 @@ func (sm *ServiceManager) ReadRelationmaintRsPolNotifFromMaintenancePolicy(paren
 	contList := models.ListFromContainer(cont, "maintRsPolNotif")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnMaintUserNotifName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -151,7 +151,7 @@ func (sm *ServiceManager) CreateRelationtrigRsTriggerableFromMaintenancePolicy(p
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tnTrigTriggerableName": "%s"
+				"dn": "%s","tDn": "%s"
 								
 			}
 		}
@@ -183,7 +183,7 @@ func (sm *ServiceManager) ReadRelationtrigRsTriggerableFromMaintenancePolicy(par
 	contList := models.ListFromContainer(cont, "trigRsTriggerable")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnTrigTriggerableName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err

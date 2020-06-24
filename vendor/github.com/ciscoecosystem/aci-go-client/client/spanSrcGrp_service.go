@@ -58,7 +58,7 @@ func (sm *ServiceManager) CreateRelationspanRsSrcGrpToFilterGrpFromSPANSourceGro
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tnSpanFilterGrpName": "%s"
+				"dn": "%s","tDn": "%s"
 								
 			}
 		}
@@ -95,7 +95,7 @@ func (sm *ServiceManager) ReadRelationspanRsSrcGrpToFilterGrpFromSPANSourceGroup
 	contList := models.ListFromContainer(cont, "spanRsSrcGrpToFilterGrp")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnSpanFilterGrpName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err

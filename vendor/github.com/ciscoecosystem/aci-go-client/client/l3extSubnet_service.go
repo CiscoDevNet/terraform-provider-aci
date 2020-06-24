@@ -112,7 +112,7 @@ func (sm *ServiceManager) CreateRelationl3extRsSubnetToRtSummFromL3ExtSubnet(par
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tnRtsumARtSummPolName": "%s"
+				"dn": "%s","tDn": "%s"
 								
 			}
 		}
@@ -149,7 +149,7 @@ func (sm *ServiceManager) ReadRelationl3extRsSubnetToRtSummFromL3ExtSubnet(paren
 	contList := models.ListFromContainer(cont, "l3extRsSubnetToRtSumm")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnRtsumARtSummPolName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err

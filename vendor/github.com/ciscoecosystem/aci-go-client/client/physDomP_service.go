@@ -107,7 +107,7 @@ func (sm *ServiceManager) CreateRelationinfraRsVlanNsDefFromPhysicalDomain(paren
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tnFvnsAInstPName": "%s"
+				"dn": "%s","tDn": "%s"
 								
 			}
 		}
@@ -139,7 +139,7 @@ func (sm *ServiceManager) ReadRelationinfraRsVlanNsDefFromPhysicalDomain(parentD
 	contList := models.ListFromContainer(cont, "infraRsVlanNsDef")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnFvnsAInstPName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -151,7 +151,7 @@ func (sm *ServiceManager) CreateRelationinfraRsVipAddrNsFromPhysicalDomain(paren
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tnFvnsAddrInstName": "%s"
+				"dn": "%s","tDn": "%s"
 								
 			}
 		}
@@ -188,7 +188,7 @@ func (sm *ServiceManager) ReadRelationinfraRsVipAddrNsFromPhysicalDomain(parentD
 	contList := models.ListFromContainer(cont, "infraRsVipAddrNs")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnFvnsAddrInstName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -200,7 +200,7 @@ func (sm *ServiceManager) CreateRelationinfraRsDomVxlanNsDefFromPhysicalDomain(p
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tnFvnsAInstPName": "%s"
+				"dn": "%s","tDn": "%s"
 								
 			}
 		}
@@ -232,7 +232,7 @@ func (sm *ServiceManager) ReadRelationinfraRsDomVxlanNsDefFromPhysicalDomain(par
 	contList := models.ListFromContainer(cont, "infraRsDomVxlanNsDef")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnFvnsAInstPName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err

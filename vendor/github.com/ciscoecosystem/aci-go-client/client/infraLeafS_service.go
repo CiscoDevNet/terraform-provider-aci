@@ -58,7 +58,7 @@ func (sm *ServiceManager) CreateRelationinfraRsAccNodePGrpFromSwitchAssociation(
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tnInfraAccNodePGrpName": "%s"
+				"dn": "%s","tDn": "%s"
 								
 			}
 		}
@@ -95,7 +95,7 @@ func (sm *ServiceManager) ReadRelationinfraRsAccNodePGrpFromSwitchAssociation(pa
 	contList := models.ListFromContainer(cont, "infraRsAccNodePGrp")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnInfraAccNodePGrpName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err

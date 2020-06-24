@@ -145,8 +145,7 @@ func resourceAciSPANSourceGroupCreate(d *schema.ResourceData, m interface{}) err
 
 	if relationTospanRsSrcGrpToFilterGrp, ok := d.GetOk("relation_span_rs_src_grp_to_filter_grp"); ok {
 		relationParam := relationTospanRsSrcGrpToFilterGrp.(string)
-		relationParamName := GetMOName(relationParam)
-		err = aciClient.CreateRelationspanRsSrcGrpToFilterGrpFromSPANSourceGroup(spanSrcGrp.DistinguishedName, relationParamName)
+		err = aciClient.CreateRelationspanRsSrcGrpToFilterGrpFromSPANSourceGroup(spanSrcGrp.DistinguishedName, relationParam)
 		if err != nil {
 			return err
 		}
@@ -199,12 +198,11 @@ func resourceAciSPANSourceGroupUpdate(d *schema.ResourceData, m interface{}) err
 
 	if d.HasChange("relation_span_rs_src_grp_to_filter_grp") {
 		_, newRelParam := d.GetChange("relation_span_rs_src_grp_to_filter_grp")
-		newRelParamName := GetMOName(newRelParam.(string))
 		err = aciClient.DeleteRelationspanRsSrcGrpToFilterGrpFromSPANSourceGroup(spanSrcGrp.DistinguishedName)
 		if err != nil {
 			return err
 		}
-		err = aciClient.CreateRelationspanRsSrcGrpToFilterGrpFromSPANSourceGroup(spanSrcGrp.DistinguishedName, newRelParamName)
+		err = aciClient.CreateRelationspanRsSrcGrpToFilterGrpFromSPANSourceGroup(spanSrcGrp.DistinguishedName, newRelParam.(string))
 		if err != nil {
 			return err
 		}
@@ -241,7 +239,7 @@ func resourceAciSPANSourceGroupRead(d *schema.ResourceData, m interface{}) error
 
 	} else {
 		if _, ok := d.GetOk("relation_span_rs_src_grp_to_filter_grp"); ok {
-			tfName := GetMOName(d.Get("relation_span_rs_src_grp_to_filter_grp").(string))
+			tfName := d.Get("relation_span_rs_src_grp_to_filter_grp").(string)
 			if tfName != spanRsSrcGrpToFilterGrpData {
 				d.Set("relation_span_rs_src_grp_to_filter_grp", "")
 			}

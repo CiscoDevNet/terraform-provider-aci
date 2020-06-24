@@ -373,8 +373,7 @@ func resourceAciVMMDomainCreate(d *schema.ResourceData, m interface{}) error {
 	}
 	if relationTovmmRsDomMcastAddrNs, ok := d.GetOk("relation_vmm_rs_dom_mcast_addr_ns"); ok {
 		relationParam := relationTovmmRsDomMcastAddrNs.(string)
-		relationParamName := GetMOName(relationParam)
-		err = aciClient.CreateRelationvmmRsDomMcastAddrNsFromVMMDomain(vmmDomP.DistinguishedName, relationParamName)
+		err = aciClient.CreateRelationvmmRsDomMcastAddrNsFromVMMDomain(vmmDomP.DistinguishedName, relationParam)
 		if err != nil {
 			return err
 		}
@@ -409,8 +408,7 @@ func resourceAciVMMDomainCreate(d *schema.ResourceData, m interface{}) error {
 	}
 	if relationToinfraRsVlanNsDef, ok := d.GetOk("relation_infra_rs_vlan_ns_def"); ok {
 		relationParam := relationToinfraRsVlanNsDef.(string)
-		relationParamName := GetMOName(relationParam)
-		err = aciClient.CreateRelationinfraRsVlanNsDefFromVMMDomain(vmmDomP.DistinguishedName, relationParamName)
+		err = aciClient.CreateRelationinfraRsVlanNsDefFromVMMDomain(vmmDomP.DistinguishedName, relationParam)
 		if err != nil {
 			return err
 		}
@@ -421,8 +419,7 @@ func resourceAciVMMDomainCreate(d *schema.ResourceData, m interface{}) error {
 	}
 	if relationToinfraRsVipAddrNs, ok := d.GetOk("relation_infra_rs_vip_addr_ns"); ok {
 		relationParam := relationToinfraRsVipAddrNs.(string)
-		relationParamName := GetMOName(relationParam)
-		err = aciClient.CreateRelationinfraRsVipAddrNsFromVMMDomain(vmmDomP.DistinguishedName, relationParamName)
+		err = aciClient.CreateRelationinfraRsVipAddrNsFromVMMDomain(vmmDomP.DistinguishedName, relationParam)
 		if err != nil {
 			return err
 		}
@@ -457,8 +454,7 @@ func resourceAciVMMDomainCreate(d *schema.ResourceData, m interface{}) error {
 	}
 	if relationToinfraRsDomVxlanNsDef, ok := d.GetOk("relation_infra_rs_dom_vxlan_ns_def"); ok {
 		relationParam := relationToinfraRsDomVxlanNsDef.(string)
-		relationParamName := GetMOName(relationParam)
-		err = aciClient.CreateRelationinfraRsDomVxlanNsDefFromVMMDomain(vmmDomP.DistinguishedName, relationParamName)
+		err = aciClient.CreateRelationinfraRsDomVxlanNsDefFromVMMDomain(vmmDomP.DistinguishedName, relationParam)
 		if err != nil {
 			return err
 		}
@@ -580,12 +576,11 @@ func resourceAciVMMDomainUpdate(d *schema.ResourceData, m interface{}) error {
 
 	if d.HasChange("relation_vmm_rs_pref_enhanced_lag_pol") {
 		_, newRelParam := d.GetChange("relation_vmm_rs_pref_enhanced_lag_pol")
-		newRelParamName := GetMOName(newRelParam.(string))
 		err = aciClient.DeleteRelationvmmRsPrefEnhancedLagPolFromVMMDomain(vmmDomP.DistinguishedName)
 		if err != nil {
 			return err
 		}
-		err = aciClient.CreateRelationvmmRsPrefEnhancedLagPolFromVMMDomain(vmmDomP.DistinguishedName, newRelParamName)
+		err = aciClient.CreateRelationvmmRsPrefEnhancedLagPolFromVMMDomain(vmmDomP.DistinguishedName, newRelParam.(string))
 		if err != nil {
 			return err
 		}
@@ -611,12 +606,11 @@ func resourceAciVMMDomainUpdate(d *schema.ResourceData, m interface{}) error {
 	}
 	if d.HasChange("relation_vmm_rs_dom_mcast_addr_ns") {
 		_, newRelParam := d.GetChange("relation_vmm_rs_dom_mcast_addr_ns")
-		newRelParamName := GetMOName(newRelParam.(string))
 		err = aciClient.DeleteRelationvmmRsDomMcastAddrNsFromVMMDomain(vmmDomP.DistinguishedName)
 		if err != nil {
 			return err
 		}
-		err = aciClient.CreateRelationvmmRsDomMcastAddrNsFromVMMDomain(vmmDomP.DistinguishedName, newRelParamName)
+		err = aciClient.CreateRelationvmmRsDomMcastAddrNsFromVMMDomain(vmmDomP.DistinguishedName, newRelParam.(string))
 		if err != nil {
 			return err
 		}
@@ -651,8 +645,7 @@ func resourceAciVMMDomainUpdate(d *schema.ResourceData, m interface{}) error {
 	}
 	if d.HasChange("relation_infra_rs_vlan_ns_def") {
 		_, newRelParam := d.GetChange("relation_infra_rs_vlan_ns_def")
-		newRelParamName := GetMOName(newRelParam.(string))
-		err = aciClient.CreateRelationinfraRsVlanNsDefFromVMMDomain(vmmDomP.DistinguishedName, newRelParamName)
+		err = aciClient.CreateRelationinfraRsVlanNsDefFromVMMDomain(vmmDomP.DistinguishedName, newRelParam.(string))
 		if err != nil {
 			return err
 		}
@@ -663,12 +656,11 @@ func resourceAciVMMDomainUpdate(d *schema.ResourceData, m interface{}) error {
 	}
 	if d.HasChange("relation_infra_rs_vip_addr_ns") {
 		_, newRelParam := d.GetChange("relation_infra_rs_vip_addr_ns")
-		newRelParamName := GetMOName(newRelParam.(string))
 		err = aciClient.DeleteRelationinfraRsVipAddrNsFromVMMDomain(vmmDomP.DistinguishedName)
 		if err != nil {
 			return err
 		}
-		err = aciClient.CreateRelationinfraRsVipAddrNsFromVMMDomain(vmmDomP.DistinguishedName, newRelParamName)
+		err = aciClient.CreateRelationinfraRsVipAddrNsFromVMMDomain(vmmDomP.DistinguishedName, newRelParam.(string))
 		if err != nil {
 			return err
 		}
@@ -703,8 +695,7 @@ func resourceAciVMMDomainUpdate(d *schema.ResourceData, m interface{}) error {
 	}
 	if d.HasChange("relation_infra_rs_dom_vxlan_ns_def") {
 		_, newRelParam := d.GetChange("relation_infra_rs_dom_vxlan_ns_def")
-		newRelParamName := GetMOName(newRelParam.(string))
-		err = aciClient.CreateRelationinfraRsDomVxlanNsDefFromVMMDomain(vmmDomP.DistinguishedName, newRelParamName)
+		err = aciClient.CreateRelationinfraRsDomVxlanNsDefFromVMMDomain(vmmDomP.DistinguishedName, newRelParam.(string))
 		if err != nil {
 			return err
 		}
@@ -765,7 +756,7 @@ func resourceAciVMMDomainRead(d *schema.ResourceData, m interface{}) error {
 
 	} else {
 		if _, ok := d.GetOk("relation_vmm_rs_pref_enhanced_lag_pol"); ok {
-			tfName := GetMOName(d.Get("relation_vmm_rs_pref_enhanced_lag_pol").(string))
+			tfName := d.Get("relation_vmm_rs_pref_enhanced_lag_pol").(string)
 			if tfName != vmmRsPrefEnhancedLagPolData {
 				d.Set("relation_vmm_rs_pref_enhanced_lag_pol", "")
 			}
@@ -791,7 +782,7 @@ func resourceAciVMMDomainRead(d *schema.ResourceData, m interface{}) error {
 
 	} else {
 		if _, ok := d.GetOk("relation_vmm_rs_dom_mcast_addr_ns"); ok {
-			tfName := GetMOName(d.Get("relation_vmm_rs_dom_mcast_addr_ns").(string))
+			tfName := d.Get("relation_vmm_rs_dom_mcast_addr_ns").(string)
 			if tfName != vmmRsDomMcastAddrNsData {
 				d.Set("relation_vmm_rs_dom_mcast_addr_ns", "")
 			}
@@ -830,7 +821,7 @@ func resourceAciVMMDomainRead(d *schema.ResourceData, m interface{}) error {
 
 	} else {
 		if _, ok := d.GetOk("relation_infra_rs_vlan_ns_def"); ok {
-			tfName := GetMOName(d.Get("relation_infra_rs_vlan_ns_def").(string))
+			tfName := d.Get("relation_infra_rs_vlan_ns_def").(string)
 			if tfName != infraRsVlanNsDefData {
 				d.Set("relation_infra_rs_vlan_ns_def", "")
 			}
@@ -843,7 +834,7 @@ func resourceAciVMMDomainRead(d *schema.ResourceData, m interface{}) error {
 
 	} else {
 		if _, ok := d.GetOk("relation_infra_rs_vip_addr_ns"); ok {
-			tfName := GetMOName(d.Get("relation_infra_rs_vip_addr_ns").(string))
+			tfName := d.Get("relation_infra_rs_vip_addr_ns").(string)
 			if tfName != infraRsVipAddrNsData {
 				d.Set("relation_infra_rs_vip_addr_ns", "")
 			}
@@ -882,7 +873,7 @@ func resourceAciVMMDomainRead(d *schema.ResourceData, m interface{}) error {
 
 	} else {
 		if _, ok := d.GetOk("relation_infra_rs_dom_vxlan_ns_def"); ok {
-			tfName := GetMOName(d.Get("relation_infra_rs_dom_vxlan_ns_def").(string))
+			tfName := d.Get("relation_infra_rs_dom_vxlan_ns_def").(string)
 			if tfName != infraRsDomVxlanNsDefData {
 				d.Set("relation_infra_rs_dom_vxlan_ns_def", "")
 			}

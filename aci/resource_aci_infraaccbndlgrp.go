@@ -564,8 +564,7 @@ func resourceAciPCVPCInterfacePolicyGroupCreate(d *schema.ResourceData, m interf
 	}
 	if relationToinfraRsL2InstPol, ok := d.GetOk("relation_infra_rs_l2_inst_pol"); ok {
 		relationParam := relationToinfraRsL2InstPol.(string)
-		relationParamName := GetMOName(relationParam)
-		err = aciClient.CreateRelationinfraRsL2InstPolFromPCVPCInterfacePolicyGroup(infraAccBndlGrp.DistinguishedName, relationParamName)
+		err = aciClient.CreateRelationinfraRsL2InstPolFromPCVPCInterfacePolicyGroup(infraAccBndlGrp.DistinguishedName, relationParam)
 		if err != nil {
 			return err
 		}
@@ -959,12 +958,11 @@ func resourceAciPCVPCInterfacePolicyGroupUpdate(d *schema.ResourceData, m interf
 	}
 	if d.HasChange("relation_infra_rs_l2_inst_pol") {
 		_, newRelParam := d.GetChange("relation_infra_rs_l2_inst_pol")
-		newRelParamName := GetMOName(newRelParam.(string))
 		err = aciClient.DeleteRelationinfraRsL2InstPolFromPCVPCInterfacePolicyGroup(infraAccBndlGrp.DistinguishedName)
 		if err != nil {
 			return err
 		}
-		err = aciClient.CreateRelationinfraRsL2InstPolFromPCVPCInterfacePolicyGroup(infraAccBndlGrp.DistinguishedName, newRelParamName)
+		err = aciClient.CreateRelationinfraRsL2InstPolFromPCVPCInterfacePolicyGroup(infraAccBndlGrp.DistinguishedName, newRelParam.(string))
 		if err != nil {
 			return err
 		}
@@ -1318,7 +1316,7 @@ func resourceAciPCVPCInterfacePolicyGroupRead(d *schema.ResourceData, m interfac
 
 	} else {
 		if _, ok := d.GetOk("relation_infra_rs_l2_inst_pol"); ok {
-			tfName := GetMOName(d.Get("relation_infra_rs_l2_inst_pol").(string))
+			tfName := d.Get("relation_infra_rs_l2_inst_pol").(string)
 			if tfName != infraRsL2InstPolData {
 				d.Set("relation_infra_rs_l2_inst_pol", "")
 			}
