@@ -1,4 +1,11 @@
-## 0.4.0 (Unreleased)
+## 0.3.2(Unreleased)
+
+IMPROVEMENTS:
+- Updated objet model payload for l3out and vmmdomain relations.
+
+BUG FIXES:
+- Fixed the issue with vzany not updated in first run.
+- FIxed the issue with switch id replaced while creating multiple switches.
 ## 0.3.1 (June 24, 2020)
 
 IMPROVEMENTS:
@@ -12,7 +19,7 @@ IMPROVEMENTS:
 - aci_rest now supports more generic YAML/JSON payload.
 - All the relation supports id only.
 
-BUF FIXES:
+BUG FIXES:
 - Fixed issues with domain and leaf attachment.
 ## 0.2.3 (May 19, 2020)
 

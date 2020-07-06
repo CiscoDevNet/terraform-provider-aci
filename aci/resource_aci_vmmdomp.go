@@ -361,8 +361,7 @@ func resourceAciVMMDomainCreate(d *schema.ResourceData, m interface{}) error {
 	}
 	if relationToinfraRsVlanNs, ok := d.GetOk("relation_infra_rs_vlan_ns"); ok {
 		relationParam := relationToinfraRsVlanNs.(string)
-		relationParamName := GetMOName(relationParam)
-		err = aciClient.CreateRelationinfraRsVlanNsFromVMMDomain(vmmDomP.DistinguishedName, relationParamName)
+		err = aciClient.CreateRelationinfraRsVlanNsFromVMMDomain(vmmDomP.DistinguishedName, relationParam)
 		if err != nil {
 			return err
 		}
