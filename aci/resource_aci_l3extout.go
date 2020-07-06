@@ -239,8 +239,7 @@ func resourceAciL3OutsideCreate(d *schema.ResourceData, m interface{}) error {
 	}
 	if relationTol3extRsL3DomAtt, ok := d.GetOk("relation_l3ext_rs_l3_dom_att"); ok {
 		relationParam := relationTol3extRsL3DomAtt.(string)
-		relationParamName := GetMOName(relationParam)
-		err = aciClient.CreateRelationl3extRsL3DomAttFromL3Outside(l3extOut.DistinguishedName, relationParamName)
+		err = aciClient.CreateRelationl3extRsL3DomAttFromL3Outside(l3extOut.DistinguishedName, relationParam)
 		if err != nil {
 			return err
 		}
@@ -366,12 +365,11 @@ func resourceAciL3OutsideUpdate(d *schema.ResourceData, m interface{}) error {
 	}
 	if d.HasChange("relation_l3ext_rs_l3_dom_att") {
 		_, newRelParam := d.GetChange("relation_l3ext_rs_l3_dom_att")
-		newRelParamName := GetMOName(newRelParam.(string))
 		err = aciClient.DeleteRelationl3extRsL3DomAttFromL3Outside(l3extOut.DistinguishedName)
 		if err != nil {
 			return err
 		}
-		err = aciClient.CreateRelationl3extRsL3DomAttFromL3Outside(l3extOut.DistinguishedName, newRelParamName)
+		err = aciClient.CreateRelationl3extRsL3DomAttFromL3Outside(l3extOut.DistinguishedName, newRelParam.(string))
 		if err != nil {
 			return err
 		}
@@ -450,7 +448,7 @@ func resourceAciL3OutsideRead(d *schema.ResourceData, m interface{}) error {
 
 	} else {
 		if _, ok := d.GetOk("relation_l3ext_rs_l3_dom_att"); ok {
-			tfName := GetMOName(d.Get("relation_l3ext_rs_l3_dom_att").(string))
+			tfName := d.Get("relation_l3ext_rs_l3_dom_att").(string)
 			if tfName != l3extRsL3DomAttData {
 				d.Set("relation_l3ext_rs_l3_dom_att", "")
 			}

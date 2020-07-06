@@ -146,7 +146,7 @@ func resourceAciAnyCreate(d *schema.ResourceData, m interface{}) error {
 		vzAnyAttr.PrefGrMemb = PrefGrMemb.(string)
 	}
 	vzAny := models.NewAny(fmt.Sprintf("any"), VRFDn, desc, vzAnyAttr)
-
+	vzAny.Status = "modified"
 	err := aciClient.Save(vzAny)
 	if err != nil {
 		return err
