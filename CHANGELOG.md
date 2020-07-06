@@ -1,4 +1,4 @@
-## 0.3.2(Unreleased)
+## 0.3.2 (Unreleased)
 
 IMPROVEMENTS:
 - Updated objet model payload for l3out and vmmdomain relations.
