@@ -1,4 +1,4 @@
-## 0.3.3 (Unreleased)
+## 0.3.3 (July 16, 2020)
 
 IMPROVEMENTS:
 - Added zone parameter to cloud_subnet resource for APIC v5.0 or higher.
