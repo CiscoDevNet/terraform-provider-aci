@@ -1,5 +1,8 @@
 ## 0.3.3 (Unreleased)
 
+IMPROVEMENTS:
+- Added zone parameter to cloud_subnet resource for APIC v5.0 or higher.
+
 BREAKING CHANGES:
 - Renamed all the e_pg attributes to epg.
 

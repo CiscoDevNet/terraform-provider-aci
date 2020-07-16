@@ -1,6 +1,5 @@
 package models
 
-
 import (
 	"fmt"
 	"strconv"
@@ -12,34 +11,25 @@ const CloudsubnetClassName = "cloudSubnet"
 
 type CloudSubnet struct {
 	BaseAttributes
-    CloudSubnetAttributes 
+	CloudSubnetAttributes
 }
-  
+
 type CloudSubnetAttributes struct {
-	
-	
 	Ip string `json:",omitempty"`
-	
-	
-    
-	Annotation       string `json:",omitempty"`
-	
-    
-    
-	NameAlias       string `json:",omitempty"`
-	
-    
-	Scope       string `json:",omitempty"`
-	
-    
-	Usage       string `json:",omitempty"`
-	
-    
+
+	Annotation string `json:",omitempty"`
+
+	NameAlias string `json:",omitempty"`
+
+	Scope string `json:",omitempty"`
+
+	Usage string `json:",omitempty"`
+
+	Zone string `json:",omitempty"`
 }
-   
 
 func NewCloudSubnet(cloudSubnetRn, parentDn, description string, cloudSubnetattr CloudSubnetAttributes) *CloudSubnet {
-	dn := fmt.Sprintf("%s/%s", parentDn, cloudSubnetRn)  
+	dn := fmt.Sprintf("%s/%s", parentDn, cloudSubnetRn)
 	return &CloudSubnet{
 		BaseAttributes: BaseAttributes{
 			DistinguishedName: dn,
@@ -48,9 +38,8 @@ func NewCloudSubnet(cloudSubnetRn, parentDn, description string, cloudSubnetattr
 			ClassName:         CloudsubnetClassName,
 			Rn:                cloudSubnetRn,
 		},
-        
+
 		CloudSubnetAttributes: cloudSubnetattr,
-         
 	}
 }
 
@@ -60,26 +49,16 @@ func (cloudSubnet *CloudSubnet) ToMap() (map[string]string, error) {
 		return nil, err
 	}
 
-	
-	
-	A(cloudSubnetMap, "ip",cloudSubnet.Ip)
-	
-	
-    
-	A(cloudSubnetMap, "annotation",cloudSubnet.Annotation)
-	
-    
-    
-	A(cloudSubnetMap, "nameAlias",cloudSubnet.NameAlias)
-	
-    
-	A(cloudSubnetMap, "scope",cloudSubnet.Scope)
-	
-    
-	A(cloudSubnetMap, "usage",cloudSubnet.Usage)
-	
-    
-	
+	A(cloudSubnetMap, "ip", cloudSubnet.Ip)
+
+	A(cloudSubnetMap, "annotation", cloudSubnet.Annotation)
+
+	A(cloudSubnetMap, "nameAlias", cloudSubnet.NameAlias)
+
+	A(cloudSubnetMap, "scope", cloudSubnet.Scope)
+
+	A(cloudSubnetMap, "usage", cloudSubnet.Usage)
+	A(cloudSubnetMap, "zone", cloudSubnet.Zone)
 
 	return cloudSubnetMap, err
 }
@@ -95,29 +74,21 @@ func CloudSubnetFromContainerList(cont *container.Container, index int) *CloudSu
 			ClassName:         CloudsubnetClassName,
 			Rn:                G(CloudSubnetCont, "rn"),
 		},
-        
+
 		CloudSubnetAttributes{
-		
-		
-			Ip : G(CloudSubnetCont, "ip"),
-		
-		
-        
-	        Annotation : G(CloudSubnetCont, "annotation"),
-		
-        
-        
-	        NameAlias : G(CloudSubnetCont, "nameAlias"),
-		
-        
-	        Scope : G(CloudSubnetCont, "scope"),
-		
-        
-	        Usage : G(CloudSubnetCont, "usage"),
-		
-        		
-        },
-        
+
+			Ip: G(CloudSubnetCont, "ip"),
+
+			Annotation: G(CloudSubnetCont, "annotation"),
+
+			NameAlias: G(CloudSubnetCont, "nameAlias"),
+
+			Scope: G(CloudSubnetCont, "scope"),
+
+			Usage: G(CloudSubnetCont, "usage"),
+
+			Zone: G(CloudSubnetCont, "zone"),
+		},
 	}
 }
 
