@@ -194,7 +194,7 @@ func NewOSource(firmwareOSourceRn, parentDn, description string, firmwareOSource
 		BaseAttributes: BaseAttributes{
 			DistinguishedName: dn,
 			Description:       description,
-			Status:            "created, modified",
+			Status:            "",
 			ClassName:         FirmwareOSourceClassName,
 			Rn:                firmwareOSourceRn,
 		},

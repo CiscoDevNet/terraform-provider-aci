@@ -80,7 +80,6 @@ func (sm *ServiceManager) UpdateOSource(name string, description string, firmwar
 	rn := fmt.Sprintf("osrc-%s", name)
 	parentDn := fmt.Sprintf("uni/fabric/fwrepop")
 	firmwareOSource := models.NewOSource(rn, parentDn, description, firmwareOSourceAttr)
-	firmwareOSource.Status = "modified"
 	err := sm.Save(firmwareOSource)
 	return firmwareOSource, err
 

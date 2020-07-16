@@ -59,6 +59,12 @@ func resourceAciCloudSubnet() *schema.Resource {
 				Computed: true,
 			},
 
+			"zone": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+
 			"relation_cloud_rs_zone_attach": &schema.Schema{
 				Type: schema.TypeString,
 
@@ -104,6 +110,7 @@ func setCloudSubnetAttributes(cloudSubnet *models.CloudSubnet, d *schema.Resourc
 	d.Set("name_alias", cloudSubnetMap["nameAlias"])
 	d.Set("scope", cloudSubnetMap["scope"])
 	d.Set("usage", cloudSubnetMap["usage"])
+	d.Set("zone", cloudSubnetMap["zone"])
 	return d
 }
 
@@ -149,6 +156,9 @@ func resourceAciCloudSubnetCreate(d *schema.ResourceData, m interface{}) error {
 	}
 	if Usage, ok := d.GetOk("usage"); ok {
 		cloudSubnetAttr.Usage = Usage.(string)
+	}
+	if zone, ok := d.GetOk("zone"); ok {
+		cloudSubnetAttr.Zone = zone.(string)
 	}
 	cloudSubnet := models.NewCloudSubnet(fmt.Sprintf("subnet-[%s]", ip), CloudCIDRPoolDn, desc, cloudSubnetAttr)
 
@@ -218,6 +228,9 @@ func resourceAciCloudSubnetUpdate(d *schema.ResourceData, m interface{}) error {
 	}
 	if Usage, ok := d.GetOk("usage"); ok {
 		cloudSubnetAttr.Usage = Usage.(string)
+	}
+	if zone, ok := d.GetOk("zone"); ok {
+		cloudSubnetAttr.Zone = zone.(string)
 	}
 	cloudSubnet := models.NewCloudSubnet(fmt.Sprintf("subnet-[%s]", ip), CloudCIDRPoolDn, desc, cloudSubnetAttr)
 
