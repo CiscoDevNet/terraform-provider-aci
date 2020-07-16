@@ -2,6 +2,7 @@ package aci
 
 import (
 	"fmt"
+
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 )
@@ -54,7 +55,7 @@ func dataSourceAciApplicationEPG() *schema.Resource {
 				Computed: true,
 			},
 
-			"is_attr_based_e_pg": &schema.Schema{
+			"is_attr_based_epg": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,

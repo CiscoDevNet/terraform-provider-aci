@@ -2,6 +2,7 @@ package aci
 
 import (
 	"fmt"
+
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 )
@@ -14,7 +15,7 @@ func dataSourceAciCloudEndpointSelectorforExternalEPgs() *schema.Resource {
 		SchemaVersion: 1,
 
 		Schema: AppendBaseAttrSchema(map[string]*schema.Schema{
-			"cloud_external_e_pg_dn": &schema.Schema{
+			"cloud_external_epg_dn": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
 			},
@@ -63,7 +64,7 @@ func dataSourceAciCloudEndpointSelectorforExternalEPgsRead(d *schema.ResourceDat
 	name := d.Get("name").(string)
 
 	rn := fmt.Sprintf("extepselector-%s", name)
-	CloudExternalEPgDn := d.Get("cloud_external_e_pg_dn").(string)
+	CloudExternalEPgDn := d.Get("cloud_external_epg_dn").(string)
 
 	dn := fmt.Sprintf("%s/%s", CloudExternalEPgDn, rn)
 

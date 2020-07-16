@@ -32,7 +32,7 @@ data "aci_application_epg" "foo_epg" {
 * `flood_on_encap` - (Optional) Control at EPG level if the traffic L2 Multicast/Broadcast and Link Local Layer should be flooded only on ENCAP or based on bridg-domain settings.
 * `fwd_ctrl` - (Optional) Forwarding control at EPG level.
 * `has_mcast_source` - (Optional) If the source for the EPG is multicast or not.
-* `is_attr_based_e_pg` - (Optional) If the EPG is attribute based or not.
+* `is_attr_based_epg` - (Optional) If the EPG is attribute based or not.
 * `match_t` - (Optional) The provider label match criteria for EPG.
 * `name_alias` - (Optional) name_alias for object application_epg.
 * `pc_enf_pref` - (Optional) The preferred policy control. 

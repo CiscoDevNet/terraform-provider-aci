@@ -14,12 +14,12 @@ Data source for ACI Cloud Endpoint Selector
 ```hcl
 data "aci_cloud_endpoint_selector" "dev_ep_select" {
 
-  cloud_e_pg_dn  = "${aci_cloud_epg.dev_epg.id}"
+  cloud_epg_dn  = "${aci_cloud_epg.dev_epg.id}"
   name           = "dev_ep_select"
 }
 ```
 ## Argument Reference ##
-* `cloud_e_pg_dn` - (Required) Distinguished name of parent CloudEPg object.
+* `cloud_epg_dn` - (Required) Distinguished name of parent CloudEPg object.
 * `name` - (Required) name of Object cloud_endpoint_selector.
 
 

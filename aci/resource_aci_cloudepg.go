@@ -108,7 +108,7 @@ func resourceAciCloudEPg() *schema.Resource {
 				Optional: true,
 				Set:      schema.HashString,
 			},
-			"relation_cloud_rs_cloud_e_pg_ctx": &schema.Schema{
+			"relation_cloud_rs_cloud_epg_ctx": &schema.Schema{
 				Type: schema.TypeString,
 
 				Optional: true,
@@ -293,7 +293,7 @@ func resourceAciCloudEPgCreate(d *schema.ResourceData, m interface{}) error {
 			d.Partial(false)
 		}
 	}
-	if relationTocloudRsCloudEPgCtx, ok := d.GetOk("relation_cloud_rs_cloud_e_pg_ctx"); ok {
+	if relationTocloudRsCloudEPgCtx, ok := d.GetOk("relation_cloud_rs_cloud_epg_ctx"); ok {
 		relationParam := relationTocloudRsCloudEPgCtx.(string)
 		relationParamName := GetMOName(relationParam)
 		err = aciClient.CreateRelationcloudRsCloudEPgCtxFromCloudEPg(cloudEPg.DistinguishedName, relationParamName)
@@ -301,7 +301,7 @@ func resourceAciCloudEPgCreate(d *schema.ResourceData, m interface{}) error {
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_cloud_rs_cloud_e_pg_ctx")
+		d.SetPartial("relation_cloud_rs_cloud_epg_ctx")
 		d.Partial(false)
 
 	}
@@ -513,15 +513,15 @@ func resourceAciCloudEPgUpdate(d *schema.ResourceData, m interface{}) error {
 		}
 
 	}
-	if d.HasChange("relation_cloud_rs_cloud_e_pg_ctx") {
-		_, newRelParam := d.GetChange("relation_cloud_rs_cloud_e_pg_ctx")
+	if d.HasChange("relation_cloud_rs_cloud_epg_ctx") {
+		_, newRelParam := d.GetChange("relation_cloud_rs_cloud_epg_ctx")
 		newRelParamName := GetMOName(newRelParam.(string))
 		err = aciClient.CreateRelationcloudRsCloudEPgCtxFromCloudEPg(cloudEPg.DistinguishedName, newRelParamName)
 		if err != nil {
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_cloud_rs_cloud_e_pg_ctx")
+		d.SetPartial("relation_cloud_rs_cloud_epg_ctx")
 		d.Partial(false)
 
 	}
@@ -697,10 +697,10 @@ func resourceAciCloudEPgRead(d *schema.ResourceData, m interface{}) error {
 		log.Printf("[DEBUG] Error while reading relation cloudRsCloudEPgCtx %v", err)
 
 	} else {
-		if _, ok := d.GetOk("relation_cloud_rs_cloud_e_pg_ctx"); ok {
-			tfName := GetMOName(d.Get("relation_cloud_rs_cloud_e_pg_ctx").(string))
+		if _, ok := d.GetOk("relation_cloud_rs_cloud_epg_ctx"); ok {
+			tfName := GetMOName(d.Get("relation_cloud_rs_cloud_epg_ctx").(string))
 			if tfName != cloudRsCloudEPgCtxData {
-				d.Set("relation_cloud_rs_cloud_e_pg_ctx", "")
+				d.Set("relation_cloud_rs_cloud_epg_ctx", "")
 			}
 		}
 	}

@@ -22,7 +22,7 @@ resource "aci_application_epg" "demoepg" {
   description                  = "This epg is created by terraform ACI providers"
   flood_on_encap               = "disabled"
   fwd_ctrl                     = "none"
-  is_attr_based_e_pg           = "no"
+  is_attr_based_epg           = "no"
   match_t                      = "None"
   pc_enf_pref                  = "unenforced"
   pref_gr_memb                 = "exclude"
@@ -39,6 +39,6 @@ resource "aci_application_epg" "demoepg" {
   relation_fv_rs_cons          = ["${aci_contract.rs_cons_contract.id}"]   # Relation to vzBrCP class. Cardinality - N_TO_M.
   relation_fv_rs_trust_ctrl    = "${aci_rest.rest_trust_ctrl_pol.id}"      # Relation to fhsTrustCtrlPol class. Cardinality - N_TO_ONE.
   relation_fv_rs_prot_by       = ["${aci_rest.rest_taboo_con.id}"]         # Relation to vzTaboo class. Cardinality - N_TO_M.
-  relation_fv_rs_ae_pg_mon_pol = "${aci_rest.rest_mon_epg_pol.id}"         # Relation to monEPGPol class. Cardinality - N_TO_ONE.
+  relation_fv_rs_aepg_mon_pol = "${aci_rest.rest_mon_epg_pol.id}"         # Relation to monEPGPol class. Cardinality - N_TO_ONE.
   relation_fv_rs_intra_epg     = ["${aci_contract.intra_epg_contract.id}"] # Relation to vzBrCP class. Cardinality - N_TO_M.
 }

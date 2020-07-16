@@ -21,7 +21,7 @@ Manages ACI Application EPG
     flood_on_encap  	      = "disabled"
     fwd_ctrl  			      	= "none"
     has_mcast_source     		= "no"
-    is_attr_based_e_pg     	= "no"
+    is_attr_based_epg     	= "no"
     match_t  				        = "AtleastOne"
     name_alias  		      	= "alias_epg"
     pc_enf_pref  		      	= "unenforced"
@@ -38,7 +38,7 @@ Manages ACI Application EPG
 * `flood_on_encap` - (Optional) Control at EPG level if the traffic L2 Multicast/Broadcast and Link Local Layer should be flooded only on ENCAP or based on bridg-domain settings. Allowed values are "disabled" and "enabled". Default is "disabled".
 * `fwd_ctrl` - (Optional) Forwarding control at EPG level. Allowed values are "none" and "proxy-arp". Default is "none".
 * `has_mcast_source` - (Optional) If the source for the EPG is multicast or not. Allowed values are "yes" and "no". Default values is "no".
-* `is_attr_based_e_pg` - (Optional) If the EPG is attribute based or not. Allowed values are "yes" and "no". Default is "yes".
+* `is_attr_based_epg` - (Optional) If the EPG is attribute based or not. Allowed values are "yes" and "no". Default is "yes".
 * `match_t` - (Optional) The provider label match criteria for EPG. Allowed values are "All", "AtleastOne", "AtmostOne", "None". Default is "AtleastOne".
 * `name_alias` - (Optional) name_alias for object application_epg.
 * `pc_enf_pref` - (Optional) The preferred policy control. Allowed values are "unenforced" and "enforced". Default is "unenforced".
@@ -74,7 +74,7 @@ Manages ACI Application EPG
                                 
 * `relation_fv_rs_prot_by` - (Optional) Relation to class vzTaboo. Cardinality - N_TO_M. Type - Set of String.
                 
-* `relation_fv_rs_ae_pg_mon_pol` - (Optional) Relation to class monEPGPol. Cardinality - N_TO_ONE. Type - String.
+* `relation_fv_rs_aepg_mon_pol` - (Optional) Relation to class monEPGPol. Cardinality - N_TO_ONE. Type - String.
                 
 * `relation_fv_rs_intra_epg` - (Optional) Relation to class vzBrCP. Cardinality - N_TO_M. Type - Set of String.
                 

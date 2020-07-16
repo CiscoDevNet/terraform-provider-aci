@@ -23,7 +23,7 @@ func resourceAciCloudEndpointSelectorforExternalEPgs() *schema.Resource {
 		SchemaVersion: 1,
 
 		Schema: AppendBaseAttrSchema(map[string]*schema.Schema{
-			"cloud_external_e_pg_dn": &schema.Schema{
+			"cloud_external_epg_dn": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
 				ForceNew: true,
@@ -85,9 +85,9 @@ func setCloudEndpointSelectorforExternalEPgsAttributes(cloudExtEPSelector *model
 	dn := d.Id()
 	d.SetId(cloudExtEPSelector.DistinguishedName)
 	d.Set("description", cloudExtEPSelector.Description)
-	// d.Set("cloud_external_e_pg_dn", GetParentDn(cloudExtEPSelector.DistinguishedName))
+	// d.Set("cloud_external_epg_dn", GetParentDn(cloudExtEPSelector.DistinguishedName))
 	if dn != cloudExtEPSelector.DistinguishedName {
-		d.Set("cloud_external_e_pg_dn", "")
+		d.Set("cloud_external_epg_dn", "")
 	}
 	cloudExtEPSelectorMap, _ := cloudExtEPSelector.ToMap()
 
@@ -126,7 +126,7 @@ func resourceAciCloudEndpointSelectorforExternalEPgsCreate(d *schema.ResourceDat
 
 	name := d.Get("name").(string)
 
-	CloudExternalEPgDn := d.Get("cloud_external_e_pg_dn").(string)
+	CloudExternalEPgDn := d.Get("cloud_external_epg_dn").(string)
 
 	cloudExtEPSelectorAttr := models.CloudEndpointSelectorforExternalEPgsAttributes{}
 	cloudExtEPSelectorAttr.Name = name
@@ -171,7 +171,7 @@ func resourceAciCloudEndpointSelectorforExternalEPgsUpdate(d *schema.ResourceDat
 
 	name := d.Get("name").(string)
 
-	CloudExternalEPgDn := d.Get("cloud_external_e_pg_dn").(string)
+	CloudExternalEPgDn := d.Get("cloud_external_epg_dn").(string)
 
 	cloudExtEPSelectorAttr := models.CloudEndpointSelectorforExternalEPgsAttributes{}
 	cloudExtEPSelectorAttr.Name = name

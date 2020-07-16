@@ -67,7 +67,7 @@ func resourceAciApplicationEPG() *schema.Resource {
 				Computed: true,
 			},
 
-			"is_attr_based_e_pg": &schema.Schema{
+			"is_attr_based_epg": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
@@ -189,7 +189,7 @@ func resourceAciApplicationEPG() *schema.Resource {
 				Optional: true,
 				Set:      schema.HashString,
 			},
-			"relation_fv_rs_ae_pg_mon_pol": &schema.Schema{
+			"relation_fv_rs_aepg_mon_pol": &schema.Schema{
 				Type: schema.TypeString,
 
 				Optional: true,
@@ -235,7 +235,7 @@ func setApplicationEPGAttributes(fvAEPg *models.ApplicationEPG, d *schema.Resour
 	d.Set("flood_on_encap", fvAEPgMap["floodOnEncap"])
 	d.Set("fwd_ctrl", fvAEPgMap["fwdCtrl"])
 	d.Set("has_mcast_source", fvAEPgMap["hasMcastSource"])
-	d.Set("is_attr_based_e_pg", fvAEPgMap["isAttrBasedEPg"])
+	d.Set("is_attr_based_epg", fvAEPgMap["isAttrBasedEPg"])
 	d.Set("match_t", fvAEPgMap["matchT"])
 	d.Set("name_alias", fvAEPgMap["nameAlias"])
 	d.Set("pc_enf_pref", fvAEPgMap["pcEnfPref"])
@@ -288,7 +288,7 @@ func resourceAciApplicationEPGCreate(d *schema.ResourceData, m interface{}) erro
 	if HasMcastSource, ok := d.GetOk("has_mcast_source"); ok {
 		fvAEPgAttr.HasMcastSource = HasMcastSource.(string)
 	}
-	if IsAttrBasedEPg, ok := d.GetOk("is_attr_based_e_pg"); ok {
+	if IsAttrBasedEPg, ok := d.GetOk("is_attr_based_epg"); ok {
 		fvAEPgAttr.IsAttrBasedEPg = IsAttrBasedEPg.(string)
 	}
 	if MatchT, ok := d.GetOk("match_t"); ok {
@@ -516,7 +516,7 @@ func resourceAciApplicationEPGCreate(d *schema.ResourceData, m interface{}) erro
 			d.Partial(false)
 		}
 	}
-	if relationTofvRsAEPgMonPol, ok := d.GetOk("relation_fv_rs_ae_pg_mon_pol"); ok {
+	if relationTofvRsAEPgMonPol, ok := d.GetOk("relation_fv_rs_aepg_mon_pol"); ok {
 		relationParam := relationTofvRsAEPgMonPol.(string)
 		relationParamName := GetMOName(relationParam)
 		err = aciClient.CreateRelationfvRsAEPgMonPolFromApplicationEPG(fvAEPg.DistinguishedName, relationParamName)
@@ -524,7 +524,7 @@ func resourceAciApplicationEPGCreate(d *schema.ResourceData, m interface{}) erro
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_fv_rs_ae_pg_mon_pol")
+		d.SetPartial("relation_fv_rs_aepg_mon_pol")
 		d.Partial(false)
 
 	}
@@ -575,7 +575,7 @@ func resourceAciApplicationEPGUpdate(d *schema.ResourceData, m interface{}) erro
 	if HasMcastSource, ok := d.GetOk("has_mcast_source"); ok {
 		fvAEPgAttr.HasMcastSource = HasMcastSource.(string)
 	}
-	if IsAttrBasedEPg, ok := d.GetOk("is_attr_based_e_pg"); ok {
+	if IsAttrBasedEPg, ok := d.GetOk("is_attr_based_epg"); ok {
 		fvAEPgAttr.IsAttrBasedEPg = IsAttrBasedEPg.(string)
 	}
 	if MatchT, ok := d.GetOk("match_t"); ok {
@@ -954,8 +954,8 @@ func resourceAciApplicationEPGUpdate(d *schema.ResourceData, m interface{}) erro
 		}
 
 	}
-	if d.HasChange("relation_fv_rs_ae_pg_mon_pol") {
-		_, newRelParam := d.GetChange("relation_fv_rs_ae_pg_mon_pol")
+	if d.HasChange("relation_fv_rs_aepg_mon_pol") {
+		_, newRelParam := d.GetChange("relation_fv_rs_aepg_mon_pol")
 		newRelParamName := GetMOName(newRelParam.(string))
 		err = aciClient.DeleteRelationfvRsAEPgMonPolFromApplicationEPG(fvAEPg.DistinguishedName)
 		if err != nil {
@@ -966,7 +966,7 @@ func resourceAciApplicationEPGUpdate(d *schema.ResourceData, m interface{}) erro
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_fv_rs_ae_pg_mon_pol")
+		d.SetPartial("relation_fv_rs_aepg_mon_pol")
 		d.Partial(false)
 
 	}
@@ -1222,10 +1222,10 @@ func resourceAciApplicationEPGRead(d *schema.ResourceData, m interface{}) error 
 		log.Printf("[DEBUG] Error while reading relation fvRsAEPgMonPol %v", err)
 
 	} else {
-		if _, ok := d.GetOk("relation_fv_rs_ae_pg_mon_pol"); ok {
-			tfName := GetMOName(d.Get("relation_fv_rs_ae_pg_mon_pol").(string))
+		if _, ok := d.GetOk("relation_fv_rs_aepg_mon_pol"); ok {
+			tfName := GetMOName(d.Get("relation_fv_rs_aepg_mon_pol").(string))
 			if tfName != fvRsAEPgMonPolData {
-				d.Set("relation_fv_rs_ae_pg_mon_pol", "")
+				d.Set("relation_fv_rs_aepg_mon_pol", "")
 			}
 		}
 	}
