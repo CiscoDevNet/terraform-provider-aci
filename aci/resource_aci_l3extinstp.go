@@ -102,7 +102,7 @@ func resourceAciExternalNetworkInstanceProfile() *schema.Resource {
 
 				Optional: true,
 			},
-			"relation_l3ext_rs_inst_p_to_nat_mapping_e_pg": &schema.Schema{
+			"relation_l3ext_rs_inst_p_to_nat_mapping_epg": &schema.Schema{
 				Type: schema.TypeString,
 
 				Optional: true,
@@ -295,14 +295,14 @@ func resourceAciExternalNetworkInstanceProfileCreate(d *schema.ResourceData, m i
 		d.Partial(false)
 
 	}
-	if relationTol3extRsInstPToNatMappingEPg, ok := d.GetOk("relation_l3ext_rs_inst_p_to_nat_mapping_e_pg"); ok {
+	if relationTol3extRsInstPToNatMappingEPg, ok := d.GetOk("relation_l3ext_rs_inst_p_to_nat_mapping_epg"); ok {
 		relationParam := relationTol3extRsInstPToNatMappingEPg.(string)
 		err = aciClient.CreateRelationl3extRsInstPToNatMappingEPgFromExternalNetworkInstanceProfile(l3extInstP.DistinguishedName, relationParam)
 		if err != nil {
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_l3ext_rs_inst_p_to_nat_mapping_e_pg")
+		d.SetPartial("relation_l3ext_rs_inst_p_to_nat_mapping_epg")
 		d.Partial(false)
 
 	}
@@ -513,8 +513,8 @@ func resourceAciExternalNetworkInstanceProfileUpdate(d *schema.ResourceData, m i
 		d.Partial(false)
 
 	}
-	if d.HasChange("relation_l3ext_rs_inst_p_to_nat_mapping_e_pg") {
-		_, newRelParam := d.GetChange("relation_l3ext_rs_inst_p_to_nat_mapping_e_pg")
+	if d.HasChange("relation_l3ext_rs_inst_p_to_nat_mapping_epg") {
+		_, newRelParam := d.GetChange("relation_l3ext_rs_inst_p_to_nat_mapping_epg")
 		err = aciClient.DeleteRelationl3extRsInstPToNatMappingEPgFromExternalNetworkInstanceProfile(l3extInstP.DistinguishedName)
 		if err != nil {
 			return err
@@ -524,7 +524,7 @@ func resourceAciExternalNetworkInstanceProfileUpdate(d *schema.ResourceData, m i
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_l3ext_rs_inst_p_to_nat_mapping_e_pg")
+		d.SetPartial("relation_l3ext_rs_inst_p_to_nat_mapping_epg")
 		d.Partial(false)
 
 	}
@@ -750,10 +750,10 @@ func resourceAciExternalNetworkInstanceProfileRead(d *schema.ResourceData, m int
 		log.Printf("[DEBUG] Error while reading relation l3extRsInstPToNatMappingEPg %v", err)
 
 	} else {
-		if _, ok := d.GetOk("relation_l3ext_rs_inst_p_to_nat_mapping_e_pg"); ok {
-			tfName := d.Get("relation_l3ext_rs_inst_p_to_nat_mapping_e_pg").(string)
+		if _, ok := d.GetOk("relation_l3ext_rs_inst_p_to_nat_mapping_epg"); ok {
+			tfName := d.Get("relation_l3ext_rs_inst_p_to_nat_mapping_epg").(string)
 			if tfName != l3extRsInstPToNatMappingEPgData {
-				d.Set("relation_l3ext_rs_inst_p_to_nat_mapping_e_pg", "")
+				d.Set("relation_l3ext_rs_inst_p_to_nat_mapping_epg", "")
 			}
 		}
 	}

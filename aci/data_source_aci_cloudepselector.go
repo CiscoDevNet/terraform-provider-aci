@@ -2,6 +2,7 @@ package aci
 
 import (
 	"fmt"
+
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 )
@@ -14,7 +15,7 @@ func dataSourceAciCloudEndpointSelector() *schema.Resource {
 		SchemaVersion: 1,
 
 		Schema: AppendBaseAttrSchema(map[string]*schema.Schema{
-			"cloud_e_pg_dn": &schema.Schema{
+			"cloud_epg_dn": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
 			},
@@ -51,7 +52,7 @@ func dataSourceAciCloudEndpointSelectorRead(d *schema.ResourceData, m interface{
 	name := d.Get("name").(string)
 
 	rn := fmt.Sprintf("epselector-%s", name)
-	CloudEPgDn := d.Get("cloud_e_pg_dn").(string)
+	CloudEPgDn := d.Get("cloud_epg_dn").(string)
 
 	dn := fmt.Sprintf("%s/%s", CloudEPgDn, rn)
 

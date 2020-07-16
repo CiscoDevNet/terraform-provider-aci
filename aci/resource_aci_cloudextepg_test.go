@@ -11,8 +11,8 @@ import (
 )
 
 func TestAccAciCloudExternalEPg_Basic(t *testing.T) {
-	var cloud_external_e_pg models.CloudExternalEPg
-	description := "cloud_external_e_pg created while acceptance testing"
+	var cloud_external_epg models.CloudExternalEPg
+	description := "cloud_external_epg created while acceptance testing"
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
@@ -22,8 +22,8 @@ func TestAccAciCloudExternalEPg_Basic(t *testing.T) {
 			{
 				Config: testAccCheckAciCloudExternalEPgConfig_basic(description, "All"),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAciCloudExternalEPgExists("aci_cloud_external_epg.foocloud_external_e_pg", &cloud_external_e_pg),
-					testAccCheckAciCloudExternalEPgAttributes(description, "All", &cloud_external_e_pg),
+					testAccCheckAciCloudExternalEPgExists("aci_cloud_external_epg.foocloud_external_epg", &cloud_external_epg),
+					testAccCheckAciCloudExternalEPgAttributes(description, "All", &cloud_external_epg),
 				),
 			},
 			{
@@ -36,8 +36,8 @@ func TestAccAciCloudExternalEPg_Basic(t *testing.T) {
 }
 
 func TestAccAciCloudExternalEPg_update(t *testing.T) {
-	var cloud_external_e_pg models.CloudExternalEPg
-	description := "cloud_external_e_pg created while acceptance testing"
+	var cloud_external_epg models.CloudExternalEPg
+	description := "cloud_external_epg created while acceptance testing"
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
@@ -47,15 +47,15 @@ func TestAccAciCloudExternalEPg_update(t *testing.T) {
 			{
 				Config: testAccCheckAciCloudExternalEPgConfig_basic(description, "All"),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAciCloudExternalEPgExists("aci_cloud_external_epg.foocloud_external_e_pg", &cloud_external_e_pg),
-					testAccCheckAciCloudExternalEPgAttributes(description, "All", &cloud_external_e_pg),
+					testAccCheckAciCloudExternalEPgExists("aci_cloud_external_epg.foocloud_external_epg", &cloud_external_epg),
+					testAccCheckAciCloudExternalEPgAttributes(description, "All", &cloud_external_epg),
 				),
 			},
 			{
 				Config: testAccCheckAciCloudExternalEPgConfig_basic(description, "AtleastOne"),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAciCloudExternalEPgExists("aci_cloud_external_epg.foocloud_external_e_pg", &cloud_external_e_pg),
-					testAccCheckAciCloudExternalEPgAttributes(description, "AtleastOne", &cloud_external_e_pg),
+					testAccCheckAciCloudExternalEPgExists("aci_cloud_external_epg.foocloud_external_epg", &cloud_external_epg),
+					testAccCheckAciCloudExternalEPgAttributes(description, "AtleastOne", &cloud_external_epg),
 				),
 			},
 		},
@@ -76,7 +76,7 @@ func testAccCheckAciCloudExternalEPgConfig_basic(description, match_t string) st
 		annotation  = "tag_app"
 	}
 
-	resource "aci_cloud_external_epg" "foocloud_external_e_pg" {
+	resource "aci_cloud_external_epg" "foocloud_external_epg" {
 		cloud_applicationcontainer_dn = "${aci_cloud_applicationcontainer.foocloud_applicationcontainer.id}"
 		description                   = "%s"
 		name                          = "cloud_ext_epg"
@@ -92,7 +92,7 @@ func testAccCheckAciCloudExternalEPgConfig_basic(description, match_t string) st
 	`, description, match_t)
 }
 
-func testAccCheckAciCloudExternalEPgExists(name string, cloud_external_e_pg *models.CloudExternalEPg) resource.TestCheckFunc {
+func testAccCheckAciCloudExternalEPgExists(name string, cloud_external_epg *models.CloudExternalEPg) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 		rs, ok := s.RootModule().Resources[name]
 
@@ -111,11 +111,11 @@ func testAccCheckAciCloudExternalEPgExists(name string, cloud_external_e_pg *mod
 			return err
 		}
 
-		cloud_external_e_pgFound := models.CloudExternalEPgFromContainer(cont)
-		if cloud_external_e_pgFound.DistinguishedName != rs.Primary.ID {
+		cloud_external_epgFound := models.CloudExternalEPgFromContainer(cont)
+		if cloud_external_epgFound.DistinguishedName != rs.Primary.ID {
 			return fmt.Errorf("Cloud External EPg %s not found", rs.Primary.ID)
 		}
-		*cloud_external_e_pg = *cloud_external_e_pgFound
+		*cloud_external_epg = *cloud_external_epgFound
 		return nil
 	}
 }
@@ -127,9 +127,9 @@ func testAccCheckAciCloudExternalEPgDestroy(s *terraform.State) error {
 
 		if rs.Type == "aci_cloud_external_epg" {
 			cont, err := client.Get(rs.Primary.ID)
-			cloud_external_e_pg := models.CloudExternalEPgFromContainer(cont)
+			cloud_external_epg := models.CloudExternalEPgFromContainer(cont)
 			if err == nil {
-				return fmt.Errorf("Cloud External EPg %s Still exists", cloud_external_e_pg.DistinguishedName)
+				return fmt.Errorf("Cloud External EPg %s Still exists", cloud_external_epg.DistinguishedName)
 			}
 
 		} else {
@@ -140,47 +140,47 @@ func testAccCheckAciCloudExternalEPgDestroy(s *terraform.State) error {
 	return nil
 }
 
-func testAccCheckAciCloudExternalEPgAttributes(description, match_t string, cloud_external_e_pg *models.CloudExternalEPg) resource.TestCheckFunc {
+func testAccCheckAciCloudExternalEPgAttributes(description, match_t string, cloud_external_epg *models.CloudExternalEPg) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 
-		if description != cloud_external_e_pg.Description {
-			return fmt.Errorf("Bad cloud_external_e_pg Description %s", cloud_external_e_pg.Description)
+		if description != cloud_external_epg.Description {
+			return fmt.Errorf("Bad cloud_external_epg Description %s", cloud_external_epg.Description)
 		}
 
-		if "cloud_ext_epg" != cloud_external_e_pg.Name {
-			return fmt.Errorf("Bad cloud_external_e_pg name %s", cloud_external_e_pg.Name)
+		if "cloud_ext_epg" != cloud_external_epg.Name {
+			return fmt.Errorf("Bad cloud_external_epg name %s", cloud_external_epg.Name)
 		}
 
-		if "tag_ext_epg" != cloud_external_e_pg.Annotation {
-			return fmt.Errorf("Bad cloud_external_e_pg annotation %s", cloud_external_e_pg.Annotation)
+		if "tag_ext_epg" != cloud_external_epg.Annotation {
+			return fmt.Errorf("Bad cloud_external_epg annotation %s", cloud_external_epg.Annotation)
 		}
 
-		if "0" != cloud_external_e_pg.ExceptionTag {
-			return fmt.Errorf("Bad cloud_external_e_pg exception_tag %s", cloud_external_e_pg.ExceptionTag)
+		if "0" != cloud_external_epg.ExceptionTag {
+			return fmt.Errorf("Bad cloud_external_epg exception_tag %s", cloud_external_epg.ExceptionTag)
 		}
 
-		if "disabled" != cloud_external_e_pg.FloodOnEncap {
-			return fmt.Errorf("Bad cloud_external_e_pg flood_on_encap %s", cloud_external_e_pg.FloodOnEncap)
+		if "disabled" != cloud_external_epg.FloodOnEncap {
+			return fmt.Errorf("Bad cloud_external_epg flood_on_encap %s", cloud_external_epg.FloodOnEncap)
 		}
 
-		if match_t != cloud_external_e_pg.MatchT {
-			return fmt.Errorf("Bad cloud_external_e_pg match_t %s", cloud_external_e_pg.MatchT)
+		if match_t != cloud_external_epg.MatchT {
+			return fmt.Errorf("Bad cloud_external_epg match_t %s", cloud_external_epg.MatchT)
 		}
 
-		if "alias_ext" != cloud_external_e_pg.NameAlias {
-			return fmt.Errorf("Bad cloud_external_e_pg name_alias %s", cloud_external_e_pg.NameAlias)
+		if "alias_ext" != cloud_external_epg.NameAlias {
+			return fmt.Errorf("Bad cloud_external_epg name_alias %s", cloud_external_epg.NameAlias)
 		}
 
-		if "exclude" != cloud_external_e_pg.PrefGrMemb {
-			return fmt.Errorf("Bad cloud_external_e_pg pref_gr_memb %s", cloud_external_e_pg.PrefGrMemb)
+		if "exclude" != cloud_external_epg.PrefGrMemb {
+			return fmt.Errorf("Bad cloud_external_epg pref_gr_memb %s", cloud_external_epg.PrefGrMemb)
 		}
 
-		if "unspecified" != cloud_external_e_pg.Prio {
-			return fmt.Errorf("Bad cloud_external_e_pg prio %s", cloud_external_e_pg.Prio)
+		if "unspecified" != cloud_external_epg.Prio {
+			return fmt.Errorf("Bad cloud_external_epg prio %s", cloud_external_epg.Prio)
 		}
 
-		if "inter-site" != cloud_external_e_pg.RouteReachability {
-			return fmt.Errorf("Bad cloud_external_e_pg route_reachability %s", cloud_external_e_pg.RouteReachability)
+		if "inter-site" != cloud_external_epg.RouteReachability {
+			return fmt.Errorf("Bad cloud_external_epg route_reachability %s", cloud_external_epg.RouteReachability)
 		}
 
 		return nil

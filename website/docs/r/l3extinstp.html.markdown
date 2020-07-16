@@ -46,7 +46,7 @@ Manages ACI External Network Instance Profile
                 
 * `relation_l3ext_rs_l3_inst_p_to_dom_p` - (Optional) Relation to class extnwDomP. Cardinality - N_TO_ONE. Type - String.
                 
-* `relation_l3ext_rs_inst_p_to_nat_mapping_e_pg` - (Optional) Relation to class fvAEPg. Cardinality - N_TO_ONE. Type - String.
+* `relation_l3ext_rs_inst_p_to_nat_mapping_epg` - (Optional) Relation to class fvAEPg. Cardinality - N_TO_ONE. Type - String.
                 
 * `relation_fv_rs_cons_if` - (Optional) Relation to class vzCPIf. Cardinality - N_TO_M. Type - Set of String.
                 

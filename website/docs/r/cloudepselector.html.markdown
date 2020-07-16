@@ -13,7 +13,7 @@ Manages ACI Cloud Endpoint Selector
 
 ```hcl
 	resource "aci_cloud_endpoint_selector" "foocloud_endpoint_selector" {
-		cloud_e_pg_dn    = "${aci_cloud_epg.foocloud_e_pg.id}"
+		cloud_epg_dn    = "${aci_cloud_epg.foocloud_epg.id}"
 		description      = "sample ep selector"
 		name             = "ep_select"
 		annotation       = "tag_ep"
@@ -22,7 +22,7 @@ Manages ACI Cloud Endpoint Selector
 	}
 ```
 ## Argument Reference ##
-* `cloud_e_pg_dn` - (Required) Distinguished name of parent CloudEPg object.
+* `cloud_epg_dn` - (Required) Distinguished name of parent CloudEPg object.
 * `name` - (Required) name of Object cloud_endpoint_selector.
 * `annotation` - (Optional) annotation for object cloud_endpoint_selector.
 * `match_expression` - (Optional) Match expression for the endpoint selector to select EP on criteria.

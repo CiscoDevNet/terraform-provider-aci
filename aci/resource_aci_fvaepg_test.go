@@ -83,7 +83,7 @@ func testAccCheckAciApplicationEPGConfig_basic(description, prio string) string 
 			flood_on_encap  		= "disabled"
 			fwd_ctrl  				= "none"
 			has_mcast_source  		= "no"
-			is_attr_based_e_pg  	= "no"
+			is_attr_based_epg  	= "no"
 			match_t  				= "AtleastOne"
 			name_alias  			= "alias_epg"
 			pc_enf_pref  			= "unenforced"
@@ -174,7 +174,7 @@ func testAccCheckAciApplicationEPGAttributes(description, prio string, applicati
 		}
 
 		if "no" != application_epg.IsAttrBasedEPg {
-			return fmt.Errorf("Bad application_epg is_attr_based_e_pg %s", application_epg.IsAttrBasedEPg)
+			return fmt.Errorf("Bad application_epg is_attr_based_epg %s", application_epg.IsAttrBasedEPg)
 		}
 
 		if "AtleastOne" != application_epg.MatchT {

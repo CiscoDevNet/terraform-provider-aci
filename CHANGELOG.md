@@ -1,4 +1,8 @@
-## 0.4.0 (Unreleased)
+## 0.3.3 (Unreleased)
+
+BREAKING CHANGES:
+- Renamed all the e_pg attributes to epg.
+
 ## 0.3.2 (July 06, 2020)
 
 IMPROVEMENTS:
@@ -30,7 +34,7 @@ IMPROVEMENTS:
 ## 0.2.2 (May 11, 2020)
 
 BREAKING CHANGES:
-- Renamed the aci_cloud_e_pg, aci_cloud_external_e_pg, aci_cloud_endpoint_selectorfor_external_e_pgs resources, removed an extra `_` in e_pg. New names for these resources will be aci_cloud_epg, aci_cloud_external_epg, aci_cloud_endpoint_selectorfor_external_epgs respectively.
+- Renamed the aci_cloud_epg, aci_cloud_external_epg, aci_cloud_endpoint_selectorfor_external_epgs resources, removed an extra `_` in epg. New names for these resources will be aci_cloud_epg, aci_cloud_external_epg, aci_cloud_endpoint_selectorfor_external_epgs respectively.
 
 IMPROVEMENTS:
 - Removed the implicit status insertion for aci_rest resource.

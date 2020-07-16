@@ -23,7 +23,7 @@ func resourceAciCloudEndpointSelector() *schema.Resource {
 		SchemaVersion: 1,
 
 		Schema: AppendBaseAttrSchema(map[string]*schema.Schema{
-			"cloud_e_pg_dn": &schema.Schema{
+			"cloud_epg_dn": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
 				ForceNew: true,
@@ -74,9 +74,9 @@ func setCloudEndpointSelectorAttributes(cloudEPSelector *models.CloudEndpointSel
 	dn := d.Id()
 	d.SetId(cloudEPSelector.DistinguishedName)
 	d.Set("description", cloudEPSelector.Description)
-	// d.Set("cloud_e_pg_dn", GetParentDn(cloudEPSelector.DistinguishedName))
+	// d.Set("cloud_epg_dn", GetParentDn(cloudEPSelector.DistinguishedName))
 	if dn != cloudEPSelector.DistinguishedName {
-		d.Set("cloud_e_pg_dn", "")
+		d.Set("cloud_epg_dn", "")
 	}
 	cloudEPSelectorMap, _ := cloudEPSelector.ToMap()
 
@@ -113,7 +113,7 @@ func resourceAciCloudEndpointSelectorCreate(d *schema.ResourceData, m interface{
 
 	name := d.Get("name").(string)
 
-	CloudEPgDn := d.Get("cloud_e_pg_dn").(string)
+	CloudEPgDn := d.Get("cloud_epg_dn").(string)
 
 	cloudEPSelectorAttr := models.CloudEndpointSelectorAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
@@ -151,7 +151,7 @@ func resourceAciCloudEndpointSelectorUpdate(d *schema.ResourceData, m interface{
 
 	name := d.Get("name").(string)
 
-	CloudEPgDn := d.Get("cloud_e_pg_dn").(string)
+	CloudEPgDn := d.Get("cloud_epg_dn").(string)
 
 	cloudEPSelectorAttr := models.CloudEndpointSelectorAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
