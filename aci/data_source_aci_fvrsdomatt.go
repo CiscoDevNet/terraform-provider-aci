@@ -20,7 +20,7 @@ func dataSourceAciDomain() *schema.Resource {
 				Required: true,
 			},
 
-			"t_dn": &schema.Schema{
+			"tdn": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
 			},
@@ -145,7 +145,7 @@ func dataSourceAciDomain() *schema.Resource {
 func dataSourceAciDomainRead(d *schema.ResourceData, m interface{}) error {
 	aciClient := m.(*client.Client)
 
-	tDn := d.Get("t_dn").(string)
+	tDn := d.Get("tdn").(string)
 
 	rn := fmt.Sprintf("rsdomAtt-[%s]", tDn)
 	ApplicationEPGDn := d.Get("application_epg_dn").(string)

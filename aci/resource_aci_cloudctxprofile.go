@@ -166,7 +166,14 @@ func resourceAciCloudContextProfileCreate(d *schema.ResourceData, m interface{})
 
 	cloudCtxProfile := models.NewCloudContextProfile(fmt.Sprintf("ctxprofile-%s", name), TenantDn, desc, cloudCtxProfileAttr)
 
-	cloudCtxProfile, err := aciClient.CreateCloudContextProfile(name, TenantDn, desc, models.CloudContextProfileAttributes{}, PrimaryCIDR, Region, d.Get("relation_cloud_rs_to_ctx").(string))
+	var cloudRsCtx string
+	if tempVar, ok := d.GetOk("relation_cloud_rs_to_ctx"); ok {
+		cloudRsCtx = tempVar.(string)
+		cloudRsCtx = GetMOName(cloudRsCtx)
+	} else {
+		cloudRsCtx = ""
+	}
+	cloudCtxProfile, err := aciClient.CreateCloudContextProfile(name, TenantDn, desc, models.CloudContextProfileAttributes{}, PrimaryCIDR, Region, cloudRsCtx)
 	//err := aciClient.Save(cloudCtxProfile)
 	if err != nil {
 		return err
@@ -219,7 +226,15 @@ func resourceAciCloudContextProfileUpdate(d *schema.ResourceData, m interface{})
 
 	Region := d.Get("region").(string)
 
-	cloudCtxProfile, err := aciClient.CreateCloudContextProfile(name, TenantDn, desc, models.CloudContextProfileAttributes{}, PrimaryCIDR, Region, d.Get("relation_cloud_rs_to_ctx").(string))
+	var cloudRsCtx string
+	if tempVar, ok := d.GetOk("relation_cloud_rs_to_ctx"); ok {
+		cloudRsCtx = tempVar.(string)
+		cloudRsCtx = GetMOName(cloudRsCtx)
+	} else {
+		cloudRsCtx = ""
+	}
+
+	cloudCtxProfile, err := aciClient.CreateCloudContextProfile(name, TenantDn, desc, models.CloudContextProfileAttributes{}, PrimaryCIDR, Region, cloudRsCtx)
 	//err := aciClient.Save(cloudCtxProfile)
 
 	if err != nil {
