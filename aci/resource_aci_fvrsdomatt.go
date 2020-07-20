@@ -28,7 +28,7 @@ func resourceAciDomain() *schema.Resource {
 				Required: true,
 			},
 
-			"t_dn": &schema.Schema{
+			"tdn": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
 			},
@@ -210,7 +210,7 @@ func setDomainAttributes(fvRsDomAtt *models.FVDomain, d *schema.ResourceData) *s
 	}
 	fvRsDomAttMap, _ := fvRsDomAtt.ToMap()
 
-	d.Set("t_dn", fvRsDomAttMap["tDn"])
+	d.Set("tdn", fvRsDomAttMap["tDn"])
 
 	d.Set("annotation", fvRsDomAttMap["annotation"])
 	d.Set("binding_type", fvRsDomAttMap["bindingType"])
@@ -265,7 +265,7 @@ func resourceAciDomainCreate(d *schema.ResourceData, m interface{}) error {
 	log.Printf("[DEBUG] Domain: Beginning Creation")
 	aciClient := m.(*client.Client)
 
-	tDn := d.Get("t_dn").(string)
+	tDn := d.Get("tdn").(string)
 
 	ApplicationEPGDn := d.Get("application_epg_dn").(string)
 
@@ -355,7 +355,7 @@ func resourceAciDomainCreate(d *schema.ResourceData, m interface{}) error {
 
 	d.Partial(true)
 
-	d.SetPartial("t_dn")
+	d.SetPartial("tdn")
 
 	d.Partial(false)
 
@@ -370,7 +370,7 @@ func resourceAciDomainUpdate(d *schema.ResourceData, m interface{}) error {
 
 	aciClient := m.(*client.Client)
 
-	tDn := d.Get("t_dn").(string)
+	tDn := d.Get("tdn").(string)
 
 	ApplicationEPGDn := d.Get("application_epg_dn").(string)
 
@@ -464,7 +464,7 @@ func resourceAciDomainUpdate(d *schema.ResourceData, m interface{}) error {
 
 	d.Partial(true)
 
-	d.SetPartial("t_dn")
+	d.SetPartial("tdn")
 
 	d.Partial(false)
 

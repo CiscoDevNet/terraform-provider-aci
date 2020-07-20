@@ -15,13 +15,13 @@ Data source for ACI epg to Domain
 
 data "aci_epg_to_domain" "temp" {
   application_epg_dn  = "${aci_application_epg.epg2.id}"
-  t_dn                = "${aci_fc_domain.example.id}"
+  tdn                = "${aci_vmm_domain.example.id}"
 }
 
 ```
 ## Argument Reference ##
 * `application_epg_dn` - (Required) Distinguished name of parent ApplicationEPG object.
-* `t_dn` - (Required) vmm domain instance.
+* `tdn` - (Required) vmm domain instance.
 
 
 

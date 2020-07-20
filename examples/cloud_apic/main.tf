@@ -104,7 +104,7 @@ resource "aci_cloud_context_profile" "context_profile" {
   tenant_dn                = "${aci_tenant.terraform_ten.id}"
   primary_cidr             = "10.230.231.1/16"
   region                   = "us-west-1"
-  relation_cloud_rs_to_ctx = "${aci_vrf.vrf1.name}"
+  relation_cloud_rs_to_ctx = "${aci_vrf.vrf1.id}"
   depends_on               = ["aci_filter_entry.icmp"]
 }
 

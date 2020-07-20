@@ -15,7 +15,7 @@ Manages ACI epg to Domain
 resource "aci_epg_to_domain" "example" {
 
   application_epg_dn    = "${aci_application_epg.example.id}"
-  t_dn                   = "${aci_fc_domain.example.id}"
+  tdn                   = "${aci_vmm_domain.example.id}"
   vmm_allow_promiscuous = "accept"
   vmm_forged_transmits  = "reject"
   vmm_mac_changes       = "accept"
@@ -24,7 +24,7 @@ resource "aci_epg_to_domain" "example" {
 ```
 ## Argument Reference ##
 * `application_epg_dn` - (Required) Distinguished name of parent ApplicationEPG object.
-* `t_dn` - (Required) vmm domain instance.
+* `tdn` - (Required) Distinguished Name of Target Domain object.
 * `annotation` - (Optional) annotation for object domain.
 * `binding_type` - (Optional) binding_type for object domain.
 * `class_pref` - (Optional) class_pref for object domain.

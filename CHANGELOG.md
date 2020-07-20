@@ -1,4 +1,11 @@
-## 0.4.0 (Unreleased)
+## 0.3.4 (Unreleased)
+
+IMPROVEMENTS:
+- Parameter `relation_cloud_rs_to_ctx` works on id now for Cloud Context Profile resource.
+
+BREAKING CHANGES:
+- Renamed all the t_dn attributes to tdn.
+
 ## 0.3.3 (July 16, 2020)
 
 IMPROVEMENTS:
