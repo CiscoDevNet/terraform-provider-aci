@@ -1,4 +1,4 @@
-## 0.3.4 (Unreleased)
+## 0.3.4 (July 20, 2020)
 
 IMPROVEMENTS:
 - Parameter `relation_cloud_rs_to_ctx` works on id now for Cloud Context Profile resource.
