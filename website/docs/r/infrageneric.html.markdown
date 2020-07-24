@@ -28,8 +28,6 @@ resource "aci_access_generic" "example" {
 * `annotation` - (Optional) annotation for object access_generic.
 
 * `name_alias` - (Optional) name_alias for object access_generic.
-
-* `relation_infra_rs_func_to_epg` - (Optional) Relation to class fvEPg. Cardinality - N_TO_M. Type - Set of String.
                 
 
 

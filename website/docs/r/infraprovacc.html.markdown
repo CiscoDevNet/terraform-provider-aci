@@ -22,8 +22,6 @@ resource "aci_vlan_encapsulationfor_vxlan_traffic" "example" {
 * `attachable_access_entity_profile_dn` - (Required) Distinguished name of parent AttachableAccessEntityProfile object.
 * `annotation` - (Optional) annotation for object vlan_encapsulationfor_vxlan_traffic.
 * `name_alias` - (Optional) name_alias for object vlan_encapsulationfor_vxlan_traffic.
-
-* `relation_infra_rs_func_to_epg` - (Optional) Relation to class fvEPg. Cardinality - N_TO_M. Type - Set of String.
                 
 
 

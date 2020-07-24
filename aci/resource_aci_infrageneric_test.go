@@ -66,7 +66,6 @@ func testAccCheckAciAccessGenericConfig_basic(description string) string {
 		name  = "default"
 		annotation  = "example"
 		name_alias  = "access_generic"
-		relation_infra_rs_func_to_epg = ["${aci_application_epg.epg1.id}"]
 	}
 	`, description)
 }

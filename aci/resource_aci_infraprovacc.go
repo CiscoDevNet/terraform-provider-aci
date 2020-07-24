@@ -40,13 +40,6 @@ func resourceAciVlanEncapsulationforVxlanTraffic() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
-
-			"relation_infra_rs_func_to_epg": &schema.Schema{
-				Type:     schema.TypeSet,
-				Elem:     &schema.Schema{Type: schema.TypeString},
-				Optional: true,
-				Set:      schema.HashString,
-			},
 		}),
 	}
 }
@@ -120,20 +113,6 @@ func resourceAciVlanEncapsulationforVxlanTrafficCreate(d *schema.ResourceData, m
 	d.Partial(true)
 	d.Partial(false)
 
-	if relationToinfraRsFuncToEpg, ok := d.GetOk("relation_infra_rs_func_to_epg"); ok {
-		relationParamList := toStringList(relationToinfraRsFuncToEpg.(*schema.Set).List())
-		for _, relationParam := range relationParamList {
-			err = aciClient.CreateRelationinfraRsFuncToEpgFromVlanEncapsulationforVxlanTraffic(infraProvAcc.DistinguishedName, relationParam)
-
-			if err != nil {
-				return err
-			}
-			d.Partial(true)
-			d.SetPartial("relation_infra_rs_func_to_epg")
-			d.Partial(false)
-		}
-	}
-
 	d.SetId(infraProvAcc.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
@@ -167,34 +146,6 @@ func resourceAciVlanEncapsulationforVxlanTrafficUpdate(d *schema.ResourceData, m
 	d.Partial(true)
 	d.Partial(false)
 
-	if d.HasChange("relation_infra_rs_func_to_epg") {
-		oldRel, newRel := d.GetChange("relation_infra_rs_func_to_epg")
-		oldRelSet := oldRel.(*schema.Set)
-		newRelSet := newRel.(*schema.Set)
-		relToDelete := toStringList(oldRelSet.Difference(newRelSet).List())
-		relToCreate := toStringList(newRelSet.Difference(oldRelSet).List())
-
-		for _, relDn := range relToDelete {
-			err = aciClient.DeleteRelationinfraRsFuncToEpgFromVlanEncapsulationforVxlanTraffic(infraProvAcc.DistinguishedName, relDn)
-			if err != nil {
-				return err
-			}
-
-		}
-
-		for _, relDn := range relToCreate {
-			err = aciClient.CreateRelationinfraRsFuncToEpgFromVlanEncapsulationforVxlanTraffic(infraProvAcc.DistinguishedName, relDn)
-			if err != nil {
-				return err
-			}
-			d.Partial(true)
-			d.SetPartial("relation_infra_rs_func_to_epg")
-			d.Partial(false)
-
-		}
-
-	}
-
 	d.SetId(infraProvAcc.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
@@ -215,14 +166,6 @@ func resourceAciVlanEncapsulationforVxlanTrafficRead(d *schema.ResourceData, m i
 		return nil
 	}
 	setVlanEncapsulationforVxlanTrafficAttributes(infraProvAcc, d)
-
-	infraRsFuncToEpgData, err := aciClient.ReadRelationinfraRsFuncToEpgFromVlanEncapsulationforVxlanTraffic(dn)
-	if err != nil {
-		log.Printf("[DEBUG] Error while reading relation infraRsFuncToEpg %v", err)
-
-	} else {
-		d.Set("relation_infra_rs_func_to_epg", infraRsFuncToEpgData)
-	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 
