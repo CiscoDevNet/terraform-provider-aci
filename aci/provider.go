@@ -141,7 +141,7 @@ func Provider() terraform.ResourceProvider {
 			"aci_node_block":                               resourceAciNodeBlock(),
 			"aci_epg_to_domain":                            resourceAciDomain(),
 			"aci_access_generic":                           resourceAciAccessGeneric(),
-			"aci_ep_gs_using_function":                     resourceAciEPGsUsingFunction(),
+			"aci_epgs_using_function":                      resourceAciEPGsUsingFunction(),
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
@@ -229,7 +229,7 @@ func Provider() terraform.ResourceProvider {
 			"aci_node_block":                               dataSourceAciNodeBlock(),
 			"aci_epg_to_domain":                            dataSourceAciDomain(),
 			"aci_access_generic":                           dataSourceAciAccessGeneric(),
-			"aci_ep_gs_using_function":                     dataSourceAciEPGsUsingFunction(),
+			"aci_epgs_using_function":                      dataSourceAciEPGsUsingFunction(),
 		},
 
 		ConfigureFunc: configureClient,

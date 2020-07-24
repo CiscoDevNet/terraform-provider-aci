@@ -21,7 +21,7 @@ func TestAccAciEPGsUsingFunction_Basic(t *testing.T) {
 			{
 				Config: testAccCheckAciEPGsUsingFunctionConfig_basic("vlan-5"),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAciEPGsUsingFunctionExists("aci_ep_gs_using_function.fooep_gs_using_function", &ep_gs_using_function),
+					testAccCheckAciEPGsUsingFunctionExists("aci_epgs_using_function.fooep_gs_using_function", &ep_gs_using_function),
 					testAccCheckAciEPGsUsingFunctionAttributes("vlan-5", &ep_gs_using_function),
 				),
 			},
@@ -40,14 +40,14 @@ func TestAccAciEPGsUsingFunction_update(t *testing.T) {
 			{
 				Config: testAccCheckAciEPGsUsingFunctionConfig_basic("vlan-5"),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAciEPGsUsingFunctionExists("aci_ep_gs_using_function.fooep_gs_using_function", &ep_gs_using_function),
+					testAccCheckAciEPGsUsingFunctionExists("aci_epgs_using_function.fooep_gs_using_function", &ep_gs_using_function),
 					testAccCheckAciEPGsUsingFunctionAttributes("vlan-5", &ep_gs_using_function),
 				),
 			},
 			{
 				Config: testAccCheckAciEPGsUsingFunctionConfig_basic("vlan-10"),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAciEPGsUsingFunctionExists("aci_ep_gs_using_function.fooep_gs_using_function", &ep_gs_using_function),
+					testAccCheckAciEPGsUsingFunctionExists("aci_epgs_using_function.fooep_gs_using_function", &ep_gs_using_function),
 					testAccCheckAciEPGsUsingFunctionAttributes("vlan-10", &ep_gs_using_function),
 				),
 			},
@@ -58,7 +58,7 @@ func TestAccAciEPGsUsingFunction_update(t *testing.T) {
 func testAccCheckAciEPGsUsingFunctionConfig_basic(encap string) string {
 	return fmt.Sprintf(`
 
-	resource "aci_ep_gs_using_function" "fooep_gs_using_function" {
+	resource "aci_epgs_using_function" "fooep_gs_using_function" {
 		  access_generic_dn  = "${aci_access_generic.fooaccess_generic.id}"
 		  annotation  = "example"
 		  t_dn  = "${aci_application_epg.epg1.id}"
@@ -102,7 +102,7 @@ func testAccCheckAciEPGsUsingFunctionDestroy(s *terraform.State) error {
 
 	for _, rs := range s.RootModule().Resources {
 
-		if rs.Type == "aci_ep_gs_using_function" {
+		if rs.Type == "aci_epgs_using_function" {
 			cont, err := client.Get(rs.Primary.ID)
 			ep_gs_using_function := models.EPGsUsingFunctionFromContainer(cont)
 			if err == nil {
@@ -121,19 +121,19 @@ func testAccCheckAciEPGsUsingFunctionAttributes(encap string, ep_gs_using_functi
 	return func(s *terraform.State) error {
 
 		if encap != ep_gs_using_function.Encap {
-			return fmt.Errorf("Bad ep_gs_using_function Description %s", ep_gs_using_function.Description)
+			return fmt.Errorf("Bad epgs_using_function Description %s", ep_gs_using_function.Description)
 		}
 
 		if "example" != ep_gs_using_function.Annotation {
-			return fmt.Errorf("Bad ep_gs_using_function annotation %s", ep_gs_using_function.Annotation)
+			return fmt.Errorf("Bad epgs_using_function annotation %s", ep_gs_using_function.Annotation)
 		}
 
 		if "regular" != ep_gs_using_function.Mode {
-			return fmt.Errorf("Bad ep_gs_using_function mode %s", ep_gs_using_function.Mode)
+			return fmt.Errorf("Bad epgs_using_function mode %s", ep_gs_using_function.Mode)
 		}
 
 		if "vlan-7" != ep_gs_using_function.PrimaryEncap {
-			return fmt.Errorf("Bad ep_gs_using_function primary_encap %s", ep_gs_using_function.PrimaryEncap)
+			return fmt.Errorf("Bad epgs_using_function primary_encap %s", ep_gs_using_function.PrimaryEncap)
 		}
 
 		return nil

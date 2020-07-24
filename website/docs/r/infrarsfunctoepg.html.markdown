@@ -1,19 +1,19 @@
 ---
 layout: "aci"
-page_title: "ACI: aci_ep_gs_using_function"
-sidebar_current: "docs-aci-resource-ep_gs_using_function"
+page_title: "ACI: aci_epgs_using_function"
+sidebar_current: "docs-aci-resource-epgs_using_function"
 description: |-
   Manages ACI EPGs Using Function
 ---
 
-# aci_ep_gs_using_function #
+# aci_epgs_using_function #
 Manages ACI EPGs Using Function
 
 ## Example Usage ##
 
 ```hcl
 
-resource "aci_ep_gs_using_function" "example" {
+resource "aci_epgs_using_function" "example" {
   access_generic_dn   = "${aci_access_generic.example.id}"
   t_dn                = "${aci_application_epg.epg2.id}"
   annotation          = "example"
@@ -27,12 +27,12 @@ resource "aci_ep_gs_using_function" "example" {
 
 ## Argument Reference ##
 * `access_generic_dn` - (Required) Distinguished name of parent AccessGeneric object.
-* `t_dn` - (Required) tDn of Object ep_gs_using_function.
+* `t_dn` - (Required) tDn of Object epgs_using_function.
 * `encap` - (Required) vlan number encap. 
-* `annotation` - (Optional) annotation for object ep_gs_using_function.
+* `annotation` - (Optional) annotation for object epgs_using_function.
 * `instr_imedcy` - (Optional) instrumentation immediacy
 * `mode` - (Optional) bgp domain mode
-* `primary_encap` - (Optional) primary_encap for object ep_gs_using_function.
+* `primary_encap` - (Optional) primary_encap for object epgs_using_function.
 
 
 
