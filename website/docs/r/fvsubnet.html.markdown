@@ -12,8 +12,9 @@ Manages ACI Subnet
 ## Example Usage ##
 
 ```hcl
+
 	resource "aci_subnet" "foosubnet" {
-		bridge_domain_dn = "${aci_bridge_domain.bd_for_subnet.id}"
+		parent_dn 		 = "${aci_bridge_domain.bd_for_subnet.id}"
 		description      = "%s"
 		ip               = "10.0.3.28/27"
 		annotation       = "tag_subnet"
@@ -23,9 +24,12 @@ Manages ACI Subnet
 		scope            = "private"
 		virtual          = "yes"
 	} 
+
 ```
+
+
 ## Argument Reference ##
-* `bridge_domain_dn` - (Required) Distinguished name of parent BridgeDomain object.
+* `parent_dn` - (Required) Distinguished name of parent object.
 * `ip` - (Required) The IP address and mask of the default gateway.
 * `annotation` - (Optional) annotation for object subnet.
 * `ctrl` - (Optional) The subnet control state. The control can be specific protocols applied to the subnet such as IGMP Snooping. Allowed values are "unspecified", "querier", "nd" and "no-default-gateway". Default is "nd".

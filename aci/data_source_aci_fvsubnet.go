@@ -2,6 +2,7 @@ package aci
 
 import (
 	"fmt"
+
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 )
@@ -14,7 +15,7 @@ func dataSourceAciSubnet() *schema.Resource {
 		SchemaVersion: 1,
 
 		Schema: AppendBaseAttrSchema(map[string]*schema.Schema{
-			"bridge_domain_dn": &schema.Schema{
+			"parent_dn": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
 			},
@@ -69,7 +70,7 @@ func dataSourceAciSubnetRead(d *schema.ResourceData, m interface{}) error {
 	ip := d.Get("ip").(string)
 
 	rn := fmt.Sprintf("subnet-[%s]", ip)
-	BridgeDomainDn := d.Get("bridge_domain_dn").(string)
+	BridgeDomainDn := d.Get("parent_dn").(string)
 
 	dn := fmt.Sprintf("%s/%s", BridgeDomainDn, rn)
 

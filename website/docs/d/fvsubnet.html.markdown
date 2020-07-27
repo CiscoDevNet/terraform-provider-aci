@@ -12,13 +12,17 @@ Data source for ACI Subnet
 ## Example Usage ##
 
 ```hcl
+
 data "aci_subnet" "dev_subnet" {
-  bridge_domain_dn  = "${aci_bridge_domain.example.id}"
+  parent_dn         = "${aci_bridge_domain.example.id}"
   ip                = "10.0.3.28/27"
 }
+
 ```
+
+
 ## Argument Reference ##
-* `bridge_domain_dn` - (Required) Distinguished name of parent BridgeDomain object.
+* `parent_dn` - (Required) Distinguished name of parent object.
 * `ip` - (Required) The IP address and mask of the default gateway.
 
 
