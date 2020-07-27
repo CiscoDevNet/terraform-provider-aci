@@ -15,7 +15,7 @@ Manages ACI EPGs Using Function
 
 resource "aci_epgs_using_function" "example" {
   access_generic_dn   = "${aci_access_generic.example.id}"
-  t_dn                = "${aci_application_epg.epg2.id}"
+  tdn                 = "${aci_application_epg.epg2.id}"
   annotation          = "example"
   encap               = "vlan-5"
   instr_imedcy        = "example"
@@ -27,7 +27,7 @@ resource "aci_epgs_using_function" "example" {
 
 ## Argument Reference ##
 * `access_generic_dn` - (Required) Distinguished name of parent AccessGeneric object.
-* `t_dn` - (Required) tDn of Object epgs_using_function.
+* `tdn` - (Required) tDn of Object epgs_using_function.
 * `encap` - (Required) vlan number encap. 
 * `annotation` - (Optional) annotation for object epgs_using_function.
 * `instr_imedcy` - (Optional) instrumentation immediacy

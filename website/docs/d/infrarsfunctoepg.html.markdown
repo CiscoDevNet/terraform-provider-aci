@@ -15,14 +15,14 @@ Data source for ACI EPGs Using Function
 
 data "aci_epgs_using_function" "example" {
   access_generic_dn   = "${aci_access_generic.example.id}"
-  t_dn                = "example"
+  tdn                 = "example"
 }
 
 ```
 
 ## Argument Reference ##
 * `access_generic_dn` - (Required) Distinguished name of parent AccessGeneric object.
-* `t_dn` - (Required) tDn of Object epgs_using_function.
+* `tdn` - (Required) tDn of Object epgs_using_function.
 
 
 

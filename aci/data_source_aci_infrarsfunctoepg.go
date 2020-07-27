@@ -20,7 +20,7 @@ func dataSourceAciEPGsUsingFunction() *schema.Resource {
 				Required: true,
 			},
 
-			"t_dn": &schema.Schema{
+			"tdn": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
 			},
@@ -61,7 +61,7 @@ func dataSourceAciEPGsUsingFunction() *schema.Resource {
 func dataSourceAciEPGsUsingFunctionRead(d *schema.ResourceData, m interface{}) error {
 	aciClient := m.(*client.Client)
 
-	tDn := d.Get("t_dn").(string)
+	tDn := d.Get("tdn").(string)
 
 	rn := fmt.Sprintf("rsfuncToEpg-[%s]", tDn)
 	AccessGenericDn := d.Get("access_generic_dn").(string)

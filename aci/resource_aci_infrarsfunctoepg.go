@@ -29,7 +29,7 @@ func resourceAciEPGsUsingFunction() *schema.Resource {
 				ForceNew: true,
 			},
 
-			"t_dn": &schema.Schema{
+			"tdn": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
 				ForceNew: true,
@@ -89,7 +89,7 @@ func setEPGsUsingFunctionAttributes(infraRsFuncToEpg *models.EPGsUsingFunction, 
 	}
 	infraRsFuncToEpgMap, _ := infraRsFuncToEpg.ToMap()
 
-	d.Set("t_dn", infraRsFuncToEpgMap["tDn"])
+	d.Set("tdn", infraRsFuncToEpgMap["tDn"])
 
 	d.Set("annotation", infraRsFuncToEpgMap["annotation"])
 	d.Set("encap", infraRsFuncToEpgMap["encap"])
@@ -121,7 +121,7 @@ func resourceAciEPGsUsingFunctionCreate(d *schema.ResourceData, m interface{}) e
 	log.Printf("[DEBUG] EPGsUsingFunction: Beginning Creation")
 	aciClient := m.(*client.Client)
 
-	tDn := d.Get("t_dn").(string)
+	tDn := d.Get("tdn").(string)
 
 	AccessGenericDn := d.Get("access_generic_dn").(string)
 
@@ -150,7 +150,7 @@ func resourceAciEPGsUsingFunctionCreate(d *schema.ResourceData, m interface{}) e
 	}
 	d.Partial(true)
 
-	d.SetPartial("t_dn")
+	d.SetPartial("tdn")
 
 	d.Partial(false)
 
@@ -165,7 +165,7 @@ func resourceAciEPGsUsingFunctionUpdate(d *schema.ResourceData, m interface{}) e
 
 	aciClient := m.(*client.Client)
 
-	tDn := d.Get("t_dn").(string)
+	tDn := d.Get("tdn").(string)
 
 	AccessGenericDn := d.Get("access_generic_dn").(string)
 
@@ -197,7 +197,7 @@ func resourceAciEPGsUsingFunctionUpdate(d *schema.ResourceData, m interface{}) e
 	}
 	d.Partial(true)
 
-	d.SetPartial("t_dn")
+	d.SetPartial("tdn")
 
 	d.Partial(false)
 

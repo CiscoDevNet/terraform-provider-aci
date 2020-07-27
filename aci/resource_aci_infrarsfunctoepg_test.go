@@ -61,7 +61,7 @@ func testAccCheckAciEPGsUsingFunctionConfig_basic(encap string) string {
 	resource "aci_epgs_using_function" "fooep_gs_using_function" {
 		  access_generic_dn  = "${aci_access_generic.fooaccess_generic.id}"
 		  annotation  = "example"
-		  t_dn  = "${aci_application_epg.epg1.id}"
+		  tdn  = "${aci_application_epg.epg1.id}"
 		  encap  = "%s"
 		  mode  = "regular"
 		  primary_encap  = "vlan-7"
