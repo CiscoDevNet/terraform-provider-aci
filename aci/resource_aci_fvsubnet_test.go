@@ -74,7 +74,7 @@ func testAccCheckAciSubnetConfig_basic(description, Ctrl string) string {
 	}
 
 	resource "aci_subnet" "foosubnet" {
-		bridge_domain_dn = "${aci_bridge_domain.bd_for_subnet.id}"
+		parent_dn = "${aci_bridge_domain.bd_for_subnet.id}"
 		description      = "%s"
 		ip               = "10.0.3.28/27"
 		annotation       = "tag_subnet"

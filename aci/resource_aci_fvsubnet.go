@@ -25,7 +25,7 @@ func resourceAciSubnet() *schema.Resource {
 		SchemaVersion: 1,
 
 		Schema: AppendBaseAttrSchema(map[string]*schema.Schema{
-			"bridge_domain_dn": &schema.Schema{
+			"parent_dn": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
 				ForceNew: true,
@@ -111,9 +111,8 @@ func setSubnetAttributes(fvSubnet *models.Subnet, d *schema.ResourceData) *schem
 	dn := d.Id()
 	d.SetId(fvSubnet.DistinguishedName)
 	d.Set("description", fvSubnet.Description)
-	// d.Set("bridge_domain_dn", GetParentDn(fvSubnet.DistinguishedName))
 	if dn != fvSubnet.DistinguishedName {
-		d.Set("bridge_domain_dn", "")
+		d.Set("parent_dn", "")
 	}
 	fvSubnetMap, _ := fvSubnet.ToMap()
 
@@ -154,7 +153,7 @@ func resourceAciSubnetCreate(d *schema.ResourceData, m interface{}) error {
 
 	ip := d.Get("ip").(string)
 
-	BridgeDomainDn := d.Get("bridge_domain_dn").(string)
+	BridgeDomainDn := d.Get("parent_dn").(string)
 
 	fvSubnetAttr := models.SubnetAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
@@ -243,7 +242,7 @@ func resourceAciSubnetUpdate(d *schema.ResourceData, m interface{}) error {
 
 	ip := d.Get("ip").(string)
 
-	BridgeDomainDn := d.Get("bridge_domain_dn").(string)
+	BridgeDomainDn := d.Get("parent_dn").(string)
 
 	fvSubnetAttr := models.SubnetAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
