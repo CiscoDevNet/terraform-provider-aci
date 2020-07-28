@@ -143,6 +143,7 @@ func Provider() terraform.ResourceProvider {
 			"aci_access_generic":                           resourceAciAccessGeneric(),
 			"aci_epgs_using_function":                      resourceAciEPGsUsingFunction(),
 			"aci_service_redirect_policy":                  resourceAciServiceRedirectPolicy(),
+			"aci_destination_of_redirected_traffic":        resourceAciDestinationofredirectedtraffic(),
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
@@ -232,6 +233,7 @@ func Provider() terraform.ResourceProvider {
 			"aci_access_generic":                           dataSourceAciAccessGeneric(),
 			"aci_epgs_using_function":                      dataSourceAciEPGsUsingFunction(),
 			"aci_service_redirect_policy":                  dataSourceAciServiceRedirectPolicy(),
+			"aci_destination_of_redirected_traffic":        dataSourceAciDestinationofredirectedtraffic(),
 		},
 
 		ConfigureFunc: configureClient,
