@@ -58,7 +58,7 @@ func (sm *ServiceManager) CreateRelationvnsRsIPSLAMonitoringPolFromServiceRedire
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tnFvIPSLAMonitoringPolName": "%s"
+				"dn": "%s","tDn": "%s"
 								
 			}
 		}
@@ -96,7 +96,7 @@ func (sm *ServiceManager) ReadRelationvnsRsIPSLAMonitoringPolFromServiceRedirect
 	contList := models.ListFromContainer(cont, "vnsRsIPSLAMonitoringPol")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnFvIPSLAMonitoringPolName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
