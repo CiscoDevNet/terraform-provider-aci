@@ -29,16 +29,17 @@ const DefaultMOURL = "/api/node/mo"
 
 // Client is the main entry point
 type Client struct {
-	BaseURL    *url.URL
-	MOURL      string
-	httpClient *http.Client
-	AuthToken  *Auth
-	username   string
-	password   string
-	privatekey string
-	adminCert  string
-	insecure   bool
-	proxyUrl   string
+	BaseURL            *url.URL
+	MOURL              string
+	httpClient         *http.Client
+	AuthToken          *Auth
+	username           string
+	password           string
+	privatekey         string
+	adminCert          string
+	insecure           bool
+	proxyUrl           string
+	skipLoggingPayload bool
 	*ServiceManager
 }
 
@@ -80,6 +81,12 @@ func AdminCert(adminCert string) Option {
 func ProxyUrl(pUrl string) Option {
 	return func(client *Client) {
 		client.proxyUrl = pUrl
+	}
+}
+
+func SkipLoggingPayload(skipLoggingPayload bool) Option {
+	return func(client *Client) {
+		client.skipLoggingPayload = skipLoggingPayload
 	}
 }
 
@@ -180,16 +187,22 @@ func (c *Client) MakeRestRequest(method string, path string, body *container.Con
 	if err != nil {
 		return nil, err
 	}
-	log.Printf("HTTP request %s %s %v", method, path, req)
 
+	if c.skipLoggingPayload {
+		log.Printf("HTTP request %s %s", method, path)
+	} else {
+		log.Printf("HTTP request %s %s %v", method, path, req)
+	}
 	if authenticated {
-
 		req, err = c.InjectAuthenticationHeader(req, path)
 		if err != nil {
 			return req, err
 		}
 	}
-	log.Printf("HTTP request after injection %s %s %v", method, path, req)
+
+	if !c.skipLoggingPayload {
+		log.Printf("HTTP request after injection %s %s %v", method, path, req)
+	}
 
 	return req, nil
 }
