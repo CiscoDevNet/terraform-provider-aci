@@ -28,11 +28,11 @@ resource "aci_destination_of_redirected_traffic" "example" {
 ## Argument Reference ##
 * `service_redirect_policy_dn` - (Required) Distinguished name of parent Service Redirect Policy object.
 * `ip` - (Required) ip of Object destination of redirected traffic.
+* `mac` - (Required) mac address.
 * `annotation` - (Optional) annotation for object destination of redirected traffic.
 * `dest_name` - (Optional) destination name to which data was exported
 * `ip` - (Optional) ip address.
 * `ip2` - (Optional) ip2 for object destination of redirected traffic.
-* `mac` - (Optional) mac address.
 * `name_alias` - (Optional) name_alias for object destination of redirected traffic.
 * `pod_id` - (Optional) pod id.
 

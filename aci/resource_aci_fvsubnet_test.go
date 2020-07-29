@@ -70,7 +70,7 @@ func testAccCheckAciSubnetConfig_basic(description, Ctrl string) string {
 	}
 	resource "aci_bridge_domain" "bd_for_subnet" {
 		tenant_dn = "${aci_tenant.tenant_for_subnet.id}"
-		name      = "bd_for_subnet
+		name      = "bd_for_subnet"
 	}
 
 	resource "aci_subnet" "foosubnet" {
