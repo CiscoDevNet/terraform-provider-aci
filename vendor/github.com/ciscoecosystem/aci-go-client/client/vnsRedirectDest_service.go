@@ -58,7 +58,7 @@ func (sm *ServiceManager) CreateRelationvnsRsRedirectHealthGroupFromDestinationo
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tnVnsRedirectHealthGroupName": "%s"
+				"dn": "%s","tDn": "%s"
 								
 			}
 		}
@@ -96,7 +96,7 @@ func (sm *ServiceManager) ReadRelationvnsRsRedirectHealthGroupFromDestinationofr
 	contList := models.ListFromContainer(cont, "vnsRsRedirectHealthGroup")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnVnsRedirectHealthGroupName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
