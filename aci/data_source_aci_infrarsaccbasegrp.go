@@ -32,7 +32,7 @@ func dataSourceAciAccessGroup() *schema.Resource {
 				Computed: true,
 			},
 
-			"t_dn": &schema.Schema{
+			"tdn": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,

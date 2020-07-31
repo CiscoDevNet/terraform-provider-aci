@@ -62,7 +62,7 @@ func testAccCheckAciAccessAccessGroupConfig_basic(fexID string) string {
 		access_port_selector_dn  = "${aci_access_port_selector.example.id}"
 		annotation = "check"
 		fex_id  = "%s"
-		t_dn  = "${aci_fex_bundle_group.example.id}"
+		tdn  = "${aci_fex_bundle_group.example.id}"
 	}
 	`, fexID)
 }

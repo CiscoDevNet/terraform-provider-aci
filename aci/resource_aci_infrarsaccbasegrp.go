@@ -41,7 +41,7 @@ func resourceAciAccessGroup() *schema.Resource {
 				Computed: true,
 			},
 
-			"t_dn": &schema.Schema{
+			"tdn": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
@@ -74,7 +74,7 @@ func setAccessAccessGroupAttributes(infraRsAccBaseGrp *models.AccessAccessGroup,
 
 	d.Set("annotation", infraRsAccBaseGrpMap["annotation"])
 	d.Set("fex_id", infraRsAccBaseGrpMap["fexId"])
-	d.Set("t_dn", infraRsAccBaseGrpMap["tDn"])
+	d.Set("tdn", infraRsAccBaseGrpMap["tDn"])
 	return d
 }
 
@@ -108,7 +108,7 @@ func resourceAciAccessAccessGroupCreate(d *schema.ResourceData, m interface{}) e
 	if FexId, ok := d.GetOk("fex_id"); ok {
 		infraRsAccBaseGrpAttr.FexId = FexId.(string)
 	}
-	if TDn, ok := d.GetOk("t_dn"); ok {
+	if TDn, ok := d.GetOk("tdn"); ok {
 		infraRsAccBaseGrpAttr.TDn = TDn.(string)
 	}
 	infraRsAccBaseGrp := models.NewAccessAccessGroup(fmt.Sprintf("rsaccBaseGrp"), AccessPortSelectorDn, "", infraRsAccBaseGrpAttr)
@@ -140,7 +140,7 @@ func resourceAciAccessAccessGroupUpdate(d *schema.ResourceData, m interface{}) e
 	if FexId, ok := d.GetOk("fex_id"); ok {
 		infraRsAccBaseGrpAttr.FexId = FexId.(string)
 	}
-	if TDn, ok := d.GetOk("t_dn"); ok {
+	if TDn, ok := d.GetOk("tdn"); ok {
 		infraRsAccBaseGrpAttr.TDn = TDn.(string)
 	}
 	infraRsAccBaseGrp := models.NewAccessAccessGroup(fmt.Sprintf("rsaccBaseGrp"), AccessPortSelectorDn, "", infraRsAccBaseGrpAttr)

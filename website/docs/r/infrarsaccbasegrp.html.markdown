@@ -17,7 +17,7 @@ resource "aci_access_group" "example" {
   access_port_selector_dn   = "${aci_access_port_selector.example.id}"
   annotation                = "one"
   fex_id                    = "101"
-  t_dn                      = "${aci_fex_bundle_group.example.id}"
+  tdn                       = "${aci_fex_bundle_group.example.id}"
 }
 
 ```
@@ -27,7 +27,7 @@ resource "aci_access_group" "example" {
 * `access_port_selector_dn` - (Required) Distinguished name of parent AccessPortSelector object.
 * `annotation` - (Optional) annotation for object access_access_group.
 * `fex_id` - (Optional) interface policy group fex id
-* `t_dn` - (Optional) interface policy group's target rn
+* `tdn` - (Optional) interface policy group's target rn
 
 
 

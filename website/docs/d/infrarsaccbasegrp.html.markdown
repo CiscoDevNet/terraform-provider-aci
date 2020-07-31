@@ -30,4 +30,4 @@ data "aci_access_group" "example" {
 * `id` - Attribute id set to the Dn of the Access Access Group.
 * `annotation` - (Optional) annotation for object access_access_group.
 * `fex_id` - (Optional) interface policy group fex id
-* `t_dn` - (Optional) interface policy group's target rn
+* `tdn` - (Optional) interface policy group's target rn
