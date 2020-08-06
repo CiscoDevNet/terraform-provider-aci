@@ -36,12 +36,6 @@ func resourceAciLocalUser() *schema.Resource {
 				Computed: true,
 			},
 
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
 			"cert_attribute": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -214,6 +208,8 @@ func resourceAciLocalUserCreate(d *schema.ResourceData, m interface{}) error {
 	}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		aaaUserAttr.Annotation = Annotation.(string)
+	} else {
+		aaaUserAttr.Annotation = "{}"
 	}
 	if CertAttribute, ok := d.GetOk("cert_attribute"); ok {
 		aaaUserAttr.CertAttribute = CertAttribute.(string)
@@ -295,6 +291,8 @@ func resourceAciLocalUserUpdate(d *schema.ResourceData, m interface{}) error {
 	}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		aaaUserAttr.Annotation = Annotation.(string)
+	} else {
+		aaaUserAttr.Annotation = "{}"
 	}
 	if CertAttribute, ok := d.GetOk("cert_attribute"); ok {
 		aaaUserAttr.CertAttribute = CertAttribute.(string)

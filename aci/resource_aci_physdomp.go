@@ -30,12 +30,6 @@ func resourceAciPhysicalDomain() *schema.Resource {
 				ForceNew: true,
 			},
 
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
 			"name_alias": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -120,6 +114,8 @@ func resourceAciPhysicalDomainCreate(d *schema.ResourceData, m interface{}) erro
 	physDomPAttr := models.PhysicalDomainAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		physDomPAttr.Annotation = Annotation.(string)
+	} else {
+		physDomPAttr.Annotation = "{}"
 	}
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		physDomPAttr.NameAlias = NameAlias.(string)
@@ -198,6 +194,8 @@ func resourceAciPhysicalDomainUpdate(d *schema.ResourceData, m interface{}) erro
 	physDomPAttr := models.PhysicalDomainAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		physDomPAttr.Annotation = Annotation.(string)
+	} else {
+		physDomPAttr.Annotation = "{}"
 	}
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		physDomPAttr.NameAlias = NameAlias.(string)

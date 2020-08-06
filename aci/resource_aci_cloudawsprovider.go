@@ -41,12 +41,6 @@ func resourceAciCloudAWSProvider() *schema.Resource {
 				Computed: true,
 			},
 
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
 			"email": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -169,6 +163,8 @@ func resourceAciCloudAWSProviderCreate(d *schema.ResourceData, m interface{}) er
 	}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		cloudAwsProviderAttr.Annotation = Annotation.(string)
+	} else {
+		cloudAwsProviderAttr.Annotation = "{}"
 	}
 	if Email, ok := d.GetOk("email"); ok {
 		cloudAwsProviderAttr.Email = Email.(string)
@@ -226,6 +222,8 @@ func resourceAciCloudAWSProviderUpdate(d *schema.ResourceData, m interface{}) er
 	}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		cloudAwsProviderAttr.Annotation = Annotation.(string)
+	} else {
+		cloudAwsProviderAttr.Annotation = "{}"
 	}
 	if Email, ok := d.GetOk("email"); ok {
 		cloudAwsProviderAttr.Email = Email.(string)

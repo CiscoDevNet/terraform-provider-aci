@@ -30,12 +30,6 @@ func resourceAciTenant() *schema.Resource {
 				ForceNew: true,
 			},
 
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
 			"name_alias": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -111,6 +105,8 @@ func resourceAciTenantCreate(d *schema.ResourceData, m interface{}) error {
 	fvTenantAttr := models.TenantAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		fvTenantAttr.Annotation = Annotation.(string)
+	} else {
+		fvTenantAttr.Annotation = "{}"
 	}
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		fvTenantAttr.NameAlias = NameAlias.(string)
@@ -170,6 +166,8 @@ func resourceAciTenantUpdate(d *schema.ResourceData, m interface{}) error {
 	fvTenantAttr := models.TenantAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		fvTenantAttr.Annotation = Annotation.(string)
+	} else {
+		fvTenantAttr.Annotation = "{}"
 	}
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		fvTenantAttr.NameAlias = NameAlias.(string)

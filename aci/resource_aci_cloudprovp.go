@@ -28,12 +28,6 @@ func resourceAciCloudProviderProfile() *schema.Resource {
 				Type:     schema.TypeString,
 				Required: true,
 			},
-
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
 		}),
 	}
 }
@@ -92,6 +86,8 @@ func resourceAciCloudProviderProfileCreate(d *schema.ResourceData, m interface{}
 	cloudProvPAttr := models.CloudProviderProfileAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		cloudProvPAttr.Annotation = Annotation.(string)
+	} else {
+		cloudProvPAttr.Annotation = "{}"
 	}
 	if Vendor, ok := d.GetOk("vendor"); ok {
 		cloudProvPAttr.Vendor = Vendor.(string)
@@ -125,6 +121,8 @@ func resourceAciCloudProviderProfileUpdate(d *schema.ResourceData, m interface{}
 	cloudProvPAttr := models.CloudProviderProfileAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		cloudProvPAttr.Annotation = Annotation.(string)
+	} else {
+		cloudProvPAttr.Annotation = "{}"
 	}
 	if Vendor, ok := d.GetOk("vendor"); ok {
 		cloudProvPAttr.Vendor = Vendor.(string)

@@ -35,12 +35,6 @@ func resourceAciX509Certificate() *schema.Resource {
 				ForceNew: true,
 			},
 
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
 			"data": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -118,6 +112,8 @@ func resourceAciX509CertificateCreate(d *schema.ResourceData, m interface{}) err
 	aaaUserCertAttr := models.X509CertificateAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		aaaUserCertAttr.Annotation = Annotation.(string)
+	} else {
+		aaaUserCertAttr.Annotation = "{}"
 	}
 	if Data, ok := d.GetOk("data"); ok {
 		aaaUserCertAttr.Data = Data.(string)
@@ -156,6 +152,8 @@ func resourceAciX509CertificateUpdate(d *schema.ResourceData, m interface{}) err
 	aaaUserCertAttr := models.X509CertificateAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		aaaUserCertAttr.Annotation = Annotation.(string)
+	} else {
+		aaaUserCertAttr.Annotation = "{}"
 	}
 	if Data, ok := d.GetOk("data"); ok {
 		aaaUserCertAttr.Data = Data.(string)

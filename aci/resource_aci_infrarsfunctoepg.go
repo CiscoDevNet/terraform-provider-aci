@@ -35,12 +35,6 @@ func resourceAciEPGsUsingFunction() *schema.Resource {
 				ForceNew: true,
 			},
 
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
 			"encap": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
@@ -129,6 +123,8 @@ func resourceAciEPGsUsingFunctionCreate(d *schema.ResourceData, m interface{}) e
 	infraRsFuncToEpgAttr.TDn = tDn
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		infraRsFuncToEpgAttr.Annotation = Annotation.(string)
+	} else {
+		infraRsFuncToEpgAttr.Annotation = "{}"
 	}
 	if Encap, ok := d.GetOk("encap"); ok {
 		infraRsFuncToEpgAttr.Encap = Encap.(string)
@@ -173,6 +169,8 @@ func resourceAciEPGsUsingFunctionUpdate(d *schema.ResourceData, m interface{}) e
 	infraRsFuncToEpgAttr.TDn = tDn
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		infraRsFuncToEpgAttr.Annotation = Annotation.(string)
+	} else {
+		infraRsFuncToEpgAttr.Annotation = "{}"
 	}
 	if Encap, ok := d.GetOk("encap"); ok {
 		infraRsFuncToEpgAttr.Encap = Encap.(string)

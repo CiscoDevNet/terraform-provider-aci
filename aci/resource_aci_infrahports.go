@@ -41,12 +41,6 @@ func resourceAciAccessPortSelector() *schema.Resource {
 				ForceNew: true,
 			},
 
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
 			"name_alias": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -128,6 +122,8 @@ func resourceAciAccessPortSelectorCreate(d *schema.ResourceData, m interface{}) 
 	infraHPortSAttr := models.AccessPortSelectorAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		infraHPortSAttr.Annotation = Annotation.(string)
+	} else {
+		infraHPortSAttr.Annotation = "{}"
 	}
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		infraHPortSAttr.NameAlias = NameAlias.(string)
@@ -182,6 +178,8 @@ func resourceAciAccessPortSelectorUpdate(d *schema.ResourceData, m interface{}) 
 	infraHPortSAttr := models.AccessPortSelectorAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		infraHPortSAttr.Annotation = Annotation.(string)
+	} else {
+		infraHPortSAttr.Annotation = "{}"
 	}
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		infraHPortSAttr.NameAlias = NameAlias.(string)

@@ -35,12 +35,6 @@ func resourceAciLogicalInterfaceProfile() *schema.Resource {
 				ForceNew: true,
 			},
 
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
 			"name_alias": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -173,6 +167,8 @@ func resourceAciLogicalInterfaceProfileCreate(d *schema.ResourceData, m interfac
 	l3extLIfPAttr := models.LogicalInterfaceProfileAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		l3extLIfPAttr.Annotation = Annotation.(string)
+	} else {
+		l3extLIfPAttr.Annotation = "{}"
 	}
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		l3extLIfPAttr.NameAlias = NameAlias.(string)
@@ -303,6 +299,8 @@ func resourceAciLogicalInterfaceProfileUpdate(d *schema.ResourceData, m interfac
 	l3extLIfPAttr := models.LogicalInterfaceProfileAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		l3extLIfPAttr.Annotation = Annotation.(string)
+	} else {
+		l3extLIfPAttr.Annotation = "{}"
 	}
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		l3extLIfPAttr.NameAlias = NameAlias.(string)

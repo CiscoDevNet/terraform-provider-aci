@@ -23,13 +23,6 @@ func resourceAciAutonomousSystemProfile() *schema.Resource {
 		SchemaVersion: 1,
 
 		Schema: AppendBaseAttrSchema(map[string]*schema.Schema{
-
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
 			"asn": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -95,6 +88,8 @@ func resourceAciAutonomousSystemProfileCreate(d *schema.ResourceData, m interfac
 	cloudBgpAsPAttr := models.AutonomousSystemProfileAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		cloudBgpAsPAttr.Annotation = Annotation.(string)
+	} else {
+		cloudBgpAsPAttr.Annotation = "{}"
 	}
 	if Asn, ok := d.GetOk("asn"); ok {
 		cloudBgpAsPAttr.Asn = Asn.(string)
@@ -126,6 +121,8 @@ func resourceAciAutonomousSystemProfileUpdate(d *schema.ResourceData, m interfac
 	cloudBgpAsPAttr := models.AutonomousSystemProfileAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		cloudBgpAsPAttr.Annotation = Annotation.(string)
+	} else {
+		cloudBgpAsPAttr.Annotation = "{}"
 	}
 	if Asn, ok := d.GetOk("asn"); ok {
 		cloudBgpAsPAttr.Asn = Asn.(string)

@@ -30,12 +30,6 @@ func resourceAciL3DomainProfile() *schema.Resource {
 				ForceNew: true,
 			},
 
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
 			"name_alias": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -126,6 +120,8 @@ func resourceAciL3DomainProfileCreate(d *schema.ResourceData, m interface{}) err
 	l3extDomPAttr := models.L3DomainProfileAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		l3extDomPAttr.Annotation = Annotation.(string)
+	} else {
+		l3extDomPAttr.Annotation = "{}"
 	}
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		l3extDomPAttr.NameAlias = NameAlias.(string)
@@ -217,6 +213,8 @@ func resourceAciL3DomainProfileUpdate(d *schema.ResourceData, m interface{}) err
 	l3extDomPAttr := models.L3DomainProfileAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		l3extDomPAttr.Annotation = Annotation.(string)
+	} else {
+		l3extDomPAttr.Annotation = "{}"
 	}
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		l3extDomPAttr.NameAlias = NameAlias.(string)

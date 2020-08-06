@@ -30,12 +30,6 @@ func resourceAciAttachableAccessEntityProfile() *schema.Resource {
 				ForceNew: true,
 			},
 
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
 			"name_alias": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -106,6 +100,8 @@ func resourceAciAttachableAccessEntityProfileCreate(d *schema.ResourceData, m in
 	infraAttEntityPAttr := models.AttachableAccessEntityProfileAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		infraAttEntityPAttr.Annotation = Annotation.(string)
+	} else {
+		infraAttEntityPAttr.Annotation = "{}"
 	}
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		infraAttEntityPAttr.NameAlias = NameAlias.(string)
@@ -153,6 +149,8 @@ func resourceAciAttachableAccessEntityProfileUpdate(d *schema.ResourceData, m in
 	infraAttEntityPAttr := models.AttachableAccessEntityProfileAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		infraAttEntityPAttr.Annotation = Annotation.(string)
+	} else {
+		infraAttEntityPAttr.Annotation = "{}"
 	}
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		infraAttEntityPAttr.NameAlias = NameAlias.(string)

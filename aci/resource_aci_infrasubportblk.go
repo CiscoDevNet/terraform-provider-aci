@@ -35,12 +35,6 @@ func resourceAciAccessSubPortBlock() *schema.Resource {
 				ForceNew: true,
 			},
 
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
 			"from_card": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -153,6 +147,8 @@ func resourceAciAccessSubPortBlockCreate(d *schema.ResourceData, m interface{}) 
 	infraSubPortBlkAttr := models.AccessSubPortBlockAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		infraSubPortBlkAttr.Annotation = Annotation.(string)
+	} else {
+		infraSubPortBlkAttr.Annotation = "{}"
 	}
 	if FromCard, ok := d.GetOk("from_card"); ok {
 		infraSubPortBlkAttr.FromCard = FromCard.(string)
@@ -206,6 +202,8 @@ func resourceAciAccessSubPortBlockUpdate(d *schema.ResourceData, m interface{}) 
 	infraSubPortBlkAttr := models.AccessSubPortBlockAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		infraSubPortBlkAttr.Annotation = Annotation.(string)
+	} else {
+		infraSubPortBlkAttr.Annotation = "{}"
 	}
 	if FromCard, ok := d.GetOk("from_card"); ok {
 		infraSubPortBlkAttr.FromCard = FromCard.(string)

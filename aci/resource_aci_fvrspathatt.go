@@ -33,12 +33,6 @@ func resourceAciStaticPath() *schema.Resource {
 				Required: true,
 			},
 
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
 			"encap": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -129,6 +123,8 @@ func resourceAciStaticPathCreate(d *schema.ResourceData, m interface{}) error {
 	fvRsPathAttAttr := models.StaticPathAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		fvRsPathAttAttr.Annotation = Annotation.(string)
+	} else {
+		fvRsPathAttAttr.Annotation = "{}"
 	}
 	if Encap, ok := d.GetOk("encap"); ok {
 		fvRsPathAttAttr.Encap = Encap.(string)
@@ -174,6 +170,8 @@ func resourceAciStaticPathUpdate(d *schema.ResourceData, m interface{}) error {
 	fvRsPathAttAttr := models.StaticPathAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		fvRsPathAttAttr.Annotation = Annotation.(string)
+	} else {
+		fvRsPathAttAttr.Annotation = "{}"
 	}
 	if Encap, ok := d.GetOk("encap"); ok {
 		fvRsPathAttAttr.Encap = Encap.(string)

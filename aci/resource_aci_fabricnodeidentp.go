@@ -36,12 +36,6 @@ func resourceAciFabricNodeMember() *schema.Resource {
 				ForceNew: true,
 			},
 
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
 			"ext_pool_id": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -151,6 +145,8 @@ func resourceAciFabricNodeMemberCreate(d *schema.ResourceData, m interface{}) er
 	fabricNodeIdentPAttr.Name = name
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		fabricNodeIdentPAttr.Annotation = Annotation.(string)
+	} else {
+		fabricNodeIdentPAttr.Annotation = "{}"
 	}
 	if ExtPoolId, ok := d.GetOk("ext_pool_id"); ok {
 		fabricNodeIdentPAttr.ExtPoolId = ExtPoolId.(string)
@@ -207,6 +203,8 @@ func resourceAciFabricNodeMemberUpdate(d *schema.ResourceData, m interface{}) er
 	fabricNodeIdentPAttr.Name = name
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		fabricNodeIdentPAttr.Annotation = Annotation.(string)
+	} else {
+		fabricNodeIdentPAttr.Annotation = "{}"
 	}
 	if ExtPoolId, ok := d.GetOk("ext_pool_id"); ok {
 		fabricNodeIdentPAttr.ExtPoolId = ExtPoolId.(string)

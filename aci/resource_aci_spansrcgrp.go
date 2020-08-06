@@ -41,12 +41,6 @@ func resourceAciSPANSourceGroup() *schema.Resource {
 				Computed: true,
 			},
 
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
 			"name_alias": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -127,6 +121,8 @@ func resourceAciSPANSourceGroupCreate(d *schema.ResourceData, m interface{}) err
 	}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		spanSrcGrpAttr.Annotation = Annotation.(string)
+	} else {
+		spanSrcGrpAttr.Annotation = "{}"
 	}
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		spanSrcGrpAttr.NameAlias = NameAlias.(string)
@@ -177,6 +173,8 @@ func resourceAciSPANSourceGroupUpdate(d *schema.ResourceData, m interface{}) err
 	}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		spanSrcGrpAttr.Annotation = Annotation.(string)
+	} else {
+		spanSrcGrpAttr.Annotation = "{}"
 	}
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		spanSrcGrpAttr.NameAlias = NameAlias.(string)

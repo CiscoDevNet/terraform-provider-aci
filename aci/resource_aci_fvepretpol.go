@@ -35,12 +35,6 @@ func resourceAciEndPointRetentionPolicy() *schema.Resource {
 				ForceNew: true,
 			},
 
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
 			"bounce_age_intvl": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -153,6 +147,8 @@ func resourceAciEndPointRetentionPolicyCreate(d *schema.ResourceData, m interfac
 	fvEpRetPolAttr := models.EndPointRetentionPolicyAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		fvEpRetPolAttr.Annotation = Annotation.(string)
+	} else {
+		fvEpRetPolAttr.Annotation = "{}"
 	}
 	if BounceAgeIntvl, ok := d.GetOk("bounce_age_intvl"); ok {
 		fvEpRetPolAttr.BounceAgeIntvl = BounceAgeIntvl.(string)
@@ -206,6 +202,8 @@ func resourceAciEndPointRetentionPolicyUpdate(d *schema.ResourceData, m interfac
 	fvEpRetPolAttr := models.EndPointRetentionPolicyAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		fvEpRetPolAttr.Annotation = Annotation.(string)
+	} else {
+		fvEpRetPolAttr.Annotation = "{}"
 	}
 	if BounceAgeIntvl, ok := d.GetOk("bounce_age_intvl"); ok {
 		fvEpRetPolAttr.BounceAgeIntvl = BounceAgeIntvl.(string)

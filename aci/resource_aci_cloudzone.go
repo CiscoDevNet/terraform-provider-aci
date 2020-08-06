@@ -35,12 +35,6 @@ func resourceAciCloudAvailabilityZone() *schema.Resource {
 				ForceNew: true,
 			},
 
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
 			"name_alias": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -111,6 +105,8 @@ func resourceAciCloudAvailabilityZoneCreate(d *schema.ResourceData, m interface{
 	cloudZoneAttr := models.CloudAvailabilityZoneAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		cloudZoneAttr.Annotation = Annotation.(string)
+	} else {
+		cloudZoneAttr.Annotation = "{}"
 	}
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		cloudZoneAttr.NameAlias = NameAlias.(string)
@@ -146,6 +142,8 @@ func resourceAciCloudAvailabilityZoneUpdate(d *schema.ResourceData, m interface{
 	cloudZoneAttr := models.CloudAvailabilityZoneAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		cloudZoneAttr.Annotation = Annotation.(string)
+	} else {
+		cloudZoneAttr.Annotation = "{}"
 	}
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		cloudZoneAttr.NameAlias = NameAlias.(string)

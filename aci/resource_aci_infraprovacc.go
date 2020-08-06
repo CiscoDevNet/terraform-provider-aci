@@ -29,12 +29,6 @@ func resourceAciVlanEncapsulationforVxlanTraffic() *schema.Resource {
 				ForceNew: true,
 			},
 
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
 			"name_alias": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -100,6 +94,8 @@ func resourceAciVlanEncapsulationforVxlanTrafficCreate(d *schema.ResourceData, m
 	infraProvAccAttr := models.VlanEncapsulationforVxlanTrafficAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		infraProvAccAttr.Annotation = Annotation.(string)
+	} else {
+		infraProvAccAttr.Annotation = "{}"
 	}
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		infraProvAccAttr.NameAlias = NameAlias.(string)
@@ -130,6 +126,8 @@ func resourceAciVlanEncapsulationforVxlanTrafficUpdate(d *schema.ResourceData, m
 	infraProvAccAttr := models.VlanEncapsulationforVxlanTrafficAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		infraProvAccAttr.Annotation = Annotation.(string)
+	} else {
+		infraProvAccAttr.Annotation = "{}"
 	}
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		infraProvAccAttr.NameAlias = NameAlias.(string)

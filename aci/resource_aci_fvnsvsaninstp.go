@@ -35,12 +35,6 @@ func resourceAciVSANPool() *schema.Resource {
 				Required: true,
 			},
 
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
 			"name_alias": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -107,6 +101,8 @@ func resourceAciVSANPoolCreate(d *schema.ResourceData, m interface{}) error {
 	fvnsVsanInstPAttr := models.VSANPoolAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		fvnsVsanInstPAttr.Annotation = Annotation.(string)
+	} else {
+		fvnsVsanInstPAttr.Annotation = "{}"
 	}
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		fvnsVsanInstPAttr.NameAlias = NameAlias.(string)
@@ -144,6 +140,8 @@ func resourceAciVSANPoolUpdate(d *schema.ResourceData, m interface{}) error {
 	fvnsVsanInstPAttr := models.VSANPoolAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		fvnsVsanInstPAttr.Annotation = Annotation.(string)
+	} else {
+		fvnsVsanInstPAttr.Annotation = "{}"
 	}
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		fvnsVsanInstPAttr.NameAlias = NameAlias.(string)

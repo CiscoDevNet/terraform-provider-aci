@@ -35,12 +35,6 @@ func resourceAciActionRuleProfile() *schema.Resource {
 				ForceNew: true,
 			},
 
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
 			"name_alias": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -111,6 +105,8 @@ func resourceAciActionRuleProfileCreate(d *schema.ResourceData, m interface{}) e
 	rtctrlAttrPAttr := models.ActionRuleProfileAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		rtctrlAttrPAttr.Annotation = Annotation.(string)
+	} else {
+		rtctrlAttrPAttr.Annotation = "{}"
 	}
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		rtctrlAttrPAttr.NameAlias = NameAlias.(string)
@@ -146,6 +142,8 @@ func resourceAciActionRuleProfileUpdate(d *schema.ResourceData, m interface{}) e
 	rtctrlAttrPAttr := models.ActionRuleProfileAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		rtctrlAttrPAttr.Annotation = Annotation.(string)
+	} else {
+		rtctrlAttrPAttr.Annotation = "{}"
 	}
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		rtctrlAttrPAttr.NameAlias = NameAlias.(string)

@@ -32,12 +32,6 @@ func resourceAciPCVPCInterfacePolicyGroup() *schema.Resource {
 				ForceNew: true,
 			},
 
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
 			"lag_t": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -248,6 +242,8 @@ func resourceAciPCVPCInterfacePolicyGroupCreate(d *schema.ResourceData, m interf
 	infraAccBndlGrpAttr := models.PCVPCInterfacePolicyGroupAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		infraAccBndlGrpAttr.Annotation = Annotation.(string)
+	} else {
+		infraAccBndlGrpAttr.Annotation = "{}"
 	}
 	if LagT, ok := d.GetOk("lag_t"); ok {
 		infraAccBndlGrpAttr.LagT = LagT.(string)
@@ -591,6 +587,8 @@ func resourceAciPCVPCInterfacePolicyGroupUpdate(d *schema.ResourceData, m interf
 	infraAccBndlGrpAttr := models.PCVPCInterfacePolicyGroupAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		infraAccBndlGrpAttr.Annotation = Annotation.(string)
+	} else {
+		infraAccBndlGrpAttr.Annotation = "{}"
 	}
 	if LagT, ok := d.GetOk("lag_t"); ok {
 		infraAccBndlGrpAttr.LagT = LagT.(string)

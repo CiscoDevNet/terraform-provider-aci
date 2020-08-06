@@ -42,11 +42,6 @@ func resourceAciVPCExplicitProtectionGroup() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
 
 			"vpc_explicit_protection_group_id": &schema.Schema{
 				Type:     schema.TypeString,
@@ -137,6 +132,8 @@ func resourceAciVPCExplicitProtectionGroupCreate(d *schema.ResourceData, m inter
 	fabricExplicitGEpAttr := models.VPCExplicitProtectionGroupAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		fabricExplicitGEpAttr.Annotation = Annotation.(string)
+	} else {
+		fabricExplicitGEpAttr.Annotation = "{}"
 	}
 	if VPCExplicitProtectionGroup_id, ok := d.GetOk("vpc_explicit_protection_group_id"); ok {
 		fabricExplicitGEpAttr.VPCExplicitProtectionGroup_id = VPCExplicitProtectionGroup_id.(string)
@@ -176,6 +173,8 @@ func resourceAciVPCExplicitProtectionGroupUpdate(d *schema.ResourceData, m inter
 	fabricExplicitGEpAttr := models.VPCExplicitProtectionGroupAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		fabricExplicitGEpAttr.Annotation = Annotation.(string)
+	} else {
+		fabricExplicitGEpAttr.Annotation = "{}"
 	}
 	if VPCExplicitProtectionGroup_id, ok := d.GetOk("vpc_explicit_protection_group_id"); ok {
 		fabricExplicitGEpAttr.VPCExplicitProtectionGroup_id = VPCExplicitProtectionGroup_id.(string)

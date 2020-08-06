@@ -47,12 +47,6 @@ func resourceAciRanges() *schema.Resource {
 				Computed: true,
 			},
 
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
 			"from": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -146,6 +140,8 @@ func resourceAciRangesCreate(d *schema.ResourceData, m interface{}) error {
 	}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		fvnsEncapBlkAttr.Annotation = Annotation.(string)
+	} else {
+		fvnsEncapBlkAttr.Annotation = "{}"
 	}
 	if From, ok := d.GetOk("from"); ok {
 		fvnsEncapBlkAttr.From = From.(string)
@@ -197,6 +193,8 @@ func resourceAciRangesUpdate(d *schema.ResourceData, m interface{}) error {
 	}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		fvnsEncapBlkAttr.Annotation = Annotation.(string)
+	} else {
+		fvnsEncapBlkAttr.Annotation = "{}"
 	}
 	if From, ok := d.GetOk("from"); ok {
 		fvnsEncapBlkAttr.From = From.(string)

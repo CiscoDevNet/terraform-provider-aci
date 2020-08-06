@@ -33,12 +33,6 @@ func resourceAciDomain() *schema.Resource {
 				Required: true,
 			},
 
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
 			"binding_type": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -273,6 +267,8 @@ func resourceAciDomainCreate(d *schema.ResourceData, m interface{}) error {
 	fvRsDomAttAttr.TDn = tDn
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		fvRsDomAttAttr.Annotation = Annotation.(string)
+	} else {
+		fvRsDomAttAttr.Annotation = "{}"
 	}
 	if BindingType, ok := d.GetOk("binding_type"); ok {
 		fvRsDomAttAttr.BindingType = BindingType.(string)
@@ -378,6 +374,8 @@ func resourceAciDomainUpdate(d *schema.ResourceData, m interface{}) error {
 	fvRsDomAttAttr.TDn = tDn
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		fvRsDomAttAttr.Annotation = Annotation.(string)
+	} else {
+		fvRsDomAttAttr.Annotation = "{}"
 	}
 	if BindingType, ok := d.GetOk("binding_type"); ok {
 		fvRsDomAttAttr.BindingType = BindingType.(string)

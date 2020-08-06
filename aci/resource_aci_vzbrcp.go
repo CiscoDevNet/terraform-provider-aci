@@ -36,12 +36,6 @@ func resourceAciContract() *schema.Resource {
 				ForceNew: true,
 			},
 
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
 			"name_alias": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -476,6 +470,8 @@ func resourceAciContractCreate(d *schema.ResourceData, m interface{}) error {
 	vzBrCPAttr := models.ContractAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		vzBrCPAttr.Annotation = Annotation.(string)
+	} else {
+		vzBrCPAttr.Annotation = "{}"
 	}
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		vzBrCPAttr.NameAlias = NameAlias.(string)
@@ -645,6 +641,8 @@ func resourceAciContractUpdate(d *schema.ResourceData, m interface{}) error {
 	vzBrCPAttr := models.ContractAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		vzBrCPAttr.Annotation = Annotation.(string)
+	} else {
+		vzBrCPAttr.Annotation = "{}"
 	}
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		vzBrCPAttr.NameAlias = NameAlias.(string)

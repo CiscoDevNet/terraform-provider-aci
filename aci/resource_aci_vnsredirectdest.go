@@ -35,12 +35,6 @@ func resourceAciDestinationofredirectedtraffic() *schema.Resource {
 				ForceNew: true,
 			},
 
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
 			"dest_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -144,6 +138,8 @@ func resourceAciDestinationofredirectedtrafficCreate(d *schema.ResourceData, m i
 	vnsRedirectDestAttr := models.DestinationofredirectedtrafficAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		vnsRedirectDestAttr.Annotation = Annotation.(string)
+	} else {
+		vnsRedirectDestAttr.Annotation = "{}"
 	}
 	if DestName, ok := d.GetOk("dest_name"); ok {
 		vnsRedirectDestAttr.DestName = DestName.(string)
@@ -206,6 +202,8 @@ func resourceAciDestinationofredirectedtrafficUpdate(d *schema.ResourceData, m i
 	vnsRedirectDestAttr := models.DestinationofredirectedtrafficAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		vnsRedirectDestAttr.Annotation = Annotation.(string)
+	} else {
+		vnsRedirectDestAttr.Annotation = "{}"
 	}
 	if DestName, ok := d.GetOk("dest_name"); ok {
 		vnsRedirectDestAttr.DestName = DestName.(string)

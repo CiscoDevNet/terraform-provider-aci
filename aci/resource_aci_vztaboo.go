@@ -35,12 +35,6 @@ func resourceAciTabooContract() *schema.Resource {
 				ForceNew: true,
 			},
 
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
 			"name_alias": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -111,6 +105,8 @@ func resourceAciTabooContractCreate(d *schema.ResourceData, m interface{}) error
 	vzTabooAttr := models.TabooContractAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		vzTabooAttr.Annotation = Annotation.(string)
+	} else {
+		vzTabooAttr.Annotation = "{}"
 	}
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		vzTabooAttr.NameAlias = NameAlias.(string)
@@ -146,6 +142,8 @@ func resourceAciTabooContractUpdate(d *schema.ResourceData, m interface{}) error
 	vzTabooAttr := models.TabooContractAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		vzTabooAttr.Annotation = Annotation.(string)
+	} else {
+		vzTabooAttr.Annotation = "{}"
 	}
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		vzTabooAttr.NameAlias = NameAlias.(string)

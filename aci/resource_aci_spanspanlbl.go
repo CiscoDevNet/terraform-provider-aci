@@ -35,12 +35,6 @@ func resourceAciSPANSourcedestinationGroupMatchLabel() *schema.Resource {
 				ForceNew: true,
 			},
 
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
 			"name_alias": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -118,6 +112,8 @@ func resourceAciSPANSourcedestinationGroupMatchLabelCreate(d *schema.ResourceDat
 	spanSpanLblAttr := models.SPANSourcedestinationGroupMatchLabelAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		spanSpanLblAttr.Annotation = Annotation.(string)
+	} else {
+		spanSpanLblAttr.Annotation = "{}"
 	}
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		spanSpanLblAttr.NameAlias = NameAlias.(string)
@@ -156,6 +152,8 @@ func resourceAciSPANSourcedestinationGroupMatchLabelUpdate(d *schema.ResourceDat
 	spanSpanLblAttr := models.SPANSourcedestinationGroupMatchLabelAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		spanSpanLblAttr.Annotation = Annotation.(string)
+	} else {
+		spanSpanLblAttr.Annotation = "{}"
 	}
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		spanSpanLblAttr.NameAlias = NameAlias.(string)

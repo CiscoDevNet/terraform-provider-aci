@@ -35,12 +35,6 @@ func resourceAciVRF() *schema.Resource {
 				ForceNew: true,
 			},
 
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
 			"bd_enforced_enable": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -231,6 +225,8 @@ func resourceAciVRFCreate(d *schema.ResourceData, m interface{}) error {
 	fvCtxAttr := models.VRFAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		fvCtxAttr.Annotation = Annotation.(string)
+	} else {
+		fvCtxAttr.Annotation = "{}"
 	}
 	if BdEnforcedEnable, ok := d.GetOk("bd_enforced_enable"); ok {
 		fvCtxAttr.BdEnforcedEnable = BdEnforcedEnable.(string)
@@ -412,6 +408,8 @@ func resourceAciVRFUpdate(d *schema.ResourceData, m interface{}) error {
 	fvCtxAttr := models.VRFAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		fvCtxAttr.Annotation = Annotation.(string)
+	} else {
+		fvCtxAttr.Annotation = "{}"
 	}
 	if BdEnforcedEnable, ok := d.GetOk("bd_enforced_enable"); ok {
 		fvCtxAttr.BdEnforcedEnable = BdEnforcedEnable.(string)

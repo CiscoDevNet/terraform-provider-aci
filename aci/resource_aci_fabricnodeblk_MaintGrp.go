@@ -35,12 +35,6 @@ func resourceAciNodeBlockMG() *schema.Resource {
 				ForceNew: true,
 			},
 
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
 			"from_": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -125,6 +119,8 @@ func resourceAciNodeBlockCreateMG(d *schema.ResourceData, m interface{}) error {
 	fabricNodeBlkAttr := models.NodeBlockAttributesMG{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		fabricNodeBlkAttr.Annotation = Annotation.(string)
+	} else {
+		fabricNodeBlkAttr.Annotation = "{}"
 	}
 	if From_, ok := d.GetOk("from_"); ok {
 		fabricNodeBlkAttr.From_ = From_.(string)
@@ -166,6 +162,8 @@ func resourceAciNodeBlockUpdateMG(d *schema.ResourceData, m interface{}) error {
 	fabricNodeBlkAttr := models.NodeBlockAttributesMG{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		fabricNodeBlkAttr.Annotation = Annotation.(string)
+	} else {
+		fabricNodeBlkAttr.Annotation = "{}"
 	}
 	if From_, ok := d.GetOk("from_"); ok {
 		fabricNodeBlkAttr.From_ = From_.(string)

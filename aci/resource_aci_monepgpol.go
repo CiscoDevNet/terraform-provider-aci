@@ -35,12 +35,6 @@ func resourceAciMonitoringPolicy() *schema.Resource {
 				ForceNew: true,
 			},
 
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
 			"name_alias": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -111,6 +105,8 @@ func resourceAciMonitoringPolicyCreate(d *schema.ResourceData, m interface{}) er
 	monEPGPolAttr := models.MonitoringPolicyAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		monEPGPolAttr.Annotation = Annotation.(string)
+	} else {
+		monEPGPolAttr.Annotation = "{}"
 	}
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		monEPGPolAttr.NameAlias = NameAlias.(string)
@@ -146,6 +142,8 @@ func resourceAciMonitoringPolicyUpdate(d *schema.ResourceData, m interface{}) er
 	monEPGPolAttr := models.MonitoringPolicyAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		monEPGPolAttr.Annotation = Annotation.(string)
+	} else {
+		monEPGPolAttr.Annotation = "{}"
 	}
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		monEPGPolAttr.NameAlias = NameAlias.(string)

@@ -35,12 +35,6 @@ func resourceAciLogicalNodeProfile() *schema.Resource {
 				ForceNew: true,
 			},
 
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
 			"config_issues": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -132,6 +126,8 @@ func resourceAciLogicalNodeProfileCreate(d *schema.ResourceData, m interface{}) 
 	l3extLNodePAttr := models.LogicalNodeProfileAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		l3extLNodePAttr.Annotation = Annotation.(string)
+	} else {
+		l3extLNodePAttr.Annotation = "{}"
 	}
 	if ConfigIssues, ok := d.GetOk("config_issues"); ok {
 		l3extLNodePAttr.ConfigIssues = ConfigIssues.(string)
@@ -190,6 +186,8 @@ func resourceAciLogicalNodeProfileUpdate(d *schema.ResourceData, m interface{}) 
 	l3extLNodePAttr := models.LogicalNodeProfileAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		l3extLNodePAttr.Annotation = Annotation.(string)
+	} else {
+		l3extLNodePAttr.Annotation = "{}"
 	}
 	if ConfigIssues, ok := d.GetOk("config_issues"); ok {
 		l3extLNodePAttr.ConfigIssues = ConfigIssues.(string)

@@ -32,12 +32,6 @@ func resourceAciLeafAccessPortPolicyGroup() *schema.Resource {
 				ForceNew: true,
 			},
 
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
 			"name_alias": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -240,6 +234,8 @@ func resourceAciLeafAccessPortPolicyGroupCreate(d *schema.ResourceData, m interf
 	infraAccPortGrpAttr := models.LeafAccessPortPolicyGroupAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		infraAccPortGrpAttr.Annotation = Annotation.(string)
+	} else {
+		infraAccPortGrpAttr.Annotation = "{}"
 	}
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		infraAccPortGrpAttr.NameAlias = NameAlias.(string)
@@ -579,6 +575,8 @@ func resourceAciLeafAccessPortPolicyGroupUpdate(d *schema.ResourceData, m interf
 	infraAccPortGrpAttr := models.LeafAccessPortPolicyGroupAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		infraAccPortGrpAttr.Annotation = Annotation.(string)
+	} else {
+		infraAccPortGrpAttr.Annotation = "{}"
 	}
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		infraAccPortGrpAttr.NameAlias = NameAlias.(string)

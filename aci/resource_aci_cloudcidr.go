@@ -35,12 +35,6 @@ func resourceAciCloudCIDRPool() *schema.Resource {
 				ForceNew: true,
 			},
 
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
 			"name_alias": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -122,6 +116,8 @@ func resourceAciCloudCIDRPoolCreate(d *schema.ResourceData, m interface{}) error
 	}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		cloudCidrAttr.Annotation = Annotation.(string)
+	} else {
+		cloudCidrAttr.Annotation = "{}"
 	}
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		cloudCidrAttr.NameAlias = NameAlias.(string)
@@ -163,6 +159,8 @@ func resourceAciCloudCIDRPoolUpdate(d *schema.ResourceData, m interface{}) error
 	}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		cloudCidrAttr.Annotation = Annotation.(string)
+	} else {
+		cloudCidrAttr.Annotation = "{}"
 	}
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		cloudCidrAttr.NameAlias = NameAlias.(string)

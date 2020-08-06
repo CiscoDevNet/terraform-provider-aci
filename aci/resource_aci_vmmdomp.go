@@ -41,12 +41,6 @@ func resourceAciVMMDomain() *schema.Resource {
 				Computed: true,
 			},
 
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
 			"arp_learning": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -287,6 +281,8 @@ func resourceAciVMMDomainCreate(d *schema.ResourceData, m interface{}) error {
 	}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		vmmDomPAttr.Annotation = Annotation.(string)
+	} else {
+		vmmDomPAttr.Annotation = "{}"
 	}
 	if ArpLearning, ok := d.GetOk("arp_learning"); ok {
 		vmmDomPAttr.ArpLearning = ArpLearning.(string)
@@ -509,6 +505,8 @@ func resourceAciVMMDomainUpdate(d *schema.ResourceData, m interface{}) error {
 	}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		vmmDomPAttr.Annotation = Annotation.(string)
+	} else {
+		vmmDomPAttr.Annotation = "{}"
 	}
 	if ArpLearning, ok := d.GetOk("arp_learning"); ok {
 		vmmDomPAttr.ArpLearning = ArpLearning.(string)

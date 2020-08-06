@@ -35,12 +35,6 @@ func resourceAciVLANPool() *schema.Resource {
 				Required: true,
 			},
 
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
 			"name_alias": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -107,6 +101,8 @@ func resourceAciVLANPoolCreate(d *schema.ResourceData, m interface{}) error {
 	fvnsVlanInstPAttr := models.VLANPoolAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		fvnsVlanInstPAttr.Annotation = Annotation.(string)
+	} else {
+		fvnsVlanInstPAttr.Annotation = "{}"
 	}
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		fvnsVlanInstPAttr.NameAlias = NameAlias.(string)
@@ -144,6 +140,8 @@ func resourceAciVLANPoolUpdate(d *schema.ResourceData, m interface{}) error {
 	fvnsVlanInstPAttr := models.VLANPoolAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		fvnsVlanInstPAttr.Annotation = Annotation.(string)
+	} else {
+		fvnsVlanInstPAttr.Annotation = "{}"
 	}
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		fvnsVlanInstPAttr.NameAlias = NameAlias.(string)

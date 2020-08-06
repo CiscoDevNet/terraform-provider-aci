@@ -30,12 +30,6 @@ func resourceAciFirmwareDownloadTask() *schema.Resource {
 				ForceNew: true,
 			},
 
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
 			"auth_pass": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -183,6 +177,8 @@ func resourceAciFirmwareDownloadTaskCreate(d *schema.ResourceData, m interface{}
 	firmwareOSourceAttr := models.FirmwareDownloadTaskAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		firmwareOSourceAttr.Annotation = Annotation.(string)
+	} else {
+		firmwareOSourceAttr.Annotation = "{}"
 	}
 	if AuthPass, ok := d.GetOk("auth_pass"); ok {
 		firmwareOSourceAttr.AuthPass = AuthPass.(string)
@@ -252,6 +248,8 @@ func resourceAciFirmwareDownloadTaskUpdate(d *schema.ResourceData, m interface{}
 	firmwareOSourceAttr := models.FirmwareDownloadTaskAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		firmwareOSourceAttr.Annotation = Annotation.(string)
+	} else {
+		firmwareOSourceAttr.Annotation = "{}"
 	}
 	if AuthPass, ok := d.GetOk("auth_pass"); ok {
 		firmwareOSourceAttr.AuthPass = AuthPass.(string)

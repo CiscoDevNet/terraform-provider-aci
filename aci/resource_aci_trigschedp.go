@@ -30,12 +30,6 @@ func resourceAciTriggerScheduler() *schema.Resource {
 				ForceNew: true,
 			},
 
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
 			"name_alias": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -99,6 +93,8 @@ func resourceAciTriggerSchedulerCreate(d *schema.ResourceData, m interface{}) er
 	trigSchedPAttr := models.TriggerSchedulerAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		trigSchedPAttr.Annotation = Annotation.(string)
+	} else {
+		trigSchedPAttr.Annotation = "{}"
 	}
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		trigSchedPAttr.NameAlias = NameAlias.(string)
@@ -132,6 +128,8 @@ func resourceAciTriggerSchedulerUpdate(d *schema.ResourceData, m interface{}) er
 	trigSchedPAttr := models.TriggerSchedulerAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		trigSchedPAttr.Annotation = Annotation.(string)
+	} else {
+		trigSchedPAttr.Annotation = "{}"
 	}
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		trigSchedPAttr.NameAlias = NameAlias.(string)

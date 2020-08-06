@@ -30,12 +30,6 @@ func resourceAciInterfaceFCPolicy() *schema.Resource {
 				ForceNew: true,
 			},
 
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
 			"automaxspeed": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -141,6 +135,8 @@ func resourceAciInterfaceFCPolicyCreate(d *schema.ResourceData, m interface{}) e
 	fcIfPolAttr := models.InterfaceFCPolicyAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		fcIfPolAttr.Annotation = Annotation.(string)
+	} else {
+		fcIfPolAttr.Annotation = "{}"
 	}
 	if Automaxspeed, ok := d.GetOk("automaxspeed"); ok {
 		fcIfPolAttr.Automaxspeed = Automaxspeed.(string)
@@ -192,6 +188,8 @@ func resourceAciInterfaceFCPolicyUpdate(d *schema.ResourceData, m interface{}) e
 	fcIfPolAttr := models.InterfaceFCPolicyAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		fcIfPolAttr.Annotation = Annotation.(string)
+	} else {
+		fcIfPolAttr.Annotation = "{}"
 	}
 	if Automaxspeed, ok := d.GetOk("automaxspeed"); ok {
 		fcIfPolAttr.Automaxspeed = Automaxspeed.(string)
