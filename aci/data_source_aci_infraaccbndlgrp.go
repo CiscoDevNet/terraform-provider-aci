@@ -21,12 +21,6 @@ func dataSourceAciPCVPCInterfacePolicyGroup() *schema.Resource {
 				Required: true,
 			},
 
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
 			"lag_t": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,

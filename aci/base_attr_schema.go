@@ -9,6 +9,12 @@ func GetBaseAttrSchema() map[string]*schema.Schema {
 			Optional: true,
 			Computed: true,
 		},
+
+		"annotation": &schema.Schema{
+			Type:     schema.TypeString,
+			Optional: true,
+			Default:  "orchestrator:terraform",
+		},
 	}
 }
 

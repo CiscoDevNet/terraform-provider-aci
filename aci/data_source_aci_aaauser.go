@@ -27,12 +27,6 @@ func dataSourceAciLocalUser() *schema.Resource {
 				Computed: true,
 			},
 
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
 			"cert_attribute": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,

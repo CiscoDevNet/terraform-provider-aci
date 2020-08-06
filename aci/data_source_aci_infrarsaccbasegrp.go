@@ -20,12 +20,6 @@ func dataSourceAciAccessGroup() *schema.Resource {
 				Required: true,
 			},
 
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
 			"fex_id": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,

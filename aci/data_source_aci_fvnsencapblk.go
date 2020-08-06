@@ -36,12 +36,6 @@ func dataSourceAciRanges() *schema.Resource {
 				Computed: true,
 			},
 
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
 			"from": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,

@@ -21,12 +21,6 @@ func dataSourceAciFirmwareDownloadTask() *schema.Resource {
 				Required: true,
 			},
 
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
 			"auth_pass": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,

@@ -25,12 +25,6 @@ func dataSourceAciX509Certificate() *schema.Resource {
 				Required: true,
 			},
 
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
 			"data": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,

@@ -21,12 +21,6 @@ func dataSourceAciPODMaintenanceGroup() *schema.Resource {
 				Required: true,
 			},
 
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
 			"fwtype": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,

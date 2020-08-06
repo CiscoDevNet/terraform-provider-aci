@@ -27,12 +27,6 @@ func dataSourceAciConfigurationExportPolicy() *schema.Resource {
 				Computed: true,
 			},
 
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
 			"format": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
