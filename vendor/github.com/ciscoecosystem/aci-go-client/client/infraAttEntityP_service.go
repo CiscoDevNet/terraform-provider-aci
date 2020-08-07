@@ -59,7 +59,7 @@ func (sm *ServiceManager) CreateRelationinfraRsDomPFromAttachableAccessEntityPro
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s"				
+				"dn": "%s","annotation":"orchestrator:terraform"				
 			}
 		}
 	}`, "infraRsDomP", dn))

@@ -58,7 +58,7 @@ func (sm *ServiceManager) CreateRelationmaintRsPolSchedulerFromMaintenancePolicy
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tnTrigSchedPName": "%s"
+				"dn": "%s","tnTrigSchedPName": "%s","annotation":"orchestrator:terraform"
 								
 			}
 		}
@@ -102,7 +102,7 @@ func (sm *ServiceManager) CreateRelationmaintRsPolNotifFromMaintenancePolicy(par
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tDn": "%s"
+				"dn": "%s","tDn": "%s","annotation":"orchestrator:terraform"
 								
 			}
 		}
@@ -151,7 +151,7 @@ func (sm *ServiceManager) CreateRelationtrigRsTriggerableFromMaintenancePolicy(p
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tDn": "%s"
+				"dn": "%s","tDn": "%s","annotation":"orchestrator:terraform"
 								
 			}
 		}
@@ -239,7 +239,7 @@ func (sm *ServiceManager) CreateRelationmaintRsPolSchedulerFromMaintP(parentDn, 
 		"%s": {
 			"attributes": {
 				"dn": "%s",
-				"tnTrigSchedPName": "%s"				
+				"tnTrigSchedPName": "%s","annotation":"orchestrator:terraform"				
 			}
 		}
 	}`, "maintRsPolScheduler", dn, tnTrigSchedPName))

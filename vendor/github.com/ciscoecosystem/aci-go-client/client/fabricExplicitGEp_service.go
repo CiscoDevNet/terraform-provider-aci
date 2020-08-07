@@ -170,7 +170,7 @@ func (sm *ServiceManager) CreateRelationfabricRsVpcInstPolFromVPCExplicitProtect
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tnVpcInstPolName": "%s"
+				"dn": "%s","tnVpcInstPolName": "%s","annotation":"orchestrator:terraform"
 								
 			}
 		}

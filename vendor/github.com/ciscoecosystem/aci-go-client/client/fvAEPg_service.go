@@ -59,7 +59,7 @@ func (sm *ServiceManager) CreateRelationfvRsBdFromApplicationEPG(parentDn, tnFvB
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tnFvBDName": "%s"
+				"dn": "%s","tnFvBDName": "%s","annotation":"orchestrator:terraform"
 								
 			}
 		}
@@ -103,7 +103,7 @@ func (sm *ServiceManager) CreateRelationfvRsCustQosPolFromApplicationEPG(parentD
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tnQosCustomPolName": "%s"
+				"dn": "%s","tnQosCustomPolName": "%s","annotation":"orchestrator:terraform"
 								
 			}
 		}
@@ -147,7 +147,7 @@ func (sm *ServiceManager) CreateRelationfvRsDomAttFromApplicationEPG(parentDn, t
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s"				
+				"dn": "%s","annotation":"orchestrator:terraform"				
 			}
 		}
 	}`, "fvRsDomAtt", dn))
@@ -197,7 +197,7 @@ func (sm *ServiceManager) CreateRelationfvRsFcPathAttFromApplicationEPG(parentDn
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s"				
+				"dn": "%s","annotation":"orchestrator:terraform"		
 			}
 		}
 	}`, "fvRsFcPathAtt", dn))
@@ -247,7 +247,7 @@ func (sm *ServiceManager) CreateRelationfvRsProvFromApplicationEPG(parentDn, tnV
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s"				
+				"dn": "%s","annotation":"orchestrator:terraform"				
 			}
 		}
 	}`, "fvRsProv", dn))
@@ -342,7 +342,7 @@ func (sm *ServiceManager) CreateRelationfvRsConsIfFromApplicationEPG(parentDn, t
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s"				
+				"dn": "%s","annotation":"orchestrator:terraform"				
 			}
 		}
 	}`, "fvRsConsIf", dn))
@@ -392,7 +392,7 @@ func (sm *ServiceManager) CreateRelationfvRsSecInheritedFromApplicationEPG(paren
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s"				
+				"dn": "%s","annotation":"orchestrator:terraform"				
 			}
 		}
 	}`, "fvRsSecInherited", dn))
@@ -442,7 +442,7 @@ func (sm *ServiceManager) CreateRelationfvRsNodeAttFromApplicationEPG(parentDn, 
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s"				
+				"dn": "%s","annotation":"orchestrator:terraform"				
 			}
 		}
 	}`, "fvRsNodeAtt", dn))
@@ -492,7 +492,7 @@ func (sm *ServiceManager) CreateRelationfvRsDppPolFromApplicationEPG(parentDn, t
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tnQosDppPolName": "%s"
+				"dn": "%s","tnQosDppPolName": "%s","annotation":"orchestrator:terraform"
 								
 			}
 		}
@@ -541,7 +541,7 @@ func (sm *ServiceManager) CreateRelationfvRsConsFromApplicationEPG(parentDn, tnV
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s"				
+				"dn": "%s","annotation":"orchestrator:terraform"				
 			}
 		}
 	}`, "fvRsCons", dn))
@@ -636,7 +636,7 @@ func (sm *ServiceManager) CreateRelationfvRsTrustCtrlFromApplicationEPG(parentDn
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tnFhsTrustCtrlPolName": "%s"
+				"dn": "%s","tnFhsTrustCtrlPolName": "%s","annotation":"orchestrator:terraform"
 								
 			}
 		}
@@ -685,7 +685,7 @@ func (sm *ServiceManager) CreateRelationfvRsPathAttFromApplicationEPG(parentDn, 
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s"				
+				"dn": "%s","annotation":"orchestrator:terraform"				
 			}
 		}
 	}`, "fvRsPathAtt", dn))
@@ -735,7 +735,7 @@ func (sm *ServiceManager) CreateRelationfvRsProtByFromApplicationEPG(parentDn, t
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s"				
+				"dn": "%s","annotation":"orchestrator:terraform"				
 			}
 		}
 	}`, "fvRsProtBy", dn))
@@ -785,7 +785,7 @@ func (sm *ServiceManager) CreateRelationfvRsAEPgMonPolFromApplicationEPG(parentD
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tnMonEPGPolName": "%s"
+				"dn": "%s","tnMonEPGPolName": "%s","annotation":"orchestrator:terraform"
 								
 			}
 		}
@@ -834,7 +834,7 @@ func (sm *ServiceManager) CreateRelationfvRsIntraEpgFromApplicationEPG(parentDn,
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s"				
+				"dn": "%s","annotation":"orchestrator:terraform"				
 			}
 		}
 	}`, "fvRsIntraEpg", dn))

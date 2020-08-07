@@ -58,7 +58,7 @@ func (sm *ServiceManager) CreateRelationvzRsGraphAttFromContract(parentDn, tnVns
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tnVnsAbsGraphName": "%s"
+				"dn": "%s","tnVnsAbsGraphName": "%s","annotation":"orchestrator:terraform"
 								
 			}
 		}

@@ -59,7 +59,7 @@ func (sm *ServiceManager) CreateRelationinfraRsFuncToEpgFromAccessGeneric(parent
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s"				
+				"dn": "%s","annotation":"orchestrator:terraform"				
 			}
 		}
 	}`, "infraRsFuncToEpg", dn))

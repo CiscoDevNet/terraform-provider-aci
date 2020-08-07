@@ -59,7 +59,7 @@ func (sm *ServiceManager) CreateRelationfvRsSecInheritedFromExternalNetworkInsta
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s"				
+				"dn": "%s","annotation":"orchestrator:terraform"				
 			}
 		}
 	}`, "fvRsSecInherited", dn))
@@ -109,7 +109,7 @@ func (sm *ServiceManager) CreateRelationfvRsProvFromExternalNetworkInstanceProfi
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s"				
+				"dn": "%s","annotation":"orchestrator:terraform"				
 			}
 		}
 	}`, "fvRsProv", dn))
@@ -203,7 +203,7 @@ func (sm *ServiceManager) CreateRelationl3extRsInstPToNatMappingEPgFromExternalN
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tDn": "%s"
+				"dn": "%s","tDn": "%s","annotation":"orchestrator:terraform"
 								
 			}
 		}
@@ -252,7 +252,7 @@ func (sm *ServiceManager) CreateRelationfvRsConsIfFromExternalNetworkInstancePro
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s"				
+				"dn": "%s","annotation":"orchestrator:terraform"				
 			}
 		}
 	}`, "fvRsConsIf", dn))
@@ -302,7 +302,7 @@ func (sm *ServiceManager) CreateRelationfvRsCustQosPolFromExternalNetworkInstanc
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tnQosCustomPolName": "%s"
+				"dn": "%s","tnQosCustomPolName": "%s","annotation":"orchestrator:terraform"
 								
 			}
 		}
@@ -346,7 +346,7 @@ func (sm *ServiceManager) CreateRelationl3extRsInstPToProfileFromExternalNetwork
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s"				
+				"dn": "%s","annotation":"orchestrator:terraform"				
 			}
 		}
 	}`, "l3extRsInstPToProfile", dn))
@@ -400,7 +400,7 @@ func (sm *ServiceManager) CreateRelationfvRsConsFromExternalNetworkInstanceProfi
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s"				
+				"dn": "%s","annotation":"orchestrator:terraform"				
 			}
 		}
 	}`, "fvRsCons", dn))
@@ -450,7 +450,7 @@ func (sm *ServiceManager) CreateRelationfvRsProtByFromExternalNetworkInstancePro
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s"				
+				"dn": "%s","annotation":"orchestrator:terraform"				
 			}
 		}
 	}`, "fvRsProtBy", dn))
@@ -500,7 +500,7 @@ func (sm *ServiceManager) CreateRelationfvRsIntraEpgFromExternalNetworkInstanceP
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s"				
+				"dn": "%s","annotation":"orchestrator:terraform"				
 			}
 		}
 	}`, "fvRsIntraEpg", dn))

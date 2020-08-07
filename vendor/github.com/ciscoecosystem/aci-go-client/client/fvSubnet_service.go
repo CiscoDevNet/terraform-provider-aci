@@ -59,7 +59,7 @@ func (sm *ServiceManager) CreateRelationfvRsBDSubnetToOutFromSubnet(parentDn, tn
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s"				
+				"dn": "%s","annotation":"orchestrator:terraform"				
 			}
 		}
 	}`, "fvRsBDSubnetToOut", dn))
@@ -109,7 +109,7 @@ func (sm *ServiceManager) CreateRelationfvRsNdPfxPolFromSubnet(parentDn, tnNdPfx
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tnNdPfxPolName": "%s"
+				"dn": "%s","tnNdPfxPolName": "%s","annotation":"orchestrator:terraform"
 								
 			}
 		}
@@ -158,7 +158,7 @@ func (sm *ServiceManager) CreateRelationfvRsBDSubnetToProfileFromSubnet(parentDn
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tnRtctrlProfileName": "%s"
+				"dn": "%s","tnRtctrlProfileName": "%s","annotation":"orchestrator:terraform"
 								
 			}
 		}

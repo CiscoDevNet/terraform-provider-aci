@@ -59,7 +59,7 @@ func (sm *ServiceManager) CreateRelationvzRsAnyToConsFromAny(parentDn, tnVzBrCPN
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s"				
+				"dn": "%s","annotation":"orchestrator:terraform"				
 			}
 		}
 	}`, "vzRsAnyToCons", dn))
@@ -109,7 +109,7 @@ func (sm *ServiceManager) CreateRelationvzRsAnyToConsIfFromAny(parentDn, tnVzCPI
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s"				
+				"dn": "%s","annotation":"orchestrator:terraform"				
 			}
 		}
 	}`, "vzRsAnyToConsIf", dn))
@@ -159,7 +159,7 @@ func (sm *ServiceManager) CreateRelationvzRsAnyToProvFromAny(parentDn, tnVzBrCPN
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s"				
+				"dn": "%s","annotation":"orchestrator:terraform"				
 			}
 		}
 	}`, "vzRsAnyToProv", dn))

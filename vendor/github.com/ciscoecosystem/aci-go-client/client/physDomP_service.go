@@ -58,7 +58,7 @@ func (sm *ServiceManager) CreateRelationinfraRsVlanNsFromPhysicalDomain(parentDn
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tDn": "%s"
+				"dn": "%s","tDn": "%s","annotation":"orchestrator:terraform"
 								
 			}
 		}
@@ -151,7 +151,7 @@ func (sm *ServiceManager) CreateRelationinfraRsVipAddrNsFromPhysicalDomain(paren
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tDn": "%s"
+				"dn": "%s","tDn": "%s","annotation":"orchestrator:terraform"
 								
 			}
 		}

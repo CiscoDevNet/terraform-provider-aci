@@ -58,7 +58,7 @@ func (sm *ServiceManager) CreateRelationl3extRsSubnetToProfileFromL3ExtSubnet(pa
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s"				
+				"dn": "%s","annotation":"orchestrator:terraform"				
 			}
 		}
 	}`, "l3extRsSubnetToProfile", dn))
@@ -112,7 +112,7 @@ func (sm *ServiceManager) CreateRelationl3extRsSubnetToRtSummFromL3ExtSubnet(par
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tDn": "%s"
+				"dn": "%s","tDn": "%s","annotation":"orchestrator:terraform"
 								
 			}
 		}

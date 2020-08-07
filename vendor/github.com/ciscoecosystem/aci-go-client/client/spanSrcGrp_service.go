@@ -58,7 +58,7 @@ func (sm *ServiceManager) CreateRelationspanRsSrcGrpToFilterGrpFromSPANSourceGro
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tDn": "%s"
+				"dn": "%s","tDn": "%s","annotation":"orchestrator:terraform"
 								
 			}
 		}
