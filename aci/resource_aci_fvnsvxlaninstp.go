@@ -30,12 +30,6 @@ func resourceAciVXLANPool() *schema.Resource {
 				ForceNew: true,
 			},
 
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
 			"name_alias": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -99,6 +93,8 @@ func resourceAciVXLANPoolCreate(d *schema.ResourceData, m interface{}) error {
 	fvnsVxlanInstPAttr := models.VXLANPoolAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		fvnsVxlanInstPAttr.Annotation = Annotation.(string)
+	} else {
+		fvnsVxlanInstPAttr.Annotation = "{}"
 	}
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		fvnsVxlanInstPAttr.NameAlias = NameAlias.(string)
@@ -132,6 +128,8 @@ func resourceAciVXLANPoolUpdate(d *schema.ResourceData, m interface{}) error {
 	fvnsVxlanInstPAttr := models.VXLANPoolAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		fvnsVxlanInstPAttr.Annotation = Annotation.(string)
+	} else {
+		fvnsVxlanInstPAttr.Annotation = "{}"
 	}
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		fvnsVxlanInstPAttr.NameAlias = NameAlias.(string)

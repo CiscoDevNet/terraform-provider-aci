@@ -59,7 +59,7 @@ func (sm *ServiceManager) CreateRelationl3extRsLIfPToNetflowMonitorPolFromLogica
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s"				
+				"dn": "%s","annotation":"orchestrator:terraform"				
 			}
 		}
 	}`, "l3extRsLIfPToNetflowMonitorPol", dn))
@@ -113,7 +113,7 @@ func (sm *ServiceManager) CreateRelationl3extRsPathL3OutAttFromLogicalInterfaceP
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s"				
+				"dn": "%s","annotation":"orchestrator:terraform"				
 			}
 		}
 	}`, "l3extRsPathL3OutAtt", dn))
@@ -163,7 +163,7 @@ func (sm *ServiceManager) CreateRelationl3extRsEgressQosDppPolFromLogicalInterfa
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tnQosDppPolName": "%s"
+				"dn": "%s","tnQosDppPolName": "%s","annotation":"orchestrator:terraform"
 								
 			}
 		}
@@ -207,7 +207,7 @@ func (sm *ServiceManager) CreateRelationl3extRsIngressQosDppPolFromLogicalInterf
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tnQosDppPolName": "%s"
+				"dn": "%s","tnQosDppPolName": "%s","annotation":"orchestrator:terraform"
 								
 			}
 		}
@@ -251,7 +251,7 @@ func (sm *ServiceManager) CreateRelationl3extRsLIfPCustQosPolFromLogicalInterfac
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tnQosCustomPolName": "%s"
+				"dn": "%s","tnQosCustomPolName": "%s","annotation":"orchestrator:terraform"
 								
 			}
 		}
@@ -295,7 +295,7 @@ func (sm *ServiceManager) CreateRelationl3extRsArpIfPolFromLogicalInterfaceProfi
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tnArpIfPolName": "%s"
+				"dn": "%s","tnArpIfPolName": "%s","annotation":"orchestrator:terraform"
 								
 			}
 		}
@@ -339,7 +339,7 @@ func (sm *ServiceManager) CreateRelationl3extRsNdIfPolFromLogicalInterfaceProfil
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tnNdIfPolName": "%s"
+				"dn": "%s","tnNdIfPolName": "%s","annotation":"orchestrator:terraform"
 								
 			}
 		}

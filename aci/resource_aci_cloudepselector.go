@@ -35,12 +35,6 @@ func resourceAciCloudEndpointSelector() *schema.Resource {
 				ForceNew: true,
 			},
 
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
 			"match_expression": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -118,6 +112,8 @@ func resourceAciCloudEndpointSelectorCreate(d *schema.ResourceData, m interface{
 	cloudEPSelectorAttr := models.CloudEndpointSelectorAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		cloudEPSelectorAttr.Annotation = Annotation.(string)
+	} else {
+		cloudEPSelectorAttr.Annotation = "{}"
 	}
 	if MatchExpression, ok := d.GetOk("match_expression"); ok {
 		cloudEPSelectorAttr.MatchExpression = MatchExpression.(string)
@@ -156,6 +152,8 @@ func resourceAciCloudEndpointSelectorUpdate(d *schema.ResourceData, m interface{
 	cloudEPSelectorAttr := models.CloudEndpointSelectorAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		cloudEPSelectorAttr.Annotation = Annotation.(string)
+	} else {
+		cloudEPSelectorAttr.Annotation = "{}"
 	}
 	if MatchExpression, ok := d.GetOk("match_expression"); ok {
 		cloudEPSelectorAttr.MatchExpression = MatchExpression.(string)

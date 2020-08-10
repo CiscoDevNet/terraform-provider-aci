@@ -37,12 +37,6 @@ func resourceAciApplicationEPG() *schema.Resource {
 				ForceNew: true,
 			},
 
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
 			"exception_tag": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -275,6 +269,8 @@ func resourceAciApplicationEPGCreate(d *schema.ResourceData, m interface{}) erro
 	fvAEPgAttr := models.ApplicationEPGAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		fvAEPgAttr.Annotation = Annotation.(string)
+	} else {
+		fvAEPgAttr.Annotation = "{}"
 	}
 	if ExceptionTag, ok := d.GetOk("exception_tag"); ok {
 		fvAEPgAttr.ExceptionTag = ExceptionTag.(string)
@@ -562,6 +558,8 @@ func resourceAciApplicationEPGUpdate(d *schema.ResourceData, m interface{}) erro
 	fvAEPgAttr := models.ApplicationEPGAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		fvAEPgAttr.Annotation = Annotation.(string)
+	} else {
+		fvAEPgAttr.Annotation = "{}"
 	}
 	if ExceptionTag, ok := d.GetOk("exception_tag"); ok {
 		fvAEPgAttr.ExceptionTag = ExceptionTag.(string)

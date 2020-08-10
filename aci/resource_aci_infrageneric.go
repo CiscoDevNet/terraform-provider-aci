@@ -35,12 +35,6 @@ func resourceAciAccessGeneric() *schema.Resource {
 				ForceNew: true,
 			},
 
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
 			"name_alias": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -110,6 +104,8 @@ func resourceAciAccessGenericCreate(d *schema.ResourceData, m interface{}) error
 	infraGenericAttr := models.AccessGenericAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		infraGenericAttr.Annotation = Annotation.(string)
+	} else {
+		infraGenericAttr.Annotation = "{}"
 	}
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		infraGenericAttr.NameAlias = NameAlias.(string)
@@ -145,6 +141,8 @@ func resourceAciAccessGenericUpdate(d *schema.ResourceData, m interface{}) error
 	infraGenericAttr := models.AccessGenericAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		infraGenericAttr.Annotation = Annotation.(string)
+	} else {
+		infraGenericAttr.Annotation = "{}"
 	}
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		infraGenericAttr.NameAlias = NameAlias.(string)

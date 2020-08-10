@@ -29,12 +29,6 @@ func resourceAciAccessGroup() *schema.Resource {
 				ForceNew: true,
 			},
 
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
 			"fex_id": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -104,6 +98,8 @@ func resourceAciAccessAccessGroupCreate(d *schema.ResourceData, m interface{}) e
 	infraRsAccBaseGrpAttr := models.AccessAccessGroupAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		infraRsAccBaseGrpAttr.Annotation = Annotation.(string)
+	} else {
+		infraRsAccBaseGrpAttr.Annotation = "{}"
 	}
 	if FexId, ok := d.GetOk("fex_id"); ok {
 		infraRsAccBaseGrpAttr.FexId = FexId.(string)
@@ -136,6 +132,8 @@ func resourceAciAccessAccessGroupUpdate(d *schema.ResourceData, m interface{}) e
 	infraRsAccBaseGrpAttr := models.AccessAccessGroupAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		infraRsAccBaseGrpAttr.Annotation = Annotation.(string)
+	} else {
+		infraRsAccBaseGrpAttr.Annotation = "{}"
 	}
 	if FexId, ok := d.GetOk("fex_id"); ok {
 		infraRsAccBaseGrpAttr.FexId = FexId.(string)

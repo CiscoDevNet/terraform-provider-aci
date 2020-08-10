@@ -35,12 +35,6 @@ func resourceAciSPANDestinationGroup() *schema.Resource {
 				ForceNew: true,
 			},
 
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
 			"name_alias": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -111,6 +105,8 @@ func resourceAciSPANDestinationGroupCreate(d *schema.ResourceData, m interface{}
 	spanDestGrpAttr := models.SPANDestinationGroupAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		spanDestGrpAttr.Annotation = Annotation.(string)
+	} else {
+		spanDestGrpAttr.Annotation = "{}"
 	}
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		spanDestGrpAttr.NameAlias = NameAlias.(string)
@@ -146,6 +142,8 @@ func resourceAciSPANDestinationGroupUpdate(d *schema.ResourceData, m interface{}
 	spanDestGrpAttr := models.SPANDestinationGroupAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		spanDestGrpAttr.Annotation = Annotation.(string)
+	} else {
+		spanDestGrpAttr.Annotation = "{}"
 	}
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		spanDestGrpAttr.NameAlias = NameAlias.(string)

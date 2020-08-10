@@ -2,6 +2,7 @@ package aci
 
 import (
 	"fmt"
+
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 )
@@ -26,12 +27,6 @@ func dataSourceAciCloudAWSProvider() *schema.Resource {
 			},
 
 			"account_id": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
-			"annotation": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,

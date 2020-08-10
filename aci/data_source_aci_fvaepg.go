@@ -25,12 +25,6 @@ func dataSourceAciApplicationEPG() *schema.Resource {
 				Required: true,
 			},
 
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
 			"exception_tag": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,

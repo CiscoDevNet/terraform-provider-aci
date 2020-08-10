@@ -58,7 +58,7 @@ func (sm *ServiceManager) CreateRelationmaintRsMgrppFromPODMaintenanceGroup(pare
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tnMaintMaintPName": "%s"
+				"dn": "%s","tnMaintMaintPName": "%s","annotation":"orchestrator:terraform"
 								
 			}
 		}
@@ -145,7 +145,7 @@ func (sm *ServiceManager) CreateRelationmaintRsMgrppFromMaintGrp(parentDn, tnMai
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tnMaintMaintPName": "%s"
+				"dn": "%s","tnMaintMaintPName": "%s","annotation":"orchestrator:terraform"
 								
 			}
 		}

@@ -59,7 +59,7 @@ func (sm *ServiceManager) CreateRelationfvRsTnDenyRuleFromTenant(parentDn, tDn s
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s"				
+				"dn": "%s","annotation":"orchestrator:terraform"				
 			}
 		}
 	}`, "fvRsTnDenyRule", dn))
@@ -109,7 +109,7 @@ func (sm *ServiceManager) CreateRelationfvRsTenantMonPolFromTenant(parentDn, tnM
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tnMonEPGPolName": "%s"
+				"dn": "%s","tnMonEPGPolName": "%s","annotation":"orchestrator:terraform"
 								
 			}
 		}

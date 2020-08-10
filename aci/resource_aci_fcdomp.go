@@ -30,12 +30,6 @@ func resourceAciFCDomain() *schema.Resource {
 				ForceNew: true,
 			},
 
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
 			"name_alias": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -140,6 +134,8 @@ func resourceAciFCDomainCreate(d *schema.ResourceData, m interface{}) error {
 	fcDomPAttr := models.FCDomainAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		fcDomPAttr.Annotation = Annotation.(string)
+	} else {
+		fcDomPAttr.Annotation = "{}"
 	}
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		fcDomPAttr.NameAlias = NameAlias.(string)
@@ -262,6 +258,8 @@ func resourceAciFCDomainUpdate(d *schema.ResourceData, m interface{}) error {
 	fcDomPAttr := models.FCDomainAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		fcDomPAttr.Annotation = Annotation.(string)
+	} else {
+		fcDomPAttr.Annotation = "{}"
 	}
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		fcDomPAttr.NameAlias = NameAlias.(string)

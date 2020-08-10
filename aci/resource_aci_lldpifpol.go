@@ -42,12 +42,6 @@ func resourceAciLLDPInterfacePolicy() *schema.Resource {
 				Computed: true,
 			},
 
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
 			"name_alias": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -119,6 +113,8 @@ func resourceAciLLDPInterfacePolicyCreate(d *schema.ResourceData, m interface{})
 	}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		lldpIfPolAttr.Annotation = Annotation.(string)
+	} else {
+		lldpIfPolAttr.Annotation = "{}"
 	}
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		lldpIfPolAttr.NameAlias = NameAlias.(string)
@@ -158,6 +154,8 @@ func resourceAciLLDPInterfacePolicyUpdate(d *schema.ResourceData, m interface{})
 	}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		lldpIfPolAttr.Annotation = Annotation.(string)
+	} else {
+		lldpIfPolAttr.Annotation = "{}"
 	}
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		lldpIfPolAttr.NameAlias = NameAlias.(string)

@@ -58,7 +58,7 @@ func (sm *ServiceManager) CreateRelationcloudRsZoneAttachFromCloudSubnet(parentD
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tDn": "%s"
+				"dn": "%s","tDn": "%s","annotation":"orchestrator:terraform"
 								
 			}
 		}
@@ -107,7 +107,7 @@ func (sm *ServiceManager) CreateRelationcloudRsSubnetToFlowLogFromCloudSubnet(pa
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tnCloudAwsFlowLogPolName": "%s"
+				"dn": "%s","tnCloudAwsFlowLogPolName": "%s","annotation":"orchestrator:terraform"
 								
 			}
 		}

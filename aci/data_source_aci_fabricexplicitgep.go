@@ -21,12 +21,6 @@ func dataSourceAciVPCExplicitProtectionGroup() *schema.Resource {
 				Required: true,
 			},
 
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
 			"vpc_explicit_protection_group_id": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,

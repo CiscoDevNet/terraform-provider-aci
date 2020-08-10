@@ -59,7 +59,7 @@ func (sm *ServiceManager) CreateRelationl3extRsDampeningPolFromL3Outside(parentD
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s"				
+				"dn": "%s","annotation":"orchestrator:terraform"				
 			}
 		}
 	}`, "l3extRsDampeningPol", dn))
@@ -113,7 +113,7 @@ func (sm *ServiceManager) CreateRelationl3extRsEctxFromL3Outside(parentDn, tnFvC
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tnFvCtxName": "%s"
+				"dn": "%s","tnFvCtxName": "%s","annotation":"orchestrator:terraform"
 								
 			}
 		}
@@ -202,7 +202,7 @@ func (sm *ServiceManager) CreateRelationl3extRsInterleakPolFromL3Outside(parentD
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tnRtctrlProfileName": "%s"
+				"dn": "%s","tnRtctrlProfileName": "%s","annotation":"orchestrator:terraform"
 								
 			}
 		}
@@ -251,7 +251,7 @@ func (sm *ServiceManager) CreateRelationl3extRsL3DomAttFromL3Outside(parentDn, t
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tDn": "%s"
+				"dn": "%s","tDn": "%s","annotation":"orchestrator:terraform"
 								
 			}
 		}

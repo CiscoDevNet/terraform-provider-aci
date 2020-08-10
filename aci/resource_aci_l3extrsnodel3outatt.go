@@ -33,12 +33,6 @@ func resourceAciFabricNode() *schema.Resource {
 				Required: true,
 			},
 
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
 			"config_issues": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -122,6 +116,8 @@ func resourceAciFabricNodeCreate(d *schema.ResourceData, m interface{}) error {
 	l3extRsNodeL3OutAttAttr := models.FabricNodeAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		l3extRsNodeL3OutAttAttr.Annotation = Annotation.(string)
+	} else {
+		l3extRsNodeL3OutAttAttr.Annotation = "{}"
 	}
 	if ConfigIssues, ok := d.GetOk("config_issues"); ok {
 		l3extRsNodeL3OutAttAttr.ConfigIssues = ConfigIssues.(string)
@@ -164,6 +160,8 @@ func resourceAciFabricNodeUpdate(d *schema.ResourceData, m interface{}) error {
 	l3extRsNodeL3OutAttAttr := models.FabricNodeAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		l3extRsNodeL3OutAttAttr.Annotation = Annotation.(string)
+	} else {
+		l3extRsNodeL3OutAttAttr.Annotation = "{}"
 	}
 	if ConfigIssues, ok := d.GetOk("config_issues"); ok {
 		l3extRsNodeL3OutAttAttr.ConfigIssues = ConfigIssues.(string)

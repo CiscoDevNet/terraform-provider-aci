@@ -139,6 +139,22 @@ func GetClient(clientUrl, username string, options ...Option) *Client {
 	return clientImpl
 }
 
+// NewClient returns a new Instance of the client - allowing for simultaneous connections to the same APIC
+func NewClient(clientUrl, username string, options ...Option) *Client {
+	// making sure it is the same client
+	_, err := url.Parse(clientUrl)
+	if err != nil {
+		// cannot move forward if url is undefined
+		log.Fatal(err)
+	}
+
+	// initClient always returns a new struct, so always create a new pointer to allow for
+	// multiple object instances
+	newClientImpl := initClient(clientUrl, username, options...)
+
+	return newClientImpl
+}
+
 func (c *Client) configProxy(transport *http.Transport) *http.Transport {
 	pUrl, err := url.Parse(c.proxyUrl)
 	if err != nil {
@@ -286,16 +302,16 @@ func (c *Client) Do(req *http.Request) (*container.Container, *http.Response, er
 
 func (c *Client) DoRaw(req *http.Request) (*http.Response, error) {
 
-        resp, err := c.httpClient.Do(req)
-        if err != nil {
-                return nil, err
-        }
+	resp, err := c.httpClient.Do(req)
+	if err != nil {
+		return nil, err
+	}
 
-        log.Printf("\n\n\n HTTP request: %v", req.Body)
-        log.Printf("\nHTTP Request: %s %s", req.Method, req.URL.String())
-        log.Printf("nHTTP Response: %d %s %v", resp.StatusCode, resp.Status, resp)
+	log.Printf("\n\n\n HTTP request: %v", req.Body)
+	log.Printf("\nHTTP Request: %s %s", req.Method, req.URL.String())
+	log.Printf("nHTTP Response: %d %s %v", resp.StatusCode, resp.Status, resp)
 
-        return resp, err
+	return resp, err
 }
 
 func stripQuotes(word string) string {

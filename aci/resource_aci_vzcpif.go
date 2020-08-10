@@ -33,12 +33,6 @@ func resourceAciImportedContract() *schema.Resource {
 				Required: true,
 			},
 
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
 			"name_alias": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -115,6 +109,8 @@ func resourceAciImportedContractCreate(d *schema.ResourceData, m interface{}) er
 	vzCPIfAttr := models.ImportedContractAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		vzCPIfAttr.Annotation = Annotation.(string)
+	} else {
+		vzCPIfAttr.Annotation = "{}"
 	}
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		vzCPIfAttr.NameAlias = NameAlias.(string)
@@ -163,6 +159,8 @@ func resourceAciImportedContractUpdate(d *schema.ResourceData, m interface{}) er
 	vzCPIfAttr := models.ImportedContractAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		vzCPIfAttr.Annotation = Annotation.(string)
+	} else {
+		vzCPIfAttr.Annotation = "{}"
 	}
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		vzCPIfAttr.NameAlias = NameAlias.(string)

@@ -35,12 +35,6 @@ func resourceAciCloudApplicationcontainer() *schema.Resource {
 				ForceNew: true,
 			},
 
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
 			"name_alias": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -111,6 +105,8 @@ func resourceAciCloudApplicationcontainerCreate(d *schema.ResourceData, m interf
 	cloudAppAttr := models.CloudApplicationcontainerAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		cloudAppAttr.Annotation = Annotation.(string)
+	} else {
+		cloudAppAttr.Annotation = "{}"
 	}
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		cloudAppAttr.NameAlias = NameAlias.(string)
@@ -146,6 +142,8 @@ func resourceAciCloudApplicationcontainerUpdate(d *schema.ResourceData, m interf
 	cloudAppAttr := models.CloudApplicationcontainerAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		cloudAppAttr.Annotation = Annotation.(string)
+	} else {
+		cloudAppAttr.Annotation = "{}"
 	}
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		cloudAppAttr.NameAlias = NameAlias.(string)

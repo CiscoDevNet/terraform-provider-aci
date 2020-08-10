@@ -59,7 +59,7 @@ func (sm *ServiceManager) CreateRelationfvRsOspfCtxPolFromVRF(parentDn, tnOspfCt
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tnOspfCtxPolName": "%s"
+				"dn": "%s","tnOspfCtxPolName": "%s","annotation":"orchestrator:terraform"
 								
 			}
 		}
@@ -103,7 +103,7 @@ func (sm *ServiceManager) CreateRelationfvRsVrfValidationPolFromVRF(parentDn, tn
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tnL3extVrfValidationPolName": "%s"
+				"dn": "%s","tnL3extVrfValidationPolName": "%s","annotation":"orchestrator:terraform"
 								
 			}
 		}
@@ -192,7 +192,7 @@ func (sm *ServiceManager) CreateRelationfvRsCtxToEigrpCtxAfPolFromVRF(parentDn, 
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s"				
+				"dn": "%s","annotation":"orchestrator:terraform"				
 			}
 		}
 	}`, "fvRsCtxToEigrpCtxAfPol", dn))
@@ -246,7 +246,7 @@ func (sm *ServiceManager) CreateRelationfvRsCtxToOspfCtxPolFromVRF(parentDn, tnO
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s"				
+				"dn": "%s","annotation":"orchestrator:terraform"				
 			}
 		}
 	}`, "fvRsCtxToOspfCtxPol", dn))
@@ -300,7 +300,7 @@ func (sm *ServiceManager) CreateRelationfvRsCtxToEpRetFromVRF(parentDn, tnFvEpRe
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tnFvEpRetPolName": "%s"
+				"dn": "%s","tnFvEpRetPolName": "%s","annotation":"orchestrator:terraform"
 								
 			}
 		}
@@ -344,7 +344,7 @@ func (sm *ServiceManager) CreateRelationfvRsBgpCtxPolFromVRF(parentDn, tnBgpCtxP
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tnBgpCtxPolName": "%s"
+				"dn": "%s","tnBgpCtxPolName": "%s","annotation":"orchestrator:terraform"
 								
 			}
 		}
@@ -388,7 +388,7 @@ func (sm *ServiceManager) CreateRelationfvRsCtxMonPolFromVRF(parentDn, tnMonEPGP
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tnMonEPGPolName": "%s"
+				"dn": "%s","tnMonEPGPolName": "%s","annotation":"orchestrator:terraform"
 								
 			}
 		}
@@ -437,7 +437,7 @@ func (sm *ServiceManager) CreateRelationfvRsCtxToExtRouteTagPolFromVRF(parentDn,
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tnL3extRouteTagPolName": "%s"
+				"dn": "%s","tnL3extRouteTagPolName": "%s","annotation":"orchestrator:terraform"
 								
 			}
 		}
@@ -481,7 +481,7 @@ func (sm *ServiceManager) CreateRelationfvRsCtxToBgpCtxAfPolFromVRF(parentDn, tn
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s"				
+				"dn": "%s","annotation":"orchestrator:terraform"				
 			}
 		}
 	}`, "fvRsCtxToBgpCtxAfPol", dn))

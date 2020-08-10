@@ -36,12 +36,6 @@ func resourceAciCDPInterfacePolicy() *schema.Resource {
 				Computed: true,
 			},
 
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
 			"name_alias": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -109,6 +103,8 @@ func resourceAciCDPInterfacePolicyCreate(d *schema.ResourceData, m interface{}) 
 	}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		cdpIfPolAttr.Annotation = Annotation.(string)
+	} else {
+		cdpIfPolAttr.Annotation = "{}"
 	}
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		cdpIfPolAttr.NameAlias = NameAlias.(string)
@@ -145,6 +141,8 @@ func resourceAciCDPInterfacePolicyUpdate(d *schema.ResourceData, m interface{}) 
 	}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		cdpIfPolAttr.Annotation = Annotation.(string)
+	} else {
+		cdpIfPolAttr.Annotation = "{}"
 	}
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		cdpIfPolAttr.NameAlias = NameAlias.(string)

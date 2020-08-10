@@ -37,12 +37,6 @@ func resourceAciSubnet() *schema.Resource {
 				ForceNew: true,
 			},
 
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
 			"ctrl": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -158,6 +152,8 @@ func resourceAciSubnetCreate(d *schema.ResourceData, m interface{}) error {
 	fvSubnetAttr := models.SubnetAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		fvSubnetAttr.Annotation = Annotation.(string)
+	} else {
+		fvSubnetAttr.Annotation = "{}"
 	}
 	if Ctrl, ok := d.GetOk("ctrl"); ok {
 		fvSubnetAttr.Ctrl = Ctrl.(string)
@@ -247,6 +243,8 @@ func resourceAciSubnetUpdate(d *schema.ResourceData, m interface{}) error {
 	fvSubnetAttr := models.SubnetAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		fvSubnetAttr.Annotation = Annotation.(string)
+	} else {
+		fvSubnetAttr.Annotation = "{}"
 	}
 	if Ctrl, ok := d.GetOk("ctrl"); ok {
 		fvSubnetAttr.Ctrl = Ctrl.(string)

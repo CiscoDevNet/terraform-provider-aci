@@ -25,12 +25,6 @@ func dataSourceAciAccessSubPortBlock() *schema.Resource {
 				Required: true,
 			},
 
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
 			"from_card": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,

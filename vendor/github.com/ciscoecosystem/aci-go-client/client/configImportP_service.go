@@ -58,7 +58,7 @@ func (sm *ServiceManager) CreateRelationconfigRsImportSourceFromConfigurationImp
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tnFileRemotePathName": "%s"
+				"dn": "%s","tnFileRemotePathName": "%s","annotation":"orchestrator:terraform"
 								
 			}
 		}
@@ -107,7 +107,7 @@ func (sm *ServiceManager) CreateRelationtrigRsTriggerableFromConfigurationImport
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tDn": "%s"
+				"dn": "%s","tDn": "%s","annotation":"orchestrator:terraform"
 								
 			}
 		}
@@ -151,7 +151,7 @@ func (sm *ServiceManager) CreateRelationconfigRsRemotePathFromConfigurationImpor
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tnFileRemotePathName": "%s"
+				"dn": "%s","tnFileRemotePathName": "%s","annotation":"orchestrator:terraform"
 								
 			}
 		}

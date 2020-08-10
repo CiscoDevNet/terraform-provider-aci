@@ -25,12 +25,6 @@ func dataSourceAciDestinationofredirectedtraffic() *schema.Resource {
 				Required: true,
 			},
 
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
 			"dest_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,

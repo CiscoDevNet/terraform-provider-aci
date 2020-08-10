@@ -59,7 +59,7 @@ func (sm *ServiceManager) CreateRelationvzRsIfFromImportedContract(parentDn, tnV
 		"%s": {
 			"attributes": {
 				"dn": "%s",
-				"tDn": "%s"				
+				"tDn": "%s","annotation":"orchestrator:terraform"				
 			}
 		}
 	}`, "vzRsIf", dn, tnVzACtrctName))

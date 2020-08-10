@@ -58,7 +58,7 @@ func (sm *ServiceManager) CreateRelationvzRsFiltGraphAttFromFilter(parentDn, tnV
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","graphName": "%s"
+				"dn": "%s","graphName": "%s","annotation":"orchestrator:terraform"
 								
 			}
 		}

@@ -41,12 +41,6 @@ func resourceAciL3ExtSubnet() *schema.Resource {
 				Computed: true,
 			},
 
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
 			"name_alias": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -151,6 +145,8 @@ func resourceAciL3ExtSubnetCreate(d *schema.ResourceData, m interface{}) error {
 	}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		l3extSubnetAttr.Annotation = Annotation.(string)
+	} else {
+		l3extSubnetAttr.Annotation = "{}"
 	}
 	if Ip, ok := d.GetOk("ip"); ok {
 		l3extSubnetAttr.Ip = Ip.(string)
@@ -222,6 +218,8 @@ func resourceAciL3ExtSubnetUpdate(d *schema.ResourceData, m interface{}) error {
 	}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		l3extSubnetAttr.Annotation = Annotation.(string)
+	} else {
+		l3extSubnetAttr.Annotation = "{}"
 	}
 	if Ip, ok := d.GetOk("ip"); ok {
 		l3extSubnetAttr.Ip = Ip.(string)

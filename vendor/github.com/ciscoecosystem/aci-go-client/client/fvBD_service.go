@@ -59,7 +59,7 @@ func (sm *ServiceManager) CreateRelationfvRsBDToProfileFromBridgeDomain(parentDn
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tnRtctrlProfileName": "%s"
+				"dn": "%s","tnRtctrlProfileName": "%s","annotation":"orchestrator:terraform"
 								
 			}
 		}
@@ -108,7 +108,7 @@ func (sm *ServiceManager) CreateRelationfvRsMldsnFromBridgeDomain(parentDn, tnMl
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tnMldSnoopPolName": "%s"
+				"dn": "%s","tnMldSnoopPolName": "%s","annotation":"orchestrator:terraform"
 								
 			}
 		}
@@ -152,7 +152,7 @@ func (sm *ServiceManager) CreateRelationfvRsABDPolMonPolFromBridgeDomain(parentD
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tnMonEPGPolName": "%s"
+				"dn": "%s","tnMonEPGPolName": "%s","annotation":"orchestrator:terraform"
 								
 			}
 		}
@@ -201,7 +201,7 @@ func (sm *ServiceManager) CreateRelationfvRsBDToNdPFromBridgeDomain(parentDn, tn
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tnNdIfPolName": "%s"
+				"dn": "%s","tnNdIfPolName": "%s","annotation":"orchestrator:terraform"
 								
 			}
 		}
@@ -245,7 +245,7 @@ func (sm *ServiceManager) CreateRelationfvRsBdFloodToFromBridgeDomain(parentDn, 
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s"				
+				"dn": "%s","annotation":"orchestrator:terraform"				
 			}
 		}
 	}`, "fvRsBdFloodTo", dn))
@@ -295,7 +295,7 @@ func (sm *ServiceManager) CreateRelationfvRsBDToFhsFromBridgeDomain(parentDn, tn
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tnFhsBDPolName": "%s"
+				"dn": "%s","tnFhsBDPolName": "%s","annotation":"orchestrator:terraform"
 								
 			}
 		}
@@ -344,7 +344,7 @@ func (sm *ServiceManager) CreateRelationfvRsBDToRelayPFromBridgeDomain(parentDn,
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tnDhcpRelayPName": "%s"
+				"dn": "%s","tnDhcpRelayPName": "%s","annotation":"orchestrator:terraform"
 								
 			}
 		}
@@ -393,7 +393,7 @@ func (sm *ServiceManager) CreateRelationfvRsCtxFromBridgeDomain(parentDn, tnFvCt
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tnFvCtxName": "%s"
+				"dn": "%s","tnFvCtxName": "%s","annotation":"orchestrator:terraform"
 								
 			}
 		}
@@ -437,7 +437,7 @@ func (sm *ServiceManager) CreateRelationfvRsBDToNetflowMonitorPolFromBridgeDomai
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s"				
+				"dn": "%s","annotation":"orchestrator:terraform"				
 			}
 		}
 	}`, "fvRsBDToNetflowMonitorPol", dn))
@@ -491,7 +491,7 @@ func (sm *ServiceManager) CreateRelationfvRsIgmpsnFromBridgeDomain(parentDn, tnI
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tnIgmpSnoopPolName": "%s"
+				"dn": "%s","tnIgmpSnoopPolName": "%s","annotation":"orchestrator:terraform"
 								
 			}
 		}
@@ -535,7 +535,7 @@ func (sm *ServiceManager) CreateRelationfvRsBdToEpRetFromBridgeDomain(parentDn, 
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tnFvEpRetPolName": "%s"
+				"dn": "%s","tnFvEpRetPolName": "%s","annotation":"orchestrator:terraform"
 								
 			}
 		}
@@ -579,7 +579,7 @@ func (sm *ServiceManager) CreateRelationfvRsBDToOutFromBridgeDomain(parentDn, tn
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s"				
+				"dn": "%s","annotation":"orchestrator:terraform"				
 			}
 		}
 	}`, "fvRsBDToOut", dn))

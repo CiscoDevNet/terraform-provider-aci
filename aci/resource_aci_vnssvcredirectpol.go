@@ -41,12 +41,6 @@ func resourceAciServiceRedirectPolicy() *schema.Resource {
 				Computed: true,
 			},
 
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
 			"dest_type": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -182,6 +176,8 @@ func resourceAciServiceRedirectPolicyCreate(d *schema.ResourceData, m interface{
 	}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		vnsSvcRedirectPolAttr.Annotation = Annotation.(string)
+	} else {
+		vnsSvcRedirectPolAttr.Annotation = "{}"
 	}
 	if DestType, ok := d.GetOk("dest_type"); ok {
 		vnsSvcRedirectPolAttr.DestType = DestType.(string)
@@ -256,6 +252,8 @@ func resourceAciServiceRedirectPolicyUpdate(d *schema.ResourceData, m interface{
 	}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		vnsSvcRedirectPolAttr.Annotation = Annotation.(string)
+	} else {
+		vnsSvcRedirectPolAttr.Annotation = "{}"
 	}
 	if DestType, ok := d.GetOk("dest_type"); ok {
 		vnsSvcRedirectPolAttr.DestType = DestType.(string)

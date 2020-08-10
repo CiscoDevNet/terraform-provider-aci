@@ -37,12 +37,6 @@ func resourceAciContractSubject() *schema.Resource {
 				ForceNew: true,
 			},
 
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
 			"cons_match_t": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -165,6 +159,8 @@ func resourceAciContractSubjectCreate(d *schema.ResourceData, m interface{}) err
 	vzSubjAttr := models.ContractSubjectAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		vzSubjAttr.Annotation = Annotation.(string)
+	} else {
+		vzSubjAttr.Annotation = "{}"
 	}
 	if ConsMatchT, ok := d.GetOk("cons_match_t"); ok {
 		vzSubjAttr.ConsMatchT = ConsMatchT.(string)
@@ -253,6 +249,8 @@ func resourceAciContractSubjectUpdate(d *schema.ResourceData, m interface{}) err
 	vzSubjAttr := models.ContractSubjectAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		vzSubjAttr.Annotation = Annotation.(string)
+	} else {
+		vzSubjAttr.Annotation = "{}"
 	}
 	if ConsMatchT, ok := d.GetOk("cons_match_t"); ok {
 		vzSubjAttr.ConsMatchT = ConsMatchT.(string)

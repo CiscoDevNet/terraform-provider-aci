@@ -37,12 +37,6 @@ func resourceAciCloudEPg() *schema.Resource {
 				ForceNew: true,
 			},
 
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
 			"exception_tag": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -195,6 +189,8 @@ func resourceAciCloudEPgCreate(d *schema.ResourceData, m interface{}) error {
 	cloudEPgAttr := models.CloudEPgAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		cloudEPgAttr.Annotation = Annotation.(string)
+	} else {
+		cloudEPgAttr.Annotation = "{}"
 	}
 	if ExceptionTag, ok := d.GetOk("exception_tag"); ok {
 		cloudEPgAttr.ExceptionTag = ExceptionTag.(string)
@@ -353,6 +349,8 @@ func resourceAciCloudEPgUpdate(d *schema.ResourceData, m interface{}) error {
 	cloudEPgAttr := models.CloudEPgAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		cloudEPgAttr.Annotation = Annotation.(string)
+	} else {
+		cloudEPgAttr.Annotation = "{}"
 	}
 	if ExceptionTag, ok := d.GetOk("exception_tag"); ok {
 		cloudEPgAttr.ExceptionTag = ExceptionTag.(string)

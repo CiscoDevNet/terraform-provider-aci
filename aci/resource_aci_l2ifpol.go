@@ -30,12 +30,6 @@ func resourceAciL2InterfacePolicy() *schema.Resource {
 				ForceNew: true,
 			},
 
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
 			"name_alias": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -120,6 +114,8 @@ func resourceAciL2InterfacePolicyCreate(d *schema.ResourceData, m interface{}) e
 	l2IfPolAttr := models.L2InterfacePolicyAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		l2IfPolAttr.Annotation = Annotation.(string)
+	} else {
+		l2IfPolAttr.Annotation = "{}"
 	}
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		l2IfPolAttr.NameAlias = NameAlias.(string)
@@ -162,6 +158,8 @@ func resourceAciL2InterfacePolicyUpdate(d *schema.ResourceData, m interface{}) e
 	l2IfPolAttr := models.L2InterfacePolicyAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		l2IfPolAttr.Annotation = Annotation.(string)
+	} else {
+		l2IfPolAttr.Annotation = "{}"
 	}
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		l2IfPolAttr.NameAlias = NameAlias.(string)

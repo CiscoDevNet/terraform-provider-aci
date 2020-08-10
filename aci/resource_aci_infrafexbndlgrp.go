@@ -35,12 +35,6 @@ func resourceAciFexBundleGroup() *schema.Resource {
 				ForceNew: true,
 			},
 
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
 			"name_alias": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -122,6 +116,8 @@ func resourceAciFexBundleGroupCreate(d *schema.ResourceData, m interface{}) erro
 	infraFexBndlGrpAttr := models.FexBundleGroupAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		infraFexBndlGrpAttr.Annotation = Annotation.(string)
+	} else {
+		infraFexBndlGrpAttr.Annotation = "{}"
 	}
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		infraFexBndlGrpAttr.NameAlias = NameAlias.(string)
@@ -183,6 +179,8 @@ func resourceAciFexBundleGroupUpdate(d *schema.ResourceData, m interface{}) erro
 	infraFexBndlGrpAttr := models.FexBundleGroupAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		infraFexBndlGrpAttr.Annotation = Annotation.(string)
+	} else {
+		infraFexBndlGrpAttr.Annotation = "{}"
 	}
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		infraFexBndlGrpAttr.NameAlias = NameAlias.(string)

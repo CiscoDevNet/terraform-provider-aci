@@ -30,12 +30,6 @@ func resourceAciPODMaintenanceGroup() *schema.Resource {
 				ForceNew: true,
 			},
 
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
 			"fwtype": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -119,6 +113,8 @@ func resourceAciPODMaintenanceGroupCreate(d *schema.ResourceData, m interface{})
 	maintMaintGrpAttr := models.PODMaintenanceGroupAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		maintMaintGrpAttr.Annotation = Annotation.(string)
+	} else {
+		maintMaintGrpAttr.Annotation = "{}"
 	}
 	if Fwtype, ok := d.GetOk("fwtype"); ok {
 		maintMaintGrpAttr.Fwtype = Fwtype.(string)
@@ -171,6 +167,8 @@ func resourceAciPODMaintenanceGroupUpdate(d *schema.ResourceData, m interface{})
 	maintMaintGrpAttr := models.PODMaintenanceGroupAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		maintMaintGrpAttr.Annotation = Annotation.(string)
+	} else {
+		maintMaintGrpAttr.Annotation = "{}"
 	}
 	if Fwtype, ok := d.GetOk("fwtype"); ok {
 		maintMaintGrpAttr.Fwtype = Fwtype.(string)

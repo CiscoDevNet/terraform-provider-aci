@@ -59,7 +59,7 @@ func (sm *ServiceManager) CreateRelationinfraRsSpanVSrcGrpFromPCVPCInterfacePoli
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s"				
+				"dn": "%s","annotation":"orchestrator:terraform"				
 			}
 		}
 	}`, "infraRsSpanVSrcGrp", dn))
@@ -154,7 +154,7 @@ func (sm *ServiceManager) CreateRelationinfraRsStormctrlIfPolFromPCVPCInterfaceP
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tnStormctrlIfPolName": "%s"
+				"dn": "%s","tnStormctrlIfPolName": "%s","annotation":"orchestrator:terraform"
 								
 			}
 		}
@@ -198,7 +198,7 @@ func (sm *ServiceManager) CreateRelationinfraRsLldpIfPolFromPCVPCInterfacePolicy
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tnLldpIfPolName": "%s"
+				"dn": "%s","tnLldpIfPolName": "%s","annotation":"orchestrator:terraform"
 								
 			}
 		}
@@ -242,7 +242,7 @@ func (sm *ServiceManager) CreateRelationinfraRsMacsecIfPolFromPCVPCInterfacePoli
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tnMacsecIfPolName": "%s"
+				"dn": "%s","tnMacsecIfPolName": "%s","annotation":"orchestrator:terraform"
 								
 			}
 		}
@@ -286,7 +286,7 @@ func (sm *ServiceManager) CreateRelationinfraRsQosDppIfPolFromPCVPCInterfacePoli
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tnQosDppPolName": "%s"
+				"dn": "%s","tnQosDppPolName": "%s","annotation":"orchestrator:terraform"
 								
 			}
 		}
@@ -330,7 +330,7 @@ func (sm *ServiceManager) CreateRelationinfraRsHIfPolFromPCVPCInterfacePolicyGro
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tnFabricHIfPolName": "%s"
+				"dn": "%s","tnFabricHIfPolName": "%s","annotation":"orchestrator:terraform"
 								
 			}
 		}
@@ -374,7 +374,7 @@ func (sm *ServiceManager) CreateRelationinfraRsNetflowMonitorPolFromPCVPCInterfa
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s"				
+				"dn": "%s","annotation":"orchestrator:terraform"				
 			}
 		}
 	}`, "infraRsNetflowMonitorPol", dn))
@@ -428,7 +428,7 @@ func (sm *ServiceManager) CreateRelationinfraRsL2PortAuthPolFromPCVPCInterfacePo
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tnL2PortAuthPolName": "%s"
+				"dn": "%s","tnL2PortAuthPolName": "%s","annotation":"orchestrator:terraform"
 								
 			}
 		}
@@ -472,7 +472,7 @@ func (sm *ServiceManager) CreateRelationinfraRsMcpIfPolFromPCVPCInterfacePolicyG
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tnMcpIfPolName": "%s"
+				"dn": "%s","tnMcpIfPolName": "%s","annotation":"orchestrator:terraform"
 								
 			}
 		}
@@ -516,7 +516,7 @@ func (sm *ServiceManager) CreateRelationinfraRsL2PortSecurityPolFromPCVPCInterfa
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tnL2PortSecurityPolName": "%s"
+				"dn": "%s","tnL2PortSecurityPolName": "%s","annotation":"orchestrator:terraform"
 								
 			}
 		}
@@ -560,7 +560,7 @@ func (sm *ServiceManager) CreateRelationinfraRsCoppIfPolFromPCVPCInterfacePolicy
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tnCoppIfPolName": "%s"
+				"dn": "%s","tnCoppIfPolName": "%s","annotation":"orchestrator:terraform"
 								
 			}
 		}
@@ -604,7 +604,7 @@ func (sm *ServiceManager) CreateRelationinfraRsSpanVDestGrpFromPCVPCInterfacePol
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s"				
+				"dn": "%s","annotation":"orchestrator:terraform"				
 			}
 		}
 	}`, "infraRsSpanVDestGrp", dn))
@@ -654,7 +654,7 @@ func (sm *ServiceManager) CreateRelationinfraRsLacpPolFromPCVPCInterfacePolicyGr
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tnLacpLagPolName": "%s"
+				"dn": "%s","tnLacpLagPolName": "%s","annotation":"orchestrator:terraform"
 								
 			}
 		}
@@ -698,7 +698,7 @@ func (sm *ServiceManager) CreateRelationinfraRsCdpIfPolFromPCVPCInterfacePolicyG
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tnCdpIfPolName": "%s"
+				"dn": "%s","tnCdpIfPolName": "%s","annotation":"orchestrator:terraform"
 								
 			}
 		}
@@ -742,7 +742,7 @@ func (sm *ServiceManager) CreateRelationinfraRsQosPfcIfPolFromPCVPCInterfacePoli
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tnQosPfcIfPolName": "%s"
+				"dn": "%s","tnQosPfcIfPolName": "%s","annotation":"orchestrator:terraform"
 								
 			}
 		}
@@ -786,7 +786,7 @@ func (sm *ServiceManager) CreateRelationinfraRsQosSdIfPolFromPCVPCInterfacePolic
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tnQosSdIfPolName": "%s"
+				"dn": "%s","tnQosSdIfPolName": "%s","annotation":"orchestrator:terraform"
 								
 			}
 		}
@@ -830,7 +830,7 @@ func (sm *ServiceManager) CreateRelationinfraRsMonIfInfraPolFromPCVPCInterfacePo
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tnMonInfraPolName": "%s"
+				"dn": "%s","tnMonInfraPolName": "%s","annotation":"orchestrator:terraform"
 								
 			}
 		}
@@ -874,7 +874,7 @@ func (sm *ServiceManager) CreateRelationinfraRsFcIfPolFromPCVPCInterfacePolicyGr
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tnFcIfPolName": "%s"
+				"dn": "%s","tnFcIfPolName": "%s","annotation":"orchestrator:terraform"
 								
 			}
 		}
@@ -918,7 +918,7 @@ func (sm *ServiceManager) CreateRelationinfraRsQosIngressDppIfPolFromPCVPCInterf
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tnQosDppPolName": "%s"
+				"dn": "%s","tnQosDppPolName": "%s","annotation":"orchestrator:terraform"
 								
 			}
 		}
@@ -962,7 +962,7 @@ func (sm *ServiceManager) CreateRelationinfraRsQosEgressDppIfPolFromPCVPCInterfa
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tnQosDppPolName": "%s"
+				"dn": "%s","tnQosDppPolName": "%s","annotation":"orchestrator:terraform"
 								
 			}
 		}
@@ -1006,7 +1006,7 @@ func (sm *ServiceManager) CreateRelationinfraRsL2IfPolFromPCVPCInterfacePolicyGr
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tnL2IfPolName": "%s"
+				"dn": "%s","tnL2IfPolName": "%s","annotation":"orchestrator:terraform"
 								
 			}
 		}
@@ -1050,7 +1050,7 @@ func (sm *ServiceManager) CreateRelationinfraRsStpIfPolFromPCVPCInterfacePolicyG
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tnStpIfPolName": "%s"
+				"dn": "%s","tnStpIfPolName": "%s","annotation":"orchestrator:terraform"
 								
 			}
 		}
@@ -1094,7 +1094,7 @@ func (sm *ServiceManager) CreateRelationinfraRsAttEntPFromPCVPCInterfacePolicyGr
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tDn": "%s"
+				"dn": "%s","tDn": "%s","annotation":"orchestrator:terraform"
 								
 			}
 		}
@@ -1143,7 +1143,7 @@ func (sm *ServiceManager) CreateRelationinfraRsL2InstPolFromPCVPCInterfacePolicy
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tDn": "%s"
+				"dn": "%s","tDn": "%s","annotation":"orchestrator:terraform"
 								
 			}
 		}

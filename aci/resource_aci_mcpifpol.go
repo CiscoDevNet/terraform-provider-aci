@@ -36,12 +36,6 @@ func resourceAciMiscablingProtocolInterfacePolicy() *schema.Resource {
 				Computed: true,
 			},
 
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
 			"name_alias": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -109,6 +103,8 @@ func resourceAciMiscablingProtocolInterfacePolicyCreate(d *schema.ResourceData, 
 	}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		mcpIfPolAttr.Annotation = Annotation.(string)
+	} else {
+		mcpIfPolAttr.Annotation = "{}"
 	}
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		mcpIfPolAttr.NameAlias = NameAlias.(string)
@@ -145,6 +141,8 @@ func resourceAciMiscablingProtocolInterfacePolicyUpdate(d *schema.ResourceData, 
 	}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		mcpIfPolAttr.Annotation = Annotation.(string)
+	} else {
+		mcpIfPolAttr.Annotation = "{}"
 	}
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		mcpIfPolAttr.NameAlias = NameAlias.(string)

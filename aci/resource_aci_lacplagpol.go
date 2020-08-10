@@ -30,12 +30,6 @@ func resourceAciLACPPolicy() *schema.Resource {
 				ForceNew: true,
 			},
 
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
 			"ctrl": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -127,6 +121,8 @@ func resourceAciLACPPolicyCreate(d *schema.ResourceData, m interface{}) error {
 	lacpLagPolAttr := models.LACPPolicyAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		lacpLagPolAttr.Annotation = Annotation.(string)
+	} else {
+		lacpLagPolAttr.Annotation = "{}"
 	}
 	if Ctrl, ok := d.GetOk("ctrl"); ok {
 		lacpLagPolAttr.Ctrl = Ctrl.(string)
@@ -172,6 +168,8 @@ func resourceAciLACPPolicyUpdate(d *schema.ResourceData, m interface{}) error {
 	lacpLagPolAttr := models.LACPPolicyAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		lacpLagPolAttr.Annotation = Annotation.(string)
+	} else {
+		lacpLagPolAttr.Annotation = "{}"
 	}
 	if Ctrl, ok := d.GetOk("ctrl"); ok {
 		lacpLagPolAttr.Ctrl = Ctrl.(string)

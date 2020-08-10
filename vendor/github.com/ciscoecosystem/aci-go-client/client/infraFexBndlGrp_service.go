@@ -59,7 +59,7 @@ func (sm *ServiceManager) CreateRelationinfraRsMonFexInfraPolFromFexBundleGroup(
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tnMonInfraPolName": "%s"
+				"dn": "%s","tnMonInfraPolName": "%s","annotation":"orchestrator:terraform"
 								
 			}
 		}

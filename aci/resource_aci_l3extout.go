@@ -35,12 +35,6 @@ func resourceAciL3Outside() *schema.Resource {
 				ForceNew: true,
 			},
 
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
 			"enforce_rtctrl": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -163,6 +157,8 @@ func resourceAciL3OutsideCreate(d *schema.ResourceData, m interface{}) error {
 	l3extOutAttr := models.L3OutsideAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		l3extOutAttr.Annotation = Annotation.(string)
+	} else {
+		l3extOutAttr.Annotation = "{}"
 	}
 	if EnforceRtctrl, ok := d.GetOk("enforce_rtctrl"); ok {
 		l3extOutAttr.EnforceRtctrl = EnforceRtctrl.(string)
@@ -268,6 +264,8 @@ func resourceAciL3OutsideUpdate(d *schema.ResourceData, m interface{}) error {
 	l3extOutAttr := models.L3OutsideAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		l3extOutAttr.Annotation = Annotation.(string)
+	} else {
+		l3extOutAttr.Annotation = "{}"
 	}
 	if EnforceRtctrl, ok := d.GetOk("enforce_rtctrl"); ok {
 		l3extOutAttr.EnforceRtctrl = EnforceRtctrl.(string)

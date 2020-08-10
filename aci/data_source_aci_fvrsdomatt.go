@@ -25,12 +25,6 @@ func dataSourceAciDomain() *schema.Resource {
 				Required: true,
 			},
 
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
 			"binding_type": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,

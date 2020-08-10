@@ -30,12 +30,6 @@ func resourceAciPortSecurityPolicy() *schema.Resource {
 				ForceNew: true,
 			},
 
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
 			"maximum": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -127,6 +121,8 @@ func resourceAciPortSecurityPolicyCreate(d *schema.ResourceData, m interface{}) 
 	l2PortSecurityPolAttr := models.PortSecurityPolicyAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		l2PortSecurityPolAttr.Annotation = Annotation.(string)
+	} else {
+		l2PortSecurityPolAttr.Annotation = "{}"
 	}
 	if Maximum, ok := d.GetOk("maximum"); ok {
 		l2PortSecurityPolAttr.Maximum = Maximum.(string)
@@ -172,6 +168,8 @@ func resourceAciPortSecurityPolicyUpdate(d *schema.ResourceData, m interface{}) 
 	l2PortSecurityPolAttr := models.PortSecurityPolicyAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		l2PortSecurityPolAttr.Annotation = Annotation.(string)
+	} else {
+		l2PortSecurityPolAttr.Annotation = "{}"
 	}
 	if Maximum, ok := d.GetOk("maximum"); ok {
 		l2PortSecurityPolAttr.Maximum = Maximum.(string)

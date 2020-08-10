@@ -34,13 +34,6 @@ func resourceAciCloudContextProfile() *schema.Resource {
 				ForceNew: true,
 			},
 
-			"annotation": &schema.Schema{
-				Type:        schema.TypeString,
-				Optional:    true,
-				Computed:    true,
-				Description: "Mo doc not defined in techpub!!!",
-			},
-
 			"name_alias": &schema.Schema{
 				Type:        schema.TypeString,
 				Optional:    true,
@@ -152,6 +145,8 @@ func resourceAciCloudContextProfileCreate(d *schema.ResourceData, m interface{})
 	cloudCtxProfileAttr := models.CloudContextProfileAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		cloudCtxProfileAttr.Annotation = Annotation.(string)
+	} else {
+		cloudCtxProfileAttr.Annotation = "{}"
 	}
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		cloudCtxProfileAttr.NameAlias = NameAlias.(string)
@@ -212,6 +207,8 @@ func resourceAciCloudContextProfileUpdate(d *schema.ResourceData, m interface{})
 	cloudCtxProfileAttr := models.CloudContextProfileAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		cloudCtxProfileAttr.Annotation = Annotation.(string)
+	} else {
+		cloudCtxProfileAttr.Annotation = "{}"
 	}
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		cloudCtxProfileAttr.NameAlias = NameAlias.(string)

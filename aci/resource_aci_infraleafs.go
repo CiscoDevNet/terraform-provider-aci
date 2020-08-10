@@ -41,12 +41,6 @@ func resourceAciSwitchAssociation() *schema.Resource {
 				ForceNew: true,
 			},
 
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
 			"name_alias": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -128,6 +122,8 @@ func resourceAciSwitchAssociationCreate(d *schema.ResourceData, m interface{}) e
 	infraLeafSAttr := models.SwitchAssociationAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		infraLeafSAttr.Annotation = Annotation.(string)
+	} else {
+		infraLeafSAttr.Annotation = "{}"
 	}
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		infraLeafSAttr.NameAlias = NameAlias.(string)
@@ -182,6 +178,8 @@ func resourceAciSwitchAssociationUpdate(d *schema.ResourceData, m interface{}) e
 	infraLeafSAttr := models.SwitchAssociationAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		infraLeafSAttr.Annotation = Annotation.(string)
+	} else {
+		infraLeafSAttr.Annotation = "{}"
 	}
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		infraLeafSAttr.NameAlias = NameAlias.(string)

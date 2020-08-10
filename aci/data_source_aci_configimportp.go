@@ -27,12 +27,6 @@ func dataSourceAciConfigurationImportPolicy() *schema.Resource {
 				Computed: true,
 			},
 
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
 			"fail_on_decrypt_errors": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,

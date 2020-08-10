@@ -58,7 +58,7 @@ func (sm *ServiceManager) CreateRelationfvRsApMonPolFromApplicationProfile(paren
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tnMonEPGPolName": "%s"
+				"dn": "%s","tnMonEPGPolName": "%s","annotation":"orchestrator:terraform"
 								
 			}
 		}

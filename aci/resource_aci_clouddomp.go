@@ -23,13 +23,6 @@ func resourceAciCloudDomainProfile() *schema.Resource {
 		SchemaVersion: 1,
 
 		Schema: AppendBaseAttrSchema(map[string]*schema.Schema{
-
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
 			"name_alias": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -95,6 +88,8 @@ func resourceAciCloudDomainProfileCreate(d *schema.ResourceData, m interface{}) 
 	cloudDomPAttr := models.CloudDomainProfileAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		cloudDomPAttr.Annotation = Annotation.(string)
+	} else {
+		cloudDomPAttr.Annotation = "{}"
 	}
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		cloudDomPAttr.NameAlias = NameAlias.(string)
@@ -126,6 +121,8 @@ func resourceAciCloudDomainProfileUpdate(d *schema.ResourceData, m interface{}) 
 	cloudDomPAttr := models.CloudDomainProfileAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		cloudDomPAttr.Annotation = Annotation.(string)
+	} else {
+		cloudDomPAttr.Annotation = "{}"
 	}
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		cloudDomPAttr.NameAlias = NameAlias.(string)

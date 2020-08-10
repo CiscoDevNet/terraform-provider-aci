@@ -58,7 +58,7 @@ func (sm *ServiceManager) CreateRelationfirmwareRsFwgrppFromFirmwareGroup(parent
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tnFirmwareFwPName": "%s"
+				"dn": "%s","tnFirmwareFwPName": "%s","annotation":"orchestrator:terraform"
 								
 			}
 		}

@@ -35,12 +35,6 @@ func resourceAciFilter() *schema.Resource {
 				ForceNew: true,
 			},
 
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
 			"name_alias": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -127,6 +121,8 @@ func resourceAciFilterCreate(d *schema.ResourceData, m interface{}) error {
 	vzFilterAttr := models.FilterAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		vzFilterAttr.Annotation = Annotation.(string)
+	} else {
+		vzFilterAttr.Annotation = "{}"
 	}
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		vzFilterAttr.NameAlias = NameAlias.(string)
@@ -197,6 +193,8 @@ func resourceAciFilterUpdate(d *schema.ResourceData, m interface{}) error {
 	vzFilterAttr := models.FilterAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		vzFilterAttr.Annotation = Annotation.(string)
+	} else {
+		vzFilterAttr.Annotation = "{}"
 	}
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		vzFilterAttr.NameAlias = NameAlias.(string)

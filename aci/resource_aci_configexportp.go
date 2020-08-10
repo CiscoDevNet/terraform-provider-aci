@@ -36,12 +36,6 @@ func resourceAciConfigurationExportPolicy() *schema.Resource {
 				Computed: true,
 			},
 
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
 			"format": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -165,6 +159,8 @@ func resourceAciConfigurationExportPolicyCreate(d *schema.ResourceData, m interf
 	}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		configExportPAttr.Annotation = Annotation.(string)
+	} else {
+		configExportPAttr.Annotation = "{}"
 	}
 	if Format, ok := d.GetOk("format"); ok {
 		configExportPAttr.Format = Format.(string)
@@ -264,6 +260,8 @@ func resourceAciConfigurationExportPolicyUpdate(d *schema.ResourceData, m interf
 	}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		configExportPAttr.Annotation = Annotation.(string)
+	} else {
+		configExportPAttr.Annotation = "{}"
 	}
 	if Format, ok := d.GetOk("format"); ok {
 		configExportPAttr.Format = Format.(string)

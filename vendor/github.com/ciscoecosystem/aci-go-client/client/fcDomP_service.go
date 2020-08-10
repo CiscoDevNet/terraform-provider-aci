@@ -58,7 +58,7 @@ func (sm *ServiceManager) CreateRelationinfraRsVlanNsFromFCDomain(parentDn, tnFv
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tDn": "%s"
+				"dn": "%s","tDn": "%s","annotation":"orchestrator:terraform"
 								
 			}
 		}
@@ -107,7 +107,7 @@ func (sm *ServiceManager) CreateRelationfcRsVsanNsFromFCDomain(parentDn, tnFvnsV
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tDn": "%s"
+				"dn": "%s","tDn": "%s","annotation":"orchestrator:terraform"
 								
 			}
 		}
@@ -156,7 +156,7 @@ func (sm *ServiceManager) CreateRelationfcRsVsanAttrFromFCDomain(parentDn, tnFcV
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tDn": "%s"
+				"dn": "%s","tDn": "%s","annotation":"orchestrator:terraform"
 								
 			}
 		}
@@ -249,7 +249,7 @@ func (sm *ServiceManager) CreateRelationinfraRsVipAddrNsFromFCDomain(parentDn, t
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tDn": "%s"
+				"dn": "%s","tDn": "%s","annotation":"orchestrator:terraform"
 								
 			}
 		}

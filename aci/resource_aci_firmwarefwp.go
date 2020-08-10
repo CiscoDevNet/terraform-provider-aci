@@ -30,12 +30,6 @@ func resourceAciFirmwarePolicy() *schema.Resource {
 				ForceNew: true,
 			},
 
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
 			"effective_on_reboot": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -134,6 +128,8 @@ func resourceAciFirmwarePolicyCreate(d *schema.ResourceData, m interface{}) erro
 	firmwareFwPAttr := models.FirmwarePolicyAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		firmwareFwPAttr.Annotation = Annotation.(string)
+	} else {
+		firmwareFwPAttr.Annotation = "{}"
 	}
 	if EffectiveOnReboot, ok := d.GetOk("effective_on_reboot"); ok {
 		firmwareFwPAttr.EffectiveOnReboot = EffectiveOnReboot.(string)
@@ -182,6 +178,8 @@ func resourceAciFirmwarePolicyUpdate(d *schema.ResourceData, m interface{}) erro
 	firmwareFwPAttr := models.FirmwarePolicyAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		firmwareFwPAttr.Annotation = Annotation.(string)
+	} else {
+		firmwareFwPAttr.Annotation = "{}"
 	}
 	if EffectiveOnReboot, ok := d.GetOk("effective_on_reboot"); ok {
 		firmwareFwPAttr.EffectiveOnReboot = EffectiveOnReboot.(string)

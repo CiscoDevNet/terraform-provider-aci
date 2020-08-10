@@ -35,12 +35,6 @@ func resourceAciFilterEntry() *schema.Resource {
 				ForceNew: true,
 			},
 
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
 			"apply_to_frag": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -270,6 +264,8 @@ func resourceAciFilterEntryCreate(d *schema.ResourceData, m interface{}) error {
 	vzEntryAttr := models.FilterEntryAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		vzEntryAttr.Annotation = Annotation.(string)
+	} else {
+		vzEntryAttr.Annotation = "{}"
 	}
 	if ApplyToFrag, ok := d.GetOk("apply_to_frag"); ok {
 		vzEntryAttr.ApplyToFrag = ApplyToFrag.(string)
@@ -344,6 +340,8 @@ func resourceAciFilterEntryUpdate(d *schema.ResourceData, m interface{}) error {
 	vzEntryAttr := models.FilterEntryAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		vzEntryAttr.Annotation = Annotation.(string)
+	} else {
+		vzEntryAttr.Annotation = "{}"
 	}
 	if ApplyToFrag, ok := d.GetOk("apply_to_frag"); ok {
 		vzEntryAttr.ApplyToFrag = ApplyToFrag.(string)

@@ -35,12 +35,6 @@ func resourceAciCloudSubnet() *schema.Resource {
 				ForceNew: true,
 			},
 
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
 			"name_alias": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -144,6 +138,8 @@ func resourceAciCloudSubnetCreate(d *schema.ResourceData, m interface{}) error {
 	cloudSubnetAttr := models.CloudSubnetAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		cloudSubnetAttr.Annotation = Annotation.(string)
+	} else {
+		cloudSubnetAttr.Annotation = "{}"
 	}
 	if Ip, ok := d.GetOk("ip"); ok {
 		cloudSubnetAttr.Ip = Ip.(string)
@@ -216,6 +212,8 @@ func resourceAciCloudSubnetUpdate(d *schema.ResourceData, m interface{}) error {
 	cloudSubnetAttr := models.CloudSubnetAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		cloudSubnetAttr.Annotation = Annotation.(string)
+	} else {
+		cloudSubnetAttr.Annotation = "{}"
 	}
 	if Ip, ok := d.GetOk("ip"); ok {
 		cloudSubnetAttr.Ip = Ip.(string)

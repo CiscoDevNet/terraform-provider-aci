@@ -33,12 +33,6 @@ func resourceAciNodeBlock() *schema.Resource {
 				Required: true,
 			},
 
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
 			"from_": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -123,6 +117,8 @@ func resourceAciNodeBlockCreate(d *schema.ResourceData, m interface{}) error {
 	infraNodeBlkAttr := models.NodeBlockAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		infraNodeBlkAttr.Annotation = Annotation.(string)
+	} else {
+		infraNodeBlkAttr.Annotation = "{}"
 	}
 	if From_, ok := d.GetOk("from_"); ok {
 		infraNodeBlkAttr.From_ = From_.(string)
@@ -164,6 +160,8 @@ func resourceAciNodeBlockUpdate(d *schema.ResourceData, m interface{}) error {
 	infraNodeBlkAttr := models.NodeBlockAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		infraNodeBlkAttr.Annotation = Annotation.(string)
+	} else {
+		infraNodeBlkAttr.Annotation = "{}"
 	}
 	if From_, ok := d.GetOk("from_"); ok {
 		infraNodeBlkAttr.From_ = From_.(string)

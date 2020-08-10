@@ -35,12 +35,6 @@ func resourceAciApplicationProfile() *schema.Resource {
 				ForceNew: true,
 			},
 
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
 			"name_alias": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -124,6 +118,8 @@ func resourceAciApplicationProfileCreate(d *schema.ResourceData, m interface{}) 
 	fvApAttr := models.ApplicationProfileAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		fvApAttr.Annotation = Annotation.(string)
+	} else {
+		fvApAttr.Annotation = "{}"
 	}
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		fvApAttr.NameAlias = NameAlias.(string)
@@ -175,6 +171,8 @@ func resourceAciApplicationProfileUpdate(d *schema.ResourceData, m interface{}) 
 	fvApAttr := models.ApplicationProfileAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		fvApAttr.Annotation = Annotation.(string)
+	} else {
+		fvApAttr.Annotation = "{}"
 	}
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		fvApAttr.NameAlias = NameAlias.(string)

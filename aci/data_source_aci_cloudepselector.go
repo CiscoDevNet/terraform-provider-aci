@@ -25,12 +25,6 @@ func dataSourceAciCloudEndpointSelector() *schema.Resource {
 				Required: true,
 			},
 
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
 			"match_expression": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,

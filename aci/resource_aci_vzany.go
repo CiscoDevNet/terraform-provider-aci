@@ -31,12 +31,6 @@ func resourceAciAny() *schema.Resource {
 				ForceNew: true,
 			},
 
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
 			"match_t": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -135,6 +129,8 @@ func resourceAciAnyCreate(d *schema.ResourceData, m interface{}) error {
 	vzAnyAttr := models.AnyAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		vzAnyAttr.Annotation = Annotation.(string)
+	} else {
+		vzAnyAttr.Annotation = "{}"
 	}
 	if MatchT, ok := d.GetOk("match_t"); ok {
 		vzAnyAttr.MatchT = MatchT.(string)
@@ -214,6 +210,8 @@ func resourceAciAnyUpdate(d *schema.ResourceData, m interface{}) error {
 	vzAnyAttr := models.AnyAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		vzAnyAttr.Annotation = Annotation.(string)
+	} else {
+		vzAnyAttr.Annotation = "{}"
 	}
 	if MatchT, ok := d.GetOk("match_t"); ok {
 		vzAnyAttr.MatchT = MatchT.(string)

@@ -41,12 +41,6 @@ func resourceAciCloudProvidersRegion() *schema.Resource {
 				Computed: true,
 			},
 
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
 			"name_alias": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -121,6 +115,8 @@ func resourceAciCloudProvidersRegionCreate(d *schema.ResourceData, m interface{}
 	}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		cloudRegionAttr.Annotation = Annotation.(string)
+	} else {
+		cloudRegionAttr.Annotation = "{}"
 	}
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		cloudRegionAttr.NameAlias = NameAlias.(string)
@@ -159,6 +155,8 @@ func resourceAciCloudProvidersRegionUpdate(d *schema.ResourceData, m interface{}
 	}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		cloudRegionAttr.Annotation = Annotation.(string)
+	} else {
+		cloudRegionAttr.Annotation = "{}"
 	}
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		cloudRegionAttr.NameAlias = NameAlias.(string)

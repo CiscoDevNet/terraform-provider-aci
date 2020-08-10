@@ -34,12 +34,6 @@ func resourceAciCloudEndpointSelectorforExternalEPgs() *schema.Resource {
 				Required: true,
 			},
 
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
 			"is_shared": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -132,6 +126,8 @@ func resourceAciCloudEndpointSelectorforExternalEPgsCreate(d *schema.ResourceDat
 	cloudExtEPSelectorAttr.Name = name
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		cloudExtEPSelectorAttr.Annotation = Annotation.(string)
+	} else {
+		cloudExtEPSelectorAttr.Annotation = "{}"
 	}
 	if IsShared, ok := d.GetOk("is_shared"); ok {
 		cloudExtEPSelectorAttr.IsShared = IsShared.(string)
@@ -178,6 +174,8 @@ func resourceAciCloudEndpointSelectorforExternalEPgsUpdate(d *schema.ResourceDat
 
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		cloudExtEPSelectorAttr.Annotation = Annotation.(string)
+	} else {
+		cloudExtEPSelectorAttr.Annotation = "{}"
 	}
 	if IsShared, ok := d.GetOk("is_shared"); ok {
 		cloudExtEPSelectorAttr.IsShared = IsShared.(string)

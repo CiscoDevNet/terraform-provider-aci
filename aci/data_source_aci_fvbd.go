@@ -2,6 +2,7 @@ package aci
 
 import (
 	"fmt"
+
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 )
@@ -25,12 +26,6 @@ func dataSourceAciBridgeDomain() *schema.Resource {
 			},
 
 			"optimize_wan_bandwidth": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
-			"annotation": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,

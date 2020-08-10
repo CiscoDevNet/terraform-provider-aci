@@ -59,7 +59,7 @@ func (sm *ServiceManager) CreateRelationl3extRsNodeL3OutAttFromLogicalNodeProfil
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s"				
+				"dn": "%s","annotation":"orchestrator:terraform"				
 			}
 		}
 	}`, "l3extRsNodeL3OutAtt", dn))

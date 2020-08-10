@@ -30,12 +30,6 @@ func resourceAciFirmwareGroup() *schema.Resource {
 				ForceNew: true,
 			},
 
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
 			"name_alias": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -112,6 +106,8 @@ func resourceAciFirmwareGroupCreate(d *schema.ResourceData, m interface{}) error
 	firmwareFwGrpAttr := models.FirmwareGroupAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		firmwareFwGrpAttr.Annotation = Annotation.(string)
+	} else {
+		firmwareFwGrpAttr.Annotation = "{}"
 	}
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		firmwareFwGrpAttr.NameAlias = NameAlias.(string)
@@ -161,6 +157,8 @@ func resourceAciFirmwareGroupUpdate(d *schema.ResourceData, m interface{}) error
 	firmwareFwGrpAttr := models.FirmwareGroupAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		firmwareFwGrpAttr.Annotation = Annotation.(string)
+	} else {
+		firmwareFwGrpAttr.Annotation = "{}"
 	}
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		firmwareFwGrpAttr.NameAlias = NameAlias.(string)

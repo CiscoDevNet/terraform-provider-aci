@@ -30,12 +30,6 @@ func resourceAciFEXProfile() *schema.Resource {
 				ForceNew: true,
 			},
 
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
 			"name_alias": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -97,9 +91,13 @@ func resourceAciFEXProfileCreate(d *schema.ResourceData, m interface{}) error {
 	name := d.Get("name").(string)
 
 	infraFexPAttr := models.FEXProfileAttributes{}
+
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		infraFexPAttr.Annotation = Annotation.(string)
+	} else {
+		infraFexPAttr.Annotation = "{}"
 	}
+
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		infraFexPAttr.NameAlias = NameAlias.(string)
 	}
@@ -132,6 +130,8 @@ func resourceAciFEXProfileUpdate(d *schema.ResourceData, m interface{}) error {
 	infraFexPAttr := models.FEXProfileAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		infraFexPAttr.Annotation = Annotation.(string)
+	} else {
+		infraFexPAttr.Annotation = "{}"
 	}
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		infraFexPAttr.NameAlias = NameAlias.(string)

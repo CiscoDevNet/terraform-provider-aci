@@ -21,12 +21,6 @@ func dataSourceAciFirmwarePolicy() *schema.Resource {
 				Required: true,
 			},
 
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
 			"effective_on_reboot": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,

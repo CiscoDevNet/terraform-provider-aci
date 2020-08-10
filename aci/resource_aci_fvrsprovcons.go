@@ -41,12 +41,6 @@ func resourceAciContractProvider() *schema.Resource {
 				ForceNew: true,
 			},
 
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
 			"match_t": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -180,6 +174,8 @@ func resourceAciContractProviderCreate(d *schema.ResourceData, m interface{}) er
 		fvRsProvAttr := models.ContractProviderAttributes{}
 		if Annotation, ok := d.GetOk("annotation"); ok {
 			fvRsProvAttr.Annotation = Annotation.(string)
+		} else {
+			fvRsProvAttr.Annotation = "{}"
 		}
 		if MatchT, ok := d.GetOk("match_t"); ok {
 			fvRsProvAttr.MatchT = MatchT.(string)
@@ -208,6 +204,8 @@ func resourceAciContractProviderCreate(d *schema.ResourceData, m interface{}) er
 		fvRsConsAttr := models.ContractConsumerAttributes{}
 		if Annotation, ok := d.GetOk("annotation"); ok {
 			fvRsConsAttr.Annotation = Annotation.(string)
+		} else {
+			fvRsConsAttr.Annotation = "{}"
 		}
 		if Prio, ok := d.GetOk("prio"); ok {
 			fvRsConsAttr.Prio = Prio.(string)
@@ -252,6 +250,8 @@ func resourceAciContractProviderUpdate(d *schema.ResourceData, m interface{}) er
 		fvRsProvAttr := models.ContractProviderAttributes{}
 		if Annotation, ok := d.GetOk("annotation"); ok {
 			fvRsProvAttr.Annotation = Annotation.(string)
+		} else {
+			fvRsProvAttr.Annotation = "{}"
 		}
 		if MatchT, ok := d.GetOk("match_t"); ok {
 			fvRsProvAttr.MatchT = MatchT.(string)
@@ -283,6 +283,8 @@ func resourceAciContractProviderUpdate(d *schema.ResourceData, m interface{}) er
 		fvRsConsAttr := models.ContractConsumerAttributes{}
 		if Annotation, ok := d.GetOk("annotation"); ok {
 			fvRsConsAttr.Annotation = Annotation.(string)
+		} else {
+			fvRsConsAttr.Annotation = "{}"
 		}
 		if Prio, ok := d.GetOk("prio"); ok {
 			fvRsConsAttr.Prio = Prio.(string)

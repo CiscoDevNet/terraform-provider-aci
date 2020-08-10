@@ -43,12 +43,6 @@ func resourceAciBridgeDomain() *schema.Resource {
 				Computed: true,
 			},
 
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
 			"arp_flood": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -330,6 +324,8 @@ func resourceAciBridgeDomainCreate(d *schema.ResourceData, m interface{}) error 
 	}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		fvBDAttr.Annotation = Annotation.(string)
+	} else {
+		fvBDAttr.Annotation = "{}"
 	}
 	if ArpFlood, ok := d.GetOk("arp_flood"); ok {
 		fvBDAttr.ArpFlood = ArpFlood.(string)
@@ -576,6 +572,8 @@ func resourceAciBridgeDomainUpdate(d *schema.ResourceData, m interface{}) error 
 	}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		fvBDAttr.Annotation = Annotation.(string)
+	} else {
+		fvBDAttr.Annotation = "{}"
 	}
 	if ArpFlood, ok := d.GetOk("arp_flood"); ok {
 		fvBDAttr.ArpFlood = ArpFlood.(string)

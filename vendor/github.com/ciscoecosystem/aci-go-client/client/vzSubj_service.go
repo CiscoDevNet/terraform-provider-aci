@@ -59,7 +59,7 @@ func (sm *ServiceManager) CreateRelationvzRsSubjGraphAttFromContractSubject(pare
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tnVnsAbsGraphName": "%s"
+				"dn": "%s","tnVnsAbsGraphName": "%s","annotation":"orchestrator:terraform"
 								
 			}
 		}
@@ -108,7 +108,7 @@ func (sm *ServiceManager) CreateRelationvzRsSdwanPolFromContractSubject(parentDn
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tDn": "%s"
+				"dn": "%s","tDn": "%s","annotation":"orchestrator:terraform"
 								
 			}
 		}
@@ -157,7 +157,7 @@ func (sm *ServiceManager) CreateRelationvzRsSubjFiltAttFromContractSubject(paren
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s"				
+				"dn": "%s","annotation":"orchestrator:terraform"				
 			}
 		}
 	}`, "vzRsSubjFiltAtt", dn))

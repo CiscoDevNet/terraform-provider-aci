@@ -35,12 +35,6 @@ func resourceAciOSPFInterfacePolicy() *schema.Resource {
 				ForceNew: true,
 			},
 
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
 			"cost": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -174,6 +168,8 @@ func resourceAciOSPFInterfacePolicyCreate(d *schema.ResourceData, m interface{})
 	ospfIfPolAttr := models.OSPFInterfacePolicyAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		ospfIfPolAttr.Annotation = Annotation.(string)
+	} else {
+		ospfIfPolAttr.Annotation = "{}"
 	}
 	if Cost, ok := d.GetOk("cost"); ok {
 		ospfIfPolAttr.Cost = Cost.(string)
@@ -236,6 +232,8 @@ func resourceAciOSPFInterfacePolicyUpdate(d *schema.ResourceData, m interface{})
 	ospfIfPolAttr := models.OSPFInterfacePolicyAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		ospfIfPolAttr.Annotation = Annotation.(string)
+	} else {
+		ospfIfPolAttr.Annotation = "{}"
 	}
 	if Cost, ok := d.GetOk("cost"); ok {
 		ospfIfPolAttr.Cost = Cost.(string)

@@ -37,12 +37,6 @@ func resourceAciExternalNetworkInstanceProfile() *schema.Resource {
 				ForceNew: true,
 			},
 
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
 			"exception_tag": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -223,6 +217,8 @@ func resourceAciExternalNetworkInstanceProfileCreate(d *schema.ResourceData, m i
 	l3extInstPAttr := models.ExternalNetworkInstanceProfileAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		l3extInstPAttr.Annotation = Annotation.(string)
+	} else {
+		l3extInstPAttr.Annotation = "{}"
 	}
 	if ExceptionTag, ok := d.GetOk("exception_tag"); ok {
 		l3extInstPAttr.ExceptionTag = ExceptionTag.(string)
@@ -409,6 +405,8 @@ func resourceAciExternalNetworkInstanceProfileUpdate(d *schema.ResourceData, m i
 	l3extInstPAttr := models.ExternalNetworkInstanceProfileAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		l3extInstPAttr.Annotation = Annotation.(string)
+	} else {
+		l3extInstPAttr.Annotation = "{}"
 	}
 	if ExceptionTag, ok := d.GetOk("exception_tag"); ok {
 		l3extInstPAttr.ExceptionTag = ExceptionTag.(string)

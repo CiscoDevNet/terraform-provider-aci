@@ -174,7 +174,7 @@ func (sm *ServiceManager) CreateRelationcloudRsCtxToFlowLogFromCloudContextProfi
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tnCloudAwsFlowLogPolName": "%s"
+				"dn": "%s","tnCloudAwsFlowLogPolName": "%s","annotation":"orchestrator:terraform"
 								
 			}
 		}
@@ -207,7 +207,7 @@ func (sm *ServiceManager) CreateRelationcloudRsToCtxFromCloudContextProfile(pare
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tnFvCtxName": "%s"
+				"dn": "%s","tnFvCtxName": "%s","annotation":"orchestrator:terraform"
 								
 			}
 		}
@@ -235,7 +235,7 @@ func (sm *ServiceManager) CreateRelationcloudRsCtxProfileToRegionFromCloudContex
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tDn": "%s"
+				"dn": "%s","tDn": "%s","annotation":"orchestrator:terraform"
 								
 			}
 		}

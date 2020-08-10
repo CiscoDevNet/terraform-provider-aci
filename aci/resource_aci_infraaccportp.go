@@ -30,12 +30,6 @@ func resourceAciLeafInterfaceProfile() *schema.Resource {
 				ForceNew: true,
 			},
 
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
 			"name_alias": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -99,6 +93,8 @@ func resourceAciLeafInterfaceProfileCreate(d *schema.ResourceData, m interface{}
 	infraAccPortPAttr := models.LeafInterfaceProfileAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		infraAccPortPAttr.Annotation = Annotation.(string)
+	} else {
+		infraAccPortPAttr.Annotation = "{}"
 	}
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		infraAccPortPAttr.NameAlias = NameAlias.(string)
@@ -132,6 +128,8 @@ func resourceAciLeafInterfaceProfileUpdate(d *schema.ResourceData, m interface{}
 	infraAccPortPAttr := models.LeafInterfaceProfileAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		infraAccPortPAttr.Annotation = Annotation.(string)
+	} else {
+		infraAccPortPAttr.Annotation = "{}"
 	}
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		infraAccPortPAttr.NameAlias = NameAlias.(string)

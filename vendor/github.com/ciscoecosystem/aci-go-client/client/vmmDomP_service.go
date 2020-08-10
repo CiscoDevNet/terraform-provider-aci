@@ -58,7 +58,7 @@ func (sm *ServiceManager) CreateRelationvmmRsPrefEnhancedLagPolFromVMMDomain(par
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tDn": "%s"
+				"dn": "%s","tDn": "%s","annotation":"orchestrator:terraform"
 								
 			}
 		}
@@ -107,7 +107,7 @@ func (sm *ServiceManager) CreateRelationinfraRsVlanNsFromVMMDomain(parentDn, tnF
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tDn": "%s"
+				"dn": "%s","tDn": "%s","annotation":"orchestrator:terraform"
 								
 			}
 		}
@@ -156,7 +156,7 @@ func (sm *ServiceManager) CreateRelationvmmRsDomMcastAddrNsFromVMMDomain(parentD
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tDn": "%s"
+				"dn": "%s","tDn": "%s","annotation":"orchestrator:terraform"
 								
 			}
 		}
@@ -205,7 +205,7 @@ func (sm *ServiceManager) CreateRelationvmmRsDefaultCdpIfPolFromVMMDomain(parent
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tnCdpIfPolName": "%s"
+				"dn": "%s","tnCdpIfPolName": "%s","annotation":"orchestrator:terraform"
 								
 			}
 		}
@@ -249,7 +249,7 @@ func (sm *ServiceManager) CreateRelationvmmRsDefaultLacpLagPolFromVMMDomain(pare
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tnLacpLagPolName": "%s"
+				"dn": "%s","tnLacpLagPolName": "%s","annotation":"orchestrator:terraform"
 								
 			}
 		}
@@ -337,7 +337,7 @@ func (sm *ServiceManager) CreateRelationinfraRsVipAddrNsFromVMMDomain(parentDn, 
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tDn": "%s"
+				"dn": "%s","tDn": "%s","annotation":"orchestrator:terraform"
 								
 			}
 		}
@@ -386,7 +386,7 @@ func (sm *ServiceManager) CreateRelationvmmRsDefaultLldpIfPolFromVMMDomain(paren
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tnLldpIfPolName": "%s"
+				"dn": "%s","tnLldpIfPolName": "%s","annotation":"orchestrator:terraform"
 								
 			}
 		}
@@ -430,7 +430,7 @@ func (sm *ServiceManager) CreateRelationvmmRsDefaultStpIfPolFromVMMDomain(parent
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tnStpIfPolName": "%s"
+				"dn": "%s","tnStpIfPolName": "%s","annotation":"orchestrator:terraform"
 								
 			}
 		}
@@ -518,7 +518,7 @@ func (sm *ServiceManager) CreateRelationvmmRsDefaultFwPolFromVMMDomain(parentDn,
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tnNwsFwPolName": "%s"
+				"dn": "%s","tnNwsFwPolName": "%s","annotation":"orchestrator:terraform"
 								
 			}
 		}
@@ -562,7 +562,7 @@ func (sm *ServiceManager) CreateRelationvmmRsDefaultL2InstPolFromVMMDomain(paren
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tnL2InstPolName": "%s"
+				"dn": "%s","tnL2InstPolName": "%s","annotation":"orchestrator:terraform"
 								
 			}
 		}

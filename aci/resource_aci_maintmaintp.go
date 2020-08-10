@@ -36,12 +36,6 @@ func resourceAciMaintenancePolicy() *schema.Resource {
 				Computed: true,
 			},
 
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
 			"graceful": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -174,6 +168,8 @@ func resourceAciMaintenancePolicyCreate(d *schema.ResourceData, m interface{}) e
 	}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		maintMaintPAttr.Annotation = Annotation.(string)
+	} else {
+		maintMaintPAttr.Annotation = "{}"
 	}
 	if Graceful, ok := d.GetOk("graceful"); ok {
 		maintMaintPAttr.Graceful = Graceful.(string)
@@ -266,6 +262,8 @@ func resourceAciMaintenancePolicyUpdate(d *schema.ResourceData, m interface{}) e
 	}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		maintMaintPAttr.Annotation = Annotation.(string)
+	} else {
+		maintMaintPAttr.Annotation = "{}"
 	}
 	if Graceful, ok := d.GetOk("graceful"); ok {
 		maintMaintPAttr.Graceful = Graceful.(string)

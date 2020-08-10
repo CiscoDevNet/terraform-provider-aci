@@ -36,12 +36,6 @@ func resourceAciConfigurationImportPolicy() *schema.Resource {
 				Computed: true,
 			},
 
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
 			"fail_on_decrypt_errors": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -160,6 +154,8 @@ func resourceAciConfigurationImportPolicyCreate(d *schema.ResourceData, m interf
 	}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		configImportPAttr.Annotation = Annotation.(string)
+	} else {
+		configImportPAttr.Annotation = "{}"
 	}
 	if FailOnDecryptErrors, ok := d.GetOk("fail_on_decrypt_errors"); ok {
 		configImportPAttr.FailOnDecryptErrors = FailOnDecryptErrors.(string)
@@ -247,6 +243,8 @@ func resourceAciConfigurationImportPolicyUpdate(d *schema.ResourceData, m interf
 	}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		configImportPAttr.Annotation = Annotation.(string)
+	} else {
+		configImportPAttr.Annotation = "{}"
 	}
 	if FailOnDecryptErrors, ok := d.GetOk("fail_on_decrypt_errors"); ok {
 		configImportPAttr.FailOnDecryptErrors = FailOnDecryptErrors.(string)
