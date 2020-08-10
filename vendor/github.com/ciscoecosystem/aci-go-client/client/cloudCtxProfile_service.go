@@ -8,7 +8,7 @@ import (
 	"github.com/ciscoecosystem/aci-go-client/models"
 )
 
-func (sm *ServiceManager) CreateCloudContextProfile(name string, tenant string, description string, cloudCtxProfileattr models.CloudContextProfileAttributes, primaryCidr string, region string, vrf string) (*models.CloudContextProfile, error) {
+func (sm *ServiceManager) CreateCloudContextProfile(name string, tenant string, description string, cloudCtxProfileattr models.CloudContextProfileAttributes, primaryCidr string, region, vendor string, vrf string) (*models.CloudContextProfile, error) {
 	rn := fmt.Sprintf("ctxprofile-%s", name)
 	parentDn := tenant
 	cloudCtxProfile := models.NewCloudContextProfile(rn, parentDn, description, cloudCtxProfileattr)
@@ -31,11 +31,11 @@ func (sm *ServiceManager) CreateCloudContextProfile(name string, tenant string, 
 		"cloudRsCtxProfileToRegion": {
 			"attributes": {
 				"status": "created,modified",
-				"tDn": "uni/clouddomp/provp-aws/region-%s"
+				"tDn": "uni/clouddomp/provp-%s/region-%s"
 			}
 		}
 	}
-	`, region))
+	`, vendor, region))
 
 	ctxAttach := []byte(fmt.Sprintf(`
 	{
@@ -95,7 +95,7 @@ func (sm *ServiceManager) DeleteCloudContextProfile(name string, tenant string) 
 	return sm.DeleteByDn(dn, models.CloudctxprofileClassName)
 }
 
-func (sm *ServiceManager) UpdateCloudContextProfile(name string, tenant string, description string, cloudCtxProfileattr models.CloudContextProfileAttributes, primaryCidr string, region string, vrf string) (*models.CloudContextProfile, error) {
+func (sm *ServiceManager) UpdateCloudContextProfile(name string, tenant string, description string, cloudCtxProfileattr models.CloudContextProfileAttributes, primaryCidr string, region, vendor string, vrf string) (*models.CloudContextProfile, error) {
 	rn := fmt.Sprintf("ctxprofile-%s", name)
 	parentDn := tenant
 	cloudCtxProfile := models.NewCloudContextProfile(rn, parentDn, description, cloudCtxProfileattr)
@@ -119,11 +119,11 @@ func (sm *ServiceManager) UpdateCloudContextProfile(name string, tenant string, 
 		"cloudRsCtxProfileToRegion": {
 			"attributes": {
 				"status": "modified",
-				"tDn": "uni/clouddomp/provp-aws/region-%s"
+				"tDn": "uni/clouddomp/provp-%s/region-%s"
 			}
 		}
 	}
-	`, region))
+	`, vendor, region))
 
 	ctxAttach := []byte(fmt.Sprintf(`
 	{

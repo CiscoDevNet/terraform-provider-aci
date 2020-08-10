@@ -61,8 +61,6 @@ func getRemoteCloudAvailabilityZone(client *client.Client, dn string) (*models.C
 func setCloudAvailabilityZoneAttributes(cloudZone *models.CloudAvailabilityZone, d *schema.ResourceData) *schema.ResourceData {
 	dn := d.Id()
 	d.SetId(cloudZone.DistinguishedName)
-	d.Set("description", cloudZone.Description)
-	// d.Set("cloud_providers_region_dn", GetParentDn(cloudZone.DistinguishedName))
 	if dn != cloudZone.DistinguishedName {
 		d.Set("cloud_providers_region_dn", "")
 	}
@@ -70,7 +68,6 @@ func setCloudAvailabilityZoneAttributes(cloudZone *models.CloudAvailabilityZone,
 
 	d.Set("name", cloudZoneMap["name"])
 
-	d.Set("annotation", cloudZoneMap["annotation"])
 	d.Set("name_alias", cloudZoneMap["nameAlias"])
 	return d
 }
@@ -96,22 +93,17 @@ func resourceAciCloudAvailabilityZoneImport(d *schema.ResourceData, m interface{
 func resourceAciCloudAvailabilityZoneCreate(d *schema.ResourceData, m interface{}) error {
 	log.Printf("[DEBUG] CloudAvailabilityZone: Beginning Creation")
 	aciClient := m.(*client.Client)
-	desc := d.Get("description").(string)
 
 	name := d.Get("name").(string)
 
 	CloudProvidersRegionDn := d.Get("cloud_providers_region_dn").(string)
 
 	cloudZoneAttr := models.CloudAvailabilityZoneAttributes{}
-	if Annotation, ok := d.GetOk("annotation"); ok {
-		cloudZoneAttr.Annotation = Annotation.(string)
-	} else {
-		cloudZoneAttr.Annotation = "{}"
-	}
+
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		cloudZoneAttr.NameAlias = NameAlias.(string)
 	}
-	cloudZone := models.NewCloudAvailabilityZone(fmt.Sprintf("zone-%s", name), CloudProvidersRegionDn, desc, cloudZoneAttr)
+	cloudZone := models.NewCloudAvailabilityZone(fmt.Sprintf("zone-%s", name), CloudProvidersRegionDn, "", cloudZoneAttr)
 
 	err := aciClient.Save(cloudZone)
 	if err != nil {
@@ -133,22 +125,17 @@ func resourceAciCloudAvailabilityZoneUpdate(d *schema.ResourceData, m interface{
 	log.Printf("[DEBUG] CloudAvailabilityZone: Beginning Update")
 
 	aciClient := m.(*client.Client)
-	desc := d.Get("description").(string)
 
 	name := d.Get("name").(string)
 
 	CloudProvidersRegionDn := d.Get("cloud_providers_region_dn").(string)
 
 	cloudZoneAttr := models.CloudAvailabilityZoneAttributes{}
-	if Annotation, ok := d.GetOk("annotation"); ok {
-		cloudZoneAttr.Annotation = Annotation.(string)
-	} else {
-		cloudZoneAttr.Annotation = "{}"
-	}
+
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		cloudZoneAttr.NameAlias = NameAlias.(string)
 	}
-	cloudZone := models.NewCloudAvailabilityZone(fmt.Sprintf("zone-%s", name), CloudProvidersRegionDn, desc, cloudZoneAttr)
+	cloudZone := models.NewCloudAvailabilityZone(fmt.Sprintf("zone-%s", name), CloudProvidersRegionDn, "", cloudZoneAttr)
 
 	cloudZone.Status = "modified"
 
