@@ -60,6 +60,12 @@ func resourceAciCloudContextProfile() *schema.Resource {
 				Description: "region",
 			},
 
+			"cloud_vendor": &schema.Schema{
+				Type:        schema.TypeString,
+				Required:    true,
+				Description: "Name of the vendor",
+			},
+
 			"relation_cloud_rs_ctx_to_flow_log": &schema.Schema{
 				Type: schema.TypeString,
 
@@ -103,7 +109,6 @@ func setCloudContextProfileAttributes(cloudCtxProfile *models.CloudContextProfil
 	dn := d.Id()
 	d.SetId(cloudCtxProfile.DistinguishedName)
 	d.Set("description", cloudCtxProfile.Description)
-	// d.Set("tenant_dn", GetParentDn(cloudCtxProfile.DistinguishedName))
 	if dn != cloudCtxProfile.DistinguishedName {
 		d.Set("tenant_dn", "")
 	}
@@ -159,6 +164,8 @@ func resourceAciCloudContextProfileCreate(d *schema.ResourceData, m interface{})
 
 	Region := d.Get("region").(string)
 
+	vendor := d.Get("cloud_vendor").(string)
+
 	cloudCtxProfile := models.NewCloudContextProfile(fmt.Sprintf("ctxprofile-%s", name), TenantDn, desc, cloudCtxProfileAttr)
 
 	var cloudRsCtx string
@@ -168,7 +175,7 @@ func resourceAciCloudContextProfileCreate(d *schema.ResourceData, m interface{})
 	} else {
 		cloudRsCtx = ""
 	}
-	cloudCtxProfile, err := aciClient.CreateCloudContextProfile(name, TenantDn, desc, models.CloudContextProfileAttributes{}, PrimaryCIDR, Region, cloudRsCtx)
+	cloudCtxProfile, err := aciClient.CreateCloudContextProfile(name, TenantDn, desc, cloudCtxProfileAttr, PrimaryCIDR, Region, vendor, cloudRsCtx)
 	//err := aciClient.Save(cloudCtxProfile)
 	if err != nil {
 		return err
@@ -223,6 +230,8 @@ func resourceAciCloudContextProfileUpdate(d *schema.ResourceData, m interface{})
 
 	Region := d.Get("region").(string)
 
+	vendor := d.Get("cloud_vendor").(string)
+
 	var cloudRsCtx string
 	if tempVar, ok := d.GetOk("relation_cloud_rs_to_ctx"); ok {
 		cloudRsCtx = tempVar.(string)
@@ -231,7 +240,7 @@ func resourceAciCloudContextProfileUpdate(d *schema.ResourceData, m interface{})
 		cloudRsCtx = ""
 	}
 
-	cloudCtxProfile, err := aciClient.CreateCloudContextProfile(name, TenantDn, desc, models.CloudContextProfileAttributes{}, PrimaryCIDR, Region, cloudRsCtx)
+	cloudCtxProfile, err := aciClient.UpdateCloudContextProfile(name, TenantDn, desc, cloudCtxProfileAttr, PrimaryCIDR, Region, vendor, cloudRsCtx)
 	//err := aciClient.Save(cloudCtxProfile)
 
 	if err != nil {

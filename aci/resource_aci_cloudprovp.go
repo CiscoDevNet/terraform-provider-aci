@@ -48,13 +48,10 @@ func getRemoteCloudProviderProfile(client *client.Client, dn string) (*models.Cl
 
 func setCloudProviderProfileAttributes(cloudProvP *models.CloudProviderProfile, d *schema.ResourceData) *schema.ResourceData {
 	d.SetId(cloudProvP.DistinguishedName)
-	// d.Set("description", cloudProvP.Description)
 	cloudProvPMap, _ := cloudProvP.ToMap()
 
 	d.Set("vendor", cloudProvPMap["vendor"])
 
-	d.Set("annotation", cloudProvPMap["annotation"])
-	d.Set("vendor", cloudProvPMap["vendor"])
 	return d
 }
 
@@ -79,20 +76,15 @@ func resourceAciCloudProviderProfileImport(d *schema.ResourceData, m interface{}
 func resourceAciCloudProviderProfileCreate(d *schema.ResourceData, m interface{}) error {
 	log.Printf("[DEBUG] CloudProviderProfile: Beginning Creation")
 	aciClient := m.(*client.Client)
-	desc := d.Get("description").(string)
 
 	vendor := d.Get("vendor").(string)
 
 	cloudProvPAttr := models.CloudProviderProfileAttributes{}
-	if Annotation, ok := d.GetOk("annotation"); ok {
-		cloudProvPAttr.Annotation = Annotation.(string)
-	} else {
-		cloudProvPAttr.Annotation = "{}"
-	}
+
 	if Vendor, ok := d.GetOk("vendor"); ok {
 		cloudProvPAttr.Vendor = Vendor.(string)
 	}
-	cloudProvP := models.NewCloudProviderProfile(fmt.Sprintf("clouddomp/provp-%s", vendor), "uni", desc, cloudProvPAttr)
+	cloudProvP := models.NewCloudProviderProfile(fmt.Sprintf("clouddomp/provp-%s", vendor), "uni", "", cloudProvPAttr)
 
 	err := aciClient.Save(cloudProvP)
 	if err != nil {
@@ -114,20 +106,15 @@ func resourceAciCloudProviderProfileUpdate(d *schema.ResourceData, m interface{}
 	log.Printf("[DEBUG] CloudProviderProfile: Beginning Update")
 
 	aciClient := m.(*client.Client)
-	desc := d.Get("description").(string)
 
 	vendor := d.Get("vendor").(string)
 
 	cloudProvPAttr := models.CloudProviderProfileAttributes{}
-	if Annotation, ok := d.GetOk("annotation"); ok {
-		cloudProvPAttr.Annotation = Annotation.(string)
-	} else {
-		cloudProvPAttr.Annotation = "{}"
-	}
+
 	if Vendor, ok := d.GetOk("vendor"); ok {
 		cloudProvPAttr.Vendor = Vendor.(string)
 	}
-	cloudProvP := models.NewCloudProviderProfile(fmt.Sprintf("clouddomp/provp-%s", vendor), "uni", desc, cloudProvPAttr)
+	cloudProvP := models.NewCloudProviderProfile(fmt.Sprintf("clouddomp/provp-%s", vendor), "uni", "", cloudProvPAttr)
 
 	cloudProvP.Status = "modified"
 

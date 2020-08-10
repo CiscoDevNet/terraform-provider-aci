@@ -67,8 +67,6 @@ func getRemoteCloudProvidersRegion(client *client.Client, dn string) (*models.Cl
 func setCloudProvidersRegionAttributes(cloudRegion *models.CloudProvidersRegion, d *schema.ResourceData) *schema.ResourceData {
 	dn := d.Id()
 	d.SetId(cloudRegion.DistinguishedName)
-	d.Set("description", cloudRegion.Description)
-	// d.Set("cloud_provider_profile_dn", GetParentDn(cloudRegion.DistinguishedName))
 	if dn != cloudRegion.DistinguishedName {
 		d.Set("cloud_provider_profile_dn", "")
 	}
@@ -77,7 +75,6 @@ func setCloudProvidersRegionAttributes(cloudRegion *models.CloudProvidersRegion,
 	d.Set("name", cloudRegionMap["name"])
 
 	d.Set("admin_st", cloudRegionMap["adminSt"])
-	d.Set("annotation", cloudRegionMap["annotation"])
 	d.Set("name_alias", cloudRegionMap["nameAlias"])
 	return d
 }
@@ -103,7 +100,6 @@ func resourceAciCloudProvidersRegionImport(d *schema.ResourceData, m interface{}
 func resourceAciCloudProvidersRegionCreate(d *schema.ResourceData, m interface{}) error {
 	log.Printf("[DEBUG] CloudProvidersRegion: Beginning Creation")
 	aciClient := m.(*client.Client)
-	desc := d.Get("description").(string)
 
 	name := d.Get("name").(string)
 
@@ -113,15 +109,11 @@ func resourceAciCloudProvidersRegionCreate(d *schema.ResourceData, m interface{}
 	if AdminSt, ok := d.GetOk("admin_st"); ok {
 		cloudRegionAttr.AdminSt = AdminSt.(string)
 	}
-	if Annotation, ok := d.GetOk("annotation"); ok {
-		cloudRegionAttr.Annotation = Annotation.(string)
-	} else {
-		cloudRegionAttr.Annotation = "{}"
-	}
+
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		cloudRegionAttr.NameAlias = NameAlias.(string)
 	}
-	cloudRegion := models.NewCloudProvidersRegion(fmt.Sprintf("region-%s", name), CloudProviderProfileDn, desc, cloudRegionAttr)
+	cloudRegion := models.NewCloudProvidersRegion(fmt.Sprintf("region-%s", name), CloudProviderProfileDn, "", cloudRegionAttr)
 
 	err := aciClient.Save(cloudRegion)
 	if err != nil {
@@ -143,7 +135,6 @@ func resourceAciCloudProvidersRegionUpdate(d *schema.ResourceData, m interface{}
 	log.Printf("[DEBUG] CloudProvidersRegion: Beginning Update")
 
 	aciClient := m.(*client.Client)
-	desc := d.Get("description").(string)
 
 	name := d.Get("name").(string)
 
@@ -153,15 +144,11 @@ func resourceAciCloudProvidersRegionUpdate(d *schema.ResourceData, m interface{}
 	if AdminSt, ok := d.GetOk("admin_st"); ok {
 		cloudRegionAttr.AdminSt = AdminSt.(string)
 	}
-	if Annotation, ok := d.GetOk("annotation"); ok {
-		cloudRegionAttr.Annotation = Annotation.(string)
-	} else {
-		cloudRegionAttr.Annotation = "{}"
-	}
+
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		cloudRegionAttr.NameAlias = NameAlias.(string)
 	}
-	cloudRegion := models.NewCloudProvidersRegion(fmt.Sprintf("region-%s", name), CloudProviderProfileDn, desc, cloudRegionAttr)
+	cloudRegion := models.NewCloudProvidersRegion(fmt.Sprintf("region-%s", name), CloudProviderProfileDn, "", cloudRegionAttr)
 
 	cloudRegion.Status = "modified"
 

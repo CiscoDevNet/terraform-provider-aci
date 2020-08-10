@@ -18,6 +18,7 @@ Manages ACI Cloud Context Profile
 		tenant_dn                = "${aci_tenant.footenant.id}"
 		primary_cidr             = "10.230.231.1/16"
 		region                   = "us-west-1"
+		cloud_vendor			 = "aws"
 		relation_cloud_rs_to_ctx = "${aci_vrf.vrf1.id}"
 	}
 ```
@@ -26,6 +27,7 @@ Manages ACI Cloud Context Profile
 * `name` - (Required) name of Object cloud_context_profile.
 * `primary_cidr` - (Required) Primary CIDR block of Cloud Context profile. 
 * `region` - (Required) AWS region in which profile is created.
+* `cloud_vendor` - (Required) name of the vendor. e.g. "aws", "azure".
 * `annotation` - (Optional) annotation for object cloud_context_profile.
 * `name_alias` - (Optional) name_alias for object cloud_context_profile.
 * `type` - (Optional) The specific type of the object or component. Allowed values are "regular" and "shadow". Default is "regular".

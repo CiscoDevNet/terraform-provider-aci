@@ -53,6 +53,7 @@ func testAccCheckAciCloudContextProfileConfig_basic(fv_tenant_name, cloud_ctx_pr
 		tenant_dn                = "${aci_tenant.footenant.id}"
 		primary_cidr             = "10.230.231.1/16"
 		region                   = "us-west-1"
+		cloud_vendor			 = "aws"
 		relation_cloud_rs_to_ctx = "${aci_vrf.vrf1.id}"
 	}
 
