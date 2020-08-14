@@ -147,6 +147,11 @@ func Provider() terraform.ResourceProvider {
 			"aci_fex_profile":                              resourceAciFEXProfile(),
 			"aci_fex_bundle_group":                         resourceAciFexBundleGroup(),
 			"aci_access_group":                             resourceAciAccessGroup(),
+			"aci_spine_profile":                            resourceAciSpineProfile(),
+			"aci_spine_switch_association":                 resourceAciSwitchSpineAssociation(),
+			"aci_spine_port_selector":                      resourceAciInterfaceProfile(),
+			"aci_spine_interface_profile":                  resourceAciSpineInterfaceProfile(),
+			"aci_spine_port_policy_group":                  resourceAciSpineAccessPortPolicyGroup(),
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
@@ -240,6 +245,11 @@ func Provider() terraform.ResourceProvider {
 			"aci_fex_profile":                              dataSourceAciFEXProfile(),
 			"aci_fex_bundle_group":                         dataSourceAciFexBundleGroup(),
 			"aci_access_group":                             dataSourceAciAccessGroup(),
+			"aci_spine_profile":                            dataSourceAciSpineProfile(),
+			"aci_spine_switch_association":                 dataSourceAciSwitchSpineAssociation(),
+			"aci_spine_port_selector":                      dataSourceAciInterfaceProfile(),
+			"aci_spine_interface_profile":                  dataSourceAciSpineInterfaceProfile(),
+			"aci_spine_port_policy_group":                  dataSourceAciSpineAccessPortPolicyGroup(),
 		},
 
 		ConfigureFunc: configureClient,
