@@ -61,6 +61,27 @@ func getRemoteSpineProfile(client *client.Client, dn string) (*models.SpineProfi
 	return infraSpineP, nil
 }
 
+func checkTDn(client *client.Client, dns []string) error {
+	flag := false
+	var errMessage string
+
+	for _, dn := range dns {
+		_, err := client.Get(dn)
+		if err != nil {
+			if flag == false {
+				flag = true
+			}
+			errMessage = fmt.Sprintf("%s\nRelation target dn %s not found", errMessage, dn)
+		}
+	}
+
+	if flag == true {
+		return fmt.Errorf(errMessage)
+	}
+
+	return nil
+}
+
 func setSpineProfileAttributes(infraSpineP *models.SpineProfile, d *schema.ResourceData) *schema.ResourceData {
 	d.SetId(infraSpineP.DistinguishedName)
 	d.Set("description", infraSpineP.Description)
@@ -119,6 +140,22 @@ func resourceAciSpineProfileCreate(d *schema.ResourceData, m interface{}) error 
 
 	d.Partial(false)
 
+	checkDns := make([]string, 0, 1)
+
+	if relationToinfraRsSpAccPortP, ok := d.GetOk("relation_infra_rs_sp_acc_port_p"); ok {
+		relationParamList := toStringList(relationToinfraRsSpAccPortP.(*schema.Set).List())
+		for _, relationParam := range relationParamList {
+			checkDns = append(checkDns, relationParam)
+		}
+	}
+
+	d.Partial(true)
+	err = checkTDn(aciClient, checkDns)
+	if err != nil {
+		return err
+	}
+	d.Partial(false)
+
 	if relationToinfraRsSpAccPortP, ok := d.GetOk("relation_infra_rs_sp_acc_port_p"); ok {
 		relationParamList := toStringList(relationToinfraRsSpAccPortP.(*schema.Set).List())
 		for _, relationParam := range relationParamList {
@@ -171,6 +208,24 @@ func resourceAciSpineProfileUpdate(d *schema.ResourceData, m interface{}) error 
 
 	d.Partial(false)
 
+	checkDns := make([]string, 0, 1)
+	if d.HasChange("relation_infra_rs_sp_acc_port_p") {
+		oldRel, newRel := d.GetChange("relation_infra_rs_sp_acc_port_p")
+		oldRelSet := oldRel.(*schema.Set)
+		newRelSet := newRel.(*schema.Set)
+		relToCreate := toStringList(newRelSet.Difference(oldRelSet).List())
+
+		for _, relDn := range relToCreate {
+			checkDns = append(checkDns, relDn)
+		}
+	}
+	d.Partial(true)
+	err = checkTDn(aciClient, checkDns)
+	if err != nil {
+		return err
+	}
+	d.Partial(false)
+
 	if d.HasChange("relation_infra_rs_sp_acc_port_p") {
 		oldRel, newRel := d.GetChange("relation_infra_rs_sp_acc_port_p")
 		oldRelSet := oldRel.(*schema.Set)
@@ -196,7 +251,6 @@ func resourceAciSpineProfileUpdate(d *schema.ResourceData, m interface{}) error 
 			d.Partial(false)
 
 		}
-
 	}
 
 	d.SetId(infraSpineP.DistinguishedName)
