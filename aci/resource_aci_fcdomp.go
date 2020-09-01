@@ -152,6 +152,55 @@ func resourceAciFCDomainCreate(d *schema.ResourceData, m interface{}) error {
 
 	d.Partial(false)
 
+	checkDns := make([]string, 0, 1)
+
+	if relationToinfraRsVlanNs, ok := d.GetOk("relation_infra_rs_vlan_ns"); ok {
+		relationParam := relationToinfraRsVlanNs.(string)
+		checkDns = append(checkDns, relationParam)
+	}
+
+	if relationTofcRsVsanNs, ok := d.GetOk("relation_fc_rs_vsan_ns"); ok {
+		relationParam := relationTofcRsVsanNs.(string)
+		checkDns = append(checkDns, relationParam)
+	}
+
+	if relationTofcRsVsanAttr, ok := d.GetOk("relation_fc_rs_vsan_attr"); ok {
+		relationParam := relationTofcRsVsanAttr.(string)
+		checkDns = append(checkDns, relationParam)
+	}
+
+	if relationToinfraRsVlanNsDef, ok := d.GetOk("relation_infra_rs_vlan_ns_def"); ok {
+		relationParam := relationToinfraRsVlanNsDef.(string)
+		checkDns = append(checkDns, relationParam)
+	}
+
+	if relationToinfraRsVipAddrNs, ok := d.GetOk("relation_infra_rs_vip_addr_ns"); ok {
+		relationParam := relationToinfraRsVipAddrNs.(string)
+		checkDns = append(checkDns, relationParam)
+	}
+
+	if relationToinfraRsDomVxlanNsDef, ok := d.GetOk("relation_infra_rs_dom_vxlan_ns_def"); ok {
+		relationParam := relationToinfraRsDomVxlanNsDef.(string)
+		checkDns = append(checkDns, relationParam)
+	}
+
+	if relationTofcRsVsanAttrDef, ok := d.GetOk("relation_fc_rs_vsan_attr_def"); ok {
+		relationParam := relationTofcRsVsanAttrDef.(string)
+		checkDns = append(checkDns, relationParam)
+	}
+
+	if relationTofcRsVsanNsDef, ok := d.GetOk("relation_fc_rs_vsan_ns_def"); ok {
+		relationParam := relationTofcRsVsanNsDef.(string)
+		checkDns = append(checkDns, relationParam)
+	}
+
+	d.Partial(true)
+	err = checkTDn(aciClient, checkDns)
+	if err != nil {
+		return err
+	}
+	d.Partial(false)
+
 	if relationToinfraRsVlanNs, ok := d.GetOk("relation_infra_rs_vlan_ns"); ok {
 		relationParam := relationToinfraRsVlanNs.(string)
 		err = aciClient.CreateRelationinfraRsVlanNsFromFCDomain(fcDomP.DistinguishedName, relationParam)
@@ -277,6 +326,55 @@ func resourceAciFCDomainUpdate(d *schema.ResourceData, m interface{}) error {
 
 	d.SetPartial("name")
 
+	d.Partial(false)
+
+	checkDns := make([]string, 0, 1)
+
+	if d.HasChange("relation_infra_rs_vlan_ns") {
+		_, newRelParam := d.GetChange("relation_infra_rs_vlan_ns")
+		checkDns = append(checkDns, newRelParam.(string))
+	}
+
+	if d.HasChange("relation_fc_rs_vsan_ns") {
+		_, newRelParam := d.GetChange("relation_fc_rs_vsan_ns")
+		checkDns = append(checkDns, newRelParam.(string))
+	}
+
+	if d.HasChange("relation_fc_rs_vsan_attr") {
+		_, newRelParam := d.GetChange("relation_fc_rs_vsan_attr")
+		checkDns = append(checkDns, newRelParam.(string))
+	}
+
+	if d.HasChange("relation_infra_rs_vlan_ns_def") {
+		_, newRelParam := d.GetChange("relation_infra_rs_vlan_ns_def")
+		checkDns = append(checkDns, newRelParam.(string))
+	}
+
+	if d.HasChange("relation_infra_rs_vip_addr_ns") {
+		_, newRelParam := d.GetChange("relation_infra_rs_vip_addr_ns")
+		checkDns = append(checkDns, newRelParam.(string))
+	}
+
+	if d.HasChange("relation_infra_rs_dom_vxlan_ns_def") {
+		_, newRelParam := d.GetChange("relation_infra_rs_dom_vxlan_ns_def")
+		checkDns = append(checkDns, newRelParam.(string))
+	}
+
+	if d.HasChange("relation_fc_rs_vsan_attr_def") {
+		_, newRelParam := d.GetChange("relation_fc_rs_vsan_attr_def")
+		checkDns = append(checkDns, newRelParam.(string))
+	}
+
+	if d.HasChange("relation_fc_rs_vsan_ns_def") {
+		_, newRelParam := d.GetChange("relation_fc_rs_vsan_ns_def")
+		checkDns = append(checkDns, newRelParam.(string))
+	}
+
+	d.Partial(true)
+	err = checkTDn(aciClient, checkDns)
+	if err != nil {
+		return err
+	}
 	d.Partial(false)
 
 	if d.HasChange("relation_infra_rs_vlan_ns") {
@@ -408,6 +506,7 @@ func resourceAciFCDomainRead(d *schema.ResourceData, m interface{}) error {
 	infraRsVlanNsData, err := aciClient.ReadRelationinfraRsVlanNsFromFCDomain(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation infraRsVlanNs %v", err)
+		d.Set("relation_infra_rs_vlan_ns", "")
 
 	} else {
 		if _, ok := d.GetOk("relation_infra_rs_vlan_ns"); ok {
@@ -421,6 +520,7 @@ func resourceAciFCDomainRead(d *schema.ResourceData, m interface{}) error {
 	fcRsVsanNsData, err := aciClient.ReadRelationfcRsVsanNsFromFCDomain(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation fcRsVsanNs %v", err)
+		d.Set("relation_fc_rs_vsan_ns", "")
 
 	} else {
 		if _, ok := d.GetOk("relation_fc_rs_vsan_ns"); ok {
@@ -434,6 +534,7 @@ func resourceAciFCDomainRead(d *schema.ResourceData, m interface{}) error {
 	fcRsVsanAttrData, err := aciClient.ReadRelationfcRsVsanAttrFromFCDomain(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation fcRsVsanAttr %v", err)
+		d.Set("relation_fc_rs_vsan_attr", "")
 
 	} else {
 		if _, ok := d.GetOk("relation_fc_rs_vsan_attr"); ok {
@@ -447,6 +548,7 @@ func resourceAciFCDomainRead(d *schema.ResourceData, m interface{}) error {
 	infraRsVlanNsDefData, err := aciClient.ReadRelationinfraRsVlanNsDefFromFCDomain(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation infraRsVlanNsDef %v", err)
+		d.Set("relation_infra_rs_vlan_ns_def", "")
 
 	} else {
 		if _, ok := d.GetOk("relation_infra_rs_vlan_ns_def"); ok {
@@ -460,6 +562,7 @@ func resourceAciFCDomainRead(d *schema.ResourceData, m interface{}) error {
 	infraRsVipAddrNsData, err := aciClient.ReadRelationinfraRsVipAddrNsFromFCDomain(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation infraRsVipAddrNs %v", err)
+		d.Set("relation_infra_rs_vip_addr_ns", "")
 
 	} else {
 		if _, ok := d.GetOk("relation_infra_rs_vip_addr_ns"); ok {
@@ -473,6 +576,7 @@ func resourceAciFCDomainRead(d *schema.ResourceData, m interface{}) error {
 	infraRsDomVxlanNsDefData, err := aciClient.ReadRelationinfraRsDomVxlanNsDefFromFCDomain(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation infraRsDomVxlanNsDef %v", err)
+		d.Set("relation_infra_rs_dom_vxlan_ns_def", "")
 
 	} else {
 		if _, ok := d.GetOk("relation_infra_rs_dom_vxlan_ns_def"); ok {
@@ -486,6 +590,7 @@ func resourceAciFCDomainRead(d *schema.ResourceData, m interface{}) error {
 	fcRsVsanAttrDefData, err := aciClient.ReadRelationfcRsVsanAttrDefFromFCDomain(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation fcRsVsanAttrDef %v", err)
+		d.Set("relation_fc_rs_vsan_attr_def", "")
 
 	} else {
 		if _, ok := d.GetOk("relation_fc_rs_vsan_attr_def"); ok {
@@ -499,6 +604,7 @@ func resourceAciFCDomainRead(d *schema.ResourceData, m interface{}) error {
 	fcRsVsanNsDefData, err := aciClient.ReadRelationfcRsVsanNsDefFromFCDomain(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation fcRsVsanNsDef %v", err)
+		d.Set("relation_fc_rs_vsan_ns_def", "")
 
 	} else {
 		if _, ok := d.GetOk("relation_fc_rs_vsan_ns_def"); ok {

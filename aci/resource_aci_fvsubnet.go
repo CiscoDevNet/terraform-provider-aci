@@ -185,6 +185,32 @@ func resourceAciSubnetCreate(d *schema.ResourceData, m interface{}) error {
 
 	d.Partial(false)
 
+	checkDns := make([]string, 0, 1)
+
+	if relationTofvRsBDSubnetToOut, ok := d.GetOk("relation_fv_rs_bd_subnet_to_out"); ok {
+		relationParamList := toStringList(relationTofvRsBDSubnetToOut.(*schema.Set).List())
+		for _, relationParam := range relationParamList {
+			checkDns = append(checkDns, relationParam)
+		}
+	}
+
+	if relationTofvRsNdPfxPol, ok := d.GetOk("relation_fv_rs_nd_pfx_pol"); ok {
+		relationParam := relationTofvRsNdPfxPol.(string)
+		checkDns = append(checkDns, relationParam)
+	}
+
+	if relationTofvRsBDSubnetToProfile, ok := d.GetOk("relation_fv_rs_bd_subnet_to_profile"); ok {
+		relationParam := relationTofvRsBDSubnetToProfile.(string)
+		checkDns = append(checkDns, relationParam)
+	}
+
+	d.Partial(true)
+	err = checkTDn(aciClient, checkDns)
+	if err != nil {
+		return err
+	}
+	d.Partial(false)
+
 	if relationTofvRsBDSubnetToOut, ok := d.GetOk("relation_fv_rs_bd_subnet_to_out"); ok {
 		relationParamList := toStringList(relationTofvRsBDSubnetToOut.(*schema.Set).List())
 		for _, relationParam := range relationParamList {
@@ -279,6 +305,36 @@ func resourceAciSubnetUpdate(d *schema.ResourceData, m interface{}) error {
 
 	d.Partial(false)
 
+	checkDns := make([]string, 0, 1)
+
+	if d.HasChange("relation_fv_rs_bd_subnet_to_out") {
+		oldRel, newRel := d.GetChange("relation_fv_rs_bd_subnet_to_out")
+		oldRelSet := oldRel.(*schema.Set)
+		newRelSet := newRel.(*schema.Set)
+		relToCreate := toStringList(newRelSet.Difference(oldRelSet).List())
+
+		for _, relDn := range relToCreate {
+			checkDns = append(checkDns, relDn)
+		}
+	}
+
+	if d.HasChange("relation_fv_rs_nd_pfx_pol") {
+		_, newRelParam := d.GetChange("relation_fv_rs_nd_pfx_pol")
+		checkDns = append(checkDns, newRelParam.(string))
+	}
+
+	if d.HasChange("relation_fv_rs_bd_subnet_to_profile") {
+		_, newRelParam := d.GetChange("relation_fv_rs_bd_subnet_to_profile")
+		checkDns = append(checkDns, newRelParam.(string))
+	}
+
+	d.Partial(true)
+	err = checkTDn(aciClient, checkDns)
+	if err != nil {
+		return err
+	}
+	d.Partial(false)
+
 	if d.HasChange("relation_fv_rs_bd_subnet_to_out") {
 		oldRel, newRel := d.GetChange("relation_fv_rs_bd_subnet_to_out")
 		oldRelSet := oldRel.(*schema.Set)
@@ -365,6 +421,7 @@ func resourceAciSubnetRead(d *schema.ResourceData, m interface{}) error {
 	fvRsBDSubnetToOutData, err := aciClient.ReadRelationfvRsBDSubnetToOutFromSubnet(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation fvRsBDSubnetToOut %v", err)
+		d.Set("relation_fv_rs_bd_subnet_to_out", make([]string, 0, 1))
 
 	} else {
 		if _, ok := d.GetOk("relation_fv_rs_bd_subnet_to_out"); ok {
@@ -387,6 +444,7 @@ func resourceAciSubnetRead(d *schema.ResourceData, m interface{}) error {
 	fvRsNdPfxPolData, err := aciClient.ReadRelationfvRsNdPfxPolFromSubnet(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation fvRsNdPfxPol %v", err)
+		d.Set("relation_fv_rs_nd_pfx_pol", "")
 
 	} else {
 		if _, ok := d.GetOk("relation_fv_rs_nd_pfx_pol"); ok {
@@ -400,6 +458,7 @@ func resourceAciSubnetRead(d *schema.ResourceData, m interface{}) error {
 	fvRsBDSubnetToProfileData, err := aciClient.ReadRelationfvRsBDSubnetToProfileFromSubnet(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation fvRsBDSubnetToProfile %v", err)
+		d.Set("relation_fv_rs_bd_subnet_to_profile", "")
 
 	} else {
 		if _, ok := d.GetOk("relation_fv_rs_bd_subnet_to_profile"); ok {

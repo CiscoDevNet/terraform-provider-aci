@@ -138,6 +138,42 @@ func resourceAciL3DomainProfileCreate(d *schema.ResourceData, m interface{}) err
 
 	d.Partial(false)
 
+	checkDns := make([]string, 0, 1)
+
+	if relationToinfraRsVlanNs, ok := d.GetOk("relation_infra_rs_vlan_ns"); ok {
+		relationParam := relationToinfraRsVlanNs.(string)
+		checkDns = append(checkDns, relationParam)
+	}
+
+	if relationToinfraRsVlanNsDef, ok := d.GetOk("relation_infra_rs_vlan_ns_def"); ok {
+		relationParam := relationToinfraRsVlanNsDef.(string)
+		checkDns = append(checkDns, relationParam)
+	}
+
+	if relationToinfraRsVipAddrNs, ok := d.GetOk("relation_infra_rs_vip_addr_ns"); ok {
+		relationParam := relationToinfraRsVipAddrNs.(string)
+		checkDns = append(checkDns, relationParam)
+	}
+
+	if relationToextnwRsOut, ok := d.GetOk("relation_extnw_rs_out"); ok {
+		relationParamList := toStringList(relationToextnwRsOut.(*schema.Set).List())
+		for _, relationParam := range relationParamList {
+			checkDns = append(checkDns, relationParam)
+		}
+	}
+
+	if relationToinfraRsDomVxlanNsDef, ok := d.GetOk("relation_infra_rs_dom_vxlan_ns_def"); ok {
+		relationParam := relationToinfraRsDomVxlanNsDef.(string)
+		checkDns = append(checkDns, relationParam)
+	}
+
+	d.Partial(true)
+	err = checkTDn(aciClient, checkDns)
+	if err != nil {
+		return err
+	}
+	d.Partial(false)
+
 	if relationToinfraRsVlanNs, ok := d.GetOk("relation_infra_rs_vlan_ns"); ok {
 		relationParam := relationToinfraRsVlanNs.(string)
 		err = aciClient.CreateRelationinfraRsVlanNsFromL3DomainProfile(l3extDomP.DistinguishedName, relationParam)
@@ -232,6 +268,46 @@ func resourceAciL3DomainProfileUpdate(d *schema.ResourceData, m interface{}) err
 
 	d.SetPartial("name")
 
+	d.Partial(false)
+
+	checkDns := make([]string, 0, 1)
+
+	if d.HasChange("relation_infra_rs_vlan_ns") {
+		_, newRelParam := d.GetChange("relation_infra_rs_vlan_ns")
+		checkDns = append(checkDns, newRelParam.(string))
+	}
+
+	if d.HasChange("relation_infra_rs_vlan_ns_def") {
+		_, newRelParam := d.GetChange("relation_infra_rs_vlan_ns_def")
+		checkDns = append(checkDns, newRelParam.(string))
+	}
+
+	if d.HasChange("relation_infra_rs_vip_addr_ns") {
+		_, newRelParam := d.GetChange("relation_infra_rs_vip_addr_ns")
+		checkDns = append(checkDns, newRelParam.(string))
+	}
+
+	if d.HasChange("relation_extnw_rs_out") {
+		oldRel, newRel := d.GetChange("relation_extnw_rs_out")
+		oldRelSet := oldRel.(*schema.Set)
+		newRelSet := newRel.(*schema.Set)
+		relToCreate := toStringList(newRelSet.Difference(oldRelSet).List())
+
+		for _, relDn := range relToCreate {
+			checkDns = append(checkDns, relDn)
+		}
+
+	}
+	if d.HasChange("relation_infra_rs_dom_vxlan_ns_def") {
+		_, newRelParam := d.GetChange("relation_infra_rs_dom_vxlan_ns_def")
+		checkDns = append(checkDns, newRelParam.(string))
+	}
+
+	d.Partial(true)
+	err = checkTDn(aciClient, checkDns)
+	if err != nil {
+		return err
+	}
 	d.Partial(false)
 
 	if d.HasChange("relation_infra_rs_vlan_ns") {
@@ -329,6 +405,7 @@ func resourceAciL3DomainProfileRead(d *schema.ResourceData, m interface{}) error
 	infraRsVlanNsData, err := aciClient.ReadRelationinfraRsVlanNsFromL3DomainProfile(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation infraRsVlanNs %v", err)
+		d.Set("relation_infra_rs_vlan_ns", "")
 
 	} else {
 		if _, ok := d.GetOk("relation_infra_rs_vlan_ns"); ok {
@@ -342,6 +419,7 @@ func resourceAciL3DomainProfileRead(d *schema.ResourceData, m interface{}) error
 	infraRsVlanNsDefData, err := aciClient.ReadRelationinfraRsVlanNsDefFromL3DomainProfile(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation infraRsVlanNsDef %v", err)
+		d.Set("relation_infra_rs_vlan_ns_def", "")
 
 	} else {
 		if _, ok := d.GetOk("relation_infra_rs_vlan_ns_def"); ok {
@@ -355,6 +433,7 @@ func resourceAciL3DomainProfileRead(d *schema.ResourceData, m interface{}) error
 	infraRsVipAddrNsData, err := aciClient.ReadRelationinfraRsVipAddrNsFromL3DomainProfile(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation infraRsVipAddrNs %v", err)
+		d.Set("relation_infra_rs_vip_addr_ns", "")
 
 	} else {
 		if _, ok := d.GetOk("relation_infra_rs_vip_addr_ns"); ok {
@@ -368,6 +447,7 @@ func resourceAciL3DomainProfileRead(d *schema.ResourceData, m interface{}) error
 	extnwRsOutData, err := aciClient.ReadRelationextnwRsOutFromL3DomainProfile(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation extnwRsOut %v", err)
+		d.Set("relation_extnw_rs_out", make([]string, 0, 1))
 
 	} else {
 		d.Set("relation_extnw_rs_out", extnwRsOutData)
@@ -376,6 +456,7 @@ func resourceAciL3DomainProfileRead(d *schema.ResourceData, m interface{}) error
 	infraRsDomVxlanNsDefData, err := aciClient.ReadRelationinfraRsDomVxlanNsDefFromL3DomainProfile(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation infraRsDomVxlanNsDef %v", err)
+		d.Set("relation_infra_rs_dom_vxlan_ns_def", "")
 
 	} else {
 		if _, ok := d.GetOk("relation_infra_rs_dom_vxlan_ns_def"); ok {

@@ -145,6 +145,20 @@ func resourceAciSwitchAssociationCreate(d *schema.ResourceData, m interface{}) e
 
 	d.Partial(false)
 
+	checkDns := make([]string, 0, 1)
+
+	if relationToinfraRsAccNodePGrp, ok := d.GetOk("relation_infra_rs_acc_node_p_grp"); ok {
+		relationParam := relationToinfraRsAccNodePGrp.(string)
+		checkDns = append(checkDns, relationParam)
+	}
+
+	d.Partial(true)
+	err = checkTDn(aciClient, checkDns)
+	if err != nil {
+		return err
+	}
+	d.Partial(false)
+
 	if relationToinfraRsAccNodePGrp, ok := d.GetOk("relation_infra_rs_acc_node_p_grp"); ok {
 		relationParam := relationToinfraRsAccNodePGrp.(string)
 		err = aciClient.CreateRelationinfraRsAccNodePGrpFromSwitchAssociation(infraLeafS.DistinguishedName, relationParam)
@@ -204,6 +218,20 @@ func resourceAciSwitchAssociationUpdate(d *schema.ResourceData, m interface{}) e
 
 	d.Partial(false)
 
+	checkDns := make([]string, 0, 1)
+
+	if d.HasChange("relation_infra_rs_acc_node_p_grp") {
+		_, newRelParam := d.GetChange("relation_infra_rs_acc_node_p_grp")
+		checkDns = append(checkDns, newRelParam.(string))
+	}
+
+	d.Partial(true)
+	err = checkTDn(aciClient, checkDns)
+	if err != nil {
+		return err
+	}
+	d.Partial(false)
+
 	if d.HasChange("relation_infra_rs_acc_node_p_grp") {
 		_, newRelParam := d.GetChange("relation_infra_rs_acc_node_p_grp")
 		err = aciClient.DeleteRelationinfraRsAccNodePGrpFromSwitchAssociation(infraLeafS.DistinguishedName)
@@ -244,6 +272,7 @@ func resourceAciSwitchAssociationRead(d *schema.ResourceData, m interface{}) err
 	infraRsAccNodePGrpData, err := aciClient.ReadRelationinfraRsAccNodePGrpFromSwitchAssociation(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation infraRsAccNodePGrp %v", err)
+		d.Set("relation_infra_rs_acc_node_p_grp", "")
 
 	} else {
 		if _, ok := d.GetOk("relation_infra_rs_acc_node_p_grp"); ok {

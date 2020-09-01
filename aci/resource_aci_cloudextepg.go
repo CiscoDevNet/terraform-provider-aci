@@ -232,6 +232,62 @@ func resourceAciCloudExternalEPgCreate(d *schema.ResourceData, m interface{}) er
 
 	d.Partial(false)
 
+	checkDns := make([]string, 0, 1)
+
+	if relationTofvRsSecInherited, ok := d.GetOk("relation_fv_rs_sec_inherited"); ok {
+		relationParamList := toStringList(relationTofvRsSecInherited.(*schema.Set).List())
+		for _, relationParam := range relationParamList {
+			checkDns = append(checkDns, relationParam)
+		}
+	}
+	if relationTofvRsProv, ok := d.GetOk("relation_fv_rs_prov"); ok {
+		relationParamList := toStringList(relationTofvRsProv.(*schema.Set).List())
+		for _, relationParam := range relationParamList {
+			checkDns = append(checkDns, relationParam)
+		}
+	}
+	if relationTofvRsConsIf, ok := d.GetOk("relation_fv_rs_cons_if"); ok {
+		relationParamList := toStringList(relationTofvRsConsIf.(*schema.Set).List())
+		for _, relationParam := range relationParamList {
+			checkDns = append(checkDns, relationParam)
+		}
+	}
+	if relationTofvRsCustQosPol, ok := d.GetOk("relation_fv_rs_cust_qos_pol"); ok {
+		relationParam := relationTofvRsCustQosPol.(string)
+		checkDns = append(checkDns, relationParam)
+
+	}
+	if relationTofvRsCons, ok := d.GetOk("relation_fv_rs_cons"); ok {
+		relationParamList := toStringList(relationTofvRsCons.(*schema.Set).List())
+		for _, relationParam := range relationParamList {
+			checkDns = append(checkDns, relationParam)
+		}
+	}
+	if relationTocloudRsCloudEPgCtx, ok := d.GetOk("relation_cloud_rs_cloud_epg_ctx"); ok {
+		relationParam := relationTocloudRsCloudEPgCtx.(string)
+		checkDns = append(checkDns, relationParam)
+
+	}
+	if relationTofvRsProtBy, ok := d.GetOk("relation_fv_rs_prot_by"); ok {
+		relationParamList := toStringList(relationTofvRsProtBy.(*schema.Set).List())
+		for _, relationParam := range relationParamList {
+			checkDns = append(checkDns, relationParam)
+		}
+	}
+	if relationTofvRsIntraEpg, ok := d.GetOk("relation_fv_rs_intra_epg"); ok {
+		relationParamList := toStringList(relationTofvRsIntraEpg.(*schema.Set).List())
+		for _, relationParam := range relationParamList {
+			checkDns = append(checkDns, relationParam)
+		}
+	}
+
+	d.Partial(true)
+	err = checkTDn(aciClient, checkDns)
+	if err != nil {
+		return err
+	}
+	d.Partial(false)
+
 	if relationTofvRsSecInherited, ok := d.GetOk("relation_fv_rs_sec_inherited"); ok {
 		relationParamList := toStringList(relationTofvRsSecInherited.(*schema.Set).List())
 		for _, relationParam := range relationParamList {
@@ -396,6 +452,91 @@ func resourceAciCloudExternalEPgUpdate(d *schema.ResourceData, m interface{}) er
 
 	d.SetPartial("name")
 
+	d.Partial(false)
+
+	checkDns := make([]string, 0, 1)
+
+	if d.HasChange("relation_fv_rs_sec_inherited") {
+		oldRel, newRel := d.GetChange("relation_fv_rs_sec_inherited")
+		oldRelSet := oldRel.(*schema.Set)
+		newRelSet := newRel.(*schema.Set)
+		relToCreate := toStringList(newRelSet.Difference(oldRelSet).List())
+
+		for _, relDn := range relToCreate {
+			checkDns = append(checkDns, relDn)
+		}
+	}
+
+	if d.HasChange("relation_fv_rs_prov") {
+		oldRel, newRel := d.GetChange("relation_fv_rs_prov")
+		oldRelSet := oldRel.(*schema.Set)
+		newRelSet := newRel.(*schema.Set)
+		relToCreate := toStringList(newRelSet.Difference(oldRelSet).List())
+
+		for _, relDn := range relToCreate {
+			checkDns = append(checkDns, relDn)
+		}
+	}
+
+	if d.HasChange("relation_fv_rs_cons_if") {
+		oldRel, newRel := d.GetChange("relation_fv_rs_cons_if")
+		oldRelSet := oldRel.(*schema.Set)
+		newRelSet := newRel.(*schema.Set)
+		relToCreate := toStringList(newRelSet.Difference(oldRelSet).List())
+
+		for _, relDn := range relToCreate {
+			checkDns = append(checkDns, relDn)
+		}
+	}
+
+	if d.HasChange("relation_fv_rs_cust_qos_pol") {
+		_, newRelParam := d.GetChange("relation_fv_rs_cust_qos_pol")
+		checkDns = append(checkDns, newRelParam.(string))
+
+	}
+	if d.HasChange("relation_fv_rs_cons") {
+		oldRel, newRel := d.GetChange("relation_fv_rs_cons")
+		oldRelSet := oldRel.(*schema.Set)
+		newRelSet := newRel.(*schema.Set)
+		relToCreate := toStringList(newRelSet.Difference(oldRelSet).List())
+
+		for _, relDn := range relToCreate {
+			checkDns = append(checkDns, relDn)
+		}
+	}
+
+	if d.HasChange("relation_cloud_rs_cloud_epg_ctx") {
+		_, newRelParam := d.GetChange("relation_cloud_rs_cloud_epg_ctx")
+		checkDns = append(checkDns, newRelParam.(string))
+	}
+
+	if d.HasChange("relation_fv_rs_prot_by") {
+		oldRel, newRel := d.GetChange("relation_fv_rs_prot_by")
+		oldRelSet := oldRel.(*schema.Set)
+		newRelSet := newRel.(*schema.Set)
+		relToCreate := toStringList(newRelSet.Difference(oldRelSet).List())
+
+		for _, relDn := range relToCreate {
+			checkDns = append(checkDns, relDn)
+		}
+	}
+
+	if d.HasChange("relation_fv_rs_intra_epg") {
+		oldRel, newRel := d.GetChange("relation_fv_rs_intra_epg")
+		oldRelSet := oldRel.(*schema.Set)
+		newRelSet := newRel.(*schema.Set)
+		relToCreate := toStringList(newRelSet.Difference(oldRelSet).List())
+
+		for _, relDn := range relToCreate {
+			checkDns = append(checkDns, relDn)
+		}
+	}
+
+	d.Partial(true)
+	err = checkTDn(aciClient, checkDns)
+	if err != nil {
+		return err
+	}
 	d.Partial(false)
 
 	if d.HasChange("relation_fv_rs_sec_inherited") {
@@ -619,6 +760,7 @@ func resourceAciCloudExternalEPgRead(d *schema.ResourceData, m interface{}) erro
 	fvRsSecInheritedData, err := aciClient.ReadRelationfvRsSecInheritedFromCloudExternalEPg(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation fvRsSecInherited %v", err)
+		d.Set("relation_fv_rs_sec_inherited", make([]string, 0, 1))
 
 	} else {
 		d.Set("relation_fv_rs_sec_inherited", fvRsSecInheritedData)
@@ -627,6 +769,7 @@ func resourceAciCloudExternalEPgRead(d *schema.ResourceData, m interface{}) erro
 	fvRsProvData, err := aciClient.ReadRelationfvRsProvFromCloudExternalEPg(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation fvRsProv %v", err)
+		d.Set("relation_fv_rs_prov", make([]string, 0, 1))
 
 	} else {
 		if _, ok := d.GetOk("relation_fv_rs_prov"); ok {
@@ -649,6 +792,7 @@ func resourceAciCloudExternalEPgRead(d *schema.ResourceData, m interface{}) erro
 	fvRsConsIfData, err := aciClient.ReadRelationfvRsConsIfFromCloudExternalEPg(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation fvRsConsIf %v", err)
+		d.Set("relation_fv_rs_cons_if", make([]string, 0, 1))
 
 	} else {
 		if _, ok := d.GetOk("relation_fv_rs_cons_if"); ok {
@@ -671,6 +815,7 @@ func resourceAciCloudExternalEPgRead(d *schema.ResourceData, m interface{}) erro
 	fvRsCustQosPolData, err := aciClient.ReadRelationfvRsCustQosPolFromCloudExternalEPg(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation fvRsCustQosPol %v", err)
+		d.Set("relation_fv_rs_cust_qos_pol", "")
 
 	} else {
 		if _, ok := d.GetOk("relation_fv_rs_cust_qos_pol"); ok {
@@ -684,6 +829,7 @@ func resourceAciCloudExternalEPgRead(d *schema.ResourceData, m interface{}) erro
 	fvRsConsData, err := aciClient.ReadRelationfvRsConsFromCloudExternalEPg(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation fvRsCons %v", err)
+		d.Set("relation_fv_rs_cons", make([]string, 0, 1))
 
 	} else {
 		if _, ok := d.GetOk("relation_fv_rs_cons"); ok {
@@ -706,6 +852,7 @@ func resourceAciCloudExternalEPgRead(d *schema.ResourceData, m interface{}) erro
 	cloudRsCloudEPgCtxData, err := aciClient.ReadRelationcloudRsCloudEPgCtxFromCloudExternalEPg(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation cloudRsCloudEPgCtx %v", err)
+		d.Set("relation_cloud_rs_cloud_epg_ctx", "")
 
 	} else {
 		if _, ok := d.GetOk("relation_cloud_rs_cloud_epg_ctx"); ok {
@@ -719,6 +866,7 @@ func resourceAciCloudExternalEPgRead(d *schema.ResourceData, m interface{}) erro
 	fvRsProtByData, err := aciClient.ReadRelationfvRsProtByFromCloudExternalEPg(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation fvRsProtBy %v", err)
+		d.Set("relation_fv_rs_prot_by", make([]string, 0, 1))
 
 	} else {
 		if _, ok := d.GetOk("relation_fv_rs_prot_by"); ok {
@@ -741,6 +889,7 @@ func resourceAciCloudExternalEPgRead(d *schema.ResourceData, m interface{}) erro
 	fvRsIntraEpgData, err := aciClient.ReadRelationfvRsIntraEpgFromCloudExternalEPg(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation fvRsIntraEpg %v", err)
+		d.Set("relation_fv_rs_intra_epg", make([]string, 0, 1))
 
 	} else {
 		if _, ok := d.GetOk("relation_fv_rs_intra_epg"); ok {

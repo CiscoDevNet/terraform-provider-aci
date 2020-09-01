@@ -137,6 +137,40 @@ func resourceAciSpineAccessPortPolicyGroupCreate(d *schema.ResourceData, m inter
 
 	d.Partial(false)
 
+	checkDns := make([]string, 0, 1)
+
+	if relationToinfraRsHIfPol, ok := d.GetOk("relation_infra_rs_h_if_pol"); ok {
+		relationParam := relationToinfraRsHIfPol.(string)
+		checkDns = append(checkDns, relationParam)
+	}
+
+	if relationToinfraRsCdpIfPol, ok := d.GetOk("relation_infra_rs_cdp_if_pol"); ok {
+		relationParam := relationToinfraRsCdpIfPol.(string)
+		checkDns = append(checkDns, relationParam)
+	}
+
+	if relationToinfraRsCoppIfPol, ok := d.GetOk("relation_infra_rs_copp_if_pol"); ok {
+		relationParam := relationToinfraRsCoppIfPol.(string)
+		checkDns = append(checkDns, relationParam)
+	}
+
+	if relationToinfraRsAttEntP, ok := d.GetOk("relation_infra_rs_att_ent_p"); ok {
+		relationParam := relationToinfraRsAttEntP.(string)
+		checkDns = append(checkDns, relationParam)
+	}
+
+	if relationToinfraRsMacsecIfPol, ok := d.GetOk("relation_infra_rs_macsec_if_pol"); ok {
+		relationParam := relationToinfraRsMacsecIfPol.(string)
+		checkDns = append(checkDns, relationParam)
+	}
+
+	d.Partial(true)
+	err = checkTDn(aciClient, checkDns)
+	if err != nil {
+		return err
+	}
+	d.Partial(false)
+
 	if relationToinfraRsHIfPol, ok := d.GetOk("relation_infra_rs_h_if_pol"); ok {
 		relationParam := relationToinfraRsHIfPol.(string)
 		relationParamName := models.GetMOName(relationParam)
@@ -235,6 +269,40 @@ func resourceAciSpineAccessPortPolicyGroupUpdate(d *schema.ResourceData, m inter
 
 	d.Partial(false)
 
+	checkDns := make([]string, 0, 1)
+
+	if d.HasChange("relation_infra_rs_h_if_pol") {
+		_, newRelParam := d.GetChange("relation_infra_rs_h_if_pol")
+		checkDns = append(checkDns, newRelParam.(string))
+	}
+
+	if d.HasChange("relation_infra_rs_cdp_if_pol") {
+		_, newRelParam := d.GetChange("relation_infra_rs_cdp_if_pol")
+		checkDns = append(checkDns, newRelParam.(string))
+	}
+
+	if d.HasChange("relation_infra_rs_copp_if_pol") {
+		_, newRelParam := d.GetChange("relation_infra_rs_copp_if_pol")
+		checkDns = append(checkDns, newRelParam.(string))
+	}
+
+	if d.HasChange("relation_infra_rs_att_ent_p") {
+		_, newRelParam := d.GetChange("relation_infra_rs_att_ent_p")
+		checkDns = append(checkDns, newRelParam.(string))
+	}
+
+	if d.HasChange("relation_infra_rs_macsec_if_pol") {
+		_, newRelParam := d.GetChange("relation_infra_rs_macsec_if_pol")
+		checkDns = append(checkDns, newRelParam.(string))
+	}
+
+	d.Partial(true)
+	err = checkTDn(aciClient, checkDns)
+	if err != nil {
+		return err
+	}
+	d.Partial(false)
+
 	if d.HasChange("relation_infra_rs_h_if_pol") {
 		_, newRelParam := d.GetChange("relation_infra_rs_h_if_pol")
 		newRelParamName := models.GetMOName(newRelParam.(string))
@@ -323,6 +391,7 @@ func resourceAciSpineAccessPortPolicyGroupRead(d *schema.ResourceData, m interfa
 	infraRsHIfPolData, err := aciClient.ReadRelationinfraRsHIfPolFromSpineAccessPortPolicyGroup(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation infraRsHIfPol %v", err)
+		d.Set("relation_infra_rs_h_if_pol", "")
 
 	} else {
 		name := models.GetMOName(d.Get("relation_infra_rs_h_if_pol").(string))
@@ -334,6 +403,7 @@ func resourceAciSpineAccessPortPolicyGroupRead(d *schema.ResourceData, m interfa
 	infraRsCdpIfPolData, err := aciClient.ReadRelationinfraRsCdpIfPolFromSpineAccessPortPolicyGroup(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation infraRsCdpIfPol %v", err)
+		d.Set("relation_infra_rs_cdp_if_pol", "")
 
 	} else {
 		name := models.GetMOName(d.Get("relation_infra_rs_cdp_if_pol").(string))
@@ -345,6 +415,7 @@ func resourceAciSpineAccessPortPolicyGroupRead(d *schema.ResourceData, m interfa
 	infraRsCoppIfPolData, err := aciClient.ReadRelationinfraRsCoppIfPolFromSpineAccessPortPolicyGroup(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation infraRsCoppIfPol %v", err)
+		d.Set("relation_infra_rs_copp_if_pol", "")
 
 	} else {
 		name := models.GetMOName(d.Get("relation_infra_rs_copp_if_pol").(string))
@@ -356,6 +427,7 @@ func resourceAciSpineAccessPortPolicyGroupRead(d *schema.ResourceData, m interfa
 	infraRsAttEntPData, err := aciClient.ReadRelationinfraRsAttEntPFromSpineAccessPortPolicyGroup(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation infraRsAttEntP %v", err)
+		d.Set("relation_infra_rs_att_ent_p", "")
 
 	} else {
 		d.Set("relation_infra_rs_att_ent_p", infraRsAttEntPData)
@@ -364,6 +436,7 @@ func resourceAciSpineAccessPortPolicyGroupRead(d *schema.ResourceData, m interfa
 	infraRsMacsecIfPolData, err := aciClient.ReadRelationinfraRsMacsecIfPolFromSpineAccessPortPolicyGroup(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation infraRsMacsecIfPol %v", err)
+		d.Set("relation_infra_rs_macsec_if_pol", "")
 
 	} else {
 		name := models.GetMOName(d.Get("relation_infra_rs_macsec_if_pol").(string))

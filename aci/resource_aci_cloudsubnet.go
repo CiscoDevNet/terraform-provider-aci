@@ -168,6 +168,25 @@ func resourceAciCloudSubnetCreate(d *schema.ResourceData, m interface{}) error {
 
 	d.Partial(false)
 
+	checkDns := make([]string, 0, 1)
+
+	if relationTocloudRsZoneAttach, ok := d.GetOk("relation_cloud_rs_zone_attach"); ok {
+		relationParam := relationTocloudRsZoneAttach.(string)
+		checkDns = append(checkDns, relationParam)
+	}
+
+	if relationTocloudRsSubnetToFlowLog, ok := d.GetOk("relation_cloud_rs_subnet_to_flow_log"); ok {
+		relationParam := relationTocloudRsSubnetToFlowLog.(string)
+		checkDns = append(checkDns, relationParam)
+	}
+
+	d.Partial(true)
+	err = checkTDn(aciClient, checkDns)
+	if err != nil {
+		return err
+	}
+	d.Partial(false)
+
 	if relationTocloudRsZoneAttach, ok := d.GetOk("relation_cloud_rs_zone_attach"); ok {
 		relationParam := relationTocloudRsZoneAttach.(string)
 		relationParamName := GetMOName(relationParam)
@@ -245,6 +264,25 @@ func resourceAciCloudSubnetUpdate(d *schema.ResourceData, m interface{}) error {
 
 	d.Partial(false)
 
+	checkDns := make([]string, 0, 1)
+
+	if d.HasChange("relation_cloud_rs_zone_attach") {
+		_, newRelParam := d.GetChange("relation_cloud_rs_zone_attach")
+		checkDns = append(checkDns, newRelParam.(string))
+	}
+
+	if d.HasChange("relation_cloud_rs_subnet_to_flow_log") {
+		_, newRelParam := d.GetChange("relation_cloud_rs_subnet_to_flow_log")
+		checkDns = append(checkDns, newRelParam.(string))
+	}
+
+	d.Partial(true)
+	err = checkTDn(aciClient, checkDns)
+	if err != nil {
+		return err
+	}
+	d.Partial(false)
+
 	if d.HasChange("relation_cloud_rs_zone_attach") {
 		_, newRelParam := d.GetChange("relation_cloud_rs_zone_attach")
 		newRelParamName := GetMOName(newRelParam.(string))
@@ -302,6 +340,7 @@ func resourceAciCloudSubnetRead(d *schema.ResourceData, m interface{}) error {
 	cloudRsZoneAttachData, err := aciClient.ReadRelationcloudRsZoneAttachFromCloudSubnet(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation cloudRsZoneAttach %v", err)
+		d.Set("relation_cloud_rs_zone_attach", "")
 
 	} else {
 		if _, ok := d.GetOk("relation_cloud_rs_zone_attach"); ok {
@@ -315,6 +354,7 @@ func resourceAciCloudSubnetRead(d *schema.ResourceData, m interface{}) error {
 	cloudRsSubnetToFlowLogData, err := aciClient.ReadRelationcloudRsSubnetToFlowLogFromCloudSubnet(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation cloudRsSubnetToFlowLog %v", err)
+		d.Set("relation_cloud_rs_subnet_to_flow_log", "")
 
 	} else {
 		if _, ok := d.GetOk("relation_cloud_rs_subnet_to_flow_log"); ok {

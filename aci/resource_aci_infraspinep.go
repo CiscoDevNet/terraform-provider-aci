@@ -61,27 +61,6 @@ func getRemoteSpineProfile(client *client.Client, dn string) (*models.SpineProfi
 	return infraSpineP, nil
 }
 
-func checkTDn(client *client.Client, dns []string) error {
-	flag := false
-	var errMessage string
-
-	for _, dn := range dns {
-		_, err := client.Get(dn)
-		if err != nil {
-			if flag == false {
-				flag = true
-			}
-			errMessage = fmt.Sprintf("%s\nRelation target dn %s not found", errMessage, dn)
-		}
-	}
-
-	if flag == true {
-		return fmt.Errorf(errMessage)
-	}
-
-	return nil
-}
-
 func setSpineProfileAttributes(infraSpineP *models.SpineProfile, d *schema.ResourceData) *schema.ResourceData {
 	d.SetId(infraSpineP.DistinguishedName)
 	d.Set("description", infraSpineP.Description)
@@ -209,6 +188,7 @@ func resourceAciSpineProfileUpdate(d *schema.ResourceData, m interface{}) error 
 	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
+
 	if d.HasChange("relation_infra_rs_sp_acc_port_p") {
 		oldRel, newRel := d.GetChange("relation_infra_rs_sp_acc_port_p")
 		oldRelSet := oldRel.(*schema.Set)
@@ -219,6 +199,7 @@ func resourceAciSpineProfileUpdate(d *schema.ResourceData, m interface{}) error 
 			checkDns = append(checkDns, relDn)
 		}
 	}
+
 	d.Partial(true)
 	err = checkTDn(aciClient, checkDns)
 	if err != nil {
@@ -277,6 +258,7 @@ func resourceAciSpineProfileRead(d *schema.ResourceData, m interface{}) error {
 	infraRsSpAccPortPData, err := aciClient.ReadRelationinfraRsSpAccPortPFromSpineProfile(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation infraRsSpAccPortP %v", err)
+		d.Set("relation_infra_rs_sp_acc_port_p", make([]interface{}, 0, 1))
 
 	} else {
 		d.Set("relation_infra_rs_sp_acc_port_p", infraRsSpAccPortPData)

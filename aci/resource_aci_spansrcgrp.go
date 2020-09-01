@@ -139,6 +139,20 @@ func resourceAciSPANSourceGroupCreate(d *schema.ResourceData, m interface{}) err
 
 	d.Partial(false)
 
+	checkDns := make([]string, 0, 1)
+
+	if relationTospanRsSrcGrpToFilterGrp, ok := d.GetOk("relation_span_rs_src_grp_to_filter_grp"); ok {
+		relationParam := relationTospanRsSrcGrpToFilterGrp.(string)
+		checkDns = append(checkDns, relationParam)
+	}
+
+	d.Partial(true)
+	err = checkTDn(aciClient, checkDns)
+	if err != nil {
+		return err
+	}
+	d.Partial(false)
+
 	if relationTospanRsSrcGrpToFilterGrp, ok := d.GetOk("relation_span_rs_src_grp_to_filter_grp"); ok {
 		relationParam := relationTospanRsSrcGrpToFilterGrp.(string)
 		err = aciClient.CreateRelationspanRsSrcGrpToFilterGrpFromSPANSourceGroup(spanSrcGrp.DistinguishedName, relationParam)
@@ -194,6 +208,20 @@ func resourceAciSPANSourceGroupUpdate(d *schema.ResourceData, m interface{}) err
 
 	d.Partial(false)
 
+	checkDns := make([]string, 0, 1)
+
+	if d.HasChange("relation_span_rs_src_grp_to_filter_grp") {
+		_, newRelParam := d.GetChange("relation_span_rs_src_grp_to_filter_grp")
+		checkDns = append(checkDns, newRelParam.(string))
+	}
+
+	d.Partial(true)
+	err = checkTDn(aciClient, checkDns)
+	if err != nil {
+		return err
+	}
+	d.Partial(false)
+
 	if d.HasChange("relation_span_rs_src_grp_to_filter_grp") {
 		_, newRelParam := d.GetChange("relation_span_rs_src_grp_to_filter_grp")
 		err = aciClient.DeleteRelationspanRsSrcGrpToFilterGrpFromSPANSourceGroup(spanSrcGrp.DistinguishedName)
@@ -234,6 +262,7 @@ func resourceAciSPANSourceGroupRead(d *schema.ResourceData, m interface{}) error
 	spanRsSrcGrpToFilterGrpData, err := aciClient.ReadRelationspanRsSrcGrpToFilterGrpFromSPANSourceGroup(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation spanRsSrcGrpToFilterGrp %v", err)
+		d.Set("relation_span_rs_src_grp_to_filter_grp", "")
 
 	} else {
 		if _, ok := d.GetOk("relation_span_rs_src_grp_to_filter_grp"); ok {

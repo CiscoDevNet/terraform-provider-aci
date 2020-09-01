@@ -123,6 +123,27 @@ func resourceAciTenantCreate(d *schema.ResourceData, m interface{}) error {
 
 	d.Partial(false)
 
+	checkDns := make([]string, 0, 1)
+
+	if relationTofvRsTnDenyRule, ok := d.GetOk("relation_fv_rs_tn_deny_rule"); ok {
+		relationParamList := toStringList(relationTofvRsTnDenyRule.(*schema.Set).List())
+		for _, relationParam := range relationParamList {
+			checkDns = append(checkDns, relationParam)
+		}
+	}
+
+	if relationTofvRsTenantMonPol, ok := d.GetOk("relation_fv_rs_tenant_mon_pol"); ok {
+		relationParam := relationTofvRsTenantMonPol.(string)
+		checkDns = append(checkDns, relationParam)
+	}
+
+	d.Partial(true)
+	err = checkTDn(aciClient, checkDns)
+	if err != nil {
+		return err
+	}
+	d.Partial(false)
+
 	if relationTofvRsTnDenyRule, ok := d.GetOk("relation_fv_rs_tn_deny_rule"); ok {
 		relationParamList := toStringList(relationTofvRsTnDenyRule.(*schema.Set).List())
 		for _, relationParam := range relationParamList {
@@ -185,6 +206,31 @@ func resourceAciTenantUpdate(d *schema.ResourceData, m interface{}) error {
 
 	d.SetPartial("name")
 
+	d.Partial(false)
+
+	checkDns := make([]string, 0, 1)
+
+	if d.HasChange("relation_fv_rs_tn_deny_rule") {
+		oldRel, newRel := d.GetChange("relation_fv_rs_tn_deny_rule")
+		oldRelSet := oldRel.(*schema.Set)
+		newRelSet := newRel.(*schema.Set)
+		relToCreate := toStringList(newRelSet.Difference(oldRelSet).List())
+
+		for _, relDn := range relToCreate {
+			checkDns = append(checkDns, relDn)
+		}
+	}
+
+	if d.HasChange("relation_fv_rs_tenant_mon_pol") {
+		_, newRelParam := d.GetChange("relation_fv_rs_tenant_mon_pol")
+		checkDns = append(checkDns, newRelParam.(string))
+	}
+
+	d.Partial(true)
+	err = checkTDn(aciClient, checkDns)
+	if err != nil {
+		return err
+	}
 	d.Partial(false)
 
 	if d.HasChange("relation_fv_rs_tn_deny_rule") {
@@ -251,6 +297,7 @@ func resourceAciTenantRead(d *schema.ResourceData, m interface{}) error {
 	fvRsTnDenyRuleData, err := aciClient.ReadRelationfvRsTnDenyRuleFromTenant(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation fvRsTnDenyRule %v", err)
+		d.Set("relation_fv_rs_tn_deny_rule", make([]string, 0, 1))
 
 	} else {
 		d.Set("relation_fv_rs_tn_deny_rule", fvRsTnDenyRuleData)
@@ -259,6 +306,7 @@ func resourceAciTenantRead(d *schema.ResourceData, m interface{}) error {
 	fvRsTenantMonPolData, err := aciClient.ReadRelationfvRsTenantMonPolFromTenant(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation fvRsTenantMonPol %v", err)
+		d.Set("relation_fv_rs_tenant_mon_pol", "")
 
 	} else {
 		if _, ok := d.GetOk("relation_fv_rs_tenant_mon_pol"); ok {

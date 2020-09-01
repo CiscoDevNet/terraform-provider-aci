@@ -258,6 +258,52 @@ func resourceAciVRFCreate(d *schema.ResourceData, m interface{}) error {
 
 	d.Partial(false)
 
+	checkDns := make([]string, 0, 1)
+
+	if relationTofvRsOspfCtxPol, ok := d.GetOk("relation_fv_rs_ospf_ctx_pol"); ok {
+		relationParam := relationTofvRsOspfCtxPol.(string)
+		checkDns = append(checkDns, relationParam)
+	}
+
+	if relationTofvRsVrfValidationPol, ok := d.GetOk("relation_fv_rs_vrf_validation_pol"); ok {
+		relationParam := relationTofvRsVrfValidationPol.(string)
+		checkDns = append(checkDns, relationParam)
+	}
+
+	if relationTofvRsCtxMcastTo, ok := d.GetOk("relation_fv_rs_ctx_mcast_to"); ok {
+		relationParamList := toStringList(relationTofvRsCtxMcastTo.(*schema.Set).List())
+		for _, relationParam := range relationParamList {
+			checkDns = append(checkDns, relationParam)
+		}
+	}
+
+	if relationTofvRsCtxToEpRet, ok := d.GetOk("relation_fv_rs_ctx_to_ep_ret"); ok {
+		relationParam := relationTofvRsCtxToEpRet.(string)
+		checkDns = append(checkDns, relationParam)
+	}
+
+	if relationTofvRsBgpCtxPol, ok := d.GetOk("relation_fv_rs_bgp_ctx_pol"); ok {
+		relationParam := relationTofvRsBgpCtxPol.(string)
+		checkDns = append(checkDns, relationParam)
+	}
+
+	if relationTofvRsCtxMonPol, ok := d.GetOk("relation_fv_rs_ctx_mon_pol"); ok {
+		relationParam := relationTofvRsCtxMonPol.(string)
+		checkDns = append(checkDns, relationParam)
+	}
+
+	if relationTofvRsCtxToExtRouteTagPol, ok := d.GetOk("relation_fv_rs_ctx_to_ext_route_tag_pol"); ok {
+		relationParam := relationTofvRsCtxToExtRouteTagPol.(string)
+		checkDns = append(checkDns, relationParam)
+	}
+
+	d.Partial(true)
+	err = checkTDn(aciClient, checkDns)
+	if err != nil {
+		return err
+	}
+	d.Partial(false)
+
 	if relationTofvRsOspfCtxPol, ok := d.GetOk("relation_fv_rs_ospf_ctx_pol"); ok {
 		relationParam := relationTofvRsOspfCtxPol.(string)
 		relationParamName := GetMOName(relationParam)
@@ -442,6 +488,56 @@ func resourceAciVRFUpdate(d *schema.ResourceData, m interface{}) error {
 
 	d.SetPartial("name")
 
+	d.Partial(false)
+
+	checkDns := make([]string, 0, 1)
+
+	if d.HasChange("relation_fv_rs_ospf_ctx_pol") {
+		_, newRelParam := d.GetChange("relation_fv_rs_ospf_ctx_pol")
+		checkDns = append(checkDns, newRelParam.(string))
+	}
+
+	if d.HasChange("relation_fv_rs_vrf_validation_pol") {
+		_, newRelParam := d.GetChange("relation_fv_rs_vrf_validation_pol")
+		checkDns = append(checkDns, newRelParam.(string))
+	}
+
+	if d.HasChange("relation_fv_rs_ctx_mcast_to") {
+		oldRel, newRel := d.GetChange("relation_fv_rs_ctx_mcast_to")
+		oldRelSet := oldRel.(*schema.Set)
+		newRelSet := newRel.(*schema.Set)
+		relToCreate := toStringList(newRelSet.Difference(oldRelSet).List())
+
+		for _, relDn := range relToCreate {
+			checkDns = append(checkDns, relDn)
+		}
+	}
+
+	if d.HasChange("relation_fv_rs_ctx_to_ep_ret") {
+		_, newRelParam := d.GetChange("relation_fv_rs_ctx_to_ep_ret")
+		checkDns = append(checkDns, newRelParam.(string))
+	}
+
+	if d.HasChange("relation_fv_rs_bgp_ctx_pol") {
+		_, newRelParam := d.GetChange("relation_fv_rs_bgp_ctx_pol")
+		checkDns = append(checkDns, newRelParam.(string))
+	}
+
+	if d.HasChange("relation_fv_rs_ctx_mon_pol") {
+		_, newRelParam := d.GetChange("relation_fv_rs_ctx_mon_pol")
+		checkDns = append(checkDns, newRelParam.(string))
+	}
+
+	if d.HasChange("relation_fv_rs_ctx_to_ext_route_tag_pol") {
+		_, newRelParam := d.GetChange("relation_fv_rs_ctx_to_ext_route_tag_pol")
+		checkDns = append(checkDns, newRelParam.(string))
+	}
+
+	d.Partial(true)
+	err = checkTDn(aciClient, checkDns)
+	if err != nil {
+		return err
+	}
 	d.Partial(false)
 
 	if d.HasChange("relation_fv_rs_ospf_ctx_pol") {
@@ -635,6 +731,7 @@ func resourceAciVRFRead(d *schema.ResourceData, m interface{}) error {
 	fvRsOspfCtxPolData, err := aciClient.ReadRelationfvRsOspfCtxPolFromVRF(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation fvRsOspfCtxPol %v", err)
+		d.Set("relation_fv_rs_ospf_ctx_pol", "")
 
 	} else {
 		if _, ok := d.GetOk("relation_fv_rs_ospf_ctx_pol"); ok {
@@ -648,6 +745,7 @@ func resourceAciVRFRead(d *schema.ResourceData, m interface{}) error {
 	fvRsVrfValidationPolData, err := aciClient.ReadRelationfvRsVrfValidationPolFromVRF(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation fvRsVrfValidationPol %v", err)
+		d.Set("relation_fv_rs_vrf_validation_pol", "")
 
 	} else {
 		if _, ok := d.GetOk("relation_fv_rs_vrf_validation_pol"); ok {
@@ -661,6 +759,7 @@ func resourceAciVRFRead(d *schema.ResourceData, m interface{}) error {
 	fvRsCtxMcastToData, err := aciClient.ReadRelationfvRsCtxMcastToFromVRF(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation fvRsCtxMcastTo %v", err)
+		d.Set("relation_fv_rs_ctx_mcast_to", fvRsCtxMcastToData)
 
 	} else {
 		d.Set("relation_fv_rs_ctx_mcast_to", fvRsCtxMcastToData)
@@ -685,6 +784,7 @@ func resourceAciVRFRead(d *schema.ResourceData, m interface{}) error {
 	fvRsCtxToEpRetData, err := aciClient.ReadRelationfvRsCtxToEpRetFromVRF(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation fvRsCtxToEpRet %v", err)
+		d.Set("relation_fv_rs_ctx_to_ep_ret", "")
 
 	} else {
 		if _, ok := d.GetOk("relation_fv_rs_ctx_to_ep_ret"); ok {
@@ -698,6 +798,7 @@ func resourceAciVRFRead(d *schema.ResourceData, m interface{}) error {
 	fvRsBgpCtxPolData, err := aciClient.ReadRelationfvRsBgpCtxPolFromVRF(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation fvRsBgpCtxPol %v", err)
+		d.Set("relation_fv_rs_bgp_ctx_pol", "")
 
 	} else {
 		if _, ok := d.GetOk("relation_fv_rs_bgp_ctx_pol"); ok {
@@ -711,6 +812,7 @@ func resourceAciVRFRead(d *schema.ResourceData, m interface{}) error {
 	fvRsCtxMonPolData, err := aciClient.ReadRelationfvRsCtxMonPolFromVRF(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation fvRsCtxMonPol %v", err)
+		d.Set("relation_fv_rs_ctx_mon_pol", "")
 
 	} else {
 		if _, ok := d.GetOk("relation_fv_rs_ctx_mon_pol"); ok {
@@ -724,6 +826,7 @@ func resourceAciVRFRead(d *schema.ResourceData, m interface{}) error {
 	fvRsCtxToExtRouteTagPolData, err := aciClient.ReadRelationfvRsCtxToExtRouteTagPolFromVRF(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation fvRsCtxToExtRouteTagPol %v", err)
+		d.Set("relation_fv_rs_ctx_to_ext_route_tag_pol", "")
 
 	} else {
 		if _, ok := d.GetOk("relation_fv_rs_ctx_to_ext_route_tag_pol"); ok {

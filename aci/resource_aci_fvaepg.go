@@ -317,6 +317,124 @@ func resourceAciApplicationEPGCreate(d *schema.ResourceData, m interface{}) erro
 
 	d.Partial(false)
 
+	checkDns := make([]string, 0, 1)
+
+	if relationTofvRsBd, ok := d.GetOk("relation_fv_rs_bd"); ok {
+		relationParam := relationTofvRsBd.(string)
+		checkDns = append(checkDns, relationParam)
+	}
+
+	if relationTofvRsCustQosPol, ok := d.GetOk("relation_fv_rs_cust_qos_pol"); ok {
+		relationParam := relationTofvRsCustQosPol.(string)
+		checkDns = append(checkDns, relationParam)
+	}
+
+	if relationTofvRsDomAtt, ok := d.GetOk("relation_fv_rs_dom_att"); ok {
+		relationParamList := toStringList(relationTofvRsDomAtt.(*schema.Set).List())
+		for _, relationParam := range relationParamList {
+			checkDns = append(checkDns, relationParam)
+		}
+	}
+
+	if relationTofvRsFcPathAtt, ok := d.GetOk("relation_fv_rs_fc_path_att"); ok {
+		relationParamList := toStringList(relationTofvRsFcPathAtt.(*schema.Set).List())
+		for _, relationParam := range relationParamList {
+			checkDns = append(checkDns, relationParam)
+		}
+	}
+
+	if relationTofvRsProv, ok := d.GetOk("relation_fv_rs_prov"); ok {
+		relationParamList := toStringList(relationTofvRsProv.(*schema.Set).List())
+		for _, relationParam := range relationParamList {
+			checkDns = append(checkDns, relationParam)
+		}
+	}
+
+	if relationTofvRsGraphDef, ok := d.GetOk("relation_fv_rs_graph_def"); ok {
+		relationParamList := toStringList(relationTofvRsGraphDef.(*schema.Set).List())
+		for _, relationParam := range relationParamList {
+			checkDns = append(checkDns, relationParam)
+		}
+	}
+
+	if relationTofvRsConsIf, ok := d.GetOk("relation_fv_rs_cons_if"); ok {
+		relationParamList := toStringList(relationTofvRsConsIf.(*schema.Set).List())
+		for _, relationParam := range relationParamList {
+			checkDns = append(checkDns, relationParam)
+		}
+	}
+
+	if relationTofvRsSecInherited, ok := d.GetOk("relation_fv_rs_sec_inherited"); ok {
+		relationParamList := toStringList(relationTofvRsSecInherited.(*schema.Set).List())
+		for _, relationParam := range relationParamList {
+			checkDns = append(checkDns, relationParam)
+		}
+	}
+
+	if relationTofvRsNodeAtt, ok := d.GetOk("relation_fv_rs_node_att"); ok {
+		relationParamList := toStringList(relationTofvRsNodeAtt.(*schema.Set).List())
+		for _, relationParam := range relationParamList {
+			checkDns = append(checkDns, relationParam)
+		}
+	}
+
+	if relationTofvRsDppPol, ok := d.GetOk("relation_fv_rs_dpp_pol"); ok {
+		relationParam := relationTofvRsDppPol.(string)
+		checkDns = append(checkDns, relationParam)
+	}
+
+	if relationTofvRsCons, ok := d.GetOk("relation_fv_rs_cons"); ok {
+		relationParamList := toStringList(relationTofvRsCons.(*schema.Set).List())
+		for _, relationParam := range relationParamList {
+			checkDns = append(checkDns, relationParam)
+		}
+	}
+
+	if relationTofvRsProvDef, ok := d.GetOk("relation_fv_rs_prov_def"); ok {
+		relationParamList := toStringList(relationTofvRsProvDef.(*schema.Set).List())
+		for _, relationParam := range relationParamList {
+			checkDns = append(checkDns, relationParam)
+		}
+	}
+
+	if relationTofvRsTrustCtrl, ok := d.GetOk("relation_fv_rs_trust_ctrl"); ok {
+		relationParam := relationTofvRsTrustCtrl.(string)
+		checkDns = append(checkDns, relationParam)
+	}
+
+	if relationTofvRsPathAtt, ok := d.GetOk("relation_fv_rs_path_att"); ok {
+		relationParamList := toStringList(relationTofvRsPathAtt.(*schema.Set).List())
+		for _, relationParam := range relationParamList {
+			checkDns = append(checkDns, relationParam)
+		}
+	}
+
+	if relationTofvRsProtBy, ok := d.GetOk("relation_fv_rs_prot_by"); ok {
+		relationParamList := toStringList(relationTofvRsProtBy.(*schema.Set).List())
+		for _, relationParam := range relationParamList {
+			checkDns = append(checkDns, relationParam)
+		}
+	}
+
+	if relationTofvRsAEPgMonPol, ok := d.GetOk("relation_fv_rs_aepg_mon_pol"); ok {
+		relationParam := relationTofvRsAEPgMonPol.(string)
+		checkDns = append(checkDns, relationParam)
+	}
+
+	if relationTofvRsIntraEpg, ok := d.GetOk("relation_fv_rs_intra_epg"); ok {
+		relationParamList := toStringList(relationTofvRsIntraEpg.(*schema.Set).List())
+		for _, relationParam := range relationParamList {
+			checkDns = append(checkDns, relationParam)
+		}
+	}
+
+	d.Partial(true)
+	err = checkTDn(aciClient, checkDns)
+	if err != nil {
+		return err
+	}
+	d.Partial(false)
+
 	if relationTofvRsBd, ok := d.GetOk("relation_fv_rs_bd"); ok {
 		relationParam := relationTofvRsBd.(string)
 		relationParamName := GetMOName(relationParam)
@@ -607,6 +725,172 @@ func resourceAciApplicationEPGUpdate(d *schema.ResourceData, m interface{}) erro
 
 	d.SetPartial("name")
 
+	d.Partial(false)
+
+	checkDns := make([]string, 0, 1)
+
+	if d.HasChange("relation_fv_rs_bd") {
+		_, newRelParam := d.GetChange("relation_fv_rs_bd")
+		checkDns = append(checkDns, newRelParam.(string))
+	}
+
+	if d.HasChange("relation_fv_rs_cust_qos_pol") {
+		_, newRelParam := d.GetChange("relation_fv_rs_cust_qos_pol")
+		checkDns = append(checkDns, newRelParam.(string))
+	}
+
+	if d.HasChange("relation_fv_rs_dom_att") {
+		oldRel, newRel := d.GetChange("relation_fv_rs_dom_att")
+		oldRelSet := oldRel.(*schema.Set)
+		newRelSet := newRel.(*schema.Set)
+		relToCreate := toStringList(newRelSet.Difference(oldRelSet).List())
+
+		for _, relDn := range relToCreate {
+			checkDns = append(checkDns, relDn)
+		}
+	}
+
+	if d.HasChange("relation_fv_rs_fc_path_att") {
+		oldRel, newRel := d.GetChange("relation_fv_rs_fc_path_att")
+		oldRelSet := oldRel.(*schema.Set)
+		newRelSet := newRel.(*schema.Set)
+		relToCreate := toStringList(newRelSet.Difference(oldRelSet).List())
+
+		for _, relDn := range relToCreate {
+			checkDns = append(checkDns, relDn)
+		}
+	}
+
+	if d.HasChange("relation_fv_rs_prov") {
+		oldRel, newRel := d.GetChange("relation_fv_rs_prov")
+		oldRelSet := oldRel.(*schema.Set)
+		newRelSet := newRel.(*schema.Set)
+		relToCreate := toStringList(newRelSet.Difference(oldRelSet).List())
+
+		for _, relDn := range relToCreate {
+			checkDns = append(checkDns, relDn)
+		}
+	}
+
+	if d.HasChange("relation_fv_rs_graph_def") {
+		oldRel, newRel := d.GetChange("relation_fv_rs_graph_def")
+		oldRelSet := oldRel.(*schema.Set)
+		newRelSet := newRel.(*schema.Set)
+		relToCreate := toStringList(newRelSet.Difference(oldRelSet).List())
+
+		for _, relDn := range relToCreate {
+			checkDns = append(checkDns, relDn)
+		}
+	}
+
+	if d.HasChange("relation_fv_rs_cons_if") {
+		oldRel, newRel := d.GetChange("relation_fv_rs_cons_if")
+		oldRelSet := oldRel.(*schema.Set)
+		newRelSet := newRel.(*schema.Set)
+		relToCreate := toStringList(newRelSet.Difference(oldRelSet).List())
+
+		for _, relDn := range relToCreate {
+			checkDns = append(checkDns, relDn)
+		}
+	}
+
+	if d.HasChange("relation_fv_rs_sec_inherited") {
+		oldRel, newRel := d.GetChange("relation_fv_rs_sec_inherited")
+		oldRelSet := oldRel.(*schema.Set)
+		newRelSet := newRel.(*schema.Set)
+		relToCreate := toStringList(newRelSet.Difference(oldRelSet).List())
+
+		for _, relDn := range relToCreate {
+			checkDns = append(checkDns, relDn)
+		}
+	}
+
+	if d.HasChange("relation_fv_rs_node_att") {
+		oldRel, newRel := d.GetChange("relation_fv_rs_node_att")
+		oldRelSet := oldRel.(*schema.Set)
+		newRelSet := newRel.(*schema.Set)
+		relToCreate := toStringList(newRelSet.Difference(oldRelSet).List())
+
+		for _, relDn := range relToCreate {
+			checkDns = append(checkDns, relDn)
+		}
+	}
+
+	if d.HasChange("relation_fv_rs_dpp_pol") {
+		_, newRelParam := d.GetChange("relation_fv_rs_dpp_pol")
+		checkDns = append(checkDns, newRelParam.(string))
+	}
+
+	if d.HasChange("relation_fv_rs_cons") {
+		oldRel, newRel := d.GetChange("relation_fv_rs_cons")
+		oldRelSet := oldRel.(*schema.Set)
+		newRelSet := newRel.(*schema.Set)
+		relToCreate := toStringList(newRelSet.Difference(oldRelSet).List())
+
+		for _, relDn := range relToCreate {
+			checkDns = append(checkDns, relDn)
+		}
+	}
+
+	if d.HasChange("relation_fv_rs_prov_def") {
+		oldRel, newRel := d.GetChange("relation_fv_rs_prov_def")
+		oldRelSet := oldRel.(*schema.Set)
+		newRelSet := newRel.(*schema.Set)
+		relToCreate := toStringList(newRelSet.Difference(oldRelSet).List())
+
+		for _, relDn := range relToCreate {
+			checkDns = append(checkDns, relDn)
+		}
+	}
+
+	if d.HasChange("relation_fv_rs_trust_ctrl") {
+		_, newRelParam := d.GetChange("relation_fv_rs_trust_ctrl")
+		checkDns = append(checkDns, newRelParam.(string))
+
+	}
+	if d.HasChange("relation_fv_rs_path_att") {
+		oldRel, newRel := d.GetChange("relation_fv_rs_path_att")
+		oldRelSet := oldRel.(*schema.Set)
+		newRelSet := newRel.(*schema.Set)
+		relToCreate := toStringList(newRelSet.Difference(oldRelSet).List())
+
+		for _, relDn := range relToCreate {
+			checkDns = append(checkDns, relDn)
+		}
+	}
+
+	if d.HasChange("relation_fv_rs_prot_by") {
+		oldRel, newRel := d.GetChange("relation_fv_rs_prot_by")
+		oldRelSet := oldRel.(*schema.Set)
+		newRelSet := newRel.(*schema.Set)
+		relToCreate := toStringList(newRelSet.Difference(oldRelSet).List())
+
+		for _, relDn := range relToCreate {
+			checkDns = append(checkDns, relDn)
+		}
+	}
+
+	if d.HasChange("relation_fv_rs_aepg_mon_pol") {
+		_, newRelParam := d.GetChange("relation_fv_rs_aepg_mon_pol")
+		checkDns = append(checkDns, newRelParam.(string))
+	}
+
+	if d.HasChange("relation_fv_rs_intra_epg") {
+		oldRel, newRel := d.GetChange("relation_fv_rs_intra_epg")
+		oldRelSet := oldRel.(*schema.Set)
+		newRelSet := newRel.(*schema.Set)
+		relToCreate := toStringList(newRelSet.Difference(oldRelSet).List())
+
+		for _, relDn := range relToCreate {
+			checkDns = append(checkDns, relDn)
+		}
+	}
+
+	d.Partial(true)
+	err = checkTDn(aciClient, checkDns)
+	if err != nil {
+		return err
+	}
 	d.Partial(false)
 
 	if d.HasChange("relation_fv_rs_bd") {
@@ -1022,6 +1306,7 @@ func resourceAciApplicationEPGRead(d *schema.ResourceData, m interface{}) error 
 	fvRsBdData, err := aciClient.ReadRelationfvRsBdFromApplicationEPG(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation fvRsBd %v", err)
+		d.Set("relation_fv_rs_bd", "")
 
 	} else {
 		if _, ok := d.GetOk("relation_fv_rs_bd"); ok {
@@ -1035,6 +1320,7 @@ func resourceAciApplicationEPGRead(d *schema.ResourceData, m interface{}) error 
 	fvRsCustQosPolData, err := aciClient.ReadRelationfvRsCustQosPolFromApplicationEPG(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation fvRsCustQosPol %v", err)
+		d.Set("relation_fv_rs_cust_qos_pol", "")
 
 	} else {
 		if _, ok := d.GetOk("relation_fv_rs_cust_qos_pol"); ok {
@@ -1048,6 +1334,7 @@ func resourceAciApplicationEPGRead(d *schema.ResourceData, m interface{}) error 
 	fvRsDomAttData, err := aciClient.ReadRelationfvRsDomAttFromApplicationEPG(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation fvRsDomAtt %v", err)
+		d.Set("relation_fv_rs_dom_att", make([]string, 0, 1))
 
 	} else {
 		d.Set("relation_fv_rs_dom_att", fvRsDomAttData)
@@ -1056,6 +1343,7 @@ func resourceAciApplicationEPGRead(d *schema.ResourceData, m interface{}) error 
 	fvRsFcPathAttData, err := aciClient.ReadRelationfvRsFcPathAttFromApplicationEPG(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation fvRsFcPathAtt %v", err)
+		d.Set("relation_fv_rs_fc_path_att", make([]string, 0, 1))
 
 	} else {
 		d.Set("relation_fv_rs_fc_path_att", fvRsFcPathAttData)
@@ -1064,6 +1352,7 @@ func resourceAciApplicationEPGRead(d *schema.ResourceData, m interface{}) error 
 	fvRsProvData, err := aciClient.ReadRelationfvRsProvFromApplicationEPG(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation fvRsProv %v", err)
+		d.Set("relation_fv_rs_prov", make([]string, 0, 1))
 
 	} else {
 		if _, ok := d.GetOk("relation_fv_rs_prov"); ok {
@@ -1086,6 +1375,7 @@ func resourceAciApplicationEPGRead(d *schema.ResourceData, m interface{}) error 
 	fvRsGraphDefData, err := aciClient.ReadRelationfvRsGraphDefFromApplicationEPG(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation fvRsGraphDef %v", err)
+		d.Set("relation_fv_rs_graph_def", make([]string, 0, 1))
 
 	} else {
 		d.Set("relation_fv_rs_graph_def", fvRsGraphDefData)
@@ -1094,6 +1384,7 @@ func resourceAciApplicationEPGRead(d *schema.ResourceData, m interface{}) error 
 	fvRsConsIfData, err := aciClient.ReadRelationfvRsConsIfFromApplicationEPG(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation fvRsConsIf %v", err)
+		d.Set("relation_fv_rs_cons_if", make([]string, 0, 1))
 
 	} else {
 		if _, ok := d.GetOk("relation_fv_rs_cons_if"); ok {
@@ -1116,6 +1407,7 @@ func resourceAciApplicationEPGRead(d *schema.ResourceData, m interface{}) error 
 	fvRsSecInheritedData, err := aciClient.ReadRelationfvRsSecInheritedFromApplicationEPG(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation fvRsSecInherited %v", err)
+		d.Set("relation_fv_rs_sec_inherited", make([]string, 0, 1))
 
 	} else {
 		d.Set("relation_fv_rs_sec_inherited", fvRsSecInheritedData)
@@ -1124,6 +1416,7 @@ func resourceAciApplicationEPGRead(d *schema.ResourceData, m interface{}) error 
 	fvRsNodeAttData, err := aciClient.ReadRelationfvRsNodeAttFromApplicationEPG(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation fvRsNodeAtt %v", err)
+		d.Set("relation_fv_rs_node_att", make([]string, 0, 1))
 
 	} else {
 		d.Set("relation_fv_rs_node_att", fvRsNodeAttData)
@@ -1132,6 +1425,7 @@ func resourceAciApplicationEPGRead(d *schema.ResourceData, m interface{}) error 
 	fvRsDppPolData, err := aciClient.ReadRelationfvRsDppPolFromApplicationEPG(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation fvRsDppPol %v", err)
+		d.Set("relation_fv_rs_dpp_pol", "")
 
 	} else {
 		if _, ok := d.GetOk("relation_fv_rs_dpp_pol"); ok {
@@ -1145,6 +1439,7 @@ func resourceAciApplicationEPGRead(d *schema.ResourceData, m interface{}) error 
 	fvRsConsData, err := aciClient.ReadRelationfvRsConsFromApplicationEPG(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation fvRsCons %v", err)
+		d.Set("relation_fv_rs_cons", make([]string, 0, 1))
 
 	} else {
 		if _, ok := d.GetOk("relation_fv_rs_cons"); ok {
@@ -1167,6 +1462,7 @@ func resourceAciApplicationEPGRead(d *schema.ResourceData, m interface{}) error 
 	fvRsProvDefData, err := aciClient.ReadRelationfvRsProvDefFromApplicationEPG(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation fvRsProvDef %v", err)
+		d.Set("relation_fv_rs_prov_def", make([]string, 0, 1))
 
 	} else {
 		d.Set("relation_fv_rs_prov_def", fvRsProvDefData)
@@ -1175,6 +1471,7 @@ func resourceAciApplicationEPGRead(d *schema.ResourceData, m interface{}) error 
 	fvRsTrustCtrlData, err := aciClient.ReadRelationfvRsTrustCtrlFromApplicationEPG(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation fvRsTrustCtrl %v", err)
+		d.Set("relation_fv_rs_trust_ctrl", "")
 
 	} else {
 		if _, ok := d.GetOk("relation_fv_rs_trust_ctrl"); ok {
@@ -1188,6 +1485,7 @@ func resourceAciApplicationEPGRead(d *schema.ResourceData, m interface{}) error 
 	fvRsPathAttData, err := aciClient.ReadRelationfvRsPathAttFromApplicationEPG(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation fvRsPathAtt %v", err)
+		d.Set("relation_fv_rs_path_att", make([]string, 0, 1))
 
 	} else {
 		d.Set("relation_fv_rs_path_att", fvRsPathAttData)
@@ -1196,6 +1494,7 @@ func resourceAciApplicationEPGRead(d *schema.ResourceData, m interface{}) error 
 	fvRsProtByData, err := aciClient.ReadRelationfvRsProtByFromApplicationEPG(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation fvRsProtBy %v", err)
+		d.Set("relation_fv_rs_prot_by", make([]string, 0, 1))
 
 	} else {
 		if _, ok := d.GetOk("relation_fv_rs_prot_by"); ok {
@@ -1218,6 +1517,7 @@ func resourceAciApplicationEPGRead(d *schema.ResourceData, m interface{}) error 
 	fvRsAEPgMonPolData, err := aciClient.ReadRelationfvRsAEPgMonPolFromApplicationEPG(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation fvRsAEPgMonPol %v", err)
+		d.Set("relation_fv_rs_aepg_mon_pol", "")
 
 	} else {
 		if _, ok := d.GetOk("relation_fv_rs_aepg_mon_pol"); ok {
@@ -1231,6 +1531,7 @@ func resourceAciApplicationEPGRead(d *schema.ResourceData, m interface{}) error 
 	fvRsIntraEpgData, err := aciClient.ReadRelationfvRsIntraEpgFromApplicationEPG(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation fvRsIntraEpg %v", err)
+		d.Set("relation_fv_rs_intra_epg", make([]string, 0, 1))
 
 	} else {
 		if _, ok := d.GetOk("relation_fv_rs_intra_epg"); ok {

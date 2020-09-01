@@ -171,6 +171,20 @@ func resourceAciDestinationofredirectedtrafficCreate(d *schema.ResourceData, m i
 
 	d.Partial(false)
 
+	checkDns := make([]string, 0, 1)
+
+	if relationTovnsRsRedirectHealthGroup, ok := d.GetOk("relation_vns_rs_redirect_health_group"); ok {
+		relationParam := relationTovnsRsRedirectHealthGroup.(string)
+		checkDns = append(checkDns, relationParam)
+	}
+
+	d.Partial(true)
+	err = checkTDn(aciClient, checkDns)
+	if err != nil {
+		return err
+	}
+	d.Partial(false)
+
 	if relationTovnsRsRedirectHealthGroup, ok := d.GetOk("relation_vns_rs_redirect_health_group"); ok {
 		relationParam := relationTovnsRsRedirectHealthGroup.(string)
 		err = aciClient.CreateRelationvnsRsRedirectHealthGroupFromDestinationofredirectedtraffic(vnsRedirectDest.DistinguishedName, relationParam)
@@ -238,6 +252,20 @@ func resourceAciDestinationofredirectedtrafficUpdate(d *schema.ResourceData, m i
 
 	d.Partial(false)
 
+	checkDns := make([]string, 0, 1)
+
+	if d.HasChange("relation_vns_rs_redirect_health_group") {
+		_, newRelParam := d.GetChange("relation_vns_rs_redirect_health_group")
+		checkDns = append(checkDns, newRelParam.(string))
+	}
+
+	d.Partial(true)
+	err = checkTDn(aciClient, checkDns)
+	if err != nil {
+		return err
+	}
+	d.Partial(false)
+
 	if d.HasChange("relation_vns_rs_redirect_health_group") {
 		_, newRelParam := d.GetChange("relation_vns_rs_redirect_health_group")
 		err = aciClient.DeleteRelationvnsRsRedirectHealthGroupFromDestinationofredirectedtraffic(vnsRedirectDest.DistinguishedName)
@@ -278,6 +306,7 @@ func resourceAciDestinationofredirectedtrafficRead(d *schema.ResourceData, m int
 	vnsRsRedirectHealthGroupData, err := aciClient.ReadRelationvnsRsRedirectHealthGroupFromDestinationofredirectedtraffic(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation vnsRsRedirectHealthGroup %v", err)
+		d.Set("relation_vns_rs_redirect_health_group", "")
 
 	} else {
 		d.Set("relation_vns_rs_redirect_health_group", vnsRsRedirectHealthGroupData)

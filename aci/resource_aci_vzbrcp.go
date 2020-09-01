@@ -609,6 +609,20 @@ func resourceAciContractCreate(d *schema.ResourceData, m interface{}) error {
 
 	d.Partial(false)
 
+	checkDns := make([]string, 0, 1)
+
+	if relationTovzRsGraphAtt, ok := d.GetOk("relation_vz_rs_graph_att"); ok {
+		relationParam := relationTovzRsGraphAtt.(string)
+		checkDns = append(checkDns, relationParam)
+	}
+
+	d.Partial(true)
+	err = checkTDn(aciClient, checkDns)
+	if err != nil {
+		return err
+	}
+	d.Partial(false)
+
 	if relationTovzRsGraphAtt, ok := d.GetOk("relation_vz_rs_graph_att"); ok {
 		relationParam := relationTovzRsGraphAtt.(string)
 		relationParamName := GetMOName(relationParam)
@@ -787,6 +801,20 @@ func resourceAciContractUpdate(d *schema.ResourceData, m interface{}) error {
 
 	d.Partial(false)
 
+	checkDns := make([]string, 0, 1)
+
+	if d.HasChange("relation_vz_rs_graph_att") {
+		_, newRelParam := d.GetChange("relation_vz_rs_graph_att")
+		checkDns = append(checkDns, newRelParam.(string))
+	}
+
+	d.Partial(true)
+	err = checkTDn(aciClient, checkDns)
+	if err != nil {
+		return err
+	}
+	d.Partial(false)
+
 	if d.HasChange("relation_vz_rs_graph_att") {
 		_, newRelParam := d.GetChange("relation_vz_rs_graph_att")
 		newRelParamName := GetMOName(newRelParam.(string))
@@ -849,6 +877,7 @@ func resourceAciContractRead(d *schema.ResourceData, m interface{}) error {
 	vzRsGraphAttData, err := aciClient.ReadRelationvzRsGraphAttFromContract(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation vzRsGraphAtt %v", err)
+		d.Set("relation_vz_rs_graph_att", "")
 
 	} else {
 		if _, ok := d.GetOk("relation_vz_rs_graph_att"); ok {
