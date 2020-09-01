@@ -181,6 +181,37 @@ func resourceAciL3OutsideCreate(d *schema.ResourceData, m interface{}) error {
 
 	d.Partial(false)
 
+	checkDns := make([]string, 0, 1)
+
+	if relationTol3extRsEctx, ok := d.GetOk("relation_l3ext_rs_ectx"); ok {
+		relationParam := relationTol3extRsEctx.(string)
+		checkDns = append(checkDns, relationParam)
+	}
+
+	if relationTol3extRsOutToBDPublicSubnetHolder, ok := d.GetOk("relation_l3ext_rs_out_to_bd_public_subnet_holder"); ok {
+		relationParamList := toStringList(relationTol3extRsOutToBDPublicSubnetHolder.(*schema.Set).List())
+		for _, relationParam := range relationParamList {
+			checkDns = append(checkDns, relationParam)
+		}
+	}
+
+	if relationTol3extRsInterleakPol, ok := d.GetOk("relation_l3ext_rs_interleak_pol"); ok {
+		relationParam := relationTol3extRsInterleakPol.(string)
+		checkDns = append(checkDns, relationParam)
+	}
+
+	if relationTol3extRsL3DomAtt, ok := d.GetOk("relation_l3ext_rs_l3_dom_att"); ok {
+		relationParam := relationTol3extRsL3DomAtt.(string)
+		checkDns = append(checkDns, relationParam)
+	}
+
+	d.Partial(true)
+	err = checkTDn(aciClient, checkDns)
+	if err != nil {
+		return err
+	}
+	d.Partial(false)
+
 	if relationTol3extRsDampeningPol, ok := d.GetOk("relation_l3ext_rs_dampening_pol"); ok {
 
 		relationParamList := relationTol3extRsDampeningPol.(*schema.Set).List()
@@ -289,6 +320,41 @@ func resourceAciL3OutsideUpdate(d *schema.ResourceData, m interface{}) error {
 
 	d.SetPartial("name")
 
+	d.Partial(false)
+
+	checkDns := make([]string, 0, 1)
+
+	if d.HasChange("relation_l3ext_rs_ectx") {
+		_, newRelParam := d.GetChange("relation_l3ext_rs_ectx")
+		checkDns = append(checkDns, newRelParam.(string))
+	}
+
+	if d.HasChange("relation_l3ext_rs_out_to_bd_public_subnet_holder") {
+		oldRel, newRel := d.GetChange("relation_l3ext_rs_out_to_bd_public_subnet_holder")
+		oldRelSet := oldRel.(*schema.Set)
+		newRelSet := newRel.(*schema.Set)
+		relToCreate := toStringList(newRelSet.Difference(oldRelSet).List())
+
+		for _, relDn := range relToCreate {
+			checkDns = append(checkDns, relDn)
+		}
+	}
+
+	if d.HasChange("relation_l3ext_rs_interleak_pol") {
+		_, newRelParam := d.GetChange("relation_l3ext_rs_interleak_pol")
+		checkDns = append(checkDns, newRelParam.(string))
+	}
+
+	if d.HasChange("relation_l3ext_rs_l3_dom_att") {
+		_, newRelParam := d.GetChange("relation_l3ext_rs_l3_dom_att")
+		checkDns = append(checkDns, newRelParam.(string))
+	}
+
+	d.Partial(true)
+	err = checkTDn(aciClient, checkDns)
+	if err != nil {
+		return err
+	}
 	d.Partial(false)
 
 	if d.HasChange("relation_l3ext_rs_dampening_pol") {
@@ -409,6 +475,7 @@ func resourceAciL3OutsideRead(d *schema.ResourceData, m interface{}) error {
 	l3extRsEctxData, err := aciClient.ReadRelationl3extRsEctxFromL3Outside(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation l3extRsEctx %v", err)
+		d.Set("relation_l3ext_rs_ectx", "")
 
 	} else {
 		if _, ok := d.GetOk("relation_l3ext_rs_ectx"); ok {
@@ -422,6 +489,7 @@ func resourceAciL3OutsideRead(d *schema.ResourceData, m interface{}) error {
 	l3extRsOutToBDPublicSubnetHolderData, err := aciClient.ReadRelationl3extRsOutToBDPublicSubnetHolderFromL3Outside(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation l3extRsOutToBDPublicSubnetHolder %v", err)
+		d.Set("relation_l3ext_rs_out_to_bd_public_subnet_holder", make([]string, 0, 1))
 
 	} else {
 		d.Set("relation_l3ext_rs_out_to_bd_public_subnet_holder", l3extRsOutToBDPublicSubnetHolderData)
@@ -430,6 +498,7 @@ func resourceAciL3OutsideRead(d *schema.ResourceData, m interface{}) error {
 	l3extRsInterleakPolData, err := aciClient.ReadRelationl3extRsInterleakPolFromL3Outside(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation l3extRsInterleakPol %v", err)
+		d.Set("relation_l3ext_rs_interleak_pol", "")
 
 	} else {
 		if _, ok := d.GetOk("relation_l3ext_rs_interleak_pol"); ok {
@@ -443,6 +512,7 @@ func resourceAciL3OutsideRead(d *schema.ResourceData, m interface{}) error {
 	l3extRsL3DomAttData, err := aciClient.ReadRelationl3extRsL3DomAttFromL3Outside(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation l3extRsL3DomAtt %v", err)
+		d.Set("relation_l3ext_rs_l3_dom_att", "")
 
 	} else {
 		if _, ok := d.GetOk("relation_l3ext_rs_l3_dom_att"); ok {

@@ -139,6 +139,20 @@ func resourceAciApplicationProfileCreate(d *schema.ResourceData, m interface{}) 
 
 	d.Partial(false)
 
+	checkDns := make([]string, 0, 1)
+
+	if relationTofvRsApMonPol, ok := d.GetOk("relation_fv_rs_ap_mon_pol"); ok {
+		relationParam := relationTofvRsApMonPol.(string)
+		checkDns = append(checkDns, relationParam)
+	}
+
+	d.Partial(true)
+	err = checkTDn(aciClient, checkDns)
+	if err != nil {
+		return err
+	}
+	d.Partial(false)
+
 	if relationTofvRsApMonPol, ok := d.GetOk("relation_fv_rs_ap_mon_pol"); ok {
 		relationParam := relationTofvRsApMonPol.(string)
 		relationParamName := GetMOName(relationParam)
@@ -195,6 +209,20 @@ func resourceAciApplicationProfileUpdate(d *schema.ResourceData, m interface{}) 
 
 	d.Partial(false)
 
+	checkDns := make([]string, 0, 1)
+
+	if d.HasChange("relation_fv_rs_ap_mon_pol") {
+		_, newRelParam := d.GetChange("relation_fv_rs_ap_mon_pol")
+		checkDns = append(checkDns, newRelParam.(string))
+	}
+
+	d.Partial(true)
+	err = checkTDn(aciClient, checkDns)
+	if err != nil {
+		return err
+	}
+	d.Partial(false)
+
 	if d.HasChange("relation_fv_rs_ap_mon_pol") {
 		_, newRelParam := d.GetChange("relation_fv_rs_ap_mon_pol")
 		newRelParamName := GetMOName(newRelParam.(string))
@@ -236,6 +264,7 @@ func resourceAciApplicationProfileRead(d *schema.ResourceData, m interface{}) er
 	fvRsApMonPolData, err := aciClient.ReadRelationfvRsApMonPolFromApplicationProfile(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation fvRsApMonPol %v", err)
+		d.Set("relation_fv_rs_ap_mon_pol", "")
 
 	} else {
 		if _, ok := d.GetOk("relation_fv_rs_ap_mon_pol"); ok {

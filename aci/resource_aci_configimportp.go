@@ -187,6 +187,30 @@ func resourceAciConfigurationImportPolicyCreate(d *schema.ResourceData, m interf
 
 	d.Partial(false)
 
+	checkDns := make([]string, 0, 1)
+
+	if relationToconfigRsImportSource, ok := d.GetOk("relation_config_rs_import_source"); ok {
+		relationParam := relationToconfigRsImportSource.(string)
+		checkDns = append(checkDns, relationParam)
+	}
+
+	if relationTotrigRsTriggerable, ok := d.GetOk("relation_trig_rs_triggerable"); ok {
+		relationParam := relationTotrigRsTriggerable.(string)
+		checkDns = append(checkDns, relationParam)
+	}
+
+	if relationToconfigRsRemotePath, ok := d.GetOk("relation_config_rs_remote_path"); ok {
+		relationParam := relationToconfigRsRemotePath.(string)
+		checkDns = append(checkDns, relationParam)
+	}
+
+	d.Partial(true)
+	err = checkTDn(aciClient, checkDns)
+	if err != nil {
+		return err
+	}
+	d.Partial(false)
+
 	if relationToconfigRsImportSource, ok := d.GetOk("relation_config_rs_import_source"); ok {
 		relationParam := relationToconfigRsImportSource.(string)
 		relationParamName := GetMOName(relationParam)
@@ -279,6 +303,30 @@ func resourceAciConfigurationImportPolicyUpdate(d *schema.ResourceData, m interf
 
 	d.Partial(false)
 
+	checkDns := make([]string, 0, 1)
+
+	if d.HasChange("relation_config_rs_import_source") {
+		_, newRelParam := d.GetChange("relation_config_rs_import_source")
+		checkDns = append(checkDns, newRelParam.(string))
+	}
+
+	if d.HasChange("relation_trig_rs_triggerable") {
+		_, newRelParam := d.GetChange("relation_trig_rs_triggerable")
+		checkDns = append(checkDns, newRelParam.(string))
+	}
+
+	if d.HasChange("relation_config_rs_remote_path") {
+		_, newRelParam := d.GetChange("relation_config_rs_remote_path")
+		checkDns = append(checkDns, newRelParam.(string))
+	}
+
+	d.Partial(true)
+	err = checkTDn(aciClient, checkDns)
+	if err != nil {
+		return err
+	}
+	d.Partial(false)
+
 	if d.HasChange("relation_config_rs_import_source") {
 		_, newRelParam := d.GetChange("relation_config_rs_import_source")
 		newRelParamName := GetMOName(newRelParam.(string))
@@ -347,6 +395,7 @@ func resourceAciConfigurationImportPolicyRead(d *schema.ResourceData, m interfac
 	configRsImportSourceData, err := aciClient.ReadRelationconfigRsImportSourceFromConfigurationImportPolicy(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation configRsImportSource %v", err)
+		d.Set("relation_config_rs_import_source", "")
 
 	} else {
 		if _, ok := d.GetOk("relation_config_rs_import_source"); ok {
@@ -360,6 +409,7 @@ func resourceAciConfigurationImportPolicyRead(d *schema.ResourceData, m interfac
 	trigRsTriggerableData, err := aciClient.ReadRelationtrigRsTriggerableFromConfigurationImportPolicy(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation trigRsTriggerable %v", err)
+		d.Set("relation_trig_rs_triggerable", "")
 
 	} else {
 		if _, ok := d.GetOk("relation_trig_rs_triggerable"); ok {
@@ -373,6 +423,7 @@ func resourceAciConfigurationImportPolicyRead(d *schema.ResourceData, m interfac
 	configRsRemotePathData, err := aciClient.ReadRelationconfigRsRemotePathFromConfigurationImportPolicy(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation configRsRemotePath %v", err)
+		d.Set("relation_config_rs_remote_path", "")
 
 	} else {
 		if _, ok := d.GetOk("relation_config_rs_remote_path"); ok {

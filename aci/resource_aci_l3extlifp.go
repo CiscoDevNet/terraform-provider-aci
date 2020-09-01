@@ -191,6 +191,47 @@ func resourceAciLogicalInterfaceProfileCreate(d *schema.ResourceData, m interfac
 
 	d.Partial(false)
 
+	checkDns := make([]string, 0, 1)
+
+	if relationTol3extRsPathL3OutAtt, ok := d.GetOk("relation_l3ext_rs_path_l3_out_att"); ok {
+		relationParamList := toStringList(relationTol3extRsPathL3OutAtt.(*schema.Set).List())
+		for _, relationParam := range relationParamList {
+			checkDns = append(checkDns, relationParam)
+		}
+	}
+
+	if relationTol3extRsEgressQosDppPol, ok := d.GetOk("relation_l3ext_rs_egress_qos_dpp_pol"); ok {
+		relationParam := relationTol3extRsEgressQosDppPol.(string)
+		checkDns = append(checkDns, relationParam)
+	}
+
+	if relationTol3extRsIngressQosDppPol, ok := d.GetOk("relation_l3ext_rs_ingress_qos_dpp_pol"); ok {
+		relationParam := relationTol3extRsIngressQosDppPol.(string)
+		checkDns = append(checkDns, relationParam)
+	}
+
+	if relationTol3extRsLIfPCustQosPol, ok := d.GetOk("relation_l3ext_rs_l_if_p_cust_qos_pol"); ok {
+		relationParam := relationTol3extRsLIfPCustQosPol.(string)
+		checkDns = append(checkDns, relationParam)
+	}
+
+	if relationTol3extRsArpIfPol, ok := d.GetOk("relation_l3ext_rs_arp_if_pol"); ok {
+		relationParam := relationTol3extRsArpIfPol.(string)
+		checkDns = append(checkDns, relationParam)
+	}
+
+	if relationTol3extRsNdIfPol, ok := d.GetOk("relation_l3ext_rs_nd_if_pol"); ok {
+		relationParam := relationTol3extRsNdIfPol.(string)
+		checkDns = append(checkDns, relationParam)
+	}
+
+	d.Partial(true)
+	err = checkTDn(aciClient, checkDns)
+	if err != nil {
+		return err
+	}
+	d.Partial(false)
+
 	if relationTol3extRsLIfPToNetflowMonitorPol, ok := d.GetOk("relation_l3ext_rs_l_if_p_to_netflow_monitor_pol"); ok {
 
 		relationParamList := relationTol3extRsLIfPToNetflowMonitorPol.(*schema.Set).List()
@@ -324,6 +365,51 @@ func resourceAciLogicalInterfaceProfileUpdate(d *schema.ResourceData, m interfac
 
 	d.SetPartial("name")
 
+	d.Partial(false)
+
+	checkDns := make([]string, 0, 1)
+
+	if d.HasChange("relation_l3ext_rs_path_l3_out_att") {
+		oldRel, newRel := d.GetChange("relation_l3ext_rs_path_l3_out_att")
+		oldRelSet := oldRel.(*schema.Set)
+		newRelSet := newRel.(*schema.Set)
+		relToCreate := toStringList(newRelSet.Difference(oldRelSet).List())
+
+		for _, relDn := range relToCreate {
+			checkDns = append(checkDns, relDn)
+		}
+	}
+
+	if d.HasChange("relation_l3ext_rs_egress_qos_dpp_pol") {
+		_, newRelParam := d.GetChange("relation_l3ext_rs_egress_qos_dpp_pol")
+		checkDns = append(checkDns, newRelParam.(string))
+	}
+
+	if d.HasChange("relation_l3ext_rs_ingress_qos_dpp_pol") {
+		_, newRelParam := d.GetChange("relation_l3ext_rs_ingress_qos_dpp_pol")
+		checkDns = append(checkDns, newRelParam.(string))
+	}
+
+	if d.HasChange("relation_l3ext_rs_l_if_p_cust_qos_pol") {
+		_, newRelParam := d.GetChange("relation_l3ext_rs_l_if_p_cust_qos_pol")
+		checkDns = append(checkDns, newRelParam.(string))
+	}
+
+	if d.HasChange("relation_l3ext_rs_arp_if_pol") {
+		_, newRelParam := d.GetChange("relation_l3ext_rs_arp_if_pol")
+		checkDns = append(checkDns, newRelParam.(string))
+	}
+
+	if d.HasChange("relation_l3ext_rs_nd_if_pol") {
+		_, newRelParam := d.GetChange("relation_l3ext_rs_nd_if_pol")
+		checkDns = append(checkDns, newRelParam.(string))
+	}
+
+	d.Partial(true)
+	err = checkTDn(aciClient, checkDns)
+	if err != nil {
+		return err
+	}
 	d.Partial(false)
 
 	if d.HasChange("relation_l3ext_rs_l_if_p_to_netflow_monitor_pol") {
@@ -470,6 +556,7 @@ func resourceAciLogicalInterfaceProfileRead(d *schema.ResourceData, m interface{
 	l3extRsPathL3OutAttData, err := aciClient.ReadRelationl3extRsPathL3OutAttFromLogicalInterfaceProfile(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation l3extRsPathL3OutAtt %v", err)
+		d.Set("relation_l3ext_rs_path_l3_out_att", make([]string, 0, 1))
 
 	} else {
 		d.Set("relation_l3ext_rs_path_l3_out_att", l3extRsPathL3OutAttData)
@@ -478,6 +565,7 @@ func resourceAciLogicalInterfaceProfileRead(d *schema.ResourceData, m interface{
 	l3extRsEgressQosDppPolData, err := aciClient.ReadRelationl3extRsEgressQosDppPolFromLogicalInterfaceProfile(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation l3extRsEgressQosDppPol %v", err)
+		d.Set("relation_l3ext_rs_egress_qos_dpp_pol", "")
 
 	} else {
 		if _, ok := d.GetOk("relation_l3ext_rs_egress_qos_dpp_pol"); ok {
@@ -491,6 +579,7 @@ func resourceAciLogicalInterfaceProfileRead(d *schema.ResourceData, m interface{
 	l3extRsIngressQosDppPolData, err := aciClient.ReadRelationl3extRsIngressQosDppPolFromLogicalInterfaceProfile(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation l3extRsIngressQosDppPol %v", err)
+		d.Set("relation_l3ext_rs_ingress_qos_dpp_pol", "")
 
 	} else {
 		if _, ok := d.GetOk("relation_l3ext_rs_ingress_qos_dpp_pol"); ok {
@@ -504,6 +593,7 @@ func resourceAciLogicalInterfaceProfileRead(d *schema.ResourceData, m interface{
 	l3extRsLIfPCustQosPolData, err := aciClient.ReadRelationl3extRsLIfPCustQosPolFromLogicalInterfaceProfile(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation l3extRsLIfPCustQosPol %v", err)
+		d.Set("relation_l3ext_rs_l_if_p_cust_qos_pol", "")
 
 	} else {
 		if _, ok := d.GetOk("relation_l3ext_rs_l_if_p_cust_qos_pol"); ok {
@@ -517,6 +607,7 @@ func resourceAciLogicalInterfaceProfileRead(d *schema.ResourceData, m interface{
 	l3extRsArpIfPolData, err := aciClient.ReadRelationl3extRsArpIfPolFromLogicalInterfaceProfile(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation l3extRsArpIfPol %v", err)
+		d.Set("relation_l3ext_rs_arp_if_pol", "")
 
 	} else {
 		if _, ok := d.GetOk("relation_l3ext_rs_arp_if_pol"); ok {
@@ -530,6 +621,7 @@ func resourceAciLogicalInterfaceProfileRead(d *schema.ResourceData, m interface{
 	l3extRsNdIfPolData, err := aciClient.ReadRelationl3extRsNdIfPolFromLogicalInterfaceProfile(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation l3extRsNdIfPol %v", err)
+		d.Set("relation_l3ext_rs_nd_if_pol", "")
 
 	} else {
 		if _, ok := d.GetOk("relation_l3ext_rs_nd_if_pol"); ok {

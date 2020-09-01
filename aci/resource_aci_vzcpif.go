@@ -127,6 +127,20 @@ func resourceAciImportedContractCreate(d *schema.ResourceData, m interface{}) er
 
 	d.Partial(false)
 
+	checkDns := make([]string, 0, 1)
+
+	if relationTovzRsIf, ok := d.GetOk("relation_vz_rs_if"); ok {
+		relationParam := relationTovzRsIf.(string)
+		checkDns = append(checkDns, relationParam)
+	}
+
+	d.Partial(true)
+	err = checkTDn(aciClient, checkDns)
+	if err != nil {
+		return err
+	}
+	d.Partial(false)
+
 	if relationTovzRsIf, ok := d.GetOk("relation_vz_rs_if"); ok {
 		relationParam := relationTovzRsIf.(string)
 		relationParamName := GetMOName(relationParam)
@@ -180,6 +194,20 @@ func resourceAciImportedContractUpdate(d *schema.ResourceData, m interface{}) er
 
 	d.Partial(false)
 
+	checkDns := make([]string, 0, 1)
+
+	if d.HasChange("relation_vz_rs_if") {
+		_, newRelParam := d.GetChange("relation_vz_rs_if")
+		checkDns = append(checkDns, newRelParam.(string))
+	}
+
+	d.Partial(true)
+	err = checkTDn(aciClient, checkDns)
+	if err != nil {
+		return err
+	}
+	d.Partial(false)
+
 	if d.HasChange("relation_vz_rs_if") {
 		_, newRelParam := d.GetChange("relation_vz_rs_if")
 		newRelParamName := GetMOName(newRelParam.(string))
@@ -221,6 +249,7 @@ func resourceAciImportedContractRead(d *schema.ResourceData, m interface{}) erro
 	vzRsIfData, err := aciClient.ReadRelationvzRsIfFromImportedContract(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation vzRsIf %v", err)
+		d.Set("relation_vz_rs_if", "")
 
 	} else {
 		if _, ok := d.GetOk("relation_vz_rs_if"); ok {

@@ -137,6 +137,20 @@ func resourceAciPODMaintenanceGroupCreate(d *schema.ResourceData, m interface{})
 
 	d.Partial(false)
 
+	checkDns := make([]string, 0, 1)
+
+	if relationTomaintRsMgrpp, ok := d.GetOk("relation_maint_rs_mgrpp"); ok {
+		relationParam := relationTomaintRsMgrpp.(string)
+		checkDns = append(checkDns, relationParam)
+	}
+
+	d.Partial(true)
+	err = checkTDn(aciClient, checkDns)
+	if err != nil {
+		return err
+	}
+	d.Partial(false)
+
 	if relationTomaintRsMgrpp, ok := d.GetOk("relation_maint_rs_mgrpp"); ok {
 		relationParam := relationTomaintRsMgrpp.(string)
 		relationParamName := GetMOName(relationParam)
@@ -194,6 +208,20 @@ func resourceAciPODMaintenanceGroupUpdate(d *schema.ResourceData, m interface{})
 
 	d.Partial(false)
 
+	checkDns := make([]string, 0, 1)
+
+	if d.HasChange("relation_maint_rs_mgrpp") {
+		_, newRelParam := d.GetChange("relation_maint_rs_mgrpp")
+		checkDns = append(checkDns, newRelParam.(string))
+	}
+
+	d.Partial(true)
+	err = checkTDn(aciClient, checkDns)
+	if err != nil {
+		return err
+	}
+	d.Partial(false)
+
 	if d.HasChange("relation_maint_rs_mgrpp") {
 		_, newRelParam := d.GetChange("relation_maint_rs_mgrpp")
 		newRelParamName := GetMOName(newRelParam.(string))
@@ -231,6 +259,7 @@ func resourceAciPODMaintenanceGroupRead(d *schema.ResourceData, m interface{}) e
 	maintRsMgrppData, err := aciClient.ReadRelationmaintRsMgrppFromPODMaintenanceGroup(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation maintRsMgrpp %v", err)
+		d.Set("relation_maint_rs_mgrpp", "")
 
 	} else {
 		if _, ok := d.GetOk("relation_maint_rs_mgrpp"); ok {

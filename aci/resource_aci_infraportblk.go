@@ -169,6 +169,20 @@ func resourceAciAccessPortBlockCreate(d *schema.ResourceData, m interface{}) err
 
 	d.Partial(false)
 
+	checkDns := make([]string, 0, 1)
+
+	if relationToinfraRsAccBndlSubgrp, ok := d.GetOk("relation_infra_rs_acc_bndl_subgrp"); ok {
+		relationParam := relationToinfraRsAccBndlSubgrp.(string)
+		checkDns = append(checkDns, relationParam)
+	}
+
+	d.Partial(true)
+	err = checkTDn(aciClient, checkDns)
+	if err != nil {
+		return err
+	}
+	d.Partial(false)
+
 	if relationToinfraRsAccBndlSubgrp, ok := d.GetOk("relation_infra_rs_acc_bndl_subgrp"); ok {
 		relationParam := relationToinfraRsAccBndlSubgrp.(string)
 		relationParamName := GetMOName(relationParam)
@@ -234,6 +248,20 @@ func resourceAciAccessPortBlockUpdate(d *schema.ResourceData, m interface{}) err
 
 	d.Partial(false)
 
+	checkDns := make([]string, 0, 1)
+
+	if d.HasChange("relation_infra_rs_acc_bndl_subgrp") {
+		_, newRelParam := d.GetChange("relation_infra_rs_acc_bndl_subgrp")
+		checkDns = append(checkDns, newRelParam.(string))
+	}
+
+	d.Partial(true)
+	err = checkTDn(aciClient, checkDns)
+	if err != nil {
+		return err
+	}
+	d.Partial(false)
+
 	if d.HasChange("relation_infra_rs_acc_bndl_subgrp") {
 		_, newRelParam := d.GetChange("relation_infra_rs_acc_bndl_subgrp")
 		newRelParamName := GetMOName(newRelParam.(string))
@@ -275,6 +303,7 @@ func resourceAciAccessPortBlockRead(d *schema.ResourceData, m interface{}) error
 	infraRsAccBndlSubgrpData, err := aciClient.ReadRelationinfraRsAccBndlSubgrpFromAccessPortBlock(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation infraRsAccBndlSubgrp %v", err)
+		d.Set("relation_infra_rs_acc_bndl_subgrp", "")
 
 	} else {
 		if _, ok := d.GetOk("relation_infra_rs_acc_bndl_subgrp"); ok {

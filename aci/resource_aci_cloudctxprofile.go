@@ -168,6 +168,27 @@ func resourceAciCloudContextProfileCreate(d *schema.ResourceData, m interface{})
 
 	cloudCtxProfile := models.NewCloudContextProfile(fmt.Sprintf("ctxprofile-%s", name), TenantDn, desc, cloudCtxProfileAttr)
 
+	checkDns := make([]string, 0, 1)
+
+	if tempVar, ok := d.GetOk("relation_cloud_rs_to_ctx"); ok {
+		checkDns = append(checkDns, tempVar.(string))
+	}
+
+	if relationTocloudRsCtxToFlowLog, ok := d.GetOk("relation_cloud_rs_ctx_to_flow_log"); ok {
+		checkDns = append(checkDns, relationTocloudRsCtxToFlowLog.(string))
+	}
+
+	if relationTocloudRsCtxProfileToRegion, ok := d.GetOk("relation_cloud_rs_ctx_profile_to_region"); ok {
+		checkDns = append(checkDns, relationTocloudRsCtxProfileToRegion.(string))
+	}
+
+	d.Partial(true)
+	err := checkTDn(aciClient, checkDns)
+	if err != nil {
+		return err
+	}
+	d.Partial(false)
+
 	var cloudRsCtx string
 	if tempVar, ok := d.GetOk("relation_cloud_rs_to_ctx"); ok {
 		cloudRsCtx = tempVar.(string)
@@ -175,7 +196,7 @@ func resourceAciCloudContextProfileCreate(d *schema.ResourceData, m interface{})
 	} else {
 		cloudRsCtx = ""
 	}
-	cloudCtxProfile, err := aciClient.CreateCloudContextProfile(name, TenantDn, desc, cloudCtxProfileAttr, PrimaryCIDR, Region, vendor, cloudRsCtx)
+	cloudCtxProfile, err = aciClient.CreateCloudContextProfile(name, TenantDn, desc, cloudCtxProfileAttr, PrimaryCIDR, Region, vendor, cloudRsCtx)
 	//err := aciClient.Save(cloudCtxProfile)
 	if err != nil {
 		return err
@@ -232,6 +253,29 @@ func resourceAciCloudContextProfileUpdate(d *schema.ResourceData, m interface{})
 
 	vendor := d.Get("cloud_vendor").(string)
 
+	checkDns := make([]string, 0, 1)
+
+	if tempVar, ok := d.GetOk("relation_cloud_rs_to_ctx"); ok {
+		checkDns = append(checkDns, tempVar.(string))
+	}
+
+	if d.HasChange("relation_cloud_rs_ctx_to_flow_log") {
+		_, newRelParam := d.GetChange("relation_cloud_rs_ctx_to_flow_log")
+		checkDns = append(checkDns, newRelParam.(string))
+	}
+
+	if d.HasChange("relation_cloud_rs_ctx_profile_to_region") {
+		_, newRelParam := d.GetChange("relation_cloud_rs_ctx_profile_to_region")
+		checkDns = append(checkDns, newRelParam.(string))
+	}
+
+	d.Partial(true)
+	err := checkTDn(aciClient, checkDns)
+	if err != nil {
+		return err
+	}
+	d.Partial(false)
+
 	var cloudRsCtx string
 	if tempVar, ok := d.GetOk("relation_cloud_rs_to_ctx"); ok {
 		cloudRsCtx = tempVar.(string)
@@ -240,7 +284,7 @@ func resourceAciCloudContextProfileUpdate(d *schema.ResourceData, m interface{})
 		cloudRsCtx = ""
 	}
 
-	cloudCtxProfile, err := aciClient.UpdateCloudContextProfile(name, TenantDn, desc, cloudCtxProfileAttr, PrimaryCIDR, Region, vendor, cloudRsCtx)
+	cloudCtxProfile, err = aciClient.UpdateCloudContextProfile(name, TenantDn, desc, cloudCtxProfileAttr, PrimaryCIDR, Region, vendor, cloudRsCtx)
 	//err := aciClient.Save(cloudCtxProfile)
 
 	if err != nil {

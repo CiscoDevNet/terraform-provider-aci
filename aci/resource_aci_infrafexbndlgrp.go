@@ -134,6 +134,27 @@ func resourceAciFexBundleGroupCreate(d *schema.ResourceData, m interface{}) erro
 
 	d.Partial(false)
 
+	checkDns := make([]string, 0, 1)
+
+	if relationToinfraRsMonFexInfraPol, ok := d.GetOk("relation_infra_rs_mon_fex_infra_pol"); ok {
+		relationParam := relationToinfraRsMonFexInfraPol.(string)
+		checkDns = append(checkDns, relationParam)
+	}
+
+	if relationToinfraRsFexBndlGrpToAggrIf, ok := d.GetOk("relation_infra_rs_fex_bndl_grp_to_aggr_if"); ok {
+		relationParamList := toStringList(relationToinfraRsFexBndlGrpToAggrIf.(*schema.Set).List())
+		for _, relationParam := range relationParamList {
+			checkDns = append(checkDns, relationParam)
+		}
+	}
+
+	d.Partial(true)
+	err = checkTDn(aciClient, checkDns)
+	if err != nil {
+		return err
+	}
+	d.Partial(false)
+
 	if relationToinfraRsMonFexInfraPol, ok := d.GetOk("relation_infra_rs_mon_fex_infra_pol"); ok {
 		relationParam := relationToinfraRsMonFexInfraPol.(string)
 		relationParamName := GetMOName(relationParam)
@@ -200,6 +221,31 @@ func resourceAciFexBundleGroupUpdate(d *schema.ResourceData, m interface{}) erro
 
 	d.Partial(false)
 
+	checkDns := make([]string, 0, 1)
+
+	if d.HasChange("relation_infra_rs_mon_fex_infra_pol") {
+		_, newRelParam := d.GetChange("relation_infra_rs_mon_fex_infra_pol")
+		checkDns = append(checkDns, newRelParam.(string))
+	}
+
+	if d.HasChange("relation_infra_rs_fex_bndl_grp_to_aggr_if") {
+		oldRel, newRel := d.GetChange("relation_infra_rs_fex_bndl_grp_to_aggr_if")
+		oldRelSet := oldRel.(*schema.Set)
+		newRelSet := newRel.(*schema.Set)
+		relToCreate := toStringList(newRelSet.Difference(oldRelSet).List())
+
+		for _, relDn := range relToCreate {
+			checkDns = append(checkDns, relDn)
+		}
+	}
+
+	d.Partial(true)
+	err = checkTDn(aciClient, checkDns)
+	if err != nil {
+		return err
+	}
+	d.Partial(false)
+
 	if d.HasChange("relation_infra_rs_mon_fex_infra_pol") {
 		_, newRelParam := d.GetChange("relation_infra_rs_mon_fex_infra_pol")
 		newRelParamName := GetMOName(newRelParam.(string))
@@ -255,6 +301,7 @@ func resourceAciFexBundleGroupRead(d *schema.ResourceData, m interface{}) error 
 	infraRsMonFexInfraPolData, err := aciClient.ReadRelationinfraRsMonFexInfraPolFromFexBundleGroup(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation infraRsMonFexInfraPol %v", err)
+		d.Set("relation_infra_rs_mon_fex_infra_pol", "")
 
 	} else {
 		paramName := GetMOName(d.Get("relation_infra_rs_mon_fex_infra_pol").(string))
@@ -266,6 +313,7 @@ func resourceAciFexBundleGroupRead(d *schema.ResourceData, m interface{}) error 
 	infraRsFexBndlGrpToAggrIfData, err := aciClient.ReadRelationinfraRsFexBndlGrpToAggrIfFromFexBundleGroup(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation infraRsFexBndlGrpToAggrIf %v", err)
+		d.Set("relation_infra_rs_fex_bndl_grp_to_aggr_if", make([]string, 0, 1))
 
 	} else {
 		d.Set("relation_infra_rs_fex_bndl_grp_to_aggr_if", infraRsFexBndlGrpToAggrIfData)

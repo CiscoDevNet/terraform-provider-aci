@@ -207,6 +207,30 @@ func resourceAciMaintenancePolicyCreate(d *schema.ResourceData, m interface{}) e
 
 	d.Partial(false)
 
+	checkDns := make([]string, 0, 1)
+
+	if relationTomaintRsPolScheduler, ok := d.GetOk("relation_maint_rs_pol_scheduler"); ok {
+		relationParam := relationTomaintRsPolScheduler.(string)
+		checkDns = append(checkDns, relationParam)
+	}
+
+	if relationTomaintRsPolNotif, ok := d.GetOk("relation_maint_rs_pol_notif"); ok {
+		relationParam := relationTomaintRsPolNotif.(string)
+		checkDns = append(checkDns, relationParam)
+	}
+
+	if relationTotrigRsTriggerable, ok := d.GetOk("relation_trig_rs_triggerable"); ok {
+		relationParam := relationTotrigRsTriggerable.(string)
+		checkDns = append(checkDns, relationParam)
+	}
+
+	d.Partial(true)
+	err = checkTDn(aciClient, checkDns)
+	if err != nil {
+		return err
+	}
+	d.Partial(false)
+
 	if relationTomaintRsPolScheduler, ok := d.GetOk("relation_maint_rs_pol_scheduler"); ok {
 		relationParam := relationTomaintRsPolScheduler.(string)
 		relationParamName := GetMOName(relationParam)
@@ -304,6 +328,30 @@ func resourceAciMaintenancePolicyUpdate(d *schema.ResourceData, m interface{}) e
 
 	d.Partial(false)
 
+	checkDns := make([]string, 0, 1)
+
+	if d.HasChange("relation_maint_rs_pol_scheduler") {
+		_, newRelParam := d.GetChange("relation_maint_rs_pol_scheduler")
+		checkDns = append(checkDns, newRelParam.(string))
+	}
+
+	if d.HasChange("relation_maint_rs_pol_notif") {
+		_, newRelParam := d.GetChange("relation_maint_rs_pol_notif")
+		checkDns = append(checkDns, newRelParam.(string))
+	}
+
+	if d.HasChange("relation_trig_rs_triggerable") {
+		_, newRelParam := d.GetChange("relation_trig_rs_triggerable")
+		checkDns = append(checkDns, newRelParam.(string))
+	}
+
+	d.Partial(true)
+	err = checkTDn(aciClient, checkDns)
+	if err != nil {
+		return err
+	}
+	d.Partial(false)
+
 	if d.HasChange("relation_maint_rs_pol_scheduler") {
 		_, newRelParam := d.GetChange("relation_maint_rs_pol_scheduler")
 		newRelParamName := GetMOName(newRelParam.(string))
@@ -367,6 +415,7 @@ func resourceAciMaintenancePolicyRead(d *schema.ResourceData, m interface{}) err
 	maintRsPolSchedulerData, err := aciClient.ReadRelationmaintRsPolSchedulerFromMaintenancePolicy(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation maintRsPolScheduler %v", err)
+		d.Set("relation_maint_rs_pol_scheduler", "")
 
 	} else {
 		if _, ok := d.GetOk("relation_maint_rs_pol_scheduler"); ok {
@@ -380,6 +429,7 @@ func resourceAciMaintenancePolicyRead(d *schema.ResourceData, m interface{}) err
 	maintRsPolNotifData, err := aciClient.ReadRelationmaintRsPolNotifFromMaintenancePolicy(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation maintRsPolNotif %v", err)
+		d.Set("relation_maint_rs_pol_notif", "")
 
 	} else {
 		if _, ok := d.GetOk("relation_maint_rs_pol_notif"); ok {
@@ -393,6 +443,7 @@ func resourceAciMaintenancePolicyRead(d *schema.ResourceData, m interface{}) err
 	trigRsTriggerableData, err := aciClient.ReadRelationtrigRsTriggerableFromMaintenancePolicy(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation trigRsTriggerable %v", err)
+		d.Set("relation_trig_rs_triggerable", "")
 
 	} else {
 		if _, ok := d.GetOk("relation_trig_rs_triggerable"); ok {

@@ -218,6 +218,20 @@ func resourceAciServiceRedirectPolicyCreate(d *schema.ResourceData, m interface{
 
 	d.Partial(false)
 
+	checkDns := make([]string, 0, 1)
+
+	if relationTovnsRsIPSLAMonitoringPol, ok := d.GetOk("relation_vns_rs_ipsla_monitoring_pol"); ok {
+		relationParam := relationTovnsRsIPSLAMonitoringPol.(string)
+		checkDns = append(checkDns, relationParam)
+	}
+
+	d.Partial(true)
+	err = checkTDn(aciClient, checkDns)
+	if err != nil {
+		return err
+	}
+	d.Partial(false)
+
 	if relationTovnsRsIPSLAMonitoringPol, ok := d.GetOk("relation_vns_rs_ipsla_monitoring_pol"); ok {
 		relationParam := relationTovnsRsIPSLAMonitoringPol.(string)
 		err = aciClient.CreateRelationvnsRsIPSLAMonitoringPolFromServiceRedirectPolicy(vnsSvcRedirectPol.DistinguishedName, relationParam)
@@ -297,6 +311,20 @@ func resourceAciServiceRedirectPolicyUpdate(d *schema.ResourceData, m interface{
 
 	d.Partial(false)
 
+	checkDns := make([]string, 0, 1)
+
+	if d.HasChange("relation_vns_rs_ipsla_monitoring_pol") {
+		_, newRelParam := d.GetChange("relation_vns_rs_ipsla_monitoring_pol")
+		checkDns = append(checkDns, newRelParam.(string))
+	}
+
+	d.Partial(true)
+	err = checkTDn(aciClient, checkDns)
+	if err != nil {
+		return err
+	}
+	d.Partial(false)
+
 	if d.HasChange("relation_vns_rs_ipsla_monitoring_pol") {
 		_, newRelParam := d.GetChange("relation_vns_rs_ipsla_monitoring_pol")
 		err = aciClient.DeleteRelationvnsRsIPSLAMonitoringPolFromServiceRedirectPolicy(vnsSvcRedirectPol.DistinguishedName)
@@ -337,6 +365,7 @@ func resourceAciServiceRedirectPolicyRead(d *schema.ResourceData, m interface{})
 	vnsRsIPSLAMonitoringPolData, err := aciClient.ReadRelationvnsRsIPSLAMonitoringPolFromServiceRedirectPolicy(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation vnsRsIPSLAMonitoringPol %v", err)
+		d.Set("relation_vns_rs_ipsla_monitoring_pol", "")
 
 	} else {
 		d.Set("relation_vns_rs_ipsla_monitoring_pol", vnsRsIPSLAMonitoringPolData)

@@ -192,6 +192,35 @@ func resourceAciConfigurationExportPolicyCreate(d *schema.ResourceData, m interf
 
 	d.Partial(false)
 
+	checkDns := make([]string, 0, 1)
+
+	if relationToconfigRsExportDestination, ok := d.GetOk("relation_config_rs_export_destination"); ok {
+		relationParam := relationToconfigRsExportDestination.(string)
+		checkDns = append(checkDns, relationParam)
+	}
+
+	if relationTotrigRsTriggerable, ok := d.GetOk("relation_trig_rs_triggerable"); ok {
+		relationParam := relationTotrigRsTriggerable.(string)
+		checkDns = append(checkDns, relationParam)
+	}
+
+	if relationToconfigRsRemotePath, ok := d.GetOk("relation_config_rs_remote_path"); ok {
+		relationParam := relationToconfigRsRemotePath.(string)
+		checkDns = append(checkDns, relationParam)
+	}
+
+	if relationToconfigRsExportScheduler, ok := d.GetOk("relation_config_rs_export_scheduler"); ok {
+		relationParam := relationToconfigRsExportScheduler.(string)
+		checkDns = append(checkDns, relationParam)
+	}
+
+	d.Partial(true)
+	err = checkTDn(aciClient, checkDns)
+	if err != nil {
+		return err
+	}
+	d.Partial(false)
+
 	if relationToconfigRsExportDestination, ok := d.GetOk("relation_config_rs_export_destination"); ok {
 		relationParam := relationToconfigRsExportDestination.(string)
 		relationParamName := GetMOName(relationParam)
@@ -296,6 +325,35 @@ func resourceAciConfigurationExportPolicyUpdate(d *schema.ResourceData, m interf
 
 	d.Partial(false)
 
+	checkDns := make([]string, 0, 1)
+
+	if d.HasChange("relation_config_rs_export_destination") {
+		_, newRelParam := d.GetChange("relation_config_rs_export_destination")
+		checkDns = append(checkDns, newRelParam.(string))
+	}
+
+	if d.HasChange("relation_trig_rs_triggerable") {
+		_, newRelParam := d.GetChange("relation_trig_rs_triggerable")
+		checkDns = append(checkDns, newRelParam.(string))
+	}
+
+	if d.HasChange("relation_config_rs_remote_path") {
+		_, newRelParam := d.GetChange("relation_config_rs_remote_path")
+		checkDns = append(checkDns, newRelParam.(string))
+	}
+
+	if d.HasChange("relation_config_rs_export_scheduler") {
+		_, newRelParam := d.GetChange("relation_config_rs_export_scheduler")
+		checkDns = append(checkDns, newRelParam.(string))
+	}
+
+	d.Partial(true)
+	err = checkTDn(aciClient, checkDns)
+	if err != nil {
+		return err
+	}
+	d.Partial(false)
+
 	if d.HasChange("relation_config_rs_export_destination") {
 		_, newRelParam := d.GetChange("relation_config_rs_export_destination")
 		newRelParamName := GetMOName(newRelParam.(string))
@@ -380,6 +438,7 @@ func resourceAciConfigurationExportPolicyRead(d *schema.ResourceData, m interfac
 	configRsExportDestinationData, err := aciClient.ReadRelationconfigRsExportDestinationFromConfigurationExportPolicy(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation configRsExportDestination %v", err)
+		d.Set("relation_config_rs_export_destination", "")
 
 	} else {
 		if _, ok := d.GetOk("relation_config_rs_export_destination"); ok {
@@ -393,6 +452,7 @@ func resourceAciConfigurationExportPolicyRead(d *schema.ResourceData, m interfac
 	trigRsTriggerableData, err := aciClient.ReadRelationtrigRsTriggerableFromConfigurationExportPolicy(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation trigRsTriggerable %v", err)
+		d.Set("relation_trig_rs_triggerable", "")
 
 	} else {
 		if _, ok := d.GetOk("relation_trig_rs_triggerable"); ok {
@@ -406,6 +466,7 @@ func resourceAciConfigurationExportPolicyRead(d *schema.ResourceData, m interfac
 	configRsRemotePathData, err := aciClient.ReadRelationconfigRsRemotePathFromConfigurationExportPolicy(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation configRsRemotePath %v", err)
+		d.Set("relation_config_rs_remote_path", "")
 
 	} else {
 		if _, ok := d.GetOk("relation_config_rs_remote_path"); ok {
@@ -419,6 +480,7 @@ func resourceAciConfigurationExportPolicyRead(d *schema.ResourceData, m interfac
 	configRsExportSchedulerData, err := aciClient.ReadRelationconfigRsExportSchedulerFromConfigurationExportPolicy(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation configRsExportScheduler %v", err)
+		d.Set("relation_config_rs_export_scheduler", "")
 
 	} else {
 		if _, ok := d.GetOk("relation_config_rs_export_scheduler"); ok {

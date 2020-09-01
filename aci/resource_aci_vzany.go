@@ -150,6 +150,36 @@ func resourceAciAnyCreate(d *schema.ResourceData, m interface{}) error {
 	d.Partial(true)
 	d.Partial(false)
 
+	checkDns := make([]string, 0, 1)
+
+	if relationTovzRsAnyToCons, ok := d.GetOk("relation_vz_rs_any_to_cons"); ok {
+		relationParamList := toStringList(relationTovzRsAnyToCons.(*schema.Set).List())
+		for _, relationParam := range relationParamList {
+			checkDns = append(checkDns, relationParam)
+		}
+	}
+
+	if relationTovzRsAnyToConsIf, ok := d.GetOk("relation_vz_rs_any_to_cons_if"); ok {
+		relationParamList := toStringList(relationTovzRsAnyToConsIf.(*schema.Set).List())
+		for _, relationParam := range relationParamList {
+			checkDns = append(checkDns, relationParam)
+		}
+	}
+
+	if relationTovzRsAnyToProv, ok := d.GetOk("relation_vz_rs_any_to_prov"); ok {
+		relationParamList := toStringList(relationTovzRsAnyToProv.(*schema.Set).List())
+		for _, relationParam := range relationParamList {
+			checkDns = append(checkDns, relationParam)
+		}
+	}
+
+	d.Partial(true)
+	err = checkTDn(aciClient, checkDns)
+	if err != nil {
+		return err
+	}
+	d.Partial(false)
+
 	if relationTovzRsAnyToCons, ok := d.GetOk("relation_vz_rs_any_to_cons"); ok {
 		relationParamList := toStringList(relationTovzRsAnyToCons.(*schema.Set).List())
 		for _, relationParam := range relationParamList {
@@ -232,6 +262,48 @@ func resourceAciAnyUpdate(d *schema.ResourceData, m interface{}) error {
 		return err
 	}
 	d.Partial(true)
+	d.Partial(false)
+
+	checkDns := make([]string, 0, 1)
+
+	if d.HasChange("relation_vz_rs_any_to_cons") {
+		oldRel, newRel := d.GetChange("relation_vz_rs_any_to_cons")
+		oldRelSet := oldRel.(*schema.Set)
+		newRelSet := newRel.(*schema.Set)
+		relToCreate := toStringList(newRelSet.Difference(oldRelSet).List())
+
+		for _, relDn := range relToCreate {
+			checkDns = append(checkDns, relDn)
+		}
+	}
+
+	if d.HasChange("relation_vz_rs_any_to_cons_if") {
+		oldRel, newRel := d.GetChange("relation_vz_rs_any_to_cons_if")
+		oldRelSet := oldRel.(*schema.Set)
+		newRelSet := newRel.(*schema.Set)
+		relToCreate := toStringList(newRelSet.Difference(oldRelSet).List())
+
+		for _, relDn := range relToCreate {
+			checkDns = append(checkDns, relDn)
+		}
+	}
+
+	if d.HasChange("relation_vz_rs_any_to_prov") {
+		oldRel, newRel := d.GetChange("relation_vz_rs_any_to_prov")
+		oldRelSet := oldRel.(*schema.Set)
+		newRelSet := newRel.(*schema.Set)
+		relToCreate := toStringList(newRelSet.Difference(oldRelSet).List())
+
+		for _, relDn := range relToCreate {
+			checkDns = append(checkDns, relDn)
+		}
+	}
+
+	d.Partial(true)
+	err = checkTDn(aciClient, checkDns)
+	if err != nil {
+		return err
+	}
 	d.Partial(false)
 
 	if d.HasChange("relation_vz_rs_any_to_cons") {
@@ -346,6 +418,7 @@ func resourceAciAnyRead(d *schema.ResourceData, m interface{}) error {
 	vzRsAnyToConsData, err := aciClient.ReadRelationvzRsAnyToConsFromAny(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation vzRsAnyToCons %v", err)
+		d.Set("relation_vz_rs_any_to_cons", make([]string, 0, 1))
 
 	} else {
 		if _, ok := d.GetOk("relation_vz_rs_any_to_cons"); ok {
@@ -368,6 +441,7 @@ func resourceAciAnyRead(d *schema.ResourceData, m interface{}) error {
 	vzRsAnyToConsIfData, err := aciClient.ReadRelationvzRsAnyToConsIfFromAny(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation vzRsAnyToConsIf %v", err)
+		d.Set("relation_vz_rs_any_to_cons_if", make([]string, 0, 1))
 
 	} else {
 		if _, ok := d.GetOk("relation_vz_rs_any_to_cons_if"); ok {
@@ -390,6 +464,7 @@ func resourceAciAnyRead(d *schema.ResourceData, m interface{}) error {
 	vzRsAnyToProvData, err := aciClient.ReadRelationvzRsAnyToProvFromAny(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation vzRsAnyToProv %v", err)
+		d.Set("relation_vz_rs_any_to_prov", make([]string, 0, 1))
 
 	} else {
 		if _, ok := d.GetOk("relation_vz_rs_any_to_prov"); ok {

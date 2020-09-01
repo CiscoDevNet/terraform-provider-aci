@@ -124,6 +124,29 @@ func resourceAciLeafProfileCreate(d *schema.ResourceData, m interface{}) error {
 
 	d.Partial(false)
 
+	checkDns := make([]string, 0, 1)
+
+	if relationToinfraRsAccCardP, ok := d.GetOk("relation_infra_rs_acc_card_p"); ok {
+		relationParamList := toStringList(relationToinfraRsAccCardP.(*schema.Set).List())
+		for _, relationParam := range relationParamList {
+			checkDns = append(checkDns, relationParam)
+		}
+	}
+
+	if relationToinfraRsAccPortP, ok := d.GetOk("relation_infra_rs_acc_port_p"); ok {
+		relationParamList := toStringList(relationToinfraRsAccPortP.(*schema.Set).List())
+		for _, relationParam := range relationParamList {
+			checkDns = append(checkDns, relationParam)
+		}
+	}
+
+	d.Partial(true)
+	err = checkTDn(aciClient, checkDns)
+	if err != nil {
+		return err
+	}
+	d.Partial(false)
+
 	if relationToinfraRsAccCardP, ok := d.GetOk("relation_infra_rs_acc_card_p"); ok {
 		relationParamList := toStringList(relationToinfraRsAccCardP.(*schema.Set).List())
 		for _, relationParam := range relationParamList {
@@ -187,6 +210,37 @@ func resourceAciLeafProfileUpdate(d *schema.ResourceData, m interface{}) error {
 
 	d.SetPartial("name")
 
+	d.Partial(false)
+
+	checkDns := make([]string, 0, 1)
+
+	if d.HasChange("relation_infra_rs_acc_card_p") {
+		oldRel, newRel := d.GetChange("relation_infra_rs_acc_card_p")
+		oldRelSet := oldRel.(*schema.Set)
+		newRelSet := newRel.(*schema.Set)
+		relToCreate := toStringList(newRelSet.Difference(oldRelSet).List())
+
+		for _, relDn := range relToCreate {
+			checkDns = append(checkDns, relDn)
+		}
+	}
+
+	if d.HasChange("relation_infra_rs_acc_port_p") {
+		oldRel, newRel := d.GetChange("relation_infra_rs_acc_port_p")
+		oldRelSet := oldRel.(*schema.Set)
+		newRelSet := newRel.(*schema.Set)
+		relToCreate := toStringList(newRelSet.Difference(oldRelSet).List())
+
+		for _, relDn := range relToCreate {
+			checkDns = append(checkDns, relDn)
+		}
+	}
+
+	d.Partial(true)
+	err = checkTDn(aciClient, checkDns)
+	if err != nil {
+		return err
+	}
 	d.Partial(false)
 
 	if d.HasChange("relation_infra_rs_acc_card_p") {
@@ -268,6 +322,7 @@ func resourceAciLeafProfileRead(d *schema.ResourceData, m interface{}) error {
 	infraRsAccCardPData, err := aciClient.ReadRelationinfraRsAccCardPFromLeafProfile(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation infraRsAccCardP %v", err)
+		d.Set("relation_infra_rs_acc_card_p", make([]string, 0, 1))
 
 	} else {
 		d.Set("relation_infra_rs_acc_card_p", infraRsAccCardPData)
@@ -276,6 +331,7 @@ func resourceAciLeafProfileRead(d *schema.ResourceData, m interface{}) error {
 	infraRsAccPortPData, err := aciClient.ReadRelationinfraRsAccPortPFromLeafProfile(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation infraRsAccPortP %v", err)
+		d.Set("relation_infra_rs_acc_port_p", make([]string, 0, 1))
 
 	} else {
 		d.Set("relation_infra_rs_acc_port_p", infraRsAccPortPData)

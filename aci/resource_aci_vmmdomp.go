@@ -344,6 +344,75 @@ func resourceAciVMMDomainCreate(d *schema.ResourceData, m interface{}) error {
 
 	d.Partial(false)
 
+	checkDns := make([]string, 0, 1)
+
+	if relationTovmmRsPrefEnhancedLagPol, ok := d.GetOk("relation_vmm_rs_pref_enhanced_lag_pol"); ok {
+		relationParam := relationTovmmRsPrefEnhancedLagPol.(string)
+		checkDns = append(checkDns, relationParam)
+	}
+
+	if relationToinfraRsVlanNs, ok := d.GetOk("relation_infra_rs_vlan_ns"); ok {
+		relationParam := relationToinfraRsVlanNs.(string)
+		checkDns = append(checkDns, relationParam)
+	}
+
+	if relationTovmmRsDomMcastAddrNs, ok := d.GetOk("relation_vmm_rs_dom_mcast_addr_ns"); ok {
+		relationParam := relationTovmmRsDomMcastAddrNs.(string)
+		checkDns = append(checkDns, relationParam)
+	}
+
+	if relationTovmmRsDefaultCdpIfPol, ok := d.GetOk("relation_vmm_rs_default_cdp_if_pol"); ok {
+		relationParam := relationTovmmRsDefaultCdpIfPol.(string)
+		checkDns = append(checkDns, relationParam)
+	}
+
+	if relationTovmmRsDefaultLacpLagPol, ok := d.GetOk("relation_vmm_rs_default_lacp_lag_pol"); ok {
+		relationParam := relationTovmmRsDefaultLacpLagPol.(string)
+		checkDns = append(checkDns, relationParam)
+	}
+
+	if relationToinfraRsVlanNsDef, ok := d.GetOk("relation_infra_rs_vlan_ns_def"); ok {
+		relationParam := relationToinfraRsVlanNsDef.(string)
+		checkDns = append(checkDns, relationParam)
+	}
+
+	if relationToinfraRsVipAddrNs, ok := d.GetOk("relation_infra_rs_vip_addr_ns"); ok {
+		relationParam := relationToinfraRsVipAddrNs.(string)
+		checkDns = append(checkDns, relationParam)
+	}
+
+	if relationTovmmRsDefaultLldpIfPol, ok := d.GetOk("relation_vmm_rs_default_lldp_if_pol"); ok {
+		relationParam := relationTovmmRsDefaultLldpIfPol.(string)
+		checkDns = append(checkDns, relationParam)
+	}
+
+	if relationTovmmRsDefaultStpIfPol, ok := d.GetOk("relation_vmm_rs_default_stp_if_pol"); ok {
+		relationParam := relationTovmmRsDefaultStpIfPol.(string)
+		checkDns = append(checkDns, relationParam)
+	}
+
+	if relationToinfraRsDomVxlanNsDef, ok := d.GetOk("relation_infra_rs_dom_vxlan_ns_def"); ok {
+		relationParam := relationToinfraRsDomVxlanNsDef.(string)
+		checkDns = append(checkDns, relationParam)
+	}
+
+	if relationTovmmRsDefaultFwPol, ok := d.GetOk("relation_vmm_rs_default_fw_pol"); ok {
+		relationParam := relationTovmmRsDefaultFwPol.(string)
+		checkDns = append(checkDns, relationParam)
+	}
+
+	if relationTovmmRsDefaultL2InstPol, ok := d.GetOk("relation_vmm_rs_default_l2_inst_pol"); ok {
+		relationParam := relationTovmmRsDefaultL2InstPol.(string)
+		checkDns = append(checkDns, relationParam)
+	}
+
+	d.Partial(true)
+	err = checkTDn(aciClient, checkDns)
+	if err != nil {
+		return err
+	}
+	d.Partial(false)
+
 	if relationTovmmRsPrefEnhancedLagPol, ok := d.GetOk("relation_vmm_rs_pref_enhanced_lag_pol"); ok {
 		relationParam := relationTovmmRsPrefEnhancedLagPol.(string)
 		err = aciClient.CreateRelationvmmRsPrefEnhancedLagPolFromVMMDomain(vmmDomP.DistinguishedName, relationParam)
@@ -571,6 +640,75 @@ func resourceAciVMMDomainUpdate(d *schema.ResourceData, m interface{}) error {
 
 	d.Partial(false)
 
+	checkDns := make([]string, 0, 1)
+
+	if d.HasChange("relation_vmm_rs_pref_enhanced_lag_pol") {
+		_, newRelParam := d.GetChange("relation_vmm_rs_pref_enhanced_lag_pol")
+		checkDns = append(checkDns, newRelParam.(string))
+	}
+
+	if d.HasChange("relation_infra_rs_vlan_ns") {
+		_, newRelParam := d.GetChange("relation_infra_rs_vlan_ns")
+		checkDns = append(checkDns, newRelParam.(string))
+	}
+
+	if d.HasChange("relation_vmm_rs_dom_mcast_addr_ns") {
+		_, newRelParam := d.GetChange("relation_vmm_rs_dom_mcast_addr_ns")
+		checkDns = append(checkDns, newRelParam.(string))
+	}
+
+	if d.HasChange("relation_vmm_rs_default_cdp_if_pol") {
+		_, newRelParam := d.GetChange("relation_vmm_rs_default_cdp_if_pol")
+		checkDns = append(checkDns, newRelParam.(string))
+	}
+
+	if d.HasChange("relation_vmm_rs_default_lacp_lag_pol") {
+		_, newRelParam := d.GetChange("relation_vmm_rs_default_lacp_lag_pol")
+		checkDns = append(checkDns, newRelParam.(string))
+	}
+
+	if d.HasChange("relation_infra_rs_vlan_ns_def") {
+		_, newRelParam := d.GetChange("relation_infra_rs_vlan_ns_def")
+		checkDns = append(checkDns, newRelParam.(string))
+	}
+
+	if d.HasChange("relation_infra_rs_vip_addr_ns") {
+		_, newRelParam := d.GetChange("relation_infra_rs_vip_addr_ns")
+		checkDns = append(checkDns, newRelParam.(string))
+	}
+
+	if d.HasChange("relation_vmm_rs_default_lldp_if_pol") {
+		_, newRelParam := d.GetChange("relation_vmm_rs_default_lldp_if_pol")
+		checkDns = append(checkDns, newRelParam.(string))
+	}
+
+	if d.HasChange("relation_vmm_rs_default_stp_if_pol") {
+		_, newRelParam := d.GetChange("relation_vmm_rs_default_stp_if_pol")
+		checkDns = append(checkDns, newRelParam.(string))
+	}
+
+	if d.HasChange("relation_infra_rs_dom_vxlan_ns_def") {
+		_, newRelParam := d.GetChange("relation_infra_rs_dom_vxlan_ns_def")
+		checkDns = append(checkDns, newRelParam.(string))
+	}
+
+	if d.HasChange("relation_vmm_rs_default_fw_pol") {
+		_, newRelParam := d.GetChange("relation_vmm_rs_default_fw_pol")
+		checkDns = append(checkDns, newRelParam.(string))
+	}
+
+	if d.HasChange("relation_vmm_rs_default_l2_inst_pol") {
+		_, newRelParam := d.GetChange("relation_vmm_rs_default_l2_inst_pol")
+		checkDns = append(checkDns, newRelParam.(string))
+	}
+
+	d.Partial(true)
+	err = checkTDn(aciClient, checkDns)
+	if err != nil {
+		return err
+	}
+	d.Partial(false)
+
 	if d.HasChange("relation_vmm_rs_pref_enhanced_lag_pol") {
 		_, newRelParam := d.GetChange("relation_vmm_rs_pref_enhanced_lag_pol")
 		err = aciClient.DeleteRelationvmmRsPrefEnhancedLagPolFromVMMDomain(vmmDomP.DistinguishedName)
@@ -750,6 +888,7 @@ func resourceAciVMMDomainRead(d *schema.ResourceData, m interface{}) error {
 	vmmRsPrefEnhancedLagPolData, err := aciClient.ReadRelationvmmRsPrefEnhancedLagPolFromVMMDomain(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation vmmRsPrefEnhancedLagPol %v", err)
+		d.Set("relation_vmm_rs_pref_enhanced_lag_pol", "")
 
 	} else {
 		if _, ok := d.GetOk("relation_vmm_rs_pref_enhanced_lag_pol"); ok {
@@ -763,6 +902,7 @@ func resourceAciVMMDomainRead(d *schema.ResourceData, m interface{}) error {
 	infraRsVlanNsData, err := aciClient.ReadRelationinfraRsVlanNsFromVMMDomain(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation infraRsVlanNs %v", err)
+		d.Set("relation_infra_rs_vlan_ns", "")
 
 	} else {
 		if _, ok := d.GetOk("relation_infra_rs_vlan_ns"); ok {
@@ -776,6 +916,7 @@ func resourceAciVMMDomainRead(d *schema.ResourceData, m interface{}) error {
 	vmmRsDomMcastAddrNsData, err := aciClient.ReadRelationvmmRsDomMcastAddrNsFromVMMDomain(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation vmmRsDomMcastAddrNs %v", err)
+		d.Set("relation_vmm_rs_dom_mcast_addr_ns", "")
 
 	} else {
 		if _, ok := d.GetOk("relation_vmm_rs_dom_mcast_addr_ns"); ok {
@@ -789,6 +930,7 @@ func resourceAciVMMDomainRead(d *schema.ResourceData, m interface{}) error {
 	vmmRsDefaultCdpIfPolData, err := aciClient.ReadRelationvmmRsDefaultCdpIfPolFromVMMDomain(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation vmmRsDefaultCdpIfPol %v", err)
+		d.Set("relation_vmm_rs_default_cdp_if_pol", "")
 
 	} else {
 		if _, ok := d.GetOk("relation_vmm_rs_default_cdp_if_pol"); ok {
@@ -802,6 +944,7 @@ func resourceAciVMMDomainRead(d *schema.ResourceData, m interface{}) error {
 	vmmRsDefaultLacpLagPolData, err := aciClient.ReadRelationvmmRsDefaultLacpLagPolFromVMMDomain(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation vmmRsDefaultLacpLagPol %v", err)
+		d.Set("relation_vmm_rs_default_lacp_lag_pol", "")
 
 	} else {
 		if _, ok := d.GetOk("relation_vmm_rs_default_lacp_lag_pol"); ok {
@@ -815,6 +958,7 @@ func resourceAciVMMDomainRead(d *schema.ResourceData, m interface{}) error {
 	infraRsVlanNsDefData, err := aciClient.ReadRelationinfraRsVlanNsDefFromVMMDomain(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation infraRsVlanNsDef %v", err)
+		d.Set("relation_infra_rs_vlan_ns_def", "")
 
 	} else {
 		if _, ok := d.GetOk("relation_infra_rs_vlan_ns_def"); ok {
@@ -828,6 +972,7 @@ func resourceAciVMMDomainRead(d *schema.ResourceData, m interface{}) error {
 	infraRsVipAddrNsData, err := aciClient.ReadRelationinfraRsVipAddrNsFromVMMDomain(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation infraRsVipAddrNs %v", err)
+		d.Set("relation_infra_rs_vip_addr_ns", "")
 
 	} else {
 		if _, ok := d.GetOk("relation_infra_rs_vip_addr_ns"); ok {
@@ -841,6 +986,7 @@ func resourceAciVMMDomainRead(d *schema.ResourceData, m interface{}) error {
 	vmmRsDefaultLldpIfPolData, err := aciClient.ReadRelationvmmRsDefaultLldpIfPolFromVMMDomain(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation vmmRsDefaultLldpIfPol %v", err)
+		d.Set("relation_vmm_rs_default_lldp_if_pol", "")
 
 	} else {
 		if _, ok := d.GetOk("relation_vmm_rs_default_lldp_if_pol"); ok {
@@ -854,6 +1000,7 @@ func resourceAciVMMDomainRead(d *schema.ResourceData, m interface{}) error {
 	vmmRsDefaultStpIfPolData, err := aciClient.ReadRelationvmmRsDefaultStpIfPolFromVMMDomain(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation vmmRsDefaultStpIfPol %v", err)
+		d.Set("relation_vmm_rs_default_stp_if_pol", "")
 
 	} else {
 		if _, ok := d.GetOk("relation_vmm_rs_default_stp_if_pol"); ok {
@@ -867,6 +1014,7 @@ func resourceAciVMMDomainRead(d *schema.ResourceData, m interface{}) error {
 	infraRsDomVxlanNsDefData, err := aciClient.ReadRelationinfraRsDomVxlanNsDefFromVMMDomain(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation infraRsDomVxlanNsDef %v", err)
+		d.Set("relation_infra_rs_dom_vxlan_ns_def", "")
 
 	} else {
 		if _, ok := d.GetOk("relation_infra_rs_dom_vxlan_ns_def"); ok {
@@ -880,6 +1028,7 @@ func resourceAciVMMDomainRead(d *schema.ResourceData, m interface{}) error {
 	vmmRsDefaultFwPolData, err := aciClient.ReadRelationvmmRsDefaultFwPolFromVMMDomain(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation vmmRsDefaultFwPol %v", err)
+		d.Set("relation_vmm_rs_default_fw_pol", "")
 
 	} else {
 		if _, ok := d.GetOk("relation_vmm_rs_default_fw_pol"); ok {
@@ -893,6 +1042,7 @@ func resourceAciVMMDomainRead(d *schema.ResourceData, m interface{}) error {
 	vmmRsDefaultL2InstPolData, err := aciClient.ReadRelationvmmRsDefaultL2InstPolFromVMMDomain(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation vmmRsDefaultL2InstPol %v", err)
+		d.Set("relation_vmm_rs_default_l2_inst_pol", "")
 
 	} else {
 		if _, ok := d.GetOk("relation_vmm_rs_default_l2_inst_pol"); ok {

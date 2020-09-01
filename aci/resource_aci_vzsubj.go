@@ -192,6 +192,32 @@ func resourceAciContractSubjectCreate(d *schema.ResourceData, m interface{}) err
 
 	d.Partial(false)
 
+	checkDns := make([]string, 0, 1)
+
+	if relationTovzRsSubjGraphAtt, ok := d.GetOk("relation_vz_rs_subj_graph_att"); ok {
+		relationParam := relationTovzRsSubjGraphAtt.(string)
+		checkDns = append(checkDns, relationParam)
+	}
+
+	if relationTovzRsSdwanPol, ok := d.GetOk("relation_vz_rs_sdwan_pol"); ok {
+		relationParam := relationTovzRsSdwanPol.(string)
+		checkDns = append(checkDns, relationParam)
+	}
+
+	if relationTovzRsSubjFiltAtt, ok := d.GetOk("relation_vz_rs_subj_filt_att"); ok {
+		relationParamList := toStringList(relationTovzRsSubjFiltAtt.(*schema.Set).List())
+		for _, relationParam := range relationParamList {
+			checkDns = append(checkDns, relationParam)
+		}
+	}
+
+	d.Partial(true)
+	err = checkTDn(aciClient, checkDns)
+	if err != nil {
+		return err
+	}
+	d.Partial(false)
+
 	if relationTovzRsSubjGraphAtt, ok := d.GetOk("relation_vz_rs_subj_graph_att"); ok {
 		relationParam := relationTovzRsSubjGraphAtt.(string)
 		relationParamName := GetMOName(relationParam)
@@ -285,6 +311,36 @@ func resourceAciContractSubjectUpdate(d *schema.ResourceData, m interface{}) err
 
 	d.Partial(false)
 
+	checkDns := make([]string, 0, 1)
+
+	if d.HasChange("relation_vz_rs_subj_graph_att") {
+		_, newRelParam := d.GetChange("relation_vz_rs_subj_graph_att")
+		checkDns = append(checkDns, newRelParam.(string))
+	}
+
+	if d.HasChange("relation_vz_rs_sdwan_pol") {
+		_, newRelParam := d.GetChange("relation_vz_rs_sdwan_pol")
+		checkDns = append(checkDns, newRelParam.(string))
+	}
+
+	if d.HasChange("relation_vz_rs_subj_filt_att") {
+		oldRel, newRel := d.GetChange("relation_vz_rs_subj_filt_att")
+		oldRelSet := oldRel.(*schema.Set)
+		newRelSet := newRel.(*schema.Set)
+		relToCreate := toStringList(newRelSet.Difference(oldRelSet).List())
+
+		for _, relDn := range relToCreate {
+			checkDns = append(checkDns, relDn)
+		}
+	}
+
+	d.Partial(true)
+	err = checkTDn(aciClient, checkDns)
+	if err != nil {
+		return err
+	}
+	d.Partial(false)
+
 	if d.HasChange("relation_vz_rs_subj_graph_att") {
 		_, newRelParam := d.GetChange("relation_vz_rs_subj_graph_att")
 		newRelParamName := GetMOName(newRelParam.(string))
@@ -370,6 +426,7 @@ func resourceAciContractSubjectRead(d *schema.ResourceData, m interface{}) error
 	vzRsSubjGraphAttData, err := aciClient.ReadRelationvzRsSubjGraphAttFromContractSubject(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation vzRsSubjGraphAtt %v", err)
+		d.Set("relation_vz_rs_subj_graph_att", "")
 
 	} else {
 		if _, ok := d.GetOk("relation_vz_rs_subj_graph_att"); ok {
@@ -383,6 +440,7 @@ func resourceAciContractSubjectRead(d *schema.ResourceData, m interface{}) error
 	vzRsSdwanPolData, err := aciClient.ReadRelationvzRsSdwanPolFromContractSubject(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation vzRsSdwanPol %v", err)
+		d.Set("relation_vz_rs_sdwan_pol", "")
 
 	} else {
 		if _, ok := d.GetOk("relation_vz_rs_sdwan_pol"); ok {
@@ -396,6 +454,7 @@ func resourceAciContractSubjectRead(d *schema.ResourceData, m interface{}) error
 	vzRsSubjFiltAttData, err := aciClient.ReadRelationvzRsSubjFiltAttFromContractSubject(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation vzRsSubjFiltAtt %v", err)
+		d.Set("relation_vz_rs_subj_filt_att", make([]string, 0, 1))
 
 	} else {
 		if _, ok := d.GetOk("relation_vz_rs_subj_filt_att"); ok {

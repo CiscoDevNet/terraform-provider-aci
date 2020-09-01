@@ -169,6 +169,20 @@ func resourceAciL3ExtSubnetCreate(d *schema.ResourceData, m interface{}) error {
 
 	d.Partial(false)
 
+	checkDns := make([]string, 0, 1)
+
+	if relationTol3extRsSubnetToRtSumm, ok := d.GetOk("relation_l3ext_rs_subnet_to_rt_summ"); ok {
+		relationParam := relationTol3extRsSubnetToRtSumm.(string)
+		checkDns = append(checkDns, relationParam)
+	}
+
+	d.Partial(true)
+	err = checkTDn(aciClient, checkDns)
+	if err != nil {
+		return err
+	}
+	d.Partial(false)
+
 	if relationTol3extRsSubnetToProfile, ok := d.GetOk("relation_l3ext_rs_subnet_to_profile"); ok {
 
 		relationParamList := relationTol3extRsSubnetToProfile.(*schema.Set).List()
@@ -245,6 +259,20 @@ func resourceAciL3ExtSubnetUpdate(d *schema.ResourceData, m interface{}) error {
 
 	d.Partial(false)
 
+	checkDns := make([]string, 0, 1)
+
+	if d.HasChange("relation_l3ext_rs_subnet_to_rt_summ") {
+		_, newRelParam := d.GetChange("relation_l3ext_rs_subnet_to_rt_summ")
+		checkDns = append(checkDns, newRelParam.(string))
+	}
+
+	d.Partial(true)
+	err = checkTDn(aciClient, checkDns)
+	if err != nil {
+		return err
+	}
+	d.Partial(false)
+
 	if d.HasChange("relation_l3ext_rs_subnet_to_profile") {
 		oldRel, newRel := d.GetChange("relation_l3ext_rs_subnet_to_profile")
 		oldRelList := oldRel.(*schema.Set).List()
@@ -317,6 +345,7 @@ func resourceAciL3ExtSubnetRead(d *schema.ResourceData, m interface{}) error {
 	l3extRsSubnetToRtSummData, err := aciClient.ReadRelationl3extRsSubnetToRtSummFromL3ExtSubnet(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation l3extRsSubnetToRtSumm %v", err)
+		d.Set("relation_l3ext_rs_subnet_to_rt_summ", "")
 
 	} else {
 		if _, ok := d.GetOk("relation_l3ext_rs_subnet_to_rt_summ"); ok {

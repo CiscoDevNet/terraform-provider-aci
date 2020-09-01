@@ -141,6 +141,20 @@ func resourceAciSwitchSpineAssociationCreate(d *schema.ResourceData, m interface
 
 	d.Partial(false)
 
+	checkDns := make([]string, 0, 1)
+
+	if relationToinfraRsSpineAccNodePGrp, ok := d.GetOk("relation_infra_rs_spine_acc_node_p_grp"); ok {
+		relationParam := relationToinfraRsSpineAccNodePGrp.(string)
+		checkDns = append(checkDns, relationParam)
+	}
+
+	d.Partial(true)
+	err = checkTDn(aciClient, checkDns)
+	if err != nil {
+		return err
+	}
+	d.Partial(false)
+
 	if relationToinfraRsSpineAccNodePGrp, ok := d.GetOk("relation_infra_rs_spine_acc_node_p_grp"); ok {
 		relationParam := relationToinfraRsSpineAccNodePGrp.(string)
 		err = aciClient.CreateRelationinfraRsSpineAccNodePGrpFromSwitchAssociation(infraSpineS.DistinguishedName, relationParam)
@@ -200,6 +214,20 @@ func resourceAciSwitchSpineAssociationUpdate(d *schema.ResourceData, m interface
 
 	d.Partial(false)
 
+	checkDns := make([]string, 0, 1)
+
+	if d.HasChange("relation_infra_rs_spine_acc_node_p_grp") {
+		_, newRelParam := d.GetChange("relation_infra_rs_spine_acc_node_p_grp")
+		checkDns = append(checkDns, newRelParam.(string))
+	}
+
+	d.Partial(true)
+	err = checkTDn(aciClient, checkDns)
+	if err != nil {
+		return err
+	}
+	d.Partial(false)
+
 	if d.HasChange("relation_infra_rs_spine_acc_node_p_grp") {
 		_, newRelParam := d.GetChange("relation_infra_rs_spine_acc_node_p_grp")
 		err = aciClient.DeleteRelationinfraRsSpineAccNodePGrpFromSwitchAssociation(infraSpineS.DistinguishedName)
@@ -240,6 +268,7 @@ func resourceAciSwitchSpineAssociationRead(d *schema.ResourceData, m interface{}
 	infraRsSpineAccNodePGrpData, err := aciClient.ReadRelationinfraRsSpineAccNodePGrpFromSwitchAssociation(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation infraRsSpineAccNodePGrp %v", err)
+		d.Set("relation_infra_rs_spine_acc_node_p_grp", "")
 
 	} else {
 		d.Set("relation_infra_rs_spine_acc_node_p_grp", infraRsSpineAccNodePGrpData)

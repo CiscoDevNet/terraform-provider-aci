@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/container"
 )
 
@@ -59,6 +60,27 @@ func GetMOName(dn string) string {
 	// match := re.FindStringSubmatch(dn)
 	// return match[1]
 
+}
+
+func checkTDn(client *client.Client, dns []string) error {
+	flag := false
+	var errMessage string
+
+	for _, dn := range dns {
+		_, err := client.Get(dn)
+		if err != nil {
+			if flag == false {
+				flag = true
+			}
+			errMessage = fmt.Sprintf("%s\nRelation target dn %s not found", errMessage, dn)
+		}
+	}
+
+	if flag == true {
+		return fmt.Errorf(errMessage)
+	}
+
+	return nil
 }
 
 // func GetParentDn(childDn string) string {

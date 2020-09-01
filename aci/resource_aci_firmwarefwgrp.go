@@ -127,6 +127,20 @@ func resourceAciFirmwareGroupCreate(d *schema.ResourceData, m interface{}) error
 
 	d.Partial(false)
 
+	checkDns := make([]string, 0, 1)
+
+	if relationTofirmwareRsFwgrpp, ok := d.GetOk("relation_firmware_rs_fwgrpp"); ok {
+		relationParam := relationTofirmwareRsFwgrpp.(string)
+		checkDns = append(checkDns, relationParam)
+	}
+
+	d.Partial(true)
+	err = checkTDn(aciClient, checkDns)
+	if err != nil {
+		return err
+	}
+	d.Partial(false)
+
 	if relationTofirmwareRsFwgrpp, ok := d.GetOk("relation_firmware_rs_fwgrpp"); ok {
 		relationParam := relationTofirmwareRsFwgrpp.(string)
 		relationParamName := GetMOName(relationParam)
@@ -181,6 +195,20 @@ func resourceAciFirmwareGroupUpdate(d *schema.ResourceData, m interface{}) error
 
 	d.Partial(false)
 
+	checkDns := make([]string, 0, 1)
+
+	if d.HasChange("relation_firmware_rs_fwgrpp") {
+		_, newRelParam := d.GetChange("relation_firmware_rs_fwgrpp")
+		checkDns = append(checkDns, newRelParam.(string))
+	}
+
+	d.Partial(true)
+	err = checkTDn(aciClient, checkDns)
+	if err != nil {
+		return err
+	}
+	d.Partial(false)
+
 	if d.HasChange("relation_firmware_rs_fwgrpp") {
 		_, newRelParam := d.GetChange("relation_firmware_rs_fwgrpp")
 		newRelParamName := GetMOName(newRelParam.(string))
@@ -218,6 +246,7 @@ func resourceAciFirmwareGroupRead(d *schema.ResourceData, m interface{}) error {
 	firmwareRsFwgrppData, err := aciClient.ReadRelationfirmwareRsFwgrppFromFirmwareGroup(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation firmwareRsFwgrpp %v", err)
+		d.Set("relation_firmware_rs_fwgrpp", "")
 
 	} else {
 		if _, ok := d.GetOk("relation_firmware_rs_fwgrpp"); ok {

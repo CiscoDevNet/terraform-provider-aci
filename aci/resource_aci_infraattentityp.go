@@ -118,6 +118,22 @@ func resourceAciAttachableAccessEntityProfileCreate(d *schema.ResourceData, m in
 
 	d.Partial(false)
 
+	checkDns := make([]string, 0, 1)
+
+	if relationToinfraRsDomP, ok := d.GetOk("relation_infra_rs_dom_p"); ok {
+		relationParamList := toStringList(relationToinfraRsDomP.(*schema.Set).List())
+		for _, relationParam := range relationParamList {
+			checkDns = append(checkDns, relationParam)
+		}
+	}
+
+	d.Partial(true)
+	err = checkTDn(aciClient, checkDns)
+	if err != nil {
+		return err
+	}
+	d.Partial(false)
+
 	if relationToinfraRsDomP, ok := d.GetOk("relation_infra_rs_dom_p"); ok {
 		relationParamList := toStringList(relationToinfraRsDomP.(*schema.Set).List())
 		for _, relationParam := range relationParamList {
@@ -168,6 +184,26 @@ func resourceAciAttachableAccessEntityProfileUpdate(d *schema.ResourceData, m in
 
 	d.SetPartial("name")
 
+	d.Partial(false)
+
+	checkDns := make([]string, 0, 1)
+
+	if d.HasChange("relation_infra_rs_dom_p") {
+		oldRel, newRel := d.GetChange("relation_infra_rs_dom_p")
+		oldRelSet := oldRel.(*schema.Set)
+		newRelSet := newRel.(*schema.Set)
+		relToCreate := toStringList(newRelSet.Difference(oldRelSet).List())
+
+		for _, relDn := range relToCreate {
+			checkDns = append(checkDns, relDn)
+		}
+	}
+
+	d.Partial(true)
+	err = checkTDn(aciClient, checkDns)
+	if err != nil {
+		return err
+	}
 	d.Partial(false)
 
 	if d.HasChange("relation_infra_rs_dom_p") {
@@ -222,6 +258,7 @@ func resourceAciAttachableAccessEntityProfileRead(d *schema.ResourceData, m inte
 	infraRsDomPData, err := aciClient.ReadRelationinfraRsDomPFromAttachableAccessEntityProfile(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation infraRsDomP %v", err)
+		d.Set("relation_infra_rs_dom_p", make([]string, 0, 1))
 
 	} else {
 		d.Set("relation_infra_rs_dom_p", infraRsDomPData)

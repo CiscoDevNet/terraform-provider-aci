@@ -145,6 +145,20 @@ func resourceAciAccessPortSelectorCreate(d *schema.ResourceData, m interface{}) 
 
 	d.Partial(false)
 
+	checkDns := make([]string, 0, 1)
+
+	if relationToinfraRsAccBaseGrp, ok := d.GetOk("relation_infra_rs_acc_base_grp"); ok {
+		relationParam := relationToinfraRsAccBaseGrp.(string)
+		checkDns = append(checkDns, relationParam)
+	}
+
+	d.Partial(true)
+	err = checkTDn(aciClient, checkDns)
+	if err != nil {
+		return err
+	}
+	d.Partial(false)
+
 	if relationToinfraRsAccBaseGrp, ok := d.GetOk("relation_infra_rs_acc_base_grp"); ok {
 		relationParam := relationToinfraRsAccBaseGrp.(string)
 		err = aciClient.CreateRelationinfraRsAccBaseGrpFromAccessPortSelector(infraHPortS.DistinguishedName, relationParam)
@@ -204,6 +218,20 @@ func resourceAciAccessPortSelectorUpdate(d *schema.ResourceData, m interface{}) 
 
 	d.Partial(false)
 
+	checkDns := make([]string, 0, 1)
+
+	if d.HasChange("relation_infra_rs_acc_base_grp") {
+		_, newRelParam := d.GetChange("relation_infra_rs_acc_base_grp")
+		checkDns = append(checkDns, newRelParam.(string))
+	}
+
+	d.Partial(true)
+	err = checkTDn(aciClient, checkDns)
+	if err != nil {
+		return err
+	}
+	d.Partial(false)
+
 	if d.HasChange("relation_infra_rs_acc_base_grp") {
 		_, newRelParam := d.GetChange("relation_infra_rs_acc_base_grp")
 		err = aciClient.DeleteRelationinfraRsAccBaseGrpFromAccessPortSelector(infraHPortS.DistinguishedName)
@@ -244,6 +272,7 @@ func resourceAciAccessPortSelectorRead(d *schema.ResourceData, m interface{}) er
 	infraRsAccBaseGrpData, err := aciClient.ReadRelationinfraRsAccBaseGrpFromAccessPortSelector(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation infraRsAccBaseGrp %v", err)
+		d.Set("relation_infra_rs_acc_base_grp", "")
 
 	} else {
 		if _, ok := d.GetOk("relation_infra_rs_acc_base_grp"); ok {
