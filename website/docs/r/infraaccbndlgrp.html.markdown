@@ -1,7 +1,7 @@
 ---
 layout: "aci"
 page_title: "ACI: aci_leaf_access_bundle_policy_group "
-sidebar_current: "docs-aci-resource-leaf_access_bundle_policy_group "
+sidebar_current: "docs-aci-resource-leaf_access_bundle_policy_group"
 description: |-
   Manages ACI leaf access bundle policy group 
 ---
