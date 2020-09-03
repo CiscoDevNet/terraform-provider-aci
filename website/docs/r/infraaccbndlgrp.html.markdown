@@ -1,31 +1,33 @@
 ---
 layout: "aci"
-page_title: "ACI: aci_pcvpc_interface_policy_group"
-sidebar_current: "docs-aci-resource-pcvpc_interface_policy_group"
+page_title: "ACI: aci_leaf_access_bundle_policy_group "
+sidebar_current: "docs-aci-resource-leaf_access_bundle_policy_group"
 description: |-
-  Manages ACI PC/VPC Interface Policy Group
+  Manages ACI leaf access bundle policy group 
 ---
 
-# aci_pcvpc_interface_policy_group #
-Manages ACI PC/VPC Interface Policy Group
+# aci_leaf_access_bundle_policy_group  #
+Manages ACI leaf access bundle policy group
 
 ## Example Usage ##
 
 ```hcl
-resource "aci_pcvpc_interface_policy_group" "example" {
 
-
-  name  = "example"
+resource "aci_leaf_access_bundle_policy_group " "example" {
+  name        = "example"
   annotation  = "example"
-  lag_t  = "example"
+  lag_t       = "example"
   name_alias  = "example"
 }
+
 ```
+
+
 ## Argument Reference ##
-* `name` - (Required) name of Object pcvpc_interface_policy_group.
-* `annotation` - (Optional) annotation for object pcvpc_interface_policy_group.
+* `name` - (Required) name of Object aci_leaf_access_bundle_policy_group .
+* `annotation` - (Optional) annotation for object aci_leaf_access_bundle_policy_group .
 * `lag_t` - (Optional) The bundled ports group link aggregation type: port channel vs virtual port channel. Allowed values are "not-aggregated", "node" and "link". Default is "link".
-* `name_alias` - (Optional) name_alias for object pcvpc_interface_policy_group.
+* `name_alias` - (Optional) name_alias for object aci_leaf_access_bundle_policy_group .
 
 * `relation_infra_rs_span_v_src_grp` - (Optional) Relation to class spanVSrcGrp. Cardinality - N_TO_M. Type - Set of String.
                 
@@ -82,14 +84,14 @@ resource "aci_pcvpc_interface_policy_group" "example" {
 ## Attribute Reference
 
 The only attribute that this resource exports is the `id`, which is set to the
-Dn of the PC/VPC Interface Policy Group.
+Dn of the leaf access bundle policy group.
 
 ## Importing ##
 
-An existing PC/VPC Interface Policy Group can be [imported][docs-import] into this resource via its Dn, via the following command:
+An existing leaf access bundle policy group can be [imported][docs-import] into this resource via its Dn, via the following command:
 [docs-import]: https://www.terraform.io/docs/import/index.html
 
 
 ```
-terraform import aci_pcvpc_interface_policy_group.example <Dn>
+terraform import aci_leaf_access_bundle_policy_group.example <Dn>
 ```
