@@ -1,18 +1,18 @@
 ---
 layout: "aci"
-page_title: "ACI: aci_switch_association"
-sidebar_current: "docs-aci-resource-switch_association"
+page_title: "ACI: aci_leaf_selector"
+sidebar_current: "docs-aci-resource-leaf_selector"
 description: |-
-  Manages ACI Switch Association
+  Manages ACI Leaf Selector
 ---
 
-# aci_switch_association #
-Manages ACI Switch Association
+# aci_leaf_selector #
+Manages ACI Leaf Selector
 
 ## Example Usage ##
 
 ```hcl
-resource "aci_switch_association" "example" {
+resource "aci_leaf_selector" "example" {
 
   leaf_profile_dn  = "${aci_leaf_profile.example.id}"
 
@@ -47,5 +47,5 @@ An existing Switch Association can be [imported][docs-import] into this resource
 
 
 ```
-terraform import aci_switch_association.example <Dn>
+terraform import aci_leaf_selector.example <Dn>
 ```

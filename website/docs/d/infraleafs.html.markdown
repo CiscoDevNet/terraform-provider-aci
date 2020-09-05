@@ -1,18 +1,18 @@
 ---
 layout: "aci"
-page_title: "ACI: aci_switch_association"
-sidebar_current: "docs-aci-data-source-switch_association"
+page_title: "ACI: aci_leaf_selector"
+sidebar_current: "docs-aci-data-source-leaf_selector"
 description: |-
-  Data source for ACI Switch Association
+  Data source for ACI Leaf Selector
 ---
 
-# aci_switch_association #
-Data source for ACI Switch Association
+# aci_leaf_selector #
+Data source for ACI Leaf Selector
 
 ## Example Usage ##
 
 ```hcl
-data "aci_switch_association" "example" {
+data "aci_leaf_selector" "example" {
 
   leaf_profile_dn  = "${aci_leaf_profile.example.id}"
 

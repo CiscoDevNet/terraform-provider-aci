@@ -22,12 +22,12 @@ func TestAccAciSwitchAssociation_Basic(t *testing.T) {
 			{
 				Config: testAccCheckAciSwitchAssociationConfig_basic(description),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAciSwitchAssociationExists("aci_switch_association.fooswitch_association", &switch_association),
+					testAccCheckAciSwitchAssociationExists("aci_leaf_selector.fooswitch_association", &switch_association),
 					testAccCheckAciSwitchAssociationAttributes(description, &switch_association),
 				),
 			},
 			{
-				ResourceName:      "aci_switch_association",
+				ResourceName:      "aci_leaf_selector",
 				ImportState:       true,
 				ImportStateVerify: true,
 			},
@@ -47,14 +47,14 @@ func TestAccAciSwitchAssociation_update(t *testing.T) {
 			{
 				Config: testAccCheckAciSwitchAssociationConfig_basic(description),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAciSwitchAssociationExists("aci_switch_association.fooswitch_association", &switch_association),
+					testAccCheckAciSwitchAssociationExists("aci_leaf_selector.fooswitch_association", &switch_association),
 					testAccCheckAciSwitchAssociationAttributes(description, &switch_association),
 				),
 			},
 			{
 				Config: testAccCheckAciSwitchAssociationConfig_basic(description),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAciSwitchAssociationExists("aci_switch_association.fooswitch_association", &switch_association),
+					testAccCheckAciSwitchAssociationExists("aci_leaf_selector.fooswitch_association", &switch_association),
 					testAccCheckAciSwitchAssociationAttributes(description, &switch_association),
 				),
 			},
@@ -65,12 +65,12 @@ func TestAccAciSwitchAssociation_update(t *testing.T) {
 func testAccCheckAciSwitchAssociationConfig_basic(description string) string {
 	return fmt.Sprintf(`
 
-	resource "aci_switch_association" "fooswitch_association" {
+	resource "aci_leaf_selector" "fooswitch_association" {
 		  leaf_profile_dn  = "${aci_leaf_profile.example.id}"
 		description = "%s"
-		
+
 		name  = "example"
-		
+
 		switch_association_type  = "example"
 		  annotation  = "example"
 		  name_alias  = "example"
@@ -111,7 +111,7 @@ func testAccCheckAciSwitchAssociationDestroy(s *terraform.State) error {
 
 	for _, rs := range s.RootModule().Resources {
 
-		if rs.Type == "aci_switch_association" {
+		if rs.Type == "aci_leaf_selector" {
 			cont, err := client.Get(rs.Primary.ID)
 			switch_association := models.SwitchAssociationFromContainer(cont)
 			if err == nil {

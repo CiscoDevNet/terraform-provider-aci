@@ -13,7 +13,7 @@ Manages ACI Node Block
 
 ```hcl
 resource "aci_node_block" "check" {
-  switch_association_dn   = "${aci_switch_association.example.id}"
+  switch_association_dn   = "${aci_leaf_selector.example.id}"
   name                    = "block"
   annotation              = "aci_node_block"
   from_                   = "105"
