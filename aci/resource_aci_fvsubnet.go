@@ -5,6 +5,7 @@ import (
 	"log"
 	"reflect"
 	"sort"
+	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
@@ -140,6 +141,74 @@ func resourceAciSubnetImport(d *schema.ResourceData, m interface{}) ([]*schema.R
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
+func checkForConflictingVRF(client *client.Client, tenantDN, bdName, vrfDn, ip string) bool {
+	flag := false
+
+	baseurlStr := "/api/node/class"
+	dnUrl := fmt.Sprintf("%s/%s/BD-%s/fvRsCtx.json", baseurlStr, tenantDN, bdName)
+	fvCtxCont, err := client.GetViaURL(dnUrl)
+	if err != nil {
+		return flag
+	}
+
+	fvCtxContList := models.ListFromContainer(fvCtxCont, "fvRsCtx")
+	if len(fvCtxContList) > 0 {
+		if vrfDn != models.G(fvCtxContList[0], "tDn") {
+			return flag
+		}
+
+		dnUrl = fmt.Sprintf("%s/BD-%s/subnet-[%s]", tenantDN, bdName, ip)
+		_, err = client.Get(dnUrl)
+		if err == nil {
+			flag = true
+			return flag
+		}
+		return flag
+	}
+
+	return flag
+}
+
+func checkForConflictingIP(client *client.Client, parentDN string, ip string) error {
+	tokens := strings.Split(parentDN, "/")
+	bdName := (strings.Split(tokens[2], "-"))[1]
+	tenantDn := fmt.Sprintf("%s/%s", tokens[0], tokens[1])
+
+	baseurlStr := "/api/node/class"
+	dnUrl := fmt.Sprintf("%s/%s/%s.json", baseurlStr, tenantDn, "fvBD")
+
+	domains, err := client.GetViaURL(dnUrl)
+	if err != nil {
+		return err
+	}
+	bdList := models.ListFromContainer(domains, "fvBD")
+
+	dnUrl = fmt.Sprintf("%s/%s/%s.json", baseurlStr, parentDN, "fvRsCtx")
+	fvCtxCont, err := client.GetViaURL(dnUrl)
+	if err != nil {
+		return nil
+	}
+	fvCtxContList := models.ListFromContainer(fvCtxCont, "fvRsCtx")
+	var ctxDN string
+	if len(fvCtxContList) > 0 {
+		ctxDN = models.G(fvCtxContList[0], "tDn")
+	} else {
+		return nil
+	}
+
+	if len(bdList) > 1 {
+		for i := 0; i < (len(bdList)); i++ {
+			currName := models.G(bdList[i], "name")
+			if currName != bdName {
+				if checkForConflictingVRF(client, tenantDn, currName, ctxDN, ip) {
+					return fmt.Errorf("A subnet already exist with Bridge Domain %s and ip %s", currName, ip)
+				}
+			}
+		}
+	}
+	return nil
+}
+
 func resourceAciSubnetCreate(d *schema.ResourceData, m interface{}) error {
 	log.Printf("[DEBUG] Subnet: Beginning Creation")
 	aciClient := m.(*client.Client)
@@ -148,6 +217,11 @@ func resourceAciSubnetCreate(d *schema.ResourceData, m interface{}) error {
 	ip := d.Get("ip").(string)
 
 	BridgeDomainDn := d.Get("parent_dn").(string)
+
+	err := checkForConflictingIP(aciClient, BridgeDomainDn, ip)
+	if err != nil {
+		return err
+	}
 
 	fvSubnetAttr := models.SubnetAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
@@ -175,7 +249,7 @@ func resourceAciSubnetCreate(d *schema.ResourceData, m interface{}) error {
 	}
 	fvSubnet := models.NewSubnet(fmt.Sprintf("subnet-[%s]", ip), BridgeDomainDn, desc, fvSubnetAttr)
 
-	err := aciClient.Save(fvSubnet)
+	err = aciClient.Save(fvSubnet)
 	if err != nil {
 		return err
 	}
