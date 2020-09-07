@@ -5,6 +5,7 @@ import (
 	"log"
 	"reflect"
 	"sort"
+	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
@@ -307,6 +308,45 @@ func resourceAciBridgeDomainImport(d *schema.ResourceData, m interface{}) ([]*sc
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
+}
+
+func checkForSubnetConflict(client *client.Client, bdDN, ctxRelation string) error {
+	tokens := strings.Split(bdDN, "/")
+	bdName := (strings.Split(tokens[2], "-"))[1]
+	tenantDn := fmt.Sprintf("%s/%s", tokens[0], tokens[1])
+
+	baseurlStr := "/api/node/class"
+	dnUrl := fmt.Sprintf("%s/%s/%s.json", baseurlStr, tenantDn, "fvBD")
+
+	domains, err := client.GetViaURL(dnUrl)
+	if err != nil {
+		return err
+	}
+	bdList := models.ListFromContainer(domains, "fvBD")
+
+	dnUrl = fmt.Sprintf("%s/%s/%s.json", baseurlStr, bdDN, "fvSubnet")
+	subnets, err := client.GetViaURL(dnUrl)
+	if err != nil {
+		return nil
+	}
+	subnetList := models.ListFromContainer(subnets, "fvSubnet")
+
+	if len(bdList) > 1 {
+		for i := 0; i < (len(bdList)); i++ {
+			currName := models.G(bdList[i], "name")
+			if currName != bdName {
+				if len(subnetList) > 0 {
+					for j := 0; j < len(subnetList); j++ {
+						ip := models.G(subnetList[j], "ip")
+						if checkForConflictingVRF(client, tenantDn, currName, ctxRelation, ip) {
+							return fmt.Errorf("A subnet already exist with Bridge Domain %s and ip %s", currName, ip)
+						}
+					}
+				}
+			}
+		}
+	}
+	return nil
 }
 
 func resourceAciBridgeDomainCreate(d *schema.ResourceData, m interface{}) error {
@@ -911,6 +951,10 @@ func resourceAciBridgeDomainUpdate(d *schema.ResourceData, m interface{}) error 
 	}
 	if d.HasChange("relation_fv_rs_ctx") {
 		_, newRelParam := d.GetChange("relation_fv_rs_ctx")
+		err := checkForSubnetConflict(aciClient, d.Id(), newRelParam.(string))
+		if err != nil {
+			return err
+		}
 		newRelParamName := GetMOName(newRelParam.(string))
 		err = aciClient.CreateRelationfvRsCtxFromBridgeDomain(fvBD.DistinguishedName, newRelParamName)
 		if err != nil {
