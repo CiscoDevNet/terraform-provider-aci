@@ -113,12 +113,6 @@ func resourceAciApplicationEPG() *schema.Resource {
 
 				Optional: true,
 			},
-			"relation_fv_rs_dom_att": &schema.Schema{
-				Type:     schema.TypeSet,
-				Elem:     &schema.Schema{Type: schema.TypeString},
-				Optional: true,
-				Set:      schema.HashString,
-			},
 			"relation_fv_rs_fc_path_att": &schema.Schema{
 				Type:     schema.TypeSet,
 				Elem:     &schema.Schema{Type: schema.TypeString},
@@ -329,13 +323,6 @@ func resourceAciApplicationEPGCreate(d *schema.ResourceData, m interface{}) erro
 		checkDns = append(checkDns, relationParam)
 	}
 
-	if relationTofvRsDomAtt, ok := d.GetOk("relation_fv_rs_dom_att"); ok {
-		relationParamList := toStringList(relationTofvRsDomAtt.(*schema.Set).List())
-		for _, relationParam := range relationParamList {
-			checkDns = append(checkDns, relationParam)
-		}
-	}
-
 	if relationTofvRsFcPathAtt, ok := d.GetOk("relation_fv_rs_fc_path_att"); ok {
 		relationParamList := toStringList(relationTofvRsFcPathAtt.(*schema.Set).List())
 		for _, relationParam := range relationParamList {
@@ -458,19 +445,6 @@ func resourceAciApplicationEPGCreate(d *schema.ResourceData, m interface{}) erro
 		d.SetPartial("relation_fv_rs_cust_qos_pol")
 		d.Partial(false)
 
-	}
-	if relationTofvRsDomAtt, ok := d.GetOk("relation_fv_rs_dom_att"); ok {
-		relationParamList := toStringList(relationTofvRsDomAtt.(*schema.Set).List())
-		for _, relationParam := range relationParamList {
-			err = aciClient.CreateRelationfvRsDomAttFromApplicationEPG(fvAEPg.DistinguishedName, relationParam)
-
-			if err != nil {
-				return err
-			}
-			d.Partial(true)
-			d.SetPartial("relation_fv_rs_dom_att")
-			d.Partial(false)
-		}
 	}
 	if relationTofvRsFcPathAtt, ok := d.GetOk("relation_fv_rs_fc_path_att"); ok {
 		relationParamList := toStringList(relationTofvRsFcPathAtt.(*schema.Set).List())
@@ -739,17 +713,6 @@ func resourceAciApplicationEPGUpdate(d *schema.ResourceData, m interface{}) erro
 		checkDns = append(checkDns, newRelParam.(string))
 	}
 
-	if d.HasChange("relation_fv_rs_dom_att") {
-		oldRel, newRel := d.GetChange("relation_fv_rs_dom_att")
-		oldRelSet := oldRel.(*schema.Set)
-		newRelSet := newRel.(*schema.Set)
-		relToCreate := toStringList(newRelSet.Difference(oldRelSet).List())
-
-		for _, relDn := range relToCreate {
-			checkDns = append(checkDns, relDn)
-		}
-	}
-
 	if d.HasChange("relation_fv_rs_fc_path_att") {
 		oldRel, newRel := d.GetChange("relation_fv_rs_fc_path_att")
 		oldRelSet := oldRel.(*schema.Set)
@@ -915,33 +878,6 @@ func resourceAciApplicationEPGUpdate(d *schema.ResourceData, m interface{}) erro
 		d.Partial(true)
 		d.SetPartial("relation_fv_rs_cust_qos_pol")
 		d.Partial(false)
-
-	}
-	if d.HasChange("relation_fv_rs_dom_att") {
-		oldRel, newRel := d.GetChange("relation_fv_rs_dom_att")
-		oldRelSet := oldRel.(*schema.Set)
-		newRelSet := newRel.(*schema.Set)
-		relToDelete := toStringList(oldRelSet.Difference(newRelSet).List())
-		relToCreate := toStringList(newRelSet.Difference(oldRelSet).List())
-
-		for _, relDn := range relToDelete {
-			err = aciClient.DeleteRelationfvRsDomAttFromApplicationEPG(fvAEPg.DistinguishedName, relDn)
-			if err != nil {
-				return err
-			}
-
-		}
-
-		for _, relDn := range relToCreate {
-			err = aciClient.CreateRelationfvRsDomAttFromApplicationEPG(fvAEPg.DistinguishedName, relDn)
-			if err != nil {
-				return err
-			}
-			d.Partial(true)
-			d.SetPartial("relation_fv_rs_dom_att")
-			d.Partial(false)
-
-		}
 
 	}
 	if d.HasChange("relation_fv_rs_fc_path_att") {
@@ -1329,15 +1265,6 @@ func resourceAciApplicationEPGRead(d *schema.ResourceData, m interface{}) error 
 				d.Set("relation_fv_rs_cust_qos_pol", "")
 			}
 		}
-	}
-
-	fvRsDomAttData, err := aciClient.ReadRelationfvRsDomAttFromApplicationEPG(dn)
-	if err != nil {
-		log.Printf("[DEBUG] Error while reading relation fvRsDomAtt %v", err)
-		d.Set("relation_fv_rs_dom_att", make([]string, 0, 1))
-
-	} else {
-		d.Set("relation_fv_rs_dom_att", fvRsDomAttData)
 	}
 
 	fvRsFcPathAttData, err := aciClient.ReadRelationfvRsFcPathAttFromApplicationEPG(dn)
