@@ -69,16 +69,16 @@ func testAccCheckAciMaintenancePolicyConfig_basic(description string) string {
 		description = "%s"
 		
 		name  = "example"
-		  admin_st  = "example"
+		  admin_st  = "untriggered"
 		  annotation  = "example"
-		  graceful  = "example"
-		  ignore_compat  = "example"
+		  graceful  = "yes"
+		  ignore_compat  = "no"
 		  internal_label  = "example"
 		  name_alias  = "example"
-		  notif_cond  = "example"
-		  run_mode  = "example"
+		  notif_cond  = "notifyNever"
+		  run_mode  = "pauseNever"
 		  version  = "example"
-		  version_check_override  = "example"
+		  version_check_override  = "untriggered"
 		}
 	`, description)
 }
@@ -142,7 +142,7 @@ func testAccCheckAciMaintenancePolicyAttributes(description string, maintenance_
 			return fmt.Errorf("Bad maintenance_policy name %s", maintenance_policy.Name)
 		}
 
-		if "example" != maintenance_policy.AdminSt {
+		if "untriggered" != maintenance_policy.AdminSt {
 			return fmt.Errorf("Bad maintenance_policy admin_st %s", maintenance_policy.AdminSt)
 		}
 
@@ -150,11 +150,11 @@ func testAccCheckAciMaintenancePolicyAttributes(description string, maintenance_
 			return fmt.Errorf("Bad maintenance_policy annotation %s", maintenance_policy.Annotation)
 		}
 
-		if "example" != maintenance_policy.Graceful {
+		if "yes" != maintenance_policy.Graceful {
 			return fmt.Errorf("Bad maintenance_policy graceful %s", maintenance_policy.Graceful)
 		}
 
-		if "example" != maintenance_policy.IgnoreCompat {
+		if "no" != maintenance_policy.IgnoreCompat {
 			return fmt.Errorf("Bad maintenance_policy ignore_compat %s", maintenance_policy.IgnoreCompat)
 		}
 
@@ -166,11 +166,11 @@ func testAccCheckAciMaintenancePolicyAttributes(description string, maintenance_
 			return fmt.Errorf("Bad maintenance_policy name_alias %s", maintenance_policy.NameAlias)
 		}
 
-		if "example" != maintenance_policy.NotifCond {
+		if "notifyNever" != maintenance_policy.NotifCond {
 			return fmt.Errorf("Bad maintenance_policy notif_cond %s", maintenance_policy.NotifCond)
 		}
 
-		if "example" != maintenance_policy.RunMode {
+		if "pauseNever" != maintenance_policy.RunMode {
 			return fmt.Errorf("Bad maintenance_policy run_mode %s", maintenance_policy.RunMode)
 		}
 
@@ -178,7 +178,7 @@ func testAccCheckAciMaintenancePolicyAttributes(description string, maintenance_
 			return fmt.Errorf("Bad maintenance_policy version %s", maintenance_policy.Version)
 		}
 
-		if "example" != maintenance_policy.VersionCheckOverride {
+		if "untriggered" != maintenance_policy.VersionCheckOverride {
 			return fmt.Errorf("Bad maintenance_policy version_check_override %s", maintenance_policy.VersionCheckOverride)
 		}
 

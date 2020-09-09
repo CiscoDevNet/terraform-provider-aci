@@ -72,8 +72,8 @@ func testAccCheckAciStaticPathConfig_basic(description string) string {
 		tdn  = "example"
 		  annotation  = "example"
 		  encap  = "example"
-		  instr_imedcy  = "example"
-		  mode  = "example"
+		  instr_imedcy  = "immediate"
+		  mode  = "regular"
 		  primary_encap  = "example"
 		}
 	`, description)
@@ -146,11 +146,11 @@ func testAccCheckAciStaticPathAttributes(description string, static_path *models
 			return fmt.Errorf("Bad static_path encap %s", static_path.Encap)
 		}
 
-		if "example" != static_path.InstrImedcy {
+		if "immediate" != static_path.InstrImedcy {
 			return fmt.Errorf("Bad static_path instr_imedcy %s", static_path.InstrImedcy)
 		}
 
-		if "example" != static_path.Mode {
+		if "regular" != static_path.Mode {
 			return fmt.Errorf("Bad static_path mode %s", static_path.Mode)
 		}
 

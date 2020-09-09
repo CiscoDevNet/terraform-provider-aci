@@ -68,7 +68,7 @@ func testAccCheckAciInterfaceFCPolicyConfig_basic(description, rx_bb_credit stri
 		name          = "demo_policy"
 		description   = "%s"
 		annotation    = "tag_if_policy"
-		fill_pattern  = "default"
+		fill_pattern  = "IDLE"
 		name_alias    = "demo_alias"
 		port_mode     = "f"
 		rx_bb_credit  = "%s"
@@ -141,7 +141,7 @@ func testAccCheckAciInterfaceFCPolicyAttributes(description, rx_bb_credit string
 			return fmt.Errorf("Bad interface_fc_policy annotation %s", interface_fc_policy.Annotation)
 		}
 
-		if "default" != interface_fc_policy.FillPattern {
+		if "IDLE" != interface_fc_policy.FillPattern {
 			return fmt.Errorf("Bad interface_fc_policy fill_pattern %s", interface_fc_policy.FillPattern)
 		}
 

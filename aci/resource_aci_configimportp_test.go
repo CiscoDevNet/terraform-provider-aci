@@ -69,14 +69,14 @@ func testAccCheckAciConfigurationImportPolicyConfig_basic(description string) st
 		description = "%s"
 		
 		name  = "example"
-		  admin_st  = "example"
+		  admin_st  = "triggered"
 		  annotation  = "example"
-		  fail_on_decrypt_errors  = "example"
+		  fail_on_decrypt_errors  = "no"
 		  file_name  = "example"
-		  import_mode  = "example"
-		  import_type  = "example"
+		  import_mode  = "atomic"
+		  import_type  = "merge"
 		  name_alias  = "example"
-		  snapshot  = "example"
+		  snapshot  = "no"
 		}
 	`, description)
 }
@@ -140,7 +140,7 @@ func testAccCheckAciConfigurationImportPolicyAttributes(description string, conf
 			return fmt.Errorf("Bad configuration_import_policy name %s", configuration_import_policy.Name)
 		}
 
-		if "example" != configuration_import_policy.AdminSt {
+		if "triggered" != configuration_import_policy.AdminSt {
 			return fmt.Errorf("Bad configuration_import_policy admin_st %s", configuration_import_policy.AdminSt)
 		}
 
@@ -148,7 +148,7 @@ func testAccCheckAciConfigurationImportPolicyAttributes(description string, conf
 			return fmt.Errorf("Bad configuration_import_policy annotation %s", configuration_import_policy.Annotation)
 		}
 
-		if "example" != configuration_import_policy.FailOnDecryptErrors {
+		if "no" != configuration_import_policy.FailOnDecryptErrors {
 			return fmt.Errorf("Bad configuration_import_policy fail_on_decrypt_errors %s", configuration_import_policy.FailOnDecryptErrors)
 		}
 
@@ -156,11 +156,11 @@ func testAccCheckAciConfigurationImportPolicyAttributes(description string, conf
 			return fmt.Errorf("Bad configuration_import_policy file_name %s", configuration_import_policy.FileName)
 		}
 
-		if "example" != configuration_import_policy.ImportMode {
+		if "atomic" != configuration_import_policy.ImportMode {
 			return fmt.Errorf("Bad configuration_import_policy import_mode %s", configuration_import_policy.ImportMode)
 		}
 
-		if "example" != configuration_import_policy.ImportType {
+		if "merge" != configuration_import_policy.ImportType {
 			return fmt.Errorf("Bad configuration_import_policy import_type %s", configuration_import_policy.ImportType)
 		}
 
@@ -168,7 +168,7 @@ func testAccCheckAciConfigurationImportPolicyAttributes(description string, conf
 			return fmt.Errorf("Bad configuration_import_policy name_alias %s", configuration_import_policy.NameAlias)
 		}
 
-		if "example" != configuration_import_policy.Snapshot {
+		if "no" != configuration_import_policy.Snapshot {
 			return fmt.Errorf("Bad configuration_import_policy snapshot %s", configuration_import_policy.Snapshot)
 		}
 
