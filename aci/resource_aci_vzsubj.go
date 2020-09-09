@@ -9,6 +9,7 @@ import (
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
 )
 
 func resourceAciContractSubject() *schema.Resource {
@@ -41,6 +42,12 @@ func resourceAciContractSubject() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"All",
+					"AtleastOne",
+					"AtmostOne",
+					"None",
+				}, false),
 			},
 
 			"name_alias": &schema.Schema{
@@ -53,24 +60,68 @@ func resourceAciContractSubject() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"unspecified",
+					"level3",
+					"level2",
+					"level1",
+					"level4",
+					"level5",
+					"level6",
+				}, false),
 			},
 
 			"prov_match_t": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"All",
+					"AtleastOne",
+					"AtmostOne",
+					"None",
+				}, false),
 			},
 
 			"rev_flt_ports": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"no",
+					"yes",
+				}, false),
 			},
 
 			"target_dscp": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"CS0",
+					"CS1",
+					"AF11",
+					"AF12",
+					"AF13",
+					"CS2",
+					"AF21",
+					"AF22",
+					"AF23",
+					"CS3",
+					"CS4",
+					"CS5",
+					"CS6",
+					"CS7",
+					"AF31",
+					"AF32",
+					"AF33",
+					"AF41",
+					"AF42",
+					"AF43",
+					"VA",
+					"EF",
+					"unspecified",
+				}, false),
 			},
 
 			"relation_vz_rs_subj_graph_att": &schema.Schema{

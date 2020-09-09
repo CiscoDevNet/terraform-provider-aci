@@ -7,6 +7,7 @@ import (
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
 )
 
 func resourceAciFilterEntry() *schema.Resource {
@@ -39,48 +40,131 @@ func resourceAciFilterEntry() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"no",
+					"yes",
+				}, false),
 			},
 
 			"arp_opc": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"unspecified",
+					"req",
+					"reply",
+				}, false),
 			},
 
 			"d_from_port": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"unspecified",
+					"ftpData",
+					"smtp",
+					"dns",
+					"http",
+					"pop3",
+					"https",
+					"rtsp",
+				}, false),
 			},
 
 			"d_to_port": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"unspecified",
+					"ftpData",
+					"smtp",
+					"dns",
+					"http",
+					"pop3",
+					"https",
+					"rtsp",
+				}, false),
 			},
 
 			"ether_t": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"unspecified",
+					"ipv4",
+					"trill",
+					"arp",
+					"ipv6",
+					"mpls_ucast",
+					"mac_security",
+					"fcoe",
+					"ip",
+				}, false),
 			},
 
 			"icmpv4_t": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"echo-rep",
+					"dst-unreach",
+					"src-quench",
+					"echo",
+					"time-exceeded",
+					"unspecified",
+				}, false),
 			},
 
 			"icmpv6_t": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"unspecified",
+					"dst-unreach",
+					"time-exceeded",
+					"echo-req",
+					"echo-rep",
+					"nbr-solicit",
+					"nbr-advert",
+					"redirect",
+				}, false),
 			},
 
 			"match_dscp": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"CS0",
+					"CS1",
+					"AF11",
+					"AF12",
+					"AF13",
+					"CS2",
+					"AF21",
+					"AF22",
+					"AF23",
+					"CS3",
+					"CS4",
+					"CS5",
+					"CS6",
+					"CS7",
+					"AF31",
+					"AF32",
+					"AF33",
+					"AF41",
+					"AF42",
+					"AF43",
+					"VA",
+					"EF",
+					"unspecified",
+				}, false),
 			},
 
 			"name_alias": &schema.Schema{
@@ -93,30 +177,76 @@ func resourceAciFilterEntry() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"unspecified",
+					"icmp",
+					"igmp",
+					"tcp",
+					"egp",
+					"igp",
+					"udp",
+					"icmpv6",
+					"eigrp",
+					"ospfigp",
+					"pim",
+					"l2tp",
+				}, false),
 			},
 
 			"s_from_port": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"unspecified",
+					"ftpData",
+					"smtp",
+					"dns",
+					"http",
+					"pop3",
+					"https",
+					"rtsp",
+				}, false),
 			},
 
 			"s_to_port": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"unspecified",
+					"ftpData",
+					"smtp",
+					"dns",
+					"http",
+					"pop3",
+					"https",
+					"rtsp",
+				}, false),
 			},
 
 			"stateful": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"no",
+					"yes",
+				}, false),
 			},
 
 			"tcp_rules": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"unspecified",
+					"est",
+					"syn",
+					"ack",
+					"fin",
+					"rst",
+				}, false),
 			},
 		}),
 	}

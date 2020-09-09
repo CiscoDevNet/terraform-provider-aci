@@ -7,6 +7,7 @@ import (
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
 )
 
 func resourceAciL2InterfacePolicy() *schema.Resource {
@@ -40,18 +41,32 @@ func resourceAciL2InterfacePolicy() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"disabled",
+					"edgePort",
+					"corePort",
+					"doubleQtagPort",
+				}, false),
 			},
 
 			"vepa": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"disabled",
+					"enabled",
+				}, false),
 			},
 
 			"vlan_scope": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"global",
+					"portlocal",
+				}, false),
 			},
 		}),
 	}

@@ -9,6 +9,7 @@ import (
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
 )
 
 func resourceAciCloudExternalEPg() *schema.Resource {
@@ -47,12 +48,22 @@ func resourceAciCloudExternalEPg() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"disabled",
+					"enabled",
+				}, false),
 			},
 
 			"match_t": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"All",
+					"AtleastOne",
+					"AtmostOne",
+					"None",
+				}, false),
 			},
 
 			"name_alias": &schema.Schema{
@@ -65,18 +76,36 @@ func resourceAciCloudExternalEPg() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"exclude",
+					"include",
+				}, false),
 			},
 
 			"prio": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"level1",
+					"level2",
+					"level3",
+					"level4",
+					"level5",
+					"level6",
+					"unspecified",
+				}, false),
 			},
 
 			"route_reachability": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"inter-site",
+					"internet",
+					"unspecified",
+				}, false),
 			},
 
 			"relation_fv_rs_sec_inherited": &schema.Schema{

@@ -7,6 +7,7 @@ import (
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
 )
 
 func resourceAciAccessPortSelector() *schema.Resource {
@@ -39,6 +40,10 @@ func resourceAciAccessPortSelector() *schema.Resource {
 				Type:     schema.TypeString,
 				Required: true,
 				ForceNew: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"ALL",
+					"range",
+				}, false),
 			},
 
 			"name_alias": &schema.Schema{

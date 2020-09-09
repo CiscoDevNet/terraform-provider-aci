@@ -9,6 +9,7 @@ import (
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
 )
 
 func resourceAciPCVPCInterfacePolicyGroup() *schema.Resource {
@@ -36,6 +37,11 @@ func resourceAciPCVPCInterfacePolicyGroup() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"not-aggregated",
+					"link",
+					"node",
+				}, false),
 			},
 
 			"name_alias": &schema.Schema{

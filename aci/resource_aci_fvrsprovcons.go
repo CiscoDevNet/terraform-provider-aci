@@ -7,6 +7,7 @@ import (
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
 )
 
 func resourceAciContractProvider() *schema.Resource {
@@ -45,12 +46,24 @@ func resourceAciContractProvider() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"All",
+					"AtleastOne",
+					"AtmostOne",
+					"None",
+				}, false),
 			},
 
 			"prio": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"unspecified",
+					"level3",
+					"level2",
+					"level1",
+				}, false),
 			},
 		}),
 	}

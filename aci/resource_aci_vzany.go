@@ -9,6 +9,7 @@ import (
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
 )
 
 func resourceAciAny() *schema.Resource {
@@ -35,6 +36,12 @@ func resourceAciAny() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"All",
+					"AtleastOne",
+					"AtmostOne",
+					"None",
+				}, false),
 			},
 
 			"name_alias": &schema.Schema{
@@ -47,6 +54,10 @@ func resourceAciAny() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"enabled",
+					"disabled",
+				}, false),
 			},
 
 			"relation_vz_rs_any_to_cons": &schema.Schema{

@@ -9,6 +9,7 @@ import (
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
 )
 
 func resourceAciApplicationEPG() *schema.Resource {
@@ -47,12 +48,20 @@ func resourceAciApplicationEPG() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"disabled",
+					"enabled",
+				}, false),
 			},
 
 			"fwd_ctrl": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"none",
+					"proxy-arp",
+				}, false),
 			},
 
 			"has_mcast_source": &schema.Schema{
@@ -65,12 +74,22 @@ func resourceAciApplicationEPG() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"no",
+					"yes",
+				}, false),
 			},
 
 			"match_t": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"All",
+					"AtleastOne",
+					"AtmostOne",
+					"None",
+				}, false),
 			},
 
 			"name_alias": &schema.Schema{
@@ -83,18 +102,32 @@ func resourceAciApplicationEPG() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"enforced",
+					"unenforced",
+				}, false),
 			},
 
 			"pref_gr_memb": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"include",
+					"exclude",
+				}, false),
 			},
 
 			"prio": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"unspecified",
+					"level3",
+					"level2",
+					"level1",
+				}, false),
 			},
 
 			"shutdown": &schema.Schema{

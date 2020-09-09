@@ -7,6 +7,7 @@ import (
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
 )
 
 func resourceAciPODMaintenanceGroup() *schema.Resource {
@@ -34,6 +35,15 @@ func resourceAciPODMaintenanceGroup() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"controller",
+					"switch",
+					"catalog",
+					"plugin",
+					"pluginPackage",
+					"config",
+					"vpod",
+				}, false),
 			},
 
 			"name_alias": &schema.Schema{

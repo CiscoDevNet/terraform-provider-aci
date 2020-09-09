@@ -7,6 +7,7 @@ import (
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
 )
 
 func resourceAciVSANPool() *schema.Resource {
@@ -33,6 +34,10 @@ func resourceAciVSANPool() *schema.Resource {
 			"alloc_mode": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"dynamic",
+					"static",
+				}, false),
 			},
 
 			"name_alias": &schema.Schema{

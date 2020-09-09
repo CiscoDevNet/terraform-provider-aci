@@ -7,6 +7,7 @@ import (
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
 )
 
 func resourceAciFirmwareDownloadTask() *schema.Resource {
@@ -34,12 +35,20 @@ func resourceAciFirmwareDownloadTask() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"password",
+					"key",
+				}, false),
 			},
 
 			"auth_type": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"usePassword",
+					"useSshKeyContents",
+				}, false),
 			},
 
 			"dnld_task_flip": &schema.Schema{
@@ -70,6 +79,10 @@ func resourceAciFirmwareDownloadTask() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"no",
+					"yes",
+				}, false),
 			},
 
 			"name_alias": &schema.Schema{
@@ -94,6 +107,12 @@ func resourceAciFirmwareDownloadTask() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"scp",
+					"http",
+					"usbkey",
+					"local",
+				}, false),
 			},
 
 			"url": &schema.Schema{

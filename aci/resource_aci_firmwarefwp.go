@@ -7,6 +7,7 @@ import (
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
 )
 
 func resourceAciFirmwarePolicy() *schema.Resource {
@@ -34,12 +35,20 @@ func resourceAciFirmwarePolicy() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"no",
+					"yes",
+				}, false),
 			},
 
 			"ignore_compat": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"no",
+					"yes",
+				}, false),
 			},
 
 			"internal_label": &schema.Schema{
@@ -64,6 +73,12 @@ func resourceAciFirmwarePolicy() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"trigger-immediate",
+					"trigger",
+					"triggered",
+					"untriggered",
+				}, false),
 			},
 		}),
 	}

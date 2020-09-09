@@ -7,6 +7,7 @@ import (
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
 )
 
 func resourceAciLACPPolicy() *schema.Resource {
@@ -34,6 +35,13 @@ func resourceAciLACPPolicy() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"symmetric-hash",
+					"susp-individual",
+					"graceful-conv",
+					"load-defer",
+					"fast-sel-hot-stdby",
+				}, false),
 			},
 
 			"max_links": &schema.Schema{
@@ -52,6 +60,13 @@ func resourceAciLACPPolicy() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"off",
+					"active",
+					"passive",
+					"mac-pin",
+					"mac-pin-nicload",
+				}, false),
 			},
 
 			"name_alias": &schema.Schema{

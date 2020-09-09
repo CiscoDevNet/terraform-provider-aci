@@ -7,6 +7,7 @@ import (
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
 )
 
 func resourceAciFirmwareGroup() *schema.Resource {
@@ -40,6 +41,11 @@ func resourceAciFirmwareGroup() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"ALL",
+					"range",
+					"ALL_IN_POD",
+				}, false),
 			},
 
 			"relation_firmware_rs_fwgrpp": &schema.Schema{
