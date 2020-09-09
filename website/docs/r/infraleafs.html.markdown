@@ -27,6 +27,7 @@ resource "aci_switch_association" "example" {
 * `leaf_profile_dn` - (Required) Distinguished name of parent LeafProfile object.
 * `name` - (Required) name of Object switch_association.
 * `switch_association_type` - (Required) switch_association_type of Object switch_association.
+Allowed values: "ALL", "range", "ALL_IN_POD"
 * `annotation` - (Optional) annotation for object switch_association.
 * `name_alias` - (Optional) name_alias for object switch_association.
 * `switch_association_type` - (Optional) leaf selector type

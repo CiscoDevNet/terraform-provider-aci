@@ -29,8 +29,10 @@ resource "aci_epg_to_static_path" "example" {
 * `tDn` - (Required) tDn of Object static_path.
 * `annotation` - (Optional) annotation for object static_path.
 * `encap` - (Optional) encapsulation
-* `instr_imedcy` - (Optional) immediacy
-* `mode` - (Optional) mode of the static association with the path
+* `instr_imedcy` - (Optional) immediacy.
+Allowed values: "immediate", "lazy"
+* `mode` - (Optional) mode of the static association with the path.
+Allowed values: "regular", "native", "untagged"
 * `primary_encap` - (Optional) primary_encap for object static_path.
 
 

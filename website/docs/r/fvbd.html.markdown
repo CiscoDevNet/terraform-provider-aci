@@ -46,6 +46,7 @@ Manages ACI Bridge Domain
 * `arp_flood` - (Optional) A property to specify whether ARP flooding is enabled. If flooding is disabled, unicast routing will be performed on the target IP address. Allowed values are "yes" and "no". Default is "no".
 * `ep_clear` - (Optional) Represents the parameter used by the node (i.e. Leaf) to clear all EPs in all leaves for this BD. Allowed values are "yes" and "no". Default is "no".
 * `ep_move_detect_mode` - (Optional) The End Point move detection option uses the Gratuitous Address Resolution Protocol (GARP). A gratuitous ARP is an ARP broadcast-type of packet that is used to verify that no other device on the network has the same IP address as the sending device.
+Allowed value: "garp"
 * `host_based_routing` - (Optional) enables advertising host routes out of l3outs of this BD. Allowed values are "yes" and "no". Default is "no".
 * `intersite_bum_traffic_allow` - (Optional)  Control whether BUM traffic is allowed between sites
 .Allowed values are "yes" and "no". Default is "no".

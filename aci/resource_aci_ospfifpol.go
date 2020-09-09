@@ -40,9 +40,6 @@ func resourceAciOSPFInterfacePolicy() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
-				ValidateFunc: validation.StringInSlice([]string{
-					"unspecified",
-				}, false),
 			},
 
 			"ctrl": &schema.Schema{

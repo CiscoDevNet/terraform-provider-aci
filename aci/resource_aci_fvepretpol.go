@@ -65,18 +65,12 @@ func resourceAciEndPointRetentionPolicy() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
-				ValidateFunc: validation.StringInSlice([]string{
-					"infinite",
-				}, false),
 			},
 
 			"move_freq": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
-				ValidateFunc: validation.StringInSlice([]string{
-					"none",
-				}, false),
 			},
 
 			"name_alias": &schema.Schema{
@@ -89,9 +83,6 @@ func resourceAciEndPointRetentionPolicy() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
-				ValidateFunc: validation.StringInSlice([]string{
-					"infinite",
-				}, false),
 			},
 		}),
 	}

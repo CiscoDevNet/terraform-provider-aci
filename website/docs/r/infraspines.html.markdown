@@ -29,6 +29,7 @@ resource "aci_spine_switch_association" "example" {
 * `spine_profile_dn` - (Required) Distinguished name of parent Spine Profile object.
 * `name` - (Required) name of Object spine Switch association.
 * `spine_switch_association_type` - (Required) spine association type of Object spine Switch association.
+Allowed values: "ALL", "range", "ALL_IN_POD"
 * `annotation` - (Optional) annotation for object spine Switch association.
 * `name_alias` - (Optional) name alias for object spine Switch association.
 

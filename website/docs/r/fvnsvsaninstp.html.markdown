@@ -17,7 +17,6 @@ resource "aci_vsan_pool" "example" {
 
   name  = "example"
 
-  allocMode  = "example"
   alloc_mode  = "example"
   annotation  = "example"
   name_alias  = "example"
@@ -25,8 +24,8 @@ resource "aci_vsan_pool" "example" {
 ```
 ## Argument Reference ##
 * `name` - (Required) name of Object vsan_pool.
-* `allocMode` - (Required) allocMode of Object vsan_pool.
 * `alloc_mode` - (Optional) alloc_mode for object vsan_pool.
+Allowed values: "dynamic", "static"
 * `annotation` - (Optional) annotation for object vsan_pool.
 * `name_alias` - (Optional) name_alias for object vsan_pool.
 
