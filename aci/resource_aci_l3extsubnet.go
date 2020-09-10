@@ -7,6 +7,7 @@ import (
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
 )
 
 func resourceAciL3ExtSubnet() *schema.Resource {
@@ -39,6 +40,11 @@ func resourceAciL3ExtSubnet() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"import-rtctrl",
+					"export-rtctrl",
+					"shared-rtctrl",
+				}, false),
 			},
 
 			"name_alias": &schema.Schema{
@@ -51,6 +57,13 @@ func resourceAciL3ExtSubnet() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"import-rtctrl",
+					"export-rtctrl",
+					"shared-rtctrl",
+					"import-security",
+					"shared-security",
+				}, false),
 			},
 
 			"relation_l3ext_rs_subnet_to_profile": &schema.Schema{

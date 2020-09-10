@@ -71,9 +71,9 @@ func testAccCheckAciFabricNodeConfig_basic(description string) string {
 		
 		tdn  = "example"
 		  annotation  = "example"
-		  config_issues  = "example"
+		  config_issues  = "none"
 		  rtr_id  = "example"
-		  rtr_id_loop_back  = "example"
+		  rtr_id_loop_back  = "no"
 		}
 	`, description)
 }
@@ -141,7 +141,7 @@ func testAccCheckAciFabricNodeAttributes(description string, fabric_node *models
 			return fmt.Errorf("Bad fabric_node annotation %s", fabric_node.Annotation)
 		}
 
-		if "example" != fabric_node.ConfigIssues {
+		if "none" != fabric_node.ConfigIssues {
 			return fmt.Errorf("Bad fabric_node config_issues %s", fabric_node.ConfigIssues)
 		}
 
@@ -149,7 +149,7 @@ func testAccCheckAciFabricNodeAttributes(description string, fabric_node *models
 			return fmt.Errorf("Bad fabric_node rtr_id %s", fabric_node.RtrId)
 		}
 
-		if "example" != fabric_node.RtrIdLoopBack {
+		if "no" != fabric_node.RtrIdLoopBack {
 			return fmt.Errorf("Bad fabric_node rtr_id_loop_back %s", fabric_node.RtrIdLoopBack)
 		}
 

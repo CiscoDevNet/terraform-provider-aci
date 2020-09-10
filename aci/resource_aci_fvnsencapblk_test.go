@@ -72,11 +72,11 @@ func testAccCheckAciRangesConfig_basic(description string) string {
 		_from  = "example"
 		
 		to  = "example"
-		  alloc_mode  = "example"
+		  alloc_mode  = "static"
 		  annotation  = "example"
 		  from  = "example"
 		  name_alias  = "example"
-		  role  = "example"
+		  role  = "external"
 		}
 	`, description)
 }
@@ -144,7 +144,7 @@ func testAccCheckAciRangesAttributes(description string, ranges *models.Ranges) 
 			return fmt.Errorf("Bad ranges to %s", ranges.To)
 		}
 
-		if "example" != ranges.AllocMode {
+		if "static" != ranges.AllocMode {
 			return fmt.Errorf("Bad ranges alloc_mode %s", ranges.AllocMode)
 		}
 
@@ -160,7 +160,7 @@ func testAccCheckAciRangesAttributes(description string, ranges *models.Ranges) 
 			return fmt.Errorf("Bad ranges name_alias %s", ranges.NameAlias)
 		}
 
-		if "example" != ranges.Role {
+		if "external" != ranges.Role {
 			return fmt.Errorf("Bad ranges role %s", ranges.Role)
 		}
 

@@ -10,6 +10,7 @@ import (
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
 )
 
 func resourceAciSubnet() *schema.Resource {
@@ -42,6 +43,12 @@ func resourceAciSubnet() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"unspecified",
+					"querier",
+					"nd",
+					"no-default-gateway",
+				}, false),
 			},
 
 			"name_alias": &schema.Schema{
@@ -54,18 +61,31 @@ func resourceAciSubnet() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"yes",
+					"no",
+				}, false),
 			},
 
 			"scope": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"public",
+					"private",
+					"shared",
+				}, false),
 			},
 
 			"virtual": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"yes",
+					"no",
+				}, false),
 			},
 
 			"relation_fv_rs_bd_subnet_to_out": &schema.Schema{

@@ -70,7 +70,7 @@ func testAccCheckAciPODMaintenanceGroupConfig_basic(description string) string {
 		
 		name  = "example"
 		  annotation  = "example"
-		  fwtype  = "example"
+		  fwtype  = "switch"
 		  name_alias  = "example"
 		  pod_maintenance_group_type  = "example"
 		}
@@ -140,7 +140,7 @@ func testAccCheckAciPODMaintenanceGroupAttributes(description string, pod_mainte
 			return fmt.Errorf("Bad pod_maintenance_group annotation %s", pod_maintenance_group.Annotation)
 		}
 
-		if "example" != pod_maintenance_group.Fwtype {
+		if "switch" != pod_maintenance_group.Fwtype {
 			return fmt.Errorf("Bad pod_maintenance_group fwtype %s", pod_maintenance_group.Fwtype)
 		}
 

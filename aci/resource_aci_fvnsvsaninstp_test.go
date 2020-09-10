@@ -70,8 +70,7 @@ func testAccCheckAciVSANPoolConfig_basic(description string) string {
 		
 		name  = "example"
 		
-		allocMode  = "example"
-		  alloc_mode  = "example"
+		  alloc_mode  = "dynamic"
 		  annotation  = "example"
 		  name_alias  = "example"
 		}
@@ -137,11 +136,7 @@ func testAccCheckAciVSANPoolAttributes(description string, vsan_pool *models.VSA
 			return fmt.Errorf("Bad vsan_pool name %s", vsan_pool.Name)
 		}
 
-		if "example" != vsan_pool.AllocMode {
-			return fmt.Errorf("Bad vsan_pool alloc_mode %s", vsan_pool.AllocMode)
-		}
-
-		if "example" != vsan_pool.AllocMode {
+		if "dynamic" != vsan_pool.AllocMode {
 			return fmt.Errorf("Bad vsan_pool alloc_mode %s", vsan_pool.AllocMode)
 		}
 

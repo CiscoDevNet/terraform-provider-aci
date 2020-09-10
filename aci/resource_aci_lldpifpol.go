@@ -7,6 +7,7 @@ import (
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
 )
 
 func resourceAciLLDPInterfacePolicy() *schema.Resource {
@@ -34,12 +35,20 @@ func resourceAciLLDPInterfacePolicy() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"enabled",
+					"disabled",
+				}, false),
 			},
 
 			"admin_tx_st": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"enabled",
+					"disabled",
+				}, false),
 			},
 
 			"name_alias": &schema.Schema{

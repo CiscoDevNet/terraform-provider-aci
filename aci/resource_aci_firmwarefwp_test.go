@@ -70,12 +70,12 @@ func testAccCheckAciFirmwarePolicyConfig_basic(description string) string {
 		
 		name  = "example"
 		  annotation  = "example"
-		  effective_on_reboot  = "example"
-		  ignore_compat  = "example"
+		  effective_on_reboot  = "no"
+		  ignore_compat  = "no"
 		  internal_label  = "example"
 		  name_alias  = "example"
 		  version  = "example"
-		  version_check_override  = "example"
+		  version_check_override  = "trigger"
 		}
 	`, description)
 }
@@ -143,11 +143,11 @@ func testAccCheckAciFirmwarePolicyAttributes(description string, firmware_policy
 			return fmt.Errorf("Bad firmware_policy annotation %s", firmware_policy.Annotation)
 		}
 
-		if "example" != firmware_policy.EffectiveOnReboot {
+		if "no" != firmware_policy.EffectiveOnReboot {
 			return fmt.Errorf("Bad firmware_policy effective_on_reboot %s", firmware_policy.EffectiveOnReboot)
 		}
 
-		if "example" != firmware_policy.IgnoreCompat {
+		if "no" != firmware_policy.IgnoreCompat {
 			return fmt.Errorf("Bad firmware_policy ignore_compat %s", firmware_policy.IgnoreCompat)
 		}
 
@@ -163,7 +163,7 @@ func testAccCheckAciFirmwarePolicyAttributes(description string, firmware_policy
 			return fmt.Errorf("Bad firmware_policy version %s", firmware_policy.Version)
 		}
 
-		if "example" != firmware_policy.VersionCheckOverride {
+		if "trigger" != firmware_policy.VersionCheckOverride {
 			return fmt.Errorf("Bad firmware_policy version_check_override %s", firmware_policy.VersionCheckOverride)
 		}
 

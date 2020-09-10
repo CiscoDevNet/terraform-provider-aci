@@ -70,7 +70,7 @@ func testAccCheckAciVLANPoolConfig_basic(description string) string {
 		
 		name  = "example"
 		
-		alloc_mode  = "example"
+		alloc_mode  = "static"
 		  annotation  = "example"
 		  name_alias  = "example"
 		}
@@ -136,7 +136,7 @@ func testAccCheckAciVLANPoolAttributes(description string, vlan_pool *models.VLA
 			return fmt.Errorf("Bad vlan_pool name %s", vlan_pool.Name)
 		}
 
-		if "example" != vlan_pool.AllocMode {
+		if "static" != vlan_pool.AllocMode {
 			return fmt.Errorf("Bad vlan_pool alloc_mode %s", vlan_pool.AllocMode)
 		}
 

@@ -69,24 +69,12 @@ func testAccCheckAciLocalUserConfig_basic(description string) string {
 		description = "%s"
 		
 		name  = "example"
-		  account_status  = "example"
+		  account_status  = "active"
 		  annotation  = "example"
 		  cert_attribute  = "example"
-		  clear_pwd_history  = "example"
+		  clear_pwd_history  = "no"
 		  email  = "example"
-		  expiration  = "example"
-		  expires  = "example"
-		  first_name  = "example"
-		  last_name  = "example"
-		  name_alias  = "example"
-		  otpenable  = "example"
-		  otpkey  = "example"
-		  phone  = "example"
-		  pwd  = "example"
-		  pwd_life_time  = "example"
-		  pwd_update_required  = "example"
-		  rbac_string  = "example"
-		  unix_user_id  = "example"
+		  expires  = "no"
 		}
 	`, description)
 }
@@ -150,7 +138,7 @@ func testAccCheckAciLocalUserAttributes(description string, local_user *models.L
 			return fmt.Errorf("Bad local_user name %s", local_user.Name)
 		}
 
-		if "example" != local_user.AccountStatus {
+		if "active" != local_user.AccountStatus {
 			return fmt.Errorf("Bad local_user account_status %s", local_user.AccountStatus)
 		}
 
@@ -162,7 +150,7 @@ func testAccCheckAciLocalUserAttributes(description string, local_user *models.L
 			return fmt.Errorf("Bad local_user cert_attribute %s", local_user.CertAttribute)
 		}
 
-		if "example" != local_user.ClearPwdHistory {
+		if "no" != local_user.ClearPwdHistory {
 			return fmt.Errorf("Bad local_user clear_pwd_history %s", local_user.ClearPwdHistory)
 		}
 
@@ -170,56 +158,8 @@ func testAccCheckAciLocalUserAttributes(description string, local_user *models.L
 			return fmt.Errorf("Bad local_user email %s", local_user.Email)
 		}
 
-		if "example" != local_user.Expiration {
-			return fmt.Errorf("Bad local_user expiration %s", local_user.Expiration)
-		}
-
-		if "example" != local_user.Expires {
+		if "no" != local_user.Expires {
 			return fmt.Errorf("Bad local_user expires %s", local_user.Expires)
-		}
-
-		if "example" != local_user.FirstName {
-			return fmt.Errorf("Bad local_user first_name %s", local_user.FirstName)
-		}
-
-		if "example" != local_user.LastName {
-			return fmt.Errorf("Bad local_user last_name %s", local_user.LastName)
-		}
-
-		if "example" != local_user.NameAlias {
-			return fmt.Errorf("Bad local_user name_alias %s", local_user.NameAlias)
-		}
-
-		if "example" != local_user.Otpenable {
-			return fmt.Errorf("Bad local_user otpenable %s", local_user.Otpenable)
-		}
-
-		if "example" != local_user.Otpkey {
-			return fmt.Errorf("Bad local_user otpkey %s", local_user.Otpkey)
-		}
-
-		if "example" != local_user.Phone {
-			return fmt.Errorf("Bad local_user phone %s", local_user.Phone)
-		}
-
-		if "example" != local_user.Pwd {
-			return fmt.Errorf("Bad local_user pwd %s", local_user.Pwd)
-		}
-
-		if "example" != local_user.PwdLifeTime {
-			return fmt.Errorf("Bad local_user pwd_life_time %s", local_user.PwdLifeTime)
-		}
-
-		if "example" != local_user.PwdUpdateRequired {
-			return fmt.Errorf("Bad local_user pwd_update_required %s", local_user.PwdUpdateRequired)
-		}
-
-		if "example" != local_user.RbacString {
-			return fmt.Errorf("Bad local_user rbac_string %s", local_user.RbacString)
-		}
-
-		if "example" != local_user.UnixUserId {
-			return fmt.Errorf("Bad local_user unix_user_id %s", local_user.UnixUserId)
 		}
 
 		return nil

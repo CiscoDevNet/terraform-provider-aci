@@ -7,6 +7,7 @@ import (
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
 )
 
 func resourceAciOSPFInterfacePolicy() *schema.Resource {
@@ -45,6 +46,13 @@ func resourceAciOSPFInterfacePolicy() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"unspecified",
+					"passive",
+					"mtu-ignore",
+					"advert-subnet",
+					"bfd",
+				}, false),
 			},
 
 			"dead_intvl": &schema.Schema{
@@ -69,12 +77,22 @@ func resourceAciOSPFInterfacePolicy() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"unspecified",
+					"p2p",
+					"bcast",
+				}, false),
 			},
 
 			"pfx_suppress": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"inherit",
+					"enable",
+					"disable",
+				}, false),
 			},
 
 			"prio": &schema.Schema{

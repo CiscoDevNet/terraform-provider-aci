@@ -28,12 +28,15 @@ resource "aci_firmware_policy" "example" {
 ## Argument Reference ##
 * `name` - (Required) name of Object firmware_policy.
 * `annotation` - (Optional) annotation for object firmware_policy.
-* `effective_on_reboot` - (Optional) firmware version effective on reboot selection
+* `effective_on_reboot` - (Optional) firmware version effective on reboot selection.
+Allowed values: "no", "yes"
 * `ignore_compat` - (Optional) whether compatibility check required
+Allowed values: "no", "yes"
 * `internal_label` - (Optional) firmware label
 * `name_alias` - (Optional) name_alias for object firmware_policy.
 * `version` - (Optional) firmware version
-* `version_check_override` - (Optional) version check override
+* `version_check_override` - (Optional) version check override.
+Allowed values: "trigger-immediate", "trigger", "triggered", "untriggered"
 
 
 

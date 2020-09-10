@@ -31,10 +31,12 @@ resource "aci_ranges" "example" {
 * `_from` - (Required) _from of Object ranges.
 * `to` - (Required) to of Object ranges.
 * `alloc_mode` - (Optional) alloc_mode for object ranges.
+Allowed values: "dynamic", "static", "inherit"
 * `annotation` - (Optional) annotation for object ranges.
 * `from` - (Optional) encapsulation block start
 * `name_alias` - (Optional) name_alias for object ranges.
-* `role` - (Optional) system role type
+* `role` - (Optional) system role type.
+Allowed values: "external", "internal"
 * `to` - (Optional) encapsulation block end
 
 

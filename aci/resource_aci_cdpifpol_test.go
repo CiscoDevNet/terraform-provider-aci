@@ -69,7 +69,7 @@ func testAccCheckAciCDPInterfacePolicyConfig_basic(description string) string {
 		description = "%s"
 		
 		name  = "example"
-		  admin_st  = "example"
+		  admin_st  = "enabled"
 		  annotation  = "example"
 		  name_alias  = "example"
 		}
@@ -135,7 +135,7 @@ func testAccCheckAciCDPInterfacePolicyAttributes(description string, cdp_interfa
 			return fmt.Errorf("Bad cdp_interface_policy name %s", cdp_interface_policy.Name)
 		}
 
-		if "example" != cdp_interface_policy.AdminSt {
+		if "enabled" != cdp_interface_policy.AdminSt {
 			return fmt.Errorf("Bad cdp_interface_policy admin_st %s", cdp_interface_policy.AdminSt)
 		}
 

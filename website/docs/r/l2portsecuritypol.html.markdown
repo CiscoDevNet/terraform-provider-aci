@@ -30,6 +30,7 @@ Manages ACI Port Security Policy
 * `name_alias` - (Optional) name_alias for object port_security_policy.
 * `timeout` - (Optional) amount of time between authentication attempts. Allowed value range is "60" - "3600". Default is "60".
 * `violation` - (Optional) Port Security Violation. default value is "protect".
+Allowed value: "protect"
 
 
 

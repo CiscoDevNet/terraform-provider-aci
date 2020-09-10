@@ -7,6 +7,7 @@ import (
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
 )
 
 func resourceAciMaintenancePolicy() *schema.Resource {
@@ -34,18 +35,30 @@ func resourceAciMaintenancePolicy() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"untriggered",
+					"triggered",
+				}, false),
 			},
 
 			"graceful": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"no",
+					"yes",
+				}, false),
 			},
 
 			"ignore_compat": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"no",
+					"yes",
+				}, false),
 			},
 
 			"internal_label": &schema.Schema{
@@ -64,12 +77,22 @@ func resourceAciMaintenancePolicy() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"notifyOnlyOnFailures",
+					"notifyAlwaysBetweenSets",
+					"notifyNever",
+				}, false),
 			},
 
 			"run_mode": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"pauseOnlyOnFailures",
+					"pauseAlwaysBetweenSets",
+					"pauseNever",
+				}, false),
 			},
 
 			"version": &schema.Schema{
@@ -82,6 +105,12 @@ func resourceAciMaintenancePolicy() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"trigger-immediate",
+					"trigger",
+					"triggered",
+					"untriggered",
+				}, false),
 			},
 
 			"relation_maint_rs_pol_scheduler": &schema.Schema{

@@ -69,13 +69,13 @@ func testAccCheckAciConfigurationExportPolicyConfig_basic(description string) st
 		description = "%s"
 		
 		name  = "example"
-		  admin_st  = "example"
+		  admin_st  = "untriggered"
 		  annotation  = "example"
-		  format  = "example"
-		  include_secure_fields  = "example"
+		  format  = "json"
+		  include_secure_fields  = "no"
 		  max_snapshot_count  = "example"
 		  name_alias  = "example"
-		  snapshot  = "example"
+		  snapshot  = "yes"
 		  target_dn  = "example"
 		}
 	`, description)
@@ -140,7 +140,7 @@ func testAccCheckAciConfigurationExportPolicyAttributes(description string, conf
 			return fmt.Errorf("Bad configuration_export_policy name %s", configuration_export_policy.Name)
 		}
 
-		if "example" != configuration_export_policy.AdminSt {
+		if "untriggered" != configuration_export_policy.AdminSt {
 			return fmt.Errorf("Bad configuration_export_policy admin_st %s", configuration_export_policy.AdminSt)
 		}
 
@@ -148,11 +148,11 @@ func testAccCheckAciConfigurationExportPolicyAttributes(description string, conf
 			return fmt.Errorf("Bad configuration_export_policy annotation %s", configuration_export_policy.Annotation)
 		}
 
-		if "example" != configuration_export_policy.Format {
+		if "json" != configuration_export_policy.Format {
 			return fmt.Errorf("Bad configuration_export_policy format %s", configuration_export_policy.Format)
 		}
 
-		if "example" != configuration_export_policy.IncludeSecureFields {
+		if "no" != configuration_export_policy.IncludeSecureFields {
 			return fmt.Errorf("Bad configuration_export_policy include_secure_fields %s", configuration_export_policy.IncludeSecureFields)
 		}
 
@@ -164,7 +164,7 @@ func testAccCheckAciConfigurationExportPolicyAttributes(description string, conf
 			return fmt.Errorf("Bad configuration_export_policy name_alias %s", configuration_export_policy.NameAlias)
 		}
 
-		if "example" != configuration_export_policy.Snapshot {
+		if "yes" != configuration_export_policy.Snapshot {
 			return fmt.Errorf("Bad configuration_export_policy snapshot %s", configuration_export_policy.Snapshot)
 		}
 

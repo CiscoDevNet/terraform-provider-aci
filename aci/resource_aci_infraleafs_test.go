@@ -71,7 +71,7 @@ func testAccCheckAciSwitchAssociationConfig_basic(description string) string {
 		
 		name  = "example"
 		
-		switch_association_type  = "example"
+		switch_association_type  = "range"
 		  annotation  = "example"
 		  name_alias  = "example"
 		}
@@ -137,7 +137,7 @@ func testAccCheckAciSwitchAssociationAttributes(description string, switch_assoc
 			return fmt.Errorf("Bad switch_association name %s", switch_association.Name)
 		}
 
-		if "example" != switch_association.Switch_association_type {
+		if "range" != switch_association.Switch_association_type {
 			return fmt.Errorf("Bad switch_association switch_association_type %s", switch_association.Switch_association_type)
 		}
 

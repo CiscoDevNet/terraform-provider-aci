@@ -40,7 +40,9 @@ Manages ACI Filter Entry
 * `apply_to_frag` - (Optional) Flag to determine whether to apply changes to fragment. Allowed values are "yes" and "no". Default is "no". 
 * `arp_opc` - (Optional) open peripheral codes. Allowed values are "unspecified", "req" and "reply". Default is "unspecified".
 * `d_from_port` - (Optional) Destination From Port. Accepted values are any valid TCP/UDP port range. Default is "unspecified".
+Allowed values: "unspecified", "ftpData", "smtp", "dns", "http","pop3", "https", "rtsp"
 * `d_to_port` - (Optional) Destination To Port. Accepted values are any valid TCP/UDP port range. Default is "unspecified".
+Allowed values: "unspecified", "ftpData", "smtp", "dns", "http","pop3", "https", "rtsp"
 * `ether_t` - (Optional) ether type for the entry. Allowed values are "unspecified", "ipv4", "trill", "arp", "ipv6", "mpls_ucast", "mac_security", "fcoe" and "ip". Default is "unspecified".
 * `icmpv4_t` - (Optional) ICMPv4 message type; used when ip_protocol is icmp. Allowed values are "echo-rep", "dst-unreach", "src-quench", "echo", "time-exceeded" and "unspecified". Default is "unspecified".
 * `icmpv6_t` - (Optional) ICMPv6 message type; used when ip_protocol is icmpv6. Allowed values are "unspecified", "dst-unreach", "time-exceeded", "echo-req", "echo-rep", "nbr-solicit", "nbr-advert" and "redirect". Default is "unspecified".
@@ -48,7 +50,9 @@ Manages ACI Filter Entry
 * `name_alias` - (Optional) name_alias for object filter_entry.
 * `prot` - (Optional) level 3 ip protocol. Allowed values are "unspecified", "icmp", "igmp", "tcp", "egp", "igp", "udp", "icmpv6", "eigrp", "ospfigp", "pim" and "l2tp". Default is "unspecified".
 * `s_from_port` - (Optional) Source From Port. Accepted values are any valid TCP/UDP port range. Default is "unspecified".
+Allowed values: "unspecified", "ftpData", "smtp", "dns", "http","pop3", "https", "rtsp"
 * `s_to_port` - (Optional) Source To Port. Accepted values are any valid TCP/UDP port range. Default is "unspecified".
+Allowed values: "unspecified", "ftpData", "smtp", "dns", "http","pop3", "https", "rtsp"
 * `stateful` - (Optional) Determines if entry is stateful or not. Allowed values are "yes" and "no". Default is "no".
 * `tcp_rules` - (Optional) TCP Session Rules. Allowed values are "unspecified", "est", "syn", "ack", "fin" and "rst". Default is "unspecified".
 

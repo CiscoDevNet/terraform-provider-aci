@@ -70,7 +70,7 @@ func testAccCheckAciSPANSourceGroupConfig_basic(description string) string {
 		description = "%s"
 		
 		name  = "example"
-		  admin_st  = "example"
+		  admin_st  = "enabled"
 		  annotation  = "example"
 		  name_alias  = "example"
 		}
@@ -136,7 +136,7 @@ func testAccCheckAciSPANSourceGroupAttributes(description string, span_source_gr
 			return fmt.Errorf("Bad span_source_group name %s", span_source_group.Name)
 		}
 
-		if "example" != span_source_group.AdminSt {
+		if "enabled" != span_source_group.AdminSt {
 			return fmt.Errorf("Bad span_source_group admin_st %s", span_source_group.AdminSt)
 		}
 

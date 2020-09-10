@@ -35,8 +35,10 @@ resource "aci_fabric_node_member" "example" {
 * `name_alias` - (Optional) name_alias for object fabric_node_member.
 * `node_id` - (Optional) node id
 * `node_type` - (Optional) node_type for object fabric_node_member.
+Allowed values: "unspecified", "remote-leaf-wan"
 * `pod_id` - (Optional) pod id
-* `role` - (Optional) system role type
+* `role` - (Optional) system role type.
+Allowed values: "unspecified", "leaf", "spine"
 * `serial` - (Optional) serial number
 
 

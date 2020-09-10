@@ -27,9 +27,10 @@ resource "aci_logical_node_to_fabric_node" "example" {
 * `logical_node_profile_dn` - (Required) Distinguished name of parent LogicalNodeProfile object.
 * `tDn` - (Required) tDn of Object fabric_node.
 * `annotation` - (Optional) annotation for object fabric_node.
-* `config_issues` - (Optional) configuration issues
+* `config_issues` - (Optional) configuration issues.
+Allowed values: "none", "node-path-misconfig","routerid-not-changable-with-mcast", "loopback-ip-missing"
 * `rtr_id` - (Optional) router identifier
-* `rtr_id_loop_back` - (Optional) 
+* `rtr_id_loop_back` - (Optional) Allowed values: "yes", "no"
 
 
 

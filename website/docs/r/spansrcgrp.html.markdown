@@ -25,7 +25,8 @@ resource "aci_span_source_group" "example" {
 ## Argument Reference ##
 * `tenant_dn` - (Required) Distinguished name of parent Tenant object.
 * `name` - (Required) name of Object span_source_group.
-* `admin_st` - (Optional) administrative state of the object or policy
+* `admin_st` - (Optional) administrative state of the object or policy.
+Allowed values: "enabled", "disabled"
 * `annotation` - (Optional) 
 * `name_alias` - (Optional) 
 

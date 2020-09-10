@@ -35,17 +35,21 @@ resource "aci_firmware_download_task" "example" {
 ## Argument Reference ##
 * `name` - (Required) name of Object firmware_download_task.
 * `annotation` - (Optional) annotation for object firmware_download_task.
-* `auth_pass` - (Optional) authentication type
-* `auth_type` - (Optional) ospf authentication type specifier
+* `auth_pass` - (Optional) authentication type.
+Allowed values: "password", "key"
+* `auth_type` - (Optional) ospf authentication type specifier.
+Allowed values: "usePassword", "useSshKeyContents"
 * `dnld_task_flip` - (Optional) dnld_task_flip for object firmware_download_task.
 * `identity_private_key_contents` - (Optional) identity_private_key_contents for object firmware_download_task.
 * `identity_private_key_passphrase` - (Optional) identity_private_key_passphrase for object firmware_download_task.
 * `identity_public_key_contents` - (Optional) identity_public_key_contents for object firmware_download_task.
-* `load_catalog_if_exists_and_newer` - (Optional) tracks to load the contained catalog or newer
+* `load_catalog_if_exists_and_newer` - (Optional) tracks to load the contained catalog or newer.
+Allowed values: "yes", "no"
 * `name_alias` - (Optional) name_alias for object firmware_download_task.
 * `password` - (Optional) password/key string
 * `polling_interval` - (Optional) polling interval
-* `proto` - (Optional) download protocol
+* `proto` - (Optional) download protocol.
+Allowed values: "scp", "http", "usbkey", "local"
 * `url` - (Optional) URL of image of source
 * `user` - (Optional) username for source
 

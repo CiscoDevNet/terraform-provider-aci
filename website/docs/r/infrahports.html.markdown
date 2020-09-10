@@ -27,7 +27,8 @@ Manages ACI Access Port Selector
 * `access_port_selector_type` - (Required) The host port selector type.Allowed values are "ALL" and "range". Default is "ALL".
 * `annotation` - (Optional) annotation for object access_port_selector.
 * `name_alias` - (Optional) name_alias for object access_port_selector.
-* `access_port_selector_type` - (Optional) host port selector type
+* `access_port_selector_type` - (Optional) host port selector type.
+Allowed values: "ALL", "range"
 
 * `relation_infra_rs_acc_base_grp` - (Optional) Relation to class infraAccBaseGrp. Cardinality - N_TO_ONE. Type - String.
                 

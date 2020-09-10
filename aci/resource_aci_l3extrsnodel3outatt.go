@@ -7,6 +7,7 @@ import (
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
 )
 
 func resourceAciFabricNode() *schema.Resource {
@@ -37,6 +38,12 @@ func resourceAciFabricNode() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"none",
+					"node-path-misconfig",
+					"routerid-not-changable-with-mcast",
+					"loopback-ip-missing",
+				}, false),
 			},
 
 			"rtr_id": &schema.Schema{
@@ -49,6 +56,10 @@ func resourceAciFabricNode() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"no",
+					"yes",
+				}, false),
 			},
 		}),
 	}
