@@ -6,6 +6,7 @@ import (
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
 )
 
 func resourceAciCloudContextProfile() *schema.Resource {
@@ -46,6 +47,10 @@ func resourceAciCloudContextProfile() *schema.Resource {
 				Optional:    true,
 				Computed:    true,
 				Description: "component type",
+				ValidateFunc: validation.StringInSlice([]string{
+					"regular",
+					"shadow",
+				}, false),
 			},
 
 			"primary_cidr": &schema.Schema{

@@ -7,6 +7,7 @@ import (
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
 )
 
 func resourceAciApplicationProfile() *schema.Resource {
@@ -45,6 +46,12 @@ func resourceAciApplicationProfile() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"unspecified",
+					"level3",
+					"level2",
+					"level1",
+				}, false),
 			},
 
 			"relation_fv_rs_ap_mon_pol": &schema.Schema{

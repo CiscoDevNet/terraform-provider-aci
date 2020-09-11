@@ -30,8 +30,10 @@ resource "aci_epgs_using_function" "example" {
 * `tdn` - (Required) tDn of Object epgs_using_function.
 * `encap` - (Required) vlan number encap. 
 * `annotation` - (Optional) annotation for object epgs_using_function.
-* `instr_imedcy` - (Optional) instrumentation immediacy
-* `mode` - (Optional) bgp domain mode
+* `instr_imedcy` - (Optional) instrumentation immediacy.
+Allowed values: "immediate", "lazy"
+* `mode` - (Optional) bgp domain mode.
+Allowed values: "regular", "native", "untagged"
 * `primary_encap` - (Optional) primary_encap for object epgs_using_function.
 
 

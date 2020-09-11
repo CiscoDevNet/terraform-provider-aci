@@ -7,6 +7,7 @@ import (
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
 )
 
 func resourceAciConfigurationImportPolicy() *schema.Resource {
@@ -34,12 +35,20 @@ func resourceAciConfigurationImportPolicy() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"untriggered",
+					"triggered",
+				}, false),
 			},
 
 			"fail_on_decrypt_errors": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"no",
+					"yes",
+				}, false),
 			},
 
 			"file_name": &schema.Schema{
@@ -52,12 +61,20 @@ func resourceAciConfigurationImportPolicy() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"atomic",
+					"best-effort",
+				}, false),
 			},
 
 			"import_type": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"merge",
+					"replace",
+				}, false),
 			},
 
 			"name_alias": &schema.Schema{
@@ -70,6 +87,10 @@ func resourceAciConfigurationImportPolicy() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"no",
+					"yes",
+				}, false),
 			},
 
 			"relation_config_rs_import_source": &schema.Schema{

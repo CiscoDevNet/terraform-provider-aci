@@ -32,6 +32,7 @@ resource "aci_service_redirect_policy" "example" {
 * `tenant_dn` - (Required) Distinguished name of parent Tenant object.
 * `name` - (Required) name of Object service_redirect_policy.
 * `anycast_enabled` - (Optional) anycast_enabled for object service_redirect_policy.
+Allowed values: "yes", "no"
 * `annotation` - (Optional) annotation for object service_redirect_policy.
 * `dest_type` - (Optional) dest_type for object service_redirect_policy.
 * `hashing_algorithm` - (Optional) hashing_algorithm for object service_redirect_policy.
@@ -39,9 +40,13 @@ resource "aci_service_redirect_policy" "example" {
 * `min_threshold_percent` - (Optional) min_threshold_percent for object service_redirect_policy.
 * `name_alias` - (Optional) name_alias for object service_redirect_policy.
 * `program_local_pod_only` - (Optional) program_local_pod_only for object service_redirect_policy.
+Allowed values: "yes", "no"
 * `resilient_hash_enabled` - (Optional) resilient_hash_enabled for object service_redirect_policy.
+Allowed values: "yes", "no"
 * `threshold_down_action` - (Optional) threshold_down_action for object service_redirect_policy.
+Allowed values: "deny", "permit"
 * `threshold_enable` - (Optional) threshold_enable for object service_redirect_policy.
+Allowed values: "yes", "no"
 
 * `relation_vns_rs_ipsla_monitoring_pol` - (Optional) Relation to class fvIPSLAMonitoringPol. Cardinality - N_TO_ONE. Type - String.
                 

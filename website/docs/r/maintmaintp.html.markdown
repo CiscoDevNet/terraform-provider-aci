@@ -30,16 +30,22 @@ resource "aci_maintenance_policy" "example" {
 ```
 ## Argument Reference ##
 * `name` - (Required) name of Object maintenance_policy.
-* `admin_st` - (Optional) maintenance policy admin state
+* `admin_st` - (Optional) maintenance policy admin state.
+Allowed values: "untriggered", "triggered"
 * `annotation` - (Optional) annotation for object maintenance_policy.
 * `graceful` - (Optional) graceful for object maintenance_policy.
-* `ignore_compat` - (Optional) whether compatibility check required
+Allowed values: "yes", "no"
+* `ignore_compat` - (Optional) whether compatibility check required.
+Allowed values: "yes", "no"
 * `internal_label` - (Optional) firmware label
 * `name_alias` - (Optional) name_alias for object maintenance_policy.
-* `notif_cond` - (Optional) when to send notifications to the admin
-* `run_mode` - (Optional) maintenance policy run mode
+* `notif_cond` - (Optional) when to send notifications to the admin.
+Allowed values: "notifyOnlyOnFailures","notifyAlwaysBetweenSets", "notifyNever"
+* `run_mode` - (Optional) maintenance policy run mode.
+Allowed values: "pauseOnlyOnFailures","pauseAlwaysBetweenSets", "pauseNever"
 * `version` - (Optional) compatibility catalog version
-* `version_check_override` - (Optional) version check override
+* `version_check_override` - (Optional) version check override.
+Allowed values: "trigger-immediate", "trigger", "triggered","untriggered"
 
 * `relation_maint_rs_pol_scheduler` - (Optional) Relation to class trigSchedP. Cardinality - N_TO_ONE. Type - String.
                 

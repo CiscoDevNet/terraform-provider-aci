@@ -7,6 +7,7 @@ import (
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
 )
 
 func resourceAciDomain() *schema.Resource {
@@ -37,12 +38,22 @@ func resourceAciDomain() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"none",
+					"staticBinding",
+					"dynamicBinding",
+					"ephemeral",
+				}, false),
 			},
 
 			"class_pref": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"encap",
+					"useg",
+				}, false),
 			},
 
 			"delimiter": &schema.Schema{
@@ -61,24 +72,47 @@ func resourceAciDomain() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"auto",
+					"vlan",
+					"vxlan",
+				}, false),
 			},
 
 			"epg_cos": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"Cos0",
+					"Cos1",
+					"Cos2",
+					"Cos3",
+					"Cos4",
+					"Cos5",
+					"Cos6",
+					"Cos7",
+				}, false),
 			},
 
 			"epg_cos_pref": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"disabled",
+					"enabled",
+				}, false),
 			},
 
 			"instr_imedcy": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"immediate",
+					"lazy",
+				}, false),
 			},
 
 			"lag_policy_name": &schema.Schema{
@@ -91,12 +125,21 @@ func resourceAciDomain() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"ingress",
+					"egress",
+					"both",
+				}, false),
 			},
 
 			"netflow_pref": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"disabled",
+					"enabled",
+				}, false),
 			},
 
 			"num_ports": &schema.Schema{
@@ -127,6 +170,11 @@ func resourceAciDomain() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"immediate",
+					"lazy",
+					"pre-provision",
+				}, false),
 			},
 
 			"secondary_encap_inner": &schema.Schema{
@@ -139,6 +187,10 @@ func resourceAciDomain() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"native",
+					"AVE",
+				}, false),
 			},
 
 			"vmm_id": &schema.Schema{

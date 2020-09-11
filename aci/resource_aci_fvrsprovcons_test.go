@@ -71,8 +71,8 @@ func testAccCheckAciContractProviderConfig_basic(description string) string {
 		
 		tnVzBrCPName  = "example"
 		  annotation  = "example"
-		  match_t  = "example"
-		  prio  = "example"
+		  match_t  = "All"
+		  prio  = "unspecified"
 		  tn_vz_br_cp_name  = "example"
 		}
 	`, description)
@@ -141,11 +141,11 @@ func testAccCheckAciContractProviderAttributes(description string, contract_prov
 			return fmt.Errorf("Bad contract_provider annotation %s", contract_provider.Annotation)
 		}
 
-		if "example" != contract_provider.MatchT {
+		if "All" != contract_provider.MatchT {
 			return fmt.Errorf("Bad contract_provider match_t %s", contract_provider.MatchT)
 		}
 
-		if "example" != contract_provider.Prio {
+		if "unspecified" != contract_provider.Prio {
 			return fmt.Errorf("Bad contract_provider prio %s", contract_provider.Prio)
 		}
 

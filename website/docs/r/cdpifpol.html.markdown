@@ -24,6 +24,7 @@ resource "aci_cdp_interface_policy" "example" {
 ## Argument Reference ##
 * `name` - (Required) name of Object cdp_interface_policy.
 * `admin_st` - (Optional) administrative state
+Allowed values: "enabled", "disabled"
 * `annotation` - (Optional) annotation for object cdp_interface_policy.
 * `name_alias` - (Optional) name_alias for object cdp_interface_policy.
 

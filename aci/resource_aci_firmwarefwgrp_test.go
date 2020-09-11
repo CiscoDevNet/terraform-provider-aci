@@ -71,7 +71,7 @@ func testAccCheckAciFirmwareGroupConfig_basic(description string) string {
 		name  = "example"
 		  annotation  = "example"
 		  name_alias  = "example"
-		  firmware_group_type  = "example"
+		  firmware_group_type  = "ALL"
 		}
 	`, description)
 }
@@ -143,7 +143,7 @@ func testAccCheckAciFirmwareGroupAttributes(description string, firmware_group *
 			return fmt.Errorf("Bad firmware_group name_alias %s", firmware_group.NameAlias)
 		}
 
-		if "example" != firmware_group.FirmwareGroup_type {
+		if "ALL" != firmware_group.FirmwareGroup_type {
 			return fmt.Errorf("Bad firmware_group firmware_group_type %s", firmware_group.FirmwareGroup_type)
 		}
 

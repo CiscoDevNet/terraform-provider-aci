@@ -7,6 +7,7 @@ import (
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
 )
 
 func resourceAciCloudProvidersRegion() *schema.Resource {
@@ -39,6 +40,10 @@ func resourceAciCloudProvidersRegion() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"managed",
+					"unmanaged",
+				}, false),
 			},
 
 			"name_alias": &schema.Schema{

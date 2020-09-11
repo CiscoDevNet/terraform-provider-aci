@@ -72,7 +72,7 @@ func testAccCheckAciSPANSourcedestinationGroupMatchLabelConfig_basic(description
 		name  = "example"
 		  annotation  = "example"
 		  name_alias  = "example"
-		  tag  = "example"
+		  tag  = "yellow"
 		}
 	`, description)
 }
@@ -144,7 +144,7 @@ func testAccCheckAciSPANSourcedestinationGroupMatchLabelAttributes(description s
 			return fmt.Errorf("Bad span_sourcedestination_group_match_label name_alias %s", span_sourcedestination_group_match_label.NameAlias)
 		}
 
-		if "example" != span_sourcedestination_group_match_label.Tag {
+		if "yellow" != span_sourcedestination_group_match_label.Tag {
 			return fmt.Errorf("Bad span_sourcedestination_group_match_label tag %s", span_sourcedestination_group_match_label.Tag)
 		}
 

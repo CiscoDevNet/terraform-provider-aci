@@ -17,7 +17,6 @@ resource "aci_vlan_pool" "example" {
 
   name  = "example"
 
-  allocMode  = "example"
   alloc_mode  = "example"
   annotation  = "example"
   name_alias  = "example"
@@ -25,8 +24,8 @@ resource "aci_vlan_pool" "example" {
 ```
 ## Argument Reference ##
 * `name` - (Required) name of Object vlan_pool.
-* `allocMode` - (Required) allocMode of Object vlan_pool.
-* `alloc_mode` - (Optional) allocation mode
+* `alloc_mode` - (Optional) allocation mode.
+Allowed values: "dynamic", "static"
 * `annotation` - (Optional) annotation for object vlan_pool.
 * `name_alias` - (Optional) name_alias for object vlan_pool.
 

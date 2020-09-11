@@ -7,6 +7,7 @@ import (
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
 )
 
 func resourceAciL3Outside() *schema.Resource {
@@ -39,6 +40,10 @@ func resourceAciL3Outside() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"import",
+					"export",
+				}, false),
 			},
 
 			"name_alias": &schema.Schema{
@@ -51,6 +56,31 @@ func resourceAciL3Outside() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"CS0",
+					"CS1",
+					"AF11",
+					"AF12",
+					"AF13",
+					"CS2",
+					"AF21",
+					"AF22",
+					"AF23",
+					"CS3",
+					"CS4",
+					"CS5",
+					"CS6",
+					"CS7",
+					"AF31",
+					"AF32",
+					"AF33",
+					"AF41",
+					"AF42",
+					"AF43",
+					"VA",
+					"EF",
+					"unspecified",
+				}, false),
 			},
 
 			"relation_l3ext_rs_dampening_pol": &schema.Schema{

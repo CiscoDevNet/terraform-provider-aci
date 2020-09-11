@@ -7,6 +7,7 @@ import (
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
 )
 
 func resourceAciRanges() *schema.Resource {
@@ -45,6 +46,11 @@ func resourceAciRanges() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"dynamic",
+					"static",
+					"inherit",
+				}, false),
 			},
 
 			"from": &schema.Schema{
@@ -63,6 +69,10 @@ func resourceAciRanges() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"external",
+					"internal",
+				}, false),
 			},
 		}),
 	}

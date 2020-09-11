@@ -7,6 +7,7 @@ import (
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
 )
 
 func resourceAciVRF() *schema.Resource {
@@ -39,6 +40,10 @@ func resourceAciVRF() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"no",
+					"yes",
+				}, false),
 			},
 
 			"ip_data_plane_learning": &schema.Schema{
@@ -51,6 +56,10 @@ func resourceAciVRF() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"deny",
+					"permit",
+				}, false),
 			},
 
 			"name_alias": &schema.Schema{
@@ -63,12 +72,20 @@ func resourceAciVRF() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"ingress",
+					"egress",
+				}, false),
 			},
 
 			"pc_enf_pref": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"enforced",
+					"unenforced",
+				}, false),
 			},
 
 			"relation_fv_rs_ospf_ctx_pol": &schema.Schema{

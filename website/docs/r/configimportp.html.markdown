@@ -29,13 +29,18 @@ resource "aci_configuration_import_policy" "example" {
 ## Argument Reference ##
 * `name` - (Required) name of Object configuration_import_policy.
 * `admin_st` - (Optional) admin state of the import
+Allowed values: "untriggered", "triggered"
 * `annotation` - (Optional) annotation for object configuration_import_policy.
 * `fail_on_decrypt_errors` - (Optional) fail_on_decrypt_errors for object configuration_import_policy.
+Allowed values: "no", "yes"
 * `file_name` - (Optional) import file name
-* `import_mode` - (Optional) data import mode
-* `import_type` - (Optional) data import type
+* `import_mode` - (Optional) data import mode.
+Allowed values: "atomic", "best-effort"
+* `import_type` - (Optional) data import type.
+Allowed values: "merge", "replace"
 * `name_alias` - (Optional) name_alias for object configuration_import_policy.
 * `snapshot` - (Optional) snapshot for object configuration_import_policy.
+Allowed values: "no", "yes"
 
 * `relation_config_rs_import_source` - (Optional) Relation to class fileRemotePath. Cardinality - ONE_TO_ONE. Type - String.
                 

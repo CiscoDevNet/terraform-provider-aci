@@ -30,7 +30,9 @@ Manages ACI Cloud AWS Provider
 * `email` - (Optional) email address of the local user.
 * `http_proxy` - (Optional) http_proxy for object cloud_aws_provider.
 * `is_account_in_org` - (Optional) Flag to decide whether the account is in the organization or not.
+Allowed values: "no", "yes"
 * `is_trusted` - (Optional) Whether the account is trusted with Tenant infra account.
+Allowed values: "no", "yes"
 * `name_alias` - (Optional) name_alias for object cloud_aws_provider.
 * `provider_id` - (Optional) provider_id for object cloud_aws_provider.
 * `region` - (Optional) which AWS region to manage.

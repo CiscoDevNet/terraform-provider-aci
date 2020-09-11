@@ -7,6 +7,7 @@ import (
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
 )
 
 func resourceAciFabricNodeMember() *schema.Resource {
@@ -64,6 +65,10 @@ func resourceAciFabricNodeMember() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"unspecified",
+					"remote-leaf-wan",
+				}, false),
 			},
 
 			"pod_id": &schema.Schema{
@@ -76,6 +81,11 @@ func resourceAciFabricNodeMember() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"unspecified",
+					"leaf",
+					"spine",
+				}, false),
 			},
 		}),
 	}

@@ -70,17 +70,17 @@ func testAccCheckAciFirmwareDownloadTaskConfig_basic(description string) string 
 		
 		name  = "example"
 		  annotation  = "example"
-		  auth_pass  = "example"
-		  auth_type  = "example"
+		  auth_pass  = "password"
+		  auth_type  = "usePassword"
 		  dnld_task_flip  = "example"
 		  identity_private_key_contents  = "example"
 		  identity_private_key_passphrase  = "example"
 		  identity_public_key_contents  = "example"
-		  load_catalog_if_exists_and_newer  = "example"
+		  load_catalog_if_exists_and_newer  = "no"
 		  name_alias  = "example"
 		  password  = "example"
 		  polling_interval  = "example"
-		  proto  = "example"
+		  proto  = "http"
 		  url  = "example"
 		  user  = "example"
 		}
@@ -150,11 +150,11 @@ func testAccCheckAciFirmwareDownloadTaskAttributes(description string, firmware_
 			return fmt.Errorf("Bad firmware_download_task annotation %s", firmware_download_task.Annotation)
 		}
 
-		if "example" != firmware_download_task.AuthPass {
+		if "password" != firmware_download_task.AuthPass {
 			return fmt.Errorf("Bad firmware_download_task auth_pass %s", firmware_download_task.AuthPass)
 		}
 
-		if "example" != firmware_download_task.AuthType {
+		if "usePassword" != firmware_download_task.AuthType {
 			return fmt.Errorf("Bad firmware_download_task auth_type %s", firmware_download_task.AuthType)
 		}
 
@@ -174,7 +174,7 @@ func testAccCheckAciFirmwareDownloadTaskAttributes(description string, firmware_
 			return fmt.Errorf("Bad firmware_download_task identity_public_key_contents %s", firmware_download_task.IdentityPublicKeyContents)
 		}
 
-		if "example" != firmware_download_task.LoadCatalogIfExistsAndNewer {
+		if "no" != firmware_download_task.LoadCatalogIfExistsAndNewer {
 			return fmt.Errorf("Bad firmware_download_task load_catalog_if_exists_and_newer %s", firmware_download_task.LoadCatalogIfExistsAndNewer)
 		}
 
@@ -190,7 +190,7 @@ func testAccCheckAciFirmwareDownloadTaskAttributes(description string, firmware_
 			return fmt.Errorf("Bad firmware_download_task polling_interval %s", firmware_download_task.PollingInterval)
 		}
 
-		if "example" != firmware_download_task.Proto {
+		if "http" != firmware_download_task.Proto {
 			return fmt.Errorf("Bad firmware_download_task proto %s", firmware_download_task.Proto)
 		}
 

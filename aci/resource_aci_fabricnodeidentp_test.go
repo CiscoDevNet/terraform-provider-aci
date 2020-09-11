@@ -74,9 +74,9 @@ func testAccCheckAciFabricNodeMemberConfig_basic(description string) string {
 		  fabric_id  = "example"
 		  name_alias  = "example"
 		  node_id  = "example"
-		  node_type  = "example"
+		  node_type  = "unspecified"
 		  pod_id  = "example"
-		  role  = "example"
+		  role  = "unspecified"
 		}
 	`, description)
 }
@@ -160,7 +160,7 @@ func testAccCheckAciFabricNodeMemberAttributes(description string, fabric_node_m
 			return fmt.Errorf("Bad fabric_node_member node_id %s", fabric_node_member.NodeId)
 		}
 
-		if "example" != fabric_node_member.NodeType {
+		if "unspecified" != fabric_node_member.NodeType {
 			return fmt.Errorf("Bad fabric_node_member node_type %s", fabric_node_member.NodeType)
 		}
 
@@ -168,7 +168,7 @@ func testAccCheckAciFabricNodeMemberAttributes(description string, fabric_node_m
 			return fmt.Errorf("Bad fabric_node_member pod_id %s", fabric_node_member.PodId)
 		}
 
-		if "example" != fabric_node_member.Role {
+		if "unspecified" != fabric_node_member.Role {
 			return fmt.Errorf("Bad fabric_node_member role %s", fabric_node_member.Role)
 		}
 

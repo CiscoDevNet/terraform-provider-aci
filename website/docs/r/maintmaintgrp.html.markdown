@@ -26,6 +26,7 @@ resource "aci_pod_maintenance_group" "example" {
 * `name` - (Required) name of Object pod_maintenance_group.
 * `annotation` - (Optional) annotation for object pod_maintenance_group.
 * `fwtype` - (Optional) fwtype for object pod_maintenance_group.
+Allowed values: "controller", "switch", "catalog", "plugin","pluginPackage", "config", "vpod"
 * `name_alias` - (Optional) name_alias for object pod_maintenance_group.
 * `pod_maintenance_group_type` - (Optional) component type
 

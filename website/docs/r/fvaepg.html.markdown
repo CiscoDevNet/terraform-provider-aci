@@ -50,8 +50,6 @@ Manages ACI Application EPG
                 
 * `relation_fv_rs_cust_qos_pol` - (Optional) Relation to class qosCustomPol. Cardinality - N_TO_ONE. Type - String.
                 
-* `relation_fv_rs_dom_att` - (Optional) Relation to class infraDomP. Cardinality - N_TO_M. Type - Set of String.
-                
 * `relation_fv_rs_fc_path_att` - (Optional) Relation to class fabricPathEp. Cardinality - N_TO_M. Type - Set of String.
                 
 * `relation_fv_rs_prov` - (Optional) Relation to class vzBrCP. Cardinality - N_TO_M. Type - Set of String.

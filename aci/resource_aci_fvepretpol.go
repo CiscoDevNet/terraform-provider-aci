@@ -7,6 +7,7 @@ import (
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
 )
 
 func resourceAciEndPointRetentionPolicy() *schema.Resource {
@@ -39,12 +40,19 @@ func resourceAciEndPointRetentionPolicy() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"infinite",
+				}, false),
 			},
 
 			"bounce_trig": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"rarp-flood",
+					"protocol",
+				}, false),
 			},
 
 			"hold_intvl": &schema.Schema{

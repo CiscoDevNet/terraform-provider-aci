@@ -7,6 +7,7 @@ import (
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
 )
 
 func resourceAciInterfaceFCPolicy() *schema.Resource {
@@ -40,6 +41,10 @@ func resourceAciInterfaceFCPolicy() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"ARBFF",
+					"IDLE",
+				}, false),
 			},
 
 			"name_alias": &schema.Schema{
@@ -52,6 +57,10 @@ func resourceAciInterfaceFCPolicy() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"f",
+					"np",
+				}, false),
 			},
 
 			"rx_bb_credit": &schema.Schema{
@@ -64,12 +73,26 @@ func resourceAciInterfaceFCPolicy() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"unknown",
+					"auto",
+					"4G",
+					"8G",
+					"16G",
+					"32G",
+				}, false),
 			},
 
 			"trunk_mode": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"un-init",
+					"trunk-off",
+					"trunk-on",
+					"auto",
+				}, false),
 			},
 		}),
 	}

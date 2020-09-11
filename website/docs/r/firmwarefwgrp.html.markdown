@@ -25,7 +25,8 @@ resource "aci_firmware_group" "example" {
 * `name` - (Required) name of Object firmware_group.
 * `annotation` - (Optional) annotation for object firmware_group.
 * `name_alias` - (Optional) name_alias for object firmware_group.
-* `firmware_group_type` - (Optional) component type
+* `firmware_group_type` - (Optional) component type.
+Allowed values: "ALL", "range", "ALL_IN_POD"
 
 * `relation_firmware_rs_fwgrpp` - (Optional) Relation to class firmwareFwP. Cardinality - N_TO_ONE. Type - String.
                 

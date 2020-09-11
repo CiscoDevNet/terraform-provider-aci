@@ -7,6 +7,7 @@ import (
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
 )
 
 func resourceAciVMMDomain() *schema.Resource {
@@ -39,12 +40,20 @@ func resourceAciVMMDomain() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"read-write",
+					"read-only",
+				}, false),
 			},
 
 			"arp_learning": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"enabled",
+					"disabled",
+				}, false),
 			},
 
 			"ave_time_out": &schema.Schema{
@@ -57,12 +66,20 @@ func resourceAciVMMDomain() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"no",
+					"yes",
+				}, false),
 			},
 
 			"ctrl_knob": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"none",
+					"epDpVerify",
+				}, false),
 			},
 
 			"delimiter": &schema.Schema{
@@ -75,30 +92,52 @@ func resourceAciVMMDomain() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"no",
+					"yes",
+				}, false),
 			},
 
 			"enable_tag": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"no",
+					"yes",
+				}, false),
 			},
 
 			"encap_mode": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"unknown",
+					"vlan",
+					"vxlan",
+				}, false),
 			},
 
 			"enf_pref": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"sw",
+					"hw",
+					"unknown",
+				}, false),
 			},
 
 			"ep_inventory_type": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"none",
+					"on-link",
+				}, false),
 			},
 
 			"ep_ret_time": &schema.Schema{
@@ -111,6 +150,10 @@ func resourceAciVMMDomain() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"no",
+					"yes",
+				}, false),
 			},
 
 			"mcast_addr": &schema.Schema{
@@ -123,6 +166,16 @@ func resourceAciVMMDomain() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"default",
+					"n1kv",
+					"unknown",
+					"ovs",
+					"k8s",
+					"rhev",
+					"cf",
+					"openshift",
+				}, false),
 			},
 
 			"name_alias": &schema.Schema{
@@ -135,6 +188,11 @@ func resourceAciVMMDomain() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"unspecified",
+					"vlan",
+					"vxlan",
+				}, false),
 			},
 
 			"relation_vmm_rs_pref_enhanced_lag_pol": &schema.Schema{

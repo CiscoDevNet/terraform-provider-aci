@@ -29,12 +29,16 @@ resource "aci_configuration_export_policy" "example" {
 ## Argument Reference ##
 * `name` - (Required) name of Object configuration_export_policy.
 * `admin_st` - (Optional) admin state of the export policy
+Allowed values: "untriggered", "triggered"
 * `annotation` - (Optional) annotation for object configuration_export_policy.
 * `format` - (Optional) export data format
+Allowed values: "xml", "json"
 * `include_secure_fields` - (Optional) include_secure_fields for object configuration_export_policy.
+Allowed values: "no", "yes"
 * `max_snapshot_count` - (Optional) max_snapshot_count for object configuration_export_policy.
 * `name_alias` - (Optional) name_alias for object configuration_export_policy.
 * `snapshot` - (Optional) snapshot for object configuration_export_policy.
+Allowed values: "no", "yes"
 * `target_dn` - (Optional) target export object
 
 * `relation_config_rs_export_destination` - (Optional) Relation to class fileRemotePath. Cardinality - ONE_TO_ONE. Type - String.
