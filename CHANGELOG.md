@@ -1,4 +1,13 @@
 ## 0.4.0 (Unreleased)
+
+IMPROVEMENTS:
+- Improved checks in the parameters.
+- Added resources to manage FEX profiles.
+
+BUG FIXES:
+- Fixed an issue with parameters not getting updated on first run.
+- Fixed typo errors in documentations.
+
 ## 0.3.4 (July 20, 2020)
 
 IMPROVEMENTS:
