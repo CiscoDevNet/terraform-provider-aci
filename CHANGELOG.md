@@ -1,4 +1,4 @@
-## 0.4.0 (Unreleased)
+## 0.4.0 (September 16, 2020)
 
 IMPROVEMENTS:
 - Improved checks in the parameters.
