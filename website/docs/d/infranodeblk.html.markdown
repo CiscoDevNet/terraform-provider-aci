@@ -13,7 +13,7 @@ Data source for ACI Node Block
 
 ```hcl
 data "aci_node_block" "example" {
-  switch_association_dn   = "${aci_switch_association.example.id}"
+  switch_association_dn   = "${aci_leaf_selector.example.id}"
   name                    = "example"
 }
 ```
