@@ -120,6 +120,12 @@ github.com/ciscoecosystem/aci-go-client v0.5.7 h1:sXYYvpbvl7tTu8icpWYfq0A+Isnqmv
 github.com/ciscoecosystem/aci-go-client v0.5.7/go.mod h1:fhY7vWysK655g3Yp5Fz4Zje/JN4+moRe8RjwiRy0amQ=
 github.com/ciscoecosystem/aci-go-client v0.5.8 h1:ZpcqZBEiJJy6QEyAZeK1sdoBfG+W0OSwCyGAavHgA/4=
 github.com/ciscoecosystem/aci-go-client v0.5.8/go.mod h1:fhY7vWysK655g3Yp5Fz4Zje/JN4+moRe8RjwiRy0amQ=
+github.com/ciscoecosystem/aci-go-client v0.5.9 h1:aZoBr6wUFzbZJIfzrLE+VK7W6e3TsSI+PSxKe5UegCs=
+github.com/ciscoecosystem/aci-go-client v0.5.9/go.mod h1:fhY7vWysK655g3Yp5Fz4Zje/JN4+moRe8RjwiRy0amQ=
+github.com/ciscoecosystem/aci-go-client v0.5.10 h1:4WzzfnlQsMlbddxJJCuXFZxeWFSzNILF1ICBKv5MR/0=
+github.com/ciscoecosystem/aci-go-client v0.5.10/go.mod h1:fhY7vWysK655g3Yp5Fz4Zje/JN4+moRe8RjwiRy0amQ=
+github.com/ciscoecosystem/aci-go-client v0.5.11 h1:3Zoo+VRwzvkPuJDGdAAW5tT/wawgIzW+Vs4RGrXvx8Q=
+github.com/ciscoecosystem/aci-go-client v0.5.11/go.mod h1:fhY7vWysK655g3Yp5Fz4Zje/JN4+moRe8RjwiRy0amQ=
 github.com/ciscoecosystem/aci-go-client v1.0.0 h1:mTFw2AJBbUAVDd8OETQd0jD9EEJYv+a5bnXNskc46SY=
 github.com/ciscoecosystem/aci-go-client v1.0.0/go.mod h1:jFrITzPN2qjycddQVHNFIDOe3rvR00YCdkPK7N24vkM=
 github.com/ciscoecosystem/aci-go-client v1.0.1 h1:hemK22oIvaiA8KIpPp38z533qtlJvk0ujvCIagII+fs=
@@ -174,6 +180,8 @@ github.com/ciscoecosystem/aci-go-client v1.3.4-0.20200716070731-3c5343020306 h1:
 github.com/ciscoecosystem/aci-go-client v1.3.4-0.20200716070731-3c5343020306/go.mod h1:fhY7vWysK655g3Yp5Fz4Zje/JN4+moRe8RjwiRy0amQ=
 github.com/ciscoecosystem/aci-go-client v1.3.4 h1:+ZPRDoIxTsBBy+zWjcWKgNnXrNH9CgwKMZb84n9Rm1w=
 github.com/ciscoecosystem/aci-go-client v1.3.4/go.mod h1:fhY7vWysK655g3Yp5Fz4Zje/JN4+moRe8RjwiRy0amQ=
+github.com/ciscoecosystem/aci-go-client v1.3.8 h1:hqOgPGGzfjsXQHNueKXCQsmvrE/gUiWs9JAAbCHcayA=
+github.com/ciscoecosystem/aci-go-client v1.3.8/go.mod h1:fhY7vWysK655g3Yp5Fz4Zje/JN4+moRe8RjwiRy0amQ=
 github.com/client9/misspell v0.3.4/go.mod h1:qj6jICC3Q7zFZvVWo7KLAzC3yx5G7kyvSDkc90ppPyw=
 github.com/coreos/bbolt v1.3.0/go.mod h1:iRUV2dpdMOn7Bo10OQBFzIJO9kkE559Wcmn+qkEiiKk=
 github.com/coreos/etcd v3.3.10+incompatible/go.mod h1:uF7uidLiAD3TWHmW31ZFd/JWoc32PjwdhPthX9715RE=
