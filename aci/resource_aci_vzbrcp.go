@@ -213,16 +213,6 @@ func resourceAciContract() *schema.Resource {
 											}
 											return false
 										},
-										ValidateFunc: validation.StringInSlice([]string{
-											"unspecified",
-											"ftpData",
-											"smtp",
-											"dns",
-											"http",
-											"pop3",
-											"https",
-											"rtsp",
-										}, false),
 									},
 
 									"d_to_port": &schema.Schema{
@@ -248,16 +238,6 @@ func resourceAciContract() *schema.Resource {
 											}
 											return false
 										},
-										ValidateFunc: validation.StringInSlice([]string{
-											"unspecified",
-											"ftpData",
-											"smtp",
-											"dns",
-											"http",
-											"pop3",
-											"https",
-											"rtsp",
-										}, false),
 									},
 
 									"ether_t": &schema.Schema{
@@ -387,16 +367,6 @@ func resourceAciContract() *schema.Resource {
 											}
 											return false
 										},
-										ValidateFunc: validation.StringInSlice([]string{
-											"unspecified",
-											"ftpData",
-											"smtp",
-											"dns",
-											"http",
-											"pop3",
-											"https",
-											"rtsp",
-										}, false),
 									},
 
 									"s_to_port": &schema.Schema{
@@ -422,16 +392,6 @@ func resourceAciContract() *schema.Resource {
 											}
 											return false
 										},
-										ValidateFunc: validation.StringInSlice([]string{
-											"unspecified",
-											"ftpData",
-											"smtp",
-											"dns",
-											"http",
-											"pop3",
-											"https",
-											"rtsp",
-										}, false),
 									},
 
 									"stateful": &schema.Schema{

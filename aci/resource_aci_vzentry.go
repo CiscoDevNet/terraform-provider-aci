@@ -61,32 +61,12 @@ func resourceAciFilterEntry() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
-				ValidateFunc: validation.StringInSlice([]string{
-					"unspecified",
-					"ftpData",
-					"smtp",
-					"dns",
-					"http",
-					"pop3",
-					"https",
-					"rtsp",
-				}, false),
 			},
 
 			"d_to_port": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
-				ValidateFunc: validation.StringInSlice([]string{
-					"unspecified",
-					"ftpData",
-					"smtp",
-					"dns",
-					"http",
-					"pop3",
-					"https",
-					"rtsp",
-				}, false),
 			},
 
 			"ether_t": &schema.Schema{
@@ -197,32 +177,12 @@ func resourceAciFilterEntry() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
-				ValidateFunc: validation.StringInSlice([]string{
-					"unspecified",
-					"ftpData",
-					"smtp",
-					"dns",
-					"http",
-					"pop3",
-					"https",
-					"rtsp",
-				}, false),
 			},
 
 			"s_to_port": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
-				ValidateFunc: validation.StringInSlice([]string{
-					"unspecified",
-					"ftpData",
-					"smtp",
-					"dns",
-					"http",
-					"pop3",
-					"https",
-					"rtsp",
-				}, false),
 			},
 
 			"stateful": &schema.Schema{

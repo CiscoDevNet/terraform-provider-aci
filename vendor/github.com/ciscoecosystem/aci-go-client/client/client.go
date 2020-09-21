@@ -11,6 +11,7 @@ import (
 	"net/url"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/ciscoecosystem/aci-go-client/container"
@@ -25,6 +26,10 @@ const authPayload = `{
 	}
 }`
 
+// Default timeout for NGINX in ACI is 90 Seconds.
+// Allow the client to set a shorter or longer time depending on their
+// environment
+const DefaultReqTimeoutVal uint32 = 100
 const DefaultMOURL = "/api/node/mo"
 
 // Client is the main entry point
@@ -33,11 +38,14 @@ type Client struct {
 	MOURL              string
 	httpClient         *http.Client
 	AuthToken          *Auth
+	l                  sync.Mutex
 	username           string
 	password           string
 	privatekey         string
 	adminCert          string
 	insecure           bool
+	reqTimeoutSet      bool
+	reqTimeoutVal      uint32
 	proxyUrl           string
 	skipLoggingPayload bool
 	*ServiceManager
@@ -90,6 +98,13 @@ func SkipLoggingPayload(skipLoggingPayload bool) Option {
 	}
 }
 
+func ReqTimeout(timeout uint32) Option {
+	return func(client *Client) {
+		client.reqTimeoutSet = true
+		client.reqTimeoutVal = timeout
+	}
+}
+
 func initClient(clientUrl, username string, options ...Option) *Client {
 	var transport *http.Transport
 	bUrl, err := url.Parse(clientUrl)
@@ -117,6 +132,14 @@ func initClient(clientUrl, username string, options ...Option) *Client {
 		Transport: transport,
 	}
 
+	var timeout time.Duration
+	if client.reqTimeoutSet {
+		timeout = time.Second * time.Duration(client.reqTimeoutVal)
+	} else {
+		timeout = time.Second * time.Duration(DefaultReqTimeoutVal)
+	}
+
+	client.httpClient.Timeout = timeout
 	client.ServiceManager = NewServiceManager(client.MOURL, client)
 	return client
 }
@@ -164,6 +187,7 @@ func (c *Client) configProxy(transport *http.Transport) *http.Transport {
 	return transport
 
 }
+
 func (c *Client) useInsecureHTTPClient(insecure bool) *http.Transport {
 	// proxyUrl, _ := url.Parse("http://10.0.1.167:3128")
 	transport := &http.Transport{
@@ -241,6 +265,10 @@ func (c *Client) Authenticate() error {
 	}
 	if obj == nil {
 		return errors.New("Empty response")
+	}
+	err = CheckForErrors(obj, method)
+	if err != nil {
+		return err
 	}
 
 	token := obj.S("imdata").Index(0).S("aaaLogin", "attributes", "token").String()

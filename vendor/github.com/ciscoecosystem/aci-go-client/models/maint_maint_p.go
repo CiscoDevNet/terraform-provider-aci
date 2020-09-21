@@ -152,6 +152,8 @@ type MaintP struct {
 type MaintPAttributes struct {
 	AdminSt              string `json:",omitempty"`
 	Annotation           string `json:",omitempty"`
+	DnldSeqNum           string `json:",omitempty"`
+	DownloadSt           string `json:",omitempty"`
 	Graceful             string `json:",omitempty"`
 	IgnoreCompat         string `json:",omitempty"`
 	InternalLabel        string `json:",omitempty"`
@@ -192,6 +194,8 @@ func (maintMaintP *MaintP) ToMap() (map[string]string, error) {
 
 	A(maintMaintPMap, "adminSt", maintMaintP.AdminSt)
 	A(maintMaintPMap, "annotation", maintMaintP.Annotation)
+	A(maintMaintPMap, "dnldSeqNum", maintMaintP.DnldSeqNum)
+	A(maintMaintPMap, "downloadSt", maintMaintP.DownloadSt)
 	A(maintMaintPMap, "graceful", maintMaintP.Graceful)
 	A(maintMaintPMap, "ignoreCompat", maintMaintP.IgnoreCompat)
 	A(maintMaintPMap, "internalLabel", maintMaintP.InternalLabel)
@@ -226,6 +230,8 @@ func MaintPFromContainerList(cont *container.Container, index int) *MaintP {
 		MaintPAttributes{
 			AdminSt:              G(MaintPCont, "adminSt"),
 			Annotation:           G(MaintPCont, "annotation"),
+			DnldSeqNum:           G(MaintPCont, "dnldSeqNum"),
+			DownloadSt:           G(MaintPCont, "downloadSt"),
 			Graceful:             G(MaintPCont, "graceful"),
 			IgnoreCompat:         G(MaintPCont, "ignoreCompat"),
 			InternalLabel:        G(MaintPCont, "internalLabel"),
