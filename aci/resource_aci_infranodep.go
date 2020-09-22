@@ -3,10 +3,12 @@ package aci
 import (
 	"fmt"
 	"log"
+	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
 )
 
 func resourceAciLeafProfile() *schema.Resource {
@@ -34,6 +36,94 @@ func resourceAciLeafProfile() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+			},
+
+			"leaf_selector": &schema.Schema{
+				Type:     schema.TypeList,
+				Optional: true,
+				Computed: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"name": &schema.Schema{
+							Type:     schema.TypeString,
+							Required: true,
+						},
+
+						"description": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+							Computed: true,
+						},
+
+						"id": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+							Computed: true,
+						},
+
+						"switch_association_type": &schema.Schema{
+							Type:     schema.TypeString,
+							Required: true,
+							ValidateFunc: validation.StringInSlice([]string{
+								"ALL",
+								"range",
+								"ALL_IN_POD",
+							}, false),
+						},
+
+						"node_block": &schema.Schema{
+							Type:     schema.TypeList,
+							Optional: true,
+							Computed: true,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"name": &schema.Schema{
+										Type:     schema.TypeString,
+										Required: true,
+									},
+
+									"description": &schema.Schema{
+										Type:     schema.TypeString,
+										Optional: true,
+										Computed: true,
+									},
+
+									"id": &schema.Schema{
+										Type:     schema.TypeString,
+										Optional: true,
+										Computed: true,
+									},
+
+									"from_": &schema.Schema{
+										Type:     schema.TypeString,
+										Optional: true,
+										Computed: true,
+									},
+
+									"to_": &schema.Schema{
+										Type:     schema.TypeString,
+										Optional: true,
+										Computed: true,
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+
+			"leaf_selector_ids": &schema.Schema{
+				Type:     schema.TypeList,
+				Optional: true,
+				Computed: true,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+			},
+
+			"node_block_ids": &schema.Schema{
+				Type:     schema.TypeList,
+				Optional: true,
+				Computed: true,
+				Elem:     &schema.Schema{Type: schema.TypeString},
 			},
 
 			"relation_infra_rs_acc_card_p": &schema.Schema{
@@ -66,6 +156,36 @@ func getRemoteLeafProfile(client *client.Client, dn string) (*models.LeafProfile
 	return infraNodeP, nil
 }
 
+func getRemoteSwitchAssociationFromLeafP(client *client.Client, dn string) (*models.SwitchAssociation, error) {
+	infraLeafSCont, err := client.Get(dn)
+	if err != nil {
+		return nil, err
+	}
+
+	infraLeafS := models.SwitchAssociationFromContainer(infraLeafSCont)
+
+	if infraLeafS.DistinguishedName == "" {
+		return nil, fmt.Errorf("SwitchAssociation %s not found", infraLeafS.DistinguishedName)
+	}
+
+	return infraLeafS, nil
+}
+
+func getRemoteNodeBlockFromLeafP(client *client.Client, dn string) (*models.NodeBlock, error) {
+	infraNodeBlkCont, err := client.Get(dn)
+	if err != nil {
+		return nil, err
+	}
+
+	infraNodeBlk := models.NodeBlockFromContainerBLK(infraNodeBlkCont)
+
+	if infraNodeBlk.DistinguishedName == "" {
+		return nil, fmt.Errorf("NodeBlock %s not found", infraNodeBlk.DistinguishedName)
+	}
+
+	return infraNodeBlk, nil
+}
+
 func setLeafProfileAttributes(infraNodeP *models.LeafProfile, d *schema.ResourceData) *schema.ResourceData {
 	d.SetId(infraNodeP.DistinguishedName)
 	d.Set("description", infraNodeP.Description)
@@ -76,6 +196,44 @@ func setLeafProfileAttributes(infraNodeP *models.LeafProfile, d *schema.Resource
 	d.Set("annotation", infraNodePMap["annotation"])
 	d.Set("name_alias", infraNodePMap["nameAlias"])
 	return d
+}
+
+func setLeafSelectorAttributesFromLeafP(selectors []*models.SwitchAssociation, nodeBlocks []*models.NodeBlock, d *schema.ResourceData) *schema.ResourceData {
+	selectorSet := make([]interface{}, 0, 1)
+
+	for _, selector := range selectors {
+		selMap := make(map[string]interface{})
+		selMap["description"] = selector.Description
+		selMap["id"] = selector.DistinguishedName
+
+		infraLeafSMap, _ := selector.ToMap()
+		selMap["name"] = infraLeafSMap["name"]
+		selMap["switch_association_type"] = infraLeafSMap["type"]
+
+		nodeSet := make([]interface{}, 0, 1)
+		for _, nodeBlock := range nodeBlocks {
+			if strings.Contains(nodeBlock.DistinguishedName, selector.DistinguishedName) {
+				nodeBlockMap := setNodeBlockAttributesFromLeafP(nodeBlock)
+				nodeSet = append(nodeSet, nodeBlockMap)
+			}
+		}
+		selMap["node_block"] = nodeSet
+		selectorSet = append(selectorSet, selMap)
+	}
+	d.Set("leaf_selector", selectorSet)
+	return d
+}
+
+func setNodeBlockAttributesFromLeafP(nodeBlock *models.NodeBlock) map[string]interface{} {
+	nodeMap := make(map[string]interface{})
+	nodeMap["description"] = nodeBlock.Description
+	nodeMap["id"] = nodeBlock.DistinguishedName
+
+	infraNodeBlkMap, _ := nodeBlock.ToMap()
+	nodeMap["name"] = infraNodeBlkMap["name"]
+	nodeMap["from_"] = infraNodeBlkMap["from_"]
+	nodeMap["to_"] = infraNodeBlkMap["to_"]
+	return nodeMap
 }
 
 func resourceAciLeafProfileImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -118,6 +276,64 @@ func resourceAciLeafProfileCreate(d *schema.ResourceData, m interface{}) error {
 	if err != nil {
 		return err
 	}
+
+	leafSelectorIDs := make([]string, 0, 1)
+	nodeBlockIDs := make([]string, 0, 1)
+	if leafSelectors, ok := d.GetOk("leaf_selector"); ok {
+		selectors := leafSelectors.([]interface{})
+		leafPDN := infraNodeP.DistinguishedName
+
+		for _, val := range selectors {
+			selector := val.(map[string]interface{})
+
+			name := selector["name"].(string)
+			desc := selector["description"].(string)
+			switchAssType := selector["switch_association_type"].(string)
+
+			infraLeafSAttr := models.SwitchAssociationAttributes{}
+			infraLeafSAttr.Annotation = "{}"
+			infraLeafSAttr.Switch_association_type = switchAssType
+
+			infraLeafS := models.NewSwitchAssociation(fmt.Sprintf("leaves-%s-typ-%s", name, switchAssType), leafPDN, desc, infraLeafSAttr)
+			err := aciClient.Save(infraLeafS)
+			if err != nil {
+				return err
+			}
+			leafSelectorIDs = append(leafSelectorIDs, infraLeafS.DistinguishedName)
+
+			if selector["node_block"] != nil {
+				nodeBlocks := selector["node_block"].([]interface{})
+				selectorDN := infraLeafS.DistinguishedName
+
+				for _, block := range nodeBlocks {
+					nodeBlock := block.(map[string]interface{})
+
+					name := nodeBlock["name"].(string)
+					desc := nodeBlock["description"].(string)
+
+					infraNodeBlkAttr := models.NodeBlockAttributes{}
+					infraNodeBlkAttr.Annotation = "{}"
+					if nodeBlock["from_"] != nil {
+						infraNodeBlkAttr.From_ = nodeBlock["from_"].(string)
+					}
+					if nodeBlock["to_"] != nil {
+						infraNodeBlkAttr.To_ = nodeBlock["to_"].(string)
+					}
+					infraNodeBlk := models.NewNodeBlock(fmt.Sprintf("nodeblk-%s", name), selectorDN, desc, infraNodeBlkAttr)
+
+					err := aciClient.Save(infraNodeBlk)
+					if err != nil {
+						return err
+					}
+
+					nodeBlockIDs = append(nodeBlockIDs, infraNodeBlk.DistinguishedName)
+				}
+			}
+		}
+	}
+	d.Set("leaf_selector_ids", leafSelectorIDs)
+	d.Set("node_block_ids", nodeBlockIDs)
+
 	d.Partial(true)
 
 	d.SetPartial("name")
@@ -206,6 +422,73 @@ func resourceAciLeafProfileUpdate(d *schema.ResourceData, m interface{}) error {
 	if err != nil {
 		return err
 	}
+
+	if d.HasChange("leaf_selector") {
+		for _, selectorDn := range d.Get("leaf_selector_ids").([]interface{}) {
+			err := aciClient.DeleteByDn(selectorDn.(string), "infraLeafS")
+			if err != nil {
+				return err
+			}
+		}
+
+		leafSelectorIDs := make([]string, 0, 1)
+		nodeBlockIDs := make([]string, 0, 1)
+		if leafSelectors, ok := d.GetOk("leaf_selector"); ok {
+			selectors := leafSelectors.([]interface{})
+			leafPDN := infraNodeP.DistinguishedName
+
+			for _, val := range selectors {
+				selector := val.(map[string]interface{})
+
+				name := selector["name"].(string)
+				desc := selector["description"].(string)
+				switchAssType := selector["switch_association_type"].(string)
+
+				infraLeafSAttr := models.SwitchAssociationAttributes{}
+				infraLeafSAttr.Annotation = "{}"
+				infraLeafSAttr.Switch_association_type = switchAssType
+
+				infraLeafS := models.NewSwitchAssociation(fmt.Sprintf("leaves-%s-typ-%s", name, switchAssType), leafPDN, desc, infraLeafSAttr)
+				err := aciClient.Save(infraLeafS)
+				if err != nil {
+					return err
+				}
+				leafSelectorIDs = append(leafSelectorIDs, infraLeafS.DistinguishedName)
+
+				if selector["node_block"] != nil {
+					nodeBlocks := selector["node_block"].([]interface{})
+					selectorDN := infraLeafS.DistinguishedName
+
+					for _, block := range nodeBlocks {
+						nodeBlock := block.(map[string]interface{})
+
+						name := nodeBlock["name"].(string)
+						desc := nodeBlock["description"].(string)
+
+						infraNodeBlkAttr := models.NodeBlockAttributes{}
+						infraNodeBlkAttr.Annotation = "{}"
+						if nodeBlock["from_"] != nil {
+							infraNodeBlkAttr.From_ = nodeBlock["from_"].(string)
+						}
+						if nodeBlock["to_"] != nil {
+							infraNodeBlkAttr.To_ = nodeBlock["to_"].(string)
+						}
+						infraNodeBlk := models.NewNodeBlock(fmt.Sprintf("nodeblk-%s", name), selectorDN, desc, infraNodeBlkAttr)
+
+						err := aciClient.Save(infraNodeBlk)
+						if err != nil {
+							return err
+						}
+
+						nodeBlockIDs = append(nodeBlockIDs, infraNodeBlk.DistinguishedName)
+					}
+				}
+			}
+		}
+		d.Set("leaf_selector_ids", leafSelectorIDs)
+		d.Set("node_block_ids", nodeBlockIDs)
+	}
+
 	d.Partial(true)
 
 	d.SetPartial("name")
@@ -318,6 +601,26 @@ func resourceAciLeafProfileRead(d *schema.ResourceData, m interface{}) error {
 		return nil
 	}
 	setLeafProfileAttributes(infraNodeP, d)
+
+	leafSelectors := make([]*models.SwitchAssociation, 0, 1)
+	nodeBlocks := make([]*models.NodeBlock, 0, 1)
+	selectors := d.Get("leaf_selector_ids").([]interface{})
+	for _, val := range selectors {
+		selectorDn := val.(string)
+		selector, err := getRemoteSwitchAssociationFromLeafP(aciClient, selectorDn)
+		if err == nil {
+			for _, node := range d.Get("node_block_ids").([]interface{}) {
+				if strings.Contains(node.(string), selectorDn) {
+					nodeBlock, err := getRemoteNodeBlockFromLeafP(aciClient, node.(string))
+					if err == nil {
+						nodeBlocks = append(nodeBlocks, nodeBlock)
+					}
+				}
+			}
+			leafSelectors = append(leafSelectors, selector)
+		}
+	}
+	setLeafSelectorAttributesFromLeafP(leafSelectors, nodeBlocks, d)
 
 	infraRsAccCardPData, err := aciClient.ReadRelationinfraRsAccCardPFromLeafProfile(dn)
 	if err != nil {
