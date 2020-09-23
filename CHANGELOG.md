@@ -1,4 +1,8 @@
-## 0.5.0 (Unreleased)
+## 0.4.1 (September 23, 2020)
+
+IMPROVEMENTS:
+- First Terraform Registry release.
+
 ## 0.4.0 (September 16, 2020)
 
 IMPROVEMENTS:
