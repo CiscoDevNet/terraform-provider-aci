@@ -30,7 +30,8 @@ data "aci_epg_to_domain" "temp" {
 * `id` - Attribute id set to the Dn of the Domain.
 * `annotation` - (Optional) annotation for object domain.
 * `binding_type` - (Optional) binding_type for object domain.
-* `class_pref` - (Optional) class_pref for object domain.
+* `allow_micro_seg` - (Optional) boolean flag for allow micro segment. default value will be "false".
+"true" maps to class_pref="useg" and "false maps to class_pref="encap"
 * `delimiter` - (Optional) delimiter for object domain.
 * `encap` - (Optional) port encapsulation
 * `encap_mode` - (Optional) encap_mode for object domain.
