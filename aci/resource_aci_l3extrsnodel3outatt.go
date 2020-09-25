@@ -59,7 +59,17 @@ func resourceAciFabricNode() *schema.Resource {
 				ValidateFunc: validation.StringInSlice([]string{
 					"no",
 					"yes",
+					"true",
+					"false",
 				}, false),
+				DiffSuppressFunc: func(k, old, new string, d *schema.ResourceData) bool {
+					if old == "yes" && new == "true" {
+						return true
+					} else if old == "no" && new == "false" {
+						return true
+					}
+					return false
+				},
 			},
 		}),
 	}

@@ -30,7 +30,7 @@ resource "aci_logical_node_to_fabric_node" "example" {
 * `config_issues` - (Optional) configuration issues.
 Allowed values: "none", "node-path-misconfig","routerid-not-changable-with-mcast", "loopback-ip-missing"
 * `rtr_id` - (Optional) router identifier
-* `rtr_id_loop_back` - (Optional) Allowed values: "yes", "no"
+* `rtr_id_loop_back` - (Optional) Allowed values: "yes", "no", "true", "false"
 
 
 
