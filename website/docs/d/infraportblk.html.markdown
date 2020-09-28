@@ -12,11 +12,15 @@ Data source for ACI Access Port Block
 ## Example Usage ##
 
 ```hcl
+
 data "aci_access_port_block" "dev_port_blk" {
   access_port_selector_dn  = "${aci_access_port_selector.example.id}"
   name                     = "foo_port_blk"
 }
+
 ```
+
+
 ## Argument Reference ##
 * `access_port_selector_dn` - (Required) Distinguished name of parent AccessPortSelector object.
 * `name` - (Required) name of Object access_port_block.

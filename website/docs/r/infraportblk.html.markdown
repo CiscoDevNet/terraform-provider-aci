@@ -12,6 +12,7 @@ Manages ACI Access Port Block
 ## Example Usage ##
 
 ```hcl
+
 	resource "aci_access_port_block" "fooaccess_port_block" {
 		access_port_selector_dn = "${aci_access_port_selector.example.id}"
 		description             = "%s"
@@ -23,10 +24,13 @@ Manages ACI Access Port Block
 		to_card                 = "3"
 		to_port                 = "3"
 	}
+
 ```
+
+
 ## Argument Reference ##
 * `access_port_selector_dn` - (Required) Distinguished name of parent AccessPortSelector object.
-* `name` - (Required) name of Object access_port_block.
+* `name` - (Optional) name of Object access_port_block.
 * `annotation` - (Optional) annotation for object access_port_block.
 * `from_card` - (Optional) The beginning (from-range) of the card range block for the leaf access port block.
 * `from_port` - (Optional) The beginning (from-range) of the port range block for the leaf access port block.
