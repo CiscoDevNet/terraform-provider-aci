@@ -3,6 +3,9 @@ package aci
 import (
 	"fmt"
 	"log"
+	"reflect"
+	"sort"
+	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
@@ -32,16 +35,19 @@ func resourceAciLACPPolicy() *schema.Resource {
 			},
 
 			"ctrl": &schema.Schema{
-				Type:     schema.TypeString,
+				Type:     schema.TypeList,
 				Optional: true,
 				Computed: true,
-				ValidateFunc: validation.StringInSlice([]string{
-					"symmetric-hash",
-					"susp-individual",
-					"graceful-conv",
-					"load-defer",
-					"fast-sel-hot-stdby",
-				}, false),
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+					ValidateFunc: validation.StringInSlice([]string{
+						"symmetric-hash",
+						"susp-individual",
+						"graceful-conv",
+						"load-defer",
+						"fast-sel-hot-stdby",
+					}, false),
+				},
 			},
 
 			"max_links": &schema.Schema{
@@ -100,7 +106,25 @@ func setLACPPolicyAttributes(lacpLagPol *models.LACPPolicy, d *schema.ResourceDa
 	d.Set("name", lacpLagPolMap["name"])
 
 	d.Set("annotation", lacpLagPolMap["annotation"])
-	d.Set("ctrl", lacpLagPolMap["ctrl"])
+	ctrlsGet := make([]string, 0, 1)
+	for _, val := range strings.Split(lacpLagPolMap["ctrl"], ",") {
+		ctrlsGet = append(ctrlsGet, strings.Trim(val, " "))
+	}
+	sort.Strings(ctrlsGet)
+	if _, ok := d.GetOk("ctrl"); ok {
+		ctrlsAct := make([]string, 0, 1)
+		for _, val := range d.Get("ctrl").([]interface{}) {
+			ctrlsAct = append(ctrlsAct, val.(string))
+		}
+		sort.Strings(ctrlsAct)
+		if reflect.DeepEqual(ctrlsAct, ctrlsGet) {
+			d.Set("ctrl", d.Get("ctrl").([]interface{}))
+		} else {
+			d.Set("ctrl", ctrlsGet)
+		}
+	} else {
+		d.Set("ctrl", ctrlsGet)
+	}
 	d.Set("max_links", lacpLagPolMap["maxLinks"])
 	d.Set("min_links", lacpLagPolMap["minLinks"])
 	d.Set("mode", lacpLagPolMap["mode"])
@@ -140,7 +164,12 @@ func resourceAciLACPPolicyCreate(d *schema.ResourceData, m interface{}) error {
 		lacpLagPolAttr.Annotation = "{}"
 	}
 	if Ctrl, ok := d.GetOk("ctrl"); ok {
-		lacpLagPolAttr.Ctrl = Ctrl.(string)
+		tp := Ctrl.([]interface{})
+		ctrls := make([]string, 0, 1)
+		for _, val := range tp {
+			ctrls = append(ctrls, val.(string))
+		}
+		lacpLagPolAttr.Ctrl = strings.Join(ctrls, ",")
 	}
 	if MaxLinks, ok := d.GetOk("max_links"); ok {
 		lacpLagPolAttr.MaxLinks = MaxLinks.(string)
@@ -187,7 +216,12 @@ func resourceAciLACPPolicyUpdate(d *schema.ResourceData, m interface{}) error {
 		lacpLagPolAttr.Annotation = "{}"
 	}
 	if Ctrl, ok := d.GetOk("ctrl"); ok {
-		lacpLagPolAttr.Ctrl = Ctrl.(string)
+		tp := Ctrl.([]interface{})
+		ctrls := make([]string, 0, 1)
+		for _, val := range tp {
+			ctrls = append(ctrls, val.(string))
+		}
+		lacpLagPolAttr.Ctrl = strings.Join(ctrls, ",")
 	}
 	if MaxLinks, ok := d.GetOk("max_links"); ok {
 		lacpLagPolAttr.MaxLinks = MaxLinks.(string)
