@@ -122,6 +122,11 @@ func resourceAciAccessPortBlockImport(d *schema.ResourceData, m interface{}) ([]
 	if err != nil {
 		return nil, err
 	}
+	infraPortBlkMap, _ := infraPortBlk.ToMap()
+
+	name := infraPortBlkMap["name"]
+	pDN := GetParentDn(dn, fmt.Sprintf("/portblk-%s", name))
+	d.Set("access_port_selector_dn", pDN)
 	schemaFilled := setAccessPortBlockAttributes(infraPortBlk, d)
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())

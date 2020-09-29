@@ -93,6 +93,11 @@ func resourceAciX509CertificateImport(d *schema.ResourceData, m interface{}) ([]
 	if err != nil {
 		return nil, err
 	}
+
+	aaaUserCertMap, _ := aaaUserCert.ToMap()
+	name := aaaUserCertMap["name"]
+	pDN := GetParentDn(dn, fmt.Sprintf("/usercert-%s", name))
+	d.Set("local_user_dn", pDN)
 	schemaFilled := setX509CertificateAttributes(aaaUserCert, d)
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())

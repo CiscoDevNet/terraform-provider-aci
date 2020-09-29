@@ -128,6 +128,10 @@ func resourceAciAccessSubPortBlockImport(d *schema.ResourceData, m interface{}) 
 	if err != nil {
 		return nil, err
 	}
+	infraSubPortBlkMap, _ := infraSubPortBlk.ToMap()
+	name := infraSubPortBlkMap["name"]
+	pDN := GetParentDn(dn, fmt.Sprintf("/subportblk-%s", name))
+	d.Set("access_port_selector_dn", pDN)
 	schemaFilled := setAccessSubPortBlockAttributes(infraSubPortBlk, d)
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())

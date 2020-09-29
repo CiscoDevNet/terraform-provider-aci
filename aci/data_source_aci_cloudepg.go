@@ -79,6 +79,7 @@ func dataSourceAciCloudEPgRead(d *schema.ResourceData, m interface{}) error {
 	if err != nil {
 		return err
 	}
+	d.SetId(dn)
 	setCloudEPgAttributes(cloudEPg, d)
 	return nil
 }

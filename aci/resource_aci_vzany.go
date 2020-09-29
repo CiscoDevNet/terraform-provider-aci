@@ -124,6 +124,8 @@ func resourceAciAnyImport(d *schema.ResourceData, m interface{}) ([]*schema.Reso
 	if err != nil {
 		return nil, err
 	}
+	pDN := GetParentDn(dn, fmt.Sprintf("/any"))
+	d.Set("vrf_dn", pDN)
 	schemaFilled := setAnyAttributes(vzAny, d)
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())

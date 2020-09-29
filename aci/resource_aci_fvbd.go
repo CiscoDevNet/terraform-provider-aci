@@ -363,6 +363,11 @@ func resourceAciBridgeDomainImport(d *schema.ResourceData, m interface{}) ([]*sc
 	if err != nil {
 		return nil, err
 	}
+	fvBDMap, _ := fvBD.ToMap()
+
+	name := fvBDMap["name"]
+	pDN := GetParentDn(dn, fmt.Sprintf("/BD-%s", name))
+	d.Set("tenant_dn", pDN)
 	schemaFilled := setBridgeDomainAttributes(fvBD, d)
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())

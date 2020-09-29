@@ -90,6 +90,10 @@ func resourceAciImportedContractImport(d *schema.ResourceData, m interface{}) ([
 	if err != nil {
 		return nil, err
 	}
+	vzCPIfMap, _ := vzCPIf.ToMap()
+	name := vzCPIfMap["name"]
+	pDN := GetParentDn(dn, fmt.Sprintf("/cif-%s", name))
+	d.Set("tenant_dn", pDN)
 	schemaFilled := setImportedContractAttributes(vzCPIf, d)
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())

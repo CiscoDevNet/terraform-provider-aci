@@ -140,6 +140,9 @@ func resourceAciCloudContextProfileImport(d *schema.ResourceData, m interface{})
 	if err != nil {
 		return nil, err
 	}
+	name := GetMOName(cloudCtxProfile.DistinguishedName)
+	pDN := GetParentDn(dn, fmt.Sprintf("/ctxprofile-%s", name))
+	d.Set("tenant_dn", pDN)
 	schemaFilled := setCloudContextProfileAttributes(cloudCtxProfile, d)
 	return []*schema.ResourceData{schemaFilled}, nil
 }

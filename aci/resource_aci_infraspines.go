@@ -104,6 +104,11 @@ func resourceAciSwitchSpineAssociationImport(d *schema.ResourceData, m interface
 	if err != nil {
 		return nil, err
 	}
+	infraSpineSMap, _ := infraSpineS.ToMap()
+	name := infraSpineSMap["name"]
+	satype := infraSpineSMap["type"]
+	pDN := GetParentDn(dn, fmt.Sprintf("/spines-%s-typ-%s", name, satype))
+	d.Set("spine_profile_dn", pDN)
 	schemaFilled := setSwitchSpineAssociationAttributes(infraSpineS, d)
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())

@@ -86,6 +86,10 @@ func resourceAciCloudApplicationcontainerImport(d *schema.ResourceData, m interf
 	if err != nil {
 		return nil, err
 	}
+	cloudAppMap, _ := cloudApp.ToMap()
+	name := cloudAppMap["name"]
+	pDN := GetParentDn(dn, fmt.Sprintf("/cloudapp-%s", name))
+	d.Set("tenant_dn", pDN)
 	schemaFilled := setCloudApplicationcontainerAttributes(cloudApp, d)
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())

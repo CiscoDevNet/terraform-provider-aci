@@ -85,6 +85,7 @@ func dataSourceAciCloudExternalEPgRead(d *schema.ResourceData, m interface{}) er
 	if err != nil {
 		return err
 	}
+	d.SetId(dn)
 	setCloudExternalEPgAttributes(cloudExtEPg, d)
 	return nil
 }

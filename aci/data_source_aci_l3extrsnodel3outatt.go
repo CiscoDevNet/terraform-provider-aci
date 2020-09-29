@@ -61,6 +61,7 @@ func dataSourceAciFabricNodeRead(d *schema.ResourceData, m interface{}) error {
 	if err != nil {
 		return err
 	}
+	d.SetId(dn)
 	setFabricNodeAttributes(l3extRsNodeL3OutAtt, d)
 	return nil
 }

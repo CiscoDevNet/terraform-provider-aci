@@ -103,6 +103,7 @@ func dataSourceAciServiceRedirectPolicyRead(d *schema.ResourceData, m interface{
 	if err != nil {
 		return err
 	}
+	d.SetId(dn)
 	setServiceRedirectPolicyAttributes(vnsSvcRedirectPol, d)
 	return nil
 }

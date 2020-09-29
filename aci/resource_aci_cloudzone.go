@@ -83,6 +83,11 @@ func resourceAciCloudAvailabilityZoneImport(d *schema.ResourceData, m interface{
 	if err != nil {
 		return nil, err
 	}
+	cloudZoneMap, _ := cloudZone.ToMap()
+
+	name := cloudZoneMap["name"]
+	pDN := GetParentDn(dn, fmt.Sprintf("/zone-%s", name))
+	d.Set("cloud_providers_region_dn", pDN)
 	schemaFilled := setCloudAvailabilityZoneAttributes(cloudZone, d)
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())

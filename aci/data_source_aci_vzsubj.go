@@ -79,6 +79,7 @@ func dataSourceAciContractSubjectRead(d *schema.ResourceData, m interface{}) err
 	if err != nil {
 		return err
 	}
+	d.SetId(dn)
 	setContractSubjectAttributes(vzSubj, d)
 	return nil
 }

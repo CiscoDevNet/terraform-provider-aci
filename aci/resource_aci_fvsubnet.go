@@ -154,6 +154,10 @@ func resourceAciSubnetImport(d *schema.ResourceData, m interface{}) ([]*schema.R
 	if err != nil {
 		return nil, err
 	}
+	fvSubnetMap, _ := fvSubnet.ToMap()
+	ip := fvSubnetMap["ip"]
+	pDN := GetParentDn(dn, fmt.Sprintf("/subnet-[%s]", ip))
+	d.Set("parent_dn", pDN)
 	schemaFilled := setSubnetAttributes(fvSubnet, d)
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())

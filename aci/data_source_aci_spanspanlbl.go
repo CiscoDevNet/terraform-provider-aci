@@ -55,6 +55,7 @@ func dataSourceAciSPANSourcedestinationGroupMatchLabelRead(d *schema.ResourceDat
 	if err != nil {
 		return err
 	}
+	d.SetId(dn)
 	setSPANSourcedestinationGroupMatchLabelAttributes(spanSpanLbl, d)
 	return nil
 }

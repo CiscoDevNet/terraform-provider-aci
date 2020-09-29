@@ -67,6 +67,7 @@ func dataSourceAciEPGsUsingFunctionRead(d *schema.ResourceData, m interface{}) e
 	if err != nil {
 		return err
 	}
+	d.SetId(dn)
 	setEPGsUsingFunctionAttributes(infraRsFuncToEpg, d)
 	return nil
 }

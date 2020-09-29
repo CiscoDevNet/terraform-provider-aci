@@ -55,6 +55,7 @@ func dataSourceAciCloudCIDRPoolRead(d *schema.ResourceData, m interface{}) error
 	if err != nil {
 		return err
 	}
+	d.SetId(dn)
 	setCloudCIDRPoolAttributes(cloudCidr, d)
 	return nil
 }

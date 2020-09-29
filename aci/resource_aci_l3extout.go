@@ -168,6 +168,10 @@ func resourceAciL3OutsideImport(d *schema.ResourceData, m interface{}) ([]*schem
 	if err != nil {
 		return nil, err
 	}
+	l3extOutMap, _ := l3extOut.ToMap()
+	name := l3extOutMap["name"]
+	pDN := GetParentDn(dn, fmt.Sprintf("/out-%s", name))
+	d.Set("tenant_dn", pDN)
 	schemaFilled := setL3OutsideAttributes(l3extOut, d)
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())

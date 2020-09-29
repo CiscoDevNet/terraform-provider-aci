@@ -85,6 +85,7 @@ func dataSourceAciAccessSubPortBlockRead(d *schema.ResourceData, m interface{}) 
 	if err != nil {
 		return err
 	}
+	d.SetId(dn)
 	setAccessSubPortBlockAttributes(infraSubPortBlk, d)
 	return nil
 }

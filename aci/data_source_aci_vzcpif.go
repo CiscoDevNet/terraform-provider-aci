@@ -49,6 +49,7 @@ func dataSourceAciImportedContractRead(d *schema.ResourceData, m interface{}) er
 	if err != nil {
 		return err
 	}
+	d.SetId(dn)
 	setImportedContractAttributes(vzCPIf, d)
 	return nil
 }

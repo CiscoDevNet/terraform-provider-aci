@@ -581,6 +581,10 @@ func resourceAciContractImport(d *schema.ResourceData, m interface{}) ([]*schema
 	if err != nil {
 		return nil, err
 	}
+	vzBrCPMap, _ := vzBrCP.ToMap()
+	name := vzBrCPMap["name"]
+	pDN := GetParentDn(dn, fmt.Sprintf("/brc-%s", name))
+	d.Set("tenant_dn", pDN)
 	schemaFilled := setContractAttributes(vzBrCP, d)
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())

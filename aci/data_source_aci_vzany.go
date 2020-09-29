@@ -54,6 +54,7 @@ func dataSourceAciAnyRead(d *schema.ResourceData, m interface{}) error {
 	if err != nil {
 		return err
 	}
+	d.SetId(dn)
 	setAnyAttributes(vzAny, d)
 	return nil
 }

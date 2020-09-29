@@ -73,6 +73,7 @@ func dataSourceAciDestinationofredirectedtrafficRead(d *schema.ResourceData, m i
 	if err != nil {
 		return err
 	}
+	d.SetId(dn)
 	setDestinationofredirectedtrafficAttributes(vnsRedirectDest, d)
 	return nil
 }

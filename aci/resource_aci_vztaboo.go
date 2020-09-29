@@ -86,6 +86,10 @@ func resourceAciTabooContractImport(d *schema.ResourceData, m interface{}) ([]*s
 	if err != nil {
 		return nil, err
 	}
+	vzTabooMap, _ := vzTaboo.ToMap()
+	name := vzTabooMap["name"]
+	pDN := GetParentDn(dn, fmt.Sprintf("/taboo-%s", name))
+	d.Set("tenant_dn", pDN)
 	schemaFilled := setTabooContractAttributes(vzTaboo, d)
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())

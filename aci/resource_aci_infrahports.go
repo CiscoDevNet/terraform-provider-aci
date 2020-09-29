@@ -106,6 +106,11 @@ func resourceAciAccessPortSelectorImport(d *schema.ResourceData, m interface{}) 
 	if err != nil {
 		return nil, err
 	}
+	infraHPortSMap, _ := infraHPortS.ToMap()
+	name := infraHPortSMap["name"]
+	ptype := infraHPortSMap["type"]
+	pDN := GetParentDn(dn, fmt.Sprintf("/hports-%s-typ-%s", name, ptype))
+	d.Set("leaf_interface_profile_dn", pDN)
 	schemaFilled := setAccessPortSelectorAttributes(infraHPortS, d)
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())

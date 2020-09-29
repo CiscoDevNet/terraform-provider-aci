@@ -78,6 +78,10 @@ func resourceAciInterfaceProfileImport(d *schema.ResourceData, m interface{}) ([
 	if err != nil {
 		return nil, err
 	}
+	infraRsSpAccPortPMap, _ := infraRsSpAccPortP.ToMap()
+	tDn := infraRsSpAccPortPMap["tDn"]
+	pDN := GetParentDn(dn, fmt.Sprintf("/rsspAccPortP-[%s]", tDn))
+	d.Set("spine_profile_dn", pDN)
 	schemaFilled := setInterfaceProfileAttributes(infraRsSpAccPortP, d)
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())

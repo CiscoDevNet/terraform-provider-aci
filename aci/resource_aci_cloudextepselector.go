@@ -111,6 +111,10 @@ func resourceAciCloudEndpointSelectorforExternalEPgsImport(d *schema.ResourceDat
 	if err != nil {
 		return nil, err
 	}
+	cloudExtEPSelectorMap, _ := cloudExtEPSelector.ToMap()
+	subnet := cloudExtEPSelectorMap["subnet"]
+	pDN := GetParentDn(dn, fmt.Sprintf("/extepselector-[%s]", subnet))
+	d.Set("cloud_external_epg_dn", pDN)
 	schemaFilled := setCloudEndpointSelectorforExternalEPgsAttributes(cloudExtEPSelector, d)
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())

@@ -64,7 +64,7 @@ func dataSourceAciContractProviderRead(d *schema.ResourceData, m interface{}) er
 		if err != nil {
 			return nil
 		}
-
+		d.SetId(dn)
 		setContractProviderDataAttributes(fvRsProv, d)
 
 	} else if contractType == "consumer" {
@@ -75,7 +75,7 @@ func dataSourceAciContractProviderRead(d *schema.ResourceData, m interface{}) er
 		if err != nil {
 			return nil
 		}
-
+		d.SetId(dn)
 		setContractConsumerDataAttributes(fvRsCons, d)
 
 	} else {

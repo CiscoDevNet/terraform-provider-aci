@@ -114,6 +114,11 @@ func resourceAciEPGsUsingFunctionImport(d *schema.ResourceData, m interface{}) (
 	if err != nil {
 		return nil, err
 	}
+	infraRsFuncToEpgMap, _ := infraRsFuncToEpg.ToMap()
+
+	tDn := infraRsFuncToEpgMap["tDn"]
+	pDN := GetParentDn(dn, fmt.Sprintf("/rsfuncToEpg-[%s]", tDn))
+	d.Set("access_generic_dn", pDN)
 	schemaFilled := setEPGsUsingFunctionAttributes(infraRsFuncToEpg, d)
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())

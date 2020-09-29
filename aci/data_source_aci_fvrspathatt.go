@@ -67,6 +67,7 @@ func dataSourceAciStaticPathRead(d *schema.ResourceData, m interface{}) error {
 	if err != nil {
 		return err
 	}
+	d.SetId(dn)
 	setStaticPathAttributes(fvRsPathAtt, d)
 	return nil
 }

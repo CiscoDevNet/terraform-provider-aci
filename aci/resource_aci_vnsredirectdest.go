@@ -119,6 +119,10 @@ func resourceAciDestinationofredirectedtrafficImport(d *schema.ResourceData, m i
 	if err != nil {
 		return nil, err
 	}
+	vnsRedirectDestMap, _ := vnsRedirectDest.ToMap()
+	ip := vnsRedirectDestMap["ip"]
+	pDN := GetParentDn(dn, fmt.Sprintf("/RedirectDest_ip-[%s]", ip))
+	d.Set("service_redirect_policy_dn", pDN)
 	schemaFilled := setDestinationofredirectedtrafficAttributes(vnsRedirectDest, d)
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
