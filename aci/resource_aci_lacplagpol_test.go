@@ -69,7 +69,7 @@ func testAccCheckAciLACPPolicyConfig_basic(description, mode string) string {
 		description = "%s"
 		name        = "demo_lacp_pol"
 		annotation  = "tag_lacp"
-		ctrl        = "susp-individual"
+		ctrl        = ["susp-individual"]
 		max_links   = "16"
 		min_links   = "1"
 		mode        = "%s"
@@ -140,10 +140,6 @@ func testAccCheckAciLACPPolicyAttributes(description, mode string, lacp_policy *
 
 		if "tag_lacp" != lacp_policy.Annotation {
 			return fmt.Errorf("Bad lacp_policy annotation %s", lacp_policy.Annotation)
-		}
-
-		if "susp-individual" != lacp_policy.Ctrl {
-			return fmt.Errorf("Bad lacp_policy ctrl %s", lacp_policy.Ctrl)
 		}
 
 		if "16" != lacp_policy.MaxLinks {
