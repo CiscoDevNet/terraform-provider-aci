@@ -85,6 +85,7 @@ func dataSourceAciExternalNetworkInstanceProfileRead(d *schema.ResourceData, m i
 	if err != nil {
 		return err
 	}
+	d.SetId(dn)
 	setExternalNetworkInstanceProfileAttributes(l3extInstP, d)
 	return nil
 }

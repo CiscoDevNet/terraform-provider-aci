@@ -100,6 +100,11 @@ func resourceAciNodeBlockImport(d *schema.ResourceData, m interface{}) ([]*schem
 	if err != nil {
 		return nil, err
 	}
+	infraNodeBlkMap, _ := infraNodeBlk.ToMap()
+
+	name := infraNodeBlkMap["name"]
+	pDN := GetParentDn(dn, fmt.Sprintf("/nodeblk-%s", name))
+	d.Set("switch_association_dn", pDN)
 	schemaFilled := setNodeBlockAttributes(infraNodeBlk, d)
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())

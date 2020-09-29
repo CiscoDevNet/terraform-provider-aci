@@ -96,6 +96,7 @@ func dataSourceAciCloudAWSProviderRead(d *schema.ResourceData, m interface{}) er
 	if err != nil {
 		return err
 	}
+	d.SetId(dn)
 	setCloudAWSProviderAttributes(cloudAwsProvider, d)
 	return nil
 }

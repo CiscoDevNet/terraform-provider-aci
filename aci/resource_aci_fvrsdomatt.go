@@ -302,6 +302,10 @@ func resourceAciDomainImport(d *schema.ResourceData, m interface{}) ([]*schema.R
 	if err != nil {
 		return nil, err
 	}
+	fvRsDomAttMap, _ := fvRsDomAtt.ToMap()
+	tDn := fvRsDomAttMap["tDn"]
+	pDN := GetParentDn(dn, fmt.Sprintf("/rsdomAtt-[%s]", tDn))
+	d.Set("application_epg_dn", pDN)
 	schemaFilled := setDomainAttributes(fvRsDomAtt, d)
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())

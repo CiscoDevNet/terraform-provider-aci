@@ -107,6 +107,11 @@ func resourceAciSwitchAssociationImport(d *schema.ResourceData, m interface{}) (
 	if err != nil {
 		return nil, err
 	}
+	infraLeafSMap, _ := infraLeafS.ToMap()
+	name := infraLeafSMap["name"]
+	ltype := infraLeafSMap["type"]
+	pDN := GetParentDn(dn, fmt.Sprintf("/leaves-%s-typ-%s", name, ltype))
+	d.Set("leaf_profile_dn", pDN)
 	schemaFilled := setSwitchAssociationAttributes(infraLeafS, d)
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())

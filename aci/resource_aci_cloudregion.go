@@ -95,6 +95,10 @@ func resourceAciCloudProvidersRegionImport(d *schema.ResourceData, m interface{}
 	if err != nil {
 		return nil, err
 	}
+	cloudRegionMap, _ := cloudRegion.ToMap()
+	name := cloudRegionMap["name"]
+	pDN := GetParentDn(dn, fmt.Sprintf("/region-%s", name))
+	d.Set("cloud_provider_profile_dn", pDN)
 	schemaFilled := setCloudProvidersRegionAttributes(cloudRegion, d)
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())

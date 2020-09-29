@@ -86,6 +86,10 @@ func resourceAciMonitoringPolicyImport(d *schema.ResourceData, m interface{}) ([
 	if err != nil {
 		return nil, err
 	}
+	monEPGPolMap, _ := monEPGPol.ToMap()
+	name := monEPGPolMap["name"]
+	pDN := GetParentDn(dn, fmt.Sprintf("/monepg-%s", name))
+	d.Set("tenant_dn", pDN)
 	schemaFilled := setMonitoringPolicyAttributes(monEPGPol, d)
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())

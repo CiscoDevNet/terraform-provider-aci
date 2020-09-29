@@ -85,6 +85,10 @@ func resourceAciAccessGenericImport(d *schema.ResourceData, m interface{}) ([]*s
 	if err != nil {
 		return nil, err
 	}
+	infraGenericMap, _ := infraGeneric.ToMap()
+	name := infraGenericMap["name"]
+	pDN := GetParentDn(dn, fmt.Sprintf("/gen-%s", name))
+	d.Set("attachable_access_entity_profile_dn", pDN)
 	schemaFilled := setAccessGenericAttributes(infraGeneric, d)
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())

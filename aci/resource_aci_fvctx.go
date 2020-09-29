@@ -223,6 +223,11 @@ func resourceAciVRFImport(d *schema.ResourceData, m interface{}) ([]*schema.Reso
 	if err != nil {
 		return nil, err
 	}
+	fvCtxMap, _ := fvCtx.ToMap()
+
+	name := fvCtxMap["name"]
+	pDN := GetParentDn(dn, fmt.Sprintf("/ctx-%s", name))
+	d.Set("tenant_dn", pDN)
 	schemaFilled := setVRFAttributes(fvCtx, d)
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())

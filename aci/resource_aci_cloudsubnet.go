@@ -129,6 +129,11 @@ func resourceAciCloudSubnetImport(d *schema.ResourceData, m interface{}) ([]*sch
 	if err != nil {
 		return nil, err
 	}
+	cloudSubnetMap, _ := cloudSubnet.ToMap()
+
+	ip := cloudSubnetMap["ip"]
+	pDN := GetParentDn(dn, fmt.Sprintf("/subnet-[%s]", ip))
+	d.Set("cloud_cidr_pool_dn", pDN)
 	schemaFilled := setCloudSubnetAttributes(cloudSubnet, d)
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())

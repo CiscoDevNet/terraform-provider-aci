@@ -78,6 +78,8 @@ func resourceAciVlanEncapsulationforVxlanTrafficImport(d *schema.ResourceData, m
 	if err != nil {
 		return nil, err
 	}
+	pDN := GetParentDn(dn, fmt.Sprintf("/provacc"))
+	d.Set("attachable_access_entity_profile_dn", pDN)
 	schemaFilled := setVlanEncapsulationforVxlanTrafficAttributes(infraProvAcc, d)
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())

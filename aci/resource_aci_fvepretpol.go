@@ -136,6 +136,11 @@ func resourceAciEndPointRetentionPolicyImport(d *schema.ResourceData, m interfac
 	if err != nil {
 		return nil, err
 	}
+	fvEpRetPolMap, _ := fvEpRetPol.ToMap()
+
+	name := fvEpRetPolMap["name"]
+	pDN := GetParentDn(dn, fmt.Sprintf("/epRPol-%s", name))
+	d.Set("tenant_dn", pDN)
 	schemaFilled := setEndPointRetentionPolicyAttributes(fvEpRetPol, d)
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())

@@ -55,6 +55,7 @@ func dataSourceAciCloudEndpointSelectorRead(d *schema.ResourceData, m interface{
 	if err != nil {
 		return err
 	}
+	d.SetId(dn)
 	setCloudEndpointSelectorAttributes(cloudEPSelector, d)
 	return nil
 }

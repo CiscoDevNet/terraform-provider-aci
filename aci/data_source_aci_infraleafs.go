@@ -56,6 +56,7 @@ func dataSourceAciSwitchAssociationRead(d *schema.ResourceData, m interface{}) e
 	if err != nil {
 		return err
 	}
+	d.SetId(dn)
 	setSwitchAssociationAttributes(infraLeafS, d)
 	return nil
 }

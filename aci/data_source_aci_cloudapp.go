@@ -49,6 +49,7 @@ func dataSourceAciCloudApplicationcontainerRead(d *schema.ResourceData, m interf
 	if err != nil {
 		return err
 	}
+	d.SetId(dn)
 	setCloudApplicationcontainerAttributes(cloudApp, d)
 	return nil
 }

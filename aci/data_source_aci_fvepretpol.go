@@ -85,6 +85,7 @@ func dataSourceAciEndPointRetentionPolicyRead(d *schema.ResourceData, m interfac
 	if err != nil {
 		return err
 	}
+	d.SetId(dn)
 	setEndPointRetentionPolicyAttributes(fvEpRetPol, d)
 	return nil
 }

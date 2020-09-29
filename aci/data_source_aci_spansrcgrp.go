@@ -55,6 +55,7 @@ func dataSourceAciSPANSourceGroupRead(d *schema.ResourceData, m interface{}) err
 	if err != nil {
 		return err
 	}
+	d.SetId(dn)
 	setSPANSourceGroupAttributes(spanSrcGrp, d)
 	return nil
 }

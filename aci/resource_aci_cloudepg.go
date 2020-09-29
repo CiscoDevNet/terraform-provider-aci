@@ -194,6 +194,10 @@ func resourceAciCloudEPgImport(d *schema.ResourceData, m interface{}) ([]*schema
 	if err != nil {
 		return nil, err
 	}
+	cloudEPgMap, _ := cloudEPg.ToMap()
+	name := cloudEPgMap["name"]
+	pDN := GetParentDn(dn, fmt.Sprintf("/cloudepg-%s", name))
+	d.Set("cloud_applicationcontainer_dn", pDN)
 	schemaFilled := setCloudEPgAttributes(cloudEPg, d)
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())

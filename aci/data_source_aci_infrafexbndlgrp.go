@@ -49,6 +49,7 @@ func dataSourceAciFexBundleGroupRead(d *schema.ResourceData, m interface{}) erro
 	if err != nil {
 		return err
 	}
+	d.SetId(dn)
 	setFexBundleGroupAttributes(infraFexBndlGrp, d)
 	return nil
 }

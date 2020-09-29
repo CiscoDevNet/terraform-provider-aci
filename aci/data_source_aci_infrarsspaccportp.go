@@ -43,6 +43,7 @@ func dataSourceAciInterfaceProfileRead(d *schema.ResourceData, m interface{}) er
 	if err != nil {
 		return err
 	}
+	d.SetId(dn)
 	setInterfaceProfileAttributes(infraRsSpAccPortP, d)
 	return nil
 }

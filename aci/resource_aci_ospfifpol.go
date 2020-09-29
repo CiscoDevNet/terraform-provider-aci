@@ -167,6 +167,10 @@ func resourceAciOSPFInterfacePolicyImport(d *schema.ResourceData, m interface{})
 	if err != nil {
 		return nil, err
 	}
+	ospfIfPolMap, _ := ospfIfPol.ToMap()
+	name := ospfIfPolMap["name"]
+	pDN := GetParentDn(dn, fmt.Sprintf("/ospfIfPol-%s", name))
+	d.Set("tenant_dn", pDN)
 	schemaFilled := setOSPFInterfacePolicyAttributes(ospfIfPol, d)
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())

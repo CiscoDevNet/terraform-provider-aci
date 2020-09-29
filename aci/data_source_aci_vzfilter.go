@@ -49,6 +49,7 @@ func dataSourceAciFilterRead(d *schema.ResourceData, m interface{}) error {
 	if err != nil {
 		return err
 	}
+	d.SetId(dn)
 	setFilterAttributes(vzFilter, d)
 	return nil
 }
