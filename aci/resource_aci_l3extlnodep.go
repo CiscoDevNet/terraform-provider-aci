@@ -159,6 +159,10 @@ func resourceAciLogicalNodeProfileImport(d *schema.ResourceData, m interface{}) 
 	if err != nil {
 		return nil, err
 	}
+	l3extLNodePMap, _ := l3extLNodeP.ToMap()
+	name := l3extLNodePMap["name"]
+	pDN := GetParentDn(dn, fmt.Sprintf("/lnodep-%s", name))
+	d.Set("l3_outside_dn", pDN)
 	schemaFilled := setLogicalNodeProfileAttributes(l3extLNodeP, d)
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())

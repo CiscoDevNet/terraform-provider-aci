@@ -103,6 +103,7 @@ func dataSourceAciOSPFInterfacePolicyRead(d *schema.ResourceData, m interface{})
 	if err != nil {
 		return err
 	}
+	d.SetId(dn)
 	setOSPFInterfacePolicyAttributes(ospfIfPol, d)
 	return nil
 }

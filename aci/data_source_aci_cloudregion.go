@@ -55,6 +55,7 @@ func dataSourceAciCloudProvidersRegionRead(d *schema.ResourceData, m interface{}
 	if err != nil {
 		return err
 	}
+	d.SetId(dn)
 	setCloudProvidersRegionAttributes(cloudRegion, d)
 	return nil
 }

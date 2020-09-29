@@ -42,6 +42,7 @@ func dataSourceAciVlanEncapsulationforVxlanTrafficRead(d *schema.ResourceData, m
 	if err != nil {
 		return err
 	}
+	d.SetId(dn)
 	setVlanEncapsulationforVxlanTrafficAttributes(infraProvAcc, d)
 	return nil
 }

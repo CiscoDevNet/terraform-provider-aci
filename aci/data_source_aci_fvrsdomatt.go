@@ -151,6 +151,7 @@ func dataSourceAciDomainRead(d *schema.ResourceData, m interface{}) error {
 	if err != nil {
 		return err
 	}
+	d.SetId(dn)
 	setDomainAttributes(fvRsDomAtt, d)
 	return nil
 }

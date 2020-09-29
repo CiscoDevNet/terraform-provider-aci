@@ -61,6 +61,7 @@ func dataSourceAciLogicalInterfaceProfileRead(d *schema.ResourceData, m interfac
 	if err != nil {
 		return err
 	}
+	d.SetId(dn)
 	setLogicalInterfaceProfileAttributes(l3extLIfP, d)
 	return nil
 }

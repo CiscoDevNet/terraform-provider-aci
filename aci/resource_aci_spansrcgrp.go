@@ -104,6 +104,10 @@ func resourceAciSPANSourceGroupImport(d *schema.ResourceData, m interface{}) ([]
 	if err != nil {
 		return nil, err
 	}
+	spanSrcGrpMap, _ := spanSrcGrp.ToMap()
+	name := spanSrcGrpMap["name"]
+	pDN := GetParentDn(dn, fmt.Sprintf("/srcgrp-%s", name))
+	d.Set("tenant_dn", pDN)
 	schemaFilled := setSPANSourceGroupAttributes(spanSrcGrp, d)
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())

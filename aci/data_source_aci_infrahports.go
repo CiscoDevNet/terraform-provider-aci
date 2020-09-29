@@ -56,6 +56,7 @@ func dataSourceAciAccessPortSelectorRead(d *schema.ResourceData, m interface{}) 
 	if err != nil {
 		return err
 	}
+	d.SetId(dn)
 	setAccessPortSelectorAttributes(infraHPortS, d)
 	return nil
 }

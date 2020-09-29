@@ -191,6 +191,10 @@ func resourceAciContractSubjectImport(d *schema.ResourceData, m interface{}) ([]
 	if err != nil {
 		return nil, err
 	}
+	vzSubjMap, _ := vzSubj.ToMap()
+	name := vzSubjMap["name"]
+	pDN := GetParentDn(dn, fmt.Sprintf("/subj-%s", name))
+	d.Set("contract_dn", pDN)
 	schemaFilled := setContractSubjectAttributes(vzSubj, d)
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())

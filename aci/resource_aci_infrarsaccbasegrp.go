@@ -83,6 +83,8 @@ func resourceAciAccessAccessGroupImport(d *schema.ResourceData, m interface{}) (
 	if err != nil {
 		return nil, err
 	}
+	pDN := GetParentDn(dn, fmt.Sprintf("/rsaccBaseGrp"))
+	d.Set("access_port_selector_dn", pDN)
 	schemaFilled := setAccessAccessGroupAttributes(infraRsAccBaseGrp, d)
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())

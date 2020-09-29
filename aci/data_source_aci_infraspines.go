@@ -56,6 +56,7 @@ func dataSourceAciSwitchSpineAssociationRead(d *schema.ResourceData, m interface
 	if err != nil {
 		return err
 	}
+	d.SetId(dn)
 	setSwitchSpineAssociationAttributes(infraSpineS, d)
 	return nil
 }

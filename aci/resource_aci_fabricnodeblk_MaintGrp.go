@@ -100,6 +100,11 @@ func resourceAciNodeBlockImportMG(d *schema.ResourceData, m interface{}) ([]*sch
 	if err != nil {
 		return nil, err
 	}
+	fabricNodeBlkMap, _ := fabricNodeBlk.ToMap()
+
+	name := fabricNodeBlkMap["name"]
+	pDN := GetParentDn(dn, fmt.Sprintf("/nodeblk-%s", name))
+	d.Set("pod_maintenance_group_dn", pDN)
 	schemaFilled := setNodeBlockAttributesMG(fabricNodeBlk, d)
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())

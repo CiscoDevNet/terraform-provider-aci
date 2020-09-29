@@ -67,6 +67,7 @@ func dataSourceAciLogicalNodeProfileRead(d *schema.ResourceData, m interface{}) 
 	if err != nil {
 		return err
 	}
+	d.SetId(dn)
 	setLogicalNodeProfileAttributes(l3extLNodeP, d)
 	return nil
 }

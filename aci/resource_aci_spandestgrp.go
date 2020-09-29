@@ -86,6 +86,10 @@ func resourceAciSPANDestinationGroupImport(d *schema.ResourceData, m interface{}
 	if err != nil {
 		return nil, err
 	}
+	spanDestGrpMap, _ := spanDestGrp.ToMap()
+	name := spanDestGrpMap["name"]
+	pDN := GetParentDn(dn, fmt.Sprintf("/destgrp-%s", name))
+	d.Set("tenant_dn", pDN)
 	schemaFilled := setSPANDestinationGroupAttributes(spanDestGrp, d)
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())

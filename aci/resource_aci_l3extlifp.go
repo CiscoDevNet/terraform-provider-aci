@@ -169,6 +169,10 @@ func resourceAciLogicalInterfaceProfileImport(d *schema.ResourceData, m interfac
 	if err != nil {
 		return nil, err
 	}
+	l3extLIfPMap, _ := l3extLIfP.ToMap()
+	name := l3extLIfPMap["name"]
+	pDN := GetParentDn(dn, fmt.Sprintf("/lifp-%s", name))
+	d.Set("logical_node_profile_dn", pDN)
 	schemaFilled := setLogicalInterfaceProfileAttributes(l3extLIfP, d)
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
