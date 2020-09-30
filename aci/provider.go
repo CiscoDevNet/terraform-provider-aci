@@ -153,6 +153,7 @@ func Provider() terraform.ResourceProvider {
 			"aci_spine_interface_profile":                  resourceAciSpineInterfaceProfile(),
 			"aci_spine_port_policy_group":                  resourceAciSpineAccessPortPolicyGroup(),
 			"aci_fabric_if_pol":                            resourceAciLinkLevelPolicy(),
+			"aci_aaa_domain":                               resourceAciSecurityDomain(),
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
@@ -253,6 +254,7 @@ func Provider() terraform.ResourceProvider {
 			"aci_spine_port_policy_group":                  dataSourceAciSpineAccessPortPolicyGroup(),
 			"aci_fabric_path_ep":                           dataSourceAciFabricPathEndpoint(),
 			"aci_fabric_if_pol":                            dataSourceAciLinkLevelPolicy(),
+			"aci_aaa_domain":                               dataSourceAciSecurityDomain(),
 		},
 
 		ConfigureFunc: configureClient,
