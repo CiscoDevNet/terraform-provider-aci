@@ -63,15 +63,15 @@ The Provider supports authentication with Cisco APIC in 3 ways:
 ```
 
   3. Authentication with login-domain and password.
-  Example:
+  example:
 
   ```hcl
     provider "aci" {
-      username = "apic:${var.login_domain}\\\\${var.username}"
-      # private_key = var.aci_private_key
-      # cert_name = var.aci_cert_name
-      password = var.password
-      url = var.apic_url
+      username = "apic:Demo_domain\\\\admin"
+      # private_key = "path to private key"
+      # cert_name = "certificate.crt"
+      password = "password"
+      url = "url"
       insecure = true
     }
   ```
