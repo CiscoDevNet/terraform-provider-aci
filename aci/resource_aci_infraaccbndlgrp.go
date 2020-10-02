@@ -60,6 +60,7 @@ func resourceAciPCVPCInterfacePolicyGroup() *schema.Resource {
 				Type:     schema.TypeSet,
 				Elem:     &schema.Schema{Type: schema.TypeString},
 				Optional: true,
+				Computed: true,
 				Set:      schema.HashString,
 			},
 			"relation_infra_rs_stormctrl_if_pol": &schema.Schema{
