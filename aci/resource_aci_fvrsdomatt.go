@@ -27,11 +27,13 @@ func resourceAciDomain() *schema.Resource {
 			"application_epg_dn": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
+				ForceNew: true,
 			},
 
 			"tdn": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
+				ForceNew: true,
 			},
 
 			"binding_type": &schema.Schema{
