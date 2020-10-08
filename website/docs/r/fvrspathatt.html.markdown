@@ -13,20 +13,15 @@ Manages ACI Static Path
 
 ```hcl
 resource "aci_epg_to_static_path" "example" {
-
   application_epg_dn  = "${aci_application_epg.example.id}"
-
-  tDn  = "example"
-  annotation  = "example"
-  encap  = "example"
-  instr_imedcy  = "example"
-  mode  = "example"
-  primary_encap  = "example"
+  tdn  = "topology/pod-1/paths-129/pathep-[eth1/3]"
+  encap  = "vlan-1000"
+  mode  = "regular"
 }
 ```
 ## Argument Reference ##
 * `application_epg_dn` - (Required) Distinguished name of parent ApplicationEPG object.
-* `tDn` - (Required) tDn of Object static_path.
+* `tdn` - (Required) tDn of Object static_path.
 * `annotation` - (Optional) annotation for object static_path.
 * `encap` - (Optional) encapsulation
 * `instr_imedcy` - (Optional) immediacy.

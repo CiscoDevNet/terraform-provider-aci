@@ -27,11 +27,13 @@ func resourceAciStaticPath() *schema.Resource {
 			"application_epg_dn": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
+				ForceNew: true,
 			},
 
 			"tdn": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
+				ForceNew: true,
 			},
 
 			"encap": &schema.Schema{
