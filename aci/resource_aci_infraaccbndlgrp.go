@@ -56,12 +56,6 @@ func resourceAciPCVPCInterfacePolicyGroup() *schema.Resource {
 				Optional: true,
 				Set:      schema.HashString,
 			},
-			"relation_infra_rs_acc_bndl_grp_to_aggr_if": &schema.Schema{
-				Type:     schema.TypeSet,
-				Elem:     &schema.Schema{Type: schema.TypeString},
-				Optional: true,
-				Set:      schema.HashString,
-			},
 			"relation_infra_rs_stormctrl_if_pol": &schema.Schema{
 				Type: schema.TypeString,
 
@@ -278,13 +272,6 @@ func resourceAciPCVPCInterfacePolicyGroupCreate(d *schema.ResourceData, m interf
 		}
 	}
 
-	if relationToinfraRsAccBndlGrpToAggrIf, ok := d.GetOk("relation_infra_rs_acc_bndl_grp_to_aggr_if"); ok {
-		relationParamList := toStringList(relationToinfraRsAccBndlGrpToAggrIf.(*schema.Set).List())
-		for _, relationParam := range relationParamList {
-			checkDns = append(checkDns, relationParam)
-		}
-	}
-
 	if relationToinfraRsStormctrlIfPol, ok := d.GetOk("relation_infra_rs_stormctrl_if_pol"); ok {
 		relationParam := relationToinfraRsStormctrlIfPol.(string)
 		checkDns = append(checkDns, relationParam)
@@ -418,19 +405,7 @@ func resourceAciPCVPCInterfacePolicyGroupCreate(d *schema.ResourceData, m interf
 			d.Partial(false)
 		}
 	}
-	if relationToinfraRsAccBndlGrpToAggrIf, ok := d.GetOk("relation_infra_rs_acc_bndl_grp_to_aggr_if"); ok {
-		relationParamList := toStringList(relationToinfraRsAccBndlGrpToAggrIf.(*schema.Set).List())
-		for _, relationParam := range relationParamList {
-			err = aciClient.CreateRelationinfraRsAccBndlGrpToAggrIfFromPCVPCInterfacePolicyGroup(infraAccBndlGrp.DistinguishedName, relationParam)
 
-			if err != nil {
-				return err
-			}
-			d.Partial(true)
-			d.SetPartial("relation_infra_rs_acc_bndl_grp_to_aggr_if")
-			d.Partial(false)
-		}
-	}
 	if relationToinfraRsStormctrlIfPol, ok := d.GetOk("relation_infra_rs_stormctrl_if_pol"); ok {
 		relationParam := relationToinfraRsStormctrlIfPol.(string)
 		relationParamName := GetMOName(relationParam)
@@ -765,17 +740,6 @@ func resourceAciPCVPCInterfacePolicyGroupUpdate(d *schema.ResourceData, m interf
 		}
 	}
 
-	if d.HasChange("relation_infra_rs_acc_bndl_grp_to_aggr_if") {
-		oldRel, newRel := d.GetChange("relation_infra_rs_acc_bndl_grp_to_aggr_if")
-		oldRelSet := oldRel.(*schema.Set)
-		newRelSet := newRel.(*schema.Set)
-		relToCreate := toStringList(newRelSet.Difference(oldRelSet).List())
-
-		for _, relDn := range relToCreate {
-			checkDns = append(checkDns, relDn)
-		}
-	}
-
 	if d.HasChange("relation_infra_rs_stormctrl_if_pol") {
 		_, newRelParam := d.GetChange("relation_infra_rs_stormctrl_if_pol")
 		checkDns = append(checkDns, newRelParam.(string))
@@ -923,24 +887,6 @@ func resourceAciPCVPCInterfacePolicyGroupUpdate(d *schema.ResourceData, m interf
 			}
 			d.Partial(true)
 			d.SetPartial("relation_infra_rs_span_v_src_grp")
-			d.Partial(false)
-
-		}
-
-	}
-	if d.HasChange("relation_infra_rs_acc_bndl_grp_to_aggr_if") {
-		oldRel, newRel := d.GetChange("relation_infra_rs_acc_bndl_grp_to_aggr_if")
-		oldRelSet := oldRel.(*schema.Set)
-		newRelSet := newRel.(*schema.Set)
-		relToCreate := toStringList(newRelSet.Difference(oldRelSet).List())
-
-		for _, relDn := range relToCreate {
-			err = aciClient.CreateRelationinfraRsAccBndlGrpToAggrIfFromPCVPCInterfacePolicyGroup(infraAccBndlGrp.DistinguishedName, relDn)
-			if err != nil {
-				return err
-			}
-			d.Partial(true)
-			d.SetPartial("relation_infra_rs_acc_bndl_grp_to_aggr_if")
 			d.Partial(false)
 
 		}
@@ -1300,15 +1246,6 @@ func resourceAciPCVPCInterfacePolicyGroupRead(d *schema.ResourceData, m interfac
 				d.Set("relation_infra_rs_span_v_src_grp", make([]string, 0, 1))
 			}
 		}
-	}
-
-	infraRsAccBndlGrpToAggrIfData, err := aciClient.ReadRelationinfraRsAccBndlGrpToAggrIfFromPCVPCInterfacePolicyGroup(dn)
-	if err != nil {
-		log.Printf("[DEBUG] Error while reading relation infraRsAccBndlGrpToAggrIf %v", err)
-		d.Set("relation_infra_rs_acc_bndl_grp_to_aggr_if", make([]string, 0, 1))
-
-	} else {
-		d.Set("relation_infra_rs_acc_bndl_grp_to_aggr_if", infraRsAccBndlGrpToAggrIfData)
 	}
 
 	infraRsStormctrlIfPolData, err := aciClient.ReadRelationinfraRsStormctrlIfPolFromPCVPCInterfacePolicyGroup(dn)
