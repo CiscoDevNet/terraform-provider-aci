@@ -68,14 +68,17 @@ func resourceAciSubnet() *schema.Resource {
 			},
 
 			"scope": &schema.Schema{
-				Type:     schema.TypeString,
+				Type:     schema.TypeList,
 				Optional: true,
 				Computed: true,
-				ValidateFunc: validation.StringInSlice([]string{
-					"public",
-					"private",
-					"shared",
-				}, false),
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+					ValidateFunc: validation.StringInSlice([]string{
+						"public",
+						"private",
+						"shared",
+					}, false),
+				},
 			},
 
 			"virtual": &schema.Schema{
@@ -138,7 +141,25 @@ func setSubnetAttributes(fvSubnet *models.Subnet, d *schema.ResourceData) *schem
 	d.Set("ip", fvSubnetMap["ip"])
 	d.Set("name_alias", fvSubnetMap["nameAlias"])
 	d.Set("preferred", fvSubnetMap["preferred"])
-	d.Set("scope", fvSubnetMap["scope"])
+	scopeGet := make([]string, 0, 1)
+	for _, val := range strings.Split(fvSubnetMap["scope"], ",") {
+		scopeGet = append(scopeGet, strings.Trim(val, " "))
+	}
+	sort.Strings(scopeGet)
+	if scopeIntr, ok := d.GetOk("scope"); ok {
+		scopeAct := make([]string, 0, 1)
+		for _, val := range scopeIntr.([]interface{}) {
+			scopeAct = append(scopeAct, val.(string))
+		}
+		sort.Strings(scopeAct)
+		if reflect.DeepEqual(scopeAct, scopeGet) {
+			d.Set("scope", d.Get("scope").([]interface{}))
+		} else {
+			d.Set("scope", scopeGet)
+		}
+	} else {
+		d.Set("scope", scopeGet)
+	}
 	d.Set("virtual", fvSubnetMap["virtual"])
 	return d
 }
@@ -265,8 +286,13 @@ func resourceAciSubnetCreate(d *schema.ResourceData, m interface{}) error {
 	if Preferred, ok := d.GetOk("preferred"); ok {
 		fvSubnetAttr.Preferred = Preferred.(string)
 	}
-	if Scope, ok := d.GetOk("scope"); ok {
-		fvSubnetAttr.Scope = Scope.(string)
+	if scIntr, ok := d.GetOk("scope"); ok {
+		scopeList := make([]string, 0, 1)
+		for _, val := range scIntr.([]interface{}) {
+			scopeList = append(scopeList, val.(string))
+		}
+		Scope := strings.Join(scopeList, ",")
+		fvSubnetAttr.Scope = Scope
 	}
 	if Virtual, ok := d.GetOk("virtual"); ok {
 		fvSubnetAttr.Virtual = Virtual.(string)
@@ -382,8 +408,13 @@ func resourceAciSubnetUpdate(d *schema.ResourceData, m interface{}) error {
 	if Preferred, ok := d.GetOk("preferred"); ok {
 		fvSubnetAttr.Preferred = Preferred.(string)
 	}
-	if Scope, ok := d.GetOk("scope"); ok {
-		fvSubnetAttr.Scope = Scope.(string)
+	if scIntr, ok := d.GetOk("scope"); ok {
+		scopeList := make([]string, 0, 1)
+		for _, val := range scIntr.([]interface{}) {
+			scopeList = append(scopeList, val.(string))
+		}
+		Scope := strings.Join(scopeList, ",")
+		fvSubnetAttr.Scope = Scope
 	}
 	if Virtual, ok := d.GetOk("virtual"); ok {
 		fvSubnetAttr.Virtual = Virtual.(string)
