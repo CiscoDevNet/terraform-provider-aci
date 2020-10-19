@@ -96,10 +96,17 @@ func (client *Client) InjectAuthenticationHeader(req *http.Request, path string)
 			Name:  "APIC-Certificate-Fingerprint",
 			Value: "fingerprint",
 		})
-		req.AddCookie(&http.Cookie{
+		if client.appUserName != "" {
+		   req.AddCookie(&http.Cookie{
+			Name:  "APIC-Certificate-DN",
+			Value: fmt.Sprintf("uni/userext/appuser-%s/usercert-%s", client.appUserName, client.adminCert),
+		    })
+		} else {
+		    req.AddCookie(&http.Cookie{
 			Name:  "APIC-Certificate-DN",
 			Value: fmt.Sprintf("uni/userext/user-%s/usercert-%s", client.username, client.adminCert),
-		})
+		    })
+		}
 		log.Printf("[DEBUG] finished signature creation")
 		return req, nil
 

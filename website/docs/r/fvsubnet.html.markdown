@@ -21,7 +21,7 @@ Manages ACI Subnet
 		ctrl             = "%s"
 		name_alias       = "alias_subnet"
 		preferred        = "no"
-		scope            = "private"
+		scope            = ["private", "shared"]
 		virtual          = "yes"
 	} 
 
@@ -35,7 +35,7 @@ Manages ACI Subnet
 * `ctrl` - (Optional) The subnet control state. The control can be specific protocols applied to the subnet such as IGMP Snooping. Allowed values are "unspecified", "querier", "nd" and "no-default-gateway". Default is "nd".
 * `name_alias` - (Optional) name_alias for object subnet.
 * `preferred` - (Optional) Indicates if the subnet is preferred (primary) over the available alternatives. Only one preferred subnet is allowed. Allowed values are "yes" and "no". Default is "no".
-* `scope` - (Optional) The network visibility of the subnet. Allowed values are "private", "public" and "shared". Default is "private".
+* `scope` - (Optional) The List of network visibility of the subnet. Allowed values are "private", "public" and "shared". Default is "private".
 * `virtual` - (Optional) Treated as virtual IP address. Used in case of BD extended to multiple sites. Allowed values are "yes" and "no". Default is "no".
 
 * `relation_fv_rs_bd_subnet_to_out` - (Optional) Relation to class l3extOut. Cardinality - N_TO_M. Type - Set of String.
