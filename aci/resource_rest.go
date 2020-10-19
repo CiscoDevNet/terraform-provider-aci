@@ -177,7 +177,7 @@ func PostAndSetStatus(d *schema.ResourceData, m interface{}, status string) (*co
 	if err != nil {
 		return nil, err
 	}
-	err = client.CheckForErrors(respCont, "POST")
+	err = client.CheckForErrors(respCont, "POST", false)
 	if err != nil {
 		return nil, err
 	}
