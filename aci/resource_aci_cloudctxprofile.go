@@ -373,6 +373,14 @@ func resourceAciCloudContextProfileRead(d *schema.ResourceData, m interface{}) e
 		return err
 	}
 	setCloudContextProfileAttributes(cloudCtxProfile, d)
+
+	if hub, ok := d.GetOk("hub_network"); ok {
+		dURL := fmt.Sprintf("%s/rsctxProfileToGatewayRouterP-[%s]", dn, hub.(string))
+		_, err := aciClient.Get(dURL)
+		if err != nil {
+			d.Set("hub_network", "")
+		}
+	}
 	return nil
 }
 
