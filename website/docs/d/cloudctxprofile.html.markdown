@@ -12,11 +12,15 @@ Data source for ACI Cloud Context Profile
 ## Example Usage ##
 
 ```hcl
+
 data "aci_cloud_context_profile" "sample_prof" {
   tenant_dn  = "${aci_tenant.dev_tenant.id}"
   name       = "demo_cloud_ctx_prof"
 }
+
 ```
+
+
 ## Argument Reference ##
 * `tenant_dn` - (Required) Distinguished name of parent Tenant object.
 * `name` - (Required) name of Object cloud-ctx-profile.
@@ -31,4 +35,5 @@ data "aci_cloud_context_profile" "sample_prof" {
 * `type` - The specific type of the object or component. 
 * `primary_cidr` - Primary CIDR block of Cloud Context profile. 
 * `region` - AWS region in which profile is created.
+* `hub_network` - hub network Dn which enables Transit Gateway.
 
