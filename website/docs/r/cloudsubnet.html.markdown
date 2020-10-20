@@ -32,7 +32,7 @@ Manages ACI Cloud Subnet
 * `annotation` - (Optional) annotation for object cloud_subnet.
 * `name_alias` - (Optional) name_alias for object cloud_subnet.
 * `scope` - (Optional) The domain applicable to the capability. Allowed values are "public", "private" and "shared". Default is "private".
-* `usage` - (Optional) The usage of the port. This property shows how the port is used. Allowed values are "user", "gateway" and "infra-router". Default is "user". If `hub_network` is set for `aci_cloud_context_profile`, then value of `usage` must be "gateway".	
+* `usage` - (Optional) The usage of the port. This property shows how the port is used. Allowed values are "user", "gateway" and "infra-router". Default is "user". To make any subnet a Gateway subnet use `usage` = "gateway".	
 * `zone` - (Optional) [AWS Only] Availability zone where the subnet must be deployed. This property can carry both the actual zone or the ACI logical zone name. In the former case, driver directly uses the value of this property. In the latter case, Connector has to first resolve the mapping from ACI logical zone to actual AWS zone. This parameter is required in APIC v5.0 or higher.
 
 * `relation_cloud_rs_zone_attach` - (Optional) Relation to class cloudZone. Cardinality - N_TO_ONE. Type - String.
