@@ -1,13 +1,13 @@
 ---
 layout: "aci"
-page_title: "ACI: aci_subnet"
-sidebar_current: "docs-aci-resource-subnet"
+page_title: "ACI: aci_l3_ext_subnet"
+sidebar_current: "docs-aci-resource-l3_ext_subnet"
 description: |-
-  Manages ACI Subnet
+  Manages ACI l3 extension subnet
 ---
 
-# aci_subnet #
-Manages ACI Subnet
+# aci_l3_ext_subnet #
+Manages ACI l3 extension subnet
 
 ## Example Usage ##
 
@@ -24,10 +24,10 @@ Manages ACI Subnet
 ```
 ## Argument Reference ##
 * `external_network_instance_profile_dn` - (Required) Distinguished name of parent ExternalNetworkInstanceProfile object.
-* `ip` - (Required) ip of Object subnet.
-* `aggregate` - (Optional) Aggregate Routes for Subnet. Allowed values are "import-rtctrl", "export-rtctrl" and "shared-rtctrl".
-* `annotation` - (Optional) annotation for object subnet.
-* `name_alias` - (Optional) name_alias for object subnet.
+* `ip` - (Required) ip of Object l3 extension subnet.
+* `aggregate` - (Optional) Aggregate Routes for l3 extension subnet. Allowed values are "import-rtctrl", "export-rtctrl" and "shared-rtctrl".
+* `annotation` - (Optional) annotation for object l3 extension subnet.
+* `name_alias` - (Optional) name_alias for object l3 extension subnet.
 * `scope` - (Optional) The domain applicable to the capability. Allowed values are "import-rtctrl", "export-rtctrl", "import-security", "shared-security" and "shared-rtctrl". Default is "import-security".
 
 * `relation_l3ext_rs_subnet_to_profile` - (Optional) Relation to class rtctrlProfile. Cardinality - N_TO_M. Type - Set of Map.
@@ -39,7 +39,7 @@ Manages ACI Subnet
 ## Attribute Reference
 
 The only attribute that this resource exports is the `id`, which is set to the
-Dn of the Subnet.
+Dn of the l3 extension subnet.
 
 ## Importing ##
 
@@ -48,5 +48,5 @@ An existing Subnet can be [imported][docs-import] into this resource via its Dn,
 
 
 ```
-terraform import aci_subnet.example <Dn>
+terraform import aci_l3_ext_subnet.example <Dn>
 ```

@@ -1,13 +1,13 @@
 ---
 layout: "aci"
-page_title: "ACI: aci_fabric_node"
-sidebar_current: "docs-aci-resource-fabric_node"
+page_title: "ACI: aci_logical_node_to_fabric_node"
+sidebar_current: "docs-aci-resource-logical_node_to_fabric_node"
 description: |-
-  Manages ACI Fabric Node
+  Manages ACI Logical Node to Fabric Node
 ---
 
 # aci_logical_node_to_fabric_node #
-Manages ACI Fabric Node
+Manages ACI Logical Node to Fabric Node
 
 ## Example Usage ##
 
@@ -46,5 +46,5 @@ An existing Fabric Node can be [imported][docs-import] into this resource via it
 
 
 ```
-terraform import aci_fabric_node.example <Dn>
+terraform import aci_logical_node_to_fabric_node.example <Dn>
 ```
