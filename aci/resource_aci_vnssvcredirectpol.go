@@ -175,6 +175,10 @@ func resourceAciServiceRedirectPolicyImport(d *schema.ResourceData, m interface{
 	if err != nil {
 		return nil, err
 	}
+	vnsSvcRedirectPolMap, _ := vnsSvcRedirectPol.ToMap()
+	name := vnsSvcRedirectPolMap["name"]
+	pDN := GetParentDn(dn, fmt.Sprintf("/svcCont/svcRedirectPol-%s", name))
+	d.Set("tenant_dn", pDN)
 	schemaFilled := setServiceRedirectPolicyAttributes(vnsSvcRedirectPol, d)
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())

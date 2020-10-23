@@ -12,6 +12,7 @@ Manages ACI Cloud Context Profile
 ## Example Usage ##
 
 ```hcl
+
 	resource "aci_cloud_context_profile" "foocloud_context_profile" {
 		name 		                 = "%s"
 		description              = "cloud_context_profile created while acceptance testing"
@@ -20,8 +21,12 @@ Manages ACI Cloud Context Profile
 		region                   = "us-west-1"
 		cloud_vendor			 = "aws"
 		relation_cloud_rs_to_ctx = "${aci_vrf.vrf1.id}"
+		hub_network  			 =  "uni/tn-infra/gwrouterp-default"
 	}
+
 ```
+
+
 ## Argument Reference ##
 * `tenant_dn` - (Required) Distinguished name of parent Tenant object.
 * `name` - (Required) name of Object cloud_context_profile.
@@ -31,6 +36,8 @@ Manages ACI Cloud Context Profile
 * `annotation` - (Optional) annotation for object cloud_context_profile.
 * `name_alias` - (Optional) name_alias for object cloud_context_profile.
 * `type` - (Optional) The specific type of the object or component. Allowed values are "regular" and "shadow". Default is "regular".
+
+* `hub_network` - (Optional) hub network Dn which enables Transit Gateway.
 
 * `relation_cloud_rs_ctx_to_flow_log` - (Optional) Relation to class cloudAwsFlowLogPol. Cardinality - N_TO_ONE. Type - String.
                 

@@ -49,6 +49,7 @@ func dataSourceAciActionRuleProfileRead(d *schema.ResourceData, m interface{}) e
 	if err != nil {
 		return err
 	}
+	d.SetId(dn)
 	setActionRuleProfileAttributes(rtctrlAttrP, d)
 	return nil
 }

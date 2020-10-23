@@ -99,6 +99,11 @@ func resourceAciCloudCIDRPoolImport(d *schema.ResourceData, m interface{}) ([]*s
 	if err != nil {
 		return nil, err
 	}
+	cloudCidrMap, _ := cloudCidr.ToMap()
+
+	addr := cloudCidrMap["addr"]
+	pDN := GetParentDn(dn, fmt.Sprintf("/cidr-[%s]", addr))
+	d.Set("cloud_context_profile_dn", pDN)
 	schemaFilled := setCloudCIDRPoolAttributes(cloudCidr, d)
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())

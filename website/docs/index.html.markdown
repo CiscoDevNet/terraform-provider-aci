@@ -23,21 +23,21 @@ The Cisco ACI terraform provider is used to interact with resources provided by 
 
 Authentication
 --------------
-The Provider supports authentication with Cisco APIC in 2 ways:  
+The Provider supports authentication with Cisco APIC in 3 ways:  
 
  1. Authentication with user-id and password.  
  example:  
 
  ```hcl
- provider "aci" {
-    # cisco-aci user name
-    username = "admin"
-    # cisco-aci password
-    password = "password"
-    # cisco-aci url
-    url      = "https://my-cisco-aci.com"
-    insecure = true
-}
+    provider "aci" {
+      # cisco-aci user name
+      username = "admin"
+      # cisco-aci password
+      password = "password"
+      # cisco-aci url
+      url      = "https://my-cisco-aci.com"
+      insecure = true
+    }
  ```
 
  In this method, it will obtain an authentication token from Cisco APIC and will use that token to authenticate. A limitation with this approach is APIC counts the request to authenticate and threshold it to avoid DOS attack. After too many attempts this authentication method may fail as the threshold will be exceeded.  
@@ -50,17 +50,31 @@ The Provider supports authentication with Cisco APIC in 2 ways:
 
 ```
     provider "aci" {
-        # cisco-aci user name
-        username = "admin"
-        # private key path
-        private_key = "path to private key"
-        # Certificate Name
-        cert_name = "certificate.crt"
-        # cisco-aci url
-        url      = "https://my-cisco-aci.com"
-        insecure = true
+      # cisco-aci user name
+      username = "admin"
+      # private key path
+      private_key = "path to private key"
+      # Certificate Name
+      cert_name = "certificate.crt"
+      # cisco-aci url
+      url      = "https://my-cisco-aci.com"
+      insecure = true
     }
 ```
+
+  3. Authentication with login-domain and password.
+  example:
+
+  ```hcl
+    provider "aci" {
+      username = "apic:Demo_domain\\\\admin"
+      # private_key = "path to private key"
+      # cert_name = "certificate.crt"
+      password = "password"
+      url = "url"
+      insecure = true
+    }
+  ```
 
 ### How to add Certificate to the Cisco APIC local user ###
 

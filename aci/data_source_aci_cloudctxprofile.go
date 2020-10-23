@@ -2,6 +2,7 @@ package aci
 
 import (
 	"fmt"
+
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 )
@@ -42,6 +43,7 @@ func dataSourceAciCloudContextProfileRead(d *schema.ResourceData, m interface{})
 	if err != nil {
 		return err
 	}
+	d.SetId(dn)
 	setCloudContextProfileAttributes(cloudCtxProfile, d)
 	return nil
 }

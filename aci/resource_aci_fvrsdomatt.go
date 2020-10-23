@@ -48,14 +48,10 @@ func resourceAciDomain() *schema.Resource {
 				}, false),
 			},
 
-			"class_pref": &schema.Schema{
-				Type:     schema.TypeString,
+			"allow_micro_seg": &schema.Schema{
+				Type:     schema.TypeBool,
 				Optional: true,
 				Computed: true,
-				ValidateFunc: validation.StringInSlice([]string{
-					"encap",
-					"useg",
-				}, false),
 			},
 
 			"delimiter": &schema.Schema{
@@ -262,7 +258,11 @@ func setDomainAttributes(fvRsDomAtt *models.FVDomain, d *schema.ResourceData) *s
 
 	d.Set("annotation", fvRsDomAttMap["annotation"])
 	d.Set("binding_type", fvRsDomAttMap["bindingType"])
-	d.Set("class_pref", fvRsDomAttMap["classPref"])
+	if fvRsDomAttMap["classPref"] == "useg" {
+		d.Set("allow_micro_seg", true)
+	} else {
+		d.Set("allow_micro_seg", false)
+	}
 	d.Set("delimiter", fvRsDomAttMap["delimiter"])
 	d.Set("encap", fvRsDomAttMap["encap"])
 	d.Set("encap_mode", fvRsDomAttMap["encapMode"])
@@ -302,6 +302,10 @@ func resourceAciDomainImport(d *schema.ResourceData, m interface{}) ([]*schema.R
 	if err != nil {
 		return nil, err
 	}
+	fvRsDomAttMap, _ := fvRsDomAtt.ToMap()
+	tDn := fvRsDomAttMap["tDn"]
+	pDN := GetParentDn(dn, fmt.Sprintf("/rsdomAtt-[%s]", tDn))
+	d.Set("application_epg_dn", pDN)
 	schemaFilled := setDomainAttributes(fvRsDomAtt, d)
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
@@ -327,8 +331,14 @@ func resourceAciDomainCreate(d *schema.ResourceData, m interface{}) error {
 	if BindingType, ok := d.GetOk("binding_type"); ok {
 		fvRsDomAttAttr.BindingType = BindingType.(string)
 	}
-	if ClassPref, ok := d.GetOk("class_pref"); ok {
-		fvRsDomAttAttr.ClassPref = ClassPref.(string)
+	if flag, ok := d.GetOk("allow_micro_seg"); ok {
+		if flag.(bool) == true {
+			fvRsDomAttAttr.ClassPref = "useg"
+		} else {
+			fvRsDomAttAttr.ClassPref = "encap"
+		}
+	} else {
+		fvRsDomAttAttr.ClassPref = "encap"
 	}
 	if Delimiter, ok := d.GetOk("delimiter"); ok {
 		fvRsDomAttAttr.Delimiter = Delimiter.(string)
@@ -434,8 +444,14 @@ func resourceAciDomainUpdate(d *schema.ResourceData, m interface{}) error {
 	if BindingType, ok := d.GetOk("binding_type"); ok {
 		fvRsDomAttAttr.BindingType = BindingType.(string)
 	}
-	if ClassPref, ok := d.GetOk("class_pref"); ok {
-		fvRsDomAttAttr.ClassPref = ClassPref.(string)
+	if flag, ok := d.GetOk("allow_micro_seg"); ok {
+		if flag.(bool) == true {
+			fvRsDomAttAttr.ClassPref = "useg"
+		} else {
+			fvRsDomAttAttr.ClassPref = "encap"
+		}
+	} else {
+		fvRsDomAttAttr.ClassPref = "encap"
 	}
 	if Delimiter, ok := d.GetOk("delimiter"); ok {
 		fvRsDomAttAttr.Delimiter = Delimiter.(string)

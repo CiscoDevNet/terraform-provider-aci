@@ -73,6 +73,7 @@ func testAccCheckAciCloudSubnetConfig_basic(description, scope string) string {
 		name_alias         = "alias_subnet"
 		scope              = "%s"
 		usage              = "user"
+		zone 			   = "uni/clouddomp/provp-aws/region-us-west-1/zone-us-west-1b"
 	}
 	  
 	`, description, scope)

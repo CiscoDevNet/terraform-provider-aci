@@ -41,7 +41,7 @@ func (sm *ServiceManager) Get(dn string) (*container.Container, error) {
 		return nil, errors.New("Empty response body")
 	}
 	log.Printf("[DEBUG] Exit from GET %s", finalURL)
-	return obj, CheckForErrors(obj, "GET")
+	return obj, CheckForErrors(obj, "GET", sm.client.skipLoggingPayload)
 }
 
 func createJsonPayload(payload map[string]string) (*container.Container, error) {
@@ -73,15 +73,18 @@ func (sm *ServiceManager) Save(obj models.Model) error {
 		return err
 	}
 
-	return CheckForErrors(cont, "POST")
+	return CheckForErrors(cont, "POST", sm.client.skipLoggingPayload)
 }
 
 // CheckForErrors parses the response and checks of there is an error attribute in the response
-func CheckForErrors(cont *container.Container, method string) error {
+func CheckForErrors(cont *container.Container, method string, skipLoggingPayload bool) error {
 	number, err := strconv.Atoi(models.G(cont, "totalCount"))
 	if err != nil {
-		log.Printf("[DEBUG] Exit from errors %v", cont)
-
+		if !skipLoggingPayload {
+			log.Printf("[DEBUG] Exit from errors %v", cont)
+		} else {
+			log.Printf("[DEBUG] Exit from errors %s", err.Error())
+		}
 		return err
 	}
 	imdata := cont.S("imdata").Index(0)
@@ -90,14 +93,20 @@ func CheckForErrors(cont *container.Container, method string) error {
 		if imdata.Exists("error") {
 
 			if models.StripQuotes(imdata.Path("error.attributes.code").String()) == "103" {
-				log.Printf("[DEBUG] Exit from errors %v", cont)
+				if !skipLoggingPayload {
+					log.Printf("[DEBUG] Exit from errors %v", cont)
+				}
 				return nil
 			} else {
 				if models.StripQuotes(imdata.Path("error.attributes.text").String()) == "" && models.StripQuotes(imdata.Path("error.attributes.code").String()) == "403" {
-					log.Printf("[DEBUG] Exit from errors %v", cont)
+					if !skipLoggingPayload {
+						log.Printf("[DEBUG] Exit from errors %v", cont)
+					}
 					return errors.New("Unable to authenticate. Please check your credentials")
 				}
-				log.Printf("[DEBUG] Exit from errors %v", cont)
+				if !skipLoggingPayload {
+					log.Printf("[DEBUG] Exit from errors %v", cont)
+				}
 
 				return errors.New(models.StripQuotes(imdata.Path("error.attributes.text").String()))
 			}
@@ -106,11 +115,15 @@ func CheckForErrors(cont *container.Container, method string) error {
 	}
 
 	if imdata.String() == "{}" && method == "GET" {
-		log.Printf("[DEBUG] Exit from errors %v", cont)
+		if !skipLoggingPayload {
+			log.Printf("[DEBUG] Exit from errors %v", cont)
+		}
 
 		return errors.New("Error retriving Object: Object may not exists")
 	}
-	log.Printf("[DEBUG] Exit from errors %v", cont)
+	if !skipLoggingPayload {
+		log.Printf("[DEBUG] Exit from errors %v", cont)
+	}
 	return nil
 }
 
@@ -138,7 +151,7 @@ func (sm *ServiceManager) Delete(obj models.Model) error {
 
 func (sm *ServiceManager) PostViaURL(url string, obj models.Model) (*container.Container, error) {
 
-    jsonPayload, _, err := sm.PrepareModel(obj)
+	jsonPayload, _, err := sm.PrepareModel(obj)
 
 	if err != nil {
 		return nil, err
@@ -151,7 +164,9 @@ func (sm *ServiceManager) PostViaURL(url string, obj models.Model) (*container.C
 	}
 
 	cont, _, err := sm.client.Do(req)
-	log.Printf("PostViaUrl %+v", obj)
+	if !sm.client.skipLoggingPayload {
+		log.Printf("PostViaUrl %+v", obj)
+	}
 	if err != nil {
 		return nil, err
 	}
@@ -159,7 +174,7 @@ func (sm *ServiceManager) PostViaURL(url string, obj models.Model) (*container.C
 	if cont == nil {
 		return nil, errors.New("Empty response body")
 	}
-	return cont, CheckForErrors(cont, "POST")
+	return cont, CheckForErrors(cont, "POST", sm.client.skipLoggingPayload)
 
 }
 
@@ -171,7 +186,9 @@ func (sm *ServiceManager) GetViaURL(url string) (*container.Container, error) {
 	}
 
 	obj, _, err := sm.client.Do(req)
-	log.Printf("Getvia url %+v", obj)
+	if !sm.client.skipLoggingPayload {
+		log.Printf("Getvia url %+v", obj)
+	}
 	if err != nil {
 		return nil, err
 	}
@@ -179,7 +196,7 @@ func (sm *ServiceManager) GetViaURL(url string) (*container.Container, error) {
 	if obj == nil {
 		return nil, errors.New("Empty response body")
 	}
-	return obj, CheckForErrors(obj, "GET")
+	return obj, CheckForErrors(obj, "GET", sm.client.skipLoggingPayload)
 
 }
 

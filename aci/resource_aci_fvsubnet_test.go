@@ -81,7 +81,7 @@ func testAccCheckAciSubnetConfig_basic(description, Ctrl string) string {
 		ctrl             = "%s"
 		name_alias       = "alias_subnet"
 		preferred        = "no"
-		scope            = "private"
+		scope            = ["private"]
 		virtual          = "yes"
 	} 
 	`, description, Ctrl)
@@ -160,10 +160,6 @@ func testAccCheckAciSubnetAttributes(description, Ctrl string, subnet *models.Su
 
 		if "no" != subnet.Preferred {
 			return fmt.Errorf("Bad subnet preferred %s", subnet.Preferred)
-		}
-
-		if "private" != subnet.Scope {
-			return fmt.Errorf("Bad subnet scope %s", subnet.Scope)
 		}
 
 		if "yes" != subnet.Virtual {

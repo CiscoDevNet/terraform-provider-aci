@@ -49,6 +49,7 @@ func dataSourceAciSPANDestinationGroupRead(d *schema.ResourceData, m interface{}
 	if err != nil {
 		return err
 	}
+	d.SetId(dn)
 	setSPANDestinationGroupAttributes(spanDestGrp, d)
 	return nil
 }

@@ -44,9 +44,12 @@ func dataSourceAciSubnet() *schema.Resource {
 			},
 
 			"scope": &schema.Schema{
-				Type:     schema.TypeString,
+				Type:     schema.TypeList,
 				Optional: true,
 				Computed: true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
 			},
 
 			"virtual": &schema.Schema{
@@ -73,6 +76,7 @@ func dataSourceAciSubnetRead(d *schema.ResourceData, m interface{}) error {
 	if err != nil {
 		return err
 	}
+	d.SetId(dn)
 	setSubnetAttributes(fvSubnet, d)
 	return nil
 }

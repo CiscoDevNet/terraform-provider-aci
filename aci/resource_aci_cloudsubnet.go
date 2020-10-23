@@ -60,6 +60,7 @@ func resourceAciCloudSubnet() *schema.Resource {
 				ValidateFunc: validation.StringInSlice([]string{
 					"infra-router",
 					"user",
+					"gateway",
 				}, false),
 			},
 
@@ -67,13 +68,9 @@ func resourceAciCloudSubnet() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ForceNew: true,
 			},
 
-			"relation_cloud_rs_zone_attach": &schema.Schema{
-				Type: schema.TypeString,
-
-				Optional: true,
-			},
 			"relation_cloud_rs_subnet_to_flow_log": &schema.Schema{
 				Type: schema.TypeString,
 
@@ -101,7 +98,6 @@ func setCloudSubnetAttributes(cloudSubnet *models.CloudSubnet, d *schema.Resourc
 	dn := d.Id()
 	d.SetId(cloudSubnet.DistinguishedName)
 	d.Set("description", cloudSubnet.Description)
-	// d.Set("cloud_cidr_pool_dn", GetParentDn(cloudSubnet.DistinguishedName))
 	if dn != cloudSubnet.DistinguishedName {
 		d.Set("cloud_cidr_pool_dn", "")
 	}
@@ -114,7 +110,6 @@ func setCloudSubnetAttributes(cloudSubnet *models.CloudSubnet, d *schema.Resourc
 	d.Set("name_alias", cloudSubnetMap["nameAlias"])
 	d.Set("scope", cloudSubnetMap["scope"])
 	d.Set("usage", cloudSubnetMap["usage"])
-	d.Set("zone", cloudSubnetMap["zone"])
 	return d
 }
 
@@ -129,6 +124,11 @@ func resourceAciCloudSubnetImport(d *schema.ResourceData, m interface{}) ([]*sch
 	if err != nil {
 		return nil, err
 	}
+	cloudSubnetMap, _ := cloudSubnet.ToMap()
+
+	ip := cloudSubnetMap["ip"]
+	pDN := GetParentDn(dn, fmt.Sprintf("/subnet-[%s]", ip))
+	d.Set("cloud_cidr_pool_dn", pDN)
 	schemaFilled := setCloudSubnetAttributes(cloudSubnet, d)
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
@@ -163,24 +163,10 @@ func resourceAciCloudSubnetCreate(d *schema.ResourceData, m interface{}) error {
 	if Usage, ok := d.GetOk("usage"); ok {
 		cloudSubnetAttr.Usage = Usage.(string)
 	}
-	if zone, ok := d.GetOk("zone"); ok {
-		cloudSubnetAttr.Zone = zone.(string)
-	}
-	cloudSubnet := models.NewCloudSubnet(fmt.Sprintf("subnet-[%s]", ip), CloudCIDRPoolDn, desc, cloudSubnetAttr)
-
-	err := aciClient.Save(cloudSubnet)
-	if err != nil {
-		return err
-	}
-	d.Partial(true)
-
-	d.SetPartial("ip")
-
-	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
 
-	if relationTocloudRsZoneAttach, ok := d.GetOk("relation_cloud_rs_zone_attach"); ok {
+	if relationTocloudRsZoneAttach, ok := d.GetOk("zone"); ok {
 		relationParam := relationTocloudRsZoneAttach.(string)
 		checkDns = append(checkDns, relationParam)
 	}
@@ -191,24 +177,30 @@ func resourceAciCloudSubnetCreate(d *schema.ResourceData, m interface{}) error {
 	}
 
 	d.Partial(true)
-	err = checkTDn(aciClient, checkDns)
+	err := checkTDn(aciClient, checkDns)
 	if err != nil {
 		return err
 	}
 	d.Partial(false)
 
-	if relationTocloudRsZoneAttach, ok := d.GetOk("relation_cloud_rs_zone_attach"); ok {
-		relationParam := relationTocloudRsZoneAttach.(string)
-		relationParamName := GetMOName(relationParam)
-		err = aciClient.CreateRelationcloudRsZoneAttachFromCloudSubnet(cloudSubnet.DistinguishedName, relationParamName)
-		if err != nil {
-			return err
-		}
-		d.Partial(true)
-		d.SetPartial("relation_cloud_rs_zone_attach")
-		d.Partial(false)
-
+	var zoneDn string
+	if zone, ok := d.GetOk("zone"); ok {
+		zoneDn = zone.(string)
+	} else {
+		zoneDn = ""
 	}
+
+	cloudSubnet, err := aciClient.CreateCloudSubnet(ip, CloudCIDRPoolDn, desc, cloudSubnetAttr, zoneDn)
+	if err != nil {
+		return err
+	}
+
+	d.Partial(true)
+
+	d.SetPartial("ip")
+
+	d.Partial(false)
+
 	if relationTocloudRsSubnetToFlowLog, ok := d.GetOk("relation_cloud_rs_subnet_to_flow_log"); ok {
 		relationParam := relationTocloudRsSubnetToFlowLog.(string)
 		relationParamName := GetMOName(relationParam)
@@ -256,28 +248,11 @@ func resourceAciCloudSubnetUpdate(d *schema.ResourceData, m interface{}) error {
 	if Usage, ok := d.GetOk("usage"); ok {
 		cloudSubnetAttr.Usage = Usage.(string)
 	}
-	if zone, ok := d.GetOk("zone"); ok {
-		cloudSubnetAttr.Zone = zone.(string)
-	}
-	cloudSubnet := models.NewCloudSubnet(fmt.Sprintf("subnet-[%s]", ip), CloudCIDRPoolDn, desc, cloudSubnetAttr)
-
-	cloudSubnet.Status = "modified"
-
-	err := aciClient.Save(cloudSubnet)
-
-	if err != nil {
-		return err
-	}
-	d.Partial(true)
-
-	d.SetPartial("ip")
-
-	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
 
-	if d.HasChange("relation_cloud_rs_zone_attach") {
-		_, newRelParam := d.GetChange("relation_cloud_rs_zone_attach")
+	if d.HasChange("zone") {
+		_, newRelParam := d.GetChange("zone")
 		checkDns = append(checkDns, newRelParam.(string))
 	}
 
@@ -287,28 +262,29 @@ func resourceAciCloudSubnetUpdate(d *schema.ResourceData, m interface{}) error {
 	}
 
 	d.Partial(true)
-	err = checkTDn(aciClient, checkDns)
+	err := checkTDn(aciClient, checkDns)
 	if err != nil {
 		return err
 	}
 	d.Partial(false)
 
-	if d.HasChange("relation_cloud_rs_zone_attach") {
-		_, newRelParam := d.GetChange("relation_cloud_rs_zone_attach")
-		newRelParamName := GetMOName(newRelParam.(string))
-		err = aciClient.DeleteRelationcloudRsZoneAttachFromCloudSubnet(cloudSubnet.DistinguishedName)
-		if err != nil {
-			return err
-		}
-		err = aciClient.CreateRelationcloudRsZoneAttachFromCloudSubnet(cloudSubnet.DistinguishedName, newRelParamName)
-		if err != nil {
-			return err
-		}
-		d.Partial(true)
-		d.SetPartial("relation_cloud_rs_zone_attach")
-		d.Partial(false)
-
+	var zoneDn string
+	if zone, ok := d.GetOk("zone"); ok {
+		zoneDn = zone.(string)
+	} else {
+		zoneDn = ""
 	}
+
+	cloudSubnet, err := aciClient.UpdateCloudSubnet(ip, CloudCIDRPoolDn, desc, cloudSubnetAttr, zoneDn)
+	if err != nil {
+		return err
+	}
+	d.Partial(true)
+
+	d.SetPartial("ip")
+
+	d.Partial(false)
+
 	if d.HasChange("relation_cloud_rs_subnet_to_flow_log") {
 		_, newRelParam := d.GetChange("relation_cloud_rs_subnet_to_flow_log")
 		newRelParamName := GetMOName(newRelParam.(string))
@@ -353,10 +329,9 @@ func resourceAciCloudSubnetRead(d *schema.ResourceData, m interface{}) error {
 		d.Set("relation_cloud_rs_zone_attach", "")
 
 	} else {
-		if _, ok := d.GetOk("relation_cloud_rs_zone_attach"); ok {
-			tfName := GetMOName(d.Get("relation_cloud_rs_zone_attach").(string))
-			if tfName != cloudRsZoneAttachData {
-				d.Set("relation_cloud_rs_zone_attach", "")
+		if subnetZone, ok := d.GetOk("zone"); ok {
+			if subnetZone.(string) != cloudRsZoneAttachData {
+				d.Set("zone", "")
 			}
 		}
 	}

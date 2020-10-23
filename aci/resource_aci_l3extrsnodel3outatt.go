@@ -59,7 +59,17 @@ func resourceAciFabricNode() *schema.Resource {
 				ValidateFunc: validation.StringInSlice([]string{
 					"no",
 					"yes",
+					"true",
+					"false",
 				}, false),
+				DiffSuppressFunc: func(k, old, new string, d *schema.ResourceData) bool {
+					if old == "yes" && new == "true" {
+						return true
+					} else if old == "no" && new == "false" {
+						return true
+					}
+					return false
+				},
 			},
 		}),
 	}
@@ -108,6 +118,10 @@ func resourceAciFabricNodeImport(d *schema.ResourceData, m interface{}) ([]*sche
 	if err != nil {
 		return nil, err
 	}
+	l3extRsNodeL3OutAttMap, _ := l3extRsNodeL3OutAtt.ToMap()
+	tDn := l3extRsNodeL3OutAttMap["tDn"]
+	pDN := GetParentDn(dn, fmt.Sprintf("/rsnodeL3OutAtt-[%s]", tDn))
+	d.Set("logical_node_profile_dn", pDN)
 	schemaFilled := setFabricNodeAttributes(l3extRsNodeL3OutAtt, d)
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())

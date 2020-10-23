@@ -116,6 +116,11 @@ func resourceAciStaticPathImport(d *schema.ResourceData, m interface{}) ([]*sche
 	if err != nil {
 		return nil, err
 	}
+	fvRsPathAttMap, _ := fvRsPathAtt.ToMap()
+
+	tDn := fvRsPathAttMap["tDn"]
+	pDN := GetParentDn(dn, fmt.Sprintf("/rspathAtt-[%s]", tDn))
+	d.Set("application_epg_dn", pDN)
 	schemaFilled := setStaticPathAttributes(fvRsPathAtt, d)
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())

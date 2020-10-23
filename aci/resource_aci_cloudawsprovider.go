@@ -150,6 +150,8 @@ func resourceAciCloudAWSProviderImport(d *schema.ResourceData, m interface{}) ([
 	if err != nil {
 		return nil, err
 	}
+	pDN := GetParentDn(dn, fmt.Sprintf("/awsprovider"))
+	d.Set("tenant_dn", pDN)
 	schemaFilled := setCloudAWSProviderAttributes(cloudAwsProvider, d)
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())

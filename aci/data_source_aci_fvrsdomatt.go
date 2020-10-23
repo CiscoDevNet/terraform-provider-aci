@@ -31,8 +31,8 @@ func dataSourceAciDomain() *schema.Resource {
 				Computed: true,
 			},
 
-			"class_pref": &schema.Schema{
-				Type:     schema.TypeString,
+			"allow_micro_seg": &schema.Schema{
+				Type:     schema.TypeBool,
 				Optional: true,
 				Computed: true,
 			},
@@ -151,6 +151,7 @@ func dataSourceAciDomainRead(d *schema.ResourceData, m interface{}) error {
 	if err != nil {
 		return err
 	}
+	d.SetId(dn)
 	setDomainAttributes(fvRsDomAtt, d)
 	return nil
 }

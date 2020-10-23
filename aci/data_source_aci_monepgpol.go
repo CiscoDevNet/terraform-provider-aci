@@ -49,6 +49,7 @@ func dataSourceAciMonitoringPolicyRead(d *schema.ResourceData, m interface{}) er
 	if err != nil {
 		return err
 	}
+	d.SetId(dn)
 	setMonitoringPolicyAttributes(monEPGPol, d)
 	return nil
 }

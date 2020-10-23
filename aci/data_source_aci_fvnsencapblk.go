@@ -74,6 +74,7 @@ func dataSourceAciRangesRead(d *schema.ResourceData, m interface{}) error {
 	if err != nil {
 		return err
 	}
+	d.SetId(dn)
 	setRangesAttributes(fvnsEncapBlk, d)
 	return nil
 }

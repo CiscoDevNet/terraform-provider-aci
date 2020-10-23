@@ -277,6 +277,11 @@ func resourceAciApplicationEPGImport(d *schema.ResourceData, m interface{}) ([]*
 	if err != nil {
 		return nil, err
 	}
+	fvAEPgMap, _ := fvAEPg.ToMap()
+
+	name := fvAEPgMap["name"]
+	pDN := GetParentDn(dn, fmt.Sprintf("/epg-%s", name))
+	d.Set("application_profile_dn", pDN)
 	schemaFilled := setApplicationEPGAttributes(fvAEPg, d)
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())

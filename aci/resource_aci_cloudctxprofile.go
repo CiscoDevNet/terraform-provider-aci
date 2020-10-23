@@ -89,6 +89,12 @@ func resourceAciCloudContextProfile() *schema.Resource {
 				Optional:    true,
 				Description: "Create relation to cloudRegion",
 			},
+			"hub_network": &schema.Schema{
+				Type: schema.TypeString,
+
+				Optional:    true,
+				Description: "hub network to enable transit gateway",
+			},
 		}),
 	}
 }
@@ -140,6 +146,9 @@ func resourceAciCloudContextProfileImport(d *schema.ResourceData, m interface{})
 	if err != nil {
 		return nil, err
 	}
+	name := GetMOName(cloudCtxProfile.DistinguishedName)
+	pDN := GetParentDn(dn, fmt.Sprintf("/ctxprofile-%s", name))
+	d.Set("tenant_dn", pDN)
 	schemaFilled := setCloudContextProfileAttributes(cloudCtxProfile, d)
 	return []*schema.ResourceData{schemaFilled}, nil
 }
@@ -187,6 +196,10 @@ func resourceAciCloudContextProfileCreate(d *schema.ResourceData, m interface{})
 		checkDns = append(checkDns, relationTocloudRsCtxProfileToRegion.(string))
 	}
 
+	if temp, ok := d.GetOk("hub_network"); ok {
+		checkDns = append(checkDns, temp.(string))
+	}
+
 	d.Partial(true)
 	err := checkTDn(aciClient, checkDns)
 	if err != nil {
@@ -223,6 +236,12 @@ func resourceAciCloudContextProfileCreate(d *schema.ResourceData, m interface{})
 			return err
 		}
 
+	}
+	if temp, ok := d.GetOk("hub_network"); ok {
+		err := aciClient.CreateRelationcloudRsCtxProfileTocloudRsCtxProfileToGatewayRouterP(cloudCtxProfile.DistinguishedName, temp.(string))
+		if err != nil {
+			return err
+		}
 	}
 
 	d.SetId(cloudCtxProfile.DistinguishedName)
@@ -274,6 +293,11 @@ func resourceAciCloudContextProfileUpdate(d *schema.ResourceData, m interface{})
 		checkDns = append(checkDns, newRelParam.(string))
 	}
 
+	if d.HasChange("hub_network") {
+		_, newRelParam := d.GetChange("hub_network")
+		checkDns = append(checkDns, newRelParam.(string))
+	}
+
 	d.Partial(true)
 	err := checkTDn(aciClient, checkDns)
 	if err != nil {
@@ -321,6 +345,18 @@ func resourceAciCloudContextProfileUpdate(d *schema.ResourceData, m interface{})
 		}
 
 	}
+	if d.HasChange("hub_network") {
+		oldRelParam, newRelParam := d.GetChange("hub_network")
+		err = aciClient.DeleteRelationcloudRsCtxProfileTocloudRsCtxProfileToGatewayRouterP(cloudCtxProfile.DistinguishedName, oldRelParam.(string))
+		if err != nil {
+			return err
+		}
+		err = aciClient.CreateRelationcloudRsCtxProfileTocloudRsCtxProfileToGatewayRouterP(cloudCtxProfile.DistinguishedName, newRelParam.(string))
+		if err != nil {
+			return err
+		}
+
+	}
 
 	d.SetId(cloudCtxProfile.DistinguishedName)
 	return resourceAciCloudContextProfileRead(d, m)
@@ -337,6 +373,14 @@ func resourceAciCloudContextProfileRead(d *schema.ResourceData, m interface{}) e
 		return err
 	}
 	setCloudContextProfileAttributes(cloudCtxProfile, d)
+
+	if hub, ok := d.GetOk("hub_network"); ok {
+		dURL := fmt.Sprintf("%s/rsctxProfileToGatewayRouterP-[%s]", dn, hub.(string))
+		_, err := aciClient.Get(dURL)
+		if err != nil {
+			d.Set("hub_network", "")
+		}
+	}
 	return nil
 }
 

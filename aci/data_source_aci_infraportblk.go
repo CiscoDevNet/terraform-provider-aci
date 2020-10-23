@@ -73,6 +73,7 @@ func dataSourceAciAccessPortBlockRead(d *schema.ResourceData, m interface{}) err
 	if err != nil {
 		return err
 	}
+	d.SetId(dn)
 	setAccessPortBlockAttributes(infraPortBlk, d)
 	return nil
 }

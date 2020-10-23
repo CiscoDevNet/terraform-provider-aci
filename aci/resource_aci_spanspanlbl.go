@@ -114,6 +114,10 @@ func resourceAciSPANSourcedestinationGroupMatchLabelImport(d *schema.ResourceDat
 	if err != nil {
 		return nil, err
 	}
+	spanSpanLblMap, _ := spanSpanLbl.ToMap()
+	name := spanSpanLblMap["name"]
+	pDN := GetParentDn(dn, fmt.Sprintf("/spanlbl-%s", name))
+	d.Set("span_source_group_dn", pDN)
 	schemaFilled := setSPANSourcedestinationGroupMatchLabelAttributes(spanSpanLbl, d)
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())

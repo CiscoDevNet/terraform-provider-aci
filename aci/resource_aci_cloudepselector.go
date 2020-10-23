@@ -93,6 +93,10 @@ func resourceAciCloudEndpointSelectorImport(d *schema.ResourceData, m interface{
 	if err != nil {
 		return nil, err
 	}
+	cloudEPSelectorMap, _ := cloudEPSelector.ToMap()
+	name := cloudEPSelectorMap["name"]
+	pDN := GetParentDn(dn, fmt.Sprintf("/epselector-%s", name))
+	d.Set("cloud_epg_dn", pDN)
 	schemaFilled := setCloudEndpointSelectorAttributes(cloudEPSelector, d)
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())

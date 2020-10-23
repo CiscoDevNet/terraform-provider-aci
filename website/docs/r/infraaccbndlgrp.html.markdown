@@ -31,8 +31,6 @@ resource "aci_leaf_access_bundle_policy_group " "example" {
 
 * `relation_infra_rs_span_v_src_grp` - (Optional) Relation to class spanVSrcGrp. Cardinality - N_TO_M. Type - Set of String.
                 
-* `relation_infra_rs_acc_bndl_grp_to_aggr_if` - (Optional) Relation to class pcAggrIf. Cardinality - ONE_TO_M. Type - Set of String.
-                
 * `relation_infra_rs_stormctrl_if_pol` - (Optional) Relation to class stormctrlIfPol. Cardinality - N_TO_ONE. Type - String.
                 
 * `relation_infra_rs_lldp_if_pol` - (Optional) Relation to class lldpIfPol. Cardinality - N_TO_ONE. Type - String.

@@ -106,6 +106,11 @@ func resourceAciApplicationProfileImport(d *schema.ResourceData, m interface{}) 
 	if err != nil {
 		return nil, err
 	}
+	fvApMap, _ := fvAp.ToMap()
+
+	name := fvApMap["name"]
+	pDN := GetParentDn(dn, fmt.Sprintf("/ap-%s", name))
+	d.Set("tenant_dn", pDN)
 	schemaFilled := setApplicationProfileAttributes(fvAp, d)
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())

@@ -335,6 +335,10 @@ func resourceAciFilterEntryImport(d *schema.ResourceData, m interface{}) ([]*sch
 	if err != nil {
 		return nil, err
 	}
+	vzEntryMap, _ := vzEntry.ToMap()
+	name := vzEntryMap["name"]
+	pDN := GetParentDn(dn, fmt.Sprintf("/e-%s", name))
+	d.Set("filter_dn", pDN)
 	schemaFilled := setFilterEntryAttributes(vzEntry, d)
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())

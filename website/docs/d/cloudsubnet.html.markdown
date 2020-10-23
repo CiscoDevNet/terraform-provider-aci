@@ -12,12 +12,15 @@ Data source for ACI Cloud Subnet
 ## Example Usage ##
 
 ```hcl
-data "aci_cloud_subnet" "dev_subnet" {
 
+data "aci_cloud_subnet" "dev_subnet" {
   cloud_cidr_pool_dn  = "${aci_cloud_cidr_pool.dev_cidr_pool.id}"
   ip                  = "14.12.0.0/28"
 }
+
 ```
+
+
 ## Argument Reference ##
 * `cloud_cidr_pool_dn` - (Required) Distinguished name of parent CloudCIDRPool object.
 * `ip` - (Required) CIDR block of Object cloud_subnet.

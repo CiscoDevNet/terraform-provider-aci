@@ -86,6 +86,10 @@ func resourceAciActionRuleProfileImport(d *schema.ResourceData, m interface{}) (
 	if err != nil {
 		return nil, err
 	}
+	rtctrlAttrPMap, _ := rtctrlAttrP.ToMap()
+	name := rtctrlAttrPMap["name"]
+	pDN := GetParentDn(dn, fmt.Sprintf("/attr-%s", name))
+	d.Set("tenant_dn", pDN)
 	schemaFilled := setActionRuleProfileAttributes(rtctrlAttrP, d)
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())

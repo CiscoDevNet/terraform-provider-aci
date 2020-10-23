@@ -28,8 +28,8 @@ resource "aci_epg_to_domain" "example" {
 * `annotation` - (Optional) annotation for object domain.
 * `binding_type` - (Optional) binding_type for object domain.
 Allowed values: "none", "staticBinding", "dynamicBinding", "ephemeral",
-* `class_pref` - (Optional) class_pref for object domain.
-Allowed values: "encap", "useg"
+* `allow_micro_seg` - (Optional) boolean flag for allow micro segment. default value will be "false".
+"true" maps to class_pref="useg" and "false maps to class_pref="encap" 
 * `delimiter` - (Optional) delimiter for object domain.
 * `encap` - (Optional) port encapsulation
 * `encap_mode` - (Optional) encap_mode for object domain.

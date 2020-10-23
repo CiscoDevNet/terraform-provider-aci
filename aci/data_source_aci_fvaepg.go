@@ -109,6 +109,7 @@ func dataSourceAciApplicationEPGRead(d *schema.ResourceData, m interface{}) erro
 	if err != nil {
 		return err
 	}
+	d.SetId(dn)
 	setApplicationEPGAttributes(fvAEPg, d)
 	return nil
 }

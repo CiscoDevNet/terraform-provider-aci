@@ -67,6 +67,7 @@ func dataSourceAciContractRead(d *schema.ResourceData, m interface{}) error {
 	if err != nil {
 		return err
 	}
+	d.SetId(dn)
 	setContractAttributes(vzBrCP, d)
 	return nil
 }

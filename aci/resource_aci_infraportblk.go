@@ -3,6 +3,7 @@ package aci
 import (
 	"fmt"
 	"log"
+	"strconv"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
@@ -31,7 +32,8 @@ func resourceAciAccessPortBlock() *schema.Resource {
 
 			"name": &schema.Schema{
 				Type:     schema.TypeString,
-				Required: true,
+				Optional: true,
+				Computed: true,
 				ForceNew: true,
 			},
 
@@ -120,6 +122,11 @@ func resourceAciAccessPortBlockImport(d *schema.ResourceData, m interface{}) ([]
 	if err != nil {
 		return nil, err
 	}
+	infraPortBlkMap, _ := infraPortBlk.ToMap()
+
+	name := infraPortBlkMap["name"]
+	pDN := GetParentDn(dn, fmt.Sprintf("/portblk-%s", name))
+	d.Set("access_port_selector_dn", pDN)
 	schemaFilled := setAccessPortBlockAttributes(infraPortBlk, d)
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
@@ -132,9 +139,48 @@ func resourceAciAccessPortBlockCreate(d *schema.ResourceData, m interface{}) err
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
 
-	name := d.Get("name").(string)
-
 	AccessPortSelectorDn := d.Get("access_port_selector_dn").(string)
+
+	var name string
+	if _, ok := d.GetOk("name"); !ok {
+		baseurlStr := "/api/node/class"
+		dnUrl := fmt.Sprintf("%s/%s/%s.json", baseurlStr, AccessPortSelectorDn, "infraPortBlk")
+
+		cont, err := aciClient.GetViaURL(dnUrl)
+		if err != nil {
+			if models.G(cont, "totalCount") != "0" {
+				return err
+			}
+		}
+		contList := models.ListFromContainer(cont, "infraPortBlk")
+		contListLen := len(contList)
+
+		blkNames := make([]string, 0, 1)
+		for i := 0; i < contListLen; i++ {
+			tp := models.G(contList[i], "name")
+			blkNames = append(blkNames, tp)
+		}
+		log.Println("check .. : ", blkNames)
+
+		cnt := contListLen + 1
+		for true {
+			flag := false
+			tpName := fmt.Sprintf("Block%s", strconv.Itoa(cnt))
+			for _, val := range blkNames {
+				if val == tpName {
+					flag = true
+					cnt = cnt + 1
+					break
+				}
+			}
+			if !flag {
+				name = tpName
+				break
+			}
+		}
+	} else {
+		name = d.Get("name").(string)
+	}
 
 	infraPortBlkAttr := models.AccessPortBlockAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {

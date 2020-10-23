@@ -136,6 +136,10 @@ func resourceAciL3ExtSubnetImport(d *schema.ResourceData, m interface{}) ([]*sch
 	if err != nil {
 		return nil, err
 	}
+	l3extSubnetMap, _ := l3extSubnet.ToMap()
+	ip := l3extSubnetMap["ip"]
+	pDN := GetParentDn(dn, fmt.Sprintf("/extsubnet-[%s]", ip))
+	d.Set("external_network_instance_profile_dn", pDN)
 	schemaFilled := setL3ExtSubnetAttributes(l3extSubnet, d)
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())

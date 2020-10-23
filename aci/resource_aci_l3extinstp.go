@@ -244,6 +244,10 @@ func resourceAciExternalNetworkInstanceProfileImport(d *schema.ResourceData, m i
 	if err != nil {
 		return nil, err
 	}
+	l3extInstPMap, _ := l3extInstP.ToMap()
+	name := l3extInstPMap["name"]
+	pDN := GetParentDn(dn, fmt.Sprintf("/instP-%s", name))
+	d.Set("l3_outside_dn", pDN)
 	schemaFilled := setExternalNetworkInstanceProfileAttributes(l3extInstP, d)
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())

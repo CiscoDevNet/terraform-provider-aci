@@ -97,3 +97,8 @@ func checkTDn(client *client.Client, dns []string) error {
 // 	return strings.Join(arr[:len(arr)-1], "/")
 
 // }
+
+func GetParentDn(dn string, rn string) string {
+	arr := strings.Split(dn, rn)
+	return arr[0]
+}

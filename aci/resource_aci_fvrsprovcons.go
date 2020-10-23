@@ -152,6 +152,10 @@ func resourceAciContractProviderImport(d *schema.ResourceData, m interface{}) ([
 		if err != nil {
 			return nil, err
 		}
+		fvRsProvMap, _ := fvRsProv.ToMap()
+		name := fvRsProvMap["tnVzBrCPName"]
+		pDN := GetParentDn(dn, fmt.Sprintf("/rsprov-%s", name))
+		d.Set("application_epg_dn", pDN)
 		schemaFilled = setContractProviderAttributes(fvRsProv, d)
 
 	} else if contractType == "consumer" {
@@ -160,6 +164,10 @@ func resourceAciContractProviderImport(d *schema.ResourceData, m interface{}) ([
 		if err != nil {
 			return nil, err
 		}
+		fvRsConsMap, _ := fvRsCons.ToMap()
+		name := fvRsConsMap["tnVzBrCPName"]
+		pDN := GetParentDn(dn, fmt.Sprintf("/rscons-%s", name))
+		d.Set("application_epg_dn", pDN)
 		schemaFilled = setContractConsumerAttributes(fvRsCons, d)
 
 	} else {

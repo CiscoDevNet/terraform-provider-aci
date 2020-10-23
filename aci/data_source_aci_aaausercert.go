@@ -55,6 +55,7 @@ func dataSourceAciX509CertificateRead(d *schema.ResourceData, m interface{}) err
 	if err != nil {
 		return err
 	}
+	d.SetId(dn)
 	setX509CertificateAttributes(aaaUserCert, d)
 	return nil
 }

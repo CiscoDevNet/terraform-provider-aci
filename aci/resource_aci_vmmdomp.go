@@ -317,6 +317,10 @@ func resourceAciVMMDomainImport(d *schema.ResourceData, m interface{}) ([]*schem
 	if err != nil {
 		return nil, err
 	}
+	vmmDomPMap, _ := vmmDomP.ToMap()
+	name := vmmDomPMap["name"]
+	pDN := GetParentDn(dn, fmt.Sprintf("/dom-%s", name))
+	d.Set("provider_profile_dn", pDN)
 	schemaFilled := setVMMDomainAttributes(vmmDomP, d)
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())

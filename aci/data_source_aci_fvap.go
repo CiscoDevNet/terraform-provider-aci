@@ -55,6 +55,7 @@ func dataSourceAciApplicationProfileRead(d *schema.ResourceData, m interface{}) 
 	if err != nil {
 		return err
 	}
+	d.SetId(dn)
 	setApplicationProfileAttributes(fvAp, d)
 	return nil
 }

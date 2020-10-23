@@ -126,6 +126,11 @@ func resourceAciRangesImport(d *schema.ResourceData, m interface{}) ([]*schema.R
 	if err != nil {
 		return nil, err
 	}
+	fvnsEncapBlkMap, _ := fvnsEncapBlk.ToMap()
+	from := fvnsEncapBlkMap["from"]
+	to := fvnsEncapBlkMap["to"]
+	pDN := GetParentDn(dn, fmt.Sprintf("/from-[%s]-to-[%s]", from, to))
+	d.Set("vlan_pool_dn", pDN)
 	schemaFilled := setRangesAttributes(fvnsEncapBlk, d)
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
