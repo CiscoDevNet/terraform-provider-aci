@@ -1,3 +1,15 @@
+## 0.5.0 (Unreleased)
+
+IMPROVEMENTS:
+- Added new resources Spine Switch profiles and interfaces, L4-L7 interfaces.
+- access_port_block have default name attribute with auto incrementor.
+- Added resources to manage FEX profiles.
+
+BUG FIXES:
+- Fixed an issue with docs being not rendered via name in Hashicorp registry.
+- Fixed an issue with subnet scope attribute to have list value.
+- Fixed all the bugs reported.
+
 ## 0.4.1 (September 23, 2020)
 
 IMPROVEMENTS:
