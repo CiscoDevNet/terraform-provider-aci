@@ -1,13 +1,13 @@
 ---
 layout: "aci"
-page_title: "ACI: aci_static_path"
-sidebar_current: "docs-aci-data-source-static_path"
+page_title: "ACI: aci_epg_to_static_path"
+sidebar_current: "docs-aci-data-source-epg_to_static_path"
 description: |-
-  Data source for ACI Static Path
+  Data source for ACI EPG to Static Path
 ---
 
 # aci_epg_to_static_path #
-Data source for ACI Static Path
+Data source for ACI EPG to Static Path
 
 ## Example Usage ##
 

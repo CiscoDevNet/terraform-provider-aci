@@ -1,13 +1,13 @@
 ---
 layout: "aci"
-page_title: "ACI: aci_static_path"
-sidebar_current: "docs-aci-resource-static_path"
+page_title: "ACI: aci_epg_to_static_path"
+sidebar_current: "docs-aci-resource-epg_to_static_path"
 description: |-
-  Manages ACI Static Path
+  Manages ACI EPG to Static Path
 ---
 
 # aci_epg_to_static_path #
-Manages ACI Static Path
+Manages ACI EPG to Static Path
 
 ## Example Usage ##
 
@@ -44,5 +44,5 @@ An existing Static Path can be [imported][docs-import] into this resource via it
 
 
 ```
-terraform import aci_static_path.example <Dn>
+terraform import aci_epg_to_static_path.example <Dn>
 ```

@@ -1,13 +1,13 @@
 ---
 layout: "aci"
-page_title: "ACI: aci_fabric_node"
-sidebar_current: "docs-aci-data-source-fabric_node"
+page_title: "ACI: aci_logical_node_to_fabric_node"
+sidebar_current: "docs-aci-data-source-logical_node_to_fabric_node"
 description: |-
-  Data source for ACI Fabric Node
+  Data source for ACI Logical Node to Fabric Node
 ---
 
 # aci_logical_node_to_fabric_node #
-Data source for ACI Fabric Node
+Data source for ACI Logical Node to Fabric Node
 
 ## Example Usage ##
 
