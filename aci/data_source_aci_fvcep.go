@@ -44,18 +44,9 @@ func dataSourceAciClientEndPoint() *schema.Resource {
 			"vlan": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
-				Computed: true,
-			},
-
-			"object_dns": &schema.Schema{
-				Type:     schema.TypeList,
-				Optional: true,
-				Computed: true,
-				Elem: &schema.Schema{
 					Type: schema.TypeString,
-				},
 			},
-		}),
+		),
 	}
 }
 
