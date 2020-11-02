@@ -76,7 +76,7 @@ func getRemotePhysicalDomain(client *client.Client, dn string) (*models.Physical
 
 func setPhysicalDomainAttributes(physDomP *models.PhysicalDomain, d *schema.ResourceData) *schema.ResourceData {
 	d.SetId(physDomP.DistinguishedName)
-	d.Set("description", physDomP.Description)
+	// d.Set("description", physDomP.Description)
 	physDomPMap, _ := physDomP.ToMap()
 
 	d.Set("name", physDomPMap["name"])

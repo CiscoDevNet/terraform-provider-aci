@@ -82,7 +82,7 @@ func getRemoteL3DomainProfile(client *client.Client, dn string) (*models.L3Domai
 
 func setL3DomainProfileAttributes(l3extDomP *models.L3DomainProfile, d *schema.ResourceData) *schema.ResourceData {
 	d.SetId(l3extDomP.DistinguishedName)
-	d.Set("description", l3extDomP.Description)
+	// d.Set("description", "")
 	l3extDomPMap, _ := l3extDomP.ToMap()
 
 	d.Set("name", l3extDomPMap["name"])
