@@ -82,7 +82,6 @@ func getRemoteL3DomainProfile(client *client.Client, dn string) (*models.L3Domai
 
 func setL3DomainProfileAttributes(l3extDomP *models.L3DomainProfile, d *schema.ResourceData) *schema.ResourceData {
 	d.SetId(l3extDomP.DistinguishedName)
-	// d.Set("description", "")
 	l3extDomPMap, _ := l3extDomP.ToMap()
 
 	d.Set("name", l3extDomPMap["name"])
@@ -113,7 +112,6 @@ func resourceAciL3DomainProfileImport(d *schema.ResourceData, m interface{}) ([]
 func resourceAciL3DomainProfileCreate(d *schema.ResourceData, m interface{}) error {
 	log.Printf("[DEBUG] L3DomainProfile: Beginning Creation")
 	aciClient := m.(*client.Client)
-	desc := d.Get("description").(string)
 
 	name := d.Get("name").(string)
 
@@ -126,7 +124,7 @@ func resourceAciL3DomainProfileCreate(d *schema.ResourceData, m interface{}) err
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		l3extDomPAttr.NameAlias = NameAlias.(string)
 	}
-	l3extDomP := models.NewL3DomainProfile(fmt.Sprintf("l3dom-%s", name), "uni", desc, l3extDomPAttr)
+	l3extDomP := models.NewL3DomainProfile(fmt.Sprintf("l3dom-%s", name), "uni", "", l3extDomPAttr)
 
 	err := aciClient.Save(l3extDomP)
 	if err != nil {
@@ -242,7 +240,6 @@ func resourceAciL3DomainProfileUpdate(d *schema.ResourceData, m interface{}) err
 	log.Printf("[DEBUG] L3DomainProfile: Beginning Update")
 
 	aciClient := m.(*client.Client)
-	desc := d.Get("description").(string)
 
 	name := d.Get("name").(string)
 
@@ -255,7 +252,7 @@ func resourceAciL3DomainProfileUpdate(d *schema.ResourceData, m interface{}) err
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		l3extDomPAttr.NameAlias = NameAlias.(string)
 	}
-	l3extDomP := models.NewL3DomainProfile(fmt.Sprintf("l3dom-%s", name), "uni", desc, l3extDomPAttr)
+	l3extDomP := models.NewL3DomainProfile(fmt.Sprintf("l3dom-%s", name), "uni", "", l3extDomPAttr)
 
 	l3extDomP.Status = "modified"
 

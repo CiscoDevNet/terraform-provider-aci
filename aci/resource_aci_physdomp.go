@@ -76,7 +76,6 @@ func getRemotePhysicalDomain(client *client.Client, dn string) (*models.Physical
 
 func setPhysicalDomainAttributes(physDomP *models.PhysicalDomain, d *schema.ResourceData) *schema.ResourceData {
 	d.SetId(physDomP.DistinguishedName)
-	// d.Set("description", physDomP.Description)
 	physDomPMap, _ := physDomP.ToMap()
 
 	d.Set("name", physDomPMap["name"])
@@ -107,7 +106,6 @@ func resourceAciPhysicalDomainImport(d *schema.ResourceData, m interface{}) ([]*
 func resourceAciPhysicalDomainCreate(d *schema.ResourceData, m interface{}) error {
 	log.Printf("[DEBUG] PhysicalDomain: Beginning Creation")
 	aciClient := m.(*client.Client)
-	desc := d.Get("description").(string)
 
 	name := d.Get("name").(string)
 
@@ -120,7 +118,7 @@ func resourceAciPhysicalDomainCreate(d *schema.ResourceData, m interface{}) erro
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		physDomPAttr.NameAlias = NameAlias.(string)
 	}
-	physDomP := models.NewPhysicalDomain(fmt.Sprintf("phys-%s", name), "uni", desc, physDomPAttr)
+	physDomP := models.NewPhysicalDomain(fmt.Sprintf("phys-%s", name), "uni", "", physDomPAttr)
 
 	err := aciClient.Save(physDomP)
 	if err != nil {
@@ -216,7 +214,6 @@ func resourceAciPhysicalDomainUpdate(d *schema.ResourceData, m interface{}) erro
 	log.Printf("[DEBUG] PhysicalDomain: Beginning Update")
 
 	aciClient := m.(*client.Client)
-	desc := d.Get("description").(string)
 
 	name := d.Get("name").(string)
 
@@ -229,7 +226,7 @@ func resourceAciPhysicalDomainUpdate(d *schema.ResourceData, m interface{}) erro
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		physDomPAttr.NameAlias = NameAlias.(string)
 	}
-	physDomP := models.NewPhysicalDomain(fmt.Sprintf("phys-%s", name), "uni", desc, physDomPAttr)
+	physDomP := models.NewPhysicalDomain(fmt.Sprintf("phys-%s", name), "uni", "", physDomPAttr)
 
 	physDomP.Status = "modified"
 
