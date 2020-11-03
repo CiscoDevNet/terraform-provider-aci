@@ -8,17 +8,17 @@ Requirements
 - [Go](https://golang.org/doc/install) Latest Version
 
 ## Building The Provider ##
-Clone this repository to: `$GOPATH/src/github.com/ciscoecosystem/terraform-provider-cisco-aci`.
+Clone this repository to: `$GOPATH/src/github.com/CiscoDevNet/terraform-provider-cisco-aci`.
 
 ```sh
-$ mkdir -p $GOPATH/src/github.com/ciscoecosystem; cd $GOPATH/src/github.com/ciscoecosystem
-$ git clone https://github.com/ciscoecosystem/terraform-provider-aci.git
+$ mkdir -p $GOPATH/src/github.com/CiscoDevNet; cd $GOPATH/src/github.com/CiscoDevNet
+$ git clone https://github.com/CiscoDevNet/terraform-provider-aci.git
 ```
 
 Enter the provider directory and run dep ensure to install all the dependancies. After, that run make build to build the provider binary.
 
 ```sh
-$ cd $GOPATH/src/github.com/ciscoecosystem/terraform-provider-aci
+$ cd $GOPATH/src/github.com/CiscoDevNet/terraform-provider-aci
 $ dep ensure
 $ make build
 
