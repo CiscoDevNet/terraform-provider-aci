@@ -11,10 +11,9 @@ resource "aci_bridge_domain" "bd_for_subnet" {
 }
 
 resource "aci_subnet" "demosubnet" {
-  name                                = "10.0.3.28/27"
-  bridge_domain_dn                    = "${aci_bridge_domain.bd_for_subnet.id}"
+  parent_dn                           = "${aci_bridge_domain.bd_for_subnet.id}"
   ip                                  = "10.0.3.28/27"
-  scope                               = "private"
+  scope                               = ["private"]
   description                         = "This subject is created by terraform"
   ctrl                                = "unspecified"
   preferred                           = "no"
