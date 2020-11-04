@@ -59,7 +59,7 @@ func resourceAciRestCreate(d *schema.ResourceData, m interface{}) error {
 	}
 	classNameIntf := d.Get("class_name")
 	className := classNameIntf.(string)
-	dn := cont.Search(className, "attributes", "dn").String()
+	dn := models.StripQuotes(models.StripSquareBrackets(cont.Search(className, "attributes", "dn").String()))
 
 	if dn == "{}" {
 		d.SetId(GetDN(d, m))
@@ -79,7 +79,7 @@ func resourceAciRestUpdate(d *schema.ResourceData, m interface{}) error {
 	}
 	classNameIntf := d.Get("class_name")
 	className := classNameIntf.(string)
-	dn := cont.Search(className, "attributes", "dn").String()
+	dn := models.StripQuotes(models.StripSquareBrackets(cont.Search(className, "attributes", "dn").String()))
 	if dn == "{}" {
 		d.SetId(GetDN(d, m))
 
