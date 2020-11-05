@@ -1,4 +1,13 @@
-## 0.5.0 (Unreleased)
+## 0.5.1 (November 05, 2020)
+
+IMPROVEMENTS:
+- Added new data-source for fvCEP resource..
+
+BUG FIXES:
+- Fixed an issue with aci_physical_domain and aci_l3_domain_profile about unknown attribute error.
+
+
+## 0.5.0 (October 23, 2020)
 
 IMPROVEMENTS:
 - Added new resources Spine Switch profiles and interfaces, L4-L7 interfaces.
