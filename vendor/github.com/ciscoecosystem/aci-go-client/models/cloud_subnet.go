@@ -17,6 +17,8 @@ type CloudSubnet struct {
 type CloudSubnetAttributes struct {
 	Ip string `json:",omitempty"`
 
+	Name string `json:",omitempty"`
+
 	Annotation string `json:",omitempty"`
 
 	NameAlias string `json:",omitempty"`
@@ -51,6 +53,8 @@ func (cloudSubnet *CloudSubnet) ToMap() (map[string]string, error) {
 
 	A(cloudSubnetMap, "ip", cloudSubnet.Ip)
 
+	A(cloudSubnetMap, "name", cloudSubnet.Name)
+
 	A(cloudSubnetMap, "annotation", cloudSubnet.Annotation)
 
 	A(cloudSubnetMap, "nameAlias", cloudSubnet.NameAlias)
@@ -78,6 +82,8 @@ func CloudSubnetFromContainerList(cont *container.Container, index int) *CloudSu
 		CloudSubnetAttributes{
 
 			Ip: G(CloudSubnetCont, "ip"),
+
+			Name: G(CloudSubnetCont, "name"),
 
 			Annotation: G(CloudSubnetCont, "annotation"),
 

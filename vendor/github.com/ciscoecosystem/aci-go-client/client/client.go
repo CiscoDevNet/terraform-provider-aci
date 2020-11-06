@@ -258,7 +258,12 @@ func (c *Client) MakeRestRequest(method string, path string, body *container.Con
 func (c *Client) Authenticate() error {
 	method := "POST"
 	path := "/api/aaaLogin.json"
-	body, err := container.ParseJSON([]byte(fmt.Sprintf(authPayload, c.username, c.password)))
+
+	// Adding the follwing replace allows support for (1) Login Domains, where login is in the format of: apic#LOCAL\admin2
+	// (2) escapes out the password to support scenarios where the user password includes backslashes
+	escUserName := strings.ReplaceAll(c.username, `\`, `\\`)
+	escPwd := strings.ReplaceAll(c.password, `\`, `\\`)
+	body, err := container.ParseJSON([]byte(fmt.Sprintf(authPayload, escUserName, escPwd)))
 
 	if err != nil {
 		return err
