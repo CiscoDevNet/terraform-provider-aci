@@ -16,6 +16,7 @@ Manages ACI Cloud Subnet
 	resource "aci_cloud_subnet" "foocloud_subnet" {
 		cloud_cidr_pool_dn = "${aci_cloud_cidr_pool.example.id}"
 		description        = "sample cloud subnet"
+		name			   = "subnet1"	
 		ip                 = "14.12.0.0/28"
 		annotation         = "tag_subnet"
 		name_alias         = "alias_subnet"
@@ -29,6 +30,7 @@ Manages ACI Cloud Subnet
 ## Argument Reference ##
 * `cloud_cidr_pool_dn` - (Required) Distinguished name of parent CloudCIDRPool object.
 * `ip` - (Required) CIDR block of Object cloud_subnet.
+* `name` - (Optional) Name for object cloud subnet.
 * `annotation` - (Optional) annotation for object cloud_subnet.
 * `name_alias` - (Optional) name_alias for object cloud_subnet.
 * `scope` - (Optional) The domain applicable to the capability. Allowed values are "public", "private" and "shared". Default is "private".

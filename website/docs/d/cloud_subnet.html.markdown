@@ -30,6 +30,7 @@ data "aci_cloud_subnet" "dev_subnet" {
 ## Attribute Reference
 
 * `id` - Attribute id set to the Dn of the Cloud Subnet.
+* `name` - (Optional) Name for object cloud subnet.
 * `annotation` - (Optional) annotation for object cloud_subnet.
 * `name_alias` - (Optional) name_alias for object cloud_subnet.
 * `scope` - (Optional) The domain applicable to the capability.
