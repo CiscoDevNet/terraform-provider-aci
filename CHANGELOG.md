@@ -1,3 +1,10 @@
+## 0.5.2 (November 20, 2020)
+
+BUG FIXES:
+- Fixed an issue with aci_subnet ctrl attribute to have list value.
+- Fixed an issue with aci_any relations being not created.
+- Fixed an issue with aci_cloud_subnet to have name attribute.
+
 ## 0.5.1 (November 05, 2020)
 
 IMPROVEMENTS:
