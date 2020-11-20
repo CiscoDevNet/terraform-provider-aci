@@ -55,7 +55,7 @@ func (sm *ServiceManager) ListAny(vrf string, tenant string) ([]*models.Any, err
 }
 
 func (sm *ServiceManager) CreateRelationvzRsAnyToConsFromAny(parentDn, tnVzBrCPName string) error {
-	dn := fmt.Sprintf("%s/any/rsanyToCons-%s", parentDn, tnVzBrCPName)
+	dn := fmt.Sprintf("%s/rsanyToCons-%s", parentDn, tnVzBrCPName)
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
@@ -83,7 +83,7 @@ func (sm *ServiceManager) CreateRelationvzRsAnyToConsFromAny(parentDn, tnVzBrCPN
 }
 
 func (sm *ServiceManager) DeleteRelationvzRsAnyToConsFromAny(parentDn, tnVzBrCPName string) error {
-	dn := fmt.Sprintf("%s/any/rsanyToCons-%s", parentDn, tnVzBrCPName)
+	dn := fmt.Sprintf("%s/rsanyToCons-%s", parentDn, tnVzBrCPName)
 	return sm.DeleteByDn(dn, "vzRsAnyToCons")
 }
 
@@ -105,7 +105,7 @@ func (sm *ServiceManager) ReadRelationvzRsAnyToConsFromAny(parentDn string) (int
 
 }
 func (sm *ServiceManager) CreateRelationvzRsAnyToConsIfFromAny(parentDn, tnVzCPIfName string) error {
-	dn := fmt.Sprintf("%s/any/rsanyToConsIf-%s", parentDn, tnVzCPIfName)
+	dn := fmt.Sprintf("%s/rsanyToConsIf-%s", parentDn, tnVzCPIfName)
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
@@ -133,7 +133,7 @@ func (sm *ServiceManager) CreateRelationvzRsAnyToConsIfFromAny(parentDn, tnVzCPI
 }
 
 func (sm *ServiceManager) DeleteRelationvzRsAnyToConsIfFromAny(parentDn, tnVzCPIfName string) error {
-	dn := fmt.Sprintf("%s/any/rsanyToConsIf-%s", parentDn, tnVzCPIfName)
+	dn := fmt.Sprintf("%s/rsanyToConsIf-%s", parentDn, tnVzCPIfName)
 	return sm.DeleteByDn(dn, "vzRsAnyToConsIf")
 }
 
@@ -155,7 +155,7 @@ func (sm *ServiceManager) ReadRelationvzRsAnyToConsIfFromAny(parentDn string) (i
 
 }
 func (sm *ServiceManager) CreateRelationvzRsAnyToProvFromAny(parentDn, tnVzBrCPName string) error {
-	dn := fmt.Sprintf("%s/any/rsanyToProv-%s", parentDn, tnVzBrCPName)
+	dn := fmt.Sprintf("%s/rsanyToProv-%s", parentDn, tnVzBrCPName)
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
@@ -183,7 +183,7 @@ func (sm *ServiceManager) CreateRelationvzRsAnyToProvFromAny(parentDn, tnVzBrCPN
 }
 
 func (sm *ServiceManager) DeleteRelationvzRsAnyToProvFromAny(parentDn, tnVzBrCPName string) error {
-	dn := fmt.Sprintf("%s/any/rsanyToProv-%s", parentDn, tnVzBrCPName)
+	dn := fmt.Sprintf("%s/rsanyToProv-%s", parentDn, tnVzBrCPName)
 	return sm.DeleteByDn(dn, "vzRsAnyToProv")
 }
 

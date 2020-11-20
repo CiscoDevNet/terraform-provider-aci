@@ -149,14 +149,12 @@ func setSubnetAttributes(fvSubnet *models.Subnet, d *schema.ResourceData) *schem
 		ctrlGet = append(ctrlGet, strings.Trim(val, " "))
 	}
 	sort.Strings(ctrlGet)
-	log.Println("check ... : ", ctrlGet)
 	if ctrlInp, ok := d.GetOk("ctrl"); ok {
 		ctrlAct := make([]string, 0, 1)
 		for _, val := range ctrlInp.([]interface{}) {
 			ctrlAct = append(ctrlAct, val.(string))
 		}
 		sort.Strings(ctrlAct)
-		log.Println("check ... : ", ctrlAct)
 		if reflect.DeepEqual(ctrlAct, ctrlGet) {
 			d.Set("ctrl", d.Get("ctrl").([]interface{}))
 		} else {
@@ -165,7 +163,6 @@ func setSubnetAttributes(fvSubnet *models.Subnet, d *schema.ResourceData) *schem
 	} else {
 		d.Set("ctrl", ctrlGet)
 	}
-	log.Println("check ... : ", d.Get("ctrl"))
 
 	scopeGet := make([]string, 0, 1)
 	for _, val := range strings.Split(fvSubnetMap["scope"], ",") {
