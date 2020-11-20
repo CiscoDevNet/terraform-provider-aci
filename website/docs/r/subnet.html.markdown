@@ -15,10 +15,10 @@ Manages ACI Subnet
 
 	resource "aci_subnet" "foosubnet" {
 		parent_dn 		 = "${aci_bridge_domain.bd_for_subnet.id}"
-		description      = "%s"
+		description      = "subnet"
 		ip               = "10.0.3.28/27"
 		annotation       = "tag_subnet"
-		ctrl             = "%s"
+		ctrl             = ["querier", "nd"]
 		name_alias       = "alias_subnet"
 		preferred        = "no"
 		scope            = ["private", "shared"]
@@ -32,7 +32,7 @@ Manages ACI Subnet
 * `parent_dn` - (Required) Distinguished name of parent object.
 * `ip` - (Required) The IP address and mask of the default gateway.
 * `annotation` - (Optional) annotation for object subnet.
-* `ctrl` - (Optional) The subnet control state. The control can be specific protocols applied to the subnet such as IGMP Snooping. Allowed values are "unspecified", "querier", "nd" and "no-default-gateway". Default is "nd".
+* `ctrl` - (Optional) The list of subnet control state. The control can be specific protocols applied to the subnet such as IGMP Snooping. Allowed values are "unspecified", "querier", "nd" and "no-default-gateway". Default is "nd".
 * `name_alias` - (Optional) name_alias for object subnet.
 * `preferred` - (Optional) Indicates if the subnet is preferred (primary) over the available alternatives. Only one preferred subnet is allowed. Allowed values are "yes" and "no". Default is "no".
 * `scope` - (Optional) The List of network visibility of the subnet. Allowed values are "private", "public" and "shared". Default is "private".

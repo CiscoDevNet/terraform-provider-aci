@@ -78,7 +78,7 @@ func testAccCheckAciSubnetConfig_basic(description, Ctrl string) string {
 		description      = "%s"
 		ip               = "10.0.3.28/27"
 		annotation       = "tag_subnet"
-		ctrl             = "%s"
+		ctrl             = ["%s"]
 		name_alias       = "alias_subnet"
 		preferred        = "no"
 		scope            = ["private"]

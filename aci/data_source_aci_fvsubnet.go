@@ -26,9 +26,12 @@ func dataSourceAciSubnet() *schema.Resource {
 			},
 
 			"ctrl": &schema.Schema{
-				Type:     schema.TypeString,
+				Type:     schema.TypeList,
 				Optional: true,
 				Computed: true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
 			},
 
 			"name_alias": &schema.Schema{
