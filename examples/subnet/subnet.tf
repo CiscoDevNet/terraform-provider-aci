@@ -15,7 +15,7 @@ resource "aci_subnet" "demosubnet" {
   ip                                  = "10.0.3.28/27"
   scope                               = ["private"]
   description                         = "This subject is created by terraform"
-  ctrl                                = "unspecified"
+  ctrl                                = ["unspecified"]
   preferred                           = "no"
   virtual                             = "yes"
   relation_fv_rs_bd_subnet_to_profile = "${aci_rest.rest_rt_ctrl_profile.id}" # Relation to rtctrlProfile class. Cardinality - N_TO_ONE.
