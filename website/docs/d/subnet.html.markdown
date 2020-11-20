@@ -31,7 +31,7 @@ data "aci_subnet" "dev_subnet" {
 
 * `id` - Attribute id set to the Dn of the Subnet.
 * `annotation` - (Optional) annotation for object subnet.
-* `ctrl` - (Optional) The subnet control state. The control can be specific protocols applied to the subnet such as IGMP Snooping.
+* `ctrl` - (Optional) The list of subnet control state. The control can be specific protocols applied to the subnet such as IGMP Snooping.
 * `name_alias` - (Optional) name_alias for object subnet.
 * `preferred` - (Optional) Indicates if the subnet is preferred (primary) over the available alternatives. Only one preferred subnet is allowed.
 * `scope` - (Optional) The List of network visibility of the subnet.

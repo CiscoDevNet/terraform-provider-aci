@@ -40,15 +40,18 @@ func resourceAciSubnet() *schema.Resource {
 			},
 
 			"ctrl": &schema.Schema{
-				Type:     schema.TypeString,
+				Type:     schema.TypeList,
 				Optional: true,
 				Computed: true,
-				ValidateFunc: validation.StringInSlice([]string{
-					"unspecified",
-					"querier",
-					"nd",
-					"no-default-gateway",
-				}, false),
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+					ValidateFunc: validation.StringInSlice([]string{
+						"unspecified",
+						"querier",
+						"nd",
+						"no-default-gateway",
+					}, false),
+				},
 			},
 
 			"name_alias": &schema.Schema{
@@ -137,10 +140,30 @@ func setSubnetAttributes(fvSubnet *models.Subnet, d *schema.ResourceData) *schem
 	d.Set("ip", fvSubnetMap["ip"])
 
 	d.Set("annotation", fvSubnetMap["annotation"])
-	d.Set("ctrl", fvSubnetMap["ctrl"])
 	d.Set("ip", fvSubnetMap["ip"])
 	d.Set("name_alias", fvSubnetMap["nameAlias"])
 	d.Set("preferred", fvSubnetMap["preferred"])
+
+	ctrlGet := make([]string, 0, 1)
+	for _, val := range strings.Split(fvSubnetMap["ctrl"], ",") {
+		ctrlGet = append(ctrlGet, strings.Trim(val, " "))
+	}
+	sort.Strings(ctrlGet)
+	if ctrlInp, ok := d.GetOk("ctrl"); ok {
+		ctrlAct := make([]string, 0, 1)
+		for _, val := range ctrlInp.([]interface{}) {
+			ctrlAct = append(ctrlAct, val.(string))
+		}
+		sort.Strings(ctrlAct)
+		if reflect.DeepEqual(ctrlAct, ctrlGet) {
+			d.Set("ctrl", d.Get("ctrl").([]interface{}))
+		} else {
+			d.Set("ctrl", ctrlGet)
+		}
+	} else {
+		d.Set("ctrl", ctrlGet)
+	}
+
 	scopeGet := make([]string, 0, 1)
 	for _, val := range strings.Split(fvSubnetMap["scope"], ",") {
 		scopeGet = append(scopeGet, strings.Trim(val, " "))
@@ -274,8 +297,13 @@ func resourceAciSubnetCreate(d *schema.ResourceData, m interface{}) error {
 	} else {
 		fvSubnetAttr.Annotation = "{}"
 	}
-	if Ctrl, ok := d.GetOk("ctrl"); ok {
-		fvSubnetAttr.Ctrl = Ctrl.(string)
+	if ctrlInp, ok := d.GetOk("ctrl"); ok {
+		ctrlList := make([]string, 0, 1)
+		for _, val := range ctrlInp.([]interface{}) {
+			ctrlList = append(ctrlList, val.(string))
+		}
+		ctrl := strings.Join(ctrlList, ",")
+		fvSubnetAttr.Ctrl = ctrl
 	}
 	if Ip, ok := d.GetOk("ip"); ok {
 		fvSubnetAttr.Ip = Ip.(string)
@@ -396,8 +424,13 @@ func resourceAciSubnetUpdate(d *schema.ResourceData, m interface{}) error {
 	} else {
 		fvSubnetAttr.Annotation = "{}"
 	}
-	if Ctrl, ok := d.GetOk("ctrl"); ok {
-		fvSubnetAttr.Ctrl = Ctrl.(string)
+	if ctrlInp, ok := d.GetOk("ctrl"); ok {
+		ctrlList := make([]string, 0, 1)
+		for _, val := range ctrlInp.([]interface{}) {
+			ctrlList = append(ctrlList, val.(string))
+		}
+		ctrl := strings.Join(ctrlList, ",")
+		fvSubnetAttr.Ctrl = ctrl
 	}
 	if Ip, ok := d.GetOk("ip"); ok {
 		fvSubnetAttr.Ip = Ip.(string)
