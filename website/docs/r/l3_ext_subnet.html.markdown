@@ -12,6 +12,7 @@ Manages ACI l3 extension subnet
 ## Example Usage ##
 
 ```hcl
+
 	resource "aci_l3_ext_subnet" "foosubnet" {
 	  external_network_instance_profile_dn  = "${aci_external_network_instance_profile.example.id}"
 	  description                           = "Sample L3 External subnet"
@@ -19,16 +20,19 @@ Manages ACI l3 extension subnet
 	  aggregate                             = "shared-rtctrl"
 	  annotation                            = "tag_ext_subnet"
 	  name_alias                            = "alias_ext_subnet"
-	  scope                                 = "import-security"
+	  scope                                 = ["import-security"]
 	}
+
 ```
+
+
 ## Argument Reference ##
 * `external_network_instance_profile_dn` - (Required) Distinguished name of parent ExternalNetworkInstanceProfile object.
 * `ip` - (Required) ip of Object l3 extension subnet.
 * `aggregate` - (Optional) Aggregate Routes for l3 extension subnet. Allowed values are "import-rtctrl", "export-rtctrl" and "shared-rtctrl".
 * `annotation` - (Optional) annotation for object l3 extension subnet.
 * `name_alias` - (Optional) name_alias for object l3 extension subnet.
-* `scope` - (Optional) The List of domain applicable to the capability. Allowed values are "import-rtctrl", "export-rtctrl", "import-security", "shared-security" and "shared-rtctrl". Default is "import-security".
+* `scope` - (Optional) The list of domain applicable to the capability. Allowed values are "import-rtctrl", "export-rtctrl", "import-security", "shared-security" and "shared-rtctrl". Default is "import-security".
 
 * `relation_l3ext_rs_subnet_to_profile` - (Optional) Relation to class rtctrlProfile. Cardinality - N_TO_M. Type - Set of Map.
                 

@@ -61,6 +61,7 @@ func resourceAciL3ExtSubnet() *schema.Resource {
 				Optional: true,
 				Computed: true,
 				Elem: &schema.Schema{
+					Type: schema.TypeString,
 					ValidateFunc: validation.StringInSlice([]string{
 						"import-rtctrl",
 						"export-rtctrl",

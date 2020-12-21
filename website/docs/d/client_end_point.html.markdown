@@ -46,3 +46,4 @@ data "aci_client_end_point" "check" {
 * `fvcep_objects.epg_name` - parent epg name for matched client end point.
 * `fvcep_objects.l2out_name` - parent l2out name for matched client end point.
 * `fvcep_objects.instance_profile_name` - parent instance profile name for matched client end point.
+* `fvcep_objects.endpoint_path` - list of endpoint paths associated with client end point.

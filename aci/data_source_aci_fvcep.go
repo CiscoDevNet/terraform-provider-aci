@@ -107,6 +107,15 @@ func dataSourceAciClientEndPoint() *schema.Resource {
 							Optional: true,
 							Computed: true,
 						},
+
+						"endpoint_path": &schema.Schema{
+							Type:     schema.TypeList,
+							Optional: true,
+							Computed: true,
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+						},
 					},
 				},
 			},
@@ -162,6 +171,27 @@ func extractInfo(con *container.Container) (obj map[string]interface{}, dn strin
 	return infoMap, dnString
 }
 
+func extractEndpointPaths(cont *container.Container) ([]string, error) {
+	paths := make([]string, 0, 1)
+
+	count, err := cont.ArrayCount("imdata")
+	if err != nil {
+		return paths, err
+	}
+
+	for i := 0; i < count; i++ {
+		pathEpCont, err := cont.ArrayElement(i, "imdata")
+		if err != nil {
+			return paths, err
+		}
+
+		tDN := models.StripQuotes(pathEpCont.S("fvRsCEpToPathEp", "attributes", "tDn").String())
+
+		paths = append(paths, tDN)
+	}
+	return paths, nil
+}
+
 func getRemoteClientEndPoint(client *client.Client, query string) (objMap []interface{}, objdns []string, err error) {
 	baseURL := "/api/node/class"
 
@@ -193,6 +223,15 @@ func getRemoteClientEndPoint(client *client.Client, query string) (objMap []inte
 
 		objMap, dn := extractInfo(clientEndPointCont.S("fvCEp", "attributes"))
 		if dn != "" {
+			durl := fmt.Sprintf("%s/%s/fvRsCEpToPathEp.json", baseURL, dn)
+			cepToPathEpCont, err := client.GetViaURL(durl)
+			if err == nil {
+				endpointPaths, err := extractEndpointPaths(cepToPathEpCont)
+				if err == nil {
+					objMap["endpoint_path"] = endpointPaths
+				}
+			}
+
 			objects = append(objects, objMap)
 			dns = append(dns, dn)
 		}
