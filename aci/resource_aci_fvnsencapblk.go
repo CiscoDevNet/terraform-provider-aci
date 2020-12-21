@@ -30,7 +30,7 @@ func resourceAciRanges() *schema.Resource {
 				ForceNew: true,
 			},
 
-			"_from": &schema.Schema{
+			"from": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
 				ForceNew: true,
@@ -51,12 +51,6 @@ func resourceAciRanges() *schema.Resource {
 					"static",
 					"inherit",
 				}, false),
-			},
-
-			"from": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
 			},
 
 			"name_alias": &schema.Schema{
@@ -102,10 +96,6 @@ func setRangesAttributes(fvnsEncapBlk *models.Ranges, d *schema.ResourceData) *s
 	}
 	fvnsEncapBlkMap, _ := fvnsEncapBlk.ToMap()
 
-	d.Set("_from", fvnsEncapBlkMap["from"])
-
-	d.Set("to", fvnsEncapBlkMap["to"])
-
 	d.Set("alloc_mode", fvnsEncapBlkMap["allocMode"])
 	d.Set("annotation", fvnsEncapBlkMap["annotation"])
 	d.Set("from", fvnsEncapBlkMap["from"])
@@ -143,7 +133,7 @@ func resourceAciRangesCreate(d *schema.ResourceData, m interface{}) error {
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
 
-	_from := d.Get("_from").(string)
+	from := d.Get("from").(string)
 
 	to := d.Get("to").(string)
 
@@ -170,7 +160,7 @@ func resourceAciRangesCreate(d *schema.ResourceData, m interface{}) error {
 	if To, ok := d.GetOk("to"); ok {
 		fvnsEncapBlkAttr.To = To.(string)
 	}
-	fvnsEncapBlk := models.NewRanges(fmt.Sprintf("from-[%s]-to-[%s]", _from, to), VLANPoolDn, desc, fvnsEncapBlkAttr)
+	fvnsEncapBlk := models.NewRanges(fmt.Sprintf("from-[%s]-to-[%s]", from, to), VLANPoolDn, desc, fvnsEncapBlkAttr)
 
 	err := aciClient.Save(fvnsEncapBlk)
 	if err != nil {
@@ -178,7 +168,7 @@ func resourceAciRangesCreate(d *schema.ResourceData, m interface{}) error {
 	}
 	d.Partial(true)
 
-	d.SetPartial("_from")
+	d.SetPartial("from")
 
 	d.SetPartial("to")
 
@@ -196,7 +186,7 @@ func resourceAciRangesUpdate(d *schema.ResourceData, m interface{}) error {
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
 
-	_from := d.Get("_from").(string)
+	from := d.Get("from").(string)
 
 	to := d.Get("to").(string)
 
@@ -223,7 +213,7 @@ func resourceAciRangesUpdate(d *schema.ResourceData, m interface{}) error {
 	if To, ok := d.GetOk("to"); ok {
 		fvnsEncapBlkAttr.To = To.(string)
 	}
-	fvnsEncapBlk := models.NewRanges(fmt.Sprintf("from-[%s]-to-[%s]", _from, to), VLANPoolDn, desc, fvnsEncapBlkAttr)
+	fvnsEncapBlk := models.NewRanges(fmt.Sprintf("from-[%s]-to-[%s]", from, to), VLANPoolDn, desc, fvnsEncapBlkAttr)
 
 	fvnsEncapBlk.Status = "modified"
 
@@ -234,7 +224,7 @@ func resourceAciRangesUpdate(d *schema.ResourceData, m interface{}) error {
 	}
 	d.Partial(true)
 
-	d.SetPartial("_from")
+	d.SetPartial("from")
 
 	d.SetPartial("to")
 

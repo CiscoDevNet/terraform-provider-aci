@@ -30,4 +30,4 @@ data "aci_l3_ext_subnet" "example" {
 * `aggregate` - (Optional) Aggregate Routes for l3 extension subnet.
 * `annotation` - (Optional) annotation for object l3 extension subnet.
 * `name_alias` - (Optional) name_alias for object l3 extension subnet.
-* `scope` - (Optional) The domain applicable to the capability.
+* `scope` - (Optional) The list of domain applicable to the capability.

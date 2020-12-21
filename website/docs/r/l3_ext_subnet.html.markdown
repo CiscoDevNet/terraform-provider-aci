@@ -28,7 +28,7 @@ Manages ACI l3 extension subnet
 * `aggregate` - (Optional) Aggregate Routes for l3 extension subnet. Allowed values are "import-rtctrl", "export-rtctrl" and "shared-rtctrl".
 * `annotation` - (Optional) annotation for object l3 extension subnet.
 * `name_alias` - (Optional) name_alias for object l3 extension subnet.
-* `scope` - (Optional) The domain applicable to the capability. Allowed values are "import-rtctrl", "export-rtctrl", "import-security", "shared-security" and "shared-rtctrl". Default is "import-security".
+* `scope` - (Optional) The List of domain applicable to the capability. Allowed values are "import-rtctrl", "export-rtctrl", "import-security", "shared-security" and "shared-rtctrl". Default is "import-security".
 
 * `relation_l3ext_rs_subnet_to_profile` - (Optional) Relation to class rtctrlProfile. Cardinality - N_TO_M. Type - Set of Map.
                 

@@ -12,18 +12,19 @@ Data source for ACI Ranges
 ## Example Usage ##
 
 ```hcl
+
 data "aci_ranges" "example" {
-
   vlan_pool_dn  = "${aci_vlan_pool.example.id}"
-
-  _from  = "example"
-
+  from  = "example"
   to  = "example"
 }
+
 ```
+
 ## Argument Reference ##
+
 * `vlan_pool_dn` - (Required) Distinguished name of parent VLANPool object.
-* `_from` - (Required) _from of Object ranges.
+* `from` - (Required) from of Object ranges.
 * `to` - (Required) to of Object ranges.
 
 
@@ -33,7 +34,5 @@ data "aci_ranges" "example" {
 * `id` - Attribute id set to the Dn of the Ranges.
 * `alloc_mode` - (Optional) alloc_mode for object ranges.
 * `annotation` - (Optional) annotation for object ranges.
-* `from` - (Optional) encapsulation block start
 * `name_alias` - (Optional) name_alias for object ranges.
 * `role` - (Optional) system role type
-* `to` - (Optional) encapsulation block end

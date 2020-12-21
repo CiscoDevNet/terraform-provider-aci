@@ -20,7 +20,7 @@ func dataSourceAciRanges() *schema.Resource {
 				Required: true,
 			},
 
-			"_from": &schema.Schema{
+			"from": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
 			},
@@ -31,12 +31,6 @@ func dataSourceAciRanges() *schema.Resource {
 			},
 
 			"alloc_mode": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
-			"from": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
@@ -60,11 +54,11 @@ func dataSourceAciRanges() *schema.Resource {
 func dataSourceAciRangesRead(d *schema.ResourceData, m interface{}) error {
 	aciClient := m.(*client.Client)
 
-	_from := d.Get("_from").(string)
+	from := d.Get("from").(string)
 
 	to := d.Get("to").(string)
 
-	rn := fmt.Sprintf("from-[%s]-to-[%s]", _from, to)
+	rn := fmt.Sprintf("from-[%s]-to-[%s]", from, to)
 	VLANPoolDn := d.Get("vlan_pool_dn").(string)
 
 	dn := fmt.Sprintf("%s/%s", VLANPoolDn, rn)
