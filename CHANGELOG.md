@@ -1,3 +1,15 @@
+## 0.5.3 (December 22, 2020)
+
+IMPROVEMENTS:
+- Added New attribute named endpoint_path to fvcep data-source.
+- Added More levels for priorities to the application_profile resource. (Supported in latest version of APIC)
+
+BUG FIXES:
+- Renamed `_from` attribute to `from` for aci_ranges resource.
+
+BREAKING CHANGES:
+- scope attribute for aci_l3_ext_subnet resource is now list of string rather than a single string. This change will break your infrastructure if you have l3extsubnet created with terraform. Consider removing the l3extsubnet resource from your terraform state file using `terraform state rm` and than run the `terraform apply` to make your configuration inline with the new changes. This will not affect the l3extsubnet which is already there.
+
 ## 0.5.2 (November 20, 2020)
 
 BUG FIXES:
