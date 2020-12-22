@@ -119,6 +119,7 @@ func PostAndSetStatus(d *schema.ResourceData, m interface{}, status string) (*co
 	path := d.Get("path").(string)
 	var cont *container.Container
 	var err error
+	method := "POST"
 
 	if content, ok := d.GetOk("content"); ok {
 		contentStrMap := toStrMap(content.(map[string]interface{}))
@@ -165,10 +166,14 @@ func PostAndSetStatus(d *schema.ResourceData, m interface{}, status string) (*co
 			return nil, fmt.Errorf("Unable to parse the payload to JSON. Please check your payload")
 		}
 
+		if status == "deleted" {
+			method = "DELETE"
+		}
+
 	} else {
 		return nil, fmt.Errorf("Either of payload or content is required")
 	}
-	req, err := aciClient.MakeRestRequest("POST", path, cont, true)
+	req, err := aciClient.MakeRestRequest(method, path, cont, true)
 	if err != nil {
 		return nil, err
 	}
@@ -177,7 +182,7 @@ func PostAndSetStatus(d *schema.ResourceData, m interface{}, status string) (*co
 	if err != nil {
 		return nil, err
 	}
-	err = client.CheckForErrors(respCont, "POST", false)
+	err = client.CheckForErrors(respCont, method, false)
 	if err != nil {
 		return nil, err
 	}
