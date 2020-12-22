@@ -12,32 +12,30 @@ Manages ACI Ranges
 ## Example Usage ##
 
 ```hcl
+
 resource "aci_ranges" "example" {
-
   vlan_pool_dn  = "${aci_vlan_pool.example.id}"
-
-  _from  = "example"
-
+  from  = "example"
   to  = "example"
   alloc_mode  = "example"
   annotation  = "example"
-  from  = "example"
   name_alias  = "example"
   role  = "example"
 }
+
 ```
+
 ## Argument Reference ##
+
 * `vlan_pool_dn` - (Required) Distinguished name of parent VLANPool object.
-* `_from` - (Required) _from of Object ranges.
+* `from` - (Required) _from of Object ranges.
 * `to` - (Required) to of Object ranges.
 * `alloc_mode` - (Optional) alloc_mode for object ranges.
 Allowed values: "dynamic", "static", "inherit"
 * `annotation` - (Optional) annotation for object ranges.
-* `from` - (Optional) encapsulation block start
 * `name_alias` - (Optional) name_alias for object ranges.
 * `role` - (Optional) system role type.
 Allowed values: "external", "internal"
-* `to` - (Optional) encapsulation block end
 
 
 

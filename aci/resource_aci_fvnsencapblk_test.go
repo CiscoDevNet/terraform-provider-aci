@@ -66,18 +66,15 @@ func testAccCheckAciRangesConfig_basic(description string) string {
 	return fmt.Sprintf(`
 
 	resource "aci_ranges" "fooranges" {
-		  vlan_pool_dn  = "${aci_vlan_pool.example.id}"
+		vlan_pool_dn  = "${aci_vlan_pool.example.id}"
 		description = "%s"
-		
-		_from  = "example"
-		
+		from  = "example"
 		to  = "example"
-		  alloc_mode  = "static"
-		  annotation  = "example"
-		  from  = "example"
-		  name_alias  = "example"
-		  role  = "external"
-		}
+		alloc_mode  = "static"
+		annotation  = "example"	  
+		name_alias  = "example"
+		role  = "external"
+	}
 	`, description)
 }
 
@@ -137,7 +134,7 @@ func testAccCheckAciRangesAttributes(description string, ranges *models.Ranges) 
 		}
 
 		if "example" != ranges.From {
-			return fmt.Errorf("Bad ranges _from %s", ranges.From)
+			return fmt.Errorf("Bad ranges from %s", ranges.From)
 		}
 
 		if "example" != ranges.To {
@@ -150,10 +147,6 @@ func testAccCheckAciRangesAttributes(description string, ranges *models.Ranges) 
 
 		if "example" != ranges.Annotation {
 			return fmt.Errorf("Bad ranges annotation %s", ranges.Annotation)
-		}
-
-		if "example" != ranges.From {
-			return fmt.Errorf("Bad ranges from %s", ranges.From)
 		}
 
 		if "example" != ranges.NameAlias {

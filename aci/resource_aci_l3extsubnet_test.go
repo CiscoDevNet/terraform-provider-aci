@@ -72,7 +72,7 @@ func testAccCheckAciL3ExtSubnetConfig_basic(description, aggregate string) strin
 	  aggregate                             = "%s"
 	  annotation                            = "tag_ext_subnet"
 	  name_alias                            = "alias_ext_subnet"
-	  scope                                 = "import-security"
+	  scope                                 = ["import-security"]
 	}
 	`, description, aggregate)
 }
@@ -146,10 +146,6 @@ func testAccCheckAciL3ExtSubnetAttributes(description, aggregate string, subnet 
 
 		if "alias_ext_subnet" != subnet.NameAlias {
 			return fmt.Errorf("Bad subnet name_alias %s", subnet.NameAlias)
-		}
-
-		if "import-security" != subnet.Scope {
-			return fmt.Errorf("Bad subnet scope %s", subnet.Scope)
 		}
 
 		return nil

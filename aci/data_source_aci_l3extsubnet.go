@@ -38,9 +38,12 @@ func dataSourceAciL3ExtSubnet() *schema.Resource {
 			},
 
 			"scope": &schema.Schema{
-				Type:     schema.TypeString,
+				Type:     schema.TypeList,
 				Optional: true,
 				Computed: true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
 			},
 		}),
 	}
@@ -56,12 +59,12 @@ func dataSourceAciL3ExtSubnetRead(d *schema.ResourceData, m interface{}) error {
 
 	dn := fmt.Sprintf("%s/%s", ExternalNetworkInstanceProfileDn, rn)
 
-	l3extSubnet, err := getRemoteSubnet(aciClient, dn)
+	l3extSubnet, err := getRemoteL3ExtSubnet(aciClient, dn)
 
 	if err != nil {
 		return err
 	}
 	d.SetId(dn)
-	setSubnetAttributes(l3extSubnet, d)
+	setL3ExtSubnetAttributes(l3extSubnet, d)
 	return nil
 }

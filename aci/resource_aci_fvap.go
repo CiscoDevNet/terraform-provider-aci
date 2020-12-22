@@ -51,6 +51,9 @@ func resourceAciApplicationProfile() *schema.Resource {
 					"level3",
 					"level2",
 					"level1",
+					"level4",
+					"level5",
+					"level6",
 				}, false),
 			},
 

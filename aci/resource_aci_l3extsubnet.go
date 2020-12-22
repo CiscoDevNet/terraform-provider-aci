@@ -3,6 +3,9 @@ package aci
 import (
 	"fmt"
 	"log"
+	"reflect"
+	"sort"
+	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
@@ -54,16 +57,19 @@ func resourceAciL3ExtSubnet() *schema.Resource {
 			},
 
 			"scope": &schema.Schema{
-				Type:     schema.TypeString,
+				Type:     schema.TypeList,
 				Optional: true,
 				Computed: true,
-				ValidateFunc: validation.StringInSlice([]string{
-					"import-rtctrl",
-					"export-rtctrl",
-					"shared-rtctrl",
-					"import-security",
-					"shared-security",
-				}, false),
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+					ValidateFunc: validation.StringInSlice([]string{
+						"import-rtctrl",
+						"export-rtctrl",
+						"shared-rtctrl",
+						"import-security",
+						"shared-security",
+					}, false),
+				},
 			},
 
 			"relation_l3ext_rs_subnet_to_profile": &schema.Schema{
@@ -121,7 +127,27 @@ func setL3ExtSubnetAttributes(l3extSubnet *models.L3ExtSubnet, d *schema.Resourc
 	d.Set("annotation", l3extSubnetMap["annotation"])
 	d.Set("ip", l3extSubnetMap["ip"])
 	d.Set("name_alias", l3extSubnetMap["nameAlias"])
-	d.Set("scope", l3extSubnetMap["scope"])
+
+	scpGet := make([]string, 0, 1)
+	for _, val := range strings.Split(l3extSubnetMap["scope"], ",") {
+		scpGet = append(scpGet, strings.Trim(val, " "))
+	}
+	sort.Strings(scpGet)
+	if scpInp, ok := d.GetOk("scope"); ok {
+		scpAct := make([]string, 0, 1)
+		for _, val := range scpInp.([]interface{}) {
+			scpAct = append(scpAct, val.(string))
+		}
+		sort.Strings(scpAct)
+		if reflect.DeepEqual(scpAct, scpGet) {
+			d.Set("scope", d.Get("scope").([]interface{}))
+		} else {
+			d.Set("scope", scpGet)
+		}
+	} else {
+		d.Set("scope", scpGet)
+	}
+
 	return d
 }
 
@@ -172,7 +198,12 @@ func resourceAciL3ExtSubnetCreate(d *schema.ResourceData, m interface{}) error {
 		l3extSubnetAttr.NameAlias = NameAlias.(string)
 	}
 	if Scope, ok := d.GetOk("scope"); ok {
-		l3extSubnetAttr.Scope = Scope.(string)
+		scpList := make([]string, 0, 1)
+		for _, val := range Scope.([]interface{}) {
+			scpList = append(scpList, val.(string))
+		}
+		scp := strings.Join(scpList, ",")
+		l3extSubnetAttr.Scope = scp
 	}
 	l3extSubnet := models.NewL3ExtSubnet(fmt.Sprintf("extsubnet-[%s]", ip), ExternalNetworkInstanceProfileDn, desc, l3extSubnetAttr)
 
@@ -259,7 +290,12 @@ func resourceAciL3ExtSubnetUpdate(d *schema.ResourceData, m interface{}) error {
 		l3extSubnetAttr.NameAlias = NameAlias.(string)
 	}
 	if Scope, ok := d.GetOk("scope"); ok {
-		l3extSubnetAttr.Scope = Scope.(string)
+		scpList := make([]string, 0, 1)
+		for _, val := range Scope.([]interface{}) {
+			scpList = append(scpList, val.(string))
+		}
+		scp := strings.Join(scpList, ",")
+		l3extSubnetAttr.Scope = scp
 	}
 	l3extSubnet := models.NewL3ExtSubnet(fmt.Sprintf("extsubnet-[%s]", ip), ExternalNetworkInstanceProfileDn, desc, l3extSubnetAttr)
 
