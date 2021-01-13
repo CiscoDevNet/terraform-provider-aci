@@ -1,3 +1,8 @@
+## 0.5.4 (January 13, 2020)
+
+BUG FIXES:
+- Added Missing documentation for aci_monitoring_policy resource.
+
 ## 0.5.3 (December 22, 2020)
 
 IMPROVEMENTS:
