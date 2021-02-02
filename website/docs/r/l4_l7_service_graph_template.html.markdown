@@ -26,7 +26,7 @@ resource "aci_l4_l7_service_graph_template" "example" {
 ```
 
 ## Argument Reference ##
-* `tenant_dn` - (Required) Distinguished name of parent Tenant object.
+* `tenant_dn` - (Required) distinguished name of parent Tenant object.
 * `name` - (Required) name for l4 l7 service graph template object.
 * `annotation` - (Optional) annotation for l4 l7 service graph template object.
 * `name_alias` - (Optional) name_alias for l4 l7 service graph template object.

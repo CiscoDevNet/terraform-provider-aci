@@ -11,7 +11,7 @@ import (
 )
 
 func TestAccAciL4L7ServiceGraphTemplate_Basic(t *testing.T) {
-	var l4_l7_service_graph_template models.L4L7ServiceGraphTemplate
+	var l4l7SGraphTemplate models.L4L7ServiceGraphTemplate
 	description := "l4-l7_service_graph_template created while acceptance testing"
 
 	resource.Test(t, resource.TestCase{
@@ -22,8 +22,8 @@ func TestAccAciL4L7ServiceGraphTemplate_Basic(t *testing.T) {
 			{
 				Config: testAccCheckAciL4L7ServiceGraphTemplateConfig_basic(description),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAciL4L7ServiceGraphTemplateExists("aci_l4_l7_service_graph_template.test", &l4_l7_service_graph_template),
-					testAccCheckAciL4L7ServiceGraphTemplateAttributes(description, &l4_l7_service_graph_template),
+					testAccCheckAciL4L7ServiceGraphTemplateExists("aci_l4_l7_service_graph_template.test", &l4l7SGraphTemplate),
+					testAccCheckAciL4L7ServiceGraphTemplateAttributes(description, &l4l7SGraphTemplate),
 				),
 			},
 		},
@@ -31,7 +31,7 @@ func TestAccAciL4L7ServiceGraphTemplate_Basic(t *testing.T) {
 }
 
 func TestAccAciL4L7ServiceGraphTemplate_update(t *testing.T) {
-	var l4_l7_service_graph_template models.L4L7ServiceGraphTemplate
+	var l4l7SGraphTemplate models.L4L7ServiceGraphTemplate
 	description := "l4-l7_service_graph_template created while acceptance testing"
 
 	resource.Test(t, resource.TestCase{
@@ -42,15 +42,15 @@ func TestAccAciL4L7ServiceGraphTemplate_update(t *testing.T) {
 			{
 				Config: testAccCheckAciL4L7ServiceGraphTemplateConfig_basic(description),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAciL4L7ServiceGraphTemplateExists("aci_l4_l7_service_graph_template.test", &l4_l7_service_graph_template),
-					testAccCheckAciL4L7ServiceGraphTemplateAttributes(description, &l4_l7_service_graph_template),
+					testAccCheckAciL4L7ServiceGraphTemplateExists("aci_l4_l7_service_graph_template.test", &l4l7SGraphTemplate),
+					testAccCheckAciL4L7ServiceGraphTemplateAttributes(description, &l4l7SGraphTemplate),
 				),
 			},
 			{
 				Config: testAccCheckAciL4L7ServiceGraphTemplateConfig_basic(description),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAciL4L7ServiceGraphTemplateExists("aci_l4_l7_service_graph_template.test", &l4_l7_service_graph_template),
-					testAccCheckAciL4L7ServiceGraphTemplateAttributes(description, &l4_l7_service_graph_template),
+					testAccCheckAciL4L7ServiceGraphTemplateExists("aci_l4_l7_service_graph_template.test", &l4l7SGraphTemplate),
+					testAccCheckAciL4L7ServiceGraphTemplateAttributes(description, &l4l7SGraphTemplate),
 				),
 			},
 		},
@@ -60,18 +60,18 @@ func TestAccAciL4L7ServiceGraphTemplate_update(t *testing.T) {
 func testAccCheckAciL4L7ServiceGraphTemplateConfig_basic(description string) string {
 	return fmt.Sprintf(`
 	resource "aci_l4_l7_service_graph_template" "test" {
-		tenant_dn  = "${aci_tenant.example.id}"
+		tenant_dn  = "${aci_tenant.tenentcheck.id}"
 		description = "%s"
-		name  = "example"
+		name  = "test"
 		annotation  = "example"
 		name_alias  = "example"
-		l4-l7_service_graph_template_type  = "example"
-		ui_template_type  = "example"
+		l4_l7_service_graph_template_type  = "legacy"
+		ui_template_type  = "ONE_NODE_ADC_ONE_ARM"
 	}
 	`, description)
 }
 
-func testAccCheckAciL4L7ServiceGraphTemplateExists(name string, l4_l7_service_graph_template *models.L4L7ServiceGraphTemplate) resource.TestCheckFunc {
+func testAccCheckAciL4L7ServiceGraphTemplateExists(name string, l4l7SGraphTemplate *models.L4L7ServiceGraphTemplate) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 		rs, ok := s.RootModule().Resources[name]
 
@@ -90,11 +90,11 @@ func testAccCheckAciL4L7ServiceGraphTemplateExists(name string, l4_l7_service_gr
 			return err
 		}
 
-		l4_l7_service_graph_templateFound := models.L4L7ServiceGraphTemplateFromContainer(cont)
-		if l4_l7_service_graph_templateFound.DistinguishedName != rs.Primary.ID {
+		l4l7SGraphTemplateFound := models.L4L7ServiceGraphTemplateFromContainer(cont)
+		if l4l7SGraphTemplateFound.DistinguishedName != rs.Primary.ID {
 			return fmt.Errorf("L4-L7 Service Graph Template %s not found", rs.Primary.ID)
 		}
-		*l4_l7_service_graph_template = *l4_l7_service_graph_templateFound
+		*l4l7SGraphTemplate = *l4l7SGraphTemplateFound
 		return nil
 	}
 }
@@ -106,9 +106,9 @@ func testAccCheckAciL4L7ServiceGraphTemplateDestroy(s *terraform.State) error {
 
 		if rs.Type == "aci_l4-l7_service_graph_template" {
 			cont, err := client.Get(rs.Primary.ID)
-			l4_l7_service_graph_template := models.L4L7ServiceGraphTemplateFromContainer(cont)
+			l4l7SGraphTemplate := models.L4L7ServiceGraphTemplateFromContainer(cont)
 			if err == nil {
-				return fmt.Errorf("L4-L7 Service Graph Template %s Still exists", l4_l7_service_graph_template.DistinguishedName)
+				return fmt.Errorf("L4-L7 Service Graph Template %s Still exists", l4l7SGraphTemplate.DistinguishedName)
 			}
 
 		} else {
@@ -119,31 +119,31 @@ func testAccCheckAciL4L7ServiceGraphTemplateDestroy(s *terraform.State) error {
 	return nil
 }
 
-func testAccCheckAciL4L7ServiceGraphTemplateAttributes(description string, l4_l7_service_graph_template *models.L4L7ServiceGraphTemplate) resource.TestCheckFunc {
+func testAccCheckAciL4L7ServiceGraphTemplateAttributes(description string, l4l7SGraphTemplate *models.L4L7ServiceGraphTemplate) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 
-		if description != l4_l7_service_graph_template.Description {
-			return fmt.Errorf("Bad l4_l7_service_graph_template Description %s", l4_l7_service_graph_template.Description)
+		if description != l4l7SGraphTemplate.Description {
+			return fmt.Errorf("Bad l4 l7 service graph template Description %s", l4l7SGraphTemplate.Description)
 		}
 
-		if "example" != l4_l7_service_graph_template.Name {
-			return fmt.Errorf("Bad l4_l7_service_graph_template name %s", l4_l7_service_graph_template.Name)
+		if "test" != l4l7SGraphTemplate.Name {
+			return fmt.Errorf("Bad l4 l7 service graph template name %s", l4l7SGraphTemplate.Name)
 		}
 
-		if "example" != l4_l7_service_graph_template.Annotation {
-			return fmt.Errorf("Bad l4_l7_service_graph_template annotation %s", l4_l7_service_graph_template.Annotation)
+		if "example" != l4l7SGraphTemplate.Annotation {
+			return fmt.Errorf("Bad l4 l7 service graph template annotation %s", l4l7SGraphTemplate.Annotation)
 		}
 
-		if "example" != l4_l7_service_graph_template.NameAlias {
-			return fmt.Errorf("Bad l4_l7_service_graph_template name_alias %s", l4_l7_service_graph_template.NameAlias)
+		if "example" != l4l7SGraphTemplate.NameAlias {
+			return fmt.Errorf("Bad l4 l7 service graph template name_alias %s", l4l7SGraphTemplate.NameAlias)
 		}
 
-		if "example" != l4_l7_service_graph_template.L4L7ServiceGraphTemplate_type {
-			return fmt.Errorf("Bad l4_l7_service_graph_template l4_l7_service_graph_template_type %s", l4_l7_service_graph_template.L4L7ServiceGraphTemplate_type)
+		if "legacy" != l4l7SGraphTemplate.L4L7ServiceGraphTemplate_type {
+			return fmt.Errorf("Bad l4 l7 service graph template type %s", l4l7SGraphTemplate.L4L7ServiceGraphTemplate_type)
 		}
 
-		if "example" != l4_l7_service_graph_template.UiTemplateType {
-			return fmt.Errorf("Bad l4_l7_service_graph_template ui_template_type %s", l4_l7_service_graph_template.UiTemplateType)
+		if "ONE_NODE_ADC_ONE_ARM" != l4l7SGraphTemplate.UiTemplateType {
+			return fmt.Errorf("Bad l4 l7 service graph template ui_template_type %s", l4l7SGraphTemplate.UiTemplateType)
 		}
 
 		return nil
