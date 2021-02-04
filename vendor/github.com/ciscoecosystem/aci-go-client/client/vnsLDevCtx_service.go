@@ -58,7 +58,7 @@ func (sm *ServiceManager) CreateRelationvnsRsLDevCtxToLDevFromLogicalDeviceConte
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tnVnsALDevIfName": "%s"
+				"dn": "%s","tDn": "%s","annotation":"orchestrator:terraform"
 								
 			}
 		}
@@ -96,7 +96,7 @@ func (sm *ServiceManager) ReadRelationvnsRsLDevCtxToLDevFromLogicalDeviceContext
 	contList := models.ListFromContainer(cont, "vnsRsLDevCtxToLDev")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnVnsALDevIfName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -108,7 +108,7 @@ func (sm *ServiceManager) CreateRelationvnsRsLDevCtxToRtrCfgFromLogicalDeviceCon
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tnVnsRtrCfgName": "%s"
+				"dn": "%s","tnVnsRtrCfgName": "%s","annotation":"orchestrator:terraform"
 								
 			}
 		}

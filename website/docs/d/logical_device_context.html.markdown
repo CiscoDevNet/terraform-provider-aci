@@ -13,10 +13,10 @@ Data source for ACI Logical Device Context
 
 ```hcl
 
-data "aci_logical_device_context" "example" {
-  tenant_dn  = "${aci_tenant.example.id}"
-  ctrct_name_or_lbl  = "example"
-  graph_name_or_lbl  = "example"
+data "aci_logical_device_context" "check" {
+  tenant_dn         = "${aci_tenant.tenentcheck.id}"
+  ctrct_name_or_lbl = "example"
+  graph_name_or_lbl = "example"
   node_name_or_lbl  = "example"
 }
 
