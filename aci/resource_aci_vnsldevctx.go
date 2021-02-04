@@ -31,16 +31,19 @@ func resourceAciLogicalDeviceContext() *schema.Resource {
 			"ctrct_name_or_lbl": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
+				ForceNew: true,
 			},
 
 			"graph_name_or_lbl": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
+				ForceNew: true,
 			},
 
 			"node_name_or_lbl": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
+				ForceNew: true,
 			},
 
 			"context": &schema.Schema{
@@ -138,6 +141,8 @@ func resourceAciLogicalDeviceContextCreate(d *schema.ResourceData, m interface{}
 	vnsLDevCtxAttr := models.LogicalDeviceContextAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		vnsLDevCtxAttr.Annotation = Annotation.(string)
+	} else {
+		vnsLDevCtxAttr.Annotation = "{}"
 	}
 	if Context, ok := d.GetOk("context"); ok {
 		vnsLDevCtxAttr.Context = Context.(string)
@@ -162,6 +167,25 @@ func resourceAciLogicalDeviceContextCreate(d *schema.ResourceData, m interface{}
 
 	d.Partial(false)
 
+	checkDns := make([]string, 0, 1)
+
+	if relationTovnsRsLDevCtxToLDev, ok := d.GetOk("relation_vns_rs_l_dev_ctx_to_l_dev"); ok {
+		relationParam := relationTovnsRsLDevCtxToLDev.(string)
+		checkDns = append(checkDns, relationParam)
+	}
+
+	if relationTovnsRsLDevCtxToRtrCfg, ok := d.GetOk("relation_vns_rs_l_dev_ctx_to_rtr_cfg"); ok {
+		relationParam := relationTovnsRsLDevCtxToRtrCfg.(string)
+		checkDns = append(checkDns, relationParam)
+	}
+
+	d.Partial(true)
+	err = checkTDn(aciClient, checkDns)
+	if err != nil {
+		return err
+	}
+	d.Partial(false)
+
 	if relationTovnsRsLDevCtxToLDev, ok := d.GetOk("relation_vns_rs_l_dev_ctx_to_l_dev"); ok {
 		relationParam := relationTovnsRsLDevCtxToLDev.(string)
 		err = aciClient.CreateRelationvnsRsLDevCtxToLDevFromLogicalDeviceContext(vnsLDevCtx.DistinguishedName, relationParam)
@@ -175,7 +199,8 @@ func resourceAciLogicalDeviceContextCreate(d *schema.ResourceData, m interface{}
 	}
 	if relationTovnsRsLDevCtxToRtrCfg, ok := d.GetOk("relation_vns_rs_l_dev_ctx_to_rtr_cfg"); ok {
 		relationParam := relationTovnsRsLDevCtxToRtrCfg.(string)
-		err = aciClient.CreateRelationvnsRsLDevCtxToRtrCfgFromLogicalDeviceContext(vnsLDevCtx.DistinguishedName, relationParam)
+		relationParamName := GetMOName(relationParam)
+		err = aciClient.CreateRelationvnsRsLDevCtxToRtrCfgFromLogicalDeviceContext(vnsLDevCtx.DistinguishedName, relationParamName)
 		if err != nil {
 			return err
 		}
@@ -208,6 +233,8 @@ func resourceAciLogicalDeviceContextUpdate(d *schema.ResourceData, m interface{}
 	vnsLDevCtxAttr := models.LogicalDeviceContextAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		vnsLDevCtxAttr.Annotation = Annotation.(string)
+	} else {
+		vnsLDevCtxAttr.Annotation = "{}"
 	}
 	if Context, ok := d.GetOk("context"); ok {
 		vnsLDevCtxAttr.Context = Context.(string)
@@ -235,6 +262,25 @@ func resourceAciLogicalDeviceContextUpdate(d *schema.ResourceData, m interface{}
 
 	d.Partial(false)
 
+	checkDns := make([]string, 0, 1)
+
+	if d.HasChange("relation_vns_rs_l_dev_ctx_to_l_dev") {
+		_, newRelParam := d.GetChange("relation_vns_rs_l_dev_ctx_to_l_dev")
+		checkDns = append(checkDns, newRelParam.(string))
+	}
+
+	if d.HasChange("relation_vns_rs_l_dev_ctx_to_rtr_cfg") {
+		_, newRelParam := d.GetChange("relation_vns_rs_l_dev_ctx_to_rtr_cfg")
+		checkDns = append(checkDns, newRelParam.(string))
+	}
+
+	d.Partial(true)
+	err = checkTDn(aciClient, checkDns)
+	if err != nil {
+		return err
+	}
+	d.Partial(false)
+
 	if d.HasChange("relation_vns_rs_l_dev_ctx_to_l_dev") {
 		_, newRelParam := d.GetChange("relation_vns_rs_l_dev_ctx_to_l_dev")
 		err = aciClient.DeleteRelationvnsRsLDevCtxToLDevFromLogicalDeviceContext(vnsLDevCtx.DistinguishedName)
@@ -252,11 +298,12 @@ func resourceAciLogicalDeviceContextUpdate(d *schema.ResourceData, m interface{}
 	}
 	if d.HasChange("relation_vns_rs_l_dev_ctx_to_rtr_cfg") {
 		_, newRelParam := d.GetChange("relation_vns_rs_l_dev_ctx_to_rtr_cfg")
+		newRelParamName := GetMOName(newRelParam.(string))
 		err = aciClient.DeleteRelationvnsRsLDevCtxToRtrCfgFromLogicalDeviceContext(vnsLDevCtx.DistinguishedName)
 		if err != nil {
 			return err
 		}
-		err = aciClient.CreateRelationvnsRsLDevCtxToRtrCfgFromLogicalDeviceContext(vnsLDevCtx.DistinguishedName, newRelParam.(string))
+		err = aciClient.CreateRelationvnsRsLDevCtxToRtrCfgFromLogicalDeviceContext(vnsLDevCtx.DistinguishedName, newRelParamName)
 		if err != nil {
 			return err
 		}
@@ -290,17 +337,29 @@ func resourceAciLogicalDeviceContextRead(d *schema.ResourceData, m interface{}) 
 	vnsRsLDevCtxToLDevData, err := aciClient.ReadRelationvnsRsLDevCtxToLDevFromLogicalDeviceContext(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation vnsRsLDevCtxToLDev %v", err)
+		d.Set("relation_vns_rs_l_dev_ctx_to_l_dev", "")
 
 	} else {
-		d.Set("relation_vns_rs_l_dev_ctx_to_l_dev", vnsRsLDevCtxToLDevData)
+		if _, ok := d.GetOk("relation_vns_rs_l_dev_ctx_to_l_dev"); ok {
+			tfName := d.Get("relation_vns_rs_l_dev_ctx_to_l_dev").(string)
+			if tfName != vnsRsLDevCtxToLDevData {
+				d.Set("relation_vns_rs_l_dev_ctx_to_l_dev", "")
+			}
+		}
 	}
 
 	vnsRsLDevCtxToRtrCfgData, err := aciClient.ReadRelationvnsRsLDevCtxToRtrCfgFromLogicalDeviceContext(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation vnsRsLDevCtxToRtrCfg %v", err)
+		d.Set("relation_vns_rs_l_dev_ctx_to_rtr_cfg", "")
 
 	} else {
-		d.Set("relation_vns_rs_l_dev_ctx_to_rtr_cfg", vnsRsLDevCtxToRtrCfgData)
+		if _, ok := d.GetOk("relation_vns_rs_l_dev_ctx_to_rtr_cfg"); ok {
+			tfName := GetMOName(d.Get("relation_vns_rs_l_dev_ctx_to_rtr_cfg").(string))
+			if tfName != vnsRsLDevCtxToRtrCfgData {
+				d.Set("relation_vns_rs_l_dev_ctx_to_rtr_cfg", "")
+			}
+		}
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())

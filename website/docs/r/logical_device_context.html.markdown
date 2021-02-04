@@ -14,13 +14,13 @@ Manages ACI Logical Device Context
 ```hcl
 
 resource "aci_logical_device_context" "example" {
-  tenant_dn  = "${aci_tenant.example.id}"
-  ctrct_name_or_lbl  = "example"
-  graph_name_or_lbl  = "example"
-  node_name_or_lbl  = "example"
-  annotation  = "example"
-  context  = "example"
-  name_alias  = "example"
+  tenant_dn         = "${aci_tenant.tenentcheck.id}"
+  ctrct_name_or_lbl = "default"
+  graph_name_or_lbl = "any"
+  node_name_or_lbl  = "any"
+  annotation        = "example"
+  context           = "ctx1"
+  name_alias        = "example"
 }
 
 ```
