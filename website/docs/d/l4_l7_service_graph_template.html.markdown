@@ -21,15 +21,15 @@ data "aci_l4_l7_service_graph_template" "check" {
 ```
 
 ## Argument Reference ##
-* `tenant_dn` - (Required) Distinguished name of parent Tenant object.
-* `name` - (Required) Name for L4-L7 service graph template object.
+* `tenant_dn` - (Required) distinguished name of parent Tenant object.
+* `name` - (Required) name for l4 l7 service graph template object.
 
 
 
 ## Attribute Reference
 
 * `id` - Attribute id set to the Dn of the L4-L7 Service Graph Template.
-* `annotation` - (Optional) Annotation for L4-L7 service graph template object.
-* `name_alias` - (Optional) name_alias for L4-L7 service graph template object.
-* `l4_l7_service_graph_template_type` - (Optional) Component type for L4-L7 service graph template object.
-* `ui_template_type` - (Optional) UI template type for L4-L7 service graph template object.
+* `annotation` - (Optional) annotation for l4 l7 service graph template object.
+* `name_alias` - (Optional) name_alias for l4 l7 service graph template object.
+* `l4_l7_service_graph_template_type` - (Optional) component type for l4 l7 service graph template object.
+* `ui_template_type` - (Optional) UI template type for l4 l7 service graph template object.
