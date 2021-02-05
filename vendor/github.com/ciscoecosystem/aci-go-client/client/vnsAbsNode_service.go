@@ -58,7 +58,7 @@ func (sm *ServiceManager) CreateRelationvnsRsNodeToAbsFuncProfFromFunctionNode(p
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tnVnsAbsFuncProfName": "%s"
+				"dn": "%s","tDn": "%s","annotation":"orchestrator:terraform"
 								
 			}
 		}
@@ -96,7 +96,7 @@ func (sm *ServiceManager) ReadRelationvnsRsNodeToAbsFuncProfFromFunctionNode(par
 	contList := models.ListFromContainer(cont, "vnsRsNodeToAbsFuncProf")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnVnsAbsFuncProfName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -108,7 +108,7 @@ func (sm *ServiceManager) CreateRelationvnsRsNodeToLDevFromFunctionNode(parentDn
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tnVnsALDevIfName": "%s"
+				"dn": "%s","tDn": "%s","annotation":"orchestrator:terraform"
 								
 			}
 		}
@@ -146,7 +146,7 @@ func (sm *ServiceManager) ReadRelationvnsRsNodeToLDevFromFunctionNode(parentDn s
 	contList := models.ListFromContainer(cont, "vnsRsNodeToLDev")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnVnsALDevIfName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -158,7 +158,7 @@ func (sm *ServiceManager) CreateRelationvnsRsNodeToMFuncFromFunctionNode(parentD
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tnVnsMFuncName": "%s"
+				"dn": "%s","tDn": "%s","annotation":"orchestrator:terraform"
 								
 			}
 		}
@@ -196,7 +196,7 @@ func (sm *ServiceManager) ReadRelationvnsRsNodeToMFuncFromFunctionNode(parentDn 
 	contList := models.ListFromContainer(cont, "vnsRsNodeToMFunc")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnVnsMFuncName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -208,7 +208,7 @@ func (sm *ServiceManager) CreateRelationvnsRsDefaultScopeToTermFromFunctionNode(
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tnVnsATermName": "%s"
+				"dn": "%s","tDn": "%s","annotation":"orchestrator:terraform"
 								
 			}
 		}
@@ -246,7 +246,7 @@ func (sm *ServiceManager) ReadRelationvnsRsDefaultScopeToTermFromFunctionNode(pa
 	contList := models.ListFromContainer(cont, "vnsRsDefaultScopeToTerm")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnVnsATermName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -258,7 +258,7 @@ func (sm *ServiceManager) CreateRelationvnsRsNodeToCloudLDevFromFunctionNode(par
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tnCloudALDevName": "%s"
+				"dn": "%s","tDn": "%s","annotation":"orchestrator:terraform"
 								
 			}
 		}
@@ -296,7 +296,7 @@ func (sm *ServiceManager) ReadRelationvnsRsNodeToCloudLDevFromFunctionNode(paren
 	contList := models.ListFromContainer(cont, "vnsRsNodeToCloudLDev")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnCloudALDevName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
