@@ -20,21 +20,21 @@ data "aci_function_node" "example" {
   name  = "example"
 }
 ```
+## Argument Reference ##
+* `l4_l7_service_graph_template_dn` - (Required) Distinguished name of parent L4-L7ServiceGraphTemplate object.
+* `name` - (Required) name of Object function_node.
 
-## Argument Reference
 
-- `l4_l7_service_graph_template_dn` - (Required) Distinguished name of parent L4-L7 Service Graph Template object.
-- `name` - (Required) Name of Object function_node.
 
 ## Attribute Reference
 
-- `id` - Attribute id set to the Dn of the Function Node.
-- `annotation` - (Optional) Annotation for object function_node.
-- `func_template_type` - (Optional) func_template_type for object function_node.
-- `func_type` - (Optional) Function type
-- `is_copy` - (Optional) is_copy for object function_node.
-- `managed` - (Optional) Managed for object function_node.
-- `name_alias` - (Optional) name_alias for object function_node.
-- `routing_mode` - (Optional) Routing_mode for object function_node.
-- `sequence_number` - (Optional) Internal property incremented when aaa user logs in
-- `share_encap` - (Optional) Enables encap sharing on node
+* `id` - Attribute id set to the Dn of the Function Node.
+* `annotation` - (Optional) annotation for object function_node.
+* `func_template_type` - (Optional) func_template_type for object function_node.
+* `func_type` - (Optional) function type
+* `is_copy` - (Optional) is_copy for object function_node.
+* `managed` - (Optional) managed for object function_node.
+* `name_alias` - (Optional) name_alias for object function_node.
+* `routing_mode` - (Optional) routing_mode for object function_node.
+* `sequence_number` - (Optional) internal property incremented when aaa user logs in
+* `share_encap` - (Optional) enables encap sharing on node
