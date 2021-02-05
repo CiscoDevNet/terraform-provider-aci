@@ -26,12 +26,12 @@ resource "aci_tenant" "test_tenant1" {
 }
 
 resource "aci_monitoring_policy" "foomonitoring_policy" {
-  tenant_dn = "${aci_tenant.test_tenant1.id}"
+  tenant_dn = aci_tenant.test_tenant1.id
   name = "monepgpol1"
 }
 
 resource "aci_action_rule_profile" "fooaction_rule_profile" {
-  tenant_dn = "${aci_tenant.test_tenant1.id}"
+  tenant_dn = aci_tenant.test_tenant1.id
   name = "rtctrlAttrP1"
 }
 
@@ -44,7 +44,7 @@ resource "aci_physical_domain" "foophysical_domain" {
 }
 
 resource "aci_taboo_contract" "footaboo_contract" {
-  tenant_dn = "${aci_tenant.test_tenant1.id}"
+  tenant_dn = aci_tenant.test_tenant1.id
   name = "vztaboo1"
 }
 
@@ -53,23 +53,23 @@ resource "aci_leaf_profile" "tf_leaf_prof" {
 }
 
 resource "aci_switch_association" "fooswitch_association" {
-  leaf_profile_dn = "${aci_leaf_profile.tf_leaf_prof.id}"
+  leaf_profile_dn = aci_leaf_profile.tf_leaf_prof.id
   name = "infraLeafs1"
   switch_association_type = "ALL"
 }
 
 resource "aci_span_destination_group" "foospan_destination_group" {
-  tenant_dn = "${aci_tenant.test_tenant1.id}"
+  tenant_dn = aci_tenant.test_tenant1.id
   name = "spanDestGrp1"
 }
 
 resource "aci_span_source_group" "foospan_source_group" {
-  tenant_dn = "${aci_tenant.test_tenant1.id}"
+  tenant_dn = aci_tenant.test_tenant1.id
   name = "spanSrcGrp1"
 }
 
 resource "aci_span_sourcedestination_group_match_label" "foospan_sourcedestination_group_match_label" {
-  span_source_group_dn = "${aci_span_source_group.foospan_source_group.id}"
+  span_source_group_dn = aci_span_source_group.foospan_source_group.id
   name = "spanLbl1"
 }
 
@@ -79,7 +79,7 @@ resource "aci_vlan_pool" "foovlan_pool" {
 }
 
 resource "fcDomP" "fooranges" {
-  vlan_pool_dn = "${aci_vlan_pool.foovlan_pool.id}"
+  vlan_pool_dn = aci_vlan_pool.foovlan_pool.id
   _from        = "vlan-25"
   to           = "vlan-35"
   alloc_mode   = "inherit"
@@ -133,13 +133,13 @@ resource "aci_leaf_interface_profile" "test_leaf_profile" {
 }
 
 resource "aci_access_port_selector" "test_selector" {
-    leaf_interface_profile_dn = "${aci_leaf_interface_profile.test_leaf_profile.id}"
+    leaf_interface_profile_dn = aci_leaf_interface_profile.test_leaf_profile.id
     name = "tf_test"
     access_port_selector_type = "default"
 }
 
 resource "aci_access_sub_port_block" "fooaccess_sub_port_block" {
-  access_port_selector_dn = "${aci_access_port_selector.test_selector.id}"
+  access_port_selector_dn = aci_access_port_selector.test_selector.id
   name = "infraSubportBlk1"
 }
 
@@ -151,12 +151,12 @@ resource "aci_vpc_explicit_protection_group" "foovpc_explicit_protection_group" 
 }
 
 resource "aci_node_block_maintgrp" "foonode_block_maintgrp" {
-  pod_maintenance_group_dn = "${aci_pod_maintenance_group.foopod_maintenance_group.id}"
+  pod_maintenance_group_dn = aci_pod_maintenance_group.foopod_maintenance_group.id
   name = "fabricNodeBlkMG"
 }
 
 resource "aci_node_block_firmware" "foonode_block_firmware" {
- firmware_group_dn = "${aci_firmware_group.foofirmware_group.id}"
+ firmware_group_dn = aci_firmware_group.foofirmware_group.id
  name = "fabricNodeBlkFW" 
 }
 

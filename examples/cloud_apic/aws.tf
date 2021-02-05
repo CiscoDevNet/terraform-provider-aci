@@ -29,13 +29,13 @@ data "aws_subnet" "capic_subnet" {
   }
 
   availability_zone = "us-west-1a"
-  vpc_id            = "${data.aws_vpc.capic_vpc.id}"
+  vpc_id            = data.aws_vpc.capic_vpc.id
 }
 
 resource "aws_instance" "web" {
-  ami                         = "${data.aws_ami.ubuntu.id}"
+  ami                         = data.aws_ami.ubuntu.id
   instance_type               = "t2.micro"
-  subnet_id                   = "${data.aws_subnet.capic_subnet.id}"
+  subnet_id                   = data.aws_subnet.capic_subnet.id
   associate_public_ip_address = true
 
   tags = {

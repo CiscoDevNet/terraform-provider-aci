@@ -11,9 +11,9 @@ resource "aci_tenant" "terraform_ten" {
 
 resource "aci_imported_contract" "example" {
 
-  tenant_dn = "${aci_tenant.terraform_ten.id}"
+  tenant_dn = aci_tenant.terraform_ten.id
   name       = "example"
   annotation = "example"
   name_alias = "example"
-  relation_vz_rs_if = "${aci_tenant.terraform_ten.id}"
+  relation_vz_rs_if = aci_tenant.terraform_ten.id
 }

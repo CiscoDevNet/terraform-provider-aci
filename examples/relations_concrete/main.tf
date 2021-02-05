@@ -11,13 +11,13 @@ resource "aci_tenant" "tenant_for_epg" {
 }
 
 resource "aci_application_profile" "app_profile_for_epg" {
-  tenant_dn   = "${aci_tenant.tenant_for_epg.id}"
+  tenant_dn   = aci_tenant.tenant_for_epg.id
   name        = "ap_for_epg"
   description = "This app profile is created by terraform ACI providers"
 }
 
 resource "aci_application_epg" "inherit_epg" {
-  application_profile_dn = "${aci_application_profile.app_profile_for_epg.id}"
+  application_profile_dn = aci_application_profile.app_profile_for_epg.id
   name                   = "inherit_epg"
   description            = "epg to create relation sec_inherited"
 
@@ -33,7 +33,7 @@ resource "aci_epg_to_static_path" "epg_to_stat_path" {
 }
 
 resource "aci_l3_outside" "fool3_outside" {
-  tenant_dn      = "${aci_tenant.tenant_for_epg.id}"
+  tenant_dn      = aci_tenant.tenant_for_epg.id
   name           = "demo_l3out"
   annotation     = "tag_l3out"
   name_alias     = "alias_out"
@@ -41,7 +41,7 @@ resource "aci_l3_outside" "fool3_outside" {
 }
 
 resource "aci_logical_node_profile" "foological_node_profile" {
-  l3_outside_dn = "${aci_l3_outside.fool3_outside.id}"
+  l3_outside_dn = aci_l3_outside.fool3_outside.id
   description   = "sample logical node profile"
   name          = "demo_node"
   annotation    = "tag_node"
@@ -53,7 +53,7 @@ resource "aci_logical_node_profile" "foological_node_profile" {
 
 resource "aci_logical_node_to_fabric_node" "example" {
 
-  logical_node_profile_dn  = "${aci_logical_node_profile.foological_node_profile.id}"
+  logical_node_profile_dn  = aci_logical_node_profile.foological_node_profile.id
   tdn  = "topology/pod-1/node-101"
   annotation  = "example"
   rtr_id  = "12"
