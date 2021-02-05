@@ -29,12 +29,12 @@ resource "aci_logical_device_context" "example" {
 ## Argument Reference ##
 
 * `tenant_dn` - (Required) Distinguished name of parent Tenant object.
-* `ctrct_name_or_lbl` - (Required) Ctrct name or label of Object logical_device_context.
-* `graph_name_or_lbl` - (Required) Graph name or label of Object logical_device_context.
-* `node_name_or_lbl` - (Required) Node name or label of Object logical_device_context.
-* `annotation` - (Optional) Annotation for object logical_device_context.
-* `context` - (Optional) Context for object logical_device_context.
-* `name_alias` - (Optional) Name alias for object logical_device_context.
+* `ctrct_name_or_lbl` - (Required) ctrct name or label of Object logical_device_context.
+* `graph_name_or_lbl` - (Required) graph name or label of Object logical_device_context.
+* `node_name_or_lbl` - (Required) node name or label of Object logical_device_context.
+* `annotation` - (Optional) annotation for object logical_device_context.
+* `context` - (Optional) context for object logical_device_context.
+* `name_alias` - (Optional) name_alias for object logical_device_context.
 
 
 * `relation_vns_rs_l_dev_ctx_to_l_dev` - (Optional) Relation to class vnsALDevIf. Cardinality - N_TO_ONE. Type - String.

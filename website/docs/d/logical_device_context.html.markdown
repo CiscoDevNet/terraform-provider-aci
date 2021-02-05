@@ -23,16 +23,17 @@ data "aci_logical_device_context" "check" {
 
 ```
 
-## Argument Reference
+## Argument Reference ##
+* `tenant_dn` - (Required) Distinguished name of parent Tenant object.
+* `ctrct_name_or_lbl` - (Required) ctrct name or label of Object logical_device_context.
+* `graph_name_or_lbl` - (Required) graph name or label of Object logical_device_context.
+* `node_name_or_lbl` - (Required) node name or label of Object logical_device_context.
 
-- `tenant_dn` - (Required) Distinguished name of parent Tenant object.
-- `ctrct_name_or_lbl` - (Required) Ctrct name or label of Object logical_device_context.
-- `graph_name_or_lbl` - (Required) Graph name or label of Object logical_device_context.
-- `node_name_or_lbl` - (Required) Node name or label of Object logical_device_context.
+
 
 ## Attribute Reference
 
-- `id` - Attribute id set to the Dn of the Logical Device Context.
-- `annotation` - Annotation for object logical_device_context.
-- `context` - Context for object logical_device_context.
-- `name_alias` - Name alias for object logical_device_context.
+* `id` - attribute id set to the Dn of the Logical Device Context.
+* `annotation` - annotation for object logical_device_context.
+* `context` - context for object logical_device_context.
+* `name_alias` - name_alias for object logical_device_context.
