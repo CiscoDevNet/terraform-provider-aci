@@ -3,13 +3,13 @@ resource "aci_leaf_profile" "checkBLK" {
 }
 
 resource "aci_switch_association" "checkBLK" {
-  leaf_profile_dn  = "${aci_leaf_profile.checkBLK.id}"
+  leaf_profile_dn  = aci_leaf_profile.checkBLK.id
   name  = "example"
   switch_association_type  = "range"
 }
 
 resource "aci_node_block" "check" {
-  switch_association_dn   = "${aci_switch_association.checkBLK.id}"
+  switch_association_dn   = aci_switch_association.checkBLK.id
   name                    = "block"
   annotation              = "aci_node_block"
   from_                   = "101"

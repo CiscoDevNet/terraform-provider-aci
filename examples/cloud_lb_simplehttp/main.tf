@@ -96,7 +96,7 @@ resource "aci_rest" "appliedServiceGraph" {
           children:
           - vnsAbsGraph:
               attributes:
-                name: ${var.name}
+                name: var.name
               children:
               - vnsAbsNode:
                   attributes:
@@ -111,7 +111,7 @@ resource "aci_rest" "appliedServiceGraph" {
                       - cloudListener:
                           attributes:
                             name: http_listener
-                            port: "${var.listenerPort}"
+                            port: var.listenerPort
                             protocol: http
                           children:
                           - cloudListenerRule:
@@ -122,8 +122,8 @@ resource "aci_rest" "appliedServiceGraph" {
                               children:
                               - cloudRuleAction:
                                   attributes:
-                                    epgdn: ${var.epg_dn}
-                                    port: "${var.hostPort}"
+                                    epgdn: var.epg_dn
+                                    port: var.hostPort
                                     protocol: http
                                     type: forward
           - vzBrCP:
@@ -136,7 +136,7 @@ resource "aci_rest" "appliedServiceGraph" {
                  children:
                  - vzRsSubjGraphAtt:
                      attributes:
-                       tnVnsAbsGraphName: ${var.name}
+                       tnVnsAbsGraphName: var.name
   EOF
 }
 

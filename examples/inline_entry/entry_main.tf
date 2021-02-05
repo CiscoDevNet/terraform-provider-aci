@@ -14,7 +14,7 @@ resource "aci_tenant" "tenentcheck" {
 }
 
 resource "aci_contract" "democontract" {
-  tenant_dn   = "${aci_tenant.tenentcheck.id}"
+  tenant_dn   = aci_tenant.tenentcheck.id
   name        = "test_tf_contract"
   description = "ThiscontractiscreatedbyterraformACIprovider"
   scope       = "context"
