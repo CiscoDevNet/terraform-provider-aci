@@ -39,3 +39,4 @@ data "aci_application_epg" "foo_epg" {
 * `pref_gr_memb` - (Optional) Represents parameter used to determine if EPg is part of a group that does not a contract for communication.
 * `prio` - (Optional) qos priority class id
 * `shutdown` - (Optional) shutdown for object application_epg.
+* `relation_fv_rs_sec_inherited` - (Optional) Relation to fvEPg class. Named 'contract Master' in GUI and the old name was 'contract inheritance'.
