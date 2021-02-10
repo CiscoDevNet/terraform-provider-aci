@@ -32,3 +32,4 @@ data "aci_logical_interface_context" "example" {
 * `l3_dest` - (Optional) l3_dest for object logical_interface_context.
 * `name_alias` - (Optional) name_alias for object logical_interface_context.
 * `permit_log` - (Optional) permit_log for object logical_interface_context.
+

@@ -36,12 +36,6 @@ func resourceAciLogicalInterfaceContext() *schema.Resource {
 				ForceNew: true,
 			},
 
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
 			"l3_dest": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -579,6 +573,7 @@ func resourceAciLogicalInterfaceContextRead(d *schema.ResourceData, m interface{
 	vnsRsLIfCtxToCustQosPolData, err := aciClient.ReadRelationvnsRsLIfCtxToCustQosPolFromLogicalInterfaceContext(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation vnsRsLIfCtxToCustQosPol %v", err)
+		d.Set("relation_vns_rs_l_if_ctx_to_cust_qos_pol", "")
 
 	} else {
 		if _, ok := d.GetOk("relation_vns_rs_l_if_ctx_to_cust_qos_pol"); ok {
@@ -592,6 +587,7 @@ func resourceAciLogicalInterfaceContextRead(d *schema.ResourceData, m interface{
 	vnsRsLIfCtxToSvcEPgPolData, err := aciClient.ReadRelationvnsRsLIfCtxToSvcEPgPolFromLogicalInterfaceContext(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation vnsRsLIfCtxToSvcEPgPol %v", err)
+		d.Set("relation_vns_rs_l_if_ctx_to_svc_e_pg_pol", "")
 
 	} else {
 		if _, ok := d.GetOk("relation_vns_rs_l_if_ctx_to_svc_e_pg_pol"); ok {
@@ -605,6 +601,7 @@ func resourceAciLogicalInterfaceContextRead(d *schema.ResourceData, m interface{
 	vnsRsLIfCtxToSvcRedirectPolData, err := aciClient.ReadRelationvnsRsLIfCtxToSvcRedirectPolFromLogicalInterfaceContext(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation vnsRsLIfCtxToSvcRedirectPol %v", err)
+		d.Set("relation_vns_rs_l_if_ctx_to_svc_redirect_pol", "")
 
 	} else {
 		if _, ok := d.GetOk("relation_vns_rs_l_if_ctx_to_svc_redirect_pol"); ok {
@@ -618,6 +615,7 @@ func resourceAciLogicalInterfaceContextRead(d *schema.ResourceData, m interface{
 	vnsRsLIfCtxToLIfData, err := aciClient.ReadRelationvnsRsLIfCtxToLIfFromLogicalInterfaceContext(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation vnsRsLIfCtxToLIf %v", err)
+		d.Set("relation_vns_rs_l_if_ctx_to_l_if", "")
 
 	} else {
 		if _, ok := d.GetOk("relation_vns_rs_l_if_ctx_to_l_if"); ok {
@@ -631,6 +629,7 @@ func resourceAciLogicalInterfaceContextRead(d *schema.ResourceData, m interface{
 	vnsRsLIfCtxToOutDefData, err := aciClient.ReadRelationvnsRsLIfCtxToOutDefFromLogicalInterfaceContext(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation vnsRsLIfCtxToOutDef %v", err)
+		d.Set("relation_vns_rs_l_if_ctx_to_out_def", "")
 
 	} else {
 		if _, ok := d.GetOk("relation_vns_rs_l_if_ctx_to_out_def"); ok {
@@ -644,6 +643,7 @@ func resourceAciLogicalInterfaceContextRead(d *schema.ResourceData, m interface{
 	vnsRsLIfCtxToInstPData, err := aciClient.ReadRelationvnsRsLIfCtxToInstPFromLogicalInterfaceContext(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation vnsRsLIfCtxToInstP %v", err)
+		d.Set("relation_vns_rs_l_if_ctx_to_inst_p", "")
 
 	} else {
 		if _, ok := d.GetOk("relation_vns_rs_l_if_ctx_to_inst_p"); ok {
@@ -657,7 +657,7 @@ func resourceAciLogicalInterfaceContextRead(d *schema.ResourceData, m interface{
 	vnsRsLIfCtxToBDData, err := aciClient.ReadRelationvnsRsLIfCtxToBDFromLogicalInterfaceContext(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation vnsRsLIfCtxToBD %v", err)
-
+		d.Set("relation_vns_rs_l_if_ctx_to_bd", "")
 	} else {
 		if _, ok := d.GetOk("relation_vns_rs_l_if_ctx_to_bd"); ok {
 			tfName := GetMOName(d.Get("relation_vns_rs_l_if_ctx_to_bd").(string))
@@ -670,6 +670,7 @@ func resourceAciLogicalInterfaceContextRead(d *schema.ResourceData, m interface{
 	vnsRsLIfCtxToOutData, err := aciClient.ReadRelationvnsRsLIfCtxToOutFromLogicalInterfaceContext(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation vnsRsLIfCtxToOut %v", err)
+		d.Set("relation_vns_rs_l_if_ctx_to_bd", "")
 
 	} else {
 		if _, ok := d.GetOk("relation_vns_rs_l_if_ctx_to_out"); ok {

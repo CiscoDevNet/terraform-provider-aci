@@ -58,7 +58,7 @@ func (sm *ServiceManager) CreateRelationvnsRsLIfCtxToCustQosPolFromLogicalInterf
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tnQosCustomPolName": "%s"
+				"dn": "%s","tnQosCustomPolName": "%s","annotation":"orchestrator:terraform"
 								
 			}
 		}
@@ -103,7 +103,7 @@ func (sm *ServiceManager) CreateRelationvnsRsLIfCtxToSvcEPgPolFromLogicalInterfa
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tnVnsSvcEPgPolName": "%s"
+				"dn": "%s","tDn": "%s","annotation":"orchestrator:terraform"
 								
 			}
 		}
@@ -153,7 +153,7 @@ func (sm *ServiceManager) CreateRelationvnsRsLIfCtxToSvcRedirectPolFromLogicalIn
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tnVnsSvcRedirectPolName": "%s"
+				"dn": "%s","tDn": "%s","annotation":"orchestrator:terraform"
 								
 			}
 		}
@@ -203,7 +203,7 @@ func (sm *ServiceManager) CreateRelationvnsRsLIfCtxToLIfFromLogicalInterfaceCont
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tnVnsALDevLIfName": "%s"
+				"dn": "%s","tDn": "%s","annotation":"orchestrator:terraform"
 								
 			}
 		}
@@ -348,7 +348,7 @@ func (sm *ServiceManager) CreateRelationvnsRsLIfCtxToBDFromLogicalInterfaceConte
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tnFvBDName": "%s"
+				"dn": "%s","tDn": "%s","annotation":"orchestrator:terraform"
 								
 			}
 		}
@@ -398,7 +398,7 @@ func (sm *ServiceManager) CreateRelationvnsRsLIfCtxToOutFromLogicalInterfaceCont
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tnL3extOutName": "%s"
+				"dn": "%s","tDn": "%s","annotation":"orchestrator:terraform"
 								
 			}
 		}
