@@ -34,19 +34,19 @@ resource "aci_function_node" "example" {
 - `name` - (Required) name of Object function_node.
 - `annotation` - (Optional) Annotation for object function_node.
 - `func_template_type` - (Optional) func_template_type for object function_node.
-  Allowed values: "OTHER","FW_TRANS","FW_ROUTED","CLOUD_VENDOR_LB","CLOUD_VENDOR_FW","CLOUD_NATIVE_LB","CLOUD_NATIVE_FW","ADC_TWO_ARM","ADC_ONE_ARM" Default value: "OTHER"
+  Allowed values: "OTHER","FW_TRANS","FW_ROUTED","CLOUD_VENDOR_LB","CLOUD_VENDOR_FW","CLOUD_NATIVE_LB","CLOUD_NATIVE_FW","ADC_TWO_ARM","ADC_ONE_ARM". Default value: "OTHER"
 - `func_type` - (Optional) Function type
-  Allowed values: "GoThrough","GoTo","L1","L2","None" Default value: "GoTo"
+  Allowed values: "GoThrough","GoTo","L1","L2","None". Default value: "GoTo"
 - `is_copy` - (Optional) is_copy for object function_node.
-  Allowed values: "yes","no" Default value: "no"
+  Allowed values: "yes","no". Default value: "no"
 - `managed` - (Optional) Managed for object function_node.
-  Allowed values: "yes","no" Default value: "yes"
+  Allowed values: "yes","no". Default value: "yes"
 - `name_alias` - (Optional) name_alias for object function_node.
 - `routing_mode` - (Optional) Routing_mode for object function_node.
-  Allowed values: "Redirect","unspecified" Default value: "unspecified"
+  Allowed values: "Redirect","unspecified". Default value: "unspecified"
 - `sequence_number` - (Optional) Internal property incremented when aaa user logs in
 - `share_encap` - (Optional) Enables encap sharing on node
-  Allowed values: "yes","no" Default value: "no"
+  Allowed values: "yes","no". Default value: "no"
 
 - `relation_vns_rs_node_to_abs_func_prof` - (Optional) Relation to class vnsAbsFuncProf. Cardinality - N_TO_ONE. Type - String.
 - `relation_vns_rs_node_to_l_dev` - (Optional) Relation to class vnsALDevIf. Cardinality - N_TO_ONE. Type - String.
