@@ -76,12 +76,20 @@ func resourceAciFunctionNode() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"yes",
+					"no",
+				}, false),
 			},
 
 			"managed": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"yes",
+					"no",
+				}, false),
 			},
 
 			"name_alias": &schema.Schema{
@@ -96,6 +104,7 @@ func resourceAciFunctionNode() *schema.Resource {
 				Computed: true,
 				ValidateFunc: validation.StringInSlice([]string{
 					"Redirect",
+					"unspecified",
 				}, false),
 			},
 
@@ -109,6 +118,10 @@ func resourceAciFunctionNode() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"yes",
+					"no",
+				}, false),
 			},
 
 			"relation_vns_rs_node_to_abs_func_prof": &schema.Schema{

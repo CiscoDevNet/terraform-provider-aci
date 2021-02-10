@@ -61,7 +61,7 @@ func testAccCheckAciLogicalInterfaceContextConfig_basic(description string) stri
 	return fmt.Sprintf(`
 
 	resource "aci_logical_interface_context" "foological_interface_context" {
-		logical_device_context_dn  = "uni/tn-check_context_tenant/ldevCtx-c-x-g-y-n-z"
+		logical_device_context_dn  = aci_logical_device_context.example.id
 		description = "%s"
 		annotation  = "anno"
 		conn_name_or_lbl  = "lbl"
