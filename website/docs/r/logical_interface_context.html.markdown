@@ -28,7 +28,7 @@ resource "aci_logical_interface_context" "example" {
 
 - `logical_device_context_dn` - (Required) Distinguished name of parent LogicalDeviceContext object.
 - `conn_name_or_lbl` - (Required) connNameOrLbl of Object logical_interface_context.
-- `annotation` - (Optional) annotation for object logical_interface_context.
+- `annotation` - (Optional) Annotation for object logical_interface_context.
 - `l3_dest` - (Optional) l3_dest for object logical_interface_context.
   Allowed values: "yes", "no" Default is "yes"
 - `name_alias` - (Optional) name_alias for object logical_interface_context.

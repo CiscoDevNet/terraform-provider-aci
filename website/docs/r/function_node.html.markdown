@@ -41,7 +41,7 @@ resource "aci_function_node" "example" {
   Allowed values: "yes","no" Default value: "no"
 - `managed` - (Optional) Managed for object function_node.
   Allowed values: "yes","no" Default value: "yes"
-- `name_alias` - (Optional) Name_alias for object function_node.
+- `name_alias` - (Optional) name_alias for object function_node.
 - `routing_mode` - (Optional) Routing_mode for object function_node.
   Allowed values: "Redirect","unspecified" Default value: "unspecified"
 - `sequence_number` - (Optional) Internal property incremented when aaa user logs in
