@@ -26,11 +26,6 @@ func TestAccAciCloudVpnGateway_Basic(t *testing.T) {
 					testAccCheckAciCloudVpnGatewayAttributes(description, &cloud_vpn_gateway),
 				),
 			},
-			{
-				ResourceName:      "aci_cloud_vpn_gateway",
-				ImportState:       true,
-				ImportStateVerify: true,
-			},
 		},
 	})
 }
@@ -65,16 +60,16 @@ func TestAccAciCloudVpnGateway_update(t *testing.T) {
 func testAccCheckAciCloudVpnGatewayConfig_basic(description string) string {
 	return fmt.Sprintf(`
 
-	resource "aci_cloud_vpn_gateway" "foocloud_vpn_gateway" {
-		  cloud_context_profile_dn  = "${aci_cloud_context_profile.example.id}"
-		description = "%s"
-		
-		name  = "example"
-		  annotation  = "example"
-		  name_alias  = "example"
-		  num_instances  = "example"
-		  cloud_vpn_gateway_type  = "host-router"
-		}
+	resource "aci_cloud_vpn_gateway" "example" {
+		cloud_context_profile_dn  = "${aci_cloud_context_profile.example.id}"
+	  description = "%s"
+	
+	  name  = "example_name"
+		annotation  = "example_annotation"
+		name_alias  = "example_alias"
+		num_instances  = "1"
+		cloud_router_profile_type  = "vpn-gw"
+	  }
 	`, description)
 }
 
@@ -133,23 +128,23 @@ func testAccCheckAciCloudVpnGatewayAttributes(description string, cloud_vpn_gate
 			return fmt.Errorf("Bad cloud_vpn_gateway Description %s", cloud_vpn_gateway.Description)
 		}
 
-		if "example" != cloud_vpn_gateway.Name {
+		if "example_name" != cloud_vpn_gateway.Name {
 			return fmt.Errorf("Bad cloud_vpn_gateway name %s", cloud_vpn_gateway.Name)
 		}
 
-		if "example" != cloud_vpn_gateway.Annotation {
+		if "example_annotation" != cloud_vpn_gateway.Annotation {
 			return fmt.Errorf("Bad cloud_vpn_gateway annotation %s", cloud_vpn_gateway.Annotation)
 		}
 
-		if "example" != cloud_vpn_gateway.NameAlias {
+		if "example_alias" != cloud_vpn_gateway.NameAlias {
 			return fmt.Errorf("Bad cloud_vpn_gateway name_alias %s", cloud_vpn_gateway.NameAlias)
 		}
 
-		if "example" != cloud_vpn_gateway.NumInstances {
+		if "1" != cloud_vpn_gateway.NumInstances {
 			return fmt.Errorf("Bad cloud_vpn_gateway num_instances %s", cloud_vpn_gateway.NumInstances)
 		}
 
-		if "host-router" != cloud_vpn_gateway.CloudVpnGateway_type {
+		if "vpn-gw" != cloud_vpn_gateway.CloudVpnGateway_type {
 			return fmt.Errorf("Bad cloud_vpn_gateway cloud_vpn_gateway_type %s", cloud_vpn_gateway.CloudVpnGateway_type)
 		}
 

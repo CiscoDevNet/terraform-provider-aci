@@ -26,21 +26,21 @@ Note: This resource is supported in Cloud APIC only.
 
   cloud_context_profile_dn  = "${aci_cloud_context_profile.example.id}"
 
-  name  = "example"
+  name  = "example_name"
   annotation  = "example_annotation"
   name_alias  = "Alias_name"
   num_instances  = "1"
-  cloud_router_profile_type  = "host-router"
+  cloud_router_profile_type  = "vpn-gw"
 } 
 
 ```
 ## Argument Reference ##
 * `cloud_context_profile_dn` - (Required) Distinguished name of parent CloudContextProfile object.
-* `name` - (Required) name of Object cloud_router_profile.
-* `annotation` - (Optional) annotation for object cloud_router_profile.
+* `name` - (Required) Name of Object cloud_router_profile.
+* `annotation` - (Optional) Annotation for object cloud_router_profile.
 * `name_alias` - (Optional) name_alias for object cloud_router_profile.
 * `num_instances` - (Optional) num_instances for object cloud_router_profile.
-* `cloud_router_profile_type` - (Optional) component type
+* `cloud_router_profile_type` - (Optional) Component type Allowed values are " "direct-connect","host-router","internet-gw" and "vpn-gw".
 
 * `relation_cloud_rs_to_vpn_gw_pol` - (Optional) Relation to class cloudVpnGwPol. Cardinality - N_TO_ONE. Type - String.
                 

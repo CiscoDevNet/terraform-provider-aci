@@ -31,14 +31,14 @@ Note: This resource is supported in Cloud APIC only.
 ```
 ## Argument Reference ##
 * `cloud_context_profile_dn` - (Required) Distinguished name of parent CloudContextProfile object.
-* `name` - (Required) name of Object cloud_router_profile.
+* `name` - (Required) Name of Object cloud_router_profile.
 
 
 
 ## Attribute Reference
 
 * `id` - Attribute id set to the Dn of the Cloud Router Profile.
-* `annotation` - (Optional) annotation for object cloud_router_profile.
+* `annotation` - (Optional) Annotation for object cloud_router_profile.
 * `name_alias` - (Optional) name_alias for object cloud_router_profile.
 * `num_instances` - (Optional) num_instances for object cloud_router_profile.
-* `cloud_router_profile_type` - (Optional) component type
+* `cloud_router_profile_type` - (Optional) Component type
