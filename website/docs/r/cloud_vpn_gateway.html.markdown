@@ -1,5 +1,5 @@
 ---
-# layout: "aci"
+ layout: "aci"
 # page_title: "ACI: aci_cloud_router_profile"
 # sidebar_current: "docs-aci-resource-cloud_router_profile"
 # description: |-
