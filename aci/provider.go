@@ -157,6 +157,7 @@ func Provider() terraform.ResourceProvider {
 			"aci_l4_l7_service_graph_template":             resourceAciL4L7ServiceGraphTemplate(),
 			"aci_logical_device_context":                   resourceAciLogicalDeviceContext(),
 			"aci_function_node":                            resourceAciFunctionNode(),
+			"aci_logical_interface_context":                resourceAciLogicalInterfaceContext(),
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
@@ -262,6 +263,7 @@ func Provider() terraform.ResourceProvider {
 			"aci_l4_l7_service_graph_template":             dataSourceAciL4L7ServiceGraphTemplate(),
 			"aci_logical_device_context":                   dataSourceAciLogicalDeviceContext(),
 			"aci_function_node":                            dataSourceAciFunctionNode(),
+			"aci_logical_interface_context":                dataSourceAciLogicalInterfaceContext(),
 		},
 
 		ConfigureFunc: configureClient,
