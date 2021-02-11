@@ -27,10 +27,10 @@ Note: This resource is supported in Cloud APIC only.
   cloud_context_profile_dn  = "${aci_cloud_context_profile.example.id}"
 
   name  = "example"
-  annotation  = "example"
-  name_alias  = "example"
-  num_instances  = "example"
-  cloud_router_profile_type  = "example"
+  annotation  = "example_annotation"
+  name_alias  = "Alias_name"
+  num_instances  = "1"
+  cloud_router_profile_type  = "host-router"
 } 
 
 ```
