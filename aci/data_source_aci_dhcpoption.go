@@ -13,7 +13,7 @@ func dataSourceAciDHCPOption() *schema.Resource {
 
 		SchemaVersion: 1,
 
-		Schema: AppendBaseAttrSchema(map[string]*schema.Schema{
+		Schema: map[string]*schema.Schema{
 			"dhcp_option_policy_dn": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
@@ -27,7 +27,7 @@ func dataSourceAciDHCPOption() *schema.Resource {
 			"annotation": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
-				Computed: true,
+				Default:  "orchestrator:terraform",
 			},
 
 			"data": &schema.Schema{
@@ -47,7 +47,7 @@ func dataSourceAciDHCPOption() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
-		}),
+		},
 	}
 }
 
