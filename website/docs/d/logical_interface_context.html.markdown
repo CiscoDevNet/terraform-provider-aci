@@ -23,8 +23,8 @@ data "aci_logical_interface_context" "example" {
 
 ## Argument Reference
 
-- `logical_device_context_dn` - (Required) Distinguished name of parent LogicalDeviceContext object.
-- `conn_name_or_lbl` - (Required) connNameOrLbl of Object logical_interface_context.
+- `logical_device_context_dn` - (Required) Distinguished name of parent Logical Device Context object.
+- `conn_name_or_lbl` - (Required) The connector name or label for the logical interface context.
 
 ## Attribute Reference
 
