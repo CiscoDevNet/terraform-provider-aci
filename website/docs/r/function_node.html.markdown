@@ -14,17 +14,17 @@ Manages ACI Function Node
 
 ```hcl
 resource "aci_function_node" "example" {
-  l4_l7_service_graph_template_dn  = "${aci_l4-l7_service_graph_template.example.id}"
+  l4_l7_service_graph_template_dn  = "${aci_l4_l7_service_graph_template.example.id}"
   name  = "example"
   annotation  = "example"
-  func_template_type  = "example"
+  func_template_type  = "GoTo"
   func_type  = "example"
-  is_copy  = "example"
-  managed  = "example"
+  is_copy  = "yes"
+  managed  = "yes"
   name_alias  = "example"
-  routing_mode  = "example"
-  sequence_number  = "example"
-  share_encap  = "example"
+  routing_mode  = "Redirect"
+  sequence_number  = "1"
+  share_encap  = "yes"
 }
 ```
 
@@ -34,19 +34,19 @@ resource "aci_function_node" "example" {
 - `name` - (Required) name of Object function_node.
 - `annotation` - (Optional) Annotation for object function_node.
 - `func_template_type` - (Optional) func_template_type for object function_node.
-  Allowed values: "OTHER","FW_TRANS","FW_ROUTED","CLOUD_VENDOR_LB","CLOUD_VENDOR_FW","CLOUD_NATIVE_LB","CLOUD_NATIVE_FW","ADC_TWO_ARM","ADC_ONE_ARM". Default value: "OTHER"
-- `func_type` - (Optional) Function type
-  Allowed values: "GoThrough","GoTo","L1","L2","None". Default value: "GoTo"
-- `is_copy` - (Optional) is_copy for object function_node.
-  Allowed values: "yes","no". Default value: "no"
-- `managed` - (Optional) Managed for object function_node.
-  Allowed values: "yes","no". Default value: "yes"
+  Allowed values: "OTHER", "FW_TRANS", "FW_ROUTED", "CLOUD_VENDOR_LB", "CLOUD_VENDOR_FW", "CLOUD_NATIVE_LB", "CLOUD_NATIVE_FW", "ADC_TWO_ARM", "ADC_ONE_ARM". Default value: "OTHER".
+- `func_type` - (Optional) A function type. A GoThrough node is a transparent device, where a packet goes through without being addressed to the device, and the endpoints are not aware of that device. A GoTo device has a specific destination.
+  Allowed values: "GoThrough", "GoTo", "L1", "L2", "None". Default value: "GoTo".
+- `is_copy` - (Optional) if the device is a copy device.
+  Allowed values: "yes", "no". Default value: "no".
+- `managed` - (Optional) Specified if the function is using a managed device.
+  Allowed values: "yes", "no". Default value: "yes".
 - `name_alias` - (Optional) name_alias for object function_node.
 - `routing_mode` - (Optional) Routing_mode for object function_node.
-  Allowed values: "Redirect","unspecified". Default value: "unspecified"
-- `sequence_number` - (Optional) Internal property incremented when aaa user logs in
-- `share_encap` - (Optional) Enables encap sharing on node
-  Allowed values: "yes","no". Default value: "no"
+  Allowed values: "Redirect", "unspecified". Default value: "unspecified".
+- `sequence_number` - (Optional) Internal property incremented when aaa user logs in.
+- `share_encap` - (Optional) Enables encap sharing on node.
+  Allowed values: "yes", "no". Default value: "no".
 
 - `relation_vns_rs_node_to_abs_func_prof` - (Optional) Relation to class vnsAbsFuncProf. Cardinality - N_TO_ONE. Type - String.
 - `relation_vns_rs_node_to_l_dev` - (Optional) Relation to class vnsALDevIf. Cardinality - N_TO_ONE. Type - String.
