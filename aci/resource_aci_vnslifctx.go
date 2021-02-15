@@ -394,7 +394,7 @@ func resourceAciLogicalInterfaceContextUpdate(d *schema.ResourceData, m interfac
 	}
 
 	if d.HasChange("relation_vns_rs_l_if_ctx_to_svc_e_pg_pol") {
-		_, newRelParam := d.GetChange("relation_vns_rs_l_if_ctx_to_cust_qos_pol")
+		_, newRelParam := d.GetChange("relation_vns_rs_l_if_ctx_to_svc_e_pg_pol")
 		checkDns = append(checkDns, newRelParam.(string))
 	}
 
@@ -437,7 +437,6 @@ func resourceAciLogicalInterfaceContextUpdate(d *schema.ResourceData, m interfac
 
 	if d.HasChange("relation_vns_rs_l_if_ctx_to_cust_qos_pol") {
 		_, newRelParam := d.GetChange("relation_vns_rs_l_if_ctx_to_cust_qos_pol")
-
 		err = aciClient.CreateRelationvnsRsLIfCtxToCustQosPolFromLogicalInterfaceContext(vnsLIfCtx.DistinguishedName, newRelParam.(string))
 		if err != nil {
 			return err
@@ -670,7 +669,7 @@ func resourceAciLogicalInterfaceContextRead(d *schema.ResourceData, m interface{
 	vnsRsLIfCtxToOutData, err := aciClient.ReadRelationvnsRsLIfCtxToOutFromLogicalInterfaceContext(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation vnsRsLIfCtxToOut %v", err)
-		d.Set("relation_vns_rs_l_if_ctx_to_bd", "")
+		d.Set("relation_vns_rs_l_if_ctx_to_out", "")
 
 	} else {
 		if _, ok := d.GetOk("relation_vns_rs_l_if_ctx_to_out"); ok {
