@@ -1,23 +1,13 @@
 ---
  layout: "aci"
-# page_title: "ACI: aci_cloud_router_profile"
-# sidebar_current: "docs-aci-resource-cloud_router_profile"
-# description: |-
-#   Manages ACI Cloud Router Profile
-
 page_title: "ACI: aci_cloud_vpn_gateway"
 sidebar_current: "docs-aci-resource-cloud_vpn_gateway"
 description: |-
   Manages ACI Cloud Vpn Gateway
----
-
-<!-- # aci_cloud_router_profile #
-Manages ACI Cloud Router Profile
-Note: This resource is supported in Cloud APIC only.
-## Example Usage ## -->
+--- 
 
 # aci_cloud_vpn_gateway #
-Manages ACI Cloud Vpn Gateway
+Manages ACI Cloud Vpn Gateway.
 Note: This resource is supported in Cloud APIC only.
 ## Example Usage ## 
 
@@ -40,7 +30,7 @@ Note: This resource is supported in Cloud APIC only.
 * `annotation` - (Optional) Annotation for object cloud_router_profile.
 * `name_alias` - (Optional) name_alias for object cloud_router_profile.
 * `num_instances` - (Optional) num_instances for object cloud_router_profile.
-* `cloud_router_profile_type` - (Optional) Component type Allowed values are " "direct-connect","host-router","internet-gw" and "vpn-gw".
+* `cloud_router_profile_type` - (Optional) Component type Allowed values are "host-router" and "vpn-gw". Default value is "vpn-gw" 
 
 * `relation_cloud_rs_to_vpn_gw_pol` - (Optional) Relation to class cloudVpnGwPol. Cardinality - N_TO_ONE. Type - String.
                 

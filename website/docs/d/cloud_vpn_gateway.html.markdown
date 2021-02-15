@@ -1,22 +1,13 @@
 ---
 layout: "aci"
-#page_title: "ACI: aci_cloud_router_profile"
 page_title: "ACI: aci_cloud_vpn_gateway"
-#sidebar_current: "docs-aci-data-source-cloud_router_profile"
 sidebar_current: "docs-aci-data-source-cloud_vpn_gateway"
-#description: |-
-#  Data source for ACI Cloud Router Profile
 description: |-
   Data source for ACI Cloud Vpn Gateway
 ---
 
-<!-- # aci_cloud_router_profile #
-Data source for ACI Cloud Router Profile
-Note: This resource is supported in Cloud APIC only.
-## Example Usage ## -->
-
 # aci_cloud_vpn_gateway #
-Data source for ACI Cloud Vpn Gateway
+Data source for ACI Cloud Vpn Gateway.
 Note: This resource is supported in Cloud APIC only.
 ## Example Usage ##
 
