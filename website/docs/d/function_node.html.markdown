@@ -15,7 +15,7 @@ Data source for ACI Function Node
 ```hcl
 data "aci_function_node" "example" {
 
-  l4_l7_service_graph_template_dn  = "${aci_l4-l7_service_graph_template.example.id}"
+  l4_l7_service_graph_template_dn  = "${aci_l4_l7_service_graph_template.example.id}"
 
   name  = "example"
 }
