@@ -59,9 +59,7 @@ func resourceAciCloudVpnGateway() *schema.Resource {
 				Optional: true,
 				Computed: true,
 				ValidateFunc: validation.StringInSlice([]string{
-					"direct-connect",
 					"host-router",
-					"internet-gw",
 					"vpn-gw",
 				}, false),
 			},
