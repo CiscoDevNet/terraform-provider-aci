@@ -23,13 +23,12 @@ data "aci_logical_device_context" "check" {
 
 ```
 
-## Argument Reference ##
-* `tenant_dn` - (Required) Distinguished name of parent Tenant object.
-* `ctrct_name_or_lbl` - (Required) ctrct name or label of Object logical_device_context.
-* `graph_name_or_lbl` - (Required) graph name or label of Object logical_device_context.
-* `node_name_or_lbl` - (Required) node name or label of Object logical_device_context.
+## Argument Reference
 
-
+- `tenant_dn` - (Required) Distinguished name of parent Tenant object.
+- `ctrct_name_or_lbl` - (Required) Ctrct name or label of Object logical_device_context.
+- `graph_name_or_lbl` - (Required) Graph name or label of Object logical_device_context.
+- `node_name_or_lbl` - (Required) Node name or label of Object logical_device_context.
 
 ## Attribute Reference
 
