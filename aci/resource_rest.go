@@ -96,8 +96,13 @@ func resourceAciRestRead(d *schema.ResourceData, m interface{}) error {
 }
 
 func resourceAciRestDelete(d *schema.ResourceData, m interface{}) error {
-	_, err := PostAndSetStatus(d, m, Deleted)
+	cont, err := PostAndSetStatus(d, m, Deleted)
 	if err != nil {
+		errCode := models.StripQuotes(models.StripSquareBrackets(cont.Search("imdata", "error", "attributes", "code").String()))
+		// Ignore errors of type "Cannot delete object of class"
+		if errCode == "107" {
+			return nil
+		}
 		return err
 	}
 	d.SetId("")
@@ -180,11 +185,11 @@ func PostAndSetStatus(d *schema.ResourceData, m interface{}, status string) (*co
 
 	respCont, _, err := aciClient.Do(req)
 	if err != nil {
-		return nil, err
+		return respCont, err
 	}
 	err = client.CheckForErrors(respCont, method, false)
 	if err != nil {
-		return nil, err
+		return respCont, err
 	}
 	return cont, nil
 }
