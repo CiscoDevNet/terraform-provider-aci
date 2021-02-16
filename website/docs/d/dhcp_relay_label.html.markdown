@@ -29,6 +29,6 @@ data "aci_dhcp_relay_label" "example" {
 
 - `id` - Attribute id set to the Dn of the DHCP Relay Label.
 - `annotation` - (Optional) Annotation for object dhcp_relay_label.
-- `name_alias` - (Optional) name_alias for object dhcp_relay_label.
+- `name_alias` - (Optional) Name alias for object dhcp_relay_label.
 - `owner` - (Optional) Owner of the target relay servers.
 - `tag` - (Optional) Label color.
