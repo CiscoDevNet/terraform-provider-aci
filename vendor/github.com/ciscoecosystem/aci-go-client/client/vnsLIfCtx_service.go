@@ -141,7 +141,7 @@ func (sm *ServiceManager) ReadRelationvnsRsLIfCtxToSvcEPgPolFromLogicalInterface
 	contList := models.ListFromContainer(cont, "vnsRsLIfCtxToSvcEPgPol")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnVnsSvcEPgPolName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -191,7 +191,7 @@ func (sm *ServiceManager) ReadRelationvnsRsLIfCtxToSvcRedirectPolFromLogicalInte
 	contList := models.ListFromContainer(cont, "vnsRsLIfCtxToSvcRedirectPol")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnVnsSvcRedirectPolName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -241,7 +241,7 @@ func (sm *ServiceManager) ReadRelationvnsRsLIfCtxToLIfFromLogicalInterfaceContex
 	contList := models.ListFromContainer(cont, "vnsRsLIfCtxToLIf")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnVnsALDevLIfName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -386,7 +386,7 @@ func (sm *ServiceManager) ReadRelationvnsRsLIfCtxToBDFromLogicalInterfaceContext
 	contList := models.ListFromContainer(cont, "vnsRsLIfCtxToBD")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnFvBDName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -436,7 +436,7 @@ func (sm *ServiceManager) ReadRelationvnsRsLIfCtxToOutFromLogicalInterfaceContex
 	contList := models.ListFromContainer(cont, "vnsRsLIfCtxToOut")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnL3extOutName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
