@@ -510,7 +510,10 @@ func resourceAciLogicalInterfaceContextUpdate(d *schema.ResourceData, m interfac
 	if d.HasChange("relation_vns_rs_l_if_ctx_to_inst_p") {
 		_, newRelParam := d.GetChange("relation_vns_rs_l_if_ctx_to_inst_p")
 		newRelParamName := GetMOName(newRelParam.(string))
+		err = aciClient.DeleteRelationvnsRsLIfCtxToInstPFromLogicalInterfaceContext(vnsLIfCtx.DistinguishedName)
 		if err != nil {
+			return err
+		}
 		err = aciClient.CreateRelationvnsRsLIfCtxToInstPFromLogicalInterfaceContext(vnsLIfCtx.DistinguishedName, newRelParamName)
 		if err != nil {
 			return err
