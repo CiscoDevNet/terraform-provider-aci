@@ -3,6 +3,7 @@ package aci
 import (
 	"errors"
 	"fmt"
+	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/container"
@@ -92,6 +93,29 @@ func resourceAciRestUpdate(d *schema.ResourceData, m interface{}) error {
 }
 
 func resourceAciRestRead(d *schema.ResourceData, m interface{}) error {
+	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
+
+	if content, ok := d.GetOk("content"); ok {
+		aciClient := m.(*client.Client)
+		path := d.Get("path").(string)
+		className := d.Get("class_name").(string)
+		cont, _ := aciClient.GetViaURL(path)
+
+		if cont.Search("imdata", className) == nil {
+			return nil
+		}
+
+		contentStrMap := toStrMap(content.(map[string]interface{}))
+		newContent := make(map[string]interface{})
+
+		for key := range contentStrMap {
+			newContent[key] = models.StripQuotes(models.StripSquareBrackets(cont.Search("imdata", className, "attributes", key).String()))
+		}
+		d.Set("content", newContent)
+	}
+
+	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
+
 	return nil
 }
 
