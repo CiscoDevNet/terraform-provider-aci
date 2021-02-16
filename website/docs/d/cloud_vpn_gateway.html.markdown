@@ -7,7 +7,7 @@ description: |-
 ---
 
 # aci_cloud_vpn_gateway #
-Data source for ACI Cloud Vpn Gateway.
+Data source for ACI Cloud Vpn Gateway.<br>
 Note: This resource is supported in Cloud APIC only.
 ## Example Usage ##
 
