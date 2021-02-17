@@ -3,7 +3,6 @@ package aci
 import (
 	"errors"
 	"fmt"
-	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/container"
@@ -19,11 +18,10 @@ const ErrDistinguishedNameNotFound = "The Dn is not present in the content"
 
 func resourceAciRest() *schema.Resource {
 	return &schema.Resource{
-		Create:        resourceAciRestCreate,
-		Update:        resourceAciRestUpdate,
-		Read:          resourceAciRestRead,
-		Delete:        resourceAciRestDelete,
-		CustomizeDiff: resourceAciRestCustomizeDiff,
+		Create: resourceAciRestCreate,
+		Update: resourceAciRestUpdate,
+		Read:   resourceAciRestRead,
+		Delete: resourceAciRestDelete,
 
 		SchemaVersion: 1,
 
@@ -55,48 +53,6 @@ func resourceAciRest() *schema.Resource {
 			},
 		},
 	}
-}
-func resourceAciRestCustomizeDiff(d *schema.ResourceDiff, m interface{}) error {
-
-	if d.HasChange("path") || d.HasChange("class_name") {
-		log.Printf("[DEBUG] path or class_name changed, resource %s will be recreated, no further check required",
-			d.Id())
-		return nil
-	}
-
-	if d.HasChange("content") {
-		log.Printf("[DEBUG] content of resource %s has changed, checking if the dn is still valid \n", d.Id())
-		var oldContent, newContent map[string]interface{}
-
-		oldUntyped, newUntyped := d.GetChange("content")
-
-		switch v := oldUntyped.(type) {
-		case map[string]interface{}:
-			oldContent = v
-		default:
-			oldContent = nil
-		}
-
-		switch v := newUntyped.(type) {
-		case map[string]interface{}:
-			newContent = v
-		default:
-			oldContent = nil
-		}
-		//New content or old content is empty, skipping diff compute
-		if newContent == nil || oldContent == nil {
-			return nil
-		}
-
-		if oldContent["dn"] != newContent["dn"] {
-			d.SetNewComputed("dn")
-		}
-
-	} else if d.HasChange("payload") {
-		//TODO : handle payload change
-	}
-
-	return nil
 }
 
 func resourceAciRestCreate(d *schema.ResourceData, m interface{}) error {
@@ -139,7 +95,6 @@ func resourceAciRestUpdate(d *schema.ResourceData, m interface{}) error {
 }
 
 func resourceAciRestRead(d *schema.ResourceData, m interface{}) error {
-
 	return nil
 }
 
@@ -187,9 +142,31 @@ func PostAndSetStatus(d *schema.ResourceData, m interface{}, status string) (*co
 		}
 
 	} else if payload, ok := d.GetOk("payload"); ok {
-		cont, err = payloadToContainer(payload)
+		payloadStr := payload.(string)
+		if len(payloadStr) == 0 {
+			return nil, fmt.Errorf("Payload cannot be empty string")
+		}
+
+		yamlJsonPayload, err := yaml.YAMLToJSON([]byte(payloadStr))
+
 		if err != nil {
-			return nil, err
+			// It may be possible that the payload is in JSON
+			jsonPayload, err := container.ParseJSON([]byte(payloadStr))
+			if err != nil {
+				return nil, fmt.Errorf("Invalid format for yaml/JSON payload")
+			}
+			cont = jsonPayload
+		} else {
+			// we have valid yaml payload and we were able to convert it to json
+			cont, err = container.ParseJSON(yamlJsonPayload)
+			if err != nil {
+				return nil, fmt.Errorf("Failed to convert YAML to JSON.")
+			}
+		}
+
+		if err != nil {
+
+			return nil, fmt.Errorf("Unable to parse the payload to JSON. Please check your payload")
 		}
 
 		if status == "deleted" {
@@ -211,37 +188,6 @@ func PostAndSetStatus(d *schema.ResourceData, m interface{}, status string) (*co
 	err = client.CheckForErrors(respCont, method, false)
 	if err != nil {
 		return nil, err
-	}
-	return cont, nil
-}
-
-func payloadToContainer(payload interface{}) (*container.Container, error) {
-	var cont *container.Container
-	payloadStr := payload.(string)
-	if len(payloadStr) == 0 {
-		return nil, fmt.Errorf("Payload cannot be empty string")
-	}
-
-	yamlJsonPayload, err := yaml.YAMLToJSON([]byte(payloadStr))
-
-	if err != nil {
-		// It may be possible that the payload is in JSON
-		jsonPayload, err := container.ParseJSON([]byte(payloadStr))
-		if err != nil {
-			return nil, fmt.Errorf("Invalid format for yaml/JSON payload")
-		}
-		cont = jsonPayload
-	} else {
-		// we have valid yaml payload and we were able to convert it to json
-		cont, err = container.ParseJSON(yamlJsonPayload)
-		if err != nil {
-			return nil, fmt.Errorf("Failed to convert YAML to JSON.")
-		}
-	}
-
-	if err != nil {
-
-		return nil, fmt.Errorf("Unable to parse the payload to JSON. Please check your payload")
 	}
 	return cont, nil
 }
