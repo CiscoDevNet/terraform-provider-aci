@@ -26,7 +26,7 @@ resource "aci_bd_dhcp_label" "foo_bd_dhcp_label" {
 
 ## Argument Reference
 
-- `bridge_domain_dn` - (Required) Distinguished name of parent BridgeDomain object.
+- `bridge_domain_dn` - (Required) Distinguished name of parent Bridge Domain object.
 - `name` - (Required) The Bridge Domain DHCP label name. This name can be up to 64 alphanumeric characters.
 - `annotation` - (Optional) Annotation for object bd_dhcp_label.
 - `name_alias` - (Optional) Name alias for object bd_dhcp_label.
