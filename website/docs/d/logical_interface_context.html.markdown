@@ -16,8 +16,7 @@ Data source for ACI Logical Interface Context
 data "aci_logical_interface_context" "example" {
 
   logical_device_context_dn  = "${aci_logical_device_context.example.id}"
-
-  connNameOrLbl  = "example"
+  conn_name_or_lbl = "example"
 }
 ```
 
