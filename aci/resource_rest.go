@@ -93,53 +93,7 @@ func resourceAciRestCustomizeDiff(d *schema.ResourceDiff, m interface{}) error {
 		}
 
 	} else if d.HasChange("payload") {
-		log.Printf("[DEBUG] payload of resource %s has changed, checking if the dn is still valid \n", d.Id())
-		var oldContent, newContent, className string
-
-		var err error
-		oldUntyped, newUntyped := d.GetChange("payload")
-
-		switch v := oldUntyped.(type) {
-		case string:
-			oldContent = v
-		default:
-			oldContent = ""
-		}
-
-		switch v := newUntyped.(type) {
-		case string:
-			newContent = v
-		default:
-			oldContent = ""
-		}
-		oldPayload, err := payloadToContainer(oldContent)
-		if err != nil {
-			return err
-		}
-		newPayload, err := payloadToContainer(newContent)
-		if err != nil {
-			return err
-		}
-		classNameUntyped := d.Get("class_name")
-
-		switch v := classNameUntyped.(type) {
-		case string:
-			className = v
-		default:
-			className = ""
-		}
-
-		//classNamme is empty, skipping diff compute
-		if len(className) == 0 {
-			return nil
-		}
-
-		oldDn := models.StripQuotes(models.StripSquareBrackets(oldPayload.Search(className, "attributes", "dn").String()))
-		newDn := models.StripQuotes(models.StripSquareBrackets(newPayload.Search(className, "attributes", "dn").String()))
-
-		if oldDn != newDn {
-			d.SetNewComputed("dn")
-		}
+		//TODO : handle payload change
 	}
 
 	return nil
