@@ -10,7 +10,7 @@ description: |-
 Manages ACI Cloud Vpn Gateway.
 Note: This resource is supported in Cloud APIC only.
 
-## Example Usage
+## Example Usage 
 
 ```hcl
  resource "aci_cloud_vpn_gateway" "example" {
