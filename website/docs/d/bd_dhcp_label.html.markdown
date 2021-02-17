@@ -22,7 +22,7 @@ data "aci_bd_dhcp_label" "example" {
 
 ## Argument Reference
 
-- `bridge_domain_dn` - (Required) Distinguished name of parent BridgeDomain object.
+- `bridge_domain_dn` - (Required) Distinguished name of parent Bridge Domain object.
 - `name` - (Required) Name of Object bd_dhcp_label.
 
 ## Attribute Reference
