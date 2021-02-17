@@ -9,12 +9,12 @@ import (
 
 const DhcplblClassName = "dhcpLbl"
 
-type DHCPRelayLabel struct {
+type BDDHCPLabel struct {
 	BaseAttributes
-	DHCPRelayLabelAttributes
+	BDDHCPLabelAttributes
 }
 
-type DHCPRelayLabelAttributes struct {
+type BDDHCPLabelAttributes struct {
 	Name string `json:",omitempty"`
 
 	Annotation string `json:",omitempty"`
@@ -26,9 +26,9 @@ type DHCPRelayLabelAttributes struct {
 	Tag string `json:",omitempty"`
 }
 
-func NewDHCPRelayLabel(dhcpLblRn, parentDn, description string, dhcpLblattr DHCPRelayLabelAttributes) *DHCPRelayLabel {
+func NewBDDHCPLabel(dhcpLblRn, parentDn, description string, dhcpLblattr BDDHCPLabelAttributes) *BDDHCPLabel {
 	dn := fmt.Sprintf("%s/%s", parentDn, dhcpLblRn)
-	return &DHCPRelayLabel{
+	return &BDDHCPLabel{
 		BaseAttributes: BaseAttributes{
 			DistinguishedName: dn,
 			Description:       description,
@@ -37,11 +37,11 @@ func NewDHCPRelayLabel(dhcpLblRn, parentDn, description string, dhcpLblattr DHCP
 			Rn:                dhcpLblRn,
 		},
 
-		DHCPRelayLabelAttributes: dhcpLblattr,
+		BDDHCPLabelAttributes: dhcpLblattr,
 	}
 }
 
-func (dhcpLbl *DHCPRelayLabel) ToMap() (map[string]string, error) {
+func (dhcpLbl *BDDHCPLabel) ToMap() (map[string]string, error) {
 	dhcpLblMap, err := dhcpLbl.BaseAttributes.ToMap()
 	if err != nil {
 		return nil, err
@@ -60,46 +60,46 @@ func (dhcpLbl *DHCPRelayLabel) ToMap() (map[string]string, error) {
 	return dhcpLblMap, err
 }
 
-func DHCPRelayLabelFromContainerList(cont *container.Container, index int) *DHCPRelayLabel {
+func BDDHCPLabelFromContainerList(cont *container.Container, index int) *BDDHCPLabel {
 
-	DHCPRelayLabelCont := cont.S("imdata").Index(index).S(DhcplblClassName, "attributes")
-	return &DHCPRelayLabel{
+	BDDHCPLabelCont := cont.S("imdata").Index(index).S(DhcplblClassName, "attributes")
+	return &BDDHCPLabel{
 		BaseAttributes{
-			DistinguishedName: G(DHCPRelayLabelCont, "dn"),
-			Description:       G(DHCPRelayLabelCont, "descr"),
-			Status:            G(DHCPRelayLabelCont, "status"),
+			DistinguishedName: G(BDDHCPLabelCont, "dn"),
+			Description:       G(BDDHCPLabelCont, "descr"),
+			Status:            G(BDDHCPLabelCont, "status"),
 			ClassName:         DhcplblClassName,
-			Rn:                G(DHCPRelayLabelCont, "rn"),
+			Rn:                G(BDDHCPLabelCont, "rn"),
 		},
 
-		DHCPRelayLabelAttributes{
+		BDDHCPLabelAttributes{
 
-			Name: G(DHCPRelayLabelCont, "name"),
+			Name: G(BDDHCPLabelCont, "name"),
 
-			Annotation: G(DHCPRelayLabelCont, "annotation"),
+			Annotation: G(BDDHCPLabelCont, "annotation"),
 
-			NameAlias: G(DHCPRelayLabelCont, "nameAlias"),
+			NameAlias: G(BDDHCPLabelCont, "nameAlias"),
 
-			Owner: G(DHCPRelayLabelCont, "owner"),
+			Owner: G(BDDHCPLabelCont, "owner"),
 
-			Tag: G(DHCPRelayLabelCont, "tag"),
+			Tag: G(BDDHCPLabelCont, "tag"),
 		},
 	}
 }
 
-func DHCPRelayLabelFromContainer(cont *container.Container) *DHCPRelayLabel {
+func BDDHCPLabelFromContainer(cont *container.Container) *BDDHCPLabel {
 
-	return DHCPRelayLabelFromContainerList(cont, 0)
+	return BDDHCPLabelFromContainerList(cont, 0)
 }
 
-func DHCPRelayLabelListFromContainer(cont *container.Container) []*DHCPRelayLabel {
+func BDDHCPLabelListFromContainer(cont *container.Container) []*BDDHCPLabel {
 	length, _ := strconv.Atoi(G(cont, "totalCount"))
 
-	arr := make([]*DHCPRelayLabel, length)
+	arr := make([]*BDDHCPLabel, length)
 
 	for i := 0; i < length; i++ {
 
-		arr[i] = DHCPRelayLabelFromContainerList(cont, i)
+		arr[i] = BDDHCPLabelFromContainerList(cont, i)
 	}
 
 	return arr

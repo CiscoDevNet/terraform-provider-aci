@@ -10,15 +10,15 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
 )
 
-func resourceAciDHCPRelayLabel() *schema.Resource {
+func resourceAciBDDHCPLabel() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciDHCPRelayLabelCreate,
-		Update: resourceAciDHCPRelayLabelUpdate,
-		Read:   resourceAciDHCPRelayLabelRead,
-		Delete: resourceAciDHCPRelayLabelDelete,
+		Create: resourceAciBDDHCPLabelCreate,
+		Update: resourceAciBDDHCPLabelUpdate,
+		Read:   resourceAciBDDHCPLabelRead,
+		Delete: resourceAciBDDHCPLabelDelete,
 
 		Importer: &schema.ResourceImporter{
-			State: resourceAciDHCPRelayLabelImport,
+			State: resourceAciBDDHCPLabelImport,
 		},
 
 		SchemaVersion: 1,
@@ -90,22 +90,22 @@ func resourceAciDHCPRelayLabel() *schema.Resource {
 		}),
 	}
 }
-func getRemoteDHCPRelayLabel(client *client.Client, dn string) (*models.DHCPRelayLabel, error) {
+func getRemoteBDDHCPLabel(client *client.Client, dn string) (*models.BDDHCPLabel, error) {
 	dhcpLblCont, err := client.Get(dn)
 	if err != nil {
 		return nil, err
 	}
 
-	dhcpLbl := models.DHCPRelayLabelFromContainer(dhcpLblCont)
+	dhcpLbl := models.BDDHCPLabelFromContainer(dhcpLblCont)
 
 	if dhcpLbl.DistinguishedName == "" {
-		return nil, fmt.Errorf("DHCPRelayLabel %s not found", dhcpLbl.DistinguishedName)
+		return nil, fmt.Errorf("BDDHCPLabel %s not found", dhcpLbl.DistinguishedName)
 	}
 
 	return dhcpLbl, nil
 }
 
-func setDHCPRelayLabelAttributes(dhcpLbl *models.DHCPRelayLabel, d *schema.ResourceData) *schema.ResourceData {
+func setBDDHCPLabelAttributes(dhcpLbl *models.BDDHCPLabel, d *schema.ResourceData) *schema.ResourceData {
 	dn := d.Id()
 	d.SetId(dhcpLbl.DistinguishedName)
 	d.Set("description", dhcpLbl.Description)
@@ -124,26 +124,26 @@ func setDHCPRelayLabelAttributes(dhcpLbl *models.DHCPRelayLabel, d *schema.Resou
 	return d
 }
 
-func resourceAciDHCPRelayLabelImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
+func resourceAciBDDHCPLabelImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
 	log.Printf("[DEBUG] %s: Beginning Import", d.Id())
 	aciClient := m.(*client.Client)
 
 	dn := d.Id()
 
-	dhcpLbl, err := getRemoteDHCPRelayLabel(aciClient, dn)
+	dhcpLbl, err := getRemoteBDDHCPLabel(aciClient, dn)
 
 	if err != nil {
 		return nil, err
 	}
-	schemaFilled := setDHCPRelayLabelAttributes(dhcpLbl, d)
+	schemaFilled := setBDDHCPLabelAttributes(dhcpLbl, d)
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciDHCPRelayLabelCreate(d *schema.ResourceData, m interface{}) error {
-	log.Printf("[DEBUG] DHCPRelayLabel: Beginning Creation")
+func resourceAciBDDHCPLabelCreate(d *schema.ResourceData, m interface{}) error {
+	log.Printf("[DEBUG] BDDHCPLabel: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
 
@@ -151,7 +151,7 @@ func resourceAciDHCPRelayLabelCreate(d *schema.ResourceData, m interface{}) erro
 
 	BridgeDomainDn := d.Get("bridge_domain_dn").(string)
 
-	dhcpLblAttr := models.DHCPRelayLabelAttributes{}
+	dhcpLblAttr := models.BDDHCPLabelAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		dhcpLblAttr.Annotation = Annotation.(string)
 	} else {
@@ -166,7 +166,7 @@ func resourceAciDHCPRelayLabelCreate(d *schema.ResourceData, m interface{}) erro
 	if Tag, ok := d.GetOk("tag"); ok {
 		dhcpLblAttr.Tag = Tag.(string)
 	}
-	dhcpLbl := models.NewDHCPRelayLabel(fmt.Sprintf("dhcplbl-%s", name), BridgeDomainDn, desc, dhcpLblAttr)
+	dhcpLbl := models.NewBDDHCPLabel(fmt.Sprintf("dhcplbl-%s", name), BridgeDomainDn, desc, dhcpLblAttr)
 
 	err := aciClient.Save(dhcpLbl)
 	if err != nil {
@@ -195,7 +195,7 @@ func resourceAciDHCPRelayLabelCreate(d *schema.ResourceData, m interface{}) erro
 	if relationTodhcpRsDhcpOptionPol, ok := d.GetOk("relation_dhcp_rs_dhcp_option_pol"); ok {
 		relationParam := relationTodhcpRsDhcpOptionPol.(string)
 		relationParamName := GetMOName(relationParam)
-		err = aciClient.CreateRelationdhcpRsDhcpOptionPolFromDHCPRelayLabel(dhcpLbl.DistinguishedName, relationParamName)
+		err = aciClient.CreateRelationdhcpRsDhcpOptionPolFromBDDHCPLabel(dhcpLbl.DistinguishedName, relationParamName)
 		if err != nil {
 			return err
 		}
@@ -208,11 +208,11 @@ func resourceAciDHCPRelayLabelCreate(d *schema.ResourceData, m interface{}) erro
 	d.SetId(dhcpLbl.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciDHCPRelayLabelRead(d, m)
+	return resourceAciBDDHCPLabelRead(d, m)
 }
 
-func resourceAciDHCPRelayLabelUpdate(d *schema.ResourceData, m interface{}) error {
-	log.Printf("[DEBUG] DHCPRelayLabel: Beginning Update")
+func resourceAciBDDHCPLabelUpdate(d *schema.ResourceData, m interface{}) error {
+	log.Printf("[DEBUG] BDDHCPLabel: Beginning Update")
 
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -221,7 +221,7 @@ func resourceAciDHCPRelayLabelUpdate(d *schema.ResourceData, m interface{}) erro
 
 	BridgeDomainDn := d.Get("bridge_domain_dn").(string)
 
-	dhcpLblAttr := models.DHCPRelayLabelAttributes{}
+	dhcpLblAttr := models.BDDHCPLabelAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		dhcpLblAttr.Annotation = Annotation.(string)
 	} else {
@@ -236,7 +236,7 @@ func resourceAciDHCPRelayLabelUpdate(d *schema.ResourceData, m interface{}) erro
 	if Tag, ok := d.GetOk("tag"); ok {
 		dhcpLblAttr.Tag = Tag.(string)
 	}
-	dhcpLbl := models.NewDHCPRelayLabel(fmt.Sprintf("dhcplbl-%s", name), BridgeDomainDn, desc, dhcpLblAttr)
+	dhcpLbl := models.NewBDDHCPLabel(fmt.Sprintf("dhcplbl-%s", name), BridgeDomainDn, desc, dhcpLblAttr)
 
 	dhcpLbl.Status = "modified"
 
@@ -268,7 +268,7 @@ func resourceAciDHCPRelayLabelUpdate(d *schema.ResourceData, m interface{}) erro
 	if d.HasChange("relation_dhcp_rs_dhcp_option_pol") {
 		_, newRelParam := d.GetChange("relation_dhcp_rs_dhcp_option_pol")
 		newRelParamName := GetMOName(newRelParam.(string))
-		err = aciClient.CreateRelationdhcpRsDhcpOptionPolFromDHCPRelayLabel(dhcpLbl.DistinguishedName, newRelParamName)
+		err = aciClient.CreateRelationdhcpRsDhcpOptionPolFromBDDHCPLabel(dhcpLbl.DistinguishedName, newRelParamName)
 		if err != nil {
 			return err
 		}
@@ -281,25 +281,25 @@ func resourceAciDHCPRelayLabelUpdate(d *schema.ResourceData, m interface{}) erro
 	d.SetId(dhcpLbl.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciDHCPRelayLabelRead(d, m)
+	return resourceAciBDDHCPLabelRead(d, m)
 
 }
 
-func resourceAciDHCPRelayLabelRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciBDDHCPLabelRead(d *schema.ResourceData, m interface{}) error {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
 
 	dn := d.Id()
-	dhcpLbl, err := getRemoteDHCPRelayLabel(aciClient, dn)
+	dhcpLbl, err := getRemoteBDDHCPLabel(aciClient, dn)
 
 	if err != nil {
 		d.SetId("")
 		return nil
 	}
-	setDHCPRelayLabelAttributes(dhcpLbl, d)
+	setBDDHCPLabelAttributes(dhcpLbl, d)
 
-	dhcpRsDhcpOptionPolData, err := aciClient.ReadRelationdhcpRsDhcpOptionPolFromDHCPRelayLabel(dn)
+	dhcpRsDhcpOptionPolData, err := aciClient.ReadRelationdhcpRsDhcpOptionPolFromBDDHCPLabel(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation dhcpRsDhcpOptionPol %v", err)
 		d.Set("relation_dhcp_rs_dhcp_option_pol", "")
@@ -317,7 +317,7 @@ func resourceAciDHCPRelayLabelRead(d *schema.ResourceData, m interface{}) error 
 	return nil
 }
 
-func resourceAciDHCPRelayLabelDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciBDDHCPLabelDelete(d *schema.ResourceData, m interface{}) error {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
