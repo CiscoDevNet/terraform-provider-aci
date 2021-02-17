@@ -45,7 +45,6 @@ func resourceAciRest() *schema.Resource {
 			"dn": &schema.Schema{
 				Type:     schema.TypeString,
 				Computed: true,
-				ForceNew: true,
 			},
 			"payload": &schema.Schema{
 				Type:     schema.TypeString,
