@@ -7,7 +7,9 @@ description: |-
 --- 
 
 # aci_cloud_vpn_gateway #
-Manages ACI Cloud Vpn Gateway.<br>
+Manages ACI Cloud Vpn Gateway.
+
+
 Note: This resource is supported in Cloud APIC only.
 
 ## Example Usage
