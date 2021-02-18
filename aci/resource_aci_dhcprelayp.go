@@ -3,6 +3,9 @@ package aci
 import (
 	"fmt"
 	"log"
+	"reflect"
+	"sort"
+	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
@@ -314,11 +317,25 @@ func resourceAciDHCPRelayPolicyRead(d *schema.ResourceData, m interface{}) error
 	dhcpRsProvData, err := aciClient.ReadRelationdhcpRsProvFromDHCPRelayPolicy(dn)
 
 	if err != nil {
-		log.Printf("[DEBUG] Error while reading relation fvRsBdFloodTo %v", err)
+		log.Printf("[DEBUG] Error while reading relation dhcpRsProv %v", err)
 		d.Set("relation_dhcp_rs_prov", make([]string, 0, 1))
 
 	} else {
-		d.Set("relation_dhcp_rs_prov", dhcpRsProvData)
+		if _, ok := d.GetOk("relation_dhcp_rs_prov"); ok {
+			relationParamList := toStringList(d.Get("relation_dhcp_rs_prov").(*schema.Set).List())
+			tfList := make([]string, 0, 1)
+			for _, relationParam := range relationParamList {
+				relationParamName := GetMOName(relationParam)
+				tfList = append(tfList, relationParamName)
+			}
+			dhcpRsProvDataList := toStringList(dhcpRsProvData.(*schema.Set).List())
+			sort.Strings(tfList)
+			sort.Strings(dhcpRsProvDataList)
+
+			if !reflect.DeepEqual(tfList, dhcpRsProvDataList) {
+				d.Set("relation_dhcp_rs_prov", make([]string, 0, 1))
+			}
+		}
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
