@@ -169,8 +169,10 @@ func resourceAciDHCPRelayPolicyCreate(d *schema.ResourceData, m interface{}) err
 	checkDns := make([]string, 0, 1)
 
 	if relationTodhcpRsProv, ok := d.GetOk("relation_dhcp_rs_prov"); ok {
-		relationParam := relationTodhcpRsProv.(string)
-		checkDns = append(checkDns, relationParam)
+		relationParamList := toStringList(relationTodhcpRsProv.(*schema.Set).List())
+		for _, relationParam := range relationParamList {
+			checkDns = append(checkDns, relationParam)
+		}
 	}
 
 	d.Partial(true)
@@ -243,8 +245,14 @@ func resourceAciDHCPRelayPolicyUpdate(d *schema.ResourceData, m interface{}) err
 	checkDns := make([]string, 0, 1)
 
 	if d.HasChange("relation_dhcp_rs_prov") {
-		_, newRelParam := d.GetChange("relation_dhcp_rs_prov")
-		checkDns = append(checkDns, newRelParam.(string))
+		oldRel, newRel := d.GetChange("relation_dhcp_rs_prov")
+		oldRelSet := oldRel.(*schema.Set)
+		newRelSet := newRel.(*schema.Set)
+		relToCreate := toStringList(newRelSet.Difference(oldRelSet).List())
+
+		for _, relDn := range relToCreate {
+			checkDns = append(checkDns, relDn)
+		}
 	}
 
 	d.Partial(true)
@@ -304,17 +312,13 @@ func resourceAciDHCPRelayPolicyRead(d *schema.ResourceData, m interface{}) error
 	setDHCPRelayPolicyAttributes(dhcpRelayP, d)
 
 	dhcpRsProvData, err := aciClient.ReadRelationdhcpRsProvFromDHCPRelayPolicy(dn)
+
 	if err != nil {
-		log.Printf("[DEBUG] Error while reading relation dhcpRsProv %v", err)
-		d.Set("relation_dhcp_rs_prov", "")
+		log.Printf("[DEBUG] Error while reading relation fvRsBdFloodTo %v", err)
+		d.Set("relation_dhcp_rs_prov", make([]string, 0, 1))
 
 	} else {
-		if _, ok := d.GetOk("relation_dhcp_rs_prov"); ok {
-			tfName := d.Get("relation_dhcp_rs_prov").(string)
-			if tfName != dhcpRsProvData {
-				d.Set("relation_dhcp_rs_prov", "")
-			}
-		}
+		d.Set("relation_dhcp_rs_prov", dhcpRsProvData)
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
