@@ -7,10 +7,10 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 )
 
-func dataSourceAciDHCPRelayLabel() *schema.Resource {
+func dataSourceAciBDDHCPLabel() *schema.Resource {
 	return &schema.Resource{
 
-		Read: dataSourceAciDHCPRelayLabelRead,
+		Read: dataSourceAciBDDHCPLabelRead,
 
 		SchemaVersion: 1,
 
@@ -52,7 +52,7 @@ func dataSourceAciDHCPRelayLabel() *schema.Resource {
 	}
 }
 
-func dataSourceAciDHCPRelayLabelRead(d *schema.ResourceData, m interface{}) error {
+func dataSourceAciBDDHCPLabelRead(d *schema.ResourceData, m interface{}) error {
 	aciClient := m.(*client.Client)
 
 	name := d.Get("name").(string)
@@ -62,12 +62,12 @@ func dataSourceAciDHCPRelayLabelRead(d *schema.ResourceData, m interface{}) erro
 
 	dn := fmt.Sprintf("%s/%s", BridgeDomainDn, rn)
 
-	dhcpLbl, err := getRemoteDHCPRelayLabel(aciClient, dn)
+	dhcpLbl, err := getRemoteBDDHCPLabel(aciClient, dn)
 
 	if err != nil {
 		return err
 	}
 	d.SetId(dn)
-	setDHCPRelayLabelAttributes(dhcpLbl, d)
+	setBDDHCPLabelAttributes(dhcpLbl, d)
 	return nil
 }

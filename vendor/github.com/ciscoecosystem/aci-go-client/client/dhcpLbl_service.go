@@ -7,34 +7,34 @@ import (
 	"github.com/ciscoecosystem/aci-go-client/models"
 )
 
-func (sm *ServiceManager) CreateDHCPRelayLabel(name string, bridge_domain string, tenant string, description string, dhcpLblattr models.DHCPRelayLabelAttributes) (*models.DHCPRelayLabel, error) {
+func (sm *ServiceManager) CreateBDDHCPLabel(name string, bridge_domain string, tenant string, description string, dhcpLblattr models.BDDHCPLabelAttributes) (*models.BDDHCPLabel, error) {
 	rn := fmt.Sprintf("dhcplbl-%s", name)
 	parentDn := fmt.Sprintf("uni/tn-%s/BD-%s", tenant, bridge_domain)
-	dhcpLbl := models.NewDHCPRelayLabel(rn, parentDn, description, dhcpLblattr)
+	dhcpLbl := models.NewBDDHCPLabel(rn, parentDn, description, dhcpLblattr)
 	err := sm.Save(dhcpLbl)
 	return dhcpLbl, err
 }
 
-func (sm *ServiceManager) ReadDHCPRelayLabel(name string, bridge_domain string, tenant string) (*models.DHCPRelayLabel, error) {
+func (sm *ServiceManager) ReadBDDHCPLabel(name string, bridge_domain string, tenant string) (*models.BDDHCPLabel, error) {
 	dn := fmt.Sprintf("uni/tn-%s/BD-%s/dhcplbl-%s", tenant, bridge_domain, name)
 	cont, err := sm.Get(dn)
 	if err != nil {
 		return nil, err
 	}
 
-	dhcpLbl := models.DHCPRelayLabelFromContainer(cont)
+	dhcpLbl := models.BDDHCPLabelFromContainer(cont)
 	return dhcpLbl, nil
 }
 
-func (sm *ServiceManager) DeleteDHCPRelayLabel(name string, bridge_domain string, tenant string) error {
+func (sm *ServiceManager) DeleteBDDHCPLabel(name string, bridge_domain string, tenant string) error {
 	dn := fmt.Sprintf("uni/tn-%s/BD-%s/dhcplbl-%s", tenant, bridge_domain, name)
 	return sm.DeleteByDn(dn, models.DhcplblClassName)
 }
 
-func (sm *ServiceManager) UpdateDHCPRelayLabel(name string, bridge_domain string, tenant string, description string, dhcpLblattr models.DHCPRelayLabelAttributes) (*models.DHCPRelayLabel, error) {
+func (sm *ServiceManager) UpdateBDDHCPLabel(name string, bridge_domain string, tenant string, description string, dhcpLblattr models.BDDHCPLabelAttributes) (*models.BDDHCPLabel, error) {
 	rn := fmt.Sprintf("dhcplbl-%s", name)
 	parentDn := fmt.Sprintf("uni/tn-%s/BD-%s", tenant, bridge_domain)
-	dhcpLbl := models.NewDHCPRelayLabel(rn, parentDn, description, dhcpLblattr)
+	dhcpLbl := models.NewBDDHCPLabel(rn, parentDn, description, dhcpLblattr)
 
 	dhcpLbl.Status = "modified"
 	err := sm.Save(dhcpLbl)
@@ -42,18 +42,18 @@ func (sm *ServiceManager) UpdateDHCPRelayLabel(name string, bridge_domain string
 
 }
 
-func (sm *ServiceManager) ListDHCPRelayLabel(bridge_domain string, tenant string) ([]*models.DHCPRelayLabel, error) {
+func (sm *ServiceManager) ListBDDHCPLabel(bridge_domain string, tenant string) ([]*models.BDDHCPLabel, error) {
 
 	baseurlStr := "/api/node/class"
 	dnUrl := fmt.Sprintf("%s/uni/tn-%s/BD-%s/dhcpLbl.json", baseurlStr, tenant, bridge_domain)
 
 	cont, err := sm.GetViaURL(dnUrl)
-	list := models.DHCPRelayLabelListFromContainer(cont)
+	list := models.BDDHCPLabelListFromContainer(cont)
 
 	return list, err
 }
 
-func (sm *ServiceManager) CreateRelationdhcpRsDhcpOptionPolFromDHCPRelayLabel(parentDn, tnDhcpOptionPolName string) error {
+func (sm *ServiceManager) CreateRelationdhcpRsDhcpOptionPolFromBDDHCPLabel(parentDn, tnDhcpOptionPolName string) error {
 	dn := fmt.Sprintf("%s/rsdhcpOptionPol", parentDn)
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
@@ -83,7 +83,7 @@ func (sm *ServiceManager) CreateRelationdhcpRsDhcpOptionPolFromDHCPRelayLabel(pa
 	return nil
 }
 
-func (sm *ServiceManager) ReadRelationdhcpRsDhcpOptionPolFromDHCPRelayLabel(parentDn string) (interface{}, error) {
+func (sm *ServiceManager) ReadRelationdhcpRsDhcpOptionPolFromBDDHCPLabel(parentDn string) (interface{}, error) {
 	baseurlStr := "/api/node/class"
 	dnUrl := fmt.Sprintf("%s/%s/%s.json", baseurlStr, parentDn, "dhcpRsDhcpOptionPol")
 	cont, err := sm.GetViaURL(dnUrl)
