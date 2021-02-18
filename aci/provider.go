@@ -161,6 +161,8 @@ func Provider() terraform.ResourceProvider {
 			"aci_logical_interface_context":                resourceAciLogicalInterfaceContext(),
 			"aci_dhcp_option_policy":                       resourceAciDHCPOptionPolicy(),
 			"aci_dhcp_option":                              resourceAciDHCPOption(),
+			"aci_bd_dhcp_label":                            resourceAciBDDHCPLabel(),
+
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
@@ -270,6 +272,7 @@ func Provider() terraform.ResourceProvider {
 			"aci_logical_interface_context":                dataSourceAciLogicalInterfaceContext(),
 			"aci_dhcp_option_policy":                       dataSourceAciDHCPOptionPolicy(),
 			"aci_dhcp_option":                              dataSourceAciDHCPOption(),
+			"aci_bd_dhcp_label":                            dataSourceAciBDDHCPLabel(),
 		},
 
 		ConfigureFunc: configureClient,
