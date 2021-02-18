@@ -56,11 +56,6 @@ github.com/aws/aws-sdk-go/service/sts/stsiface
 github.com/bgentry/go-netrc/netrc
 # github.com/bgentry/speakeasy v0.1.0
 github.com/bgentry/speakeasy
-# github.com/ciscoecosystem/aci-go-client v1.6.13
-# github.com/blang/semver v3.5.1+incompatible
-github.com/blang/semver
-# github.com/ciscoecosystem/aci-go-client v1.4.11
-# github.com/ciscoecosystem/aci-go-client v1.4.12
 # github.com/ciscoecosystem/aci-go-client v1.7.1
 github.com/ciscoecosystem/aci-go-client/client
 github.com/ciscoecosystem/aci-go-client/container
