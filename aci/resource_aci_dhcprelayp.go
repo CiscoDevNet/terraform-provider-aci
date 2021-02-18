@@ -5,7 +5,6 @@ import (
 	"log"
 	"reflect"
 	"sort"
-	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
@@ -322,11 +321,11 @@ func resourceAciDHCPRelayPolicyRead(d *schema.ResourceData, m interface{}) error
 
 	} else {
 		if _, ok := d.GetOk("relation_dhcp_rs_prov"); ok {
-			tfList := make([]string, 0, 1)
+			relationParamList := toStringList(d.Get("relation_dhcp_rs_prov").(*schema.Set).List())
 			dhcpRsProvDataList := toStringList(dhcpRsProvData.(*schema.Set).List())
-			sort.Strings(tfList)
+			sort.Strings(relationParamList)
 			sort.Strings(dhcpRsProvDataList)
-			if !reflect.DeepEqual(tfList, dhcpRsProvDataList) {
+			if !reflect.DeepEqual(relationParamList, dhcpRsProvDataList) {
 				d.Set("relation_dhcp_rs_prov", make([]string, 0, 1))
 			}
 		}
