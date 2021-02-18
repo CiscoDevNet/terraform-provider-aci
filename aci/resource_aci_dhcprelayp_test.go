@@ -61,7 +61,7 @@ func testAccCheckAciDHCPRelayPolicyConfig_basic(description string) string {
 	return fmt.Sprintf(`
 
 	resource "aci_dhcp_relay_policy" "foodhcp_relay_policy" {
-		  tenant_dn  = "${aci_tenant.example.id}"
+		tenant_dn  = "uni/tn-crest_test_dhrumil_tenant" 
 		description = "%s"
 		
 		name  = "name_example"
