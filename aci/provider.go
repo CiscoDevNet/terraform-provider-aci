@@ -161,7 +161,8 @@ func Provider() terraform.ResourceProvider {
 			"aci_logical_interface_context":                resourceAciLogicalInterfaceContext(),
 			"aci_dhcp_option_policy":                       resourceAciDHCPOptionPolicy(),
 			"aci_dhcp_option":                              resourceAciDHCPOption(),
-			"aci_dhcp_relay_label":                         resourceAciDHCPRelayLabel(),
+			"aci_bd_dhcp_label":                            resourceAciBDDHCPLabel(),
+
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
@@ -269,12 +270,9 @@ func Provider() terraform.ResourceProvider {
 			"aci_function_node":                            dataSourceAciFunctionNode(),
 			"aci_cloud_vpn_gateway":                        dataSourceAciCloudVpnGateway(),
 			"aci_logical_interface_context":                dataSourceAciLogicalInterfaceContext(),
-<<<<<<< HEAD
 			"aci_dhcp_option_policy":                       dataSourceAciDHCPOptionPolicy(),
 			"aci_dhcp_option":                              dataSourceAciDHCPOption(),
-=======
-			"aci_dhcp_relay_label":                         dataSourceAciDHCPRelayLabel(),
->>>>>>> 48a36d0 (CACIT-360 added all files for class: dhcpLbl)
+			"aci_bd_dhcp_label":                            dataSourceAciBDDHCPLabel(),
 		},
 
 		ConfigureFunc: configureClient,
