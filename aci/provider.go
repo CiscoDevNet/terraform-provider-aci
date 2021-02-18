@@ -159,6 +159,8 @@ func Provider() terraform.ResourceProvider {
 			"aci_function_node":                            resourceAciFunctionNode(),
 			"aci_cloud_vpn_gateway":                        resourceAciCloudVpnGateway(),
 			"aci_logical_interface_context":                resourceAciLogicalInterfaceContext(),
+			"aci_dhcp_option_policy":                       resourceAciDHCPOptionPolicy(),
+			"aci_dhcp_option":                              resourceAciDHCPOption(),
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
@@ -266,6 +268,8 @@ func Provider() terraform.ResourceProvider {
 			"aci_function_node":                            dataSourceAciFunctionNode(),
 			"aci_cloud_vpn_gateway":                        dataSourceAciCloudVpnGateway(),
 			"aci_logical_interface_context":                dataSourceAciLogicalInterfaceContext(),
+			"aci_dhcp_option_policy":                       dataSourceAciDHCPOptionPolicy(),
+			"aci_dhcp_option":                              dataSourceAciDHCPOption(),
 		},
 
 		ConfigureFunc: configureClient,
