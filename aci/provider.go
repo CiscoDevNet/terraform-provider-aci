@@ -164,6 +164,7 @@ func Provider() terraform.ResourceProvider {
 			"aci_bd_dhcp_label":                            resourceAciBDDHCPLabel(),
 			"aci_dhcp_relay_policy":                        resourceAciDHCPRelayPolicy(),
 			"aci_leaf_breakout_port_group":                 resourceAciLeafBreakoutPortGroup(),
+			"aci_l2_domain":                                resourceAciL2Domain(),
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
@@ -276,6 +277,7 @@ func Provider() terraform.ResourceProvider {
 			"aci_bd_dhcp_label":                            dataSourceAciBDDHCPLabel(),
 			"aci_dhcp_relay_policy":                        dataSourceAciDHCPRelayPolicy(),
 			"aci_leaf_breakout_port_group":                 dataSourceAciLeafBreakoutPortGroup(),
+			"aci_l2_domain":                                dataSourceAciL2Domain(),
 		},
 
 		ConfigureFunc: configureClient,
