@@ -24,18 +24,12 @@ func resourceAciL2Domain() *schema.Resource {
 
 		SchemaVersion: 1,
 
-		Schema: map[string]*schema.Schema{
+		Schema: AppendBaseAttrSchema(map[string]*schema.Schema{
 
 			"name": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
 				ForceNew: true,
-			},
-
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
 			},
 
 			"name_alias": &schema.Schema{
@@ -69,7 +63,7 @@ func resourceAciL2Domain() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
-		},
+		}),
 	}
 }
 func getRemoteL2Domain(client *client.Client, dn string) (*models.L2Domain, error) {
