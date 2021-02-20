@@ -48,6 +48,12 @@ func resourceAciRest() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
+			// some dn lookups can take a long time, make this optional only checked if dn not supplied
+			"lookup_dn": &schema.Schema{
+				Type:     schema.TypeBool,
+				Optional: true,
+				Default:  false,
+			},
 		},
 	}
 }
@@ -57,19 +63,18 @@ func resourceAciRestCreate(d *schema.ResourceData, m interface{}) error {
 	if err != nil {
 		return err
 	}
-	classNameIntf := d.Get("class_name")
-	className := classNameIntf.(string)
+	className := GetClass(cont)
+
 	dn := models.StripQuotes(models.StripSquareBrackets(cont.Search(className, "attributes", "dn").String()))
+	lookupDn := d.Get("lookup_dn").(bool)
 
-	if dn == "{}" {
-		d.SetId(GetDN(d, m))
-
+	if dn == "{}" && lookupDn {
+		d.SetId(GetDN(d, cont, m))
 	} else {
-
 		d.SetId(dn)
 	}
-	return resourceAciRestRead(d, m)
 
+	return resourceAciRestRead(d, m)
 }
 
 func resourceAciRestUpdate(d *schema.ResourceData, m interface{}) error {
@@ -77,14 +82,14 @@ func resourceAciRestUpdate(d *schema.ResourceData, m interface{}) error {
 	if err != nil {
 		return err
 	}
-	classNameIntf := d.Get("class_name")
-	className := classNameIntf.(string)
+	className := GetClass(cont)
+
 	dn := models.StripQuotes(models.StripSquareBrackets(cont.Search(className, "attributes", "dn").String()))
-	if dn == "{}" {
-		d.SetId(GetDN(d, m))
+	lookupDn := d.Get("lookup_dn").(bool)
 
+	if dn == "{}" && lookupDn {
+		d.SetId(GetDN(d, cont, m))
 	} else {
-
 		d.SetId(dn)
 	}
 
@@ -104,13 +109,64 @@ func resourceAciRestDelete(d *schema.ResourceData, m interface{}) error {
 	return nil
 }
 
-func GetDN(d *schema.ResourceData, m interface{}) string {
+// GetDN performs a lookup on the APIC to find the real DN of the object created
+func GetDN(d *schema.ResourceData, c *container.Container, m interface{}) string {
 	aciClient := m.(*client.Client)
 	path := d.Get("path").(string)
-	className := d.Get("class_name").(string)
-	cont, _ := aciClient.GetViaURL(path)
-	dn := models.StripQuotes(models.StripSquareBrackets(cont.Search("imdata", className, "attributes", "dn").String()))
+	class := GetClass(c)
+	name := GetName(c)
+
+	// Assume an object was defined directly to its path
+	queryPath := fmt.Sprintf(`%v?query-target-filter=eq(%v.name,%v)`, path, class, name)
+
+	cont, _ := aciClient.GetViaURL(queryPath)
+
+	dn := models.StripQuotes(models.StripSquareBrackets(cont.Search("imdata", class, "attributes", "dn").String()))
+
+	// Child object was created with parent as path
+	if dn == "{}" {
+		queryPath = fmt.Sprintf(`%v?query-target=children&query-target-filter=eq(%v.name,%v)`, path, class, name)
+
+		childCont, _ := aciClient.GetViaURL(queryPath)
+
+		dn = models.StripQuotes(models.StripSquareBrackets(childCont.Search("imdata", class, "attributes", "dn").String()))
+	}
+
 	return fmt.Sprintf("%s", dn)
+}
+
+// GetName returns the name of the object being created
+func GetName(c *container.Container) string {
+	var name string
+
+	contMap, err := c.ChildrenMap()
+	if err != nil {
+		return name
+	}
+
+	for _, v := range contMap {
+		name = v.Path("attributes.name").String()
+		break
+	}
+
+	return name
+}
+
+// GetClass returns the normalized class (as first key of the container)
+func GetClass(c *container.Container) string {
+	var class string
+
+	contMap, err := c.ChildrenMap()
+	if err != nil {
+		return class
+	}
+
+	for k, _ := range contMap {
+		class = k
+		break
+	}
+
+	return class
 }
 
 // PostAndSetStatus is used to post schema and set the status
@@ -120,6 +176,33 @@ func PostAndSetStatus(d *schema.ResourceData, m interface{}, status string) (*co
 	var cont *container.Container
 	var err error
 	method := "POST"
+
+	cont, err = GetCont(d, status)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := aciClient.MakeRestRequest(method, path, cont, true)
+	if err != nil {
+		return nil, err
+	}
+
+	respCont, _, err := aciClient.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	err = client.CheckForErrors(respCont, method, false)
+	if err != nil {
+		return nil, err
+	}
+
+	return cont, nil
+}
+
+// GetCont attempts to unify the different input methods for the provider by creating a single reusable parser
+func GetCont(d *schema.ResourceData, status string) (*container.Container, error) {
+	var cont *container.Container
+	var err error
 
 	if content, ok := d.GetOk("content"); ok {
 		contentStrMap := toStrMap(content.(map[string]interface{}))
@@ -144,7 +227,7 @@ func PostAndSetStatus(d *schema.ResourceData, m interface{}, status string) (*co
 			return nil, fmt.Errorf("Payload cannot be empty string")
 		}
 
-		yamlJsonPayload, err := yaml.YAMLToJSON([]byte(payloadStr))
+		yamlJSONPayload, err := yaml.YAMLToJSON([]byte(payloadStr))
 
 		if err != nil {
 			// It may be possible that the payload is in JSON
@@ -155,9 +238,9 @@ func PostAndSetStatus(d *schema.ResourceData, m interface{}, status string) (*co
 			cont = jsonPayload
 		} else {
 			// we have valid yaml payload and we were able to convert it to json
-			cont, err = container.ParseJSON(yamlJsonPayload)
+			cont, err = container.ParseJSON(yamlJSONPayload)
 			if err != nil {
-				return nil, fmt.Errorf("Failed to convert YAML to JSON.")
+				return nil, fmt.Errorf("Failed to convert YAML to JSON")
 			}
 		}
 
@@ -166,25 +249,9 @@ func PostAndSetStatus(d *schema.ResourceData, m interface{}, status string) (*co
 			return nil, fmt.Errorf("Unable to parse the payload to JSON. Please check your payload")
 		}
 
-		if status == "deleted" {
-			method = "DELETE"
-		}
-
 	} else {
 		return nil, fmt.Errorf("Either of payload or content is required")
 	}
-	req, err := aciClient.MakeRestRequest(method, path, cont, true)
-	if err != nil {
-		return nil, err
-	}
 
-	respCont, _, err := aciClient.Do(req)
-	if err != nil {
-		return nil, err
-	}
-	err = client.CheckForErrors(respCont, method, false)
-	if err != nil {
-		return nil, err
-	}
-	return cont, nil
+	return cont, err
 }
