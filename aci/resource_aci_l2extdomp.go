@@ -412,7 +412,7 @@ func resourceAciL2DomainRead(d *schema.ResourceData, m interface{}) error {
 
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation infraRsVlanNs %v", err)
-		d.Set("relation_infra_rs_vlan_ns", make([]string, 0, 1))
+		d.Set("relation_infra_rs_vlan_ns", "")
 
 	} else {
 		if _, ok := d.GetOk("relation_infra_rs_vlan_ns"); ok {
@@ -428,7 +428,7 @@ func resourceAciL2DomainRead(d *schema.ResourceData, m interface{}) error {
 
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation infraRsVlanNsDef %v", err)
-		d.Set("relation_infra_rs_vlan_ns_def", make([]string, 0, 1))
+		d.Set("relation_infra_rs_vlan_ns_def", "")
 
 	} else {
 		if _, ok := d.GetOk("relation_infra_rs_vlan_ns_def"); ok {
@@ -444,7 +444,7 @@ func resourceAciL2DomainRead(d *schema.ResourceData, m interface{}) error {
 
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation infraRsVipAddrNs %v", err)
-		d.Set("relation_infra_rs_vip_addr_ns", make([]string, 0, 1))
+		d.Set("relation_infra_rs_vip_addr_ns", "")
 
 	} else {
 		if _, ok := d.GetOk("relation_infra_rs_vip_addr_ns"); ok {
@@ -478,7 +478,7 @@ func resourceAciL2DomainRead(d *schema.ResourceData, m interface{}) error {
 
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation infraRsDomVxlanNsDef %v", err)
-		d.Set("relation_infra_rs_dom_vxlan_ns_def", make([]string, 0, 1))
+		d.Set("relation_infra_rs_dom_vxlan_ns_def", "")
 
 	} else {
 		if _, ok := d.GetOk("relation_infra_rs_dom_vxlan_ns_def"); ok {
