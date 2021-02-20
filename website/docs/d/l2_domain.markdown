@@ -23,4 +23,4 @@ data "aci_l2_domain" "example" {
 
 * `id` - Attribute id set to the Dn of the L2 Domain.
 * `annotation` - (Optional) Annotation for L2 Domain.
-* `name_alias` - (Optional) Name Alias for L2 Domain.
+* `name_alias` - (Optional) Name alias for L2 Domain.
