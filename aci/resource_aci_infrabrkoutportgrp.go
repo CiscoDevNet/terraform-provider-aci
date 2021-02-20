@@ -136,6 +136,20 @@ func resourceAciLeafBreakoutPortGroupCreate(d *schema.ResourceData, m interface{
 
 	d.Partial(false)
 
+	checkDns := make([]string, 0, 1)
+
+	if relationToinfraRsMonBrkoutInfraPol, ok := d.GetOk("relation_infra_rs_mon_brkout_infra_pol"); ok {
+		relationParam := relationToinfraRsMonBrkoutInfraPol.(string)
+		checkDns = append(checkDns, relationParam)
+	}
+
+	d.Partial(true)
+	err = checkTDn(aciClient, checkDns)
+	if err != nil {
+		return err
+	}
+	d.Partial(false)
+
 	if relationToinfraRsMonBrkoutInfraPol, ok := d.GetOk("relation_infra_rs_mon_brkout_infra_pol"); ok {
 		relationParam := relationToinfraRsMonBrkoutInfraPol.(string)
 		relationParamName := GetMOName(relationParam)
@@ -188,6 +202,20 @@ func resourceAciLeafBreakoutPortGroupUpdate(d *schema.ResourceData, m interface{
 
 	d.SetPartial("name")
 
+	d.Partial(false)
+
+	checkDns := make([]string, 0, 1)
+
+	if d.HasChange("relation_infra_rs_mon_brkout_infra_pol") {
+		_, newRelParam := d.GetChange("relation_infra_rs_mon_brkout_infra_pol")
+		checkDns = append(checkDns, newRelParam.(string))
+	}
+
+	d.Partial(true)
+	err = checkTDn(aciClient, checkDns)
+	if err != nil {
+		return err
+	}
 	d.Partial(false)
 
 	if d.HasChange("relation_infra_rs_mon_brkout_infra_pol") {
