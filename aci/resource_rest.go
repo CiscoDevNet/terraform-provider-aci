@@ -48,7 +48,7 @@ func resourceAciRest() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
-			// some dn lookups can take a long time, make this optional only checked if dn not supplied
+			// perform a lookup if dn or full path to object isn't supplied
 			"lookup_dn": &schema.Schema{
 				Type:     schema.TypeBool,
 				Optional: true,
@@ -66,9 +66,8 @@ func resourceAciRestCreate(d *schema.ResourceData, m interface{}) error {
 	className := GetClass(cont)
 
 	dn := models.StripQuotes(models.StripSquareBrackets(cont.Search(className, "attributes", "dn").String()))
-	lookupDn := d.Get("lookup_dn").(bool)
 
-	if dn == "{}" && lookupDn {
+	if dn == "{}" {
 		d.SetId(GetDN(d, cont, m))
 	} else {
 		d.SetId(dn)
@@ -85,9 +84,8 @@ func resourceAciRestUpdate(d *schema.ResourceData, m interface{}) error {
 	className := GetClass(cont)
 
 	dn := models.StripQuotes(models.StripSquareBrackets(cont.Search(className, "attributes", "dn").String()))
-	lookupDn := d.Get("lookup_dn").(bool)
 
-	if dn == "{}" && lookupDn {
+	if dn == "{}" {
 		d.SetId(GetDN(d, cont, m))
 	} else {
 		d.SetId(dn)
@@ -111,6 +109,7 @@ func resourceAciRestDelete(d *schema.ResourceData, m interface{}) error {
 
 // GetDN performs a lookup on the APIC to find the real DN of the object created
 func GetDN(d *schema.ResourceData, c *container.Container, m interface{}) string {
+	lookupDn := d.Get("lookup_dn").(bool)
 	aciClient := m.(*client.Client)
 	path := d.Get("path").(string)
 	class := GetClass(c)
@@ -124,7 +123,7 @@ func GetDN(d *schema.ResourceData, c *container.Container, m interface{}) string
 	dn := models.StripQuotes(models.StripSquareBrackets(cont.Search("imdata", class, "attributes", "dn").String()))
 
 	// Child object was created with parent as path
-	if dn == "{}" {
+	if dn == "{}" && lookupDn {
 		queryPath = fmt.Sprintf(`%v?query-target=children&query-target-filter=eq(%v.name,%v)`, path, class, name)
 
 		childCont, _ := aciClient.GetViaURL(queryPath)
@@ -210,9 +209,7 @@ func GetCont(d *schema.ResourceData, status string) (*container.Container, error
 		if classNameIntf, ok := d.GetOk("class_name"); ok {
 			className := classNameIntf.(string)
 			cont, err = preparePayload(className, contentStrMap)
-			if status == Deleted {
-				cont.Set(status, className, "attributes", "status")
-			}
+
 			if err != nil {
 				return nil, err
 			}
@@ -251,6 +248,11 @@ func GetCont(d *schema.ResourceData, status string) (*container.Container, error
 
 	} else {
 		return nil, fmt.Errorf("Either of payload or content is required")
+	}
+
+	class := GetClass(cont)
+	if status == Deleted {
+		cont.Set(status, class, "attributes", "status")
 	}
 
 	return cont, err
