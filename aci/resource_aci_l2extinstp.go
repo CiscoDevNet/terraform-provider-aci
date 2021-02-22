@@ -463,6 +463,8 @@ func resourceAciL2outExternalEpgUpdate(d *schema.ResourceData, m interface{}) er
 	l2extInstPAttr := models.L2outExternalEpgAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		l2extInstPAttr.Annotation = Annotation.(string)
+	} else {
+		l2extInstPAttr.Annotation = "{}"
 	}
 	if ExceptionTag, ok := d.GetOk("exception_tag"); ok {
 		l2extInstPAttr.ExceptionTag = ExceptionTag.(string)

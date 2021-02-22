@@ -19,9 +19,9 @@ resource "aci_l2_domain" "example" {
 }
 ```
 ## Argument Reference ##
-* `name` - (Required) Name of Object l2_domain.
-* `annotation` - (Optional) Annotation for object l2_domain.
-* `name_alias` - (Optional) Name alias for object l2_domain.
+* `name` - (Required) Name of Object L2 Domain.
+* `annotation` - (Optional) Annotation for object L2 Domain.
+* `name_alias` - (Optional) Name alias for object L2 Domain.
 
 * `relation_infra_rs_vlan_ns` - (Optional) Relation to class fvnsVlanInstP. Cardinality - N_TO_ONE. Type - String.
                 

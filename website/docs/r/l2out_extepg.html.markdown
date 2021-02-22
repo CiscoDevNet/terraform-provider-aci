@@ -31,17 +31,17 @@ resource "aci_l2out_extepg" "example" {
 
 ## Argument Reference
 
-- `l2_outside_dn` - (Required) Distinguished name of parent L2Outside object.
+- `l2_outside_dn` - (Required) Distinguished name of parent L2-Outside object.
 - `name` - (Required) The name of the layer 2 L2-Out External EPG. This name can be up to 64 alphanumeric characters. Note that you cannot change this name after the object has been saved.
-- `annotation` - (Optional) annotation for object l2out_extepg.
+- `annotation` - (Optional) annotation for object L2-Out External EPG.
 
-- `exception_tag` - (Optional) Exception tag for object l2out_extepg.
+- `exception_tag` - (Optional) Exception tag for object L2-Out External EPG.
 
 - `flood_on_encap` - (Optional) Control at EPG level if the traffic L2 Multicast/Broadcast and Link Local Layer should be flooded only on ENCAP or based on bridg-domain settings.  
   Allowed values: "disabled", "enabled". Default value: "disabled".
 - `match_t` - (Optional) The provider label match criteria.  
-  Allowed values: "All", "AtleastOne", "AtmostOne", "None".
-- `name_alias` - (Optional) name_alias for object l2out_extepg. Default value: "AtleastOne".
+  Allowed values: "All", "AtleastOne", "AtmostOne", "None". Default value: "AtleastOne".
+- `name_alias` - (Optional) name_alias for object L2-Out External EPG. 
 
 - `pref_gr_memb` - (Optional) Represents parameter used to determine if EPg is part of a group that does not a contract for communication.  
   Allowed values: "exclude", "include". Default value: "exclude".
@@ -61,8 +61,7 @@ resource "aci_l2out_extepg" "example" {
 
 ## Attribute Reference
 
-The only attribute that this resource exports is the `id`, which is set to the
-Dn of the L2-Out External EPG.
+The only attribute that this resource exports is the `id`, which is set to the Dn of the L2-Out External EPG.
 
 ## Importing
 

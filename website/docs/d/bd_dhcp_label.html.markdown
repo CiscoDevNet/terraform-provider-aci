@@ -23,12 +23,12 @@ data "aci_bd_dhcp_label" "example" {
 ## Argument Reference
 
 - `bridge_domain_dn` - (Required) Distinguished name of parent Bridge Domain object.
-- `name` - (Required) Name of Object bd_dhcp_label.
+- `name` - (Required) Name of Object BD DHCP Label.
 
 ## Attribute Reference
 
 - `id` - Attribute id set to the Dn of the BD DHCP Label.
-- `annotation` - (Optional) Annotation for object bd_dhcp_label.
-- `name_alias` - (Optional) Name alias for object bd_dhcp_label.
+- `annotation` - (Optional) Annotation for object BD DHCP Label.
+- `name_alias` - (Optional) Name alias for object BD DHCP Label.
 - `owner` - (Optional) Owner of the target relay servers.
 - `tag` - (Optional) Label color.
