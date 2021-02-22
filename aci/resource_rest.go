@@ -11,8 +11,10 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 )
 
-const Created = "created"
+const Created = "created, modified"
+const Modified = "modified"
 const Deleted = "deleted"
+const Read = ""
 
 const ErrDistinguishedNameNotFound = "The Dn is not present in the content"
 
@@ -59,51 +61,57 @@ func resourceAciRest() *schema.Resource {
 }
 
 func resourceAciRestCreate(d *schema.ResourceData, m interface{}) error {
-	cont, err := PostAndSetStatus(d, m, "created, modified")
+	err := PostAndSetStatus(d, m, Created)
 	if err != nil {
 		return err
-	}
-	className := GetClass(cont)
-
-	dn := models.StripQuotes(models.StripSquareBrackets(cont.Search(className, "attributes", "dn").String()))
-
-	if dn == "{}" {
-		d.SetId(GetDN(d, cont, m))
-	} else {
-		d.SetId(dn)
 	}
 
 	return resourceAciRestRead(d, m)
 }
 
 func resourceAciRestUpdate(d *schema.ResourceData, m interface{}) error {
-	cont, err := PostAndSetStatus(d, m, "modified")
+	err := PostAndSetStatus(d, m, Modified)
+	if err != nil {
+		return err
+	}
+
+	return resourceAciRestRead(d, m)
+}
+
+func resourceAciRestDelete(d *schema.ResourceData, m interface{}) error {
+	err := PostAndSetStatus(d, m, Deleted)
+	if err != nil {
+		return err
+	}
+
+	d.SetId("")
+	return nil
+}
+
+func resourceAciRestRead(d *schema.ResourceData, m interface{}) error {
+	return CheckSetID(d, m)
+}
+
+// CheckSetID checks if the id has been set and makes an effort to set it to the dn if it is not
+func CheckSetID(d *schema.ResourceData, m interface{}) error {
+	// return if Id has already been properly set
+	if (d.Id() != "{}") && (len(d.Id()) != 0) {
+		return nil
+	}
+
+	cont, err := GetContWithStatus(d, Read)
 	if err != nil {
 		return err
 	}
 	className := GetClass(cont)
 
 	dn := models.StripQuotes(models.StripSquareBrackets(cont.Search(className, "attributes", "dn").String()))
-
 	if dn == "{}" {
 		d.SetId(GetDN(d, cont, m))
 	} else {
 		d.SetId(dn)
 	}
 
-	return resourceAciRestRead(d, m)
-}
-
-func resourceAciRestRead(d *schema.ResourceData, m interface{}) error {
-	return nil
-}
-
-func resourceAciRestDelete(d *schema.ResourceData, m interface{}) error {
-	_, err := PostAndSetStatus(d, m, Deleted)
-	if err != nil {
-		return err
-	}
-	d.SetId("")
 	return nil
 }
 
@@ -169,37 +177,36 @@ func GetClass(c *container.Container) string {
 }
 
 // PostAndSetStatus is used to post schema and set the status
-func PostAndSetStatus(d *schema.ResourceData, m interface{}, status string) (*container.Container, error) {
+func PostAndSetStatus(d *schema.ResourceData, m interface{}, status string) error {
 	aciClient := m.(*client.Client)
 	path := d.Get("path").(string)
-	var cont *container.Container
 	var err error
 	method := "POST"
 
-	cont, err = GetCont(d, status)
+	cont, err := GetContWithStatus(d, status)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	req, err := aciClient.MakeRestRequest(method, path, cont, true)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	respCont, _, err := aciClient.Do(req)
 	if err != nil {
-		return nil, err
+		return err
 	}
 	err = client.CheckForErrors(respCont, method, false)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	return cont, nil
+	return nil
 }
 
-// GetCont attempts to unify the different input methods for the provider by creating a single reusable parser
-func GetCont(d *schema.ResourceData, status string) (*container.Container, error) {
+// GetContWithStatus attempts to unify the different input methods for the provider by creating a container
+func GetContWithStatus(d *schema.ResourceData, status string) (*container.Container, error) {
 	var cont *container.Container
 	var err error
 
@@ -251,9 +258,11 @@ func GetCont(d *schema.ResourceData, status string) (*container.Container, error
 	}
 
 	class := GetClass(cont)
-	if status == Deleted {
+	if status != "" {
 		cont.Set(status, class, "attributes", "status")
 	}
+
+	d.Set("class_name", class)
 
 	return cont, err
 }
