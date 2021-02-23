@@ -166,6 +166,7 @@ func Provider() terraform.ResourceProvider {
 			"aci_leaf_breakout_port_group":                 resourceAciLeafBreakoutPortGroup(),
 			"aci_l2_domain":                                resourceAciL2Domain(),
 			"aci_l2out_extepg":                             resourceAciL2outExternalEpg(),
+			"aci_l2_outside":                               resourceAciL2Outside(),
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
@@ -280,6 +281,7 @@ func Provider() terraform.ResourceProvider {
 			"aci_leaf_breakout_port_group":                 dataSourceAciLeafBreakoutPortGroup(),
 			"aci_l2_domain":                                dataSourceAciL2Domain(),
 			"aci_l2out_extepg":                             dataSourceAciL2outExternalEpg(),
+			"aci_l2_outside":                               dataSourceAciL2Outside(),
 		},
 
 		ConfigureFunc: configureClient,
