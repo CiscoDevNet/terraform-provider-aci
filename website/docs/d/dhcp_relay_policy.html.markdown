@@ -21,14 +21,14 @@ data "aci_dhcp_relay_policy" "example" {
 ```
 ## Argument Reference ##
 * `tenant_dn` - (Required) Distinguished name of parent Tenant object.
-* `name` - (Required) Name of Object dhcp_relay_policy.
+* `name` - (Required) Name of Object DHCP Relay Policy.
 
 
 
 ## Attribute Reference
 
 * `id` - Attribute id set to the Dn of the DHCP Relay Policy.
-* `annotation` - (Optional) Annotation for object dhcp_relay_policy.
-* `mode` - (Optional) Dhcp relay policy mode
-* `name_alias` - (Optional) name_alias for object dhcp_relay_policy.
-* `owner` - (Optional) Owner of the target relay servers
+* `annotation` - (Optional) Annotation for object DHCP Relay Policy.
+* `mode` - (Optional) Dhcp Relay policy mode.
+* `name_alias` - (Optional) Name alias for object DHCP Relay Policy.
+* `owner` - (Optional) Owner of the target relay servers.

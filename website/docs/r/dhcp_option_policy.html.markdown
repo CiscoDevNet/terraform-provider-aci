@@ -22,9 +22,9 @@ resource "aci_dhcp_option_policy" "example" {
 ```
 ## Argument Reference ##
 * `tenant_dn` - (Required) Distinguished name of parent Tenant object.
-* `name` - (Required) Name of Object dhcp_option_policy.
-* `annotation` - (Optional) Annotation for object dhcp_option_policy.
-* `name_alias` - (Optional) Name_alias for object dhcp_option_policy.
+* `name` - (Required) Name of Object  DHCP Option Policy.
+* `annotation` - (Optional) Annotation for object  DHCP Option Policy.
+* `name_alias` - (Optional) Name alias for object  DHCP Option Policy.
 
 
 

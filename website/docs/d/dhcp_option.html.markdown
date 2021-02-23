@@ -22,13 +22,13 @@ data "aci_dhcp_option" "example" {
 
 ## Argument Reference
 
-- `dhcp_option_policy_dn` - (Required) Distinguished name of parent DHCPOptionPolicy object.
-- `name` - (Required) Name of Object dhcp_option.
+- `dhcp_option_policy_dn` - (Required) Distinguished name of parent DHCP Option Policy object.
+- `name` - (Required) Name of Object DHCP Option.
 
 ## Attribute Reference
 
 - `id` - Attribute id set to the Dn of the DHCP Option.
-- `annotation` - (Optional) Annotation for object dhcp_option.
-- `data` - (Optional) DHCP option data
-- `dhcp_option_id` - (Optional) DHCP option id
-- `name_alias` - (Optional) name_alias for object dhcp_option.
+- `annotation` - (Optional) Annotation for object DHCP Option.
+- `data` - (Optional) DHCP Option data.
+- `dhcp_option_id` - (Optional) DHCP Option id.
+- `name_alias` - (Optional) Name alias for object DHCP Option.

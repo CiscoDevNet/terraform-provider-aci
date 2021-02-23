@@ -28,18 +28,17 @@ resource "aci_dhcp_relay_policy" "example" {
 ## Argument Reference
 
 - `tenant_dn` - (Required) Distinguished name of parent Tenant object.
-- `name` - (Required) Name of Object dhcp_relay_policy.
-- `annotation` - (Optional) Annotation for object dhcp_relay_policy.
-- `mode` - (Optional) dhcp relay policy mode. Allowed Values are "visible" and "not-visible". Default Value is "visible".
-- `name_alias` - (Optional) name_alias for object dhcp_relay_policy.
+- `name` - (Required) Name of Object DHCP Relay Policy.
+- `annotation` - (Optional) Annotation for object DHCP Relay Policy.
+- `mode` - (Optional) DHCP relay policy mode. Allowed Values are "visible" and "not-visible". Default Value is "visible".
+- `name_alias` - (Optional) Name alias for object DHCP Relay Policy.
 - `owner` - (Optional) Owner of the target relay servers. Allowed values are "infra" and "tenant". Default value is "infra".
 
 - `relation_dhcp_rs_prov` - (Optional) List of relation to class fvEPg. Cardinality - N_TO_M. Type - Set of String.
 
 ## Attribute Reference
 
-The only attribute that this resource exports is the `id`, which is set to the
-Dn of the DHCP Relay Policy.
+The only attribute that this resource exports is the `id`, which is set to the Dn of the DHCP Relay Policy.
 
 ## Importing
 
