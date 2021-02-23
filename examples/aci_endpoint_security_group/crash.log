@@ -1,0 +1,60 @@
+2021/02/23 10:42:42 [INFO] Terraform version: 0.13.3  
+2021/02/23 10:42:42 [INFO] Go runtime version: go1.14.7
+2021/02/23 10:42:42 [INFO] CLI args: []string{"/usr/local/bin/terraform", "plan"}
+2021/02/23 10:42:42 [DEBUG] Attempting to open CLI config file: /Users/cizhao/.terraformrc
+2021/02/23 10:42:42 [DEBUG] File doesn't exist, but doesn't need to. Ignoring.
+2021/02/23 10:42:42 [DEBUG] ignoring non-existing provider search directory terraform.d/plugins
+2021/02/23 10:42:42 [DEBUG] ignoring non-existing provider search directory /Users/cizhao/.terraform.d/plugins
+2021/02/23 10:42:42 [DEBUG] ignoring non-existing provider search directory /Users/cizhao/Library/Application Support/io.terraform/plugins
+2021/02/23 10:42:42 [DEBUG] ignoring non-existing provider search directory /Library/Application Support/io.terraform/plugins
+2021/02/23 10:42:42 [INFO] CLI command args: []string{"plan"}
+2021/02/23 10:42:42 [TRACE] Meta.Backend: no config given or present on disk, so returning nil config
+2021/02/23 10:42:42 [TRACE] Meta.Backend: backend has not previously been initialized in this working directory
+2021/02/23 10:42:42 [DEBUG] New state was assigned lineage "6e9bf59f-d905-0e88-1095-1620c0b922d5"
+2021/02/23 10:42:42 [TRACE] Meta.Backend: using default local state only (no backend configuration, and no existing initialized backend)
+2021/02/23 10:42:42 [TRACE] Meta.Backend: instantiated backend of type <nil>
+2021/02/23 10:42:42 [TRACE] providercache.fillMetaCache: scanning directory .terraform/plugins
+2021/02/23 10:42:42 [TRACE] getproviders.SearchLocalDirectory: .terraform/plugins is a symlink to .terraform/plugins
+2021/02/23 10:42:42 [TRACE] getproviders.SearchLocalDirectory: found registry.terraform.io/ciscodevnet/aci v0.5.4 for darwin_amd64 at .terraform/plugins/registry.terraform.io/ciscodevnet/aci/0.5.4/darwin_amd64
+2021/02/23 10:42:42 [TRACE] providercache.fillMetaCache: including .terraform/plugins/registry.terraform.io/ciscodevnet/aci/0.5.4/darwin_amd64 as a candidate package for registry.terraform.io/ciscodevnet/aci 0.5.4
+2021/02/23 10:42:42 [DEBUG] checking for provisioner in "."
+2021/02/23 10:42:42 [DEBUG] checking for provisioner in "/usr/local/bin"
+2021/02/23 10:42:42 [INFO] Failed to read plugin lock file .terraform/plugins/darwin_amd64/lock.json: open .terraform/plugins/darwin_amd64/lock.json: no such file or directory
+2021/02/23 10:42:42 [TRACE] Meta.Backend: backend <nil> does not support operations, so wrapping it in a local backend
+2021/02/23 10:42:42 [INFO] backend/local: starting Plan operation
+2021/02/23 10:42:42 [TRACE] backend/local: requesting state manager for workspace "default"
+2021/02/23 10:42:42 [TRACE] backend/local: state manager for workspace "default" will:
+ - read initial snapshot from terraform.tfstate
+ - write new snapshots to terraform.tfstate
+ - create any backup at terraform.tfstate.backup
+2021/02/23 10:42:42 [TRACE] backend/local: requesting state lock for workspace "default"
+2021/02/23 10:42:42 [TRACE] statemgr.Filesystem: preparing to manage state snapshots at terraform.tfstate
+2021/02/23 10:42:42 [TRACE] statemgr.Filesystem: no previously-stored snapshot exists
+2021/02/23 10:42:42 [TRACE] statemgr.Filesystem: locking terraform.tfstate using fcntl flock
+2021/02/23 10:42:42 [TRACE] statemgr.Filesystem: writing lock metadata to .terraform.tfstate.lock.info
+2021/02/23 10:42:42 [TRACE] backend/local: reading remote state for workspace "default"
+2021/02/23 10:42:42 [TRACE] statemgr.Filesystem: reading latest snapshot from terraform.tfstate
+2021/02/23 10:42:42 [TRACE] statemgr.Filesystem: snapshot file has nil snapshot, but that's okay
+2021/02/23 10:42:42 [TRACE] statemgr.Filesystem: read nil snapshot
+2021/02/23 10:42:42 [TRACE] backend/local: retrieving local state snapshot for workspace "default"
+2021/02/23 10:42:42 [TRACE] backend/local: building context for current working directory
+2021/02/23 10:42:42 [TRACE] terraform.NewContext: starting
+2021/02/23 10:42:42 [TRACE] terraform.NewContext: loading provider schemas
+2021/02/23 10:42:42 [TRACE] LoadSchemas: retrieving schema for provider type "registry.terraform.io/ciscodevnet/aci"
+2021-02-23T10:42:42.826-0800 [INFO]  plugin: configuring client automatic mTLS
+2021-02-23T10:42:42.851-0800 [DEBUG] plugin: starting plugin: path=.terraform/plugins/registry.terraform.io/ciscodevnet/aci/0.5.4/darwin_amd64/terraform-provider-aci args=[.terraform/plugins/registry.terraform.io/ciscodevnet/aci/0.5.4/darwin_amd64/terraform-provider-aci]
+2021-02-23T10:42:43.052-0800 [DEBUG] plugin: plugin started: path=.terraform/plugins/registry.terraform.io/ciscodevnet/aci/0.5.4/darwin_amd64/terraform-provider-aci pid=19560
+2021-02-23T10:42:43.052-0800 [DEBUG] plugin: waiting for RPC address: path=.terraform/plugins/registry.terraform.io/ciscodevnet/aci/0.5.4/darwin_amd64/terraform-provider-aci
+2021-02-23T10:42:43.421-0800 [DEBUG] plugin.terraform-provider-aci: panic: gob: registering duplicate types for "*tfdiags.rpcFriendlyDiag": *tfdiags.rpcFriendlyDiag != *tfdiags.rpcFriendlyDiag
+2021-02-23T10:42:43.421-0800 [DEBUG] plugin.terraform-provider-aci: 
+2021-02-23T10:42:43.421-0800 [DEBUG] plugin.terraform-provider-aci: goroutine 1 [running]:
+2021-02-23T10:42:43.421-0800 [DEBUG] plugin.terraform-provider-aci: encoding/gob.RegisterName(0x1e4e5c7, 0x18, 0x1f85a20, 0x0)
+2021-02-23T10:42:43.421-0800 [DEBUG] plugin.terraform-provider-aci: 	/usr/local/Cellar/go/1.15.2/libexec/src/encoding/gob/type.go:820 +0x53f
+2021-02-23T10:42:43.421-0800 [DEBUG] plugin.terraform-provider-aci: encoding/gob.Register(0x1f85a20, 0x0)
+2021-02-23T10:42:43.421-0800 [DEBUG] plugin.terraform-provider-aci: 	/usr/local/Cellar/go/1.15.2/libexec/src/encoding/gob/type.go:874 +0x12c
+2021-02-23T10:42:43.421-0800 [DEBUG] plugin.terraform-provider-aci: github.com/hashicorp/terraform/tfdiags.init.0()
+2021-02-23T10:42:43.421-0800 [DEBUG] plugin.terraform-provider-aci: 	/Users/cizhao/go/pkg/mod/github.com/hashicorp/terraform@v0.12.5/tfdiags/rpc_friendly.go:58 +0x36
+2021-02-23T10:42:43.421-0800 [DEBUG] plugin: plugin process exited: path=.terraform/plugins/registry.terraform.io/ciscodevnet/aci/0.5.4/darwin_amd64/terraform-provider-aci pid=19560 error="exit status 2"
+2021/02/23 10:42:43 [TRACE] statemgr.Filesystem: removing lock metadata file .terraform.tfstate.lock.info
+2021/02/23 10:42:43 [TRACE] statemgr.Filesystem: unlocking terraform.tfstate using fcntl flock
+2021-02-23T10:42:43.422-0800 [WARN]  plugin: plugin failed to exit gracefully
