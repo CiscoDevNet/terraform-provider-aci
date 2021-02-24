@@ -139,7 +139,7 @@ func testAccCheckAciInBandManagementEPgAttributes(description string, node_inb_m
 			return fmt.Errorf("Bad node_inb_mgmt_epg annotation %s", node_inb_mgmt_epg.Annotation)
 		}
 
-		if "example" != node_inb_mgmt_epg.Encap {
+		if "vlan-1" != node_inb_mgmt_epg.Encap {
 			return fmt.Errorf("Bad node_inb_mgmt_epg encap %s", node_inb_mgmt_epg.Encap)
 		}
 
