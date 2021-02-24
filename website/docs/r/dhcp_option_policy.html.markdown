@@ -53,7 +53,7 @@ resource "aci_dhcp_option_policy" "example" {
 
 ## Attribute Reference
 
-- `id` - Dn of the DHCP Option Policy..
+- `id` - Dn of the DHCP Option Policy.
 - `dhcp_option.id` - exports this attribute for DHCP Option object. Set to the Dn for the DHCP Option managed by the DHCP Option policy.
 
 ## Importing
