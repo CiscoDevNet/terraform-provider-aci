@@ -117,7 +117,7 @@ func resourceAciEndpointSecurityGroup() *schema.Resource {
 			},
 			"relation_fv_rs_scope": &schema.Schema{
 				Type: schema.TypeString,
-
+				
 				Optional: true,
 			},
 			"relation_fv_rs_prot_by": &schema.Schema{
