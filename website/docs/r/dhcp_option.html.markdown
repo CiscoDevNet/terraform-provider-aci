@@ -29,7 +29,7 @@ resource "aci_dhcp_option" "example" {
 - `name` - (Required) Name of Object  DHCP Option.
 - `annotation` - (Optional) Annotation for object DHCP Option.
 - `data` - (Optional) DHCP Option data.
-- `dhcp_option_id` - (Optional) DHCP option id (Unsigned Integer).
+- `dhcp_option_id` - (Optional) DHCP Option id (Unsigned Integer).
 - `name_alias` - (Optional) Name alias for object DHCP Option.
 
 ## Attribute Reference
