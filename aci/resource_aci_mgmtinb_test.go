@@ -65,7 +65,7 @@ func testAccCheckAciInBandManagementEPgConfig_basic(description string) string {
 		description = "%s"
 		name  = "example"
   		annotation  = "example"
-  		encap  = "example"
+  		encap  = "vlan-1"
   		exception_tag  = "example"
   		flood_on_encap = "disabled"
   		match_t = "All"

@@ -3,11 +3,11 @@ layout: "aci"
 page_title: "ACI: aci_node_inb_mgmt_epg"
 sidebar_current: "docs-aci-resource-node_inb_mgmt_epg"
 description: |-
-  Manages ACI In-Band Management EPg
+  Manages ACI Node In-Band Management EPg
 ---
 
 # aci_node_inb_mgmt_epg #
-Manages ACI In-Band Management EPg
+Manages ACI Node In-Band Management EPg
 
 ## Example Usage ##
 
@@ -17,7 +17,7 @@ resource "aci_node_inb_mgmt_epg" "example" {
   management_profile_dn  = "${aci_management_profile.example.id}"
   name  = "example"
   annotation  = "example"
-  encap  = "example"
+  encap  = "vlan-1"
   exception_tag  = "example"
   flood_on_encap = "disabled"
   match_t = "All"
@@ -30,17 +30,17 @@ resource "aci_node_inb_mgmt_epg" "example" {
 ## Argument Reference ##
 * `management_profile_dn` - (Required) Distinguished name of parent management profile object.
 * `name` - (Required) The in-band management endpoint group name. This name can be up to 64 alphanumeric characters.
-* `annotation` - (Optional) Annotation for object in-band management EPg.
+* `annotation` - (Optional) Annotation for object node in-band management EPg.
 
 * `encap` - (Optional) The in-band access encapsulation.  
 
-* `exception_tag` - (Optional) Exception tag for object in-band management EPg.
+* `exception_tag` - (Optional) Exception-tag for object node in-band management EPg.
 
 * `flood_on_encap` - (Optional) Control at EPg level if the traffic L2 Multicast/Broadcast and Link Local Layer should be flooded only on ENCAP or based on bridg-domain settings.
 Allowed values: "disabled", "enabled". Default value: "disabled".
 * `match_t` - (Optional) The provider label match criteria. 
 Allowed values: "All", "AtleastOne", "AtmostOne", "None". Default value: "AtleastOne".
-* `name_alias` - (Optional) Name alias for object in-band management EPg.
+* `name_alias` - (Optional) Name alias for object node in-band management EPg.
 
 * `pref_gr_memb` - (Optional) Represents parameter used to determine if EPg is part of a group that does not a contract for communication.
 Allowed values: "exclude", "include". Default value: "exclude".
