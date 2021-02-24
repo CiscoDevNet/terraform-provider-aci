@@ -257,7 +257,6 @@ func Provider() terraform.ResourceProvider {
 			"aci_fabric_if_pol":                            dataSourceAciLinkLevelPolicy(),
 			"aci_aaa_domain":                               dataSourceAciSecurityDomain(),
 			"aci_client_end_point":                         dataSourceAciClientEndPoint(),
-			"aci_endpoint_security_group":                  dataSourceAciEndpointSecurityGroup(),
 		},
 
 		ConfigureFunc: configureClient,
