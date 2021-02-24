@@ -3,6 +3,6 @@ resource "aci_rest" "rest_cons_if" {
   class_name = "fvRsConsIf"
 
   content = {
-    "name" = "interface"
+    "tnVzCPIfName" = "interface"
   }
 }
