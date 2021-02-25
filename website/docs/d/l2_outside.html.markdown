@@ -6,10 +6,11 @@ description: |-
   Data source for ACI L2 Outside
 ---
 
-# aci_l2_outside #
+# aci_l2_outside
+
 Data source for ACI L2 Outside
 
-## Example Usage ##
+## Example Usage
 
 ```hcl
 data "aci_l2_outside" "example" {
@@ -18,16 +19,14 @@ data "aci_l2_outside" "example" {
 }
 ```
 
+## Argument Reference
 
-## Argument Reference ##
-* `tenant_dn` - (Required) Distinguished name of parent Tenant object.
-* `name` - (Required) name of Object l2_outside.
-
-
+- `tenant_dn` - (Required) Distinguished name of parent Tenant object.
+- `name` - (Required) name of object l2 outside.
 
 ## Attribute Reference
 
-* `id` - Attribute id set to the Dn of the L2 Outside.
-* `annotation` - (Optional) annotation for object l2_outside.
-* `name_alias` - (Optional) name_alias for object l2_outside.
-* `target_dscp` - (Optional) target dscp
+- `id` - Attribute id set to the Dn of the l2 outside.
+- `annotation` - (Optional) Annotation for object l2 outside.
+- `name_alias` - (Optional) Name alias for object l2 outside.
+- `target_dscp` - (Optional) Target dscp.
