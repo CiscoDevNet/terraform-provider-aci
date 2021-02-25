@@ -143,7 +143,7 @@ func setDHCPOptionPolicyAttributes(dhcpOptionPol *models.DHCPOptionPolicy, d *sc
 }
 
 func setDHCPOptionAttributesFromDHCPOptionPolicy(dhcpOptions []*models.DHCPOption, d *schema.ResourceData) *schema.ResourceData {
-	log.Println("Check .... :", dhcpOptions)
+
 	dhcpOptionSet := make([]interface{}, 0, 1)
 	for _, dhcpOption := range dhcpOptions {
 
@@ -157,7 +157,7 @@ func setDHCPOptionAttributesFromDHCPOptionPolicy(dhcpOptions []*models.DHCPOptio
 		opMap["data"] = dhcpOptionMap["data"]
 		dhcpOptionSet = append(dhcpOptionSet, opMap)
 	}
-	log.Println("Check ...:", dhcpOptionSet)
+
 	d.Set("dhcp_option", dhcpOptionSet)
 	return d
 }
@@ -238,7 +238,6 @@ func resourceAciDHCPOptionPolicyCreate(d *schema.ResourceData, m interface{}) er
 			}
 			dhcpOptionIDS = append(dhcpOptionIDS, dhcpOptionModel.DistinguishedName)
 		}
-		log.Println("Check ... :", dhcpOptionIDS)
 		d.Set("dhcp_option_ids", dhcpOptionIDS)
 	} else {
 		d.Set("dhcp_option_ids", dhcpOptionIDS)
@@ -328,7 +327,7 @@ func resourceAciDHCPOptionPolicyUpdate(d *schema.ResourceData, m interface{}) er
 			}
 			dhcpOptionIDS = append(dhcpOptionIDS, dhcpOptionModel.DistinguishedName)
 		}
-		log.Println("Check ... :", dhcpOptionIDS)
+
 		d.Set("dhcp_option_ids", dhcpOptionIDS)
 	}
 
@@ -360,7 +359,6 @@ func resourceAciDHCPOptionPolicyRead(d *schema.ResourceData, m interface{}) erro
 	setDHCPOptionPolicyAttributes(dhcpOptionPol, d)
 
 	options := d.Get("dhcp_option_ids").([]interface{})
-	log.Println("Check ... :", options)
 	dhcpOptions := make([]*models.DHCPOption, 0, 1)
 
 	for _, val := range options {
