@@ -61,7 +61,7 @@ func testAccCheckAciL2OutsideConfig_basic(description string) string {
 	return fmt.Sprintf(`
 
 	resource "aci_l2_outside" "fool2_outside" {
-		#tenant_dn  = "${aci_tenant.example.id}"
+		tenant_dn  = "${aci_tenant.example.id}"
 		description = "%s"
 		name  = "example"
   		annotation  = "example"

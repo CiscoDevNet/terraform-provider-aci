@@ -12,20 +12,33 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
 )
 
-func resourceAciInBandManagementEPg() *schema.Resource {
+func resourceAciNodeManagementEPg() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciInBandManagementEPgCreate,
-		Update: resourceAciInBandManagementEPgUpdate,
-		Read:   resourceAciInBandManagementEPgRead,
-		Delete: resourceAciInBandManagementEPgDelete,
+		Create: resourceAciNodeManagementEPgCreate,
+		Update: resourceAciNodeManagementEPgUpdate,
+		Read:   resourceAciNodeManagementEPgRead,
+		Delete: resourceAciNodeManagementEPgDelete,
 
 		Importer: &schema.ResourceImporter{
-			State: resourceAciInBandManagementEPgImport,
+			State: resourceAciNodeManagementEPgImport,
 		},
 
 		SchemaVersion: 1,
 
 		Schema: AppendBaseAttrSchema(map[string]*schema.Schema{
+
+			// Common Attributes
+
+			"type": &schema.Schema{
+				Type:     schema.TypeString,
+				Required: true,
+				ForceNew: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"in_band",
+					"out_of_band",
+				}, false),
+			},
+
 			"management_profile_dn": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
@@ -37,55 +50,10 @@ func resourceAciInBandManagementEPg() *schema.Resource {
 				Required: true,
 				ForceNew: true,
 			},
-
-			"encap": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
-			"exception_tag": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
-			"flood_on_encap": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-				ValidateFunc: validation.StringInSlice([]string{
-					"disabled",
-					"enabled",
-				}, false),
-			},
-
-			"match_t": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-				ValidateFunc: validation.StringInSlice([]string{
-					"All",
-					"AtleastOne",
-					"AtmostOne",
-					"None",
-				}, false),
-			},
-
 			"name_alias": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
-			},
-
-			"pref_gr_memb": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-				ValidateFunc: validation.StringInSlice([]string{
-					"exclude",
-					"include",
-				}, false),
 			},
 
 			"prio": &schema.Schema{
@@ -101,6 +69,82 @@ func resourceAciInBandManagementEPg() *schema.Resource {
 					"level6",
 					"unspecified",
 				}, false),
+			},
+
+			//Attributes of mgmtInB
+
+			"encap": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+				DiffSuppressFunc: func(k, old, new string, d *schema.ResourceData) bool {
+					if d.Get("type").(string) == "in_band" {
+						return false
+					}
+					return true
+				},
+			},
+
+			"exception_tag": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+				DiffSuppressFunc: func(k, old, new string, d *schema.ResourceData) bool {
+					if d.Get("type").(string) == "in_band" {
+						return false
+					}
+					return true
+				},
+			},
+
+			"flood_on_encap": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"disabled",
+					"enabled",
+				}, false),
+				DiffSuppressFunc: func(k, old, new string, d *schema.ResourceData) bool {
+					if d.Get("type").(string) == "in_band" {
+						return false
+					}
+					return true
+				},
+			},
+
+			"match_t": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"All",
+					"AtleastOne",
+					"AtmostOne",
+					"None",
+				}, false),
+				DiffSuppressFunc: func(k, old, new string, d *schema.ResourceData) bool {
+					if d.Get("type").(string) == "in_band" {
+						return false
+					}
+					return true
+				},
+			},
+
+			"pref_gr_memb": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"exclude",
+					"include",
+				}, false),
+				DiffSuppressFunc: func(k, old, new string, d *schema.ResourceData) bool {
+					if d.Get("type").(string) == "in_band" {
+						return false
+					}
+					return true
+				},
 			},
 
 			"relation_fv_rs_sec_inherited": &schema.Schema{
@@ -155,9 +199,65 @@ func resourceAciInBandManagementEPg() *schema.Resource {
 				Optional: true,
 				Set:      schema.HashString,
 			},
+
+			// Attributes of mgmtOob
+
+			"relation_mgmt_rs_oo_b_prov": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Set:      schema.HashString,
+			},
+			"relation_mgmt_rs_oo_b_st_node": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Set:      schema.HashString,
+			},
+			"relation_mgmt_rs_oo_b_ctx": &schema.Schema{
+				Type: schema.TypeString,
+
+				Optional: true,
+			},
 		}),
 	}
 }
+
+func resourceAciNodeManagementEPgImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
+	if d.Get("type").(string) == "in_band" {
+		return inBandManagementEPgImport(d, m)
+	}
+	return outOfBandManagementEPgImport(d, m)
+}
+
+func resourceAciNodeManagementEPgCreate(d *schema.ResourceData, m interface{}) error {
+	if d.Get("type").(string) == "in_band" {
+		return inBandManagementEPgCreate(d, m)
+	}
+	return outOfBandManagementEPgCreate(d, m)
+}
+
+func resourceAciNodeManagementEPgUpdate(d *schema.ResourceData, m interface{}) error {
+	if d.Get("type").(string) == "in_band" {
+		return inBandManagementEPgUpdate(d, m)
+	}
+	return outOfBandManagementEPgUpdate(d, m)
+}
+
+func resourceAciNodeManagementEPgRead(d *schema.ResourceData, m interface{}) error {
+	if d.Get("type").(string) == "in_band" {
+		return inBandManagementEPgRead(d, m)
+	}
+	return outOfBandManagementEPgRead(d, m)
+}
+
+func resourceAciNodeManagementEPgDelete(d *schema.ResourceData, m interface{}) error {
+	if d.Get("type").(string) == "in_band" {
+		return inBandManagementEPgDelete(d, m)
+	}
+	return outOfBandManagementEPgDelete(d, m)
+}
+
 func getRemoteInBandManagementEPg(client *client.Client, dn string) (*models.InBandManagementEPg, error) {
 	mgmtInBCont, err := client.Get(dn)
 	if err != nil {
@@ -171,6 +271,21 @@ func getRemoteInBandManagementEPg(client *client.Client, dn string) (*models.InB
 	}
 
 	return mgmtInB, nil
+}
+
+func getRemoteOutOfBandManagementEPg(client *client.Client, dn string) (*models.OutOfBandManagementEPg, error) {
+	mgmtOoBCont, err := client.Get(dn)
+	if err != nil {
+		return nil, err
+	}
+
+	mgmtOoB := models.OutOfBandManagementEPgFromContainer(mgmtOoBCont)
+
+	if mgmtOoB.DistinguishedName == "" {
+		return nil, fmt.Errorf("OutOfBandManagementEPg %s not found", mgmtOoB.DistinguishedName)
+	}
+
+	return mgmtOoB, nil
 }
 
 func setInBandManagementEPgAttributes(mgmtInB *models.InBandManagementEPg, d *schema.ResourceData) *schema.ResourceData {
@@ -195,7 +310,24 @@ func setInBandManagementEPgAttributes(mgmtInB *models.InBandManagementEPg, d *sc
 	return d
 }
 
-func resourceAciInBandManagementEPgImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
+func setOutOfBandManagementEPgAttributes(mgmtOoB *models.OutOfBandManagementEPg, d *schema.ResourceData) *schema.ResourceData {
+	d.SetId(mgmtOoB.DistinguishedName)
+	d.Set("description", mgmtOoB.Description)
+	dn := d.Id()
+	if dn != mgmtOoB.DistinguishedName {
+		d.Set("management_profile_dn", "")
+	}
+	mgmtOoBMap, _ := mgmtOoB.ToMap()
+
+	d.Set("name", mgmtOoBMap["name"])
+
+	d.Set("annotation", mgmtOoBMap["annotation"])
+	d.Set("name_alias", mgmtOoBMap["nameAlias"])
+	d.Set("prio", mgmtOoBMap["prio"])
+	return d
+}
+
+func inBandManagementEPgImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
 	log.Printf("[DEBUG] %s: Beginning Import", d.Id())
 	aciClient := m.(*client.Client)
 
@@ -213,7 +345,25 @@ func resourceAciInBandManagementEPgImport(d *schema.ResourceData, m interface{})
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciInBandManagementEPgCreate(d *schema.ResourceData, m interface{}) error {
+func outOfBandManagementEPgImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
+	log.Printf("[DEBUG] %s: Beginning Import", d.Id())
+	aciClient := m.(*client.Client)
+
+	dn := d.Id()
+
+	mgmtOoB, err := getRemoteOutOfBandManagementEPg(aciClient, dn)
+
+	if err != nil {
+		return nil, err
+	}
+	schemaFilled := setOutOfBandManagementEPgAttributes(mgmtOoB, d)
+
+	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
+
+	return []*schema.ResourceData{schemaFilled}, nil
+}
+
+func inBandManagementEPgCreate(d *schema.ResourceData, m interface{}) error {
 	log.Printf("[DEBUG] InBandManagementEPg: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -447,10 +597,116 @@ func resourceAciInBandManagementEPgCreate(d *schema.ResourceData, m interface{})
 	d.SetId(mgmtInB.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciInBandManagementEPgRead(d, m)
+	return inBandManagementEPgRead(d, m)
 }
 
-func resourceAciInBandManagementEPgUpdate(d *schema.ResourceData, m interface{}) error {
+func outOfBandManagementEPgCreate(d *schema.ResourceData, m interface{}) error {
+	log.Printf("[DEBUG] OutOfBandManagementEPg: Beginning Creation")
+	aciClient := m.(*client.Client)
+	desc := d.Get("description").(string)
+
+	name := d.Get("name").(string)
+
+	ManagementProfileDn := d.Get("management_profile_dn").(string)
+
+	mgmtOoBAttr := models.OutOfBandManagementEPgAttributes{}
+	if Annotation, ok := d.GetOk("annotation"); ok {
+		mgmtOoBAttr.Annotation = Annotation.(string)
+	} else {
+		mgmtOoBAttr.Annotation = "{}"
+	}
+	if NameAlias, ok := d.GetOk("name_alias"); ok {
+		mgmtOoBAttr.NameAlias = NameAlias.(string)
+	}
+	if Prio, ok := d.GetOk("prio"); ok {
+		mgmtOoBAttr.Prio = Prio.(string)
+	}
+	mgmtOoB := models.NewOutOfBandManagementEPg(fmt.Sprintf("oob-%s", name), ManagementProfileDn, desc, mgmtOoBAttr)
+
+	err := aciClient.Save(mgmtOoB)
+	if err != nil {
+		return err
+	}
+	d.Partial(true)
+
+	d.SetPartial("name")
+
+	d.Partial(false)
+
+	checkDns := make([]string, 0, 1)
+
+	if relationTomgmtRsOoBProv, ok := d.GetOk("relation_mgmt_rs_oo_b_prov"); ok {
+		relationParamList := toStringList(relationTomgmtRsOoBProv.(*schema.Set).List())
+		for _, relationParam := range relationParamList {
+			checkDns = append(checkDns, relationParam)
+		}
+	}
+	if relationTomgmtRsOoBStNode, ok := d.GetOk("relation_mgmt_rs_oo_b_st_node"); ok {
+		relationParamList := toStringList(relationTomgmtRsOoBStNode.(*schema.Set).List())
+		for _, relationParam := range relationParamList {
+			checkDns = append(checkDns, relationParam)
+		}
+	}
+	if relationTomgmtRsOoBCtx, ok := d.GetOk("relation_mgmt_rs_oo_b_ctx"); ok {
+		relationParam := relationTomgmtRsOoBCtx.(string)
+		checkDns = append(checkDns, relationParam)
+
+	}
+
+	d.Partial(true)
+	err = checkTDn(aciClient, checkDns)
+	if err != nil {
+		return err
+	}
+	d.Partial(false)
+
+	if relationTomgmtRsOoBProv, ok := d.GetOk("relation_mgmt_rs_oo_b_prov"); ok {
+		relationParamList := toStringList(relationTomgmtRsOoBProv.(*schema.Set).List())
+		for _, relationParam := range relationParamList {
+			relationParam = GetMOName(relationParam)
+			err = aciClient.CreateRelationmgmtRsOoBProvFromOutOfBandManagementEPg(mgmtOoB.DistinguishedName, relationParam)
+
+			if err != nil {
+				return err
+			}
+			d.Partial(true)
+			d.SetPartial("relation_mgmt_rs_oo_b_prov")
+			d.Partial(false)
+		}
+	}
+	if relationTomgmtRsOoBStNode, ok := d.GetOk("relation_mgmt_rs_oo_b_st_node"); ok {
+		relationParamList := toStringList(relationTomgmtRsOoBStNode.(*schema.Set).List())
+		for _, relationParam := range relationParamList {
+
+			err = aciClient.CreateRelationmgmtRsOoBStNodeFromOutOfBandManagementEPg(mgmtOoB.DistinguishedName, relationParam)
+
+			if err != nil {
+				return err
+			}
+			d.Partial(true)
+			d.SetPartial("relation_mgmt_rs_oo_b_st_node")
+			d.Partial(false)
+		}
+	}
+	if relationTomgmtRsOoBCtx, ok := d.GetOk("relation_mgmt_rs_oo_b_ctx"); ok {
+		relationParam := GetMOName(relationTomgmtRsOoBCtx.(string))
+		err = aciClient.CreateRelationmgmtRsOoBCtxFromOutOfBandManagementEPg(mgmtOoB.DistinguishedName, relationParam)
+		if err != nil {
+			return err
+		}
+		d.Partial(true)
+		d.SetPartial("relation_mgmt_rs_oo_b_ctx")
+		d.Partial(false)
+
+	}
+
+	d.SetId(mgmtOoB.DistinguishedName)
+	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
+
+	return outOfBandManagementEPgRead(d, m)
+}
+
+func inBandManagementEPgUpdate(d *schema.ResourceData, m interface{}) error {
 	log.Printf("[DEBUG] InBandManagementEPg: Beginning Update")
 
 	aciClient := m.(*client.Client)
@@ -828,11 +1084,162 @@ func resourceAciInBandManagementEPgUpdate(d *schema.ResourceData, m interface{})
 	d.SetId(mgmtInB.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciInBandManagementEPgRead(d, m)
+	return inBandManagementEPgRead(d, m)
 
 }
 
-func resourceAciInBandManagementEPgRead(d *schema.ResourceData, m interface{}) error {
+func outOfBandManagementEPgUpdate(d *schema.ResourceData, m interface{}) error {
+	log.Printf("[DEBUG] OutOfBandManagementEPg: Beginning Update")
+
+	aciClient := m.(*client.Client)
+	desc := d.Get("description").(string)
+
+	name := d.Get("name").(string)
+
+	ManagementProfileDn := d.Get("management_profile_dn").(string)
+
+	mgmtOoBAttr := models.OutOfBandManagementEPgAttributes{}
+	if Annotation, ok := d.GetOk("annotation"); ok {
+		mgmtOoBAttr.Annotation = Annotation.(string)
+	} else {
+		mgmtOoBAttr.Annotation = "{}"
+	}
+	if NameAlias, ok := d.GetOk("name_alias"); ok {
+		mgmtOoBAttr.NameAlias = NameAlias.(string)
+	}
+	if Prio, ok := d.GetOk("prio"); ok {
+		mgmtOoBAttr.Prio = Prio.(string)
+	}
+	mgmtOoB := models.NewOutOfBandManagementEPg(fmt.Sprintf("oob-%s", name), ManagementProfileDn, desc, mgmtOoBAttr)
+
+	mgmtOoB.Status = "modified"
+
+	err := aciClient.Save(mgmtOoB)
+
+	if err != nil {
+		return err
+	}
+	d.Partial(true)
+
+	d.SetPartial("name")
+
+	d.Partial(false)
+
+	checkDns := make([]string, 0, 1)
+
+	if d.HasChange("relation_mgmt_rs_oo_b_prov") {
+		oldRel, newRel := d.GetChange("relation_mgmt_rs_oo_b_prov")
+		oldRelSet := oldRel.(*schema.Set)
+		newRelSet := newRel.(*schema.Set)
+		relToCreate := toStringList(newRelSet.Difference(oldRelSet).List())
+
+		for _, relDn := range relToCreate {
+			checkDns = append(checkDns, relDn)
+		}
+
+	}
+	if d.HasChange("relation_mgmt_rs_oo_b_st_node") {
+		oldRel, newRel := d.GetChange("relation_mgmt_rs_oo_b_st_node")
+		oldRelSet := oldRel.(*schema.Set)
+		newRelSet := newRel.(*schema.Set)
+		relToCreate := toStringList(newRelSet.Difference(oldRelSet).List())
+
+		for _, relDn := range relToCreate {
+			checkDns = append(checkDns, relDn)
+		}
+
+	}
+	if d.HasChange("relation_mgmt_rs_oo_b_ctx") {
+		_, newRelParam := d.GetChange("relation_mgmt_rs_oo_b_ctx")
+		checkDns = append(checkDns, newRelParam.(string))
+
+	}
+
+	d.Partial(true)
+	err = checkTDn(aciClient, checkDns)
+	if err != nil {
+		return err
+	}
+	d.Partial(false)
+
+	if d.HasChange("relation_mgmt_rs_oo_b_prov") {
+		oldRel, newRel := d.GetChange("relation_mgmt_rs_oo_b_prov")
+		oldRelSet := oldRel.(*schema.Set)
+		newRelSet := newRel.(*schema.Set)
+		relToDelete := toStringList(oldRelSet.Difference(newRelSet).List())
+		relToCreate := toStringList(newRelSet.Difference(oldRelSet).List())
+
+		for _, relDn := range relToDelete {
+			relDn = GetMOName(relDn)
+			err = aciClient.DeleteRelationmgmtRsOoBProvFromOutOfBandManagementEPg(mgmtOoB.DistinguishedName, relDn)
+			if err != nil {
+				return err
+			}
+
+		}
+
+		for _, relDn := range relToCreate {
+			relDn = GetMOName(relDn)
+			err = aciClient.CreateRelationmgmtRsOoBProvFromOutOfBandManagementEPg(mgmtOoB.DistinguishedName, relDn)
+			if err != nil {
+				return err
+			}
+			d.Partial(true)
+			d.SetPartial("relation_mgmt_rs_oo_b_prov")
+			d.Partial(false)
+
+		}
+
+	}
+	if d.HasChange("relation_mgmt_rs_oo_b_st_node") {
+		oldRel, newRel := d.GetChange("relation_mgmt_rs_oo_b_st_node")
+		oldRelSet := oldRel.(*schema.Set)
+		newRelSet := newRel.(*schema.Set)
+		relToDelete := toStringList(oldRelSet.Difference(newRelSet).List())
+		relToCreate := toStringList(newRelSet.Difference(oldRelSet).List())
+
+		for _, relDn := range relToDelete {
+
+			err = aciClient.DeleteRelationmgmtRsOoBStNodeFromOutOfBandManagementEPg(mgmtOoB.DistinguishedName, relDn)
+			if err != nil {
+				return err
+			}
+
+		}
+
+		for _, relDn := range relToCreate {
+
+			err = aciClient.CreateRelationmgmtRsOoBStNodeFromOutOfBandManagementEPg(mgmtOoB.DistinguishedName, relDn)
+			if err != nil {
+				return err
+			}
+			d.Partial(true)
+			d.SetPartial("relation_mgmt_rs_oo_b_st_node")
+			d.Partial(false)
+
+		}
+
+	}
+	if d.HasChange("relation_mgmt_rs_oo_b_ctx") {
+		_, newRelParam := d.GetChange("relation_mgmt_rs_oo_b_ctx")
+		err = aciClient.CreateRelationmgmtRsOoBCtxFromOutOfBandManagementEPg(mgmtOoB.DistinguishedName, GetMOName(newRelParam.(string)))
+		if err != nil {
+			return err
+		}
+		d.Partial(true)
+		d.SetPartial("relation_mgmt_rs_oo_b_ctx")
+		d.Partial(false)
+
+	}
+
+	d.SetId(mgmtOoB.DistinguishedName)
+	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
+
+	return outOfBandManagementEPgRead(d, m)
+
+}
+
+func inBandManagementEPgRead(d *schema.ResourceData, m interface{}) error {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -1025,7 +1432,80 @@ func resourceAciInBandManagementEPgRead(d *schema.ResourceData, m interface{}) e
 	return nil
 }
 
-func resourceAciInBandManagementEPgDelete(d *schema.ResourceData, m interface{}) error {
+func outOfBandManagementEPgRead(d *schema.ResourceData, m interface{}) error {
+	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
+
+	aciClient := m.(*client.Client)
+
+	dn := d.Id()
+	mgmtOoB, err := getRemoteOutOfBandManagementEPg(aciClient, dn)
+
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
+	setOutOfBandManagementEPgAttributes(mgmtOoB, d)
+
+	mgmtRsOoBProvData, err := aciClient.ReadRelationmgmtRsOoBProvFromOutOfBandManagementEPg(dn)
+	if err != nil {
+		log.Printf("[DEBUG] Error while reading relation mgmtRsOoBProv %v", err)
+		d.Set("relation_mgmt_rs_oo_b_prov", make([]string, 0, 1))
+
+	} else {
+		if _, ok := d.GetOk("relation_mgmt_rs_oo_b_prov"); ok {
+			relationParamList := toStringList(d.Get("relation_mgmt_rs_oo_b_prov").(*schema.Set).List())
+			tfList := make([]string, 0, 1)
+			for _, relationParam := range relationParamList {
+				relationParamName := GetMOName(relationParam)
+				tfList = append(tfList, relationParamName)
+			}
+			mgmtRsOoBProvDataList := toStringList(mgmtRsOoBProvData.(*schema.Set).List())
+			sort.Strings(tfList)
+			sort.Strings(mgmtRsOoBProvDataList)
+
+			if !reflect.DeepEqual(tfList, mgmtRsOoBProvDataList) {
+				d.Set("relation_mgmt_rs_oo_b_prov", make([]string, 0, 1))
+			}
+		}
+	}
+	mgmtRsOoBStNodeData, err := aciClient.ReadRelationmgmtRsOoBStNodeFromOutOfBandManagementEPg(dn)
+	if err != nil {
+		log.Printf("[DEBUG] Error while reading relation mgmtRsOoBStNode %v", err)
+		d.Set("relation_mgmt_rs_oo_b_st_node", make([]string, 0, 1))
+
+	} else {
+		if _, ok := d.GetOk("relation_mgmt_rs_oo_b_st_node"); ok {
+			relationParamList := toStringList(d.Get("relation_mgmt_rs_oo_b_st_node").(*schema.Set).List())
+			mgmtRsOoBStNodeDataList := toStringList(mgmtRsOoBStNodeData.(*schema.Set).List())
+			sort.Strings(relationParamList)
+			sort.Strings(mgmtRsOoBStNodeDataList)
+
+			if !reflect.DeepEqual(relationParamList, mgmtRsOoBStNodeDataList) {
+				d.Set("relation_mgmt_rs_oo_b_st_node", make([]string, 0, 1))
+			}
+		}
+	}
+	mgmtRsOoBCtxData, err := aciClient.ReadRelationmgmtRsOoBCtxFromOutOfBandManagementEPg(dn)
+	if err != nil {
+		log.Printf("[DEBUG] Error while reading relation mgmtRsOoBCtx %v", err)
+		d.Set("relation_mgmt_rs_oo_b_ctx", "")
+
+	} else {
+		if _, ok := d.GetOk("relation_mgmt_rs_oo_b_ctx"); ok {
+			tfName := GetMOName(d.Get("relation_mgmt_rs_oo_b_ctx").(string))
+			if tfName != mgmtRsOoBCtxData {
+				d.Set("relation_mgmt_rs_oo_b_ctx", "")
+			}
+		}
+
+	}
+
+	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
+
+	return nil
+}
+
+func inBandManagementEPgDelete(d *schema.ResourceData, m interface{}) error {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -1040,3 +1520,20 @@ func resourceAciInBandManagementEPgDelete(d *schema.ResourceData, m interface{})
 	d.SetId("")
 	return err
 }
+
+func outOfBandManagementEPgDelete(d *schema.ResourceData, m interface{}) error {
+	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
+
+	aciClient := m.(*client.Client)
+	dn := d.Id()
+	err := aciClient.DeleteByDn(dn, "mgmtOoB")
+	if err != nil {
+		return err
+	}
+
+	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
+
+	d.SetId("")
+	return err
+}
+

@@ -5,16 +5,27 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
 )
 
-func dataSourceAciInBandManagementEPg() *schema.Resource {
+func dataSourceAciNodeManagementEPg() *schema.Resource {
 	return &schema.Resource{
 
-		Read: dataSourceAciInBandManagementEPgRead,
+		Read: dataSourceAciNodeManagementEPgRead,
 
 		SchemaVersion: 1,
 
 		Schema: AppendBaseAttrSchema(map[string]*schema.Schema{
+
+			"type": &schema.Schema{
+				Type:     schema.TypeString,
+				Required: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"in_band",
+					"out_of_band",
+				}, false),
+			},
+
 			"management_profile_dn": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
@@ -76,7 +87,14 @@ func dataSourceAciInBandManagementEPg() *schema.Resource {
 	}
 }
 
-func dataSourceAciInBandManagementEPgRead(d *schema.ResourceData, m interface{}) error {
+func dataSourceAciNodeManagementEPgRead(d *schema.ResourceData, m interface{}) error {
+	if d.Get("type").(string) == "in_band" {
+		return dataSourceInBandManagementEPgRead(d, m)
+	}
+	return dataSourceOutOfBandManagementEPgRead(d, m)
+}
+
+func dataSourceInBandManagementEPgRead(d *schema.ResourceData, m interface{}) error {
 	aciClient := m.(*client.Client)
 
 	name := d.Get("name").(string)
@@ -93,5 +111,25 @@ func dataSourceAciInBandManagementEPgRead(d *schema.ResourceData, m interface{})
 	}
 	d.SetId(dn)
 	setInBandManagementEPgAttributes(mgmtInB, d)
+	return nil
+}
+
+func dataSourceOutOfBandManagementEPgRead(d *schema.ResourceData, m interface{}) error {
+	aciClient := m.(*client.Client)
+
+	name := d.Get("name").(string)
+
+	rn := fmt.Sprintf("oob-%s", name)
+	ManagementProfileDn := d.Get("management_profile_dn").(string)
+
+	dn := fmt.Sprintf("%s/%s", ManagementProfileDn, rn)
+
+	mgmtOoB, err := getRemoteOutOfBandManagementEPg(aciClient, dn)
+
+	if err != nil {
+		return err
+	}
+	d.SetId(dn)
+	setOutOfBandManagementEPgAttributes(mgmtOoB, d)
 	return nil
 }
