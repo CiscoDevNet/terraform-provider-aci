@@ -167,7 +167,6 @@ func resourceAciNodeManagementEPg() *schema.Resource {
 			},
 			"relation_fv_rs_cust_qos_pol": &schema.Schema{
 				Type: schema.TypeString,
-
 				Optional: true,
 			},
 			"relation_mgmt_rs_mgmt_bd": &schema.Schema{
@@ -216,7 +215,6 @@ func resourceAciNodeManagementEPg() *schema.Resource {
 			},
 			"relation_mgmt_rs_oo_b_ctx": &schema.Schema{
 				Type: schema.TypeString,
-
 				Optional: true,
 			},
 		}),
@@ -224,6 +222,7 @@ func resourceAciNodeManagementEPg() *schema.Resource {
 }
 
 func resourceAciNodeManagementEPgImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
+	log.Printf("[DEBUG] %s: Beginning Import", d.Id())
 	if d.Get("type").(string) == "in_band" {
 		return inBandManagementEPgImport(d, m)
 	}
@@ -232,19 +231,24 @@ func resourceAciNodeManagementEPgImport(d *schema.ResourceData, m interface{}) (
 
 func resourceAciNodeManagementEPgCreate(d *schema.ResourceData, m interface{}) error {
 	if d.Get("type").(string) == "in_band" {
+		log.Printf("[DEBUG] InBandManagementEPg: Beginning Creation")
 		return inBandManagementEPgCreate(d, m)
 	}
+	log.Printf("[DEBUG] OutOfBandManagementEPg: Beginning Creation")
 	return outOfBandManagementEPgCreate(d, m)
 }
 
 func resourceAciNodeManagementEPgUpdate(d *schema.ResourceData, m interface{}) error {
 	if d.Get("type").(string) == "in_band" {
+		log.Printf("[DEBUG] InBandManagementEPg: Beginning Update")
 		return inBandManagementEPgUpdate(d, m)
 	}
+	log.Printf("[DEBUG] OutOfBandManagementEPg: Beginning Update")
 	return outOfBandManagementEPgUpdate(d, m)
 }
 
 func resourceAciNodeManagementEPgRead(d *schema.ResourceData, m interface{}) error {
+	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 	if d.Get("type").(string) == "in_band" {
 		return inBandManagementEPgRead(d, m)
 	}
@@ -252,6 +256,7 @@ func resourceAciNodeManagementEPgRead(d *schema.ResourceData, m interface{}) err
 }
 
 func resourceAciNodeManagementEPgDelete(d *schema.ResourceData, m interface{}) error {
+	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 	if d.Get("type").(string) == "in_band" {
 		return inBandManagementEPgDelete(d, m)
 	}
@@ -328,7 +333,7 @@ func setOutOfBandManagementEPgAttributes(mgmtOoB *models.OutOfBandManagementEPg,
 }
 
 func inBandManagementEPgImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
-	log.Printf("[DEBUG] %s: Beginning Import", d.Id())
+
 	aciClient := m.(*client.Client)
 
 	dn := d.Id()
@@ -346,7 +351,7 @@ func inBandManagementEPgImport(d *schema.ResourceData, m interface{}) ([]*schema
 }
 
 func outOfBandManagementEPgImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
-	log.Printf("[DEBUG] %s: Beginning Import", d.Id())
+
 	aciClient := m.(*client.Client)
 
 	dn := d.Id()
@@ -364,7 +369,6 @@ func outOfBandManagementEPgImport(d *schema.ResourceData, m interface{}) ([]*sch
 }
 
 func inBandManagementEPgCreate(d *schema.ResourceData, m interface{}) error {
-	log.Printf("[DEBUG] InBandManagementEPg: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
 
@@ -597,11 +601,11 @@ func inBandManagementEPgCreate(d *schema.ResourceData, m interface{}) error {
 	d.SetId(mgmtInB.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return inBandManagementEPgRead(d, m)
+	return resourceAciNodeManagementEPgRead(d, m)
 }
 
 func outOfBandManagementEPgCreate(d *schema.ResourceData, m interface{}) error {
-	log.Printf("[DEBUG] OutOfBandManagementEPg: Beginning Creation")
+
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
 
@@ -703,7 +707,7 @@ func outOfBandManagementEPgCreate(d *schema.ResourceData, m interface{}) error {
 	d.SetId(mgmtOoB.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return outOfBandManagementEPgRead(d, m)
+	return resourceAciNodeManagementEPgRead(d, m)
 }
 
 func inBandManagementEPgUpdate(d *schema.ResourceData, m interface{}) error {
@@ -1084,7 +1088,7 @@ func inBandManagementEPgUpdate(d *schema.ResourceData, m interface{}) error {
 	d.SetId(mgmtInB.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return inBandManagementEPgRead(d, m)
+	return resourceAciNodeManagementEPgRead(d, m)
 
 }
 
@@ -1235,7 +1239,7 @@ func outOfBandManagementEPgUpdate(d *schema.ResourceData, m interface{}) error {
 	d.SetId(mgmtOoB.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return outOfBandManagementEPgRead(d, m)
+	return resourceAciNodeManagementEPgRead(d, m)
 
 }
 
@@ -1536,4 +1540,3 @@ func outOfBandManagementEPgDelete(d *schema.ResourceData, m interface{}) error {
 	d.SetId("")
 	return err
 }
-
