@@ -14,13 +14,13 @@ Data source for ACI Node Management EPg
 
 ```hcl
 
-data "aci_in_band_management_e_pg" "example" {
+data "aci_node_mgmt_epg" "example" {
   type = "in_band"
   management_profile_dn  = "${aci_management_profile.example.id}"
   name  = "example"
 }
 
-data "aci_in_band_management_e_pg" "example" {
+data "aci_node_mgmt_epg" "example" {
   type = "out_of_band"
   management_profile_dn  = "${aci_management_profile.example.id}"
   name  = "example"
