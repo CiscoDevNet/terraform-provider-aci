@@ -75,12 +75,12 @@ resource "aci_node_mgmt_epg" "out_of_band_example" {
 ### `type = "out_of_band"`
 
 - `name` - (Required) The out-of-band management endpoint group name. This name can be up to 64 alphanumeric characters.
-- `annotation` - (Optional) annotation for object out-of-band management EPg.
+- `annotation` - (Optional) Annotation for object out-of-band management EPg.
 
 - `name_alias` - (Optional) Name alias for object out-of-band management EPg.
 
 - `prio` - (Optional) The QoS priority class identifier.
-  Allowed values: "level1", "level2", "level3", "level4", "level5", "level6", "unspecified".
+  Allowed values: "level1", "level2", "level3", "level4", "level5", "level6", "unspecified".Default value: "unspecified".
 
 - `relation_mgmt_rs_oo_b_prov` - (Optional) Relation to class vzOOBBrCP. Cardinality - N_TO_M. Type - Set of String.
 - `relation_mgmt_rs_oo_b_st_node` - (Optional) Relation to class fabricNode. Cardinality - N_TO_M. Type - Set of String.
