@@ -80,7 +80,7 @@ resource "aci_node_mgmt_epg" "out_of_band_example" {
 - `name_alias` - (Optional) Name alias for object out-of-band management EPg.
 
 - `prio` - (Optional) The QoS priority class identifier.
-  Allowed values: "level1", "level2", "level3", "level4", "level5", "level6", "unspecified".Default value: "unspecified".
+  Allowed values: "level1", "level2", "level3", "level4", "level5", "level6", "unspecified". Default value: "unspecified".
 
 - `relation_mgmt_rs_oo_b_prov` - (Optional) Relation to class vzOOBBrCP. Cardinality - N_TO_M. Type - Set of String.
 - `relation_mgmt_rs_oo_b_st_node` - (Optional) Relation to class fabricNode. Cardinality - N_TO_M. Type - Set of String.
