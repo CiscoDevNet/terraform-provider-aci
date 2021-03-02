@@ -6,7 +6,7 @@ description: |-
   Data source for ACI Node Management EPg
 ---
 
-# aci_in_band_management_e_pg
+# aci_node_mgmt_epg
 
 Data source for ACI Node Management EPg
 
