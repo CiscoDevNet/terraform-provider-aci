@@ -253,7 +253,8 @@ func resourceAciEndpointSecurityGroupCreate(d *schema.ResourceData, m interface{
 	if relationTofvRsProv, ok := d.GetOk("relation_fv_rs_prov"); ok {
 		relationParamList := toStringList(relationTofvRsProv.(*schema.Set).List())
 		for _, relationParam := range relationParamList {
-			err = aciClient.CreateRelationfvRsProvFromEndpointSecurityGroup(fvESg.DistinguishedName, relationParam)
+			relationParamName := GetMOName(relationParam)
+			err = aciClient.CreateRelationfvRsProvFromEndpointSecurityGroup(fvESg.DistinguishedName, relationParamName)
 
 			if err != nil {
 				return err
@@ -266,7 +267,8 @@ func resourceAciEndpointSecurityGroupCreate(d *schema.ResourceData, m interface{
 	if relationTofvRsConsIf, ok := d.GetOk("relation_fv_rs_cons_if"); ok {
 		relationParamList := toStringList(relationTofvRsConsIf.(*schema.Set).List())
 		for _, relationParam := range relationParamList {
-			err = aciClient.CreateRelationfvRsConsIfFromEndpointSecurityGroup(fvESg.DistinguishedName, relationParam)
+			relationParamName := GetMOName(relationParam)
+			err = aciClient.CreateRelationfvRsConsIfFromEndpointSecurityGroup(fvESg.DistinguishedName, relationParamName)
 
 			if err != nil {
 				return err
@@ -278,7 +280,8 @@ func resourceAciEndpointSecurityGroupCreate(d *schema.ResourceData, m interface{
 	}
 	if relationTofvRsCustQosPol, ok := d.GetOk("relation_fv_rs_cust_qos_pol"); ok {
 		relationParam := relationTofvRsCustQosPol.(string)
-		err = aciClient.CreateRelationfvRsCustQosPolFromEndpointSecurityGroup(fvESg.DistinguishedName, relationParam)
+		relationParamName := GetMOName(relationParam)
+		err = aciClient.CreateRelationfvRsCustQosPolFromEndpointSecurityGroup(fvESg.DistinguishedName, relationParamName)
 		if err != nil {
 			return err
 		}
@@ -290,7 +293,8 @@ func resourceAciEndpointSecurityGroupCreate(d *schema.ResourceData, m interface{
 	if relationTofvRsCons, ok := d.GetOk("relation_fv_rs_cons"); ok {
 		relationParamList := toStringList(relationTofvRsCons.(*schema.Set).List())
 		for _, relationParam := range relationParamList {
-			err = aciClient.CreateRelationfvRsConsFromEndpointSecurityGroup(fvESg.DistinguishedName, relationParam)
+			relationParamName := GetMOName(relationParam)
+			err = aciClient.CreateRelationfvRsConsFromEndpointSecurityGroup(fvESg.DistinguishedName, relationParamName)
 
 			if err != nil {
 				return err
@@ -302,7 +306,8 @@ func resourceAciEndpointSecurityGroupCreate(d *schema.ResourceData, m interface{
 	}
 	if relationTofvRsScope, ok := d.GetOk("relation_fv_rs_scope"); ok {
 		relationParam := relationTofvRsScope.(string)
-		err = aciClient.CreateRelationfvRsScopeFromEndpointSecurityGroup(fvESg.DistinguishedName, relationParam)
+		relationParamName := GetMOName(relationParam)
+		err = aciClient.CreateRelationfvRsScopeFromEndpointSecurityGroup(fvESg.DistinguishedName, relationParamName)
 		if err != nil {
 			return err
 		}
@@ -314,7 +319,8 @@ func resourceAciEndpointSecurityGroupCreate(d *schema.ResourceData, m interface{
 	if relationTofvRsProtBy, ok := d.GetOk("relation_fv_rs_prot_by"); ok {
 		relationParamList := toStringList(relationTofvRsProtBy.(*schema.Set).List())
 		for _, relationParam := range relationParamList {
-			err = aciClient.CreateRelationfvRsProtByFromEndpointSecurityGroup(fvESg.DistinguishedName, relationParam)
+			relationParamName := GetMOName(relationParam)
+			err = aciClient.CreateRelationfvRsProtByFromEndpointSecurityGroup(fvESg.DistinguishedName, relationParamName)
 
 			if err != nil {
 				return err
@@ -327,7 +333,8 @@ func resourceAciEndpointSecurityGroupCreate(d *schema.ResourceData, m interface{
 	if relationTofvRsIntraEpg, ok := d.GetOk("relation_fv_rs_intra_epg"); ok {
 		relationParamList := toStringList(relationTofvRsIntraEpg.(*schema.Set).List())
 		for _, relationParam := range relationParamList {
-			err = aciClient.CreateRelationfvRsIntraEpgFromEndpointSecurityGroup(fvESg.DistinguishedName, relationParam)
+			relationParamName := GetMOName(relationParam)
+			err = aciClient.CreateRelationfvRsIntraEpgFromEndpointSecurityGroup(fvESg.DistinguishedName, relationParamName)
 
 			if err != nil {
 				return err
