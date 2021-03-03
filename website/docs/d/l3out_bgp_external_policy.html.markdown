@@ -25,5 +25,5 @@ data "aci_l3out_bgp_external_policy" "example" {
 ## Attribute Reference
 
 - `id` - Attribute id set to the Dn of the L3-out BGP External Policy.
-- `annotation` - (Optional) Annotation for object l3out BGP external policy.
-- `name_alias` - (Optional) Name alias for object l3out BGP external policy.
+- `annotation` - (Optional) Annotation for object L3-out BGP External Policy.
+- `name_alias` - (Optional) Name alias for object L3-out BGP External Policy.
