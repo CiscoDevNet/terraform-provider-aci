@@ -6,10 +6,11 @@ description: |-
   Manages ACI L3-out BGP External Policy
 ---
 
-# aci_l3out_bgp_external_policy #
+# aci_l3out_bgp_external_policy
+
 Manages ACI L3-out BGP External Policy
 
-## Example Usage ##
+## Example Usage
 
 ```hcl
 resource "aci_l3out_bgp_external_policy" "example" {
@@ -20,21 +21,22 @@ resource "aci_l3out_bgp_external_policy" "example" {
 
 }
 ```
-## Argument Reference ##
-* `l3_outside_dn` - (Required) Distinguished name of parent l3 outside object.
-* `annotation` - (Optional) Annotation for object l3-out BGP external policy.
-* `name_alias` - (Optional) Name alias for object l3-out BGP external policy.
+
+## Argument Reference
+
+- `l3_outside_dn` - (Required) Distinguished name of parent l3 outside object.
+- `annotation` - (Optional) Annotation for object L3-out BGP External Policy.
+- `name_alias` - (Optional) Name alias for object L3-out BGP External Policy.
 
 ## Attribute Reference
 
 The only attribute that this resource exports is the `id`, which is set to the
 Dn of the L3-out BGP External Policy.
 
-## Importing ##
+## Importing
 
 An existing L3-out BGP External Policy can be [imported][docs-import] into this resource via its Dn, via the following command:
 [docs-import]: https://www.terraform.io/docs/import/index.html
-
 
 ```
 terraform import aci_l3out_bgp_external_policy.example <Dn>
