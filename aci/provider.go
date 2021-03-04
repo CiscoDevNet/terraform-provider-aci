@@ -169,6 +169,7 @@ func Provider() terraform.ResourceProvider {
 			"aci_l2_outside":                               resourceAciL2Outside(),
 			"aci_node_mgmt_epg":                            resourceAciNodeManagementEPg(),
 			"aci_l3out_bgp_external_policy":                resourceAciL3outBgpExternalPolicy(),
+			"aci_l3out_ospf_external_policy":               resourceAciL3outOspfExternalPolicy(),
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
@@ -287,6 +288,7 @@ func Provider() terraform.ResourceProvider {
 			"aci_node_mgmt_epg":                            dataSourceAciNodeManagementEPg(),
 			"aci_system":                                   dataSourceAciSystem(),
 			"aci_l3out_bgp_external_policy":                dataSourceAciL3outBgpExternalPolicy(),
+			"aci_l3out_ospf_external_policy":               dataSourceAciL3outOspfExternalPolicy(),
 		},
 
 		ConfigureFunc: configureClient,
