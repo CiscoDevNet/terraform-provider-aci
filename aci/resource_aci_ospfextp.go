@@ -200,15 +200,6 @@ func resourceAciL3outOspfExternalPolicyCreate(d *schema.ResourceData, m interfac
 	d.Partial(true)
 	d.Partial(false)
 
-	checkDns := make([]string, 0, 1)
-
-	d.Partial(true)
-	err = checkTDn(aciClient, checkDns)
-	if err != nil {
-		return err
-	}
-	d.Partial(false)
-
 	d.SetId(ospfExtP.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
@@ -257,15 +248,6 @@ func resourceAciL3outOspfExternalPolicyUpdate(d *schema.ResourceData, m interfac
 		return err
 	}
 	d.Partial(true)
-	d.Partial(false)
-
-	checkDns := make([]string, 0, 1)
-
-	d.Partial(true)
-	err = checkTDn(aciClient, checkDns)
-	if err != nil {
-		return err
-	}
 	d.Partial(false)
 
 	d.SetId(ospfExtP.DistinguishedName)
