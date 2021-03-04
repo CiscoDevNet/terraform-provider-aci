@@ -3,12 +3,12 @@ layout: "aci"
 page_title: "ACI: aci_l3out_ospf_external_policy"
 sidebar_current: "docs-aci-data-source-l3out_ospf_external_policy"
 description: |-
-  Data source for ACI L3-out Ospf External Policy
+  Data source for ACI L3-out OSPF External Policy
 ---
 
 # aci_l3out_ospf_external_policy
 
-Data source for ACI L3-out Ospf External Policy
+Data source for ACI L3-out OSPF External Policy
 
 ## Example Usage
 
@@ -24,7 +24,7 @@ data "aci_l3out_ospf_external_policy" "example" {
 
 ## Attribute Reference
 
-- `id` - Attribute id set to the Dn of the L3-out Ospf External Policy.
+- `id` - Attribute id set to the Dn of the L3-out OSPF External Policy.
 
 * `annotation` - (Optional) Annotation for object L3-out OSPF External Policy.
 * `area_cost` - (Optional) The OSPF Area cost.
