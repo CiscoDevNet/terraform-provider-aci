@@ -71,9 +71,46 @@ func resourceAciL4L7ServiceGraphTemplate() *schema.Resource {
 					"UNSPECIFIED",
 				}, false),
 			},
+
+			"term_cons_name": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Default:  "T1",
+			},
+
+			"term_prov_name": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Default:  "T2",
+			},
+
+			"term_node_cons_dn": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+
+			"term_node_prov_dn": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+
+			"term_cons_dn": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+
+			"term_prov_dn": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
 		}),
 	}
 }
+
 func getRemoteL4L7ServiceGraphTemplate(client *client.Client, dn string) (*models.L4L7ServiceGraphTemplate, error) {
 	vnsAbsGraphCont, err := client.Get(dn)
 	if err != nil {
@@ -106,6 +143,65 @@ func setL4L7ServiceGraphTemplateAttributes(vnsAbsGraph *models.L4L7ServiceGraphT
 	d.Set("ui_template_type", vnsAbsGraphMap["uiTemplateType"])
 
 	return d
+}
+
+func getRemoteConsumerTerminalNode(client *client.Client, dn string) (*models.ConsumerTerminalNode, error) {
+	vnsAbsTermNodeConCont, err := client.Get(dn)
+	if err != nil {
+		return nil, err
+	}
+
+	vnsAbsTermNodeCon := models.ConsumerTerminalNodeFromContainer(vnsAbsTermNodeConCont)
+
+	if vnsAbsTermNodeCon.DistinguishedName == "" {
+		return nil, fmt.Errorf("Consumer Terminal Node %s not found", vnsAbsTermNodeCon.DistinguishedName)
+	}
+
+	return vnsAbsTermNodeCon, nil
+}
+
+func setConsumerTerminalNodeAttributes(vnsAbsTermNodeCon *models.ConsumerTerminalNode, d *schema.ResourceData) *schema.ResourceData {
+	vnsAbsTermNodeConMap, _ := vnsAbsTermNodeCon.ToMap()
+	d.Set("term_cons_name", vnsAbsTermNodeConMap["name"])
+	d.Set("tern_node_cons_dn", vnsAbsTermNodeCon.DistinguishedName)
+	return d
+}
+
+func getRemoteProviderTerminalNode(client *client.Client, dn string) (*models.ProviderTerminalNode, error) {
+	vnsAbsTermNodeProvCont, err := client.Get(dn)
+	if err != nil {
+		return nil, err
+	}
+
+	vnsAbsTermNodeProv := models.ProviderTerminalNodeFromContainer(vnsAbsTermNodeProvCont)
+
+	if vnsAbsTermNodeProv.DistinguishedName == "" {
+		return nil, fmt.Errorf("Provider Terminal Node %s not found", vnsAbsTermNodeProv.DistinguishedName)
+	}
+
+	return vnsAbsTermNodeProv, nil
+}
+
+func setProviderTerminalNodeAttributes(vnsAbsTermNodeProv *models.ProviderTerminalNode, d *schema.ResourceData) *schema.ResourceData {
+	vnsAbsTermNodeProvMap, _ := vnsAbsTermNodeProv.ToMap()
+	d.Set("term_prov_name", vnsAbsTermNodeProvMap["name"])
+	d.Set("tern_node_prov_dn", vnsAbsTermNodeProv.DistinguishedName)
+	return d
+}
+
+func getRemoteTerminalConnector(client *client.Client, dn string) (*models.TerminalConnector, error) {
+	vnsAbsTermConnCont, err := client.Get(dn)
+	if err != nil {
+		return nil, err
+	}
+
+	vnsAbsTermConn := models.TerminalConnectorFromContainer(vnsAbsTermConnCont)
+
+	if vnsAbsTermConn.DistinguishedName == "" {
+		return nil, fmt.Errorf("Terminal Connector %s not found", vnsAbsTermConn.DistinguishedName)
+	}
+
+	return vnsAbsTermConn, nil
 }
 
 func resourceAciL4L7ServiceGraphTemplateImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -162,6 +258,56 @@ func resourceAciL4L7ServiceGraphTemplateCreate(d *schema.ResourceData, m interfa
 
 	d.Partial(false)
 
+	if consName, ok := d.GetOk("term_cons_name"); ok {
+		vnsAbsTermNodeConAttr := models.ConsumerTerminalNodeAttributes{}
+
+		vnsAbsTermNodeConAttr.Annotation = "{}"
+
+		vnsAbsTermNodeCon := models.NewConsumerTerminalNode(fmt.Sprintf("AbsTermNodeCon-%s", consName), vnsAbsGraph.DistinguishedName, "", vnsAbsTermNodeConAttr)
+
+		err := aciClient.Save(vnsAbsTermNodeCon)
+		if err != nil {
+			return err
+		}
+		d.Set("term_node_cons_dn", vnsAbsTermNodeCon.DistinguishedName)
+
+		vnsAbsTermConnAttr := models.TerminalConnectorAttributes{}
+		vnsAbsTermConnAttr.Annotation = "{}"
+		vnsAbsTermConn := models.NewTerminalConnector(fmt.Sprintf("AbsTConn"), vnsAbsTermNodeCon.DistinguishedName, "", vnsAbsTermConnAttr)
+
+		err = aciClient.Save(vnsAbsTermConn)
+		if err != nil {
+			return err
+		}
+
+		d.Set("term_cons_dn", vnsAbsTermConn.DistinguishedName)
+	}
+
+	if provName, ok := d.GetOk("term_prov_name"); ok {
+		vnsAbsTermNodeProvAttr := models.ProviderTerminalNodeAttributes{}
+
+		vnsAbsTermNodeProvAttr.Annotation = "{}"
+
+		vnsAbsTermNodeProv := models.NewProviderTerminalNode(fmt.Sprintf("AbsTermNodeProv-%s", provName), vnsAbsGraph.DistinguishedName, "", vnsAbsTermNodeProvAttr)
+
+		err := aciClient.Save(vnsAbsTermNodeProv)
+		if err != nil {
+			return err
+		}
+		d.Set("term_node_prov_dn", vnsAbsTermNodeProv.DistinguishedName)
+
+		vnsAbsTermConnAttr := models.TerminalConnectorAttributes{}
+		vnsAbsTermConnAttr.Annotation = "{}"
+		vnsAbsTermConn := models.NewTerminalConnector(fmt.Sprintf("AbsTConn"), vnsAbsTermNodeProv.DistinguishedName, "", vnsAbsTermConnAttr)
+
+		err = aciClient.Save(vnsAbsTermConn)
+		if err != nil {
+			return err
+		}
+
+		d.Set("term_prov_dn", vnsAbsTermConn.DistinguishedName)
+	}
+
 	d.SetId(vnsAbsGraph.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
@@ -208,6 +354,73 @@ func resourceAciL4L7ServiceGraphTemplateUpdate(d *schema.ResourceData, m interfa
 
 	d.Partial(false)
 
+	if d.HasChange("term_cons_name") {
+		consNameDn := d.Get("term_node_cons_dn").(string)
+
+		err := aciClient.DeleteByDn(consNameDn, "vnsAbsTermNodeCon")
+		if err != nil {
+			return err
+		}
+
+		consName := d.Get("term_cons_name").(string)
+		vnsAbsTermNodeConAttr := models.ConsumerTerminalNodeAttributes{}
+
+		vnsAbsTermNodeConAttr.Annotation = "{}"
+
+		vnsAbsTermNodeCon := models.NewConsumerTerminalNode(fmt.Sprintf("AbsTermNodeCon-%s", consName), vnsAbsGraph.DistinguishedName, "", vnsAbsTermNodeConAttr)
+
+		err = aciClient.Save(vnsAbsTermNodeCon)
+		if err != nil {
+			return err
+		}
+		d.Set("term_node_cons_dn", vnsAbsTermNodeCon.DistinguishedName)
+
+		vnsAbsTermConnAttr := models.TerminalConnectorAttributes{}
+		vnsAbsTermConnAttr.Annotation = "{}"
+		vnsAbsTermConn := models.NewTerminalConnector(fmt.Sprintf("AbsTConn"), vnsAbsTermNodeCon.DistinguishedName, "", vnsAbsTermConnAttr)
+
+		err = aciClient.Save(vnsAbsTermConn)
+		if err != nil {
+			return err
+		}
+
+		d.Set("term_cons_dn", vnsAbsTermConn.DistinguishedName)
+
+	}
+
+	if d.HasChange("term_prov_name") {
+		provNameDn := d.Get("term_node_prov_dn").(string)
+
+		err := aciClient.DeleteByDn(provNameDn, "vnsAbsTermNodeProv")
+		if err != nil {
+			return err
+		}
+
+		provName := d.Get("term_prov_name").(string)
+		vnsAbsTermNodeProvAttr := models.ProviderTerminalNodeAttributes{}
+
+		vnsAbsTermNodeProvAttr.Annotation = "{}"
+
+		vnsAbsTermNodeProv := models.NewProviderTerminalNode(fmt.Sprintf("AbsTermNodeProv-%s", provName), vnsAbsGraph.DistinguishedName, "", vnsAbsTermNodeProvAttr)
+
+		err = aciClient.Save(vnsAbsTermNodeProv)
+		if err != nil {
+			return err
+		}
+		d.Set("term_node_prov_dn", vnsAbsTermNodeProv.DistinguishedName)
+
+		vnsAbsTermConnAttr := models.TerminalConnectorAttributes{}
+		vnsAbsTermConnAttr.Annotation = "{}"
+		vnsAbsTermConn := models.NewTerminalConnector(fmt.Sprintf("AbsTConn"), vnsAbsTermNodeProv.DistinguishedName, "", vnsAbsTermConnAttr)
+
+		err = aciClient.Save(vnsAbsTermConn)
+		if err != nil {
+			return err
+		}
+
+		d.Set("term_prov_dn", vnsAbsTermConn.DistinguishedName)
+	}
+
 	d.SetId(vnsAbsGraph.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
@@ -228,6 +441,40 @@ func resourceAciL4L7ServiceGraphTemplateRead(d *schema.ResourceData, m interface
 		return nil
 	}
 	setL4L7ServiceGraphTemplateAttributes(vnsAbsGraph, d)
+
+	consDn := d.Get("term_node_cons_dn").(string)
+	vnsAbsTermNodeCon, err := getRemoteConsumerTerminalNode(aciClient, consDn)
+	if err != nil {
+		d.Set("term_node_cons_dn", "")
+		d.Set("term_cons_name", "")
+		return nil
+	}
+	setConsumerTerminalNodeAttributes(vnsAbsTermNodeCon, d)
+
+	vnsAbsTermConnDn := d.Get("term_cons_dn").(string)
+	vnsAbsTermConn, err := getRemoteTerminalConnector(aciClient, vnsAbsTermConnDn)
+	if err != nil {
+		d.Set("term_cons_dn", "")
+	} else {
+		d.Set("term_cons_dn", vnsAbsTermConn.DistinguishedName)
+	}
+
+	provDn := d.Get("term_node_prov_dn").(string)
+	vnsAbsTermNodeProv, err := getRemoteProviderTerminalNode(aciClient, provDn)
+	if err != nil {
+		d.Set("term_node_prov_dn", "")
+		d.Set("term_prov_name", "")
+		return nil
+	}
+	setProviderTerminalNodeAttributes(vnsAbsTermNodeProv, d)
+
+	vnsAbsTermConnDn = d.Get("term_prov_dn").(string)
+	vnsAbsTermConn, err = getRemoteTerminalConnector(aciClient, vnsAbsTermConnDn)
+	if err != nil {
+		d.Set("term_prov_dn", "")
+	} else {
+		d.Set("term_prov_dn", vnsAbsTermConn.DistinguishedName)
+	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 
