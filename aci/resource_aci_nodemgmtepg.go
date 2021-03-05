@@ -166,7 +166,7 @@ func resourceAciNodeManagementEPg() *schema.Resource {
 				Set:      schema.HashString,
 			},
 			"relation_fv_rs_cust_qos_pol": &schema.Schema{
-				Type: schema.TypeString,
+				Type:     schema.TypeString,
 				Optional: true,
 			},
 			"relation_mgmt_rs_mgmt_bd": &schema.Schema{
@@ -214,7 +214,7 @@ func resourceAciNodeManagementEPg() *schema.Resource {
 				Set:      schema.HashString,
 			},
 			"relation_mgmt_rs_oo_b_ctx": &schema.Schema{
-				Type: schema.TypeString,
+				Type:     schema.TypeString,
 				Optional: true,
 			},
 		}),
