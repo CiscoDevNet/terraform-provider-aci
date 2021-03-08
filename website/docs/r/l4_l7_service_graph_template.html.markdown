@@ -26,19 +26,22 @@ resource "aci_l4_l7_service_graph_template" "example" {
 ```
 
 ## Argument Reference ##
-* `tenant_dn` - (Required) Distinguished name of parent Tenant object.
-* `name` - (Required) Name for L4-L7 service graph template object.
-* `annotation` - (Optional) Annotation for L4-L7 service graph template object.
+* `tenant_dn` - (Required) distinguished name of parent Tenant object.
+* `name` - (Required) name for L4-L7 service graph template object.
+* `annotation` - (Optional) annotation for L4-L7 service graph template object.
 * `name_alias` - (Optional) name_alias for L4-L7 service graph template object.
-* `l4-l7_service_graph_template_type` - (Optional) Component type for L4-L7 service graph template object. Allowed values are "legacy" and "cloud". Default value is "legacy".
+* `l4-l7_service_graph_template_type` - (Optional) component type for L4-L7 service graph template object. Allowed values are "legacy" and "cloud". Default value is "legacy".
 * `ui_template_type` - (Optional) UI template type for L4-L7 service graph template object. Allowed values are "ONE_NODE_ADC_ONE_ARM", "ONE_NODE_ADC_ONE_ARM_L3EXT", "ONE_NODE_ADC_TWO_ARM", "ONE_NODE_FW_ROUTED", "ONE_NODE_FW_TRANS", "TWO_NODE_FW_ROUTED_ADC_ONE_ARM", "TWO_NODE_FW_ROUTED_ADC_ONE_ARM_L3EXT", "TWO_NODE_FW_ROUTED_ADC_TWO_ARM", "TWO_NODE_FW_TRANS_ADC_ONE_ARM", "TWO_NODE_FW_TRANS_ADC_ONE_ARM_L3EXT", "TWO_NODE_FW_TRANS_ADC_TWO_ARM" and "UNSPECIFIED". Default value is "UNSPECIFIED".
+* `term_cons_name` - (Optional) name of consumer terminal node. Default value is "T1".
+* `term_prov_name` - (Optional) name of provider terminal node. Default value is "T2".
 
 
 
 ## Attribute Reference
 
-The only attribute that this resource exports is the `id`, which is set to the
-Dn of the L4-L7 Service Graph Template.
+* `id` - Dn of the L4-L7 service graph template.
+* `term_cons_dn` - Dn of consumer terminal node for L4-L7 service graph template.
+* `term_prov_dn` - Dn of provider terminal node for L4-L7 service graph template.
 
 ## Importing ##
 
