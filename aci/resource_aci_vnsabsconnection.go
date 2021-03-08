@@ -427,12 +427,7 @@ func resourceAciConnectionRead(d *schema.ResourceData, m interface{}) error {
 
 	} else {
 		if _, ok := d.GetOk("relation_vns_rs_abs_copy_connection"); ok {
-			relationParamList := toStringList(d.Get("relation_vns_rs_abs_copy_connection").(*schema.Set).List())
-			tfList := make([]string, 0, 1)
-			for _, relationParam := range relationParamList {
-				relationParamName := GetMOName(relationParam)
-				tfList = append(tfList, relationParamName)
-			}
+			tfList := toStringList(d.Get("relation_vns_rs_abs_copy_connection").(*schema.Set).List())
 			vnsRsAbsCopyConnectionDataList := toStringList(vnsRsAbsCopyConnectionData.(*schema.Set).List())
 			sort.Strings(tfList)
 			sort.Strings(vnsRsAbsCopyConnectionDataList)
@@ -450,12 +445,7 @@ func resourceAciConnectionRead(d *schema.ResourceData, m interface{}) error {
 
 	} else {
 		if _, ok := d.GetOk("relation_vns_rs_abs_connection_conns"); ok {
-			relationParamList := toStringList(d.Get("relation_vns_rs_abs_connection_conns").(*schema.Set).List())
-			tfList := make([]string, 0, 1)
-			for _, relationParam := range relationParamList {
-				relationParamName := GetMOName(relationParam)
-				tfList = append(tfList, relationParamName)
-			}
+			tfList := toStringList(d.Get("relation_vns_rs_abs_connection_conns").(*schema.Set).List())
 			vnsRsAbsConnectionConnsDataList := toStringList(vnsRsAbsConnectionConnsData.(*schema.Set).List())
 			sort.Strings(tfList)
 			sort.Strings(vnsRsAbsConnectionConnsDataList)

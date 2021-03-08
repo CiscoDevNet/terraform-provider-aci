@@ -80,7 +80,7 @@ func (sm *ServiceManager) CreateRelationvnsRsAbsCopyConnectionFromConnection(par
 	}
 	fmt.Printf("%+v", cont)
 
-	return nil
+	return CheckForErrors(cont, "POST", sm.client.skipLoggingPayload)
 }
 
 func (sm *ServiceManager) DeleteRelationvnsRsAbsCopyConnectionFromConnection(parentDn, tDn string) error {
@@ -131,7 +131,7 @@ func (sm *ServiceManager) CreateRelationvnsRsAbsConnectionConnsFromConnection(pa
 	}
 	fmt.Printf("%+v", cont)
 
-	return nil
+	return CheckForErrors(cont, "POST", sm.client.skipLoggingPayload)
 }
 
 func (sm *ServiceManager) DeleteRelationvnsRsAbsConnectionConnsFromConnection(parentDn, tDn string) error {

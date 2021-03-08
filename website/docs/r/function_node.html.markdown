@@ -56,8 +56,9 @@ resource "aci_function_node" "example" {
 
 ## Attribute Reference
 
-The only attribute that this resource exports is the `id`, which is set to the
-Dn of the Function Node.
+* `id` - Dn of the function node.
+* `conn_consumer_dn` - Dn of consumer connection in fuction node.
+* `conn_provider_dn` - Dn of provider connection in fuction node.
 
 ## Importing
 

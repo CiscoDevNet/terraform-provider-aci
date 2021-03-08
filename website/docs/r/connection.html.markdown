@@ -33,8 +33,8 @@ resource "aci_connection" "conn2" {
 
 ## Argument Reference ##
 
-* `l4_l7_service_graph_template_dn` - (Required) Distinguished name of parent L4-L7 Service Graph Template object.
-* `name` - (Required) name of Object connection.
+* `l4_l7_service_graph_template_dn` - (Required) distinguished name of parent L4-L7 Service Graph Template object.
+* `name` - (Required) name of object connection.
 * `adj_type` - (Optional) connector adjacency type. Allowed values are "L2", "L3". Default value is "L2".
 * `annotation` - (Optional) annotation for object connection.
 * `conn_dir` - (Optional) conn_dir for object connection. Allowed values are "consumer", "provider". Default value is "provider".
@@ -43,9 +43,9 @@ resource "aci_connection" "conn2" {
 * `name_alias` - (Optional) name_alias for object connection.
 * `unicast_route` - (Optional) unicast route for connection object. Allowed values are "yes" and "no". Default value is "yes".
 
-* `relation_vns_rs_abs_copy_connection` - (Optional) List of relation to class vnsAConn. Cardinality - ONE_TO_M. Type - Set of String.
+* `relation_vns_rs_abs_copy_connection` - (Optional) list of relation to class vnsAConn. Cardinality - ONE_TO_M. Type - Set of String.
                 
-* `relation_vns_rs_abs_connection_conns` - (Optional) List of relation to class vnsAConn. Cardinality - ONE_TO_M. Type - Set of String.
+* `relation_vns_rs_abs_connection_conns` - (Optional) list of relation to class vnsAConn. Cardinality - ONE_TO_M. Type - Set of String.
                 
 
 
