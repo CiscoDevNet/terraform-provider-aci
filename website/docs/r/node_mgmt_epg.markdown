@@ -16,7 +16,7 @@ Manages ACI Node Management EPg
 
 resource "aci_node_mgmt_epg" "in_band_example" {
   type = "in_band"
-  management_profile_dn  = "${aci_management_profile.example.id}"
+  management_profile_dn  = "uni/tn-mgmt/mgmtp-default"
   name  = "example"
   annotation  = "example"
   encap  = "vlan-1"
@@ -30,7 +30,7 @@ resource "aci_node_mgmt_epg" "in_band_example" {
 
 resource "aci_node_mgmt_epg" "out_of_band_example" {
   type = "out_of_band"
-  management_profile_dn  = "${aci_management_profile.example.id}"
+  management_profile_dn  = "uni/tn-mgmt/mgmtp-default"
   name  = "example"
   annotation  = "example"
   name_alias  = "example"
