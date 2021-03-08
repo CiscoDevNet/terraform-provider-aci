@@ -3,6 +3,8 @@ package aci
 import (
 	"fmt"
 	"log"
+	"reflect"
+	"sort"
 	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
@@ -41,6 +43,14 @@ func resourceAciL3outOspfExternalPolicy() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				DiffSuppressFunc: func(k, old, new string, d *schema.ResourceData) bool {
+					oldList := strings.Split(old, ",")
+					newList := strings.Split(new, ",")
+					sort.Strings(oldList)
+					sort.Strings(newList)
+
+					return reflect.DeepEqual(oldList, newList)
+				},
 				ValidateFunc: schema.SchemaValidateFunc(validateCommaSeparatedStringInSlice([]string{
 					"redistribute",
 					"summary",
