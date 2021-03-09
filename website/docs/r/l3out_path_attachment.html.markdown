@@ -24,7 +24,7 @@ resource "aci_l3out_path_attachment" "example" {
   encap  = "vlan-1"
   encap_scope = "ctx"
   ipv6_dad = "disabled"
-  ll_addr  = "example"
+  ll_addr  = "::"
   mac  = "0F:0F:0F:0F:FF:FF"
   mode = "native"
   mtu = "inherit"
@@ -45,7 +45,7 @@ resource "aci_l3out_path_attachment" "example" {
 
 - `autostate` - (Optional) Autostate for object L3-out Path Attachment.
   Allowed values: "disabled", "enabled". Default value: "disabled".
-- `encap` - (Optional) The encapsulation of the path attached to the layer 3 outside profile.
+- `encap` - (Optional) The encapsulation of the path attached to the layer 3 outside profile. Encap should be set to "unknown" if the value of if_inst_t is "l3-port".
 
 - `encap_scope` - (Optional) The encapsulation scope for object L3-out Path Attachment.
   Allowed values: "ctx", "local". Default value: "local".
