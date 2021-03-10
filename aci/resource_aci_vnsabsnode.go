@@ -114,6 +114,18 @@ func resourceAciFunctionNode() *schema.Resource {
 				Computed: true,
 			},
 
+			"conn_consumer_dn": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+
+			"conn_provider_dn": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+
 			"share_encap": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -192,6 +204,21 @@ func setFunctionNodeAttributes(vnsAbsNode *models.FunctionNode, d *schema.Resour
 	return d
 }
 
+func getRemoteFunctionConnector(client *client.Client, dn string) (*models.FunctionConnector, error) {
+	vnsAbsFuncConnCont, err := client.Get(dn)
+	if err != nil {
+		return nil, err
+	}
+
+	vnsAbsFuncConn := models.FunctionConnectorFromContainer(vnsAbsFuncConnCont)
+
+	if vnsAbsFuncConn.DistinguishedName == "" {
+		return nil, fmt.Errorf("Function Connector %s not found", vnsAbsFuncConn.DistinguishedName)
+	}
+
+	return vnsAbsFuncConn, nil
+}
+
 func resourceAciFunctionNodeImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
 	log.Printf("[DEBUG] %s: Beginning Import", d.Id())
 	aciClient := m.(*client.Client)
@@ -260,6 +287,22 @@ func resourceAciFunctionNodeCreate(d *schema.ResourceData, m interface{}) error 
 	d.SetPartial("name")
 
 	d.Partial(false)
+
+	vnsAbsFuncConnAttr := models.FunctionConnectorAttributes{}
+	vnsAbsFuncConnAttr.Annotation = "{}"
+	vnsAbsFuncConn := models.NewFunctionConnector(fmt.Sprintf("AbsFConn-%s", "consumer"), vnsAbsNode.DistinguishedName, "", vnsAbsFuncConnAttr)
+	err = aciClient.Save(vnsAbsFuncConn)
+	if err != nil {
+		return err
+	}
+	d.Set("conn_consumer_dn", vnsAbsFuncConn.DistinguishedName)
+
+	vnsAbsFuncConn = models.NewFunctionConnector(fmt.Sprintf("AbsFConn-%s", "provider"), vnsAbsNode.DistinguishedName, "", vnsAbsFuncConnAttr)
+	err = aciClient.Save(vnsAbsFuncConn)
+	if err != nil {
+		return err
+	}
+	d.Set("conn_provider_dn", vnsAbsFuncConn.DistinguishedName)
 
 	checkDns := make([]string, 0, 1)
 
@@ -410,6 +453,15 @@ func resourceAciFunctionNodeUpdate(d *schema.ResourceData, m interface{}) error 
 
 	d.Partial(false)
 
+	if d.HasChange("conn_consumer_dn") || d.HasChange("conn_provider_dn") {
+		consOld, _ := d.GetChange("conn_consumer_dn")
+		d.Set("conn_consumer_dn", consOld.(string))
+
+		provOld, _ := d.GetChange("conn_provider_dn")
+		d.Set("conn_provider_dn", provOld.(string))
+		return fmt.Errorf("conn_consumer_dn and conn_provider_dn is not user configurable")
+	}
+
 	checkDns := make([]string, 0, 1)
 
 	if d.HasChange("relation_vns_rs_node_to_abs_func_prof") {
@@ -536,6 +588,22 @@ func resourceAciFunctionNodeRead(d *schema.ResourceData, m interface{}) error {
 		return nil
 	}
 	setFunctionNodeAttributes(vnsAbsNode, d)
+
+	consDn := d.Get("conn_consumer_dn").(string)
+	vnsAbsFuncConn, err := getRemoteFunctionConnector(aciClient, consDn)
+	if err != nil {
+		d.Set("conn_consumer_dn", "")
+	} else {
+		d.Set("conn_consumer_dn", vnsAbsFuncConn.DistinguishedName)
+	}
+
+	provDn := d.Get("conn_provider_dn").(string)
+	vnsAbsFuncConn, err = getRemoteFunctionConnector(aciClient, provDn)
+	if err != nil {
+		d.Set("conn_provider_dn", "")
+	} else {
+		d.Set("conn_provider_dn", vnsAbsFuncConn.DistinguishedName)
+	}
 
 	vnsRsNodeToAbsFuncProfData, err := aciClient.ReadRelationvnsRsNodeToAbsFuncProfFromFunctionNode(dn)
 	if err != nil {

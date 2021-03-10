@@ -242,6 +242,47 @@ func (c *Client) useInsecureHTTPClient(insecure bool) *http.Transport {
 
 }
 
+// Takes raw payload and does the http request
+//  Used for login request
+//  passwords with special chars have issues when using container
+//  for encoding/decoding
+func (c *Client) MakeRestRequestRaw(method string, path string, payload []byte, authenticated bool) (*http.Request, error) {
+
+	url, err := url.Parse(path)
+	if err != nil {
+		return nil, err
+	}
+
+	fURL := c.BaseURL.ResolveReference(url)
+	var req *http.Request
+	if method == "GET" {
+		req, err = http.NewRequest(method, fURL.String(), nil)
+	} else {
+		req, err = http.NewRequest(method, fURL.String(), bytes.NewBuffer(payload))
+	}
+	if err != nil {
+		return nil, err
+	}
+
+	if c.skipLoggingPayload {
+		log.Printf("HTTP request %s %s", method, path)
+	} else {
+		log.Printf("HTTP request %s %s %v", method, path, req)
+	}
+	if authenticated {
+		req, err = c.InjectAuthenticationHeader(req, path)
+		if err != nil {
+			return req, err
+		}
+	}
+
+	if !c.skipLoggingPayload {
+		log.Printf("HTTP request after injection %s %s %v", method, path, req)
+	}
+
+	return req, nil
+}
+
 func (c *Client) MakeRestRequest(method string, rpath string, body *container.Container, authenticated bool) (*http.Request, error) {
 
 	pathURL, err := url.Parse(rpath)
@@ -277,12 +318,6 @@ func (c *Client) MakeRestRequest(method string, rpath string, body *container.Co
 		return nil, err
 	}
 
-	if !authenticated {
-		c.skipLoggingPayload = true
-	} else {
-		c.skipLoggingPayload = false
-	}
-
 	if c.skipLoggingPayload {
 		log.Printf("HTTP request %s %s", method, rpath)
 	} else {
@@ -312,20 +347,22 @@ func (c *Client) Authenticate() error {
 	// (2) escapes out the password to support scenarios where the user password includes backslashes
 	escUserName := strings.ReplaceAll(c.username, `\`, `\\`)
 	escPwd := strings.ReplaceAll(c.password, `\`, `\\`)
-	body, err := container.ParseJSON([]byte(fmt.Sprintf(authPayload, escUserName, escPwd)))
+	body := []byte(fmt.Sprintf(authPayload, escUserName, escPwd))
 	if c.appUserName != "" {
 		path = "/api/requestAppToken.json"
-		body, err = container.ParseJSON([]byte(fmt.Sprintf(authAppPayload, c.appUserName)))
+		body = []byte(fmt.Sprintf(authAppPayload, c.appUserName))
 		authenticated = true
 	}
 
+	c.skipLoggingPayload = true
+
+	req, err := c.MakeRestRequestRaw(method, path, body, authenticated)
 	if err != nil {
 		return err
 	}
-
-	req, err := c.MakeRestRequest(method, path, body, authenticated)
 	obj, _, err := c.Do(req)
 
+	c.skipLoggingPayload = false
 	if err != nil {
 		return err
 	}
