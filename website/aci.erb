@@ -5,13 +5,13 @@
           <li<%= sidebar_current("docs-home") %>>
           <a href="/docs/providers/index.html">All Providers</a>
           </li>
-  
+
           <li<%= sidebar_current("docs-aci-index") %>>
           <a href="/docs/providers/aci/index.html">ACI Provider</a>
           </li>
-  
 
-  
+
+
           <li<%= sidebar_current("docs-aci-datasource") %>>
           <a href="#">Data Resources</a>
                   <ul class="nav nav-visible">
@@ -119,13 +119,13 @@
                       </li>
                       <li<%= sidebar_current("docs-aci-data-source-cloud_providers_region") %>>
                         <a href="/docs/providers/aci/d/cloud_providers_region.html">aci_cloud_providers_region</a>
-                      </li>                            
+                      </li>
                       <li<%= sidebar_current("docs-aci-data-source-cloud_subnet") %>>
                         <a href="/docs/providers/aci/d/cloud_subnet.html">aci_cloud_subnet</a>
                       </li>
                       <li<%= sidebar_current("docs-aci-data-source-cloud_vpn_gateway") %>>
                         <a href="/docs/providers/aci/d/cloud_vpn_gateway.html">aci_cloud_vpn_gateway</a>
-                      </li>  
+                      </li>
                       <li<%= sidebar_current("docs-aci-data-source-configuration_export_policy") %>>
                         <a href="/docs/providers/aci/d/configuration_export_policy.html">aci_configuration_export_policy</a>
                       </li>
@@ -437,6 +437,15 @@
                       <li<%= sidebar_current("docs-aci-data-source-vmm_domain") %>>
                         <a href="/docs/providers/aci/d/vmm_domain.html">aci_vmm_domain</a>
                       </li>
+                      <li<%= sidebar_current("docs-aci-data-source-vmmctrlrp") %>>
+                        <a href="/docs/providers/aci/d/vmmctrlrp.html">aci_vmm_controller</a>
+                      </li>
+                      <li<%= sidebar_current("docs-aci-data-source-vmmusraccp") %>>
+                        <a href="/docs/providers/aci/d/vmmusraccp.html">aci_vmm_credential</a>
+                      </li>
+                      <li<%= sidebar_current("docs-aci-data-source-vmm_vswitchpolicycont") %>>
+                        <a href="/docs/providers/aci/d/vmmvswitchpolicycont.html">aci_vmm_vswitchpolicy</a>
+                      </li>
                       <li<%= sidebar_current("docs-aci-data-source-vpc_explicit_protection_group") %>>
                         <a href="/docs/providers/aci/d/vpc_explicit_protection_group.html">aci_vpc_explicit_protection_group</a>
                       </li>
@@ -455,7 +464,7 @@
                       <li<%= sidebar_current("docs-aci-index") %>>
                         <a href="/docs/providers/aci/index.html">ACI</a>
                       </li>
-                     
+
                   </ul>
           </li>
           <li<%= sidebar_current("docs-aci-resource") %>>
@@ -872,6 +881,15 @@
                       <li<%= sidebar_current("docs-aci-resource-vmm_domain") %>>
                         <a href="/docs/providers/aci/r/vmm_domain.html">aci_vmm_domain</a>
                       </li>
+                      <li<%= sidebar_current("docs-aci-resource-vmmctrlrp") %>>
+                        <a href="/docs/providers/aci/r/vmmctrlrp.html">aci_vmm_controller</a>
+                      </li>
+                      <li<%= sidebar_current("docs-aci-resource-vmmusraccp") %>>
+                        <a href="/docs/providers/aci/r/vmmusraccp.html">aci_vmm_credential</a>
+                      </li>
+                      <li<%= sidebar_current("docs-aci-resource-vmm_vswitchpolicycont") %>>
+                        <a href="/docs/providers/aci/r/vmmvswitchpolicycont.html">aci_vmm_vswitchpolicy</a>
+                      </li>
                       <li<%= sidebar_current("docs-aci-resource-vpc_explicit_protection_group") %>>
                         <a href="/docs/providers/aci/r/vpc_explicit_protection_group.html">aci_vpc_explicit_protection_group</a>
                       </li>
@@ -890,12 +908,12 @@
                       <li<%= sidebar_current("docs-aci-index") %>>
                         <a href="/docs/providers/aci/index.html">ACI</a>
                       </li>
-                     
+
                   </ul>
           </li>
         </ul>
       </div>
     <% end %>
-  
+
     <%= yield %>
     <% end %>
