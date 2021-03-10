@@ -160,7 +160,6 @@ func Provider() terraform.ResourceProvider {
 			"aci_cloud_vpn_gateway":                        resourceAciCloudVpnGateway(),
 			"aci_logical_interface_context":                resourceAciLogicalInterfaceContext(),
 			"aci_dhcp_option_policy":                       resourceAciDHCPOptionPolicy(),
-			"aci_dhcp_option":                              resourceAciDHCPOption(),
 			"aci_bd_dhcp_label":                            resourceAciBDDHCPLabel(),
 			"aci_dhcp_relay_policy":                        resourceAciDHCPRelayPolicy(),
 			"aci_leaf_breakout_port_group":                 resourceAciLeafBreakoutPortGroup(),
