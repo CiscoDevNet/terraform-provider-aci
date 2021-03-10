@@ -20,7 +20,7 @@ func dataSourceAciL3outPathAttachment() *schema.Resource {
 				Required: true,
 			},
 
-			"logical_interface_dn": &schema.Schema{
+			"target_dn": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
 			},
@@ -103,7 +103,7 @@ func dataSourceAciL3outPathAttachment() *schema.Resource {
 func dataSourceAciL3outPathAttachmentRead(d *schema.ResourceData, m interface{}) error {
 	aciClient := m.(*client.Client)
 
-	tDn := d.Get("logical_interface_dn").(string)
+	tDn := d.Get("target_dn").(string)
 
 	rn := fmt.Sprintf("rspathL3OutAtt-[%s]", tDn)
 	LogicalInterfaceProfileDn := d.Get("logical_interface_profile_dn").(string)
