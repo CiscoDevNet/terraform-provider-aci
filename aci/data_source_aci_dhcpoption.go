@@ -2,7 +2,9 @@ package aci
 
 import (
 	"fmt"
+
 	"github.com/ciscoecosystem/aci-go-client/client"
+	"github.com/ciscoecosystem/aci-go-client/models"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 )
 
@@ -69,4 +71,38 @@ func dataSourceAciDHCPOptionRead(d *schema.ResourceData, m interface{}) error {
 	d.SetId(dn)
 	setDHCPOptionAttributes(dhcpOption, d)
 	return nil
+}
+
+func getRemoteDHCPOption(client *client.Client, dn string) (*models.DHCPOption, error) {
+	dhcpOptionCont, err := client.Get(dn)
+	if err != nil {
+		return nil, err
+	}
+
+	dhcpOption := models.DHCPOptionFromContainer(dhcpOptionCont)
+
+	if dhcpOption.DistinguishedName == "" {
+		return nil, fmt.Errorf("DHCPOption %s not found", dhcpOption.DistinguishedName)
+	}
+
+	return dhcpOption, nil
+}
+
+func setDHCPOptionAttributes(dhcpOption *models.DHCPOption, d *schema.ResourceData) *schema.ResourceData {
+	dn := d.Id()
+	d.SetId(dhcpOption.DistinguishedName)
+	//d.Set("description", dhcpOption.Description)
+
+	if dn != dhcpOption.DistinguishedName {
+		d.Set("dhcp_option_policy_dn", "")
+	}
+	dhcpOptionMap, _ := dhcpOption.ToMap()
+
+	d.Set("name", dhcpOptionMap["name"])
+
+	d.Set("annotation", dhcpOptionMap["annotation"])
+	d.Set("data", dhcpOptionMap["data"])
+	d.Set("dhcp_option_id", dhcpOptionMap["id"])
+	d.Set("name_alias", dhcpOptionMap["nameAlias"])
+	return d
 }
