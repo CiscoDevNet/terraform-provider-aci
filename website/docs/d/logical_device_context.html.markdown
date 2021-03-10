@@ -32,7 +32,7 @@ data "aci_logical_device_context" "check" {
 
 ## Attribute Reference
 
-* `id` - attribute id set to the Dn of the Logical Device Context.
-* `annotation` - annotation for object logical_device_context.
-* `context` - context for object logical_device_context.
-* `name_alias` - name_alias for object logical_device_context.
+- `id` - Attribute id set to the Dn of the Logical Device Context.
+- `annotation` - Annotation for object logical_device_context.
+- `context` - Context for object logical_device_context.
+- `name_alias` - Name alias for object logical_device_context.
