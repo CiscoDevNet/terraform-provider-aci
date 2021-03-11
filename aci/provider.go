@@ -125,7 +125,7 @@ func Provider() terraform.ResourceProvider {
 			"aci_configuration_export_policy":              resourceAciConfigurationExportPolicy(),
 			"aci_cdp_interface_policy":                     resourceAciCDPInterfacePolicy(),
 			"aci_access_sub_port_block":                    resourceAciAccessSubPortBlock(),
-			"aci_node_block_maintgrp":                      resourceAciNodeBlockMG(),
+			"aci_maintenance_group_node":                   resourceAciNodeBlockMG(),
 			"aci_node_block_firmware":                      resourceAciNodeBlockFW(),
 			"aci_vpc_explicit_protection_group":            resourceAciVPCExplicitProtectionGroup(),
 			"aci_configuration_import_policy":              resourceAciConfigurationImportPolicy(),
@@ -173,6 +173,7 @@ func Provider() terraform.ResourceProvider {
 			"aci_l3out_path_attachment":                    resourceAciL3outPathAttachment(),
 			"aci_l3out_path_attachment_secondary_ip":       resourceAciL3outPathAttachmentSecondaryIp(),
 			"aci_bgp_route_summarization":                  resourceAciBgpRouteSummarization(),
+			"aci_static_node_mgmt_address":                 resourceAciMgmtStaticNode(),
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
@@ -244,7 +245,7 @@ func Provider() terraform.ResourceProvider {
 			"aci_configuration_export_policy":              dataSourceAciConfigurationExportPolicy(),
 			"aci_cdp_interface_policy":                     dataSourceAciCDPInterfacePolicy(),
 			"aci_access_sub_port_block":                    dataSourceAciAccessSubPortBlock(),
-			"aci_node_block_maintgrp":                      dataSourceAciNodeBlockMG(),
+			"aci_maintenance_group_node":                   dataSourceAciNodeBlockMG(),
 			"aci_node_block_firmware":                      dataSourceAciNodeBlockFW(),
 			"aci_vpc_explicit_protection_group":            dataSourceAciVPCExplicitProtectionGroup(),
 			"aci_configuration_import_policy":              dataSourceAciConfigurationImportPolicy(),
@@ -296,6 +297,7 @@ func Provider() terraform.ResourceProvider {
 			"aci_l3out_path_attachment":                    dataSourceAciL3outPathAttachment(),
 			"aci_l3out_path_attachment_secondary_ip":       dataSourceAciL3outPathAttachmentSecondaryIp(),
 			"aci_bgp_route_summarization":                  dataSourceAciBgpRouteSummarization(),
+			"aci_static_node_mgmt_address":                 dataSourceAciMgmtStaticNode(),
 		},
 
 		ConfigureFunc: configureClient,
