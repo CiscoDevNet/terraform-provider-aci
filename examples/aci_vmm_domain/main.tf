@@ -55,6 +55,6 @@ resource "aci_lacp_policy" "port_channel_policy" {
 
 resource "aci_vswitch_policy" "vmware_switch_policy" {
   vmm_domain_dn = aci_vmm_domain.vds.id
-  // relation_vmm_rs_vswitch_override_lacp_pol = aci_lldp_interface_policy.port_channel_policy.id
-  // relation_vmm_rs_vswitch_override_lldp_if_pol = aci_lacp_policy.LLDP_policy.id
+  relation_vmm_rs_vswitch_override_lacp_pol = aci_lacp_policy.port_channel_policy.id
+  relation_vmm_rs_vswitch_override_lldp_if_pol = aci_lldp_interface_policy.LLDP_policy.id
 }
