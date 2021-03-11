@@ -109,13 +109,18 @@ func setMgmtStaticNodeAttributes(mgmtRsOoBStNode *models.OutofbandStaticNode, mg
 
 	if bandType == "in_band" {
 		d.SetId(mgmtRsInBStNode.DistinguishedName)
+
+		d.Set("description", mgmtRsInBStNode.Description)
+		if dn != mgmtRsInBStNode.DistinguishedName {
+			d.Set("management_epg_dn", "")
+		}
 	} else {
 		d.SetId(mgmtRsOoBStNode.DistinguishedName)
-	}
 
-	d.Set("description", mgmtRsOoBStNode.Description)
-	if dn != mgmtRsOoBStNode.DistinguishedName {
-		d.Set("management_epg_dn", "")
+		d.Set("description", mgmtRsOoBStNode.Description)
+		if dn != mgmtRsOoBStNode.DistinguishedName {
+			d.Set("management_epg_dn", "")
+		}
 	}
 
 	if bandType == "in_band" {
@@ -172,7 +177,7 @@ func resourceAciMgmtStaticNodeImport(d *schema.ResourceData, m interface{}) ([]*
 		if err != nil {
 			return nil, err
 		}
-		schemaFilled := setMgmtStaticNodeAttributes(mgmtRsOoBStNode, nil, "out-of-band", d)
+		schemaFilled := setMgmtStaticNodeAttributes(mgmtRsOoBStNode, nil, "out_of_band", d)
 
 		log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
@@ -381,7 +386,7 @@ func resourceAciMgmtStaticNodeRead(d *schema.ResourceData, m interface{}) error 
 			d.SetId("")
 			return nil
 		}
-		setMgmtStaticNodeAttributes(mgmtRsOoBStNode, nil, "out-of-band", d)
+		setMgmtStaticNodeAttributes(mgmtRsOoBStNode, nil, "out_of_band", d)
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())

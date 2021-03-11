@@ -14,26 +14,27 @@ Data source for ACI Management Static Node
 
 ```hcl
 data "aci_static_node_mgmt_address" "example" {
-  out-_of-_band_management_e_pg_dn  = "${aci_out-_of-_band_management_e_pg.example.id}"
-  tDn  = "example"
-  type = "in-band"
+  management_epg_dn = "${aci_node_mgmt_epg.example.id}"
+  t_dn              = "${aci_static_node_mgmt_address.example.t_dn}"
+  type              = "out_of_band"
 }
 ```
 
 
 ## Argument Reference ##
 
-* `out-_of-_band_management_e_pg_dn` - (Required) Distinguished name of parent management static node object.
-* `tDn` - (Required) tDn of management static node object.
+* `management_epg_dn` - (Required) distinguished name of parent management static node object.
+* `t_dn` - (Required) target dn of management static node object.
 * `type` - (Required) type for management static node object.
+Note := for "in_band", `management_epg_dn` should be of type "in_band" and for "out_of_band", `management_epg_dn` should be of type "out_of_band".
 
 
 
 ## Attribute Reference
 
-* `id` - Attribute id set to the Dn of management static node object.
-* `addr` - (Optional) peer address for management static node object.
-* `annotation` - (Optional) annotation for management static node object.
-* `gw` - (Optional) gateway IP address for management static node object
-* `v6_addr` - (Optional) v6 address for management static node object.
-* `v6_gw` - (Optional) v6 gw for management static node object.
+* `id` - attribute id set to the Dn of management static node object.
+* `addr` - peer address for management static node object.
+* `annotation` - annotation for management static node object.
+* `gw` - gateway IP address for management static node object
+* `v6_addr` - v6 address for management static node object.
+* `v6_gw` - v6 gw for management static node object.

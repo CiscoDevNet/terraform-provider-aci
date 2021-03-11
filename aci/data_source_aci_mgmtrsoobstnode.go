@@ -5,6 +5,7 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
 )
 
 func dataSourceAciMgmtStaticNode() *schema.Resource {
@@ -28,6 +29,10 @@ func dataSourceAciMgmtStaticNode() *schema.Resource {
 			"type": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"in_band",
+					"out_of_band",
+				}, false),
 			},
 
 			"addr": &schema.Schema{
@@ -68,32 +73,35 @@ func dataSourceAciAciMgmtStaticNodeRead(d *schema.ResourceData, m interface{}) e
 
 	tDn := d.Get("t_dn").(string)
 
-	rn := fmt.Sprintf("rsooBStNode-[%s]", tDn)
-	managementEPgDn := d.Get("management_epg_dn").(string)
-
-	dn := fmt.Sprintf("%s/%s", managementEPgDn, rn)
-
 	bandType := d.Get("type").(string)
 
-	if bandType == "in-band" {
+	if bandType == "in_band" {
+		rn := fmt.Sprintf("rsinBStNode-[%s]", tDn)
+		managementEPgDn := d.Get("management_epg_dn").(string)
+
+		dn := fmt.Sprintf("%s/%s", managementEPgDn, rn)
+
 		mgmtRsInBStNode, err := getRemoteInbandStaticNode(aciClient, dn)
 		if err != nil {
-			d.SetId("")
-			return nil
+			return err
 		}
 
 		d.SetId(dn)
-		setMgmtStaticNodeAttributes(nil, mgmtRsInBStNode, "in-band", d)
+		setMgmtStaticNodeAttributes(nil, mgmtRsInBStNode, "in_band", d)
 
 	} else {
+		rn := fmt.Sprintf("rsooBStNode-[%s]", tDn)
+		managementEPgDn := d.Get("management_epg_dn").(string)
+
+		dn := fmt.Sprintf("%s/%s", managementEPgDn, rn)
+
 		mgmtRsOoBStNode, err := getRemoteOutofbandStaticNode(aciClient, dn)
 		if err != nil {
-			d.SetId("")
-			return nil
+			return err
 		}
 
 		d.SetId(dn)
-		setMgmtStaticNodeAttributes(mgmtRsOoBStNode, nil, "out-of-band", d)
+		setMgmtStaticNodeAttributes(mgmtRsOoBStNode, nil, "out_of_band", d)
 	}
 	return nil
 }
