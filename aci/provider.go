@@ -171,6 +171,8 @@ func Provider() terraform.ResourceProvider {
 			"aci_l3out_bgp_external_policy":                resourceAciL3outBgpExternalPolicy(),
 			"aci_l3out_ospf_external_policy":               resourceAciL3outOspfExternalPolicy(),
 			"aci_l3out_path_attachment":                    resourceAciL3outPathAttachment(),
+			"aci_l3out_path_attachment_secondary_ip":       resourceAciL3outPathAttachmentSecondaryIp(),
+			"aci_bgp_route_summarization":                  resourceAciBgpRouteSummarization(),
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
@@ -292,6 +294,8 @@ func Provider() terraform.ResourceProvider {
 			"aci_l3out_bgp_external_policy":                dataSourceAciL3outBgpExternalPolicy(),
 			"aci_l3out_ospf_external_policy":               dataSourceAciL3outOspfExternalPolicy(),
 			"aci_l3out_path_attachment":                    dataSourceAciL3outPathAttachment(),
+			"aci_l3out_path_attachment_secondary_ip":       dataSourceAciL3outPathAttachmentSecondaryIp(),
+			"aci_bgp_route_summarization":                  dataSourceAciBgpRouteSummarization(),
 		},
 
 		ConfigureFunc: configureClient,
