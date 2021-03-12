@@ -200,6 +200,8 @@ func Provider() terraform.ResourceProvider {
 			"aci_l3out_static_route":                       resourceAciL3outStaticRoute(),
 			"aci_l3out_static_route_next_hop":              resourceAciL3outStaticRouteNextHop(),
 			"aci_l3out_vpc_member":                         resourceAciL3outVPCMember(),
+			"aci_endpoint_security_group_selector":         resourceAciEndpointSecurityGroupSelector(),
+			"aci_endpoint_security_group":                  resourceAciEndpointSecurityGroup(),
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
@@ -351,6 +353,8 @@ func Provider() terraform.ResourceProvider {
 			"aci_l3out_static_route":                       dataSourceAciL3outStaticRoute(),
 			"aci_l3out_static_route_next_hop":              dataSourceAciL3outStaticRouteNextHop(),
 			"aci_l3out_vpc_member":                         dataSourceAciL3outVPCMember(),
+			"aci_endpoint_security_group_selector":         dataSourceAciEndpointSecurityGroupSelector(),
+			"aci_endpoint_security_group":                  dataSourceAciEndpointSecurityGroup(),
 		},
 
 		ConfigureFunc: configureClient,
