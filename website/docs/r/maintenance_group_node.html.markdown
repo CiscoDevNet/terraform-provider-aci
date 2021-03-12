@@ -13,12 +13,12 @@ Manages ACI Maintenance Group Node
 
 ```hcl
 resource "aci_maintenance_group_node" "example" {
-  pod_maintenance_group_dn  = "${aci_pod_maintenance_group.example.id}"
-  name  = "First"
-  annotation  = "example"
-  from_  = "example"
-  name_alias  = "example"
-  to_  = "example"
+  pod_maintenance_group_dn = "${aci_pod_maintenance_group.example.id}"
+  name                     = "First"
+  annotation               = "example"
+  from_                    = "1"
+  name_alias               = "aliasing"
+  to_                      = "5"
 }
 ```
 
@@ -28,9 +28,9 @@ resource "aci_maintenance_group_node" "example" {
 * `pod_maintenance_group_dn` - (Required) distinguished name of parent POD maintenance group object.
 * `name` - (Required) name of maintenance group node object.
 * `annotation` - (Optional) annotation for maintenance group node object.
-* `from_` - (Optional) from for maintenance group node object.
+* `from_` - (Optional) from value for maintenance group node object.
 * `name_alias` - (Optional) name alias for maintenance group node object.
-* `to_` - (Optional) to for maintenance group node object.
+* `to_` - (Optional) to value for maintenance group node object.
 
 
 
