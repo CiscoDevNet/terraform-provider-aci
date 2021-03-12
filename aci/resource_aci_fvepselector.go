@@ -6,7 +6,6 @@ import (
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
 )
 
 func resourceAciEndpointSecurityGroupSelector() *schema.Resource {
@@ -26,32 +25,19 @@ func resourceAciEndpointSecurityGroupSelector() *schema.Resource {
 			"endpoint_security_group_dn": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
-			},
-			
-			"matchExpression": &schema.Schema{
-				Type: schema.TypeString,
-				Required: true,
-			},
-			
+		},
 
-
-	     
 			"annotation": &schema.Schema{
 				Type:     schema.TypeString,
-			     
 				Optional: true,
 				Computed: true,
 				Description: "Mo doc not defined in techpub!!!",
-                
 		},
-             
+
 			"match_expression": &schema.Schema{
 				Type:     schema.TypeString,
-			     
-				Optional: true,
-				Computed: true,
+				Required: true,
 				Description: "Mo doc not defined in techpub!!!",
-                
 		},
              
 			"name_alias": &schema.Schema{
@@ -71,7 +57,7 @@ func resourceAciEndpointSecurityGroupSelector() *schema.Resource {
 				Description: "Mo doc not defined in techpub!!!",
                 
 		},
-            	    
+
 
 			
 
@@ -97,11 +83,11 @@ func getRemoteEndpointSecurityGroupSelector(client *client.Client, dn string) (*
 func setEndpointSecurityGroupSelectorAttributes(fvEPSelector *models.EndpointSecurityGroupSelector, d *schema.ResourceData) *schema.ResourceData {
 	d.SetId(fvEPSelector.DistinguishedName)
 	d.Set("description", fvEPSelector.Description)
-	d.Set("endpoint_security_group_dn", GetParentDn(fvEPSelector.DistinguishedName))
 	fvEPSelectorMap , _ := fvEPSelector.ToMap()
      
 	d.Set("annotation", fvEPSelectorMap["annotation"]) 
-	d.Set("match_expression", fvEPSelectorMap["matchExpression"]) 
+	d.Set("match_expression", fvEPSelectorMap["matchExpression"])
+	d.Set("endpoint_security_group_dn", GetParentDn(fvEPSelector.DistinguishedName, fmt.Sprintf("/epselector-[%s]", fvEPSelectorMap["matchExpression"])))
 	d.Set("name_alias", fvEPSelectorMap["nameAlias"]) 
 	d.Set("userdom", fvEPSelectorMap["userdom"])
 	return d
@@ -125,7 +111,7 @@ func resourceAciEndpointSecurityGroupSelectorImport(d *schema.ResourceData, m in
 func resourceAciEndpointSecurityGroupSelectorCreate(d *schema.ResourceData, m interface{}) error {
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
-	matchExpression := d.Get("matchExpression").(string)
+	matchExpression := d.Get("match_expression").(string)
 	EndpointSecurityGroupDn := d.Get("endpoint_security_group_dn").(string)
 	
 	fvEPSelectorAttr := models.EndpointSecurityGroupSelectorAttributes{} 
@@ -159,7 +145,7 @@ func resourceAciEndpointSecurityGroupSelectorUpdate(d *schema.ResourceData, m in
 	desc := d.Get("description").(string)
 
 	
-	matchExpression := d.Get("matchExpression").(string)
+	matchExpression := d.Get("match_expression").(string)
 	EndpointSecurityGroupDn := d.Get("endpoint_security_group_dn").(string)
 	
 
