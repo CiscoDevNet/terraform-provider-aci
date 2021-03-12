@@ -16,7 +16,7 @@ data "aci_endpoint_security_group_selector" "example" {
 
   endpoint_security_group_dn  = "${aci_endpoint_security_group.example.id}"
 
-  matchExpression  = "example"
+  match_expression  = "example"
 }
 ```
 ## Argument Reference ##

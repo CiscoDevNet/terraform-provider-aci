@@ -24,8 +24,7 @@ resource "aci_endpoint_security_group_selector" "example" {
 ```
 ## Argument Reference ##
 * `endpoint_security_group_dn` - (Required) Distinguished name of parent EndpointSecurityGroup object.
-* `matchExpression` - (Required) matchExpression of Object endpoint_security_group_selector.
 * `annotation` - (Optional) annotation for object endpoint_security_group_selector.
-* `match_expression` - (Optional) match_expression for object endpoint_security_group_selector.
+* `match_expression` - (Required) match_expression for object endpoint_security_group_selector.
 * `name_alias` - (Optional) name_alias for object endpoint_security_group_selector.
 * `userdom` - (Optional) userdom for object endpoint_security_group_selector.
