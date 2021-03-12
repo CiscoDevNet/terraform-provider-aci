@@ -13,8 +13,8 @@ Data source for ACI Node Block
 
 ```hcl
 data "aci_maintenance_group_node" "example" {
-  pod_maintenance_group_dn  = "${aci_pod_maintenance_group.example.id}"
-  name  = "example"
+  pod_maintenance_group_dn = "${aci_pod_maintenance_group.example.id}"
+  name                     = "example"
 }
 ```
 
