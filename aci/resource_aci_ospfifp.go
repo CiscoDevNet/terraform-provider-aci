@@ -7,6 +7,7 @@ import (
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
 )
 
 func resourceAciOSPFInterfaceProfile() *schema.Resource {
@@ -31,8 +32,8 @@ func resourceAciOSPFInterfaceProfile() *schema.Resource {
 
 			"auth_key": &schema.Schema{
 				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
+				Required: true,
+				ForceNew: true,
 			},
 
 			"auth_key_id": &schema.Schema{
@@ -45,6 +46,11 @@ func resourceAciOSPFInterfaceProfile() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"none",
+					"md5",
+					"simple",
+				}, false),
 			},
 
 			"name_alias": &schema.Schema{
@@ -88,7 +94,6 @@ func setOSPFInterfaceProfileAttributes(ospfIfP *models.OSPFInterfaceProfile, d *
 	ospfIfPMap, _ := ospfIfP.ToMap()
 
 	d.Set("annotation", ospfIfPMap["annotation"])
-	d.Set("auth_key", ospfIfPMap["authKey"])
 	d.Set("auth_key_id", ospfIfPMap["authKeyId"])
 	d.Set("auth_type", ospfIfPMap["authType"])
 	d.Set("name_alias", ospfIfPMap["nameAlias"])
@@ -147,6 +152,20 @@ func resourceAciOSPFInterfaceProfileCreate(d *schema.ResourceData, m interface{}
 	d.Partial(true)
 	d.Partial(false)
 
+	checkDns := make([]string, 0, 1)
+
+	if relationToospfRsIfPol, ok := d.GetOk("relation_ospf_rs_if_pol"); ok {
+		relationParam := relationToospfRsIfPol.(string)
+		checkDns = append(checkDns, relationParam)
+	}
+
+	d.Partial(true)
+	err = checkTDn(aciClient, checkDns)
+	if err != nil {
+		return err
+	}
+	d.Partial(false)
+
 	if relationToospfRsIfPol, ok := d.GetOk("relation_ospf_rs_if_pol"); ok {
 		relationParam := relationToospfRsIfPol.(string)
 		relationParamName := GetMOName(relationParam)
@@ -163,7 +182,7 @@ func resourceAciOSPFInterfaceProfileCreate(d *schema.ResourceData, m interface{}
 	d.SetId(ospfIfP.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciInterfaceProfileRead(d, m)
+	return resourceAciOSPFInterfaceProfileRead(d, m)
 }
 
 func resourceAciOSPFInterfaceProfileUpdate(d *schema.ResourceData, m interface{}) error {
@@ -204,6 +223,20 @@ func resourceAciOSPFInterfaceProfileUpdate(d *schema.ResourceData, m interface{}
 	d.Partial(true)
 	d.Partial(false)
 
+	checkDns := make([]string, 0, 1)
+
+	if d.HasChange("relation_ospf_rs_if_pol") {
+		_, newRelParam := d.GetChange("relation_ospf_rs_if_pol")
+		checkDns = append(checkDns, newRelParam.(string))
+	}
+
+	d.Partial(true)
+	err = checkTDn(aciClient, checkDns)
+	if err != nil {
+		return err
+	}
+	d.Partial(false)
+
 	if d.HasChange("relation_ospf_rs_if_pol") {
 		_, newRelParam := d.GetChange("relation_ospf_rs_if_pol")
 		newRelParamName := GetMOName(newRelParam.(string))
@@ -220,7 +253,7 @@ func resourceAciOSPFInterfaceProfileUpdate(d *schema.ResourceData, m interface{}
 	d.SetId(ospfIfP.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciInterfaceProfileRead(d, m)
+	return resourceAciOSPFInterfaceProfileRead(d, m)
 
 }
 

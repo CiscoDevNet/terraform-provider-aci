@@ -306,6 +306,12 @@ github.com/ciscoecosystem/aci-go-client v1.8.4 h1:oYT2VWsCN61jsk72wqX23NBTHEtatm
 github.com/ciscoecosystem/aci-go-client v1.8.4/go.mod h1:fhY7vWysK655g3Yp5Fz4Zje/JN4+moRe8RjwiRy0amQ=
 github.com/ciscoecosystem/aci-go-client v1.8.5 h1:Jz3ufazp3tU/bOknkrz1Mv/0+tU4/ozM3upe4xwchF4=
 github.com/ciscoecosystem/aci-go-client v1.8.5/go.mod h1:fhY7vWysK655g3Yp5Fz4Zje/JN4+moRe8RjwiRy0amQ=
+github.com/ciscoecosystem/aci-go-client v1.8.6 h1:VQ2nILCfYrQBVJSHUPx5aWcPpdFTHUKA25f/LQVM1aA=
+github.com/ciscoecosystem/aci-go-client v1.8.6/go.mod h1:fhY7vWysK655g3Yp5Fz4Zje/JN4+moRe8RjwiRy0amQ=
+github.com/ciscoecosystem/aci-go-client v1.8.7 h1:LeLm/FeYtBXTz245e/5zHNWYokcQuUCJHQqx+naW0BE=
+github.com/ciscoecosystem/aci-go-client v1.8.7/go.mod h1:fhY7vWysK655g3Yp5Fz4Zje/JN4+moRe8RjwiRy0amQ=
+github.com/ciscoecosystem/aci-go-client v1.8.8 h1:KOqr4cmexE0CnSHhbv4tXX/4e7NNhI+KXZpoWN98Quk=
+github.com/ciscoecosystem/aci-go-client v1.8.8/go.mod h1:fhY7vWysK655g3Yp5Fz4Zje/JN4+moRe8RjwiRy0amQ=
 github.com/client9/misspell v0.3.4/go.mod h1:qj6jICC3Q7zFZvVWo7KLAzC3yx5G7kyvSDkc90ppPyw=
 github.com/coreos/bbolt v1.3.0/go.mod h1:iRUV2dpdMOn7Bo10OQBFzIJO9kkE559Wcmn+qkEiiKk=
 github.com/coreos/etcd v3.3.10+incompatible/go.mod h1:uF7uidLiAD3TWHmW31ZFd/JWoc32PjwdhPthX9715RE=

@@ -13,12 +13,14 @@ Manages ACI L3out OSPF Interface Profile
 
 ```hcl
 resource "aci_l3out_ospf_interface_profile" "example" {
-  logical_interface_profile_dn  = "${aci_logical_interface_profile.example.id}"
-  annotation  = "example"
-  auth_key  = "example"
-  auth_key_id  = "example"
-  auth_type  = "example"
-  name_alias  = "example"
+  logical_interface_profile_dn = "${aci_logical_interface_profile.example.id}"
+  description                  = "from terraform"
+  annotation                   = "example"
+  auth_key                     = "key"
+  auth_key_id                  = "255"
+  auth_type                    = "simple"
+  name_alias                   = "example"
+  relation_ospf_rs_if_pol      = "${aci_ospf_interface_policy.example.id}"
 }
 ```
 
@@ -26,10 +28,12 @@ resource "aci_l3out_ospf_interface_profile" "example" {
 ## Argument Reference ##
 
 * `logical_interface_profile_dn` - (Required) distinguished name of parent logical interface profile object.
+* `auth_key` - (Required) ospf authentication key for L3out OSPF interface profile object.
 * `annotation` - (Optional) annotation for L3out OSPF interface profile object.
-* `auth_key` - (Optional) ospf authentication key for L3out OSPF interface profile object.
-* `auth_key_id` - (Optional) authentication key id for L3out OSPF interface profile object.
-* `auth_type` - (Optional) ospf authentication type for L3out OSPF interface profile object.
+* `description` - (Optional) description for L3out OSPF interface profile object.
+* `auth_key_id` - (Optional) authentication key id for L3out OSPF interface profile object. Allowed ranges is from "1" to "255". 
+* `auth_type` - (Optional) ospf authentication type for L3out OSPF interface profile object. Allowed values are "none", "md5" and "simple".
+Default value is "none".
 * `name_alias` - (Optional) name_alias for L3out OSPF interface profile object.
 
 * `relation_ospf_rs_if_pol` - (Optional) Relation to class ospfIfPol. Cardinality - N_TO_ONE. Type - String.

@@ -54,7 +54,7 @@ func (sm *ServiceManager) ListOSPFInterfaceProfile(logical_interface_profile str
 }
 
 func (sm *ServiceManager) CreateRelationospfRsIfPolFromInterfaceProfile(parentDn, tnOspfIfPolName string) error {
-	dn := fmt.Sprintf("%s/ospfIfP/rsIfPol", parentDn)
+	dn := fmt.Sprintf("%s/rsIfPol", parentDn)
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
@@ -80,7 +80,7 @@ func (sm *ServiceManager) CreateRelationospfRsIfPolFromInterfaceProfile(parentDn
 	}
 	fmt.Printf("%+v", cont)
 
-	return nil
+	return CheckForErrors(cont, "POST", sm.client.skipLoggingPayload)
 }
 
 func (sm *ServiceManager) ReadRelationospfRsIfPolFromInterfaceProfile(parentDn string) (interface{}, error) {

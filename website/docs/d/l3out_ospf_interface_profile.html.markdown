@@ -28,7 +28,6 @@ data "aci_l3out_ospf_interface_profile" "example" {
 
 * `id` - attribute id set to the Dn of the Interface Profile.
 * `annotation` - annotation for L3out OSPF interface profile object.
-* `auth_key` - ospf authentication key for L3out OSPF interface profile object.
 * `auth_key_id` - authentication key id for L3out OSPF interface profile object.
 * `auth_type` - ospf authentication type for L3out OSPF interface profile object.
 * `name_alias` - name_alias for L3out OSPF interface profile object.

@@ -7,6 +7,7 @@ import (
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
 )
 
 func resourceAciBGPPeerPrefixPolicy() *schema.Resource {
@@ -39,6 +40,12 @@ func resourceAciBGPPeerPrefixPolicy() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"log",
+					"reject",
+					"restart",
+					"shut",
+				}, false),
 			},
 
 			"max_pfx": &schema.Schema{

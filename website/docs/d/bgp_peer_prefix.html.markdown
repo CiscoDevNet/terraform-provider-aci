@@ -13,8 +13,8 @@ Data source for ACI BGP Peer Prefix
 
 ```hcl
 data "aci_bgp_peer_prefix" "example" {
-  tenant_dn  = "${aci_tenant.example.id}"
-  name  = "example"
+  tenant_dn = "${aci_tenant.tenentcheck.id}"
+  name      = "one"
 }
 ```
 

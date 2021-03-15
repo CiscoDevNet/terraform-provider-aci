@@ -13,14 +13,15 @@ Manages ACI BGP Peer Prefix
 
 ```hcl
 resource "aci_bgp_peer_prefix" "example" {
-  tenant_dn  = "${aci_tenant.example.id}"
-  name  = "example"
-  action  = "example"
-  annotation  = "example"
-  max_pfx  = "example"
-  name_alias  = "example"
-  restart_time  = "example"
-  thresh  = "example"
+  tenant_dn    = "${aci_tenant.tenentcheck.id}"
+  name         = "one"
+  description  = "from terraform"
+  action       = "shut"
+  annotation   = "example"
+  max_pfx      = "200"
+  name_alias   = "example"
+  restart_time = "200"
+  thresh       = "85"
 }
 ```
 
@@ -29,13 +30,13 @@ resource "aci_bgp_peer_prefix" "example" {
 
 * `tenant_dn` - (Required) distinguished name of parent tenant object.
 * `name` - (Required) name of BGP peer prefix object.
-* `action` - (Optional) action when the maximum prefix limit is reached for BGP peer prefix object.
+* `action` - (Optional) action when the maximum prefix limit is reached for BGP peer prefix object. Allowed values are "log", "reject", "restart" and "shut". Default value is "reject".
 * `annotation` - (Optional) annotation for BGP peer prefix object.
-* `max_pfx` - (Optional) maximum number of prefixes allowed from the peer for BGP peer prefix object.
+* `max_pfx` - (Optional) maximum number of prefixes allowed from the peer for BGP peer prefix object. Default value is "20000".
 * `name_alias` - (Optional) name_alias for BGP peer prefix object.
-* `restart_time` - (Optional) time before restarting peer for BGP peer prefix object.
-* `thresh` - (Optional) threshold for a maximum number of prefixes for BGP peer prefix object.
-
+* `restart_time` - (Optional) the period of time in minutes before restarting the peer when the prefix limit is reached for BGP peer prefix object. Default value is "infinite".
+* `thresh` - (Optional) threshold percentage of the maximum number of prefixes before a warning is issued for BGP peer prefix object. Default value is "75".
+ 
 
 
 ## Attribute Reference
