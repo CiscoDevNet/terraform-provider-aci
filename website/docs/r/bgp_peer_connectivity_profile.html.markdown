@@ -23,7 +23,7 @@ resource "aci_bgp_peer_connectivity_profile" "example" {
   name_alias              = "example"
   password                = "example"
   peer_ctrl               = "bfd"
-  private_a_sctrl         = "remove-all"
+  private_a_sctrl         = "remove-all,remove-exclusive"
   ttl                     = "1"
   weight                  = "1"
   as_number               = "1"
