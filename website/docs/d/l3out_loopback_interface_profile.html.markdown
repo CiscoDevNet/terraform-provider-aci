@@ -28,5 +28,6 @@ data "aci_l3out_loopback_interface_profile" "example" {
 ## Attribute Reference
 
 * `id` - attribute id set to the Dn of the L3out lookback interface profile.
+* `description` - description for L3out lookback interface profile.
 * `annotation` - annotation for L3out lookback interface profile.
 * `name_alias` - name_alias for L3out lookback interface profile.
