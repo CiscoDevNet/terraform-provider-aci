@@ -285,6 +285,16 @@ func Provider() terraform.ResourceProvider {
 			"aci_l2_outside":                               dataSourceAciL2Outside(),
 			"aci_node_mgmt_epg":                            dataSourceAciNodeManagementEPg(),
 			"aci_connection":                               dataSourceAciConnection(),
+<<<<<<< HEAD
+=======
+			"aci_system":                                   dataSourceAciSystem(),
+			"aci_l3out_bgp_external_policy":                dataSourceAciL3outBgpExternalPolicy(),
+			"aci_l3out_ospf_external_policy":               dataSourceAciL3outOspfExternalPolicy(),
+			"aci_l3out_path_attachment":                    dataSourceAciL3outPathAttachment(),
+			"aci_l3out_path_attachment_secondary_ip":       dataSourceAciL3outPathAttachmentSecondaryIp(),
+			"aci_bgp_route_summarization":                  dataSourceAciBgpRouteSummarization(),
+			"aci_bgp_peer_connectivity_profile":            dataSourceAciBgpPeerConnectivityProfile(),
+>>>>>>> d5be938 (CACIT-1103 added resource and daata-source for aci_bgp_peer_connectivity_profile.)
 		},
 
 		ConfigureFunc: configureClient,
