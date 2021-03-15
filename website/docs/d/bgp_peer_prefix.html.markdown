@@ -30,6 +30,7 @@ data "aci_bgp_peer_prefix" "example" {
 
 * `id` - attribute id set to the Dn of BGP peer prefix object.
 * `action` - action when the maximum prefix limit is reached for BGP peer prefix object.
+* `description` - description for BGP peer prefix object.
 * `annotation` - annotation for BGP peer prefix object.
 * `max_pfx` - maximum number of prefixes allowed from the peer for BGP peer prefix object.
 * `name_alias` - name_alias for BGP peer prefix object.
