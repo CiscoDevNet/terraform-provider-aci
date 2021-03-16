@@ -22,7 +22,7 @@ func TestAccAciBgpPeerConnectivityProfile_Basic(t *testing.T) {
 			{
 				Config: testAccCheckAciBgpPeerConnectivityProfileConfig_basic(description),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAciBgpPeerConnectivityProfileExists("aci_bgp_peer_connectivity_profile.foobgp_peer_connectivity_profile", &bgp_peer_connectivity_profile),
+					testAccCheckAciBgpPeerConnectivityProfileExists("aci_bgp_peer_connectivity_profile.example", &bgp_peer_connectivity_profile),
 					testAccCheckAciBgpPeerConnectivityProfileAttributes(description, &bgp_peer_connectivity_profile),
 				),
 			},
@@ -42,14 +42,14 @@ func TestAccAciBgpPeerConnectivityProfile_update(t *testing.T) {
 			{
 				Config: testAccCheckAciBgpPeerConnectivityProfileConfig_basic(description),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAciBgpPeerConnectivityProfileExists("aci_bgp_peer_connectivity_profile.foobgp_peer_connectivity_profile", &bgp_peer_connectivity_profile),
+					testAccCheckAciBgpPeerConnectivityProfileExists("aci_bgp_peer_connectivity_profile.example", &bgp_peer_connectivity_profile),
 					testAccCheckAciBgpPeerConnectivityProfileAttributes(description, &bgp_peer_connectivity_profile),
 				),
 			},
 			{
 				Config: testAccCheckAciBgpPeerConnectivityProfileConfig_basic(description),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAciBgpPeerConnectivityProfileExists("aci_bgp_peer_connectivity_profile.foobgp_peer_connectivity_profile", &bgp_peer_connectivity_profile),
+					testAccCheckAciBgpPeerConnectivityProfileExists("aci_bgp_peer_connectivity_profile.example", &bgp_peer_connectivity_profile),
 					testAccCheckAciBgpPeerConnectivityProfileAttributes(description, &bgp_peer_connectivity_profile),
 				),
 			},
@@ -59,22 +59,24 @@ func TestAccAciBgpPeerConnectivityProfile_update(t *testing.T) {
 
 func testAccCheckAciBgpPeerConnectivityProfileConfig_basic(description string) string {
 	return fmt.Sprintf(`
-
-	resource "aci_bgp_peer_connectivity_profile" "foobgp_peer_connectivity_profile" {
-		logical_node_profile_dn  = "${aci_logical_node_profile.example.id}"
-		description = "%s"
-		addr  = "example"
-  		addr_t_ctrl = "af-mcast"
-  		allowed_self_as_cnt  = "example"
-  		annotation  = "example"
-  		ctrl = "allow-self-as"
-  		name_alias  = "example"
-  		password  = "example"
-  		peer_ctrl = "bfd"
-  		private_a_sctrl = "remove-all"
-  		ttl  = "example"
-  		weight  = "example"
-	}
+	resource "aci_bgp_peer_connectivity_profile" "example" {
+		logical_node_profile_dn = aci_logical_node_profile.example.id
+		addr                    = "10.0.0.1"
+		addr_t_ctrl             = "af-mcast,af-ucast"
+		allowed_self_as_cnt     = "3"
+		description 			= "%s"
+		annotation              = "example"
+		ctrl                    = "allow-self-as"
+		name_alias              = "example"
+		peer_ctrl               = "bfd"
+		private_a_sctrl         = "remove-all,remove-exclusive"
+		ttl                     = "1"
+		weight                  = "1"
+		as_number               = "1"
+		local_asn               = "15"
+		local_asn_propagate     = "dual-as"
+	  }
+	  
 	`, description)
 }
 
@@ -133,15 +135,15 @@ func testAccCheckAciBgpPeerConnectivityProfileAttributes(description string, bgp
 			return fmt.Errorf("Bad bgp_peer_connectivity_profile Description %s", bgp_peer_connectivity_profile.Description)
 		}
 
-		if "example" != bgp_peer_connectivity_profile.Addr {
+		if "10.0.0.3" != bgp_peer_connectivity_profile.Addr {
 			return fmt.Errorf("Bad bgp_peer_connectivity_profile addr %s", bgp_peer_connectivity_profile.Addr)
 		}
 
-		if "af-mcast" != bgp_peer_connectivity_profile.AddrTCtrl {
+		if "af-mcast,af-ucast" != bgp_peer_connectivity_profile.AddrTCtrl {
 			return fmt.Errorf("Bad bgp_peer_connectivity_profile addr_t_ctrl %s", bgp_peer_connectivity_profile.AddrTCtrl)
 		}
 
-		if "example" != bgp_peer_connectivity_profile.AllowedSelfAsCnt {
+		if "3" != bgp_peer_connectivity_profile.AllowedSelfAsCnt {
 			return fmt.Errorf("Bad bgp_peer_connectivity_profile allowed_self_as_cnt %s", bgp_peer_connectivity_profile.AllowedSelfAsCnt)
 		}
 
@@ -157,26 +159,21 @@ func testAccCheckAciBgpPeerConnectivityProfileAttributes(description string, bgp
 			return fmt.Errorf("Bad bgp_peer_connectivity_profile name_alias %s", bgp_peer_connectivity_profile.NameAlias)
 		}
 
-		if "example" != bgp_peer_connectivity_profile.Password {
-			return fmt.Errorf("Bad bgp_peer_connectivity_profile password %s", bgp_peer_connectivity_profile.Password)
-		}
-
 		if "bfd" != bgp_peer_connectivity_profile.PeerCtrl {
 			return fmt.Errorf("Bad bgp_peer_connectivity_profile peer_ctrl %s", bgp_peer_connectivity_profile.PeerCtrl)
 		}
 
-		if "remove-all" != bgp_peer_connectivity_profile.PrivateASctrl {
+		if "remove-all,remove-exclusive" != bgp_peer_connectivity_profile.PrivateASctrl {
 			return fmt.Errorf("Bad bgp_peer_connectivity_profile private_a_sctrl %s", bgp_peer_connectivity_profile.PrivateASctrl)
 		}
 
-		if "example" != bgp_peer_connectivity_profile.Ttl {
+		if "1" != bgp_peer_connectivity_profile.Ttl {
 			return fmt.Errorf("Bad bgp_peer_connectivity_profile ttl %s", bgp_peer_connectivity_profile.Ttl)
 		}
 
-		if "example" != bgp_peer_connectivity_profile.Weight {
+		if "1" != bgp_peer_connectivity_profile.Weight {
 			return fmt.Errorf("Bad bgp_peer_connectivity_profile weight %s", bgp_peer_connectivity_profile.Weight)
 		}
-
 		return nil
 	}
 }
