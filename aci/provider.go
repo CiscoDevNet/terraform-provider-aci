@@ -304,6 +304,7 @@ func Provider() terraform.ResourceProvider {
 			"aci_l3out_ospf_interface_profile":             dataSourceAciOSPFInterfaceProfile(),
 			"aci_l3out_loopback_interface_profile":         dataSourceAciLoopBackInterfaceProfile(),
 			"aci_bgp_peer_prefix":                          dataSourceAciBGPPeerPrefixPolicy(),
+			"aci_rest":                                     datasourceAciRest(),
 		},
 
 		ConfigureFunc: configureClient,
