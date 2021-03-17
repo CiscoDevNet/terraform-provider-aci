@@ -20,14 +20,14 @@ data "aci_l3out_loopback_interface_profile" "example" {
 
 ## Argument Reference ##
 
-* `fabric_node_dn` - (Required) distinguished name of parent FabricNode object.
-* `addr` - (Required) address of L3out lookback interface profile.
+* `fabric_node_dn` - (Required) Distinguished name of parent FabricNode object.
+* `addr` - (Required) Address of L3out lookback interface profile.
 
 
 
 ## Attribute Reference
 
-* `id` - attribute id set to the Dn of the L3out lookback interface profile.
-* `description` - description for L3out lookback interface profile.
-* `annotation` - annotation for L3out lookback interface profile.
-* `name_alias` - name_alias for L3out lookback interface profile.
+* `id` - Attribute id set to the Dn of the L3out lookback interface profile.
+* `description` - Description for L3out lookback interface profile.
+* `annotation` - Annotation for L3out lookback interface profile.
+* `name_alias` - Name alias for L3out lookback interface profile.

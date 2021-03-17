@@ -20,15 +20,15 @@ data "aci_l3out_ospf_interface_profile" "example" {
 
 ## Argument Reference ##
 
-* `logical_interface_profile_dn` - (Required) distinguished name of parent logical interface profile object.
+* `logical_interface_profile_dn` - (Required) Distinguished name of parent logical interface profile object.
 
 
 
 ## Attribute Reference
 
-* `id` - attribute id set to the Dn of the Interface Profile.
-* `annotation` - annotation for L3out OSPF interface profile object.
-* `description` - description for L3out OSPF interface profile object.
-* `auth_key_id` - authentication key id for L3out OSPF interface profile object.
-* `auth_type` - ospf authentication type for L3out OSPF interface profile object.
-* `name_alias` - name_alias for L3out OSPF interface profile object.
+* `id` - Attribute id set to the Dn of the Interface Profile.
+* `annotation` - Annotation for L3out OSPF interface profile object.
+* `description` - Description for L3out OSPF interface profile object.
+* `auth_key_id` - Authentication key id for L3out OSPF interface profile object.
+* `auth_type` - OSPF authentication type for L3out OSPF interface profile object.
+* `name_alias` - Name alias for L3out OSPF interface profile object.

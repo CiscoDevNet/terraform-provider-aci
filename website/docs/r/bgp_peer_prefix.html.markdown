@@ -28,15 +28,15 @@ resource "aci_bgp_peer_prefix" "example" {
 
 ## Argument Reference ##
 
-* `tenant_dn` - (Required) distinguished name of parent tenant object.
-* `name` - (Required) name of BGP peer prefix object.
-* `action` - (Optional) action when the maximum prefix limit is reached for BGP peer prefix object. Allowed values are "log", "reject", "restart" and "shut". Default value is "reject".
-* `description` - (Optional) description for BGP peer prefix object.
-* `annotation` - (Optional) annotation for BGP peer prefix object.
-* `max_pfx` - (Optional) maximum number of prefixes allowed from the peer for BGP peer prefix object. Default value is "20000".
-* `name_alias` - (Optional) name_alias for BGP peer prefix object.
-* `restart_time` - (Optional) the period of time in minutes before restarting the peer when the prefix limit is reached for BGP peer prefix object. Default value is "infinite".
-* `thresh` - (Optional) threshold percentage of the maximum number of prefixes before a warning is issued for BGP peer prefix object. Default value is "75".
+* `tenant_dn` - (Required) Distinguished name of parent tenant object.
+* `name` - (Required) Name of BGP peer prefix object.
+* `action` - (Optional) Action when the maximum prefix limit is reached for BGP peer prefix object. Allowed values are "log", "reject", "restart" and "shut". Default value is "reject".
+* `description` - (Optional) Description for BGP peer prefix object.
+* `annotation` - (Optional) Annotation for BGP peer prefix object.
+* `max_pfx` - (Optional) Maximum number of prefixes allowed from the peer for BGP peer prefix object. Default value is "20000".
+* `name_alias` - (Optional) Name alias for BGP peer prefix object.
+* `restart_time` - (Optional) The period of time in minutes before restarting the peer when the prefix limit is reached for BGP peer prefix object. Default value is "infinite".
+* `thresh` - (Optional) Threshold percentage of the maximum number of prefixes before a warning is issued for BGP peer prefix object. Default value is "75".
  
 
 

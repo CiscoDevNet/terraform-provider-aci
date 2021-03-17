@@ -28,15 +28,15 @@ resource "aci_static_node_mgmt_address" "example" {
 
 ## Argument Reference ##
 
-* `management_epg_dn` - (Required) distinguished name of parent management static node object.
-* `t_dn` - (Required) target dn of management static node object.
-* `type` - (Required) type of the management static node object. Allowed values are "in_band" and "out_of_band". 
-Note := for "in_band", `management_epg_dn` should be of type "in_band" and for "out_of_band", `management_epg_dn` should be of type "out_of_band".
-* `addr` - (Optional) peer address of the management static node object
-* `annotation` - (Optional) annotation for management static node object.
-* `gw` - (Optional) gateway IP address for management static node object
-* `v6_addr` - (Optional) v6 address for management static node object.
-* `v6_gw` - (Optional) v6 gw for management static node object.
+* `management_epg_dn` - (Required) Distinguished name of parent management static node object.
+* `t_dn` - (Required) Target dn of management static node object.
+* `type` - (Required) Type of the management static node object. Allowed values are "in_band" and "out_of_band". 
+<strong>Note</strong> : for "in_band", `management_epg_dn` should be of type "in_band" and for "out_of_band", `management_epg_dn` should be of type "out_of_band".
+* `addr` - (Optional) Peer address of the management static node object
+* `annotation` - (Optional) Annotation for management static node object.
+* `gw` - (Optional) Gateway IP address for management static node object
+* `v6_addr` - (Optional) V6 address for management static node object.
+* `v6_gw` - (Optional) V6 gw for management static node object.
 
 
 
