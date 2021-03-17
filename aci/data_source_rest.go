@@ -21,7 +21,14 @@ func datasourceAciRest() *schema.Resource {
 
 			"class_name": &schema.Schema{
 				Type:     schema.TypeString,
-				Required: true,
+				Optional: true,
+				Computed: true,
+			},
+
+			"content": &schema.Schema{
+				Type:     schema.TypeMap,
+				Optional: true,
+				Computed: true,
 			},
 
 			"payload": &schema.Schema{
@@ -40,6 +47,7 @@ func datasourceAciRest() *schema.Resource {
 }
 
 func datasourceAciRestRead(d *schema.ResourceData, m interface{}) error {
+	log.Printf("[DEBUG] Rest data source: Beginning Read")
 
 	aciClient := m.(*client.Client)
 
@@ -51,8 +59,19 @@ func datasourceAciRestRead(d *schema.ResourceData, m interface{}) error {
 	}
 
 	payloadData := cont.S("imdata").Index(0)
+	for k, _ := range payloadData.Data().(map[string]interface{}) {
+		d.Set("class_name", k)
+	}
 
-	log.Println("check data : ", payloadData)
+	dn := stripQuotes(payloadData.S(d.Get("class_name").(string), "attributes", "dn").String())
 
+	contentMap := payloadData.S(d.Get("class_name").(string), "attributes").Data().(map[string]interface{})
+	d.Set("content", contentMap)
+
+	d.Set("payload", payloadData.String())
+	d.Set("dn", dn)
+	d.SetId(dn)
+
+	log.Println("[DEBUG] Rest data source: Ending Read ", d.Id())
 	return nil
 }
