@@ -13,24 +13,24 @@ Manages ACI POD Maintenance Group
 
 ```hcl
 resource "aci_pod_maintenance_group" "example" {
-
-
-  name  = "example"
-  annotation  = "example"
-  fwtype  = "example"
-  name_alias  = "example"
-  pod_maintenance_group_type  = "example"
+  name  = "mgmt"
+  fwtype  = "controller"
+  name_alias  = "aliasing"
+  pod_maintenance_group_type  = "ALL"
 }
 ```
-## Argument Reference ##
-* `name` - (Required) name of Object pod_maintenance_group.
-* `annotation` - (Optional) annotation for object pod_maintenance_group.
-* `fwtype` - (Optional) fwtype for object pod_maintenance_group.
-Allowed values: "controller", "switch", "catalog", "plugin","pluginPackage", "config", "vpod"
-* `name_alias` - (Optional) name_alias for object pod_maintenance_group.
-* `pod_maintenance_group_type` - (Optional) component type
 
-* `relation_maint_rs_mgrpp` - (Optional) Relation to class maintMaintP. Cardinality - N_TO_ONE. Type - String.
+
+## Argument Reference ##
+
+* `name` - (Required) name of pod maintenance group object.
+* `annotation` - (Optional) annotation for pod maintenance group object.
+* `fwtype` - (Optional) fwtype for pod maintenance group object.
+Allowed values: "controller", "switch", "catalog", "plugin","pluginPackage", "config", "vpod"
+* `name_alias` - (Optional) name_alias for pod maintenance group object.
+* `pod_maintenance_group_type` - (Optional) component type for pod maintenance group object. Allowed values are "range", "ALL" and "ALL_IN_POD". Default value is "range".  
+
+* `relation_maint_rs_mgrpp` - (Optional) relation to class maintMaintP. Cardinality - N_TO_ONE. Type - String.
                 
 
 
