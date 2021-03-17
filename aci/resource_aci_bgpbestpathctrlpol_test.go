@@ -61,8 +61,7 @@ func testAccCheckAciBgpBestPathPolicyConfig_basic(description string) string {
 	return fmt.Sprintf(`
 
 	resource "aci_bgp_best_path_policy" "foobgp_best_path_policy" {
-		#tenant_dn  = "${aci_tenant.example.id}"
-		tenant_dn  = "uni/tn-check_tenantnk"
+		tenant_dn  = "${aci_tenant.example.id}"
 		description = "%s"
 		name  = "example"
   		annotation  = "example"
