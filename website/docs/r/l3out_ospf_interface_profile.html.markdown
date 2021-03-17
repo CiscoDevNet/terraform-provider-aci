@@ -27,14 +27,14 @@ resource "aci_l3out_ospf_interface_profile" "example" {
 
 ## Argument Reference ##
 
-* `logical_interface_profile_dn` - (Required) distinguished name of parent logical interface profile object.
-* `auth_key` - (Required) ospf authentication key for L3out OSPF interface profile object.
-* `annotation` - (Optional) annotation for L3out OSPF interface profile object.
-* `description` - (Optional) description for L3out OSPF interface profile object.
-* `auth_key_id` - (Optional) authentication key id for L3out OSPF interface profile object. Allowed ranges is from "1" to "255". 
-* `auth_type` - (Optional) ospf authentication type for L3out OSPF interface profile object. Allowed values are "none", "md5" and "simple".
+* `logical_interface_profile_dn` - (Required) Distinguished name of parent logical interface profile object.
+* `auth_key` - (Required) OSPF authentication key for L3out OSPF interface profile object.
+* `annotation` - (Optional) Annotation for L3out OSPF interface profile object.
+* `description` - (Optional) Description for L3out OSPF interface profile object.
+* `auth_key_id` - (Optional) Authentication key id for L3out OSPF interface profile object. Allowed ranges is from "1" to "255". 
+* `auth_type` - (Optional) OSPF authentication type for L3out OSPF interface profile object. Allowed values are "none", "md5" and "simple".
 Default value is "none".
-* `name_alias` - (Optional) name_alias for L3out OSPF interface profile object.
+* `name_alias` - (Optional) Name alias for L3out OSPF interface profile object.
 
 * `relation_ospf_rs_if_pol` - (Optional) Relation to class ospfIfPol. Cardinality - N_TO_ONE. Type - String.
                 

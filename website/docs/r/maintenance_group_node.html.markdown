@@ -25,12 +25,12 @@ resource "aci_maintenance_group_node" "example" {
 
 ## Argument Reference ##
 
-* `pod_maintenance_group_dn` - (Required) distinguished name of parent POD maintenance group object.
-* `name` - (Required) name of maintenance group node object.
-* `annotation` - (Optional) annotation for maintenance group node object.
-* `from_` - (Optional) from value for maintenance group node object.
-* `name_alias` - (Optional) name alias for maintenance group node object.
-* `to_` - (Optional) to value for maintenance group node object.
+* `pod_maintenance_group_dn` - (Required) Distinguished name of parent POD maintenance group object.
+* `name` - (Required) Name of maintenance group node object.
+* `annotation` - (Optional) Annotation for maintenance group node object.
+* `from_` - (Optional) From value for maintenance group node object.
+* `name_alias` - (Optional) Name alias for maintenance group node object.
+* `to_` - (Optional) To value for maintenance group node object.
 
 
 
