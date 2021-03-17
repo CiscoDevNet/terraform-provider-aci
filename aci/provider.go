@@ -169,6 +169,7 @@ func Provider() terraform.ResourceProvider {
 			"aci_node_mgmt_epg":                            resourceAciNodeManagementEPg(),
 			"aci_connection":                               resourceAciConnection(),
 			"aci_bgp_peer_connectivity_profile":            resourceAciBgpPeerConnectivityProfile(),
+			"aci_bgp_best_path_policy":                     resourceAciBgpBestPathPolicy(),
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
@@ -287,6 +288,7 @@ func Provider() terraform.ResourceProvider {
 			"aci_node_mgmt_epg":                            dataSourceAciNodeManagementEPg(),
 			"aci_connection":                               dataSourceAciConnection(),
 			"aci_bgp_peer_connectivity_profile":            dataSourceAciBgpPeerConnectivityProfile(),
+			"aci_bgp_best_path_policy":                     dataSourceAciBgpBestPathPolicy(),
 		},
 
 		ConfigureFunc: configureClient,
