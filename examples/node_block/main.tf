@@ -1,3 +1,11 @@
+terraform {
+  required_providers {
+    aci = {
+      source = "ciscodevnet/aci"
+    }
+  }
+}
+
 resource "aci_leaf_profile" "checkBLK" {
   name        = "example"
 }

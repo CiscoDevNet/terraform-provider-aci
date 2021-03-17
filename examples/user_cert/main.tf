@@ -18,6 +18,14 @@ Q1R8g1Y=
 EOF
 }
 
+terraform {
+  required_providers {
+    aci = {
+      source = "ciscodevnet/aci"
+    }
+  }
+}
+
 provider "aci" {
   username = ""
   password = ""
