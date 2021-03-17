@@ -2,10 +2,13 @@ package aci
 
 import (
 	"fmt"
+	"reflect"
+	"sort"
 	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/container"
+	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 )
 
 func toStrMap(inputMap map[string]interface{}) map[string]string {
@@ -101,4 +104,39 @@ func checkTDn(client *client.Client, dns []string) error {
 func GetParentDn(dn string, rn string) string {
 	arr := strings.Split(dn, rn)
 	return arr[0]
+}
+
+func validateCommaSeparatedStringInSlice(valid []string, ignoreCase bool) schema.SchemaValidateFunc {
+	return func(i interface{}, k string) (s []string, es []error) {
+		// modified validation.StringInSlice function.
+		v, ok := i.(string)
+		if !ok {
+			es = append(es, fmt.Errorf("expected type of %s to be string", k))
+			return
+		}
+		vals := strings.Split(v, ",")
+		for _, val := range vals {
+			match := false
+			for _, str := range valid {
+				if val == str || (ignoreCase && strings.ToLower(val) == strings.ToLower(str)) {
+					match = true
+				}
+			}
+			if !match {
+				es = append(es, fmt.Errorf("expected %s to be one of %v, got %s", k, valid, val))
+			}
+		}
+		return
+	}
+}
+
+func suppressBitMaskDiffFunc() func(k, old, new string, d *schema.ResourceData) bool {
+	return func(k, old, new string, d *schema.ResourceData) bool {
+		oldList := strings.Split(old, ",")
+		newList := strings.Split(new, ",")
+		sort.Strings(oldList)
+		sort.Strings(newList)
+
+		return reflect.DeepEqual(oldList, newList)
+	}
 }
