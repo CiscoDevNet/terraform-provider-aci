@@ -14,7 +14,7 @@ Manages ACI BGP Peer Connectivity Profile
 
 ```hcl
 resource "aci_bgp_peer_connectivity_profile" "example" {
-  logical_node_profile_dn = aci_logical_node_profile.example.id
+  logical_node_profile_dn = "${aci_logical_node_profile.example.id}"
   addr                    = "10.0.0.1"
   addr_t_ctrl             = "af-mcast,af-ucast"
   allowed_self_as_cnt     = "3"
