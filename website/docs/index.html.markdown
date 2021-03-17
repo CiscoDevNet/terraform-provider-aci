@@ -96,6 +96,14 @@ Click the + sign and in the Create X509 Certificate enter a certificate name in 
 Example Usage
 ------------
 ```hcl
+terraform {
+  required_providers {
+    aci = {
+      source = "ciscodevnet/aci"
+    }
+  }
+}
+
 #configure provider with your cisco aci credentials.
 provider "aci" {
   # cisco-aci user name

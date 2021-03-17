@@ -1,3 +1,11 @@
+terraform {
+  required_providers {
+    aci = {
+      source = "ciscodevnet/aci"
+    }
+  }
+}
+
 provider "aci" {
   username = "admin"
   password = "ins3965!ins3965!"
