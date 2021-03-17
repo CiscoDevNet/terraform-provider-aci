@@ -21,18 +21,18 @@ data "aci_bgp_peer_prefix" "example" {
 
 ## Argument Reference ##
 
-* `tenant_dn` - (Required) distinguished name of parent tenant object.
-* `name` - (Required) name of BGP peer prefix object.
+* `tenant_dn` - (Required) Distinguished name of parent tenant object.
+* `name` - (Required) Name of BGP peer prefix object.
 
 
 
 ## Attribute Reference
 
-* `id` - attribute id set to the Dn of BGP peer prefix object.
-* `action` - action when the maximum prefix limit is reached for BGP peer prefix object.
-* `description` - description for BGP peer prefix object.
-* `annotation` - annotation for BGP peer prefix object.
-* `max_pfx` - maximum number of prefixes allowed from the peer for BGP peer prefix object.
-* `name_alias` - name_alias for BGP peer prefix object.
-* `restart_time` - time before restarting peer for BGP peer prefix object.
-* `thresh` - threshold for a maximum number of prefixes for BGP peer prefix object.
+* `id` - Attribute id set to the Dn of BGP peer prefix object.
+* `action` - Action when the maximum prefix limit is reached for BGP peer prefix object.
+* `description` - Description for BGP peer prefix object.
+* `annotation` - Annotation for BGP peer prefix object.
+* `max_pfx` - Maximum number of prefixes allowed from the peer for BGP peer prefix object.
+* `name_alias` - Name alias for BGP peer prefix object.
+* `restart_time` - Time before restarting peer for BGP peer prefix object.
+* `thresh` - Threshold for a maximum number of prefixes for BGP peer prefix object.

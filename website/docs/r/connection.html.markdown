@@ -33,17 +33,17 @@ resource "aci_connection" "conn2" {
 
 ## Argument Reference ##
 
-* `l4_l7_service_graph_template_dn` - (Required) distinguished name of parent L4-L7 Service Graph Template object.
-* `name` - (Required) name of object connection.
-* `adj_type` - (Optional) connector adjacency type. Allowed values are "L2", "L3". Default value is "L2".
-* `annotation` - (Optional) annotation for object connection.
-* `conn_dir` - (Optional) conn_dir for object connection. Allowed values are "consumer", "provider". Default value is "provider".
-* `conn_type` - (Optional) connection type of connection object. Allowed values are "external", "internal". Default value is "external".
-* `direct_connect` - (Optional) direct_connect for object connection. Allowed values are "yes" and "no". Default value is "no".
-* `name_alias` - (Optional) name_alias for object connection.
-* `unicast_route` - (Optional) unicast route for connection object. Allowed values are "yes" and "no". Default value is "yes".
+* `l4_l7_service_graph_template_dn` - (Required) Distinguished name of parent L4-L7 Service Graph Template object.
+* `name` - (Required) Name of object connection.
+* `adj_type` - (Optional) Connector adjacency type. Allowed values are "L2", "L3". Default value is "L2".
+* `annotation` - (Optional) Annotation for object connection.
+* `conn_dir` - (Optional) Connection directory for object connection. Allowed values are "consumer", "provider". Default value is "provider".
+* `conn_type` - (Optional) Connection type of connection object. Allowed values are "external", "internal". Default value is "external".
+* `direct_connect` - (Optional) Direct connect for object connection. Allowed values are "yes" and "no". Default value is "no".
+* `name_alias` - (Optional) Name alias for object connection.
+* `unicast_route` - (Optional) Unicast route for connection object. Allowed values are "yes" and "no". Default value is "yes".
 
-* `relation_vns_rs_abs_copy_connection` - (Optional) list of relation to class vnsAConn. Cardinality - ONE_TO_M. Type - Set of String.
+* `relation_vns_rs_abs_copy_connection` - (Optional) List of relation to class vnsAConn. Cardinality - ONE_TO_M. Type - Set of String.
                 
 * `relation_vns_rs_abs_connection_conns` - (Optional) list of relation to class vnsAConn. Cardinality - ONE_TO_M. Type - Set of String.
                 

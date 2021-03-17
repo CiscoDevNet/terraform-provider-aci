@@ -20,8 +20,8 @@ data "aci_connection" "check" {
 
 
 ## Argument Reference ##
-* `l4_l7_service_graph_template_dn` - (Required) distinguished name of parent L4-L7 Service Graph Template object.
-* `name` - (Required) name of Object connection.
+* `l4_l7_service_graph_template_dn` - (Required) Distinguished name of parent L4-L7 Service Graph Template object.
+* `name` - (Required) Name of Object connection.
 
 
 

@@ -19,13 +19,13 @@ data "aci_leaf_breakout_port_group" "example" {
 
 
 ## Argument Reference ##
-* `name` - (Required) name of leaf breakout port group object.
+* `name` - (Required) Name of leaf breakout port group object.
 
 
 
 ## Attribute Reference
 
 * `id` - Attribute id set to the Dn of the leaf breakout port group object.
-* `annotation` - (Optional) annotation for leaf breakout port group object.
-* `brkout_map` - (Optional) breakout map for leaf breakout port group object.
-* `name_alias` - (Optional) name alias for leaf breakout port group object.
+* `annotation` - (Optional) Annotation for leaf breakout port group object.
+* `brkout_map` - (Optional) Breakout map for leaf breakout port group object.
+* `name_alias` - (Optional) Name alias for leaf breakout port group object.
