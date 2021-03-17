@@ -178,6 +178,7 @@ func Provider() terraform.ResourceProvider {
 			"aci_l3out_loopback_interface_profile":         resourceAciLoopBackInterfaceProfile(),
 			"aci_bgp_peer_prefix":                          resourceAciBGPPeerPrefixPolicy(),
 			"aci_bgp_peer_connectivity_profile":            resourceAciBgpPeerConnectivityProfile(),
+			"aci_bgp_best_path_policy":                     resourceAciBgpBestPathPolicy(),
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
@@ -307,6 +308,7 @@ func Provider() terraform.ResourceProvider {
 			"aci_bgp_peer_prefix":                          dataSourceAciBGPPeerPrefixPolicy(),
 			"aci_rest":                                     datasourceAciRest(),
 			"aci_bgp_peer_connectivity_profile":            dataSourceAciBgpPeerConnectivityProfile(),
+			"aci_bgp_best_path_policy":                     dataSourceAciBgpBestPathPolicy(),
 		},
 
 		ConfigureFunc: configureClient,
