@@ -1,4 +1,4 @@
-variable "provider_profile_dn" {
+variable "vds" {
   default = "uni/vmmp-VMware"
 }
 
@@ -12,4 +12,8 @@ variable "aci_vmm_controller" {
 
 variable "aci_vmm_credential" {
   default = "vmm_cred"
+}
+
+variable "microsoft_domain" {
+  default = "uni/vmmp-Microsoft"
 }
