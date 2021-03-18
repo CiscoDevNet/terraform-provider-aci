@@ -74,16 +74,19 @@ func datasourceAciRestRead(d *schema.ResourceData, m interface{}) error {
 		return err
 	}
 
+	// Fetching class name
 	payloadData := cont.S("imdata").Index(0)
 	for k, _ := range payloadData.Data().(map[string]interface{}) {
 		d.Set("class_name", k)
 	}
 
+	// Fetching dn and content map
 	dn := stripQuotes(payloadData.S(d.Get("class_name").(string), "attributes", "dn").String())
 
 	contentMap := payloadData.S(d.Get("class_name").(string), "attributes").Data().(map[string]interface{})
 	d.Set("content", contentMap)
 
+	// check for children and fetching children attributes
 	if payloadData.Exists(d.Get("class_name").(string), "children") {
 		childrenSet, err := getChildrenAttrs(aciClient, payloadData.S(d.Get("class_name").(string), "children"))
 		if err != nil {

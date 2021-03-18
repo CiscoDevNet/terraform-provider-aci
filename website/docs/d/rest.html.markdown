@@ -54,7 +54,8 @@ data "aci_rest" "tenant_rest" {
 ## Argument Reference ##
 
 * `path` - (Required) ACI path for object which should should be get. Starting with api/node/mo/{parent-dn}(if applicable)/{rn of object}.json
-<string>Note</strong> : To extract children, use path format as api/node/mo/{parent-dn}(if applicable)/{rn of object}.json?rsp-subtree=children
+
+<strong>Note</strong> : To extract children, use path format as "api/node/mo/{parent-dn}(if applicable)/{rn of object}.json?rsp-subtree=children"
 
 
 ## Attribute Reference
@@ -65,6 +66,6 @@ data "aci_rest" "tenant_rest" {
 * `payload` - Freestyle JSON or YAML payload of object being managed.
 * `dn` - Distinguished name of object being managed.
 
-* `children` - Set of children of the object being managed
-* `children.child_class_name` - Class name of the child of the object being managed
+* `children` - Set of children of the object being managed.
+* `children.child_class_name` - Class name of the child of the object being managed.
 * `children.child_content` - map of key-value pairs which represents the attributes for child of the object being managed.
