@@ -35,12 +35,6 @@ func resourceAciBGPTimersPolicy() *schema.Resource {
 				ForceNew: true,
 			},
 
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
 			"gr_ctrl": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -240,7 +234,6 @@ func resourceAciBGPTimersPolicyUpdate(d *schema.ResourceData, m interface{}) err
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
 	return resourceAciBGPTimersPolicyRead(d, m)
-
 }
 
 func resourceAciBGPTimersPolicyRead(d *schema.ResourceData, m interface{}) error {

@@ -12,9 +12,9 @@ Data source for ACI BGP Timers
 ## Example Usage ##
 
 ```hcl
-data "aci_bgp_timers" "example" {
-  tenant_dn  = "${aci_tenant.example.id}"
-  name  = "example"
+data "aci_bgp_timers" "check" {
+  tenant_dn = "${aci_tenant.tenentcheck.id}"
+  name      = "one"
 }
 ```
 
@@ -30,6 +30,7 @@ data "aci_bgp_timers" "example" {
 
 * `id` - Attribute id set to the Dn of the BGP Timers Policy.
 * `annotation` -  Annotation for bgp timers object.
+* `description` - Description for bgp timers object.
 * `gr_ctrl` -  Graceful restart enabled or helper only for bgp timers object.
 * `hold_intvl` -  Time period before declaring neighbor down for bgp timers object.
 * `ka_intvl` -  Interval time between keepalive messages for bgp timers object.

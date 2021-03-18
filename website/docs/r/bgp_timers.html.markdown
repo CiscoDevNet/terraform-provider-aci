@@ -30,6 +30,7 @@ resource "aci_bgp_timers" "example" {
 * `tenant_dn` - (Required) Distinguished name of parent tenant object.
 * `name` - (Required) Name of bgp timers object.
 * `annotation` - (Optional) Annotation for bgp timers object.
+* `description` - (Optional) Description for bgp timers object.
 * `gr_ctrl` - (Optional) Graceful restart enabled or helper only for bgp timers object. Default value is "helper".
 * `hold_intvl` - (Optional) Time period before declaring neighbor down for bgp timers object. Default value is "180".
 * `ka_intvl` - (Optional) Interval time between keepalive messages for bgp timers object. Default value is "60".
