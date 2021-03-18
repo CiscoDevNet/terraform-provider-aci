@@ -60,11 +60,11 @@ data "aci_rest" "tenant_rest" {
 
 ## Attribute Reference
 
-* `id` - dishtiguished name of object being managed.
-* `class_name` - class name of object being managed.
-* `content` - map of key-value pairs which represents the attributes for the object being managed.
+* `id` - Dishtiguished name of object being managed.
+* `class_name` - Class name of object being managed.
+* `content` - Map of key-value pairs which represents the attributes for the object being managed.
 * `dn` - Distinguished name of object being managed.
 
 * `children` - Set of children of the object being managed.
 * `children.child_class_name` - Class name of the child of the object being managed.
-* `children.child_content` - map of key-value pairs which represents the attributes for child of the object being managed.
+* `children.child_content` - Map of key-value pairs which represents the attributes for child of the object being managed.
