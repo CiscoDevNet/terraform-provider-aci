@@ -52,9 +52,21 @@ resource "aci_lldp_interface_policy" "LLDP_policy" {
 resource "aci_lacp_policy" "port_channel_policy" {
   name       = "vmm_lacp"
 }
+resource "aci_cdp_interface_policy" "foocdp_interface_policy" {
+  name = "cdpIfPol1"
+}
+
 
 resource "aci_vswitch_policy" "vmware_switch_policy" {
   vmm_domain_dn = aci_vmm_domain.vds.id
+  relation_vmm_rs_vswitch_exporter_pol {
+    exporter_pol_dn = "uni/infra/vmmexporterpol-exporter_policy"
+    active_flow_timeout = 60
+    idle_flow_timeout= 10
+    sampling_rate= 0
+  }
+  relation_vmm_rs_vswitch_override_mtu_pol = "uni/fabric/l2pol-l2InstPolicy"
+  relation_vmm_rs_vswitch_override_cdp_if_pol = aci_cdp_interface_policy.foocdp_interface_policy.id
   relation_vmm_rs_vswitch_override_lacp_pol = aci_lacp_policy.port_channel_policy.id
   relation_vmm_rs_vswitch_override_lldp_if_pol = aci_lldp_interface_policy.LLDP_policy.id
 }

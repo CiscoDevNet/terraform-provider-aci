@@ -2,6 +2,7 @@ package aci
 
 import (
 	"fmt"
+	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
@@ -44,11 +45,32 @@ func resourceAciVSwitchPolicyGroup() *schema.Resource {
 			},
 
 			"relation_vmm_rs_vswitch_exporter_pol": &schema.Schema{
-				Type:        schema.TypeSet,
-				Elem:        &schema.Schema{Type: schema.TypeString},
+				Type:        schema.TypeList,
 				Optional:    true,
 				Description: "Create relation to netflowVmmExporterPol",
-				Set:         schema.HashString,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"exporter_pol_dn": &schema.Schema{
+							Type:     schema.TypeString,
+							Required: true,
+						},
+
+						"active_flow_timeout": &schema.Schema{
+							Type:     schema.TypeString,
+							Required: true,
+						},
+
+						"idle_flow_timeout": &schema.Schema{
+							Type:     schema.TypeString,
+							Required: true,
+						},
+
+						"sampling_rate": &schema.Schema{
+							Type:     schema.TypeString,
+							Required: true,
+						},
+					},
+				},
 			},
 			"relation_vmm_rs_vswitch_override_fw_pol": &schema.Schema{
 				Type: schema.TypeString,
@@ -85,6 +107,12 @@ func resourceAciVSwitchPolicyGroup() *schema.Resource {
 
 				Optional:    true,
 				Description: "Create relation to lacpLagPol",
+			},
+			"relation_vmm_rs_vswitch_override_mtu_pol": &schema.Schema{
+				Type: schema.TypeString,
+
+				Optional:    true,
+				Description: "Create relation to l2InstPol",
 			},
 		}),
 	}
@@ -152,15 +180,23 @@ func resourceAciVSwitchPolicyGroupCreate(d *schema.ResourceData, m interface{}) 
 		return err
 	}
 
+	exporterPolicyIDS := make([]string, 0, 1)
 	if relationTovmmRsVswitchExporterPol, ok := d.GetOk("relation_vmm_rs_vswitch_exporter_pol"); ok {
-		relationParamList := toStringList(relationTovmmRsVswitchExporterPol.(*schema.Set).List())
-		for _, relationParam := range relationParamList {
-			err = aciClient.CreateRelationvmmRsVswitchExporterPol(vmmVSwitchPolicyCont.DistinguishedName, relationParam)
+		exporterPolicies := relationTovmmRsVswitchExporterPol.([]interface{})
+		for _, relDn := range exporterPolicies {
+			relation_vmm_rs_vswitch_exporter_pol := relDn.(map[string]interface{})
+			var exporterPolicyDn string
+			exporterPolicyDn, err = aciClient.CreateRelationvmmRsVswitchExporterPol(vmmVSwitchPolicyCont.DistinguishedName, relation_vmm_rs_vswitch_exporter_pol["exporter_pol_dn"].(string), relation_vmm_rs_vswitch_exporter_pol["active_flow_timeout"].(string), relation_vmm_rs_vswitch_exporter_pol["idle_flow_timeout"].(string), relation_vmm_rs_vswitch_exporter_pol["sampling_rate"].(string))
 
 			if err != nil {
 				return err
 			}
+			exporterPolicyIDS = append(exporterPolicyIDS, exporterPolicyDn)
 		}
+		log.Println("Check ... :", exporterPolicyIDS)
+		d.Set("exporterPolicy_ids", exporterPolicyIDS)
+	} else {
+		d.Set("exporterPolicy_ids", exporterPolicyIDS)
 	}
 
 	if relationTovmmRsVswitchOverrideFwPol, ok := d.GetOk("relation_vmm_rs_vswitch_override_fw_pol"); ok {
@@ -217,6 +253,15 @@ func resourceAciVSwitchPolicyGroupCreate(d *schema.ResourceData, m interface{}) 
 
 	}
 
+	if relationTovmmRsVswitchOverrideMtuPol, ok := d.GetOk("relation_vmm_rs_vswitch_override_mtu_pol"); ok {
+		relationParam := relationTovmmRsVswitchOverrideMtuPol.(string)
+		err = aciClient.CreateRelationvmmRsVswitchOverrideMtuPol(vmmVSwitchPolicyCont.DistinguishedName, relationParam)
+		if err != nil {
+			return err
+		}
+
+	}
+
 	d.SetId(vmmVSwitchPolicyCont.DistinguishedName)
 	return resourceAciVSwitchPolicyGroupRead(d, m)
 }
@@ -243,29 +288,34 @@ func resourceAciVSwitchPolicyGroupUpdate(d *schema.ResourceData, m interface{}) 
 	if err != nil {
 		return err
 	}
+
 	if d.HasChange("relation_vmm_rs_vswitch_exporter_pol") {
-		oldRel, newRel := d.GetChange("relation_vmm_rs_vswitch_exporter_pol")
-		oldRelSet := oldRel.(*schema.Set)
-		newRelSet := newRel.(*schema.Set)
-		relToDelete := toStringList(oldRelSet.Difference(newRelSet).List())
-		relToCreate := toStringList(newRelSet.Difference(oldRelSet).List())
+		relation_vmm_rs_vswitch_exporter_pol := d.Get("exporterPolicy_ids").([]interface{})
+		for _, relDn := range relation_vmm_rs_vswitch_exporter_pol {
+			err := aciClient.DeleteRelationvmmRsVswitchExporterPol(vmmVSwitchPolicyCont.DistinguishedName, relDn.(string))
+			if err != nil {
+				return err
+			}
+		}
+		relationTovmmRsVswitchExporterPol := d.Get("relation_vmm_rs_vswitch_exporter_pol")
+		exporterPolicyIDS := make([]string, 0, 1)
+		exporterPolicies := relationTovmmRsVswitchExporterPol.([]interface{})
+		for _, relDn := range exporterPolicies {
+			relation_vmm_rs_vswitch_exporter_pol := relDn.(map[string]interface{})
+			var exporterPolicyDn string
+			exporterPolicyDn, err = aciClient.CreateRelationvmmRsVswitchExporterPol(vmmVSwitchPolicyCont.DistinguishedName, relation_vmm_rs_vswitch_exporter_pol["exporter_pol_dn"].(string), relation_vmm_rs_vswitch_exporter_pol["active_flow_timeout"].(string), relation_vmm_rs_vswitch_exporter_pol["idle_flow_timeout"].(string), relation_vmm_rs_vswitch_exporter_pol["sampling_rate"].(string))
 
-		for _, relDn := range relToDelete {
-			err = aciClient.DeleteRelationvmmRsVswitchExporterPol(vmmVSwitchPolicyCont.DistinguishedName, relDn)
 			if err != nil {
 				return err
 			}
 
+			exporterPolicyIDS = append(exporterPolicyIDS, exporterPolicyDn)
 		}
 
-		for _, relDn := range relToCreate {
-			err = aciClient.CreateRelationvmmRsVswitchExporterPol(vmmVSwitchPolicyCont.DistinguishedName, relDn)
-			if err != nil {
-				return err
-			}
+		d.Set("exporterPolicy_ids", exporterPolicyIDS)
 
-		}
 	}
+
 	if d.HasChange("relation_vmm_rs_vswitch_override_fw_pol") {
 		_, newRelParam := d.GetChange("relation_vmm_rs_vswitch_override_fw_pol")
 		err = aciClient.DeleteRelationvmmRsVswitchOverrideFwPol(vmmVSwitchPolicyCont.DistinguishedName)
@@ -333,6 +383,19 @@ func resourceAciVSwitchPolicyGroupUpdate(d *schema.ResourceData, m interface{}) 
 			return err
 		}
 		err = aciClient.CreateRelationvmmRsVswitchOverrideLacpPol(vmmVSwitchPolicyCont.DistinguishedName, newRelParam.(string))
+		if err != nil {
+			return err
+		}
+
+	}
+
+	if d.HasChange("relation_vmm_rs_vswitch_override_mtu_pol") {
+		_, newRelParam := d.GetChange("relation_vmm_rs_vswitch_override_mtu_pol")
+		err = aciClient.DeleteRelationvmmRsVswitchOverrideMtuPol(vmmVSwitchPolicyCont.DistinguishedName)
+		if err != nil {
+			return err
+		}
+		err = aciClient.CreateRelationvmmRsVswitchOverrideMtuPol(vmmVSwitchPolicyCont.DistinguishedName, newRelParam.(string))
 		if err != nil {
 			return err
 		}
