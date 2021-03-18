@@ -2,10 +2,13 @@ package aci
 
 import (
 	"fmt"
+	"reflect"
+	"sort"
 	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/container"
+	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 )
 
 func toStrMap(inputMap map[string]interface{}) map[string]string {
@@ -108,4 +111,45 @@ func stripQuotes(word string) string {
 		return strings.TrimSuffix(strings.TrimPrefix(word, "\""), "\"")
 	}
 	return word
+}
+
+func validateCommaSeparatedStringInSlice(valid []string, ignoreCase bool) schema.SchemaValidateFunc {
+	return func(i interface{}, k string) (s []string, es []error) {
+		// modified validation.StringInSlice function.
+		v, ok := i.(string)
+		if !ok {
+			es = append(es, fmt.Errorf("expected type of %s to be string", k))
+			return
+		}
+		vals := strings.Split(v, ",")
+		elemap := make(map[string]bool)
+		for _, val := range vals {
+			if !elemap[val] {
+				match := false
+				for _, str := range valid {
+					if val == str || (ignoreCase && strings.ToLower(val) == strings.ToLower(str)) {
+						match = true
+					}
+				}
+				if !match {
+					es = append(es, fmt.Errorf("expected %s to be one of %v, got %s", k, valid, val))
+				}
+			} else {
+				es = append(es, fmt.Errorf("unexpected duplicate values in %s : %s", k, val))
+			}
+			elemap[val] = true
+		}
+		return
+	}
+}
+
+func suppressBitMaskDiffFunc() func(k, old, new string, d *schema.ResourceData) bool {
+	return func(k, old, new string, d *schema.ResourceData) bool {
+		oldList := strings.Split(old, ",")
+		newList := strings.Split(new, ",")
+		sort.Strings(oldList)
+		sort.Strings(newList)
+
+		return reflect.DeepEqual(oldList, newList)
+	}
 }

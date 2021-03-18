@@ -3,9 +3,6 @@ package aci
 import (
 	"fmt"
 	"log"
-	"reflect"
-	"sort"
-	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
@@ -40,17 +37,10 @@ func resourceAciL3outOspfExternalPolicy() *schema.Resource {
 			},
 
 			"area_ctrl": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-				DiffSuppressFunc: func(k, old, new string, d *schema.ResourceData) bool {
-					oldList := strings.Split(old, ",")
-					newList := strings.Split(new, ",")
-					sort.Strings(oldList)
-					sort.Strings(newList)
-
-					return reflect.DeepEqual(oldList, newList)
-				},
+				Type:             schema.TypeString,
+				Optional:         true,
+				Computed:         true,
+				DiffSuppressFunc: suppressBitMaskDiffFunc(),
 				ValidateFunc: schema.SchemaValidateFunc(validateCommaSeparatedStringInSlice([]string{
 					"redistribute",
 					"summary",
@@ -92,30 +82,6 @@ func resourceAciL3outOspfExternalPolicy() *schema.Resource {
 				Computed: true,
 			},
 		}),
-	}
-}
-
-func validateCommaSeparatedStringInSlice(valid []string, ignoreCase bool) schema.SchemaValidateFunc {
-	return func(i interface{}, k string) (s []string, es []error) {
-		// modified validation.StringInSlice function.
-		v, ok := i.(string)
-		if !ok {
-			es = append(es, fmt.Errorf("expected type of %s to be string", k))
-			return
-		}
-		vals := strings.Split(v, ",")
-		for _, val := range vals {
-			match := false
-			for _, str := range valid {
-				if val == str || (ignoreCase && strings.ToLower(val) == strings.ToLower(str)) {
-					match = true
-				}
-			}
-			if !match {
-				es = append(es, fmt.Errorf("expected %s to be one of %v, got %s", k, valid, val))
-			}
-		}
-		return
 	}
 }
 
