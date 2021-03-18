@@ -115,16 +115,22 @@ func validateCommaSeparatedStringInSlice(valid []string, ignoreCase bool) schema
 			return
 		}
 		vals := strings.Split(v, ",")
+		elemap := make(map[string]bool)
 		for _, val := range vals {
-			match := false
-			for _, str := range valid {
-				if val == str || (ignoreCase && strings.ToLower(val) == strings.ToLower(str)) {
-					match = true
+			if !elemap[val] {
+				match := false
+				for _, str := range valid {
+					if val == str || (ignoreCase && strings.ToLower(val) == strings.ToLower(str)) {
+						match = true
+					}
 				}
+				if !match {
+					es = append(es, fmt.Errorf("expected %s to be one of %v, got %s", k, valid, val))
+				}
+			} else {
+				es = append(es, fmt.Errorf("unexpected duplicate values in %s : %s", k, val))
 			}
-			if !match {
-				es = append(es, fmt.Errorf("expected %s to be one of %v, got %s", k, valid, val))
-			}
+			elemap[val] = true
 		}
 		return
 	}
