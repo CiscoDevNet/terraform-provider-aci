@@ -18,8 +18,14 @@ resource "aci_tenant" "tenentcheck" {
   name_alias = "alias_tenant"
 }
 
+// To get information regarding the tenant object without children
 data "aci_rest" "tenant_rest" {
   path = "/api/node/mo/${aci_tenant.tenentcheck.id}.json"
+}
+
+// To get information regarding the tenant object with children
+data "aci_rest" "tenant_rest" {
+  path = "/api/node/mo/${aci_tenant.tenentcheck.id}.json?rsp-subtree=children"
 }
 
 resource "aci_bgp_peer_prefix" "example" {
@@ -34,22 +40,31 @@ resource "aci_bgp_peer_prefix" "example" {
   thresh       = "85"
 }
 
+// To get information regarding the BGP peer prefix object without children
 data "aci_rest" "bgp_peer_prefix_Rest" {
   path = "/api/node/mo/${aci_bgp_peer_prefix.example.id}.json"
+}
+
+// To get information regarding the BGP peer prefix object with children
+data "aci_rest" "tenant_rest" {
+  path = "/api/node/mo/${aci_bgp_peer_prefix.example.id}.json?rsp-subtree=children"
 }
 ```
 
 ## Argument Reference ##
 
 * `path` - (Required) ACI path for object which should should be get. Starting with api/node/mo/{parent-dn}(if applicable)/{rn of object}.json
+<string>Note</strong> : To extract children, use path format as api/node/mo/{parent-dn}(if applicable)/{rn of object}.json?rsp-subtree=children
 
 
 ## Attribute Reference
 
-The only attribute that this resource exports is the `id`, which is set to the
-Dn of the object created by it.
 * `id` - dishtiguished name of object being managed.
 * `class_name` - class name of object being managed.
 * `content` - map of key-value pairs which represents the attributes for the object being managed.
 * `payload` - Freestyle JSON or YAML payload of object being managed.
-* `dn` - Distinguished name of object being managed. 
+* `dn` - Distinguished name of object being managed.
+
+* `children` - Set of children of the object being managed
+* `children.child_class_name` - Class name of the child of the object being managed
+* `children.child_content` - map of key-value pairs which represents the attributes for child of the object being managed.
