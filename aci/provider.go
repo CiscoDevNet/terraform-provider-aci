@@ -180,6 +180,7 @@ func Provider() terraform.ResourceProvider {
 			"aci_bgp_peer_connectivity_profile":            resourceAciBgpPeerConnectivityProfile(),
 			"aci_bgp_best_path_policy":                     resourceAciBgpBestPathPolicy(),
 			"aci_bgp_timers":                               resourceAciBGPTimersPolicy(),
+			"aci_ospf_route_summarization":                 resourceAciOspfRouteSummarization(),
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
@@ -311,6 +312,7 @@ func Provider() terraform.ResourceProvider {
 			"aci_bgp_peer_connectivity_profile":            dataSourceAciBgpPeerConnectivityProfile(),
 			"aci_bgp_best_path_policy":                     dataSourceAciBgpBestPathPolicy(),
 			"aci_bgp_timers":                               dataSourceAciBGPTimersPolicy(),
+			"aci_ospf_route_summarization":                 dataSourceAciOspfRouteSummarization(),
 		},
 
 		ConfigureFunc: configureClient,
