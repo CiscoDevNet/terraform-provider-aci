@@ -3,6 +3,8 @@ package aci
 import (
 	"fmt"
 	"log"
+	"reflect"
+	"sort"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
@@ -526,7 +528,15 @@ func resourceAciL3OutsideRead(d *schema.ResourceData, m interface{}) error {
 		d.Set("relation_l3ext_rs_out_to_bd_public_subnet_holder", make([]string, 0, 1))
 
 	} else {
-		d.Set("relation_l3ext_rs_out_to_bd_public_subnet_holder", l3extRsOutToBDPublicSubnetHolderData)
+		if _, ok := d.GetOk("relation_l3ext_rs_out_to_bd_public_subnet_holder"); ok {
+			relationParamList := toStringList(d.Get("relation_l3ext_rs_out_to_bd_public_subnet_holder").(*schema.Set).List())
+			l3extRsOutToBDPublicSubnetHolderDataList := toStringList(l3extRsOutToBDPublicSubnetHolderData.(*schema.Set).List())
+			sort.Strings(relationParamList)
+			sort.Strings(l3extRsOutToBDPublicSubnetHolderDataList)
+			if !reflect.DeepEqual(relationParamList, l3extRsOutToBDPublicSubnetHolderDataList) {
+				d.Set("relation_l3ext_rs_out_to_bd_public_subnet_holder", make([]string, 0, 1))
+			}
+		}
 	}
 
 	l3extRsInterleakPolData, err := aciClient.ReadRelationl3extRsInterleakPolFromL3Outside(dn)
