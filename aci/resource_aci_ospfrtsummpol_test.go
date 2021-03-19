@@ -61,8 +61,7 @@ func testAccCheckAciOspfRouteSummarizationConfig_basic(description string) strin
 	return fmt.Sprintf(`
 
 	resource "aci_ospf_route_summarization" "fooospf_route_summarization" {
-		#tenant_dn  = "${aci_tenant.example.id}"
-		tenant_dn  = "uni/tn-check_tenantnk"
+		tenant_dn  = "${aci_tenant.example.id}"
 		description = "%s"
 		name  = "example"
   		annotation  = "example"
