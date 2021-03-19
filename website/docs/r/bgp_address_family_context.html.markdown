@@ -32,7 +32,7 @@ resource "aci_bgp_address_family_context" "example" {
 
 * `tenant_dn` - (Required) Distinguished name of parent tenant object.
 * `name` - (Required) Name of BGP address family context object.
-* `description` - (Optional) description for BGP address family context object.
+* `description` - (Optional) Description for BGP address family context object.
 * `annotation` - (Optional) Annotation for BGP address family context object.
 * `ctrl` - (Optional) Control state for BGP address family context object. Allowed value is "host-rt-leak".
 * `e_dist` - (Optional) Administrative distance of EBGP routes for BGP address family context object. Default value is "20".
@@ -47,11 +47,11 @@ resource "aci_bgp_address_family_context" "example" {
 ## Attribute Reference
 
 The only attribute that this resource exports is the `id`, which is set to the
-Dn of the BGP Address Family Context Policy.
+Dn of the BGP Address Family Context.
 
 ## Importing ##
 
-An existing BGP Address Family Context Policy can be [imported][docs-import] into this resource via its Dn, via the following command:
+An existing BGP Address Family Context can be [imported][docs-import] into this resource via its Dn, via the following command:
 [docs-import]: https://www.terraform.io/docs/import/index.html
 
 
