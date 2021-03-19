@@ -173,6 +173,8 @@ func Provider() terraform.ResourceProvider {
 			"aci_bgp_timers":                               resourceAciBGPTimersPolicy(),
 			"aci_ospf_route_summarization":                 resourceAciOspfRouteSummarization(),
 			"aci_bgp_address_family_context":               resourceAciBGPAddressFamilyContextPolicy(),
+			"aci_ospf_timers":                              resourceAciOSPFTimersPolicy(),
+			"aci_hsrp_interface_policy":                    resourceAciHSRPInterfacePolicy(),
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
@@ -295,6 +297,8 @@ func Provider() terraform.ResourceProvider {
 			"aci_bgp_timers":                               dataSourceAciBGPTimersPolicy(),
 			"aci_ospf_route_summarization":                 dataSourceAciOspfRouteSummarization(),
 			"aci_bgp_address_family_context":               dataSourceAciBGPAddressFamilyContextPolicy(),
+			"aci_ospf_timers":                              dataSourceAciOSPFTimersPolicy(),
+			"aci_hsrp_interface_policy":                    dataSourceAciHSRPInterfacePolicy(),
 		},
 
 		ConfigureFunc: configureClient,
