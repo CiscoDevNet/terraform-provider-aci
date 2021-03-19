@@ -175,6 +175,8 @@ func Provider() terraform.ResourceProvider {
 			"aci_bgp_address_family_context":               resourceAciBGPAddressFamilyContextPolicy(),
 			"aci_hsrp_group_policy":                        resourceAciHSRPGroupPolicy(),
 			"aci_l3out_hsrp_interface_profile":             resourceAciL3outHSRPInterfaceProfile(),
+			"aci_ospf_timers":                              resourceAciOSPFTimersPolicy(),
+			"aci_hsrp_interface_policy":                    resourceAciHSRPInterfacePolicy(),
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
@@ -299,6 +301,8 @@ func Provider() terraform.ResourceProvider {
 			"aci_bgp_address_family_context":               dataSourceAciBGPAddressFamilyContextPolicy(),
 			"aci_hsrp_group_policy":                        dataSourceAciHSRPGroupPolicy(),
 			"aci_l3out_hsrp_interface_profile":             dataSourceAciL3outHSRPInterfaceProfile(),
+			"aci_ospf_timers":                              dataSourceAciOSPFTimersPolicy(),
+			"aci_hsrp_interface_policy":                    dataSourceAciHSRPInterfacePolicy(),
 		},
 
 		ConfigureFunc: configureClient,
