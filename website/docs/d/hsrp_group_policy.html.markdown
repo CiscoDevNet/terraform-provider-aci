@@ -28,7 +28,8 @@ data "aci_hsrp_group_policy" "example" {
 
 - `id` - Attribute id set to the Dn of the HSRP Group Policy.
 - `annotation` - (Optional) Annotation for object hsrp group policy.
-- `ctrl` - (Optional) The control state.  
+- `description` - (Optional) Description for object hsrp group policy.
+- `ctrl` - (Optional) The control state.
 - `hello_intvl` - (Optional) The hello interval.
 - `hold_intvl` - (Optional) The period of time before declaring that the neighbor is down.
 - `key` - (Optional) The key or password used to uniquely identify this configuration object.
