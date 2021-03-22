@@ -46,7 +46,7 @@ func resourceAciL3outOspfExternalPolicy() *schema.Resource {
 					"summary",
 					"suppress-fa",
 					"unspecified",
-				}, false)),
+				}, false, "unspecified")),
 			},
 
 			"area_id": &schema.Schema{
@@ -112,6 +112,11 @@ func setL3outOspfExternalPolicyAttributes(ospfExtP *models.L3outOspfExternalPoli
 	d.Set("annotation", ospfExtPMap["annotation"])
 	d.Set("area_cost", ospfExtPMap["areaCost"])
 	d.Set("area_ctrl", ospfExtPMap["areaCtrl"])
+	if ospfExtPMap["areaCtrl"] == "" {
+		d.Set("area_ctrl", "unspecified")
+	} else {
+		d.Set("area_ctrl", ospfExtPMap["areaCtrl"])
+	}
 	d.Set("area_id", ospfExtPMap["areaId"])
 	d.Set("area_type", ospfExtPMap["areaType"])
 	d.Set("multipod_internal", ospfExtPMap["multipodInternal"])
