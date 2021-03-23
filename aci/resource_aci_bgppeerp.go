@@ -45,7 +45,7 @@ func resourceAciBgpPeerConnectivityProfile() *schema.Resource {
 					"af-mcast",
 					"af-ucast",
 					"",
-				}, false)),
+				}, false, "")),
 			},
 
 			"allowed_self_as_cnt": &schema.Schema{
@@ -67,7 +67,7 @@ func resourceAciBgpPeerConnectivityProfile() *schema.Resource {
 					"send-com",
 					"send-ext-com",
 					"",
-				}, false)),
+				}, false, "")),
 			},
 
 			"name_alias": &schema.Schema{
@@ -92,7 +92,7 @@ func resourceAciBgpPeerConnectivityProfile() *schema.Resource {
 					"bfd",
 					"dis-conn-check",
 					"",
-				}, false)),
+				}, false, "")),
 			},
 
 			"private_a_sctrl": &schema.Schema{
@@ -105,7 +105,7 @@ func resourceAciBgpPeerConnectivityProfile() *schema.Resource {
 					"remove-exclusive",
 					"replace-as",
 					"",
-				}, false)),
+				}, false, "")),
 			},
 
 			"ttl": &schema.Schema{
