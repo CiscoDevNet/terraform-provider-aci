@@ -272,7 +272,7 @@ func getRemoteVMMController(client *client.Client, dn string) (*models.VMMContro
 	vmmCtrlrP := models.VMMControllerFromContainer(vmmCtrlrPCont)
 
 	if vmmCtrlrP.DistinguishedName == "" {
-		return nil, fmt.Errorf("Bridge Domain %s not found", vmmCtrlrP.DistinguishedName)
+		return nil, fmt.Errorf("VMM Controller %s not found", vmmCtrlrP.DistinguishedName)
 	}
 
 	return vmmCtrlrP, nil
@@ -284,7 +284,7 @@ func setVMMControllerAttributes(vmmCtrlrP *models.VMMController, d *schema.Resou
 	// d.Set("vmm_domain_dn", GetParentDn(vmmCtrlrP.DistinguishedName))
 	vmmCtrlrPMap, _ := vmmCtrlrP.ToMap()
 	d.Set("name", vmmCtrlrPMap["name"])
-	d.Set("vmm_domain_dn", GetParentDn(vmmCtrlrP.DistinguishedName, vmmCtrlrPMap["name"]))
+	d.Set("vmm_domain_dn", GetParentDn(vmmCtrlrP.DistinguishedName, fmt.Sprintf("/ctrlr-%s", vmmCtrlrPMap["name"])))
 
 	d.Set("annotation", vmmCtrlrPMap["annotation"])
 	d.Set("dvs_version", vmmCtrlrPMap["dvsVersion"])

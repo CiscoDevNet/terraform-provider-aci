@@ -7,7 +7,7 @@ variable "vmm_domain" {
 }
 
 variable "aci_vmm_controller" {
-  default = "vmm-ctrl"
+  default = "vmm_ctrl"
 }
 
 variable "aci_vmm_credential" {
