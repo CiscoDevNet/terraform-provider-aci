@@ -46,57 +46,66 @@ func resourceAciHSRPGroupPolicy() *schema.Resource {
 			},
 
 			"hello_intvl": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
+				Type:         schema.TypeString,
+				Optional:     true,
+				Computed:     true,
+				ValidateFunc: validateNonEmptyString(),
 			},
 
 			"hold_intvl": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
+				Type:         schema.TypeString,
+				Optional:     true,
+				Computed:     true,
+				ValidateFunc: validateNonEmptyString(),
 			},
 
 			"key": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
+				Type:         schema.TypeString,
+				Optional:     true,
+				Computed:     true,
+				ValidateFunc: validateNonEmptyString(),
 			},
 
 			"name_alias": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
+				Type:         schema.TypeString,
+				Optional:     true,
+				Computed:     true,
+				ValidateFunc: validateNonEmptyString(),
 			},
 
 			"preempt_delay_min": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
+				Type:         schema.TypeString,
+				Optional:     true,
+				Computed:     true,
+				ValidateFunc: validateNonEmptyString(),
 			},
 
 			"preempt_delay_reload": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
+				Type:         schema.TypeString,
+				Optional:     true,
+				Computed:     true,
+				ValidateFunc: validateNonEmptyString(),
 			},
 
 			"preempt_delay_sync": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
+				Type:         schema.TypeString,
+				Optional:     true,
+				Computed:     true,
+				ValidateFunc: validateNonEmptyString(),
 			},
 
 			"prio": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
+				Type:         schema.TypeString,
+				Optional:     true,
+				Computed:     true,
+				ValidateFunc: validateNonEmptyString(),
 			},
 
 			"timeout": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
+				Type:         schema.TypeString,
+				Optional:     true,
+				Computed:     true,
+				ValidateFunc: validateNonEmptyString(),
 			},
 
 			"hsrp_group_policy_type": &schema.Schema{
@@ -111,6 +120,22 @@ func resourceAciHSRPGroupPolicy() *schema.Resource {
 		}),
 	}
 }
+
+func validateNonEmptyString() schema.SchemaValidateFunc {
+	return func(i interface{}, k string) (s []string, es []error) {
+		// modified validation.StringInSlice function.
+		v, ok := i.(string)
+		if !ok {
+			es = append(es, fmt.Errorf("expected type of %s to be string", k))
+			return
+		}
+		if v == "" {
+			es = append(es, fmt.Errorf("expected %s to be a non-empty string", k))
+		}
+		return
+	}
+}
+
 func getRemoteHSRPGroupPolicy(client *client.Client, dn string) (*models.HSRPGroupPolicy, error) {
 	hsrpGroupPolCont, err := client.Get(dn)
 	if err != nil {
