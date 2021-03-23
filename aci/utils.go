@@ -106,7 +106,7 @@ func GetParentDn(dn string, rn string) string {
 	return arr[0]
 }
 
-func validateCommaSeparatedStringInSlice(valid []string, ignoreCase bool) schema.SchemaValidateFunc {
+func validateCommaSeparatedStringInSlice(valid []string, ignoreCase bool, zeroVal string) schema.SchemaValidateFunc {
 	return func(i interface{}, k string) (s []string, es []error) {
 		// modified validation.StringInSlice function.
 		v, ok := i.(string)
@@ -117,6 +117,10 @@ func validateCommaSeparatedStringInSlice(valid []string, ignoreCase bool) schema
 		vals := strings.Split(v, ",")
 		elemap := make(map[string]bool)
 		for _, val := range vals {
+			if val == zeroVal && len(vals) > 1 {
+				es = append(es, fmt.Errorf("%s should't be used along with other values in %s", zeroVal, k))
+				break
+			}
 			if !elemap[val] {
 				match := false
 				for _, str := range valid {
