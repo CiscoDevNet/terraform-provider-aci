@@ -127,7 +127,7 @@ func getRemoteVSwitchPolicyGroup(client *client.Client, dn string) (*models.VSwi
 	vmmVSwitchPolicyCont := models.VSwitchPolicyGroupFromContainer(vmmVSwitchPolicyContCont)
 
 	if vmmVSwitchPolicyCont.DistinguishedName == "" {
-		return nil, fmt.Errorf("Bridge Domain %s not found", vmmVSwitchPolicyCont.DistinguishedName)
+		return nil, fmt.Errorf("VMM vSwitch Policy %s not found", vmmVSwitchPolicyCont.DistinguishedName)
 	}
 
 	return vmmVSwitchPolicyCont, nil
@@ -138,8 +138,8 @@ func setVSwitchPolicyGroupAttributes(vmmVSwitchPolicyCont *models.VSwitchPolicyG
 	d.Set("description", vmmVSwitchPolicyCont.Description)
 	// d.Set("vmm_domain_dn", GetParentDn(vmmVSwitchPolicyCont.DistinguishedName))
 	vmmVSwitchPolicyContMap, _ := vmmVSwitchPolicyCont.ToMap()
-	d.Set("name", vmmVSwitchPolicyContMap["name"])
-	d.Set("vmm_domain_dn", GetParentDn(vmmVSwitchPolicyCont.DistinguishedName, vmmVSwitchPolicyContMap["name"]))
+	// d.Set("name", vmmVSwitchPolicyContMap["name"])
+	d.Set("vmm_domain_dn", GetParentDn(vmmVSwitchPolicyCont.DistinguishedName, "/vswitchpolcont"))
 
 	d.Set("annotation", vmmVSwitchPolicyContMap["annotation"])
 	d.Set("name_alias", vmmVSwitchPolicyContMap["nameAlias"])
