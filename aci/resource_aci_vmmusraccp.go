@@ -88,7 +88,7 @@ func setVMMCredentialAttributes(vmmUsrAccP *models.VMMCredential, d *schema.Reso
 	// d.Set("vmm_domain_dn", GetParentDn(vmmUsrAccP.DistinguishedName))
 	vmmUsrAccPMap, _ := vmmUsrAccP.ToMap()
 	d.Set("name", vmmUsrAccPMap["name"])
-	d.Set("vmm_domain_dn", GetParentDn(vmmUsrAccP.DistinguishedName, vmmUsrAccPMap["name"]))
+	d.Set("vmm_domain_dn", GetParentDn(vmmUsrAccP.DistinguishedName, fmt.Sprintf("/usracc-%s", vmmUsrAccPMap["name"])))
 
 	d.Set("annotation", vmmUsrAccPMap["annotation"])
 	d.Set("name_alias", vmmUsrAccPMap["nameAlias"])
