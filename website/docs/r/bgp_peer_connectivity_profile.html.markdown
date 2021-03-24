@@ -40,6 +40,7 @@ resource "aci_bgp_peer_connectivity_profile" "example" {
 - `addr_t_ctrl` - (Optional) Ucast/Mcast Addr Type AF Control. (Multiple Comma-Delimited values are allowed. E.g., "af-mcast,af-ucast"). Apply "" to clear all the values.  
   Allowed values: "af-mcast", "af-ucast". Default value: "af-ucast".
 - `allowed_self_as_cnt` - (Optional) The number of occurrences of a local Autonomous System Number (ASN). Default value: "3".
+- `description` - (Optional) Description for object bgp peer connectivity profile.
 - `annotation` - (Optional) Annotation for object bgp peer connectivity profile.
 - `ctrl` - (Optional)
   The peer controls specify which Border Gateway Protocol (BGP) attributes are sent to a peer. (Multiple Comma-Delimited values are allowed. E.g., "allow-self-as,as-override"). Apply "" to clear all the values.  

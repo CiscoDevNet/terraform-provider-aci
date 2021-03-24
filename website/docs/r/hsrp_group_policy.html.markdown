@@ -38,6 +38,7 @@ resource "aci_hsrp_group_policy" "example" {
 - `tenant_dn` - (Required) Distinguished name of parent tenant object.
 - `name` - (Required) Name of Object hsrp group policy.
 - `annotation` - (Optional) Annotation for object hsrp group policy.
+- `description` - (Optional) Description for object hsrp group policy.
 - `ctrl` - (Optional) The control state.  
   Allowed values: "preempt", "0". Default value: "0".
 - `hello_intvl` - (Optional) The hello interval. Default value: "3000".
