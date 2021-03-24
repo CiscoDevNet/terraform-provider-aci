@@ -170,7 +170,6 @@ func setHSRPGroupPolicyAttributes(hsrpGroupPol *models.HSRPGroupPolicy, d *schem
 	}
 	d.Set("hello_intvl", hsrpGroupPolMap["helloIntvl"])
 	d.Set("hold_intvl", hsrpGroupPolMap["holdIntvl"])
-	d.Set("key", hsrpGroupPolMap["key"])
 	d.Set("name_alias", hsrpGroupPolMap["nameAlias"])
 	d.Set("preempt_delay_min", hsrpGroupPolMap["preemptDelayMin"])
 	d.Set("preempt_delay_reload", hsrpGroupPolMap["preemptDelayReload"])
