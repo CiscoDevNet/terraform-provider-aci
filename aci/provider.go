@@ -174,6 +174,7 @@ func Provider() terraform.ResourceProvider {
 			"aci_ospf_route_summarization":                 resourceAciOspfRouteSummarization(),
 			"aci_bgp_address_family_context":               resourceAciBGPAddressFamilyContextPolicy(),
 			"aci_hsrp_group_policy":                        resourceAciHSRPGroupPolicy(),
+			"aci_l3out_hsrp_interface_profile":             resourceAciL3outHSRPInterfaceProfile(),
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
@@ -297,6 +298,7 @@ func Provider() terraform.ResourceProvider {
 			"aci_ospf_route_summarization":                 dataSourceAciOspfRouteSummarization(),
 			"aci_bgp_address_family_context":               dataSourceAciBGPAddressFamilyContextPolicy(),
 			"aci_hsrp_group_policy":                        dataSourceAciHSRPGroupPolicy(),
+			"aci_l3out_hsrp_interface_profile":             dataSourceAciL3outHSRPInterfaceProfile(),
 		},
 
 		ConfigureFunc: configureClient,
