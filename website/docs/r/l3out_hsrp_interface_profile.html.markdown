@@ -30,7 +30,7 @@ resource "aci_l3out_hsrp_interface_profile" "example" {
 - `description` - (Optional) Description for object L3-out HSRP interface profile.
 - `name_alias` - (Optional) Name alias for object L3-out HSRP interface profile.
 - `version` - (Optional) Compatibility catalog version.  
-  Allowed values: "v1", "v2". Default value: "v1"
+  Allowed values: "v1", "v2". Default value: "v1".
 - `relation_hsrp_rs_if_pol` - (Optional) Relation to class hsrpIfPol. Cardinality - N_TO_ONE. Type - String.
 
 ## Attribute Reference
