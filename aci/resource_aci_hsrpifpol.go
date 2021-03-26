@@ -7,7 +7,6 @@ import (
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
 )
 
 func resourceAciHSRPInterfacePolicy() *schema.Resource {
@@ -37,13 +36,14 @@ func resourceAciHSRPInterfacePolicy() *schema.Resource {
 			},
 
 			"ctrl": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-				ValidateFunc: validation.StringInSlice([]string{
+				Type:             schema.TypeString,
+				Optional:         true,
+				DiffSuppressFunc: suppressBitMaskDiffFunc(),
+				ValidateFunc: schema.SchemaValidateFunc(validateCommaSeparatedStringInSlice([]string{
 					"bfd",
 					"bia",
-				}, false),
+					"",
+				}, false, "")),
 			},
 
 			"delay": &schema.Schema{
@@ -135,8 +135,10 @@ func resourceAciHSRPInterfacePolicyCreate(d *schema.ResourceData, m interface{})
 	} else {
 		hsrpIfPolAttr.Annotation = "{}"
 	}
-	if Ctrl, ok := d.GetOk("ctrl"); ok {
-		hsrpIfPolAttr.Ctrl = Ctrl.(string)
+	if ctrl, ok := d.GetOk("ctrl"); ok {
+		hsrpIfPolAttr.Ctrl = ctrl.(string)
+	} else {
+		hsrpIfPolAttr.Ctrl = "{}"
 	}
 	if Delay, ok := d.GetOk("delay"); ok {
 		hsrpIfPolAttr.Delay = Delay.(string)
@@ -181,8 +183,10 @@ func resourceAciHSRPInterfacePolicyUpdate(d *schema.ResourceData, m interface{})
 	} else {
 		hsrpIfPolAttr.Annotation = "{}"
 	}
-	if Ctrl, ok := d.GetOk("ctrl"); ok {
-		hsrpIfPolAttr.Ctrl = Ctrl.(string)
+	if ctrl, ok := d.GetOk("ctrl"); ok {
+		hsrpIfPolAttr.Ctrl = ctrl.(string)
+	} else {
+		hsrpIfPolAttr.Ctrl = "{}"
 	}
 	if Delay, ok := d.GetOk("delay"); ok {
 		hsrpIfPolAttr.Delay = Delay.(string)
