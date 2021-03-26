@@ -17,3 +17,7 @@ variable "aci_vmm_credential" {
 variable "microsoft_domain" {
   default = "uni/vmmp-Microsoft"
 }
+
+variable "ave" {
+  default = "uni/vmmp-VMware"
+}
