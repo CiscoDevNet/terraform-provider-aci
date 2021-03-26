@@ -43,13 +43,14 @@ func resourceAciOSPFTimersPolicy() *schema.Resource {
 			},
 
 			"ctrl": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-				ValidateFunc: validation.StringInSlice([]string{
+				Type:             schema.TypeString,
+				Optional:         true,
+				DiffSuppressFunc: suppressBitMaskDiffFunc(),
+				ValidateFunc: schema.SchemaValidateFunc(validateCommaSeparatedStringInSlice([]string{
 					"name-lookup",
 					"pfx-suppress",
-				}, false),
+					"",
+				}, false, "")),
 			},
 
 			"dist": &schema.Schema{
@@ -61,9 +62,9 @@ func resourceAciOSPFTimersPolicy() *schema.Resource {
 			"gr_ctrl": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
-				Computed: true,
 				ValidateFunc: validation.StringInSlice([]string{
 					"helper",
+					"",
 				}, false),
 			},
 
@@ -260,12 +261,16 @@ func resourceAciOSPFTimersPolicyCreate(d *schema.ResourceData, m interface{}) er
 	}
 	if Ctrl, ok := d.GetOk("ctrl"); ok {
 		ospfCtxPolAttr.Ctrl = Ctrl.(string)
+	} else {
+		ospfCtxPolAttr.Ctrl = "{}"
 	}
 	if Dist, ok := d.GetOk("dist"); ok {
 		ospfCtxPolAttr.Dist = Dist.(string)
 	}
 	if GrCtrl, ok := d.GetOk("gr_ctrl"); ok {
 		ospfCtxPolAttr.GrCtrl = GrCtrl.(string)
+	} else {
+		ospfCtxPolAttr.GrCtrl = "{}"
 	}
 	if LsaArrivalIntvl, ok := d.GetOk("lsa_arrival_intvl"); ok {
 		ospfCtxPolAttr.LsaArrivalIntvl = LsaArrivalIntvl.(string)
@@ -354,12 +359,16 @@ func resourceAciOSPFTimersPolicyUpdate(d *schema.ResourceData, m interface{}) er
 	}
 	if Ctrl, ok := d.GetOk("ctrl"); ok {
 		ospfCtxPolAttr.Ctrl = Ctrl.(string)
+	} else {
+		ospfCtxPolAttr.Ctrl = "{}"
 	}
 	if Dist, ok := d.GetOk("dist"); ok {
 		ospfCtxPolAttr.Dist = Dist.(string)
 	}
 	if GrCtrl, ok := d.GetOk("gr_ctrl"); ok {
 		ospfCtxPolAttr.GrCtrl = GrCtrl.(string)
+	} else {
+		ospfCtxPolAttr.GrCtrl = "{}"
 	}
 	if LsaArrivalIntvl, ok := d.GetOk("lsa_arrival_intvl"); ok {
 		ospfCtxPolAttr.LsaArrivalIntvl = LsaArrivalIntvl.(string)

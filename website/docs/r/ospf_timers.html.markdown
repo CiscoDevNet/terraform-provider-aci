@@ -17,7 +17,7 @@ resource "aci_ospf_timers" "example" {
   name                = "one"
   annotation          = "example"
   bw_ref              = "30000"
-  ctrl                = "pfx-suppress"
+  ctrl                = "pfx-suppress,name-lookup"
   dist                = "200"
   gr_ctrl             = "helper"
   lsa_arrival_intvl   = "2000"
@@ -47,9 +47,9 @@ resource "aci_ospf_timers" "example" {
 * `annotation` - (Optional) Annotation for OSPF timers object.
 * `description` - (Optional) Description for OSPF timers object.
 * `bw_ref` - (Optional) OSPF policy bandwidth for OSPF timers object. Default value is "40000".
-* `ctrl` - (Optional) Control state for OSPF timers object. Default value is "0".
+* `ctrl` - (Optional) Control state for OSPF timers object. It is in the form of comma separated string and allowed values are "name-lookup" and"pfx-suppress". To deselect both the options, just pass `ctrl=""`. Default value is "" that means none of the options are selected.
 * `dist` - (Optional) Preferred administrative distance for OSPF timers object. Default value is "110".
-* `gr_ctrl` - (Optional) Graceful restart enabled or helper only for OSPF timers object. Allowed value is "helper". 
+* `gr_ctrl` - (Optional) Graceful restart enabled or helper only for OSPF timers object. Allowed value is "helper".  Default value is "helper". To deselect the option, just pass `gr_ctrl=""`
 * `lsa_arrival_intvl` - (Optional) Minimum interval between the arrivals of lsas for OSPF timers object. Default value is "1000".
 * `lsa_gp_pacing_intvl` - (Optional) LSA group pacing interval for OSPF timers object. Default value is "10".
 * `lsa_hold_intvl` - (Optional) Throttle hold interval between LSAs for OSPF timers object. Default value is "5000".
