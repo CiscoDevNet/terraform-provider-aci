@@ -148,15 +148,6 @@ func resourceAciL3outHSRPSecondaryVIPCreate(d *schema.ResourceData, m interface{
 
 	d.Partial(false)
 
-	checkDns := make([]string, 0, 1)
-
-	d.Partial(true)
-	err = checkTDn(aciClient, checkDns)
-	if err != nil {
-		return err
-	}
-	d.Partial(false)
-
 	d.SetId(hsrpSecVip.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
@@ -201,15 +192,6 @@ func resourceAciL3outHSRPSecondaryVIPUpdate(d *schema.ResourceData, m interface{
 
 	d.SetPartial("ip")
 
-	d.Partial(false)
-
-	checkDns := make([]string, 0, 1)
-
-	d.Partial(true)
-	err = checkTDn(aciClient, checkDns)
-	if err != nil {
-		return err
-	}
 	d.Partial(false)
 
 	d.SetId(hsrpSecVip.DistinguishedName)
