@@ -61,9 +61,9 @@ func testAccCheckAciL3outHSRPSecondaryVIPConfig_basic(description string) string
 	return fmt.Sprintf(`
 
 	resource "aci_l3out_hsrp_secondary_vip" "fool3out_hsrp_secondary_vip" {
-		hsrp_group_profile_dn  = "${aci_hsrp_group_profile.example.id}"
+		l3out_hsrp_interface_group_dn  = "uni/tn-check_tenantnk/out-crest_test_rutvik_l3out/lnodep-crest_test_rutvik_node/lifp-demo_int_prof/hsrpIfP/hsrpGroupP-hsrp_group_profile"
 		description = "%s"
-		ip  = "example"
+		ip  = "10.0.0.3"
   		annotation  = "example"
   		config_issues = "GroupMac-Conflicts-Other-Group"
   		name_alias  = "example"
@@ -126,7 +126,7 @@ func testAccCheckAciL3outHSRPSecondaryVIPAttributes(description string, l3out_hs
 			return fmt.Errorf("Bad l3out_hsrp_secondary_vip Description %s", l3out_hsrp_secondary_vip.Description)
 		}
 
-		if "example" != l3out_hsrp_secondary_vip.Ip {
+		if "10.0.0.3" != l3out_hsrp_secondary_vip.Ip {
 			return fmt.Errorf("Bad l3out_hsrp_secondary_vip ip %s", l3out_hsrp_secondary_vip.Ip)
 		}
 

@@ -14,14 +14,14 @@ Data source for ACI L3out HSRP Secondary VIP
 
 ```hcl
 data "aci_l3out_hsrp_secondary_vip" "example" {
-  hsrp_group_profile_dn = "uni/tn-example/out-example/lnodep-example/lifp-example/hsrpIfP/hsrpGroupP-example"
+  l3out_hsrp_interface_group_dn = "${aci_l3out_hsrp_interface_group.example.id}"
   ip = "example"
 }
 ```
 
 ## Argument Reference
 
-- `hsrp_group_profile_dn` - (Required) Distinguished name of parent HSRP group profile object.
+- `l3out_hsrp_interface_group_dn` - (Required) Distinguished name of parent HSRP group profile object.
 - `ip` - (Required) IP of Object L3out HSRP Secondary VIP.
 
 ## Attribute Reference

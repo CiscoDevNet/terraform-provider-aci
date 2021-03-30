@@ -15,7 +15,7 @@ func dataSourceAciL3outHSRPSecondaryVIP() *schema.Resource {
 		SchemaVersion: 1,
 
 		Schema: AppendBaseAttrSchema(map[string]*schema.Schema{
-			"hsrp_group_profile_dn": &schema.Schema{
+			"l3out_hsrp_interface_group_dn": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
 			},
@@ -52,7 +52,7 @@ func dataSourceAciL3outHSRPSecondaryVIPRead(d *schema.ResourceData, m interface{
 	ip := d.Get("ip").(string)
 
 	rn := fmt.Sprintf("hsrpSecVip-[%s]", ip)
-	HSRPGroupProfileDn := d.Get("hsrp_group_profile_dn").(string)
+	HSRPGroupProfileDn := d.Get("l3out_hsrp_interface_group_dn").(string)
 
 	dn := fmt.Sprintf("%s/%s", HSRPGroupProfileDn, rn)
 

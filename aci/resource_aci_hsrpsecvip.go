@@ -24,7 +24,7 @@ func resourceAciL3outHSRPSecondaryVIP() *schema.Resource {
 		SchemaVersion: 1,
 
 		Schema: AppendBaseAttrSchema(map[string]*schema.Schema{
-			"hsrp_group_profile_dn": &schema.Schema{
+			"l3out_hsrp_interface_group_dn": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
 				ForceNew: true,
@@ -81,7 +81,7 @@ func setL3outHSRPSecondaryVIPAttributes(hsrpSecVip *models.L3outHSRPSecondaryVIP
 	d.Set("description", hsrpSecVip.Description)
 	dn := d.Id()
 	if dn != hsrpSecVip.DistinguishedName {
-		d.Set("hsrp_group_profile_dn", "")
+		d.Set("l3out_hsrp_interface_group_dn", "")
 	}
 	hsrpSecVipMap, _ := hsrpSecVip.ToMap()
 
@@ -119,7 +119,7 @@ func resourceAciL3outHSRPSecondaryVIPCreate(d *schema.ResourceData, m interface{
 
 	ip := d.Get("ip").(string)
 
-	HSRPGroupProfileDn := d.Get("hsrp_group_profile_dn").(string)
+	HSRPGroupProfileDn := d.Get("l3out_hsrp_interface_group_dn").(string)
 
 	hsrpSecVipAttr := models.L3outHSRPSecondaryVIPAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
@@ -162,7 +162,7 @@ func resourceAciL3outHSRPSecondaryVIPUpdate(d *schema.ResourceData, m interface{
 
 	ip := d.Get("ip").(string)
 
-	HSRPGroupProfileDn := d.Get("hsrp_group_profile_dn").(string)
+	HSRPGroupProfileDn := d.Get("l3out_hsrp_interface_group_dn").(string)
 
 	hsrpSecVipAttr := models.L3outHSRPSecondaryVIPAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {

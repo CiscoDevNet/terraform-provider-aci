@@ -15,7 +15,7 @@ Manages ACI L3out HSRP Secondary VIP
 ```hcl
 resource "aci_l3out_hsrp_secondary_vip" "example" {
 
-  hsrp_group_profile_dn  = "${aci_hsrp_group_profile.example.id}"
+  l3out_hsrp_interface_group_dn  = "${aci_l3out_hsrp_interface_group.example.id}"
   ip  = "10.0.0.1"
   annotation  = "example"
   config_issues = "GroupMac-Conflicts-Other-Group"
@@ -26,7 +26,7 @@ resource "aci_l3out_hsrp_secondary_vip" "example" {
 
 ## Argument Reference
 
-- `hsrp_group_profile_dn` - (Required) Distinguished name of parent hsrp group profile object.
+- `l3out_hsrp_interface_group_dn` - (Required) Distinguished name of parent hsrp group profile object.
 - `ip` - (Required) IP of Object L3out HSRP Secondary VIP.
 - `annotation` - (Optional) Annotation for object L3out HSRP Secondary VIP.
 - `description` - (Optional) Description for object L3out HSRP Secondary VIP.
