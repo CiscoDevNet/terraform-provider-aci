@@ -178,6 +178,7 @@ func Provider() terraform.ResourceProvider {
 			"aci_ospf_timers":                              resourceAciOSPFTimersPolicy(),
 			"aci_hsrp_interface_policy":                    resourceAciHSRPInterfacePolicy(),
 			"aci_route_control_profile":                    resourceAciRouteControlProfile(),
+			"aci_l3out_hsrp_interface_group":               resourceAciHSRPGroupProfile(),
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
@@ -305,6 +306,7 @@ func Provider() terraform.ResourceProvider {
 			"aci_ospf_timers":                              dataSourceAciOSPFTimersPolicy(),
 			"aci_hsrp_interface_policy":                    dataSourceAciHSRPInterfacePolicy(),
 			"aci_route_control_profile":                    dataSourceAciRouteControlProfile(),
+			"aci_l3out_hsrp_interface_group":               dataSourceAciHSRPGroupProfile(),
 		},
 
 		ConfigureFunc: configureClient,
