@@ -189,6 +189,7 @@ func Provider() terraform.ResourceProvider {
 			"aci_route_control_profile":                    resourceAciRouteControlProfile(),
 			"aci_l3out_hsrp_interface_group":               resourceAciHSRPGroupProfile(),
 			"aci_l3out_floating_svi":                       resourceAciVirtualLogicalInterfaceProfile(),
+			"aci_l3out_hsrp_secondary_vip":                 resourceAciL3outHSRPSecondaryVIP(),
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
@@ -329,6 +330,7 @@ func Provider() terraform.ResourceProvider {
 			"aci_route_control_profile":                    dataSourceAciRouteControlProfile(),
 			"aci_l3out_hsrp_interface_group":               dataSourceAciHSRPGroupProfile(),
 			"aci_l3out_floating_svi":                       dataSourceAciVirtualLogicalInterfaceProfile(),
+			"aci_l3out_hsrp_secondary_vip":                 dataSourceAciL3outHSRPSecondaryVIP(),
 		},
 
 		ConfigureFunc: configureClient,
