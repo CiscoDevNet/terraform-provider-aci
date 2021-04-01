@@ -12,10 +12,10 @@ Data source for ACI L3out Floating SVI
 ## Example Usage ##
 
 ```hcl
-data "aci_l3out_floating_svi" "example" {
-  logical_interface_profile_dn  = "${aci_l3out_floating_svi.example.id}"
-  nodeDn  = "example"
-  encap  = "example"
+data "aci_l3out_floating_svi" "check" {
+  logical_interface_profile_dn = aci_logical_interface_profile.example.id
+  node_dn                      = "topology/pod-1/node-201"
+  encap                        = "vlan-20"
 }
 ```
 
@@ -39,7 +39,7 @@ data "aci_l3out_floating_svi" "example" {
 * `encap_scope` - Encap scope for L3out floating SVI object.
 * `if_inst_t` - Interface type for L3out floating SVI object.
 * `ipv6_dad` - IPv6 dad for L3out floating SVI object.
-* `ll_addr` - LL address for L3out floating SVI object.
+* `ll_addr` - Link local address address for L3out floating SVI object.
 * `mac` - MAC address for L3out floating SVI object.
 * `mode` - BGP domain mode for L3out floating SVI object.
 * `mtu` - Administrative MTU port on the aggregated interface for L3out floating SVI object.

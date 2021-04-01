@@ -13,21 +13,22 @@ Manages ACI L3out Floating SVI
 
 ```hcl
 resource "aci_l3out_floating_svi" "example" {
-  logical_interface_profile_dn  = "${aci_l3out_floating_svi.example.id}"
-  node_dn  = "example"
-  encap  = "example"
-  addr  = "example"
-  annotation  = "example"
-  autostate  = "example"
-  encap_scope  = "example"
-  if_inst_t  = "example"
-  ipv6_dad  = "example"
-  ll_addr  = "example"
-  mac  = "example"
-  mode  = "example"
-  mtu  = "example"
-  target_dscp  = "example"
-  userdom  = "example"
+  logical_interface_profile_dn = aci_logical_interface_profile.example.id
+  node_dn                      = "topology/pod-1/node-201"
+  encap                        = "vlan-20"
+  addr                         = "10.20.30.40/16"
+  annotation                   = "example"
+  description                  = "from terraform"
+  autostate                    = "enabled"
+  encap_scope                  = "ctx"
+  if_inst_t                    = "ext-svi"
+  ipv6_dad                     = "disabled"
+  ll_addr                      = "::"
+  mac                          = "12:23:34:45:56:67"
+  mode                         = "native"
+  mtu                          = "580"
+  target_dscp                  = "CS1"
+  userdom                      = "example"
 }
 ```
 
@@ -45,7 +46,7 @@ resource "aci_l3out_floating_svi" "example" {
 * `encap_scope` - (Optional) Encap scope for L3out floating SVI object. Allowed values are "ctx" and "local". Default value is "local".
 * `if_inst_t` - (Optional) Interface type for L3out floating SVI object. Allowed values are "ext-svi", "l3-port", "sub-interface" and "unspecified".
 * `ipv6_dad` - (Optional) IPv6 dad for L3out floating SVI object. Allowed values are "disabled" and "enabled". Default value is "enabled".
-* `ll_addr` - (Optional) ll addr for L3out floating SVI object.
+* `ll_addr` - (Optional) Link local address for L3out floating SVI object.
 * `mac` - (Optional) MAC address for L3out floating SVI object.
 * `mode` - (Optional) BGP domain mode for L3out floating SVI object. Allowed values are "native", "regular" and "untagged". Default value is "regular".
 * `mtu` - (Optional) Administrative MTU port on the aggregated interface for L3out floating SVI object.

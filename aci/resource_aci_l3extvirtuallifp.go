@@ -307,7 +307,7 @@ func resourceAciVirtualLogicalInterfaceProfileCreate(d *schema.ResourceData, m i
 	d.SetId(l3extVirtualLIfP.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciLogicalInterfaceProfileRead(d, m)
+	return resourceAciVirtualLogicalInterfaceProfileRead(d, m)
 }
 
 func resourceAciVirtualLogicalInterfaceProfileUpdate(d *schema.ResourceData, m interface{}) error {
@@ -433,7 +433,7 @@ func resourceAciVirtualLogicalInterfaceProfileUpdate(d *schema.ResourceData, m i
 	d.SetId(l3extVirtualLIfP.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciLogicalInterfaceProfileRead(d, m)
+	return resourceAciVirtualLogicalInterfaceProfileRead(d, m)
 
 }
 
