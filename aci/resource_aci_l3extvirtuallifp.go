@@ -9,6 +9,7 @@ import (
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
 )
 
 func resourceAciVirtualLogicalInterfaceProfile() *schema.Resource {
@@ -53,24 +54,42 @@ func resourceAciVirtualLogicalInterfaceProfile() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"disabled",
+					"enabled",
+				}, false),
 			},
 
 			"encap_scope": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"ctx",
+					"local",
+				}, false),
 			},
 
 			"if_inst_t": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"ext-svi",
+					"l3-port",
+					"sub-interface",
+					"unspecified",
+				}, false),
 			},
 
 			"ipv6_dad": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"disabled",
+					"enabled",
+				}, false),
 			},
 
 			"ll_addr": &schema.Schema{
@@ -89,6 +108,11 @@ func resourceAciVirtualLogicalInterfaceProfile() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"native",
+					"regular",
+					"untagged",
+				}, false),
 			},
 
 			"mtu": &schema.Schema{
