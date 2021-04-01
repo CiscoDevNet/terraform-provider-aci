@@ -1,209 +1,192 @@
 package aci
 
-// import (
-// 	"fmt"
-// 	"testing"
+import (
+	"fmt"
+	"testing"
 
-// 	"github.com/ciscoecosystem/aci-go-client/client"
-// 	"github.com/ciscoecosystem/aci-go-client/models"
-// 	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
-// 	"github.com/hashicorp/terraform-plugin-sdk/terraform"
-// )
+	"github.com/ciscoecosystem/aci-go-client/client"
+	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+)
 
-// func TestAccAciLogicalInterfaceProfile_Basic(t *testing.T) {
-// 	var logical_interface_profile models.LogicalInterfaceProfile
-// 	description := "logical_interface_profile created while acceptance testing"
+func TestAccAciVirtualLogicalInterfaceProfile_Basic(t *testing.T) {
+	var logical_interface_profile models.VirtualLogicalInterfaceProfile
+	description := "logical_interface_profile created while acceptance testing"
 
-// 	resource.Test(t, resource.TestCase{
-// 		PreCheck:     func() { testAccPreCheck(t) },
-// 		Providers:    testAccProviders,
-// 		CheckDestroy: testAccCheckAciLogicalInterfaceProfileDestroy,
-// 		Steps: []resource.TestStep{
-// 			{
-// 				Config: testAccCheckAciLogicalInterfaceProfileConfig_basic(description),
-// 				Check: resource.ComposeTestCheckFunc(
-// 					testAccCheckAciLogicalInterfaceProfileExists("aci_logical_interface_profile.foological_interface_profile", &logical_interface_profile),
-// 					testAccCheckAciLogicalInterfaceProfileAttributes(description, &logical_interface_profile),
-// 				),
-// 			},
-// 			{
-// 				ResourceName:      "aci_logical_interface_profile",
-// 				ImportState:       true,
-// 				ImportStateVerify: true,
-// 			},
-// 		},
-// 	})
-// }
+	resource.Test(t, resource.TestCase{
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testAccProviders,
+		CheckDestroy: testAccCheckAciVirtualLogicalInterfaceProfileDestroy,
+		Steps: []resource.TestStep{
+			{
+				Config: testAccCheckAciVirtualLogicalInterfaceProfileConfig_basic(description),
+				Check: resource.ComposeTestCheckFunc(
+					testAccCheckAciVirtualLogicalInterfaceProfileExists("aci_l3out_floating_svi.test", &logical_interface_profile),
+					testAccCheckAciVirtualLogicalInterfaceProfileAttributes(description, &logical_interface_profile),
+				),
+			},
+		},
+	})
+}
 
-// func TestAccAciLogicalInterfaceProfile_update(t *testing.T) {
-// 	var logical_interface_profile models.LogicalInterfaceProfile
-// 	description := "logical_interface_profile created while acceptance testing"
+func TestAccAciVirtualLogicalInterfaceProfile_update(t *testing.T) {
+	var logical_interface_profile models.VirtualLogicalInterfaceProfile
+	description := "logical_interface_profile created while acceptance testing"
 
-// 	resource.Test(t, resource.TestCase{
-// 		PreCheck:     func() { testAccPreCheck(t) },
-// 		Providers:    testAccProviders,
-// 		CheckDestroy: testAccCheckAciLogicalInterfaceProfileDestroy,
-// 		Steps: []resource.TestStep{
-// 			{
-// 				Config: testAccCheckAciLogicalInterfaceProfileConfig_basic(description),
-// 				Check: resource.ComposeTestCheckFunc(
-// 					testAccCheckAciLogicalInterfaceProfileExists("aci_logical_interface_profile.foological_interface_profile", &logical_interface_profile),
-// 					testAccCheckAciLogicalInterfaceProfileAttributes(description, &logical_interface_profile),
-// 				),
-// 			},
-// 			{
-// 				Config: testAccCheckAciLogicalInterfaceProfileConfig_basic(description),
-// 				Check: resource.ComposeTestCheckFunc(
-// 					testAccCheckAciLogicalInterfaceProfileExists("aci_logical_interface_profile.foological_interface_profile", &logical_interface_profile),
-// 					testAccCheckAciLogicalInterfaceProfileAttributes(description, &logical_interface_profile),
-// 				),
-// 			},
-// 		},
-// 	})
-// }
+	resource.Test(t, resource.TestCase{
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testAccProviders,
+		CheckDestroy: testAccCheckAciVirtualLogicalInterfaceProfileDestroy,
+		Steps: []resource.TestStep{
+			{
+				Config: testAccCheckAciVirtualLogicalInterfaceProfileConfig_basic(description),
+				Check: resource.ComposeTestCheckFunc(
+					testAccCheckAciVirtualLogicalInterfaceProfileExists("aci_l3out_floating_svi.test", &logical_interface_profile),
+					testAccCheckAciVirtualLogicalInterfaceProfileAttributes(description, &logical_interface_profile),
+				),
+			},
+			{
+				Config: testAccCheckAciVirtualLogicalInterfaceProfileConfig_basic(description),
+				Check: resource.ComposeTestCheckFunc(
+					testAccCheckAciVirtualLogicalInterfaceProfileExists("aci_l3out_floating_svi.test", &logical_interface_profile),
+					testAccCheckAciVirtualLogicalInterfaceProfileAttributes(description, &logical_interface_profile),
+				),
+			},
+		},
+	})
+}
 
-// func testAccCheckAciLogicalInterfaceProfileConfig_basic(description string) string {
-// 	return fmt.Sprintf(`
+func testAccCheckAciVirtualLogicalInterfaceProfileConfig_basic(description string) string {
+	return fmt.Sprintf(`
 
-// 	resource "aci_logical_interface_profile" "foological_interface_profile" {
-// 		  logical_interface_profile_dn  = "${aci_logical_interface_profile.example.id}"
-// 		description = "%s"
+	resource "aci_l3out_floating_svi" "test" {
+		logical_interface_profile_dn = "uni/tn-aaaaa/out-demo_l3out/lnodep-demo_node/lifp-demo_int_prof"
+		node_dn                      = "topology/pod-1/node-201"
+		encap                        = "vlan-20"
+		addr                         = "10.20.30.40/16"
+		annotation                   = "example"
+		description                  = "%s"
+		autostate                    = "enabled"
+		encap_scope                  = "ctx"
+		if_inst_t                    = "ext-svi"
+		ipv6_dad                     = "disabled"
+		ll_addr                      = "::"
+		mac                          = "12:23:34:45:56:67"
+		mode                         = "untagged"
+		mtu                          = "580"
+		target_dscp                  = "CS1"
+	}
+	`, description)
+}
 
-// 		nodeDn  = "example"
+func testAccCheckAciVirtualLogicalInterfaceProfileExists(name string, logical_interface_profile *models.VirtualLogicalInterfaceProfile) resource.TestCheckFunc {
+	return func(s *terraform.State) error {
+		rs, ok := s.RootModule().Resources[name]
 
-// 		encap  = "example"
-// 		  addr  = "example"
-// 		  annotation  = "example"
-// 		  autostate  = "example"
-// 		  encap_scope  = "example"
-// 		  if_inst_t  = "example"
-// 		  ipv6_dad  = "example"
-// 		  ll_addr  = "example"
-// 		  mac  = "example"
-// 		  mode  = "example"
-// 		  mtu  = "example"
-// 		  node_dn  = "example"
-// 		  target_dscp  = "example"
-// 		  userdom  = "example"
-// 		}
-// 	`, description)
-// }
+		if !ok {
+			return fmt.Errorf("Logical Interface Profile %s not found", name)
+		}
 
-// func testAccCheckAciLogicalInterfaceProfileExists(name string, logical_interface_profile *models.LogicalInterfaceProfile) resource.TestCheckFunc {
-// 	return func(s *terraform.State) error {
-// 		rs, ok := s.RootModule().Resources[name]
+		if rs.Primary.ID == "" {
+			return fmt.Errorf("No Logical Interface Profile dn was set")
+		}
 
-// 		if !ok {
-// 			return fmt.Errorf("Logical Interface Profile %s not found", name)
-// 		}
+		client := testAccProvider.Meta().(*client.Client)
 
-// 		if rs.Primary.ID == "" {
-// 			return fmt.Errorf("No Logical Interface Profile dn was set")
-// 		}
+		cont, err := client.Get(rs.Primary.ID)
+		if err != nil {
+			return err
+		}
 
-// 		client := testAccProvider.Meta().(*client.Client)
+		logical_interface_profileFound := models.VirtualLogicalInterfaceProfileFromContainer(cont)
+		if logical_interface_profileFound.DistinguishedName != rs.Primary.ID {
+			return fmt.Errorf("Logical Interface Profile %s not found", rs.Primary.ID)
+		}
+		*logical_interface_profile = *logical_interface_profileFound
+		return nil
+	}
+}
 
-// 		cont, err := client.Get(rs.Primary.ID)
-// 		if err != nil {
-// 			return err
-// 		}
+func testAccCheckAciVirtualLogicalInterfaceProfileDestroy(s *terraform.State) error {
+	client := testAccProvider.Meta().(*client.Client)
 
-// 		logical_interface_profileFound := models.LogicalInterfaceProfileFromContainer(cont)
-// 		if logical_interface_profileFound.DistinguishedName != rs.Primary.ID {
-// 			return fmt.Errorf("Logical Interface Profile %s not found", rs.Primary.ID)
-// 		}
-// 		*logical_interface_profile = *logical_interface_profileFound
-// 		return nil
-// 	}
-// }
+	for _, rs := range s.RootModule().Resources {
 
-// func testAccCheckAciLogicalInterfaceProfileDestroy(s *terraform.State) error {
-// 	client := testAccProvider.Meta().(*client.Client)
+		if rs.Type == "aci_l3out_floating_svi" {
+			cont, err := client.Get(rs.Primary.ID)
+			logical_interface_profile := models.LogicalInterfaceProfileFromContainer(cont)
+			if err == nil {
+				return fmt.Errorf("Logical Interface Profile %s Still exists", logical_interface_profile.DistinguishedName)
+			}
 
-// 	for _, rs := range s.RootModule().Resources {
+		} else {
+			continue
+		}
+	}
 
-// 		if rs.Type == "aci_logical_interface_profile" {
-// 			cont, err := client.Get(rs.Primary.ID)
-// 			logical_interface_profile := models.LogicalInterfaceProfileFromContainer(cont)
-// 			if err == nil {
-// 				return fmt.Errorf("Logical Interface Profile %s Still exists", logical_interface_profile.DistinguishedName)
-// 			}
+	return nil
+}
 
-// 		} else {
-// 			continue
-// 		}
-// 	}
+func testAccCheckAciVirtualLogicalInterfaceProfileAttributes(description string, logical_interface_profile *models.VirtualLogicalInterfaceProfile) resource.TestCheckFunc {
+	return func(s *terraform.State) error {
 
-// 	return nil
-// }
+		if description != logical_interface_profile.Description {
+			return fmt.Errorf("Bad logical_interface_profile Description %s", logical_interface_profile.Description)
+		}
 
-// func testAccCheckAciLogicalInterfaceProfileAttributes(description string, logical_interface_profile *models.LogicalInterfaceProfile) resource.TestCheckFunc {
-// 	return func(s *terraform.State) error {
+		if "topology/pod-1/node-201" != logical_interface_profile.NodeDn {
+			return fmt.Errorf("Bad logical_interface_profile node_dn %s", logical_interface_profile.NodeDn)
+		}
 
-// 		if description != logical_interface_profile.Description {
-// 			return fmt.Errorf("Bad logical_interface_profile Description %s", logical_interface_profile.Description)
-// 		}
+		if "vlan-20" != logical_interface_profile.Encap {
+			return fmt.Errorf("Bad logical_interface_profile encap %s", logical_interface_profile.Encap)
+		}
 
-// 		if "example" != logical_interface_profile.NodeDn {
-// 			return fmt.Errorf("Bad logical_interface_profile node_dn %s", logical_interface_profile.NodeDn)
-// 		}
+		if "10.20.30.40/16" != logical_interface_profile.Addr {
+			return fmt.Errorf("Bad logical_interface_profile addr %s", logical_interface_profile.Addr)
+		}
 
-// 		if "example" != logical_interface_profile.Encap {
-// 			return fmt.Errorf("Bad logical_interface_profile encap %s", logical_interface_profile.Encap)
-// 		}
+		if "example" != logical_interface_profile.Annotation {
+			return fmt.Errorf("Bad logical_interface_profile annotation %s", logical_interface_profile.Annotation)
+		}
 
-// 		if "example" != logical_interface_profile.Addr {
-// 			return fmt.Errorf("Bad logical_interface_profile addr %s", logical_interface_profile.Addr)
-// 		}
+		if "enabled" != logical_interface_profile.Autostate {
+			return fmt.Errorf("Bad logical_interface_profile autostate %s", logical_interface_profile.Autostate)
+		}
 
-// 		if "example" != logical_interface_profile.Annotation {
-// 			return fmt.Errorf("Bad logical_interface_profile annotation %s", logical_interface_profile.Annotation)
-// 		}
+		if "ctx" != logical_interface_profile.EncapScope {
+			return fmt.Errorf("Bad logical_interface_profile encap_scope %s", logical_interface_profile.EncapScope)
+		}
 
-// 		if "example" != logical_interface_profile.Autostate {
-// 			return fmt.Errorf("Bad logical_interface_profile autostate %s", logical_interface_profile.Autostate)
-// 		}
+		if "ext-svi" != logical_interface_profile.IfInstT {
+			return fmt.Errorf("Bad logical_interface_profile if_inst_t %s", logical_interface_profile.IfInstT)
+		}
 
-// 		if "example" != logical_interface_profile.EncapScope {
-// 			return fmt.Errorf("Bad logical_interface_profile encap_scope %s", logical_interface_profile.EncapScope)
-// 		}
+		if "disabled" != logical_interface_profile.Ipv6Dad {
+			return fmt.Errorf("Bad logical_interface_profile ipv6_dad %s", logical_interface_profile.Ipv6Dad)
+		}
 
-// 		if "example" != logical_interface_profile.IfInstT {
-// 			return fmt.Errorf("Bad logical_interface_profile if_inst_t %s", logical_interface_profile.IfInstT)
-// 		}
+		if "::" != logical_interface_profile.LlAddr {
+			return fmt.Errorf("Bad logical_interface_profile ll_addr %s", logical_interface_profile.LlAddr)
+		}
 
-// 		if "example" != logical_interface_profile.Ipv6Dad {
-// 			return fmt.Errorf("Bad logical_interface_profile ipv6_dad %s", logical_interface_profile.Ipv6Dad)
-// 		}
+		if "12:23:34:45:56:67" != logical_interface_profile.Mac {
+			return fmt.Errorf("Bad logical_interface_profile mac %s", logical_interface_profile.Mac)
+		}
 
-// 		if "example" != logical_interface_profile.LlAddr {
-// 			return fmt.Errorf("Bad logical_interface_profile ll_addr %s", logical_interface_profile.LlAddr)
-// 		}
+		if "untagged" != logical_interface_profile.Mode {
+			return fmt.Errorf("Bad logical_interface_profile mode %s", logical_interface_profile.Mode)
+		}
 
-// 		if "example" != logical_interface_profile.Mac {
-// 			return fmt.Errorf("Bad logical_interface_profile mac %s", logical_interface_profile.Mac)
-// 		}
+		if "580" != logical_interface_profile.Mtu {
+			return fmt.Errorf("Bad logical_interface_profile mtu %s", logical_interface_profile.Mtu)
+		}
 
-// 		if "example" != logical_interface_profile.Mode {
-// 			return fmt.Errorf("Bad logical_interface_profile mode %s", logical_interface_profile.Mode)
-// 		}
+		if "CS1" != logical_interface_profile.TargetDscp {
+			return fmt.Errorf("Bad logical_interface_profile target_dscp %s", logical_interface_profile.TargetDscp)
+		}
 
-// 		if "example" != logical_interface_profile.Mtu {
-// 			return fmt.Errorf("Bad logical_interface_profile mtu %s", logical_interface_profile.Mtu)
-// 		}
-
-// 		if "example" != logical_interface_profile.NodeDn {
-// 			return fmt.Errorf("Bad logical_interface_profile node_dn %s", logical_interface_profile.NodeDn)
-// 		}
-
-// 		if "example" != logical_interface_profile.TargetDscp {
-// 			return fmt.Errorf("Bad logical_interface_profile target_dscp %s", logical_interface_profile.TargetDscp)
-// 		}
-
-// 		if "example" != logical_interface_profile.Userdom {
-// 			return fmt.Errorf("Bad logical_interface_profile userdom %s", logical_interface_profile.Userdom)
-// 		}
-
-// 		return nil
-// 	}
-// }
+		return nil
+	}
+}
