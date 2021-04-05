@@ -280,6 +280,10 @@ github.com/ciscoecosystem/aci-go-client v1.5.20 h1:1R2dbsFB1CDCG/EUJjt8eRB22ssO2
 github.com/ciscoecosystem/aci-go-client v1.5.20/go.mod h1:fhY7vWysK655g3Yp5Fz4Zje/JN4+moRe8RjwiRy0amQ=
 github.com/ciscoecosystem/aci-go-client v1.5.21 h1:RL22K5yZ8GayOPenvkVq/ixuIycKhpCOXgK5FWK784s=
 github.com/ciscoecosystem/aci-go-client v1.5.21/go.mod h1:fhY7vWysK655g3Yp5Fz4Zje/JN4+moRe8RjwiRy0amQ=
+github.com/ciscoecosystem/aci-go-client v1.5.22 h1:rn/NT19gmL35AP0vl6BhgtLnkmy5qa3SBcAk3SH4XeM=
+github.com/ciscoecosystem/aci-go-client v1.5.22/go.mod h1:fhY7vWysK655g3Yp5Fz4Zje/JN4+moRe8RjwiRy0amQ=
+github.com/ciscoecosystem/aci-go-client v1.5.23 h1:coBXpCQbIt3I6qEvl8Zqa/UKMnyXgYBVVgKETYVuYL4=
+github.com/ciscoecosystem/aci-go-client v1.5.23/go.mod h1:fhY7vWysK655g3Yp5Fz4Zje/JN4+moRe8RjwiRy0amQ=
 github.com/ciscoecosystem/aci-go-client v1.6.4 h1:e5jiQ1T2sL0Q9wqSLhXdPHIxVHxdsIrARfvd148Srjo=
 github.com/ciscoecosystem/aci-go-client v1.6.4/go.mod h1:fhY7vWysK655g3Yp5Fz4Zje/JN4+moRe8RjwiRy0amQ=
 github.com/ciscoecosystem/aci-go-client v1.6.5 h1:n99YFrm8/ZrPOoGMVR9WzdSCq2tiZOvLccgseJTzHBU=
