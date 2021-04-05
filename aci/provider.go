@@ -191,6 +191,7 @@ func Provider() terraform.ResourceProvider {
 			"aci_l3out_floating_svi":                       resourceAciVirtualLogicalInterfaceProfile(),
 			"aci_l3out_hsrp_secondary_vip":                 resourceAciL3outHSRPSecondaryVIP(),
 			"aci_l3out_bfd_interface_profile":              resourceAciBFDInterfaceProfile(),
+			"aci_l3out_bgp_protocol_profile":               resourceAciL3outBGPProtocolProfile(),
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
@@ -333,6 +334,7 @@ func Provider() terraform.ResourceProvider {
 			"aci_l3out_floating_svi":                       dataSourceAciVirtualLogicalInterfaceProfile(),
 			"aci_l3out_hsrp_secondary_vip":                 dataSourceAciL3outHSRPSecondaryVIP(),
 			"aci_l3out_bfd_interface_profile":              dataSourceAciBFDInterfaceProfile(),
+			"aci_l3out_bgp_protocol_profile":               dataSourceAciL3outBGPProtocolProfile(),
 		},
 
 		ConfigureFunc: configureClient,
