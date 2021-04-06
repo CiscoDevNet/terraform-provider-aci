@@ -141,7 +141,11 @@ func setLogicalNodeProfileAttributes(l3extLNodeP *models.LogicalNodeProfile, d *
 	d.Set("name", l3extLNodePMap["name"])
 
 	d.Set("annotation", l3extLNodePMap["annotation"])
-	d.Set("config_issues", l3extLNodePMap["configIssues"])
+	if l3extLNodePMap["configIssues"] == "" {
+		d.Set("config_issues", "none")
+	} else {
+		d.Set("config_issues", l3extLNodePMap["configIssues"])
+	}
 	d.Set("name_alias", l3extLNodePMap["nameAlias"])
 	d.Set("tag", l3extLNodePMap["tag"])
 	d.Set("target_dscp", l3extLNodePMap["targetDscp"])
