@@ -215,7 +215,6 @@ func setBgpPeerConnectivityProfileAttributes(bgpPeerP *models.BgpPeerConnectivit
 	d.Set("annotation", bgpPeerPMap["annotation"])
 	d.Set("ctrl", bgpPeerPMap["ctrl"])
 	d.Set("name_alias", bgpPeerPMap["nameAlias"])
-	d.Set("password", bgpPeerPMap["password"])
 	d.Set("peer_ctrl", bgpPeerPMap["peerCtrl"])
 	d.Set("private_a_sctrl", bgpPeerPMap["privateASctrl"])
 	d.Set("ttl", bgpPeerPMap["ttl"])
