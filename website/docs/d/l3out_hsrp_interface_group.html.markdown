@@ -13,7 +13,7 @@ Data source for ACI HSRP Interface Group
 
 ```hcl
 data "aci_l3out_hsrp_interface_group" "check" {
-  l3out_hsrp_interface_profile_dn = aci_l3out_hsrp_interface_profile.example.id
+  l3out_hsrp_interface_profile_dn = "${aci_l3out_hsrp_interface_profile.example.id}"
   name                            = "one"
 }
 ```
