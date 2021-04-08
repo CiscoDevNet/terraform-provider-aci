@@ -377,6 +377,7 @@ func (c *Client) Authenticate() error {
 	if err != nil {
 		return err
 	}
+
 	obj, _, err := c.Do(req)
 
 	c.skipLoggingPayload = false
