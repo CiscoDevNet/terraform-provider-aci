@@ -246,15 +246,32 @@ func (c *Client) useInsecureHTTPClient(insecure bool) *http.Transport {
 //  Used for login request
 //  passwords with special chars have issues when using container
 //  for encoding/decoding
-func (c *Client) MakeRestRequestRaw(method string, path string, payload []byte, authenticated bool) (*http.Request, error) {
+func (c *Client) MakeRestRequestRaw(method string, rpath string, payload []byte, authenticated bool) (*http.Request, error) {
 
-	url, err := url.Parse(path)
+	pathURL, err := url.Parse(rpath)
 	if err != nil {
 		return nil, err
 	}
 
-	fURL := c.BaseURL.ResolveReference(url)
+	fURL, err := url.Parse(c.BaseURL.String())
+	if err != nil {
+		return nil, err
+	}
+
+	if c.preserveBaseUrlRef {
+		// Default is false for preserveBaseUrlRef - matching original behavior to strip out BaseURL
+		fURLStr := fURL.String() + pathURL.String()
+		fURL, err = url.Parse(fURLStr)
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		// Original behavior to strip down BaseURL
+		fURL = fURL.ResolveReference(pathURL)
+	}
+
 	var req *http.Request
+	log.Printf("[DEBUG] BaseURL: %s, pathURL: %s, fURL: %s", c.BaseURL.String(), pathURL.String(), fURL.String())
 	if method == "GET" {
 		req, err = http.NewRequest(method, fURL.String(), nil)
 	} else {
@@ -265,19 +282,19 @@ func (c *Client) MakeRestRequestRaw(method string, path string, payload []byte, 
 	}
 
 	if c.skipLoggingPayload {
-		log.Printf("HTTP request %s %s", method, path)
+		log.Printf("HTTP request %s %s", method, rpath)
 	} else {
-		log.Printf("HTTP request %s %s %v", method, path, req)
+		log.Printf("HTTP request %s %s %v", method, rpath, req)
 	}
 	if authenticated {
-		req, err = c.InjectAuthenticationHeader(req, path)
+		req, err = c.InjectAuthenticationHeader(req, rpath)
 		if err != nil {
 			return req, err
 		}
 	}
 
 	if !c.skipLoggingPayload {
-		log.Printf("HTTP request after injection %s %s %v", method, path, req)
+		log.Printf("HTTP request after injection %s %s %v", method, rpath, req)
 	}
 
 	return req, nil
@@ -360,6 +377,7 @@ func (c *Client) Authenticate() error {
 	if err != nil {
 		return err
 	}
+
 	obj, _, err := c.Do(req)
 
 	c.skipLoggingPayload = false

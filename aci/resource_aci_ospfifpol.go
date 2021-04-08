@@ -144,7 +144,11 @@ func setOSPFInterfacePolicyAttributes(ospfIfPol *models.OSPFInterfacePolicy, d *
 
 	d.Set("annotation", ospfIfPolMap["annotation"])
 	d.Set("cost", ospfIfPolMap["cost"])
-	d.Set("ctrl", ospfIfPolMap["ctrl"])
+	if ospfIfPolMap["ctrl"] == "" {
+		d.Set("ctrl", "unspecified")
+	} else {
+		d.Set("ctrl", ospfIfPolMap["ctrl"])
+	}
 	d.Set("dead_intvl", ospfIfPolMap["deadIntvl"])
 	d.Set("hello_intvl", ospfIfPolMap["helloIntvl"])
 	d.Set("name_alias", ospfIfPolMap["nameAlias"])
