@@ -172,6 +172,8 @@ func Provider() terraform.ResourceProvider {
 			"aci_l3out_bfd_interface_profile":              resourceAciBFDInterfaceProfile(),
 			"aci_l3out_bgp_protocol_profile":               resourceAciL3outBGPProtocolProfile(),
 			"aci_l3out_route_tag_policy":                   resourceAciL3outRouteTagPolicy(),
+			"aci_l3out_static_route":                       resourceAciL3outStaticRoute(),
+			"aci_l3out_static_route_next_hop":              resourceAciL3outStaticRouteNextHop(),
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
@@ -293,6 +295,8 @@ func Provider() terraform.ResourceProvider {
 			"aci_l3out_bfd_interface_profile":              dataSourceAciBFDInterfaceProfile(),
 			"aci_l3out_bgp_protocol_profile":               dataSourceAciL3outBGPProtocolProfile(),
 			"aci_l3out_route_tag_policy":                   dataSourceAciL3outRouteTagPolicy(),
+			"aci_l3out_static_route":                       dataSourceAciL3outStaticRoute(),
+			"aci_l3out_static_route_next_hop":              dataSourceAciL3outStaticRouteNextHop(),
 		},
 
 		ConfigureFunc: configureClient,
