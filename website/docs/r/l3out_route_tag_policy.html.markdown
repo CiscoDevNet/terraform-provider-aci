@@ -32,7 +32,7 @@ resource "aci_l3out_route_tag_policy" "example" {
 
 - `name_alias` - (Optional) Name alias for object L3out route tag policy.
 
-- `tag` - (Optional) Tagged number.
+- `tag` - (Optional) Tagged number. Default value: "4294967295".
 
 ## Attribute Reference
 
