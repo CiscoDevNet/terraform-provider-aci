@@ -107,7 +107,11 @@ func setL3outStaticRouteAttributes(ipRouteP *models.L3outStaticRoute, d *schema.
 	d.Set("ip", ipRoutePMap["ip"])
 	d.Set("name_alias", ipRoutePMap["nameAlias"])
 	d.Set("pref", ipRoutePMap["pref"])
-	d.Set("rt_ctrl", ipRoutePMap["rtCtrl"])
+	if ipRoutePMap["rtCtrl"] == "" {
+		d.Set("rt_ctrl", "unspecified")
+	} else {
+		d.Set("rt_ctrl", ipRoutePMap["rtCtrl"])
+	}
 	return d
 }
 
