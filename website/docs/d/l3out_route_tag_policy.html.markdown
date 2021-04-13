@@ -29,4 +29,5 @@ data "aci_l3out_route_tag_policy" "example" {
 - `id` - Attribute id set to the Dn of the L3out Route Tag Policy.
 - `annotation` - (Optional) Annotation for object L3out route tag policy.
 - `name_alias` - (Optional) Name alias for object L3out route tag policy.
+- `description` - (Optional) Description for object L3out route tag policy.
 - `tag` - (Optional) Tagged number.

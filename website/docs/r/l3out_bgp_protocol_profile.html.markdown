@@ -26,6 +26,7 @@ resource "aci_l3out_bgp_protocol_profile" "example" {
 
 - `logical_node_profile_dn` - (Required) Distinguished name of parent logical node profile object.
 - `annotation` - (Optional) Annotation for object L3out BGP Protocol Profile.
+- `description` - (Optional) Description for object L3out BGP Protocol Profile.
 - `name_alias` - (Optional) Name alias for object L3out BGP Protocol Profile.
 - `relation_bgp_rs_bgp_node_ctx_pol` - (Optional) Relation to class bgpCtxPol. Cardinality - N_TO_ONE. Type - String.
 
