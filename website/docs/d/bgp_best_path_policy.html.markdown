@@ -29,4 +29,5 @@ data "aci_bgp_best_path_policy" "example" {
 - `id` - Attribute id set to the Dn of the BGP Best Path Policy.
 - `annotation` - (Optional) Annotation for object BGP Best Path Policy.
 - `ctrl` - (Optional) The control state.
+- `description` - Description for the object of the BGP Best Path Policy.
 - `name_alias` - (Optional) Name alias for object BGP Best Path Policy.

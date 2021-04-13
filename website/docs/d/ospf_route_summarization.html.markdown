@@ -32,3 +32,4 @@ data "aci_ospf_route_summarization" "example" {
 - `inter_area_enabled` - (Optional) Inter area enabled flag for object OSPF route summarization.
 - `name_alias` - (Optional) Name alias for object OSPF route summarization.
 - `tag` - (Optional) The color of a policy label.
+- `description` - Description for the object of the OSPF Route Summarization.

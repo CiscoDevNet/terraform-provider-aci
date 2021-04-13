@@ -28,6 +28,7 @@ data "aci_bgp_peer_connectivity_profile" "example" {
 
 - `id` - Attribute id set to the Dn of the BGP Peer Connectivity Profile.
 - `addr_t_ctrl` - (Optional) Ucast/Mcast Address Type AF Control.
+- `description` - Description for the object of the BGP Peer Connectivity Profile.
 - `allowed_self_as_cnt` - (Optional) The number of occurrences of a local Autonomous System Number (ASN).
 - `annotation` - (Optional) Annotation for object bgp peer connectivity profile.
 - `ctrl` - (Optional) The peer controls specify which Border Gateway Protocol (BGP) attributes are sent to a peer.

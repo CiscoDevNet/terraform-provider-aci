@@ -18,6 +18,7 @@ resource "aci_hsrp_group_policy" "example" {
   tenant_dn  = "${aci_tenant.example.id}"
   name  = "example"
   annotation  = "example"
+  description = "from terraform"
   ctrl = "preempt"
   hello_intvl  = "3000"
   hold_intvl  = "10000"

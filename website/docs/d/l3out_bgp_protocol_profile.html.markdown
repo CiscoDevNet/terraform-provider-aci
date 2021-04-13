@@ -27,3 +27,4 @@ data "aci_l3out_bgp_protocol_profile" "example" {
 - `id` - Attribute id set to the Dn of the L3out BGP Protocol Profile.
 - `annotation` - (Optional) Annotation for object L3out BGP Protocol Profile.
 - `name_alias` - (Optional) Name alias for object L3out BGP Protocol Profile.
+- `description` - (Optional) Description for object L3out BGP Protocol Profile.

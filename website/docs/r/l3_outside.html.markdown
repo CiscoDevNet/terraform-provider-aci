@@ -6,15 +6,16 @@ description: |-
   Manages ACI L3 Outside
 ---
 
-# aci_l3_outside #
+# aci_l3_outside
+
 Manages ACI L3 Outside
 
-## Example Usage ##
+## Example Usage
 
 ```hcl
 	resource "aci_l3_outside" "fool3_outside" {
 		tenant_dn      = "${aci_tenant.dev_tenant.id}"
-		description    = "%s"
+		description    = "from terraform"
 		name           = "demo_l3out"
 		annotation     = "tag_l3out"
 		enforce_rtctrl = "%s"
@@ -22,36 +23,31 @@ Manages ACI L3 Outside
 		target_dscp    = "unspecified"
 	}
 ```
-## Argument Reference ##
-* `tenant_dn` - (Required) Distinguished name of parent Tenant object.
-* `name` - (Required) name of Object l3_outside.
-* `annotation` - (Optional) annotation for object l3_outside.
-* `enforce_rtctrl` - (Optional) enforce route control type. Allowed values are "import" and "export". Default is "export".
-* `name_alias` - (Optional) name_alias for object l3_outside.
-* `target_dscp` - (Optional) The target differentiated services code point (DSCP) of the path attached to the layer 3 outside profile. Allowed values are "CS0", "CS1", "AF11",	"AF12",	"AF13",	"CS2",	"AF21",	"AF22",	"AF23",	"CS3",	"AF31",	"AF32",	"AF33",	"CS4",	"AF41",	"AF42",	"AF43",	"CS5",	"VA",	"EF",	"CS6",	"CS7"	and "unspecified". Default is "unspecified".
 
-* `relation_l3ext_rs_dampening_pol` - (Optional) Relation to class rtctrlProfile. Cardinality - N_TO_M. Type - Set of Map.
-                
-* `relation_l3ext_rs_ectx` - (Optional) Relation to class fvCtx. Cardinality - N_TO_ONE. Type - String.
-                
-* `relation_l3ext_rs_out_to_bd_public_subnet_holder` - (Optional) Relation to class fvBDPublicSubnetHolder. Cardinality - N_TO_M. Type - Set of String.
-                
-* `relation_l3ext_rs_interleak_pol` - (Optional) Relation to class rtctrlProfile. Cardinality - N_TO_ONE. Type - String.
-                
-* `relation_l3ext_rs_l3_dom_att` - (Optional) Relation to class extnwDomP. Cardinality - N_TO_ONE. Type - String.
-                
+## Argument Reference
 
+- `tenant_dn` - (Required) Distinguished name of parent Tenant object.
+- `name` - (Required) name of Object l3_outside.
+- `annotation` - (Optional) annotation for object l3_outside.
+- `enforce_rtctrl` - (Optional) enforce route control type. Allowed values are "import" and "export". Default is "export".
+- `name_alias` - (Optional) name_alias for object l3_outside.
+- `target_dscp` - (Optional) The target differentiated services code point (DSCP) of the path attached to the layer 3 outside profile. Allowed values are "CS0", "CS1", "AF11", "AF12", "AF13", "CS2", "AF21", "AF22", "AF23", "CS3", "AF31", "AF32", "AF33", "CS4", "AF41", "AF42", "AF43", "CS5", "VA", "EF", "CS6", "CS7" and "unspecified". Default is "unspecified".
+
+- `relation_l3ext_rs_dampening_pol` - (Optional) Relation to class rtctrlProfile. Cardinality - N_TO_M. Type - Set of Map.
+- `relation_l3ext_rs_ectx` - (Optional) Relation to class fvCtx. Cardinality - N_TO_ONE. Type - String.
+- `relation_l3ext_rs_out_to_bd_public_subnet_holder` - (Optional) Relation to class fvBDPublicSubnetHolder. Cardinality - N_TO_M. Type - Set of String.
+- `relation_l3ext_rs_interleak_pol` - (Optional) Relation to class rtctrlProfile. Cardinality - N_TO_ONE. Type - String.
+- `relation_l3ext_rs_l3_dom_att` - (Optional) Relation to class extnwDomP. Cardinality - N_TO_ONE. Type - String.
 
 ## Attribute Reference
 
 The only attribute that this resource exports is the `id`, which is set to the
 Dn of the L3 Outside.
 
-## Importing ##
+## Importing
 
 An existing L3 Outside can be [imported][docs-import] into this resource via its Dn, via the following command:
 [docs-import]: https://www.terraform.io/docs/import/index.html
-
 
 ```
 terraform import aci_l3_outside.example <Dn>
