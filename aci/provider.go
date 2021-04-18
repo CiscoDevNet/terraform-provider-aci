@@ -68,6 +68,7 @@ func Provider() terraform.ResourceProvider {
 			"aci_vmm_domain":                               resourceAciVMMDomain(),
 			"aci_vrf":                                      resourceAciVRF(),
 			"aci_rest":                                     resourceAciRest(),
+			"aci_rest_managed":                             resourceAciRestManaged(),
 			"aci_external_network_instance_profile":        resourceAciExternalNetworkInstanceProfile(),
 			"aci_l3_outside":                               resourceAciL3Outside(),
 			"aci_leaf_interface_profile":                   resourceAciLeafInterfaceProfile(),
