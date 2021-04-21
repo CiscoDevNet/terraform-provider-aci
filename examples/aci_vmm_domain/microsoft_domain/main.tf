@@ -13,7 +13,6 @@ provider "aci" {
   insecure = true
 }
 
-
 resource "aci_vlan_pool" "vmm_vlan_pool" {
   name       = "vlan_pool_P12"
   alloc_mode = "dynamic"
