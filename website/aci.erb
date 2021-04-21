@@ -10,8 +10,6 @@
           <a href="/docs/providers/aci/index.html">ACI Provider</a>
           </li>
 
-
-
           <li<%= sidebar_current("docs-aci-datasource") %>>
           <a href="#">Data Resources</a>
                   <ul class="nav nav-visible">
@@ -464,7 +462,6 @@
                       <li<%= sidebar_current("docs-aci-index") %>>
                         <a href="/docs/providers/aci/index.html">ACI</a>
                       </li>
-
                   </ul>
           </li>
           <li<%= sidebar_current("docs-aci-resource") %>>
@@ -908,12 +905,10 @@
                       <li<%= sidebar_current("docs-aci-index") %>>
                         <a href="/docs/providers/aci/index.html">ACI</a>
                       </li>
-
                   </ul>
           </li>
         </ul>
       </div>
     <% end %>
-
-    <%= yield %>
-    <% end %>
+  <%= yield %>
+<% end %>
