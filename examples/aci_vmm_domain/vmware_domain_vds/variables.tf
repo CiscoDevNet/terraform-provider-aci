@@ -1,7 +1,7 @@
 variable "vds" {
   default = "uni/vmmp-VMware"
 }
-
+// vmware vds
 variable "vmm_domain" {
   default = "ESX0-leaf102-vds"
 }

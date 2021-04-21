@@ -26,7 +26,7 @@ resource "aci_vmm_domain" "ave" {
   name                = var.vmm_domain
   enable_ave = "yes"
   mcast_addr = "239.10.10.10"
-  // create multicast address pool and add that to below relationship.
+  // create a multicast address pool and add that to below relationship.
   // dn ="comp/prov-{name}/ctrlr-{[domName]}-{name}/addrinstdef-{name}"
   relation_vmm_rs_dom_mcast_addr_ns = "uni/infra/maddrns-testo"
 }

@@ -1,7 +1,7 @@
 variable "ave" {
   default = "uni/vmmp-VMware"
 }
-
+// vmware ave
 variable "vmm_domain" {
   default = "ESX0-leaf102-ave"
 }

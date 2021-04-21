@@ -18,7 +18,7 @@ resource "aci_vlan_pool" "vmm_vlan_pool" {
   alloc_mode = "dynamic"
 }
 
-// VMWare vmm domain resources
+// VMWare vds vmm domain resources
 resource "aci_vmm_domain" "vds" {
   provider_profile_dn = var.vds
   relation_infra_rs_vlan_ns = aci_vlan_pool.vmm_vlan_pool.id
