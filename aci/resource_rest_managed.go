@@ -38,11 +38,6 @@ func resourceAciRestManaged() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
-			"state_ignore_attributes": &schema.Schema{
-				Type:     schema.TypeSet,
-				Elem:     &schema.Schema{Type: schema.TypeString},
-				Optional: true,
-			},
 		},
 	}
 }
@@ -52,26 +47,12 @@ func getAciRestManaged(d *schema.ResourceData, c *container.Container) error {
 	dn := d.Get("dn").(string)
 	d.SetId(dn)
 
-	ignoreAttr := d.Get("state_ignore_attributes")
-	ignoreAttrList := toStringList(ignoreAttr.(*schema.Set).List())
-
 	content := d.Get("content")
 	contentStrMap := toStrMap(content.(map[string]interface{}))
 	newContent := make(map[string]interface{})
 
-	for key, value := range contentStrMap {
-		ignore_found := false
-		for _, ignoreAttr := range ignoreAttrList {
-			if ignoreAttr == key {
-				ignore_found = true
-				break
-			}
-		}
-		if ignore_found {
-			newContent[key] = value
-		} else {
-			newContent[key] = models.StripQuotes(models.StripSquareBrackets(c.Search("imdata", className, "attributes", key).String()))
-		}
+	for key, _ := range contentStrMap {
+		newContent[key] = models.StripQuotes(models.StripSquareBrackets(c.Search("imdata", className, "attributes", key).String()))
 	}
 	d.Set("content", newContent)
 	return nil
