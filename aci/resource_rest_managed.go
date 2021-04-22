@@ -76,7 +76,7 @@ func resourceAciRestManagedCreate(d *schema.ResourceData, m interface{}) error {
 	}
 
 	log.Printf("[DEBUG] %s: Create finished successfully", d.Id())
-	return resourceAciRestManagedRead(d, m)
+	return nil
 }
 
 func resourceAciRestManagedUpdate(d *schema.ResourceData, m interface{}) error {
@@ -97,7 +97,7 @@ func resourceAciRestManagedUpdate(d *schema.ResourceData, m interface{}) error {
 	}
 
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
-	return resourceAciRestManagedRead(d, m)
+	return nil
 }
 
 func resourceAciRestManagedRead(d *schema.ResourceData, m interface{}) error {
