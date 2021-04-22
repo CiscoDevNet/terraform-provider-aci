@@ -51,7 +51,7 @@ func getAciRestManaged(d *schema.ResourceData, c *container.Container) error {
 	contentStrMap := toStrMap(content.(map[string]interface{}))
 	newContent := make(map[string]interface{})
 
-	for key, _ := range contentStrMap {
+	for key := range contentStrMap {
 		newContent[key] = models.StripQuotes(models.StripSquareBrackets(c.Search("imdata", className, "attributes", key).String()))
 	}
 	d.Set("content", newContent)
@@ -59,8 +59,10 @@ func getAciRestManaged(d *schema.ResourceData, c *container.Container) error {
 }
 
 func resourceAciRestManagedCreate(d *schema.ResourceData, m interface{}) error {
+	log.Printf("[DEBUG] %s: Beginning Create", d.Id())
+
 	for attempts := 0; ; attempts++ {
-		cont, err := ApicRest(d, m, "POST")
+		_, err := ApicRest(d, m, "POST")
 		if err != nil {
 			if attempts > Retries {
 				return err
@@ -70,26 +72,18 @@ func resourceAciRestManagedCreate(d *schema.ResourceData, m interface{}) error {
 				continue
 			}
 		}
-
-		err = getAciRestManaged(d, cont)
-		if err != nil {
-			if attempts > Retries {
-				return err
-			} else {
-				log.Printf("[ERROR] Failed to decode response after creating object: %s, retries: %v", err, attempts)
-				time.Sleep(RetryDelay * time.Second)
-				continue
-			}
-		}
-		return nil
+		break
 	}
+
+	log.Printf("[DEBUG] %s: Create finished successfully", d.Id())
+	return resourceAciRestManagedRead(d, m)
 }
 
 func resourceAciRestManagedUpdate(d *schema.ResourceData, m interface{}) error {
 	log.Printf("[DEBUG] %s: Beginning Update", d.Id())
 
 	for attempts := 0; ; attempts++ {
-		cont, err := ApicRest(d, m, "POST")
+		_, err := ApicRest(d, m, "POST")
 		if err != nil {
 			if attempts > Retries {
 				return err
@@ -99,22 +93,11 @@ func resourceAciRestManagedUpdate(d *schema.ResourceData, m interface{}) error {
 				continue
 			}
 		}
-
-		err = getAciRestManaged(d, cont)
-		if err != nil {
-			if attempts > Retries {
-				return err
-			} else {
-				log.Printf("[ERROR] Failed to decode response after updating object: %s, retries: %v", err, attempts)
-				time.Sleep(RetryDelay * time.Second)
-				continue
-			}
-		}
 		break
 	}
 
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
-	return nil
+	return resourceAciRestManagedRead(d, m)
 }
 
 func resourceAciRestManagedRead(d *schema.ResourceData, m interface{}) error {
