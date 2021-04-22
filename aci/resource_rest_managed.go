@@ -76,7 +76,7 @@ func resourceAciRestManagedCreate(d *schema.ResourceData, m interface{}) error {
 	}
 
 	log.Printf("[DEBUG] %s: Create finished successfully", d.Id())
-	return nil
+	return resourceAciRestManagedRead(d, m)
 }
 
 func resourceAciRestManagedUpdate(d *schema.ResourceData, m interface{}) error {
@@ -97,7 +97,7 @@ func resourceAciRestManagedUpdate(d *schema.ResourceData, m interface{}) error {
 	}
 
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
-	return nil
+	return resourceAciRestManagedRead(d, m)
 }
 
 func resourceAciRestManagedRead(d *schema.ResourceData, m interface{}) error {
@@ -110,6 +110,16 @@ func resourceAciRestManagedRead(d *schema.ResourceData, m interface{}) error {
 				return err
 			} else {
 				log.Printf("[ERROR] Failed to read object: %s, retries: %v", err, attempts)
+				time.Sleep(RetryDelay * time.Second)
+				continue
+			}
+		}
+		err = client.CheckForErrors(cont, "GET", false)
+		if err != nil {
+			if attempts > Retries {
+				return err
+			} else {
+				log.Printf("[ERROR] Retrieved an error when reading object: %s, retries: %v", err, attempts)
 				time.Sleep(RetryDelay * time.Second)
 				continue
 			}
@@ -190,6 +200,13 @@ func ApicRest(d *schema.ResourceData, m interface{}, method string) (*container.
 	}
 	err = client.CheckForErrors(respCont, method, false)
 	if err != nil {
+		if method == "DELETE" {
+			errCode := models.StripQuotes(models.StripSquareBrackets(respCont.Search("imdata", "error", "attributes", "code").String()))
+			// Ignore errors of type "Cannot delete object"
+			if errCode == "1" || errCode == "107" {
+				return respCont, nil
+			}
+		}
 		return respCont, err
 	}
 	if method == "POST" {
