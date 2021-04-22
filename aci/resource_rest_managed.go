@@ -143,7 +143,7 @@ func resourceAciRestManagedDelete(d *schema.ResourceData, m interface{}) error {
 
 	for attempts := 0; ; attempts++ {
 		_, err := ApicRest(d, m, "DELETE")
-		if err != nil && attempts > Retries {
+		if err != nil {
 			if attempts > Retries {
 				return err
 			} else {
