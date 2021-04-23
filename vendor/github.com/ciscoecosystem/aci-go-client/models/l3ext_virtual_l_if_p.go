@@ -40,6 +40,8 @@ type VirtualLogicalInterfaceProfileAttributes struct {
 	Mtu string `json:",omitempty"`
 
 	TargetDscp string `json:",omitempty"`
+
+	Userdom string `json:",omitempty"`
 }
 
 func NewVirtualLogicalInterfaceProfile(l3extVirtualLIfPRn, parentDn, description string, l3extVirtualLIfPattr VirtualLogicalInterfaceProfileAttributes) *VirtualLogicalInterfaceProfile {
@@ -89,6 +91,8 @@ func (l3extVirtualLIfP *VirtualLogicalInterfaceProfile) ToMap() (map[string]stri
 
 	A(l3extVirtualLIfPMap, "targetDscp", l3extVirtualLIfP.TargetDscp)
 
+	A(l3extVirtualLIfPMap, "userdom", l3extVirtualLIfP.Userdom)
+
 	return l3extVirtualLIfPMap, err
 }
 
@@ -131,6 +135,8 @@ func VirtualLogicalInterfaceProfileFromContainerList(cont *container.Container, 
 			Mtu: G(VirtualLogicalInterfaceProfileCont, "mtu"),
 
 			TargetDscp: G(VirtualLogicalInterfaceProfileCont, "targetDscp"),
+
+			Userdom: G(VirtualLogicalInterfaceProfileCont, "userdom"),
 		},
 	}
 }
