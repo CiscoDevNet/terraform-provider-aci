@@ -8,8 +8,8 @@ terraform {
 
 provider "aci" {
   username = "admin"
-  password = "ins3965!"
-  url      = "https://10.23.248.120"
+  password = ""
+  url      = ""
   insecure = true
 }
 
@@ -65,14 +65,14 @@ resource "aci_cdp_interface_policy" "foocdp_interface_policy" {
 
 resource "aci_vswitch_policy" "vmware_switch_policy" {
   vmm_domain_dn = aci_vmm_domain.ave.id
-  relation_vmm_rs_vswitch_override_fw_pol = "uni/infra/fwP-firewallPolicy"
-  // STP_Policy is available for higher versions of ACI only (>5.1(2e))
-  relation_vmm_rs_vswitch_override_stp_pol = "uni/infra/ifPol-stpPolicy"
-  relation_vmm_rs_vswitch_override_mtu_pol = "uni/fabric/l2pol-l2InstPolicy"
+  // relation_vmm_rs_vswitch_override_fw_pol = "uni/infra/fwP-firewallPolicy"
+  // // STP_Policy is available for higher versions of ACI only (>5.1(2e))
+  // relation_vmm_rs_vswitch_override_stp_pol = "uni/infra/ifPol-stpPolicy"
+  // relation_vmm_rs_vswitch_override_mtu_pol = "uni/fabric/l2pol-l2InstPolicy"
   relation_vmm_rs_vswitch_exporter_pol {
-    exporter_pol_dn = "uni/infra/vmmexporterpol-exporter_policy"
-    active_flow_timeout = 60
-    idle_flow_timeout= 10
+    target_dn = "uni/infra/vmmexporterpol-exporter_policy"
+    active_flow_time_out = 60
+    idle_flow_time_out= 10
     sampling_rate= 0
   }
   relation_vmm_rs_vswitch_override_cdp_if_pol = aci_cdp_interface_policy.foocdp_interface_policy.id

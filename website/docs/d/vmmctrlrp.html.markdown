@@ -7,39 +7,52 @@ description: |-
 ---
 
 # aci_vmm_controller #
+
 Data source for ACI VMM Controller
+
+
+## API Information ##
+
+* `Class` - vmmCtrlrP
+* `Distinguished Named` - uni/vmmp-{vendor}/dom-{name}/ctrlr-{name}
+
+## GUI Information ##
+
+* `Location` - 
+
+
 
 ## Example Usage ##
 
 ```hcl
 data "aci_vmm_controller" "example" {
-
-  vmm_domain_dn  = "${aci_vmm_domain.example.id}"
-
+  vmm_domain_dn  = aci_vmm_domain.example.id
   name  = "example"
 }
 ```
+
 ## Argument Reference ##
+
 * `vmm_domain_dn` - (Required) Distinguished name of parent VMMDomain object.
-* `name` - (Required) name of Object vmm_controller.
+* `name` - (Required) name of object VMM Controller.
 
-
-
-## Attribute Reference
-
+## Attribute Reference ##
 * `id` - Attribute id set to the Dn of the VMM Controller.
-* `annotation` - (Optional) annotation for object vmm_controller.
-* `dvs_version` - (Optional) 
-* `host_or_ip` - (Optional) host or ip
-* `inventory_trig_st` - (Optional) 
-* `mode` - (Optional) mode of operation
-* `msft_config_err_msg` - (Optional) msft_config_err_msg for object vmm_controller.
-* `msft_config_issues` - (Optional) 
-* `n1kv_stats_mode` - (Optional) n1kv_stats_mode for object vmm_controller.
-* `name_alias` - (Optional) name_alias for object vmm_controller.
-* `port` - (Optional) service port number for LDAP service
-* `root_cont_name` - (Optional) top level container name
-* `scope` - (Optional) scope
-* `seq_num` - (Optional) isis lsp sequence number
-* `stats_mode` - (Optional) statistics mode
-* `vxlan_depl_pref` - (Optional) vxlan_depl_pref for object vmm_controller.
+* `annotation` - (Optional) Annotation of object VMM Controller.
+* `name_alias` - (Optional) Name Alias of object VMM Controller.
+* `dvs_version` - (Optional) Dvs Version. 
+* `host_or_ip` - (Optional) Hostname or IP Address. Host or IP
+* `inventory_trig_st` - (Optional) Triggered Inventory Sync Status. 
+* `mode` - (Optional) Mode. The mode of operation.
+* `msft_config_err_msg` - (Optional) msftConfigErrMsg. Deployment Error Message of Mirosoft Plugin SCVM Controller.
+                    It captures error message encountered in SCVMM Controller 
+                    plugin.This error message represents specific details for bitmask 
+                    based msftConfigIssues fault.
+* `msft_config_issues` - (Optional) msftConfigIssues. 
+* `n1kv_stats_mode` - (Optional) n1kvStatsMode. n1kv statistics enable
+* `port` - (Optional) Port. Port
+* `root_cont_name` - (Optional) Datacenter. Top level container name.
+* `scope` - (Optional) Scope. The VMM control policy scope.
+* `seq_num` - (Optional) seqNum. An ISIS link-state packet sequence number.
+* `stats_mode` - (Optional) statsMode. The statistics mode.
+* `vxlan_depl_pref` - (Optional) VxLAN Deployment Preference. 

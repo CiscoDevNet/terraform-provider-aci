@@ -6,8 +6,8 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
 	"github.com/hashicorp/terraform/helper/acctest"
+	"github.com/hashicorp/terraform/helper/resource"
 	"github.com/hashicorp/terraform/terraform"
 )
 
@@ -46,13 +46,13 @@ func testAccCheckAciVMMCredentialConfig_basic(vmm_prov_p_name, vmm_dom_p_name, v
 	resource "aci_vmm_domain" "foovmm_domain" {
 		name 		= "%s"
 		description = "vmm_domain created while acceptance testing"
-		provider_profile_dn = "${aci_provider_profile.fooprovider_profile.id}"
+		provider_profile_dn = aci_provider_profile.fooprovider_profile.id
 	}
 
 	resource "aci_vmm_credential" "foovmm_credential" {
 		name 		= "%s"
 		description = "vmm_credential created while acceptance testing"
-		vmm_domain_dn = "${aci_vmm_domain.foovmm_domain.id}"
+		vmm_domain_dn = aci_vmm_domain.foovmm_domain.id
 	}
 
 	`, vmm_prov_p_name, vmm_dom_p_name, vmm_usr_acc_p_name)
@@ -88,27 +88,22 @@ func testAccCheckAciVMMCredentialExists(name string, vmm_credential *models.VMMC
 
 func testAccCheckAciVMMCredentialDestroy(s *terraform.State) error {
 	client := testAccProvider.Meta().(*client.Client)
-
 	for _, rs := range s.RootModule().Resources {
-
 		if rs.Type == "aci_vmm_credential" {
 			cont, err := client.Get(rs.Primary.ID)
 			vmm_credential := models.VMMCredentialFromContainer(cont)
 			if err == nil {
 				return fmt.Errorf("VMM Credential %s Still exists", vmm_credential.DistinguishedName)
 			}
-
 		} else {
 			continue
 		}
 	}
-
 	return nil
 }
 
 func testAccCheckAciVMMCredentialAttributes(vmm_prov_p_name, vmm_dom_p_name, vmm_usr_acc_p_name, description string, vmm_credential *models.VMMCredential) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
-
 		if vmm_usr_acc_p_name != GetMOName(vmm_credential.DistinguishedName) {
 			return fmt.Errorf("Bad vmm_usr_acc_p %s", GetMOName(vmm_credential.DistinguishedName))
 		}
@@ -119,7 +114,6 @@ func testAccCheckAciVMMCredentialAttributes(vmm_prov_p_name, vmm_dom_p_name, vmm
 		if description != vmm_credential.Description {
 			return fmt.Errorf("Bad vmm_credential Description %s", vmm_credential.Description)
 		}
-
 		return nil
 	}
 }

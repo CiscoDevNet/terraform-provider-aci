@@ -6,8 +6,8 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
 	"github.com/hashicorp/terraform/helper/acctest"
+	"github.com/hashicorp/terraform/helper/resource"
 	"github.com/hashicorp/terraform/terraform"
 )
 
@@ -46,13 +46,13 @@ func testAccCheckAciVMMControllerConfig_basic(vmm_prov_p_name, vmm_dom_p_name, v
 	resource "aci_vmm_domain" "foovmm_domain" {
 		name 		= "%s"
 		description = "vmm_domain created while acceptance testing"
-		provider_profile_dn = "${aci_provider_profile.fooprovider_profile.id}"
+		provider_profile_dn = aci_provider_profile.fooprovider_profile.id
 	}
 
 	resource "aci_vmm_controller" "foovmm_controller" {
 		name 		= "%s"
 		description = "vmm_controller created while acceptance testing"
-		vmm_domain_dn = "${aci_vmm_domain.foovmm_domain.id}"
+		vmm_domain_dn = aci_vmm_domain.foovmm_domain.id
 	}
 
 	`, vmm_prov_p_name, vmm_dom_p_name, vmm_ctrlr_p_name)
@@ -88,27 +88,22 @@ func testAccCheckAciVMMControllerExists(name string, vmm_controller *models.VMMC
 
 func testAccCheckAciVMMControllerDestroy(s *terraform.State) error {
 	client := testAccProvider.Meta().(*client.Client)
-
 	for _, rs := range s.RootModule().Resources {
-
 		if rs.Type == "aci_vmm_controller" {
 			cont, err := client.Get(rs.Primary.ID)
 			vmm_controller := models.VMMControllerFromContainer(cont)
 			if err == nil {
 				return fmt.Errorf("VMM Controller %s Still exists", vmm_controller.DistinguishedName)
 			}
-
 		} else {
 			continue
 		}
 	}
-
 	return nil
 }
 
 func testAccCheckAciVMMControllerAttributes(vmm_prov_p_name, vmm_dom_p_name, vmm_ctrlr_p_name, description string, vmm_controller *models.VMMController) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
-
 		if vmm_ctrlr_p_name != GetMOName(vmm_controller.DistinguishedName) {
 			return fmt.Errorf("Bad vmm_ctrlr_p %s", GetMOName(vmm_controller.DistinguishedName))
 		}
@@ -119,7 +114,6 @@ func testAccCheckAciVMMControllerAttributes(vmm_prov_p_name, vmm_dom_p_name, vmm
 		if description != vmm_controller.Description {
 			return fmt.Errorf("Bad vmm_controller Description %s", vmm_controller.Description)
 		}
-
 		return nil
 	}
 }
