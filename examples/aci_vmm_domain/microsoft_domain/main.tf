@@ -9,7 +9,7 @@ terraform {
 provider "aci" {
   username = "admin"
   password = "ins3965!"
-  url      = "https://10.23.248.120"
+  url      = "https://10.23.248.103"
   insecure = true
 }
 
@@ -55,5 +55,5 @@ resource "aci_vswitch_policy" "microsoft_switch_policy" {
   relation_vmm_rs_vswitch_override_cdp_if_pol = aci_cdp_interface_policy.foocdp_interface_policy.id
   relation_vmm_rs_vswitch_override_lacp_pol = aci_lacp_policy.port_channel_policy.id
   relation_vmm_rs_vswitch_override_lldp_if_pol = aci_lldp_interface_policy.LLDP_policy.id
-  relation_vmm_rs_vswitch_override_stp_pol = "uni/infra/ifPol-stpPolicy"
+  // relation_vmm_rs_vswitch_override_stp_pol = "uni/infra/ifPol-stpPolicy"
 }

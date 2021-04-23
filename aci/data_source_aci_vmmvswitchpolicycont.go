@@ -9,42 +9,28 @@ import (
 
 func dataSourceAciVSwitchPolicyGroup() *schema.Resource {
 	return &schema.Resource{
-
-		Read: dataSourceAciVSwitchPolicyGroupRead,
-
+		Read:          dataSourceAciVSwitchPolicyGroupRead,
 		SchemaVersion: 1,
-
-		Schema: AppendBaseAttrSchema(map[string]*schema.Schema{
-			"vmm_domain_dn": &schema.Schema{
+		Schema: AppendBaseAttrSchema(AppendNameAliasAttrSchema(map[string]*schema.Schema{
+			"vmm_domain_dn": {
 				Type:     schema.TypeString,
 				Required: true,
 			},
-
-			"annotation": &schema.Schema{
+			"annotation": {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
 			},
-
-			"name_alias": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-		}),
+		})),
 	}
 }
 
 func dataSourceAciVSwitchPolicyGroupRead(d *schema.ResourceData, m interface{}) error {
 	aciClient := m.(*client.Client)
-
-	rn := fmt.Sprintf("vswitchpolcont")
 	VMMDomainDn := d.Get("vmm_domain_dn").(string)
-
+	rn := fmt.Sprintf("vswitchpolcont")
 	dn := fmt.Sprintf("%s/%s", VMMDomainDn, rn)
-
 	vmmVSwitchPolicyCont, err := getRemoteVSwitchPolicyGroup(aciClient, dn)
-
 	if err != nil {
 		return err
 	}

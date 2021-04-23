@@ -7,28 +7,38 @@ description: |-
 ---
 
 # aci_vmm_credential #
+
 Data source for ACI VMM Credential
+
+
+## API Information ##
+
+* `Class` - vmmUsrAccP
+* `Distinguished Named` - uni/vmmp-{vendor}/dom-{name}/usracc-{name}
+
+## GUI Information ##
+
+* `Location` - 
+
+
 
 ## Example Usage ##
 
 ```hcl
 data "aci_vmm_credential" "example" {
-
-  vmm_domain_dn  = "${aci_vmm_domain.example.id}"
-
+  vmm_domain_dn  = aci_vmm_domain.example.id
   name  = "example"
 }
 ```
+
 ## Argument Reference ##
+
 * `vmm_domain_dn` - (Required) Distinguished name of parent VMMDomain object.
-* `name` - (Required) name of Object vmm_credential.
+* `name` - (Required) name of object VMM Credential.
 
-
-
-## Attribute Reference
-
+## Attribute Reference ##
 * `id` - Attribute id set to the Dn of the VMM Credential.
-* `annotation` - (Optional) annotation for object vmm_credential.
-* `name_alias` - (Optional) name_alias for object vmm_credential.
-* `pwd` - (Optional) user account profile password
-* `usr` - (Optional) user name
+* `annotation` - (Optional) Annotation of object VMM Credential.
+* `name_alias` - (Optional) Name Alias of object VMM Credential.
+* `pwd` - (Optional) Password. Pwd
+* `usr` - (Optional) Username. User

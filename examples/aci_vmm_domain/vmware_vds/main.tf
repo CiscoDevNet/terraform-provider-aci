@@ -8,8 +8,8 @@ terraform {
 
 provider "aci" {
   username = "admin"
-  password = "ins3965!"
-  url      = "https://173.36.219.25"
+  password = ""
+  url      = ""
   insecure = true
 }
 
