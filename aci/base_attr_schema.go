@@ -9,6 +9,7 @@ func GetBaseAttrSchema() map[string]*schema.Schema {
 			Optional: true,
 			Computed: true,
 		},
+
 		"annotation": &schema.Schema{
 			Type:     schema.TypeString,
 			Optional: true,
@@ -22,5 +23,6 @@ func AppendBaseAttrSchema(attrs map[string]*schema.Schema) map[string]*schema.Sc
 	for key, value := range GetBaseAttrSchema() {
 		attrs[key] = value
 	}
+
 	return attrs
 }
