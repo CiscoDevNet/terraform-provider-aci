@@ -12,18 +12,22 @@ func dataSourceAciSpanningTreeInterfacePolicy() *schema.Resource {
 		Read:          dataSourceAciSpanningTreeInterfacePolicyRead,
 		SchemaVersion: 1,
 		Schema: AppendBaseAttrSchema(AppendNameAliasAttrSchema(map[string]*schema.Schema{
-			"name": &schema.Schema{
+			"annotation": {
 				Type:     schema.TypeString,
-				Required: true,
+				Optional: true,
+				Computed: true,
 			},
-
-			"ctrl": &schema.Schema{
+			"ctrl": {
 				Type:     schema.TypeList,
 				Optional: true,
 				Computed: true,
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
 				},
+			},
+			"name": {
+				Type:     schema.TypeString,
+				Required: true,
 			},
 		})),
 	}
@@ -32,7 +36,8 @@ func dataSourceAciSpanningTreeInterfacePolicy() *schema.Resource {
 func dataSourceAciSpanningTreeInterfacePolicyRead(d *schema.ResourceData, m interface{}) error {
 	aciClient := m.(*client.Client)
 	name := d.Get("name").(string)
-	rn := fmt.Sprintf("ifPol-%s", name)
+
+	rn := fmt.Sprintf("infra/ifPol-%s", name)
 	dn := fmt.Sprintf("uni/%s", rn)
 	stpIfPol, err := getRemoteSpanningTreeInterfacePolicy(aciClient, dn)
 	if err != nil {

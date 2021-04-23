@@ -14,7 +14,6 @@ import (
 )
 
 func resourceAciSpanningTreeInterfacePolicy() *schema.Resource {
-
 	return &schema.Resource{
 		Create: resourceAciSpanningTreeInterfacePolicyCreate,
 		Update: resourceAciSpanningTreeInterfacePolicyUpdate,
@@ -27,12 +26,8 @@ func resourceAciSpanningTreeInterfacePolicy() *schema.Resource {
 
 		SchemaVersion: 1,
 		Schema: AppendBaseAttrSchema(AppendNameAliasAttrSchema(map[string]*schema.Schema{
-			"name": &schema.Schema{
-				Type:     schema.TypeString,
-				Required: true,
-				ForceNew: true,
-			},
-			"ctrl": &schema.Schema{
+
+			"ctrl": {
 				Type:     schema.TypeList,
 				Optional: true,
 				Computed: true,
@@ -41,8 +36,14 @@ func resourceAciSpanningTreeInterfacePolicy() *schema.Resource {
 					ValidateFunc: validation.StringInSlice([]string{
 						"bpdu-filter",
 						"bpdu-guard",
+						"unspecified",
 					}, false),
 				},
+			},
+			"name": {
+				Type:     schema.TypeString,
+				Required: true,
+				ForceNew: true,
 			},
 		})),
 	}
@@ -64,7 +65,6 @@ func setSpanningTreeInterfacePolicyAttributes(stpIfPol *models.SpanningTreeInter
 	d.SetId(stpIfPol.DistinguishedName)
 	d.Set("description", stpIfPol.Description)
 	stpIfPolMap, _ := stpIfPol.ToMap()
-	d.Set("name", stpIfPolMap["name"])
 	d.Set("annotation", stpIfPolMap["annotation"])
 	ctrlGet := make([]string, 0, 1)
 	for _, val := range strings.Split(stpIfPolMap["ctrl"], ",") {
@@ -85,6 +85,7 @@ func setSpanningTreeInterfacePolicyAttributes(stpIfPol *models.SpanningTreeInter
 	} else {
 		d.Set("ctrl", ctrlGet)
 	}
+	d.Set("name", stpIfPolMap["name"])
 	d.Set("name_alias", stpIfPolMap["nameAlias"])
 	return d
 }
@@ -103,11 +104,89 @@ func resourceAciSpanningTreeInterfacePolicyImport(d *schema.ResourceData, m inte
 }
 
 func resourceAciSpanningTreeInterfacePolicyCreate(d *schema.ResourceData, m interface{}) error {
-	return resourceAciSpanningTreeInterfacePolicyCreateOrUpdate(d, m, false)
+	log.Printf("[DEBUG] SpanningTreeInterfacePolicy: Beginning Creation")
+	aciClient := m.(*client.Client)
+	desc := d.Get("description").(string)
+	name := d.Get("name").(string)
+	stpIfPolAttr := models.SpanningTreeInterfacePolicyAttributes{}
+	nameAlias := ""
+	if NameAlias, ok := d.GetOk("name_alias"); ok {
+		nameAlias = NameAlias.(string)
+	}
+	if Annotation, ok := d.GetOk("annotation"); ok {
+		stpIfPolAttr.Annotation = Annotation.(string)
+	} else {
+		stpIfPolAttr.Annotation = "{}"
+	}
+
+	if Ctrl, ok := d.GetOk("ctrl"); ok {
+		ctrlList := make([]string, 0, 1)
+		for _, val := range Ctrl.([]interface{}) {
+			ctrlList = append(ctrlList, val.(string))
+		}
+		Ctrl := strings.Join(ctrlList, ",")
+		stpIfPolAttr.Ctrl = Ctrl
+	}
+
+	if Name, ok := d.GetOk("name"); ok {
+		stpIfPolAttr.Name = Name.(string)
+	}
+	stpIfPol := models.NewSpanningTreeInterfacePolicy(fmt.Sprintf("infra/ifPol-%s", name), "uni", desc, nameAlias, stpIfPolAttr)
+	err := aciClient.Save(stpIfPol)
+	if err != nil {
+		return err
+	}
+	d.Partial(true)
+	d.SetPartial("name")
+	d.Partial(false)
+
+	d.SetId(stpIfPol.DistinguishedName)
+	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
+	return resourceAciSpanningTreeInterfacePolicyRead(d, m)
 }
 
 func resourceAciSpanningTreeInterfacePolicyUpdate(d *schema.ResourceData, m interface{}) error {
-	return resourceAciSpanningTreeInterfacePolicyCreateOrUpdate(d, m, true)
+	log.Printf("[DEBUG] SpanningTreeInterfacePolicy: Beginning Update")
+	aciClient := m.(*client.Client)
+	desc := d.Get("description").(string)
+	name := d.Get("name").(string)
+	stpIfPolAttr := models.SpanningTreeInterfacePolicyAttributes{}
+	nameAlias := ""
+	if NameAlias, ok := d.GetOk("name_alias"); ok {
+		nameAlias = NameAlias.(string)
+	}
+
+	if Annotation, ok := d.GetOk("annotation"); ok {
+		stpIfPolAttr.Annotation = Annotation.(string)
+	} else {
+		stpIfPolAttr.Annotation = "{}"
+	}
+
+	if Ctrl, ok := d.GetOk("ctrl"); ok {
+		ctrlList := make([]string, 0, 1)
+		for _, val := range Ctrl.([]interface{}) {
+			ctrlList = append(ctrlList, val.(string))
+		}
+		Ctrl := strings.Join(ctrlList, ",")
+		stpIfPolAttr.Ctrl = Ctrl
+	}
+
+	if Name, ok := d.GetOk("name"); ok {
+		stpIfPolAttr.Name = Name.(string)
+	}
+	stpIfPol := models.NewSpanningTreeInterfacePolicy(fmt.Sprintf("infra/ifPol-%s", name), "uni", desc, nameAlias, stpIfPolAttr)
+	stpIfPol.Status = "modified"
+	err := aciClient.Save(stpIfPol)
+	if err != nil {
+		return err
+	}
+	d.Partial(true)
+	d.SetPartial("name")
+	d.Partial(false)
+
+	d.SetId(stpIfPol.DistinguishedName)
+	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
+	return resourceAciSpanningTreeInterfacePolicyRead(d, m)
 }
 
 func resourceAciSpanningTreeInterfacePolicyRead(d *schema.ResourceData, m interface{}) error {
@@ -117,9 +196,10 @@ func resourceAciSpanningTreeInterfacePolicyRead(d *schema.ResourceData, m interf
 	stpIfPol, err := getRemoteSpanningTreeInterfacePolicy(aciClient, dn)
 	if err != nil {
 		d.SetId("")
-		return nil
+		return err
 	}
 	setSpanningTreeInterfacePolicyAttributes(stpIfPol, d)
+
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 	return nil
 }
@@ -135,47 +215,4 @@ func resourceAciSpanningTreeInterfacePolicyDelete(d *schema.ResourceData, m inte
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 	d.SetId("")
 	return err
-}
-func resourceAciSpanningTreeInterfacePolicyCreateOrUpdate(d *schema.ResourceData, m interface{}, update bool) error {
-	action := "Creation"
-	if update == true {
-		action = "Update"
-	}
-	log.Printf("[DEBUG] SpanningTreeInterfacePolicy: Beginning %s", action)
-	aciClient := m.(*client.Client)
-	desc := d.Get("description").(string)
-	name := d.Get("name").(string)
-	stpIfPolAttr := models.SpanningTreeInterfacePolicyAttributes{}
-	if Annotation, ok := d.GetOk("annotation"); ok {
-		stpIfPolAttr.Annotation = Annotation.(string)
-	} else {
-		stpIfPolAttr.Annotation = "{}"
-	}
-	if Ctrl, ok := d.GetOk("ctrl"); ok {
-		ctrlList := make([]string, 0, 1)
-		for _, val := range Ctrl.([]interface{}) {
-			ctrlList = append(ctrlList, val.(string))
-		}
-		Ctrl := strings.Join(ctrlList, ",")
-		stpIfPolAttr.Ctrl = Ctrl
-	}
-	nameAlias := ""
-	if NameAlias, ok := d.GetOk("name_alias"); ok {
-		nameAlias = NameAlias.(string)
-	}
-
-	stpIfPol := models.NewSpanningTreeInterfacePolicy(fmt.Sprintf("infra/ifPol-%s", name), "uni", desc, nameAlias, stpIfPolAttr)
-	if update == true {
-		stpIfPol.Status = "modified"
-	}
-	err := aciClient.Save(stpIfPol)
-	if err != nil {
-		return err
-	}
-	d.Partial(true)
-	d.SetPartial("name")
-	d.Partial(false)
-	d.SetId(stpIfPol.DistinguishedName)
-	log.Printf("[DEBUG] %s: %s finished successfully", d.Id(), action)
-	return resourceAciSpanningTreeInterfacePolicyRead(d, m)
 }
