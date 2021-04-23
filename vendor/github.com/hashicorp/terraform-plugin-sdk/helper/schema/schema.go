@@ -262,7 +262,6 @@ type Schema struct {
 	// secret fields. Future versions of Terraform may encrypt these
 	// values.
 	Sensitive bool
-	LabelNames []string
 }
 
 // SchemaConfigMode is used to influence how a schema item is mapped into a

@@ -84,6 +84,7 @@ func NewVMMDomain(vmmDomPRn, parentDn, description string, vmmDomPattr VMMDomain
 	return &VMMDomain{
 		BaseAttributes: BaseAttributes{
 			DistinguishedName: dn,
+			Description:       description,
 			Status:            "created, modified",
 			ClassName:         VmmdompClassName,
 			Rn:                vmmDomPRn,
@@ -171,6 +172,7 @@ func VMMDomainFromContainerList(cont *container.Container, index int) *VMMDomain
 	return &VMMDomain{
 		BaseAttributes{
 			DistinguishedName: G(VMMDomainCont, "dn"),
+			Description:       G(VMMDomainCont, "descr"),
 			Status:            G(VMMDomainCont, "status"),
 			ClassName:         VmmdompClassName,
 			Rn:                G(VMMDomainCont, "rn"),
