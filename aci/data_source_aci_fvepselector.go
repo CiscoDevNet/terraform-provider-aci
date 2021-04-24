@@ -44,6 +44,7 @@ func dataSourceAciEndpointSecurityGroupSelectorRead(d *schema.ResourceData, m in
 	if err != nil {
 		return err
 	}
+	d.SetId(dn)
 	setEndpointSecurityGroupSelectorAttributes(fvEPSelector, d)
 	return nil
 }
