@@ -7,28 +7,35 @@ description: |-
 ---
 
 # aci_endpoint_security_group_selector #
+
 Data source for ACI Endpoint Security Group Selector
+
+## API Information ##
+
+* `Class` - fvEPSelector
+* `Distinguished Named` - uni/tn-{name}/ap-{name}/esg-{name}/epselector-{[matchExpression]}
+
+## GUI Information ##
+
+* `Location` - Tenants > {tenant_name} > Application Profiles > Endpoint Security Groups > Selectors
 
 ## Example Usage ##
 
 ```hcl
 data "aci_endpoint_security_group_selector" "example" {
-
-  endpoint_security_group_dn  = "${aci_endpoint_security_group.example.id}"
-
-  match_expression  = "example"
+  endpoint_security_group_dn  = aci_endpoint_security_group.example.id
+  match_expression = "ip=='10.10.10.0/24'"
 }
 ```
+
 ## Argument Reference ##
-* `endpoint_security_group_dn` - (Required) Distinguished name of parent EndpointSecurityGroup object.
-* `matchExpression` - (Required) matchExpression of Object endpoint_security_group_selector.
 
+* `endpoint_security_group_dn` - (Required) Distinguished name of parent Endpoint Security Group object.
+* `match_expression` - (Optional) Expression used to define matching tags.
 
-
-## Attribute Reference
+## Attribute Reference ##
 
 * `id` - Attribute id set to the Dn of the Endpoint Security Group Selector.
-* `annotation` - (Optional) annotation for object endpoint_security_group_selector.
-* `match_expression` - (Optional) match_expression for object endpoint_security_group_selector.
-* `name_alias` - (Optional) name_alias for object endpoint_security_group_selector.
-* `userdom` - (Optional) userdom for object endpoint_security_group_selector.
+* `annotation` - (Optional) Annotation of object Endpoint Security Group Selector.
+* `name_alias` - (Optional) Name Alias of object Endpoint Security Group Selector.
+* `match_expression` - (Optional) Expression used to define matching tagTags.

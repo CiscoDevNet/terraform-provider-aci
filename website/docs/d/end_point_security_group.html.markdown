@@ -7,33 +7,41 @@ description: |-
 ---
 
 # aci_endpoint_security_group #
+
 Data source for ACI Endpoint Security Group
+
+## API Information ##
+
+* `Class` - fvESg
+* `Distinguished Named` - uni/tn-{name}/ap-{name}/esg-{name}
+
+## GUI Information ##
+
+* `Location` - Tenants > {tenant_name} > Application Profiles > Endpoint Security Groups
 
 ## Example Usage ##
 
 ```hcl
 data "aci_endpoint_security_group" "example" {
-
-  application_profile_dn  = "${aci_application_profile.example.id}"
-
+  application_profile_dn  = aci_application_profile.example.id
   name  = "example"
 }
 ```
+
 ## Argument Reference ##
-* `application_profile_dn` - (Required) Distinguished name of parent ApplicationProfile object.
-* `name` - (Required) name of Object endpoint_security_group.
 
+* `application_profile_dn` - (Required) Distinguished name of parent Application Profile object.
+* `name` - (Required) name of object Endpoint Security Group.
 
-
-## Attribute Reference
+## Attribute Reference ##
 
 * `id` - Attribute id set to the Dn of the Endpoint Security Group.
-* `annotation` - (Optional) annotation for object endpoint_security_group.
-* `exception_tag` - (Optional) exception_tag for object endpoint_security_group.
-* `flood_on_encap` - (Optional) flood_on_encap for object endpoint_security_group.
-* `match_t` - (Optional) match criteria
-* `name_alias` - (Optional) name_alias for object endpoint_security_group.
-* `pc_enf_pref` - (Optional) enforcement preference
-* `pref_gr_memb` - (Optional) pref_gr_memb for object endpoint_security_group.
-* `prio` - (Optional) qos priority class id
-* `userdom` - (Optional) userdom for object endpoint_security_group.
+* `annotation` - (Optional) Annotation of object Endpoint Security Group.
+* `name_alias` - (Optional) Name Alias of object Endpoint Security Group.
+* `flood_on_encap` - (Optional) Handles L2 Multicast/Broadcast and Link-Layer traffic at EPG level. It represents Control at EPG level and decides if the traffic L2 Multicast/Broadcast and Link Local Layer should be flooded only on ENCAP, or based on bridge-domain settings.
+* `match_t` - (Optional) The provider label match criteria.
+* `pc_enf_pref` - (Optional) The preferred policy control.
+* `pref_gr_memb` - (Optional) Represents parameter used to determine
+                    if EPg is part of a group that does not
+                    a contract for communication.
+* `prio` - (Optional) The QoS priority class identifier.

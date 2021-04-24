@@ -7,24 +7,40 @@ description: |-
 ---
 
 # aci_endpoint_security_group_selector #
+
 Manages ACI Endpoint Security Group Selector
+
+## API Information ##
+
+* `Class` - fvEPSelector
+* `Distinguished Named` - uni/tn-{name}/ap-{name}/esg-{name}/epselector-{[matchExpression]}
+
+## GUI Information ##
+
+* `Location` - Tenants > {tenant_name} > Application Profiles > Endpoint Security Groups > Selectors
 
 ## Example Usage ##
 
 ```hcl
 resource "aci_endpoint_security_group_selector" "example" {
+  endpoint_security_group_dn  = aci_endpoint_security_group.example.id
+  annotation = "orchestrator:terraform"
+  match_expression = "ip=='10.10.10.0/24'"
 
-  endpoint_security_group_dn  = "${aci_endpoint_security_group.example.id}"
-  matchExpression  = "example"
-  annotation  = "example"
-  match_expression  = "example"
-  name_alias  = "example"
-  userdom  = "example"
 }
 ```
+
 ## Argument Reference ##
-* `endpoint_security_group_dn` - (Required) Distinguished name of parent EndpointSecurityGroup object.
-* `annotation` - (Optional) annotation for object endpoint_security_group_selector.
-* `match_expression` - (Required) match_expression for object endpoint_security_group_selector.
-* `name_alias` - (Optional) name_alias for object endpoint_security_group_selector.
-* `userdom` - (Optional) userdom for object endpoint_security_group_selector.
+
+* `endpoint_security_group_dn` - (Required) Distinguished name of parent Endpoint Security Group object.
+* `annotation` - (Optional) Annotation of object Endpoint Security Group Selector.
+* `match_expression` - (Optional) Expression used to define matching tags.  
+
+## Importing ##
+
+An existing EndpointSecurityGroupSelector can be [imported][docs-import] into this resource via its Dn, via the following command:
+[docs-import]: https://www.terraform.io/docs/import/index.html
+
+```
+terraform import endpoint_security_group_selector.example <Dn>
+```
