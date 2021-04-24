@@ -3,7 +3,7 @@ variable "vds" {
 }
 // vmware vds
 variable "vmm_domain" {
-  default = "ESX0-leaf102-vds"
+  default = "vmware_vds_domain"
 }
 
 variable "aci_vmm_controller" {

@@ -3,7 +3,7 @@ variable "microsoft_domain" {
 }
 // Microsoft vmm domain resources
 variable "vmm_domain" {
-  default = "ESX0-leaf102"
+  default = "microsoft_domain"
 }
 
 variable "aci_vmm_controller" {

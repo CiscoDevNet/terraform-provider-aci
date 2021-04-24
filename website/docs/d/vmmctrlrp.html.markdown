@@ -6,7 +6,7 @@ description: |-
   Data source for ACI VMM Controller
 ---
 
-# aci_vmm_controller #
+# vmm_controller #
 
 Data source for ACI VMM Controller
 
@@ -18,7 +18,7 @@ Data source for ACI VMM Controller
 
 ## GUI Information ##
 
-* `Location` - 
+* `Location` - Virtual Networking -> VMM Domain -> VmmController
 
 
 
@@ -44,7 +44,7 @@ data "aci_vmm_controller" "example" {
 * `host_or_ip` - (Optional) Hostname or IP Address. Host or IP
 * `inventory_trig_st` - (Optional) Triggered Inventory Sync Status. 
 * `mode` - (Optional) Mode. The mode of operation.
-* `msft_config_err_msg` - (Optional) msftConfigErrMsg. Deployment Error Message of Mirosoft Plugin SCVM Controller.
+* `msft_config_err_msg` - (Optional) Deployment Error Message of Microsoft Plugin SCVMM Controller.
                     It captures error message encountered in SCVMM Controller 
                     plugin.This error message represents specific details for bitmask 
                     based msftConfigIssues fault.

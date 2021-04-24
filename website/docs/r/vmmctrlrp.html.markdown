@@ -6,7 +6,7 @@ description: |-
   Manages ACI VMM Controller
 ---
 
-# aci_vmm_controller #
+# vmm_controller #
 
 Manages ACI VMM Controller
 
@@ -17,7 +17,7 @@ Manages ACI VMM Controller
 
 ## GUI Information ##
 
-* `Location` - 
+* `Location` - Virtual Networking -> VMM Domain -> VmmController
 
 
 ## Example Usage ##
@@ -73,7 +73,7 @@ resource "aci_vmm_controller" "example" {
 * `host_or_ip` - (Optional) Hostname or IP Address. Host or IP 
 * `inventory_trig_st` - (Optional) Triggered Inventory Sync Status.  Allowed values are "autoTriggered", "triggered", "untriggered", and default value is "untriggered". Type: String.
 * `mode` - (Optional) Mode. The mode of operation. Allowed values are "cf", "default", "k8s", "n1kv", "nsx", "openshift", "ovs", "rancher", "rhev", "unknown", and default value is "default". Type: String.
-* `msft_config_err_msg` - (Optional) msftConfigErrMsg. Deployment Error Message of Mirosoft Plugin SCVM Controller.
+* `msft_config_err_msg` - (Optional) Deployment Error Message of Microsoft Plugin SCVMM Controller.
                     It captures error message encountered in SCVMM Controller 
                     plugin.This error message represents specific details for bitmask 
                     based msftConfigIssues fault. 
