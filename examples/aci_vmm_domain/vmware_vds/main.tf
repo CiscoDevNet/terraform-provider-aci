@@ -7,7 +7,7 @@ terraform {
 }
 
 provider "aci" {
-  username = "admin"
+  username = ""
   password = ""
   url      = ""
   insecure = true
@@ -39,10 +39,10 @@ resource "aci_vlan_pool" "vmm_vlan_pool" {
   alloc_mode = "dynamic"
 }
 
-// // VMWare vmm domain resources
-// resource "aci_vmm_domain" "vds" {
-//   provider_profile_dn = var.vds
-//   relation_infra_rs_vlan_ns = aci_vlan_pool.vmm_vlan_pool.id
-//   name                = var.vmm_domain
-// }
+// VMWare vmm domain resources
+resource "aci_vmm_domain" "vds" {
+  provider_profile_dn = var.vds
+  relation_infra_rs_vlan_ns = aci_vlan_pool.vmm_vlan_pool.id
+  name                = var.vmm_domain
+}
 

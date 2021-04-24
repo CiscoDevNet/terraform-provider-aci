@@ -6,7 +6,7 @@ description: |-
   Manages ACI VSwitch Policy Group
 ---
 
-# aci_v_switch_policy_group #
+# vSwitch_Policy #
 
 Manages ACI VSwitch Policy Group
 
@@ -17,7 +17,7 @@ Manages ACI VSwitch Policy Group
 
 ## GUI Information ##
 
-* `Location` - 
+* `Location` - Virtual Networking -> VMM Domain -> VSwitchPolicy
 
 
 ## Example Usage ##

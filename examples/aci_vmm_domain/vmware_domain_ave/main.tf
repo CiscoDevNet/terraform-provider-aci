@@ -7,7 +7,7 @@ terraform {
 }
 
 provider "aci" {
-  username = "admin"
+  username = ""
   password = ""
   url      = ""
   insecure = true
@@ -27,7 +27,6 @@ resource "aci_vmm_domain" "ave" {
   enable_ave = "yes"
   mcast_addr = "239.10.10.10"
   // create a multicast address pool and add that to below relationship.
-  // dn ="comp/prov-{name}/ctrlr-{[domName]}-{name}/addrinstdef-{name}"
   relation_vmm_rs_dom_mcast_addr_ns = "uni/infra/maddrns-testo"
 }
 
@@ -65,10 +64,10 @@ resource "aci_cdp_interface_policy" "foocdp_interface_policy" {
 
 resource "aci_vswitch_policy" "vmware_switch_policy" {
   vmm_domain_dn = aci_vmm_domain.ave.id
-  // relation_vmm_rs_vswitch_override_fw_pol = "uni/infra/fwP-firewallPolicy"
-  // // STP_Policy is available for higher versions of ACI only (>5.1(2e))
-  // relation_vmm_rs_vswitch_override_stp_pol = "uni/infra/ifPol-stpPolicy"
-  // relation_vmm_rs_vswitch_override_mtu_pol = "uni/fabric/l2pol-l2InstPolicy"
+  relation_vmm_rs_vswitch_override_fw_pol = "uni/infra/fwP-firewallPolicy"
+  // STP_Policy is available for higher versions of ACI only (>5.1(2e))
+  relation_vmm_rs_vswitch_override_stp_pol = "uni/infra/ifPol-stpPolicy"
+  relation_vmm_rs_vswitch_override_mtu_pol = "uni/fabric/l2pol-l2InstPolicy"
   relation_vmm_rs_vswitch_exporter_pol {
     target_dn = "uni/infra/vmmexporterpol-exporter_policy"
     active_flow_time_out = 60

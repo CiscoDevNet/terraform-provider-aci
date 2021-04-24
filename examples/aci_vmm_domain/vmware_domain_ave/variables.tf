@@ -3,7 +3,7 @@ variable "ave" {
 }
 // vmware ave
 variable "vmm_domain" {
-  default = "ESX0-leaf102-ave"
+  default = "vmware_ave_domain"
 }
 
 variable "aci_vmm_controller" {

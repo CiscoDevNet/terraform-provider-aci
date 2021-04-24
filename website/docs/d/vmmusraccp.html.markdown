@@ -6,7 +6,7 @@ description: |-
   Data source for ACI VMM Credential
 ---
 
-# aci_vmm_credential #
+# vmm_credential #
 
 Data source for ACI VMM Credential
 
@@ -18,7 +18,7 @@ Data source for ACI VMM Credential
 
 ## GUI Information ##
 
-* `Location` - 
+* `Location` - Virtual Networking -> VMM Domain -> VmmController -> vCenterCredentials
 
 
 
