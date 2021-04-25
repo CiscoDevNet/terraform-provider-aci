@@ -6,7 +6,7 @@ description: |-
   Manages ACI VMM Credential
 ---
 
-# vmm_credential #
+# aci_vmm_credential #
 
 Manages ACI VMM Credential
 
@@ -17,9 +17,8 @@ Manages ACI VMM Credential
 
 ## GUI Information ##
 
-* `Location` - Virtual Networking -> VMM Domain -> VmmController -> vCenterCredentials
-
-
+* `Location` - Virtual Networking -> {vendor} -> {domain_name} -> vCenter Credentials
+  
 ## Example Usage ##
 
 ```hcl
@@ -27,27 +26,23 @@ resource "aci_vmm_credential" "example" {
   vmm_domain_dn  = aci_vmm_domain.example.id
   name  = "example"
   annotation = "orchestrator:terraform"
-
-  pwd = 
-  usr = 
+  pwd = "password"
+  usr = "username"
 }
 ```
 
 ## Argument Reference ##
 
-* `vmm_domain_dn` - (Required) Distinguished name of parent VMMDomain object.
+* `vmm_domain_dn` - (Required) Distinguished name of parent VMM Domain object.
 * `name` - (Required) Name of object VMM Credential.
 * `annotation` - (Optional) Annotation of object VMM Credential.
-
-* `pwd` - (Optional) Password. Pwd 
-* `usr` - (Optional) Username. User 
-
+* `pwd` - (Optional) Password.
+* `usr` - (Optional) Username.
 
 ## Importing ##
 
 An existing VMMCredential can be [imported][docs-import] into this resource via its Dn, via the following command:
 [docs-import]: https://www.terraform.io/docs/import/index.html
-
 
 ```
 terraform import vmm_credential.example <Dn>

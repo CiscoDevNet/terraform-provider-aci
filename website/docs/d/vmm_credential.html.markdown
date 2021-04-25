@@ -6,7 +6,7 @@ description: |-
   Data source for ACI VMM Credential
 ---
 
-# vmm_credential #
+# aci_vmm_credential #
 
 Data source for ACI VMM Credential
 
@@ -18,9 +18,7 @@ Data source for ACI VMM Credential
 
 ## GUI Information ##
 
-* `Location` - Virtual Networking -> VMM Domain -> VmmController -> vCenterCredentials
-
-
+* `Location` - Virtual Networking -> {vendor} -> {domain_name} -> vCenter Credentials
 
 ## Example Usage ##
 
@@ -33,12 +31,13 @@ data "aci_vmm_credential" "example" {
 
 ## Argument Reference ##
 
-* `vmm_domain_dn` - (Required) Distinguished name of parent VMMDomain object.
+* `vmm_domain_dn` - (Required) Distinguished name of parent VMM Domain object.
 * `name` - (Required) name of object VMM Credential.
 
 ## Attribute Reference ##
+
 * `id` - Attribute id set to the Dn of the VMM Credential.
 * `annotation` - (Optional) Annotation of object VMM Credential.
 * `name_alias` - (Optional) Name Alias of object VMM Credential.
-* `pwd` - (Optional) Password. Pwd
-* `usr` - (Optional) Username. User
+* `pwd` - (Optional) Password.
+* `usr` - (Optional) Username.
