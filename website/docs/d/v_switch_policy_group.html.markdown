@@ -6,10 +6,9 @@ description: |-
   Data source for ACI VSwitch Policy Group
 ---
 
-# vSwitch_Policy #
+# aci_v_switch_policy_group #
 
 Data source for ACI VSwitch Policy Group
-
 
 ## API Information ##
 
@@ -18,9 +17,7 @@ Data source for ACI VSwitch Policy Group
 
 ## GUI Information ##
 
-* `Location` - Virtual Networking -> VMM Domain -> VSwitchPolicy
-
-
+* `Location` - Virtual Networking -> {vendor} -> {domain_name} -> VSwitch Policy
 
 ## Example Usage ##
 
@@ -32,9 +29,10 @@ data "aci_v_switch_policy_group" "example" {
 
 ## Argument Reference ##
 
-* `vmm_domain_dn` - (Required) Distinguished name of parent VMMDomain object.
+* `vmm_domain_dn` - (Required) Distinguished name of parent VMM Domain object.
 
 ## Attribute Reference ##
+
 * `id` - Attribute id set to the Dn of the VSwitch Policy Group.
 * `annotation` - (Optional) Annotation of object VSwitch Policy Group.
 * `name_alias` - (Optional) Name Alias of object VSwitch Policy Group.
