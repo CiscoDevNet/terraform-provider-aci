@@ -114,6 +114,13 @@ func resourceAciRestManagedRead(d *schema.ResourceData, m interface{}) error {
 				continue
 			}
 		}
+
+		// Check if we received an empty response without errors -> object has been deleted
+		if cont == nil && err == nil {
+			d.SetId("")
+			return nil
+		}
+
 		err = client.CheckForErrors(cont, "GET", false)
 		if err != nil {
 			if attempts > Retries {
@@ -123,12 +130,6 @@ func resourceAciRestManagedRead(d *schema.ResourceData, m interface{}) error {
 				time.Sleep(RetryDelay * time.Second)
 				continue
 			}
-		}
-
-		// Check if we received an empty response without errors -> object has been deleted
-		if cont == nil && err == nil {
-			d.SetId("")
-			return nil
 		}
 
 		err = getAciRestManaged(d, cont)
