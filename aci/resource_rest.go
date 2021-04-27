@@ -1,6 +1,7 @@
 package aci
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 
@@ -13,6 +14,8 @@ import (
 
 const Created = "created"
 const Deleted = "deleted"
+
+var class, name string
 
 const ErrDistinguishedNameNotFound = "The Dn is not present in the content"
 
@@ -60,12 +63,9 @@ func resourceAciRestCreate(d *schema.ResourceData, m interface{}) error {
 	classNameIntf := d.Get("class_name")
 	className := classNameIntf.(string)
 	dn := models.StripQuotes(models.StripSquareBrackets(cont.Search(className, "attributes", "dn").String()))
-
 	if dn == "{}" {
 		d.SetId(GetDN(d, m))
-
 	} else {
-
 		d.SetId(dn)
 	}
 	return resourceAciRestRead(d, m)
@@ -82,12 +82,9 @@ func resourceAciRestUpdate(d *schema.ResourceData, m interface{}) error {
 	dn := models.StripQuotes(models.StripSquareBrackets(cont.Search(className, "attributes", "dn").String()))
 	if dn == "{}" {
 		d.SetId(GetDN(d, m))
-
 	} else {
-
 		d.SetId(dn)
 	}
-
 	return resourceAciRestRead(d, m)
 }
 
@@ -112,9 +109,8 @@ func resourceAciRestDelete(d *schema.ResourceData, m interface{}) error {
 func GetDN(d *schema.ResourceData, m interface{}) string {
 	aciClient := m.(*client.Client)
 	path := d.Get("path").(string)
-	className := d.Get("class_name").(string)
 	cont, _ := aciClient.GetViaURL(path)
-	dn := models.StripQuotes(models.StripSquareBrackets(cont.Search("imdata", className, "attributes", "dn").String()))
+	dn := models.StripQuotes(models.StripSquareBrackets(cont.Search("imdata", class, "attributes", "dn").String()))
 	return fmt.Sprintf("%s", dn)
 }
 
@@ -132,9 +128,6 @@ func PostAndSetStatus(d *schema.ResourceData, m interface{}, status string) (*co
 		if classNameIntf, ok := d.GetOk("class_name"); ok {
 			className := classNameIntf.(string)
 			cont, err = preparePayload(className, contentStrMap)
-			if status == Deleted {
-				cont.Set(status, className, "attributes", "status")
-			}
 			if err != nil {
 				return nil, err
 			}
@@ -148,9 +141,7 @@ func PostAndSetStatus(d *schema.ResourceData, m interface{}, status string) (*co
 		if len(payloadStr) == 0 {
 			return nil, fmt.Errorf("Payload cannot be empty string")
 		}
-
 		yamlJsonPayload, err := yaml.YAMLToJSON([]byte(payloadStr))
-
 		if err != nil {
 			// It may be possible that the payload is in JSON
 			jsonPayload, err := container.ParseJSON([]byte(payloadStr))
@@ -161,28 +152,34 @@ func PostAndSetStatus(d *schema.ResourceData, m interface{}, status string) (*co
 		} else {
 			// we have valid yaml payload and we were able to convert it to json
 			cont, err = container.ParseJSON(yamlJsonPayload)
+
 			if err != nil {
 				return nil, fmt.Errorf("Failed to convert YAML to JSON.")
 			}
 		}
-
 		if err != nil {
-
 			return nil, fmt.Errorf("Unable to parse the payload to JSON. Please check your payload")
-		}
-
-		if status == "deleted" {
-			method = "DELETE"
 		}
 
 	} else {
 		return nil, fmt.Errorf("Either of payload or content is required")
 	}
+	var output map[string]interface{}
+	err_output := json.Unmarshal([]byte(cont.String()), &output)
+	if err_output != nil {
+		return nil, err_output
+	}
+	for key, _ := range output {
+		class = key
+	}
+
+	if status == Deleted {
+		cont.Set(status, class, "attributes", "status")
+	}
 	req, err := aciClient.MakeRestRequest(method, path, cont, true)
 	if err != nil {
 		return nil, err
 	}
-
 	respCont, _, err := aciClient.Do(req)
 	if err != nil {
 		return respCont, err
