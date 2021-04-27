@@ -2,6 +2,7 @@ package aci
 
 import (
 	"log"
+	"math/rand"
 	"time"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
@@ -12,6 +13,7 @@ import (
 
 const Retries = 3
 const RetryDelay = 30
+const Jitter = 5000
 
 func resourceAciRestManaged() *schema.Resource {
 	return &schema.Resource{
@@ -42,6 +44,12 @@ func resourceAciRestManaged() *schema.Resource {
 	}
 }
 
+func backoff() {
+	jitter := time.Duration(rand.Intn(Jitter)) * time.Microsecond
+	backoff := RetryDelay*time.Second + jitter
+	time.Sleep(backoff)
+}
+
 func getAciRestManaged(d *schema.ResourceData, c *container.Container) error {
 	className := d.Get("class_name").(string)
 	dn := d.Get("dn").(string)
@@ -64,11 +72,11 @@ func resourceAciRestManagedCreate(d *schema.ResourceData, m interface{}) error {
 	for attempts := 0; ; attempts++ {
 		_, err := ApicRest(d, m, "POST")
 		if err != nil {
-			if attempts > Retries {
+			if attempts >= Retries {
 				return err
 			} else {
 				log.Printf("[ERROR] Failed to create object: %s, retries: %v", err, attempts)
-				time.Sleep(RetryDelay * time.Second)
+				backoff()
 				continue
 			}
 		}
@@ -85,11 +93,11 @@ func resourceAciRestManagedUpdate(d *schema.ResourceData, m interface{}) error {
 	for attempts := 0; ; attempts++ {
 		_, err := ApicRest(d, m, "POST")
 		if err != nil {
-			if attempts > Retries {
+			if attempts >= Retries {
 				return err
 			} else {
 				log.Printf("[ERROR] Failed to update object: %s, retries: %v", err, attempts)
-				time.Sleep(RetryDelay * time.Second)
+				backoff()
 				continue
 			}
 		}
@@ -106,11 +114,11 @@ func resourceAciRestManagedRead(d *schema.ResourceData, m interface{}) error {
 	for attempts := 0; ; attempts++ {
 		cont, err := ApicRest(d, m, "GET")
 		if err != nil {
-			if attempts > Retries {
+			if attempts >= Retries {
 				return err
 			} else {
 				log.Printf("[ERROR] Failed to read object: %s, retries: %v", err, attempts)
-				time.Sleep(RetryDelay * time.Second)
+				backoff()
 				continue
 			}
 		}
@@ -123,22 +131,22 @@ func resourceAciRestManagedRead(d *schema.ResourceData, m interface{}) error {
 
 		err = client.CheckForErrors(cont, "GET", false)
 		if err != nil {
-			if attempts > Retries {
+			if attempts >= Retries {
 				return err
 			} else {
 				log.Printf("[ERROR] Retrieved an error when reading object: %s, retries: %v", err, attempts)
-				time.Sleep(RetryDelay * time.Second)
+				backoff()
 				continue
 			}
 		}
 
 		err = getAciRestManaged(d, cont)
 		if err != nil {
-			if attempts > Retries {
+			if attempts >= Retries {
 				return err
 			} else {
 				log.Printf("[ERROR] Failed to decode response after reading object: %s, retries: %v", err, attempts)
-				time.Sleep(RetryDelay * time.Second)
+				backoff()
 				continue
 			}
 		}
@@ -155,11 +163,11 @@ func resourceAciRestManagedDelete(d *schema.ResourceData, m interface{}) error {
 	for attempts := 0; ; attempts++ {
 		_, err := ApicRest(d, m, "DELETE")
 		if err != nil {
-			if attempts > Retries {
+			if attempts >= Retries {
 				return err
 			} else {
 				log.Printf("[ERROR] Failed to delete object: %s, retries: %v", err, attempts)
-				time.Sleep(RetryDelay * time.Second)
+				backoff()
 				continue
 			}
 		}
