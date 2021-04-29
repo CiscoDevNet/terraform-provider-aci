@@ -6,8 +6,8 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciDomain() *schema.Resource {
@@ -415,8 +415,6 @@ func resourceAciDomainCreate(d *schema.ResourceData, m interface{}) error {
 
 	d.Partial(true)
 
-	d.SetPartial("tdn")
-
 	d.Partial(false)
 
 	d.SetId(fvRsDomAtt.DistinguishedName)
@@ -531,8 +529,6 @@ func resourceAciDomainUpdate(d *schema.ResourceData, m interface{}) error {
 	d.Set("vmm_id", vmmSecP.DistinguishedName)
 
 	d.Partial(true)
-
-	d.SetPartial("tdn")
 
 	d.Partial(false)
 

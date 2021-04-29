@@ -6,7 +6,7 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func resourceAciAccessGeneric() *schema.Resource {
@@ -122,8 +122,6 @@ func resourceAciAccessGenericCreate(d *schema.ResourceData, m interface{}) error
 	}
 	d.Partial(true)
 
-	d.SetPartial("name")
-
 	d.Partial(false)
 
 	d.SetId(infraGeneric.DistinguishedName)
@@ -161,8 +159,6 @@ func resourceAciAccessGenericUpdate(d *schema.ResourceData, m interface{}) error
 		return err
 	}
 	d.Partial(true)
-
-	d.SetPartial("name")
 
 	d.Partial(false)
 

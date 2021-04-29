@@ -8,8 +8,8 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciL2outExternalEpg() *schema.Resource {
@@ -277,8 +277,6 @@ func resourceAciL2outExternalEpgCreate(d *schema.ResourceData, m interface{}) er
 	}
 	d.Partial(true)
 
-	d.SetPartial("name")
-
 	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
@@ -346,7 +344,6 @@ func resourceAciL2outExternalEpgCreate(d *schema.ResourceData, m interface{}) er
 				return err
 			}
 			d.Partial(true)
-			d.SetPartial("relation_fv_rs_sec_inherited")
 			d.Partial(false)
 		}
 	}
@@ -360,7 +357,6 @@ func resourceAciL2outExternalEpgCreate(d *schema.ResourceData, m interface{}) er
 				return err
 			}
 			d.Partial(true)
-			d.SetPartial("relation_fv_rs_prov")
 			d.Partial(false)
 		}
 	}
@@ -374,7 +370,6 @@ func resourceAciL2outExternalEpgCreate(d *schema.ResourceData, m interface{}) er
 				return err
 			}
 			d.Partial(true)
-			d.SetPartial("relation_fv_rs_cons_if")
 			d.Partial(false)
 		}
 	}
@@ -386,7 +381,6 @@ func resourceAciL2outExternalEpgCreate(d *schema.ResourceData, m interface{}) er
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_fv_rs_cust_qos_pol")
 		d.Partial(false)
 
 	}
@@ -400,7 +394,6 @@ func resourceAciL2outExternalEpgCreate(d *schema.ResourceData, m interface{}) er
 				return err
 			}
 			d.Partial(true)
-			d.SetPartial("relation_fv_rs_cons")
 			d.Partial(false)
 		}
 	}
@@ -411,7 +404,6 @@ func resourceAciL2outExternalEpgCreate(d *schema.ResourceData, m interface{}) er
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_l2ext_rs_l2_inst_p_to_dom_p")
 		d.Partial(false)
 
 	}
@@ -425,7 +417,6 @@ func resourceAciL2outExternalEpgCreate(d *schema.ResourceData, m interface{}) er
 				return err
 			}
 			d.Partial(true)
-			d.SetPartial("relation_fv_rs_prot_by")
 			d.Partial(false)
 		}
 	}
@@ -439,7 +430,6 @@ func resourceAciL2outExternalEpgCreate(d *schema.ResourceData, m interface{}) er
 				return err
 			}
 			d.Partial(true)
-			d.SetPartial("relation_fv_rs_intra_epg")
 			d.Partial(false)
 		}
 	}
@@ -497,8 +487,6 @@ func resourceAciL2outExternalEpgUpdate(d *schema.ResourceData, m interface{}) er
 		return err
 	}
 	d.Partial(true)
-
-	d.SetPartial("name")
 
 	d.Partial(false)
 
@@ -609,7 +597,6 @@ func resourceAciL2outExternalEpgUpdate(d *schema.ResourceData, m interface{}) er
 				return err
 			}
 			d.Partial(true)
-			d.SetPartial("relation_fv_rs_sec_inherited")
 			d.Partial(false)
 
 		}
@@ -638,7 +625,6 @@ func resourceAciL2outExternalEpgUpdate(d *schema.ResourceData, m interface{}) er
 				return err
 			}
 			d.Partial(true)
-			d.SetPartial("relation_fv_rs_prov")
 			d.Partial(false)
 
 		}
@@ -667,7 +653,6 @@ func resourceAciL2outExternalEpgUpdate(d *schema.ResourceData, m interface{}) er
 				return err
 			}
 			d.Partial(true)
-			d.SetPartial("relation_fv_rs_cons_if")
 			d.Partial(false)
 
 		}
@@ -681,7 +666,6 @@ func resourceAciL2outExternalEpgUpdate(d *schema.ResourceData, m interface{}) er
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_fv_rs_cust_qos_pol")
 		d.Partial(false)
 
 	}
@@ -708,7 +692,6 @@ func resourceAciL2outExternalEpgUpdate(d *schema.ResourceData, m interface{}) er
 				return err
 			}
 			d.Partial(true)
-			d.SetPartial("relation_fv_rs_cons")
 			d.Partial(false)
 
 		}
@@ -721,7 +704,6 @@ func resourceAciL2outExternalEpgUpdate(d *schema.ResourceData, m interface{}) er
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_l2ext_rs_l2_inst_p_to_dom_p")
 		d.Partial(false)
 
 	}
@@ -748,7 +730,6 @@ func resourceAciL2outExternalEpgUpdate(d *schema.ResourceData, m interface{}) er
 				return err
 			}
 			d.Partial(true)
-			d.SetPartial("relation_fv_rs_prot_by")
 			d.Partial(false)
 
 		}
@@ -777,7 +758,6 @@ func resourceAciL2outExternalEpgUpdate(d *schema.ResourceData, m interface{}) er
 				return err
 			}
 			d.Partial(true)
-			d.SetPartial("relation_fv_rs_intra_epg")
 			d.Partial(false)
 
 		}

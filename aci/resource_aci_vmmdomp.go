@@ -6,8 +6,8 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciVMMDomain() *schema.Resource {
@@ -402,8 +402,6 @@ func resourceAciVMMDomainCreate(d *schema.ResourceData, m interface{}) error {
 	}
 	d.Partial(true)
 
-	d.SetPartial("name")
-
 	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
@@ -482,7 +480,6 @@ func resourceAciVMMDomainCreate(d *schema.ResourceData, m interface{}) error {
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_vmm_rs_pref_enhanced_lag_pol")
 		d.Partial(false)
 
 	}
@@ -493,7 +490,6 @@ func resourceAciVMMDomainCreate(d *schema.ResourceData, m interface{}) error {
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_infra_rs_vlan_ns")
 		d.Partial(false)
 
 	}
@@ -504,7 +500,6 @@ func resourceAciVMMDomainCreate(d *schema.ResourceData, m interface{}) error {
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_vmm_rs_dom_mcast_addr_ns")
 		d.Partial(false)
 
 	}
@@ -516,7 +511,6 @@ func resourceAciVMMDomainCreate(d *schema.ResourceData, m interface{}) error {
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_vmm_rs_default_cdp_if_pol")
 		d.Partial(false)
 
 	}
@@ -528,7 +522,6 @@ func resourceAciVMMDomainCreate(d *schema.ResourceData, m interface{}) error {
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_vmm_rs_default_lacp_lag_pol")
 		d.Partial(false)
 
 	}
@@ -539,7 +532,6 @@ func resourceAciVMMDomainCreate(d *schema.ResourceData, m interface{}) error {
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_infra_rs_vlan_ns_def")
 		d.Partial(false)
 
 	}
@@ -550,7 +542,6 @@ func resourceAciVMMDomainCreate(d *schema.ResourceData, m interface{}) error {
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_infra_rs_vip_addr_ns")
 		d.Partial(false)
 
 	}
@@ -562,7 +553,6 @@ func resourceAciVMMDomainCreate(d *schema.ResourceData, m interface{}) error {
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_vmm_rs_default_lldp_if_pol")
 		d.Partial(false)
 
 	}
@@ -574,7 +564,6 @@ func resourceAciVMMDomainCreate(d *schema.ResourceData, m interface{}) error {
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_vmm_rs_default_stp_if_pol")
 		d.Partial(false)
 
 	}
@@ -585,7 +574,6 @@ func resourceAciVMMDomainCreate(d *schema.ResourceData, m interface{}) error {
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_infra_rs_dom_vxlan_ns_def")
 		d.Partial(false)
 
 	}
@@ -597,7 +585,6 @@ func resourceAciVMMDomainCreate(d *schema.ResourceData, m interface{}) error {
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_vmm_rs_default_fw_pol")
 		d.Partial(false)
 
 	}
@@ -609,7 +596,6 @@ func resourceAciVMMDomainCreate(d *schema.ResourceData, m interface{}) error {
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_vmm_rs_default_l2_inst_pol")
 		d.Partial(false)
 
 	}
@@ -698,8 +684,6 @@ func resourceAciVMMDomainUpdate(d *schema.ResourceData, m interface{}) error {
 	}
 	d.Partial(true)
 
-	d.SetPartial("name")
-
 	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
@@ -782,7 +766,6 @@ func resourceAciVMMDomainUpdate(d *schema.ResourceData, m interface{}) error {
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_vmm_rs_pref_enhanced_lag_pol")
 		d.Partial(false)
 
 	}
@@ -797,7 +780,6 @@ func resourceAciVMMDomainUpdate(d *schema.ResourceData, m interface{}) error {
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_infra_rs_vlan_ns")
 		d.Partial(false)
 
 	}
@@ -812,7 +794,6 @@ func resourceAciVMMDomainUpdate(d *schema.ResourceData, m interface{}) error {
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_vmm_rs_dom_mcast_addr_ns")
 		d.Partial(false)
 
 	}
@@ -824,7 +805,6 @@ func resourceAciVMMDomainUpdate(d *schema.ResourceData, m interface{}) error {
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_vmm_rs_default_cdp_if_pol")
 		d.Partial(false)
 
 	}
@@ -836,7 +816,6 @@ func resourceAciVMMDomainUpdate(d *schema.ResourceData, m interface{}) error {
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_vmm_rs_default_lacp_lag_pol")
 		d.Partial(false)
 
 	}
@@ -847,7 +826,6 @@ func resourceAciVMMDomainUpdate(d *schema.ResourceData, m interface{}) error {
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_infra_rs_vlan_ns_def")
 		d.Partial(false)
 
 	}
@@ -862,7 +840,6 @@ func resourceAciVMMDomainUpdate(d *schema.ResourceData, m interface{}) error {
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_infra_rs_vip_addr_ns")
 		d.Partial(false)
 
 	}
@@ -874,7 +851,6 @@ func resourceAciVMMDomainUpdate(d *schema.ResourceData, m interface{}) error {
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_vmm_rs_default_lldp_if_pol")
 		d.Partial(false)
 
 	}
@@ -886,7 +862,6 @@ func resourceAciVMMDomainUpdate(d *schema.ResourceData, m interface{}) error {
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_vmm_rs_default_stp_if_pol")
 		d.Partial(false)
 
 	}
@@ -897,7 +872,6 @@ func resourceAciVMMDomainUpdate(d *schema.ResourceData, m interface{}) error {
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_infra_rs_dom_vxlan_ns_def")
 		d.Partial(false)
 
 	}
@@ -909,7 +883,6 @@ func resourceAciVMMDomainUpdate(d *schema.ResourceData, m interface{}) error {
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_vmm_rs_default_fw_pol")
 		d.Partial(false)
 
 	}
@@ -921,7 +894,6 @@ func resourceAciVMMDomainUpdate(d *schema.ResourceData, m interface{}) error {
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_vmm_rs_default_l2_inst_pol")
 		d.Partial(false)
 
 	}

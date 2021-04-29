@@ -6,7 +6,7 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func resourceAciTenant() *schema.Resource {
@@ -119,8 +119,6 @@ func resourceAciTenantCreate(d *schema.ResourceData, m interface{}) error {
 	}
 	d.Partial(true)
 
-	d.SetPartial("name")
-
 	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
@@ -153,7 +151,6 @@ func resourceAciTenantCreate(d *schema.ResourceData, m interface{}) error {
 				return err
 			}
 			d.Partial(true)
-			d.SetPartial("relation_fv_rs_tn_deny_rule")
 			d.Partial(false)
 		}
 	}
@@ -165,7 +162,6 @@ func resourceAciTenantCreate(d *schema.ResourceData, m interface{}) error {
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_fv_rs_tenant_mon_pol")
 		d.Partial(false)
 
 	}
@@ -203,8 +199,6 @@ func resourceAciTenantUpdate(d *schema.ResourceData, m interface{}) error {
 		return err
 	}
 	d.Partial(true)
-
-	d.SetPartial("name")
 
 	d.Partial(false)
 
@@ -254,7 +248,6 @@ func resourceAciTenantUpdate(d *schema.ResourceData, m interface{}) error {
 				return err
 			}
 			d.Partial(true)
-			d.SetPartial("relation_fv_rs_tn_deny_rule")
 			d.Partial(false)
 
 		}
@@ -268,7 +261,6 @@ func resourceAciTenantUpdate(d *schema.ResourceData, m interface{}) error {
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_fv_rs_tenant_mon_pol")
 		d.Partial(false)
 
 	}

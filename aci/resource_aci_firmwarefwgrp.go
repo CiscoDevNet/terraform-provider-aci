@@ -6,8 +6,8 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciFirmwareGroup() *schema.Resource {
@@ -129,8 +129,6 @@ func resourceAciFirmwareGroupCreate(d *schema.ResourceData, m interface{}) error
 	}
 	d.Partial(true)
 
-	d.SetPartial("name")
-
 	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
@@ -155,7 +153,6 @@ func resourceAciFirmwareGroupCreate(d *schema.ResourceData, m interface{}) error
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_firmware_rs_fwgrpp")
 		d.Partial(false)
 
 	}
@@ -197,8 +194,6 @@ func resourceAciFirmwareGroupUpdate(d *schema.ResourceData, m interface{}) error
 	}
 	d.Partial(true)
 
-	d.SetPartial("name")
-
 	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
@@ -223,7 +218,6 @@ func resourceAciFirmwareGroupUpdate(d *schema.ResourceData, m interface{}) error
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_firmware_rs_fwgrpp")
 		d.Partial(false)
 
 	}

@@ -6,8 +6,8 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciBGPAddressFamilyContextPolicy() *schema.Resource {
@@ -185,8 +185,6 @@ func resourceAciBGPAddressFamilyContextPolicyCreate(d *schema.ResourceData, m in
 	}
 	d.Partial(true)
 
-	d.SetPartial("name")
-
 	d.Partial(false)
 
 	d.SetId(bgpCtxAfPol.DistinguishedName)
@@ -242,8 +240,6 @@ func resourceAciBGPAddressFamilyContextPolicyUpdate(d *schema.ResourceData, m in
 		return err
 	}
 	d.Partial(true)
-
-	d.SetPartial("name")
 
 	d.Partial(false)
 

@@ -6,8 +6,8 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciRanges() *schema.Resource {
@@ -168,10 +168,6 @@ func resourceAciRangesCreate(d *schema.ResourceData, m interface{}) error {
 	}
 	d.Partial(true)
 
-	d.SetPartial("from")
-
-	d.SetPartial("to")
-
 	d.Partial(false)
 
 	d.SetId(fvnsEncapBlk.DistinguishedName)
@@ -223,10 +219,6 @@ func resourceAciRangesUpdate(d *schema.ResourceData, m interface{}) error {
 		return err
 	}
 	d.Partial(true)
-
-	d.SetPartial("from")
-
-	d.SetPartial("to")
 
 	d.Partial(false)
 

@@ -9,8 +9,8 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciBridgeDomain() *schema.Resource {
@@ -500,8 +500,6 @@ func resourceAciBridgeDomainCreate(d *schema.ResourceData, m interface{}) error 
 	}
 	d.Partial(true)
 
-	d.SetPartial("name")
-
 	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
@@ -580,7 +578,6 @@ func resourceAciBridgeDomainCreate(d *schema.ResourceData, m interface{}) error 
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_fv_rs_bd_to_profile")
 		d.Partial(false)
 
 	}
@@ -592,7 +589,6 @@ func resourceAciBridgeDomainCreate(d *schema.ResourceData, m interface{}) error 
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_fv_rs_mldsn")
 		d.Partial(false)
 
 	}
@@ -604,7 +600,6 @@ func resourceAciBridgeDomainCreate(d *schema.ResourceData, m interface{}) error 
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_fv_rs_abd_pol_mon_pol")
 		d.Partial(false)
 
 	}
@@ -616,7 +611,6 @@ func resourceAciBridgeDomainCreate(d *schema.ResourceData, m interface{}) error 
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_fv_rs_bd_to_nd_p")
 		d.Partial(false)
 
 	}
@@ -629,7 +623,6 @@ func resourceAciBridgeDomainCreate(d *schema.ResourceData, m interface{}) error 
 				return err
 			}
 			d.Partial(true)
-			d.SetPartial("relation_fv_rs_bd_flood_to")
 			d.Partial(false)
 		}
 	}
@@ -641,7 +634,6 @@ func resourceAciBridgeDomainCreate(d *schema.ResourceData, m interface{}) error 
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_fv_rs_bd_to_fhs")
 		d.Partial(false)
 
 	}
@@ -653,7 +645,6 @@ func resourceAciBridgeDomainCreate(d *schema.ResourceData, m interface{}) error 
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_fv_rs_bd_to_relay_p")
 		d.Partial(false)
 
 	}
@@ -665,7 +656,6 @@ func resourceAciBridgeDomainCreate(d *schema.ResourceData, m interface{}) error 
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_fv_rs_ctx")
 		d.Partial(false)
 
 	}
@@ -679,7 +669,6 @@ func resourceAciBridgeDomainCreate(d *schema.ResourceData, m interface{}) error 
 				return err
 			}
 			d.Partial(true)
-			d.SetPartial("relation_fv_rs_bd_to_netflow_monitor_pol")
 			d.Partial(false)
 		}
 
@@ -692,7 +681,6 @@ func resourceAciBridgeDomainCreate(d *schema.ResourceData, m interface{}) error 
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_fv_rs_igmpsn")
 		d.Partial(false)
 
 	}
@@ -704,7 +692,6 @@ func resourceAciBridgeDomainCreate(d *schema.ResourceData, m interface{}) error 
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_fv_rs_bd_to_ep_ret")
 		d.Partial(false)
 
 	}
@@ -718,7 +705,6 @@ func resourceAciBridgeDomainCreate(d *schema.ResourceData, m interface{}) error 
 				return err
 			}
 			d.Partial(true)
-			d.SetPartial("relation_fv_rs_bd_to_out")
 			d.Partial(false)
 		}
 	}
@@ -819,8 +805,6 @@ func resourceAciBridgeDomainUpdate(d *schema.ResourceData, m interface{}) error 
 	}
 	d.Partial(true)
 
-	d.SetPartial("name")
-
 	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
@@ -911,7 +895,6 @@ func resourceAciBridgeDomainUpdate(d *schema.ResourceData, m interface{}) error 
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_fv_rs_bd_to_profile")
 		d.Partial(false)
 
 	}
@@ -923,7 +906,6 @@ func resourceAciBridgeDomainUpdate(d *schema.ResourceData, m interface{}) error 
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_fv_rs_mldsn")
 		d.Partial(false)
 
 	}
@@ -939,7 +921,6 @@ func resourceAciBridgeDomainUpdate(d *schema.ResourceData, m interface{}) error 
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_fv_rs_abd_pol_mon_pol")
 		d.Partial(false)
 
 	}
@@ -951,7 +932,6 @@ func resourceAciBridgeDomainUpdate(d *schema.ResourceData, m interface{}) error 
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_fv_rs_bd_to_nd_p")
 		d.Partial(false)
 
 	}
@@ -976,7 +956,6 @@ func resourceAciBridgeDomainUpdate(d *schema.ResourceData, m interface{}) error 
 				return err
 			}
 			d.Partial(true)
-			d.SetPartial("relation_fv_rs_bd_flood_to")
 			d.Partial(false)
 
 		}
@@ -994,7 +973,6 @@ func resourceAciBridgeDomainUpdate(d *schema.ResourceData, m interface{}) error 
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_fv_rs_bd_to_fhs")
 		d.Partial(false)
 
 	}
@@ -1010,7 +988,6 @@ func resourceAciBridgeDomainUpdate(d *schema.ResourceData, m interface{}) error 
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_fv_rs_bd_to_relay_p")
 		d.Partial(false)
 
 	}
@@ -1026,7 +1003,6 @@ func resourceAciBridgeDomainUpdate(d *schema.ResourceData, m interface{}) error 
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_fv_rs_ctx")
 		d.Partial(false)
 
 	}
@@ -1049,7 +1025,6 @@ func resourceAciBridgeDomainUpdate(d *schema.ResourceData, m interface{}) error 
 				return err
 			}
 			d.Partial(true)
-			d.SetPartial("relation_fv_rs_bd_to_netflow_monitor_pol")
 			d.Partial(false)
 		}
 
@@ -1062,7 +1037,6 @@ func resourceAciBridgeDomainUpdate(d *schema.ResourceData, m interface{}) error 
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_fv_rs_igmpsn")
 		d.Partial(false)
 
 	}
@@ -1074,7 +1048,6 @@ func resourceAciBridgeDomainUpdate(d *schema.ResourceData, m interface{}) error 
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_fv_rs_bd_to_ep_ret")
 		d.Partial(false)
 
 	}
@@ -1101,7 +1074,6 @@ func resourceAciBridgeDomainUpdate(d *schema.ResourceData, m interface{}) error 
 				return err
 			}
 			d.Partial(true)
-			d.SetPartial("relation_fv_rs_bd_to_out")
 			d.Partial(false)
 
 		}

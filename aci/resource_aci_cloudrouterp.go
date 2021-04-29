@@ -6,8 +6,8 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciCloudVpnGateway() *schema.Resource {
@@ -168,8 +168,6 @@ func resourceAciCloudVpnGatewayCreate(d *schema.ResourceData, m interface{}) err
 	}
 	d.Partial(true)
 
-	d.SetPartial("name")
-
 	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
@@ -203,7 +201,6 @@ func resourceAciCloudVpnGatewayCreate(d *schema.ResourceData, m interface{}) err
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_cloud_rs_to_vpn_gw_pol")
 		d.Partial(false)
 
 	}
@@ -215,7 +212,6 @@ func resourceAciCloudVpnGatewayCreate(d *schema.ResourceData, m interface{}) err
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_cloud_rs_to_direct_conn_pol")
 		d.Partial(false)
 
 	}
@@ -226,7 +222,6 @@ func resourceAciCloudVpnGatewayCreate(d *schema.ResourceData, m interface{}) err
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_cloud_rs_to_host_router_pol")
 		d.Partial(false)
 
 	}
@@ -273,8 +268,6 @@ func resourceAciCloudVpnGatewayUpdate(d *schema.ResourceData, m interface{}) err
 	}
 	d.Partial(true)
 
-	d.SetPartial("name")
-
 	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
@@ -301,7 +294,6 @@ func resourceAciCloudVpnGatewayUpdate(d *schema.ResourceData, m interface{}) err
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_cloud_rs_to_vpn_gw_pol")
 		d.Partial(false)
 
 	}
@@ -312,7 +304,6 @@ func resourceAciCloudVpnGatewayUpdate(d *schema.ResourceData, m interface{}) err
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_cloud_rs_to_direct_conn_pol")
 		d.Partial(false)
 
 	}
@@ -323,7 +314,6 @@ func resourceAciCloudVpnGatewayUpdate(d *schema.ResourceData, m interface{}) err
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_cloud_rs_to_host_router_pol")
 		d.Partial(false)
 
 	}

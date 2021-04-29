@@ -8,8 +8,8 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciVirtualLogicalInterfaceProfile() *schema.Resource {
@@ -293,10 +293,6 @@ func resourceAciVirtualLogicalInterfaceProfileCreate(d *schema.ResourceData, m i
 	}
 	d.Partial(true)
 
-	d.SetPartial("node_dn")
-
-	d.SetPartial("encap")
-
 	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
@@ -324,7 +320,6 @@ func resourceAciVirtualLogicalInterfaceProfileCreate(d *schema.ResourceData, m i
 				return err
 			}
 			d.Partial(true)
-			d.SetPartial("relation_l3ext_rs_dyn_path_att")
 			d.Partial(false)
 		}
 	}
@@ -401,10 +396,6 @@ func resourceAciVirtualLogicalInterfaceProfileUpdate(d *schema.ResourceData, m i
 	}
 	d.Partial(true)
 
-	d.SetPartial("node_dn")
-
-	d.SetPartial("encap")
-
 	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
@@ -448,7 +439,6 @@ func resourceAciVirtualLogicalInterfaceProfileUpdate(d *schema.ResourceData, m i
 				return err
 			}
 			d.Partial(true)
-			d.SetPartial("relation_l3ext_rs_dyn_path_att")
 			d.Partial(false)
 
 		}

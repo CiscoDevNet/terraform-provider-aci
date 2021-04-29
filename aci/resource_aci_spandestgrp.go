@@ -6,7 +6,7 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func resourceAciSPANDestinationGroup() *schema.Resource {
@@ -123,8 +123,6 @@ func resourceAciSPANDestinationGroupCreate(d *schema.ResourceData, m interface{}
 	}
 	d.Partial(true)
 
-	d.SetPartial("name")
-
 	d.Partial(false)
 
 	d.SetId(spanDestGrp.DistinguishedName)
@@ -162,8 +160,6 @@ func resourceAciSPANDestinationGroupUpdate(d *schema.ResourceData, m interface{}
 		return err
 	}
 	d.Partial(true)
-
-	d.SetPartial("name")
 
 	d.Partial(false)
 

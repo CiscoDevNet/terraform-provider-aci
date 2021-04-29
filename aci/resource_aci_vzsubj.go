@@ -8,8 +8,8 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciContractSubject() *schema.Resource {
@@ -243,8 +243,6 @@ func resourceAciContractSubjectCreate(d *schema.ResourceData, m interface{}) err
 	}
 	d.Partial(true)
 
-	d.SetPartial("name")
-
 	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
@@ -281,7 +279,6 @@ func resourceAciContractSubjectCreate(d *schema.ResourceData, m interface{}) err
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_vz_rs_subj_graph_att")
 		d.Partial(false)
 
 	}
@@ -292,7 +289,6 @@ func resourceAciContractSubjectCreate(d *schema.ResourceData, m interface{}) err
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_vz_rs_sdwan_pol")
 		d.Partial(false)
 
 	}
@@ -306,7 +302,6 @@ func resourceAciContractSubjectCreate(d *schema.ResourceData, m interface{}) err
 				return err
 			}
 			d.Partial(true)
-			d.SetPartial("relation_vz_rs_subj_filt_att")
 			d.Partial(false)
 		}
 	}
@@ -362,8 +357,6 @@ func resourceAciContractSubjectUpdate(d *schema.ResourceData, m interface{}) err
 	}
 	d.Partial(true)
 
-	d.SetPartial("name")
-
 	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
@@ -408,7 +401,6 @@ func resourceAciContractSubjectUpdate(d *schema.ResourceData, m interface{}) err
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_vz_rs_subj_graph_att")
 		d.Partial(false)
 
 	}
@@ -423,7 +415,6 @@ func resourceAciContractSubjectUpdate(d *schema.ResourceData, m interface{}) err
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_vz_rs_sdwan_pol")
 		d.Partial(false)
 
 	}
@@ -450,7 +441,6 @@ func resourceAciContractSubjectUpdate(d *schema.ResourceData, m interface{}) err
 				return err
 			}
 			d.Partial(true)
-			d.SetPartial("relation_vz_rs_subj_filt_att")
 			d.Partial(false)
 
 		}

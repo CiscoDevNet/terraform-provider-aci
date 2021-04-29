@@ -7,8 +7,8 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciLeafProfile() *schema.Resource {
@@ -336,8 +336,6 @@ func resourceAciLeafProfileCreate(d *schema.ResourceData, m interface{}) error {
 
 	d.Partial(true)
 
-	d.SetPartial("name")
-
 	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
@@ -372,7 +370,6 @@ func resourceAciLeafProfileCreate(d *schema.ResourceData, m interface{}) error {
 				return err
 			}
 			d.Partial(true)
-			d.SetPartial("relation_infra_rs_acc_card_p")
 			d.Partial(false)
 		}
 	}
@@ -385,7 +382,6 @@ func resourceAciLeafProfileCreate(d *schema.ResourceData, m interface{}) error {
 				return err
 			}
 			d.Partial(true)
-			d.SetPartial("relation_infra_rs_acc_port_p")
 			d.Partial(false)
 		}
 	}
@@ -491,8 +487,6 @@ func resourceAciLeafProfileUpdate(d *schema.ResourceData, m interface{}) error {
 
 	d.Partial(true)
 
-	d.SetPartial("name")
-
 	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
@@ -547,7 +541,6 @@ func resourceAciLeafProfileUpdate(d *schema.ResourceData, m interface{}) error {
 				return err
 			}
 			d.Partial(true)
-			d.SetPartial("relation_infra_rs_acc_card_p")
 			d.Partial(false)
 
 		}
@@ -574,7 +567,6 @@ func resourceAciLeafProfileUpdate(d *schema.ResourceData, m interface{}) error {
 				return err
 			}
 			d.Partial(true)
-			d.SetPartial("relation_infra_rs_acc_port_p")
 			d.Partial(false)
 
 		}

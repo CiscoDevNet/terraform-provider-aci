@@ -4,11 +4,10 @@ import (
 	"fmt"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
-func Provider() terraform.ResourceProvider {
+func Provider() *schema.Provider {
 	return &schema.Provider{
 		Schema: map[string]*schema.Schema{
 			"username": &schema.Schema{
@@ -153,7 +152,6 @@ func Provider() terraform.ResourceProvider {
 			"aci_spine_interface_profile":                  resourceAciSpineInterfaceProfile(),
 			"aci_spine_port_policy_group":                  resourceAciSpineAccessPortPolicyGroup(),
 			"aci_fabric_if_pol":                            resourceAciLinkLevelPolicy(),
-			"aci_stp_if_pol":                               resourceAciSpanningTreeInterfacePolicy(),
 			"aci_aaa_domain":                               resourceAciSecurityDomain(),
 			"aci_l4_l7_service_graph_template":             resourceAciL4L7ServiceGraphTemplate(),
 			"aci_logical_device_context":                   resourceAciLogicalDeviceContext(),
@@ -290,7 +288,6 @@ func Provider() terraform.ResourceProvider {
 			"aci_spine_port_policy_group":                  dataSourceAciSpineAccessPortPolicyGroup(),
 			"aci_fabric_path_ep":                           dataSourceAciFabricPathEndpoint(),
 			"aci_fabric_if_pol":                            dataSourceAciLinkLevelPolicy(),
-			"aci_stp_if_pol":                               dataSourceAciSpanningTreeInterfacePolicy(),
 			"aci_aaa_domain":                               dataSourceAciSecurityDomain(),
 			"aci_client_end_point":                         dataSourceAciClientEndPoint(),
 			"aci_l4_l7_service_graph_template":             dataSourceAciL4L7ServiceGraphTemplate(),

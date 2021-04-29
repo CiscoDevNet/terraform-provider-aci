@@ -6,8 +6,8 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciLogicalInterfaceProfile() *schema.Resource {
@@ -207,8 +207,6 @@ func resourceAciLogicalInterfaceProfileCreate(d *schema.ResourceData, m interfac
 	}
 	d.Partial(true)
 
-	d.SetPartial("name")
-
 	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
@@ -255,7 +253,6 @@ func resourceAciLogicalInterfaceProfileCreate(d *schema.ResourceData, m interfac
 				return err
 			}
 			d.Partial(true)
-			d.SetPartial("relation_l3ext_rs_l_if_p_to_netflow_monitor_pol")
 			d.Partial(false)
 		}
 
@@ -268,7 +265,6 @@ func resourceAciLogicalInterfaceProfileCreate(d *schema.ResourceData, m interfac
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_l3ext_rs_egress_qos_dpp_pol")
 		d.Partial(false)
 
 	}
@@ -280,7 +276,6 @@ func resourceAciLogicalInterfaceProfileCreate(d *schema.ResourceData, m interfac
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_l3ext_rs_ingress_qos_dpp_pol")
 		d.Partial(false)
 
 	}
@@ -292,7 +287,6 @@ func resourceAciLogicalInterfaceProfileCreate(d *schema.ResourceData, m interfac
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_l3ext_rs_l_if_p_cust_qos_pol")
 		d.Partial(false)
 
 	}
@@ -304,7 +298,6 @@ func resourceAciLogicalInterfaceProfileCreate(d *schema.ResourceData, m interfac
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_l3ext_rs_arp_if_pol")
 		d.Partial(false)
 
 	}
@@ -316,7 +309,6 @@ func resourceAciLogicalInterfaceProfileCreate(d *schema.ResourceData, m interfac
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_l3ext_rs_nd_if_pol")
 		d.Partial(false)
 
 	}
@@ -362,8 +354,6 @@ func resourceAciLogicalInterfaceProfileUpdate(d *schema.ResourceData, m interfac
 		return err
 	}
 	d.Partial(true)
-
-	d.SetPartial("name")
 
 	d.Partial(false)
 
@@ -420,7 +410,6 @@ func resourceAciLogicalInterfaceProfileUpdate(d *schema.ResourceData, m interfac
 				return err
 			}
 			d.Partial(true)
-			d.SetPartial("relation_l3ext_rs_l_if_p_to_netflow_monitor_pol")
 			d.Partial(false)
 		}
 
@@ -434,7 +423,6 @@ func resourceAciLogicalInterfaceProfileUpdate(d *schema.ResourceData, m interfac
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_l3ext_rs_egress_qos_dpp_pol")
 		d.Partial(false)
 
 	}
@@ -446,7 +434,6 @@ func resourceAciLogicalInterfaceProfileUpdate(d *schema.ResourceData, m interfac
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_l3ext_rs_ingress_qos_dpp_pol")
 		d.Partial(false)
 
 	}
@@ -458,7 +445,6 @@ func resourceAciLogicalInterfaceProfileUpdate(d *schema.ResourceData, m interfac
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_l3ext_rs_l_if_p_cust_qos_pol")
 		d.Partial(false)
 
 	}
@@ -470,7 +456,6 @@ func resourceAciLogicalInterfaceProfileUpdate(d *schema.ResourceData, m interfac
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_l3ext_rs_arp_if_pol")
 		d.Partial(false)
 
 	}
@@ -482,7 +467,6 @@ func resourceAciLogicalInterfaceProfileUpdate(d *schema.ResourceData, m interfac
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_l3ext_rs_nd_if_pol")
 		d.Partial(false)
 
 	}

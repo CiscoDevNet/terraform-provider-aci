@@ -6,7 +6,7 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func resourceAciAttachableAccessEntityProfile() *schema.Resource {
@@ -114,8 +114,6 @@ func resourceAciAttachableAccessEntityProfileCreate(d *schema.ResourceData, m in
 	}
 	d.Partial(true)
 
-	d.SetPartial("name")
-
 	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
@@ -143,7 +141,6 @@ func resourceAciAttachableAccessEntityProfileCreate(d *schema.ResourceData, m in
 				return err
 			}
 			d.Partial(true)
-			d.SetPartial("relation_infra_rs_dom_p")
 			d.Partial(false)
 		}
 	}
@@ -181,8 +178,6 @@ func resourceAciAttachableAccessEntityProfileUpdate(d *schema.ResourceData, m in
 		return err
 	}
 	d.Partial(true)
-
-	d.SetPartial("name")
 
 	d.Partial(false)
 
@@ -227,7 +222,6 @@ func resourceAciAttachableAccessEntityProfileUpdate(d *schema.ResourceData, m in
 				return err
 			}
 			d.Partial(true)
-			d.SetPartial("relation_infra_rs_dom_p")
 			d.Partial(false)
 
 		}

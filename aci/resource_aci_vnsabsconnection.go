@@ -8,8 +8,8 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciConnection() *schema.Resource {
@@ -205,8 +205,6 @@ func resourceAciConnectionCreate(d *schema.ResourceData, m interface{}) error {
 	}
 	d.Partial(true)
 
-	d.SetPartial("name")
-
 	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
@@ -240,7 +238,6 @@ func resourceAciConnectionCreate(d *schema.ResourceData, m interface{}) error {
 				return err
 			}
 			d.Partial(true)
-			d.SetPartial("relation_vns_rs_abs_copy_connection")
 			d.Partial(false)
 		}
 	}
@@ -253,7 +250,6 @@ func resourceAciConnectionCreate(d *schema.ResourceData, m interface{}) error {
 				return err
 			}
 			d.Partial(true)
-			d.SetPartial("relation_vns_rs_abs_connection_conns")
 			d.Partial(false)
 		}
 	}
@@ -309,8 +305,6 @@ func resourceAciConnectionUpdate(d *schema.ResourceData, m interface{}) error {
 	}
 	d.Partial(true)
 
-	d.SetPartial("name")
-
 	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
@@ -365,7 +359,6 @@ func resourceAciConnectionUpdate(d *schema.ResourceData, m interface{}) error {
 				return err
 			}
 			d.Partial(true)
-			d.SetPartial("relation_vns_rs_abs_copy_connection")
 			d.Partial(false)
 
 		}
@@ -392,7 +385,6 @@ func resourceAciConnectionUpdate(d *schema.ResourceData, m interface{}) error {
 				return err
 			}
 			d.Partial(true)
-			d.SetPartial("relation_vns_rs_abs_connection_conns")
 			d.Partial(false)
 
 		}

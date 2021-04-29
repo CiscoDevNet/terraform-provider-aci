@@ -6,8 +6,8 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciFunctionNode() *schema.Resource {
@@ -284,8 +284,6 @@ func resourceAciFunctionNodeCreate(d *schema.ResourceData, m interface{}) error 
 	}
 	d.Partial(true)
 
-	d.SetPartial("name")
-
 	d.Partial(false)
 
 	vnsAbsFuncConnAttr := models.FunctionConnectorAttributes{}
@@ -343,7 +341,6 @@ func resourceAciFunctionNodeCreate(d *schema.ResourceData, m interface{}) error 
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_vns_rs_node_to_abs_func_prof")
 		d.Partial(false)
 
 	}
@@ -354,7 +351,6 @@ func resourceAciFunctionNodeCreate(d *schema.ResourceData, m interface{}) error 
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_vns_rs_node_to_l_dev")
 		d.Partial(false)
 
 	}
@@ -365,7 +361,6 @@ func resourceAciFunctionNodeCreate(d *schema.ResourceData, m interface{}) error 
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_vns_rs_node_to_m_func")
 		d.Partial(false)
 
 	}
@@ -376,7 +371,6 @@ func resourceAciFunctionNodeCreate(d *schema.ResourceData, m interface{}) error 
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_vns_rs_default_scope_to_term")
 		d.Partial(false)
 
 	}
@@ -387,7 +381,6 @@ func resourceAciFunctionNodeCreate(d *schema.ResourceData, m interface{}) error 
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_vns_rs_node_to_cloud_l_dev")
 		d.Partial(false)
 
 	}
@@ -449,8 +442,6 @@ func resourceAciFunctionNodeUpdate(d *schema.ResourceData, m interface{}) error 
 	}
 	d.Partial(true)
 
-	d.SetPartial("name")
-
 	d.Partial(false)
 
 	if d.HasChange("conn_consumer_dn") || d.HasChange("conn_provider_dn") {
@@ -503,7 +494,6 @@ func resourceAciFunctionNodeUpdate(d *schema.ResourceData, m interface{}) error 
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_vns_rs_node_to_abs_func_prof")
 		d.Partial(false)
 
 	}
@@ -518,7 +508,6 @@ func resourceAciFunctionNodeUpdate(d *schema.ResourceData, m interface{}) error 
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_vns_rs_node_to_l_dev")
 		d.Partial(false)
 
 	}
@@ -533,7 +522,6 @@ func resourceAciFunctionNodeUpdate(d *schema.ResourceData, m interface{}) error 
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_vns_rs_node_to_m_func")
 		d.Partial(false)
 
 	}
@@ -548,7 +536,6 @@ func resourceAciFunctionNodeUpdate(d *schema.ResourceData, m interface{}) error 
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_vns_rs_default_scope_to_term")
 		d.Partial(false)
 
 	}
@@ -563,7 +550,6 @@ func resourceAciFunctionNodeUpdate(d *schema.ResourceData, m interface{}) error 
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_vns_rs_node_to_cloud_l_dev")
 		d.Partial(false)
 
 	}

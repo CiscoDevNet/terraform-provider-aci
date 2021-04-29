@@ -6,7 +6,7 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func resourceAciVPCExplicitProtectionGroup() *schema.Resource {
@@ -145,8 +145,6 @@ func resourceAciVPCExplicitProtectionGroupCreate(d *schema.ResourceData, m inter
 	}
 	d.Partial(true)
 
-	d.SetPartial("name")
-
 	d.Partial(false)
 
 	d.SetId(fabricExplicitGEp.DistinguishedName)
@@ -188,8 +186,6 @@ func resourceAciVPCExplicitProtectionGroupUpdate(d *schema.ResourceData, m inter
 		return err
 	}
 	d.Partial(true)
-
-	d.SetPartial("name")
 
 	d.Partial(false)
 
