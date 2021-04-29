@@ -61,7 +61,7 @@ func testAccCheckAciL3outVPCMemberConfig_basic(description string) string {
 	return fmt.Sprintf(`
 
 	resource "aci_l3out_vpc_member" "fool3out_vpc_member" {
-		leaf_port_dn  = "uni/tn-Crest-T/out-L3_out/lnodep-demo_node/lifp-demo_int_prof/rspathL3OutAtt-[topology/pod-1/protpaths-1003-1004/pathep-[Crest-VPC-polGrp]]"
+		leaf_port_dn  = "${aci_l3out_path_attachment.example.id}"
 		description = "%s"
 		side  = "A"
   		addr  = "10.0.0.1/16"
