@@ -67,7 +67,6 @@ func testAccCheckAciBFDInterfaceProfileConfig_basic(description string) string {
 		key                          = "example"
 		key_id                       = "25"
 		interface_profile_type       = "sha1"
-		userdom                      = ":all:"
 	}
 	`, description)
 }
@@ -137,10 +136,6 @@ func testAccCheckAciBFDInterfaceProfileAttributes(description string, interface_
 
 		if "sha1" != interface_profile.InterfaceProfileType {
 			return fmt.Errorf("Bad interface_profile interface_profile_type %s", interface_profile.InterfaceProfileType)
-		}
-
-		if ":all:" != interface_profile.Userdom {
-			return fmt.Errorf("Bad interface_profile userdom %s", interface_profile.Userdom)
 		}
 
 		return nil

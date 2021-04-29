@@ -152,12 +152,6 @@ func resourceAciVirtualLogicalInterfaceProfile() *schema.Resource {
 				}, false),
 			},
 
-			"userdom": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
 			"relation_l3ext_rs_dyn_path_att": &schema.Schema{
 				Type:     schema.TypeSet,
 				Elem:     &schema.Schema{Type: schema.TypeString},
@@ -207,7 +201,6 @@ func setVirtualLogicalInterfaceProfileAttributes(l3extVirtualLIfP *models.Virtua
 	d.Set("mode", l3extVirtualLIfPMap["mode"])
 	d.Set("mtu", l3extVirtualLIfPMap["mtu"])
 	d.Set("target_dscp", l3extVirtualLIfPMap["targetDscp"])
-	d.Set("userdom", l3extVirtualLIfPMap["userdom"])
 
 	return d
 }
@@ -281,9 +274,6 @@ func resourceAciVirtualLogicalInterfaceProfileCreate(d *schema.ResourceData, m i
 	}
 	if TargetDscp, ok := d.GetOk("target_dscp"); ok {
 		l3extVirtualLIfPAttr.TargetDscp = TargetDscp.(string)
-	}
-	if Userdom, ok := d.GetOk("userdom"); ok {
-		l3extVirtualLIfPAttr.Userdom = Userdom.(string)
 	}
 	l3extVirtualLIfP := models.NewVirtualLogicalInterfaceProfile(fmt.Sprintf("vlifp-[%s]-[%s]", nodeDn, encap), LogicalInterfaceProfileDn, desc, l3extVirtualLIfPAttr)
 
@@ -386,9 +376,6 @@ func resourceAciVirtualLogicalInterfaceProfileUpdate(d *schema.ResourceData, m i
 	}
 	if TargetDscp, ok := d.GetOk("target_dscp"); ok {
 		l3extVirtualLIfPAttr.TargetDscp = TargetDscp.(string)
-	}
-	if Userdom, ok := d.GetOk("userdom"); ok {
-		l3extVirtualLIfPAttr.Userdom = Userdom.(string)
 	}
 	l3extVirtualLIfP := models.NewVirtualLogicalInterfaceProfile(fmt.Sprintf("vlifp-[%s]-[%s]", nodeDn, encap), LogicalInterfaceProfileDn, desc, l3extVirtualLIfPAttr)
 

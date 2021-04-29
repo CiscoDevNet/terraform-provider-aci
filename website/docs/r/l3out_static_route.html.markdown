@@ -22,7 +22,8 @@ resource "aci_l3out_static_route" "example" {
   name_alias  = "example"
   pref  = "example"
   rt_ctrl = "bfd"
-
+  description = "from terraform"
+  
 }
 ```
 

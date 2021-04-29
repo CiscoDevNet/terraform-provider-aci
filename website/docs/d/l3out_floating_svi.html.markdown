@@ -41,4 +41,3 @@ data "aci_l3out_floating_svi" "check" {
 - `mode` - BGP domain mode for L3out floating SVI object.
 - `mtu` - Administrative MTU port on the aggregated interface for L3out floating SVI object.
 - `target_dscp` - Target DSCP for L3out floating SVI object.
-- `userdom` - Userdom for L3out floating SVI object.

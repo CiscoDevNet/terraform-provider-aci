@@ -58,12 +58,6 @@ func resourceAciBFDInterfaceProfile() *schema.Resource {
 				}, false),
 			},
 
-			"userdom": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
 			"relation_bfd_rs_if_pol": &schema.Schema{
 				Type: schema.TypeString,
 
@@ -102,7 +96,6 @@ func setBFDInterfaceProfileAttributes(bfdIfP *models.BFDInterfaceProfile, d *sch
 	d.Set("key_id", bfdIfPMap["keyId"])
 	d.Set("name_alias", bfdIfPMap["nameAlias"])
 	d.Set("interface_profile_type", bfdIfPMap["type"])
-	d.Set("userdom", bfdIfPMap["userdom"])
 
 	return d
 }
@@ -148,9 +141,6 @@ func resourceAciBFDInterfaceProfileCreate(d *schema.ResourceData, m interface{})
 	}
 	if InterfaceProfile_type, ok := d.GetOk("interface_profile_type"); ok {
 		bfdIfPAttr.InterfaceProfileType = InterfaceProfile_type.(string)
-	}
-	if Userdom, ok := d.GetOk("userdom"); ok {
-		bfdIfPAttr.Userdom = Userdom.(string)
 	}
 	bfdIfP := models.NewBFDInterfaceProfile(fmt.Sprintf("bfdIfP"), LogicalInterfaceProfileDn, desc, bfdIfPAttr)
 
@@ -219,9 +209,6 @@ func resourceAciBFDInterfaceProfileUpdate(d *schema.ResourceData, m interface{})
 	}
 	if InterfaceProfile_type, ok := d.GetOk("interface_profile_type"); ok {
 		bfdIfPAttr.InterfaceProfileType = InterfaceProfile_type.(string)
-	}
-	if Userdom, ok := d.GetOk("userdom"); ok {
-		bfdIfPAttr.Userdom = Userdom.(string)
 	}
 	bfdIfP := models.NewBFDInterfaceProfile(fmt.Sprintf("bfdIfP"), LogicalInterfaceProfileDn, desc, bfdIfPAttr)
 

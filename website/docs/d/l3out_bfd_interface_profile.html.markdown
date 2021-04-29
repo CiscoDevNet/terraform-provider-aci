@@ -30,4 +30,3 @@ data "aci_l3out_bfd_interface_profile" "check" {
 - `key_id` - Authentication key id for L3out BFD interface profile object.
 - `name_alias` - Name alias for L3out BFD interface profile object.
 - `interface_profile_type` - Component type for L3out BFD interface profile object.
-- `userdom` - Userdom for L3out BFD interface profile object.
