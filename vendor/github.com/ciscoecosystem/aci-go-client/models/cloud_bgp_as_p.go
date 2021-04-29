@@ -1,6 +1,5 @@
 package models
 
-
 import (
 	"fmt"
 	"strconv"
@@ -12,26 +11,19 @@ const CloudbgpaspClassName = "cloudBgpAsP"
 
 type AutonomousSystemProfile struct {
 	BaseAttributes
-    AutonomousSystemProfileAttributes 
+	AutonomousSystemProfileAttributes
 }
-  
+
 type AutonomousSystemProfileAttributes struct {
-	
-    
-	Annotation       string `json:",omitempty"`
-	
-    
-	Asn       string `json:",omitempty"`
-	
-    
-	NameAlias       string `json:",omitempty"`
-	
-    
+	Annotation string `json:",omitempty"`
+
+	Asn string `json:",omitempty"`
+
+	NameAlias string `json:",omitempty"`
 }
-   
 
 func NewAutonomousSystemProfile(cloudBgpAsPRn, parentDn, description string, cloudBgpAsPattr AutonomousSystemProfileAttributes) *AutonomousSystemProfile {
-	dn := fmt.Sprintf("%s/%s", parentDn, cloudBgpAsPRn)  
+	dn := fmt.Sprintf("%s/%s", parentDn, cloudBgpAsPRn)
 	return &AutonomousSystemProfile{
 		BaseAttributes: BaseAttributes{
 			DistinguishedName: dn,
@@ -40,9 +32,8 @@ func NewAutonomousSystemProfile(cloudBgpAsPRn, parentDn, description string, clo
 			ClassName:         CloudbgpaspClassName,
 			Rn:                cloudBgpAsPRn,
 		},
-        
+
 		AutonomousSystemProfileAttributes: cloudBgpAsPattr,
-         
 	}
 }
 
@@ -52,18 +43,11 @@ func (cloudBgpAsP *AutonomousSystemProfile) ToMap() (map[string]string, error) {
 		return nil, err
 	}
 
-	
-    
-	A(cloudBgpAsPMap, "annotation",cloudBgpAsP.Annotation)
-	
-    
-	A(cloudBgpAsPMap, "asn",cloudBgpAsP.Asn)
-	
-    
-	A(cloudBgpAsPMap, "nameAlias",cloudBgpAsP.NameAlias)
-	
-    
-	
+	A(cloudBgpAsPMap, "annotation", cloudBgpAsP.Annotation)
+
+	A(cloudBgpAsPMap, "asn", cloudBgpAsP.Asn)
+
+	A(cloudBgpAsPMap, "nameAlias", cloudBgpAsP.NameAlias)
 
 	return cloudBgpAsPMap, err
 }
@@ -79,21 +63,15 @@ func AutonomousSystemProfileFromContainerList(cont *container.Container, index i
 			ClassName:         CloudbgpaspClassName,
 			Rn:                G(AutonomousSystemProfileCont, "rn"),
 		},
-        
+
 		AutonomousSystemProfileAttributes{
-		
-        
-	        Annotation : G(AutonomousSystemProfileCont, "annotation"),
-		
-        
-	        Asn : G(AutonomousSystemProfileCont, "asn"),
-		
-        
-	        NameAlias : G(AutonomousSystemProfileCont, "nameAlias"),
-		
-        		
-        },
-        
+
+			Annotation: G(AutonomousSystemProfileCont, "annotation"),
+
+			Asn: G(AutonomousSystemProfileCont, "asn"),
+
+			NameAlias: G(AutonomousSystemProfileCont, "nameAlias"),
+		},
 	}
 }
 

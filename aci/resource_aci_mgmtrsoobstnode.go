@@ -7,8 +7,8 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciMgmtStaticNode() *schema.Resource {
@@ -226,8 +226,6 @@ func resourceAciMgmtStaticNodeCreate(d *schema.ResourceData, m interface{}) erro
 		}
 		d.Partial(true)
 
-		d.SetPartial("t_dn")
-
 		d.Partial(false)
 
 		d.SetId(mgmtRsInBStNode.DistinguishedName)
@@ -260,8 +258,6 @@ func resourceAciMgmtStaticNodeCreate(d *schema.ResourceData, m interface{}) erro
 			return err
 		}
 		d.Partial(true)
-
-		d.SetPartial("t_dn")
 
 		d.Partial(false)
 
@@ -315,8 +311,6 @@ func resourceAciMgmtStaticNodeUpdate(d *schema.ResourceData, m interface{}) erro
 		}
 		d.Partial(true)
 
-		d.SetPartial("t_dn")
-
 		d.Partial(false)
 
 		d.SetId(mgmtRsInBStNode.DistinguishedName)
@@ -348,8 +342,6 @@ func resourceAciMgmtStaticNodeUpdate(d *schema.ResourceData, m interface{}) erro
 			return err
 		}
 		d.Partial(true)
-
-		d.SetPartial("t_dn")
 
 		d.Partial(false)
 

@@ -6,8 +6,8 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciLogicalNodeProfile() *schema.Resource {
@@ -209,8 +209,6 @@ func resourceAciLogicalNodeProfileCreate(d *schema.ResourceData, m interface{}) 
 	}
 	d.Partial(true)
 
-	d.SetPartial("name")
-
 	d.Partial(false)
 
 	if relationTol3extRsNodeL3OutAtt, ok := d.GetOk("relation_l3ext_rs_node_l3_out_att"); ok {
@@ -222,7 +220,6 @@ func resourceAciLogicalNodeProfileCreate(d *schema.ResourceData, m interface{}) 
 				return err
 			}
 			d.Partial(true)
-			d.SetPartial("relation_l3ext_rs_node_l3_out_att")
 			d.Partial(false)
 		}
 	}
@@ -272,8 +269,6 @@ func resourceAciLogicalNodeProfileUpdate(d *schema.ResourceData, m interface{}) 
 	}
 	d.Partial(true)
 
-	d.SetPartial("name")
-
 	d.Partial(false)
 
 	if d.HasChange("relation_l3ext_rs_node_l3_out_att") {
@@ -297,7 +292,6 @@ func resourceAciLogicalNodeProfileUpdate(d *schema.ResourceData, m interface{}) 
 				return err
 			}
 			d.Partial(true)
-			d.SetPartial("relation_l3ext_rs_node_l3_out_att")
 			d.Partial(false)
 
 		}

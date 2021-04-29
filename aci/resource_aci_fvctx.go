@@ -6,8 +6,8 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciVRF() *schema.Resource {
@@ -276,8 +276,6 @@ func resourceAciVRFCreate(d *schema.ResourceData, m interface{}) error {
 	}
 	d.Partial(true)
 
-	d.SetPartial("name")
-
 	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
@@ -334,7 +332,6 @@ func resourceAciVRFCreate(d *schema.ResourceData, m interface{}) error {
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_fv_rs_ospf_ctx_pol")
 		d.Partial(false)
 
 	}
@@ -346,7 +343,6 @@ func resourceAciVRFCreate(d *schema.ResourceData, m interface{}) error {
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_fv_rs_vrf_validation_pol")
 		d.Partial(false)
 
 	}
@@ -359,7 +355,6 @@ func resourceAciVRFCreate(d *schema.ResourceData, m interface{}) error {
 				return err
 			}
 			d.Partial(true)
-			d.SetPartial("relation_fv_rs_ctx_mcast_to")
 			d.Partial(false)
 		}
 	}
@@ -373,7 +368,6 @@ func resourceAciVRFCreate(d *schema.ResourceData, m interface{}) error {
 				return err
 			}
 			d.Partial(true)
-			d.SetPartial("relation_fv_rs_ctx_to_eigrp_ctx_af_pol")
 			d.Partial(false)
 		}
 
@@ -388,7 +382,6 @@ func resourceAciVRFCreate(d *schema.ResourceData, m interface{}) error {
 				return err
 			}
 			d.Partial(true)
-			d.SetPartial("relation_fv_rs_ctx_to_ospf_ctx_pol")
 			d.Partial(false)
 		}
 
@@ -401,7 +394,6 @@ func resourceAciVRFCreate(d *schema.ResourceData, m interface{}) error {
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_fv_rs_ctx_to_ep_ret")
 		d.Partial(false)
 
 	}
@@ -413,7 +405,6 @@ func resourceAciVRFCreate(d *schema.ResourceData, m interface{}) error {
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_fv_rs_bgp_ctx_pol")
 		d.Partial(false)
 
 	}
@@ -425,7 +416,6 @@ func resourceAciVRFCreate(d *schema.ResourceData, m interface{}) error {
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_fv_rs_ctx_mon_pol")
 		d.Partial(false)
 
 	}
@@ -437,7 +427,6 @@ func resourceAciVRFCreate(d *schema.ResourceData, m interface{}) error {
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_fv_rs_ctx_to_ext_route_tag_pol")
 		d.Partial(false)
 
 	}
@@ -451,7 +440,6 @@ func resourceAciVRFCreate(d *schema.ResourceData, m interface{}) error {
 				return err
 			}
 			d.Partial(true)
-			d.SetPartial("relation_fv_rs_ctx_to_bgp_ctx_af_pol")
 			d.Partial(false)
 		}
 
@@ -507,8 +495,6 @@ func resourceAciVRFUpdate(d *schema.ResourceData, m interface{}) error {
 		return err
 	}
 	d.Partial(true)
-
-	d.SetPartial("name")
 
 	d.Partial(false)
 
@@ -570,7 +556,6 @@ func resourceAciVRFUpdate(d *schema.ResourceData, m interface{}) error {
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_fv_rs_ospf_ctx_pol")
 		d.Partial(false)
 
 	}
@@ -582,7 +567,6 @@ func resourceAciVRFUpdate(d *schema.ResourceData, m interface{}) error {
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_fv_rs_vrf_validation_pol")
 		d.Partial(false)
 
 	}
@@ -598,7 +582,6 @@ func resourceAciVRFUpdate(d *schema.ResourceData, m interface{}) error {
 				return err
 			}
 			d.Partial(true)
-			d.SetPartial("relation_fv_rs_ctx_mcast_to")
 			d.Partial(false)
 
 		}
@@ -623,7 +606,6 @@ func resourceAciVRFUpdate(d *schema.ResourceData, m interface{}) error {
 				return err
 			}
 			d.Partial(true)
-			d.SetPartial("relation_fv_rs_ctx_to_eigrp_ctx_af_pol")
 			d.Partial(false)
 		}
 
@@ -647,7 +629,6 @@ func resourceAciVRFUpdate(d *schema.ResourceData, m interface{}) error {
 				return err
 			}
 			d.Partial(true)
-			d.SetPartial("relation_fv_rs_ctx_to_ospf_ctx_pol")
 			d.Partial(false)
 		}
 
@@ -660,7 +641,6 @@ func resourceAciVRFUpdate(d *schema.ResourceData, m interface{}) error {
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_fv_rs_ctx_to_ep_ret")
 		d.Partial(false)
 
 	}
@@ -672,7 +652,6 @@ func resourceAciVRFUpdate(d *schema.ResourceData, m interface{}) error {
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_fv_rs_bgp_ctx_pol")
 		d.Partial(false)
 
 	}
@@ -688,7 +667,6 @@ func resourceAciVRFUpdate(d *schema.ResourceData, m interface{}) error {
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_fv_rs_ctx_mon_pol")
 		d.Partial(false)
 
 	}
@@ -700,7 +678,6 @@ func resourceAciVRFUpdate(d *schema.ResourceData, m interface{}) error {
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_fv_rs_ctx_to_ext_route_tag_pol")
 		d.Partial(false)
 
 	}
@@ -723,7 +700,6 @@ func resourceAciVRFUpdate(d *schema.ResourceData, m interface{}) error {
 				return err
 			}
 			d.Partial(true)
-			d.SetPartial("relation_fv_rs_ctx_to_bgp_ctx_af_pol")
 			d.Partial(false)
 		}
 

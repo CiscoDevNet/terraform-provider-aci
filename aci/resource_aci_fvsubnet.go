@@ -9,8 +9,8 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciSubnet() *schema.Resource {
@@ -333,8 +333,6 @@ func resourceAciSubnetCreate(d *schema.ResourceData, m interface{}) error {
 	}
 	d.Partial(true)
 
-	d.SetPartial("ip")
-
 	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
@@ -373,7 +371,6 @@ func resourceAciSubnetCreate(d *schema.ResourceData, m interface{}) error {
 				return err
 			}
 			d.Partial(true)
-			d.SetPartial("relation_fv_rs_bd_subnet_to_out")
 			d.Partial(false)
 		}
 	}
@@ -385,7 +382,6 @@ func resourceAciSubnetCreate(d *schema.ResourceData, m interface{}) error {
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_fv_rs_nd_pfx_pol")
 		d.Partial(false)
 
 	}
@@ -397,7 +393,6 @@ func resourceAciSubnetCreate(d *schema.ResourceData, m interface{}) error {
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_fv_rs_bd_subnet_to_profile")
 		d.Partial(false)
 
 	}
@@ -463,8 +458,6 @@ func resourceAciSubnetUpdate(d *schema.ResourceData, m interface{}) error {
 	}
 	d.Partial(true)
 
-	d.SetPartial("ip")
-
 	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
@@ -520,7 +513,6 @@ func resourceAciSubnetUpdate(d *schema.ResourceData, m interface{}) error {
 				return err
 			}
 			d.Partial(true)
-			d.SetPartial("relation_fv_rs_bd_subnet_to_out")
 			d.Partial(false)
 
 		}
@@ -538,7 +530,6 @@ func resourceAciSubnetUpdate(d *schema.ResourceData, m interface{}) error {
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_fv_rs_nd_pfx_pol")
 		d.Partial(false)
 
 	}
@@ -554,7 +545,6 @@ func resourceAciSubnetUpdate(d *schema.ResourceData, m interface{}) error {
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_fv_rs_bd_subnet_to_profile")
 		d.Partial(false)
 
 	}

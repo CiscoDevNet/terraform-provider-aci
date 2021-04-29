@@ -8,7 +8,7 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func resourceAciLeafAccessPortPolicyGroup() *schema.Resource {
@@ -248,8 +248,6 @@ func resourceAciLeafAccessPortPolicyGroupCreate(d *schema.ResourceData, m interf
 	}
 	d.Partial(true)
 
-	d.SetPartial("name")
-
 	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
@@ -395,7 +393,6 @@ func resourceAciLeafAccessPortPolicyGroupCreate(d *schema.ResourceData, m interf
 				return err
 			}
 			d.Partial(true)
-			d.SetPartial("relation_infra_rs_span_v_src_grp")
 			d.Partial(false)
 		}
 	}
@@ -407,7 +404,6 @@ func resourceAciLeafAccessPortPolicyGroupCreate(d *schema.ResourceData, m interf
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_infra_rs_stormctrl_if_pol")
 		d.Partial(false)
 
 	}
@@ -419,7 +415,6 @@ func resourceAciLeafAccessPortPolicyGroupCreate(d *schema.ResourceData, m interf
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_infra_rs_poe_if_pol")
 		d.Partial(false)
 
 	}
@@ -431,7 +426,6 @@ func resourceAciLeafAccessPortPolicyGroupCreate(d *schema.ResourceData, m interf
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_infra_rs_lldp_if_pol")
 		d.Partial(false)
 
 	}
@@ -443,7 +437,6 @@ func resourceAciLeafAccessPortPolicyGroupCreate(d *schema.ResourceData, m interf
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_infra_rs_macsec_if_pol")
 		d.Partial(false)
 
 	}
@@ -455,7 +448,6 @@ func resourceAciLeafAccessPortPolicyGroupCreate(d *schema.ResourceData, m interf
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_infra_rs_qos_dpp_if_pol")
 		d.Partial(false)
 
 	}
@@ -467,7 +459,6 @@ func resourceAciLeafAccessPortPolicyGroupCreate(d *schema.ResourceData, m interf
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_infra_rs_h_if_pol")
 		d.Partial(false)
 
 	}
@@ -481,7 +472,6 @@ func resourceAciLeafAccessPortPolicyGroupCreate(d *schema.ResourceData, m interf
 				return err
 			}
 			d.Partial(true)
-			d.SetPartial("relation_infra_rs_netflow_monitor_pol")
 			d.Partial(false)
 		}
 
@@ -494,7 +484,6 @@ func resourceAciLeafAccessPortPolicyGroupCreate(d *schema.ResourceData, m interf
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_infra_rs_l2_port_auth_pol")
 		d.Partial(false)
 
 	}
@@ -506,7 +495,6 @@ func resourceAciLeafAccessPortPolicyGroupCreate(d *schema.ResourceData, m interf
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_infra_rs_mcp_if_pol")
 		d.Partial(false)
 
 	}
@@ -518,7 +506,6 @@ func resourceAciLeafAccessPortPolicyGroupCreate(d *schema.ResourceData, m interf
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_infra_rs_l2_port_security_pol")
 		d.Partial(false)
 
 	}
@@ -530,7 +517,6 @@ func resourceAciLeafAccessPortPolicyGroupCreate(d *schema.ResourceData, m interf
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_infra_rs_copp_if_pol")
 		d.Partial(false)
 
 	}
@@ -544,7 +530,6 @@ func resourceAciLeafAccessPortPolicyGroupCreate(d *schema.ResourceData, m interf
 				return err
 			}
 			d.Partial(true)
-			d.SetPartial("relation_infra_rs_span_v_dest_grp")
 			d.Partial(false)
 		}
 	}
@@ -556,7 +541,6 @@ func resourceAciLeafAccessPortPolicyGroupCreate(d *schema.ResourceData, m interf
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_infra_rs_dwdm_if_pol")
 		d.Partial(false)
 
 	}
@@ -568,7 +552,6 @@ func resourceAciLeafAccessPortPolicyGroupCreate(d *schema.ResourceData, m interf
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_infra_rs_qos_pfc_if_pol")
 		d.Partial(false)
 
 	}
@@ -580,7 +563,6 @@ func resourceAciLeafAccessPortPolicyGroupCreate(d *schema.ResourceData, m interf
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_infra_rs_qos_sd_if_pol")
 		d.Partial(false)
 
 	}
@@ -592,7 +574,6 @@ func resourceAciLeafAccessPortPolicyGroupCreate(d *schema.ResourceData, m interf
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_infra_rs_mon_if_infra_pol")
 		d.Partial(false)
 
 	}
@@ -604,7 +585,6 @@ func resourceAciLeafAccessPortPolicyGroupCreate(d *schema.ResourceData, m interf
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_infra_rs_fc_if_pol")
 		d.Partial(false)
 
 	}
@@ -616,7 +596,6 @@ func resourceAciLeafAccessPortPolicyGroupCreate(d *schema.ResourceData, m interf
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_infra_rs_qos_ingress_dpp_if_pol")
 		d.Partial(false)
 
 	}
@@ -628,7 +607,6 @@ func resourceAciLeafAccessPortPolicyGroupCreate(d *schema.ResourceData, m interf
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_infra_rs_cdp_if_pol")
 		d.Partial(false)
 
 	}
@@ -640,7 +618,6 @@ func resourceAciLeafAccessPortPolicyGroupCreate(d *schema.ResourceData, m interf
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_infra_rs_l2_if_pol")
 		d.Partial(false)
 
 	}
@@ -652,7 +629,6 @@ func resourceAciLeafAccessPortPolicyGroupCreate(d *schema.ResourceData, m interf
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_infra_rs_stp_if_pol")
 		d.Partial(false)
 
 	}
@@ -664,7 +640,6 @@ func resourceAciLeafAccessPortPolicyGroupCreate(d *schema.ResourceData, m interf
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_infra_rs_qos_egress_dpp_if_pol")
 		d.Partial(false)
 
 	}
@@ -675,7 +650,6 @@ func resourceAciLeafAccessPortPolicyGroupCreate(d *schema.ResourceData, m interf
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_infra_rs_att_ent_p")
 		d.Partial(false)
 
 	}
@@ -686,7 +660,6 @@ func resourceAciLeafAccessPortPolicyGroupCreate(d *schema.ResourceData, m interf
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_infra_rs_l2_inst_pol")
 		d.Partial(false)
 
 	}
@@ -724,8 +697,6 @@ func resourceAciLeafAccessPortPolicyGroupUpdate(d *schema.ResourceData, m interf
 		return err
 	}
 	d.Partial(true)
-
-	d.SetPartial("name")
 
 	d.Partial(false)
 
@@ -893,7 +864,6 @@ func resourceAciLeafAccessPortPolicyGroupUpdate(d *schema.ResourceData, m interf
 				return err
 			}
 			d.Partial(true)
-			d.SetPartial("relation_infra_rs_span_v_src_grp")
 			d.Partial(false)
 
 		}
@@ -907,7 +877,6 @@ func resourceAciLeafAccessPortPolicyGroupUpdate(d *schema.ResourceData, m interf
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_infra_rs_stormctrl_if_pol")
 		d.Partial(false)
 
 	}
@@ -923,7 +892,6 @@ func resourceAciLeafAccessPortPolicyGroupUpdate(d *schema.ResourceData, m interf
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_infra_rs_poe_if_pol")
 		d.Partial(false)
 
 	}
@@ -935,7 +903,6 @@ func resourceAciLeafAccessPortPolicyGroupUpdate(d *schema.ResourceData, m interf
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_infra_rs_lldp_if_pol")
 		d.Partial(false)
 
 	}
@@ -947,7 +914,6 @@ func resourceAciLeafAccessPortPolicyGroupUpdate(d *schema.ResourceData, m interf
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_infra_rs_macsec_if_pol")
 		d.Partial(false)
 
 	}
@@ -959,7 +925,6 @@ func resourceAciLeafAccessPortPolicyGroupUpdate(d *schema.ResourceData, m interf
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_infra_rs_qos_dpp_if_pol")
 		d.Partial(false)
 
 	}
@@ -971,7 +936,6 @@ func resourceAciLeafAccessPortPolicyGroupUpdate(d *schema.ResourceData, m interf
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_infra_rs_h_if_pol")
 		d.Partial(false)
 
 	}
@@ -994,7 +958,6 @@ func resourceAciLeafAccessPortPolicyGroupUpdate(d *schema.ResourceData, m interf
 				return err
 			}
 			d.Partial(true)
-			d.SetPartial("relation_infra_rs_netflow_monitor_pol")
 			d.Partial(false)
 		}
 
@@ -1007,7 +970,6 @@ func resourceAciLeafAccessPortPolicyGroupUpdate(d *schema.ResourceData, m interf
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_infra_rs_l2_port_auth_pol")
 		d.Partial(false)
 
 	}
@@ -1019,7 +981,6 @@ func resourceAciLeafAccessPortPolicyGroupUpdate(d *schema.ResourceData, m interf
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_infra_rs_mcp_if_pol")
 		d.Partial(false)
 
 	}
@@ -1031,7 +992,6 @@ func resourceAciLeafAccessPortPolicyGroupUpdate(d *schema.ResourceData, m interf
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_infra_rs_l2_port_security_pol")
 		d.Partial(false)
 
 	}
@@ -1043,7 +1003,6 @@ func resourceAciLeafAccessPortPolicyGroupUpdate(d *schema.ResourceData, m interf
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_infra_rs_copp_if_pol")
 		d.Partial(false)
 
 	}
@@ -1070,7 +1029,6 @@ func resourceAciLeafAccessPortPolicyGroupUpdate(d *schema.ResourceData, m interf
 				return err
 			}
 			d.Partial(true)
-			d.SetPartial("relation_infra_rs_span_v_dest_grp")
 			d.Partial(false)
 
 		}
@@ -1084,7 +1042,6 @@ func resourceAciLeafAccessPortPolicyGroupUpdate(d *schema.ResourceData, m interf
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_infra_rs_dwdm_if_pol")
 		d.Partial(false)
 
 	}
@@ -1096,7 +1053,6 @@ func resourceAciLeafAccessPortPolicyGroupUpdate(d *schema.ResourceData, m interf
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_infra_rs_qos_pfc_if_pol")
 		d.Partial(false)
 
 	}
@@ -1108,7 +1064,6 @@ func resourceAciLeafAccessPortPolicyGroupUpdate(d *schema.ResourceData, m interf
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_infra_rs_qos_sd_if_pol")
 		d.Partial(false)
 
 	}
@@ -1120,7 +1075,6 @@ func resourceAciLeafAccessPortPolicyGroupUpdate(d *schema.ResourceData, m interf
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_infra_rs_mon_if_infra_pol")
 		d.Partial(false)
 
 	}
@@ -1132,7 +1086,6 @@ func resourceAciLeafAccessPortPolicyGroupUpdate(d *schema.ResourceData, m interf
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_infra_rs_fc_if_pol")
 		d.Partial(false)
 
 	}
@@ -1144,7 +1097,6 @@ func resourceAciLeafAccessPortPolicyGroupUpdate(d *schema.ResourceData, m interf
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_infra_rs_qos_ingress_dpp_if_pol")
 		d.Partial(false)
 
 	}
@@ -1156,7 +1108,6 @@ func resourceAciLeafAccessPortPolicyGroupUpdate(d *schema.ResourceData, m interf
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_infra_rs_cdp_if_pol")
 		d.Partial(false)
 
 	}
@@ -1168,7 +1119,6 @@ func resourceAciLeafAccessPortPolicyGroupUpdate(d *schema.ResourceData, m interf
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_infra_rs_l2_if_pol")
 		d.Partial(false)
 
 	}
@@ -1180,7 +1130,6 @@ func resourceAciLeafAccessPortPolicyGroupUpdate(d *schema.ResourceData, m interf
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_infra_rs_stp_if_pol")
 		d.Partial(false)
 
 	}
@@ -1192,7 +1141,6 @@ func resourceAciLeafAccessPortPolicyGroupUpdate(d *schema.ResourceData, m interf
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_infra_rs_qos_egress_dpp_if_pol")
 		d.Partial(false)
 
 	}
@@ -1207,7 +1155,6 @@ func resourceAciLeafAccessPortPolicyGroupUpdate(d *schema.ResourceData, m interf
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_infra_rs_att_ent_p")
 		d.Partial(false)
 
 	}
@@ -1222,7 +1169,6 @@ func resourceAciLeafAccessPortPolicyGroupUpdate(d *schema.ResourceData, m interf
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_infra_rs_l2_inst_pol")
 		d.Partial(false)
 
 	}

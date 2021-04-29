@@ -6,7 +6,7 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func resourceAciDestinationofredirectedtraffic() *schema.Resource {
@@ -171,8 +171,6 @@ func resourceAciDestinationofredirectedtrafficCreate(d *schema.ResourceData, m i
 	}
 	d.Partial(true)
 
-	d.SetPartial("ip")
-
 	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
@@ -196,7 +194,6 @@ func resourceAciDestinationofredirectedtrafficCreate(d *schema.ResourceData, m i
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_vns_rs_redirect_health_group")
 		d.Partial(false)
 
 	}
@@ -252,8 +249,6 @@ func resourceAciDestinationofredirectedtrafficUpdate(d *schema.ResourceData, m i
 	}
 	d.Partial(true)
 
-	d.SetPartial("ip")
-
 	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
@@ -281,7 +276,6 @@ func resourceAciDestinationofredirectedtrafficUpdate(d *schema.ResourceData, m i
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_vns_rs_redirect_health_group")
 		d.Partial(false)
 
 	}

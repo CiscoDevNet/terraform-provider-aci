@@ -1,6 +1,5 @@
 package models
 
-
 import (
 	"fmt"
 	"strconv"
@@ -12,27 +11,19 @@ const L2extdompClassName = "l2extDomP"
 
 type L2Domain struct {
 	BaseAttributes
-    L2DomainAttributes 
+	L2DomainAttributes
 }
-  
+
 type L2DomainAttributes struct {
-	
-	
 	Name string `json:",omitempty"`
-	
-	
-    
-	Annotation       string `json:",omitempty"`
-	
-    
-	NameAlias       string `json:",omitempty"`
-	
-    
+
+	Annotation string `json:",omitempty"`
+
+	NameAlias string `json:",omitempty"`
 }
-   
 
 func NewL2Domain(l2extDomPRn, parentDn string, l2extDomPattr L2DomainAttributes) *L2Domain {
-	dn := fmt.Sprintf("%s/%s", parentDn, l2extDomPRn)  
+	dn := fmt.Sprintf("%s/%s", parentDn, l2extDomPRn)
 	return &L2Domain{
 		BaseAttributes: BaseAttributes{
 			DistinguishedName: dn,
@@ -40,9 +31,8 @@ func NewL2Domain(l2extDomPRn, parentDn string, l2extDomPattr L2DomainAttributes)
 			ClassName:         L2extdompClassName,
 			Rn:                l2extDomPRn,
 		},
-        
+
 		L2DomainAttributes: l2extDomPattr,
-         
 	}
 }
 
@@ -52,19 +42,11 @@ func (l2extDomP *L2Domain) ToMap() (map[string]string, error) {
 		return nil, err
 	}
 
-	
-	
-	A(l2extDomPMap, "name",l2extDomP.Name)
-	
-	
-    
-	A(l2extDomPMap, "annotation",l2extDomP.Annotation)
-	
-    
-	A(l2extDomPMap, "nameAlias",l2extDomP.NameAlias)
-	
-    
-	
+	A(l2extDomPMap, "name", l2extDomP.Name)
+
+	A(l2extDomPMap, "annotation", l2extDomP.Annotation)
+
+	A(l2extDomPMap, "nameAlias", l2extDomP.NameAlias)
 
 	return l2extDomPMap, err
 }
@@ -79,22 +61,15 @@ func L2DomainFromContainerList(cont *container.Container, index int) *L2Domain {
 			ClassName:         L2extdompClassName,
 			Rn:                G(L2DomainCont, "rn"),
 		},
-        
+
 		L2DomainAttributes{
-		
-		
-			Name : G(L2DomainCont, "name"),
-		
-		
-        
-	        Annotation : G(L2DomainCont, "annotation"),
-		
-        
-	        NameAlias : G(L2DomainCont, "nameAlias"),
-		
-        		
-        },
-        
+
+			Name: G(L2DomainCont, "name"),
+
+			Annotation: G(L2DomainCont, "annotation"),
+
+			NameAlias: G(L2DomainCont, "nameAlias"),
+		},
 	}
 }
 

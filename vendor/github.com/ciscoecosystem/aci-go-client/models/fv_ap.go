@@ -1,6 +1,5 @@
 package models
 
-
 import (
 	"fmt"
 	"strconv"
@@ -12,30 +11,21 @@ const FvapClassName = "fvAp"
 
 type ApplicationProfile struct {
 	BaseAttributes
-    ApplicationProfileAttributes 
+	ApplicationProfileAttributes
 }
-  
+
 type ApplicationProfileAttributes struct {
-	
-	
 	Name string `json:",omitempty"`
-	
-	
-    
-	Annotation       string `json:",omitempty"`
-	
-    
-	NameAlias       string `json:",omitempty"`
-	
-    
-	Prio       string `json:",omitempty"`
-	
-    
+
+	Annotation string `json:",omitempty"`
+
+	NameAlias string `json:",omitempty"`
+
+	Prio string `json:",omitempty"`
 }
-   
 
 func NewApplicationProfile(fvApRn, parentDn, description string, fvApattr ApplicationProfileAttributes) *ApplicationProfile {
-	dn := fmt.Sprintf("%s/%s", parentDn, fvApRn)  
+	dn := fmt.Sprintf("%s/%s", parentDn, fvApRn)
 	return &ApplicationProfile{
 		BaseAttributes: BaseAttributes{
 			DistinguishedName: dn,
@@ -44,9 +34,8 @@ func NewApplicationProfile(fvApRn, parentDn, description string, fvApattr Applic
 			ClassName:         FvapClassName,
 			Rn:                fvApRn,
 		},
-        
+
 		ApplicationProfileAttributes: fvApattr,
-         
 	}
 }
 
@@ -56,22 +45,13 @@ func (fvAp *ApplicationProfile) ToMap() (map[string]string, error) {
 		return nil, err
 	}
 
-	
-	
-	A(fvApMap, "name",fvAp.Name)
-	
-	
-    
-	A(fvApMap, "annotation",fvAp.Annotation)
-	
-    
-	A(fvApMap, "nameAlias",fvAp.NameAlias)
-	
-    
-	A(fvApMap, "prio",fvAp.Prio)
-	
-    
-	
+	A(fvApMap, "name", fvAp.Name)
+
+	A(fvApMap, "annotation", fvAp.Annotation)
+
+	A(fvApMap, "nameAlias", fvAp.NameAlias)
+
+	A(fvApMap, "prio", fvAp.Prio)
 
 	return fvApMap, err
 }
@@ -87,25 +67,17 @@ func ApplicationProfileFromContainerList(cont *container.Container, index int) *
 			ClassName:         FvapClassName,
 			Rn:                G(ApplicationProfileCont, "rn"),
 		},
-        
+
 		ApplicationProfileAttributes{
-		
-		
-			Name : G(ApplicationProfileCont, "name"),
-		
-		
-        
-	        Annotation : G(ApplicationProfileCont, "annotation"),
-		
-        
-	        NameAlias : G(ApplicationProfileCont, "nameAlias"),
-		
-        
-	        Prio : G(ApplicationProfileCont, "prio"),
-		
-        		
-        },
-        
+
+			Name: G(ApplicationProfileCont, "name"),
+
+			Annotation: G(ApplicationProfileCont, "annotation"),
+
+			NameAlias: G(ApplicationProfileCont, "nameAlias"),
+
+			Prio: G(ApplicationProfileCont, "prio"),
+		},
 	}
 }
 

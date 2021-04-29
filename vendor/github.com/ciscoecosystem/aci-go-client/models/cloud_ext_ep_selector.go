@@ -1,6 +1,5 @@
 package models
 
-
 import (
 	"fmt"
 	"strconv"
@@ -12,36 +11,25 @@ const CloudextepselectorClassName = "cloudExtEPSelector"
 
 type CloudEndpointSelectorforExternalEPgs struct {
 	BaseAttributes
-    CloudEndpointSelectorforExternalEPgsAttributes 
+	CloudEndpointSelectorforExternalEPgsAttributes
 }
-  
+
 type CloudEndpointSelectorforExternalEPgsAttributes struct {
-	
-	
 	Name string `json:",omitempty"`
-	
-	
-    
-	Annotation       string `json:",omitempty"`
-	
-    
-	IsShared       string `json:",omitempty"`
-	
-    
-	MatchExpression       string `json:",omitempty"`
-	
-    
-	NameAlias       string `json:",omitempty"`
-	
-    
-	Subnet       string `json:",omitempty"`
-	
-    
+
+	Annotation string `json:",omitempty"`
+
+	IsShared string `json:",omitempty"`
+
+	MatchExpression string `json:",omitempty"`
+
+	NameAlias string `json:",omitempty"`
+
+	Subnet string `json:",omitempty"`
 }
-   
 
 func NewCloudEndpointSelectorforExternalEPgs(cloudExtEPSelectorRn, parentDn, description string, cloudExtEPSelectorattr CloudEndpointSelectorforExternalEPgsAttributes) *CloudEndpointSelectorforExternalEPgs {
-	dn := fmt.Sprintf("%s/%s", parentDn, cloudExtEPSelectorRn)  
+	dn := fmt.Sprintf("%s/%s", parentDn, cloudExtEPSelectorRn)
 	return &CloudEndpointSelectorforExternalEPgs{
 		BaseAttributes: BaseAttributes{
 			DistinguishedName: dn,
@@ -50,9 +38,8 @@ func NewCloudEndpointSelectorforExternalEPgs(cloudExtEPSelectorRn, parentDn, des
 			ClassName:         CloudextepselectorClassName,
 			Rn:                cloudExtEPSelectorRn,
 		},
-        
+
 		CloudEndpointSelectorforExternalEPgsAttributes: cloudExtEPSelectorattr,
-         
 	}
 }
 
@@ -62,28 +49,17 @@ func (cloudExtEPSelector *CloudEndpointSelectorforExternalEPgs) ToMap() (map[str
 		return nil, err
 	}
 
-	
-	
-	A(cloudExtEPSelectorMap, "name",cloudExtEPSelector.Name)
-	
-	
-    
-	A(cloudExtEPSelectorMap, "annotation",cloudExtEPSelector.Annotation)
-	
-    
-	A(cloudExtEPSelectorMap, "isShared",cloudExtEPSelector.IsShared)
-	
-    
-	A(cloudExtEPSelectorMap, "matchExpression",cloudExtEPSelector.MatchExpression)
-	
-    
-	A(cloudExtEPSelectorMap, "nameAlias",cloudExtEPSelector.NameAlias)
-	
-    
-	A(cloudExtEPSelectorMap, "subnet",cloudExtEPSelector.Subnet)
-	
-    
-	
+	A(cloudExtEPSelectorMap, "name", cloudExtEPSelector.Name)
+
+	A(cloudExtEPSelectorMap, "annotation", cloudExtEPSelector.Annotation)
+
+	A(cloudExtEPSelectorMap, "isShared", cloudExtEPSelector.IsShared)
+
+	A(cloudExtEPSelectorMap, "matchExpression", cloudExtEPSelector.MatchExpression)
+
+	A(cloudExtEPSelectorMap, "nameAlias", cloudExtEPSelector.NameAlias)
+
+	A(cloudExtEPSelectorMap, "subnet", cloudExtEPSelector.Subnet)
 
 	return cloudExtEPSelectorMap, err
 }
@@ -99,31 +75,21 @@ func CloudEndpointSelectorforExternalEPgsFromContainerList(cont *container.Conta
 			ClassName:         CloudextepselectorClassName,
 			Rn:                G(CloudEndpointSelectorforExternalEPgsCont, "rn"),
 		},
-        
+
 		CloudEndpointSelectorforExternalEPgsAttributes{
-		
-		
-			Name : G(CloudEndpointSelectorforExternalEPgsCont, "name"),
-		
-		
-        
-	        Annotation : G(CloudEndpointSelectorforExternalEPgsCont, "annotation"),
-		
-        
-	        IsShared : G(CloudEndpointSelectorforExternalEPgsCont, "isShared"),
-		
-        
-	        MatchExpression : G(CloudEndpointSelectorforExternalEPgsCont, "matchExpression"),
-		
-        
-	        NameAlias : G(CloudEndpointSelectorforExternalEPgsCont, "nameAlias"),
-		
-        
-	        Subnet : G(CloudEndpointSelectorforExternalEPgsCont, "subnet"),
-		
-        		
-        },
-        
+
+			Name: G(CloudEndpointSelectorforExternalEPgsCont, "name"),
+
+			Annotation: G(CloudEndpointSelectorforExternalEPgsCont, "annotation"),
+
+			IsShared: G(CloudEndpointSelectorforExternalEPgsCont, "isShared"),
+
+			MatchExpression: G(CloudEndpointSelectorforExternalEPgsCont, "matchExpression"),
+
+			NameAlias: G(CloudEndpointSelectorforExternalEPgsCont, "nameAlias"),
+
+			Subnet: G(CloudEndpointSelectorforExternalEPgsCont, "subnet"),
+		},
 	}
 }
 

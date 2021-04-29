@@ -8,8 +8,8 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciNodeManagementEPg() *schema.Resource {
@@ -411,8 +411,6 @@ func inBandManagementEPgCreate(d *schema.ResourceData, m interface{}) error {
 	}
 	d.Partial(true)
 
-	d.SetPartial("name")
-
 	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
@@ -487,7 +485,6 @@ func inBandManagementEPgCreate(d *schema.ResourceData, m interface{}) error {
 				return err
 			}
 			d.Partial(true)
-			d.SetPartial("relation_fv_rs_sec_inherited")
 			d.Partial(false)
 		}
 	}
@@ -501,7 +498,6 @@ func inBandManagementEPgCreate(d *schema.ResourceData, m interface{}) error {
 				return err
 			}
 			d.Partial(true)
-			d.SetPartial("relation_fv_rs_prov")
 			d.Partial(false)
 		}
 	}
@@ -515,7 +511,6 @@ func inBandManagementEPgCreate(d *schema.ResourceData, m interface{}) error {
 				return err
 			}
 			d.Partial(true)
-			d.SetPartial("relation_fv_rs_cons_if")
 			d.Partial(false)
 		}
 	}
@@ -526,7 +521,6 @@ func inBandManagementEPgCreate(d *schema.ResourceData, m interface{}) error {
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_fv_rs_cust_qos_pol")
 		d.Partial(false)
 
 	}
@@ -537,7 +531,6 @@ func inBandManagementEPgCreate(d *schema.ResourceData, m interface{}) error {
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_mgmt_rs_mgmt_bd")
 		d.Partial(false)
 
 	}
@@ -551,7 +544,6 @@ func inBandManagementEPgCreate(d *schema.ResourceData, m interface{}) error {
 				return err
 			}
 			d.Partial(true)
-			d.SetPartial("relation_fv_rs_cons")
 			d.Partial(false)
 		}
 	}
@@ -565,7 +557,6 @@ func inBandManagementEPgCreate(d *schema.ResourceData, m interface{}) error {
 				return err
 			}
 			d.Partial(true)
-			d.SetPartial("relation_fv_rs_prot_by")
 			d.Partial(false)
 		}
 	}
@@ -579,7 +570,6 @@ func inBandManagementEPgCreate(d *schema.ResourceData, m interface{}) error {
 				return err
 			}
 			d.Partial(true)
-			d.SetPartial("relation_mgmt_rs_in_b_st_node")
 			d.Partial(false)
 		}
 	}
@@ -593,7 +583,6 @@ func inBandManagementEPgCreate(d *schema.ResourceData, m interface{}) error {
 				return err
 			}
 			d.Partial(true)
-			d.SetPartial("relation_fv_rs_intra_epg")
 			d.Partial(false)
 		}
 	}
@@ -632,8 +621,6 @@ func outOfBandManagementEPgCreate(d *schema.ResourceData, m interface{}) error {
 		return err
 	}
 	d.Partial(true)
-
-	d.SetPartial("name")
 
 	d.Partial(false)
 
@@ -674,7 +661,6 @@ func outOfBandManagementEPgCreate(d *schema.ResourceData, m interface{}) error {
 				return err
 			}
 			d.Partial(true)
-			d.SetPartial("relation_mgmt_rs_oo_b_prov")
 			d.Partial(false)
 		}
 	}
@@ -688,7 +674,6 @@ func outOfBandManagementEPgCreate(d *schema.ResourceData, m interface{}) error {
 				return err
 			}
 			d.Partial(true)
-			d.SetPartial("relation_mgmt_rs_oo_b_st_node")
 			d.Partial(false)
 		}
 	}
@@ -699,7 +684,6 @@ func outOfBandManagementEPgCreate(d *schema.ResourceData, m interface{}) error {
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_mgmt_rs_oo_b_ctx")
 		d.Partial(false)
 
 	}
@@ -757,8 +741,6 @@ func inBandManagementEPgUpdate(d *schema.ResourceData, m interface{}) error {
 		return err
 	}
 	d.Partial(true)
-
-	d.SetPartial("name")
 
 	d.Partial(false)
 
@@ -882,7 +864,6 @@ func inBandManagementEPgUpdate(d *schema.ResourceData, m interface{}) error {
 				return err
 			}
 			d.Partial(true)
-			d.SetPartial("relation_fv_rs_sec_inherited")
 			d.Partial(false)
 
 		}
@@ -911,7 +892,6 @@ func inBandManagementEPgUpdate(d *schema.ResourceData, m interface{}) error {
 				return err
 			}
 			d.Partial(true)
-			d.SetPartial("relation_fv_rs_prov")
 			d.Partial(false)
 
 		}
@@ -940,7 +920,6 @@ func inBandManagementEPgUpdate(d *schema.ResourceData, m interface{}) error {
 				return err
 			}
 			d.Partial(true)
-			d.SetPartial("relation_fv_rs_cons_if")
 			d.Partial(false)
 
 		}
@@ -953,7 +932,6 @@ func inBandManagementEPgUpdate(d *schema.ResourceData, m interface{}) error {
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_fv_rs_cust_qos_pol")
 		d.Partial(false)
 
 	}
@@ -964,7 +942,6 @@ func inBandManagementEPgUpdate(d *schema.ResourceData, m interface{}) error {
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_mgmt_rs_mgmt_bd")
 		d.Partial(false)
 
 	}
@@ -991,7 +968,6 @@ func inBandManagementEPgUpdate(d *schema.ResourceData, m interface{}) error {
 				return err
 			}
 			d.Partial(true)
-			d.SetPartial("relation_fv_rs_cons")
 			d.Partial(false)
 
 		}
@@ -1020,7 +996,6 @@ func inBandManagementEPgUpdate(d *schema.ResourceData, m interface{}) error {
 				return err
 			}
 			d.Partial(true)
-			d.SetPartial("relation_fv_rs_prot_by")
 			d.Partial(false)
 
 		}
@@ -1049,7 +1024,6 @@ func inBandManagementEPgUpdate(d *schema.ResourceData, m interface{}) error {
 				return err
 			}
 			d.Partial(true)
-			d.SetPartial("relation_mgmt_rs_in_b_st_node")
 			d.Partial(false)
 
 		}
@@ -1078,7 +1052,6 @@ func inBandManagementEPgUpdate(d *schema.ResourceData, m interface{}) error {
 				return err
 			}
 			d.Partial(true)
-			d.SetPartial("relation_fv_rs_intra_epg")
 			d.Partial(false)
 
 		}
@@ -1124,8 +1097,6 @@ func outOfBandManagementEPgUpdate(d *schema.ResourceData, m interface{}) error {
 		return err
 	}
 	d.Partial(true)
-
-	d.SetPartial("name")
 
 	d.Partial(false)
 
@@ -1189,7 +1160,6 @@ func outOfBandManagementEPgUpdate(d *schema.ResourceData, m interface{}) error {
 				return err
 			}
 			d.Partial(true)
-			d.SetPartial("relation_mgmt_rs_oo_b_prov")
 			d.Partial(false)
 
 		}
@@ -1218,7 +1188,6 @@ func outOfBandManagementEPgUpdate(d *schema.ResourceData, m interface{}) error {
 				return err
 			}
 			d.Partial(true)
-			d.SetPartial("relation_mgmt_rs_oo_b_st_node")
 			d.Partial(false)
 
 		}
@@ -1231,7 +1200,6 @@ func outOfBandManagementEPgUpdate(d *schema.ResourceData, m interface{}) error {
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_mgmt_rs_oo_b_ctx")
 		d.Partial(false)
 
 	}
