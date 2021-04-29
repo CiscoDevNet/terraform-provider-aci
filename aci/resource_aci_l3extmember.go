@@ -101,7 +101,6 @@ func setL3outVPCMemberAttributes(l3extMember *models.L3outVPCMember, d *schema.R
 	d.Set("ipv6_dad", l3extMemberMap["ipv6Dad"])
 	d.Set("ll_addr", l3extMemberMap["llAddr"])
 	d.Set("name_alias", l3extMemberMap["nameAlias"])
-	d.Set("side", l3extMemberMap["side"])
 	return d
 }
 
@@ -150,9 +149,6 @@ func resourceAciL3outVPCMemberCreate(d *schema.ResourceData, m interface{}) erro
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		l3extMemberAttr.NameAlias = NameAlias.(string)
 	}
-	if Side, ok := d.GetOk("side"); ok {
-		l3extMemberAttr.Side = Side.(string)
-	}
 	l3extMember := models.NewL3outVPCMember(fmt.Sprintf("mem-%s", side), LeafPortDn, desc, l3extMemberAttr)
 
 	err := aciClient.Save(l3extMember)
@@ -198,9 +194,6 @@ func resourceAciL3outVPCMemberUpdate(d *schema.ResourceData, m interface{}) erro
 	}
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		l3extMemberAttr.NameAlias = NameAlias.(string)
-	}
-	if Side, ok := d.GetOk("side"); ok {
-		l3extMemberAttr.Side = Side.(string)
 	}
 	l3extMember := models.NewL3outVPCMember(fmt.Sprintf("mem-%s", side), LeafPortDn, desc, l3extMemberAttr)
 

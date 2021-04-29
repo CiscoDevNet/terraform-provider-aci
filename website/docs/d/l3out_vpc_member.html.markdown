@@ -29,9 +29,9 @@ data "aci_l3out_vpc_member" "example" {
 ## Attribute Reference
 
 - `id` - Attribute id set to the Dn of the L3out VPC Member.
-- `addr` - (Optional) peer address
-- `annotation` - (Optional) annotation for object l3out vpc member.
-- `ipv6_dad` - (Optional) ipv6_dad for object l3out vpc member.
-- `ll_addr` - (Optional) override of system generated ipv6 link-local address
-- `name_alias` - (Optional) name_alias for object l3out vpc member.
-- `side` - (Optional) node id
+- `addr` - (Optional) Peer IP address.
+- `description` - (Optional) Description for object l3out VPC member.
+- `annotation` - (Optional) Annotation for object l3out VPC member.
+- `ipv6_dad` - (Optional) IPv6 DAD feature of l3out VPC member.
+- `ll_addr` - (Optional) Override of system generated IPv6 link-local address.
+- `name_alias` - (Optional) Name alias for object l3out vpc member.

@@ -17,10 +17,11 @@ resource "aci_l3out_vpc_member" "example" {
 
   leaf_port_dn  = "${aci_l3out_path_attachment.example.id}"
   side  = "A"
-  addr  = "10.0.0.1"
+  addr  = "10.0.0.1/16"
   annotation  = "example"
   ipv6_dad = "enabled"
   ll_addr  = "::"
+  description = "from terraform"
   name_alias  = "example"
 
 }
@@ -29,17 +30,15 @@ resource "aci_l3out_vpc_member" "example" {
 ## Argument Reference
 
 - `leaf_port_dn` - (Required) Distinguished name of parent leaf port object.
-- `side` - (Required) side of Object l3out vpc member.  
+- `side` - (Required) Side of Object l3out VPC member.  
 Allowed values: "A" and "B". Default value: "A".
-- `addr` - (Optional) peer address.
-
-- `annotation` - (Optional) annotation for object l3out vpc member.
-
-- `ipv6_dad` - (Optional) ipv6_dad for object l3out vpc member.
+- `addr` - (Optional) Peer IP address.
+- `description` - (Optional) Description for object l3out VPC member.
+- `annotation` - (Optional) Annotation for object l3out VPC member.
+- `ipv6_dad` - (Optional) IPv6 DAD feature of l3out VPC member.
   Allowed values: "disabled", "enabled". Default value: "enabled"
-- `ll_addr` - (Optional) override of system generated ipv6 link-local address.
-
-- `name_alias` - (Optional) name_alias for object l3out vpc member.
+- `ll_addr` - (Optional) Override of system generated IPv6 link-local address.
+- `name_alias` - (Optional) Name alias for object l3out vpc member.
 
 ## Attribute Reference
 
