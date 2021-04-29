@@ -33,7 +33,7 @@ resource "aci_rest_managed" "mgmtConnectivityPrefs" {
 
 ## Argument Reference ##
 
-* `dn` - (Required) Distinguished name of object being managed including its relative name, e.g. uni/ten-EXAMPLE_TENANT.
+* `dn` - (Required) Distinguished name of object being managed including its relative name, e.g. uni/tn-EXAMPLE_TENANT.
 * `class_name` - (Required) Which class object is being created. (Make sure there is no colon in the classname)
 * `content` - (Optional) Map of key-value pairs those needed to be passed to the Model object as parameters. Make sure the key name matches the name with the object parameter in ACI.
 
