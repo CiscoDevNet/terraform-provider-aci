@@ -6,10 +6,11 @@ description: |-
   Data source for ACI Leaf Breakout Port Group
 ---
 
-# aci_leaf_breakout_port_group #
+# aci_leaf_breakout_port_group
+
 Data source for ACI Leaf Breakout Port Group
 
-## Example Usage ##
+## Example Usage
 
 ```hcl
 data "aci_leaf_breakout_port_group" "example" {
@@ -17,15 +18,14 @@ data "aci_leaf_breakout_port_group" "example" {
 }
 ```
 
+## Argument Reference
 
-## Argument Reference ##
-* `name` - (Required) Name of leaf breakout port group object.
-
-
+- `name` - (Required) Name of leaf breakout port group object.
 
 ## Attribute Reference
 
-* `id` - Attribute id set to the Dn of the leaf breakout port group object.
-* `annotation` - (Optional) Annotation for leaf breakout port group object.
-* `brkout_map` - (Optional) Breakout map for leaf breakout port group object.
-* `name_alias` - (Optional) Name alias for leaf breakout port group object.
+- `id` - Attribute id set to the Dn of the leaf breakout port group object.
+- `description` - (Optional) Description for leaf breakout port group object.
+- `annotation` - (Optional) Annotation for leaf breakout port group object.
+- `brkout_map` - (Optional) Breakout map for leaf breakout port group object.
+- `name_alias` - (Optional) Name alias for leaf breakout port group object.

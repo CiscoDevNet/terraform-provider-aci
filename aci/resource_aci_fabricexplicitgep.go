@@ -22,7 +22,7 @@ func resourceAciVPCExplicitProtectionGroup() *schema.Resource {
 
 		SchemaVersion: 1,
 
-		Schema: AppendBaseAttrSchema(map[string]*schema.Schema{
+		Schema: map[string]*schema.Schema{
 
 			"name": &schema.Schema{
 				Type:     schema.TypeString,
@@ -42,13 +42,17 @@ func resourceAciVPCExplicitProtectionGroup() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
-
+			"annotation": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Default:  "orchestrator:terraform",
+			},
 			"vpc_explicit_protection_group_id": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
 			},
-		}),
+		},
 	}
 }
 func getRemoteVPCExplicitProtectionGroup(client *client.Client, dn string) (*models.VPCExplicitProtectionGroup, error) {
@@ -70,11 +74,7 @@ func getRemoteVPCExplicitProtectionGroup(client *client.Client, dn string) (*mod
 
 func setVPCExplicitProtectionGroupAttributes(fabricExplicitGEp *models.VPCExplicitProtectionGroup, d *schema.ResourceData) *schema.ResourceData {
 	d.SetId(fabricExplicitGEp.DistinguishedName)
-	if fabricExplicitGEp.Description == "{}" {
-		d.Set("description", fabricExplicitGEp.Description)
-	} else {
-		d.Set("description", fabricExplicitGEp.Description)
-	}
+
 	fabricExplicitGEpMap, _ := fabricExplicitGEp.ToMap()
 
 	d.Set("name", fabricExplicitGEpMap["name"])
@@ -116,7 +116,6 @@ func resourceAciVPCExplicitProtectionGroupImport(d *schema.ResourceData, m inter
 func resourceAciVPCExplicitProtectionGroupCreate(d *schema.ResourceData, m interface{}) error {
 	log.Printf("[DEBUG] VPCExplicitProtectionGroup: Beginning Creation")
 	aciClient := m.(*client.Client)
-	desc := d.Get("description").(string)
 
 	name := d.Get("name").(string)
 
@@ -159,7 +158,6 @@ func resourceAciVPCExplicitProtectionGroupUpdate(d *schema.ResourceData, m inter
 	log.Printf("[DEBUG] VPCExplicitProtectionGroup: Beginning Update")
 
 	aciClient := m.(*client.Client)
-	desc := d.Get("description").(string)
 
 	name := d.Get("name").(string)
 	switch1 := d.Get("switch1").(string)
