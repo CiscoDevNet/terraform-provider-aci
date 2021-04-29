@@ -15,7 +15,7 @@ import (
 const Created = "created"
 const Deleted = "deleted"
 
-var class, name string
+var class string
 
 const ErrDistinguishedNameNotFound = "The Dn is not present in the content"
 
