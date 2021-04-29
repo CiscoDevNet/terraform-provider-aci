@@ -24,8 +24,6 @@ type BFDInterfaceProfileAttributes struct {
 	NameAlias string `json:",omitempty"`
 
 	InterfaceProfileType string `json:",omitempty"`
-
-	Userdom string `json:",omitempty"`
 }
 
 func NewBFDInterfaceProfile(bfdIfPRn, parentDn, description string, bfdIfPattr BFDInterfaceProfileAttributes) *BFDInterfaceProfile {
@@ -59,8 +57,6 @@ func (bfdIfP *BFDInterfaceProfile) ToMap() (map[string]string, error) {
 
 	A(bfdIfPMap, "type", bfdIfP.InterfaceProfileType)
 
-	A(bfdIfPMap, "userdom", bfdIfP.Userdom)
-
 	return bfdIfPMap, err
 }
 
@@ -87,8 +83,6 @@ func BFDInterfaceProfileFromContainerList(cont *container.Container, index int) 
 			NameAlias: G(InterfaceProfileCont, "nameAlias"),
 
 			InterfaceProfileType: G(InterfaceProfileCont, "type"),
-
-			Userdom: G(InterfaceProfileCont, "userdom"),
 		},
 	}
 }

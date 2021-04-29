@@ -20,6 +20,7 @@ resource "aci_l3out_route_tag_policy" "example" {
   annotation  = "example"
   name_alias  = "example"
   tag  = "1"
+  description = "from terraform"
 
 }
 ```
@@ -29,9 +30,8 @@ resource "aci_l3out_route_tag_policy" "example" {
 - `tenant_dn` - (Required) Distinguished name of parent tenant object.
 - `name` - (Required) Name of Object L3out route tag policy.
 - `annotation` - (Optional) Annotation for object L3out route tag policy.
-
 - `name_alias` - (Optional) Name alias for object L3out route tag policy.
-
+- `description` - (Optional) Description for object L3out route tag policy.
 - `tag` - (Optional) Tagged number. Default value: "4294967295".
 
 ## Attribute Reference

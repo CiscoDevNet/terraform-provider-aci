@@ -20,7 +20,6 @@ resource "aci_l3out_bfd_interface_profile" "example" {
   key                          = "example"
   key_id                       = "25"
   interface_profile_type       = "sha1"
-  userdom                      = ":all:"
 }
 ```
 
@@ -33,7 +32,6 @@ resource "aci_l3out_bfd_interface_profile" "example" {
 - `key_id` - (Optional) Authentication key id for L3out BFD interface profile object. Default value is "1".
 - `name_alias` - (Optional) Name alias for L3out BFD interface profile object.
 - `interface_profile_type` - (Optional) Component type for L3out BFD interface profile object. Allowed values are "none" and "sha1". Default value is "none".
-- `userdom` - (Optional) Userdom for L3out BFD interface profile object. Default value is ":all:".
 
 - `relation_bfd_rs_if_pol` - (Optional) Relation to class bfdIfPol. Cardinality - N_TO_ONE. Type - String.
 
