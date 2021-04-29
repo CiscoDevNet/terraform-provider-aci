@@ -36,7 +36,7 @@ Allowed values: "A" and "B". Default value: "A".
 - `description` - (Optional) Description for object l3out VPC member.
 - `annotation` - (Optional) Annotation for object l3out VPC member.
 - `ipv6_dad` - (Optional) IPv6 DAD feature of l3out VPC member.
-  Allowed values: "disabled", "enabled". Default value: "enabled"
+  Allowed values: "disabled", "enabled". Default value: "enabled".
 - `ll_addr` - (Optional) Override of system generated IPv6 link-local address.
 - `name_alias` - (Optional) Name alias for object l3out vpc member.
 
