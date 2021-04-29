@@ -21,6 +21,7 @@ resource "aci_l3out_static_route_next_hop" "example" {
   name_alias  = "example"
   pref = "unspecified"
   nexthop_profile_type = "prefix"
+  description = "from terraform"
 
 }
 ```

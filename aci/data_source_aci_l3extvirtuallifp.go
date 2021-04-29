@@ -95,12 +95,6 @@ func dataSourceAciVirtualLogicalInterfaceProfile() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
-
-			"userdom": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
 		}),
 	}
 }

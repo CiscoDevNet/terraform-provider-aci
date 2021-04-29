@@ -20,6 +20,7 @@ resource "aci_l3out_hsrp_secondary_vip" "example" {
   annotation  = "example"
   config_issues = "GroupMac-Conflicts-Other-Group"
   name_alias  = "example"
+  description = "from terraform"
 
 }
 ```
