@@ -137,8 +137,8 @@ func resourceAciVPCExplicitProtectionGroupCreate(d *schema.ResourceData, m inter
 	if VPCExplicitProtectionGroup_id, ok := d.GetOk("vpc_explicit_protection_group_id"); ok {
 		fabricExplicitGEpAttr.VPCExplicitProtectionGroup_id = VPCExplicitProtectionGroup_id.(string)
 	}
-	fabricExplicitGEp := models.NewVPCExplicitProtectionGroup(fmt.Sprintf("fabric/protpol/expgep-%s", name), "uni", desc, fabricExplicitGEpAttr)
-	fabricExplicitGEp, err := aciClient.CreateVPCExplicitProtectionGroup(name, "", switch1, switch2, vpcDomainPolicy, fabricExplicitGEpAttr)
+	fabricExplicitGEp := models.NewVPCExplicitProtectionGroup(fmt.Sprintf("fabric/protpol/expgep-%s", name), "uni", fabricExplicitGEpAttr)
+	fabricExplicitGEp, err := aciClient.CreateVPCExplicitProtectionGroup(name, switch1, switch2, vpcDomainPolicy, fabricExplicitGEpAttr)
 	if err != nil {
 		return err
 	}
@@ -177,10 +177,10 @@ func resourceAciVPCExplicitProtectionGroupUpdate(d *schema.ResourceData, m inter
 	if VPCExplicitProtectionGroup_id, ok := d.GetOk("vpc_explicit_protection_group_id"); ok {
 		fabricExplicitGEpAttr.VPCExplicitProtectionGroup_id = VPCExplicitProtectionGroup_id.(string)
 	}
-	fabricExplicitGEp := models.NewVPCExplicitProtectionGroup(fmt.Sprintf("fabric/protpol/expgep-%s", name), "uni", desc, fabricExplicitGEpAttr)
+	fabricExplicitGEp := models.NewVPCExplicitProtectionGroup(fmt.Sprintf("fabric/protpol/expgep-%s", name), "uni", fabricExplicitGEpAttr)
 
 	fabricExplicitGEp.Status = "modified"
-	fabricExplicitGEp, err := aciClient.UpdateVPCExplicitProtectionGroup(name, desc, switch1, switch2, vpcDomainPolicy, fabricExplicitGEpAttr)
+	fabricExplicitGEp, err := aciClient.UpdateVPCExplicitProtectionGroup(name, switch1, switch2, vpcDomainPolicy, fabricExplicitGEpAttr)
 
 	if err != nil {
 		return err
