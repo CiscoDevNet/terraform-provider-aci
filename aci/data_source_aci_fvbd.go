@@ -1,16 +1,18 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func dataSourceAciBridgeDomain() *schema.Resource {
 	return &schema.Resource{
 
-		Read: dataSourceAciBridgeDomainRead,
+		ReadContext: dataSourceAciBridgeDomainRead,
 
 		SchemaVersion: 1,
 
@@ -154,7 +156,7 @@ func dataSourceAciBridgeDomain() *schema.Resource {
 	}
 }
 
-func dataSourceAciBridgeDomainRead(d *schema.ResourceData, m interface{}) error {
+func dataSourceAciBridgeDomainRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	aciClient := m.(*client.Client)
 
 	name := d.Get("name").(string)
@@ -167,7 +169,7 @@ func dataSourceAciBridgeDomainRead(d *schema.ResourceData, m interface{}) error 
 	fvBD, err := getRemoteBridgeDomain(aciClient, dn)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.SetId(dn)
 	setBridgeDomainAttributes(fvBD, d)

@@ -149,8 +149,6 @@ func resourceAciTenantCreate(ctx context.Context, d *schema.ResourceData, m inte
 			if err != nil {
 				return diag.FromErr(err)
 			}
-			d.Partial(true)
-			d.Partial(false)
 		}
 	}
 	if relationTofvRsTenantMonPol, ok := d.GetOk("relation_fv_rs_tenant_mon_pol"); ok {
@@ -195,9 +193,6 @@ func resourceAciTenantUpdate(ctx context.Context, d *schema.ResourceData, m inte
 	if err != nil {
 		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
 
@@ -244,9 +239,6 @@ func resourceAciTenantUpdate(ctx context.Context, d *schema.ResourceData, m inte
 			if err != nil {
 				return diag.FromErr(err)
 			}
-			d.Partial(true)
-			d.Partial(false)
-
 		}
 
 	}
@@ -257,9 +249,6 @@ func resourceAciTenantUpdate(ctx context.Context, d *schema.ResourceData, m inte
 		if err != nil {
 			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.Partial(false)
-
 	}
 
 	d.SetId(fvTenant.DistinguishedName)
