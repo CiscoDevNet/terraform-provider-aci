@@ -13,7 +13,7 @@ Data source for ACI Contract
 
 ```hcl
 data "aci_contract" "example" {
-  tenant_dn  = "aci_tenant.dev_tenant.id"
+  tenant_dn  = aci_tenant.dev_tenant.id
   name       = "contract_name"
 }
 ```
@@ -26,6 +26,7 @@ data "aci_contract" "example" {
 ## Attribute Reference
 
 * `id` - Attribute id set to the Dn of the Contract.
+* `description` - (Optional) Description for object contract.
 * `annotation` - (Optional) Annotation for object contract.
 * `name_alias` - (Optional) Name alias for object contract.
 * `prio` - (Optional) Priority level of the service contract.
