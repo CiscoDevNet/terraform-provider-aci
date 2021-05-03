@@ -26,11 +26,6 @@ func TestAccAciApplicationEPG_Basic(t *testing.T) {
 					testAccCheckAciApplicationEPGAttributes(description, "unspecified", &application_epg),
 				),
 			},
-			{
-				ResourceName:      "aci_application_epg",
-				ImportState:       true,
-				ImportStateVerify: true,
-			},
 		},
 	})
 }
@@ -163,10 +158,6 @@ func testAccCheckAciApplicationEPGAttributes(description, prio string, applicati
 
 		if "disabled" != application_epg.FloodOnEncap {
 			return fmt.Errorf("Bad application_epg flood_on_encap %s", application_epg.FloodOnEncap)
-		}
-
-		if "none" != application_epg.FwdCtrl {
-			return fmt.Errorf("Bad application_epg fwd_ctrl %s", application_epg.FwdCtrl)
 		}
 
 		if "no" != application_epg.HasMcastSource {
