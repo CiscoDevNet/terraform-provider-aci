@@ -27,3 +27,4 @@ data "aci_tenant" "example" {
 - `id` - Attribute id set to the Dn of the Tenant.
 - `annotation` - (Optional) Annotation for object tenant.
 - `name_alias` - (Optional) Name alias for object tenant.
+- `description` - (Optional) Description for object tenant.

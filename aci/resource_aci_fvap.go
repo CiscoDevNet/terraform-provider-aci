@@ -1,21 +1,23 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciApplicationProfile() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciApplicationProfileCreate,
-		Update: resourceAciApplicationProfileUpdate,
-		Read:   resourceAciApplicationProfileRead,
-		Delete: resourceAciApplicationProfileDelete,
+		CreateContext: resourceAciApplicationProfileCreate,
+		UpdateContext: resourceAciApplicationProfileUpdate,
+		ReadContext:   resourceAciApplicationProfileRead,
+		DeleteContext: resourceAciApplicationProfileDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciApplicationProfileImport,
@@ -121,7 +123,7 @@ func resourceAciApplicationProfileImport(d *schema.ResourceData, m interface{}) 
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciApplicationProfileCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciApplicationProfileCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] ApplicationProfile: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -146,11 +148,8 @@ func resourceAciApplicationProfileCreate(d *schema.ResourceData, m interface{}) 
 
 	err := aciClient.Save(fvAp)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
 
@@ -162,7 +161,7 @@ func resourceAciApplicationProfileCreate(d *schema.ResourceData, m interface{}) 
 	d.Partial(true)
 	err = checkTDn(aciClient, checkDns)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Partial(false)
 
@@ -171,20 +170,17 @@ func resourceAciApplicationProfileCreate(d *schema.ResourceData, m interface{}) 
 		relationParamName := GetMOName(relationParam)
 		err = aciClient.CreateRelationfvRsApMonPolFromApplicationProfile(fvAp.DistinguishedName, relationParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.Partial(false)
-
 	}
 
 	d.SetId(fvAp.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciApplicationProfileRead(d, m)
+	return resourceAciApplicationProfileRead(ctx, d, m)
 }
 
-func resourceAciApplicationProfileUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciApplicationProfileUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] ApplicationProfile: Beginning Update")
 
 	aciClient := m.(*client.Client)
@@ -213,11 +209,8 @@ func resourceAciApplicationProfileUpdate(d *schema.ResourceData, m interface{}) 
 	err := aciClient.Save(fvAp)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
 
@@ -229,7 +222,7 @@ func resourceAciApplicationProfileUpdate(d *schema.ResourceData, m interface{}) 
 	d.Partial(true)
 	err = checkTDn(aciClient, checkDns)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Partial(false)
 
@@ -238,25 +231,22 @@ func resourceAciApplicationProfileUpdate(d *schema.ResourceData, m interface{}) 
 		newRelParamName := GetMOName(newRelParam.(string))
 		err = aciClient.DeleteRelationfvRsApMonPolFromApplicationProfile(fvAp.DistinguishedName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 		err = aciClient.CreateRelationfvRsApMonPolFromApplicationProfile(fvAp.DistinguishedName, newRelParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.Partial(false)
-
 	}
 
 	d.SetId(fvAp.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciApplicationProfileRead(d, m)
+	return resourceAciApplicationProfileRead(ctx, d, m)
 
 }
 
-func resourceAciApplicationProfileRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciApplicationProfileRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -289,18 +279,18 @@ func resourceAciApplicationProfileRead(d *schema.ResourceData, m interface{}) er
 	return nil
 }
 
-func resourceAciApplicationProfileDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciApplicationProfileDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "fvAp")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
 }

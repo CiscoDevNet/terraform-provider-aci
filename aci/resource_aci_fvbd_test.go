@@ -26,11 +26,6 @@ func TestAccAciBridgeDomain_Basic(t *testing.T) {
 					testAccCheckAciBridgeDomainAttributes(description, "yes", &bridge_domain),
 				),
 			},
-			{
-				ResourceName:      "aci_bridge_domain",
-				ImportState:       true,
-				ImportStateVerify: true,
-			},
 		},
 	})
 }
