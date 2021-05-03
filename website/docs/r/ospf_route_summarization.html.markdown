@@ -16,6 +16,7 @@ Manages ACI OSPF Route Summarization
 resource "aci_ospf_route_summarization" "example" {
 
   tenant_dn  = "${aci_tenant.example.id}"
+  description = "from terraform"
   name  = "example"
   annotation  = "example"
   cost = "1"
@@ -31,6 +32,7 @@ resource "aci_ospf_route_summarization" "example" {
 - `tenant_dn` - (Required) Distinguished name of parent tenant object.
 - `name` - (Required) Name of object OSPF route summarization.
 - `annotation` - (Optional) Annotation for object OSPF route summarization.
+- `description` - Description for for object OSPF route summarization.
 - `cost` - (Optional) The OSPF Area cost for the default summary LSAs. The Area cost is used with NSSA and stub area types only. Default value: "unspecified".
 - `inter_area_enabled` - (Optional) Inter area enabled flag for object OSPF route summarization.
   Allowed values: "no", "yes". Default value: "no".

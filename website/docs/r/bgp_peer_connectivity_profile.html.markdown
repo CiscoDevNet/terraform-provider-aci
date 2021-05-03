@@ -16,6 +16,7 @@ Manages ACI BGP Peer Connectivity Profile
 resource "aci_bgp_peer_connectivity_profile" "example" {
   logical_node_profile_dn = "${aci_logical_node_profile.example.id}"
   addr                    = "10.0.0.1"
+  description             = "from terraform"
   addr_t_ctrl             = "af-mcast,af-ucast"
   allowed_self_as_cnt     = "3"
   annotation              = "example"
@@ -36,7 +37,6 @@ resource "aci_bgp_peer_connectivity_profile" "example" {
 
 - `logical_node_profile_dn` - (Required) Distinguished name of parent logical node profile object.
 - `addr` - (Required) The peer IP address.
-
 - `addr_t_ctrl` - (Optional) Ucast/Mcast Addr Type AF Control. (Multiple Comma-Delimited values are allowed. E.g., "af-mcast,af-ucast"). Apply "" to clear all the values.  
   Allowed values: "af-mcast", "af-ucast". Default value: "af-ucast".
 - `allowed_self_as_cnt` - (Optional) The number of occurrences of a local Autonomous System Number (ASN). Default value: "3".

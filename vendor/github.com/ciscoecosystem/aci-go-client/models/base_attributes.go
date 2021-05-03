@@ -6,11 +6,14 @@ import (
 	"github.com/ciscoecosystem/aci-go-client/container"
 )
 
-const baPayload = `
+const (
+	BaseurlStr = "/api/node/class"
+	baPayload  = `
 	"dn": "%s",
 	"name": "%s",
 	"descr": "%s",
 `
+)
 
 type BaseAttributes struct {
 	DistinguishedName string `json:"dn"`
@@ -35,17 +38,12 @@ func (ba *BaseAttributes) ToMap() (map[string]string, error) {
 		return nil, err
 	}
 	cont, err := container.ParseJSON([]byte(jsonData))
-
 	if err != nil {
 		return nil, err
 	}
-	//
-
 	cont.Set(ba.ClassName, "classname")
-
 	if err != nil {
 		return nil, err
 	}
-	//
 	return toStringMap(cont.Data()), nil
 }

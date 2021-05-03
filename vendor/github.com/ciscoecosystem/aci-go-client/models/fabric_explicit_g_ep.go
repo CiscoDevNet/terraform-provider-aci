@@ -25,12 +25,11 @@ type VPCExplicitProtectionGroupAttributes struct {
 	VpcDomainPolicy               string `json:",omitempty"`
 }
 
-func NewVPCExplicitProtectionGroup(fabricExplicitGEpRn, parentDn, description string, fabricExplicitGEpattr VPCExplicitProtectionGroupAttributes) *VPCExplicitProtectionGroup {
+func NewVPCExplicitProtectionGroup(fabricExplicitGEpRn, parentDn string, fabricExplicitGEpattr VPCExplicitProtectionGroupAttributes) *VPCExplicitProtectionGroup {
 	dn := fmt.Sprintf("%s/%s", parentDn, fabricExplicitGEpRn)
 	return &VPCExplicitProtectionGroup{
 		BaseAttributes: BaseAttributes{
 			DistinguishedName: dn,
-			Description:       description,
 			Status:            "created, modified",
 			ClassName:         FabricexplicitgepClassName,
 			Rn:                fabricExplicitGEpRn,
@@ -82,7 +81,6 @@ func VPCExplicitProtectionGroupFromContainerList(cont *container.Container, inde
 	return &VPCExplicitProtectionGroup{
 		BaseAttributes{
 			DistinguishedName: G(VPCExplicitProtectionGroupCont, "dn"),
-			Description:       G(VPCExplicitProtectionGroupCont, "descr"),
 			Status:            G(VPCExplicitProtectionGroupCont, "status"),
 			ClassName:         FabricexplicitgepClassName,
 			Rn:                G(VPCExplicitProtectionGroupCont, "rn"),

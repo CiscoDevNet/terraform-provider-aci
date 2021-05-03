@@ -190,6 +190,13 @@ func Provider() terraform.ResourceProvider {
 			"aci_bgp_route_control_profile":                resourceAciRouteControlProfile(),
 			"aci_l3out_hsrp_interface_group":               resourceAciHSRPGroupProfile(),
 			"aci_l3out_floating_svi":                       resourceAciVirtualLogicalInterfaceProfile(),
+			"aci_l3out_hsrp_secondary_vip":                 resourceAciL3outHSRPSecondaryVIP(),
+			"aci_l3out_bfd_interface_profile":              resourceAciBFDInterfaceProfile(),
+			"aci_l3out_bgp_protocol_profile":               resourceAciL3outBGPProtocolProfile(),
+			"aci_l3out_route_tag_policy":                   resourceAciL3outRouteTagPolicy(),
+			"aci_l3out_static_route":                       resourceAciL3outStaticRoute(),
+			"aci_l3out_static_route_next_hop":              resourceAciL3outStaticRouteNextHop(),
+			"aci_l3out_vpc_member":                         resourceAciL3outVPCMember(),
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
@@ -331,6 +338,13 @@ func Provider() terraform.ResourceProvider {
 			"aci_bgp_route_control_profile":                dataSourceAciRouteControlProfile(),
 			"aci_l3out_hsrp_interface_group":               dataSourceAciHSRPGroupProfile(),
 			"aci_l3out_floating_svi":                       dataSourceAciVirtualLogicalInterfaceProfile(),
+			"aci_l3out_hsrp_secondary_vip":                 dataSourceAciL3outHSRPSecondaryVIP(),
+			"aci_l3out_bfd_interface_profile":              dataSourceAciBFDInterfaceProfile(),
+			"aci_l3out_bgp_protocol_profile":               dataSourceAciL3outBGPProtocolProfile(),
+			"aci_l3out_route_tag_policy":                   dataSourceAciL3outRouteTagPolicy(),
+			"aci_l3out_static_route":                       dataSourceAciL3outStaticRoute(),
+			"aci_l3out_static_route_next_hop":              dataSourceAciL3outStaticRouteNextHop(),
+			"aci_l3out_vpc_member":                         dataSourceAciL3outVPCMember(),
 		},
 
 		ConfigureFunc: configureClient,
