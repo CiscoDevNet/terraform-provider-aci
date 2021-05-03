@@ -26,11 +26,6 @@ func TestAccAciContract_Basic(t *testing.T) {
 					testAccCheckAciContractAttributes(description, "tenant", &contract),
 				),
 			},
-			{
-				ResourceName:      "aci_contract",
-				ImportState:       true,
-				ImportStateVerify: true,
-			},
 		},
 	})
 }
