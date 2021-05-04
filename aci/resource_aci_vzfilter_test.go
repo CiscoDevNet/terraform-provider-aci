@@ -26,11 +26,6 @@ func TestAccAciFilter_Basic(t *testing.T) {
 					testAccCheckAciFilterAttributes(description, "alias_filter", &filter),
 				),
 			},
-			{
-				ResourceName:      "aci_filter",
-				ImportState:       true,
-				ImportStateVerify: true,
-			},
 		},
 	})
 }
@@ -66,7 +61,7 @@ func testAccCheckAciFilterConfig_basic(description, name_alias string) string {
 	return fmt.Sprintf(`
 
 	resource "aci_filter" "foofilter" {
-		tenant_dn   = "${aci_tenant.example.id}"
+		tenant_dn   = aci_tenant.example.id
 		description = "%s"
 		name        = "demo_filter"
 		annotation  = "tag_filter"

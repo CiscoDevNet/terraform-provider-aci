@@ -13,18 +13,19 @@ Data source for ACI Filter
 
 ```hcl
 data "aci_filter" "allow_http" {
-  tenant_dn  = "${aci_tenant.dev_tenant.id}"
+  tenant_dn  = aci_tenant.dev_tenant.id
   name       = "http_flt"
 }
 ```
 ## Argument Reference ##
 * `tenant_dn` - (Required) Distinguished name of parent Tenant object.
-* `name` - (Required) name of Object filter.
+* `name` - (Required) Name of Object filter.
 
 
 
 ## Attribute Reference
 
 * `id` - Attribute id set to the Dn of the Filter.
-* `annotation` - (Optional) annotation for object filter.
-* `name_alias` - (Optional) name_alias for object filter.
+* `description` - (Optional) Description for object filter.
+* `annotation` - (Optional) Annotation for object filter.
+* `name_alias` - (Optional) Name alias for object filter.
