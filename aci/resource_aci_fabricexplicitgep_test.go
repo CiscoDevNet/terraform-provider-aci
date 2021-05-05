@@ -26,11 +26,6 @@ func TestAccAciVPCExplicitProtectionGroup_Basic(t *testing.T) {
 					testAccCheckAciVPCExplicitProtectionGroupAttributes(description, &vpc_explicit_protection_group),
 				),
 			},
-			{
-				ResourceName:      "aci_vpc_explicit_protection_group",
-				ImportState:       true,
-				ImportStateVerify: true,
-			},
 		},
 	})
 }
@@ -67,10 +62,11 @@ func testAccCheckAciVPCExplicitProtectionGroupConfig_basic(description string) s
 
 	resource "aci_vpc_explicit_protection_group" "foovpc_explicit_protection_group" {
 		description = "%s"
-		
-		name  = "example"
-		  annotation  = "example"
-		  vpc_explicit_protection_group_id  = "example"
+		name  = "example2"
+		switch1 = "203"
+		switch2 = "204"
+		annotation  = "example"
+		vpc_explicit_protection_group_id  = "5"
 		}
 	`, description)
 }
@@ -126,11 +122,7 @@ func testAccCheckAciVPCExplicitProtectionGroupDestroy(s *terraform.State) error 
 func testAccCheckAciVPCExplicitProtectionGroupAttributes(description string, vpc_explicit_protection_group *models.VPCExplicitProtectionGroup) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 
-		if description != vpc_explicit_protection_group.Description {
-			return fmt.Errorf("Bad vpc_explicit_protection_group Description %s", vpc_explicit_protection_group.Description)
-		}
-
-		if "example" != vpc_explicit_protection_group.Name {
+		if "example2" != vpc_explicit_protection_group.Name {
 			return fmt.Errorf("Bad vpc_explicit_protection_group name %s", vpc_explicit_protection_group.Name)
 		}
 
@@ -138,7 +130,7 @@ func testAccCheckAciVPCExplicitProtectionGroupAttributes(description string, vpc
 			return fmt.Errorf("Bad vpc_explicit_protection_group annotation %s", vpc_explicit_protection_group.Annotation)
 		}
 
-		if "example" != vpc_explicit_protection_group.VPCExplicitProtectionGroup_id {
+		if "5" != vpc_explicit_protection_group.VPCExplicitProtectionGroup_id {
 			return fmt.Errorf("Bad vpc_explicit_protection_group vpc_explicit_protection_group_id %s", vpc_explicit_protection_group.VPCExplicitProtectionGroup_id)
 		}
 

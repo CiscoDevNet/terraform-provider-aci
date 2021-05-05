@@ -73,11 +73,7 @@ func getRemoteVPCExplicitProtectionGroup(client *client.Client, dn string) (*mod
 
 func setVPCExplicitProtectionGroupAttributes(fabricExplicitGEp *models.VPCExplicitProtectionGroup, d *schema.ResourceData) *schema.ResourceData {
 	d.SetId(fabricExplicitGEp.DistinguishedName)
-	if fabricExplicitGEp.Description == "{}" {
-		d.Set("description", fabricExplicitGEp.Description)
-	} else {
-		d.Set("description", fabricExplicitGEp.Description)
-	}
+
 	fabricExplicitGEpMap, _ := fabricExplicitGEp.ToMap()
 
 	d.Set("name", fabricExplicitGEpMap["name"])
@@ -119,8 +115,6 @@ func resourceAciVPCExplicitProtectionGroupImport(d *schema.ResourceData, m inter
 func resourceAciVPCExplicitProtectionGroupCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] VPCExplicitProtectionGroup: Beginning Creation")
 	aciClient := m.(*client.Client)
-	desc := d.Get("description").(string)
-
 	name := d.Get("name").(string)
 
 	switch1 := d.Get("switch1").(string)
@@ -141,8 +135,8 @@ func resourceAciVPCExplicitProtectionGroupCreate(ctx context.Context, d *schema.
 	if VPCExplicitProtectionGroup_id, ok := d.GetOk("vpc_explicit_protection_group_id"); ok {
 		fabricExplicitGEpAttr.VPCExplicitProtectionGroup_id = VPCExplicitProtectionGroup_id.(string)
 	}
-	fabricExplicitGEp := models.NewVPCExplicitProtectionGroup(fmt.Sprintf("fabric/protpol/expgep-%s", name), "uni", desc, fabricExplicitGEpAttr)
-	fabricExplicitGEp, err := aciClient.CreateVPCExplicitProtectionGroup(name, "", switch1, switch2, vpcDomainPolicy, fabricExplicitGEpAttr)
+	fabricExplicitGEp := models.NewVPCExplicitProtectionGroup(fmt.Sprintf("fabric/protpol/expgep-%s", name), "uni", fabricExplicitGEpAttr)
+	fabricExplicitGEp, err := aciClient.CreateVPCExplicitProtectionGroup(name, switch1, switch2, vpcDomainPolicy, fabricExplicitGEpAttr)
 	if err != nil {
 		return diag.FromErr(err)
 	}
@@ -157,7 +151,6 @@ func resourceAciVPCExplicitProtectionGroupUpdate(ctx context.Context, d *schema.
 	log.Printf("[DEBUG] VPCExplicitProtectionGroup: Beginning Update")
 
 	aciClient := m.(*client.Client)
-	desc := d.Get("description").(string)
 
 	name := d.Get("name").(string)
 	switch1 := d.Get("switch1").(string)
@@ -177,10 +170,10 @@ func resourceAciVPCExplicitProtectionGroupUpdate(ctx context.Context, d *schema.
 	if VPCExplicitProtectionGroup_id, ok := d.GetOk("vpc_explicit_protection_group_id"); ok {
 		fabricExplicitGEpAttr.VPCExplicitProtectionGroup_id = VPCExplicitProtectionGroup_id.(string)
 	}
-	fabricExplicitGEp := models.NewVPCExplicitProtectionGroup(fmt.Sprintf("fabric/protpol/expgep-%s", name), "uni", desc, fabricExplicitGEpAttr)
+	fabricExplicitGEp := models.NewVPCExplicitProtectionGroup(fmt.Sprintf("fabric/protpol/expgep-%s", name), "uni", fabricExplicitGEpAttr)
 
 	fabricExplicitGEp.Status = "modified"
-	fabricExplicitGEp, err := aciClient.UpdateVPCExplicitProtectionGroup(name, desc, switch1, switch2, vpcDomainPolicy, fabricExplicitGEpAttr)
+	fabricExplicitGEp, err := aciClient.UpdateVPCExplicitProtectionGroup(name, switch1, switch2, vpcDomainPolicy, fabricExplicitGEpAttr)
 
 	if err != nil {
 		return diag.FromErr(err)

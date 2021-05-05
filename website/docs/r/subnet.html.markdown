@@ -34,7 +34,7 @@ Manages ACI Subnet
 - `ip` - (Required) The IP address and mask of the default gateway.
 - `annotation` - (Optional) Annotation for object subnet.
 - `description` - (Optional) Description for object subnet.
-- `ctrl` - (Optional) The list of subnet control state. The control can be specific protocols applied to the subnet such as IGMP Snooping. Allowed values are "unspecified", "querier", "nd" and "no-default-gateway". Default is "nd".
+- `ctrl` - (Optional) The list of subnet control state. The control can be specific protocols applied to the subnet such as IGMP Snooping. Allowed values are "unspecified", "querier", "nd" and "no-default-gateway". Default is "nd". NOTE: "unspecified" should't be used along with other values.
 - `name_alias` - (Optional) Name alias for object subnet.
 - `preferred` - (Optional) Indicates if the subnet is preferred (primary) over the available alternatives. Only one preferred subnet is allowed. Allowed values are "yes" and "no". Default is "no".
 - `scope` - (Optional) The List of network visibility of the subnet. Allowed values are "private", "public" and "shared". Default is "private".
