@@ -1,16 +1,18 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func dataSourceAciExternalNetworkInstanceProfile() *schema.Resource {
 	return &schema.Resource{
 
-		Read: dataSourceAciExternalNetworkInstanceProfileRead,
+		ReadContext: dataSourceAciExternalNetworkInstanceProfileRead,
 
 		SchemaVersion: 1,
 
@@ -70,7 +72,7 @@ func dataSourceAciExternalNetworkInstanceProfile() *schema.Resource {
 	}
 }
 
-func dataSourceAciExternalNetworkInstanceProfileRead(d *schema.ResourceData, m interface{}) error {
+func dataSourceAciExternalNetworkInstanceProfileRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	aciClient := m.(*client.Client)
 
 	name := d.Get("name").(string)
@@ -83,7 +85,7 @@ func dataSourceAciExternalNetworkInstanceProfileRead(d *schema.ResourceData, m i
 	l3extInstP, err := getRemoteExternalNetworkInstanceProfile(aciClient, dn)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.SetId(dn)
 	setExternalNetworkInstanceProfileAttributes(l3extInstP, d)

@@ -1,16 +1,18 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func dataSourceAciContractSubject() *schema.Resource {
 	return &schema.Resource{
 
-		Read: dataSourceAciContractSubjectRead,
+		ReadContext: dataSourceAciContractSubjectRead,
 
 		SchemaVersion: 1,
 
@@ -64,7 +66,7 @@ func dataSourceAciContractSubject() *schema.Resource {
 	}
 }
 
-func dataSourceAciContractSubjectRead(d *schema.ResourceData, m interface{}) error {
+func dataSourceAciContractSubjectRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	aciClient := m.(*client.Client)
 
 	name := d.Get("name").(string)
@@ -77,7 +79,7 @@ func dataSourceAciContractSubjectRead(d *schema.ResourceData, m interface{}) err
 	vzSubj, err := getRemoteContractSubject(aciClient, dn)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.SetId(dn)
 	setContractSubjectAttributes(vzSubj, d)
