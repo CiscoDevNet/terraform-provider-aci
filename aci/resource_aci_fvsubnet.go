@@ -1,6 +1,7 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"reflect"
@@ -9,16 +10,17 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciSubnet() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciSubnetCreate,
-		Update: resourceAciSubnetUpdate,
-		Read:   resourceAciSubnetRead,
-		Delete: resourceAciSubnetDelete,
+		CreateContext: resourceAciSubnetCreate,
+		UpdateContext: resourceAciSubnetUpdate,
+		ReadContext:   resourceAciSubnetRead,
+		DeleteContext: resourceAciSubnetDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciSubnetImport,
@@ -277,7 +279,7 @@ func checkForConflictingIP(client *client.Client, parentDN string, ip string) er
 	return nil
 }
 
-func resourceAciSubnetCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciSubnetCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] Subnet: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -288,7 +290,7 @@ func resourceAciSubnetCreate(d *schema.ResourceData, m interface{}) error {
 
 	err := checkForConflictingIP(aciClient, BridgeDomainDn, ip)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	fvSubnetAttr := models.SubnetAttributes{}
@@ -329,11 +331,8 @@ func resourceAciSubnetCreate(d *schema.ResourceData, m interface{}) error {
 
 	err = aciClient.Save(fvSubnet)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
 
@@ -357,7 +356,7 @@ func resourceAciSubnetCreate(d *schema.ResourceData, m interface{}) error {
 	d.Partial(true)
 	err = checkTDn(aciClient, checkDns)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Partial(false)
 
@@ -368,10 +367,8 @@ func resourceAciSubnetCreate(d *schema.ResourceData, m interface{}) error {
 			err = aciClient.CreateRelationfvRsBDSubnetToOutFromSubnet(fvSubnet.DistinguishedName, relationParamName)
 
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
-			d.Partial(true)
-			d.Partial(false)
 		}
 	}
 	if relationTofvRsNdPfxPol, ok := d.GetOk("relation_fv_rs_nd_pfx_pol"); ok {
@@ -379,31 +376,25 @@ func resourceAciSubnetCreate(d *schema.ResourceData, m interface{}) error {
 		relationParamName := GetMOName(relationParam)
 		err = aciClient.CreateRelationfvRsNdPfxPolFromSubnet(fvSubnet.DistinguishedName, relationParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.Partial(false)
-
 	}
 	if relationTofvRsBDSubnetToProfile, ok := d.GetOk("relation_fv_rs_bd_subnet_to_profile"); ok {
 		relationParam := relationTofvRsBDSubnetToProfile.(string)
 		relationParamName := GetMOName(relationParam)
 		err = aciClient.CreateRelationfvRsBDSubnetToProfileFromSubnet(fvSubnet.DistinguishedName, relationParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.Partial(false)
-
 	}
 
 	d.SetId(fvSubnet.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciSubnetRead(d, m)
+	return resourceAciSubnetRead(ctx, d, m)
 }
 
-func resourceAciSubnetUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciSubnetUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] Subnet: Beginning Update")
 
 	aciClient := m.(*client.Client)
@@ -454,11 +445,8 @@ func resourceAciSubnetUpdate(d *schema.ResourceData, m interface{}) error {
 	err := aciClient.Save(fvSubnet)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
 
@@ -486,7 +474,7 @@ func resourceAciSubnetUpdate(d *schema.ResourceData, m interface{}) error {
 	d.Partial(true)
 	err = checkTDn(aciClient, checkDns)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Partial(false)
 
@@ -501,7 +489,7 @@ func resourceAciSubnetUpdate(d *schema.ResourceData, m interface{}) error {
 			relDnName := GetMOName(relDn)
 			err = aciClient.DeleteRelationfvRsBDSubnetToOutFromSubnet(fvSubnet.DistinguishedName, relDnName)
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 		}
@@ -510,53 +498,43 @@ func resourceAciSubnetUpdate(d *schema.ResourceData, m interface{}) error {
 			relDnName := GetMOName(relDn)
 			err = aciClient.CreateRelationfvRsBDSubnetToOutFromSubnet(fvSubnet.DistinguishedName, relDnName)
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
-			d.Partial(true)
-			d.Partial(false)
-
 		}
-
 	}
 	if d.HasChange("relation_fv_rs_nd_pfx_pol") {
 		_, newRelParam := d.GetChange("relation_fv_rs_nd_pfx_pol")
 		newRelParamName := GetMOName(newRelParam.(string))
 		err = aciClient.DeleteRelationfvRsNdPfxPolFromSubnet(fvSubnet.DistinguishedName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 		err = aciClient.CreateRelationfvRsNdPfxPolFromSubnet(fvSubnet.DistinguishedName, newRelParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.Partial(false)
-
 	}
 	if d.HasChange("relation_fv_rs_bd_subnet_to_profile") {
 		_, newRelParam := d.GetChange("relation_fv_rs_bd_subnet_to_profile")
 		newRelParamName := GetMOName(newRelParam.(string))
 		err = aciClient.DeleteRelationfvRsBDSubnetToProfileFromSubnet(fvSubnet.DistinguishedName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 		err = aciClient.CreateRelationfvRsBDSubnetToProfileFromSubnet(fvSubnet.DistinguishedName, newRelParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.Partial(false)
-
 	}
 
 	d.SetId(fvSubnet.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciSubnetRead(d, m)
+	return resourceAciSubnetRead(ctx, d, m)
 
 }
 
-func resourceAciSubnetRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciSubnetRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -626,18 +604,18 @@ func resourceAciSubnetRead(d *schema.ResourceData, m interface{}) error {
 	return nil
 }
 
-func resourceAciSubnetDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciSubnetDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "fvSubnet")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
 }
