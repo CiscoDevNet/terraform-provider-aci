@@ -13,8 +13,7 @@ Data source for ACI Application EPG
 
 ```hcl
 data "aci_application_epg" "foo_epg" {
-
-  application_profile_dn  = "aci_application_profile.foo_app.id"
+  application_profile_dn  = aci_application_profile.foo_app.id
   name                    = "dev_app_epg"
 }
 ```

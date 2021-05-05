@@ -14,7 +14,7 @@ Data source for ACI Bridge Domain
 
 ```hcl
 data "aci_bridge_domain" "dev_bd" {
-  tenant_dn  = "${aci_tenant.dev_tenant.id}"
+  tenant_dn  = aci_tenant.dev_tenant.id
   name       = "foo_bd"
 }
 ```
