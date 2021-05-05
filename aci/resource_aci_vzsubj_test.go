@@ -26,11 +26,6 @@ func TestAccAciContractSubject_Basic(t *testing.T) {
 					testAccCheckAciContractSubjectAttributes(description, "AtleastOne", &contract_subject),
 				),
 			},
-			{
-				ResourceName:      "aci_contract_subject",
-				ImportState:       true,
-				ImportStateVerify: true,
-			},
 		},
 	})
 }
@@ -66,7 +61,7 @@ func testAccCheckAciContractSubjectConfig_basic(description, cons_match_t string
 	return fmt.Sprintf(`
 
 	resource "aci_contract_subject" "foocontract_subject" {
-		contract_dn   = "${aci_contract.example.id}"
+		contract_dn   = "uni/tn-test_rutvik_tenant/brc-demo_contract"
 		description   = "%s"
 		name          = "demo_subject"
 		annotation    = "tag_subject"

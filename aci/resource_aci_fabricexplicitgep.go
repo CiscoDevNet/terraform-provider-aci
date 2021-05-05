@@ -1,20 +1,22 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func resourceAciVPCExplicitProtectionGroup() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciVPCExplicitProtectionGroupCreate,
-		Update: resourceAciVPCExplicitProtectionGroupUpdate,
-		Read:   resourceAciVPCExplicitProtectionGroupRead,
-		Delete: resourceAciVPCExplicitProtectionGroupDelete,
+		CreateContext: resourceAciVPCExplicitProtectionGroupCreate,
+		UpdateContext: resourceAciVPCExplicitProtectionGroupUpdate,
+		ReadContext:   resourceAciVPCExplicitProtectionGroupRead,
+		DeleteContext: resourceAciVPCExplicitProtectionGroupDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciVPCExplicitProtectionGroupImport,
@@ -51,6 +53,7 @@ func resourceAciVPCExplicitProtectionGroup() *schema.Resource {
 		}),
 	}
 }
+
 func getRemoteVPCExplicitProtectionGroup(client *client.Client, dn string) (*models.VPCExplicitProtectionGroup, error) {
 	baseurlStr := "/api/node/mo"
 	dnUrl := fmt.Sprintf("%s/%s.json?rsp-subtree=children", baseurlStr, dn)
@@ -70,11 +73,7 @@ func getRemoteVPCExplicitProtectionGroup(client *client.Client, dn string) (*mod
 
 func setVPCExplicitProtectionGroupAttributes(fabricExplicitGEp *models.VPCExplicitProtectionGroup, d *schema.ResourceData) *schema.ResourceData {
 	d.SetId(fabricExplicitGEp.DistinguishedName)
-	if fabricExplicitGEp.Description == "{}" {
-		d.Set("description", fabricExplicitGEp.Description)
-	} else {
-		d.Set("description", fabricExplicitGEp.Description)
-	}
+
 	fabricExplicitGEpMap, _ := fabricExplicitGEp.ToMap()
 
 	d.Set("name", fabricExplicitGEpMap["name"])
@@ -113,11 +112,9 @@ func resourceAciVPCExplicitProtectionGroupImport(d *schema.ResourceData, m inter
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciVPCExplicitProtectionGroupCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciVPCExplicitProtectionGroupCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] VPCExplicitProtectionGroup: Beginning Creation")
 	aciClient := m.(*client.Client)
-	desc := d.Get("description").(string)
-
 	name := d.Get("name").(string)
 
 	switch1 := d.Get("switch1").(string)
@@ -138,26 +135,22 @@ func resourceAciVPCExplicitProtectionGroupCreate(d *schema.ResourceData, m inter
 	if VPCExplicitProtectionGroup_id, ok := d.GetOk("vpc_explicit_protection_group_id"); ok {
 		fabricExplicitGEpAttr.VPCExplicitProtectionGroup_id = VPCExplicitProtectionGroup_id.(string)
 	}
-	fabricExplicitGEp := models.NewVPCExplicitProtectionGroup(fmt.Sprintf("fabric/protpol/expgep-%s", name), "uni", desc, fabricExplicitGEpAttr)
-	fabricExplicitGEp, err := aciClient.CreateVPCExplicitProtectionGroup(name, "", switch1, switch2, vpcDomainPolicy, fabricExplicitGEpAttr)
+	fabricExplicitGEp := models.NewVPCExplicitProtectionGroup(fmt.Sprintf("fabric/protpol/expgep-%s", name), "uni", fabricExplicitGEpAttr)
+	fabricExplicitGEp, err := aciClient.CreateVPCExplicitProtectionGroup(name, switch1, switch2, vpcDomainPolicy, fabricExplicitGEpAttr)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.Partial(false)
 
 	d.SetId(fabricExplicitGEp.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciVPCExplicitProtectionGroupRead(d, m)
+	return resourceAciVPCExplicitProtectionGroupRead(ctx, d, m)
 }
 
-func resourceAciVPCExplicitProtectionGroupUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciVPCExplicitProtectionGroupUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] VPCExplicitProtectionGroup: Beginning Update")
 
 	aciClient := m.(*client.Client)
-	desc := d.Get("description").(string)
 
 	name := d.Get("name").(string)
 	switch1 := d.Get("switch1").(string)
@@ -177,26 +170,23 @@ func resourceAciVPCExplicitProtectionGroupUpdate(d *schema.ResourceData, m inter
 	if VPCExplicitProtectionGroup_id, ok := d.GetOk("vpc_explicit_protection_group_id"); ok {
 		fabricExplicitGEpAttr.VPCExplicitProtectionGroup_id = VPCExplicitProtectionGroup_id.(string)
 	}
-	fabricExplicitGEp := models.NewVPCExplicitProtectionGroup(fmt.Sprintf("fabric/protpol/expgep-%s", name), "uni", desc, fabricExplicitGEpAttr)
+	fabricExplicitGEp := models.NewVPCExplicitProtectionGroup(fmt.Sprintf("fabric/protpol/expgep-%s", name), "uni", fabricExplicitGEpAttr)
 
 	fabricExplicitGEp.Status = "modified"
-	fabricExplicitGEp, err := aciClient.UpdateVPCExplicitProtectionGroup(name, desc, switch1, switch2, vpcDomainPolicy, fabricExplicitGEpAttr)
+	fabricExplicitGEp, err := aciClient.UpdateVPCExplicitProtectionGroup(name, switch1, switch2, vpcDomainPolicy, fabricExplicitGEpAttr)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.Partial(false)
 
 	d.SetId(fabricExplicitGEp.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciVPCExplicitProtectionGroupRead(d, m)
+	return resourceAciVPCExplicitProtectionGroupRead(ctx, d, m)
 
 }
 
-func resourceAciVPCExplicitProtectionGroupRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciVPCExplicitProtectionGroupRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -215,18 +205,18 @@ func resourceAciVPCExplicitProtectionGroupRead(d *schema.ResourceData, m interfa
 	return nil
 }
 
-func resourceAciVPCExplicitProtectionGroupDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciVPCExplicitProtectionGroupDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "fabricExplicitGEp")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
 }

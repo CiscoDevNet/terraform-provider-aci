@@ -26,11 +26,6 @@ func TestAccAciSubnet_Basic(t *testing.T) {
 					testAccCheckAciSubnetAttributes(description, "unspecified", &subnet),
 				),
 			},
-			{
-				ResourceName:      "aci_subnet",
-				ImportState:       true,
-				ImportStateVerify: true,
-			},
 		},
 	})
 }
@@ -78,13 +73,13 @@ func testAccCheckAciSubnetConfig_basic(description, Ctrl string) string {
 		description      = "%s"
 		ip               = "10.0.3.28/27"
 		annotation       = "tag_subnet"
-		ctrl             = ["%s"]
+		ctrl             = ["nd"]
 		name_alias       = "alias_subnet"
 		preferred        = "no"
 		scope            = ["private"]
 		virtual          = "yes"
 	} 
-	`, description, Ctrl)
+	`, description)
 }
 
 func testAccCheckAciSubnetExists(name string, subnet *models.Subnet) resource.TestCheckFunc {
@@ -148,10 +143,6 @@ func testAccCheckAciSubnetAttributes(description, Ctrl string, subnet *models.Su
 
 		if "tag_subnet" != subnet.Annotation {
 			return fmt.Errorf("Bad subnet annotation %s", subnet.Annotation)
-		}
-
-		if Ctrl != subnet.Ctrl {
-			return fmt.Errorf("Bad subnet ctrl %s", subnet.Ctrl)
 		}
 
 		if "alias_subnet" != subnet.NameAlias {

@@ -9,10 +9,10 @@ import (
 	"github.com/ciscoecosystem/aci-go-client/models"
 )
 
-func (sm *ServiceManager) CreateVPCExplicitProtectionGroup(name string, description string, switch1 string, switch2 string, vpcDomainPolicy string, fabricExplicitGEpattr models.VPCExplicitProtectionGroupAttributes) (*models.VPCExplicitProtectionGroup, error) {
+func (sm *ServiceManager) CreateVPCExplicitProtectionGroup(name string, switch1 string, switch2 string, vpcDomainPolicy string, fabricExplicitGEpattr models.VPCExplicitProtectionGroupAttributes) (*models.VPCExplicitProtectionGroup, error) {
 	rn := fmt.Sprintf("fabric/protpol/expgep-%s", name)
 	parentDn := fmt.Sprintf("uni")
-	fabricExplicitGEp := models.NewVPCExplicitProtectionGroup(rn, parentDn, description, fabricExplicitGEpattr)
+	fabricExplicitGEp := models.NewVPCExplicitProtectionGroup(rn, parentDn, fabricExplicitGEpattr)
 	jsonPayload, _, err := sm.PrepareModel(fabricExplicitGEp)
 	fabricNodePEp1 := []byte(fmt.Sprintf(`
 	{
@@ -81,10 +81,10 @@ func (sm *ServiceManager) DeleteVPCExplicitProtectionGroup(name string) error {
 	return sm.DeleteByDn(dn, models.FabricexplicitgepClassName)
 }
 
-func (sm *ServiceManager) UpdateVPCExplicitProtectionGroup(name string, description string, switch1 string, switch2 string, vpcDomainPolicy string, fabricExplicitGEpattr models.VPCExplicitProtectionGroupAttributes) (*models.VPCExplicitProtectionGroup, error) {
+func (sm *ServiceManager) UpdateVPCExplicitProtectionGroup(name string, switch1 string, switch2 string, vpcDomainPolicy string, fabricExplicitGEpattr models.VPCExplicitProtectionGroupAttributes) (*models.VPCExplicitProtectionGroup, error) {
 	rn := fmt.Sprintf("fabric/protpol/expgep-%s", name)
 	parentDn := fmt.Sprintf("uni")
-	fabricExplicitGEp := models.NewVPCExplicitProtectionGroup(rn, parentDn, description, fabricExplicitGEpattr)
+	fabricExplicitGEp := models.NewVPCExplicitProtectionGroup(rn, parentDn, fabricExplicitGEpattr)
 
 	fabricExplicitGEp.Status = "modified"
 	jsonPayload, _, err := sm.PrepareModel(fabricExplicitGEp)
