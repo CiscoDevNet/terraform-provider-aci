@@ -44,7 +44,7 @@ Manages ACI Application EPG
 * `name_alias` - (Optional) Name alias for object application epg.
 * `pc_enf_pref` - (Optional) The preferred policy control. Allowed values are "unenforced" and "enforced". Default is "unenforced".
 * `pref_gr_memb` - (Optional) Represents parameter used to determine if EPg is part of a group that does not a contract for communication. Allowed values are "exclude" and "include". Default is "exclude".
-* `prio` - (Optional) QoS priority class id. Allowed values are "unspecified", "level1", "level2", "level3" and "level4". Default is "unspecified.
+* `prio` - (Optional) QoS priority class id. Allowed values are "unspecified", "level1", "level2", "level3" and "level4". Default is value of prio in aci application profile .
 * `shutdown` - (Optional) Shutdown for object application epg. Allowed values are "yes" and "no". Default is "no".
 
 * `relation_fv_rs_bd` - (Optional) Relation to class fvBD. Cardinality - N_TO_ONE. Type - String.
