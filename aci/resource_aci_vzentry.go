@@ -250,7 +250,11 @@ func setFilterEntryAttributes(vzEntry *models.FilterEntry, d *schema.ResourceDat
 	d.Set("name_alias", vzEntryMap["nameAlias"])
 	d.Set("prot", vzEntryMap["prot"])
 	d.Set("stateful", vzEntryMap["stateful"])
-	d.Set("tcp_rules", vzEntryMap["tcpRules"])
+	if vzEntryMap["tcpRules"] == "" {
+		d.Set("tcp_rules", "unspecified")
+	} else {
+		d.Set("tcp_rules", vzEntryMap["tcpRules"])
+	}
 	return d
 }
 
