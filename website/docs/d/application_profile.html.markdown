@@ -22,7 +22,7 @@ data "aci_application_profile" "dev_apps" {
 ## Argument Reference
 
 - `tenant_dn` - (Required) Distinguished name of parent Tenant object.
-- `name` - (Required) Name of Object application_profile.
+- `name` - (Required) Name of Object application profile.
 
 ## Attribute Reference
 
