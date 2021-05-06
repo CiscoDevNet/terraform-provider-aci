@@ -6,8 +6,8 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciL3outStaticRouteNextHop() *schema.Resource {
@@ -155,11 +155,6 @@ func resourceAciL3outStaticRouteNextHopCreate(d *schema.ResourceData, m interfac
 	if err != nil {
 		return err
 	}
-	d.Partial(true)
-
-	d.SetPartial("nh_addr")
-
-	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
 
@@ -187,9 +182,6 @@ func resourceAciL3outStaticRouteNextHopCreate(d *schema.ResourceData, m interfac
 		if err != nil {
 			return err
 		}
-		d.Partial(true)
-		d.SetPartial("relation_ip_rs_nexthop_route_track")
-		d.Partial(false)
 
 	}
 	if relationToipRsNHTrackMember, ok := d.GetOk("relation_ip_rs_nh_track_member"); ok {
@@ -198,10 +190,6 @@ func resourceAciL3outStaticRouteNextHopCreate(d *schema.ResourceData, m interfac
 		if err != nil {
 			return err
 		}
-		d.Partial(true)
-		d.SetPartial("relation_ip_rs_nh_track_member")
-		d.Partial(false)
-
 	}
 
 	d.SetId(ipNexthopP.DistinguishedName)
@@ -244,11 +232,6 @@ func resourceAciL3outStaticRouteNextHopUpdate(d *schema.ResourceData, m interfac
 	if err != nil {
 		return err
 	}
-	d.Partial(true)
-
-	d.SetPartial("nh_addr")
-
-	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
 
@@ -280,9 +263,6 @@ func resourceAciL3outStaticRouteNextHopUpdate(d *schema.ResourceData, m interfac
 		if err != nil {
 			return err
 		}
-		d.Partial(true)
-		d.SetPartial("relation_ip_rs_nexthop_route_track")
-		d.Partial(false)
 
 	}
 	if d.HasChange("relation_ip_rs_nh_track_member") {
@@ -295,9 +275,6 @@ func resourceAciL3outStaticRouteNextHopUpdate(d *schema.ResourceData, m interfac
 		if err != nil {
 			return err
 		}
-		d.Partial(true)
-		d.SetPartial("relation_ip_rs_nh_track_member")
-		d.Partial(false)
 
 	}
 
