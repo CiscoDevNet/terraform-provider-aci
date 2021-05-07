@@ -28,6 +28,7 @@ Manages ACI Bridge Domain
 		ip_learning                 = "yes"
 		ipv6_mcast_allow            = "no"
 		limit_ip_learn_to_subnets   = "yes"
+		ll_addr						= "::"
 		mac                         = "00:22:BD:F8:19:FF"
 		mcast_allow                 = "yes"
 		multi_dst_pkt_act           = "bd-flood"
@@ -36,6 +37,7 @@ Manages ACI Bridge Domain
 		unicast_route               = "no"
 		unk_mac_ucast_act           = "flood"
 		unk_mcast_act               = "flood"
+		v6unk_mcast_act				= "flood"
 		vmac                        = "not-applicable"
 	}
 ```
@@ -56,7 +58,7 @@ Manages ACI Bridge Domain
 - `ip_learning` - (Optional) Endpoint Dataplane Learning. Allowed values are "yes" and "no". Default is "yes".
 - `ipv6_mcast_allow` - (Optional) Flag to indicate multicast IpV6 is allowed or not. Allowed values are "yes" and "no". Default is "no".
 - `limit_ip_learn_to_subnets` - (Optional) Limits IP address learning to the bridge domain subnets only. Every BD can have multiple subnets associated with it. By default, all IPs are learned. Allowed values are "yes" and "no". Default is "yes".
-- `ll_addr` - (Optional) Override of system generated ipv6 link-local address.
+- `ll_addr` - (Optional) Override of system generated ipv6 link-local address. Default value is "::".
 - `mac` - (Optional) The MAC address of the bridge domain (BD) or switched virtual interface (SVI). Every BD by default takes the fabric-wide default MAC address. You can override that address with a different one. By default the BD will take a 00:22:BD:F8:19:FF mac address.
 - `mcast_allow` - (Optional) Flag to indicate if multicast is enabled for IpV4 addresses. Allowed values are "yes" and "no". Default is "no".
 - `multi_dst_pkt_act` - (Optional) The multiple destination forwarding method for L2 Multicast, Broadcast, and Link Layer traffic types. Allowed values are "bd-flood", "encap-flood" and "drop". Default is "bd-flood".
@@ -65,8 +67,8 @@ Manages ACI Bridge Domain
 - `unicast_route` - (Optional) The forwarding method based on predefined forwarding criteria (IP or MAC address). Allowed values are "yes" and "no". Default is "yes".
 - `unk_mac_ucast_act` - (Optional) The forwarding method for unknown layer 2 destinations. Allowed values are "flood" and "proxy". Default is "proxy".
 - `unk_mcast_act` - (Optional) The parameter used by the node (i.e. a leaf) for forwarding data for an unknown multicast destination. Allowed values are "flood" and "opt-flood". Default is "flood".
-- `v6unk_mcast_act` - (Optional) M-cast action for object bridge_domain.
-- `vmac` - (Optional) Virtual MAC address of the BD/SVI. This is used when the BD is extended to multiple sites using l2 Outside. Only allowed values is "not-applicable".
+- `v6unk_mcast_act` - (Optional) M-cast action for object bridge_domain. Allowed values are "flood" and "opt-flood". Default is "flood".
+- `vmac` - (Optional) Virtual MAC address of the BD/SVI. This is used when the BD is extended to multiple sites using l2 Outside. Only allowed values is "not-applicable". Default value is "not-applicable".
 
 - `relation_fv_rs_bd_to_profile` - (Optional) Relation to class rtctrlProfile. Cardinality - N_TO_ONE. Type - String.
 - `relation_fv_rs_mldsn` - (Optional) Relation to class mldSnoopPol. Cardinality - N_TO_ONE. Type - String.
