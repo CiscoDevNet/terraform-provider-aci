@@ -20,9 +20,10 @@ Manages ACI Leaf Interface Profile
 	}
 ```
 ## Argument Reference ##
-* `name` - (Required) name of Object leaf_interface_profile.
-* `annotation` - (Optional) annotation for object leaf_interface_profile.
-* `name_alias` - (Optional) name_alias for object leaf_interface_profile.
+* `name` - (Required) Name of Object leaf_interface_profile.
+* `description` - (Optional) Description for object leaf_interface_profile.
+* `annotation` - (Optional) Annotation for object leaf_interface_profile.
+* `name_alias` - (Optional) Name alias for object leaf_interface_profile.
 
 
 
