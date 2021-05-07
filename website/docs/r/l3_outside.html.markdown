@@ -14,11 +14,11 @@ Manages ACI L3 Outside
 
 ```hcl
 	resource "aci_l3_outside" "fool3_outside" {
-		tenant_dn      = "${aci_tenant.dev_tenant.id}"
+		tenant_dn      = aci_tenant.dev_tenant.id
 		description    = "from terraform"
 		name           = "demo_l3out"
 		annotation     = "tag_l3out"
-		enforce_rtctrl = "%s"
+		enforce_rtctrl = "export"
 		name_alias     = "alias_out"
 		target_dscp    = "unspecified"
 	}
@@ -27,10 +27,11 @@ Manages ACI L3 Outside
 ## Argument Reference
 
 - `tenant_dn` - (Required) Distinguished name of parent Tenant object.
-- `name` - (Required) name of Object l3_outside.
-- `annotation` - (Optional) annotation for object l3_outside.
-- `enforce_rtctrl` - (Optional) enforce route control type. Allowed values are "import" and "export". Default is "export".
-- `name_alias` - (Optional) name_alias for object l3_outside.
+- `name` - (Required) Name of Object l3_outside.
+- `description`- (Optional) Description for object l3_outside.
+- `annotation` - (Optional) Annotation for object l3_outside.
+- `enforce_rtctrl` - (Optional) Enforce route control type. Allowed values are "import" and "export". Default is "export".
+- `name_alias` - (Optional) Name alias for object l3_outside.
 - `target_dscp` - (Optional) The target differentiated services code point (DSCP) of the path attached to the layer 3 outside profile. Allowed values are "CS0", "CS1", "AF11", "AF12", "AF13", "CS2", "AF21", "AF22", "AF23", "CS3", "AF31", "AF32", "AF33", "CS4", "AF41", "AF42", "AF43", "CS5", "VA", "EF", "CS6", "CS7" and "unspecified". Default is "unspecified".
 
 - `relation_l3ext_rs_dampening_pol` - (Optional) Relation to class rtctrlProfile. Cardinality - N_TO_M. Type - Set of Map.

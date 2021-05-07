@@ -26,6 +26,7 @@ data "aci_l3_outside" "dev_l3_out" {
 ## Attribute Reference
 
 * `id` - Attribute id set to the Dn of the L3 Outside.
+* `description`- (Optional) Description for object l3_outside.
 * `annotation` - (Optional) annotation for object l3_outside.
 * `enforce_rtctrl` - (Optional) enforce route control type
 * `name_alias` - (Optional) name_alias for object l3_outside.
