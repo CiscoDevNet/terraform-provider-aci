@@ -5,7 +5,7 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/container"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func (sm *ServiceManager) CreateApplicationEPG(name string, application_profile string, tenant string, description string, fvAEPgattr models.ApplicationEPGAttributes) (*models.ApplicationEPG, error) {

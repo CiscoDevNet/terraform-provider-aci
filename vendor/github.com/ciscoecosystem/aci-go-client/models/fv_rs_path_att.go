@@ -1,6 +1,5 @@
 package models
 
-
 import (
 	"fmt"
 	"strconv"
@@ -12,37 +11,25 @@ const FvrspathattClassName = "fvRsPathAtt"
 
 type StaticPath struct {
 	BaseAttributes
-    StaticPathAttributes 
+	StaticPathAttributes
 }
-  
+
 type StaticPathAttributes struct {
-	
-	
 	TDn string `json:",omitempty"`
-	
-	
-    
-	Annotation       string `json:",omitempty"`
-	
-    
-	Encap       string `json:",omitempty"`
-	
-    
-	InstrImedcy       string `json:",omitempty"`
-	
-    
-	Mode       string `json:",omitempty"`
-	
-    
-	PrimaryEncap       string `json:",omitempty"`
-	
-    	
-    
+
+	Annotation string `json:",omitempty"`
+
+	Encap string `json:",omitempty"`
+
+	InstrImedcy string `json:",omitempty"`
+
+	Mode string `json:",omitempty"`
+
+	PrimaryEncap string `json:",omitempty"`
 }
-   
 
 func NewStaticPath(fvRsPathAttRn, parentDn, description string, fvRsPathAttattr StaticPathAttributes) *StaticPath {
-	dn := fmt.Sprintf("%s/%s", parentDn, fvRsPathAttRn)  
+	dn := fmt.Sprintf("%s/%s", parentDn, fvRsPathAttRn)
 	return &StaticPath{
 		BaseAttributes: BaseAttributes{
 			DistinguishedName: dn,
@@ -51,9 +38,8 @@ func NewStaticPath(fvRsPathAttRn, parentDn, description string, fvRsPathAttattr 
 			ClassName:         FvrspathattClassName,
 			Rn:                fvRsPathAttRn,
 		},
-        
+
 		StaticPathAttributes: fvRsPathAttattr,
-         
 	}
 }
 
@@ -63,30 +49,17 @@ func (fvRsPathAtt *StaticPath) ToMap() (map[string]string, error) {
 		return nil, err
 	}
 
-	
-	
-	A(fvRsPathAttMap, "tDn",fvRsPathAtt.TDn)
-	
-	
-    
-	A(fvRsPathAttMap, "annotation",fvRsPathAtt.Annotation)
-	
-    
-	A(fvRsPathAttMap, "encap",fvRsPathAtt.Encap)
-	
-    
-	A(fvRsPathAttMap, "instrImedcy",fvRsPathAtt.InstrImedcy)
-	
-    
-	A(fvRsPathAttMap, "mode",fvRsPathAtt.Mode)
-	
-    
-	A(fvRsPathAttMap, "primaryEncap",fvRsPathAtt.PrimaryEncap)
-	
-    
-	
-    
-	
+	A(fvRsPathAttMap, "tDn", fvRsPathAtt.TDn)
+
+	A(fvRsPathAttMap, "annotation", fvRsPathAtt.Annotation)
+
+	A(fvRsPathAttMap, "encap", fvRsPathAtt.Encap)
+
+	A(fvRsPathAttMap, "instrImedcy", fvRsPathAtt.InstrImedcy)
+
+	A(fvRsPathAttMap, "mode", fvRsPathAtt.Mode)
+
+	A(fvRsPathAttMap, "primaryEncap", fvRsPathAtt.PrimaryEncap)
 
 	return fvRsPathAttMap, err
 }
@@ -102,33 +75,21 @@ func StaticPathFromContainerList(cont *container.Container, index int) *StaticPa
 			ClassName:         FvrspathattClassName,
 			Rn:                G(StaticPathCont, "rn"),
 		},
-        
+
 		StaticPathAttributes{
-		
-		
-			TDn : G(StaticPathCont, "tDn"),
-		
-		
-        
-	        Annotation : G(StaticPathCont, "annotation"),
-		
-        
-	        Encap : G(StaticPathCont, "encap"),
-		
-        
-	        InstrImedcy : G(StaticPathCont, "instrImedcy"),
-		
-        
-	        Mode : G(StaticPathCont, "mode"),
-		
-        
-	        PrimaryEncap : G(StaticPathCont, "primaryEncap"),
-		
-        
-		
-        		
-        },
-        
+
+			TDn: G(StaticPathCont, "tDn"),
+
+			Annotation: G(StaticPathCont, "annotation"),
+
+			Encap: G(StaticPathCont, "encap"),
+
+			InstrImedcy: G(StaticPathCont, "instrImedcy"),
+
+			Mode: G(StaticPathCont, "mode"),
+
+			PrimaryEncap: G(StaticPathCont, "primaryEncap"),
+		},
 	}
 }
 

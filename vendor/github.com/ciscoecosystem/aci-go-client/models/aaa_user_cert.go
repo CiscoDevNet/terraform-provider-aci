@@ -1,6 +1,5 @@
 package models
 
-
 import (
 	"fmt"
 	"strconv"
@@ -12,30 +11,21 @@ const AaausercertClassName = "aaaUserCert"
 
 type X509Certificate struct {
 	BaseAttributes
-    X509CertificateAttributes 
+	X509CertificateAttributes
 }
-  
+
 type X509CertificateAttributes struct {
-	
-	
 	Name string `json:",omitempty"`
-	
-	
-    
-	Annotation       string `json:",omitempty"`
-	
-    
-	Data       string `json:",omitempty"`
-	
-    
-	NameAlias       string `json:",omitempty"`
-	
-    
+
+	Annotation string `json:",omitempty"`
+
+	Data string `json:",omitempty"`
+
+	NameAlias string `json:",omitempty"`
 }
-   
 
 func NewX509Certificate(aaaUserCertRn, parentDn, description string, aaaUserCertattr X509CertificateAttributes) *X509Certificate {
-	dn := fmt.Sprintf("%s/%s", parentDn, aaaUserCertRn)  
+	dn := fmt.Sprintf("%s/%s", parentDn, aaaUserCertRn)
 	return &X509Certificate{
 		BaseAttributes: BaseAttributes{
 			DistinguishedName: dn,
@@ -44,9 +34,8 @@ func NewX509Certificate(aaaUserCertRn, parentDn, description string, aaaUserCert
 			ClassName:         AaausercertClassName,
 			Rn:                aaaUserCertRn,
 		},
-        
+
 		X509CertificateAttributes: aaaUserCertattr,
-         
 	}
 }
 
@@ -56,22 +45,13 @@ func (aaaUserCert *X509Certificate) ToMap() (map[string]string, error) {
 		return nil, err
 	}
 
-	
-	
-	A(aaaUserCertMap, "name",aaaUserCert.Name)
-	
-	
-    
-	A(aaaUserCertMap, "annotation",aaaUserCert.Annotation)
-	
-    
-	A(aaaUserCertMap, "data",aaaUserCert.Data)
-	
-    
-	A(aaaUserCertMap, "nameAlias",aaaUserCert.NameAlias)
-	
-    
-	
+	A(aaaUserCertMap, "name", aaaUserCert.Name)
+
+	A(aaaUserCertMap, "annotation", aaaUserCert.Annotation)
+
+	A(aaaUserCertMap, "data", aaaUserCert.Data)
+
+	A(aaaUserCertMap, "nameAlias", aaaUserCert.NameAlias)
 
 	return aaaUserCertMap, err
 }
@@ -87,25 +67,17 @@ func X509CertificateFromContainerList(cont *container.Container, index int) *X50
 			ClassName:         AaausercertClassName,
 			Rn:                G(X509CertificateCont, "rn"),
 		},
-        
+
 		X509CertificateAttributes{
-		
-		
-			Name : G(X509CertificateCont, "name"),
-		
-		
-        
-	        Annotation : G(X509CertificateCont, "annotation"),
-		
-        
-	        Data : G(X509CertificateCont, "data"),
-		
-        
-	        NameAlias : G(X509CertificateCont, "nameAlias"),
-		
-        		
-        },
-        
+
+			Name: G(X509CertificateCont, "name"),
+
+			Annotation: G(X509CertificateCont, "annotation"),
+
+			Data: G(X509CertificateCont, "data"),
+
+			NameAlias: G(X509CertificateCont, "nameAlias"),
+		},
 	}
 }
 

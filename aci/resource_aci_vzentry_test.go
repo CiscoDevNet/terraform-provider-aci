@@ -6,8 +6,8 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
 func TestAccAciFilterEntry_Basic(t *testing.T) {
@@ -25,11 +25,6 @@ func TestAccAciFilterEntry_Basic(t *testing.T) {
 					testAccCheckAciFilterEntryExists("aci_filter_entry.foofilter_entry", &filter_entry),
 					testAccCheckAciFilterEntryAttributes(description, "http", &filter_entry),
 				),
-			},
-			{
-				ResourceName:      "aci_filter_entry",
-				ImportState:       true,
-				ImportStateVerify: true,
 			},
 		},
 	})
@@ -64,29 +59,28 @@ func TestAccAciFilterEntry_update(t *testing.T) {
 
 func testAccCheckAciFilterEntryConfig_basic(description, d_from_port string) string {
 	return fmt.Sprintf(`
-
+	
 	resource "aci_filter_entry" "foofilter_entry" {
-		filter_dn     = "${aci_filter.example.id}"
+		filter_dn     = aci_filter.example.id
 		description   = "%s"
 		name          = "demo_entry"
 		annotation    = "tag_entry"
 		apply_to_frag = "no"
 		arp_opc       = "unspecified"
-		d_from_port   = "%s"
+		d_from_port   = "unspecified"
 		d_to_port     = "unspecified"
 		ether_t       = "ipv4"
 		icmpv4_t      = "unspecified"
 		icmpv6_t      = "unspecified"
 		match_dscp    = "CS0"
 		name_alias    = "alias_entry"
-		prot          = "icmp"
+		prot          = "tcp"
 		s_from_port   = "0"
 		s_to_port     = "0"
 		stateful      = "no"
 		tcp_rules     = "ack"
 	}
-	  
-	`, description, d_from_port)
+	`, description)
 }
 
 func testAccCheckAciFilterEntryExists(name string, filter_entry *models.FilterEntry) resource.TestCheckFunc {
@@ -160,7 +154,7 @@ func testAccCheckAciFilterEntryAttributes(description, d_from_port string, filte
 			return fmt.Errorf("Bad filter_entry arp_opc %s", filter_entry.ArpOpc)
 		}
 
-		if d_from_port != filter_entry.DFromPort {
+		if "unspecified" != filter_entry.DFromPort {
 			return fmt.Errorf("Bad filter_entry d_from_port %s", filter_entry.DFromPort)
 		}
 
@@ -188,15 +182,15 @@ func testAccCheckAciFilterEntryAttributes(description, d_from_port string, filte
 			return fmt.Errorf("Bad filter_entry name_alias %s", filter_entry.NameAlias)
 		}
 
-		if "icmp" != filter_entry.Prot {
+		if "tcp" != filter_entry.Prot {
 			return fmt.Errorf("Bad filter_entry prot %s", filter_entry.Prot)
 		}
 
-		if "0" != filter_entry.SFromPort {
+		if "unspecified" != filter_entry.SFromPort {
 			return fmt.Errorf("Bad filter_entry s_from_port %s", filter_entry.SFromPort)
 		}
 
-		if "0" != filter_entry.SToPort {
+		if "unspecified" != filter_entry.SToPort {
 			return fmt.Errorf("Bad filter_entry s_to_port %s", filter_entry.SToPort)
 		}
 

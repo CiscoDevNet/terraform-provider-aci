@@ -6,8 +6,8 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciCloudSubnet() *schema.Resource {
@@ -207,8 +207,6 @@ func resourceAciCloudSubnetCreate(d *schema.ResourceData, m interface{}) error {
 
 	d.Partial(true)
 
-	d.SetPartial("ip")
-
 	d.Partial(false)
 
 	if relationTocloudRsSubnetToFlowLog, ok := d.GetOk("relation_cloud_rs_subnet_to_flow_log"); ok {
@@ -219,7 +217,6 @@ func resourceAciCloudSubnetCreate(d *schema.ResourceData, m interface{}) error {
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_cloud_rs_subnet_to_flow_log")
 		d.Partial(false)
 
 	}
@@ -294,8 +291,6 @@ func resourceAciCloudSubnetUpdate(d *schema.ResourceData, m interface{}) error {
 	}
 	d.Partial(true)
 
-	d.SetPartial("ip")
-
 	d.Partial(false)
 
 	if d.HasChange("relation_cloud_rs_subnet_to_flow_log") {
@@ -310,7 +305,6 @@ func resourceAciCloudSubnetUpdate(d *schema.ResourceData, m interface{}) error {
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_cloud_rs_subnet_to_flow_log")
 		d.Partial(false)
 
 	}

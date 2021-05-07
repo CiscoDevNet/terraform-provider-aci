@@ -6,7 +6,7 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func resourceAciInterfaceProfile() *schema.Resource {
@@ -112,8 +112,6 @@ func resourceAciInterfaceProfileCreate(d *schema.ResourceData, m interface{}) er
 	}
 	d.Partial(true)
 
-	d.SetPartial("tdn")
-
 	d.Partial(false)
 
 	d.SetId(infraRsSpAccPortP.DistinguishedName)
@@ -148,8 +146,6 @@ func resourceAciInterfaceProfileUpdate(d *schema.ResourceData, m interface{}) er
 		return err
 	}
 	d.Partial(true)
-
-	d.SetPartial("tdn")
 
 	d.Partial(false)
 

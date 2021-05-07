@@ -9,8 +9,8 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciSpanningTreeInterfacePolicy() *schema.Resource {
@@ -140,9 +140,6 @@ func resourceAciSpanningTreeInterfacePolicyCreate(d *schema.ResourceData, m inte
 	if err != nil {
 		return err
 	}
-	d.Partial(true)
-	d.SetPartial("name")
-	d.Partial(false)
 
 	d.SetId(stpIfPol.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
@@ -184,9 +181,6 @@ func resourceAciSpanningTreeInterfacePolicyUpdate(d *schema.ResourceData, m inte
 	if err != nil {
 		return err
 	}
-	d.Partial(true)
-	d.SetPartial("name")
-	d.Partial(false)
 
 	d.SetId(stpIfPol.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())

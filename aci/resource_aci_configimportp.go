@@ -6,8 +6,8 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciConfigurationImportPolicy() *schema.Resource {
@@ -204,8 +204,6 @@ func resourceAciConfigurationImportPolicyCreate(d *schema.ResourceData, m interf
 	}
 	d.Partial(true)
 
-	d.SetPartial("name")
-
 	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
@@ -240,7 +238,6 @@ func resourceAciConfigurationImportPolicyCreate(d *schema.ResourceData, m interf
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_config_rs_import_source")
 		d.Partial(false)
 
 	}
@@ -251,7 +248,6 @@ func resourceAciConfigurationImportPolicyCreate(d *schema.ResourceData, m interf
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_trig_rs_triggerable")
 		d.Partial(false)
 
 	}
@@ -263,7 +259,6 @@ func resourceAciConfigurationImportPolicyCreate(d *schema.ResourceData, m interf
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_config_rs_remote_path")
 		d.Partial(false)
 
 	}
@@ -320,8 +315,6 @@ func resourceAciConfigurationImportPolicyUpdate(d *schema.ResourceData, m interf
 	}
 	d.Partial(true)
 
-	d.SetPartial("name")
-
 	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
@@ -360,7 +353,6 @@ func resourceAciConfigurationImportPolicyUpdate(d *schema.ResourceData, m interf
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_config_rs_import_source")
 		d.Partial(false)
 
 	}
@@ -371,7 +363,6 @@ func resourceAciConfigurationImportPolicyUpdate(d *schema.ResourceData, m interf
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_trig_rs_triggerable")
 		d.Partial(false)
 
 	}
@@ -387,7 +378,6 @@ func resourceAciConfigurationImportPolicyUpdate(d *schema.ResourceData, m interf
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_config_rs_remote_path")
 		d.Partial(false)
 
 	}

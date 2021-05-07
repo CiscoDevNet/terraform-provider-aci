@@ -6,7 +6,7 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/container"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func (sm *ServiceManager) CreateEndpointSecurityGroup(name string, application_profile string, tenant string, description string, nameAlias string, fvESgAttr models.EndpointSecurityGroupAttributes) (*models.EndpointSecurityGroup, error) {

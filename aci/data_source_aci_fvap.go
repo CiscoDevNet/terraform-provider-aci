@@ -1,16 +1,18 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func dataSourceAciApplicationProfile() *schema.Resource {
 	return &schema.Resource{
 
-		Read: dataSourceAciApplicationProfileRead,
+		ReadContext: dataSourceAciApplicationProfileRead,
 
 		SchemaVersion: 1,
 
@@ -40,7 +42,7 @@ func dataSourceAciApplicationProfile() *schema.Resource {
 	}
 }
 
-func dataSourceAciApplicationProfileRead(d *schema.ResourceData, m interface{}) error {
+func dataSourceAciApplicationProfileRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	aciClient := m.(*client.Client)
 
 	name := d.Get("name").(string)
@@ -53,7 +55,7 @@ func dataSourceAciApplicationProfileRead(d *schema.ResourceData, m interface{}) 
 	fvAp, err := getRemoteApplicationProfile(aciClient, dn)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.SetId(dn)
 	setApplicationProfileAttributes(fvAp, d)

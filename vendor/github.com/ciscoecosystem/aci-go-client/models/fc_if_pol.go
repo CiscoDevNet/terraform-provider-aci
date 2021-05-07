@@ -1,6 +1,5 @@
 package models
 
-
 import (
 	"fmt"
 	"strconv"
@@ -12,45 +11,31 @@ const FcifpolClassName = "fcIfPol"
 
 type InterfaceFCPolicy struct {
 	BaseAttributes
-    InterfaceFCPolicyAttributes 
+	InterfaceFCPolicyAttributes
 }
-  
+
 type InterfaceFCPolicyAttributes struct {
-	
-	
 	Name string `json:",omitempty"`
-	
-	
-    
-	Annotation       string `json:",omitempty"`
-	
-    
-	Automaxspeed       string `json:",omitempty"`
-	
-    
-	FillPattern       string `json:",omitempty"`
-	
-    
-	NameAlias       string `json:",omitempty"`
-	
-    
-	PortMode       string `json:",omitempty"`
-	
-    
-	RxBBCredit       string `json:",omitempty"`
-	
-    
-	Speed       string `json:",omitempty"`
-	
-    
-	TrunkMode       string `json:",omitempty"`
-	
-    
+
+	Annotation string `json:",omitempty"`
+
+	Automaxspeed string `json:",omitempty"`
+
+	FillPattern string `json:",omitempty"`
+
+	NameAlias string `json:",omitempty"`
+
+	PortMode string `json:",omitempty"`
+
+	RxBBCredit string `json:",omitempty"`
+
+	Speed string `json:",omitempty"`
+
+	TrunkMode string `json:",omitempty"`
 }
-   
 
 func NewInterfaceFCPolicy(fcIfPolRn, parentDn, description string, fcIfPolattr InterfaceFCPolicyAttributes) *InterfaceFCPolicy {
-	dn := fmt.Sprintf("%s/%s", parentDn, fcIfPolRn)  
+	dn := fmt.Sprintf("%s/%s", parentDn, fcIfPolRn)
 	return &InterfaceFCPolicy{
 		BaseAttributes: BaseAttributes{
 			DistinguishedName: dn,
@@ -59,9 +44,8 @@ func NewInterfaceFCPolicy(fcIfPolRn, parentDn, description string, fcIfPolattr I
 			ClassName:         FcifpolClassName,
 			Rn:                fcIfPolRn,
 		},
-        
+
 		InterfaceFCPolicyAttributes: fcIfPolattr,
-         
 	}
 }
 
@@ -71,37 +55,23 @@ func (fcIfPol *InterfaceFCPolicy) ToMap() (map[string]string, error) {
 		return nil, err
 	}
 
-	
-	
-	A(fcIfPolMap, "name",fcIfPol.Name)
-	
-	
-    
-	A(fcIfPolMap, "annotation",fcIfPol.Annotation)
-	
-    
-	A(fcIfPolMap, "automaxspeed",fcIfPol.Automaxspeed)
-	
-    
-	A(fcIfPolMap, "fillPattern",fcIfPol.FillPattern)
-	
-    
-	A(fcIfPolMap, "nameAlias",fcIfPol.NameAlias)
-	
-    
-	A(fcIfPolMap, "portMode",fcIfPol.PortMode)
-	
-    
-	A(fcIfPolMap, "rxBBCredit",fcIfPol.RxBBCredit)
-	
-    
-	A(fcIfPolMap, "speed",fcIfPol.Speed)
-	
-    
-	A(fcIfPolMap, "trunkMode",fcIfPol.TrunkMode)
-	
-    
-	
+	A(fcIfPolMap, "name", fcIfPol.Name)
+
+	A(fcIfPolMap, "annotation", fcIfPol.Annotation)
+
+	A(fcIfPolMap, "automaxspeed", fcIfPol.Automaxspeed)
+
+	A(fcIfPolMap, "fillPattern", fcIfPol.FillPattern)
+
+	A(fcIfPolMap, "nameAlias", fcIfPol.NameAlias)
+
+	A(fcIfPolMap, "portMode", fcIfPol.PortMode)
+
+	A(fcIfPolMap, "rxBBCredit", fcIfPol.RxBBCredit)
+
+	A(fcIfPolMap, "speed", fcIfPol.Speed)
+
+	A(fcIfPolMap, "trunkMode", fcIfPol.TrunkMode)
 
 	return fcIfPolMap, err
 }
@@ -117,40 +87,27 @@ func InterfaceFCPolicyFromContainerList(cont *container.Container, index int) *I
 			ClassName:         FcifpolClassName,
 			Rn:                G(InterfaceFCPolicyCont, "rn"),
 		},
-        
+
 		InterfaceFCPolicyAttributes{
-		
-		
-			Name : G(InterfaceFCPolicyCont, "name"),
-		
-		
-        
-	        Annotation : G(InterfaceFCPolicyCont, "annotation"),
-		
-        
-	        Automaxspeed : G(InterfaceFCPolicyCont, "automaxspeed"),
-		
-        
-	        FillPattern : G(InterfaceFCPolicyCont, "fillPattern"),
-		
-        
-	        NameAlias : G(InterfaceFCPolicyCont, "nameAlias"),
-		
-        
-	        PortMode : G(InterfaceFCPolicyCont, "portMode"),
-		
-        
-	        RxBBCredit : G(InterfaceFCPolicyCont, "rxBBCredit"),
-		
-        
-	        Speed : G(InterfaceFCPolicyCont, "speed"),
-		
-        
-	        TrunkMode : G(InterfaceFCPolicyCont, "trunkMode"),
-		
-        		
-        },
-        
+
+			Name: G(InterfaceFCPolicyCont, "name"),
+
+			Annotation: G(InterfaceFCPolicyCont, "annotation"),
+
+			Automaxspeed: G(InterfaceFCPolicyCont, "automaxspeed"),
+
+			FillPattern: G(InterfaceFCPolicyCont, "fillPattern"),
+
+			NameAlias: G(InterfaceFCPolicyCont, "nameAlias"),
+
+			PortMode: G(InterfaceFCPolicyCont, "portMode"),
+
+			RxBBCredit: G(InterfaceFCPolicyCont, "rxBBCredit"),
+
+			Speed: G(InterfaceFCPolicyCont, "speed"),
+
+			TrunkMode: G(InterfaceFCPolicyCont, "trunkMode"),
+		},
 	}
 }
 

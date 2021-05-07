@@ -6,7 +6,7 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func resourceAciFCDomain() *schema.Resource {
@@ -148,8 +148,6 @@ func resourceAciFCDomainCreate(d *schema.ResourceData, m interface{}) error {
 	}
 	d.Partial(true)
 
-	d.SetPartial("name")
-
 	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
@@ -208,7 +206,6 @@ func resourceAciFCDomainCreate(d *schema.ResourceData, m interface{}) error {
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_infra_rs_vlan_ns")
 		d.Partial(false)
 
 	}
@@ -219,7 +216,6 @@ func resourceAciFCDomainCreate(d *schema.ResourceData, m interface{}) error {
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_fc_rs_vsan_ns")
 		d.Partial(false)
 
 	}
@@ -230,7 +226,6 @@ func resourceAciFCDomainCreate(d *schema.ResourceData, m interface{}) error {
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_fc_rs_vsan_attr")
 		d.Partial(false)
 
 	}
@@ -241,7 +236,6 @@ func resourceAciFCDomainCreate(d *schema.ResourceData, m interface{}) error {
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_infra_rs_vlan_ns_def")
 		d.Partial(false)
 
 	}
@@ -252,7 +246,6 @@ func resourceAciFCDomainCreate(d *schema.ResourceData, m interface{}) error {
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_infra_rs_vip_addr_ns")
 		d.Partial(false)
 
 	}
@@ -263,7 +256,6 @@ func resourceAciFCDomainCreate(d *schema.ResourceData, m interface{}) error {
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_infra_rs_dom_vxlan_ns_def")
 		d.Partial(false)
 
 	}
@@ -274,7 +266,6 @@ func resourceAciFCDomainCreate(d *schema.ResourceData, m interface{}) error {
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_fc_rs_vsan_attr_def")
 		d.Partial(false)
 
 	}
@@ -285,7 +276,6 @@ func resourceAciFCDomainCreate(d *schema.ResourceData, m interface{}) error {
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_fc_rs_vsan_ns_def")
 		d.Partial(false)
 
 	}
@@ -323,8 +313,6 @@ func resourceAciFCDomainUpdate(d *schema.ResourceData, m interface{}) error {
 		return err
 	}
 	d.Partial(true)
-
-	d.SetPartial("name")
 
 	d.Partial(false)
 
@@ -388,7 +376,6 @@ func resourceAciFCDomainUpdate(d *schema.ResourceData, m interface{}) error {
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_infra_rs_vlan_ns")
 		d.Partial(false)
 
 	}
@@ -403,7 +390,6 @@ func resourceAciFCDomainUpdate(d *schema.ResourceData, m interface{}) error {
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_fc_rs_vsan_ns")
 		d.Partial(false)
 
 	}
@@ -418,7 +404,6 @@ func resourceAciFCDomainUpdate(d *schema.ResourceData, m interface{}) error {
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_fc_rs_vsan_attr")
 		d.Partial(false)
 
 	}
@@ -429,7 +414,6 @@ func resourceAciFCDomainUpdate(d *schema.ResourceData, m interface{}) error {
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_infra_rs_vlan_ns_def")
 		d.Partial(false)
 
 	}
@@ -444,7 +428,6 @@ func resourceAciFCDomainUpdate(d *schema.ResourceData, m interface{}) error {
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_infra_rs_vip_addr_ns")
 		d.Partial(false)
 
 	}
@@ -455,7 +438,6 @@ func resourceAciFCDomainUpdate(d *schema.ResourceData, m interface{}) error {
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_infra_rs_dom_vxlan_ns_def")
 		d.Partial(false)
 
 	}
@@ -466,7 +448,6 @@ func resourceAciFCDomainUpdate(d *schema.ResourceData, m interface{}) error {
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_fc_rs_vsan_attr_def")
 		d.Partial(false)
 
 	}
@@ -477,7 +458,6 @@ func resourceAciFCDomainUpdate(d *schema.ResourceData, m interface{}) error {
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_fc_rs_vsan_ns_def")
 		d.Partial(false)
 
 	}

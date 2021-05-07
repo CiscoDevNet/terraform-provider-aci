@@ -6,8 +6,8 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciL2Outside() *schema.Resource {
@@ -165,8 +165,6 @@ func resourceAciL2OutsideCreate(d *schema.ResourceData, m interface{}) error {
 	}
 	d.Partial(true)
 
-	d.SetPartial("name")
-
 	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
@@ -197,7 +195,6 @@ func resourceAciL2OutsideCreate(d *schema.ResourceData, m interface{}) error {
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_l2ext_rs_e_bd")
 		d.Partial(false)
 
 	}
@@ -208,7 +205,6 @@ func resourceAciL2OutsideCreate(d *schema.ResourceData, m interface{}) error {
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_l2ext_rs_l2_dom_att")
 		d.Partial(false)
 
 	}
@@ -252,8 +248,6 @@ func resourceAciL2OutsideUpdate(d *schema.ResourceData, m interface{}) error {
 	}
 	d.Partial(true)
 
-	d.SetPartial("name")
-
 	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
@@ -284,7 +278,6 @@ func resourceAciL2OutsideUpdate(d *schema.ResourceData, m interface{}) error {
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_l2ext_rs_e_bd")
 		d.Partial(false)
 
 	}
@@ -299,7 +292,6 @@ func resourceAciL2OutsideUpdate(d *schema.ResourceData, m interface{}) error {
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_l2ext_rs_l2_dom_att")
 		d.Partial(false)
 
 	}

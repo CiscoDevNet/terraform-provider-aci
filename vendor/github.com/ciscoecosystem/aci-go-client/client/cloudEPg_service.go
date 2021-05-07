@@ -5,7 +5,7 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/container"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func (sm *ServiceManager) CreateCloudEPg(name string, cloud_application_container string, tenant string, description string, cloudEPgattr models.CloudEPgAttributes) (*models.CloudEPg, error) {

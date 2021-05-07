@@ -6,33 +6,33 @@ description: |-
   Data source for ACI Subnet
 ---
 
-# aci_subnet #
+# aci_subnet
+
 Data source for ACI Subnet
 
-## Example Usage ##
+## Example Usage
 
 ```hcl
 
 data "aci_subnet" "dev_subnet" {
-  parent_dn         = "${aci_bridge_domain.example.id}"
+  parent_dn         = aci_bridge_domain.example.id
   ip                = "10.0.3.28/27"
 }
 
 ```
 
+## Argument Reference
 
-## Argument Reference ##
-* `parent_dn` - (Required) Distinguished name of parent object.
-* `ip` - (Required) The IP address and mask of the default gateway.
-
-
+- `parent_dn` - (Required) Distinguished name of parent bridge domain object.
+- `ip` - (Required) The IP address and mask of the default gateway.
 
 ## Attribute Reference
 
-* `id` - Attribute id set to the Dn of the Subnet.
-* `annotation` - (Optional) annotation for object subnet.
-* `ctrl` - (Optional) The list of subnet control state. The control can be specific protocols applied to the subnet such as IGMP Snooping.
-* `name_alias` - (Optional) name_alias for object subnet.
-* `preferred` - (Optional) Indicates if the subnet is preferred (primary) over the available alternatives. Only one preferred subnet is allowed.
-* `scope` - (Optional) The List of network visibility of the subnet.
-* `virtual` - (Optional) Treated as virtual IP address. Used in case of BD extended to multiple sites.
+- `id` - Attribute id set to the Dn of the Subnet.
+- `annotation` - (Optional) Annotation for object subnet.
+- `description` - (Optional) Description for object subnet.
+- `ctrl` - (Optional) The list of subnet control state. The control can be specific protocols applied to the subnet such as IGMP Snooping.
+- `name_alias` - (Optional) Name alias for object subnet.
+- `preferred` - (Optional) Indicates if the subnet is preferred (primary) over the available alternatives. Only one preferred subnet is allowed.
+- `scope` - (Optional) The List of network visibility of the subnet.
+- `virtual` - (Optional) Treated as virtual IP address. Used in case of BD extended to multiple sites.

@@ -1,6 +1,5 @@
 package models
 
-
 import (
 	"fmt"
 	"strconv"
@@ -12,42 +11,29 @@ const VzsubjClassName = "vzSubj"
 
 type ContractSubject struct {
 	BaseAttributes
-    ContractSubjectAttributes 
+	ContractSubjectAttributes
 }
-  
+
 type ContractSubjectAttributes struct {
-	
-	
 	Name string `json:",omitempty"`
-	
-	
-    
-	Annotation       string `json:",omitempty"`
-	
-    
-	ConsMatchT       string `json:",omitempty"`
-	
-    
-	NameAlias       string `json:",omitempty"`
-	
-    
-	Prio       string `json:",omitempty"`
-	
-    
-	ProvMatchT       string `json:",omitempty"`
-	
-    
-	RevFltPorts       string `json:",omitempty"`
-	
-    
-	TargetDscp       string `json:",omitempty"`
-	
-    
+
+	Annotation string `json:",omitempty"`
+
+	ConsMatchT string `json:",omitempty"`
+
+	NameAlias string `json:",omitempty"`
+
+	Prio string `json:",omitempty"`
+
+	ProvMatchT string `json:",omitempty"`
+
+	RevFltPorts string `json:",omitempty"`
+
+	TargetDscp string `json:",omitempty"`
 }
-   
 
 func NewContractSubject(vzSubjRn, parentDn, description string, vzSubjattr ContractSubjectAttributes) *ContractSubject {
-	dn := fmt.Sprintf("%s/%s", parentDn, vzSubjRn)  
+	dn := fmt.Sprintf("%s/%s", parentDn, vzSubjRn)
 	return &ContractSubject{
 		BaseAttributes: BaseAttributes{
 			DistinguishedName: dn,
@@ -56,9 +42,8 @@ func NewContractSubject(vzSubjRn, parentDn, description string, vzSubjattr Contr
 			ClassName:         VzsubjClassName,
 			Rn:                vzSubjRn,
 		},
-        
+
 		ContractSubjectAttributes: vzSubjattr,
-         
 	}
 }
 
@@ -68,34 +53,21 @@ func (vzSubj *ContractSubject) ToMap() (map[string]string, error) {
 		return nil, err
 	}
 
-	
-	
-	A(vzSubjMap, "name",vzSubj.Name)
-	
-	
-    
-	A(vzSubjMap, "annotation",vzSubj.Annotation)
-	
-    
-	A(vzSubjMap, "consMatchT",vzSubj.ConsMatchT)
-	
-    
-	A(vzSubjMap, "nameAlias",vzSubj.NameAlias)
-	
-    
-	A(vzSubjMap, "prio",vzSubj.Prio)
-	
-    
-	A(vzSubjMap, "provMatchT",vzSubj.ProvMatchT)
-	
-    
-	A(vzSubjMap, "revFltPorts",vzSubj.RevFltPorts)
-	
-    
-	A(vzSubjMap, "targetDscp",vzSubj.TargetDscp)
-	
-    
-	
+	A(vzSubjMap, "name", vzSubj.Name)
+
+	A(vzSubjMap, "annotation", vzSubj.Annotation)
+
+	A(vzSubjMap, "consMatchT", vzSubj.ConsMatchT)
+
+	A(vzSubjMap, "nameAlias", vzSubj.NameAlias)
+
+	A(vzSubjMap, "prio", vzSubj.Prio)
+
+	A(vzSubjMap, "provMatchT", vzSubj.ProvMatchT)
+
+	A(vzSubjMap, "revFltPorts", vzSubj.RevFltPorts)
+
+	A(vzSubjMap, "targetDscp", vzSubj.TargetDscp)
 
 	return vzSubjMap, err
 }
@@ -111,37 +83,25 @@ func ContractSubjectFromContainerList(cont *container.Container, index int) *Con
 			ClassName:         VzsubjClassName,
 			Rn:                G(ContractSubjectCont, "rn"),
 		},
-        
+
 		ContractSubjectAttributes{
-		
-		
-			Name : G(ContractSubjectCont, "name"),
-		
-		
-        
-	        Annotation : G(ContractSubjectCont, "annotation"),
-		
-        
-	        ConsMatchT : G(ContractSubjectCont, "consMatchT"),
-		
-        
-	        NameAlias : G(ContractSubjectCont, "nameAlias"),
-		
-        
-	        Prio : G(ContractSubjectCont, "prio"),
-		
-        
-	        ProvMatchT : G(ContractSubjectCont, "provMatchT"),
-		
-        
-	        RevFltPorts : G(ContractSubjectCont, "revFltPorts"),
-		
-        
-	        TargetDscp : G(ContractSubjectCont, "targetDscp"),
-		
-        		
-        },
-        
+
+			Name: G(ContractSubjectCont, "name"),
+
+			Annotation: G(ContractSubjectCont, "annotation"),
+
+			ConsMatchT: G(ContractSubjectCont, "consMatchT"),
+
+			NameAlias: G(ContractSubjectCont, "nameAlias"),
+
+			Prio: G(ContractSubjectCont, "prio"),
+
+			ProvMatchT: G(ContractSubjectCont, "provMatchT"),
+
+			RevFltPorts: G(ContractSubjectCont, "revFltPorts"),
+
+			TargetDscp: G(ContractSubjectCont, "targetDscp"),
+		},
 	}
 }
 

@@ -6,8 +6,8 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciFirmwareDownloadTask() *schema.Resource {
@@ -246,8 +246,6 @@ func resourceAciFirmwareDownloadTaskCreate(d *schema.ResourceData, m interface{}
 	}
 	d.Partial(true)
 
-	d.SetPartial("name")
-
 	d.Partial(false)
 
 	d.SetId(firmwareOSource.DistinguishedName)
@@ -319,8 +317,6 @@ func resourceAciFirmwareDownloadTaskUpdate(d *schema.ResourceData, m interface{}
 		return err
 	}
 	d.Partial(true)
-
-	d.SetPartial("name")
 
 	d.Partial(false)
 
