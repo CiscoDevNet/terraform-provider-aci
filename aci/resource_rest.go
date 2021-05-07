@@ -1,6 +1,7 @@
 package aci
 
 import (
+	"context"
 	"errors"
 	"fmt"
 
@@ -8,7 +9,8 @@ import (
 	"github.com/ciscoecosystem/aci-go-client/container"
 	"github.com/ciscoecosystem/aci-go-client/models"
 	"github.com/ghodss/yaml"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 const Created = "created"
@@ -18,10 +20,10 @@ const ErrDistinguishedNameNotFound = "The Dn is not present in the content"
 
 func resourceAciRest() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciRestCreate,
-		Update: resourceAciRestUpdate,
-		Read:   resourceAciRestRead,
-		Delete: resourceAciRestDelete,
+		CreateContext: resourceAciRestCreate,
+		UpdateContext: resourceAciRestUpdate,
+		ReadContext:   resourceAciRestRead,
+		DeleteContext: resourceAciRestDelete,
 
 		SchemaVersion: 1,
 
@@ -52,10 +54,10 @@ func resourceAciRest() *schema.Resource {
 	}
 }
 
-func resourceAciRestCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciRestCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	cont, err := PostAndSetStatus(d, m, "created, modified")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	classNameIntf := d.Get("class_name")
 	className := classNameIntf.(string)
@@ -68,14 +70,14 @@ func resourceAciRestCreate(d *schema.ResourceData, m interface{}) error {
 
 		d.SetId(dn)
 	}
-	return resourceAciRestRead(d, m)
+	return resourceAciRestRead(ctx, d, m)
 
 }
 
-func resourceAciRestUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciRestUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	cont, err := PostAndSetStatus(d, m, "modified")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	classNameIntf := d.Get("class_name")
 	className := classNameIntf.(string)
@@ -88,14 +90,14 @@ func resourceAciRestUpdate(d *schema.ResourceData, m interface{}) error {
 		d.SetId(dn)
 	}
 
-	return resourceAciRestRead(d, m)
+	return resourceAciRestRead(ctx, d, m)
 }
 
-func resourceAciRestRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciRestRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	return nil
 }
 
-func resourceAciRestDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciRestDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	cont, err := PostAndSetStatus(d, m, Deleted)
 	if err != nil {
 		errCode := models.StripQuotes(models.StripSquareBrackets(cont.Search("imdata", "error", "attributes", "code").String()))
@@ -103,7 +105,7 @@ func resourceAciRestDelete(d *schema.ResourceData, m interface{}) error {
 		if errCode == "107" {
 			return nil
 		}
-		return err
+		return diag.FromErr(err)
 	}
 	d.SetId("")
 	return nil

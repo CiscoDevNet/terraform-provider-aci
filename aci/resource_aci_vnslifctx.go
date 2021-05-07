@@ -6,8 +6,8 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciLogicalInterfaceContext() *schema.Resource {
@@ -194,8 +194,6 @@ func resourceAciLogicalInterfaceContextCreate(d *schema.ResourceData, m interfac
 	}
 	d.Partial(true)
 
-	d.SetPartial("conn_name_or_lbl")
-
 	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
@@ -255,7 +253,6 @@ func resourceAciLogicalInterfaceContextCreate(d *schema.ResourceData, m interfac
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_vns_rs_l_if_ctx_to_cust_qos_pol")
 		d.Partial(false)
 
 	}
@@ -266,7 +263,6 @@ func resourceAciLogicalInterfaceContextCreate(d *schema.ResourceData, m interfac
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_vns_rs_l_if_ctx_to_svc_e_pg_pol")
 		d.Partial(false)
 
 	}
@@ -277,7 +273,6 @@ func resourceAciLogicalInterfaceContextCreate(d *schema.ResourceData, m interfac
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_vns_rs_l_if_ctx_to_svc_redirect_pol")
 		d.Partial(false)
 
 	}
@@ -288,7 +283,6 @@ func resourceAciLogicalInterfaceContextCreate(d *schema.ResourceData, m interfac
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_vns_rs_l_if_ctx_to_l_if")
 		d.Partial(false)
 
 	}
@@ -300,7 +294,6 @@ func resourceAciLogicalInterfaceContextCreate(d *schema.ResourceData, m interfac
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_vns_rs_l_if_ctx_to_out_def")
 		d.Partial(false)
 
 	}
@@ -312,7 +305,6 @@ func resourceAciLogicalInterfaceContextCreate(d *schema.ResourceData, m interfac
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_vns_rs_l_if_ctx_to_inst_p")
 		d.Partial(false)
 
 	}
@@ -323,7 +315,6 @@ func resourceAciLogicalInterfaceContextCreate(d *schema.ResourceData, m interfac
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_vns_rs_l_if_ctx_to_bd")
 		d.Partial(false)
 
 	}
@@ -335,7 +326,6 @@ func resourceAciLogicalInterfaceContextCreate(d *schema.ResourceData, m interfac
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_vns_rs_l_if_ctx_to_out")
 		d.Partial(false)
 
 	}
@@ -384,8 +374,6 @@ func resourceAciLogicalInterfaceContextUpdate(d *schema.ResourceData, m interfac
 		return err
 	}
 	d.Partial(true)
-
-	d.SetPartial("conn_name_or_lbl")
 
 	d.Partial(false)
 
@@ -446,7 +434,6 @@ func resourceAciLogicalInterfaceContextUpdate(d *schema.ResourceData, m interfac
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_vns_rs_l_if_ctx_to_cust_qos_pol")
 		d.Partial(false)
 
 	}
@@ -461,7 +448,6 @@ func resourceAciLogicalInterfaceContextUpdate(d *schema.ResourceData, m interfac
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_vns_rs_l_if_ctx_to_svc_e_pg_pol")
 		d.Partial(false)
 
 	}
@@ -476,7 +462,6 @@ func resourceAciLogicalInterfaceContextUpdate(d *schema.ResourceData, m interfac
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_vns_rs_l_if_ctx_to_svc_redirect_pol")
 		d.Partial(false)
 
 	}
@@ -491,7 +476,6 @@ func resourceAciLogicalInterfaceContextUpdate(d *schema.ResourceData, m interfac
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_vns_rs_l_if_ctx_to_l_if")
 		d.Partial(false)
 
 	}
@@ -503,7 +487,6 @@ func resourceAciLogicalInterfaceContextUpdate(d *schema.ResourceData, m interfac
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_vns_rs_l_if_ctx_to_out_def")
 		d.Partial(false)
 
 	}
@@ -519,7 +502,6 @@ func resourceAciLogicalInterfaceContextUpdate(d *schema.ResourceData, m interfac
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_vns_rs_l_if_ctx_to_inst_p")
 		d.Partial(false)
 
 	}
@@ -534,7 +516,6 @@ func resourceAciLogicalInterfaceContextUpdate(d *schema.ResourceData, m interfac
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_vns_rs_l_if_ctx_to_bd")
 		d.Partial(false)
 
 	}
@@ -549,7 +530,6 @@ func resourceAciLogicalInterfaceContextUpdate(d *schema.ResourceData, m interfac
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_vns_rs_l_if_ctx_to_out")
 		d.Partial(false)
 
 	}

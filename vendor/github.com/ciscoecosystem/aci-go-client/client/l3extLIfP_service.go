@@ -5,7 +5,7 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/container"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func (sm *ServiceManager) CreateLogicalInterfaceProfile(name string, logical_node_profile string, l3_outside string, tenant string, description string, l3extLIfPattr models.LogicalInterfaceProfileAttributes) (*models.LogicalInterfaceProfile, error) {

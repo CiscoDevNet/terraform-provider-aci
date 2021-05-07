@@ -6,7 +6,7 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func resourceAciDHCPOptionPolicy() *schema.Resource {
@@ -245,8 +245,6 @@ func resourceAciDHCPOptionPolicyCreate(d *schema.ResourceData, m interface{}) er
 
 	d.Partial(true)
 
-	d.SetPartial("name")
-
 	d.Partial(false)
 
 	d.SetId(dhcpOptionPol.DistinguishedName)
@@ -332,8 +330,6 @@ func resourceAciDHCPOptionPolicyUpdate(d *schema.ResourceData, m interface{}) er
 	}
 
 	d.Partial(true)
-
-	d.SetPartial("name")
 
 	d.Partial(false)
 

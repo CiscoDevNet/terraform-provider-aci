@@ -1,21 +1,23 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciL2InterfacePolicy() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciL2InterfacePolicyCreate,
-		Update: resourceAciL2InterfacePolicyUpdate,
-		Read:   resourceAciL2InterfacePolicyRead,
-		Delete: resourceAciL2InterfacePolicyDelete,
+		CreateContext: resourceAciL2InterfacePolicyCreate,
+		UpdateContext: resourceAciL2InterfacePolicyUpdate,
+		ReadContext:   resourceAciL2InterfacePolicyRead,
+		DeleteContext: resourceAciL2InterfacePolicyDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciL2InterfacePolicyImport,
@@ -119,7 +121,7 @@ func resourceAciL2InterfacePolicyImport(d *schema.ResourceData, m interface{}) (
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciL2InterfacePolicyCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciL2InterfacePolicyCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] L2InterfacePolicy: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -148,21 +150,16 @@ func resourceAciL2InterfacePolicyCreate(d *schema.ResourceData, m interface{}) e
 
 	err := aciClient.Save(l2IfPol)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.SetPartial("name")
-
-	d.Partial(false)
 
 	d.SetId(l2IfPol.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciL2InterfacePolicyRead(d, m)
+	return resourceAciL2InterfacePolicyRead(ctx, d, m)
 }
 
-func resourceAciL2InterfacePolicyUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciL2InterfacePolicyUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] L2InterfacePolicy: Beginning Update")
 
 	aciClient := m.(*client.Client)
@@ -195,22 +192,17 @@ func resourceAciL2InterfacePolicyUpdate(d *schema.ResourceData, m interface{}) e
 	err := aciClient.Save(l2IfPol)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.SetPartial("name")
-
-	d.Partial(false)
 
 	d.SetId(l2IfPol.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciL2InterfacePolicyRead(d, m)
+	return resourceAciL2InterfacePolicyRead(ctx, d, m)
 
 }
 
-func resourceAciL2InterfacePolicyRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciL2InterfacePolicyRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -229,18 +221,18 @@ func resourceAciL2InterfacePolicyRead(d *schema.ResourceData, m interface{}) err
 	return nil
 }
 
-func resourceAciL2InterfacePolicyDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciL2InterfacePolicyDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "l2IfPol")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
 }

@@ -1,20 +1,22 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func resourceAciTenant() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciTenantCreate,
-		Update: resourceAciTenantUpdate,
-		Read:   resourceAciTenantRead,
-		Delete: resourceAciTenantDelete,
+		CreateContext: resourceAciTenantCreate,
+		UpdateContext: resourceAciTenantUpdate,
+		ReadContext:   resourceAciTenantRead,
+		DeleteContext: resourceAciTenantDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciTenantImport,
@@ -95,7 +97,7 @@ func resourceAciTenantImport(d *schema.ResourceData, m interface{}) ([]*schema.R
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciTenantCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciTenantCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] Tenant: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -115,13 +117,8 @@ func resourceAciTenantCreate(d *schema.ResourceData, m interface{}) error {
 
 	err := aciClient.Save(fvTenant)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.SetPartial("name")
-
-	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
 
@@ -140,7 +137,7 @@ func resourceAciTenantCreate(d *schema.ResourceData, m interface{}) error {
 	d.Partial(true)
 	err = checkTDn(aciClient, checkDns)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Partial(false)
 
@@ -150,11 +147,8 @@ func resourceAciTenantCreate(d *schema.ResourceData, m interface{}) error {
 			err = aciClient.CreateRelationfvRsTnDenyRuleFromTenant(fvTenant.DistinguishedName, relationParam)
 
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
-			d.Partial(true)
-			d.SetPartial("relation_fv_rs_tn_deny_rule")
-			d.Partial(false)
 		}
 	}
 	if relationTofvRsTenantMonPol, ok := d.GetOk("relation_fv_rs_tenant_mon_pol"); ok {
@@ -162,21 +156,18 @@ func resourceAciTenantCreate(d *schema.ResourceData, m interface{}) error {
 		relationParamName := GetMOName(relationParam)
 		err = aciClient.CreateRelationfvRsTenantMonPolFromTenant(fvTenant.DistinguishedName, relationParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_fv_rs_tenant_mon_pol")
-		d.Partial(false)
 
 	}
 
 	d.SetId(fvTenant.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciTenantRead(d, m)
+	return resourceAciTenantRead(ctx, d, m)
 }
 
-func resourceAciTenantUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciTenantUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] Tenant: Beginning Update")
 
 	aciClient := m.(*client.Client)
@@ -200,13 +191,8 @@ func resourceAciTenantUpdate(d *schema.ResourceData, m interface{}) error {
 	err := aciClient.Save(fvTenant)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.SetPartial("name")
-
-	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
 
@@ -229,7 +215,7 @@ func resourceAciTenantUpdate(d *schema.ResourceData, m interface{}) error {
 	d.Partial(true)
 	err = checkTDn(aciClient, checkDns)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Partial(false)
 
@@ -243,7 +229,7 @@ func resourceAciTenantUpdate(d *schema.ResourceData, m interface{}) error {
 		for _, relDn := range relToDelete {
 			err = aciClient.DeleteRelationfvRsTnDenyRuleFromTenant(fvTenant.DistinguishedName, relDn)
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 		}
@@ -251,12 +237,8 @@ func resourceAciTenantUpdate(d *schema.ResourceData, m interface{}) error {
 		for _, relDn := range relToCreate {
 			err = aciClient.CreateRelationfvRsTnDenyRuleFromTenant(fvTenant.DistinguishedName, relDn)
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
-			d.Partial(true)
-			d.SetPartial("relation_fv_rs_tn_deny_rule")
-			d.Partial(false)
-
 		}
 
 	}
@@ -265,22 +247,18 @@ func resourceAciTenantUpdate(d *schema.ResourceData, m interface{}) error {
 		newRelParamName := GetMOName(newRelParam.(string))
 		err = aciClient.CreateRelationfvRsTenantMonPolFromTenant(fvTenant.DistinguishedName, newRelParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_fv_rs_tenant_mon_pol")
-		d.Partial(false)
-
 	}
 
 	d.SetId(fvTenant.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciTenantRead(d, m)
+	return resourceAciTenantRead(ctx, d, m)
 
 }
 
-func resourceAciTenantRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciTenantRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -322,18 +300,18 @@ func resourceAciTenantRead(d *schema.ResourceData, m interface{}) error {
 	return nil
 }
 
-func resourceAciTenantDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciTenantDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "fvTenant")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
 }

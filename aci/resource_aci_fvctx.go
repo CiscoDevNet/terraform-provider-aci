@@ -1,21 +1,23 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciVRF() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciVRFCreate,
-		Update: resourceAciVRFUpdate,
-		Read:   resourceAciVRFRead,
-		Delete: resourceAciVRFDelete,
+		CreateContext: resourceAciVRFCreate,
+		UpdateContext: resourceAciVRFUpdate,
+		ReadContext:   resourceAciVRFRead,
+		DeleteContext: resourceAciVRFDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciVRFImport,
@@ -235,7 +237,7 @@ func resourceAciVRFImport(d *schema.ResourceData, m interface{}) ([]*schema.Reso
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciVRFCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciVRFCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] VRF: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -272,13 +274,8 @@ func resourceAciVRFCreate(d *schema.ResourceData, m interface{}) error {
 
 	err := aciClient.Save(fvCtx)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.SetPartial("name")
-
-	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
 
@@ -322,7 +319,7 @@ func resourceAciVRFCreate(d *schema.ResourceData, m interface{}) error {
 	d.Partial(true)
 	err = checkTDn(aciClient, checkDns)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Partial(false)
 
@@ -331,11 +328,8 @@ func resourceAciVRFCreate(d *schema.ResourceData, m interface{}) error {
 		relationParamName := GetMOName(relationParam)
 		err = aciClient.CreateRelationfvRsOspfCtxPolFromVRF(fvCtx.DistinguishedName, relationParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_fv_rs_ospf_ctx_pol")
-		d.Partial(false)
 
 	}
 	if relationTofvRsVrfValidationPol, ok := d.GetOk("relation_fv_rs_vrf_validation_pol"); ok {
@@ -343,11 +337,8 @@ func resourceAciVRFCreate(d *schema.ResourceData, m interface{}) error {
 		relationParamName := GetMOName(relationParam)
 		err = aciClient.CreateRelationfvRsVrfValidationPolFromVRF(fvCtx.DistinguishedName, relationParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_fv_rs_vrf_validation_pol")
-		d.Partial(false)
 
 	}
 	if relationTofvRsCtxMcastTo, ok := d.GetOk("relation_fv_rs_ctx_mcast_to"); ok {
@@ -356,11 +347,9 @@ func resourceAciVRFCreate(d *schema.ResourceData, m interface{}) error {
 			err = aciClient.CreateRelationfvRsCtxMcastToFromVRF(fvCtx.DistinguishedName, relationParam)
 
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
-			d.Partial(true)
-			d.SetPartial("relation_fv_rs_ctx_mcast_to")
-			d.Partial(false)
+
 		}
 	}
 	if relationTofvRsCtxToEigrpCtxAfPol, ok := d.GetOk("relation_fv_rs_ctx_to_eigrp_ctx_af_pol"); ok {
@@ -370,11 +359,9 @@ func resourceAciVRFCreate(d *schema.ResourceData, m interface{}) error {
 			paramMap := relationParam.(map[string]interface{})
 			err = aciClient.CreateRelationfvRsCtxToEigrpCtxAfPolFromVRF(fvCtx.DistinguishedName, paramMap["tn_eigrp_ctx_af_pol_name"].(string), paramMap["af"].(string))
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
-			d.Partial(true)
-			d.SetPartial("relation_fv_rs_ctx_to_eigrp_ctx_af_pol")
-			d.Partial(false)
+
 		}
 
 	}
@@ -385,11 +372,9 @@ func resourceAciVRFCreate(d *schema.ResourceData, m interface{}) error {
 			paramMap := relationParam.(map[string]interface{})
 			err = aciClient.CreateRelationfvRsCtxToOspfCtxPolFromVRF(fvCtx.DistinguishedName, paramMap["tn_ospf_ctx_pol_name"].(string), paramMap["af"].(string))
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
-			d.Partial(true)
-			d.SetPartial("relation_fv_rs_ctx_to_ospf_ctx_pol")
-			d.Partial(false)
+
 		}
 
 	}
@@ -398,11 +383,8 @@ func resourceAciVRFCreate(d *schema.ResourceData, m interface{}) error {
 		relationParamName := GetMOName(relationParam)
 		err = aciClient.CreateRelationfvRsCtxToEpRetFromVRF(fvCtx.DistinguishedName, relationParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_fv_rs_ctx_to_ep_ret")
-		d.Partial(false)
 
 	}
 	if relationTofvRsBgpCtxPol, ok := d.GetOk("relation_fv_rs_bgp_ctx_pol"); ok {
@@ -410,11 +392,8 @@ func resourceAciVRFCreate(d *schema.ResourceData, m interface{}) error {
 		relationParamName := GetMOName(relationParam)
 		err = aciClient.CreateRelationfvRsBgpCtxPolFromVRF(fvCtx.DistinguishedName, relationParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_fv_rs_bgp_ctx_pol")
-		d.Partial(false)
 
 	}
 	if relationTofvRsCtxMonPol, ok := d.GetOk("relation_fv_rs_ctx_mon_pol"); ok {
@@ -422,11 +401,8 @@ func resourceAciVRFCreate(d *schema.ResourceData, m interface{}) error {
 		relationParamName := GetMOName(relationParam)
 		err = aciClient.CreateRelationfvRsCtxMonPolFromVRF(fvCtx.DistinguishedName, relationParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_fv_rs_ctx_mon_pol")
-		d.Partial(false)
 
 	}
 	if relationTofvRsCtxToExtRouteTagPol, ok := d.GetOk("relation_fv_rs_ctx_to_ext_route_tag_pol"); ok {
@@ -434,11 +410,8 @@ func resourceAciVRFCreate(d *schema.ResourceData, m interface{}) error {
 		relationParamName := GetMOName(relationParam)
 		err = aciClient.CreateRelationfvRsCtxToExtRouteTagPolFromVRF(fvCtx.DistinguishedName, relationParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_fv_rs_ctx_to_ext_route_tag_pol")
-		d.Partial(false)
 
 	}
 	if relationTofvRsCtxToBgpCtxAfPol, ok := d.GetOk("relation_fv_rs_ctx_to_bgp_ctx_af_pol"); ok {
@@ -448,11 +421,9 @@ func resourceAciVRFCreate(d *schema.ResourceData, m interface{}) error {
 			paramMap := relationParam.(map[string]interface{})
 			err = aciClient.CreateRelationfvRsCtxToBgpCtxAfPolFromVRF(fvCtx.DistinguishedName, paramMap["tn_bgp_ctx_af_pol_name"].(string), paramMap["af"].(string))
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
-			d.Partial(true)
-			d.SetPartial("relation_fv_rs_ctx_to_bgp_ctx_af_pol")
-			d.Partial(false)
+
 		}
 
 	}
@@ -460,10 +431,10 @@ func resourceAciVRFCreate(d *schema.ResourceData, m interface{}) error {
 	d.SetId(fvCtx.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciVRFRead(d, m)
+	return resourceAciVRFRead(ctx, d, m)
 }
 
-func resourceAciVRFUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciVRFUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] VRF: Beginning Update")
 
 	aciClient := m.(*client.Client)
@@ -504,13 +475,8 @@ func resourceAciVRFUpdate(d *schema.ResourceData, m interface{}) error {
 	err := aciClient.Save(fvCtx)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.SetPartial("name")
-
-	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
 
@@ -558,7 +524,7 @@ func resourceAciVRFUpdate(d *schema.ResourceData, m interface{}) error {
 	d.Partial(true)
 	err = checkTDn(aciClient, checkDns)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Partial(false)
 
@@ -567,11 +533,8 @@ func resourceAciVRFUpdate(d *schema.ResourceData, m interface{}) error {
 		newRelParamName := GetMOName(newRelParam.(string))
 		err = aciClient.CreateRelationfvRsOspfCtxPolFromVRF(fvCtx.DistinguishedName, newRelParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_fv_rs_ospf_ctx_pol")
-		d.Partial(false)
 
 	}
 	if d.HasChange("relation_fv_rs_vrf_validation_pol") {
@@ -579,11 +542,8 @@ func resourceAciVRFUpdate(d *schema.ResourceData, m interface{}) error {
 		newRelParamName := GetMOName(newRelParam.(string))
 		err = aciClient.CreateRelationfvRsVrfValidationPolFromVRF(fvCtx.DistinguishedName, newRelParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_fv_rs_vrf_validation_pol")
-		d.Partial(false)
 
 	}
 	if d.HasChange("relation_fv_rs_ctx_mcast_to") {
@@ -595,11 +555,8 @@ func resourceAciVRFUpdate(d *schema.ResourceData, m interface{}) error {
 		for _, relDn := range relToCreate {
 			err = aciClient.CreateRelationfvRsCtxMcastToFromVRF(fvCtx.DistinguishedName, relDn)
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
-			d.Partial(true)
-			d.SetPartial("relation_fv_rs_ctx_mcast_to")
-			d.Partial(false)
 
 		}
 
@@ -612,7 +569,7 @@ func resourceAciVRFUpdate(d *schema.ResourceData, m interface{}) error {
 			paramMap := relationParam.(map[string]interface{})
 			err = aciClient.DeleteRelationfvRsCtxToEigrpCtxAfPolFromVRF(fvCtx.DistinguishedName, paramMap["tn_eigrp_ctx_af_pol_name"].(string), paramMap["af"].(string))
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 		}
@@ -620,11 +577,9 @@ func resourceAciVRFUpdate(d *schema.ResourceData, m interface{}) error {
 			paramMap := relationParam.(map[string]interface{})
 			err = aciClient.CreateRelationfvRsCtxToEigrpCtxAfPolFromVRF(fvCtx.DistinguishedName, paramMap["tn_eigrp_ctx_af_pol_name"].(string), paramMap["af"].(string))
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
-			d.Partial(true)
-			d.SetPartial("relation_fv_rs_ctx_to_eigrp_ctx_af_pol")
-			d.Partial(false)
+
 		}
 
 	}
@@ -636,7 +591,7 @@ func resourceAciVRFUpdate(d *schema.ResourceData, m interface{}) error {
 			paramMap := relationParam.(map[string]interface{})
 			err = aciClient.DeleteRelationfvRsCtxToOspfCtxPolFromVRF(fvCtx.DistinguishedName, paramMap["tn_ospf_ctx_pol_name"].(string), paramMap["af"].(string))
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 		}
@@ -644,11 +599,9 @@ func resourceAciVRFUpdate(d *schema.ResourceData, m interface{}) error {
 			paramMap := relationParam.(map[string]interface{})
 			err = aciClient.CreateRelationfvRsCtxToOspfCtxPolFromVRF(fvCtx.DistinguishedName, paramMap["tn_ospf_ctx_pol_name"].(string), paramMap["af"].(string))
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
-			d.Partial(true)
-			d.SetPartial("relation_fv_rs_ctx_to_ospf_ctx_pol")
-			d.Partial(false)
+
 		}
 
 	}
@@ -657,11 +610,8 @@ func resourceAciVRFUpdate(d *schema.ResourceData, m interface{}) error {
 		newRelParamName := GetMOName(newRelParam.(string))
 		err = aciClient.CreateRelationfvRsCtxToEpRetFromVRF(fvCtx.DistinguishedName, newRelParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_fv_rs_ctx_to_ep_ret")
-		d.Partial(false)
 
 	}
 	if d.HasChange("relation_fv_rs_bgp_ctx_pol") {
@@ -669,11 +619,8 @@ func resourceAciVRFUpdate(d *schema.ResourceData, m interface{}) error {
 		newRelParamName := GetMOName(newRelParam.(string))
 		err = aciClient.CreateRelationfvRsBgpCtxPolFromVRF(fvCtx.DistinguishedName, newRelParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_fv_rs_bgp_ctx_pol")
-		d.Partial(false)
 
 	}
 	if d.HasChange("relation_fv_rs_ctx_mon_pol") {
@@ -681,15 +628,12 @@ func resourceAciVRFUpdate(d *schema.ResourceData, m interface{}) error {
 		newRelParamName := GetMOName(newRelParam.(string))
 		err = aciClient.DeleteRelationfvRsCtxMonPolFromVRF(fvCtx.DistinguishedName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 		err = aciClient.CreateRelationfvRsCtxMonPolFromVRF(fvCtx.DistinguishedName, newRelParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_fv_rs_ctx_mon_pol")
-		d.Partial(false)
 
 	}
 	if d.HasChange("relation_fv_rs_ctx_to_ext_route_tag_pol") {
@@ -697,11 +641,8 @@ func resourceAciVRFUpdate(d *schema.ResourceData, m interface{}) error {
 		newRelParamName := GetMOName(newRelParam.(string))
 		err = aciClient.CreateRelationfvRsCtxToExtRouteTagPolFromVRF(fvCtx.DistinguishedName, newRelParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_fv_rs_ctx_to_ext_route_tag_pol")
-		d.Partial(false)
 
 	}
 	if d.HasChange("relation_fv_rs_ctx_to_bgp_ctx_af_pol") {
@@ -712,7 +653,7 @@ func resourceAciVRFUpdate(d *schema.ResourceData, m interface{}) error {
 			paramMap := relationParam.(map[string]interface{})
 			err = aciClient.DeleteRelationfvRsCtxToBgpCtxAfPolFromVRF(fvCtx.DistinguishedName, paramMap["tn_bgp_ctx_af_pol_name"].(string), paramMap["af"].(string))
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 		}
@@ -720,11 +661,9 @@ func resourceAciVRFUpdate(d *schema.ResourceData, m interface{}) error {
 			paramMap := relationParam.(map[string]interface{})
 			err = aciClient.CreateRelationfvRsCtxToBgpCtxAfPolFromVRF(fvCtx.DistinguishedName, paramMap["tn_bgp_ctx_af_pol_name"].(string), paramMap["af"].(string))
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
-			d.Partial(true)
-			d.SetPartial("relation_fv_rs_ctx_to_bgp_ctx_af_pol")
-			d.Partial(false)
+
 		}
 
 	}
@@ -732,11 +671,11 @@ func resourceAciVRFUpdate(d *schema.ResourceData, m interface{}) error {
 	d.SetId(fvCtx.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciVRFRead(d, m)
+	return resourceAciVRFRead(ctx, d, m)
 
 }
 
-func resourceAciVRFRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciVRFRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -872,18 +811,18 @@ func resourceAciVRFRead(d *schema.ResourceData, m interface{}) error {
 	return nil
 }
 
-func resourceAciVRFDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciVRFDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "fvCtx")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
 }

@@ -8,8 +8,8 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciL3Outside() *schema.Resource {
@@ -213,8 +213,6 @@ func resourceAciL3OutsideCreate(d *schema.ResourceData, m interface{}) error {
 	}
 	d.Partial(true)
 
-	d.SetPartial("name")
-
 	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
@@ -258,7 +256,6 @@ func resourceAciL3OutsideCreate(d *schema.ResourceData, m interface{}) error {
 				return err
 			}
 			d.Partial(true)
-			d.SetPartial("relation_l3ext_rs_dampening_pol")
 			d.Partial(false)
 		}
 
@@ -271,7 +268,6 @@ func resourceAciL3OutsideCreate(d *schema.ResourceData, m interface{}) error {
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_l3ext_rs_ectx")
 		d.Partial(false)
 
 	}
@@ -284,7 +280,6 @@ func resourceAciL3OutsideCreate(d *schema.ResourceData, m interface{}) error {
 				return err
 			}
 			d.Partial(true)
-			d.SetPartial("relation_l3ext_rs_out_to_bd_public_subnet_holder")
 			d.Partial(false)
 		}
 	}
@@ -296,7 +291,6 @@ func resourceAciL3OutsideCreate(d *schema.ResourceData, m interface{}) error {
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_l3ext_rs_interleak_pol")
 		d.Partial(false)
 
 	}
@@ -307,7 +301,6 @@ func resourceAciL3OutsideCreate(d *schema.ResourceData, m interface{}) error {
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_l3ext_rs_l3_dom_att")
 		d.Partial(false)
 
 	}
@@ -353,8 +346,6 @@ func resourceAciL3OutsideUpdate(d *schema.ResourceData, m interface{}) error {
 		return err
 	}
 	d.Partial(true)
-
-	d.SetPartial("name")
 
 	d.Partial(false)
 
@@ -412,7 +403,6 @@ func resourceAciL3OutsideUpdate(d *schema.ResourceData, m interface{}) error {
 				return err
 			}
 			d.Partial(true)
-			d.SetPartial("relation_l3ext_rs_dampening_pol")
 			d.Partial(false)
 		}
 
@@ -425,7 +415,6 @@ func resourceAciL3OutsideUpdate(d *schema.ResourceData, m interface{}) error {
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_l3ext_rs_ectx")
 		d.Partial(false)
 
 	}
@@ -441,7 +430,6 @@ func resourceAciL3OutsideUpdate(d *schema.ResourceData, m interface{}) error {
 				return err
 			}
 			d.Partial(true)
-			d.SetPartial("relation_l3ext_rs_out_to_bd_public_subnet_holder")
 			d.Partial(false)
 
 		}
@@ -459,7 +447,6 @@ func resourceAciL3OutsideUpdate(d *schema.ResourceData, m interface{}) error {
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_l3ext_rs_interleak_pol")
 		d.Partial(false)
 
 	}
@@ -474,7 +461,6 @@ func resourceAciL3OutsideUpdate(d *schema.ResourceData, m interface{}) error {
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_l3ext_rs_l3_dom_att")
 		d.Partial(false)
 
 	}

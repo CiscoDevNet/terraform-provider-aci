@@ -1,21 +1,23 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciFilterEntry() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciFilterEntryCreate,
-		Update: resourceAciFilterEntryUpdate,
-		Read:   resourceAciFilterEntryRead,
-		Delete: resourceAciFilterEntryDelete,
+		CreateContext: resourceAciFilterEntryCreate,
+		UpdateContext: resourceAciFilterEntryUpdate,
+		ReadContext:   resourceAciFilterEntryRead,
+		DeleteContext: resourceAciFilterEntryDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciFilterEntryImport,
@@ -248,7 +250,11 @@ func setFilterEntryAttributes(vzEntry *models.FilterEntry, d *schema.ResourceDat
 	d.Set("name_alias", vzEntryMap["nameAlias"])
 	d.Set("prot", vzEntryMap["prot"])
 	d.Set("stateful", vzEntryMap["stateful"])
-	d.Set("tcp_rules", vzEntryMap["tcpRules"])
+	if vzEntryMap["tcpRules"] == "" {
+		d.Set("tcp_rules", "unspecified")
+	} else {
+		d.Set("tcp_rules", vzEntryMap["tcpRules"])
+	}
 	return d
 }
 
@@ -346,7 +352,7 @@ func resourceAciFilterEntryImport(d *schema.ResourceData, m interface{}) ([]*sch
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciFilterEntryCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciFilterEntryCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] FilterEntry: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -407,21 +413,16 @@ func resourceAciFilterEntryCreate(d *schema.ResourceData, m interface{}) error {
 
 	err := aciClient.Save(vzEntry)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.SetPartial("name")
-
-	d.Partial(false)
 
 	d.SetId(vzEntry.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciFilterEntryRead(d, m)
+	return resourceAciFilterEntryRead(ctx, d, m)
 }
 
-func resourceAciFilterEntryUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciFilterEntryUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] FilterEntry: Beginning Update")
 
 	aciClient := m.(*client.Client)
@@ -486,22 +487,16 @@ func resourceAciFilterEntryUpdate(d *schema.ResourceData, m interface{}) error {
 	err := aciClient.Save(vzEntry)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.SetPartial("name")
-
-	d.Partial(false)
 
 	d.SetId(vzEntry.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciFilterEntryRead(d, m)
-
+	return resourceAciFilterEntryRead(ctx, d, m)
 }
 
-func resourceAciFilterEntryRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciFilterEntryRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -522,18 +517,18 @@ func resourceAciFilterEntryRead(d *schema.ResourceData, m interface{}) error {
 	return nil
 }
 
-func resourceAciFilterEntryDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciFilterEntryDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "vzEntry")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
 }

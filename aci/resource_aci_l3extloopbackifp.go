@@ -6,7 +6,7 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func resourceAciLoopBackInterfaceProfile() *schema.Resource {
@@ -126,8 +126,6 @@ func resourceAciLoopBackInterfaceProfileCreate(d *schema.ResourceData, m interfa
 	}
 	d.Partial(true)
 
-	d.SetPartial("addr")
-
 	d.Partial(false)
 
 	d.SetId(l3extLoopBackIfP.DistinguishedName)
@@ -168,8 +166,6 @@ func resourceAciLoopBackInterfaceProfileUpdate(d *schema.ResourceData, m interfa
 		return err
 	}
 	d.Partial(true)
-
-	d.SetPartial("addr")
 
 	d.Partial(false)
 

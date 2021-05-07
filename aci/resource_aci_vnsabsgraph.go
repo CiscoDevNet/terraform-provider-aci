@@ -6,8 +6,8 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciL4L7ServiceGraphTemplate() *schema.Resource {
@@ -254,8 +254,6 @@ func resourceAciL4L7ServiceGraphTemplateCreate(d *schema.ResourceData, m interfa
 	}
 	d.Partial(true)
 
-	d.SetPartial("name")
-
 	d.Partial(false)
 
 	if consName, ok := d.GetOk("term_cons_name"); ok {
@@ -349,8 +347,6 @@ func resourceAciL4L7ServiceGraphTemplateUpdate(d *schema.ResourceData, m interfa
 		return err
 	}
 	d.Partial(true)
-
-	d.SetPartial("name")
 
 	d.Partial(false)
 

@@ -6,8 +6,8 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciLeafBreakoutPortGroup() *schema.Resource {
@@ -132,8 +132,6 @@ func resourceAciLeafBreakoutPortGroupCreate(d *schema.ResourceData, m interface{
 	}
 	d.Partial(true)
 
-	d.SetPartial("name")
-
 	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
@@ -158,7 +156,6 @@ func resourceAciLeafBreakoutPortGroupCreate(d *schema.ResourceData, m interface{
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_infra_rs_mon_brkout_infra_pol")
 		d.Partial(false)
 
 	}
@@ -200,8 +197,6 @@ func resourceAciLeafBreakoutPortGroupUpdate(d *schema.ResourceData, m interface{
 	}
 	d.Partial(true)
 
-	d.SetPartial("name")
-
 	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
@@ -226,7 +221,6 @@ func resourceAciLeafBreakoutPortGroupUpdate(d *schema.ResourceData, m interface{
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_infra_rs_mon_brkout_infra_pol")
 		d.Partial(false)
 
 	}
