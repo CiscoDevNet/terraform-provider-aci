@@ -6,7 +6,7 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func resourceAciVXLANPool() *schema.Resource {
@@ -107,8 +107,6 @@ func resourceAciVXLANPoolCreate(d *schema.ResourceData, m interface{}) error {
 	}
 	d.Partial(true)
 
-	d.SetPartial("name")
-
 	d.Partial(false)
 
 	d.SetId(fvnsVxlanInstP.DistinguishedName)
@@ -144,8 +142,6 @@ func resourceAciVXLANPoolUpdate(d *schema.ResourceData, m interface{}) error {
 		return err
 	}
 	d.Partial(true)
-
-	d.SetPartial("name")
 
 	d.Partial(false)
 

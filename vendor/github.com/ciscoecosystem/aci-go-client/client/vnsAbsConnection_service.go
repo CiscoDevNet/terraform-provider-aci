@@ -5,7 +5,7 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/container"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func (sm *ServiceManager) CreateConnection(name string, l4_l7_service_graph_template string, tenant string, description string, vnsAbsConnectionattr models.ConnectionAttributes) (*models.Connection, error) {

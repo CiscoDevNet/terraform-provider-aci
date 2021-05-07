@@ -6,8 +6,8 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciBgpPeerConnectivityProfile() *schema.Resource {
@@ -344,8 +344,6 @@ func resourceAciBgpPeerConnectivityProfileCreate(d *schema.ResourceData, m inter
 
 	d.Partial(true)
 
-	d.SetPartial("addr")
-
 	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
@@ -370,7 +368,6 @@ func resourceAciBgpPeerConnectivityProfileCreate(d *schema.ResourceData, m inter
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_bgp_rs_peer_pfx_pol")
 		d.Partial(false)
 
 	}
@@ -472,8 +469,6 @@ func resourceAciBgpPeerConnectivityProfileUpdate(d *schema.ResourceData, m inter
 
 	d.Partial(true)
 
-	d.SetPartial("addr")
-
 	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
@@ -498,7 +493,6 @@ func resourceAciBgpPeerConnectivityProfileUpdate(d *schema.ResourceData, m inter
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_bgp_rs_peer_pfx_pol")
 		d.Partial(false)
 
 	}

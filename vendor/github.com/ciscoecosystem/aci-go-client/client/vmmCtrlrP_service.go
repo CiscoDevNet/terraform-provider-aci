@@ -6,7 +6,7 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/container"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func (sm *ServiceManager) CreateVMMController(name string, vmm_domain string, provider_profile_vendor string, description string, nameAlias string, vmmCtrlrPAttr models.VMMControllerAttributes) (*models.VMMController, error) {

@@ -6,7 +6,7 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func resourceAciL3DomainProfile() *schema.Resource {
@@ -132,8 +132,6 @@ func resourceAciL3DomainProfileCreate(d *schema.ResourceData, m interface{}) err
 	}
 	d.Partial(true)
 
-	d.SetPartial("name")
-
 	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
@@ -179,7 +177,6 @@ func resourceAciL3DomainProfileCreate(d *schema.ResourceData, m interface{}) err
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_infra_rs_vlan_ns")
 		d.Partial(false)
 
 	}
@@ -190,7 +187,6 @@ func resourceAciL3DomainProfileCreate(d *schema.ResourceData, m interface{}) err
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_infra_rs_vlan_ns_def")
 		d.Partial(false)
 
 	}
@@ -201,7 +197,6 @@ func resourceAciL3DomainProfileCreate(d *schema.ResourceData, m interface{}) err
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_infra_rs_vip_addr_ns")
 		d.Partial(false)
 
 	}
@@ -214,7 +209,6 @@ func resourceAciL3DomainProfileCreate(d *schema.ResourceData, m interface{}) err
 				return err
 			}
 			d.Partial(true)
-			d.SetPartial("relation_extnw_rs_out")
 			d.Partial(false)
 		}
 	}
@@ -225,7 +219,6 @@ func resourceAciL3DomainProfileCreate(d *schema.ResourceData, m interface{}) err
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_infra_rs_dom_vxlan_ns_def")
 		d.Partial(false)
 
 	}
@@ -262,8 +255,6 @@ func resourceAciL3DomainProfileUpdate(d *schema.ResourceData, m interface{}) err
 		return err
 	}
 	d.Partial(true)
-
-	d.SetPartial("name")
 
 	d.Partial(false)
 
@@ -318,7 +309,6 @@ func resourceAciL3DomainProfileUpdate(d *schema.ResourceData, m interface{}) err
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_infra_rs_vlan_ns")
 		d.Partial(false)
 
 	}
@@ -329,7 +319,6 @@ func resourceAciL3DomainProfileUpdate(d *schema.ResourceData, m interface{}) err
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_infra_rs_vlan_ns_def")
 		d.Partial(false)
 
 	}
@@ -344,7 +333,6 @@ func resourceAciL3DomainProfileUpdate(d *schema.ResourceData, m interface{}) err
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_infra_rs_vip_addr_ns")
 		d.Partial(false)
 
 	}
@@ -360,7 +348,6 @@ func resourceAciL3DomainProfileUpdate(d *schema.ResourceData, m interface{}) err
 				return err
 			}
 			d.Partial(true)
-			d.SetPartial("relation_extnw_rs_out")
 			d.Partial(false)
 
 		}
@@ -373,7 +360,6 @@ func resourceAciL3DomainProfileUpdate(d *schema.ResourceData, m interface{}) err
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_infra_rs_dom_vxlan_ns_def")
 		d.Partial(false)
 
 	}

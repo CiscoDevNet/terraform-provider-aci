@@ -1,16 +1,18 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func dataSourceAciL2InterfacePolicy() *schema.Resource {
 	return &schema.Resource{
 
-		Read: dataSourceAciL2InterfacePolicyRead,
+		ReadContext: dataSourceAciL2InterfacePolicyRead,
 
 		SchemaVersion: 1,
 
@@ -48,7 +50,7 @@ func dataSourceAciL2InterfacePolicy() *schema.Resource {
 	}
 }
 
-func dataSourceAciL2InterfacePolicyRead(d *schema.ResourceData, m interface{}) error {
+func dataSourceAciL2InterfacePolicyRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	aciClient := m.(*client.Client)
 
 	name := d.Get("name").(string)
@@ -60,7 +62,7 @@ func dataSourceAciL2InterfacePolicyRead(d *schema.ResourceData, m interface{}) e
 	l2IfPol, err := getRemoteL2InterfacePolicy(aciClient, dn)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	setL2InterfacePolicyAttributes(l2IfPol, d)
 	return nil

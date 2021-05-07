@@ -1,6 +1,5 @@
 package models
 
-
 import (
 	"fmt"
 	"strconv"
@@ -12,30 +11,21 @@ const SpansrcgrpClassName = "spanSrcGrp"
 
 type SPANSourceGroup struct {
 	BaseAttributes
-    SPANSourceGroupAttributes 
+	SPANSourceGroupAttributes
 }
-  
+
 type SPANSourceGroupAttributes struct {
-	
-	
 	Name string `json:",omitempty"`
-	
-	
-    
-	AdminSt       string `json:",omitempty"`
-	
-    
-	Annotation       string `json:",omitempty"`
-	
-    
-	NameAlias       string `json:",omitempty"`
-	
-    
+
+	AdminSt string `json:",omitempty"`
+
+	Annotation string `json:",omitempty"`
+
+	NameAlias string `json:",omitempty"`
 }
-   
 
 func NewSPANSourceGroup(spanSrcGrpRn, parentDn, description string, spanSrcGrpattr SPANSourceGroupAttributes) *SPANSourceGroup {
-	dn := fmt.Sprintf("%s/%s", parentDn, spanSrcGrpRn)  
+	dn := fmt.Sprintf("%s/%s", parentDn, spanSrcGrpRn)
 	return &SPANSourceGroup{
 		BaseAttributes: BaseAttributes{
 			DistinguishedName: dn,
@@ -44,9 +34,8 @@ func NewSPANSourceGroup(spanSrcGrpRn, parentDn, description string, spanSrcGrpat
 			ClassName:         SpansrcgrpClassName,
 			Rn:                spanSrcGrpRn,
 		},
-        
+
 		SPANSourceGroupAttributes: spanSrcGrpattr,
-         
 	}
 }
 
@@ -56,22 +45,13 @@ func (spanSrcGrp *SPANSourceGroup) ToMap() (map[string]string, error) {
 		return nil, err
 	}
 
-	
-	
-	A(spanSrcGrpMap, "name",spanSrcGrp.Name)
-	
-	
-    
-	A(spanSrcGrpMap, "adminSt",spanSrcGrp.AdminSt)
-	
-    
-	A(spanSrcGrpMap, "annotation",spanSrcGrp.Annotation)
-	
-    
-	A(spanSrcGrpMap, "nameAlias",spanSrcGrp.NameAlias)
-	
-    
-	
+	A(spanSrcGrpMap, "name", spanSrcGrp.Name)
+
+	A(spanSrcGrpMap, "adminSt", spanSrcGrp.AdminSt)
+
+	A(spanSrcGrpMap, "annotation", spanSrcGrp.Annotation)
+
+	A(spanSrcGrpMap, "nameAlias", spanSrcGrp.NameAlias)
 
 	return spanSrcGrpMap, err
 }
@@ -87,25 +67,17 @@ func SPANSourceGroupFromContainerList(cont *container.Container, index int) *SPA
 			ClassName:         SpansrcgrpClassName,
 			Rn:                G(SPANSourceGroupCont, "rn"),
 		},
-        
+
 		SPANSourceGroupAttributes{
-		
-		
-			Name : G(SPANSourceGroupCont, "name"),
-		
-		
-        
-	        AdminSt : G(SPANSourceGroupCont, "adminSt"),
-		
-        
-	        Annotation : G(SPANSourceGroupCont, "annotation"),
-		
-        
-	        NameAlias : G(SPANSourceGroupCont, "nameAlias"),
-		
-        		
-        },
-        
+
+			Name: G(SPANSourceGroupCont, "name"),
+
+			AdminSt: G(SPANSourceGroupCont, "adminSt"),
+
+			Annotation: G(SPANSourceGroupCont, "annotation"),
+
+			NameAlias: G(SPANSourceGroupCont, "nameAlias"),
+		},
 	}
 }
 

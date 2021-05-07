@@ -5,7 +5,7 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/container"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func (sm *ServiceManager) CreateNodePolicyEndPoint(node_policy_end_point_id string, vpc_explicit_protection_group string, description string, fabricNodePEpattr models.NodePolicyEndPointAttributes) (*models.NodePolicyEndPoint, error) {

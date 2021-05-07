@@ -1,21 +1,23 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciVMMDomain() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciVMMDomainCreate,
-		Update: resourceAciVMMDomainUpdate,
-		Read:   resourceAciVMMDomainRead,
-		Delete: resourceAciVMMDomainDelete,
+		CreateContext: resourceAciVMMDomainCreate,
+		UpdateContext: resourceAciVMMDomainUpdate,
+		ReadContext:   resourceAciVMMDomainRead,
+		DeleteContext: resourceAciVMMDomainDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciVMMDomainImport,
@@ -328,7 +330,7 @@ func resourceAciVMMDomainImport(d *schema.ResourceData, m interface{}) ([]*schem
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciVMMDomainCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciVMMDomainCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] VMMDomain: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -398,13 +400,8 @@ func resourceAciVMMDomainCreate(d *schema.ResourceData, m interface{}) error {
 
 	err := aciClient.Save(vmmDomP)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.SetPartial("name")
-
-	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
 
@@ -471,7 +468,7 @@ func resourceAciVMMDomainCreate(d *schema.ResourceData, m interface{}) error {
 	d.Partial(true)
 	err = checkTDn(aciClient, checkDns)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Partial(false)
 
@@ -479,148 +476,100 @@ func resourceAciVMMDomainCreate(d *schema.ResourceData, m interface{}) error {
 		relationParam := relationTovmmRsPrefEnhancedLagPol.(string)
 		err = aciClient.CreateRelationvmmRsPrefEnhancedLagPolFromVMMDomain(vmmDomP.DistinguishedName, relationParam)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_vmm_rs_pref_enhanced_lag_pol")
-		d.Partial(false)
-
 	}
 	if relationToinfraRsVlanNs, ok := d.GetOk("relation_infra_rs_vlan_ns"); ok {
 		relationParam := relationToinfraRsVlanNs.(string)
 		err = aciClient.CreateRelationinfraRsVlanNsFromVMMDomain(vmmDomP.DistinguishedName, relationParam)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_infra_rs_vlan_ns")
-		d.Partial(false)
-
 	}
 	if relationTovmmRsDomMcastAddrNs, ok := d.GetOk("relation_vmm_rs_dom_mcast_addr_ns"); ok {
 		relationParam := relationTovmmRsDomMcastAddrNs.(string)
 		err = aciClient.CreateRelationvmmRsDomMcastAddrNsFromVMMDomain(vmmDomP.DistinguishedName, relationParam)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_vmm_rs_dom_mcast_addr_ns")
-		d.Partial(false)
-
 	}
 	if relationTovmmRsDefaultCdpIfPol, ok := d.GetOk("relation_vmm_rs_default_cdp_if_pol"); ok {
 		relationParam := relationTovmmRsDefaultCdpIfPol.(string)
 		relationParamName := GetMOName(relationParam)
 		err = aciClient.CreateRelationvmmRsDefaultCdpIfPolFromVMMDomain(vmmDomP.DistinguishedName, relationParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_vmm_rs_default_cdp_if_pol")
-		d.Partial(false)
-
 	}
 	if relationTovmmRsDefaultLacpLagPol, ok := d.GetOk("relation_vmm_rs_default_lacp_lag_pol"); ok {
 		relationParam := relationTovmmRsDefaultLacpLagPol.(string)
 		relationParamName := GetMOName(relationParam)
 		err = aciClient.CreateRelationvmmRsDefaultLacpLagPolFromVMMDomain(vmmDomP.DistinguishedName, relationParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_vmm_rs_default_lacp_lag_pol")
-		d.Partial(false)
-
 	}
 	if relationToinfraRsVlanNsDef, ok := d.GetOk("relation_infra_rs_vlan_ns_def"); ok {
 		relationParam := relationToinfraRsVlanNsDef.(string)
 		err = aciClient.CreateRelationinfraRsVlanNsDefFromVMMDomain(vmmDomP.DistinguishedName, relationParam)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_infra_rs_vlan_ns_def")
-		d.Partial(false)
-
 	}
 	if relationToinfraRsVipAddrNs, ok := d.GetOk("relation_infra_rs_vip_addr_ns"); ok {
 		relationParam := relationToinfraRsVipAddrNs.(string)
 		err = aciClient.CreateRelationinfraRsVipAddrNsFromVMMDomain(vmmDomP.DistinguishedName, relationParam)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_infra_rs_vip_addr_ns")
-		d.Partial(false)
-
 	}
 	if relationTovmmRsDefaultLldpIfPol, ok := d.GetOk("relation_vmm_rs_default_lldp_if_pol"); ok {
 		relationParam := relationTovmmRsDefaultLldpIfPol.(string)
 		relationParamName := GetMOName(relationParam)
 		err = aciClient.CreateRelationvmmRsDefaultLldpIfPolFromVMMDomain(vmmDomP.DistinguishedName, relationParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_vmm_rs_default_lldp_if_pol")
-		d.Partial(false)
-
 	}
 	if relationTovmmRsDefaultStpIfPol, ok := d.GetOk("relation_vmm_rs_default_stp_if_pol"); ok {
 		relationParam := relationTovmmRsDefaultStpIfPol.(string)
 		relationParamName := GetMOName(relationParam)
 		err = aciClient.CreateRelationvmmRsDefaultStpIfPolFromVMMDomain(vmmDomP.DistinguishedName, relationParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_vmm_rs_default_stp_if_pol")
-		d.Partial(false)
-
 	}
 	if relationToinfraRsDomVxlanNsDef, ok := d.GetOk("relation_infra_rs_dom_vxlan_ns_def"); ok {
 		relationParam := relationToinfraRsDomVxlanNsDef.(string)
 		err = aciClient.CreateRelationinfraRsDomVxlanNsDefFromVMMDomain(vmmDomP.DistinguishedName, relationParam)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_infra_rs_dom_vxlan_ns_def")
-		d.Partial(false)
-
 	}
 	if relationTovmmRsDefaultFwPol, ok := d.GetOk("relation_vmm_rs_default_fw_pol"); ok {
 		relationParam := relationTovmmRsDefaultFwPol.(string)
 		relationParamName := GetMOName(relationParam)
 		err = aciClient.CreateRelationvmmRsDefaultFwPolFromVMMDomain(vmmDomP.DistinguishedName, relationParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_vmm_rs_default_fw_pol")
-		d.Partial(false)
-
 	}
 	if relationTovmmRsDefaultL2InstPol, ok := d.GetOk("relation_vmm_rs_default_l2_inst_pol"); ok {
 		relationParam := relationTovmmRsDefaultL2InstPol.(string)
 		relationParamName := GetMOName(relationParam)
 		err = aciClient.CreateRelationvmmRsDefaultL2InstPolFromVMMDomain(vmmDomP.DistinguishedName, relationParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_vmm_rs_default_l2_inst_pol")
-		d.Partial(false)
-
 	}
 
 	d.SetId(vmmDomP.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciVMMDomainRead(d, m)
+	return resourceAciVMMDomainRead(ctx, d, m)
 }
 
-func resourceAciVMMDomainUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciVMMDomainUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] VMMDomain: Beginning Update")
 
 	aciClient := m.(*client.Client)
@@ -694,13 +643,8 @@ func resourceAciVMMDomainUpdate(d *schema.ResourceData, m interface{}) error {
 	err := aciClient.Save(vmmDomP)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.SetPartial("name")
-
-	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
 
@@ -767,7 +711,7 @@ func resourceAciVMMDomainUpdate(d *schema.ResourceData, m interface{}) error {
 	d.Partial(true)
 	err = checkTDn(aciClient, checkDns)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Partial(false)
 
@@ -775,165 +719,117 @@ func resourceAciVMMDomainUpdate(d *schema.ResourceData, m interface{}) error {
 		_, newRelParam := d.GetChange("relation_vmm_rs_pref_enhanced_lag_pol")
 		err = aciClient.DeleteRelationvmmRsPrefEnhancedLagPolFromVMMDomain(vmmDomP.DistinguishedName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 		err = aciClient.CreateRelationvmmRsPrefEnhancedLagPolFromVMMDomain(vmmDomP.DistinguishedName, newRelParam.(string))
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_vmm_rs_pref_enhanced_lag_pol")
-		d.Partial(false)
-
 	}
 	if d.HasChange("relation_infra_rs_vlan_ns") {
 		_, newRelParam := d.GetChange("relation_infra_rs_vlan_ns")
 		err = aciClient.DeleteRelationinfraRsVlanNsFromVMMDomain(vmmDomP.DistinguishedName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 		err = aciClient.CreateRelationinfraRsVlanNsFromVMMDomain(vmmDomP.DistinguishedName, newRelParam.(string))
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_infra_rs_vlan_ns")
-		d.Partial(false)
-
 	}
 	if d.HasChange("relation_vmm_rs_dom_mcast_addr_ns") {
 		_, newRelParam := d.GetChange("relation_vmm_rs_dom_mcast_addr_ns")
 		err = aciClient.DeleteRelationvmmRsDomMcastAddrNsFromVMMDomain(vmmDomP.DistinguishedName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 		err = aciClient.CreateRelationvmmRsDomMcastAddrNsFromVMMDomain(vmmDomP.DistinguishedName, newRelParam.(string))
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_vmm_rs_dom_mcast_addr_ns")
-		d.Partial(false)
-
 	}
 	if d.HasChange("relation_vmm_rs_default_cdp_if_pol") {
 		_, newRelParam := d.GetChange("relation_vmm_rs_default_cdp_if_pol")
 		newRelParamName := GetMOName(newRelParam.(string))
 		err = aciClient.CreateRelationvmmRsDefaultCdpIfPolFromVMMDomain(vmmDomP.DistinguishedName, newRelParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_vmm_rs_default_cdp_if_pol")
-		d.Partial(false)
-
 	}
 	if d.HasChange("relation_vmm_rs_default_lacp_lag_pol") {
 		_, newRelParam := d.GetChange("relation_vmm_rs_default_lacp_lag_pol")
 		newRelParamName := GetMOName(newRelParam.(string))
 		err = aciClient.CreateRelationvmmRsDefaultLacpLagPolFromVMMDomain(vmmDomP.DistinguishedName, newRelParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_vmm_rs_default_lacp_lag_pol")
-		d.Partial(false)
-
 	}
 	if d.HasChange("relation_infra_rs_vlan_ns_def") {
 		_, newRelParam := d.GetChange("relation_infra_rs_vlan_ns_def")
 		err = aciClient.CreateRelationinfraRsVlanNsDefFromVMMDomain(vmmDomP.DistinguishedName, newRelParam.(string))
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_infra_rs_vlan_ns_def")
-		d.Partial(false)
-
 	}
 	if d.HasChange("relation_infra_rs_vip_addr_ns") {
 		_, newRelParam := d.GetChange("relation_infra_rs_vip_addr_ns")
 		err = aciClient.DeleteRelationinfraRsVipAddrNsFromVMMDomain(vmmDomP.DistinguishedName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 		err = aciClient.CreateRelationinfraRsVipAddrNsFromVMMDomain(vmmDomP.DistinguishedName, newRelParam.(string))
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_infra_rs_vip_addr_ns")
-		d.Partial(false)
-
 	}
 	if d.HasChange("relation_vmm_rs_default_lldp_if_pol") {
 		_, newRelParam := d.GetChange("relation_vmm_rs_default_lldp_if_pol")
 		newRelParamName := GetMOName(newRelParam.(string))
 		err = aciClient.CreateRelationvmmRsDefaultLldpIfPolFromVMMDomain(vmmDomP.DistinguishedName, newRelParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_vmm_rs_default_lldp_if_pol")
-		d.Partial(false)
-
 	}
 	if d.HasChange("relation_vmm_rs_default_stp_if_pol") {
 		_, newRelParam := d.GetChange("relation_vmm_rs_default_stp_if_pol")
 		newRelParamName := GetMOName(newRelParam.(string))
 		err = aciClient.CreateRelationvmmRsDefaultStpIfPolFromVMMDomain(vmmDomP.DistinguishedName, newRelParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_vmm_rs_default_stp_if_pol")
-		d.Partial(false)
-
 	}
 	if d.HasChange("relation_infra_rs_dom_vxlan_ns_def") {
 		_, newRelParam := d.GetChange("relation_infra_rs_dom_vxlan_ns_def")
 		err = aciClient.CreateRelationinfraRsDomVxlanNsDefFromVMMDomain(vmmDomP.DistinguishedName, newRelParam.(string))
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_infra_rs_dom_vxlan_ns_def")
-		d.Partial(false)
-
 	}
 	if d.HasChange("relation_vmm_rs_default_fw_pol") {
 		_, newRelParam := d.GetChange("relation_vmm_rs_default_fw_pol")
 		newRelParamName := GetMOName(newRelParam.(string))
 		err = aciClient.CreateRelationvmmRsDefaultFwPolFromVMMDomain(vmmDomP.DistinguishedName, newRelParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_vmm_rs_default_fw_pol")
-		d.Partial(false)
-
 	}
 	if d.HasChange("relation_vmm_rs_default_l2_inst_pol") {
 		_, newRelParam := d.GetChange("relation_vmm_rs_default_l2_inst_pol")
 		newRelParamName := GetMOName(newRelParam.(string))
 		err = aciClient.CreateRelationvmmRsDefaultL2InstPolFromVMMDomain(vmmDomP.DistinguishedName, newRelParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_vmm_rs_default_l2_inst_pol")
-		d.Partial(false)
-
 	}
 
 	d.SetId(vmmDomP.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciVMMDomainRead(d, m)
+	return resourceAciVMMDomainRead(ctx, d, m)
 
 }
 
-func resourceAciVMMDomainRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciVMMDomainRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -1120,18 +1016,18 @@ func resourceAciVMMDomainRead(d *schema.ResourceData, m interface{}) error {
 	return nil
 }
 
-func resourceAciVMMDomainDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciVMMDomainDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "vmmDomP")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
 }

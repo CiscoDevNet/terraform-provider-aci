@@ -6,7 +6,7 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func resourceAciSpineAccessPortPolicyGroup() *schema.Resource {
@@ -133,8 +133,6 @@ func resourceAciSpineAccessPortPolicyGroupCreate(d *schema.ResourceData, m inter
 	}
 	d.Partial(true)
 
-	d.SetPartial("name")
-
 	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
@@ -179,7 +177,6 @@ func resourceAciSpineAccessPortPolicyGroupCreate(d *schema.ResourceData, m inter
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_infra_rs_h_if_pol")
 		d.Partial(false)
 
 	}
@@ -191,7 +188,6 @@ func resourceAciSpineAccessPortPolicyGroupCreate(d *schema.ResourceData, m inter
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_infra_rs_cdp_if_pol")
 		d.Partial(false)
 
 	}
@@ -203,7 +199,6 @@ func resourceAciSpineAccessPortPolicyGroupCreate(d *schema.ResourceData, m inter
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_infra_rs_copp_if_pol")
 		d.Partial(false)
 
 	}
@@ -214,7 +209,6 @@ func resourceAciSpineAccessPortPolicyGroupCreate(d *schema.ResourceData, m inter
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_infra_rs_att_ent_p")
 		d.Partial(false)
 
 	}
@@ -226,7 +220,6 @@ func resourceAciSpineAccessPortPolicyGroupCreate(d *schema.ResourceData, m inter
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_infra_rs_macsec_if_pol")
 		d.Partial(false)
 
 	}
@@ -264,8 +257,6 @@ func resourceAciSpineAccessPortPolicyGroupUpdate(d *schema.ResourceData, m inter
 		return err
 	}
 	d.Partial(true)
-
-	d.SetPartial("name")
 
 	d.Partial(false)
 
@@ -311,7 +302,6 @@ func resourceAciSpineAccessPortPolicyGroupUpdate(d *schema.ResourceData, m inter
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_infra_rs_h_if_pol")
 		d.Partial(false)
 
 	}
@@ -323,7 +313,6 @@ func resourceAciSpineAccessPortPolicyGroupUpdate(d *schema.ResourceData, m inter
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_infra_rs_cdp_if_pol")
 		d.Partial(false)
 
 	}
@@ -335,7 +324,6 @@ func resourceAciSpineAccessPortPolicyGroupUpdate(d *schema.ResourceData, m inter
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_infra_rs_copp_if_pol")
 		d.Partial(false)
 
 	}
@@ -350,7 +338,6 @@ func resourceAciSpineAccessPortPolicyGroupUpdate(d *schema.ResourceData, m inter
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_infra_rs_att_ent_p")
 		d.Partial(false)
 
 	}
@@ -362,7 +349,6 @@ func resourceAciSpineAccessPortPolicyGroupUpdate(d *schema.ResourceData, m inter
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_infra_rs_macsec_if_pol")
 		d.Partial(false)
 
 	}

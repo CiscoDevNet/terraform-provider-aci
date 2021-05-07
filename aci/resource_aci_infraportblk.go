@@ -7,7 +7,7 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func resourceAciAccessPortBlock() *schema.Resource {
@@ -211,8 +211,6 @@ func resourceAciAccessPortBlockCreate(d *schema.ResourceData, m interface{}) err
 	}
 	d.Partial(true)
 
-	d.SetPartial("name")
-
 	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
@@ -237,7 +235,6 @@ func resourceAciAccessPortBlockCreate(d *schema.ResourceData, m interface{}) err
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_infra_rs_acc_bndl_subgrp")
 		d.Partial(false)
 
 	}
@@ -290,8 +287,6 @@ func resourceAciAccessPortBlockUpdate(d *schema.ResourceData, m interface{}) err
 	}
 	d.Partial(true)
 
-	d.SetPartial("name")
-
 	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
@@ -320,7 +315,6 @@ func resourceAciAccessPortBlockUpdate(d *schema.ResourceData, m interface{}) err
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_infra_rs_acc_bndl_subgrp")
 		d.Partial(false)
 
 	}

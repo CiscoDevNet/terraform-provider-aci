@@ -6,7 +6,7 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func resourceAciX509Certificate() *schema.Resource {
@@ -134,8 +134,6 @@ func resourceAciX509CertificateCreate(d *schema.ResourceData, m interface{}) err
 	}
 	d.Partial(true)
 
-	d.SetPartial("name")
-
 	d.Partial(false)
 
 	d.SetId(aaaUserCert.DistinguishedName)
@@ -176,8 +174,6 @@ func resourceAciX509CertificateUpdate(d *schema.ResourceData, m interface{}) err
 		return err
 	}
 	d.Partial(true)
-
-	d.SetPartial("name")
 
 	d.Partial(false)
 

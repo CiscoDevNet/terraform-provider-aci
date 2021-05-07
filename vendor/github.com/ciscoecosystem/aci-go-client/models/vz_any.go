@@ -1,6 +1,5 @@
 package models
 
-
 import (
 	"fmt"
 	"strconv"
@@ -12,29 +11,21 @@ const VzanyClassName = "vzAny"
 
 type Any struct {
 	BaseAttributes
-    AnyAttributes 
+	AnyAttributes
 }
-  
+
 type AnyAttributes struct {
-	
-    
-	Annotation       string `json:",omitempty"`
-	
-    
-	MatchT       string `json:",omitempty"`
-	
-    
-	NameAlias       string `json:",omitempty"`
-	
-    
-	PrefGrMemb       string `json:",omitempty"`
-	
-    
+	Annotation string `json:",omitempty"`
+
+	MatchT string `json:",omitempty"`
+
+	NameAlias string `json:",omitempty"`
+
+	PrefGrMemb string `json:",omitempty"`
 }
-   
 
 func NewAny(vzAnyRn, parentDn, description string, vzAnyattr AnyAttributes) *Any {
-	dn := fmt.Sprintf("%s/%s", parentDn, vzAnyRn)  
+	dn := fmt.Sprintf("%s/%s", parentDn, vzAnyRn)
 	return &Any{
 		BaseAttributes: BaseAttributes{
 			DistinguishedName: dn,
@@ -43,9 +34,8 @@ func NewAny(vzAnyRn, parentDn, description string, vzAnyattr AnyAttributes) *Any
 			ClassName:         VzanyClassName,
 			Rn:                vzAnyRn,
 		},
-        
+
 		AnyAttributes: vzAnyattr,
-         
 	}
 }
 
@@ -55,21 +45,13 @@ func (vzAny *Any) ToMap() (map[string]string, error) {
 		return nil, err
 	}
 
-	
-    
-	A(vzAnyMap, "annotation",vzAny.Annotation)
-	
-    
-	A(vzAnyMap, "matchT",vzAny.MatchT)
-	
-    
-	A(vzAnyMap, "nameAlias",vzAny.NameAlias)
-	
-    
-	A(vzAnyMap, "prefGrMemb",vzAny.PrefGrMemb)
-	
-    
-	
+	A(vzAnyMap, "annotation", vzAny.Annotation)
+
+	A(vzAnyMap, "matchT", vzAny.MatchT)
+
+	A(vzAnyMap, "nameAlias", vzAny.NameAlias)
+
+	A(vzAnyMap, "prefGrMemb", vzAny.PrefGrMemb)
 
 	return vzAnyMap, err
 }
@@ -85,24 +67,17 @@ func AnyFromContainerList(cont *container.Container, index int) *Any {
 			ClassName:         VzanyClassName,
 			Rn:                G(AnyCont, "rn"),
 		},
-        
+
 		AnyAttributes{
-		
-        
-	        Annotation : G(AnyCont, "annotation"),
-		
-        
-	        MatchT : G(AnyCont, "matchT"),
-		
-        
-	        NameAlias : G(AnyCont, "nameAlias"),
-		
-        
-	        PrefGrMemb : G(AnyCont, "prefGrMemb"),
-		
-        		
-        },
-        
+
+			Annotation: G(AnyCont, "annotation"),
+
+			MatchT: G(AnyCont, "matchT"),
+
+			NameAlias: G(AnyCont, "nameAlias"),
+
+			PrefGrMemb: G(AnyCont, "prefGrMemb"),
+		},
 	}
 }
 

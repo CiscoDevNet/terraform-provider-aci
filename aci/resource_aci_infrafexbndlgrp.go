@@ -6,7 +6,7 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func resourceAciFexBundleGroup() *schema.Resource {
@@ -135,8 +135,6 @@ func resourceAciFexBundleGroupCreate(d *schema.ResourceData, m interface{}) erro
 	}
 	d.Partial(true)
 
-	d.SetPartial("name")
-
 	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
@@ -168,7 +166,6 @@ func resourceAciFexBundleGroupCreate(d *schema.ResourceData, m interface{}) erro
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_infra_rs_mon_fex_infra_pol")
 		d.Partial(false)
 
 	}
@@ -181,7 +178,6 @@ func resourceAciFexBundleGroupCreate(d *schema.ResourceData, m interface{}) erro
 				return err
 			}
 			d.Partial(true)
-			d.SetPartial("relation_infra_rs_fex_bndl_grp_to_aggr_if")
 			d.Partial(false)
 		}
 	}
@@ -222,8 +218,6 @@ func resourceAciFexBundleGroupUpdate(d *schema.ResourceData, m interface{}) erro
 	}
 	d.Partial(true)
 
-	d.SetPartial("name")
-
 	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
@@ -259,7 +253,6 @@ func resourceAciFexBundleGroupUpdate(d *schema.ResourceData, m interface{}) erro
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_infra_rs_mon_fex_infra_pol")
 		d.Partial(false)
 
 	}
@@ -275,7 +268,6 @@ func resourceAciFexBundleGroupUpdate(d *schema.ResourceData, m interface{}) erro
 				return err
 			}
 			d.Partial(true)
-			d.SetPartial("relation_infra_rs_fex_bndl_grp_to_aggr_if")
 			d.Partial(false)
 
 		}

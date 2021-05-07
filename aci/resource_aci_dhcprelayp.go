@@ -6,8 +6,8 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciDHCPRelayPolicy() *schema.Resource {
@@ -172,8 +172,6 @@ func resourceAciDHCPRelayPolicyCreate(d *schema.ResourceData, m interface{}) err
 	}
 	d.Partial(true)
 
-	d.SetPartial("name")
-
 	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
@@ -203,7 +201,6 @@ func resourceAciDHCPRelayPolicyCreate(d *schema.ResourceData, m interface{}) err
 				return err
 			}
 			d.Partial(true)
-			d.SetPartial("relation_dhcp_rs_prov")
 			d.Partial(false)
 		}
 	}
@@ -250,8 +247,6 @@ func resourceAciDHCPRelayPolicyUpdate(d *schema.ResourceData, m interface{}) err
 	}
 	d.Partial(true)
 
-	d.SetPartial("name")
-
 	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
@@ -293,7 +288,6 @@ func resourceAciDHCPRelayPolicyUpdate(d *schema.ResourceData, m interface{}) err
 				return err
 			}
 			d.Partial(true)
-			d.SetPartial("relation_dhcp_rs_prov")
 			d.Partial(false)
 
 		}

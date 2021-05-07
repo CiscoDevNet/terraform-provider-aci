@@ -1,6 +1,5 @@
 package models
 
-
 import (
 	"fmt"
 	"strconv"
@@ -12,57 +11,39 @@ const FvaepgClassName = "fvAEPg"
 
 type ApplicationEPG struct {
 	BaseAttributes
-    ApplicationEPGAttributes 
+	ApplicationEPGAttributes
 }
-  
+
 type ApplicationEPGAttributes struct {
-	
-	
 	Name string `json:",omitempty"`
-	
-	
-    
-	Annotation       string `json:",omitempty"`
-	
-    
-	ExceptionTag       string `json:",omitempty"`
-	
-    
-	FloodOnEncap       string `json:",omitempty"`
-	
-    
-	FwdCtrl       string `json:",omitempty"`
-	
-    
-	HasMcastSource       string `json:",omitempty"`
-	
-    
-	IsAttrBasedEPg       string `json:",omitempty"`
-	
-    
-	MatchT       string `json:",omitempty"`
-	
-    
-	NameAlias       string `json:",omitempty"`
-	
-    
-	PcEnfPref       string `json:",omitempty"`
-	
-    
-	PrefGrMemb       string `json:",omitempty"`
-	
-    
-	Prio       string `json:",omitempty"`
-	
-    
-	Shutdown       string `json:",omitempty"`
-	
-    
+
+	Annotation string `json:",omitempty"`
+
+	ExceptionTag string `json:",omitempty"`
+
+	FloodOnEncap string `json:",omitempty"`
+
+	FwdCtrl string `json:",omitempty"`
+
+	HasMcastSource string `json:",omitempty"`
+
+	IsAttrBasedEPg string `json:",omitempty"`
+
+	MatchT string `json:",omitempty"`
+
+	NameAlias string `json:",omitempty"`
+
+	PcEnfPref string `json:",omitempty"`
+
+	PrefGrMemb string `json:",omitempty"`
+
+	Prio string `json:",omitempty"`
+
+	Shutdown string `json:",omitempty"`
 }
-   
 
 func NewApplicationEPG(fvAEPgRn, parentDn, description string, fvAEPgattr ApplicationEPGAttributes) *ApplicationEPG {
-	dn := fmt.Sprintf("%s/%s", parentDn, fvAEPgRn)  
+	dn := fmt.Sprintf("%s/%s", parentDn, fvAEPgRn)
 	return &ApplicationEPG{
 		BaseAttributes: BaseAttributes{
 			DistinguishedName: dn,
@@ -71,9 +52,8 @@ func NewApplicationEPG(fvAEPgRn, parentDn, description string, fvAEPgattr Applic
 			ClassName:         FvaepgClassName,
 			Rn:                fvAEPgRn,
 		},
-        
+
 		ApplicationEPGAttributes: fvAEPgattr,
-         
 	}
 }
 
@@ -83,49 +63,31 @@ func (fvAEPg *ApplicationEPG) ToMap() (map[string]string, error) {
 		return nil, err
 	}
 
-	
-	
-	A(fvAEPgMap, "name",fvAEPg.Name)
-	
-	
-    
-	A(fvAEPgMap, "annotation",fvAEPg.Annotation)
-	
-    
-	A(fvAEPgMap, "exceptionTag",fvAEPg.ExceptionTag)
-	
-    
-	A(fvAEPgMap, "floodOnEncap",fvAEPg.FloodOnEncap)
-	
-    
-	A(fvAEPgMap, "fwdCtrl",fvAEPg.FwdCtrl)
-	
-    
-	A(fvAEPgMap, "hasMcastSource",fvAEPg.HasMcastSource)
-	
-    
-	A(fvAEPgMap, "isAttrBasedEPg",fvAEPg.IsAttrBasedEPg)
-	
-    
-	A(fvAEPgMap, "matchT",fvAEPg.MatchT)
-	
-    
-	A(fvAEPgMap, "nameAlias",fvAEPg.NameAlias)
-	
-    
-	A(fvAEPgMap, "pcEnfPref",fvAEPg.PcEnfPref)
-	
-    
-	A(fvAEPgMap, "prefGrMemb",fvAEPg.PrefGrMemb)
-	
-    
-	A(fvAEPgMap, "prio",fvAEPg.Prio)
-	
-    
-	A(fvAEPgMap, "shutdown",fvAEPg.Shutdown)
-	
-    
-	
+	A(fvAEPgMap, "name", fvAEPg.Name)
+
+	A(fvAEPgMap, "annotation", fvAEPg.Annotation)
+
+	A(fvAEPgMap, "exceptionTag", fvAEPg.ExceptionTag)
+
+	A(fvAEPgMap, "floodOnEncap", fvAEPg.FloodOnEncap)
+
+	A(fvAEPgMap, "fwdCtrl", fvAEPg.FwdCtrl)
+
+	A(fvAEPgMap, "hasMcastSource", fvAEPg.HasMcastSource)
+
+	A(fvAEPgMap, "isAttrBasedEPg", fvAEPg.IsAttrBasedEPg)
+
+	A(fvAEPgMap, "matchT", fvAEPg.MatchT)
+
+	A(fvAEPgMap, "nameAlias", fvAEPg.NameAlias)
+
+	A(fvAEPgMap, "pcEnfPref", fvAEPg.PcEnfPref)
+
+	A(fvAEPgMap, "prefGrMemb", fvAEPg.PrefGrMemb)
+
+	A(fvAEPgMap, "prio", fvAEPg.Prio)
+
+	A(fvAEPgMap, "shutdown", fvAEPg.Shutdown)
 
 	return fvAEPgMap, err
 }
@@ -141,52 +103,35 @@ func ApplicationEPGFromContainerList(cont *container.Container, index int) *Appl
 			ClassName:         FvaepgClassName,
 			Rn:                G(ApplicationEPGCont, "rn"),
 		},
-        
+
 		ApplicationEPGAttributes{
-		
-		
-			Name : G(ApplicationEPGCont, "name"),
-		
-		
-        
-	        Annotation : G(ApplicationEPGCont, "annotation"),
-		
-        
-	        ExceptionTag : G(ApplicationEPGCont, "exceptionTag"),
-		
-        
-	        FloodOnEncap : G(ApplicationEPGCont, "floodOnEncap"),
-		
-        
-	        FwdCtrl : G(ApplicationEPGCont, "fwdCtrl"),
-		
-        
-	        HasMcastSource : G(ApplicationEPGCont, "hasMcastSource"),
-		
-        
-	        IsAttrBasedEPg : G(ApplicationEPGCont, "isAttrBasedEPg"),
-		
-        
-	        MatchT : G(ApplicationEPGCont, "matchT"),
-		
-        
-	        NameAlias : G(ApplicationEPGCont, "nameAlias"),
-		
-        
-	        PcEnfPref : G(ApplicationEPGCont, "pcEnfPref"),
-		
-        
-	        PrefGrMemb : G(ApplicationEPGCont, "prefGrMemb"),
-		
-        
-	        Prio : G(ApplicationEPGCont, "prio"),
-		
-        
-	        Shutdown : G(ApplicationEPGCont, "shutdown"),
-		
-        		
-        },
-        
+
+			Name: G(ApplicationEPGCont, "name"),
+
+			Annotation: G(ApplicationEPGCont, "annotation"),
+
+			ExceptionTag: G(ApplicationEPGCont, "exceptionTag"),
+
+			FloodOnEncap: G(ApplicationEPGCont, "floodOnEncap"),
+
+			FwdCtrl: G(ApplicationEPGCont, "fwdCtrl"),
+
+			HasMcastSource: G(ApplicationEPGCont, "hasMcastSource"),
+
+			IsAttrBasedEPg: G(ApplicationEPGCont, "isAttrBasedEPg"),
+
+			MatchT: G(ApplicationEPGCont, "matchT"),
+
+			NameAlias: G(ApplicationEPGCont, "nameAlias"),
+
+			PcEnfPref: G(ApplicationEPGCont, "pcEnfPref"),
+
+			PrefGrMemb: G(ApplicationEPGCont, "prefGrMemb"),
+
+			Prio: G(ApplicationEPGCont, "prio"),
+
+			Shutdown: G(ApplicationEPGCont, "shutdown"),
+		},
 	}
 }
 

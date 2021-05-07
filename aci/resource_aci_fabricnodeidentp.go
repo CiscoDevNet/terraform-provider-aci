@@ -6,8 +6,8 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciFabricNodeMember() *schema.Resource {
@@ -190,8 +190,6 @@ func resourceAciFabricNodeMemberCreate(d *schema.ResourceData, m interface{}) er
 	}
 	d.Partial(true)
 
-	d.SetPartial("serial")
-
 	d.Partial(false)
 
 	d.SetId(fabricNodeIdentP.DistinguishedName)
@@ -250,8 +248,6 @@ func resourceAciFabricNodeMemberUpdate(d *schema.ResourceData, m interface{}) er
 		return err
 	}
 	d.Partial(true)
-
-	d.SetPartial("serial")
 
 	d.Partial(false)
 
