@@ -1,20 +1,22 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func resourceAciFilter() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciFilterCreate,
-		Update: resourceAciFilterUpdate,
-		Read:   resourceAciFilterRead,
-		Delete: resourceAciFilterDelete,
+		CreateContext: resourceAciFilterCreate,
+		UpdateContext: resourceAciFilterUpdate,
+		ReadContext:   resourceAciFilterRead,
+		DeleteContext: resourceAciFilterDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciFilterImport,
@@ -113,7 +115,7 @@ func resourceAciFilterImport(d *schema.ResourceData, m interface{}) ([]*schema.R
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciFilterCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciFilterCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] Filter: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -135,13 +137,8 @@ func resourceAciFilterCreate(d *schema.ResourceData, m interface{}) error {
 
 	err := aciClient.Save(vzFilter)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.SetPartial("name")
-
-	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
 
@@ -163,7 +160,7 @@ func resourceAciFilterCreate(d *schema.ResourceData, m interface{}) error {
 	d.Partial(true)
 	err = checkTDn(aciClient, checkDns)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Partial(false)
 
@@ -172,43 +169,34 @@ func resourceAciFilterCreate(d *schema.ResourceData, m interface{}) error {
 		relationParamName := GetMOName(relationParam)
 		err = aciClient.CreateRelationvzRsFiltGraphAttFromFilter(vzFilter.DistinguishedName, relationParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_vz_rs_filt_graph_att")
-		d.Partial(false)
 
 	}
 	if relationTovzRsFwdRFltPAtt, ok := d.GetOk("relation_vz_rs_fwd_r_flt_p_att"); ok {
 		relationParam := relationTovzRsFwdRFltPAtt.(string)
 		err = aciClient.CreateRelationvzRsFwdRFltPAttFromFilter(vzFilter.DistinguishedName, relationParam)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_vz_rs_fwd_r_flt_p_att")
-		d.Partial(false)
 
 	}
 	if relationTovzRsRevRFltPAtt, ok := d.GetOk("relation_vz_rs_rev_r_flt_p_att"); ok {
 		relationParam := relationTovzRsRevRFltPAtt.(string)
 		err = aciClient.CreateRelationvzRsRevRFltPAttFromFilter(vzFilter.DistinguishedName, relationParam)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_vz_rs_rev_r_flt_p_att")
-		d.Partial(false)
 
 	}
 
 	d.SetId(vzFilter.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciFilterRead(d, m)
+	return resourceAciFilterRead(ctx, d, m)
 }
 
-func resourceAciFilterUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciFilterUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] Filter: Beginning Update")
 
 	aciClient := m.(*client.Client)
@@ -234,13 +222,8 @@ func resourceAciFilterUpdate(d *schema.ResourceData, m interface{}) error {
 	err := aciClient.Save(vzFilter)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.SetPartial("name")
-
-	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
 
@@ -262,7 +245,7 @@ func resourceAciFilterUpdate(d *schema.ResourceData, m interface{}) error {
 	d.Partial(true)
 	err = checkTDn(aciClient, checkDns)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Partial(false)
 
@@ -271,44 +254,35 @@ func resourceAciFilterUpdate(d *schema.ResourceData, m interface{}) error {
 		newRelParamName := GetMOName(newRelParam.(string))
 		err = aciClient.CreateRelationvzRsFiltGraphAttFromFilter(vzFilter.DistinguishedName, newRelParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_vz_rs_filt_graph_att")
-		d.Partial(false)
 
 	}
 	if d.HasChange("relation_vz_rs_fwd_r_flt_p_att") {
 		_, newRelParam := d.GetChange("relation_vz_rs_fwd_r_flt_p_att")
 		err = aciClient.CreateRelationvzRsFwdRFltPAttFromFilter(vzFilter.DistinguishedName, newRelParam.(string))
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_vz_rs_fwd_r_flt_p_att")
-		d.Partial(false)
 
 	}
 	if d.HasChange("relation_vz_rs_rev_r_flt_p_att") {
 		_, newRelParam := d.GetChange("relation_vz_rs_rev_r_flt_p_att")
 		err = aciClient.CreateRelationvzRsRevRFltPAttFromFilter(vzFilter.DistinguishedName, newRelParam.(string))
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_vz_rs_rev_r_flt_p_att")
-		d.Partial(false)
 
 	}
 
 	d.SetId(vzFilter.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciFilterRead(d, m)
+	return resourceAciFilterRead(ctx, d, m)
 
 }
 
-func resourceAciFilterRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciFilterRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -369,18 +343,18 @@ func resourceAciFilterRead(d *schema.ResourceData, m interface{}) error {
 	return nil
 }
 
-func resourceAciFilterDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciFilterDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "vzFilter")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
 }

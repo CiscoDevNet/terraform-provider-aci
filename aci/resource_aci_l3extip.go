@@ -6,8 +6,8 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciL3outPathAttachmentSecondaryIp() *schema.Resource {
@@ -137,8 +137,6 @@ func resourceAciL3outPathAttachmentSecondaryIpCreate(d *schema.ResourceData, m i
 	}
 	d.Partial(true)
 
-	d.SetPartial("addr")
-
 	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
@@ -191,8 +189,6 @@ func resourceAciL3outPathAttachmentSecondaryIpUpdate(d *schema.ResourceData, m i
 		return err
 	}
 	d.Partial(true)
-
-	d.SetPartial("addr")
 
 	d.Partial(false)
 

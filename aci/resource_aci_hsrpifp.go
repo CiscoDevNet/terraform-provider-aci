@@ -6,8 +6,8 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciL3outHSRPInterfaceProfile() *schema.Resource {
@@ -151,7 +151,6 @@ func resourceAciL3outHSRPInterfaceProfileCreate(d *schema.ResourceData, m interf
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_hsrp_rs_if_pol")
 		d.Partial(false)
 
 	}
@@ -216,7 +215,6 @@ func resourceAciL3outHSRPInterfaceProfileUpdate(d *schema.ResourceData, m interf
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_hsrp_rs_if_pol")
 		d.Partial(false)
 
 	}

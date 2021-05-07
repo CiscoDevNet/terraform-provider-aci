@@ -6,7 +6,7 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func resourceAciMonitoringPolicy() *schema.Resource {
@@ -123,8 +123,6 @@ func resourceAciMonitoringPolicyCreate(d *schema.ResourceData, m interface{}) er
 	}
 	d.Partial(true)
 
-	d.SetPartial("name")
-
 	d.Partial(false)
 
 	d.SetId(monEPGPol.DistinguishedName)
@@ -162,8 +160,6 @@ func resourceAciMonitoringPolicyUpdate(d *schema.ResourceData, m interface{}) er
 		return err
 	}
 	d.Partial(true)
-
-	d.SetPartial("name")
 
 	d.Partial(false)
 

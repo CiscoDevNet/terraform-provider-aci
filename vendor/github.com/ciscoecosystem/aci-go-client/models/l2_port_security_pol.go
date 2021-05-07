@@ -21,6 +21,8 @@ type PortSecurityPolicyAttributes struct {
 
 	Maximum string `json:",omitempty"`
 
+	Mode string `json:",omitempty"`
+
 	NameAlias string `json:",omitempty"`
 
 	Timeout string `json:",omitempty"`
@@ -55,6 +57,8 @@ func (l2PortSecurityPol *PortSecurityPolicy) ToMap() (map[string]string, error) 
 
 	A(l2PortSecurityPolMap, "maximum", l2PortSecurityPol.Maximum)
 
+	A(l2PortSecurityPolMap, "mode", l2PortSecurityPol.Mode)
+
 	A(l2PortSecurityPolMap, "nameAlias", l2PortSecurityPol.NameAlias)
 
 	A(l2PortSecurityPolMap, "timeout", l2PortSecurityPol.Timeout)
@@ -83,6 +87,8 @@ func PortSecurityPolicyFromContainerList(cont *container.Container, index int) *
 			Annotation: G(PortSecurityPolicyCont, "annotation"),
 
 			Maximum: G(PortSecurityPolicyCont, "maximum"),
+
+			Mode: G(PortSecurityPolicyCont, "mode"),
 
 			NameAlias: G(PortSecurityPolicyCont, "nameAlias"),
 

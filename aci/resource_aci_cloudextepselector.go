@@ -6,8 +6,8 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciCloudEndpointSelectorforExternalEPgs() *schema.Resource {
@@ -158,8 +158,6 @@ func resourceAciCloudEndpointSelectorforExternalEPgsCreate(d *schema.ResourceDat
 	}
 	d.Partial(true)
 
-	d.SetPartial("name")
-
 	d.Partial(false)
 
 	d.SetId(cloudExtEPSelector.DistinguishedName)
@@ -208,8 +206,6 @@ func resourceAciCloudEndpointSelectorforExternalEPgsUpdate(d *schema.ResourceDat
 		return err
 	}
 	d.Partial(true)
-
-	d.SetPartial("name")
 
 	d.Partial(false)
 

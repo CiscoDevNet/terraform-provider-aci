@@ -6,7 +6,7 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func resourceAciCloudApplicationcontainer() *schema.Resource {
@@ -123,8 +123,6 @@ func resourceAciCloudApplicationcontainerCreate(d *schema.ResourceData, m interf
 	}
 	d.Partial(true)
 
-	d.SetPartial("name")
-
 	d.Partial(false)
 
 	d.SetId(cloudApp.DistinguishedName)
@@ -162,8 +160,6 @@ func resourceAciCloudApplicationcontainerUpdate(d *schema.ResourceData, m interf
 		return err
 	}
 	d.Partial(true)
-
-	d.SetPartial("name")
 
 	d.Partial(false)
 

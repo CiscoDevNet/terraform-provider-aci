@@ -6,7 +6,7 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func resourceAciPhysicalDomain() *schema.Resource {
@@ -126,8 +126,6 @@ func resourceAciPhysicalDomainCreate(d *schema.ResourceData, m interface{}) erro
 	}
 	d.Partial(true)
 
-	d.SetPartial("name")
-
 	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
@@ -166,7 +164,6 @@ func resourceAciPhysicalDomainCreate(d *schema.ResourceData, m interface{}) erro
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_infra_rs_vlan_ns")
 		d.Partial(false)
 
 	}
@@ -177,7 +174,6 @@ func resourceAciPhysicalDomainCreate(d *schema.ResourceData, m interface{}) erro
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_infra_rs_vlan_ns_def")
 		d.Partial(false)
 
 	}
@@ -188,7 +184,6 @@ func resourceAciPhysicalDomainCreate(d *schema.ResourceData, m interface{}) erro
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_infra_rs_vip_addr_ns")
 		d.Partial(false)
 
 	}
@@ -199,7 +194,6 @@ func resourceAciPhysicalDomainCreate(d *schema.ResourceData, m interface{}) erro
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_infra_rs_dom_vxlan_ns_def")
 		d.Partial(false)
 
 	}
@@ -236,8 +230,6 @@ func resourceAciPhysicalDomainUpdate(d *schema.ResourceData, m interface{}) erro
 		return err
 	}
 	d.Partial(true)
-
-	d.SetPartial("name")
 
 	d.Partial(false)
 
@@ -281,7 +273,6 @@ func resourceAciPhysicalDomainUpdate(d *schema.ResourceData, m interface{}) erro
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_infra_rs_vlan_ns")
 		d.Partial(false)
 
 	}
@@ -292,7 +283,6 @@ func resourceAciPhysicalDomainUpdate(d *schema.ResourceData, m interface{}) erro
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_infra_rs_vlan_ns_def")
 		d.Partial(false)
 
 	}
@@ -307,7 +297,6 @@ func resourceAciPhysicalDomainUpdate(d *schema.ResourceData, m interface{}) erro
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_infra_rs_vip_addr_ns")
 		d.Partial(false)
 
 	}
@@ -318,7 +307,6 @@ func resourceAciPhysicalDomainUpdate(d *schema.ResourceData, m interface{}) erro
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_infra_rs_dom_vxlan_ns_def")
 		d.Partial(false)
 
 	}

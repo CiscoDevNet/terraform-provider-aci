@@ -6,8 +6,8 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciSwitchSpineAssociation() *schema.Resource {
@@ -146,10 +146,6 @@ func resourceAciSwitchSpineAssociationCreate(d *schema.ResourceData, m interface
 	}
 	d.Partial(true)
 
-	d.SetPartial("name")
-
-	d.SetPartial("spine_switch_association_type")
-
 	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
@@ -173,7 +169,6 @@ func resourceAciSwitchSpineAssociationCreate(d *schema.ResourceData, m interface
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_infra_rs_spine_acc_node_p_grp")
 		d.Partial(false)
 
 	}
@@ -219,10 +214,6 @@ func resourceAciSwitchSpineAssociationUpdate(d *schema.ResourceData, m interface
 	}
 	d.Partial(true)
 
-	d.SetPartial("name")
-
-	d.SetPartial("spine_switch_association_type")
-
 	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
@@ -250,7 +241,6 @@ func resourceAciSwitchSpineAssociationUpdate(d *schema.ResourceData, m interface
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_infra_rs_spine_acc_node_p_grp")
 		d.Partial(false)
 
 	}

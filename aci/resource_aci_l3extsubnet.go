@@ -9,8 +9,8 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciL3ExtSubnet() *schema.Resource {
@@ -218,8 +218,6 @@ func resourceAciL3ExtSubnetCreate(d *schema.ResourceData, m interface{}) error {
 	}
 	d.Partial(true)
 
-	d.SetPartial("ip")
-
 	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
@@ -256,7 +254,6 @@ func resourceAciL3ExtSubnetCreate(d *schema.ResourceData, m interface{}) error {
 				return err
 			}
 			d.Partial(true)
-			d.SetPartial("relation_l3ext_rs_subnet_to_profile")
 			d.Partial(false)
 		}
 
@@ -268,7 +265,6 @@ func resourceAciL3ExtSubnetCreate(d *schema.ResourceData, m interface{}) error {
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_l3ext_rs_subnet_to_rt_summ")
 		d.Partial(false)
 
 	}
@@ -323,8 +319,6 @@ func resourceAciL3ExtSubnetUpdate(d *schema.ResourceData, m interface{}) error {
 	}
 	d.Partial(true)
 
-	d.SetPartial("ip")
-
 	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
@@ -360,7 +354,6 @@ func resourceAciL3ExtSubnetUpdate(d *schema.ResourceData, m interface{}) error {
 				return err
 			}
 			d.Partial(true)
-			d.SetPartial("relation_l3ext_rs_subnet_to_profile")
 			d.Partial(false)
 		}
 
@@ -376,7 +369,6 @@ func resourceAciL3ExtSubnetUpdate(d *schema.ResourceData, m interface{}) error {
 			return err
 		}
 		d.Partial(true)
-		d.SetPartial("relation_l3ext_rs_subnet_to_rt_summ")
 		d.Partial(false)
 
 	}

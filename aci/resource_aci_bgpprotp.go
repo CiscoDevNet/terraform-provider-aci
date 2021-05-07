@@ -6,7 +6,7 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func resourceAciL3outBGPProtocolProfile() *schema.Resource {
@@ -139,9 +139,6 @@ func resourceAciL3outBGPProtocolProfileCreate(d *schema.ResourceData, m interfac
 		if err != nil {
 			return err
 		}
-		d.Partial(true)
-		d.SetPartial("relation_bgp_rs_bgp_node_ctx_pol")
-		d.Partial(false)
 
 	}
 
@@ -176,8 +173,6 @@ func resourceAciL3outBGPProtocolProfileUpdate(d *schema.ResourceData, m interfac
 	if err != nil {
 		return err
 	}
-	d.Partial(true)
-	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
 
@@ -200,9 +195,6 @@ func resourceAciL3outBGPProtocolProfileUpdate(d *schema.ResourceData, m interfac
 		if err != nil {
 			return err
 		}
-		d.Partial(true)
-		d.SetPartial("relation_bgp_rs_bgp_node_ctx_pol")
-		d.Partial(false)
 
 	}
 

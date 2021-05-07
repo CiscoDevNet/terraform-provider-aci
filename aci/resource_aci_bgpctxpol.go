@@ -6,7 +6,7 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func resourceAciBGPTimersPolicy() *schema.Resource {
@@ -171,8 +171,6 @@ func resourceAciBGPTimersPolicyCreate(d *schema.ResourceData, m interface{}) err
 	}
 	d.Partial(true)
 
-	d.SetPartial("name")
-
 	d.Partial(false)
 
 	d.SetId(bgpCtxPol.DistinguishedName)
@@ -225,8 +223,6 @@ func resourceAciBGPTimersPolicyUpdate(d *schema.ResourceData, m interface{}) err
 		return err
 	}
 	d.Partial(true)
-
-	d.SetPartial("name")
 
 	d.Partial(false)
 
