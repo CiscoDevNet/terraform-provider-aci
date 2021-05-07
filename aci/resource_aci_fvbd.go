@@ -215,6 +215,10 @@ func resourceAciBridgeDomain() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"flood",
+					"opt-flood",
+				}, false),
 			},
 
 			"vmac": &schema.Schema{
