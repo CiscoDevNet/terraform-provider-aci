@@ -30,7 +30,7 @@ resource "aci_vpc_explicit_protection_group" "example" {
 - `switch2` - (Required) Node Id of switch 2 to attach.
 - `annotation` - (Optional) Annotation for object VPC Explicit Protection Group.
 - `vpc_domain_policy` - (Optional) VPC domain policy name.
-- `vpc_explicit_protection_group_id` - (Optional) Explicit protection group ID. Integer values are allowed between 1-1000. default value is "0". 
+- `vpc_explicit_protection_group_id` - (Optional) Explicit protection group ID. Integer values are allowed between 1-1000. default value is "0".
 
 ## Attribute Reference
 
