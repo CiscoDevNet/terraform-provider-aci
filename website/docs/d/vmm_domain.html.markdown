@@ -14,7 +14,7 @@ Data source for ACI VMM Domain
 
 ```hcl
 data "aci_vmm_domain" "dev_vmmdom" {
-  provider_profile_dn  = "${aci_provider_profile.example.id}"
+  provider_profile_dn  = "uni/vmmp-VMware"
   name                 = "demo_vmmdomp"
 }
 ```
