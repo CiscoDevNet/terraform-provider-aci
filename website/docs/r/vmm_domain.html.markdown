@@ -22,7 +22,7 @@ Manages ACI VMM Domain
 		ave_time_out        = "30"
 		config_infra_pg     = "no"
 		ctrl_knob           = "epDpVerify"
-		delimiter           = ""
+		delimiter           = "_"
 		enable_ave          = "no"
 		enable_tag          = "no"
 		encap_mode          = "unknown"

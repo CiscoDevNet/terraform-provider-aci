@@ -299,7 +299,7 @@ func setVMMDomainAttributes(vmmDomP *models.VMMDomain, d *schema.ResourceData) *
 	} else {
 		d.Set("arp_learning", vmmDomPMap["arpLearning"])
 	}
-	if vmmDomPMap["ctrl_knob"] == "" {
+	if vmmDomPMap["ctrlKnob"] == "" {
 		d.Set("ctrl_knob", "none")
 	} else {
 		d.Set("ctrl_knob", vmmDomPMap["ctrlKnob"])

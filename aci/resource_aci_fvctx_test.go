@@ -26,11 +26,6 @@ func TestAccAciVRF_Basic(t *testing.T) {
 					testAccCheckAciVRFAttributes(description, "enabled", &vrf),
 				),
 			},
-			{
-				ResourceName:      "aci_vrf",
-				ImportState:       true,
-				ImportStateVerify: true,
-			},
 		},
 	})
 }
