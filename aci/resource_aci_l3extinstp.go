@@ -216,7 +216,7 @@ func setExternalNetworkInstanceProfileAttributes(l3extInstP *models.ExternalNetw
 	dn := d.Id()
 	d.SetId(l3extInstP.DistinguishedName)
 	d.Set("description", l3extInstP.Description)
-	// d.Set("l3_outside_dn", GetParentDn(l3extInstP.DistinguishedName))
+
 	if dn != l3extInstP.DistinguishedName {
 		d.Set("l3_outside_dn", "")
 	}
@@ -869,13 +869,13 @@ func resourceAciExternalNetworkInstanceProfileRead(ctx context.Context, d *schem
 	l3extRsL3InstPToDomPData, err := aciClient.ReadRelationl3extRsL3InstPToDomPFromExternalNetworkInstanceProfile(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation l3extRsL3InstPToDomP %v", err)
-		d.Set("relation_fv_rs_nd_pfx_pol", "")
+		d.Set("relation_l3ext_rs_l3_inst_p_to_dom_p", "")
 
 	} else {
 		if _, ok := d.GetOk("relation_l3ext_rs_l3_inst_p_to_dom_p"); ok {
 			tfName := d.Get("relation_l3ext_rs_l3_inst_p_to_dom_p").(string)
 			if tfName != l3extRsL3InstPToDomPData {
-				d.Set("relation_fv_rs_nd_pfx_pol", "")
+				d.Set("relation_l3ext_rs_l3_inst_p_to_dom_p", "")
 			}
 		}
 	}

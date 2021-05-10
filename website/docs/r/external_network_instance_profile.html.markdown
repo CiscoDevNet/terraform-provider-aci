@@ -33,10 +33,10 @@ Manages ACI External Network Instance Profile
 - `l3_outside_dn` - (Required) Distinguished name of parent L3Outside object.
 - `name` - (Required) Name of Object external network instance profile.
 - `annotation` - (Optional) Annotation for object external network instance profile.
-- `exception_tag` - (Optional) exception_tag for object external network instance profile. Allowed value range is "0" - "512".
+- `exception_tag` - (Optional) Exception tag for object external network instance profile. Allowed value range is "0" - "512".
 - `flood_on_encap` - (Optional) Control at EPG level if the traffic L2 Multicast/Broadcast and Link Local Layer should be flooded only on ENCAP or based on bridg-domain settings. Allowed values are "disabled" and "enabled". Default value is "disabled".
 - `match_t` - (Optional) The provider label match criteria. Allowed values are "All", "AtleastOne", "AtmostOne" and "None". Default is "AtleastOne".
-- `name_alias` - (Optional) name_alias for object external network instance profile.
+- `name_alias` - (Optional) Name alias for object external network instance profile.
 - `pref_gr_memb` - (Optional) Represents parameter used to determine if EPg is part of a group that does not a contract for communication. Allowed values are "include" and "exclude". Default is "exclude".
 
 - `prio` - (Optional) The QoS priority class identifier. Allowed values are "unspecified", "level1", "level2", "level3", "level4", "level5" and "level6". Default is "unspecified".
