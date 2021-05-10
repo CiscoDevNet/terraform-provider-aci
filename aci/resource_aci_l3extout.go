@@ -1,6 +1,7 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"reflect"
@@ -8,16 +9,17 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciL3Outside() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciL3OutsideCreate,
-		Update: resourceAciL3OutsideUpdate,
-		Read:   resourceAciL3OutsideRead,
-		Delete: resourceAciL3OutsideDelete,
+		CreateContext: resourceAciL3OutsideCreate,
+		UpdateContext: resourceAciL3OutsideUpdate,
+		ReadContext:   resourceAciL3OutsideRead,
+		DeleteContext: resourceAciL3OutsideDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciL3OutsideImport,
@@ -181,7 +183,7 @@ func resourceAciL3OutsideImport(d *schema.ResourceData, m interface{}) ([]*schem
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciL3OutsideCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciL3OutsideCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] L3Outside: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -209,11 +211,8 @@ func resourceAciL3OutsideCreate(d *schema.ResourceData, m interface{}) error {
 
 	err := aciClient.Save(l3extOut)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
 
@@ -242,7 +241,7 @@ func resourceAciL3OutsideCreate(d *schema.ResourceData, m interface{}) error {
 	d.Partial(true)
 	err = checkTDn(aciClient, checkDns)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Partial(false)
 
@@ -253,10 +252,9 @@ func resourceAciL3OutsideCreate(d *schema.ResourceData, m interface{}) error {
 			paramMap := relationParam.(map[string]interface{})
 			err = aciClient.CreateRelationl3extRsDampeningPolFromL3Outside(l3extOut.DistinguishedName, paramMap["tn_rtctrl_profile_name"].(string), paramMap["af"].(string))
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
-			d.Partial(true)
-			d.Partial(false)
+
 		}
 
 	}
@@ -265,10 +263,8 @@ func resourceAciL3OutsideCreate(d *schema.ResourceData, m interface{}) error {
 		relationParamName := GetMOName(relationParam)
 		err = aciClient.CreateRelationl3extRsEctxFromL3Outside(l3extOut.DistinguishedName, relationParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.Partial(false)
 
 	}
 	if relationTol3extRsOutToBDPublicSubnetHolder, ok := d.GetOk("relation_l3ext_rs_out_to_bd_public_subnet_holder"); ok {
@@ -277,10 +273,9 @@ func resourceAciL3OutsideCreate(d *schema.ResourceData, m interface{}) error {
 			err = aciClient.CreateRelationl3extRsOutToBDPublicSubnetHolderFromL3Outside(l3extOut.DistinguishedName, relationParam)
 
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
-			d.Partial(true)
-			d.Partial(false)
+
 		}
 	}
 	if relationTol3extRsInterleakPol, ok := d.GetOk("relation_l3ext_rs_interleak_pol"); ok {
@@ -288,30 +283,26 @@ func resourceAciL3OutsideCreate(d *schema.ResourceData, m interface{}) error {
 		relationParamName := GetMOName(relationParam)
 		err = aciClient.CreateRelationl3extRsInterleakPolFromL3Outside(l3extOut.DistinguishedName, relationParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.Partial(false)
 
 	}
 	if relationTol3extRsL3DomAtt, ok := d.GetOk("relation_l3ext_rs_l3_dom_att"); ok {
 		relationParam := relationTol3extRsL3DomAtt.(string)
 		err = aciClient.CreateRelationl3extRsL3DomAttFromL3Outside(l3extOut.DistinguishedName, relationParam)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.Partial(false)
 
 	}
 
 	d.SetId(l3extOut.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciL3OutsideRead(d, m)
+	return resourceAciL3OutsideRead(ctx, d, m)
 }
 
-func resourceAciL3OutsideUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciL3OutsideUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] L3Outside: Beginning Update")
 
 	aciClient := m.(*client.Client)
@@ -343,11 +334,8 @@ func resourceAciL3OutsideUpdate(d *schema.ResourceData, m interface{}) error {
 	err := aciClient.Save(l3extOut)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
 
@@ -380,7 +368,7 @@ func resourceAciL3OutsideUpdate(d *schema.ResourceData, m interface{}) error {
 	d.Partial(true)
 	err = checkTDn(aciClient, checkDns)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Partial(false)
 
@@ -392,7 +380,7 @@ func resourceAciL3OutsideUpdate(d *schema.ResourceData, m interface{}) error {
 			paramMap := relationParam.(map[string]interface{})
 			err = aciClient.DeleteRelationl3extRsDampeningPolFromL3Outside(l3extOut.DistinguishedName, paramMap["tn_rtctrl_profile_name"].(string), paramMap["af"].(string))
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 		}
@@ -400,10 +388,8 @@ func resourceAciL3OutsideUpdate(d *schema.ResourceData, m interface{}) error {
 			paramMap := relationParam.(map[string]interface{})
 			err = aciClient.CreateRelationl3extRsDampeningPolFromL3Outside(l3extOut.DistinguishedName, paramMap["tn_rtctrl_profile_name"].(string), paramMap["af"].(string))
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
-			d.Partial(true)
-			d.Partial(false)
 		}
 
 	}
@@ -412,10 +398,8 @@ func resourceAciL3OutsideUpdate(d *schema.ResourceData, m interface{}) error {
 		newRelParamName := GetMOName(newRelParam.(string))
 		err = aciClient.CreateRelationl3extRsEctxFromL3Outside(l3extOut.DistinguishedName, newRelParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.Partial(false)
 
 	}
 	if d.HasChange("relation_l3ext_rs_out_to_bd_public_subnet_holder") {
@@ -427,10 +411,8 @@ func resourceAciL3OutsideUpdate(d *schema.ResourceData, m interface{}) error {
 		for _, relDn := range relToCreate {
 			err = aciClient.CreateRelationl3extRsOutToBDPublicSubnetHolderFromL3Outside(l3extOut.DistinguishedName, relDn)
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
-			d.Partial(true)
-			d.Partial(false)
 
 		}
 
@@ -440,39 +422,35 @@ func resourceAciL3OutsideUpdate(d *schema.ResourceData, m interface{}) error {
 		newRelParamName := GetMOName(newRelParam.(string))
 		err = aciClient.DeleteRelationl3extRsInterleakPolFromL3Outside(l3extOut.DistinguishedName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 		err = aciClient.CreateRelationl3extRsInterleakPolFromL3Outside(l3extOut.DistinguishedName, newRelParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.Partial(false)
 
 	}
 	if d.HasChange("relation_l3ext_rs_l3_dom_att") {
 		_, newRelParam := d.GetChange("relation_l3ext_rs_l3_dom_att")
 		err = aciClient.DeleteRelationl3extRsL3DomAttFromL3Outside(l3extOut.DistinguishedName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 		err = aciClient.CreateRelationl3extRsL3DomAttFromL3Outside(l3extOut.DistinguishedName, newRelParam.(string))
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.Partial(false)
 
 	}
 
 	d.SetId(l3extOut.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciL3OutsideRead(d, m)
+	return resourceAciL3OutsideRead(ctx, d, m)
 
 }
 
-func resourceAciL3OutsideRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciL3OutsideRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -558,18 +536,18 @@ func resourceAciL3OutsideRead(d *schema.ResourceData, m interface{}) error {
 	return nil
 }
 
-func resourceAciL3OutsideDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciL3OutsideDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "l3extOut")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
 }
