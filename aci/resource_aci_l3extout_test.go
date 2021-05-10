@@ -61,7 +61,7 @@ func testAccCheckAciL3OutsideConfig_basic(description, enforce_rtctrl string) st
 	return fmt.Sprintf(`
 
 	resource "aci_l3_outside" "fool3_outside" {
-		tenant_dn      = "uni/tn-crest_test_kishan_tenant"
+		tenant_dn      = aci_tenant.example.id
 		description    = "%s"
 		name           = "demo_l3out"
 		annotation     = "tag_l3out"
