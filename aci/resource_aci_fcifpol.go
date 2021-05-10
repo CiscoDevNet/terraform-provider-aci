@@ -37,6 +37,9 @@ func resourceAciInterfaceFCPolicy() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"2G", "4G", "8G", "16G", "32G",
+				}, false),
 			},
 
 			"fill_pattern": &schema.Schema{
