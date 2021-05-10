@@ -17,12 +17,13 @@ data "aci_leaf_interface_profile" "dev_leaf_int_prof" {
 }
 ```
 ## Argument Reference ##
-* `name` - (Required) name of Object leaf_interface_profile.
+* `name` - (Required) Name of Object Leaf Interface Profile.
 
 
 
 ## Attribute Reference
 
 * `id` - Attribute id set to the Dn of the Leaf Interface Profile.
-* `annotation` - (Optional) annotation for object leaf_interface_profile.
-* `name_alias` - (Optional) name_alias for object leaf_interface_profile.
+* `description` - (Optional) Description for object Leaf Interface Profile.
+* `annotation` - (Optional) Annotation for object Leaf Interface Profile.
+* `name_alias` - (Optional) Name alias for object Leaf Interface Profile.
