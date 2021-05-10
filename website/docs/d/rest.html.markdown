@@ -30,7 +30,7 @@ data "aci_rest" "tenant_rest_children" {
 }
 
 resource "aci_bgp_peer_prefix" "example" {
-  tenant_dn    = "${aci_tenant.tenentcheck.id}"
+  tenant_dn    = aci_tenant.tenentcheck.id
   name         = "one"
   description  = "from terraform"
   action       = "shut"
