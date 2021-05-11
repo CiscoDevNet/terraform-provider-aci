@@ -1,16 +1,18 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func dataSourceAciVlanEncapsulationforVxlanTraffic() *schema.Resource {
 	return &schema.Resource{
 
-		Read: dataSourceAciVlanEncapsulationforVxlanTrafficRead,
+		ReadContext: dataSourceAciVlanEncapsulationforVxlanTrafficRead,
 
 		SchemaVersion: 1,
 
@@ -29,7 +31,7 @@ func dataSourceAciVlanEncapsulationforVxlanTraffic() *schema.Resource {
 	}
 }
 
-func dataSourceAciVlanEncapsulationforVxlanTrafficRead(d *schema.ResourceData, m interface{}) error {
+func dataSourceAciVlanEncapsulationforVxlanTrafficRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	aciClient := m.(*client.Client)
 
 	rn := fmt.Sprintf("provacc")
@@ -40,7 +42,7 @@ func dataSourceAciVlanEncapsulationforVxlanTrafficRead(d *schema.ResourceData, m
 	infraProvAcc, err := getRemoteVlanEncapsulationforVxlanTraffic(aciClient, dn)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.SetId(dn)
 	setVlanEncapsulationforVxlanTrafficAttributes(infraProvAcc, d)

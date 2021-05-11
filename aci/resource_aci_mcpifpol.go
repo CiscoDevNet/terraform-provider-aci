@@ -1,21 +1,23 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciMiscablingProtocolInterfacePolicy() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciMiscablingProtocolInterfacePolicyCreate,
-		Update: resourceAciMiscablingProtocolInterfacePolicyUpdate,
-		Read:   resourceAciMiscablingProtocolInterfacePolicyRead,
-		Delete: resourceAciMiscablingProtocolInterfacePolicyDelete,
+		CreateContext: resourceAciMiscablingProtocolInterfacePolicyCreate,
+		UpdateContext: resourceAciMiscablingProtocolInterfacePolicyUpdate,
+		ReadContext:   resourceAciMiscablingProtocolInterfacePolicyRead,
+		DeleteContext: resourceAciMiscablingProtocolInterfacePolicyDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciMiscablingProtocolInterfacePolicyImport,
@@ -95,7 +97,7 @@ func resourceAciMiscablingProtocolInterfacePolicyImport(d *schema.ResourceData, 
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciMiscablingProtocolInterfacePolicyCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciMiscablingProtocolInterfacePolicyCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] MiscablingProtocolInterfacePolicy: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -118,19 +120,16 @@ func resourceAciMiscablingProtocolInterfacePolicyCreate(d *schema.ResourceData, 
 
 	err := aciClient.Save(mcpIfPol)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.Partial(false)
 
 	d.SetId(mcpIfPol.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciMiscablingProtocolInterfacePolicyRead(d, m)
+	return resourceAciMiscablingProtocolInterfacePolicyRead(ctx, d, m)
 }
 
-func resourceAciMiscablingProtocolInterfacePolicyUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciMiscablingProtocolInterfacePolicyUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] MiscablingProtocolInterfacePolicy: Beginning Update")
 
 	aciClient := m.(*client.Client)
@@ -157,7 +156,7 @@ func resourceAciMiscablingProtocolInterfacePolicyUpdate(d *schema.ResourceData, 
 	err := aciClient.Save(mcpIfPol)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Partial(true)
 
@@ -166,11 +165,11 @@ func resourceAciMiscablingProtocolInterfacePolicyUpdate(d *schema.ResourceData, 
 	d.SetId(mcpIfPol.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciMiscablingProtocolInterfacePolicyRead(d, m)
+	return resourceAciMiscablingProtocolInterfacePolicyRead(ctx, d, m)
 
 }
 
-func resourceAciMiscablingProtocolInterfacePolicyRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciMiscablingProtocolInterfacePolicyRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -189,18 +188,18 @@ func resourceAciMiscablingProtocolInterfacePolicyRead(d *schema.ResourceData, m 
 	return nil
 }
 
-func resourceAciMiscablingProtocolInterfacePolicyDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciMiscablingProtocolInterfacePolicyDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "mcpIfPol")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
 }
