@@ -20,8 +20,8 @@ resource "aci_vlan_encapsulationfor_vxlan_traffic" "example" {
 ```
 ## Argument Reference ##
 * `attachable_access_entity_profile_dn` - (Required) Distinguished name of parent AttachableAccessEntityProfile object.
-* `annotation` - (Optional) annotation for object vlan_encapsulationfor_vxlan_traffic.
-* `name_alias` - (Optional) name_alias for object vlan_encapsulationfor_vxlan_traffic.
+* `annotation` - (Optional) Annotation for object vlan encapsulation for vxlan traffic.
+* `name_alias` - (Optional) Name alias for object vlan encapsulation for vxlan traffic.
                 
 
 
