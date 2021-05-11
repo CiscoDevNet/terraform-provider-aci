@@ -61,7 +61,7 @@ func testAccCheckAciOSPFInterfacePolicyConfig_basic(description, ctrl string) st
 	return fmt.Sprintf(`
 
 	resource "aci_ospf_interface_policy" "fooospf_interface_policy" {
-		tenant_dn    = "uni/tn-vishwa_tenant"
+		tenant_dn    = ${aci_tenant.example.id}"
 		description  = "%s"
 		name         = "demo_ospfpol"
 		annotation   = "tag_ospf"
