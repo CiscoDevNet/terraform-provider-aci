@@ -1,21 +1,23 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciOSPFInterfacePolicy() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciOSPFInterfacePolicyCreate,
-		Update: resourceAciOSPFInterfacePolicyUpdate,
-		Read:   resourceAciOSPFInterfacePolicyRead,
-		Delete: resourceAciOSPFInterfacePolicyDelete,
+		CreateContext: resourceAciOSPFInterfacePolicyCreate,
+		UpdateContext: resourceAciOSPFInterfacePolicyUpdate,
+		ReadContext:   resourceAciOSPFInterfacePolicyRead,
+		DeleteContext: resourceAciOSPFInterfacePolicyDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciOSPFInterfacePolicyImport,
@@ -182,7 +184,7 @@ func resourceAciOSPFInterfacePolicyImport(d *schema.ResourceData, m interface{})
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciOSPFInterfacePolicyCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciOSPFInterfacePolicyCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] OSPFInterfacePolicy: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -231,19 +233,16 @@ func resourceAciOSPFInterfacePolicyCreate(d *schema.ResourceData, m interface{})
 
 	err := aciClient.Save(ospfIfPol)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.Partial(false)
 
 	d.SetId(ospfIfPol.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciOSPFInterfacePolicyRead(d, m)
+	return resourceAciOSPFInterfacePolicyRead(ctx, d, m)
 }
 
-func resourceAciOSPFInterfacePolicyUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciOSPFInterfacePolicyUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] OSPFInterfacePolicy: Beginning Update")
 
 	aciClient := m.(*client.Client)
@@ -296,20 +295,17 @@ func resourceAciOSPFInterfacePolicyUpdate(d *schema.ResourceData, m interface{})
 	err := aciClient.Save(ospfIfPol)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.Partial(false)
 
 	d.SetId(ospfIfPol.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciOSPFInterfacePolicyRead(d, m)
+	return resourceAciOSPFInterfacePolicyRead(ctx, d, m)
 
 }
 
-func resourceAciOSPFInterfacePolicyRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciOSPFInterfacePolicyRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -328,18 +324,18 @@ func resourceAciOSPFInterfacePolicyRead(d *schema.ResourceData, m interface{}) e
 	return nil
 }
 
-func resourceAciOSPFInterfacePolicyDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciOSPFInterfacePolicyDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "ospfIfPol")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
 }
