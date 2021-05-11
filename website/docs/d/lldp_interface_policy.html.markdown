@@ -17,14 +17,15 @@ data "aci_lldp_interface_policy" "dev_lldp_pol" {
 }
 ```
 ## Argument Reference ##
-* `name` - (Required) name of Object lldp_interface_policy.
+* `name` - (Required) Name of Object LLDP Interface Policy.
 
 
 
 ## Attribute Reference
 
 * `id` - Attribute id set to the Dn of the LLDP Interface Policy.
-* `admin_rx_st` - (Optional) admin receive state.
-* `admin_tx_st` - (Optional) admin transmit state.
-* `annotation` - (Optional) annotation for object lldp_interface_policy.
-* `name_alias` - (Optional) name_alias for object lldp_interface_policy.
+* `admin_rx_st` - (Optional) Admin receive state.
+* `admin_tx_st` - (Optional) Admin transmit state.
+* `description` - (Optional) Description for object LLDP Interface Policy.
+* `annotation` - (Optional) Annotation for object LLDP Interface Policy.
+* `name_alias` - (Optional) Name alias for object LLDP Interface Policy.
