@@ -43,16 +43,17 @@ func resourceAciOSPFInterfacePolicy() *schema.Resource {
 			},
 
 			"ctrl": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-				ValidateFunc: validation.StringInSlice([]string{
+				Type:             schema.TypeString,
+				Optional:         true,
+				Computed:         true,
+				DiffSuppressFunc: suppressBitMaskDiffFunc(),
+				ValidateFunc: schema.SchemaValidateFunc(validateCommaSeparatedStringInSlice([]string{
 					"unspecified",
 					"passive",
 					"mtu-ignore",
 					"advert-subnet",
 					"bfd",
-				}, false),
+				}, false, "unspecified")),
 			},
 
 			"dead_intvl": &schema.Schema{

@@ -90,6 +90,9 @@ func resourceAciExternalNetworkInstanceProfile() *schema.Resource {
 				Computed: true,
 				ValidateFunc: validation.StringInSlice([]string{
 					"unspecified",
+					"level6",
+					"level5",
+					"level4",
 					"level3",
 					"level2",
 					"level1",
