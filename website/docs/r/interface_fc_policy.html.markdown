@@ -18,7 +18,7 @@ resource "aci_interface_fc_policy" "example" {
   annotation   = "tag_if_policy"
   description  = "from terraform"
   automaxspeed = "32G"
-  fill_pattern = "default"
+  fill_pattern = "IDLE"
   name_alias   = "demo_alias"
   port_mode    = "f"
   rx_bb_credit = "64"

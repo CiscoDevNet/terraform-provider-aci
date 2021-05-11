@@ -16,7 +16,7 @@ Manages ACI L2 Interface Policy
 resource "aci_l2_interface_policy" "example" {
   name        = "demo_l2_pol"
   annotation  = "tag_l2_pol"
-  description = "from description"
+  description = "from terraform"
   name_alias  = "alias_l2_pol"
   qinq        = "disabled"
   vepa        = "disabled"
