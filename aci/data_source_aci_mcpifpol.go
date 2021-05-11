@@ -1,16 +1,18 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func dataSourceAciMiscablingProtocolInterfacePolicy() *schema.Resource {
 	return &schema.Resource{
 
-		Read: dataSourceAciMiscablingProtocolInterfacePolicyRead,
+		ReadContext: dataSourceAciMiscablingProtocolInterfacePolicyRead,
 
 		SchemaVersion: 1,
 
@@ -36,7 +38,7 @@ func dataSourceAciMiscablingProtocolInterfacePolicy() *schema.Resource {
 	}
 }
 
-func dataSourceAciMiscablingProtocolInterfacePolicyRead(d *schema.ResourceData, m interface{}) error {
+func dataSourceAciMiscablingProtocolInterfacePolicyRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	aciClient := m.(*client.Client)
 
 	name := d.Get("name").(string)
@@ -48,7 +50,7 @@ func dataSourceAciMiscablingProtocolInterfacePolicyRead(d *schema.ResourceData, 
 	mcpIfPol, err := getRemoteMiscablingProtocolInterfacePolicy(aciClient, dn)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	setMiscablingProtocolInterfacePolicyAttributes(mcpIfPol, d)
 	return nil
