@@ -28,6 +28,7 @@ resource "aci_lldp_interface_policy" "example" {
 * `name` - (Required) Name of Object LLDP Interface Policy.
 * `admin_rx_st` - (Optional) Admin receive state. Allowed values are "enabled" and "disabled". Default value is "enabled".
 * `admin_tx_st` - (Optional) Admin transmit state. Allowed values are "enabled" and "disabled". Default value is "enabled".
+* `description` - (Optional) Description for object LLDP Interface Policy.
 * `annotation` - (Optional) Annotation for object LLDP Interface Policy.
 * `name_alias` - (Optional) Name alias for object LLDP Interface Policy.
 
