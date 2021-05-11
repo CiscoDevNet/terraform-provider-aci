@@ -1,16 +1,18 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func dataSourceAciPCVPCInterfacePolicyGroup() *schema.Resource {
 	return &schema.Resource{
 
-		Read: dataSourceAciPCVPCInterfacePolicyGroupRead,
+		ReadContext: dataSourceAciPCVPCInterfacePolicyGroupRead,
 
 		SchemaVersion: 1,
 
@@ -36,7 +38,7 @@ func dataSourceAciPCVPCInterfacePolicyGroup() *schema.Resource {
 	}
 }
 
-func dataSourceAciPCVPCInterfacePolicyGroupRead(d *schema.ResourceData, m interface{}) error {
+func dataSourceAciPCVPCInterfacePolicyGroupRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	aciClient := m.(*client.Client)
 
 	name := d.Get("name").(string)
@@ -48,7 +50,7 @@ func dataSourceAciPCVPCInterfacePolicyGroupRead(d *schema.ResourceData, m interf
 	infraAccBndlGrp, err := getRemotePCVPCInterfacePolicyGroup(aciClient, dn)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	setPCVPCInterfacePolicyGroupAttributes(infraAccBndlGrp, d)
 	return nil

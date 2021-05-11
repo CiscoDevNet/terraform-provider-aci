@@ -25,11 +25,12 @@ data "aci_interface_fc_policy" "test_pol" {
 ## Attribute Reference
 
 - `id` - Attribute id set to the Dn of the Interface FC Policy.
-- `annotation` - (Optional) annotation for object interface_fc policy.
-- `automaxspeed` - (Optional) automaxspeed for object interface fc policy.
+- `annotation` - (Optional) Annotation for object interface FC policy.
+- `automaxspeed` - (Optional) Auto-max-speed for object interface FC policy.
+- `description` - (Optional) Description for object interface FC policy.
 - `fill_pattern` - (Optional) Fill Pattern for native FC ports.
-- `name_alias` - (Optional) name_alias for object interface_fc_policy.
+- `name_alias` - (Optional) Name alias for object Interface FC policy.
 - `port_mode` - (Optional) In which mode Ports should be used.
-- `rx_bb_credit` - (Optional) Receive buffer credits for native FC ports.
-- `speed` - (Optional) cpu or port speed.
-- `trunk_mode` - (Optional) Trunking on/off for native FC ports.Default value is OFF.
+- `rx_bb_credit` - (Optional) Receive buffer credits for native FC ports Range:(16 - 64).
+- `speed` - (Optional) CPU or port speed.
+- `trunk_mode` - (Optional) Trunking on/off for native FC ports.

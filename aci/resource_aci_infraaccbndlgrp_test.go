@@ -12,7 +12,7 @@ import (
 
 func TestAccAciPCVPCInterfacePolicyGroup_Basic(t *testing.T) {
 	var pcvpc_interface_policy_group models.PCVPCInterfacePolicyGroup
-	description := "pc/vpc_interface_policy_group created while acceptance testing"
+	description := "leaf_access_bundle_policy_group created while acceptance testing"
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
@@ -22,14 +22,9 @@ func TestAccAciPCVPCInterfacePolicyGroup_Basic(t *testing.T) {
 			{
 				Config: testAccCheckAciPCVPCInterfacePolicyGroupConfig_basic(description, "link"),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAciPCVPCInterfacePolicyGroupExists("aci_pc/vpc_interface_policy_group.foopc/vpc_interface_policy_group", &pcvpc_interface_policy_group),
+					testAccCheckAciPCVPCInterfacePolicyGroupExists("aci_leaf_access_bundle_policy_group.fooleaf_access_bundle_policy_group", &pcvpc_interface_policy_group),
 					testAccCheckAciPCVPCInterfacePolicyGroupAttributes(description, "link", &pcvpc_interface_policy_group),
 				),
-			},
-			{
-				ResourceName:      "aci_pcvpc_interface_policy_group",
-				ImportState:       true,
-				ImportStateVerify: true,
 			},
 		},
 	})
@@ -37,7 +32,7 @@ func TestAccAciPCVPCInterfacePolicyGroup_Basic(t *testing.T) {
 
 func TestAccAciPCVPCInterfacePolicyGroup_update(t *testing.T) {
 	var pcvpc_interface_policy_group models.PCVPCInterfacePolicyGroup
-	description := "pc/vpc_interface_policy_group created while acceptance testing"
+	description := "leaf_access_bundle_policy_group created while acceptance testing"
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
@@ -47,14 +42,14 @@ func TestAccAciPCVPCInterfacePolicyGroup_update(t *testing.T) {
 			{
 				Config: testAccCheckAciPCVPCInterfacePolicyGroupConfig_basic(description, "link"),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAciPCVPCInterfacePolicyGroupExists("aci_pc/vpc_interface_policy_group.foopc/vpc_interface_policy_group", &pcvpc_interface_policy_group),
+					testAccCheckAciPCVPCInterfacePolicyGroupExists("aci_leaf_access_bundle_policy_group.fooleaf_access_bundle_policy_group", &pcvpc_interface_policy_group),
 					testAccCheckAciPCVPCInterfacePolicyGroupAttributes(description, "link", &pcvpc_interface_policy_group),
 				),
 			},
 			{
 				Config: testAccCheckAciPCVPCInterfacePolicyGroupConfig_basic(description, "node"),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAciPCVPCInterfacePolicyGroupExists("aci_pc/vpc_interface_policy_group.foopc/vpc_interface_policy_group", &pcvpc_interface_policy_group),
+					testAccCheckAciPCVPCInterfacePolicyGroupExists("aci_leaf_access_bundle_policy_group.fooleaf_access_bundle_policy_group", &pcvpc_interface_policy_group),
 					testAccCheckAciPCVPCInterfacePolicyGroupAttributes(description, "node", &pcvpc_interface_policy_group),
 				),
 			},
@@ -65,7 +60,7 @@ func TestAccAciPCVPCInterfacePolicyGroup_update(t *testing.T) {
 func testAccCheckAciPCVPCInterfacePolicyGroupConfig_basic(description, lag_t string) string {
 	return fmt.Sprintf(`
 
-	resource "aci_pcvpc_interface_policy_group" "foopcvpc_interface_policy_group" {
+	resource "aci_leaf_access_bundle_policy_group" "fooleaf_access_bundle_policy_group" {
 		description = "%s"
 		name        = "demo_if_pol_grp"
 		annotation  = "tag_if_pol"
@@ -108,7 +103,7 @@ func testAccCheckAciPCVPCInterfacePolicyGroupDestroy(s *terraform.State) error {
 
 	for _, rs := range s.RootModule().Resources {
 
-		if rs.Type == "aci_pc/vpc_interface_policy_group" {
+		if rs.Type == "aci_leaf_access_bundle_policy_group" {
 			cont, err := client.Get(rs.Primary.ID)
 			pcvpc_interface_policy_group := models.PCVPCInterfacePolicyGroupFromContainer(cont)
 			if err == nil {
