@@ -1,16 +1,18 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func dataSourceAciAttachableAccessEntityProfile() *schema.Resource {
 	return &schema.Resource{
 
-		Read: dataSourceAciAttachableAccessEntityProfileRead,
+		ReadContext: dataSourceAciAttachableAccessEntityProfileRead,
 
 		SchemaVersion: 1,
 
@@ -30,7 +32,7 @@ func dataSourceAciAttachableAccessEntityProfile() *schema.Resource {
 	}
 }
 
-func dataSourceAciAttachableAccessEntityProfileRead(d *schema.ResourceData, m interface{}) error {
+func dataSourceAciAttachableAccessEntityProfileRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	aciClient := m.(*client.Client)
 
 	name := d.Get("name").(string)
@@ -42,7 +44,7 @@ func dataSourceAciAttachableAccessEntityProfileRead(d *schema.ResourceData, m in
 	infraAttEntityP, err := getRemoteAttachableAccessEntityProfile(aciClient, dn)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	setAttachableAccessEntityProfileAttributes(infraAttEntityP, d)
 	return nil

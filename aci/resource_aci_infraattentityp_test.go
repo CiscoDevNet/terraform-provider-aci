@@ -26,11 +26,6 @@ func TestAccAciAttachableAccessEntityProfile_Basic(t *testing.T) {
 					testAccCheckAciAttachableAccessEntityProfileAttributes(description, "alias_entity_prof", &attachable_access_entity_profile),
 				),
 			},
-			{
-				ResourceName:      "aci_attachable_access_entity_profile",
-				ImportState:       true,
-				ImportStateVerify: true,
-			},
 		},
 	})
 }
@@ -64,14 +59,12 @@ func TestAccAciAttachableAccessEntityProfile_update(t *testing.T) {
 
 func testAccCheckAciAttachableAccessEntityProfileConfig_basic(description, name_alias string) string {
 	return fmt.Sprintf(`
-
 	resource "aci_attachable_access_entity_profile" "fooattachable_access_entity_profile" {
 		description = "%s"
 		name        = "demo_entity_prof"
 		annotation  = "tag_entity"
 		name_alias  = "%s"
 	}
-	  
 	`, description, name_alias)
 }
 
