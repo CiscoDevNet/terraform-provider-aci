@@ -13,10 +13,10 @@ Manages ACI Leaf Access Port Policy Group
 
 ```hcl
 	resource "aci_leaf_access_port_policy_group" "fooleaf_access_port_policy_group" {
-		description = "%s"
+		description = "From Terraform"
 		name        = "demo_access_port"
 		annotation  = "tag_ports"
-		name_alias  = "%s"
+		name_alias  = "name_alias"
 	} 
 ```
 ## Argument Reference ##

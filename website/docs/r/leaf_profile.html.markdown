@@ -15,6 +15,7 @@ Manages ACI Leaf Profile
 
 resource "aci_leaf_profile" "example" {
   name        = "leaf1"
+  description  = "From Terraform"
   annotation  = "example"
   name_alias  = "example"
   leaf_selector {
@@ -45,19 +46,20 @@ resource "aci_leaf_profile" "example" {
 ```
 
 ## Argument Reference ##
-* `name` - (Required) name of Object leaf_profile.
-* `annotation` - (Optional) annotation for object leaf_profile.
-* `name_alias` - (Optional) name_alias for object leaf_profile.
+* `name` - (Required) name of Object leaf profile.
+* `description` - (Optional) Description for object leaf profile.
+* `annotation` - (Optional) Annotation for object leaf profile.
+* `name_alias` - (Optional) Name_alias for object leaf profile.
 
-* `leaf_selector` - (Optional) leaf Selector block to attach with the leaf profile.
-* `leaf_selector.name` - (Required) name of the leaf selector.
-* `leaf_selector.switch_association_type` - (Required) type of switch association. 
+* `leaf_selector` - (Optional) Leaf Selector block to attach with the leaf profile.
+* `leaf_selector.name` - (Required) Name of the leaf selector.
+* `leaf_selector.switch_association_type` - (Required) Type of switch association. 
 Allowed values: "ALL", "range", "ALL_IN_POD"
 
 * `leaf_selector.node_block` - (Optional) Node block to attach with leaf selector.
 * `leaf_selector.node_block.name` - (Required) Name of the node block.
-* `leaf_selector.node_block.from_` - (Optional) from Node ID. Range from 101 to 110.
-* `leaf_selector.node_block.to_` - (Optional) to node ID. Range from 101 to 110.
+* `leaf_selector.node_block.from_` - (Optional) From Node ID. Range from 101 to 110.
+* `leaf_selector.node_block.to_` - (Optional) To node ID. Range from 101 to 110.
 
 * `relation_infra_rs_acc_card_p` - (Optional) Relation to class infraAccCardP. Cardinality - N_TO_M. Type - Set of String.
                 
