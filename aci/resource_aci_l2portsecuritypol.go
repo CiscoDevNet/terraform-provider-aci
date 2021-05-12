@@ -1,21 +1,23 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciPortSecurityPolicy() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciPortSecurityPolicyCreate,
-		Update: resourceAciPortSecurityPolicyUpdate,
-		Read:   resourceAciPortSecurityPolicyRead,
-		Delete: resourceAciPortSecurityPolicyDelete,
+		CreateContext: resourceAciPortSecurityPolicyCreate,
+		UpdateContext: resourceAciPortSecurityPolicyUpdate,
+		ReadContext:   resourceAciPortSecurityPolicyRead,
+		DeleteContext: resourceAciPortSecurityPolicyDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciPortSecurityPolicyImport,
@@ -115,7 +117,7 @@ func resourceAciPortSecurityPolicyImport(d *schema.ResourceData, m interface{}) 
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciPortSecurityPolicyCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciPortSecurityPolicyCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] PortSecurityPolicy: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -147,19 +149,16 @@ func resourceAciPortSecurityPolicyCreate(d *schema.ResourceData, m interface{}) 
 
 	err := aciClient.Save(l2PortSecurityPol)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.Partial(false)
 
 	d.SetId(l2PortSecurityPol.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciPortSecurityPolicyRead(d, m)
+	return resourceAciPortSecurityPolicyRead(ctx, d, m)
 }
 
-func resourceAciPortSecurityPolicyUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciPortSecurityPolicyUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] PortSecurityPolicy: Beginning Update")
 
 	aciClient := m.(*client.Client)
@@ -195,20 +194,17 @@ func resourceAciPortSecurityPolicyUpdate(d *schema.ResourceData, m interface{}) 
 	err := aciClient.Save(l2PortSecurityPol)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.Partial(false)
 
 	d.SetId(l2PortSecurityPol.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciPortSecurityPolicyRead(d, m)
+	return resourceAciPortSecurityPolicyRead(ctx, d, m)
 
 }
 
-func resourceAciPortSecurityPolicyRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciPortSecurityPolicyRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -227,18 +223,18 @@ func resourceAciPortSecurityPolicyRead(d *schema.ResourceData, m interface{}) er
 	return nil
 }
 
-func resourceAciPortSecurityPolicyDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciPortSecurityPolicyDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "l2PortSecurityPol")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
 }

@@ -13,7 +13,7 @@ Manages ACI Port Security Policy
 
 ```hcl
 	resource "aci_port_security_policy" "fooport_security_policy" {
-		description = "%s"
+		description = "From Terraform"
 		name        = "demo_port_pol"
 		annotation  = "tag_port_pol"
 		maximum     = "12"
@@ -23,12 +23,13 @@ Manages ACI Port Security Policy
 	}
 ```
 ## Argument Reference ##
-* `name` - (Required) name of Object port_security_policy.
-* `annotation` - (Optional) annotation for object port_security_policy.
+* `name` - (Required) Name of Object port security policy.
+* `description` - (Optional) Description for object port security policy.
+* `annotation` - (Optional) Annotation for object port security policy.
 * `maximum` - (Optional) Port Security Maximum. Allowed value range is "0" - "12000". Default is "0".
-* `mode` - (Optional) bgp domain mode
-* `name_alias` - (Optional) name_alias for object port_security_policy.
-* `timeout` - (Optional) amount of time between authentication attempts. Allowed value range is "60" - "3600". Default is "60".
+* `mode` - (Optional) Bgp domain mode
+* `name_alias` - (Optional) Name alias for object port security policy.
+* `timeout` - (Optional) Amount of time between authentication attempts. Allowed value range is "60" - "3600". Default is "60".
 * `violation` - (Optional) Port Security Violation. default value is "protect".
 Allowed value: "protect"
 

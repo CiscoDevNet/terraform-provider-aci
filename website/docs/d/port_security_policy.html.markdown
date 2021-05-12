@@ -23,10 +23,10 @@ data "aci_port_security_policy" "dev_port_sec_pol" {
 
 ## Attribute Reference
 
-* `id` - Attribute id set to the Dn of the Port Security Policy.
-* `annotation` - (Optional) annotation for object port_security_policy.
+* `description` - (Optional) Description for object port security policy.
+* `annotation` - (Optional) Annotation for object port security policy.
 * `maximum` - (Optional) Port Security Maximum.
-* `mode` - (Optional) bgp domain mode
-* `name_alias` - (Optional) name_alias for object port_security_policy.
-* `timeout` - (Optional) amount of time between authentication attempts
-* `violation` - (Optional) Port security violation.
+* `mode` - (Optional) Bgp domain mode
+* `name_alias` - (Optional) Name alias for object port security policy.
+* `timeout` - (Optional) Amount of time between authentication attempts.
+* `violation` - (Optional) Port Security Violation.
