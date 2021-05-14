@@ -42,9 +42,6 @@ func resourceAciEndPointRetentionPolicy() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
-				ValidateFunc: validation.StringInSlice([]string{
-					"infinite",
-				}, false),
 			},
 
 			"bounce_trig": &schema.Schema{

@@ -64,7 +64,7 @@ func testAccCheckAciEndPointRetentionPolicyConfig_basic(description, bounce_trig
 		description = "This tenant is created by terraform ACI provider"
 	}
 	resource "aci_end_point_retention_policy" "fooend_point_retention_policy" {
-		tenant_dn   		= "${aci_tenant.tenant_for_ret_pol.id}"
+		tenant_dn   		= aci_tenant.tenant_for_ret_pol.id
 		description 		= "%s"
 		name                = "demo_ret_pol"
 		annotation          = "tag_ret_pol"
