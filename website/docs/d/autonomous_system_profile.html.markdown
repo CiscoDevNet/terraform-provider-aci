@@ -24,5 +24,6 @@ This data source don't have any arguments.
 
 * `id` - Attribute id set to the Dn of the Autonomous System Profile.
 * `annotation` - (Optional) Annotation for object Autonomous System Profile.
+* `description` - (Optional) Description for object Autonomous System Profile.
 * `asn` - (Optional) A number that uniquely identifies an autonomous system. 
 * `name_alias` - (Optional) Name alias for object Autonomous System Profile.
