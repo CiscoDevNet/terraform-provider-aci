@@ -46,10 +46,10 @@ resource "aci_leaf_profile" "example" {
 ```
 
 ## Argument Reference ##
-* `name` - (Required) name of Object leaf profile.
+* `name` - (Required) Name of Object leaf profile.
 * `description` - (Optional) Description for object leaf profile.
 * `annotation` - (Optional) Annotation for object leaf profile.
-* `name_alias` - (Optional) Name_alias for object leaf profile.
+* `name_alias` - (Optional) Name alias for object leaf profile.
 
 * `leaf_selector` - (Optional) Leaf Selector block to attach with the leaf profile.
 * `leaf_selector.name` - (Required) Name of the leaf selector.
