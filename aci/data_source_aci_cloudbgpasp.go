@@ -1,16 +1,18 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func dataSourceAciAutonomousSystemProfile() *schema.Resource {
 	return &schema.Resource{
 
-		Read: dataSourceAciAutonomousSystemProfileRead,
+		ReadContext: dataSourceAciAutonomousSystemProfileRead,
 
 		SchemaVersion: 1,
 
@@ -31,7 +33,7 @@ func dataSourceAciAutonomousSystemProfile() *schema.Resource {
 	}
 }
 
-func dataSourceAciAutonomousSystemProfileRead(d *schema.ResourceData, m interface{}) error {
+func dataSourceAciAutonomousSystemProfileRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	aciClient := m.(*client.Client)
 
 	rn := fmt.Sprintf("clouddomp/as")
@@ -41,8 +43,35 @@ func dataSourceAciAutonomousSystemProfileRead(d *schema.ResourceData, m interfac
 	cloudBgpAsP, err := getRemoteAutonomousSystemProfile(aciClient, dn)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	setAutonomousSystemProfileAttributes(cloudBgpAsP, d)
 	return nil
 }
+
+func getRemoteAutonomousSystemProfile(client *client.Client, dn string) (*models.AutonomousSystemProfile, error) {
+	cloudBgpAsPCont, err := client.Get(dn)
+	if err != nil {
+		return nil, err
+	}
+
+	cloudBgpAsP := models.AutonomousSystemProfileFromContainer(cloudBgpAsPCont)
+
+	if cloudBgpAsP.DistinguishedName == "" {
+		return nil, fmt.Errorf("AutonomousSystemProfile %s not found", cloudBgpAsP.DistinguishedName)
+	}
+
+	return cloudBgpAsP, nil
+}
+
+func setAutonomousSystemProfileAttributes(cloudBgpAsP *models.AutonomousSystemProfile, d *schema.ResourceData) *schema.ResourceData {
+	d.SetId(cloudBgpAsP.DistinguishedName)
+	d.Set("description", cloudBgpAsP.Description)
+	cloudBgpAsPMap, _ := cloudBgpAsP.ToMap()
+
+	d.Set("annotation", cloudBgpAsPMap["annotation"])
+	d.Set("asn", cloudBgpAsPMap["asn"])
+	d.Set("name_alias", cloudBgpAsPMap["nameAlias"])
+	return d
+}
+

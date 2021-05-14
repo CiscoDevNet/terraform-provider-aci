@@ -15,14 +15,14 @@ Manages ACI Autonomous System Profile
 	resource "aci_autonomous_system_profile" "fooautonomous_system_profile" {
 		description = "sample autonomous profile"
 		annotation  = "tag_system"
-		asn         = "121"
+		asn         = "64601"
 		name_alias  = "alias_sys_prof"
 	} 
 ```
 ## Argument Reference ##
-* `annotation` - (Optional) annotation for object autonomous_system_profile.
-* `asn` - (Optional) A number that uniquely identifies an autonomous system. 
-* `name_alias` - (Optional) name_alias for object autonomous_system_profile.
+* `annotation` - (Optional) Annotation for object Autonomous System Profile.
+* `asn` - (Optional) A number that uniquely identifies an Autonomous System Profile.
+* `name_alias` - (Optional) Name alias for object Autonomous System Profile.
 
 
 

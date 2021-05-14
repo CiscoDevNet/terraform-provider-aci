@@ -90,7 +90,6 @@ func Provider() *schema.Provider {
 			"aci_l3_ext_subnet":                            resourceAciL3ExtSubnet(),
 			"aci_cloud_applicationcontainer":               resourceAciCloudApplicationcontainer(),
 			"aci_cloud_aws_provider":                       resourceAciCloudAWSProvider(),
-			"aci_autonomous_system_profile":                resourceAciAutonomousSystemProfile(),
 			"aci_cloud_cidr_pool":                          resourceAciCloudCIDRPool(),
 			"aci_cloud_domain_profile":                     resourceAciCloudDomainProfile(),
 			"aci_cloud_context_profile":                    resourceAciCloudContextProfile(),
