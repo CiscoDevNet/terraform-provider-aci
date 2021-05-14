@@ -26,11 +26,6 @@ func TestAccAciPortSecurityPolicy_Basic(t *testing.T) {
 					testAccCheckAciPortSecurityPolicyAttributes(description, "60", &port_security_policy),
 				),
 			},
-			{
-				ResourceName:      "aci_port_security_policy",
-				ImportState:       true,
-				ImportStateVerify: true,
-			},
 		},
 	})
 }

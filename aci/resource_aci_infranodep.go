@@ -1,22 +1,24 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciLeafProfile() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciLeafProfileCreate,
-		Update: resourceAciLeafProfileUpdate,
-		Read:   resourceAciLeafProfileRead,
-		Delete: resourceAciLeafProfileDelete,
+		CreateContext: resourceAciLeafProfileCreate,
+		UpdateContext: resourceAciLeafProfileUpdate,
+		ReadContext:   resourceAciLeafProfileRead,
+		DeleteContext: resourceAciLeafProfileDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciLeafProfileImport,
@@ -254,7 +256,7 @@ func resourceAciLeafProfileImport(d *schema.ResourceData, m interface{}) ([]*sch
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciLeafProfileCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciLeafProfileCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] LeafProfile: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -274,7 +276,7 @@ func resourceAciLeafProfileCreate(d *schema.ResourceData, m interface{}) error {
 
 	err := aciClient.Save(infraNodeP)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	leafSelectorIDs := make([]string, 0, 1)
@@ -297,7 +299,7 @@ func resourceAciLeafProfileCreate(d *schema.ResourceData, m interface{}) error {
 			infraLeafS := models.NewSwitchAssociation(fmt.Sprintf("leaves-%s-typ-%s", name, switchAssType), leafPDN, desc, infraLeafSAttr)
 			err := aciClient.Save(infraLeafS)
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 			leafSelectorIDs = append(leafSelectorIDs, infraLeafS.DistinguishedName)
 
@@ -323,7 +325,7 @@ func resourceAciLeafProfileCreate(d *schema.ResourceData, m interface{}) error {
 
 					err := aciClient.Save(infraNodeBlk)
 					if err != nil {
-						return err
+						return diag.FromErr(err)
 					}
 
 					nodeBlockIDs = append(nodeBlockIDs, infraNodeBlk.DistinguishedName)
@@ -357,7 +359,7 @@ func resourceAciLeafProfileCreate(d *schema.ResourceData, m interface{}) error {
 	d.Partial(true)
 	err = checkTDn(aciClient, checkDns)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Partial(false)
 
@@ -367,7 +369,7 @@ func resourceAciLeafProfileCreate(d *schema.ResourceData, m interface{}) error {
 			err = aciClient.CreateRelationinfraRsAccCardPFromLeafProfile(infraNodeP.DistinguishedName, relationParam)
 
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 			d.Partial(true)
 			d.Partial(false)
@@ -379,7 +381,7 @@ func resourceAciLeafProfileCreate(d *schema.ResourceData, m interface{}) error {
 			err = aciClient.CreateRelationinfraRsAccPortPFromLeafProfile(infraNodeP.DistinguishedName, relationParam)
 
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 			d.Partial(true)
 			d.Partial(false)
@@ -389,10 +391,10 @@ func resourceAciLeafProfileCreate(d *schema.ResourceData, m interface{}) error {
 	d.SetId(infraNodeP.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciLeafProfileRead(d, m)
+	return resourceAciLeafProfileRead(ctx, d, m)
 }
 
-func resourceAciLeafProfileUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciLeafProfileUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] LeafProfile: Beginning Update")
 
 	aciClient := m.(*client.Client)
@@ -416,14 +418,14 @@ func resourceAciLeafProfileUpdate(d *schema.ResourceData, m interface{}) error {
 	err := aciClient.Save(infraNodeP)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	if d.HasChange("leaf_selector") {
 		for _, selectorDn := range d.Get("leaf_selector_ids").([]interface{}) {
 			err := aciClient.DeleteByDn(selectorDn.(string), "infraLeafS")
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 		}
 
@@ -447,7 +449,7 @@ func resourceAciLeafProfileUpdate(d *schema.ResourceData, m interface{}) error {
 				infraLeafS := models.NewSwitchAssociation(fmt.Sprintf("leaves-%s-typ-%s", name, switchAssType), leafPDN, desc, infraLeafSAttr)
 				err := aciClient.Save(infraLeafS)
 				if err != nil {
-					return err
+					return diag.FromErr(err)
 				}
 				leafSelectorIDs = append(leafSelectorIDs, infraLeafS.DistinguishedName)
 
@@ -473,7 +475,7 @@ func resourceAciLeafProfileUpdate(d *schema.ResourceData, m interface{}) error {
 
 						err := aciClient.Save(infraNodeBlk)
 						if err != nil {
-							return err
+							return diag.FromErr(err)
 						}
 
 						nodeBlockIDs = append(nodeBlockIDs, infraNodeBlk.DistinguishedName)
@@ -516,7 +518,7 @@ func resourceAciLeafProfileUpdate(d *schema.ResourceData, m interface{}) error {
 	d.Partial(true)
 	err = checkTDn(aciClient, checkDns)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Partial(false)
 
@@ -530,7 +532,7 @@ func resourceAciLeafProfileUpdate(d *schema.ResourceData, m interface{}) error {
 		for _, relDn := range relToDelete {
 			err = aciClient.DeleteRelationinfraRsAccCardPFromLeafProfile(infraNodeP.DistinguishedName, relDn)
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 		}
@@ -538,7 +540,7 @@ func resourceAciLeafProfileUpdate(d *schema.ResourceData, m interface{}) error {
 		for _, relDn := range relToCreate {
 			err = aciClient.CreateRelationinfraRsAccCardPFromLeafProfile(infraNodeP.DistinguishedName, relDn)
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 			d.Partial(true)
 			d.Partial(false)
@@ -556,7 +558,7 @@ func resourceAciLeafProfileUpdate(d *schema.ResourceData, m interface{}) error {
 		for _, relDn := range relToDelete {
 			err = aciClient.DeleteRelationinfraRsAccPortPFromLeafProfile(infraNodeP.DistinguishedName, relDn)
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 		}
@@ -564,7 +566,7 @@ func resourceAciLeafProfileUpdate(d *schema.ResourceData, m interface{}) error {
 		for _, relDn := range relToCreate {
 			err = aciClient.CreateRelationinfraRsAccPortPFromLeafProfile(infraNodeP.DistinguishedName, relDn)
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 			d.Partial(true)
 			d.Partial(false)
@@ -576,11 +578,11 @@ func resourceAciLeafProfileUpdate(d *schema.ResourceData, m interface{}) error {
 	d.SetId(infraNodeP.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciLeafProfileRead(d, m)
+	return resourceAciLeafProfileRead(ctx, d, m)
 
 }
 
-func resourceAciLeafProfileRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciLeafProfileRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -637,18 +639,18 @@ func resourceAciLeafProfileRead(d *schema.ResourceData, m interface{}) error {
 	return nil
 }
 
-func resourceAciLeafProfileDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciLeafProfileDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "infraNodeP")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
 }
