@@ -14,8 +14,8 @@ Manage End Point (EP) retention protocol policies
 
 ```hcl
 	resource "aci_end_point_retention_policy" "fooend_point_retention_policy" {
-		tenant_dn   		= aci_tenant.tenant_for_ret_pol.id
-		description 		= "From Terraform"
+		tenant_dn           = aci_tenant.tenant_for_ret_pol.id
+		description 	    = "From Terraform"
 		name                = "demo_ret_pol"
 		annotation          = "tag_ret_pol"
 		bounce_age_intvl    = "630"
