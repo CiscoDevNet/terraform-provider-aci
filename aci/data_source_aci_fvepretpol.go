@@ -1,16 +1,18 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func dataSourceAciEndPointRetentionPolicy() *schema.Resource {
 	return &schema.Resource{
 
-		Read: dataSourceAciEndPointRetentionPolicyRead,
+		ReadContext: dataSourceAciEndPointRetentionPolicyRead,
 
 		SchemaVersion: 1,
 
@@ -70,7 +72,7 @@ func dataSourceAciEndPointRetentionPolicy() *schema.Resource {
 	}
 }
 
-func dataSourceAciEndPointRetentionPolicyRead(d *schema.ResourceData, m interface{}) error {
+func dataSourceAciEndPointRetentionPolicyRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	aciClient := m.(*client.Client)
 
 	name := d.Get("name").(string)
@@ -83,7 +85,7 @@ func dataSourceAciEndPointRetentionPolicyRead(d *schema.ResourceData, m interfac
 	fvEpRetPol, err := getRemoteEndPointRetentionPolicy(aciClient, dn)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.SetId(dn)
 	setEndPointRetentionPolicyAttributes(fvEpRetPol, d)

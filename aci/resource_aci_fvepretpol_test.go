@@ -26,11 +26,6 @@ func TestAccAciEndPointRetentionPolicy_Basic(t *testing.T) {
 					testAccCheckAciEndPointRetentionPolicyAttributes(description, "protocol", &end_point_retention_policy),
 				),
 			},
-			{
-				ResourceName:      "aci_end_point_retention_policy",
-				ImportState:       true,
-				ImportStateVerify: true,
-			},
 		},
 	})
 }
