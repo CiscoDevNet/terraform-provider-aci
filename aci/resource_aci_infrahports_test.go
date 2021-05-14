@@ -65,6 +65,9 @@ func TestAccAciAccessPortSelector_update(t *testing.T) {
 func testAccCheckAciAccessPortSelectorConfig_basic(description, access_port_selector_type string) string {
 	return fmt.Sprintf(`
 
+	resource "aci_leaf_interface_profile" "example" {
+		name        = "demo_leaf_profile"
+	}	
 	resource "aci_access_port_selector" "fooaccess_port_selector" {
 		leaf_interface_profile_dn = "${aci_leaf_interface_profile.example.id}"
 		description               = "%s"

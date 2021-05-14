@@ -1,21 +1,23 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"strconv"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func resourceAciAccessPortBlock() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciAccessPortBlockCreate,
-		Update: resourceAciAccessPortBlockUpdate,
-		Read:   resourceAciAccessPortBlockRead,
-		Delete: resourceAciAccessPortBlockDelete,
+		CreateContext: resourceAciAccessPortBlockCreate,
+		UpdateContext: resourceAciAccessPortBlockUpdate,
+		ReadContext:   resourceAciAccessPortBlockRead,
+		DeleteContext: resourceAciAccessPortBlockDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciAccessPortBlockImport,
@@ -134,7 +136,7 @@ func resourceAciAccessPortBlockImport(d *schema.ResourceData, m interface{}) ([]
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciAccessPortBlockCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciAccessPortBlockCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] AccessPortBlock: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -149,7 +151,7 @@ func resourceAciAccessPortBlockCreate(d *schema.ResourceData, m interface{}) err
 		cont, err := aciClient.GetViaURL(dnUrl)
 		if err != nil {
 			if models.G(cont, "totalCount") != "0" {
-				return err
+				return diag.FromErr(err)
 			}
 		}
 		contList := models.ListFromContainer(cont, "infraPortBlk")
@@ -207,11 +209,8 @@ func resourceAciAccessPortBlockCreate(d *schema.ResourceData, m interface{}) err
 
 	err := aciClient.Save(infraPortBlk)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
 
@@ -223,7 +222,7 @@ func resourceAciAccessPortBlockCreate(d *schema.ResourceData, m interface{}) err
 	d.Partial(true)
 	err = checkTDn(aciClient, checkDns)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Partial(false)
 
@@ -232,20 +231,18 @@ func resourceAciAccessPortBlockCreate(d *schema.ResourceData, m interface{}) err
 		relationParamName := GetMOName(relationParam)
 		err = aciClient.CreateRelationinfraRsAccBndlSubgrpFromAccessPortBlock(infraPortBlk.DistinguishedName, relationParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.Partial(false)
 
 	}
 
 	d.SetId(infraPortBlk.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciAccessPortBlockRead(d, m)
+	return resourceAciAccessPortBlockRead(ctx, d, m)
 }
 
-func resourceAciAccessPortBlockUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciAccessPortBlockUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] AccessPortBlock: Beginning Update")
 
 	aciClient := m.(*client.Client)
@@ -283,11 +280,8 @@ func resourceAciAccessPortBlockUpdate(d *schema.ResourceData, m interface{}) err
 	err := aciClient.Save(infraPortBlk)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
 
@@ -299,7 +293,7 @@ func resourceAciAccessPortBlockUpdate(d *schema.ResourceData, m interface{}) err
 	d.Partial(true)
 	err = checkTDn(aciClient, checkDns)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Partial(false)
 
@@ -308,25 +302,23 @@ func resourceAciAccessPortBlockUpdate(d *schema.ResourceData, m interface{}) err
 		newRelParamName := GetMOName(newRelParam.(string))
 		err = aciClient.DeleteRelationinfraRsAccBndlSubgrpFromAccessPortBlock(infraPortBlk.DistinguishedName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 		err = aciClient.CreateRelationinfraRsAccBndlSubgrpFromAccessPortBlock(infraPortBlk.DistinguishedName, newRelParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.Partial(false)
 
 	}
 
 	d.SetId(infraPortBlk.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciAccessPortBlockRead(d, m)
+	return resourceAciAccessPortBlockRead(ctx, d, m)
 
 }
 
-func resourceAciAccessPortBlockRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciAccessPortBlockRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -359,18 +351,18 @@ func resourceAciAccessPortBlockRead(d *schema.ResourceData, m interface{}) error
 	return nil
 }
 
-func resourceAciAccessPortBlockDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciAccessPortBlockDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "infraPortBlk")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
 }
