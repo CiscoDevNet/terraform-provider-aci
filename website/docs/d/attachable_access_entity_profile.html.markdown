@@ -26,3 +26,4 @@ data "aci_attachable_access_entity_profile" "dev_ent_prof" {
 * `id` - Attribute id set to the Dn of the attachable access entity profile.
 * `annotation` - (Optional) Annotation for object attachable access entity profile.
 * `name_alias` - (Optional) Name alias for object attachable access entity profile.
+* `description` - (Optional) Description for object attachable access entity profile.

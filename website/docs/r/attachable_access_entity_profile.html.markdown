@@ -26,7 +26,7 @@ resource "aci_attachable_access_entity_profile" "example" {
 * `name` - (Required) Name of Object attachable access entity profile.
 * `annotation` - (Optional) Annotation for object attachable access entity profile.
 * `name_alias` - (Optional) Name alias for object attachable access entity profile.
-
+* `description` - (Optional) Description for object attachable access entity profile.
 * `relation_infra_rs_dom_p` - (Optional) Relation to class infraADomP. Cardinality - N_TO_M. Type - [Set of String].
 
 ## Attribute Reference ##
