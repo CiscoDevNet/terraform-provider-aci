@@ -27,11 +27,6 @@ func TestAccAciCloudAWSProvider_Basic(t *testing.T) {
 					testAccCheckAciCloudAWSProviderAttributes(description, &cloud_aws_provider),
 				),
 			},
-			{
-				ResourceName:      "aci_cloud_aws_provider",
-				ImportState:       true,
-				ImportStateVerify: true,
-			},
 		},
 	})
 }

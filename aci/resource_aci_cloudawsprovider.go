@@ -1,21 +1,23 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciCloudAWSProvider() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciCloudAWSProviderCreate,
-		Update: resourceAciCloudAWSProviderUpdate,
-		Read:   resourceAciCloudAWSProviderRead,
-		Delete: resourceAciCloudAWSProviderDelete,
+		CreateContext: resourceAciCloudAWSProviderCreate,
+		UpdateContext: resourceAciCloudAWSProviderUpdate,
+		ReadContext:   resourceAciCloudAWSProviderRead,
+		DeleteContext: resourceAciCloudAWSProviderDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciCloudAWSProviderImport,
@@ -159,7 +161,7 @@ func resourceAciCloudAWSProviderImport(d *schema.ResourceData, m interface{}) ([
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciCloudAWSProviderCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciCloudAWSProviderCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] CloudAWSProvider: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -205,7 +207,7 @@ func resourceAciCloudAWSProviderCreate(d *schema.ResourceData, m interface{}) er
 
 	err := aciClient.Save(cloudAwsProvider)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Partial(true)
 	d.Partial(false)
@@ -213,10 +215,10 @@ func resourceAciCloudAWSProviderCreate(d *schema.ResourceData, m interface{}) er
 	d.SetId(cloudAwsProvider.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciCloudAWSProviderRead(d, m)
+	return resourceAciCloudAWSProviderRead(ctx, d, m)
 }
 
-func resourceAciCloudAWSProviderUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciCloudAWSProviderUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] CloudAWSProvider: Beginning Update")
 
 	aciClient := m.(*client.Client)
@@ -267,7 +269,7 @@ func resourceAciCloudAWSProviderUpdate(d *schema.ResourceData, m interface{}) er
 	err := aciClient.Save(cloudAwsProvider)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Partial(true)
 	d.Partial(false)
@@ -275,11 +277,11 @@ func resourceAciCloudAWSProviderUpdate(d *schema.ResourceData, m interface{}) er
 	d.SetId(cloudAwsProvider.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciCloudAWSProviderRead(d, m)
+	return resourceAciCloudAWSProviderRead(ctx, d, m)
 
 }
 
-func resourceAciCloudAWSProviderRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciCloudAWSProviderRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -298,18 +300,18 @@ func resourceAciCloudAWSProviderRead(d *schema.ResourceData, m interface{}) erro
 	return nil
 }
 
-func resourceAciCloudAWSProviderDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciCloudAWSProviderDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "cloudAwsProvider")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
 }
