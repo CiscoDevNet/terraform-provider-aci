@@ -52,6 +52,12 @@ func Provider() *schema.Provider {
 				DefaultFunc: schema.EnvDefaultFunc("ACI_PROXY_URL", nil),
 				Description: "Proxy Server URL with port number",
 			},
+			"proxy_creds": &schema.Schema{
+				Type:        schema.TypeString,
+				Optional:    true,
+				DefaultFunc: schema.EnvDefaultFunc("ACI_PROXY_CREDS", nil),
+				Description: "Proxy server credentials in the form of username:password",
+			},
 		},
 
 		ResourcesMap: map[string]*schema.Resource{
@@ -358,6 +364,7 @@ func configureClient(d *schema.ResourceData) (interface{}, error) {
 		PrivateKey: d.Get("private_key").(string),
 		Certname:   d.Get("cert_name").(string),
 		ProxyUrl:   d.Get("proxy_url").(string),
+		ProxyCreds: d.Get("proxy_creds").(string),
 	}
 
 	if err := config.Valid(); err != nil {
@@ -392,11 +399,11 @@ func (c Config) Valid() error {
 func (c Config) getClient() interface{} {
 	if c.Password != "" {
 
-		return client.GetClient(c.URL, c.Username, client.Password(c.Password), client.Insecure(c.IsInsecure), client.ProxyUrl(c.ProxyUrl))
+		return client.GetClient(c.URL, c.Username, client.Password(c.Password), client.Insecure(c.IsInsecure), client.ProxyUrl(c.ProxyUrl), client.ProxyCreds(c.ProxyCreds))
 
 	} else {
 
-		return client.GetClient(c.URL, c.Username, client.PrivateKey(c.PrivateKey), client.AdminCert(c.Certname), client.Insecure(c.IsInsecure), client.ProxyUrl(c.ProxyUrl))
+		return client.GetClient(c.URL, c.Username, client.PrivateKey(c.PrivateKey), client.AdminCert(c.Certname), client.Insecure(c.IsInsecure), client.ProxyUrl(c.ProxyUrl), client.ProxyCreds(c.ProxyCreds))
 	}
 }
 
@@ -409,4 +416,5 @@ type Config struct {
 	PrivateKey string
 	Certname   string
 	ProxyUrl   string
+	ProxyCreds string
 }
