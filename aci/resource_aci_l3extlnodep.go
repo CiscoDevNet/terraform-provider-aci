@@ -1,21 +1,23 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciLogicalNodeProfile() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciLogicalNodeProfileCreate,
-		Update: resourceAciLogicalNodeProfileUpdate,
-		Read:   resourceAciLogicalNodeProfileRead,
-		Delete: resourceAciLogicalNodeProfileDelete,
+		CreateContext: resourceAciLogicalNodeProfileCreate,
+		UpdateContext: resourceAciLogicalNodeProfileUpdate,
+		ReadContext:   resourceAciLogicalNodeProfileRead,
+		DeleteContext: resourceAciLogicalNodeProfileDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciLogicalNodeProfileImport,
@@ -37,15 +39,16 @@ func resourceAciLogicalNodeProfile() *schema.Resource {
 			},
 
 			"config_issues": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-				ValidateFunc: validation.StringInSlice([]string{
+				Type:             schema.TypeString,
+				Optional:         true,
+				Computed:         true,
+				DiffSuppressFunc: suppressBitMaskDiffFunc(),
+				ValidateFunc: schema.SchemaValidateFunc(validateCommaSeparatedStringInSlice([]string{
 					"none",
 					"node-path-misconfig",
 					"routerid-not-changable-with-mcast",
 					"loopback-ip-missing",
-				}, false),
+				}, false, "none")),
 			},
 
 			"name_alias": &schema.Schema{
@@ -58,26 +61,6 @@ func resourceAciLogicalNodeProfile() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
-				ValidateFunc: validation.StringInSlice([]string{
-					"black", "navy", "dark-blue", "medium-blue", "blue", "dark-green", "green", "teal", "dark-cyan", "deep-sky-blue",
-					"dark-turquoise", "medium-spring-green", "lime", "spring-green", "aqua", "cyan", "midnight-blue",
-					"dodger-blue", "light-sea-green", "forest-green", "sea-green", "dark-slate-gray", "lime-green",
-					"medium-sea-green", "turquoise", "royal-blue", "steel-blue", "dark-slate-blue", "medium-turquoise",
-					"indigo", "dark-olive-green", "cadet-blue", "cornflower-blue", "medium-aquamarine", "dim-gray",
-					"slate-blue", "olive-drab", "slate-gray", "light-slate-gray", "medium-slate-blue", "lawn-green", "chartreuse",
-					"aquamarine", "maroon", "purple", "olive", "gray", "sky-blue", "light-sky-blue", "blue-violet", "dark-red",
-					"dark-magenta", "saddle-brown", "dark-sea-green", "light-green", "medium-purple", "dark-violet", "pale-green",
-					"dark-orchid", "yellow-green", "sienna", "brown", "dark-gray", "light-blue", "green-yellow", "pale-turquoise",
-					"light-steel-blue", "powder-blue", "fire-brick", "dark-goldenrod", "medium-orchid", "rosy-brown", "dark-khaki",
-					"silver", "medium-violet-red", "indian-red", "peru", "chocolate", "tan", "light-gray", "thistle", "orchid",
-					"goldenrod", "pale-violet-red", "crimson", "gainsboro", "plum", "burlywood", "light-cyan", "lavender",
-					"dark-salmon", "violet", "pale-goldenrod", "light-coral", "khaki", "alice-blue", "honeydew", "azure",
-					"sandy-brown", "wheat", "beige", "white-smoke", "mint-cream", "ghost-white", "salmon", "antique-white",
-					"linen", "light-goldenrod-yellow", "old-lace", "red", "fuchsia", "magenta", "deep-pink", "orange-red",
-					"tomato", "hot-pink", "coral", "dark-orange", "light-salmon", "orange", "light-pink", "pink", "gold",
-					"peachpuff", "navajo-white", "moccasin", "bisque", "misty-rose", "blanched-almond", "papaya-whip", "lavender-blush",
-					"seashell", "cornsilk", "lemon-chiffon", "floral-white", "snow", "yellow", "light-yellow", "ivory", "white",
-				}, false),
 			},
 
 			"target_dscp": &schema.Schema{
@@ -174,7 +157,7 @@ func resourceAciLogicalNodeProfileImport(d *schema.ResourceData, m interface{}) 
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciLogicalNodeProfileCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciLogicalNodeProfileCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] LogicalNodeProfile: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -205,11 +188,8 @@ func resourceAciLogicalNodeProfileCreate(d *schema.ResourceData, m interface{}) 
 
 	err := aciClient.Save(l3extLNodeP)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.Partial(false)
 
 	if relationTol3extRsNodeL3OutAtt, ok := d.GetOk("relation_l3ext_rs_node_l3_out_att"); ok {
 		relationParamList := toStringList(relationTol3extRsNodeL3OutAtt.(*schema.Set).List())
@@ -217,20 +197,18 @@ func resourceAciLogicalNodeProfileCreate(d *schema.ResourceData, m interface{}) 
 			err = aciClient.CreateRelationl3extRsNodeL3OutAttFromLogicalNodeProfile(l3extLNodeP.DistinguishedName, relationParam)
 
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
-			d.Partial(true)
-			d.Partial(false)
 		}
 	}
 
 	d.SetId(l3extLNodeP.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciLogicalNodeProfileRead(d, m)
+	return resourceAciLogicalNodeProfileRead(ctx, d, m)
 }
 
-func resourceAciLogicalNodeProfileUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciLogicalNodeProfileUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] LogicalNodeProfile: Beginning Update")
 
 	aciClient := m.(*client.Client)
@@ -265,11 +243,8 @@ func resourceAciLogicalNodeProfileUpdate(d *schema.ResourceData, m interface{}) 
 	err := aciClient.Save(l3extLNodeP)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.Partial(false)
 
 	if d.HasChange("relation_l3ext_rs_node_l3_out_att") {
 		oldRel, newRel := d.GetChange("relation_l3ext_rs_node_l3_out_att")
@@ -281,7 +256,7 @@ func resourceAciLogicalNodeProfileUpdate(d *schema.ResourceData, m interface{}) 
 		for _, relDn := range relToDelete {
 			err = aciClient.DeleteRelationl3extRsNodeL3OutAttFromLogicalNodeProfile(l3extLNodeP.DistinguishedName, relDn)
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 		}
@@ -289,10 +264,8 @@ func resourceAciLogicalNodeProfileUpdate(d *schema.ResourceData, m interface{}) 
 		for _, relDn := range relToCreate {
 			err = aciClient.CreateRelationl3extRsNodeL3OutAttFromLogicalNodeProfile(l3extLNodeP.DistinguishedName, relDn)
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
-			d.Partial(true)
-			d.Partial(false)
 
 		}
 
@@ -301,11 +274,11 @@ func resourceAciLogicalNodeProfileUpdate(d *schema.ResourceData, m interface{}) 
 	d.SetId(l3extLNodeP.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciLogicalNodeProfileRead(d, m)
+	return resourceAciLogicalNodeProfileRead(ctx, d, m)
 
 }
 
-func resourceAciLogicalNodeProfileRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciLogicalNodeProfileRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -332,18 +305,18 @@ func resourceAciLogicalNodeProfileRead(d *schema.ResourceData, m interface{}) er
 	return nil
 }
 
-func resourceAciLogicalNodeProfileDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciLogicalNodeProfileDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "l3extLNodeP")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
 }
