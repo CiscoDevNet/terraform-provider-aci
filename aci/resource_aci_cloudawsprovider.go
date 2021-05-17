@@ -209,8 +209,6 @@ func resourceAciCloudAWSProviderCreate(ctx context.Context, d *schema.ResourceDa
 	if err != nil {
 		return diag.FromErr(err)
 	}
-	d.Partial(true)
-	d.Partial(false)
 
 	d.SetId(cloudAwsProvider.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())

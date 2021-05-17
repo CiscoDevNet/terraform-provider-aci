@@ -42,9 +42,9 @@ func testAccCheckAciCloudAWSProviderConfig_basic(description string) string {
 		tenant_dn         = "${aci_tenant.footenant.id}"
 		description       = "%s"
 		access_key_id     = "%s"
-		account_id        = "310368696476"
+		account_id        = "765918992658"
 		annotation        = "tag_aws"
-		region            = "us-west-2"
+		#region            = "us-west-2"
 		secret_access_key = "%s"
 	}
 	  
@@ -110,7 +110,7 @@ func testAccCheckAciCloudAWSProviderAttributes(description string, cloud_aws_pro
 			return fmt.Errorf("Bad cloud_aws_provider access_key_id %s", cloud_aws_provider.AccessKeyId)
 		}
 
-		if "310368696476" != cloud_aws_provider.AccountId {
+		if "765918992658" != cloud_aws_provider.AccountId {
 			return fmt.Errorf("Bad cloud_aws_provider account_id %s", cloud_aws_provider.AccountId)
 		}
 
@@ -118,9 +118,9 @@ func testAccCheckAciCloudAWSProviderAttributes(description string, cloud_aws_pro
 			return fmt.Errorf("Bad cloud_aws_provider annotation %s", cloud_aws_provider.Annotation)
 		}
 
-		if "us-west-2" != cloud_aws_provider.Region {
-			return fmt.Errorf("Bad cloud_aws_provider region %s", cloud_aws_provider.Region)
-		}
+		// if "us-west-2" != cloud_aws_provider.Region {
+		// 	return fmt.Errorf("Bad cloud_aws_provider region %s", cloud_aws_provider.Region)
+		// }
 
 		if os.Getenv("AWS_SECRET_KEY") != cloud_aws_provider.SecretAccessKey {
 			return fmt.Errorf("Bad cloud_aws_provider secret_access_key %s", cloud_aws_provider.SecretAccessKey)
