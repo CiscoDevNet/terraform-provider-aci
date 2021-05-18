@@ -18,7 +18,7 @@ Manages ACI OSPF Interface Policy
 		name         = "demo_ospfpol"
 		annotation   = "tag_ospf"
 		cost         = "unspecified"
-		ctrl         = "%s"
+		ctrl         = ["advert-subnet", "bfd", "mtu-ignore", "passive"]
 		dead_intvl   = "40"
 		hello_intvl  = "10"
 		name_alias   = "alias_ospf"
