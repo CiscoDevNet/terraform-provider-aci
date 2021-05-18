@@ -6,25 +6,25 @@ description: |-
   Data source for ACI Trigger Scheduler
 ---
 
-# aci_trigger_scheduler #
+# aci_trigger_scheduler
+
 Data source for ACI Trigger Scheduler
 
-## Example Usage ##
+## Example Usage
 
 ```hcl
 data "aci_trigger_scheduler" "example" {
-
-
   name  = "example"
 }
 ```
-## Argument Reference ##
-* `name` - (Required) name of Object trigger_scheduler.
 
+## Argument Reference
 
+- `name` - (Required) name of Object trigger_scheduler.
 
 ## Attribute Reference
 
-* `id` - Attribute id set to the Dn of the Trigger Scheduler.
-* `annotation` - (Optional) annotation for object trigger_scheduler.
-* `name_alias` - (Optional) name_alias for object trigger_scheduler.
+- `id` - Attribute id set to the Dn of the Trigger Scheduler.
+- `annotation` - (Optional) annotation for object trigger_scheduler.
+- `name_alias` - (Optional) name_alias for object trigger_scheduler.
+- `description` - (Optional) Description for object trigger_scheduler.

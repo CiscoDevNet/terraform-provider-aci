@@ -90,12 +90,7 @@ func resourceAciLogicalInterfaceProfile() *schema.Resource {
 					},
 				},
 			},
-			"relation_l3ext_rs_path_l3_out_att": &schema.Schema{
-				Type:     schema.TypeSet,
-				Elem:     &schema.Schema{Type: schema.TypeString},
-				Optional: true,
-				Set:      schema.HashString,
-			},
+
 			"relation_l3ext_rs_egress_qos_dpp_pol": &schema.Schema{
 				Type: schema.TypeString,
 
@@ -218,13 +213,6 @@ func resourceAciLogicalInterfaceProfileCreate(d *schema.ResourceData, m interfac
 
 	checkDns := make([]string, 0, 1)
 
-	if relationTol3extRsPathL3OutAtt, ok := d.GetOk("relation_l3ext_rs_path_l3_out_att"); ok {
-		relationParamList := toStringList(relationTol3extRsPathL3OutAtt.(*schema.Set).List())
-		for _, relationParam := range relationParamList {
-			checkDns = append(checkDns, relationParam)
-		}
-	}
-
 	if relationTol3extRsEgressQosDppPol, ok := d.GetOk("relation_l3ext_rs_egress_qos_dpp_pol"); ok {
 		relationParam := relationTol3extRsEgressQosDppPol.(string)
 		checkDns = append(checkDns, relationParam)
@@ -271,19 +259,6 @@ func resourceAciLogicalInterfaceProfileCreate(d *schema.ResourceData, m interfac
 			d.Partial(false)
 		}
 
-	}
-	if relationTol3extRsPathL3OutAtt, ok := d.GetOk("relation_l3ext_rs_path_l3_out_att"); ok {
-		relationParamList := toStringList(relationTol3extRsPathL3OutAtt.(*schema.Set).List())
-		for _, relationParam := range relationParamList {
-			err = aciClient.CreateRelationl3extRsPathL3OutAttFromLogicalInterfaceProfile(l3extLIfP.DistinguishedName, relationParam)
-
-			if err != nil {
-				return err
-			}
-			d.Partial(true)
-			d.SetPartial("relation_l3ext_rs_path_l3_out_att")
-			d.Partial(false)
-		}
 	}
 	if relationTol3extRsEgressQosDppPol, ok := d.GetOk("relation_l3ext_rs_egress_qos_dpp_pol"); ok {
 		relationParam := relationTol3extRsEgressQosDppPol.(string)
@@ -394,17 +369,6 @@ func resourceAciLogicalInterfaceProfileUpdate(d *schema.ResourceData, m interfac
 
 	checkDns := make([]string, 0, 1)
 
-	if d.HasChange("relation_l3ext_rs_path_l3_out_att") {
-		oldRel, newRel := d.GetChange("relation_l3ext_rs_path_l3_out_att")
-		oldRelSet := oldRel.(*schema.Set)
-		newRelSet := newRel.(*schema.Set)
-		relToCreate := toStringList(newRelSet.Difference(oldRelSet).List())
-
-		for _, relDn := range relToCreate {
-			checkDns = append(checkDns, relDn)
-		}
-	}
-
 	if d.HasChange("relation_l3ext_rs_egress_qos_dpp_pol") {
 		_, newRelParam := d.GetChange("relation_l3ext_rs_egress_qos_dpp_pol")
 		checkDns = append(checkDns, newRelParam.(string))
@@ -461,33 +425,7 @@ func resourceAciLogicalInterfaceProfileUpdate(d *schema.ResourceData, m interfac
 		}
 
 	}
-	if d.HasChange("relation_l3ext_rs_path_l3_out_att") {
-		oldRel, newRel := d.GetChange("relation_l3ext_rs_path_l3_out_att")
-		oldRelSet := oldRel.(*schema.Set)
-		newRelSet := newRel.(*schema.Set)
-		relToDelete := toStringList(oldRelSet.Difference(newRelSet).List())
-		relToCreate := toStringList(newRelSet.Difference(oldRelSet).List())
 
-		for _, relDn := range relToDelete {
-			err = aciClient.DeleteRelationl3extRsPathL3OutAttFromLogicalInterfaceProfile(l3extLIfP.DistinguishedName, relDn)
-			if err != nil {
-				return err
-			}
-
-		}
-
-		for _, relDn := range relToCreate {
-			err = aciClient.CreateRelationl3extRsPathL3OutAttFromLogicalInterfaceProfile(l3extLIfP.DistinguishedName, relDn)
-			if err != nil {
-				return err
-			}
-			d.Partial(true)
-			d.SetPartial("relation_l3ext_rs_path_l3_out_att")
-			d.Partial(false)
-
-		}
-
-	}
 	if d.HasChange("relation_l3ext_rs_egress_qos_dpp_pol") {
 		_, newRelParam := d.GetChange("relation_l3ext_rs_egress_qos_dpp_pol")
 		newRelParamName := GetMOName(newRelParam.(string))
@@ -576,15 +514,6 @@ func resourceAciLogicalInterfaceProfileRead(d *schema.ResourceData, m interface{
 
 	} else {
 		d.Set("relation_l3ext_rs_l_if_p_to_netflow_monitor_pol", l3extRsLIfPToNetflowMonitorPolData)
-	}
-
-	l3extRsPathL3OutAttData, err := aciClient.ReadRelationl3extRsPathL3OutAttFromLogicalInterfaceProfile(dn)
-	if err != nil {
-		log.Printf("[DEBUG] Error while reading relation l3extRsPathL3OutAtt %v", err)
-		d.Set("relation_l3ext_rs_path_l3_out_att", make([]string, 0, 1))
-
-	} else {
-		d.Set("relation_l3ext_rs_path_l3_out_att", l3extRsPathL3OutAttData)
 	}
 
 	l3extRsEgressQosDppPolData, err := aciClient.ReadRelationl3extRsEgressQosDppPolFromLogicalInterfaceProfile(dn)

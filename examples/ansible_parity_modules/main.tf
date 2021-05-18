@@ -1,7 +1,15 @@
+terraform {
+  required_providers {
+    aci = {
+      source = "ciscodevnet/aci"
+    }
+  }
+}
+
 provider "aci" {
-  username = "admin"
-  password = "ins3965!ins3965!"
-  url      = "https://173.36.219.26/"
+  username = ""
+  password = ""
+  url      = ""
   insecure = true
 }
 

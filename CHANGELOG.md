@@ -1,4 +1,15 @@
-## 0.5.4 (January 13, 2020)
+## 0.6.0 (May 11, 2021)
+IMPROVEMENTS:
+- Updated documentation and examples for new terraform required_provider syntax.
+- Add new resources for Cloud ACI VGW, L3Outs, L2Outs, routing, Service Graphs, ESGs, STP Interface Policy, DHCP options, DHCP relay, DHCP labels, breakout, OOB/inband EPG and VMM domain policies.
+- Add vPC support for aci_fabric_path_ep
+
+BUG FIXES:
+- Fixed a few documentation issues.
+- Ignore REST errors on destroy for object that cannot be deleted.
+- Diverse fixes for issues.
+
+## 0.5.4 (January 13, 2021)
 
 BUG FIXES:
 - Added Missing documentation for aci_monitoring_policy resource.

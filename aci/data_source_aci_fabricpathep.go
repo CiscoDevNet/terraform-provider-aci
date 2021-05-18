@@ -16,6 +16,12 @@ func dataSourceAciFabricPathEndpoint() *schema.Resource {
 		SchemaVersion: 1,
 
 		Schema: AppendBaseAttrSchema(map[string]*schema.Schema{
+			"vpc": &schema.Schema{
+				Type:     schema.TypeBool,
+				Optional: true,
+				Default:  false,
+			},
+
 			"pod_id": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
@@ -62,11 +68,18 @@ func setFabricPathEndpointAttributes(fabricPathEp *models.FabricPathEndpoint, d 
 func dataSourceAciFabricPathEndpointRead(d *schema.ResourceData, m interface{}) error {
 	aciClient := m.(*client.Client)
 
+	vpc := d.Get("vpc").(bool)
 	name := d.Get("name").(string)
 	podID := d.Get("pod_id").(string)
 	nodeID := d.Get("node_id").(string)
 
-	pDN := fmt.Sprintf("topology/pod-%s/paths-%s", podID, nodeID)
+	var pDN string
+
+	if vpc {
+		pDN = fmt.Sprintf("topology/pod-%s/protpaths-%s", podID, nodeID)
+	} else {
+		pDN = fmt.Sprintf("topology/pod-%s/paths-%s", podID, nodeID)
+	}
 
 	rn := fmt.Sprintf("pathep-[%s]", name)
 

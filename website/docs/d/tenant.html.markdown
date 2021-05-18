@@ -6,23 +6,24 @@ description: |-
   Data source for ACI Tenant
 ---
 
-# aci_tenant #
+# aci_tenant
+
 Data source for ACI Tenant
 
-## Example Usage ##
+## Example Usage
 
 ```hcl
 data "aci_tenant" "example" {
   name  = "dev_ten"
 }
 ```
-## Argument Reference ##
-* `name` - (Required) name of Object tenant.
 
+## Argument Reference
 
+- `name` - (Required) Name of Object tenant.
 
 ## Attribute Reference
 
-* `id` - Attribute id set to the Dn of the Tenant.
-* `annotation` - (Optional) annotation for object tenant.
-* `name_alias` - (Optional) name_alias for object tenant.
+- `id` - Attribute id set to the Dn of the Tenant.
+- `annotation` - (Optional) Annotation for object tenant.
+- `name_alias` - (Optional) Name alias for object tenant.

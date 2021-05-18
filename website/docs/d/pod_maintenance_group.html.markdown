@@ -13,20 +13,21 @@ Data source for ACI POD Maintenance Group
 
 ```hcl
 data "aci_pod_maintenance_group" "example" {
-
-
   name  = "example"
 }
 ```
+
+
 ## Argument Reference ##
+
 * `name` - (Required) name of Object pod_maintenance_group.
 
 
 
 ## Attribute Reference
 
-* `id` - Attribute id set to the Dn of the POD Maintenance Group.
-* `annotation` - (Optional) annotation for object pod_maintenance_group.
-* `fwtype` - (Optional) fwtype for object pod_maintenance_group.
-* `name_alias` - (Optional) name_alias for object pod_maintenance_group.
-* `pod_maintenance_group_type` - (Optional) component type
+* `id` - attribute id set to the Dn of pod maintenance group object.
+* `annotation` - annotation for pod maintenance group object.
+* `fwtype` - fwtype for pod maintenance group object.
+* `name_alias` - name_alias for pod maintenance group object.
+* `pod_maintenance_group_type` - component type for pod maintenance group object.

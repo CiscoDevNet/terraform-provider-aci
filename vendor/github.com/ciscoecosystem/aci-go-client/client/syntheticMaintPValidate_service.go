@@ -4,6 +4,11 @@ import (
 	"fmt"
 	"github.com/ciscoecosystem/aci-go-client/models"
 )
+// Notes: PyQuery Based Request
+// Requires a valid client APIC-Cookie to be present in the Header
+// Ways to obtain the APIC-Cooki:
+// (1) Use Username/Password for Client Authentication
+// (2) Call client.Authenticate() prior to calling this function for AppUserName+Cert based clients
 
 func (sm *ServiceManager) ListSyntheticMaintPValidateCtrlrMaintP(targetVersion string) ([]*models.MaintPValidate, error) {
 	baseurlStr := "/mqapi2/deployment.query.json?mode=validateCtrlrMaintP"
