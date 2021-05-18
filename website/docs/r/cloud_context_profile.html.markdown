@@ -14,7 +14,7 @@ Manages ACI Cloud Context Profile
 ```hcl
 
 	resource "aci_cloud_context_profile" "foocloud_context_profile" {
-		name 		                 = "%s"
+		name 		             = "cloud_ctx_prof"
 		description              = "cloud_context_profile created while acceptance testing"
 		tenant_dn                = "${aci_tenant.footenant.id}"
 		primary_cidr             = "10.230.231.1/16"
@@ -29,6 +29,7 @@ Manages ACI Cloud Context Profile
 
 ## Argument Reference ##
 * `tenant_dn` - (Required) Distinguished name of parent Tenant object.
+* `description` -(Optional) Description of object Cloud Context profile.
 * `name` - (Required) Name of Object Cloud Context profile.
 * `primary_cidr` - (Required) Primary CIDR block of Cloud Context profile. 
 * `region` - (Required) AWS region in which profile is created.
