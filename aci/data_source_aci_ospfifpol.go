@@ -31,10 +31,13 @@ func dataSourceAciOSPFInterfacePolicy() *schema.Resource {
 				Computed: true,
 			},
 
-			"ctrl": &schema.Schema{
-				Type:     schema.TypeString,
+			"ctrl": {
+				Type:     schema.TypeList,
 				Optional: true,
 				Computed: true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
 			},
 
 			"dead_intvl": &schema.Schema{
