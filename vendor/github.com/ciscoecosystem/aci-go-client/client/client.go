@@ -26,6 +26,16 @@ const authPayload = `{
 	}
 }`
 
+// Used authAppPayload to authenticate against the APIC using:
+// AppName, App Certificate DN, Signed Request
+const authAppPayload = `{
+	"aaaAppToken" : {
+		"attributes" : {
+			"appName" : "%s"
+		}
+	}
+}`
+
 // Default timeout for NGINX in ACI is 90 Seconds.
 // Allow the client to set a shorter or longer time depending on their
 // environment
@@ -47,6 +57,7 @@ type Client struct {
 	reqTimeoutSet      bool
 	reqTimeoutVal      uint32
 	proxyUrl           string
+	preserveBaseUrlRef bool
 	skipLoggingPayload bool
 	appUserName        string
 	*ServiceManager
@@ -99,9 +110,23 @@ func ProxyUrl(pUrl string) Option {
 	}
 }
 
+// HttpClient option: allows for caller to set 'httpClient' with 'Transport'.
+// When this option is set 'client.proxyUrl' option is ignored.
+func HttpClient(httpcl *http.Client) Option {
+	return func(client *Client) {
+		client.httpClient = httpcl
+	}
+}
+
 func SkipLoggingPayload(skipLoggingPayload bool) Option {
 	return func(client *Client) {
 		client.skipLoggingPayload = skipLoggingPayload
+	}
+}
+
+func PreserveBaseUrlRef(preserveBaseUrlRef bool) Option {
+	return func(client *Client) {
+		client.preserveBaseUrlRef = preserveBaseUrlRef
 	}
 }
 
@@ -120,23 +145,23 @@ func initClient(clientUrl, username string, options ...Option) *Client {
 		log.Fatal(err)
 	}
 	client := &Client{
-		BaseURL:    bUrl,
-		username:   username,
-		httpClient: http.DefaultClient,
-		MOURL:      DefaultMOURL,
+		BaseURL:  bUrl,
+		username: username,
+		MOURL:    DefaultMOURL,
 	}
 
 	for _, option := range options {
 		option(client)
 	}
 
-	transport = client.useInsecureHTTPClient(client.insecure)
-	if client.proxyUrl != "" {
-		transport = client.configProxy(transport)
-	}
-
-	client.httpClient = &http.Client{
-		Transport: transport,
+	if client.httpClient == nil {
+		transport = client.useInsecureHTTPClient(client.insecure)
+		if client.proxyUrl != "" {
+			transport = client.configProxy(transport)
+		}
+		client.httpClient = &http.Client{
+			Transport: transport,
+		}
 	}
 
 	var timeout time.Duration
@@ -217,15 +242,90 @@ func (c *Client) useInsecureHTTPClient(insecure bool) *http.Transport {
 
 }
 
-func (c *Client) MakeRestRequest(method string, path string, body *container.Container, authenticated bool) (*http.Request, error) {
+// Takes raw payload and does the http request
+//  Used for login request
+//  passwords with special chars have issues when using container
+//  for encoding/decoding
+func (c *Client) MakeRestRequestRaw(method string, rpath string, payload []byte, authenticated bool) (*http.Request, error) {
 
-	url, err := url.Parse(path)
+	pathURL, err := url.Parse(rpath)
 	if err != nil {
 		return nil, err
 	}
 
-	fURL := c.BaseURL.ResolveReference(url)
+	fURL, err := url.Parse(c.BaseURL.String())
+	if err != nil {
+		return nil, err
+	}
+
+	if c.preserveBaseUrlRef {
+		// Default is false for preserveBaseUrlRef - matching original behavior to strip out BaseURL
+		fURLStr := fURL.String() + pathURL.String()
+		fURL, err = url.Parse(fURLStr)
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		// Original behavior to strip down BaseURL
+		fURL = fURL.ResolveReference(pathURL)
+	}
+
 	var req *http.Request
+	log.Printf("[DEBUG] BaseURL: %s, pathURL: %s, fURL: %s", c.BaseURL.String(), pathURL.String(), fURL.String())
+	if method == "GET" {
+		req, err = http.NewRequest(method, fURL.String(), nil)
+	} else {
+		req, err = http.NewRequest(method, fURL.String(), bytes.NewBuffer(payload))
+	}
+	if err != nil {
+		return nil, err
+	}
+
+	if c.skipLoggingPayload {
+		log.Printf("HTTP request %s %s", method, rpath)
+	} else {
+		log.Printf("HTTP request %s %s %v", method, rpath, req)
+	}
+	if authenticated {
+		req, err = c.InjectAuthenticationHeader(req, rpath)
+		if err != nil {
+			return req, err
+		}
+	}
+
+	if !c.skipLoggingPayload {
+		log.Printf("HTTP request after injection %s %s %v", method, rpath, req)
+	}
+
+	return req, nil
+}
+
+func (c *Client) MakeRestRequest(method string, rpath string, body *container.Container, authenticated bool) (*http.Request, error) {
+
+	pathURL, err := url.Parse(rpath)
+	if err != nil {
+		return nil, err
+	}
+
+	fURL, err := url.Parse(c.BaseURL.String())
+	if err != nil {
+		return nil, err
+	}
+
+	if c.preserveBaseUrlRef {
+		// Default is false for preserveBaseUrlRef - matching original behavior to strip out BaseURL
+		fURLStr := fURL.String() + pathURL.String()
+		fURL, err = url.Parse(fURLStr)
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		// Original behavior to strip down BaseURL
+		fURL = fURL.ResolveReference(pathURL)
+	}
+
+	var req *http.Request
+	log.Printf("[DEBUG] BaseURL: %s, pathURL: %s, fURL: %s", c.BaseURL.String(), pathURL.String(), fURL.String())
 	if method == "GET" {
 		req, err = http.NewRequest(method, fURL.String(), nil)
 	} else {
@@ -236,19 +336,19 @@ func (c *Client) MakeRestRequest(method string, path string, body *container.Con
 	}
 
 	if c.skipLoggingPayload {
-		log.Printf("HTTP request %s %s", method, path)
+		log.Printf("HTTP request %s %s", method, rpath)
 	} else {
-		log.Printf("HTTP request %s %s %v", method, path, req)
+		log.Printf("HTTP request %s %s %v", method, rpath, req)
 	}
 	if authenticated {
-		req, err = c.InjectAuthenticationHeader(req, path)
+		req, err = c.InjectAuthenticationHeader(req, rpath)
 		if err != nil {
 			return req, err
 		}
 	}
 
 	if !c.skipLoggingPayload {
-		log.Printf("HTTP request after injection %s %s %v", method, path, req)
+		log.Printf("HTTP request after injection %s %s %v", method, rpath, req)
 	}
 
 	return req, nil
@@ -258,20 +358,29 @@ func (c *Client) MakeRestRequest(method string, path string, body *container.Con
 func (c *Client) Authenticate() error {
 	method := "POST"
 	path := "/api/aaaLogin.json"
+	authenticated := false
 
 	// Adding the follwing replace allows support for (1) Login Domains, where login is in the format of: apic#LOCAL\admin2
 	// (2) escapes out the password to support scenarios where the user password includes backslashes
 	escUserName := strings.ReplaceAll(c.username, `\`, `\\`)
 	escPwd := strings.ReplaceAll(c.password, `\`, `\\`)
-	body, err := container.ParseJSON([]byte(fmt.Sprintf(authPayload, escUserName, escPwd)))
+	body := []byte(fmt.Sprintf(authPayload, escUserName, escPwd))
+	if c.appUserName != "" {
+		path = "/api/requestAppToken.json"
+		body = []byte(fmt.Sprintf(authAppPayload, c.appUserName))
+		authenticated = true
+	}
 
+	c.skipLoggingPayload = true
+
+	req, err := c.MakeRestRequestRaw(method, path, body, authenticated)
 	if err != nil {
 		return err
 	}
 
-	req, err := c.MakeRestRequest(method, path, body, false)
 	obj, _, err := c.Do(req)
 
+	c.skipLoggingPayload = false
 	if err != nil {
 		return err
 	}

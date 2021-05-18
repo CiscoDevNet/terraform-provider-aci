@@ -5,6 +5,14 @@
 #   insecure = true
 # }
 
+terraform {
+  required_providers {
+    aci = {
+      source = "ciscodevnet/aci"
+    }
+  }
+}
+
 provider "aci" {
   username    = "nirav"
   private_key = "/Users/crest/go/src/github.com/ciscoecosystem/certdir/.key"

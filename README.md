@@ -30,6 +30,14 @@ If you are building the provider, follow the instructions to [install it as a pl
 
 ex.
 ```hcl
+terraform {
+  required_providers {
+    aci = {
+      source = "ciscodevnet/aci"
+    }
+  }
+}
+
 #configure provider with your cisco aci credentials.
 provider "aci" {
   # cisco-aci user name
