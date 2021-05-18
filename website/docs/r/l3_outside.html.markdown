@@ -18,7 +18,7 @@ Manages ACI L3 Outside
 		description    = "from terraform"
 		name           = "demo_l3out"
 		annotation     = "tag_l3out"
-		enforce_rtctrl = "%s"
+		enforce_rtctrl = ["export, "import"]
 		name_alias     = "alias_out"
 		target_dscp    = "unspecified"
 	}
