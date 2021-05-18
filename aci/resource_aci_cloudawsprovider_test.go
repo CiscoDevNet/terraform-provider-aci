@@ -30,6 +30,33 @@ func TestAccAciCloudAWSProvider_Basic(t *testing.T) {
 	})
 }
 
+func TestAccAciCloudAWSProvider_update(t *testing.T) {
+	var cloud_aws_provider models.CloudAWSProvider
+	description := "cloud_aws_provider created while acceptance testing"
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testAccProviders,
+		CheckDestroy: testAccCheckAciCloudAWSProviderDestroy,
+		Steps: []resource.TestStep{
+			{
+				Config: testAccCheckAciCloudAWSProviderConfig_basic(description),
+				Check: resource.ComposeTestCheckFunc(
+					testAccCheckAciCloudAWSProviderExists("aci_cloud_aws_provider.foocloud_aws_provider", &cloud_aws_provider),
+					testAccCheckAciCloudAWSProviderAttributes(description, &cloud_aws_provider),
+				),
+			},
+			{
+				Config: testAccCheckAciCloudAWSProviderConfig_basic(description),
+				Check: resource.ComposeTestCheckFunc(
+					testAccCheckAciCloudAWSProviderExists("aci_cloud_aws_provider.foocloud_aws_provider", &cloud_aws_provider),
+					testAccCheckAciCloudAWSProviderAttributes(description, &cloud_aws_provider),
+				),
+			},
+		},
+	})
+}
+
 func testAccCheckAciCloudAWSProviderConfig_basic(description string) string {
 	return fmt.Sprintf(`
 	resource "aci_tenant" "footenant" {
