@@ -137,7 +137,7 @@ func setCloudAWSProviderAttributes(cloudAwsProvider *models.CloudAWSProvider, d 
 	d.Set("name_alias", cloudAwsProviderMap["nameAlias"])
 	d.Set("provider_id", cloudAwsProviderMap["providerId"])
 	d.Set("region", cloudAwsProviderMap["region"])
-	d.Set("secret_access_key", cloudAwsProviderMap["secretAccessKey"])
+	//d.Set("secret_access_key", cloudAwsProviderMap["secretAccessKey"])
 	return d
 }
 
