@@ -121,9 +121,9 @@ func resourceAciCloudCIDRPoolCreate(d *schema.ResourceData, m interface{}) error
 	CloudContextProfileDn := d.Get("cloud_context_profile_dn").(string)
 
 	cloudCidrAttr := models.CloudCIDRPoolAttributes{}
-	if Addr, ok := d.GetOk("addr"); ok {
-		cloudCidrAttr.Addr = Addr.(string)
-	}
+	// if Addr, ok := d.GetOk("addr"); ok {
+	// 	cloudCidrAttr.Addr = Addr.(string)
+	// }
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		cloudCidrAttr.Annotation = Annotation.(string)
 	} else {
@@ -162,9 +162,9 @@ func resourceAciCloudCIDRPoolUpdate(d *schema.ResourceData, m interface{}) error
 	CloudContextProfileDn := d.Get("cloud_context_profile_dn").(string)
 
 	cloudCidrAttr := models.CloudCIDRPoolAttributes{}
-	if Addr, ok := d.GetOk("addr"); ok {
-		cloudCidrAttr.Addr = Addr.(string)
-	}
+	// if Addr, ok := d.GetOk("addr"); ok {
+	// 	cloudCidrAttr.Addr = Addr.(string)
+	// }
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		cloudCidrAttr.Annotation = Annotation.(string)
 	} else {
