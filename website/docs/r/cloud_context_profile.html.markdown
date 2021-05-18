@@ -29,21 +29,21 @@ Manages ACI Cloud Context Profile
 
 ## Argument Reference ##
 * `tenant_dn` - (Required) Distinguished name of parent Tenant object.
-* `name` - (Required) name of Object cloud_context_profile.
+* `name` - (Required) Name of Object Cloud Context profile.
 * `primary_cidr` - (Required) Primary CIDR block of Cloud Context profile. 
 * `region` - (Required) AWS region in which profile is created.
-* `cloud_vendor` - (Required) name of the vendor. e.g. "aws", "azure".
-* `annotation` - (Optional) annotation for object cloud_context_profile.
-* `name_alias` - (Optional) name_alias for object cloud_context_profile.
+* `cloud_vendor` - (Required) Name of the vendor. e.g. "aws", "azure".
+* `annotation` - (Optional) Annotation for object Cloud Context profile.
+* `name_alias` - (Optional) Name alias for object Cloud Context profile.
 * `type` - (Optional) The specific type of the object or component. Allowed values are "regular" and "shadow". Default is "regular".
 
-* `hub_network` - (Optional) hub network Dn which enables Transit Gateway.
+* `hub_network` - (Optional) Hub network Dn which enables Transit Gateway.
 
-* `relation_cloud_rs_ctx_to_flow_log` - (Optional) Relation to class cloudAwsFlowLogPol. Cardinality - N_TO_ONE. Type - String.
+* `relation_cloud_rs_ctx_to_flow_log` - (Optional) Relation to class cloudAwsFlowLogPol. Cardinality - N TO ONE. Type - String.
                 
-* `relation_cloud_rs_to_ctx` - (Required) Relation to class fvCtx. Cardinality - N_TO_ONE. Type - String.
+* `relation_cloud_rs_to_ctx` - (Required) Relation to class fvCtx. Cardinality - N TO ONE. Type - String.
                 
-* `relation_cloud_rs_ctx_profile_to_region` - (Optional) Relation to class cloudRegion. Cardinality - N_TO_ONE. Type - String.
+* `relation_cloud_rs_ctx_profile_to_region` - (Optional) Relation to class cloudRegion. Cardinality - N TO ONE. Type - String.
                 
 
 

@@ -1,20 +1,22 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciCloudContextProfile() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciCloudContextProfileCreate,
-		Update: resourceAciCloudContextProfileUpdate,
-		Read:   resourceAciCloudContextProfileRead,
-		Delete: resourceAciCloudContextProfileDelete,
+		CreateContext: resourceAciCloudContextProfileCreate,
+		UpdateContext: resourceAciCloudContextProfileUpdate,
+		ReadContext:   resourceAciCloudContextProfileRead,
+		DeleteContext: resourceAciCloudContextProfileDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciCloudContextProfileImport,
@@ -153,7 +155,7 @@ func resourceAciCloudContextProfileImport(d *schema.ResourceData, m interface{})
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciCloudContextProfileCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciCloudContextProfileCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
 
@@ -203,7 +205,7 @@ func resourceAciCloudContextProfileCreate(d *schema.ResourceData, m interface{})
 	d.Partial(true)
 	err := checkTDn(aciClient, checkDns)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Partial(false)
 
@@ -217,7 +219,7 @@ func resourceAciCloudContextProfileCreate(d *schema.ResourceData, m interface{})
 	cloudCtxProfile, err = aciClient.CreateCloudContextProfile(name, TenantDn, desc, cloudCtxProfileAttr, PrimaryCIDR, Region, vendor, cloudRsCtx)
 	//err := aciClient.Save(cloudCtxProfile)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	if relationTocloudRsCtxToFlowLog, ok := d.GetOk("relation_cloud_rs_ctx_to_flow_log"); ok {
@@ -225,7 +227,7 @@ func resourceAciCloudContextProfileCreate(d *schema.ResourceData, m interface{})
 		relationParamName := GetMOName(relationParam)
 		err = aciClient.CreateRelationcloudRsCtxToFlowLogFromCloudContextProfile(cloudCtxProfile.DistinguishedName, relationParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 
 	}
@@ -233,22 +235,22 @@ func resourceAciCloudContextProfileCreate(d *schema.ResourceData, m interface{})
 		relationParam := relationTocloudRsCtxProfileToRegion.(string)
 		err = aciClient.CreateRelationcloudRsCtxProfileToRegionFromCloudContextProfile(cloudCtxProfile.DistinguishedName, relationParam)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 
 	}
 	if temp, ok := d.GetOk("hub_network"); ok {
 		err := aciClient.CreateRelationcloudRsCtxProfileTocloudRsCtxProfileToGatewayRouterP(cloudCtxProfile.DistinguishedName, temp.(string))
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 	}
 
 	d.SetId(cloudCtxProfile.DistinguishedName)
-	return resourceAciCloudContextProfileRead(d, m)
+	return resourceAciCloudContextProfileRead(ctx, d, m)
 }
 
-func resourceAciCloudContextProfileUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciCloudContextProfileUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
 
@@ -301,7 +303,7 @@ func resourceAciCloudContextProfileUpdate(d *schema.ResourceData, m interface{})
 	d.Partial(true)
 	err := checkTDn(aciClient, checkDns)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Partial(false)
 
@@ -317,7 +319,7 @@ func resourceAciCloudContextProfileUpdate(d *schema.ResourceData, m interface{})
 	//err := aciClient.Save(cloudCtxProfile)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	if d.HasChange("relation_cloud_rs_ctx_to_flow_log") {
@@ -325,11 +327,11 @@ func resourceAciCloudContextProfileUpdate(d *schema.ResourceData, m interface{})
 		newRelParamName := GetMOName(newRelParam.(string))
 		err = aciClient.DeleteRelationcloudRsCtxToFlowLogFromCloudContextProfile(cloudCtxProfile.DistinguishedName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 		err = aciClient.CreateRelationcloudRsCtxToFlowLogFromCloudContextProfile(cloudCtxProfile.DistinguishedName, newRelParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 
 	}
@@ -337,11 +339,11 @@ func resourceAciCloudContextProfileUpdate(d *schema.ResourceData, m interface{})
 		_, newRelParam := d.GetChange("relation_cloud_rs_ctx_profile_to_region")
 		err = aciClient.DeleteRelationcloudRsCtxProfileToRegionFromCloudContextProfile(cloudCtxProfile.DistinguishedName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 		err = aciClient.CreateRelationcloudRsCtxProfileToRegionFromCloudContextProfile(cloudCtxProfile.DistinguishedName, newRelParam.(string))
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 
 	}
@@ -349,28 +351,28 @@ func resourceAciCloudContextProfileUpdate(d *schema.ResourceData, m interface{})
 		oldRelParam, newRelParam := d.GetChange("hub_network")
 		err = aciClient.DeleteRelationcloudRsCtxProfileTocloudRsCtxProfileToGatewayRouterP(cloudCtxProfile.DistinguishedName, oldRelParam.(string))
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 		err = aciClient.CreateRelationcloudRsCtxProfileTocloudRsCtxProfileToGatewayRouterP(cloudCtxProfile.DistinguishedName, newRelParam.(string))
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 
 	}
 
 	d.SetId(cloudCtxProfile.DistinguishedName)
-	return resourceAciCloudContextProfileRead(d, m)
+	return resourceAciCloudContextProfileRead(ctx, d, m)
 
 }
 
-func resourceAciCloudContextProfileRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciCloudContextProfileRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	aciClient := m.(*client.Client)
 
 	dn := d.Id()
 	cloudCtxProfile, err := getRemoteCloudContextProfile(aciClient, dn)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	setCloudContextProfileAttributes(cloudCtxProfile, d)
 
@@ -384,14 +386,14 @@ func resourceAciCloudContextProfileRead(d *schema.ResourceData, m interface{}) e
 	return nil
 }
 
-func resourceAciCloudContextProfileDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciCloudContextProfileDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "cloudCtxProfile")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
 }
