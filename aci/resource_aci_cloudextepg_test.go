@@ -26,11 +26,6 @@ func TestAccAciCloudExternalEPg_Basic(t *testing.T) {
 					testAccCheckAciCloudExternalEPgAttributes(description, "All", &cloud_external_epg),
 				),
 			},
-			{
-				ResourceName:      "aci_cloud_external_epg",
-				ImportState:       true,
-				ImportStateVerify: true,
-			},
 		},
 	})
 }
