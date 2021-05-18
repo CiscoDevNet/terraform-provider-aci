@@ -14,7 +14,7 @@ Data source for ACI Cloud CIDR Pool.
 ```hcl
 data "aci_cloud_cidr_pool" "dev_cloud_cidr" {
 
-  cloud_context_profile_dn  = aci_cloud_context_profile.dev_ctx_prof.id
+  cloud_context_profile_dn  = "${aci_cloud_context_profile.dev_ctx_prof.id}"
   addr  = "10.0.1.10/28"
 }
 ```
@@ -27,7 +27,6 @@ data "aci_cloud_cidr_pool" "dev_cloud_cidr" {
 ## Attribute Reference
 
 * `id` - Attribute id set to the Dn of the Cloud CIDR Pool.
-* `description` - (Optional) Description for object Cloud CIDR Pool.
-* `annotation` - (Optional) Annotation for object Cloud CIDR Pool.
-* `name_alias` - (Optional) Name alias for object Cloud CIDR Pool.
+* `annotation` - (Optional) annotation for object cloud_cidr_pool.
+* `name_alias` - (Optional) name_alias for object cloud_cidr_pool.
 * `primary` - (Optional) This will represent whether CIDR is primary CIDR or not.

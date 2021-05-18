@@ -13,7 +13,7 @@ Data source for ACI Cloud AWS Provider
 
 ```hcl
 data "aci_cloud_aws_provider" "aws_prov" {
-  tenant_dn  = aci_tenant.dev_tenant.id
+  tenant_dn  = "${aci_tenant.dev_tenant.id}"
 }
 ```
 ## Argument Reference ##
@@ -24,15 +24,14 @@ data "aci_cloud_aws_provider" "aws_prov" {
 ## Attribute Reference
 
 * `id` - Attribute id set to the Dn of the Cloud AWS Provider.
-* `access_key_id` - (Optional) access_key_id for the AWS account provided in the account id field.
-* `account_id` - (Optional) AWS account-id to manage with cloud APIC.
-* `description` - (Optional) Description for object cloud aws provider.
-* `annotation` - (Optional) Annotation for object cloud aws provider.
-* `email` - (Optional) Email address of the local user.
-* `http_proxy` - (Optional) Http proxy for object cloud aws provider.
-* `is_account_in_org` - (Optional) Flag to decide whether the account is in the organization or not.
-* `is_trusted` - (Optional) Whether the account is trusted with Tenant infra account.
-* `name_alias` - (Optional) Name alias for object cloud aws provider.
-* `provider_id` - (Optional) Provider id for object cloud aws provider.
-* `region` - (Optional) Which AWS region to manage.
-* `secret_access_key` - (Optional) Secret access key for the AWS account provided in the account id field.
+* `access_key_id` - (Optional) access_key_id for object cloud_aws_provider.
+* `account_id` - (Optional) account_id for object cloud_aws_provider.
+* `annotation` - (Optional) annotation for object cloud_aws_provider.
+* `email` - (Optional) email address of the local user
+* `http_proxy` - (Optional) http_proxy for object cloud_aws_provider.
+* `is_account_in_org` - (Optional) is_account_in_org for object cloud_aws_provider.
+* `is_trusted` - (Optional) is_trusted for object cloud_aws_provider.
+* `name_alias` - (Optional) name_alias for object cloud_aws_provider.
+* `provider_id` - (Optional) provider_id for object cloud_aws_provider.
+* `region` - (Optional) region for object cloud_aws_provider.
+* `secret_access_key` - (Optional) secret_access_key for object cloud_aws_provider.

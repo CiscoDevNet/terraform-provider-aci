@@ -1,22 +1,20 @@
 package aci
 
 import (
-	"context"
 	"fmt"
 	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func resourceAciCloudApplicationcontainer() *schema.Resource {
 	return &schema.Resource{
-		CreateContext: resourceAciCloudApplicationcontainerCreate,
-		UpdateContext: resourceAciCloudApplicationcontainerUpdate,
-		ReadContext:   resourceAciCloudApplicationcontainerRead,
-		DeleteContext: resourceAciCloudApplicationcontainerDelete,
+		Create: resourceAciCloudApplicationcontainerCreate,
+		Update: resourceAciCloudApplicationcontainerUpdate,
+		Read:   resourceAciCloudApplicationcontainerRead,
+		Delete: resourceAciCloudApplicationcontainerDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciCloudApplicationcontainerImport,
@@ -99,7 +97,7 @@ func resourceAciCloudApplicationcontainerImport(d *schema.ResourceData, m interf
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciCloudApplicationcontainerCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceAciCloudApplicationcontainerCreate(d *schema.ResourceData, m interface{}) error {
 	log.Printf("[DEBUG] CloudApplicationcontainer: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -121,16 +119,19 @@ func resourceAciCloudApplicationcontainerCreate(ctx context.Context, d *schema.R
 
 	err := aciClient.Save(cloudApp)
 	if err != nil {
-		return diag.FromErr(err)
+		return err
 	}
+	d.Partial(true)
+
+	d.Partial(false)
 
 	d.SetId(cloudApp.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciCloudApplicationcontainerRead(ctx, d, m)
+	return resourceAciCloudApplicationcontainerRead(d, m)
 }
 
-func resourceAciCloudApplicationcontainerUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceAciCloudApplicationcontainerUpdate(d *schema.ResourceData, m interface{}) error {
 	log.Printf("[DEBUG] CloudApplicationcontainer: Beginning Update")
 
 	aciClient := m.(*client.Client)
@@ -156,17 +157,20 @@ func resourceAciCloudApplicationcontainerUpdate(ctx context.Context, d *schema.R
 	err := aciClient.Save(cloudApp)
 
 	if err != nil {
-		return diag.FromErr(err)
+		return err
 	}
+	d.Partial(true)
+
+	d.Partial(false)
 
 	d.SetId(cloudApp.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciCloudApplicationcontainerRead(ctx, d, m)
+	return resourceAciCloudApplicationcontainerRead(d, m)
 
 }
 
-func resourceAciCloudApplicationcontainerRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceAciCloudApplicationcontainerRead(d *schema.ResourceData, m interface{}) error {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -185,18 +189,18 @@ func resourceAciCloudApplicationcontainerRead(ctx context.Context, d *schema.Res
 	return nil
 }
 
-func resourceAciCloudApplicationcontainerDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceAciCloudApplicationcontainerDelete(d *schema.ResourceData, m interface{}) error {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "cloudApp")
 	if err != nil {
-		return diag.FromErr(err)
+		return err
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return diag.FromErr(err)
+	return err
 }

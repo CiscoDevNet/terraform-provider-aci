@@ -1,23 +1,21 @@
 package aci
 
 import (
-	"context"
 	"fmt"
 	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciCloudAWSProvider() *schema.Resource {
 	return &schema.Resource{
-		CreateContext: resourceAciCloudAWSProviderCreate,
-		UpdateContext: resourceAciCloudAWSProviderUpdate,
-		ReadContext:   resourceAciCloudAWSProviderRead,
-		DeleteContext: resourceAciCloudAWSProviderDelete,
+		Create: resourceAciCloudAWSProviderCreate,
+		Update: resourceAciCloudAWSProviderUpdate,
+		Read:   resourceAciCloudAWSProviderRead,
+		Delete: resourceAciCloudAWSProviderDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciCloudAWSProviderImport,
@@ -137,7 +135,7 @@ func setCloudAWSProviderAttributes(cloudAwsProvider *models.CloudAWSProvider, d 
 	d.Set("name_alias", cloudAwsProviderMap["nameAlias"])
 	d.Set("provider_id", cloudAwsProviderMap["providerId"])
 	d.Set("region", cloudAwsProviderMap["region"])
-	//d.Set("secret_access_key", cloudAwsProviderMap["secretAccessKey"])
+	d.Set("secret_access_key", cloudAwsProviderMap["secretAccessKey"])
 	return d
 }
 
@@ -161,7 +159,7 @@ func resourceAciCloudAWSProviderImport(d *schema.ResourceData, m interface{}) ([
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciCloudAWSProviderCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceAciCloudAWSProviderCreate(d *schema.ResourceData, m interface{}) error {
 	log.Printf("[DEBUG] CloudAWSProvider: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -207,16 +205,18 @@ func resourceAciCloudAWSProviderCreate(ctx context.Context, d *schema.ResourceDa
 
 	err := aciClient.Save(cloudAwsProvider)
 	if err != nil {
-		return diag.FromErr(err)
+		return err
 	}
+	d.Partial(true)
+	d.Partial(false)
 
 	d.SetId(cloudAwsProvider.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciCloudAWSProviderRead(ctx, d, m)
+	return resourceAciCloudAWSProviderRead(d, m)
 }
 
-func resourceAciCloudAWSProviderUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceAciCloudAWSProviderUpdate(d *schema.ResourceData, m interface{}) error {
 	log.Printf("[DEBUG] CloudAWSProvider: Beginning Update")
 
 	aciClient := m.(*client.Client)
@@ -267,7 +267,7 @@ func resourceAciCloudAWSProviderUpdate(ctx context.Context, d *schema.ResourceDa
 	err := aciClient.Save(cloudAwsProvider)
 
 	if err != nil {
-		return diag.FromErr(err)
+		return err
 	}
 	d.Partial(true)
 	d.Partial(false)
@@ -275,11 +275,11 @@ func resourceAciCloudAWSProviderUpdate(ctx context.Context, d *schema.ResourceDa
 	d.SetId(cloudAwsProvider.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciCloudAWSProviderRead(ctx, d, m)
+	return resourceAciCloudAWSProviderRead(d, m)
 
 }
 
-func resourceAciCloudAWSProviderRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceAciCloudAWSProviderRead(d *schema.ResourceData, m interface{}) error {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -298,18 +298,18 @@ func resourceAciCloudAWSProviderRead(ctx context.Context, d *schema.ResourceData
 	return nil
 }
 
-func resourceAciCloudAWSProviderDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceAciCloudAWSProviderDelete(d *schema.ResourceData, m interface{}) error {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "cloudAwsProvider")
 	if err != nil {
-		return diag.FromErr(err)
+		return err
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return diag.FromErr(err)
+	return err
 }

@@ -1,23 +1,21 @@
 package aci
 
 import (
-	"context"
 	"fmt"
 	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciCloudCIDRPool() *schema.Resource {
 	return &schema.Resource{
-		CreateContext: resourceAciCloudCIDRPoolCreate,
-		UpdateContext: resourceAciCloudCIDRPoolUpdate,
-		ReadContext:   resourceAciCloudCIDRPoolRead,
-		DeleteContext: resourceAciCloudCIDRPoolDelete,
+		Create: resourceAciCloudCIDRPoolCreate,
+		Update: resourceAciCloudCIDRPoolUpdate,
+		Read:   resourceAciCloudCIDRPoolRead,
+		Delete: resourceAciCloudCIDRPoolDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciCloudCIDRPoolImport,
@@ -82,6 +80,8 @@ func setCloudCIDRPoolAttributes(cloudCidr *models.CloudCIDRPool, d *schema.Resou
 	cloudCidrMap, _ := cloudCidr.ToMap()
 
 	d.Set("addr", cloudCidrMap["addr"])
+
+	d.Set("addr", cloudCidrMap["addr"])
 	d.Set("annotation", cloudCidrMap["annotation"])
 	d.Set("name_alias", cloudCidrMap["nameAlias"])
 	d.Set("primary", cloudCidrMap["primary"])
@@ -111,7 +111,7 @@ func resourceAciCloudCIDRPoolImport(d *schema.ResourceData, m interface{}) ([]*s
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciCloudCIDRPoolCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceAciCloudCIDRPoolCreate(d *schema.ResourceData, m interface{}) error {
 	log.Printf("[DEBUG] CloudCIDRPool: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -139,16 +139,19 @@ func resourceAciCloudCIDRPoolCreate(ctx context.Context, d *schema.ResourceData,
 
 	err := aciClient.Save(cloudCidr)
 	if err != nil {
-		return diag.FromErr(err)
+		return err
 	}
+	d.Partial(true)
+
+	d.Partial(false)
 
 	d.SetId(cloudCidr.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciCloudCIDRPoolRead(ctx, d, m)
+	return resourceAciCloudCIDRPoolRead(d, m)
 }
 
-func resourceAciCloudCIDRPoolUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceAciCloudCIDRPoolUpdate(d *schema.ResourceData, m interface{}) error {
 	log.Printf("[DEBUG] CloudCIDRPool: Beginning Update")
 
 	aciClient := m.(*client.Client)
@@ -180,17 +183,20 @@ func resourceAciCloudCIDRPoolUpdate(ctx context.Context, d *schema.ResourceData,
 	err := aciClient.Save(cloudCidr)
 
 	if err != nil {
-		return diag.FromErr(err)
+		return err
 	}
+	d.Partial(true)
+
+	d.Partial(false)
 
 	d.SetId(cloudCidr.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciCloudCIDRPoolRead(ctx, d, m)
+	return resourceAciCloudCIDRPoolRead(d, m)
 
 }
 
-func resourceAciCloudCIDRPoolRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceAciCloudCIDRPoolRead(d *schema.ResourceData, m interface{}) error {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -209,18 +215,18 @@ func resourceAciCloudCIDRPoolRead(ctx context.Context, d *schema.ResourceData, m
 	return nil
 }
 
-func resourceAciCloudCIDRPoolDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceAciCloudCIDRPoolDelete(d *schema.ResourceData, m interface{}) error {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "cloudCidr")
 	if err != nil {
-		return diag.FromErr(err)
+		return err
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return diag.FromErr(err)
+	return err
 }

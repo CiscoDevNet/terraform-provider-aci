@@ -26,6 +26,11 @@ func TestAccAciCloudCIDRPool_Basic(t *testing.T) {
 					testAccCheckAciCloudCIDRPoolAttributes(description, "alias_cidr", &cloud_cidr_pool),
 				),
 			},
+			{
+				ResourceName:      "aci_cloud_cidr_pool",
+				ImportState:       true,
+				ImportStateVerify: true,
+			},
 		},
 	})
 }
@@ -67,27 +72,26 @@ func testAccCheckAciCloudCIDRPoolConfig_basic(description, name_alias string) st
 	}
 
 	resource "aci_vrf" "vrf1" {
-		tenant_dn = aci_tenant.footenant.id
+		tenant_dn = "${aci_tenant.footenant.id}"
 		name      = "acc-vrf"
 	}
 
 	resource "aci_cloud_context_profile" "foocloud_context_profile" {
 		name 		             = "ctx_prof_cidr"
 		description              = "cloud_context_profile created while acceptance testing"
-		tenant_dn                = aci_tenant.footenant.id
+		tenant_dn                = "${aci_tenant.footenant.id}"
 		primary_cidr             = "10.230.231.1/16"
 		region                   = "us-west-1"
-		cloud_vendor			 = "aws"
-		relation_cloud_rs_to_ctx = aci_vrf.vrf1.id
+		relation_cloud_rs_to_ctx = "${aci_vrf.vrf1.id}"
 	}
 
 	resource "aci_cloud_cidr_pool" "foocloud_cidr_pool" {
-		cloud_context_profile_dn = aci_cloud_context_profile.foocloud_context_profile.id
+		cloud_context_profile_dn = "${aci_cloud_context_profile.foocloud_context_profile.id}"
 		description              = "%s"
-		addr                     = "10.231.231.1/16"
+		addr                     = "10.0.1.10/28"
 		annotation               = "tag_cidr"
 		name_alias               = "%s"
-		primary                  = "no"
+		primary                  = "yes"
 	}
 	  
 	`, description, name_alias)
@@ -148,7 +152,7 @@ func testAccCheckAciCloudCIDRPoolAttributes(description, name_alias string, clou
 			return fmt.Errorf("Bad cloud_cidr_pool Description %s", cloud_cidr_pool.Description)
 		}
 
-		if "10.231.231.1/16" != cloud_cidr_pool.Addr {
+		if "10.0.1.10/28" != cloud_cidr_pool.Addr {
 			return fmt.Errorf("Bad cloud_cidr_pool addr %s", cloud_cidr_pool.Addr)
 		}
 
@@ -160,7 +164,7 @@ func testAccCheckAciCloudCIDRPoolAttributes(description, name_alias string, clou
 			return fmt.Errorf("Bad cloud_cidr_pool name_alias %s", cloud_cidr_pool.NameAlias)
 		}
 
-		if "no" != cloud_cidr_pool.Primary {
+		if "yes" != cloud_cidr_pool.Primary {
 			return fmt.Errorf("Bad cloud_cidr_pool primary %s", cloud_cidr_pool.Primary)
 		}
 

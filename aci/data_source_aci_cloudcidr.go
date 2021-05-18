@@ -1,18 +1,16 @@
 package aci
 
 import (
-	"context"
 	"fmt"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func dataSourceAciCloudCIDRPool() *schema.Resource {
 	return &schema.Resource{
 
-		ReadContext: dataSourceAciCloudCIDRPoolRead,
+		Read: dataSourceAciCloudCIDRPoolRead,
 
 		SchemaVersion: 1,
 
@@ -42,7 +40,7 @@ func dataSourceAciCloudCIDRPool() *schema.Resource {
 	}
 }
 
-func dataSourceAciCloudCIDRPoolRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func dataSourceAciCloudCIDRPoolRead(d *schema.ResourceData, m interface{}) error {
 	aciClient := m.(*client.Client)
 
 	addr := d.Get("addr").(string)
@@ -55,7 +53,7 @@ func dataSourceAciCloudCIDRPoolRead(ctx context.Context, d *schema.ResourceData,
 	cloudCidr, err := getRemoteCloudCIDRPool(aciClient, dn)
 
 	if err != nil {
-		return diag.FromErr(err)
+		return err
 	}
 	d.SetId(dn)
 	setCloudCIDRPoolAttributes(cloudCidr, d)

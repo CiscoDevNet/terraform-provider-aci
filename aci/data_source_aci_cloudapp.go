@@ -1,18 +1,16 @@
 package aci
 
 import (
-	"context"
 	"fmt"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func dataSourceAciCloudApplicationcontainer() *schema.Resource {
 	return &schema.Resource{
 
-		ReadContext: dataSourceAciCloudApplicationcontainerRead,
+		Read: dataSourceAciCloudApplicationcontainerRead,
 
 		SchemaVersion: 1,
 
@@ -36,7 +34,7 @@ func dataSourceAciCloudApplicationcontainer() *schema.Resource {
 	}
 }
 
-func dataSourceAciCloudApplicationcontainerRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func dataSourceAciCloudApplicationcontainerRead(d *schema.ResourceData, m interface{}) error {
 	aciClient := m.(*client.Client)
 
 	name := d.Get("name").(string)
@@ -49,7 +47,7 @@ func dataSourceAciCloudApplicationcontainerRead(ctx context.Context, d *schema.R
 	cloudApp, err := getRemoteCloudApplicationcontainer(aciClient, dn)
 
 	if err != nil {
-		return diag.FromErr(err)
+		return err
 	}
 	d.SetId(dn)
 	setCloudApplicationcontainerAttributes(cloudApp, d)
