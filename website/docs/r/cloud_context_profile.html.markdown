@@ -14,14 +14,14 @@ Manages ACI Cloud Context Profile
 ```hcl
 
 	resource "aci_cloud_context_profile" "foocloud_context_profile" {
-		name 		             = "cloud_ctx_prof"
+		name 		         = "cloud_ctx_prof"
 		description              = "cloud_context_profile created while acceptance testing"
-		tenant_dn                = "${aci_tenant.footenant.id}"
+		tenant_dn                = aci_tenant.footenant.id
 		primary_cidr             = "10.230.231.1/16"
 		region                   = "us-west-1"
-		cloud_vendor			 = "aws"
-		relation_cloud_rs_to_ctx = "${aci_vrf.vrf1.id}"
-		hub_network  			 =  "uni/tn-infra/gwrouterp-default"
+		cloud_vendor	         = "aws"
+		relation_cloud_rs_to_ctx = aci_vrf.example.id
+		hub_network  		 = "uni/tn-infra/gwrouterp-default"
 	}
 
 ```
