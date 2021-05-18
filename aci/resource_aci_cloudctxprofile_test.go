@@ -37,7 +37,7 @@ func testAccCheckAciCloudContextProfileConfig_basic(fv_tenant_name, cloud_ctx_pr
 	return fmt.Sprintf(`
 
 	resource "aci_tenant" "footenant" {
-		name 		= "%s"
+		name 		= "%s" 
 		description = "tenant created while acceptance testing"
 
 	}

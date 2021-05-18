@@ -23,17 +23,16 @@ data "aci_cloud_context_profile" "sample_prof" {
 
 ## Argument Reference ##
 * `tenant_dn` - (Required) Distinguished name of parent Tenant object.
-* `name` - (Required) name of Object cloud-ctx-profile.
-
-
+* `name` - (Required) Name of Object Cloud Context profile.
 
 ## Attribute Reference
 
 * `id` - Attribute id set to the Dn of the Cloud Context profile.
-* `annotation` - annotation for object Cloud Context profile.
-* `name_alias` - name_alias for object Cloud Context Profile.
+* `description` - Description of object Cloud Context profile.
+* `annotation` - Annotation for object Cloud Context profile.
+* `name_alias` - Name_alias for object Cloud Context Profile.
 * `type` - The specific type of the object or component. 
 * `primary_cidr` - Primary CIDR block of Cloud Context profile. 
 * `region` - AWS region in which profile is created.
-* `hub_network` - hub network Dn which enables Transit Gateway.
+* `hub_network` - Hub network Dn which enables Transit Gateway.
 
