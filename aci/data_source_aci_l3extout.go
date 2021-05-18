@@ -25,10 +25,13 @@ func dataSourceAciL3Outside() *schema.Resource {
 				Required: true,
 			},
 
-			"enforce_rtctrl": &schema.Schema{
-				Type:     schema.TypeString,
+			"enforce_rtctrl": {
+				Type:     schema.TypeList,
 				Optional: true,
 				Computed: true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
 			},
 
 			"name_alias": &schema.Schema{
