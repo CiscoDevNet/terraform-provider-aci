@@ -1,16 +1,19 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
+	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func dataSourceAciCloudAvailabilityZone() *schema.Resource {
 	return &schema.Resource{
 
-		Read: dataSourceAciCloudAvailabilityZoneRead,
+		ReadContext: dataSourceAciCloudAvailabilityZoneRead,
 
 		SchemaVersion: 1,
 
@@ -34,7 +37,7 @@ func dataSourceAciCloudAvailabilityZone() *schema.Resource {
 	}
 }
 
-func dataSourceAciCloudAvailabilityZoneRead(d *schema.ResourceData, m interface{}) error {
+func dataSourceAciCloudAvailabilityZoneRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	aciClient := m.(*client.Client)
 
 	name := d.Get("name").(string)
@@ -52,4 +55,32 @@ func dataSourceAciCloudAvailabilityZoneRead(d *schema.ResourceData, m interface{
 	d.SetId(dn)
 	setCloudAvailabilityZoneAttributes(cloudZone, d)
 	return nil
+}
+func getRemoteCloudAvailabilityZone(client *client.Client, dn string) (*models.CloudAvailabilityZone, error) {
+	cloudZoneCont, err := client.Get(dn)
+	if err != nil {
+		return nil, err
+	}
+
+	cloudZone := models.CloudAvailabilityZoneFromContainer(cloudZoneCont)
+
+	if cloudZone.DistinguishedName == "" {
+		return nil, fmt.Errorf("CloudAvailabilityZone %s not found", cloudZone.DistinguishedName)
+	}
+
+	return cloudZone, nil
+}
+
+func setCloudAvailabilityZoneAttributes(cloudZone *models.CloudAvailabilityZone, d *schema.ResourceData) *schema.ResourceData {
+	dn := d.Id()
+	d.SetId(cloudZone.DistinguishedName)
+	if dn != cloudZone.DistinguishedName {
+		d.Set("cloud_providers_region_dn", "")
+	}
+	cloudZoneMap, _ := cloudZone.ToMap()
+
+	d.Set("name", cloudZoneMap["name"])
+
+	d.Set("name_alias", cloudZoneMap["nameAlias"])
+	return d
 }

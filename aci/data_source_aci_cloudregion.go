@@ -1,16 +1,19 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
+	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func dataSourceAciCloudProvidersRegion() *schema.Resource {
 	return &schema.Resource{
 
-		Read: dataSourceAciCloudProvidersRegionRead,
+		ReadContext: dataSourceAciCloudProvidersRegionRead,
 
 		SchemaVersion: 1,
 
@@ -40,7 +43,7 @@ func dataSourceAciCloudProvidersRegion() *schema.Resource {
 	}
 }
 
-func dataSourceAciCloudProvidersRegionRead(d *schema.ResourceData, m interface{}) error {
+func dataSourceAciCloudProvidersRegionRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	aciClient := m.(*client.Client)
 
 	name := d.Get("name").(string)
@@ -53,9 +56,38 @@ func dataSourceAciCloudProvidersRegionRead(d *schema.ResourceData, m interface{}
 	cloudRegion, err := getRemoteCloudProvidersRegion(aciClient, dn)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.SetId(dn)
 	setCloudProvidersRegionAttributes(cloudRegion, d)
 	return nil
+}
+func getRemoteCloudProvidersRegion(client *client.Client, dn string) (*models.CloudProvidersRegion, error) {
+	cloudRegionCont, err := client.Get(dn)
+	if err != nil {
+		return nil, err
+	}
+
+	cloudRegion := models.CloudProvidersRegionFromContainer(cloudRegionCont)
+
+	if cloudRegion.DistinguishedName == "" {
+		return nil, fmt.Errorf("CloudProvidersRegion %s not found", cloudRegion.DistinguishedName)
+	}
+
+	return cloudRegion, nil
+}
+
+func setCloudProvidersRegionAttributes(cloudRegion *models.CloudProvidersRegion, d *schema.ResourceData) *schema.ResourceData {
+	dn := d.Id()
+	d.SetId(cloudRegion.DistinguishedName)
+	if dn != cloudRegion.DistinguishedName {
+		d.Set("cloud_provider_profile_dn", "")
+	}
+	cloudRegionMap, _ := cloudRegion.ToMap()
+
+	d.Set("name", cloudRegionMap["name"])
+
+	d.Set("admin_st", cloudRegionMap["adminSt"])
+	d.Set("name_alias", cloudRegionMap["nameAlias"])
+	return d
 }
