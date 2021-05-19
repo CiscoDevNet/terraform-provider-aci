@@ -115,7 +115,6 @@ func setCloudSubnetAttributes(cloudSubnet *models.CloudSubnet, d *schema.Resourc
 	d.Set("name", cloudSubnetMap["name"])
 
 	d.Set("annotation", cloudSubnetMap["annotation"])
-	d.Set("ip", cloudSubnetMap["ip"])
 	d.Set("name_alias", cloudSubnetMap["nameAlias"])
 	d.Set("scope", cloudSubnetMap["scope"])
 	d.Set("usage", cloudSubnetMap["usage"])

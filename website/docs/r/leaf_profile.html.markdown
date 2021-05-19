@@ -58,8 +58,8 @@ Allowed values: "ALL", "range", "ALL_IN_POD"
 
 * `leaf_selector.node_block` - (Optional) Node block to attach with leaf selector.
 * `leaf_selector.node_block.name` - (Required) Name of the node block.
-* `leaf_selector.node_block.from_` - (Optional) From Node ID. Range from 101 to 110.
-* `leaf_selector.node_block.to_` - (Optional) To node ID. Range from 101 to 110.
+* `leaf_selector.node_block.from_` - (Optional) From Node ID. Default value is 1.
+* `leaf_selector.node_block.to_` - (Optional) To node ID. Default value is 1.
 
 * `relation_infra_rs_acc_card_p` - (Optional) Relation to class infraAccCardP. Cardinality - N_TO_M. Type - Set of String.
                 

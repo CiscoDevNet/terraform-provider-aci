@@ -50,7 +50,7 @@ func dataSourceAciCloudAvailabilityZoneRead(ctx context.Context, d *schema.Resou
 	cloudZone, err := getRemoteCloudAvailabilityZone(aciClient, dn)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.SetId(dn)
 	setCloudAvailabilityZoneAttributes(cloudZone, d)
