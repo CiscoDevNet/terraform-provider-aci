@@ -98,7 +98,6 @@ func Provider() *schema.Provider {
 			"aci_cloud_endpoint_selectorfor_external_epgs": resourceAciCloudEndpointSelectorforExternalEPgs(),
 			"aci_cloud_endpoint_selector":                  resourceAciCloudEndpointSelector(),
 			"aci_cloud_external_epg":                       resourceAciCloudExternalEPg(),
-			"aci_cloud_provider_profile":                   resourceAciCloudProviderProfile(),
 			"aci_cloud_providers_region":                   resourceAciCloudProvidersRegion(),
 			"aci_cloud_subnet":                             resourceAciCloudSubnet(),
 			"aci_cloud_availability_zone":                  resourceAciCloudAvailabilityZone(),

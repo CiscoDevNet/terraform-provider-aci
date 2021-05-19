@@ -17,11 +17,11 @@ data "aci_cloud_provider_profile" "aws_prof" {
 }
 ```
 ## Argument Reference ##
-* `vendor` - (Required) vendor of Object cloud_provider_profile.
+* `vendor` - (Required) Vendor of Object Cloud Provider Profile.
 
 
 
 ## Attribute Reference
 
 * `id` - Attribute id set to the Dn of the Cloud Provider Profile.
-* `annotation` - (Optional) annotation for object cloud_provider_profile.
+* `annotation` - (Optional) Annotation for object Cloud Provider Profile.
