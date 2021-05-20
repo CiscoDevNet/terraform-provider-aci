@@ -25,6 +25,7 @@ Manages ACI Spanning Tree Interface Policy
 resource "aci_spanning_tree_interface_policy" "example" {
   name  = "example"
   annotation = "orchestrator:terraform"
+  description = "This was created by terraform"
   ctrl = ["unspecified"]
 }
 ```
@@ -33,6 +34,7 @@ resource "aci_spanning_tree_interface_policy" "example" {
 
 * `name` - (Required) Name of object Spanning Tree Interface Policy.
 * `annotation` - (Optional) Annotation of object Spanning Tree Interface Policy.
+* `description` - (Optional) Description of object Spanning Tree Interface Policy.
 * `ctrl` - (Optional) Interface controls. Allowed values are "bpdu-filter", "bpdu-guard", "unspecified", and default value is "unspecified". Type: List.
 
 ## Importing ##

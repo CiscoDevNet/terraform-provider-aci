@@ -36,4 +36,5 @@ data "aci_spanning_tree_interface_policy" "example" {
 * `id` - Attribute id set to the Dn of the Spanning Tree Interface Policy.
 * `annotation` - (Optional) Annotation of object Spanning Tree Interface Policy.
 * `name_alias` - (Optional) Name Alias of object Spanning Tree Interface Policy.
+* `description` - (Optional) Description of object Spanning Tree Interface Policy.
 * `ctrl` - (Optional) Interface controls.
