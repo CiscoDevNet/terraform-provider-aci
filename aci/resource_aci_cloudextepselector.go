@@ -1,21 +1,23 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciCloudEndpointSelectorforExternalEPgs() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciCloudEndpointSelectorforExternalEPgsCreate,
-		Update: resourceAciCloudEndpointSelectorforExternalEPgsUpdate,
-		Read:   resourceAciCloudEndpointSelectorforExternalEPgsRead,
-		Delete: resourceAciCloudEndpointSelectorforExternalEPgsDelete,
+		CreateContext: resourceAciCloudEndpointSelectorforExternalEPgsCreate,
+		UpdateContext: resourceAciCloudEndpointSelectorforExternalEPgsUpdate,
+		ReadContext:   resourceAciCloudEndpointSelectorforExternalEPgsRead,
+		DeleteContext: resourceAciCloudEndpointSelectorforExternalEPgsDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciCloudEndpointSelectorforExternalEPgsImport,
@@ -122,7 +124,7 @@ func resourceAciCloudEndpointSelectorforExternalEPgsImport(d *schema.ResourceDat
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciCloudEndpointSelectorforExternalEPgsCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciCloudEndpointSelectorforExternalEPgsCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] CloudEndpointSelectorforExternalEPgs: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -154,19 +156,16 @@ func resourceAciCloudEndpointSelectorforExternalEPgsCreate(d *schema.ResourceDat
 
 	err := aciClient.Save(cloudExtEPSelector)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.Partial(false)
 
 	d.SetId(cloudExtEPSelector.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciCloudEndpointSelectorforExternalEPgsRead(d, m)
+	return resourceAciCloudEndpointSelectorforExternalEPgsRead(ctx, d, m)
 }
 
-func resourceAciCloudEndpointSelectorforExternalEPgsUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciCloudEndpointSelectorforExternalEPgsUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] CloudEndpointSelectorforExternalEPgs: Beginning Update")
 
 	aciClient := m.(*client.Client)
@@ -203,20 +202,17 @@ func resourceAciCloudEndpointSelectorforExternalEPgsUpdate(d *schema.ResourceDat
 	err := aciClient.Save(cloudExtEPSelector)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.Partial(false)
 
 	d.SetId(cloudExtEPSelector.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciCloudEndpointSelectorforExternalEPgsRead(d, m)
+	return resourceAciCloudEndpointSelectorforExternalEPgsRead(ctx, d, m)
 
 }
 
-func resourceAciCloudEndpointSelectorforExternalEPgsRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciCloudEndpointSelectorforExternalEPgsRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -235,18 +231,18 @@ func resourceAciCloudEndpointSelectorforExternalEPgsRead(d *schema.ResourceData,
 	return nil
 }
 
-func resourceAciCloudEndpointSelectorforExternalEPgsDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciCloudEndpointSelectorforExternalEPgsDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "cloudExtEPSelector")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
 }

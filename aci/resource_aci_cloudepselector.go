@@ -1,20 +1,22 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func resourceAciCloudEndpointSelector() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciCloudEndpointSelectorCreate,
-		Update: resourceAciCloudEndpointSelectorUpdate,
-		Read:   resourceAciCloudEndpointSelectorRead,
-		Delete: resourceAciCloudEndpointSelectorDelete,
+		CreateContext: resourceAciCloudEndpointSelectorCreate,
+		UpdateContext: resourceAciCloudEndpointSelectorUpdate,
+		ReadContext:   resourceAciCloudEndpointSelectorRead,
+		DeleteContext: resourceAciCloudEndpointSelectorDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciCloudEndpointSelectorImport,
@@ -104,7 +106,7 @@ func resourceAciCloudEndpointSelectorImport(d *schema.ResourceData, m interface{
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciCloudEndpointSelectorCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciCloudEndpointSelectorCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] CloudEndpointSelector: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -129,19 +131,16 @@ func resourceAciCloudEndpointSelectorCreate(d *schema.ResourceData, m interface{
 
 	err := aciClient.Save(cloudEPSelector)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.Partial(false)
 
 	d.SetId(cloudEPSelector.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciCloudEndpointSelectorRead(d, m)
+	return resourceAciCloudEndpointSelectorRead(ctx, d, m)
 }
 
-func resourceAciCloudEndpointSelectorUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciCloudEndpointSelectorUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] CloudEndpointSelector: Beginning Update")
 
 	aciClient := m.(*client.Client)
@@ -170,20 +169,17 @@ func resourceAciCloudEndpointSelectorUpdate(d *schema.ResourceData, m interface{
 	err := aciClient.Save(cloudEPSelector)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.Partial(false)
 
 	d.SetId(cloudEPSelector.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciCloudEndpointSelectorRead(d, m)
+	return resourceAciCloudEndpointSelectorRead(ctx, d, m)
 
 }
 
-func resourceAciCloudEndpointSelectorRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciCloudEndpointSelectorRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -202,18 +198,18 @@ func resourceAciCloudEndpointSelectorRead(d *schema.ResourceData, m interface{})
 	return nil
 }
 
-func resourceAciCloudEndpointSelectorDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciCloudEndpointSelectorDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "cloudEPSelector")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
 }
