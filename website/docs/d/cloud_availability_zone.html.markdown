@@ -14,7 +14,7 @@ Data source for ACI Cloud Availability Zone
 ```hcl
 data "aci_cloud_availability_zone" "az_us_east_1_aws" {
 
-  cloud_providers_region_dn  = "${aci_cloud_providers_region.region_aws.id}"
+  cloud_providers_region_dn  = aci_cloud_providers_region.region_aws.id
   name                       = "us-east-1a"
 }
 ```
@@ -27,5 +27,6 @@ data "aci_cloud_availability_zone" "az_us_east_1_aws" {
 ## Attribute Reference
 
 * `id` - Attribute id set to the Dn of the Cloud Availability Zone.
-* `annotation` - (Optional) annotation for object cloud_availability_zone.
-* `name_alias` - (Optional) name_alias for object cloud_availability_zone.
+* `description` - (Optional) Description for object cloud availability zone.
+* `annotation` - (Optional) Annotation for object cloud availability zone.
+* `name_alias` - (Optional) Name alias for object cloud availability zone.

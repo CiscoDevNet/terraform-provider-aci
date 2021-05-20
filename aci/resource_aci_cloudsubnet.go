@@ -1,21 +1,23 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciCloudSubnet() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciCloudSubnetCreate,
-		Update: resourceAciCloudSubnetUpdate,
-		Read:   resourceAciCloudSubnetRead,
-		Delete: resourceAciCloudSubnetDelete,
+		CreateContext: resourceAciCloudSubnetCreate,
+		UpdateContext: resourceAciCloudSubnetUpdate,
+		ReadContext:   resourceAciCloudSubnetRead,
+		DeleteContext: resourceAciCloudSubnetDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciCloudSubnetImport,
@@ -113,7 +115,6 @@ func setCloudSubnetAttributes(cloudSubnet *models.CloudSubnet, d *schema.Resourc
 	d.Set("name", cloudSubnetMap["name"])
 
 	d.Set("annotation", cloudSubnetMap["annotation"])
-	d.Set("ip", cloudSubnetMap["ip"])
 	d.Set("name_alias", cloudSubnetMap["nameAlias"])
 	d.Set("scope", cloudSubnetMap["scope"])
 	d.Set("usage", cloudSubnetMap["usage"])
@@ -143,7 +144,7 @@ func resourceAciCloudSubnetImport(d *schema.ResourceData, m interface{}) ([]*sch
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciCloudSubnetCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciCloudSubnetCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] CloudSubnet: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -189,7 +190,7 @@ func resourceAciCloudSubnetCreate(d *schema.ResourceData, m interface{}) error {
 	d.Partial(true)
 	err := checkTDn(aciClient, checkDns)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Partial(false)
 
@@ -202,32 +203,26 @@ func resourceAciCloudSubnetCreate(d *schema.ResourceData, m interface{}) error {
 
 	cloudSubnet, err := aciClient.CreateCloudSubnet(ip, CloudCIDRPoolDn, desc, cloudSubnetAttr, zoneDn)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-
-	d.Partial(true)
-
-	d.Partial(false)
 
 	if relationTocloudRsSubnetToFlowLog, ok := d.GetOk("relation_cloud_rs_subnet_to_flow_log"); ok {
 		relationParam := relationTocloudRsSubnetToFlowLog.(string)
 		relationParamName := GetMOName(relationParam)
 		err = aciClient.CreateRelationcloudRsSubnetToFlowLogFromCloudSubnet(cloudSubnet.DistinguishedName, relationParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.Partial(false)
 
 	}
 
 	d.SetId(cloudSubnet.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciCloudSubnetRead(d, m)
+	return resourceAciCloudSubnetRead(ctx, d, m)
 }
 
-func resourceAciCloudSubnetUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciCloudSubnetUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] CloudSubnet: Beginning Update")
 
 	aciClient := m.(*client.Client)
@@ -274,7 +269,7 @@ func resourceAciCloudSubnetUpdate(d *schema.ResourceData, m interface{}) error {
 	d.Partial(true)
 	err := checkTDn(aciClient, checkDns)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Partial(false)
 
@@ -287,36 +282,31 @@ func resourceAciCloudSubnetUpdate(d *schema.ResourceData, m interface{}) error {
 
 	cloudSubnet, err := aciClient.UpdateCloudSubnet(ip, CloudCIDRPoolDn, desc, cloudSubnetAttr, zoneDn)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.Partial(false)
 
 	if d.HasChange("relation_cloud_rs_subnet_to_flow_log") {
 		_, newRelParam := d.GetChange("relation_cloud_rs_subnet_to_flow_log")
 		newRelParamName := GetMOName(newRelParam.(string))
 		err = aciClient.DeleteRelationcloudRsSubnetToFlowLogFromCloudSubnet(cloudSubnet.DistinguishedName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 		err = aciClient.CreateRelationcloudRsSubnetToFlowLogFromCloudSubnet(cloudSubnet.DistinguishedName, newRelParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.Partial(false)
 
 	}
 
 	d.SetId(cloudSubnet.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciCloudSubnetRead(d, m)
+	return resourceAciCloudSubnetRead(ctx, d, m)
 
 }
 
-func resourceAciCloudSubnetRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciCloudSubnetRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -362,18 +352,18 @@ func resourceAciCloudSubnetRead(d *schema.ResourceData, m interface{}) error {
 	return nil
 }
 
-func resourceAciCloudSubnetDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciCloudSubnetDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "cloudSubnet")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
 }
