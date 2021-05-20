@@ -14,7 +14,7 @@ Data source for ACI Cloud External EPg
 ```hcl
 data "aci_cloud_external_epg" "foo_ext_epg" {
 
-  cloud_applicationcontainer_dn  = "${aci_cloud_applicationcontainer.sample_app.id}" 
+  cloud_applicationcontainer_dn  = aci_cloud_applicationcontainer.sample_app.id
   name                           = "dev_ext_epg"
 }
 ```
