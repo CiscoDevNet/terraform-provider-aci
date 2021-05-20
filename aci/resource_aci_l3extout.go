@@ -41,13 +41,14 @@ func resourceAciL3Outside() *schema.Resource {
 			},
 
 			"enforce_rtctrl": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-				ValidateFunc: validation.StringInSlice([]string{
+				Type:             schema.TypeString,
+				Optional:         true,
+				Computed:         true,
+				DiffSuppressFunc: suppressBitMaskDiffFunc(),
+				ValidateFunc: schema.SchemaValidateFunc(validateCommaSeparatedStringInSlice([]string{
 					"import",
 					"export",
-				}, false),
+				}, false, "")),
 			},
 
 			"name_alias": &schema.Schema{

@@ -1,16 +1,18 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func dataSourceAciCloudAWSProvider() *schema.Resource {
 	return &schema.Resource{
 
-		Read: dataSourceAciCloudAWSProviderRead,
+		ReadContext: dataSourceAciCloudAWSProviderRead,
 
 		SchemaVersion: 1,
 
@@ -83,7 +85,7 @@ func dataSourceAciCloudAWSProvider() *schema.Resource {
 	}
 }
 
-func dataSourceAciCloudAWSProviderRead(d *schema.ResourceData, m interface{}) error {
+func dataSourceAciCloudAWSProviderRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	aciClient := m.(*client.Client)
 
 	rn := fmt.Sprintf("awsprovider")
@@ -94,7 +96,7 @@ func dataSourceAciCloudAWSProviderRead(d *schema.ResourceData, m interface{}) er
 	cloudAwsProvider, err := getRemoteCloudAWSProvider(aciClient, dn)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.SetId(dn)
 	setCloudAWSProviderAttributes(cloudAwsProvider, d)

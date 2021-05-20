@@ -1,16 +1,18 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func dataSourceAciLeafAccessPortPolicyGroup() *schema.Resource {
 	return &schema.Resource{
 
-		Read: dataSourceAciLeafAccessPortPolicyGroupRead,
+		ReadContext: dataSourceAciLeafAccessPortPolicyGroupRead,
 
 		SchemaVersion: 1,
 
@@ -30,7 +32,7 @@ func dataSourceAciLeafAccessPortPolicyGroup() *schema.Resource {
 	}
 }
 
-func dataSourceAciLeafAccessPortPolicyGroupRead(d *schema.ResourceData, m interface{}) error {
+func dataSourceAciLeafAccessPortPolicyGroupRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	aciClient := m.(*client.Client)
 
 	name := d.Get("name").(string)
@@ -42,7 +44,7 @@ func dataSourceAciLeafAccessPortPolicyGroupRead(d *schema.ResourceData, m interf
 	infraAccPortGrp, err := getRemoteLeafAccessPortPolicyGroup(aciClient, dn)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	setLeafAccessPortPolicyGroupAttributes(infraAccPortGrp, d)
 	return nil

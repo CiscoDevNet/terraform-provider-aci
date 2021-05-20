@@ -1,21 +1,23 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciEndPointRetentionPolicy() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciEndPointRetentionPolicyCreate,
-		Update: resourceAciEndPointRetentionPolicyUpdate,
-		Read:   resourceAciEndPointRetentionPolicyRead,
-		Delete: resourceAciEndPointRetentionPolicyDelete,
+		CreateContext: resourceAciEndPointRetentionPolicyCreate,
+		UpdateContext: resourceAciEndPointRetentionPolicyUpdate,
+		ReadContext:   resourceAciEndPointRetentionPolicyRead,
+		DeleteContext: resourceAciEndPointRetentionPolicyDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciEndPointRetentionPolicyImport,
@@ -40,9 +42,6 @@ func resourceAciEndPointRetentionPolicy() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
-				ValidateFunc: validation.StringInSlice([]string{
-					"infinite",
-				}, false),
 			},
 
 			"bounce_trig": &schema.Schema{
@@ -148,7 +147,7 @@ func resourceAciEndPointRetentionPolicyImport(d *schema.ResourceData, m interfac
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciEndPointRetentionPolicyCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciEndPointRetentionPolicyCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] EndPointRetentionPolicy: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -188,19 +187,16 @@ func resourceAciEndPointRetentionPolicyCreate(d *schema.ResourceData, m interfac
 
 	err := aciClient.Save(fvEpRetPol)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.Partial(false)
 
 	d.SetId(fvEpRetPol.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciEndPointRetentionPolicyRead(d, m)
+	return resourceAciEndPointRetentionPolicyRead(ctx, d, m)
 }
 
-func resourceAciEndPointRetentionPolicyUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciEndPointRetentionPolicyUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] EndPointRetentionPolicy: Beginning Update")
 
 	aciClient := m.(*client.Client)
@@ -244,20 +240,17 @@ func resourceAciEndPointRetentionPolicyUpdate(d *schema.ResourceData, m interfac
 	err := aciClient.Save(fvEpRetPol)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.Partial(false)
 
 	d.SetId(fvEpRetPol.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciEndPointRetentionPolicyRead(d, m)
+	return resourceAciEndPointRetentionPolicyRead(ctx, d, m)
 
 }
 
-func resourceAciEndPointRetentionPolicyRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciEndPointRetentionPolicyRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -276,18 +269,18 @@ func resourceAciEndPointRetentionPolicyRead(d *schema.ResourceData, m interface{
 	return nil
 }
 
-func resourceAciEndPointRetentionPolicyDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciEndPointRetentionPolicyDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "fvEpRetPol")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
 }

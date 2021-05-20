@@ -1,16 +1,18 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func dataSourceAciLogicalInterfaceProfile() *schema.Resource {
 	return &schema.Resource{
 
-		Read: dataSourceAciLogicalInterfaceProfileRead,
+		ReadContext: dataSourceAciLogicalInterfaceProfileRead,
 
 		SchemaVersion: 1,
 
@@ -46,7 +48,7 @@ func dataSourceAciLogicalInterfaceProfile() *schema.Resource {
 	}
 }
 
-func dataSourceAciLogicalInterfaceProfileRead(d *schema.ResourceData, m interface{}) error {
+func dataSourceAciLogicalInterfaceProfileRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	aciClient := m.(*client.Client)
 
 	name := d.Get("name").(string)
@@ -59,7 +61,7 @@ func dataSourceAciLogicalInterfaceProfileRead(d *schema.ResourceData, m interfac
 	l3extLIfP, err := getRemoteLogicalInterfaceProfile(aciClient, dn)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.SetId(dn)
 	setLogicalInterfaceProfileAttributes(l3extLIfP, d)
