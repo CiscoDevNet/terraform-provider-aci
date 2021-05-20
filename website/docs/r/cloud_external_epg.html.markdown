@@ -29,6 +29,7 @@ Manages ACI Cloud External EPg
 ## Argument Reference ##
 * `cloud_applicationcontainer_dn` - (Required) Distinguished name of parent CloudApplicationcontainer object.
 * `name` - (Required) Name of Object Cloud External EPg.
+* `description` - (Optional) Description for object Cloud External EPg.
 * `annotation` - (Optional) Annotation for object Cloud External EPg.
 * `exception_tag` - (Optional) Exception tag for object Cloud External EPg. Allowed value range is "0" to "512".
 * `flood_on_encap` - (Optional) Control at EPG level if the traffic L2 Multicast/Broadcast and Link Local Layer should be flooded only on ENCAP or based on bridg-domain settings. Allowed values are "disabled" and "enabled". Default is "disabled".
