@@ -32,13 +32,13 @@ Manage End Point (EP) retention protocol policies
 * `name` - (Required) Name of Object end point retention policy.
 * `descripton` - (Optional) Descripton for object end point retention policy.
 * `annotation` - (Optional) Annotation for object end point retention policy.
-* `bounce_age_intvl` - (Optional)  The aging interval for a bounce entry. When an endpoint (VM) migrates to another switch, the endpoint is marked as bouncing for the specified aging interval and is deleted afterwards. Allowed value range is "0" - "0xffff". Default is "630".
+* `bounce_age_intvl` - (Optional)  The aging interval for a bounce entry. When an endpoint (VM) migrates to another switch, the endpoint is marked as bouncing for the specified aging interval and is deleted afterwards. Allowed value range is "0" - "0xffff". Default is "630"."0" is treated as special value here. Providing interval as "0" is treated as infinite interval.
 * `bounce_trig` - (Optional) Specifies whether to install the bounce entry by RARP flood or by COOP protocol. Allowed values are "rarp-flood" and "protocol". Default is "protocol".
 * `hold_intvl` - (Optional) A time period during which new endpoint learn events will not be honored. This interval is triggered when the maximum endpoint move frequency is exceeded. Allowed value range is "5" - "0xffff". Default is "300".  
 * `local_ep_age_intvl` - (Optional) The aging interval for all local endpoints learned in this bridge domain. When 75% of the interval is reached, 3 ARP requests are sent to verify the existence of the endpoint. If no response is received, the endpoint is deleted. Allowed value range is "120" - "0xffff". Default is "900". "0" is treated as special value here. Providing interval as "0" is treated as infinite interval.
-* `move_freq` - (Optional) A maximum allowed number of endpoint moves per second. If the move frequency is exceeded, the hold interval is triggered, and new endpoint learn events will not be honored until after the hold interval expires. Allowed value range is "0" - "0xffff". Default is "256".
+* `move_freq` - (Optional) A maximum allowed number of endpoint moves per second. If the move frequency is exceeded, the hold interval is triggered, and new endpoint learn events will not be honored until after the hold interval expires. Allowed value range is "0" - "0xffff". Default is "256"."0" is treated as special value here. Providing interval as "0" is treated as none.
 * `name_alias` - (Optional) Name alias for object end point retention policy.
-* `remote_ep_age_intvl` - (Optional) The aging interval for all remote endpoints learned in this bridge domain.Allowed value range is "120" - "0xffff". Default is "900". "0" is treated as special value here. Providing interval as "0" is treated as infinite interval.
+* `remote_ep_age_intvl` - (Optional) The aging interval for all remote endpoints learned in this bridge domain.Allowed value range is "120" - "0xffff". Default is "300". "0" is treated as special value here. Providing interval as "0" is treated as infinite interval.
 
 
 
