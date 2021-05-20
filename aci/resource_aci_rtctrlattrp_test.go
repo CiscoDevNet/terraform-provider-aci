@@ -26,11 +26,6 @@ func TestAccAciActionRuleProfile_Basic(t *testing.T) {
 					testAccCheckAciActionRuleProfileAttributes(description, &action_rule_profile),
 				),
 			},
-			{
-				ResourceName:      "aci_action_rule_profile",
-				ImportState:       true,
-				ImportStateVerify: true,
-			},
 		},
 	})
 }
@@ -66,7 +61,7 @@ func testAccCheckAciActionRuleProfileConfig_basic(description string) string {
 	return fmt.Sprintf(`
 
 	resource "aci_action_rule_profile" "fooaction_rule_profile" {
-		  tenant_dn  = "${aci_tenant.example.id}"
+		  tenant_dn  = aci_tenant.example.id
 		description = "%s"
 		
 		name  = "example"

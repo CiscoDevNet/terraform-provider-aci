@@ -26,11 +26,6 @@ func TestAccAciPhysicalDomain_Basic(t *testing.T) {
 					testAccCheckAciPhysicalDomainAttributes(description, &physical_domain),
 				),
 			},
-			{
-				ResourceName:      "aci_physical_domain",
-				ImportState:       true,
-				ImportStateVerify: true,
-			},
 		},
 	})
 }
@@ -66,11 +61,10 @@ func testAccCheckAciPhysicalDomainConfig_basic(description string) string {
 	return fmt.Sprintf(`
 
 	resource "aci_physical_domain" "foophysical_domain" {
-		description = "%s"
-		
-		name  = "example"
-		  annotation  = "example"
-		  name_alias  = "example"
+			description = "%s"
+			name  = "example"
+		  	annotation  = "example"
+		  	name_alias  = "example"
 		}
 	`, description)
 }
