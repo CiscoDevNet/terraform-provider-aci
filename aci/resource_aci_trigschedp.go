@@ -1,20 +1,22 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func resourceAciTriggerScheduler() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciTriggerSchedulerCreate,
-		Update: resourceAciTriggerSchedulerUpdate,
-		Read:   resourceAciTriggerSchedulerRead,
-		Delete: resourceAciTriggerSchedulerDelete,
+		CreateContext: resourceAciTriggerSchedulerCreate,
+		UpdateContext: resourceAciTriggerSchedulerUpdate,
+		ReadContext:   resourceAciTriggerSchedulerRead,
+		DeleteContext: resourceAciTriggerSchedulerDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciTriggerSchedulerImport,
@@ -83,7 +85,7 @@ func resourceAciTriggerSchedulerImport(d *schema.ResourceData, m interface{}) ([
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciTriggerSchedulerCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciTriggerSchedulerCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] TriggerScheduler: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -103,19 +105,16 @@ func resourceAciTriggerSchedulerCreate(d *schema.ResourceData, m interface{}) er
 
 	err := aciClient.Save(trigSchedP)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.Partial(false)
 
 	d.SetId(trigSchedP.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciTriggerSchedulerRead(d, m)
+	return resourceAciTriggerSchedulerRead(ctx, d, m)
 }
 
-func resourceAciTriggerSchedulerUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciTriggerSchedulerUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] TriggerScheduler: Beginning Update")
 
 	aciClient := m.(*client.Client)
@@ -139,20 +138,17 @@ func resourceAciTriggerSchedulerUpdate(d *schema.ResourceData, m interface{}) er
 	err := aciClient.Save(trigSchedP)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.Partial(false)
 
 	d.SetId(trigSchedP.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciTriggerSchedulerRead(d, m)
+	return resourceAciTriggerSchedulerRead(ctx, d, m)
 
 }
 
-func resourceAciTriggerSchedulerRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciTriggerSchedulerRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -171,18 +167,18 @@ func resourceAciTriggerSchedulerRead(d *schema.ResourceData, m interface{}) erro
 	return nil
 }
 
-func resourceAciTriggerSchedulerDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciTriggerSchedulerDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "trigSchedP")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
 }
