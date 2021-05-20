@@ -1,16 +1,19 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
+	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func dataSourceAciCloudProviderProfile() *schema.Resource {
 	return &schema.Resource{
 
-		Read: dataSourceAciCloudProviderProfileRead,
+		ReadContext: dataSourceAciCloudProviderProfileRead,
 
 		SchemaVersion: 1,
 
@@ -24,7 +27,7 @@ func dataSourceAciCloudProviderProfile() *schema.Resource {
 	}
 }
 
-func dataSourceAciCloudProviderProfileRead(d *schema.ResourceData, m interface{}) error {
+func dataSourceAciCloudProviderProfileRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	aciClient := m.(*client.Client)
 
 	vendor := d.Get("vendor").(string)
@@ -36,8 +39,32 @@ func dataSourceAciCloudProviderProfileRead(d *schema.ResourceData, m interface{}
 	cloudProvP, err := getRemoteCloudProviderProfile(aciClient, dn)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	setCloudProviderProfileAttributes(cloudProvP, d)
 	return nil
+}
+
+func getRemoteCloudProviderProfile(client *client.Client, dn string) (*models.CloudProviderProfile, error) {
+	cloudProvPCont, err := client.Get(dn)
+	if err != nil {
+		return nil, err
+	}
+
+	cloudProvP := models.CloudProviderProfileFromContainer(cloudProvPCont)
+
+	if cloudProvP.DistinguishedName == "" {
+		return nil, fmt.Errorf("CloudProviderProfile %s not found", cloudProvP.DistinguishedName)
+	}
+
+	return cloudProvP, nil
+}
+
+func setCloudProviderProfileAttributes(cloudProvP *models.CloudProviderProfile, d *schema.ResourceData) *schema.ResourceData {
+	d.SetId(cloudProvP.DistinguishedName)
+	cloudProvPMap, _ := cloudProvP.ToMap()
+
+	d.Set("vendor", cloudProvPMap["vendor"])
+
+	return d
 }
