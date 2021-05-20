@@ -3,6 +3,9 @@ package aci
 import (
 	"fmt"
 	"log"
+	"reflect"
+	"sort"
+	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
@@ -42,17 +45,20 @@ func resourceAciOSPFInterfacePolicy() *schema.Resource {
 				Computed: true,
 			},
 
-			"ctrl": &schema.Schema{
-				Type:     schema.TypeString,
+			"ctrl": {
+				Type:     schema.TypeList,
 				Optional: true,
 				Computed: true,
-				ValidateFunc: validation.StringInSlice([]string{
-					"unspecified",
-					"passive",
-					"mtu-ignore",
-					"advert-subnet",
-					"bfd",
-				}, false),
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+					ValidateFunc: validation.StringInSlice([]string{
+						"advert-subnet",
+						"bfd",
+						"mtu-ignore",
+						"passive",
+						"unspecified",
+					}, false),
+				},
 			},
 
 			"dead_intvl": &schema.Schema{
@@ -144,10 +150,24 @@ func setOSPFInterfacePolicyAttributes(ospfIfPol *models.OSPFInterfacePolicy, d *
 
 	d.Set("annotation", ospfIfPolMap["annotation"])
 	d.Set("cost", ospfIfPolMap["cost"])
-	if ospfIfPolMap["ctrl"] == "" {
-		d.Set("ctrl", "unspecified")
+	ctrlGet := make([]string, 0, 1)
+	for _, val := range strings.Split(ospfIfPolMap["ctrl"], ",") {
+		ctrlGet = append(ctrlGet, strings.Trim(val, " "))
+	}
+	sort.Strings(ctrlGet)
+	if ctrlIntr, ok := d.GetOk("ctrl"); ok {
+		ctrlAct := make([]string, 0, 1)
+		for _, val := range ctrlIntr.([]interface{}) {
+			ctrlAct = append(ctrlAct, val.(string))
+		}
+		sort.Strings(ctrlAct)
+		if reflect.DeepEqual(ctrlAct, ctrlGet) {
+			d.Set("ctrl", d.Get("ctrl").([]interface{}))
+		} else {
+			d.Set("ctrl", ctrlGet)
+		}
 	} else {
-		d.Set("ctrl", ospfIfPolMap["ctrl"])
+		d.Set("ctrl", ctrlGet)
 	}
 	d.Set("dead_intvl", ospfIfPolMap["deadIntvl"])
 	d.Set("hello_intvl", ospfIfPolMap["helloIntvl"])
@@ -201,8 +221,14 @@ func resourceAciOSPFInterfacePolicyCreate(d *schema.ResourceData, m interface{})
 		ospfIfPolAttr.Cost = Cost.(string)
 	}
 	if Ctrl, ok := d.GetOk("ctrl"); ok {
-		ospfIfPolAttr.Ctrl = Ctrl.(string)
+		ctrlList := make([]string, 0, 1)
+		for _, val := range Ctrl.([]interface{}) {
+			ctrlList = append(ctrlList, val.(string))
+		}
+		Ctrl := strings.Join(ctrlList, ",")
+		ospfIfPolAttr.Ctrl = Ctrl
 	}
+
 	if DeadIntvl, ok := d.GetOk("dead_intvl"); ok {
 		ospfIfPolAttr.DeadIntvl = DeadIntvl.(string)
 	}
@@ -265,7 +291,12 @@ func resourceAciOSPFInterfacePolicyUpdate(d *schema.ResourceData, m interface{})
 		ospfIfPolAttr.Cost = Cost.(string)
 	}
 	if Ctrl, ok := d.GetOk("ctrl"); ok {
-		ospfIfPolAttr.Ctrl = Ctrl.(string)
+		ctrlList := make([]string, 0, 1)
+		for _, val := range Ctrl.([]interface{}) {
+			ctrlList = append(ctrlList, val.(string))
+		}
+		Ctrl := strings.Join(ctrlList, ",")
+		ospfIfPolAttr.Ctrl = Ctrl
 	}
 	if DeadIntvl, ok := d.GetOk("dead_intvl"); ok {
 		ospfIfPolAttr.DeadIntvl = DeadIntvl.(string)
