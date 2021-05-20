@@ -24,4 +24,5 @@ data "aci_cloud_provider_profile" "aws_prof" {
 ## Attribute Reference
 
 * `id` - Attribute id set to the Dn of the Cloud Provider Profile.
+* `description` - (Optional) Description for object Cloud Provider Profile.
 * `annotation` - (Optional) Annotation for object Cloud Provider Profile.
