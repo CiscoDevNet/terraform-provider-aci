@@ -1,20 +1,22 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func resourceAciTabooContract() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciTabooContractCreate,
-		Update: resourceAciTabooContractUpdate,
-		Read:   resourceAciTabooContractRead,
-		Delete: resourceAciTabooContractDelete,
+		CreateContext: resourceAciTabooContractCreate,
+		UpdateContext: resourceAciTabooContractUpdate,
+		ReadContext:   resourceAciTabooContractRead,
+		DeleteContext: resourceAciTabooContractDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciTabooContractImport,
@@ -97,7 +99,7 @@ func resourceAciTabooContractImport(d *schema.ResourceData, m interface{}) ([]*s
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciTabooContractCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciTabooContractCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] TabooContract: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -119,19 +121,16 @@ func resourceAciTabooContractCreate(d *schema.ResourceData, m interface{}) error
 
 	err := aciClient.Save(vzTaboo)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.Partial(false)
 
 	d.SetId(vzTaboo.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciTabooContractRead(d, m)
+	return resourceAciTabooContractRead(ctx, d, m)
 }
 
-func resourceAciTabooContractUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciTabooContractUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] TabooContract: Beginning Update")
 
 	aciClient := m.(*client.Client)
@@ -157,20 +156,17 @@ func resourceAciTabooContractUpdate(d *schema.ResourceData, m interface{}) error
 	err := aciClient.Save(vzTaboo)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.Partial(false)
 
 	d.SetId(vzTaboo.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciTabooContractRead(d, m)
+	return resourceAciTabooContractRead(ctx, d, m)
 
 }
 
-func resourceAciTabooContractRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciTabooContractRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -189,18 +185,18 @@ func resourceAciTabooContractRead(d *schema.ResourceData, m interface{}) error {
 	return nil
 }
 
-func resourceAciTabooContractDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciTabooContractDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "vzTaboo")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
 }
