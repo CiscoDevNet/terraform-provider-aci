@@ -15,7 +15,6 @@ Manages ACI Physical Domain
 ```hcl
 resource "aci_physical_domain" "example" {
   name        = "example"
-  description = "From Terraform"
   annotation  = "tag_domain"
   name_alias  = "alias_domain"
 }
@@ -26,7 +25,6 @@ resource "aci_physical_domain" "example" {
 * `name` - (Required) Name of Object physical domain.
 * `annotation` - (Optional) Annotation for object physical domain.
 * `name_alias` - (Optional) Name alias for object physical domain.
-* `description` - (Optional) Description for object physical domain.
 * `relation_infra_rs_vlan_ns` - (Optional) Relation to class fvnsVlanInstP. Cardinality - N_TO_ONE. Type - String.
 * `relation_infra_rs_vlan_ns_def` - (Optional) Relation to class fvnsAInstP. Cardinality - N_TO_ONE. Type - String.
 * `relation_infra_rs_vip_addr_ns` - (Optional) Relation to class fvnsAddrInst. Cardinality - N_TO_ONE. Type - String.

@@ -24,7 +24,13 @@ func resourceAciPhysicalDomain() *schema.Resource {
 
 		SchemaVersion: 1,
 
-		Schema: AppendBaseAttrSchema(map[string]*schema.Schema{
+		Schema: map[string]*schema.Schema{
+
+			"annotation": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Default:  "orchestrator:terraform",
+			},
 
 			"name": &schema.Schema{
 				Type:     schema.TypeString,
@@ -58,7 +64,7 @@ func resourceAciPhysicalDomain() *schema.Resource {
 
 				Optional: true,
 			},
-		}),
+		},
 	}
 }
 func getRemotePhysicalDomain(client *client.Client, dn string) (*models.PhysicalDomain, error) {

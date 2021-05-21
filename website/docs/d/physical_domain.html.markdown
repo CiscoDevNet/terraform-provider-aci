@@ -26,4 +26,3 @@ data "aci_physical_domain" "example" {
 * `id` - Attribute id set to the Dn of the Physical Domain.
 * `annotation` - (Optional) Annotation for object physical domain.
 * `name_alias` - (Optional) Name alias for object physical domain.
-* `description` - (Optional) Description for object physical domain.
