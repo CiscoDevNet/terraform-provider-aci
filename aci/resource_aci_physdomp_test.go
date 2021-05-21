@@ -12,7 +12,7 @@ import (
 
 func TestAccAciPhysicalDomain_Basic(t *testing.T) {
 	var physical_domain models.PhysicalDomain
-	description := "physical_domain created while acceptance testing"
+	name_alias := "physical_domain"
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
@@ -20,16 +20,11 @@ func TestAccAciPhysicalDomain_Basic(t *testing.T) {
 		CheckDestroy: testAccCheckAciPhysicalDomainDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckAciPhysicalDomainConfig_basic(description),
+				Config: testAccCheckAciPhysicalDomainConfig_basic(name_alias),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckAciPhysicalDomainExists("aci_physical_domain.foophysical_domain", &physical_domain),
-					testAccCheckAciPhysicalDomainAttributes(description, &physical_domain),
+					testAccCheckAciPhysicalDomainAttributes(name_alias, &physical_domain),
 				),
-			},
-			{
-				ResourceName:      "aci_physical_domain",
-				ImportState:       true,
-				ImportStateVerify: true,
 			},
 		},
 	})
@@ -37,7 +32,7 @@ func TestAccAciPhysicalDomain_Basic(t *testing.T) {
 
 func TestAccAciPhysicalDomain_update(t *testing.T) {
 	var physical_domain models.PhysicalDomain
-	description := "physical_domain created while acceptance testing"
+	name_alias := "physical_domain"
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
@@ -45,34 +40,32 @@ func TestAccAciPhysicalDomain_update(t *testing.T) {
 		CheckDestroy: testAccCheckAciPhysicalDomainDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckAciPhysicalDomainConfig_basic(description),
+				Config: testAccCheckAciPhysicalDomainConfig_basic(name_alias),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckAciPhysicalDomainExists("aci_physical_domain.foophysical_domain", &physical_domain),
-					testAccCheckAciPhysicalDomainAttributes(description, &physical_domain),
+					testAccCheckAciPhysicalDomainAttributes(name_alias, &physical_domain),
 				),
 			},
 			{
-				Config: testAccCheckAciPhysicalDomainConfig_basic(description),
+				Config: testAccCheckAciPhysicalDomainConfig_basic(name_alias),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckAciPhysicalDomainExists("aci_physical_domain.foophysical_domain", &physical_domain),
-					testAccCheckAciPhysicalDomainAttributes(description, &physical_domain),
+					testAccCheckAciPhysicalDomainAttributes(name_alias, &physical_domain),
 				),
 			},
 		},
 	})
 }
 
-func testAccCheckAciPhysicalDomainConfig_basic(description string) string {
+func testAccCheckAciPhysicalDomainConfig_basic(name_alias string) string {
 	return fmt.Sprintf(`
 
 	resource "aci_physical_domain" "foophysical_domain" {
-		description = "%s"
-		
-		name  = "example"
-		  annotation  = "example"
-		  name_alias  = "example"
+			name  = "example"
+		  	annotation  = "example"
+		  	name_alias  = "%s"
 		}
-	`, description)
+	`, name_alias)
 }
 
 func testAccCheckAciPhysicalDomainExists(name string, physical_domain *models.PhysicalDomain) resource.TestCheckFunc {
@@ -123,12 +116,12 @@ func testAccCheckAciPhysicalDomainDestroy(s *terraform.State) error {
 	return nil
 }
 
-func testAccCheckAciPhysicalDomainAttributes(description string, physical_domain *models.PhysicalDomain) resource.TestCheckFunc {
+func testAccCheckAciPhysicalDomainAttributes(name_alias string, physical_domain *models.PhysicalDomain) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 
-		if description != physical_domain.Description {
-			return fmt.Errorf("Bad physical_domain Description %s", physical_domain.Description)
-		}
+		// if description != physical_domain.Description {
+		// 	return fmt.Errorf("Bad physical_domain Description %s", physical_domain.Description)
+		// }
 
 		if "example" != physical_domain.Name {
 			return fmt.Errorf("Bad physical_domain name %s", physical_domain.Name)
@@ -138,7 +131,7 @@ func testAccCheckAciPhysicalDomainAttributes(description string, physical_domain
 			return fmt.Errorf("Bad physical_domain annotation %s", physical_domain.Annotation)
 		}
 
-		if "example" != physical_domain.NameAlias {
+		if name_alias != physical_domain.NameAlias {
 			return fmt.Errorf("Bad physical_domain name_alias %s", physical_domain.NameAlias)
 		}
 

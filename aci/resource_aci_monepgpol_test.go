@@ -26,11 +26,6 @@ func TestAccAciMonitoringPolicy_Basic(t *testing.T) {
 					testAccCheckAciMonitoringPolicyAttributes(description, &monitoring_policy),
 				),
 			},
-			{
-				ResourceName:      "aci_monitoring_policy",
-				ImportState:       true,
-				ImportStateVerify: true,
-			},
 		},
 	})
 }
@@ -66,12 +61,11 @@ func testAccCheckAciMonitoringPolicyConfig_basic(description string) string {
 	return fmt.Sprintf(`
 
 	resource "aci_monitoring_policy" "foomonitoring_policy" {
-		  tenant_dn  = "${aci_tenant.example.id}"
-		description = "%s"
-		
-		name  = "example"
-		  annotation  = "example"
-		  name_alias  = "example"
+			tenant_dn  = aci_tenant.example.id
+			description = "%s"
+			name        = "example"
+			annotation  = "example"
+			name_alias  = "example"
 		}
 	`, description)
 }

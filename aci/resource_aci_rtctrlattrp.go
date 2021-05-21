@@ -1,20 +1,22 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func resourceAciActionRuleProfile() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciActionRuleProfileCreate,
-		Update: resourceAciActionRuleProfileUpdate,
-		Read:   resourceAciActionRuleProfileRead,
-		Delete: resourceAciActionRuleProfileDelete,
+		CreateContext: resourceAciActionRuleProfileCreate,
+		UpdateContext: resourceAciActionRuleProfileUpdate,
+		ReadContext:   resourceAciActionRuleProfileRead,
+		DeleteContext: resourceAciActionRuleProfileDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciActionRuleProfileImport,
@@ -97,7 +99,7 @@ func resourceAciActionRuleProfileImport(d *schema.ResourceData, m interface{}) (
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciActionRuleProfileCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciActionRuleProfileCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] ActionRuleProfile: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -119,19 +121,16 @@ func resourceAciActionRuleProfileCreate(d *schema.ResourceData, m interface{}) e
 
 	err := aciClient.Save(rtctrlAttrP)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.Partial(false)
 
 	d.SetId(rtctrlAttrP.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciActionRuleProfileRead(d, m)
+	return resourceAciActionRuleProfileRead(ctx, d, m)
 }
 
-func resourceAciActionRuleProfileUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciActionRuleProfileUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] ActionRuleProfile: Beginning Update")
 
 	aciClient := m.(*client.Client)
@@ -157,20 +156,17 @@ func resourceAciActionRuleProfileUpdate(d *schema.ResourceData, m interface{}) e
 	err := aciClient.Save(rtctrlAttrP)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.Partial(false)
 
 	d.SetId(rtctrlAttrP.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciActionRuleProfileRead(d, m)
+	return resourceAciActionRuleProfileRead(ctx, d, m)
 
 }
 
-func resourceAciActionRuleProfileRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciActionRuleProfileRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -189,18 +185,18 @@ func resourceAciActionRuleProfileRead(d *schema.ResourceData, m interface{}) err
 	return nil
 }
 
-func resourceAciActionRuleProfileDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciActionRuleProfileDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "rtctrlAttrP")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
 }

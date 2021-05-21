@@ -1,20 +1,22 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func resourceAciMonitoringPolicy() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciMonitoringPolicyCreate,
-		Update: resourceAciMonitoringPolicyUpdate,
-		Read:   resourceAciMonitoringPolicyRead,
-		Delete: resourceAciMonitoringPolicyDelete,
+		CreateContext: resourceAciMonitoringPolicyCreate,
+		UpdateContext: resourceAciMonitoringPolicyUpdate,
+		ReadContext:   resourceAciMonitoringPolicyRead,
+		DeleteContext: resourceAciMonitoringPolicyDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciMonitoringPolicyImport,
@@ -97,7 +99,7 @@ func resourceAciMonitoringPolicyImport(d *schema.ResourceData, m interface{}) ([
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciMonitoringPolicyCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciMonitoringPolicyCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] MonitoringPolicy: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -119,19 +121,16 @@ func resourceAciMonitoringPolicyCreate(d *schema.ResourceData, m interface{}) er
 
 	err := aciClient.Save(monEPGPol)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.Partial(false)
 
 	d.SetId(monEPGPol.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciMonitoringPolicyRead(d, m)
+	return resourceAciMonitoringPolicyRead(ctx, d, m)
 }
 
-func resourceAciMonitoringPolicyUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciMonitoringPolicyUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] MonitoringPolicy: Beginning Update")
 
 	aciClient := m.(*client.Client)
@@ -157,20 +156,17 @@ func resourceAciMonitoringPolicyUpdate(d *schema.ResourceData, m interface{}) er
 	err := aciClient.Save(monEPGPol)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.Partial(false)
 
 	d.SetId(monEPGPol.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciMonitoringPolicyRead(d, m)
+	return resourceAciMonitoringPolicyRead(ctx, d, m)
 
 }
 
-func resourceAciMonitoringPolicyRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciMonitoringPolicyRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -189,18 +185,18 @@ func resourceAciMonitoringPolicyRead(d *schema.ResourceData, m interface{}) erro
 	return nil
 }
 
-func resourceAciMonitoringPolicyDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciMonitoringPolicyDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "monEPGPol")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
 }
