@@ -62,8 +62,10 @@ func getRemoteCloudProviderProfile(client *client.Client, dn string) (*models.Cl
 
 func setCloudProviderProfileAttributes(cloudProvP *models.CloudProviderProfile, d *schema.ResourceData) *schema.ResourceData {
 	d.SetId(cloudProvP.DistinguishedName)
+	d.Set("description", cloudProvP.Description)
 	cloudProvPMap, _ := cloudProvP.ToMap()
 
+	d.Set("annotation", cloudProvPMap["annotation"])
 	d.Set("vendor", cloudProvPMap["vendor"])
 
 	return d

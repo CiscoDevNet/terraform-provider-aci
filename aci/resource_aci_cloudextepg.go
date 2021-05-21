@@ -105,6 +105,8 @@ func resourceAciCloudExternalEPg() *schema.Resource {
 				Computed: true,
 				ValidateFunc: validation.StringInSlice([]string{
 					"inter-site",
+					"site-ext",
+					"inter-site-ext",
 					"internet",
 					"unspecified",
 				}, false),
