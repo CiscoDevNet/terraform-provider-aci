@@ -13,16 +13,13 @@ Data source for ACI VLAN Pool
 
 ```hcl
 data "aci_vlan_pool" "example" {
-
-
   name  = "example"
-
-  allocMode  = "example"
+  alloc_mode  = "dynamic"
 }
 ```
 ## Argument Reference ##
 * `name` - (Required) name of Object vlan_pool.
-* `allocMode` - (Required) allocMode of Object vlan_pool.
+* `alloc_mode` - (Required) allocation mode of Object vlan_pool.
 
 
 

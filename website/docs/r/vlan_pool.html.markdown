@@ -17,9 +17,8 @@ resource "aci_vlan_pool" "example" {
 
 
   name  = "example"
-
-  alloc_mode  = "example"
-  annotation  = "example"
+  alloc_mode  = "dynamic"
+  annotation  = "orchestrator:terraform"
   name_alias  = "example"
 }
 ```
