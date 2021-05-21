@@ -57,9 +57,9 @@ func dataSourceAciCloudEndpointSelectorforExternalEPgs() *schema.Resource {
 func dataSourceAciCloudEndpointSelectorforExternalEPgsRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	aciClient := m.(*client.Client)
 
-	name := d.Get("name").(string)
+	subnet := d.Get("subnet").(string)
 
-	rn := fmt.Sprintf("extepselector-%s", name)
+	rn := fmt.Sprintf("extepselector-%s", subnet)
 	CloudExternalEPgDn := d.Get("cloud_external_epg_dn").(string)
 
 	dn := fmt.Sprintf("%s/%s", CloudExternalEPgDn, rn)
