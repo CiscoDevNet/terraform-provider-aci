@@ -61,12 +61,11 @@ func testAccCheckAciActionRuleProfileConfig_basic(description string) string {
 	return fmt.Sprintf(`
 
 	resource "aci_action_rule_profile" "fooaction_rule_profile" {
-		  tenant_dn  = aci_tenant.example.id
-		description = "%s"
-		
-		name  = "example"
-		  annotation  = "example"
-		  name_alias  = "example"
+		  	tenant_dn  = aci_tenant.example.id
+			description = "%s"
+			name  = "example"
+		  	annotation  = "example"
+		  	name_alias  = "example"
 		}
 	`, description)
 }

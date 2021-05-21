@@ -13,18 +13,17 @@ Data source for ACI Physical Domain
 
 ```hcl
 data "aci_physical_domain" "example" {
-
-
   name  = "example"
 }
 ```
 ## Argument Reference ##
-* `name` - (Required) name of Object physical_domain.
+* `name` - (Required) Name of object physical domain..
 
 
 
 ## Attribute Reference
 
 * `id` - Attribute id set to the Dn of the Physical Domain.
-* `annotation` - (Optional) annotation for object physical_domain.
-* `name_alias` - (Optional) name_alias for object physical_domain.
+* `annotation` - (Optional) Annotation for object physical domain.
+* `name_alias` - (Optional) Name alias for object physical domain.
+* `description` - (Optional) Description for object physical domain.
