@@ -1,16 +1,18 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func dataSourceAciTabooContract() *schema.Resource {
 	return &schema.Resource{
 
-		Read: dataSourceAciTabooContractRead,
+		ReadContext: dataSourceAciTabooContractRead,
 
 		SchemaVersion: 1,
 
@@ -34,7 +36,7 @@ func dataSourceAciTabooContract() *schema.Resource {
 	}
 }
 
-func dataSourceAciTabooContractRead(d *schema.ResourceData, m interface{}) error {
+func dataSourceAciTabooContractRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	aciClient := m.(*client.Client)
 
 	name := d.Get("name").(string)
@@ -47,7 +49,7 @@ func dataSourceAciTabooContractRead(d *schema.ResourceData, m interface{}) error
 	vzTaboo, err := getRemoteTabooContract(aciClient, dn)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.SetId(dn)
 	setTabooContractAttributes(vzTaboo, d)
