@@ -65,10 +65,10 @@ func testAccCheckAciTabooContractConfig_basic(description string) string {
 	}
 
 	resource "aci_taboo_contract" "footaboo_contract" {
-		  tenant_dn  = "${aci_tenant.example.id}"
-		description = "%s"
+		  tenant_dn  = aci_tenant.example.id
+		  description = "%s"
 		
-		name  = "example"
+		  name        = "example"
 		  annotation  = "example"
 		  name_alias  = "example"
 		}
