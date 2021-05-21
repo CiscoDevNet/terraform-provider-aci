@@ -1,21 +1,23 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciPODMaintenanceGroup() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciPODMaintenanceGroupCreate,
-		Update: resourceAciPODMaintenanceGroupUpdate,
-		Read:   resourceAciPODMaintenanceGroupRead,
-		Delete: resourceAciPODMaintenanceGroupDelete,
+		CreateContext: resourceAciPODMaintenanceGroupCreate,
+		UpdateContext: resourceAciPODMaintenanceGroupUpdate,
+		ReadContext:   resourceAciPODMaintenanceGroupRead,
+		DeleteContext: resourceAciPODMaintenanceGroupDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciPODMaintenanceGroupImport,
@@ -113,7 +115,7 @@ func resourceAciPODMaintenanceGroupImport(d *schema.ResourceData, m interface{})
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciPODMaintenanceGroupCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciPODMaintenanceGroupCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] PODMaintenanceGroup: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -139,11 +141,8 @@ func resourceAciPODMaintenanceGroupCreate(d *schema.ResourceData, m interface{})
 
 	err := aciClient.Save(maintMaintGrp)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
 
@@ -155,7 +154,7 @@ func resourceAciPODMaintenanceGroupCreate(d *schema.ResourceData, m interface{})
 	d.Partial(true)
 	err = checkTDn(aciClient, checkDns)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Partial(false)
 
@@ -164,20 +163,18 @@ func resourceAciPODMaintenanceGroupCreate(d *schema.ResourceData, m interface{})
 		relationParamName := GetMOName(relationParam)
 		err = aciClient.CreateRelationmaintRsMgrppFromPODMaintenanceGroup(maintMaintGrp.DistinguishedName, relationParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.Partial(false)
 
 	}
 
 	d.SetId(maintMaintGrp.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciPODMaintenanceGroupRead(d, m)
+	return resourceAciPODMaintenanceGroupRead(ctx, d, m)
 }
 
-func resourceAciPODMaintenanceGroupUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciPODMaintenanceGroupUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] PODMaintenanceGroup: Beginning Update")
 
 	aciClient := m.(*client.Client)
@@ -207,11 +204,8 @@ func resourceAciPODMaintenanceGroupUpdate(d *schema.ResourceData, m interface{})
 	err := aciClient.Save(maintMaintGrp)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
 
@@ -223,7 +217,7 @@ func resourceAciPODMaintenanceGroupUpdate(d *schema.ResourceData, m interface{})
 	d.Partial(true)
 	err = checkTDn(aciClient, checkDns)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Partial(false)
 
@@ -232,21 +226,19 @@ func resourceAciPODMaintenanceGroupUpdate(d *schema.ResourceData, m interface{})
 		newRelParamName := GetMOName(newRelParam.(string))
 		err = aciClient.CreateRelationmaintRsMgrppFromPODMaintenanceGroup(maintMaintGrp.DistinguishedName, newRelParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.Partial(false)
 
 	}
 
 	d.SetId(maintMaintGrp.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciPODMaintenanceGroupRead(d, m)
+	return resourceAciPODMaintenanceGroupRead(ctx, d, m)
 
 }
 
-func resourceAciPODMaintenanceGroupRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciPODMaintenanceGroupRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -279,18 +271,18 @@ func resourceAciPODMaintenanceGroupRead(d *schema.ResourceData, m interface{}) e
 	return nil
 }
 
-func resourceAciPODMaintenanceGroupDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciPODMaintenanceGroupDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "maintMaintGrp")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
 }
