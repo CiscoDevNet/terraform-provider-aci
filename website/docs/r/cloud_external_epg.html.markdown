@@ -37,7 +37,7 @@ Manages ACI Cloud External EPg
 * `name_alias` - (Optional) name_alias for object Cloud External EPg.
 * `pref_gr_memb` - (Optional) Represents parameter used to determine if EPg is part of a group that does not a contract for communication. Allowed values are "include" and "exclude". Default is "exclude".
 * `prio` - (Optional) QOS priority class id. Allowed values are "unspecified", "level1", "level2", "level3", "level4", "level5" and "level6". Default is "unspecified.
-* `route_reachability` - (Optional) Route reachability for this EPG. Allowed values are "unspecified", "inter-site", "internet" and "inter-site-ext".Default is "inter-site".
+* `route_reachability` - (Optional) Route reachability for this EPG. Allowed values are "unspecified", "inter-site", "internet", "site-ext" and "inter-site-ext".Default is "inter-site".
 
 * `relation_fv_rs_sec_inherited` - (Optional) Relation to class fvEPg. Cardinality - N TO M. Type - Set of String.
                 
