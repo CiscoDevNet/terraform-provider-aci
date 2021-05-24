@@ -40,7 +40,7 @@ resource "aci_local_user" "example" {
 
 - `name` - (Required) Name of Object locally authenticated user.
 - `account_status` - (Optional) The status of the locally-authenticated user account.
-  Allowed values: "active", "inactive".
+  Allowed values: "active", "inactive". Default value: "active".
 - `annotation` - (Optional) Annotation for object locally authenticated user.
 - `cert_attribute` - (Optional) cert-attribute for object locally authenticated user.
 - `clear_pwd_history` - (Optional) Allows the administrator to clear the password history of a locally-authenticated user. This is a trigger type attribute, So the value will reset to "no" once histry is cleared. Allowed values: "no", "yes". Default value: no.
