@@ -17,7 +17,7 @@ data "aci_physical_domain" "example" {
 }
 ```
 ## Argument Reference ##
-* `name` - (Required) Name of object physical domain..
+* `name` - (Required) Name of object physical domain.
 
 
 
