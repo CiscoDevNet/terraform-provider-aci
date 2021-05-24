@@ -13,14 +13,13 @@ Data source for ACI Cloud Providers Region
 
 ```hcl
 data "aci_cloud_providers_region" "region_aws" {
-
   cloud_provider_profile_dn  = aci_cloud_provider_profile.aws_prov.id
   name                       = "us-east-1"
 }
 ```
 ## Argument Reference ##
 * `cloud_provider_profile_dn` - (Required) Distinguished name of parent CloudProviderProfile object.
-* `name` - (Required) name of Object cloud providers region.
+* `name` - (Required) Name of Object cloud providers region.
 
 
 
