@@ -1,21 +1,23 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciVLANPool() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciVLANPoolCreate,
-		Update: resourceAciVLANPoolUpdate,
-		Read:   resourceAciVLANPoolRead,
-		Delete: resourceAciVLANPoolDelete,
+		CreateContext: resourceAciVLANPoolCreate,
+		UpdateContext: resourceAciVLANPoolUpdate,
+		ReadContext:   resourceAciVLANPoolRead,
+		DeleteContext: resourceAciVLANPoolDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciVLANPoolImport,
@@ -95,7 +97,7 @@ func resourceAciVLANPoolImport(d *schema.ResourceData, m interface{}) ([]*schema
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciVLANPoolCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciVLANPoolCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] VLANPool: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -117,19 +119,16 @@ func resourceAciVLANPoolCreate(d *schema.ResourceData, m interface{}) error {
 
 	err := aciClient.Save(fvnsVlanInstP)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.Partial(false)
 
 	d.SetId(fvnsVlanInstP.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciVLANPoolRead(d, m)
+	return resourceAciVLANPoolRead(ctx, d, m)
 }
 
-func resourceAciVLANPoolUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciVLANPoolUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] VLANPool: Beginning Update")
 
 	aciClient := m.(*client.Client)
@@ -155,20 +154,17 @@ func resourceAciVLANPoolUpdate(d *schema.ResourceData, m interface{}) error {
 	err := aciClient.Save(fvnsVlanInstP)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.Partial(false)
 
 	d.SetId(fvnsVlanInstP.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciVLANPoolRead(d, m)
+	return resourceAciVLANPoolRead(ctx, d, m)
 
 }
 
-func resourceAciVLANPoolRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciVLANPoolRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -187,18 +183,18 @@ func resourceAciVLANPoolRead(d *schema.ResourceData, m interface{}) error {
 	return nil
 }
 
-func resourceAciVLANPoolDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciVLANPoolDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "fvnsVlanInstP")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
 }
