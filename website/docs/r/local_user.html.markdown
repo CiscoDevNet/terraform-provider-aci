@@ -20,6 +20,7 @@ resource "aci_local_user" "example" {
     annotation          = "local_user_tag"
     cert_attribute      = "example"
     clear_pwd_history   = "no"
+    description         = "from terraform"
     email               = "example@email.com"
     expiration          = "2030-01-01 00:00:00"
     expires             = "yes"
