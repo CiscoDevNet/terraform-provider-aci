@@ -30,7 +30,6 @@ resource "aci_pod_maintenance_group" "example" {
 - `fwtype` - (Optional) The firmware type for pod maintenance group object. Allowed values are "catalog", "config", "controller", "plugin", "pluginPackage", "switch" and "vpod". Default value is "switch".
 - `name_alias` - (Optional) Name alias for pod maintenance group object.
 - `pod_maintenance_group_type` - (Optional) component type for pod maintenance group object. Allowed values are "range", "ALL" and "ALL_IN_POD". Default value is "range".
-
 - `relation_maint_rs_mgrpp` - (Optional) relation to class maintMaintP. Cardinality - N_TO_ONE. Type - String.
 
 ## Attribute Reference
