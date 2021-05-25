@@ -39,7 +39,7 @@ Manages ACI Cloud Context Profile
 * `cloud_vendor` - (Required) Name of the vendor. e.g. "aws", "azure".
 * `annotation` - (Optional) Annotation for object Cloud Context profile.
 * `name_alias` - (Optional) Name alias for object Cloud Context profile.
-* `type` - (Optional) The specific type of the object or component. Allowed values are "regular" and "shadow". Default is "regular".
+* `type` - (Optional) The specific type of the object or component. Allowed values are "regular", "shadow", "hosted" and "container-overlay". Default is "regular".
 
 * `hub_network` - (Optional) Hub network Dn which enables Transit Gateway.
 

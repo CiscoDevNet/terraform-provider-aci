@@ -52,6 +52,8 @@ func resourceAciCloudContextProfile() *schema.Resource {
 				ValidateFunc: validation.StringInSlice([]string{
 					"regular",
 					"shadow",
+					"hosted",
+					"container-overlay",
 				}, false),
 			},
 
