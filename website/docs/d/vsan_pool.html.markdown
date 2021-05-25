@@ -14,22 +14,18 @@ Data source for ACI VSAN Pool
 ```hcl
 data "aci_vsan_pool" "example" {
 
-
-  name  = "example"
-
-  allocMode  = "example"
+  name       = "example"
+  alloc_mode  = "example"
 }
 ```
 ## Argument Reference ##
 * `name` - (Required) Name of Object VSAN Pool.
-* `allocMode` - (Required) AllocMode of Object VSAN Pool.
+* `alloc_mode` - (Required) Allocation Mode of Object VSAN Pool.
 
 
 ## Attribute Reference
 
 * `id` - Attribute id set to the Dn of the VSAN Pool.
 * `description` - (Optional) Description for object VSAN Pool.
-* `alloc_mode` - (Optional) Allocmode for object VSAN Pool.
-Allowed values: "dynamic", "static". Default value: "static".
 * `annotation` - (Optional) Annotation for object VSAN Pool.
 * `name_alias` - (Optional) Name alias for object VSAN Pool.

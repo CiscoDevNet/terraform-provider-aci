@@ -14,9 +14,7 @@ Manages ACI VSAN Pool
 ```hcl
 resource "aci_vsan_pool" "example" {
 
-
-  name  = "example"
-
+  name        = "example"
   alloc_mode  = "static"
   annotation  = "example"
   name_alias  = "example"
@@ -25,7 +23,7 @@ resource "aci_vsan_pool" "example" {
 ## Argument Reference ##
 * `name` - (Required) Name of Object VSAN Pool.
 * `description` - (Optional) Description for object VSAN Pool.
-* `alloc_mode` - (Optional) Allocmode for object VSAN Pool.
+* `alloc_mode` - (Required) Allocmode for object VSAN Pool.
 Allowed values: "dynamic", "static". Default value: "static".
 * `annotation` - (Optional) Annotation for object VSAN Pool.
 * `name_alias` - (Optional) Name alias for object VSAN Pool.
