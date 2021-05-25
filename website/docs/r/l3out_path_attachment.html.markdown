@@ -59,7 +59,7 @@ resource "aci_l3out_path_attachment" "example" {
 - `mode` - (Optional) BGP Domain mode.  
   Allowed values: "native", "regular", "untagged". Default value: "regular".
 - `mtu` - (Optional) The maximum transmit unit of the external network.
-  Allowed value: "inherit".
+  Default value: "inherit".
 
 - `target_dscp` - (Optional) The target differentiated service code point (DSCP) of the path attached to the layer 3 outside profile. Default value: "unspecified".
   Allowed values: "AF11", "AF12", "AF13", "AF21", "AF22", "AF23", "AF31", "AF32", "AF33", "AF41", "AF42", "AF43", "CS0", "CS1", "CS2", "CS3", "CS4", "CS5", "CS6", "CS7", "EF", "VA", "unspecified". Default value: "unspecified".

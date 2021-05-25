@@ -282,7 +282,12 @@ func resourceAciSwitchSpineAssociationRead(d *schema.ResourceData, m interface{}
 		d.Set("relation_infra_rs_spine_acc_node_p_grp", "")
 
 	} else {
-		d.Set("relation_infra_rs_spine_acc_node_p_grp", infraRsSpineAccNodePGrpData)
+		if _, ok := d.GetOk("relation_infra_rs_spine_acc_node_p_grp"); ok {
+			tfName := d.Get("relation_infra_rs_spine_acc_node_p_grp").(string)
+			if tfName != infraRsSpineAccNodePGrpData {
+				d.Set("relation_infra_rs_spine_acc_node_p_grp", "")
+			}
+		}
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())

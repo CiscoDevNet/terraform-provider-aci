@@ -3,6 +3,8 @@ package aci
 import (
 	"fmt"
 	"log"
+	"reflect"
+	"sort"
 	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
@@ -628,7 +630,15 @@ func resourceAciLeafProfileRead(d *schema.ResourceData, m interface{}) error {
 		d.Set("relation_infra_rs_acc_card_p", make([]string, 0, 1))
 
 	} else {
-		d.Set("relation_infra_rs_acc_card_p", infraRsAccCardPData)
+		if _, ok := d.GetOk("relation_infra_rs_acc_card_p"); ok {
+			relationParamList := toStringList(d.Get("relation_infra_rs_acc_card_p").(*schema.Set).List())
+			infraRsAccCardPDataList := toStringList(infraRsAccCardPData.(*schema.Set).List())
+			sort.Strings(relationParamList)
+			sort.Strings(infraRsAccCardPDataList)
+			if !reflect.DeepEqual(relationParamList, infraRsAccCardPDataList) {
+				d.Set("relation_infra_rs_acc_card_p", make([]string, 0, 1))
+			}
+		}
 	}
 
 	infraRsAccPortPData, err := aciClient.ReadRelationinfraRsAccPortPFromLeafProfile(dn)
@@ -637,7 +647,15 @@ func resourceAciLeafProfileRead(d *schema.ResourceData, m interface{}) error {
 		d.Set("relation_infra_rs_acc_port_p", make([]string, 0, 1))
 
 	} else {
-		d.Set("relation_infra_rs_acc_port_p", infraRsAccPortPData)
+		if _, ok := d.GetOk("relation_infra_rs_acc_port_p"); ok {
+			relationParamList := toStringList(d.Get("relation_infra_rs_acc_port_p").(*schema.Set).List())
+			infraRsAccPortPDataList := toStringList(infraRsAccPortPData.(*schema.Set).List())
+			sort.Strings(relationParamList)
+			sort.Strings(infraRsAccPortPDataList)
+			if !reflect.DeepEqual(relationParamList, infraRsAccPortPDataList) {
+				d.Set("relation_infra_rs_acc_port_p", make([]string, 0, 1))
+			}
+		}
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
