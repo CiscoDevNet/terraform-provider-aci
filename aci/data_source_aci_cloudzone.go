@@ -82,10 +82,11 @@ func setCloudAvailabilityZoneAttributes(cloudZone *models.CloudAvailabilityZone,
 	if dn != cloudZone.DistinguishedName {
 		d.Set("cloud_providers_region_dn", "")
 	}
+	d.Set("description", cloudZone.Description)
 	cloudZoneMap, _ := cloudZone.ToMap()
 
 	d.Set("name", cloudZoneMap["name"])
-
+	d.Set("annotation", cloudZoneMap["annotation"])
 	d.Set("name_alias", cloudZoneMap["nameAlias"])
 	return d
 }

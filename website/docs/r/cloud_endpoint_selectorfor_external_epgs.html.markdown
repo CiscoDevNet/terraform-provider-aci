@@ -21,6 +21,7 @@ Manages ACI Cloud Endpoint Selector for External EPgs
 		name                  = "ext_ep_selector"
 		annotation            = "tag_ext_selector"
 		is_shared             = "yes"
+		match_expression 	  = "custom:tag=='provbaz'"
 		name_alias            = "alias_select"
 	}
 ```
@@ -30,6 +31,7 @@ Manages ACI Cloud Endpoint Selector for External EPgs
 - `cloud_external_epg_dn` - (Required) Distinguished name of parent Cloud External EPg object.
 - `name` - (Required) Name of Object cloud endpoint selector for external EPgs.
 - `subnet` - (Required) Subnet from which EP to select. Any valid CIDR block is allowed here.
+- `match_expression` - (Optional) Expressions are not used in cloudExtEPSelector because this selector only match subnets.
 - `annotation` - (Optional) Annotation for object cloud endpoint selector for external EPgs.
 - `description` - (Optional) Description for object cloud endpoint selector for external EPgs.
 - `is_shared` - (Optional) For Selectors set the shared route control. Allowed values are "yes" and "no". Default value is "yes".

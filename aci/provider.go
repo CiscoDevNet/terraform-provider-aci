@@ -266,7 +266,7 @@ func Provider() *schema.Provider {
 			"aci_firmware_policy":                          dataSourceAciFirmwarePolicy(),
 			"aci_firmware_download_task":                   dataSourceAciFirmwareDownloadTask(),
 			"aci_fc_domain":                                dataSourceAciFCDomain(),
-			"aci_configuration_export_policy":              dataSourceAciConfigurationExportPolicy(),
+			"aci_configurat	ion_export_policy":              dataSourceAciConfigurationExportPolicy(),
 			"aci_cdp_interface_policy":                     dataSourceAciCDPInterfacePolicy(),
 			"aci_access_sub_port_block":                    dataSourceAciAccessSubPortBlock(),
 			"aci_maintenance_group_node":                   dataSourceAciNodeBlockMG(),

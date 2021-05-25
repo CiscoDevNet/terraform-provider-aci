@@ -19,7 +19,7 @@ data "aci_cloud_providers_region" "region_aws" {
 ```
 ## Argument Reference ##
 * `cloud_provider_profile_dn` - (Required) Distinguished name of parent CloudProviderProfile object.
-* `name` - (Required) name of Object cloud providers region.
+* `name` - (Required) Name of Object cloud providers region.
 
 
 

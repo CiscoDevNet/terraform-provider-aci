@@ -21,7 +21,10 @@ Manages ACI Cloud Context Profile
 		region                   = "us-west-1"
 		cloud_vendor	         = "aws"
 		relation_cloud_rs_to_ctx = aci_vrf.example.id
-		hub_network  		 = "uni/tn-infra/gwrouterp-default"
+		hub_network  		 	 = "uni/tn-infra/gwrouterp-default"
+		annotation			     = "context_profile"
+		name_alias				 = "alias_context_profile"
+		type					 = "regular"
 	}
 
 ```

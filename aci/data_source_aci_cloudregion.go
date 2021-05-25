@@ -88,9 +88,10 @@ func setCloudProvidersRegionAttributes(cloudRegion *models.CloudProvidersRegion,
 	if dn != cloudRegion.DistinguishedName {
 		d.Set("cloud_provider_profile_dn", "")
 	}
+	d.Set("description", cloudRegion.Description)
 	cloudRegionMap, _ := cloudRegion.ToMap()
-	d.Set("annotation", cloudRegionMap["annotation"])
 	d.Set("name", cloudRegionMap["name"])
+	d.Set("annotation", cloudRegionMap["annotation"])
 	d.Set("admin_st", cloudRegionMap["adminSt"])
 	d.Set("name_alias", cloudRegionMap["nameAlias"])
 	return d

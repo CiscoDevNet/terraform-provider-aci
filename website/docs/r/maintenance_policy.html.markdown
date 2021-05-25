@@ -14,17 +14,18 @@ Manages ACI Maintenance Policy
 
 ```hcl
 resource "aci_maintenance_policy" "example" {
-  name  = "example"
-  admin_st  = "example"
-  annotation  = "example"
-  graceful  = "example"
-  ignore_compat  = "example"
-  internal_label  = "example"
-  name_alias  = "example"
-  notif_cond  = "example"
-  run_mode  = "example"
-  version  = "example"
-  version_check_override  = "example"
+  name           = "mnt_policy"
+  admin_st       = "triggered"
+  description    = "from terraform"
+  annotation     = "example"
+  graceful       = "yes"
+  ignore_compat  = "yes"
+  internal_label = "example"
+  name_alias     = "example"
+  notif_cond     = "notifyOnlyOnFailures"
+  run_mode       = "pauseOnlyOnFailures"
+  version        = "n9000-15.0(1k)"
+  version_check_override = "trigger-immediate"
 }
 ```
 
