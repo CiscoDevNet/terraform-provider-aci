@@ -17,7 +17,7 @@ func dataSourceAciCloudProviderProfile() *schema.Resource {
 
 		SchemaVersion: 1,
 
-		Schema: AppendBaseAttrSchema(map[string]*schema.Schema{
+		Schema: map[string]*schema.Schema{
 
 			"vendor": &schema.Schema{
 				Type:     schema.TypeString,
@@ -29,7 +29,7 @@ func dataSourceAciCloudProviderProfile() *schema.Resource {
 				Optional: true,
 				Default:  "orchestrator:terraform",
 			},
-		}),
+		},
 	}
 }
 
