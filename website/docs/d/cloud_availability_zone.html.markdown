@@ -13,14 +13,13 @@ Data source for ACI Cloud Availability Zone
 
 ```hcl
 data "aci_cloud_availability_zone" "az_us_east_1_aws" {
-
   cloud_providers_region_dn  = aci_cloud_providers_region.region_aws.id
   name                       = "us-east-1a"
 }
 ```
 ## Argument Reference ##
 * `cloud_providers_region_dn` - (Required) Distinguished name of parent CloudProvidersRegion object.
-* `name` - (Required) name of Object cloud_availability_zone.
+* `name` - (Required) Name of Object cloud availability zone.
 
 
 
