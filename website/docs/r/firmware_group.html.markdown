@@ -14,7 +14,6 @@ Manages ACI Firmware Group
 ```hcl
 resource "aci_firmware_group" "example" {
 
-
   name  = "example"
   annotation  = "example"
   name_alias  = "example"
@@ -22,10 +21,10 @@ resource "aci_firmware_group" "example" {
 }
 ```
 ## Argument Reference ##
-* `name` - (Required) name of Object firmware_group.
-* `annotation` - (Optional) annotation for object firmware_group.
-* `name_alias` - (Optional) name_alias for object firmware_group.
-* `firmware_group_type` - (Optional) component type.
+* `name` - (Required) Name of object Firmware Group.
+* `annotation` - (Optional) Annotation for object Firmware Group.
+* `name_alias` - (Optional) Name_alias for object Firmware Group.
+* `firmware_group_type` - (Optional) Component type.
 Allowed values: "ALL", "range", "ALL_IN_POD"
 
 * `relation_firmware_rs_fwgrpp` - (Optional) Relation to class firmwareFwP. Cardinality - N_TO_ONE. Type - String.

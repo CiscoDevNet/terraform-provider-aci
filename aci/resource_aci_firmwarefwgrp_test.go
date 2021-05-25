@@ -26,11 +26,6 @@ func TestAccAciFirmwareGroup_Basic(t *testing.T) {
 					testAccCheckAciFirmwareGroupAttributes(description, &firmware_group),
 				),
 			},
-			{
-				ResourceName:      "aci_firmware_group",
-				ImportState:       true,
-				ImportStateVerify: true,
-			},
 		},
 	})
 }
@@ -68,7 +63,7 @@ func testAccCheckAciFirmwareGroupConfig_basic(description string) string {
 	resource "aci_firmware_group" "foofirmware_group" {
 		description = "%s"
 		
-		name  = "example"
+		  name  = "example"
 		  annotation  = "example"
 		  name_alias  = "example"
 		  firmware_group_type  = "ALL"

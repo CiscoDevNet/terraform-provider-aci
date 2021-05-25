@@ -1,21 +1,23 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciFirmwareGroup() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciFirmwareGroupCreate,
-		Update: resourceAciFirmwareGroupUpdate,
-		Read:   resourceAciFirmwareGroupRead,
-		Delete: resourceAciFirmwareGroupDelete,
+		CreateContext: resourceAciFirmwareGroupCreate,
+		UpdateContext: resourceAciFirmwareGroupUpdate,
+		ReadContext:   resourceAciFirmwareGroupRead,
+		DeleteContext: resourceAciFirmwareGroupDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciFirmwareGroupImport,
@@ -102,7 +104,7 @@ func resourceAciFirmwareGroupImport(d *schema.ResourceData, m interface{}) ([]*s
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciFirmwareGroupCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciFirmwareGroupCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] FirmwareGroup: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -125,11 +127,8 @@ func resourceAciFirmwareGroupCreate(d *schema.ResourceData, m interface{}) error
 
 	err := aciClient.Save(firmwareFwGrp)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
 
@@ -141,7 +140,7 @@ func resourceAciFirmwareGroupCreate(d *schema.ResourceData, m interface{}) error
 	d.Partial(true)
 	err = checkTDn(aciClient, checkDns)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Partial(false)
 
@@ -150,20 +149,18 @@ func resourceAciFirmwareGroupCreate(d *schema.ResourceData, m interface{}) error
 		relationParamName := GetMOName(relationParam)
 		err = aciClient.CreateRelationfirmwareRsFwgrppFromFirmwareGroup(firmwareFwGrp.DistinguishedName, relationParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.Partial(false)
 
 	}
 
 	d.SetId(firmwareFwGrp.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciFirmwareGroupRead(d, m)
+	return resourceAciFirmwareGroupRead(ctx, d, m)
 }
 
-func resourceAciFirmwareGroupUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciFirmwareGroupUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] FirmwareGroup: Beginning Update")
 
 	aciClient := m.(*client.Client)
@@ -190,11 +187,8 @@ func resourceAciFirmwareGroupUpdate(d *schema.ResourceData, m interface{}) error
 	err := aciClient.Save(firmwareFwGrp)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
 
@@ -206,7 +200,7 @@ func resourceAciFirmwareGroupUpdate(d *schema.ResourceData, m interface{}) error
 	d.Partial(true)
 	err = checkTDn(aciClient, checkDns)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Partial(false)
 
@@ -215,21 +209,19 @@ func resourceAciFirmwareGroupUpdate(d *schema.ResourceData, m interface{}) error
 		newRelParamName := GetMOName(newRelParam.(string))
 		err = aciClient.CreateRelationfirmwareRsFwgrppFromFirmwareGroup(firmwareFwGrp.DistinguishedName, newRelParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.Partial(false)
 
 	}
 
 	d.SetId(firmwareFwGrp.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciFirmwareGroupRead(d, m)
+	return resourceAciFirmwareGroupRead(ctx, d, m)
 
 }
 
-func resourceAciFirmwareGroupRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciFirmwareGroupRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -262,18 +254,18 @@ func resourceAciFirmwareGroupRead(d *schema.ResourceData, m interface{}) error {
 	return nil
 }
 
-func resourceAciFirmwareGroupDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciFirmwareGroupDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "firmwareFwGrp")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
 }
