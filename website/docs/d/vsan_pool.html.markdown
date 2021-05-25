@@ -29,6 +29,7 @@ data "aci_vsan_pool" "example" {
 
 * `id` - Attribute id set to the Dn of the VSAN Pool.
 * `description` - (Optional) Description for object VSAN Pool.
-* `alloc_mode` - (Optional) AllocMode for object VSAN Pool.
+* `alloc_mode` - (Optional) Allocmode for object VSAN Pool.
+Allowed values: "dynamic", "static". Default value: "static".
 * `annotation` - (Optional) Annotation for object VSAN Pool.
 * `name_alias` - (Optional) Name alias for object VSAN Pool.
