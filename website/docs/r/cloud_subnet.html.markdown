@@ -22,6 +22,7 @@ Manages ACI Cloud Subnet
 		name_alias         = "alias_subnet"
 		scope              = "public"
 		usage              = "user"
+		zone               = data.aci_cloud_availability_zone.az_us_east_1_aws.id
 	}
 
 ```

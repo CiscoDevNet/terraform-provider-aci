@@ -26,6 +26,5 @@ data "aci_cloud_availability_zone" "az_us_east_1_aws" {
 ## Attribute Reference
 
 * `id` - Attribute id set to the Dn of the Cloud Availability Zone.
-* `description` - (Optional) Description for object cloud availability zone.
 * `annotation` - (Optional) Annotation for object cloud availability zone.
 * `name_alias` - (Optional) Name alias for object cloud availability zone.

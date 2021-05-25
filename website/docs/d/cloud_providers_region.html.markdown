@@ -27,6 +27,5 @@ data "aci_cloud_providers_region" "region_aws" {
 
 * `id` - Attribute id set to the Dn of the Cloud Providers Region.
 * `admin_st` - (Optional) Administrative state of the object or policy.
-* `description` - (Optional) Description for object cloud providers region.
 * `annotation` - (Optional) Annotation for object cloud providers region.
 * `name_alias` - (Optional) Name alias for object cloud providers region.
