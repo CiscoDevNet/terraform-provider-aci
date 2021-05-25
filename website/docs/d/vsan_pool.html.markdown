@@ -21,14 +21,14 @@ data "aci_vsan_pool" "example" {
 }
 ```
 ## Argument Reference ##
-* `name` - (Required) name of Object vsan_pool.
-* `allocMode` - (Required) allocMode of Object vsan_pool.
-
+* `name` - (Required) Name of Object VSAN Pool.
+* `allocMode` - (Required) AllocMode of Object VSAN Pool.
 
 
 ## Attribute Reference
 
 * `id` - Attribute id set to the Dn of the VSAN Pool.
-* `alloc_mode` - (Optional) alloc_mode for object vsan_pool.
-* `annotation` - (Optional) annotation for object vsan_pool.
-* `name_alias` - (Optional) name_alias for object vsan_pool.
+* `description` - (Optional) Description for object VSAN Pool.
+* `alloc_mode` - (Optional) AllocMode for object VSAN Pool.
+* `annotation` - (Optional) Annotation for object VSAN Pool.
+* `name_alias` - (Optional) Name alias for object VSAN Pool.
