@@ -17,7 +17,7 @@ func dataSourceAciCloudProvidersRegion() *schema.Resource {
 
 		SchemaVersion: 1,
 
-		Schema: AppendBaseAttrSchema(map[string]*schema.Schema{
+		Schema: map[string]*schema.Schema{
 			"cloud_provider_profile_dn": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
@@ -33,13 +33,17 @@ func dataSourceAciCloudProvidersRegion() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
-
+			"annotation": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Default:  "orchestrator:terraform",
+			},
 			"name_alias": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
 			},
-		}),
+		},
 	}
 }
 
@@ -80,13 +84,13 @@ func getRemoteCloudProvidersRegion(client *client.Client, dn string) (*models.Cl
 func setCloudProvidersRegionAttributes(cloudRegion *models.CloudProvidersRegion, d *schema.ResourceData) *schema.ResourceData {
 	dn := d.Id()
 	d.SetId(cloudRegion.DistinguishedName)
+	//d.Set("description", cloudRegion.Description)
 	if dn != cloudRegion.DistinguishedName {
 		d.Set("cloud_provider_profile_dn", "")
 	}
 	cloudRegionMap, _ := cloudRegion.ToMap()
-
+	d.Set("annotation", cloudRegionMap["annotation"])
 	d.Set("name", cloudRegionMap["name"])
-
 	d.Set("admin_st", cloudRegionMap["adminSt"])
 	d.Set("name_alias", cloudRegionMap["nameAlias"])
 	return d

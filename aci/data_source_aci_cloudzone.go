@@ -17,7 +17,12 @@ func dataSourceAciCloudAvailabilityZone() *schema.Resource {
 
 		SchemaVersion: 1,
 
-		Schema: AppendBaseAttrSchema(map[string]*schema.Schema{
+		Schema: map[string]*schema.Schema{
+			"description": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
 			"cloud_providers_region_dn": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
@@ -33,7 +38,7 @@ func dataSourceAciCloudAvailabilityZone() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
-		}),
+		},
 	}
 }
 
