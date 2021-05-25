@@ -31,7 +31,6 @@ func dataSourceAciCloudContextProfile() *schema.Resource {
 				Type:        schema.TypeString,
 				Optional:    true,
 				Computed:    true,
-				Description: "Mo doc not defined in techpub!!!",
 			},
 
 			"type": &schema.Schema{

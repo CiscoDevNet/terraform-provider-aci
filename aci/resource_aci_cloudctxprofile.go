@@ -89,13 +89,11 @@ func resourceAciCloudContextProfile() *schema.Resource {
 			},
 			"relation_cloud_rs_ctx_profile_to_region": &schema.Schema{
 				Type: schema.TypeString,
-
 				Optional:    true,
 				Description: "Create relation to cloudRegion",
 			},
 			"hub_network": &schema.Schema{
 				Type: schema.TypeString,
-
 				Optional:    true,
 				Description: "hub network to enable transit gateway",
 			},
