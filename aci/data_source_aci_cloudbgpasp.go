@@ -46,7 +46,12 @@ func dataSourceAciAutonomousSystemProfileRead(ctx context.Context, d *schema.Res
 	if err != nil {
 		return diag.FromErr(err)
 	}
-	setAutonomousSystemProfileAttributes(cloudBgpAsP, d)
+	_, err = setAutonomousSystemProfileAttributes(cloudBgpAsP, d)
+
+	if err != nil {
+		return diag.FromErr(err)
+	}
+	
 	return nil
 }
 
@@ -65,13 +70,17 @@ func getRemoteAutonomousSystemProfile(client *client.Client, dn string) (*models
 	return cloudBgpAsP, nil
 }
 
-func setAutonomousSystemProfileAttributes(cloudBgpAsP *models.AutonomousSystemProfile, d *schema.ResourceData) *schema.ResourceData {
+func setAutonomousSystemProfileAttributes(cloudBgpAsP *models.AutonomousSystemProfile, d *schema.ResourceData) (*schema.ResourceData, error) {
 	d.SetId(cloudBgpAsP.DistinguishedName)
 	d.Set("description", cloudBgpAsP.Description)
-	cloudBgpAsPMap, _ := cloudBgpAsP.ToMap()
+	cloudBgpAsPMap, err := cloudBgpAsP.ToMap()
+	
+	if err != nil {
+		return d, err
+	}
 
 	d.Set("annotation", cloudBgpAsPMap["annotation"])
 	d.Set("asn", cloudBgpAsPMap["asn"])
 	d.Set("name_alias", cloudBgpAsPMap["nameAlias"])
-	return d
+	return d, nil
 }
