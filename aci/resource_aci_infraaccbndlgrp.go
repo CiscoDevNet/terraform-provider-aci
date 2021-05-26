@@ -203,17 +203,19 @@ func getRemotePCVPCInterfacePolicyGroup(client *client.Client, dn string) (*mode
 	return infraAccBndlGrp, nil
 }
 
-func setPCVPCInterfacePolicyGroupAttributes(infraAccBndlGrp *models.PCVPCInterfacePolicyGroup, d *schema.ResourceData) *schema.ResourceData {
+func setPCVPCInterfacePolicyGroupAttributes(infraAccBndlGrp *models.PCVPCInterfacePolicyGroup, d *schema.ResourceData) (*schema.ResourceData, error) {
 	d.SetId(infraAccBndlGrp.DistinguishedName)
 	d.Set("description", infraAccBndlGrp.Description)
-	infraAccBndlGrpMap, _ := infraAccBndlGrp.ToMap()
-
+	infraAccBndlGrpMap, err := infraAccBndlGrp.ToMap()
+	if err != nil {
+		return d, err
+	}
 	d.Set("name", infraAccBndlGrpMap["name"])
 
 	d.Set("annotation", infraAccBndlGrpMap["annotation"])
 	d.Set("lag_t", infraAccBndlGrpMap["lagT"])
 	d.Set("name_alias", infraAccBndlGrpMap["nameAlias"])
-	return d
+	return d, nil
 }
 
 func resourceAciPCVPCInterfacePolicyGroupImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -227,7 +229,10 @@ func resourceAciPCVPCInterfacePolicyGroupImport(d *schema.ResourceData, m interf
 	if err != nil {
 		return nil, err
 	}
-	schemaFilled := setPCVPCInterfacePolicyGroupAttributes(infraAccBndlGrp, d)
+	schemaFilled, err := setPCVPCInterfacePolicyGroupAttributes(infraAccBndlGrp, d)
+	if err != nil {
+		return nil, err
+	}
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
@@ -1069,8 +1074,11 @@ func resourceAciPCVPCInterfacePolicyGroupRead(ctx context.Context, d *schema.Res
 		d.SetId("")
 		return nil
 	}
-	setPCVPCInterfacePolicyGroupAttributes(infraAccBndlGrp, d)
-
+	_, err = setPCVPCInterfacePolicyGroupAttributes(infraAccBndlGrp, d)
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 	infraRsSpanVSrcGrpData, err := aciClient.ReadRelationinfraRsSpanVSrcGrpFromPCVPCInterfacePolicyGroup(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation infraRsSpanVSrcGrp %v", err)

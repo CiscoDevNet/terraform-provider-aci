@@ -58,6 +58,6 @@ func dataSourceAciCloudEndpointSelectorRead(ctx context.Context, d *schema.Resou
 		return diag.FromErr(err)
 	}
 	d.SetId(dn)
-	setCloudEndpointSelectorAttributes(cloudEPSelector, d)
+	_, err = setCloudEndpointSelectorAttributes(cloudEPSelector, d)
 	return nil
 }

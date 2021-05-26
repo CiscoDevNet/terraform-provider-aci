@@ -70,6 +70,9 @@ func dataSourceAciCloudEndpointSelectorforExternalEPgsRead(ctx context.Context, 
 		return diag.FromErr(err)
 	}
 	d.SetId(dn)
-	setCloudEndpointSelectorforExternalEPgsAttributes(cloudExtEPSelector, d)
+	_, err = setCloudEndpointSelectorforExternalEPgsAttributes(cloudExtEPSelector, d)
+	if err != nil {
+		return diag.FromErr(err)
+	}
 	return nil
 }

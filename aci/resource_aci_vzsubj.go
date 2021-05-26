@@ -160,7 +160,7 @@ func getRemoteContractSubject(client *client.Client, dn string) (*models.Contrac
 	return vzSubj, nil
 }
 
-func setContractSubjectAttributes(vzSubj *models.ContractSubject, d *schema.ResourceData) *schema.ResourceData {
+func setContractSubjectAttributes(vzSubj *models.ContractSubject, d *schema.ResourceData) (*schema.ResourceData, error) {
 	dn := d.Id()
 	d.SetId(vzSubj.DistinguishedName)
 	d.Set("description", vzSubj.Description)
@@ -168,7 +168,10 @@ func setContractSubjectAttributes(vzSubj *models.ContractSubject, d *schema.Reso
 	if dn != vzSubj.DistinguishedName {
 		d.Set("contract_dn", "")
 	}
-	vzSubjMap, _ := vzSubj.ToMap()
+	vzSubjMap, err := vzSubj.ToMap()
+	if err != nil {
+		return d, err
+	}
 
 	d.Set("name", vzSubjMap["name"])
 
@@ -179,7 +182,7 @@ func setContractSubjectAttributes(vzSubj *models.ContractSubject, d *schema.Reso
 	d.Set("prov_match_t", vzSubjMap["provMatchT"])
 	d.Set("rev_flt_ports", vzSubjMap["revFltPorts"])
 	d.Set("target_dscp", vzSubjMap["targetDscp"])
-	return d
+	return d, nil
 }
 
 func resourceAciContractSubjectImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -193,12 +196,17 @@ func resourceAciContractSubjectImport(d *schema.ResourceData, m interface{}) ([]
 	if err != nil {
 		return nil, err
 	}
-	vzSubjMap, _ := vzSubj.ToMap()
+	vzSubjMap, err := vzSubj.ToMap()
+	if err != nil {
+		return nil, err
+	}
 	name := vzSubjMap["name"]
 	pDN := GetParentDn(dn, fmt.Sprintf("/subj-%s", name))
 	d.Set("contract_dn", pDN)
-	schemaFilled := setContractSubjectAttributes(vzSubj, d)
-
+	schemaFilled, err := setContractSubjectAttributes(vzSubj, d)
+	if err != nil {
+		return nil, err
+	}
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
@@ -444,7 +452,11 @@ func resourceAciContractSubjectRead(ctx context.Context, d *schema.ResourceData,
 		d.SetId("")
 		return nil
 	}
-	setContractSubjectAttributes(vzSubj, d)
+	_, err = setContractSubjectAttributes(vzSubj, d)
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 
 	vzRsSubjGraphAttData, err := aciClient.ReadRelationvzRsSubjGraphAttFromContractSubject(dn)
 	if err != nil {

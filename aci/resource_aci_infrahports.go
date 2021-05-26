@@ -77,7 +77,7 @@ func getRemoteAccessPortSelector(client *client.Client, dn string) (*models.Acce
 	return infraHPortS, nil
 }
 
-func setAccessPortSelectorAttributes(infraHPortS *models.AccessPortSelector, d *schema.ResourceData) *schema.ResourceData {
+func setAccessPortSelectorAttributes(infraHPortS *models.AccessPortSelector, d *schema.ResourceData) (*schema.ResourceData, error) {
 	dn := d.Id()
 	d.SetId(infraHPortS.DistinguishedName)
 	d.Set("description", infraHPortS.Description)
@@ -85,7 +85,10 @@ func setAccessPortSelectorAttributes(infraHPortS *models.AccessPortSelector, d *
 	if dn != infraHPortS.DistinguishedName {
 		d.Set("leaf_interface_profile_dn", "")
 	}
-	infraHPortSMap, _ := infraHPortS.ToMap()
+	infraHPortSMap, err := infraHPortS.ToMap()
+	if err != nil {
+		return d, err
+	}
 
 	d.Set("name", infraHPortSMap["name"])
 
@@ -94,7 +97,7 @@ func setAccessPortSelectorAttributes(infraHPortS *models.AccessPortSelector, d *
 	d.Set("annotation", infraHPortSMap["annotation"])
 	d.Set("name_alias", infraHPortSMap["nameAlias"])
 	d.Set("access_port_selector_type", infraHPortSMap["type"])
-	return d
+	return d, nil
 }
 
 func resourceAciAccessPortSelectorImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -108,12 +111,18 @@ func resourceAciAccessPortSelectorImport(d *schema.ResourceData, m interface{}) 
 	if err != nil {
 		return nil, err
 	}
-	infraHPortSMap, _ := infraHPortS.ToMap()
+	infraHPortSMap, err := infraHPortS.ToMap()
+	if err != nil {
+		return nil, err
+	}
 	name := infraHPortSMap["name"]
 	ptype := infraHPortSMap["type"]
 	pDN := GetParentDn(dn, fmt.Sprintf("/hports-%s-typ-%s", name, ptype))
 	d.Set("leaf_interface_profile_dn", pDN)
-	schemaFilled := setAccessPortSelectorAttributes(infraHPortS, d)
+	schemaFilled, err := setAccessPortSelectorAttributes(infraHPortS, d)
+	if err != nil {
+		return nil, err
+	}
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
@@ -259,7 +268,11 @@ func resourceAciAccessPortSelectorRead(ctx context.Context, d *schema.ResourceDa
 		d.SetId("")
 		return nil
 	}
-	setAccessPortSelectorAttributes(infraHPortS, d)
+	_, err = setAccessPortSelectorAttributes(infraHPortS, d)
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 
 	infraRsAccBaseGrpData, err := aciClient.ReadRelationinfraRsAccBaseGrpFromAccessPortSelector(dn)
 	if err != nil {

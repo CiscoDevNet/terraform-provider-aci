@@ -76,6 +76,9 @@ func dataSourceAciAccessPortBlockRead(ctx context.Context, d *schema.ResourceDat
 		return diag.FromErr(err)
 	}
 	d.SetId(dn)
-	setAccessPortBlockAttributes(infraPortBlk, d)
+	_, err = setAccessPortBlockAttributes(infraPortBlk, d)
+	if err != nil {
+		return diag.FromErr(err)
+	}
 	return nil
 }

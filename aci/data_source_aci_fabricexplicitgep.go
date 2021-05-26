@@ -47,7 +47,10 @@ func dataSourceAciVPCExplicitProtectionGroupRead(ctx context.Context, d *schema.
 	if err != nil {
 		return diag.FromErr(err)
 	}
-	setVPCExplicitProtectionGroupAttributesDS(fabricExplicitGEp, d)
+	_, err = setVPCExplicitProtectionGroupAttributesDS(fabricExplicitGEp, d)
+	if err != nil {
+		return diag.FromErr(err)
+	}
 	return nil
 }
 
@@ -68,14 +71,17 @@ func getRemoteVPCExplicitProtectionGroupDS(client *client.Client, dn string) (*m
 	return fabricExplicitGEp, nil
 }
 
-func setVPCExplicitProtectionGroupAttributesDS(fabricExplicitGEp *models.VPCExplicitProtectionGroup, d *schema.ResourceData) *schema.ResourceData {
+func setVPCExplicitProtectionGroupAttributesDS(fabricExplicitGEp *models.VPCExplicitProtectionGroup, d *schema.ResourceData) (*schema.ResourceData, error) {
 	d.SetId(fabricExplicitGEp.DistinguishedName)
 	d.Set("description", fabricExplicitGEp.Description)
-	fabricExplicitGEpMap, _ := fabricExplicitGEp.ToMap()
+	fabricExplicitGEpMap, err := fabricExplicitGEp.ToMap()
+	if err != nil {
+		return d, err
+	}
 
 	d.Set("name", fabricExplicitGEpMap["name"])
 
 	d.Set("annotation", fabricExplicitGEpMap["annotation"])
 	d.Set("vpc_explicit_protection_group_id", fabricExplicitGEpMap["id"])
-	return d
+	return d, nil
 }

@@ -215,7 +215,7 @@ func getRemoteExternalNetworkInstanceProfile(client *client.Client, dn string) (
 	return l3extInstP, nil
 }
 
-func setExternalNetworkInstanceProfileAttributes(l3extInstP *models.ExternalNetworkInstanceProfile, d *schema.ResourceData) *schema.ResourceData {
+func setExternalNetworkInstanceProfileAttributes(l3extInstP *models.ExternalNetworkInstanceProfile, d *schema.ResourceData) (*schema.ResourceData, error) {
 	dn := d.Id()
 	d.SetId(l3extInstP.DistinguishedName)
 	d.Set("description", l3extInstP.Description)
@@ -223,7 +223,10 @@ func setExternalNetworkInstanceProfileAttributes(l3extInstP *models.ExternalNetw
 	if dn != l3extInstP.DistinguishedName {
 		d.Set("l3_outside_dn", "")
 	}
-	l3extInstPMap, _ := l3extInstP.ToMap()
+	l3extInstPMap, err := l3extInstP.ToMap()
+	if err != nil {
+		return d, err
+	}
 
 	d.Set("name", l3extInstPMap["name"])
 
@@ -249,12 +252,17 @@ func resourceAciExternalNetworkInstanceProfileImport(d *schema.ResourceData, m i
 	if err != nil {
 		return nil, err
 	}
-	l3extInstPMap, _ := l3extInstP.ToMap()
+	l3extInstPMap, err := l3extInstP.ToMap()
+	if err != nil {
+		return nil, err
+	}
 	name := l3extInstPMap["name"]
 	pDN := GetParentDn(dn, fmt.Sprintf("/instP-%s", name))
 	d.Set("l3_outside_dn", pDN)
-	schemaFilled := setExternalNetworkInstanceProfileAttributes(l3extInstP, d)
-
+	schemaFilled, err := setExternalNetworkInstanceProfileAttributes(l3extInstP, d)
+	if err != nil {
+		return nil, err
+	}
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
@@ -835,7 +843,11 @@ func resourceAciExternalNetworkInstanceProfileRead(ctx context.Context, d *schem
 		d.SetId("")
 		return nil
 	}
-	setExternalNetworkInstanceProfileAttributes(l3extInstP, d)
+	_, err = setExternalNetworkInstanceProfileAttributes(l3extInstP, d)
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 
 	fvRsSecInheritedData, err := aciClient.ReadRelationfvRsSecInheritedFromExternalNetworkInstanceProfile(dn)
 	if err != nil {

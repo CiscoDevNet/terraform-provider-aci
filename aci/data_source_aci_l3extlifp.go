@@ -64,6 +64,9 @@ func dataSourceAciLogicalInterfaceProfileRead(ctx context.Context, d *schema.Res
 		return diag.FromErr(err)
 	}
 	d.SetId(dn)
-	setLogicalInterfaceProfileAttributes(l3extLIfP, d)
+	_, err = setLogicalInterfaceProfileAttributes(l3extLIfP, d)
+	if err != nil {
+		return diag.FromErr(err)
+	}
 	return nil
 }

@@ -73,6 +73,9 @@ func dataSourceAciLACPPolicyRead(ctx context.Context, d *schema.ResourceData, m 
 	if err != nil {
 		return diag.FromErr(err)
 	}
-	setLACPPolicyAttributes(lacpLagPol, d)
+	_, err = setLACPPolicyAttributes(lacpLagPol, d)
+	if err != nil {
+		return diag.FromErr(err)
+	}
 	return nil
 }

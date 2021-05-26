@@ -64,6 +64,9 @@ func dataSourceAciAccessPortSelectorRead(ctx context.Context, d *schema.Resource
 		return diag.FromErr(err)
 	}
 	d.SetId(dn)
-	setAccessPortSelectorAttributes(infraHPortS, d)
+	_, err = setAccessPortSelectorAttributes(infraHPortS, d)
+	if err != nil {
+		return diag.FromErr(err)
+	}
 	return nil
 }
