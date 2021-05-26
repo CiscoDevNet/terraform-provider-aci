@@ -26,11 +26,6 @@ func TestAccAciVXLANPool_Basic(t *testing.T) {
 					testAccCheckAciVXLANPoolAttributes(description, &vxlan_pool),
 				),
 			},
-			{
-				ResourceName:      "aci_vxlan_pool",
-				ImportState:       true,
-				ImportStateVerify: true,
-			},
 		},
 	})
 }
@@ -66,11 +61,10 @@ func testAccCheckAciVXLANPoolConfig_basic(description string) string {
 	return fmt.Sprintf(`
 
 	resource "aci_vxlan_pool" "foovxlan_pool" {
-		description = "%s"
-		
-		name  = "example"
-		  annotation  = "example"
-		  name_alias  = "example"
+			description = "%s"
+			name  = "example"
+			annotation  = "example"
+			name_alias  = "example"
 		}
 	`, description)
 }

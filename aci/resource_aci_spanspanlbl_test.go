@@ -26,11 +26,6 @@ func TestAccAciSPANSourcedestinationGroupMatchLabel_Basic(t *testing.T) {
 					testAccCheckAciSPANSourcedestinationGroupMatchLabelAttributes(description, &span_sourcedestination_group_match_label),
 				),
 			},
-			{
-				ResourceName:      "aci_span_sourcedestination_group_match_label",
-				ImportState:       true,
-				ImportStateVerify: true,
-			},
 		},
 	})
 }
@@ -64,15 +59,25 @@ func TestAccAciSPANSourcedestinationGroupMatchLabel_update(t *testing.T) {
 
 func testAccCheckAciSPANSourcedestinationGroupMatchLabelConfig_basic(description string) string {
 	return fmt.Sprintf(`
-
-	resource "aci_span_sourcedestination_group_match_label" "foospan_sourcedestination_group_match_label" {
-		  span_source_group_dn  = "${aci_span_source_group.example.id}"
-		description = "%s"
-		
+	resource "aci_tenant" "footenant" {
+		name        = "example"
+		name_alias  = "alias_tenant"
+	} 
+	resource "aci_span_source_group" "foospan_source_group" {
+		tenant_dn  = aci_tenant.footenant.id
+		description = "From terraform"
 		name  = "example"
-		  annotation  = "example"
-		  name_alias  = "example"
-		  tag  = "yellow"
+		admin_st  = "enabled"
+		annotation  = "example"
+		name_alias  = "example"
+	  }
+	resource "aci_span_sourcedestination_group_match_label" "foospan_sourcedestination_group_match_label" {
+			span_source_group_dn  = aci_span_source_group.foospan_source_group.id
+			description = "%s"
+			name  = "example"
+		 	annotation  = "example"
+			name_alias  = "example"
+			tag  = "yellow"
 		}
 	`, description)
 }
