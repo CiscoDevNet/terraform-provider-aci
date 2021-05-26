@@ -14,20 +14,20 @@ Manages ACI VSAN Pool
 ```hcl
 resource "aci_vsan_pool" "example" {
 
-
-  name  = "example"
-
-  alloc_mode  = "example"
+  name        = "example"
+  description = "from terraform"
+  alloc_mode  = "static"
   annotation  = "example"
   name_alias  = "example"
 }
 ```
 ## Argument Reference ##
-* `name` - (Required) name of Object vsan_pool.
-* `alloc_mode` - (Optional) alloc_mode for object vsan_pool.
-Allowed values: "dynamic", "static"
-* `annotation` - (Optional) annotation for object vsan_pool.
-* `name_alias` - (Optional) name_alias for object vsan_pool.
+* `name` - (Required) Name of Object VSAN Pool.
+* `description` - (Optional) Description for object VSAN Pool.
+* `alloc_mode` - (Required) Allocation mode for object VSAN Pool.
+Allowed values: "dynamic", "static". Default value: "static".
+* `annotation` - (Optional) Annotation for object VSAN Pool.
+* `name_alias` - (Optional) Name alias for object VSAN Pool.
 
 
 
