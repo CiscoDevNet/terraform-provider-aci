@@ -6,27 +6,28 @@ description: |-
   Data source for ACI SPAN Destination Group
 ---
 
-# aci_span_destination_group #
+# aci_span_destination_group
+
 Data source for ACI SPAN Destination Group
 
-## Example Usage ##
+## Example Usage
 
 ```hcl
 data "aci_span_destination_group" "example" {
-
-  tenant_dn  = "${aci_tenant.example.id}"
-
+  tenant_dn  = aci_tenant.example.id
   name  = "example"
 }
 ```
-## Argument Reference ##
-* `tenant_dn` - (Required) Distinguished name of parent Tenant object.
-* `name` - (Required) name of Object span_destination_group.
 
+## Argument Reference
 
+- `tenant_dn` - (Required) Distinguished name of parent Tenant object.
+- `name` - (Required) Name of Object SPAN Source Group.
 
 ## Attribute Reference
 
-* `id` - Attribute id set to the Dn of the SPAN Destination Group.
-* `annotation` - (Optional) 
-* `name_alias` - (Optional) 
+- `id` - Attribute id set to the Dn of the SPAN Destination Group.
+- `admin_st` - (Optional) administrative state of the object or policy.
+- `annotation` - (Optional) Specifies a annotation of the policy definition.
+- `description` - (Optional) Specifies a description of the policy definition.
+- `name_alias` - (Optional) Specifies a alias-name of the policy definition.

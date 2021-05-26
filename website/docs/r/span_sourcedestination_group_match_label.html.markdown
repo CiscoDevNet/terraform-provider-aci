@@ -14,11 +14,11 @@ Manages ACI SPAN Source-destination Group Match Label
 
 ```hcl
 resource "aci_span_sourcedestination_group_match_label" "example" {
-  span_source_group_dn  = aci_span_source_group.example.id
-  name                  = "example"
-  annotation            = "tag_label"
-  name_alias            = "alias_label"
-  tag                   = "label_color"
+span_source_group_dn  = aci_span_source_group.example.id
+name                  = "example"
+annotation            = "tag_label"
+name_alias            = "alias_label"
+tag                   = "label_color"
 }
 ```
 
