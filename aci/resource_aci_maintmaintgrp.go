@@ -83,10 +83,13 @@ func getRemotePODMaintenanceGroup(client *client.Client, dn string) (*models.POD
 	return maintMaintGrp, nil
 }
 
-func setPODMaintenanceGroupAttributes(maintMaintGrp *models.PODMaintenanceGroup, d *schema.ResourceData) *schema.ResourceData {
+func setPODMaintenanceGroupAttributes(maintMaintGrp *models.PODMaintenanceGroup, d *schema.ResourceData) (*schema.ResourceData, error) {
 	d.SetId(maintMaintGrp.DistinguishedName)
 	d.Set("description", maintMaintGrp.Description)
-	maintMaintGrpMap, _ := maintMaintGrp.ToMap()
+	maintMaintGrpMap, err := maintMaintGrp.ToMap()
+	if err != nil {
+		return d, err
+	}
 
 	d.Set("name", maintMaintGrpMap["name"])
 
@@ -94,7 +97,7 @@ func setPODMaintenanceGroupAttributes(maintMaintGrp *models.PODMaintenanceGroup,
 	d.Set("fwtype", maintMaintGrpMap["fwtype"])
 	d.Set("name_alias", maintMaintGrpMap["nameAlias"])
 	d.Set("pod_maintenance_group_type", maintMaintGrpMap["type"])
-	return d
+	return d, nil
 }
 
 func resourceAciPODMaintenanceGroupImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -108,7 +111,10 @@ func resourceAciPODMaintenanceGroupImport(d *schema.ResourceData, m interface{})
 	if err != nil {
 		return nil, err
 	}
-	schemaFilled := setPODMaintenanceGroupAttributes(maintMaintGrp, d)
+	schemaFilled, err := setPODMaintenanceGroupAttributes(maintMaintGrp, d)
+	if err != nil {
+		return nil, err
+	}
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
@@ -250,7 +256,11 @@ func resourceAciPODMaintenanceGroupRead(ctx context.Context, d *schema.ResourceD
 		d.SetId("")
 		return nil
 	}
-	setPODMaintenanceGroupAttributes(maintMaintGrp, d)
+	_, err = setPODMaintenanceGroupAttributes(maintMaintGrp, d)
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 
 	maintRsMgrppData, err := aciClient.ReadRelationmaintRsMgrppFromPODMaintenanceGroup(dn)
 	if err != nil {

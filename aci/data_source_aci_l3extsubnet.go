@@ -67,6 +67,9 @@ func dataSourceAciL3ExtSubnetRead(ctx context.Context, d *schema.ResourceData, m
 		return diag.FromErr(err)
 	}
 	d.SetId(dn)
-	setL3ExtSubnetAttributes(l3extSubnet, d)
+	_, err = setL3ExtSubnetAttributes(l3extSubnet, d)
+	if err != nil {
+		return diag.FromErr(err)
+	}
 	return nil
 }

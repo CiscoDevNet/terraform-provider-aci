@@ -111,7 +111,7 @@ func getRemoteLogicalNodeProfile(client *client.Client, dn string) (*models.Logi
 	return l3extLNodeP, nil
 }
 
-func setLogicalNodeProfileAttributes(l3extLNodeP *models.LogicalNodeProfile, d *schema.ResourceData) *schema.ResourceData {
+func setLogicalNodeProfileAttributes(l3extLNodeP *models.LogicalNodeProfile, d *schema.ResourceData) (*schema.ResourceData, error) {
 	dn := d.Id()
 	d.SetId(l3extLNodeP.DistinguishedName)
 	d.Set("description", l3extLNodeP.Description)
@@ -119,8 +119,10 @@ func setLogicalNodeProfileAttributes(l3extLNodeP *models.LogicalNodeProfile, d *
 	if dn != l3extLNodeP.DistinguishedName {
 		d.Set("l3_outside_dn", "")
 	}
-	l3extLNodePMap, _ := l3extLNodeP.ToMap()
-
+	l3extLNodePMap, err := l3extLNodeP.ToMap()
+	if err != nil {
+		return d, err
+	}
 	d.Set("name", l3extLNodePMap["name"])
 
 	d.Set("annotation", l3extLNodePMap["annotation"])
@@ -132,7 +134,7 @@ func setLogicalNodeProfileAttributes(l3extLNodeP *models.LogicalNodeProfile, d *
 	d.Set("name_alias", l3extLNodePMap["nameAlias"])
 	d.Set("tag", l3extLNodePMap["tag"])
 	d.Set("target_dscp", l3extLNodePMap["targetDscp"])
-	return d
+	return d, nil
 }
 
 func resourceAciLogicalNodeProfileImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -146,12 +148,17 @@ func resourceAciLogicalNodeProfileImport(d *schema.ResourceData, m interface{}) 
 	if err != nil {
 		return nil, err
 	}
-	l3extLNodePMap, _ := l3extLNodeP.ToMap()
+	l3extLNodePMap, err := l3extLNodeP.ToMap()
+	if err != nil {
+		return nil, err
+	}
 	name := l3extLNodePMap["name"]
 	pDN := GetParentDn(dn, fmt.Sprintf("/lnodep-%s", name))
 	d.Set("l3_outside_dn", pDN)
-	schemaFilled := setLogicalNodeProfileAttributes(l3extLNodeP, d)
-
+	schemaFilled, err := setLogicalNodeProfileAttributes(l3extLNodeP, d)
+	if err != nil {
+		return nil, err
+	}
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
@@ -290,7 +297,11 @@ func resourceAciLogicalNodeProfileRead(ctx context.Context, d *schema.ResourceDa
 		d.SetId("")
 		return nil
 	}
-	setLogicalNodeProfileAttributes(l3extLNodeP, d)
+	_, err = setLogicalNodeProfileAttributes(l3extLNodeP, d)
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 
 	l3extRsNodeL3OutAttData, err := aciClient.ReadRelationl3extRsNodeL3OutAttFromLogicalNodeProfile(dn)
 	if err != nil {

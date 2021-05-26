@@ -860,7 +860,7 @@ func resourceAciVMMDomainRead(ctx context.Context, d *schema.ResourceData, m int
 		d.SetId("")
 		return nil
 	}
-	_,err = setVMMDomainAttributes(vmmDomP, d)
+	_, err = setVMMDomainAttributes(vmmDomP, d)
 	if err != nil {
 		d.SetId("")
 		return nil

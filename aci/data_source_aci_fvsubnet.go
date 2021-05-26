@@ -82,6 +82,9 @@ func dataSourceAciSubnetRead(ctx context.Context, d *schema.ResourceData, m inte
 		return diag.FromErr(err)
 	}
 	d.SetId(dn)
-	setSubnetAttributes(fvSubnet, d)
+	_, err = setSubnetAttributes(fvSubnet, d)
+	if err != nil {
+		return diag.FromErr(err)
+	}
 	return nil
 }

@@ -52,6 +52,9 @@ func dataSourceAciPCVPCInterfacePolicyGroupRead(ctx context.Context, d *schema.R
 	if err != nil {
 		return diag.FromErr(err)
 	}
-	setPCVPCInterfacePolicyGroupAttributes(infraAccBndlGrp, d)
+	_, err = setPCVPCInterfacePolicyGroupAttributes(infraAccBndlGrp, d)
+	if err != nil {
+		return diag.FromErr(err)
+	}
 	return nil
 }

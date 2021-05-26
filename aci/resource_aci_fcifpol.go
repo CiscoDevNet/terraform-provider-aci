@@ -117,11 +117,13 @@ func getRemoteInterfaceFCPolicy(client *client.Client, dn string) (*models.Inter
 	return fcIfPol, nil
 }
 
-func setInterfaceFCPolicyAttributes(fcIfPol *models.InterfaceFCPolicy, d *schema.ResourceData) *schema.ResourceData {
+func setInterfaceFCPolicyAttributes(fcIfPol *models.InterfaceFCPolicy, d *schema.ResourceData) (*schema.ResourceData, error) {
 	d.SetId(fcIfPol.DistinguishedName)
 	d.Set("description", fcIfPol.Description)
-	fcIfPolMap, _ := fcIfPol.ToMap()
-
+	fcIfPolMap, err := fcIfPol.ToMap()
+	if err != nil {
+		return d, err
+	}
 	d.Set("name", fcIfPolMap["name"])
 
 	d.Set("annotation", fcIfPolMap["annotation"])
@@ -132,7 +134,7 @@ func setInterfaceFCPolicyAttributes(fcIfPol *models.InterfaceFCPolicy, d *schema
 	d.Set("rx_bb_credit", fcIfPolMap["rxBBCredit"])
 	d.Set("speed", fcIfPolMap["speed"])
 	d.Set("trunk_mode", fcIfPolMap["trunkMode"])
-	return d
+	return d, nil
 }
 
 func resourceAciInterfaceFCPolicyImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -146,8 +148,10 @@ func resourceAciInterfaceFCPolicyImport(d *schema.ResourceData, m interface{}) (
 	if err != nil {
 		return nil, err
 	}
-	schemaFilled := setInterfaceFCPolicyAttributes(fcIfPol, d)
-
+	schemaFilled, err := setInterfaceFCPolicyAttributes(fcIfPol, d)
+	if err != nil {
+		return nil, err
+	}
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
@@ -264,7 +268,11 @@ func resourceAciInterfaceFCPolicyRead(ctx context.Context, d *schema.ResourceDat
 		d.SetId("")
 		return nil
 	}
-	setInterfaceFCPolicyAttributes(fcIfPol, d)
+	_, err = setInterfaceFCPolicyAttributes(fcIfPol, d)
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 

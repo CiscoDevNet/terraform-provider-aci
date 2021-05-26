@@ -114,7 +114,7 @@ func getRemoteL3ExtSubnet(client *client.Client, dn string) (*models.L3ExtSubnet
 	return l3extSubnet, nil
 }
 
-func setL3ExtSubnetAttributes(l3extSubnet *models.L3ExtSubnet, d *schema.ResourceData) *schema.ResourceData {
+func setL3ExtSubnetAttributes(l3extSubnet *models.L3ExtSubnet, d *schema.ResourceData) (*schema.ResourceData, error) {
 	dn := d.Id()
 	d.SetId(l3extSubnet.DistinguishedName)
 	d.Set("description", l3extSubnet.Description)
@@ -122,7 +122,10 @@ func setL3ExtSubnetAttributes(l3extSubnet *models.L3ExtSubnet, d *schema.Resourc
 	if dn != l3extSubnet.DistinguishedName {
 		d.Set("external_network_instance_profile_dn", "")
 	}
-	l3extSubnetMap, _ := l3extSubnet.ToMap()
+	l3extSubnetMap, err := l3extSubnet.ToMap()
+	if err != nil {
+		return d, err
+	}
 
 	d.Set("ip", l3extSubnetMap["ip"])
 
@@ -151,7 +154,7 @@ func setL3ExtSubnetAttributes(l3extSubnet *models.L3ExtSubnet, d *schema.Resourc
 		d.Set("scope", scpGet)
 	}
 
-	return d
+	return d, nil
 }
 
 func resourceAciL3ExtSubnetImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -165,11 +168,17 @@ func resourceAciL3ExtSubnetImport(d *schema.ResourceData, m interface{}) ([]*sch
 	if err != nil {
 		return nil, err
 	}
-	l3extSubnetMap, _ := l3extSubnet.ToMap()
+	l3extSubnetMap, err := l3extSubnet.ToMap()
+	if err != nil {
+		return nil, err
+	}
 	ip := l3extSubnetMap["ip"]
 	pDN := GetParentDn(dn, fmt.Sprintf("/extsubnet-[%s]", ip))
 	d.Set("external_network_instance_profile_dn", pDN)
-	schemaFilled := setL3ExtSubnetAttributes(l3extSubnet, d)
+	schemaFilled, err := setL3ExtSubnetAttributes(l3extSubnet, d)
+	if err != nil {
+		return nil, err
+	}
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
@@ -366,7 +375,11 @@ func resourceAciL3ExtSubnetRead(ctx context.Context, d *schema.ResourceData, m i
 		d.SetId("")
 		return nil
 	}
-	setL3ExtSubnetAttributes(l3extSubnet, d)
+	_, err = setL3ExtSubnetAttributes(l3extSubnet, d)
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 
 	l3extRsSubnetToProfileData, err := aciClient.ReadRelationl3extRsSubnetToProfileFromL3ExtSubnet(dn)
 	if err != nil {
