@@ -46,6 +46,11 @@ func dataSourceAciTriggerSchedulerRead(ctx context.Context, d *schema.ResourceDa
 	if err != nil {
 		return diag.FromErr(err)
 	}
-	setTriggerSchedulerAttributes(trigSchedP, d)
+	_, err = setTriggerSchedulerAttributes(trigSchedP, d)
+
+	if err != nil {
+		return diag.FromErr(err)
+	}
+	
 	return nil
 }

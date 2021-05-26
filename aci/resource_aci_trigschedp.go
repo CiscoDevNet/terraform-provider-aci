@@ -55,16 +55,20 @@ func getRemoteTriggerScheduler(client *client.Client, dn string) (*models.Trigge
 	return trigSchedP, nil
 }
 
-func setTriggerSchedulerAttributes(trigSchedP *models.TriggerScheduler, d *schema.ResourceData) *schema.ResourceData {
+func setTriggerSchedulerAttributes(trigSchedP *models.TriggerScheduler, d *schema.ResourceData) (*schema.ResourceData, error) {
 	d.SetId(trigSchedP.DistinguishedName)
 	d.Set("description", trigSchedP.Description)
-	trigSchedPMap, _ := trigSchedP.ToMap()
+	trigSchedPMap, err := trigSchedP.ToMap()
+	
+	if err != nil {
+		return d, err
+	}
 
 	d.Set("name", trigSchedPMap["name"])
 
 	d.Set("annotation", trigSchedPMap["annotation"])
 	d.Set("name_alias", trigSchedPMap["nameAlias"])
-	return d
+	return d, nil
 }
 
 func resourceAciTriggerSchedulerImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -78,7 +82,11 @@ func resourceAciTriggerSchedulerImport(d *schema.ResourceData, m interface{}) ([
 	if err != nil {
 		return nil, err
 	}
-	schemaFilled := setTriggerSchedulerAttributes(trigSchedP, d)
+	schemaFilled, err := setTriggerSchedulerAttributes(trigSchedP, d)
+
+	if err != nil {
+		return nil, err
+	}
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
@@ -160,7 +168,12 @@ func resourceAciTriggerSchedulerRead(ctx context.Context, d *schema.ResourceData
 		d.SetId("")
 		return nil
 	}
-	setTriggerSchedulerAttributes(trigSchedP, d)
+	_, err = setTriggerSchedulerAttributes(trigSchedP, d)
+
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 
