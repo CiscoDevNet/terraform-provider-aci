@@ -18,10 +18,10 @@ func dataSourceAciCloudAvailabilityZone() *schema.Resource {
 		SchemaVersion: 1,
 
 		Schema: map[string]*schema.Schema{
-			"description": &schema.Schema{
+			"annotation": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
-				Computed: true,
+				Default:  "orchestrator:terraform",
 			},
 			"cloud_providers_region_dn": &schema.Schema{
 				Type:     schema.TypeString,
@@ -85,7 +85,7 @@ func setCloudAvailabilityZoneAttributes(cloudZone *models.CloudAvailabilityZone,
 	cloudZoneMap, _ := cloudZone.ToMap()
 
 	d.Set("name", cloudZoneMap["name"])
-
+	d.Set("annotation", cloudZoneMap["annotation"])
 	d.Set("name_alias", cloudZoneMap["nameAlias"])
 	return d
 }
