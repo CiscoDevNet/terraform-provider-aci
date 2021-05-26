@@ -26,6 +26,10 @@ func dataSourceAciVSANPool() *schema.Resource {
 			"alloc_mode": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"dynamic",
+					"static",
+				}, false),
 			},
 
 			"name_alias": &schema.Schema{
