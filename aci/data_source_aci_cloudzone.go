@@ -18,7 +18,7 @@ func dataSourceAciCloudAvailabilityZone() *schema.Resource {
 		SchemaVersion: 1,
 
 		Schema: map[string]*schema.Schema{
-			
+
 			"cloud_providers_region_dn": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,

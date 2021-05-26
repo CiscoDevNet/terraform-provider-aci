@@ -130,7 +130,7 @@ func getRemoteSubnet(client *client.Client, dn string) (*models.Subnet, error) {
 	return fvSubnet, nil
 }
 
-func setSubnetAttributes(fvSubnet *models.Subnet, d *schema.ResourceData) (*schema.ResourceData,error) {
+func setSubnetAttributes(fvSubnet *models.Subnet, d *schema.ResourceData) (*schema.ResourceData, error) {
 	dn := d.Id()
 	d.SetId(fvSubnet.DistinguishedName)
 	d.Set("description", fvSubnet.Description)
@@ -194,7 +194,7 @@ func setSubnetAttributes(fvSubnet *models.Subnet, d *schema.ResourceData) (*sche
 		d.Set("scope", scopeGet)
 	}
 	d.Set("virtual", fvSubnetMap["virtual"])
-	return d,nil
+	return d, nil
 }
 
 func resourceAciSubnetImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -215,7 +215,7 @@ func resourceAciSubnetImport(d *schema.ResourceData, m interface{}) ([]*schema.R
 	ip := fvSubnetMap["ip"]
 	pDN := GetParentDn(dn, fmt.Sprintf("/subnet-[%s]", ip))
 	d.Set("parent_dn", pDN)
-	schemaFilled,err := setSubnetAttributes(fvSubnet, d)
+	schemaFilled, err := setSubnetAttributes(fvSubnet, d)
 	if err != nil {
 		return nil, err
 	}
@@ -559,7 +559,7 @@ func resourceAciSubnetRead(ctx context.Context, d *schema.ResourceData, m interf
 		d.SetId("")
 		return nil
 	}
-	_,err = setSubnetAttributes(fvSubnet, d)
+	_, err = setSubnetAttributes(fvSubnet, d)
 	if err != nil {
 		d.SetId("")
 		return nil

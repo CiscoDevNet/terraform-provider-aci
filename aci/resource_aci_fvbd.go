@@ -1059,7 +1059,7 @@ func resourceAciBridgeDomainRead(ctx context.Context, d *schema.ResourceData, m 
 		return nil
 	}
 	_, err = setBridgeDomainAttributes(fvBD, d)
-	
+
 	if err != nil {
 		d.SetId("")
 		return nil

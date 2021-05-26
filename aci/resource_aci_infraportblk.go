@@ -339,7 +339,7 @@ func resourceAciAccessPortBlockRead(ctx context.Context, d *schema.ResourceData,
 		return nil
 	}
 	_, err = setAccessPortBlockAttributes(infraPortBlk, d)
-	
+
 	if err != nil {
 		d.SetId("")
 		return nil
