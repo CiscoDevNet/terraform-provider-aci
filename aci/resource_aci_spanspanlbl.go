@@ -1,21 +1,22 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciSPANSourcedestinationGroupMatchLabel() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciSPANSourcedestinationGroupMatchLabelCreate,
-		Update: resourceAciSPANSourcedestinationGroupMatchLabelUpdate,
-		Read:   resourceAciSPANSourcedestinationGroupMatchLabelRead,
-		Delete: resourceAciSPANSourcedestinationGroupMatchLabelDelete,
+		CreateContext: resourceAciSPANSourcedestinationGroupMatchLabelCreate,
+		UpdateContext: resourceAciSPANSourcedestinationGroupMatchLabelUpdate,
+		ReadContext:   resourceAciSPANSourcedestinationGroupMatchLabelRead,
+		DeleteContext: resourceAciSPANSourcedestinationGroupMatchLabelDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciSPANSourcedestinationGroupMatchLabelImport,
@@ -46,26 +47,6 @@ func resourceAciSPANSourcedestinationGroupMatchLabel() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
-				ValidateFunc: validation.StringInSlice([]string{
-					"black", "navy", "dark-blue", "medium-blue", "blue", "dark-green", "green", "teal", "dark-cyan", "deep-sky-blue",
-					"dark-turquoise", "medium-spring-green", "lime", "spring-green", "aqua", "cyan", "midnight-blue",
-					"dodger-blue", "light-sea-green", "forest-green", "sea-green", "dark-slate-gray", "lime-green",
-					"medium-sea-green", "turquoise", "royal-blue", "steel-blue", "dark-slate-blue", "medium-turquoise",
-					"indigo", "dark-olive-green", "cadet-blue", "cornflower-blue", "medium-aquamarine", "dim-gray",
-					"slate-blue", "olive-drab", "slate-gray", "light-slate-gray", "medium-slate-blue", "lawn-green", "chartreuse",
-					"aquamarine", "maroon", "purple", "olive", "gray", "sky-blue", "light-sky-blue", "blue-violet", "dark-red",
-					"dark-magenta", "saddle-brown", "dark-sea-green", "light-green", "medium-purple", "dark-violet", "pale-green",
-					"dark-orchid", "yellow-green", "sienna", "brown", "dark-gray", "light-blue", "green-yellow", "pale-turquoise",
-					"light-steel-blue", "powder-blue", "fire-brick", "dark-goldenrod", "medium-orchid", "rosy-brown", "dark-khaki",
-					"silver", "medium-violet-red", "indian-red", "peru", "chocolate", "tan", "light-gray", "thistle", "orchid",
-					"goldenrod", "pale-violet-red", "crimson", "gainsboro", "plum", "burlywood", "light-cyan", "lavender",
-					"dark-salmon", "violet", "pale-goldenrod", "light-coral", "khaki", "alice-blue", "honeydew", "azure",
-					"sandy-brown", "wheat", "beige", "white-smoke", "mint-cream", "ghost-white", "salmon", "antique-white",
-					"linen", "light-goldenrod-yellow", "old-lace", "red", "fuchsia", "magenta", "deep-pink", "orange-red",
-					"tomato", "hot-pink", "coral", "dark-orange", "light-salmon", "orange", "light-pink", "pink", "gold",
-					"peachpuff", "navajo-white", "moccasin", "bisque", "misty-rose", "blanched-almond", "papaya-whip", "lavender-blush",
-					"seashell", "cornsilk", "lemon-chiffon", "floral-white", "snow", "yellow", "light-yellow", "ivory", "white",
-				}, false),
 			},
 		}),
 	}
@@ -125,7 +106,7 @@ func resourceAciSPANSourcedestinationGroupMatchLabelImport(d *schema.ResourceDat
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciSPANSourcedestinationGroupMatchLabelCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciSPANSourcedestinationGroupMatchLabelCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] SPANSourcedestinationGroupMatchLabel: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -150,19 +131,16 @@ func resourceAciSPANSourcedestinationGroupMatchLabelCreate(d *schema.ResourceDat
 
 	err := aciClient.Save(spanSpanLbl)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.Partial(false)
 
 	d.SetId(spanSpanLbl.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciSPANSourcedestinationGroupMatchLabelRead(d, m)
+	return resourceAciSPANSourcedestinationGroupMatchLabelRead(ctx, d, m)
 }
 
-func resourceAciSPANSourcedestinationGroupMatchLabelUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciSPANSourcedestinationGroupMatchLabelUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] SPANSourcedestinationGroupMatchLabel: Beginning Update")
 
 	aciClient := m.(*client.Client)
@@ -191,20 +169,17 @@ func resourceAciSPANSourcedestinationGroupMatchLabelUpdate(d *schema.ResourceDat
 	err := aciClient.Save(spanSpanLbl)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.Partial(false)
 
 	d.SetId(spanSpanLbl.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciSPANSourcedestinationGroupMatchLabelRead(d, m)
+	return resourceAciSPANSourcedestinationGroupMatchLabelRead(ctx, d, m)
 
 }
 
-func resourceAciSPANSourcedestinationGroupMatchLabelRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciSPANSourcedestinationGroupMatchLabelRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -223,18 +198,18 @@ func resourceAciSPANSourcedestinationGroupMatchLabelRead(d *schema.ResourceData,
 	return nil
 }
 
-func resourceAciSPANSourcedestinationGroupMatchLabelDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciSPANSourcedestinationGroupMatchLabelDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "spanSpanLbl")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
 }
