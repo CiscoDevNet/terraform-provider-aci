@@ -1,21 +1,23 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciSwitchAssociation() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciSwitchAssociationCreate,
-		Update: resourceAciSwitchAssociationUpdate,
-		Read:   resourceAciSwitchAssociationRead,
-		Delete: resourceAciSwitchAssociationDelete,
+		CreateContext: resourceAciSwitchAssociationCreate,
+		UpdateContext: resourceAciSwitchAssociationUpdate,
+		ReadContext:   resourceAciSwitchAssociationRead,
+		DeleteContext: resourceAciSwitchAssociationDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciSwitchAssociationImport,
@@ -92,7 +94,6 @@ func setSwitchAssociationAttributes(infraLeafS *models.SwitchAssociation, d *sch
 
 	d.Set("annotation", infraLeafSMap["annotation"])
 	d.Set("name_alias", infraLeafSMap["nameAlias"])
-	d.Set("switch_association_type", infraLeafSMap["type"])
 	return d
 }
 
@@ -119,7 +120,7 @@ func resourceAciSwitchAssociationImport(d *schema.ResourceData, m interface{}) (
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciSwitchAssociationCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciSwitchAssociationCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] SwitchAssociation: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -146,11 +147,8 @@ func resourceAciSwitchAssociationCreate(d *schema.ResourceData, m interface{}) e
 
 	err := aciClient.Save(infraLeafS)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
 
@@ -162,7 +160,7 @@ func resourceAciSwitchAssociationCreate(d *schema.ResourceData, m interface{}) e
 	d.Partial(true)
 	err = checkTDn(aciClient, checkDns)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Partial(false)
 
@@ -170,20 +168,18 @@ func resourceAciSwitchAssociationCreate(d *schema.ResourceData, m interface{}) e
 		relationParam := relationToinfraRsAccNodePGrp.(string)
 		err = aciClient.CreateRelationinfraRsAccNodePGrpFromSwitchAssociation(infraLeafS.DistinguishedName, relationParam)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.Partial(false)
 
 	}
 
 	d.SetId(infraLeafS.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciSwitchAssociationRead(d, m)
+	return resourceAciSwitchAssociationRead(ctx, d, m)
 }
 
-func resourceAciSwitchAssociationUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciSwitchAssociationUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] SwitchAssociation: Beginning Update")
 
 	aciClient := m.(*client.Client)
@@ -214,11 +210,8 @@ func resourceAciSwitchAssociationUpdate(d *schema.ResourceData, m interface{}) e
 	err := aciClient.Save(infraLeafS)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
 
@@ -230,7 +223,7 @@ func resourceAciSwitchAssociationUpdate(d *schema.ResourceData, m interface{}) e
 	d.Partial(true)
 	err = checkTDn(aciClient, checkDns)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Partial(false)
 
@@ -238,25 +231,23 @@ func resourceAciSwitchAssociationUpdate(d *schema.ResourceData, m interface{}) e
 		_, newRelParam := d.GetChange("relation_infra_rs_acc_node_p_grp")
 		err = aciClient.DeleteRelationinfraRsAccNodePGrpFromSwitchAssociation(infraLeafS.DistinguishedName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 		err = aciClient.CreateRelationinfraRsAccNodePGrpFromSwitchAssociation(infraLeafS.DistinguishedName, newRelParam.(string))
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.Partial(false)
 
 	}
 
 	d.SetId(infraLeafS.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciSwitchAssociationRead(d, m)
+	return resourceAciSwitchAssociationRead(ctx, d, m)
 
 }
 
-func resourceAciSwitchAssociationRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciSwitchAssociationRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -289,18 +280,18 @@ func resourceAciSwitchAssociationRead(d *schema.ResourceData, m interface{}) err
 	return nil
 }
 
-func resourceAciSwitchAssociationDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciSwitchAssociationDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "infraLeafS")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
 }

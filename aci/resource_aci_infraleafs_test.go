@@ -26,11 +26,6 @@ func TestAccAciSwitchAssociation_Basic(t *testing.T) {
 					testAccCheckAciSwitchAssociationAttributes(description, &switch_association),
 				),
 			},
-			{
-				ResourceName:      "aci_leaf_selector",
-				ImportState:       true,
-				ImportStateVerify: true,
-			},
 		},
 	})
 }
@@ -66,14 +61,12 @@ func testAccCheckAciSwitchAssociationConfig_basic(description string) string {
 	return fmt.Sprintf(`
 
 	resource "aci_leaf_selector" "fooswitch_association" {
-		  leaf_profile_dn  = "${aci_leaf_profile.example.id}"
+		leaf_profile_dn  = "${aci_leaf_profile.example.id}"
 		description = "%s"
-
 		name  = "example"
-
 		switch_association_type  = "range"
-		  annotation  = "example"
-		  name_alias  = "example"
+		annotation  = "example"
+	    name_alias  = "example"
 		}
 	`, description)
 }

@@ -1,16 +1,18 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func dataSourceAciSPANSourceGroup() *schema.Resource {
 	return &schema.Resource{
 
-		Read: dataSourceAciSPANSourceGroupRead,
+		ReadContext: dataSourceAciSPANSourceGroupRead,
 
 		SchemaVersion: 1,
 
@@ -40,7 +42,7 @@ func dataSourceAciSPANSourceGroup() *schema.Resource {
 	}
 }
 
-func dataSourceAciSPANSourceGroupRead(d *schema.ResourceData, m interface{}) error {
+func dataSourceAciSPANSourceGroupRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	aciClient := m.(*client.Client)
 
 	name := d.Get("name").(string)
@@ -53,7 +55,7 @@ func dataSourceAciSPANSourceGroupRead(d *schema.ResourceData, m interface{}) err
 	spanSrcGrp, err := getRemoteSPANSourceGroup(aciClient, dn)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.SetId(dn)
 	setSPANSourceGroupAttributes(spanSrcGrp, d)
