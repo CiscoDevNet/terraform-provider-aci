@@ -62,16 +62,21 @@ func getRemoteAttachableAccessEntityProfile(client *client.Client, dn string) (*
 	return infraAttEntityP, nil
 }
 
-func setAttachableAccessEntityProfileAttributes(infraAttEntityP *models.AttachableAccessEntityProfile, d *schema.ResourceData) *schema.ResourceData {
+func setAttachableAccessEntityProfileAttributes(infraAttEntityP *models.AttachableAccessEntityProfile, d *schema.ResourceData) (*schema.ResourceData, error) {
 	d.SetId(infraAttEntityP.DistinguishedName)
 	d.Set("description", infraAttEntityP.Description)
-	infraAttEntityPMap, _ := infraAttEntityP.ToMap()
+	infraAttEntityPMap, err := infraAttEntityP.ToMap()
+
+	if err != nil {
+		return d, err
+	}
+
 
 	d.Set("name", infraAttEntityPMap["name"])
 
 	d.Set("annotation", infraAttEntityPMap["annotation"])
 	d.Set("name_alias", infraAttEntityPMap["nameAlias"])
-	return d
+	return d, nil
 }
 
 func resourceAciAttachableAccessEntityProfileImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -85,7 +90,11 @@ func resourceAciAttachableAccessEntityProfileImport(d *schema.ResourceData, m in
 	if err != nil {
 		return nil, err
 	}
-	schemaFilled := setAttachableAccessEntityProfileAttributes(infraAttEntityP, d)
+	schemaFilled, err := setAttachableAccessEntityProfileAttributes(infraAttEntityP, d)
+
+	if err != nil {
+		return nil, err
+	}
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
@@ -240,7 +249,12 @@ func resourceAciAttachableAccessEntityProfileRead(ctx context.Context, d *schema
 		d.SetId("")
 		return nil
 	}
-	setAttachableAccessEntityProfileAttributes(infraAttEntityP, d)
+	_, err = setAttachableAccessEntityProfileAttributes(infraAttEntityP, d)
+
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 
 	infraRsDomPData, err := aciClient.ReadRelationinfraRsDomPFromAttachableAccessEntityProfile(dn)
 	if err != nil {
