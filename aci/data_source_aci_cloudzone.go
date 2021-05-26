@@ -28,12 +28,6 @@ func dataSourceAciCloudAvailabilityZone() *schema.Resource {
 				Required: true,
 			},
 
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Default:  "orchestrator:terraform",
-			},
-
 			"name": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
