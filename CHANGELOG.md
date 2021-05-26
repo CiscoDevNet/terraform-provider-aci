@@ -1,3 +1,16 @@
+## 0.7.0 (May 26, 2021)
+BREAKING CHANGE:
+- Fix "ctrl" attribute issues with list of items in OSPF Interface Policy resource/datasource.
+- Fix "enforce_rtctrl" attribute issues with list of items in L3 Outside resource/datasource.
+- Change aci_stp_if_pol resource name to aci_spanning_tree_interface_policy name
+
+BUG FIXES:
+- Update aci_spanning_tree_interface_policy documentation to add description attribute.
+- Stop control(ctrl) from being added repeatedly when set to "unspecified" in OSPF Interface Policy, Subnet and STP Interface Policy resources.
+- Add alloc_mode in documentation of aci_vlan_pool datasource and update resource example.
+- Fix aci_l3out_path_attachment to accept custom MTU values.
+- Fix relation_infra_rs_spine_acc_node_p_grp issue in aci_spine_switch_association resource.
+
 ## 0.6.0 (May 11, 2021)
 IMPROVEMENTS:
 - Updated documentation and examples for new terraform required_provider syntax.
