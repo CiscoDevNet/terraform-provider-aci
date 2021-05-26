@@ -13,7 +13,6 @@ Data source for ACI Firmware Group
 
 ```hcl
 data "aci_firmware_group" "example" {
-
   name  = "example"
 }
 ```
@@ -25,6 +24,7 @@ data "aci_firmware_group" "example" {
 ## Attribute Reference
 
 * `id` - Attribute id set to the Dn of the Firmware Group.
-* `annotation` - (Optional) Annotation for object firmware_group.
-* `name_alias` - (Optional) Name alias for object firmware_group.
-* `firmware_group_type` - (Optional) Component type
+* `annotation` - (Optional) Annotation for object Firmware Group.
+* `description` - (Optional) Description for object Firmware Group.
+* `name_alias` - (Optional) Name alias for object Firmware Group.
+* `firmware_group_type` - (Optional) Component type.
