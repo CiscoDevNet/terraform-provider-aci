@@ -152,7 +152,11 @@ func setOSPFInterfacePolicyAttributes(ospfIfPol *models.OSPFInterfacePolicy, d *
 	d.Set("cost", ospfIfPolMap["cost"])
 	ctrlGet := make([]string, 0, 1)
 	for _, val := range strings.Split(ospfIfPolMap["ctrl"], ",") {
-		ctrlGet = append(ctrlGet, strings.Trim(val, " "))
+		if val == "" {
+			ctrlGet = append(ctrlGet, "unspecified")
+		} else {
+			ctrlGet = append(ctrlGet, strings.Trim(val, " "))
+		}
 	}
 	sort.Strings(ctrlGet)
 	if ctrlIntr, ok := d.GetOk("ctrl"); ok {
