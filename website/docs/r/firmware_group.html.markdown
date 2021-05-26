@@ -13,16 +13,17 @@ Manages ACI Firmware Group
 
 ```hcl
 resource "aci_firmware_group" "example" {
-
   name  = "example"
   annotation  = "example"
+  description = "from terraform"
   name_alias  = "example"
-  firmware_group_type  = "example"
+  firmware_group_type  = "range"
 }
 ```
 ## Argument Reference ##
 * `name` - (Required) Name of object Firmware Group.
 * `annotation` - (Optional) Annotation for object Firmware Group.
+* `description` - (Optional) Description for object Firmware Group.
 * `name_alias` - (Optional) Name_alias for object Firmware Group.
 * `firmware_group_type` - (Optional) Component type.
 Allowed values: "ALL", "range", "ALL_IN_POD"
