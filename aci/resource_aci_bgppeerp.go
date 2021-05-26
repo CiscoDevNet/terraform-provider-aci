@@ -306,7 +306,6 @@ func resourceAciBgpPeerConnectivityProfileCreate(d *schema.ResourceData, m inter
 	if err != nil {
 		return err
 	}
-
 	PeerConnectivityProfileDn := bgpPeerP.DistinguishedName
 	bgpLocalAsnPAttr := models.LocalAutonomousSystemProfileAttributes{}
 
