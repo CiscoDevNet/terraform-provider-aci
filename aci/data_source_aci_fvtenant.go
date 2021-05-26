@@ -46,6 +46,10 @@ func dataSourceAciTenantRead(ctx context.Context, d *schema.ResourceData, m inte
 	if err != nil {
 		return diag.FromErr(err)
 	}
-	setTenantAttributes(fvTenant, d)
+	_, err = setTenantAttributes(fvTenant, d)
+	
+	if err != nil {
+		return diag.FromErr(err)
+	}
 	return nil
 }

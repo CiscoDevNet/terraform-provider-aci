@@ -28,9 +28,9 @@ func dataSourceAciCloudContextProfile() *schema.Resource {
 			},
 
 			"name_alias": &schema.Schema{
-				Type:        schema.TypeString,
-				Optional:    true,
-				Computed:    true,
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
 			},
 
 			"type": &schema.Schema{

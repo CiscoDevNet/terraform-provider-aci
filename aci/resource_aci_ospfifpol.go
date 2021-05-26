@@ -133,15 +133,18 @@ func getRemoteOSPFInterfacePolicy(client *client.Client, dn string) (*models.OSP
 	return ospfIfPol, nil
 }
 
-func setOSPFInterfacePolicyAttributes(ospfIfPol *models.OSPFInterfacePolicy, d *schema.ResourceData) *schema.ResourceData {
+func setOSPFInterfacePolicyAttributes(ospfIfPol *models.OSPFInterfacePolicy, d *schema.ResourceData) (*schema.ResourceData, error) {
 	dn := d.Id()
 	d.SetId(ospfIfPol.DistinguishedName)
 	d.Set("description", ospfIfPol.Description)
-	// d.Set("tenant_dn", GetParentDn(ospfIfPol.DistinguishedName))
+
 	if dn != ospfIfPol.DistinguishedName {
 		d.Set("tenant_dn", "")
 	}
-	ospfIfPolMap, _ := ospfIfPol.ToMap()
+	ospfIfPolMap, err := ospfIfPol.ToMap()
+	if err != nil {
+		return d, err
+	}
 
 	d.Set("name", ospfIfPolMap["name"])
 
@@ -160,7 +163,7 @@ func setOSPFInterfacePolicyAttributes(ospfIfPol *models.OSPFInterfacePolicy, d *
 	d.Set("prio", ospfIfPolMap["prio"])
 	d.Set("rexmit_intvl", ospfIfPolMap["rexmitIntvl"])
 	d.Set("xmit_delay", ospfIfPolMap["xmitDelay"])
-	return d
+	return d, nil
 }
 
 func resourceAciOSPFInterfacePolicyImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -174,11 +177,20 @@ func resourceAciOSPFInterfacePolicyImport(d *schema.ResourceData, m interface{})
 	if err != nil {
 		return nil, err
 	}
-	ospfIfPolMap, _ := ospfIfPol.ToMap()
+	ospfIfPolMap, err := ospfIfPol.ToMap()
+
+	if err != nil {
+		return nil, err
+	}
+
 	name := ospfIfPolMap["name"]
 	pDN := GetParentDn(dn, fmt.Sprintf("/ospfIfPol-%s", name))
 	d.Set("tenant_dn", pDN)
-	schemaFilled := setOSPFInterfacePolicyAttributes(ospfIfPol, d)
+	schemaFilled, err := setOSPFInterfacePolicyAttributes(ospfIfPol, d)
+
+	if err != nil {
+		return nil, err
+	}
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
@@ -318,7 +330,13 @@ func resourceAciOSPFInterfacePolicyRead(ctx context.Context, d *schema.ResourceD
 		d.SetId("")
 		return nil
 	}
-	setOSPFInterfacePolicyAttributes(ospfIfPol, d)
+
+	_, err = setOSPFInterfacePolicyAttributes(ospfIfPol, d)
+
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 
