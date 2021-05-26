@@ -112,6 +112,10 @@ func dataSourceAciApplicationEPGRead(ctx context.Context, d *schema.ResourceData
 		return diag.FromErr(err)
 	}
 	d.SetId(dn)
-	setApplicationEPGAttributes(fvAEPg, d)
+	_, err = setApplicationEPGAttributes(fvAEPg, d)
+
+	if err != nil {
+		return diag.FromErr(err)
+	}
 	return nil
 }

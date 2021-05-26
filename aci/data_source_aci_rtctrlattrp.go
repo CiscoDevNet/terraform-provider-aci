@@ -52,6 +52,9 @@ func dataSourceAciActionRuleProfileRead(ctx context.Context, d *schema.ResourceD
 		return diag.FromErr(err)
 	}
 	d.SetId(dn)
-	setActionRuleProfileAttributes(rtctrlAttrP, d)
+	_, err = setActionRuleProfileAttributes(rtctrlAttrP, d)
+	if err != nil {
+		return diag.FromErr(err)
+	}
 	return nil
 }

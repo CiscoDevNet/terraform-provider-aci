@@ -82,16 +82,18 @@ func getRemotePhysicalDomain(client *client.Client, dn string) (*models.Physical
 	return physDomP, nil
 }
 
-func setPhysicalDomainAttributes(physDomP *models.PhysicalDomain, d *schema.ResourceData) *schema.ResourceData {
+func setPhysicalDomainAttributes(physDomP *models.PhysicalDomain, d *schema.ResourceData) (*schema.ResourceData, error) {
 	d.SetId(physDomP.DistinguishedName)
 	//d.Set("description", physDomP.Description)
-	physDomPMap, _ := physDomP.ToMap()
-
+	physDomPMap, err := physDomP.ToMap()
+	if err != nil {
+		return d, err
+	}
 	d.Set("name", physDomPMap["name"])
 
 	d.Set("annotation", physDomPMap["annotation"])
 	d.Set("name_alias", physDomPMap["nameAlias"])
-	return d
+	return d, nil
 }
 
 func resourceAciPhysicalDomainImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -105,8 +107,10 @@ func resourceAciPhysicalDomainImport(d *schema.ResourceData, m interface{}) ([]*
 	if err != nil {
 		return nil, err
 	}
-	schemaFilled := setPhysicalDomainAttributes(physDomP, d)
-
+	schemaFilled, err := setPhysicalDomainAttributes(physDomP, d)
+	if err != nil {
+		return nil, err
+	}
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
@@ -316,8 +320,11 @@ func resourceAciPhysicalDomainRead(ctx context.Context, d *schema.ResourceData, 
 		d.SetId("")
 		return nil
 	}
-	setPhysicalDomainAttributes(physDomP, d)
-
+	_, err = setPhysicalDomainAttributes(physDomP, d)
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 	infraRsVlanNsData, err := aciClient.ReadRelationinfraRsVlanNsFromPhysicalDomain(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation infraRsVlanNs %v", err)

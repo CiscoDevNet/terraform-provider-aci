@@ -58,6 +58,10 @@ func dataSourceAciCloudCIDRPoolRead(ctx context.Context, d *schema.ResourceData,
 		return diag.FromErr(err)
 	}
 	d.SetId(dn)
-	setCloudCIDRPoolAttributes(cloudCidr, d)
+	_, err = setCloudCIDRPoolAttributes(cloudCidr, d)
+
+	if err != nil {
+		return diag.FromErr(err)
+	}
 	return nil
 }

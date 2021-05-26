@@ -70,6 +70,9 @@ func dataSourceAciPortSecurityPolicyRead(ctx context.Context, d *schema.Resource
 	if err != nil {
 		return diag.FromErr(err)
 	}
-	setPortSecurityPolicyAttributes(l2PortSecurityPol, d)
+	_, err = setPortSecurityPolicyAttributes(l2PortSecurityPol, d)
+	if err != nil {
+		return diag.FromErr(err)
+	}
 	return nil
 }

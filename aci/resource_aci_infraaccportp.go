@@ -55,16 +55,18 @@ func getRemoteLeafInterfaceProfile(client *client.Client, dn string) (*models.Le
 	return infraAccPortP, nil
 }
 
-func setLeafInterfaceProfileAttributes(infraAccPortP *models.LeafInterfaceProfile, d *schema.ResourceData) *schema.ResourceData {
+func setLeafInterfaceProfileAttributes(infraAccPortP *models.LeafInterfaceProfile, d *schema.ResourceData) (*schema.ResourceData, error) {
 	d.SetId(infraAccPortP.DistinguishedName)
 	d.Set("description", infraAccPortP.Description)
-	infraAccPortPMap, _ := infraAccPortP.ToMap()
-
+	infraAccPortPMap, err := infraAccPortP.ToMap()
+	if err != nil {
+		return d, err
+	}
 	d.Set("name", infraAccPortPMap["name"])
 
 	d.Set("annotation", infraAccPortPMap["annotation"])
 	d.Set("name_alias", infraAccPortPMap["nameAlias"])
-	return d
+	return d, nil
 }
 
 func resourceAciLeafInterfaceProfileImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -78,8 +80,10 @@ func resourceAciLeafInterfaceProfileImport(d *schema.ResourceData, m interface{}
 	if err != nil {
 		return nil, err
 	}
-	schemaFilled := setLeafInterfaceProfileAttributes(infraAccPortP, d)
-
+	schemaFilled, err := setLeafInterfaceProfileAttributes(infraAccPortP, d)
+	if err != nil {
+		return nil, err
+	}
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
@@ -166,8 +170,11 @@ func resourceAciLeafInterfaceProfileRead(ctx context.Context, d *schema.Resource
 		d.SetId("")
 		return nil
 	}
-	setLeafInterfaceProfileAttributes(infraAccPortP, d)
-
+	_, err = setLeafInterfaceProfileAttributes(infraAccPortP, d)
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 
 	return nil

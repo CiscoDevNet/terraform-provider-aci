@@ -46,6 +46,9 @@ func dataSourceAciLeafProfileRead(ctx context.Context, d *schema.ResourceData, m
 	if err != nil {
 		return diag.FromErr(err)
 	}
-	setLeafProfileAttributes(infraNodeP, d)
+	_, err = setLeafProfileAttributes(infraNodeP, d)
+	if err != nil {
+		return diag.FromErr(err)
+	}
 	return nil
 }

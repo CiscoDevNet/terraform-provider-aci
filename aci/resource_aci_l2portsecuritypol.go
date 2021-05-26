@@ -83,11 +83,13 @@ func getRemotePortSecurityPolicy(client *client.Client, dn string) (*models.Port
 	return l2PortSecurityPol, nil
 }
 
-func setPortSecurityPolicyAttributes(l2PortSecurityPol *models.PortSecurityPolicy, d *schema.ResourceData) *schema.ResourceData {
+func setPortSecurityPolicyAttributes(l2PortSecurityPol *models.PortSecurityPolicy, d *schema.ResourceData) (*schema.ResourceData, error) {
 	d.SetId(l2PortSecurityPol.DistinguishedName)
 	d.Set("description", l2PortSecurityPol.Description)
-	l2PortSecurityPolMap, _ := l2PortSecurityPol.ToMap()
-
+	l2PortSecurityPolMap, err := l2PortSecurityPol.ToMap()
+	if err != nil {
+		return d, err
+	}
 	d.Set("name", l2PortSecurityPolMap["name"])
 
 	d.Set("annotation", l2PortSecurityPolMap["annotation"])
@@ -96,7 +98,7 @@ func setPortSecurityPolicyAttributes(l2PortSecurityPol *models.PortSecurityPolic
 	d.Set("name_alias", l2PortSecurityPolMap["nameAlias"])
 	d.Set("timeout", l2PortSecurityPolMap["timeout"])
 	d.Set("violation", l2PortSecurityPolMap["violation"])
-	return d
+	return d, nil
 }
 
 func resourceAciPortSecurityPolicyImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -110,8 +112,10 @@ func resourceAciPortSecurityPolicyImport(d *schema.ResourceData, m interface{}) 
 	if err != nil {
 		return nil, err
 	}
-	schemaFilled := setPortSecurityPolicyAttributes(l2PortSecurityPol, d)
-
+	schemaFilled, err := setPortSecurityPolicyAttributes(l2PortSecurityPol, d)
+	if err != nil {
+		return nil, err
+	}
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
@@ -216,8 +220,11 @@ func resourceAciPortSecurityPolicyRead(ctx context.Context, d *schema.ResourceDa
 		d.SetId("")
 		return nil
 	}
-	setPortSecurityPolicyAttributes(l2PortSecurityPol, d)
-
+	_, err = setPortSecurityPolicyAttributes(l2PortSecurityPol, d)
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 
 	return nil

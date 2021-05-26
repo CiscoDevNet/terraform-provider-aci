@@ -70,6 +70,9 @@ func dataSourceAciContractRead(ctx context.Context, d *schema.ResourceData, m in
 		return diag.FromErr(err)
 	}
 	d.SetId(dn)
-	setContractAttributes(vzBrCP, d)
+	_, err = setContractAttributes(vzBrCP, d)
+	if err != nil {
+		return diag.FromErr(err)
+	}
 	return nil
 }

@@ -76,18 +76,20 @@ func getRemoteLLDPInterfacePolicy(client *client.Client, dn string) (*models.LLD
 	return lldpIfPol, nil
 }
 
-func setLLDPInterfacePolicyAttributes(lldpIfPol *models.LLDPInterfacePolicy, d *schema.ResourceData) *schema.ResourceData {
+func setLLDPInterfacePolicyAttributes(lldpIfPol *models.LLDPInterfacePolicy, d *schema.ResourceData) (*schema.ResourceData, error) {
 	d.SetId(lldpIfPol.DistinguishedName)
 	d.Set("description", lldpIfPol.Description)
-	lldpIfPolMap, _ := lldpIfPol.ToMap()
-
+	lldpIfPolMap, err := lldpIfPol.ToMap()
+	if err != nil {
+		return d, err
+	}
 	d.Set("name", lldpIfPolMap["name"])
 
 	d.Set("admin_rx_st", lldpIfPolMap["adminRxSt"])
 	d.Set("admin_tx_st", lldpIfPolMap["adminTxSt"])
 	d.Set("annotation", lldpIfPolMap["annotation"])
 	d.Set("name_alias", lldpIfPolMap["nameAlias"])
-	return d
+	return d, nil
 }
 
 func resourceAciLLDPInterfacePolicyImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -101,8 +103,10 @@ func resourceAciLLDPInterfacePolicyImport(d *schema.ResourceData, m interface{})
 	if err != nil {
 		return nil, err
 	}
-	schemaFilled := setLLDPInterfacePolicyAttributes(lldpIfPol, d)
-
+	schemaFilled, err := setLLDPInterfacePolicyAttributes(lldpIfPol, d)
+	if err != nil {
+		return nil, err
+	}
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
@@ -195,8 +199,11 @@ func resourceAciLLDPInterfacePolicyRead(ctx context.Context, d *schema.ResourceD
 		d.SetId("")
 		return nil
 	}
-	setLLDPInterfacePolicyAttributes(lldpIfPol, d)
-
+	_, err = setLLDPInterfacePolicyAttributes(lldpIfPol, d)
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 
 	return nil
