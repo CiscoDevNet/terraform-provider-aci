@@ -281,15 +281,17 @@ func getRemoteVMMDomain(client *client.Client, dn string) (*models.VMMDomain, er
 	return vmmDomP, nil
 }
 
-func setVMMDomainAttributes(vmmDomP *models.VMMDomain, d *schema.ResourceData) *schema.ResourceData {
+func setVMMDomainAttributes(vmmDomP *models.VMMDomain, d *schema.ResourceData) (*schema.ResourceData, error) {
 	dn := d.Id()
 	d.SetId(vmmDomP.DistinguishedName)
 	// d.Set("provider_profile_dn", GetParentDn(vmmDomP.DistinguishedName))
 	if dn != vmmDomP.DistinguishedName {
 		d.Set("provider_profile_dn", "")
 	}
-	vmmDomPMap, _ := vmmDomP.ToMap()
-
+	vmmDomPMap, err := vmmDomP.ToMap()
+	if err != nil {
+		return d, err
+	}
 	d.Set("name", vmmDomPMap["name"])
 
 	d.Set("access_mode", vmmDomPMap["accessMode"])
@@ -318,7 +320,7 @@ func setVMMDomainAttributes(vmmDomP *models.VMMDomain, d *schema.ResourceData) *
 	d.Set("mode", vmmDomPMap["mode"])
 	d.Set("name_alias", vmmDomPMap["nameAlias"])
 	d.Set("pref_encap_mode", vmmDomPMap["prefEncapMode"])
-	return d
+	return d, nil
 }
 
 func resourceAciVMMDomainImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -332,11 +334,17 @@ func resourceAciVMMDomainImport(d *schema.ResourceData, m interface{}) ([]*schem
 	if err != nil {
 		return nil, err
 	}
-	vmmDomPMap, _ := vmmDomP.ToMap()
+	vmmDomPMap, err := vmmDomP.ToMap()
+	if err != nil {
+		return nil, err
+	}
 	name := vmmDomPMap["name"]
 	pDN := GetParentDn(dn, fmt.Sprintf("/dom-%s", name))
 	d.Set("provider_profile_dn", pDN)
-	schemaFilled := setVMMDomainAttributes(vmmDomP, d)
+	schemaFilled, err := setVMMDomainAttributes(vmmDomP, d)
+	if err != nil {
+		return nil, err
+	}
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
@@ -852,7 +860,11 @@ func resourceAciVMMDomainRead(ctx context.Context, d *schema.ResourceData, m int
 		d.SetId("")
 		return nil
 	}
-	setVMMDomainAttributes(vmmDomP, d)
+	_,err = setVMMDomainAttributes(vmmDomP, d)
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 
 	vmmRsPrefEnhancedLagPolData, err := aciClient.ReadRelationvmmRsPrefEnhancedLagPolFromVMMDomain(dn)
 	if err != nil {

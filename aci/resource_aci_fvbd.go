@@ -321,14 +321,17 @@ func getRemoteBridgeDomain(client *client.Client, dn string) (*models.BridgeDoma
 	return fvBD, nil
 }
 
-func setBridgeDomainAttributes(fvBD *models.BridgeDomain, d *schema.ResourceData) *schema.ResourceData {
+func setBridgeDomainAttributes(fvBD *models.BridgeDomain, d *schema.ResourceData) (*schema.ResourceData, error) {
 	dn := d.Id()
 	d.SetId(fvBD.DistinguishedName)
 	d.Set("description", fvBD.Description)
 	if dn != fvBD.DistinguishedName {
 		d.Set("tenant_dn", "")
 	}
-	fvBDMap, _ := fvBD.ToMap()
+	fvBDMap, err := fvBD.ToMap()
+	if err != nil {
+		return d, err
+	}
 
 	d.Set("name", fvBDMap["name"])
 
@@ -354,7 +357,7 @@ func setBridgeDomainAttributes(fvBD *models.BridgeDomain, d *schema.ResourceData
 	d.Set("unk_mcast_act", fvBDMap["unkMcastAct"])
 	d.Set("v6unk_mcast_act", fvBDMap["v6unkMcastAct"])
 	d.Set("vmac", fvBDMap["vmac"])
-	return d
+	return d, err
 }
 
 func resourceAciBridgeDomainImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -368,12 +371,17 @@ func resourceAciBridgeDomainImport(d *schema.ResourceData, m interface{}) ([]*sc
 	if err != nil {
 		return nil, err
 	}
-	fvBDMap, _ := fvBD.ToMap()
-
+	fvBDMap, err := fvBD.ToMap()
+	if err != nil {
+		return nil, err
+	}
 	name := fvBDMap["name"]
 	pDN := GetParentDn(dn, fmt.Sprintf("/BD-%s", name))
 	d.Set("tenant_dn", pDN)
-	schemaFilled := setBridgeDomainAttributes(fvBD, d)
+	schemaFilled, err := setBridgeDomainAttributes(fvBD, d)
+	if err != nil {
+		return nil, err
+	}
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
@@ -1050,7 +1058,12 @@ func resourceAciBridgeDomainRead(ctx context.Context, d *schema.ResourceData, m 
 		d.SetId("")
 		return nil
 	}
-	setBridgeDomainAttributes(fvBD, d)
+	_, err = setBridgeDomainAttributes(fvBD, d)
+	
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 
 	fvRsBDToProfileData, err := aciClient.ReadRelationfvRsBDToProfileFromBridgeDomain(dn)
 	if err != nil {
