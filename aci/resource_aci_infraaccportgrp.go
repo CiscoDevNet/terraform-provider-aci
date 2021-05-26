@@ -196,16 +196,18 @@ func getRemoteLeafAccessPortPolicyGroup(client *client.Client, dn string) (*mode
 	return infraAccPortGrp, nil
 }
 
-func setLeafAccessPortPolicyGroupAttributes(infraAccPortGrp *models.LeafAccessPortPolicyGroup, d *schema.ResourceData) *schema.ResourceData {
+func setLeafAccessPortPolicyGroupAttributes(infraAccPortGrp *models.LeafAccessPortPolicyGroup, d *schema.ResourceData) (*schema.ResourceData, error) {
 	d.SetId(infraAccPortGrp.DistinguishedName)
 	d.Set("description", infraAccPortGrp.Description)
-	infraAccPortGrpMap, _ := infraAccPortGrp.ToMap()
-
+	infraAccPortGrpMap, err := infraAccPortGrp.ToMap()
+	if err != nil {
+		return d, err
+	}
 	d.Set("name", infraAccPortGrpMap["name"])
 
 	d.Set("annotation", infraAccPortGrpMap["annotation"])
 	d.Set("name_alias", infraAccPortGrpMap["nameAlias"])
-	return d
+	return d, nil
 }
 
 func resourceAciLeafAccessPortPolicyGroupImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -219,7 +221,11 @@ func resourceAciLeafAccessPortPolicyGroupImport(d *schema.ResourceData, m interf
 	if err != nil {
 		return nil, err
 	}
-	schemaFilled := setLeafAccessPortPolicyGroupAttributes(infraAccPortGrp, d)
+	schemaFilled, err := setLeafAccessPortPolicyGroupAttributes(infraAccPortGrp, d)
+
+	if err != nil {
+		return nil, err
+	}
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
@@ -1083,8 +1089,11 @@ func resourceAciLeafAccessPortPolicyGroupRead(ctx context.Context, d *schema.Res
 		d.SetId("")
 		return nil
 	}
-	setLeafAccessPortPolicyGroupAttributes(infraAccPortGrp, d)
-
+	_, err = setLeafAccessPortPolicyGroupAttributes(infraAccPortGrp, d)
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 	infraRsSpanVSrcGrpData, err := aciClient.ReadRelationinfraRsSpanVSrcGrpFromLeafAccessPortPolicyGroup(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation infraRsSpanVSrcGrp %v", err)

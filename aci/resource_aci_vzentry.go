@@ -228,7 +228,7 @@ func getRemoteFilterEntry(client *client.Client, dn string) (*models.FilterEntry
 	return vzEntry, nil
 }
 
-func setFilterEntryAttributes(vzEntry *models.FilterEntry, d *schema.ResourceData) *schema.ResourceData {
+func setFilterEntryAttributes(vzEntry *models.FilterEntry, d *schema.ResourceData) (*schema.ResourceData, error) {
 	dn := d.Id()
 	d.SetId(vzEntry.DistinguishedName)
 	d.Set("description", vzEntry.Description)
@@ -236,7 +236,10 @@ func setFilterEntryAttributes(vzEntry *models.FilterEntry, d *schema.ResourceDat
 	if dn != vzEntry.DistinguishedName {
 		d.Set("filter_dn", "")
 	}
-	vzEntryMap, _ := vzEntry.ToMap()
+	vzEntryMap, err := vzEntry.ToMap()
+	if err != nil {
+		return d, err
+	}
 	log.Println("Check .... :", d.Get("d_from_port"))
 	d.Set("name", vzEntryMap["name"])
 
@@ -255,10 +258,10 @@ func setFilterEntryAttributes(vzEntry *models.FilterEntry, d *schema.ResourceDat
 	} else {
 		d.Set("tcp_rules", vzEntryMap["tcpRules"])
 	}
-	return d
+	return d, nil
 }
 
-func portConversionCheck(vzEntry *models.FilterEntry, d *schema.ResourceData) *schema.ResourceData {
+func portConversionCheck(vzEntry *models.FilterEntry, d *schema.ResourceData) (*schema.ResourceData, error) {
 	constantPortMapping := map[string]string{
 		"smtp":        "25",
 		"dns":         "53",
@@ -270,7 +273,10 @@ func portConversionCheck(vzEntry *models.FilterEntry, d *schema.ResourceData) *s
 		"ssh":         "22",
 		"unspecified": "0",
 	}
-	vzEntryMap, _ := vzEntry.ToMap()
+	vzEntryMap, err := vzEntry.ToMap()
+	if err != nil {
+		return d, err
+	}
 	if DFromPortTf, ok := d.GetOk("d_from_port"); ok {
 		if DFromPortTf != vzEntryMap["dFromPort"] {
 			if DFromPortTf != constantPortMapping[vzEntryMap["dFromPort"]] {
@@ -326,7 +332,7 @@ func portConversionCheck(vzEntry *models.FilterEntry, d *schema.ResourceData) *s
 	} else {
 		d.Set("s_to_port", vzEntryMap["sToPort"])
 	}
-	return d
+	return d, nil
 
 }
 
@@ -341,12 +347,17 @@ func resourceAciFilterEntryImport(d *schema.ResourceData, m interface{}) ([]*sch
 	if err != nil {
 		return nil, err
 	}
-	vzEntryMap, _ := vzEntry.ToMap()
+	vzEntryMap, err := vzEntry.ToMap()
+	if err != nil {
+		return nil, err
+	}
 	name := vzEntryMap["name"]
 	pDN := GetParentDn(dn, fmt.Sprintf("/e-%s", name))
 	d.Set("filter_dn", pDN)
-	schemaFilled := setFilterEntryAttributes(vzEntry, d)
-
+	schemaFilled, err := setFilterEntryAttributes(vzEntry, d)
+	if err != nil {
+		return nil, err
+	}
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
@@ -508,10 +519,16 @@ func resourceAciFilterEntryRead(ctx context.Context, d *schema.ResourceData, m i
 		d.SetId("")
 		return nil
 	}
-	d = portConversionCheck(vzEntry, d)
-
-	setFilterEntryAttributes(vzEntry, d)
-
+	d, err = portConversionCheck(vzEntry, d)
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
+	_, err = setFilterEntryAttributes(vzEntry, d)
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 
 	return nil

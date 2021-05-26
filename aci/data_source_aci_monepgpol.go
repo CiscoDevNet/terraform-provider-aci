@@ -52,6 +52,9 @@ func dataSourceAciMonitoringPolicyRead(ctx context.Context, d *schema.ResourceDa
 		return diag.FromErr(err)
 	}
 	d.SetId(dn)
-	setMonitoringPolicyAttributes(monEPGPol, d)
+	_, err = setMonitoringPolicyAttributes(monEPGPol, d)
+	if err != nil {
+		return diag.FromErr(err)
+	}
 	return nil
 }

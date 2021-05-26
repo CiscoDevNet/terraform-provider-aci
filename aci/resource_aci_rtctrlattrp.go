@@ -60,7 +60,7 @@ func getRemoteActionRuleProfile(client *client.Client, dn string) (*models.Actio
 	return rtctrlAttrP, nil
 }
 
-func setActionRuleProfileAttributes(rtctrlAttrP *models.ActionRuleProfile, d *schema.ResourceData) *schema.ResourceData {
+func setActionRuleProfileAttributes(rtctrlAttrP *models.ActionRuleProfile, d *schema.ResourceData) (*schema.ResourceData, error) {
 	dn := d.Id()
 	d.SetId(rtctrlAttrP.DistinguishedName)
 	d.Set("description", rtctrlAttrP.Description)
@@ -68,13 +68,15 @@ func setActionRuleProfileAttributes(rtctrlAttrP *models.ActionRuleProfile, d *sc
 	if dn != rtctrlAttrP.DistinguishedName {
 		d.Set("tenant_dn", "")
 	}
-	rtctrlAttrPMap, _ := rtctrlAttrP.ToMap()
-
+	rtctrlAttrPMap, err := rtctrlAttrP.ToMap()
+	if err != nil {
+		return d, err
+	}
 	d.Set("name", rtctrlAttrPMap["name"])
 
 	d.Set("annotation", rtctrlAttrPMap["annotation"])
 	d.Set("name_alias", rtctrlAttrPMap["nameAlias"])
-	return d
+	return d, nil
 }
 
 func resourceAciActionRuleProfileImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -88,12 +90,17 @@ func resourceAciActionRuleProfileImport(d *schema.ResourceData, m interface{}) (
 	if err != nil {
 		return nil, err
 	}
-	rtctrlAttrPMap, _ := rtctrlAttrP.ToMap()
+	rtctrlAttrPMap, err := rtctrlAttrP.ToMap()
+	if err != nil {
+		return nil, err
+	}
 	name := rtctrlAttrPMap["name"]
 	pDN := GetParentDn(dn, fmt.Sprintf("/attr-%s", name))
 	d.Set("tenant_dn", pDN)
-	schemaFilled := setActionRuleProfileAttributes(rtctrlAttrP, d)
-
+	schemaFilled, err := setActionRuleProfileAttributes(rtctrlAttrP, d)
+	if err != nil {
+		return nil, err
+	}
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
@@ -178,8 +185,11 @@ func resourceAciActionRuleProfileRead(ctx context.Context, d *schema.ResourceDat
 		d.SetId("")
 		return nil
 	}
-	setActionRuleProfileAttributes(rtctrlAttrP, d)
-
+	_, err = setActionRuleProfileAttributes(rtctrlAttrP, d)
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 
 	return nil

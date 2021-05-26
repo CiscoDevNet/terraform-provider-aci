@@ -66,17 +66,19 @@ func getRemoteMiscablingProtocolInterfacePolicy(client *client.Client, dn string
 	return mcpIfPol, nil
 }
 
-func setMiscablingProtocolInterfacePolicyAttributes(mcpIfPol *models.MiscablingProtocolInterfacePolicy, d *schema.ResourceData) *schema.ResourceData {
+func setMiscablingProtocolInterfacePolicyAttributes(mcpIfPol *models.MiscablingProtocolInterfacePolicy, d *schema.ResourceData) (*schema.ResourceData, error) {
 	d.SetId(mcpIfPol.DistinguishedName)
 	d.Set("description", mcpIfPol.Description)
-	mcpIfPolMap, _ := mcpIfPol.ToMap()
-
+	mcpIfPolMap, err := mcpIfPol.ToMap()
+	if err != nil {
+		return d, err
+	}
 	d.Set("name", mcpIfPolMap["name"])
 
 	d.Set("admin_st", mcpIfPolMap["adminSt"])
 	d.Set("annotation", mcpIfPolMap["annotation"])
 	d.Set("name_alias", mcpIfPolMap["nameAlias"])
-	return d
+	return d, nil
 }
 
 func resourceAciMiscablingProtocolInterfacePolicyImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -90,8 +92,10 @@ func resourceAciMiscablingProtocolInterfacePolicyImport(d *schema.ResourceData, 
 	if err != nil {
 		return nil, err
 	}
-	schemaFilled := setMiscablingProtocolInterfacePolicyAttributes(mcpIfPol, d)
-
+	schemaFilled, err := setMiscablingProtocolInterfacePolicyAttributes(mcpIfPol, d)
+	if err != nil {
+		return nil, err
+	}
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
@@ -181,8 +185,11 @@ func resourceAciMiscablingProtocolInterfacePolicyRead(ctx context.Context, d *sc
 		d.SetId("")
 		return nil
 	}
-	setMiscablingProtocolInterfacePolicyAttributes(mcpIfPol, d)
-
+	_, err = setMiscablingProtocolInterfacePolicyAttributes(mcpIfPol, d)
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 
 	return nil

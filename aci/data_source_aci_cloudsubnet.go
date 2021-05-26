@@ -70,6 +70,9 @@ func dataSourceAciCloudSubnetRead(ctx context.Context, d *schema.ResourceData, m
 		return diag.FromErr(err)
 	}
 	d.SetId(dn)
-	setCloudSubnetAttributes(cloudSubnet, d)
+	_, err = setCloudSubnetAttributes(cloudSubnet, d)
+	if err != nil {
+		return diag.FromErr(err)
+	}
 	return nil
 }

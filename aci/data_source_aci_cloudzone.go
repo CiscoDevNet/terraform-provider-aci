@@ -28,12 +28,6 @@ func dataSourceAciCloudAvailabilityZone() *schema.Resource {
 				Required: true,
 			},
 
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Default:  "orchestrator:terraform",
-			},
-
 			"name": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
@@ -64,7 +58,10 @@ func dataSourceAciCloudAvailabilityZoneRead(ctx context.Context, d *schema.Resou
 		return diag.FromErr(err)
 	}
 	d.SetId(dn)
-	setCloudAvailabilityZoneAttributes(cloudZone, d)
+	_, err = setCloudAvailabilityZoneAttributes(cloudZone, d)
+	if err != nil {
+		return diag.FromErr(err)
+	}
 	return nil
 }
 func getRemoteCloudAvailabilityZone(client *client.Client, dn string) (*models.CloudAvailabilityZone, error) {
@@ -82,16 +79,18 @@ func getRemoteCloudAvailabilityZone(client *client.Client, dn string) (*models.C
 	return cloudZone, nil
 }
 
-func setCloudAvailabilityZoneAttributes(cloudZone *models.CloudAvailabilityZone, d *schema.ResourceData) *schema.ResourceData {
+func setCloudAvailabilityZoneAttributes(cloudZone *models.CloudAvailabilityZone, d *schema.ResourceData) (*schema.ResourceData, error) {
 	dn := d.Id()
 	d.SetId(cloudZone.DistinguishedName)
 	if dn != cloudZone.DistinguishedName {
 		d.Set("cloud_providers_region_dn", "")
 	}
-	cloudZoneMap, _ := cloudZone.ToMap()
-
+	cloudZoneMap, err := cloudZone.ToMap()
+	if err != nil {
+		return d, err
+	}
 	d.Set("name", cloudZoneMap["name"])
 	d.Set("annotation", cloudZoneMap["annotation"])
 	d.Set("name_alias", cloudZoneMap["nameAlias"])
-	return d
+	return d, nil
 }
