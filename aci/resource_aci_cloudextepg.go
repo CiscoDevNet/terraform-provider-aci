@@ -216,7 +216,7 @@ func resourceAciCloudExternalEPgImport(d *schema.ResourceData, m interface{}) ([
 
 	cloudExtEPgMap, err := cloudExtEPg.ToMap()
 	if err != nil {
-		return d, err
+		return nil, err
 	}
 
 	name := cloudExtEPgMap["name"]
@@ -224,7 +224,7 @@ func resourceAciCloudExternalEPgImport(d *schema.ResourceData, m interface{}) ([
 	d.Set("cloud_applicationcontainer_dn", pDN)
 	schemaFilled, err := setCloudExternalEPgAttributes(cloudExtEPg, d)
 	if err != nil {
-		return d, err
+		return nil, err
 	}
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
