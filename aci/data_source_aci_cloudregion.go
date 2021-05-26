@@ -63,7 +63,10 @@ func dataSourceAciCloudProvidersRegionRead(ctx context.Context, d *schema.Resour
 		return diag.FromErr(err)
 	}
 	d.SetId(dn)
-	setCloudProvidersRegionAttributes(cloudRegion, d)
+	_, err = setCloudProvidersRegionAttributes(cloudRegion, d)
+	if err != nil {
+		return diag.FromErr(err)
+	}
 	return nil
 }
 func getRemoteCloudProvidersRegion(client *client.Client, dn string) (*models.CloudProvidersRegion, error) {
@@ -81,7 +84,7 @@ func getRemoteCloudProvidersRegion(client *client.Client, dn string) (*models.Cl
 	return cloudRegion, nil
 }
 
-func setCloudProvidersRegionAttributes(cloudRegion *models.CloudProvidersRegion, d *schema.ResourceData) *schema.ResourceData {
+func setCloudProvidersRegionAttributes(cloudRegion *models.CloudProvidersRegion, d *schema.ResourceData) (*schema.ResourceData, error) {
 	dn := d.Id()
 	d.SetId(cloudRegion.DistinguishedName)
 	//d.Set("description", cloudRegion.Description)
@@ -89,10 +92,13 @@ func setCloudProvidersRegionAttributes(cloudRegion *models.CloudProvidersRegion,
 		d.Set("cloud_provider_profile_dn", "")
 	}
 	d.Set("description", cloudRegion.Description)
-	cloudRegionMap, _ := cloudRegion.ToMap()
+	cloudRegionMap, err := cloudRegion.ToMap()
+	if err != nil {
+		return d, err
+	}
 	d.Set("annotation", cloudRegionMap["annotation"])
 	d.Set("name", cloudRegionMap["name"])
 	d.Set("admin_st", cloudRegionMap["adminSt"])
 	d.Set("name_alias", cloudRegionMap["nameAlias"])
-	return d
+	return d, nil
 }

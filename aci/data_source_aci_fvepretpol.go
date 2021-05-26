@@ -88,6 +88,9 @@ func dataSourceAciEndPointRetentionPolicyRead(ctx context.Context, d *schema.Res
 		return diag.FromErr(err)
 	}
 	d.SetId(dn)
-	setEndPointRetentionPolicyAttributes(fvEpRetPol, d)
+	_, err = setEndPointRetentionPolicyAttributes(fvEpRetPol, d)
+	if err != nil {
+		return diag.FromErr(err)
+	}
 	return nil
 }

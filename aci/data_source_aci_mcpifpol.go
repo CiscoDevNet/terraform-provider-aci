@@ -52,6 +52,10 @@ func dataSourceAciMiscablingProtocolInterfacePolicyRead(ctx context.Context, d *
 	if err != nil {
 		return diag.FromErr(err)
 	}
-	setMiscablingProtocolInterfacePolicyAttributes(mcpIfPol, d)
+	_, err = setMiscablingProtocolInterfacePolicyAttributes(mcpIfPol, d)
+
+	if err != nil {
+		return diag.FromErr(err)
+	}
 	return nil
 }

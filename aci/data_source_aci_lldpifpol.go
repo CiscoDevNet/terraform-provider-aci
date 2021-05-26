@@ -58,6 +58,9 @@ func dataSourceAciLLDPInterfacePolicyRead(ctx context.Context, d *schema.Resourc
 	if err != nil {
 		return diag.FromErr(err)
 	}
-	setLLDPInterfacePolicyAttributes(lldpIfPol, d)
+	_, err = setLLDPInterfacePolicyAttributes(lldpIfPol, d)
+	if err != nil {
+		return diag.FromErr(err)
+	}
 	return nil
 }

@@ -60,7 +60,7 @@ func getRemoteCloudApplicationcontainer(client *client.Client, dn string) (*mode
 	return cloudApp, nil
 }
 
-func setCloudApplicationcontainerAttributes(cloudApp *models.CloudApplicationcontainer, d *schema.ResourceData) *schema.ResourceData {
+func setCloudApplicationcontainerAttributes(cloudApp *models.CloudApplicationcontainer, d *schema.ResourceData) (*schema.ResourceData, error) {
 	dn := d.Id()
 	d.SetId(cloudApp.DistinguishedName)
 	d.Set("description", cloudApp.Description)
@@ -68,13 +68,15 @@ func setCloudApplicationcontainerAttributes(cloudApp *models.CloudApplicationcon
 	if dn != cloudApp.DistinguishedName {
 		d.Set("tenant_dn", "")
 	}
-	cloudAppMap, _ := cloudApp.ToMap()
-
+	cloudAppMap, err := cloudApp.ToMap()
+	if err != nil {
+		return d, err
+	}
 	d.Set("name", cloudAppMap["name"])
 
 	d.Set("annotation", cloudAppMap["annotation"])
 	d.Set("name_alias", cloudAppMap["nameAlias"])
-	return d
+	return d, nil
 }
 
 func resourceAciCloudApplicationcontainerImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -88,12 +90,18 @@ func resourceAciCloudApplicationcontainerImport(d *schema.ResourceData, m interf
 	if err != nil {
 		return nil, err
 	}
-	cloudAppMap, _ := cloudApp.ToMap()
+	cloudAppMap, err := cloudApp.ToMap()
+
+	if err != nil {
+		return nil, err
+	}
 	name := cloudAppMap["name"]
 	pDN := GetParentDn(dn, fmt.Sprintf("/cloudapp-%s", name))
 	d.Set("tenant_dn", pDN)
-	schemaFilled := setCloudApplicationcontainerAttributes(cloudApp, d)
-
+	schemaFilled, err := setCloudApplicationcontainerAttributes(cloudApp, d)
+	if err != nil {
+		return nil, err
+	}
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
@@ -178,8 +186,11 @@ func resourceAciCloudApplicationcontainerRead(ctx context.Context, d *schema.Res
 		d.SetId("")
 		return nil
 	}
-	setCloudApplicationcontainerAttributes(cloudApp, d)
-
+	_, err = setCloudApplicationcontainerAttributes(cloudApp, d)
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 
 	return nil

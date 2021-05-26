@@ -101,7 +101,7 @@ func getRemoteEndPointRetentionPolicy(client *client.Client, dn string) (*models
 	return fvEpRetPol, nil
 }
 
-func setEndPointRetentionPolicyAttributes(fvEpRetPol *models.EndPointRetentionPolicy, d *schema.ResourceData) *schema.ResourceData {
+func setEndPointRetentionPolicyAttributes(fvEpRetPol *models.EndPointRetentionPolicy, d *schema.ResourceData) (*schema.ResourceData, error) {
 	dn := d.Id()
 	d.SetId(fvEpRetPol.DistinguishedName)
 	d.Set("description", fvEpRetPol.Description)
@@ -109,8 +109,10 @@ func setEndPointRetentionPolicyAttributes(fvEpRetPol *models.EndPointRetentionPo
 	if dn != fvEpRetPol.DistinguishedName {
 		d.Set("tenant_dn", "")
 	}
-	fvEpRetPolMap, _ := fvEpRetPol.ToMap()
-
+	fvEpRetPolMap, err := fvEpRetPol.ToMap()
+	if err != nil {
+		return d, err
+	}
 	d.Set("name", fvEpRetPolMap["name"])
 
 	d.Set("annotation", fvEpRetPolMap["annotation"])
@@ -121,7 +123,7 @@ func setEndPointRetentionPolicyAttributes(fvEpRetPol *models.EndPointRetentionPo
 	d.Set("move_freq", fvEpRetPolMap["moveFreq"])
 	d.Set("name_alias", fvEpRetPolMap["nameAlias"])
 	d.Set("remote_ep_age_intvl", fvEpRetPolMap["remoteEpAgeIntvl"])
-	return d
+	return d, nil
 }
 
 func resourceAciEndPointRetentionPolicyImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -135,13 +137,18 @@ func resourceAciEndPointRetentionPolicyImport(d *schema.ResourceData, m interfac
 	if err != nil {
 		return nil, err
 	}
-	fvEpRetPolMap, _ := fvEpRetPol.ToMap()
+	fvEpRetPolMap, err := fvEpRetPol.ToMap()
 
+	if err != nil {
+		return nil, err
+	}
 	name := fvEpRetPolMap["name"]
 	pDN := GetParentDn(dn, fmt.Sprintf("/epRPol-%s", name))
 	d.Set("tenant_dn", pDN)
-	schemaFilled := setEndPointRetentionPolicyAttributes(fvEpRetPol, d)
-
+	schemaFilled, err := setEndPointRetentionPolicyAttributes(fvEpRetPol, d)
+	if err != nil {
+		return nil, err
+	}
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
@@ -262,8 +269,12 @@ func resourceAciEndPointRetentionPolicyRead(ctx context.Context, d *schema.Resou
 		d.SetId("")
 		return nil
 	}
-	setEndPointRetentionPolicyAttributes(fvEpRetPol, d)
+	_, err = setEndPointRetentionPolicyAttributes(fvEpRetPol, d)
 
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 
 	return nil

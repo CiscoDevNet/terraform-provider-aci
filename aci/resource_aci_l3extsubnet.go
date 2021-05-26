@@ -126,7 +126,6 @@ func setL3ExtSubnetAttributes(l3extSubnet *models.L3ExtSubnet, d *schema.Resourc
 	if err != nil {
 		return d, err
 	}
-
 	d.Set("ip", l3extSubnetMap["ip"])
 
 	d.Set("aggregate", l3extSubnetMap["aggregate"])
@@ -179,7 +178,6 @@ func resourceAciL3ExtSubnetImport(d *schema.ResourceData, m interface{}) ([]*sch
 	if err != nil {
 		return nil, err
 	}
-
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil

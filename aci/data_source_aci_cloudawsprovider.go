@@ -99,6 +99,9 @@ func dataSourceAciCloudAWSProviderRead(ctx context.Context, d *schema.ResourceDa
 		return diag.FromErr(err)
 	}
 	d.SetId(dn)
-	setCloudAWSProviderAttributes(cloudAwsProvider, d)
+	_, err = setCloudAWSProviderAttributes(cloudAwsProvider, d)
+	if err != nil {
+		return diag.FromErr(err)
+	}
 	return nil
 }

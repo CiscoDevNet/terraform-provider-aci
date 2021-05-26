@@ -46,6 +46,9 @@ func dataSourceAciLeafAccessPortPolicyGroupRead(ctx context.Context, d *schema.R
 	if err != nil {
 		return diag.FromErr(err)
 	}
-	setLeafAccessPortPolicyGroupAttributes(infraAccPortGrp, d)
+	_, err = setLeafAccessPortPolicyGroupAttributes(infraAccPortGrp, d)
+	if err != nil {
+		return diag.FromErr(err)
+	}
 	return nil
 }
