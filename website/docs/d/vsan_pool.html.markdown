@@ -15,12 +15,12 @@ Data source for ACI VSAN Pool
 data "aci_vsan_pool" "example" {
 
   name       = "example"
-  alloc_mode  = "example"
+  alloc_mode  = "static"
 }
 ```
 ## Argument Reference ##
 * `name` - (Required) Name of Object VSAN Pool.
-* `alloc_mode` - (Required) Allocation Mode of Object VSAN Pool.
+* `alloc_mode` - (Required) Allocation Mode of Object VSAN Pool. Allowed values: "dynamic", "static". 
 
 
 ## Attribute Reference
