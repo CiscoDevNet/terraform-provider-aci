@@ -27,11 +27,11 @@ data "aci_cloud_endpoint_selectorfor_external_epgs" "foo_ep_selector" {
 - `name` - (Required) Name of Object cloud endpoint selector for external EPgs.
 - `subnet` - (Required) Subnet from which EP to select. Any valid CIDR block is allowed here.
 
-
 ## Attribute Reference
 
 - `id` - Attribute id set to the Dn of the Cloud Endpoint Selector for External EPgs.
 - `annotation` - (Optional) Annotation for object cloud endpoint selector for external EPgs.
 - `description` - (Optional) Description for object cloud endpoint selector for external EPgs.
 - `is_shared` - (Optional) For Selectors set the shared route control.
+- `match_expression` - (Optional) Expressions are not used in cloudExtEPSelector because this selector only match subnets.
 - `name_alias` - (Optional) Name alias for object cloud endpoint selector for external EPgs.

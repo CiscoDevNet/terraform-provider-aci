@@ -21,7 +21,10 @@ Manages ACI Cloud Context Profile
 		region                   = "us-west-1"
 		cloud_vendor	         = "aws"
 		relation_cloud_rs_to_ctx = aci_vrf.example.id
-		hub_network  		 = "uni/tn-infra/gwrouterp-default"
+		hub_network  		 	 = "uni/tn-infra/gwrouterp-default"
+		annotation			     = "context_profile"
+		name_alias				 = "alias_context_profile"
+		type					 = "regular"
 	}
 
 ```
@@ -36,7 +39,7 @@ Manages ACI Cloud Context Profile
 * `cloud_vendor` - (Required) Name of the vendor. e.g. "aws", "azure".
 * `annotation` - (Optional) Annotation for object Cloud Context profile.
 * `name_alias` - (Optional) Name alias for object Cloud Context profile.
-* `type` - (Optional) The specific type of the object or component. Allowed values are "regular" and "shadow". Default is "regular".
+* `type` - (Optional) The specific type of the object or component. Allowed values are "regular", "shadow", "hosted" and "container-overlay". Default is "regular".
 
 * `hub_network` - (Optional) Hub network Dn which enables Transit Gateway.
 

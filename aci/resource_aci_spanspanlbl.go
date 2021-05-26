@@ -1,21 +1,23 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciSPANSourcedestinationGroupMatchLabel() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciSPANSourcedestinationGroupMatchLabelCreate,
-		Update: resourceAciSPANSourcedestinationGroupMatchLabelUpdate,
-		Read:   resourceAciSPANSourcedestinationGroupMatchLabelRead,
-		Delete: resourceAciSPANSourcedestinationGroupMatchLabelDelete,
+		CreateContext: resourceAciSPANSourcedestinationGroupMatchLabelCreate,
+		UpdateContext: resourceAciSPANSourcedestinationGroupMatchLabelUpdate,
+		ReadContext:   resourceAciSPANSourcedestinationGroupMatchLabelRead,
+		DeleteContext: resourceAciSPANSourcedestinationGroupMatchLabelDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciSPANSourcedestinationGroupMatchLabelImport,
@@ -125,7 +127,7 @@ func resourceAciSPANSourcedestinationGroupMatchLabelImport(d *schema.ResourceDat
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciSPANSourcedestinationGroupMatchLabelCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciSPANSourcedestinationGroupMatchLabelCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] SPANSourcedestinationGroupMatchLabel: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -150,19 +152,16 @@ func resourceAciSPANSourcedestinationGroupMatchLabelCreate(d *schema.ResourceDat
 
 	err := aciClient.Save(spanSpanLbl)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.Partial(false)
 
 	d.SetId(spanSpanLbl.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciSPANSourcedestinationGroupMatchLabelRead(d, m)
+	return resourceAciSPANSourcedestinationGroupMatchLabelRead(ctx, d, m)
 }
 
-func resourceAciSPANSourcedestinationGroupMatchLabelUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciSPANSourcedestinationGroupMatchLabelUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] SPANSourcedestinationGroupMatchLabel: Beginning Update")
 
 	aciClient := m.(*client.Client)
@@ -191,20 +190,17 @@ func resourceAciSPANSourcedestinationGroupMatchLabelUpdate(d *schema.ResourceDat
 	err := aciClient.Save(spanSpanLbl)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.Partial(false)
 
 	d.SetId(spanSpanLbl.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciSPANSourcedestinationGroupMatchLabelRead(d, m)
+	return resourceAciSPANSourcedestinationGroupMatchLabelRead(ctx, d, m)
 
 }
 
-func resourceAciSPANSourcedestinationGroupMatchLabelRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciSPANSourcedestinationGroupMatchLabelRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -223,18 +219,18 @@ func resourceAciSPANSourcedestinationGroupMatchLabelRead(d *schema.ResourceData,
 	return nil
 }
 
-func resourceAciSPANSourcedestinationGroupMatchLabelDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciSPANSourcedestinationGroupMatchLabelDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "spanSpanLbl")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
 }
