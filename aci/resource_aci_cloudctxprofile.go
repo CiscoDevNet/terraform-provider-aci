@@ -118,14 +118,19 @@ func getRemoteCloudContextProfile(client *client.Client, dn string) (*models.Clo
 	return cloudCtxProfile, nil
 }
 
-func setCloudContextProfileAttributes(cloudCtxProfile *models.CloudContextProfile, d *schema.ResourceData) *schema.ResourceData {
+func setCloudContextProfileAttributes(cloudCtxProfile *models.CloudContextProfile, d *schema.ResourceData) (*schema.ResourceData, error) {
 	dn := d.Id()
 	d.SetId(cloudCtxProfile.DistinguishedName)
 	d.Set("description", cloudCtxProfile.Description)
 	if dn != cloudCtxProfile.DistinguishedName {
 		d.Set("tenant_dn", "")
 	}
-	cloudCtxProfileMap, _ := cloudCtxProfile.ToMap()
+	cloudCtxProfileMap, err := cloudCtxProfile.ToMap()
+
+	if err != nil {
+		return d, err
+	}
+
 	d.Set("name", GetMOName(cloudCtxProfile.DistinguishedName))
 
 	d.Set("annotation", cloudCtxProfileMap["annotation"])
@@ -134,7 +139,7 @@ func setCloudContextProfileAttributes(cloudCtxProfile *models.CloudContextProfil
 	d.Set("primary_cidr", cloudCtxProfileMap["primary_cidr"])
 	d.Set("region", cloudCtxProfileMap["region"])
 
-	return d
+	return d, nil
 }
 
 func resourceAciCloudContextProfileImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -148,10 +153,15 @@ func resourceAciCloudContextProfileImport(d *schema.ResourceData, m interface{})
 	if err != nil {
 		return nil, err
 	}
+
 	name := GetMOName(cloudCtxProfile.DistinguishedName)
 	pDN := GetParentDn(dn, fmt.Sprintf("/ctxprofile-%s", name))
 	d.Set("tenant_dn", pDN)
-	schemaFilled := setCloudContextProfileAttributes(cloudCtxProfile, d)
+	schemaFilled, err := setCloudContextProfileAttributes(cloudCtxProfile, d)
+
+	if err != nil {
+		return nil, err
+	}
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
@@ -374,7 +384,11 @@ func resourceAciCloudContextProfileRead(ctx context.Context, d *schema.ResourceD
 	if err != nil {
 		return diag.FromErr(err)
 	}
-	setCloudContextProfileAttributes(cloudCtxProfile, d)
+	_, err = setCloudContextProfileAttributes(cloudCtxProfile, d)
+
+	if err != nil {
+		return diag.FromErr(err)
+	}
 
 	if hub, ok := d.GetOk("hub_network"); ok {
 		dURL := fmt.Sprintf("%s/rsctxProfileToGatewayRouterP-[%s]", dn, hub.(string))
