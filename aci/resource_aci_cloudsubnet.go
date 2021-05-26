@@ -102,15 +102,17 @@ func getRemoteCloudSubnet(client *client.Client, dn string) (*models.CloudSubnet
 	return cloudSubnet, nil
 }
 
-func setCloudSubnetAttributes(cloudSubnet *models.CloudSubnet, d *schema.ResourceData) *schema.ResourceData {
+func setCloudSubnetAttributes(cloudSubnet *models.CloudSubnet, d *schema.ResourceData) (*schema.ResourceData, error) {
 	dn := d.Id()
 	d.SetId(cloudSubnet.DistinguishedName)
 	d.Set("description", cloudSubnet.Description)
 	if dn != cloudSubnet.DistinguishedName {
 		d.Set("cloud_cidr_pool_dn", "")
 	}
-	cloudSubnetMap, _ := cloudSubnet.ToMap()
-
+	cloudSubnetMap, err := cloudSubnet.ToMap()
+	if err != nil {
+		return d, err
+	}
 	d.Set("ip", cloudSubnetMap["ip"])
 	d.Set("name", cloudSubnetMap["name"])
 
@@ -118,7 +120,7 @@ func setCloudSubnetAttributes(cloudSubnet *models.CloudSubnet, d *schema.Resourc
 	d.Set("name_alias", cloudSubnetMap["nameAlias"])
 	d.Set("scope", cloudSubnetMap["scope"])
 	d.Set("usage", cloudSubnetMap["usage"])
-	return d
+	return d, nil
 }
 
 func resourceAciCloudSubnetImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -132,13 +134,17 @@ func resourceAciCloudSubnetImport(d *schema.ResourceData, m interface{}) ([]*sch
 	if err != nil {
 		return nil, err
 	}
-	cloudSubnetMap, _ := cloudSubnet.ToMap()
-
+	cloudSubnetMap, err := cloudSubnet.ToMap()
+	if err != nil {
+		return nil, err
+	}
 	ip := cloudSubnetMap["ip"]
 	pDN := GetParentDn(dn, fmt.Sprintf("/subnet-[%s]", ip))
 	d.Set("cloud_cidr_pool_dn", pDN)
-	schemaFilled := setCloudSubnetAttributes(cloudSubnet, d)
-
+	schemaFilled, err := setCloudSubnetAttributes(cloudSubnet, d)
+	if err != nil {
+		return nil, err
+	}
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
@@ -318,8 +324,11 @@ func resourceAciCloudSubnetRead(ctx context.Context, d *schema.ResourceData, m i
 		d.SetId("")
 		return nil
 	}
-	setCloudSubnetAttributes(cloudSubnet, d)
-
+	_, err = setCloudSubnetAttributes(cloudSubnet, d)
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 	cloudRsZoneAttachData, err := aciClient.ReadRelationcloudRsZoneAttachFromCloudSubnet(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation cloudRsZoneAttach %v", err)

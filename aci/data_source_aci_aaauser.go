@@ -142,6 +142,9 @@ func dataSourceAciLocalUserRead(ctx context.Context, d *schema.ResourceData, m i
 	if err != nil {
 		return diag.FromErr(err)
 	}
-	setLocalUserAttributes(aaaUser, d)
+	_, err = setLocalUserAttributes(aaaUser, d)
+	if err != nil {
+		return diag.FromErr(err)
+	}
 	return nil
 }

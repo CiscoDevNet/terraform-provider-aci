@@ -172,10 +172,13 @@ func getRemoteLocalUser(client *client.Client, dn string) (*models.LocalUser, er
 	return aaaUser, nil
 }
 
-func setLocalUserAttributes(aaaUser *models.LocalUser, d *schema.ResourceData) *schema.ResourceData {
+func setLocalUserAttributes(aaaUser *models.LocalUser, d *schema.ResourceData) (*schema.ResourceData, error) {
 	d.SetId(aaaUser.DistinguishedName)
 	d.Set("description", aaaUser.Description)
-	aaaUserMap, _ := aaaUser.ToMap()
+	aaaUserMap, err := aaaUser.ToMap()
+	if err != nil {
+		return d, err
+	}
 
 	d.Set("name", aaaUserMap["name"])
 
@@ -200,7 +203,7 @@ func setLocalUserAttributes(aaaUser *models.LocalUser, d *schema.ResourceData) *
 	d.Set("pwd_update_required", aaaUserMap["pwdUpdateRequired"])
 	d.Set("rbac_string", aaaUserMap["rbacString"])
 	d.Set("unix_user_id", aaaUserMap["unixUserId"])
-	return d
+	return d, nil
 }
 
 func resourceAciLocalUserImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -214,7 +217,10 @@ func resourceAciLocalUserImport(d *schema.ResourceData, m interface{}) ([]*schem
 	if err != nil {
 		return nil, err
 	}
-	schemaFilled := setLocalUserAttributes(aaaUser, d)
+	schemaFilled, err := setLocalUserAttributes(aaaUser, d)
+	if err != nil {
+		return nil, err
+	}
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
@@ -392,7 +398,11 @@ func resourceAciLocalUserRead(ctx context.Context, d *schema.ResourceData, m int
 		d.SetId("")
 		return nil
 	}
-	setLocalUserAttributes(aaaUser, d)
+	_, err = setLocalUserAttributes(aaaUser, d)
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 

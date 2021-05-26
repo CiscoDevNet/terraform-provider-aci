@@ -94,6 +94,9 @@ func dataSourceAciMaintenancePolicyRead(ctx context.Context, d *schema.ResourceD
 	if err != nil {
 		return diag.FromErr(err)
 	}
-	setMaintenancePolicyAttributes(maintMaintP, d)
+	_, err = setMaintenancePolicyAttributes(maintMaintP, d)
+	if err != nil {
+		return diag.FromErr(err)
+	}
 	return nil
 }

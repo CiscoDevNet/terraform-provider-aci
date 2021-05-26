@@ -52,6 +52,9 @@ func dataSourceAciFilterRead(ctx context.Context, d *schema.ResourceData, m inte
 		return diag.FromErr(err)
 	}
 	d.SetId(dn)
-	setFilterAttributes(vzFilter, d)
+	_, err = setFilterAttributes(vzFilter, d)
+	if err != nil {
+		return diag.FromErr(err)
+	}
 	return nil
 }

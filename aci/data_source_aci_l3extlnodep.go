@@ -70,6 +70,9 @@ func dataSourceAciLogicalNodeProfileRead(ctx context.Context, d *schema.Resource
 		return diag.FromErr(err)
 	}
 	d.SetId(dn)
-	setLogicalNodeProfileAttributes(l3extLNodeP, d)
+	_, err = setLogicalNodeProfileAttributes(l3extLNodeP, d)
+	if err != nil {
+		return diag.FromErr(err)
+	}
 	return nil
 }

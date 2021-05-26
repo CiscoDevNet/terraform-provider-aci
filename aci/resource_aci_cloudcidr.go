@@ -71,7 +71,7 @@ func getRemoteCloudCIDRPool(client *client.Client, dn string) (*models.CloudCIDR
 	return cloudCidr, nil
 }
 
-func setCloudCIDRPoolAttributes(cloudCidr *models.CloudCIDRPool, d *schema.ResourceData) *schema.ResourceData {
+func setCloudCIDRPoolAttributes(cloudCidr *models.CloudCIDRPool, d *schema.ResourceData) (*schema.ResourceData, error) {
 	dn := d.Id()
 	d.SetId(cloudCidr.DistinguishedName)
 	d.Set("description", cloudCidr.Description)
@@ -79,13 +79,15 @@ func setCloudCIDRPoolAttributes(cloudCidr *models.CloudCIDRPool, d *schema.Resou
 	if dn != cloudCidr.DistinguishedName {
 		d.Set("cloud_context_profile_dn", "")
 	}
-	cloudCidrMap, _ := cloudCidr.ToMap()
-
+	cloudCidrMap, err := cloudCidr.ToMap()
+	if err != nil {
+		return d, err
+	}
 	d.Set("addr", cloudCidrMap["addr"])
 	d.Set("annotation", cloudCidrMap["annotation"])
 	d.Set("name_alias", cloudCidrMap["nameAlias"])
 	d.Set("primary", cloudCidrMap["primary"])
-	return d
+	return d, nil
 }
 
 func resourceAciCloudCIDRPoolImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -99,13 +101,17 @@ func resourceAciCloudCIDRPoolImport(d *schema.ResourceData, m interface{}) ([]*s
 	if err != nil {
 		return nil, err
 	}
-	cloudCidrMap, _ := cloudCidr.ToMap()
-
+	cloudCidrMap, err := cloudCidr.ToMap()
+	if err != nil {
+		return nil, err
+	}
 	addr := cloudCidrMap["addr"]
 	pDN := GetParentDn(dn, fmt.Sprintf("/cidr-[%s]", addr))
 	d.Set("cloud_context_profile_dn", pDN)
-	schemaFilled := setCloudCIDRPoolAttributes(cloudCidr, d)
-
+	schemaFilled, err := setCloudCIDRPoolAttributes(cloudCidr, d)
+	if err != nil {
+		return nil, err
+	}
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
@@ -202,8 +208,12 @@ func resourceAciCloudCIDRPoolRead(ctx context.Context, d *schema.ResourceData, m
 		d.SetId("")
 		return nil
 	}
-	setCloudCIDRPoolAttributes(cloudCidr, d)
+	_, err = setCloudCIDRPoolAttributes(cloudCidr, d)
 
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 
 	return nil

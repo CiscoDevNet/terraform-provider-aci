@@ -60,7 +60,7 @@ func getRemoteMonitoringPolicy(client *client.Client, dn string) (*models.Monito
 	return monEPGPol, nil
 }
 
-func setMonitoringPolicyAttributes(monEPGPol *models.MonitoringPolicy, d *schema.ResourceData) *schema.ResourceData {
+func setMonitoringPolicyAttributes(monEPGPol *models.MonitoringPolicy, d *schema.ResourceData) (*schema.ResourceData, error) {
 	dn := d.Id()
 	d.SetId(monEPGPol.DistinguishedName)
 	d.Set("description", monEPGPol.Description)
@@ -68,13 +68,15 @@ func setMonitoringPolicyAttributes(monEPGPol *models.MonitoringPolicy, d *schema
 	if dn != monEPGPol.DistinguishedName {
 		d.Set("tenant_dn", "")
 	}
-	monEPGPolMap, _ := monEPGPol.ToMap()
-
+	monEPGPolMap, err := monEPGPol.ToMap()
+	if err != nil {
+		return d, err
+	}
 	d.Set("name", monEPGPolMap["name"])
 
 	d.Set("annotation", monEPGPolMap["annotation"])
 	d.Set("name_alias", monEPGPolMap["nameAlias"])
-	return d
+	return d, nil
 }
 
 func resourceAciMonitoringPolicyImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -88,12 +90,17 @@ func resourceAciMonitoringPolicyImport(d *schema.ResourceData, m interface{}) ([
 	if err != nil {
 		return nil, err
 	}
-	monEPGPolMap, _ := monEPGPol.ToMap()
+	monEPGPolMap, err := monEPGPol.ToMap()
+	if err != nil {
+		return nil, err
+	}
 	name := monEPGPolMap["name"]
 	pDN := GetParentDn(dn, fmt.Sprintf("/monepg-%s", name))
 	d.Set("tenant_dn", pDN)
-	schemaFilled := setMonitoringPolicyAttributes(monEPGPol, d)
-
+	schemaFilled, err := setMonitoringPolicyAttributes(monEPGPol, d)
+	if err != nil {
+		return nil, err
+	}
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
@@ -178,8 +185,12 @@ func resourceAciMonitoringPolicyRead(ctx context.Context, d *schema.ResourceData
 		d.SetId("")
 		return nil
 	}
-	setMonitoringPolicyAttributes(monEPGPol, d)
+	_, err = setMonitoringPolicyAttributes(monEPGPol, d)
 
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 
 	return nil

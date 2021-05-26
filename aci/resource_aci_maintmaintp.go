@@ -148,10 +148,13 @@ func getRemoteMaintenancePolicy(client *client.Client, dn string) (*models.Maint
 	return maintMaintP, nil
 }
 
-func setMaintenancePolicyAttributes(maintMaintP *models.MaintenancePolicy, d *schema.ResourceData) *schema.ResourceData {
+func setMaintenancePolicyAttributes(maintMaintP *models.MaintenancePolicy, d *schema.ResourceData) (*schema.ResourceData, error) {
 	d.SetId(maintMaintP.DistinguishedName)
 	d.Set("description", maintMaintP.Description)
-	maintMaintPMap, _ := maintMaintP.ToMap()
+	maintMaintPMap, err := maintMaintP.ToMap()
+	if err != nil {
+		return d, err
+	}
 
 	d.Set("name", maintMaintPMap["name"])
 
@@ -165,7 +168,7 @@ func setMaintenancePolicyAttributes(maintMaintP *models.MaintenancePolicy, d *sc
 	d.Set("run_mode", maintMaintPMap["runMode"])
 	d.Set("version", maintMaintPMap["version"])
 	d.Set("version_check_override", maintMaintPMap["versionCheckOverride"])
-	return d
+	return d, nil
 }
 
 func resourceAciMaintenancePolicyImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -179,7 +182,10 @@ func resourceAciMaintenancePolicyImport(d *schema.ResourceData, m interface{}) (
 	if err != nil {
 		return nil, err
 	}
-	schemaFilled := setMaintenancePolicyAttributes(maintMaintP, d)
+	schemaFilled, err := setMaintenancePolicyAttributes(maintMaintP, d)
+	if err != nil {
+		return nil, err
+	}
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
@@ -413,7 +419,11 @@ func resourceAciMaintenancePolicyRead(ctx context.Context, d *schema.ResourceDat
 		d.SetId("")
 		return nil
 	}
-	setMaintenancePolicyAttributes(maintMaintP, d)
+	_, err = setMaintenancePolicyAttributes(maintMaintP, d)
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 
 	maintRsPolSchedulerData, err := aciClient.ReadRelationmaintRsPolSchedulerFromMaintenancePolicy(dn)
 	if err != nil {

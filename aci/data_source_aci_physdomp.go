@@ -46,6 +46,10 @@ func dataSourceAciPhysicalDomainRead(ctx context.Context, d *schema.ResourceData
 	if err != nil {
 		return diag.FromErr(err)
 	}
-	setPhysicalDomainAttributes(physDomP, d)
+	_, err = setPhysicalDomainAttributes(physDomP, d)
+
+	if err != nil {
+		return diag.FromErr(err)
+	}
 	return nil
 }

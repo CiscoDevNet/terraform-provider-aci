@@ -66,7 +66,7 @@ func getRemoteCloudEndpointSelector(client *client.Client, dn string) (*models.C
 	return cloudEPSelector, nil
 }
 
-func setCloudEndpointSelectorAttributes(cloudEPSelector *models.CloudEndpointSelector, d *schema.ResourceData) *schema.ResourceData {
+func setCloudEndpointSelectorAttributes(cloudEPSelector *models.CloudEndpointSelector, d *schema.ResourceData) (*schema.ResourceData, error) {
 	dn := d.Id()
 	d.SetId(cloudEPSelector.DistinguishedName)
 	d.Set("description", cloudEPSelector.Description)
@@ -74,14 +74,16 @@ func setCloudEndpointSelectorAttributes(cloudEPSelector *models.CloudEndpointSel
 	if dn != cloudEPSelector.DistinguishedName {
 		d.Set("cloud_epg_dn", "")
 	}
-	cloudEPSelectorMap, _ := cloudEPSelector.ToMap()
-
+	cloudEPSelectorMap, err := cloudEPSelector.ToMap()
+	if err != nil {
+		return d, err
+	}
 	d.Set("name", cloudEPSelectorMap["name"])
 
 	d.Set("annotation", cloudEPSelectorMap["annotation"])
 	d.Set("match_expression", cloudEPSelectorMap["matchExpression"])
 	d.Set("name_alias", cloudEPSelectorMap["nameAlias"])
-	return d
+	return d, nil
 }
 
 func resourceAciCloudEndpointSelectorImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -95,11 +97,17 @@ func resourceAciCloudEndpointSelectorImport(d *schema.ResourceData, m interface{
 	if err != nil {
 		return nil, err
 	}
-	cloudEPSelectorMap, _ := cloudEPSelector.ToMap()
+	cloudEPSelectorMap, err := cloudEPSelector.ToMap()
+	if err != nil {
+		return nil, err
+	}
 	name := cloudEPSelectorMap["name"]
 	pDN := GetParentDn(dn, fmt.Sprintf("/epselector-%s", name))
 	d.Set("cloud_epg_dn", pDN)
-	schemaFilled := setCloudEndpointSelectorAttributes(cloudEPSelector, d)
+	schemaFilled, err := setCloudEndpointSelectorAttributes(cloudEPSelector, d)
+	if err != nil {
+		return nil, err
+	}
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
@@ -191,8 +199,11 @@ func resourceAciCloudEndpointSelectorRead(ctx context.Context, d *schema.Resourc
 		d.SetId("")
 		return nil
 	}
-	setCloudEndpointSelectorAttributes(cloudEPSelector, d)
-
+	_, err = setCloudEndpointSelectorAttributes(cloudEPSelector, d)
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 
 	return nil

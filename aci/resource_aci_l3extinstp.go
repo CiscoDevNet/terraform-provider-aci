@@ -215,7 +215,7 @@ func getRemoteExternalNetworkInstanceProfile(client *client.Client, dn string) (
 	return l3extInstP, nil
 }
 
-func setExternalNetworkInstanceProfileAttributes(l3extInstP *models.ExternalNetworkInstanceProfile, d *schema.ResourceData) (*schema.ResourceData,error) {
+func setExternalNetworkInstanceProfileAttributes(l3extInstP *models.ExternalNetworkInstanceProfile, d *schema.ResourceData) (*schema.ResourceData, error) {
 	dn := d.Id()
 	d.SetId(l3extInstP.DistinguishedName)
 	d.Set("description", l3extInstP.Description)
@@ -238,7 +238,7 @@ func setExternalNetworkInstanceProfileAttributes(l3extInstP *models.ExternalNetw
 	d.Set("pref_gr_memb", l3extInstPMap["prefGrMemb"])
 	d.Set("prio", l3extInstPMap["prio"])
 	d.Set("target_dscp", l3extInstPMap["targetDscp"])
-	return d
+	return d, nil
 }
 
 func resourceAciExternalNetworkInstanceProfileImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -259,7 +259,7 @@ func resourceAciExternalNetworkInstanceProfileImport(d *schema.ResourceData, m i
 	name := l3extInstPMap["name"]
 	pDN := GetParentDn(dn, fmt.Sprintf("/instP-%s", name))
 	d.Set("l3_outside_dn", pDN)
-	schemaFilled,err := setExternalNetworkInstanceProfileAttributes(l3extInstP, d)
+	schemaFilled, err := setExternalNetworkInstanceProfileAttributes(l3extInstP, d)
 	if err != nil {
 		return nil, err
 	}
@@ -848,7 +848,7 @@ func resourceAciExternalNetworkInstanceProfileRead(ctx context.Context, d *schem
 		d.SetId("")
 		return nil
 	}
-	
+
 	fvRsSecInheritedData, err := aciClient.ReadRelationfvRsSecInheritedFromExternalNetworkInstanceProfile(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation fvRsSecInherited %v", err)

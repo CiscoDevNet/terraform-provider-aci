@@ -115,7 +115,7 @@ func getRemoteLogicalInterfaceProfile(client *client.Client, dn string) (*models
 	return l3extLIfP, nil
 }
 
-func setLogicalInterfaceProfileAttributes(l3extLIfP *models.LogicalInterfaceProfile, d *schema.ResourceData) *schema.ResourceData {
+func setLogicalInterfaceProfileAttributes(l3extLIfP *models.LogicalInterfaceProfile, d *schema.ResourceData) (*schema.ResourceData, error) {
 	dn := d.Id()
 	d.SetId(l3extLIfP.DistinguishedName)
 	d.Set("description", l3extLIfP.Description)
@@ -123,7 +123,10 @@ func setLogicalInterfaceProfileAttributes(l3extLIfP *models.LogicalInterfaceProf
 	if dn != l3extLIfP.DistinguishedName {
 		d.Set("logical_node_profile_dn", "")
 	}
-	l3extLIfPMap, _ := l3extLIfP.ToMap()
+	l3extLIfPMap, err := l3extLIfP.ToMap()
+	if err != nil {
+		return d, err
+	}
 
 	d.Set("name", l3extLIfPMap["name"])
 
@@ -131,7 +134,7 @@ func setLogicalInterfaceProfileAttributes(l3extLIfP *models.LogicalInterfaceProf
 	d.Set("name_alias", l3extLIfPMap["nameAlias"])
 	d.Set("prio", l3extLIfPMap["prio"])
 	d.Set("tag", l3extLIfPMap["tag"])
-	return d
+	return d, nil
 }
 
 func resourceAciLogicalInterfaceProfileImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -145,11 +148,17 @@ func resourceAciLogicalInterfaceProfileImport(d *schema.ResourceData, m interfac
 	if err != nil {
 		return nil, err
 	}
-	l3extLIfPMap, _ := l3extLIfP.ToMap()
+	l3extLIfPMap, err := l3extLIfP.ToMap()
+	if err != nil {
+		return nil, err
+	}
 	name := l3extLIfPMap["name"]
 	pDN := GetParentDn(dn, fmt.Sprintf("/lifp-%s", name))
 	d.Set("logical_node_profile_dn", pDN)
-	schemaFilled := setLogicalInterfaceProfileAttributes(l3extLIfP, d)
+	schemaFilled, err := setLogicalInterfaceProfileAttributes(l3extLIfP, d)
+	if err != nil {
+		return nil, err
+	}
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
@@ -453,7 +462,11 @@ func resourceAciLogicalInterfaceProfileRead(ctx context.Context, d *schema.Resou
 		d.SetId("")
 		return nil
 	}
-	setLogicalInterfaceProfileAttributes(l3extLIfP, d)
+	_, err = setLogicalInterfaceProfileAttributes(l3extLIfP, d)
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 
 	l3extRsLIfPToNetflowMonitorPolData, err := aciClient.ReadRelationl3extRsLIfPToNetflowMonitorPolFromLogicalInterfaceProfile(dn)
 	if err != nil {

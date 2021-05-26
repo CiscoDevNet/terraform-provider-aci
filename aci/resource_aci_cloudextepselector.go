@@ -82,7 +82,7 @@ func getRemoteCloudEndpointSelectorforExternalEPgs(client *client.Client, dn str
 	return cloudExtEPSelector, nil
 }
 
-func setCloudEndpointSelectorforExternalEPgsAttributes(cloudExtEPSelector *models.CloudEndpointSelectorforExternalEPgs, d *schema.ResourceData) *schema.ResourceData {
+func setCloudEndpointSelectorforExternalEPgsAttributes(cloudExtEPSelector *models.CloudEndpointSelectorforExternalEPgs, d *schema.ResourceData) (*schema.ResourceData, error) {
 	dn := d.Id()
 	d.SetId(cloudExtEPSelector.DistinguishedName)
 	d.Set("description", cloudExtEPSelector.Description)
@@ -90,7 +90,10 @@ func setCloudEndpointSelectorforExternalEPgsAttributes(cloudExtEPSelector *model
 	if dn != cloudExtEPSelector.DistinguishedName {
 		d.Set("cloud_external_epg_dn", "")
 	}
-	cloudExtEPSelectorMap, _ := cloudExtEPSelector.ToMap()
+	cloudExtEPSelectorMap, err := cloudExtEPSelector.ToMap()
+	if err != nil {
+		return d, err
+	}
 
 	d.Set("name", cloudExtEPSelectorMap["name"])
 
@@ -99,7 +102,7 @@ func setCloudEndpointSelectorforExternalEPgsAttributes(cloudExtEPSelector *model
 	d.Set("match_expression", cloudExtEPSelectorMap["matchExpression"])
 	d.Set("name_alias", cloudExtEPSelectorMap["nameAlias"])
 	d.Set("subnet", cloudExtEPSelectorMap["subnet"])
-	return d
+	return d, nil
 }
 
 func resourceAciCloudEndpointSelectorforExternalEPgsImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -113,11 +116,17 @@ func resourceAciCloudEndpointSelectorforExternalEPgsImport(d *schema.ResourceDat
 	if err != nil {
 		return nil, err
 	}
-	cloudExtEPSelectorMap, _ := cloudExtEPSelector.ToMap()
+	cloudExtEPSelectorMap, err := cloudExtEPSelector.ToMap()
+	if err != nil {
+		return nil, err
+	}
 	subnet := cloudExtEPSelectorMap["subnet"]
 	pDN := GetParentDn(dn, fmt.Sprintf("/extepselector-[%s]", subnet))
 	d.Set("cloud_external_epg_dn", pDN)
-	schemaFilled := setCloudEndpointSelectorforExternalEPgsAttributes(cloudExtEPSelector, d)
+	schemaFilled, err := setCloudEndpointSelectorforExternalEPgsAttributes(cloudExtEPSelector, d)
+	if err != nil {
+		return nil, err
+	}
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
@@ -224,7 +233,11 @@ func resourceAciCloudEndpointSelectorforExternalEPgsRead(ctx context.Context, d 
 		d.SetId("")
 		return nil
 	}
-	setCloudEndpointSelectorforExternalEPgsAttributes(cloudExtEPSelector, d)
+	_, err = setCloudEndpointSelectorforExternalEPgsAttributes(cloudExtEPSelector, d)
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 

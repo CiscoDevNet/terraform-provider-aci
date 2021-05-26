@@ -163,7 +163,7 @@ func getRemoteCloudEPg(client *client.Client, dn string) (*models.CloudEPg, erro
 	return cloudEPg, nil
 }
 
-func setCloudEPgAttributes(cloudEPg *models.CloudEPg, d *schema.ResourceData) *schema.ResourceData {
+func setCloudEPgAttributes(cloudEPg *models.CloudEPg, d *schema.ResourceData) (*schema.ResourceData, error) {
 	dn := d.Id()
 	d.SetId(cloudEPg.DistinguishedName)
 	d.Set("description", cloudEPg.Description)
@@ -171,7 +171,10 @@ func setCloudEPgAttributes(cloudEPg *models.CloudEPg, d *schema.ResourceData) *s
 	if dn != cloudEPg.DistinguishedName {
 		d.Set("cloud_applicationcontainer_dn", "")
 	}
-	cloudEPgMap, _ := cloudEPg.ToMap()
+	cloudEPgMap, err := cloudEPg.ToMap()
+	if err != nil {
+		return d, err
+	}
 
 	d.Set("name", cloudEPgMap["name"])
 
@@ -182,7 +185,7 @@ func setCloudEPgAttributes(cloudEPg *models.CloudEPg, d *schema.ResourceData) *s
 	d.Set("name_alias", cloudEPgMap["nameAlias"])
 	d.Set("pref_gr_memb", cloudEPgMap["prefGrMemb"])
 	d.Set("prio", cloudEPgMap["prio"])
-	return d
+	return d, nil
 }
 
 func resourceAciCloudEPgImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -196,12 +199,17 @@ func resourceAciCloudEPgImport(d *schema.ResourceData, m interface{}) ([]*schema
 	if err != nil {
 		return nil, err
 	}
-	cloudEPgMap, _ := cloudEPg.ToMap()
+	cloudEPgMap, err := cloudEPg.ToMap()
+	if err != nil {
+		return nil, err
+	}
 	name := cloudEPgMap["name"]
 	pDN := GetParentDn(dn, fmt.Sprintf("/cloudepg-%s", name))
 	d.Set("cloud_applicationcontainer_dn", pDN)
-	schemaFilled := setCloudEPgAttributes(cloudEPg, d)
-
+	schemaFilled, err := setCloudEPgAttributes(cloudEPg, d)
+	if err != nil {
+		return nil, err
+	}
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
@@ -720,7 +728,11 @@ func resourceAciCloudEPgRead(ctx context.Context, d *schema.ResourceData, m inte
 		d.SetId("")
 		return nil
 	}
-	setCloudEPgAttributes(cloudEPg, d)
+	_, err = setCloudEPgAttributes(cloudEPg, d)
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 
 	fvRsSecInheritedData, err := aciClient.ReadRelationfvRsSecInheritedFromCloudEPg(dn)
 	if err != nil {

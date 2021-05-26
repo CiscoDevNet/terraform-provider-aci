@@ -64,6 +64,9 @@ func dataSourceAciL3OutsideRead(ctx context.Context, d *schema.ResourceData, m i
 		return diag.FromErr(err)
 	}
 	d.SetId(dn)
-	setL3OutsideAttributes(l3extOut, d)
+	_, err = setL3OutsideAttributes(l3extOut, d)
+	if err != nil {
+		return diag.FromErr(err)
+	}
 	return nil
 }

@@ -143,7 +143,7 @@ func getRemoteL3Outside(client *client.Client, dn string) (*models.L3Outside, er
 	return l3extOut, nil
 }
 
-func setL3OutsideAttributes(l3extOut *models.L3Outside, d *schema.ResourceData) *schema.ResourceData {
+func setL3OutsideAttributes(l3extOut *models.L3Outside, d *schema.ResourceData) (*schema.ResourceData, error) {
 	dn := d.Id()
 	d.SetId(l3extOut.DistinguishedName)
 	d.Set("description", l3extOut.Description)
@@ -151,15 +151,17 @@ func setL3OutsideAttributes(l3extOut *models.L3Outside, d *schema.ResourceData) 
 	if dn != l3extOut.DistinguishedName {
 		d.Set("tenant_dn", "")
 	}
-	l3extOutMap, _ := l3extOut.ToMap()
-
+	l3extOutMap, err := l3extOut.ToMap()
+	if err != nil {
+		return d, err
+	}
 	d.Set("name", l3extOutMap["name"])
 
 	d.Set("annotation", l3extOutMap["annotation"])
 	d.Set("enforce_rtctrl", l3extOutMap["enforceRtctrl"])
 	d.Set("name_alias", l3extOutMap["nameAlias"])
 	d.Set("target_dscp", l3extOutMap["targetDscp"])
-	return d
+	return d, nil
 }
 
 func resourceAciL3OutsideImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -173,11 +175,17 @@ func resourceAciL3OutsideImport(d *schema.ResourceData, m interface{}) ([]*schem
 	if err != nil {
 		return nil, err
 	}
-	l3extOutMap, _ := l3extOut.ToMap()
+	l3extOutMap, err := l3extOut.ToMap()
+	if err != nil {
+		return nil, err
+	}
 	name := l3extOutMap["name"]
 	pDN := GetParentDn(dn, fmt.Sprintf("/out-%s", name))
 	d.Set("tenant_dn", pDN)
-	schemaFilled := setL3OutsideAttributes(l3extOut, d)
+	schemaFilled, err := setL3OutsideAttributes(l3extOut, d)
+	if err != nil {
+		return nil, err
+	}
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
@@ -463,8 +471,11 @@ func resourceAciL3OutsideRead(ctx context.Context, d *schema.ResourceData, m int
 		d.SetId("")
 		return nil
 	}
-	setL3OutsideAttributes(l3extOut, d)
-
+	_, err = setL3OutsideAttributes(l3extOut, d)
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 	l3extRsDampeningPolData, err := aciClient.ReadRelationl3extRsDampeningPolFromL3Outside(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation l3extRsDampeningPol %v", err)

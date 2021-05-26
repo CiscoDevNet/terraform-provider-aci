@@ -51,7 +51,11 @@ func dataSourceAciCloudApplicationcontainerRead(ctx context.Context, d *schema.R
 	if err != nil {
 		return diag.FromErr(err)
 	}
+
 	d.SetId(dn)
-	setCloudApplicationcontainerAttributes(cloudApp, d)
+	_, err = setCloudApplicationcontainerAttributes(cloudApp, d)
+	if err != nil {
+		return diag.FromErr(err)
+	}
 	return nil
 }

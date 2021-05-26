@@ -92,7 +92,7 @@ func getRemoteAccessPortBlock(client *client.Client, dn string) (*models.AccessP
 	return infraPortBlk, nil
 }
 
-func setAccessPortBlockAttributes(infraPortBlk *models.AccessPortBlock, d *schema.ResourceData) *schema.ResourceData {
+func setAccessPortBlockAttributes(infraPortBlk *models.AccessPortBlock, d *schema.ResourceData) (*schema.ResourceData, error) {
 	dn := d.Id()
 	d.SetId(infraPortBlk.DistinguishedName)
 	d.Set("description", infraPortBlk.Description)
@@ -100,8 +100,10 @@ func setAccessPortBlockAttributes(infraPortBlk *models.AccessPortBlock, d *schem
 	if dn != infraPortBlk.DistinguishedName {
 		d.Set("access_port_selector_dn", "")
 	}
-	infraPortBlkMap, _ := infraPortBlk.ToMap()
-
+	infraPortBlkMap, err := infraPortBlk.ToMap()
+	if err != nil {
+		return d, err
+	}
 	d.Set("name", infraPortBlkMap["name"])
 
 	d.Set("annotation", infraPortBlkMap["annotation"])
@@ -110,7 +112,7 @@ func setAccessPortBlockAttributes(infraPortBlk *models.AccessPortBlock, d *schem
 	d.Set("name_alias", infraPortBlkMap["nameAlias"])
 	d.Set("to_card", infraPortBlkMap["toCard"])
 	d.Set("to_port", infraPortBlkMap["toPort"])
-	return d
+	return d, nil
 }
 
 func resourceAciAccessPortBlockImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -124,12 +126,18 @@ func resourceAciAccessPortBlockImport(d *schema.ResourceData, m interface{}) ([]
 	if err != nil {
 		return nil, err
 	}
-	infraPortBlkMap, _ := infraPortBlk.ToMap()
+	infraPortBlkMap, err := infraPortBlk.ToMap()
+	if err != nil {
+		return nil, err
+	}
 
 	name := infraPortBlkMap["name"]
 	pDN := GetParentDn(dn, fmt.Sprintf("/portblk-%s", name))
 	d.Set("access_port_selector_dn", pDN)
-	schemaFilled := setAccessPortBlockAttributes(infraPortBlk, d)
+	schemaFilled, err := setAccessPortBlockAttributes(infraPortBlk, d)
+	if err != nil {
+		return nil, err
+	}
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
@@ -330,7 +338,12 @@ func resourceAciAccessPortBlockRead(ctx context.Context, d *schema.ResourceData,
 		d.SetId("")
 		return nil
 	}
-	setAccessPortBlockAttributes(infraPortBlk, d)
+	_, err = setAccessPortBlockAttributes(infraPortBlk, d)
+	
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 
 	infraRsAccBndlSubgrpData, err := aciClient.ReadRelationinfraRsAccBndlSubgrpFromAccessPortBlock(dn)
 	if err != nil {

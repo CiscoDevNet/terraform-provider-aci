@@ -117,7 +117,7 @@ func getRemoteCloudAWSProvider(client *client.Client, dn string) (*models.CloudA
 	return cloudAwsProvider, nil
 }
 
-func setCloudAWSProviderAttributes(cloudAwsProvider *models.CloudAWSProvider, d *schema.ResourceData) *schema.ResourceData {
+func setCloudAWSProviderAttributes(cloudAwsProvider *models.CloudAWSProvider, d *schema.ResourceData) (*schema.ResourceData, error) {
 	dn := d.Id()
 	d.SetId(cloudAwsProvider.DistinguishedName)
 	d.Set("description", cloudAwsProvider.Description)
@@ -125,8 +125,10 @@ func setCloudAWSProviderAttributes(cloudAwsProvider *models.CloudAWSProvider, d 
 	if dn != cloudAwsProvider.DistinguishedName {
 		d.Set("tenant_dn", "")
 	}
-	cloudAwsProviderMap, _ := cloudAwsProvider.ToMap()
-
+	cloudAwsProviderMap, err := cloudAwsProvider.ToMap()
+	if err != nil {
+		return d, err
+	}
 	d.Set("access_key_id", cloudAwsProviderMap["accessKeyId"])
 	d.Set("account_id", cloudAwsProviderMap["accountId"])
 	d.Set("annotation", cloudAwsProviderMap["annotation"])
@@ -138,7 +140,7 @@ func setCloudAWSProviderAttributes(cloudAwsProvider *models.CloudAWSProvider, d 
 	d.Set("provider_id", cloudAwsProviderMap["providerId"])
 	d.Set("region", cloudAwsProviderMap["region"])
 	//d.Set("secret_access_key", cloudAwsProviderMap["secretAccessKey"])
-	return d
+	return d, nil
 }
 
 func resourceAciCloudAWSProviderImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -154,8 +156,10 @@ func resourceAciCloudAWSProviderImport(d *schema.ResourceData, m interface{}) ([
 	}
 	pDN := GetParentDn(dn, fmt.Sprintf("/awsprovider"))
 	d.Set("tenant_dn", pDN)
-	schemaFilled := setCloudAWSProviderAttributes(cloudAwsProvider, d)
-
+	schemaFilled, err := setCloudAWSProviderAttributes(cloudAwsProvider, d)
+	if err != nil {
+		return nil, err
+	}
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
@@ -291,8 +295,11 @@ func resourceAciCloudAWSProviderRead(ctx context.Context, d *schema.ResourceData
 		d.SetId("")
 		return nil
 	}
-	setCloudAWSProviderAttributes(cloudAwsProvider, d)
-
+	_, err = setCloudAWSProviderAttributes(cloudAwsProvider, d)
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 
 	return nil

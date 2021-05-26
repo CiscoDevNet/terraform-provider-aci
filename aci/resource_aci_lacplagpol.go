@@ -100,11 +100,13 @@ func getRemoteLACPPolicy(client *client.Client, dn string) (*models.LACPPolicy, 
 	return lacpLagPol, nil
 }
 
-func setLACPPolicyAttributes(lacpLagPol *models.LACPPolicy, d *schema.ResourceData) *schema.ResourceData {
+func setLACPPolicyAttributes(lacpLagPol *models.LACPPolicy, d *schema.ResourceData) (*schema.ResourceData, error) {
 	d.SetId(lacpLagPol.DistinguishedName)
 	d.Set("description", lacpLagPol.Description)
-	lacpLagPolMap, _ := lacpLagPol.ToMap()
-
+	lacpLagPolMap, err := lacpLagPol.ToMap()
+	if err != nil {
+		return d, err
+	}
 	d.Set("name", lacpLagPolMap["name"])
 
 	d.Set("annotation", lacpLagPolMap["annotation"])
@@ -131,7 +133,7 @@ func setLACPPolicyAttributes(lacpLagPol *models.LACPPolicy, d *schema.ResourceDa
 	d.Set("min_links", lacpLagPolMap["minLinks"])
 	d.Set("mode", lacpLagPolMap["mode"])
 	d.Set("name_alias", lacpLagPolMap["nameAlias"])
-	return d
+	return d, nil
 }
 
 func resourceAciLACPPolicyImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -145,7 +147,10 @@ func resourceAciLACPPolicyImport(d *schema.ResourceData, m interface{}) ([]*sche
 	if err != nil {
 		return nil, err
 	}
-	schemaFilled := setLACPPolicyAttributes(lacpLagPol, d)
+	schemaFilled, err := setLACPPolicyAttributes(lacpLagPol, d)
+	if err != nil {
+		return nil, err
+	}
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
@@ -261,7 +266,11 @@ func resourceAciLACPPolicyRead(ctx context.Context, d *schema.ResourceData, m in
 		d.SetId("")
 		return nil
 	}
-	setLACPPolicyAttributes(lacpLagPol, d)
+	_, err = setLACPPolicyAttributes(lacpLagPol, d)
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 
