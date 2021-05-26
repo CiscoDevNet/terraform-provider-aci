@@ -46,6 +46,11 @@ func dataSourceAciAttachableAccessEntityProfileRead(ctx context.Context, d *sche
 	if err != nil {
 		return diag.FromErr(err)
 	}
-	setAttachableAccessEntityProfileAttributes(infraAttEntityP, d)
+	_, err = setAttachableAccessEntityProfileAttributes(infraAttEntityP, d)
+
+	if err != nil {
+		return diag.FromErr(err)
+	}
+	
 	return nil
 }

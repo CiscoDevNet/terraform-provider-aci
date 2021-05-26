@@ -59,6 +59,11 @@ func dataSourceAciCloudContextProfileRead(ctx context.Context, d *schema.Resourc
 		return diag.FromErr(err)
 	}
 	d.SetId(dn)
-	setCloudContextProfileAttributes(cloudCtxProfile, d)
+	_, err = setCloudContextProfileAttributes(cloudCtxProfile, d)
+
+	if err != nil {
+		return diag.FromErr(err)
+	}
+	
 	return nil
 }

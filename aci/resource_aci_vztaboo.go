@@ -60,7 +60,7 @@ func getRemoteTabooContract(client *client.Client, dn string) (*models.TabooCont
 	return vzTaboo, nil
 }
 
-func setTabooContractAttributes(vzTaboo *models.TabooContract, d *schema.ResourceData) *schema.ResourceData {
+func setTabooContractAttributes(vzTaboo *models.TabooContract, d *schema.ResourceData) (*schema.ResourceData, error) {
 	dn := d.Id()
 	d.SetId(vzTaboo.DistinguishedName)
 	d.Set("description", vzTaboo.Description)
@@ -68,13 +68,17 @@ func setTabooContractAttributes(vzTaboo *models.TabooContract, d *schema.Resourc
 	if dn != vzTaboo.DistinguishedName {
 		d.Set("tenant_dn", "")
 	}
-	vzTabooMap, _ := vzTaboo.ToMap()
+	vzTabooMap, err := vzTaboo.ToMap()
+
+	if err != nil {
+		return d, err
+	}
 
 	d.Set("name", vzTabooMap["name"])
 
 	d.Set("annotation", vzTabooMap["annotation"])
 	d.Set("name_alias", vzTabooMap["nameAlias"])
-	return d
+	return d, nil
 }
 
 func resourceAciTabooContractImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -88,11 +92,20 @@ func resourceAciTabooContractImport(d *schema.ResourceData, m interface{}) ([]*s
 	if err != nil {
 		return nil, err
 	}
-	vzTabooMap, _ := vzTaboo.ToMap()
+	vzTabooMap, err := vzTaboo.ToMap()
+
+	if err != nil {
+		return nil, err
+	}
+
 	name := vzTabooMap["name"]
 	pDN := GetParentDn(dn, fmt.Sprintf("/taboo-%s", name))
 	d.Set("tenant_dn", pDN)
-	schemaFilled := setTabooContractAttributes(vzTaboo, d)
+	schemaFilled, err := setTabooContractAttributes(vzTaboo, d)
+
+	if err != nil {
+		return nil, err
+	}
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
@@ -178,7 +191,12 @@ func resourceAciTabooContractRead(ctx context.Context, d *schema.ResourceData, m
 		d.SetId("")
 		return nil
 	}
-	setTabooContractAttributes(vzTaboo, d)
+	_, err = setTabooContractAttributes(vzTaboo, d)
+
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 

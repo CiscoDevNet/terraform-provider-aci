@@ -106,6 +106,11 @@ func dataSourceAciOSPFInterfacePolicyRead(ctx context.Context, d *schema.Resourc
 		return diag.FromErr(err)
 	}
 	d.SetId(dn)
-	setOSPFInterfacePolicyAttributes(ospfIfPol, d)
+	_, err = setOSPFInterfacePolicyAttributes(ospfIfPol, d)
+
+	if err != nil {
+		return diag.FromErr(err)
+	}
+	
 	return nil
 }

@@ -47,7 +47,11 @@ func dataSourceAciCloudProviderProfileRead(ctx context.Context, d *schema.Resour
 	if err != nil {
 		return diag.FromErr(err)
 	}
-	setCloudProviderProfileAttributes(cloudProvP, d)
+	_, err = setCloudProviderProfileAttributes(cloudProvP, d)
+
+	if err != nil {
+		return diag.FromErr(err)
+	}
 	return nil
 }
 
@@ -66,10 +70,14 @@ func getRemoteCloudProviderProfile(client *client.Client, dn string) (*models.Cl
 	return cloudProvP, nil
 }
 
-func setCloudProviderProfileAttributes(cloudProvP *models.CloudProviderProfile, d *schema.ResourceData) *schema.ResourceData {
+func setCloudProviderProfileAttributes(cloudProvP *models.CloudProviderProfile, d *schema.ResourceData) (*schema.ResourceData, error) {
 	d.SetId(cloudProvP.DistinguishedName)
-	cloudProvPMap, _ := cloudProvP.ToMap()
+	cloudProvPMap, err := cloudProvP.ToMap()
+	if err != nil {
+		return d, err
+	}
+
 	d.Set("annotation", cloudProvPMap["annotation"])
 	d.Set("vendor", cloudProvPMap["vendor"])
-	return d
+	return d, nil
 }

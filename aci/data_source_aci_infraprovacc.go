@@ -44,7 +44,13 @@ func dataSourceAciVlanEncapsulationforVxlanTrafficRead(ctx context.Context, d *s
 	if err != nil {
 		return diag.FromErr(err)
 	}
+	
 	d.SetId(dn)
-	setVlanEncapsulationforVxlanTrafficAttributes(infraProvAcc, d)
+	_, err = setVlanEncapsulationforVxlanTrafficAttributes(infraProvAcc, d)
+
+	if err != nil {
+		return diag.FromErr(err)
+	}
+
 	return nil
 }

@@ -54,7 +54,7 @@ func getRemoteVlanEncapsulationforVxlanTraffic(client *client.Client, dn string)
 	return infraProvAcc, nil
 }
 
-func setVlanEncapsulationforVxlanTrafficAttributes(infraProvAcc *models.VlanEncapsulationforVxlanTraffic, d *schema.ResourceData) *schema.ResourceData {
+func setVlanEncapsulationforVxlanTrafficAttributes(infraProvAcc *models.VlanEncapsulationforVxlanTraffic, d *schema.ResourceData) (*schema.ResourceData, error) {
 	dn := d.Id()
 	d.SetId(infraProvAcc.DistinguishedName)
 	d.Set("description", infraProvAcc.Description)
@@ -62,11 +62,14 @@ func setVlanEncapsulationforVxlanTrafficAttributes(infraProvAcc *models.VlanEnca
 	if dn != infraProvAcc.DistinguishedName {
 		d.Set("attachable_access_entity_profile_dn", "")
 	}
-	infraProvAccMap, _ := infraProvAcc.ToMap()
+	infraProvAccMap, err := infraProvAcc.ToMap()
+	if err != nil {
+		return d, err
+	}
 
 	d.Set("annotation", infraProvAccMap["annotation"])
 	d.Set("name_alias", infraProvAccMap["nameAlias"])
-	return d
+	return d, nil
 }
 
 func resourceAciVlanEncapsulationforVxlanTrafficImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -80,9 +83,14 @@ func resourceAciVlanEncapsulationforVxlanTrafficImport(d *schema.ResourceData, m
 	if err != nil {
 		return nil, err
 	}
+
 	pDN := GetParentDn(dn, fmt.Sprintf("/provacc"))
 	d.Set("attachable_access_entity_profile_dn", pDN)
-	schemaFilled := setVlanEncapsulationforVxlanTrafficAttributes(infraProvAcc, d)
+	schemaFilled, err := setVlanEncapsulationforVxlanTrafficAttributes(infraProvAcc, d)
+
+	if err != nil {
+		return nil, err
+	}
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
@@ -163,7 +171,12 @@ func resourceAciVlanEncapsulationforVxlanTrafficRead(ctx context.Context, d *sch
 		d.SetId("")
 		return nil
 	}
-	setVlanEncapsulationforVxlanTrafficAttributes(infraProvAcc, d)
+	_, err = setVlanEncapsulationforVxlanTrafficAttributes(infraProvAcc, d)
+
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 

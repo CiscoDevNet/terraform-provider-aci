@@ -176,7 +176,7 @@ func getRemoteCloudExternalEPg(client *client.Client, dn string) (*models.CloudE
 	return cloudExtEPg, nil
 }
 
-func setCloudExternalEPgAttributes(cloudExtEPg *models.CloudExternalEPg, d *schema.ResourceData) *schema.ResourceData {
+func setCloudExternalEPgAttributes(cloudExtEPg *models.CloudExternalEPg, d *schema.ResourceData) (*schema.ResourceData, error) {
 	dn := d.Id()
 	d.SetId(cloudExtEPg.DistinguishedName)
 	d.Set("description", cloudExtEPg.Description)
@@ -184,7 +184,10 @@ func setCloudExternalEPgAttributes(cloudExtEPg *models.CloudExternalEPg, d *sche
 	if dn != cloudExtEPg.DistinguishedName {
 		d.Set("cloud_applicationcontainer_dn", "")
 	}
-	cloudExtEPgMap, _ := cloudExtEPg.ToMap()
+	cloudExtEPgMap, err := cloudExtEPg.ToMap()
+	if err != nil {
+		return d, err
+	}
 
 	d.Set("name", cloudExtEPgMap["name"])
 
@@ -196,7 +199,7 @@ func setCloudExternalEPgAttributes(cloudExtEPg *models.CloudExternalEPg, d *sche
 	d.Set("pref_gr_memb", cloudExtEPgMap["prefGrMemb"])
 	d.Set("prio", cloudExtEPgMap["prio"])
 	d.Set("route_reachability", cloudExtEPgMap["routeReachability"])
-	return d
+	return d, nil
 }
 
 func resourceAciCloudExternalEPgImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -210,11 +213,19 @@ func resourceAciCloudExternalEPgImport(d *schema.ResourceData, m interface{}) ([
 	if err != nil {
 		return nil, err
 	}
-	cloudExtEPgMap, _ := cloudExtEPg.ToMap()
+
+	cloudExtEPgMap, err := cloudExtEPg.ToMap()
+	if err != nil {
+		return nil, err
+	}
+
 	name := cloudExtEPgMap["name"]
 	pDN := GetParentDn(dn, fmt.Sprintf("/cloudextepg-%s", name))
 	d.Set("cloud_applicationcontainer_dn", pDN)
-	schemaFilled := setCloudExternalEPgAttributes(cloudExtEPg, d)
+	schemaFilled, err := setCloudExternalEPgAttributes(cloudExtEPg, d)
+	if err != nil {
+		return nil, err
+	}
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
@@ -734,7 +745,12 @@ func resourceAciCloudExternalEPgRead(ctx context.Context, d *schema.ResourceData
 		d.SetId("")
 		return nil
 	}
-	setCloudExternalEPgAttributes(cloudExtEPg, d)
+	_, err = setCloudExternalEPgAttributes(cloudExtEPg, d)
+
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 
 	fvRsSecInheritedData, err := aciClient.ReadRelationfvRsSecInheritedFromCloudExternalEPg(dn)
 	if err != nil {

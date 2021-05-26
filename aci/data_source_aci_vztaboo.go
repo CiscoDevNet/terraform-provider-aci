@@ -52,6 +52,11 @@ func dataSourceAciTabooContractRead(ctx context.Context, d *schema.ResourceData,
 		return diag.FromErr(err)
 	}
 	d.SetId(dn)
-	setTabooContractAttributes(vzTaboo, d)
+	_, err = setTabooContractAttributes(vzTaboo, d)
+
+	if err != nil {
+		return diag.FromErr(err)
+	}
+	
 	return nil
 }
