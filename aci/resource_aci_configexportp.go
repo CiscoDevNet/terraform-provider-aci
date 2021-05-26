@@ -1,21 +1,23 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciConfigurationExportPolicy() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciConfigurationExportPolicyCreate,
-		Update: resourceAciConfigurationExportPolicyUpdate,
-		Read:   resourceAciConfigurationExportPolicyRead,
-		Delete: resourceAciConfigurationExportPolicyDelete,
+		CreateContext: resourceAciConfigurationExportPolicyCreate,
+		UpdateContext: resourceAciConfigurationExportPolicyUpdate,
+		ReadContext:   resourceAciConfigurationExportPolicyRead,
+		DeleteContext: resourceAciConfigurationExportPolicyDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciConfigurationExportPolicyImport,
@@ -163,7 +165,7 @@ func resourceAciConfigurationExportPolicyImport(d *schema.ResourceData, m interf
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciConfigurationExportPolicyCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciConfigurationExportPolicyCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] ConfigurationExportPolicy: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -201,11 +203,8 @@ func resourceAciConfigurationExportPolicyCreate(d *schema.ResourceData, m interf
 
 	err := aciClient.Save(configExportP)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
 
@@ -232,7 +231,7 @@ func resourceAciConfigurationExportPolicyCreate(d *schema.ResourceData, m interf
 	d.Partial(true)
 	err = checkTDn(aciClient, checkDns)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Partial(false)
 
@@ -241,31 +240,24 @@ func resourceAciConfigurationExportPolicyCreate(d *schema.ResourceData, m interf
 		relationParamName := GetMOName(relationParam)
 		err = aciClient.CreateRelationconfigRsExportDestinationFromConfigurationExportPolicy(configExportP.DistinguishedName, relationParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.Partial(false)
 
 	}
 	if relationTotrigRsTriggerable, ok := d.GetOk("relation_trig_rs_triggerable"); ok {
 		relationParam := relationTotrigRsTriggerable.(string)
 		err = aciClient.CreateRelationtrigRsTriggerableFromConfigurationExportPolicy(configExportP.DistinguishedName, relationParam)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.Partial(false)
-
 	}
 	if relationToconfigRsRemotePath, ok := d.GetOk("relation_config_rs_remote_path"); ok {
 		relationParam := relationToconfigRsRemotePath.(string)
 		relationParamName := GetMOName(relationParam)
 		err = aciClient.CreateRelationconfigRsRemotePathFromConfigurationExportPolicy(configExportP.DistinguishedName, relationParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.Partial(false)
 
 	}
 	if relationToconfigRsExportScheduler, ok := d.GetOk("relation_config_rs_export_scheduler"); ok {
@@ -273,20 +265,18 @@ func resourceAciConfigurationExportPolicyCreate(d *schema.ResourceData, m interf
 		relationParamName := GetMOName(relationParam)
 		err = aciClient.CreateRelationconfigRsExportSchedulerFromConfigurationExportPolicy(configExportP.DistinguishedName, relationParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.Partial(false)
 
 	}
 
 	d.SetId(configExportP.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciConfigurationExportPolicyRead(d, m)
+	return resourceAciConfigurationExportPolicyRead(ctx, d, m)
 }
 
-func resourceAciConfigurationExportPolicyUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciConfigurationExportPolicyUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] ConfigurationExportPolicy: Beginning Update")
 
 	aciClient := m.(*client.Client)
@@ -328,12 +318,8 @@ func resourceAciConfigurationExportPolicyUpdate(d *schema.ResourceData, m interf
 	err := aciClient.Save(configExportP)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.Partial(false)
-
 	checkDns := make([]string, 0, 1)
 
 	if d.HasChange("relation_config_rs_export_destination") {
@@ -359,7 +345,7 @@ func resourceAciConfigurationExportPolicyUpdate(d *schema.ResourceData, m interf
 	d.Partial(true)
 	err = checkTDn(aciClient, checkDns)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Partial(false)
 
@@ -368,24 +354,19 @@ func resourceAciConfigurationExportPolicyUpdate(d *schema.ResourceData, m interf
 		newRelParamName := GetMOName(newRelParam.(string))
 		err = aciClient.DeleteRelationconfigRsExportDestinationFromConfigurationExportPolicy(configExportP.DistinguishedName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 		err = aciClient.CreateRelationconfigRsExportDestinationFromConfigurationExportPolicy(configExportP.DistinguishedName, newRelParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.Partial(false)
-
 	}
 	if d.HasChange("relation_trig_rs_triggerable") {
 		_, newRelParam := d.GetChange("relation_trig_rs_triggerable")
 		err = aciClient.CreateRelationtrigRsTriggerableFromConfigurationExportPolicy(configExportP.DistinguishedName, newRelParam.(string))
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.Partial(false)
 
 	}
 	if d.HasChange("relation_config_rs_remote_path") {
@@ -393,14 +374,12 @@ func resourceAciConfigurationExportPolicyUpdate(d *schema.ResourceData, m interf
 		newRelParamName := GetMOName(newRelParam.(string))
 		err = aciClient.DeleteRelationconfigRsRemotePathFromConfigurationExportPolicy(configExportP.DistinguishedName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 		err = aciClient.CreateRelationconfigRsRemotePathFromConfigurationExportPolicy(configExportP.DistinguishedName, newRelParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.Partial(false)
 
 	}
 	if d.HasChange("relation_config_rs_export_scheduler") {
@@ -408,25 +387,23 @@ func resourceAciConfigurationExportPolicyUpdate(d *schema.ResourceData, m interf
 		newRelParamName := GetMOName(newRelParam.(string))
 		err = aciClient.DeleteRelationconfigRsExportSchedulerFromConfigurationExportPolicy(configExportP.DistinguishedName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 		err = aciClient.CreateRelationconfigRsExportSchedulerFromConfigurationExportPolicy(configExportP.DistinguishedName, newRelParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.Partial(false)
 
 	}
 
 	d.SetId(configExportP.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciConfigurationExportPolicyRead(d, m)
+	return resourceAciConfigurationExportPolicyRead(ctx, d, m)
 
 }
 
-func resourceAciConfigurationExportPolicyRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciConfigurationExportPolicyRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -501,18 +478,18 @@ func resourceAciConfigurationExportPolicyRead(d *schema.ResourceData, m interfac
 	return nil
 }
 
-func resourceAciConfigurationExportPolicyDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciConfigurationExportPolicyDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "configExportP")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
 }
