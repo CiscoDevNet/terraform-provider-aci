@@ -34,5 +34,5 @@ data "aci_cloud_aws_provider" "aws_prov" {
 * `is_trusted` - (Optional) Whether the account is trusted with Tenant infra account.
 * `name_alias` - (Optional) Name alias for object cloud aws provider.
 * `provider_id` - (Optional) Provider id for object cloud aws provider.
-* `region` - (Optional) Which AWS region to manage.
+* `region` - (Optional) Which AWS region to manage. \[Supported only in Cloud-APIC 4.2(x) or earlier\]
 * `secret_access_key` - (Optional) Secret access key for the AWS account provided in the account id field.

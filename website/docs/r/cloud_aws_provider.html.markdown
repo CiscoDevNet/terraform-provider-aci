@@ -20,7 +20,6 @@ Manages ACI Cloud AWS Provider
 		access_key_id     = "access_key"
 		account_id        = "acc_id"
 		annotation        = "tag_aws"
-		region            = "us-west-2"
 		secret_access_key = "secret_key"
 	}
 ```
@@ -40,7 +39,7 @@ Manages ACI Cloud AWS Provider
   Allowed values: "no", "yes". Default value: "no".
 - `name_alias` - (Optional) Name alias for object cloud aws provider.
 - `provider_id` - (Optional) Provider id for object cloud aws provider.
-- `region` - (Optional) Which AWS region to manage.
+- `region` - (Optional) Which AWS region to manage. \[Supported only in Cloud APIC 4.2(x) or earlier\]
 - `secret_access_key` - (Optional) Secret access key for the AWS account provided in the account id field.
 
 ## Attribute Reference

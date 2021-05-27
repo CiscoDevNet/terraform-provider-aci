@@ -27,12 +27,12 @@ resource "aci_rest" "rest_l3_ext_out" {
 }
 
 resource "aci_rest" "madebyrest_yaml" {
-  path       = "/api/mo/uni.json"
+  path       = "/api/mo/uni/tn-sales_main.json"
   payload = <<EOF
 {
         "fvTenant": {
           "attributes": {
-            "name": "Sales",
+            "name": "sales_main",
             "descr": "Sales department json"
           }
         }
@@ -41,11 +41,11 @@ resource "aci_rest" "madebyrest_yaml" {
 }
 
 resource "aci_rest" "rest_yaml" {
-  path       = "/api/mo/uni.json"
+  path       = "/api/mo/uni/tn-sales.json"
   payload = <<EOF
   fvTenant:
         attributes:
-          name: Sales
+          name: sale
           descr: Sales department
   EOF
 }
