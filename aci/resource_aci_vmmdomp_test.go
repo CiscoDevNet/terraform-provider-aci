@@ -26,11 +26,6 @@ func TestAccAciVMMDomain_Basic(t *testing.T) {
 					testAccCheckAciVMMDomainAttributes(description, "epDpVerify", &vmm_domain),
 				),
 			},
-			{
-				ResourceName:      "aci_vmm_domain",
-				ImportState:       true,
-				ImportStateVerify: true,
-			},
 		},
 	})
 }
@@ -66,8 +61,7 @@ func testAccCheckAciVMMDomainConfig_basic(description, ctrl_knob string) string 
 	return fmt.Sprintf(`
 
 	resource "aci_vmm_domain" "foovmm_domain" {
-		provider_profile_dn = "${aci_provider_profile.example.id}"
-		description         = "%s"
+		provider_profile_dn = "uni/vmmp-VMware"
 		name                = "demo_domp"
 		access_mode         = "read-write"
 		annotation          = "tag_dom"
@@ -75,7 +69,7 @@ func testAccCheckAciVMMDomainConfig_basic(description, ctrl_knob string) string 
 		ave_time_out        = "30"
 		config_infra_pg     = "no"
 		ctrl_knob           = "%s"
-		delimiter           = ";"
+		delimiter           = ""
 		enable_ave          = "no"
 		enable_tag          = "no"
 		encap_mode          = "unknown"
@@ -83,12 +77,12 @@ func testAccCheckAciVMMDomainConfig_basic(description, ctrl_knob string) string 
 		ep_inventory_type   = "on-link"
 		ep_ret_time         = "0"
 		hv_avail_monitor    = "no"
-		mcast_addr          = "224.0.1.0"
+		mcast_addr          = "224.0.1.2"
 		mode                = "default"
 		name_alias          = "alias_dom"
 		pref_encap_mode     = "unspecified"
 	}  
-	`, description, ctrl_knob)
+	`, ctrl_knob)
 }
 
 func testAccCheckAciVMMDomainExists(name string, vmm_domain *models.VMMDomain) resource.TestCheckFunc {
@@ -142,10 +136,6 @@ func testAccCheckAciVMMDomainDestroy(s *terraform.State) error {
 func testAccCheckAciVMMDomainAttributes(description, ctrl_knob string, vmm_domain *models.VMMDomain) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 
-		if description != vmm_domain.Description {
-			return fmt.Errorf("Bad vmm_domain Description %s", vmm_domain.Description)
-		}
-
 		if "demo_domp" != vmm_domain.Name {
 			return fmt.Errorf("Bad vmm_domain name %s", vmm_domain.Name)
 		}
@@ -158,7 +148,13 @@ func testAccCheckAciVMMDomainAttributes(description, ctrl_knob string, vmm_domai
 			return fmt.Errorf("Bad vmm_domain annotation %s", vmm_domain.Annotation)
 		}
 
-		if "disabled" != vmm_domain.ArpLearning {
+		arpLearning := vmm_domain.ArpLearning
+
+		if arpLearning == "" {
+			arpLearning = "disabled"
+		}
+
+		if "disabled" != arpLearning {
 			return fmt.Errorf("Bad vmm_domain arp_learning %s", vmm_domain.ArpLearning)
 		}
 
@@ -170,11 +166,17 @@ func testAccCheckAciVMMDomainAttributes(description, ctrl_knob string, vmm_domai
 			return fmt.Errorf("Bad vmm_domain config_infra_pg %s", vmm_domain.ConfigInfraPg)
 		}
 
-		if ctrl_knob != vmm_domain.CtrlKnob {
+		ctrlKnob := vmm_domain.CtrlKnob
+
+		if ctrlKnob == "" {
+			ctrlKnob = "none"
+		}
+
+		if ctrl_knob != ctrlKnob {
 			return fmt.Errorf("Bad vmm_domain ctrl_knob %s", vmm_domain.CtrlKnob)
 		}
 
-		if ";" != vmm_domain.Delimiter {
+		if "" != vmm_domain.Delimiter {
 			return fmt.Errorf("Bad vmm_domain delimiter %s", vmm_domain.Delimiter)
 		}
 
@@ -206,7 +208,7 @@ func testAccCheckAciVMMDomainAttributes(description, ctrl_knob string, vmm_domai
 			return fmt.Errorf("Bad vmm_domain hv_avail_monitor %s", vmm_domain.HvAvailMonitor)
 		}
 
-		if "224.0.1.0" != vmm_domain.McastAddr {
+		if "224.0.1.2" != vmm_domain.McastAddr {
 			return fmt.Errorf("Bad vmm_domain mcast_addr %s", vmm_domain.McastAddr)
 		}
 

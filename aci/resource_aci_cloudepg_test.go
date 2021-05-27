@@ -26,11 +26,6 @@ func TestAccAciCloudEPg_Basic(t *testing.T) {
 					testAccCheckAciCloudEPgAttributes(description, "All", &cloud_epg),
 				),
 			},
-			{
-				ResourceName:      "aci_cloud_epg",
-				ImportState:       true,
-				ImportStateVerify: true,
-			},
 		},
 	})
 }

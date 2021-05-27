@@ -1,6 +1,7 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"reflect"
@@ -8,16 +9,17 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciCloudEPg() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciCloudEPgCreate,
-		Update: resourceAciCloudEPgUpdate,
-		Read:   resourceAciCloudEPgRead,
-		Delete: resourceAciCloudEPgDelete,
+		CreateContext: resourceAciCloudEPgCreate,
+		UpdateContext: resourceAciCloudEPgUpdate,
+		ReadContext:   resourceAciCloudEPgRead,
+		DeleteContext: resourceAciCloudEPgDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciCloudEPgImport,
@@ -161,7 +163,7 @@ func getRemoteCloudEPg(client *client.Client, dn string) (*models.CloudEPg, erro
 	return cloudEPg, nil
 }
 
-func setCloudEPgAttributes(cloudEPg *models.CloudEPg, d *schema.ResourceData) *schema.ResourceData {
+func setCloudEPgAttributes(cloudEPg *models.CloudEPg, d *schema.ResourceData) (*schema.ResourceData, error) {
 	dn := d.Id()
 	d.SetId(cloudEPg.DistinguishedName)
 	d.Set("description", cloudEPg.Description)
@@ -169,7 +171,10 @@ func setCloudEPgAttributes(cloudEPg *models.CloudEPg, d *schema.ResourceData) *s
 	if dn != cloudEPg.DistinguishedName {
 		d.Set("cloud_applicationcontainer_dn", "")
 	}
-	cloudEPgMap, _ := cloudEPg.ToMap()
+	cloudEPgMap, err := cloudEPg.ToMap()
+	if err != nil {
+		return d, err
+	}
 
 	d.Set("name", cloudEPgMap["name"])
 
@@ -180,7 +185,7 @@ func setCloudEPgAttributes(cloudEPg *models.CloudEPg, d *schema.ResourceData) *s
 	d.Set("name_alias", cloudEPgMap["nameAlias"])
 	d.Set("pref_gr_memb", cloudEPgMap["prefGrMemb"])
 	d.Set("prio", cloudEPgMap["prio"])
-	return d
+	return d, nil
 }
 
 func resourceAciCloudEPgImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -194,18 +199,23 @@ func resourceAciCloudEPgImport(d *schema.ResourceData, m interface{}) ([]*schema
 	if err != nil {
 		return nil, err
 	}
-	cloudEPgMap, _ := cloudEPg.ToMap()
+	cloudEPgMap, err := cloudEPg.ToMap()
+	if err != nil {
+		return nil, err
+	}
 	name := cloudEPgMap["name"]
 	pDN := GetParentDn(dn, fmt.Sprintf("/cloudepg-%s", name))
 	d.Set("cloud_applicationcontainer_dn", pDN)
-	schemaFilled := setCloudEPgAttributes(cloudEPg, d)
-
+	schemaFilled, err := setCloudEPgAttributes(cloudEPg, d)
+	if err != nil {
+		return nil, err
+	}
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciCloudEPgCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciCloudEPgCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] CloudEPg: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -242,11 +252,8 @@ func resourceAciCloudEPgCreate(d *schema.ResourceData, m interface{}) error {
 
 	err := aciClient.Save(cloudEPg)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
 
@@ -300,7 +307,7 @@ func resourceAciCloudEPgCreate(d *schema.ResourceData, m interface{}) error {
 	d.Partial(true)
 	err = checkTDn(aciClient, checkDns)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Partial(false)
 
@@ -310,10 +317,9 @@ func resourceAciCloudEPgCreate(d *schema.ResourceData, m interface{}) error {
 			err = aciClient.CreateRelationfvRsSecInheritedFromCloudEPg(cloudEPg.DistinguishedName, relationParam)
 
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
-			d.Partial(true)
-			d.Partial(false)
+
 		}
 	}
 	if relationTofvRsProv, ok := d.GetOk("relation_fv_rs_prov"); ok {
@@ -323,10 +329,9 @@ func resourceAciCloudEPgCreate(d *schema.ResourceData, m interface{}) error {
 			err = aciClient.CreateRelationfvRsProvFromCloudEPg(cloudEPg.DistinguishedName, relationParamName)
 
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
-			d.Partial(true)
-			d.Partial(false)
+
 		}
 	}
 	if relationTofvRsConsIf, ok := d.GetOk("relation_fv_rs_cons_if"); ok {
@@ -336,10 +341,9 @@ func resourceAciCloudEPgCreate(d *schema.ResourceData, m interface{}) error {
 			err = aciClient.CreateRelationfvRsConsIfFromCloudEPg(cloudEPg.DistinguishedName, relationParamName)
 
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
-			d.Partial(true)
-			d.Partial(false)
+
 		}
 	}
 	if relationTofvRsCustQosPol, ok := d.GetOk("relation_fv_rs_cust_qos_pol"); ok {
@@ -347,10 +351,8 @@ func resourceAciCloudEPgCreate(d *schema.ResourceData, m interface{}) error {
 		relationParamName := GetMOName(relationParam)
 		err = aciClient.CreateRelationfvRsCustQosPolFromCloudEPg(cloudEPg.DistinguishedName, relationParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.Partial(false)
 
 	}
 	if relationTofvRsCons, ok := d.GetOk("relation_fv_rs_cons"); ok {
@@ -360,10 +362,9 @@ func resourceAciCloudEPgCreate(d *schema.ResourceData, m interface{}) error {
 			err = aciClient.CreateRelationfvRsConsFromCloudEPg(cloudEPg.DistinguishedName, relationParamName)
 
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
-			d.Partial(true)
-			d.Partial(false)
+
 		}
 	}
 	if relationTocloudRsCloudEPgCtx, ok := d.GetOk("relation_cloud_rs_cloud_epg_ctx"); ok {
@@ -371,10 +372,8 @@ func resourceAciCloudEPgCreate(d *schema.ResourceData, m interface{}) error {
 		relationParamName := GetMOName(relationParam)
 		err = aciClient.CreateRelationcloudRsCloudEPgCtxFromCloudEPg(cloudEPg.DistinguishedName, relationParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.Partial(false)
 
 	}
 	if relationTofvRsProtBy, ok := d.GetOk("relation_fv_rs_prot_by"); ok {
@@ -384,10 +383,9 @@ func resourceAciCloudEPgCreate(d *schema.ResourceData, m interface{}) error {
 			err = aciClient.CreateRelationfvRsProtByFromCloudEPg(cloudEPg.DistinguishedName, relationParamName)
 
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
-			d.Partial(true)
-			d.Partial(false)
+
 		}
 	}
 	if relationTofvRsIntraEpg, ok := d.GetOk("relation_fv_rs_intra_epg"); ok {
@@ -397,20 +395,19 @@ func resourceAciCloudEPgCreate(d *schema.ResourceData, m interface{}) error {
 			err = aciClient.CreateRelationfvRsIntraEpgFromCloudEPg(cloudEPg.DistinguishedName, relationParamName)
 
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
-			d.Partial(true)
-			d.Partial(false)
+
 		}
 	}
 
 	d.SetId(cloudEPg.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciCloudEPgRead(d, m)
+	return resourceAciCloudEPgRead(ctx, d, m)
 }
 
-func resourceAciCloudEPgUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciCloudEPgUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] CloudEPg: Beginning Update")
 
 	aciClient := m.(*client.Client)
@@ -451,11 +448,8 @@ func resourceAciCloudEPgUpdate(d *schema.ResourceData, m interface{}) error {
 	err := aciClient.Save(cloudEPg)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
 
@@ -538,7 +532,7 @@ func resourceAciCloudEPgUpdate(d *schema.ResourceData, m interface{}) error {
 	d.Partial(true)
 	err = checkTDn(aciClient, checkDns)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Partial(false)
 
@@ -552,7 +546,7 @@ func resourceAciCloudEPgUpdate(d *schema.ResourceData, m interface{}) error {
 		for _, relDn := range relToDelete {
 			err = aciClient.DeleteRelationfvRsSecInheritedFromCloudEPg(cloudEPg.DistinguishedName, relDn)
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 		}
@@ -560,10 +554,8 @@ func resourceAciCloudEPgUpdate(d *schema.ResourceData, m interface{}) error {
 		for _, relDn := range relToCreate {
 			err = aciClient.CreateRelationfvRsSecInheritedFromCloudEPg(cloudEPg.DistinguishedName, relDn)
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
-			d.Partial(true)
-			d.Partial(false)
 
 		}
 
@@ -579,7 +571,7 @@ func resourceAciCloudEPgUpdate(d *schema.ResourceData, m interface{}) error {
 			relDnName := GetMOName(relDn)
 			err = aciClient.DeleteRelationfvRsProvFromCloudEPg(cloudEPg.DistinguishedName, relDnName)
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 		}
@@ -588,10 +580,8 @@ func resourceAciCloudEPgUpdate(d *schema.ResourceData, m interface{}) error {
 			relDnName := GetMOName(relDn)
 			err = aciClient.CreateRelationfvRsProvFromCloudEPg(cloudEPg.DistinguishedName, relDnName)
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
-			d.Partial(true)
-			d.Partial(false)
 
 		}
 
@@ -607,7 +597,7 @@ func resourceAciCloudEPgUpdate(d *schema.ResourceData, m interface{}) error {
 			relDnName := GetMOName(relDn)
 			err = aciClient.DeleteRelationfvRsConsIfFromCloudEPg(cloudEPg.DistinguishedName, relDnName)
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 		}
@@ -616,10 +606,8 @@ func resourceAciCloudEPgUpdate(d *schema.ResourceData, m interface{}) error {
 			relDnName := GetMOName(relDn)
 			err = aciClient.CreateRelationfvRsConsIfFromCloudEPg(cloudEPg.DistinguishedName, relDnName)
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
-			d.Partial(true)
-			d.Partial(false)
 
 		}
 
@@ -629,10 +617,8 @@ func resourceAciCloudEPgUpdate(d *schema.ResourceData, m interface{}) error {
 		newRelParamName := GetMOName(newRelParam.(string))
 		err = aciClient.CreateRelationfvRsCustQosPolFromCloudEPg(cloudEPg.DistinguishedName, newRelParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.Partial(false)
 
 	}
 	if d.HasChange("relation_fv_rs_cons") {
@@ -646,7 +632,7 @@ func resourceAciCloudEPgUpdate(d *schema.ResourceData, m interface{}) error {
 			relDnName := GetMOName(relDn)
 			err = aciClient.DeleteRelationfvRsConsFromCloudEPg(cloudEPg.DistinguishedName, relDnName)
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 		}
@@ -655,10 +641,8 @@ func resourceAciCloudEPgUpdate(d *schema.ResourceData, m interface{}) error {
 			relDnName := GetMOName(relDn)
 			err = aciClient.CreateRelationfvRsConsFromCloudEPg(cloudEPg.DistinguishedName, relDnName)
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
-			d.Partial(true)
-			d.Partial(false)
 
 		}
 
@@ -668,10 +652,8 @@ func resourceAciCloudEPgUpdate(d *schema.ResourceData, m interface{}) error {
 		newRelParamName := GetMOName(newRelParam.(string))
 		err = aciClient.CreateRelationcloudRsCloudEPgCtxFromCloudEPg(cloudEPg.DistinguishedName, newRelParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.Partial(false)
 
 	}
 	if d.HasChange("relation_fv_rs_prot_by") {
@@ -685,7 +667,7 @@ func resourceAciCloudEPgUpdate(d *schema.ResourceData, m interface{}) error {
 			relDnName := GetMOName(relDn)
 			err = aciClient.DeleteRelationfvRsProtByFromCloudEPg(cloudEPg.DistinguishedName, relDnName)
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 		}
@@ -694,10 +676,8 @@ func resourceAciCloudEPgUpdate(d *schema.ResourceData, m interface{}) error {
 			relDnName := GetMOName(relDn)
 			err = aciClient.CreateRelationfvRsProtByFromCloudEPg(cloudEPg.DistinguishedName, relDnName)
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
-			d.Partial(true)
-			d.Partial(false)
 
 		}
 
@@ -713,7 +693,7 @@ func resourceAciCloudEPgUpdate(d *schema.ResourceData, m interface{}) error {
 			relDnName := GetMOName(relDn)
 			err = aciClient.DeleteRelationfvRsIntraEpgFromCloudEPg(cloudEPg.DistinguishedName, relDnName)
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 		}
@@ -722,10 +702,8 @@ func resourceAciCloudEPgUpdate(d *schema.ResourceData, m interface{}) error {
 			relDnName := GetMOName(relDn)
 			err = aciClient.CreateRelationfvRsIntraEpgFromCloudEPg(cloudEPg.DistinguishedName, relDnName)
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
-			d.Partial(true)
-			d.Partial(false)
 
 		}
 
@@ -734,11 +712,11 @@ func resourceAciCloudEPgUpdate(d *schema.ResourceData, m interface{}) error {
 	d.SetId(cloudEPg.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciCloudEPgRead(d, m)
+	return resourceAciCloudEPgRead(ctx, d, m)
 
 }
 
-func resourceAciCloudEPgRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciCloudEPgRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -750,7 +728,11 @@ func resourceAciCloudEPgRead(d *schema.ResourceData, m interface{}) error {
 		d.SetId("")
 		return nil
 	}
-	setCloudEPgAttributes(cloudEPg, d)
+	_, err = setCloudEPgAttributes(cloudEPg, d)
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 
 	fvRsSecInheritedData, err := aciClient.ReadRelationfvRsSecInheritedFromCloudEPg(dn)
 	if err != nil {
@@ -909,18 +891,18 @@ func resourceAciCloudEPgRead(d *schema.ResourceData, m interface{}) error {
 	return nil
 }
 
-func resourceAciCloudEPgDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciCloudEPgDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "cloudEPg")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
 }

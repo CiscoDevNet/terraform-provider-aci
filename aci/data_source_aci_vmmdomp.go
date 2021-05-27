@@ -148,6 +148,9 @@ func dataSourceAciVMMDomainRead(ctx context.Context, d *schema.ResourceData, m i
 		return diag.FromErr(err)
 	}
 	d.SetId(dn)
-	setVMMDomainAttributes(vmmDomP, d)
+	_, err = setVMMDomainAttributes(vmmDomP, d)
+	if err != nil {
+		return diag.FromErr(err)
+	}
 	return nil
 }

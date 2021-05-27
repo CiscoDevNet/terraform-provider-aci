@@ -1,16 +1,18 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func dataSourceAciLocalUser() *schema.Resource {
 	return &schema.Resource{
 
-		Read: dataSourceAciLocalUserRead,
+		ReadContext: dataSourceAciLocalUserRead,
 
 		SchemaVersion: 1,
 
@@ -126,7 +128,7 @@ func dataSourceAciLocalUser() *schema.Resource {
 	}
 }
 
-func dataSourceAciLocalUserRead(d *schema.ResourceData, m interface{}) error {
+func dataSourceAciLocalUserRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	aciClient := m.(*client.Client)
 
 	name := d.Get("name").(string)
@@ -138,8 +140,11 @@ func dataSourceAciLocalUserRead(d *schema.ResourceData, m interface{}) error {
 	aaaUser, err := getRemoteLocalUser(aciClient, dn)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	setLocalUserAttributes(aaaUser, d)
+	_, err = setLocalUserAttributes(aaaUser, d)
+	if err != nil {
+		return diag.FromErr(err)
+	}
 	return nil
 }

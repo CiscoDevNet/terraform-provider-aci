@@ -75,11 +75,13 @@ func getRemoteVPCExplicitProtectionGroup(client *client.Client, dn string) (*mod
 	return fabricExplicitGEp, nil
 }
 
-func setVPCExplicitProtectionGroupAttributes(fabricExplicitGEp *models.VPCExplicitProtectionGroup, d *schema.ResourceData) *schema.ResourceData {
+func setVPCExplicitProtectionGroupAttributes(fabricExplicitGEp *models.VPCExplicitProtectionGroup, d *schema.ResourceData) (*schema.ResourceData, error) {
 	d.SetId(fabricExplicitGEp.DistinguishedName)
 
-	fabricExplicitGEpMap, _ := fabricExplicitGEp.ToMap()
-
+	fabricExplicitGEpMap, err := fabricExplicitGEp.ToMap()
+	if err != nil {
+		return d, err
+	}
 	d.Set("name", fabricExplicitGEpMap["name"])
 
 	d.Set("annotation", fabricExplicitGEpMap["annotation"])
@@ -95,7 +97,7 @@ func setVPCExplicitProtectionGroupAttributes(fabricExplicitGEp *models.VPCExplic
 
 	d.Set("vpc_domain_policy", fabricExplicitGEpMap["vpc_domain_policy"])
 
-	return d
+	return d, nil
 }
 
 func resourceAciVPCExplicitProtectionGroupImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -109,8 +111,10 @@ func resourceAciVPCExplicitProtectionGroupImport(d *schema.ResourceData, m inter
 	if err != nil {
 		return nil, err
 	}
-	schemaFilled := setVPCExplicitProtectionGroupAttributes(fabricExplicitGEp, d)
-
+	schemaFilled, err := setVPCExplicitProtectionGroupAttributes(fabricExplicitGEp, d)
+	if err != nil {
+		return nil, err
+	}
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
@@ -202,7 +206,11 @@ func resourceAciVPCExplicitProtectionGroupRead(ctx context.Context, d *schema.Re
 		d.SetId("")
 		return nil
 	}
-	setVPCExplicitProtectionGroupAttributes(fabricExplicitGEp, d)
+	_, err = setVPCExplicitProtectionGroupAttributes(fabricExplicitGEp, d)
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 

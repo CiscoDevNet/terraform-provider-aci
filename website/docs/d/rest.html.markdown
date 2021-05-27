@@ -6,10 +6,11 @@ description: |-
   Data source for ACI Rest
 ---
 
-# aci_rest #
+# aci_rest
+
 Data source for ACI Rest
 
-## Example Usage ##
+## Example Usage
 
 ```hcl
 resource "aci_tenant" "tenentcheck" {
@@ -24,12 +25,12 @@ data "aci_rest" "tenant_rest" {
 }
 
 // To get information regarding the tenant object with children
-data "aci_rest" "tenant_rest" {
+data "aci_rest" "tenant_rest_children" {
   path = "/api/node/mo/${aci_tenant.tenentcheck.id}.json?rsp-subtree=children"
 }
 
 resource "aci_bgp_peer_prefix" "example" {
-  tenant_dn    = "${aci_tenant.tenentcheck.id}"
+  tenant_dn    = aci_tenant.tenentcheck.id
   name         = "one"
   description  = "from terraform"
   action       = "shut"
@@ -46,25 +47,23 @@ data "aci_rest" "bgp_peer_prefix_Rest" {
 }
 
 // To get information regarding the BGP peer prefix object with children
-data "aci_rest" "tenant_rest" {
+data "aci_rest" "tenant_rest_children" {
   path = "/api/node/mo/${aci_bgp_peer_prefix.example.id}.json?rsp-subtree=children"
 }
 ```
 
-## Argument Reference ##
+## Argument Reference
 
-* `path` - (Required) ACI path for object which should should be get. Starting with api/node/mo/{parent-dn}(if applicable)/{rn of object}.json
+- `path` - (Required) ACI path for object which should should be get. Starting with api/node/mo/{parent-dn}(if applicable)/{rn of object}.json
 
 <strong>Note</strong> : To extract children, use path format as "api/node/mo/{parent-dn}(if applicable)/{rn of object}.json?rsp-subtree=children"
 
-
 ## Attribute Reference
 
-* `id` - Dishtiguished name of object being managed.
-* `class_name` - Class name of object being managed.
-* `content` - Map of key-value pairs which represents the attributes for the object being managed.
-* `dn` - Distinguished name of object being managed.
-
-* `children` - Set of children of the object being managed.
-* `children.child_class_name` - Class name of the child of the object being managed.
-* `children.child_content` - Map of key-value pairs which represents the attributes for child of the object being managed.
+- `id` - Dishtiguished name of object being managed.
+- `class_name` - Class name of object being managed.
+- `content` - Map of key-value pairs which represents the attributes for the object being managed.
+- `dn` - Distinguished name of object being managed.
+- `children` - Set of children of the object being managed.
+- `children.child_class_name` - Class name of the child of the object being managed.
+- `children.child_content` - Map of key-value pairs which represents the attributes for child of the object being managed.

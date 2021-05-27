@@ -25,7 +25,7 @@ func resourceAciVMMDomain() *schema.Resource {
 
 		SchemaVersion: 1,
 
-		Schema: AppendBaseAttrSchema(map[string]*schema.Schema{
+		Schema: map[string]*schema.Schema{
 			"provider_profile_dn": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
@@ -36,6 +36,12 @@ func resourceAciVMMDomain() *schema.Resource {
 				Type:     schema.TypeString,
 				Required: true,
 				ForceNew: true,
+			},
+
+			"annotation": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Default:  "orchestrator:terraform",
 			},
 
 			"access_mode": &schema.Schema{
@@ -257,7 +263,7 @@ func resourceAciVMMDomain() *schema.Resource {
 
 				Optional: true,
 			},
-		}),
+		},
 	}
 }
 func getRemoteVMMDomain(client *client.Client, dn string) (*models.VMMDomain, error) {
@@ -275,24 +281,33 @@ func getRemoteVMMDomain(client *client.Client, dn string) (*models.VMMDomain, er
 	return vmmDomP, nil
 }
 
-func setVMMDomainAttributes(vmmDomP *models.VMMDomain, d *schema.ResourceData) *schema.ResourceData {
+func setVMMDomainAttributes(vmmDomP *models.VMMDomain, d *schema.ResourceData) (*schema.ResourceData, error) {
 	dn := d.Id()
 	d.SetId(vmmDomP.DistinguishedName)
-	d.Set("description", vmmDomP.Description)
 	// d.Set("provider_profile_dn", GetParentDn(vmmDomP.DistinguishedName))
 	if dn != vmmDomP.DistinguishedName {
 		d.Set("provider_profile_dn", "")
 	}
-	vmmDomPMap, _ := vmmDomP.ToMap()
-
+	vmmDomPMap, err := vmmDomP.ToMap()
+	if err != nil {
+		return d, err
+	}
 	d.Set("name", vmmDomPMap["name"])
 
 	d.Set("access_mode", vmmDomPMap["accessMode"])
 	d.Set("annotation", vmmDomPMap["annotation"])
-	d.Set("arp_learning", vmmDomPMap["arpLearning"])
+	if vmmDomPMap["arpLearning"] == "" {
+		d.Set("arp_learning", "disabled")
+	} else {
+		d.Set("arp_learning", vmmDomPMap["arpLearning"])
+	}
+	if vmmDomPMap["ctrlKnob"] == "" {
+		d.Set("ctrl_knob", "none")
+	} else {
+		d.Set("ctrl_knob", vmmDomPMap["ctrlKnob"])
+	}
 	d.Set("ave_time_out", vmmDomPMap["aveTimeOut"])
 	d.Set("config_infra_pg", vmmDomPMap["configInfraPg"])
-	d.Set("ctrl_knob", vmmDomPMap["ctrlKnob"])
 	d.Set("delimiter", vmmDomPMap["delimiter"])
 	d.Set("enable_ave", vmmDomPMap["enableAVE"])
 	d.Set("enable_tag", vmmDomPMap["enableTag"])
@@ -305,7 +320,7 @@ func setVMMDomainAttributes(vmmDomP *models.VMMDomain, d *schema.ResourceData) *
 	d.Set("mode", vmmDomPMap["mode"])
 	d.Set("name_alias", vmmDomPMap["nameAlias"])
 	d.Set("pref_encap_mode", vmmDomPMap["prefEncapMode"])
-	return d
+	return d, nil
 }
 
 func resourceAciVMMDomainImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -319,11 +334,17 @@ func resourceAciVMMDomainImport(d *schema.ResourceData, m interface{}) ([]*schem
 	if err != nil {
 		return nil, err
 	}
-	vmmDomPMap, _ := vmmDomP.ToMap()
+	vmmDomPMap, err := vmmDomP.ToMap()
+	if err != nil {
+		return nil, err
+	}
 	name := vmmDomPMap["name"]
 	pDN := GetParentDn(dn, fmt.Sprintf("/dom-%s", name))
 	d.Set("provider_profile_dn", pDN)
-	schemaFilled := setVMMDomainAttributes(vmmDomP, d)
+	schemaFilled, err := setVMMDomainAttributes(vmmDomP, d)
+	if err != nil {
+		return nil, err
+	}
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
@@ -333,7 +354,6 @@ func resourceAciVMMDomainImport(d *schema.ResourceData, m interface{}) ([]*schem
 func resourceAciVMMDomainCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] VMMDomain: Beginning Creation")
 	aciClient := m.(*client.Client)
-	desc := d.Get("description").(string)
 
 	name := d.Get("name").(string)
 
@@ -396,7 +416,7 @@ func resourceAciVMMDomainCreate(ctx context.Context, d *schema.ResourceData, m i
 	if PrefEncapMode, ok := d.GetOk("pref_encap_mode"); ok {
 		vmmDomPAttr.PrefEncapMode = PrefEncapMode.(string)
 	}
-	vmmDomP := models.NewVMMDomain(fmt.Sprintf("dom-%s", name), ProviderProfileDn, desc, vmmDomPAttr)
+	vmmDomP := models.NewVMMDomain(fmt.Sprintf("dom-%s", name), ProviderProfileDn, vmmDomPAttr)
 
 	err := aciClient.Save(vmmDomP)
 	if err != nil {
@@ -573,7 +593,6 @@ func resourceAciVMMDomainUpdate(ctx context.Context, d *schema.ResourceData, m i
 	log.Printf("[DEBUG] VMMDomain: Beginning Update")
 
 	aciClient := m.(*client.Client)
-	desc := d.Get("description").(string)
 
 	name := d.Get("name").(string)
 
@@ -636,7 +655,7 @@ func resourceAciVMMDomainUpdate(ctx context.Context, d *schema.ResourceData, m i
 	if PrefEncapMode, ok := d.GetOk("pref_encap_mode"); ok {
 		vmmDomPAttr.PrefEncapMode = PrefEncapMode.(string)
 	}
-	vmmDomP := models.NewVMMDomain(fmt.Sprintf("dom-%s", name), ProviderProfileDn, desc, vmmDomPAttr)
+	vmmDomP := models.NewVMMDomain(fmt.Sprintf("dom-%s", name), ProviderProfileDn, vmmDomPAttr)
 
 	vmmDomP.Status = "modified"
 
@@ -841,7 +860,11 @@ func resourceAciVMMDomainRead(ctx context.Context, d *schema.ResourceData, m int
 		d.SetId("")
 		return nil
 	}
-	setVMMDomainAttributes(vmmDomP, d)
+	_, err = setVMMDomainAttributes(vmmDomP, d)
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 
 	vmmRsPrefEnhancedLagPolData, err := aciClient.ReadRelationvmmRsPrefEnhancedLagPolFromVMMDomain(dn)
 	if err != nil {

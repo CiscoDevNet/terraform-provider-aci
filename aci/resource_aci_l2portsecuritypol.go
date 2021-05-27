@@ -1,21 +1,23 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciPortSecurityPolicy() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciPortSecurityPolicyCreate,
-		Update: resourceAciPortSecurityPolicyUpdate,
-		Read:   resourceAciPortSecurityPolicyRead,
-		Delete: resourceAciPortSecurityPolicyDelete,
+		CreateContext: resourceAciPortSecurityPolicyCreate,
+		UpdateContext: resourceAciPortSecurityPolicyUpdate,
+		ReadContext:   resourceAciPortSecurityPolicyRead,
+		DeleteContext: resourceAciPortSecurityPolicyDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciPortSecurityPolicyImport,
@@ -32,12 +34,6 @@ func resourceAciPortSecurityPolicy() *schema.Resource {
 			},
 
 			"maximum": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
-			"mode": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
@@ -81,20 +77,21 @@ func getRemotePortSecurityPolicy(client *client.Client, dn string) (*models.Port
 	return l2PortSecurityPol, nil
 }
 
-func setPortSecurityPolicyAttributes(l2PortSecurityPol *models.PortSecurityPolicy, d *schema.ResourceData) *schema.ResourceData {
+func setPortSecurityPolicyAttributes(l2PortSecurityPol *models.PortSecurityPolicy, d *schema.ResourceData) (*schema.ResourceData, error) {
 	d.SetId(l2PortSecurityPol.DistinguishedName)
 	d.Set("description", l2PortSecurityPol.Description)
-	l2PortSecurityPolMap, _ := l2PortSecurityPol.ToMap()
-
+	l2PortSecurityPolMap, err := l2PortSecurityPol.ToMap()
+	if err != nil {
+		return d, err
+	}
 	d.Set("name", l2PortSecurityPolMap["name"])
 
 	d.Set("annotation", l2PortSecurityPolMap["annotation"])
 	d.Set("maximum", l2PortSecurityPolMap["maximum"])
-	d.Set("mode", l2PortSecurityPolMap["mode"])
 	d.Set("name_alias", l2PortSecurityPolMap["nameAlias"])
 	d.Set("timeout", l2PortSecurityPolMap["timeout"])
 	d.Set("violation", l2PortSecurityPolMap["violation"])
-	return d
+	return d, nil
 }
 
 func resourceAciPortSecurityPolicyImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -108,14 +105,16 @@ func resourceAciPortSecurityPolicyImport(d *schema.ResourceData, m interface{}) 
 	if err != nil {
 		return nil, err
 	}
-	schemaFilled := setPortSecurityPolicyAttributes(l2PortSecurityPol, d)
-
+	schemaFilled, err := setPortSecurityPolicyAttributes(l2PortSecurityPol, d)
+	if err != nil {
+		return nil, err
+	}
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciPortSecurityPolicyCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciPortSecurityPolicyCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] PortSecurityPolicy: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -131,9 +130,6 @@ func resourceAciPortSecurityPolicyCreate(d *schema.ResourceData, m interface{}) 
 	if Maximum, ok := d.GetOk("maximum"); ok {
 		l2PortSecurityPolAttr.Maximum = Maximum.(string)
 	}
-	if Mode, ok := d.GetOk("mode"); ok {
-		l2PortSecurityPolAttr.Mode = Mode.(string)
-	}
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		l2PortSecurityPolAttr.NameAlias = NameAlias.(string)
 	}
@@ -147,19 +143,16 @@ func resourceAciPortSecurityPolicyCreate(d *schema.ResourceData, m interface{}) 
 
 	err := aciClient.Save(l2PortSecurityPol)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.Partial(false)
 
 	d.SetId(l2PortSecurityPol.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciPortSecurityPolicyRead(d, m)
+	return resourceAciPortSecurityPolicyRead(ctx, d, m)
 }
 
-func resourceAciPortSecurityPolicyUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciPortSecurityPolicyUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] PortSecurityPolicy: Beginning Update")
 
 	aciClient := m.(*client.Client)
@@ -175,9 +168,6 @@ func resourceAciPortSecurityPolicyUpdate(d *schema.ResourceData, m interface{}) 
 	}
 	if Maximum, ok := d.GetOk("maximum"); ok {
 		l2PortSecurityPolAttr.Maximum = Maximum.(string)
-	}
-	if Mode, ok := d.GetOk("mode"); ok {
-		l2PortSecurityPolAttr.Mode = Mode.(string)
 	}
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		l2PortSecurityPolAttr.NameAlias = NameAlias.(string)
@@ -195,20 +185,17 @@ func resourceAciPortSecurityPolicyUpdate(d *schema.ResourceData, m interface{}) 
 	err := aciClient.Save(l2PortSecurityPol)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.Partial(false)
 
 	d.SetId(l2PortSecurityPol.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciPortSecurityPolicyRead(d, m)
+	return resourceAciPortSecurityPolicyRead(ctx, d, m)
 
 }
 
-func resourceAciPortSecurityPolicyRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciPortSecurityPolicyRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -220,25 +207,28 @@ func resourceAciPortSecurityPolicyRead(d *schema.ResourceData, m interface{}) er
 		d.SetId("")
 		return nil
 	}
-	setPortSecurityPolicyAttributes(l2PortSecurityPol, d)
-
+	_, err = setPortSecurityPolicyAttributes(l2PortSecurityPol, d)
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 
 	return nil
 }
 
-func resourceAciPortSecurityPolicyDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciPortSecurityPolicyDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "l2PortSecurityPol")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
 }

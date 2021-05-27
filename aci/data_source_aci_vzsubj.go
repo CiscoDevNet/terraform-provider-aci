@@ -82,6 +82,9 @@ func dataSourceAciContractSubjectRead(ctx context.Context, d *schema.ResourceDat
 		return diag.FromErr(err)
 	}
 	d.SetId(dn)
-	setContractSubjectAttributes(vzSubj, d)
+	_, err = setContractSubjectAttributes(vzSubj, d)
+	if err != nil {
+		return diag.FromErr(err)
+	}
 	return nil
 }

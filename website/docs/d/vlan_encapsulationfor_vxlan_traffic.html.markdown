@@ -24,5 +24,6 @@ data "aci_vlan_encapsulationfor_vxlan_traffic" "dev_vlan_traffic" {
 ## Attribute Reference
 
 * `id` - Attribute id set to the Dn of the Vlan Encapsulation for Vxlan Traffic.
-* `annotation` - (Optional) annotation for object vlan_encapsulationfor_vxlan_traffic.
-* `name_alias` - (Optional) name_alias for object vlan_encapsulationfor_vxlan_traffic.
+* `annotation` - (Optional) Annotation for object vlan encapsulation for vxlan traffic.
+* `name_alias` - (Optional) Name alias for object vlan encapsulation for vxlan traffic.
+* `description`- (Optional) Description for object vlan encapsulation for vxlan traffic.

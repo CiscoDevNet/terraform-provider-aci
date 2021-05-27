@@ -1,16 +1,18 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func dataSourceAciCloudEndpointSelector() *schema.Resource {
 	return &schema.Resource{
 
-		Read: dataSourceAciCloudEndpointSelectorRead,
+		ReadContext: dataSourceAciCloudEndpointSelectorRead,
 
 		SchemaVersion: 1,
 
@@ -40,7 +42,7 @@ func dataSourceAciCloudEndpointSelector() *schema.Resource {
 	}
 }
 
-func dataSourceAciCloudEndpointSelectorRead(d *schema.ResourceData, m interface{}) error {
+func dataSourceAciCloudEndpointSelectorRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	aciClient := m.(*client.Client)
 
 	name := d.Get("name").(string)
@@ -53,9 +55,9 @@ func dataSourceAciCloudEndpointSelectorRead(d *schema.ResourceData, m interface{
 	cloudEPSelector, err := getRemoteCloudEndpointSelector(aciClient, dn)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.SetId(dn)
-	setCloudEndpointSelectorAttributes(cloudEPSelector, d)
+	_, err = setCloudEndpointSelectorAttributes(cloudEPSelector, d)
 	return nil
 }
