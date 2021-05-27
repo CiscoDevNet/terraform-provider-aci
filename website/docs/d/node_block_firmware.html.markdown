@@ -14,21 +14,21 @@ Data source for ACI Node Block
 ```hcl
 data "aci_node_block_firmware" "example" {
 
-  firmware_group_dn  = "${aci_firmware_group.example.id}"
+  firmware_group_dn  = aci_firmware_group.example.id
 
   name  = "example"
 }
 ```
 ## Argument Reference ##
-* `firmware_group_dn` - (Required) Distinguished name of parent FirmwareGroup object.
-* `name` - (Required) name of Object node_block.
+* `firmware_group_dn` - (Required) Distinguished name of parent Firmware Group object.
+* `name` - (Required) Name of Object Node Block.
 
 
 
 ## Attribute Reference
 
 * `id` - Attribute id set to the Dn of the Node Block.
-* `annotation` - (Optional) annotation for object node_block.
-* `from_` - (Optional) from
-* `name_alias` - (Optional) name_alias for object node_block.
-* `to_` - (Optional) to
+* `annotation` - (Optional) Annotation for Object Node Block..
+* `from_` - (Optional) From
+* `name_alias` - (Optional) Name alias for Object Node Block..
+* `to_` - (Optional) To
