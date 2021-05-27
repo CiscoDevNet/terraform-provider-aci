@@ -59,10 +59,10 @@ func (sm *ServiceManager) CreateRelationinfraRsAccCardPFromLeafProfile(parentDn,
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","annotation":"orchestrator:terraform"				
+				"dn": "%s","tDn": "%s","annotation":"orchestrator:terraform"				
 			}
 		}
-	}`, "infraRsAccCardP", dn))
+	}`, "infraRsAccCardP", tDn, dn))
 
 	jsonPayload, err := container.ParseJSON(containerJSON)
 	if err != nil {
@@ -109,10 +109,10 @@ func (sm *ServiceManager) CreateRelationinfraRsAccPortPFromLeafProfile(parentDn,
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","annotation":"orchestrator:terraform"				
+				"dn": "%s","tDn": "%s","annotation":"orchestrator:terraform"				
 			}
 		}
-	}`, "infraRsAccPortP", dn))
+	}`, "infraRsAccPortP",tDn, dn))
 
 	jsonPayload, err := container.ParseJSON(containerJSON)
 	if err != nil {

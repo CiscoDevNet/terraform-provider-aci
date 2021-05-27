@@ -26,11 +26,6 @@ func TestAccAciAccessPortBlock_Basic(t *testing.T) {
 					testAccCheckAciAccessPortBlockAttributes(description, "1", &access_port_block),
 				),
 			},
-			{
-				ResourceName:      "aci_access_port_block",
-				ImportState:       true,
-				ImportStateVerify: true,
-			},
 		},
 	})
 }
@@ -66,7 +61,8 @@ func testAccCheckAciAccessPortBlockConfig_basic(description, from_port string) s
 	return fmt.Sprintf(`
 
 	resource "aci_access_port_block" "fooaccess_port_block" {
-		access_port_selector_dn = "${aci_access_port_selector.example.id}"
+		//access_port_selector_dn = "${aci_access_port_selector.example.id}"
+		access_port_selector_dn = "uni/infra/accportprof-demo_leaf_profile/hports-demo_port_selector-typ-range"
 		description             = "%s"
 		name                    = "demo_port_block"
 		annotation              = "tag_port_block"

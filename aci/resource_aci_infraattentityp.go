@@ -1,20 +1,22 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func resourceAciAttachableAccessEntityProfile() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciAttachableAccessEntityProfileCreate,
-		Update: resourceAciAttachableAccessEntityProfileUpdate,
-		Read:   resourceAciAttachableAccessEntityProfileRead,
-		Delete: resourceAciAttachableAccessEntityProfileDelete,
+		CreateContext: resourceAciAttachableAccessEntityProfileCreate,
+		UpdateContext: resourceAciAttachableAccessEntityProfileUpdate,
+		ReadContext:   resourceAciAttachableAccessEntityProfileRead,
+		DeleteContext: resourceAciAttachableAccessEntityProfileDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciAttachableAccessEntityProfileImport,
@@ -60,16 +62,20 @@ func getRemoteAttachableAccessEntityProfile(client *client.Client, dn string) (*
 	return infraAttEntityP, nil
 }
 
-func setAttachableAccessEntityProfileAttributes(infraAttEntityP *models.AttachableAccessEntityProfile, d *schema.ResourceData) *schema.ResourceData {
+func setAttachableAccessEntityProfileAttributes(infraAttEntityP *models.AttachableAccessEntityProfile, d *schema.ResourceData) (*schema.ResourceData, error) {
 	d.SetId(infraAttEntityP.DistinguishedName)
 	d.Set("description", infraAttEntityP.Description)
-	infraAttEntityPMap, _ := infraAttEntityP.ToMap()
+	infraAttEntityPMap, err := infraAttEntityP.ToMap()
+
+	if err != nil {
+		return d, err
+	}
 
 	d.Set("name", infraAttEntityPMap["name"])
 
 	d.Set("annotation", infraAttEntityPMap["annotation"])
 	d.Set("name_alias", infraAttEntityPMap["nameAlias"])
-	return d
+	return d, nil
 }
 
 func resourceAciAttachableAccessEntityProfileImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -83,14 +89,18 @@ func resourceAciAttachableAccessEntityProfileImport(d *schema.ResourceData, m in
 	if err != nil {
 		return nil, err
 	}
-	schemaFilled := setAttachableAccessEntityProfileAttributes(infraAttEntityP, d)
+	schemaFilled, err := setAttachableAccessEntityProfileAttributes(infraAttEntityP, d)
+
+	if err != nil {
+		return nil, err
+	}
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciAttachableAccessEntityProfileCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciAttachableAccessEntityProfileCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] AttachableAccessEntityProfile: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -110,11 +120,8 @@ func resourceAciAttachableAccessEntityProfileCreate(d *schema.ResourceData, m in
 
 	err := aciClient.Save(infraAttEntityP)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
 
@@ -128,7 +135,7 @@ func resourceAciAttachableAccessEntityProfileCreate(d *schema.ResourceData, m in
 	d.Partial(true)
 	err = checkTDn(aciClient, checkDns)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Partial(false)
 
@@ -138,20 +145,19 @@ func resourceAciAttachableAccessEntityProfileCreate(d *schema.ResourceData, m in
 			err = aciClient.CreateRelationinfraRsDomPFromAttachableAccessEntityProfile(infraAttEntityP.DistinguishedName, relationParam)
 
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
-			d.Partial(true)
-			d.Partial(false)
+
 		}
 	}
 
 	d.SetId(infraAttEntityP.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciAttachableAccessEntityProfileRead(d, m)
+	return resourceAciAttachableAccessEntityProfileRead(ctx, d, m)
 }
 
-func resourceAciAttachableAccessEntityProfileUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciAttachableAccessEntityProfileUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] AttachableAccessEntityProfile: Beginning Update")
 
 	aciClient := m.(*client.Client)
@@ -175,11 +181,8 @@ func resourceAciAttachableAccessEntityProfileUpdate(d *schema.ResourceData, m in
 	err := aciClient.Save(infraAttEntityP)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
 
@@ -197,7 +200,7 @@ func resourceAciAttachableAccessEntityProfileUpdate(d *schema.ResourceData, m in
 	d.Partial(true)
 	err = checkTDn(aciClient, checkDns)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Partial(false)
 
@@ -211,7 +214,7 @@ func resourceAciAttachableAccessEntityProfileUpdate(d *schema.ResourceData, m in
 		for _, relDn := range relToDelete {
 			err = aciClient.DeleteRelationinfraRsDomPFromAttachableAccessEntityProfile(infraAttEntityP.DistinguishedName, relDn)
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 		}
@@ -219,10 +222,8 @@ func resourceAciAttachableAccessEntityProfileUpdate(d *schema.ResourceData, m in
 		for _, relDn := range relToCreate {
 			err = aciClient.CreateRelationinfraRsDomPFromAttachableAccessEntityProfile(infraAttEntityP.DistinguishedName, relDn)
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
-			d.Partial(true)
-			d.Partial(false)
 
 		}
 
@@ -231,11 +232,11 @@ func resourceAciAttachableAccessEntityProfileUpdate(d *schema.ResourceData, m in
 	d.SetId(infraAttEntityP.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciAttachableAccessEntityProfileRead(d, m)
+	return resourceAciAttachableAccessEntityProfileRead(ctx, d, m)
 
 }
 
-func resourceAciAttachableAccessEntityProfileRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciAttachableAccessEntityProfileRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -247,7 +248,12 @@ func resourceAciAttachableAccessEntityProfileRead(d *schema.ResourceData, m inte
 		d.SetId("")
 		return nil
 	}
-	setAttachableAccessEntityProfileAttributes(infraAttEntityP, d)
+	_, err = setAttachableAccessEntityProfileAttributes(infraAttEntityP, d)
+
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 
 	infraRsDomPData, err := aciClient.ReadRelationinfraRsDomPFromAttachableAccessEntityProfile(dn)
 	if err != nil {
@@ -263,18 +269,18 @@ func resourceAciAttachableAccessEntityProfileRead(d *schema.ResourceData, m inte
 	return nil
 }
 
-func resourceAciAttachableAccessEntityProfileDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciAttachableAccessEntityProfileDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "infraAttEntityP")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
 }

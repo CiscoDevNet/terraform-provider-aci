@@ -90,6 +90,9 @@ func resourceAciExternalNetworkInstanceProfile() *schema.Resource {
 				Computed: true,
 				ValidateFunc: validation.StringInSlice([]string{
 					"unspecified",
+					"level6",
+					"level5",
+					"level4",
 					"level3",
 					"level2",
 					"level1",
@@ -212,15 +215,18 @@ func getRemoteExternalNetworkInstanceProfile(client *client.Client, dn string) (
 	return l3extInstP, nil
 }
 
-func setExternalNetworkInstanceProfileAttributes(l3extInstP *models.ExternalNetworkInstanceProfile, d *schema.ResourceData) *schema.ResourceData {
+func setExternalNetworkInstanceProfileAttributes(l3extInstP *models.ExternalNetworkInstanceProfile, d *schema.ResourceData) (*schema.ResourceData, error) {
 	dn := d.Id()
 	d.SetId(l3extInstP.DistinguishedName)
 	d.Set("description", l3extInstP.Description)
-	// d.Set("l3_outside_dn", GetParentDn(l3extInstP.DistinguishedName))
+
 	if dn != l3extInstP.DistinguishedName {
 		d.Set("l3_outside_dn", "")
 	}
-	l3extInstPMap, _ := l3extInstP.ToMap()
+	l3extInstPMap, err := l3extInstP.ToMap()
+	if err != nil {
+		return d, err
+	}
 
 	d.Set("name", l3extInstPMap["name"])
 
@@ -232,7 +238,7 @@ func setExternalNetworkInstanceProfileAttributes(l3extInstP *models.ExternalNetw
 	d.Set("pref_gr_memb", l3extInstPMap["prefGrMemb"])
 	d.Set("prio", l3extInstPMap["prio"])
 	d.Set("target_dscp", l3extInstPMap["targetDscp"])
-	return d
+	return d, nil
 }
 
 func resourceAciExternalNetworkInstanceProfileImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -246,12 +252,17 @@ func resourceAciExternalNetworkInstanceProfileImport(d *schema.ResourceData, m i
 	if err != nil {
 		return nil, err
 	}
-	l3extInstPMap, _ := l3extInstP.ToMap()
+	l3extInstPMap, err := l3extInstP.ToMap()
+	if err != nil {
+		return nil, err
+	}
 	name := l3extInstPMap["name"]
 	pDN := GetParentDn(dn, fmt.Sprintf("/instP-%s", name))
 	d.Set("l3_outside_dn", pDN)
-	schemaFilled := setExternalNetworkInstanceProfileAttributes(l3extInstP, d)
-
+	schemaFilled, err := setExternalNetworkInstanceProfileAttributes(l3extInstP, d)
+	if err != nil {
+		return nil, err
+	}
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
@@ -832,7 +843,11 @@ func resourceAciExternalNetworkInstanceProfileRead(ctx context.Context, d *schem
 		d.SetId("")
 		return nil
 	}
-	setExternalNetworkInstanceProfileAttributes(l3extInstP, d)
+	_, err = setExternalNetworkInstanceProfileAttributes(l3extInstP, d)
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 
 	fvRsSecInheritedData, err := aciClient.ReadRelationfvRsSecInheritedFromExternalNetworkInstanceProfile(dn)
 	if err != nil {
@@ -869,13 +884,13 @@ func resourceAciExternalNetworkInstanceProfileRead(ctx context.Context, d *schem
 	l3extRsL3InstPToDomPData, err := aciClient.ReadRelationl3extRsL3InstPToDomPFromExternalNetworkInstanceProfile(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation l3extRsL3InstPToDomP %v", err)
-		d.Set("relation_fv_rs_nd_pfx_pol", "")
+		d.Set("relation_l3ext_rs_l3_inst_p_to_dom_p", "")
 
 	} else {
 		if _, ok := d.GetOk("relation_l3ext_rs_l3_inst_p_to_dom_p"); ok {
 			tfName := d.Get("relation_l3ext_rs_l3_inst_p_to_dom_p").(string)
 			if tfName != l3extRsL3InstPToDomPData {
-				d.Set("relation_fv_rs_nd_pfx_pol", "")
+				d.Set("relation_l3ext_rs_l3_inst_p_to_dom_p", "")
 			}
 		}
 	}

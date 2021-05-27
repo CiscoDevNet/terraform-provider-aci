@@ -1,21 +1,23 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciLLDPInterfacePolicy() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciLLDPInterfacePolicyCreate,
-		Update: resourceAciLLDPInterfacePolicyUpdate,
-		Read:   resourceAciLLDPInterfacePolicyRead,
-		Delete: resourceAciLLDPInterfacePolicyDelete,
+		CreateContext: resourceAciLLDPInterfacePolicyCreate,
+		UpdateContext: resourceAciLLDPInterfacePolicyUpdate,
+		ReadContext:   resourceAciLLDPInterfacePolicyRead,
+		DeleteContext: resourceAciLLDPInterfacePolicyDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciLLDPInterfacePolicyImport,
@@ -74,18 +76,20 @@ func getRemoteLLDPInterfacePolicy(client *client.Client, dn string) (*models.LLD
 	return lldpIfPol, nil
 }
 
-func setLLDPInterfacePolicyAttributes(lldpIfPol *models.LLDPInterfacePolicy, d *schema.ResourceData) *schema.ResourceData {
+func setLLDPInterfacePolicyAttributes(lldpIfPol *models.LLDPInterfacePolicy, d *schema.ResourceData) (*schema.ResourceData, error) {
 	d.SetId(lldpIfPol.DistinguishedName)
 	d.Set("description", lldpIfPol.Description)
-	lldpIfPolMap, _ := lldpIfPol.ToMap()
-
+	lldpIfPolMap, err := lldpIfPol.ToMap()
+	if err != nil {
+		return d, err
+	}
 	d.Set("name", lldpIfPolMap["name"])
 
 	d.Set("admin_rx_st", lldpIfPolMap["adminRxSt"])
 	d.Set("admin_tx_st", lldpIfPolMap["adminTxSt"])
 	d.Set("annotation", lldpIfPolMap["annotation"])
 	d.Set("name_alias", lldpIfPolMap["nameAlias"])
-	return d
+	return d, nil
 }
 
 func resourceAciLLDPInterfacePolicyImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -99,14 +103,16 @@ func resourceAciLLDPInterfacePolicyImport(d *schema.ResourceData, m interface{})
 	if err != nil {
 		return nil, err
 	}
-	schemaFilled := setLLDPInterfacePolicyAttributes(lldpIfPol, d)
-
+	schemaFilled, err := setLLDPInterfacePolicyAttributes(lldpIfPol, d)
+	if err != nil {
+		return nil, err
+	}
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciLLDPInterfacePolicyCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciLLDPInterfacePolicyCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] LLDPInterfacePolicy: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -132,19 +138,16 @@ func resourceAciLLDPInterfacePolicyCreate(d *schema.ResourceData, m interface{})
 
 	err := aciClient.Save(lldpIfPol)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.Partial(false)
 
 	d.SetId(lldpIfPol.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciLLDPInterfacePolicyRead(d, m)
+	return resourceAciLLDPInterfacePolicyRead(ctx, d, m)
 }
 
-func resourceAciLLDPInterfacePolicyUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciLLDPInterfacePolicyUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] LLDPInterfacePolicy: Beginning Update")
 
 	aciClient := m.(*client.Client)
@@ -174,20 +177,17 @@ func resourceAciLLDPInterfacePolicyUpdate(d *schema.ResourceData, m interface{})
 	err := aciClient.Save(lldpIfPol)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.Partial(false)
 
 	d.SetId(lldpIfPol.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciLLDPInterfacePolicyRead(d, m)
+	return resourceAciLLDPInterfacePolicyRead(ctx, d, m)
 
 }
 
-func resourceAciLLDPInterfacePolicyRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciLLDPInterfacePolicyRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -199,25 +199,28 @@ func resourceAciLLDPInterfacePolicyRead(d *schema.ResourceData, m interface{}) e
 		d.SetId("")
 		return nil
 	}
-	setLLDPInterfacePolicyAttributes(lldpIfPol, d)
-
+	_, err = setLLDPInterfacePolicyAttributes(lldpIfPol, d)
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 
 	return nil
 }
 
-func resourceAciLLDPInterfacePolicyDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciLLDPInterfacePolicyDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "lldpIfPol")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
 }

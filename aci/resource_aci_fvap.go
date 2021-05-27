@@ -82,7 +82,7 @@ func getRemoteApplicationProfile(client *client.Client, dn string) (*models.Appl
 	return fvAp, nil
 }
 
-func setApplicationProfileAttributes(fvAp *models.ApplicationProfile, d *schema.ResourceData) *schema.ResourceData {
+func setApplicationProfileAttributes(fvAp *models.ApplicationProfile, d *schema.ResourceData) (*schema.ResourceData, error) {
 	dn := d.Id()
 	d.SetId(fvAp.DistinguishedName)
 	d.Set("description", fvAp.Description)
@@ -90,14 +90,17 @@ func setApplicationProfileAttributes(fvAp *models.ApplicationProfile, d *schema.
 	if dn != fvAp.DistinguishedName {
 		d.Set("tenant_dn", "")
 	}
-	fvApMap, _ := fvAp.ToMap()
+	fvApMap, err := fvAp.ToMap()
+	if err != nil {
+		return d, err
+	}
 
 	d.Set("name", fvApMap["name"])
 
 	d.Set("annotation", fvApMap["annotation"])
 	d.Set("name_alias", fvApMap["nameAlias"])
 	d.Set("prio", fvApMap["prio"])
-	return d
+	return d, nil
 }
 
 func resourceAciApplicationProfileImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -111,12 +114,18 @@ func resourceAciApplicationProfileImport(d *schema.ResourceData, m interface{}) 
 	if err != nil {
 		return nil, err
 	}
-	fvApMap, _ := fvAp.ToMap()
 
+	fvApMap, err := fvAp.ToMap()
+	if err != nil {
+		return nil, err
+	}
 	name := fvApMap["name"]
 	pDN := GetParentDn(dn, fmt.Sprintf("/ap-%s", name))
 	d.Set("tenant_dn", pDN)
-	schemaFilled := setApplicationProfileAttributes(fvAp, d)
+	schemaFilled, err := setApplicationProfileAttributes(fvAp, d)
+	if err != nil {
+		return nil, err
+	}
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
@@ -258,7 +267,11 @@ func resourceAciApplicationProfileRead(ctx context.Context, d *schema.ResourceDa
 		d.SetId("")
 		return nil
 	}
-	setApplicationProfileAttributes(fvAp, d)
+	_, err = setApplicationProfileAttributes(fvAp, d)
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 
 	fvRsApMonPolData, err := aciClient.ReadRelationfvRsApMonPolFromApplicationProfile(dn)
 	if err != nil {

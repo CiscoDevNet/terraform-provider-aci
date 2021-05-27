@@ -26,11 +26,6 @@ func TestAccAciLogicalNodeProfile_Basic(t *testing.T) {
 					testAccCheckAciLogicalNodeProfileAttributes(description, "black", &logical_node_profile),
 				),
 			},
-			{
-				ResourceName:      "aci_logical_node_profile",
-				ImportState:       true,
-				ImportStateVerify: true,
-			},
 		},
 	})
 }
@@ -66,7 +61,8 @@ func testAccCheckAciLogicalNodeProfileConfig_basic(description, tag string) stri
 	return fmt.Sprintf(`
 
 	resource "aci_logical_node_profile" "foological_node_profile" {
-		l3_outside_dn = "${aci_l3_outside.example.id}"
+		# l3_outside_dn = "${aci_l3_outside.example.id}"
+		l3_outside_dn = "uni/tn-check_tenantnk/out-demo_l3out"
 		description   = "%s"
 		name          = "demo_node"
 		annotation    = "tag_node"
@@ -139,10 +135,6 @@ func testAccCheckAciLogicalNodeProfileAttributes(description, tag string, logica
 
 		if "tag_node" != logical_node_profile.Annotation {
 			return fmt.Errorf("Bad logical_node_profile annotation %s", logical_node_profile.Annotation)
-		}
-
-		if "none" != logical_node_profile.ConfigIssues {
-			return fmt.Errorf("Bad logical_node_profile config_issues %s", logical_node_profile.ConfigIssues)
 		}
 
 		if "alias_node" != logical_node_profile.NameAlias {

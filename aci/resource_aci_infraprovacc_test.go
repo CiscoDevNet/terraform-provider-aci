@@ -26,11 +26,6 @@ func TestAccAciVlanEncapsulationforVxlanTraffic_Basic(t *testing.T) {
 					testAccCheckAciVlanEncapsulationforVxlanTrafficAttributes(description, "alias_heavy_traffic", &vlan_encapsulationfor_vxlan_traffic),
 				),
 			},
-			{
-				ResourceName:      "aci_vlan_encapsulationfor_vxlan_traffic",
-				ImportState:       true,
-				ImportStateVerify: true,
-			},
 		},
 	})
 }
@@ -65,6 +60,13 @@ func TestAccAciVlanEncapsulationforVxlanTraffic_update(t *testing.T) {
 func testAccCheckAciVlanEncapsulationforVxlanTrafficConfig_basic(description, name_alias string) string {
 	return fmt.Sprintf(`
 
+	resource "aci_attachable_access_entity_profile" "example" {
+		description = "AAEP description"
+		name        = "demo_entity_prof"
+		annotation  = "tag_entity"
+		name_alias  = "alias_entity"
+	  }
+	
 	resource "aci_vlan_encapsulationfor_vxlan_traffic" "foovlan_encapsulationfor_vxlan_traffic" {
 		attachable_access_entity_profile_dn = "${aci_attachable_access_entity_profile.example.id}"
 		description                         = "%s"

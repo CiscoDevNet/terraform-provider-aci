@@ -1,16 +1,18 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func dataSourceAciTriggerScheduler() *schema.Resource {
 	return &schema.Resource{
 
-		Read: dataSourceAciTriggerSchedulerRead,
+		ReadContext: dataSourceAciTriggerSchedulerRead,
 
 		SchemaVersion: 1,
 
@@ -30,7 +32,7 @@ func dataSourceAciTriggerScheduler() *schema.Resource {
 	}
 }
 
-func dataSourceAciTriggerSchedulerRead(d *schema.ResourceData, m interface{}) error {
+func dataSourceAciTriggerSchedulerRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	aciClient := m.(*client.Client)
 
 	name := d.Get("name").(string)
@@ -42,8 +44,13 @@ func dataSourceAciTriggerSchedulerRead(d *schema.ResourceData, m interface{}) er
 	trigSchedP, err := getRemoteTriggerScheduler(aciClient, dn)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	setTriggerSchedulerAttributes(trigSchedP, d)
+	_, err = setTriggerSchedulerAttributes(trigSchedP, d)
+
+	if err != nil {
+		return diag.FromErr(err)
+	}
+
 	return nil
 }

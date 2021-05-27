@@ -26,11 +26,6 @@ func TestAccAciCloudApplicationcontainer_Basic(t *testing.T) {
 					testAccCheckAciCloudApplicationcontainerAttributes(description, "alias_app", &cloud_applicationcontainer),
 				),
 			},
-			{
-				ResourceName:      "aci_cloud_applicationcontainer",
-				ImportState:       true,
-				ImportStateVerify: true,
-			},
 		},
 	})
 }
@@ -70,7 +65,7 @@ func testAccCheckAciCloudApplicationcontainerConfig_basic(description, name_alia
 	}
 
 	resource "aci_cloud_applicationcontainer" "foocloud_applicationcontainer" {
-		tenant_dn   = "${aci_tenant.footenant.id}"
+		tenant_dn   = aci_tenant.footenant.id
 		description = "%s"
 		name        = "demo_app"
 		annotation  = "tag_app"
