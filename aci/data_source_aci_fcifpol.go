@@ -82,6 +82,9 @@ func dataSourceAciInterfaceFCPolicyRead(ctx context.Context, d *schema.ResourceD
 	if err != nil {
 		return diag.FromErr(err)
 	}
-	setInterfaceFCPolicyAttributes(fcIfPol, d)
+	_, err = setInterfaceFCPolicyAttributes(fcIfPol, d)
+	if err != nil {
+		return diag.FromErr(err)
+	}
 	return nil
 }

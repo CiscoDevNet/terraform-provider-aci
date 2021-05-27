@@ -26,11 +26,6 @@ func TestAccAciCloudSubnet_Basic(t *testing.T) {
 					testAccCheckAciCloudSubnetAttributes(description, "private", &cloud_subnet),
 				),
 			},
-			{
-				ResourceName:      "aci_cloud_subnet",
-				ImportState:       true,
-				ImportStateVerify: true,
-			},
 		},
 	})
 }
@@ -64,18 +59,69 @@ func TestAccAciCloudSubnet_update(t *testing.T) {
 
 func testAccCheckAciCloudSubnetConfig_basic(description, scope string) string {
 	return fmt.Sprintf(`
+	
 
-	resource "aci_cloud_subnet" "foocloud_subnet" {
-		cloud_cidr_pool_dn = "${aci_cloud_cidr_pool.example.id}"
+	resource "aci_tenant" "example" {
+		name       = "crest_test_kishan_tenant"
+		annotation = "atag"
+		name_alias = "alias_tenant"
+	  }
+	  
+	  resource "aci_cloud_provider_profile" "example" {
+		# description = "cloud provider profile1"
+		vendor      = "aws"
+		annotation  = "tag_aws_prof1"
+	  }
+	  
+	  resource "aci_vrf" "example" {
+		tenant_dn              = aci_tenant.example.id
+		name                   = "demo_vrf"
+		annotation             = "tag_vrf"
+		bd_enforced_enable     = "no"
+		ip_data_plane_learning = "enabled"
+		knw_mcast_act          = "permit"
+		name_alias             = "alias_vrf"
+		pc_enf_dir             = "egress"
+		pc_enf_pref            = "unenforced"
+	  }
+	  
+	  resource "aci_cloud_context_profile" "example" {
+		name                     = "s"
+		# description              = "cloud_context_profile created while acceptance testing"
+		tenant_dn                = aci_tenant.example.id
+		primary_cidr             = "10.235.231.1/24"
+		region                   = "us-east-1"
+		cloud_vendor             = "aws"
+		relation_cloud_rs_to_ctx = aci_vrf.example.id
+	  }
+	  resource "aci_cloud_cidr_pool" "example" {
+		cloud_context_profile_dn = aci_cloud_context_profile.example.id
+		# description              = "cloud CIDR"
+		addr                     = "10.230.0.0/16"
+		annotation               = "tag_cidr"
+		name_alias               = "s"
+		primary                  = "no"
+	  }
+	  
+	  data "aci_cloud_providers_region" "region_aws" {
+		cloud_provider_profile_dn = aci_cloud_provider_profile.example.id
+		name                      = "us-east-1"
+	  }
+	  data "aci_cloud_availability_zone" "az_us_east_1_aws" {
+		cloud_providers_region_dn = data.aci_cloud_providers_region.region_aws.id
+		name                      = "us-east-1a"
+	  }
+	  
+	  resource "aci_cloud_subnet" "foocloud_subnet" {
+		cloud_cidr_pool_dn = aci_cloud_cidr_pool.example.id
+		ip                 = "10.230.0.1/24"
 		description        = "%s"
-		ip                 = "14.12.0.0/28"
 		annotation         = "tag_subnet"
 		name_alias         = "alias_subnet"
 		scope              = "%s"
 		usage              = "user"
-		zone 			   = "uni/clouddomp/provp-aws/region-us-west-1/zone-us-west-1b"
-	}
-	  
+		zone               = data.aci_cloud_availability_zone.az_us_east_1_aws.id
+	  }  	  
 	`, description, scope)
 }
 
@@ -134,7 +180,7 @@ func testAccCheckAciCloudSubnetAttributes(description, scope string, cloud_subne
 			return fmt.Errorf("Bad cloud_subnet Description %s", cloud_subnet.Description)
 		}
 
-		if "14.12.0.0/28" != cloud_subnet.Ip {
+		if "10.230.0.1/24" != cloud_subnet.Ip {
 			return fmt.Errorf("Bad cloud_subnet ip %s", cloud_subnet.Ip)
 		}
 

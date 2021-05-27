@@ -64,6 +64,9 @@ func dataSourceAciL2InterfacePolicyRead(ctx context.Context, d *schema.ResourceD
 	if err != nil {
 		return diag.FromErr(err)
 	}
-	setL2InterfacePolicyAttributes(l2IfPol, d)
+	_, err = setL2InterfacePolicyAttributes(l2IfPol, d)
+	if err != nil {
+		return diag.FromErr(err)
+	}
 	return nil
 }

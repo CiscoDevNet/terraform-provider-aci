@@ -26,11 +26,6 @@ func TestAccAciCloudEndpointSelectorforExternalEPgs_Basic(t *testing.T) {
 					testAccCheckAciCloudEndpointSelectorforExternalEPgsAttributes(description, "0.0.0.0/0", &cloud_endpoint_selectorfor_external_epgs),
 				),
 			},
-			{
-				ResourceName:      "aci_cloud_endpoint_selectorfor_external_epgs",
-				ImportState:       true,
-				ImportStateVerify: true,
-			},
 		},
 	})
 }

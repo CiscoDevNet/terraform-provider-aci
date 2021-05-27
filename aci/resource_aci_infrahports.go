@@ -1,21 +1,23 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciAccessPortSelector() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciAccessPortSelectorCreate,
-		Update: resourceAciAccessPortSelectorUpdate,
-		Read:   resourceAciAccessPortSelectorRead,
-		Delete: resourceAciAccessPortSelectorDelete,
+		CreateContext: resourceAciAccessPortSelectorCreate,
+		UpdateContext: resourceAciAccessPortSelectorUpdate,
+		ReadContext:   resourceAciAccessPortSelectorRead,
+		DeleteContext: resourceAciAccessPortSelectorDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciAccessPortSelectorImport,
@@ -75,7 +77,7 @@ func getRemoteAccessPortSelector(client *client.Client, dn string) (*models.Acce
 	return infraHPortS, nil
 }
 
-func setAccessPortSelectorAttributes(infraHPortS *models.AccessPortSelector, d *schema.ResourceData) *schema.ResourceData {
+func setAccessPortSelectorAttributes(infraHPortS *models.AccessPortSelector, d *schema.ResourceData) (*schema.ResourceData, error) {
 	dn := d.Id()
 	d.SetId(infraHPortS.DistinguishedName)
 	d.Set("description", infraHPortS.Description)
@@ -83,7 +85,10 @@ func setAccessPortSelectorAttributes(infraHPortS *models.AccessPortSelector, d *
 	if dn != infraHPortS.DistinguishedName {
 		d.Set("leaf_interface_profile_dn", "")
 	}
-	infraHPortSMap, _ := infraHPortS.ToMap()
+	infraHPortSMap, err := infraHPortS.ToMap()
+	if err != nil {
+		return d, err
+	}
 
 	d.Set("name", infraHPortSMap["name"])
 
@@ -92,7 +97,7 @@ func setAccessPortSelectorAttributes(infraHPortS *models.AccessPortSelector, d *
 	d.Set("annotation", infraHPortSMap["annotation"])
 	d.Set("name_alias", infraHPortSMap["nameAlias"])
 	d.Set("access_port_selector_type", infraHPortSMap["type"])
-	return d
+	return d, nil
 }
 
 func resourceAciAccessPortSelectorImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -106,19 +111,25 @@ func resourceAciAccessPortSelectorImport(d *schema.ResourceData, m interface{}) 
 	if err != nil {
 		return nil, err
 	}
-	infraHPortSMap, _ := infraHPortS.ToMap()
+	infraHPortSMap, err := infraHPortS.ToMap()
+	if err != nil {
+		return nil, err
+	}
 	name := infraHPortSMap["name"]
 	ptype := infraHPortSMap["type"]
 	pDN := GetParentDn(dn, fmt.Sprintf("/hports-%s-typ-%s", name, ptype))
 	d.Set("leaf_interface_profile_dn", pDN)
-	schemaFilled := setAccessPortSelectorAttributes(infraHPortS, d)
+	schemaFilled, err := setAccessPortSelectorAttributes(infraHPortS, d)
+	if err != nil {
+		return nil, err
+	}
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciAccessPortSelectorCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciAccessPortSelectorCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] AccessPortSelector: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -145,11 +156,8 @@ func resourceAciAccessPortSelectorCreate(d *schema.ResourceData, m interface{}) 
 
 	err := aciClient.Save(infraHPortS)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
 
@@ -161,7 +169,7 @@ func resourceAciAccessPortSelectorCreate(d *schema.ResourceData, m interface{}) 
 	d.Partial(true)
 	err = checkTDn(aciClient, checkDns)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Partial(false)
 
@@ -169,20 +177,18 @@ func resourceAciAccessPortSelectorCreate(d *schema.ResourceData, m interface{}) 
 		relationParam := relationToinfraRsAccBaseGrp.(string)
 		err = aciClient.CreateRelationinfraRsAccBaseGrpFromAccessPortSelector(infraHPortS.DistinguishedName, relationParam)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.Partial(false)
 
 	}
 
 	d.SetId(infraHPortS.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciAccessPortSelectorRead(d, m)
+	return resourceAciAccessPortSelectorRead(ctx, d, m)
 }
 
-func resourceAciAccessPortSelectorUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciAccessPortSelectorUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] AccessPortSelector: Beginning Update")
 
 	aciClient := m.(*client.Client)
@@ -213,11 +219,8 @@ func resourceAciAccessPortSelectorUpdate(d *schema.ResourceData, m interface{}) 
 	err := aciClient.Save(infraHPortS)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
 
@@ -229,7 +232,7 @@ func resourceAciAccessPortSelectorUpdate(d *schema.ResourceData, m interface{}) 
 	d.Partial(true)
 	err = checkTDn(aciClient, checkDns)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Partial(false)
 
@@ -237,25 +240,23 @@ func resourceAciAccessPortSelectorUpdate(d *schema.ResourceData, m interface{}) 
 		_, newRelParam := d.GetChange("relation_infra_rs_acc_base_grp")
 		err = aciClient.DeleteRelationinfraRsAccBaseGrpFromAccessPortSelector(infraHPortS.DistinguishedName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 		err = aciClient.CreateRelationinfraRsAccBaseGrpFromAccessPortSelector(infraHPortS.DistinguishedName, newRelParam.(string))
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.Partial(false)
 
 	}
 
 	d.SetId(infraHPortS.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciAccessPortSelectorRead(d, m)
+	return resourceAciAccessPortSelectorRead(ctx, d, m)
 
 }
 
-func resourceAciAccessPortSelectorRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciAccessPortSelectorRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -267,7 +268,11 @@ func resourceAciAccessPortSelectorRead(d *schema.ResourceData, m interface{}) er
 		d.SetId("")
 		return nil
 	}
-	setAccessPortSelectorAttributes(infraHPortS, d)
+	_, err = setAccessPortSelectorAttributes(infraHPortS, d)
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 
 	infraRsAccBaseGrpData, err := aciClient.ReadRelationinfraRsAccBaseGrpFromAccessPortSelector(dn)
 	if err != nil {
@@ -288,18 +293,18 @@ func resourceAciAccessPortSelectorRead(d *schema.ResourceData, m interface{}) er
 	return nil
 }
 
-func resourceAciAccessPortSelectorDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciAccessPortSelectorDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "infraHPortS")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
 }

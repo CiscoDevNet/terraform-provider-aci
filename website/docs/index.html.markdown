@@ -136,5 +136,8 @@ Following arguments are supported with Cisco ACI terraform provider.
  * `private-key` - (Optional) Path to the private key for which x509 certificate has been calculated for the user mentioned in `username`.
  * `url` - (Required) URL for CISCO APIC.
  * `insecure` - (Optional) This determines whether to use insecure HTTP connection or not. Default value is `true`.  
+ * `cert_name` - (Optional) Certificate name for the User in Cisco ACI.
+ * `proxy_url` - (Optional) Proxy Server URL with port number.
+ * `proxy_creds` - (Optional) Proxy server credentials in the form of username:password.
 
 ~> NOTE: `password` or `private-key` either of one is required.

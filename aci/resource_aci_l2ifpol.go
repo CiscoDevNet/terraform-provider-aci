@@ -88,11 +88,13 @@ func getRemoteL2InterfacePolicy(client *client.Client, dn string) (*models.L2Int
 	return l2IfPol, nil
 }
 
-func setL2InterfacePolicyAttributes(l2IfPol *models.L2InterfacePolicy, d *schema.ResourceData) *schema.ResourceData {
+func setL2InterfacePolicyAttributes(l2IfPol *models.L2InterfacePolicy, d *schema.ResourceData) (*schema.ResourceData, error) {
 	d.SetId(l2IfPol.DistinguishedName)
 	d.Set("description", l2IfPol.Description)
-	l2IfPolMap, _ := l2IfPol.ToMap()
-
+	l2IfPolMap, err := l2IfPol.ToMap()
+	if err != nil {
+		return d, err
+	}
 	d.Set("name", l2IfPolMap["name"])
 
 	d.Set("annotation", l2IfPolMap["annotation"])
@@ -100,7 +102,7 @@ func setL2InterfacePolicyAttributes(l2IfPol *models.L2InterfacePolicy, d *schema
 	d.Set("qinq", l2IfPolMap["qinq"])
 	d.Set("vepa", l2IfPolMap["vepa"])
 	d.Set("vlan_scope", l2IfPolMap["vlanScope"])
-	return d
+	return d, nil
 }
 
 func resourceAciL2InterfacePolicyImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -114,7 +116,10 @@ func resourceAciL2InterfacePolicyImport(d *schema.ResourceData, m interface{}) (
 	if err != nil {
 		return nil, err
 	}
-	schemaFilled := setL2InterfacePolicyAttributes(l2IfPol, d)
+	schemaFilled, err := setL2InterfacePolicyAttributes(l2IfPol, d)
+	if err != nil {
+		return nil, err
+	}
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
@@ -214,7 +219,11 @@ func resourceAciL2InterfacePolicyRead(ctx context.Context, d *schema.ResourceDat
 		d.SetId("")
 		return nil
 	}
-	setL2InterfacePolicyAttributes(l2IfPol, d)
+	_, err = setL2InterfacePolicyAttributes(l2IfPol, d)
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 

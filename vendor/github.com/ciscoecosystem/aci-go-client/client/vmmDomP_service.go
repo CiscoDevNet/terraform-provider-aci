@@ -7,10 +7,10 @@ import (
 	"github.com/ciscoecosystem/aci-go-client/models"
 )
 
-func (sm *ServiceManager) CreateVMMDomain(name string, provider_profile_vendor string, description string, vmmDomPattr models.VMMDomainAttributes) (*models.VMMDomain, error) {
+func (sm *ServiceManager) CreateVMMDomain(name string, provider_profile_vendor string, vmmDomPattr models.VMMDomainAttributes) (*models.VMMDomain, error) {
 	rn := fmt.Sprintf("dom-%s", name)
 	parentDn := fmt.Sprintf("uni/vmmp-%s", provider_profile_vendor)
-	vmmDomP := models.NewVMMDomain(rn, parentDn, description, vmmDomPattr)
+	vmmDomP := models.NewVMMDomain(rn, parentDn, vmmDomPattr)
 	err := sm.Save(vmmDomP)
 	return vmmDomP, err
 }
@@ -31,10 +31,10 @@ func (sm *ServiceManager) DeleteVMMDomain(name string, provider_profile_vendor s
 	return sm.DeleteByDn(dn, models.VmmdompClassName)
 }
 
-func (sm *ServiceManager) UpdateVMMDomain(name string, provider_profile_vendor string, description string, vmmDomPattr models.VMMDomainAttributes) (*models.VMMDomain, error) {
+func (sm *ServiceManager) UpdateVMMDomain(name string, provider_profile_vendor string, vmmDomPattr models.VMMDomainAttributes) (*models.VMMDomain, error) {
 	rn := fmt.Sprintf("dom-%s", name)
 	parentDn := fmt.Sprintf("uni/vmmp-%s", provider_profile_vendor)
-	vmmDomP := models.NewVMMDomain(rn, parentDn, description, vmmDomPattr)
+	vmmDomP := models.NewVMMDomain(rn, parentDn, vmmDomPattr)
 
 	vmmDomP.Status = "modified"
 	err := sm.Save(vmmDomP)

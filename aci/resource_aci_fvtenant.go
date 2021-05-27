@@ -67,16 +67,20 @@ func getRemoteTenant(client *client.Client, dn string) (*models.Tenant, error) {
 	return fvTenant, nil
 }
 
-func setTenantAttributes(fvTenant *models.Tenant, d *schema.ResourceData) *schema.ResourceData {
+func setTenantAttributes(fvTenant *models.Tenant, d *schema.ResourceData) (*schema.ResourceData, error) {
 	d.SetId(fvTenant.DistinguishedName)
 	d.Set("description", fvTenant.Description)
-	fvTenantMap, _ := fvTenant.ToMap()
+	fvTenantMap, err := fvTenant.ToMap()
+
+	if err != nil {
+		return d, err
+	}
 
 	d.Set("name", fvTenantMap["name"])
 
 	d.Set("annotation", fvTenantMap["annotation"])
 	d.Set("name_alias", fvTenantMap["nameAlias"])
-	return d
+	return d, nil
 }
 
 func resourceAciTenantImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -90,7 +94,10 @@ func resourceAciTenantImport(d *schema.ResourceData, m interface{}) ([]*schema.R
 	if err != nil {
 		return nil, err
 	}
-	schemaFilled := setTenantAttributes(fvTenant, d)
+	schemaFilled, err := setTenantAttributes(fvTenant, d)
+	if err != nil {
+		return nil, err
+	}
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
@@ -270,7 +277,12 @@ func resourceAciTenantRead(ctx context.Context, d *schema.ResourceData, m interf
 		d.SetId("")
 		return nil
 	}
-	setTenantAttributes(fvTenant, d)
+	_, err = setTenantAttributes(fvTenant, d)
+
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 
 	fvRsTnDenyRuleData, err := aciClient.ReadRelationfvRsTnDenyRuleFromTenant(dn)
 	if err != nil {

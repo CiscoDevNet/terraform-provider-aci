@@ -250,7 +250,7 @@ func getRemoteApplicationEPG(client *client.Client, dn string) (*models.Applicat
 	return fvAEPg, nil
 }
 
-func setApplicationEPGAttributes(fvAEPg *models.ApplicationEPG, d *schema.ResourceData) *schema.ResourceData {
+func setApplicationEPGAttributes(fvAEPg *models.ApplicationEPG, d *schema.ResourceData) (*schema.ResourceData, error) {
 	dn := d.Id()
 	d.SetId(fvAEPg.DistinguishedName)
 	d.Set("description", fvAEPg.Description)
@@ -258,8 +258,10 @@ func setApplicationEPGAttributes(fvAEPg *models.ApplicationEPG, d *schema.Resour
 	if dn != fvAEPg.DistinguishedName {
 		d.Set("application_profile_dn", "")
 	}
-	fvAEPgMap, _ := fvAEPg.ToMap()
-
+	fvAEPgMap, err := fvAEPg.ToMap()
+	if err != nil {
+		return d, err
+	}
 	d.Set("name", fvAEPgMap["name"])
 
 	d.Set("annotation", fvAEPgMap["annotation"])
@@ -278,7 +280,7 @@ func setApplicationEPGAttributes(fvAEPg *models.ApplicationEPG, d *schema.Resour
 	d.Set("pref_gr_memb", fvAEPgMap["prefGrMemb"])
 	d.Set("prio", fvAEPgMap["prio"])
 	d.Set("shutdown", fvAEPgMap["shutdown"])
-	return d
+	return d, nil
 }
 
 func resourceAciApplicationEPGImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -292,13 +294,17 @@ func resourceAciApplicationEPGImport(d *schema.ResourceData, m interface{}) ([]*
 	if err != nil {
 		return nil, err
 	}
-	fvAEPgMap, _ := fvAEPg.ToMap()
-
+	fvAEPgMap, err := fvAEPg.ToMap()
+	if err != nil {
+		return nil, err
+	}
 	name := fvAEPgMap["name"]
 	pDN := GetParentDn(dn, fmt.Sprintf("/epg-%s", name))
 	d.Set("application_profile_dn", pDN)
-	schemaFilled := setApplicationEPGAttributes(fvAEPg, d)
-
+	schemaFilled, err := setApplicationEPGAttributes(fvAEPg, d)
+	if err != nil {
+		return nil, err
+	}
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
@@ -1191,8 +1197,11 @@ func resourceAciApplicationEPGRead(ctx context.Context, d *schema.ResourceData, 
 		d.SetId("")
 		return nil
 	}
-	setApplicationEPGAttributes(fvAEPg, d)
-
+	_, err = setApplicationEPGAttributes(fvAEPg, d)
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 	fvRsBdData, err := aciClient.ReadRelationfvRsBdFromApplicationEPG(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation fvRsBd %v", err)

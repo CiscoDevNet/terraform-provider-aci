@@ -6,33 +6,33 @@ description: |-
   Data source for ACI Access Port Block
 ---
 
-# aci_access_port_block #
+# aci_access_port_block
+
 Data source for ACI Access Port Block
 
-## Example Usage ##
+## Example Usage
 
 ```hcl
 
 data "aci_access_port_block" "dev_port_blk" {
-  access_port_selector_dn  = "${aci_access_port_selector.example.id}"
+  access_port_selector_dn  = aci_access_port_selector.example.id
   name                     = "foo_port_blk"
 }
 
 ```
 
+## Argument Reference
 
-## Argument Reference ##
-* `access_port_selector_dn` - (Required) Distinguished name of parent AccessPortSelector object.
-* `name` - (Required) name of Object access_port_block.
-
-
+- `access_port_selector_dn` - (Required) Distinguished name of parent Access Port Selector object.
+- `name` - (Required) Name of Object Access Port Block.
 
 ## Attribute Reference
 
-* `id` - Attribute id set to the Dn of the Access Port Block.
-* `annotation` - (Optional) annotation for object access_port_block.
-* `from_card` - (Optional) The beginning (from-range) of the card range block for the leaf access port block.
-* `from_port` - (Optional) The beginning (from-range) of the port range block for the leaf access port block.
-* `name_alias` - (Optional) name_alias for object access_port_block.
-* `to_card` - (Optional) The end (to-range) of the card range block for the leaf access port block.
-* `to_port` - (Optional) The end (to-range) of the port range block for the leaf access port block.
+- `id` - Attribute id set to the Dn of the Access Port Block.
+- `description` - (Optional) Description for object Access Port Block.
+- `annotation` - (Optional) Annotation for object Access Port Block.
+- `from_card` - (Optional) The beginning (from-range) of the card range block for the leaf Access Port Block.
+- `from_port` - (Optional) The beginning (from-range) of the port range block for the leaf Access Port Block.
+- `name_alias` - (Optional) Name alias for object Access Port Block.
+- `to_card` - (Optional) The end (to-range) of the card range block for the leaf Access Port Block.
+- `to_port` - (Optional) The end (to-range) of the port range block for the leaf Access Port Block.

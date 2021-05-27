@@ -1,21 +1,23 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciCloudEndpointSelectorforExternalEPgs() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciCloudEndpointSelectorforExternalEPgsCreate,
-		Update: resourceAciCloudEndpointSelectorforExternalEPgsUpdate,
-		Read:   resourceAciCloudEndpointSelectorforExternalEPgsRead,
-		Delete: resourceAciCloudEndpointSelectorforExternalEPgsDelete,
+		CreateContext: resourceAciCloudEndpointSelectorforExternalEPgsCreate,
+		UpdateContext: resourceAciCloudEndpointSelectorforExternalEPgsUpdate,
+		ReadContext:   resourceAciCloudEndpointSelectorforExternalEPgsRead,
+		DeleteContext: resourceAciCloudEndpointSelectorforExternalEPgsDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciCloudEndpointSelectorforExternalEPgsImport,
@@ -80,7 +82,7 @@ func getRemoteCloudEndpointSelectorforExternalEPgs(client *client.Client, dn str
 	return cloudExtEPSelector, nil
 }
 
-func setCloudEndpointSelectorforExternalEPgsAttributes(cloudExtEPSelector *models.CloudEndpointSelectorforExternalEPgs, d *schema.ResourceData) *schema.ResourceData {
+func setCloudEndpointSelectorforExternalEPgsAttributes(cloudExtEPSelector *models.CloudEndpointSelectorforExternalEPgs, d *schema.ResourceData) (*schema.ResourceData, error) {
 	dn := d.Id()
 	d.SetId(cloudExtEPSelector.DistinguishedName)
 	d.Set("description", cloudExtEPSelector.Description)
@@ -88,7 +90,10 @@ func setCloudEndpointSelectorforExternalEPgsAttributes(cloudExtEPSelector *model
 	if dn != cloudExtEPSelector.DistinguishedName {
 		d.Set("cloud_external_epg_dn", "")
 	}
-	cloudExtEPSelectorMap, _ := cloudExtEPSelector.ToMap()
+	cloudExtEPSelectorMap, err := cloudExtEPSelector.ToMap()
+	if err != nil {
+		return d, err
+	}
 
 	d.Set("name", cloudExtEPSelectorMap["name"])
 
@@ -97,7 +102,7 @@ func setCloudEndpointSelectorforExternalEPgsAttributes(cloudExtEPSelector *model
 	d.Set("match_expression", cloudExtEPSelectorMap["matchExpression"])
 	d.Set("name_alias", cloudExtEPSelectorMap["nameAlias"])
 	d.Set("subnet", cloudExtEPSelectorMap["subnet"])
-	return d
+	return d, nil
 }
 
 func resourceAciCloudEndpointSelectorforExternalEPgsImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -111,18 +116,24 @@ func resourceAciCloudEndpointSelectorforExternalEPgsImport(d *schema.ResourceDat
 	if err != nil {
 		return nil, err
 	}
-	cloudExtEPSelectorMap, _ := cloudExtEPSelector.ToMap()
+	cloudExtEPSelectorMap, err := cloudExtEPSelector.ToMap()
+	if err != nil {
+		return nil, err
+	}
 	subnet := cloudExtEPSelectorMap["subnet"]
 	pDN := GetParentDn(dn, fmt.Sprintf("/extepselector-[%s]", subnet))
 	d.Set("cloud_external_epg_dn", pDN)
-	schemaFilled := setCloudEndpointSelectorforExternalEPgsAttributes(cloudExtEPSelector, d)
+	schemaFilled, err := setCloudEndpointSelectorforExternalEPgsAttributes(cloudExtEPSelector, d)
+	if err != nil {
+		return nil, err
+	}
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciCloudEndpointSelectorforExternalEPgsCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciCloudEndpointSelectorforExternalEPgsCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] CloudEndpointSelectorforExternalEPgs: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -154,19 +165,16 @@ func resourceAciCloudEndpointSelectorforExternalEPgsCreate(d *schema.ResourceDat
 
 	err := aciClient.Save(cloudExtEPSelector)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.Partial(false)
 
 	d.SetId(cloudExtEPSelector.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciCloudEndpointSelectorforExternalEPgsRead(d, m)
+	return resourceAciCloudEndpointSelectorforExternalEPgsRead(ctx, d, m)
 }
 
-func resourceAciCloudEndpointSelectorforExternalEPgsUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciCloudEndpointSelectorforExternalEPgsUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] CloudEndpointSelectorforExternalEPgs: Beginning Update")
 
 	aciClient := m.(*client.Client)
@@ -203,20 +211,17 @@ func resourceAciCloudEndpointSelectorforExternalEPgsUpdate(d *schema.ResourceDat
 	err := aciClient.Save(cloudExtEPSelector)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.Partial(false)
 
 	d.SetId(cloudExtEPSelector.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciCloudEndpointSelectorforExternalEPgsRead(d, m)
+	return resourceAciCloudEndpointSelectorforExternalEPgsRead(ctx, d, m)
 
 }
 
-func resourceAciCloudEndpointSelectorforExternalEPgsRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciCloudEndpointSelectorforExternalEPgsRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -228,25 +233,29 @@ func resourceAciCloudEndpointSelectorforExternalEPgsRead(d *schema.ResourceData,
 		d.SetId("")
 		return nil
 	}
-	setCloudEndpointSelectorforExternalEPgsAttributes(cloudExtEPSelector, d)
+	_, err = setCloudEndpointSelectorforExternalEPgsAttributes(cloudExtEPSelector, d)
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 
 	return nil
 }
 
-func resourceAciCloudEndpointSelectorforExternalEPgsDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciCloudEndpointSelectorforExternalEPgsDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "cloudExtEPSelector")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
 }

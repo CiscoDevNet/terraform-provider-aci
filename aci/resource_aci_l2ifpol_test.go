@@ -26,11 +26,6 @@ func TestAccAciL2InterfacePolicy_Basic(t *testing.T) {
 					testAccCheckAciL2InterfacePolicyAttributes(description, "global", &l2_interface_policy),
 				),
 			},
-			{
-				ResourceName:      "aci_l2_interface_policy",
-				ImportState:       true,
-				ImportStateVerify: true,
-			},
 		},
 	})
 }

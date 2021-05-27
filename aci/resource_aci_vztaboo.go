@@ -1,20 +1,22 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func resourceAciTabooContract() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciTabooContractCreate,
-		Update: resourceAciTabooContractUpdate,
-		Read:   resourceAciTabooContractRead,
-		Delete: resourceAciTabooContractDelete,
+		CreateContext: resourceAciTabooContractCreate,
+		UpdateContext: resourceAciTabooContractUpdate,
+		ReadContext:   resourceAciTabooContractRead,
+		DeleteContext: resourceAciTabooContractDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciTabooContractImport,
@@ -58,7 +60,7 @@ func getRemoteTabooContract(client *client.Client, dn string) (*models.TabooCont
 	return vzTaboo, nil
 }
 
-func setTabooContractAttributes(vzTaboo *models.TabooContract, d *schema.ResourceData) *schema.ResourceData {
+func setTabooContractAttributes(vzTaboo *models.TabooContract, d *schema.ResourceData) (*schema.ResourceData, error) {
 	dn := d.Id()
 	d.SetId(vzTaboo.DistinguishedName)
 	d.Set("description", vzTaboo.Description)
@@ -66,13 +68,17 @@ func setTabooContractAttributes(vzTaboo *models.TabooContract, d *schema.Resourc
 	if dn != vzTaboo.DistinguishedName {
 		d.Set("tenant_dn", "")
 	}
-	vzTabooMap, _ := vzTaboo.ToMap()
+	vzTabooMap, err := vzTaboo.ToMap()
+
+	if err != nil {
+		return d, err
+	}
 
 	d.Set("name", vzTabooMap["name"])
 
 	d.Set("annotation", vzTabooMap["annotation"])
 	d.Set("name_alias", vzTabooMap["nameAlias"])
-	return d
+	return d, nil
 }
 
 func resourceAciTabooContractImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -86,18 +92,27 @@ func resourceAciTabooContractImport(d *schema.ResourceData, m interface{}) ([]*s
 	if err != nil {
 		return nil, err
 	}
-	vzTabooMap, _ := vzTaboo.ToMap()
+	vzTabooMap, err := vzTaboo.ToMap()
+
+	if err != nil {
+		return nil, err
+	}
+
 	name := vzTabooMap["name"]
 	pDN := GetParentDn(dn, fmt.Sprintf("/taboo-%s", name))
 	d.Set("tenant_dn", pDN)
-	schemaFilled := setTabooContractAttributes(vzTaboo, d)
+	schemaFilled, err := setTabooContractAttributes(vzTaboo, d)
+
+	if err != nil {
+		return nil, err
+	}
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciTabooContractCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciTabooContractCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] TabooContract: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -119,19 +134,16 @@ func resourceAciTabooContractCreate(d *schema.ResourceData, m interface{}) error
 
 	err := aciClient.Save(vzTaboo)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.Partial(false)
 
 	d.SetId(vzTaboo.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciTabooContractRead(d, m)
+	return resourceAciTabooContractRead(ctx, d, m)
 }
 
-func resourceAciTabooContractUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciTabooContractUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] TabooContract: Beginning Update")
 
 	aciClient := m.(*client.Client)
@@ -157,20 +169,17 @@ func resourceAciTabooContractUpdate(d *schema.ResourceData, m interface{}) error
 	err := aciClient.Save(vzTaboo)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.Partial(false)
 
 	d.SetId(vzTaboo.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciTabooContractRead(d, m)
+	return resourceAciTabooContractRead(ctx, d, m)
 
 }
 
-func resourceAciTabooContractRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciTabooContractRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -182,25 +191,30 @@ func resourceAciTabooContractRead(d *schema.ResourceData, m interface{}) error {
 		d.SetId("")
 		return nil
 	}
-	setTabooContractAttributes(vzTaboo, d)
+	_, err = setTabooContractAttributes(vzTaboo, d)
+
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 
 	return nil
 }
 
-func resourceAciTabooContractDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciTabooContractDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "vzTaboo")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
 }

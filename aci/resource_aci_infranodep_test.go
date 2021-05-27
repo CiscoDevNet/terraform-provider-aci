@@ -26,11 +26,6 @@ func TestAccAciLeafProfile_Basic(t *testing.T) {
 					testAccCheckAciLeafProfileAttributes(description, "alias_node_ep", &leaf_profile),
 				),
 			},
-			{
-				ResourceName:      "aci_leaf_profile",
-				ImportState:       true,
-				ImportStateVerify: true,
-			},
 		},
 	})
 }

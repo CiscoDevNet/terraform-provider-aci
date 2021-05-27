@@ -1,20 +1,22 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func resourceAciMonitoringPolicy() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciMonitoringPolicyCreate,
-		Update: resourceAciMonitoringPolicyUpdate,
-		Read:   resourceAciMonitoringPolicyRead,
-		Delete: resourceAciMonitoringPolicyDelete,
+		CreateContext: resourceAciMonitoringPolicyCreate,
+		UpdateContext: resourceAciMonitoringPolicyUpdate,
+		ReadContext:   resourceAciMonitoringPolicyRead,
+		DeleteContext: resourceAciMonitoringPolicyDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciMonitoringPolicyImport,
@@ -58,7 +60,7 @@ func getRemoteMonitoringPolicy(client *client.Client, dn string) (*models.Monito
 	return monEPGPol, nil
 }
 
-func setMonitoringPolicyAttributes(monEPGPol *models.MonitoringPolicy, d *schema.ResourceData) *schema.ResourceData {
+func setMonitoringPolicyAttributes(monEPGPol *models.MonitoringPolicy, d *schema.ResourceData) (*schema.ResourceData, error) {
 	dn := d.Id()
 	d.SetId(monEPGPol.DistinguishedName)
 	d.Set("description", monEPGPol.Description)
@@ -66,13 +68,15 @@ func setMonitoringPolicyAttributes(monEPGPol *models.MonitoringPolicy, d *schema
 	if dn != monEPGPol.DistinguishedName {
 		d.Set("tenant_dn", "")
 	}
-	monEPGPolMap, _ := monEPGPol.ToMap()
-
+	monEPGPolMap, err := monEPGPol.ToMap()
+	if err != nil {
+		return d, err
+	}
 	d.Set("name", monEPGPolMap["name"])
 
 	d.Set("annotation", monEPGPolMap["annotation"])
 	d.Set("name_alias", monEPGPolMap["nameAlias"])
-	return d
+	return d, nil
 }
 
 func resourceAciMonitoringPolicyImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -86,18 +90,23 @@ func resourceAciMonitoringPolicyImport(d *schema.ResourceData, m interface{}) ([
 	if err != nil {
 		return nil, err
 	}
-	monEPGPolMap, _ := monEPGPol.ToMap()
+	monEPGPolMap, err := monEPGPol.ToMap()
+	if err != nil {
+		return nil, err
+	}
 	name := monEPGPolMap["name"]
 	pDN := GetParentDn(dn, fmt.Sprintf("/monepg-%s", name))
 	d.Set("tenant_dn", pDN)
-	schemaFilled := setMonitoringPolicyAttributes(monEPGPol, d)
-
+	schemaFilled, err := setMonitoringPolicyAttributes(monEPGPol, d)
+	if err != nil {
+		return nil, err
+	}
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciMonitoringPolicyCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciMonitoringPolicyCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] MonitoringPolicy: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -119,19 +128,16 @@ func resourceAciMonitoringPolicyCreate(d *schema.ResourceData, m interface{}) er
 
 	err := aciClient.Save(monEPGPol)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.Partial(false)
 
 	d.SetId(monEPGPol.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciMonitoringPolicyRead(d, m)
+	return resourceAciMonitoringPolicyRead(ctx, d, m)
 }
 
-func resourceAciMonitoringPolicyUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciMonitoringPolicyUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] MonitoringPolicy: Beginning Update")
 
 	aciClient := m.(*client.Client)
@@ -157,20 +163,17 @@ func resourceAciMonitoringPolicyUpdate(d *schema.ResourceData, m interface{}) er
 	err := aciClient.Save(monEPGPol)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.Partial(false)
 
 	d.SetId(monEPGPol.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciMonitoringPolicyRead(d, m)
+	return resourceAciMonitoringPolicyRead(ctx, d, m)
 
 }
 
-func resourceAciMonitoringPolicyRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciMonitoringPolicyRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -182,25 +185,29 @@ func resourceAciMonitoringPolicyRead(d *schema.ResourceData, m interface{}) erro
 		d.SetId("")
 		return nil
 	}
-	setMonitoringPolicyAttributes(monEPGPol, d)
+	_, err = setMonitoringPolicyAttributes(monEPGPol, d)
 
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 
 	return nil
 }
 
-func resourceAciMonitoringPolicyDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciMonitoringPolicyDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "monEPGPol")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
 }

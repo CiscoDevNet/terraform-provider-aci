@@ -54,7 +54,7 @@ type VMMDomainAttributes struct {
 	PrefEncapMode string `json:",omitempty"`
 }
 
-func NewVMMDomain(vmmDomPRn, parentDn, description string, vmmDomPattr VMMDomainAttributes) *VMMDomain {
+func NewVMMDomain(vmmDomPRn, parentDn string, vmmDomPattr VMMDomainAttributes) *VMMDomain {
 	dn := fmt.Sprintf("%s/%s", parentDn, vmmDomPRn)
 	return &VMMDomain{
 		BaseAttributes: BaseAttributes{

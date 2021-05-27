@@ -26,11 +26,6 @@ func TestAccAciLeafInterfaceProfile_Basic(t *testing.T) {
 					testAccCheckAciLeafInterfaceProfileAttributes(description, "alias_leaf", &leaf_interface_profile),
 				),
 			},
-			{
-				ResourceName:      "aci_leaf_interface_profile",
-				ImportState:       true,
-				ImportStateVerify: true,
-			},
 		},
 	})
 }

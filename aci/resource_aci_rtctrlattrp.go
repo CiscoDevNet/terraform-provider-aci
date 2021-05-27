@@ -1,20 +1,22 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func resourceAciActionRuleProfile() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciActionRuleProfileCreate,
-		Update: resourceAciActionRuleProfileUpdate,
-		Read:   resourceAciActionRuleProfileRead,
-		Delete: resourceAciActionRuleProfileDelete,
+		CreateContext: resourceAciActionRuleProfileCreate,
+		UpdateContext: resourceAciActionRuleProfileUpdate,
+		ReadContext:   resourceAciActionRuleProfileRead,
+		DeleteContext: resourceAciActionRuleProfileDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciActionRuleProfileImport,
@@ -58,7 +60,7 @@ func getRemoteActionRuleProfile(client *client.Client, dn string) (*models.Actio
 	return rtctrlAttrP, nil
 }
 
-func setActionRuleProfileAttributes(rtctrlAttrP *models.ActionRuleProfile, d *schema.ResourceData) *schema.ResourceData {
+func setActionRuleProfileAttributes(rtctrlAttrP *models.ActionRuleProfile, d *schema.ResourceData) (*schema.ResourceData, error) {
 	dn := d.Id()
 	d.SetId(rtctrlAttrP.DistinguishedName)
 	d.Set("description", rtctrlAttrP.Description)
@@ -66,13 +68,15 @@ func setActionRuleProfileAttributes(rtctrlAttrP *models.ActionRuleProfile, d *sc
 	if dn != rtctrlAttrP.DistinguishedName {
 		d.Set("tenant_dn", "")
 	}
-	rtctrlAttrPMap, _ := rtctrlAttrP.ToMap()
-
+	rtctrlAttrPMap, err := rtctrlAttrP.ToMap()
+	if err != nil {
+		return d, err
+	}
 	d.Set("name", rtctrlAttrPMap["name"])
 
 	d.Set("annotation", rtctrlAttrPMap["annotation"])
 	d.Set("name_alias", rtctrlAttrPMap["nameAlias"])
-	return d
+	return d, nil
 }
 
 func resourceAciActionRuleProfileImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -86,18 +90,23 @@ func resourceAciActionRuleProfileImport(d *schema.ResourceData, m interface{}) (
 	if err != nil {
 		return nil, err
 	}
-	rtctrlAttrPMap, _ := rtctrlAttrP.ToMap()
+	rtctrlAttrPMap, err := rtctrlAttrP.ToMap()
+	if err != nil {
+		return nil, err
+	}
 	name := rtctrlAttrPMap["name"]
 	pDN := GetParentDn(dn, fmt.Sprintf("/attr-%s", name))
 	d.Set("tenant_dn", pDN)
-	schemaFilled := setActionRuleProfileAttributes(rtctrlAttrP, d)
-
+	schemaFilled, err := setActionRuleProfileAttributes(rtctrlAttrP, d)
+	if err != nil {
+		return nil, err
+	}
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciActionRuleProfileCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciActionRuleProfileCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] ActionRuleProfile: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -119,19 +128,16 @@ func resourceAciActionRuleProfileCreate(d *schema.ResourceData, m interface{}) e
 
 	err := aciClient.Save(rtctrlAttrP)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.Partial(false)
 
 	d.SetId(rtctrlAttrP.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciActionRuleProfileRead(d, m)
+	return resourceAciActionRuleProfileRead(ctx, d, m)
 }
 
-func resourceAciActionRuleProfileUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciActionRuleProfileUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] ActionRuleProfile: Beginning Update")
 
 	aciClient := m.(*client.Client)
@@ -157,20 +163,17 @@ func resourceAciActionRuleProfileUpdate(d *schema.ResourceData, m interface{}) e
 	err := aciClient.Save(rtctrlAttrP)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.Partial(false)
 
 	d.SetId(rtctrlAttrP.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciActionRuleProfileRead(d, m)
+	return resourceAciActionRuleProfileRead(ctx, d, m)
 
 }
 
-func resourceAciActionRuleProfileRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciActionRuleProfileRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -182,25 +185,28 @@ func resourceAciActionRuleProfileRead(d *schema.ResourceData, m interface{}) err
 		d.SetId("")
 		return nil
 	}
-	setActionRuleProfileAttributes(rtctrlAttrP, d)
-
+	_, err = setActionRuleProfileAttributes(rtctrlAttrP, d)
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 
 	return nil
 }
 
-func resourceAciActionRuleProfileDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciActionRuleProfileDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "rtctrlAttrP")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
 }
