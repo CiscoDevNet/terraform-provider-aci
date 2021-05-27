@@ -58,8 +58,9 @@ func (sm *ServiceManager) CreateRelationinfraRsSpineAccNodePGrpFromSwitchAssocia
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tDn": "%s","annotation":"orchestrator:terraform"
-								
+				"dn": "%s",
+				"tDn": "%s",
+				"annotation":"orchestrator:terraform"
 			}
 		}
 	}`, "infraRsSpineAccNodePGrp", dn, tDn))
@@ -96,7 +97,7 @@ func (sm *ServiceManager) ReadRelationinfraRsSpineAccNodePGrpFromSwitchAssociati
 	contList := models.ListFromContainer(cont, "infraRsSpineAccNodePGrp")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnInfraSpineAccNodePGrpName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err

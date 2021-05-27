@@ -59,7 +59,7 @@ func setTriggerSchedulerAttributes(trigSchedP *models.TriggerScheduler, d *schem
 	d.SetId(trigSchedP.DistinguishedName)
 	d.Set("description", trigSchedP.Description)
 	trigSchedPMap, err := trigSchedP.ToMap()
-	
+
 	if err != nil {
 		return d, err
 	}

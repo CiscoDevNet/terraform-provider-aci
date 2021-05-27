@@ -51,7 +51,7 @@ func dataSourceAciAutonomousSystemProfileRead(ctx context.Context, d *schema.Res
 	if err != nil {
 		return diag.FromErr(err)
 	}
-	
+
 	return nil
 }
 
@@ -74,7 +74,7 @@ func setAutonomousSystemProfileAttributes(cloudBgpAsP *models.AutonomousSystemPr
 	d.SetId(cloudBgpAsP.DistinguishedName)
 	d.Set("description", cloudBgpAsP.Description)
 	cloudBgpAsPMap, err := cloudBgpAsP.ToMap()
-	
+
 	if err != nil {
 		return d, err
 	}

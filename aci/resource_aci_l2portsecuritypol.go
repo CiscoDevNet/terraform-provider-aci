@@ -39,12 +39,6 @@ func resourceAciPortSecurityPolicy() *schema.Resource {
 				Computed: true,
 			},
 
-			"mode": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
 			"name_alias": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -94,7 +88,6 @@ func setPortSecurityPolicyAttributes(l2PortSecurityPol *models.PortSecurityPolic
 
 	d.Set("annotation", l2PortSecurityPolMap["annotation"])
 	d.Set("maximum", l2PortSecurityPolMap["maximum"])
-	d.Set("mode", l2PortSecurityPolMap["mode"])
 	d.Set("name_alias", l2PortSecurityPolMap["nameAlias"])
 	d.Set("timeout", l2PortSecurityPolMap["timeout"])
 	d.Set("violation", l2PortSecurityPolMap["violation"])
@@ -137,9 +130,6 @@ func resourceAciPortSecurityPolicyCreate(ctx context.Context, d *schema.Resource
 	if Maximum, ok := d.GetOk("maximum"); ok {
 		l2PortSecurityPolAttr.Maximum = Maximum.(string)
 	}
-	if Mode, ok := d.GetOk("mode"); ok {
-		l2PortSecurityPolAttr.Mode = Mode.(string)
-	}
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		l2PortSecurityPolAttr.NameAlias = NameAlias.(string)
 	}
@@ -178,9 +168,6 @@ func resourceAciPortSecurityPolicyUpdate(ctx context.Context, d *schema.Resource
 	}
 	if Maximum, ok := d.GetOk("maximum"); ok {
 		l2PortSecurityPolAttr.Maximum = Maximum.(string)
-	}
-	if Mode, ok := d.GetOk("mode"); ok {
-		l2PortSecurityPolAttr.Mode = Mode.(string)
 	}
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		l2PortSecurityPolAttr.NameAlias = NameAlias.(string)

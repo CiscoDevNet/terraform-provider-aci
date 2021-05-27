@@ -71,7 +71,6 @@ func setAttachableAccessEntityProfileAttributes(infraAttEntityP *models.Attachab
 		return d, err
 	}
 
-
 	d.Set("name", infraAttEntityPMap["name"])
 
 	d.Set("annotation", infraAttEntityPMap["annotation"])
