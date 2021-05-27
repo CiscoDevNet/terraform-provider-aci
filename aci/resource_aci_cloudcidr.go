@@ -1,21 +1,23 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciCloudCIDRPool() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciCloudCIDRPoolCreate,
-		Update: resourceAciCloudCIDRPoolUpdate,
-		Read:   resourceAciCloudCIDRPoolRead,
-		Delete: resourceAciCloudCIDRPoolDelete,
+		CreateContext: resourceAciCloudCIDRPoolCreate,
+		UpdateContext: resourceAciCloudCIDRPoolUpdate,
+		ReadContext:   resourceAciCloudCIDRPoolRead,
+		DeleteContext: resourceAciCloudCIDRPoolDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciCloudCIDRPoolImport,
@@ -69,7 +71,7 @@ func getRemoteCloudCIDRPool(client *client.Client, dn string) (*models.CloudCIDR
 	return cloudCidr, nil
 }
 
-func setCloudCIDRPoolAttributes(cloudCidr *models.CloudCIDRPool, d *schema.ResourceData) *schema.ResourceData {
+func setCloudCIDRPoolAttributes(cloudCidr *models.CloudCIDRPool, d *schema.ResourceData) (*schema.ResourceData, error) {
 	dn := d.Id()
 	d.SetId(cloudCidr.DistinguishedName)
 	d.Set("description", cloudCidr.Description)
@@ -77,15 +79,15 @@ func setCloudCIDRPoolAttributes(cloudCidr *models.CloudCIDRPool, d *schema.Resou
 	if dn != cloudCidr.DistinguishedName {
 		d.Set("cloud_context_profile_dn", "")
 	}
-	cloudCidrMap, _ := cloudCidr.ToMap()
-
-	d.Set("addr", cloudCidrMap["addr"])
-
+	cloudCidrMap, err := cloudCidr.ToMap()
+	if err != nil {
+		return d, err
+	}
 	d.Set("addr", cloudCidrMap["addr"])
 	d.Set("annotation", cloudCidrMap["annotation"])
 	d.Set("name_alias", cloudCidrMap["nameAlias"])
 	d.Set("primary", cloudCidrMap["primary"])
-	return d
+	return d, nil
 }
 
 func resourceAciCloudCIDRPoolImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -99,19 +101,23 @@ func resourceAciCloudCIDRPoolImport(d *schema.ResourceData, m interface{}) ([]*s
 	if err != nil {
 		return nil, err
 	}
-	cloudCidrMap, _ := cloudCidr.ToMap()
-
+	cloudCidrMap, err := cloudCidr.ToMap()
+	if err != nil {
+		return nil, err
+	}
 	addr := cloudCidrMap["addr"]
 	pDN := GetParentDn(dn, fmt.Sprintf("/cidr-[%s]", addr))
 	d.Set("cloud_context_profile_dn", pDN)
-	schemaFilled := setCloudCIDRPoolAttributes(cloudCidr, d)
-
+	schemaFilled, err := setCloudCIDRPoolAttributes(cloudCidr, d)
+	if err != nil {
+		return nil, err
+	}
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciCloudCIDRPoolCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciCloudCIDRPoolCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] CloudCIDRPool: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -121,9 +127,9 @@ func resourceAciCloudCIDRPoolCreate(d *schema.ResourceData, m interface{}) error
 	CloudContextProfileDn := d.Get("cloud_context_profile_dn").(string)
 
 	cloudCidrAttr := models.CloudCIDRPoolAttributes{}
-	if Addr, ok := d.GetOk("addr"); ok {
-		cloudCidrAttr.Addr = Addr.(string)
-	}
+	// if Addr, ok := d.GetOk("addr"); ok {
+	// 	cloudCidrAttr.Addr = Addr.(string)
+	// }
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		cloudCidrAttr.Annotation = Annotation.(string)
 	} else {
@@ -139,19 +145,16 @@ func resourceAciCloudCIDRPoolCreate(d *schema.ResourceData, m interface{}) error
 
 	err := aciClient.Save(cloudCidr)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.Partial(false)
 
 	d.SetId(cloudCidr.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciCloudCIDRPoolRead(d, m)
+	return resourceAciCloudCIDRPoolRead(ctx, d, m)
 }
 
-func resourceAciCloudCIDRPoolUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciCloudCIDRPoolUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] CloudCIDRPool: Beginning Update")
 
 	aciClient := m.(*client.Client)
@@ -162,9 +165,9 @@ func resourceAciCloudCIDRPoolUpdate(d *schema.ResourceData, m interface{}) error
 	CloudContextProfileDn := d.Get("cloud_context_profile_dn").(string)
 
 	cloudCidrAttr := models.CloudCIDRPoolAttributes{}
-	if Addr, ok := d.GetOk("addr"); ok {
-		cloudCidrAttr.Addr = Addr.(string)
-	}
+	// if Addr, ok := d.GetOk("addr"); ok {
+	// 	cloudCidrAttr.Addr = Addr.(string)
+	// }
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		cloudCidrAttr.Annotation = Annotation.(string)
 	} else {
@@ -183,20 +186,17 @@ func resourceAciCloudCIDRPoolUpdate(d *schema.ResourceData, m interface{}) error
 	err := aciClient.Save(cloudCidr)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.Partial(false)
 
 	d.SetId(cloudCidr.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciCloudCIDRPoolRead(d, m)
+	return resourceAciCloudCIDRPoolRead(ctx, d, m)
 
 }
 
-func resourceAciCloudCIDRPoolRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciCloudCIDRPoolRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -208,25 +208,29 @@ func resourceAciCloudCIDRPoolRead(d *schema.ResourceData, m interface{}) error {
 		d.SetId("")
 		return nil
 	}
-	setCloudCIDRPoolAttributes(cloudCidr, d)
+	_, err = setCloudCIDRPoolAttributes(cloudCidr, d)
 
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 
 	return nil
 }
 
-func resourceAciCloudCIDRPoolDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciCloudCIDRPoolDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "cloudCidr")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
 }

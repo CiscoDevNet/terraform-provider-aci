@@ -26,11 +26,6 @@ func TestAccAciTabooContract_Basic(t *testing.T) {
 					testAccCheckAciTabooContractAttributes(description, &taboo_contract),
 				),
 			},
-			{
-				ResourceName:      "aci_taboo_contract",
-				ImportState:       true,
-				ImportStateVerify: true,
-			},
 		},
 	})
 }
@@ -64,12 +59,16 @@ func TestAccAciTabooContract_update(t *testing.T) {
 
 func testAccCheckAciTabooContractConfig_basic(description string) string {
 	return fmt.Sprintf(`
+	resource "aci_tenant" "example"{
+		description = "Tenant created while acceptance testing"
+		name        = "demo_tenant"
+	}
 
 	resource "aci_taboo_contract" "footaboo_contract" {
-		  tenant_dn  = "${aci_tenant.example.id}"
-		description = "%s"
+		  tenant_dn  = aci_tenant.example.id
+		  description = "%s"
 		
-		name  = "example"
+		  name        = "example"
 		  annotation  = "example"
 		  name_alias  = "example"
 		}

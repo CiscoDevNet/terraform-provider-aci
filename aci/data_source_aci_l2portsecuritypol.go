@@ -1,16 +1,18 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func dataSourceAciPortSecurityPolicy() *schema.Resource {
 	return &schema.Resource{
 
-		Read: dataSourceAciPortSecurityPolicyRead,
+		ReadContext: dataSourceAciPortSecurityPolicyRead,
 
 		SchemaVersion: 1,
 
@@ -22,12 +24,6 @@ func dataSourceAciPortSecurityPolicy() *schema.Resource {
 			},
 
 			"maximum": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
-			"mode": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
@@ -54,7 +50,7 @@ func dataSourceAciPortSecurityPolicy() *schema.Resource {
 	}
 }
 
-func dataSourceAciPortSecurityPolicyRead(d *schema.ResourceData, m interface{}) error {
+func dataSourceAciPortSecurityPolicyRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	aciClient := m.(*client.Client)
 
 	name := d.Get("name").(string)
@@ -66,8 +62,11 @@ func dataSourceAciPortSecurityPolicyRead(d *schema.ResourceData, m interface{}) 
 	l2PortSecurityPol, err := getRemotePortSecurityPolicy(aciClient, dn)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	setPortSecurityPolicyAttributes(l2PortSecurityPol, d)
+	_, err = setPortSecurityPolicyAttributes(l2PortSecurityPol, d)
+	if err != nil {
+		return diag.FromErr(err)
+	}
 	return nil
 }

@@ -13,7 +13,6 @@ Manages ACI Cloud Provider Profile
 
 ```hcl
 	resource "aci_cloud_provider_profile" "foocloud_provider_profile" {
-		description = "cloud provider profile"
 		vendor      = "aws"
 		annotation  = "tag_aws_prof"
 	}

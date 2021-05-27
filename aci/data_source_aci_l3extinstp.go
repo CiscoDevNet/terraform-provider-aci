@@ -88,6 +88,9 @@ func dataSourceAciExternalNetworkInstanceProfileRead(ctx context.Context, d *sch
 		return diag.FromErr(err)
 	}
 	d.SetId(dn)
-	setExternalNetworkInstanceProfileAttributes(l3extInstP, d)
+	_, err = setExternalNetworkInstanceProfileAttributes(l3extInstP, d)
+	if err != nil {
+		return diag.FromErr(err)
+	}
 	return nil
 }

@@ -26,11 +26,6 @@ func TestAccAciExternalNetworkInstanceProfile_Basic(t *testing.T) {
 					testAccCheckAciExternalNetworkInstanceProfileAttributes(description, "AtleastOne", &external_network_instance_profile),
 				),
 			},
-			{
-				ResourceName:      "aci_external_network_instance_profile",
-				ImportState:       true,
-				ImportStateVerify: true,
-			},
 		},
 	})
 }
@@ -65,6 +60,16 @@ func TestAccAciExternalNetworkInstanceProfile_update(t *testing.T) {
 func testAccCheckAciExternalNetworkInstanceProfileConfig_basic(description, match_t string) string {
 	return fmt.Sprintf(`
 
+	resource "aci_tenant" "example" {
+		name       = "test_acc_tenant"
+	}
+
+	resource "aci_l3_outside" "example" {
+		tenant_dn      = aci_tenant.example.id
+		name           = "demo_l3out"
+		target_dscp = "CS0"
+	}
+
 	resource "aci_external_network_instance_profile" "fooexternal_network_instance_profile" {
 		l3_outside_dn  = "${aci_l3_outside.example.id}"
 		description    = "%s"
@@ -76,7 +81,7 @@ func testAccCheckAciExternalNetworkInstanceProfileConfig_basic(description, matc
 		name_alias     = "alias_profile"
 		pref_gr_memb   = "exclude"
 		prio           = "level1"
-		target_dscp    = "exclude"
+		target_dscp    = "unspecified"
 	}
 	  
 	`, description, match_t)
@@ -169,7 +174,7 @@ func testAccCheckAciExternalNetworkInstanceProfileAttributes(description, match_
 			return fmt.Errorf("Bad external_network_instance_profile prio %s", external_network_instance_profile.Prio)
 		}
 
-		if "exclude" != external_network_instance_profile.TargetDscp {
+		if "unspecified" != external_network_instance_profile.TargetDscp {
 			return fmt.Errorf("Bad external_network_instance_profile target_dscp %s", external_network_instance_profile.TargetDscp)
 		}
 

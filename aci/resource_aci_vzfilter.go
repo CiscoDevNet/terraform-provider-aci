@@ -76,7 +76,7 @@ func getRemoteFilter(client *client.Client, dn string) (*models.Filter, error) {
 	return vzFilter, nil
 }
 
-func setFilterAttributes(vzFilter *models.Filter, d *schema.ResourceData) *schema.ResourceData {
+func setFilterAttributes(vzFilter *models.Filter, d *schema.ResourceData) (*schema.ResourceData, error) {
 	dn := d.Id()
 	d.SetId(vzFilter.DistinguishedName)
 	d.Set("description", vzFilter.Description)
@@ -84,13 +84,15 @@ func setFilterAttributes(vzFilter *models.Filter, d *schema.ResourceData) *schem
 	if dn != vzFilter.DistinguishedName {
 		d.Set("tenant_dn", "")
 	}
-	vzFilterMap, _ := vzFilter.ToMap()
-
+	vzFilterMap, err := vzFilter.ToMap()
+	if err != nil {
+		return d, err
+	}
 	d.Set("name", vzFilterMap["name"])
 
 	d.Set("annotation", vzFilterMap["annotation"])
 	d.Set("name_alias", vzFilterMap["nameAlias"])
-	return d
+	return d, nil
 }
 
 func resourceAciFilterImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -104,12 +106,17 @@ func resourceAciFilterImport(d *schema.ResourceData, m interface{}) ([]*schema.R
 	if err != nil {
 		return nil, err
 	}
-	vzFilterMap, _ := vzFilter.ToMap()
+	vzFilterMap, err := vzFilter.ToMap()
+	if err != nil {
+		return nil, err
+	}
 	name := vzFilterMap["name"]
 	pDN := GetParentDn(dn, fmt.Sprintf("/flt-%s", name))
 	d.Set("tenant_dn", pDN)
-	schemaFilled := setFilterAttributes(vzFilter, d)
-
+	schemaFilled, err := setFilterAttributes(vzFilter, d)
+	if err != nil {
+		return nil, err
+	}
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
@@ -294,8 +301,11 @@ func resourceAciFilterRead(ctx context.Context, d *schema.ResourceData, m interf
 		d.SetId("")
 		return nil
 	}
-	setFilterAttributes(vzFilter, d)
-
+	_, err = setFilterAttributes(vzFilter, d)
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 	vzRsFiltGraphAttData, err := aciClient.ReadRelationvzRsFiltGraphAttFromFilter(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation vzRsFiltGraphAtt %v", err)

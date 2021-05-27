@@ -192,7 +192,7 @@ func getRemoteVRF(client *client.Client, dn string) (*models.VRF, error) {
 	return fvCtx, nil
 }
 
-func setVRFAttributes(fvCtx *models.VRF, d *schema.ResourceData) *schema.ResourceData {
+func setVRFAttributes(fvCtx *models.VRF, d *schema.ResourceData) (*schema.ResourceData, error) {
 	dn := d.Id()
 	d.SetId(fvCtx.DistinguishedName)
 	d.Set("description", fvCtx.Description)
@@ -200,8 +200,10 @@ func setVRFAttributes(fvCtx *models.VRF, d *schema.ResourceData) *schema.Resourc
 	if dn != fvCtx.DistinguishedName {
 		d.Set("tenant_dn", "")
 	}
-	fvCtxMap, _ := fvCtx.ToMap()
-
+	fvCtxMap, err := fvCtx.ToMap()
+	if err != nil {
+		return d, err
+	}
 	d.Set("name", fvCtxMap["name"])
 
 	d.Set("annotation", fvCtxMap["annotation"])
@@ -211,7 +213,7 @@ func setVRFAttributes(fvCtx *models.VRF, d *schema.ResourceData) *schema.Resourc
 	d.Set("name_alias", fvCtxMap["nameAlias"])
 	d.Set("pc_enf_dir", fvCtxMap["pcEnfDir"])
 	d.Set("pc_enf_pref", fvCtxMap["pcEnfPref"])
-	return d
+	return d, nil
 }
 
 func resourceAciVRFImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -221,17 +223,20 @@ func resourceAciVRFImport(d *schema.ResourceData, m interface{}) ([]*schema.Reso
 	dn := d.Id()
 
 	fvCtx, err := getRemoteVRF(aciClient, dn)
-
 	if err != nil {
 		return nil, err
 	}
-	fvCtxMap, _ := fvCtx.ToMap()
-
+	fvCtxMap, err := fvCtx.ToMap()
+	if err != nil {
+		return nil, err
+	}
 	name := fvCtxMap["name"]
 	pDN := GetParentDn(dn, fmt.Sprintf("/ctx-%s", name))
 	d.Set("tenant_dn", pDN)
-	schemaFilled := setVRFAttributes(fvCtx, d)
-
+	schemaFilled, err := setVRFAttributes(fvCtx, d)
+	if err != nil {
+		return nil, err
+	}
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
@@ -687,7 +692,11 @@ func resourceAciVRFRead(ctx context.Context, d *schema.ResourceData, m interface
 		d.SetId("")
 		return nil
 	}
-	setVRFAttributes(fvCtx, d)
+	_, err = setVRFAttributes(fvCtx, d)
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 
 	fvRsOspfCtxPolData, err := aciClient.ReadRelationfvRsOspfCtxPolFromVRF(dn)
 	if err != nil {

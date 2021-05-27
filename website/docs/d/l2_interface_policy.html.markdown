@@ -6,26 +6,28 @@ description: |-
   Data source for ACI L2 Interface Policy
 ---
 
-# aci_l2_interface_policy #
+# aci_l2_interface_policy
+
 Data source for ACI L2 Interface Policy
 
-## Example Usage ##
+## Example Usage
 
 ```hcl
 data "aci_l2_interface_policy" "dev_l2_int_pol" {
   name  = "foo_l2_int_pol"
 }
 ```
-## Argument Reference ##
-* `name` - (Required) name of Object l2_interface_policy.
 
+## Argument Reference
 
+- `name` - (Required) Name of Object L2 interface policy.
 
-## Attribute Reference ##
+## Attribute Reference
 
-* `id` - Attribute id set to the Dn of the L2 Interface Policy.
-* `annotation` - (Optional) annotation for object l2_interface_policy.
-* `name_alias` - (Optional) name_alias for object l2_interface_policy.
-* `qinq` - (Optional) Determines if QinQ is disabled or if the port should be considered a core or edge port.
-* `vepa` - (Optional) Determines if Virtual Ethernet Port Aggregator is disabled or enabled.
-* `vlan_scope` - (Optional) The scope of the VLAN.
+- `id` - Attribute id set to the Dn of the L2 Interface Policy.
+- `annotation` - (Optional) Annotation for object L2 interface policy.
+- `description` - (Optional) Description for object L2 interface policy.
+- `name_alias` - (Optional) Name alias for object L2 interface policy.
+- `qinq` - (Optional) Determines if QinQ is disabled or if the port should be considered a core or edge port.
+- `vepa` - (Optional) Determines if Virtual Ethernet Port Aggregator is disabled or enabled.
+- `vlan_scope` - (Optional) The scope of the VLAN.

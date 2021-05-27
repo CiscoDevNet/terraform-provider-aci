@@ -26,11 +26,6 @@ func TestAccAciCloudEndpointSelector_Basic(t *testing.T) {
 					testAccCheckAciCloudEndpointSelectorAttributes(description, "custom:Name=='admin-ep2'", &cloud_endpoint_selector),
 				),
 			},
-			{
-				ResourceName:      "aci_cloud_endpoint_selector",
-				ImportState:       true,
-				ImportStateVerify: true,
-			},
 		},
 	})
 }
