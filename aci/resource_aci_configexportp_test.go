@@ -26,11 +26,6 @@ func TestAccAciConfigurationExportPolicy_Basic(t *testing.T) {
 					testAccCheckAciConfigurationExportPolicyAttributes(description, &configuration_export_policy),
 				),
 			},
-			{
-				ResourceName:      "aci_configuration_export_policy",
-				ImportState:       true,
-				ImportStateVerify: true,
-			},
 		},
 	})
 }

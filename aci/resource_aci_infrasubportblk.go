@@ -96,7 +96,7 @@ func getRemoteAccessSubPortBlock(client *client.Client, dn string) (*models.Acce
 	return infraSubPortBlk, nil
 }
 
-func setAccessSubPortBlockAttributes(infraSubPortBlk *models.AccessSubPortBlock, d *schema.ResourceData) *schema.ResourceData {
+func setAccessSubPortBlockAttributes(infraSubPortBlk *models.AccessSubPortBlock, d *schema.ResourceData) (*schema.ResourceData, error) {
 	dn := d.Id()
 	d.SetId(infraSubPortBlk.DistinguishedName)
 	d.Set("description", infraSubPortBlk.Description)
@@ -116,7 +116,7 @@ func setAccessSubPortBlockAttributes(infraSubPortBlk *models.AccessSubPortBlock,
 	d.Set("to_card", infraSubPortBlkMap["toCard"])
 	d.Set("to_port", infraSubPortBlkMap["toPort"])
 	d.Set("to_sub_port", infraSubPortBlkMap["toSubPort"])
-	return d
+	return d, nil
 }
 
 func resourceAciAccessSubPortBlockImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -134,8 +134,11 @@ func resourceAciAccessSubPortBlockImport(d *schema.ResourceData, m interface{}) 
 	name := infraSubPortBlkMap["name"]
 	pDN := GetParentDn(dn, fmt.Sprintf("/subportblk-%s", name))
 	d.Set("access_port_selector_dn", pDN)
-	schemaFilled := setAccessSubPortBlockAttributes(infraSubPortBlk, d)
+	schemaFilled, err := setAccessSubPortBlockAttributes(infraSubPortBlk, d)
 
+	if err != nil {
+		return nil, err
+	}
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
@@ -256,8 +259,11 @@ func resourceAciAccessSubPortBlockRead(ctx context.Context, d *schema.ResourceDa
 		d.SetId("")
 		return nil
 	}
-	setAccessSubPortBlockAttributes(infraSubPortBlk, d)
-
+	_, err = setAccessSubPortBlockAttributes(infraSubPortBlk, d)
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 
 	return nil

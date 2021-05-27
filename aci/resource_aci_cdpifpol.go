@@ -66,17 +66,19 @@ func getRemoteCDPInterfacePolicy(client *client.Client, dn string) (*models.CDPI
 	return cdpIfPol, nil
 }
 
-func setCDPInterfacePolicyAttributes(cdpIfPol *models.CDPInterfacePolicy, d *schema.ResourceData) *schema.ResourceData {
+func setCDPInterfacePolicyAttributes(cdpIfPol *models.CDPInterfacePolicy, d *schema.ResourceData) (*schema.ResourceData, error) {
 	d.SetId(cdpIfPol.DistinguishedName)
 	d.Set("description", cdpIfPol.Description)
-	cdpIfPolMap, _ := cdpIfPol.ToMap()
-
+	cdpIfPolMap, err := cdpIfPol.ToMap()
+	if err != nil {
+		return d, err
+	}
 	d.Set("name", cdpIfPolMap["name"])
 
 	d.Set("admin_st", cdpIfPolMap["adminSt"])
 	d.Set("annotation", cdpIfPolMap["annotation"])
 	d.Set("name_alias", cdpIfPolMap["nameAlias"])
-	return d
+	return d, nil
 }
 
 func resourceAciCDPInterfacePolicyImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -90,8 +92,11 @@ func resourceAciCDPInterfacePolicyImport(d *schema.ResourceData, m interface{}) 
 	if err != nil {
 		return nil, err
 	}
-	schemaFilled := setCDPInterfacePolicyAttributes(cdpIfPol, d)
+	schemaFilled, err := setCDPInterfacePolicyAttributes(cdpIfPol, d)
 
+	if err != nil {
+		return nil, err
+	}
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
@@ -177,8 +182,11 @@ func resourceAciCDPInterfacePolicyRead(ctx context.Context, d *schema.ResourceDa
 		d.SetId("")
 		return nil
 	}
-	setCDPInterfacePolicyAttributes(cdpIfPol, d)
-
+	_, err = setCDPInterfacePolicyAttributes(cdpIfPol, d)
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 
 	return nil

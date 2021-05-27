@@ -129,11 +129,13 @@ func getRemoteConfigurationExportPolicy(client *client.Client, dn string) (*mode
 	return configExportP, nil
 }
 
-func setConfigurationExportPolicyAttributes(configExportP *models.ConfigurationExportPolicy, d *schema.ResourceData) *schema.ResourceData {
+func setConfigurationExportPolicyAttributes(configExportP *models.ConfigurationExportPolicy, d *schema.ResourceData) (*schema.ResourceData, error) {
 	d.SetId(configExportP.DistinguishedName)
 	d.Set("description", configExportP.Description)
-	configExportPMap, _ := configExportP.ToMap()
-
+	configExportPMap, err := configExportP.ToMap()
+	if err != nil {
+		return d, err
+	}
 	d.Set("name", configExportPMap["name"])
 
 	d.Set("admin_st", configExportPMap["adminSt"])
@@ -144,7 +146,7 @@ func setConfigurationExportPolicyAttributes(configExportP *models.ConfigurationE
 	d.Set("name_alias", configExportPMap["nameAlias"])
 	d.Set("snapshot", configExportPMap["snapshot"])
 	d.Set("target_dn", configExportPMap["targetDn"])
-	return d
+	return d, nil
 }
 
 func resourceAciConfigurationExportPolicyImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -158,8 +160,10 @@ func resourceAciConfigurationExportPolicyImport(d *schema.ResourceData, m interf
 	if err != nil {
 		return nil, err
 	}
-	schemaFilled := setConfigurationExportPolicyAttributes(configExportP, d)
-
+	schemaFilled, err := setConfigurationExportPolicyAttributes(configExportP, d)
+	if err != nil {
+		return nil, err
+	}
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
@@ -415,8 +419,11 @@ func resourceAciConfigurationExportPolicyRead(ctx context.Context, d *schema.Res
 		d.SetId("")
 		return nil
 	}
-	setConfigurationExportPolicyAttributes(configExportP, d)
-
+	_, err = setConfigurationExportPolicyAttributes(configExportP, d)
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 	configRsExportDestinationData, err := aciClient.ReadRelationconfigRsExportDestinationFromConfigurationExportPolicy(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation configRsExportDestination %v", err)
