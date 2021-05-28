@@ -1,3 +1,17 @@
+terraform {
+  required_providers {
+    aci = {
+      source = "ciscodevnet/aci"
+    }
+  }
+}
+
+provider "aci" {
+  username = ""
+  password = ""
+  url      = ""
+  insecure = true
+}
 resource "aci_leaf_profile" "tf_leaf_prof" {
   name        = "tf_leaf_prof"
   description = "From Terraform"
