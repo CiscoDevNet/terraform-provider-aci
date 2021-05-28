@@ -14,35 +14,36 @@ Manages ACI Configuration Export Policy
 
 ```hcl
 resource "aci_configuration_export_policy" "example" {
-  name  = "example"
-  admin_st  = "example"
-  description = "from terraform"
-  annotation  = "example"
-  format  = "example"
-  include_secure_fields  = "example"
-  max_snapshot_count  = "example"
-  name_alias  = "example"
-  snapshot  = "example"
-  target_dn  = "example"
+  name                  = "example"
+  description           = "from terraform"
+  admin_st              = "untriggered"
+  annotation            = "example"
+  format                = "json"
+  include_secure_fields = "yes"
+  max_snapshot_count    = "10"
+  name_alias            = "example"
+  snapshot              = "yes"
+  target_dn             = "uni/tn-test"
 }
 ```
 
 ## Argument Reference
 
-- `name` - (Required) name of Object configuration_export_policy.
-- `admin_st` - (Optional) admin state of the export policy
-  Allowed values: "untriggered", "triggered"
-- `annotation` - (Optional) annotation for object configuration_export_policy.
-- `description` - (Optional) Description for object configuration_export_policy.
-- `format` - (Optional) export data format
-  Allowed values: "xml", "json"
-- `include_secure_fields` - (Optional) include_secure_fields for object configuration_export_policy.
-  Allowed values: "no", "yes"
-- `max_snapshot_count` - (Optional) max_snapshot_count for object configuration_export_policy.
-- `name_alias` - (Optional) name_alias for object configuration_export_policy.
-- `snapshot` - (Optional) snapshot for object configuration_export_policy.
-  Allowed values: "no", "yes"
-- `target_dn` - (Optional) target export object
+- `name` - (Required) Name of Object configuration export policy.
+- `admin_st` - (Optional) Admin state of the export policy
+  Allowed values: "untriggered(0)", "triggered(1)". Default value is untriggered.
+- `annotation` - (Optional) Annotation for object configuration export policy.
+- `description` - (Optional) Description for object configuration export policy.
+- `format` - (Optional) Export data format.
+  Allowed values: "xml", "json". Default value is json.
+- `include_secure_fields` - (Optional) Include_secure_fields for object configuration export policy.
+  Allowed values: "no", "yes".Default value is yes.
+- `max_snapshot_count` - (Optional) Max snapshot count for object configuration export policy.
+Allowed Values are betwwen 1 to 10.Default value is global-limit.
+- `name_alias` - (Optional) Name alias for object configuration export policy.
+- `snapshot` - (Optional) Snapshot for object configuration export policy.
+  Allowed values: "no", "yes"Default value is no.
+- `target_dn` - (Optional) Target export object. The distinguished name of the object to be exported.
 
 - `relation_config_rs_export_destination` - (Optional) Relation to class fileRemotePath. Cardinality - ONE_TO_ONE. Type - String.
 - `relation_trig_rs_triggerable` - (Optional) Relation to class trigTriggerable. Cardinality - ONE_TO_ONE. Type - String.

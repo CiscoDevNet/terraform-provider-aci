@@ -61,17 +61,16 @@ func testAccCheckAciConfigurationExportPolicyConfig_basic(description string) st
 	return fmt.Sprintf(`
 
 	resource "aci_configuration_export_policy" "fooconfiguration_export_policy" {
-		description = "%s"
-		
-		name  = "example"
-		  admin_st  = "untriggered"
-		  annotation  = "example"
-		  format  = "json"
-		  include_secure_fields  = "no"
-		  max_snapshot_count  = "example"
-		  name_alias  = "example"
-		  snapshot  = "yes"
-		  target_dn  = "example"
+		name                  = "example"
+		description           = "%s"
+		admin_st              = "untriggered"
+		annotation            = "example"
+		format                = "json"
+		include_secure_fields = "yes"
+		max_snapshot_count    = "10"
+		name_alias            = "example"
+		snapshot              = "yes"
+		target_dn             = "uni/tn-crest_test_kishan_tenant"
 		}
 	`, description)
 }
