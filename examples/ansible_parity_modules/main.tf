@@ -137,7 +137,7 @@ resource "aci_cdp_interface_policy" "foocdp_interface_policy" {
 }
 
 resource "aci_leaf_interface_profile" "test_leaf_profile" {
-    name = "tf_leaf"
+    name = "demo_leaf_profile"
 }
 
 resource "aci_access_port_selector" "test_selector" {
