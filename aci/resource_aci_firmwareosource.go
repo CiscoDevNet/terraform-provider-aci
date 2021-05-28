@@ -1,21 +1,23 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciFirmwareDownloadTask() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciFirmwareDownloadTaskCreate,
-		Update: resourceAciFirmwareDownloadTaskUpdate,
-		Read:   resourceAciFirmwareDownloadTaskRead,
-		Delete: resourceAciFirmwareDownloadTaskDelete,
+		CreateContext: resourceAciFirmwareDownloadTaskCreate,
+		UpdateContext: resourceAciFirmwareDownloadTaskUpdate,
+		ReadContext:   resourceAciFirmwareDownloadTaskRead,
+		DeleteContext: resourceAciFirmwareDownloadTaskDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciFirmwareDownloadTaskImport,
@@ -144,10 +146,13 @@ func getRemoteFirmwareDownloadTask(client *client.Client, dn string) (*models.Fi
 	return firmwareOSource, nil
 }
 
-func setFirmwareDownloadTaskAttributes(firmwareOSource *models.FirmwareDownloadTask, d *schema.ResourceData) *schema.ResourceData {
+func setFirmwareDownloadTaskAttributes(firmwareOSource *models.FirmwareDownloadTask, d *schema.ResourceData) (*schema.ResourceData, error) {
 	d.SetId(firmwareOSource.DistinguishedName)
 	d.Set("description", firmwareOSource.Description)
-	firmwareOSourceMap, _ := firmwareOSource.ToMap()
+	firmwareOSourceMap, err := firmwareOSource.ToMap()
+	if err != nil {
+		return d, err
+	}
 
 	d.Set("name", firmwareOSourceMap["name"])
 
@@ -165,7 +170,7 @@ func setFirmwareDownloadTaskAttributes(firmwareOSource *models.FirmwareDownloadT
 	d.Set("proto", firmwareOSourceMap["proto"])
 	d.Set("url", firmwareOSourceMap["url"])
 	d.Set("user", firmwareOSourceMap["user"])
-	return d
+	return d, nil
 }
 
 func resourceAciFirmwareDownloadTaskImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -179,14 +184,17 @@ func resourceAciFirmwareDownloadTaskImport(d *schema.ResourceData, m interface{}
 	if err != nil {
 		return nil, err
 	}
-	schemaFilled := setFirmwareDownloadTaskAttributes(firmwareOSource, d)
+	schemaFilled, err := setFirmwareDownloadTaskAttributes(firmwareOSource, d)
+	if err != nil {
+		return nil, err
+	}
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciFirmwareDownloadTaskCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciFirmwareDownloadTaskCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] FirmwareDownloadTask: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -242,19 +250,17 @@ func resourceAciFirmwareDownloadTaskCreate(d *schema.ResourceData, m interface{}
 
 	err := aciClient.Save(firmwareOSource)
 	if err != nil {
-		return err
-	}
-	d.Partial(true)
+		return diag.FromErr(err)
 
-	d.Partial(false)
+	}
 
 	d.SetId(firmwareOSource.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciFirmwareDownloadTaskRead(d, m)
+	return resourceAciFirmwareDownloadTaskRead(ctx, d, m)
 }
 
-func resourceAciFirmwareDownloadTaskUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciFirmwareDownloadTaskUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] FirmwareDownloadTask: Beginning Update")
 
 	aciClient := m.(*client.Client)
@@ -314,20 +320,18 @@ func resourceAciFirmwareDownloadTaskUpdate(d *schema.ResourceData, m interface{}
 	err := aciClient.Save(firmwareOSource)
 
 	if err != nil {
-		return err
-	}
-	d.Partial(true)
+		return diag.FromErr(err)
 
-	d.Partial(false)
+	}
 
 	d.SetId(firmwareOSource.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciFirmwareDownloadTaskRead(d, m)
+	return resourceAciFirmwareDownloadTaskRead(ctx, d, m)
 
 }
 
-func resourceAciFirmwareDownloadTaskRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciFirmwareDownloadTaskRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -339,25 +343,31 @@ func resourceAciFirmwareDownloadTaskRead(d *schema.ResourceData, m interface{}) 
 		d.SetId("")
 		return nil
 	}
-	setFirmwareDownloadTaskAttributes(firmwareOSource, d)
+	_, err = setFirmwareDownloadTaskAttributes(firmwareOSource, d)
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 
 	return nil
 }
 
-func resourceAciFirmwareDownloadTaskDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciFirmwareDownloadTaskDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "firmwareOSource")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
+
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
+
 }

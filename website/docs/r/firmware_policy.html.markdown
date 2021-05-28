@@ -6,16 +6,16 @@ description: |-
   Manages ACI Firmware Policy
 ---
 
-# aci_firmware_policy #
+# aci_firmware_policy
+
 Manages ACI Firmware Policy
 
-## Example Usage ##
+## Example Usage
 
 ```hcl
 resource "aci_firmware_policy" "example" {
-
-
   name  = "example"
+  description = "from terraform"
   annotation  = "example"
   effective_on_reboot  = "example"
   ignore_compat  = "example"
@@ -25,31 +25,30 @@ resource "aci_firmware_policy" "example" {
   version_check_override  = "example"
 }
 ```
-## Argument Reference ##
-* `name` - (Required) name of Object firmware_policy.
-* `annotation` - (Optional) annotation for object firmware_policy.
-* `effective_on_reboot` - (Optional) firmware version effective on reboot selection.
-Allowed values: "no", "yes"
-* `ignore_compat` - (Optional) whether compatibility check required
-Allowed values: "no", "yes"
-* `internal_label` - (Optional) firmware label
-* `name_alias` - (Optional) name_alias for object firmware_policy.
-* `version` - (Optional) firmware version
-* `version_check_override` - (Optional) version check override.
-Allowed values: "trigger-immediate", "trigger", "triggered", "untriggered"
 
+## Argument Reference
 
+- `name` - (Required) name of Object firmware_policy.
+- `annotation` - (Optional) annotation for object firmware_policy.
+- `effective_on_reboot` - (Optional) firmware version effective on reboot selection.
+  Allowed values: "no", "yes". Default value: "no".
+- `ignore_compat` - (Optional) whether compatibility check required
+  Allowed values: "no", "yes". Default value: "no".
+- `internal_label` - (Optional) firmware label
+- `name_alias` - (Optional) name_alias for object firmware_policy.
+- `version` - (Optional) firmware version
+- `version_check_override` - (Optional) version check override.
+  Allowed values: "trigger-immediate", "trigger", "triggered", "untriggered". Default value: "untriggered".
 
 ## Attribute Reference
 
 The only attribute that this resource exports is the `id`, which is set to the
 Dn of the Firmware Policy.
 
-## Importing ##
+## Importing
 
 An existing Firmware Policy can be [imported][docs-import] into this resource via its Dn, via the following command:
 [docs-import]: https://www.terraform.io/docs/import/index.html
-
 
 ```
 terraform import aci_firmware_policy.example <Dn>

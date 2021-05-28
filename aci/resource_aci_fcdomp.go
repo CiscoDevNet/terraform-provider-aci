@@ -1,20 +1,22 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func resourceAciFCDomain() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciFCDomainCreate,
-		Update: resourceAciFCDomainUpdate,
-		Read:   resourceAciFCDomainRead,
-		Delete: resourceAciFCDomainDelete,
+		CreateContext: resourceAciFCDomainCreate,
+		UpdateContext: resourceAciFCDomainUpdate,
+		ReadContext:   resourceAciFCDomainRead,
+		DeleteContext: resourceAciFCDomainDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciFCDomainImport,
@@ -94,16 +96,19 @@ func getRemoteFCDomain(client *client.Client, dn string) (*models.FCDomain, erro
 	return fcDomP, nil
 }
 
-func setFCDomainAttributes(fcDomP *models.FCDomain, d *schema.ResourceData) *schema.ResourceData {
+func setFCDomainAttributes(fcDomP *models.FCDomain, d *schema.ResourceData) (*schema.ResourceData, error) {
 	d.SetId(fcDomP.DistinguishedName)
 	d.Set("description", fcDomP.Description)
-	fcDomPMap, _ := fcDomP.ToMap()
+	fcDomPMap, err := fcDomP.ToMap()
+	if err != nil {
+		return d, err
+	}
 
 	d.Set("name", fcDomPMap["name"])
 
 	d.Set("annotation", fcDomPMap["annotation"])
 	d.Set("name_alias", fcDomPMap["nameAlias"])
-	return d
+	return d, nil
 }
 
 func resourceAciFCDomainImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -117,14 +122,17 @@ func resourceAciFCDomainImport(d *schema.ResourceData, m interface{}) ([]*schema
 	if err != nil {
 		return nil, err
 	}
-	schemaFilled := setFCDomainAttributes(fcDomP, d)
+	schemaFilled, err := setFCDomainAttributes(fcDomP, d)
+	if err != nil {
+		return nil, err
+	}
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciFCDomainCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciFCDomainCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] FCDomain: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -144,11 +152,8 @@ func resourceAciFCDomainCreate(d *schema.ResourceData, m interface{}) error {
 
 	err := aciClient.Save(fcDomP)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
 
@@ -195,7 +200,7 @@ func resourceAciFCDomainCreate(d *schema.ResourceData, m interface{}) error {
 	d.Partial(true)
 	err = checkTDn(aciClient, checkDns)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Partial(false)
 
@@ -203,90 +208,74 @@ func resourceAciFCDomainCreate(d *schema.ResourceData, m interface{}) error {
 		relationParam := relationToinfraRsVlanNs.(string)
 		err = aciClient.CreateRelationinfraRsVlanNsFromFCDomain(fcDomP.DistinguishedName, relationParam)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.Partial(false)
 
 	}
 	if relationTofcRsVsanNs, ok := d.GetOk("relation_fc_rs_vsan_ns"); ok {
 		relationParam := relationTofcRsVsanNs.(string)
 		err = aciClient.CreateRelationfcRsVsanNsFromFCDomain(fcDomP.DistinguishedName, relationParam)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.Partial(false)
 
 	}
 	if relationTofcRsVsanAttr, ok := d.GetOk("relation_fc_rs_vsan_attr"); ok {
 		relationParam := relationTofcRsVsanAttr.(string)
 		err = aciClient.CreateRelationfcRsVsanAttrFromFCDomain(fcDomP.DistinguishedName, relationParam)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.Partial(false)
 
 	}
 	if relationToinfraRsVlanNsDef, ok := d.GetOk("relation_infra_rs_vlan_ns_def"); ok {
 		relationParam := relationToinfraRsVlanNsDef.(string)
 		err = aciClient.CreateRelationinfraRsVlanNsDefFromFCDomain(fcDomP.DistinguishedName, relationParam)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.Partial(false)
 
 	}
 	if relationToinfraRsVipAddrNs, ok := d.GetOk("relation_infra_rs_vip_addr_ns"); ok {
 		relationParam := relationToinfraRsVipAddrNs.(string)
 		err = aciClient.CreateRelationinfraRsVipAddrNsFromFCDomain(fcDomP.DistinguishedName, relationParam)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.Partial(false)
 
 	}
 	if relationToinfraRsDomVxlanNsDef, ok := d.GetOk("relation_infra_rs_dom_vxlan_ns_def"); ok {
 		relationParam := relationToinfraRsDomVxlanNsDef.(string)
 		err = aciClient.CreateRelationinfraRsDomVxlanNsDefFromFCDomain(fcDomP.DistinguishedName, relationParam)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.Partial(false)
 
 	}
 	if relationTofcRsVsanAttrDef, ok := d.GetOk("relation_fc_rs_vsan_attr_def"); ok {
 		relationParam := relationTofcRsVsanAttrDef.(string)
 		err = aciClient.CreateRelationfcRsVsanAttrDefFromFCDomain(fcDomP.DistinguishedName, relationParam)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.Partial(false)
 
 	}
 	if relationTofcRsVsanNsDef, ok := d.GetOk("relation_fc_rs_vsan_ns_def"); ok {
 		relationParam := relationTofcRsVsanNsDef.(string)
 		err = aciClient.CreateRelationfcRsVsanNsDefFromFCDomain(fcDomP.DistinguishedName, relationParam)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.Partial(false)
 
 	}
 
 	d.SetId(fcDomP.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciFCDomainRead(d, m)
+	return resourceAciFCDomainRead(ctx, d, m)
 }
 
-func resourceAciFCDomainUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciFCDomainUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] FCDomain: Beginning Update")
 
 	aciClient := m.(*client.Client)
@@ -310,11 +299,8 @@ func resourceAciFCDomainUpdate(d *schema.ResourceData, m interface{}) error {
 	err := aciClient.Save(fcDomP)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
 
@@ -361,7 +347,7 @@ func resourceAciFCDomainUpdate(d *schema.ResourceData, m interface{}) error {
 	d.Partial(true)
 	err = checkTDn(aciClient, checkDns)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Partial(false)
 
@@ -369,107 +355,91 @@ func resourceAciFCDomainUpdate(d *schema.ResourceData, m interface{}) error {
 		_, newRelParam := d.GetChange("relation_infra_rs_vlan_ns")
 		err = aciClient.DeleteRelationinfraRsVlanNsFromFCDomain(fcDomP.DistinguishedName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 		err = aciClient.CreateRelationinfraRsVlanNsFromFCDomain(fcDomP.DistinguishedName, newRelParam.(string))
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.Partial(false)
 
 	}
 	if d.HasChange("relation_fc_rs_vsan_ns") {
 		_, newRelParam := d.GetChange("relation_fc_rs_vsan_ns")
 		err = aciClient.DeleteRelationfcRsVsanNsFromFCDomain(fcDomP.DistinguishedName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 		err = aciClient.CreateRelationfcRsVsanNsFromFCDomain(fcDomP.DistinguishedName, newRelParam.(string))
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.Partial(false)
 
 	}
 	if d.HasChange("relation_fc_rs_vsan_attr") {
 		_, newRelParam := d.GetChange("relation_fc_rs_vsan_attr")
 		err = aciClient.DeleteRelationfcRsVsanAttrFromFCDomain(fcDomP.DistinguishedName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 		err = aciClient.CreateRelationfcRsVsanAttrFromFCDomain(fcDomP.DistinguishedName, newRelParam.(string))
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.Partial(false)
 
 	}
 	if d.HasChange("relation_infra_rs_vlan_ns_def") {
 		_, newRelParam := d.GetChange("relation_infra_rs_vlan_ns_def")
 		err = aciClient.CreateRelationinfraRsVlanNsDefFromFCDomain(fcDomP.DistinguishedName, newRelParam.(string))
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.Partial(false)
 
 	}
 	if d.HasChange("relation_infra_rs_vip_addr_ns") {
 		_, newRelParam := d.GetChange("relation_infra_rs_vip_addr_ns")
 		err = aciClient.DeleteRelationinfraRsVipAddrNsFromFCDomain(fcDomP.DistinguishedName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 		err = aciClient.CreateRelationinfraRsVipAddrNsFromFCDomain(fcDomP.DistinguishedName, newRelParam.(string))
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.Partial(false)
 
 	}
 	if d.HasChange("relation_infra_rs_dom_vxlan_ns_def") {
 		_, newRelParam := d.GetChange("relation_infra_rs_dom_vxlan_ns_def")
 		err = aciClient.CreateRelationinfraRsDomVxlanNsDefFromFCDomain(fcDomP.DistinguishedName, newRelParam.(string))
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.Partial(false)
 
 	}
 	if d.HasChange("relation_fc_rs_vsan_attr_def") {
 		_, newRelParam := d.GetChange("relation_fc_rs_vsan_attr_def")
 		err = aciClient.CreateRelationfcRsVsanAttrDefFromFCDomain(fcDomP.DistinguishedName, newRelParam.(string))
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.Partial(false)
 
 	}
 	if d.HasChange("relation_fc_rs_vsan_ns_def") {
 		_, newRelParam := d.GetChange("relation_fc_rs_vsan_ns_def")
 		err = aciClient.CreateRelationfcRsVsanNsDefFromFCDomain(fcDomP.DistinguishedName, newRelParam.(string))
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.Partial(false)
 
 	}
 
 	d.SetId(fcDomP.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciFCDomainRead(d, m)
+	return resourceAciFCDomainRead(ctx, d, m)
 
 }
 
-func resourceAciFCDomainRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciFCDomainRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -481,7 +451,11 @@ func resourceAciFCDomainRead(d *schema.ResourceData, m interface{}) error {
 		d.SetId("")
 		return nil
 	}
-	setFCDomainAttributes(fcDomP, d)
+	_, err = setFCDomainAttributes(fcDomP, d)
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 
 	infraRsVlanNsData, err := aciClient.ReadRelationinfraRsVlanNsFromFCDomain(dn)
 	if err != nil {
@@ -600,18 +574,18 @@ func resourceAciFCDomainRead(d *schema.ResourceData, m interface{}) error {
 	return nil
 }
 
-func resourceAciFCDomainDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciFCDomainDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "fcDomP")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
 }
