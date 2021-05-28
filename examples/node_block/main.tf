@@ -6,6 +6,13 @@ terraform {
   }
 }
 
+provider "aci" {
+  username = ""
+  password = ""
+  url      = ""
+  insecure = true
+}
+
 resource "aci_leaf_profile" "checkBLK" {
   name        = "example"
 }
