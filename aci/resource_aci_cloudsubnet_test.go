@@ -62,7 +62,7 @@ func testAccCheckAciCloudSubnetConfig_basic(description, scope string) string {
 	
 
 	resource "aci_tenant" "example" {
-		name       = "crest_test_kishan_tenant"
+		name       = "test_tenant"
 		annotation = "atag"
 		name_alias = "alias_tenant"
 	  }
