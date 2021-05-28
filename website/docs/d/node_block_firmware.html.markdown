@@ -16,6 +16,7 @@ data "aci_node_block_firmware" "example" {
 
   firmware_group_dn  = aci_firmware_group.example.id
 
+  description = "from terraform"
   name  = "example"
 }
 ```
@@ -28,7 +29,8 @@ data "aci_node_block_firmware" "example" {
 ## Attribute Reference
 
 * `id` - Attribute id set to the Dn of the Node Block.
-* `annotation` - (Optional) Annotation for Object Node Block..
-* `from_` - (Optional) From
+* `description` - (Optional) Description for Object Node Block.
+* `annotation` - (Optional) Annotation for Object Node Block.
+* `from_` - (Optional) From value for Object Node Block.
 * `name_alias` - (Optional) Name alias for Object Node Block..
-* `to_` - (Optional) To
+* `to_` - (Optional) To value for Object Node Block.

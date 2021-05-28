@@ -17,6 +17,7 @@ resource "aci_node_block_firmware" "example" {
   firmware_group_dn  = aci_firmware_group.example.id
 
   name  = "example"
+  description = "from terraform"
   annotation  = "example"
   from_  = "example"
   name_alias  = "example"
@@ -25,11 +26,12 @@ resource "aci_node_block_firmware" "example" {
 ```
 ## Argument Reference ##
 * `firmware_group_dn` - (Required) Distinguished name of parent Firmware Group Object.
-* `name` - (Required) Name of Object Node Block..
-* `annotation` - (Optional) Annotation for Object Node Block..
-* `from_` - (Optional) From
-* `name_alias` - (Optional) Name alias for Object Node Block..
-* `to_` - (Optional) To
+* `name` - (Required) Name of Object Node Block.
+* `description` - (Optional) Description for Object Node Block.
+* `annotation` - (Optional) Annotation for Object Node Block.
+* `from_` - (Optional) From value for Object Node Block.
+* `name_alias` - (Optional) Name alias for Object Node Block.
+* `to_` - (Optional) To value for Object Node Block.
 
 
 
