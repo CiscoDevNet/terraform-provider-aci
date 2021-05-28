@@ -14,6 +14,7 @@ Manages ACI Maintenance Group Node
 ```hcl
 resource "aci_maintenance_group_node" "example" {
   pod_maintenance_group_dn = aci_pod_maintenance_group.example.id
+  description              = "from terraform"
   name                     = "First"
   annotation               = "example"
   from_                    = "1"
@@ -27,6 +28,7 @@ resource "aci_maintenance_group_node" "example" {
 
 * `pod_maintenance_group_dn` - (Required) Distinguished name of parent POD Maintenance Group Object.
 * `name` - (Required) Name of Maintenance Group Node Object.
+* `description` - (Optional) Description for Maintenance Group Node Object.
 * `annotation` - (Optional) Annotation for Maintenance Group Node Object.
 * `from_` - (Optional) From value for Maintenance Group Node Object.
 * `name_alias` - (Optional) Name alias for Maintenance Group Node Object.
