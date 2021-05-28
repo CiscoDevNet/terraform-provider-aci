@@ -35,7 +35,7 @@ Allowed values: "no", "yes"
 Allowed values: "no", "yes"
 * `name_alias` - (Optional) name_alias for object cloud_aws_provider.
 * `provider_id` - (Optional) provider_id for object cloud_aws_provider.
-* `region` - (Optional) which AWS region to manage.
+* `region` - (Optional) which AWS region to manage. \[Supported only in Cloud APIC 4.2(x) or earlier\]
 * `secret_access_key` - (Optional) secret_access_key for the AWS account provided in the account_id field.
 
 

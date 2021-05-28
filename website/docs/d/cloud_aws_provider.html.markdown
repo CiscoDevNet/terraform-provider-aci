@@ -33,5 +33,5 @@ data "aci_cloud_aws_provider" "aws_prov" {
 * `is_trusted` - (Optional) is_trusted for object cloud_aws_provider.
 * `name_alias` - (Optional) name_alias for object cloud_aws_provider.
 * `provider_id` - (Optional) provider_id for object cloud_aws_provider.
-* `region` - (Optional) region for object cloud_aws_provider.
+* `region` - (Optional) region for object cloud_aws_provider. \[Supported only in Cloud APIC 4.2(x) or earlier\]
 * `secret_access_key` - (Optional) secret_access_key for object cloud_aws_provider.
