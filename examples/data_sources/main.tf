@@ -67,3 +67,6 @@ data "aci_vmm_domain" "fetch_domain" {
   provider_profile_dn = "uni/vmmp-VMware"
   name                = "test"
 }
+
+data "aci_autonomous_system_profile" "auto_prof" {
+}

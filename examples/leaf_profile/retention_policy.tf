@@ -1,6 +1,25 @@
+terraform {
+  required_providers {
+    aci = {
+      source = "ciscodevnet/aci"
+    }
+  }
+}
+
+provider "aci" {
+  username = ""
+  password = ""
+  url      = ""
+  insecure = true
+}
+
+resource "aci_tenant" "tenant_for_ret_pol" {
+		name        = "tenant_for_ret_pol"
+		description = "This tenant is created by terraform ACI provider"
+	}
 resource "aci_end_point_retention_policy" "test_ret_policy" {
-    tenant_dn = aci_tenant.test_tenant.id
-    name = "tf_test"
+    tenant_dn = aci_tenant.tenant_for_ret_pol.id
+    name 				= "tf_test"
     description 		= "From terraform"
 	annotation          = "tag_ret_pol"
 	bounce_age_intvl    = "630"
