@@ -32,5 +32,3 @@ data "aci_cloud_context_profile" "sample_prof" {
 - `id` - Attribute id set to the Dn of the Cloud Context profile.
 - `description` - Description of object Cloud Context profile.
 - `annotation` - Annotation for object Cloud Context profile.
-- `name_alias` - Name alias for object Cloud Context Profile.
-- `type` - The specific type of the object or component.
