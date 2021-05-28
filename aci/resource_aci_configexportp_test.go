@@ -146,11 +146,11 @@ func testAccCheckAciConfigurationExportPolicyAttributes(description string, conf
 			return fmt.Errorf("Bad configuration_export_policy format %s", configuration_export_policy.Format)
 		}
 
-		if "no" != configuration_export_policy.IncludeSecureFields {
+		if "yes" != configuration_export_policy.IncludeSecureFields {
 			return fmt.Errorf("Bad configuration_export_policy include_secure_fields %s", configuration_export_policy.IncludeSecureFields)
 		}
 
-		if "example" != configuration_export_policy.MaxSnapshotCount {
+		if "10" != configuration_export_policy.MaxSnapshotCount {
 			return fmt.Errorf("Bad configuration_export_policy max_snapshot_count %s", configuration_export_policy.MaxSnapshotCount)
 		}
 
@@ -162,7 +162,7 @@ func testAccCheckAciConfigurationExportPolicyAttributes(description string, conf
 			return fmt.Errorf("Bad configuration_export_policy snapshot %s", configuration_export_policy.Snapshot)
 		}
 
-		if "example" != configuration_export_policy.TargetDn {
+		if "uni/tn-crest_test_kishan_tenant" != configuration_export_policy.TargetDn {
 			return fmt.Errorf("Bad configuration_export_policy target_dn %s", configuration_export_policy.TargetDn)
 		}
 
