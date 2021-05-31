@@ -14,7 +14,6 @@ Data source for ACI Maintenance Group Node
 ```hcl
 data "aci_maintenance_group_node" "example" {
   pod_maintenance_group_dn = aci_pod_maintenance_group.example.id
-  description              = "from terraform"
   name                     = "example"
 }
 ```
