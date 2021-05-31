@@ -20,16 +20,11 @@ func TestAccAciNodeBlock_Basic_MaintGrp(t *testing.T) {
 		CheckDestroy: testAccCheckAciNodeBlockDestroyMG,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckAciNodeBlockConfig_basic(description),
+				Config: testAccCheckAciNodeBlockConfig_basicMG(description),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAciNodeBlockExistsMG("aci_node_block_maintgrp.foonode_block_maintgrp", &node_block),
+					testAccCheckAciNodeBlockExistsMG("aci_maintenance_group_node.foonode_block_maintgrp", &node_block),
 					testAccCheckAciNodeBlockAttributesMG(description, &node_block),
 				),
-			},
-			{
-				ResourceName:      "aci_node_block_maintgrp",
-				ImportState:       true,
-				ImportStateVerify: true,
 			},
 		},
 	})
@@ -45,16 +40,16 @@ func TestAccAciNodeBlock_updateMG(t *testing.T) {
 		CheckDestroy: testAccCheckAciNodeBlockDestroyMG,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckAciNodeBlockConfig_basic(description),
+				Config: testAccCheckAciNodeBlockConfig_basicMG(description),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAciNodeBlockExistsMG("aci_node_block_maintgrp.foonode_block_maintgrp", &node_block),
+					testAccCheckAciNodeBlockExistsMG("aci_maintenance_group_node.foonode_block_maintgrp", &node_block),
 					testAccCheckAciNodeBlockAttributesMG(description, &node_block),
 				),
 			},
 			{
-				Config: testAccCheckAciNodeBlockConfig_basic(description),
+				Config: testAccCheckAciNodeBlockConfig_basicMG(description),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAciNodeBlockExistsMG("aci_node_block_maintgrp.foonode_block_maintgrp", &node_block),
+					testAccCheckAciNodeBlockExistsMG("aci_maintenance_group_node.foonode_block_maintgrp", &node_block),
 					testAccCheckAciNodeBlockAttributesMG(description, &node_block),
 				),
 			},
@@ -65,15 +60,23 @@ func TestAccAciNodeBlock_updateMG(t *testing.T) {
 func testAccCheckAciNodeBlockConfig_basicMG(description string) string {
 	return fmt.Sprintf(`
 
-	resource "aci_node_block_maintgrp" "foonode_block_maintgrp" {
+	resource "aci_pod_maintenance_group" "example" {
+		name  = "mgmt"
+		fwtype  = "controller"
+		description = "from terraform"
+		name_alias  = "aliasing"
+		pod_maintenance_group_type  = "ALL"
+	  }
+
+	resource "aci_maintenance_group_node" "foonode_block_maintgrp" {
 		  pod_maintenance_group_dn  = "${aci_pod_maintenance_group.example.id}"
-		description = "%s"
+		description = %s
 		
 		name  = "example"
 		  annotation  = "example"
-		  from_  = "example"
+		  from_  = "1"
 		  name_alias  = "example"
-		  to_  = "example"
+		  to_  = "1"
 		}
 	`, description)
 }
@@ -111,7 +114,7 @@ func testAccCheckAciNodeBlockDestroyMG(s *terraform.State) error {
 
 	for _, rs := range s.RootModule().Resources {
 
-		if rs.Type == "aci_node_block_maintgrp" {
+		if rs.Type == "aci_maintanence_group_node" {
 			cont, err := client.Get(rs.Primary.ID)
 			node_block := models.NodeBlockFromContainerMG(cont)
 			if err == nil {
@@ -141,7 +144,7 @@ func testAccCheckAciNodeBlockAttributesMG(description string, node_block *models
 			return fmt.Errorf("Bad node_block annotation %s", node_block.Annotation)
 		}
 
-		if "example" != node_block.From_ {
+		if "1" != node_block.From_ {
 			return fmt.Errorf("Bad node_block from_ %s", node_block.From_)
 		}
 
@@ -149,7 +152,7 @@ func testAccCheckAciNodeBlockAttributesMG(description string, node_block *models
 			return fmt.Errorf("Bad node_block name_alias %s", node_block.NameAlias)
 		}
 
-		if "example" != node_block.To_ {
+		if "1" != node_block.To_ {
 			return fmt.Errorf("Bad node_block to_ %s", node_block.To_)
 		}
 
