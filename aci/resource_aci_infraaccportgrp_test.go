@@ -26,11 +26,6 @@ func TestAccAciLeafAccessPortPolicyGroup_Basic(t *testing.T) {
 					testAccCheckAciLeafAccessPortPolicyGroupAttributes(description, "alias_port", &leaf_access_port_policy_group),
 				),
 			},
-			{
-				ResourceName:      "aci_leaf_access_port_policy_group",
-				ImportState:       true,
-				ImportStateVerify: true,
-			},
 		},
 	})
 }

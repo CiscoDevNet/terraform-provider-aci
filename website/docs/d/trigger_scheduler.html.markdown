@@ -20,11 +20,11 @@ data "aci_trigger_scheduler" "example" {
 
 ## Argument Reference
 
-- `name` - (Required) name of Object trigger_scheduler.
+- `name` - (Required) Name of Object Trigger Scheduler
 
 ## Attribute Reference
 
 - `id` - Attribute id set to the Dn of the Trigger Scheduler.
-- `annotation` - (Optional) annotation for object trigger_scheduler.
-- `name_alias` - (Optional) name_alias for object trigger_scheduler.
-- `description` - (Optional) Description for object trigger_scheduler.
+- `annotation` - (Optional) Annotation for object Trigger Scheduler
+- `name_alias` - (Optional) Name alias for object Trigger Scheduler
+- `description` - (Optional) Description for object Trigger Scheduler

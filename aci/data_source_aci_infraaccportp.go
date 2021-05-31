@@ -1,16 +1,18 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func dataSourceAciLeafInterfaceProfile() *schema.Resource {
 	return &schema.Resource{
 
-		Read: dataSourceAciLeafInterfaceProfileRead,
+		ReadContext: dataSourceAciLeafInterfaceProfileRead,
 
 		SchemaVersion: 1,
 
@@ -30,7 +32,7 @@ func dataSourceAciLeafInterfaceProfile() *schema.Resource {
 	}
 }
 
-func dataSourceAciLeafInterfaceProfileRead(d *schema.ResourceData, m interface{}) error {
+func dataSourceAciLeafInterfaceProfileRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	aciClient := m.(*client.Client)
 
 	name := d.Get("name").(string)
@@ -42,8 +44,11 @@ func dataSourceAciLeafInterfaceProfileRead(d *schema.ResourceData, m interface{}
 	infraAccPortP, err := getRemoteLeafInterfaceProfile(aciClient, dn)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	setLeafInterfaceProfileAttributes(infraAccPortP, d)
+	_, err = setLeafInterfaceProfileAttributes(infraAccPortP, d)
+	if err != nil {
+		return diag.FromErr(err)
+	}
 	return nil
 }

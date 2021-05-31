@@ -58,6 +58,9 @@ func dataSourceAciApplicationProfileRead(ctx context.Context, d *schema.Resource
 		return diag.FromErr(err)
 	}
 	d.SetId(dn)
-	setApplicationProfileAttributes(fvAp, d)
+	_, err = setApplicationProfileAttributes(fvAp, d)
+	if err != nil {
+		return diag.FromErr(err)
+	}
 	return nil
 }

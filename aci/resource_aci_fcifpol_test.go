@@ -26,11 +26,6 @@ func TestAccAciInterfaceFCPolicy_Basic(t *testing.T) {
 					testAccCheckAciInterfaceFCPolicyAttributes(description, "64", &interface_fc_policy),
 				),
 			},
-			{
-				ResourceName:      "aci_interface_fc_policy",
-				ImportState:       true,
-				ImportStateVerify: true,
-			},
 		},
 	})
 }
@@ -51,10 +46,10 @@ func TestAccAciInterfaceFCPolicy_update(t *testing.T) {
 				),
 			},
 			{
-				Config: testAccCheckAciInterfaceFCPolicyConfig_basic(description, "70"),
+				Config: testAccCheckAciInterfaceFCPolicyConfig_basic(description, "32"),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckAciInterfaceFCPolicyExists("aci_interface_fc_policy.foointerface_fc_policy", &interface_fc_policy),
-					testAccCheckAciInterfaceFCPolicyAttributes(description, "70", &interface_fc_policy),
+					testAccCheckAciInterfaceFCPolicyAttributes(description, "32", &interface_fc_policy),
 				),
 			},
 		},

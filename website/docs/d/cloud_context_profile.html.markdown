@@ -6,10 +6,12 @@ description: |-
   Data source for ACI Cloud Context Profile
 ---
 
-# aci_cloud_context_profile #
+# aci_cloud_context_profile
+
 Data source for ACI Cloud Context Profile
 <b>Note: This resource is supported in Cloud APIC only. </b>
-## Example Usage ##
+
+## Example Usage
 
 ```hcl
 
@@ -20,20 +22,13 @@ data "aci_cloud_context_profile" "sample_prof" {
 
 ```
 
+## Argument Reference
 
-## Argument Reference ##
-* `tenant_dn` - (Required) Distinguished name of parent Tenant object.
-* `name` - (Required) name of Object cloud-ctx-profile.
-
-
+- `tenant_dn` - (Required) Distinguished name of parent Tenant object.
+- `name` - (Required) Name of Object Cloud Context profile.
 
 ## Attribute Reference
 
-* `id` - Attribute id set to the Dn of the Cloud Context profile.
-* `annotation` - annotation for object Cloud Context profile.
-* `name_alias` - name_alias for object Cloud Context Profile.
-* `type` - The specific type of the object or component. 
-* `primary_cidr` - Primary CIDR block of Cloud Context profile. 
-* `region` - AWS region in which profile is created.
-* `hub_network` - hub network Dn which enables Transit Gateway.
-
+- `id` - Attribute id set to the Dn of the Cloud Context profile.
+- `description` - Description of object Cloud Context profile.
+- `annotation` - Annotation for object Cloud Context profile.

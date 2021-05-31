@@ -172,6 +172,9 @@ func dataSourceAciBridgeDomainRead(ctx context.Context, d *schema.ResourceData, 
 		return diag.FromErr(err)
 	}
 	d.SetId(dn)
-	setBridgeDomainAttributes(fvBD, d)
+	_, err = setBridgeDomainAttributes(fvBD, d)
+	if err != nil {
+		return diag.FromErr(err)
+	}
 	return nil
 }

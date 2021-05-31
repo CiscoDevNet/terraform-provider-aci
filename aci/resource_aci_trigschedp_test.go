@@ -26,11 +26,6 @@ func TestAccAciTriggerScheduler_Basic(t *testing.T) {
 					testAccCheckAciTriggerSchedulerAttributes(description, &trigger_scheduler),
 				),
 			},
-			{
-				ResourceName:      "aci_trigger_scheduler",
-				ImportState:       true,
-				ImportStateVerify: true,
-			},
 		},
 	})
 }

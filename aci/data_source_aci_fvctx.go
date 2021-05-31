@@ -82,6 +82,9 @@ func dataSourceAciVRFRead(ctx context.Context, d *schema.ResourceData, m interfa
 		return diag.FromErr(err)
 	}
 	d.SetId(dn)
-	setVRFAttributes(fvCtx, d)
+	_, err = setVRFAttributes(fvCtx, d)
+	if err != nil {
+		return diag.FromErr(err)
+	}
 	return nil
 }

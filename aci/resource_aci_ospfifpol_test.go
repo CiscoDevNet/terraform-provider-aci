@@ -26,11 +26,6 @@ func TestAccAciOSPFInterfacePolicy_Basic(t *testing.T) {
 					testAccCheckAciOSPFInterfacePolicyAttributes(description, "unspecified", &ospf_interface_policy),
 				),
 			},
-			{
-				ResourceName:      "aci_ospf_interface_policy",
-				ImportState:       true,
-				ImportStateVerify: true,
-			},
 		},
 	})
 }
@@ -152,7 +147,11 @@ func testAccCheckAciOSPFInterfacePolicyAttributes(description, ctrl string, ospf
 			return fmt.Errorf("Bad ospf_interface_policy cost %s", ospf_interface_policy.Cost)
 		}
 
-		if ctrl != ospf_interface_policy.Ctrl {
+		policyCtrl := ospf_interface_policy.Ctrl
+		if policyCtrl == "" {
+			policyCtrl = "unspecified"
+		}
+		if ctrl != policyCtrl {
 			return fmt.Errorf("Bad ospf_interface_policy ctrl %s", ospf_interface_policy.Ctrl)
 		}
 

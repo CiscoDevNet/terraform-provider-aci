@@ -26,11 +26,6 @@ func TestAccAciLACPPolicy_Basic(t *testing.T) {
 					testAccCheckAciLACPPolicyAttributes(description, "off", &lacp_policy),
 				),
 			},
-			{
-				ResourceName:      "aci_lacp_policy",
-				ImportState:       true,
-				ImportStateVerify: true,
-			},
 		},
 	})
 }
@@ -154,7 +149,7 @@ func testAccCheckAciLACPPolicyAttributes(description, mode string, lacp_policy *
 			return fmt.Errorf("Bad lacp_policy mode %s", lacp_policy.Mode)
 		}
 
-		if "example" != lacp_policy.NameAlias {
+		if "alias_lacp" != lacp_policy.NameAlias {
 			return fmt.Errorf("Bad lacp_policy name_alias %s", lacp_policy.NameAlias)
 		}
 

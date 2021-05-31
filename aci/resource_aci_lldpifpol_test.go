@@ -26,11 +26,6 @@ func TestAccAciLLDPInterfacePolicy_Basic(t *testing.T) {
 					testAccCheckAciLLDPInterfacePolicyAttributes(description, "enabled", &lldp_interface_policy),
 				),
 			},
-			{
-				ResourceName:      "aci_lldp_interface_policy",
-				ImportState:       true,
-				ImportStateVerify: true,
-			},
 		},
 	})
 }

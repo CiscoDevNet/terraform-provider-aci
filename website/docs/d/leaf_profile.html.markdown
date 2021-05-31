@@ -24,5 +24,6 @@ data "aci_leaf_profile" "dev_leaf_prof" {
 ## Attribute Reference
 
 * `id` - Attribute id set to the Dn of the Leaf Profile.
-* `annotation` - (Optional) annotation for object leaf_profile.
-* `name_alias` - (Optional) name_alias for object leaf_profile.
+* `description` - (Optional) Description for object leaf profile.
+* `annotation` - (Optional) Annotation for object leaf profile.
+* `name_alias` - (Optional) Name alias for object leaf profile.
