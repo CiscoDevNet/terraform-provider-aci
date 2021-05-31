@@ -26,11 +26,6 @@ func TestAccAciAccessSubPortBlock_Basic(t *testing.T) {
 					testAccCheckAciAccessSubPortBlockAttributes(description, &access_sub_port_block),
 				),
 			},
-			{
-				ResourceName:      "aci_access_sub_port_block",
-				ImportState:       true,
-				ImportStateVerify: true,
-			},
 		},
 	})
 }
@@ -64,20 +59,34 @@ func TestAccAciAccessSubPortBlock_update(t *testing.T) {
 
 func testAccCheckAciAccessSubPortBlockConfig_basic(description string) string {
 	return fmt.Sprintf(`
+	resource "aci_leaf_interface_profile" "example" {
+		description = "s"
+		name        = "example"
+		annotation  = "tag_leaf"
+		name_alias  = "s"
+	}
+	resource "aci_access_port_selector" "example" {
+		leaf_interface_profile_dn = aci_leaf_interface_profile.example.id
+		description               = "s"
+		name                      = "example"
+		access_port_selector_type = "ALL"
+		annotation                = "tag_port_selector"
+		name_alias                = "alias_port_selector"
+	} 
 
 	resource "aci_access_sub_port_block" "fooaccess_sub_port_block" {
-		  access_port_selector_dn  = "${aci_access_port_selector.example.id}"
+		  access_port_selector_dn  = aci_access_port_selector.example.id
 		description = "%s"
 		
 		name  = "example"
 		  annotation  = "example"
-		  from_card  = "example"
-		  from_port  = "example"
-		  from_sub_port  = "example"
+		  from_card  = "1"
+		  from_port  = "1"
+		  from_sub_port  = "1"
 		  name_alias  = "example"
-		  to_card  = "example"
-		  to_port  = "example"
-		  to_sub_port  = "example"
+		  to_card  = "1"
+		  to_port  = "1"
+		  to_sub_port  = "1"
 		}
 	`, description)
 }
@@ -145,15 +154,15 @@ func testAccCheckAciAccessSubPortBlockAttributes(description string, access_sub_
 			return fmt.Errorf("Bad access_sub_port_block annotation %s", access_sub_port_block.Annotation)
 		}
 
-		if "example" != access_sub_port_block.FromCard {
+		if "1" != access_sub_port_block.FromCard {
 			return fmt.Errorf("Bad access_sub_port_block from_card %s", access_sub_port_block.FromCard)
 		}
 
-		if "example" != access_sub_port_block.FromPort {
+		if "1" != access_sub_port_block.FromPort {
 			return fmt.Errorf("Bad access_sub_port_block from_port %s", access_sub_port_block.FromPort)
 		}
 
-		if "example" != access_sub_port_block.FromSubPort {
+		if "1" != access_sub_port_block.FromSubPort {
 			return fmt.Errorf("Bad access_sub_port_block from_sub_port %s", access_sub_port_block.FromSubPort)
 		}
 
@@ -161,15 +170,15 @@ func testAccCheckAciAccessSubPortBlockAttributes(description string, access_sub_
 			return fmt.Errorf("Bad access_sub_port_block name_alias %s", access_sub_port_block.NameAlias)
 		}
 
-		if "example" != access_sub_port_block.ToCard {
+		if "1" != access_sub_port_block.ToCard {
 			return fmt.Errorf("Bad access_sub_port_block to_card %s", access_sub_port_block.ToCard)
 		}
 
-		if "example" != access_sub_port_block.ToPort {
+		if "1" != access_sub_port_block.ToPort {
 			return fmt.Errorf("Bad access_sub_port_block to_port %s", access_sub_port_block.ToPort)
 		}
 
-		if "example" != access_sub_port_block.ToSubPort {
+		if "1" != access_sub_port_block.ToSubPort {
 			return fmt.Errorf("Bad access_sub_port_block to_sub_port %s", access_sub_port_block.ToSubPort)
 		}
 
