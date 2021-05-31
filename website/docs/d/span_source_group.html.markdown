@@ -28,7 +28,6 @@ data "aci_span_source_group" "example" {
 
 - `id` - Attribute id set to the Dn of the SPAN Source Group.
 - `admin_st` - (Optional) administrative state of the object or policy.
-  Allowed values: "enabled", "disabled". Default value: "enabled".
 - `annotation` - (Optional) Specifies a annotation of the policy definition.
 - `description` - (Optional) Specifies a description of the policy definition.
 - `name_alias` - (Optional) Specifies a alias-name of the policy definition.

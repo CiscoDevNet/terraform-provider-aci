@@ -13,7 +13,6 @@ Manages ACI VSAN Pool
 
 ```hcl
 resource "aci_vsan_pool" "example" {
-
   name        = "example"
   description = "from terraform"
   alloc_mode  = "static"
