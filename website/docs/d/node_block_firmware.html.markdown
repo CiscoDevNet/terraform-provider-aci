@@ -13,10 +13,7 @@ Data source for ACI Node Block
 
 ```hcl
 data "aci_node_block_firmware" "example" {
-
   firmware_group_dn  = aci_firmware_group.example.id
-
-  description = "from terraform"
   name  = "example"
 }
 ```
