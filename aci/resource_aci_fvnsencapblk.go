@@ -126,17 +126,14 @@ func resourceAciRangesImport(d *schema.ResourceData, m interface{}) ([]*schema.R
 	if err != nil {
 		return nil, err
 	}
-
 	from := fvnsEncapBlkMap["from"]
 	to := fvnsEncapBlkMap["to"]
 	pDN := GetParentDn(dn, fmt.Sprintf("/from-[%s]-to-[%s]", from, to))
 	d.Set("vlan_pool_dn", pDN)
-
 	schemaFilled, err := setRangesAttributes(fvnsEncapBlk, d)
 	if err != nil {
 		return nil, err
 	}
-
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
@@ -234,6 +231,10 @@ func resourceAciRangesUpdate(ctx context.Context, d *schema.ResourceData, m inte
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
 	return resourceAciRangesRead(ctx, d, m)
+<<<<<<< HEAD
+=======
+
+>>>>>>> 7dad5fb (change in the 1671)
 }
 
 func resourceAciRangesRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
