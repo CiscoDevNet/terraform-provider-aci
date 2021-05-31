@@ -22,12 +22,11 @@ data "aci_span_destination_group" "example" {
 ## Argument Reference
 
 - `tenant_dn` - (Required) Distinguished name of parent Tenant object.
-- `name` - (Required) Name of Object SPAN Source Group.
+- `name` - (Required) Name of object SPAN destination group.
 
 ## Attribute Reference
 
 - `id` - Attribute id set to the Dn of the SPAN Destination Group.
-- `admin_st` - (Optional) administrative state of the object or policy.
-- `annotation` - (Optional) Specifies a annotation of the policy definition.
+- `annotation` - (Optional) Annotation of object SPAN destination group.
 - `description` - (Optional) Specifies a description of the policy definition.
-- `name_alias` - (Optional) Specifies a alias-name of the policy definition.
+- `name_alias` - (Optional) Name alias of object SPAN destination group.
