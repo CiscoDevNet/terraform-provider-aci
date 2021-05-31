@@ -53,9 +53,9 @@ resource "aci_bgp_peer_connectivity_profile" "example" {
   Allowed values: "remove-all", "remove-exclusive", "replace-as". Default value: "".
 - `ttl` - (Optional) Specifies time to live (TTL). Default value: "1".
 - `weight` - (Optional) The weight of the fault in calculating the health score of an object. A higher weight causes a higher degradation of the health score of the affected object. Default value: "0".
-- `as_number` - (Optional) A number that uniquely identifies an autonomous system. Default value: "0".
-- `local_asn ` - (Optional) The local autonomous system number (ASN). Default value: "0".
-- `local_asn_propagate` - (Optional) The local Autonomous System Number (ASN) configuration.  
+- `as_number` - (Optional) A number that uniquely identifies an autonomous system.
+- `local_asn ` - (Optional) The local autonomous system number (ASN).
+- `local_asn_propagate` - (Optional) The local Autonomous System Number (ASN) configuration.
   Allowed values: "dual-as", "no-prepend", "none", "replace-as". Default value: "none".
 - `relation_bgp_rs_peer_pfx_pol` - (Optional) Relation to class bgpPeerPfxPol. Cardinality - N_TO_ONE. Type - String.
 
