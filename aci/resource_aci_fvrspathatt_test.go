@@ -26,11 +26,6 @@ func TestAccAciStaticPath_Basic(t *testing.T) {
 					testAccCheckAciStaticPathAttributes(description, &static_path),
 				),
 			},
-			{
-				ResourceName:      "aci_epg_to_static_path",
-				ImportState:       true,
-				ImportStateVerify: true,
-			},
 		},
 	})
 }
@@ -65,16 +60,19 @@ func TestAccAciStaticPath_update(t *testing.T) {
 func testAccCheckAciStaticPathConfig_basic(description string) string {
 	return fmt.Sprintf(`
 
+	
+
 	resource "aci_epg_to_static_path" "foostatic_path" {
-		  application_epg_dn  = "${aci_application_epg.example.id}"
-		description = "%s"
+		   application_epg_dn  = "uni/tn-demo_dev_tenant/ap-demo_ap/epg-demo_epg"
+		  #application_epg_dn  = "${aci_application_epg.example.id}"
+		  description = "%s"
 		
-		tdn  = "example"
-		  annotation  = "example"
-		  encap  = "example"
-		  instr_imedcy  = "immediate"
-		  mode  = "regular"
-		  primary_encap  = "example"
+		  tdn            = "topology/pod-1/paths-101/pathep-[eth1/1]"
+		  annotation     = "example"
+		  instr_imedcy   = "immediate"
+		  mode           = "regular"
+		  encap          = "vlan-1000"
+		  primary_encap  = "unknown"
 		}
 	`, description)
 }
@@ -134,7 +132,7 @@ func testAccCheckAciStaticPathAttributes(description string, static_path *models
 			return fmt.Errorf("Bad static_path Description %s", static_path.Description)
 		}
 
-		if "example" != static_path.TDn {
+		if "topology/pod-1/paths-101/pathep-[eth1/1]" != static_path.TDn {
 			return fmt.Errorf("Bad static_path t_dn %s", static_path.TDn)
 		}
 
@@ -142,7 +140,7 @@ func testAccCheckAciStaticPathAttributes(description string, static_path *models
 			return fmt.Errorf("Bad static_path annotation %s", static_path.Annotation)
 		}
 
-		if "example" != static_path.Encap {
+		if "vlan-1000" != static_path.Encap {
 			return fmt.Errorf("Bad static_path encap %s", static_path.Encap)
 		}
 
@@ -154,7 +152,7 @@ func testAccCheckAciStaticPathAttributes(description string, static_path *models
 			return fmt.Errorf("Bad static_path mode %s", static_path.Mode)
 		}
 
-		if "example" != static_path.PrimaryEncap {
+		if "unknown" != static_path.PrimaryEncap {
 			return fmt.Errorf("Bad static_path primary_encap %s", static_path.PrimaryEncap)
 		}
 
