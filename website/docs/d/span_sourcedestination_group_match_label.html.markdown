@@ -19,7 +19,7 @@ data "aci_span_sourcedestination_group_match_label" "example" {
 ```
 ## Argument Reference ##
 * `span_source_group_dn` - (Required) Distinguished name of parent SPANSourceGroup object.
-* `name` - (Required) Name of Object span_sourcedestination_group_match_label.
+* `name` - (Required) Name of Object SPANSourceGroup object.
 
 
 

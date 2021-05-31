@@ -19,7 +19,7 @@ resource "aci_span_sourcedestination_group_match_label" "example" {
   name                  = "example"
   annotation            = "tag_label"
   name_alias            = "alias_label"
-  tag                   = "label_color"
+  tag                   = "yellow-green"
 }
 ```
 
