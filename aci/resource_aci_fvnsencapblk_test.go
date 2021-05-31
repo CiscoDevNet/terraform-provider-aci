@@ -26,11 +26,6 @@ func TestAccAciRanges_Basic(t *testing.T) {
 					testAccCheckAciRangesAttributes(description, &ranges),
 				),
 			},
-			{
-				ResourceName:      "aci_ranges",
-				ImportState:       true,
-				ImportStateVerify: true,
-			},
 		},
 	})
 }

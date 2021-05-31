@@ -1,21 +1,23 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciRanges() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciRangesCreate,
-		Update: resourceAciRangesUpdate,
-		Read:   resourceAciRangesRead,
-		Delete: resourceAciRangesDelete,
+		CreateContext: resourceAciRangesCreate,
+		UpdateContext: resourceAciRangesUpdate,
+		ReadContext:   resourceAciRangesRead,
+		DeleteContext: resourceAciRangesDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciRangesImport,
@@ -86,7 +88,7 @@ func getRemoteRanges(client *client.Client, dn string) (*models.Ranges, error) {
 	return fvnsEncapBlk, nil
 }
 
-func setRangesAttributes(fvnsEncapBlk *models.Ranges, d *schema.ResourceData) *schema.ResourceData {
+func setRangesAttributes(fvnsEncapBlk *models.Ranges, d *schema.ResourceData) (*schema.ResourceData, error) {
 	dn := d.Id()
 	d.SetId(fvnsEncapBlk.DistinguishedName)
 	d.Set("description", fvnsEncapBlk.Description)
@@ -94,15 +96,18 @@ func setRangesAttributes(fvnsEncapBlk *models.Ranges, d *schema.ResourceData) *s
 	if dn != fvnsEncapBlk.DistinguishedName {
 		d.Set("vlan_pool_dn", "")
 	}
-	fvnsEncapBlkMap, _ := fvnsEncapBlk.ToMap()
+	fvnsEncapBlkMap, err := fvnsEncapBlk.ToMap()
 
+	if err != nil {
+		return d, err
+	}
 	d.Set("alloc_mode", fvnsEncapBlkMap["allocMode"])
 	d.Set("annotation", fvnsEncapBlkMap["annotation"])
 	d.Set("from", fvnsEncapBlkMap["from"])
 	d.Set("name_alias", fvnsEncapBlkMap["nameAlias"])
 	d.Set("role", fvnsEncapBlkMap["role"])
 	d.Set("to", fvnsEncapBlkMap["to"])
-	return d
+	return d, nil
 }
 
 func resourceAciRangesImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -116,19 +121,24 @@ func resourceAciRangesImport(d *schema.ResourceData, m interface{}) ([]*schema.R
 	if err != nil {
 		return nil, err
 	}
-	fvnsEncapBlkMap, _ := fvnsEncapBlk.ToMap()
+	fvnsEncapBlkMap, err := fvnsEncapBlk.ToMap()
+	if err != nil {
+		return nil, err
+	}
 	from := fvnsEncapBlkMap["from"]
 	to := fvnsEncapBlkMap["to"]
 	pDN := GetParentDn(dn, fmt.Sprintf("/from-[%s]-to-[%s]", from, to))
 	d.Set("vlan_pool_dn", pDN)
-	schemaFilled := setRangesAttributes(fvnsEncapBlk, d)
-
+	schemaFilled, err := setRangesAttributes(fvnsEncapBlk, d)
+	if err != nil {
+		return nil, err
+	}
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciRangesCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciRangesCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] Ranges: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -164,19 +174,16 @@ func resourceAciRangesCreate(d *schema.ResourceData, m interface{}) error {
 
 	err := aciClient.Save(fvnsEncapBlk)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.Partial(false)
 
 	d.SetId(fvnsEncapBlk.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciRangesRead(d, m)
+	return resourceAciRangesRead(ctx, d, m)
 }
 
-func resourceAciRangesUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciRangesUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] Ranges: Beginning Update")
 
 	aciClient := m.(*client.Client)
@@ -216,20 +223,17 @@ func resourceAciRangesUpdate(d *schema.ResourceData, m interface{}) error {
 	err := aciClient.Save(fvnsEncapBlk)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.Partial(false)
 
 	d.SetId(fvnsEncapBlk.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciRangesRead(d, m)
+	return resourceAciRangesRead(ctx, d, m)
 
 }
 
-func resourceAciRangesRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciRangesRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -241,25 +245,28 @@ func resourceAciRangesRead(d *schema.ResourceData, m interface{}) error {
 		d.SetId("")
 		return nil
 	}
-	setRangesAttributes(fvnsEncapBlk, d)
-
+	_, err = setRangesAttributes(fvnsEncapBlk, d)
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 
 	return nil
 }
 
-func resourceAciRangesDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciRangesDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "fvnsEncapBlk")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
 }
