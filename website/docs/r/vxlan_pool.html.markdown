@@ -20,7 +20,7 @@ resource "aci_vxlan_pool" "example" {
 }
 ```
 ## Argument Reference ##
-* `name` - (Required) Name of Object vxlan_pool.
+* `name` - (Required) Name of Object vxlan pool.
 * `annotation` - (Optional) Annotation for object vxlan pool.
 * `description` - (Optional) Description for object vxlan pool.
 * `name_alias` - (Optional) Name alias for object vxlan pool.
