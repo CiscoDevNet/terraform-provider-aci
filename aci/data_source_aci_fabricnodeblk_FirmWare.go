@@ -1,16 +1,18 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func dataSourceAciNodeBlockFW() *schema.Resource {
 	return &schema.Resource{
 
-		Read: dataSourceAciNodeBlockReadFW,
+		ReadContext: dataSourceAciNodeBlockReadFW,
 
 		SchemaVersion: 1,
 
@@ -46,7 +48,7 @@ func dataSourceAciNodeBlockFW() *schema.Resource {
 	}
 }
 
-func dataSourceAciNodeBlockReadFW(d *schema.ResourceData, m interface{}) error {
+func dataSourceAciNodeBlockReadFW(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	aciClient := m.(*client.Client)
 
 	name := d.Get("name").(string)
@@ -59,9 +61,14 @@ func dataSourceAciNodeBlockReadFW(d *schema.ResourceData, m interface{}) error {
 	fabricNodeBlk, err := getRemoteNodeBlockFW(aciClient, dn)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.SetId(dn)
-	setNodeBlockAttributesFW(fabricNodeBlk, d)
+	_, err = setNodeBlockAttributesFW(fabricNodeBlk, d)
+
+	if err != nil {
+		return diag.FromErr(err)
+	}
+
 	return nil
 }
