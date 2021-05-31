@@ -26,7 +26,7 @@ data "aci_vlan_pool" "example" {
 ## Attribute Reference
 
 * `id` - Attribute id set to the Dn of the VLAN Pool.
-* `alloc_mode` - (Optional) Allocation mode for object vlan_pool.
-* `annotation` - (Optional) Annotation for object vlan_pool.
+* `alloc_mode` - (Optional) Allocation mode for object vlan pool.
+* `annotation` - (Optional) Annotation for object vlan pool.
 * `description` - (Optional) Description for  object vlan pool.
-* `name_alias` - (Optional) Name alias for object vlan_pool.
+* `name_alias` - (Optional) Name alias for object vlan pool.
