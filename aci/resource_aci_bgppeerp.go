@@ -133,9 +133,11 @@ func resourceAciBgpPeerConnectivityProfile() *schema.Resource {
 			},
 
 			"local_asn_propagate": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
+				Type:         schema.TypeString,
+				Optional:     true,
+				Computed:     true,
+				RequiredWith: []string{"local_asn"},
+
 				ValidateFunc: validation.StringInSlice([]string{
 					"dual-as",
 					"no-prepend",
@@ -307,32 +309,37 @@ func resourceAciBgpPeerConnectivityProfileCreate(d *schema.ResourceData, m inter
 		return err
 	}
 	PeerConnectivityProfileDn := bgpPeerP.DistinguishedName
-	bgpLocalAsnPAttr := models.LocalAutonomousSystemProfileAttributes{}
 
-	if AsnPropagate, ok := d.GetOk("local_asn_propagate"); ok {
-		bgpLocalAsnPAttr.AsnPropagate = AsnPropagate.(string)
-	}
-	if LocalAsn, ok := d.GetOk("local_asn"); ok {
-		bgpLocalAsnPAttr.LocalAsn = LocalAsn.(string)
-	}
+	if _, ok := d.GetOk("local_asn"); ok {
+		bgpLocalAsnPAttr := models.LocalAutonomousSystemProfileAttributes{}
 
-	bgpLocalAsnP := models.NewLocalAutonomousSystemProfile(fmt.Sprintf("localasn"), PeerConnectivityProfileDn, desc, bgpLocalAsnPAttr)
+		if AsnPropagate, ok := d.GetOk("local_asn_propagate"); ok {
+			bgpLocalAsnPAttr.AsnPropagate = AsnPropagate.(string)
+		}
+		if LocalAsn, ok := d.GetOk("local_asn"); ok {
+			bgpLocalAsnPAttr.LocalAsn = LocalAsn.(string)
+		}
 
-	err = aciClient.Save(bgpLocalAsnP)
-	if err != nil {
-		return err
-	}
+		bgpLocalAsnP := models.NewLocalAutonomousSystemProfile(fmt.Sprintf("localasn"), PeerConnectivityProfileDn, desc, bgpLocalAsnPAttr)
 
-	bgpAsPAttr := models.BgpAutonomousSystemProfileAttributes{}
-
-	if Asn, ok := d.GetOk("as_number"); ok {
-		bgpAsPAttr.Asn = Asn.(string)
+		err = aciClient.Save(bgpLocalAsnP)
+		if err != nil {
+			return err
+		}
 	}
 
-	bgpAsP := models.NewBgpAutonomousSystemProfile(fmt.Sprintf("as"), PeerConnectivityProfileDn, desc, bgpAsPAttr)
-	err = aciClient.Save(bgpAsP)
-	if err != nil {
-		return err
+	if _, ok := d.GetOk("as_number"); ok {
+		bgpAsPAttr := models.BgpAutonomousSystemProfileAttributes{}
+
+		if Asn, ok := d.GetOk("as_number"); ok {
+			bgpAsPAttr.Asn = Asn.(string)
+		}
+
+		bgpAsP := models.NewBgpAutonomousSystemProfile(fmt.Sprintf("as"), PeerConnectivityProfileDn, desc, bgpAsPAttr)
+		err = aciClient.Save(bgpAsP)
+		if err != nil {
+			return err
+		}
 	}
 
 	d.Partial(true)
@@ -431,34 +438,36 @@ func resourceAciBgpPeerConnectivityProfileUpdate(d *schema.ResourceData, m inter
 	}
 
 	PeerConnectivityProfileDn := bgpPeerP.DistinguishedName
-	bgpLocalAsnPAttr := models.LocalAutonomousSystemProfileAttributes{}
+	if _, ok := d.GetOk("local_asn"); ok {
+		bgpLocalAsnPAttr := models.LocalAutonomousSystemProfileAttributes{}
 
-	if AsnPropagate, ok := d.GetOk("local_asn_propagate"); ok {
-		bgpLocalAsnPAttr.AsnPropagate = AsnPropagate.(string)
-	}
-	if LocalAsn, ok := d.GetOk("local_asn"); ok {
-		bgpLocalAsnPAttr.LocalAsn = LocalAsn.(string)
-	}
+		if AsnPropagate, ok := d.GetOk("local_asn_propagate"); ok {
+			bgpLocalAsnPAttr.AsnPropagate = AsnPropagate.(string)
+		}
+		if LocalAsn, ok := d.GetOk("local_asn"); ok {
+			bgpLocalAsnPAttr.LocalAsn = LocalAsn.(string)
+		}
 
-	bgpLocalAsnP := models.NewLocalAutonomousSystemProfile(fmt.Sprintf("localasn"), PeerConnectivityProfileDn, desc, bgpLocalAsnPAttr)
-	bgpLocalAsnP.Status = "modified"
+		bgpLocalAsnP := models.NewLocalAutonomousSystemProfile(fmt.Sprintf("localasn"), PeerConnectivityProfileDn, desc, bgpLocalAsnPAttr)
 
-	err = aciClient.Save(bgpLocalAsnP)
-	if err != nil {
-		return err
-	}
-
-	bgpAsPAttr := models.BgpAutonomousSystemProfileAttributes{}
-
-	if Asn, ok := d.GetOk("as_number"); ok {
-		bgpAsPAttr.Asn = Asn.(string)
+		err = aciClient.Save(bgpLocalAsnP)
+		if err != nil {
+			return err
+		}
 	}
 
-	bgpAsP := models.NewBgpAutonomousSystemProfile(fmt.Sprintf("as"), PeerConnectivityProfileDn, desc, bgpAsPAttr)
-	bgpAsP.Status = "modified"
-	err = aciClient.Save(bgpAsP)
-	if err != nil {
-		return err
+	if _, ok := d.GetOk("as_number"); ok {
+		bgpAsPAttr := models.BgpAutonomousSystemProfileAttributes{}
+
+		if Asn, ok := d.GetOk("as_number"); ok {
+			bgpAsPAttr.Asn = Asn.(string)
+		}
+
+		bgpAsP := models.NewBgpAutonomousSystemProfile(fmt.Sprintf("as"), PeerConnectivityProfileDn, desc, bgpAsPAttr)
+		err = aciClient.Save(bgpAsP)
+		if err != nil {
+			return err
+		}
 	}
 
 	d.Partial(true)
@@ -515,17 +524,23 @@ func resourceAciBgpPeerConnectivityProfileRead(d *schema.ResourceData, m interfa
 	}
 	setBgpPeerConnectivityProfileAttributes(bgpPeerP, d)
 
-	bgpAsP, err := getRemoteBgpAutonomousSystemProfileFromBgpPeerConnectivityProfile(aciClient, fmt.Sprintf("%s/as", dn))
-	if err != nil {
-		return err
+	if _, ok := d.GetOk("as_number"); ok {
+		bgpAsP, err := getRemoteBgpAutonomousSystemProfileFromBgpPeerConnectivityProfile(aciClient, fmt.Sprintf("%s/as", dn))
+		if err != nil {
+			d.SetId("")
+			return nil
+		}
+		setBgpAutonomousSystemProfileAttributesFromBgpPeerConnectivityProfile(bgpAsP, d)
 	}
-	setBgpAutonomousSystemProfileAttributesFromBgpPeerConnectivityProfile(bgpAsP, d)
 
-	bgpLocalAsnP, err := getRemoteLocalAutonomousSystemProfileFromBgpPeerConnectivityProfile(aciClient, fmt.Sprintf("%s/localasn", dn))
-	if err != nil {
-		return err
+	if _, ok := d.GetOk("local_asn"); ok {
+		bgpLocalAsnP, err := getRemoteLocalAutonomousSystemProfileFromBgpPeerConnectivityProfile(aciClient, fmt.Sprintf("%s/localasn", dn))
+		if err != nil {
+			d.SetId("")
+			return nil
+		}
+		setLocalAutonomousSystemProfileAttributesFromBgpPeerConnectivityProfile(bgpLocalAsnP, d)
 	}
-	setLocalAutonomousSystemProfileAttributesFromBgpPeerConnectivityProfile(bgpLocalAsnP, d)
 
 	bgpRsPeerPfxPolData, err := aciClient.ReadRelationbgpRsPeerPfxPolFromBgpPeerConnectivityProfile(dn)
 	if err != nil {
@@ -555,15 +570,7 @@ func resourceAciBgpPeerConnectivityProfileDelete(d *schema.ResourceData, m inter
 	if err != nil {
 		return err
 	}
-	err = aciClient.DeleteByDn(fmt.Sprintf("%s/localasn", dn), "bgpLocalAsnP")
-	if err != nil {
-		return err
-	}
-	err = aciClient.DeleteByDn(fmt.Sprintf("%s/as", dn), "bgpAsP")
-	if err != nil {
-		return err
-	}
-
+	
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
