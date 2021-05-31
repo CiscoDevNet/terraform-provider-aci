@@ -6,25 +6,24 @@ description: |-
   Data source for ACI FC Domain
 ---
 
-# aci_fc_domain #
+# aci_fc_domain
+
 Data source for ACI FC Domain
 
-## Example Usage ##
+## Example Usage
 
 ```hcl
 data "aci_fc_domain" "example" {
-
-
   name  = "example"
 }
 ```
-## Argument Reference ##
-* `name` - (Required) name of Object fc_domain.
 
+## Argument Reference
 
+- `name` - (Required) Name of Object fibre channel domain.
 
 ## Attribute Reference
 
-* `id` - Attribute id set to the Dn of the FC Domain.
-* `annotation` - (Optional) annotation for object fc_domain.
-* `name_alias` - (Optional) name_alias for object fc_domain.
+- `id` - Attribute id set to the Dn of the FC Domain.
+- `annotation` - (Optional) Annotation for object fibre channel domain.
+- `name_alias` - (Optional) Name alias for object fibre channel domain.

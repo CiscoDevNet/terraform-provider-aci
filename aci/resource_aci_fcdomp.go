@@ -24,12 +24,18 @@ func resourceAciFCDomain() *schema.Resource {
 
 		SchemaVersion: 1,
 
-		Schema: AppendBaseAttrSchema(map[string]*schema.Schema{
+		Schema: map[string]*schema.Schema{
 
 			"name": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
 				ForceNew: true,
+			},
+
+			"annotation": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Default:  "orchestrator:terraform",
 			},
 
 			"name_alias": &schema.Schema{
@@ -78,7 +84,7 @@ func resourceAciFCDomain() *schema.Resource {
 
 				Optional: true,
 			},
-		}),
+		},
 	}
 }
 func getRemoteFCDomain(client *client.Client, dn string) (*models.FCDomain, error) {
@@ -98,7 +104,7 @@ func getRemoteFCDomain(client *client.Client, dn string) (*models.FCDomain, erro
 
 func setFCDomainAttributes(fcDomP *models.FCDomain, d *schema.ResourceData) (*schema.ResourceData, error) {
 	d.SetId(fcDomP.DistinguishedName)
-	d.Set("description", fcDomP.Description)
+
 	fcDomPMap, err := fcDomP.ToMap()
 	if err != nil {
 		return d, err
@@ -135,7 +141,6 @@ func resourceAciFCDomainImport(d *schema.ResourceData, m interface{}) ([]*schema
 func resourceAciFCDomainCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] FCDomain: Beginning Creation")
 	aciClient := m.(*client.Client)
-	desc := d.Get("description").(string)
 
 	name := d.Get("name").(string)
 
@@ -148,7 +153,7 @@ func resourceAciFCDomainCreate(ctx context.Context, d *schema.ResourceData, m in
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		fcDomPAttr.NameAlias = NameAlias.(string)
 	}
-	fcDomP := models.NewFCDomain(fmt.Sprintf("fc-%s", name), "uni", desc, fcDomPAttr)
+	fcDomP := models.NewFCDomain(fmt.Sprintf("fc-%s", name), "uni", "", fcDomPAttr)
 
 	err := aciClient.Save(fcDomP)
 	if err != nil {
@@ -279,7 +284,6 @@ func resourceAciFCDomainUpdate(ctx context.Context, d *schema.ResourceData, m in
 	log.Printf("[DEBUG] FCDomain: Beginning Update")
 
 	aciClient := m.(*client.Client)
-	desc := d.Get("description").(string)
 
 	name := d.Get("name").(string)
 
@@ -292,7 +296,7 @@ func resourceAciFCDomainUpdate(ctx context.Context, d *schema.ResourceData, m in
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		fcDomPAttr.NameAlias = NameAlias.(string)
 	}
-	fcDomP := models.NewFCDomain(fmt.Sprintf("fc-%s", name), "uni", desc, fcDomPAttr)
+	fcDomP := models.NewFCDomain(fmt.Sprintf("fc-%s", name), "uni", "", fcDomPAttr)
 
 	fcDomP.Status = "modified"
 

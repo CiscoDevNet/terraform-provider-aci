@@ -153,19 +153,13 @@ func setFirmwareDownloadTaskAttributes(firmwareOSource *models.FirmwareDownloadT
 	if err != nil {
 		return d, err
 	}
-
 	d.Set("name", firmwareOSourceMap["name"])
-
 	d.Set("annotation", firmwareOSourceMap["annotation"])
 	d.Set("auth_pass", firmwareOSourceMap["authPass"])
 	d.Set("auth_type", firmwareOSourceMap["authType"])
 	d.Set("dnld_task_flip", firmwareOSourceMap["dnldTaskFlip"])
-	d.Set("identity_private_key_contents", firmwareOSourceMap["identityPrivateKeyContents"])
-	d.Set("identity_private_key_passphrase", firmwareOSourceMap["identityPrivateKeyPassphrase"])
-	d.Set("identity_public_key_contents", firmwareOSourceMap["identityPublicKeyContents"])
 	d.Set("load_catalog_if_exists_and_newer", firmwareOSourceMap["loadCatalogIfExistsAndNewer"])
 	d.Set("name_alias", firmwareOSourceMap["nameAlias"])
-	d.Set("password", firmwareOSourceMap["password"])
 	d.Set("polling_interval", firmwareOSourceMap["pollingInterval"])
 	d.Set("proto", firmwareOSourceMap["proto"])
 	d.Set("url", firmwareOSourceMap["url"])
