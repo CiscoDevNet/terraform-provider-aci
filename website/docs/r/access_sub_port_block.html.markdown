@@ -13,8 +13,7 @@ Manages ACI Access Sub Port Block
 
 ```hcl
 resource "aci_access_sub_port_block" "example" {
-
-  access_port_selector_dn  = "${aci_access_port_selector.example.id}"
+  access_port_selector_dn  = aci_access_port_selector.example.id
   description             = "From Terraform"
   name                    = "example"
   annotation              = "example"
@@ -33,18 +32,18 @@ resource "aci_access_sub_port_block" "example" {
 * `annotation` - (Optional) Annotation for object access sub port block.
 * `description` - (Optional) Description for object access sub port block.
 * `from_card` - (Optional) From card.
-  Allowed Values are between 1 to 100. Default Value is 1.
+  Allowed Values are between 1 to 100. Default Value is "1".
 * `from_port` - (Optional) Port block from port
-  Allowed Values are between 1 to 127. Default Value is 1.
+  Allowed Values are between 1 to 127. Default Value is "1".
 * `from_sub_port` - (Optional) From sub port for object access sub port block.
-  Allowed Values are between 1 to 64. Default Value is 1.
+  Allowed Values are between 1 to 64. Default Value is "1".
 * `name_alias` - (Optional) Name alias for object access sub port block.
 * `to_card` - (Optional) To card.
-  Allowed Values are between 1 to 100. Default Value is 1.
+  Allowed Values are between 1 to 100. Default Value is "1".
 * `to_port` - (Optional) To port.
- Allowed Values are between 1 to 127. Default Value is 1.
+ Allowed Values are between 1 to 127. Default Value is "1".
 * `to_sub_port` - (Optional) To sub port for object access sub port block.
-  Allowed Values are between 1 to 64. Default Value is 1.
+  Allowed Values are between 1 to 64. Default Value is "1".
 
 
 
