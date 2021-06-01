@@ -13,9 +13,7 @@ Data source for ACI EPG to Static Path
 
 ```hcl
 data "aci_epg_to_static_path" "example" {
-
   application_epg_dn  = aci_application_epg.example.id
-
   tdn  = "example"
 }
 ```
@@ -29,7 +27,7 @@ data "aci_epg_to_static_path" "example" {
 
 * `id` - Attribute id set to the Dn of the Static Path.
 * `annotation` - (Optional) Annotation for object Static Path.
-* `encap` - (Optional) Encapsulation
-* `instr_imedcy` - (Optional) Immediacy
-* `mode` - (Optional) Mode of the static association with the path
+* `encap` - (Optional) Encapsulation of the Static Path.
+* `instr_imedcy` - (Optional) Immediacy of the Static Path.
+* `mode` - (Optional) Mode of the static association with the path.
 * `primary_encap` - (Optional) Primary encap for object Static Path.
