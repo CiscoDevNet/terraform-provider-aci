@@ -153,7 +153,7 @@ func resourceAciFCDomainCreate(ctx context.Context, d *schema.ResourceData, m in
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		fcDomPAttr.NameAlias = NameAlias.(string)
 	}
-	fcDomP := models.NewFCDomain(fmt.Sprintf("fc-%s", name), "uni", "", fcDomPAttr)
+	fcDomP := models.NewFCDomain(fmt.Sprintf("fc-%s", name), "uni", fcDomPAttr)
 
 	err := aciClient.Save(fcDomP)
 	if err != nil {
@@ -296,7 +296,7 @@ func resourceAciFCDomainUpdate(ctx context.Context, d *schema.ResourceData, m in
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		fcDomPAttr.NameAlias = NameAlias.(string)
 	}
-	fcDomP := models.NewFCDomain(fmt.Sprintf("fc-%s", name), "uni", "", fcDomPAttr)
+	fcDomP := models.NewFCDomain(fmt.Sprintf("fc-%s", name), "uni", fcDomPAttr)
 
 	fcDomP.Status = "modified"
 
