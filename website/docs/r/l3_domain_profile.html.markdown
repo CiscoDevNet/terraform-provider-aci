@@ -19,9 +19,9 @@ resource "aci_l3_domain_profile" "example" {
 }
 ```
 ## Argument Reference ##
-* `name` - (Required) Name of Object l3_domain_profile.
-* `annotation` - (Optional) Annotation for object l3_domain_profile.
-* `name_alias` - (Optional) Name alias for object l3_domain_profile.
+* `name` - (Required) Name of Object l3 domain profile.
+* `annotation` - (Optional) Annotation for object l3 domain profile.
+* `name_alias` - (Optional) Name alias for object l3 domain profile.
 
 * `relation_infra_rs_vlan_ns` - (Optional) Relation to class fvnsVlanInstP. Cardinality - N_TO_ONE. Type - String.
                 

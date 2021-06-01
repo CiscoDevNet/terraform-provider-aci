@@ -17,12 +17,12 @@ data "aci_l3_domain_profile" "example" {
 }
 ```
 ## Argument Reference ##
-* `name` - (Required) Name of Object l3_domain_profile.
+* `name` - (Required) Name of Object l3 domain profile.
 
 
 
 ## Attribute Reference
 
 * `id` - Attribute id set to the Dn of the L3 Domain Profile.
-* `annotation` - (Optional) Annotation for object l3_domain_profile.
-* `name_alias` - (Optional) Name alias for object l3_domain_profile.
+* `annotation` - (Optional) Annotation for object l3 domain profile.
+* `name_alias` - (Optional) Name alias for object l3 domain profile.
