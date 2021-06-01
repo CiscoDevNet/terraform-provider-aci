@@ -6,14 +6,14 @@ description: |-
   Manages ACI Fabric Node Member
 ---
 
-# aci_fabric_node_member #
+# aci_fabric_node_member
+
 Manages ACI Fabric Node Member
 
-## Example Usage ##
+## Example Usage
 
 ```hcl
 resource "aci_fabric_node_member" "example" {
-
   name = "test"
   serial  = "example"
   annotation  = "example"
@@ -26,33 +26,32 @@ resource "aci_fabric_node_member" "example" {
   role  = "example"
 }
 ```
-## Argument Reference ##
-* `serial` - (Required) serial of Object fabric_node_member.
-* `name` - (Required) Name of Fabric Node member.
-* `annotation` - (Optional) annotation for object fabric_node_member.
-* `ext_pool_id` - (Optional) ext_pool_id for object fabric_node_member.
-* `fabric_id` - (Optional) place holder for a value
-* `name_alias` - (Optional) name_alias for object fabric_node_member.
-* `node_id` - (Optional) node id
-* `node_type` - (Optional) node_type for object fabric_node_member.
-Allowed values: "unspecified", "remote-leaf-wan"
-* `pod_id` - (Optional) pod id
-* `role` - (Optional) system role type.
-Allowed values: "unspecified", "leaf", "spine"
-* `serial` - (Optional) serial number
 
+## Argument Reference
 
+- `serial` - (Required) Serial Number for the new Fabric Node Member.
+- `name` - (Required) Name of Fabric Node member.
+- `annotation` - (Optional) Specifies the annotation of a Fabric Node member.
+- `description` - (Optional) Specifies the description of a Fabric Node member.
+- `ext_pool_id` - (Optional) external pool ID for object Fabric Node member. Default value: "0".
+- `fabric_id` - (Optional) Fabric ID for the new Fabric Node Member. Default value: "1".
+- `name_alias` - (Optional) Name alias for object Fabric Node member.
+- `node_id` - (Optional) Node ID Number for the new Fabric Node Member. Default value: "0".
+- `node_type` - (Optional) Node type for object Fabric Node member.
+  Allowed values: "unspecified", "remote-leaf-wan". Default value: "unspecified".
+- `pod_id` - (Optional) The pod id of the new Fabric Node Member. Default value: "1".
+- `role` - (Optional) Role for the new Fabric Node Member. 
+  Allowed values: "unspecified", "leaf", "spine". Default value: "unspecified".
 
 ## Attribute Reference
 
 The only attribute that this resource exports is the `id`, which is set to the
 Dn of the Fabric Node Member.
 
-## Importing ##
+## Importing
 
 An existing Fabric Node Member can be [imported][docs-import] into this resource via its Dn, via the following command:
 [docs-import]: https://www.terraform.io/docs/import/index.html
-
 
 ```
 terraform import aci_fabric_node_member.example <Dn>

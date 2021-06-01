@@ -30,16 +30,16 @@ resource "aci_configuration_export_policy" "example" {
 ## Argument Reference
 
 - `name` - (Required) Name of Object configuration export policy.
-- `admin_st` - (Optional) Admin state of the export policy
-  Allowed values: "untriggered(0)", "triggered(1)". Default value is untriggered.
+- `admin_st` - (Optional) Admin state of the export policy. A policy can be triggered at any time by setting the admin_st to triggered. The value on APIC will reset back to untriggered once trigger is done. 
+  Allowed values: "untriggered", "triggered". Default value is "untriggered".
 - `annotation` - (Optional) Annotation for object configuration export policy.
 - `description` - (Optional) Description for object configuration export policy.
 - `format` - (Optional) Export data format.
   Allowed values: "xml", "json". Default value is json.
-- `include_secure_fields` - (Optional) Include_secure_fields for object configuration export policy.
-  Allowed values: "no", "yes".Default value is yes.
+- `include_secure_fields` - (Optional) Include secure fields for object configuration export policy.
+  Allowed values: "no", "yes". Default value is yes.
 - `max_snapshot_count` - (Optional) Max snapshot count for object configuration export policy.
-Allowed Values are betwwen 1 to 10.Default value is global-limit.
+  Allowed Values are betwwen 1 to 10.Default value is global-limit.
 - `name_alias` - (Optional) Name alias for object configuration export policy.
 - `snapshot` - (Optional) Snapshot for object configuration export policy.
   Allowed values: "no", "yes"Default value is no.
