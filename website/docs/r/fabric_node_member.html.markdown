@@ -14,16 +14,17 @@ Manages ACI Fabric Node Member
 
 ```hcl
 resource "aci_fabric_node_member" "example" {
-  name = "test"
-  serial  = "example"
+  name        = "test"
+  serial      = "1"
   annotation  = "example"
-  ext_pool_id  = "example"
-  fabric_id  = "example"
+  description = "from terraform"
+  ext_pool_id = "0"
+  fabric_id   = "1"
   name_alias  = "example"
-  node_id  = "example"
-  node_type  = "example"
-  pod_id  = "example"
-  role  = "example"
+  node_id     = "201"
+  node_type   = "unspecified"
+  pod_id      = "1"
+  role        = "unspecified"
 }
 ```
 
