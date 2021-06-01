@@ -24,7 +24,6 @@ resource "aci_vsan_pool" "example" {
 * `name` - (Required) Name of Object VSAN Pool.
 * `description` - (Optional) Description for object VSAN Pool.
 * `alloc_mode` - (Required) Allocation mode for object VSAN Pool.
-Allowed values: "dynamic", "static". Default value: "static".
 * `annotation` - (Optional) Annotation for object VSAN Pool.
 * `name_alias` - (Optional) Name alias for object VSAN Pool.
 
