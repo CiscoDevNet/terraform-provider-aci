@@ -71,6 +71,8 @@ github.com/ciscoecosystem/aci-go-client v1.10.3 h1:5mER3GhM9TcqDgwFHS8E15i3C5bIW
 github.com/ciscoecosystem/aci-go-client v1.10.3/go.mod h1:pGK3tDhR/D4+P5f6utT1V7TQQxDw2fL7j79QXeVk6po=
 github.com/ciscoecosystem/aci-go-client v1.10.6 h1:TuLXKo3QP7vDgrKjqdqS4/lrksAq3jrB0B7HC7E2xms=
 github.com/ciscoecosystem/aci-go-client v1.10.6/go.mod h1:pGK3tDhR/D4+P5f6utT1V7TQQxDw2fL7j79QXeVk6po=
+github.com/ciscoecosystem/aci-go-client v1.10.7 h1:voN3ysqcojmIPaffboEmjj1yBDXszaK228qvQCu73jc=
+github.com/ciscoecosystem/aci-go-client v1.10.7/go.mod h1:pGK3tDhR/D4+P5f6utT1V7TQQxDw2fL7j79QXeVk6po=
 github.com/ciscoecosystem/aci-go-client v1.11.1 h1:3TdTcCITgMXJSx3PJSzp43kDH5rfcuAGtLqL3zGdLuw=
 github.com/ciscoecosystem/aci-go-client v1.11.1/go.mod h1:pGK3tDhR/D4+P5f6utT1V7TQQxDw2fL7j79QXeVk6po=
 github.com/client9/misspell v0.3.4/go.mod h1:qj6jICC3Q7zFZvVWo7KLAzC3yx5G7kyvSDkc90ppPyw=
@@ -189,6 +191,7 @@ github.com/hashicorp/terraform-json v0.8.0 h1:XObQ3PgqU52YLQKEaJ08QtUshAfN3yu4u8
 github.com/hashicorp/terraform-json v0.8.0/go.mod h1:3defM4kkMfttwiE7VakJDwCd4R+umhSQnvJwORXbprE=
 github.com/hashicorp/terraform-plugin-go v0.2.1 h1:EW/R8bB2Zbkjmugzsy1d27yS8/0454b3MtYHkzOknqA=
 github.com/hashicorp/terraform-plugin-go v0.2.1/go.mod h1:10V6F3taeDWVAoLlkmArKttR3IULlRWFAGtQIQTIDr4=
+github.com/hashicorp/terraform-plugin-sdk v1.17.2 h1:V7DUR3yBWFrVB9z3ddpY7kiYVSsq4NYR67NiTs93NQo=
 github.com/hashicorp/terraform-plugin-sdk/v2 v2.4.3 h1:DGnxpIYRHXQZb2TOlQ1OCEYxoRQrAcbLIcYm8kvbFuU=
 github.com/hashicorp/terraform-plugin-sdk/v2 v2.4.3/go.mod h1:5wrrTcxbSaQXamCDbHZTHk6yTF9OEZaOvQ9fvLXBE3o=
 github.com/hashicorp/yamux v0.0.0-20180604194846-3520598351bb/go.mod h1:+NfK9FKeTrX5uv1uIXGdwYDTeHna2qgaIlx54MXqjAM=

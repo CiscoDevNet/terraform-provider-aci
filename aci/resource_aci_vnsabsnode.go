@@ -235,7 +235,7 @@ func resourceAciFunctionNodeImport(d *schema.ResourceData, m interface{}) ([]*sc
 	if err != nil {
 		return nil, err
 	}
-	schemaFilled,err := setFunctionNodeAttributes(vnsAbsNode, d)
+	schemaFilled, err := setFunctionNodeAttributes(vnsAbsNode, d)
 	if err != nil {
 		return nil, err
 	}

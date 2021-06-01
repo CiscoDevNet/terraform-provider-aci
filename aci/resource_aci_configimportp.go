@@ -128,10 +128,13 @@ func getRemoteConfigurationImportPolicy(client *client.Client, dn string) (*mode
 	return configImportP, nil
 }
 
-func setConfigurationImportPolicyAttributes(configImportP *models.ConfigurationImportPolicy, d *schema.ResourceData) *schema.ResourceData {
+func setConfigurationImportPolicyAttributes(configImportP *models.ConfigurationImportPolicy, d *schema.ResourceData) (*schema.ResourceData, error) {
 	d.SetId(configImportP.DistinguishedName)
 	d.Set("description", configImportP.Description)
-	configImportPMap, _ := configImportP.ToMap()
+	configImportPMap, err := configImportP.ToMap()
+	if err != nil {
+		return d, err
+	}
 
 	d.Set("name", configImportPMap["name"])
 
@@ -143,7 +146,7 @@ func setConfigurationImportPolicyAttributes(configImportP *models.ConfigurationI
 	d.Set("import_type", configImportPMap["importType"])
 	d.Set("name_alias", configImportPMap["nameAlias"])
 	d.Set("snapshot", configImportPMap["snapshot"])
-	return d
+	return d, nil
 }
 
 func resourceAciConfigurationImportPolicyImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -157,7 +160,10 @@ func resourceAciConfigurationImportPolicyImport(d *schema.ResourceData, m interf
 	if err != nil {
 		return nil, err
 	}
-	schemaFilled := setConfigurationImportPolicyAttributes(configImportP, d)
+	schemaFilled, err := setConfigurationImportPolicyAttributes(configImportP, d)
+	if err != nil {
+		return nil, err
+	}
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
@@ -385,7 +391,11 @@ func resourceAciConfigurationImportPolicyRead(ctx context.Context, d *schema.Res
 		d.SetId("")
 		return nil
 	}
-	setConfigurationImportPolicyAttributes(configImportP, d)
+	_, err = setConfigurationImportPolicyAttributes(configImportP, d)
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 
 	configRsImportSourceData, err := aciClient.ReadRelationconfigRsImportSourceFromConfigurationImportPolicy(dn)
 	if err != nil {
