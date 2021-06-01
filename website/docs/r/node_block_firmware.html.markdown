@@ -13,9 +13,7 @@ Manages ACI Node Block
 
 ```hcl
 resource "aci_node_block_firmware" "example" {
-
   firmware_group_dn  = aci_firmware_group.example.id
-
   name  = "example"
   description = "from terraform"
   annotation  = "example"
@@ -29,9 +27,9 @@ resource "aci_node_block_firmware" "example" {
 * `name` - (Required) Name of Object Node Block.
 * `description` - (Optional) Description for Object Node Block.
 * `annotation` - (Optional) Annotation for Object Node Block.
-* `from_` - (Optional) From value for Object Node Block.
+* `from_` - (Optional) From value for Object Node Block. Range : 1 - 16000. DefaultValue : "1".
 * `name_alias` - (Optional) Name alias for Object Node Block.
-* `to_` - (Optional) To value for Object Node Block.
+* `to_` - (Optional) To value for Object Node Block.Range : 1 - 16000. DefaultValue : "1"
 
 
 

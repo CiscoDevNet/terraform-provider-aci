@@ -30,9 +30,9 @@ resource "aci_maintenance_group_node" "example" {
 * `name` - (Required) Name of Maintenance Group Node Object.
 * `description` - (Optional) Description for Maintenance Group Node Object.
 * `annotation` - (Optional) Annotation for Maintenance Group Node Object.
-* `from_` - (Optional) From value for Maintenance Group Node Object.
+* `from_` - (Optional) From value for Maintenance Group Node Object. Range : 1 - 16000. DefaultValue : "1"
 * `name_alias` - (Optional) Name alias for Maintenance Group Node Object.
-* `to_` - (Optional) To value for Maintenance Group Node Object.
+* `to_` - (Optional) To value for Maintenance Group Node Object. Range : 1 - 16000. DefaultValue : "1"
 
 
 
