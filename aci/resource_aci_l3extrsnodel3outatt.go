@@ -1,21 +1,23 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciFabricNode() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciFabricNodeCreate,
-		Update: resourceAciFabricNodeUpdate,
-		Read:   resourceAciFabricNodeRead,
-		Delete: resourceAciFabricNodeDelete,
+		CreateContext: resourceAciFabricNodeCreate,
+		UpdateContext: resourceAciFabricNodeUpdate,
+		ReadContext:   resourceAciFabricNodeRead,
+		DeleteContext: resourceAciFabricNodeDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciFabricNodeImport,
@@ -89,22 +91,30 @@ func getRemoteFabricNode(client *client.Client, dn string) (*models.FabricNode, 
 	return l3extRsNodeL3OutAtt, nil
 }
 
-func setFabricNodeAttributes(l3extRsNodeL3OutAtt *models.FabricNode, d *schema.ResourceData) *schema.ResourceData {
+func setFabricNodeAttributes(l3extRsNodeL3OutAtt *models.FabricNode, d *schema.ResourceData) (*schema.ResourceData, error) {
 	dn := d.Id()
 	d.SetId(l3extRsNodeL3OutAtt.DistinguishedName)
 	// d.Set("logical_node_profile_dn", GetParentDn(l3extRsNodeL3OutAtt.DistinguishedName))
 	if dn != l3extRsNodeL3OutAtt.DistinguishedName {
 		d.Set("logical_node_profile_dn", "")
 	}
-	l3extRsNodeL3OutAttMap, _ := l3extRsNodeL3OutAtt.ToMap()
+	l3extRsNodeL3OutAttMap, err := l3extRsNodeL3OutAtt.ToMap()
+
+	if err != nil {
+		return d, err
+	}
 
 	d.Set("tdn", l3extRsNodeL3OutAttMap["tDn"])
 
 	d.Set("annotation", l3extRsNodeL3OutAttMap["annotation"])
 	d.Set("config_issues", l3extRsNodeL3OutAttMap["configIssues"])
+
+	if l3extRsNodeL3OutAttMap["configIssues"] == "" {
+		d.Set("config_issues", "none")
+	}
 	d.Set("rtr_id", l3extRsNodeL3OutAttMap["rtrId"])
 	d.Set("rtr_id_loop_back", l3extRsNodeL3OutAttMap["rtrIdLoopBack"])
-	return d
+	return d, nil
 }
 
 func resourceAciFabricNodeImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -118,23 +128,31 @@ func resourceAciFabricNodeImport(d *schema.ResourceData, m interface{}) ([]*sche
 	if err != nil {
 		return nil, err
 	}
-	l3extRsNodeL3OutAttMap, _ := l3extRsNodeL3OutAtt.ToMap()
-	tDn := l3extRsNodeL3OutAttMap["tDn"]
-	pDN := GetParentDn(dn, fmt.Sprintf("/rsnodeL3OutAtt-[%s]", tDn))
+	l3extRsNodeL3OutAttMap, err := l3extRsNodeL3OutAtt.ToMap()
+
+	if err != nil {
+		return nil, err
+	}
+
+	tdn := l3extRsNodeL3OutAttMap["tDn"]
+	pDN := GetParentDn(dn, fmt.Sprintf("/rsnodeL3OutAtt-[%s]", tdn))
 	d.Set("logical_node_profile_dn", pDN)
-	schemaFilled := setFabricNodeAttributes(l3extRsNodeL3OutAtt, d)
+	schemaFilled, err := setFabricNodeAttributes(l3extRsNodeL3OutAtt, d)
+
+	if err != nil {
+		return nil, err
+	}
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciFabricNodeCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciFabricNodeCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] FabricNode: Beginning Creation")
 	aciClient := m.(*client.Client)
-	desc := d.Get("description").(string)
 
-	tDn := d.Get("tdn").(string)
+	tdn := d.Get("tdn").(string)
 
 	LogicalNodeProfileDn := d.Get("logical_node_profile_dn").(string)
 
@@ -154,29 +172,25 @@ func resourceAciFabricNodeCreate(d *schema.ResourceData, m interface{}) error {
 		l3extRsNodeL3OutAttAttr.RtrIdLoopBack = RtrIdLoopBack.(string)
 	}
 
-	l3extRsNodeL3OutAtt := models.NewFabricNode(fmt.Sprintf("rsnodeL3OutAtt-[%s]", tDn), LogicalNodeProfileDn, desc, l3extRsNodeL3OutAttAttr)
+	l3extRsNodeL3OutAtt := models.NewFabricNode(fmt.Sprintf("rsnodeL3OutAtt-[%s]", tdn), LogicalNodeProfileDn, l3extRsNodeL3OutAttAttr)
 
 	err := aciClient.Save(l3extRsNodeL3OutAtt)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.Partial(false)
 
 	d.SetId(l3extRsNodeL3OutAtt.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciFabricNodeRead(d, m)
+	return resourceAciFabricNodeRead(ctx, d, m)
 }
 
-func resourceAciFabricNodeUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciFabricNodeUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] FabricNode: Beginning Update")
 
 	aciClient := m.(*client.Client)
-	desc := d.Get("description").(string)
 
-	tDn := d.Get("tdn").(string)
+	tdn := d.Get("tdn").(string)
 
 	LogicalNodeProfileDn := d.Get("logical_node_profile_dn").(string)
 
@@ -196,27 +210,24 @@ func resourceAciFabricNodeUpdate(d *schema.ResourceData, m interface{}) error {
 		l3extRsNodeL3OutAttAttr.RtrIdLoopBack = RtrIdLoopBack.(string)
 	}
 
-	l3extRsNodeL3OutAtt := models.NewFabricNode(fmt.Sprintf("rsnodeL3OutAtt-[%s]", tDn), LogicalNodeProfileDn, desc, l3extRsNodeL3OutAttAttr)
+	l3extRsNodeL3OutAtt := models.NewFabricNode(fmt.Sprintf("rsnodeL3OutAtt-[%s]", tdn), LogicalNodeProfileDn, l3extRsNodeL3OutAttAttr)
 
 	l3extRsNodeL3OutAtt.Status = "modified"
 
 	err := aciClient.Save(l3extRsNodeL3OutAtt)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.Partial(false)
 
 	d.SetId(l3extRsNodeL3OutAtt.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciFabricNodeRead(d, m)
+	return resourceAciFabricNodeRead(ctx, d, m)
 
 }
 
-func resourceAciFabricNodeRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciFabricNodeRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -228,25 +239,30 @@ func resourceAciFabricNodeRead(d *schema.ResourceData, m interface{}) error {
 		d.SetId("")
 		return nil
 	}
-	setFabricNodeAttributes(l3extRsNodeL3OutAtt, d)
+	_, err = setFabricNodeAttributes(l3extRsNodeL3OutAtt, d)
+
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 
 	return nil
 }
 
-func resourceAciFabricNodeDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciFabricNodeDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "l3extRsNodeL3OutAtt")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
 }
