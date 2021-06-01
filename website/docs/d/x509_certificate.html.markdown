@@ -14,20 +14,20 @@ Data source for ACI X509 Certificate
 ```hcl
 data "aci_x509_certificate" "example" {
 
-  local_user_dn  = "${aci_local_user.example.id}"
+  local_user_dn  = aci_local_user.example.id
 
-  name  = "example"
+  name  = "x509_certificate_1"
 }
 ```
 ## Argument Reference ##
 * `local_user_dn` - (Required) Distinguished name of parent LocalUser object.
-* `name` - (Required) name of Object x509_certificate.
+* `name` - (Required) Name of Object x509_certificate.
 
 
 
 ## Attribute Reference
 
 * `id` - Attribute id set to the Dn of the X509 Certificate.
-* `annotation` - (Optional) annotation for object x509_certificate.
-* `data` - (Optional) data from the user certificate
-* `name_alias` - (Optional) name_alias for object x509_certificate.
+* `annotation` - (Optional) Annotation for object x509_certificate.
+* `data` - (Optional) Data from the user certificate
+* `name_alias` - (Optional) Name alias for object x509_certificate.

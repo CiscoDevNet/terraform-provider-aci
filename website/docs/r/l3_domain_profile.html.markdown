@@ -13,17 +13,15 @@ Manages ACI L3 Domain Profile
 
 ```hcl
 resource "aci_l3_domain_profile" "example" {
-
-
-  name  = "example"
-  annotation  = "example"
-  name_alias  = "example"
+  name  = "l3_domain_profile_1"
+  annotation  = "l3_domain_profile_tag"
+  name_alias  = "alias_name"
 }
 ```
 ## Argument Reference ##
-* `name` - (Required) name of Object l3_domain_profile.
-* `annotation` - (Optional) annotation for object l3_domain_profile.
-* `name_alias` - (Optional) name_alias for object l3_domain_profile.
+* `name` - (Required) Name of Object l3_domain_profile.
+* `annotation` - (Optional) Annotation for object l3_domain_profile.
+* `name_alias` - (Optional) Name alias for object l3_domain_profile.
 
 * `relation_infra_rs_vlan_ns` - (Optional) Relation to class fvnsVlanInstP. Cardinality - N_TO_ONE. Type - String.
                 

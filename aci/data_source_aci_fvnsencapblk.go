@@ -70,6 +70,7 @@ func dataSourceAciRangesRead(ctx context.Context, d *schema.ResourceData, m inte
 	if err != nil {
 		return diag.FromErr(err)
 	}
+
 	d.SetId(dn)
 	_, err = setRangesAttributes(fvnsEncapBlk, d)
 	if err != nil {
