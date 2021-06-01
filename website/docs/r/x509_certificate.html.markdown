@@ -13,9 +13,7 @@ Manages ACI X509 Certificate
 
 ```hcl
 resource "aci_x509_certificate" "example" {
-
   local_user_dn  = aci_local_user.example.id
-
   name  = "x509_certificate_1"
   annotation  = "x509_certificate_tag"
   data  = "example"
