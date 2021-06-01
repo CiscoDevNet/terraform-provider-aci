@@ -35,14 +35,14 @@ resource "aci_configuration_export_policy" "example" {
 - `annotation` - (Optional) Annotation for object configuration export policy.
 - `description` - (Optional) Description for object configuration export policy.
 - `format` - (Optional) Export data format.
-  Allowed values: "xml", "json". Default value is json.
-- `include_secure_fields` - (Optional) Include secure fields for object configuration export policy.
-  Allowed values: "no", "yes". Default value is yes.
+  Allowed values: "xml", "json". Default value is "json".
+- `include_secure_fields` - (Optional) Include_secure_fields for object configuration export policy.
+  Allowed values: "no", "yes".Default value is "yes".
 - `max_snapshot_count` - (Optional) Max snapshot count for object configuration export policy.
-  Allowed Values are betwwen 1 to 10.Default value is global-limit.
+  Allowed Values are betwwen 0 to 10. Default value is "global-limit" (0 is consider as a global limit).
 - `name_alias` - (Optional) Name alias for object configuration export policy.
 - `snapshot` - (Optional) Snapshot for object configuration export policy.
-  Allowed values: "no", "yes"Default value is no.
+  Allowed values: "no", "yes"Default value is "no".
 - `target_dn` - (Optional) Target export object. The distinguished name of the object to be exported.
 
 - `relation_config_rs_export_destination` - (Optional) Relation to class fileRemotePath. Cardinality - ONE_TO_ONE. Type - String.

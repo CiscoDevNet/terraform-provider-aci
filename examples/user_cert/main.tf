@@ -1,6 +1,10 @@
 resource "aci_x509_certificate" "test_cert" {
     local_user_dn = "uni/userext/user-admin"
-    name = "test"
+    description = "From Terraform"
+      
+    name = "test_1"
+    annotation  = "x509_certificate_tag"    
+    name_alias  = "alias_name"
     data =<<EOF
 -----BEGIN CERTIFICATE-----
 MIIB4TCCAUoCCQCUp2SLleZjbjANBgkqhkiG9w0BAQsFADA0MQ4wDAYDVQQDDAVB

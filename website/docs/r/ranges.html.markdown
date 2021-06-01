@@ -15,11 +15,12 @@ Manages ACI Ranges
 ```hcl
 resource "aci_ranges" "example" {
   vlan_pool_dn  = aci_vlan_pool.example.id
-  from          = "example"
-  to            = "example"
-  alloc_mode    = "example"
+  from          = "vlan-1"
+  description   = "From Terraform"
+  to            = "vlan-2"
+  alloc_mode    = "inherit"
   annotation    = "example"
-  name_alias    = "example"
+  name_alias    = "name_alias"
   role          = "external"
 }
 ```
@@ -27,12 +28,13 @@ resource "aci_ranges" "example" {
 ## Argument Reference ##
 
 * `vlan_pool_dn` - (Required) Distinguished name of parent VLANPool object.
-* `from` - (Required) _from of Object ranges.
-* `to` - (Required) to of Object ranges.
-* `alloc_mode` - (Optional) alloc_mode for object ranges.  Allowed values: "dynamic", "static", "inherit".
-* `annotation` - (Optional) annotation for object ranges.
-* `name_alias` - (Optional) name_alias for object ranges.
-* `role` - (Optional) system role type.  Allowed values: "external", "internal".  Default is "external".
+* `from` - (Required) From of Object ranges. Allowed value min: vlan-1, max: vlan-4094.
+* `to` - (Required) To of Object ranges. Allowed value min: vlan-1, max: vlan-4094.
+* `alloc_mode` - (Optional) Alloc mode for object ranges.  Allowed values: "dynamic", "static", "inherit". Default is   "inherrit".
+* `annotation` - (Optional) Annotation for object ranges.
+* `description` - (Optional) Description for object ranges.
+* `name_alias` - (Optional) Name alias for object ranges.
+* `role` - (Optional) System role type.  Allowed values: "external", "internal".  Default is "external".
 
 ## Attribute Reference ##
 
