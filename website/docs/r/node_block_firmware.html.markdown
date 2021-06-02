@@ -14,7 +14,7 @@ Manages ACI Node Block
 ```hcl
 resource "aci_node_block_firmware" "example" {
   firmware_group_dn  = aci_firmware_group.example.id
-  name        = "crest_test_vishwa"
+  name        = "test"
   description = "from terraform"
   annotation  = "annotation"
   from_       = "1"
