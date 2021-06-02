@@ -37,10 +37,10 @@ resource "aci_fabric_node_member" "example" {
 - `ext_pool_id` - (Optional) external pool ID for object Fabric Node member. Default value: "0".
 - `fabric_id` - (Optional) Fabric ID for the new Fabric Node Member. Default value: "1".
 - `name_alias` - (Optional) Name alias for object Fabric Node member.
-- `node_id` - (Optional) Node ID Number for the new Fabric Node Member. Default value: "0".
+- `node_id` - (Optional) Node ID Number for the new Fabric Node Member. Allowed value range: "101" - "4000". Default value: "0".
 - `node_type` - (Optional) Node type for object Fabric Node member.
   Allowed values: "unspecified", "remote-leaf-wan". Default value: "unspecified".
-- `pod_id` - (Optional) The pod id of the new Fabric Node Member. Default value: "1".
+- `pod_id` - (Optional) The pod id of the new Fabric Node Member. Allowed value range: "1" - "254". Default value: "1".
 - `role` - (Optional) Role for the new Fabric Node Member. 
   Allowed values: "unspecified", "leaf", "spine". Default value: "unspecified".
 
