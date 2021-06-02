@@ -30,7 +30,7 @@ resource "aci_configuration_import_policy" "example" {
 ## Argument Reference
 
 - `name` - (Required) The name of the import policy. For ease of reference, include details such as: the full or partial name of the file to be imported, the type/mode of import, and the remote location where the file is stored. The name cannot be changed after the policy has been created.
-- `admin_st` - (Optional) The administrative state of the executable policies. A policy can be triggered at any time by setting the admin_st to triggered. The value on APIC will reset back to untriggered once trigger is done. Allowed values: "untriggered", "triggered". 
+- `admin_st` - (Optional) The administrative state of the executable policies. A policy can be triggered at any time by setting the admin_st to triggered. The value on APIC will reset back to untriggered once trigger is done. Allowed values: "untriggered", "triggered". Default value: "untriggered".
 - `annotation` - (Optional) Specifies the annotation of a policy component.
 - `description` - (Optional) Specifies the description of a policy component.
 - `fail_on_decrypt_errors` - (Optional) Determines if the APIC should fail the rollback if unable to decrypt secured data. Allowed values: "no", "yes". Default value: "yes".
