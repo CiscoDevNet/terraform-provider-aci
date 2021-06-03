@@ -43,7 +43,7 @@ resource "aci_node_mgmt_epg" "out_of_band_example" {
 
 - `type` - (Required) Type of node management EPg to be configured.  
   Allowed values: "in_band", "out_of_band".
-- `management_profile_dn` - (Required) Distinguished name of parent management profile object.
+- `management_profile_dn` - (Optional) Distinguished name of parent management profile object. Default value: "uni/tn-mgmt/mgmtp-default".
 
 ### `type = "in_band"`
 
