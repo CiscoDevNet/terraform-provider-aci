@@ -234,13 +234,6 @@ func resourceAciRangesUpdate(ctx context.Context, d *schema.ResourceData, m inte
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
 	return resourceAciRangesRead(ctx, d, m)
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-
->>>>>>> 7dad5fb (change in the 1671)
-=======
->>>>>>> 92179b5 (ATPS-1672-73 changes in resource, data source and in index files)
 }
 
 func resourceAciRangesRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
