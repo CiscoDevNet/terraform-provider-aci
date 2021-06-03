@@ -59,9 +59,11 @@ func testAccCheckAciEPGsUsingFunctionConfig_basic(encap string) string {
 	return fmt.Sprintf(`
 
 	resource "aci_epgs_using_function" "fooep_gs_using_function" {
-		  access_generic_dn  = "${aci_access_generic.fooaccess_generic.id}"
+		  access_generic_dn	 = "uni/infra/attentp-demo_entity_prof/gen-default"
+		  #access_generic_dn  = "${aci_access_generic.fooaccess_generic.id}"
 		  annotation  = "example"
-		  tdn  = "${aci_application_epg.epg1.id}"
+		  tdn  = "uni/tn-crest_vishwa_test/ap-demo_ap/epg-demo_epg"
+		  #tdn  = "${aci_application_epg.epg1.id}"
 		  encap  = "%s"
 		  mode  = "regular"
 		  primary_encap  = "vlan-7"
