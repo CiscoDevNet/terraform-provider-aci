@@ -62,7 +62,6 @@ func testAccCheckAciInBandManagementEPgConfig_basic(description string) string {
 
 	resource "aci_node_mgmt_epg" "foonode_mgmt_epg" {
 		type = "in_band"
-		management_profile_dn  = "uni/tn-mgmt/mgmtp-default"
 		description = "%s"
 		name  = "example"
   		annotation  = "example"
@@ -224,7 +223,6 @@ func testAccCheckAciOutOfBandManagementEPgConfig_basic(description string) strin
 
 	resource "aci_node_mgmt_epg" "foonode_mgmt_epg" {
 		type = "out_of_band"
-		management_profile_dn  = "uni/tn-mgmt/mgmtp-default"
 		description = "%s"
 		name  = "example"
   		annotation  = "example"

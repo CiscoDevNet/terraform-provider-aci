@@ -16,13 +16,11 @@ Data source for ACI Node Management EPg
 
 data "aci_node_mgmt_epg" "example" {
   type = "in_band"
-  management_profile_dn  = "uni/tn-mgmt/mgmtp-default"
   name  = "example"
 }
 
 data "aci_node_mgmt_epg" "example" {
   type = "out_of_band"
-  management_profile_dn  = "uni/tn-mgmt/mgmtp-default"
   name  = "example"
 }
 
@@ -32,7 +30,6 @@ data "aci_node_mgmt_epg" "example" {
 
 - `type` - (Required) Type of node management EPg to be configured.  
   Allowed values: "in_band", "out_of_band".
-- `management_profile_dn` - (Required) Distinguished name of parent management profile object.
 - `name` - (Required) Name of Object node management EPg.
 
 ## Attribute Reference

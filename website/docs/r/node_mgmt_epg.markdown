@@ -16,7 +16,6 @@ Manages ACI Node Management EPg
 
 resource "aci_node_mgmt_epg" "in_band_example" {
   type = "in_band"
-  management_profile_dn  = "uni/tn-mgmt/mgmtp-default"
   name  = "example"
   annotation  = "example"
   encap  = "vlan-1"
@@ -30,7 +29,6 @@ resource "aci_node_mgmt_epg" "in_band_example" {
 
 resource "aci_node_mgmt_epg" "out_of_band_example" {
   type = "out_of_band"
-  management_profile_dn  = "uni/tn-mgmt/mgmtp-default"
   name  = "example"
   annotation  = "example"
   name_alias  = "example"
@@ -43,7 +41,6 @@ resource "aci_node_mgmt_epg" "out_of_band_example" {
 
 - `type` - (Required) Type of node management EPg to be configured.  
   Allowed values: "in_band", "out_of_band".
-- `management_profile_dn` - (Required) Distinguished name of parent management profile object.
 
 ### `type = "in_band"`
 
@@ -56,7 +53,6 @@ resource "aci_node_mgmt_epg" "out_of_band_example" {
 - `match_t` - (Optional) The provider label match criteria.
   Allowed values: "All", "AtleastOne", "AtmostOne", "None". Default value: "AtleastOne".
 - `name_alias` - (Optional) Name alias for object in-band management EPg.
-
 - `pref_gr_memb` - (Optional) Represents parameter used to determine if EPg is part of a group that does not a contract for communication.
   Allowed values: "exclude", "include". Default value: "exclude".
 - `prio` - (Optional) The QoS priority class identifier.

@@ -15,7 +15,6 @@ provider "aci" {
 
 resource "aci_node_mgmt_epg" "in_band_example" {
   type = "in_band"
-  management_profile_dn  = "uni/tn-mgmt/mgmtp-default"
   name  = "inb_example"
   annotation  = "example"
   encap  = "vlan-1"
@@ -29,7 +28,6 @@ resource "aci_node_mgmt_epg" "in_band_example" {
 
 resource "aci_node_mgmt_epg" "out_of_band_example" {
   type = "out_of_band"
-  management_profile_dn  = "uni/tn-mgmt/mgmtp-default"
   name  = "oob_example"
   annotation  = "example"
   name_alias  = "example"

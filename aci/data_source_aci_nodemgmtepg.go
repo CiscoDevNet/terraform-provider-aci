@@ -26,11 +26,6 @@ func dataSourceAciNodeManagementEPg() *schema.Resource {
 				}, false),
 			},
 
-			"management_profile_dn": &schema.Schema{
-				Type:     schema.TypeString,
-				Required: true,
-			},
-
 			"name": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
@@ -100,9 +95,8 @@ func dataSourceInBandManagementEPgRead(d *schema.ResourceData, m interface{}) er
 	name := d.Get("name").(string)
 
 	rn := fmt.Sprintf("inb-%s", name)
-	ManagementProfileDn := d.Get("management_profile_dn").(string)
 
-	dn := fmt.Sprintf("%s/%s", ManagementProfileDn, rn)
+	dn := fmt.Sprintf("uni/tn-mgmt/mgmtp-default/%s", rn)
 
 	mgmtInB, err := getRemoteInBandManagementEPg(aciClient, dn)
 
@@ -120,9 +114,8 @@ func dataSourceOutOfBandManagementEPgRead(d *schema.ResourceData, m interface{})
 	name := d.Get("name").(string)
 
 	rn := fmt.Sprintf("oob-%s", name)
-	ManagementProfileDn := d.Get("management_profile_dn").(string)
 
-	dn := fmt.Sprintf("%s/%s", ManagementProfileDn, rn)
+	dn := fmt.Sprintf("uni/tn-mgmt/mgmtp-default/%s", rn)
 
 	mgmtOoB, err := getRemoteOutOfBandManagementEPg(aciClient, dn)
 

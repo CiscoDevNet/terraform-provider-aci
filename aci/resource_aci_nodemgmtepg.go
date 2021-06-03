@@ -39,12 +39,6 @@ func resourceAciNodeManagementEPg() *schema.Resource {
 				}, false),
 			},
 
-			"management_profile_dn": &schema.Schema{
-				Type:     schema.TypeString,
-				Required: true,
-				ForceNew: true,
-			},
-
 			"name": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
@@ -296,10 +290,6 @@ func getRemoteOutOfBandManagementEPg(client *client.Client, dn string) (*models.
 func setInBandManagementEPgAttributes(mgmtInB *models.InBandManagementEPg, d *schema.ResourceData) *schema.ResourceData {
 	d.SetId(mgmtInB.DistinguishedName)
 	d.Set("description", mgmtInB.Description)
-	dn := d.Id()
-	if dn != mgmtInB.DistinguishedName {
-		d.Set("management_profile_dn", "")
-	}
 	mgmtInBMap, _ := mgmtInB.ToMap()
 
 	d.Set("name", mgmtInBMap["name"])
@@ -318,10 +308,6 @@ func setInBandManagementEPgAttributes(mgmtInB *models.InBandManagementEPg, d *sc
 func setOutOfBandManagementEPgAttributes(mgmtOoB *models.OutOfBandManagementEPg, d *schema.ResourceData) *schema.ResourceData {
 	d.SetId(mgmtOoB.DistinguishedName)
 	d.Set("description", mgmtOoB.Description)
-	dn := d.Id()
-	if dn != mgmtOoB.DistinguishedName {
-		d.Set("management_profile_dn", "")
-	}
 	mgmtOoBMap, _ := mgmtOoB.ToMap()
 
 	d.Set("name", mgmtOoBMap["name"])
@@ -374,8 +360,6 @@ func inBandManagementEPgCreate(d *schema.ResourceData, m interface{}) error {
 
 	name := d.Get("name").(string)
 
-	ManagementProfileDn := d.Get("management_profile_dn").(string)
-
 	mgmtInBAttr := models.InBandManagementEPgAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		mgmtInBAttr.Annotation = Annotation.(string)
@@ -403,7 +387,7 @@ func inBandManagementEPgCreate(d *schema.ResourceData, m interface{}) error {
 	if Prio, ok := d.GetOk("prio"); ok {
 		mgmtInBAttr.Prio = Prio.(string)
 	}
-	mgmtInB := models.NewInBandManagementEPg(fmt.Sprintf("inb-%s", name), ManagementProfileDn, desc, mgmtInBAttr)
+	mgmtInB := models.NewInBandManagementEPg(fmt.Sprintf("inb-%s", name), "uni/tn-mgmt/mgmtp-default", desc, mgmtInBAttr)
 
 	err := aciClient.Save(mgmtInB)
 	if err != nil {
@@ -611,8 +595,6 @@ func outOfBandManagementEPgCreate(d *schema.ResourceData, m interface{}) error {
 
 	name := d.Get("name").(string)
 
-	ManagementProfileDn := d.Get("management_profile_dn").(string)
-
 	mgmtOoBAttr := models.OutOfBandManagementEPgAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		mgmtOoBAttr.Annotation = Annotation.(string)
@@ -625,7 +607,7 @@ func outOfBandManagementEPgCreate(d *schema.ResourceData, m interface{}) error {
 	if Prio, ok := d.GetOk("prio"); ok {
 		mgmtOoBAttr.Prio = Prio.(string)
 	}
-	mgmtOoB := models.NewOutOfBandManagementEPg(fmt.Sprintf("oob-%s", name), ManagementProfileDn, desc, mgmtOoBAttr)
+	mgmtOoB := models.NewOutOfBandManagementEPg(fmt.Sprintf("oob-%s", name), "uni/tn-mgmt/mgmtp-default", desc, mgmtOoBAttr)
 
 	err := aciClient.Save(mgmtOoB)
 	if err != nil {
@@ -718,8 +700,6 @@ func inBandManagementEPgUpdate(d *schema.ResourceData, m interface{}) error {
 
 	name := d.Get("name").(string)
 
-	ManagementProfileDn := d.Get("management_profile_dn").(string)
-
 	mgmtInBAttr := models.InBandManagementEPgAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		mgmtInBAttr.Annotation = Annotation.(string)
@@ -747,7 +727,7 @@ func inBandManagementEPgUpdate(d *schema.ResourceData, m interface{}) error {
 	if Prio, ok := d.GetOk("prio"); ok {
 		mgmtInBAttr.Prio = Prio.(string)
 	}
-	mgmtInB := models.NewInBandManagementEPg(fmt.Sprintf("inb-%s", name), ManagementProfileDn, desc, mgmtInBAttr)
+	mgmtInB := models.NewInBandManagementEPg(fmt.Sprintf("inb-%s", name), "uni/tn-mgmt/mgmtp-default", desc, mgmtInBAttr)
 
 	mgmtInB.Status = "modified"
 
@@ -1100,8 +1080,6 @@ func outOfBandManagementEPgUpdate(d *schema.ResourceData, m interface{}) error {
 
 	name := d.Get("name").(string)
 
-	ManagementProfileDn := d.Get("management_profile_dn").(string)
-
 	mgmtOoBAttr := models.OutOfBandManagementEPgAttributes{}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		mgmtOoBAttr.Annotation = Annotation.(string)
@@ -1114,7 +1092,7 @@ func outOfBandManagementEPgUpdate(d *schema.ResourceData, m interface{}) error {
 	if Prio, ok := d.GetOk("prio"); ok {
 		mgmtOoBAttr.Prio = Prio.(string)
 	}
-	mgmtOoB := models.NewOutOfBandManagementEPg(fmt.Sprintf("oob-%s", name), ManagementProfileDn, desc, mgmtOoBAttr)
+	mgmtOoB := models.NewOutOfBandManagementEPg(fmt.Sprintf("oob-%s", name), "uni/tn-mgmt/mgmtp-default", desc, mgmtOoBAttr)
 
 	mgmtOoB.Status = "modified"
 
