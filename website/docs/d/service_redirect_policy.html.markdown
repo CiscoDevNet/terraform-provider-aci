@@ -14,7 +14,7 @@ Data source for ACI Service Redirect Policy
 ```hcl
 
 data "aci_service_redirect_policy" "example" {
-  tenant_dn   = "${aci_tenant.example.id}"
+  tenant_dn   = aci_tenant.example.id
   name        = "example"
 }
 
@@ -23,21 +23,22 @@ data "aci_service_redirect_policy" "example" {
 
 ## Argument Reference ##
 * `tenant_dn` - (Required) Distinguished name of parent Tenant object.
-* `name` - (Required) name of Object service_redirect_policy.
+* `name` - (Required) Name of Object Service Redirect Policy.
 
 
 
 ## Attribute Reference
 
 * `id` - Attribute id set to the Dn of the Service Redirect Policy.
-* `anycast_enabled` - (Optional) anycast_enabled for object service_redirect_policy.
-* `annotation` - (Optional) annotation for object service_redirect_policy.
-* `dest_type` - (Optional) dest_type for object service_redirect_policy.
-* `hashing_algorithm` - (Optional) hashing_algorithm for object service_redirect_policy.
-* `max_threshold_percent` - (Optional) max_threshold_percent for object service_redirect_policy.
-* `min_threshold_percent` - (Optional) min_threshold_percent for object service_redirect_policy.
-* `name_alias` - (Optional) name_alias for object service_redirect_policy.
-* `program_local_pod_only` - (Optional) program_local_pod_only for object service_redirect_policy.
-* `resilient_hash_enabled` - (Optional) resilient_hash_enabled for object service_redirect_policy.
-* `threshold_down_action` - (Optional) threshold_down_action for object service_redirect_policy.
-* `threshold_enable` - (Optional) threshold_enable for object service_redirect_policy.
+* `anycast_enabled` - (Optional) Anycast enabled for object Service Redirect Policy.
+* `annotation` - (Optional) annotation for object Service Redirect Policy.
+* `description` - (Optional) Description of object Service Redirect Policy.
+* `dest_type` - (Optional) Dest type for object Service Redirect Policy.
+* `hashing_algorithm` - (Optional) Hashing algorithm for object Service Redirect Policy.
+* `max_threshold_percent` - (Optional) Max threshold percent for object Service Redirect Policy.
+* `min_threshold_percent` - (Optional) Min threshold percent for object Service Redirect Policy.
+* `name_alias` - (Optional) Name alias for object Service Redirect Policy.
+* `program_local_pod_only` - (Optional) Program local pod only for object Service Redirect Policy.
+* `resilient_hash_enabled` - (Optional) Resilient hash enabled for object Service Redirect Policy.
+* `threshold_down_action` - (Optional) Threshold down action for object Service Redirect Policy.
+* `threshold_enable` - (Optional) Threshold enable for object Service Redirect Policy.
