@@ -1,20 +1,22 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func resourceAciAccessGeneric() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciAccessGenericCreate,
-		Update: resourceAciAccessGenericUpdate,
-		Read:   resourceAciAccessGenericRead,
-		Delete: resourceAciAccessGenericDelete,
+		CreateContext: resourceAciAccessGenericCreate,
+		UpdateContext: resourceAciAccessGenericUpdate,
+		ReadContext:   resourceAciAccessGenericRead,
+		DeleteContext: resourceAciAccessGenericDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciAccessGenericImport,
@@ -43,6 +45,7 @@ func resourceAciAccessGeneric() *schema.Resource {
 		}),
 	}
 }
+
 func getRemoteAccessGeneric(client *client.Client, dn string) (*models.AccessGeneric, error) {
 	infraGenericCont, err := client.Get(dn)
 	if err != nil {
@@ -58,20 +61,23 @@ func getRemoteAccessGeneric(client *client.Client, dn string) (*models.AccessGen
 	return infraGeneric, nil
 }
 
-func setAccessGenericAttributes(infraGeneric *models.AccessGeneric, d *schema.ResourceData) *schema.ResourceData {
+func setAccessGenericAttributes(infraGeneric *models.AccessGeneric, d *schema.ResourceData) (*schema.ResourceData, error) {
 	dn := d.Id()
 	d.SetId(infraGeneric.DistinguishedName)
 	d.Set("description", infraGeneric.Description)
 	if dn != infraGeneric.DistinguishedName {
 		d.Set("attachable_access_entity_profile_dn", "")
 	}
-	infraGenericMap, _ := infraGeneric.ToMap()
+	infraGenericMap, err := infraGeneric.ToMap()
+	if err != nil {
+		return d, err
+	}
 
 	d.Set("name", infraGenericMap["name"])
 
 	d.Set("annotation", infraGenericMap["annotation"])
 	d.Set("name_alias", infraGenericMap["nameAlias"])
-	return d
+	return d, nil
 }
 
 func resourceAciAccessGenericImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -85,18 +91,24 @@ func resourceAciAccessGenericImport(d *schema.ResourceData, m interface{}) ([]*s
 	if err != nil {
 		return nil, err
 	}
-	infraGenericMap, _ := infraGeneric.ToMap()
+	infraGenericMap, err := infraGeneric.ToMap()
+	if err != nil {
+		return nil, err
+	}
 	name := infraGenericMap["name"]
 	pDN := GetParentDn(dn, fmt.Sprintf("/gen-%s", name))
 	d.Set("attachable_access_entity_profile_dn", pDN)
-	schemaFilled := setAccessGenericAttributes(infraGeneric, d)
+	schemaFilled, err := setAccessGenericAttributes(infraGeneric, d)
+	if err != nil {
+		return nil, err
+	}
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciAccessGenericCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciAccessGenericCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] AccessGeneric: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -118,19 +130,17 @@ func resourceAciAccessGenericCreate(d *schema.ResourceData, m interface{}) error
 
 	err := aciClient.Save(infraGeneric)
 	if err != nil {
-		return err
-	}
-	d.Partial(true)
+		return diag.FromErr(err)
 
-	d.Partial(false)
+	}
 
 	d.SetId(infraGeneric.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciAccessGenericRead(d, m)
+	return resourceAciAccessGenericRead(ctx, d, m)
 }
 
-func resourceAciAccessGenericUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciAccessGenericUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] AccessGeneric: Beginning Update")
 
 	aciClient := m.(*client.Client)
@@ -156,20 +166,17 @@ func resourceAciAccessGenericUpdate(d *schema.ResourceData, m interface{}) error
 	err := aciClient.Save(infraGeneric)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.Partial(false)
 
 	d.SetId(infraGeneric.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciAccessGenericRead(d, m)
+	return resourceAciAccessGenericRead(ctx, d, m)
 
 }
 
-func resourceAciAccessGenericRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciAccessGenericRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -181,25 +188,30 @@ func resourceAciAccessGenericRead(d *schema.ResourceData, m interface{}) error {
 		d.SetId("")
 		return nil
 	}
-	setAccessGenericAttributes(infraGeneric, d)
+	_, err = setAccessGenericAttributes(infraGeneric, d)
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 
 	return nil
 }
 
-func resourceAciAccessGenericDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciAccessGenericDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "infraGeneric")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
+
 }
