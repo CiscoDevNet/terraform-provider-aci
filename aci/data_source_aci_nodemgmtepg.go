@@ -28,7 +28,8 @@ func dataSourceAciNodeManagementEPg() *schema.Resource {
 
 			"management_profile_dn": &schema.Schema{
 				Type:     schema.TypeString,
-				Required: true,
+				Optional: true,
+				Default:  "uni/tn-mgmt/mgmtp-default",
 			},
 
 			"name": &schema.Schema{
