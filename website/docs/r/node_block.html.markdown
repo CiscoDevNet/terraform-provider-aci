@@ -13,7 +13,7 @@ Manages ACI Node Block
 
 ```hcl
 resource "aci_node_block" "check" {
-  switch_association_dn   = "${aci_leaf_selector.example.id}"
+  switch_association_dn   = aci_leaf_selector.example.id
   name                    = "block"
   annotation              = "aci_node_block"
   from_                   = "105"
@@ -22,13 +22,12 @@ resource "aci_node_block" "check" {
 }
 ```
 ## Argument Reference ##
-* `switch_association_dn` - (Required) Distinguished name of parent SwitchAssociation object.
-* `name` - (Required) name of Object node_block.
-* `annotation` - (Optional) annotation for object node_block.
-* `from_` - (Optional) from Node ID. Range from 101 to 110
-* `name_alias` - (Optional) name_alias for object node_block.
-* `to_` - (Optional) to node ID. Range from 101 to 110
-
+* `switch_association_dn` - (Required) Distinguished name of parent Switch Association object.
+* `name` - (Required) Name of Object node_block.
+* `annotation` - (Optional) Annotation for object node_block.
+* `from_` - (Optional) From Node ID. Range from 101 to 110
+* `name_alias` - (Optional) Name_alias for object node_block.
+* `to_` - (Optional) To node ID. Range from 101 to 110
 
 
 ## Attribute Reference
