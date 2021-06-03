@@ -1,6 +1,7 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"reflect"
@@ -8,16 +9,17 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciAny() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciAnyCreate,
-		Update: resourceAciAnyUpdate,
-		Read:   resourceAciAnyRead,
-		Delete: resourceAciAnyDelete,
+		CreateContext: resourceAciAnyCreate,
+		UpdateContext: resourceAciAnyUpdate,
+		ReadContext:   resourceAciAnyRead,
+		DeleteContext: resourceAciAnyDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciAnyImport,
@@ -96,21 +98,23 @@ func getRemoteAny(client *client.Client, dn string) (*models.Any, error) {
 	return vzAny, nil
 }
 
-func setAnyAttributes(vzAny *models.Any, d *schema.ResourceData) *schema.ResourceData {
+func setAnyAttributes(vzAny *models.Any, d *schema.ResourceData) (*schema.ResourceData, error) {
 	dn := d.Id()
 	d.SetId(vzAny.DistinguishedName)
 	d.Set("description", vzAny.Description)
-	// d.Set("vrf_dn", GetParentDn(vzAny.DistinguishedName))
 	if dn != vzAny.DistinguishedName {
 		d.Set("vrf_dn", "")
 	}
-	vzAnyMap, _ := vzAny.ToMap()
+	vzAnyMap, err := vzAny.ToMap()
+	if err != nil {
+		return d, err
+	}
 
 	d.Set("annotation", vzAnyMap["annotation"])
 	d.Set("match_t", vzAnyMap["matchT"])
 	d.Set("name_alias", vzAnyMap["nameAlias"])
 	d.Set("pref_gr_memb", vzAnyMap["prefGrMemb"])
-	return d
+	return d, nil
 }
 
 func resourceAciAnyImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -126,14 +130,16 @@ func resourceAciAnyImport(d *schema.ResourceData, m interface{}) ([]*schema.Reso
 	}
 	pDN := GetParentDn(dn, fmt.Sprintf("/any"))
 	d.Set("vrf_dn", pDN)
-	schemaFilled := setAnyAttributes(vzAny, d)
-
+	schemaFilled, err := setAnyAttributes(vzAny, d)
+	if err != nil {
+		return nil, err
+	}
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciAnyCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciAnyCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] Any: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -158,10 +164,8 @@ func resourceAciAnyCreate(d *schema.ResourceData, m interface{}) error {
 	vzAny.Status = "modified"
 	err := aciClient.Save(vzAny)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
 
@@ -189,7 +193,7 @@ func resourceAciAnyCreate(d *schema.ResourceData, m interface{}) error {
 	d.Partial(true)
 	err = checkTDn(aciClient, checkDns)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Partial(false)
 
@@ -200,10 +204,9 @@ func resourceAciAnyCreate(d *schema.ResourceData, m interface{}) error {
 			err = aciClient.CreateRelationvzRsAnyToConsFromAny(vzAny.DistinguishedName, relationParamName)
 
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
-			d.Partial(true)
-			d.Partial(false)
+
 		}
 	}
 	if relationTovzRsAnyToConsIf, ok := d.GetOk("relation_vz_rs_any_to_cons_if"); ok {
@@ -213,10 +216,9 @@ func resourceAciAnyCreate(d *schema.ResourceData, m interface{}) error {
 			err = aciClient.CreateRelationvzRsAnyToConsIfFromAny(vzAny.DistinguishedName, relationParamName)
 
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
-			d.Partial(true)
-			d.Partial(false)
+
 		}
 	}
 	if relationTovzRsAnyToProv, ok := d.GetOk("relation_vz_rs_any_to_prov"); ok {
@@ -226,20 +228,19 @@ func resourceAciAnyCreate(d *schema.ResourceData, m interface{}) error {
 			err = aciClient.CreateRelationvzRsAnyToProvFromAny(vzAny.DistinguishedName, relationParamName)
 
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
-			d.Partial(true)
-			d.Partial(false)
+
 		}
 	}
 
 	d.SetId(vzAny.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciAnyRead(d, m)
+	return resourceAciAnyRead(ctx, d, m)
 }
 
-func resourceAciAnyUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciAnyUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] Any: Beginning Update")
 
 	aciClient := m.(*client.Client)
@@ -269,10 +270,8 @@ func resourceAciAnyUpdate(d *schema.ResourceData, m interface{}) error {
 	err := aciClient.Save(vzAny)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
 
@@ -312,7 +311,7 @@ func resourceAciAnyUpdate(d *schema.ResourceData, m interface{}) error {
 	d.Partial(true)
 	err = checkTDn(aciClient, checkDns)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Partial(false)
 
@@ -327,7 +326,7 @@ func resourceAciAnyUpdate(d *schema.ResourceData, m interface{}) error {
 			relDnName := GetMOName(relDn)
 			err = aciClient.DeleteRelationvzRsAnyToConsFromAny(vzAny.DistinguishedName, relDnName)
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 		}
@@ -336,10 +335,8 @@ func resourceAciAnyUpdate(d *schema.ResourceData, m interface{}) error {
 			relDnName := GetMOName(relDn)
 			err = aciClient.CreateRelationvzRsAnyToConsFromAny(vzAny.DistinguishedName, relDnName)
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
-			d.Partial(true)
-			d.Partial(false)
 
 		}
 
@@ -355,7 +352,7 @@ func resourceAciAnyUpdate(d *schema.ResourceData, m interface{}) error {
 			relDnName := GetMOName(relDn)
 			err = aciClient.DeleteRelationvzRsAnyToConsIfFromAny(vzAny.DistinguishedName, relDnName)
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 		}
@@ -364,10 +361,8 @@ func resourceAciAnyUpdate(d *schema.ResourceData, m interface{}) error {
 			relDnName := GetMOName(relDn)
 			err = aciClient.CreateRelationvzRsAnyToConsIfFromAny(vzAny.DistinguishedName, relDnName)
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
-			d.Partial(true)
-			d.Partial(false)
 
 		}
 
@@ -383,7 +378,7 @@ func resourceAciAnyUpdate(d *schema.ResourceData, m interface{}) error {
 			relDnName := GetMOName(relDn)
 			err = aciClient.DeleteRelationvzRsAnyToProvFromAny(vzAny.DistinguishedName, relDnName)
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 		}
@@ -392,10 +387,8 @@ func resourceAciAnyUpdate(d *schema.ResourceData, m interface{}) error {
 			relDnName := GetMOName(relDn)
 			err = aciClient.CreateRelationvzRsAnyToProvFromAny(vzAny.DistinguishedName, relDnName)
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
-			d.Partial(true)
-			d.Partial(false)
 
 		}
 
@@ -404,11 +397,11 @@ func resourceAciAnyUpdate(d *schema.ResourceData, m interface{}) error {
 	d.SetId(vzAny.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciAnyRead(d, m)
+	return resourceAciAnyRead(ctx, d, m)
 
 }
 
-func resourceAciAnyRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciAnyRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -420,7 +413,11 @@ func resourceAciAnyRead(d *schema.ResourceData, m interface{}) error {
 		d.SetId("")
 		return nil
 	}
-	setAnyAttributes(vzAny, d)
+	_, err = setAnyAttributes(vzAny, d)
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 
 	vzRsAnyToConsData, err := aciClient.ReadRelationvzRsAnyToConsFromAny(dn)
 	if err != nil {
@@ -496,18 +493,18 @@ func resourceAciAnyRead(d *schema.ResourceData, m interface{}) error {
 	return nil
 }
 
-func resourceAciAnyDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciAnyDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "vzAny")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
 }
