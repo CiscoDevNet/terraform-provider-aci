@@ -25,9 +25,9 @@ resource "aci_logical_node_to_fabric_node" "example" {
 * `logical_node_profile_dn` - (Required) Distinguished name of parent LogicalNodeProfile object.
 * `tdn` - (Required) Tdn of Object Fabric Node.
 * `annotation` - (Optional) Annotation for object Fabric Node.
-* `config_issues` - (Optional) Configuration issues.Allowed values: "anchor-node-mismatch", "bd-profile-missmatch", "loopback-ip-missing", "missing-mpls-infra-l3out", "missing-rs-export-route-profile", "node-path-misconfig", "node-vlif-misconfig", "none", "routerid-not-changable-with-mcast", "subnet-mismatch". Default value: "none"
+* `config_issues` - (Optional) Configuration issues. Allowed values: "anchor-node-mismatch", "bd-profile-missmatch", "loopback-ip-missing", "missing-mpls-infra-l3out", "missing-rs-export-route-profile", "node-path-misconfig", "node-vlif-misconfig", "none", "routerid-not-changable-with-mcast", "subnet-mismatch". Default value: "none"
 * `rtr_id` - (Optional) Router identifier
-* `rtr_id_loop_back` - (Optional) Allowed values: "yes", "no", "true", "false". Default value: "yes"
+* `rtr_id_loop_back` - (Optional) Allowed values: "yes", "no". Default value: "yes"
 
 
 
