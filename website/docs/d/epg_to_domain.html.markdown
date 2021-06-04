@@ -21,7 +21,7 @@ data "aci_epg_to_domain" "temp" {
 ```
 ## Argument Reference ##
 * `application_epg_dn` - (Required) Distinguished name of parent ApplicationEPG object.
-* `tdn` - (Required) vmm domain instance.
+* `tdn` - (Required) Vmm domain instance.
 
 
 

@@ -45,6 +45,12 @@ func resourceAciFabricNode() *schema.Resource {
 					"node-path-misconfig",
 					"routerid-not-changable-with-mcast",
 					"loopback-ip-missing",
+					"anchor-node-mismatch",
+					"bd-profile-missmatch",
+					"missing-mpls-infra-l3out",
+					"missing-rs-export-route-profile",
+					"node-vlif-misconfig",
+					"subnet-mismatch",
 				}, false),
 			},
 
