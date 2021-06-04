@@ -23,12 +23,12 @@ data "aci_spine_port_selector" "example" {
 
 ## Argument Reference ##
 * `spine_profile_dn` - (Required) Distinguished name of parent SpineProfile object.
-* `tdn` - (Required) tDn of Object interface_profile.
+* `tdn` - (Required) tDn of Object Interface profile.
 
 
 
 ## Attribute Reference
 
 * `id` - Attribute id set to the Dn of the port selector.
-* `annotation` - (Optional) annotation for object port selector.
+* `annotation` - (Optional) Annotation for object port selector.
 
