@@ -28,9 +28,9 @@ resource "aci_node_block" "check" {
 - `switch_association_dn` - (Required) Distinguished name of parent Leaf selector object.
 - `name` - (Required) Name of Object node block.
 - `annotation` - (Optional) Annotation for object node block.
-- `from_` - (Optional) From Node ID. Range from 101 to 110.
+- `from_` - (Optional) From Node ID. Range from 101 to 110. Default value is "1".
 - `name_alias` - (Optional) Name alias for object node block.
-- `to_` - (Optional) To node ID. Range from 101 to 110.
+- `to_` - (Optional) To node ID. Range from 101 to 110. Default value is "1".
 
 ## Attribute Reference
 
