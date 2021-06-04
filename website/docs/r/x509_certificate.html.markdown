@@ -17,7 +17,7 @@ resource "aci_x509_certificate" "example" {
   local_user_dn  = aci_local_user.example.id
   name           = "x509_certificate_1"
   annotation     = "x509_certificate_tag"
-  description    = from terraform
+  description    = "from terraform"
   data           = "example"
   name_alias     = "alias_name"
 }
