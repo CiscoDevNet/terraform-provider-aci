@@ -1,6 +1,7 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"reflect"
@@ -8,16 +9,17 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciConnection() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciConnectionCreate,
-		Update: resourceAciConnectionUpdate,
-		Read:   resourceAciConnectionRead,
-		Delete: resourceAciConnectionDelete,
+		CreateContext: resourceAciConnectionCreate,
+		UpdateContext: resourceAciConnectionUpdate,
+		ReadContext:   resourceAciConnectionRead,
+		DeleteContext: resourceAciConnectionDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciConnectionImport,
@@ -164,7 +166,7 @@ func resourceAciConnectionImport(d *schema.ResourceData, m interface{}) ([]*sche
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciConnectionCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciConnectionCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] Connection: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -201,11 +203,8 @@ func resourceAciConnectionCreate(d *schema.ResourceData, m interface{}) error {
 
 	err := aciClient.Save(vnsAbsConnection)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
 
@@ -225,7 +224,7 @@ func resourceAciConnectionCreate(d *schema.ResourceData, m interface{}) error {
 	d.Partial(true)
 	err = checkTDn(aciClient, checkDns)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Partial(false)
 
@@ -235,10 +234,9 @@ func resourceAciConnectionCreate(d *schema.ResourceData, m interface{}) error {
 			err = aciClient.CreateRelationvnsRsAbsCopyConnectionFromConnection(vnsAbsConnection.DistinguishedName, relationParam)
 
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
-			d.Partial(true)
-			d.Partial(false)
+
 		}
 	}
 	if relationTovnsRsAbsConnectionConns, ok := d.GetOk("relation_vns_rs_abs_connection_conns"); ok {
@@ -247,20 +245,19 @@ func resourceAciConnectionCreate(d *schema.ResourceData, m interface{}) error {
 			err = aciClient.CreateRelationvnsRsAbsConnectionConnsFromConnection(vnsAbsConnection.DistinguishedName, relationParam)
 
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
-			d.Partial(true)
-			d.Partial(false)
+
 		}
 	}
 
 	d.SetId(vnsAbsConnection.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciConnectionRead(d, m)
+	return resourceAciConnectionRead(ctx, d, m)
 }
 
-func resourceAciConnectionUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciConnectionUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] Connection: Beginning Update")
 
 	aciClient := m.(*client.Client)
@@ -301,11 +298,8 @@ func resourceAciConnectionUpdate(d *schema.ResourceData, m interface{}) error {
 	err := aciClient.Save(vnsAbsConnection)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
 
@@ -334,7 +328,7 @@ func resourceAciConnectionUpdate(d *schema.ResourceData, m interface{}) error {
 	d.Partial(true)
 	err = checkTDn(aciClient, checkDns)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Partial(false)
 
@@ -348,7 +342,7 @@ func resourceAciConnectionUpdate(d *schema.ResourceData, m interface{}) error {
 		for _, relDn := range relToDelete {
 			err = aciClient.DeleteRelationvnsRsAbsCopyConnectionFromConnection(vnsAbsConnection.DistinguishedName, relDn)
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 		}
@@ -356,10 +350,8 @@ func resourceAciConnectionUpdate(d *schema.ResourceData, m interface{}) error {
 		for _, relDn := range relToCreate {
 			err = aciClient.CreateRelationvnsRsAbsCopyConnectionFromConnection(vnsAbsConnection.DistinguishedName, relDn)
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
-			d.Partial(true)
-			d.Partial(false)
 
 		}
 
@@ -374,7 +366,7 @@ func resourceAciConnectionUpdate(d *schema.ResourceData, m interface{}) error {
 		for _, relDn := range relToDelete {
 			err = aciClient.DeleteRelationvnsRsAbsConnectionConnsFromConnection(vnsAbsConnection.DistinguishedName, relDn)
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 		}
@@ -382,10 +374,8 @@ func resourceAciConnectionUpdate(d *schema.ResourceData, m interface{}) error {
 		for _, relDn := range relToCreate {
 			err = aciClient.CreateRelationvnsRsAbsConnectionConnsFromConnection(vnsAbsConnection.DistinguishedName, relDn)
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
-			d.Partial(true)
-			d.Partial(false)
 
 		}
 
@@ -394,11 +384,11 @@ func resourceAciConnectionUpdate(d *schema.ResourceData, m interface{}) error {
 	d.SetId(vnsAbsConnection.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciConnectionRead(d, m)
+	return resourceAciConnectionRead(ctx, d, m)
 
 }
 
-func resourceAciConnectionRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciConnectionRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -453,18 +443,18 @@ func resourceAciConnectionRead(d *schema.ResourceData, m interface{}) error {
 	return nil
 }
 
-func resourceAciConnectionDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciConnectionDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "vnsAbsConnection")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
 }
