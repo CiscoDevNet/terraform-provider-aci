@@ -13,10 +13,8 @@ Data source for ACI Logical Node to Fabric Node
 
 ```hcl
 data "aci_logical_node_to_fabric_node" "example" {
-
   logical_node_profile_dn  = aci_logical_node_profile.example.id
-
-  tdn  = "example"
+  tdn  = "topology/pod-1/node-201"
 }
 ```
 ## Argument Reference ##
