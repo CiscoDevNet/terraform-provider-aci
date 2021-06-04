@@ -14,7 +14,7 @@ Data source for ACI EPG to Static Path
 ```hcl
 data "aci_epg_to_static_path" "example" {
   application_epg_dn  = aci_application_epg.example.id
-  tdn  = "example"
+  tdn  = "topology/pod-1/paths-129/pathep-[eth1/3]"
 }
 ```
 ## Argument Reference ##
