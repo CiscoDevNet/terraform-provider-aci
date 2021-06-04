@@ -1,21 +1,23 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciDomain() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciDomainCreate,
-		Update: resourceAciDomainUpdate,
-		Read:   resourceAciDomainRead,
-		Delete: resourceAciDomainDelete,
+		CreateContext: resourceAciDomainCreate,
+		UpdateContext: resourceAciDomainUpdate,
+		ReadContext:   resourceAciDomainRead,
+		DeleteContext: resourceAciDomainDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciDomainImport,
@@ -124,9 +126,9 @@ func resourceAciDomain() *schema.Resource {
 				Optional: true,
 				Computed: true,
 				ValidateFunc: validation.StringInSlice([]string{
+					"both",
 					"ingress",
 					"egress",
-					"both",
 				}, false),
 			},
 
@@ -150,6 +152,11 @@ func resourceAciDomain() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"none",
+					"elastic",
+					"fixed",
+				}, false),
 			},
 
 			"primary_encap": &schema.Schema{
@@ -169,8 +176,8 @@ func resourceAciDomain() *schema.Resource {
 				Optional: true,
 				Computed: true,
 				ValidateFunc: validation.StringInSlice([]string{
-					"immediate",
 					"lazy",
+					"immediate",
 					"pre-provision",
 				}, false),
 			},
@@ -246,13 +253,17 @@ func getRemoteVMMSecurityPolicy(client *client.Client, dn string) (*models.VMMSe
 	return vmmSecP, nil
 }
 
-func setDomainAttributes(fvRsDomAtt *models.FVDomain, d *schema.ResourceData) *schema.ResourceData {
+func setDomainAttributes(fvRsDomAtt *models.FVDomain, d *schema.ResourceData) (*schema.ResourceData, error) {
 	dn := d.Id()
 	d.SetId(fvRsDomAtt.DistinguishedName)
 	if dn != fvRsDomAtt.DistinguishedName {
 		d.Set("application_epg_dn", "")
 	}
-	fvRsDomAttMap, _ := fvRsDomAtt.ToMap()
+	fvRsDomAttMap, err := fvRsDomAtt.ToMap()
+
+	if err != nil {
+		return d, err
+	}
 
 	d.Set("tdn", fvRsDomAttMap["tDn"])
 
@@ -279,16 +290,20 @@ func setDomainAttributes(fvRsDomAtt *models.FVDomain, d *schema.ResourceData) *s
 	d.Set("res_imedcy", fvRsDomAttMap["resImedcy"])
 	d.Set("secondary_encap_inner", fvRsDomAttMap["secondaryEncapInner"])
 	d.Set("switching_mode", fvRsDomAttMap["switchingMode"])
-	return d
+	return d, nil
 }
 
-func setVMMSecurityPolicyAttributes(vmmSecP *models.VMMSecurityPolicy, d *schema.ResourceData) *schema.ResourceData {
-	vmmSecPMap, _ := vmmSecP.ToMap()
+func setVMMSecurityPolicyAttributes(vmmSecP *models.VMMSecurityPolicy, d *schema.ResourceData) (*schema.ResourceData, error) {
+	vmmSecPMap, err := vmmSecP.ToMap()
+
+	if err != nil {
+		return d, err
+	}
 	d.Set("vmm_allow_promiscuous", vmmSecPMap["allowPromiscuous"])
 	d.Set("vmm_forged_transmits", vmmSecPMap["forgedTransmits"])
 	d.Set("vmm_mac_changes", vmmSecPMap["macChanges"])
 	d.Set("vmm_id", vmmSecP.DistinguishedName)
-	return d
+	return d, nil
 }
 
 func resourceAciDomainImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -302,18 +317,26 @@ func resourceAciDomainImport(d *schema.ResourceData, m interface{}) ([]*schema.R
 	if err != nil {
 		return nil, err
 	}
-	fvRsDomAttMap, _ := fvRsDomAtt.ToMap()
+	fvRsDomAttMap, err := fvRsDomAtt.ToMap()
+
+	if err != nil {
+		return nil, err
+	}
 	tDn := fvRsDomAttMap["tDn"]
 	pDN := GetParentDn(dn, fmt.Sprintf("/rsdomAtt-[%s]", tDn))
 	d.Set("application_epg_dn", pDN)
-	schemaFilled := setDomainAttributes(fvRsDomAtt, d)
+	schemaFilled, err := setDomainAttributes(fvRsDomAtt, d)
+
+	if err != nil {
+		return nil, err
+	}
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciDomainCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciDomainCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] Domain: Beginning Creation")
 	aciClient := m.(*client.Client)
 
@@ -392,7 +415,7 @@ func resourceAciDomainCreate(d *schema.ResourceData, m interface{}) error {
 
 	err := aciClient.Save(fvRsDomAtt)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	vmmSecPAttr := models.VMMSecurityPolicyAttributes{}
@@ -409,21 +432,17 @@ func resourceAciDomainCreate(d *schema.ResourceData, m interface{}) error {
 
 	err = aciClient.Save(vmmSecP)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Set("vmm_id", vmmSecP.DistinguishedName)
-
-	d.Partial(true)
-
-	d.Partial(false)
 
 	d.SetId(fvRsDomAtt.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciDomainRead(d, m)
+	return resourceAciDomainRead(ctx, d, m)
 }
 
-func resourceAciDomainUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciDomainUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] Domain: Beginning Update")
 
 	aciClient := m.(*client.Client)
@@ -505,7 +524,7 @@ func resourceAciDomainUpdate(d *schema.ResourceData, m interface{}) error {
 
 	err := aciClient.Save(fvRsDomAtt)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	vmmSecPAttr := models.VMMSecurityPolicyAttributes{}
@@ -524,22 +543,18 @@ func resourceAciDomainUpdate(d *schema.ResourceData, m interface{}) error {
 
 	err = aciClient.Save(vmmSecP)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Set("vmm_id", vmmSecP.DistinguishedName)
-
-	d.Partial(true)
-
-	d.Partial(false)
 
 	d.SetId(fvRsDomAtt.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciDomainRead(d, m)
+	return resourceAciDomainRead(ctx, d, m)
 
 }
 
-func resourceAciDomainRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciDomainRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -551,13 +566,23 @@ func resourceAciDomainRead(d *schema.ResourceData, m interface{}) error {
 		d.SetId("")
 		return nil
 	}
-	setDomainAttributes(fvRsDomAtt, d)
+	_, err = setDomainAttributes(fvRsDomAtt, d)
+
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 
 	if d.Get("vmm_id") != nil {
 		vmmDn := d.Get("vmm_id").(string)
 		vmmSecP, err := getRemoteVMMSecurityPolicy(aciClient, vmmDn)
 		if err == nil {
-			setVMMSecurityPolicyAttributes(vmmSecP, d)
+			_, err = setVMMSecurityPolicyAttributes(vmmSecP, d)
+
+			if err != nil {
+				d.SetId("")
+				return nil
+			}
 		}
 	}
 
@@ -566,18 +591,18 @@ func resourceAciDomainRead(d *schema.ResourceData, m interface{}) error {
 	return nil
 }
 
-func resourceAciDomainDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciDomainDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "fvRsDomAtt")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
 }
