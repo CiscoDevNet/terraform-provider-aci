@@ -32,7 +32,6 @@ resource "aci_ranges" "example" {
 * `to` - (Required) To of Object ranges. Allowed value min: vlan-1, max: vlan-4094.
 * `alloc_mode` - (Optional) Alloc mode for object ranges.  Allowed values: "dynamic", "static", "inherit". Default is "inherit".
 * `annotation` - (Optional) Annotation for object ranges.
-* `description` - (Optional) Description for object ranges.
 * `name_alias` - (Optional) Name alias for object ranges.
 * `role` - (Optional) System role type.  Allowed values: "external", "internal".  Default is "external".
 
