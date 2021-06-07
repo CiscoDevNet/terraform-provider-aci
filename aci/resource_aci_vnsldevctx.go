@@ -123,7 +123,7 @@ func resourceAciLogicalDeviceContextImport(d *schema.ResourceData, m interface{}
 	if err != nil {
 		return nil, err
 	}
-	schemaFilled,err := setLogicalDeviceContextAttributes(vnsLDevCtx, d)
+	schemaFilled, err := setLogicalDeviceContextAttributes(vnsLDevCtx, d)
 	if err != nil {
 		return nil, err
 	}
@@ -310,7 +310,7 @@ func resourceAciLogicalDeviceContextRead(ctx context.Context, d *schema.Resource
 		d.SetId("")
 		return nil
 	}
-	_,err = setLogicalDeviceContextAttributes(vnsLDevCtx, d)
+	_, err = setLogicalDeviceContextAttributes(vnsLDevCtx, d)
 	if err != nil {
 		d.SetId("")
 		return nil

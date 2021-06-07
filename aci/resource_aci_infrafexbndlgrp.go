@@ -109,7 +109,7 @@ func resourceAciFexBundleGroupImport(d *schema.ResourceData, m interface{}) ([]*
 	name := infraFexBndlGrpMap["name"]
 	pDN := GetParentDn(dn, fmt.Sprintf("/fexbundle-%s", name))
 	d.Set("fex_profile_dn", pDN)
-	schemaFilled,err := setFexBundleGroupAttributes(infraFexBndlGrp, d)
+	schemaFilled, err := setFexBundleGroupAttributes(infraFexBndlGrp, d)
 	if err != nil {
 		return nil, err
 	}
