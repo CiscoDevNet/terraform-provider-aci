@@ -13,13 +13,6 @@ Manages ACI Spine Association
 
 ```hcl
 
-resource "aci_spine_profile" "foospine_profile" {		
-		name  = "spine_profile_1"
-    description = "from terraform"
-		annotation  = "spine_profile_tag"
-		name_alias  = "example"
-}
-
 resource "aci_spine_switch_association" "example" {
   spine_profile_dn                = aci_spine_profile.foospine_profile.id
   name                            = "spine_switch_association_1"
