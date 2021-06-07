@@ -1,16 +1,18 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func dataSourceAciSpineProfile() *schema.Resource {
 	return &schema.Resource{
 
-		Read: dataSourceAciSpineProfileRead,
+		ReadContext: dataSourceAciSpineProfileRead,
 
 		SchemaVersion: 1,
 
@@ -30,7 +32,7 @@ func dataSourceAciSpineProfile() *schema.Resource {
 	}
 }
 
-func dataSourceAciSpineProfileRead(d *schema.ResourceData, m interface{}) error {
+func dataSourceAciSpineProfileRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	aciClient := m.(*client.Client)
 
 	name := d.Get("name").(string)
@@ -40,10 +42,13 @@ func dataSourceAciSpineProfileRead(d *schema.ResourceData, m interface{}) error 
 	dn := fmt.Sprintf("uni/%s", rn)
 
 	infraSpineP, err := getRemoteSpineProfile(aciClient, dn)
-
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	setSpineProfileAttributes(infraSpineP, d)
+
+	_, err = setSpineProfileAttributes(infraSpineP, d)
+	if err != nil {
+		return diag.FromErr(err)
+	}
 	return nil
 }
