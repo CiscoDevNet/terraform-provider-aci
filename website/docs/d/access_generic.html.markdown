@@ -16,7 +16,7 @@ Data source for ACI Access Generic
 
 data "aci_access_generic" "example" {
   attachable_access_entity_profile_dn = aci_attachable_access_entity_profile.example.id
-  name                                = "example"
+  name                                = "default"
 }
 
 ```
