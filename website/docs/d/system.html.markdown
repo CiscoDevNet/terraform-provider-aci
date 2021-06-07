@@ -26,7 +26,7 @@ data "aci_system" "example" {
 
 ## Attribute Reference
 
-- `id` - Attribute id set to the Dn of the System.
+- `id` - Attribute id set to the Dn of the system.
 - `address` - (Optional) The IP address of the system.
 - `etep_addr` - (Optional) The External TEP IP address of this PoD.
 - `name_alias` - (Optional) Name alias of the system.
