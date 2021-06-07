@@ -18,7 +18,7 @@ resource "aci_epg_to_domain" "example" {
   annotation            = "annotation"
   binding_type          = "none"
   allow_micro_seg       = "false"
-  delimeter             = ""
+  delimiter             = ""
   encap                 = "vlan-5"
   encap_mode            = "auto"
   epg_cos               = "Cos0"
