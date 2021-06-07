@@ -126,7 +126,7 @@ func getRemoteConnection(client *client.Client, dn string) (*models.Connection, 
 	return vnsAbsConnection, nil
 }
 
-func setConnectionAttributes(vnsAbsConnection *models.Connection, d *schema.ResourceData) *schema.ResourceData {
+func setConnectionAttributes(vnsAbsConnection *models.Connection, d *schema.ResourceData) (*schema.ResourceData, error) {
 	dn := d.Id()
 
 	d.SetId(vnsAbsConnection.DistinguishedName)
@@ -134,7 +134,10 @@ func setConnectionAttributes(vnsAbsConnection *models.Connection, d *schema.Reso
 	if dn != vnsAbsConnection.DistinguishedName {
 		d.Set("l4_l7_service_graph_template_dn", "")
 	}
-	vnsAbsConnectionMap, _ := vnsAbsConnection.ToMap()
+	vnsAbsConnectionMap, err := vnsAbsConnection.ToMap()
+	if err != nil {
+		return d, err
+	}
 
 	d.Set("name", vnsAbsConnectionMap["name"])
 
@@ -145,7 +148,7 @@ func setConnectionAttributes(vnsAbsConnection *models.Connection, d *schema.Reso
 	d.Set("direct_connect", vnsAbsConnectionMap["directConnect"])
 	d.Set("name_alias", vnsAbsConnectionMap["nameAlias"])
 	d.Set("unicast_route", vnsAbsConnectionMap["unicastRoute"])
-	return d
+	return d, nil
 }
 
 func resourceAciConnectionImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -159,7 +162,10 @@ func resourceAciConnectionImport(d *schema.ResourceData, m interface{}) ([]*sche
 	if err != nil {
 		return nil, err
 	}
-	schemaFilled := setConnectionAttributes(vnsAbsConnection, d)
+	schemaFilled, err := setConnectionAttributes(vnsAbsConnection, d)
+	if err != nil {
+		return nil, err
+	}
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
@@ -400,7 +406,11 @@ func resourceAciConnectionRead(ctx context.Context, d *schema.ResourceData, m in
 		d.SetId("")
 		return nil
 	}
-	setConnectionAttributes(vnsAbsConnection, d)
+	_, err = setConnectionAttributes(vnsAbsConnection, d)
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 
 	vnsRsAbsCopyConnectionData, err := aciClient.ReadRelationvnsRsAbsCopyConnectionFromConnection(dn)
 	if err != nil {

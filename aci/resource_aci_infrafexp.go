@@ -40,6 +40,7 @@ func resourceAciFEXProfile() *schema.Resource {
 		}),
 	}
 }
+
 func getRemoteFEXProfile(client *client.Client, dn string) (*models.FEXProfile, error) {
 	infraFexPCont, err := client.Get(dn)
 	if err != nil {

@@ -6,10 +6,11 @@ description: |-
   Data source for ACI FEX Profile
 ---
 
-# aci_fex_profile #
+# aci_fex_profile
+
 Data source for ACI FEX Profile
 
-## Example Usage ##
+## Example Usage
 
 ```hcl
 
@@ -19,14 +20,13 @@ data "aci_fex_profile" "example" {
 
 ```
 
+## Argument Reference
 
-## Argument Reference ##
-* `name` - (Required) name of Object fex_profile.
-
-
+- `name` - (Required) The fex profile name.
 
 ## Attribute Reference
 
-* `id` - Attribute id set to the Dn of the FEX Profile.
-* `annotation` - (Optional) annotation for object fex_profile.
-* `name_alias` - (Optional) name_alias for object fex_profile.
+- `id` - Attribute id set to the Dn of the FEX Profile.
+- `annotation` - (Optional) Specifies the annotation of the policy definition.
+- `name_alias` - (Optional) Specifies the description of the policy definition.
+- `name_alias` - (Optional) Specifies the alias name of the policy definition.

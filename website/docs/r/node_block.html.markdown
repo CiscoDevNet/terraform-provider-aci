@@ -17,6 +17,7 @@ resource "aci_node_block" "check" {
   switch_association_dn   = aci_leaf_selector.example.id
   name                    = "block"
   annotation              = "aci_node_block"
+  description             = "from terraform"
   from_                   = "105"
   name_alias              = "node_block"
   to_                     = "106"
@@ -28,6 +29,7 @@ resource "aci_node_block" "check" {
 - `switch_association_dn` - (Required) Distinguished name of parent Leaf selector object.
 - `name` - (Required) Name of Object node block.
 - `annotation` - (Optional) Annotation for object node block.
+- `description` - (Optional) Description for object node block.
 - `from_` - (Optional) From Node ID. Range from 101 to 110.
 - `name_alias` - (Optional) Name alias for object node block.
 - `to_` - (Optional) To node ID. Range from 101 to 110.
