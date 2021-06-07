@@ -66,11 +66,11 @@ Allowed values: "disabled", "enabled"
 * `num_ports` - (Optional) Number of ports existing operationally in module. Default value: "0"
 * `port_allocation` - (Optional) Port allocation for object Domain.
 Allowed values: "none", "elastic", "fixed". Default value: "none"
-* `primary_encap` - (Optional) Primary encap for object Domain.
-* `primary_encap_inner` - (Optional) Primary encap inner for object Domain.
+* `primary_encap` - (Optional) Primary encap for object Domain. Default value: "unknown".
+* `primary_encap_inner` - (Optional) Primary encap inner for object Domain. Default value: "unknown".
 * `res_imedcy` - (Optional) Policy resolution.
 Allowed values: "immediate", "lazy", "pre-provision". Default value: "lazy"
-* `secondary_encap_inner` - (Optional) Secondary encap inner for object Domain.
+* `secondary_encap_inner` - (Optional) Secondary encap inner for object Domain.Default value: "unknown".
 * `switching_mode` - (Optional) Switching mode for object domain.
 Allowed values: "native", "AVE". Default value: "native"
 
