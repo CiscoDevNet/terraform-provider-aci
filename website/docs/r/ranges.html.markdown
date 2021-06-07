@@ -30,7 +30,7 @@ resource "aci_ranges" "example" {
 * `vlan_pool_dn` - (Required) Distinguished name of parent VLANPool object.
 * `from` - (Required) From of Object ranges. Allowed value min: vlan-1, max: vlan-4094.
 * `to` - (Required) To of Object ranges. Allowed value min: vlan-1, max: vlan-4094.
-* `alloc_mode` - (Optional) Alloc mode for object ranges.  Allowed values: "dynamic", "static", "inherit". Default is   "inherrit".
+* `alloc_mode` - (Optional) Alloc mode for object ranges.  Allowed values: "dynamic", "static", "inherit". Default is "inherit".
 * `annotation` - (Optional) Annotation for object ranges.
 * `description` - (Optional) Description for object ranges.
 * `name_alias` - (Optional) Name alias for object ranges.
