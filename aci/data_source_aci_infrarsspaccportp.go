@@ -16,17 +16,27 @@ func dataSourceAciInterfaceProfile() *schema.Resource {
 
 		SchemaVersion: 1,
 
-		Schema: AppendBaseAttrSchema(map[string]*schema.Schema{
+		Schema:map[string]*schema.Schema{
 			"spine_profile_dn": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
+			},
+
+			"annotation": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				// Default:  "orchestrator:terraform",
+				Computed: true,
+				DefaultFunc: func() (interface{}, error) {
+					return "orchestrator:terraform", nil
+				},
 			},
 
 			"tdn": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
 			},
-		}),
+		},
 	}
 }
 
