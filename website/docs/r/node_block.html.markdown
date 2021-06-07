@@ -30,9 +30,9 @@ resource "aci_node_block" "check" {
 - `name` - (Required) Name of Object node block.
 - `annotation` - (Optional) Annotation for object node block.
 - `description` - (Optional) Description for object node block.
-- `from_` - (Optional) From Node ID. Range from 101 to 110.
+- `from_` - (Optional) From Node ID. Range from 1 to 16000. Default value is "1".
 - `name_alias` - (Optional) Name alias for object node block.
-- `to_` - (Optional) To node ID. Range from 101 to 110.
+- `to_` - (Optional) To node ID. Range from 1 to 16000. Default value is "1".
 
 ## Attribute Reference
 

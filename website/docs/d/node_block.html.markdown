@@ -29,6 +29,6 @@ data "aci_node_block" "example" {
 - `id` - Attribute id set to the Dn of the Node Block.
 - `annotation` - (Optional) Annotation for object node block.
 - `description` - (Optional) Description for object node block.
-- `from_` - (Optional) From Node ID. Range from 101 to 110.
+- `from_` - (Optional) From Node ID.
 - `name_alias` - (Optional) Name alias for object node block.
-- `to_` - (Optional) To node ID. Range from 101 to 110.
+- `to_` - (Optional) To node ID.

@@ -14,7 +14,7 @@ Data source for ACI Any
 
 ```hcl
 data "aci_any" "dev_any" {
-  vrf_dn  = "${aci_vrf.dev_vrf.id}"
+  vrf_dn  = aci_vrf.dev_vrf.id
 }
 ```
 
@@ -29,4 +29,4 @@ data "aci_any" "dev_any" {
 - `description` - (Optional) Description for object any.
 - `match_t` - (Optional) Represents the provider label match criteria.
 - `name_alias` - (Optional) Name alias for object any.
-- `pref_gr_memb` - (Optional) Represents parameter used to determine if EPgs can be divided in a the context can be divided in two subgroups.
+- `pref_gr_memb` - (Optional) Represents parameter used to determine if EPgs can be divided in a the context can be divided into two subgroups.
