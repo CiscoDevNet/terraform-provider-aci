@@ -120,9 +120,6 @@ func resourceAciSpineProfileCreate(ctx context.Context, d *schema.ResourceData, 
 	if err != nil {
 		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
 
@@ -148,8 +145,6 @@ func resourceAciSpineProfileCreate(ctx context.Context, d *schema.ResourceData, 
 			if err != nil {
 				return diag.FromErr(err)
 			}
-			d.Partial(true)
-			d.Partial(false)
 		}
 	}
 
@@ -185,9 +180,6 @@ func resourceAciSpineProfileUpdate(ctx context.Context, d *schema.ResourceData, 
 	if err != nil {
 		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
 
@@ -229,9 +221,6 @@ func resourceAciSpineProfileUpdate(ctx context.Context, d *schema.ResourceData, 
 			if err != nil {
 				return diag.FromErr(err)
 			}
-			d.Partial(true)
-			d.Partial(false)
-
 		}
 	}
 
