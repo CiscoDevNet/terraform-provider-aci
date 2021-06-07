@@ -37,7 +37,7 @@ resource "aci_service_redirect_policy" "example" {
 * `tenant_dn` - (Required) Distinguished name of parent Tenant object.
 * `name` - (Required) Name of Object Service Redirect Policy.
 * `description` - (Optional) Description of Object Service Redirect Policy.
-* `anycast_enabled` - (Optional) Anycast enabled for object Service Redirect Policy.
+* `anycast_enabled` - (Optional) Anycast enabled for object Service Redirect Policy. NOTE: `anycast_enabled` and `program_local_pod_only` cannot be "yes" simultaneously.
 Allowed values: "yes", "no". Default value: "no".
 * `annotation` - (Optional) Annotation for object Service Redirect Policy.
 * `dest_type` - (Optional) Dest type for object Service Redirect Policy. Allowed values: "L1", "L2", "L3". Default value: "L3".
@@ -49,7 +49,7 @@ Allowed values: "yes", "no". Default value: "no".
 Allowed values: "yes", "no". Default value: "no".
 * `resilient_hash_enabled` - (Optional) Resilient hash enabled for object Service Redirect Policy.
 Allowed values: "yes", "no". Default value: "no".
-* `threshold_down_action` - (Optional) Threshold down action for object Service Redirect Policy.
+*`threshold_down_action` - (Optional) Threshold down the action for object Service Redirect Policy.
 Allowed values: "bypass", "deny", "permit". Default value: "permit".
 * `threshold_enable` - (Optional) Threshold enable for object Service Redirect Policy.
 Allowed values: "yes", "no". Default value: "no".

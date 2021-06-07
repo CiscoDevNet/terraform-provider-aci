@@ -29,4 +29,4 @@ This data source doesn't require any arguments.
 - `annotation` - (Optional) Specifies the Annotation of the cloud domain profile.
 - `description` - (Optional) Specifies the Description of the cloud domain profile.
 - `name_alias` - (Optional) Specifies the alias-name of the cloud domain profile.
-- `site_id` - (Optional) Site-ID of the cloud domain profile. Allowed value range is "0" to "1000". Default is "0".
+- `site_id` - (Optional) Site-ID of the cloud domain profile.
