@@ -25,11 +25,21 @@ func resourceAciDomain() *schema.Resource {
 
 		SchemaVersion: 1,
 
-		Schema: AppendBaseAttrSchema(map[string]*schema.Schema{
+		Schema:map[string]*schema.Schema{
 			"application_epg_dn": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
 				ForceNew: true,
+			},
+
+			"annotation": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				// Default:  "orchestrator:terraform",
+				Computed: true,
+				DefaultFunc: func() (interface{}, error) {
+					return "orchestrator:terraform", nil
+				},
 			},
 
 			"tdn": &schema.Schema{
@@ -220,7 +230,7 @@ func resourceAciDomain() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
-		}),
+		},
 	}
 }
 func getRemoteDomain(client *client.Client, dn string) (*models.FVDomain, error) {
