@@ -16,7 +16,7 @@ func dataSourceAciDomain() *schema.Resource {
 
 		SchemaVersion: 1,
 
-		Schema:map[string]*schema.Schema{
+		Schema: map[string]*schema.Schema{
 			"application_epg_dn": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,

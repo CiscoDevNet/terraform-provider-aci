@@ -16,9 +16,7 @@ Note: This resource is supported in Cloud APIC only.
 
 ```hcl
  resource "aci_cloud_vpn_gateway" "example" {
-
-  cloud_context_profile_dn  = "${aci_cloud_context_profile.example.id}"
-
+  cloud_context_profile_dn  = aci_cloud_context_profile.example.id
   name  = "example_name"
   annotation  = "example_annotation"
   name_alias  = "Alias_name"
@@ -29,10 +27,11 @@ Note: This resource is supported in Cloud APIC only.
 ```
 ## Argument Reference ##
 * `cloud_context_profile_dn` - (Required) Distinguished name of parent CloudContextProfile object.
-* `name` - (Required) Name of Object cloud_router_profile.
-* `annotation` - (Optional) Annotation for object cloud_router_profile.
-* `name_alias` - (Optional) name_alias for object cloud_router_profile.
-* `num_instances` - (Optional) num_instances for object cloud_router_profile.
+* `name` - (Required) Name of Object  Cloud Router Profile.
+* `description` - (Optional) Description for object Cloud Router Profile.
+* `annotation` - (Optional) Annotation for object  Cloud Router Profile.
+* `name_alias` - (Optional) Name_alias for object  Cloud Router Profile.
+* `num_instances` - (Optional) Num instances for object  Cloud Router Profile.
 * `cloud_router_profile_type` - (Optional) Component type Allowed values are "host-router" and "vpn-gw". Default value is "vpn-gw". 
 
 * `relation_cloud_rs_to_vpn_gw_pol` - (Optional) Relation to class cloudVpnGwPol. Cardinality - N_TO_ONE. Type - String.
