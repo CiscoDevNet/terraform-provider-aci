@@ -15,7 +15,8 @@ Manages ACI aaa Domain
 ```hcl
 
 resource "aci_aaa_domain" "example" {
-  name        = "example"
+  name        = "aaa_domain_1"
+  description = "from terraform"
   annotation  = "tag_aaa"
   name_alias  = "alias_aaa"
 }
@@ -24,9 +25,10 @@ resource "aci_aaa_domain" "example" {
 
 ## Argument Reference ##
 
-* `name` - (Required) name of Object aaa domain.
-* `annotation` - (Optional) annotation for object aaa domain.
-* `name_alias` - (Optional) name_alias for object aaa domain.
+* `name` - (Required) Name of object aaa domain.
+* `description` - (Optional) Description for object aaa domain.
+* `annotation` - (Optional) Annotation for object aaa domain.
+* `name_alias` - (Optional) Name alias for object aaa domain.
 
 ## Attribute Reference ##
 

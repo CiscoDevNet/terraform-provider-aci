@@ -16,7 +16,7 @@ Manages ACI Spine Profile
 resource "aci_spine_profile" "example" {
   name        = "spine_profile_1"
   description = "from terraform"
-  annotation  = "spine profile"
+  annotation  = "spine_profile_tag"
   name_alias  = "check"
 }
 
