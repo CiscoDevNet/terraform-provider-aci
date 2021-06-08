@@ -171,7 +171,7 @@ func setConsumerTerminalNodeAttributes(vnsAbsTermNodeCon *models.ConsumerTermina
 		return d, err
 	}
 	d.Set("term_cons_name", vnsAbsTermNodeConMap["name"])
-	d.Set("tern_node_cons_dn", vnsAbsTermNodeCon.DistinguishedName)
+	d.Set("term_node_cons_dn", vnsAbsTermNodeCon.DistinguishedName)
 	return d, nil
 }
 
@@ -196,7 +196,7 @@ func setProviderTerminalNodeAttributes(vnsAbsTermNodeProv *models.ProviderTermin
 		return d, err
 	}
 	d.Set("term_prov_name", vnsAbsTermNodeProvMap["name"])
-	d.Set("tern_node_prov_dn", vnsAbsTermNodeProv.DistinguishedName)
+	d.Set("term_node_prov_dn", vnsAbsTermNodeProv.DistinguishedName)
 	return d, nil
 }
 
