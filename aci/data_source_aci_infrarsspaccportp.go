@@ -16,7 +16,7 @@ func dataSourceAciInterfaceProfile() *schema.Resource {
 
 		SchemaVersion: 1,
 
-		Schema:map[string]*schema.Schema{
+		Schema: map[string]*schema.Schema{
 			"spine_profile_dn": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
