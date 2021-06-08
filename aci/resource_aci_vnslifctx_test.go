@@ -60,6 +60,21 @@ func TestAccAciLogicalInterfaceContext_update(t *testing.T) {
 func testAccCheckAciLogicalInterfaceContextConfig_basic(description string) string {
 	return fmt.Sprintf(`
 
+	resource "aci_tenant" "tenentcheck" {
+		     name        = "demo_dev_tenentcheck"
+		     description = "This tenant is created by terraform"
+	  }
+
+	resource "aci_logical_device_context" "example" {
+		tenant_dn         = aci_tenant.tenentcheck.id
+		ctrct_name_or_lbl = "default"
+		graph_name_or_lbl = "any"
+		node_name_or_lbl  = "N1"
+		context           = "ctx1"
+		description       = "from terraform"
+		name_alias        = "example"
+	  }
+
 	resource "aci_logical_interface_context" "foological_interface_context" {
 		logical_device_context_dn  = aci_logical_device_context.example.id
 		description = "%s"

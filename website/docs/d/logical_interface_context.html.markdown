@@ -14,8 +14,7 @@ Data source for ACI Logical Interface Context
 
 ```hcl
 data "aci_logical_interface_context" "example" {
-
-  logical_device_context_dn  = "${aci_logical_device_context.example.id}"
+  logical_device_context_dn  = aci_logical_device_context.example.id
   conn_name_or_lbl = "example"
 }
 ```
@@ -23,12 +22,12 @@ data "aci_logical_interface_context" "example" {
 ## Argument Reference
 
 - `logical_device_context_dn` - (Required) Distinguished name of parent Logical Device Context object.
-- `conn_name_or_lbl` - (Required) The connector name or label for the logical interface context.
+- `conn_name_or_lbl` - (Required) The connector name or label for the Logical Interface Context.
 
 ## Attribute Reference
 
 - `id` - Attribute id set to the Dn of the Logical Interface Context.
-- `annotation` - (Optional) Annotation for object logical_interface_context.
-- `l3_dest` - (Optional) l3_dest for object logical_interface_context.
-- `name_alias` - (Optional) Name_alias for object logical_interface_context.
-- `permit_log` - (Optional) permit_log for object logical_interface_context.
+- `annotation` - (Optional) Annotation for object Logical Interface Context.
+- `l3_dest` - (Optional) L3 dest for object Logical Interface Context.
+- `name_alias` - (Optional) Name alias for object Logical Interface Context.
+- `permit_log` - (Optional) Permit log for object Logical Interface Context.
