@@ -1,21 +1,23 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciCloudVpnGateway() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciCloudVpnGatewayCreate,
-		Update: resourceAciCloudVpnGatewayUpdate,
-		Read:   resourceAciCloudVpnGatewayRead,
-		Delete: resourceAciCloudVpnGatewayDelete,
+		CreateContext: resourceAciCloudVpnGatewayCreate,
+		UpdateContext: resourceAciCloudVpnGatewayUpdate,
+		ReadContext:   resourceAciCloudVpnGatewayRead,
+		DeleteContext: resourceAciCloudVpnGatewayDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciCloudVpnGatewayImport,
@@ -97,7 +99,7 @@ func getRemoteCloudVpnGateway(client *client.Client, dn string) (*models.CloudVp
 	return cloudRouterP, nil
 }
 
-func setCloudVpnGatewayAttributes(cloudRouterP *models.CloudVpnGateway, d *schema.ResourceData) *schema.ResourceData {
+func setCloudVpnGatewayAttributes(cloudRouterP *models.CloudVpnGateway, d *schema.ResourceData) (*schema.ResourceData, error) {
 	dn := d.Id()
 
 	d.SetId(cloudRouterP.DistinguishedName)
@@ -107,7 +109,10 @@ func setCloudVpnGatewayAttributes(cloudRouterP *models.CloudVpnGateway, d *schem
 		d.Set("cloud_context_profile_dn", "")
 	}
 
-	cloudRouterPMap, _ := cloudRouterP.ToMap()
+	cloudRouterPMap, err := cloudRouterP.ToMap()
+	if err != nil {
+		return d, err
+	}
 
 	d.Set("name", cloudRouterPMap["name"])
 
@@ -115,7 +120,7 @@ func setCloudVpnGatewayAttributes(cloudRouterP *models.CloudVpnGateway, d *schem
 	d.Set("name_alias", cloudRouterPMap["nameAlias"])
 	d.Set("num_instances", cloudRouterPMap["numInstances"])
 	d.Set("cloud_router_profile_type", cloudRouterPMap["type"])
-	return d
+	return d, nil
 }
 
 func resourceAciCloudVpnGatewayImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -129,14 +134,18 @@ func resourceAciCloudVpnGatewayImport(d *schema.ResourceData, m interface{}) ([]
 	if err != nil {
 		return nil, err
 	}
-	schemaFilled := setCloudVpnGatewayAttributes(cloudRouterP, d)
+	schemaFilled, err := setCloudVpnGatewayAttributes(cloudRouterP, d)
+
+	if err != nil {
+		return nil, err
+	}
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciCloudVpnGatewayCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciCloudVpnGatewayCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] CloudVpnGateway: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -164,11 +173,8 @@ func resourceAciCloudVpnGatewayCreate(d *schema.ResourceData, m interface{}) err
 
 	err := aciClient.Save(cloudRouterP)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
 
@@ -190,7 +196,7 @@ func resourceAciCloudVpnGatewayCreate(d *schema.ResourceData, m interface{}) err
 	d.Partial(true)
 	err = checkTDn(aciClient, checkDns)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Partial(false)
 
@@ -198,10 +204,8 @@ func resourceAciCloudVpnGatewayCreate(d *schema.ResourceData, m interface{}) err
 		relationParam := relationTocloudRsToVpnGwPol.(string)
 		err = aciClient.CreateRelationcloudRsToVpnGwPolFromCloudVpnGateway(cloudRouterP.DistinguishedName, relationParam)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.Partial(false)
 
 	}
 
@@ -209,30 +213,26 @@ func resourceAciCloudVpnGatewayCreate(d *schema.ResourceData, m interface{}) err
 		relationParam := relationTocloudRsToDirectConnPol.(string)
 		err = aciClient.CreateRelationcloudRsToDirectConnPolFromCloudVpnGateway(cloudRouterP.DistinguishedName, relationParam)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.Partial(false)
 
 	}
 	if relationTocloudRsToHostRouterPol, ok := d.GetOk("relation_cloud_rs_to_host_router_pol"); ok {
 		relationParam := relationTocloudRsToHostRouterPol.(string)
 		err = aciClient.CreateRelationcloudRsToHostRouterPolFromCloudVpnGateway(cloudRouterP.DistinguishedName, relationParam)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.Partial(false)
 
 	}
 
 	d.SetId(cloudRouterP.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciCloudVpnGatewayRead(d, m)
+	return resourceAciCloudVpnGatewayRead(ctx, d, m)
 }
 
-func resourceAciCloudVpnGatewayUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciCloudVpnGatewayUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] CloudVpnGateway: Beginning Update")
 
 	aciClient := m.(*client.Client)
@@ -264,11 +264,8 @@ func resourceAciCloudVpnGatewayUpdate(d *schema.ResourceData, m interface{}) err
 	err := aciClient.Save(cloudRouterP)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
 
@@ -291,41 +288,34 @@ func resourceAciCloudVpnGatewayUpdate(d *schema.ResourceData, m interface{}) err
 		_, newRelParam := d.GetChange("relation_cloud_rs_to_vpn_gw_pol")
 		err = aciClient.CreateRelationcloudRsToVpnGwPolFromCloudVpnGateway(cloudRouterP.DistinguishedName, newRelParam.(string))
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.Partial(false)
 
 	}
 	if d.HasChange("relation_cloud_rs_to_direct_conn_pol") {
 		_, newRelParam := d.GetChange("relation_cloud_rs_to_direct_conn_pol")
 		err = aciClient.CreateRelationcloudRsToDirectConnPolFromCloudVpnGateway(cloudRouterP.DistinguishedName, newRelParam.(string))
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.Partial(false)
-
 	}
 	if d.HasChange("relation_cloud_rs_to_host_router_pol") {
 		_, newRelParam := d.GetChange("relation_cloud_rs_to_host_router_pol")
 		err = aciClient.CreateRelationcloudRsToHostRouterPolFromCloudVpnGateway(cloudRouterP.DistinguishedName, newRelParam.(string))
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.Partial(false)
 
 	}
 
 	d.SetId(cloudRouterP.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciCloudVpnGatewayRead(d, m)
+	return resourceAciCloudVpnGatewayRead(ctx, d, m)
 
 }
 
-func resourceAciCloudVpnGatewayRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciCloudVpnGatewayRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -337,7 +327,12 @@ func resourceAciCloudVpnGatewayRead(d *schema.ResourceData, m interface{}) error
 		d.SetId("")
 		return nil
 	}
-	setCloudVpnGatewayAttributes(cloudRouterP, d)
+	_, err = setCloudVpnGatewayAttributes(cloudRouterP, d)
+
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 
 	cloudRsToVpnGwPolData, err := aciClient.ReadRelationcloudRsToVpnGwPolFromCloudVpnGateway(dn)
 	if err != nil {
@@ -390,18 +385,18 @@ func resourceAciCloudVpnGatewayRead(d *schema.ResourceData, m interface{}) error
 	return nil
 }
 
-func resourceAciCloudVpnGatewayDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciCloudVpnGatewayDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "cloudRouterP")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
 }
