@@ -28,6 +28,7 @@ data "aci_logical_interface_context" "example" {
 
 - `id` - Attribute id set to the Dn of the Logical Interface Context.
 - `annotation` - (Optional) Annotation for object Logical Interface Context.
+- `description` - (Optional) Description for object Logical interface context.
 - `l3_dest` - (Optional) L3 dest for object Logical Interface Context.
 - `name_alias` - (Optional) Name alias for object Logical Interface Context.
 - `permit_log` - (Optional) Permit log for object Logical Interface Context.
