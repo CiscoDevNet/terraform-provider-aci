@@ -46,6 +46,9 @@ func dataSourceAciSpineAccessPortPolicyGroupRead(ctx context.Context, d *schema.
 	if err != nil {
 		return diag.FromErr(err)
 	}
-	setSpineAccessPortPolicyGroupAttributes(infraSpAccPortGrp, d)
+	_, err = setSpineAccessPortPolicyGroupAttributes(infraSpAccPortGrp, d)
+	if err != nil {
+		return diag.FromErr(err)
+	}
 	return nil
 }
