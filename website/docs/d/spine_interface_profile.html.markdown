@@ -28,5 +28,6 @@ data "aci_spine_interface_profile" "example" {
 ## Attribute Reference
 
 * `id` - Attribute id set to the Dn of the Object Spine interface profile.
+* `description` - (Optional) Description for Object Spine interface profile.
 * `annotation` - (Optional) Annotation for Object Spine interface profile.
 * `name_alias` - (Optional) Name alias for Object Spine interface profile.

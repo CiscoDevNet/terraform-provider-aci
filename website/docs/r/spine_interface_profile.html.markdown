@@ -24,6 +24,7 @@ resource "aci_spine_interface_profile" "example" {
 
 ## Argument Reference ##
 * `name` - (Required) Name of Object Spine interface profile.
+* `description` - (Optional) Description for Object Spine interface profile.
 * `annotation` - (Optional) Annotation for Object Spine interface profile.
 * `name_alias` - (Optional) Name alias for Object Spine interface profile.
 
