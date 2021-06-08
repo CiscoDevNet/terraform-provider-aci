@@ -14,8 +14,7 @@ Data source for ACI DHCP Option Policy.
 
 ```hcl
 data "aci_dhcp_option_policy" "example" {
-
-  tenant_dn  = "${aci_tenant.example.id}"
+  tenant_dn  = aci_tenant.example.id
   name  = "example"
 }
 ```
