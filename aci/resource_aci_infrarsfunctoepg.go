@@ -25,11 +25,21 @@ func resourceAciEPGsUsingFunction() *schema.Resource {
 
 		SchemaVersion: 1,
 
-		Schema: AppendBaseAttrSchema(map[string]*schema.Schema{
+		Schema:map[string]*schema.Schema{
 			"access_generic_dn": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
 				ForceNew: true,
+			},
+
+			"annotation": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				// Default:  "orchestrator:terraform",
+				Computed: true,
+				DefaultFunc: func() (interface{}, error) {
+					return "orchestrator:terraform", nil
+				},
 			},
 
 			"tdn": &schema.Schema{
@@ -69,7 +79,7 @@ func resourceAciEPGsUsingFunction() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
-		}),
+		},
 	}
 }
 func getRemoteEPGsUsingFunction(client *client.Client, dn string) (*models.EPGsUsingFunction, error) {

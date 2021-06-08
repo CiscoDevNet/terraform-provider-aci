@@ -14,8 +14,8 @@ Data source for ACI epg to Domain
 ```hcl
 
 data "aci_epg_to_domain" "temp" {
-  application_epg_dn  = "${aci_application_epg.epg2.id}"
-  tdn                = "${aci_vmm_domain.example.id}"
+  application_epg_dn  = aci_application_epg.epg2.id
+  tdn                 =  aci_vmm_domain.example.id
 }
 
 ```

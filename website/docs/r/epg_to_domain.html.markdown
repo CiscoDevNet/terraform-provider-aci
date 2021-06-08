@@ -58,7 +58,7 @@ Allowed values: "Cos0", "Cos1", "Cos2", "Cos3", "Cos4", "Cos5", "Cos6", "Cos7". 
 Allowed values: "disabled", "enabled". Default value: "disabled"
 * `instr_imedcy` - (Optional) Determines when policies are pushed to cam.
 Allowed values: "immediate", "lazy". Default value: "lazy"
-* `lag_policy_name` - (Optional) Lag policy name for object Domain. Range: "0" to "512"
+* `lag_policy_name` - (Optional) Lag policy name for object Domain.
 * `netflow_dir` - (Optional) Netflow dir for object Domain.
 Allowed values: "ingress", "egress", "both". Default value: "both"
 * `netflow_pref` - (Optional) Netflow pref for object Domain.
