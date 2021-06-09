@@ -21,7 +21,7 @@ resource "aci_function_node" "example" {
   func_template_type  = "CLOUD_NATIVE_LB"
   func_type  = "GoTo"
   is_copy  = "yes"
-  managed  = "yes"
+  managed  = "no"
   name_alias  = "example"
   routing_mode  = "Redirect"
   sequence_number  = "1"

@@ -19,7 +19,7 @@ resource "aci_connection" "conn2" {
   adj_type  = "L3"
   description = "from terraform"
   annotation  = "example"
-  conn_dir  = "unknown"
+  conn_dir  = "consumer"
   conn_type  = "internal"
   direct_connect  = "yes"
   name_alias  = "example"
@@ -42,7 +42,7 @@ resource "aci_connection" "conn2" {
 - `conn_type` - (Optional) Connection type of connection object. Allowed values are "external", "internal". Default value is "external".
 - `direct_connect` - (Optional) Direct connect for object connection. Allowed values are "yes" and "no". Default value is "no".
 - `name_alias` - (Optional) Name alias for object connection.
-- `unicast_route` - (Optional) Unicast route for connection object. Unicast route setting should be true for L3 connections.  Allowed values are "yes" and "no". Default value is "yes".
+- `unicast_route` - (Optional) Unicast route for connection object. Unicast route setting should be true for L3 connections. Allowed values are "yes" and "no". Default value is "yes".
 
 - `relation_vns_rs_abs_copy_connection` - (Optional) List of relation to class vnsAConn. Cardinality - ONE_TO_M. Type - Set of String.
 - `relation_vns_rs_abs_connection_conns` - (Optional) list of relation to class vnsAConn. Cardinality - ONE_TO_M. Type - Set of String.
