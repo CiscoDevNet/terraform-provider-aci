@@ -27,7 +27,7 @@ resource "aci_access_group" "example" {
 
 - `access_port_selector_dn` - (Required) Distinguished name of parent Access Port Selector object.
 - `annotation` - (Optional) Annotation for object access group.
-- `fex_id` - (Optional) Interface policy group FEX ID.
+- `fex_id` - (Optional) Interface policy group FEX ID. Allowed value range: "101" to "199". Default value: "101".
 - `tdn` - (Optional) Interface policy group's target dn.
 
 ## Attribute Reference
