@@ -33,7 +33,7 @@ resource "aci_l4_l7_service_graph_template" "example" {
 - `annotation` - (Optional) Annotation for L4-L7 service graph template object.
 - `description` - (Optional) Description for L4-L7 service graph template object.
 - `name_alias` - (Optional) Name alias for L4-L7 service graph template object.
-- `l4-l7_service_graph_template_type` - (Optional) Component type for L4-L7 service graph template object. Allowed values are "legacy" and "cloud". Default value is "legacy".
+- `l4_l7_service_graph_template_type` - (Optional) Component type for L4-L7 service graph template object. Allowed values are "legacy" and "cloud". Default value is "legacy".
 - `ui_template_type` - (Optional) UI template type for L4-L7 service graph template object. Allowed values are "ONE_NODE_ADC_ONE_ARM", "ONE_NODE_ADC_ONE_ARM_L3EXT", "ONE_NODE_ADC_TWO_ARM", "ONE_NODE_FW_ROUTED", "ONE_NODE_FW_TRANS", "TWO_NODE_FW_ROUTED_ADC_ONE_ARM", "TWO_NODE_FW_ROUTED_ADC_ONE_ARM_L3EXT", "TWO_NODE_FW_ROUTED_ADC_TWO_ARM", "TWO_NODE_FW_TRANS_ADC_ONE_ARM", "TWO_NODE_FW_TRANS_ADC_ONE_ARM_L3EXT", "TWO_NODE_FW_TRANS_ADC_TWO_ARM" and "UNSPECIFIED". Default value is "UNSPECIFIED".
 - `term_cons_name` - (Optional) Name of consumer terminal node. Default value is "T1".
 - `term_prov_name` - (Optional) Name of provider terminal node. Default value is "T2".
