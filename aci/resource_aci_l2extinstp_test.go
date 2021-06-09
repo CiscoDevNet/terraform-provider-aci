@@ -60,10 +60,24 @@ func TestAccAciL2outExternalEpg_update(t *testing.T) {
 func testAccCheckAciL2outExternalEpgConfig_basic(description string) string {
 	return fmt.Sprintf(`
 
+	resource "aci_tenant" "foo_tenant" {
+		name        = "tenant_1"
+		description = "This tenant is created by terraform"
+	}
+	
+	resource "aci_l2_outside" "fool2_outside" {
+		tenant_dn  = aci_tenant.foo_tenant.id
+		description = "from terraform"
+		name  = "l2_outside_1"
+		annotation  = "l2_outside_tag"
+		name_alias  = "example"
+		target_dscp = "AF11"
+	}
+
 	resource "aci_l2out_extepg" "fool2out_extepg" {
-		l2_outside_dn  = "${aci_l2_outside.example.id}"
+		l2_outside_dn  = aci_l2_outside.fool2_outside.id
 		description = "%s"
-		name  = "example"
+		name  = "l2out_extepg_1"
   		annotation  = "example"
   		exception_tag  = "example"
   		flood_on_encap = "disabled"
@@ -131,7 +145,7 @@ func testAccCheckAciL2outExternalEpgAttributes(description string, l2out_extepg 
 			return fmt.Errorf("Bad l2out_extepg Description %s", l2out_extepg.Description)
 		}
 
-		if "example" != l2out_extepg.Name {
+		if "l2out_extepg_1" != l2out_extepg.Name {
 			return fmt.Errorf("Bad l2out_extepg name %s", l2out_extepg.Name)
 		}
 
