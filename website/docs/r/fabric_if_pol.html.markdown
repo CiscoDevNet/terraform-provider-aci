@@ -32,7 +32,7 @@ resource "aci_fabric_if_pol" "example" {
 * `description` - (Optional) Description for object fabric if pol.
 * `auto_neg` - (Optional) Policy auto negotiation for object fabric if pol. Allowed values: "on", "off". Default value is "on".
 * `fec_mode` - (Optional) Forwarding error correction for object fabric if pol. Allowed values: "inherit", "cl91-rs-fec", "cl74-fc-fec", "ieee-rs-fec", "cons16-rs-fec", "kp-fec", "disable-fec". Default value is "inherit".
-* `link_debounce` - (Optional) Link debounce interval for object fabric if pol. Default value is "100".
+* `link_debounce` - (Optional) Link debounce interval for object fabric if pol. Range of allowed values: "0" to "5000". Default value is "100".
 * `name_alias` - (Optional) Name alias for object fabric if pol.
 * `speed` - (Optional) Port speed for object fabric if pol. Allowed values: "unknown", "100M", "1G", "10G", "25G", "40G", "50G", "100G","200G", "400G", "inherit". Default value is "inherit".
 
