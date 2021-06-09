@@ -15,6 +15,7 @@ Data source for ACI Spine Interface Profile
 
 data "aci_spine_interface_profile" "example" {
   name  = "example"
+  description = "from terraform"
 }
 
 ```
