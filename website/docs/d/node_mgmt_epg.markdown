@@ -17,12 +17,14 @@ Data source for ACI Node Management EPg
 data "aci_node_mgmt_epg" "example" {
   type = "in_band"
   management_profile_dn  = "uni/tn-mgmt/mgmtp-default"
+  description = "from terraform"
   name  = "example"
 }
 
 data "aci_node_mgmt_epg" "example" {
   type = "out_of_band"
   management_profile_dn  = "uni/tn-mgmt/mgmtp-default"
+  description = "from terraform"
   name  = "example"
 }
 
@@ -41,6 +43,7 @@ data "aci_node_mgmt_epg" "example" {
 
 - `id` - Attribute id set to the Dn of the Node Management EPg.
 - `annotation` - (Optional) Annotation for object in-band management EPg.
+- `description` - (Optional) Description for object in-band management EPg.
 - `encap` - (Optional) The in-band access encapsulation.
 - `exception_tag` - (Optional) Exception tag for object in-band management EPg.
 - `flood_on_encap` - (Optional) Control at EPg level if the traffic L2 Multicast/Broadcast and Link Local Layer should be flooded only on ENCAP or based on bridg-domain settings.
