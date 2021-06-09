@@ -18,6 +18,7 @@ resource "aci_dhcp_option_policy" "example" {
   name  = "example"
   annotation  = "example"
   name_alias  = "example"
+  description = "from terraform"
 
   dhcp_option {
       name  = "example_one"
@@ -42,6 +43,7 @@ resource "aci_dhcp_option_policy" "example" {
 - `tenant_dn` - (Required) Distinguished name of parent Tenant object.
 - `name` - (Required) Name of Object DHCP Option Policy.
 - `annotation` - (Optional) Annotation for object DHCP Option Policy.
+- `description` - (Optional) Description for object DHCP Option Policy.
 - `name_alias` - (Optional) Name alias for object DHCP Option Policy.
 - `dhcp_option` - (Optional) To manage DHCP Option from the DHCP Option Policy resource. It has the attributes like name, annotation,data,dhcp_option_id and name_alias.
 - `dhcp_option.name` - (Required) Name of Object DHCP Option.
