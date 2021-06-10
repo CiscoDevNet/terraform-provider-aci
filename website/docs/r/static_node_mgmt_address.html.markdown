@@ -13,9 +13,10 @@ Manages ACI Management Static Node
 
 ```hcl
 resource "aci_static_node_mgmt_address" "example" {
-  management_epg_dn = "${aci_node_mgmt_epg.example.id}"
+  management_epg_dn = aci_node_mgmt_epg.example.id
   t_dn              = "topology/pod-1/node-1"
   type              = "out_of_band"
+  description       = "from terraform"
   addr              = "10.20.30.40/20"
   annotation        = "example"
   description       = "from terraform"
@@ -28,15 +29,16 @@ resource "aci_static_node_mgmt_address" "example" {
 
 ## Argument Reference ##
 
-* `management_epg_dn` - (Required) Distinguished name of parent management static node object.
-* `t_dn` - (Required) Target dn of management static node object.
-* `type` - (Required) Type of the management static node object. Allowed values are "in_band" and "out_of_band". 
+* `management_epg_dn` - (Required) Distinguished name of parent Management static node object.
+* `t_dn` - (Required) Target dn of Management static node object.
+* `type` - (Required) Type of the Management static node object. Allowed values are "in_band" and "out_of_band". 
 <strong>Note</strong> : for "in_band", `management_epg_dn` should be of type "in_band" and for "out_of_band", `management_epg_dn` should be of type "out_of_band".
-* `addr` - (Optional) Peer address of the management static node object
-* `annotation` - (Optional) Annotation for management static node object.
-* `gw` - (Optional) Gateway IP address for management static node object
-* `v6_addr` - (Optional) V6 address for management static node object.
-* `v6_gw` - (Optional) V6 gw for management static node object.
+* `addr` - (Optional) Peer address of the Management static node object.
+* `annotation` - (Optional) Annotation for Management static node object.
+* `description` - (Optional) Description for Management static node object.
+* `gw` - (Optional) Gateway IP address for Management static node object.
+* `v6_addr` - (Optional) V6 address for Management static node object.
+* `v6_gw` - (Optional) V6 gw for Management static node object.
 
 
 

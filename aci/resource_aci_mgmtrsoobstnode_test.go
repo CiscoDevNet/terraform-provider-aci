@@ -59,17 +59,16 @@ func TestAccAciOutofbandStaticNode_update(t *testing.T) {
 
 func testAccCheckAciOutofbandStaticNodeConfig_basic(description string) string {
 	return fmt.Sprintf(`
-
 	resource "aci_static_node_mgmt_address" "test" {
-		management_epg_dn  = "${aci_node_mgmt_epg.example.id}"
+		management_epg_dn  = "${aci_node_mgmt_epg.foo_aci_node_mgmt_epg.id}"
 		description = "%s"
-		type = "out_of_bound"
-		t_dn  = "example"
-		addr  = "example"
-		annotation  = "example"
-		gw  = "example"
-		v6_addr  = "example"
-		v6_gw  = "example"
+		t_dn              = "topology/pod-1/node-1"
+		type              = "out_of_band"
+		addr              = "10.20.30.40/20"
+		annotation        = "example"
+		gw                = "10.20.30.41"
+  		v6_addr           = "1::40/64"
+  		v6_gw             = "1::21"
 	}
 	`, description)
 }
@@ -129,11 +128,11 @@ func testAccCheckAciOutofbandStaticNodeAttributes(description string, mgmtStNode
 			return fmt.Errorf("Bad mgmtStNode Description %s", mgmtStNode.Description)
 		}
 
-		if "example" != mgmtStNode.TDn {
+		if "topology/pod-1/node-1" != mgmtStNode.TDn {
 			return fmt.Errorf("Bad mgmtStNode t_dn %s", mgmtStNode.TDn)
 		}
 
-		if "example" != mgmtStNode.Addr {
+		if "10.20.30.40/20" != mgmtStNode.Addr {
 			return fmt.Errorf("Bad mgmtStNode addr %s", mgmtStNode.Addr)
 		}
 
@@ -141,19 +140,15 @@ func testAccCheckAciOutofbandStaticNodeAttributes(description string, mgmtStNode
 			return fmt.Errorf("Bad mgmtStNode annotation %s", mgmtStNode.Annotation)
 		}
 
-		if "example" != mgmtStNode.Gw {
+		if "10.20.30.41" != mgmtStNode.Gw {
 			return fmt.Errorf("Bad mgmtStNode gw %s", mgmtStNode.Gw)
 		}
 
-		if "example" != mgmtStNode.TDn {
-			return fmt.Errorf("Bad mgmtStNode t_dn %s", mgmtStNode.TDn)
-		}
-
-		if "example" != mgmtStNode.V6Addr {
+		if "1::40/64" != mgmtStNode.V6Addr {
 			return fmt.Errorf("Bad mgmtStNode v6_addr %s", mgmtStNode.V6Addr)
 		}
 
-		if "example" != mgmtStNode.V6Gw {
+		if "1::21" != mgmtStNode.V6Gw {
 			return fmt.Errorf("Bad mgmtStNode v6_gw %s", mgmtStNode.V6Gw)
 		}
 

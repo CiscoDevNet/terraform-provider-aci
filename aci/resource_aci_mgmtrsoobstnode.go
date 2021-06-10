@@ -1,22 +1,24 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciMgmtStaticNode() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciMgmtStaticNodeCreate,
-		Update: resourceAciMgmtStaticNodeUpdate,
-		Read:   resourceAciMgmtStaticNodeRead,
-		Delete: resourceAciMgmtStaticNodeDelete,
+		CreateContext: resourceAciMgmtStaticNodeCreate,
+		UpdateContext: resourceAciMgmtStaticNodeUpdate,
+		ReadContext:   resourceAciMgmtStaticNodeRead,
+		DeleteContext: resourceAciMgmtStaticNodeDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciMgmtStaticNodeImport,
@@ -104,7 +106,7 @@ func getRemoteOutofbandStaticNode(client *client.Client, dn string) (*models.Out
 	return mgmtRsOoBStNode, nil
 }
 
-func setMgmtStaticNodeAttributes(mgmtRsOoBStNode *models.OutofbandStaticNode, mgmtRsInBStNode *models.InbandStaticNode, bandType string, d *schema.ResourceData) *schema.ResourceData {
+func setMgmtStaticNodeAttributes(mgmtRsOoBStNode *models.OutofbandStaticNode, mgmtRsInBStNode *models.InbandStaticNode, bandType string, d *schema.ResourceData) (*schema.ResourceData, error) {
 	dn := d.Id()
 
 	if bandType == "in_band" {
@@ -124,7 +126,10 @@ func setMgmtStaticNodeAttributes(mgmtRsOoBStNode *models.OutofbandStaticNode, mg
 	}
 
 	if bandType == "in_band" {
-		mgmtRsInBStNodeMap, _ := mgmtRsInBStNode.ToMap()
+		mgmtRsInBStNodeMap, err := mgmtRsInBStNode.ToMap()
+		if err != nil {
+			return d, err
+		}
 
 		d.Set("addr", mgmtRsInBStNodeMap["addr"])
 		d.Set("annotation", mgmtRsInBStNodeMap["annotation"])
@@ -134,7 +139,10 @@ func setMgmtStaticNodeAttributes(mgmtRsOoBStNode *models.OutofbandStaticNode, mg
 		d.Set("v6_gw", mgmtRsInBStNodeMap["v6Gw"])
 
 	} else {
-		mgmtRsOoBStNodeMap, _ := mgmtRsOoBStNode.ToMap()
+		mgmtRsOoBStNodeMap, err := mgmtRsOoBStNode.ToMap()
+		if err != nil {
+			return d, err
+		}
 
 		d.Set("t_dn", mgmtRsOoBStNodeMap["tDn"])
 		d.Set("addr", mgmtRsOoBStNodeMap["addr"])
@@ -144,7 +152,7 @@ func setMgmtStaticNodeAttributes(mgmtRsOoBStNode *models.OutofbandStaticNode, mg
 		d.Set("v6_gw", mgmtRsOoBStNodeMap["v6Gw"])
 	}
 
-	return d
+	return d, nil
 }
 
 func resourceAciMgmtStaticNodeImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -165,7 +173,11 @@ func resourceAciMgmtStaticNodeImport(d *schema.ResourceData, m interface{}) ([]*
 		if err != nil {
 			return nil, err
 		}
-		schemaFilled := setMgmtStaticNodeAttributes(nil, mgmtRsInBStNode, "in_band", d)
+		schemaFilled, err := setMgmtStaticNodeAttributes(nil, mgmtRsInBStNode, "in_band", d)
+
+		if err != nil {
+			return nil, err
+		}
 
 		log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
@@ -177,7 +189,10 @@ func resourceAciMgmtStaticNodeImport(d *schema.ResourceData, m interface{}) ([]*
 		if err != nil {
 			return nil, err
 		}
-		schemaFilled := setMgmtStaticNodeAttributes(mgmtRsOoBStNode, nil, "out_of_band", d)
+		schemaFilled, err := setMgmtStaticNodeAttributes(mgmtRsOoBStNode, nil, "out_of_band", d)
+		if err != nil {
+			return nil, err
+		}
 
 		log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
@@ -187,7 +202,7 @@ func resourceAciMgmtStaticNodeImport(d *schema.ResourceData, m interface{}) ([]*
 
 }
 
-func resourceAciMgmtStaticNodeCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciMgmtStaticNodeCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] Mgmt Static Node: Beginning Creation")
 
 	aciClient := m.(*client.Client)
@@ -222,11 +237,8 @@ func resourceAciMgmtStaticNodeCreate(d *schema.ResourceData, m interface{}) erro
 
 		err := aciClient.Save(mgmtRsInBStNode)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-
-		d.Partial(false)
 
 		d.SetId(mgmtRsInBStNode.DistinguishedName)
 
@@ -255,21 +267,18 @@ func resourceAciMgmtStaticNodeCreate(d *schema.ResourceData, m interface{}) erro
 
 		err := aciClient.Save(mgmtRsOoBStNode)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-
-		d.Partial(false)
 
 		d.SetId(mgmtRsOoBStNode.DistinguishedName)
 	}
 
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciMgmtStaticNodeRead(d, m)
+	return resourceAciMgmtStaticNodeRead(ctx, d, m)
 }
 
-func resourceAciMgmtStaticNodeUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciMgmtStaticNodeUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] Mgmt Static Node: Beginning Update")
 
 	aciClient := m.(*client.Client)
@@ -307,11 +316,8 @@ func resourceAciMgmtStaticNodeUpdate(d *schema.ResourceData, m interface{}) erro
 		err := aciClient.Save(mgmtRsInBStNode)
 
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-
-		d.Partial(false)
 
 		d.SetId(mgmtRsInBStNode.DistinguishedName)
 
@@ -339,22 +345,19 @@ func resourceAciMgmtStaticNodeUpdate(d *schema.ResourceData, m interface{}) erro
 		err := aciClient.Save(mgmtRsOoBStNode)
 
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-
-		d.Partial(false)
 
 		d.SetId(mgmtRsOoBStNode.DistinguishedName)
 	}
 
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciMgmtStaticNodeRead(d, m)
+	return resourceAciMgmtStaticNodeRead(ctx, d, m)
 
 }
 
-func resourceAciMgmtStaticNodeRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciMgmtStaticNodeRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -369,7 +372,12 @@ func resourceAciMgmtStaticNodeRead(d *schema.ResourceData, m interface{}) error 
 			d.SetId("")
 			return nil
 		}
-		setMgmtStaticNodeAttributes(nil, mgmtRsInBStNode, "in_band", d)
+		_, err = setMgmtStaticNodeAttributes(nil, mgmtRsInBStNode, "in_band", d)
+
+		if err != nil {
+			d.SetId("")
+			return nil
+		}
 
 	} else {
 		mgmtRsOoBStNode, err := getRemoteOutofbandStaticNode(aciClient, dn)
@@ -378,7 +386,12 @@ func resourceAciMgmtStaticNodeRead(d *schema.ResourceData, m interface{}) error 
 			d.SetId("")
 			return nil
 		}
-		setMgmtStaticNodeAttributes(mgmtRsOoBStNode, nil, "out_of_band", d)
+		_, err = setMgmtStaticNodeAttributes(mgmtRsOoBStNode, nil, "out_of_band", d)
+
+		if err != nil {
+			d.SetId("")
+			return nil
+		}
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
@@ -386,7 +399,7 @@ func resourceAciMgmtStaticNodeRead(d *schema.ResourceData, m interface{}) error 
 	return nil
 }
 
-func resourceAciMgmtStaticNodeDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciMgmtStaticNodeDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -396,12 +409,12 @@ func resourceAciMgmtStaticNodeDelete(d *schema.ResourceData, m interface{}) erro
 	if bandType == "in_band" {
 		err := aciClient.DeleteByDn(dn, "mgmtRsInBStNode")
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 	} else {
 		err := aciClient.DeleteByDn(dn, "mgmtRsOoBStNode")
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 	}
 
