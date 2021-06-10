@@ -35,6 +35,7 @@ Note := for "in_band", `management_epg_dn` should be of type "in_band" and for "
 * `id` - Attribute id set to the Dn of Management static node object.
 * `addr` - Peer address for Management static node object.
 * `annotation` - Annotation for Management static node object.
+* `description` - Description for Management static node object.
 * `gw` - Gateway IP address for Management static node object.
 * `v6_addr` - V6 address for Management static node object.
 * `v6_gw` - V6 gw for Management static node object.
