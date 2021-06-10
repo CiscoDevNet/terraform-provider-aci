@@ -52,6 +52,7 @@ func dataSourceAciDHCPOption() *schema.Resource {
 				DefaultFunc: func() (interface{}, error) {
 					return "orchestrator:terraform", nil
 				},
+			},
 		},
 	}
 }
