@@ -1,16 +1,18 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func dataSourceAciLeafBreakoutPortGroup() *schema.Resource {
 	return &schema.Resource{
 
-		Read: dataSourceAciLeafBreakoutPortGroupRead,
+		ReadContext: dataSourceAciLeafBreakoutPortGroupRead,
 
 		SchemaVersion: 1,
 
@@ -36,7 +38,7 @@ func dataSourceAciLeafBreakoutPortGroup() *schema.Resource {
 	}
 }
 
-func dataSourceAciLeafBreakoutPortGroupRead(d *schema.ResourceData, m interface{}) error {
+func dataSourceAciLeafBreakoutPortGroupRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	aciClient := m.(*client.Client)
 
 	name := d.Get("name").(string)
@@ -48,9 +50,12 @@ func dataSourceAciLeafBreakoutPortGroupRead(d *schema.ResourceData, m interface{
 	infraBrkoutPortGrp, err := getRemoteLeafBreakoutPortGroup(aciClient, dn)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.SetId(dn)
-	setLeafBreakoutPortGroupAttributes(infraBrkoutPortGrp, d)
+	_, err = setLeafBreakoutPortGroupAttributes(infraBrkoutPortGrp, d)
+	if err != nil {
+		return diag.FromErr(err)
+	}
 	return nil
 }

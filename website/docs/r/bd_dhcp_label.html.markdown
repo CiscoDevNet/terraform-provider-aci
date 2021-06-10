@@ -14,10 +14,10 @@ Manages ACI BD DHCP Label
 
 ```hcl
 resource "aci_bd_dhcp_label" "foo_bd_dhcp_label" {
-
-  bridge_domain_dn  = "${aci_bridge_domain.foo_bridge_domain.id}"
+  bridge_domain_dn  = aci_bridge_domain.foo_bridge_domain.id
   name  = "example"
   annotation  = "example"
+  description = "from terraform"
   name_alias  = "example"
   owner  = "tenant"
   tag  = "aqua"
@@ -29,10 +29,11 @@ resource "aci_bd_dhcp_label" "foo_bd_dhcp_label" {
 - `bridge_domain_dn` - (Required) Distinguished name of parent Bridge Domain object.
 - `name` - (Required) The Bridge Domain DHCP label name. This name can be up to 64 alphanumeric characters.
 - `annotation` - (Optional) Annotation for object BD DHCP Label.
+- `description` - (Optional) Description for object BD DHCP Label.
 - `name_alias` - (Optional) Name alias for object BD DHCP Label.
 - `owner` - (Optional) Owner of the target relay servers.  
   Allowed values: "infra", "tenant". Default value: "infra".
-- `tag` - (Optional) Label color.  
+- `tag` - (Optional) Label color.
 
 - `relation_dhcp_rs_dhcp_option_pol` - (Optional) Relation to class dhcpOptionPol. Cardinality - N_TO_ONE. Type - String.
 

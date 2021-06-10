@@ -14,8 +14,7 @@ Data source for ACI BD DHCP Label
 
 ```hcl
 data "aci_bd_dhcp_label" "example" {
-
-  bridge_domain_dn  = "${aci_bridge_domain.example.id}"
+  bridge_domain_dn  = aci_bridge_domain.example.id
   name  = "example"
 }
 ```
@@ -28,6 +27,7 @@ data "aci_bd_dhcp_label" "example" {
 ## Attribute Reference
 
 - `id` - Attribute id set to the Dn of the BD DHCP Label.
+- `description` - (Optional) Description for object BD DHCP Label.
 - `annotation` - (Optional) Annotation for object BD DHCP Label.
 - `name_alias` - (Optional) Name alias for object BD DHCP Label.
 - `owner` - (Optional) Owner of the target relay servers.

@@ -17,6 +17,7 @@ resource "aci_logical_interface_context" "example" {
   logical_device_context_dn  = aci_logical_device_context.example.id
   annotation  = "example"
   conn_name_or_lbl  = "example"
+  description = "from terraform"
   l3_dest  = "no"
   name_alias  = "example"
   permit_log  = "no"
