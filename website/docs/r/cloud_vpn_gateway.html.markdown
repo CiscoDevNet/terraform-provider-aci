@@ -31,7 +31,7 @@ Note: This resource is supported in Cloud APIC only.
 * `description` - (Optional) Description for object Cloud Router Profile.
 * `annotation` - (Optional) Annotation for object  Cloud Router Profile.
 * `name_alias` - (Optional) Name_alias for object  Cloud Router Profile.
-* `num_instances` - (Optional) Num instances for object  Cloud Router Profile.
+* `num_instances` - (Optional) Num instances for object  Cloud Router Profile. Default value: "1"
 * `cloud_router_profile_type` - (Optional) Component type Allowed values are "host-router" and "vpn-gw". Default value is "vpn-gw". 
 
 * `relation_cloud_rs_to_vpn_gw_pol` - (Optional) Relation to class cloudVpnGwPol. Cardinality - N_TO_ONE. Type - String.
