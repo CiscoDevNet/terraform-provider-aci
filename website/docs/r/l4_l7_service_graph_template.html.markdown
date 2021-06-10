@@ -22,6 +22,8 @@ resource "aci_l4_l7_service_graph_template" "example" {
   description                       = "from terraform"
   l4_l7_service_graph_template_type = "legacy"
   ui_template_type                  = "ONE_NODE_ADC_ONE_ARM"
+  term_prov_name                    = "prov"
+  term_cons_name                    = "cons"
 }
 
 ```
