@@ -34,6 +34,7 @@ resource "aci_static_node_mgmt_address" "example" {
 <strong>Note</strong> : for "in_band", `management_epg_dn` should be of type "in_band" and for "out_of_band", `management_epg_dn` should be of type "out_of_band".
 * `addr` - (Optional) Peer address of the Management static node object.
 * `annotation` - (Optional) Annotation for Management static node object.
+* `description` - (Optional) Description for Management static node object.
 * `gw` - (Optional) Gateway IP address for Management static node object.
 * `v6_addr` - (Optional) V6 address for Management static node object.
 * `v6_gw` - (Optional) V6 gw for Management static node object.
