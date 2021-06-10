@@ -39,8 +39,8 @@ func resourceAciX509Certificate() *schema.Resource {
 
 			"data": &schema.Schema{
 				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
+				Required: true,
+				ForceNew: true,
 			},
 
 			"name_alias": &schema.Schema{

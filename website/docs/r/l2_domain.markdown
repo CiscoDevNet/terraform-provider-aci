@@ -12,15 +12,17 @@ Manages ACI L2 Domain
 ## Example Usage ##
 
 ```hcl
-resource "aci_l2_domain" "example" {
-  name  = "example"
-  annotation  = "example"
+resource "aci_l2_domain" "fool2_domain" {
+  name  = "l2_domain_1"
+  annotation  = "l2_domain_tag"
+  description = "from terraform"
   name_alias  = "example"
 }
 ```
 ## Argument Reference ##
-* `name` - (Required) Name of Object L2 Domain.
+* `name` - (Required) Name of object L2 Domain.
 * `annotation` - (Optional) Annotation for object L2 Domain.
+* `description` - (Optional) Description for object L2 Domain.
 * `name_alias` - (Optional) Name alias for object L2 Domain.
 
 * `relation_infra_rs_vlan_ns` - (Optional) Relation to class fvnsVlanInstP. Cardinality - N_TO_ONE. Type - String.

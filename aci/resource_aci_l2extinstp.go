@@ -1,6 +1,7 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"reflect"
@@ -8,16 +9,17 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciL2outExternalEpg() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciL2outExternalEpgCreate,
-		Update: resourceAciL2outExternalEpgUpdate,
-		Read:   resourceAciL2outExternalEpgRead,
-		Delete: resourceAciL2outExternalEpgDelete,
+		CreateContext: resourceAciL2outExternalEpgCreate,
+		UpdateContext: resourceAciL2outExternalEpgUpdate,
+		ReadContext:   resourceAciL2outExternalEpgRead,
+		DeleteContext: resourceAciL2outExternalEpgDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciL2outExternalEpgImport,
@@ -192,7 +194,7 @@ func getRemoteL2outExternalEpg(client *client.Client, dn string) (*models.L2outE
 	return l2extInstP, nil
 }
 
-func setL2outExternalEpgAttributes(l2extInstP *models.L2outExternalEpg, d *schema.ResourceData) *schema.ResourceData {
+func setL2outExternalEpgAttributes(l2extInstP *models.L2outExternalEpg, d *schema.ResourceData) (*schema.ResourceData, error) {
 	dn := d.Id()
 	d.SetId(l2extInstP.DistinguishedName)
 	d.Set("description", l2extInstP.Description)
@@ -200,7 +202,10 @@ func setL2outExternalEpgAttributes(l2extInstP *models.L2outExternalEpg, d *schem
 	if dn != l2extInstP.DistinguishedName {
 		d.Set("l2_outside_dn", "")
 	}
-	l2extInstPMap, _ := l2extInstP.ToMap()
+	l2extInstPMap, err := l2extInstP.ToMap()
+	if err != nil {
+		return d, err
+	}
 
 	d.Set("name", l2extInstPMap["name"])
 
@@ -212,7 +217,7 @@ func setL2outExternalEpgAttributes(l2extInstP *models.L2outExternalEpg, d *schem
 	d.Set("pref_gr_memb", l2extInstPMap["prefGrMemb"])
 	d.Set("prio", l2extInstPMap["prio"])
 	d.Set("target_dscp", l2extInstPMap["targetDscp"])
-	return d
+	return d, nil
 }
 
 func resourceAciL2outExternalEpgImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -226,14 +231,17 @@ func resourceAciL2outExternalEpgImport(d *schema.ResourceData, m interface{}) ([
 	if err != nil {
 		return nil, err
 	}
-	schemaFilled := setL2outExternalEpgAttributes(l2extInstP, d)
+	schemaFilled, err := setL2outExternalEpgAttributes(l2extInstP, d)
+	if err != nil {
+		return nil, err
+	}
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciL2outExternalEpgCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciL2outExternalEpgCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] L2outExternalEpg: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -273,11 +281,8 @@ func resourceAciL2outExternalEpgCreate(d *schema.ResourceData, m interface{}) er
 
 	err := aciClient.Save(l2extInstP)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
 
@@ -331,7 +336,7 @@ func resourceAciL2outExternalEpgCreate(d *schema.ResourceData, m interface{}) er
 	d.Partial(true)
 	err = checkTDn(aciClient, checkDns)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Partial(false)
 
@@ -341,10 +346,8 @@ func resourceAciL2outExternalEpgCreate(d *schema.ResourceData, m interface{}) er
 			err = aciClient.CreateRelationfvRsSecInheritedFromL2outExternalEpg(l2extInstP.DistinguishedName, relationParam)
 
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
-			d.Partial(true)
-			d.Partial(false)
 		}
 	}
 	if relationTofvRsProv, ok := d.GetOk("relation_fv_rs_prov"); ok {
@@ -354,10 +357,8 @@ func resourceAciL2outExternalEpgCreate(d *schema.ResourceData, m interface{}) er
 			err = aciClient.CreateRelationfvRsProvFromL2outExternalEpg(l2extInstP.DistinguishedName, relationParamName)
 
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
-			d.Partial(true)
-			d.Partial(false)
 		}
 	}
 	if relationTofvRsConsIf, ok := d.GetOk("relation_fv_rs_cons_if"); ok {
@@ -367,10 +368,8 @@ func resourceAciL2outExternalEpgCreate(d *schema.ResourceData, m interface{}) er
 			err = aciClient.CreateRelationfvRsConsIfFromL2outExternalEpg(l2extInstP.DistinguishedName, relationParamName)
 
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
-			d.Partial(true)
-			d.Partial(false)
 		}
 	}
 	if relationTofvRsCustQosPol, ok := d.GetOk("relation_fv_rs_cust_qos_pol"); ok {
@@ -378,10 +377,8 @@ func resourceAciL2outExternalEpgCreate(d *schema.ResourceData, m interface{}) er
 		relationParamName := GetMOName(relationParam)
 		err = aciClient.CreateRelationfvRsCustQosPolFromL2outExternalEpg(l2extInstP.DistinguishedName, relationParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.Partial(false)
 
 	}
 	if relationTofvRsCons, ok := d.GetOk("relation_fv_rs_cons"); ok {
@@ -391,20 +388,16 @@ func resourceAciL2outExternalEpgCreate(d *schema.ResourceData, m interface{}) er
 			err = aciClient.CreateRelationfvRsConsFromL2outExternalEpg(l2extInstP.DistinguishedName, relationParamName)
 
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
-			d.Partial(true)
-			d.Partial(false)
 		}
 	}
 	if relationTol2extRsL2InstPToDomP, ok := d.GetOk("relation_l2ext_rs_l2_inst_p_to_dom_p"); ok {
 		relationParam := relationTol2extRsL2InstPToDomP.(string)
 		err = aciClient.CreateRelationl2extRsL2InstPToDomPFromL2outExternalEpg(l2extInstP.DistinguishedName, relationParam)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.Partial(false)
 
 	}
 	if relationTofvRsProtBy, ok := d.GetOk("relation_fv_rs_prot_by"); ok {
@@ -414,10 +407,8 @@ func resourceAciL2outExternalEpgCreate(d *schema.ResourceData, m interface{}) er
 			err = aciClient.CreateRelationfvRsProtByFromL2outExternalEpg(l2extInstP.DistinguishedName, relationParamName)
 
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
-			d.Partial(true)
-			d.Partial(false)
 		}
 	}
 	if relationTofvRsIntraEpg, ok := d.GetOk("relation_fv_rs_intra_epg"); ok {
@@ -427,20 +418,18 @@ func resourceAciL2outExternalEpgCreate(d *schema.ResourceData, m interface{}) er
 			err = aciClient.CreateRelationfvRsIntraEpgFromL2outExternalEpg(l2extInstP.DistinguishedName, relationParamName)
 
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
-			d.Partial(true)
-			d.Partial(false)
 		}
 	}
 
 	d.SetId(l2extInstP.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciL2outExternalEpgRead(d, m)
+	return resourceAciL2outExternalEpgRead(ctx, d, m)
 }
 
-func resourceAciL2outExternalEpgUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciL2outExternalEpgUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] L2outExternalEpg: Beginning Update")
 
 	aciClient := m.(*client.Client)
@@ -484,11 +473,8 @@ func resourceAciL2outExternalEpgUpdate(d *schema.ResourceData, m interface{}) er
 	err := aciClient.Save(l2extInstP)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
 
@@ -572,7 +558,7 @@ func resourceAciL2outExternalEpgUpdate(d *schema.ResourceData, m interface{}) er
 	d.Partial(true)
 	err = checkTDn(aciClient, checkDns)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Partial(false)
 
@@ -586,7 +572,7 @@ func resourceAciL2outExternalEpgUpdate(d *schema.ResourceData, m interface{}) er
 		for _, relDn := range relToDelete {
 			err = aciClient.DeleteRelationfvRsSecInheritedFromL2outExternalEpg(l2extInstP.DistinguishedName, relDn)
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 		}
@@ -594,10 +580,8 @@ func resourceAciL2outExternalEpgUpdate(d *schema.ResourceData, m interface{}) er
 		for _, relDn := range relToCreate {
 			err = aciClient.CreateRelationfvRsSecInheritedFromL2outExternalEpg(l2extInstP.DistinguishedName, relDn)
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
-			d.Partial(true)
-			d.Partial(false)
 
 		}
 
@@ -613,7 +597,7 @@ func resourceAciL2outExternalEpgUpdate(d *schema.ResourceData, m interface{}) er
 			relDnName := GetMOName(relDn)
 			err = aciClient.DeleteRelationfvRsProvFromL2outExternalEpg(l2extInstP.DistinguishedName, relDnName)
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 		}
@@ -622,11 +606,8 @@ func resourceAciL2outExternalEpgUpdate(d *schema.ResourceData, m interface{}) er
 			relDnName := GetMOName(relDn)
 			err = aciClient.CreateRelationfvRsProvFromL2outExternalEpg(l2extInstP.DistinguishedName, relDnName)
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
-			d.Partial(true)
-			d.Partial(false)
-
 		}
 
 	}
@@ -641,7 +622,7 @@ func resourceAciL2outExternalEpgUpdate(d *schema.ResourceData, m interface{}) er
 			relDnName := GetMOName(relDn)
 			err = aciClient.DeleteRelationfvRsConsIfFromL2outExternalEpg(l2extInstP.DistinguishedName, relDnName)
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 		}
@@ -650,10 +631,8 @@ func resourceAciL2outExternalEpgUpdate(d *schema.ResourceData, m interface{}) er
 			relDnName := GetMOName(relDn)
 			err = aciClient.CreateRelationfvRsConsIfFromL2outExternalEpg(l2extInstP.DistinguishedName, relDnName)
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
-			d.Partial(true)
-			d.Partial(false)
 
 		}
 
@@ -663,10 +642,8 @@ func resourceAciL2outExternalEpgUpdate(d *schema.ResourceData, m interface{}) er
 		newRelParamName := GetMOName(newRelParam.(string))
 		err = aciClient.CreateRelationfvRsCustQosPolFromL2outExternalEpg(l2extInstP.DistinguishedName, newRelParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.Partial(false)
 
 	}
 	if d.HasChange("relation_fv_rs_cons") {
@@ -680,7 +657,7 @@ func resourceAciL2outExternalEpgUpdate(d *schema.ResourceData, m interface{}) er
 			relDnName := GetMOName(relDn)
 			err = aciClient.DeleteRelationfvRsConsFromL2outExternalEpg(l2extInstP.DistinguishedName, relDnName)
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 		}
@@ -689,11 +666,8 @@ func resourceAciL2outExternalEpgUpdate(d *schema.ResourceData, m interface{}) er
 			relDnName := GetMOName(relDn)
 			err = aciClient.CreateRelationfvRsConsFromL2outExternalEpg(l2extInstP.DistinguishedName, relDnName)
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
-			d.Partial(true)
-			d.Partial(false)
-
 		}
 
 	}
@@ -701,10 +675,8 @@ func resourceAciL2outExternalEpgUpdate(d *schema.ResourceData, m interface{}) er
 		_, newRelParam := d.GetChange("relation_l2ext_rs_l2_inst_p_to_dom_p")
 		err = aciClient.CreateRelationl2extRsL2InstPToDomPFromL2outExternalEpg(l2extInstP.DistinguishedName, newRelParam.(string))
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.Partial(false)
 
 	}
 	if d.HasChange("relation_fv_rs_prot_by") {
@@ -718,7 +690,7 @@ func resourceAciL2outExternalEpgUpdate(d *schema.ResourceData, m interface{}) er
 			relDnName := GetMOName(relDn)
 			err = aciClient.DeleteRelationfvRsProtByFromL2outExternalEpg(l2extInstP.DistinguishedName, relDnName)
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 		}
@@ -727,10 +699,8 @@ func resourceAciL2outExternalEpgUpdate(d *schema.ResourceData, m interface{}) er
 			relDnName := GetMOName(relDn)
 			err = aciClient.CreateRelationfvRsProtByFromL2outExternalEpg(l2extInstP.DistinguishedName, relDnName)
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
-			d.Partial(true)
-			d.Partial(false)
 
 		}
 
@@ -746,7 +716,7 @@ func resourceAciL2outExternalEpgUpdate(d *schema.ResourceData, m interface{}) er
 			relDnName := GetMOName(relDn)
 			err = aciClient.DeleteRelationfvRsIntraEpgFromL2outExternalEpg(l2extInstP.DistinguishedName, relDnName)
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 		}
@@ -755,11 +725,8 @@ func resourceAciL2outExternalEpgUpdate(d *schema.ResourceData, m interface{}) er
 			relDnName := GetMOName(relDn)
 			err = aciClient.CreateRelationfvRsIntraEpgFromL2outExternalEpg(l2extInstP.DistinguishedName, relDnName)
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
-			d.Partial(true)
-			d.Partial(false)
-
 		}
 
 	}
@@ -767,11 +734,11 @@ func resourceAciL2outExternalEpgUpdate(d *schema.ResourceData, m interface{}) er
 	d.SetId(l2extInstP.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciL2outExternalEpgRead(d, m)
+	return resourceAciL2outExternalEpgRead(ctx, d, m)
 
 }
 
-func resourceAciL2outExternalEpgRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciL2outExternalEpgRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -783,7 +750,11 @@ func resourceAciL2outExternalEpgRead(d *schema.ResourceData, m interface{}) erro
 		d.SetId("")
 		return nil
 	}
-	setL2outExternalEpgAttributes(l2extInstP, d)
+	_, err = setL2outExternalEpgAttributes(l2extInstP, d)
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 
 	fvRsSecInheritedData, err := aciClient.ReadRelationfvRsSecInheritedFromL2outExternalEpg(dn)
 	if err != nil {
@@ -947,18 +918,18 @@ func resourceAciL2outExternalEpgRead(d *schema.ResourceData, m interface{}) erro
 	return nil
 }
 
-func resourceAciL2outExternalEpgDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciL2outExternalEpgDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "l2extInstP")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
 }

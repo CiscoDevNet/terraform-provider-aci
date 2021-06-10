@@ -14,10 +14,10 @@ Manages ACI L2-Out External EPG
 
 ```hcl
 resource "aci_l2out_extepg" "example" {
-
-  l2_outside_dn  = "${aci_l2_outside.example.id}"
-  name  = "example"
-  annotation  = "example"
+  l2_outside_dn  = aci_l2_outside.example.id
+  description = "from terraform"
+  name  = "l2out_extepg_1"
+  annotation  = "l2out_extepg_tag"
   exception_tag  = "example"
   flood_on_encap = "disabled"
   match_t = "All"
@@ -25,31 +25,26 @@ resource "aci_l2out_extepg" "example" {
   pref_gr_memb = "exclude"
   prio = "level1"
   target_dscp = "AF11"
-
 }
 ```
 
 ## Argument Reference
 
-- `l2_outside_dn` - (Required) Distinguished name of parent L2-Outside object.
-- `name` - (Required) The name of the layer 2 L2-Out External EPG. This name can be up to 64 alphanumeric characters. Note that you cannot change this name after the object has been saved.
-- `annotation` - (Optional) annotation for object L2-Out External EPG.
-
-- `exception_tag` - (Optional) Exception tag for object L2-Out External EPG.
-
+- `l2_outside_dn` - (Required) Distinguished name of parent L2 Outside object.
+- `name` - (Required) The name of the layer 2 L2 Out External EPG. This name can be up to 64 alphanumeric characters. Note that you cannot change this name after the object has been saved.
+- `annotation` - (Optional) Annotation for object L2 Out External EPG.
+- `description` - (Optional) Description for object L2 Out External EPG.
+- `exception_tag` - (Optional) Exception tag for object L2 Out External EPG.
 - `flood_on_encap` - (Optional) Control at EPG level if the traffic L2 Multicast/Broadcast and Link Local Layer should be flooded only on ENCAP or based on bridg-domain settings.  
-  Allowed values: "disabled", "enabled". Default value: "disabled".
+  Allowed values: "disabled", "enabled". Default value is "disabled".
 - `match_t` - (Optional) The provider label match criteria.  
-  Allowed values: "All", "AtleastOne", "AtmostOne", "None". Default value: "AtleastOne".
-- `name_alias` - (Optional) name_alias for object L2-Out External EPG. 
-
-- `pref_gr_memb` - (Optional) Represents parameter used to determine if EPg is part of a group that does not a contract for communication.  
-  Allowed values: "exclude", "include". Default value: "exclude".
+  Allowed values: "All", "AtleastOne", "AtmostOne", "None". Default value is "AtleastOne".
+- `name_alias` - (Optional) Name alias for object L2 Out External EPG. 
+- `pref_gr_memb` - (Optional) Represents parameter used to determine if EPG is part of a group that does not a contract for communication. Allowed values: "exclude", "include". Default value is "exclude".
 - `prio` - (Optional) The QoS priority class identifier.  
-  Allowed values: "level1", "level2", "level3", "level4", "level5", "level6", "unspecified".
+  Allowed values: "level1", "level2", "level3", "level4", "level5", "level6", "unspecified". Default value is "unspecified".
 - `target_dscp` - (Optional) The target differentiated services code point (DSCP) of the path attached to the layer 3 outside profile.  
-  Allowed values: "AF11", "AF12", "AF13", "AF21", "AF22", "AF23", "AF31", "AF32", "AF33", "AF41", "AF42", "AF43", "CS0", "CS1", "CS2", "CS3", "CS4", "CS5", "CS6", "CS7", "EF", "VA", "unspecified".
-
+  Allowed values: "AF11", "AF12", "AF13", "AF21", "AF22", "AF23", "AF31", "AF32", "AF33", "AF41", "AF42", "AF43", "CS0", "CS1", "CS2", "CS3", "CS4", "CS5", "CS6", "CS7", "EF", "VA", "unspecified". Default value is "unspecified".
 - `relation_fv_rs_sec_inherited` - (Optional) Relation to class fvEPg. Cardinality - N_TO_M. Type - Set of String.
 - `relation_fv_rs_prov` - (Optional) Relation to class vzBrCP. Cardinality - N_TO_M. Type - Set of String.
 - `relation_fv_rs_cons_if` - (Optional) Relation to class vzCPIf. Cardinality - N_TO_M. Type - Set of String.

@@ -27,9 +27,9 @@ resource "aci_x509_certificate" "example" {
 
 - `local_user_dn` - (Required) Distinguished name of parent LocalUser object.
 - `name` - (Required) Name of Object x509 certificate.
+- `data` - (Required) Data from the user certificate
 - `annotation` - (Optional) Annotation for object x509 certificate.
 - `description` - (Optional) Description for object x509 certificate.
-- `data` - (Optional) Data from the user certificate
 - `name_alias` - (Optional) Name alias for object x509 certificate.
 
 ## Attribute Reference
