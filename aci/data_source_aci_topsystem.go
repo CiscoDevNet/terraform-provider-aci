@@ -17,7 +17,7 @@ func dataSourceAciSystem() *schema.Resource {
 
 		SchemaVersion: 1,
 
-		Schema: AppendBaseAttrSchema(map[string]*schema.Schema{
+		Schema: map[string]*schema.Schema{
 
 			"system_id": &schema.Schema{
 				Type:     schema.TypeString,
@@ -309,7 +309,7 @@ func dataSourceAciSystem() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
-		}),
+		},
 	}
 }
 
@@ -396,9 +396,10 @@ func setSystemAttributes(topSystem *models.System, d *schema.ResourceData) (*sch
 	d.Set("oob_mgmt_gateway", topSystemMap["oobMgmtGateway"])
 	d.Set("oob_mgmt_gateway6", topSystemMap["oobMgmtGateway6"])
 	d.Set("pod_id", topSystemMap["podId"])
-	d.Set("rl_oper_pod_id", topSystemMap["oobMgmtGateway"])
+	d.Set("rl_oper_pod_id", topSystemMap["rlOperPodId"])
 	d.Set("rl_routable_mode", topSystemMap["rlRoutableMode"])
 	d.Set("serial", topSystemMap["serial"])
+	d.Set("site_id", topSystemMap["siteId"])
 	d.Set("state", topSystemMap["state"])
 	d.Set("system_uptime", topSystemMap["systemUpTime"])
 	d.Set("tep_pool", topSystemMap["tepPool"])

@@ -14,7 +14,7 @@ Manages ACI Service Redirect Policy
 ```hcl
 
 resource "aci_service_redirect_policy" "example" {
-  tenant_dn               = "${aci_tenant.tenentcheck.id}"
+  tenant_dn               = aci_tenant.tenentcheck.id
   name                    = "first"
   name_alias              = "name_alias"
   dest_type               = "L3"

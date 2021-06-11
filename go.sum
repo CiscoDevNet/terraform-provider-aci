@@ -77,6 +77,8 @@ github.com/ciscoecosystem/aci-go-client v1.10.8 h1:0BHXY7h7cNR7RhGhz50gOie0zEc4u
 github.com/ciscoecosystem/aci-go-client v1.10.8/go.mod h1:pGK3tDhR/D4+P5f6utT1V7TQQxDw2fL7j79QXeVk6po=
 github.com/ciscoecosystem/aci-go-client v1.10.9 h1:Ddz6Dr0dzTd2cNKDEwBu++8P3bmtWB3D7FAoyhbeYhg=
 github.com/ciscoecosystem/aci-go-client v1.10.9/go.mod h1:pGK3tDhR/D4+P5f6utT1V7TQQxDw2fL7j79QXeVk6po=
+github.com/ciscoecosystem/aci-go-client v1.10.10 h1:Ndw3cU1KZt6F+KshetnGRZgcV/D4qEanJL8nk35asUU=
+github.com/ciscoecosystem/aci-go-client v1.10.10/go.mod h1:pGK3tDhR/D4+P5f6utT1V7TQQxDw2fL7j79QXeVk6po=
 github.com/ciscoecosystem/aci-go-client v1.11.1 h1:3TdTcCITgMXJSx3PJSzp43kDH5rfcuAGtLqL3zGdLuw=
 github.com/ciscoecosystem/aci-go-client v1.11.1/go.mod h1:pGK3tDhR/D4+P5f6utT1V7TQQxDw2fL7j79QXeVk6po=
 github.com/client9/misspell v0.3.4/go.mod h1:qj6jICC3Q7zFZvVWo7KLAzC3yx5G7kyvSDkc90ppPyw=

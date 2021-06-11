@@ -15,7 +15,7 @@ Data source for ACI Access Group
 ```hcl
 
 data "aci_access_group" "example" {
-  access_port_selector_dn  = "${aci_access_port_selector.example.id}"
+  access_port_selector_dn  = aci_access_port_selector.example.id
 }
 
 ```
