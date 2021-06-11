@@ -17,6 +17,7 @@ Note: This resource is supported in Cloud APIC only.
  data "aci_cloud_vpn_gateway" "example" {
   cloud_context_profile_dn  = aci_cloud_context_profile.example.id
   name  = "example"
+  description = "from terraform"
 }
 
 ```
