@@ -15,7 +15,7 @@ Data source for ACI EPGs Using Function
 
 data "aci_epgs_using_function" "example" {
   access_generic_dn   = aci_access_generic.example.id
-  tdn                 = "example"
+  tdn                 = aci_application_epg.epg2.id
 }
 
 ```
