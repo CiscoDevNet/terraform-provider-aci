@@ -29,5 +29,5 @@ data "aci_l3out_path_attachment_secondary_ip" "example" {
 - `id` - Attribute id set to the Dn of the L3 out path attachment secondary IP.
 - `description` - (Optional) Description for object L3 out path attachment secondary IP.
 - `annotation` - (Optional) Annotation for object L3 out path attachment secondary IP.
-- `ipv6_dad` - (Optional) IPv6 dad for object L3 out path attachment secondary IP.
+- `ipv6_dad` - (Optional) IPv6 DAD for object L3 out path attachment secondary IP.
 - `name_alias` - (Optional) Name alias for object L3 out path attachment secondary IP.

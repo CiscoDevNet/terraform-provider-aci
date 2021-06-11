@@ -34,7 +34,7 @@ data "aci_l3out_path_attachment" "example" {
 - `encap` - (Optional) The encapsulation of the path attached to the layer 3 outside profile.
 - `encap_scope` - (Optional) The encapsulation scope for object L3 out Path Attachment.
 - `if_inst_t` - (Optional) Interface type.
-- `ipv6_dad` - (Optional) IPv6 Dad for object L3 out Path Attachment.
+- `ipv6_dad` - (Optional) IPv6 DAD for object L3 out Path Attachment.
 - `ll_addr` - (Optional) The override of the system generated IPv6 link local address.
 - `mac` - (Optional) The MAC address of the path attached to the layer 3 outside profile.
 - `mode` - (Optional) BGP Domain mode.

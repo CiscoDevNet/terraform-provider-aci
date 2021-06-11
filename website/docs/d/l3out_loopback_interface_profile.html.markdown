@@ -13,14 +13,14 @@ Data source for ACI Loop Back Interface Profile
 
 ```hcl
 data "aci_l3out_loopback_interface_profile" "example" {
-  fabric_node_dn = "${aci_logical_node_to_fabric_node.example.id}"
+  fabric_node_dn = aci_logical_node_to_fabric_node.example.id
   addr           = "1.2.3.5"
 }
 ```
 
 ## Argument Reference ##
 
-* `fabric_node_dn` - (Required) Distinguished name of parent FabricNode object.
+* `fabric_node_dn` - (Required) Distinguished name of parent Fabric Node object.
 * `addr` - (Required) Address of L3out lookback interface profile.
 
 
