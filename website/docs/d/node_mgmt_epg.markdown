@@ -17,14 +17,12 @@ Data source for ACI Node Management EPg
 data "aci_node_mgmt_epg" "example" {
   type = "in_band"
   management_profile_dn  = "uni/tn-mgmt/mgmtp-default"
-  description = "from terraform"
   name  = "example"
 }
 
 data "aci_node_mgmt_epg" "example" {
   type = "out_of_band"
   management_profile_dn  = "uni/tn-mgmt/mgmtp-default"
-  description = "from terraform"
   name  = "example"
 }
 
