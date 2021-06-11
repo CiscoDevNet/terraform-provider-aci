@@ -30,7 +30,7 @@ data "aci_l2out_extepg" "example" {
 - `annotation` - (Optional) Annotation for object L2 Out External EPG.
 - `description` - (Optional) Description for object L2 Out External EPG.
 - `exception_tag` - (Optional) Exception tag for object L2 Out External EPG.
-- `flood_on_encap` - (Optional) Control at EPG level if the traffic L2 Multicast/Broadcast and Link Local Layer should be flooded only on ENCAP or based on bridg-domain settings.
+- `flood_on_encap` - (Optional) Control at EPG level if the traffic L2 Multicast/Broadcast and Link-Local Layer should be flooded only on ENCAP or based on bridge-domain settings.
 - `match_t` - (Optional) The provider label match criteria.
 - `name_alias` - (Optional) Name alias for object L2 Out External EPG.
 - `pref_gr_memb` - (Optional) Represents parameter used to determine if EPG is part of a group that does not a contract for communication.
