@@ -61,7 +61,7 @@ func testAccCheckAciBGPPeerPrefixPolicyConfig_basic(description string) string {
 	return fmt.Sprintf(`
 
 	resource "aci_bgp_peer_prefix" "test" {
-		tenant_dn    = "${aci_tenant.tenentcheck.id}"
+		tenant_dn    = "${aci_tenant.demo_dev_tenant_test.id}"
 		name         = "one"
 		description  = "%s"
 		action       = "shut"
