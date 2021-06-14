@@ -14,7 +14,7 @@ Manages ACI OSPF Timers
 
 ```hcl
 resource "aci_ospf_timers" "example" {
-  tenant_dn           = "${aci_tenant.tenentcheck.id}"
+  tenant_dn           = aci_tenant.tenentcheck.id
   name                = "one"
   annotation          = "example"
   description         = "from terraform"
@@ -70,8 +70,7 @@ resource "aci_ospf_timers" "example" {
 
 ## Attribute Reference
 
-The only attribute that this resource exports is the `id`, which is set to the
-Dn of the OSPF Timers.
+The only attribute that this resource exports is the `id`, which is set to the Dn of the OSPF Timers.
 
 ## Importing
 
