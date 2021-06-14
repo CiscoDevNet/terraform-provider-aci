@@ -59,12 +59,6 @@ func TestAccAciBgpRouteSummarization_update(t *testing.T) {
 
 func testAccCheckAciBgpRouteSummarizationConfig_basic(description string) string {
 	return fmt.Sprintf(`
-
-	resource "aci_tenant" "demo_dev_tenant_test" {
-		name        = "demo_dev_tenant_test"
-		description = "This tenant is created by terraform"
-	}
-
 	resource "aci_bgp_route_summarization" "foobgp_route_summarization" {
 		tenant_dn  = "${aci_tenant.demo_dev_tenant_test.id}"
 		description = "%s"
