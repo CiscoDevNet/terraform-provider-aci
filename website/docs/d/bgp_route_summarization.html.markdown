@@ -14,14 +14,14 @@ Data source for ACI BGP Route Summarization
 
 ```hcl
 data "aci_bgp_route_summarization" "example" {
-  tenant_dn  = "${aci_tenant.example.id}"
+  tenant_dn  = aci_tenant.example.id
   name  = "example"
 }
 ```
 
 ## Argument Reference
 
-- `tenant_dn` - (Required) Distinguished name of parent tenant object.
+- `tenant_dn` - (Required) Distinguished name of parent Tenant object.
 - `name` - (Required) Name of Object BGP route summarization.
 
 ## Attribute Reference

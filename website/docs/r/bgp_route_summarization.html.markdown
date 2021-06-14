@@ -15,7 +15,7 @@ Manages ACI BGP Route Summarization
 ```hcl
 resource "aci_bgp_route_summarization" "example" {
 
-  tenant_dn  = "${aci_tenant.example.id}"
+  tenant_dn  = aci_tenant.example.id
   name  = "example"
   annotation  = "example"
   attrmap  = "example"
