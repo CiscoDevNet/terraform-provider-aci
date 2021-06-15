@@ -1,20 +1,22 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func resourceAciInterfaceProfile() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciInterfaceProfileCreate,
-		Update: resourceAciInterfaceProfileUpdate,
-		Read:   resourceAciInterfaceProfileRead,
-		Delete: resourceAciInterfaceProfileDelete,
+		CreateContext: resourceAciInterfaceProfileCreate,
+		UpdateContext: resourceAciInterfaceProfileUpdate,
+		ReadContext:   resourceAciInterfaceProfileRead,
+		DeleteContext: resourceAciInterfaceProfileDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciInterfaceProfileImport,
@@ -22,11 +24,21 @@ func resourceAciInterfaceProfile() *schema.Resource {
 
 		SchemaVersion: 1,
 
-		Schema: AppendBaseAttrSchema(map[string]*schema.Schema{
+		Schema: map[string]*schema.Schema{
 			"spine_profile_dn": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
 				ForceNew: true,
+			},
+
+			"annotation": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				// Default:  "orchestrator:terraform",
+				Computed: true,
+				DefaultFunc: func() (interface{}, error) {
+					return "orchestrator:terraform", nil
+				},
 			},
 
 			"tdn": &schema.Schema{
@@ -34,7 +46,7 @@ func resourceAciInterfaceProfile() *schema.Resource {
 				Required: true,
 				ForceNew: true,
 			},
-		}),
+		},
 	}
 }
 func getRemoteInterfaceProfile(client *client.Client, dn string) (*models.InterfaceProfile, error) {
@@ -52,19 +64,22 @@ func getRemoteInterfaceProfile(client *client.Client, dn string) (*models.Interf
 	return infraRsSpAccPortP, nil
 }
 
-func setInterfaceProfileAttributes(infraRsSpAccPortP *models.InterfaceProfile, d *schema.ResourceData) *schema.ResourceData {
+func setInterfaceProfileAttributes(infraRsSpAccPortP *models.InterfaceProfile, d *schema.ResourceData) (*schema.ResourceData, error) {
 	dn := d.Id()
 	d.SetId(infraRsSpAccPortP.DistinguishedName)
 	if dn != infraRsSpAccPortP.DistinguishedName {
 		d.Set("spine_profile_dn", "")
 	}
 
-	infraRsSpAccPortPMap, _ := infraRsSpAccPortP.ToMap()
+	infraRsSpAccPortPMap, err := infraRsSpAccPortP.ToMap()
+	if err != nil {
+		return d, err
+	}
 
 	d.Set("tdn", infraRsSpAccPortPMap["tDn"])
 	d.Set("annotation", infraRsSpAccPortPMap["annotation"])
 
-	return d
+	return d, nil
 }
 
 func resourceAciInterfaceProfileImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -78,18 +93,25 @@ func resourceAciInterfaceProfileImport(d *schema.ResourceData, m interface{}) ([
 	if err != nil {
 		return nil, err
 	}
-	infraRsSpAccPortPMap, _ := infraRsSpAccPortP.ToMap()
+	infraRsSpAccPortPMap, err := infraRsSpAccPortP.ToMap()
+	if err != nil {
+		return nil, err
+	}
 	tDn := infraRsSpAccPortPMap["tDn"]
 	pDN := GetParentDn(dn, fmt.Sprintf("/rsspAccPortP-[%s]", tDn))
 	d.Set("spine_profile_dn", pDN)
-	schemaFilled := setInterfaceProfileAttributes(infraRsSpAccPortP, d)
+	schemaFilled, err := setInterfaceProfileAttributes(infraRsSpAccPortP, d)
+
+	if err != nil {
+		return nil, err
+	}
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciInterfaceProfileCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciInterfaceProfileCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] InterfaceProfile: Beginning Creation")
 	aciClient := m.(*client.Client)
 
@@ -108,19 +130,16 @@ func resourceAciInterfaceProfileCreate(d *schema.ResourceData, m interface{}) er
 
 	err := aciClient.Save(infraRsSpAccPortP)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.Partial(false)
 
 	d.SetId(infraRsSpAccPortP.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciInterfaceProfileRead(d, m)
+	return resourceAciInterfaceProfileRead(ctx, d, m)
 }
 
-func resourceAciInterfaceProfileUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciInterfaceProfileUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] InterfaceProfile: Beginning Update")
 
 	aciClient := m.(*client.Client)
@@ -143,20 +162,17 @@ func resourceAciInterfaceProfileUpdate(d *schema.ResourceData, m interface{}) er
 	err := aciClient.Save(infraRsSpAccPortP)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.Partial(false)
 
 	d.SetId(infraRsSpAccPortP.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciInterfaceProfileRead(d, m)
+	return resourceAciInterfaceProfileRead(ctx, d, m)
 
 }
 
-func resourceAciInterfaceProfileRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciInterfaceProfileRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -168,25 +184,30 @@ func resourceAciInterfaceProfileRead(d *schema.ResourceData, m interface{}) erro
 		d.SetId("")
 		return nil
 	}
-	setInterfaceProfileAttributes(infraRsSpAccPortP, d)
+	_, err = setInterfaceProfileAttributes(infraRsSpAccPortP, d)
+
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 
 	return nil
 }
 
-func resourceAciInterfaceProfileDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciInterfaceProfileDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "infraRsSpAccPortP")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
 }

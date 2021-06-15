@@ -139,7 +139,6 @@ func resourceAciL3outBGPProtocolProfileCreate(d *schema.ResourceData, m interfac
 		if err != nil {
 			return err
 		}
-
 	}
 
 	d.SetId(bgpProtP.DistinguishedName)

@@ -1,16 +1,18 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func dataSourceAciFabricNode() *schema.Resource {
 	return &schema.Resource{
 
-		Read: dataSourceAciFabricNodeRead,
+		ReadContext: dataSourceAciFabricNodeRead,
 
 		SchemaVersion: 1,
 
@@ -46,12 +48,12 @@ func dataSourceAciFabricNode() *schema.Resource {
 	}
 }
 
-func dataSourceAciFabricNodeRead(d *schema.ResourceData, m interface{}) error {
+func dataSourceAciFabricNodeRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	aciClient := m.(*client.Client)
 
-	tDn := d.Get("tdn").(string)
+	tdn := d.Get("tdn").(string)
 
-	rn := fmt.Sprintf("rsnodeL3OutAtt-[%s]", tDn)
+	rn := fmt.Sprintf("rsnodeL3OutAtt-[%s]", tdn)
 	LogicalNodeProfileDn := d.Get("logical_node_profile_dn").(string)
 
 	dn := fmt.Sprintf("%s/%s", LogicalNodeProfileDn, rn)
@@ -59,9 +61,13 @@ func dataSourceAciFabricNodeRead(d *schema.ResourceData, m interface{}) error {
 	l3extRsNodeL3OutAtt, err := getRemoteFabricNode(aciClient, dn)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.SetId(dn)
-	setFabricNodeAttributes(l3extRsNodeL3OutAtt, d)
+	_, err = setFabricNodeAttributes(l3extRsNodeL3OutAtt, d)
+
+	if err != nil {
+		return diag.FromErr(err)
+	}
 	return nil
 }

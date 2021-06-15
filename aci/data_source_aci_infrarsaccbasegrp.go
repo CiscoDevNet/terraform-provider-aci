@@ -1,20 +1,22 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func dataSourceAciAccessGroup() *schema.Resource {
 	return &schema.Resource{
 
-		Read: dataSourceAciAccessAccessGroupRead,
+		ReadContext: dataSourceAciAccessAccessGroupRead,
 
 		SchemaVersion: 1,
 
-		Schema: AppendBaseAttrSchema(map[string]*schema.Schema{
+		Schema: map[string]*schema.Schema{
 			"access_port_selector_dn": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
@@ -31,11 +33,19 @@ func dataSourceAciAccessGroup() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
-		}),
+			"annotation": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+				DefaultFunc: func() (interface{}, error) {
+					return "orchestrator:terraform", nil
+				},
+			},
+		},
 	}
 }
 
-func dataSourceAciAccessAccessGroupRead(d *schema.ResourceData, m interface{}) error {
+func dataSourceAciAccessAccessGroupRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	aciClient := m.(*client.Client)
 
 	rn := fmt.Sprintf("rsaccBaseGrp")
@@ -46,9 +56,12 @@ func dataSourceAciAccessAccessGroupRead(d *schema.ResourceData, m interface{}) e
 	infraRsAccBaseGrp, err := getRemoteAccessAccessGroup(aciClient, dn)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.SetId(dn)
-	setAccessAccessGroupAttributes(infraRsAccBaseGrp, d)
+	_, err = setAccessAccessGroupAttributes(infraRsAccBaseGrp, d)
+	if err != nil {
+		return diag.FromErr(err)
+	}
 	return nil
 }

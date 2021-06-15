@@ -342,10 +342,6 @@ func resourceAciBgpPeerConnectivityProfileCreate(d *schema.ResourceData, m inter
 		}
 	}
 
-	d.Partial(true)
-
-	d.Partial(false)
-
 	checkDns := make([]string, 0, 1)
 
 	if relationTobgpRsPeerPfxPol, ok := d.GetOk("relation_bgp_rs_peer_pfx_pol"); ok {
@@ -367,8 +363,6 @@ func resourceAciBgpPeerConnectivityProfileCreate(d *schema.ResourceData, m inter
 		if err != nil {
 			return err
 		}
-		d.Partial(true)
-		d.Partial(false)
 
 	}
 
@@ -467,10 +461,6 @@ func resourceAciBgpPeerConnectivityProfileUpdate(d *schema.ResourceData, m inter
 		}
 	}
 
-	d.Partial(true)
-
-	d.Partial(false)
-
 	checkDns := make([]string, 0, 1)
 
 	if d.HasChange("relation_bgp_rs_peer_pfx_pol") {
@@ -492,8 +482,6 @@ func resourceAciBgpPeerConnectivityProfileUpdate(d *schema.ResourceData, m inter
 		if err != nil {
 			return err
 		}
-		d.Partial(true)
-		d.Partial(false)
 
 	}
 

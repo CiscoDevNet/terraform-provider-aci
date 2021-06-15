@@ -1,21 +1,32 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func dataSourceAciL3DomainProfile() *schema.Resource {
 	return &schema.Resource{
 
-		Read: dataSourceAciL3DomainProfileRead,
+		ReadContext: dataSourceAciL3DomainProfileRead,
 
 		SchemaVersion: 1,
 
-		Schema: AppendBaseAttrSchema(map[string]*schema.Schema{
+		Schema: map[string]*schema.Schema{
 
+			"annotation": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				// Default:  "orchestrator:terraform",
+				Computed: true,
+				DefaultFunc: func() (interface{}, error) {
+					return "orchestrator:terraform", nil
+				},
+			},
 			"name": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
@@ -26,11 +37,11 @@ func dataSourceAciL3DomainProfile() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
-		}),
+		},
 	}
 }
 
-func dataSourceAciL3DomainProfileRead(d *schema.ResourceData, m interface{}) error {
+func dataSourceAciL3DomainProfileRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	aciClient := m.(*client.Client)
 
 	name := d.Get("name").(string)
@@ -42,8 +53,11 @@ func dataSourceAciL3DomainProfileRead(d *schema.ResourceData, m interface{}) err
 	l3extDomP, err := getRemoteL3DomainProfile(aciClient, dn)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	setL3DomainProfileAttributes(l3extDomP, d)
+	_, err = setL3DomainProfileAttributes(l3extDomP, d)
+	if err != nil {
+		return diag.FromErr(err)
+	}
 	return nil
 }

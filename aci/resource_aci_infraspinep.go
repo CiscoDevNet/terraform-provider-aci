@@ -1,20 +1,22 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func resourceAciSpineProfile() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciSpineProfileCreate,
-		Update: resourceAciSpineProfileUpdate,
-		Read:   resourceAciSpineProfileRead,
-		Delete: resourceAciSpineProfileDelete,
+		CreateContext: resourceAciSpineProfileCreate,
+		UpdateContext: resourceAciSpineProfileUpdate,
+		ReadContext:   resourceAciSpineProfileRead,
+		DeleteContext: resourceAciSpineProfileDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciSpineProfileImport,
@@ -61,16 +63,18 @@ func getRemoteSpineProfile(client *client.Client, dn string) (*models.SpineProfi
 	return infraSpineP, nil
 }
 
-func setSpineProfileAttributes(infraSpineP *models.SpineProfile, d *schema.ResourceData) *schema.ResourceData {
+func setSpineProfileAttributes(infraSpineP *models.SpineProfile, d *schema.ResourceData) (*schema.ResourceData, error) {
 	d.SetId(infraSpineP.DistinguishedName)
 	d.Set("description", infraSpineP.Description)
-	infraSpinePMap, _ := infraSpineP.ToMap()
+	infraSpinePMap, err := infraSpineP.ToMap()
+	if err != nil {
+		return d, err
+	}
 
 	d.Set("name", infraSpinePMap["name"])
-
 	d.Set("annotation", infraSpinePMap["annotation"])
 	d.Set("name_alias", infraSpinePMap["nameAlias"])
-	return d
+	return d, nil
 }
 
 func resourceAciSpineProfileImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -84,14 +88,17 @@ func resourceAciSpineProfileImport(d *schema.ResourceData, m interface{}) ([]*sc
 	if err != nil {
 		return nil, err
 	}
-	schemaFilled := setSpineProfileAttributes(infraSpineP, d)
+	schemaFilled, err := setSpineProfileAttributes(infraSpineP, d)
+	if err != nil {
+		return nil, err
+	}
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciSpineProfileCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciSpineProfileCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] SpineProfile: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -111,11 +118,8 @@ func resourceAciSpineProfileCreate(d *schema.ResourceData, m interface{}) error 
 
 	err := aciClient.Save(infraSpineP)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
 
@@ -129,7 +133,7 @@ func resourceAciSpineProfileCreate(d *schema.ResourceData, m interface{}) error 
 	d.Partial(true)
 	err = checkTDn(aciClient, checkDns)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Partial(false)
 
@@ -139,20 +143,18 @@ func resourceAciSpineProfileCreate(d *schema.ResourceData, m interface{}) error 
 			err = aciClient.CreateRelationinfraRsSpAccPortPFromSpineProfile(infraSpineP.DistinguishedName, relationParam)
 
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
-			d.Partial(true)
-			d.Partial(false)
 		}
 	}
 
 	d.SetId(infraSpineP.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciSpineProfileRead(d, m)
+	return resourceAciSpineProfileRead(ctx, d, m)
 }
 
-func resourceAciSpineProfileUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciSpineProfileUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] SpineProfile: Beginning Update")
 
 	aciClient := m.(*client.Client)
@@ -176,11 +178,8 @@ func resourceAciSpineProfileUpdate(d *schema.ResourceData, m interface{}) error 
 	err := aciClient.Save(infraSpineP)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
 
@@ -198,7 +197,7 @@ func resourceAciSpineProfileUpdate(d *schema.ResourceData, m interface{}) error 
 	d.Partial(true)
 	err = checkTDn(aciClient, checkDns)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Partial(false)
 
@@ -212,7 +211,7 @@ func resourceAciSpineProfileUpdate(d *schema.ResourceData, m interface{}) error 
 		for _, relDn := range relToDelete {
 			err = aciClient.DeleteRelationinfraRsSpAccPortPFromSpineProfile(infraSpineP.DistinguishedName, relDn)
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 		}
@@ -220,22 +219,19 @@ func resourceAciSpineProfileUpdate(d *schema.ResourceData, m interface{}) error 
 		for _, relDn := range relToCreate {
 			err = aciClient.CreateRelationinfraRsSpAccPortPFromSpineProfile(infraSpineP.DistinguishedName, relDn)
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
-			d.Partial(true)
-			d.Partial(false)
-
 		}
 	}
 
 	d.SetId(infraSpineP.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciSpineProfileRead(d, m)
+	return resourceAciSpineProfileRead(ctx, d, m)
 
 }
 
-func resourceAciSpineProfileRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciSpineProfileRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -247,7 +243,11 @@ func resourceAciSpineProfileRead(d *schema.ResourceData, m interface{}) error {
 		d.SetId("")
 		return nil
 	}
-	setSpineProfileAttributes(infraSpineP, d)
+	_, err = setSpineProfileAttributes(infraSpineP, d)
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 
 	infraRsSpAccPortPData, err := aciClient.ReadRelationinfraRsSpAccPortPFromSpineProfile(dn)
 	if err != nil {
@@ -263,18 +263,18 @@ func resourceAciSpineProfileRead(d *schema.ResourceData, m interface{}) error {
 	return nil
 }
 
-func resourceAciSpineProfileDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciSpineProfileDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "infraSpineP")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
 }

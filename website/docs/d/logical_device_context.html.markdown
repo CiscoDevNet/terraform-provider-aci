@@ -15,7 +15,7 @@ Data source for ACI Logical Device Context
 ```hcl
 
 data "aci_logical_device_context" "check" {
-  tenant_dn         = "${aci_tenant.tenentcheck.id}"
+  tenant_dn         = aci_tenant.tenentcheck.id
   ctrct_name_or_lbl = "example"
   graph_name_or_lbl = "example"
   node_name_or_lbl  = "example"
@@ -26,13 +26,14 @@ data "aci_logical_device_context" "check" {
 ## Argument Reference
 
 - `tenant_dn` - (Required) Distinguished name of parent Tenant object.
-- `ctrct_name_or_lbl` - (Required) Ctrct name or label of Object logical_device_context.
-- `graph_name_or_lbl` - (Required) Graph name or label of Object logical_device_context.
-- `node_name_or_lbl` - (Required) Node name or label of Object logical_device_context.
+- `ctrct_name_or_lbl` - (Required) Ctrct name or label of Object logical device context.
+- `graph_name_or_lbl` - (Required) Graph name or label of Object logical device context.
+- `node_name_or_lbl` - (Required) Node name or label of Object logical device context.
 
 ## Attribute Reference
 
 - `id` - Attribute id set to the Dn of the Logical Device Context.
-- `annotation` - Annotation for object logical_device_context.
-- `context` - Context for object logical_device_context.
-- `name_alias` - Name alias for object logical_device_context.
+- `annotation` - (Optional) Annotation for object logical device context.
+- `description` - (Optional) Description for object logical device context.
+- `context` - (Optional) Context for object logical device context.
+- `name_alias` - (Optional) Name alias for object logical device context.

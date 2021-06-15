@@ -1,20 +1,22 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func resourceAciSPANDestinationGroup() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciSPANDestinationGroupCreate,
-		Update: resourceAciSPANDestinationGroupUpdate,
-		Read:   resourceAciSPANDestinationGroupRead,
-		Delete: resourceAciSPANDestinationGroupDelete,
+		CreateContext: resourceAciSPANDestinationGroupCreate,
+		UpdateContext: resourceAciSPANDestinationGroupUpdate,
+		ReadContext:   resourceAciSPANDestinationGroupRead,
+		DeleteContext: resourceAciSPANDestinationGroupDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciSPANDestinationGroupImport,
@@ -97,7 +99,7 @@ func resourceAciSPANDestinationGroupImport(d *schema.ResourceData, m interface{}
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciSPANDestinationGroupCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciSPANDestinationGroupCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] SPANDestinationGroup: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -119,19 +121,16 @@ func resourceAciSPANDestinationGroupCreate(d *schema.ResourceData, m interface{}
 
 	err := aciClient.Save(spanDestGrp)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.Partial(false)
 
 	d.SetId(spanDestGrp.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciSPANDestinationGroupRead(d, m)
+	return resourceAciSPANDestinationGroupRead(ctx, d, m)
 }
 
-func resourceAciSPANDestinationGroupUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciSPANDestinationGroupUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] SPANDestinationGroup: Beginning Update")
 
 	aciClient := m.(*client.Client)
@@ -157,20 +156,17 @@ func resourceAciSPANDestinationGroupUpdate(d *schema.ResourceData, m interface{}
 	err := aciClient.Save(spanDestGrp)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.Partial(false)
 
 	d.SetId(spanDestGrp.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciSPANDestinationGroupRead(d, m)
+	return resourceAciSPANDestinationGroupRead(ctx, d, m)
 
 }
 
-func resourceAciSPANDestinationGroupRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciSPANDestinationGroupRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -189,18 +185,18 @@ func resourceAciSPANDestinationGroupRead(d *schema.ResourceData, m interface{}) 
 	return nil
 }
 
-func resourceAciSPANDestinationGroupDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciSPANDestinationGroupDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "spanDestGrp")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
 }

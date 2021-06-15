@@ -13,24 +13,21 @@ Manages ACI Logical Node to Fabric Node
 
 ```hcl
 resource "aci_logical_node_to_fabric_node" "example" {
-
-  logical_node_profile_dn  = "${aci_logical_node_profile.example.id}"
-
-  tDn  = "example"
-  annotation  = "example"
-  config_issues  = "example"
-  rtr_id  = "example"
-  rtr_id_loop_back  = "example"
+  logical_node_profile_dn  = aci_logical_node_profile.example.id
+  tdn               = "topology/pod-1/paths-101/pathep-[eth1/4]"
+  annotation        = "annotation"
+  config_issues     = "none"
+  rtr_id            = "10.0.1.1"
+  rtr_id_loop_back  = "no"
 }
 ```
 ## Argument Reference ##
 * `logical_node_profile_dn` - (Required) Distinguished name of parent LogicalNodeProfile object.
-* `tDn` - (Required) tDn of Object fabric_node.
-* `annotation` - (Optional) annotation for object fabric_node.
-* `config_issues` - (Optional) configuration issues.
-Allowed values: "none", "node-path-misconfig","routerid-not-changable-with-mcast", "loopback-ip-missing"
-* `rtr_id` - (Optional) router identifier
-* `rtr_id_loop_back` - (Optional) Allowed values: "yes", "no", "true", "false"
+* `tdn` - (Required) Tdn of Object Fabric Node.
+* `annotation` - (Optional) Annotation for object Fabric Node.
+* `config_issues` - (Optional) Configuration issues. Allowed values: "anchor-node-mismatch", "bd-profile-missmatch", "loopback-ip-missing", "missing-mpls-infra-l3out", "missing-rs-export-route-profile", "node-path-misconfig", "node-vlif-misconfig", "none", "routerid-not-changable-with-mcast", "subnet-mismatch". Default value: "none"
+* `rtr_id` - (Optional) Router identifier
+* `rtr_id_loop_back` - (Optional) Allowed values: "yes", "no". Default value: "yes"
 
 
 

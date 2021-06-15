@@ -1,20 +1,22 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func resourceAciAccessSubPortBlock() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciAccessSubPortBlockCreate,
-		Update: resourceAciAccessSubPortBlockUpdate,
-		Read:   resourceAciAccessSubPortBlockRead,
-		Delete: resourceAciAccessSubPortBlockDelete,
+		CreateContext: resourceAciAccessSubPortBlockCreate,
+		UpdateContext: resourceAciAccessSubPortBlockUpdate,
+		ReadContext:   resourceAciAccessSubPortBlockRead,
+		DeleteContext: resourceAciAccessSubPortBlockDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciAccessSubPortBlockImport,
@@ -94,7 +96,7 @@ func getRemoteAccessSubPortBlock(client *client.Client, dn string) (*models.Acce
 	return infraSubPortBlk, nil
 }
 
-func setAccessSubPortBlockAttributes(infraSubPortBlk *models.AccessSubPortBlock, d *schema.ResourceData) *schema.ResourceData {
+func setAccessSubPortBlockAttributes(infraSubPortBlk *models.AccessSubPortBlock, d *schema.ResourceData) (*schema.ResourceData, error) {
 	dn := d.Id()
 	d.SetId(infraSubPortBlk.DistinguishedName)
 	d.Set("description", infraSubPortBlk.Description)
@@ -114,7 +116,7 @@ func setAccessSubPortBlockAttributes(infraSubPortBlk *models.AccessSubPortBlock,
 	d.Set("to_card", infraSubPortBlkMap["toCard"])
 	d.Set("to_port", infraSubPortBlkMap["toPort"])
 	d.Set("to_sub_port", infraSubPortBlkMap["toSubPort"])
-	return d
+	return d, nil
 }
 
 func resourceAciAccessSubPortBlockImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -132,14 +134,17 @@ func resourceAciAccessSubPortBlockImport(d *schema.ResourceData, m interface{}) 
 	name := infraSubPortBlkMap["name"]
 	pDN := GetParentDn(dn, fmt.Sprintf("/subportblk-%s", name))
 	d.Set("access_port_selector_dn", pDN)
-	schemaFilled := setAccessSubPortBlockAttributes(infraSubPortBlk, d)
+	schemaFilled, err := setAccessSubPortBlockAttributes(infraSubPortBlk, d)
 
+	if err != nil {
+		return nil, err
+	}
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciAccessSubPortBlockCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciAccessSubPortBlockCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] AccessSubPortBlock: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -179,19 +184,16 @@ func resourceAciAccessSubPortBlockCreate(d *schema.ResourceData, m interface{}) 
 
 	err := aciClient.Save(infraSubPortBlk)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.Partial(false)
 
 	d.SetId(infraSubPortBlk.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciAccessSubPortBlockRead(d, m)
+	return resourceAciAccessSubPortBlockRead(ctx, d, m)
 }
 
-func resourceAciAccessSubPortBlockUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciAccessSubPortBlockUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] AccessSubPortBlock: Beginning Update")
 
 	aciClient := m.(*client.Client)
@@ -235,20 +237,17 @@ func resourceAciAccessSubPortBlockUpdate(d *schema.ResourceData, m interface{}) 
 	err := aciClient.Save(infraSubPortBlk)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.Partial(false)
 
 	d.SetId(infraSubPortBlk.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciAccessSubPortBlockRead(d, m)
+	return resourceAciAccessSubPortBlockRead(ctx, d, m)
 
 }
 
-func resourceAciAccessSubPortBlockRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciAccessSubPortBlockRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -260,25 +259,28 @@ func resourceAciAccessSubPortBlockRead(d *schema.ResourceData, m interface{}) er
 		d.SetId("")
 		return nil
 	}
-	setAccessSubPortBlockAttributes(infraSubPortBlk, d)
-
+	_, err = setAccessSubPortBlockAttributes(infraSubPortBlk, d)
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 
 	return nil
 }
 
-func resourceAciAccessSubPortBlockDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciAccessSubPortBlockDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "infraSubPortBlk")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
 }

@@ -13,31 +13,38 @@ Manages ACI Access Sub Port Block
 
 ```hcl
 resource "aci_access_sub_port_block" "example" {
-
-  access_port_selector_dn  = "${aci_access_port_selector.example.id}"
-
-  name  = "example"
-  annotation  = "example"
-  from_card  = "example"
-  from_port  = "example"
-  from_sub_port  = "example"
-  name_alias  = "example"
-  to_card  = "example"
-  to_port  = "example"
-  to_sub_port  = "example"
+  access_port_selector_dn  = aci_access_port_selector.example.id
+  description             = "From Terraform"
+  name                    = "example"
+  annotation              = "example"
+  from_card               = "1"
+  from_port               = "1"
+  from_sub_port           = "1"
+  name_alias              = "example"
+  to_card                 = "1"
+  to_port                 = "1"
+  to_sub_port             = "1"
 }
 ```
 ## Argument Reference ##
 * `access_port_selector_dn` - (Required) Distinguished name of parent AccessPortSelector object.
-* `name` - (Required) name of Object access_sub_port_block.
-* `annotation` - (Optional) annotation for object access_sub_port_block.
-* `from_card` - (Optional) from card
-* `from_port` - (Optional) port block from port
-* `from_sub_port` - (Optional) from_sub_port for object access_sub_port_block.
-* `name_alias` - (Optional) name_alias for object access_sub_port_block.
-* `to_card` - (Optional) to card
-* `to_port` - (Optional) to port
-* `to_sub_port` - (Optional) to_sub_port for object access_sub_port_block.
+* `name` - (Required) Name of Object access sub port block.
+* `annotation` - (Optional) Annotation for object access sub port block.
+* `description` - (Optional) Description for object access sub port block.
+* `from_card` - (Optional) From card.
+  Allowed Values are between 1 to 100. Default Value is "1".
+* `from_port` - (Optional) Port block from port
+  Allowed Values are between 1 to 127. Default Value is "1".
+* `from_sub_port` - (Optional) From sub port for object access sub port block.
+  Allowed Values are between 1 to 64. Default Value is "1".
+* `name_alias` - (Optional) Name alias for object access sub port block.
+* `to_card` - (Optional) To card.
+  Allowed Values are between 1 to 100. Default Value is "1".
+* `to_port` - (Optional) To port.
+ Allowed Values are between 1 to 127. Default Value is "1".
+* `to_sub_port` - (Optional) To sub port for object access sub port block.
+  Allowed Values are between 1 to 64. Default Value is "1".
+
 
 
 

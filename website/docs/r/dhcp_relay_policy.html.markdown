@@ -10,7 +10,6 @@ Manages ACI DHCP Relay Policy.
 ## Example Usage
 ```hcl
 resource "aci_dhcp_relay_policy" "example" {
-
   tenant_dn   = aci_tenant.example.id
   name        = "name_example"
   annotation  = "annotation_example"

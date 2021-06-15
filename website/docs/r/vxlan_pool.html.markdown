@@ -13,17 +13,17 @@ Manages ACI VXLAN Pool
 
 ```hcl
 resource "aci_vxlan_pool" "example" {
-
-
   name  = "example"
   annotation  = "example"
-  name_alias  = "example"
+  name_alias  = "name_alias_for_vxlan"
+  description = "From Teraform"
 }
 ```
 ## Argument Reference ##
-* `name` - (Required) name of Object vxlan_pool.
-* `annotation` - (Optional) annotation for object vxlan_pool.
-* `name_alias` - (Optional) name_alias for object vxlan_pool.
+* `name` - (Required) Name of Object vxlan pool.
+* `annotation` - (Optional) Annotation for object vxlan pool.
+* `description` - (Optional) Description for object vxlan pool.
+* `name_alias` - (Optional) Name alias for object vxlan pool.
 
 
 

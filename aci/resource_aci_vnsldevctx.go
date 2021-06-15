@@ -1,20 +1,22 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func resourceAciLogicalDeviceContext() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciLogicalDeviceContextCreate,
-		Update: resourceAciLogicalDeviceContextUpdate,
-		Read:   resourceAciLogicalDeviceContextRead,
-		Delete: resourceAciLogicalDeviceContextDelete,
+		CreateContext: resourceAciLogicalDeviceContextCreate,
+		UpdateContext: resourceAciLogicalDeviceContextUpdate,
+		ReadContext:   resourceAciLogicalDeviceContextRead,
+		DeleteContext: resourceAciLogicalDeviceContextDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciLogicalDeviceContextImport,
@@ -86,7 +88,7 @@ func getRemoteLogicalDeviceContext(client *client.Client, dn string) (*models.Lo
 	return vnsLDevCtx, nil
 }
 
-func setLogicalDeviceContextAttributes(vnsLDevCtx *models.LogicalDeviceContext, d *schema.ResourceData) *schema.ResourceData {
+func setLogicalDeviceContextAttributes(vnsLDevCtx *models.LogicalDeviceContext, d *schema.ResourceData) (*schema.ResourceData, error) {
 	dn := d.Id()
 
 	d.SetId(vnsLDevCtx.DistinguishedName)
@@ -95,7 +97,10 @@ func setLogicalDeviceContextAttributes(vnsLDevCtx *models.LogicalDeviceContext, 
 	if dn != vnsLDevCtx.DistinguishedName {
 		d.Set("tenant_dn", "")
 	}
-	vnsLDevCtxMap, _ := vnsLDevCtx.ToMap()
+	vnsLDevCtxMap, err := vnsLDevCtx.ToMap()
+	if err != nil {
+		return d, err
+	}
 
 	d.Set("ctrct_name_or_lbl", vnsLDevCtxMap["ctrctNameOrLbl"])
 	d.Set("graph_name_or_lbl", vnsLDevCtxMap["graphNameOrLbl"])
@@ -104,7 +109,7 @@ func setLogicalDeviceContextAttributes(vnsLDevCtx *models.LogicalDeviceContext, 
 	d.Set("context", vnsLDevCtxMap["context"])
 	d.Set("name_alias", vnsLDevCtxMap["nameAlias"])
 
-	return d
+	return d, nil
 }
 
 func resourceAciLogicalDeviceContextImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -118,14 +123,17 @@ func resourceAciLogicalDeviceContextImport(d *schema.ResourceData, m interface{}
 	if err != nil {
 		return nil, err
 	}
-	schemaFilled := setLogicalDeviceContextAttributes(vnsLDevCtx, d)
+	schemaFilled, err := setLogicalDeviceContextAttributes(vnsLDevCtx, d)
+	if err != nil {
+		return nil, err
+	}
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciLogicalDeviceContextCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciLogicalDeviceContextCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] LogicalDeviceContext: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -155,11 +163,8 @@ func resourceAciLogicalDeviceContextCreate(d *schema.ResourceData, m interface{}
 
 	err := aciClient.Save(vnsLDevCtx)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
 
@@ -176,7 +181,7 @@ func resourceAciLogicalDeviceContextCreate(d *schema.ResourceData, m interface{}
 	d.Partial(true)
 	err = checkTDn(aciClient, checkDns)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Partial(false)
 
@@ -184,10 +189,8 @@ func resourceAciLogicalDeviceContextCreate(d *schema.ResourceData, m interface{}
 		relationParam := relationTovnsRsLDevCtxToLDev.(string)
 		err = aciClient.CreateRelationvnsRsLDevCtxToLDevFromLogicalDeviceContext(vnsLDevCtx.DistinguishedName, relationParam)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.Partial(false)
 
 	}
 	if relationTovnsRsLDevCtxToRtrCfg, ok := d.GetOk("relation_vns_rs_l_dev_ctx_to_rtr_cfg"); ok {
@@ -195,20 +198,18 @@ func resourceAciLogicalDeviceContextCreate(d *schema.ResourceData, m interface{}
 		relationParamName := GetMOName(relationParam)
 		err = aciClient.CreateRelationvnsRsLDevCtxToRtrCfgFromLogicalDeviceContext(vnsLDevCtx.DistinguishedName, relationParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.Partial(false)
 
 	}
 
 	d.SetId(vnsLDevCtx.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciLogicalDeviceContextRead(d, m)
+	return resourceAciLogicalDeviceContextRead(ctx, d, m)
 }
 
-func resourceAciLogicalDeviceContextUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciLogicalDeviceContextUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] LogicalDeviceContext: Beginning Update")
 
 	aciClient := m.(*client.Client)
@@ -242,11 +243,8 @@ func resourceAciLogicalDeviceContextUpdate(d *schema.ResourceData, m interface{}
 	err := aciClient.Save(vnsLDevCtx)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
 
@@ -263,7 +261,7 @@ func resourceAciLogicalDeviceContextUpdate(d *schema.ResourceData, m interface{}
 	d.Partial(true)
 	err = checkTDn(aciClient, checkDns)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Partial(false)
 
@@ -271,14 +269,12 @@ func resourceAciLogicalDeviceContextUpdate(d *schema.ResourceData, m interface{}
 		_, newRelParam := d.GetChange("relation_vns_rs_l_dev_ctx_to_l_dev")
 		err = aciClient.DeleteRelationvnsRsLDevCtxToLDevFromLogicalDeviceContext(vnsLDevCtx.DistinguishedName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 		err = aciClient.CreateRelationvnsRsLDevCtxToLDevFromLogicalDeviceContext(vnsLDevCtx.DistinguishedName, newRelParam.(string))
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.Partial(false)
 
 	}
 	if d.HasChange("relation_vns_rs_l_dev_ctx_to_rtr_cfg") {
@@ -286,25 +282,23 @@ func resourceAciLogicalDeviceContextUpdate(d *schema.ResourceData, m interface{}
 		newRelParamName := GetMOName(newRelParam.(string))
 		err = aciClient.DeleteRelationvnsRsLDevCtxToRtrCfgFromLogicalDeviceContext(vnsLDevCtx.DistinguishedName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 		err = aciClient.CreateRelationvnsRsLDevCtxToRtrCfgFromLogicalDeviceContext(vnsLDevCtx.DistinguishedName, newRelParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.Partial(false)
 
 	}
 
 	d.SetId(vnsLDevCtx.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciLogicalDeviceContextRead(d, m)
+	return resourceAciLogicalDeviceContextRead(ctx, d, m)
 
 }
 
-func resourceAciLogicalDeviceContextRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciLogicalDeviceContextRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -316,8 +310,11 @@ func resourceAciLogicalDeviceContextRead(d *schema.ResourceData, m interface{}) 
 		d.SetId("")
 		return nil
 	}
-	setLogicalDeviceContextAttributes(vnsLDevCtx, d)
-
+	_, err = setLogicalDeviceContextAttributes(vnsLDevCtx, d)
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 	vnsRsLDevCtxToLDevData, err := aciClient.ReadRelationvnsRsLDevCtxToLDevFromLogicalDeviceContext(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation vnsRsLDevCtxToLDev %v", err)
@@ -351,18 +348,18 @@ func resourceAciLogicalDeviceContextRead(d *schema.ResourceData, m interface{}) 
 	return nil
 }
 
-func resourceAciLogicalDeviceContextDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciLogicalDeviceContextDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "vnsLDevCtx")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
 }

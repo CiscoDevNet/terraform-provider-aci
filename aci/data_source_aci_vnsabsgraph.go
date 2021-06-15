@@ -1,16 +1,18 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func dataSourceAciL4L7ServiceGraphTemplate() *schema.Resource {
 	return &schema.Resource{
 
-		Read: dataSourceAciL4L7ServiceGraphTemplateRead,
+		ReadContext: dataSourceAciL4L7ServiceGraphTemplateRead,
 
 		SchemaVersion: 1,
 
@@ -52,7 +54,7 @@ func dataSourceAciL4L7ServiceGraphTemplate() *schema.Resource {
 	}
 }
 
-func dataSourceAciL4L7ServiceGraphTemplateRead(d *schema.ResourceData, m interface{}) error {
+func dataSourceAciL4L7ServiceGraphTemplateRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	aciClient := m.(*client.Client)
 
 	name := d.Get("name").(string)
@@ -65,9 +67,12 @@ func dataSourceAciL4L7ServiceGraphTemplateRead(d *schema.ResourceData, m interfa
 	vnsAbsGraph, err := getRemoteL4L7ServiceGraphTemplate(aciClient, dn)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.SetId(dn)
-	setL4L7ServiceGraphTemplateAttributes(vnsAbsGraph, d)
+	_, err = setL4L7ServiceGraphTemplateAttributes(vnsAbsGraph, d)
+	if err != nil {
+		return diag.FromErr(err)
+	}
 	return nil
 }

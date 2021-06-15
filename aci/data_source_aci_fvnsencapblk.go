@@ -1,16 +1,18 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func dataSourceAciRanges() *schema.Resource {
 	return &schema.Resource{
 
-		Read: dataSourceAciRangesRead,
+		ReadContext: dataSourceAciRangesRead,
 
 		SchemaVersion: 1,
 
@@ -51,7 +53,7 @@ func dataSourceAciRanges() *schema.Resource {
 	}
 }
 
-func dataSourceAciRangesRead(d *schema.ResourceData, m interface{}) error {
+func dataSourceAciRangesRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	aciClient := m.(*client.Client)
 
 	from := d.Get("from").(string)
@@ -66,9 +68,13 @@ func dataSourceAciRangesRead(d *schema.ResourceData, m interface{}) error {
 	fvnsEncapBlk, err := getRemoteRanges(aciClient, dn)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
+
 	d.SetId(dn)
-	setRangesAttributes(fvnsEncapBlk, d)
+	_, err = setRangesAttributes(fvnsEncapBlk, d)
+	if err != nil {
+		return diag.FromErr(err)
+	}
 	return nil
 }

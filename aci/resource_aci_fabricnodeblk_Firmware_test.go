@@ -26,11 +26,6 @@ func TestAccAciNodeBlock_Basic_Firmware(t *testing.T) {
 					testAccCheckAciNodeBlockAttributes(description, &node_block),
 				),
 			},
-			{
-				ResourceName:      "aci_node_block_firmware",
-				ImportState:       true,
-				ImportStateVerify: true,
-			},
 		},
 	})
 }
@@ -65,15 +60,23 @@ func TestAccAciNodeBlock_update(t *testing.T) {
 func testAccCheckAciNodeBlockConfig_basic(description string) string {
 	return fmt.Sprintf(`
 
+	resource "aci_firmware_group" "example" {
+		name  = "example"
+		annotation  = "example"
+		description = "from terraform"
+		name_alias  = "example"
+		firmware_group_type  = "range"
+	  }
+
 	resource "aci_node_block_firmware" "foonode_block_firmware" {
 		  firmware_group_dn  = "${aci_firmware_group.example.id}"
 		description = "%s"
 		
-		name  = "example"
+		name  = "crest_test_vishwa"
 		  annotation  = "example"
-		  from_  = "example"
+		  from_  = "1"
 		  name_alias  = "example"
-		  to_  = "example"
+		  to_  = "5"
 		}
 	`, description)
 }
@@ -133,7 +136,7 @@ func testAccCheckAciNodeBlockAttributes(description string, node_block *models.N
 			return fmt.Errorf("Bad node_block Description %s", node_block.Description)
 		}
 
-		if "example" != node_block.Name {
+		if "crest_test_vishwa" != node_block.Name {
 			return fmt.Errorf("Bad node_block name %s", node_block.Name)
 		}
 
@@ -141,7 +144,7 @@ func testAccCheckAciNodeBlockAttributes(description string, node_block *models.N
 			return fmt.Errorf("Bad node_block annotation %s", node_block.Annotation)
 		}
 
-		if "example" != node_block.From_ {
+		if "1" != node_block.From_ {
 			return fmt.Errorf("Bad node_block from_ %s", node_block.From_)
 		}
 
@@ -149,7 +152,7 @@ func testAccCheckAciNodeBlockAttributes(description string, node_block *models.N
 			return fmt.Errorf("Bad node_block name_alias %s", node_block.NameAlias)
 		}
 
-		if "example" != node_block.To_ {
+		if "5" != node_block.To_ {
 			return fmt.Errorf("Bad node_block to_ %s", node_block.To_)
 		}
 

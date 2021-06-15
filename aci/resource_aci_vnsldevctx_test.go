@@ -59,9 +59,12 @@ func TestAccAciLogicalDeviceContext_update(t *testing.T) {
 
 func testAccCheckAciLogicalDeviceContextConfig_basic(description string) string {
 	return fmt.Sprintf(`
+	resource "aci_tenant" "example" {
+		name = "testacc"
+	}
 
 	resource "aci_logical_device_context" "test" {
-		tenant_dn  = "${aci_tenant.tenentcheck.id}"
+		tenant_dn  = "${aci_tenant.example.id}"
 		description = "%s"
 		annotation  = "test"
 		context  = "test"

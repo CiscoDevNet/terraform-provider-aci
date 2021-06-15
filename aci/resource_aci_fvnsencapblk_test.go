@@ -26,11 +26,6 @@ func TestAccAciRanges_Basic(t *testing.T) {
 					testAccCheckAciRangesAttributes(description, &ranges),
 				),
 			},
-			{
-				ResourceName:      "aci_ranges",
-				ImportState:       true,
-				ImportStateVerify: true,
-			},
 		},
 	})
 }
@@ -64,12 +59,18 @@ func TestAccAciRanges_update(t *testing.T) {
 
 func testAccCheckAciRangesConfig_basic(description string) string {
 	return fmt.Sprintf(`
-
+	resource "aci_vlan_pool" "example" {
+		name        = "example"
+		description = "From Terraform"
+		alloc_mode  = "static"
+		annotation  = "example"
+		name_alias  = "example"
+	  }
 	resource "aci_ranges" "fooranges" {
-		vlan_pool_dn  = "${aci_vlan_pool.example.id}"
+		vlan_pool_dn  = aci_vlan_pool.example.id
 		description = "%s"
-		from  = "example"
-		to  = "example"
+		from  = "vlan-1"
+		to  = "vlan-2"
 		alloc_mode  = "static"
 		annotation  = "example"	  
 		name_alias  = "example"
@@ -133,11 +134,11 @@ func testAccCheckAciRangesAttributes(description string, ranges *models.Ranges) 
 			return fmt.Errorf("Bad ranges Description %s", ranges.Description)
 		}
 
-		if "example" != ranges.From {
+		if "vlan-1" != ranges.From {
 			return fmt.Errorf("Bad ranges from %s", ranges.From)
 		}
 
-		if "example" != ranges.To {
+		if "vlan-2" != ranges.To {
 			return fmt.Errorf("Bad ranges to %s", ranges.To)
 		}
 

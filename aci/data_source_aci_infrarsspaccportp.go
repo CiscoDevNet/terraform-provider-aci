@@ -1,34 +1,46 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func dataSourceAciInterfaceProfile() *schema.Resource {
 	return &schema.Resource{
 
-		Read: dataSourceAciInterfaceProfileRead,
+		ReadContext: dataSourceAciInterfaceProfileRead,
 
 		SchemaVersion: 1,
 
-		Schema: AppendBaseAttrSchema(map[string]*schema.Schema{
+		Schema: map[string]*schema.Schema{
 			"spine_profile_dn": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
+			},
+
+			"annotation": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				// Default:  "orchestrator:terraform",
+				Computed: true,
+				DefaultFunc: func() (interface{}, error) {
+					return "orchestrator:terraform", nil
+				},
 			},
 
 			"tdn": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
 			},
-		}),
+		},
 	}
 }
 
-func dataSourceAciInterfaceProfileRead(d *schema.ResourceData, m interface{}) error {
+func dataSourceAciInterfaceProfileRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	aciClient := m.(*client.Client)
 
 	tDn := d.Get("tdn").(string)
@@ -41,9 +53,13 @@ func dataSourceAciInterfaceProfileRead(d *schema.ResourceData, m interface{}) er
 	infraRsSpAccPortP, err := getRemoteInterfaceProfile(aciClient, dn)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.SetId(dn)
-	setInterfaceProfileAttributes(infraRsSpAccPortP, d)
+	_, err = setInterfaceProfileAttributes(infraRsSpAccPortP, d)
+
+	if err != nil {
+		return diag.FromErr(err)
+	}
 	return nil
 }
