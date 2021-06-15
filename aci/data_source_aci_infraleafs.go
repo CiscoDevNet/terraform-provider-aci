@@ -1,16 +1,18 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func dataSourceAciSwitchAssociation() *schema.Resource {
 	return &schema.Resource{
 
-		Read: dataSourceAciSwitchAssociationRead,
+		ReadContext: dataSourceAciSwitchAssociationRead,
 
 		SchemaVersion: 1,
 
@@ -39,7 +41,7 @@ func dataSourceAciSwitchAssociation() *schema.Resource {
 	}
 }
 
-func dataSourceAciSwitchAssociationRead(d *schema.ResourceData, m interface{}) error {
+func dataSourceAciSwitchAssociationRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	aciClient := m.(*client.Client)
 
 	name := d.Get("name").(string)
@@ -54,7 +56,7 @@ func dataSourceAciSwitchAssociationRead(d *schema.ResourceData, m interface{}) e
 	infraLeafS, err := getRemoteSwitchAssociation(aciClient, dn)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.SetId(dn)
 	setSwitchAssociationAttributes(infraLeafS, d)

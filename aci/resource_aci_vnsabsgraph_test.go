@@ -59,8 +59,11 @@ func TestAccAciL4L7ServiceGraphTemplate_update(t *testing.T) {
 
 func testAccCheckAciL4L7ServiceGraphTemplateConfig_basic(description string) string {
 	return fmt.Sprintf(`
+	resource "aci_tenant" "example" {
+		name = "testacc"
+	}
 	resource "aci_l4_l7_service_graph_template" "test" {
-		tenant_dn  = "${aci_tenant.tenentcheck.id}"
+		tenant_dn  = "${aci_tenant.example.id}"
 		description = "%s"
 		name  = "test"
 		annotation  = "example"

@@ -1,15 +1,17 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func dataSourceAciSpanningTreeInterfacePolicy() *schema.Resource {
 	return &schema.Resource{
-		Read:          dataSourceAciSpanningTreeInterfacePolicyRead,
+		ReadContext:   dataSourceAciSpanningTreeInterfacePolicyRead,
 		SchemaVersion: 1,
 		Schema: AppendBaseAttrSchema(AppendNameAliasAttrSchema(map[string]*schema.Schema{
 			"annotation": {
@@ -33,7 +35,7 @@ func dataSourceAciSpanningTreeInterfacePolicy() *schema.Resource {
 	}
 }
 
-func dataSourceAciSpanningTreeInterfacePolicyRead(d *schema.ResourceData, m interface{}) error {
+func dataSourceAciSpanningTreeInterfacePolicyRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	aciClient := m.(*client.Client)
 	name := d.Get("name").(string)
 
@@ -41,8 +43,11 @@ func dataSourceAciSpanningTreeInterfacePolicyRead(d *schema.ResourceData, m inte
 	dn := fmt.Sprintf("uni/%s", rn)
 	stpIfPol, err := getRemoteSpanningTreeInterfacePolicy(aciClient, dn)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	setSpanningTreeInterfacePolicyAttributes(stpIfPol, d)
+	_, err = setSpanningTreeInterfacePolicyAttributes(stpIfPol, d)
+	if err != nil {
+		return diag.FromErr(err)
+	}
 	return nil
 }

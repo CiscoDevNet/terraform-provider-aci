@@ -26,11 +26,6 @@ func TestAccAciVLANPool_Basic(t *testing.T) {
 					testAccCheckAciVLANPoolAttributes(description, &vlan_pool),
 				),
 			},
-			{
-				ResourceName:      "aci_vlan_pool",
-				ImportState:       true,
-				ImportStateVerify: true,
-			},
 		},
 	})
 }
@@ -67,12 +62,10 @@ func testAccCheckAciVLANPoolConfig_basic(description string) string {
 
 	resource "aci_vlan_pool" "foovlan_pool" {
 		description = "%s"
-		
 		name  = "example"
-		
 		alloc_mode  = "static"
-		  annotation  = "example"
-		  name_alias  = "example"
+		annotation  = "example"
+		name_alias  = "example"
 		}
 	`, description)
 }
@@ -140,9 +133,9 @@ func testAccCheckAciVLANPoolAttributes(description string, vlan_pool *models.VLA
 			return fmt.Errorf("Bad vlan_pool alloc_mode %s", vlan_pool.AllocMode)
 		}
 
-		if "example" != vlan_pool.AllocMode {
-			return fmt.Errorf("Bad vlan_pool alloc_mode %s", vlan_pool.AllocMode)
-		}
+		// if "example" != vlan_pool.AllocMode {
+		// 	return fmt.Errorf("Bad vlan_pool alloc_mode %s", vlan_pool.AllocMode)
+		// }
 
 		if "example" != vlan_pool.Annotation {
 			return fmt.Errorf("Bad vlan_pool annotation %s", vlan_pool.Annotation)

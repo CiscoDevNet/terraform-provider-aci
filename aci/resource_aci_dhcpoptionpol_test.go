@@ -59,10 +59,8 @@ func TestAccAciDHCPOptionPolicy_update(t *testing.T) {
 
 func testAccCheckAciDHCPOptionPolicyConfig_basic(description string) string {
 	return fmt.Sprintf(`
-
 	resource "aci_dhcp_option_policy" "foodhcp_option_policy" {
-		#tenant_dn  = "${aci_tenant.example.id}"
-		tenant_dn  = "uni/tn-check_context_tenant"
+		tenant_dn  = "${aci_tenant.dev_tenant.id}"
 		description = "%s"
 		name  = "example"
 		annotation  = "example"

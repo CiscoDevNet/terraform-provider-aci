@@ -54,7 +54,7 @@ func (sm *ServiceManager) ListL3outBGPProtocolProfile(logical_node_profile strin
 }
 
 func (sm *ServiceManager) CreateRelationbgpRsBgpNodeCtxPolFromL3outBGPProtocolProfile(parentDn, tnBgpCtxPolName string) error {
-	dn := fmt.Sprintf("%s/protp/rsbgpNodeCtxPol", parentDn)
+	dn := fmt.Sprintf("%s/rsbgpNodeCtxPol", parentDn)
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {

@@ -1,21 +1,23 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciStaticPath() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciStaticPathCreate,
-		Update: resourceAciStaticPathUpdate,
-		Read:   resourceAciStaticPathRead,
-		Delete: resourceAciStaticPathDelete,
+		CreateContext: resourceAciStaticPathCreate,
+		UpdateContext: resourceAciStaticPathUpdate,
+		ReadContext:   resourceAciStaticPathRead,
+		DeleteContext: resourceAciStaticPathDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciStaticPathImport,
@@ -86,14 +88,18 @@ func getRemoteStaticPath(client *client.Client, dn string) (*models.StaticPath, 
 	return fvRsPathAtt, nil
 }
 
-func setStaticPathAttributes(fvRsPathAtt *models.StaticPath, d *schema.ResourceData) *schema.ResourceData {
+func setStaticPathAttributes(fvRsPathAtt *models.StaticPath, d *schema.ResourceData) (*schema.ResourceData, error) {
 	dn := d.Id()
 	d.SetId(fvRsPathAtt.DistinguishedName)
 	// d.Set("application_epg_dn", GetParentDn(fvRsPathAtt.DistinguishedName))
 	if dn != fvRsPathAtt.DistinguishedName {
 		d.Set("application_epg_dn", "")
 	}
-	fvRsPathAttMap, _ := fvRsPathAtt.ToMap()
+	fvRsPathAttMap, err := fvRsPathAtt.ToMap()
+
+	if err != nil {
+		return d, err
+	}
 
 	d.Set("tdn", fvRsPathAttMap["tDn"])
 
@@ -102,7 +108,7 @@ func setStaticPathAttributes(fvRsPathAtt *models.StaticPath, d *schema.ResourceD
 	d.Set("instr_imedcy", fvRsPathAttMap["instrImedcy"])
 	d.Set("mode", fvRsPathAttMap["mode"])
 	d.Set("primary_encap", fvRsPathAttMap["primaryEncap"])
-	return d
+	return d, nil
 }
 
 func resourceAciStaticPathImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -116,19 +122,27 @@ func resourceAciStaticPathImport(d *schema.ResourceData, m interface{}) ([]*sche
 	if err != nil {
 		return nil, err
 	}
-	fvRsPathAttMap, _ := fvRsPathAtt.ToMap()
+	fvRsPathAttMap, err := fvRsPathAtt.ToMap()
+
+	if err != nil {
+		return nil, err
+	}
 
 	tDn := fvRsPathAttMap["tDn"]
 	pDN := GetParentDn(dn, fmt.Sprintf("/rspathAtt-[%s]", tDn))
 	d.Set("application_epg_dn", pDN)
-	schemaFilled := setStaticPathAttributes(fvRsPathAtt, d)
+	schemaFilled, err := setStaticPathAttributes(fvRsPathAtt, d)
+
+	if err != nil {
+		return nil, err
+	}
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciStaticPathCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciStaticPathCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] StaticPath: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -160,19 +174,16 @@ func resourceAciStaticPathCreate(d *schema.ResourceData, m interface{}) error {
 
 	err := aciClient.Save(fvRsPathAtt)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.Partial(false)
 
 	d.SetId(fvRsPathAtt.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciStaticPathRead(d, m)
+	return resourceAciStaticPathRead(ctx, d, m)
 }
 
-func resourceAciStaticPathUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciStaticPathUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] StaticPath: Beginning Update")
 
 	aciClient := m.(*client.Client)
@@ -208,20 +219,17 @@ func resourceAciStaticPathUpdate(d *schema.ResourceData, m interface{}) error {
 	err := aciClient.Save(fvRsPathAtt)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.Partial(false)
 
 	d.SetId(fvRsPathAtt.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciStaticPathRead(d, m)
+	return resourceAciStaticPathRead(ctx, d, m)
 
 }
 
-func resourceAciStaticPathRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciStaticPathRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -233,25 +241,30 @@ func resourceAciStaticPathRead(d *schema.ResourceData, m interface{}) error {
 		d.SetId("")
 		return nil
 	}
-	setStaticPathAttributes(fvRsPathAtt, d)
+	_, err = setStaticPathAttributes(fvRsPathAtt, d)
+
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 
 	return nil
 }
 
-func resourceAciStaticPathDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciStaticPathDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "fvRsPathAtt")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
 }

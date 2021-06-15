@@ -26,11 +26,6 @@ func TestAccAciX509Certificate_Basic(t *testing.T) {
 					testAccCheckAciX509CertificateAttributes(description, &x509_certificate),
 				),
 			},
-			{
-				ResourceName:      "aci_x509_certificate",
-				ImportState:       true,
-				ImportStateVerify: true,
-			},
 		},
 	})
 }
@@ -66,7 +61,7 @@ func testAccCheckAciX509CertificateConfig_basic(description string) string {
 	return fmt.Sprintf(`
 
 	resource "aci_x509_certificate" "foox509_certificate" {
-		  local_user_dn  = "${aci_local_user.example.id}"
+		local_user_dn  = aci_local_user.example.id
 		description = "%s"
 		
 		name  = "example"

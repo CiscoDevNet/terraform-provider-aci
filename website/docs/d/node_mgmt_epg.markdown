@@ -32,8 +32,8 @@ data "aci_node_mgmt_epg" "example" {
 
 - `type` - (Required) Type of node management EPg to be configured.  
   Allowed values: "in_band", "out_of_band".
-- `management_profile_dn` - (Required) Distinguished name of parent management profile object.
 - `name` - (Required) Name of Object node management EPg.
+- `management_profile_dn` - (Optional) Distinguished name of parent Management profile object. Default value: "uni/tn-mgmt/mgmtp-default".
 
 ## Attribute Reference
 
@@ -41,6 +41,7 @@ data "aci_node_mgmt_epg" "example" {
 
 - `id` - Attribute id set to the Dn of the Node Management EPg.
 - `annotation` - (Optional) Annotation for object in-band management EPg.
+- `description` - (Optional) Description for object in-band management EPg.
 - `encap` - (Optional) The in-band access encapsulation.
 - `exception_tag` - (Optional) Exception tag for object in-band management EPg.
 - `flood_on_encap` - (Optional) Control at EPg level if the traffic L2 Multicast/Broadcast and Link Local Layer should be flooded only on ENCAP or based on bridg-domain settings.

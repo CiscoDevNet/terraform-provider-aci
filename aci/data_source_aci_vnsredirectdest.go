@@ -1,16 +1,18 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func dataSourceAciDestinationofredirectedtraffic() *schema.Resource {
 	return &schema.Resource{
 
-		Read: dataSourceAciDestinationofredirectedtrafficRead,
+		ReadContext: dataSourceAciDestinationofredirectedtrafficRead,
 
 		SchemaVersion: 1,
 
@@ -58,7 +60,7 @@ func dataSourceAciDestinationofredirectedtraffic() *schema.Resource {
 	}
 }
 
-func dataSourceAciDestinationofredirectedtrafficRead(d *schema.ResourceData, m interface{}) error {
+func dataSourceAciDestinationofredirectedtrafficRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	aciClient := m.(*client.Client)
 
 	ip := d.Get("ip").(string)
@@ -71,9 +73,12 @@ func dataSourceAciDestinationofredirectedtrafficRead(d *schema.ResourceData, m i
 	vnsRedirectDest, err := getRemoteDestinationofredirectedtraffic(aciClient, dn)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.SetId(dn)
-	setDestinationofredirectedtrafficAttributes(vnsRedirectDest, d)
+	_, err = setDestinationofredirectedtrafficAttributes(vnsRedirectDest, d)
+	if err != nil {
+		return diag.FromErr(err)
+	}
 	return nil
 }

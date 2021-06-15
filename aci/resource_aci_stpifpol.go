@@ -1,6 +1,7 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"reflect"
@@ -9,16 +10,17 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciSpanningTreeInterfacePolicy() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciSpanningTreeInterfacePolicyCreate,
-		Update: resourceAciSpanningTreeInterfacePolicyUpdate,
-		Read:   resourceAciSpanningTreeInterfacePolicyRead,
-		Delete: resourceAciSpanningTreeInterfacePolicyDelete,
+		CreateContext: resourceAciSpanningTreeInterfacePolicyCreate,
+		UpdateContext: resourceAciSpanningTreeInterfacePolicyUpdate,
+		ReadContext:   resourceAciSpanningTreeInterfacePolicyRead,
+		DeleteContext: resourceAciSpanningTreeInterfacePolicyDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciSpanningTreeInterfacePolicyImport,
@@ -61,14 +63,21 @@ func getRemoteSpanningTreeInterfacePolicy(client *client.Client, dn string) (*mo
 	return stpIfPol, nil
 }
 
-func setSpanningTreeInterfacePolicyAttributes(stpIfPol *models.SpanningTreeInterfacePolicy, d *schema.ResourceData) *schema.ResourceData {
+func setSpanningTreeInterfacePolicyAttributes(stpIfPol *models.SpanningTreeInterfacePolicy, d *schema.ResourceData) (*schema.ResourceData, error) {
 	d.SetId(stpIfPol.DistinguishedName)
 	d.Set("description", stpIfPol.Description)
-	stpIfPolMap, _ := stpIfPol.ToMap()
+	stpIfPolMap, err := stpIfPol.ToMap()
+	if err != nil {
+		return d, err
+	}
 	d.Set("annotation", stpIfPolMap["annotation"])
 	ctrlGet := make([]string, 0, 1)
 	for _, val := range strings.Split(stpIfPolMap["ctrl"], ",") {
-		ctrlGet = append(ctrlGet, strings.Trim(val, " "))
+		if val == "" {
+			ctrlGet = append(ctrlGet, "unspecified")
+		} else {
+			ctrlGet = append(ctrlGet, strings.Trim(val, " "))
+		}
 	}
 	sort.Strings(ctrlGet)
 	if ctrlIntr, ok := d.GetOk("ctrl"); ok {
@@ -87,7 +96,7 @@ func setSpanningTreeInterfacePolicyAttributes(stpIfPol *models.SpanningTreeInter
 	}
 	d.Set("name", stpIfPolMap["name"])
 	d.Set("name_alias", stpIfPolMap["nameAlias"])
-	return d
+	return d, nil
 }
 
 func resourceAciSpanningTreeInterfacePolicyImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -98,12 +107,15 @@ func resourceAciSpanningTreeInterfacePolicyImport(d *schema.ResourceData, m inte
 	if err != nil {
 		return nil, err
 	}
-	schemaFilled := setSpanningTreeInterfacePolicyAttributes(stpIfPol, d)
+	schemaFilled, err := setSpanningTreeInterfacePolicyAttributes(stpIfPol, d)
+	if err != nil {
+		return nil, err
+	}
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciSpanningTreeInterfacePolicyCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciSpanningTreeInterfacePolicyCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] SpanningTreeInterfacePolicy: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -134,15 +146,15 @@ func resourceAciSpanningTreeInterfacePolicyCreate(d *schema.ResourceData, m inte
 	stpIfPol := models.NewSpanningTreeInterfacePolicy(fmt.Sprintf("infra/ifPol-%s", name), "uni", desc, nameAlias, stpIfPolAttr)
 	err := aciClient.Save(stpIfPol)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	d.SetId(stpIfPol.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
-	return resourceAciSpanningTreeInterfacePolicyRead(d, m)
+	return resourceAciSpanningTreeInterfacePolicyRead(ctx, d, m)
 }
 
-func resourceAciSpanningTreeInterfacePolicyUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciSpanningTreeInterfacePolicyUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] SpanningTreeInterfacePolicy: Beginning Update")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -175,38 +187,42 @@ func resourceAciSpanningTreeInterfacePolicyUpdate(d *schema.ResourceData, m inte
 	stpIfPol.Status = "modified"
 	err := aciClient.Save(stpIfPol)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	d.SetId(stpIfPol.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
-	return resourceAciSpanningTreeInterfacePolicyRead(d, m)
+	return resourceAciSpanningTreeInterfacePolicyRead(ctx, d, m)
 }
 
-func resourceAciSpanningTreeInterfacePolicyRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciSpanningTreeInterfacePolicyRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	stpIfPol, err := getRemoteSpanningTreeInterfacePolicy(aciClient, dn)
 	if err != nil {
 		d.SetId("")
-		return err
+		return diag.FromErr(err)
 	}
-	setSpanningTreeInterfacePolicyAttributes(stpIfPol, d)
+	_, err = setSpanningTreeInterfacePolicyAttributes(stpIfPol, d)
+	if err != nil {
+		d.SetId("")
+		return diag.FromErr(err)
+	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 	return nil
 }
 
-func resourceAciSpanningTreeInterfacePolicyDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciSpanningTreeInterfacePolicyDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "stpIfPol")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
 }
