@@ -1,21 +1,23 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciFunctionNode() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciFunctionNodeCreate,
-		Update: resourceAciFunctionNodeUpdate,
-		Read:   resourceAciFunctionNodeRead,
-		Delete: resourceAciFunctionNodeDelete,
+		CreateContext: resourceAciFunctionNodeCreate,
+		UpdateContext: resourceAciFunctionNodeUpdate,
+		ReadContext:   resourceAciFunctionNodeRead,
+		DeleteContext: resourceAciFunctionNodeDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciFunctionNodeImport,
@@ -179,7 +181,7 @@ func getRemoteFunctionNode(client *client.Client, dn string) (*models.FunctionNo
 	return vnsAbsNode, nil
 }
 
-func setFunctionNodeAttributes(vnsAbsNode *models.FunctionNode, d *schema.ResourceData) *schema.ResourceData {
+func setFunctionNodeAttributes(vnsAbsNode *models.FunctionNode, d *schema.ResourceData) (*schema.ResourceData, error) {
 
 	dn := d.Id()
 	d.SetId(vnsAbsNode.DistinguishedName)
@@ -189,7 +191,10 @@ func setFunctionNodeAttributes(vnsAbsNode *models.FunctionNode, d *schema.Resour
 		d.Set("l4_l7_service_graph_template_dn", "")
 	}
 
-	vnsAbsNodeMap, _ := vnsAbsNode.ToMap()
+	vnsAbsNodeMap, err := vnsAbsNode.ToMap()
+	if err != nil {
+		return d, err
+	}
 	d.Set("name", vnsAbsNodeMap["name"])
 
 	d.Set("annotation", vnsAbsNodeMap["annotation"])
@@ -201,7 +206,7 @@ func setFunctionNodeAttributes(vnsAbsNode *models.FunctionNode, d *schema.Resour
 	d.Set("routing_mode", vnsAbsNodeMap["routingMode"])
 	d.Set("sequence_number", vnsAbsNodeMap["sequenceNumber"])
 	d.Set("share_encap", vnsAbsNodeMap["shareEncap"])
-	return d
+	return d, nil
 }
 
 func getRemoteFunctionConnector(client *client.Client, dn string) (*models.FunctionConnector, error) {
@@ -230,14 +235,17 @@ func resourceAciFunctionNodeImport(d *schema.ResourceData, m interface{}) ([]*sc
 	if err != nil {
 		return nil, err
 	}
-	schemaFilled := setFunctionNodeAttributes(vnsAbsNode, d)
+	schemaFilled, err := setFunctionNodeAttributes(vnsAbsNode, d)
+	if err != nil {
+		return nil, err
+	}
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciFunctionNodeCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciFunctionNodeCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] FunctionNode: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -280,25 +288,22 @@ func resourceAciFunctionNodeCreate(d *schema.ResourceData, m interface{}) error 
 
 	err := aciClient.Save(vnsAbsNode)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.Partial(false)
 
 	vnsAbsFuncConnAttr := models.FunctionConnectorAttributes{}
 	vnsAbsFuncConnAttr.Annotation = "{}"
 	vnsAbsFuncConn := models.NewFunctionConnector(fmt.Sprintf("AbsFConn-%s", "consumer"), vnsAbsNode.DistinguishedName, "", vnsAbsFuncConnAttr)
 	err = aciClient.Save(vnsAbsFuncConn)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Set("conn_consumer_dn", vnsAbsFuncConn.DistinguishedName)
 
 	vnsAbsFuncConn = models.NewFunctionConnector(fmt.Sprintf("AbsFConn-%s", "provider"), vnsAbsNode.DistinguishedName, "", vnsAbsFuncConnAttr)
 	err = aciClient.Save(vnsAbsFuncConn)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Set("conn_provider_dn", vnsAbsFuncConn.DistinguishedName)
 
@@ -330,7 +335,7 @@ func resourceAciFunctionNodeCreate(d *schema.ResourceData, m interface{}) error 
 	d.Partial(true)
 	err = checkTDn(aciClient, checkDns)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Partial(false)
 
@@ -338,60 +343,50 @@ func resourceAciFunctionNodeCreate(d *schema.ResourceData, m interface{}) error 
 		relationParam := relationTovnsRsNodeToAbsFuncProf.(string)
 		err = aciClient.CreateRelationvnsRsNodeToAbsFuncProfFromFunctionNode(vnsAbsNode.DistinguishedName, relationParam)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.Partial(false)
 
 	}
 	if relationTovnsRsNodeToLDev, ok := d.GetOk("relation_vns_rs_node_to_l_dev"); ok {
 		relationParam := relationTovnsRsNodeToLDev.(string)
 		err = aciClient.CreateRelationvnsRsNodeToLDevFromFunctionNode(vnsAbsNode.DistinguishedName, relationParam)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.Partial(false)
 
 	}
 	if relationTovnsRsNodeToMFunc, ok := d.GetOk("relation_vns_rs_node_to_m_func"); ok {
 		relationParam := relationTovnsRsNodeToMFunc.(string)
 		err = aciClient.CreateRelationvnsRsNodeToMFuncFromFunctionNode(vnsAbsNode.DistinguishedName, relationParam)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.Partial(false)
 
 	}
 	if relationTovnsRsDefaultScopeToTerm, ok := d.GetOk("relation_vns_rs_default_scope_to_term"); ok {
 		relationParam := relationTovnsRsDefaultScopeToTerm.(string)
 		err = aciClient.CreateRelationvnsRsDefaultScopeToTermFromFunctionNode(vnsAbsNode.DistinguishedName, relationParam)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.Partial(false)
 
 	}
 	if relationTovnsRsNodeToCloudLDev, ok := d.GetOk("relation_vns_rs_node_to_cloud_l_dev"); ok {
 		relationParam := relationTovnsRsNodeToCloudLDev.(string)
 		err = aciClient.CreateRelationvnsRsNodeToCloudLDevFromFunctionNode(vnsAbsNode.DistinguishedName, relationParam)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.Partial(false)
 
 	}
 
 	d.SetId(vnsAbsNode.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciFunctionNodeRead(d, m)
+	return resourceAciFunctionNodeRead(ctx, d, m)
 }
 
-func resourceAciFunctionNodeUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciFunctionNodeUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] FunctionNode: Beginning Update")
 
 	aciClient := m.(*client.Client)
@@ -438,11 +433,8 @@ func resourceAciFunctionNodeUpdate(d *schema.ResourceData, m interface{}) error 
 	err := aciClient.Save(vnsAbsNode)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.Partial(false)
 
 	if d.HasChange("conn_consumer_dn") || d.HasChange("conn_provider_dn") {
 		consOld, _ := d.GetChange("conn_consumer_dn")
@@ -450,7 +442,7 @@ func resourceAciFunctionNodeUpdate(d *schema.ResourceData, m interface{}) error 
 
 		provOld, _ := d.GetChange("conn_provider_dn")
 		d.Set("conn_provider_dn", provOld.(string))
-		return fmt.Errorf("conn_consumer_dn and conn_provider_dn is not user configurable")
+		return diag.FromErr(fmt.Errorf("conn_consumer_dn and conn_provider_dn is not user configurable"))
 	}
 
 	checkDns := make([]string, 0, 1)
@@ -479,7 +471,7 @@ func resourceAciFunctionNodeUpdate(d *schema.ResourceData, m interface{}) error 
 	d.Partial(true)
 	err = checkTDn(aciClient, checkDns)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Partial(false)
 
@@ -487,81 +479,71 @@ func resourceAciFunctionNodeUpdate(d *schema.ResourceData, m interface{}) error 
 		_, newRelParam := d.GetChange("relation_vns_rs_node_to_abs_func_prof")
 		err = aciClient.DeleteRelationvnsRsNodeToAbsFuncProfFromFunctionNode(vnsAbsNode.DistinguishedName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 		err = aciClient.CreateRelationvnsRsNodeToAbsFuncProfFromFunctionNode(vnsAbsNode.DistinguishedName, newRelParam.(string))
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.Partial(false)
 
 	}
 	if d.HasChange("relation_vns_rs_node_to_l_dev") {
 		_, newRelParam := d.GetChange("relation_vns_rs_node_to_l_dev")
 		err = aciClient.DeleteRelationvnsRsNodeToLDevFromFunctionNode(vnsAbsNode.DistinguishedName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 		err = aciClient.CreateRelationvnsRsNodeToLDevFromFunctionNode(vnsAbsNode.DistinguishedName, newRelParam.(string))
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.Partial(false)
 
 	}
 	if d.HasChange("relation_vns_rs_node_to_m_func") {
 		_, newRelParam := d.GetChange("relation_vns_rs_node_to_m_func")
 		err = aciClient.DeleteRelationvnsRsNodeToMFuncFromFunctionNode(vnsAbsNode.DistinguishedName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 		err = aciClient.CreateRelationvnsRsNodeToMFuncFromFunctionNode(vnsAbsNode.DistinguishedName, newRelParam.(string))
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.Partial(false)
 
 	}
 	if d.HasChange("relation_vns_rs_default_scope_to_term") {
 		_, newRelParam := d.GetChange("relation_vns_rs_default_scope_to_term")
 		err = aciClient.DeleteRelationvnsRsDefaultScopeToTermFromFunctionNode(vnsAbsNode.DistinguishedName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 		err = aciClient.CreateRelationvnsRsDefaultScopeToTermFromFunctionNode(vnsAbsNode.DistinguishedName, newRelParam.(string))
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.Partial(false)
 
 	}
 	if d.HasChange("relation_vns_rs_node_to_cloud_l_dev") {
 		_, newRelParam := d.GetChange("relation_vns_rs_node_to_cloud_l_dev")
 		err = aciClient.DeleteRelationvnsRsNodeToCloudLDevFromFunctionNode(vnsAbsNode.DistinguishedName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 		err = aciClient.CreateRelationvnsRsNodeToCloudLDevFromFunctionNode(vnsAbsNode.DistinguishedName, newRelParam.(string))
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.Partial(false)
 
 	}
 
 	d.SetId(vnsAbsNode.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciFunctionNodeRead(d, m)
+	return resourceAciFunctionNodeRead(ctx, d, m)
 
 }
 
-func resourceAciFunctionNodeRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciFunctionNodeRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -661,18 +643,18 @@ func resourceAciFunctionNodeRead(d *schema.ResourceData, m interface{}) error {
 	return nil
 }
 
-func resourceAciFunctionNodeDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciFunctionNodeDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "vnsAbsNode")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
 }

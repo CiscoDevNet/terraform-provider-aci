@@ -1,16 +1,18 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func dataSourceAciSecurityDomain() *schema.Resource {
 	return &schema.Resource{
 
-		Read: dataSourceAciSecurityDomainRead,
+		ReadContext: dataSourceAciSecurityDomainRead,
 
 		SchemaVersion: 1,
 
@@ -30,7 +32,7 @@ func dataSourceAciSecurityDomain() *schema.Resource {
 	}
 }
 
-func dataSourceAciSecurityDomainRead(d *schema.ResourceData, m interface{}) error {
+func dataSourceAciSecurityDomainRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	aciClient := m.(*client.Client)
 
 	name := d.Get("name").(string)
@@ -42,8 +44,11 @@ func dataSourceAciSecurityDomainRead(d *schema.ResourceData, m interface{}) erro
 	aaaDomain, err := getRemoteSecurityDomain(aciClient, dn)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	setSecurityDomainAttributes(aaaDomain, d)
+	_, err = setSecurityDomainAttributes(aaaDomain, d)
+	if err != nil {
+		return diag.FromErr(err)
+	}
 	return nil
 }

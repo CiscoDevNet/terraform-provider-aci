@@ -1,16 +1,18 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func dataSourceAciFabricNodeMember() *schema.Resource {
 	return &schema.Resource{
 
-		Read: dataSourceAciFabricNodeMemberRead,
+		ReadContext: dataSourceAciFabricNodeMemberRead,
 
 		SchemaVersion: 1,
 
@@ -66,7 +68,7 @@ func dataSourceAciFabricNodeMember() *schema.Resource {
 	}
 }
 
-func dataSourceAciFabricNodeMemberRead(d *schema.ResourceData, m interface{}) error {
+func dataSourceAciFabricNodeMemberRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	aciClient := m.(*client.Client)
 
 	serial := d.Get("serial").(string)
@@ -78,8 +80,11 @@ func dataSourceAciFabricNodeMemberRead(d *schema.ResourceData, m interface{}) er
 	fabricNodeIdentP, err := getRemoteFabricNodeMember(aciClient, dn)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	setFabricNodeMemberAttributes(fabricNodeIdentP, d)
+	_, err = setFabricNodeMemberAttributes(fabricNodeIdentP, d)
+	if err != nil {
+		return diag.FromErr(err)
+	}
 	return nil
 }

@@ -1,21 +1,23 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciSwitchSpineAssociation() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciSwitchSpineAssociationCreate,
-		Update: resourceAciSwitchSpineAssociationUpdate,
-		Read:   resourceAciSwitchSpineAssociationRead,
-		Delete: resourceAciSwitchSpineAssociationDelete,
+		CreateContext: resourceAciSwitchSpineAssociationCreate,
+		UpdateContext: resourceAciSwitchSpineAssociationUpdate,
+		ReadContext:   resourceAciSwitchSpineAssociationRead,
+		DeleteContext: resourceAciSwitchSpineAssociationDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciSwitchSpineAssociationImport,
@@ -76,21 +78,24 @@ func getRemoteSwitchSpineAssociation(client *client.Client, dn string) (*models.
 	return infraSpineS, nil
 }
 
-func setSwitchSpineAssociationAttributes(infraSpineS *models.SwitchSpineAssociation, d *schema.ResourceData) *schema.ResourceData {
+func setSwitchSpineAssociationAttributes(infraSpineS *models.SwitchSpineAssociation, d *schema.ResourceData) (*schema.ResourceData, error) {
 	dn := d.Id()
 	d.SetId(infraSpineS.DistinguishedName)
 	d.Set("description", infraSpineS.Description)
 	if dn != infraSpineS.DistinguishedName {
 		d.Set("spine_profile_dn", "")
 	}
-	infraSpineSMap, _ := infraSpineS.ToMap()
+	infraSpineSMap, err := infraSpineS.ToMap()
+	if err != nil {
+		return d, err
+	}
 
 	d.Set("name", infraSpineSMap["name"])
 	d.Set("spine_switch_association_type", infraSpineSMap["type"])
 	d.Set("annotation", infraSpineSMap["annotation"])
 	d.Set("name_alias", infraSpineSMap["nameAlias"])
 
-	return d
+	return d, nil
 }
 
 func resourceAciSwitchSpineAssociationImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -100,23 +105,31 @@ func resourceAciSwitchSpineAssociationImport(d *schema.ResourceData, m interface
 	dn := d.Id()
 
 	infraSpineS, err := getRemoteSwitchSpineAssociation(aciClient, dn)
-
 	if err != nil {
 		return nil, err
 	}
-	infraSpineSMap, _ := infraSpineS.ToMap()
+
+	infraSpineSMap, err := infraSpineS.ToMap()
+	if err != nil {
+		return nil, err
+	}
+
 	name := infraSpineSMap["name"]
 	satype := infraSpineSMap["type"]
 	pDN := GetParentDn(dn, fmt.Sprintf("/spines-%s-typ-%s", name, satype))
 	d.Set("spine_profile_dn", pDN)
-	schemaFilled := setSwitchSpineAssociationAttributes(infraSpineS, d)
+
+	schemaFilled, err := setSwitchSpineAssociationAttributes(infraSpineS, d)
+	if err != nil {
+		return nil, err
+	}
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciSwitchSpineAssociationCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciSwitchSpineAssociationCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] SwitchAssociation: Beginning Creation")
 	aciClient := m.(*client.Client)
 
@@ -142,11 +155,8 @@ func resourceAciSwitchSpineAssociationCreate(d *schema.ResourceData, m interface
 
 	err := aciClient.Save(infraSpineS)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
 
@@ -158,7 +168,7 @@ func resourceAciSwitchSpineAssociationCreate(d *schema.ResourceData, m interface
 	d.Partial(true)
 	err = checkTDn(aciClient, checkDns)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Partial(false)
 
@@ -166,20 +176,17 @@ func resourceAciSwitchSpineAssociationCreate(d *schema.ResourceData, m interface
 		relationParam := relationToinfraRsSpineAccNodePGrp.(string)
 		err = aciClient.CreateRelationinfraRsSpineAccNodePGrpFromSwitchAssociation(infraSpineS.DistinguishedName, relationParam)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.Partial(false)
-
 	}
 
 	d.SetId(infraSpineS.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciSwitchSpineAssociationRead(d, m)
+	return resourceAciSwitchSpineAssociationRead(ctx, d, m)
 }
 
-func resourceAciSwitchSpineAssociationUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciSwitchSpineAssociationUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] SwitchAssociation: Beginning Update")
 
 	aciClient := m.(*client.Client)
@@ -210,11 +217,8 @@ func resourceAciSwitchSpineAssociationUpdate(d *schema.ResourceData, m interface
 	err := aciClient.Save(infraSpineS)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
 
@@ -226,7 +230,7 @@ func resourceAciSwitchSpineAssociationUpdate(d *schema.ResourceData, m interface
 	d.Partial(true)
 	err = checkTDn(aciClient, checkDns)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Partial(false)
 
@@ -234,25 +238,21 @@ func resourceAciSwitchSpineAssociationUpdate(d *schema.ResourceData, m interface
 		_, newRelParam := d.GetChange("relation_infra_rs_spine_acc_node_p_grp")
 		err = aciClient.DeleteRelationinfraRsSpineAccNodePGrpFromSwitchAssociation(infraSpineS.DistinguishedName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 		err = aciClient.CreateRelationinfraRsSpineAccNodePGrpFromSwitchAssociation(infraSpineS.DistinguishedName, newRelParam.(string))
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.Partial(false)
-
 	}
 
 	d.SetId(infraSpineS.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciSwitchSpineAssociationRead(d, m)
-
+	return resourceAciSwitchSpineAssociationRead(ctx, d, m)
 }
 
-func resourceAciSwitchSpineAssociationRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciSwitchSpineAssociationRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -264,7 +264,11 @@ func resourceAciSwitchSpineAssociationRead(d *schema.ResourceData, m interface{}
 		d.SetId("")
 		return nil
 	}
-	setSwitchSpineAssociationAttributes(infraSpineS, d)
+	_, err = setSwitchSpineAssociationAttributes(infraSpineS, d)
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 
 	infraRsSpineAccNodePGrpData, err := aciClient.ReadRelationinfraRsSpineAccNodePGrpFromSwitchAssociation(dn)
 	if err != nil {
@@ -285,18 +289,18 @@ func resourceAciSwitchSpineAssociationRead(d *schema.ResourceData, m interface{}
 	return nil
 }
 
-func resourceAciSwitchSpineAssociationDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciSwitchSpineAssociationDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "infraSpineS")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
 }

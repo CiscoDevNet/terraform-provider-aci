@@ -60,10 +60,15 @@ func TestAccAciL2Outside_update(t *testing.T) {
 func testAccCheckAciL2OutsideConfig_basic(description string) string {
 	return fmt.Sprintf(`
 
+	resource "aci_tenant" "foo_tenant" {
+		name        = "tenant_1"
+		description = "This tenant is created by terraform"
+	}
+	
 	resource "aci_l2_outside" "fool2_outside" {
-		tenant_dn  = "${aci_tenant.example.id}"
+		tenant_dn  = aci_tenant.foo_tenant.id
 		description = "%s"
-		name  = "example"
+		name  = "l2_outside_1"
   		annotation  = "example"
   		name_alias  = "example"
   		target_dscp = "AF11"
@@ -126,7 +131,7 @@ func testAccCheckAciL2OutsideAttributes(description string, l2_outside *models.L
 			return fmt.Errorf("Bad l2_outside Description %s", l2_outside.Description)
 		}
 
-		if "example" != l2_outside.Name {
+		if "l2_outside_1" != l2_outside.Name {
 			return fmt.Errorf("Bad l2_outside name %s", l2_outside.Name)
 		}
 

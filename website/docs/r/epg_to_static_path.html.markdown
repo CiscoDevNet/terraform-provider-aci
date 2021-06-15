@@ -14,24 +14,27 @@ Manages ACI EPG to Static Path
 
 ```hcl
 resource "aci_epg_to_static_path" "example" {
-  application_epg_dn = "${aci_application_epg.example.id}"
-  tdn                = "topology/pod-1/paths-129/pathep-[eth1/3]"
-  encap              = "vlan-1000"
-  mode               = "regular"
+  application_epg_dn  = aci_application_epg.example.id
+  tdn  = "topology/pod-1/paths-129/pathep-[eth1/3]"
+  annotation = "annotation"
+  encap  = "vlan-1000"
+  instr_imedcy = "lazy"
+  mode  = "regular"
+  primary_encap ="vlan-500"
 }
 ```
 
 ## Argument Reference ##
 
 * `application_epg_dn` - (Required) Distinguished name of parent ApplicationEPG object.
-* `tdn` - (Required) tDn of Object static_path.
-* `annotation` - (Optional) annotation for object static_path.
-* `encap` - (Optional) encapsulation
-* `instr_imedcy` - (Optional) immediacy.
-Allowed values: "immediate", "lazy"
-* `mode` - (Optional) mode of the static association with the path.
-Allowed values: "regular", "native", "untagged"
-* `primary_encap` - (Optional) primary_encap for object static_path.
+* `tdn` - (Required) tdn of Object Static Path.
+* `annotation` - (Optional) Annotation for object Static Path.
+* `encap` - (Optional) Encapsulation of the Static Path.
+* `instr_imedcy` - (Optional) Immediacy of the Static Path.
+Allowed values: "immediate", "lazy". Default value: "lazy"
+* `mode` - (Optional) Mode of the static association with the path.
+Allowed values: "regular", "native", "untagged". Default value: "regular"
+* `primary_encap` - (Optional) Primary encap for object Static Path.
 
 ## Attribute Reference
 

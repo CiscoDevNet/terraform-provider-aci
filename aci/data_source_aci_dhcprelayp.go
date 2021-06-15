@@ -1,15 +1,18 @@
 package aci
 
 import (
+	"context"
 	"fmt"
+
 	"github.com/ciscoecosystem/aci-go-client/client"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func dataSourceAciDHCPRelayPolicy() *schema.Resource {
 	return &schema.Resource{
 
-		Read: dataSourceAciDHCPRelayPolicyRead,
+		ReadContext: dataSourceAciDHCPRelayPolicyRead,
 
 		SchemaVersion: 1,
 
@@ -51,7 +54,7 @@ func dataSourceAciDHCPRelayPolicy() *schema.Resource {
 	}
 }
 
-func dataSourceAciDHCPRelayPolicyRead(d *schema.ResourceData, m interface{}) error {
+func dataSourceAciDHCPRelayPolicyRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	aciClient := m.(*client.Client)
 
 	name := d.Get("name").(string)
@@ -64,9 +67,12 @@ func dataSourceAciDHCPRelayPolicyRead(d *schema.ResourceData, m interface{}) err
 	dhcpRelayP, err := getRemoteDHCPRelayPolicy(aciClient, dn)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.SetId(dn)
-	setDHCPRelayPolicyAttributes(dhcpRelayP, d)
+	_, err = setDHCPRelayPolicyAttributes(dhcpRelayP, d)
+	if err != nil {
+		return diag.FromErr(err)
+	}
 	return nil
 }

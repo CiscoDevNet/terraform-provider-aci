@@ -1,16 +1,18 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func dataSourceAciEPGsUsingFunction() *schema.Resource {
 	return &schema.Resource{
 
-		Read: dataSourceAciEPGsUsingFunctionRead,
+		ReadContext: dataSourceAciEPGsUsingFunctionRead,
 
 		SchemaVersion: 1,
 
@@ -52,7 +54,7 @@ func dataSourceAciEPGsUsingFunction() *schema.Resource {
 	}
 }
 
-func dataSourceAciEPGsUsingFunctionRead(d *schema.ResourceData, m interface{}) error {
+func dataSourceAciEPGsUsingFunctionRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	aciClient := m.(*client.Client)
 
 	tDn := d.Get("tdn").(string)
@@ -65,9 +67,13 @@ func dataSourceAciEPGsUsingFunctionRead(d *schema.ResourceData, m interface{}) e
 	infraRsFuncToEpg, err := getRemoteEPGsUsingFunction(aciClient, dn)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.SetId(dn)
-	setEPGsUsingFunctionAttributes(infraRsFuncToEpg, d)
+	_, err = setEPGsUsingFunctionAttributes(infraRsFuncToEpg, d)
+
+	if err != nil {
+		return diag.FromErr(err)
+	}
 	return nil
 }

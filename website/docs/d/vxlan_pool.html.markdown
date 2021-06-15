@@ -13,18 +13,17 @@ Data source for ACI VXLAN Pool
 
 ```hcl
 data "aci_vxlan_pool" "example" {
-
-
   name  = "example"
 }
 ```
 ## Argument Reference ##
-* `name` - (Required) name of Object vxlan_pool.
+* `name` - (Required) Name of Object vxlan pool.
 
 
 
 ## Attribute Reference
 
 * `id` - Attribute id set to the Dn of the VXLAN Pool.
-* `annotation` - (Optional) annotation for object vxlan_pool.
-* `name_alias` - (Optional) name_alias for object vxlan_pool.
+* `annotation` - (Optional) Annotation for object vxlan pool.
+* `description` - (Optional) Description for object vxlan pool.
+* `name_alias` - (Optional) Name alias for object vxlan pool.

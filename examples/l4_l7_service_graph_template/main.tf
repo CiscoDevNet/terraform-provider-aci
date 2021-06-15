@@ -14,7 +14,7 @@ provider "aci" {
 }
 
 resource "aci_l4_l7_service_graph_template" "example" {
-  tenant_dn                         = "${aci_tenant.tenentcheck.id}"
+  tenant_dn                         = aci_tenant.tenentcheck.id
   name                              = "second"
   name_alias                        = "alias"
   description                       = "from terraform"

@@ -1,20 +1,22 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func resourceAciImportedContract() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciImportedContractCreate,
-		Update: resourceAciImportedContractUpdate,
-		Read:   resourceAciImportedContractRead,
-		Delete: resourceAciImportedContractDelete,
+		CreateContext: resourceAciImportedContractCreate,
+		UpdateContext: resourceAciImportedContractUpdate,
+		ReadContext:   resourceAciImportedContractRead,
+		DeleteContext: resourceAciImportedContractDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciImportedContractImport,
@@ -62,21 +64,24 @@ func getRemoteImportedContract(client *client.Client, dn string) (*models.Import
 	return vzCPIf, nil
 }
 
-func setImportedContractAttributes(vzCPIf *models.ImportedContract, d *schema.ResourceData) *schema.ResourceData {
+func setImportedContractAttributes(vzCPIf *models.ImportedContract, d *schema.ResourceData) (*schema.ResourceData, error) {
 	dn := d.Id()
 	d.SetId(vzCPIf.DistinguishedName)
 	d.Set("description", vzCPIf.Description)
-	// d.Set("tenant_dn", GetParentDn(vzCPIf.DistinguishedName))
+
 	if dn != vzCPIf.DistinguishedName {
 		d.Set("tenant_dn", "")
 	}
-	vzCPIfMap, _ := vzCPIf.ToMap()
+	vzCPIfMap, err := vzCPIf.ToMap()
+	if err != nil {
+		return d, err
+	}
 
 	d.Set("name", vzCPIfMap["name"])
 
 	d.Set("annotation", vzCPIfMap["annotation"])
 	d.Set("name_alias", vzCPIfMap["nameAlias"])
-	return d
+	return d, nil
 }
 
 func resourceAciImportedContractImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -90,18 +95,23 @@ func resourceAciImportedContractImport(d *schema.ResourceData, m interface{}) ([
 	if err != nil {
 		return nil, err
 	}
-	vzCPIfMap, _ := vzCPIf.ToMap()
+	vzCPIfMap, err := vzCPIf.ToMap()
+	if err != nil {
+		return nil, err
+	}
 	name := vzCPIfMap["name"]
 	pDN := GetParentDn(dn, fmt.Sprintf("/cif-%s", name))
 	d.Set("tenant_dn", pDN)
-	schemaFilled := setImportedContractAttributes(vzCPIf, d)
-
+	schemaFilled, err := setImportedContractAttributes(vzCPIf, d)
+	if err != nil {
+		return nil, err
+	}
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciImportedContractCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciImportedContractCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] ImportedContract: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -123,7 +133,8 @@ func resourceAciImportedContractCreate(d *schema.ResourceData, m interface{}) er
 
 	err := aciClient.Save(vzCPIf)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
+
 	}
 	d.Partial(true)
 
@@ -139,7 +150,8 @@ func resourceAciImportedContractCreate(d *schema.ResourceData, m interface{}) er
 	d.Partial(true)
 	err = checkTDn(aciClient, checkDns)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
+
 	}
 	d.Partial(false)
 
@@ -148,7 +160,8 @@ func resourceAciImportedContractCreate(d *schema.ResourceData, m interface{}) er
 		relationParamName := GetMOName(relationParam)
 		err = aciClient.CreateRelationvzRsIfFromImportedContract(vzCPIf.DistinguishedName, relationParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
+
 		}
 		d.Partial(true)
 		d.Partial(false)
@@ -158,10 +171,10 @@ func resourceAciImportedContractCreate(d *schema.ResourceData, m interface{}) er
 	d.SetId(vzCPIf.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciImportedContractRead(d, m)
+	return resourceAciImportedContractRead(ctx, d, m)
 }
 
-func resourceAciImportedContractUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciImportedContractUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] ImportedContract: Beginning Update")
 
 	aciClient := m.(*client.Client)
@@ -187,7 +200,7 @@ func resourceAciImportedContractUpdate(d *schema.ResourceData, m interface{}) er
 	err := aciClient.Save(vzCPIf)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Partial(true)
 
@@ -203,7 +216,7 @@ func resourceAciImportedContractUpdate(d *schema.ResourceData, m interface{}) er
 	d.Partial(true)
 	err = checkTDn(aciClient, checkDns)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Partial(false)
 
@@ -212,11 +225,11 @@ func resourceAciImportedContractUpdate(d *schema.ResourceData, m interface{}) er
 		newRelParamName := GetMOName(newRelParam.(string))
 		err = aciClient.DeleteRelationvzRsIfFromImportedContract(vzCPIf.DistinguishedName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 		err = aciClient.CreateRelationvzRsIfFromImportedContract(vzCPIf.DistinguishedName, newRelParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 		d.Partial(true)
 		d.Partial(false)
@@ -226,11 +239,11 @@ func resourceAciImportedContractUpdate(d *schema.ResourceData, m interface{}) er
 	d.SetId(vzCPIf.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciImportedContractRead(d, m)
+	return resourceAciImportedContractRead(ctx, d, m)
 
 }
 
-func resourceAciImportedContractRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciImportedContractRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -242,7 +255,11 @@ func resourceAciImportedContractRead(d *schema.ResourceData, m interface{}) erro
 		d.SetId("")
 		return nil
 	}
-	setImportedContractAttributes(vzCPIf, d)
+	_, err = setImportedContractAttributes(vzCPIf, d)
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 
 	vzRsIfData, err := aciClient.ReadRelationvzRsIfFromImportedContract(dn)
 	if err != nil {
@@ -263,18 +280,20 @@ func resourceAciImportedContractRead(d *schema.ResourceData, m interface{}) erro
 	return nil
 }
 
-func resourceAciImportedContractDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciImportedContractDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "vzCPIf")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
+
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
+
 }

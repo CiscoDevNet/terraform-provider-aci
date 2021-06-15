@@ -59,7 +59,7 @@ func testAccCheckAciL2DomainConfig_basic() string {
 	return fmt.Sprintf(`
 
 	resource "aci_l2_domain" "fool2_domain" {
-		name  = "example"
+		name  = "l2_domain_1"
 		annotation  = "example"
 		name_alias  = "example"
 		}
@@ -117,7 +117,7 @@ func testAccCheckAciL2DomainDestroy(s *terraform.State) error {
 func testAccCheckAciL2DomainAttributes(l2_domain *models.L2Domain) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 
-		if "example" != l2_domain.Name {
+		if "l2_domain_1" != l2_domain.Name {
 			return fmt.Errorf("Bad l2_domain name %s", l2_domain.Name)
 		}
 

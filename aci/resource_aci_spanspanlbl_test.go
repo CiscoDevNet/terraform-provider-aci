@@ -59,21 +59,23 @@ func TestAccAciSPANSourcedestinationGroupMatchLabel_update(t *testing.T) {
 
 func testAccCheckAciSPANSourcedestinationGroupMatchLabelConfig_basic(description string) string {
 	return fmt.Sprintf(`
-
+	resource "aci_tenant" "footenant" {
+		name        = "example"
+		name_alias  = "alias_tenant"
+	} 
 	resource "aci_span_source_group" "foospan_source_group" {
-		tenant_dn  = "${aci_tenant.example.id}"
-		description = "from terraform"
+		tenant_dn  = aci_tenant.footenant.id
+		description = "From terraform"
 		name  = "example"
 		admin_st  = "enabled"
 		annotation  = "example"
 		name_alias  = "example"
 	  }
-
 	resource "aci_span_sourcedestination_group_match_label" "foospan_sourcedestination_group_match_label" {
-			span_source_group_dn  = aci_span_source_group.example.id
+			span_source_group_dn  = aci_span_source_group.foospan_source_group.id
 			description = "%s"
 			name  = "example"
-			annotation  = "example"
+		 	annotation  = "example"
 			name_alias  = "example"
 			tag  = "yellow"
 		}

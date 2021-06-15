@@ -1236,7 +1236,16 @@ func resourceAciApplicationEPGRead(ctx context.Context, d *schema.ResourceData, 
 		d.Set("relation_fv_rs_fc_path_att", make([]string, 0, 1))
 
 	} else {
-		d.Set("relation_fv_rs_fc_path_att", fvRsFcPathAttData)
+		if _, ok := d.GetOk("relation_fv_rs_fc_path_att"); ok {
+			relationParamList := toStringList(d.Get("relation_fv_rs_fc_path_att").(*schema.Set).List())
+			fvRsFcPathAttDataList := toStringList(fvRsFcPathAttData.(*schema.Set).List())
+			sort.Strings(relationParamList)
+			sort.Strings(fvRsFcPathAttDataList)
+
+			if !reflect.DeepEqual(relationParamList, fvRsFcPathAttDataList) {
+				d.Set("relation_fv_rs_fc_path_att", make([]string, 0, 1))
+			}
+		}
 	}
 
 	fvRsProvData, err := aciClient.ReadRelationfvRsProvFromApplicationEPG(dn)
@@ -1268,7 +1277,16 @@ func resourceAciApplicationEPGRead(ctx context.Context, d *schema.ResourceData, 
 		d.Set("relation_fv_rs_graph_def", make([]string, 0, 1))
 
 	} else {
-		d.Set("relation_fv_rs_graph_def", fvRsGraphDefData)
+		if _, ok := d.GetOk("relation_fv_rs_graph_def"); ok {
+			relationParamList := toStringList(d.Get("relation_fv_rs_graph_def").(*schema.Set).List())
+			fvRsGraphDefDataList := toStringList(fvRsGraphDefData.(*schema.Set).List())
+			sort.Strings(relationParamList)
+			sort.Strings(fvRsGraphDefDataList)
+
+			if !reflect.DeepEqual(relationParamList, fvRsGraphDefDataList) {
+				d.Set("relation_fv_rs_graph_def", make([]string, 0, 1))
+			}
+		}
 	}
 
 	fvRsConsIfData, err := aciClient.ReadRelationfvRsConsIfFromApplicationEPG(dn)
@@ -1300,7 +1318,16 @@ func resourceAciApplicationEPGRead(ctx context.Context, d *schema.ResourceData, 
 		d.Set("relation_fv_rs_sec_inherited", make([]string, 0, 1))
 
 	} else {
-		d.Set("relation_fv_rs_sec_inherited", fvRsSecInheritedData)
+		if _, ok := d.GetOk("relation_fv_rs_sec_inherited"); ok {
+			relationParamList := toStringList(d.Get("relation_fv_rs_sec_inherited").(*schema.Set).List())
+			fvRsSecInheritedDataList := toStringList(fvRsSecInheritedData.(*schema.Set).List())
+			sort.Strings(relationParamList)
+			sort.Strings(fvRsSecInheritedDataList)
+
+			if !reflect.DeepEqual(relationParamList, fvRsSecInheritedDataList) {
+				d.Set("relation_fv_rs_sec_inherited", make([]string, 0, 1))
+			}
+		}
 	}
 
 	fvRsNodeAttData, err := aciClient.ReadRelationfvRsNodeAttFromApplicationEPG(dn)
@@ -1309,7 +1336,16 @@ func resourceAciApplicationEPGRead(ctx context.Context, d *schema.ResourceData, 
 		d.Set("relation_fv_rs_node_att", make([]string, 0, 1))
 
 	} else {
-		d.Set("relation_fv_rs_node_att", fvRsNodeAttData)
+		if _, ok := d.GetOk("relation_fv_rs_node_att"); ok {
+			relationParamList := toStringList(d.Get("relation_fv_rs_node_att").(*schema.Set).List())
+			fvRsNodeAttDataList := toStringList(fvRsNodeAttData.(*schema.Set).List())
+			sort.Strings(relationParamList)
+			sort.Strings(fvRsNodeAttDataList)
+
+			if !reflect.DeepEqual(relationParamList, fvRsNodeAttDataList) {
+				d.Set("relation_fv_rs_node_att", make([]string, 0, 1))
+			}
+		}
 	}
 
 	fvRsDppPolData, err := aciClient.ReadRelationfvRsDppPolFromApplicationEPG(dn)
@@ -1355,7 +1391,16 @@ func resourceAciApplicationEPGRead(ctx context.Context, d *schema.ResourceData, 
 		d.Set("relation_fv_rs_prov_def", make([]string, 0, 1))
 
 	} else {
-		d.Set("relation_fv_rs_prov_def", fvRsProvDefData)
+		if _, ok := d.GetOk("relation_fv_rs_prov_def"); ok {
+			relationParamList := toStringList(d.Get("relation_fv_rs_prov_def").(*schema.Set).List())
+			fvRsProvDefDataList := toStringList(fvRsProvDefData.(*schema.Set).List())
+			sort.Strings(relationParamList)
+			sort.Strings(fvRsProvDefDataList)
+
+			if !reflect.DeepEqual(relationParamList, fvRsProvDefDataList) {
+				d.Set("relation_fv_rs_prov_def", make([]string, 0, 1))
+			}
+		}
 	}
 
 	fvRsTrustCtrlData, err := aciClient.ReadRelationfvRsTrustCtrlFromApplicationEPG(dn)
@@ -1378,7 +1423,16 @@ func resourceAciApplicationEPGRead(ctx context.Context, d *schema.ResourceData, 
 		d.Set("relation_fv_rs_path_att", make([]string, 0, 1))
 
 	} else {
-		d.Set("relation_fv_rs_path_att", fvRsPathAttData)
+		if _, ok := d.GetOk("relation_fv_rs_path_att"); ok {
+			relationParamList := toStringList(d.Get("relation_fv_rs_path_att").(*schema.Set).List())
+			fvRsPathAttDataList := toStringList(fvRsPathAttData.(*schema.Set).List())
+			sort.Strings(relationParamList)
+			sort.Strings(fvRsPathAttDataList)
+
+			if !reflect.DeepEqual(relationParamList, fvRsPathAttDataList) {
+				d.Set("relation_fv_rs_path_att", make([]string, 0, 1))
+			}
+		}
 	}
 
 	fvRsProtByData, err := aciClient.ReadRelationfvRsProtByFromApplicationEPG(dn)

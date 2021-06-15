@@ -59,12 +59,10 @@ func TestAccAciCloudVpnGateway_update(t *testing.T) {
 
 func testAccCheckAciCloudVpnGatewayConfig_basic(description string) string {
 	return fmt.Sprintf(`
-
-	resource "aci_cloud_vpn_gateway" "example" {
-		cloud_context_profile_dn  = "${aci_cloud_context_profile.example.id}"
-	  description = "%s"
-	
-	  name  = "example_name"
+	resource "aci_cloud_vpn_gateway" "foocloud_vpn_gateway" {
+		cloud_context_profile_dn  = "${aci_cloud_context_profile.foocloud_context_profile.id}"
+	    description = "%s"
+	    name  = "example_name"
 		annotation  = "example_annotation"
 		name_alias  = "example_alias"
 		num_instances  = "1"

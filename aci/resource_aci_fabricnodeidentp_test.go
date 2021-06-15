@@ -26,11 +26,6 @@ func TestAccAciFabricNodeMember_Basic(t *testing.T) {
 					testAccCheckAciFabricNodeMemberAttributes(description, &fabric_node_member),
 				),
 			},
-			{
-				ResourceName:      "aci_fabric_node_member",
-				ImportState:       true,
-				ImportStateVerify: true,
-			},
 		},
 	})
 }

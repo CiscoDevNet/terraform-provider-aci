@@ -1,21 +1,23 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciSPANSourceGroup() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciSPANSourceGroupCreate,
-		Update: resourceAciSPANSourceGroupUpdate,
-		Read:   resourceAciSPANSourceGroupRead,
-		Delete: resourceAciSPANSourceGroupDelete,
+		CreateContext: resourceAciSPANSourceGroupCreate,
+		UpdateContext: resourceAciSPANSourceGroupUpdate,
+		ReadContext:   resourceAciSPANSourceGroupRead,
+		DeleteContext: resourceAciSPANSourceGroupDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciSPANSourceGroupImport,
@@ -115,7 +117,7 @@ func resourceAciSPANSourceGroupImport(d *schema.ResourceData, m interface{}) ([]
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciSPANSourceGroupCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciSPANSourceGroupCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] SPANSourceGroup: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -140,11 +142,8 @@ func resourceAciSPANSourceGroupCreate(d *schema.ResourceData, m interface{}) err
 
 	err := aciClient.Save(spanSrcGrp)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
 
@@ -156,7 +155,7 @@ func resourceAciSPANSourceGroupCreate(d *schema.ResourceData, m interface{}) err
 	d.Partial(true)
 	err = checkTDn(aciClient, checkDns)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Partial(false)
 
@@ -164,20 +163,18 @@ func resourceAciSPANSourceGroupCreate(d *schema.ResourceData, m interface{}) err
 		relationParam := relationTospanRsSrcGrpToFilterGrp.(string)
 		err = aciClient.CreateRelationspanRsSrcGrpToFilterGrpFromSPANSourceGroup(spanSrcGrp.DistinguishedName, relationParam)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.Partial(false)
 
 	}
 
 	d.SetId(spanSrcGrp.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciSPANSourceGroupRead(d, m)
+	return resourceAciSPANSourceGroupRead(ctx, d, m)
 }
 
-func resourceAciSPANSourceGroupUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciSPANSourceGroupUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] SPANSourceGroup: Beginning Update")
 
 	aciClient := m.(*client.Client)
@@ -206,11 +203,8 @@ func resourceAciSPANSourceGroupUpdate(d *schema.ResourceData, m interface{}) err
 	err := aciClient.Save(spanSrcGrp)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
 
@@ -222,7 +216,7 @@ func resourceAciSPANSourceGroupUpdate(d *schema.ResourceData, m interface{}) err
 	d.Partial(true)
 	err = checkTDn(aciClient, checkDns)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Partial(false)
 
@@ -230,25 +224,23 @@ func resourceAciSPANSourceGroupUpdate(d *schema.ResourceData, m interface{}) err
 		_, newRelParam := d.GetChange("relation_span_rs_src_grp_to_filter_grp")
 		err = aciClient.DeleteRelationspanRsSrcGrpToFilterGrpFromSPANSourceGroup(spanSrcGrp.DistinguishedName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 		err = aciClient.CreateRelationspanRsSrcGrpToFilterGrpFromSPANSourceGroup(spanSrcGrp.DistinguishedName, newRelParam.(string))
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.Partial(false)
 
 	}
 
 	d.SetId(spanSrcGrp.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciSPANSourceGroupRead(d, m)
+	return resourceAciSPANSourceGroupRead(ctx, d, m)
 
 }
 
-func resourceAciSPANSourceGroupRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciSPANSourceGroupRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -281,18 +273,18 @@ func resourceAciSPANSourceGroupRead(d *schema.ResourceData, m interface{}) error
 	return nil
 }
 
-func resourceAciSPANSourceGroupDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciSPANSourceGroupDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "spanSrcGrp")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
 }
