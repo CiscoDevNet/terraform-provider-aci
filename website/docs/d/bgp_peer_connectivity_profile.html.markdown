@@ -14,7 +14,7 @@ Data source for ACI BGP Peer Connectivity Profile
 
 ```hcl
 data "aci_bgp_peer_connectivity_profile" "example" {
-  logical_node_profile_dn  = "${aci_logical_node_profile.example.id}"
+  logical_node_profile_dn  = aci_logical_node_profile.example.id
   addr  = "10.0.0.1"
 }
 ```
