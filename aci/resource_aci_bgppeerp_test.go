@@ -57,12 +57,12 @@ func TestAccAciBgpPeerConnectivityProfile_update(t *testing.T) {
 	})
 }
 
-func testAccCheckAciBgpPeerConnectivityProfileConfig_basic(description string) string {
-	return fmt.Sprintf(`
+func testAccCheckAciBgpPeerConnectivityProfileConfig_basic(description string) string {	
+
 	resource "aci_bgp_peer_connectivity_profile" "example" {
 		logical_node_profile_dn = aci_logical_node_profile.example.id
 		addr                    = "10.0.0.1"
-		addr_t_ctrl             = "af-mcast,af-ucast"
+		addr_t_ctrl             = "af-mcast, af-ucast"
 		allowed_self_as_cnt     = "3"
 		description 			= "%s"
 		annotation              = "example"
@@ -135,7 +135,7 @@ func testAccCheckAciBgpPeerConnectivityProfileAttributes(description string, bgp
 			return fmt.Errorf("Bad bgp_peer_connectivity_profile Description %s", bgp_peer_connectivity_profile.Description)
 		}
 
-		if "10.0.0.3" != bgp_peer_connectivity_profile.Addr {
+		if "10.0.0.1" != bgp_peer_connectivity_profile.Addr {
 			return fmt.Errorf("Bad bgp_peer_connectivity_profile addr %s", bgp_peer_connectivity_profile.Addr)
 		}
 
