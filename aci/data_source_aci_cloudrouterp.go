@@ -1,15 +1,17 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"github.com/ciscoecosystem/aci-go-client/client"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func dataSourceAciCloudVpnGateway() *schema.Resource {
 	return &schema.Resource{
 
-		Read: dataSourceAciCloudVpnGatewayRead,
+		ReadContext: dataSourceAciCloudVpnGatewayRead,
 
 		SchemaVersion: 1,
 
@@ -51,7 +53,7 @@ func dataSourceAciCloudVpnGateway() *schema.Resource {
 	}
 }
 
-func dataSourceAciCloudVpnGatewayRead(d *schema.ResourceData, m interface{}) error {
+func dataSourceAciCloudVpnGatewayRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	aciClient := m.(*client.Client)
 
 	name := d.Get("name").(string)
@@ -64,9 +66,14 @@ func dataSourceAciCloudVpnGatewayRead(d *schema.ResourceData, m interface{}) err
 	cloudRouterP, err := getRemoteCloudVpnGateway(aciClient, dn)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.SetId(dn)
-	setCloudVpnGatewayAttributes(cloudRouterP, d)
+
+	_, err = setCloudVpnGatewayAttributes(cloudRouterP, d)
+
+	if err != nil {
+		return diag.FromErr(err)
+	}
 	return nil
 }

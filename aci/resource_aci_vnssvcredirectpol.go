@@ -1,21 +1,23 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciServiceRedirectPolicy() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciServiceRedirectPolicyCreate,
-		Update: resourceAciServiceRedirectPolicyUpdate,
-		Read:   resourceAciServiceRedirectPolicyRead,
-		Delete: resourceAciServiceRedirectPolicyDelete,
+		CreateContext: resourceAciServiceRedirectPolicyCreate,
+		UpdateContext: resourceAciServiceRedirectPolicyUpdate,
+		ReadContext:   resourceAciServiceRedirectPolicyRead,
+		DeleteContext: resourceAciServiceRedirectPolicyDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciServiceRedirectPolicyImport,
@@ -50,12 +52,22 @@ func resourceAciServiceRedirectPolicy() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"L3",
+					"L2",
+					"L1",
+				}, false),
 			},
 
 			"hashing_algorithm": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"sip-dip-prototype",
+					"sip",
+					"dip",
+				}, false),
 			},
 
 			"max_threshold_percent": &schema.Schema{
@@ -101,8 +113,9 @@ func resourceAciServiceRedirectPolicy() *schema.Resource {
 				Optional: true,
 				Computed: true,
 				ValidateFunc: validation.StringInSlice([]string{
-					"deny",
 					"permit",
+					"deny",
+					"bypass",
 				}, false),
 			},
 
@@ -139,14 +152,18 @@ func getRemoteServiceRedirectPolicy(client *client.Client, dn string) (*models.S
 	return vnsSvcRedirectPol, nil
 }
 
-func setServiceRedirectPolicyAttributes(vnsSvcRedirectPol *models.ServiceRedirectPolicy, d *schema.ResourceData) *schema.ResourceData {
+func setServiceRedirectPolicyAttributes(vnsSvcRedirectPol *models.ServiceRedirectPolicy, d *schema.ResourceData) (*schema.ResourceData, error) {
 	dn := d.Id()
 	d.SetId(vnsSvcRedirectPol.DistinguishedName)
 	d.Set("description", vnsSvcRedirectPol.Description)
 	if dn != vnsSvcRedirectPol.DistinguishedName {
 		d.Set("tenant_dn", "")
 	}
-	vnsSvcRedirectPolMap, _ := vnsSvcRedirectPol.ToMap()
+	vnsSvcRedirectPolMap, err := vnsSvcRedirectPol.ToMap()
+
+	if err != nil {
+		return d, err
+	}
 
 	d.Set("name", vnsSvcRedirectPolMap["name"])
 
@@ -161,7 +178,7 @@ func setServiceRedirectPolicyAttributes(vnsSvcRedirectPol *models.ServiceRedirec
 	d.Set("resilient_hash_enabled", vnsSvcRedirectPolMap["resilientHashEnabled"])
 	d.Set("threshold_down_action", vnsSvcRedirectPolMap["thresholdDownAction"])
 	d.Set("threshold_enable", vnsSvcRedirectPolMap["thresholdEnable"])
-	return d
+	return d, nil
 }
 
 func resourceAciServiceRedirectPolicyImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -175,18 +192,26 @@ func resourceAciServiceRedirectPolicyImport(d *schema.ResourceData, m interface{
 	if err != nil {
 		return nil, err
 	}
-	vnsSvcRedirectPolMap, _ := vnsSvcRedirectPol.ToMap()
+	vnsSvcRedirectPolMap, err := vnsSvcRedirectPol.ToMap()
+
+	if err != nil {
+		return nil, err
+	}
 	name := vnsSvcRedirectPolMap["name"]
 	pDN := GetParentDn(dn, fmt.Sprintf("/svcCont/svcRedirectPol-%s", name))
 	d.Set("tenant_dn", pDN)
-	schemaFilled := setServiceRedirectPolicyAttributes(vnsSvcRedirectPol, d)
+	schemaFilled, err := setServiceRedirectPolicyAttributes(vnsSvcRedirectPol, d)
+
+	if err != nil {
+		return nil, err
+	}
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciServiceRedirectPolicyCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciServiceRedirectPolicyCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] ServiceRedirectPolicy: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -235,11 +260,8 @@ func resourceAciServiceRedirectPolicyCreate(d *schema.ResourceData, m interface{
 
 	err := aciClient.Save(vnsSvcRedirectPol)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
 
@@ -251,7 +273,7 @@ func resourceAciServiceRedirectPolicyCreate(d *schema.ResourceData, m interface{
 	d.Partial(true)
 	err = checkTDn(aciClient, checkDns)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Partial(false)
 
@@ -259,20 +281,18 @@ func resourceAciServiceRedirectPolicyCreate(d *schema.ResourceData, m interface{
 		relationParam := relationTovnsRsIPSLAMonitoringPol.(string)
 		err = aciClient.CreateRelationvnsRsIPSLAMonitoringPolFromServiceRedirectPolicy(vnsSvcRedirectPol.DistinguishedName, relationParam)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.Partial(false)
 
 	}
 
 	d.SetId(vnsSvcRedirectPol.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciServiceRedirectPolicyRead(d, m)
+	return resourceAciServiceRedirectPolicyRead(ctx, d, m)
 }
 
-func resourceAciServiceRedirectPolicyUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciServiceRedirectPolicyUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] ServiceRedirectPolicy: Beginning Update")
 
 	aciClient := m.(*client.Client)
@@ -325,11 +345,8 @@ func resourceAciServiceRedirectPolicyUpdate(d *schema.ResourceData, m interface{
 	err := aciClient.Save(vnsSvcRedirectPol)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
 
@@ -341,7 +358,7 @@ func resourceAciServiceRedirectPolicyUpdate(d *schema.ResourceData, m interface{
 	d.Partial(true)
 	err = checkTDn(aciClient, checkDns)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Partial(false)
 
@@ -349,25 +366,22 @@ func resourceAciServiceRedirectPolicyUpdate(d *schema.ResourceData, m interface{
 		_, newRelParam := d.GetChange("relation_vns_rs_ipsla_monitoring_pol")
 		err = aciClient.DeleteRelationvnsRsIPSLAMonitoringPolFromServiceRedirectPolicy(vnsSvcRedirectPol.DistinguishedName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 		err = aciClient.CreateRelationvnsRsIPSLAMonitoringPolFromServiceRedirectPolicy(vnsSvcRedirectPol.DistinguishedName, newRelParam.(string))
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.Partial(false)
-
 	}
 
 	d.SetId(vnsSvcRedirectPol.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciServiceRedirectPolicyRead(d, m)
+	return resourceAciServiceRedirectPolicyRead(ctx, d, m)
 
 }
 
-func resourceAciServiceRedirectPolicyRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciServiceRedirectPolicyRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -379,7 +393,12 @@ func resourceAciServiceRedirectPolicyRead(d *schema.ResourceData, m interface{})
 		d.SetId("")
 		return nil
 	}
-	setServiceRedirectPolicyAttributes(vnsSvcRedirectPol, d)
+	_, err = setServiceRedirectPolicyAttributes(vnsSvcRedirectPol, d)
+
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 
 	vnsRsIPSLAMonitoringPolData, err := aciClient.ReadRelationvnsRsIPSLAMonitoringPolFromServiceRedirectPolicy(dn)
 	if err != nil {
@@ -395,18 +414,18 @@ func resourceAciServiceRedirectPolicyRead(d *schema.ResourceData, m interface{})
 	return nil
 }
 
-func resourceAciServiceRedirectPolicyDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciServiceRedirectPolicyDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "vnsSvcRedirectPol")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
 }

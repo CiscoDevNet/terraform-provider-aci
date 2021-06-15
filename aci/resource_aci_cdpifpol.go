@@ -1,21 +1,23 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciCDPInterfacePolicy() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciCDPInterfacePolicyCreate,
-		Update: resourceAciCDPInterfacePolicyUpdate,
-		Read:   resourceAciCDPInterfacePolicyRead,
-		Delete: resourceAciCDPInterfacePolicyDelete,
+		CreateContext: resourceAciCDPInterfacePolicyCreate,
+		UpdateContext: resourceAciCDPInterfacePolicyUpdate,
+		ReadContext:   resourceAciCDPInterfacePolicyRead,
+		DeleteContext: resourceAciCDPInterfacePolicyDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciCDPInterfacePolicyImport,
@@ -64,17 +66,19 @@ func getRemoteCDPInterfacePolicy(client *client.Client, dn string) (*models.CDPI
 	return cdpIfPol, nil
 }
 
-func setCDPInterfacePolicyAttributes(cdpIfPol *models.CDPInterfacePolicy, d *schema.ResourceData) *schema.ResourceData {
+func setCDPInterfacePolicyAttributes(cdpIfPol *models.CDPInterfacePolicy, d *schema.ResourceData) (*schema.ResourceData, error) {
 	d.SetId(cdpIfPol.DistinguishedName)
 	d.Set("description", cdpIfPol.Description)
-	cdpIfPolMap, _ := cdpIfPol.ToMap()
-
+	cdpIfPolMap, err := cdpIfPol.ToMap()
+	if err != nil {
+		return d, err
+	}
 	d.Set("name", cdpIfPolMap["name"])
 
 	d.Set("admin_st", cdpIfPolMap["adminSt"])
 	d.Set("annotation", cdpIfPolMap["annotation"])
 	d.Set("name_alias", cdpIfPolMap["nameAlias"])
-	return d
+	return d, nil
 }
 
 func resourceAciCDPInterfacePolicyImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -88,14 +92,17 @@ func resourceAciCDPInterfacePolicyImport(d *schema.ResourceData, m interface{}) 
 	if err != nil {
 		return nil, err
 	}
-	schemaFilled := setCDPInterfacePolicyAttributes(cdpIfPol, d)
+	schemaFilled, err := setCDPInterfacePolicyAttributes(cdpIfPol, d)
 
+	if err != nil {
+		return nil, err
+	}
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciCDPInterfacePolicyCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciCDPInterfacePolicyCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] CDPInterfacePolicy: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -118,19 +125,16 @@ func resourceAciCDPInterfacePolicyCreate(d *schema.ResourceData, m interface{}) 
 
 	err := aciClient.Save(cdpIfPol)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.Partial(false)
 
 	d.SetId(cdpIfPol.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciCDPInterfacePolicyRead(d, m)
+	return resourceAciCDPInterfacePolicyRead(ctx, d, m)
 }
 
-func resourceAciCDPInterfacePolicyUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciCDPInterfacePolicyUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] CDPInterfacePolicy: Beginning Update")
 
 	aciClient := m.(*client.Client)
@@ -157,20 +161,16 @@ func resourceAciCDPInterfacePolicyUpdate(d *schema.ResourceData, m interface{}) 
 	err := aciClient.Save(cdpIfPol)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.Partial(false)
-
 	d.SetId(cdpIfPol.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciCDPInterfacePolicyRead(d, m)
+	return resourceAciCDPInterfacePolicyRead(ctx, d, m)
 
 }
 
-func resourceAciCDPInterfacePolicyRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciCDPInterfacePolicyRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -182,25 +182,28 @@ func resourceAciCDPInterfacePolicyRead(d *schema.ResourceData, m interface{}) er
 		d.SetId("")
 		return nil
 	}
-	setCDPInterfacePolicyAttributes(cdpIfPol, d)
-
+	_, err = setCDPInterfacePolicyAttributes(cdpIfPol, d)
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 
 	return nil
 }
 
-func resourceAciCDPInterfacePolicyDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciCDPInterfacePolicyDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "cdpIfPol")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
 }

@@ -1,20 +1,22 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func resourceAciSpineInterfaceProfile() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciSpineInterfaceProfileCreate,
-		Update: resourceAciSpineInterfaceProfileUpdate,
-		Read:   resourceAciSpineInterfaceProfileRead,
-		Delete: resourceAciSpineInterfaceProfileDelete,
+		CreateContext: resourceAciSpineInterfaceProfileCreate,
+		UpdateContext: resourceAciSpineInterfaceProfileUpdate,
+		ReadContext:   resourceAciSpineInterfaceProfileRead,
+		DeleteContext: resourceAciSpineInterfaceProfileDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciSpineInterfaceProfileImport,
@@ -53,16 +55,20 @@ func getRemoteSpineInterfaceProfile(client *client.Client, dn string) (*models.S
 	return infraSpAccPortP, nil
 }
 
-func setSpineInterfaceProfileAttributes(infraSpAccPortP *models.SpineInterfaceProfile, d *schema.ResourceData) *schema.ResourceData {
+func setSpineInterfaceProfileAttributes(infraSpAccPortP *models.SpineInterfaceProfile, d *schema.ResourceData) (*schema.ResourceData, error) {
 	d.SetId(infraSpAccPortP.DistinguishedName)
 	d.Set("description", infraSpAccPortP.Description)
-	infraSpAccPortPMap, _ := infraSpAccPortP.ToMap()
+	infraSpAccPortPMap, err := infraSpAccPortP.ToMap()
+
+	if err != nil {
+		return d, err
+	}
 
 	d.Set("name", infraSpAccPortPMap["name"])
 
 	d.Set("annotation", infraSpAccPortPMap["annotation"])
 	d.Set("name_alias", infraSpAccPortPMap["nameAlias"])
-	return d
+	return d, nil
 }
 
 func resourceAciSpineInterfaceProfileImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -76,14 +82,18 @@ func resourceAciSpineInterfaceProfileImport(d *schema.ResourceData, m interface{
 	if err != nil {
 		return nil, err
 	}
-	schemaFilled := setSpineInterfaceProfileAttributes(infraSpAccPortP, d)
+	schemaFilled, err := setSpineInterfaceProfileAttributes(infraSpAccPortP, d)
+
+	if err != nil {
+		return nil, err
+	}
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciSpineInterfaceProfileCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciSpineInterfaceProfileCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] SpineInterfaceProfile: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -103,19 +113,16 @@ func resourceAciSpineInterfaceProfileCreate(d *schema.ResourceData, m interface{
 
 	err := aciClient.Save(infraSpAccPortP)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.Partial(false)
 
 	d.SetId(infraSpAccPortP.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciSpineInterfaceProfileRead(d, m)
+	return resourceAciSpineInterfaceProfileRead(ctx, d, m)
 }
 
-func resourceAciSpineInterfaceProfileUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciSpineInterfaceProfileUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] SpineInterfaceProfile: Beginning Update")
 
 	aciClient := m.(*client.Client)
@@ -139,20 +146,17 @@ func resourceAciSpineInterfaceProfileUpdate(d *schema.ResourceData, m interface{
 	err := aciClient.Save(infraSpAccPortP)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.Partial(false)
 
 	d.SetId(infraSpAccPortP.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciSpineInterfaceProfileRead(d, m)
+	return resourceAciSpineInterfaceProfileRead(ctx, d, m)
 
 }
 
-func resourceAciSpineInterfaceProfileRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciSpineInterfaceProfileRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -164,25 +168,30 @@ func resourceAciSpineInterfaceProfileRead(d *schema.ResourceData, m interface{})
 		d.SetId("")
 		return nil
 	}
-	setSpineInterfaceProfileAttributes(infraSpAccPortP, d)
+	_, err = setSpineInterfaceProfileAttributes(infraSpAccPortP, d)
+
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 
 	return nil
 }
 
-func resourceAciSpineInterfaceProfileDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciSpineInterfaceProfileDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "infraSpAccPortP")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
 }

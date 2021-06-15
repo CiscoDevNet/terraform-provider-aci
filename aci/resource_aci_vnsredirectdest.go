@@ -1,20 +1,22 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func resourceAciDestinationofredirectedtraffic() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciDestinationofredirectedtrafficCreate,
-		Update: resourceAciDestinationofredirectedtrafficUpdate,
-		Read:   resourceAciDestinationofredirectedtrafficRead,
-		Delete: resourceAciDestinationofredirectedtrafficDelete,
+		CreateContext: resourceAciDestinationofredirectedtrafficCreate,
+		UpdateContext: resourceAciDestinationofredirectedtrafficUpdate,
+		ReadContext:   resourceAciDestinationofredirectedtrafficRead,
+		DeleteContext: resourceAciDestinationofredirectedtrafficDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciDestinationofredirectedtrafficImport,
@@ -87,14 +89,17 @@ func getRemoteDestinationofredirectedtraffic(client *client.Client, dn string) (
 	return vnsRedirectDest, nil
 }
 
-func setDestinationofredirectedtrafficAttributes(vnsRedirectDest *models.Destinationofredirectedtraffic, d *schema.ResourceData) *schema.ResourceData {
+func setDestinationofredirectedtrafficAttributes(vnsRedirectDest *models.Destinationofredirectedtraffic, d *schema.ResourceData) (*schema.ResourceData, error) {
 	dn := d.Id()
 	d.SetId(vnsRedirectDest.DistinguishedName)
 	d.Set("description", vnsRedirectDest.Description)
 	if dn != vnsRedirectDest.DistinguishedName {
 		d.Set("service_redirect_policy_dn", "")
 	}
-	vnsRedirectDestMap, _ := vnsRedirectDest.ToMap()
+	vnsRedirectDestMap, err := vnsRedirectDest.ToMap()
+	if err != nil {
+		return d, err
+	}
 
 	d.Set("ip", vnsRedirectDestMap["ip"])
 
@@ -105,7 +110,7 @@ func setDestinationofredirectedtrafficAttributes(vnsRedirectDest *models.Destina
 	d.Set("mac", vnsRedirectDestMap["mac"])
 	d.Set("name_alias", vnsRedirectDestMap["nameAlias"])
 	d.Set("pod_id", vnsRedirectDestMap["podId"])
-	return d
+	return d, nil
 }
 
 func resourceAciDestinationofredirectedtrafficImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -119,18 +124,24 @@ func resourceAciDestinationofredirectedtrafficImport(d *schema.ResourceData, m i
 	if err != nil {
 		return nil, err
 	}
-	vnsRedirectDestMap, _ := vnsRedirectDest.ToMap()
+	vnsRedirectDestMap, err := vnsRedirectDest.ToMap()
+	if err != nil {
+		return nil, err
+	}
 	ip := vnsRedirectDestMap["ip"]
 	pDN := GetParentDn(dn, fmt.Sprintf("/RedirectDest_ip-[%s]", ip))
 	d.Set("service_redirect_policy_dn", pDN)
-	schemaFilled := setDestinationofredirectedtrafficAttributes(vnsRedirectDest, d)
+	schemaFilled, err := setDestinationofredirectedtrafficAttributes(vnsRedirectDest, d)
+	if err != nil {
+		return nil, err
+	}
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciDestinationofredirectedtrafficCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciDestinationofredirectedtrafficCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] Destinationofredirectedtraffic: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -167,11 +178,8 @@ func resourceAciDestinationofredirectedtrafficCreate(d *schema.ResourceData, m i
 
 	err := aciClient.Save(vnsRedirectDest)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
 
@@ -183,7 +191,7 @@ func resourceAciDestinationofredirectedtrafficCreate(d *schema.ResourceData, m i
 	d.Partial(true)
 	err = checkTDn(aciClient, checkDns)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Partial(false)
 
@@ -191,20 +199,18 @@ func resourceAciDestinationofredirectedtrafficCreate(d *schema.ResourceData, m i
 		relationParam := relationTovnsRsRedirectHealthGroup.(string)
 		err = aciClient.CreateRelationvnsRsRedirectHealthGroupFromDestinationofredirectedtraffic(vnsRedirectDest.DistinguishedName, relationParam)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.Partial(false)
 
 	}
 
 	d.SetId(vnsRedirectDest.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciDestinationofredirectedtrafficRead(d, m)
+	return resourceAciDestinationofredirectedtrafficRead(ctx, d, m)
 }
 
-func resourceAciDestinationofredirectedtrafficUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciDestinationofredirectedtrafficUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] Destinationofredirectedtraffic: Beginning Update")
 
 	aciClient := m.(*client.Client)
@@ -245,11 +251,8 @@ func resourceAciDestinationofredirectedtrafficUpdate(d *schema.ResourceData, m i
 	err := aciClient.Save(vnsRedirectDest)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
 
@@ -261,7 +264,7 @@ func resourceAciDestinationofredirectedtrafficUpdate(d *schema.ResourceData, m i
 	d.Partial(true)
 	err = checkTDn(aciClient, checkDns)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Partial(false)
 
@@ -269,25 +272,23 @@ func resourceAciDestinationofredirectedtrafficUpdate(d *schema.ResourceData, m i
 		_, newRelParam := d.GetChange("relation_vns_rs_redirect_health_group")
 		err = aciClient.DeleteRelationvnsRsRedirectHealthGroupFromDestinationofredirectedtraffic(vnsRedirectDest.DistinguishedName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 		err = aciClient.CreateRelationvnsRsRedirectHealthGroupFromDestinationofredirectedtraffic(vnsRedirectDest.DistinguishedName, newRelParam.(string))
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.Partial(false)
 
 	}
 
 	d.SetId(vnsRedirectDest.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciDestinationofredirectedtrafficRead(d, m)
+	return resourceAciDestinationofredirectedtrafficRead(ctx, d, m)
 
 }
 
-func resourceAciDestinationofredirectedtrafficRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciDestinationofredirectedtrafficRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -299,8 +300,11 @@ func resourceAciDestinationofredirectedtrafficRead(d *schema.ResourceData, m int
 		d.SetId("")
 		return nil
 	}
-	setDestinationofredirectedtrafficAttributes(vnsRedirectDest, d)
-
+	_, err = setDestinationofredirectedtrafficAttributes(vnsRedirectDest, d)
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 	vnsRsRedirectHealthGroupData, err := aciClient.ReadRelationvnsRsRedirectHealthGroupFromDestinationofredirectedtraffic(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation vnsRsRedirectHealthGroup %v", err)
@@ -315,18 +319,18 @@ func resourceAciDestinationofredirectedtrafficRead(d *schema.ResourceData, m int
 	return nil
 }
 
-func resourceAciDestinationofredirectedtrafficDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciDestinationofredirectedtrafficDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "vnsRedirectDest")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
 }

@@ -1,21 +1,23 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciL4L7ServiceGraphTemplate() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciL4L7ServiceGraphTemplateCreate,
-		Update: resourceAciL4L7ServiceGraphTemplateUpdate,
-		Read:   resourceAciL4L7ServiceGraphTemplateRead,
-		Delete: resourceAciL4L7ServiceGraphTemplateDelete,
+		CreateContext: resourceAciL4L7ServiceGraphTemplateCreate,
+		UpdateContext: resourceAciL4L7ServiceGraphTemplateUpdate,
+		ReadContext:   resourceAciL4L7ServiceGraphTemplateRead,
+		DeleteContext: resourceAciL4L7ServiceGraphTemplateDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciL4L7ServiceGraphTemplateImport,
@@ -126,14 +128,17 @@ func getRemoteL4L7ServiceGraphTemplate(client *client.Client, dn string) (*model
 	return vnsAbsGraph, nil
 }
 
-func setL4L7ServiceGraphTemplateAttributes(vnsAbsGraph *models.L4L7ServiceGraphTemplate, d *schema.ResourceData) *schema.ResourceData {
+func setL4L7ServiceGraphTemplateAttributes(vnsAbsGraph *models.L4L7ServiceGraphTemplate, d *schema.ResourceData) (*schema.ResourceData, error) {
 	dn := d.Id()
 	d.SetId(vnsAbsGraph.DistinguishedName)
 	d.Set("description", vnsAbsGraph.Description)
 	if dn != vnsAbsGraph.DistinguishedName {
 		d.Set("tenant_dn", "")
 	}
-	vnsAbsGraphMap, _ := vnsAbsGraph.ToMap()
+	vnsAbsGraphMap, err := vnsAbsGraph.ToMap()
+	if err != nil {
+		return d, err
+	}
 
 	d.Set("name", vnsAbsGraphMap["name"])
 
@@ -142,7 +147,7 @@ func setL4L7ServiceGraphTemplateAttributes(vnsAbsGraph *models.L4L7ServiceGraphT
 	d.Set("l4_l7_service_graph_template_type", vnsAbsGraphMap["type"])
 	d.Set("ui_template_type", vnsAbsGraphMap["uiTemplateType"])
 
-	return d
+	return d, nil
 }
 
 func getRemoteConsumerTerminalNode(client *client.Client, dn string) (*models.ConsumerTerminalNode, error) {
@@ -160,11 +165,14 @@ func getRemoteConsumerTerminalNode(client *client.Client, dn string) (*models.Co
 	return vnsAbsTermNodeCon, nil
 }
 
-func setConsumerTerminalNodeAttributes(vnsAbsTermNodeCon *models.ConsumerTerminalNode, d *schema.ResourceData) *schema.ResourceData {
-	vnsAbsTermNodeConMap, _ := vnsAbsTermNodeCon.ToMap()
+func setConsumerTerminalNodeAttributes(vnsAbsTermNodeCon *models.ConsumerTerminalNode, d *schema.ResourceData) (*schema.ResourceData, error) {
+	vnsAbsTermNodeConMap, err := vnsAbsTermNodeCon.ToMap()
+	if err != nil {
+		return d, err
+	}
 	d.Set("term_cons_name", vnsAbsTermNodeConMap["name"])
-	d.Set("tern_node_cons_dn", vnsAbsTermNodeCon.DistinguishedName)
-	return d
+	d.Set("term_node_cons_dn", vnsAbsTermNodeCon.DistinguishedName)
+	return d, nil
 }
 
 func getRemoteProviderTerminalNode(client *client.Client, dn string) (*models.ProviderTerminalNode, error) {
@@ -182,11 +190,14 @@ func getRemoteProviderTerminalNode(client *client.Client, dn string) (*models.Pr
 	return vnsAbsTermNodeProv, nil
 }
 
-func setProviderTerminalNodeAttributes(vnsAbsTermNodeProv *models.ProviderTerminalNode, d *schema.ResourceData) *schema.ResourceData {
-	vnsAbsTermNodeProvMap, _ := vnsAbsTermNodeProv.ToMap()
+func setProviderTerminalNodeAttributes(vnsAbsTermNodeProv *models.ProviderTerminalNode, d *schema.ResourceData) (*schema.ResourceData, error) {
+	vnsAbsTermNodeProvMap, err := vnsAbsTermNodeProv.ToMap()
+	if err != nil {
+		return d, err
+	}
 	d.Set("term_prov_name", vnsAbsTermNodeProvMap["name"])
-	d.Set("tern_node_prov_dn", vnsAbsTermNodeProv.DistinguishedName)
-	return d
+	d.Set("term_node_prov_dn", vnsAbsTermNodeProv.DistinguishedName)
+	return d, nil
 }
 
 func getRemoteTerminalConnector(client *client.Client, dn string) (*models.TerminalConnector, error) {
@@ -215,14 +226,17 @@ func resourceAciL4L7ServiceGraphTemplateImport(d *schema.ResourceData, m interfa
 	if err != nil {
 		return nil, err
 	}
-	schemaFilled := setL4L7ServiceGraphTemplateAttributes(vnsAbsGraph, d)
+	schemaFilled, err := setL4L7ServiceGraphTemplateAttributes(vnsAbsGraph, d)
+	if err != nil {
+		return nil, err
+	}
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciL4L7ServiceGraphTemplateCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciL4L7ServiceGraphTemplateCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] L4L7ServiceGraphTemplate: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -250,11 +264,8 @@ func resourceAciL4L7ServiceGraphTemplateCreate(d *schema.ResourceData, m interfa
 
 	err := aciClient.Save(vnsAbsGraph)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.Partial(false)
 
 	if consName, ok := d.GetOk("term_cons_name"); ok {
 		vnsAbsTermNodeConAttr := models.ConsumerTerminalNodeAttributes{}
@@ -265,7 +276,7 @@ func resourceAciL4L7ServiceGraphTemplateCreate(d *schema.ResourceData, m interfa
 
 		err := aciClient.Save(vnsAbsTermNodeCon)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 		d.Set("term_node_cons_dn", vnsAbsTermNodeCon.DistinguishedName)
 
@@ -275,7 +286,7 @@ func resourceAciL4L7ServiceGraphTemplateCreate(d *schema.ResourceData, m interfa
 
 		err = aciClient.Save(vnsAbsTermConn)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 
 		d.Set("term_cons_dn", vnsAbsTermConn.DistinguishedName)
@@ -290,7 +301,7 @@ func resourceAciL4L7ServiceGraphTemplateCreate(d *schema.ResourceData, m interfa
 
 		err := aciClient.Save(vnsAbsTermNodeProv)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 		d.Set("term_node_prov_dn", vnsAbsTermNodeProv.DistinguishedName)
 
@@ -300,7 +311,7 @@ func resourceAciL4L7ServiceGraphTemplateCreate(d *schema.ResourceData, m interfa
 
 		err = aciClient.Save(vnsAbsTermConn)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 
 		d.Set("term_prov_dn", vnsAbsTermConn.DistinguishedName)
@@ -309,10 +320,10 @@ func resourceAciL4L7ServiceGraphTemplateCreate(d *schema.ResourceData, m interfa
 	d.SetId(vnsAbsGraph.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciL4L7ServiceGraphTemplateRead(d, m)
+	return resourceAciL4L7ServiceGraphTemplateRead(ctx, d, m)
 }
 
-func resourceAciL4L7ServiceGraphTemplateUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciL4L7ServiceGraphTemplateUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] L4L7ServiceGraphTemplate: Beginning Update")
 
 	aciClient := m.(*client.Client)
@@ -344,18 +355,15 @@ func resourceAciL4L7ServiceGraphTemplateUpdate(d *schema.ResourceData, m interfa
 	err := aciClient.Save(vnsAbsGraph)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.Partial(false)
 
 	if d.HasChange("term_cons_name") {
 		consNameDn := d.Get("term_node_cons_dn").(string)
 
 		err := aciClient.DeleteByDn(consNameDn, "vnsAbsTermNodeCon")
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 
 		consName := d.Get("term_cons_name").(string)
@@ -367,7 +375,7 @@ func resourceAciL4L7ServiceGraphTemplateUpdate(d *schema.ResourceData, m interfa
 
 		err = aciClient.Save(vnsAbsTermNodeCon)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 		d.Set("term_node_cons_dn", vnsAbsTermNodeCon.DistinguishedName)
 
@@ -377,7 +385,7 @@ func resourceAciL4L7ServiceGraphTemplateUpdate(d *schema.ResourceData, m interfa
 
 		err = aciClient.Save(vnsAbsTermConn)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 
 		d.Set("term_cons_dn", vnsAbsTermConn.DistinguishedName)
@@ -389,7 +397,7 @@ func resourceAciL4L7ServiceGraphTemplateUpdate(d *schema.ResourceData, m interfa
 
 		err := aciClient.DeleteByDn(provNameDn, "vnsAbsTermNodeProv")
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 
 		provName := d.Get("term_prov_name").(string)
@@ -401,7 +409,7 @@ func resourceAciL4L7ServiceGraphTemplateUpdate(d *schema.ResourceData, m interfa
 
 		err = aciClient.Save(vnsAbsTermNodeProv)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 		d.Set("term_node_prov_dn", vnsAbsTermNodeProv.DistinguishedName)
 
@@ -411,7 +419,7 @@ func resourceAciL4L7ServiceGraphTemplateUpdate(d *schema.ResourceData, m interfa
 
 		err = aciClient.Save(vnsAbsTermConn)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 
 		d.Set("term_prov_dn", vnsAbsTermConn.DistinguishedName)
@@ -420,11 +428,11 @@ func resourceAciL4L7ServiceGraphTemplateUpdate(d *schema.ResourceData, m interfa
 	d.SetId(vnsAbsGraph.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciL4L7ServiceGraphTemplateRead(d, m)
+	return resourceAciL4L7ServiceGraphTemplateRead(ctx, d, m)
 
 }
 
-func resourceAciL4L7ServiceGraphTemplateRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciL4L7ServiceGraphTemplateRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -436,7 +444,11 @@ func resourceAciL4L7ServiceGraphTemplateRead(d *schema.ResourceData, m interface
 		d.SetId("")
 		return nil
 	}
-	setL4L7ServiceGraphTemplateAttributes(vnsAbsGraph, d)
+	_, err = setL4L7ServiceGraphTemplateAttributes(vnsAbsGraph, d)
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 
 	consDn := d.Get("term_node_cons_dn").(string)
 	vnsAbsTermNodeCon, err := getRemoteConsumerTerminalNode(aciClient, consDn)
@@ -445,7 +457,11 @@ func resourceAciL4L7ServiceGraphTemplateRead(d *schema.ResourceData, m interface
 		d.Set("term_cons_name", "")
 		return nil
 	}
-	setConsumerTerminalNodeAttributes(vnsAbsTermNodeCon, d)
+	_, err = setConsumerTerminalNodeAttributes(vnsAbsTermNodeCon, d)
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 
 	vnsAbsTermConnDn := d.Get("term_cons_dn").(string)
 	vnsAbsTermConn, err := getRemoteTerminalConnector(aciClient, vnsAbsTermConnDn)
@@ -462,7 +478,11 @@ func resourceAciL4L7ServiceGraphTemplateRead(d *schema.ResourceData, m interface
 		d.Set("term_prov_name", "")
 		return nil
 	}
-	setProviderTerminalNodeAttributes(vnsAbsTermNodeProv, d)
+	_, err = setProviderTerminalNodeAttributes(vnsAbsTermNodeProv, d)
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 
 	vnsAbsTermConnDn = d.Get("term_prov_dn").(string)
 	vnsAbsTermConn, err = getRemoteTerminalConnector(aciClient, vnsAbsTermConnDn)
@@ -477,18 +497,18 @@ func resourceAciL4L7ServiceGraphTemplateRead(d *schema.ResourceData, m interface
 	return nil
 }
 
-func resourceAciL4L7ServiceGraphTemplateDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciL4L7ServiceGraphTemplateDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "vnsAbsGraph")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
 }

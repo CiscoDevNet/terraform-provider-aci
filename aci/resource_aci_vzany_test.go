@@ -26,11 +26,6 @@ func TestAccAciAny_Basic(t *testing.T) {
 					testAccCheckAciAnyAttributes(description, "AtleastOne", &any),
 				),
 			},
-			{
-				ResourceName:      "aci_any",
-				ImportState:       true,
-				ImportStateVerify: true,
-			},
 		},
 	})
 }
@@ -65,8 +60,12 @@ func TestAccAciAny_update(t *testing.T) {
 func testAccCheckAciAnyConfig_basic(description, match_t string) string {
 	return fmt.Sprintf(`
 
+	resource "aci_vrf" "example" {
+		tenant_dn              = "${aci_tenant.example.id}"
+		name                   = "demo_vrf"
+	}
 	resource "aci_any" "fooany" {
-		vrf_dn       = "${aci_vrf.example.id}"
+		vrf_dn       = aci_vrf.example.id
 		description  = "%s"
 		annotation   = "tag_any"
 		match_t      = "%s"

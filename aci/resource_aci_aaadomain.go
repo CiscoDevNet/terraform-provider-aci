@@ -55,16 +55,19 @@ func getRemoteSecurityDomain(client *client.Client, dn string) (*models.Security
 	return aaaDomain, nil
 }
 
-func setSecurityDomainAttributes(aaaDomain *models.SecurityDomain, d *schema.ResourceData) *schema.ResourceData {
+func setSecurityDomainAttributes(aaaDomain *models.SecurityDomain, d *schema.ResourceData) (*schema.ResourceData, error) {
 	d.SetId(aaaDomain.DistinguishedName)
 	d.Set("description", aaaDomain.Description)
-	aaaDomainMap, _ := aaaDomain.ToMap()
+	aaaDomainMap, err := aaaDomain.ToMap()
+	if err != nil {
+		return d, err
+	}
 
 	d.Set("name", aaaDomainMap["name"])
 
 	d.Set("annotation", aaaDomainMap["annotation"])
 	d.Set("name_alias", aaaDomainMap["nameAlias"])
-	return d
+	return d, nil
 }
 
 func resourceAciSecurityDomainImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -78,7 +81,10 @@ func resourceAciSecurityDomainImport(d *schema.ResourceData, m interface{}) ([]*
 	if err != nil {
 		return nil, err
 	}
-	schemaFilled := setSecurityDomainAttributes(aaaDomain, d)
+	schemaFilled, err := setSecurityDomainAttributes(aaaDomain, d)
+	if err != nil {
+		return nil, err
+	}
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
@@ -160,7 +166,11 @@ func resourceAciSecurityDomainRead(ctx context.Context, d *schema.ResourceData, 
 		d.SetId("")
 		return nil
 	}
-	setSecurityDomainAttributes(aaaDomain, d)
+	_, err = setSecurityDomainAttributes(aaaDomain, d)
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 

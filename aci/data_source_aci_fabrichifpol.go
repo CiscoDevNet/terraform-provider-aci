@@ -1,16 +1,18 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func dataSourceAciLinkLevelPolicy() *schema.Resource {
 	return &schema.Resource{
 
-		Read: dataSourceAciLinkLevelPolicyRead,
+		ReadContext: dataSourceAciLinkLevelPolicyRead,
 
 		SchemaVersion: 1,
 
@@ -54,7 +56,7 @@ func dataSourceAciLinkLevelPolicy() *schema.Resource {
 	}
 }
 
-func dataSourceAciLinkLevelPolicyRead(d *schema.ResourceData, m interface{}) error {
+func dataSourceAciLinkLevelPolicyRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	aciClient := m.(*client.Client)
 
 	name := d.Get("name").(string)
@@ -66,8 +68,11 @@ func dataSourceAciLinkLevelPolicyRead(d *schema.ResourceData, m interface{}) err
 	fabricHIfPol, err := getRemoteLinkLevelPolicy(aciClient, dn)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	setLinkLevelPolicyAttributes(fabricHIfPol, d)
+	_, err = setLinkLevelPolicyAttributes(fabricHIfPol, d)
+	if err != nil {
+		return diag.FromErr(err)
+	}
 	return nil
 }

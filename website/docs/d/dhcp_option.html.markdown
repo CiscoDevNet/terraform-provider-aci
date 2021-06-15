@@ -14,7 +14,6 @@ Data source for ACI DHCP Option.
 
 ```hcl
 data "aci_dhcp_option" "example" {
-
   dhcp_option_policy_dn  = "${aci_dhcp_option_policy.example.id}"
   name  = "example"
 }

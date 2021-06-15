@@ -25,11 +25,6 @@ func TestAccAciFVDomain_Basic(t *testing.T) {
 					testAccCheckAciFVDomainAttributes(&fvdomain),
 				),
 			},
-			{
-				ResourceName:      "aci_epg_to_domain",
-				ImportState:       true,
-				ImportStateVerify: true,
-			},
 		},
 	})
 }
@@ -64,11 +59,12 @@ func testAccCheckAciFVDomainConfig_basic() string {
 	return fmt.Sprintf(`
 
 	resource "aci_epg_to_domain" "check" {
-		application_epg_dn  = "${aci_application_epg.epg2.id}"
-		t_dn = "${aci_fc_domain.example.id}"
+		application_epg_dn  = "${aci_application_epg.fooapplication_epg.id}"
+		tdn = "${aci_fc_domain.foofc_domain.id}"
 		vmm_allow_promiscuous = "accept"
 		vmm_forged_transmits = "reject"
 		vmm_mac_changes = "accept"
+		epg_cos = "Cos0"
 	}
 
 	`)
@@ -132,7 +128,7 @@ func testAccCheckAciFVDomainAttributes(domain *models.FVDomain) resource.TestChe
 			return fmt.Errorf("Bad domain class_pref %s", domain.ClassPref)
 		}
 
-		if "cos0" != domain.EpgCos {
+		if "Cos0" != domain.EpgCos {
 			return fmt.Errorf("Bad domain epg_cos %s", domain.EpgCos)
 		}
 		return nil

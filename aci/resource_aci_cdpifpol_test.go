@@ -26,11 +26,6 @@ func TestAccAciCDPInterfacePolicy_Basic(t *testing.T) {
 					testAccCheckAciCDPInterfacePolicyAttributes(description, &cdp_interface_policy),
 				),
 			},
-			{
-				ResourceName:      "aci_cdp_interface_policy",
-				ImportState:       true,
-				ImportStateVerify: true,
-			},
 		},
 	})
 }
