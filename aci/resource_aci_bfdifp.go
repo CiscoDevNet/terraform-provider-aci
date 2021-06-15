@@ -1,21 +1,23 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciBFDInterfaceProfile() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciBFDInterfaceProfileCreate,
-		Update: resourceAciBFDInterfaceProfileUpdate,
-		Read:   resourceAciBFDInterfaceProfileRead,
-		Delete: resourceAciBFDInterfaceProfileDelete,
+		CreateContext: resourceAciBFDInterfaceProfileCreate,
+		UpdateContext: resourceAciBFDInterfaceProfileUpdate,
+		ReadContext:   resourceAciBFDInterfaceProfileRead,
+		DeleteContext: resourceAciBFDInterfaceProfileDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciBFDInterfaceProfileImport,
@@ -82,7 +84,7 @@ func getRemoteBFDInterfaceProfile(client *client.Client, dn string) (*models.BFD
 	return bfdIfP, nil
 }
 
-func setBFDInterfaceProfileAttributes(bfdIfP *models.BFDInterfaceProfile, d *schema.ResourceData) *schema.ResourceData {
+func setBFDInterfaceProfileAttributes(bfdIfP *models.BFDInterfaceProfile, d *schema.ResourceData) (*schema.ResourceData, error) {
 	dn := d.Id()
 
 	d.SetId(bfdIfP.DistinguishedName)
@@ -90,14 +92,17 @@ func setBFDInterfaceProfileAttributes(bfdIfP *models.BFDInterfaceProfile, d *sch
 	if dn != bfdIfP.DistinguishedName {
 		d.Set("logical_interface_profile_dn", "")
 	}
-	bfdIfPMap, _ := bfdIfP.ToMap()
+	bfdIfPMap, err := bfdIfP.ToMap()
+	if err != nil {
+		return d, err
+	}
 
 	d.Set("annotation", bfdIfPMap["annotation"])
 	d.Set("key_id", bfdIfPMap["keyId"])
 	d.Set("name_alias", bfdIfPMap["nameAlias"])
 	d.Set("interface_profile_type", bfdIfPMap["type"])
 
-	return d
+	return d, nil
 }
 
 func resourceAciBFDInterfaceProfileImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -111,14 +116,17 @@ func resourceAciBFDInterfaceProfileImport(d *schema.ResourceData, m interface{})
 	if err != nil {
 		return nil, err
 	}
-	schemaFilled := setBFDInterfaceProfileAttributes(bfdIfP, d)
+	schemaFilled, err := setBFDInterfaceProfileAttributes(bfdIfP, d)
+	if err != nil {
+		return nil, err
+	}
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciBFDInterfaceProfileCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciBFDInterfaceProfileCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] InterfaceProfile: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -146,10 +154,8 @@ func resourceAciBFDInterfaceProfileCreate(d *schema.ResourceData, m interface{})
 
 	err := aciClient.Save(bfdIfP)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
 
@@ -161,7 +167,7 @@ func resourceAciBFDInterfaceProfileCreate(d *schema.ResourceData, m interface{})
 	d.Partial(true)
 	err = checkTDn(aciClient, checkDns)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Partial(false)
 
@@ -170,7 +176,7 @@ func resourceAciBFDInterfaceProfileCreate(d *schema.ResourceData, m interface{})
 		relationParamName := GetMOName(relationParam)
 		err = aciClient.CreateRelationbfdRsIfPolFromInterfaceProfile(bfdIfP.DistinguishedName, relationParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 
 	}
@@ -178,10 +184,10 @@ func resourceAciBFDInterfaceProfileCreate(d *schema.ResourceData, m interface{})
 	d.SetId(bfdIfP.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciBFDInterfaceProfileRead(d, m)
+	return resourceAciBFDInterfaceProfileRead(ctx, d, m)
 }
 
-func resourceAciBFDInterfaceProfileUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciBFDInterfaceProfileUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] InterfaceProfile: Beginning Update")
 
 	aciClient := m.(*client.Client)
@@ -214,10 +220,8 @@ func resourceAciBFDInterfaceProfileUpdate(d *schema.ResourceData, m interface{})
 	err := aciClient.Save(bfdIfP)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
 
@@ -229,7 +233,7 @@ func resourceAciBFDInterfaceProfileUpdate(d *schema.ResourceData, m interface{})
 	d.Partial(true)
 	err = checkTDn(aciClient, checkDns)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Partial(false)
 
@@ -238,7 +242,7 @@ func resourceAciBFDInterfaceProfileUpdate(d *schema.ResourceData, m interface{})
 		newRelParamName := GetMOName(newRelParam.(string))
 		err = aciClient.CreateRelationbfdRsIfPolFromInterfaceProfile(bfdIfP.DistinguishedName, newRelParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 
 	}
@@ -246,11 +250,11 @@ func resourceAciBFDInterfaceProfileUpdate(d *schema.ResourceData, m interface{})
 	d.SetId(bfdIfP.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciBFDInterfaceProfileRead(d, m)
+	return resourceAciBFDInterfaceProfileRead(ctx, d, m)
 
 }
 
-func resourceAciBFDInterfaceProfileRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciBFDInterfaceProfileRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -262,7 +266,11 @@ func resourceAciBFDInterfaceProfileRead(d *schema.ResourceData, m interface{}) e
 		d.SetId("")
 		return nil
 	}
-	setBFDInterfaceProfileAttributes(bfdIfP, d)
+	_, err = setBFDInterfaceProfileAttributes(bfdIfP, d)
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 
 	bfdRsIfPolData, err := aciClient.ReadRelationbfdRsIfPolFromInterfaceProfile(dn)
 	if err != nil {
@@ -283,18 +291,18 @@ func resourceAciBFDInterfaceProfileRead(d *schema.ResourceData, m interface{}) e
 	return nil
 }
 
-func resourceAciBFDInterfaceProfileDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciBFDInterfaceProfileDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "bfdIfP")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
 }
