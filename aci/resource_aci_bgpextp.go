@@ -119,7 +119,7 @@ func resourceAciL3outBgpExternalPolicyCreate(ctx context.Context, d *schema.Reso
 	d.Partial(true)
 	err = checkTDn(aciClient, checkDns)
 	if err != nil {
-		return diag.FromErr(err)+
+		return diag.FromErr(err)
 	}
 	d.Partial(false)
 
@@ -184,7 +184,7 @@ func resourceAciL3outBgpExternalPolicyRead(ctx context.Context, d *schema.Resour
 		d.SetId("")
 		return nil
 	}
-	_,err = setL3outBgpExternalPolicyAttributes(bgpExtP, d)
+	_, err = setL3outBgpExternalPolicyAttributes(bgpExtP, d)
 	if err != nil {
 		d.SetId("")
 		return nil
