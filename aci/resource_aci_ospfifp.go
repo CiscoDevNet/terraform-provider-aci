@@ -1,21 +1,23 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciOSPFInterfaceProfile() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciOSPFInterfaceProfileCreate,
-		Update: resourceAciOSPFInterfaceProfileUpdate,
-		Read:   resourceAciOSPFInterfaceProfileRead,
-		Delete: resourceAciOSPFInterfaceProfileDelete,
+		CreateContext: resourceAciOSPFInterfaceProfileCreate,
+		UpdateContext: resourceAciOSPFInterfaceProfileUpdate,
+		ReadContext:   resourceAciOSPFInterfaceProfileRead,
+		DeleteContext: resourceAciOSPFInterfaceProfileDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciInterfaceProfileImport,
@@ -83,7 +85,7 @@ func getRemoteOSPFInterfaceProfile(client *client.Client, dn string) (*models.OS
 	return ospfIfP, nil
 }
 
-func setOSPFInterfaceProfileAttributes(ospfIfP *models.OSPFInterfaceProfile, d *schema.ResourceData) *schema.ResourceData {
+func setOSPFInterfaceProfileAttributes(ospfIfP *models.OSPFInterfaceProfile, d *schema.ResourceData) (*schema.ResourceData, error) {
 	dn := d.Id()
 
 	d.SetId(ospfIfP.DistinguishedName)
@@ -91,13 +93,16 @@ func setOSPFInterfaceProfileAttributes(ospfIfP *models.OSPFInterfaceProfile, d *
 	if dn != ospfIfP.DistinguishedName {
 		d.Set("logical_interface_profile_dn", "")
 	}
-	ospfIfPMap, _ := ospfIfP.ToMap()
+	ospfIfPMap, err := ospfIfP.ToMap()
+	if err != nil {
+		return d, err
+	}
 
 	d.Set("annotation", ospfIfPMap["annotation"])
 	d.Set("auth_key_id", ospfIfPMap["authKeyId"])
 	d.Set("auth_type", ospfIfPMap["authType"])
 	d.Set("name_alias", ospfIfPMap["nameAlias"])
-	return d
+	return d, nil
 }
 
 func resourceAciOSPFInterfaceProfileImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -111,14 +116,17 @@ func resourceAciOSPFInterfaceProfileImport(d *schema.ResourceData, m interface{}
 	if err != nil {
 		return nil, err
 	}
-	schemaFilled := setOSPFInterfaceProfileAttributes(ospfIfP, d)
+	schemaFilled, err := setOSPFInterfaceProfileAttributes(ospfIfP, d)
+	if err != nil {
+		return nil, err
+	}
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciOSPFInterfaceProfileCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciOSPFInterfaceProfileCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] InterfaceProfile: Beginning Creation")
 
 	aciClient := m.(*client.Client)
@@ -147,10 +155,8 @@ func resourceAciOSPFInterfaceProfileCreate(d *schema.ResourceData, m interface{}
 
 	err := aciClient.Save(ospfIfP)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
 
@@ -162,7 +168,7 @@ func resourceAciOSPFInterfaceProfileCreate(d *schema.ResourceData, m interface{}
 	d.Partial(true)
 	err = checkTDn(aciClient, checkDns)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Partial(false)
 
@@ -171,20 +177,18 @@ func resourceAciOSPFInterfaceProfileCreate(d *schema.ResourceData, m interface{}
 		relationParamName := GetMOName(relationParam)
 		err = aciClient.CreateRelationospfRsIfPolFromInterfaceProfile(ospfIfP.DistinguishedName, relationParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.Partial(false)
 
 	}
 
 	d.SetId(ospfIfP.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciOSPFInterfaceProfileRead(d, m)
+	return resourceAciOSPFInterfaceProfileRead(ctx, d, m)
 }
 
-func resourceAciOSPFInterfaceProfileUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciOSPFInterfaceProfileUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] InterfaceProfile: Beginning Update")
 
 	aciClient := m.(*client.Client)
@@ -217,10 +221,8 @@ func resourceAciOSPFInterfaceProfileUpdate(d *schema.ResourceData, m interface{}
 	err := aciClient.Save(ospfIfP)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
 
@@ -232,7 +234,7 @@ func resourceAciOSPFInterfaceProfileUpdate(d *schema.ResourceData, m interface{}
 	d.Partial(true)
 	err = checkTDn(aciClient, checkDns)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Partial(false)
 
@@ -241,21 +243,19 @@ func resourceAciOSPFInterfaceProfileUpdate(d *schema.ResourceData, m interface{}
 		newRelParamName := GetMOName(newRelParam.(string))
 		err = aciClient.CreateRelationospfRsIfPolFromInterfaceProfile(ospfIfP.DistinguishedName, newRelParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.Partial(false)
 
 	}
 
 	d.SetId(ospfIfP.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciOSPFInterfaceProfileRead(d, m)
+	return resourceAciOSPFInterfaceProfileRead(ctx, d, m)
 
 }
 
-func resourceAciOSPFInterfaceProfileRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciOSPFInterfaceProfileRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -267,7 +267,11 @@ func resourceAciOSPFInterfaceProfileRead(d *schema.ResourceData, m interface{}) 
 		d.SetId("")
 		return nil
 	}
-	setOSPFInterfaceProfileAttributes(ospfIfP, d)
+	_, err = setOSPFInterfaceProfileAttributes(ospfIfP, d)
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 
 	ospfRsIfPolData, err := aciClient.ReadRelationospfRsIfPolFromInterfaceProfile(dn)
 	if err != nil {
@@ -290,18 +294,18 @@ func resourceAciOSPFInterfaceProfileRead(d *schema.ResourceData, m interface{}) 
 	return nil
 }
 
-func resourceAciOSPFInterfaceProfileDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciOSPFInterfaceProfileDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "ospfIfP")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
 }

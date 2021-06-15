@@ -1,21 +1,23 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciBgpBestPathPolicy() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciBgpBestPathPolicyCreate,
-		Update: resourceAciBgpBestPathPolicyUpdate,
-		Read:   resourceAciBgpBestPathPolicyRead,
-		Delete: resourceAciBgpBestPathPolicyDelete,
+		CreateContext: resourceAciBgpBestPathPolicyCreate,
+		UpdateContext: resourceAciBgpBestPathPolicyUpdate,
+		ReadContext:   resourceAciBgpBestPathPolicyRead,
+		DeleteContext: resourceAciBgpBestPathPolicyDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciBgpBestPathPolicyImport,
@@ -68,14 +70,17 @@ func getRemoteBgpBestPathPolicy(client *client.Client, dn string) (*models.BgpBe
 	return bgpBestPathCtrlPol, nil
 }
 
-func setBgpBestPathPolicyAttributes(bgpBestPathCtrlPol *models.BgpBestPathPolicy, d *schema.ResourceData) *schema.ResourceData {
+func setBgpBestPathPolicyAttributes(bgpBestPathCtrlPol *models.BgpBestPathPolicy, d *schema.ResourceData) (*schema.ResourceData, error) {
 	d.SetId(bgpBestPathCtrlPol.DistinguishedName)
 	d.Set("description", bgpBestPathCtrlPol.Description)
 	dn := d.Id()
 	if dn != bgpBestPathCtrlPol.DistinguishedName {
 		d.Set("tenant_dn", "")
 	}
-	bgpBestPathCtrlPolMap, _ := bgpBestPathCtrlPol.ToMap()
+	bgpBestPathCtrlPolMap, err := bgpBestPathCtrlPol.ToMap()
+	if err != nil {
+		return d, err
+	}
 
 	d.Set("name", bgpBestPathCtrlPolMap["name"])
 
@@ -86,7 +91,7 @@ func setBgpBestPathPolicyAttributes(bgpBestPathCtrlPol *models.BgpBestPathPolicy
 		d.Set("ctrl", bgpBestPathCtrlPolMap["ctrl"])
 	}
 	d.Set("name_alias", bgpBestPathCtrlPolMap["nameAlias"])
-	return d
+	return d, nil
 }
 
 func resourceAciBgpBestPathPolicyImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -100,14 +105,17 @@ func resourceAciBgpBestPathPolicyImport(d *schema.ResourceData, m interface{}) (
 	if err != nil {
 		return nil, err
 	}
-	schemaFilled := setBgpBestPathPolicyAttributes(bgpBestPathCtrlPol, d)
+	schemaFilled,err := setBgpBestPathPolicyAttributes(bgpBestPathCtrlPol, d)
+	if err != nil {
+		return nil, err
+	}
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciBgpBestPathPolicyCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciBgpBestPathPolicyCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] BgpBestPathPolicy: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -132,19 +140,16 @@ func resourceAciBgpBestPathPolicyCreate(d *schema.ResourceData, m interface{}) e
 
 	err := aciClient.Save(bgpBestPathCtrlPol)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.Partial(false)
 
 	d.SetId(bgpBestPathCtrlPol.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciBgpBestPathPolicyRead(d, m)
+	return resourceAciBgpBestPathPolicyRead(ctx, d, m)
 }
 
-func resourceAciBgpBestPathPolicyUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciBgpBestPathPolicyUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] BgpBestPathPolicy: Beginning Update")
 
 	aciClient := m.(*client.Client)
@@ -173,20 +178,17 @@ func resourceAciBgpBestPathPolicyUpdate(d *schema.ResourceData, m interface{}) e
 	err := aciClient.Save(bgpBestPathCtrlPol)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.Partial(false)
 
 	d.SetId(bgpBestPathCtrlPol.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciBgpBestPathPolicyRead(d, m)
+	return resourceAciBgpBestPathPolicyRead(ctx, d, m)
 
 }
 
-func resourceAciBgpBestPathPolicyRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciBgpBestPathPolicyRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -198,25 +200,29 @@ func resourceAciBgpBestPathPolicyRead(d *schema.ResourceData, m interface{}) err
 		return nil
 	}
 
-	setBgpBestPathPolicyAttributes(bgpBestPathCtrlPol, d)
+	_, err = setBgpBestPathPolicyAttributes(bgpBestPathCtrlPol, d)
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 
 	return nil
 }
 
-func resourceAciBgpBestPathPolicyDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciBgpBestPathPolicyDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "bgpBestPathCtrlPol")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
 }
