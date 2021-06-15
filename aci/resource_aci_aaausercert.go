@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
@@ -40,7 +41,6 @@ func resourceAciX509Certificate() *schema.Resource {
 			"data": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
-				ForceNew: true,
 			},
 
 			"name_alias": &schema.Schema{
@@ -82,7 +82,8 @@ func setX509CertificateAttributes(aaaUserCert *models.X509Certificate, d *schema
 	d.Set("name", aaaUserCertMap["name"])
 
 	d.Set("annotation", aaaUserCertMap["annotation"])
-	d.Set("data", aaaUserCertMap["data"])
+	data := strings.Replace(aaaUserCertMap["data"], "\\r\\n", "\r\n", -1)
+	d.Set("data", data)
 	d.Set("name_alias", aaaUserCertMap["nameAlias"])
 	return d, nil
 }
