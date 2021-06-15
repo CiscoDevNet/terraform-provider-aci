@@ -1,20 +1,22 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func resourceAciLoopBackInterfaceProfile() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciLoopBackInterfaceProfileCreate,
-		Update: resourceAciLoopBackInterfaceProfileUpdate,
-		Read:   resourceAciLoopBackInterfaceProfileRead,
-		Delete: resourceAciLoopBackInterfaceProfileDelete,
+		CreateContext: resourceAciLoopBackInterfaceProfileCreate,
+		UpdateContext: resourceAciLoopBackInterfaceProfileUpdate,
+		ReadContext:   resourceAciLoopBackInterfaceProfileRead,
+		DeleteContext: resourceAciLoopBackInterfaceProfileDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciLoopBackInterfaceProfileImport,
@@ -59,7 +61,7 @@ func getRemoteLoopBackInterfaceProfile(client *client.Client, dn string) (*model
 	return l3extLoopBackIfP, nil
 }
 
-func setLoopBackInterfaceProfileAttributes(l3extLoopBackIfP *models.LoopBackInterfaceProfile, d *schema.ResourceData) *schema.ResourceData {
+func setLoopBackInterfaceProfileAttributes(l3extLoopBackIfP *models.LoopBackInterfaceProfile, d *schema.ResourceData) (*schema.ResourceData, error) {
 	dn := d.Id()
 
 	d.SetId(l3extLoopBackIfP.DistinguishedName)
@@ -69,12 +71,15 @@ func setLoopBackInterfaceProfileAttributes(l3extLoopBackIfP *models.LoopBackInte
 		d.Set("fabric_node_dn", "")
 	}
 
-	l3extLoopBackIfPMap, _ := l3extLoopBackIfP.ToMap()
+	l3extLoopBackIfPMap, err := l3extLoopBackIfP.ToMap()
+	if err != nil {
+		return d, err
+	}
 	d.Set("addr", l3extLoopBackIfPMap["addr"])
 	d.Set("annotation", l3extLoopBackIfPMap["annotation"])
 	d.Set("name_alias", l3extLoopBackIfPMap["nameAlias"])
 
-	return d
+	return d, nil
 }
 
 func resourceAciLoopBackInterfaceProfileImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -89,14 +94,16 @@ func resourceAciLoopBackInterfaceProfileImport(d *schema.ResourceData, m interfa
 	if err != nil {
 		return nil, err
 	}
-	schemaFilled := setLoopBackInterfaceProfileAttributes(l3extLoopBackIfP, d)
-
+	schemaFilled, err := setLoopBackInterfaceProfileAttributes(l3extLoopBackIfP, d)
+	if err != nil {
+		return nil, err
+	}
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciLoopBackInterfaceProfileCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciLoopBackInterfaceProfileCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] LoopBackInterfaceProfile: Beginning Creation")
 
 	aciClient := m.(*client.Client)
@@ -122,19 +129,16 @@ func resourceAciLoopBackInterfaceProfileCreate(d *schema.ResourceData, m interfa
 
 	err := aciClient.Save(l3extLoopBackIfP)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.Partial(false)
 
 	d.SetId(l3extLoopBackIfP.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciLoopBackInterfaceProfileRead(d, m)
+	return resourceAciLoopBackInterfaceProfileRead(ctx, d, m)
 }
 
-func resourceAciLoopBackInterfaceProfileUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciLoopBackInterfaceProfileUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] LoopBackInterfaceProfile: Beginning Update")
 
 	aciClient := m.(*client.Client)
@@ -163,20 +167,17 @@ func resourceAciLoopBackInterfaceProfileUpdate(d *schema.ResourceData, m interfa
 	err := aciClient.Save(l3extLoopBackIfP)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.Partial(false)
 
 	d.SetId(l3extLoopBackIfP.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciLoopBackInterfaceProfileRead(d, m)
+	return resourceAciLoopBackInterfaceProfileRead(ctx, d, m)
 
 }
 
-func resourceAciLoopBackInterfaceProfileRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciLoopBackInterfaceProfileRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -188,25 +189,28 @@ func resourceAciLoopBackInterfaceProfileRead(d *schema.ResourceData, m interface
 		d.SetId("")
 		return nil
 	}
-	setLoopBackInterfaceProfileAttributes(l3extLoopBackIfP, d)
-
+	_, err = setLoopBackInterfaceProfileAttributes(l3extLoopBackIfP, d)
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 
 	return nil
 }
 
-func resourceAciLoopBackInterfaceProfileDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciLoopBackInterfaceProfileDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "l3extLoopBackIfP")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
 }

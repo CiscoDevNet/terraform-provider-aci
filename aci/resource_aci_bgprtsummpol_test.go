@@ -59,7 +59,6 @@ func TestAccAciBgpRouteSummarization_update(t *testing.T) {
 
 func testAccCheckAciBgpRouteSummarizationConfig_basic(description string) string {
 	return fmt.Sprintf(`
-
 	resource "aci_bgp_route_summarization" "foobgp_route_summarization" {
 		tenant_dn  = "${aci_tenant.example.id}"
 		description = "%s"
