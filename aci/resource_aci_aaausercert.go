@@ -82,7 +82,8 @@ func setX509CertificateAttributes(aaaUserCert *models.X509Certificate, d *schema
 	d.Set("name", aaaUserCertMap["name"])
 
 	d.Set("annotation", aaaUserCertMap["annotation"])
-	data := strings.Replace(aaaUserCertMap["data"], "\\r\\n", "\r\n", -1)
+	data := strings.Replace(aaaUserCertMap["data"], "\\r", "\r", -1)
+	data = strings.Replace(data, "\\n", "\n", -1)
 	d.Set("data", data)
 	d.Set("name_alias", aaaUserCertMap["nameAlias"])
 	return d, nil
