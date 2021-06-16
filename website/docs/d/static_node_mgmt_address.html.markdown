@@ -25,7 +25,7 @@ data "aci_static_node_mgmt_address" "example" {
 
 * `management_epg_dn` - (Required) Distinguished name of parent Management static node object.
 * `t_dn` - (Required) Target dn of Management static node object.
-* `type` - (Required) type for Management static node object. Allowed values are "in_band" and "out_of_band".
+* `type` - (Required) Type for Management static node object. Allowed values are "in_band" and "out_of_band".
 Note := for "in_band", `management_epg_dn` should be of type "in_band" and for "out_of_band", `management_epg_dn` should be of type "out_of_band".
 
 
