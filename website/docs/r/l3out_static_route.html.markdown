@@ -14,16 +14,14 @@ Manages ACI L3out Static Route
 
 ```hcl
 resource "aci_l3out_static_route" "example" {
-
-  fabric_node_dn  = "${aci_logical_node_to_fabric_node.example.id}"
+  fabric_node_dn  = aci_logical_node_to_fabric_node.example.id
   ip  = "10.0.0.1"
   aggregate = "no"
   annotation  = "example"
   name_alias  = "example"
   pref  = "example"
   rt_ctrl = "bfd"
-  description = "from terraform"
-  
+  description = "from terraform"  
 }
 ```
 
@@ -36,16 +34,14 @@ resource "aci_l3out_static_route" "example" {
 - `annotation` - (Optional) Annotation for object l3out static route.
 - `description` - (Optional) Description for object l3out static route.
 - `name_alias` - (Optional) Name alias for object l3out static route.
-- `pref` - (Optional) The administrative preference value for this route. This value is useful for resolving routes advertised from different protocols. Default value: "1".
+- `pref` - (Optional) The administrative preference value for this route. This value is useful for resolving routes advertised from different protocols. Default value is "1".
 - `rt_ctrl` - (Optional) Route control for object l3out static route.
-  Allowed values: "bfd", "unspecified". Default value: "unspecified".
-
+  Allowed values: "bfd", "unspecified". Default value is "unspecified".
 - `relation_ip_rs_route_track` - (Optional) Relation to class fvTrackList. Cardinality - N_TO_ONE. Type - String.
 
 ## Attribute Reference
 
-The only attribute that this resource exports is the `id`, which is set to the
-Dn of the L3out Static Route.
+The only attribute that this resource exports is the `id`, which is set to the Dn of the L3out Static Route.
 
 ## Importing0
 

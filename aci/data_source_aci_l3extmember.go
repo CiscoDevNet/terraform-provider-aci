@@ -1,9 +1,11 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
@@ -11,7 +13,7 @@ import (
 func dataSourceAciL3outVPCMember() *schema.Resource {
 	return &schema.Resource{
 
-		Read: dataSourceAciL3outVPCMemberRead,
+		ReadContext: dataSourceAciL3outVPCMemberRead,
 
 		SchemaVersion: 1,
 
@@ -63,7 +65,7 @@ func dataSourceAciL3outVPCMember() *schema.Resource {
 	}
 }
 
-func dataSourceAciL3outVPCMemberRead(d *schema.ResourceData, m interface{}) error {
+func dataSourceAciL3outVPCMemberRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	aciClient := m.(*client.Client)
 
 	side := d.Get("side").(string)
@@ -76,9 +78,12 @@ func dataSourceAciL3outVPCMemberRead(d *schema.ResourceData, m interface{}) erro
 	l3extMember, err := getRemoteL3outVPCMember(aciClient, dn)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.SetId(dn)
-	setL3outVPCMemberAttributes(l3extMember, d)
+	_, err = setL3outVPCMemberAttributes(l3extMember, d)
+	if err != nil {
+		return diag.FromErr(err)
+	}
 	return nil
 }
