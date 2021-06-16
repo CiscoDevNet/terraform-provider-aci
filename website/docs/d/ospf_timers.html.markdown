@@ -14,7 +14,7 @@ Data source for ACI OSPF Timers
 
 ```hcl
 data "aci_ospf_timers" "check" {
-  tenant_dn = "${aci_tenant.tenentcheck.id}"
+  tenant_dn = aci_tenant.tenentcheck.id
   name      = "one"
 }
 ```

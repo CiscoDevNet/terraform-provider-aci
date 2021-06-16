@@ -14,16 +14,14 @@ Manages ACI OSPF Route Summarization
 
 ```hcl
 resource "aci_ospf_route_summarization" "example" {
-
-  tenant_dn  = "${aci_tenant.example.id}"
+  tenant_dn  = aci_tenant.example.id
   description = "from terraform"
-  name  = "example"
-  annotation  = "example"
+  name  = "ospf_route_summarization_1"
+  annotation  = "ospf_route_summarization_tag"
   cost = "1"
   inter_area_enabled = "no"
   name_alias  = "example"
   tag  = "1"
-
 }
 ```
 
@@ -41,8 +39,7 @@ resource "aci_ospf_route_summarization" "example" {
 
 ## Attribute Reference
 
-The only attribute that this resource exports is the `id`, which is set to the
-Dn of the OSPF Route Summarization.
+The only attribute that this resource exports is the `id`, which is set to the Dn of the OSPF Route Summarization.
 
 ## Importing
 

@@ -6,7 +6,6 @@ provider "aci" {
 }
 
 resource "aci_ospf_route_summarization" "example" {
-
   tenant_dn          = aci_tenant.example.id
   name               = "example"
   annotation         = "example"
@@ -14,5 +13,4 @@ resource "aci_ospf_route_summarization" "example" {
   inter_area_enabled = "no"
   name_alias         = "example"
   tag                = "1"
-
 }
