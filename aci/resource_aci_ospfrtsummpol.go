@@ -1,21 +1,23 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciOspfRouteSummarization() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciOspfRouteSummarizationCreate,
-		Update: resourceAciOspfRouteSummarizationUpdate,
-		Read:   resourceAciOspfRouteSummarizationRead,
-		Delete: resourceAciOspfRouteSummarizationDelete,
+		CreateContext: resourceAciOspfRouteSummarizationCreate,
+		UpdateContext: resourceAciOspfRouteSummarizationUpdate,
+		ReadContext:   resourceAciOspfRouteSummarizationRead,
+		DeleteContext: resourceAciOspfRouteSummarizationDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciOspfRouteSummarizationImport,
@@ -81,15 +83,17 @@ func getRemoteOspfRouteSummarization(client *client.Client, dn string) (*models.
 	return ospfRtSummPol, nil
 }
 
-func setOspfRouteSummarizationAttributes(ospfRtSummPol *models.OspfRouteSummarization, d *schema.ResourceData) *schema.ResourceData {
+func setOspfRouteSummarizationAttributes(ospfRtSummPol *models.OspfRouteSummarization, d *schema.ResourceData) (*schema.ResourceData, error) {
 	d.SetId(ospfRtSummPol.DistinguishedName)
 	d.Set("description", ospfRtSummPol.Description)
 	dn := d.Id()
 	if dn != ospfRtSummPol.DistinguishedName {
 		d.Set("tenant_dn", "")
 	}
-	ospfRtSummPolMap, _ := ospfRtSummPol.ToMap()
-
+	ospfRtSummPolMap, err := ospfRtSummPol.ToMap()
+	if err != nil {
+		return d, err
+	}
 	d.Set("name", ospfRtSummPolMap["name"])
 
 	d.Set("annotation", ospfRtSummPolMap["annotation"])
@@ -97,7 +101,7 @@ func setOspfRouteSummarizationAttributes(ospfRtSummPol *models.OspfRouteSummariz
 	d.Set("inter_area_enabled", ospfRtSummPolMap["interAreaEnabled"])
 	d.Set("name_alias", ospfRtSummPolMap["nameAlias"])
 	d.Set("tag", ospfRtSummPolMap["tag"])
-	return d
+	return d, nil
 }
 
 func resourceAciOspfRouteSummarizationImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -111,14 +115,16 @@ func resourceAciOspfRouteSummarizationImport(d *schema.ResourceData, m interface
 	if err != nil {
 		return nil, err
 	}
-	schemaFilled := setOspfRouteSummarizationAttributes(ospfRtSummPol, d)
-
+	schemaFilled, err := setOspfRouteSummarizationAttributes(ospfRtSummPol, d)
+	if err != nil {
+		return nil, err
+	}
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciOspfRouteSummarizationCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciOspfRouteSummarizationCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] OspfRouteSummarization: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -149,19 +155,16 @@ func resourceAciOspfRouteSummarizationCreate(d *schema.ResourceData, m interface
 
 	err := aciClient.Save(ospfRtSummPol)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.Partial(false)
 
 	d.SetId(ospfRtSummPol.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciOspfRouteSummarizationRead(d, m)
+	return resourceAciOspfRouteSummarizationRead(ctx, d, m)
 }
 
-func resourceAciOspfRouteSummarizationUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciOspfRouteSummarizationUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] OspfRouteSummarization: Beginning Update")
 
 	aciClient := m.(*client.Client)
@@ -196,20 +199,16 @@ func resourceAciOspfRouteSummarizationUpdate(d *schema.ResourceData, m interface
 	err := aciClient.Save(ospfRtSummPol)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.Partial(false)
-
 	d.SetId(ospfRtSummPol.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciOspfRouteSummarizationRead(d, m)
+	return resourceAciOspfRouteSummarizationRead(ctx, d, m)
 
 }
 
-func resourceAciOspfRouteSummarizationRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciOspfRouteSummarizationRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -221,25 +220,28 @@ func resourceAciOspfRouteSummarizationRead(d *schema.ResourceData, m interface{}
 		d.SetId("")
 		return nil
 	}
-	setOspfRouteSummarizationAttributes(ospfRtSummPol, d)
-
+	_, err = setOspfRouteSummarizationAttributes(ospfRtSummPol, d)
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 
 	return nil
 }
 
-func resourceAciOspfRouteSummarizationDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciOspfRouteSummarizationDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "ospfRtSummPol")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
 }
