@@ -61,7 +61,7 @@ func testAccCheckAciL3outStaticRouteConfig_basic(description string) string {
 	return fmt.Sprintf(`
 
 	resource "aci_l3out_static_route" "fool3out_static_route" {
-		fabric_node_dn  = "${aci_fabric_node.example.id}"
+		fabric_node_dn  = aci_fabric_node.example.id
 		description = "%s"
 		ip  = "example"
   		aggregate = "no"
