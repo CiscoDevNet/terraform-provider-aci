@@ -20,7 +20,6 @@ resource "aci_static_node_mgmt_address" "example" {
   description       = "from terraform"
   addr              = "10.20.30.40/20"
   annotation        = "example"
-  description       = "from terraform"
   gw                = "10.20.30.41"
   v6_addr           = "1::40/64"
   v6_gw             = "1::21"
