@@ -18,7 +18,7 @@ resource "aci_l3out_path_attachment" "example" {
   target_dn  = "topology/pod-1/paths-101/pathep-[eth1/1]"
   if_inst_t = "ext-svi"
   description = "from terraform"
-  addr  = "0.0.0.0"
+  addr  = "10.20.30.40/16"
   annotation  = "example"
   autostate = "disabled"
   encap  = "vlan-1"
