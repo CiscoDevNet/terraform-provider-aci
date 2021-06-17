@@ -1,9 +1,19 @@
+terraform {
+  required_providers {
+    aci = {
+      source = "ciscodevnet/aci"
+    }
+  }
+}
+
+#configure provider with your cisco aci credentials.
 provider "aci" {
-  username = ""
-  password = ""
-  url      = ""
+  username = "" # <APIC username>
+  password = "" # <APIC pwd>
+  url      = "" # <cloud APIC URL>
   insecure = true
 }
+
 resource "aci_static_node_mgmt_address" "example" {
   management_epg_dn = "${aci_node_mgmt_epg.example.id}"
   t_dn              = "topology/pod-1/node-1"

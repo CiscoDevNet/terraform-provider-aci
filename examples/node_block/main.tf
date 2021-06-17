@@ -6,6 +6,14 @@ terraform {
   }
 }
 
+#configure provider with your cisco aci credentials.
+provider "aci" {
+  username = "" # <APIC username>
+  password = "" # <APIC pwd>
+  url      = "" # <cloud APIC URL>
+  insecure = true
+}
+
 resource "aci_leaf_profile" "checkBLK" {
   name        = "example"
 }
