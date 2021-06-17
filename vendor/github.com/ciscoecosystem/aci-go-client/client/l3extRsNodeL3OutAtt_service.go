@@ -6,10 +6,10 @@ import (
 	"github.com/ciscoecosystem/aci-go-client/models"
 )
 
-func (sm *ServiceManager) CreateFabricNode(tDn string, logical_node_profile string, l3_outside string, tenant string, l3extRsNodeL3OutAttattr models.FabricNodeAttributes) (*models.FabricNode, error) {
+func (sm *ServiceManager) CreateFabricNode(tDn string, logical_node_profile string, l3_outside string, tenant string, description string, l3extRsNodeL3OutAttattr models.FabricNodeAttributes) (*models.FabricNode, error) {
 	rn := fmt.Sprintf("rsnodeL3OutAtt-[%s]", tDn)
 	parentDn := fmt.Sprintf("uni/tn-%s/out-%s/lnodep-%s", tenant, l3_outside, logical_node_profile)
-	l3extRsNodeL3OutAtt := models.NewFabricNode(rn, parentDn, l3extRsNodeL3OutAttattr)
+	l3extRsNodeL3OutAtt := models.NewFabricNode(rn, parentDn, description, l3extRsNodeL3OutAttattr)
 	err := sm.Save(l3extRsNodeL3OutAtt)
 	return l3extRsNodeL3OutAtt, err
 }
@@ -30,10 +30,10 @@ func (sm *ServiceManager) DeleteFabricNode(tDn string, logical_node_profile stri
 	return sm.DeleteByDn(dn, models.L3extrsnodel3outattClassName)
 }
 
-func (sm *ServiceManager) UpdateFabricNode(tDn string, logical_node_profile string, l3_outside string, tenant string, l3extRsNodeL3OutAttattr models.FabricNodeAttributes) (*models.FabricNode, error) {
+func (sm *ServiceManager) UpdateFabricNode(tDn string, logical_node_profile string, l3_outside string, tenant string, description string, l3extRsNodeL3OutAttattr models.FabricNodeAttributes) (*models.FabricNode, error) {
 	rn := fmt.Sprintf("rsnodeL3OutAtt-[%s]", tDn)
 	parentDn := fmt.Sprintf("uni/tn-%s/out-%s/lnodep-%s", tenant, l3_outside, logical_node_profile)
-	l3extRsNodeL3OutAtt := models.NewFabricNode(rn, parentDn, l3extRsNodeL3OutAttattr)
+	l3extRsNodeL3OutAtt := models.NewFabricNode(rn, parentDn, description, l3extRsNodeL3OutAttattr)
 
 	l3extRsNodeL3OutAtt.Status = "modified"
 	err := sm.Save(l3extRsNodeL3OutAtt)

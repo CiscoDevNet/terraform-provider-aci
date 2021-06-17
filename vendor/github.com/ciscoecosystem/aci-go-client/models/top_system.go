@@ -2,9 +2,8 @@ package models
 
 import (
 	"fmt"
-	"strconv"
-
 	"github.com/ciscoecosystem/aci-go-client/container"
+	"strconv"
 )
 
 const TopSystemClassName = "topSystem"
@@ -152,7 +151,6 @@ func SystemFromContainerList(cont *container.Container, index int) *System {
 		},
 
 		SystemAttributes{
-			Address:                 G(SystemCont, "address"),
 			BootstrapState:          G(SystemCont, "bootstrapState"),
 			ChildAction:             G(SystemCont, "childAction"),
 			ConfigIssues:            G(SystemCont, "configIssues"),

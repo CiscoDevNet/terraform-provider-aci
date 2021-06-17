@@ -26,11 +26,12 @@ type FabricNodeAttributes struct {
 	RtrIdLoopBack string `json:",omitempty"`
 }
 
-func NewFabricNode(l3extRsNodeL3OutAttRn, parentDn string, l3extRsNodeL3OutAttattr FabricNodeAttributes) *FabricNode {
+func NewFabricNode(l3extRsNodeL3OutAttRn, parentDn, description string, l3extRsNodeL3OutAttattr FabricNodeAttributes) *FabricNode {
 	dn := fmt.Sprintf("%s/%s", parentDn, l3extRsNodeL3OutAttRn)
 	return &FabricNode{
 		BaseAttributes: BaseAttributes{
 			DistinguishedName: dn,
+			Description:       description,
 			Status:            "created, modified",
 			ClassName:         L3extrsnodel3outattClassName,
 			Rn:                l3extRsNodeL3OutAttRn,
@@ -65,6 +66,7 @@ func FabricNodeFromContainerList(cont *container.Container, index int) *FabricNo
 	return &FabricNode{
 		BaseAttributes{
 			DistinguishedName: G(FabricNodeCont, "dn"),
+			Description:       G(FabricNodeCont, "descr"),
 			Status:            G(FabricNodeCont, "status"),
 			ClassName:         L3extrsnodel3outattClassName,
 			Rn:                G(FabricNodeCont, "rn"),
