@@ -14,7 +14,7 @@ Data source for ACI HSRP Group Policy
 
 ```hcl
 data "aci_hsrp_group_policy" "example" {
-  tenant_dn  = "${aci_tenant.example.id}"
+  tenant_dn  = aci_tenant.example.id
   name  = "example"
 }
 ```
