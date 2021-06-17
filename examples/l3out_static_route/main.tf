@@ -19,7 +19,7 @@ resource "aci_l3out_static_route" "example" {
   aggregate      = "no"
   annotation     = "example"
   name_alias     = "example"
-  pref           = "example"
+  pref           = "1"
   rt_ctrl        = "bfd"
   description    = "from terraform"
 }
