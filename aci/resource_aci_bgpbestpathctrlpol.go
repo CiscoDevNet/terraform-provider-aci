@@ -105,7 +105,7 @@ func resourceAciBgpBestPathPolicyImport(d *schema.ResourceData, m interface{}) (
 	if err != nil {
 		return nil, err
 	}
-	schemaFilled,err := setBgpBestPathPolicyAttributes(bgpBestPathCtrlPol, d)
+	schemaFilled, err := setBgpBestPathPolicyAttributes(bgpBestPathCtrlPol, d)
 	if err != nil {
 		return nil, err
 	}

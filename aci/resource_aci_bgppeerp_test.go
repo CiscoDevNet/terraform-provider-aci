@@ -57,8 +57,8 @@ func TestAccAciBgpPeerConnectivityProfile_update(t *testing.T) {
 	})
 }
 
-func testAccCheckAciBgpPeerConnectivityProfileConfig_basic(description string) string {	
-
+func testAccCheckAciBgpPeerConnectivityProfileConfig_basic(description string) string {
+	return fmt.Sprintf(`
 	resource "aci_bgp_peer_connectivity_profile" "example" {
 		logical_node_profile_dn = aci_logical_node_profile.example.id
 		addr                    = "10.0.0.1"
