@@ -22,11 +22,12 @@ type AccessAccessGroupAttributes struct {
 	TDn string `json:",omitempty"`
 }
 
-func NewAccessAccessGroup(infraRsAccBaseGrpRn, parentDn string, infraRsAccBaseGrpattr AccessAccessGroupAttributes) *AccessAccessGroup {
+func NewAccessAccessGroup(infraRsAccBaseGrpRn, parentDn, description string, infraRsAccBaseGrpattr AccessAccessGroupAttributes) *AccessAccessGroup {
 	dn := fmt.Sprintf("%s/%s", parentDn, infraRsAccBaseGrpRn)
 	return &AccessAccessGroup{
 		BaseAttributes: BaseAttributes{
 			DistinguishedName: dn,
+			Description:       description,
 			Status:            "created, modified",
 			ClassName:         InfrarsaccbasegrpClassName,
 			Rn:                infraRsAccBaseGrpRn,
@@ -57,6 +58,7 @@ func AccessAccessGroupFromContainerList(cont *container.Container, index int) *A
 	return &AccessAccessGroup{
 		BaseAttributes{
 			DistinguishedName: G(AccessAccessGroupCont, "dn"),
+			Description:       G(AccessAccessGroupCont, "descr"),
 			Status:            G(AccessAccessGroupCont, "status"),
 			ClassName:         InfrarsaccbasegrpClassName,
 			Rn:                G(AccessAccessGroupCont, "rn"),

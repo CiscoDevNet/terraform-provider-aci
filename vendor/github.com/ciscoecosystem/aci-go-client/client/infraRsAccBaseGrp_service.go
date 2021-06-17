@@ -6,10 +6,10 @@ import (
 	"github.com/ciscoecosystem/aci-go-client/models"
 )
 
-func (sm *ServiceManager) CreateAccessAccessGroup(access_port_selector_type string, access_port_selector string, leaf_interface_profile string, infraRsAccBaseGrpattr models.AccessAccessGroupAttributes) (*models.AccessAccessGroup, error) {
+func (sm *ServiceManager) CreateAccessAccessGroup(access_port_selector_type string, access_port_selector string, leaf_interface_profile string, description string, infraRsAccBaseGrpattr models.AccessAccessGroupAttributes) (*models.AccessAccessGroup, error) {
 	rn := fmt.Sprintf("rsaccBaseGrp")
 	parentDn := fmt.Sprintf("uni/infra/accportprof-%s/hports-%s-typ-%s", leaf_interface_profile, access_port_selector, access_port_selector_type)
-	infraRsAccBaseGrp := models.NewAccessAccessGroup(rn, parentDn, infraRsAccBaseGrpattr)
+	infraRsAccBaseGrp := models.NewAccessAccessGroup(rn, parentDn, description, infraRsAccBaseGrpattr)
 	err := sm.Save(infraRsAccBaseGrp)
 	return infraRsAccBaseGrp, err
 }
@@ -30,10 +30,10 @@ func (sm *ServiceManager) DeleteAccessAccessGroup(access_port_selector_type stri
 	return sm.DeleteByDn(dn, models.InfrarsaccbasegrpClassName)
 }
 
-func (sm *ServiceManager) UpdateAccessAccessGroup(access_port_selector_type string, access_port_selector string, leaf_interface_profile string, infraRsAccBaseGrpattr models.AccessAccessGroupAttributes) (*models.AccessAccessGroup, error) {
+func (sm *ServiceManager) UpdateAccessAccessGroup(access_port_selector_type string, access_port_selector string, leaf_interface_profile string, description string, infraRsAccBaseGrpattr models.AccessAccessGroupAttributes) (*models.AccessAccessGroup, error) {
 	rn := fmt.Sprintf("rsaccBaseGrp")
 	parentDn := fmt.Sprintf("uni/infra/accportprof-%s/hports-%s-typ-%s", leaf_interface_profile, access_port_selector, access_port_selector_type)
-	infraRsAccBaseGrp := models.NewAccessAccessGroup(rn, parentDn, infraRsAccBaseGrpattr)
+	infraRsAccBaseGrp := models.NewAccessAccessGroup(rn, parentDn, description, infraRsAccBaseGrpattr)
 
 	infraRsAccBaseGrp.Status = "modified"
 	err := sm.Save(infraRsAccBaseGrp)
