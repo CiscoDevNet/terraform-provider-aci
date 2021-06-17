@@ -76,7 +76,7 @@ terraform apply -parallelism=1
       # private key path
       private_key = "path to private key"
       # Certificate Name
-      cert_name = "admin-cert"
+      cert_name = "user-cert"
       # cisco-aci url
       url      = "https://my-cisco-aci.com"
       insecure = true
