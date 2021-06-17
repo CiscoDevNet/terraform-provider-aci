@@ -55,7 +55,7 @@ The Provider supports authentication with Cisco APIC in 3 ways:
       # private key path
       private_key = "path to private key"
       # Certificate Name
-      cert_name = "certificate.crt"
+      cert_name = "user-cert"
       # cisco-aci url
       url      = "https://my-cisco-aci.com"
       insecure = true
@@ -69,7 +69,7 @@ The Provider supports authentication with Cisco APIC in 3 ways:
     provider "aci" {
       username = "apic:Demo_domain\\\\admin"
       # private_key = "path to private key"
-      # cert_name = "certificate.crt"
+      # cert_name = "user-cert"
       password = "password"
       url = "url"
       insecure = true
@@ -91,7 +91,7 @@ $ openssl req -new -newkey rsa:1024 -days 36500 -nodes -x509 -keyout admin.key -
 * Expand Security Management » Local Users
 Click the name of the user you want to add a certificate to, in the User Certificates area
 Click the + sign and in the Create X509 Certificate enter a certificate name in the Name field. Copy and paste your X.509 certificate in the Data field.
-
+Use this certificate name as the value of "cert_name" argument.
 
 Example Usage
 ------------
