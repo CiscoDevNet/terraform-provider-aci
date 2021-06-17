@@ -61,13 +61,13 @@ func testAccCheckAciL3outStaticRouteConfig_basic(description string) string {
 	return fmt.Sprintf(`
 
 	resource "aci_l3out_static_route" "fool3out_static_route" {
-		fabric_node_dn  = aci_fabric_node.example.id
+		fabric_node_dn  = "uni/tn-tenant_1/out-l3_outside_1/lnodep-logical_node_profile_1/rsnodeL3OutAtt-[topology/pod-1/node-101]"
 		description = "%s"
 		ip  = "example"
   		aggregate = "no"
   		annotation  = "example"
   		name_alias  = "example"
-  		pref  = "example"
+  		pref  = "1"
   		rt_ctrl = "bfd"
 	}
 	`, description)
@@ -144,7 +144,7 @@ func testAccCheckAciL3outStaticRouteAttributes(description string, l3out_static_
 			return fmt.Errorf("Bad l3out_static_route name_alias %s", l3out_static_route.NameAlias)
 		}
 
-		if "example" != l3out_static_route.Pref {
+		if "1" != l3out_static_route.Pref {
 			return fmt.Errorf("Bad l3out_static_route pref %s", l3out_static_route.Pref)
 		}
 
