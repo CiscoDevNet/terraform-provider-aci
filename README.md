@@ -76,12 +76,14 @@ terraform apply -parallelism=1
       # private key path
       private_key = "path to private key"
       # Certificate Name
-      cert_name = "certificate.crt"
+      cert_name = "admin-cert"
       # cisco-aci url
       url      = "https://my-cisco-aci.com"
       insecure = true
   }
 ```
+
+Note: The value of "cert_name" arugument must match the name of the certificate attached to the APIC user (aaaUserCert) used for signature-based authentication
 
 Developing The Provider
 -----------------------
