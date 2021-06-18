@@ -31,9 +31,8 @@ resource "aci_l3out_ospf_interface_profile" "example" {
 - `auth_key` - (Required) OSPF authentication key for L3out OSPF interface profile object.
 - `annotation` - (Optional) Annotation for L3out OSPF interface profile object.
 - `description` - (Optional) Description for L3out OSPF interface profile object.
-- `auth_key_id` - (Optional) Authentication key id for L3out OSPF interface profile object. Allowed ranges is from "1" to "255".
-- `auth_type` - (Optional) OSPF authentication type for L3out OSPF interface profile object. Allowed values are "none", "md5" and "simple".
-  Default value is "none".
+- `auth_key_id` - (Optional) Authentication key id for L3out OSPF interface profile object. Allowed ranges is from "1" to "255". Default value is "1".
+- `auth_type` - (Optional) OSPF authentication type for L3out OSPF interface profile object. Allowed values are "none", "md5" and "simple". Default value is "none".
 - `name_alias` - (Optional) Name alias for L3out OSPF interface profile object.
 
 - `relation_ospf_rs_if_pol` - (Optional) Relation to class ospfIfPol. Cardinality - N_TO_ONE. Type - String.
