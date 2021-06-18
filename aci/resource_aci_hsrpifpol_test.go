@@ -59,9 +59,9 @@ func TestAccAciHSRPInterfacePolicy_update(t *testing.T) {
 
 func testAccCheckAciHSRPInterfacePolicyConfig_basic(description string) string {
 	return fmt.Sprintf(`
-
 	resource "aci_hsrp_interface_policy" "test" {
-		tenant_dn    = "uni/tn-aaaaa"
+		tenant_dn    = aci_tenant.example.id
+		#tenant_dn    = "uni/tn-aaaaa"
 		name         = "one"
 		annotation   = "example"
 		description  = "%s"

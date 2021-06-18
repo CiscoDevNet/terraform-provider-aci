@@ -59,7 +59,6 @@ func TestAccAciL3outRouteTagPolicy_update(t *testing.T) {
 
 func testAccCheckAciL3outRouteTagPolicyConfig_basic(description string) string {
 	return fmt.Sprintf(`
-
 	resource "aci_l3out_route_tag_policy" "fool3out_route_tag_policy" {
 		tenant_dn  = "${aci_tenant.example.id}"
 		description = "%s"

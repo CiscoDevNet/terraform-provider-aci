@@ -15,7 +15,7 @@ Manages ACI L3out Route Tag Policy
 ```hcl
 resource "aci_l3out_route_tag_policy" "example" {
 
-  tenant_dn  = "${aci_tenant.example.id}"
+  tenant_dn  = aci_tenant.example.id
   name  = "example"
   annotation  = "example"
   name_alias  = "example"
@@ -27,7 +27,7 @@ resource "aci_l3out_route_tag_policy" "example" {
 
 ## Argument Reference
 
-- `tenant_dn` - (Required) Distinguished name of parent tenant object.
+- `tenant_dn` - (Required) Distinguished name of parent Tenant object.
 - `name` - (Required) Name of Object L3out route tag policy.
 - `annotation` - (Optional) Annotation for object L3out route tag policy.
 - `name_alias` - (Optional) Name alias for object L3out route tag policy.

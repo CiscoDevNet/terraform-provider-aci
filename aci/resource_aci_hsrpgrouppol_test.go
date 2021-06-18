@@ -59,8 +59,7 @@ func TestAccAciHSRPGroupPolicy_update(t *testing.T) {
 
 func testAccCheckAciHSRPGroupPolicyConfig_basic(description string) string {
 	return fmt.Sprintf(`
-
-	resource "aci_hsrp_group_policy" "foohsrp_group_policy" {
+		resource "aci_hsrp_group_policy" "foohsrp_group_policy" {
 		tenant_dn  = "${aci_tenant.example.id}"
 		name  = "example"
 		annotation  = "example"
