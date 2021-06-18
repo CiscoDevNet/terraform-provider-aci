@@ -30,7 +30,7 @@ resource "aci_l3out_static_route" "example" {
 - `fabric_node_dn` - (Required) Distinguished name of parent fabric node object.
 - `ip` - (Required) The static route IP address assigned to the outside network.
 - `aggregate` - (Optional) Aggregated Route for object l3out static route.
-  Allowed values: "no", "yes". Default value: "no".
+  Allowed values: "no", "yes". Default value is "no".
 - `annotation` - (Optional) Annotation for object l3out static route.
 - `description` - (Optional) Description for object l3out static route.
 - `name_alias` - (Optional) Name alias for object l3out static route.
