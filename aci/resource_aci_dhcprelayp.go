@@ -79,7 +79,7 @@ func resourceAciDHCPRelayPolicy() *schema.Resource {
 							Type:     schema.TypeString,
 							Required: true,
 						},
-						"address": {
+						"addr": {
 							Type:     schema.TypeString,
 							Required: true,
 						},
@@ -201,7 +201,7 @@ func resourceAciDHCPRelayPolicyCreate(ctx context.Context, d *schema.ResourceDat
 		relationParamList := relationTodhcpRsProv.(*schema.Set).List()
 		for _, relationParam := range relationParamList {
 			paramMap := relationParam.(map[string]interface{})
-			err = aciClient.CreateRelationdhcpRsProvFromDHCPRelayPolicy(dhcpRelayP.DistinguishedName, paramMap["tdn"].(string), paramMap["address"].(string))
+			err = aciClient.CreateRelationdhcpRsProvFromDHCPRelayPolicy(dhcpRelayP.DistinguishedName, paramMap["tdn"].(string), paramMap["addr"].(string))
 			if err != nil {
 				return diag.FromErr(err)
 			}
@@ -276,7 +276,7 @@ func resourceAciDHCPRelayPolicyUpdate(ctx context.Context, d *schema.ResourceDat
 
 		for _, relationParam := range newRelList {
 			paramMap := relationParam.(map[string]interface{})
-			err = aciClient.CreateRelationdhcpRsProvFromDHCPRelayPolicy(dhcpRelayP.DistinguishedName, paramMap["tdn"].(string), paramMap["address"].(string))
+			err = aciClient.CreateRelationdhcpRsProvFromDHCPRelayPolicy(dhcpRelayP.DistinguishedName, paramMap["tdn"].(string), paramMap["addr"].(string))
 			if err != nil {
 				return diag.FromErr(err)
 			}
