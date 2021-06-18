@@ -5,7 +5,6 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/container"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func (sm *ServiceManager) CreateDHCPRelayPolicy(name string, tenant string, description string, dhcpRelayPattr models.DHCPRelayPolicyAttributes) (*models.DHCPRelayPolicy, error) {
@@ -54,15 +53,18 @@ func (sm *ServiceManager) ListDHCPRelayPolicy(tenant string) ([]*models.DHCPRela
 	return list, err
 }
 
-func (sm *ServiceManager) CreateRelationdhcpRsProvFromDHCPRelayPolicy(parentDn, tDn string) error {
+func (sm *ServiceManager) CreateRelationdhcpRsProvFromDHCPRelayPolicy(parentDn, tDn, addr string) error {
 	dn := fmt.Sprintf("%s/rsprov-[%s]", parentDn, tDn)
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s", "annotation": "orchestrator:terraform", "tDn": "%s"				
+				"dn": "%s", 
+				"annotation": "orchestrator:terraform", 
+				"tDn": "%s",
+				"addr": "%s"				
 			}
 		}
-	}`, "dhcpRsProv", dn, tDn))
+	}`, "dhcpRsProv", dn, tDn, addr))
 
 	jsonPayload, err := container.ParseJSON(containerJSON)
 	if err != nil {
@@ -95,13 +97,17 @@ func (sm *ServiceManager) ReadRelationdhcpRsProvFromDHCPRelayPolicy(parentDn str
 
 	contList := models.ListFromContainer(cont, "dhcpRsProv")
 
-	st := &schema.Set{
-		F: schema.HashString,
-	}
+	st := make([]map[string]string, 0)
+
 	for _, contItem := range contList {
-		dat := models.G(contItem, "tDn")
-		st.Add(dat)
+		paramMap := make(map[string]string)
+		paramMap["tDn"] = models.G(contItem, "tDn")
+		paramMap["addr"] = models.G(contItem, "addr")
+
+		st = append(st, paramMap)
+
 	}
+
 	return st, err
 
 }
