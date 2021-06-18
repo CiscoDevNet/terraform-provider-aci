@@ -314,7 +314,7 @@ func resourceAciDHCPRelayPolicyRead(ctx context.Context, d *schema.ResourceData,
 		log.Printf("[DEBUG] Error while reading relation dhcpRsProv %v", err)
 
 	} else {
-		d.Set("relation__prov", dhcpRsProvData)
+		d.Set("relation_dhcp_rs_prov", dhcpRsProvData)
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())

@@ -21,6 +21,14 @@ resource "aci_dhcp_relay_policy" "example" {
   mode        = "visible"
   name_alias  = "alias_example"
   owner       = "infra"
+  relation_dhcp_rs_prov {
+    address = "10.20.30.40"
+    tdn     = aci_application_epg.example.id
+  }
+  relation_dhcp_rs_prov {
+    address = "10.20.30.41"
+    tdn     = aci_l2out_extepg.example.id
+  }
 }
 ```
 
@@ -33,8 +41,8 @@ resource "aci_dhcp_relay_policy" "example" {
 - `mode` - (Optional) DHCP relay policy mode. Allowed Values are "visible" and "not-visible". Default Value is "visible".
 - `name_alias` - (Optional) Name alias for object DHCP Relay Policy.
 - `owner` - (Optional) Owner of the target relay servers. Allowed values are "infra" and "tenant". Default value is "infra".
-
-- `relation_dhcp_rs_prov` - (Optional) List of relation to class fvEPg. Cardinality - N_TO_M. Type - Set of String.
+- `relation_dhcp_rs_prov.tdn` - (Required) target Dn of the class fvEPg.
+- `relation_dhcp_rs_prov.address` - (Required) IP address for relation dhcpRsProv.
 
 ## Attribute Reference
 
