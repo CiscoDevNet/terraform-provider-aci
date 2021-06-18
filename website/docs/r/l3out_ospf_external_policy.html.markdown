@@ -39,8 +39,7 @@ resource "aci_l3out_ospf_external_policy" "example" {
 - `area_id` - (Optional) The OSPF Area ID.
 - `area_type` - (Optional) The area type.  
   Allowed values: "nssa", "regular", "stub". Default value: "nssa".
-- `multipod_internal` - (Optional) Start OSPF in WAN instance instead of default.  
-  Allowed values: "no", "yes". Default value: "no".
+- `multipod_internal` - (Optional) Start OSPF in WAN instance instead of the default. Value "yes" can be set only under infra tenant. Allowed values: "no", "yes". Default value: "no".
 - `name_alias` - (Optional) Name alias for object L3-out OSPF External Policy.
 
 ## Attribute Reference

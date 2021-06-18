@@ -15,7 +15,7 @@ Data source for ACI L3-out Path Attachment
 ```hcl
 data "aci_l3out_path_attachment" "example" {
   logical_interface_profile_dn  = aci_logical_interface_profile.example.id
-  target_dn  = "example"
+  target_dn  = "topology/pod-1/paths-101/pathep-[eth1/1]"
 }
 ```
 

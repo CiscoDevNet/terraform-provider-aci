@@ -146,7 +146,7 @@ func resourceAciL3outBgpExternalPolicyUpdate(ctx context.Context, d *schema.Reso
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		bgpExtPAttr.NameAlias = NameAlias.(string)
 	}
-	bgpExtP := models.NewL3outBgpExternalPolicy(fmt.Sprintf("1"), L3OutsideDn, desc, bgpExtPAttr)
+	bgpExtP := models.NewL3outBgpExternalPolicy(fmt.Sprintf("bgpExtP"), L3OutsideDn, desc, bgpExtPAttr)
 
 	bgpExtP.Status = "modified"
 
