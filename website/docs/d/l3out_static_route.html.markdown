@@ -14,8 +14,8 @@ Data source for ACI L3out Static Route
 
 ```hcl
 data "aci_l3out_static_route" "example" {
-  fabric_node_dn  = "${aci_logical_node_to_fabric_node.example.id}"
-  ip  = "example"
+  fabric_node_dn  = aci_logical_node_to_fabric_node.example.id
+  ip  = "10.0.0.1"
 }
 ```
 
