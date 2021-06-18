@@ -14,7 +14,7 @@ Data source for ACI L3-out HSRP interface profile
 
 ```hcl
 data "aci_l3out_hsrp_interface_profile" "example" {
-  logical_interface_profile_dn  = "${aci_logical_interface_profile.example.id}"
+  logical_interface_profile_dn  = aci_logical_interface_profile.example.id
 }
 ```
 

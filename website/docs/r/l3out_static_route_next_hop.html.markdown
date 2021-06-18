@@ -15,7 +15,7 @@ Manages ACI L3out Static Route Next Hop
 ```hcl
 resource "aci_l3out_static_route_next_hop" "example" {
 
-  static_route_dn  = "${aci_l3out_static_route.example.id}"
+  static_route_dn  = aci_l3out_static_route.example.id
   nh_addr  = "10.0.0.1"
   annotation  = "example"
   name_alias  = "example"
