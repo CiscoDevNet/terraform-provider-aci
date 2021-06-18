@@ -1,21 +1,23 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciL3outStaticRouteNextHop() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciL3outStaticRouteNextHopCreate,
-		Update: resourceAciL3outStaticRouteNextHopUpdate,
-		Read:   resourceAciL3outStaticRouteNextHopRead,
-		Delete: resourceAciL3outStaticRouteNextHopDelete,
+		CreateContext: resourceAciL3outStaticRouteNextHopCreate,
+		UpdateContext: resourceAciL3outStaticRouteNextHopUpdate,
+		ReadContext:   resourceAciL3outStaticRouteNextHopRead,
+		DeleteContext: resourceAciL3outStaticRouteNextHopDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciL3outStaticRouteNextHopImport,
@@ -89,14 +91,18 @@ func getRemoteL3outStaticRouteNextHop(client *client.Client, dn string) (*models
 	return ipNexthopP, nil
 }
 
-func setL3outStaticRouteNextHopAttributes(ipNexthopP *models.L3outStaticRouteNextHop, d *schema.ResourceData) *schema.ResourceData {
+func setL3outStaticRouteNextHopAttributes(ipNexthopP *models.L3outStaticRouteNextHop, d *schema.ResourceData) (*schema.ResourceData, error) {
 	d.SetId(ipNexthopP.DistinguishedName)
 	d.Set("description", ipNexthopP.Description)
 	dn := d.Id()
 	if dn != ipNexthopP.DistinguishedName {
 		d.Set("static_route_dn", "")
 	}
-	ipNexthopPMap, _ := ipNexthopP.ToMap()
+	ipNexthopPMap, err := ipNexthopP.ToMap()
+
+	if err != nil {
+		return d, err
+	}
 
 	d.Set("nh_addr", ipNexthopPMap["nhAddr"])
 
@@ -104,7 +110,7 @@ func setL3outStaticRouteNextHopAttributes(ipNexthopP *models.L3outStaticRouteNex
 	d.Set("name_alias", ipNexthopPMap["nameAlias"])
 	d.Set("pref", ipNexthopPMap["pref"])
 	d.Set("nexthop_profile_type", ipNexthopPMap["type"])
-	return d
+	return d, nil
 }
 
 func resourceAciL3outStaticRouteNextHopImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -118,14 +124,18 @@ func resourceAciL3outStaticRouteNextHopImport(d *schema.ResourceData, m interfac
 	if err != nil {
 		return nil, err
 	}
-	schemaFilled := setL3outStaticRouteNextHopAttributes(ipNexthopP, d)
+	schemaFilled, err := setL3outStaticRouteNextHopAttributes(ipNexthopP, d)
+
+	if err != nil {
+		return nil, err
+	}
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciL3outStaticRouteNextHopCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciL3outStaticRouteNextHopCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] L3outStaticRouteNextHop: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -153,7 +163,7 @@ func resourceAciL3outStaticRouteNextHopCreate(d *schema.ResourceData, m interfac
 
 	err := aciClient.Save(ipNexthopP)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	checkDns := make([]string, 0, 1)
@@ -172,7 +182,7 @@ func resourceAciL3outStaticRouteNextHopCreate(d *schema.ResourceData, m interfac
 	d.Partial(true)
 	err = checkTDn(aciClient, checkDns)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Partial(false)
 
@@ -180,7 +190,7 @@ func resourceAciL3outStaticRouteNextHopCreate(d *schema.ResourceData, m interfac
 		relationParam := relationToipRsNexthopRouteTrack.(string)
 		err = aciClient.CreateRelationipRsNexthopRouteTrackFromL3outStaticRouteNextHop(ipNexthopP.DistinguishedName, relationParam)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 
 	}
@@ -188,17 +198,17 @@ func resourceAciL3outStaticRouteNextHopCreate(d *schema.ResourceData, m interfac
 		relationParam := relationToipRsNHTrackMember.(string)
 		err = aciClient.CreateRelationipRsNHTrackMemberFromL3outStaticRouteNextHop(ipNexthopP.DistinguishedName, relationParam)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 	}
 
 	d.SetId(ipNexthopP.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciL3outStaticRouteNextHopRead(d, m)
+	return resourceAciL3outStaticRouteNextHopRead(ctx, d, m)
 }
 
-func resourceAciL3outStaticRouteNextHopUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciL3outStaticRouteNextHopUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] L3outStaticRouteNextHop: Beginning Update")
 
 	aciClient := m.(*client.Client)
@@ -230,7 +240,7 @@ func resourceAciL3outStaticRouteNextHopUpdate(d *schema.ResourceData, m interfac
 	err := aciClient.Save(ipNexthopP)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	checkDns := make([]string, 0, 1)
@@ -249,7 +259,7 @@ func resourceAciL3outStaticRouteNextHopUpdate(d *schema.ResourceData, m interfac
 	d.Partial(true)
 	err = checkTDn(aciClient, checkDns)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Partial(false)
 
@@ -257,11 +267,11 @@ func resourceAciL3outStaticRouteNextHopUpdate(d *schema.ResourceData, m interfac
 		_, newRelParam := d.GetChange("relation_ip_rs_nexthop_route_track")
 		err = aciClient.DeleteRelationipRsNexthopRouteTrackFromL3outStaticRouteNextHop(ipNexthopP.DistinguishedName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 		err = aciClient.CreateRelationipRsNexthopRouteTrackFromL3outStaticRouteNextHop(ipNexthopP.DistinguishedName, newRelParam.(string))
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 
 	}
@@ -269,11 +279,11 @@ func resourceAciL3outStaticRouteNextHopUpdate(d *schema.ResourceData, m interfac
 		_, newRelParam := d.GetChange("relation_ip_rs_nh_track_member")
 		err = aciClient.DeleteRelationipRsNHTrackMemberFromL3outStaticRouteNextHop(ipNexthopP.DistinguishedName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 		err = aciClient.CreateRelationipRsNHTrackMemberFromL3outStaticRouteNextHop(ipNexthopP.DistinguishedName, newRelParam.(string))
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 
 	}
@@ -281,11 +291,11 @@ func resourceAciL3outStaticRouteNextHopUpdate(d *schema.ResourceData, m interfac
 	d.SetId(ipNexthopP.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciL3outStaticRouteNextHopRead(d, m)
+	return resourceAciL3outStaticRouteNextHopRead(ctx, d, m)
 
 }
 
-func resourceAciL3outStaticRouteNextHopRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciL3outStaticRouteNextHopRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -297,7 +307,12 @@ func resourceAciL3outStaticRouteNextHopRead(d *schema.ResourceData, m interface{
 		d.SetId("")
 		return nil
 	}
-	setL3outStaticRouteNextHopAttributes(ipNexthopP, d)
+	_, err = setL3outStaticRouteNextHopAttributes(ipNexthopP, d)
+
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 
 	ipRsNexthopRouteTrackData, err := aciClient.ReadRelationipRsNexthopRouteTrackFromL3outStaticRouteNextHop(dn)
 	if err != nil {
@@ -334,18 +349,18 @@ func resourceAciL3outStaticRouteNextHopRead(d *schema.ResourceData, m interface{
 	return nil
 }
 
-func resourceAciL3outStaticRouteNextHopDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciL3outStaticRouteNextHopDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "ipNexthopP")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
 }
