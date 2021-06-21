@@ -15,11 +15,12 @@ Manages ACI BGP Route Summarization
 ```hcl
 resource "aci_bgp_route_summarization" "example" {
 
-  tenant_dn  = aci_tenant.example.id
-  name  = "example"
+  tenant_dn   = aci_tenant.example.id
+  name        = "example"
   annotation  = "example"
-  attrmap  = "example"
-  ctrl = "as-set"
+  description = "from terraform"
+  attrmap     = "example"
+  ctrl        = "as-set"
   name_alias  = "example"
 
 }
@@ -33,7 +34,7 @@ resource "aci_bgp_route_summarization" "example" {
 - `description` - (Optional) Description for object BGP route summarization.
 - `attrmap` - (Optional) Summary attribute map.
 - `ctrl` - (Optional) The control state.
-  Allowed values: "as-set", "". Default value: "".
+  Allowed values: "as-set", "none". Default value: "none".
 - `name_alias` - (Optional) Name alias for object BGP route summarization.
 
 ## Attribute Reference

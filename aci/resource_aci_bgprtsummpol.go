@@ -49,7 +49,7 @@ func resourceAciBgpRouteSummarization() *schema.Resource {
 				Optional: true,
 				Computed: true,
 				ValidateFunc: validation.StringInSlice([]string{
-					"as-set", "",
+					"as-set", "none",
 				}, false),
 			},
 
@@ -93,6 +93,9 @@ func setBgpRouteSummarizationAttributes(bgpRtSummPol *models.BgpRouteSummarizati
 	d.Set("annotation", bgpRtSummPolMap["annotation"])
 	d.Set("attrmap", bgpRtSummPolMap["attrmap"])
 	d.Set("ctrl", bgpRtSummPolMap["ctrl"])
+	if bgpRtSummPolMap["ctrl"] == "" {
+		d.Set("ctrl", "none")
+	}
 	d.Set("name_alias", bgpRtSummPolMap["nameAlias"])
 	return d, nil
 }
@@ -139,6 +142,9 @@ func resourceAciBgpRouteSummarizationCreate(ctx context.Context, d *schema.Resou
 	}
 	if Ctrl, ok := d.GetOk("ctrl"); ok {
 		bgpRtSummPolAttr.Ctrl = Ctrl.(string)
+		if Ctrl.(string) == "none" {
+			bgpRtSummPolAttr.Ctrl = "{}"
+		}
 	}
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		bgpRtSummPolAttr.NameAlias = NameAlias.(string)
@@ -186,6 +192,9 @@ func resourceAciBgpRouteSummarizationUpdate(ctx context.Context, d *schema.Resou
 	}
 	if Ctrl, ok := d.GetOk("ctrl"); ok {
 		bgpRtSummPolAttr.Ctrl = Ctrl.(string)
+		if Ctrl.(string) == "none" {
+			bgpRtSummPolAttr.Ctrl = "{}"
+		}
 	}
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		bgpRtSummPolAttr.NameAlias = NameAlias.(string)
