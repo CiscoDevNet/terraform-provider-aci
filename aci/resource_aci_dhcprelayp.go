@@ -261,6 +261,13 @@ func resourceAciDHCPRelayPolicyUpdate(ctx context.Context, d *schema.ResourceDat
 
 	}
 
+	d.Partial(true)
+	err = checkTDn(aciClient, checkDns)
+	if err != nil {
+		return diag.FromErr(err)
+	}
+	d.Partial(false)
+
 	if d.HasChange("relation_dhcp_rs_prov") {
 		oldRel, newRel := d.GetChange("relation_dhcp_rs_prov")
 		oldRelList := oldRel.(*schema.Set).List()
