@@ -314,7 +314,15 @@ func resourceAciDHCPRelayPolicyRead(ctx context.Context, d *schema.ResourceData,
 		log.Printf("[DEBUG] Error while reading relation dhcpRsProv %v", err)
 
 	} else {
-		d.Set("relation_dhcp_rs_prov", dhcpRsProvData)
+		dhcpRsProvMap := dhcpRsProvData.([]map[string]string)
+		st := make([]map[string]string, 0)
+		for _, dhcpRsProvObj := range dhcpRsProvMap {
+			obj := make(map[string]string, 0)
+			obj["addr"] = dhcpRsProvObj["addr"]
+			obj["tdn"] = dhcpRsProvObj["tDn"]
+			st = append(st, obj)
+		}
+		d.Set("relation_dhcp_rs_prov", st)
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
