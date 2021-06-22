@@ -30,12 +30,12 @@ resource "aci_l3out_vpc_member" "example" {
 - `leaf_port_dn` - (Required) Distinguished name of parent leaf port object.
 - `side` - (Required) Side of Object l3out VPC member.  
 Allowed values: "A" and "B". Default value is "A".
-- `addr` - (Optional) Peer IP address.
+- `addr` - (Optional) Peer IP address. Default value is "0.0.0.0".
 - `description` - (Optional) Description for object l3out VPC member.
 - `annotation` - (Optional) Annotation for object l3out VPC member.
 - `ipv6_dad` - (Optional) IPv6 DAD feature of l3out VPC member.
   Allowed values: "disabled", "enabled". Default value is "enabled".
-- `ll_addr` - (Optional) Override of system generated IPv6 link-local address.
+- `ll_addr` - (Optional) Override of system generated IPv6 link-local address. Default value is "::".
 - `name_alias` - (Optional) Name alias for object l3out vpc member.
 
 ## Attribute Reference
