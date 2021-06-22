@@ -89,4 +89,16 @@ If you want to work on the provider, you'll first need [Go](http://www.golang.or
 
 To compile the provider, run `make build`. This will build the provider with sanity checks present in scripts directory and put the provider binary in `$GOPATH/bin` directory.
 
+<strong>Important: </strong>To successfully use the provider you need to use the below configuration just before setting up the provider with your cisco aci credentials.
+
+```hcl
+terraform {
+  required_providers {
+    aci = {
+      source = "ciscodevnet/aci"
+    }
+  }
+}
+```
+
 <strong>NOTE:</strong> Currently only resource properties supports the reflecting manual changes made in CISCO ACI. Manual changes to relationship is not taken care by the provider.
