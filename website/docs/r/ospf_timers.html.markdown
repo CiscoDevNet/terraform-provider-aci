@@ -47,9 +47,9 @@ resource "aci_ospf_timers" "example" {
 - `name` - (Required) Name of OSPF timers object.
 - `annotation` - (Optional) Annotation for OSPF timers object.
 - `description` - (Optional) Description for OSPF timers object.
-- `bw_ref` - (Optional) OSPF policy bandwidth for OSPF timers object. Default value is "40000".
+- `bw_ref` - (Optional) OSPF policy bandwidth for OSPF timers object. Range of allowed values is "1" to "4000000". Default value is "40000".
 - `ctrl` - (Optional) Control state for OSPF timers object. It is in the form of comma separated string and allowed values are "name-lookup" and"pfx-suppress". To deselect both the options, just pass `ctrl=""`. Default value is "" that means none of the options are selected.
-- `dist` - (Optional) Preferred administrative distance for OSPF timers object. Default value is "110".
+- `dist` - (Optional) Preferred administrative distance for OSPF timers object. Range of allowed values is "1" to "255". Default value is "110".
 - `gr_ctrl` - (Optional) Graceful restart enabled or helper only for OSPF timers object. Allowed value is "helper". Default value is "helper". To deselect the option, just pass `gr_ctrl=""`
 - `lsa_arrival_intvl` - (Optional) Minimum interval between the arrivals of lsas for OSPF timers object. Default value is "1000".
 - `lsa_gp_pacing_intvl` - (Optional) LSA group pacing interval for OSPF timers object. Default value is "10".
