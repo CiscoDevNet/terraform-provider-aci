@@ -31,7 +31,7 @@ resource "aci_l3out_bfd_interface_profile" "example" {
 - `name_alias` - (Optional) Name alias for L3out BFD interface profile object.
 - `description` - (Optional) Description for L3out BFD interface profile object.
 - `key` - (Optional) Password to identify this L3out BFD interface profile object.
-- `key_id` - (Optional) Authentication key id for L3out BFD interface profile object. Range of allowd values is "1" to "255". Default value is "1".
+- `key_id` - (Optional) Authentication key id for L3out BFD interface profile object. The range of allowed values is "1" to "255". The default value is "1".
 - `interface_profile_type` - (Optional) Component type for L3out BFD interface profile object. Allowed values are "none" and "sha1". Default value is "none".
 
 - `relation_bfd_rs_if_pol` - (Optional) Relation to class bfdIfPol. Cardinality - N_TO_ONE. Type - String.
