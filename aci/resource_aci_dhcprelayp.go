@@ -3,8 +3,6 @@ package aci
 import (
 	"fmt"
 	"log"
-	"reflect"
-	"sort"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
@@ -72,9 +70,19 @@ func resourceAciDHCPRelayPolicy() *schema.Resource {
 
 			"relation_dhcp_rs_prov": &schema.Schema{
 				Type:     schema.TypeSet,
-				Elem:     &schema.Schema{Type: schema.TypeString},
 				Optional: true,
-				Set:      schema.HashString,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"tdn": {
+							Type:     schema.TypeString,
+							Required: true,
+						},
+						"addr": {
+							Type:     schema.TypeString,
+							Required: true,
+						},
+					},
+				},
 			},
 		}),
 	}
@@ -171,9 +179,10 @@ func resourceAciDHCPRelayPolicyCreate(d *schema.ResourceData, m interface{}) err
 	checkDns := make([]string, 0, 1)
 
 	if relationTodhcpRsProv, ok := d.GetOk("relation_dhcp_rs_prov"); ok {
-		relationParamList := toStringList(relationTodhcpRsProv.(*schema.Set).List())
+		relationParamList := relationTodhcpRsProv.(*schema.Set).List()
 		for _, relationParam := range relationParamList {
-			checkDns = append(checkDns, relationParam)
+			paramMap := relationParam.(map[string]interface{})
+			checkDns = append(checkDns, paramMap["tdn"].(string))
 		}
 	}
 
@@ -185,9 +194,10 @@ func resourceAciDHCPRelayPolicyCreate(d *schema.ResourceData, m interface{}) err
 	d.Partial(false)
 
 	if relationTodhcpRsProv, ok := d.GetOk("relation_dhcp_rs_prov"); ok {
-		relationParamList := toStringList(relationTodhcpRsProv.(*schema.Set).List())
+		relationParamList := relationTodhcpRsProv.(*schema.Set).List()
 		for _, relationParam := range relationParamList {
-			err = aciClient.CreateRelationdhcpRsProvFromDHCPRelayPolicy(dhcpRelayP.DistinguishedName, relationParam)
+			paramMap := relationParam.(map[string]interface{})
+			err = aciClient.CreateRelationdhcpRsProvFromDHCPRelayPolicy(dhcpRelayP.DistinguishedName, paramMap["tdn"].(string), paramMap["addr"].(string))
 
 			if err != nil {
 				return err
@@ -247,13 +257,11 @@ func resourceAciDHCPRelayPolicyUpdate(d *schema.ResourceData, m interface{}) err
 	checkDns := make([]string, 0, 1)
 
 	if d.HasChange("relation_dhcp_rs_prov") {
-		oldRel, newRel := d.GetChange("relation_dhcp_rs_prov")
-		oldRelSet := oldRel.(*schema.Set)
-		newRelSet := newRel.(*schema.Set)
-		relToCreate := toStringList(newRelSet.Difference(oldRelSet).List())
-
-		for _, relDn := range relToCreate {
-			checkDns = append(checkDns, relDn)
+		newRel := d.Get("relation_dhcp_rs_prov")
+		newRelList := newRel.(*schema.Set).List()
+		for _, relationParam := range newRelList {
+			paramMap := relationParam.(map[string]interface{})
+			checkDns = append(checkDns, paramMap["tdn"].(string))
 		}
 	}
 
@@ -266,21 +274,21 @@ func resourceAciDHCPRelayPolicyUpdate(d *schema.ResourceData, m interface{}) err
 
 	if d.HasChange("relation_dhcp_rs_prov") {
 		oldRel, newRel := d.GetChange("relation_dhcp_rs_prov")
-		oldRelSet := oldRel.(*schema.Set)
-		newRelSet := newRel.(*schema.Set)
-		relToDelete := toStringList(oldRelSet.Difference(newRelSet).List())
-		relToCreate := toStringList(newRelSet.Difference(oldRelSet).List())
+		oldRelList := oldRel.(*schema.Set).List()
+		newRelList := newRel.(*schema.Set).List()
 
-		for _, relDn := range relToDelete {
-			err = aciClient.DeleteRelationdhcpRsProvFromDHCPRelayPolicy(dhcpRelayP.DistinguishedName, relDn)
+		for _, relationParam := range oldRelList {
+			paramMap := relationParam.(map[string]interface{})
+			err = aciClient.DeleteRelationdhcpRsProvFromDHCPRelayPolicy(dhcpRelayP.DistinguishedName, paramMap["tdn"].(string))
 			if err != nil {
 				return err
 			}
 
 		}
 
-		for _, relDn := range relToCreate {
-			err = aciClient.CreateRelationdhcpRsProvFromDHCPRelayPolicy(dhcpRelayP.DistinguishedName, relDn)
+		for _, relationParam := range newRelList {
+			paramMap := relationParam.(map[string]interface{})
+			err = aciClient.CreateRelationdhcpRsProvFromDHCPRelayPolicy(dhcpRelayP.DistinguishedName, paramMap["tdn"].(string), paramMap["addr"].(string))
 			if err != nil {
 				return err
 			}
@@ -317,18 +325,18 @@ func resourceAciDHCPRelayPolicyRead(d *schema.ResourceData, m interface{}) error
 
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation dhcpRsProv %v", err)
-		d.Set("relation_dhcp_rs_prov", make([]string, 0, 1))
+		d.Set("relation_dhcp_rs_prov", make([]map[string]string, 0))
 
 	} else {
-		if _, ok := d.GetOk("relation_dhcp_rs_prov"); ok {
-			relationParamList := toStringList(d.Get("relation_dhcp_rs_prov").(*schema.Set).List())
-			dhcpRsProvDataList := toStringList(dhcpRsProvData.(*schema.Set).List())
-			sort.Strings(relationParamList)
-			sort.Strings(dhcpRsProvDataList)
-			if !reflect.DeepEqual(relationParamList, dhcpRsProvDataList) {
-				d.Set("relation_dhcp_rs_prov", make([]string, 0, 1))
-			}
+		dhcpRsProvMap := dhcpRsProvData.([]map[string]string)
+		st := make([]map[string]string, 0)
+		for _, dhcpRsProvObj := range dhcpRsProvMap {
+			obj := make(map[string]string, 0)
+			obj["addr"] = dhcpRsProvObj["addr"]
+			obj["tdn"] = dhcpRsProvObj["tDn"]
+			st = append(st, obj)
 		}
+		d.Set("relation_dhcp_rs_prov", st)
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
