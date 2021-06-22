@@ -31,7 +31,7 @@ resource "aci_ospf_route_summarization" "example" {
 - `name` - (Required) Name of object OSPF route summarization.
 - `annotation` - (Optional) Annotation for object OSPF route summarization.
 - `description` - Description for for object OSPF route summarization.
-- `cost` - (Optional) The OSPF Area cost for the default summary LSAs. The Area cost is used with NSSA and stub area types only. Default value: "unspecified".
+- `cost` - (Optional) The OSPF Area cost for the default summary LSAs. The Area cost is used with NSSA and stub area types only. Range of allowed values is "0" to "16777215". Default value: "unspecified".
 - `inter_area_enabled` - (Optional) Inter area enabled flag for object OSPF route summarization.
   Allowed values: "no", "yes". Default value: "no".
 - `name_alias` - (Optional) Name alias for object OSPF route summarization.
