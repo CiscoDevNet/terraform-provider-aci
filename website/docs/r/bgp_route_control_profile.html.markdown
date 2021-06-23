@@ -34,7 +34,7 @@ resource "aci_bgp_route_control_profile" "example" {
 
 ## Argument Reference
 
-- `parent_dn` - (Required) Distinguished name of parent object.
+- `parent_dn` - (Required) Distinguished name of the parent object.
 - `name` - (Required) Name of router control profile object.
 - `annotation` - (Optional) Annotation for router control profile object.
 - `description` - (Optional) Description for router control profile object.

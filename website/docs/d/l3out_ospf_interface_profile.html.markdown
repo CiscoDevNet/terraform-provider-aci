@@ -20,7 +20,7 @@ data "aci_l3out_ospf_interface_profile" "example" {
 
 ## Argument Reference
 
-- `logical_interface_profile_dn` - (Required) Distinguished name of parent logical interface profile object.
+- `logical_interface_profile_dn` - (Required) Distinguished name of the parent logical interface profile object.
 
 ## Attribute Reference
 

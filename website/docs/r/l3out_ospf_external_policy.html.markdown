@@ -14,7 +14,6 @@ Manages ACI L3-out OSPF External Policy
 
 ```hcl
 resource "aci_l3out_ospf_external_policy" "example" {
-
   l3_outside_dn  = aci_l3_outside.example.id
   annotation     = "example"
   description    = "from terraform"
@@ -24,13 +23,12 @@ resource "aci_l3out_ospf_external_policy" "example" {
   area_type      = "nssa"
   multipod_internal = "no"
   name_alias     = "example"
-
 }
 ```
 
 ## Argument Reference
 
-- `l3_outside_dn` - (Required) Distinguished name of parent l3 outside object.
+- `l3_outside_dn` - (Required) Distinguished name of the parent l3 outside object.
 - `annotation` - (Optional) Annotation for object L3-out OSPF External Policy.
 - `description` - (Optional) Description for object L3-out OSPF External Policy.
 - `area_cost` - (Optional) The OSPF Area cost. Default value: "1".
