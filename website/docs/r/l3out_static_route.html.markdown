@@ -21,7 +21,7 @@ resource "aci_l3out_static_route" "example" {
   name_alias  = "example"
   pref  = "1"
   rt_ctrl = "bfd"
-  description = "from terraform"  
+  description = "from terraform"
 }
 ```
 
@@ -34,7 +34,7 @@ resource "aci_l3out_static_route" "example" {
 - `annotation` - (Optional) Annotation for object l3out static route.
 - `description` - (Optional) Description for object l3out static route.
 - `name_alias` - (Optional) Name alias for object l3out static route.
-- `pref` - (Optional) The administrative preference value for this route. This value is useful for resolving routes advertised from different protocols. Default value is "1".
+- `pref` - (Optional) The administrative preference value for this route. This value is useful for resolving routes advertised from different protocols. Range of allowed values is "1" to "255". Default value is "1".
 - `rt_ctrl` - (Optional) Route control for object l3out static route.
   Allowed values: "bfd", "unspecified". Default value is "unspecified".
 - `relation_ip_rs_route_track` - (Optional) Relation to class fvTrackList. Cardinality - N_TO_ONE. Type - String.

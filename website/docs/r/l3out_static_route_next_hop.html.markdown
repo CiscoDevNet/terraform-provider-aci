@@ -19,7 +19,7 @@ resource "aci_l3out_static_route_next_hop" "example" {
   nh_addr  = "10.0.0.1"
   annotation  = "example"
   name_alias  = "example"
-  pref = "unspecified"
+  pref = "1"
   nexthop_profile_type = "prefix"
   description = "from terraform"
 
@@ -34,7 +34,7 @@ resource "aci_l3out_static_route_next_hop" "example" {
 - `description` - (Optional) Description for object l3out static route next hop.
 - `name_alias` - (Optional) Name alias for object l3out static route next hop.
 - `pref` - (Optional) Administrative preference value for this route.  
-  Allowed values: "unspecified". Default value: "unspecified".
+  Range of allowed values is "1" to "255". Default value is "unspecified".
 - `nexthop_profile_type` - (Optional) Component type.  
   Allowed values: "none", "prefix". Default value: "prefix".
 

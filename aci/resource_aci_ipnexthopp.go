@@ -48,9 +48,6 @@ func resourceAciL3outStaticRouteNextHop() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
-				ValidateFunc: validation.StringInSlice([]string{
-					"unspecified",
-				}, false),
 			},
 
 			"nexthop_profile_type": &schema.Schema{
