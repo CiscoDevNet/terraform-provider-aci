@@ -20,7 +20,7 @@ data "aci_l3out_ospf_external_policy" "example" {
 
 ## Argument Reference
 
-- `l3_outside_dn` - (Required) Distinguished name of parent l3 outside object.
+- `l3_outside_dn` - (Required) Distinguished name of the parent l3 outside object.
 
 ## Attribute Reference
 
@@ -31,5 +31,5 @@ data "aci_l3out_ospf_external_policy" "example" {
 - `area_ctrl` - (Optional) The controls of redistribution and summary LSA generation into NSSA and Stub areas.
 - `area_id` - (Optional) The OSPF Area ID.
 - `area_type` - (Optional) The area type.
-- `multipod_internal` - (Optional) Start OSPF in WAN instance instead of default.
+- `multipod_internal` - (Optional) Start OSPF in WAN instance instead of the default.
 - `name_alias` - (Optional) Name alias for object L3-out OSPF External Policy.
