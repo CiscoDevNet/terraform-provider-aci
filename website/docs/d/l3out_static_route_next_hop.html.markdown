@@ -15,7 +15,7 @@ Data source for ACI L3out Static Route Next Hop
 ```hcl
 data "aci_l3out_static_route_next_hop" "example" {
   static_route_dn  = aci_l3out_static_route.example.id
-  nh_addr  = "example"
+  nh_addr  = "10.0.0.1"
 }
 ```
 
