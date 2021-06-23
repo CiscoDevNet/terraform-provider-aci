@@ -15,8 +15,6 @@ import (
 const Created = "created"
 const Deleted = "deleted"
 
-var class string
-
 const ErrDistinguishedNameNotFound = "The Dn is not present in the content"
 
 func resourceAciRest() *schema.Resource {
@@ -64,7 +62,7 @@ func resourceAciRestCreate(d *schema.ResourceData, m interface{}) error {
 	className := classNameIntf.(string)
 	dn := models.StripQuotes(models.StripSquareBrackets(cont.Search(className, "attributes", "dn").String()))
 	if dn == "{}" {
-		d.SetId(GetDN(d, m))
+		d.SetId(GetDN(d, m, className))
 	} else {
 		d.SetId(dn)
 	}
@@ -81,7 +79,7 @@ func resourceAciRestUpdate(d *schema.ResourceData, m interface{}) error {
 	className := classNameIntf.(string)
 	dn := models.StripQuotes(models.StripSquareBrackets(cont.Search(className, "attributes", "dn").String()))
 	if dn == "{}" {
-		d.SetId(GetDN(d, m))
+		d.SetId(GetDN(d, m, className))
 	} else {
 		d.SetId(dn)
 	}
@@ -106,11 +104,11 @@ func resourceAciRestDelete(d *schema.ResourceData, m interface{}) error {
 	return nil
 }
 
-func GetDN(d *schema.ResourceData, m interface{}) string {
+func GetDN(d *schema.ResourceData, m interface{}, className string) string {
 	aciClient := m.(*client.Client)
 	path := d.Get("path").(string)
 	cont, _ := aciClient.GetViaURL(path)
-	dn := models.StripQuotes(models.StripSquareBrackets(cont.Search("imdata", class, "attributes", "dn").String()))
+	dn := models.StripQuotes(models.StripSquareBrackets(cont.Search("imdata", className, "attributes", "dn").String()))
 	return fmt.Sprintf("%s", dn)
 }
 
@@ -169,6 +167,7 @@ func PostAndSetStatus(d *schema.ResourceData, m interface{}, status string) (*co
 	if err_output != nil {
 		return nil, err_output
 	}
+	var class string
 	for key, _ := range output {
 		class = key
 	}

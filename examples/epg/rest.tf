@@ -7,7 +7,6 @@ resource "aci_rest" "rest_qos_custom_pol" {
   }
 }
 
-
 resource "aci_rest" "rest_infra_domp" {
   path       = "api/node/mo/uni/fc-test.json"
   class_name = "fcDomP"
@@ -55,5 +54,14 @@ resource "aci_rest" "rest_taboo_con" {
 
   content = {
     "name" = "testcon"
+  }
+}
+
+resource "aci_rest" "rest_abs_graph" {
+  path       = "api/node/mo/${aci_tenant.tenant_for_contract.id}/AbsGraph-testgraph.json"
+  class_name = "vnsAbsGraph"
+
+  content = {
+    "name" = "testgraph"
   }
 }
