@@ -37,14 +37,14 @@ resource "aci_l3out_floating_svi" "example" {
 - `logical_interface_profile_dn` - (Required) Distinguished name of parent logical interface profile object.
 - `node_dn` - (Required) Distinguished name of the node for L3out floating SVI object.
 - `encap` - (Required) Port encapsulation for L3out floating SVI object.
-- `addr` - (Optional) Peer address for L3out floating SVI object.
+- `addr` - (Optional) Peer address for L3out floating SVI object. Default value: "0.0.0.0".
 - `annotation` - (Optional) Annotation for L3out floating SVI object.
 - `description` - (Optional) Description for L3out floating SVI object.
 - `autostate` - (Optional) Autostate for L3out floating SVI object. Allowed values are "disabled" and "enabled". Default value is "disabled".
 - `encap_scope` - (Optional) Encap scope for L3out floating SVI object. Allowed values are "ctx" and "local". Default value is "local".
 - `if_inst_t` - (Optional) Interface type for L3out floating SVI object. Allowed values are "ext-svi", "l3-port", "sub-interface" and "unspecified". Default value is "unspecified".
 - `ipv6_dad` - (Optional) IPv6 dad for L3out floating SVI object. Allowed values are "disabled" and "enabled". Default value is "enabled".
-- `ll_addr` - (Optional) Link local address for L3out floating SVI object.
+- `ll_addr` - (Optional) Link local address for L3out floating SVI object. Default value: "::".
 - `mac` - (Optional) MAC address for L3out floating SVI object.
 - `mode` - (Optional) BGP domain mode for L3out floating SVI object. Allowed values are "native", "regular" and "untagged". Default value is "regular".
 - `mtu` - (Optional) Administrative MTU port on the aggregated interface for L3out floating SVI object. Range of allowed values is "576" to "9216". Default value is "inherit".
