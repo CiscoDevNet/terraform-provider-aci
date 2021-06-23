@@ -33,8 +33,8 @@ resource "aci_l3out_static_route_next_hop" "example" {
 - `annotation` - (Optional) Annotation for object l3out static route next hop.
 - `description` - (Optional) Description for object l3out static route next hop.
 - `name_alias` - (Optional) Name alias for object l3out static route next hop.
-- `pref` - (Optional) Administrative preference value for this route.  
-  Range of allowed values is "1" to "255". Default value is "unspecified".
+- `pref` - (Optional) Administrative preference value for this route. Range: "1" to "255"
+  Allowed values: "unspecified". Default value: "unspecified".
 - `nexthop_profile_type` - (Optional) Component type.  
   Allowed values: "none", "prefix". Default value: "prefix".
 
