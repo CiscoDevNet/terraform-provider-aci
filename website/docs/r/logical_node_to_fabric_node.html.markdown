@@ -14,7 +14,7 @@ Manages ACI Logical Node to Fabric Node
 ```hcl
 resource "aci_logical_node_to_fabric_node" "example" {
   logical_node_profile_dn  = aci_logical_node_profile.example.id
-  tdn               = "topology/pod-1/paths-201"
+  tdn               = "topology/pod-1/node-201"
   annotation        = "annotation"
   config_issues     = "none"
   rtr_id            = "10.0.1.1"
