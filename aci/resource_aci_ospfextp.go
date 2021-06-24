@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
@@ -55,6 +56,14 @@ func resourceAciL3outOspfExternalPolicy() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				StateFunc: func(val interface{}) string {
+					numList := strings.Split(val.(string), ".")
+					ip := []string{"0", "0", "0", "0"}
+					for i := 1; i <= len(numList); i++ {
+						ip[4-i] = numList[len(numList)-i]
+					}
+					return strings.Join(ip, ".")
+				},
 			},
 
 			"area_type": &schema.Schema{
