@@ -80,8 +80,9 @@ func resourceAciDHCPRelayPolicy() *schema.Resource {
 							Required: true,
 						},
 						"addr": {
-							Type:     schema.TypeString,
-							Required: true,
+							Type:         schema.TypeString,
+							Required:     true,
+							ValidateFunc: validation.IsIPv4Address,
 						},
 					},
 				},

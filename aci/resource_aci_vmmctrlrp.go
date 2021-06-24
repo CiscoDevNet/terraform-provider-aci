@@ -9,8 +9,8 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciVMMController() *schema.Resource {
@@ -387,9 +387,6 @@ func resourceAciVMMControllerCreate(d *schema.ResourceData, m interface{}) error
 	if err != nil {
 		return err
 	}
-	d.Partial(true)
-	d.SetPartial("name")
-	d.Partial(false)
 	checkDns := make([]string, 0, 1)
 
 	if relationTovmmRsAcc, ok := d.GetOk("relation_vmm_rs_acc"); ok {
@@ -456,9 +453,6 @@ func resourceAciVMMControllerCreate(d *schema.ResourceData, m interface{}) error
 		if err != nil {
 			return err
 		}
-		d.Partial(true)
-		d.SetPartial("relation_vmm_rs_acc")
-		d.Partial(false)
 
 	}
 
@@ -469,9 +463,6 @@ func resourceAciVMMControllerCreate(d *schema.ResourceData, m interface{}) error
 		if err != nil {
 			return err
 		}
-		d.Partial(true)
-		d.SetPartial("relation_vmm_rs_ctrlr_p_mon_pol")
-		d.Partial(false)
 
 	}
 
@@ -482,9 +473,6 @@ func resourceAciVMMControllerCreate(d *schema.ResourceData, m interface{}) error
 		if err != nil {
 			return err
 		}
-		d.Partial(true)
-		d.SetPartial("relation_vmm_rs_mcast_addr_ns")
-		d.Partial(false)
 
 	}
 
@@ -495,9 +483,6 @@ func resourceAciVMMControllerCreate(d *schema.ResourceData, m interface{}) error
 		if err != nil {
 			return err
 		}
-		d.Partial(true)
-		d.SetPartial("relation_vmm_rs_mgmt_e_pg")
-		d.Partial(false)
 
 	}
 
@@ -509,9 +494,6 @@ func resourceAciVMMControllerCreate(d *schema.ResourceData, m interface{}) error
 			if err != nil {
 				return err
 			}
-			d.Partial(true)
-			d.SetPartial("relation_vmm_rs_to_ext_dev_mgr")
-			d.Partial(false)
 		}
 	}
 
@@ -524,9 +506,6 @@ func resourceAciVMMControllerCreate(d *schema.ResourceData, m interface{}) error
 			if err != nil {
 				return err
 			}
-			d.Partial(true)
-			d.SetPartial("relation_vmm_rs_vmm_ctrlr_p")
-			d.Partial(false)
 		}
 	}
 
@@ -537,9 +516,6 @@ func resourceAciVMMControllerCreate(d *schema.ResourceData, m interface{}) error
 		if err != nil {
 			return err
 		}
-		d.Partial(true)
-		d.SetPartial("relation_vmm_rs_vxlan_ns")
-		d.Partial(false)
 
 	}
 
@@ -550,9 +526,6 @@ func resourceAciVMMControllerCreate(d *schema.ResourceData, m interface{}) error
 		if err != nil {
 			return err
 		}
-		d.Partial(true)
-		d.SetPartial("relation_vmm_rs_vxlan_ns_def")
-		d.Partial(false)
 
 	}
 
@@ -645,9 +618,6 @@ func resourceAciVMMControllerUpdate(d *schema.ResourceData, m interface{}) error
 	if err != nil {
 		return err
 	}
-	d.Partial(true)
-	d.SetPartial("name")
-	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
 
@@ -725,9 +695,6 @@ func resourceAciVMMControllerUpdate(d *schema.ResourceData, m interface{}) error
 		if err != nil {
 			return err
 		}
-		d.Partial(true)
-		d.SetPartial("relation_vmm_rs_acc")
-		d.Partial(false)
 
 	}
 	if d.HasChange("relation_vmm_rs_ctrlr_p_mon_pol") || d.HasChange("annotation") {
@@ -741,9 +708,6 @@ func resourceAciVMMControllerUpdate(d *schema.ResourceData, m interface{}) error
 		if err != nil {
 			return err
 		}
-		d.Partial(true)
-		d.SetPartial("relation_vmm_rs_ctrlr_p_mon_pol")
-		d.Partial(false)
 
 	}
 	if d.HasChange("relation_vmm_rs_mcast_addr_ns") || d.HasChange("annotation") {
@@ -757,9 +721,6 @@ func resourceAciVMMControllerUpdate(d *schema.ResourceData, m interface{}) error
 		if err != nil {
 			return err
 		}
-		d.Partial(true)
-		d.SetPartial("relation_vmm_rs_mcast_addr_ns")
-		d.Partial(false)
 
 	}
 	if d.HasChange("relation_vmm_rs_mgmt_e_pg") || d.HasChange("annotation") {
@@ -773,9 +734,6 @@ func resourceAciVMMControllerUpdate(d *schema.ResourceData, m interface{}) error
 		if err != nil {
 			return err
 		}
-		d.Partial(true)
-		d.SetPartial("relation_vmm_rs_mgmt_e_pg")
-		d.Partial(false)
 
 	}
 	if d.HasChange("relation_vmm_rs_to_ext_dev_mgr") || d.HasChange("annotation") {
@@ -798,9 +756,6 @@ func resourceAciVMMControllerUpdate(d *schema.ResourceData, m interface{}) error
 			if err != nil {
 				return err
 			}
-			d.Partial(true)
-			d.SetPartial("relation_vmm_rs_to_ext_dev_mgr")
-			d.Partial(false)
 		}
 	}
 	if d.HasChange("relation_vmm_rs_vmm_ctrlr_p") || d.HasChange("annotation") {
@@ -823,9 +778,6 @@ func resourceAciVMMControllerUpdate(d *schema.ResourceData, m interface{}) error
 				return err
 			}
 		}
-		d.Partial(true)
-		d.SetPartial("relation_vmm_rs_vmm_ctrlr_p")
-		d.Partial(false)
 	}
 	if d.HasChange("relation_vmm_rs_vxlan_ns") || d.HasChange("annotation") {
 		_, newRelParam := d.GetChange("relation_vmm_rs_vxlan_ns")
@@ -838,9 +790,6 @@ func resourceAciVMMControllerUpdate(d *schema.ResourceData, m interface{}) error
 		if err != nil {
 			return err
 		}
-		d.Partial(true)
-		d.SetPartial("relation_vmm_rs_vxlan_ns")
-		d.Partial(false)
 
 	}
 	if d.HasChange("relation_vmm_rs_vxlan_ns_def") || d.HasChange("annotation") {
@@ -854,9 +803,6 @@ func resourceAciVMMControllerUpdate(d *schema.ResourceData, m interface{}) error
 		if err != nil {
 			return err
 		}
-		d.Partial(true)
-		d.SetPartial("relation_vmm_rs_vxlan_ns_def")
-		d.Partial(false)
 
 	}
 

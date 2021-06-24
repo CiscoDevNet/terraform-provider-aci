@@ -6,7 +6,7 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func resourceAciVMMCredential() *schema.Resource {
@@ -119,9 +119,6 @@ func resourceAciVMMCredentialCreate(d *schema.ResourceData, m interface{}) error
 	if err != nil {
 		return err
 	}
-	d.Partial(true)
-	d.SetPartial("name")
-	d.Partial(false)
 
 	d.SetId(vmmUsrAccP.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
@@ -164,9 +161,6 @@ func resourceAciVMMCredentialUpdate(d *schema.ResourceData, m interface{}) error
 	if err != nil {
 		return err
 	}
-	d.Partial(true)
-	d.SetPartial("name")
-	d.Partial(false)
 
 	d.SetId(vmmUsrAccP.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())

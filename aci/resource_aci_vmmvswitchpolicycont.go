@@ -6,7 +6,7 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func resourceAciVSwitchPolicyGroup() *schema.Resource {
@@ -153,9 +153,6 @@ func resourceAciVSwitchPolicyGroupCreate(d *schema.ResourceData, m interface{}) 
 	if err != nil {
 		return err
 	}
-	d.Partial(true)
-	d.SetPartial("name")
-	d.Partial(false)
 	checkDns := make([]string, 0, 1)
 
 	if relationTovmmRsVswitchExporterPol, ok := d.GetOk("relation_vmm_rs_vswitch_exporter_pol"); ok {
@@ -223,9 +220,6 @@ func resourceAciVSwitchPolicyGroupCreate(d *schema.ResourceData, m interface{}) 
 			if err != nil {
 				return err
 			}
-			d.Partial(true)
-			d.SetPartial("relation_vmm_rs_vswitch_exporter_pol")
-			d.Partial(false)
 		}
 	}
 
@@ -236,9 +230,6 @@ func resourceAciVSwitchPolicyGroupCreate(d *schema.ResourceData, m interface{}) 
 		if err != nil {
 			return err
 		}
-		d.Partial(true)
-		d.SetPartial("relation_vmm_rs_vswitch_override_cdp_if_pol")
-		d.Partial(false)
 
 	}
 
@@ -249,9 +240,6 @@ func resourceAciVSwitchPolicyGroupCreate(d *schema.ResourceData, m interface{}) 
 		if err != nil {
 			return err
 		}
-		d.Partial(true)
-		d.SetPartial("relation_vmm_rs_vswitch_override_fw_pol")
-		d.Partial(false)
 
 	}
 
@@ -262,9 +250,6 @@ func resourceAciVSwitchPolicyGroupCreate(d *schema.ResourceData, m interface{}) 
 		if err != nil {
 			return err
 		}
-		d.Partial(true)
-		d.SetPartial("relation_vmm_rs_vswitch_override_lacp_pol")
-		d.Partial(false)
 
 	}
 
@@ -275,10 +260,6 @@ func resourceAciVSwitchPolicyGroupCreate(d *schema.ResourceData, m interface{}) 
 		if err != nil {
 			return err
 		}
-		d.Partial(true)
-		d.SetPartial("relation_vmm_rs_vswitch_override_lldp_if_pol")
-		d.Partial(false)
-
 	}
 
 	if relationTovmmRsVswitchOverrideMcpIfPol, ok := d.GetOk("relation_vmm_rs_vswitch_override_mcp_if_pol"); ok {
@@ -288,9 +269,6 @@ func resourceAciVSwitchPolicyGroupCreate(d *schema.ResourceData, m interface{}) 
 		if err != nil {
 			return err
 		}
-		d.Partial(true)
-		d.SetPartial("relation_vmm_rs_vswitch_override_mcp_if_pol")
-		d.Partial(false)
 
 	}
 
@@ -301,9 +279,6 @@ func resourceAciVSwitchPolicyGroupCreate(d *schema.ResourceData, m interface{}) 
 		if err != nil {
 			return err
 		}
-		d.Partial(true)
-		d.SetPartial("relation_vmm_rs_vswitch_override_mtu_pol")
-		d.Partial(false)
 
 	}
 
@@ -314,9 +289,6 @@ func resourceAciVSwitchPolicyGroupCreate(d *schema.ResourceData, m interface{}) 
 		if err != nil {
 			return err
 		}
-		d.Partial(true)
-		d.SetPartial("relation_vmm_rs_vswitch_override_stp_pol")
-		d.Partial(false)
 
 	}
 
@@ -349,9 +321,6 @@ func resourceAciVSwitchPolicyGroupUpdate(d *schema.ResourceData, m interface{}) 
 	if err != nil {
 		return err
 	}
-	d.Partial(true)
-	d.SetPartial("name")
-	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
 
@@ -434,9 +403,6 @@ func resourceAciVSwitchPolicyGroupUpdate(d *schema.ResourceData, m interface{}) 
 				return err
 			}
 		}
-		d.Partial(true)
-		d.SetPartial("relation_vmm_rs_vswitch_exporter_pol")
-		d.Partial(false)
 	}
 	if d.HasChange("relation_vmm_rs_vswitch_override_cdp_if_pol") || d.HasChange("annotation") {
 		_, newRelParam := d.GetChange("relation_vmm_rs_vswitch_override_cdp_if_pol")
@@ -449,9 +415,6 @@ func resourceAciVSwitchPolicyGroupUpdate(d *schema.ResourceData, m interface{}) 
 		if err != nil {
 			return err
 		}
-		d.Partial(true)
-		d.SetPartial("relation_vmm_rs_vswitch_override_cdp_if_pol")
-		d.Partial(false)
 
 	}
 	if d.HasChange("relation_vmm_rs_vswitch_override_fw_pol") || d.HasChange("annotation") {
@@ -465,10 +428,6 @@ func resourceAciVSwitchPolicyGroupUpdate(d *schema.ResourceData, m interface{}) 
 		if err != nil {
 			return err
 		}
-		d.Partial(true)
-		d.SetPartial("relation_vmm_rs_vswitch_override_fw_pol")
-		d.Partial(false)
-
 	}
 	if d.HasChange("relation_vmm_rs_vswitch_override_lacp_pol") || d.HasChange("annotation") {
 		_, newRelParam := d.GetChange("relation_vmm_rs_vswitch_override_lacp_pol")
@@ -481,10 +440,6 @@ func resourceAciVSwitchPolicyGroupUpdate(d *schema.ResourceData, m interface{}) 
 		if err != nil {
 			return err
 		}
-		d.Partial(true)
-		d.SetPartial("relation_vmm_rs_vswitch_override_lacp_pol")
-		d.Partial(false)
-
 	}
 	if d.HasChange("relation_vmm_rs_vswitch_override_lldp_if_pol") || d.HasChange("annotation") {
 		_, newRelParam := d.GetChange("relation_vmm_rs_vswitch_override_lldp_if_pol")
@@ -497,9 +452,6 @@ func resourceAciVSwitchPolicyGroupUpdate(d *schema.ResourceData, m interface{}) 
 		if err != nil {
 			return err
 		}
-		d.Partial(true)
-		d.SetPartial("relation_vmm_rs_vswitch_override_lldp_if_pol")
-		d.Partial(false)
 
 	}
 	if d.HasChange("relation_vmm_rs_vswitch_override_mcp_if_pol") || d.HasChange("annotation") {
@@ -513,10 +465,6 @@ func resourceAciVSwitchPolicyGroupUpdate(d *schema.ResourceData, m interface{}) 
 		if err != nil {
 			return err
 		}
-		d.Partial(true)
-		d.SetPartial("relation_vmm_rs_vswitch_override_mcp_if_pol")
-		d.Partial(false)
-
 	}
 	if d.HasChange("relation_vmm_rs_vswitch_override_mtu_pol") || d.HasChange("annotation") {
 		_, newRelParam := d.GetChange("relation_vmm_rs_vswitch_override_mtu_pol")
@@ -529,9 +477,6 @@ func resourceAciVSwitchPolicyGroupUpdate(d *schema.ResourceData, m interface{}) 
 		if err != nil {
 			return err
 		}
-		d.Partial(true)
-		d.SetPartial("relation_vmm_rs_vswitch_override_mtu_pol")
-		d.Partial(false)
 
 	}
 	if d.HasChange("relation_vmm_rs_vswitch_override_stp_pol") || d.HasChange("annotation") {
@@ -545,10 +490,6 @@ func resourceAciVSwitchPolicyGroupUpdate(d *schema.ResourceData, m interface{}) 
 		if err != nil {
 			return err
 		}
-		d.Partial(true)
-		d.SetPartial("relation_vmm_rs_vswitch_override_stp_pol")
-		d.Partial(false)
-
 	}
 
 	d.SetId(vmmVSwitchPolicyCont.DistinguishedName)

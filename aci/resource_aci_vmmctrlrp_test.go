@@ -6,9 +6,9 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform/helper/acctest"
-	"github.com/hashicorp/terraform/helper/resource"
-	"github.com/hashicorp/terraform/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/acctest"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
 func TestAccAciVMMController_Basic(t *testing.T) {
@@ -108,8 +108,8 @@ func testAccCheckAciVMMControllerAttributes(vmm_prov_p_name, vmm_dom_p_name, vmm
 			return fmt.Errorf("Bad vmm_ctrlr_p %s", GetMOName(vmm_controller.DistinguishedName))
 		}
 
-		if vmm_dom_p_name != GetMOName(GetParentDn(vmm_controller.DistinguishedName)) {
-			return fmt.Errorf(" Bad vmm_dom_p %s", GetMOName(GetParentDn(vmm_controller.DistinguishedName)))
+		if vmm_dom_p_name != GetMOName(vmm_controller.DistinguishedName) {
+			return fmt.Errorf(" Bad vmm_dom_p %s", GetMOName(vmm_controller.DistinguishedName))
 		}
 		if description != vmm_controller.Description {
 			return fmt.Errorf("Bad vmm_controller Description %s", vmm_controller.Description)

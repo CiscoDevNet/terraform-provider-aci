@@ -6,9 +6,9 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform/helper/acctest"
-	"github.com/hashicorp/terraform/helper/resource"
-	"github.com/hashicorp/terraform/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/acctest"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
 func TestAccAciVMMCredential_Basic(t *testing.T) {
@@ -108,8 +108,8 @@ func testAccCheckAciVMMCredentialAttributes(vmm_prov_p_name, vmm_dom_p_name, vmm
 			return fmt.Errorf("Bad vmm_usr_acc_p %s", GetMOName(vmm_credential.DistinguishedName))
 		}
 
-		if vmm_dom_p_name != GetMOName(GetParentDn(vmm_credential.DistinguishedName)) {
-			return fmt.Errorf(" Bad vmm_dom_p %s", GetMOName(GetParentDn(vmm_credential.DistinguishedName)))
+		if vmm_dom_p_name != GetMOName(vmm_credential.DistinguishedName) {
+			return fmt.Errorf(" Bad vmm_dom_p %s", GetMOName(vmm_credential.DistinguishedName))
 		}
 		if description != vmm_credential.Description {
 			return fmt.Errorf("Bad vmm_credential Description %s", vmm_credential.Description)

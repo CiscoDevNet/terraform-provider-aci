@@ -6,9 +6,9 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform/helper/acctest"
-	"github.com/hashicorp/terraform/helper/resource"
-	"github.com/hashicorp/terraform/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/acctest"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
 func TestAccAciEndpointSecurityGroupSelector_Basic(t *testing.T) {
@@ -115,8 +115,8 @@ func testAccCheckAciEndpointSecurityGroupSelectorAttributes(fv_tenant_name, fv_a
 			return fmt.Errorf("Bad fvep_selector %s", GetMOName(endpoint_security_group_selector.DistinguishedName))
 		}
 
-		if fv_e_sg_name != GetMOName(GetParentDn(endpoint_security_group_selector.DistinguishedName)) {
-			return fmt.Errorf(" Bad fve_sg %s", GetMOName(GetParentDn(endpoint_security_group_selector.DistinguishedName)))
+		if fv_e_sg_name != GetMOName(endpoint_security_group_selector.DistinguishedName) {
+			return fmt.Errorf(" Bad fve_sg %s", GetMOName(endpoint_security_group_selector.DistinguishedName))
 		}
 		if description != endpoint_security_group_selector.Description {
 			return fmt.Errorf("Bad endpoint_security_group_selector Description %s", endpoint_security_group_selector.Description)

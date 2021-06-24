@@ -173,7 +173,7 @@ func setSubnetAttributes(fvSubnet *models.Subnet, d *schema.ResourceData) (*sche
 	} else {
 		d.Set("ctrl", ctrlGet)
 	}
-	
+
 	scopeGet := make([]string, 0, 1)
 	for _, val := range strings.Split(fvSubnetMap["scope"], ",") {
 		scopeGet = append(scopeGet, strings.Trim(val, " "))

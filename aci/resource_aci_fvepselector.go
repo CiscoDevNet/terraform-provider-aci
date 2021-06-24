@@ -6,7 +6,7 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func resourceAciEndpointSecurityGroupSelector() *schema.Resource {
@@ -109,9 +109,6 @@ func resourceAciEndpointSecurityGroupSelectorCreate(d *schema.ResourceData, m in
 	if err != nil {
 		return err
 	}
-	d.Partial(true)
-	d.SetPartial("name")
-	d.Partial(false)
 
 	d.SetId(fvEPSelector.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
@@ -150,9 +147,6 @@ func resourceAciEndpointSecurityGroupSelectorUpdate(d *schema.ResourceData, m in
 	if err != nil {
 		return err
 	}
-	d.Partial(true)
-	d.SetPartial("name")
-	d.Partial(false)
 
 	d.SetId(fvEPSelector.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())

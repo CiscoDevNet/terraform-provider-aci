@@ -8,8 +8,8 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciEndpointSecurityGroup() *schema.Resource {
@@ -296,9 +296,6 @@ func resourceAciEndpointSecurityGroupCreate(d *schema.ResourceData, m interface{
 	if err != nil {
 		return err
 	}
-	d.Partial(true)
-	d.SetPartial("name")
-	d.Partial(false)
 	checkDns := make([]string, 0, 1)
 
 	if relationTofvRsCons, ok := d.GetOk("relation_fv_rs_cons"); ok {
@@ -371,9 +368,6 @@ func resourceAciEndpointSecurityGroupCreate(d *schema.ResourceData, m interface{
 			if err != nil {
 				return err
 			}
-			d.Partial(true)
-			d.SetPartial("relation_fv_rs_cons")
-			d.Partial(false)
 		}
 	}
 
@@ -386,9 +380,6 @@ func resourceAciEndpointSecurityGroupCreate(d *schema.ResourceData, m interface{
 			if err != nil {
 				return err
 			}
-			d.Partial(true)
-			d.SetPartial("relation_fv_rs_cons_if")
-			d.Partial(false)
 		}
 	}
 
@@ -398,9 +389,6 @@ func resourceAciEndpointSecurityGroupCreate(d *schema.ResourceData, m interface{
 		if err != nil {
 			return err
 		}
-		d.Partial(true)
-		d.SetPartial("relation_fv_rs_cust_qos_pol")
-		d.Partial(false)
 
 	}
 
@@ -411,9 +399,6 @@ func resourceAciEndpointSecurityGroupCreate(d *schema.ResourceData, m interface{
 			if err != nil {
 				return err
 			}
-			d.Partial(true)
-			d.SetPartial("relation_fv_rs_intra_epg")
-			d.Partial(false)
 		}
 	}
 
@@ -424,9 +409,6 @@ func resourceAciEndpointSecurityGroupCreate(d *schema.ResourceData, m interface{
 			if err != nil {
 				return err
 			}
-			d.Partial(true)
-			d.SetPartial("relation_fv_rs_prot_by")
-			d.Partial(false)
 		}
 	}
 
@@ -439,9 +421,6 @@ func resourceAciEndpointSecurityGroupCreate(d *schema.ResourceData, m interface{
 			if err != nil {
 				return err
 			}
-			d.Partial(true)
-			d.SetPartial("relation_fv_rs_prov")
-			d.Partial(false)
 		}
 	}
 
@@ -451,9 +430,6 @@ func resourceAciEndpointSecurityGroupCreate(d *schema.ResourceData, m interface{
 		if err != nil {
 			return err
 		}
-		d.Partial(true)
-		d.SetPartial("relation_fv_rs_scope")
-		d.Partial(false)
 
 	}
 
@@ -465,9 +441,6 @@ func resourceAciEndpointSecurityGroupCreate(d *schema.ResourceData, m interface{
 			if err != nil {
 				return err
 			}
-			d.Partial(true)
-			d.SetPartial("relation_fv_rs_sec_inherited")
-			d.Partial(false)
 		}
 	}
 
@@ -524,9 +497,6 @@ func resourceAciEndpointSecurityGroupUpdate(d *schema.ResourceData, m interface{
 	if err != nil {
 		return err
 	}
-	d.Partial(true)
-	d.SetPartial("name")
-	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
 
@@ -629,9 +599,6 @@ func resourceAciEndpointSecurityGroupUpdate(d *schema.ResourceData, m interface{
 				return err
 			}
 		}
-		d.Partial(true)
-		d.SetPartial("relation_fv_rs_cons")
-		d.Partial(false)
 	}
 	if d.HasChange("relation_fv_rs_cons_if") || d.HasChange("annotation") {
 		oldRel, newRel := d.GetChange("relation_fv_rs_cons_if")
@@ -653,9 +620,6 @@ func resourceAciEndpointSecurityGroupUpdate(d *schema.ResourceData, m interface{
 				return err
 			}
 		}
-		d.Partial(true)
-		d.SetPartial("relation_fv_rs_cons_if")
-		d.Partial(false)
 	}
 	if d.HasChange("relation_fv_rs_cust_qos_pol") || d.HasChange("annotation") {
 		_, newRelParam := d.GetChange("relation_fv_rs_cust_qos_pol")
@@ -667,9 +631,6 @@ func resourceAciEndpointSecurityGroupUpdate(d *schema.ResourceData, m interface{
 		if err != nil {
 			return err
 		}
-		d.Partial(true)
-		d.SetPartial("relation_fv_rs_cust_qos_pol")
-		d.Partial(false)
 
 	}
 	if d.HasChange("relation_fv_rs_intra_epg") || d.HasChange("annotation") {
@@ -690,9 +651,6 @@ func resourceAciEndpointSecurityGroupUpdate(d *schema.ResourceData, m interface{
 			if err != nil {
 				return err
 			}
-			d.Partial(true)
-			d.SetPartial("relation_fv_rs_intra_epg")
-			d.Partial(false)
 		}
 	}
 	if d.HasChange("relation_fv_rs_prot_by") || d.HasChange("annotation") {
@@ -713,9 +671,6 @@ func resourceAciEndpointSecurityGroupUpdate(d *schema.ResourceData, m interface{
 			if err != nil {
 				return err
 			}
-			d.Partial(true)
-			d.SetPartial("relation_fv_rs_prot_by")
-			d.Partial(false)
 		}
 	}
 	if d.HasChange("relation_fv_rs_prov") || d.HasChange("annotation") {
@@ -738,9 +693,6 @@ func resourceAciEndpointSecurityGroupUpdate(d *schema.ResourceData, m interface{
 				return err
 			}
 		}
-		d.Partial(true)
-		d.SetPartial("relation_fv_rs_prov")
-		d.Partial(false)
 	}
 	if d.HasChange("relation_fv_rs_scope") || d.HasChange("annotation") {
 		_, newRelParam := d.GetChange("relation_fv_rs_scope")
@@ -752,9 +704,6 @@ func resourceAciEndpointSecurityGroupUpdate(d *schema.ResourceData, m interface{
 		if err != nil {
 			return err
 		}
-		d.Partial(true)
-		d.SetPartial("relation_fv_rs_scope")
-		d.Partial(false)
 
 	}
 	if d.HasChange("relation_fv_rs_sec_inherited") || d.HasChange("annotation") {
@@ -777,9 +726,6 @@ func resourceAciEndpointSecurityGroupUpdate(d *schema.ResourceData, m interface{
 			if err != nil {
 				return err
 			}
-			d.Partial(true)
-			d.SetPartial("relation_fv_rs_sec_inherited")
-			d.Partial(false)
 		}
 	}
 

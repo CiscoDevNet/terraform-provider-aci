@@ -569,7 +569,7 @@ func resourceAciBgpPeerConnectivityProfileDelete(ctx context.Context, d *schema.
 	if err != nil {
 		return diag.FromErr(err)
 	}
-	
+
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
