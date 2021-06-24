@@ -46,35 +46,36 @@ Manages ACI Application EPG
 * `prio` - (Optional) qos priority class id. Allowed values are "unspecified", "level1", "level2", "level3", "level4", "level5" and "level6". Default is "unspecified.
 * `shutdown` - (Optional) shutdown for object application_epg. Allowed values are "yes" and "no". Default is "no".
 
-* `relation_fv_rs_bd` - (Optional) Relation to class fvBD. Cardinality - N_TO_ONE. Type - String.
+* `relation_fv_rs_bd` - (Required) Relation to Bridge domain associated with EPG (class fvBD). Cardinality - N_TO_ONE. Type - String.
                 
-* `relation_fv_rs_cust_qos_pol` - (Optional) Relation to class qosCustomPol. Cardinality - N_TO_ONE. Type - String.
+* `relation_fv_rs_cust_qos_pol` - (Optional) Relation to custom Quality of Service traffic policy name (class qosCustomPol). Cardinality - N_TO_ONE. Type - String.
+<!-- tenant -> policies -> protocol -> Custom QoS -->
                 
-* `relation_fv_rs_fc_path_att` - (Optional) Relation to class fabricPathEp. Cardinality - N_TO_M. Type - Set of String.
+* `relation_fv_rs_fc_path_att` - (Optional) Relation to deploy Fibre Channel(paths) (class fabricPathEp). Cardinality - N_TO_M. Type - Set of String.
                 
-* `relation_fv_rs_prov` - (Optional) Relation to class vzBrCP. Cardinality - N_TO_M. Type - Set of String.
+* `relation_fv_rs_prov` - (Optional) Relation to Provided Contract(class vzBrCP). Cardinality - N_TO_M. Type - Set of String.
                 
-* `relation_fv_rs_graph_def` - (Optional) Relation to class vzGraphCont. Cardinality - N_TO_M. Type - Set of String.
+* `relation_fv_rs_cons_if` - (Optional) Relation to imported contract (class vzCPIf). Cardinality - N_TO_M. Type - Set of String.
                 
-* `relation_fv_rs_cons_if` - (Optional) Relation to class vzCPIf. Cardinality - N_TO_M. Type - Set of String.
+* `relation_fv_rs_sec_inherited` - (Optional) Relation represents that the EPg is inheriting security configuration from another EPg (class fvEPg). Cardinality - N_TO_M. Type - Set of String.
                 
-* `relation_fv_rs_sec_inherited` - (Optional) Relation to class fvEPg. Cardinality - N_TO_M. Type - Set of String.
+* `relation_fv_rs_node_att` - (Optional) Relation between EPG and fabricNode (class fabricNode). Cardinality - N_TO_M. Type - Set of String.
+<!-- tenant -> Application Profile -> EPG ->Static Leaf -->
                 
-* `relation_fv_rs_node_att` - (Optional) Relation to class fabricNode. Cardinality - N_TO_M. Type - Set of String.
+* `relation_fv_rs_dpp_pol` - (Optional) Relation to define a Data Plane Policing policy (class qosDppPol). Cardinality - N_TO_ONE. Type - String.
+<!-- tenant -> policies -> protocol -> Data Plane Policing -->
                 
-* `relation_fv_rs_dpp_pol` - (Optional) Relation to class qosDppPol. Cardinality - N_TO_ONE. Type - String.
+* `relation_fv_rs_cons` - (Optional) Relation to Consumed Contract (class vzBrCP). Cardinality - N_TO_M. Type - Set of String.
                 
-* `relation_fv_rs_cons` - (Optional) Relation to class vzBrCP. Cardinality - N_TO_M. Type - Set of String.
-                
-* `relation_fv_rs_prov_def` - (Optional) Relation to class vzCtrctEPgCont. Cardinality - N_TO_M. Type - Set of String.
-                
-* `relation_fv_rs_trust_ctrl` - (Optional) Relation to class fhsTrustCtrlPol. Cardinality - N_TO_ONE. Type - String.
+* `relation_fv_rs_trust_ctrl` - (Optional) Relation to First Hop Security trust control (class fhsTrustCtrlPol). Cardinality - N_TO_ONE. Type - String.
+<!-- tenant -> policies -> protocol -> First Hop Security -->
                                 
-* `relation_fv_rs_prot_by` - (Optional) Relation to class vzTaboo. Cardinality - N_TO_M. Type - Set of String.
+* `relation_fv_rs_prot_by` - (Optional) Relation to Taboo Contract (class vzTaboo). Cardinality - N_TO_M. Type - Set of String.
                 
-* `relation_fv_rs_aepg_mon_pol` - (Optional) Relation to class monEPGPol. Cardinality - N_TO_ONE. Type - String.
+* `relation_fv_rs_aepg_mon_pol` - (Optional) Relation to create a container for monitoring policies associated with the tenant. This allows you to apply tenant-specific policies (class monEPGPol). Cardinality - N_TO_ONE. Type - String.
+<!-- tenant -> policies -> Monitoring -->
                 
-* `relation_fv_rs_intra_epg` - (Optional) Relation to class vzBrCP. Cardinality - N_TO_M. Type - Set of String.
+* `relation_fv_rs_intra_epg` - (Optional) Relation to Intra EPG Contract (class vzBrCP). Cardinality - N_TO_M. Type - Set of String.
                 
 
 
