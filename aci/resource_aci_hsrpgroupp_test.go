@@ -59,7 +59,6 @@ func TestAccAciHSRPGroupProfile_update(t *testing.T) {
 
 func testAccCheckAciHSRPGroupProfileConfig_basic(description string) string {
 	return fmt.Sprintf(`
-
 	resource "aci_l3out_hsrp_interface_group" "test" {
 		l3out_hsrp_interface_profile_dn = aci_l3out_hsrp_interface_profile.example.id
 		name                            = "one"

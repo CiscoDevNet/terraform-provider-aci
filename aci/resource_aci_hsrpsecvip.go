@@ -1,21 +1,23 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciL3outHSRPSecondaryVIP() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciL3outHSRPSecondaryVIPCreate,
-		Update: resourceAciL3outHSRPSecondaryVIPUpdate,
-		Read:   resourceAciL3outHSRPSecondaryVIPRead,
-		Delete: resourceAciL3outHSRPSecondaryVIPDelete,
+		CreateContext: resourceAciL3outHSRPSecondaryVIPCreate,
+		UpdateContext: resourceAciL3outHSRPSecondaryVIPUpdate,
+		ReadContext:   resourceAciL3outHSRPSecondaryVIPRead,
+		DeleteContext: resourceAciL3outHSRPSecondaryVIPDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciL3outHSRPSecondaryVIPImport,
@@ -76,14 +78,17 @@ func getRemoteL3outHSRPSecondaryVIP(client *client.Client, dn string) (*models.L
 	return hsrpSecVip, nil
 }
 
-func setL3outHSRPSecondaryVIPAttributes(hsrpSecVip *models.L3outHSRPSecondaryVIP, d *schema.ResourceData) *schema.ResourceData {
+func setL3outHSRPSecondaryVIPAttributes(hsrpSecVip *models.L3outHSRPSecondaryVIP, d *schema.ResourceData) (*schema.ResourceData, error) {
 	d.SetId(hsrpSecVip.DistinguishedName)
 	d.Set("description", hsrpSecVip.Description)
 	dn := d.Id()
 	if dn != hsrpSecVip.DistinguishedName {
 		d.Set("l3out_hsrp_interface_group_dn", "")
 	}
-	hsrpSecVipMap, _ := hsrpSecVip.ToMap()
+	hsrpSecVipMap, err := hsrpSecVip.ToMap()
+	if err != nil {
+		return d, err
+	}
 	d.Set("ip", hsrpSecVipMap["ip"])
 	d.Set("annotation", hsrpSecVipMap["annotation"])
 	if hsrpSecVipMap["configIssues"] == "" {
@@ -93,7 +98,7 @@ func setL3outHSRPSecondaryVIPAttributes(hsrpSecVip *models.L3outHSRPSecondaryVIP
 	}
 	d.Set("ip", hsrpSecVipMap["ip"])
 	d.Set("name_alias", hsrpSecVipMap["nameAlias"])
-	return d
+	return d, nil
 }
 
 func resourceAciL3outHSRPSecondaryVIPImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -107,14 +112,17 @@ func resourceAciL3outHSRPSecondaryVIPImport(d *schema.ResourceData, m interface{
 	if err != nil {
 		return nil, err
 	}
-	schemaFilled := setL3outHSRPSecondaryVIPAttributes(hsrpSecVip, d)
+	schemaFilled, err := setL3outHSRPSecondaryVIPAttributes(hsrpSecVip, d)
+	if err != nil {
+		return nil, err
+	}
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciL3outHSRPSecondaryVIPCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciL3outHSRPSecondaryVIPCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] L3outHSRPSecondaryVIP: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -142,19 +150,16 @@ func resourceAciL3outHSRPSecondaryVIPCreate(d *schema.ResourceData, m interface{
 
 	err := aciClient.Save(hsrpSecVip)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.Partial(false)
 
 	d.SetId(hsrpSecVip.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciL3outHSRPSecondaryVIPRead(d, m)
+	return resourceAciL3outHSRPSecondaryVIPRead(ctx, d, m)
 }
 
-func resourceAciL3outHSRPSecondaryVIPUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciL3outHSRPSecondaryVIPUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] L3outHSRPSecondaryVIP: Beginning Update")
 
 	aciClient := m.(*client.Client)
@@ -186,20 +191,17 @@ func resourceAciL3outHSRPSecondaryVIPUpdate(d *schema.ResourceData, m interface{
 	err := aciClient.Save(hsrpSecVip)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.Partial(false)
 
 	d.SetId(hsrpSecVip.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciL3outHSRPSecondaryVIPRead(d, m)
+	return resourceAciL3outHSRPSecondaryVIPRead(ctx, d, m)
 
 }
 
-func resourceAciL3outHSRPSecondaryVIPRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciL3outHSRPSecondaryVIPRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -211,25 +213,29 @@ func resourceAciL3outHSRPSecondaryVIPRead(d *schema.ResourceData, m interface{})
 		d.SetId("")
 		return nil
 	}
-	setL3outHSRPSecondaryVIPAttributes(hsrpSecVip, d)
+	_, err = setL3outHSRPSecondaryVIPAttributes(hsrpSecVip, d)
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 
 	return nil
 }
 
-func resourceAciL3outHSRPSecondaryVIPDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciL3outHSRPSecondaryVIPDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "hsrpSecVip")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
 }

@@ -1,6 +1,7 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"reflect"
@@ -8,16 +9,17 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciVirtualLogicalInterfaceProfile() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciVirtualLogicalInterfaceProfileCreate,
-		Update: resourceAciVirtualLogicalInterfaceProfileUpdate,
-		Read:   resourceAciVirtualLogicalInterfaceProfileRead,
-		Delete: resourceAciVirtualLogicalInterfaceProfileDelete,
+		CreateContext: resourceAciVirtualLogicalInterfaceProfileCreate,
+		UpdateContext: resourceAciVirtualLogicalInterfaceProfileUpdate,
+		ReadContext:   resourceAciVirtualLogicalInterfaceProfileRead,
+		DeleteContext: resourceAciVirtualLogicalInterfaceProfileDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciVirtualLogicalInterfaceProfileImport,
@@ -177,7 +179,7 @@ func getRemoteVirtualLogicalInterfaceProfile(client *client.Client, dn string) (
 	return l3extVirtualLIfP, nil
 }
 
-func setVirtualLogicalInterfaceProfileAttributes(l3extVirtualLIfP *models.VirtualLogicalInterfaceProfile, d *schema.ResourceData) *schema.ResourceData {
+func setVirtualLogicalInterfaceProfileAttributes(l3extVirtualLIfP *models.VirtualLogicalInterfaceProfile, d *schema.ResourceData) (*schema.ResourceData, error) {
 	dn := d.Id()
 
 	d.SetId(l3extVirtualLIfP.DistinguishedName)
@@ -185,7 +187,10 @@ func setVirtualLogicalInterfaceProfileAttributes(l3extVirtualLIfP *models.Virtua
 	if dn != l3extVirtualLIfP.DistinguishedName {
 		d.Set("logical_interface_profile_dn", "")
 	}
-	l3extVirtualLIfPMap, _ := l3extVirtualLIfP.ToMap()
+	l3extVirtualLIfPMap, err := l3extVirtualLIfP.ToMap()
+	if err != nil {
+		return d, err
+	}
 
 	d.Set("node_dn", l3extVirtualLIfPMap["nodeDn"])
 	d.Set("encap", l3extVirtualLIfPMap["encap"])
@@ -202,7 +207,7 @@ func setVirtualLogicalInterfaceProfileAttributes(l3extVirtualLIfP *models.Virtua
 	d.Set("mtu", l3extVirtualLIfPMap["mtu"])
 	d.Set("target_dscp", l3extVirtualLIfPMap["targetDscp"])
 
-	return d
+	return d, nil
 }
 
 func resourceAciVirtualLogicalInterfaceProfileImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -216,14 +221,17 @@ func resourceAciVirtualLogicalInterfaceProfileImport(d *schema.ResourceData, m i
 	if err != nil {
 		return nil, err
 	}
-	schemaFilled := setVirtualLogicalInterfaceProfileAttributes(l3extVirtualLIfP, d)
+	schemaFilled, err := setVirtualLogicalInterfaceProfileAttributes(l3extVirtualLIfP, d)
+	if err != nil {
+		return nil, err
+	}
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciVirtualLogicalInterfaceProfileCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciVirtualLogicalInterfaceProfileCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] LogicalInterfaceProfile: Beginning Creation")
 
 	aciClient := m.(*client.Client)
@@ -279,11 +287,8 @@ func resourceAciVirtualLogicalInterfaceProfileCreate(d *schema.ResourceData, m i
 
 	err := aciClient.Save(l3extVirtualLIfP)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
 
@@ -297,7 +302,7 @@ func resourceAciVirtualLogicalInterfaceProfileCreate(d *schema.ResourceData, m i
 	d.Partial(true)
 	err = checkTDn(aciClient, checkDns)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Partial(false)
 
@@ -307,20 +312,19 @@ func resourceAciVirtualLogicalInterfaceProfileCreate(d *schema.ResourceData, m i
 			err = aciClient.CreateRelationl3extRsDynPathAttFromLogicalInterfaceProfile(l3extVirtualLIfP.DistinguishedName, relationParam)
 
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
-			d.Partial(true)
-			d.Partial(false)
+
 		}
 	}
 
 	d.SetId(l3extVirtualLIfP.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciVirtualLogicalInterfaceProfileRead(d, m)
+	return resourceAciVirtualLogicalInterfaceProfileRead(ctx, d, m)
 }
 
-func resourceAciVirtualLogicalInterfaceProfileUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciVirtualLogicalInterfaceProfileUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] LogicalInterfaceProfile: Beginning Update")
 
 	aciClient := m.(*client.Client)
@@ -379,11 +383,8 @@ func resourceAciVirtualLogicalInterfaceProfileUpdate(d *schema.ResourceData, m i
 	err := aciClient.Save(l3extVirtualLIfP)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
 
@@ -401,7 +402,7 @@ func resourceAciVirtualLogicalInterfaceProfileUpdate(d *schema.ResourceData, m i
 	d.Partial(true)
 	err = checkTDn(aciClient, checkDns)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Partial(false)
 
@@ -415,7 +416,7 @@ func resourceAciVirtualLogicalInterfaceProfileUpdate(d *schema.ResourceData, m i
 		for _, relDn := range relToDelete {
 			err = aciClient.DeleteRelationl3extRsDynPathAttFromLogicalInterfaceProfile(l3extVirtualLIfP.DistinguishedName, relDn)
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 		}
@@ -423,10 +424,8 @@ func resourceAciVirtualLogicalInterfaceProfileUpdate(d *schema.ResourceData, m i
 		for _, relDn := range relToCreate {
 			err = aciClient.CreateRelationl3extRsDynPathAttFromLogicalInterfaceProfile(l3extVirtualLIfP.DistinguishedName, relDn)
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
-			d.Partial(true)
-			d.Partial(false)
 
 		}
 
@@ -435,11 +434,11 @@ func resourceAciVirtualLogicalInterfaceProfileUpdate(d *schema.ResourceData, m i
 	d.SetId(l3extVirtualLIfP.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciVirtualLogicalInterfaceProfileRead(d, m)
+	return resourceAciVirtualLogicalInterfaceProfileRead(ctx, d, m)
 
 }
 
-func resourceAciVirtualLogicalInterfaceProfileRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciVirtualLogicalInterfaceProfileRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -451,7 +450,11 @@ func resourceAciVirtualLogicalInterfaceProfileRead(d *schema.ResourceData, m int
 		d.SetId("")
 		return nil
 	}
-	setVirtualLogicalInterfaceProfileAttributes(l3extVirtualLIfP, d)
+	_, err = setVirtualLogicalInterfaceProfileAttributes(l3extVirtualLIfP, d)
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 
 	l3extRsDynPathAttData, err := aciClient.ReadRelationl3extRsDynPathAttFromLogicalInterfaceProfile(dn)
 	if err != nil {
@@ -475,18 +478,18 @@ func resourceAciVirtualLogicalInterfaceProfileRead(d *schema.ResourceData, m int
 	return nil
 }
 
-func resourceAciVirtualLogicalInterfaceProfileDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciVirtualLogicalInterfaceProfileDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "l3extVirtualLIfP")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
 }

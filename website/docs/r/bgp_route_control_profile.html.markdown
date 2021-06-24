@@ -16,7 +16,7 @@ Manages ACI BGP Route Control Profile
 resource "aci_bgp_route_control_profile" "example" {
   parent_dn                  = aci_tenant.tenentcheck.id
   name                       = "one"
-  annotation                 = "example"
+  annotation                 = "bgp_route_control_profile_tag"
   description                = "from terraform"
   name_alias                 = "example"
   route_control_profile_type = "global"
@@ -24,8 +24,8 @@ resource "aci_bgp_route_control_profile" "example" {
 
 resource "aci_bgp_route_control_profile" "example" {
   parent_dn                  = aci_l3_outside.example.id
-  name                       = "one"
-  annotation                 = "example"
+  name                       = "bgp_route_control_profile_1"
+  annotation                 = "bgp_route_control_profile_tag"
   description                = "from terraform"
   name_alias                 = "example"
   route_control_profile_type = "global"
@@ -34,7 +34,7 @@ resource "aci_bgp_route_control_profile" "example" {
 
 ## Argument Reference
 
-- `parent_dn` - (Required) Distinguished name of parent object.
+- `parent_dn` - (Required) Distinguished name of the parent object.
 - `name` - (Required) Name of router control profile object.
 - `annotation` - (Optional) Annotation for router control profile object.
 - `description` - (Optional) Description for router control profile object.
@@ -43,8 +43,7 @@ resource "aci_bgp_route_control_profile" "example" {
 
 ## Attribute Reference
 
-The only attribute that this resource exports is the `id`, which is set to the
-Dn of the Route Control Profile.
+The only attribute that this resource exports is the `id`, which is set to the Dn of the Route Control Profile.
 
 ## Importing
 

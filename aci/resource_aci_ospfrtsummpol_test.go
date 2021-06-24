@@ -60,8 +60,12 @@ func TestAccAciOspfRouteSummarization_update(t *testing.T) {
 func testAccCheckAciOspfRouteSummarizationConfig_basic(description string) string {
 	return fmt.Sprintf(`
 
+	resource "aci_tenant" "foo_tenant" {
+		name        = "tenant_1"
+		description = "This tenant is created by terraform ACI provider"
+	}
 	resource "aci_ospf_route_summarization" "fooospf_route_summarization" {
-		tenant_dn  = "${aci_tenant.example.id}"
+		tenant_dn  = aci_tenant.foo_tenant.id
 		description = "%s"
 		name  = "example"
   		annotation  = "example"

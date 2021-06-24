@@ -1,21 +1,23 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciBgpRouteSummarization() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciBgpRouteSummarizationCreate,
-		Update: resourceAciBgpRouteSummarizationUpdate,
-		Read:   resourceAciBgpRouteSummarizationRead,
-		Delete: resourceAciBgpRouteSummarizationDelete,
+		CreateContext: resourceAciBgpRouteSummarizationCreate,
+		UpdateContext: resourceAciBgpRouteSummarizationUpdate,
+		ReadContext:   resourceAciBgpRouteSummarizationRead,
+		DeleteContext: resourceAciBgpRouteSummarizationDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciBgpRouteSummarizationImport,
@@ -47,7 +49,7 @@ func resourceAciBgpRouteSummarization() *schema.Resource {
 				Optional: true,
 				Computed: true,
 				ValidateFunc: validation.StringInSlice([]string{
-					"as-set", "",
+					"as-set", "none",
 				}, false),
 			},
 
@@ -74,22 +76,28 @@ func getRemoteBgpRouteSummarization(client *client.Client, dn string) (*models.B
 	return bgpRtSummPol, nil
 }
 
-func setBgpRouteSummarizationAttributes(bgpRtSummPol *models.BgpRouteSummarization, d *schema.ResourceData) *schema.ResourceData {
+func setBgpRouteSummarizationAttributes(bgpRtSummPol *models.BgpRouteSummarization, d *schema.ResourceData) (*schema.ResourceData, error) {
 	d.SetId(bgpRtSummPol.DistinguishedName)
 	d.Set("description", bgpRtSummPol.Description)
 	dn := d.Id()
 	if dn != bgpRtSummPol.DistinguishedName {
 		d.Set("tenant_dn", "")
 	}
-	bgpRtSummPolMap, _ := bgpRtSummPol.ToMap()
+	bgpRtSummPolMap, err := bgpRtSummPol.ToMap()
+	if err != nil {
+		return d, err
+	}
 
 	d.Set("name", bgpRtSummPolMap["name"])
 
 	d.Set("annotation", bgpRtSummPolMap["annotation"])
 	d.Set("attrmap", bgpRtSummPolMap["attrmap"])
 	d.Set("ctrl", bgpRtSummPolMap["ctrl"])
+	if bgpRtSummPolMap["ctrl"] == "" {
+		d.Set("ctrl", "none")
+	}
 	d.Set("name_alias", bgpRtSummPolMap["nameAlias"])
-	return d
+	return d, nil
 }
 
 func resourceAciBgpRouteSummarizationImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -103,14 +111,18 @@ func resourceAciBgpRouteSummarizationImport(d *schema.ResourceData, m interface{
 	if err != nil {
 		return nil, err
 	}
-	schemaFilled := setBgpRouteSummarizationAttributes(bgpRtSummPol, d)
+	schemaFilled, err := setBgpRouteSummarizationAttributes(bgpRtSummPol, d)
+
+	if err != nil {
+		return nil, err
+	}
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciBgpRouteSummarizationCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciBgpRouteSummarizationCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] BgpRouteSummarization: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -130,6 +142,9 @@ func resourceAciBgpRouteSummarizationCreate(d *schema.ResourceData, m interface{
 	}
 	if Ctrl, ok := d.GetOk("ctrl"); ok {
 		bgpRtSummPolAttr.Ctrl = Ctrl.(string)
+		if Ctrl.(string) == "none" {
+			bgpRtSummPolAttr.Ctrl = "{}"
+		}
 	}
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		bgpRtSummPolAttr.NameAlias = NameAlias.(string)
@@ -138,28 +153,25 @@ func resourceAciBgpRouteSummarizationCreate(d *schema.ResourceData, m interface{
 
 	err := aciClient.Save(bgpRtSummPol)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
 
 	d.Partial(true)
 	err = checkTDn(aciClient, checkDns)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Partial(false)
 
 	d.SetId(bgpRtSummPol.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciBgpRouteSummarizationRead(d, m)
+	return resourceAciBgpRouteSummarizationRead(ctx, d, m)
 }
 
-func resourceAciBgpRouteSummarizationUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciBgpRouteSummarizationUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] BgpRouteSummarization: Beginning Update")
 
 	aciClient := m.(*client.Client)
@@ -180,6 +192,9 @@ func resourceAciBgpRouteSummarizationUpdate(d *schema.ResourceData, m interface{
 	}
 	if Ctrl, ok := d.GetOk("ctrl"); ok {
 		bgpRtSummPolAttr.Ctrl = Ctrl.(string)
+		if Ctrl.(string) == "none" {
+			bgpRtSummPolAttr.Ctrl = "{}"
+		}
 	}
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		bgpRtSummPolAttr.NameAlias = NameAlias.(string)
@@ -191,29 +206,26 @@ func resourceAciBgpRouteSummarizationUpdate(d *schema.ResourceData, m interface{
 	err := aciClient.Save(bgpRtSummPol)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
 
 	d.Partial(true)
 	err = checkTDn(aciClient, checkDns)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Partial(false)
 
 	d.SetId(bgpRtSummPol.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciBgpRouteSummarizationRead(d, m)
+	return resourceAciBgpRouteSummarizationRead(ctx, d, m)
 
 }
 
-func resourceAciBgpRouteSummarizationRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciBgpRouteSummarizationRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -225,25 +237,30 @@ func resourceAciBgpRouteSummarizationRead(d *schema.ResourceData, m interface{})
 		d.SetId("")
 		return nil
 	}
-	setBgpRouteSummarizationAttributes(bgpRtSummPol, d)
+	_, err = setBgpRouteSummarizationAttributes(bgpRtSummPol, d)
+
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 
 	return nil
 }
 
-func resourceAciBgpRouteSummarizationDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciBgpRouteSummarizationDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "bgpRtSummPol")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
 }
