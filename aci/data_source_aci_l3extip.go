@@ -1,16 +1,18 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func dataSourceAciL3outPathAttachmentSecondaryIp() *schema.Resource {
 	return &schema.Resource{
 
-		Read: dataSourceAciL3outPathAttachmentSecondaryIpRead,
+		ReadContext: dataSourceAciL3outPathAttachmentSecondaryIpRead,
 
 		SchemaVersion: 1,
 
@@ -24,13 +26,6 @@ func dataSourceAciL3outPathAttachmentSecondaryIp() *schema.Resource {
 				Type:     schema.TypeString,
 				Required: true,
 			},
-
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
 			"ipv6_dad": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -46,7 +41,7 @@ func dataSourceAciL3outPathAttachmentSecondaryIp() *schema.Resource {
 	}
 }
 
-func dataSourceAciL3outPathAttachmentSecondaryIpRead(d *schema.ResourceData, m interface{}) error {
+func dataSourceAciL3outPathAttachmentSecondaryIpRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	aciClient := m.(*client.Client)
 
 	addr := d.Get("addr").(string)
@@ -59,9 +54,12 @@ func dataSourceAciL3outPathAttachmentSecondaryIpRead(d *schema.ResourceData, m i
 	l3extIp, err := getRemoteL3outPathAttachmentSecondaryIp(aciClient, dn)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.SetId(dn)
-	setL3outPathAttachmentSecondaryIpAttributes(l3extIp, d)
+	_, err = setL3outPathAttachmentSecondaryIpAttributes(l3extIp, d)
+	if err != nil {
+		return diag.FromErr(err)
+	}
 	return nil
 }

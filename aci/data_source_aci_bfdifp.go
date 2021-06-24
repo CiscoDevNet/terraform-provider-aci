@@ -1,16 +1,18 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func dataSourceAciBFDInterfaceProfile() *schema.Resource {
 	return &schema.Resource{
 
-		Read: dataSourceAciBFDInterfaceProfileRead,
+		ReadContext: dataSourceAciBFDInterfaceProfileRead,
 
 		SchemaVersion: 1,
 
@@ -53,7 +55,7 @@ func dataSourceAciBFDInterfaceProfile() *schema.Resource {
 	}
 }
 
-func dataSourceAciBFDInterfaceProfileRead(d *schema.ResourceData, m interface{}) error {
+func dataSourceAciBFDInterfaceProfileRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	aciClient := m.(*client.Client)
 
 	rn := fmt.Sprintf("bfdIfP")
@@ -64,10 +66,13 @@ func dataSourceAciBFDInterfaceProfileRead(d *schema.ResourceData, m interface{})
 	bfdIfP, err := getRemoteBFDInterfaceProfile(aciClient, dn)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	d.SetId(dn)
-	setBFDInterfaceProfileAttributes(bfdIfP, d)
+	_, err = setBFDInterfaceProfileAttributes(bfdIfP, d)
+	if err != nil {
+		return diag.FromErr(err)
+	}
 	return nil
 }

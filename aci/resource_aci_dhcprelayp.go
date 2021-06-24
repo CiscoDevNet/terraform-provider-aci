@@ -197,15 +197,14 @@ func resourceAciDHCPRelayPolicyCreate(ctx context.Context, d *schema.ResourceDat
 	d.Partial(false)
 
 	if relationTodhcpRsProv, ok := d.GetOk("relation_dhcp_rs_prov"); ok {
+
 		relationParamList := relationTodhcpRsProv.(*schema.Set).List()
 		for _, relationParam := range relationParamList {
 			paramMap := relationParam.(map[string]interface{})
 			err = aciClient.CreateRelationdhcpRsProvFromDHCPRelayPolicy(dhcpRelayP.DistinguishedName, paramMap["tdn"].(string), paramMap["addr"].(string))
-
 			if err != nil {
 				return diag.FromErr(err)
 			}
-
 		}
 	}
 
@@ -259,6 +258,7 @@ func resourceAciDHCPRelayPolicyUpdate(ctx context.Context, d *schema.ResourceDat
 			paramMap := relationParam.(map[string]interface{})
 			checkDns = append(checkDns, paramMap["tdn"].(string))
 		}
+
 	}
 
 	d.Partial(true)
@@ -279,7 +279,6 @@ func resourceAciDHCPRelayPolicyUpdate(ctx context.Context, d *schema.ResourceDat
 			if err != nil {
 				return diag.FromErr(err)
 			}
-
 		}
 
 		for _, relationParam := range newRelList {
@@ -288,11 +287,9 @@ func resourceAciDHCPRelayPolicyUpdate(ctx context.Context, d *schema.ResourceDat
 			if err != nil {
 				return diag.FromErr(err)
 			}
-
 		}
 
 	}
-
 	d.SetId(dhcpRelayP.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 

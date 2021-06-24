@@ -1,16 +1,18 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func dataSourceAciHSRPInterfacePolicy() *schema.Resource {
 	return &schema.Resource{
 
-		Read: dataSourceAciHSRPInterfacePolicyRead,
+		ReadContext: dataSourceAciHSRPInterfacePolicyRead,
 
 		SchemaVersion: 1,
 
@@ -58,7 +60,7 @@ func dataSourceAciHSRPInterfacePolicy() *schema.Resource {
 	}
 }
 
-func dataSourceAciHSRPInterfacePolicyRead(d *schema.ResourceData, m interface{}) error {
+func dataSourceAciHSRPInterfacePolicyRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	aciClient := m.(*client.Client)
 
 	name := d.Get("name").(string)
@@ -71,10 +73,14 @@ func dataSourceAciHSRPInterfacePolicyRead(d *schema.ResourceData, m interface{})
 	hsrpIfPol, err := getRemoteHSRPInterfacePolicy(aciClient, dn)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	d.SetId(dn)
-	setHSRPInterfacePolicyAttributes(hsrpIfPol, d)
+	_, err = setHSRPInterfacePolicyAttributes(hsrpIfPol, d)
+
+	if err != nil {
+		return diag.FromErr(err)
+	}
 	return nil
 }

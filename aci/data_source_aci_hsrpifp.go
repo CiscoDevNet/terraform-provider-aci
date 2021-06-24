@@ -1,16 +1,18 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func dataSourceAciL3outHSRPInterfaceProfile() *schema.Resource {
 	return &schema.Resource{
 
-		Read: dataSourceAciL3outHSRPInterfaceProfileRead,
+		ReadContext: dataSourceAciL3outHSRPInterfaceProfileRead,
 
 		SchemaVersion: 1,
 
@@ -41,7 +43,7 @@ func dataSourceAciL3outHSRPInterfaceProfile() *schema.Resource {
 	}
 }
 
-func dataSourceAciL3outHSRPInterfaceProfileRead(d *schema.ResourceData, m interface{}) error {
+func dataSourceAciL3outHSRPInterfaceProfileRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	aciClient := m.(*client.Client)
 
 	rn := fmt.Sprintf("hsrpIfP")
@@ -52,9 +54,13 @@ func dataSourceAciL3outHSRPInterfaceProfileRead(d *schema.ResourceData, m interf
 	hsrpIfP, err := getRemoteL3outHSRPInterfaceProfile(aciClient, dn)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.SetId(dn)
-	setL3outHSRPInterfaceProfileAttributes(hsrpIfP, d)
+	_, err = setL3outHSRPInterfaceProfileAttributes(hsrpIfP, d)
+
+	if err != nil {
+		return diag.FromErr(err)
+	}
 	return nil
 }

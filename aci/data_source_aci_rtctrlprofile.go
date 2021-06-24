@@ -1,16 +1,18 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func dataSourceAciRouteControlProfile() *schema.Resource {
 	return &schema.Resource{
 
-		Read: dataSourceAciRouteControlProfileRead,
+		ReadContext: dataSourceAciRouteControlProfileRead,
 
 		SchemaVersion: 1,
 
@@ -46,7 +48,7 @@ func dataSourceAciRouteControlProfile() *schema.Resource {
 	}
 }
 
-func dataSourceAciRouteControlProfileRead(d *schema.ResourceData, m interface{}) error {
+func dataSourceAciRouteControlProfileRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	aciClient := m.(*client.Client)
 
 	name := d.Get("name").(string)
@@ -59,10 +61,13 @@ func dataSourceAciRouteControlProfileRead(d *schema.ResourceData, m interface{})
 	rtctrlProfile, err := getRemoteRouteControlProfile(aciClient, dn)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	d.SetId(dn)
-	setRouteControlProfileAttributes(rtctrlProfile, d)
+	_, err = setRouteControlProfileAttributes(rtctrlProfile, d)
+	if err != nil {
+		return diag.FromErr(err)
+	}
 	return nil
 }

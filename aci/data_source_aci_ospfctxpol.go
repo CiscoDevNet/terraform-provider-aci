@@ -1,16 +1,18 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func dataSourceAciOSPFTimersPolicy() *schema.Resource {
 	return &schema.Resource{
 
-		Read: dataSourceAciOSPFTimersPolicyRead,
+		ReadContext: dataSourceAciOSPFTimersPolicyRead,
 
 		SchemaVersion: 1,
 
@@ -154,7 +156,7 @@ func dataSourceAciOSPFTimersPolicy() *schema.Resource {
 	}
 }
 
-func dataSourceAciOSPFTimersPolicyRead(d *schema.ResourceData, m interface{}) error {
+func dataSourceAciOSPFTimersPolicyRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	aciClient := m.(*client.Client)
 
 	name := d.Get("name").(string)
@@ -167,10 +169,13 @@ func dataSourceAciOSPFTimersPolicyRead(d *schema.ResourceData, m interface{}) er
 	ospfCtxPol, err := getRemoteOSPFTimersPolicy(aciClient, dn)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	d.SetId(dn)
-	setOSPFTimersPolicyAttributes(ospfCtxPol, d)
+	_, err = setOSPFTimersPolicyAttributes(ospfCtxPol, d)
+	if err != nil {
+		return diag.FromErr(err)
+	}
 	return nil
 }

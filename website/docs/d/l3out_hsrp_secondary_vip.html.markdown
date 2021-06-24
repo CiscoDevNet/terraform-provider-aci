@@ -14,7 +14,7 @@ Data source for ACI L3out HSRP Secondary VIP
 
 ```hcl
 data "aci_l3out_hsrp_secondary_vip" "example" {
-  l3out_hsrp_interface_group_dn = "${aci_l3out_hsrp_interface_group.example.id}"
+  l3out_hsrp_interface_group_dn = aci_l3out_hsrp_interface_group.example.id
   ip = "example"
 }
 ```

@@ -1,16 +1,18 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func dataSourceAciOspfRouteSummarization() *schema.Resource {
 	return &schema.Resource{
 
-		Read: dataSourceAciOspfRouteSummarizationRead,
+		ReadContext: dataSourceAciOspfRouteSummarizationRead,
 
 		SchemaVersion: 1,
 
@@ -58,7 +60,7 @@ func dataSourceAciOspfRouteSummarization() *schema.Resource {
 	}
 }
 
-func dataSourceAciOspfRouteSummarizationRead(d *schema.ResourceData, m interface{}) error {
+func dataSourceAciOspfRouteSummarizationRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	aciClient := m.(*client.Client)
 
 	name := d.Get("name").(string)
@@ -71,9 +73,12 @@ func dataSourceAciOspfRouteSummarizationRead(d *schema.ResourceData, m interface
 	ospfRtSummPol, err := getRemoteOspfRouteSummarization(aciClient, dn)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.SetId(dn)
-	setOspfRouteSummarizationAttributes(ospfRtSummPol, d)
+	_, err = setOspfRouteSummarizationAttributes(ospfRtSummPol, d)
+	if err != nil {
+		return diag.FromErr(err)
+	}
 	return nil
 }

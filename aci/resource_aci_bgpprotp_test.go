@@ -61,7 +61,7 @@ func testAccCheckAciL3outBGPProtocolProfileConfig_basic(description string) stri
 	return fmt.Sprintf(`
 
 	resource "aci_l3out_bgp_protocol_profile" "fool3out_bgp_protocol_profile" {
-		logical_node_profile_dn = "${aci_logical_node_profile.example.id}"
+		logical_node_profile_dn = aci_logical_node_profile.example.id
   		annotation  = "example"
   		name_alias  = "example"
 	}

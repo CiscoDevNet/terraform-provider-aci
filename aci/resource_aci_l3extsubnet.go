@@ -246,7 +246,6 @@ func resourceAciL3ExtSubnetCreate(ctx context.Context, d *schema.ResourceData, m
 				return diag.FromErr(err)
 			}
 		}
-
 	}
 	if relationTol3extRsSubnetToRtSumm, ok := d.GetOk("relation_l3ext_rs_subnet_to_rt_summ"); ok {
 		relationParam := relationTol3extRsSubnetToRtSumm.(string)
