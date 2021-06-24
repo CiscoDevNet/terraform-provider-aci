@@ -1,21 +1,23 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciHSRPGroupPolicy() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciHSRPGroupPolicyCreate,
-		Update: resourceAciHSRPGroupPolicyUpdate,
-		Read:   resourceAciHSRPGroupPolicyRead,
-		Delete: resourceAciHSRPGroupPolicyDelete,
+		CreateContext: resourceAciHSRPGroupPolicyCreate,
+		UpdateContext: resourceAciHSRPGroupPolicyUpdate,
+		ReadContext:   resourceAciHSRPGroupPolicyRead,
+		DeleteContext: resourceAciHSRPGroupPolicyDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciHSRPGroupPolicyImport,
@@ -151,14 +153,18 @@ func getRemoteHSRPGroupPolicy(client *client.Client, dn string) (*models.HSRPGro
 	return hsrpGroupPol, nil
 }
 
-func setHSRPGroupPolicyAttributes(hsrpGroupPol *models.HSRPGroupPolicy, d *schema.ResourceData) *schema.ResourceData {
+func setHSRPGroupPolicyAttributes(hsrpGroupPol *models.HSRPGroupPolicy, d *schema.ResourceData) (*schema.ResourceData, error) {
 	d.SetId(hsrpGroupPol.DistinguishedName)
 	d.Set("description", hsrpGroupPol.Description)
 	dn := d.Id()
 	if dn != hsrpGroupPol.DistinguishedName {
 		d.Set("tenant_dn", "")
 	}
-	hsrpGroupPolMap, _ := hsrpGroupPol.ToMap()
+	hsrpGroupPolMap, err := hsrpGroupPol.ToMap()
+
+	if err != nil {
+		return d, err
+	}
 
 	d.Set("name", hsrpGroupPolMap["name"])
 
@@ -177,7 +183,7 @@ func setHSRPGroupPolicyAttributes(hsrpGroupPol *models.HSRPGroupPolicy, d *schem
 	d.Set("prio", hsrpGroupPolMap["prio"])
 	d.Set("timeout", hsrpGroupPolMap["timeout"])
 	d.Set("hsrp_group_policy_type", hsrpGroupPolMap["type"])
-	return d
+	return d, nil
 }
 
 func resourceAciHSRPGroupPolicyImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -191,14 +197,18 @@ func resourceAciHSRPGroupPolicyImport(d *schema.ResourceData, m interface{}) ([]
 	if err != nil {
 		return nil, err
 	}
-	schemaFilled := setHSRPGroupPolicyAttributes(hsrpGroupPol, d)
+	schemaFilled, err := setHSRPGroupPolicyAttributes(hsrpGroupPol, d)
+
+	if err != nil {
+		return nil, err
+	}
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciHSRPGroupPolicyCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciHSRPGroupPolicyCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] HSRPGroupPolicy: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -250,19 +260,16 @@ func resourceAciHSRPGroupPolicyCreate(d *schema.ResourceData, m interface{}) err
 
 	err := aciClient.Save(hsrpGroupPol)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.Partial(false)
 
 	d.SetId(hsrpGroupPol.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciHSRPGroupPolicyRead(d, m)
+	return resourceAciHSRPGroupPolicyRead(ctx, d, m)
 }
 
-func resourceAciHSRPGroupPolicyUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciHSRPGroupPolicyUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] HSRPGroupPolicy: Beginning Update")
 
 	aciClient := m.(*client.Client)
@@ -318,20 +325,17 @@ func resourceAciHSRPGroupPolicyUpdate(d *schema.ResourceData, m interface{}) err
 	err := aciClient.Save(hsrpGroupPol)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.Partial(false)
 
 	d.SetId(hsrpGroupPol.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciHSRPGroupPolicyRead(d, m)
+	return resourceAciHSRPGroupPolicyRead(ctx, d, m)
 
 }
 
-func resourceAciHSRPGroupPolicyRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciHSRPGroupPolicyRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -343,25 +347,30 @@ func resourceAciHSRPGroupPolicyRead(d *schema.ResourceData, m interface{}) error
 		d.SetId("")
 		return nil
 	}
-	setHSRPGroupPolicyAttributes(hsrpGroupPol, d)
+	_, err = setHSRPGroupPolicyAttributes(hsrpGroupPol, d)
+
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 
 	return nil
 }
 
-func resourceAciHSRPGroupPolicyDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciHSRPGroupPolicyDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "hsrpGroupPol")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
 }

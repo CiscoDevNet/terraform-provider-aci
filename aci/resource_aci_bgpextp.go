@@ -1,20 +1,22 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func resourceAciL3outBgpExternalPolicy() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciL3outBgpExternalPolicyCreate,
-		Update: resourceAciL3outBgpExternalPolicyUpdate,
-		Read:   resourceAciL3outBgpExternalPolicyRead,
-		Delete: resourceAciL3outBgpExternalPolicyDelete,
+		CreateContext: resourceAciL3outBgpExternalPolicyCreate,
+		UpdateContext: resourceAciL3outBgpExternalPolicyUpdate,
+		ReadContext:   resourceAciL3outBgpExternalPolicyRead,
+		DeleteContext: resourceAciL3outBgpExternalPolicyDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciL3outBgpExternalPolicyImport,
@@ -52,18 +54,21 @@ func getRemoteL3outBgpExternalPolicy(client *client.Client, dn string) (*models.
 	return bgpExtP, nil
 }
 
-func setL3outBgpExternalPolicyAttributes(bgpExtP *models.L3outBgpExternalPolicy, d *schema.ResourceData) *schema.ResourceData {
+func setL3outBgpExternalPolicyAttributes(bgpExtP *models.L3outBgpExternalPolicy, d *schema.ResourceData) (*schema.ResourceData, error) {
 	d.SetId(bgpExtP.DistinguishedName)
 	d.Set("description", bgpExtP.Description)
 	dn := d.Id()
 	if dn != bgpExtP.DistinguishedName {
 		d.Set("l3_outside_dn", "")
 	}
-	bgpExtPMap, _ := bgpExtP.ToMap()
+	bgpExtPMap, err := bgpExtP.ToMap()
+	if err != nil {
+		return d, err
+	}
 
 	d.Set("annotation", bgpExtPMap["annotation"])
 	d.Set("name_alias", bgpExtPMap["nameAlias"])
-	return d
+	return d, nil
 }
 
 func resourceAciL3outBgpExternalPolicyImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -77,14 +82,17 @@ func resourceAciL3outBgpExternalPolicyImport(d *schema.ResourceData, m interface
 	if err != nil {
 		return nil, err
 	}
-	schemaFilled := setL3outBgpExternalPolicyAttributes(bgpExtP, d)
+	schemaFilled, err := setL3outBgpExternalPolicyAttributes(bgpExtP, d)
+	if err != nil {
+		return nil, err
+	}
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciL3outBgpExternalPolicyCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciL3outBgpExternalPolicyCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] L3outBgpExternalPolicy: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -103,27 +111,25 @@ func resourceAciL3outBgpExternalPolicyCreate(d *schema.ResourceData, m interface
 
 	err := aciClient.Save(bgpExtP)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
 
 	d.Partial(true)
 	err = checkTDn(aciClient, checkDns)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Partial(false)
 
 	d.SetId(bgpExtP.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciL3outBgpExternalPolicyRead(d, m)
+	return resourceAciL3outBgpExternalPolicyRead(ctx, d, m)
 }
 
-func resourceAciL3outBgpExternalPolicyUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciL3outBgpExternalPolicyUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] L3outBgpExternalPolicy: Beginning Update")
 
 	aciClient := m.(*client.Client)
@@ -147,28 +153,26 @@ func resourceAciL3outBgpExternalPolicyUpdate(d *schema.ResourceData, m interface
 	err := aciClient.Save(bgpExtP)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
 
 	d.Partial(true)
 	err = checkTDn(aciClient, checkDns)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Partial(false)
 
 	d.SetId(bgpExtP.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciL3outBgpExternalPolicyRead(d, m)
+	return resourceAciL3outBgpExternalPolicyRead(ctx, d, m)
 
 }
 
-func resourceAciL3outBgpExternalPolicyRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciL3outBgpExternalPolicyRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -180,25 +184,29 @@ func resourceAciL3outBgpExternalPolicyRead(d *schema.ResourceData, m interface{}
 		d.SetId("")
 		return nil
 	}
-	setL3outBgpExternalPolicyAttributes(bgpExtP, d)
+	_, err = setL3outBgpExternalPolicyAttributes(bgpExtP, d)
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 
 	return nil
 }
 
-func resourceAciL3outBgpExternalPolicyDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciL3outBgpExternalPolicyDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "bgpExtP")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
 }

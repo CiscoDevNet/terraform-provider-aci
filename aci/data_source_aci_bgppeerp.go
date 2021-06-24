@@ -1,16 +1,18 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func dataSourceAciBgpPeerConnectivityProfile() *schema.Resource {
 	return &schema.Resource{
 
-		Read: dataSourceAciBgpPeerConnectivityProfileRead,
+		ReadContext: dataSourceAciBgpPeerConnectivityProfileRead,
 
 		SchemaVersion: 1,
 
@@ -106,7 +108,7 @@ func dataSourceAciBgpPeerConnectivityProfile() *schema.Resource {
 	}
 }
 
-func dataSourceAciBgpPeerConnectivityProfileRead(d *schema.ResourceData, m interface{}) error {
+func dataSourceAciBgpPeerConnectivityProfileRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	aciClient := m.(*client.Client)
 
 	addr := d.Get("addr").(string)
@@ -119,23 +121,32 @@ func dataSourceAciBgpPeerConnectivityProfileRead(d *schema.ResourceData, m inter
 	bgpPeerP, err := getRemoteBgpPeerConnectivityProfile(aciClient, dn)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	d.SetId(dn)
-	setBgpPeerConnectivityProfileAttributes(bgpPeerP, d)
+	_, err = setBgpPeerConnectivityProfileAttributes(bgpPeerP, d)
+	if err != nil {
+		return diag.FromErr(err)
+	}
 
 	bgpAsP, err := getRemoteBgpAutonomousSystemProfileFromBgpPeerConnectivityProfile(aciClient, fmt.Sprintf("%s/as", dn))
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	setBgpAutonomousSystemProfileAttributesFromBgpPeerConnectivityProfile(bgpAsP, d)
+	_, err = setBgpAutonomousSystemProfileAttributesFromBgpPeerConnectivityProfile(bgpAsP, d)
+	if err != nil {
+		return diag.FromErr(err)
+	}
 
 	bgpLocalAsnP, err := getRemoteLocalAutonomousSystemProfileFromBgpPeerConnectivityProfile(aciClient, fmt.Sprintf("%s/localasn", dn))
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	setLocalAutonomousSystemProfileAttributesFromBgpPeerConnectivityProfile(bgpLocalAsnP, d)
+	_, err = setLocalAutonomousSystemProfileAttributesFromBgpPeerConnectivityProfile(bgpLocalAsnP, d)
+	if err != nil {
+		return diag.FromErr(err)
+	}
 
 	return nil
 }

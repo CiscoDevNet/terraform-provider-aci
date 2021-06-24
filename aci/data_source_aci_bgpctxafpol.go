@@ -1,16 +1,18 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func dataSourceAciBGPAddressFamilyContextPolicy() *schema.Resource {
 	return &schema.Resource{
 
-		Read: dataSourceAciBGPAddressFamilyContextPolicyRead,
+		ReadContext: dataSourceAciBGPAddressFamilyContextPolicyRead,
 
 		SchemaVersion: 1,
 
@@ -76,7 +78,7 @@ func dataSourceAciBGPAddressFamilyContextPolicy() *schema.Resource {
 	}
 }
 
-func dataSourceAciBGPAddressFamilyContextPolicyRead(d *schema.ResourceData, m interface{}) error {
+func dataSourceAciBGPAddressFamilyContextPolicyRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	aciClient := m.(*client.Client)
 
 	name := d.Get("name").(string)
@@ -89,10 +91,13 @@ func dataSourceAciBGPAddressFamilyContextPolicyRead(d *schema.ResourceData, m in
 	bgpCtxAfPol, err := getRemoteBGPAddressFamilyContextPolicy(aciClient, dn)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	d.SetId(dn)
-	setBGPAddressFamilyContextPolicyAttributes(bgpCtxAfPol, d)
+	_, err = setBGPAddressFamilyContextPolicyAttributes(bgpCtxAfPol, d)
+	if err != nil {
+		return diag.FromErr(err)
+	}
 	return nil
 }

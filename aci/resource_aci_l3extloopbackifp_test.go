@@ -58,10 +58,10 @@ func TestAccAciLoopBackInterfaceProfile_update(t *testing.T) {
 }
 
 func testAccCheckAciLoopBackInterfaceProfileConfig_basic(description string) string {
-	return fmt.Sprintf(`
+	return fmt.Sprintf(`	
 
 	resource "aci_l3out_loopback_interface_profile" "test" {
-		fabric_node_dn = "${aci_logical_node_to_fabric_node.example.id}"
+		fabric_node_dn = aci_logical_node_to_fabric_node.example.id
 		addr           = "1.2.3.5"
 		description    = "%s"
 		annotation     = "example"

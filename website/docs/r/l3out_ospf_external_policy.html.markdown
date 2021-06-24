@@ -14,31 +14,30 @@ Manages ACI L3-out OSPF External Policy
 
 ```hcl
 resource "aci_l3out_ospf_external_policy" "example" {
-
-  l3_outside_dn  = "${aci_l3_outside.example.id}"
-  annotation  = "example"
-  area_cost  = "1"
-  area_ctrl = "redistribute,summary"
-  area_id  = "0.0.0.1"
-  area_type = "nssa"
+  l3_outside_dn  = aci_l3_outside.example.id
+  annotation     = "example"
+  description    = "from terraform"
+  area_cost      = "1"
+  area_ctrl      = "redistribute,summary"
+  area_id        = "0.0.0.1"
+  area_type      = "nssa"
   multipod_internal = "no"
-  name_alias  = "example"
-
+  name_alias     = "example"
 }
 ```
 
 ## Argument Reference
 
-- `l3_outside_dn` - (Required) Distinguished name of parent l3 outside object.
+- `l3_outside_dn` - (Required) Distinguished name of the parent l3 outside object.
 - `annotation` - (Optional) Annotation for object L3-out OSPF External Policy.
-- `area_cost` - (Optional) The OSPF Area cost.
+- `description` - (Optional) Description for object L3-out OSPF External Policy.
+- `area_cost` - (Optional) The OSPF Area cost. Default value: "1".
 - `area_ctrl` - (Optional) The controls of redistribution and summary LSA generation into NSSA and Stub areas.  
   Allowed values: "redistribute", "summary", "suppress-fa", "unspecified" (Multiple Comma-Delimited values are allowed. E.g., "redistribute,summary"). Default value: "redistribute,summary".
 - `area_id` - (Optional) The OSPF Area ID.
 - `area_type` - (Optional) The area type.  
   Allowed values: "nssa", "regular", "stub". Default value: "nssa".
-- `multipod_internal` - (Optional) Start OSPF in WAN instance instead of default.  
-  Allowed values: "no", "yes". Default value: "no".
+- `multipod_internal` - (Optional) Start OSPF in WAN instance instead of the default. Value "yes" can be set only under infra tenant. Allowed values: "no", "yes". Default value: "no".
 - `name_alias` - (Optional) Name alias for object L3-out OSPF External Policy.
 
 ## Attribute Reference

@@ -1,21 +1,23 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciBGPAddressFamilyContextPolicy() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciBGPAddressFamilyContextPolicyCreate,
-		Update: resourceAciBGPAddressFamilyContextPolicyUpdate,
-		Read:   resourceAciBGPAddressFamilyContextPolicyRead,
-		Delete: resourceAciBGPAddressFamilyContextPolicyDelete,
+		CreateContext: resourceAciBGPAddressFamilyContextPolicyCreate,
+		UpdateContext: resourceAciBGPAddressFamilyContextPolicyUpdate,
+		ReadContext:   resourceAciBGPAddressFamilyContextPolicyRead,
+		DeleteContext: resourceAciBGPAddressFamilyContextPolicyDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciBGPAddressFamilyContextPolicyImport,
@@ -99,7 +101,7 @@ func getRemoteBGPAddressFamilyContextPolicy(client *client.Client, dn string) (*
 	return bgpCtxAfPol, nil
 }
 
-func setBGPAddressFamilyContextPolicyAttributes(bgpCtxAfPol *models.BGPAddressFamilyContextPolicy, d *schema.ResourceData) *schema.ResourceData {
+func setBGPAddressFamilyContextPolicyAttributes(bgpCtxAfPol *models.BGPAddressFamilyContextPolicy, d *schema.ResourceData) (*schema.ResourceData, error) {
 	dn := d.Id()
 
 	d.SetId(bgpCtxAfPol.DistinguishedName)
@@ -107,7 +109,10 @@ func setBGPAddressFamilyContextPolicyAttributes(bgpCtxAfPol *models.BGPAddressFa
 	if dn != bgpCtxAfPol.DistinguishedName {
 		d.Set("tenant_dn", "")
 	}
-	bgpCtxAfPolMap, _ := bgpCtxAfPol.ToMap()
+	bgpCtxAfPolMap, err := bgpCtxAfPol.ToMap()
+	if err != nil {
+		return d, err
+	}
 
 	d.Set("name", bgpCtxAfPolMap["name"])
 
@@ -120,7 +125,7 @@ func setBGPAddressFamilyContextPolicyAttributes(bgpCtxAfPol *models.BGPAddressFa
 	d.Set("max_ecmp_ibgp", bgpCtxAfPolMap["maxEcmpIbgp"])
 	d.Set("name_alias", bgpCtxAfPolMap["nameAlias"])
 
-	return d
+	return d, nil
 }
 
 func resourceAciBGPAddressFamilyContextPolicyImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -134,14 +139,17 @@ func resourceAciBGPAddressFamilyContextPolicyImport(d *schema.ResourceData, m in
 	if err != nil {
 		return nil, err
 	}
-	schemaFilled := setBGPAddressFamilyContextPolicyAttributes(bgpCtxAfPol, d)
+	schemaFilled, err := setBGPAddressFamilyContextPolicyAttributes(bgpCtxAfPol, d)
+	if err != nil {
+		return nil, err
+	}
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciBGPAddressFamilyContextPolicyCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciBGPAddressFamilyContextPolicyCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] BGPAddressFamilyContextPolicy: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -181,19 +189,16 @@ func resourceAciBGPAddressFamilyContextPolicyCreate(d *schema.ResourceData, m in
 
 	err := aciClient.Save(bgpCtxAfPol)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.Partial(false)
 
 	d.SetId(bgpCtxAfPol.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciBGPAddressFamilyContextPolicyRead(d, m)
+	return resourceAciBGPAddressFamilyContextPolicyRead(ctx, d, m)
 }
 
-func resourceAciBGPAddressFamilyContextPolicyUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciBGPAddressFamilyContextPolicyUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] BGPAddressFamilyContextPolicy: Beginning Update")
 
 	aciClient := m.(*client.Client)
@@ -237,20 +242,17 @@ func resourceAciBGPAddressFamilyContextPolicyUpdate(d *schema.ResourceData, m in
 	err := aciClient.Save(bgpCtxAfPol)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.Partial(false)
 
 	d.SetId(bgpCtxAfPol.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciBGPAddressFamilyContextPolicyRead(d, m)
+	return resourceAciBGPAddressFamilyContextPolicyRead(ctx, d, m)
 
 }
 
-func resourceAciBGPAddressFamilyContextPolicyRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciBGPAddressFamilyContextPolicyRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -262,25 +264,29 @@ func resourceAciBGPAddressFamilyContextPolicyRead(d *schema.ResourceData, m inte
 		d.SetId("")
 		return nil
 	}
-	setBGPAddressFamilyContextPolicyAttributes(bgpCtxAfPol, d)
+	_, err = setBGPAddressFamilyContextPolicyAttributes(bgpCtxAfPol, d)
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 
 	return nil
 }
 
-func resourceAciBGPAddressFamilyContextPolicyDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciBGPAddressFamilyContextPolicyDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "bgpCtxAfPol")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
 }

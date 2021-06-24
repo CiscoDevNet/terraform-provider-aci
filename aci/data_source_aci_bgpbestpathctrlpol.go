@@ -1,16 +1,18 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func dataSourceAciBgpBestPathPolicy() *schema.Resource {
 	return &schema.Resource{
 
-		Read: dataSourceAciBgpBestPathPolicyRead,
+		ReadContext: dataSourceAciBgpBestPathPolicyRead,
 
 		SchemaVersion: 1,
 
@@ -46,7 +48,7 @@ func dataSourceAciBgpBestPathPolicy() *schema.Resource {
 	}
 }
 
-func dataSourceAciBgpBestPathPolicyRead(d *schema.ResourceData, m interface{}) error {
+func dataSourceAciBgpBestPathPolicyRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	aciClient := m.(*client.Client)
 
 	name := d.Get("name").(string)
@@ -59,9 +61,12 @@ func dataSourceAciBgpBestPathPolicyRead(d *schema.ResourceData, m interface{}) e
 	bgpBestPathCtrlPol, err := getRemoteBgpBestPathPolicy(aciClient, dn)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.SetId(dn)
-	setBgpBestPathPolicyAttributes(bgpBestPathCtrlPol, d)
+	_, err = setBgpBestPathPolicyAttributes(bgpBestPathCtrlPol, d)
+	if err != nil {
+		return diag.FromErr(err)
+	}
 	return nil
 }

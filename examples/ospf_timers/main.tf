@@ -16,8 +16,8 @@ provider "aci" {
 
 resource "aci_ospf_timers" "example" {
   tenant_dn           = aci_tenant.tenentcheck.id
-  name                = "one"
-  annotation          = "example"
+  name                = "ospf_timers_1"
+  annotation          = "ospf_timers_tag"
   description         = "from terraform"
   bw_ref              = "30000"
   ctrl                = "name-lookup"

@@ -17,12 +17,10 @@ resource "aci_dhcp_relay_policy" "example" {
   mode        = "visible"
   name_alias  = "alias_example"
   owner       = "infra"
-
   relation_dhcp_rs_prov {
     addr = "10.20.30.40"
     tdn     = aci_application_epg.example.id
   }
-
   relation_dhcp_rs_prov {
     addr = "10.20.30.41"
     tdn     = aci_l2out_extepg.example.id

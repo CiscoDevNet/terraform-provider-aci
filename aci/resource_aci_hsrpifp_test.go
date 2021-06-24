@@ -59,7 +59,6 @@ func TestAccAciL3outHSRPInterfaceProfile_update(t *testing.T) {
 
 func testAccCheckAciL3outHSRPInterfaceProfileConfig_basic(description string) string {
 	return fmt.Sprintf(`
-
 	resource "aci_l3out_hsrp_interface_profile" "fool3out_hsrp_interface_profile" {
 		logical_interface_profile_dn  = "${aci_logical_interface_profile.example.id}"
 		description = "%s"

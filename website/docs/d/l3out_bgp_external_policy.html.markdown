@@ -14,7 +14,7 @@ Data source for ACI L3-out BGP External Policy
 
 ```hcl
 data "aci_l3out_bgp_external_policy" "example" {
-  l3_outside_dn  = "${aci_l3_outside.example.id}"
+  l3_outside_dn  = aci_l3_outside.example.id
 }
 ```
 
@@ -26,4 +26,5 @@ data "aci_l3out_bgp_external_policy" "example" {
 
 - `id` - Attribute id set to the Dn of the L3-out BGP External Policy.
 - `annotation` - (Optional) Annotation for object L3-out BGP External Policy.
+- `description` - (Optional) Description for object L3-out BGP External Policy.
 - `name_alias` - (Optional) Name alias for object L3-out BGP External Policy.
