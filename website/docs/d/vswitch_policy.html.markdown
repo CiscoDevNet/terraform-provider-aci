@@ -15,6 +15,7 @@ Data source for ACI VSwitch Policy Group
 * `Class` - vmmVSwitchPolicyCont
 * `Distinguished Named` - uni/vmmp-{vendor}/dom-{name}/vswitchpolcont
 
+
 ## GUI Information ##
 
 * `Location` - Virtual Networking -> {vendor} -> {domain_name} -> VSwitch Policy
@@ -22,7 +23,7 @@ Data source for ACI VSwitch Policy Group
 ## Example Usage ##
 
 ```hcl
-data "aci_v_switch_policy_group" "example" {
+data "aci_vswitch_policy" "example" {
   vmm_domain_dn  = aci_vmm_domain.example.id
 }
 ```
@@ -35,4 +36,5 @@ data "aci_v_switch_policy_group" "example" {
 
 * `id` - Attribute id set to the Dn of the VSwitch Policy Group.
 * `annotation` - (Optional) Annotation of object VSwitch Policy Group.
+* `description` - (Optional) Description of object VSwitch Policy Group.
 * `name_alias` - (Optional) Name Alias of object VSwitch Policy Group.

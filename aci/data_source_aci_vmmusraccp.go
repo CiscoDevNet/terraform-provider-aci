@@ -1,15 +1,17 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func dataSourceAciVMMCredential() *schema.Resource {
 	return &schema.Resource{
-		Read:          dataSourceAciVMMCredentialRead,
+		ReadContext:   dataSourceAciVMMCredentialRead,
 		SchemaVersion: 1,
 		Schema: AppendBaseAttrSchema(AppendNameAliasAttrSchema(map[string]*schema.Schema{
 			"vmm_domain_dn": {
@@ -39,7 +41,7 @@ func dataSourceAciVMMCredential() *schema.Resource {
 	}
 }
 
-func dataSourceAciVMMCredentialRead(d *schema.ResourceData, m interface{}) error {
+func dataSourceAciVMMCredentialRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	aciClient := m.(*client.Client)
 	name := d.Get("name").(string)
 	VMMDomainDn := d.Get("vmm_domain_dn").(string)
@@ -47,8 +49,11 @@ func dataSourceAciVMMCredentialRead(d *schema.ResourceData, m interface{}) error
 	dn := fmt.Sprintf("%s/%s", VMMDomainDn, rn)
 	vmmUsrAccP, err := getRemoteVMMCredential(aciClient, dn)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	setVMMCredentialAttributes(vmmUsrAccP, d)
+	_, err = setVMMCredentialAttributes(vmmUsrAccP, d)
+	if err != nil {
+		return diag.FromErr(err)
+	}
 	return nil
 }

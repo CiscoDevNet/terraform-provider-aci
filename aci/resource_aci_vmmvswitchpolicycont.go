@@ -1,20 +1,22 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func resourceAciVSwitchPolicyGroup() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciVSwitchPolicyGroupCreate,
-		Update: resourceAciVSwitchPolicyGroupUpdate,
-		Read:   resourceAciVSwitchPolicyGroupRead,
-		Delete: resourceAciVSwitchPolicyGroupDelete,
+		CreateContext: resourceAciVSwitchPolicyGroupCreate,
+		UpdateContext: resourceAciVSwitchPolicyGroupUpdate,
+		ReadContext:   resourceAciVSwitchPolicyGroupRead,
+		DeleteContext: resourceAciVSwitchPolicyGroupDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciVSwitchPolicyGroupImport,
@@ -107,14 +109,17 @@ func getRemoteVSwitchPolicyGroup(client *client.Client, dn string) (*models.VSwi
 	return vmmVSwitchPolicyCont, nil
 }
 
-func setVSwitchPolicyGroupAttributes(vmmVSwitchPolicyCont *models.VSwitchPolicyGroup, d *schema.ResourceData) *schema.ResourceData {
+func setVSwitchPolicyGroupAttributes(vmmVSwitchPolicyCont *models.VSwitchPolicyGroup, d *schema.ResourceData) (*schema.ResourceData, error) {
 	d.SetId(vmmVSwitchPolicyCont.DistinguishedName)
 	d.Set("description", vmmVSwitchPolicyCont.Description)
-	vmmVSwitchPolicyContMap, _ := vmmVSwitchPolicyCont.ToMap()
-	d.Set("vmm_domain_dn", GetParentDn(vmmVSwitchPolicyCont.DistinguishedName, fmt.Sprintf("/vswitchpolcont")))
+	vmmVSwitchPolicyContMap, err := vmmVSwitchPolicyCont.ToMap()
+	if err != nil {
+		return d, err
+	}
+
 	d.Set("annotation", vmmVSwitchPolicyContMap["annotation"])
 	d.Set("name_alias", vmmVSwitchPolicyContMap["nameAlias"])
-	return d
+	return d, nil
 }
 
 func resourceAciVSwitchPolicyGroupImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -125,12 +130,15 @@ func resourceAciVSwitchPolicyGroupImport(d *schema.ResourceData, m interface{}) 
 	if err != nil {
 		return nil, err
 	}
-	schemaFilled := setVSwitchPolicyGroupAttributes(vmmVSwitchPolicyCont, d)
+	schemaFilled, err := setVSwitchPolicyGroupAttributes(vmmVSwitchPolicyCont, d)
+	if err != nil {
+		return nil, err
+	}
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciVSwitchPolicyGroupCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciVSwitchPolicyGroupCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] VSwitchPolicyGroup: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -151,7 +159,7 @@ func resourceAciVSwitchPolicyGroupCreate(d *schema.ResourceData, m interface{}) 
 
 	err := aciClient.Save(vmmVSwitchPolicyCont)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	checkDns := make([]string, 0, 1)
 
@@ -207,7 +215,7 @@ func resourceAciVSwitchPolicyGroupCreate(d *schema.ResourceData, m interface{}) 
 	d.Partial(true)
 	err = checkTDn(aciClient, checkDns)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Partial(false)
 
@@ -218,7 +226,7 @@ func resourceAciVSwitchPolicyGroupCreate(d *schema.ResourceData, m interface{}) 
 			err = aciClient.CreateRelationvmmRsVswitchExporterPol(vmmVSwitchPolicyCont.DistinguishedName, vmmVSwitchPolicyContAttr.Annotation, paramMap["active_flow_time_out"].(string), paramMap["idle_flow_time_out"].(string), paramMap["sampling_rate"].(string), paramMap["target_dn"].(string))
 
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 		}
 	}
@@ -228,7 +236,7 @@ func resourceAciVSwitchPolicyGroupCreate(d *schema.ResourceData, m interface{}) 
 		err = aciClient.CreateRelationvmmRsVswitchOverrideCdpIfPol(vmmVSwitchPolicyCont.DistinguishedName, vmmVSwitchPolicyContAttr.Annotation, relationParam)
 
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 
 	}
@@ -238,7 +246,7 @@ func resourceAciVSwitchPolicyGroupCreate(d *schema.ResourceData, m interface{}) 
 		err = aciClient.CreateRelationvmmRsVswitchOverrideFwPol(vmmVSwitchPolicyCont.DistinguishedName, vmmVSwitchPolicyContAttr.Annotation, relationParam)
 
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 
 	}
@@ -248,7 +256,7 @@ func resourceAciVSwitchPolicyGroupCreate(d *schema.ResourceData, m interface{}) 
 		err = aciClient.CreateRelationvmmRsVswitchOverrideLacpPol(vmmVSwitchPolicyCont.DistinguishedName, vmmVSwitchPolicyContAttr.Annotation, relationParam)
 
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 
 	}
@@ -258,7 +266,7 @@ func resourceAciVSwitchPolicyGroupCreate(d *schema.ResourceData, m interface{}) 
 		err = aciClient.CreateRelationvmmRsVswitchOverrideLldpIfPol(vmmVSwitchPolicyCont.DistinguishedName, vmmVSwitchPolicyContAttr.Annotation, relationParam)
 
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 	}
 
@@ -267,7 +275,7 @@ func resourceAciVSwitchPolicyGroupCreate(d *schema.ResourceData, m interface{}) 
 		err = aciClient.CreateRelationvmmRsVswitchOverrideMcpIfPol(vmmVSwitchPolicyCont.DistinguishedName, vmmVSwitchPolicyContAttr.Annotation, relationParam)
 
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 
 	}
@@ -277,7 +285,7 @@ func resourceAciVSwitchPolicyGroupCreate(d *schema.ResourceData, m interface{}) 
 		err = aciClient.CreateRelationvmmRsVswitchOverrideMtuPol(vmmVSwitchPolicyCont.DistinguishedName, vmmVSwitchPolicyContAttr.Annotation, relationParam)
 
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 
 	}
@@ -287,17 +295,17 @@ func resourceAciVSwitchPolicyGroupCreate(d *schema.ResourceData, m interface{}) 
 		err = aciClient.CreateRelationvmmRsVswitchOverrideStpPol(vmmVSwitchPolicyCont.DistinguishedName, vmmVSwitchPolicyContAttr.Annotation, relationParam)
 
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 
 	}
 
 	d.SetId(vmmVSwitchPolicyCont.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
-	return resourceAciVSwitchPolicyGroupRead(d, m)
+	return resourceAciVSwitchPolicyGroupRead(ctx, d, m)
 }
 
-func resourceAciVSwitchPolicyGroupUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciVSwitchPolicyGroupUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] VSwitchPolicyGroup: Beginning Update")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -319,7 +327,7 @@ func resourceAciVSwitchPolicyGroupUpdate(d *schema.ResourceData, m interface{}) 
 	vmmVSwitchPolicyCont.Status = "modified"
 	err := aciClient.Save(vmmVSwitchPolicyCont)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	checkDns := make([]string, 0, 1)
@@ -379,7 +387,7 @@ func resourceAciVSwitchPolicyGroupUpdate(d *schema.ResourceData, m interface{}) 
 	d.Partial(true)
 	err = checkTDn(aciClient, checkDns)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Partial(false)
 
@@ -392,7 +400,7 @@ func resourceAciVSwitchPolicyGroupUpdate(d *schema.ResourceData, m interface{}) 
 			err = aciClient.DeleteRelationvmmRsVswitchExporterPol(vmmVSwitchPolicyCont.DistinguishedName, paramMap["target_dn"].(string))
 
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 		}
 		for _, relationParam := range newRelList {
@@ -400,7 +408,7 @@ func resourceAciVSwitchPolicyGroupUpdate(d *schema.ResourceData, m interface{}) 
 			err = aciClient.CreateRelationvmmRsVswitchExporterPol(vmmVSwitchPolicyCont.DistinguishedName, vmmVSwitchPolicyContAttr.Annotation, paramMap["active_flow_time_out"].(string), paramMap["idle_flow_time_out"].(string), paramMap["sampling_rate"].(string), paramMap["target_dn"].(string))
 
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 		}
 	}
@@ -408,12 +416,12 @@ func resourceAciVSwitchPolicyGroupUpdate(d *schema.ResourceData, m interface{}) 
 		_, newRelParam := d.GetChange("relation_vmm_rs_vswitch_override_cdp_if_pol")
 		err = aciClient.DeleteRelationvmmRsVswitchOverrideCdpIfPol(vmmVSwitchPolicyCont.DistinguishedName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 		err = aciClient.CreateRelationvmmRsVswitchOverrideCdpIfPol(vmmVSwitchPolicyCont.DistinguishedName, vmmVSwitchPolicyContAttr.Annotation, newRelParam.(string))
 
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 
 	}
@@ -421,36 +429,36 @@ func resourceAciVSwitchPolicyGroupUpdate(d *schema.ResourceData, m interface{}) 
 		_, newRelParam := d.GetChange("relation_vmm_rs_vswitch_override_fw_pol")
 		err = aciClient.DeleteRelationvmmRsVswitchOverrideFwPol(vmmVSwitchPolicyCont.DistinguishedName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 		err = aciClient.CreateRelationvmmRsVswitchOverrideFwPol(vmmVSwitchPolicyCont.DistinguishedName, vmmVSwitchPolicyContAttr.Annotation, newRelParam.(string))
 
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 	}
 	if d.HasChange("relation_vmm_rs_vswitch_override_lacp_pol") || d.HasChange("annotation") {
 		_, newRelParam := d.GetChange("relation_vmm_rs_vswitch_override_lacp_pol")
 		err = aciClient.DeleteRelationvmmRsVswitchOverrideLacpPol(vmmVSwitchPolicyCont.DistinguishedName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 		err = aciClient.CreateRelationvmmRsVswitchOverrideLacpPol(vmmVSwitchPolicyCont.DistinguishedName, vmmVSwitchPolicyContAttr.Annotation, newRelParam.(string))
 
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 	}
 	if d.HasChange("relation_vmm_rs_vswitch_override_lldp_if_pol") || d.HasChange("annotation") {
 		_, newRelParam := d.GetChange("relation_vmm_rs_vswitch_override_lldp_if_pol")
 		err = aciClient.DeleteRelationvmmRsVswitchOverrideLldpIfPol(vmmVSwitchPolicyCont.DistinguishedName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 		err = aciClient.CreateRelationvmmRsVswitchOverrideLldpIfPol(vmmVSwitchPolicyCont.DistinguishedName, vmmVSwitchPolicyContAttr.Annotation, newRelParam.(string))
 
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 
 	}
@@ -458,24 +466,24 @@ func resourceAciVSwitchPolicyGroupUpdate(d *schema.ResourceData, m interface{}) 
 		_, newRelParam := d.GetChange("relation_vmm_rs_vswitch_override_mcp_if_pol")
 		err = aciClient.DeleteRelationvmmRsVswitchOverrideMcpIfPol(vmmVSwitchPolicyCont.DistinguishedName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 		err = aciClient.CreateRelationvmmRsVswitchOverrideMcpIfPol(vmmVSwitchPolicyCont.DistinguishedName, vmmVSwitchPolicyContAttr.Annotation, newRelParam.(string))
 
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 	}
 	if d.HasChange("relation_vmm_rs_vswitch_override_mtu_pol") || d.HasChange("annotation") {
 		_, newRelParam := d.GetChange("relation_vmm_rs_vswitch_override_mtu_pol")
 		err = aciClient.DeleteRelationvmmRsVswitchOverrideMtuPol(vmmVSwitchPolicyCont.DistinguishedName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 		err = aciClient.CreateRelationvmmRsVswitchOverrideMtuPol(vmmVSwitchPolicyCont.DistinguishedName, vmmVSwitchPolicyContAttr.Annotation, newRelParam.(string))
 
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 
 	}
@@ -483,30 +491,34 @@ func resourceAciVSwitchPolicyGroupUpdate(d *schema.ResourceData, m interface{}) 
 		_, newRelParam := d.GetChange("relation_vmm_rs_vswitch_override_stp_pol")
 		err = aciClient.DeleteRelationvmmRsVswitchOverrideStpPol(vmmVSwitchPolicyCont.DistinguishedName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 		err = aciClient.CreateRelationvmmRsVswitchOverrideStpPol(vmmVSwitchPolicyCont.DistinguishedName, vmmVSwitchPolicyContAttr.Annotation, newRelParam.(string))
 
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 	}
 
 	d.SetId(vmmVSwitchPolicyCont.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
-	return resourceAciVSwitchPolicyGroupRead(d, m)
+	return resourceAciVSwitchPolicyGroupRead(ctx, d, m)
 }
 
-func resourceAciVSwitchPolicyGroupRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciVSwitchPolicyGroupRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	vmmVSwitchPolicyCont, err := getRemoteVSwitchPolicyGroup(aciClient, dn)
 	if err != nil {
 		d.SetId("")
-		return err
+		return diag.FromErr(err)
 	}
-	setVSwitchPolicyGroupAttributes(vmmVSwitchPolicyCont, d)
+	_, err = setVSwitchPolicyGroupAttributes(vmmVSwitchPolicyCont, d)
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 
 	vmmRsVswitchExporterPolData, err := aciClient.ReadRelationvmmRsVswitchExporterPol(dn)
 	if err != nil {
@@ -518,7 +530,7 @@ func resourceAciVSwitchPolicyGroupRead(d *schema.ResourceData, m interface{}) er
 	vmmRsVswitchOverrideCdpIfPolData, err := aciClient.ReadRelationvmmRsVswitchOverrideCdpIfPol(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation vmmRsVswitchOverrideCdpIfPol %v", err)
-		d.Set("vmm_rs_vswitch_override_cdp_if_pol", "")
+		d.Set("relation_vmm_rs_vswitch_override_cdp_if_pol", "")
 	} else {
 		if _, ok := d.GetOk("relation_vmm_rs_vswitch_override_cdp_if_pol"); ok {
 			tfName := d.Get("relation_vmm_rs_vswitch_override_cdp_if_pol").(string)
@@ -531,7 +543,7 @@ func resourceAciVSwitchPolicyGroupRead(d *schema.ResourceData, m interface{}) er
 	vmmRsVswitchOverrideFwPolData, err := aciClient.ReadRelationvmmRsVswitchOverrideFwPol(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation vmmRsVswitchOverrideFwPol %v", err)
-		d.Set("vmm_rs_vswitch_override_fw_pol", "")
+		d.Set("relation_vmm_rs_vswitch_override_fw_pol", "")
 	} else {
 		if _, ok := d.GetOk("relation_vmm_rs_vswitch_override_fw_pol"); ok {
 			tfName := d.Get("relation_vmm_rs_vswitch_override_fw_pol").(string)
@@ -544,7 +556,7 @@ func resourceAciVSwitchPolicyGroupRead(d *schema.ResourceData, m interface{}) er
 	vmmRsVswitchOverrideLacpPolData, err := aciClient.ReadRelationvmmRsVswitchOverrideLacpPol(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation vmmRsVswitchOverrideLacpPol %v", err)
-		d.Set("vmm_rs_vswitch_override_lacp_pol", "")
+		d.Set("relation_vmm_rs_vswitch_override_lacp_pol", "")
 	} else {
 		if _, ok := d.GetOk("relation_vmm_rs_vswitch_override_lacp_pol"); ok {
 			tfName := d.Get("relation_vmm_rs_vswitch_override_lacp_pol").(string)
@@ -557,7 +569,7 @@ func resourceAciVSwitchPolicyGroupRead(d *schema.ResourceData, m interface{}) er
 	vmmRsVswitchOverrideLldpIfPolData, err := aciClient.ReadRelationvmmRsVswitchOverrideLldpIfPol(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation vmmRsVswitchOverrideLldpIfPol %v", err)
-		d.Set("vmm_rs_vswitch_override_lldp_if_pol", "")
+		d.Set("relation_vmm_rs_vswitch_override_lldp_if_pol", "")
 	} else {
 		if _, ok := d.GetOk("relation_vmm_rs_vswitch_override_lldp_if_pol"); ok {
 			tfName := d.Get("relation_vmm_rs_vswitch_override_lldp_if_pol").(string)
@@ -570,7 +582,7 @@ func resourceAciVSwitchPolicyGroupRead(d *schema.ResourceData, m interface{}) er
 	vmmRsVswitchOverrideMcpIfPolData, err := aciClient.ReadRelationvmmRsVswitchOverrideMcpIfPol(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation vmmRsVswitchOverrideMcpIfPol %v", err)
-		d.Set("vmm_rs_vswitch_override_mcp_if_pol", "")
+		d.Set("relation_vmm_rs_vswitch_override_mcp_if_pol", "")
 	} else {
 		if _, ok := d.GetOk("relation_vmm_rs_vswitch_override_mcp_if_pol"); ok {
 			tfName := d.Get("relation_vmm_rs_vswitch_override_mcp_if_pol").(string)
@@ -583,7 +595,7 @@ func resourceAciVSwitchPolicyGroupRead(d *schema.ResourceData, m interface{}) er
 	vmmRsVswitchOverrideMtuPolData, err := aciClient.ReadRelationvmmRsVswitchOverrideMtuPol(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation vmmRsVswitchOverrideMtuPol %v", err)
-		d.Set("vmm_rs_vswitch_override_mtu_pol", "")
+		d.Set("relation_vmm_rs_vswitch_override_mtu_pol", "")
 	} else {
 		if _, ok := d.GetOk("relation_vmm_rs_vswitch_override_mtu_pol"); ok {
 			tfName := d.Get("relation_vmm_rs_vswitch_override_mtu_pol").(string)
@@ -596,7 +608,7 @@ func resourceAciVSwitchPolicyGroupRead(d *schema.ResourceData, m interface{}) er
 	vmmRsVswitchOverrideStpPolData, err := aciClient.ReadRelationvmmRsVswitchOverrideStpPol(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation vmmRsVswitchOverrideStpPol %v", err)
-		d.Set("vmm_rs_vswitch_override_stp_pol", "")
+		d.Set("relation_vmm_rs_vswitch_override_stp_pol", "")
 	} else {
 		if _, ok := d.GetOk("relation_vmm_rs_vswitch_override_stp_pol"); ok {
 			tfName := d.Get("relation_vmm_rs_vswitch_override_stp_pol").(string)
@@ -609,15 +621,15 @@ func resourceAciVSwitchPolicyGroupRead(d *schema.ResourceData, m interface{}) er
 	return nil
 }
 
-func resourceAciVSwitchPolicyGroupDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciVSwitchPolicyGroupDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "vmmVSwitchPolicyCont")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
 }

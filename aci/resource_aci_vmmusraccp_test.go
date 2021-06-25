@@ -13,7 +13,6 @@ import (
 
 func TestAccAciVMMCredential_Basic(t *testing.T) {
 	var vmm_credential models.VMMCredential
-	vmm_prov_p_name := acctest.RandString(5)
 	vmm_dom_p_name := acctest.RandString(5)
 	vmm_usr_acc_p_name := acctest.RandString(5)
 	description := "vmm_credential created while acceptance testing"
@@ -24,29 +23,22 @@ func TestAccAciVMMCredential_Basic(t *testing.T) {
 		CheckDestroy: testAccCheckAciVMMCredentialDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckAciVMMCredentialConfig_basic(vmm_prov_p_name, vmm_dom_p_name, vmm_usr_acc_p_name),
+				Config: testAccCheckAciVMMCredentialConfig_basic(vmm_dom_p_name, vmm_usr_acc_p_name),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckAciVMMCredentialExists("aci_vmm_credential.foovmm_credential", &vmm_credential),
-					testAccCheckAciVMMCredentialAttributes(vmm_prov_p_name, vmm_dom_p_name, vmm_usr_acc_p_name, description, &vmm_credential),
+					testAccCheckAciVMMCredentialAttributes(vmm_dom_p_name, vmm_usr_acc_p_name, description, &vmm_credential),
 				),
 			},
 		},
 	})
 }
 
-func testAccCheckAciVMMCredentialConfig_basic(vmm_prov_p_name, vmm_dom_p_name, vmm_usr_acc_p_name string) string {
-	return fmt.Sprintf(`
-
-	resource "aci_provider_profile" "fooprovider_profile" {
-		name 		= "%s"
-		description = "provider_profile created while acceptance testing"
-
-	}
+func testAccCheckAciVMMCredentialConfig_basic(vmm_dom_p_name, vmm_usr_acc_p_name string) string {
+	return fmt.Sprintf(`	
 
 	resource "aci_vmm_domain" "foovmm_domain" {
 		name 		= "%s"
-		description = "vmm_domain created while acceptance testing"
-		provider_profile_dn = aci_provider_profile.fooprovider_profile.id
+		provider_profile_dn = "uni/vmmp-VMware"
 	}
 
 	resource "aci_vmm_credential" "foovmm_credential" {
@@ -55,7 +47,7 @@ func testAccCheckAciVMMCredentialConfig_basic(vmm_prov_p_name, vmm_dom_p_name, v
 		vmm_domain_dn = aci_vmm_domain.foovmm_domain.id
 	}
 
-	`, vmm_prov_p_name, vmm_dom_p_name, vmm_usr_acc_p_name)
+	`, vmm_dom_p_name, vmm_usr_acc_p_name)
 }
 
 func testAccCheckAciVMMCredentialExists(name string, vmm_credential *models.VMMCredential) resource.TestCheckFunc {
@@ -102,15 +94,12 @@ func testAccCheckAciVMMCredentialDestroy(s *terraform.State) error {
 	return nil
 }
 
-func testAccCheckAciVMMCredentialAttributes(vmm_prov_p_name, vmm_dom_p_name, vmm_usr_acc_p_name, description string, vmm_credential *models.VMMCredential) resource.TestCheckFunc {
+func testAccCheckAciVMMCredentialAttributes(vmm_dom_p_name, vmm_usr_acc_p_name, description string, vmm_credential *models.VMMCredential) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 		if vmm_usr_acc_p_name != GetMOName(vmm_credential.DistinguishedName) {
 			return fmt.Errorf("Bad vmm_usr_acc_p %s", GetMOName(vmm_credential.DistinguishedName))
 		}
 
-		if vmm_dom_p_name != GetMOName(vmm_credential.DistinguishedName) {
-			return fmt.Errorf(" Bad vmm_dom_p %s", GetMOName(vmm_credential.DistinguishedName))
-		}
 		if description != vmm_credential.Description {
 			return fmt.Errorf("Bad vmm_credential Description %s", vmm_credential.Description)
 		}

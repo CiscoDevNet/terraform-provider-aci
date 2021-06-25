@@ -1,15 +1,17 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func dataSourceAciVSwitchPolicyGroup() *schema.Resource {
 	return &schema.Resource{
-		Read:          dataSourceAciVSwitchPolicyGroupRead,
+		ReadContext:   dataSourceAciVSwitchPolicyGroupRead,
 		SchemaVersion: 1,
 		Schema: AppendBaseAttrSchema(AppendNameAliasAttrSchema(map[string]*schema.Schema{
 			"vmm_domain_dn": {
@@ -25,15 +27,18 @@ func dataSourceAciVSwitchPolicyGroup() *schema.Resource {
 	}
 }
 
-func dataSourceAciVSwitchPolicyGroupRead(d *schema.ResourceData, m interface{}) error {
+func dataSourceAciVSwitchPolicyGroupRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	aciClient := m.(*client.Client)
 	VMMDomainDn := d.Get("vmm_domain_dn").(string)
 	rn := fmt.Sprintf("vswitchpolcont")
 	dn := fmt.Sprintf("%s/%s", VMMDomainDn, rn)
 	vmmVSwitchPolicyCont, err := getRemoteVSwitchPolicyGroup(aciClient, dn)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	setVSwitchPolicyGroupAttributes(vmmVSwitchPolicyCont, d)
+	_, err = setVSwitchPolicyGroupAttributes(vmmVSwitchPolicyCont, d)
+	if err != nil {
+		return diag.FromErr(err)
+	}
 	return nil
 }

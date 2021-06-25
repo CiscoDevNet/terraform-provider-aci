@@ -29,7 +29,7 @@ data "aci_spanning_tree_interface_policy" "example" {
 
 ## Argument Reference
 
-- `name` - (Required) name of object Spanning Tree Interface Policy.
+- `name` - (Required) Name of object Spanning Tree Interface Policy.
 
 ## Attribute Reference
 

@@ -34,8 +34,9 @@ resource "aci_spanning_tree_interface_policy" "example" {
 
 - `name` - (Required) Name of object Spanning Tree Interface Policy.
 - `annotation` - (Optional) Annotation of object Spanning Tree Interface Policy.
+- `name_alias` - (Optional) Name alias of object Spanning Tree Interface Policy.
 - `description` - (Optional) Description of object Spanning Tree Interface Policy.
-- `ctrl` - (Optional) Interface controls. Allowed values are "bpdu-filter", "bpdu-guard", "unspecified", and default value is "unspecified". Type: List.
+- `ctrl` - (Optional) Interface controls. Allowed values are "bpdu-filter", "bpdu-guard", "unspecified". The default value is "unspecified". Type: List.
 
 ## Importing
 
