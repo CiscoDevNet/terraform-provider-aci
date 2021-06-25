@@ -7,9 +7,9 @@ terraform {
 }
 
 provider "aci" {
-  username = ""
-  password = ""
-  url      = ""
+  username = "" # <APIC username>
+  password = "" # <APIC pwd>
+  url      = "" # <cloud APIC URL>
   insecure = true
 }
 
