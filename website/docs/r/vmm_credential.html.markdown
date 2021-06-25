@@ -36,8 +36,10 @@ resource "aci_vmm_credential" "example" {
 * `vmm_domain_dn` - (Required) Distinguished name of parent VMM Domain object.
 * `name` - (Required) Name of object VMM Credential.
 * `annotation` - (Optional) Annotation of object VMM Credential.
+* `description` - (Optional) Description of object VMM Credential.
+* `name_alias` - (Optional) Name alias of object VMM Credential.
 * `pwd` - (Optional) Password.
-* `usr` - (Optional) Username.
+* `usr` - (Optional) Username. Min length is "0". Max length is "128".
 
 ## Importing ##
 
