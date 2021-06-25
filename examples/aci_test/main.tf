@@ -73,7 +73,7 @@ resource "aci_contract" "contract_epg1_epg2" {
 resource "aci_contract_subject" "Web_subject1" {
   contract_dn                  = aci_contract.contract_epg1_epg2.id
   name                         = "Subject"
-  relation_vz_rs_subj_filt_att = [aci_filter.allow_https.name, aci_filter.allow_icmp.name]
+  relation_vz_rs_subj_filt_att = [aci_filter.allow_https.id, aci_filter.allow_icmp.id]
 }
 
 resource "aci_filter" "allow_https" {

@@ -37,3 +37,15 @@ resource "aci_contract" "intra_epg_contract" {
   prio                     = "unspecified"
   relation_vz_rs_graph_att = aci_l4_l7_service_graph_template.rest_abs_graph.id
 }
+
+// Taboo Contract
+resource "aci_taboo_contract" "rest_taboo_con" {
+  tenant_dn = aci_tenant.tenant_for_epg.id
+  name = "testcon"
+}
+
+// Imported Contract
+resource "aci_imported_contract" "rest_vz_cons_if" {
+  tenant_dn = aci_tenant.tenant_for_epg.id
+  name       = "testcontract"
+}
