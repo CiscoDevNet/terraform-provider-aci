@@ -90,7 +90,7 @@ If you want to work on the provider, you'll first need [Go](http://www.golang.or
 
 To compile the provider, run `make build`. This will build the provider with sanity checks present in scripts directory and put the provider binary in `$GOPATH/bin` directory.
 
-<strong>Important: </strong>To successfully use the provider you need to use the below configuration just before setting up the provider with your cisco aci credentials.
+<strong>Important: </strong>To successfully use the provider you need to have the below configuration in your Terraform plan.
 
 ```hcl
 terraform {
