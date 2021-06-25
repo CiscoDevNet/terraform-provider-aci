@@ -48,16 +48,16 @@ Manages ACI Application EPG
 
 * `relation_fv_rs_bd` - (Required) Relation to Bridge domain associated with EPG (Point to class fvBD). Cardinality - N_TO_ONE. Type - String.
 
-* `relation_fv_rs_cust_qos_pol` - (Optional) Relation to custom Quality of Service traffic policy name (Point to class qosCustomPol). Cardinality - N_TO_ONE. Type - String.
+* `relation_fv_rs_cust_qos_pol` - (Optional) Relation to Custom Quality of Service traffic policy name (Point to class qosCustomPol). Cardinality - N_TO_ONE. Type - String.
 <!-- tenant -> policies -> protocol -> Custom QoS -->
 
-* `relation_fv_rs_fc_path_att` - (Optional) Relation to Fibre Channel (Paths)(Point to class fabricPathEp). Cardinality - N_TO_M. Type - Set of String.
+* `relation_fv_rs_fc_path_att` - (Optional) Relation to Fibre Channel (Paths) (Point to class fabricPathEp). Cardinality - N_TO_M. Type - Set of String.
 
 * `relation_fv_rs_prov` - (Optional) Relation to Provided Contract (Point to class vzBrCP). Cardinality - N_TO_M. Type - Set of String.
 
 * `relation_fv_rs_cons_if` - (Optional) Relation to Imported Contract (Point to class vzCPIf). Cardinality - N_TO_M. Type - Set of String.
 
-* `relation_fv_rs_sec_inherited` - (Optional) Relation represents that the EPG is inheriting security configuration from another EPG (Point to class fvEPg). Cardinality - N_TO_M. Type - Set of String.
+* `relation_fv_rs_sec_inherited` - (Optional) Relation represents that the EPG is inheriting security configuration from other EPGs (Point to class fvEPg). Cardinality - N_TO_M. Type - Set of String.
 
 * `relation_fv_rs_node_att` - (Optional) Relation used to define a Static Leaf binding (Point to class fabricNode). Cardinality - N_TO_M. Type - Set of String.
 <!-- tenant -> Application Profile -> EPG ->Static Leaf -->
