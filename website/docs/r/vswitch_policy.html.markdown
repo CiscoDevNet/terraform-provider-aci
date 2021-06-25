@@ -56,9 +56,9 @@ resource "aci_vswitch_policy" "example" {
 * `description` - (Optional) Description of object VSwitch Policy Group.
 * `name_alias` - (Optional) Name Alias of object VSwitch Policy Group.
 * `relation_vmm_rs_vswitch_exporter_pol` - (Optional) A block representing the relation to a VMM Netflow Exporter Policy (class netflowVmmExporterPol). Type: Block.
-  * `active_flow_time_out` - (Optional) The range of allowed values is "1" to "36001". Default value is "60".
-  * `idle_flow_time_out` - (Optional) The range of allowed values is "1" to "6001". Default value is "15".
-  * `sampling_rate` - (Optional) The range of allowed values is "1" to "10001". Default value is "0".
+  * `active_flow_time_out` - (Optional) The range of allowed values is "0" to "3600". Default value is "60".
+  * `idle_flow_time_out` - (Optional) The range of allowed values is "0" to "600". Default value is "15".
+  * `sampling_rate` - (Optional) The range of allowed values is "0" to "1000". Default value is "0".
   * `target_dn` - (Required) The distinguished name of the target exporter policy. Type: String
 
 * `relation_vmm_rs_vswitch_override_cdp_if_pol` - (Optional) Represents the relation to a CDP Interface Policy (class cdpIfPol). Relationship to policy providing physical configuration of the interfaces. Type: String.
