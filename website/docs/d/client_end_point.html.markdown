@@ -14,7 +14,6 @@ Data source for ACI Client End Point
 ```hcl
 
 data "aci_client_end_point" "check" {
-  application_epg_dn  = "${aci_application_epg.epg.id}"
   mac                 = "25:56:68:78:98:74"
   ip                  = "1.2.3.4"
   vlan                = "5"
@@ -24,7 +23,7 @@ data "aci_client_end_point" "check" {
 
 
 ## Argument Reference ##
-* `application_epg_dn` - (Required) Distinguished name of parent ApplicationEPG object.
+
 * `name` - (Optional) name of Object client end point.
 * `mac` - (Optional) Mac address of the object client end point.
 * `ip` - (Optional) ip address of the object client end point.
