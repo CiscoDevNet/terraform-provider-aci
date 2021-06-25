@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"strconv"
 	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
@@ -101,7 +102,7 @@ func resourceAciL3outOspfExternalPolicy() *schema.Resource {
 
 func validateOspfIp() schema.SchemaValidateFunc {
 	return func(i interface{}, k string) (s []string, es []error) {
-		// modified validation.StringInSlice function.
+		// function to check if partial OSPF areaId is valid.
 		val, ok := i.(string)
 		if !ok {
 			es = append(es, fmt.Errorf("expected type of %s to be string", k))
@@ -113,7 +114,8 @@ func validateOspfIp() schema.SchemaValidateFunc {
 			return
 		}
 		for _, v := range numList {
-			if v == "" {
+			intV, err := strconv.Atoi(v)
+			if err != nil || intV > 255 {
 				es = append(es, fmt.Errorf("Invalid value for %s : %s", k, val))
 				return
 			}
