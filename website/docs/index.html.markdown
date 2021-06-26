@@ -91,7 +91,7 @@ $ openssl req -new -newkey rsa:1024 -days 36500 -nodes -x509 -keyout admin.key -
 * Expand Security Management » Local Users
 Click the name of the user you want to add a certificate to, in the User Certificates area
 Click the + sign and in the Create X509 Certificate enter a certificate name in the Name field. Copy and paste your X.509 certificate in the Data field.
-Use this certificate name as the value of "cert_name" argument.
+Use this certificate name as the value of the "cert_name" argument.
 
 Example Usage
 ------------
