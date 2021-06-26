@@ -84,7 +84,7 @@ terraform apply -parallelism=1
   }
 ```
 
-Note: The value of "cert_name" arugument must match the name of the certificate attached to the APIC user (aaaUserCert) used for signature-based authentication
+Note: The value of "cert_name" argument must match the name of the certificate object attached to the APIC user (aaaUserCert) used for signature-based authentication
 
 Developing The Provider
 -----------------------
