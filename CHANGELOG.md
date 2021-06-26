@@ -1,3 +1,19 @@
+## 0.7.1 (June 25, 2021)
+BREAKING CHANGE:
+- Change aci_dhcp_relay_policy relation_dhcp_rs_prov argument from list of string to block definition to accomodate the addr argument.
+
+BUG FIXES:
+- Fix a regression introduced in aci_rest creating issues when use in parallel.
+- Make management_profile_dn an optional parameter with "uni/tn-mgmt/mgmtp-default" as default value in aci_node_mgmt_epg.
+- Deprecate use of filter argument in aci_contract and removal from documentation.
+- Fix documentation of region argument in aci_cloud_aws_provider.
+- Fix aci_bgp_peer_connectivity_profile documentation for as_number and local_asn.
+- Fix aci_application_epg examples and documentation to make it clearer.
+- Fix cert_name usage examples in documentation and README.md.
+- Remove application_epg_dn argument from aci_client_end_point documentation as use case is not implemented yet (follow #513 for use case development).
+- Add required_provider and provider definition in all examples to conform to new Terraform provider usage definitions.
+- Fix aci_contract example to showcase how to create contract, subject, filter and filter entries.
+
 ## 0.7.0 (May 26, 2021)
 BREAKING CHANGE:
 - Fix "ctrl" attribute issues with list of items in OSPF Interface Policy resource/datasource.
