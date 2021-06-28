@@ -104,13 +104,6 @@ func testAccCheckAciEndpointSecurityGroupDestroy(s *terraform.State) error {
 
 func testAccCheckAciEndpointSecurityGroupAttributes(fv_tenant_name, fv_ap_name, fv_e_sg_name, description string, endpoint_security_group *models.EndpointSecurityGroup) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
-		if fv_e_sg_name != GetMOName(endpoint_security_group.DistinguishedName) {
-			return fmt.Errorf("Bad fve_sg %s", GetMOName(endpoint_security_group.DistinguishedName))
-		}
-
-		if fv_ap_name != GetMOName(endpoint_security_group.DistinguishedName) {
-			return fmt.Errorf(" Bad fv_ap %s", GetMOName(endpoint_security_group.DistinguishedName))
-		}
 		if description != endpoint_security_group.Description {
 			return fmt.Errorf("Bad endpoint_security_group Description %s", endpoint_security_group.Description)
 		}
