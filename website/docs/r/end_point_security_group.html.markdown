@@ -26,6 +26,7 @@ resource "aci_endpoint_security_group" "example" {
   application_profile_dn  = aci_application_profile.example.id
   name  = "example"
   annotation = "orchestrator:terraform"
+  name_alias = "example"
   flood_on_encap = "disabled"
   match_t = "AtleastOne"
   pc_enf_pref = "unenforced"
@@ -63,7 +64,7 @@ resource "aci_endpoint_security_group" "example" {
 * `application_profile_dn` - (Required) Distinguished name of parent Application Profile object.
 * `name` - (Required) Name of object Endpoint Security Group.
 * `annotation` - (Optional) Annotation of object Endpoint Security Group.
-
+* `name_alias` - (Optional) Name alias of object Endpoint Security Group.
 * `flood_on_encap` - (Optional) Handles L2 Multicast/Broadcast and Link-Layer traffic at EPG level. It represents Control at EPG level and decides if the traffic L2 Multicast/Broadcast and Link Local Layer should be flooded only on ENCAP, or based on bridge-domain settings. Allowed values are "disabled", "enabled", and default value is "disabled". Type: String.
 * `match_t` - (Optional) Provider Label Match Criteria. Allowed values are "All", "AtleastOne", "AtmostOne", "None", and default value is "AtleastOne". Type: String.
 * `pc_enf_pref` - (Optional) The preferred policy control enforcement. Allowed values are "enforced", "unenforced", and default value is "unenforced". Type: String.
