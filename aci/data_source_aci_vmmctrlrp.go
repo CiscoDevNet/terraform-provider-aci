@@ -1,15 +1,17 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func dataSourceAciVMMController() *schema.Resource {
 	return &schema.Resource{
-		Read:          dataSourceAciVMMControllerRead,
+		ReadContext:   dataSourceAciVMMControllerRead,
 		SchemaVersion: 1,
 		Schema: AppendBaseAttrSchema(AppendNameAliasAttrSchema(map[string]*schema.Schema{
 			"vmm_domain_dn": {
@@ -97,7 +99,7 @@ func dataSourceAciVMMController() *schema.Resource {
 	}
 }
 
-func dataSourceAciVMMControllerRead(d *schema.ResourceData, m interface{}) error {
+func dataSourceAciVMMControllerRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	aciClient := m.(*client.Client)
 	name := d.Get("name").(string)
 	VMMDomainDn := d.Get("vmm_domain_dn").(string)
@@ -105,8 +107,11 @@ func dataSourceAciVMMControllerRead(d *schema.ResourceData, m interface{}) error
 	dn := fmt.Sprintf("%s/%s", VMMDomainDn, rn)
 	vmmCtrlrP, err := getRemoteVMMController(aciClient, dn)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	setVMMControllerAttributes(vmmCtrlrP, d)
+	_, err = setVMMControllerAttributes(vmmCtrlrP, d)
+	if err != nil {
+		return diag.FromErr(err)
+	}
 	return nil
 }
