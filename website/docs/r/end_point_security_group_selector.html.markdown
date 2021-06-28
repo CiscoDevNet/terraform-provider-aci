@@ -26,7 +26,6 @@ resource "aci_endpoint_security_group_selector" "example" {
   endpoint_security_group_dn  = aci_endpoint_security_group.example.id
   annotation = "orchestrator:terraform"
   match_expression = "ip=='10.10.10.0/24'"
-
 }
 ```
 
