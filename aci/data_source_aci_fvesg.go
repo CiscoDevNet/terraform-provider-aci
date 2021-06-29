@@ -1,15 +1,17 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func dataSourceAciEndpointSecurityGroup() *schema.Resource {
 	return &schema.Resource{
-		Read:          dataSourceAciEndpointSecurityGroupRead,
+		ReadContext:   dataSourceAciEndpointSecurityGroupRead,
 		SchemaVersion: 1,
 		Schema: AppendBaseAttrSchema(AppendNameAliasAttrSchema(map[string]*schema.Schema{
 			"application_profile_dn": {
@@ -54,7 +56,7 @@ func dataSourceAciEndpointSecurityGroup() *schema.Resource {
 	}
 }
 
-func dataSourceAciEndpointSecurityGroupRead(d *schema.ResourceData, m interface{}) error {
+func dataSourceAciEndpointSecurityGroupRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	aciClient := m.(*client.Client)
 	name := d.Get("name").(string)
 	ApplicationProfileDn := d.Get("application_profile_dn").(string)
@@ -62,9 +64,12 @@ func dataSourceAciEndpointSecurityGroupRead(d *schema.ResourceData, m interface{
 	dn := fmt.Sprintf("%s/%s", ApplicationProfileDn, rn)
 	fvESg, err := getRemoteEndpointSecurityGroup(aciClient, dn)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.SetId(dn)
-	setEndpointSecurityGroupAttributes(fvESg, d)
+	_, err = setEndpointSecurityGroupAttributes(fvESg, d)
+	if err != nil {
+		return diag.FromErr(err)
+	}
 	return nil
 }

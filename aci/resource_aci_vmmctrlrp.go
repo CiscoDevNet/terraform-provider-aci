@@ -1,6 +1,7 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"reflect"
@@ -9,28 +10,37 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciVMMController() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciVMMControllerCreate,
-		Update: resourceAciVMMControllerUpdate,
-		Read:   resourceAciVMMControllerRead,
-		Delete: resourceAciVMMControllerDelete,
+		CreateContext: resourceAciVMMControllerCreate,
+		UpdateContext: resourceAciVMMControllerUpdate,
+		ReadContext:   resourceAciVMMControllerRead,
+		DeleteContext: resourceAciVMMControllerDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciVMMControllerImport,
 		},
 
 		SchemaVersion: 1,
-		Schema: AppendBaseAttrSchema(AppendNameAliasAttrSchema(map[string]*schema.Schema{
+		Schema: AppendNameAliasAttrSchema(map[string]*schema.Schema{
 			"vmm_domain_dn": {
 				Type:     schema.TypeString,
 				Required: true,
 				ForceNew: true,
 			},
+			"annotation": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				// Default:  "orchestrator:terraform",
+				Computed: true,
+				DefaultFunc: func() (interface{}, error) {
+					return "orchestrator:terraform", nil
+				}},
 			"dvs_version": {
 				Type:     schema.TypeString,
 				Optional: true,
@@ -232,7 +242,7 @@ func resourceAciVMMController() *schema.Resource {
 
 				Optional:    true,
 				Description: "Create relation to fvns:AInstP",
-			}})),
+			}}),
 	}
 }
 
@@ -248,10 +258,13 @@ func getRemoteVMMController(client *client.Client, dn string) (*models.VMMContro
 	return vmmCtrlrP, nil
 }
 
-func setVMMControllerAttributes(vmmCtrlrP *models.VMMController, d *schema.ResourceData) *schema.ResourceData {
+func setVMMControllerAttributes(vmmCtrlrP *models.VMMController, d *schema.ResourceData) (*schema.ResourceData, error) {
 	d.SetId(vmmCtrlrP.DistinguishedName)
-	d.Set("description", vmmCtrlrP.Description)
-	vmmCtrlrPMap, _ := vmmCtrlrP.ToMap()
+	vmmCtrlrPMap, err := vmmCtrlrP.ToMap()
+
+	if err != nil {
+		return d, err
+	}
 	d.Set("vmm_domain_dn", GetParentDn(vmmCtrlrP.DistinguishedName, fmt.Sprintf("/ctrlr-%s", vmmCtrlrPMap["name"])))
 	d.Set("annotation", vmmCtrlrPMap["annotation"])
 	d.Set("dvs_version", vmmCtrlrPMap["dvsVersion"])
@@ -287,7 +300,7 @@ func setVMMControllerAttributes(vmmCtrlrP *models.VMMController, d *schema.Resou
 	d.Set("stats_mode", vmmCtrlrPMap["statsMode"])
 	d.Set("vxlan_depl_pref", vmmCtrlrPMap["vxlanDeplPref"])
 	d.Set("name_alias", vmmCtrlrPMap["nameAlias"])
-	return d
+	return d, nil
 }
 
 func resourceAciVMMControllerImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -298,15 +311,17 @@ func resourceAciVMMControllerImport(d *schema.ResourceData, m interface{}) ([]*s
 	if err != nil {
 		return nil, err
 	}
-	schemaFilled := setVMMControllerAttributes(vmmCtrlrP, d)
+	schemaFilled, err := setVMMControllerAttributes(vmmCtrlrP, d)
+	if err != nil {
+		return nil, err
+	}
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciVMMControllerCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciVMMControllerCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] VMMController: Beginning Creation")
 	aciClient := m.(*client.Client)
-	desc := d.Get("description").(string)
 	name := d.Get("name").(string)
 	VMMDomainDn := d.Get("vmm_domain_dn").(string)
 
@@ -381,11 +396,11 @@ func resourceAciVMMControllerCreate(d *schema.ResourceData, m interface{}) error
 	if VxlanDeplPref, ok := d.GetOk("vxlan_depl_pref"); ok {
 		vmmCtrlrPAttr.VxlanDeplPref = VxlanDeplPref.(string)
 	}
-	vmmCtrlrP := models.NewVMMController(fmt.Sprintf("ctrlr-%s", name), VMMDomainDn, desc, nameAlias, vmmCtrlrPAttr)
+	vmmCtrlrP := models.NewVMMController(fmt.Sprintf("ctrlr-%s", name), VMMDomainDn, "", nameAlias, vmmCtrlrPAttr)
 
 	err := aciClient.Save(vmmCtrlrP)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	checkDns := make([]string, 0, 1)
 
@@ -442,7 +457,7 @@ func resourceAciVMMControllerCreate(d *schema.ResourceData, m interface{}) error
 	d.Partial(true)
 	err = checkTDn(aciClient, checkDns)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Partial(false)
 
@@ -451,7 +466,7 @@ func resourceAciVMMControllerCreate(d *schema.ResourceData, m interface{}) error
 		err = aciClient.CreateRelationvmmRsAcc(vmmCtrlrP.DistinguishedName, vmmCtrlrPAttr.Annotation, relationParam)
 
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 
 	}
@@ -461,7 +476,7 @@ func resourceAciVMMControllerCreate(d *schema.ResourceData, m interface{}) error
 		err = aciClient.CreateRelationvmmRsCtrlrPMonPol(vmmCtrlrP.DistinguishedName, vmmCtrlrPAttr.Annotation, relationParam)
 
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 
 	}
@@ -471,7 +486,7 @@ func resourceAciVMMControllerCreate(d *schema.ResourceData, m interface{}) error
 		err = aciClient.CreateRelationvmmRsMcastAddrNs(vmmCtrlrP.DistinguishedName, vmmCtrlrPAttr.Annotation, relationParam)
 
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 
 	}
@@ -481,7 +496,7 @@ func resourceAciVMMControllerCreate(d *schema.ResourceData, m interface{}) error
 		err = aciClient.CreateRelationvmmRsMgmtEPg(vmmCtrlrP.DistinguishedName, vmmCtrlrPAttr.Annotation, relationParam)
 
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 
 	}
@@ -492,7 +507,7 @@ func resourceAciVMMControllerCreate(d *schema.ResourceData, m interface{}) error
 			err = aciClient.CreateRelationvmmRsToExtDevMgr(vmmCtrlrP.DistinguishedName, vmmCtrlrPAttr.Annotation, relationParam)
 
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 		}
 	}
@@ -504,7 +519,7 @@ func resourceAciVMMControllerCreate(d *schema.ResourceData, m interface{}) error
 			err = aciClient.CreateRelationvmmRsVmmCtrlrP(vmmCtrlrP.DistinguishedName, vmmCtrlrPAttr.Annotation, paramMap["epg_depl_pref"].(string), paramMap["target_dn"].(string))
 
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 		}
 	}
@@ -514,7 +529,7 @@ func resourceAciVMMControllerCreate(d *schema.ResourceData, m interface{}) error
 		err = aciClient.CreateRelationvmmRsVxlanNs(vmmCtrlrP.DistinguishedName, vmmCtrlrPAttr.Annotation, relationParam)
 
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 
 	}
@@ -524,20 +539,19 @@ func resourceAciVMMControllerCreate(d *schema.ResourceData, m interface{}) error
 		err = aciClient.CreateRelationvmmRsVxlanNsDef(vmmCtrlrP.DistinguishedName, vmmCtrlrPAttr.Annotation, relationParam)
 
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 
 	}
 
 	d.SetId(vmmCtrlrP.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
-	return resourceAciVMMControllerRead(d, m)
+	return resourceAciVMMControllerRead(ctx, d, m)
 }
 
-func resourceAciVMMControllerUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciVMMControllerUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] VMMController: Beginning Update")
 	aciClient := m.(*client.Client)
-	desc := d.Get("description").(string)
 	name := d.Get("name").(string)
 	VMMDomainDn := d.Get("vmm_domain_dn").(string)
 	vmmCtrlrPAttr := models.VMMControllerAttributes{}
@@ -611,12 +625,12 @@ func resourceAciVMMControllerUpdate(d *schema.ResourceData, m interface{}) error
 	if VxlanDeplPref, ok := d.GetOk("vxlan_depl_pref"); ok {
 		vmmCtrlrPAttr.VxlanDeplPref = VxlanDeplPref.(string)
 	}
-	vmmCtrlrP := models.NewVMMController(fmt.Sprintf("ctrlr-%s", name), VMMDomainDn, desc, nameAlias, vmmCtrlrPAttr)
+	vmmCtrlrP := models.NewVMMController(fmt.Sprintf("ctrlr-%s", name), VMMDomainDn, "", nameAlias, vmmCtrlrPAttr)
 
 	vmmCtrlrP.Status = "modified"
 	err := aciClient.Save(vmmCtrlrP)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	checkDns := make([]string, 0, 1)
@@ -680,7 +694,7 @@ func resourceAciVMMControllerUpdate(d *schema.ResourceData, m interface{}) error
 	d.Partial(true)
 	err = checkTDn(aciClient, checkDns)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Partial(false)
 
@@ -688,12 +702,12 @@ func resourceAciVMMControllerUpdate(d *schema.ResourceData, m interface{}) error
 		_, newRelParam := d.GetChange("relation_vmm_rs_acc")
 		err = aciClient.DeleteRelationvmmRsAcc(vmmCtrlrP.DistinguishedName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 		err = aciClient.CreateRelationvmmRsAcc(vmmCtrlrP.DistinguishedName, vmmCtrlrPAttr.Annotation, newRelParam.(string))
 
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 
 	}
@@ -701,12 +715,12 @@ func resourceAciVMMControllerUpdate(d *schema.ResourceData, m interface{}) error
 		_, newRelParam := d.GetChange("relation_vmm_rs_ctrlr_p_mon_pol")
 		err = aciClient.DeleteRelationvmmRsCtrlrPMonPol(vmmCtrlrP.DistinguishedName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 		err = aciClient.CreateRelationvmmRsCtrlrPMonPol(vmmCtrlrP.DistinguishedName, vmmCtrlrPAttr.Annotation, newRelParam.(string))
 
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 
 	}
@@ -714,12 +728,12 @@ func resourceAciVMMControllerUpdate(d *schema.ResourceData, m interface{}) error
 		_, newRelParam := d.GetChange("relation_vmm_rs_mcast_addr_ns")
 		err = aciClient.DeleteRelationvmmRsMcastAddrNs(vmmCtrlrP.DistinguishedName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 		err = aciClient.CreateRelationvmmRsMcastAddrNs(vmmCtrlrP.DistinguishedName, vmmCtrlrPAttr.Annotation, newRelParam.(string))
 
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 
 	}
@@ -727,12 +741,12 @@ func resourceAciVMMControllerUpdate(d *schema.ResourceData, m interface{}) error
 		_, newRelParam := d.GetChange("relation_vmm_rs_mgmt_e_pg")
 		err = aciClient.DeleteRelationvmmRsMgmtEPg(vmmCtrlrP.DistinguishedName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 		err = aciClient.CreateRelationvmmRsMgmtEPg(vmmCtrlrP.DistinguishedName, vmmCtrlrPAttr.Annotation, newRelParam.(string))
 
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 
 	}
@@ -747,14 +761,14 @@ func resourceAciVMMControllerUpdate(d *schema.ResourceData, m interface{}) error
 			err = aciClient.DeleteRelationvmmRsToExtDevMgr(vmmCtrlrP.DistinguishedName, relDn)
 
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 		}
 		for _, relDn := range relToCreate {
 			err = aciClient.CreateRelationvmmRsToExtDevMgr(vmmCtrlrP.DistinguishedName, vmmCtrlrPAttr.Annotation, relDn)
 
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 		}
 	}
@@ -767,7 +781,7 @@ func resourceAciVMMControllerUpdate(d *schema.ResourceData, m interface{}) error
 			err = aciClient.DeleteRelationvmmRsVmmCtrlrP(vmmCtrlrP.DistinguishedName, paramMap["target_dn"].(string))
 
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 		}
 		for _, relationParam := range newRelList {
@@ -775,7 +789,7 @@ func resourceAciVMMControllerUpdate(d *schema.ResourceData, m interface{}) error
 			err = aciClient.CreateRelationvmmRsVmmCtrlrP(vmmCtrlrP.DistinguishedName, vmmCtrlrPAttr.Annotation, paramMap["epg_depl_pref"].(string), paramMap["target_dn"].(string))
 
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 		}
 	}
@@ -783,12 +797,12 @@ func resourceAciVMMControllerUpdate(d *schema.ResourceData, m interface{}) error
 		_, newRelParam := d.GetChange("relation_vmm_rs_vxlan_ns")
 		err = aciClient.DeleteRelationvmmRsVxlanNs(vmmCtrlrP.DistinguishedName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 		err = aciClient.CreateRelationvmmRsVxlanNs(vmmCtrlrP.DistinguishedName, vmmCtrlrPAttr.Annotation, newRelParam.(string))
 
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 
 	}
@@ -796,36 +810,40 @@ func resourceAciVMMControllerUpdate(d *schema.ResourceData, m interface{}) error
 		_, newRelParam := d.GetChange("relation_vmm_rs_vxlan_ns_def")
 		err = aciClient.DeleteRelationvmmRsVxlanNsDef(vmmCtrlrP.DistinguishedName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 		err = aciClient.CreateRelationvmmRsVxlanNsDef(vmmCtrlrP.DistinguishedName, vmmCtrlrPAttr.Annotation, newRelParam.(string))
 
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 
 	}
 
 	d.SetId(vmmCtrlrP.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
-	return resourceAciVMMControllerRead(d, m)
+	return resourceAciVMMControllerRead(ctx, d, m)
 }
 
-func resourceAciVMMControllerRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciVMMControllerRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	vmmCtrlrP, err := getRemoteVMMController(aciClient, dn)
 	if err != nil {
 		d.SetId("")
-		return err
+		return diag.FromErr(err)
 	}
-	setVMMControllerAttributes(vmmCtrlrP, d)
+	_, err = setVMMControllerAttributes(vmmCtrlrP, d)
+	if err != nil {
+		d.SetId("")
+		return diag.FromErr(err)
+	}
 
 	vmmRsAccData, err := aciClient.ReadRelationvmmRsAcc(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation vmmRsAcc %v", err)
-		d.Set("vmm_rs_acc", "")
+		d.Set("relation_vmm_rs_acc", "")
 	} else {
 		if _, ok := d.GetOk("relation_vmm_rs_acc"); ok {
 			tfName := d.Get("relation_vmm_rs_acc").(string)
@@ -838,7 +856,7 @@ func resourceAciVMMControllerRead(d *schema.ResourceData, m interface{}) error {
 	vmmRsCtrlrPMonPolData, err := aciClient.ReadRelationvmmRsCtrlrPMonPol(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation vmmRsCtrlrPMonPol %v", err)
-		d.Set("vmm_rs_ctrlr_p_mon_pol", "")
+		d.Set("relation_vmm_rs_ctrlr_p_mon_pol", "")
 	} else {
 		if _, ok := d.GetOk("relation_vmm_rs_ctrlr_p_mon_pol"); ok {
 			tfName := d.Get("relation_vmm_rs_ctrlr_p_mon_pol").(string)
@@ -851,7 +869,7 @@ func resourceAciVMMControllerRead(d *schema.ResourceData, m interface{}) error {
 	vmmRsMcastAddrNsData, err := aciClient.ReadRelationvmmRsMcastAddrNs(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation vmmRsMcastAddrNs %v", err)
-		d.Set("vmm_rs_mcast_addr_ns", "")
+		d.Set("relation_vmm_rs_mcast_addr_ns", "")
 	} else {
 		if _, ok := d.GetOk("relation_vmm_rs_mcast_addr_ns"); ok {
 			tfName := d.Get("relation_vmm_rs_mcast_addr_ns").(string)
@@ -864,7 +882,7 @@ func resourceAciVMMControllerRead(d *schema.ResourceData, m interface{}) error {
 	vmmRsMgmtEPgData, err := aciClient.ReadRelationvmmRsMgmtEPg(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation vmmRsMgmtEPg %v", err)
-		d.Set("vmm_rs_mgmt_e_pg", "")
+		d.Set("relation_vmm_rs_mgmt_e_pg", "")
 	} else {
 		if _, ok := d.GetOk("relation_vmm_rs_mgmt_e_pg"); ok {
 			tfName := d.Get("relation_vmm_rs_mgmt_e_pg").(string)
@@ -904,7 +922,7 @@ func resourceAciVMMControllerRead(d *schema.ResourceData, m interface{}) error {
 	vmmRsVxlanNsData, err := aciClient.ReadRelationvmmRsVxlanNs(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation vmmRsVxlanNs %v", err)
-		d.Set("vmm_rs_vxlan_ns", "")
+		d.Set("relation_vmm_rs_vxlan_ns", "")
 	} else {
 		if _, ok := d.GetOk("relation_vmm_rs_vxlan_ns"); ok {
 			tfName := d.Get("relation_vmm_rs_vxlan_ns").(string)
@@ -917,7 +935,7 @@ func resourceAciVMMControllerRead(d *schema.ResourceData, m interface{}) error {
 	vmmRsVxlanNsDefData, err := aciClient.ReadRelationvmmRsVxlanNsDef(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation vmmRsVxlanNsDef %v", err)
-		d.Set("vmm_rs_vxlan_ns_def", "")
+		d.Set("relation_vmm_rs_vxlan_ns_def", "")
 	} else {
 		if _, ok := d.GetOk("relation_vmm_rs_vxlan_ns_def"); ok {
 			tfName := d.Get("relation_vmm_rs_vxlan_ns_def").(string)
@@ -930,15 +948,15 @@ func resourceAciVMMControllerRead(d *schema.ResourceData, m interface{}) error {
 	return nil
 }
 
-func resourceAciVMMControllerDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciVMMControllerDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "vmmCtrlrP")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
 }

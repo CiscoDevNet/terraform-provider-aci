@@ -60,6 +60,7 @@ func testAccCheckAciEndpointSecurityGroupSelectorConfig_basic(fv_tenant_name, fv
 		name 		= "%s"
 		description = "endpoint_security_group_selector created while acceptance testing"
 		endpoint_security_group_dn = aci_endpoint_security_group.fooendpoint_security_group.id
+		match_expression = "ip=='10.10.10.0/24'"
 	}
 
 	`, fv_tenant_name, fv_ap_name, fv_e_sg_name, fv_ep_selector_name)
@@ -111,13 +112,6 @@ func testAccCheckAciEndpointSecurityGroupSelectorDestroy(s *terraform.State) err
 
 func testAccCheckAciEndpointSecurityGroupSelectorAttributes(fv_tenant_name, fv_ap_name, fv_e_sg_name, fv_ep_selector_name, description string, endpoint_security_group_selector *models.EndpointSecurityGroupSelector) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
-		if fv_ep_selector_name != GetMOName(endpoint_security_group_selector.DistinguishedName) {
-			return fmt.Errorf("Bad fvep_selector %s", GetMOName(endpoint_security_group_selector.DistinguishedName))
-		}
-
-		if fv_e_sg_name != GetMOName(endpoint_security_group_selector.DistinguishedName) {
-			return fmt.Errorf(" Bad fve_sg %s", GetMOName(endpoint_security_group_selector.DistinguishedName))
-		}
 		if description != endpoint_security_group_selector.Description {
 			return fmt.Errorf("Bad endpoint_security_group_selector Description %s", endpoint_security_group_selector.Description)
 		}

@@ -25,8 +25,10 @@ Manages ACI Endpoint Security Group Selector
 resource "aci_endpoint_security_group_selector" "example" {
   endpoint_security_group_dn  = aci_endpoint_security_group.example.id
   annotation = "orchestrator:terraform"
+  description = "from terraform"
+  name = "example"
+  name_alias = "example"
   match_expression = "ip=='10.10.10.0/24'"
-
 }
 ```
 
@@ -34,6 +36,9 @@ resource "aci_endpoint_security_group_selector" "example" {
 
 * `endpoint_security_group_dn` - (Required) Distinguished name of parent Endpoint Security Group object.
 * `annotation` - (Optional) Annotation of object Endpoint Security Group Selector.
+* `description` - (Optional) Description of object Endpoint Security Group Selector.
+* `name` - (Optional) Name of object Endpoint Security Group Selector.
+* `name_alias` - (Optional) Name Alias of object Endpoint Security Group Selector.
 * `match_expression` - (Optional) Expression used to define matching tags.  
 
 ## Importing ##
