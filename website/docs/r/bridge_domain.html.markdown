@@ -9,6 +9,15 @@ description: |-
 # aci_bridge_domain #
 Manages ACI Bridge Domain
 
+## API Information ##
+
+* `Class` - fvBD
+* `Distinguished Named` - uni/tn-{name}/BD-{name}
+
+## GUI Information ##
+
+* `Location` - Tenant -> Networking -> Bridge Domains
+
 ## Example Usage ##
 
 ```hcl
@@ -66,30 +75,33 @@ Allowed value: "garp"
 * `v6unk_mcast_act` - (Optional) v6unk_mcast_act for object bridge_domain.
 * `vmac` - (Optional) Virtual MAC address of the BD/SVI. This is used when the BD is extended to multiple sites using l2 Outside. Only allowed values is "not-applicable".
 
-* `relation_fv_rs_bd_to_profile` - (Optional) Relation to class rtctrlProfile. Cardinality - N_TO_ONE. Type - String.
-                
-* `relation_fv_rs_mldsn` - (Optional) Relation to class mldSnoopPol. Cardinality - N_TO_ONE. Type - String.
-                
-* `relation_fv_rs_abd_pol_mon_pol` - (Optional) Relation to class monEPGPol. Cardinality - N_TO_ONE. Type - String.
-                
-* `relation_fv_rs_bd_to_nd_p` - (Optional) Relation to class ndIfPol. Cardinality - N_TO_ONE. Type - String.
-                
-* `relation_fv_rs_bd_flood_to` - (Optional) Relation to class vzFilter. Cardinality - N_TO_M. Type - Set of String.
-                
-* `relation_fv_rs_bd_to_fhs` - (Optional) Relation to class fhsBDPol. Cardinality - N_TO_ONE. Type - String.
-                
-* `relation_fv_rs_bd_to_relay_p` - (Optional) Relation to class dhcpRelayP. Cardinality - N_TO_ONE. Type - String.
-                
-* `relation_fv_rs_ctx` - (Optional) Relation to class fvCtx. Cardinality - N_TO_ONE. Type - String.
-                
-* `relation_fv_rs_bd_to_netflow_monitor_pol` - (Optional) Relation to class netflowMonitorPol. Cardinality - N_TO_M. Type - Set of Map.
-                
-* `relation_fv_rs_igmpsn` - (Optional) Relation to class igmpSnoopPol. Cardinality - N_TO_ONE. Type - String.
-                
-* `relation_fv_rs_bd_to_ep_ret` - (Optional) Relation to class fvEpRetPol. Cardinality - N_TO_ONE. Type - String.
-                
-* `relation_fv_rs_bd_to_out` - (Optional) Relation to class l3extOut. Cardinality - N_TO_M. Type - Set of String.
-                
+* `relation_fv_rs_bd_to_profile` - (Optional) Relation to L3Outs Route Map For Import and Export Route Control (Point to class rtctrlProfile). Cardinality - N_TO_ONE. Type - String.
+
+* `relation_fv_rs_mldsn` - (Optional) Relation to MLD Snoop (Point to class mldSnoopPol). Cardinality - N_TO_ONE. Type - String.
+
+* `relation_fv_rs_abd_pol_mon_pol` - (Optional) Relation to create a container for monitoring policies associated with the tenant (Point to class monEPGPol). Cardinality - N_TO_ONE. Type - String.
+
+* `relation_fv_rs_bd_to_nd_p` - (Optional) Relation to ND Policy (Point to class ndIfPol). Cardinality - N_TO_ONE. Type - String.
+
+* `relation_fv_rs_bd_flood_to` - (Optional) Relation to Contract Filters (Point to class vzFilter). Cardinality - N_TO_M. Type - Set of String.
+<!-- Tenants -> Contracts -> Filters -->
+
+* `relation_fv_rs_bd_to_fhs` - (Optional) Relation First Hop Security Feature Policies (Point to class fhsBDPol). Cardinality - N_TO_ONE. Type - String.
+
+* `relation_fv_rs_bd_to_relay_p` - (Optional) Relation to DHCP Relay policy (Point to class dhcpRelayP). Cardinality - N_TO_ONE. Type - String.
+
+* `relation_fv_rs_ctx` - (Optional) Relation to VRF (Point to class fvCtx). Cardinality - N_TO_ONE. Type - String.
+
+Note: In the APIC GUI,a VRF (fvCtx) was called a "Context"or "PrivateNetwork."
+
+* `relation_fv_rs_bd_to_netflow_monitor_pol` - (Optional) Relation to Netflow Monitors policy (Point to class netflowMonitorPol). Cardinality - N_TO_M. Type - Set of Map.
+
+* `relation_fv_rs_igmpsn` - (Optional) Relation to IGMP Snoop policy (Point to class igmpSnoopPol). Cardinality - N_TO_ONE. Type - String.
+
+* `relation_fv_rs_bd_to_ep_ret` - (Optional) Relation to End Point Retention policy (Point to class fvEpRetPol). Cardinality - N_TO_ONE. Type - String.
+
+* `relation_fv_rs_bd_to_out` - (Optional) Relation to L3Outs (Point to class l3extOut). Cardinality - N_TO_M. Type - Set of String.
+
 
 
 ## Attribute Reference
