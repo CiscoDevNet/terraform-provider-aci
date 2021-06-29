@@ -39,7 +39,7 @@ func dataSourceAciEndpointSecurityGroupSelector() *schema.Resource {
 
 func dataSourceAciEndpointSecurityGroupSelectorRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	aciClient := m.(*client.Client)
-	matchExpression := d.Get("matchExpression").(string)
+	matchExpression := d.Get("match_expression").(string)
 	EndpointSecurityGroupDn := d.Get("endpoint_security_group_dn").(string)
 	rn := fmt.Sprintf("epselector-[%s]", matchExpression)
 	dn := fmt.Sprintf("%s/%s", EndpointSecurityGroupDn, rn)
