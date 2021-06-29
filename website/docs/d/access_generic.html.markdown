@@ -24,7 +24,7 @@ data "aci_access_generic" "example" {
 ## Argument Reference
 
 - `attachable_access_entity_profile_dn` - (Required) Distinguished name of parent Attachable Access Entity Profile.
-- `name` - (Required) The name of the user defined function object.
+- `name` - (Required) The name of the user defined function object. Expected value: "default".
 
 ## Attribute Reference
 
