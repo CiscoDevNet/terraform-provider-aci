@@ -224,7 +224,6 @@ func setEndpointSecurityGroupAttributes(fvESg *models.EndpointSecurityGroup, d *
 	d.SetId(fvESg.DistinguishedName)
 	d.Set("description", fvESg.Description)
 	fvESgMap, _ := fvESg.ToMap()
-	d.Set("application_profile_dn", GetParentDn(fvESg.DistinguishedName, fmt.Sprintf("/esg-%s", fvESgMap["name"])))
 	d.Set("annotation", fvESgMap["annotation"])
 	d.Set("flood_on_encap", fvESgMap["floodOnEncap"])
 	d.Set("match_t", fvESgMap["matchT"])

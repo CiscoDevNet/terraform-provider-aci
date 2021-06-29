@@ -28,7 +28,8 @@ func dataSourceAciEndpointSecurityGroupSelector() *schema.Resource {
 			},
 			"name": {
 				Type:     schema.TypeString,
-				Required: true,
+				Optional: true,
+				Computed: true,
 			},
 		})),
 	}
