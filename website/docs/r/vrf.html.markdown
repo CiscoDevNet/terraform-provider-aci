@@ -10,6 +10,15 @@ description: |-
 
 Manages ACI VRF
 
+## API Information ##
+
+* `Class` - fvCtx
+* `Distinguished Named` - uni/tn-{name}/ctx-{name}
+
+## GUI Information ##
+
+* `Location` - Tenant -> Networking -> VRFs
+
 ## Example Usage ##
 
 ```hcl
@@ -48,6 +57,8 @@ resource "aci_vrf" "foovrf" {
 * `relation_fv_rs_ctx_mon_pol` - (Optional) Relation to class monEPGPol. Cardinality - N_TO_ONE. Type - String.
 * `relation_fv_rs_ctx_to_ext_route_tag_pol` - (Optional) Relation to class l3extRouteTagPol. Cardinality - N_TO_ONE. Type - String.
 * `relation_fv_rs_ctx_to_bgp_ctx_af_pol` - (Optional) Relation to class bgpCtxAfPol. Cardinality - N_TO_M. Type - [Set of Map].
+
+Note: In the APIC GUI,a VRF (fvCtx) was called a "Context"or "PrivateNetwork."
 
 ## Attribute Reference ##
 
