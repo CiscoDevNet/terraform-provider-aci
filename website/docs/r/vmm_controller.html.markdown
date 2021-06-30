@@ -65,9 +65,10 @@ resource "aci_vmm_controller" "example" {
 
 - `vmm_domain_dn` - (Required) Distinguished name of parent VMM Domain object.
 - `name` - (Required) Name of object VMM Controller.
+- `host_or_ip` - (Required) Hostname or IP Address. \[Create Only\]
+- `root_cont_name` - (Required) Top level container name. Type: String.
 - `annotation` - (Optional) Annotation of object VMM Controller.
-- `dvs_version` - (Optional) Dvs Version. Allowed values are "5.1", "5.5", "6.0", "6.5", "6.6", "7.0", "unmanaged", and default value is "unmanaged". Type: String.
-- `host_or_ip` - (Optional) Hostname or IP Address.
+- `dvs_version` - (Optional) Dvs Version. Allowed values are "5.1", "5.5", "6.0", "6.5", "6.6", "7.0", "unmanaged", and default value is "unmanaged". Type: String. \[Create Only\]
 - `inventory_trig_st` - (Optional) Triggered Inventory Sync Status. It will sync the status of inventory if value is set to triggered. Once sync is done, value is reset back to untriggered. Allowed values are "autoTriggered", "triggered", "untriggered", and default value is "untriggered". Type: String.
 - `mode` - (Optional) The mode of operation. Allowed values are "cf", "default", "k8s", "n1kv", "nsx", "openshift", "ovs", "rancher", "rhev", "unknown", and default value is "default". Type: String.
 - `msft_config_err_msg` - (Optional) Deployment Error Message of Mirosoft Plugin SCVM Controller.
@@ -77,8 +78,7 @@ resource "aci_vmm_controller" "example" {
 - `msft_config_issues` - (Optional) msftConfigIssues. Allowed values are "aaacert-invalid", "duplicate-mac-in-inventory", "duplicate-rootContName", "invalid-object-in-inventory", "invalid-rootContName", "inventory-failed", "missing-hostGroup-in-cloud", "missing-rootContName", "not-applicable", "zero-mac-in-inventory", and default value is "not-applicable". Type: List.
 - `n1kv_stats_mode` - (Optional) n1kv statistics enable. Allowed values are "disabled", "enabled", "unknown", and default value is "enabled". Type: String.
 - `port` - (Optional) Default value is "0".
-- `root_cont_name` - (Optional) Top level container name. Type: String.
-- `scope` - (Optional) The VMM control policy scope. Allowed values are "MicrosoftSCVMM", "cloudfoundry", "iaas", "kubernetes", "network", "nsx", "openshift", "openstack", "rhev", "unmanaged", "vm", and default value is "vm". Type: String.
+- `scope` - (Optional) The VMM control policy scope. Allowed values are "MicrosoftSCVMM", "cloudfoundry", "iaas", "kubernetes", "network", "nsx", "openshift", "openstack", "rhev", "unmanaged", "vm", and default value is "vm". Type: String. \[Create Only\]
 - `seq_num` - (Optional) An ISIS link-state packet sequence number. Default value is "0".
 - `stats_mode` - (Optional) The statistics mode. Allowed values are "disabled", "enabled", "unknown", and default value is "disabled". Type: String.
 - `vxlan_depl_pref` - (Optional) VxLAN Deployment Preference. Allowed values are "nsx", "vxlan", and default value is "vxlan". Type: String.

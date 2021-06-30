@@ -57,8 +57,8 @@ func resourceAciVMMController() *schema.Resource {
 			},
 			"host_or_ip": {
 				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
+				Required: true,
+				ForceNew: true,
 			},
 			"inventory_trig_st": {
 				Type:     schema.TypeString,
@@ -134,8 +134,8 @@ func resourceAciVMMController() *schema.Resource {
 			},
 			"root_cont_name": {
 				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
+				Required: true,
+				ForceNew: true,
 			},
 			"scope": {
 				Type:     schema.TypeString,
