@@ -41,7 +41,7 @@ resource "aci_vmm_credential" "example" {
 * `description` - (Optional) Description of object VMM Credential.
 * `name_alias` - (Optional) Name alias of object VMM Credential.
 * `pwd` - (Optional) Password.
-* `usr` - (Optional) Username. Min length is "1". Max length is "128". 
+* `usr` - (Optional) Username. Min length is "0". Max length is "128". If any value is assigned to a username then it cannot be updated to an empty value. 
 
 ## Importing ##
 
