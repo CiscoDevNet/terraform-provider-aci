@@ -33,19 +33,19 @@ resource "aci_vswitch_policy" "example" {
     target_dn = aci_resource.example.id
   }
 
-  relation_vmm_rs_vswitch_override_cdp_if_pol = aci_resource.example.id
+  relation_vmm_rs_vswitch_override_cdp_if_pol = aci_cdp_interface_policy.example.id
 
   relation_vmm_rs_vswitch_override_fw_pol = aci_resource.example.id
 
-  relation_vmm_rs_vswitch_override_lacp_pol = aci_resource.example.id
+  relation_vmm_rs_vswitch_override_lacp_pol = aci_lacp_policy.example.id
 
-  relation_vmm_rs_vswitch_override_lldp_if_pol = aci_resource.example.id
+  relation_vmm_rs_vswitch_override_lldp_if_pol = aci_lldp_interface_policy.example.id
 
   relation_vmm_rs_vswitch_override_mcp_if_pol = aci_resource.example.id
 
   relation_vmm_rs_vswitch_override_mtu_pol = aci_resource.example.id
 
-  relation_vmm_rs_vswitch_override_stp_pol = aci_resource.example.id
+  relation_vmm_rs_vswitch_override_stp_pol = aci_spanning_tree_interface_policy.example.id
 }
 ```
 

@@ -40,22 +40,22 @@ resource "aci_vmm_controller" "example" {
   stats_mode = "disabled"
   vxlan_depl_pref = "vxlan"
 
-  relation_vmm_rs_acc = aci_resource.example.id
+  relation_vmm_rs_acc = aci_vmm_credential.example.id
 
   relation_vmm_rs_ctrlr_p_mon_pol = aci_resource.example.id
 
   relation_vmm_rs_mcast_addr_ns = aci_resource.example.id
 
-  relation_vmm_rs_mgmt_e_pg = aci_resource.example.id
+  relation_vmm_rs_mgmt_e_pg = aci_application_epg.example.id
 
   relation_vmm_rs_to_ext_dev_mgr = [aci_resource.example.id]
 
   relation_vmm_rs_vmm_ctrlr_p {
     epg_depl_pref = "local"
-    target_dn = aci_resource.example.id
+    target_dn = aci_vmm_controller.example_two.id
   }
 
-  relation_vmm_rs_vxlan_ns = aci_resource.example.id
+  relation_vmm_rs_vxlan_ns = aci_vxlan_pool.example.id
 
   relation_vmm_rs_vxlan_ns_def = aci_resource.example.id
 }

@@ -36,27 +36,27 @@ resource "aci_endpoint_security_group" "example" {
 
   relation_fv_rs_cons {
     prio = "unspecified"
-    target_dn = aci_resource.example.id
+    target_dn = aci_contract.example.com
   }
 
   relation_fv_rs_cons_if {
     prio = "unspecified"
-    target_dn = aci_resource.example.id
+    target_dn = aci_imported_contract.example.id
   }
 
   relation_fv_rs_cust_qos_pol = aci_resource.example.id
 
-  relation_fv_rs_intra_epg = [aci_resource.example.id]
+  relation_fv_rs_intra_epg = [aci_contract.example.id]
 
   relation_fv_rs_prov {
     match_t = "AtleastOne"
     prio = "unspecified"
-    target_dn = aci_resource.example.id
+    target_dn = aci_contract.example.id
   }
 
-  relation_fv_rs_scope = aci_resource.example.id
+  relation_fv_rs_scope = aci_vrf.example.id
 
-  relation_fv_rs_sec_inherited = [aci_resource.example.id]
+  relation_fv_rs_sec_inherited = [aci_application_epg.example.id]
 }
 ```
 
