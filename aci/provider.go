@@ -185,7 +185,7 @@ func Provider() *schema.Provider {
 			"aci_bgp_peer_connectivity_profile":            resourceAciBgpPeerConnectivityProfile(),
 			"aci_bgp_best_path_policy":                     resourceAciBgpBestPathPolicy(),
 			"aci_bgp_timers":                               resourceAciBGPTimersPolicy(),
-			"aci_ospf_route_summarizationf":                resourceAciOspfRouteSummarization(),
+			"aci_ospf_route_summarization":                 resourceAciOspfRouteSummarization(),
 			"aci_bgp_address_family_context":               resourceAciBGPAddressFamilyContextPolicy(),
 			"aci_hsrp_group_policy":                        resourceAciHSRPGroupPolicy(),
 			"aci_l3out_hsrp_interface_profile":             resourceAciL3outHSRPInterfaceProfile(),
