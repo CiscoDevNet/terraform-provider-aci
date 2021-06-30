@@ -36,7 +36,7 @@ resource "aci_endpoint_security_group" "example" {
 
   relation_fv_rs_cons {
     prio = "unspecified"
-    target_dn = aci_contract.example.com
+    target_dn = aci_contract.example.id
   }
 
   relation_fv_rs_cons_if {
