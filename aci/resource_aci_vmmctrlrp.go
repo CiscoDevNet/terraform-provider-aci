@@ -265,11 +265,10 @@ func setVMMControllerAttributes(vmmCtrlrP *models.VMMController, d *schema.Resou
 	if err != nil {
 		return d, err
 	}
-	d.Set("vmm_domain_dn", GetParentDn(vmmCtrlrP.DistinguishedName, fmt.Sprintf("/ctrlr-%s", vmmCtrlrPMap["name"])))
 	d.Set("annotation", vmmCtrlrPMap["annotation"])
 	d.Set("dvs_version", vmmCtrlrPMap["dvsVersion"])
 	d.Set("host_or_ip", vmmCtrlrPMap["hostOrIp"])
-	d.Set("inventory_trig_st", vmmCtrlrPMap["inventoryTrigSt"])
+	// d.Set("inventory_trig_st", vmmCtrlrPMap["inventoryTrigSt"])
 	d.Set("mode", vmmCtrlrPMap["mode"])
 	d.Set("msft_config_err_msg", vmmCtrlrPMap["msftConfigErrMsg"])
 	msftConfigIssuesGet := make([]string, 0, 1)
