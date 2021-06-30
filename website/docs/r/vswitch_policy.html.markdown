@@ -24,13 +24,14 @@ Manages ACI VSwitch Policy Group
 ```hcl
 resource "aci_vswitch_policy" "example" {
   vmm_domain_dn  = aci_vmm_domain.example.id
-  annotation = "orchestrator:terraform"
-
+  annotation = "vswitch_policy_tag"
+  description = "from terraform"
+  name_alias = "vswitch_policy_alias"
   relation_vmm_rs_vswitch_exporter_pol {
     active_flow_time_out = "60"
     idle_flow_time_out = "15"
     sampling_rate = "0"
-    target_dn = aci_resource.example.id
+    target_dn = "uni/infra/vmmexporterpol-exporter_policy"
   }
 
   relation_vmm_rs_vswitch_override_cdp_if_pol = aci_cdp_interface_policy.example.id
