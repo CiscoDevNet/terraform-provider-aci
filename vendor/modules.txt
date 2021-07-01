@@ -54,11 +54,7 @@ github.com/aws/aws-sdk-go/service/sts
 github.com/aws/aws-sdk-go/service/sts/stsiface
 # github.com/bgentry/go-netrc v0.0.0-20140422174119-9fd32a8b3d3d
 github.com/bgentry/go-netrc/netrc
-# github.com/bgentry/speakeasy v0.1.0
-github.com/bgentry/speakeasy
-# github.com/blang/semver v3.5.1+incompatible
-github.com/blang/semver
-# github.com/ciscoecosystem/aci-go-client v1.11.5
+# github.com/ciscoecosystem/aci-go-client v1.10.16
 github.com/ciscoecosystem/aci-go-client/client
 github.com/ciscoecosystem/aci-go-client/container
 github.com/ciscoecosystem/aci-go-client/models
@@ -121,6 +117,7 @@ github.com/hashicorp/go-version
 github.com/hashicorp/hcl/v2
 github.com/hashicorp/hcl/v2/ext/customdecode
 github.com/hashicorp/hcl/v2/hclsyntax
+<<<<<<< HEAD
 github.com/hashicorp/hcl/v2/hclwrite
 github.com/hashicorp/hcl/v2/json
 # github.com/hashicorp/hcl2 v0.0.0-20190702185634-5b39d9ff3a9a
@@ -191,6 +188,13 @@ github.com/hashicorp/terraform/version
 # github.com/hashicorp/terraform-config-inspect v0.0.0-20191115094559-17f92b0546e8
 github.com/hashicorp/terraform-config-inspect/tfconfig
 # github.com/hashicorp/terraform-exec v0.1.1
+=======
+# github.com/hashicorp/logutils v1.0.0
+github.com/hashicorp/logutils
+# github.com/hashicorp/terraform-exec v0.13.0
+github.com/hashicorp/terraform-exec/internal/version
+github.com/hashicorp/terraform-exec/tfexec
+>>>>>>> f5969f8 (V2 upgrade s4 dev Merged (#536))
 github.com/hashicorp/terraform-exec/tfinstall
 # github.com/hashicorp/terraform-json v0.8.0
 github.com/hashicorp/terraform-json
@@ -240,14 +244,13 @@ github.com/mitchellh/go-homedir
 github.com/mitchellh/go-testing-interface
 # github.com/mitchellh/go-wordwrap v1.0.0
 github.com/mitchellh/go-wordwrap
-# github.com/mitchellh/hashstructure v1.0.0
-github.com/mitchellh/hashstructure
 # github.com/mitchellh/mapstructure v1.1.2
 github.com/mitchellh/mapstructure
 # github.com/mitchellh/reflectwalk v1.0.1
 github.com/mitchellh/reflectwalk
 # github.com/oklog/run v1.0.0
 github.com/oklog/run
+<<<<<<< HEAD
 # github.com/posener/complete v1.2.1
 github.com/posener/complete
 github.com/posener/complete/cmd
@@ -259,6 +262,9 @@ github.com/satori/go.uuid
 github.com/spf13/afero
 github.com/spf13/afero/mem
 # github.com/ulikunitz/xz v0.5.5
+=======
+# github.com/ulikunitz/xz v0.5.8
+>>>>>>> f5969f8 (V2 upgrade s4 dev Merged (#536))
 github.com/ulikunitz/xz
 github.com/ulikunitz/xz/internal/hash
 github.com/ulikunitz/xz/internal/xlog

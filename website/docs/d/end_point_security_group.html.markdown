@@ -37,6 +37,7 @@ data "aci_endpoint_security_group" "example" {
 
 * `id` - Attribute id set to the Dn of the Endpoint Security Group.
 * `annotation` - (Optional) Annotation of object Endpoint Security Group.
+* `description` - (Optional) Description of object Endpoint Security Group.
 * `name_alias` - (Optional) Name Alias of object Endpoint Security Group.
 * `flood_on_encap` - (Optional) Handles L2 Multicast/Broadcast and Link-Layer traffic at EPG level. It represents Control at EPG level and decides if the traffic L2 Multicast/Broadcast and Link Local Layer should be flooded only on ENCAP, or based on bridge-domain settings.
 * `match_t` - (Optional) The provider label match criteria.

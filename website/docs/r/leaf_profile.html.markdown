@@ -60,8 +60,8 @@ resource "aci_leaf_profile" "example" {
 
 - `leaf_selector.node_block` - (Optional) Node block to attach with leaf selector.
 - `leaf_selector.node_block.name` - (Required) Name of the node block.
-- `leaf_selector.node_block.from_` - (Optional) Start of Node Block range. Default value is 1.
-- `leaf_selector.node_block.to_` - (Optional) End of Node Block range. Default value is 1.
+- `leaf_selector.node_block.from_` - (Optional) Start of Node Block range. Range from 1 to 16000. Default value is "1".
+- `leaf_selector.node_block.to_` - (Optional) End of Node Block range. Range from 1 to 16000. Default value is "1".
 
 - `relation_infra_rs_acc_card_p` - (Optional) Relation to class infraAccCardP. Cardinality - N_TO_M. Type - Set of String.
 - `relation_infra_rs_acc_port_p` - (Optional) Relation to class infraAccPortP. Cardinality - N_TO_M. Type - Set of String.
