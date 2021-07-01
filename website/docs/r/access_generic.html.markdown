@@ -25,7 +25,7 @@ resource "aci_access_generic" "example" {
 ## Argument Reference
 
 - `attachable_access_entity_profile_dn` - (Required) Distinguished name of parent Attachable Access Entity Profile.
-- `name` - (Required) The name of the user defined function object.
+- `name` - (Required) The name of the user defined function object. Name must be "default".
 - `annotation` - (Optional) Specifies the annotation of a policy component.
 - `description` - (Optional) Specifies the description of a policy component.
 - `name_alias` - (Optional) Specifies the alias name of a policy component.

@@ -23,9 +23,10 @@ Manages ACI Spanning Tree Interface Policy
 
 ```hcl
 resource "aci_spanning_tree_interface_policy" "example" {
-  name        = "example"
-  annotation  = "orchestrator:terraform"
+  name        = "spanning_tree_interface_policy"
+  annotation  = "spanning_tree_interface_policy_tag"
   description = "from terraform"
+  name_alias = "spanning_tree_interface_policy_alias"
   ctrl        = ["unspecified"]
 }
 ```
@@ -34,8 +35,9 @@ resource "aci_spanning_tree_interface_policy" "example" {
 
 - `name` - (Required) Name of object Spanning Tree Interface Policy.
 - `annotation` - (Optional) Annotation of object Spanning Tree Interface Policy.
+- `name_alias` - (Optional) Name alias of object Spanning Tree Interface Policy.
 - `description` - (Optional) Description of object Spanning Tree Interface Policy.
-- `ctrl` - (Optional) Interface controls. Allowed values are "bpdu-filter", "bpdu-guard", "unspecified", and default value is "unspecified". Type: List.
+- `ctrl` - (Optional) Interface controls. Allowed values are "bpdu-filter", "bpdu-guard", "unspecified". The default value is "unspecified". Unspecified value should not be added along with other allowed values. Type: List.
 
 ## Importing
 

@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"strconv"
+	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
@@ -55,6 +57,17 @@ func resourceAciL3outOspfExternalPolicy() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				StateFunc: func(val interface{}) string {
+					numList := strings.Split(val.(string), ".")
+					ip := []string{"0", "0", "0", "0"}
+					if val.(string) != "" && len(numList) <= 4 {
+						for i := 1; i <= len(numList); i++ {
+							ip[4-i] = numList[len(numList)-i]
+						}
+					}
+					return strings.Join(ip, ".")
+				},
+				ValidateFunc: schema.SchemaValidateFunc(validateOspfIp()),
 			},
 
 			"area_type": &schema.Schema{
@@ -84,6 +97,30 @@ func resourceAciL3outOspfExternalPolicy() *schema.Resource {
 				Computed: true,
 			},
 		}),
+	}
+}
+
+func validateOspfIp() schema.SchemaValidateFunc {
+	return func(i interface{}, k string) (s []string, es []error) {
+		// function to check if partial OSPF areaId is valid.
+		val, ok := i.(string)
+		if !ok {
+			es = append(es, fmt.Errorf("expected type of %s to be string", k))
+			return
+		}
+		numList := strings.Split(val, ".")
+		if len(numList) > 4 {
+			es = append(es, fmt.Errorf("Invalid value for %s : %s", k, val))
+			return
+		}
+		for _, v := range numList {
+			intV, err := strconv.Atoi(v)
+			if err != nil || intV > 255 {
+				es = append(es, fmt.Errorf("Invalid value for %s : %s", k, val))
+				return
+			}
+		}
+		return
 	}
 }
 
