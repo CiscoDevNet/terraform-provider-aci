@@ -1,15 +1,17 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func dataSourceAciEndpointSecurityGroupSelector() *schema.Resource {
 	return &schema.Resource{
-		Read:          dataSourceAciEndpointSecurityGroupSelectorRead,
+		ReadContext:   dataSourceAciEndpointSecurityGroupSelectorRead,
 		SchemaVersion: 1,
 		Schema: AppendBaseAttrSchema(AppendNameAliasAttrSchema(map[string]*schema.Schema{
 			"endpoint_security_group_dn": {
@@ -28,23 +30,27 @@ func dataSourceAciEndpointSecurityGroupSelector() *schema.Resource {
 			},
 			"name": {
 				Type:     schema.TypeString,
-				Required: true,
+				Optional: true,
+				Computed: true,
 			},
 		})),
 	}
 }
 
-func dataSourceAciEndpointSecurityGroupSelectorRead(d *schema.ResourceData, m interface{}) error {
+func dataSourceAciEndpointSecurityGroupSelectorRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	aciClient := m.(*client.Client)
-	matchExpression := d.Get("matchExpression").(string)
+	matchExpression := d.Get("match_expression").(string)
 	EndpointSecurityGroupDn := d.Get("endpoint_security_group_dn").(string)
 	rn := fmt.Sprintf("epselector-[%s]", matchExpression)
 	dn := fmt.Sprintf("%s/%s", EndpointSecurityGroupDn, rn)
 	fvEPSelector, err := getRemoteEndpointSecurityGroupSelector(aciClient, dn)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.SetId(dn)
-	setEndpointSecurityGroupSelectorAttributes(fvEPSelector, d)
+	_, err = setEndpointSecurityGroupSelectorAttributes(fvEPSelector, d)
+	if err != nil {
+		return diag.FromErr(err)
+	}
 	return nil
 }

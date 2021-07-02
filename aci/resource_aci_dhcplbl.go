@@ -1,21 +1,23 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciBDDHCPLabel() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciBDDHCPLabelCreate,
-		Update: resourceAciBDDHCPLabelUpdate,
-		Read:   resourceAciBDDHCPLabelRead,
-		Delete: resourceAciBDDHCPLabelDelete,
+		CreateContext: resourceAciBDDHCPLabelCreate,
+		UpdateContext: resourceAciBDDHCPLabelUpdate,
+		ReadContext:   resourceAciBDDHCPLabelRead,
+		DeleteContext: resourceAciBDDHCPLabelDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciBDDHCPLabelImport,
@@ -34,12 +36,6 @@ func resourceAciBDDHCPLabel() *schema.Resource {
 				Type:     schema.TypeString,
 				Required: true,
 				ForceNew: true,
-			},
-
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
 			},
 
 			"name_alias": &schema.Schema{
@@ -87,7 +83,7 @@ func getRemoteBDDHCPLabel(client *client.Client, dn string) (*models.BDDHCPLabel
 	return dhcpLbl, nil
 }
 
-func setBDDHCPLabelAttributes(dhcpLbl *models.BDDHCPLabel, d *schema.ResourceData) *schema.ResourceData {
+func setBDDHCPLabelAttributes(dhcpLbl *models.BDDHCPLabel, d *schema.ResourceData) (*schema.ResourceData, error) {
 	dn := d.Id()
 	d.SetId(dhcpLbl.DistinguishedName)
 	d.Set("description", dhcpLbl.Description)
@@ -95,7 +91,10 @@ func setBDDHCPLabelAttributes(dhcpLbl *models.BDDHCPLabel, d *schema.ResourceDat
 	if dn != dhcpLbl.DistinguishedName {
 		d.Set("bridge_domain_dn", "")
 	}
-	dhcpLblMap, _ := dhcpLbl.ToMap()
+	dhcpLblMap, err := dhcpLbl.ToMap()
+	if err != nil {
+		return d, err
+	}
 
 	d.Set("name", dhcpLblMap["name"])
 
@@ -103,7 +102,7 @@ func setBDDHCPLabelAttributes(dhcpLbl *models.BDDHCPLabel, d *schema.ResourceDat
 	d.Set("name_alias", dhcpLblMap["nameAlias"])
 	d.Set("owner", dhcpLblMap["owner"])
 	d.Set("tag", dhcpLblMap["tag"])
-	return d
+	return d, nil
 }
 
 func resourceAciBDDHCPLabelImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -117,14 +116,17 @@ func resourceAciBDDHCPLabelImport(d *schema.ResourceData, m interface{}) ([]*sch
 	if err != nil {
 		return nil, err
 	}
-	schemaFilled := setBDDHCPLabelAttributes(dhcpLbl, d)
+	schemaFilled, err := setBDDHCPLabelAttributes(dhcpLbl, d)
+	if err != nil {
+		return nil, err
+	}
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciBDDHCPLabelCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciBDDHCPLabelCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] BDDHCPLabel: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -152,13 +154,8 @@ func resourceAciBDDHCPLabelCreate(d *schema.ResourceData, m interface{}) error {
 
 	err := aciClient.Save(dhcpLbl)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.SetPartial("name")
-
-	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
 
@@ -170,7 +167,7 @@ func resourceAciBDDHCPLabelCreate(d *schema.ResourceData, m interface{}) error {
 	d.Partial(true)
 	err = checkTDn(aciClient, checkDns)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Partial(false)
 
@@ -179,21 +176,18 @@ func resourceAciBDDHCPLabelCreate(d *schema.ResourceData, m interface{}) error {
 		relationParamName := GetMOName(relationParam)
 		err = aciClient.CreateRelationdhcpRsDhcpOptionPolFromBDDHCPLabel(dhcpLbl.DistinguishedName, relationParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_dhcp_rs_dhcp_option_pol")
-		d.Partial(false)
 
 	}
 
 	d.SetId(dhcpLbl.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciBDDHCPLabelRead(d, m)
+	return resourceAciBDDHCPLabelRead(ctx, d, m)
 }
 
-func resourceAciBDDHCPLabelUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciBDDHCPLabelUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] BDDHCPLabel: Beginning Update")
 
 	aciClient := m.(*client.Client)
@@ -225,13 +219,8 @@ func resourceAciBDDHCPLabelUpdate(d *schema.ResourceData, m interface{}) error {
 	err := aciClient.Save(dhcpLbl)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.SetPartial("name")
-
-	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
 
@@ -243,7 +232,7 @@ func resourceAciBDDHCPLabelUpdate(d *schema.ResourceData, m interface{}) error {
 	d.Partial(true)
 	err = checkTDn(aciClient, checkDns)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Partial(false)
 
@@ -252,22 +241,19 @@ func resourceAciBDDHCPLabelUpdate(d *schema.ResourceData, m interface{}) error {
 		newRelParamName := GetMOName(newRelParam.(string))
 		err = aciClient.CreateRelationdhcpRsDhcpOptionPolFromBDDHCPLabel(dhcpLbl.DistinguishedName, newRelParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_dhcp_rs_dhcp_option_pol")
-		d.Partial(false)
 
 	}
 
 	d.SetId(dhcpLbl.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciBDDHCPLabelRead(d, m)
+	return resourceAciBDDHCPLabelRead(ctx, d, m)
 
 }
 
-func resourceAciBDDHCPLabelRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciBDDHCPLabelRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -279,7 +265,12 @@ func resourceAciBDDHCPLabelRead(d *schema.ResourceData, m interface{}) error {
 		d.SetId("")
 		return nil
 	}
-	setBDDHCPLabelAttributes(dhcpLbl, d)
+
+	_, err = setBDDHCPLabelAttributes(dhcpLbl, d)
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 
 	dhcpRsDhcpOptionPolData, err := aciClient.ReadRelationdhcpRsDhcpOptionPolFromBDDHCPLabel(dn)
 	if err != nil {
@@ -299,18 +290,18 @@ func resourceAciBDDHCPLabelRead(d *schema.ResourceData, m interface{}) error {
 	return nil
 }
 
-func resourceAciBDDHCPLabelDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciBDDHCPLabelDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "dhcpLbl")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
 }

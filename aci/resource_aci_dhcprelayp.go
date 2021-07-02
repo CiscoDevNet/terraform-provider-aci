@@ -1,21 +1,23 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciDHCPRelayPolicy() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciDHCPRelayPolicyCreate,
-		Update: resourceAciDHCPRelayPolicyUpdate,
-		Read:   resourceAciDHCPRelayPolicyRead,
-		Delete: resourceAciDHCPRelayPolicyDelete,
+		CreateContext: resourceAciDHCPRelayPolicyCreate,
+		UpdateContext: resourceAciDHCPRelayPolicyUpdate,
+		ReadContext:   resourceAciDHCPRelayPolicyRead,
+		DeleteContext: resourceAciDHCPRelayPolicyDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciDHCPRelayPolicyImport,
@@ -74,12 +76,14 @@ func resourceAciDHCPRelayPolicy() *schema.Resource {
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"tdn": {
-							Type:     schema.TypeString,
-							Required: true,
+							Type:         schema.TypeString,
+							Required:     true,
+							ValidateFunc: validation.StringIsNotEmpty,
 						},
 						"addr": {
-							Type:     schema.TypeString,
-							Required: true,
+							Type:         schema.TypeString,
+							Required:     true,
+							ValidateFunc: validation.IsIPv4Address,
 						},
 					},
 				},
@@ -102,7 +106,7 @@ func getRemoteDHCPRelayPolicy(client *client.Client, dn string) (*models.DHCPRel
 	return dhcpRelayP, nil
 }
 
-func setDHCPRelayPolicyAttributes(dhcpRelayP *models.DHCPRelayPolicy, d *schema.ResourceData) *schema.ResourceData {
+func setDHCPRelayPolicyAttributes(dhcpRelayP *models.DHCPRelayPolicy, d *schema.ResourceData) (*schema.ResourceData, error) {
 	dn := d.Id()
 
 	d.SetId(dhcpRelayP.DistinguishedName)
@@ -111,7 +115,10 @@ func setDHCPRelayPolicyAttributes(dhcpRelayP *models.DHCPRelayPolicy, d *schema.
 	if dn != dhcpRelayP.DistinguishedName {
 		d.Set("tenant_dn", "")
 	}
-	dhcpRelayPMap, _ := dhcpRelayP.ToMap()
+	dhcpRelayPMap, err := dhcpRelayP.ToMap()
+	if err != nil {
+		return d, err
+	}
 
 	d.Set("name", dhcpRelayPMap["name"])
 
@@ -119,7 +126,7 @@ func setDHCPRelayPolicyAttributes(dhcpRelayP *models.DHCPRelayPolicy, d *schema.
 	d.Set("mode", dhcpRelayPMap["mode"])
 	d.Set("name_alias", dhcpRelayPMap["nameAlias"])
 	d.Set("owner", dhcpRelayPMap["owner"])
-	return d
+	return d, nil
 }
 
 func resourceAciDHCPRelayPolicyImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -133,14 +140,17 @@ func resourceAciDHCPRelayPolicyImport(d *schema.ResourceData, m interface{}) ([]
 	if err != nil {
 		return nil, err
 	}
-	schemaFilled := setDHCPRelayPolicyAttributes(dhcpRelayP, d)
+	schemaFilled, err := setDHCPRelayPolicyAttributes(dhcpRelayP, d)
+	if err != nil {
+		return nil, err
+	}
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciDHCPRelayPolicyCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciDHCPRelayPolicyCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] DHCPRelayPolicy: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -168,13 +178,8 @@ func resourceAciDHCPRelayPolicyCreate(d *schema.ResourceData, m interface{}) err
 
 	err := aciClient.Save(dhcpRelayP)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.SetPartial("name")
-
-	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
 
@@ -189,32 +194,29 @@ func resourceAciDHCPRelayPolicyCreate(d *schema.ResourceData, m interface{}) err
 	d.Partial(true)
 	err = checkTDn(aciClient, checkDns)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Partial(false)
 
 	if relationTodhcpRsProv, ok := d.GetOk("relation_dhcp_rs_prov"); ok {
+
 		relationParamList := relationTodhcpRsProv.(*schema.Set).List()
 		for _, relationParam := range relationParamList {
 			paramMap := relationParam.(map[string]interface{})
 			err = aciClient.CreateRelationdhcpRsProvFromDHCPRelayPolicy(dhcpRelayP.DistinguishedName, paramMap["tdn"].(string), paramMap["addr"].(string))
-
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
-			d.Partial(true)
-			d.SetPartial("relation_dhcp_rs_prov")
-			d.Partial(false)
 		}
 	}
 
 	d.SetId(dhcpRelayP.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciDHCPRelayPolicyRead(d, m)
+	return resourceAciDHCPRelayPolicyRead(ctx, d, m)
 }
 
-func resourceAciDHCPRelayPolicyUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciDHCPRelayPolicyUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] DHCPRelayPolicy: Beginning Update")
 
 	aciClient := m.(*client.Client)
@@ -246,13 +248,8 @@ func resourceAciDHCPRelayPolicyUpdate(d *schema.ResourceData, m interface{}) err
 	err := aciClient.Save(dhcpRelayP)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.SetPartial("name")
-
-	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
 
@@ -263,12 +260,13 @@ func resourceAciDHCPRelayPolicyUpdate(d *schema.ResourceData, m interface{}) err
 			paramMap := relationParam.(map[string]interface{})
 			checkDns = append(checkDns, paramMap["tdn"].(string))
 		}
+
 	}
 
 	d.Partial(true)
 	err = checkTDn(aciClient, checkDns)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Partial(false)
 
@@ -281,33 +279,27 @@ func resourceAciDHCPRelayPolicyUpdate(d *schema.ResourceData, m interface{}) err
 			paramMap := relationParam.(map[string]interface{})
 			err = aciClient.DeleteRelationdhcpRsProvFromDHCPRelayPolicy(dhcpRelayP.DistinguishedName, paramMap["tdn"].(string))
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
-
 		}
 
 		for _, relationParam := range newRelList {
 			paramMap := relationParam.(map[string]interface{})
 			err = aciClient.CreateRelationdhcpRsProvFromDHCPRelayPolicy(dhcpRelayP.DistinguishedName, paramMap["tdn"].(string), paramMap["addr"].(string))
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
-			d.Partial(true)
-			d.SetPartial("relation_dhcp_rs_prov")
-			d.Partial(false)
-
 		}
 
 	}
-
 	d.SetId(dhcpRelayP.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciDHCPRelayPolicyRead(d, m)
+	return resourceAciDHCPRelayPolicyRead(ctx, d, m)
 
 }
 
-func resourceAciDHCPRelayPolicyRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciDHCPRelayPolicyRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -319,7 +311,11 @@ func resourceAciDHCPRelayPolicyRead(d *schema.ResourceData, m interface{}) error
 		d.SetId("")
 		return nil
 	}
-	setDHCPRelayPolicyAttributes(dhcpRelayP, d)
+	_, err = setDHCPRelayPolicyAttributes(dhcpRelayP, d)
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 
 	dhcpRsProvData, err := aciClient.ReadRelationdhcpRsProvFromDHCPRelayPolicy(dn)
 
@@ -344,18 +340,18 @@ func resourceAciDHCPRelayPolicyRead(d *schema.ResourceData, m interface{}) error
 	return nil
 }
 
-func resourceAciDHCPRelayPolicyDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciDHCPRelayPolicyDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "dhcpRelayP")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
 }

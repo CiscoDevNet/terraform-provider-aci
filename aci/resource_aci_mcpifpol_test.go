@@ -6,13 +6,13 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
 func TestAccAciMiscablingProtocolInterfacePolicy_Basic(t *testing.T) {
 	var miscabling_protocol_interface_policy models.MiscablingProtocolInterfacePolicy
-	description := "mis-cabling_protocol_interface_policy created while acceptance testing"
+	description := "miscabling_protocol_interface_policy created while acceptance testing"
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
@@ -22,14 +22,9 @@ func TestAccAciMiscablingProtocolInterfacePolicy_Basic(t *testing.T) {
 			{
 				Config: testAccCheckAciMiscablingProtocolInterfacePolicyConfig_basic(description, "enabled"),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAciMiscablingProtocolInterfacePolicyExists("aci_mis-cabling_protocol_interface_policy.foomis-cabling_protocol_interface_policy", &miscabling_protocol_interface_policy),
+					testAccCheckAciMiscablingProtocolInterfacePolicyExists("aci_miscabling_protocol_interface_policy.foomiscabling_protocol_interface_policy", &miscabling_protocol_interface_policy),
 					testAccCheckAciMiscablingProtocolInterfacePolicyAttributes(description, "enabled", &miscabling_protocol_interface_policy),
 				),
-			},
-			{
-				ResourceName:      "aci_miscabling_protocol_interface_policy",
-				ImportState:       true,
-				ImportStateVerify: true,
 			},
 		},
 	})
@@ -37,7 +32,7 @@ func TestAccAciMiscablingProtocolInterfacePolicy_Basic(t *testing.T) {
 
 func TestAccAciMiscablingProtocolInterfacePolicy_update(t *testing.T) {
 	var miscabling_protocol_interface_policy models.MiscablingProtocolInterfacePolicy
-	description := "mis-cabling_protocol_interface_policy created while acceptance testing"
+	description := "miscabling_protocol_interface_policy created while acceptance testing"
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
@@ -47,14 +42,14 @@ func TestAccAciMiscablingProtocolInterfacePolicy_update(t *testing.T) {
 			{
 				Config: testAccCheckAciMiscablingProtocolInterfacePolicyConfig_basic(description, "enabled"),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAciMiscablingProtocolInterfacePolicyExists("aci_mis-cabling_protocol_interface_policy.foomis-cabling_protocol_interface_policy", &miscabling_protocol_interface_policy),
+					testAccCheckAciMiscablingProtocolInterfacePolicyExists("aci_miscabling_protocol_interface_policy.foomiscabling_protocol_interface_policy", &miscabling_protocol_interface_policy),
 					testAccCheckAciMiscablingProtocolInterfacePolicyAttributes(description, "enabled", &miscabling_protocol_interface_policy),
 				),
 			},
 			{
 				Config: testAccCheckAciMiscablingProtocolInterfacePolicyConfig_basic(description, "disabled"),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAciMiscablingProtocolInterfacePolicyExists("aci_mis-cabling_protocol_interface_policy.foomis-cabling_protocol_interface_policy", &miscabling_protocol_interface_policy),
+					testAccCheckAciMiscablingProtocolInterfacePolicyExists("aci_miscabling_protocol_interface_policy.foomiscabling_protocol_interface_policy", &miscabling_protocol_interface_policy),
 					testAccCheckAciMiscablingProtocolInterfacePolicyAttributes(description, "disabled", &miscabling_protocol_interface_policy),
 				),
 			},
@@ -108,7 +103,7 @@ func testAccCheckAciMiscablingProtocolInterfacePolicyDestroy(s *terraform.State)
 
 	for _, rs := range s.RootModule().Resources {
 
-		if rs.Type == "aci_mis-cabling_protocol_interface_policy" {
+		if rs.Type == "aci_miscabling_protocol_interface_policy" {
 			cont, err := client.Get(rs.Primary.ID)
 			miscabling_protocol_interface_policy := models.MiscablingProtocolInterfacePolicyFromContainer(cont)
 			if err == nil {

@@ -6,29 +6,29 @@ description: |-
   Data source for ACI Fex Bundle Group
 ---
 
-# aci_fex_bundle_group #
+# aci_fex_bundle_group
+
 Data source for ACI Fex Bundle Group
 
-## Example Usage ##
+## Example Usage
 
 ```hcl
 
 data "aci_fex_bundle_group" "example" {
-  fex_profile_dn  = "${aci_fex_profile.example.id}"
+  fex_profile_dn  = aci_fex_profile.example.id
   name            = "example"
 }
 
 ```
 
+## Argument Reference
 
-## Argument Reference ##
-* `fex_profile_dn` - (Required) Distinguished name of parent FEXProfile object.
-* `name` - (Required) name of Object fex_bundle_group.
-
-
+- `fex_profile_dn` - (Required) Distinguished name of parent FEX Profile object.
+- `name` - (Required) Name of Object FEX bundle group.
 
 ## Attribute Reference
 
-* `id` - Attribute id set to the Dn of the Fex Bundle Group.
-* `annotation` - (Optional) annotation for object fex_bundle_group.
-* `name_alias` - (Optional) name_alias for object fex_bundle_group.
+- `id` - Attribute id set to the Dn of the FEX Bundle Group.
+- `annotation` - (Optional) Specifies the annotation of the FEX bundle group.
+- `description` - (Optional) Specifies the description of the FEX bundle group.
+- `name_alias` - (Optional) Specifies the alias name of the FEX bundle group.

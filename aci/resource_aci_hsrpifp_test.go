@@ -6,8 +6,8 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
 func TestAccAciL3outHSRPInterfaceProfile_Basic(t *testing.T) {
@@ -59,7 +59,6 @@ func TestAccAciL3outHSRPInterfaceProfile_update(t *testing.T) {
 
 func testAccCheckAciL3outHSRPInterfaceProfileConfig_basic(description string) string {
 	return fmt.Sprintf(`
-
 	resource "aci_l3out_hsrp_interface_profile" "fool3out_hsrp_interface_profile" {
 		logical_interface_profile_dn  = "${aci_logical_interface_profile.example.id}"
 		description = "%s"

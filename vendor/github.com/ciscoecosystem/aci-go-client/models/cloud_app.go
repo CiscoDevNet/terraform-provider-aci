@@ -1,6 +1,5 @@
 package models
 
-
 import (
 	"fmt"
 	"strconv"
@@ -12,27 +11,19 @@ const CloudappClassName = "cloudApp"
 
 type CloudApplicationcontainer struct {
 	BaseAttributes
-    CloudApplicationcontainerAttributes 
+	CloudApplicationcontainerAttributes
 }
-  
+
 type CloudApplicationcontainerAttributes struct {
-	
-	
 	Name string `json:",omitempty"`
-	
-	
-    
-	Annotation       string `json:",omitempty"`
-	
-    
-	NameAlias       string `json:",omitempty"`
-	
-    
+
+	Annotation string `json:",omitempty"`
+
+	NameAlias string `json:",omitempty"`
 }
-   
 
 func NewCloudApplicationcontainer(cloudAppRn, parentDn, description string, cloudAppattr CloudApplicationcontainerAttributes) *CloudApplicationcontainer {
-	dn := fmt.Sprintf("%s/%s", parentDn, cloudAppRn)  
+	dn := fmt.Sprintf("%s/%s", parentDn, cloudAppRn)
 	return &CloudApplicationcontainer{
 		BaseAttributes: BaseAttributes{
 			DistinguishedName: dn,
@@ -41,9 +32,8 @@ func NewCloudApplicationcontainer(cloudAppRn, parentDn, description string, clou
 			ClassName:         CloudappClassName,
 			Rn:                cloudAppRn,
 		},
-        
+
 		CloudApplicationcontainerAttributes: cloudAppattr,
-         
 	}
 }
 
@@ -53,19 +43,11 @@ func (cloudApp *CloudApplicationcontainer) ToMap() (map[string]string, error) {
 		return nil, err
 	}
 
-	
-	
-	A(cloudAppMap, "name",cloudApp.Name)
-	
-	
-    
-	A(cloudAppMap, "annotation",cloudApp.Annotation)
-	
-    
-	A(cloudAppMap, "nameAlias",cloudApp.NameAlias)
-	
-    
-	
+	A(cloudAppMap, "name", cloudApp.Name)
+
+	A(cloudAppMap, "annotation", cloudApp.Annotation)
+
+	A(cloudAppMap, "nameAlias", cloudApp.NameAlias)
 
 	return cloudAppMap, err
 }
@@ -81,22 +63,15 @@ func CloudApplicationcontainerFromContainerList(cont *container.Container, index
 			ClassName:         CloudappClassName,
 			Rn:                G(CloudApplicationcontainerCont, "rn"),
 		},
-        
+
 		CloudApplicationcontainerAttributes{
-		
-		
-			Name : G(CloudApplicationcontainerCont, "name"),
-		
-		
-        
-	        Annotation : G(CloudApplicationcontainerCont, "annotation"),
-		
-        
-	        NameAlias : G(CloudApplicationcontainerCont, "nameAlias"),
-		
-        		
-        },
-        
+
+			Name: G(CloudApplicationcontainerCont, "name"),
+
+			Annotation: G(CloudApplicationcontainerCont, "annotation"),
+
+			NameAlias: G(CloudApplicationcontainerCont, "nameAlias"),
+		},
 	}
 }
 

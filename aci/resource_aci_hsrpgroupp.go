@@ -1,21 +1,23 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciHSRPGroupProfile() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciHSRPGroupProfileCreate,
-		Update: resourceAciHSRPGroupProfileUpdate,
-		Read:   resourceAciHSRPGroupProfileRead,
-		Delete: resourceAciHSRPGroupProfileDelete,
+		CreateContext: resourceAciHSRPGroupProfileCreate,
+		UpdateContext: resourceAciHSRPGroupProfileUpdate,
+		ReadContext:   resourceAciHSRPGroupProfileRead,
+		DeleteContext: resourceAciHSRPGroupProfileDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciHSRPGroupProfileImport,
@@ -128,7 +130,7 @@ func getRemoteHSRPGroupProfile(client *client.Client, dn string) (*models.HSRPGr
 	return hsrpGroupP, nil
 }
 
-func setHSRPGroupProfileAttributes(hsrpGroupP *models.HSRPGroupProfile, d *schema.ResourceData) *schema.ResourceData {
+func setHSRPGroupProfileAttributes(hsrpGroupP *models.HSRPGroupProfile, d *schema.ResourceData) (*schema.ResourceData, error) {
 	dn := d.Id()
 
 	d.SetId(hsrpGroupP.DistinguishedName)
@@ -136,7 +138,11 @@ func setHSRPGroupProfileAttributes(hsrpGroupP *models.HSRPGroupProfile, d *schem
 	if dn != hsrpGroupP.DistinguishedName {
 		d.Set("l3out_hsrp_interface_profile_dn", "")
 	}
-	hsrpGroupPMap, _ := hsrpGroupP.ToMap()
+	hsrpGroupPMap, err := hsrpGroupP.ToMap()
+
+	if err != nil {
+		return d, err
+	}
 
 	d.Set("name", hsrpGroupPMap["name"])
 	d.Set("annotation", hsrpGroupPMap["annotation"])
@@ -153,7 +159,7 @@ func setHSRPGroupProfileAttributes(hsrpGroupP *models.HSRPGroupProfile, d *schem
 	d.Set("mac", hsrpGroupPMap["mac"])
 	d.Set("name_alias", hsrpGroupPMap["nameAlias"])
 
-	return d
+	return d, nil
 }
 
 func resourceAciHSRPGroupProfileImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -167,14 +173,18 @@ func resourceAciHSRPGroupProfileImport(d *schema.ResourceData, m interface{}) ([
 	if err != nil {
 		return nil, err
 	}
-	schemaFilled := setHSRPGroupProfileAttributes(hsrpGroupP, d)
+	schemaFilled, err := setHSRPGroupProfileAttributes(hsrpGroupP, d)
+
+	if err != nil {
+		return nil, err
+	}
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciHSRPGroupProfileCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciHSRPGroupProfileCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] HSRPGroupProfile: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -217,13 +227,8 @@ func resourceAciHSRPGroupProfileCreate(d *schema.ResourceData, m interface{}) er
 
 	err := aciClient.Save(hsrpGroupP)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.SetPartial("name")
-
-	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
 
@@ -235,7 +240,7 @@ func resourceAciHSRPGroupProfileCreate(d *schema.ResourceData, m interface{}) er
 	d.Partial(true)
 	err = checkTDn(aciClient, checkDns)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Partial(false)
 
@@ -244,21 +249,18 @@ func resourceAciHSRPGroupProfileCreate(d *schema.ResourceData, m interface{}) er
 		relationParamName := GetMOName(relationParam)
 		err = aciClient.CreateRelationhsrpRsGroupPolFromHSRPGroupProfile(hsrpGroupP.DistinguishedName, relationParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_hsrp_rs_group_pol")
-		d.Partial(false)
 
 	}
 
 	d.SetId(hsrpGroupP.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciHSRPGroupProfileRead(d, m)
+	return resourceAciHSRPGroupProfileRead(ctx, d, m)
 }
 
-func resourceAciHSRPGroupProfileUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciHSRPGroupProfileUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] HSRPGroupProfile: Beginning Update")
 
 	aciClient := m.(*client.Client)
@@ -305,13 +307,8 @@ func resourceAciHSRPGroupProfileUpdate(d *schema.ResourceData, m interface{}) er
 	err := aciClient.Save(hsrpGroupP)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.SetPartial("name")
-
-	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
 
@@ -323,7 +320,7 @@ func resourceAciHSRPGroupProfileUpdate(d *schema.ResourceData, m interface{}) er
 	d.Partial(true)
 	err = checkTDn(aciClient, checkDns)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Partial(false)
 
@@ -332,22 +329,19 @@ func resourceAciHSRPGroupProfileUpdate(d *schema.ResourceData, m interface{}) er
 		newRelParamName := GetMOName(newRelParam.(string))
 		err = aciClient.CreateRelationhsrpRsGroupPolFromHSRPGroupProfile(hsrpGroupP.DistinguishedName, newRelParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_hsrp_rs_group_pol")
-		d.Partial(false)
 
 	}
 
 	d.SetId(hsrpGroupP.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciHSRPGroupProfileRead(d, m)
+	return resourceAciHSRPGroupProfileRead(ctx, d, m)
 
 }
 
-func resourceAciHSRPGroupProfileRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciHSRPGroupProfileRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -359,7 +353,12 @@ func resourceAciHSRPGroupProfileRead(d *schema.ResourceData, m interface{}) erro
 		d.SetId("")
 		return nil
 	}
-	setHSRPGroupProfileAttributes(hsrpGroupP, d)
+	_, err = setHSRPGroupProfileAttributes(hsrpGroupP, d)
+
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 
 	hsrpRsGroupPolData, err := aciClient.ReadRelationhsrpRsGroupPolFromHSRPGroupProfile(dn)
 	if err != nil {
@@ -379,18 +378,18 @@ func resourceAciHSRPGroupProfileRead(d *schema.ResourceData, m interface{}) erro
 	return nil
 }
 
-func resourceAciHSRPGroupProfileDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciHSRPGroupProfileDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "hsrpGroupP")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
 }

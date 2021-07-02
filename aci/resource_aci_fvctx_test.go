@@ -6,8 +6,8 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
 func TestAccAciVRF_Basic(t *testing.T) {
@@ -25,11 +25,6 @@ func TestAccAciVRF_Basic(t *testing.T) {
 					testAccCheckAciVRFExists("aci_vrf.foovrf", &vrf),
 					testAccCheckAciVRFAttributes(description, "enabled", &vrf),
 				),
-			},
-			{
-				ResourceName:      "aci_vrf",
-				ImportState:       true,
-				ImportStateVerify: true,
 			},
 		},
 	})

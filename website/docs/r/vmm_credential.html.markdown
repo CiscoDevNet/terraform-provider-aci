@@ -24,8 +24,10 @@ Manages ACI VMM Credential
 ```hcl
 resource "aci_vmm_credential" "example" {
   vmm_domain_dn  = aci_vmm_domain.example.id
-  name  = "example"
-  annotation = "orchestrator:terraform"
+  name  = "vmm_credential_1"
+  annotation = "vmm_credential_tag"
+  description = "from terraform"
+  name_alias = "vmm_credential_alias"
   pwd = "password"
   usr = "username"
 }
@@ -36,8 +38,10 @@ resource "aci_vmm_credential" "example" {
 * `vmm_domain_dn` - (Required) Distinguished name of parent VMM Domain object.
 * `name` - (Required) Name of object VMM Credential.
 * `annotation` - (Optional) Annotation of object VMM Credential.
+* `description` - (Optional) Description of object VMM Credential.
+* `name_alias` - (Optional) Name alias of object VMM Credential.
 * `pwd` - (Optional) Password.
-* `usr` - (Optional) Username.
+* `usr` - (Optional) Username. Min length is "0". Max length is "128". If any value is assigned to a username then it cannot be updated to an empty value. 
 
 ## Importing ##
 

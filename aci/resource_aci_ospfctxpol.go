@@ -1,21 +1,23 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciOSPFTimersPolicy() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciOSPFTimersPolicyCreate,
-		Update: resourceAciOSPFTimersPolicyUpdate,
-		Read:   resourceAciOSPFTimersPolicyRead,
-		Delete: resourceAciOSPFTimersPolicyDelete,
+		CreateContext: resourceAciOSPFTimersPolicyCreate,
+		UpdateContext: resourceAciOSPFTimersPolicyUpdate,
+		ReadContext:   resourceAciOSPFTimersPolicyRead,
+		DeleteContext: resourceAciOSPFTimersPolicyDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciOSPFTimersPolicyImport,
@@ -187,15 +189,17 @@ func getRemoteOSPFTimersPolicy(client *client.Client, dn string) (*models.OSPFTi
 	return ospfCtxPol, nil
 }
 
-func setOSPFTimersPolicyAttributes(ospfCtxPol *models.OSPFTimersPolicy, d *schema.ResourceData) *schema.ResourceData {
+func setOSPFTimersPolicyAttributes(ospfCtxPol *models.OSPFTimersPolicy, d *schema.ResourceData) (*schema.ResourceData, error) {
 	dn := d.Id()
 	d.SetId(ospfCtxPol.DistinguishedName)
 	d.Set("description", ospfCtxPol.Description)
 	if dn != ospfCtxPol.DistinguishedName {
 		d.Set("tenant_dn", "")
 	}
-	ospfCtxPolMap, _ := ospfCtxPol.ToMap()
-
+	ospfCtxPolMap, err := ospfCtxPol.ToMap()
+	if err != nil {
+		return d, err
+	}
 	d.Set("name", ospfCtxPolMap["name"])
 
 	d.Set("annotation", ospfCtxPolMap["annotation"])
@@ -220,7 +224,7 @@ func setOSPFTimersPolicyAttributes(ospfCtxPol *models.OSPFTimersPolicy, d *schem
 	d.Set("spf_init_intvl", ospfCtxPolMap["spfInitIntvl"])
 	d.Set("spf_max_intvl", ospfCtxPolMap["spfMaxIntvl"])
 
-	return d
+	return d, nil
 }
 
 func resourceAciOSPFTimersPolicyImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -234,14 +238,16 @@ func resourceAciOSPFTimersPolicyImport(d *schema.ResourceData, m interface{}) ([
 	if err != nil {
 		return nil, err
 	}
-	schemaFilled := setOSPFTimersPolicyAttributes(ospfCtxPol, d)
-
+	schemaFilled, err := setOSPFTimersPolicyAttributes(ospfCtxPol, d)
+	if err != nil {
+		return nil, err
+	}
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciOSPFTimersPolicyCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciOSPFTimersPolicyCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] OSPFTimersPolicy: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -324,21 +330,16 @@ func resourceAciOSPFTimersPolicyCreate(d *schema.ResourceData, m interface{}) er
 
 	err := aciClient.Save(ospfCtxPol)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.SetPartial("name")
-
-	d.Partial(false)
 
 	d.SetId(ospfCtxPol.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciOSPFTimersPolicyRead(d, m)
+	return resourceAciOSPFTimersPolicyRead(ctx, d, m)
 }
 
-func resourceAciOSPFTimersPolicyUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciOSPFTimersPolicyUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] OSPFTimersPolicy: Beginning Update")
 
 	aciClient := m.(*client.Client)
@@ -425,22 +426,17 @@ func resourceAciOSPFTimersPolicyUpdate(d *schema.ResourceData, m interface{}) er
 	err := aciClient.Save(ospfCtxPol)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.SetPartial("name")
-
-	d.Partial(false)
 
 	d.SetId(ospfCtxPol.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciOSPFTimersPolicyRead(d, m)
+	return resourceAciOSPFTimersPolicyRead(ctx, d, m)
 
 }
 
-func resourceAciOSPFTimersPolicyRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciOSPFTimersPolicyRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -452,25 +448,28 @@ func resourceAciOSPFTimersPolicyRead(d *schema.ResourceData, m interface{}) erro
 		d.SetId("")
 		return nil
 	}
-	setOSPFTimersPolicyAttributes(ospfCtxPol, d)
-
+	_, err = setOSPFTimersPolicyAttributes(ospfCtxPol, d)
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 
 	return nil
 }
 
-func resourceAciOSPFTimersPolicyDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciOSPFTimersPolicyDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "ospfCtxPol")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
 }

@@ -6,11 +6,11 @@ description: |-
   Manages ACI VPC Explicit Protection Group
 ---
 
-# aci_vpc_explicit_protection_group #
+# aci_vpc_explicit_protection_group
 
 Manages ACI VPC Explicit Protection Group
 
-## Example Usage ##
+## Example Usage
 
 ```hcl
 resource "aci_vpc_explicit_protection_group" "example" {
@@ -23,21 +23,21 @@ resource "aci_vpc_explicit_protection_group" "example" {
 }
 ```
 
-## Argument Reference ##
+## Argument Reference
 
-* `name` - (Required) name of Object vpc_explicit_protection_group.
-* `switch1` - (Required) Node Id of switch 1 to attach.
-* `switch2` - (Required) Node Id of switch 2 to attach.
-* `annotation` - (Optional) annotation for object vpc_explicit_protection_group.
-* `vpc_domain_policy` - (Optional) VPC domain policy name.
-* `vpc_explicit_protection_group_id` - (Optional) explicit protection group ID.  Between 1-1000
+- `name` - (Required) Name of Object VPC Explicit Protection Group.
+- `switch1` - (Required) Node Id of switch 1 to attach.
+- `switch2` - (Required) Node Id of switch 2 to attach.
+- `annotation` - (Optional) Annotation for object VPC Explicit Protection Group.
+- `vpc_domain_policy` - (Optional) VPC domain policy name.
+- `vpc_explicit_protection_group_id` - (Optional) Explicit protection group ID. Integer values are allowed between 1-1000. default value is "0".
 
-## Attribute Reference ##
+## Attribute Reference
 
 The only attribute that this resource exports is the `id`, which is set to the
 Dn of the VPC Explicit Protection Group.
 
-## Importing ##
+## Importing
 
 An existing VPC Explicit Protection Group can be [imported][docs-import] into this resource via its Dn, via the following command:
 [docs-import]: <https://www.terraform.io/docs/import/index.html>

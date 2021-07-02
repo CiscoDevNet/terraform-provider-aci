@@ -14,8 +14,7 @@ Data source for ACI Action Rule Profile
 ```hcl
 data "aci_action_rule_profile" "example" {
 
-  tenant_dn  = "${aci_tenant.example.id}"
-
+  tenant_dn  = aci_tenant.example.id
   name  = "example"
 }
 ```
@@ -28,5 +27,6 @@ data "aci_action_rule_profile" "example" {
 ## Attribute Reference
 
 * `id` - Attribute id set to the Dn of the Action Rule Profile.
-* `annotation` - (Optional) annotation for object action_rule_profile.
-* `name_alias` - (Optional) name_alias for object action_rule_profile.
+* `annotation` - (Optional) Annotation for object action rule profile.
+* `name_alias` - (Optional) Name alias for object action rule profile.
+* `description` - (Optional) Description for action rule profile.

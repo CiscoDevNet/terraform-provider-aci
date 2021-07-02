@@ -14,7 +14,7 @@ Manages ACI L3out HSRP Interface Group
 
 ```hcl
 resource "aci_l3out_hsrp_interface_group" "example" {
-  l3out_hsrp_interface_profile_dn = "${aci_l3out_hsrp_interface_profile.example.id}"
+  l3out_hsrp_interface_profile_dn = aci_l3out_hsrp_interface_profile.example.id
   name                            = "one"
   annotation                      = "example"
   config_issues                   = "GroupMac-Conflicts-Other-Group"

@@ -1,21 +1,23 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciLeafBreakoutPortGroup() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciLeafBreakoutPortGroupCreate,
-		Update: resourceAciLeafBreakoutPortGroupUpdate,
-		Read:   resourceAciLeafBreakoutPortGroupRead,
-		Delete: resourceAciLeafBreakoutPortGroupDelete,
+		CreateContext: resourceAciLeafBreakoutPortGroupCreate,
+		UpdateContext: resourceAciLeafBreakoutPortGroupUpdate,
+		ReadContext:   resourceAciLeafBreakoutPortGroupRead,
+		DeleteContext: resourceAciLeafBreakoutPortGroupDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciLeafBreakoutPortGroupImport,
@@ -74,17 +76,20 @@ func getRemoteLeafBreakoutPortGroup(client *client.Client, dn string) (*models.L
 	return infraBrkoutPortGrp, nil
 }
 
-func setLeafBreakoutPortGroupAttributes(infraBrkoutPortGrp *models.LeafBreakoutPortGroup, d *schema.ResourceData) *schema.ResourceData {
+func setLeafBreakoutPortGroupAttributes(infraBrkoutPortGrp *models.LeafBreakoutPortGroup, d *schema.ResourceData) (*schema.ResourceData, error) {
 	d.SetId(infraBrkoutPortGrp.DistinguishedName)
 	d.Set("description", infraBrkoutPortGrp.Description)
-	infraBrkoutPortGrpMap, _ := infraBrkoutPortGrp.ToMap()
+	infraBrkoutPortGrpMap, err := infraBrkoutPortGrp.ToMap()
+	if err != nil {
+		return d, err
+	}
 
 	d.Set("name", infraBrkoutPortGrpMap["name"])
 
 	d.Set("annotation", infraBrkoutPortGrpMap["annotation"])
 	d.Set("brkout_map", infraBrkoutPortGrpMap["brkoutMap"])
 	d.Set("name_alias", infraBrkoutPortGrpMap["nameAlias"])
-	return d
+	return d, nil
 }
 
 func resourceAciLeafBreakoutPortGroupImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -98,14 +103,14 @@ func resourceAciLeafBreakoutPortGroupImport(d *schema.ResourceData, m interface{
 	if err != nil {
 		return nil, err
 	}
-	schemaFilled := setLeafBreakoutPortGroupAttributes(infraBrkoutPortGrp, d)
+	schemaFilled, err := setLeafBreakoutPortGroupAttributes(infraBrkoutPortGrp, d)
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciLeafBreakoutPortGroupCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciLeafBreakoutPortGroupCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] LeafBreakoutPortGroup: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -128,13 +133,8 @@ func resourceAciLeafBreakoutPortGroupCreate(d *schema.ResourceData, m interface{
 
 	err := aciClient.Save(infraBrkoutPortGrp)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.SetPartial("name")
-
-	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
 
@@ -146,7 +146,7 @@ func resourceAciLeafBreakoutPortGroupCreate(d *schema.ResourceData, m interface{
 	d.Partial(true)
 	err = checkTDn(aciClient, checkDns)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Partial(false)
 
@@ -155,21 +155,18 @@ func resourceAciLeafBreakoutPortGroupCreate(d *schema.ResourceData, m interface{
 		relationParamName := GetMOName(relationParam)
 		err = aciClient.CreateRelationinfraRsMonBrkoutInfraPolFromLeafBreakoutPortGroup(infraBrkoutPortGrp.DistinguishedName, relationParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_infra_rs_mon_brkout_infra_pol")
-		d.Partial(false)
 
 	}
 
 	d.SetId(infraBrkoutPortGrp.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciLeafBreakoutPortGroupRead(d, m)
+	return resourceAciLeafBreakoutPortGroupRead(ctx, d, m)
 }
 
-func resourceAciLeafBreakoutPortGroupUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciLeafBreakoutPortGroupUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] LeafBreakoutPortGroup: Beginning Update")
 
 	aciClient := m.(*client.Client)
@@ -196,13 +193,8 @@ func resourceAciLeafBreakoutPortGroupUpdate(d *schema.ResourceData, m interface{
 	err := aciClient.Save(infraBrkoutPortGrp)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.SetPartial("name")
-
-	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
 
@@ -214,7 +206,7 @@ func resourceAciLeafBreakoutPortGroupUpdate(d *schema.ResourceData, m interface{
 	d.Partial(true)
 	err = checkTDn(aciClient, checkDns)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Partial(false)
 
@@ -223,22 +215,19 @@ func resourceAciLeafBreakoutPortGroupUpdate(d *schema.ResourceData, m interface{
 		newRelParamName := GetMOName(newRelParam.(string))
 		err = aciClient.CreateRelationinfraRsMonBrkoutInfraPolFromLeafBreakoutPortGroup(infraBrkoutPortGrp.DistinguishedName, newRelParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_infra_rs_mon_brkout_infra_pol")
-		d.Partial(false)
 
 	}
 
 	d.SetId(infraBrkoutPortGrp.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciLeafBreakoutPortGroupRead(d, m)
+	return resourceAciLeafBreakoutPortGroupRead(ctx, d, m)
 
 }
 
-func resourceAciLeafBreakoutPortGroupRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciLeafBreakoutPortGroupRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -250,7 +239,11 @@ func resourceAciLeafBreakoutPortGroupRead(d *schema.ResourceData, m interface{})
 		d.SetId("")
 		return nil
 	}
-	setLeafBreakoutPortGroupAttributes(infraBrkoutPortGrp, d)
+	_, err = setLeafBreakoutPortGroupAttributes(infraBrkoutPortGrp, d)
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 
 	infraRsMonBrkoutInfraPolData, err := aciClient.ReadRelationinfraRsMonBrkoutInfraPolFromLeafBreakoutPortGroup(dn)
 	if err != nil {
@@ -271,18 +264,18 @@ func resourceAciLeafBreakoutPortGroupRead(d *schema.ResourceData, m interface{})
 	return nil
 }
 
-func resourceAciLeafBreakoutPortGroupDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciLeafBreakoutPortGroupDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "infraBrkoutPortGrp")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
 }

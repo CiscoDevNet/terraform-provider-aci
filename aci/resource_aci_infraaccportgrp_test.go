@@ -6,8 +6,8 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
 func TestAccAciLeafAccessPortPolicyGroup_Basic(t *testing.T) {
@@ -25,11 +25,6 @@ func TestAccAciLeafAccessPortPolicyGroup_Basic(t *testing.T) {
 					testAccCheckAciLeafAccessPortPolicyGroupExists("aci_leaf_access_port_policy_group.fooleaf_access_port_policy_group", &leaf_access_port_policy_group),
 					testAccCheckAciLeafAccessPortPolicyGroupAttributes(description, "alias_port", &leaf_access_port_policy_group),
 				),
-			},
-			{
-				ResourceName:      "aci_leaf_access_port_policy_group",
-				ImportState:       true,
-				ImportStateVerify: true,
 			},
 		},
 	})

@@ -14,8 +14,7 @@ Data source for ACI L3out VPC Member
 
 ```hcl
 data "aci_l3out_vpc_member" "example" {
-
-  leaf_port_dn  = "${aci_l3out_path_attachment.example.id}"
+  leaf_port_dn  = aci_l3out_path_attachment.example.id
   side  = "A"
 }
 ```
@@ -24,7 +23,7 @@ data "aci_l3out_vpc_member" "example" {
 
 - `leaf_port_dn` - (Required) Distinguished name of parent leaf port object.
 - `side` - (Required) side of Object l3out vpc member.  
-  Allowed values: "A" and "B". Default value: "A".
+  Allowed values: "A" and "B".
 
 ## Attribute Reference
 

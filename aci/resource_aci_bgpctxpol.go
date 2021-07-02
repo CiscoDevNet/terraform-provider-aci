@@ -1,20 +1,22 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func resourceAciBGPTimersPolicy() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciBGPTimersPolicyCreate,
-		Update: resourceAciBGPTimersPolicyUpdate,
-		Read:   resourceAciBGPTimersPolicyRead,
-		Delete: resourceAciBGPTimersPolicyDelete,
+		CreateContext: resourceAciBGPTimersPolicyCreate,
+		UpdateContext: resourceAciBGPTimersPolicyUpdate,
+		ReadContext:   resourceAciBGPTimersPolicyRead,
+		DeleteContext: resourceAciBGPTimersPolicyDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciBGPTimersPolicyImport,
@@ -89,7 +91,7 @@ func getRemoteBGPTimersPolicy(client *client.Client, dn string) (*models.BGPTime
 	return bgpCtxPol, nil
 }
 
-func setBGPTimersPolicyAttributes(bgpCtxPol *models.BGPTimersPolicy, d *schema.ResourceData) *schema.ResourceData {
+func setBGPTimersPolicyAttributes(bgpCtxPol *models.BGPTimersPolicy, d *schema.ResourceData) (*schema.ResourceData, error) {
 	dn := d.Id()
 
 	d.SetId(bgpCtxPol.DistinguishedName)
@@ -97,7 +99,10 @@ func setBGPTimersPolicyAttributes(bgpCtxPol *models.BGPTimersPolicy, d *schema.R
 	if dn != bgpCtxPol.DistinguishedName {
 		d.Set("tenant_dn", "")
 	}
-	bgpCtxPolMap, _ := bgpCtxPol.ToMap()
+	bgpCtxPolMap, err := bgpCtxPol.ToMap()
+	if err != nil {
+		return d, err
+	}
 
 	d.Set("name", bgpCtxPolMap["name"])
 
@@ -109,7 +114,7 @@ func setBGPTimersPolicyAttributes(bgpCtxPol *models.BGPTimersPolicy, d *schema.R
 	d.Set("name_alias", bgpCtxPolMap["nameAlias"])
 	d.Set("stale_intvl", bgpCtxPolMap["staleIntvl"])
 
-	return d
+	return d, nil
 }
 
 func resourceAciBGPTimersPolicyImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -123,14 +128,17 @@ func resourceAciBGPTimersPolicyImport(d *schema.ResourceData, m interface{}) ([]
 	if err != nil {
 		return nil, err
 	}
-	schemaFilled := setBGPTimersPolicyAttributes(bgpCtxPol, d)
+	schemaFilled, err := setBGPTimersPolicyAttributes(bgpCtxPol, d)
+	if err != nil {
+		return nil, err
+	}
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciBGPTimersPolicyCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciBGPTimersPolicyCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] BGPTimersPolicy: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -167,21 +175,16 @@ func resourceAciBGPTimersPolicyCreate(d *schema.ResourceData, m interface{}) err
 
 	err := aciClient.Save(bgpCtxPol)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.SetPartial("name")
-
-	d.Partial(false)
 
 	d.SetId(bgpCtxPol.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciBGPTimersPolicyRead(d, m)
+	return resourceAciBGPTimersPolicyRead(ctx, d, m)
 }
 
-func resourceAciBGPTimersPolicyUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciBGPTimersPolicyUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] BGPTimersPolicy: Beginning Update")
 
 	aciClient := m.(*client.Client)
@@ -222,21 +225,16 @@ func resourceAciBGPTimersPolicyUpdate(d *schema.ResourceData, m interface{}) err
 	err := aciClient.Save(bgpCtxPol)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.SetPartial("name")
-
-	d.Partial(false)
 
 	d.SetId(bgpCtxPol.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciBGPTimersPolicyRead(d, m)
+	return resourceAciBGPTimersPolicyRead(ctx, d, m)
 }
 
-func resourceAciBGPTimersPolicyRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciBGPTimersPolicyRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -248,25 +246,29 @@ func resourceAciBGPTimersPolicyRead(d *schema.ResourceData, m interface{}) error
 		d.SetId("")
 		return nil
 	}
-	setBGPTimersPolicyAttributes(bgpCtxPol, d)
+	_, err = setBGPTimersPolicyAttributes(bgpCtxPol, d)
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 
 	return nil
 }
 
-func resourceAciBGPTimersPolicyDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciBGPTimersPolicyDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "bgpCtxPol")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
 }

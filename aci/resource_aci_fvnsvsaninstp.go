@@ -1,21 +1,23 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciVSANPool() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciVSANPoolCreate,
-		Update: resourceAciVSANPoolUpdate,
-		Read:   resourceAciVSANPoolRead,
-		Delete: resourceAciVSANPoolDelete,
+		CreateContext: resourceAciVSANPoolCreate,
+		UpdateContext: resourceAciVSANPoolUpdate,
+		ReadContext:   resourceAciVSANPoolRead,
+		DeleteContext: resourceAciVSANPoolDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciVSANPoolImport,
@@ -34,6 +36,7 @@ func resourceAciVSANPool() *schema.Resource {
 			"alloc_mode": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
+				ForceNew: true,
 				ValidateFunc: validation.StringInSlice([]string{
 					"dynamic",
 					"static",
@@ -94,7 +97,7 @@ func resourceAciVSANPoolImport(d *schema.ResourceData, m interface{}) ([]*schema
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciVSANPoolCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciVSANPoolCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] VSANPool: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -116,23 +119,16 @@ func resourceAciVSANPoolCreate(d *schema.ResourceData, m interface{}) error {
 
 	err := aciClient.Save(fvnsVsanInstP)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.SetPartial("name")
-
-	d.SetPartial("alloc_mode")
-
-	d.Partial(false)
 
 	d.SetId(fvnsVsanInstP.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciVSANPoolRead(d, m)
+	return resourceAciVSANPoolRead(ctx, d, m)
 }
 
-func resourceAciVSANPoolUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciVSANPoolUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] VSANPool: Beginning Update")
 
 	aciClient := m.(*client.Client)
@@ -158,24 +154,17 @@ func resourceAciVSANPoolUpdate(d *schema.ResourceData, m interface{}) error {
 	err := aciClient.Save(fvnsVsanInstP)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.SetPartial("name")
-
-	d.SetPartial("alloc_mode")
-
-	d.Partial(false)
 
 	d.SetId(fvnsVsanInstP.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciVSANPoolRead(d, m)
+	return resourceAciVSANPoolRead(ctx, d, m)
 
 }
 
-func resourceAciVSANPoolRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciVSANPoolRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -194,18 +183,18 @@ func resourceAciVSANPoolRead(d *schema.ResourceData, m interface{}) error {
 	return nil
 }
 
-func resourceAciVSANPoolDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciVSANPoolDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "fvnsVsanInstP")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
 }

@@ -1,6 +1,5 @@
 package models
 
-
 import (
 	"fmt"
 	"strconv"
@@ -12,27 +11,19 @@ const InfranodepClassName = "infraNodeP"
 
 type LeafProfile struct {
 	BaseAttributes
-    LeafProfileAttributes 
+	LeafProfileAttributes
 }
-  
+
 type LeafProfileAttributes struct {
-	
-	
 	Name string `json:",omitempty"`
-	
-	
-    
-	Annotation       string `json:",omitempty"`
-	
-    
-	NameAlias       string `json:",omitempty"`
-	
-    
+
+	Annotation string `json:",omitempty"`
+
+	NameAlias string `json:",omitempty"`
 }
-   
 
 func NewLeafProfile(infraNodePRn, parentDn, description string, infraNodePattr LeafProfileAttributes) *LeafProfile {
-	dn := fmt.Sprintf("%s/%s", parentDn, infraNodePRn)  
+	dn := fmt.Sprintf("%s/%s", parentDn, infraNodePRn)
 	return &LeafProfile{
 		BaseAttributes: BaseAttributes{
 			DistinguishedName: dn,
@@ -41,9 +32,8 @@ func NewLeafProfile(infraNodePRn, parentDn, description string, infraNodePattr L
 			ClassName:         InfranodepClassName,
 			Rn:                infraNodePRn,
 		},
-        
+
 		LeafProfileAttributes: infraNodePattr,
-         
 	}
 }
 
@@ -53,19 +43,11 @@ func (infraNodeP *LeafProfile) ToMap() (map[string]string, error) {
 		return nil, err
 	}
 
-	
-	
-	A(infraNodePMap, "name",infraNodeP.Name)
-	
-	
-    
-	A(infraNodePMap, "annotation",infraNodeP.Annotation)
-	
-    
-	A(infraNodePMap, "nameAlias",infraNodeP.NameAlias)
-	
-    
-	
+	A(infraNodePMap, "name", infraNodeP.Name)
+
+	A(infraNodePMap, "annotation", infraNodeP.Annotation)
+
+	A(infraNodePMap, "nameAlias", infraNodeP.NameAlias)
 
 	return infraNodePMap, err
 }
@@ -81,22 +63,15 @@ func LeafProfileFromContainerList(cont *container.Container, index int) *LeafPro
 			ClassName:         InfranodepClassName,
 			Rn:                G(LeafProfileCont, "rn"),
 		},
-        
+
 		LeafProfileAttributes{
-		
-		
-			Name : G(LeafProfileCont, "name"),
-		
-		
-        
-	        Annotation : G(LeafProfileCont, "annotation"),
-		
-        
-	        NameAlias : G(LeafProfileCont, "nameAlias"),
-		
-        		
-        },
-        
+
+			Name: G(LeafProfileCont, "name"),
+
+			Annotation: G(LeafProfileCont, "annotation"),
+
+			NameAlias: G(LeafProfileCont, "nameAlias"),
+		},
 	}
 }
 

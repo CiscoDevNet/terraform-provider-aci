@@ -6,8 +6,8 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
 func TestAccAciCloudEndpointSelector_Basic(t *testing.T) {
@@ -25,11 +25,6 @@ func TestAccAciCloudEndpointSelector_Basic(t *testing.T) {
 					testAccCheckAciCloudEndpointSelectorExists("aci_cloud_endpoint_selector.foocloud_endpoint_selector", &cloud_endpoint_selector),
 					testAccCheckAciCloudEndpointSelectorAttributes(description, "custom:Name=='admin-ep2'", &cloud_endpoint_selector),
 				),
-			},
-			{
-				ResourceName:      "aci_cloud_endpoint_selector",
-				ImportState:       true,
-				ImportStateVerify: true,
 			},
 		},
 	})

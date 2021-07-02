@@ -1,16 +1,18 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func dataSourceAciL3outPathAttachment() *schema.Resource {
 	return &schema.Resource{
 
-		Read: dataSourceAciL3outPathAttachmentRead,
+		ReadContext: dataSourceAciL3outPathAttachmentRead,
 
 		SchemaVersion: 1,
 
@@ -26,12 +28,6 @@ func dataSourceAciL3outPathAttachment() *schema.Resource {
 			},
 
 			"addr": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
-			"annotation": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
@@ -100,7 +96,7 @@ func dataSourceAciL3outPathAttachment() *schema.Resource {
 	}
 }
 
-func dataSourceAciL3outPathAttachmentRead(d *schema.ResourceData, m interface{}) error {
+func dataSourceAciL3outPathAttachmentRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	aciClient := m.(*client.Client)
 
 	tDn := d.Get("target_dn").(string)
@@ -113,9 +109,12 @@ func dataSourceAciL3outPathAttachmentRead(d *schema.ResourceData, m interface{})
 	l3extRsPathL3OutAtt, err := getRemoteL3outPathAttachment(aciClient, dn)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.SetId(dn)
-	setL3outPathAttachmentAttributes(l3extRsPathL3OutAtt, d)
+	_, err = setL3outPathAttachmentAttributes(l3extRsPathL3OutAtt, d)
+	if err != nil {
+		return diag.FromErr(err)
+	}
 	return nil
 }

@@ -14,27 +14,27 @@ Manages ACI EPGs Using Function
 ```hcl
 
 resource "aci_epgs_using_function" "example" {
-  access_generic_dn   = "${aci_access_generic.example.id}"
-  tdn                 = "${aci_application_epg.epg2.id}"
-  annotation          = "example"
+  access_generic_dn   = aci_access_generic.example.id
+  tdn                 = aci_application_epg.epg2.id
+  annotation          = "annotation"
   encap               = "vlan-5"
-  instr_imedcy        = "example"
-  mode                = "example"
-  primary_encap       = "example"
+  instr_imedcy        = "lazy"
+  mode                = "regular"
+  primary_encap       = "vlan-7"
 }
 
 ```
 
 ## Argument Reference ##
 * `access_generic_dn` - (Required) Distinguished name of parent AccessGeneric object.
-* `tdn` - (Required) tDn of Object epgs_using_function.
-* `encap` - (Required) vlan number encap. 
-* `annotation` - (Optional) annotation for object epgs_using_function.
-* `instr_imedcy` - (Optional) instrumentation immediacy.
-Allowed values: "immediate", "lazy"
-* `mode` - (Optional) bgp domain mode.
-Allowed values: "regular", "native", "untagged"
-* `primary_encap` - (Optional) primary_encap for object epgs_using_function.
+* `tdn` - (Required) tDn of Object EPGs Using Function.
+* `encap` - (Required) Vlan number encap. 
+* `annotation` - (Optional) annotation for object EPGs Using Function.
+* `instr_imedcy` - (Optional) Instrumentation immediacy.
+Allowed values: "immediate", "lazy". Default value: "lazy".
+* `mode` - (Optional) Bgp domain mode.
+Allowed values: "regular", "native", "untagged". Default value: "regular"
+* `primary_encap` - (Optional) Primary encap for object EPGs Using Function.
 
 
 

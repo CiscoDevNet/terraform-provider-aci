@@ -6,8 +6,8 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
 func TestAccAciL3outBGPProtocolProfile_Basic(t *testing.T) {
@@ -61,7 +61,7 @@ func testAccCheckAciL3outBGPProtocolProfileConfig_basic(description string) stri
 	return fmt.Sprintf(`
 
 	resource "aci_l3out_bgp_protocol_profile" "fool3out_bgp_protocol_profile" {
-		logical_node_profile_dn = "${aci_logical_node_profile.example.id}"
+		logical_node_profile_dn = aci_logical_node_profile.example.id
   		annotation  = "example"
   		name_alias  = "example"
 	}

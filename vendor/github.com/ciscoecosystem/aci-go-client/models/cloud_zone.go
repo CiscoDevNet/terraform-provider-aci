@@ -1,6 +1,5 @@
 package models
 
-
 import (
 	"fmt"
 	"strconv"
@@ -12,27 +11,19 @@ const CloudzoneClassName = "cloudZone"
 
 type CloudAvailabilityZone struct {
 	BaseAttributes
-    CloudAvailabilityZoneAttributes 
+	CloudAvailabilityZoneAttributes
 }
-  
+
 type CloudAvailabilityZoneAttributes struct {
-	
-	
 	Name string `json:",omitempty"`
-	
-	
-    
-	Annotation       string `json:",omitempty"`
-	
-    
-	NameAlias       string `json:",omitempty"`
-	
-    
+
+	Annotation string `json:",omitempty"`
+
+	NameAlias string `json:",omitempty"`
 }
-   
 
 func NewCloudAvailabilityZone(cloudZoneRn, parentDn, description string, cloudZoneattr CloudAvailabilityZoneAttributes) *CloudAvailabilityZone {
-	dn := fmt.Sprintf("%s/%s", parentDn, cloudZoneRn)  
+	dn := fmt.Sprintf("%s/%s", parentDn, cloudZoneRn)
 	return &CloudAvailabilityZone{
 		BaseAttributes: BaseAttributes{
 			DistinguishedName: dn,
@@ -41,9 +32,8 @@ func NewCloudAvailabilityZone(cloudZoneRn, parentDn, description string, cloudZo
 			ClassName:         CloudzoneClassName,
 			Rn:                cloudZoneRn,
 		},
-        
+
 		CloudAvailabilityZoneAttributes: cloudZoneattr,
-         
 	}
 }
 
@@ -53,19 +43,11 @@ func (cloudZone *CloudAvailabilityZone) ToMap() (map[string]string, error) {
 		return nil, err
 	}
 
-	
-	
-	A(cloudZoneMap, "name",cloudZone.Name)
-	
-	
-    
-	A(cloudZoneMap, "annotation",cloudZone.Annotation)
-	
-    
-	A(cloudZoneMap, "nameAlias",cloudZone.NameAlias)
-	
-    
-	
+	A(cloudZoneMap, "name", cloudZone.Name)
+
+	A(cloudZoneMap, "annotation", cloudZone.Annotation)
+
+	A(cloudZoneMap, "nameAlias", cloudZone.NameAlias)
 
 	return cloudZoneMap, err
 }
@@ -81,22 +63,15 @@ func CloudAvailabilityZoneFromContainerList(cont *container.Container, index int
 			ClassName:         CloudzoneClassName,
 			Rn:                G(CloudAvailabilityZoneCont, "rn"),
 		},
-        
+
 		CloudAvailabilityZoneAttributes{
-		
-		
-			Name : G(CloudAvailabilityZoneCont, "name"),
-		
-		
-        
-	        Annotation : G(CloudAvailabilityZoneCont, "annotation"),
-		
-        
-	        NameAlias : G(CloudAvailabilityZoneCont, "nameAlias"),
-		
-        		
-        },
-        
+
+			Name: G(CloudAvailabilityZoneCont, "name"),
+
+			Annotation: G(CloudAvailabilityZoneCont, "annotation"),
+
+			NameAlias: G(CloudAvailabilityZoneCont, "nameAlias"),
+		},
 	}
 }
 

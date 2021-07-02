@@ -1,6 +1,5 @@
 package models
 
-
 import (
 	"fmt"
 	"strconv"
@@ -12,30 +11,21 @@ const FirmwarefwgrpClassName = "firmwareFwGrp"
 
 type FirmwareGroup struct {
 	BaseAttributes
-    FirmwareGroupAttributes 
+	FirmwareGroupAttributes
 }
-  
+
 type FirmwareGroupAttributes struct {
-	
-	
 	Name string `json:",omitempty"`
-	
-	
-    
-	Annotation       string `json:",omitempty"`
-	
-    
-	NameAlias       string `json:",omitempty"`
-	
-    
-	FirmwareGroup_type       string `json:",omitempty"`
-	
-    
+
+	Annotation string `json:",omitempty"`
+
+	NameAlias string `json:",omitempty"`
+
+	FirmwareGroup_type string `json:",omitempty"`
 }
-   
 
 func NewFirmwareGroup(firmwareFwGrpRn, parentDn, description string, firmwareFwGrpattr FirmwareGroupAttributes) *FirmwareGroup {
-	dn := fmt.Sprintf("%s/%s", parentDn, firmwareFwGrpRn)  
+	dn := fmt.Sprintf("%s/%s", parentDn, firmwareFwGrpRn)
 	return &FirmwareGroup{
 		BaseAttributes: BaseAttributes{
 			DistinguishedName: dn,
@@ -44,9 +34,8 @@ func NewFirmwareGroup(firmwareFwGrpRn, parentDn, description string, firmwareFwG
 			ClassName:         FirmwarefwgrpClassName,
 			Rn:                firmwareFwGrpRn,
 		},
-        
+
 		FirmwareGroupAttributes: firmwareFwGrpattr,
-         
 	}
 }
 
@@ -56,22 +45,13 @@ func (firmwareFwGrp *FirmwareGroup) ToMap() (map[string]string, error) {
 		return nil, err
 	}
 
-	
-	
-	A(firmwareFwGrpMap, "name",firmwareFwGrp.Name)
-	
-	
-    
-	A(firmwareFwGrpMap, "annotation",firmwareFwGrp.Annotation)
-	
-    
-	A(firmwareFwGrpMap, "nameAlias",firmwareFwGrp.NameAlias)
-	
-    
-	A(firmwareFwGrpMap, "type",firmwareFwGrp.FirmwareGroup_type)
-	
-    
-	
+	A(firmwareFwGrpMap, "name", firmwareFwGrp.Name)
+
+	A(firmwareFwGrpMap, "annotation", firmwareFwGrp.Annotation)
+
+	A(firmwareFwGrpMap, "nameAlias", firmwareFwGrp.NameAlias)
+
+	A(firmwareFwGrpMap, "type", firmwareFwGrp.FirmwareGroup_type)
 
 	return firmwareFwGrpMap, err
 }
@@ -87,25 +67,17 @@ func FirmwareGroupFromContainerList(cont *container.Container, index int) *Firmw
 			ClassName:         FirmwarefwgrpClassName,
 			Rn:                G(FirmwareGroupCont, "rn"),
 		},
-        
+
 		FirmwareGroupAttributes{
-		
-		
-			Name : G(FirmwareGroupCont, "name"),
-		
-		
-        
-	        Annotation : G(FirmwareGroupCont, "annotation"),
-		
-        
-	        NameAlias : G(FirmwareGroupCont, "nameAlias"),
-		
-        
-	        FirmwareGroup_type : G(FirmwareGroupCont, "type"),
-		
-        		
-        },
-        
+
+			Name: G(FirmwareGroupCont, "name"),
+
+			Annotation: G(FirmwareGroupCont, "annotation"),
+
+			NameAlias: G(FirmwareGroupCont, "nameAlias"),
+
+			FirmwareGroup_type: G(FirmwareGroupCont, "type"),
+		},
 	}
 }
 

@@ -13,19 +13,18 @@ Data source for ACI CDP Interface Policy
 
 ```hcl
 data "aci_cdp_interface_policy" "example" {
-
-
   name  = "example"
 }
 ```
 ## Argument Reference ##
-* `name` - (Required) name of Object cdp_interface_policy.
+* `name` - (Required) Name of Object cdp interface policy.
 
 
 
 ## Attribute Reference
 
 * `id` - Attribute id set to the Dn of the CDP Interface Policy.
-* `admin_st` - (Optional) administrative state
-* `annotation` - (Optional) annotation for object cdp_interface_policy.
-* `name_alias` - (Optional) name_alias for object cdp_interface_policy.
+* `admin_st` - (Optional) Administrative state
+* `annotation` - (Optional) Annotation for object cdp interface policy.
+* `name_alias` - (Optional) Name alias for object cdp interface policy.
+* `description` - (Optional) Description for object cdp interface policy.

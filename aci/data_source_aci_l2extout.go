@@ -1,16 +1,18 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func dataSourceAciL2Outside() *schema.Resource {
 	return &schema.Resource{
 
-		Read: dataSourceAciL2OutsideRead,
+		ReadContext: dataSourceAciL2OutsideRead,
 
 		SchemaVersion: 1,
 
@@ -40,7 +42,7 @@ func dataSourceAciL2Outside() *schema.Resource {
 	}
 }
 
-func dataSourceAciL2OutsideRead(d *schema.ResourceData, m interface{}) error {
+func dataSourceAciL2OutsideRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	aciClient := m.(*client.Client)
 
 	name := d.Get("name").(string)
@@ -53,9 +55,12 @@ func dataSourceAciL2OutsideRead(d *schema.ResourceData, m interface{}) error {
 	l2extOut, err := getRemoteL2Outside(aciClient, dn)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.SetId(dn)
-	setL2OutsideAttributes(l2extOut, d)
+	_, err = setL2OutsideAttributes(l2extOut, d)
+	if err != nil {
+		return diag.FromErr(err)
+	}
 	return nil
 }

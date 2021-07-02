@@ -24,6 +24,7 @@ data "aci_miscabling_protocol_interface_policy" "dev_miscable_pol" {
 ## Attribute Reference
 
 * `id` - Attribute id set to the Dn of the Mis-cabling Protocol Interface Policy.
-* `admin_st` - (Optional) administrative state of the object or policy.
-* `annotation` - (Optional) annotation for object miscabling_protocol_interface_policy.
-* `name_alias` - (Optional) name_alias for object miscabling_protocol_interface_policy.
+* `admin_st` - (Optional) Administrative state of the object or policy.
+* `description` - (Optional) Description for object miscabling protocol interface policy.
+* `annotation` - (Optional) Annotation for object miscabling protocol interface policy.
+* `name_alias` - (Optional) Name alias for object miscabling protocol interface policy.

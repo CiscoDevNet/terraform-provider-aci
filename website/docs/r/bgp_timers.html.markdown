@@ -14,7 +14,7 @@ Manages ACI BGP Timers
 
 ```hcl
 resource "aci_bgp_timers" "example" {
-  tenant_dn    = "${aci_tenant.tenentcheck.id}"
+  tenant_dn    = aci_tenant.tenentcheck.id
   description  = "from terraform"
   name         = "one"
   annotation   = "example"
@@ -36,9 +36,9 @@ resource "aci_bgp_timers" "example" {
 - `gr_ctrl` - (Optional) Graceful restart enabled or helper only for bgp timers object. Default value is "helper".
 - `hold_intvl` - (Optional) Time period before declaring neighbor down for bgp timers object. Default value is "180".
 - `ka_intvl` - (Optional) Interval time between keepalive messages for bgp timers object. Default value is "60".
-- `max_as_limit` - (Optional) Maximum AS limit for bgp timers object. Default value is "0".
+- `max_as_limit` - (Optional) Maximum AS limit for bgp timers object. Range of allowed values is "0" to "2000". Default value is "0".
 - `name_alias` - (Optional) Name alias for bgp timers object. Default value is "default".
-- `stale_intvl` - (Optional) Stale interval for routes advertised by peer for bgp timers object.
+- `stale_intvl` - (Optional) Stale interval for routes advertised by peer for bgp timers object. Range of allowed values is "1" to "3600". Default value is "300".
 
 ## Attribute Reference
 

@@ -14,8 +14,8 @@ terraform {
 }
 
 provider "aci" {
-  username    = "nirav"
-  private_key = "/Users/crest/go/src/github.com/ciscoecosystem/certdir/.key"
+  username    = ""
+  private_key = ""
   cert_name   = ""
   url         = ""
   insecure    = true

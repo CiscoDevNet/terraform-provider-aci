@@ -17,12 +17,13 @@ data "aci_leaf_access_port_policy_group" "dev_leaf_port" {
 }
 ```
 ## Argument Reference ##
-* `name` - (Required) name of Object leaf_access_port_policy_group.
+* `name` - (Required) Name of Object leaf_access_port_policy_group.
 
 
 
 ## Attribute Reference
 
 * `id` - Attribute id set to the Dn of the Leaf Access Port Policy Group.
-* `annotation` - (Optional) annotation for object leaf_access_port_policy_group.
-* `name_alias` - (Optional) name_alias for object leaf_access_port_policy_group.
+* `description` - (Optional) Description for object leaf access port policy group.
+* `annotation` - (Optional) Annotation for object leaf access port policy group.
+* `name_alias` - (Optional) Name alias for object leaf access port policy group.

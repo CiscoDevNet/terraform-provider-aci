@@ -15,7 +15,7 @@ provider "aci" {
 }
 
 resource "aci_static_node_mgmt_address" "example" {
-  management_epg_dn = "${aci_node_mgmt_epg.example.id}"
+  management_epg_dn = aci_node_mgmt_epg.example.id
   t_dn              = "topology/pod-1/node-1"
   type              = "out_of_band"
   addr              = "10.20.30.40/20"

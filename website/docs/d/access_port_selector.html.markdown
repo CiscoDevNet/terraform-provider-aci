@@ -6,28 +6,29 @@ description: |-
   Data source for ACI Access Port Selector
 ---
 
-# aci_access_port_selector #
+# aci_access_port_selector
+
 Data source for ACI Access Port Selector
 
-## Example Usage ##
+## Example Usage
 
 ```hcl
 data "aci_access_port_selector" "dev_acc_port_select" {
-  leaf_interface_profile_dn  = "${aci_leaf_interface_profile.example.id}"
+  leaf_interface_profile_dn  = aci_leaf_interface_profile.example.id
   name                       = "foo_acc_port_select"
   access_port_selector_type  = "ALL"
 }
 ```
-## Argument Reference ##
-* `leaf_interface_profile_dn` - (Required) Distinguished name of parent LeafInterfaceProfile object.
-* `name` - (Required) name of Object access_port_selector.
-* `access_port_selector_type` - (Required) access_port_selector_type of Object access_port_selector.
 
+## Argument Reference
 
+- `leaf_interface_profile_dn` - (Required) Distinguished name of parent Leaf Interface Profile object.
+- `name` - (Required) Name of Object Access Port Selector.
+- `access_port_selector_type` - (Required) The host port selector type. Allowed values are "ALL" and "range". Default is "ALL".
 
 ## Attribute Reference
 
-* `id` - Attribute id set to the Dn of the Access Port Selector.
-* `annotation` - (Optional) annotation for object access_port_selector.
-* `name_alias` - (Optional) name_alias for object access_port_selector.
-* `access_port_selector_type` - (Optional) host port selector type.
+- `id` - Attribute id set to the Dn of the Access Port Selector.
+- `annotation` - (Optional) Annotation for object Access Port Selector.
+- `description` - (Optional) Description for object Access Port Selector.
+- `name_alias` - (Optional) Name alias for object Access Port Selector.

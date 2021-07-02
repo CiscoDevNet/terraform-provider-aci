@@ -1,20 +1,22 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func resourceAciNodeBlockMG() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciNodeBlockCreateMG,
-		Update: resourceAciNodeBlockUpdateMG,
-		Read:   resourceAciNodeBlockReadMG,
-		Delete: resourceAciNodeBlockDeleteMG,
+		CreateContext: resourceAciNodeBlockCreateMG,
+		UpdateContext: resourceAciNodeBlockUpdateMG,
+		ReadContext:   resourceAciNodeBlockReadMG,
+		DeleteContext: resourceAciNodeBlockDeleteMG,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciNodeBlockImportMG,
@@ -70,7 +72,7 @@ func getRemoteNodeBlockMG(client *client.Client, dn string) (*models.NodeBlockMG
 	return fabricNodeBlk, nil
 }
 
-func setNodeBlockAttributesMG(fabricNodeBlk *models.NodeBlockMG, d *schema.ResourceData) *schema.ResourceData {
+func setNodeBlockAttributesMG(fabricNodeBlk *models.NodeBlockMG, d *schema.ResourceData) (*schema.ResourceData, error) {
 	dn := d.Id()
 	d.SetId(fabricNodeBlk.DistinguishedName)
 	d.Set("description", fabricNodeBlk.Description)
@@ -78,7 +80,11 @@ func setNodeBlockAttributesMG(fabricNodeBlk *models.NodeBlockMG, d *schema.Resou
 	if dn != fabricNodeBlk.DistinguishedName {
 		d.Set("pod_maintenance_group_dn", "")
 	}
-	fabricNodeBlkMap, _ := fabricNodeBlk.ToMap()
+	fabricNodeBlkMap, err := fabricNodeBlk.ToMap()
+
+	if err != nil {
+		return d, err
+	}
 
 	d.Set("name", fabricNodeBlkMap["name"])
 
@@ -86,7 +92,7 @@ func setNodeBlockAttributesMG(fabricNodeBlk *models.NodeBlockMG, d *schema.Resou
 	d.Set("from_", fabricNodeBlkMap["from_"])
 	d.Set("name_alias", fabricNodeBlkMap["nameAlias"])
 	d.Set("to_", fabricNodeBlkMap["to_"])
-	return d
+	return d, nil
 }
 
 func resourceAciNodeBlockImportMG(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -100,19 +106,27 @@ func resourceAciNodeBlockImportMG(d *schema.ResourceData, m interface{}) ([]*sch
 	if err != nil {
 		return nil, err
 	}
-	fabricNodeBlkMap, _ := fabricNodeBlk.ToMap()
+	fabricNodeBlkMap, err := fabricNodeBlk.ToMap()
+
+	if err != nil {
+		return nil, err
+	}
 
 	name := fabricNodeBlkMap["name"]
 	pDN := GetParentDn(dn, fmt.Sprintf("/nodeblk-%s", name))
 	d.Set("pod_maintenance_group_dn", pDN)
-	schemaFilled := setNodeBlockAttributesMG(fabricNodeBlk, d)
+	schemaFilled, err := setNodeBlockAttributesMG(fabricNodeBlk, d)
+
+	if err != nil {
+		return nil, err
+	}
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciNodeBlockCreateMG(d *schema.ResourceData, m interface{}) error {
+func resourceAciNodeBlockCreateMG(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] NodeBlock: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -140,21 +154,16 @@ func resourceAciNodeBlockCreateMG(d *schema.ResourceData, m interface{}) error {
 
 	err := aciClient.Save(fabricNodeBlk)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.SetPartial("name")
-
-	d.Partial(false)
 
 	d.SetId(fabricNodeBlk.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciNodeBlockReadMG(d, m)
+	return resourceAciNodeBlockReadMG(ctx, d, m)
 }
 
-func resourceAciNodeBlockUpdateMG(d *schema.ResourceData, m interface{}) error {
+func resourceAciNodeBlockUpdateMG(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] NodeBlock: Beginning Update")
 
 	aciClient := m.(*client.Client)
@@ -186,22 +195,17 @@ func resourceAciNodeBlockUpdateMG(d *schema.ResourceData, m interface{}) error {
 	err := aciClient.Save(fabricNodeBlk)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.SetPartial("name")
-
-	d.Partial(false)
 
 	d.SetId(fabricNodeBlk.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciNodeBlockReadMG(d, m)
+	return resourceAciNodeBlockReadMG(ctx, d, m)
 
 }
 
-func resourceAciNodeBlockReadMG(d *schema.ResourceData, m interface{}) error {
+func resourceAciNodeBlockReadMG(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -213,25 +217,30 @@ func resourceAciNodeBlockReadMG(d *schema.ResourceData, m interface{}) error {
 		d.SetId("")
 		return nil
 	}
-	setNodeBlockAttributesMG(fabricNodeBlk, d)
+	_, err = setNodeBlockAttributesMG(fabricNodeBlk, d)
+
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 
 	return nil
 }
 
-func resourceAciNodeBlockDeleteMG(d *schema.ResourceData, m interface{}) error {
+func resourceAciNodeBlockDeleteMG(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "fabricNodeBlk")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
 }

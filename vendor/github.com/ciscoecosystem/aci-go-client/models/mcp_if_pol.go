@@ -1,6 +1,5 @@
 package models
 
-
 import (
 	"fmt"
 	"strconv"
@@ -12,30 +11,21 @@ const McpifpolClassName = "mcpIfPol"
 
 type MiscablingProtocolInterfacePolicy struct {
 	BaseAttributes
-    MiscablingProtocolInterfacePolicyAttributes 
+	MiscablingProtocolInterfacePolicyAttributes
 }
-  
+
 type MiscablingProtocolInterfacePolicyAttributes struct {
-	
-	
 	Name string `json:",omitempty"`
-	
-	
-    
-	AdminSt       string `json:",omitempty"`
-	
-    
-	Annotation       string `json:",omitempty"`
-	
-    
-	NameAlias       string `json:",omitempty"`
-	
-    
+
+	AdminSt string `json:",omitempty"`
+
+	Annotation string `json:",omitempty"`
+
+	NameAlias string `json:",omitempty"`
 }
-   
 
 func NewMiscablingProtocolInterfacePolicy(mcpIfPolRn, parentDn, description string, mcpIfPolattr MiscablingProtocolInterfacePolicyAttributes) *MiscablingProtocolInterfacePolicy {
-	dn := fmt.Sprintf("%s/%s", parentDn, mcpIfPolRn)  
+	dn := fmt.Sprintf("%s/%s", parentDn, mcpIfPolRn)
 	return &MiscablingProtocolInterfacePolicy{
 		BaseAttributes: BaseAttributes{
 			DistinguishedName: dn,
@@ -44,9 +34,8 @@ func NewMiscablingProtocolInterfacePolicy(mcpIfPolRn, parentDn, description stri
 			ClassName:         McpifpolClassName,
 			Rn:                mcpIfPolRn,
 		},
-        
+
 		MiscablingProtocolInterfacePolicyAttributes: mcpIfPolattr,
-         
 	}
 }
 
@@ -56,22 +45,13 @@ func (mcpIfPol *MiscablingProtocolInterfacePolicy) ToMap() (map[string]string, e
 		return nil, err
 	}
 
-	
-	
-	A(mcpIfPolMap, "name",mcpIfPol.Name)
-	
-	
-    
-	A(mcpIfPolMap, "adminSt",mcpIfPol.AdminSt)
-	
-    
-	A(mcpIfPolMap, "annotation",mcpIfPol.Annotation)
-	
-    
-	A(mcpIfPolMap, "nameAlias",mcpIfPol.NameAlias)
-	
-    
-	
+	A(mcpIfPolMap, "name", mcpIfPol.Name)
+
+	A(mcpIfPolMap, "adminSt", mcpIfPol.AdminSt)
+
+	A(mcpIfPolMap, "annotation", mcpIfPol.Annotation)
+
+	A(mcpIfPolMap, "nameAlias", mcpIfPol.NameAlias)
 
 	return mcpIfPolMap, err
 }
@@ -87,25 +67,17 @@ func MiscablingProtocolInterfacePolicyFromContainerList(cont *container.Containe
 			ClassName:         McpifpolClassName,
 			Rn:                G(MiscablingProtocolInterfacePolicyCont, "rn"),
 		},
-        
+
 		MiscablingProtocolInterfacePolicyAttributes{
-		
-		
-			Name : G(MiscablingProtocolInterfacePolicyCont, "name"),
-		
-		
-        
-	        AdminSt : G(MiscablingProtocolInterfacePolicyCont, "adminSt"),
-		
-        
-	        Annotation : G(MiscablingProtocolInterfacePolicyCont, "annotation"),
-		
-        
-	        NameAlias : G(MiscablingProtocolInterfacePolicyCont, "nameAlias"),
-		
-        		
-        },
-        
+
+			Name: G(MiscablingProtocolInterfacePolicyCont, "name"),
+
+			AdminSt: G(MiscablingProtocolInterfacePolicyCont, "adminSt"),
+
+			Annotation: G(MiscablingProtocolInterfacePolicyCont, "annotation"),
+
+			NameAlias: G(MiscablingProtocolInterfacePolicyCont, "nameAlias"),
+		},
 	}
 }
 

@@ -1,6 +1,5 @@
 package models
 
-
 import (
 	"fmt"
 	"strconv"
@@ -12,27 +11,19 @@ const InfraaccportpClassName = "infraAccPortP"
 
 type LeafInterfaceProfile struct {
 	BaseAttributes
-    LeafInterfaceProfileAttributes 
+	LeafInterfaceProfileAttributes
 }
-  
+
 type LeafInterfaceProfileAttributes struct {
-	
-	
 	Name string `json:",omitempty"`
-	
-	
-    
-	Annotation       string `json:",omitempty"`
-	
-    
-	NameAlias       string `json:",omitempty"`
-	
-    
+
+	Annotation string `json:",omitempty"`
+
+	NameAlias string `json:",omitempty"`
 }
-   
 
 func NewLeafInterfaceProfile(infraAccPortPRn, parentDn, description string, infraAccPortPattr LeafInterfaceProfileAttributes) *LeafInterfaceProfile {
-	dn := fmt.Sprintf("%s/%s", parentDn, infraAccPortPRn)  
+	dn := fmt.Sprintf("%s/%s", parentDn, infraAccPortPRn)
 	return &LeafInterfaceProfile{
 		BaseAttributes: BaseAttributes{
 			DistinguishedName: dn,
@@ -41,9 +32,8 @@ func NewLeafInterfaceProfile(infraAccPortPRn, parentDn, description string, infr
 			ClassName:         InfraaccportpClassName,
 			Rn:                infraAccPortPRn,
 		},
-        
+
 		LeafInterfaceProfileAttributes: infraAccPortPattr,
-         
 	}
 }
 
@@ -53,19 +43,11 @@ func (infraAccPortP *LeafInterfaceProfile) ToMap() (map[string]string, error) {
 		return nil, err
 	}
 
-	
-	
-	A(infraAccPortPMap, "name",infraAccPortP.Name)
-	
-	
-    
-	A(infraAccPortPMap, "annotation",infraAccPortP.Annotation)
-	
-    
-	A(infraAccPortPMap, "nameAlias",infraAccPortP.NameAlias)
-	
-    
-	
+	A(infraAccPortPMap, "name", infraAccPortP.Name)
+
+	A(infraAccPortPMap, "annotation", infraAccPortP.Annotation)
+
+	A(infraAccPortPMap, "nameAlias", infraAccPortP.NameAlias)
 
 	return infraAccPortPMap, err
 }
@@ -81,22 +63,15 @@ func LeafInterfaceProfileFromContainerList(cont *container.Container, index int)
 			ClassName:         InfraaccportpClassName,
 			Rn:                G(LeafInterfaceProfileCont, "rn"),
 		},
-        
+
 		LeafInterfaceProfileAttributes{
-		
-		
-			Name : G(LeafInterfaceProfileCont, "name"),
-		
-		
-        
-	        Annotation : G(LeafInterfaceProfileCont, "annotation"),
-		
-        
-	        NameAlias : G(LeafInterfaceProfileCont, "nameAlias"),
-		
-        		
-        },
-        
+
+			Name: G(LeafInterfaceProfileCont, "name"),
+
+			Annotation: G(LeafInterfaceProfileCont, "annotation"),
+
+			NameAlias: G(LeafInterfaceProfileCont, "nameAlias"),
+		},
 	}
 }
 

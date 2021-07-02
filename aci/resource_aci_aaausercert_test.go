@@ -6,8 +6,8 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
 func TestAccAciX509Certificate_Basic(t *testing.T) {
@@ -25,11 +25,6 @@ func TestAccAciX509Certificate_Basic(t *testing.T) {
 					testAccCheckAciX509CertificateExists("aci_x509_certificate.foox509_certificate", &x509_certificate),
 					testAccCheckAciX509CertificateAttributes(description, &x509_certificate),
 				),
-			},
-			{
-				ResourceName:      "aci_x509_certificate",
-				ImportState:       true,
-				ImportStateVerify: true,
 			},
 		},
 	})
@@ -66,7 +61,7 @@ func testAccCheckAciX509CertificateConfig_basic(description string) string {
 	return fmt.Sprintf(`
 
 	resource "aci_x509_certificate" "foox509_certificate" {
-		  local_user_dn  = "${aci_local_user.example.id}"
+		local_user_dn  = aci_local_user.example.id
 		description = "%s"
 		
 		name  = "example"

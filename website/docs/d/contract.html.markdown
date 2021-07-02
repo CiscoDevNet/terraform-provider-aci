@@ -13,7 +13,7 @@ Data source for ACI Contract
 
 ```hcl
 data "aci_contract" "example" {
-  tenant_dn  = "${aci_tenant.dev_tenant.id}"
+  tenant_dn  = aci_tenant.dev_tenant.id
   name       = "contract_name"
 }
 ```
@@ -26,8 +26,9 @@ data "aci_contract" "example" {
 ## Attribute Reference
 
 * `id` - Attribute id set to the Dn of the Contract.
-* `annotation` - (Optional) annotation for object contract.
-* `name_alias` - (Optional) name_alias for object contract.
-* `prio` - (Optional) priority level of the service contract.
+* `description` - (Optional) Description for object contract.
+* `annotation` - (Optional) Annotation for object contract.
+* `name_alias` - (Optional) Name alias for object contract.
+* `prio` - (Optional) Priority level of the service contract.
 * `scope` - (Optional) Represents the scope of this contract. If the scope is set as application-profile, the epg can only communicate with epgs in the same application-profile.
 * `target_dscp` - (Optional) The target differentiated services code point (DSCP) of the path attached to the layer 3 outside profile.

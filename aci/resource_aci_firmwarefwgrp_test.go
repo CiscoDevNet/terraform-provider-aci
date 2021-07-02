@@ -6,8 +6,8 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
 func TestAccAciFirmwareGroup_Basic(t *testing.T) {
@@ -25,11 +25,6 @@ func TestAccAciFirmwareGroup_Basic(t *testing.T) {
 					testAccCheckAciFirmwareGroupExists("aci_firmware_group.foofirmware_group", &firmware_group),
 					testAccCheckAciFirmwareGroupAttributes(description, &firmware_group),
 				),
-			},
-			{
-				ResourceName:      "aci_firmware_group",
-				ImportState:       true,
-				ImportStateVerify: true,
 			},
 		},
 	})
@@ -68,7 +63,7 @@ func testAccCheckAciFirmwareGroupConfig_basic(description string) string {
 	resource "aci_firmware_group" "foofirmware_group" {
 		description = "%s"
 		
-		name  = "example"
+		  name  = "example"
 		  annotation  = "example"
 		  name_alias  = "example"
 		  firmware_group_type  = "ALL"

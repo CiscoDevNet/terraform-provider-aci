@@ -6,8 +6,8 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
 func TestAccAciTenant_Basic(t *testing.T) {
@@ -25,11 +25,6 @@ func TestAccAciTenant_Basic(t *testing.T) {
 					testAccCheckAciTenantExists("aci_tenant.footenant", &tenant),
 					testAccCheckAciTenantAttributes(description, "tag_tenant", &tenant),
 				),
-			},
-			{
-				ResourceName:      "aci_tenant",
-				ImportState:       true,
-				ImportStateVerify: true,
 			},
 		},
 	})

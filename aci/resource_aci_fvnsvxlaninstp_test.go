@@ -6,8 +6,8 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
 func TestAccAciVXLANPool_Basic(t *testing.T) {
@@ -25,11 +25,6 @@ func TestAccAciVXLANPool_Basic(t *testing.T) {
 					testAccCheckAciVXLANPoolExists("aci_vxlan_pool.foovxlan_pool", &vxlan_pool),
 					testAccCheckAciVXLANPoolAttributes(description, &vxlan_pool),
 				),
-			},
-			{
-				ResourceName:      "aci_vxlan_pool",
-				ImportState:       true,
-				ImportStateVerify: true,
 			},
 		},
 	})
@@ -66,11 +61,10 @@ func testAccCheckAciVXLANPoolConfig_basic(description string) string {
 	return fmt.Sprintf(`
 
 	resource "aci_vxlan_pool" "foovxlan_pool" {
-		description = "%s"
-		
-		name  = "example"
-		  annotation  = "example"
-		  name_alias  = "example"
+			description = "%s"
+			name  = "example"
+			annotation  = "example"
+			name_alias  = "example"
 		}
 	`, description)
 }

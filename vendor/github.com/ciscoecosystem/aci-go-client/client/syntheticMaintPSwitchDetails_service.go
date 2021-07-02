@@ -15,10 +15,10 @@ import (
 // (2) Call client.Authenticate() prior to calling this function for AppUserName+Cert based clients
 func (sm *ServiceManager) ValidateSyntheticSwitchMaintP(syntheticMaintPSwitchDetailsattr models.MaintPSwitchDetailsAttributes) ([]*models.SwitchMaintPValidate, error) {
 	postUrlStr := "/mqapi2/deployment.query.json?mode=validateSwitchMaintP"
-    rn := "switchDetails"
-    parentDn := "synthuni"
-    maintPSwitchDetails := models.NewMaintPSwitchDetails(rn, parentDn, "", syntheticMaintPSwitchDetailsattr)
-    cont, err := sm.PostViaURL(postUrlStr, maintPSwitchDetails)
+	rn := "switchDetails"
+	parentDn := "synthuni"
+	maintPSwitchDetails := models.NewMaintPSwitchDetails(rn, parentDn, "", syntheticMaintPSwitchDetailsattr)
+	cont, err := sm.PostViaURL(postUrlStr, maintPSwitchDetails)
 	list := models.SwitchMaintPValidateListFromContainer(cont)
 	return list, err
 }

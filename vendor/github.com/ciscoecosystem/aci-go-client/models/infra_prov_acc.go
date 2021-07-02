@@ -1,6 +1,5 @@
 package models
 
-
 import (
 	"fmt"
 	"strconv"
@@ -12,23 +11,17 @@ const InfraprovaccClassName = "infraProvAcc"
 
 type VlanEncapsulationforVxlanTraffic struct {
 	BaseAttributes
-    VlanEncapsulationforVxlanTrafficAttributes 
+	VlanEncapsulationforVxlanTrafficAttributes
 }
-  
+
 type VlanEncapsulationforVxlanTrafficAttributes struct {
-	
-    
-	Annotation       string `json:",omitempty"`
-	
-    
-	NameAlias       string `json:",omitempty"`
-	
-    
+	Annotation string `json:",omitempty"`
+
+	NameAlias string `json:",omitempty"`
 }
-   
 
 func NewVlanEncapsulationforVxlanTraffic(infraProvAccRn, parentDn, description string, infraProvAccattr VlanEncapsulationforVxlanTrafficAttributes) *VlanEncapsulationforVxlanTraffic {
-	dn := fmt.Sprintf("%s/%s", parentDn, infraProvAccRn)  
+	dn := fmt.Sprintf("%s/%s", parentDn, infraProvAccRn)
 	return &VlanEncapsulationforVxlanTraffic{
 		BaseAttributes: BaseAttributes{
 			DistinguishedName: dn,
@@ -37,9 +30,8 @@ func NewVlanEncapsulationforVxlanTraffic(infraProvAccRn, parentDn, description s
 			ClassName:         InfraprovaccClassName,
 			Rn:                infraProvAccRn,
 		},
-        
+
 		VlanEncapsulationforVxlanTrafficAttributes: infraProvAccattr,
-         
 	}
 }
 
@@ -49,15 +41,9 @@ func (infraProvAcc *VlanEncapsulationforVxlanTraffic) ToMap() (map[string]string
 		return nil, err
 	}
 
-	
-    
-	A(infraProvAccMap, "annotation",infraProvAcc.Annotation)
-	
-    
-	A(infraProvAccMap, "nameAlias",infraProvAcc.NameAlias)
-	
-    
-	
+	A(infraProvAccMap, "annotation", infraProvAcc.Annotation)
+
+	A(infraProvAccMap, "nameAlias", infraProvAcc.NameAlias)
 
 	return infraProvAccMap, err
 }
@@ -73,18 +59,13 @@ func VlanEncapsulationforVxlanTrafficFromContainerList(cont *container.Container
 			ClassName:         InfraprovaccClassName,
 			Rn:                G(VlanEncapsulationforVxlanTrafficCont, "rn"),
 		},
-        
+
 		VlanEncapsulationforVxlanTrafficAttributes{
-		
-        
-	        Annotation : G(VlanEncapsulationforVxlanTrafficCont, "annotation"),
-		
-        
-	        NameAlias : G(VlanEncapsulationforVxlanTrafficCont, "nameAlias"),
-		
-        		
-        },
-        
+
+			Annotation: G(VlanEncapsulationforVxlanTrafficCont, "annotation"),
+
+			NameAlias: G(VlanEncapsulationforVxlanTrafficCont, "nameAlias"),
+		},
 	}
 }
 

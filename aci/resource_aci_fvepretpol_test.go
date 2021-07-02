@@ -6,8 +6,8 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
 func TestAccAciEndPointRetentionPolicy_Basic(t *testing.T) {
@@ -25,11 +25,6 @@ func TestAccAciEndPointRetentionPolicy_Basic(t *testing.T) {
 					testAccCheckAciEndPointRetentionPolicyExists("aci_end_point_retention_policy.fooend_point_retention_policy", &end_point_retention_policy),
 					testAccCheckAciEndPointRetentionPolicyAttributes(description, "protocol", &end_point_retention_policy),
 				),
-			},
-			{
-				ResourceName:      "aci_end_point_retention_policy",
-				ImportState:       true,
-				ImportStateVerify: true,
 			},
 		},
 	})
@@ -69,7 +64,7 @@ func testAccCheckAciEndPointRetentionPolicyConfig_basic(description, bounce_trig
 		description = "This tenant is created by terraform ACI provider"
 	}
 	resource "aci_end_point_retention_policy" "fooend_point_retention_policy" {
-		tenant_dn   		= "${aci_tenant.tenant_for_ret_pol.id}"
+		tenant_dn   		= aci_tenant.tenant_for_ret_pol.id
 		description 		= "%s"
 		name                = "demo_ret_pol"
 		annotation          = "tag_ret_pol"

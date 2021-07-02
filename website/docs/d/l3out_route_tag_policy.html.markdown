@@ -14,15 +14,15 @@ Data source for ACI L3out Route Tag Policy
 
 ```hcl
 data "aci_l3out_route_tag_policy" "example" {
-  tenant_dn  = "${aci_tenant.example.id}"
+  tenant_dn  = aci_tenant.example.id
   name  = "example"
 }
 ```
 
 ## Argument Reference
 
-- `tenant_dn` - (Required) Distinguished name of parent tenant object.
-- `name` - (Required) Name of Object l3out route tag policy.
+- `tenant_dn` - (Required) Distinguished name of parent Tenant object.
+- `name` - (Required) Name of Object L3out route tag policy.
 
 ## Attribute Reference
 

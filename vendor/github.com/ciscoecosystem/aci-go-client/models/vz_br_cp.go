@@ -1,6 +1,5 @@
 package models
 
-
 import (
 	"fmt"
 	"strconv"
@@ -12,36 +11,25 @@ const VzbrcpClassName = "vzBrCP"
 
 type Contract struct {
 	BaseAttributes
-    ContractAttributes 
+	ContractAttributes
 }
-  
+
 type ContractAttributes struct {
-	
-	
 	Name string `json:",omitempty"`
-	
-	
-    
-	Annotation       string `json:",omitempty"`
-	
-    
-	NameAlias       string `json:",omitempty"`
-	
-    
-	Prio       string `json:",omitempty"`
-	
-    
-	Scope       string `json:",omitempty"`
-	
-    
-	TargetDscp       string `json:",omitempty"`
-	
-    
+
+	Annotation string `json:",omitempty"`
+
+	NameAlias string `json:",omitempty"`
+
+	Prio string `json:",omitempty"`
+
+	Scope string `json:",omitempty"`
+
+	TargetDscp string `json:",omitempty"`
 }
-   
 
 func NewContract(vzBrCPRn, parentDn, description string, vzBrCPattr ContractAttributes) *Contract {
-	dn := fmt.Sprintf("%s/%s", parentDn, vzBrCPRn)  
+	dn := fmt.Sprintf("%s/%s", parentDn, vzBrCPRn)
 	return &Contract{
 		BaseAttributes: BaseAttributes{
 			DistinguishedName: dn,
@@ -50,9 +38,8 @@ func NewContract(vzBrCPRn, parentDn, description string, vzBrCPattr ContractAttr
 			ClassName:         VzbrcpClassName,
 			Rn:                vzBrCPRn,
 		},
-        
+
 		ContractAttributes: vzBrCPattr,
-         
 	}
 }
 
@@ -62,28 +49,17 @@ func (vzBrCP *Contract) ToMap() (map[string]string, error) {
 		return nil, err
 	}
 
-	
-	
-	A(vzBrCPMap, "name",vzBrCP.Name)
-	
-	
-    
-	A(vzBrCPMap, "annotation",vzBrCP.Annotation)
-	
-    
-	A(vzBrCPMap, "nameAlias",vzBrCP.NameAlias)
-	
-    
-	A(vzBrCPMap, "prio",vzBrCP.Prio)
-	
-    
-	A(vzBrCPMap, "scope",vzBrCP.Scope)
-	
-    
-	A(vzBrCPMap, "targetDscp",vzBrCP.TargetDscp)
-	
-    
-	
+	A(vzBrCPMap, "name", vzBrCP.Name)
+
+	A(vzBrCPMap, "annotation", vzBrCP.Annotation)
+
+	A(vzBrCPMap, "nameAlias", vzBrCP.NameAlias)
+
+	A(vzBrCPMap, "prio", vzBrCP.Prio)
+
+	A(vzBrCPMap, "scope", vzBrCP.Scope)
+
+	A(vzBrCPMap, "targetDscp", vzBrCP.TargetDscp)
 
 	return vzBrCPMap, err
 }
@@ -99,31 +75,21 @@ func ContractFromContainerList(cont *container.Container, index int) *Contract {
 			ClassName:         VzbrcpClassName,
 			Rn:                G(ContractCont, "rn"),
 		},
-        
+
 		ContractAttributes{
-		
-		
-			Name : G(ContractCont, "name"),
-		
-		
-        
-	        Annotation : G(ContractCont, "annotation"),
-		
-        
-	        NameAlias : G(ContractCont, "nameAlias"),
-		
-        
-	        Prio : G(ContractCont, "prio"),
-		
-        
-	        Scope : G(ContractCont, "scope"),
-		
-        
-	        TargetDscp : G(ContractCont, "targetDscp"),
-		
-        		
-        },
-        
+
+			Name: G(ContractCont, "name"),
+
+			Annotation: G(ContractCont, "annotation"),
+
+			NameAlias: G(ContractCont, "nameAlias"),
+
+			Prio: G(ContractCont, "prio"),
+
+			Scope: G(ContractCont, "scope"),
+
+			TargetDscp: G(ContractCont, "targetDscp"),
+		},
 	}
 }
 

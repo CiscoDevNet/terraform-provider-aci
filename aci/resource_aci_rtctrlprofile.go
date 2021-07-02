@@ -1,21 +1,23 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciRouteControlProfile() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciRouteControlProfileCreate,
-		Update: resourceAciRouteControlProfileUpdate,
-		Read:   resourceAciRouteControlProfileRead,
-		Delete: resourceAciRouteControlProfileDelete,
+		CreateContext: resourceAciRouteControlProfileCreate,
+		UpdateContext: resourceAciRouteControlProfileUpdate,
+		ReadContext:   resourceAciRouteControlProfileRead,
+		DeleteContext: resourceAciRouteControlProfileDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciRouteControlProfileImport,
@@ -69,7 +71,7 @@ func getRemoteRouteControlProfile(client *client.Client, dn string) (*models.Rou
 	return rtctrlProfile, nil
 }
 
-func setRouteControlProfileAttributes(rtctrlProfile *models.RouteControlProfile, d *schema.ResourceData) *schema.ResourceData {
+func setRouteControlProfileAttributes(rtctrlProfile *models.RouteControlProfile, d *schema.ResourceData) (*schema.ResourceData, error) {
 	dn := d.Id()
 
 	d.SetId(rtctrlProfile.DistinguishedName)
@@ -77,14 +79,16 @@ func setRouteControlProfileAttributes(rtctrlProfile *models.RouteControlProfile,
 	if dn != rtctrlProfile.DistinguishedName {
 		d.Set("parent_dn", "")
 	}
-	rtctrlProfileMap, _ := rtctrlProfile.ToMap()
-
+	rtctrlProfileMap, err := rtctrlProfile.ToMap()
+	if err != nil {
+		return d, err
+	}
 	d.Set("name", rtctrlProfileMap["name"])
 	d.Set("annotation", rtctrlProfileMap["annotation"])
 	d.Set("name_alias", rtctrlProfileMap["nameAlias"])
 	d.Set("route_control_profile_type", rtctrlProfileMap["type"])
 
-	return d
+	return d, nil
 }
 
 func resourceAciRouteControlProfileImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -98,14 +102,16 @@ func resourceAciRouteControlProfileImport(d *schema.ResourceData, m interface{})
 	if err != nil {
 		return nil, err
 	}
-	schemaFilled := setRouteControlProfileAttributes(rtctrlProfile, d)
-
+	schemaFilled, err := setRouteControlProfileAttributes(rtctrlProfile, d)
+	if err != nil {
+		return nil, err
+	}
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciRouteControlProfileCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciRouteControlProfileCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] RouteControlProfile: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -130,21 +136,16 @@ func resourceAciRouteControlProfileCreate(d *schema.ResourceData, m interface{})
 
 	err := aciClient.Save(rtctrlProfile)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.SetPartial("name")
-
-	d.Partial(false)
 
 	d.SetId(rtctrlProfile.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciRouteControlProfileRead(d, m)
+	return resourceAciRouteControlProfileRead(ctx, d, m)
 }
 
-func resourceAciRouteControlProfileUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciRouteControlProfileUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] RouteControlProfile: Beginning Update")
 
 	aciClient := m.(*client.Client)
@@ -173,22 +174,17 @@ func resourceAciRouteControlProfileUpdate(d *schema.ResourceData, m interface{})
 	err := aciClient.Save(rtctrlProfile)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.SetPartial("name")
-
-	d.Partial(false)
 
 	d.SetId(rtctrlProfile.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciRouteControlProfileRead(d, m)
+	return resourceAciRouteControlProfileRead(ctx, d, m)
 
 }
 
-func resourceAciRouteControlProfileRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciRouteControlProfileRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -200,25 +196,28 @@ func resourceAciRouteControlProfileRead(d *schema.ResourceData, m interface{}) e
 		d.SetId("")
 		return nil
 	}
-	setRouteControlProfileAttributes(rtctrlProfile, d)
-
+	_, err = setRouteControlProfileAttributes(rtctrlProfile, d)
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 
 	return nil
 }
 
-func resourceAciRouteControlProfileDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciRouteControlProfileDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "rtctrlProfile")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
 }

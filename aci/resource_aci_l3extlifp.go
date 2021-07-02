@@ -1,21 +1,22 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func resourceAciLogicalInterfaceProfile() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciLogicalInterfaceProfileCreate,
-		Update: resourceAciLogicalInterfaceProfileUpdate,
-		Read:   resourceAciLogicalInterfaceProfileRead,
-		Delete: resourceAciLogicalInterfaceProfileDelete,
+		CreateContext: resourceAciLogicalInterfaceProfileCreate,
+		UpdateContext: resourceAciLogicalInterfaceProfileUpdate,
+		ReadContext:   resourceAciLogicalInterfaceProfileRead,
+		DeleteContext: resourceAciLogicalInterfaceProfileDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciLogicalInterfaceProfileImport,
@@ -52,26 +53,6 @@ func resourceAciLogicalInterfaceProfile() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
-				ValidateFunc: validation.StringInSlice([]string{
-					"black", "navy", "dark-blue", "medium-blue", "blue", "dark-green", "green", "teal", "dark-cyan", "deep-sky-blue",
-					"dark-turquoise", "medium-spring-green", "lime", "spring-green", "aqua", "cyan", "midnight-blue",
-					"dodger-blue", "light-sea-green", "forest-green", "sea-green", "dark-slate-gray", "lime-green",
-					"medium-sea-green", "turquoise", "royal-blue", "steel-blue", "dark-slate-blue", "medium-turquoise",
-					"indigo", "dark-olive-green", "cadet-blue", "cornflower-blue", "medium-aquamarine", "dim-gray",
-					"slate-blue", "olive-drab", "slate-gray", "light-slate-gray", "medium-slate-blue", "lawn-green", "chartreuse",
-					"aquamarine", "maroon", "purple", "olive", "gray", "sky-blue", "light-sky-blue", "blue-violet", "dark-red",
-					"dark-magenta", "saddle-brown", "dark-sea-green", "light-green", "medium-purple", "dark-violet", "pale-green",
-					"dark-orchid", "yellow-green", "sienna", "brown", "dark-gray", "light-blue", "green-yellow", "pale-turquoise",
-					"light-steel-blue", "powder-blue", "fire-brick", "dark-goldenrod", "medium-orchid", "rosy-brown", "dark-khaki",
-					"silver", "medium-violet-red", "indian-red", "peru", "chocolate", "tan", "light-gray", "thistle", "orchid",
-					"goldenrod", "pale-violet-red", "crimson", "gainsboro", "plum", "burlywood", "light-cyan", "lavender",
-					"dark-salmon", "violet", "pale-goldenrod", "light-coral", "khaki", "alice-blue", "honeydew", "azure",
-					"sandy-brown", "wheat", "beige", "white-smoke", "mint-cream", "ghost-white", "salmon", "antique-white",
-					"linen", "light-goldenrod-yellow", "old-lace", "red", "fuchsia", "magenta", "deep-pink", "orange-red",
-					"tomato", "hot-pink", "coral", "dark-orange", "light-salmon", "orange", "light-pink", "pink", "gold",
-					"peachpuff", "navajo-white", "moccasin", "bisque", "misty-rose", "blanched-almond", "papaya-whip", "lavender-blush",
-					"seashell", "cornsilk", "lemon-chiffon", "floral-white", "snow", "yellow", "light-yellow", "ivory", "white",
-				}, false),
 			},
 
 			"relation_l3ext_rs_l_if_p_to_netflow_monitor_pol": &schema.Schema{
@@ -134,7 +115,7 @@ func getRemoteLogicalInterfaceProfile(client *client.Client, dn string) (*models
 	return l3extLIfP, nil
 }
 
-func setLogicalInterfaceProfileAttributes(l3extLIfP *models.LogicalInterfaceProfile, d *schema.ResourceData) *schema.ResourceData {
+func setLogicalInterfaceProfileAttributes(l3extLIfP *models.LogicalInterfaceProfile, d *schema.ResourceData) (*schema.ResourceData, error) {
 	dn := d.Id()
 	d.SetId(l3extLIfP.DistinguishedName)
 	d.Set("description", l3extLIfP.Description)
@@ -142,7 +123,10 @@ func setLogicalInterfaceProfileAttributes(l3extLIfP *models.LogicalInterfaceProf
 	if dn != l3extLIfP.DistinguishedName {
 		d.Set("logical_node_profile_dn", "")
 	}
-	l3extLIfPMap, _ := l3extLIfP.ToMap()
+	l3extLIfPMap, err := l3extLIfP.ToMap()
+	if err != nil {
+		return d, err
+	}
 
 	d.Set("name", l3extLIfPMap["name"])
 
@@ -150,7 +134,7 @@ func setLogicalInterfaceProfileAttributes(l3extLIfP *models.LogicalInterfaceProf
 	d.Set("name_alias", l3extLIfPMap["nameAlias"])
 	d.Set("prio", l3extLIfPMap["prio"])
 	d.Set("tag", l3extLIfPMap["tag"])
-	return d
+	return d, nil
 }
 
 func resourceAciLogicalInterfaceProfileImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -164,18 +148,24 @@ func resourceAciLogicalInterfaceProfileImport(d *schema.ResourceData, m interfac
 	if err != nil {
 		return nil, err
 	}
-	l3extLIfPMap, _ := l3extLIfP.ToMap()
+	l3extLIfPMap, err := l3extLIfP.ToMap()
+	if err != nil {
+		return nil, err
+	}
 	name := l3extLIfPMap["name"]
 	pDN := GetParentDn(dn, fmt.Sprintf("/lifp-%s", name))
 	d.Set("logical_node_profile_dn", pDN)
-	schemaFilled := setLogicalInterfaceProfileAttributes(l3extLIfP, d)
+	schemaFilled, err := setLogicalInterfaceProfileAttributes(l3extLIfP, d)
+	if err != nil {
+		return nil, err
+	}
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciLogicalInterfaceProfileCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciLogicalInterfaceProfileCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] LogicalInterfaceProfile: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -203,13 +193,9 @@ func resourceAciLogicalInterfaceProfileCreate(d *schema.ResourceData, m interfac
 
 	err := aciClient.Save(l3extLIfP)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
+
 	}
-	d.Partial(true)
-
-	d.SetPartial("name")
-
-	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
 
@@ -241,7 +227,7 @@ func resourceAciLogicalInterfaceProfileCreate(d *schema.ResourceData, m interfac
 	d.Partial(true)
 	err = checkTDn(aciClient, checkDns)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Partial(false)
 
@@ -252,11 +238,9 @@ func resourceAciLogicalInterfaceProfileCreate(d *schema.ResourceData, m interfac
 			paramMap := relationParam.(map[string]interface{})
 			err = aciClient.CreateRelationl3extRsLIfPToNetflowMonitorPolFromLogicalInterfaceProfile(l3extLIfP.DistinguishedName, paramMap["tn_netflow_monitor_pol_name"].(string), paramMap["flt_type"].(string))
 			if err != nil {
-				return err
+				return diag.FromErr(err)
+
 			}
-			d.Partial(true)
-			d.SetPartial("relation_l3ext_rs_l_if_p_to_netflow_monitor_pol")
-			d.Partial(false)
 		}
 
 	}
@@ -265,11 +249,9 @@ func resourceAciLogicalInterfaceProfileCreate(d *schema.ResourceData, m interfac
 		relationParamName := GetMOName(relationParam)
 		err = aciClient.CreateRelationl3extRsEgressQosDppPolFromLogicalInterfaceProfile(l3extLIfP.DistinguishedName, relationParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
+
 		}
-		d.Partial(true)
-		d.SetPartial("relation_l3ext_rs_egress_qos_dpp_pol")
-		d.Partial(false)
 
 	}
 	if relationTol3extRsIngressQosDppPol, ok := d.GetOk("relation_l3ext_rs_ingress_qos_dpp_pol"); ok {
@@ -277,11 +259,9 @@ func resourceAciLogicalInterfaceProfileCreate(d *schema.ResourceData, m interfac
 		relationParamName := GetMOName(relationParam)
 		err = aciClient.CreateRelationl3extRsIngressQosDppPolFromLogicalInterfaceProfile(l3extLIfP.DistinguishedName, relationParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
+
 		}
-		d.Partial(true)
-		d.SetPartial("relation_l3ext_rs_ingress_qos_dpp_pol")
-		d.Partial(false)
 
 	}
 	if relationTol3extRsLIfPCustQosPol, ok := d.GetOk("relation_l3ext_rs_l_if_p_cust_qos_pol"); ok {
@@ -289,11 +269,9 @@ func resourceAciLogicalInterfaceProfileCreate(d *schema.ResourceData, m interfac
 		relationParamName := GetMOName(relationParam)
 		err = aciClient.CreateRelationl3extRsLIfPCustQosPolFromLogicalInterfaceProfile(l3extLIfP.DistinguishedName, relationParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
+
 		}
-		d.Partial(true)
-		d.SetPartial("relation_l3ext_rs_l_if_p_cust_qos_pol")
-		d.Partial(false)
 
 	}
 	if relationTol3extRsArpIfPol, ok := d.GetOk("relation_l3ext_rs_arp_if_pol"); ok {
@@ -301,11 +279,9 @@ func resourceAciLogicalInterfaceProfileCreate(d *schema.ResourceData, m interfac
 		relationParamName := GetMOName(relationParam)
 		err = aciClient.CreateRelationl3extRsArpIfPolFromLogicalInterfaceProfile(l3extLIfP.DistinguishedName, relationParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
+
 		}
-		d.Partial(true)
-		d.SetPartial("relation_l3ext_rs_arp_if_pol")
-		d.Partial(false)
 
 	}
 	if relationTol3extRsNdIfPol, ok := d.GetOk("relation_l3ext_rs_nd_if_pol"); ok {
@@ -313,21 +289,19 @@ func resourceAciLogicalInterfaceProfileCreate(d *schema.ResourceData, m interfac
 		relationParamName := GetMOName(relationParam)
 		err = aciClient.CreateRelationl3extRsNdIfPolFromLogicalInterfaceProfile(l3extLIfP.DistinguishedName, relationParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
+
 		}
-		d.Partial(true)
-		d.SetPartial("relation_l3ext_rs_nd_if_pol")
-		d.Partial(false)
 
 	}
 
 	d.SetId(l3extLIfP.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciLogicalInterfaceProfileRead(d, m)
+	return resourceAciLogicalInterfaceProfileRead(ctx, d, m)
 }
 
-func resourceAciLogicalInterfaceProfileUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciLogicalInterfaceProfileUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] LogicalInterfaceProfile: Beginning Update")
 
 	aciClient := m.(*client.Client)
@@ -359,13 +333,9 @@ func resourceAciLogicalInterfaceProfileUpdate(d *schema.ResourceData, m interfac
 	err := aciClient.Save(l3extLIfP)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
+
 	}
-	d.Partial(true)
-
-	d.SetPartial("name")
-
-	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
 
@@ -397,7 +367,8 @@ func resourceAciLogicalInterfaceProfileUpdate(d *schema.ResourceData, m interfac
 	d.Partial(true)
 	err = checkTDn(aciClient, checkDns)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
+
 	}
 	d.Partial(false)
 
@@ -409,7 +380,8 @@ func resourceAciLogicalInterfaceProfileUpdate(d *schema.ResourceData, m interfac
 			paramMap := relationParam.(map[string]interface{})
 			err = aciClient.DeleteRelationl3extRsLIfPToNetflowMonitorPolFromLogicalInterfaceProfile(l3extLIfP.DistinguishedName, paramMap["tn_netflow_monitor_pol_name"].(string), paramMap["flt_type"].(string))
 			if err != nil {
-				return err
+				return diag.FromErr(err)
+
 			}
 
 		}
@@ -417,11 +389,9 @@ func resourceAciLogicalInterfaceProfileUpdate(d *schema.ResourceData, m interfac
 			paramMap := relationParam.(map[string]interface{})
 			err = aciClient.CreateRelationl3extRsLIfPToNetflowMonitorPolFromLogicalInterfaceProfile(l3extLIfP.DistinguishedName, paramMap["tn_netflow_monitor_pol_name"].(string), paramMap["flt_type"].(string))
 			if err != nil {
-				return err
+				return diag.FromErr(err)
+
 			}
-			d.Partial(true)
-			d.SetPartial("relation_l3ext_rs_l_if_p_to_netflow_monitor_pol")
-			d.Partial(false)
 		}
 
 	}
@@ -431,11 +401,9 @@ func resourceAciLogicalInterfaceProfileUpdate(d *schema.ResourceData, m interfac
 		newRelParamName := GetMOName(newRelParam.(string))
 		err = aciClient.CreateRelationl3extRsEgressQosDppPolFromLogicalInterfaceProfile(l3extLIfP.DistinguishedName, newRelParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
+
 		}
-		d.Partial(true)
-		d.SetPartial("relation_l3ext_rs_egress_qos_dpp_pol")
-		d.Partial(false)
 
 	}
 	if d.HasChange("relation_l3ext_rs_ingress_qos_dpp_pol") {
@@ -443,58 +411,46 @@ func resourceAciLogicalInterfaceProfileUpdate(d *schema.ResourceData, m interfac
 		newRelParamName := GetMOName(newRelParam.(string))
 		err = aciClient.CreateRelationl3extRsIngressQosDppPolFromLogicalInterfaceProfile(l3extLIfP.DistinguishedName, newRelParamName)
 		if err != nil {
-			return err
-		}
-		d.Partial(true)
-		d.SetPartial("relation_l3ext_rs_ingress_qos_dpp_pol")
-		d.Partial(false)
+			return diag.FromErr(err)
 
+		}
 	}
 	if d.HasChange("relation_l3ext_rs_l_if_p_cust_qos_pol") {
 		_, newRelParam := d.GetChange("relation_l3ext_rs_l_if_p_cust_qos_pol")
 		newRelParamName := GetMOName(newRelParam.(string))
 		err = aciClient.CreateRelationl3extRsLIfPCustQosPolFromLogicalInterfaceProfile(l3extLIfP.DistinguishedName, newRelParamName)
 		if err != nil {
-			return err
-		}
-		d.Partial(true)
-		d.SetPartial("relation_l3ext_rs_l_if_p_cust_qos_pol")
-		d.Partial(false)
+			return diag.FromErr(err)
 
+		}
 	}
 	if d.HasChange("relation_l3ext_rs_arp_if_pol") {
 		_, newRelParam := d.GetChange("relation_l3ext_rs_arp_if_pol")
 		newRelParamName := GetMOName(newRelParam.(string))
 		err = aciClient.CreateRelationl3extRsArpIfPolFromLogicalInterfaceProfile(l3extLIfP.DistinguishedName, newRelParamName)
 		if err != nil {
-			return err
-		}
-		d.Partial(true)
-		d.SetPartial("relation_l3ext_rs_arp_if_pol")
-		d.Partial(false)
+			return diag.FromErr(err)
 
+		}
 	}
 	if d.HasChange("relation_l3ext_rs_nd_if_pol") {
 		_, newRelParam := d.GetChange("relation_l3ext_rs_nd_if_pol")
 		newRelParamName := GetMOName(newRelParam.(string))
 		err = aciClient.CreateRelationl3extRsNdIfPolFromLogicalInterfaceProfile(l3extLIfP.DistinguishedName, newRelParamName)
 		if err != nil {
-			return err
-		}
-		d.Partial(true)
-		d.SetPartial("relation_l3ext_rs_nd_if_pol")
-		d.Partial(false)
+			return diag.FromErr(err)
 
+		}
 	}
 
 	d.SetId(l3extLIfP.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciLogicalInterfaceProfileRead(d, m)
+	return resourceAciLogicalInterfaceProfileRead(ctx, d, m)
 
 }
 
-func resourceAciLogicalInterfaceProfileRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciLogicalInterfaceProfileRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -506,7 +462,11 @@ func resourceAciLogicalInterfaceProfileRead(d *schema.ResourceData, m interface{
 		d.SetId("")
 		return nil
 	}
-	setLogicalInterfaceProfileAttributes(l3extLIfP, d)
+	_, err = setLogicalInterfaceProfileAttributes(l3extLIfP, d)
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 
 	l3extRsLIfPToNetflowMonitorPolData, err := aciClient.ReadRelationl3extRsLIfPToNetflowMonitorPolFromLogicalInterfaceProfile(dn)
 	if err != nil {
@@ -591,18 +551,20 @@ func resourceAciLogicalInterfaceProfileRead(d *schema.ResourceData, m interface{
 	return nil
 }
 
-func resourceAciLogicalInterfaceProfileDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciLogicalInterfaceProfileDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "l3extLIfP")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
+
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
+
 }

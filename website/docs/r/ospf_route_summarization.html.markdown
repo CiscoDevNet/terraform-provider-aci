@@ -14,16 +14,14 @@ Manages ACI OSPF Route Summarization
 
 ```hcl
 resource "aci_ospf_route_summarization" "example" {
-
-  tenant_dn  = "${aci_tenant.example.id}"
+  tenant_dn  = aci_tenant.example.id
   description = "from terraform"
-  name  = "example"
-  annotation  = "example"
+  name  = "ospf_route_summarization_1"
+  annotation  = "ospf_route_summarization_tag"
   cost = "1"
   inter_area_enabled = "no"
   name_alias  = "example"
   tag  = "1"
-
 }
 ```
 
@@ -33,7 +31,7 @@ resource "aci_ospf_route_summarization" "example" {
 - `name` - (Required) Name of object OSPF route summarization.
 - `annotation` - (Optional) Annotation for object OSPF route summarization.
 - `description` - Description for for object OSPF route summarization.
-- `cost` - (Optional) The OSPF Area cost for the default summary LSAs. The Area cost is used with NSSA and stub area types only. Default value: "unspecified".
+- `cost` - (Optional) The OSPF Area cost for the default summary LSAs. The Area cost is used with NSSA and stub area types only. Range of allowed values is "0" to "16777215". Default value: "unspecified".
 - `inter_area_enabled` - (Optional) Inter area enabled flag for object OSPF route summarization.
   Allowed values: "no", "yes". Default value: "no".
 - `name_alias` - (Optional) Name alias for object OSPF route summarization.
@@ -41,8 +39,7 @@ resource "aci_ospf_route_summarization" "example" {
 
 ## Attribute Reference
 
-The only attribute that this resource exports is the `id`, which is set to the
-Dn of the OSPF Route Summarization.
+The only attribute that this resource exports is the `id`, which is set to the Dn of the OSPF Route Summarization.
 
 ## Importing
 

@@ -6,22 +6,27 @@ description: |-
   Data source for ACI Cloud Domain Profile
 ---
 
-# aci_cloud_domain_profile #
+# aci_cloud_domain_profile
+
 Data source for ACI Cloud Domain Profile  
 <b>Note: This resource is supported in Cloud APIC only.</b>
-## Example Usage ##
+
+## Example Usage
 
 ```hcl
 data "aci_cloud_domain_profile" "default_domp" {
 
 }
 ```
-## Argument Reference ##
+
+## Argument Reference
+
 This data source doesn't require any arguments.
 
 ## Attribute Reference
 
-* `id` - Attribute id set to the Dn of the Cloud Domain Profile.
-* `annotation` - (Optional) annotation for object cloud_domain_profile.
-* `name_alias` - (Optional) name_alias for object cloud_domain_profile.
-* `site_id` - (Optional) site_id for object cloud_domain_profile.
+- `id` - Attribute id set to the Dn of the Cloud Domain Profile.
+- `annotation` - (Optional) Specifies the Annotation of the cloud domain profile.
+- `description` - (Optional) Specifies the Description of the cloud domain profile.
+- `name_alias` - (Optional) Specifies the alias-name of the cloud domain profile.
+- `site_id` - (Optional) Site-ID of the cloud domain profile.

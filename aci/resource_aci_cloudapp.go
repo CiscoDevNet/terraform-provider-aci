@@ -1,20 +1,22 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func resourceAciCloudApplicationcontainer() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciCloudApplicationcontainerCreate,
-		Update: resourceAciCloudApplicationcontainerUpdate,
-		Read:   resourceAciCloudApplicationcontainerRead,
-		Delete: resourceAciCloudApplicationcontainerDelete,
+		CreateContext: resourceAciCloudApplicationcontainerCreate,
+		UpdateContext: resourceAciCloudApplicationcontainerUpdate,
+		ReadContext:   resourceAciCloudApplicationcontainerRead,
+		DeleteContext: resourceAciCloudApplicationcontainerDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciCloudApplicationcontainerImport,
@@ -58,7 +60,7 @@ func getRemoteCloudApplicationcontainer(client *client.Client, dn string) (*mode
 	return cloudApp, nil
 }
 
-func setCloudApplicationcontainerAttributes(cloudApp *models.CloudApplicationcontainer, d *schema.ResourceData) *schema.ResourceData {
+func setCloudApplicationcontainerAttributes(cloudApp *models.CloudApplicationcontainer, d *schema.ResourceData) (*schema.ResourceData, error) {
 	dn := d.Id()
 	d.SetId(cloudApp.DistinguishedName)
 	d.Set("description", cloudApp.Description)
@@ -66,13 +68,15 @@ func setCloudApplicationcontainerAttributes(cloudApp *models.CloudApplicationcon
 	if dn != cloudApp.DistinguishedName {
 		d.Set("tenant_dn", "")
 	}
-	cloudAppMap, _ := cloudApp.ToMap()
-
+	cloudAppMap, err := cloudApp.ToMap()
+	if err != nil {
+		return d, err
+	}
 	d.Set("name", cloudAppMap["name"])
 
 	d.Set("annotation", cloudAppMap["annotation"])
 	d.Set("name_alias", cloudAppMap["nameAlias"])
-	return d
+	return d, nil
 }
 
 func resourceAciCloudApplicationcontainerImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -86,18 +90,24 @@ func resourceAciCloudApplicationcontainerImport(d *schema.ResourceData, m interf
 	if err != nil {
 		return nil, err
 	}
-	cloudAppMap, _ := cloudApp.ToMap()
+	cloudAppMap, err := cloudApp.ToMap()
+
+	if err != nil {
+		return nil, err
+	}
 	name := cloudAppMap["name"]
 	pDN := GetParentDn(dn, fmt.Sprintf("/cloudapp-%s", name))
 	d.Set("tenant_dn", pDN)
-	schemaFilled := setCloudApplicationcontainerAttributes(cloudApp, d)
-
+	schemaFilled, err := setCloudApplicationcontainerAttributes(cloudApp, d)
+	if err != nil {
+		return nil, err
+	}
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciCloudApplicationcontainerCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciCloudApplicationcontainerCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] CloudApplicationcontainer: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -119,21 +129,16 @@ func resourceAciCloudApplicationcontainerCreate(d *schema.ResourceData, m interf
 
 	err := aciClient.Save(cloudApp)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.SetPartial("name")
-
-	d.Partial(false)
 
 	d.SetId(cloudApp.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciCloudApplicationcontainerRead(d, m)
+	return resourceAciCloudApplicationcontainerRead(ctx, d, m)
 }
 
-func resourceAciCloudApplicationcontainerUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciCloudApplicationcontainerUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] CloudApplicationcontainer: Beginning Update")
 
 	aciClient := m.(*client.Client)
@@ -159,22 +164,17 @@ func resourceAciCloudApplicationcontainerUpdate(d *schema.ResourceData, m interf
 	err := aciClient.Save(cloudApp)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.SetPartial("name")
-
-	d.Partial(false)
 
 	d.SetId(cloudApp.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciCloudApplicationcontainerRead(d, m)
+	return resourceAciCloudApplicationcontainerRead(ctx, d, m)
 
 }
 
-func resourceAciCloudApplicationcontainerRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciCloudApplicationcontainerRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -186,25 +186,28 @@ func resourceAciCloudApplicationcontainerRead(d *schema.ResourceData, m interfac
 		d.SetId("")
 		return nil
 	}
-	setCloudApplicationcontainerAttributes(cloudApp, d)
-
+	_, err = setCloudApplicationcontainerAttributes(cloudApp, d)
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 
 	return nil
 }
 
-func resourceAciCloudApplicationcontainerDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciCloudApplicationcontainerDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "cloudApp")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
 }

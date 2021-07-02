@@ -14,8 +14,9 @@ Manages ACI Spine Profile
 ```hcl
 
 resource "aci_spine_profile" "example" {
-  name        = "check"
-  annotation  = "spine profile"
+  name        = "spine_profile_1"
+  description = "from terraform"
+  annotation  = "spine_profile_tag"
   name_alias  = "check"
 }
 
@@ -23,9 +24,10 @@ resource "aci_spine_profile" "example" {
 
 
 ## Argument Reference ##
-* `name` - (Required) name of Object spine_profile.
-* `annotation` - (Optional) annotation for object spine_profile.
-* `name_alias` - (Optional) name_alias for object spine_profile.
+* `name` - (Required) Name of Object Spine Profile.
+* `description` - (Optional) Description for object Spine Profile.
+* `annotation` - (Optional) Annotation for object Spine Profile.
+* `name_alias` - (Optional) Name alias for object Spine Profile.
 * `relation_infra_rs_sp_acc_port_p` - (Optional) Relation to class infraSpAccPortP. Cardinality - N_TO_M. Type - Set of String.
                 
 

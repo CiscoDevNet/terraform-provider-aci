@@ -17,6 +17,7 @@ Manages ACI Node Management EPg
 resource "aci_node_mgmt_epg" "in_band_example" {
   type = "in_band"
   management_profile_dn  = "uni/tn-mgmt/mgmtp-default"
+  description = "from terraform"
   name  = "example"
   annotation  = "example"
   encap  = "vlan-1"
@@ -31,6 +32,7 @@ resource "aci_node_mgmt_epg" "in_band_example" {
 resource "aci_node_mgmt_epg" "out_of_band_example" {
   type = "out_of_band"
   management_profile_dn  = "uni/tn-mgmt/mgmtp-default"
+  description = "from terraform"
   name  = "example"
   annotation  = "example"
   name_alias  = "example"
@@ -56,7 +58,6 @@ resource "aci_node_mgmt_epg" "out_of_band_example" {
 - `match_t` - (Optional) The provider label match criteria.
   Allowed values: "All", "AtleastOne", "AtmostOne", "None". Default value: "AtleastOne".
 - `name_alias` - (Optional) Name alias for object in-band management EPg.
-
 - `pref_gr_memb` - (Optional) Represents parameter used to determine if EPg is part of a group that does not a contract for communication.
   Allowed values: "exclude", "include". Default value: "exclude".
 - `prio` - (Optional) The QoS priority class identifier.
@@ -76,7 +77,7 @@ resource "aci_node_mgmt_epg" "out_of_band_example" {
 
 - `name` - (Required) The out-of-band management endpoint group name. This name can be up to 64 alphanumeric characters.
 - `annotation` - (Optional) Annotation for object out-of-band management EPg.
-
+- `description` - (Optional) Description for object in-band management EPg.
 - `name_alias` - (Optional) Name alias for object out-of-band management EPg.
 
 - `prio` - (Optional) The QoS priority class identifier.

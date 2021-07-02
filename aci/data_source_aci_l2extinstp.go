@@ -1,16 +1,18 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func dataSourceAciL2outExternalEpg() *schema.Resource {
 	return &schema.Resource{
 
-		Read: dataSourceAciL2outExternalEpgRead,
+		ReadContext: dataSourceAciL2outExternalEpgRead,
 
 		SchemaVersion: 1,
 
@@ -76,7 +78,7 @@ func dataSourceAciL2outExternalEpg() *schema.Resource {
 	}
 }
 
-func dataSourceAciL2outExternalEpgRead(d *schema.ResourceData, m interface{}) error {
+func dataSourceAciL2outExternalEpgRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	aciClient := m.(*client.Client)
 
 	name := d.Get("name").(string)
@@ -89,9 +91,12 @@ func dataSourceAciL2outExternalEpgRead(d *schema.ResourceData, m interface{}) er
 	l2extInstP, err := getRemoteL2outExternalEpg(aciClient, dn)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.SetId(dn)
-	setL2outExternalEpgAttributes(l2extInstP, d)
+	_, err = setL2outExternalEpgAttributes(l2extInstP, d)
+	if err != nil {
+		return diag.FromErr(err)
+	}
 	return nil
 }

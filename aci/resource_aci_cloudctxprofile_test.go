@@ -6,9 +6,9 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/acctest"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/acctest"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
 func TestAccAciCloudContextProfile_Basic(t *testing.T) {
@@ -37,7 +37,7 @@ func testAccCheckAciCloudContextProfileConfig_basic(fv_tenant_name, cloud_ctx_pr
 	return fmt.Sprintf(`
 
 	resource "aci_tenant" "footenant" {
-		name 		= "%s"
+		name 		= "%s" 
 		description = "tenant created while acceptance testing"
 
 	}

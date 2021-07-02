@@ -15,11 +15,11 @@ Manages ACI L3out Static Route Next Hop
 ```hcl
 resource "aci_l3out_static_route_next_hop" "example" {
 
-  static_route_dn  = "${aci_l3out_static_route.example.id}"
+  static_route_dn  = aci_l3out_static_route.example.id
   nh_addr  = "10.0.0.1"
   annotation  = "example"
   name_alias  = "example"
-  pref = "unspecified"
+  pref = "1"
   nexthop_profile_type = "prefix"
   description = "from terraform"
 
@@ -33,7 +33,7 @@ resource "aci_l3out_static_route_next_hop" "example" {
 - `annotation` - (Optional) Annotation for object l3out static route next hop.
 - `description` - (Optional) Description for object l3out static route next hop.
 - `name_alias` - (Optional) Name alias for object l3out static route next hop.
-- `pref` - (Optional) Administrative preference value for this route.  
+- `pref` - (Optional) Administrative preference value for this route. Range: "1" to "255"
   Allowed values: "unspecified". Default value: "unspecified".
 - `nexthop_profile_type` - (Optional) Component type.  
   Allowed values: "none", "prefix". Default value: "prefix".

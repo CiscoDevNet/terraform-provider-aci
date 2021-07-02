@@ -13,7 +13,7 @@ Manages ACI L3out Loopback Interface Profile
 
 ```hcl
 resource "aci_l3out_loopback_interface_profile" "example" {
-  fabric_node_dn = "${aci_logical_node_to_fabric_node.example.id}"
+  fabric_node_dn = aci_logical_node_to_fabric_node.example.id
   addr           = "1.2.3.5"
   description    = "from terraform"
   annotation     = "example"
@@ -34,8 +34,7 @@ resource "aci_l3out_loopback_interface_profile" "example" {
 
 ## Attribute Reference
 
-The only attribute that this resource exports is the `id`, which is set to the
-Dn of the L3out Loopback Interface Profile.
+The only attribute that this resource exports is the `id`, which is set to the Dn of the L3out Loopback Interface Profile.
 
 ## Importing ##
 

@@ -6,8 +6,8 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
 func TestAccAciApplicationEPG_Basic(t *testing.T) {
@@ -25,11 +25,6 @@ func TestAccAciApplicationEPG_Basic(t *testing.T) {
 					testAccCheckAciApplicationEPGExists("aci_application_epg.fooapplication_epg", &application_epg),
 					testAccCheckAciApplicationEPGAttributes(description, "unspecified", &application_epg),
 				),
-			},
-			{
-				ResourceName:      "aci_application_epg",
-				ImportState:       true,
-				ImportStateVerify: true,
 			},
 		},
 	})
@@ -163,10 +158,6 @@ func testAccCheckAciApplicationEPGAttributes(description, prio string, applicati
 
 		if "disabled" != application_epg.FloodOnEncap {
 			return fmt.Errorf("Bad application_epg flood_on_encap %s", application_epg.FloodOnEncap)
-		}
-
-		if "none" != application_epg.FwdCtrl {
-			return fmt.Errorf("Bad application_epg fwd_ctrl %s", application_epg.FwdCtrl)
 		}
 
 		if "no" != application_epg.HasMcastSource {

@@ -13,16 +13,17 @@ Manages ACI Leaf Access Port Policy Group
 
 ```hcl
 	resource "aci_leaf_access_port_policy_group" "fooleaf_access_port_policy_group" {
-		description = "%s"
+		description = "From Terraform"
 		name        = "demo_access_port"
 		annotation  = "tag_ports"
-		name_alias  = "%s"
+		name_alias  = "name_alias"
 	} 
 ```
 ## Argument Reference ##
-* `name` - (Required) name of Object leaf_access_port_policy_group.
-* `annotation` - (Optional) annotation for object leaf_access_port_policy_group.
-* `name_alias` - (Optional) name_alias for object leaf_access_port_policy_group.
+* `name` - (Required) Name of Object leaf access port policy group.
+* `description` - (Optional) Description for object leaf access port policy group.
+* `annotation` - (Optional) Annotation for object leaf access port policy group.
+* `name_alias` - (Optional) Name alias for object leaf access port policy group.
 
 * `relation_infra_rs_span_v_src_grp` - (Optional) Relation to class spanVSrcGrp. Cardinality - N_TO_M. Type - Set of String.
                 

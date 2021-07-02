@@ -13,18 +13,16 @@ Data source for ACI L3 Domain Profile
 
 ```hcl
 data "aci_l3_domain_profile" "example" {
-
-
-  name  = "example"
+  name  = "l3_domain_profile_1"
 }
 ```
 ## Argument Reference ##
-* `name` - (Required) name of Object l3_domain_profile.
+* `name` - (Required) Name of Object l3 domain profile.
 
 
 
 ## Attribute Reference
 
 * `id` - Attribute id set to the Dn of the L3 Domain Profile.
-* `annotation` - (Optional) annotation for object l3_domain_profile.
-* `name_alias` - (Optional) name_alias for object l3_domain_profile.
+* `annotation` - (Optional) Annotation for object l3 domain profile.
+* `name_alias` - (Optional) Name alias for object l3 domain profile.

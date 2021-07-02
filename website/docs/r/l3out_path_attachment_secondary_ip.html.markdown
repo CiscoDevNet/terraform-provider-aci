@@ -14,29 +14,28 @@ Manages ACI L3-out Path Attachment Secondary IP
 
 ```hcl
 resource "aci_l3out_path_attachment_secondary_ip" "example" {
-
-  l3out_path_attachment_dn  = "${aci_l3out_path_attachment.example.id}"
+  l3out_path_attachment_dn  = aci_l3out_path_attachment.example.id
   addr  = "10.0.0.1/24"
   annotation  = "example"
+  description = "from terraform"
   ipv6_dad = "disabled"
   name_alias  = "example"
-
 }
 ```
 
 ## Argument Reference
 
-- `l3out_path_attachment_dn` - (Required) Distinguished name of parent L3-out path attachment object.
+- `l3out_path_attachment_dn` - (Required) Distinguished name of parent L3 out path attachment object.
 - `addr` - (Required) The peer IP address.
-- `annotation` - (Optional) Annotation for object L3-out path attachment secondary IP.
-- `ipv6_dad` - (Optional) IPv6-DAD for object L3-out path attachment secondary IP.  
-  Allowed values: "disabled", "enabled". Default value: "disabled".
-- `name_alias` - (Optional) Name alias for object L3-out path attachment secondary IP.
+- `description` - (Optional) Description for object L3 out path attachment secondary IP.
+- `annotation` - (Optional) Annotation for object L3 out path attachment secondary IP.
+- `ipv6_dad` - (Optional) IPv6 DAD for object L3 out path attachment secondary IP.  
+  Allowed values: "disabled", "enabled". Default value is "enabled".
+- `name_alias` - (Optional) Name alias for object L3 out path attachment secondary IP.
 
 ## Attribute Reference
 
-The only attribute that this resource exports is the `id`, which is set to the
-Dn of the L3-out Path Attachment Secondary IP.
+The only attribute that this resource exports is the `id`, which is set to the Dn of the L3 out Path Attachment Secondary IP.
 
 ## Importing
 

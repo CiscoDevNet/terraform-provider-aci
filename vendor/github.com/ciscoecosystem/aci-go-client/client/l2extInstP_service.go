@@ -5,7 +5,7 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/container"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func (sm *ServiceManager) CreateL2outExternalEpg(name string, l2_outside string, tenant string, description string, l2extInstPattr models.L2outExternalEpgAttributes) (*models.L2outExternalEpg, error) {

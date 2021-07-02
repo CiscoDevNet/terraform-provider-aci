@@ -6,8 +6,8 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
 func TestAccAciContractSubject_Basic(t *testing.T) {
@@ -25,11 +25,6 @@ func TestAccAciContractSubject_Basic(t *testing.T) {
 					testAccCheckAciContractSubjectExists("aci_contract_subject.foocontract_subject", &contract_subject),
 					testAccCheckAciContractSubjectAttributes(description, "AtleastOne", &contract_subject),
 				),
-			},
-			{
-				ResourceName:      "aci_contract_subject",
-				ImportState:       true,
-				ImportStateVerify: true,
 			},
 		},
 	})
@@ -66,7 +61,7 @@ func testAccCheckAciContractSubjectConfig_basic(description, cons_match_t string
 	return fmt.Sprintf(`
 
 	resource "aci_contract_subject" "foocontract_subject" {
-		contract_dn   = "${aci_contract.example.id}"
+		contract_dn   = "uni/tn-test_rutvik_tenant/brc-demo_contract"
 		description   = "%s"
 		name          = "demo_subject"
 		annotation    = "tag_subject"

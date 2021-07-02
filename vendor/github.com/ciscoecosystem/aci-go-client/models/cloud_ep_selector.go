@@ -1,6 +1,5 @@
 package models
 
-
 import (
 	"fmt"
 	"strconv"
@@ -12,30 +11,21 @@ const CloudepselectorClassName = "cloudEPSelector"
 
 type CloudEndpointSelector struct {
 	BaseAttributes
-    CloudEndpointSelectorAttributes 
+	CloudEndpointSelectorAttributes
 }
-  
+
 type CloudEndpointSelectorAttributes struct {
-	
-	
 	Name string `json:",omitempty"`
-	
-	
-    
-	Annotation       string `json:",omitempty"`
-	
-    
-	MatchExpression       string `json:",omitempty"`
-	
-    
-	NameAlias       string `json:",omitempty"`
-	
-    
+
+	Annotation string `json:",omitempty"`
+
+	MatchExpression string `json:",omitempty"`
+
+	NameAlias string `json:",omitempty"`
 }
-   
 
 func NewCloudEndpointSelector(cloudEPSelectorRn, parentDn, description string, cloudEPSelectorattr CloudEndpointSelectorAttributes) *CloudEndpointSelector {
-	dn := fmt.Sprintf("%s/%s", parentDn, cloudEPSelectorRn)  
+	dn := fmt.Sprintf("%s/%s", parentDn, cloudEPSelectorRn)
 	return &CloudEndpointSelector{
 		BaseAttributes: BaseAttributes{
 			DistinguishedName: dn,
@@ -44,9 +34,8 @@ func NewCloudEndpointSelector(cloudEPSelectorRn, parentDn, description string, c
 			ClassName:         CloudepselectorClassName,
 			Rn:                cloudEPSelectorRn,
 		},
-        
+
 		CloudEndpointSelectorAttributes: cloudEPSelectorattr,
-         
 	}
 }
 
@@ -56,22 +45,13 @@ func (cloudEPSelector *CloudEndpointSelector) ToMap() (map[string]string, error)
 		return nil, err
 	}
 
-	
-	
-	A(cloudEPSelectorMap, "name",cloudEPSelector.Name)
-	
-	
-    
-	A(cloudEPSelectorMap, "annotation",cloudEPSelector.Annotation)
-	
-    
-	A(cloudEPSelectorMap, "matchExpression",cloudEPSelector.MatchExpression)
-	
-    
-	A(cloudEPSelectorMap, "nameAlias",cloudEPSelector.NameAlias)
-	
-    
-	
+	A(cloudEPSelectorMap, "name", cloudEPSelector.Name)
+
+	A(cloudEPSelectorMap, "annotation", cloudEPSelector.Annotation)
+
+	A(cloudEPSelectorMap, "matchExpression", cloudEPSelector.MatchExpression)
+
+	A(cloudEPSelectorMap, "nameAlias", cloudEPSelector.NameAlias)
 
 	return cloudEPSelectorMap, err
 }
@@ -87,25 +67,17 @@ func CloudEndpointSelectorFromContainerList(cont *container.Container, index int
 			ClassName:         CloudepselectorClassName,
 			Rn:                G(CloudEndpointSelectorCont, "rn"),
 		},
-        
+
 		CloudEndpointSelectorAttributes{
-		
-		
-			Name : G(CloudEndpointSelectorCont, "name"),
-		
-		
-        
-	        Annotation : G(CloudEndpointSelectorCont, "annotation"),
-		
-        
-	        MatchExpression : G(CloudEndpointSelectorCont, "matchExpression"),
-		
-        
-	        NameAlias : G(CloudEndpointSelectorCont, "nameAlias"),
-		
-        		
-        },
-        
+
+			Name: G(CloudEndpointSelectorCont, "name"),
+
+			Annotation: G(CloudEndpointSelectorCont, "annotation"),
+
+			MatchExpression: G(CloudEndpointSelectorCont, "matchExpression"),
+
+			NameAlias: G(CloudEndpointSelectorCont, "nameAlias"),
+		},
 	}
 }
 

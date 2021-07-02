@@ -1,16 +1,18 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func dataSourceAciAny() *schema.Resource {
 	return &schema.Resource{
 
-		Read: dataSourceAciAnyRead,
+		ReadContext: dataSourceAciAnyRead,
 
 		SchemaVersion: 1,
 
@@ -41,7 +43,7 @@ func dataSourceAciAny() *schema.Resource {
 	}
 }
 
-func dataSourceAciAnyRead(d *schema.ResourceData, m interface{}) error {
+func dataSourceAciAnyRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	aciClient := m.(*client.Client)
 
 	rn := fmt.Sprintf("any")
@@ -52,9 +54,12 @@ func dataSourceAciAnyRead(d *schema.ResourceData, m interface{}) error {
 	vzAny, err := getRemoteAny(aciClient, dn)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.SetId(dn)
-	setAnyAttributes(vzAny, d)
+	_, err = setAnyAttributes(vzAny, d)
+	if err != nil {
+		return diag.FromErr(err)
+	}
 	return nil
 }

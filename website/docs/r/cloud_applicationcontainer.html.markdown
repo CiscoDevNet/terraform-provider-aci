@@ -13,8 +13,9 @@ Note: This resource is supported in Cloud APIC only.
 
 ```hcl
 resource "aci_cloud_applicationcontainer" "foo_clou_app" {
-  tenant_dn  = "${aci_tenant.dev_tenant.id}"
+  tenant_dn  = aci_tenant.dev_tenant.id
   name       = "demo_cloud_app"
+  description = "From terraform"
   annotation = "tag_cloud_app"
   name_alias = "alias_app"
 }
@@ -22,9 +23,10 @@ resource "aci_cloud_applicationcontainer" "foo_clou_app" {
 ```
 ## Argument Reference ##
 * `tenant_dn` - (Required) Distinguished name of parent Tenant object.
-* `name` - (Required) name of Object cloud_applicationcontainer.
-* `annotation` - (Optional) annotation for object cloud_applicationcontainer.
-* `name_alias` - (Optional) name_alias for object cloud_applicationcontainer.
+* `name` - (Required) Name of Object cloud applicationcontainer.
+* `description` - (Optional) Description for object cloud applicationcontainer.
+* `annotation` - (Optional) Annotation for object cloud applicationcontainer.
+* `name_alias` - (Optional) Name alias for object cloud applicationcontainer.
 
 
 

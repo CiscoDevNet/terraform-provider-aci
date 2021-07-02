@@ -1,16 +1,18 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func dataSourceAciDHCPOptionPolicy() *schema.Resource {
 	return &schema.Resource{
 
-		Read: dataSourceAciDHCPOptionPolicyRead,
+		ReadContext: dataSourceAciDHCPOptionPolicyRead,
 
 		SchemaVersion: 1,
 
@@ -40,7 +42,7 @@ func dataSourceAciDHCPOptionPolicy() *schema.Resource {
 	}
 }
 
-func dataSourceAciDHCPOptionPolicyRead(d *schema.ResourceData, m interface{}) error {
+func dataSourceAciDHCPOptionPolicyRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	aciClient := m.(*client.Client)
 
 	name := d.Get("name").(string)
@@ -53,9 +55,12 @@ func dataSourceAciDHCPOptionPolicyRead(d *schema.ResourceData, m interface{}) er
 	dhcpOptionPol, err := getRemoteDHCPOptionPolicy(aciClient, dn)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.SetId(dn)
-	setDHCPOptionPolicyAttributes(dhcpOptionPol, d)
+	_, err = setDHCPOptionPolicyAttributes(dhcpOptionPol, d)
+	if err != nil {
+		return diag.FromErr(err)
+	}
 	return nil
 }

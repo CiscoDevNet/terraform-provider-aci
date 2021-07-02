@@ -13,7 +13,7 @@ Data source for ACI BGP Peer Prefix
 
 ```hcl
 data "aci_bgp_peer_prefix" "example" {
-  tenant_dn = "${aci_tenant.tenentcheck.id}"
+  tenant_dn = aci_tenant.tenentcheck.id
   name      = "one"
 }
 ```
@@ -21,7 +21,7 @@ data "aci_bgp_peer_prefix" "example" {
 
 ## Argument Reference ##
 
-* `tenant_dn` - (Required) Distinguished name of parent tenant object.
+* `tenant_dn` - (Required) Distinguished name of parent Tenant object.
 * `name` - (Required) Name of BGP peer prefix object.
 
 

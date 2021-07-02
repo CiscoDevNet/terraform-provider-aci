@@ -6,8 +6,8 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
 func TestAccAciAttachableAccessEntityProfile_Basic(t *testing.T) {
@@ -25,11 +25,6 @@ func TestAccAciAttachableAccessEntityProfile_Basic(t *testing.T) {
 					testAccCheckAciAttachableAccessEntityProfileExists("aci_attachable_access_entity_profile.fooattachable_access_entity_profile", &attachable_access_entity_profile),
 					testAccCheckAciAttachableAccessEntityProfileAttributes(description, "alias_entity_prof", &attachable_access_entity_profile),
 				),
-			},
-			{
-				ResourceName:      "aci_attachable_access_entity_profile",
-				ImportState:       true,
-				ImportStateVerify: true,
 			},
 		},
 	})
@@ -64,14 +59,12 @@ func TestAccAciAttachableAccessEntityProfile_update(t *testing.T) {
 
 func testAccCheckAciAttachableAccessEntityProfileConfig_basic(description, name_alias string) string {
 	return fmt.Sprintf(`
-
 	resource "aci_attachable_access_entity_profile" "fooattachable_access_entity_profile" {
 		description = "%s"
 		name        = "demo_entity_prof"
 		annotation  = "tag_entity"
 		name_alias  = "%s"
 	}
-	  
 	`, description, name_alias)
 }
 

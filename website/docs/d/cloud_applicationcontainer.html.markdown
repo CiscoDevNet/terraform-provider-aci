@@ -13,7 +13,7 @@ Data source for ACI Cloud Application container
 
 ```hcl
 data "aci_cloud_applicationcontainer" "sample_app" {
-  tenant_dn  = "${aci_tenant.dev_tenant.id}"
+  tenant_dn  = aci_tenant.dev_tenant.id
   name       = "demo_cloud_app"
 }
 ```
@@ -26,5 +26,6 @@ data "aci_cloud_applicationcontainer" "sample_app" {
 ## Attribute Reference
 
 * `id` - Attribute id set to the Dn of the Cloud Application container.
-* `annotation` - (Optional) annotation for object cloud_applicationcontainer.
-* `name_alias` - (Optional) name_alias for object cloud_applicationcontainer.
+* `description` - (Optional) Description for object cloud applicationcontainer.
+* `annotation` - (Optional) Annotation for object cloud applicationcontainer.
+* `name_alias` - (Optional) Name alias for object cloud applicationcontainer.

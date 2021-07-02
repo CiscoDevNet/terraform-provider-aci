@@ -1,16 +1,18 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func dataSourceAciL3outHSRPSecondaryVIP() *schema.Resource {
 	return &schema.Resource{
 
-		Read: dataSourceAciL3outHSRPSecondaryVIPRead,
+		ReadContext: dataSourceAciL3outHSRPSecondaryVIPRead,
 
 		SchemaVersion: 1,
 
@@ -46,7 +48,7 @@ func dataSourceAciL3outHSRPSecondaryVIP() *schema.Resource {
 	}
 }
 
-func dataSourceAciL3outHSRPSecondaryVIPRead(d *schema.ResourceData, m interface{}) error {
+func dataSourceAciL3outHSRPSecondaryVIPRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	aciClient := m.(*client.Client)
 
 	ip := d.Get("ip").(string)
@@ -59,9 +61,12 @@ func dataSourceAciL3outHSRPSecondaryVIPRead(d *schema.ResourceData, m interface{
 	hsrpSecVip, err := getRemoteL3outHSRPSecondaryVIP(aciClient, dn)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.SetId(dn)
-	setL3outHSRPSecondaryVIPAttributes(hsrpSecVip, d)
+	_, err = setL3outHSRPSecondaryVIPAttributes(hsrpSecVip, d)
+	if err != nil {
+		return diag.FromErr(err)
+	}
 	return nil
 }

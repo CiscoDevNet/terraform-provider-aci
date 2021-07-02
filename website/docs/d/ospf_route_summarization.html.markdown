@@ -14,8 +14,8 @@ Data source for ACI OSPF Route Summarization
 
 ```hcl
 data "aci_ospf_route_summarization" "example" {
-  tenant_dn  = "${aci_tenant.example.id}"
-  name  = "example"
+  tenant_dn  = aci_tenant.example.id
+  name  = "ospf_route_summarization_1"
 }
 ```
 

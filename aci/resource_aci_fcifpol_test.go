@@ -6,8 +6,8 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
 func TestAccAciInterfaceFCPolicy_Basic(t *testing.T) {
@@ -25,11 +25,6 @@ func TestAccAciInterfaceFCPolicy_Basic(t *testing.T) {
 					testAccCheckAciInterfaceFCPolicyExists("aci_interface_fc_policy.foointerface_fc_policy", &interface_fc_policy),
 					testAccCheckAciInterfaceFCPolicyAttributes(description, "64", &interface_fc_policy),
 				),
-			},
-			{
-				ResourceName:      "aci_interface_fc_policy",
-				ImportState:       true,
-				ImportStateVerify: true,
 			},
 		},
 	})
@@ -51,10 +46,10 @@ func TestAccAciInterfaceFCPolicy_update(t *testing.T) {
 				),
 			},
 			{
-				Config: testAccCheckAciInterfaceFCPolicyConfig_basic(description, "70"),
+				Config: testAccCheckAciInterfaceFCPolicyConfig_basic(description, "32"),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckAciInterfaceFCPolicyExists("aci_interface_fc_policy.foointerface_fc_policy", &interface_fc_policy),
-					testAccCheckAciInterfaceFCPolicyAttributes(description, "70", &interface_fc_policy),
+					testAccCheckAciInterfaceFCPolicyAttributes(description, "32", &interface_fc_policy),
 				),
 			},
 		},

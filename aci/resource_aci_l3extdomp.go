@@ -1,20 +1,22 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func resourceAciL3DomainProfile() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciL3DomainProfileCreate,
-		Update: resourceAciL3DomainProfileUpdate,
-		Read:   resourceAciL3DomainProfileRead,
-		Delete: resourceAciL3DomainProfileDelete,
+		CreateContext: resourceAciL3DomainProfileCreate,
+		UpdateContext: resourceAciL3DomainProfileUpdate,
+		ReadContext:   resourceAciL3DomainProfileRead,
+		DeleteContext: resourceAciL3DomainProfileDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciL3DomainProfileImport,
@@ -22,7 +24,16 @@ func resourceAciL3DomainProfile() *schema.Resource {
 
 		SchemaVersion: 1,
 
-		Schema: AppendBaseAttrSchema(map[string]*schema.Schema{
+		Schema: map[string]*schema.Schema{
+			"annotation": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				// Default:  "orchestrator:terraform",
+				Computed: true,
+				DefaultFunc: func() (interface{}, error) {
+					return "orchestrator:terraform", nil
+				},
+			},
 
 			"name": &schema.Schema{
 				Type:     schema.TypeString,
@@ -62,7 +73,7 @@ func resourceAciL3DomainProfile() *schema.Resource {
 
 				Optional: true,
 			},
-		}),
+		},
 	}
 }
 func getRemoteL3DomainProfile(client *client.Client, dn string) (*models.L3DomainProfile, error) {
@@ -80,15 +91,18 @@ func getRemoteL3DomainProfile(client *client.Client, dn string) (*models.L3Domai
 	return l3extDomP, nil
 }
 
-func setL3DomainProfileAttributes(l3extDomP *models.L3DomainProfile, d *schema.ResourceData) *schema.ResourceData {
+func setL3DomainProfileAttributes(l3extDomP *models.L3DomainProfile, d *schema.ResourceData) (*schema.ResourceData, error) {
 	d.SetId(l3extDomP.DistinguishedName)
-	l3extDomPMap, _ := l3extDomP.ToMap()
+	l3extDomPMap, err := l3extDomP.ToMap()
+	if err != nil {
+		return d, err
+	}
 
 	d.Set("name", l3extDomPMap["name"])
 
 	d.Set("annotation", l3extDomPMap["annotation"])
 	d.Set("name_alias", l3extDomPMap["nameAlias"])
-	return d
+	return d, nil
 }
 
 func resourceAciL3DomainProfileImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -98,18 +112,21 @@ func resourceAciL3DomainProfileImport(d *schema.ResourceData, m interface{}) ([]
 	dn := d.Id()
 
 	l3extDomP, err := getRemoteL3DomainProfile(aciClient, dn)
-
 	if err != nil {
 		return nil, err
 	}
-	schemaFilled := setL3DomainProfileAttributes(l3extDomP, d)
+
+	schemaFilled, err := setL3DomainProfileAttributes(l3extDomP, d)
+	if err != nil {
+		return nil, err
+	}
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciL3DomainProfileCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciL3DomainProfileCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] L3DomainProfile: Beginning Creation")
 	aciClient := m.(*client.Client)
 
@@ -128,13 +145,8 @@ func resourceAciL3DomainProfileCreate(d *schema.ResourceData, m interface{}) err
 
 	err := aciClient.Save(l3extDomP)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.SetPartial("name")
-
-	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
 
@@ -168,7 +180,7 @@ func resourceAciL3DomainProfileCreate(d *schema.ResourceData, m interface{}) err
 	d.Partial(true)
 	err = checkTDn(aciClient, checkDns)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Partial(false)
 
@@ -176,33 +188,22 @@ func resourceAciL3DomainProfileCreate(d *schema.ResourceData, m interface{}) err
 		relationParam := relationToinfraRsVlanNs.(string)
 		err = aciClient.CreateRelationinfraRsVlanNsFromL3DomainProfile(l3extDomP.DistinguishedName, relationParam)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_infra_rs_vlan_ns")
-		d.Partial(false)
-
 	}
 	if relationToinfraRsVlanNsDef, ok := d.GetOk("relation_infra_rs_vlan_ns_def"); ok {
 		relationParam := relationToinfraRsVlanNsDef.(string)
 		err = aciClient.CreateRelationinfraRsVlanNsDefFromL3DomainProfile(l3extDomP.DistinguishedName, relationParam)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_infra_rs_vlan_ns_def")
-		d.Partial(false)
-
 	}
 	if relationToinfraRsVipAddrNs, ok := d.GetOk("relation_infra_rs_vip_addr_ns"); ok {
 		relationParam := relationToinfraRsVipAddrNs.(string)
 		err = aciClient.CreateRelationinfraRsVipAddrNsFromL3DomainProfile(l3extDomP.DistinguishedName, relationParam)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_infra_rs_vip_addr_ns")
-		d.Partial(false)
 
 	}
 	if relationToextnwRsOut, ok := d.GetOk("relation_extnw_rs_out"); ok {
@@ -211,32 +212,25 @@ func resourceAciL3DomainProfileCreate(d *schema.ResourceData, m interface{}) err
 			err = aciClient.CreateRelationextnwRsOutFromL3DomainProfile(l3extDomP.DistinguishedName, relationParam)
 
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
-			d.Partial(true)
-			d.SetPartial("relation_extnw_rs_out")
-			d.Partial(false)
 		}
 	}
 	if relationToinfraRsDomVxlanNsDef, ok := d.GetOk("relation_infra_rs_dom_vxlan_ns_def"); ok {
 		relationParam := relationToinfraRsDomVxlanNsDef.(string)
 		err = aciClient.CreateRelationinfraRsDomVxlanNsDefFromL3DomainProfile(l3extDomP.DistinguishedName, relationParam)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_infra_rs_dom_vxlan_ns_def")
-		d.Partial(false)
-
 	}
 
 	d.SetId(l3extDomP.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciL3DomainProfileRead(d, m)
+	return resourceAciL3DomainProfileRead(ctx, d, m)
 }
 
-func resourceAciL3DomainProfileUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciL3DomainProfileUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] L3DomainProfile: Beginning Update")
 
 	aciClient := m.(*client.Client)
@@ -259,13 +253,8 @@ func resourceAciL3DomainProfileUpdate(d *schema.ResourceData, m interface{}) err
 	err := aciClient.Save(l3extDomP)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.SetPartial("name")
-
-	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
 
@@ -303,7 +292,7 @@ func resourceAciL3DomainProfileUpdate(d *schema.ResourceData, m interface{}) err
 	d.Partial(true)
 	err = checkTDn(aciClient, checkDns)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Partial(false)
 
@@ -311,42 +300,30 @@ func resourceAciL3DomainProfileUpdate(d *schema.ResourceData, m interface{}) err
 		_, newRelParam := d.GetChange("relation_infra_rs_vlan_ns")
 		err = aciClient.DeleteRelationinfraRsVlanNsFromL3DomainProfile(l3extDomP.DistinguishedName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 		err = aciClient.CreateRelationinfraRsVlanNsFromL3DomainProfile(l3extDomP.DistinguishedName, newRelParam.(string))
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_infra_rs_vlan_ns")
-		d.Partial(false)
-
 	}
 	if d.HasChange("relation_infra_rs_vlan_ns_def") {
 		_, newRelParam := d.GetChange("relation_infra_rs_vlan_ns_def")
 		err = aciClient.CreateRelationinfraRsVlanNsDefFromL3DomainProfile(l3extDomP.DistinguishedName, newRelParam.(string))
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_infra_rs_vlan_ns_def")
-		d.Partial(false)
-
 	}
 	if d.HasChange("relation_infra_rs_vip_addr_ns") {
 		_, newRelParam := d.GetChange("relation_infra_rs_vip_addr_ns")
 		err = aciClient.DeleteRelationinfraRsVipAddrNsFromL3DomainProfile(l3extDomP.DistinguishedName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 		err = aciClient.CreateRelationinfraRsVipAddrNsFromL3DomainProfile(l3extDomP.DistinguishedName, newRelParam.(string))
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_infra_rs_vip_addr_ns")
-		d.Partial(false)
-
 	}
 	if d.HasChange("relation_extnw_rs_out") {
 		oldRel, newRel := d.GetChange("relation_extnw_rs_out")
@@ -357,12 +334,8 @@ func resourceAciL3DomainProfileUpdate(d *schema.ResourceData, m interface{}) err
 		for _, relDn := range relToCreate {
 			err = aciClient.CreateRelationextnwRsOutFromL3DomainProfile(l3extDomP.DistinguishedName, relDn)
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
-			d.Partial(true)
-			d.SetPartial("relation_extnw_rs_out")
-			d.Partial(false)
-
 		}
 
 	}
@@ -370,34 +343,33 @@ func resourceAciL3DomainProfileUpdate(d *schema.ResourceData, m interface{}) err
 		_, newRelParam := d.GetChange("relation_infra_rs_dom_vxlan_ns_def")
 		err = aciClient.CreateRelationinfraRsDomVxlanNsDefFromL3DomainProfile(l3extDomP.DistinguishedName, newRelParam.(string))
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_infra_rs_dom_vxlan_ns_def")
-		d.Partial(false)
-
 	}
 
 	d.SetId(l3extDomP.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciL3DomainProfileRead(d, m)
-
+	return resourceAciL3DomainProfileRead(ctx, d, m)
 }
 
-func resourceAciL3DomainProfileRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciL3DomainProfileRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
 
 	dn := d.Id()
 	l3extDomP, err := getRemoteL3DomainProfile(aciClient, dn)
-
 	if err != nil {
 		d.SetId("")
 		return nil
 	}
-	setL3DomainProfileAttributes(l3extDomP, d)
+
+	_, err = setL3DomainProfileAttributes(l3extDomP, d)
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 
 	infraRsVlanNsData, err := aciClient.ReadRelationinfraRsVlanNsFromL3DomainProfile(dn)
 	if err != nil {
@@ -469,18 +441,18 @@ func resourceAciL3DomainProfileRead(d *schema.ResourceData, m interface{}) error
 	return nil
 }
 
-func resourceAciL3DomainProfileDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciL3DomainProfileDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "l3extDomP")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
 }

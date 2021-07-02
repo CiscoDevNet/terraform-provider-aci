@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/ciscoecosystem/aci-go-client/models"
 )
+
 // Notes: PyQuery Based Request
 // Requires a valid client APIC-Cookie to be present in the Header
 // Ways to obtain the APIC-Cooki:

@@ -14,21 +14,21 @@ Manages ACI VLAN Pool
 
 ```hcl
 resource "aci_vlan_pool" "example" {
-
-
   name  = "example"
-  alloc_mode  = "dynamic"
-  annotation  = "orchestrator:terraform"
+  description = "From Terraform"
+  alloc_mode  = "static"
+  annotation  = "example"
   name_alias  = "example"
 }
 ```
 
 ## Argument Reference ##
 
-* `name` - (Required) name of Object vlan_pool.
-* `alloc_mode` - (Required) allocation mode.  Allowed values: "dynamic", "static"
-* `annotation` - (Optional) annotation for object vlan_pool.
-* `name_alias` - (Optional) name_alias for object vlan_pool.
+* `name` - (Required) Name of Object vlan pool.
+* `alloc_mode` - (Required) Allocation mode for object vlan_pool. Allowed values: "dynamic", "static"
+* `description` - (Optional) Description for  object vlan pool.
+* `annotation` - (Optional) Annotation for object vlan pool.
+* `name_alias` - (Optional) Name alias for  object vlan pool.
 
 ## Attribute Reference ##
 

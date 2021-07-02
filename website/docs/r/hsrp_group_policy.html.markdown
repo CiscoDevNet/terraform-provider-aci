@@ -15,7 +15,7 @@ Manages ACI HSRP Group Policy
 ```hcl
 resource "aci_hsrp_group_policy" "example" {
 
-  tenant_dn  = "${aci_tenant.example.id}"
+  tenant_dn  = aci_tenant.example.id
   name  = "example"
   annotation  = "example"
   description = "from terraform"

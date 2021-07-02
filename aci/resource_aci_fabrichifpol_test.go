@@ -6,8 +6,8 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
 func TestAccAciLinkLevelPolicy_Basic(t *testing.T) {
@@ -62,7 +62,7 @@ func testAccCheckAciLinkLevelPolicyConfig_basic(description string) string {
 
 	resource "aci_fabric_if_pol" "foolink_level_policy" {
 		description = "%s"
-		name  = "example"
+		name  = "fabric_if_pol_1"
 		annotation  = "example"
 		auto_neg  = "on"
 		fec_mode  = "inherit"
@@ -128,7 +128,7 @@ func testAccCheckAciLinkLevelPolicyAttributes(description string, link_level_pol
 			return fmt.Errorf("Bad Fabric interface policy Description %s", link_level_policy.Description)
 		}
 
-		if "example" != link_level_policy.Name {
+		if "fabric_if_pol_1" != link_level_policy.Name {
 			return fmt.Errorf("Bad Fabric interface policy name %s", link_level_policy.Name)
 		}
 

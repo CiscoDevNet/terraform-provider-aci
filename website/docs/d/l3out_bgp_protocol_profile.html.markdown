@@ -14,7 +14,7 @@ Data source for ACI L3out BGP Protocol Profile
 
 ```hcl
 data "aci_l3out_bgp_protocol_profile" "example" {
-  logical_node_profile_dn  = "${aci_logical_node_profile.example.id}"
+  logical_node_profile_dn  = aci_logical_node_profile.example.id
 }
 ```
 
@@ -27,4 +27,3 @@ data "aci_l3out_bgp_protocol_profile" "example" {
 - `id` - Attribute id set to the Dn of the L3out BGP Protocol Profile.
 - `annotation` - (Optional) Annotation for object L3out BGP Protocol Profile.
 - `name_alias` - (Optional) Name alias for object L3out BGP Protocol Profile.
-- `description` - (Optional) Description for object L3out BGP Protocol Profile.

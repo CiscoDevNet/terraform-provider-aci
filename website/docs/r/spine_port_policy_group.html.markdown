@@ -14,8 +14,9 @@ Manages ACI Spine Port Policy Group
 ```hcl
 
 resource "aci_spine_port_policy_group" "example" {
-  name        = "example"
-  annotation  = "example"
+  name        = "spine_port_policy_group_1"
+  description = "from terraform"
+  annotation  = "spine_port_policy_group_tag"
   name_alias  = "example"
 }
 
@@ -23,9 +24,10 @@ resource "aci_spine_port_policy_group" "example" {
 
 
 ## Argument Reference ##
-* `name` - (Required) name of Object aci_spine_port_policy_group.
-* `annotation` - (Optional) annotation for object aci_spine_port_policy_group.
-* `name_alias` - (Optional) name_alias for object aci_spine_port_policy_group.
+* `name` - (Required) Name of Object Spine Port Policy Group.
+* `description` - (Optional) Description for object Spine Port Policy Group.
+* `annotation` - (Optional) Annotation for object Spine Port Policy Group.
+* `name_alias` - (Optional) Name alias for object Spine Port Policy Group.
 
 * `relation_infra_rs_h_if_pol` - (Optional) Relation to class fabricHIfPol. Cardinality - N_TO_ONE. Type - String.
                 

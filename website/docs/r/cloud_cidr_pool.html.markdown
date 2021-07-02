@@ -13,19 +13,20 @@ Note: This resource is supported in Cloud APIC only.
 
 ```hcl
 	resource "aci_cloud_cidr_pool" "foocloud_cidr_pool" {
-		cloud_context_profile_dn = "${aci_cloud_context_profile.foocloud_context_profile.id}"
+		cloud_context_profile_dn = aci_cloud_context_profile.foocloud_context_profile.id
 		description              = "cloud CIDR"
 		addr                     = "10.0.1.10/28"
 		annotation               = "tag_cidr"
-		name_alias               = "%s"
+		name_alias               = "name_alias"
 		primary                  = "yes"
 	}
 ```
 ## Argument Reference ##
 * `cloud_context_profile_dn` - (Required) Distinguished name of parent CloudContextProfile object.
 * `addr` - (Required) CIDR IPv4 block.
-* `annotation` - (Optional) annotation for object cloud_cidr_pool.
-* `name_alias` - (Optional) name_alias for object cloud_cidr_pool.
+* `description` - (Optional) Description for object Cloud CIDR Pool.
+* `annotation` - (Optional) Annotation for object Cloud CIDR Pool.
+* `name_alias` - (Optional) Name alias for object Cloud CIDR Pool.
 * `primary` - (Optional) Flag to specify whether CIDR is primary CIDR or not. Allowed values are "yes" and "no". Default is "no". Only one primary CIDR is supported under a cloud context profile.
 
 

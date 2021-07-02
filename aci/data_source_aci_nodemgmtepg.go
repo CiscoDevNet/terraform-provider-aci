@@ -1,17 +1,19 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func dataSourceAciNodeManagementEPg() *schema.Resource {
 	return &schema.Resource{
 
-		Read: dataSourceAciNodeManagementEPgRead,
+		ReadContext: dataSourceAciNodeManagementEPgRead,
 
 		SchemaVersion: 1,
 
@@ -88,14 +90,14 @@ func dataSourceAciNodeManagementEPg() *schema.Resource {
 	}
 }
 
-func dataSourceAciNodeManagementEPgRead(d *schema.ResourceData, m interface{}) error {
+func dataSourceAciNodeManagementEPgRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	if d.Get("type").(string) == "in_band" {
-		return dataSourceInBandManagementEPgRead(d, m)
+		return dataSourceInBandManagementEPgRead(ctx, d, m)
 	}
-	return dataSourceOutOfBandManagementEPgRead(d, m)
+	return dataSourceOutOfBandManagementEPgRead(ctx, d, m)
 }
 
-func dataSourceInBandManagementEPgRead(d *schema.ResourceData, m interface{}) error {
+func dataSourceInBandManagementEPgRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	aciClient := m.(*client.Client)
 
 	name := d.Get("name").(string)
@@ -108,14 +110,18 @@ func dataSourceInBandManagementEPgRead(d *schema.ResourceData, m interface{}) er
 	mgmtInB, err := getRemoteInBandManagementEPg(aciClient, dn)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.SetId(dn)
-	setInBandManagementEPgAttributes(mgmtInB, d)
+	_, err = setInBandManagementEPgAttributes(mgmtInB, d)
+
+	if err != nil {
+		return diag.FromErr(err)
+	}
 	return nil
 }
 
-func dataSourceOutOfBandManagementEPgRead(d *schema.ResourceData, m interface{}) error {
+func dataSourceOutOfBandManagementEPgRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	aciClient := m.(*client.Client)
 
 	name := d.Get("name").(string)
@@ -128,9 +134,13 @@ func dataSourceOutOfBandManagementEPgRead(d *schema.ResourceData, m interface{})
 	mgmtOoB, err := getRemoteOutOfBandManagementEPg(aciClient, dn)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.SetId(dn)
-	setOutOfBandManagementEPgAttributes(mgmtOoB, d)
+	_, err = setOutOfBandManagementEPgAttributes(mgmtOoB, d)
+
+	if err != nil {
+		return diag.FromErr(err)
+	}
 	return nil
 }

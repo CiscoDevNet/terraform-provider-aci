@@ -1,20 +1,22 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func resourceAciL3outBGPProtocolProfile() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciL3outBGPProtocolProfileCreate,
-		Update: resourceAciL3outBGPProtocolProfileUpdate,
-		Read:   resourceAciL3outBGPProtocolProfileRead,
-		Delete: resourceAciL3outBGPProtocolProfileDelete,
+		CreateContext: resourceAciL3outBGPProtocolProfileCreate,
+		UpdateContext: resourceAciL3outBGPProtocolProfileUpdate,
+		ReadContext:   resourceAciL3outBGPProtocolProfileRead,
+		DeleteContext: resourceAciL3outBGPProtocolProfileDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciL3outBGPProtocolProfileImport,
@@ -22,7 +24,7 @@ func resourceAciL3outBGPProtocolProfile() *schema.Resource {
 
 		SchemaVersion: 1,
 
-		Schema: AppendBaseAttrSchema(map[string]*schema.Schema{
+		Schema: map[string]*schema.Schema{
 			"logical_node_profile_dn": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
@@ -46,7 +48,7 @@ func resourceAciL3outBGPProtocolProfile() *schema.Resource {
 
 				Optional: true,
 			},
-		}),
+		},
 	}
 }
 func getRemoteL3outBGPProtocolProfile(client *client.Client, dn string) (*models.L3outBGPProtocolProfile, error) {
@@ -64,17 +66,19 @@ func getRemoteL3outBGPProtocolProfile(client *client.Client, dn string) (*models
 	return bgpProtP, nil
 }
 
-func setL3outBGPProtocolProfileAttributes(bgpProtP *models.L3outBGPProtocolProfile, d *schema.ResourceData) *schema.ResourceData {
+func setL3outBGPProtocolProfileAttributes(bgpProtP *models.L3outBGPProtocolProfile, d *schema.ResourceData) (*schema.ResourceData, error) {
 	d.SetId(bgpProtP.DistinguishedName)
 	dn := d.Id()
 	if dn != bgpProtP.DistinguishedName {
 		d.Set("logical_node_profile_dn", "")
 	}
-	bgpProtPMap, _ := bgpProtP.ToMap()
-
+	bgpProtPMap, err := bgpProtP.ToMap()
+	if err != nil {
+		return d, err
+	}
 	d.Set("annotation", bgpProtPMap["annotation"])
 	d.Set("name_alias", bgpProtPMap["nameAlias"])
-	return d
+	return d, nil
 }
 
 func resourceAciL3outBGPProtocolProfileImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -88,14 +92,16 @@ func resourceAciL3outBGPProtocolProfileImport(d *schema.ResourceData, m interfac
 	if err != nil {
 		return nil, err
 	}
-	schemaFilled := setL3outBGPProtocolProfileAttributes(bgpProtP, d)
-
+	schemaFilled, err := setL3outBGPProtocolProfileAttributes(bgpProtP, d)
+	if err != nil {
+		return nil, err
+	}
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciL3outBGPProtocolProfileCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciL3outBGPProtocolProfileCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] L3outBGPProtocolProfile: Beginning Creation")
 	aciClient := m.(*client.Client)
 	LogicalNodeProfileDn := d.Get("logical_node_profile_dn").(string)
@@ -113,10 +119,8 @@ func resourceAciL3outBGPProtocolProfileCreate(d *schema.ResourceData, m interfac
 
 	err := aciClient.Save(bgpProtP)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
 
@@ -129,7 +133,7 @@ func resourceAciL3outBGPProtocolProfileCreate(d *schema.ResourceData, m interfac
 	d.Partial(true)
 	err = checkTDn(aciClient, checkDns)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Partial(false)
 
@@ -137,21 +141,17 @@ func resourceAciL3outBGPProtocolProfileCreate(d *schema.ResourceData, m interfac
 		relationParam := GetMOName(relationTobgpRsBgpNodeCtxPol.(string))
 		err = aciClient.CreateRelationbgpRsBgpNodeCtxPolFromL3outBGPProtocolProfile(bgpProtP.DistinguishedName, relationParam)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_bgp_rs_bgp_node_ctx_pol")
-		d.Partial(false)
-
 	}
 
 	d.SetId(bgpProtP.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciL3outBGPProtocolProfileRead(d, m)
+	return resourceAciL3outBGPProtocolProfileRead(ctx, d, m)
 }
 
-func resourceAciL3outBGPProtocolProfileUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciL3outBGPProtocolProfileUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] L3outBGPProtocolProfile: Beginning Update")
 
 	aciClient := m.(*client.Client)
@@ -174,10 +174,8 @@ func resourceAciL3outBGPProtocolProfileUpdate(d *schema.ResourceData, m interfac
 	err := aciClient.Save(bgpProtP)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
 
@@ -190,7 +188,7 @@ func resourceAciL3outBGPProtocolProfileUpdate(d *schema.ResourceData, m interfac
 	d.Partial(true)
 	err = checkTDn(aciClient, checkDns)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Partial(false)
 
@@ -198,22 +196,19 @@ func resourceAciL3outBGPProtocolProfileUpdate(d *schema.ResourceData, m interfac
 		_, newRelParam := d.GetChange("relation_bgp_rs_bgp_node_ctx_pol")
 		err = aciClient.CreateRelationbgpRsBgpNodeCtxPolFromL3outBGPProtocolProfile(bgpProtP.DistinguishedName, GetMOName(newRelParam.(string)))
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_bgp_rs_bgp_node_ctx_pol")
-		d.Partial(false)
 
 	}
 
 	d.SetId(bgpProtP.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciL3outBGPProtocolProfileRead(d, m)
+	return resourceAciL3outBGPProtocolProfileRead(ctx, d, m)
 
 }
 
-func resourceAciL3outBGPProtocolProfileRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciL3outBGPProtocolProfileRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -225,8 +220,11 @@ func resourceAciL3outBGPProtocolProfileRead(d *schema.ResourceData, m interface{
 		d.SetId("")
 		return nil
 	}
-	setL3outBGPProtocolProfileAttributes(bgpProtP, d)
-
+	_, err = setL3outBGPProtocolProfileAttributes(bgpProtP, d)
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 	bgpRsBgpNodeCtxPolData, err := aciClient.ReadRelationbgpRsBgpNodeCtxPolFromL3outBGPProtocolProfile(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation bgpRsBgpNodeCtxPol %v", err)
@@ -247,18 +245,18 @@ func resourceAciL3outBGPProtocolProfileRead(d *schema.ResourceData, m interface{
 	return nil
 }
 
-func resourceAciL3outBGPProtocolProfileDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciL3outBGPProtocolProfileDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "bgpProtP")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
 }

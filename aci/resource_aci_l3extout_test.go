@@ -6,8 +6,8 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
 func TestAccAciL3Outside_Basic(t *testing.T) {
@@ -25,11 +25,6 @@ func TestAccAciL3Outside_Basic(t *testing.T) {
 					testAccCheckAciL3OutsideExists("aci_l3_outside.fool3_outside", &l3_outside),
 					testAccCheckAciL3OutsideAttributes(description, "export", &l3_outside),
 				),
-			},
-			{
-				ResourceName:      "aci_l3_outside",
-				ImportState:       true,
-				ImportStateVerify: true,
 			},
 		},
 	})
@@ -52,10 +47,10 @@ func TestAccAciL3Outside_update(t *testing.T) {
 				),
 			},
 			{
-				Config: testAccCheckAciL3OutsideConfig_basic(description, "import"),
+				Config: testAccCheckAciL3OutsideConfig_basic(description, "export"),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckAciL3OutsideExists("aci_l3_outside.fool3_outside", &l3_outside),
-					testAccCheckAciL3OutsideAttributes(description, "import", &l3_outside),
+					testAccCheckAciL3OutsideAttributes(description, "export", &l3_outside),
 				),
 			},
 		},
@@ -66,7 +61,7 @@ func testAccCheckAciL3OutsideConfig_basic(description, enforce_rtctrl string) st
 	return fmt.Sprintf(`
 
 	resource "aci_l3_outside" "fool3_outside" {
-		tenant_dn      = "${aci_tenant.example.id}"
+		tenant_dn      = aci_tenant.example.id
 		description    = "%s"
 		name           = "demo_l3out"
 		annotation     = "tag_l3out"

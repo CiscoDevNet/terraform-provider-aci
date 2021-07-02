@@ -6,8 +6,8 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
 func TestAccAciPortSecurityPolicy_Basic(t *testing.T) {
@@ -25,11 +25,6 @@ func TestAccAciPortSecurityPolicy_Basic(t *testing.T) {
 					testAccCheckAciPortSecurityPolicyExists("aci_port_security_policy.fooport_security_policy", &port_security_policy),
 					testAccCheckAciPortSecurityPolicyAttributes(description, "60", &port_security_policy),
 				),
-			},
-			{
-				ResourceName:      "aci_port_security_policy",
-				ImportState:       true,
-				ImportStateVerify: true,
 			},
 		},
 	})

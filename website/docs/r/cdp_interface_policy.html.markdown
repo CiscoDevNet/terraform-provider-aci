@@ -18,16 +18,17 @@ resource "aci_cdp_interface_policy" "example" {
   admin_st    = "enabled"
   annotation  = "tag_cdp"
   name_alias  = "alias_cdp"
+  description = "From Terraform"
 }
 ```
 
 ## Argument Reference ##
 
-* `name` - (Required) name of Object cdp_interface_policy.
-* `admin_st` - (Optional) administrative state.  Allowed values: "enabled", "disabled".  Default value is "enabled".
-* `annotation` - (Optional) annotation for object cdp_interface_policy.
-* `name_alias` - (Optional) name_alias for object cdp_interface_policy.
-
+* `name` - (Required) Name of Object cdp interface policy.
+* `admin_st` - (Optional) Administrative state.  Allowed values: "enabled", "disabled".  Default value is "enabled".
+* `annotation` - (Optional) Annotation for object cdp interface policy.
+* `name_alias` - (Optional) Name alias for object cdp interface policy.
+* `description` - (Optional) Description for object cdp interface policy.
 ## Attribute Reference ##
 
 The only attribute that this resource exports is the `id`, which is set to the

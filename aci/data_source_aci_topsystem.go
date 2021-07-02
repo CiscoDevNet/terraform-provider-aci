@@ -1,21 +1,23 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func dataSourceAciSystem() *schema.Resource {
 	return &schema.Resource{
 
-		Read: dataSourceAciSystemRead,
+		ReadContext: dataSourceAciSystemRead,
 
 		SchemaVersion: 1,
 
-		Schema: AppendBaseAttrSchema(map[string]*schema.Schema{
+		Schema: map[string]*schema.Schema{
 
 			"system_id": &schema.Schema{
 				Type:     schema.TypeString,
@@ -307,11 +309,11 @@ func dataSourceAciSystem() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
-		}),
+		},
 	}
 }
 
-func dataSourceAciSystemRead(d *schema.ResourceData, m interface{}) error {
+func dataSourceAciSystemRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	aciClient := m.(*client.Client)
 	pod := d.Get("pod_id").(string)
 	node := d.Get("system_id").(string)
@@ -320,10 +322,14 @@ func dataSourceAciSystemRead(d *schema.ResourceData, m interface{}) error {
 	topSystem, err := getRemoteSystem(aciClient, dn)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.SetId(dn)
-	setSystemAttributes(topSystem, d)
+	_, err = setSystemAttributes(topSystem, d)
+
+	if err != nil {
+		return diag.FromErr(err)
+	}
 	return nil
 }
 
@@ -342,11 +348,15 @@ func getRemoteSystem(client *client.Client, dn string) (*models.System, error) {
 	return topSystem, nil
 }
 
-func setSystemAttributes(topSystem *models.System, d *schema.ResourceData) *schema.ResourceData {
+func setSystemAttributes(topSystem *models.System, d *schema.ResourceData) (*schema.ResourceData, error) {
 	d.SetId(topSystem.DistinguishedName)
 	d.Set("description", topSystem.Description)
 
-	topSystemMap, _ := topSystem.ToMap()
+	topSystemMap, err := topSystem.ToMap()
+
+	if err != nil {
+		return d, err
+	}
 	d.Set("address", topSystemMap["address"])
 	d.Set("etep_addr", topSystemMap["etepAddr"])
 	d.Set("system_id", topSystemMap["id"])
@@ -386,9 +396,10 @@ func setSystemAttributes(topSystem *models.System, d *schema.ResourceData) *sche
 	d.Set("oob_mgmt_gateway", topSystemMap["oobMgmtGateway"])
 	d.Set("oob_mgmt_gateway6", topSystemMap["oobMgmtGateway6"])
 	d.Set("pod_id", topSystemMap["podId"])
-	d.Set("rl_oper_pod_id", topSystemMap["oobMgmtGateway"])
+	d.Set("rl_oper_pod_id", topSystemMap["rlOperPodId"])
 	d.Set("rl_routable_mode", topSystemMap["rlRoutableMode"])
 	d.Set("serial", topSystemMap["serial"])
+	d.Set("site_id", topSystemMap["siteId"])
 	d.Set("state", topSystemMap["state"])
 	d.Set("system_uptime", topSystemMap["systemUpTime"])
 	d.Set("tep_pool", topSystemMap["tepPool"])
@@ -396,5 +407,5 @@ func setSystemAttributes(topSystem *models.System, d *schema.ResourceData) *sche
 	d.Set("version", topSystemMap["version"])
 	d.Set("virtual_mode", topSystemMap["virtualMode"])
 
-	return d
+	return d, nil
 }

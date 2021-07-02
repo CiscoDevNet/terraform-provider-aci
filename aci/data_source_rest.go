@@ -1,16 +1,18 @@
 package aci
 
 import (
+	"context"
 	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/container"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func datasourceAciRest() *schema.Resource {
 	return &schema.Resource{
-		Read: datasourceAciRestRead,
+		ReadContext: datasourceAciRestRead,
 
 		SchemaVersion: 1,
 
@@ -62,7 +64,7 @@ func datasourceAciRest() *schema.Resource {
 	}
 }
 
-func datasourceAciRestRead(d *schema.ResourceData, m interface{}) error {
+func datasourceAciRestRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] Rest data source: Beginning Read")
 
 	aciClient := m.(*client.Client)
@@ -71,7 +73,7 @@ func datasourceAciRestRead(d *schema.ResourceData, m interface{}) error {
 
 	cont, err := aciClient.GetViaURL(path)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	// Fetching class name
@@ -90,7 +92,7 @@ func datasourceAciRestRead(d *schema.ResourceData, m interface{}) error {
 	if payloadData.Exists(d.Get("class_name").(string), "children") {
 		childrenSet, err := getChildrenAttrs(aciClient, payloadData.S(d.Get("class_name").(string), "children"))
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 
 		d.Set("children", childrenSet)

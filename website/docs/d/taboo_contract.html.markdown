@@ -6,27 +6,27 @@ description: |-
   Data source for ACI Taboo Contract
 ---
 
-# aci_taboo_contract #
+# aci_taboo_contract
+
 Data source for ACI Taboo Contract
 
-## Example Usage ##
+## Example Usage
 
 ```hcl
 data "aci_taboo_contract" "example" {
-
-  tenant_dn  = "${aci_tenant.example.id}"
-
+  tenant_dn  = aci_tenant.example.id
   name  = "example"
 }
 ```
-## Argument Reference ##
-* `tenant_dn` - (Required) Distinguished name of parent Tenant object.
-* `name` - (Required) name of Object taboo_contract.
 
+## Argument Reference
 
+- `tenant_dn` - (Required) Distinguished name of parent Tenant object.
+- `name` - (Required) Name of Object Taboo Contract.
 
 ## Attribute Reference
 
-* `id` - Attribute id set to the Dn of the Taboo Contract.
-* `annotation` - (Optional) annotation for object taboo_contract.
-* `name_alias` - (Optional) name_alias for object taboo_contract.
+- `id` - Attribute id set to the Dn of the Taboo Contract.
+- `description` - (Optional) Description for object Taboo Contract.
+- `annotation` - (Optional) Annotation for object Taboo Contract.
+- `name_alias` - (Optional) Name alias for object Taboo Contract.

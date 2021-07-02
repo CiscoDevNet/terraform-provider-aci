@@ -1,6 +1,5 @@
 package models
 
-
 import (
 	"fmt"
 	"strconv"
@@ -12,27 +11,19 @@ const InfraattentitypClassName = "infraAttEntityP"
 
 type AttachableAccessEntityProfile struct {
 	BaseAttributes
-    AttachableAccessEntityProfileAttributes 
+	AttachableAccessEntityProfileAttributes
 }
-  
+
 type AttachableAccessEntityProfileAttributes struct {
-	
-	
 	Name string `json:",omitempty"`
-	
-	
-    
-	Annotation       string `json:",omitempty"`
-	
-    
-	NameAlias       string `json:",omitempty"`
-	
-    
+
+	Annotation string `json:",omitempty"`
+
+	NameAlias string `json:",omitempty"`
 }
-   
 
 func NewAttachableAccessEntityProfile(infraAttEntityPRn, parentDn, description string, infraAttEntityPattr AttachableAccessEntityProfileAttributes) *AttachableAccessEntityProfile {
-	dn := fmt.Sprintf("%s/%s", parentDn, infraAttEntityPRn)  
+	dn := fmt.Sprintf("%s/%s", parentDn, infraAttEntityPRn)
 	return &AttachableAccessEntityProfile{
 		BaseAttributes: BaseAttributes{
 			DistinguishedName: dn,
@@ -41,9 +32,8 @@ func NewAttachableAccessEntityProfile(infraAttEntityPRn, parentDn, description s
 			ClassName:         InfraattentitypClassName,
 			Rn:                infraAttEntityPRn,
 		},
-        
+
 		AttachableAccessEntityProfileAttributes: infraAttEntityPattr,
-         
 	}
 }
 
@@ -53,19 +43,11 @@ func (infraAttEntityP *AttachableAccessEntityProfile) ToMap() (map[string]string
 		return nil, err
 	}
 
-	
-	
-	A(infraAttEntityPMap, "name",infraAttEntityP.Name)
-	
-	
-    
-	A(infraAttEntityPMap, "annotation",infraAttEntityP.Annotation)
-	
-    
-	A(infraAttEntityPMap, "nameAlias",infraAttEntityP.NameAlias)
-	
-    
-	
+	A(infraAttEntityPMap, "name", infraAttEntityP.Name)
+
+	A(infraAttEntityPMap, "annotation", infraAttEntityP.Annotation)
+
+	A(infraAttEntityPMap, "nameAlias", infraAttEntityP.NameAlias)
 
 	return infraAttEntityPMap, err
 }
@@ -81,22 +63,15 @@ func AttachableAccessEntityProfileFromContainerList(cont *container.Container, i
 			ClassName:         InfraattentitypClassName,
 			Rn:                G(AttachableAccessEntityProfileCont, "rn"),
 		},
-        
+
 		AttachableAccessEntityProfileAttributes{
-		
-		
-			Name : G(AttachableAccessEntityProfileCont, "name"),
-		
-		
-        
-	        Annotation : G(AttachableAccessEntityProfileCont, "annotation"),
-		
-        
-	        NameAlias : G(AttachableAccessEntityProfileCont, "nameAlias"),
-		
-        		
-        },
-        
+
+			Name: G(AttachableAccessEntityProfileCont, "name"),
+
+			Annotation: G(AttachableAccessEntityProfileCont, "annotation"),
+
+			NameAlias: G(AttachableAccessEntityProfileCont, "nameAlias"),
+		},
 	}
 }
 

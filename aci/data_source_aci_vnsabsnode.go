@@ -1,16 +1,18 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func dataSourceAciFunctionNode() *schema.Resource {
 	return &schema.Resource{
 
-		Read: dataSourceAciFunctionNodeRead,
+		ReadContext: dataSourceAciFunctionNodeRead,
 
 		SchemaVersion: 1,
 
@@ -82,7 +84,7 @@ func dataSourceAciFunctionNode() *schema.Resource {
 	}
 }
 
-func dataSourceAciFunctionNodeRead(d *schema.ResourceData, m interface{}) error {
+func dataSourceAciFunctionNodeRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	aciClient := m.(*client.Client)
 
 	name := d.Get("name").(string)
@@ -95,9 +97,12 @@ func dataSourceAciFunctionNodeRead(d *schema.ResourceData, m interface{}) error 
 	vnsAbsNode, err := getRemoteFunctionNode(aciClient, dn)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.SetId(dn)
-	setFunctionNodeAttributes(vnsAbsNode, d)
+	_, err = setFunctionNodeAttributes(vnsAbsNode, d)
+	if err != nil {
+		return diag.FromErr(err)
+	}
 	return nil
 }

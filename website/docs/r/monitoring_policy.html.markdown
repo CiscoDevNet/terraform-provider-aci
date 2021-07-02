@@ -13,19 +13,22 @@ Manages ACI Monitoring Policy
 
 ```hcl
 resource "aci_monitoring_policy" "example" {
-  tenant_dn = "example"
-  name  = "example"
-  name_alias = "example"
+  			tenant_dn  = aci_tenant.example.id
+			description = "From Terraform"
+			name        = "example"
+			annotation  = "example"
+			name_alias  = "example"
 }
 ```
 
 
 ## Argument Reference ##
 
-* `name` - (Required) name of object monitoring policy.
-* `tenant_dn` - (Required) tenant dn for monitoring policy.
-* `name_alias` - (Optional) name alias for monitoring policy.
-* `annotation` - (Optional) annotation for object monitoring policy.
+* `name` - (Required) Name of object monitoring policy.
+* `tenant_dn` - (Required) Tenant dn for monitoring policy.
+* `name_alias` - (Optional) Name alias for monitoring policy.
+* `description` - (Optional) Description for object monitoring policy.
+* `annotation` - (Optional) Annotation for object monitoring policy.
                 
 
 

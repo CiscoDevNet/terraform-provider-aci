@@ -14,19 +14,19 @@ Data source for ACI Spine Profile
 ```hcl
 
 data "aci_spine_profile" "example" {
-  name  = "example"
+  name  = "spine_profile_1"
 }
 
 ```
 
 
 ## Argument Reference ##
-* `name` - (Required) name of Object spine_profile.
-
+* `name` - (Required) Name of Object Spine Profile.
 
 
 ## Attribute Reference
 
 * `id` - Attribute id set to the Dn of the Spine Profile.
-* `annotation` - (Optional) annotation for object spine_profile.
-* `name_alias` - (Optional) name_alias for object spine_profile.
+* `description` - (Optional) Description for object Spine Profile.
+* `annotation` - (Optional) Annotation for object Spine Profile.
+* `name_alias` - (Optional) Name alias for object Spine Profile.

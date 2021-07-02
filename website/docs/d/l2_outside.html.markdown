@@ -14,19 +14,20 @@ Data source for ACI L2 Outside
 
 ```hcl
 data "aci_l2_outside" "example" {
-  tenant_dn  = "${aci_tenant.example.id}"
-  name  = "example"
+  tenant_dn  = aci_tenant.example.id
+  name  = "l2_outside_1"
 }
 ```
 
 ## Argument Reference
 
 - `tenant_dn` - (Required) Distinguished name of parent Tenant object.
-- `name` - (Required) name of object l2 outside.
+- `name` - (Required) Name of object l2 outside.
 
 ## Attribute Reference
 
 - `id` - Attribute id set to the Dn of the l2 outside.
 - `annotation` - (Optional) Annotation for object l2 outside.
+- `description` - (Optional) Description for object l2 outside.
 - `name_alias` - (Optional) Name alias for object l2 outside.
-- `target_dscp` - (Optional) Target dscp.
+- `target_dscp` - (Optional) Target dscp for object l2 outside.

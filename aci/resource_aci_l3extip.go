@@ -1,21 +1,23 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciL3outPathAttachmentSecondaryIp() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciL3outPathAttachmentSecondaryIpCreate,
-		Update: resourceAciL3outPathAttachmentSecondaryIpUpdate,
-		Read:   resourceAciL3outPathAttachmentSecondaryIpRead,
-		Delete: resourceAciL3outPathAttachmentSecondaryIpDelete,
+		CreateContext: resourceAciL3outPathAttachmentSecondaryIpCreate,
+		UpdateContext: resourceAciL3outPathAttachmentSecondaryIpUpdate,
+		ReadContext:   resourceAciL3outPathAttachmentSecondaryIpRead,
+		DeleteContext: resourceAciL3outPathAttachmentSecondaryIpDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciL3outPathAttachmentSecondaryIpImport,
@@ -69,14 +71,17 @@ func getRemoteL3outPathAttachmentSecondaryIp(client *client.Client, dn string) (
 	return l3extIp, nil
 }
 
-func setL3outPathAttachmentSecondaryIpAttributes(l3extIp *models.L3outPathAttachmentSecondaryIp, d *schema.ResourceData) *schema.ResourceData {
+func setL3outPathAttachmentSecondaryIpAttributes(l3extIp *models.L3outPathAttachmentSecondaryIp, d *schema.ResourceData) (*schema.ResourceData, error) {
 	d.SetId(l3extIp.DistinguishedName)
 	d.Set("description", l3extIp.Description)
 	dn := d.Id()
 	if dn != l3extIp.DistinguishedName {
 		d.Set("l3out_path_attachment_dn", "")
 	}
-	l3extIpMap, _ := l3extIp.ToMap()
+	l3extIpMap, err := l3extIp.ToMap()
+	if err != nil {
+		return d, err
+	}
 
 	d.Set("addr", l3extIpMap["addr"])
 
@@ -84,7 +89,7 @@ func setL3outPathAttachmentSecondaryIpAttributes(l3extIp *models.L3outPathAttach
 	d.Set("annotation", l3extIpMap["annotation"])
 	d.Set("ipv6_dad", l3extIpMap["ipv6Dad"])
 	d.Set("name_alias", l3extIpMap["nameAlias"])
-	return d
+	return d, nil
 }
 
 func resourceAciL3outPathAttachmentSecondaryIpImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -98,14 +103,16 @@ func resourceAciL3outPathAttachmentSecondaryIpImport(d *schema.ResourceData, m i
 	if err != nil {
 		return nil, err
 	}
-	schemaFilled := setL3outPathAttachmentSecondaryIpAttributes(l3extIp, d)
-
+	schemaFilled, err := setL3outPathAttachmentSecondaryIpAttributes(l3extIp, d)
+	if err != nil {
+		return nil, err
+	}
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciL3outPathAttachmentSecondaryIpCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciL3outPathAttachmentSecondaryIpCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] L3outPathAttachmentSecondaryIp: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -133,30 +140,25 @@ func resourceAciL3outPathAttachmentSecondaryIpCreate(d *schema.ResourceData, m i
 
 	err := aciClient.Save(l3extIp)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.SetPartial("addr")
-
-	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
 
 	d.Partial(true)
 	err = checkTDn(aciClient, checkDns)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Partial(false)
 
 	d.SetId(l3extIp.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciL3outPathAttachmentSecondaryIpRead(d, m)
+	return resourceAciL3outPathAttachmentSecondaryIpRead(ctx, d, m)
 }
 
-func resourceAciL3outPathAttachmentSecondaryIpUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciL3outPathAttachmentSecondaryIpUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] L3outPathAttachmentSecondaryIp: Beginning Update")
 
 	aciClient := m.(*client.Client)
@@ -188,31 +190,26 @@ func resourceAciL3outPathAttachmentSecondaryIpUpdate(d *schema.ResourceData, m i
 	err := aciClient.Save(l3extIp)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.SetPartial("addr")
-
-	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
 
 	d.Partial(true)
 	err = checkTDn(aciClient, checkDns)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Partial(false)
 
 	d.SetId(l3extIp.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciL3outPathAttachmentSecondaryIpRead(d, m)
+	return resourceAciL3outPathAttachmentSecondaryIpRead(ctx, d, m)
 
 }
 
-func resourceAciL3outPathAttachmentSecondaryIpRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciL3outPathAttachmentSecondaryIpRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -224,25 +221,28 @@ func resourceAciL3outPathAttachmentSecondaryIpRead(d *schema.ResourceData, m int
 		d.SetId("")
 		return nil
 	}
-	setL3outPathAttachmentSecondaryIpAttributes(l3extIp, d)
-
+	_, err = setL3outPathAttachmentSecondaryIpAttributes(l3extIp, d)
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 
 	return nil
 }
 
-func resourceAciL3outPathAttachmentSecondaryIpDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciL3outPathAttachmentSecondaryIpDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "l3extIp")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
 }

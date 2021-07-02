@@ -1,20 +1,22 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func resourceAciVlanEncapsulationforVxlanTraffic() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciVlanEncapsulationforVxlanTrafficCreate,
-		Update: resourceAciVlanEncapsulationforVxlanTrafficUpdate,
-		Read:   resourceAciVlanEncapsulationforVxlanTrafficRead,
-		Delete: resourceAciVlanEncapsulationforVxlanTrafficDelete,
+		CreateContext: resourceAciVlanEncapsulationforVxlanTrafficCreate,
+		UpdateContext: resourceAciVlanEncapsulationforVxlanTrafficUpdate,
+		ReadContext:   resourceAciVlanEncapsulationforVxlanTrafficRead,
+		DeleteContext: resourceAciVlanEncapsulationforVxlanTrafficDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciVlanEncapsulationforVxlanTrafficImport,
@@ -52,7 +54,7 @@ func getRemoteVlanEncapsulationforVxlanTraffic(client *client.Client, dn string)
 	return infraProvAcc, nil
 }
 
-func setVlanEncapsulationforVxlanTrafficAttributes(infraProvAcc *models.VlanEncapsulationforVxlanTraffic, d *schema.ResourceData) *schema.ResourceData {
+func setVlanEncapsulationforVxlanTrafficAttributes(infraProvAcc *models.VlanEncapsulationforVxlanTraffic, d *schema.ResourceData) (*schema.ResourceData, error) {
 	dn := d.Id()
 	d.SetId(infraProvAcc.DistinguishedName)
 	d.Set("description", infraProvAcc.Description)
@@ -60,11 +62,14 @@ func setVlanEncapsulationforVxlanTrafficAttributes(infraProvAcc *models.VlanEnca
 	if dn != infraProvAcc.DistinguishedName {
 		d.Set("attachable_access_entity_profile_dn", "")
 	}
-	infraProvAccMap, _ := infraProvAcc.ToMap()
+	infraProvAccMap, err := infraProvAcc.ToMap()
+	if err != nil {
+		return d, err
+	}
 
 	d.Set("annotation", infraProvAccMap["annotation"])
 	d.Set("name_alias", infraProvAccMap["nameAlias"])
-	return d
+	return d, nil
 }
 
 func resourceAciVlanEncapsulationforVxlanTrafficImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -78,16 +83,21 @@ func resourceAciVlanEncapsulationforVxlanTrafficImport(d *schema.ResourceData, m
 	if err != nil {
 		return nil, err
 	}
+
 	pDN := GetParentDn(dn, fmt.Sprintf("/provacc"))
 	d.Set("attachable_access_entity_profile_dn", pDN)
-	schemaFilled := setVlanEncapsulationforVxlanTrafficAttributes(infraProvAcc, d)
+	schemaFilled, err := setVlanEncapsulationforVxlanTrafficAttributes(infraProvAcc, d)
+
+	if err != nil {
+		return nil, err
+	}
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciVlanEncapsulationforVxlanTrafficCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciVlanEncapsulationforVxlanTrafficCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] VlanEncapsulationforVxlanTraffic: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -106,18 +116,16 @@ func resourceAciVlanEncapsulationforVxlanTrafficCreate(d *schema.ResourceData, m
 
 	err := aciClient.Save(infraProvAcc)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-	d.Partial(false)
 
 	d.SetId(infraProvAcc.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciVlanEncapsulationforVxlanTrafficRead(d, m)
+	return resourceAciVlanEncapsulationforVxlanTrafficRead(ctx, d, m)
 }
 
-func resourceAciVlanEncapsulationforVxlanTrafficUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciVlanEncapsulationforVxlanTrafficUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] VlanEncapsulationforVxlanTraffic: Beginning Update")
 
 	aciClient := m.(*client.Client)
@@ -141,19 +149,17 @@ func resourceAciVlanEncapsulationforVxlanTrafficUpdate(d *schema.ResourceData, m
 	err := aciClient.Save(infraProvAcc)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-	d.Partial(false)
 
 	d.SetId(infraProvAcc.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciVlanEncapsulationforVxlanTrafficRead(d, m)
+	return resourceAciVlanEncapsulationforVxlanTrafficRead(ctx, d, m)
 
 }
 
-func resourceAciVlanEncapsulationforVxlanTrafficRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciVlanEncapsulationforVxlanTrafficRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -165,25 +171,30 @@ func resourceAciVlanEncapsulationforVxlanTrafficRead(d *schema.ResourceData, m i
 		d.SetId("")
 		return nil
 	}
-	setVlanEncapsulationforVxlanTrafficAttributes(infraProvAcc, d)
+	_, err = setVlanEncapsulationforVxlanTrafficAttributes(infraProvAcc, d)
+
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 
 	return nil
 }
 
-func resourceAciVlanEncapsulationforVxlanTrafficDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciVlanEncapsulationforVxlanTrafficDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "infraProvAcc")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
 }

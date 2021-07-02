@@ -1,16 +1,18 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func dataSourceAciAccessPortBlock() *schema.Resource {
 	return &schema.Resource{
 
-		Read: dataSourceAciAccessPortBlockRead,
+		ReadContext: dataSourceAciAccessPortBlockRead,
 
 		SchemaVersion: 1,
 
@@ -58,7 +60,7 @@ func dataSourceAciAccessPortBlock() *schema.Resource {
 	}
 }
 
-func dataSourceAciAccessPortBlockRead(d *schema.ResourceData, m interface{}) error {
+func dataSourceAciAccessPortBlockRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	aciClient := m.(*client.Client)
 
 	name := d.Get("name").(string)
@@ -71,9 +73,12 @@ func dataSourceAciAccessPortBlockRead(d *schema.ResourceData, m interface{}) err
 	infraPortBlk, err := getRemoteAccessPortBlock(aciClient, dn)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.SetId(dn)
-	setAccessPortBlockAttributes(infraPortBlk, d)
+	_, err = setAccessPortBlockAttributes(infraPortBlk, d)
+	if err != nil {
+		return diag.FromErr(err)
+	}
 	return nil
 }

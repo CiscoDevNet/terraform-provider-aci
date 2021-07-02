@@ -1,21 +1,23 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciFilterEntry() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciFilterEntryCreate,
-		Update: resourceAciFilterEntryUpdate,
-		Read:   resourceAciFilterEntryRead,
-		Delete: resourceAciFilterEntryDelete,
+		CreateContext: resourceAciFilterEntryCreate,
+		UpdateContext: resourceAciFilterEntryUpdate,
+		ReadContext:   resourceAciFilterEntryRead,
+		DeleteContext: resourceAciFilterEntryDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciFilterEntryImport,
@@ -226,7 +228,7 @@ func getRemoteFilterEntry(client *client.Client, dn string) (*models.FilterEntry
 	return vzEntry, nil
 }
 
-func setFilterEntryAttributes(vzEntry *models.FilterEntry, d *schema.ResourceData) *schema.ResourceData {
+func setFilterEntryAttributes(vzEntry *models.FilterEntry, d *schema.ResourceData) (*schema.ResourceData, error) {
 	dn := d.Id()
 	d.SetId(vzEntry.DistinguishedName)
 	d.Set("description", vzEntry.Description)
@@ -234,7 +236,10 @@ func setFilterEntryAttributes(vzEntry *models.FilterEntry, d *schema.ResourceDat
 	if dn != vzEntry.DistinguishedName {
 		d.Set("filter_dn", "")
 	}
-	vzEntryMap, _ := vzEntry.ToMap()
+	vzEntryMap, err := vzEntry.ToMap()
+	if err != nil {
+		return d, err
+	}
 	log.Println("Check .... :", d.Get("d_from_port"))
 	d.Set("name", vzEntryMap["name"])
 
@@ -248,11 +253,15 @@ func setFilterEntryAttributes(vzEntry *models.FilterEntry, d *schema.ResourceDat
 	d.Set("name_alias", vzEntryMap["nameAlias"])
 	d.Set("prot", vzEntryMap["prot"])
 	d.Set("stateful", vzEntryMap["stateful"])
-	d.Set("tcp_rules", vzEntryMap["tcpRules"])
-	return d
+	if vzEntryMap["tcpRules"] == "" {
+		d.Set("tcp_rules", "unspecified")
+	} else {
+		d.Set("tcp_rules", vzEntryMap["tcpRules"])
+	}
+	return d, nil
 }
 
-func portConversionCheck(vzEntry *models.FilterEntry, d *schema.ResourceData) *schema.ResourceData {
+func portConversionCheck(vzEntry *models.FilterEntry, d *schema.ResourceData) (*schema.ResourceData, error) {
 	constantPortMapping := map[string]string{
 		"smtp":        "25",
 		"dns":         "53",
@@ -264,7 +273,10 @@ func portConversionCheck(vzEntry *models.FilterEntry, d *schema.ResourceData) *s
 		"ssh":         "22",
 		"unspecified": "0",
 	}
-	vzEntryMap, _ := vzEntry.ToMap()
+	vzEntryMap, err := vzEntry.ToMap()
+	if err != nil {
+		return d, err
+	}
 	if DFromPortTf, ok := d.GetOk("d_from_port"); ok {
 		if DFromPortTf != vzEntryMap["dFromPort"] {
 			if DFromPortTf != constantPortMapping[vzEntryMap["dFromPort"]] {
@@ -320,7 +332,7 @@ func portConversionCheck(vzEntry *models.FilterEntry, d *schema.ResourceData) *s
 	} else {
 		d.Set("s_to_port", vzEntryMap["sToPort"])
 	}
-	return d
+	return d, nil
 
 }
 
@@ -335,18 +347,23 @@ func resourceAciFilterEntryImport(d *schema.ResourceData, m interface{}) ([]*sch
 	if err != nil {
 		return nil, err
 	}
-	vzEntryMap, _ := vzEntry.ToMap()
+	vzEntryMap, err := vzEntry.ToMap()
+	if err != nil {
+		return nil, err
+	}
 	name := vzEntryMap["name"]
 	pDN := GetParentDn(dn, fmt.Sprintf("/e-%s", name))
 	d.Set("filter_dn", pDN)
-	schemaFilled := setFilterEntryAttributes(vzEntry, d)
-
+	schemaFilled, err := setFilterEntryAttributes(vzEntry, d)
+	if err != nil {
+		return nil, err
+	}
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciFilterEntryCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciFilterEntryCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] FilterEntry: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -407,21 +424,16 @@ func resourceAciFilterEntryCreate(d *schema.ResourceData, m interface{}) error {
 
 	err := aciClient.Save(vzEntry)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.SetPartial("name")
-
-	d.Partial(false)
 
 	d.SetId(vzEntry.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciFilterEntryRead(d, m)
+	return resourceAciFilterEntryRead(ctx, d, m)
 }
 
-func resourceAciFilterEntryUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciFilterEntryUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] FilterEntry: Beginning Update")
 
 	aciClient := m.(*client.Client)
@@ -486,22 +498,16 @@ func resourceAciFilterEntryUpdate(d *schema.ResourceData, m interface{}) error {
 	err := aciClient.Save(vzEntry)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.SetPartial("name")
-
-	d.Partial(false)
 
 	d.SetId(vzEntry.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciFilterEntryRead(d, m)
-
+	return resourceAciFilterEntryRead(ctx, d, m)
 }
 
-func resourceAciFilterEntryRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciFilterEntryRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -513,27 +519,33 @@ func resourceAciFilterEntryRead(d *schema.ResourceData, m interface{}) error {
 		d.SetId("")
 		return nil
 	}
-	d = portConversionCheck(vzEntry, d)
-
-	setFilterEntryAttributes(vzEntry, d)
-
+	d, err = portConversionCheck(vzEntry, d)
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
+	_, err = setFilterEntryAttributes(vzEntry, d)
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 
 	return nil
 }
 
-func resourceAciFilterEntryDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciFilterEntryDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "vzEntry")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
 }

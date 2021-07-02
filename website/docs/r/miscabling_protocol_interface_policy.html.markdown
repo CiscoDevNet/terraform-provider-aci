@@ -24,10 +24,11 @@ resource "aci_miscabling_protocol_interface_policy" "example" {
 
 ## Argument Reference ##
 
-* `name` - (Required) name of Object miscabling_protocol_interface_policy.
-* `admin_st` - (Optional) administrative state of the object or policy. Allowed values are "enabled" and "disabled". Default is "enabled".
-* `annotation` - (Optional) annotation for object miscabling_protocol_interface_policy.
-* `name_alias` - (Optional) name_alias for object miscabling_protocol_interface_policy.
+* `name` - (Required) Name of Object miscabling protocol interface policy.
+* `admin_st` - (Optional) Administrative state of the object or policy. Allowed values are "enabled" and "disabled". Default is "enabled".
+* `description` - (Optional) Description for object miscabling protocol interface policy.
+* `annotation` - (Optional) Annotation for object miscabling protocol interface policy.
+* `name_alias` - (Optional) Name alias for object miscabling protocol interface policy.
 
 ## Attribute Reference ##
 

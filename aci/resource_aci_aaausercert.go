@@ -1,20 +1,23 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
+	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func resourceAciX509Certificate() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciX509CertificateCreate,
-		Update: resourceAciX509CertificateUpdate,
-		Read:   resourceAciX509CertificateRead,
-		Delete: resourceAciX509CertificateDelete,
+		CreateContext: resourceAciX509CertificateCreate,
+		UpdateContext: resourceAciX509CertificateUpdate,
+		ReadContext:   resourceAciX509CertificateRead,
+		DeleteContext: resourceAciX509CertificateDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciX509CertificateImport,
@@ -37,8 +40,7 @@ func resourceAciX509Certificate() *schema.Resource {
 
 			"data": &schema.Schema{
 				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
+				Required: true,
 			},
 
 			"name_alias": &schema.Schema{
@@ -64,7 +66,7 @@ func getRemoteX509Certificate(client *client.Client, dn string) (*models.X509Cer
 	return aaaUserCert, nil
 }
 
-func setX509CertificateAttributes(aaaUserCert *models.X509Certificate, d *schema.ResourceData) *schema.ResourceData {
+func setX509CertificateAttributes(aaaUserCert *models.X509Certificate, d *schema.ResourceData) (*schema.ResourceData, error) {
 	dn := d.Id()
 	d.SetId(aaaUserCert.DistinguishedName)
 	d.Set("description", aaaUserCert.Description)
@@ -72,14 +74,19 @@ func setX509CertificateAttributes(aaaUserCert *models.X509Certificate, d *schema
 	if dn != aaaUserCert.DistinguishedName {
 		d.Set("local_user_dn", "")
 	}
-	aaaUserCertMap, _ := aaaUserCert.ToMap()
+	aaaUserCertMap, err := aaaUserCert.ToMap()
+	if err != nil {
+		return d, err
+	}
 
 	d.Set("name", aaaUserCertMap["name"])
 
 	d.Set("annotation", aaaUserCertMap["annotation"])
-	d.Set("data", aaaUserCertMap["data"])
+	data := strings.Replace(aaaUserCertMap["data"], "\\r", "\r", -1)
+	data = strings.Replace(data, "\\n", "\n", -1)
+	d.Set("data", data)
 	d.Set("name_alias", aaaUserCertMap["nameAlias"])
-	return d
+	return d, nil
 }
 
 func resourceAciX509CertificateImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -89,23 +96,29 @@ func resourceAciX509CertificateImport(d *schema.ResourceData, m interface{}) ([]
 	dn := d.Id()
 
 	aaaUserCert, err := getRemoteX509Certificate(aciClient, dn)
-
 	if err != nil {
 		return nil, err
 	}
 
-	aaaUserCertMap, _ := aaaUserCert.ToMap()
+	aaaUserCertMap, err := aaaUserCert.ToMap()
+	if err != nil {
+		return nil, err
+	}
+
 	name := aaaUserCertMap["name"]
 	pDN := GetParentDn(dn, fmt.Sprintf("/usercert-%s", name))
 	d.Set("local_user_dn", pDN)
-	schemaFilled := setX509CertificateAttributes(aaaUserCert, d)
+	schemaFilled, err := setX509CertificateAttributes(aaaUserCert, d)
+	if err != nil {
+		return nil, err
+	}
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciX509CertificateCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciX509CertificateCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] X509Certificate: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -130,21 +143,16 @@ func resourceAciX509CertificateCreate(d *schema.ResourceData, m interface{}) err
 
 	err := aciClient.Save(aaaUserCert)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.SetPartial("name")
-
-	d.Partial(false)
 
 	d.SetId(aaaUserCert.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciX509CertificateRead(d, m)
+	return resourceAciX509CertificateRead(ctx, d, m)
 }
 
-func resourceAciX509CertificateUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciX509CertificateUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] X509Certificate: Beginning Update")
 
 	aciClient := m.(*client.Client)
@@ -173,22 +181,16 @@ func resourceAciX509CertificateUpdate(d *schema.ResourceData, m interface{}) err
 	err := aciClient.Save(aaaUserCert)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.SetPartial("name")
-
-	d.Partial(false)
 
 	d.SetId(aaaUserCert.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciX509CertificateRead(d, m)
-
+	return resourceAciX509CertificateRead(ctx, d, m)
 }
 
-func resourceAciX509CertificateRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciX509CertificateRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -198,27 +200,31 @@ func resourceAciX509CertificateRead(d *schema.ResourceData, m interface{}) error
 
 	if err != nil {
 		d.SetId("")
+		return diag.FromErr(err)
+	}
+	_, err = setX509CertificateAttributes(aaaUserCert, d)
+	if err != nil {
+		d.SetId("")
 		return nil
 	}
-	setX509CertificateAttributes(aaaUserCert, d)
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 
 	return nil
 }
 
-func resourceAciX509CertificateDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciX509CertificateDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "aaaUserCert")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
 }

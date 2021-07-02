@@ -32,12 +32,13 @@ data "aci_vmm_credential" "example" {
 ## Argument Reference ##
 
 * `vmm_domain_dn` - (Required) Distinguished name of parent VMM Domain object.
-* `name` - (Required) name of object VMM Credential.
+* `name` - (Required) Name of object VMM Credential.
 
 ## Attribute Reference ##
 
 * `id` - Attribute id set to the Dn of the VMM Credential.
 * `annotation` - (Optional) Annotation of object VMM Credential.
+* `description` - (Optional) Description of object VMM Credential.
 * `name_alias` - (Optional) Name Alias of object VMM Credential.
 * `pwd` - (Optional) Password.
 * `usr` - (Optional) Username.

@@ -22,10 +22,9 @@ resource "aci_physical_domain" "example" {
 
 ## Argument Reference ##
 
-* `name` - (Required) name of Object physical_domain.
-* `annotation` - (Optional) annotation for object physical_domain.
-* `name_alias` - (Optional) name_alias for object physical_domain.
-
+* `name` - (Required) Name of Object physical domain.
+* `annotation` - (Optional) Annotation for object physical domain.
+* `name_alias` - (Optional) Name alias for object physical domain.
 * `relation_infra_rs_vlan_ns` - (Optional) Relation to class fvnsVlanInstP. Cardinality - N_TO_ONE. Type - String.
 * `relation_infra_rs_vlan_ns_def` - (Optional) Relation to class fvnsAInstP. Cardinality - N_TO_ONE. Type - String.
 * `relation_infra_rs_vip_addr_ns` - (Optional) Relation to class fvnsAddrInst. Cardinality - N_TO_ONE. Type - String.

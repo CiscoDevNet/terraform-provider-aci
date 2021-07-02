@@ -13,7 +13,7 @@ Data source for ACI Maintenance Group Node
 
 ```hcl
 data "aci_maintenance_group_node" "example" {
-  pod_maintenance_group_dn = "${aci_pod_maintenance_group.example.id}"
+  pod_maintenance_group_dn = aci_pod_maintenance_group.example.id
   name                     = "example"
 }
 ```
@@ -21,15 +21,16 @@ data "aci_maintenance_group_node" "example" {
 
 ## Argument Reference ##
 
-* `pod_maintenance_group_dn` - (Required) Distinguished name of parent POD maintenance group object.
-* `name` - (Required) Name of maintenance group node object.
+* `pod_maintenance_group_dn` - (Required) Distinguished name of parent POD Maintenance Group Object.
+* `name` - (Required) Name of Maintenance Group Node Object.
 
 
 
 ## Attribute Reference
 
-* `id` - Attribute id set to the dn of the maintenance group node object.
-* `annotation` - (Optional) Annotation for maintenance group node object.
-* `from_` - (Optional) From for maintenance group node object.
-* `name_alias` - (Optional) Name alias for maintenance group node object.
-* `to_` - (Optional) To for maintenance group node object.
+* `id` - Attribute id set to the dn of the Maintenance Group Node Object.
+* `description` - (Optional) Description for Maintenance Group Node Object.
+* `annotation` - (Optional) Annotation for Maintenance Group Node Object.
+* `from_` - (Optional) From for Maintenance Group Node Object.
+* `name_alias` - (Optional) Name alias for Maintenance Group Node Object.
+* `to_` - (Optional) To for Maintenance Group Node Object.

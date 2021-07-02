@@ -6,8 +6,8 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
 func TestAccAciSpineAccessPortPolicyGroup_Basic(t *testing.T) {
@@ -62,8 +62,8 @@ func testAccCheckAciSpineAccessPortPolicyGroupConfig_basic(description string) s
 
 	resource "aci_spine_port_policy_group" "foospine_access_port_policy_group" {
 		description = "%s"
-		name  = "example"
-		annotation  = "example"
+		name  = "spine_port_policy_group_1"
+		annotation  = "spine_port_policy_group_tag"
 		name_alias  = "example"
 	}
 	`, description)
@@ -124,11 +124,11 @@ func testAccCheckAciSpineAccessPortPolicyGroupAttributes(description string, spi
 			return fmt.Errorf("Bad spine_access_port_policy_group Description %s", spine_access_port_policy_group.Description)
 		}
 
-		if "example" != spine_access_port_policy_group.Name {
+		if "spine_port_policy_group_1" != spine_access_port_policy_group.Name {
 			return fmt.Errorf("Bad spine_access_port_policy_group name %s", spine_access_port_policy_group.Name)
 		}
 
-		if "example" != spine_access_port_policy_group.Annotation {
+		if "spine_port_policy_group_tag" != spine_access_port_policy_group.Annotation {
 			return fmt.Errorf("Bad spine_access_port_policy_group annotation %s", spine_access_port_policy_group.Annotation)
 		}
 

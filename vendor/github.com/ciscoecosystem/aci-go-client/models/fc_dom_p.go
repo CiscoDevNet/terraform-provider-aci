@@ -22,12 +22,11 @@ type FCDomainAttributes struct {
 	NameAlias string `json:",omitempty"`
 }
 
-func NewFCDomain(fcDomPRn, parentDn, description string, fcDomPattr FCDomainAttributes) *FCDomain {
+func NewFCDomain(fcDomPRn, parentDn string, fcDomPattr FCDomainAttributes) *FCDomain {
 	dn := fmt.Sprintf("%s/%s", parentDn, fcDomPRn)
 	return &FCDomain{
 		BaseAttributes: BaseAttributes{
 			DistinguishedName: dn,
-			Description:       description,
 			Status:            "created, modified",
 			ClassName:         FcdompClassName,
 			Rn:                fcDomPRn,
@@ -58,7 +57,6 @@ func FCDomainFromContainerList(cont *container.Container, index int) *FCDomain {
 	return &FCDomain{
 		BaseAttributes{
 			DistinguishedName: G(FCDomainCont, "dn"),
-			Description:       G(FCDomainCont, "descr"),
 			Status:            G(FCDomainCont, "status"),
 			ClassName:         FcdompClassName,
 			Rn:                G(FCDomainCont, "rn"),

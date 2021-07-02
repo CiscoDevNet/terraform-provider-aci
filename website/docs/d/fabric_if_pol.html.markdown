@@ -21,16 +21,14 @@ data "aci_fabric_if_pol" "example" {
 
 
 ## Argument Reference ##
-* `name` - (Required) name of Object fabric if pol.
-
-
+* `name` - (Required) Name of object fabric if pol.
 
 ## Attribute Reference
 
 * `id` - Attribute id set to the Dn of the fabric if pol.
-* `annotation` - (Optional) annotation for object fabric if pol.
-* `auto_neg` - (Optional) policy auto-negotiation
-* `fec_mode` - (Optional) forwarding error correction
-* `link_debounce` - (Optional) link debounce interval
-* `name_alias` - (Optional) name alias for object fabric if pol.
-* `speed` - (Optional) port speed
+* `annotation` - (Optional) Annotation for object fabric if pol.
+* `auto_neg` - (Optional) Policy auto-negotiation for object fabric if pol.
+* `fec_mode` - (Optional) Forwarding error correction for object fabric if pol.
+* `link_debounce` - (Optional) Link debounce interval for object fabric if pol.
+* `name_alias` - (Optional) Name alias for object fabric if pol.
+* `speed` - (Optional) Port speed for object fabric if pol.

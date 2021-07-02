@@ -1,6 +1,5 @@
 package models
 
-
 import (
 	"fmt"
 	"strconv"
@@ -12,42 +11,29 @@ const FvctxClassName = "fvCtx"
 
 type VRF struct {
 	BaseAttributes
-    VRFAttributes 
+	VRFAttributes
 }
-  
+
 type VRFAttributes struct {
-	
-	
 	Name string `json:",omitempty"`
-	
-	
-    
-	Annotation       string `json:",omitempty"`
-	
-    
-	BdEnforcedEnable       string `json:",omitempty"`
-	
-    
-	IpDataPlaneLearning       string `json:",omitempty"`
-	
-    
-	KnwMcastAct       string `json:",omitempty"`
-	
-    
-	NameAlias       string `json:",omitempty"`
-	
-    
-	PcEnfDir       string `json:",omitempty"`
-	
-    
-	PcEnfPref       string `json:",omitempty"`
-	
-    
+
+	Annotation string `json:",omitempty"`
+
+	BdEnforcedEnable string `json:",omitempty"`
+
+	IpDataPlaneLearning string `json:",omitempty"`
+
+	KnwMcastAct string `json:",omitempty"`
+
+	NameAlias string `json:",omitempty"`
+
+	PcEnfDir string `json:",omitempty"`
+
+	PcEnfPref string `json:",omitempty"`
 }
-   
 
 func NewVRF(fvCtxRn, parentDn, description string, fvCtxattr VRFAttributes) *VRF {
-	dn := fmt.Sprintf("%s/%s", parentDn, fvCtxRn)  
+	dn := fmt.Sprintf("%s/%s", parentDn, fvCtxRn)
 	return &VRF{
 		BaseAttributes: BaseAttributes{
 			DistinguishedName: dn,
@@ -56,9 +42,8 @@ func NewVRF(fvCtxRn, parentDn, description string, fvCtxattr VRFAttributes) *VRF
 			ClassName:         FvctxClassName,
 			Rn:                fvCtxRn,
 		},
-        
+
 		VRFAttributes: fvCtxattr,
-         
 	}
 }
 
@@ -68,34 +53,21 @@ func (fvCtx *VRF) ToMap() (map[string]string, error) {
 		return nil, err
 	}
 
-	
-	
-	A(fvCtxMap, "name",fvCtx.Name)
-	
-	
-    
-	A(fvCtxMap, "annotation",fvCtx.Annotation)
-	
-    
-	A(fvCtxMap, "bdEnforcedEnable",fvCtx.BdEnforcedEnable)
-	
-    
-	A(fvCtxMap, "ipDataPlaneLearning",fvCtx.IpDataPlaneLearning)
-	
-    
-	A(fvCtxMap, "knwMcastAct",fvCtx.KnwMcastAct)
-	
-    
-	A(fvCtxMap, "nameAlias",fvCtx.NameAlias)
-	
-    
-	A(fvCtxMap, "pcEnfDir",fvCtx.PcEnfDir)
-	
-    
-	A(fvCtxMap, "pcEnfPref",fvCtx.PcEnfPref)
-	
-    
-	
+	A(fvCtxMap, "name", fvCtx.Name)
+
+	A(fvCtxMap, "annotation", fvCtx.Annotation)
+
+	A(fvCtxMap, "bdEnforcedEnable", fvCtx.BdEnforcedEnable)
+
+	A(fvCtxMap, "ipDataPlaneLearning", fvCtx.IpDataPlaneLearning)
+
+	A(fvCtxMap, "knwMcastAct", fvCtx.KnwMcastAct)
+
+	A(fvCtxMap, "nameAlias", fvCtx.NameAlias)
+
+	A(fvCtxMap, "pcEnfDir", fvCtx.PcEnfDir)
+
+	A(fvCtxMap, "pcEnfPref", fvCtx.PcEnfPref)
 
 	return fvCtxMap, err
 }
@@ -111,37 +83,25 @@ func VRFFromContainerList(cont *container.Container, index int) *VRF {
 			ClassName:         FvctxClassName,
 			Rn:                G(VRFCont, "rn"),
 		},
-        
+
 		VRFAttributes{
-		
-		
-			Name : G(VRFCont, "name"),
-		
-		
-        
-	        Annotation : G(VRFCont, "annotation"),
-		
-        
-	        BdEnforcedEnable : G(VRFCont, "bdEnforcedEnable"),
-		
-        
-	        IpDataPlaneLearning : G(VRFCont, "ipDataPlaneLearning"),
-		
-        
-	        KnwMcastAct : G(VRFCont, "knwMcastAct"),
-		
-        
-	        NameAlias : G(VRFCont, "nameAlias"),
-		
-        
-	        PcEnfDir : G(VRFCont, "pcEnfDir"),
-		
-        
-	        PcEnfPref : G(VRFCont, "pcEnfPref"),
-		
-        		
-        },
-        
+
+			Name: G(VRFCont, "name"),
+
+			Annotation: G(VRFCont, "annotation"),
+
+			BdEnforcedEnable: G(VRFCont, "bdEnforcedEnable"),
+
+			IpDataPlaneLearning: G(VRFCont, "ipDataPlaneLearning"),
+
+			KnwMcastAct: G(VRFCont, "knwMcastAct"),
+
+			NameAlias: G(VRFCont, "nameAlias"),
+
+			PcEnfDir: G(VRFCont, "pcEnfDir"),
+
+			PcEnfPref: G(VRFCont, "pcEnfPref"),
+		},
 	}
 }
 

@@ -1,16 +1,18 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func dataSourceAciX509Certificate() *schema.Resource {
 	return &schema.Resource{
 
-		Read: dataSourceAciX509CertificateRead,
+		ReadContext: dataSourceAciX509CertificateRead,
 
 		SchemaVersion: 1,
 
@@ -40,7 +42,7 @@ func dataSourceAciX509Certificate() *schema.Resource {
 	}
 }
 
-func dataSourceAciX509CertificateRead(d *schema.ResourceData, m interface{}) error {
+func dataSourceAciX509CertificateRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	aciClient := m.(*client.Client)
 
 	name := d.Get("name").(string)
@@ -51,11 +53,15 @@ func dataSourceAciX509CertificateRead(d *schema.ResourceData, m interface{}) err
 	dn := fmt.Sprintf("%s/%s", LocalUserDn, rn)
 
 	aaaUserCert, err := getRemoteX509Certificate(aciClient, dn)
-
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
+
 	d.SetId(dn)
-	setX509CertificateAttributes(aaaUserCert, d)
+	_, err = setX509CertificateAttributes(aaaUserCert, d)
+	if err != nil {
+		return diag.FromErr(err)
+	}
+
 	return nil
 }

@@ -1,21 +1,23 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciLocalUser() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciLocalUserCreate,
-		Update: resourceAciLocalUserUpdate,
-		Read:   resourceAciLocalUserRead,
-		Delete: resourceAciLocalUserDelete,
+		CreateContext: resourceAciLocalUserCreate,
+		UpdateContext: resourceAciLocalUserUpdate,
+		ReadContext:   resourceAciLocalUserRead,
+		DeleteContext: resourceAciLocalUserDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciLocalUserImport,
@@ -67,9 +69,6 @@ func resourceAciLocalUser() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
-				ValidateFunc: validation.StringInSlice([]string{
-					"never",
-				}, false),
 			},
 
 			"expires": &schema.Schema{
@@ -132,9 +131,6 @@ func resourceAciLocalUser() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
-				ValidateFunc: validation.StringInSlice([]string{
-					"no-password-expire",
-				}, false),
 			},
 
 			"pwd_update_required": &schema.Schema{
@@ -176,10 +172,13 @@ func getRemoteLocalUser(client *client.Client, dn string) (*models.LocalUser, er
 	return aaaUser, nil
 }
 
-func setLocalUserAttributes(aaaUser *models.LocalUser, d *schema.ResourceData) *schema.ResourceData {
+func setLocalUserAttributes(aaaUser *models.LocalUser, d *schema.ResourceData) (*schema.ResourceData, error) {
 	d.SetId(aaaUser.DistinguishedName)
 	d.Set("description", aaaUser.Description)
-	aaaUserMap, _ := aaaUser.ToMap()
+	aaaUserMap, err := aaaUser.ToMap()
+	if err != nil {
+		return d, err
+	}
 
 	d.Set("name", aaaUserMap["name"])
 
@@ -196,12 +195,15 @@ func setLocalUserAttributes(aaaUser *models.LocalUser, d *schema.ResourceData) *
 	d.Set("otpenable", aaaUserMap["otpenable"])
 	d.Set("otpkey", aaaUserMap["otpkey"])
 	d.Set("phone", aaaUserMap["phone"])
-	d.Set("pwd", aaaUserMap["pwd"])
-	d.Set("pwd_life_time", aaaUserMap["pwdLifeTime"])
+	if aaaUserMap["pwdLifeTime"] == "no-password-expire" {
+		d.Set("pwd_life_time", "0")
+	} else {
+		d.Set("pwd_life_time", aaaUserMap["pwdLifeTime"])
+	}
 	d.Set("pwd_update_required", aaaUserMap["pwdUpdateRequired"])
 	d.Set("rbac_string", aaaUserMap["rbacString"])
 	d.Set("unix_user_id", aaaUserMap["unixUserId"])
-	return d
+	return d, nil
 }
 
 func resourceAciLocalUserImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -215,14 +217,17 @@ func resourceAciLocalUserImport(d *schema.ResourceData, m interface{}) ([]*schem
 	if err != nil {
 		return nil, err
 	}
-	schemaFilled := setLocalUserAttributes(aaaUser, d)
+	schemaFilled, err := setLocalUserAttributes(aaaUser, d)
+	if err != nil {
+		return nil, err
+	}
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciLocalUserCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciLocalUserCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] LocalUser: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -290,21 +295,16 @@ func resourceAciLocalUserCreate(d *schema.ResourceData, m interface{}) error {
 
 	err := aciClient.Save(aaaUser)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.SetPartial("name")
-
-	d.Partial(false)
 
 	d.SetId(aaaUser.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciLocalUserRead(d, m)
+	return resourceAciLocalUserRead(ctx, d, m)
 }
 
-func resourceAciLocalUserUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciLocalUserUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] LocalUser: Beginning Update")
 
 	aciClient := m.(*client.Client)
@@ -376,22 +376,17 @@ func resourceAciLocalUserUpdate(d *schema.ResourceData, m interface{}) error {
 	err := aciClient.Save(aaaUser)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.SetPartial("name")
-
-	d.Partial(false)
 
 	d.SetId(aaaUser.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciLocalUserRead(d, m)
+	return resourceAciLocalUserRead(ctx, d, m)
 
 }
 
-func resourceAciLocalUserRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciLocalUserRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -403,25 +398,29 @@ func resourceAciLocalUserRead(d *schema.ResourceData, m interface{}) error {
 		d.SetId("")
 		return nil
 	}
-	setLocalUserAttributes(aaaUser, d)
+	_, err = setLocalUserAttributes(aaaUser, d)
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 
 	return nil
 }
 
-func resourceAciLocalUserDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciLocalUserDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "aaaUser")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
 }

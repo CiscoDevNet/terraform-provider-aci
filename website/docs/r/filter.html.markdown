@@ -13,8 +13,8 @@ Manages ACI Filter
 
 ```hcl
 	resource "aci_filter" "foofilter" {
-		tenant_dn   = "${aci_tenant.dev_tenant.id}"
-		description = "%s"
+		tenant_dn   = aci_tenant.dev_tenant.id
+		description = "From Terraform"
 		name        = "demo_filter"
 		annotation  = "tag_filter"
 		name_alias  = "alias_filter"
@@ -22,9 +22,10 @@ Manages ACI Filter
 ```
 ## Argument Reference ##
 * `tenant_dn` - (Required) Distinguished name of parent Tenant object.
-* `name` - (Required) name of Object filter.
-* `annotation` - (Optional) annotation for object filter.
-* `name_alias` - (Optional) name_alias for object filter.
+* `name` - (Required) Name of Object filter.
+* `description` - (Optional) Description for object filter.
+* `annotation` - (Optional) Annotation for object filter.
+* `name_alias` - (Optional) Name alias for object filter.
 
 * `relation_vz_rs_filt_graph_att` - (Optional) Relation to class vnsInTerm. Cardinality - N_TO_ONE. Type - String.
                 

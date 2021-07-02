@@ -1,21 +1,25 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
+	"strconv"
+	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciL3outOspfExternalPolicy() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciL3outOspfExternalPolicyCreate,
-		Update: resourceAciL3outOspfExternalPolicyUpdate,
-		Read:   resourceAciL3outOspfExternalPolicyRead,
-		Delete: resourceAciL3outOspfExternalPolicyDelete,
+		CreateContext: resourceAciL3outOspfExternalPolicyCreate,
+		UpdateContext: resourceAciL3outOspfExternalPolicyUpdate,
+		ReadContext:   resourceAciL3outOspfExternalPolicyRead,
+		DeleteContext: resourceAciL3outOspfExternalPolicyDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciL3outOspfExternalPolicyImport,
@@ -53,6 +57,17 @@ func resourceAciL3outOspfExternalPolicy() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				StateFunc: func(val interface{}) string {
+					numList := strings.Split(val.(string), ".")
+					ip := []string{"0", "0", "0", "0"}
+					if val.(string) != "" && len(numList) <= 4 {
+						for i := 1; i <= len(numList); i++ {
+							ip[4-i] = numList[len(numList)-i]
+						}
+					}
+					return strings.Join(ip, ".")
+				},
+				ValidateFunc: schema.SchemaValidateFunc(validateOspfIp()),
 			},
 
 			"area_type": &schema.Schema{
@@ -85,6 +100,30 @@ func resourceAciL3outOspfExternalPolicy() *schema.Resource {
 	}
 }
 
+func validateOspfIp() schema.SchemaValidateFunc {
+	return func(i interface{}, k string) (s []string, es []error) {
+		// function to check if partial OSPF areaId is valid.
+		val, ok := i.(string)
+		if !ok {
+			es = append(es, fmt.Errorf("expected type of %s to be string", k))
+			return
+		}
+		numList := strings.Split(val, ".")
+		if len(numList) > 4 {
+			es = append(es, fmt.Errorf("Invalid value for %s : %s", k, val))
+			return
+		}
+		for _, v := range numList {
+			intV, err := strconv.Atoi(v)
+			if err != nil || intV > 255 {
+				es = append(es, fmt.Errorf("Invalid value for %s : %s", k, val))
+				return
+			}
+		}
+		return
+	}
+}
+
 func getRemoteL3outOspfExternalPolicy(client *client.Client, dn string) (*models.L3outOspfExternalPolicy, error) {
 	ospfExtPCont, err := client.Get(dn)
 	if err != nil {
@@ -100,14 +139,17 @@ func getRemoteL3outOspfExternalPolicy(client *client.Client, dn string) (*models
 	return ospfExtP, nil
 }
 
-func setL3outOspfExternalPolicyAttributes(ospfExtP *models.L3outOspfExternalPolicy, d *schema.ResourceData) *schema.ResourceData {
+func setL3outOspfExternalPolicyAttributes(ospfExtP *models.L3outOspfExternalPolicy, d *schema.ResourceData) (*schema.ResourceData, error) {
 	d.SetId(ospfExtP.DistinguishedName)
 	d.Set("description", ospfExtP.Description)
 	dn := d.Id()
 	if dn != ospfExtP.DistinguishedName {
 		d.Set("l3_outside_dn", "")
 	}
-	ospfExtPMap, _ := ospfExtP.ToMap()
+	ospfExtPMap, err := ospfExtP.ToMap()
+	if err != nil {
+		return d, err
+	}
 
 	d.Set("annotation", ospfExtPMap["annotation"])
 	d.Set("area_cost", ospfExtPMap["areaCost"])
@@ -121,7 +163,7 @@ func setL3outOspfExternalPolicyAttributes(ospfExtP *models.L3outOspfExternalPoli
 	d.Set("area_type", ospfExtPMap["areaType"])
 	d.Set("multipod_internal", ospfExtPMap["multipodInternal"])
 	d.Set("name_alias", ospfExtPMap["nameAlias"])
-	return d
+	return d, nil
 }
 
 func resourceAciL3outOspfExternalPolicyImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -135,14 +177,17 @@ func resourceAciL3outOspfExternalPolicyImport(d *schema.ResourceData, m interfac
 	if err != nil {
 		return nil, err
 	}
-	schemaFilled := setL3outOspfExternalPolicyAttributes(ospfExtP, d)
+	schemaFilled, err := setL3outOspfExternalPolicyAttributes(ospfExtP, d)
+	if err != nil {
+		return nil, err
+	}
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciL3outOspfExternalPolicyCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciL3outOspfExternalPolicyCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] L3outOspfExternalPolicy: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -176,18 +221,16 @@ func resourceAciL3outOspfExternalPolicyCreate(d *schema.ResourceData, m interfac
 
 	err := aciClient.Save(ospfExtP)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-	d.Partial(false)
 
 	d.SetId(ospfExtP.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciL3outOspfExternalPolicyRead(d, m)
+	return resourceAciL3outOspfExternalPolicyRead(ctx, d, m)
 }
 
-func resourceAciL3outOspfExternalPolicyUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciL3outOspfExternalPolicyUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] L3outOspfExternalPolicy: Beginning Update")
 
 	aciClient := m.(*client.Client)
@@ -226,19 +269,17 @@ func resourceAciL3outOspfExternalPolicyUpdate(d *schema.ResourceData, m interfac
 	err := aciClient.Save(ospfExtP)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-	d.Partial(false)
 
 	d.SetId(ospfExtP.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciL3outOspfExternalPolicyRead(d, m)
+	return resourceAciL3outOspfExternalPolicyRead(ctx, d, m)
 
 }
 
-func resourceAciL3outOspfExternalPolicyRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciL3outOspfExternalPolicyRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -250,25 +291,29 @@ func resourceAciL3outOspfExternalPolicyRead(d *schema.ResourceData, m interface{
 		d.SetId("")
 		return nil
 	}
-	setL3outOspfExternalPolicyAttributes(ospfExtP, d)
+	_, err = setL3outOspfExternalPolicyAttributes(ospfExtP, d)
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 
 	return nil
 }
 
-func resourceAciL3outOspfExternalPolicyDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciL3outOspfExternalPolicyDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "ospfExtP")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
 }

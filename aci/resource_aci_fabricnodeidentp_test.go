@@ -6,8 +6,8 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
 func TestAccAciFabricNodeMember_Basic(t *testing.T) {
@@ -25,11 +25,6 @@ func TestAccAciFabricNodeMember_Basic(t *testing.T) {
 					testAccCheckAciFabricNodeMemberExists("aci_fabric_node_member.foofabric_node_member", &fabric_node_member),
 					testAccCheckAciFabricNodeMemberAttributes(description, &fabric_node_member),
 				),
-			},
-			{
-				ResourceName:      "aci_fabric_node_member",
-				ImportState:       true,
-				ImportStateVerify: true,
 			},
 		},
 	})

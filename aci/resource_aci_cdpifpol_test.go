@@ -6,8 +6,8 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
 func TestAccAciCDPInterfacePolicy_Basic(t *testing.T) {
@@ -25,11 +25,6 @@ func TestAccAciCDPInterfacePolicy_Basic(t *testing.T) {
 					testAccCheckAciCDPInterfacePolicyExists("aci_cdp_interface_policy.foocdp_interface_policy", &cdp_interface_policy),
 					testAccCheckAciCDPInterfacePolicyAttributes(description, &cdp_interface_policy),
 				),
-			},
-			{
-				ResourceName:      "aci_cdp_interface_policy",
-				ImportState:       true,
-				ImportStateVerify: true,
 			},
 		},
 	})

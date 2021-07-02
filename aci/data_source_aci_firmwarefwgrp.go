@@ -1,16 +1,18 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func dataSourceAciFirmwareGroup() *schema.Resource {
 	return &schema.Resource{
 
-		Read: dataSourceAciFirmwareGroupRead,
+		ReadContext: dataSourceAciFirmwareGroupRead,
 
 		SchemaVersion: 1,
 
@@ -36,7 +38,7 @@ func dataSourceAciFirmwareGroup() *schema.Resource {
 	}
 }
 
-func dataSourceAciFirmwareGroupRead(d *schema.ResourceData, m interface{}) error {
+func dataSourceAciFirmwareGroupRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	aciClient := m.(*client.Client)
 
 	name := d.Get("name").(string)
@@ -48,7 +50,7 @@ func dataSourceAciFirmwareGroupRead(d *schema.ResourceData, m interface{}) error
 	firmwareFwGrp, err := getRemoteFirmwareGroup(aciClient, dn)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	setFirmwareGroupAttributes(firmwareFwGrp, d)
 	return nil

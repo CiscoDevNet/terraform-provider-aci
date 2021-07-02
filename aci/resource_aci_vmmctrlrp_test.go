@@ -6,9 +6,9 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform/helper/acctest"
-	"github.com/hashicorp/terraform/helper/resource"
-	"github.com/hashicorp/terraform/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/acctest"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
 func TestAccAciVMMController_Basic(t *testing.T) {
@@ -36,26 +36,30 @@ func TestAccAciVMMController_Basic(t *testing.T) {
 
 func testAccCheckAciVMMControllerConfig_basic(vmm_prov_p_name, vmm_dom_p_name, vmm_ctrlr_p_name string) string {
 	return fmt.Sprintf(`
-
-	resource "aci_provider_profile" "fooprovider_profile" {
-		name 		= "%s"
-		description = "provider_profile created while acceptance testing"
-
-	}
-
 	resource "aci_vmm_domain" "foovmm_domain" {
 		name 		= "%s"
-		description = "vmm_domain created while acceptance testing"
-		provider_profile_dn = aci_provider_profile.fooprovider_profile.id
+		provider_profile_dn = "uni/vmmp-VMware"
 	}
 
 	resource "aci_vmm_controller" "foovmm_controller" {
 		name 		= "%s"
-		description = "vmm_controller created while acceptance testing"
 		vmm_domain_dn = aci_vmm_domain.foovmm_domain.id
+		annotation = "orchestrator:terraform"
+		dvs_version = "unmanaged"
+		host_or_ip = "10.10.10.10"
+		inventory_trig_st = "untriggered"
+		mode = "default"
+		msft_config_err_msg = "Error"
+		n1kv_stats_mode = "enabled"
+		port = "0"
+		root_cont_name = "vmmdc"
+		scope = "vm"
+		seq_num = "0"
+		stats_mode = "disabled"
+		vxlan_depl_pref = "vxlan"
 	}
 
-	`, vmm_prov_p_name, vmm_dom_p_name, vmm_ctrlr_p_name)
+	`, vmm_dom_p_name, vmm_ctrlr_p_name)
 }
 
 func testAccCheckAciVMMControllerExists(name string, vmm_controller *models.VMMController) resource.TestCheckFunc {
@@ -106,13 +110,6 @@ func testAccCheckAciVMMControllerAttributes(vmm_prov_p_name, vmm_dom_p_name, vmm
 	return func(s *terraform.State) error {
 		if vmm_ctrlr_p_name != GetMOName(vmm_controller.DistinguishedName) {
 			return fmt.Errorf("Bad vmm_ctrlr_p %s", GetMOName(vmm_controller.DistinguishedName))
-		}
-
-		if vmm_dom_p_name != GetMOName(GetParentDn(vmm_controller.DistinguishedName)) {
-			return fmt.Errorf(" Bad vmm_dom_p %s", GetMOName(GetParentDn(vmm_controller.DistinguishedName)))
-		}
-		if description != vmm_controller.Description {
-			return fmt.Errorf("Bad vmm_controller Description %s", vmm_controller.Description)
 		}
 		return nil
 	}

@@ -1,21 +1,23 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciConfigurationImportPolicy() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciConfigurationImportPolicyCreate,
-		Update: resourceAciConfigurationImportPolicyUpdate,
-		Read:   resourceAciConfigurationImportPolicyRead,
-		Delete: resourceAciConfigurationImportPolicyDelete,
+		CreateContext: resourceAciConfigurationImportPolicyCreate,
+		UpdateContext: resourceAciConfigurationImportPolicyUpdate,
+		ReadContext:   resourceAciConfigurationImportPolicyRead,
+		DeleteContext: resourceAciConfigurationImportPolicyDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciConfigurationImportPolicyImport,
@@ -126,10 +128,13 @@ func getRemoteConfigurationImportPolicy(client *client.Client, dn string) (*mode
 	return configImportP, nil
 }
 
-func setConfigurationImportPolicyAttributes(configImportP *models.ConfigurationImportPolicy, d *schema.ResourceData) *schema.ResourceData {
+func setConfigurationImportPolicyAttributes(configImportP *models.ConfigurationImportPolicy, d *schema.ResourceData) (*schema.ResourceData, error) {
 	d.SetId(configImportP.DistinguishedName)
 	d.Set("description", configImportP.Description)
-	configImportPMap, _ := configImportP.ToMap()
+	configImportPMap, err := configImportP.ToMap()
+	if err != nil {
+		return d, err
+	}
 
 	d.Set("name", configImportPMap["name"])
 
@@ -141,7 +146,7 @@ func setConfigurationImportPolicyAttributes(configImportP *models.ConfigurationI
 	d.Set("import_type", configImportPMap["importType"])
 	d.Set("name_alias", configImportPMap["nameAlias"])
 	d.Set("snapshot", configImportPMap["snapshot"])
-	return d
+	return d, nil
 }
 
 func resourceAciConfigurationImportPolicyImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -155,14 +160,17 @@ func resourceAciConfigurationImportPolicyImport(d *schema.ResourceData, m interf
 	if err != nil {
 		return nil, err
 	}
-	schemaFilled := setConfigurationImportPolicyAttributes(configImportP, d)
+	schemaFilled, err := setConfigurationImportPolicyAttributes(configImportP, d)
+	if err != nil {
+		return nil, err
+	}
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciConfigurationImportPolicyCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciConfigurationImportPolicyCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] ConfigurationImportPolicy: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -200,13 +208,8 @@ func resourceAciConfigurationImportPolicyCreate(d *schema.ResourceData, m interf
 
 	err := aciClient.Save(configImportP)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.SetPartial("name")
-
-	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
 
@@ -228,7 +231,7 @@ func resourceAciConfigurationImportPolicyCreate(d *schema.ResourceData, m interf
 	d.Partial(true)
 	err = checkTDn(aciClient, checkDns)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Partial(false)
 
@@ -237,22 +240,16 @@ func resourceAciConfigurationImportPolicyCreate(d *schema.ResourceData, m interf
 		relationParamName := GetMOName(relationParam)
 		err = aciClient.CreateRelationconfigRsImportSourceFromConfigurationImportPolicy(configImportP.DistinguishedName, relationParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_config_rs_import_source")
-		d.Partial(false)
 
 	}
 	if relationTotrigRsTriggerable, ok := d.GetOk("relation_trig_rs_triggerable"); ok {
 		relationParam := relationTotrigRsTriggerable.(string)
 		err = aciClient.CreateRelationtrigRsTriggerableFromConfigurationImportPolicy(configImportP.DistinguishedName, relationParam)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_trig_rs_triggerable")
-		d.Partial(false)
 
 	}
 	if relationToconfigRsRemotePath, ok := d.GetOk("relation_config_rs_remote_path"); ok {
@@ -260,21 +257,18 @@ func resourceAciConfigurationImportPolicyCreate(d *schema.ResourceData, m interf
 		relationParamName := GetMOName(relationParam)
 		err = aciClient.CreateRelationconfigRsRemotePathFromConfigurationImportPolicy(configImportP.DistinguishedName, relationParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_config_rs_remote_path")
-		d.Partial(false)
 
 	}
 
 	d.SetId(configImportP.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciConfigurationImportPolicyRead(d, m)
+	return resourceAciConfigurationImportPolicyRead(ctx, d, m)
 }
 
-func resourceAciConfigurationImportPolicyUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciConfigurationImportPolicyUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] ConfigurationImportPolicy: Beginning Update")
 
 	aciClient := m.(*client.Client)
@@ -316,13 +310,8 @@ func resourceAciConfigurationImportPolicyUpdate(d *schema.ResourceData, m interf
 	err := aciClient.Save(configImportP)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.SetPartial("name")
-
-	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
 
@@ -344,7 +333,7 @@ func resourceAciConfigurationImportPolicyUpdate(d *schema.ResourceData, m interf
 	d.Partial(true)
 	err = checkTDn(aciClient, checkDns)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Partial(false)
 
@@ -353,26 +342,20 @@ func resourceAciConfigurationImportPolicyUpdate(d *schema.ResourceData, m interf
 		newRelParamName := GetMOName(newRelParam.(string))
 		err = aciClient.DeleteRelationconfigRsImportSourceFromConfigurationImportPolicy(configImportP.DistinguishedName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 		err = aciClient.CreateRelationconfigRsImportSourceFromConfigurationImportPolicy(configImportP.DistinguishedName, newRelParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_config_rs_import_source")
-		d.Partial(false)
 
 	}
 	if d.HasChange("relation_trig_rs_triggerable") {
 		_, newRelParam := d.GetChange("relation_trig_rs_triggerable")
 		err = aciClient.CreateRelationtrigRsTriggerableFromConfigurationImportPolicy(configImportP.DistinguishedName, newRelParam.(string))
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_trig_rs_triggerable")
-		d.Partial(false)
 
 	}
 	if d.HasChange("relation_config_rs_remote_path") {
@@ -380,26 +363,23 @@ func resourceAciConfigurationImportPolicyUpdate(d *schema.ResourceData, m interf
 		newRelParamName := GetMOName(newRelParam.(string))
 		err = aciClient.DeleteRelationconfigRsRemotePathFromConfigurationImportPolicy(configImportP.DistinguishedName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 		err = aciClient.CreateRelationconfigRsRemotePathFromConfigurationImportPolicy(configImportP.DistinguishedName, newRelParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_config_rs_remote_path")
-		d.Partial(false)
 
 	}
 
 	d.SetId(configImportP.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciConfigurationImportPolicyRead(d, m)
+	return resourceAciConfigurationImportPolicyRead(ctx, d, m)
 
 }
 
-func resourceAciConfigurationImportPolicyRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciConfigurationImportPolicyRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -411,7 +391,11 @@ func resourceAciConfigurationImportPolicyRead(d *schema.ResourceData, m interfac
 		d.SetId("")
 		return nil
 	}
-	setConfigurationImportPolicyAttributes(configImportP, d)
+	_, err = setConfigurationImportPolicyAttributes(configImportP, d)
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 
 	configRsImportSourceData, err := aciClient.ReadRelationconfigRsImportSourceFromConfigurationImportPolicy(dn)
 	if err != nil {
@@ -460,18 +444,18 @@ func resourceAciConfigurationImportPolicyRead(d *schema.ResourceData, m interfac
 	return nil
 }
 
-func resourceAciConfigurationImportPolicyDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciConfigurationImportPolicyDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "configImportP")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
 }

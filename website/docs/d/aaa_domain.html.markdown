@@ -14,19 +14,18 @@ Data source for ACI aaa Domain
 ```hcl
 
 data "aci_aaa_domain" "example" {
-  name  = "example"
+  name  = "aaa_domain_1"
 }
 
 ```
 
 
 ## Argument Reference ##
-* `name` - (Required) name of Object aaa domain.
-
-
+* `name` - (Required) Name of object aaa domain.
 
 ## Attribute Reference
 
 * `id` - Attribute id set to the Dn of the aaa domain.
-* `annotation` - (Optional) annotation for object aaa domain.
-* `name_alias` - (Optional) name_alias for object aaa domain.
+* `description` - (Optional) Description for object aaa domain.
+* `annotation` - (Optional) Annotation for object aaa domain.
+* `name_alias` - (Optional) Name alias for object aaa domain.

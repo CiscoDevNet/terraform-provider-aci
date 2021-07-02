@@ -14,20 +14,22 @@ Data source for ACI Logical Interface Profile
 
 ```hcl
 data "aci_logical_interface_profile" "example" {
-  logical_node_profile_dn  = "${aci_logical_node_profile.example.id}"
+  logical_node_profile_dn  = aci_logical_node_profile.example.id
   name  = "example"
 }
 ```
 
 ## Argument Reference
 
-- `logical_node_profile_dn` - (Required) Distinguished name of parent LogicalNodeProfile object.
-- `name` - (Required) name of Object logical_interface_profile.
+- `logical_node_profile_dn` - (Required) Distinguished name of parent Logical Node Profile object.
+- `name` - (Required) Name of Object logical interface profile.
 
 ## Attribute Reference
 
 - `id` - Attribute id set to the Dn of the Logical Interface Profile.
-- `annotation` - (Optional) annotation for object logical_interface_profile.
-- `name_alias` - (Optional) name_alias for object logical_interface_profile.
-- `prio` - (Optional) qos priority class id
-- `tag` - (Optional) label color
+- `annotation` - (Optional) Annotation for object logical interface profile.
+- `description` - (Optional) Description for object logical interface profile.
+- `name_alias` - (Optional) Name alias for object logical interface profile.
+- `prio` - (Optional) QoS priority class id.
+- `tag` - (Optional) Specifies the color of a policy label.
+

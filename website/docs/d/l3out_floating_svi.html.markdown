@@ -14,7 +14,7 @@ Data source for ACI L3out Floating SVI
 
 ```hcl
 data "aci_l3out_floating_svi" "check" {
-  logical_interface_profile_dn = "${aci_logical_interface_profile.example.id}"
+  logical_interface_profile_dn = aci_logical_interface_profile.example.id
   node_dn                      = "topology/pod-1/node-201"
   encap                        = "vlan-20"
 }

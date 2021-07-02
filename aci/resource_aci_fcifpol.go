@@ -1,21 +1,23 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciInterfaceFCPolicy() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciInterfaceFCPolicyCreate,
-		Update: resourceAciInterfaceFCPolicyUpdate,
-		Read:   resourceAciInterfaceFCPolicyRead,
-		Delete: resourceAciInterfaceFCPolicyDelete,
+		CreateContext: resourceAciInterfaceFCPolicyCreate,
+		UpdateContext: resourceAciInterfaceFCPolicyUpdate,
+		ReadContext:   resourceAciInterfaceFCPolicyRead,
+		DeleteContext: resourceAciInterfaceFCPolicyDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciInterfaceFCPolicyImport,
@@ -35,6 +37,9 @@ func resourceAciInterfaceFCPolicy() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"2G", "4G", "8G", "16G", "32G",
+				}, false),
 			},
 
 			"fill_pattern": &schema.Schema{
@@ -112,11 +117,13 @@ func getRemoteInterfaceFCPolicy(client *client.Client, dn string) (*models.Inter
 	return fcIfPol, nil
 }
 
-func setInterfaceFCPolicyAttributes(fcIfPol *models.InterfaceFCPolicy, d *schema.ResourceData) *schema.ResourceData {
+func setInterfaceFCPolicyAttributes(fcIfPol *models.InterfaceFCPolicy, d *schema.ResourceData) (*schema.ResourceData, error) {
 	d.SetId(fcIfPol.DistinguishedName)
 	d.Set("description", fcIfPol.Description)
-	fcIfPolMap, _ := fcIfPol.ToMap()
-
+	fcIfPolMap, err := fcIfPol.ToMap()
+	if err != nil {
+		return d, err
+	}
 	d.Set("name", fcIfPolMap["name"])
 
 	d.Set("annotation", fcIfPolMap["annotation"])
@@ -127,7 +134,7 @@ func setInterfaceFCPolicyAttributes(fcIfPol *models.InterfaceFCPolicy, d *schema
 	d.Set("rx_bb_credit", fcIfPolMap["rxBBCredit"])
 	d.Set("speed", fcIfPolMap["speed"])
 	d.Set("trunk_mode", fcIfPolMap["trunkMode"])
-	return d
+	return d, nil
 }
 
 func resourceAciInterfaceFCPolicyImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -141,14 +148,16 @@ func resourceAciInterfaceFCPolicyImport(d *schema.ResourceData, m interface{}) (
 	if err != nil {
 		return nil, err
 	}
-	schemaFilled := setInterfaceFCPolicyAttributes(fcIfPol, d)
-
+	schemaFilled, err := setInterfaceFCPolicyAttributes(fcIfPol, d)
+	if err != nil {
+		return nil, err
+	}
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciInterfaceFCPolicyCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciInterfaceFCPolicyCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] InterfaceFCPolicy: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -186,21 +195,16 @@ func resourceAciInterfaceFCPolicyCreate(d *schema.ResourceData, m interface{}) e
 
 	err := aciClient.Save(fcIfPol)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.SetPartial("name")
-
-	d.Partial(false)
 
 	d.SetId(fcIfPol.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciInterfaceFCPolicyRead(d, m)
+	return resourceAciInterfaceFCPolicyRead(ctx, d, m)
 }
 
-func resourceAciInterfaceFCPolicyUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciInterfaceFCPolicyUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] InterfaceFCPolicy: Beginning Update")
 
 	aciClient := m.(*client.Client)
@@ -242,22 +246,17 @@ func resourceAciInterfaceFCPolicyUpdate(d *schema.ResourceData, m interface{}) e
 	err := aciClient.Save(fcIfPol)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.SetPartial("name")
-
-	d.Partial(false)
 
 	d.SetId(fcIfPol.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciInterfaceFCPolicyRead(d, m)
+	return resourceAciInterfaceFCPolicyRead(ctx, d, m)
 
 }
 
-func resourceAciInterfaceFCPolicyRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciInterfaceFCPolicyRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -269,25 +268,29 @@ func resourceAciInterfaceFCPolicyRead(d *schema.ResourceData, m interface{}) err
 		d.SetId("")
 		return nil
 	}
-	setInterfaceFCPolicyAttributes(fcIfPol, d)
+	_, err = setInterfaceFCPolicyAttributes(fcIfPol, d)
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 
 	return nil
 }
 
-func resourceAciInterfaceFCPolicyDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciInterfaceFCPolicyDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "fcIfPol")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
 }

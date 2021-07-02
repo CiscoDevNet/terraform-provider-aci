@@ -6,8 +6,8 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
 func TestAccAciOSPFInterfacePolicy_Basic(t *testing.T) {
@@ -25,11 +25,6 @@ func TestAccAciOSPFInterfacePolicy_Basic(t *testing.T) {
 					testAccCheckAciOSPFInterfacePolicyExists("aci_ospf_interface_policy.fooospf_interface_policy", &ospf_interface_policy),
 					testAccCheckAciOSPFInterfacePolicyAttributes(description, "unspecified", &ospf_interface_policy),
 				),
-			},
-			{
-				ResourceName:      "aci_ospf_interface_policy",
-				ImportState:       true,
-				ImportStateVerify: true,
 			},
 		},
 	})
@@ -152,7 +147,11 @@ func testAccCheckAciOSPFInterfacePolicyAttributes(description, ctrl string, ospf
 			return fmt.Errorf("Bad ospf_interface_policy cost %s", ospf_interface_policy.Cost)
 		}
 
-		if ctrl != ospf_interface_policy.Ctrl {
+		policyCtrl := ospf_interface_policy.Ctrl
+		if policyCtrl == "" {
+			policyCtrl = "unspecified"
+		}
+		if ctrl != policyCtrl {
 			return fmt.Errorf("Bad ospf_interface_policy ctrl %s", ospf_interface_policy.Ctrl)
 		}
 

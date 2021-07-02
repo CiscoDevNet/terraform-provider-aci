@@ -14,8 +14,7 @@ Data source for ACI DHCP Option Policy.
 
 ```hcl
 data "aci_dhcp_option_policy" "example" {
-
-  tenant_dn  = "${aci_tenant.example.id}"
+  tenant_dn  = aci_tenant.example.id
   name  = "example"
 }
 ```
@@ -23,10 +22,11 @@ data "aci_dhcp_option_policy" "example" {
 ## Argument Reference
 
 - `tenant_dn` - (Required) Distinguished name of parent Tenant object.
-- `name` - (Required) Name of Object  DHCP Option Policy.
+- `name` - (Required) Name of Object DHCP Option Policy.
 
 ## Attribute Reference
 
 - `id` - Attribute id set to the Dn of the DHCP Option Policy.
-- `annotation` - (Optional) Annotation for object  DHCP Option Policy.
-- `name_alias` - (Optional) Name alias for object  DHCP Option Policy.
+- `annotation` - (Optional) Annotation for object DHCP Option Policy.
+- `description` - (Optional) Description for object DHCP Option Policy.
+- `name_alias` - (Optional) Name alias for object DHCP Option Policy.

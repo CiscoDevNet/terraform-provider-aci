@@ -1,6 +1,5 @@
 package models
 
-
 import (
 	"fmt"
 	"strconv"
@@ -12,27 +11,19 @@ const FvtenantClassName = "fvTenant"
 
 type Tenant struct {
 	BaseAttributes
-    TenantAttributes 
+	TenantAttributes
 }
-  
+
 type TenantAttributes struct {
-	
-	
 	Name string `json:",omitempty"`
-	
-	
-    
-	Annotation       string `json:",omitempty"`
-	
-    
-	NameAlias       string `json:",omitempty"`
-	
-    
+
+	Annotation string `json:",omitempty"`
+
+	NameAlias string `json:",omitempty"`
 }
-   
 
 func NewTenant(fvTenantRn, parentDn, description string, fvTenantattr TenantAttributes) *Tenant {
-	dn := fmt.Sprintf("%s/%s", parentDn, fvTenantRn)  
+	dn := fmt.Sprintf("%s/%s", parentDn, fvTenantRn)
 	return &Tenant{
 		BaseAttributes: BaseAttributes{
 			DistinguishedName: dn,
@@ -41,9 +32,8 @@ func NewTenant(fvTenantRn, parentDn, description string, fvTenantattr TenantAttr
 			ClassName:         FvtenantClassName,
 			Rn:                fvTenantRn,
 		},
-        
+
 		TenantAttributes: fvTenantattr,
-         
 	}
 }
 
@@ -53,19 +43,11 @@ func (fvTenant *Tenant) ToMap() (map[string]string, error) {
 		return nil, err
 	}
 
-	
-	
-	A(fvTenantMap, "name",fvTenant.Name)
-	
-	
-    
-	A(fvTenantMap, "annotation",fvTenant.Annotation)
-	
-    
-	A(fvTenantMap, "nameAlias",fvTenant.NameAlias)
-	
-    
-	
+	A(fvTenantMap, "name", fvTenant.Name)
+
+	A(fvTenantMap, "annotation", fvTenant.Annotation)
+
+	A(fvTenantMap, "nameAlias", fvTenant.NameAlias)
 
 	return fvTenantMap, err
 }
@@ -81,22 +63,15 @@ func TenantFromContainerList(cont *container.Container, index int) *Tenant {
 			ClassName:         FvtenantClassName,
 			Rn:                G(TenantCont, "rn"),
 		},
-        
+
 		TenantAttributes{
-		
-		
-			Name : G(TenantCont, "name"),
-		
-		
-        
-	        Annotation : G(TenantCont, "annotation"),
-		
-        
-	        NameAlias : G(TenantCont, "nameAlias"),
-		
-        		
-        },
-        
+
+			Name: G(TenantCont, "name"),
+
+			Annotation: G(TenantCont, "annotation"),
+
+			NameAlias: G(TenantCont, "nameAlias"),
+		},
 	}
 }
 

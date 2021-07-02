@@ -14,7 +14,7 @@ Data source for ACI HSRP Interface Policy
 
 ```hcl
 data "aci_hsrp_interface_policy" "check" {
-  tenant_dn = "${aci_tenant.tenentcheck.id}"
+  tenant_dn = aci_tenant.tenentcheck.id
   name      = "one"
 }
 ```

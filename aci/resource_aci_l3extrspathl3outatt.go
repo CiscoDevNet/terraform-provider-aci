@@ -1,21 +1,23 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciL3outPathAttachment() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciL3outPathAttachmentCreate,
-		Update: resourceAciL3outPathAttachmentUpdate,
-		Read:   resourceAciL3outPathAttachmentRead,
-		Delete: resourceAciL3outPathAttachmentDelete,
+		CreateContext: resourceAciL3outPathAttachmentCreate,
+		UpdateContext: resourceAciL3outPathAttachmentUpdate,
+		ReadContext:   resourceAciL3outPathAttachmentRead,
+		DeleteContext: resourceAciL3outPathAttachmentDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciL3outPathAttachmentImport,
@@ -167,14 +169,17 @@ func getRemoteL3outPathAttachment(client *client.Client, dn string) (*models.L3o
 	return l3extRsPathL3OutAtt, nil
 }
 
-func setL3outPathAttachmentAttributes(l3extRsPathL3OutAtt *models.L3outPathAttachment, d *schema.ResourceData) *schema.ResourceData {
+func setL3outPathAttachmentAttributes(l3extRsPathL3OutAtt *models.L3outPathAttachment, d *schema.ResourceData) (*schema.ResourceData, error) {
 	d.SetId(l3extRsPathL3OutAtt.DistinguishedName)
 	d.Set("description", l3extRsPathL3OutAtt.Description)
 	dn := d.Id()
 	if dn != l3extRsPathL3OutAtt.DistinguishedName {
 		d.Set("logical_interface_profile_dn", "")
 	}
-	l3extRsPathL3OutAttMap, _ := l3extRsPathL3OutAtt.ToMap()
+	l3extRsPathL3OutAttMap, err := l3extRsPathL3OutAtt.ToMap()
+	if err != nil {
+		return d, err
+	}
 
 	d.Set("target_dn", l3extRsPathL3OutAttMap["tDn"])
 
@@ -190,7 +195,7 @@ func setL3outPathAttachmentAttributes(l3extRsPathL3OutAtt *models.L3outPathAttac
 	d.Set("mode", l3extRsPathL3OutAttMap["mode"])
 	d.Set("mtu", l3extRsPathL3OutAttMap["mtu"])
 	d.Set("target_dscp", l3extRsPathL3OutAttMap["targetDscp"])
-	return d
+	return d, nil
 }
 
 func resourceAciL3outPathAttachmentImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -204,14 +209,16 @@ func resourceAciL3outPathAttachmentImport(d *schema.ResourceData, m interface{})
 	if err != nil {
 		return nil, err
 	}
-	schemaFilled := setL3outPathAttachmentAttributes(l3extRsPathL3OutAtt, d)
-
+	schemaFilled, err := setL3outPathAttachmentAttributes(l3extRsPathL3OutAtt, d)
+	if err != nil {
+		return nil, err
+	}
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciL3outPathAttachmentCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciL3outPathAttachmentCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] L3outPathAttachment: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -263,21 +270,16 @@ func resourceAciL3outPathAttachmentCreate(d *schema.ResourceData, m interface{})
 
 	err := aciClient.Save(l3extRsPathL3OutAtt)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.SetPartial("target_dn")
-
-	d.Partial(false)
 
 	d.SetId(l3extRsPathL3OutAtt.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciL3outPathAttachmentRead(d, m)
+	return resourceAciL3outPathAttachmentRead(ctx, d, m)
 }
 
-func resourceAciL3outPathAttachmentUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciL3outPathAttachmentUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] L3outPathAttachment: Beginning Update")
 
 	aciClient := m.(*client.Client)
@@ -333,22 +335,17 @@ func resourceAciL3outPathAttachmentUpdate(d *schema.ResourceData, m interface{})
 	err := aciClient.Save(l3extRsPathL3OutAtt)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.SetPartial("target_dn")
-
-	d.Partial(false)
 
 	d.SetId(l3extRsPathL3OutAtt.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciL3outPathAttachmentRead(d, m)
+	return resourceAciL3outPathAttachmentRead(ctx, d, m)
 
 }
 
-func resourceAciL3outPathAttachmentRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciL3outPathAttachmentRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -360,25 +357,28 @@ func resourceAciL3outPathAttachmentRead(d *schema.ResourceData, m interface{}) e
 		d.SetId("")
 		return nil
 	}
-	setL3outPathAttachmentAttributes(l3extRsPathL3OutAtt, d)
-
+	_, err = setL3outPathAttachmentAttributes(l3extRsPathL3OutAtt, d)
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 
 	return nil
 }
 
-func resourceAciL3outPathAttachmentDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciL3outPathAttachmentDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "l3extRsPathL3OutAtt")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
 }

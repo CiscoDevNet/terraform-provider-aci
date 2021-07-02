@@ -20,17 +20,17 @@ data "aci_configuration_export_policy" "example" {
 
 ## Argument Reference
 
-- `name` - (Required) name of Object configuration_export_policy.
+- `name` - (Required) Name of Object configuration export policy.
 
 ## Attribute Reference
 
 - `id` - Attribute id set to the Dn of the Configuration Export Policy.
-- `admin_st` - (Optional) admin state of the export policy
-- `annotation` - (Optional) annotation for object configuration_export_policy.
-- `format` - (Optional) export data format.
-- `description` - (Optional) Description for object configuration_export_policy.
-- `include_secure_fields` - (Optional) include_secure_fields for object configuration_export_policy.
-- `max_snapshot_count` - (Optional) max_snapshot_count for object configuration_export_policy.
-- `name_alias` - (Optional) name_alias for object configuration_export_policy.
-- `snapshot` - (Optional) snapshot for object configuration_export_policy.
-- `target_dn` - (Optional) target export object
+- `admin_st` - (Optional) Admin state of the export policy
+- `annotation` - (Optional) Annotation for object configuration export policy.
+- `format` - (Optional) Export data format.
+- `description` - (Optional) Description for object configuration export policy.
+- `include_secure_fields` - (Optional) Include secure fields for object configuration export policy.
+- `max_snapshot_count` - (Optional) Max snapshot count for object configuration export policy.
+- `name_alias` - (Optional) Name alias for object configuration export policy.
+- `snapshot` - (Optional) Snapshot for object configuration export policy.
+- `target_dn` - (Optional) Target export object.The distinguished name of the object to be exported.

@@ -6,8 +6,8 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
 func TestAccAciRouteControlProfile_Basic(t *testing.T) {
@@ -22,7 +22,7 @@ func TestAccAciRouteControlProfile_Basic(t *testing.T) {
 			{
 				Config: testAccCheckAciRouteControlProfileConfig_basic(description),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAciRouteControlProfileExists("aci_route_control_profile.test", &route_control_profile),
+					testAccCheckAciRouteControlProfileExists("aci_bgp_route_control_profile.test", &route_control_profile),
 					testAccCheckAciRouteControlProfileAttributes(description, &route_control_profile),
 				),
 			},
@@ -42,14 +42,14 @@ func TestAccAciRouteControlProfile_update(t *testing.T) {
 			{
 				Config: testAccCheckAciRouteControlProfileConfig_basic(description),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAciRouteControlProfileExists("aci_route_control_profile.test", &route_control_profile),
+					testAccCheckAciRouteControlProfileExists("aci_bgp_route_control_profile.test", &route_control_profile),
 					testAccCheckAciRouteControlProfileAttributes(description, &route_control_profile),
 				),
 			},
 			{
 				Config: testAccCheckAciRouteControlProfileConfig_basic(description),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAciRouteControlProfileExists("aci_route_control_profile.test", &route_control_profile),
+					testAccCheckAciRouteControlProfileExists("aci_bgp_route_control_profile.test", &route_control_profile),
 					testAccCheckAciRouteControlProfileAttributes(description, &route_control_profile),
 				),
 			},
@@ -60,14 +60,27 @@ func TestAccAciRouteControlProfile_update(t *testing.T) {
 func testAccCheckAciRouteControlProfileConfig_basic(description string) string {
 	return fmt.Sprintf(`
 
-	resource "aci_route_control_profile" "test" {
-		parent_dn                  = "uni/tn-aaaaa"
+	resource "aci_tenant" "foo_tenant" {
+		name        = "tenant_1"
+		description = "This tenant is created by terraform ACI provider"
+	}
+	  
+	resource "aci_l3_outside" "fool3_outside" {
+		tenant_dn      = aci_tenant.foo_tenant.id
+		name           = "l3_outside_1"
+		annotation     = "l3_outside_tag"
+		name_alias     = "alias_out"
+		target_dscp    = "unspecified"
+	}	
+
+	resource "aci_bgp_route_control_profile" "test" {
+		parent_dn                  = aci_l3_outside.fool3_outside.id
 		name                       = "one"
 		annotation                 = "example"
 		description                = "%s"
 		name_alias                 = "example"
 		route_control_profile_type = "global"
-	}
+	  }
 	`, description)
 }
 
@@ -104,7 +117,7 @@ func testAccCheckAciRouteControlProfileDestroy(s *terraform.State) error {
 
 	for _, rs := range s.RootModule().Resources {
 
-		if rs.Type == "aci_route_control_profile" {
+		if rs.Type == "aci_bgp_route_control_profile" {
 			cont, err := client.Get(rs.Primary.ID)
 			route_control_profile := models.RouteControlProfileFromContainer(cont)
 			if err == nil {

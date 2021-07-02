@@ -1,6 +1,5 @@
 package models
 
-
 import (
 	"fmt"
 	"strconv"
@@ -12,31 +11,21 @@ const CloudcidrClassName = "cloudCidr"
 
 type CloudCIDRPool struct {
 	BaseAttributes
-    CloudCIDRPoolAttributes 
+	CloudCIDRPoolAttributes
 }
-  
+
 type CloudCIDRPoolAttributes struct {
-	
-	
 	Addr string `json:",omitempty"`
-	
-	
-    
-    
-	Annotation       string `json:",omitempty"`
-	
-    
-	NameAlias       string `json:",omitempty"`
-	
-    
-	Primary       string `json:",omitempty"`
-	
-    
+
+	Annotation string `json:",omitempty"`
+
+	NameAlias string `json:",omitempty"`
+
+	Primary string `json:",omitempty"`
 }
-   
 
 func NewCloudCIDRPool(cloudCidrRn, parentDn, description string, cloudCidrattr CloudCIDRPoolAttributes) *CloudCIDRPool {
-	dn := fmt.Sprintf("%s/%s", parentDn, cloudCidrRn)  
+	dn := fmt.Sprintf("%s/%s", parentDn, cloudCidrRn)
 	return &CloudCIDRPool{
 		BaseAttributes: BaseAttributes{
 			DistinguishedName: dn,
@@ -45,9 +34,8 @@ func NewCloudCIDRPool(cloudCidrRn, parentDn, description string, cloudCidrattr C
 			ClassName:         CloudcidrClassName,
 			Rn:                cloudCidrRn,
 		},
-        
+
 		CloudCIDRPoolAttributes: cloudCidrattr,
-         
 	}
 }
 
@@ -57,23 +45,13 @@ func (cloudCidr *CloudCIDRPool) ToMap() (map[string]string, error) {
 		return nil, err
 	}
 
-	
-	
-	A(cloudCidrMap, "addr",cloudCidr.Addr)
-	
-	
-    
-    
-	A(cloudCidrMap, "annotation",cloudCidr.Annotation)
-	
-    
-	A(cloudCidrMap, "nameAlias",cloudCidr.NameAlias)
-	
-    
-	A(cloudCidrMap, "primary",cloudCidr.Primary)
-	
-    
-	
+	A(cloudCidrMap, "addr", cloudCidr.Addr)
+
+	A(cloudCidrMap, "annotation", cloudCidr.Annotation)
+
+	A(cloudCidrMap, "nameAlias", cloudCidr.NameAlias)
+
+	A(cloudCidrMap, "primary", cloudCidr.Primary)
 
 	return cloudCidrMap, err
 }
@@ -89,26 +67,17 @@ func CloudCIDRPoolFromContainerList(cont *container.Container, index int) *Cloud
 			ClassName:         CloudcidrClassName,
 			Rn:                G(CloudCIDRPoolCont, "rn"),
 		},
-        
+
 		CloudCIDRPoolAttributes{
-		
-		
-			Addr : G(CloudCIDRPoolCont, "addr"),
-		
-		
-        
-        
-	        Annotation : G(CloudCIDRPoolCont, "annotation"),
-		
-        
-	        NameAlias : G(CloudCIDRPoolCont, "nameAlias"),
-		
-        
-	        Primary : G(CloudCIDRPoolCont, "primary"),
-		
-        		
-        },
-        
+
+			Addr: G(CloudCIDRPoolCont, "addr"),
+
+			Annotation: G(CloudCIDRPoolCont, "annotation"),
+
+			NameAlias: G(CloudCIDRPoolCont, "nameAlias"),
+
+			Primary: G(CloudCIDRPoolCont, "primary"),
+		},
 	}
 }
 

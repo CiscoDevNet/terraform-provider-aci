@@ -1,6 +1,7 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"reflect"
@@ -9,16 +10,17 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciLACPPolicy() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciLACPPolicyCreate,
-		Update: resourceAciLACPPolicyUpdate,
-		Read:   resourceAciLACPPolicyRead,
-		Delete: resourceAciLACPPolicyDelete,
+		CreateContext: resourceAciLACPPolicyCreate,
+		UpdateContext: resourceAciLACPPolicyUpdate,
+		ReadContext:   resourceAciLACPPolicyRead,
+		DeleteContext: resourceAciLACPPolicyDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciLACPPolicyImport,
@@ -98,11 +100,13 @@ func getRemoteLACPPolicy(client *client.Client, dn string) (*models.LACPPolicy, 
 	return lacpLagPol, nil
 }
 
-func setLACPPolicyAttributes(lacpLagPol *models.LACPPolicy, d *schema.ResourceData) *schema.ResourceData {
+func setLACPPolicyAttributes(lacpLagPol *models.LACPPolicy, d *schema.ResourceData) (*schema.ResourceData, error) {
 	d.SetId(lacpLagPol.DistinguishedName)
 	d.Set("description", lacpLagPol.Description)
-	lacpLagPolMap, _ := lacpLagPol.ToMap()
-
+	lacpLagPolMap, err := lacpLagPol.ToMap()
+	if err != nil {
+		return d, err
+	}
 	d.Set("name", lacpLagPolMap["name"])
 
 	d.Set("annotation", lacpLagPolMap["annotation"])
@@ -129,7 +133,7 @@ func setLACPPolicyAttributes(lacpLagPol *models.LACPPolicy, d *schema.ResourceDa
 	d.Set("min_links", lacpLagPolMap["minLinks"])
 	d.Set("mode", lacpLagPolMap["mode"])
 	d.Set("name_alias", lacpLagPolMap["nameAlias"])
-	return d
+	return d, nil
 }
 
 func resourceAciLACPPolicyImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -143,14 +147,17 @@ func resourceAciLACPPolicyImport(d *schema.ResourceData, m interface{}) ([]*sche
 	if err != nil {
 		return nil, err
 	}
-	schemaFilled := setLACPPolicyAttributes(lacpLagPol, d)
+	schemaFilled, err := setLACPPolicyAttributes(lacpLagPol, d)
+	if err != nil {
+		return nil, err
+	}
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciLACPPolicyCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciLACPPolicyCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] LACPPolicy: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -187,21 +194,16 @@ func resourceAciLACPPolicyCreate(d *schema.ResourceData, m interface{}) error {
 
 	err := aciClient.Save(lacpLagPol)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.SetPartial("name")
-
-	d.Partial(false)
 
 	d.SetId(lacpLagPol.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciLACPPolicyRead(d, m)
+	return resourceAciLACPPolicyRead(ctx, d, m)
 }
 
-func resourceAciLACPPolicyUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciLACPPolicyUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] LACPPolicy: Beginning Update")
 
 	aciClient := m.(*client.Client)
@@ -242,22 +244,17 @@ func resourceAciLACPPolicyUpdate(d *schema.ResourceData, m interface{}) error {
 	err := aciClient.Save(lacpLagPol)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.SetPartial("name")
-
-	d.Partial(false)
 
 	d.SetId(lacpLagPol.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciLACPPolicyRead(d, m)
+	return resourceAciLACPPolicyRead(ctx, d, m)
 
 }
 
-func resourceAciLACPPolicyRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciLACPPolicyRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -269,25 +266,29 @@ func resourceAciLACPPolicyRead(d *schema.ResourceData, m interface{}) error {
 		d.SetId("")
 		return nil
 	}
-	setLACPPolicyAttributes(lacpLagPol, d)
+	_, err = setLACPPolicyAttributes(lacpLagPol, d)
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 
 	return nil
 }
 
-func resourceAciLACPPolicyDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciLACPPolicyDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "lacpLagPol")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
 }

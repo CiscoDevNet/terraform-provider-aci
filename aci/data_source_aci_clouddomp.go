@@ -1,16 +1,18 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func dataSourceAciCloudDomainProfile() *schema.Resource {
 	return &schema.Resource{
 
-		Read: dataSourceAciCloudDomainProfileRead,
+		ReadContext: dataSourceAciCloudDomainProfileRead,
 
 		SchemaVersion: 1,
 
@@ -31,7 +33,7 @@ func dataSourceAciCloudDomainProfile() *schema.Resource {
 	}
 }
 
-func dataSourceAciCloudDomainProfileRead(d *schema.ResourceData, m interface{}) error {
+func dataSourceAciCloudDomainProfileRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	aciClient := m.(*client.Client)
 
 	rn := fmt.Sprintf("clouddomp")
@@ -41,8 +43,11 @@ func dataSourceAciCloudDomainProfileRead(d *schema.ResourceData, m interface{}) 
 	cloudDomP, err := getRemoteCloudDomainProfile(aciClient, dn)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	setCloudDomainProfileAttributes(cloudDomP, d)
+	_, err = setCloudDomainProfileAttributes(cloudDomP, d)
+	if err != nil {
+		return diag.FromErr(err)
+	}
 	return nil
 }

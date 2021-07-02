@@ -1,20 +1,22 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func resourceAciVMMCredential() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciVMMCredentialCreate,
-		Update: resourceAciVMMCredentialUpdate,
-		Read:   resourceAciVMMCredentialRead,
-		Delete: resourceAciVMMCredentialDelete,
+		CreateContext: resourceAciVMMCredentialCreate,
+		UpdateContext: resourceAciVMMCredentialUpdate,
+		ReadContext:   resourceAciVMMCredentialRead,
+		DeleteContext: resourceAciVMMCredentialDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciVMMCredentialImport,
@@ -58,17 +60,18 @@ func getRemoteVMMCredential(client *client.Client, dn string) (*models.VMMCreden
 	return vmmUsrAccP, nil
 }
 
-func setVMMCredentialAttributes(vmmUsrAccP *models.VMMCredential, d *schema.ResourceData) *schema.ResourceData {
+func setVMMCredentialAttributes(vmmUsrAccP *models.VMMCredential, d *schema.ResourceData) (*schema.ResourceData, error) {
 	d.SetId(vmmUsrAccP.DistinguishedName)
 	d.Set("description", vmmUsrAccP.Description)
-	vmmUsrAccPMap, _ := vmmUsrAccP.ToMap()
-	d.Set("vmm_domain_dn", GetParentDn(vmmUsrAccP.DistinguishedName, fmt.Sprintf("/usracc-%s", vmmUsrAccPMap["name"])))
+	vmmUsrAccPMap, err := vmmUsrAccP.ToMap()
+	if err != nil {
+		return d, err
+	}
 	d.Set("annotation", vmmUsrAccPMap["annotation"])
 	d.Set("name", vmmUsrAccPMap["name"])
-	d.Set("pwd", vmmUsrAccPMap["pwd"])
 	d.Set("usr", vmmUsrAccPMap["usr"])
 	d.Set("name_alias", vmmUsrAccPMap["nameAlias"])
-	return d
+	return d, nil
 }
 
 func resourceAciVMMCredentialImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -79,12 +82,15 @@ func resourceAciVMMCredentialImport(d *schema.ResourceData, m interface{}) ([]*s
 	if err != nil {
 		return nil, err
 	}
-	schemaFilled := setVMMCredentialAttributes(vmmUsrAccP, d)
+	schemaFilled, err := setVMMCredentialAttributes(vmmUsrAccP, d)
+	if err != nil {
+		return nil, err
+	}
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciVMMCredentialCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciVMMCredentialCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] VMMCredential: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -117,18 +123,15 @@ func resourceAciVMMCredentialCreate(d *schema.ResourceData, m interface{}) error
 
 	err := aciClient.Save(vmmUsrAccP)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-	d.SetPartial("name")
-	d.Partial(false)
 
 	d.SetId(vmmUsrAccP.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
-	return resourceAciVMMCredentialRead(d, m)
+	return resourceAciVMMCredentialRead(ctx, d, m)
 }
 
-func resourceAciVMMCredentialUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciVMMCredentialUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] VMMCredential: Beginning Update")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -162,41 +165,41 @@ func resourceAciVMMCredentialUpdate(d *schema.ResourceData, m interface{}) error
 	vmmUsrAccP.Status = "modified"
 	err := aciClient.Save(vmmUsrAccP)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-	d.SetPartial("name")
-	d.Partial(false)
 
 	d.SetId(vmmUsrAccP.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
-	return resourceAciVMMCredentialRead(d, m)
+	return resourceAciVMMCredentialRead(ctx, d, m)
 }
 
-func resourceAciVMMCredentialRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciVMMCredentialRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	vmmUsrAccP, err := getRemoteVMMCredential(aciClient, dn)
 	if err != nil {
 		d.SetId("")
-		return err
+		return diag.FromErr(err)
 	}
-	setVMMCredentialAttributes(vmmUsrAccP, d)
-
+	_, err = setVMMCredentialAttributes(vmmUsrAccP, d)
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 	return nil
 }
 
-func resourceAciVMMCredentialDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciVMMCredentialDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "vmmUsrAccP")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
 }
