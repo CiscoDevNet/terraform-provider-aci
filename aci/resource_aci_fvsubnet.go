@@ -151,7 +151,6 @@ func setSubnetAttributes(fvSubnet *models.Subnet, d *schema.ResourceData) (*sche
 
 	ctrlGet := make([]string, 0, 1)
 	for _, val := range strings.Split(fvSubnetMap["ctrl"], ",") {
-		ctrlGet = append(ctrlGet, strings.Trim(val, " "))
 		if val == "" {
 			ctrlGet = append(ctrlGet, "unspecified")
 		} else {
