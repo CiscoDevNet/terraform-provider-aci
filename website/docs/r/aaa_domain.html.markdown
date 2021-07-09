@@ -13,13 +13,11 @@ Manages ACI aaa Domain
 ## Example Usage ##
 
 ```hcl
-
 resource "aci_aaa_domain" "example" {
   name        = "example"
   annotation  = "tag_aaa"
   name_alias  = "alias_aaa"
 }
-
 ```
 
 ## Argument Reference ##

@@ -8,73 +8,77 @@ description: |-
 ---
 
 Application Centric Infrastructure (ACI)
------------------------------------------  
-The Cisco Application Centric Infrastructure (ACI) allows application requirements to define the network. This architecture simplifies, optimizes, and accelerates the entire application deployment life cycle.  
+----------------------------------------
+
+The Cisco Application Centric Infrastructure (ACI) allows application requirements to define the network. This architecture simplifies, optimizes, and accelerates the entire application deployment life cycle.
 
 Application Policy Infrastructure Controller (APIC)
---------------------------------------------------
+---------------------------------------------------
+
 The APIC manages the scalable ACI multi-tenant fabric. The APIC provides a unified point of automation and management, policy programming, application deployment, and health monitoring for the fabric. The APIC, which is implemented as a replicated synchronized clustered controller, optimizes performance, supports any application anywhere, and provides unified operation of the physical and virtual infrastructure.
 The APIC enables network administrators to easily define the optimal network for applications. Data center operators can clearly see how applications consume network resources, easily isolate and troubleshoot application and infrastructure problems, and monitor and profile resource usage patterns.
 The Cisco Application Policy Infrastructure Controller (APIC) API enables applications to directly connect with a secure, shared, high-performance resource pool that includes network, compute, and storage capabilities.
 
 Cisco ACI Provider
-------------
+------------------
+
 The Cisco ACI terraform provider is used to interact with resources provided by Cisco APIC. The provider needs to be configured with proper credentials to authenticate with Cisco APIC.
 
 Authentication
 --------------
-The Provider supports authentication with Cisco APIC in 3 ways:  
 
- 1. Authentication with user-id and password.  
- example:  
+The Provider supports authentication with Cisco APIC in 3 ways:
+
+ 1. Authentication with user-id and password.
+ example:
 
  ```hcl
-    provider "aci" {
-      # cisco-aci user name
-      username = "admin"
-      # cisco-aci password
-      password = "password"
-      # cisco-aci url
-      url      = "https://my-cisco-aci.com"
-      insecure = true
-    }
+provider "aci" {
+  # cisco-aci user name
+  username = "admin"
+  # cisco-aci password
+  password = "password"
+  # cisco-aci url
+  url      = "https://my-cisco-aci.com"
+  insecure = true
+}
  ```
 
- In this method, it will obtain an authentication token from Cisco APIC and will use that token to authenticate. A limitation with this approach is APIC counts the request to authenticate and threshold it to avoid DOS attack. After too many attempts this authentication method may fail as the threshold will be exceeded.  
- To avoid the above-mentioned problem Cisco APIC supports signature-based authentication.  
+ In this method, it will obtain an authentication token from Cisco APIC and will use that token to authenticate. A limitation with this approach is APIC counts the request to authenticate and threshold it to avoid DOS attack. After too many attempts this authentication method may fail as the threshold will be exceeded.
+ To avoid the above-mentioned problem Cisco APIC supports signature-based authentication.
 
- 2. Signature Based authentication.  
+ 2. Signature Based authentication.
     * x509 certificate has been created and added it to the user in Cisco APIC.
-    * With the help of private key that has been used to calculate the certificate, a signature has been calculated and passed with the request. This signature will be used to authenticate the user.  
-    example.  
+    * With the help of private key that has been used to calculate the certificate, a signature has been calculated and passed with the request. This signature will be used to authenticate the user.
+    example.
 
 ```
-    provider "aci" {
-      # cisco-aci user name
-      username = "admin"
-      # private key path
-      private_key = "path to private key"
-      # Certificate Name
-      cert_name = "user-cert"
-      # cisco-aci url
-      url      = "https://my-cisco-aci.com"
-      insecure = true
-    }
+provider "aci" {
+  # cisco-aci user name
+  username = "admin"
+  # private key path
+  private_key = "path to private key"
+  # Certificate Name
+  cert_name = "user-cert"
+  # cisco-aci url
+  url      = "https://my-cisco-aci.com"
+  insecure = true
+}
 ```
 
-  3. Authentication with login-domain and password.
-  example:
+3. Authentication with login-domain and password.
+   example:
 
-  ```hcl
-    provider "aci" {
-      username = "apic:Demo_domain\\\\admin"
-      # private_key = "path to private key"
-      # cert_name = "user-cert"
-      password = "password"
-      url = "url"
-      insecure = true
-    }
-  ```
+```hcl
+provider "aci" {
+  username = "apic:Demo_domain\\\\admin"
+  # private_key = "path to private key"
+  # cert_name = "user-cert"
+  password = "password"
+  url = "url"
+  insecure = true
+}
+```
 
 ### How to add Certificate to the Cisco APIC local user ###
 
@@ -94,7 +98,8 @@ Click the + sign and in the Create X509 Certificate enter a certificate name in 
 Use this certificate name as the value of the "cert_name" argument.
 
 Example Usage
-------------
+-------------
+
 ```hcl
 terraform {
   required_providers {
@@ -135,6 +140,6 @@ Following arguments are supported with Cisco ACI terraform provider.
  * `password` - (Optional) Password of the user mentioned in username argument. It is required when you want to use token-based authentication.
  * `private-key` - (Optional) Path to the private key for which x509 certificate has been calculated for the user mentioned in `username`.
  * `url` - (Required) URL for CISCO APIC.
- * `insecure` - (Optional) This determines whether to use insecure HTTP connection or not. Default value is `true`.  
+ * `insecure` - (Optional) This determines whether to use insecure HTTP connection or not. Default value is `true`.
 
 ~> NOTE: `password` or `private-key` either of one is required.
