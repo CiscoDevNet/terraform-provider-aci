@@ -7,27 +7,26 @@ description: |-
 ---
 
 # aci_action_rule_profile #
+
 Manages ACI Action Rule Profile
 
 ## Example Usage ##
 
 ```hcl
 resource "aci_action_rule_profile" "example" {
-
   tenant_dn  = "${aci_tenant.example.id}"
-
-  name  = "example"
-  annotation  = "example"
-  name_alias  = "example"
+  name       = "example"
+  annotation = "example"
+  name_alias = "example"
 }
 ```
+
 ## Argument Reference ##
+
 * `tenant_dn` - (Required) Distinguished name of parent Tenant object.
 * `name` - (Required) name of Object action_rule_profile.
 * `annotation` - (Optional) annotation for object action_rule_profile.
 * `name_alias` - (Optional) name_alias for object action_rule_profile.
-
-
 
 ## Attribute Reference
 
@@ -38,7 +37,6 @@ Dn of the Action Rule Profile.
 
 An existing Action Rule Profile can be [imported][docs-import] into this resource via its Dn, via the following command:
 [docs-import]: https://www.terraform.io/docs/import/index.html
-
 
 ```
 terraform import aci_action_rule_profile.example <Dn>

@@ -7,21 +7,23 @@ description: |-
 ---
 
 # aci_access_port_selector #
+
 Manages ACI Access Port Selector
 
 ## Example Usage ##
 
 ```hcl
-	resource "aci_access_port_selector" "fooaccess_port_selector" {
-		leaf_interface_profile_dn = "${aci_leaf_interface_profile.example.id}"
-		description               = "%s"
-		name                      = "demo_port_selector"
-		access_port_selector_type = "%s"
-		annotation                = "tag_port_selector"
-		name_alias                = "alias_port_selector"
-	} 
+resource "aci_access_port_selector" "fooaccess_port_selector" {
+  leaf_interface_profile_dn = "${aci_leaf_interface_profile.example.id}"
+  description               = "%s"
+  name                      = "demo_port_selector"
+  access_port_selector_type = "%s"
+  annotation                = "tag_port_selector"
+  name_alias                = "alias_port_selector"
+}
 ```
 ## Argument Reference ##
+
 * `leaf_interface_profile_dn` - (Required) Distinguished name of parent LeafInterfaceProfile object.
 * `name` - (Required) name of Object access_port_selector.
 * `access_port_selector_type` - (Required) The host port selector type.Allowed values are "ALL" and "range". Default is "ALL".
@@ -31,8 +33,6 @@ Manages ACI Access Port Selector
 Allowed values: "ALL", "range"
 
 * `relation_infra_rs_acc_base_grp` - (Optional) Relation to class infraAccBaseGrp. Cardinality - N_TO_ONE. Type - String.
-                
-
 
 ## Attribute Reference
 

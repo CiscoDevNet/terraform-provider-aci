@@ -12,24 +12,25 @@ Manages ACI Application EPG
 ## Example Usage ##
 
 ```hcl
-  resource "aci_application_epg" "fooapplication_epg" {
-    application_profile_dn  = "${aci_application_profile.app_profile_for_epg.id}"
-    name  					        = "demo_epg"
-    description 			      = "%s"
-    annotation  			      = "tag_epg"
-    exception_tag 		    	= "0"
-    flood_on_encap  	      = "disabled"
-    fwd_ctrl  			      	= "none"
-    has_mcast_source     		= "no"
-    is_attr_based_epg     	= "no"
-    match_t  				        = "AtleastOne"
-    name_alias  		      	= "alias_epg"
-    pc_enf_pref  		      	= "unenforced"
-    pref_gr_memb  	    		= "exclude"
-    prio  				        	= "unspecified"
-    shutdown  		      		= "no"
-  }
+resource "aci_application_epg" "fooapplication_epg" {
+  application_profile_dn  = "${aci_application_profile.app_profile_for_epg.id}"
+  name                    = "demo_epg"
+  description             = "%s"
+  annotation              = "tag_epg"
+  exception_tag           = "0"
+  flood_on_encap          = "disabled"
+  fwd_ctrl                = "none"
+  has_mcast_source        = "no"
+  is_attr_based_epg       = "no"
+  match_t                 = "AtleastOne"
+  name_alias              = "alias_epg"
+  pc_enf_pref             = "unenforced"
+  pref_gr_memb            = "exclude"
+  prio                    = "unspecified"
+  shutdown                = "no"
+}
 ```
+
 ## Argument Reference ##
 * `application_profile_dn` - (Required) Distinguished name of parent ApplicationProfile object.
 * `name` - (Required) name of Object application_epg.
@@ -78,7 +79,6 @@ Manages ACI Application EPG
 * `relation_fv_rs_intra_epg` - (Optional) Relation to Intra EPG Contract (Point to class vzBrCP). Cardinality - N_TO_M. Type - Set of String.
 
 
-
 ## Attribute Reference
 
 The only attribute that this resource exports is the `id`, which is set to the
@@ -88,7 +88,6 @@ Dn of the Application EPG.
 
 An existing Application EPG can be [imported][docs-import] into this resource via its Dn, via the following command:
 [docs-import]: https://www.terraform.io/docs/import/index.html
-
 
 ```
 terraform import aci_application_epg.example <Dn>
