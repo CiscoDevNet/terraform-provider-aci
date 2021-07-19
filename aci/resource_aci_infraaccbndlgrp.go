@@ -88,13 +88,18 @@ func resourceAciPCVPCInterfacePolicyGroup() *schema.Resource {
 				Optional: true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
-						"tn_netflow_monitor_pol_name": {
+						"target_dn": {
 							Type:     schema.TypeString,
 							Required: true,
 						},
 						"flt_type": {
 							Type:     schema.TypeString,
 							Required: true,
+							ValidateFunc: validation.StringInSlice([]string{
+								"ipv4",
+								"ipv6",
+								"ce",
+							}, false),
 						},
 					},
 				},
@@ -455,7 +460,7 @@ func resourceAciPCVPCInterfacePolicyGroupCreate(ctx context.Context, d *schema.R
 		relationParamList := relationToinfraRsNetflowMonitorPol.(*schema.Set).List()
 		for _, relationParam := range relationParamList {
 			paramMap := relationParam.(map[string]interface{})
-			err = aciClient.CreateRelationinfraRsNetflowMonitorPolFromPCVPCInterfacePolicyGroup(infraAccBndlGrp.DistinguishedName, paramMap["tn_netflow_monitor_pol_name"].(string), paramMap["flt_type"].(string))
+			err = aciClient.CreateRelationinfraRsNetflowMonitorPolFromPCVPCInterfacePolicyGroup(infraAccBndlGrp.DistinguishedName, GetMOName(paramMap["target_dn"].(string)), paramMap["flt_type"].(string))
 			if err != nil {
 				return diag.FromErr(err)
 			}
@@ -863,7 +868,7 @@ func resourceAciPCVPCInterfacePolicyGroupUpdate(ctx context.Context, d *schema.R
 		newRelList := newRel.(*schema.Set).List()
 		for _, relationParam := range oldRelList {
 			paramMap := relationParam.(map[string]interface{})
-			err = aciClient.DeleteRelationinfraRsNetflowMonitorPolFromPCVPCInterfacePolicyGroup(infraAccBndlGrp.DistinguishedName, paramMap["tn_netflow_monitor_pol_name"].(string), paramMap["flt_type"].(string))
+			err = aciClient.DeleteRelationinfraRsNetflowMonitorPolFromPCVPCInterfacePolicyGroup(infraAccBndlGrp.DistinguishedName, GetMOName(paramMap["target_dn"].(string)), paramMap["flt_type"].(string))
 			if err != nil {
 				return diag.FromErr(err)
 			}
@@ -871,7 +876,7 @@ func resourceAciPCVPCInterfacePolicyGroupUpdate(ctx context.Context, d *schema.R
 		}
 		for _, relationParam := range newRelList {
 			paramMap := relationParam.(map[string]interface{})
-			err = aciClient.CreateRelationinfraRsNetflowMonitorPolFromPCVPCInterfacePolicyGroup(infraAccBndlGrp.DistinguishedName, paramMap["tn_netflow_monitor_pol_name"].(string), paramMap["flt_type"].(string))
+			err = aciClient.CreateRelationinfraRsNetflowMonitorPolFromPCVPCInterfacePolicyGroup(infraAccBndlGrp.DistinguishedName, GetMOName(paramMap["target_dn"].(string)), paramMap["flt_type"].(string))
 			if err != nil {
 				return diag.FromErr(err)
 			}
@@ -1177,7 +1182,23 @@ func resourceAciPCVPCInterfacePolicyGroupRead(ctx context.Context, d *schema.Res
 		log.Printf("[DEBUG] Error while reading relation infraRsNetflowMonitorPol %v", err)
 
 	} else {
-		d.Set("relation_infra_rs_netflow_monitor_pol", infraRsNetflowMonitorPolData)
+		if _, ok := d.GetOk("relation_infra_rs_netflow_monitor_pol"); ok {
+			relationParamList := d.Get("relation_infra_rs_netflow_monitor_pol").(*schema.Set).List()
+			tfList := make([]map[string]string, 0)
+			for _, relationParam := range relationParamList {
+				paramMap := relationParam.(map[string]interface{})
+				params := map[string]string{
+					"tnNetflowMonitorPolName": GetMOName(paramMap["target_dn"].(string)),
+					"fltType":                 paramMap["flt_type"].(string),
+				}
+				tfList = append(tfList, params)
+			}
+
+			infraRsNetflowMonitorPolDataList := infraRsNetflowMonitorPolData.([]map[string]string)
+			if !reflect.DeepEqual(tfList, infraRsNetflowMonitorPolDataList) {
+				d.Set("relation_infra_rs_netflow_monitor_pol", make([]string, 0, 1))
+			}
+		}
 	}
 
 	infraRsL2PortAuthPolData, err := aciClient.ReadRelationinfraRsL2PortAuthPolFromPCVPCInterfacePolicyGroup(dn)
