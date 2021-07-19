@@ -26,7 +26,7 @@ func resourceAciBgpPeerConnectivityProfile() *schema.Resource {
 		SchemaVersion: 1,
 
 		Schema: AppendBaseAttrSchema(map[string]*schema.Schema{
-			"logical_node_profile_dn": &schema.Schema{
+			"parent_dn": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
 				ForceNew: true,
@@ -207,7 +207,7 @@ func setBgpPeerConnectivityProfileAttributes(bgpPeerP *models.BgpPeerConnectivit
 	d.Set("description", bgpPeerP.Description)
 	dn := d.Id()
 	if dn != bgpPeerP.DistinguishedName {
-		d.Set("logical_node_profile_dn", "")
+		d.Set("parent_dn", "")
 	}
 	bgpPeerPMap, err := bgpPeerP.ToMap()
 	if err != nil {
@@ -277,7 +277,7 @@ func resourceAciBgpPeerConnectivityProfileCreate(ctx context.Context, d *schema.
 
 	addr := d.Get("addr").(string)
 
-	LogicalNodeProfileDn := d.Get("logical_node_profile_dn").(string)
+	ParentDn := d.Get("parent_dn").(string)
 
 	bgpPeerPAttr := models.BgpPeerConnectivityProfileAttributes{}
 	if Addr, ok := d.GetOk("addr"); ok {
@@ -315,7 +315,7 @@ func resourceAciBgpPeerConnectivityProfileCreate(ctx context.Context, d *schema.
 	if Weight, ok := d.GetOk("weight"); ok {
 		bgpPeerPAttr.Weight = Weight.(string)
 	}
-	bgpPeerP := models.NewBgpPeerConnectivityProfile(fmt.Sprintf("peerP-[%s]", addr), LogicalNodeProfileDn, desc, bgpPeerPAttr)
+	bgpPeerP := models.NewBgpPeerConnectivityProfile(fmt.Sprintf("peerP-[%s]", addr), ParentDn, desc, bgpPeerPAttr)
 
 	err := aciClient.Save(bgpPeerP)
 	if err != nil {
@@ -393,7 +393,7 @@ func resourceAciBgpPeerConnectivityProfileUpdate(ctx context.Context, d *schema.
 
 	addr := d.Get("addr").(string)
 
-	LogicalNodeProfileDn := d.Get("logical_node_profile_dn").(string)
+	ParentDn := d.Get("parent_dn").(string)
 
 	bgpPeerPAttr := models.BgpPeerConnectivityProfileAttributes{}
 	if Addr, ok := d.GetOk("addr"); ok {
@@ -431,7 +431,7 @@ func resourceAciBgpPeerConnectivityProfileUpdate(ctx context.Context, d *schema.
 	if Weight, ok := d.GetOk("weight"); ok {
 		bgpPeerPAttr.Weight = Weight.(string)
 	}
-	bgpPeerP := models.NewBgpPeerConnectivityProfile(fmt.Sprintf("peerP-[%s]", addr), LogicalNodeProfileDn, desc, bgpPeerPAttr)
+	bgpPeerP := models.NewBgpPeerConnectivityProfile(fmt.Sprintf("peerP-[%s]", addr), ParentDn, desc, bgpPeerPAttr)
 
 	bgpPeerP.Status = "modified"
 

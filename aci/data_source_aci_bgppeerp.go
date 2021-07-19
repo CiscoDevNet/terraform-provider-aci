@@ -17,7 +17,7 @@ func dataSourceAciBgpPeerConnectivityProfile() *schema.Resource {
 		SchemaVersion: 1,
 
 		Schema: AppendBaseAttrSchema(map[string]*schema.Schema{
-			"logical_node_profile_dn": &schema.Schema{
+			"parent_dn": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
 			},
@@ -114,9 +114,9 @@ func dataSourceAciBgpPeerConnectivityProfileRead(ctx context.Context, d *schema.
 	addr := d.Get("addr").(string)
 
 	rn := fmt.Sprintf("peerP-[%s]", addr)
-	LogicalNodeProfileDn := d.Get("logical_node_profile_dn").(string)
+	ParentDn := d.Get("parent_dn").(string)
 
-	dn := fmt.Sprintf("%s/%s", LogicalNodeProfileDn, rn)
+	dn := fmt.Sprintf("%s/%s", ParentDn, rn)
 
 	bgpPeerP, err := getRemoteBgpPeerConnectivityProfile(aciClient, dn)
 
