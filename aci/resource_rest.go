@@ -32,6 +32,7 @@ func resourceAciRest() *schema.Resource {
 			"path": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
+				ForceNew: true,
 			},
 			// we set it automatically if file config is provided
 			"class_name": &schema.Schema{
