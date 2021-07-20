@@ -13,7 +13,7 @@ Manages ACI leaf access bundle policy group
 
 ```hcl
 
-resource "aci_leaf_access_bundle_policy_group " "example" {
+resource "aci_leaf_access_bundle_policy_group" "example" {
   name        = "example"
   annotation  = "example"
   lag_t       = "example"
