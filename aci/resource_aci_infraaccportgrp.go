@@ -11,6 +11,7 @@ import (
 	"github.com/ciscoecosystem/aci-go-client/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciLeafAccessPortPolicyGroup() *schema.Resource {
@@ -81,13 +82,18 @@ func resourceAciLeafAccessPortPolicyGroup() *schema.Resource {
 				Optional: true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
-						"tn_netflow_monitor_pol_name": {
+						"target_dn": {
 							Type:     schema.TypeString,
 							Required: true,
 						},
 						"flt_type": {
 							Type:     schema.TypeString,
 							Required: true,
+							ValidateFunc: validation.StringInSlice([]string{
+								"ipv4",
+								"ipv6",
+								"ce",
+							}, false),
 						},
 					},
 				},
@@ -456,7 +462,7 @@ func resourceAciLeafAccessPortPolicyGroupCreate(ctx context.Context, d *schema.R
 		relationParamList := relationToinfraRsNetflowMonitorPol.(*schema.Set).List()
 		for _, relationParam := range relationParamList {
 			paramMap := relationParam.(map[string]interface{})
-			err = aciClient.CreateRelationinfraRsNetflowMonitorPolFromLeafAccessPortPolicyGroup(infraAccPortGrp.DistinguishedName, paramMap["tn_netflow_monitor_pol_name"].(string), paramMap["flt_type"].(string))
+			err = aciClient.CreateRelationinfraRsNetflowMonitorPolFromLeafAccessPortPolicyGroup(infraAccPortGrp.DistinguishedName, GetMOName(paramMap["target_dn"].(string)), paramMap["flt_type"].(string))
 			if err != nil {
 				return diag.FromErr(err)
 			}
@@ -880,7 +886,7 @@ func resourceAciLeafAccessPortPolicyGroupUpdate(ctx context.Context, d *schema.R
 		newRelList := newRel.(*schema.Set).List()
 		for _, relationParam := range oldRelList {
 			paramMap := relationParam.(map[string]interface{})
-			err = aciClient.DeleteRelationinfraRsNetflowMonitorPolFromLeafAccessPortPolicyGroup(infraAccPortGrp.DistinguishedName, paramMap["tn_netflow_monitor_pol_name"].(string), paramMap["flt_type"].(string))
+			err = aciClient.DeleteRelationinfraRsNetflowMonitorPolFromLeafAccessPortPolicyGroup(infraAccPortGrp.DistinguishedName, GetMOName(paramMap["target_dn"].(string)), paramMap["flt_type"].(string))
 			if err != nil {
 				return diag.FromErr(err)
 			}
@@ -888,7 +894,7 @@ func resourceAciLeafAccessPortPolicyGroupUpdate(ctx context.Context, d *schema.R
 		}
 		for _, relationParam := range newRelList {
 			paramMap := relationParam.(map[string]interface{})
-			err = aciClient.CreateRelationinfraRsNetflowMonitorPolFromLeafAccessPortPolicyGroup(infraAccPortGrp.DistinguishedName, paramMap["tn_netflow_monitor_pol_name"].(string), paramMap["flt_type"].(string))
+			err = aciClient.CreateRelationinfraRsNetflowMonitorPolFromLeafAccessPortPolicyGroup(infraAccPortGrp.DistinguishedName, GetMOName(paramMap["target_dn"].(string)), paramMap["flt_type"].(string))
 			if err != nil {
 				return diag.FromErr(err)
 			}
@@ -1204,9 +1210,24 @@ func resourceAciLeafAccessPortPolicyGroupRead(ctx context.Context, d *schema.Res
 	infraRsNetflowMonitorPolData, err := aciClient.ReadRelationinfraRsNetflowMonitorPolFromLeafAccessPortPolicyGroup(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation infraRsNetflowMonitorPol %v", err)
-
 	} else {
-		d.Set("relation_infra_rs_netflow_monitor_pol", infraRsNetflowMonitorPolData)
+		if _, ok := d.GetOk("relation_infra_rs_netflow_monitor_pol"); ok {
+			relationParamList := d.Get("relation_infra_rs_netflow_monitor_pol").(*schema.Set).List()
+			tfList := make([]map[string]string, 0)
+			for _, relationParam := range relationParamList {
+				paramMap := relationParam.(map[string]interface{})
+				params := map[string]string{
+					"tnNetflowMonitorPolName": GetMOName(paramMap["target_dn"].(string)),
+					"fltType":                 paramMap["flt_type"].(string),
+				}
+				tfList = append(tfList, params)
+			}
+
+			infraRsNetflowMonitorPolDataList := infraRsNetflowMonitorPolData.([]map[string]string)
+			if !reflect.DeepEqual(tfList, infraRsNetflowMonitorPolDataList) {
+				d.Set("relation_infra_rs_netflow_monitor_pol", make([]string, 0, 1))
+			}
+		}
 	}
 
 	infraRsL2PortAuthPolData, err := aciClient.ReadRelationinfraRsL2PortAuthPolFromLeafAccessPortPolicyGroup(dn)

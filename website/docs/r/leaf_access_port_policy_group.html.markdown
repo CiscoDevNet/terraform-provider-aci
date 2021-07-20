@@ -40,6 +40,8 @@ Manages ACI Leaf Access Port Policy Group
 * `relation_infra_rs_h_if_pol` - (Optional) Relation to class fabricHIfPol. Cardinality - N_TO_ONE. Type - String.
                 
 * `relation_infra_rs_netflow_monitor_pol` - (Optional) Relation to class netflowMonitorPol. Cardinality - N_TO_M. Type - Set of Map.
+	- `flt_type` - (Required) Netflow IP filter type. Allowed values: "ce", "ipv4", "ipv6". 
+	- `target_dn` - (Required) Distinguished name of target Netflow Monitor object.
                 
 * `relation_infra_rs_l2_port_auth_pol` - (Optional) Relation to class l2PortAuthPol. Cardinality - N_TO_ONE. Type - String.
                 
