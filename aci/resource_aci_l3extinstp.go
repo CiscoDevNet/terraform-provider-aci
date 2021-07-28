@@ -873,12 +873,15 @@ func resourceAciExternalNetworkInstanceProfileRead(ctx context.Context, d *schem
 			relationParamList := toStringList(d.Get("relation_fv_rs_prov").(*schema.Set).List())
 			fvRsProvDataList := toStringList(fvRsProvData.(*schema.Set).List())
 			relationToDelete := make([]string, 0, 1)
-			for _, relationParam := range relationParamList {
-				relationParamName := GetMOName(relationParam)
-				for _, val := range fvRsProvDataList {
-					if val == relationParamName {
-						continue
+			for _, val := range fvRsProvDataList {
+				contains := false
+				for _, relationParam := range relationParamList {
+					if val == GetMOName(relationParam) {
+						contains = true
+						break
 					}
+				}
+				if !contains {
 					relationToDelete = append(relationToDelete, val)
 				}
 			}
