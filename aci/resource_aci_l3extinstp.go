@@ -655,6 +655,9 @@ func resourceAciExternalNetworkInstanceProfileUpdate(ctx context.Context, d *sch
 
 		for _, relDn := range relToDelete {
 			relDnName := GetMOName(relDn)
+			if relDnName == "" {
+				relDnName = relDn
+			}
 			err = aciClient.DeleteRelationfvRsProvFromExternalNetworkInstanceProfile(l3extInstP.DistinguishedName, relDnName)
 			if err != nil {
 				return diag.FromErr(err)
@@ -664,6 +667,9 @@ func resourceAciExternalNetworkInstanceProfileUpdate(ctx context.Context, d *sch
 
 		for _, relDn := range relToCreate {
 			relDnName := GetMOName(relDn)
+			if relDnName == "" {
+				relDnName = relDn
+			}
 			err = aciClient.CreateRelationfvRsProvFromExternalNetworkInstanceProfile(l3extInstP.DistinguishedName, relDnName)
 			if err != nil {
 				return diag.FromErr(err)
@@ -862,22 +868,24 @@ func resourceAciExternalNetworkInstanceProfileRead(ctx context.Context, d *schem
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation fvRsProv %v", err)
 		d.Set("relation_fv_rs_prov", make([]string, 0, 1))
-
 	} else {
 		if _, ok := d.GetOk("relation_fv_rs_prov"); ok {
 			relationParamList := toStringList(d.Get("relation_fv_rs_prov").(*schema.Set).List())
-			tfList := make([]string, 0, 1)
-			for _, relationParam := range relationParamList {
-				relationParamName := GetMOName(relationParam)
-				tfList = append(tfList, relationParamName)
-			}
 			fvRsProvDataList := toStringList(fvRsProvData.(*schema.Set).List())
-			sort.Strings(tfList)
-			sort.Strings(fvRsProvDataList)
-
-			if !reflect.DeepEqual(tfList, fvRsProvDataList) {
-				d.Set("relation_fv_rs_prov", make([]string, 0, 1))
+			relationToDelete := make([]string, 0, 1)
+			for _, val := range fvRsProvDataList {
+				contains := false
+				for _, relationParam := range relationParamList {
+					if val == GetMOName(relationParam) {
+						contains = true
+						break
+					}
+				}
+				if !contains {
+					relationToDelete = append(relationToDelete, val)
+				}
 			}
+			d.Set("relation_fv_rs_prov", append(relationParamList, relationToDelete...))
 		}
 	}
 
