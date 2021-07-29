@@ -124,6 +124,9 @@ func resourceAciApplicationEPG() *schema.Resource {
 				Computed: true,
 				ValidateFunc: validation.StringInSlice([]string{
 					"unspecified",
+					"level6",
+					"level5",
+					"level4",
 					"level3",
 					"level2",
 					"level1",
@@ -255,6 +258,11 @@ func setApplicationEPGAttributes(fvAEPg *models.ApplicationEPG, d *schema.Resour
 	d.Set("exception_tag", fvAEPgMap["exceptionTag"])
 	d.Set("flood_on_encap", fvAEPgMap["floodOnEncap"])
 	d.Set("fwd_ctrl", fvAEPgMap["fwdCtrl"])
+	if fvAEPgMap["fwdCtrl"] == "" {
+		d.Set("fwd_ctrl", "none")
+	} else {
+		d.Set("fwd_ctrl", fvAEPgMap["fwdCtrl"])
+	}
 	d.Set("has_mcast_source", fvAEPgMap["hasMcastSource"])
 	d.Set("is_attr_based_epg", fvAEPgMap["isAttrBasedEPg"])
 	d.Set("match_t", fvAEPgMap["matchT"])
