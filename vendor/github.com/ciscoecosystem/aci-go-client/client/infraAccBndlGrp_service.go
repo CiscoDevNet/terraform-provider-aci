@@ -389,12 +389,12 @@ func (sm *ServiceManager) CreateRelationinfraRsNetflowMonitorPolFromPCVPCInterfa
 		return err
 	}
 
-	_, _, err = sm.client.Do(req)
+	cont, _, err := sm.client.Do(req)
 	if err != nil {
 		return err
 	}
 
-	return nil
+	return CheckForErrors(cont, "POST", sm.client.skipLoggingPayload)
 }
 
 func (sm *ServiceManager) DeleteRelationinfraRsNetflowMonitorPolFromPCVPCInterfacePolicyGroup(parentDn, tnNetflowMonitorPolName, fltType string) error {

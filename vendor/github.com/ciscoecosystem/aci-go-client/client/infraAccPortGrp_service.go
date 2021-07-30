@@ -393,12 +393,12 @@ func (sm *ServiceManager) CreateRelationinfraRsNetflowMonitorPolFromLeafAccessPo
 		return err
 	}
 
-	_, _, err = sm.client.Do(req)
+	cont, _, err := sm.client.Do(req)
 	if err != nil {
 		return err
 	}
 
-	return nil
+	return CheckForErrors(cont, "POST", sm.client.skipLoggingPayload)
 }
 
 func (sm *ServiceManager) DeleteRelationinfraRsNetflowMonitorPolFromLeafAccessPortPolicyGroup(parentDn, tnNetflowMonitorPolName, fltType string) error {

@@ -81,7 +81,7 @@ func CheckForErrors(cont *container.Container, method string, skipLoggingPayload
 	number, err := strconv.Atoi(models.G(cont, "totalCount"))
 	if err != nil {
 		if !skipLoggingPayload {
-			log.Printf("[DEBUG] Exit from errors %v", cont)
+			log.Printf("[DEBUG] Exit from errors, Unable to parse error count from response %v", cont)
 		} else {
 			log.Printf("[DEBUG] Exit from errors %s", err.Error())
 		}
@@ -94,13 +94,13 @@ func CheckForErrors(cont *container.Container, method string, skipLoggingPayload
 
 			if models.StripQuotes(imdata.Path("error.attributes.code").String()) == "103" {
 				if !skipLoggingPayload {
-					log.Printf("[DEBUG] Exit from errors %v", cont)
+					log.Printf("[DEBUG] Exit from error 103 %v", cont)
 				}
 				return nil
 			} else {
 				if models.StripQuotes(imdata.Path("error.attributes.text").String()) == "" && models.StripQuotes(imdata.Path("error.attributes.code").String()) == "403" {
 					if !skipLoggingPayload {
-						log.Printf("[DEBUG] Exit from errors %v", cont)
+						log.Printf("[DEBUG] Exit from authentication error 403 %v", cont)
 					}
 					return errors.New("Unable to authenticate. Please check your credentials")
 				}
@@ -116,7 +116,7 @@ func CheckForErrors(cont *container.Container, method string, skipLoggingPayload
 
 	if imdata.String() == "{}" && method == "GET" {
 		if !skipLoggingPayload {
-			log.Printf("[DEBUG] Exit from errors %v", cont)
+			log.Printf("[DEBUG] Exit from error (Empty response) %v", cont)
 		}
 
 		return errors.New("Error retriving Object: Object may not exists")
