@@ -30,7 +30,7 @@ Manages ACI Filter Entry
 		s_from_port   = "0"
 		s_to_port     = "0"
 		stateful      = "no"
-		tcp_rules     = "ack"
+		tcp_rules     = ["ack","rst"]
 	}
 ```
 ## Argument Reference ##
@@ -54,7 +54,7 @@ Allowed values: "unspecified", "ftpData", "smtp", "dns", "http","pop3", "https",
 * `s_to_port` - (Optional) Source To Port. Accepted values are any valid TCP/UDP port range. Default is "unspecified".
 Allowed values: "unspecified", "ftpData", "smtp", "dns", "http","pop3", "https", "rtsp"
 * `stateful` - (Optional) Determines if entry is stateful or not. Allowed values are "yes" and "no". Default is "no".
-* `tcp_rules` - (Optional) TCP Session Rules. Allowed values are "unspecified", "est", "syn", "ack", "fin" and "rst". Default is "unspecified".
+* `tcp_rules` - (Optional) TCP Rules. TCP Session Rules Allowed values are "ack", "est", "fin", "rst", "syn", "unspecified", and default value is "unspecified". Type: List.
 
 
 
