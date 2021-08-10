@@ -491,7 +491,6 @@ func setContractAttributes(vzBrCP *models.Contract, d *schema.ResourceData) (*sc
 	dn := d.Id()
 	d.SetId(vzBrCP.DistinguishedName)
 	d.Set("description", vzBrCP.Description)
-	// d.Set("tenant_dn", GetParentDn(vzBrCP.DistinguishedName))
 	if dn != vzBrCP.DistinguishedName {
 		d.Set("tenant_dn", "")
 	}
@@ -499,6 +498,9 @@ func setContractAttributes(vzBrCP *models.Contract, d *schema.ResourceData) (*sc
 	if err != nil {
 		return d, err
 	}
+
+	d.Set("tenant_dn", GetParentDn(dn, fmt.Sprintf("/brc-%s", vzBrCPMap["name"])))
+
 	d.Set("name", vzBrCPMap["name"])
 
 	d.Set("annotation", vzBrCPMap["annotation"])
