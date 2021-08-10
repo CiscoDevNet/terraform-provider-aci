@@ -92,9 +92,7 @@ func setL3outStaticRouteNextHopAttributes(ipNexthopP *models.L3outStaticRouteNex
 	d.SetId(ipNexthopP.DistinguishedName)
 	d.Set("description", ipNexthopP.Description)
 	dn := d.Id()
-	if dn != ipNexthopP.DistinguishedName {
-		d.Set("static_route_dn", "")
-	}
+
 	ipNexthopPMap, err := ipNexthopP.ToMap()
 
 	if err != nil {
@@ -102,7 +100,7 @@ func setL3outStaticRouteNextHopAttributes(ipNexthopP *models.L3outStaticRouteNex
 	}
 
 	d.Set("nh_addr", ipNexthopPMap["nhAddr"])
-
+	d.Set("static_route_dn", GetParentDn(dn, fmt.Sprintf("/nh-[%s]", ipNexthopPMap["nhAddr"])))
 	d.Set("annotation", ipNexthopPMap["annotation"])
 	d.Set("name_alias", ipNexthopPMap["nameAlias"])
 	d.Set("pref", ipNexthopPMap["pref"])
@@ -317,13 +315,7 @@ func resourceAciL3outStaticRouteNextHopRead(ctx context.Context, d *schema.Resou
 		d.Set("relation_ip_rs_nexthop_route_track", "")
 
 	} else {
-		if _, ok := d.GetOk("relation_ip_rs_nexthop_route_track"); ok {
-			tfName := d.Get("relation_ip_rs_nexthop_route_track").(string)
-			if tfName != ipRsNexthopRouteTrackData {
-				d.Set("relation_ip_rs_nexthop_route_track", "")
-			}
-		}
-
+		d.Set("relation_ip_rs_nexthop_route_track", ipRsNexthopRouteTrackData.(string))
 	}
 
 	ipRsNHTrackMemberData, err := aciClient.ReadRelationipRsNHTrackMemberFromL3outStaticRouteNextHop(dn)
@@ -332,13 +324,7 @@ func resourceAciL3outStaticRouteNextHopRead(ctx context.Context, d *schema.Resou
 		d.Set("relation_ip_rs_nh_track_member", "")
 
 	} else {
-		if _, ok := d.GetOk("relation_ip_rs_nh_track_member"); ok {
-			tfName := d.Get("relation_ip_rs_nh_track_member").(string)
-			if tfName != ipRsNHTrackMemberData {
-				d.Set("relation_ip_rs_nh_track_member", "")
-			}
-		}
-
+		d.Set("relation_ip_rs_nh_track_member", ipRsNHTrackMemberData.(string))
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())

@@ -50,8 +50,8 @@ func resourceAciPhysicalDomain() *schema.Resource {
 				Optional: true,
 			},
 			"relation_infra_rs_vlan_ns_def": &schema.Schema{
-				Type: schema.TypeString,
-
+				Type:     schema.TypeString,
+				Computed: true,
 				Optional: true,
 			},
 			"relation_infra_rs_vip_addr_ns": &schema.Schema{
@@ -60,8 +60,8 @@ func resourceAciPhysicalDomain() *schema.Resource {
 				Optional: true,
 			},
 			"relation_infra_rs_dom_vxlan_ns_def": &schema.Schema{
-				Type: schema.TypeString,
-
+				Type:     schema.TypeString,
+				Computed: true,
 				Optional: true,
 			},
 		},
@@ -331,12 +331,7 @@ func resourceAciPhysicalDomainRead(ctx context.Context, d *schema.ResourceData, 
 		d.Set("relation_infra_rs_vlan_ns", "")
 
 	} else {
-		if _, ok := d.GetOk("relation_infra_rs_vlan_ns"); ok {
-			tfName := d.Get("relation_infra_rs_vlan_ns").(string)
-			if tfName != infraRsVlanNsData {
-				d.Set("relation_infra_rs_vlan_ns", "")
-			}
-		}
+		d.Set("relation_infra_rs_vlan_ns", infraRsVlanNsData.(string))
 	}
 
 	infraRsVlanNsDefData, err := aciClient.ReadRelationinfraRsVlanNsDefFromPhysicalDomain(dn)
@@ -345,12 +340,7 @@ func resourceAciPhysicalDomainRead(ctx context.Context, d *schema.ResourceData, 
 		d.Set("relation_infra_rs_vlan_ns_def", "")
 
 	} else {
-		if _, ok := d.GetOk("relation_infra_rs_vlan_ns_def"); ok {
-			tfName := d.Get("relation_infra_rs_vlan_ns_def").(string)
-			if tfName != infraRsVlanNsDefData {
-				d.Set("relation_infra_rs_vlan_ns_def", "")
-			}
-		}
+		d.Set("relation_infra_rs_vlan_ns_def", infraRsVlanNsDefData.(string))
 	}
 
 	infraRsVipAddrNsData, err := aciClient.ReadRelationinfraRsVipAddrNsFromPhysicalDomain(dn)
@@ -359,12 +349,7 @@ func resourceAciPhysicalDomainRead(ctx context.Context, d *schema.ResourceData, 
 		d.Set("relation_infra_rs_vip_addr_ns", "")
 
 	} else {
-		if _, ok := d.GetOk("relation_infra_rs_vip_addr_ns"); ok {
-			tfName := d.Get("relation_infra_rs_vip_addr_ns").(string)
-			if tfName != infraRsVipAddrNsData {
-				d.Set("relation_infra_rs_vip_addr_ns", "")
-			}
-		}
+		d.Set("relation_infra_rs_vip_addr_ns", infraRsVipAddrNsData.(string))
 	}
 
 	infraRsDomVxlanNsDefData, err := aciClient.ReadRelationinfraRsDomVxlanNsDefFromPhysicalDomain(dn)
@@ -373,12 +358,7 @@ func resourceAciPhysicalDomainRead(ctx context.Context, d *schema.ResourceData, 
 		d.Set("relation_infra_rs_dom_vxlan_ns_def", "")
 
 	} else {
-		if _, ok := d.GetOk("relation_infra_rs_dom_vxlan_ns_def"); ok {
-			tfName := d.Get("relation_infra_rs_dom_vxlan_ns_def").(string)
-			if tfName != infraRsDomVxlanNsDefData {
-				d.Set("relation_infra_rs_dom_vxlan_ns_def", "")
-			}
-		}
+		d.Set("relation_infra_rs_dom_vxlan_ns_def", infraRsDomVxlanNsDefData.(string))
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())

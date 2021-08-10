@@ -241,12 +241,7 @@ func resourceAciFirmwareGroupRead(ctx context.Context, d *schema.ResourceData, m
 		d.Set("relation_firmware_rs_fwgrpp", "")
 
 	} else {
-		if _, ok := d.GetOk("relation_firmware_rs_fwgrpp"); ok {
-			tfName := GetMOName(d.Get("relation_firmware_rs_fwgrpp").(string))
-			if tfName != firmwareRsFwgrppData {
-				d.Set("relation_firmware_rs_fwgrpp", "")
-			}
-		}
+		d.Set("relation_firmware_rs_fwgrpp", firmwareRsFwgrppData.(string))
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())

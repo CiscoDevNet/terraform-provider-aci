@@ -97,7 +97,7 @@ func (sm *ServiceManager) ReadRelationl3extRsSubnetToProfileFromL3ExtSubnet(pare
 
 	for _, contItem := range contList {
 		paramMap := make(map[string]string)
-		paramMap["tnRtctrlProfileName"] = models.G(contItem, "tnRtctrlProfileName")
+		paramMap["tnRtctrlProfileName"] = models.G(contItem, "tDn")
 		paramMap["direction"] = models.G(contItem, "direction")
 
 		st = append(st, paramMap)

@@ -63,6 +63,7 @@ func resourceAciFCDomain() *schema.Resource {
 				Type: schema.TypeString,
 
 				Optional: true,
+				Computed: true,
 			},
 			"relation_infra_rs_vip_addr_ns": &schema.Schema{
 				Type: schema.TypeString,
@@ -78,11 +79,13 @@ func resourceAciFCDomain() *schema.Resource {
 				Type: schema.TypeString,
 
 				Optional: true,
+				Computed: true,
 			},
 			"relation_fc_rs_vsan_ns_def": &schema.Schema{
 				Type: schema.TypeString,
 
 				Optional: true,
+				Computed: true,
 			},
 		},
 	}
@@ -467,12 +470,7 @@ func resourceAciFCDomainRead(ctx context.Context, d *schema.ResourceData, m inte
 		d.Set("relation_infra_rs_vlan_ns", "")
 
 	} else {
-		if _, ok := d.GetOk("relation_infra_rs_vlan_ns"); ok {
-			tfName := d.Get("relation_infra_rs_vlan_ns").(string)
-			if tfName != infraRsVlanNsData {
-				d.Set("relation_infra_rs_vlan_ns", "")
-			}
-		}
+		d.Set("relation_infra_rs_vlan_ns", infraRsVlanNsData.(string))
 	}
 
 	fcRsVsanNsData, err := aciClient.ReadRelationfcRsVsanNsFromFCDomain(dn)
@@ -481,12 +479,7 @@ func resourceAciFCDomainRead(ctx context.Context, d *schema.ResourceData, m inte
 		d.Set("relation_fc_rs_vsan_ns", "")
 
 	} else {
-		if _, ok := d.GetOk("relation_fc_rs_vsan_ns"); ok {
-			tfName := d.Get("relation_fc_rs_vsan_ns").(string)
-			if tfName != fcRsVsanNsData {
-				d.Set("relation_fc_rs_vsan_ns", "")
-			}
-		}
+		d.Set("relation_fc_rs_vsan_ns", fcRsVsanNsData.(string))
 	}
 
 	fcRsVsanAttrData, err := aciClient.ReadRelationfcRsVsanAttrFromFCDomain(dn)
@@ -495,12 +488,7 @@ func resourceAciFCDomainRead(ctx context.Context, d *schema.ResourceData, m inte
 		d.Set("relation_fc_rs_vsan_attr", "")
 
 	} else {
-		if _, ok := d.GetOk("relation_fc_rs_vsan_attr"); ok {
-			tfName := d.Get("relation_fc_rs_vsan_attr").(string)
-			if tfName != fcRsVsanAttrData {
-				d.Set("relation_fc_rs_vsan_attr", "")
-			}
-		}
+		d.Set("relation_fc_rs_vsan_attr", fcRsVsanAttrData.(string))
 	}
 
 	infraRsVlanNsDefData, err := aciClient.ReadRelationinfraRsVlanNsDefFromFCDomain(dn)
@@ -509,12 +497,7 @@ func resourceAciFCDomainRead(ctx context.Context, d *schema.ResourceData, m inte
 		d.Set("relation_infra_rs_vlan_ns_def", "")
 
 	} else {
-		if _, ok := d.GetOk("relation_infra_rs_vlan_ns_def"); ok {
-			tfName := d.Get("relation_infra_rs_vlan_ns_def").(string)
-			if tfName != infraRsVlanNsDefData {
-				d.Set("relation_infra_rs_vlan_ns_def", "")
-			}
-		}
+		d.Set("relation_infra_rs_vlan_ns_def", infraRsVlanNsDefData.(string))
 	}
 
 	infraRsVipAddrNsData, err := aciClient.ReadRelationinfraRsVipAddrNsFromFCDomain(dn)
@@ -523,12 +506,7 @@ func resourceAciFCDomainRead(ctx context.Context, d *schema.ResourceData, m inte
 		d.Set("relation_infra_rs_vip_addr_ns", "")
 
 	} else {
-		if _, ok := d.GetOk("relation_infra_rs_vip_addr_ns"); ok {
-			tfName := d.Get("relation_infra_rs_vip_addr_ns").(string)
-			if tfName != infraRsVipAddrNsData {
-				d.Set("relation_infra_rs_vip_addr_ns", "")
-			}
-		}
+		d.Set("relation_infra_rs_vip_addr_ns", infraRsVipAddrNsData.(string))
 	}
 
 	infraRsDomVxlanNsDefData, err := aciClient.ReadRelationinfraRsDomVxlanNsDefFromFCDomain(dn)
@@ -537,12 +515,7 @@ func resourceAciFCDomainRead(ctx context.Context, d *schema.ResourceData, m inte
 		d.Set("relation_infra_rs_dom_vxlan_ns_def", "")
 
 	} else {
-		if _, ok := d.GetOk("relation_infra_rs_dom_vxlan_ns_def"); ok {
-			tfName := d.Get("relation_infra_rs_dom_vxlan_ns_def").(string)
-			if tfName != infraRsDomVxlanNsDefData {
-				d.Set("relation_infra_rs_dom_vxlan_ns_def", "")
-			}
-		}
+		d.Set("relation_infra_rs_dom_vxlan_ns_def", infraRsDomVxlanNsDefData.(string))
 	}
 
 	fcRsVsanAttrDefData, err := aciClient.ReadRelationfcRsVsanAttrDefFromFCDomain(dn)
@@ -551,12 +524,7 @@ func resourceAciFCDomainRead(ctx context.Context, d *schema.ResourceData, m inte
 		d.Set("relation_fc_rs_vsan_attr_def", "")
 
 	} else {
-		if _, ok := d.GetOk("relation_fc_rs_vsan_attr_def"); ok {
-			tfName := d.Get("relation_fc_rs_vsan_attr_def").(string)
-			if tfName != fcRsVsanAttrDefData {
-				d.Set("relation_fc_rs_vsan_attr_def", "")
-			}
-		}
+		d.Set("relation_fc_rs_vsan_attr_def", fcRsVsanAttrDefData.(string))
 	}
 
 	fcRsVsanNsDefData, err := aciClient.ReadRelationfcRsVsanNsDefFromFCDomain(dn)
@@ -565,12 +533,7 @@ func resourceAciFCDomainRead(ctx context.Context, d *schema.ResourceData, m inte
 		d.Set("relation_fc_rs_vsan_ns_def", "")
 
 	} else {
-		if _, ok := d.GetOk("relation_fc_rs_vsan_ns_def"); ok {
-			tfName := d.Get("relation_fc_rs_vsan_ns_def").(string)
-			if tfName != fcRsVsanNsDefData {
-				d.Set("relation_fc_rs_vsan_ns_def", "")
-			}
-		}
+		d.Set("relation_fc_rs_vsan_ns_def", fcRsVsanNsDefData.(string))
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())

@@ -96,7 +96,7 @@ func setAccessPortBlockAttributes(infraPortBlk *models.AccessPortBlock, d *schem
 	dn := d.Id()
 	d.SetId(infraPortBlk.DistinguishedName)
 	d.Set("description", infraPortBlk.Description)
-	// d.Set("access_port_selector_dn", GetParentDn(infraPortBlk.DistinguishedName))
+
 	if dn != infraPortBlk.DistinguishedName {
 		d.Set("access_port_selector_dn", "")
 	}
@@ -104,6 +104,8 @@ func setAccessPortBlockAttributes(infraPortBlk *models.AccessPortBlock, d *schem
 	if err != nil {
 		return d, err
 	}
+
+	d.Set("access_port_selector_dn", GetParentDn(dn, fmt.Sprintf("/portblk-%s", infraPortBlkMap["name"])))
 	d.Set("name", infraPortBlkMap["name"])
 
 	d.Set("annotation", infraPortBlkMap["annotation"])
@@ -351,12 +353,7 @@ func resourceAciAccessPortBlockRead(ctx context.Context, d *schema.ResourceData,
 		d.Set("relation_infra_rs_acc_bndl_subgrp", "")
 
 	} else {
-		if _, ok := d.GetOk("relation_infra_rs_acc_bndl_subgrp"); ok {
-			tfName := GetMOName(d.Get("relation_infra_rs_acc_bndl_subgrp").(string))
-			if tfName != infraRsAccBndlSubgrpData {
-				d.Set("relation_infra_rs_acc_bndl_subgrp", "")
-			}
-		}
+		d.Set("relation_infra_rs_acc_bndl_subgrp", infraRsAccBndlSubgrpData.(string))
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())

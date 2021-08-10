@@ -92,6 +92,7 @@ func setSwitchSpineAssociationAttributes(infraSpineS *models.SwitchSpineAssociat
 
 	d.Set("name", infraSpineSMap["name"])
 	d.Set("spine_switch_association_type", infraSpineSMap["type"])
+	d.Set("spine_profile_dn", GetParentDn(dn, fmt.Sprintf("/spines-%s-typ-%s", infraSpineSMap["name"], infraSpineSMap["type"])))
 	d.Set("annotation", infraSpineSMap["annotation"])
 	d.Set("name_alias", infraSpineSMap["nameAlias"])
 
@@ -276,12 +277,7 @@ func resourceAciSwitchSpineAssociationRead(ctx context.Context, d *schema.Resour
 		d.Set("relation_infra_rs_spine_acc_node_p_grp", "")
 
 	} else {
-		if _, ok := d.GetOk("relation_infra_rs_spine_acc_node_p_grp"); ok {
-			tfName := d.Get("relation_infra_rs_spine_acc_node_p_grp").(string)
-			if tfName != infraRsSpineAccNodePGrpData {
-				d.Set("relation_infra_rs_spine_acc_node_p_grp", "")
-			}
-		}
+		d.Set("relation_infra_rs_spine_acc_node_p_grp", infraRsSpineAccNodePGrpData.(string))
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())

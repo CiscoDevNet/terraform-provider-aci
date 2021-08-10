@@ -95,7 +95,7 @@ func (sm *ServiceManager) ReadRelationconfigRsImportSourceFromConfigurationImpor
 	contList := models.ListFromContainer(cont, "configRsImportSource")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnFileRemotePathName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -188,7 +188,7 @@ func (sm *ServiceManager) ReadRelationconfigRsRemotePathFromConfigurationImportP
 	contList := models.ListFromContainer(cont, "configRsRemotePath")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnFileRemotePathName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err

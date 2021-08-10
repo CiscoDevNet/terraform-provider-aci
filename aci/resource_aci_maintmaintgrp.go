@@ -268,12 +268,7 @@ func resourceAciPODMaintenanceGroupRead(ctx context.Context, d *schema.ResourceD
 		d.Set("relation_maint_rs_mgrpp", "")
 
 	} else {
-		if _, ok := d.GetOk("relation_maint_rs_mgrpp"); ok {
-			tfName := GetMOName(d.Get("relation_maint_rs_mgrpp").(string))
-			if tfName != maintRsMgrppData {
-				d.Set("relation_maint_rs_mgrpp", "")
-			}
-		}
+		d.Set("relation_maint_rs_mgrpp", maintRsMgrppData.(string))
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())

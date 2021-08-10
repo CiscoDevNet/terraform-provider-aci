@@ -89,6 +89,7 @@ func setL3outHSRPSecondaryVIPAttributes(hsrpSecVip *models.L3outHSRPSecondaryVIP
 	if err != nil {
 		return d, err
 	}
+	d.Set("l3out_hsrp_interface_group_dn", GetParentDn(dn, fmt.Sprintf("/hsrpSecVip-[%s]", hsrpSecVipMap["ip"])))
 	d.Set("ip", hsrpSecVipMap["ip"])
 	d.Set("annotation", hsrpSecVipMap["annotation"])
 	if hsrpSecVipMap["configIssues"] == "" {

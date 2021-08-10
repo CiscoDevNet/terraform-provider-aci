@@ -113,7 +113,7 @@ func setBGPAddressFamilyContextPolicyAttributes(bgpCtxAfPol *models.BGPAddressFa
 	if err != nil {
 		return d, err
 	}
-
+	d.Set("tenant_dn", GetParentDn(dn, fmt.Sprintf("/bgpCtxAfP-%s", bgpCtxAfPolMap["name"])))
 	d.Set("name", bgpCtxAfPolMap["name"])
 
 	d.Set("annotation", bgpCtxAfPolMap["annotation"])

@@ -80,6 +80,7 @@ resource "aci_application_epg" "fooapplication_epg" {
 
 * `relation_fv_rs_intra_epg` - (Optional) Relation to Intra EPG Contract (Point to class vzBrCP). Cardinality - N_TO_M. Type - Set of String.
 
+
 ## Attribute Reference
 
 The only attribute that this resource exports is the `id`, which is set to the

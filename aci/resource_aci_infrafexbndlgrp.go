@@ -45,6 +45,7 @@ func resourceAciFexBundleGroup() *schema.Resource {
 
 			"relation_infra_rs_mon_fex_infra_pol": &schema.Schema{
 				Type:     schema.TypeString,
+				Default:  "uni/infra/moninfra-default",
 				Optional: true,
 			},
 
@@ -85,7 +86,7 @@ func setFexBundleGroupAttributes(infraFexBndlGrp *models.FexBundleGroup, d *sche
 	}
 
 	d.Set("name", infraFexBndlGrpMap["name"])
-
+	d.Set("fex_profile_dn", GetParentDn(dn, fmt.Sprintf("/fexbundle-%s", infraFexBndlGrpMap["name"])))
 	d.Set("annotation", infraFexBndlGrpMap["annotation"])
 	d.Set("name_alias", infraFexBndlGrpMap["nameAlias"])
 	return d, nil
@@ -302,10 +303,7 @@ func resourceAciFexBundleGroupRead(ctx context.Context, d *schema.ResourceData, 
 		d.Set("relation_infra_rs_mon_fex_infra_pol", "")
 
 	} else {
-		paramName := GetMOName(d.Get("relation_infra_rs_mon_fex_infra_pol").(string))
-		if paramName != infraRsMonFexInfraPolData {
-			d.Set("relation_infra_rs_mon_fex_infra_pol", "")
-		}
+		d.Set("relation_infra_rs_mon_fex_infra_pol", infraRsMonFexInfraPolData.(string))
 	}
 
 	infraRsFexBndlGrpToAggrIfData, err := aciClient.ReadRelationinfraRsFexBndlGrpToAggrIfFromFexBundleGroup(dn)
@@ -314,7 +312,7 @@ func resourceAciFexBundleGroupRead(ctx context.Context, d *schema.ResourceData, 
 		d.Set("relation_infra_rs_fex_bndl_grp_to_aggr_if", make([]string, 0, 1))
 
 	} else {
-		d.Set("relation_infra_rs_fex_bndl_grp_to_aggr_if", infraRsFexBndlGrpToAggrIfData)
+		d.Set("relation_infra_rs_fex_bndl_grp_to_aggr_if", toStringList(infraRsFexBndlGrpToAggrIfData.(*schema.Set).List()))
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())

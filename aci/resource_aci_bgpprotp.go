@@ -44,8 +44,8 @@ func resourceAciL3outBGPProtocolProfile() *schema.Resource {
 			},
 
 			"relation_bgp_rs_bgp_node_ctx_pol": &schema.Schema{
-				Type: schema.TypeString,
-
+				Type:     schema.TypeString,
+				Default:  "uni/tn-common/bgpCtxP-default",
 				Optional: true,
 			},
 		},
@@ -76,6 +76,7 @@ func setL3outBGPProtocolProfileAttributes(bgpProtP *models.L3outBGPProtocolProfi
 	if err != nil {
 		return d, err
 	}
+	d.Set("logical_node_profile_dn", GetParentDn(dn, fmt.Sprintf("/protp")))
 	d.Set("annotation", bgpProtPMap["annotation"])
 	d.Set("name_alias", bgpProtPMap["nameAlias"])
 	return d, nil
@@ -231,13 +232,7 @@ func resourceAciL3outBGPProtocolProfileRead(ctx context.Context, d *schema.Resou
 		d.Set("relation_bgp_rs_bgp_node_ctx_pol", "")
 
 	} else {
-		if _, ok := d.GetOk("relation_bgp_rs_bgp_node_ctx_pol"); ok {
-			tfName := GetMOName(d.Get("relation_bgp_rs_bgp_node_ctx_pol").(string))
-			if tfName != bgpRsBgpNodeCtxPolData {
-				d.Set("relation_bgp_rs_bgp_node_ctx_pol", "")
-			}
-		}
-
+		d.Set("relation_bgp_rs_bgp_node_ctx_pol", bgpRsBgpNodeCtxPolData.(string))
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())

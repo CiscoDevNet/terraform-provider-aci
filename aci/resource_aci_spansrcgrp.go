@@ -88,7 +88,7 @@ func setSPANSourceGroupAttributes(spanSrcGrp *models.SPANSourceGroup, d *schema.
 	spanSrcGrpMap, _ := spanSrcGrp.ToMap()
 
 	d.Set("name", spanSrcGrpMap["name"])
-
+	d.Set("tenant_dn", GetParentDn(spanSrcGrp.DistinguishedName, fmt.Sprintf("/srcgrp-%s", spanSrcGrpMap["name"])))
 	d.Set("admin_st", spanSrcGrpMap["adminSt"])
 	d.Set("annotation", spanSrcGrpMap["annotation"])
 	d.Set("name_alias", spanSrcGrpMap["nameAlias"])
@@ -260,12 +260,7 @@ func resourceAciSPANSourceGroupRead(ctx context.Context, d *schema.ResourceData,
 		d.Set("relation_span_rs_src_grp_to_filter_grp", "")
 
 	} else {
-		if _, ok := d.GetOk("relation_span_rs_src_grp_to_filter_grp"); ok {
-			tfName := d.Get("relation_span_rs_src_grp_to_filter_grp").(string)
-			if tfName != spanRsSrcGrpToFilterGrpData {
-				d.Set("relation_span_rs_src_grp_to_filter_grp", "")
-			}
-		}
+		d.Set("relation_span_rs_src_grp_to_filter_grp", spanRsSrcGrpToFilterGrpData.(string))
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())

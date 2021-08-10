@@ -4,8 +4,6 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"reflect"
-	"sort"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
@@ -418,16 +416,7 @@ func resourceAciConnectionRead(ctx context.Context, d *schema.ResourceData, m in
 		d.Set("relation_vns_rs_abs_copy_connection", make([]string, 0, 1))
 
 	} else {
-		if _, ok := d.GetOk("relation_vns_rs_abs_copy_connection"); ok {
-			tfList := toStringList(d.Get("relation_vns_rs_abs_copy_connection").(*schema.Set).List())
-			vnsRsAbsCopyConnectionDataList := toStringList(vnsRsAbsCopyConnectionData.(*schema.Set).List())
-			sort.Strings(tfList)
-			sort.Strings(vnsRsAbsCopyConnectionDataList)
-
-			if !reflect.DeepEqual(tfList, vnsRsAbsCopyConnectionDataList) {
-				d.Set("relation_vns_rs_abs_copy_connection", make([]string, 0, 1))
-			}
-		}
+		d.Set("relation_vns_rs_abs_copy_connection", toStringList(vnsRsAbsCopyConnectionData.(*schema.Set).List()))
 	}
 
 	vnsRsAbsConnectionConnsData, err := aciClient.ReadRelationvnsRsAbsConnectionConnsFromConnection(dn)
@@ -436,16 +425,7 @@ func resourceAciConnectionRead(ctx context.Context, d *schema.ResourceData, m in
 		d.Set("relation_vns_rs_abs_connection_conns", make([]string, 0, 1))
 
 	} else {
-		if _, ok := d.GetOk("relation_vns_rs_abs_connection_conns"); ok {
-			tfList := toStringList(d.Get("relation_vns_rs_abs_connection_conns").(*schema.Set).List())
-			vnsRsAbsConnectionConnsDataList := toStringList(vnsRsAbsConnectionConnsData.(*schema.Set).List())
-			sort.Strings(tfList)
-			sort.Strings(vnsRsAbsConnectionConnsDataList)
-
-			if !reflect.DeepEqual(tfList, vnsRsAbsConnectionConnsDataList) {
-				d.Set("relation_vns_rs_abs_connection_conns", make([]string, 0, 1))
-			}
-		}
+		d.Set("relation_vns_rs_abs_connection_conns", toStringList(vnsRsAbsConnectionConnsData.(*schema.Set).List()))
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())

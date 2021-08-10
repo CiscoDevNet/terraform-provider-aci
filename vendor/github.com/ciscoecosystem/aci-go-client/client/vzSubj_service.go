@@ -96,7 +96,7 @@ func (sm *ServiceManager) ReadRelationvzRsSubjGraphAttFromContractSubject(parent
 	contList := models.ListFromContainer(cont, "vzRsSubjGraphAtt")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnVnsAbsGraphName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -196,7 +196,7 @@ func (sm *ServiceManager) ReadRelationvzRsSubjFiltAttFromContractSubject(parentD
 		F: schema.HashString,
 	}
 	for _, contItem := range contList {
-		dat := models.G(contItem, "tnVzFilterName")
+		dat := models.G(contItem, "tDn")
 		st.Add(dat)
 	}
 	return st, err

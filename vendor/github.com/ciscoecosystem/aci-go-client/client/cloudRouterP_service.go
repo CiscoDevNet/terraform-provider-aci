@@ -91,7 +91,7 @@ func (sm *ServiceManager) ReadRelationcloudRsToVpnGwPolFromCloudVpnGateway(paren
 	contList := models.ListFromContainer(cont, "cloudRsToVpnGwPol")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnCloudVpnGwPolName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -136,7 +136,7 @@ func (sm *ServiceManager) ReadRelationcloudRsToDirectConnPolFromCloudVpnGateway(
 	contList := models.ListFromContainer(cont, "cloudRsToDirectConnPol")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnCloudDirectConnPolName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -181,7 +181,7 @@ func (sm *ServiceManager) ReadRelationcloudRsToHostRouterPolFromCloudVpnGateway(
 	contList := models.ListFromContainer(cont, "cloudRsToHostRouterPol")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnCloudHostRouterPolName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err

@@ -60,8 +60,8 @@ func resourceAciApplicationProfile() *schema.Resource {
 			},
 
 			"relation_fv_rs_ap_mon_pol": &schema.Schema{
-				Type: schema.TypeString,
-
+				Type:     schema.TypeString,
+				Computed: true,
 				Optional: true,
 			},
 		}),
@@ -86,7 +86,6 @@ func setApplicationProfileAttributes(fvAp *models.ApplicationProfile, d *schema.
 	dn := d.Id()
 	d.SetId(fvAp.DistinguishedName)
 	d.Set("description", fvAp.Description)
-	// d.Set("tenant_dn", GetParentDn(fvAp.DistinguishedName))
 	if dn != fvAp.DistinguishedName {
 		d.Set("tenant_dn", "")
 	}
@@ -94,6 +93,8 @@ func setApplicationProfileAttributes(fvAp *models.ApplicationProfile, d *schema.
 	if err != nil {
 		return d, err
 	}
+
+	d.Set("tenant_dn", GetParentDn(dn, fmt.Sprintf("/ap-%s", fvApMap["name"])))
 
 	d.Set("name", fvApMap["name"])
 
@@ -279,12 +280,7 @@ func resourceAciApplicationProfileRead(ctx context.Context, d *schema.ResourceDa
 		d.Set("relation_fv_rs_ap_mon_pol", "")
 
 	} else {
-		if _, ok := d.GetOk("relation_fv_rs_ap_mon_pol"); ok {
-			tfName := GetMOName(d.Get("relation_fv_rs_ap_mon_pol").(string))
-			if tfName != fvRsApMonPolData {
-				d.Set("relation_fv_rs_ap_mon_pol", "")
-			}
-		}
+		d.Set("relation_fv_rs_ap_mon_pol", fvRsApMonPolData.(string))
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())

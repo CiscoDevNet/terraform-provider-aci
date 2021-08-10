@@ -70,7 +70,7 @@ func setCloudEndpointSelectorAttributes(cloudEPSelector *models.CloudEndpointSel
 	dn := d.Id()
 	d.SetId(cloudEPSelector.DistinguishedName)
 	d.Set("description", cloudEPSelector.Description)
-	// d.Set("cloud_epg_dn", GetParentDn(cloudEPSelector.DistinguishedName))
+
 	if dn != cloudEPSelector.DistinguishedName {
 		d.Set("cloud_epg_dn", "")
 	}
@@ -78,6 +78,8 @@ func setCloudEndpointSelectorAttributes(cloudEPSelector *models.CloudEndpointSel
 	if err != nil {
 		return d, err
 	}
+	d.Set("cloud_epg_dn", GetParentDn(dn, fmt.Sprintf("/epselector-%s", cloudEPSelectorMap["name"])))
+
 	d.Set("name", cloudEPSelectorMap["name"])
 
 	d.Set("annotation", cloudEPSelectorMap["annotation"])

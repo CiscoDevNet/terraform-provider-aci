@@ -1,0 +1,44 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build",
+            "type": "shell",
+            "command": "make fmt && make",
+            
+            "problemMatcher": [
+                "$go"
+            ],
+            "group": "build",
+            "presentation": {
+                "reveal": "silent",
+            }
+        },
+        {
+            "label": "move-binary",
+            "dependsOn": [
+                "build"
+            ],
+            "type": "shell",
+            "command": ".vscode/move_binary.sh",
+            "args": [
+                "terraform-provider-aci",
+                "~/Desktop/terraform-test/aci"
+            ],
+            "presentation": {
+                "reveal": "silent",
+            },
+            "group": "build",
+        },
+        {
+            "label": "default",
+            "dependsOn": [
+                "move-binary"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        }
+    ]
+}

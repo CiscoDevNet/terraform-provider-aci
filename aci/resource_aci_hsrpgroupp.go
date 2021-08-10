@@ -107,8 +107,8 @@ func resourceAciHSRPGroupProfile() *schema.Resource {
 			},
 
 			"relation_hsrp_rs_group_pol": &schema.Schema{
-				Type: schema.TypeString,
-
+				Type:     schema.TypeString,
+				Default:  "uni/tn-common/hsrpGroupPol-default",
 				Optional: true,
 			},
 		}),
@@ -143,7 +143,7 @@ func setHSRPGroupProfileAttributes(hsrpGroupP *models.HSRPGroupProfile, d *schem
 	if err != nil {
 		return d, err
 	}
-
+	d.Set("l3out_hsrp_interface_profile_dn", GetParentDn(hsrpGroupP.DistinguishedName, fmt.Sprintf("/hsrpGroupP-%s", hsrpGroupPMap["name"])))
 	d.Set("name", hsrpGroupPMap["name"])
 	d.Set("annotation", hsrpGroupPMap["annotation"])
 	if hsrpGroupPMap["configIssues"] == "" {
@@ -365,12 +365,7 @@ func resourceAciHSRPGroupProfileRead(ctx context.Context, d *schema.ResourceData
 		log.Printf("[DEBUG] Error while reading relation hsrpRsGroupPol %v", err)
 		d.Set("relation_hsrp_rs_group_pol", "")
 	} else {
-		if _, ok := d.GetOk("relation_hsrp_rs_group_pol"); ok {
-			tfName := GetMOName(d.Get("relation_hsrp_rs_group_pol").(string))
-			if tfName != hsrpRsGroupPolData {
-				d.Set("relation_hsrp_rs_group_pol", "")
-			}
-		}
+		d.Set("relation_hsrp_rs_group_pol", hsrpRsGroupPolData.(string))
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())

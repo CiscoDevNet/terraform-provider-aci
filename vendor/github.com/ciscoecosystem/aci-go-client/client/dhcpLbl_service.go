@@ -91,7 +91,7 @@ func (sm *ServiceManager) ReadRelationdhcpRsDhcpOptionPolFromBDDHCPLabel(parentD
 	contList := models.ListFromContainer(cont, "dhcpRsDhcpOptionPol")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnDhcpOptionPolName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err

@@ -49,8 +49,8 @@ Allowed values: "yes", "no". Default value: "no".
 * `program_local_pod_only` - (Optional) Program local pod only for object Service Redirect Policy.
 Allowed values: "yes", "no". Default value: "no".
 * `resilient_hash_enabled` - (Optional) Resilient hash enabled for object Service Redirect Policy.
-Allowed values: "yes", "no". Default value: "no".
-*`threshold_down_action` - (Optional) Threshold down the action for object Service Redirect Policy.
+Allowed values: "yes", "no". Default value: "no".  
+* `threshold_down_action` - (Optional) Threshold down the action for object Service Redirect Policy.
 Allowed values: "bypass", "deny", "permit". Default value: "permit".
 * `threshold_enable` - (Optional) Threshold enable for object Service Redirect Policy.
 Allowed values: "yes", "no". Default value: "no".

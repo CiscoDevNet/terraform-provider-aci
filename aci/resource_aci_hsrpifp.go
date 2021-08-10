@@ -49,8 +49,8 @@ func resourceAciL3outHSRPInterfaceProfile() *schema.Resource {
 			},
 
 			"relation_hsrp_rs_if_pol": &schema.Schema{
-				Type: schema.TypeString,
-
+				Type:     schema.TypeString,
+				Computed: true,
 				Optional: true,
 			},
 		}),
@@ -83,7 +83,7 @@ func setL3outHSRPInterfaceProfileAttributes(hsrpIfP *models.L3outHSRPInterfacePr
 	if err != nil {
 		return d, err
 	}
-
+	d.Set("logical_interface_profile_dn", GetParentDn(hsrpIfP.DistinguishedName, "/hsrpIfP"))
 	d.Set("annotation", hsrpIfPMap["annotation"])
 	d.Set("name_alias", hsrpIfPMap["nameAlias"])
 	d.Set("version", hsrpIfPMap["version"])
@@ -253,13 +253,7 @@ func resourceAciL3outHSRPInterfaceProfileRead(ctx context.Context, d *schema.Res
 		d.Set("relation_hsrp_rs_if_pol", "")
 
 	} else {
-		if _, ok := d.GetOk("relation_hsrp_rs_if_pol"); ok {
-			tfName := GetMOName(d.Get("relation_hsrp_rs_if_pol").(string))
-			if tfName != hsrpRsIfPolData {
-				d.Set("relation_hsrp_rs_if_pol", "")
-			}
-		}
-
+		d.Set("relation_hsrp_rs_if_pol", hsrpRsIfPolData.(string))
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())

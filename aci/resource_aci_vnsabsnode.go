@@ -578,12 +578,7 @@ func resourceAciFunctionNodeRead(ctx context.Context, d *schema.ResourceData, m 
 		log.Printf("[DEBUG] Error while reading relation vnsRsNodeToAbsFuncProf %v", err)
 		d.Set("relation_vns_rs_node_to_abs_func_prof", "")
 	} else {
-		if _, ok := d.GetOk("relation_vns_rs_node_to_abs_func_prof"); ok {
-			tfName := d.Get("relation_vns_rs_node_to_abs_func_prof").(string)
-			if tfName != vnsRsNodeToAbsFuncProfData {
-				d.Set("relation_vns_rs_node_to_abs_func_prof", "")
-			}
-		}
+		d.Set("relation_vns_rs_node_to_abs_func_prof", vnsRsNodeToAbsFuncProfData.(string))
 	}
 
 	vnsRsNodeToLDevData, err := aciClient.ReadRelationvnsRsNodeToLDevFromFunctionNode(dn)
@@ -591,12 +586,7 @@ func resourceAciFunctionNodeRead(ctx context.Context, d *schema.ResourceData, m 
 		log.Printf("[DEBUG] Error while reading relation vnsRsNodeToLDev %v", err)
 		d.Set("relation_vns_rs_node_to_l_dev", "")
 	} else {
-		if _, ok := d.GetOk("relation_vns_rs_node_to_l_dev"); ok {
-			tfName := d.Get("relation_vns_rs_node_to_l_dev").(string)
-			if tfName != vnsRsNodeToLDevData {
-				d.Set("relation_vns_rs_node_to_l_dev", "")
-			}
-		}
+		d.Set("relation_vns_rs_node_to_l_dev", vnsRsNodeToLDevData.(string))
 	}
 
 	vnsRsNodeToMFuncData, err := aciClient.ReadRelationvnsRsNodeToMFuncFromFunctionNode(dn)
@@ -604,12 +594,7 @@ func resourceAciFunctionNodeRead(ctx context.Context, d *schema.ResourceData, m 
 		log.Printf("[DEBUG] Error while reading relation vnsRsNodeToMFunc %v", err)
 		d.Set("relation_vns_rs_node_to_m_func", "")
 	} else {
-		if _, ok := d.GetOk("relation_vns_rs_node_to_m_func"); ok {
-			tfName := d.Get("relation_vns_rs_node_to_m_func").(string)
-			if tfName != vnsRsNodeToMFuncData {
-				d.Set("relation_vns_rs_node_to_m_func", "")
-			}
-		}
+		d.Set("relation_vns_rs_node_to_m_func", vnsRsNodeToMFuncData.(string))
 	}
 
 	vnsRsDefaultScopeToTermData, err := aciClient.ReadRelationvnsRsDefaultScopeToTermFromFunctionNode(dn)
@@ -617,12 +602,7 @@ func resourceAciFunctionNodeRead(ctx context.Context, d *schema.ResourceData, m 
 		log.Printf("[DEBUG] Error while reading relation vnsRsDefaultScopeToTerm %v", err)
 		d.Set("relation_vns_rs_default_scope_to_term", "")
 	} else {
-		if _, ok := d.GetOk("relation_vns_rs_default_scope_to_term"); ok {
-			tfName := d.Get("relation_vns_rs_default_scope_to_term").(string)
-			if tfName != vnsRsDefaultScopeToTermData {
-				d.Set("relation_vns_rs_default_scope_to_term", "")
-			}
-		}
+		d.Set("relation_vns_rs_default_scope_to_term", vnsRsDefaultScopeToTermData.(string))
 	}
 
 	vnsRsNodeToCloudLDevData, err := aciClient.ReadRelationvnsRsNodeToCloudLDevFromFunctionNode(dn)
@@ -630,12 +610,7 @@ func resourceAciFunctionNodeRead(ctx context.Context, d *schema.ResourceData, m 
 		log.Printf("[DEBUG] Error while reading relation vnsRsNodeToCloudLDev %v", err)
 		d.Set("relation_vns_rs_node_to_cloud_l_dev", "")
 	} else {
-		if _, ok := d.GetOk("relation_vns_rs_node_to_cloud_l_dev"); ok {
-			tfName := d.Get("relation_vns_rs_node_to_cloud_l_dev").(string)
-			if tfName != vnsRsNodeToCloudLDevData {
-				d.Set("relation_vns_rs_node_to_cloud_l_dev", "")
-			}
-		}
+		d.Set("relation_vns_rs_node_to_cloud_l_dev", vnsRsNodeToCloudLDevData.(string))
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())

@@ -95,7 +95,7 @@ func (sm *ServiceManager) ReadRelationfvRsApMonPolFromApplicationProfile(parentD
 	contList := models.ListFromContainer(cont, "fvRsApMonPol")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnMonEPGPolName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err

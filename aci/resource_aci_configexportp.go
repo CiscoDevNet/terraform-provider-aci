@@ -430,12 +430,7 @@ func resourceAciConfigurationExportPolicyRead(ctx context.Context, d *schema.Res
 		d.Set("relation_config_rs_export_destination", "")
 
 	} else {
-		if _, ok := d.GetOk("relation_config_rs_export_destination"); ok {
-			tfName := GetMOName(d.Get("relation_config_rs_export_destination").(string))
-			if tfName != configRsExportDestinationData {
-				d.Set("relation_config_rs_export_destination", "")
-			}
-		}
+		d.Set("relation_config_rs_export_destination", configRsExportDestinationData.(string))
 	}
 
 	trigRsTriggerableData, err := aciClient.ReadRelationtrigRsTriggerableFromConfigurationExportPolicy(dn)
@@ -444,12 +439,7 @@ func resourceAciConfigurationExportPolicyRead(ctx context.Context, d *schema.Res
 		d.Set("relation_trig_rs_triggerable", "")
 
 	} else {
-		if _, ok := d.GetOk("relation_trig_rs_triggerable"); ok {
-			tfName := d.Get("relation_trig_rs_triggerable").(string)
-			if tfName != trigRsTriggerableData {
-				d.Set("relation_trig_rs_triggerable", "")
-			}
-		}
+		d.Set("relation_trig_rs_triggerable", trigRsTriggerableData.(string))
 	}
 
 	configRsRemotePathData, err := aciClient.ReadRelationconfigRsRemotePathFromConfigurationExportPolicy(dn)
@@ -458,12 +448,7 @@ func resourceAciConfigurationExportPolicyRead(ctx context.Context, d *schema.Res
 		d.Set("relation_config_rs_remote_path", "")
 
 	} else {
-		if _, ok := d.GetOk("relation_config_rs_remote_path"); ok {
-			tfName := GetMOName(d.Get("relation_config_rs_remote_path").(string))
-			if tfName != configRsRemotePathData {
-				d.Set("relation_config_rs_remote_path", "")
-			}
-		}
+		d.Set("relation_config_rs_remote_path", configRsRemotePathData.(string))
 	}
 
 	configRsExportSchedulerData, err := aciClient.ReadRelationconfigRsExportSchedulerFromConfigurationExportPolicy(dn)
@@ -472,12 +457,7 @@ func resourceAciConfigurationExportPolicyRead(ctx context.Context, d *schema.Res
 		d.Set("relation_config_rs_export_scheduler", "")
 
 	} else {
-		if _, ok := d.GetOk("relation_config_rs_export_scheduler"); ok {
-			tfName := GetMOName(d.Get("relation_config_rs_export_scheduler").(string))
-			if tfName != configRsExportSchedulerData {
-				d.Set("relation_config_rs_export_scheduler", "")
-			}
-		}
+		d.Set("relation_config_rs_export_scheduler", configRsExportSchedulerData.(string))
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())

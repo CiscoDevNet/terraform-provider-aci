@@ -62,8 +62,8 @@ func resourceAciOSPFInterfaceProfile() *schema.Resource {
 			},
 
 			"relation_ospf_rs_if_pol": &schema.Schema{
-				Type: schema.TypeString,
-
+				Type:     schema.TypeString,
+				Default:  "uni/tn-common/ospfIfPol-default",
 				Optional: true,
 			},
 		}),
@@ -97,7 +97,7 @@ func setOSPFInterfaceProfileAttributes(ospfIfP *models.OSPFInterfaceProfile, d *
 	if err != nil {
 		return d, err
 	}
-
+	d.Set("logical_interface_profile_dn", GetParentDn(dn, fmt.Sprintf("/ospfIfP")))
 	d.Set("annotation", ospfIfPMap["annotation"])
 	d.Set("auth_key_id", ospfIfPMap["authKeyId"])
 	d.Set("auth_type", ospfIfPMap["authType"])
@@ -279,14 +279,7 @@ func resourceAciOSPFInterfaceProfileRead(ctx context.Context, d *schema.Resource
 		d.Set("relation_ospf_rs_if_pol", "")
 
 	} else {
-		if tf, ok := d.GetOk("relation_ospf_rs_if_pol"); ok {
-			tfName := GetMOName(tf.(string))
-			if tfName != ospfRsIfPolData {
-				d.Set("relation_ospf_rs_if_pol", "")
-			}
-		} else {
-			d.Set("relation_ospf_rs_if_pol", "")
-		}
+		d.Set("relation_ospf_rs_if_pol", ospfRsIfPolData.(string))
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())

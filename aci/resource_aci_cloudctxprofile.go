@@ -130,9 +130,10 @@ func setCloudContextProfileAttributes(cloudCtxProfile *models.CloudContextProfil
 	if err != nil {
 		return d, err
 	}
+	d.Set("tenant_dn", GetParentDn(dn, fmt.Sprintf("/ctxprofile-%s", GetMOName(cloudCtxProfile.DistinguishedName))))
 
 	d.Set("name", GetMOName(cloudCtxProfile.DistinguishedName))
-
+	d.Set("cloud_vendor", "aws")
 	d.Set("annotation", cloudCtxProfileMap["annotation"])
 	d.Set("name_alias", cloudCtxProfileMap["nameAlias"])
 	d.Set("type", cloudCtxProfileMap["type"])

@@ -67,8 +67,8 @@ func resourceAciCloudVpnGateway() *schema.Resource {
 			},
 
 			"relation_cloud_rs_to_vpn_gw_pol": &schema.Schema{
-				Type: schema.TypeString,
-
+				Type:     schema.TypeString,
+				Default:  "uni/tn-common/vpngwpol-default",
 				Optional: true,
 			},
 			"relation_cloud_rs_to_direct_conn_pol": &schema.Schema{
@@ -77,8 +77,8 @@ func resourceAciCloudVpnGateway() *schema.Resource {
 				Optional: true,
 			},
 			"relation_cloud_rs_to_host_router_pol": &schema.Schema{
-				Type: schema.TypeString,
-
+				Type:     schema.TypeString,
+				Default:  "uni/tn-common/hostrouterpol-default",
 				Optional: true,
 			},
 		}),
@@ -115,7 +115,7 @@ func setCloudVpnGatewayAttributes(cloudRouterP *models.CloudVpnGateway, d *schem
 	}
 
 	d.Set("name", cloudRouterPMap["name"])
-
+	d.Set("cloud_context_profile_dn", GetParentDn(cloudRouterP.DistinguishedName, fmt.Sprintf("/routerp-%s", cloudRouterPMap["name"])))
 	d.Set("annotation", cloudRouterPMap["annotation"])
 	d.Set("name_alias", cloudRouterPMap["nameAlias"])
 	d.Set("num_instances", cloudRouterPMap["numInstances"])
@@ -340,13 +340,7 @@ func resourceAciCloudVpnGatewayRead(ctx context.Context, d *schema.ResourceData,
 		d.Set("relation_cloud_rs_to_vpn_gw_pol", "")
 
 	} else {
-		if _, ok := d.GetOk("relation_cloud_rs_to_vpn_gw_pol"); ok {
-			tfName := d.Get("relation_cloud_rs_to_vpn_gw_pol").(string)
-			if tfName != cloudRsToVpnGwPolData {
-				d.Set("relation_cloud_rs_to_vpn_gw_pol", "")
-			}
-		}
-		//d.Set("relation_cloud_rs_to_vpn_gw_pol", cloudRsToVpnGwPolData)
+		d.Set("relation_cloud_rs_to_vpn_gw_pol", cloudRsToVpnGwPolData.(string))
 	}
 
 	cloudRsToDirectConnPolData, err := aciClient.ReadRelationcloudRsToDirectConnPolFromCloudVpnGateway(dn)
@@ -355,13 +349,7 @@ func resourceAciCloudVpnGatewayRead(ctx context.Context, d *schema.ResourceData,
 		d.Set("relation_cloud_rs_to_direct_conn_pol", "")
 
 	} else {
-		if _, ok := d.GetOk("relation_cloud_rs_to_direct_conn_pol"); ok {
-			tfName := d.Get("relation_cloud_rs_to_direct_conn_pol").(string)
-			if tfName != cloudRsToDirectConnPolData {
-				d.Set("relation_cloud_rs_to_direct_conn_pol", "")
-			}
-		}
-		//d.Set("relation_cloud_rs_to_direct_conn_pol", cloudRsToDirectConnPolData)
+		d.Set("relation_cloud_rs_to_direct_conn_pol", cloudRsToDirectConnPolData.(string))
 	}
 
 	cloudRsToHostRouterPolData, err := aciClient.ReadRelationcloudRsToHostRouterPolFromCloudVpnGateway(dn)
@@ -370,14 +358,7 @@ func resourceAciCloudVpnGatewayRead(ctx context.Context, d *schema.ResourceData,
 		d.Set("relation_cloud_rs_to_host_router_pol", "")
 
 	} else {
-		if _, ok := d.GetOk("relation_cloud_rs_to_host_router_pol"); ok {
-			tfName := d.Get("relation_cloud_rs_to_host_router_pol").(string)
-			if tfName != cloudRsToHostRouterPolData {
-				d.Set("relation_cloud_rs_to_host_router_pol", "")
-			}
-		}
-
-		//d.Set("relation_cloud_rs_to_host_router_pol", cloudRsToHostRouterPolData)
+		d.Set("relation_cloud_rs_to_host_router_pol", cloudRsToHostRouterPolData.(string))
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())

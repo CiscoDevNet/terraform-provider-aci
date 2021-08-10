@@ -42,7 +42,6 @@ func resourceAciSpineProfile() *schema.Resource {
 				Type:     schema.TypeSet,
 				Elem:     &schema.Schema{Type: schema.TypeString},
 				Optional: true,
-				Computed: true,
 				Set:      schema.HashString,
 			},
 		}),
@@ -255,7 +254,7 @@ func resourceAciSpineProfileRead(ctx context.Context, d *schema.ResourceData, m 
 		d.Set("relation_infra_rs_sp_acc_port_p", make([]interface{}, 0, 1))
 
 	} else {
-		d.Set("relation_infra_rs_sp_acc_port_p", infraRsSpAccPortPData)
+		d.Set("relation_infra_rs_sp_acc_port_p", toStringList(infraRsSpAccPortPData.(*schema.Set).List()))
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())

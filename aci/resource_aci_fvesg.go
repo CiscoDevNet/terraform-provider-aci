@@ -4,8 +4,6 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"reflect"
-	"sort"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
@@ -27,6 +25,7 @@ func resourceAciEndpointSecurityGroup() *schema.Resource {
 
 		SchemaVersion: 1,
 		Schema: AppendBaseAttrSchema(AppendNameAliasAttrSchema(map[string]*schema.Schema{
+
 			"application_profile_dn": {
 				Type:     schema.TypeString,
 				Required: true,
@@ -117,8 +116,8 @@ func resourceAciEndpointSecurityGroup() *schema.Resource {
 				},
 			},
 			"relation_fv_rs_cust_qos_pol": {
-				Type: schema.TypeString,
-
+				Type:        schema.TypeString,
+				Default:     "uni/tn-common/qoscustom-default",
 				Optional:    true,
 				Description: "Create relation to qos:CustomPol",
 			},
@@ -171,8 +170,8 @@ func resourceAciEndpointSecurityGroup() *schema.Resource {
 				},
 			},
 			"relation_fv_rs_scope": {
-				Type: schema.TypeString,
-
+				Type:        schema.TypeString,
+				Default:     "uni/tn-common/qoscustom-default",
 				Optional:    true,
 				Description: "Create relation to fv:Ctx",
 			},
@@ -209,6 +208,7 @@ func setEndpointSecurityGroupAttributes(fvESg *models.EndpointSecurityGroup, d *
 	d.Set("flood_on_encap", fvESgMap["floodOnEncap"])
 	d.Set("match_t", fvESgMap["matchT"])
 	d.Set("name", fvESgMap["name"])
+	d.Set("application_profile_dn", GetParentDn(fvESg.DistinguishedName, fmt.Sprintf("/esg-%s", fvESgMap["name"])))
 	d.Set("pc_enf_pref", fvESgMap["pcEnfPref"])
 	d.Set("pref_gr_memb", fvESgMap["prefGrMemb"])
 	d.Set("prio", fvESgMap["prio"])
@@ -346,7 +346,6 @@ func resourceAciEndpointSecurityGroupCreate(ctx context.Context, d *schema.Resou
 		relationParamList := relationTofvRsCons.(*schema.Set).List()
 		for _, relationParam := range relationParamList {
 			paramMap := relationParam.(map[string]interface{})
-
 			err = aciClient.CreateRelationfvRsCons(fvESg.DistinguishedName, fvESgAttr.Annotation, paramMap["prio"].(string), GetMOName(paramMap["target_dn"].(string)))
 			if err != nil {
 				return diag.FromErr(err)
@@ -736,14 +735,30 @@ func resourceAciEndpointSecurityGroupRead(ctx context.Context, d *schema.Resourc
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation fvRsCons %v", err)
 	} else {
-		d.Set("relation_fv_rs_cons", fvRsConsData)
+		listRelMap := make([]map[string]string, 0, 1)
+		listfvRsConsData := fvRsConsData.([]map[string]string)
+		for _, obj := range listfvRsConsData {
+			listRelMap = append(listRelMap, map[string]string{
+				"prio":      obj["prio"],
+				"target_dn": obj["tDn"],
+			})
+		}
+		d.Set("relation_fv_rs_cons", listRelMap)
 	}
 
 	fvRsConsIfData, err := aciClient.ReadRelationfvRsConsIf(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation fvRsConsIf %v", err)
 	} else {
-		d.Set("relation_fv_rs_cons_if", fvRsConsIfData)
+		listRelMap := make([]map[string]string, 0, 1)
+		listfvRsConsIfData := fvRsConsIfData.([]map[string]string)
+		for _, obj := range listfvRsConsIfData {
+			listRelMap = append(listRelMap, map[string]string{
+				"prio":      obj["prio"],
+				"target_dn": obj["tDn"],
+			})
+		}
+		d.Set("relation_fv_rs_cons_if", listRelMap)
 	}
 
 	fvRsCustQosPolData, err := aciClient.ReadRelationfvRsCustQosPol(dn)
@@ -751,59 +766,37 @@ func resourceAciEndpointSecurityGroupRead(ctx context.Context, d *schema.Resourc
 		log.Printf("[DEBUG] Error while reading relation fvRsCustQosPol %v", err)
 		d.Set("fv_rs_cust_qos_pol", "")
 	} else {
-		if _, ok := d.GetOk("relation_fv_rs_cust_qos_pol"); ok {
-			tfName := GetMOName(d.Get("relation_fv_rs_cust_qos_pol").(string))
-			if tfName != fvRsCustQosPolData {
-				d.Set("relation_fv_rs_cust_qos_pol", "")
-			}
-		}
+		d.Set("relation_fv_rs_cust_qos_pol", fvRsCustQosPolData.(string))
 	}
 	fvRsIntraEpgData, err := aciClient.ReadRelationfvRsIntraEpg(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation fvRsIntraEpg %v", err)
 		d.Set("relation_fv_rs_intra_epg", make([]string, 0, 1))
 	} else {
-		if _, ok := d.GetOk("relation_fv_rs_intra_epg"); ok {
-			relationParamList := toStringList(d.Get("relation_fv_rs_intra_epg").(*schema.Set).List())
-			tfList := make([]string, 0, 1)
-			for _, relationParam := range relationParamList {
-				relationParamName := GetMOName(relationParam)
-				tfList = append(tfList, relationParamName)
-			}
-			fvRsIntraEpgDataList := toStringList(fvRsIntraEpgData.(*schema.Set).List())
-			sort.Strings(tfList)
-			sort.Strings(fvRsIntraEpgDataList)
-			if !reflect.DeepEqual(tfList, fvRsIntraEpgDataList) {
-				d.Set("relation_fv_rs_intra_epg", make([]string, 0, 1))
-			}
-		}
+		d.Set("relation_fv_rs_intra_epg", toStringList(fvRsIntraEpgData.(*schema.Set).List()))
 	}
 	fvRsProtByData, err := aciClient.ReadRelationfvRsProtBy(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation fvRsProtBy %v", err)
 		d.Set("relation_fv_rs_prot_by", make([]string, 0, 1))
 	} else {
-		if _, ok := d.GetOk("relation_fv_rs_prot_by"); ok {
-			relationParamList := toStringList(d.Get("relation_fv_rs_prot_by").(*schema.Set).List())
-			tfList := make([]string, 0, 1)
-			for _, relationParam := range relationParamList {
-				relationParamName := GetMOName(relationParam)
-				tfList = append(tfList, relationParamName)
-			}
-			fvRsProtByDataList := toStringList(fvRsProtByData.(*schema.Set).List())
-			sort.Strings(tfList)
-			sort.Strings(fvRsProtByDataList)
-			if !reflect.DeepEqual(tfList, fvRsProtByDataList) {
-				d.Set("relation_fv_rs_prot_by", make([]string, 0, 1))
-			}
-		}
+		d.Set("relation_fv_rs_prot_by", toStringList(fvRsProtByData.(*schema.Set).List()))
 	}
 
 	fvRsProvData, err := aciClient.ReadRelationfvRsProv(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation fvRsProv %v", err)
 	} else {
-		d.Set("relation_fv_rs_prov", fvRsProvData)
+		listRelMap := make([]map[string]string, 0, 1)
+		listfvRsProvData := fvRsProvData.([]map[string]string)
+		for _, obj := range listfvRsProvData {
+			listRelMap = append(listRelMap, map[string]string{
+				"prio":      obj["prio"],
+				"target_dn": obj["tDn"],
+				"match_t":   obj["matchT"],
+			})
+		}
+		d.Set("relation_fv_rs_prov", listRelMap)
 	}
 
 	fvRsScopeData, err := aciClient.ReadRelationfvRsScope(dn)
@@ -811,32 +804,14 @@ func resourceAciEndpointSecurityGroupRead(ctx context.Context, d *schema.Resourc
 		log.Printf("[DEBUG] Error while reading relation fvRsScope %v", err)
 		d.Set("fv_rs_scope", "")
 	} else {
-		if _, ok := d.GetOk("relation_fv_rs_scope"); ok {
-			tfName := GetMOName(d.Get("relation_fv_rs_scope").(string))
-			if tfName != fvRsScopeData {
-				d.Set("relation_fv_rs_scope", "")
-			}
-		}
+		d.Set("relation_fv_rs_scope", fvRsScopeData.(string))
 	}
 	fvRsSecInheritedData, err := aciClient.ReadRelationfvRsSecInherited(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation fvRsSecInherited %v", err)
 		d.Set("relation_fv_rs_sec_inherited", make([]string, 0, 1))
 	} else {
-		if _, ok := d.GetOk("relation_fv_rs_sec_inherited"); ok {
-			relationParamList := toStringList(d.Get("relation_fv_rs_sec_inherited").(*schema.Set).List())
-			tfList := make([]string, 0, 1)
-			for _, relationParam := range relationParamList {
-				relationParamName := relationParam
-				tfList = append(tfList, relationParamName)
-			}
-			fvRsSecInheritedDataList := toStringList(fvRsSecInheritedData.(*schema.Set).List())
-			sort.Strings(tfList)
-			sort.Strings(fvRsSecInheritedDataList)
-			if !reflect.DeepEqual(tfList, fvRsSecInheritedDataList) {
-				d.Set("relation_fv_rs_sec_inherited", make([]string, 0, 1))
-			}
-		}
+		d.Set("relation_fv_rs_sec_inherited", toStringList(fvRsSecInheritedData.(*schema.Set).List()))
 	}
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 	return nil

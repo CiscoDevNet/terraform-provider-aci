@@ -216,14 +216,15 @@ func resourceAciVMMController() *schema.Resource {
 				Optional:    true,
 				Description: "Create relation to vmmCtrlrP",
 				Elem: &schema.Resource{
-					Schema: map[string]*schema.Schema{"epg_depl_pref": {
-						Optional: true,
-						Type:     schema.TypeString,
-						ValidateFunc: validation.StringInSlice([]string{
-							"both",
-							"local",
-						}, false),
-					},
+					Schema: map[string]*schema.Schema{
+						"epg_depl_pref": {
+							Optional: true,
+							Type:     schema.TypeString,
+							ValidateFunc: validation.StringInSlice([]string{
+								"both",
+								"local",
+							}, false),
+						},
 						"target_dn": {
 							Required: true,
 							Type:     schema.TypeString,
@@ -238,8 +239,8 @@ func resourceAciVMMController() *schema.Resource {
 				Description: "Create relation to fvns:VxlanInstP",
 			},
 			"relation_vmm_rs_vxlan_ns_def": {
-				Type: schema.TypeString,
-
+				Type:        schema.TypeString,
+				Computed:    true,
 				Optional:    true,
 				Description: "Create relation to fvns:AInstP",
 			}}),
@@ -290,6 +291,7 @@ func setVMMControllerAttributes(vmmCtrlrP *models.VMMController, d *schema.Resou
 	} else {
 		d.Set("msft_config_issues", msftConfigIssuesGet)
 	}
+	d.Set("vmm_domain_dn", GetParentDn(vmmCtrlrP.DistinguishedName, fmt.Sprintf("/ctrlr-%s", vmmCtrlrPMap["name"])))
 	d.Set("n1kv_stats_mode", vmmCtrlrPMap["n1kvStatsMode"])
 	d.Set("name", vmmCtrlrPMap["name"])
 	d.Set("port", vmmCtrlrPMap["port"])
@@ -844,12 +846,7 @@ func resourceAciVMMControllerRead(ctx context.Context, d *schema.ResourceData, m
 		log.Printf("[DEBUG] Error while reading relation vmmRsAcc %v", err)
 		d.Set("relation_vmm_rs_acc", "")
 	} else {
-		if _, ok := d.GetOk("relation_vmm_rs_acc"); ok {
-			tfName := d.Get("relation_vmm_rs_acc").(string)
-			if tfName != vmmRsAccData {
-				d.Set("relation_vmm_rs_acc", "")
-			}
-		}
+		d.Set("relation_vmm_rs_acc", vmmRsAccData.(string))
 	}
 
 	vmmRsCtrlrPMonPolData, err := aciClient.ReadRelationvmmRsCtrlrPMonPol(dn)
@@ -857,12 +854,7 @@ func resourceAciVMMControllerRead(ctx context.Context, d *schema.ResourceData, m
 		log.Printf("[DEBUG] Error while reading relation vmmRsCtrlrPMonPol %v", err)
 		d.Set("relation_vmm_rs_ctrlr_p_mon_pol", "")
 	} else {
-		if _, ok := d.GetOk("relation_vmm_rs_ctrlr_p_mon_pol"); ok {
-			tfName := d.Get("relation_vmm_rs_ctrlr_p_mon_pol").(string)
-			if tfName != vmmRsCtrlrPMonPolData {
-				d.Set("relation_vmm_rs_ctrlr_p_mon_pol", "")
-			}
-		}
+		d.Set("relation_vmm_rs_ctrlr_p_mon_pol", vmmRsCtrlrPMonPolData.(string))
 	}
 
 	vmmRsMcastAddrNsData, err := aciClient.ReadRelationvmmRsMcastAddrNs(dn)
@@ -870,12 +862,7 @@ func resourceAciVMMControllerRead(ctx context.Context, d *schema.ResourceData, m
 		log.Printf("[DEBUG] Error while reading relation vmmRsMcastAddrNs %v", err)
 		d.Set("relation_vmm_rs_mcast_addr_ns", "")
 	} else {
-		if _, ok := d.GetOk("relation_vmm_rs_mcast_addr_ns"); ok {
-			tfName := d.Get("relation_vmm_rs_mcast_addr_ns").(string)
-			if tfName != vmmRsMcastAddrNsData {
-				d.Set("relation_vmm_rs_mcast_addr_ns", "")
-			}
-		}
+		d.Set("relation_vmm_rs_mcast_addr_ns", vmmRsMcastAddrNsData.(string))
 	}
 
 	vmmRsMgmtEPgData, err := aciClient.ReadRelationvmmRsMgmtEPg(dn)
@@ -883,39 +870,29 @@ func resourceAciVMMControllerRead(ctx context.Context, d *schema.ResourceData, m
 		log.Printf("[DEBUG] Error while reading relation vmmRsMgmtEPg %v", err)
 		d.Set("relation_vmm_rs_mgmt_e_pg", "")
 	} else {
-		if _, ok := d.GetOk("relation_vmm_rs_mgmt_e_pg"); ok {
-			tfName := d.Get("relation_vmm_rs_mgmt_e_pg").(string)
-			if tfName != vmmRsMgmtEPgData {
-				d.Set("relation_vmm_rs_mgmt_e_pg", "")
-			}
-		}
+		d.Set("relation_vmm_rs_mgmt_e_pg", vmmRsMgmtEPgData.(string))
 	}
 	vmmRsToExtDevMgrData, err := aciClient.ReadRelationvmmRsToExtDevMgr(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation vmmRsToExtDevMgr %v", err)
 		d.Set("relation_vmm_rs_to_ext_dev_mgr", make([]string, 0, 1))
 	} else {
-		if _, ok := d.GetOk("relation_vmm_rs_to_ext_dev_mgr"); ok {
-			relationParamList := toStringList(d.Get("relation_vmm_rs_to_ext_dev_mgr").(*schema.Set).List())
-			tfList := make([]string, 0, 1)
-			for _, relationParam := range relationParamList {
-				relationParamName := relationParam
-				tfList = append(tfList, relationParamName)
-			}
-			vmmRsToExtDevMgrDataList := toStringList(vmmRsToExtDevMgrData.(*schema.Set).List())
-			sort.Strings(tfList)
-			sort.Strings(vmmRsToExtDevMgrDataList)
-			if !reflect.DeepEqual(tfList, vmmRsToExtDevMgrDataList) {
-				d.Set("relation_vmm_rs_to_ext_dev_mgr", make([]string, 0, 1))
-			}
-		}
+		d.Set("relation_vmm_rs_to_ext_dev_mgr", toStringList(vmmRsToExtDevMgrData.(*schema.Set).List()))
 	}
 
 	vmmRsVmmCtrlrPData, err := aciClient.ReadRelationvmmRsVmmCtrlrP(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation vmmRsVmmCtrlrP %v", err)
 	} else {
-		d.Set("relation_vmm_rs_vmm_ctrlr_p", vmmRsVmmCtrlrPData)
+		relParams := make([]map[string]string, 0, 1)
+		relParamsList := vmmRsVmmCtrlrPData.([]map[string]string)
+		for _, obj := range relParamsList {
+			relParams = append(relParams, map[string]string{
+				"epg_depl_pref": obj["epgDeplPref"],
+				"target_dn":     obj["tDn"],
+			})
+		}
+		d.Set("relation_vmm_rs_vmm_ctrlr_p", relParams)
 	}
 
 	vmmRsVxlanNsData, err := aciClient.ReadRelationvmmRsVxlanNs(dn)
@@ -923,12 +900,7 @@ func resourceAciVMMControllerRead(ctx context.Context, d *schema.ResourceData, m
 		log.Printf("[DEBUG] Error while reading relation vmmRsVxlanNs %v", err)
 		d.Set("relation_vmm_rs_vxlan_ns", "")
 	} else {
-		if _, ok := d.GetOk("relation_vmm_rs_vxlan_ns"); ok {
-			tfName := d.Get("relation_vmm_rs_vxlan_ns").(string)
-			if tfName != vmmRsVxlanNsData {
-				d.Set("relation_vmm_rs_vxlan_ns", "")
-			}
-		}
+		d.Set("relation_vmm_rs_vxlan_ns", vmmRsVxlanNsData.(string))
 	}
 
 	vmmRsVxlanNsDefData, err := aciClient.ReadRelationvmmRsVxlanNsDef(dn)
@@ -936,12 +908,7 @@ func resourceAciVMMControllerRead(ctx context.Context, d *schema.ResourceData, m
 		log.Printf("[DEBUG] Error while reading relation vmmRsVxlanNsDef %v", err)
 		d.Set("relation_vmm_rs_vxlan_ns_def", "")
 	} else {
-		if _, ok := d.GetOk("relation_vmm_rs_vxlan_ns_def"); ok {
-			tfName := d.Get("relation_vmm_rs_vxlan_ns_def").(string)
-			if tfName != vmmRsVxlanNsDefData {
-				d.Set("relation_vmm_rs_vxlan_ns_def", "")
-			}
-		}
+		d.Set("relation_vmm_rs_vxlan_ns_def", vmmRsVxlanNsDefData.(string))
 	}
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 	return nil

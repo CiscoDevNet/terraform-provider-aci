@@ -106,6 +106,8 @@ func setBGPPeerPrefixPolicyAttributes(bgpPeerPfxPol *models.BGPPeerPrefixPolicy,
 	if err != nil {
 		return d, err
 	}
+	d.Set("tenant_dn", GetParentDn(dn, fmt.Sprintf("/bgpPfxP-%s", bgpPeerPfxPolMap["name"])))
+
 	d.Set("name", bgpPeerPfxPolMap["name"])
 	d.Set("action", bgpPeerPfxPolMap["action"])
 	d.Set("annotation", bgpPeerPfxPolMap["annotation"])

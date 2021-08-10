@@ -4,8 +4,6 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"reflect"
-	"sort"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
@@ -164,7 +162,6 @@ func setContractSubjectAttributes(vzSubj *models.ContractSubject, d *schema.Reso
 	dn := d.Id()
 	d.SetId(vzSubj.DistinguishedName)
 	d.Set("description", vzSubj.Description)
-	// d.Set("contract_dn", GetParentDn(vzSubj.DistinguishedName))
 	if dn != vzSubj.DistinguishedName {
 		d.Set("contract_dn", "")
 	}
@@ -172,6 +169,7 @@ func setContractSubjectAttributes(vzSubj *models.ContractSubject, d *schema.Reso
 	if err != nil {
 		return d, err
 	}
+	d.Set("contract_dn", GetParentDn(dn, fmt.Sprintf("/subj-%s", vzSubjMap["name"])))
 
 	d.Set("name", vzSubjMap["name"])
 
@@ -464,12 +462,7 @@ func resourceAciContractSubjectRead(ctx context.Context, d *schema.ResourceData,
 		d.Set("relation_vz_rs_subj_graph_att", "")
 
 	} else {
-		if _, ok := d.GetOk("relation_vz_rs_subj_graph_att"); ok {
-			tfName := GetMOName(d.Get("relation_vz_rs_subj_graph_att").(string))
-			if tfName != vzRsSubjGraphAttData {
-				d.Set("relation_vz_rs_subj_graph_att", "")
-			}
-		}
+		d.Set("relation_vz_rs_subj_graph_att", vzRsSubjGraphAttData.(string))
 	}
 
 	vzRsSdwanPolData, err := aciClient.ReadRelationvzRsSdwanPolFromContractSubject(dn)
@@ -478,12 +471,7 @@ func resourceAciContractSubjectRead(ctx context.Context, d *schema.ResourceData,
 		d.Set("relation_vz_rs_sdwan_pol", "")
 
 	} else {
-		if _, ok := d.GetOk("relation_vz_rs_sdwan_pol"); ok {
-			tfName := d.Get("relation_vz_rs_sdwan_pol").(string)
-			if tfName != vzRsSdwanPolData {
-				d.Set("relation_vz_rs_sdwan_pol", "")
-			}
-		}
+		d.Set("relation_vz_rs_sdwan_pol", vzRsSdwanPolData.(string))
 	}
 
 	vzRsSubjFiltAttData, err := aciClient.ReadRelationvzRsSubjFiltAttFromContractSubject(dn)
@@ -492,21 +480,7 @@ func resourceAciContractSubjectRead(ctx context.Context, d *schema.ResourceData,
 		d.Set("relation_vz_rs_subj_filt_att", make([]string, 0, 1))
 
 	} else {
-		if _, ok := d.GetOk("relation_vz_rs_subj_filt_att"); ok {
-			relationParamList := toStringList(d.Get("relation_vz_rs_subj_filt_att").(*schema.Set).List())
-			tfList := make([]string, 0, 1)
-			for _, relationParam := range relationParamList {
-				relationParamName := GetMOName(relationParam)
-				tfList = append(tfList, relationParamName)
-			}
-			vzRsSubjFiltAttDataList := toStringList(vzRsSubjFiltAttData.(*schema.Set).List())
-			sort.Strings(tfList)
-			sort.Strings(vzRsSubjFiltAttDataList)
-
-			if !reflect.DeepEqual(tfList, vzRsSubjFiltAttDataList) {
-				d.Set("relation_vz_rs_subj_filt_att", make([]string, 0, 1))
-			}
-		}
+		d.Set("relation_vz_rs_subj_filt_att", toStringList(vzRsSubjFiltAttData.(*schema.Set).List()))
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
