@@ -80,7 +80,6 @@ func setFilterAttributes(vzFilter *models.Filter, d *schema.ResourceData) (*sche
 	dn := d.Id()
 	d.SetId(vzFilter.DistinguishedName)
 	d.Set("description", vzFilter.Description)
-	// d.Set("tenant_dn", GetParentDn(vzFilter.DistinguishedName))
 	if dn != vzFilter.DistinguishedName {
 		d.Set("tenant_dn", "")
 	}
@@ -88,6 +87,8 @@ func setFilterAttributes(vzFilter *models.Filter, d *schema.ResourceData) (*sche
 	if err != nil {
 		return d, err
 	}
+	d.Set("tenant_dn", GetParentDn(dn, fmt.Sprintf("/flt-%s", vzFilterMap["name"])))
+
 	d.Set("name", vzFilterMap["name"])
 
 	d.Set("annotation", vzFilterMap["annotation"])

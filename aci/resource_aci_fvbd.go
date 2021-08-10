@@ -333,6 +333,7 @@ func setBridgeDomainAttributes(fvBD *models.BridgeDomain, d *schema.ResourceData
 		return d, err
 	}
 
+	d.Set("tenant_dn", GetParentDn(dn, fmt.Sprintf("/BD-%s", fvBDMap["name"])))
 	d.Set("name", fvBDMap["name"])
 
 	d.Set("optimize_wan_bandwidth", fvBDMap["OptimizeWanBandwidth"])
