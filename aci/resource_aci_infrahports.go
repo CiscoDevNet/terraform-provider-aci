@@ -81,7 +81,7 @@ func setAccessPortSelectorAttributes(infraHPortS *models.AccessPortSelector, d *
 	dn := d.Id()
 	d.SetId(infraHPortS.DistinguishedName)
 	d.Set("description", infraHPortS.Description)
-	// d.Set("leaf_interface_profile_dn", GetParentDn(infraHPortS.DistinguishedName))
+	
 	if dn != infraHPortS.DistinguishedName {
 		d.Set("leaf_interface_profile_dn", "")
 	}
@@ -89,6 +89,7 @@ func setAccessPortSelectorAttributes(infraHPortS *models.AccessPortSelector, d *
 	if err != nil {
 		return d, err
 	}
+	d.Set("leaf_interface_profile_dn", GetParentDn(dn, fmt.Sprintf("/hports-%s-typ-%s", infraHPortSMap["name"], infraHPortSMap["type"])))
 
 	d.Set("name", infraHPortSMap["name"])
 
