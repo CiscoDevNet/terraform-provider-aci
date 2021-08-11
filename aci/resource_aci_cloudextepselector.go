@@ -86,7 +86,7 @@ func setCloudEndpointSelectorforExternalEPgsAttributes(cloudExtEPSelector *model
 	dn := d.Id()
 	d.SetId(cloudExtEPSelector.DistinguishedName)
 	d.Set("description", cloudExtEPSelector.Description)
-	// d.Set("cloud_external_epg_dn", GetParentDn(cloudExtEPSelector.DistinguishedName))
+	
 	if dn != cloudExtEPSelector.DistinguishedName {
 		d.Set("cloud_external_epg_dn", "")
 	}
@@ -94,7 +94,7 @@ func setCloudEndpointSelectorforExternalEPgsAttributes(cloudExtEPSelector *model
 	if err != nil {
 		return d, err
 	}
-
+	d.Set("cloud_external_epg_dn", GetParentDn(dn, fmt.Sprintf("/extepselector-[%s]", cloudExtEPSelectorMap["subnet"])))
 	d.Set("name", cloudExtEPSelectorMap["name"])
 
 	d.Set("annotation", cloudExtEPSelectorMap["annotation"])

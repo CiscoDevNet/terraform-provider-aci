@@ -150,7 +150,7 @@ func setL3OutsideAttributes(l3extOut *models.L3Outside, d *schema.ResourceData) 
 	dn := d.Id()
 	d.SetId(l3extOut.DistinguishedName)
 	d.Set("description", l3extOut.Description)
-	// d.Set("tenant_dn", GetParentDn(l3extOut.DistinguishedName))
+	
 	if dn != l3extOut.DistinguishedName {
 		d.Set("tenant_dn", "")
 	}
@@ -158,6 +158,9 @@ func setL3OutsideAttributes(l3extOut *models.L3Outside, d *schema.ResourceData) 
 	if err != nil {
 		return d, err
 	}
+
+	d.Set("tenant_dn", GetParentDn(dn, fmt.Sprintf("/out-%s", l3extOutMap["name"])))
+
 	d.Set("name", l3extOutMap["name"])
 
 	d.Set("annotation", l3extOutMap["annotation"])

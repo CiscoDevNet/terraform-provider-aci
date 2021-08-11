@@ -196,7 +196,7 @@ func setVRFAttributes(fvCtx *models.VRF, d *schema.ResourceData) (*schema.Resour
 	dn := d.Id()
 	d.SetId(fvCtx.DistinguishedName)
 	d.Set("description", fvCtx.Description)
-	// d.Set("tenant_dn", GetParentDn(fvCtx.DistinguishedName))
+
 	if dn != fvCtx.DistinguishedName {
 		d.Set("tenant_dn", "")
 	}
@@ -204,6 +204,8 @@ func setVRFAttributes(fvCtx *models.VRF, d *schema.ResourceData) (*schema.Resour
 	if err != nil {
 		return d, err
 	}
+
+	d.Set("tenant_dn", GetParentDn(dn, fmt.Sprintf("/ctx-%s", fvCtxMap["name"])))
 	d.Set("name", fvCtxMap["name"])
 
 	d.Set("annotation", fvCtxMap["annotation"])

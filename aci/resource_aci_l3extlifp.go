@@ -119,7 +119,7 @@ func setLogicalInterfaceProfileAttributes(l3extLIfP *models.LogicalInterfaceProf
 	dn := d.Id()
 	d.SetId(l3extLIfP.DistinguishedName)
 	d.Set("description", l3extLIfP.Description)
-	// d.Set("logical_node_profile_dn", GetParentDn(l3extLIfP.DistinguishedName))
+
 	if dn != l3extLIfP.DistinguishedName {
 		d.Set("logical_node_profile_dn", "")
 	}
@@ -127,7 +127,7 @@ func setLogicalInterfaceProfileAttributes(l3extLIfP *models.LogicalInterfaceProf
 	if err != nil {
 		return d, err
 	}
-
+	d.Set("logical_node_profile_dn", GetParentDn(dn, fmt.Sprintf("/lifp-%s", l3extLIfPMap["name"])))
 	d.Set("name", l3extLIfPMap["name"])
 
 	d.Set("annotation", l3extLIfPMap["annotation"])

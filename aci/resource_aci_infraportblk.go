@@ -96,7 +96,7 @@ func setAccessPortBlockAttributes(infraPortBlk *models.AccessPortBlock, d *schem
 	dn := d.Id()
 	d.SetId(infraPortBlk.DistinguishedName)
 	d.Set("description", infraPortBlk.Description)
-	// d.Set("access_port_selector_dn", GetParentDn(infraPortBlk.DistinguishedName))
+
 	if dn != infraPortBlk.DistinguishedName {
 		d.Set("access_port_selector_dn", "")
 	}
@@ -104,6 +104,8 @@ func setAccessPortBlockAttributes(infraPortBlk *models.AccessPortBlock, d *schem
 	if err != nil {
 		return d, err
 	}
+
+	d.Set("access_port_selector_dn", GetParentDn(dn, fmt.Sprintf("/portblk-%s", infraPortBlkMap["name"])))
 	d.Set("name", infraPortBlkMap["name"])
 
 	d.Set("annotation", infraPortBlkMap["annotation"])
