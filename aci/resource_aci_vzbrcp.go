@@ -430,14 +430,12 @@ func resourceAciContract() *schema.Resource {
 				Type:     schema.TypeList,
 				Optional: true,
 				Elem:     &schema.Schema{Type: schema.TypeString},
-				Computed: true,
 			},
 
 			"filter_entry_ids": &schema.Schema{
 				Type:     schema.TypeList,
 				Optional: true,
-				Computed: true,
-				Elem:     &schema.Schema{Type: schema.TypeString},
+				Elem: &schema.Schema{Type: schema.TypeString},
 			},
 		}),
 	}
