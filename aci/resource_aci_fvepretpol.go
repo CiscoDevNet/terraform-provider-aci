@@ -105,7 +105,7 @@ func setEndPointRetentionPolicyAttributes(fvEpRetPol *models.EndPointRetentionPo
 	dn := d.Id()
 	d.SetId(fvEpRetPol.DistinguishedName)
 	d.Set("description", fvEpRetPol.Description)
-	// d.Set("tenant_dn", GetParentDn(fvEpRetPol.DistinguishedName))
+
 	if dn != fvEpRetPol.DistinguishedName {
 		d.Set("tenant_dn", "")
 	}
@@ -113,6 +113,8 @@ func setEndPointRetentionPolicyAttributes(fvEpRetPol *models.EndPointRetentionPo
 	if err != nil {
 		return d, err
 	}
+	d.Set("tenant_dn", GetParentDn(dn, fmt.Sprintf("/epRPol-%s", fvEpRetPolMap["name"])))
+
 	d.Set("name", fvEpRetPolMap["name"])
 
 	d.Set("annotation", fvEpRetPolMap["annotation"])

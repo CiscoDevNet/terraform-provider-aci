@@ -167,7 +167,7 @@ func setCloudEPgAttributes(cloudEPg *models.CloudEPg, d *schema.ResourceData) (*
 	dn := d.Id()
 	d.SetId(cloudEPg.DistinguishedName)
 	d.Set("description", cloudEPg.Description)
-	// d.Set("cloud_applicationcontainer_dn", GetParentDn(cloudEPg.DistinguishedName))
+	
 	if dn != cloudEPg.DistinguishedName {
 		d.Set("cloud_applicationcontainer_dn", "")
 	}
@@ -175,7 +175,7 @@ func setCloudEPgAttributes(cloudEPg *models.CloudEPg, d *schema.ResourceData) (*
 	if err != nil {
 		return d, err
 	}
-
+	d.Set("cloud_applicationcontainer_dn", GetParentDn(dn, fmt.Sprintf("/cloudepg-%s", cloudEPgMap["name"])))
 	d.Set("name", cloudEPgMap["name"])
 
 	d.Set("annotation", cloudEPgMap["annotation"])

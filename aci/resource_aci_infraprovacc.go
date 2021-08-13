@@ -58,7 +58,7 @@ func setVlanEncapsulationforVxlanTrafficAttributes(infraProvAcc *models.VlanEnca
 	dn := d.Id()
 	d.SetId(infraProvAcc.DistinguishedName)
 	d.Set("description", infraProvAcc.Description)
-	// d.Set("attachable_access_entity_profile_dn", GetParentDn(infraProvAcc.DistinguishedName))
+
 	if dn != infraProvAcc.DistinguishedName {
 		d.Set("attachable_access_entity_profile_dn", "")
 	}
@@ -66,6 +66,7 @@ func setVlanEncapsulationforVxlanTrafficAttributes(infraProvAcc *models.VlanEnca
 	if err != nil {
 		return d, err
 	}
+	d.Set("attachable_access_entity_profile_dn", GetParentDn(dn, fmt.Sprintf("/provacc")))
 
 	d.Set("annotation", infraProvAccMap["annotation"])
 	d.Set("name_alias", infraProvAccMap["nameAlias"])

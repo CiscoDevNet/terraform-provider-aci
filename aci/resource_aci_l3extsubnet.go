@@ -118,7 +118,7 @@ func setL3ExtSubnetAttributes(l3extSubnet *models.L3ExtSubnet, d *schema.Resourc
 	dn := d.Id()
 	d.SetId(l3extSubnet.DistinguishedName)
 	d.Set("description", l3extSubnet.Description)
-	// d.Set("external_network_instance_profile_dn", GetParentDn(l3extSubnet.DistinguishedName))
+
 	if dn != l3extSubnet.DistinguishedName {
 		d.Set("external_network_instance_profile_dn", "")
 	}
@@ -126,6 +126,8 @@ func setL3ExtSubnetAttributes(l3extSubnet *models.L3ExtSubnet, d *schema.Resourc
 	if err != nil {
 		return d, err
 	}
+
+	d.Set("external_network_instance_profile_dn", GetParentDn(dn, fmt.Sprintf("/extsubnet-[%s]", l3extSubnetMap["ip"])))
 	d.Set("ip", l3extSubnetMap["ip"])
 
 	d.Set("aggregate", l3extSubnetMap["aggregate"])

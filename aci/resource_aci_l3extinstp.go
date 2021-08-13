@@ -227,7 +227,7 @@ func setExternalNetworkInstanceProfileAttributes(l3extInstP *models.ExternalNetw
 	if err != nil {
 		return d, err
 	}
-
+	d.Set("l3_outside_dn",GetParentDn(dn, fmt.Sprintf("/instP-%s", l3extInstPMap["name"])) )
 	d.Set("name", l3extInstPMap["name"])
 
 	d.Set("annotation", l3extInstPMap["annotation"])
