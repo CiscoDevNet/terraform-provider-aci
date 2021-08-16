@@ -1,20 +1,22 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func resourceAciDHCPOptionPolicy() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciDHCPOptionPolicyCreate,
-		Update: resourceAciDHCPOptionPolicyUpdate,
-		Read:   resourceAciDHCPOptionPolicyRead,
-		Delete: resourceAciDHCPOptionPolicyDelete,
+		CreateContext: resourceAciDHCPOptionPolicyCreate,
+		UpdateContext: resourceAciDHCPOptionPolicyUpdate,
+		ReadContext:   resourceAciDHCPOptionPolicyRead,
+		DeleteContext: resourceAciDHCPOptionPolicyDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciDHCPOptionPolicyImport,
@@ -62,7 +64,6 @@ func resourceAciDHCPOptionPolicy() *schema.Resource {
 						"name": &schema.Schema{
 							Type:     schema.TypeString,
 							Required: true,
-							ForceNew: true,
 						},
 
 						"data": &schema.Schema{
@@ -124,7 +125,7 @@ func getRemoteDHCPOptionFromDHCPOptionPolicy(client *client.Client, dn string) (
 	return dhcpOption, nil
 }
 
-func setDHCPOptionPolicyAttributes(dhcpOptionPol *models.DHCPOptionPolicy, d *schema.ResourceData) *schema.ResourceData {
+func setDHCPOptionPolicyAttributes(dhcpOptionPol *models.DHCPOptionPolicy, d *schema.ResourceData) (*schema.ResourceData, error) {
 	dn := d.Id()
 	d.SetId(dhcpOptionPol.DistinguishedName)
 	d.Set("description", dhcpOptionPol.Description)
@@ -133,24 +134,31 @@ func setDHCPOptionPolicyAttributes(dhcpOptionPol *models.DHCPOptionPolicy, d *sc
 		d.Set("tenant_dn", "")
 	}
 
-	dhcpOptionPolMap, _ := dhcpOptionPol.ToMap()
+	dhcpOptionPolMap, err := dhcpOptionPol.ToMap()
+	if err != nil {
+		return d, err
+	}
+
 	d.Set("tenant_dn", GetParentDn(dn, fmt.Sprintf("/dhcpoptpol-%s", dhcpOptionPolMap["name"])))
 
 	d.Set("name", dhcpOptionPolMap["name"])
 
 	d.Set("annotation", dhcpOptionPolMap["annotation"])
 	d.Set("name_alias", dhcpOptionPolMap["nameAlias"])
-	return d
+	return d, nil
 }
 
-func setDHCPOptionAttributesFromDHCPOptionPolicy(dhcpOptions []*models.DHCPOption, d *schema.ResourceData) *schema.ResourceData {
+func setDHCPOptionAttributesFromDHCPOptionPolicy(dhcpOptions []*models.DHCPOption, d *schema.ResourceData) (*schema.ResourceData, error) {
 
 	dhcpOptionSet := make([]interface{}, 0, 1)
 	for _, dhcpOption := range dhcpOptions {
 
 		opMap := make(map[string]interface{})
 		opMap["id"] = dhcpOption.DistinguishedName
-		dhcpOptionMap, _ := dhcpOption.ToMap()
+		dhcpOptionMap, err := dhcpOption.ToMap()
+		if err != nil {
+			return d, err
+		}
 		opMap["name"] = dhcpOptionMap["name"]
 		opMap["annotation"] = dhcpOptionMap["annotation"]
 		opMap["name_alias"] = dhcpOptionMap["nameAlias"]
@@ -160,7 +168,7 @@ func setDHCPOptionAttributesFromDHCPOptionPolicy(dhcpOptions []*models.DHCPOptio
 	}
 
 	d.Set("dhcp_option", dhcpOptionSet)
-	return d
+	return d, nil
 }
 
 func resourceAciDHCPOptionPolicyImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -180,14 +188,17 @@ func resourceAciDHCPOptionPolicyImport(d *schema.ResourceData, m interface{}) ([
 	name := dhcpOptionPolMap["name"]
 	pDN := GetParentDn(dn, fmt.Sprintf("/dhcpoptpol-%s", name))
 	d.Set("tenant_dn", pDN)
-	schemaFilled := setDHCPOptionPolicyAttributes(dhcpOptionPol, d)
+	schemaFilled, err := setDHCPOptionPolicyAttributes(dhcpOptionPol, d)
+	if err != nil {
+		return nil, err
+	}
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciDHCPOptionPolicyCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciDHCPOptionPolicyCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] DHCPOptionPolicy: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -209,7 +220,7 @@ func resourceAciDHCPOptionPolicyCreate(d *schema.ResourceData, m interface{}) er
 
 	err := aciClient.Save(dhcpOptionPol)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	dhcpOptionIDS := make([]string, 0, 1)
@@ -241,7 +252,7 @@ func resourceAciDHCPOptionPolicyCreate(d *schema.ResourceData, m interface{}) er
 			dhcpOptionModel := models.NewDHCPOption(fmt.Sprintf("opt-%s", name), DHCPOptionPolicyDn, dhcpOptionAttr)
 			err := aciClient.Save(dhcpOptionModel)
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 			dhcpOptionIDS = append(dhcpOptionIDS, dhcpOptionModel.DistinguishedName)
 		}
@@ -250,19 +261,13 @@ func resourceAciDHCPOptionPolicyCreate(d *schema.ResourceData, m interface{}) er
 		d.Set("dhcp_option_ids", dhcpOptionIDS)
 	}
 
-	d.Partial(true)
-
-	d.SetPartial("name")
-
-	d.Partial(false)
-
 	d.SetId(dhcpOptionPol.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciDHCPOptionPolicyRead(d, m)
+	return resourceAciDHCPOptionPolicyRead(ctx, d, m)
 }
 
-func resourceAciDHCPOptionPolicyUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciDHCPOptionPolicyUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] DHCPOptionPolicy: Beginning Update")
 
 	aciClient := m.(*client.Client)
@@ -288,7 +293,7 @@ func resourceAciDHCPOptionPolicyUpdate(d *schema.ResourceData, m interface{}) er
 	err := aciClient.Save(dhcpOptionPol)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	if d.HasChange("dhcp_option") {
@@ -297,7 +302,7 @@ func resourceAciDHCPOptionPolicyUpdate(d *schema.ResourceData, m interface{}) er
 			dhcpOptionDN := val.(string)
 			err := aciClient.DeleteByDn(dhcpOptionDN, "dhcpOption")
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 		}
 
@@ -330,7 +335,7 @@ func resourceAciDHCPOptionPolicyUpdate(d *schema.ResourceData, m interface{}) er
 			dhcpOptionModel := models.NewDHCPOption(fmt.Sprintf("opt-%s", name), DHCPOptionPolicyDn, dhcpOptionAttr)
 			err := aciClient.Save(dhcpOptionModel)
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 			dhcpOptionIDS = append(dhcpOptionIDS, dhcpOptionModel.DistinguishedName)
 		}
@@ -338,20 +343,14 @@ func resourceAciDHCPOptionPolicyUpdate(d *schema.ResourceData, m interface{}) er
 		d.Set("dhcp_option_ids", dhcpOptionIDS)
 	}
 
-	d.Partial(true)
-
-	d.SetPartial("name")
-
-	d.Partial(false)
-
 	d.SetId(dhcpOptionPol.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciDHCPOptionPolicyRead(d, m)
+	return resourceAciDHCPOptionPolicyRead(ctx, d, m)
 
 }
 
-func resourceAciDHCPOptionPolicyRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciDHCPOptionPolicyRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -363,7 +362,11 @@ func resourceAciDHCPOptionPolicyRead(d *schema.ResourceData, m interface{}) erro
 		d.SetId("")
 		return nil
 	}
-	setDHCPOptionPolicyAttributes(dhcpOptionPol, d)
+	_, err = setDHCPOptionPolicyAttributes(dhcpOptionPol, d)
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 
 	options := d.Get("dhcp_option_ids").([]interface{})
 	dhcpOptions := make([]*models.DHCPOption, 0, 1)
@@ -372,26 +375,30 @@ func resourceAciDHCPOptionPolicyRead(d *schema.ResourceData, m interface{}) erro
 		dhcpOptionDN := val.(string)
 		dhcpOption, err := getRemoteDHCPOption(aciClient, dhcpOptionDN)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 		dhcpOptions = append(dhcpOptions, dhcpOption)
 
 	}
-	setDHCPOptionAttributesFromDHCPOptionPolicy(dhcpOptions, d)
+	_, err = setDHCPOptionAttributesFromDHCPOptionPolicy(dhcpOptions, d)
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 
 	return nil
 }
 
-func resourceAciDHCPOptionPolicyDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciDHCPOptionPolicyDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "dhcpOptionPol")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	options := d.Get("dhcp_option_ids").([]interface{})
@@ -399,12 +406,12 @@ func resourceAciDHCPOptionPolicyDelete(d *schema.ResourceData, m interface{}) er
 		dhcpOptionDN := val.(string)
 		err := aciClient.DeleteByDn(dhcpOptionDN, "dhcpOption")
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
 }
