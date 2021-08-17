@@ -119,7 +119,7 @@ func setDHCPRelayPolicyAttributes(dhcpRelayP *models.DHCPRelayPolicy, d *schema.
 	if err != nil {
 		return d, err
 	}
-
+	d.Set("tenant_dn", GetParentDn(dn, fmt.Sprintf("/relayp-%s", dhcpRelayPMap["name"])))
 	d.Set("name", dhcpRelayPMap["name"])
 
 	d.Set("annotation", dhcpRelayPMap["annotation"])

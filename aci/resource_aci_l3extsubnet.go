@@ -50,7 +50,8 @@ func resourceAciL3ExtSubnet() *schema.Resource {
 					"import-rtctrl",
 					"export-rtctrl",
 					"shared-rtctrl",
-				}, false, "")),
+					"none",
+				}, false, "none")),
 			},
 
 			"name_alias": &schema.Schema{
@@ -130,7 +131,12 @@ func setL3ExtSubnetAttributes(l3extSubnet *models.L3ExtSubnet, d *schema.Resourc
 	d.Set("external_network_instance_profile_dn", GetParentDn(dn, fmt.Sprintf("/extsubnet-[%s]", l3extSubnetMap["ip"])))
 	d.Set("ip", l3extSubnetMap["ip"])
 
-	d.Set("aggregate", l3extSubnetMap["aggregate"])
+	if l3extSubnetMap["aggregate"] == "" {
+		d.Set("aggregate", "none")
+	} else {
+		d.Set("aggregate", l3extSubnetMap["aggregate"])
+	}
+
 	d.Set("annotation", l3extSubnetMap["annotation"])
 	d.Set("ip", l3extSubnetMap["ip"])
 	d.Set("name_alias", l3extSubnetMap["nameAlias"])
@@ -196,7 +202,11 @@ func resourceAciL3ExtSubnetCreate(ctx context.Context, d *schema.ResourceData, m
 
 	l3extSubnetAttr := models.L3ExtSubnetAttributes{}
 	if Aggregate, ok := d.GetOk("aggregate"); ok {
-		l3extSubnetAttr.Aggregate = Aggregate.(string)
+		agg := Aggregate.(string)
+		if agg == "none" {
+			agg = ""
+		}
+		l3extSubnetAttr.Aggregate = agg
 	}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		l3extSubnetAttr.Annotation = Annotation.(string)

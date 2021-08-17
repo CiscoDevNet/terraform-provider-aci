@@ -66,6 +66,8 @@ func setL3outBgpExternalPolicyAttributes(bgpExtP *models.L3outBgpExternalPolicy,
 		return d, err
 	}
 
+	d.Set("l3_outside_dn", GetParentDn(dn, "/bgpExtP"))
+
 	d.Set("annotation", bgpExtPMap["annotation"])
 	d.Set("name_alias", bgpExtPMap["nameAlias"])
 	return d, nil

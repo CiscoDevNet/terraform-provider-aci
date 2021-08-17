@@ -97,7 +97,7 @@ func setOSPFInterfaceProfileAttributes(ospfIfP *models.OSPFInterfaceProfile, d *
 	if err != nil {
 		return d, err
 	}
-
+	d.Set("logical_interface_profile_dn", GetParentDn(dn,fmt.Sprintf("/ospfIfP")))
 	d.Set("annotation", ospfIfPMap["annotation"])
 	d.Set("auth_key_id", ospfIfPMap["authKeyId"])
 	d.Set("auth_type", ospfIfPMap["authType"])
