@@ -95,7 +95,7 @@ func setBDDHCPLabelAttributes(dhcpLbl *models.BDDHCPLabel, d *schema.ResourceDat
 	if err != nil {
 		return d, err
 	}
-
+	d.Set("bridge_domain_dn", GetParentDn(dn, fmt.Sprintf("/dhcplbl-%s", dhcpLblMap["name"])))
 	d.Set("name", dhcpLblMap["name"])
 
 	d.Set("annotation", dhcpLblMap["annotation"])

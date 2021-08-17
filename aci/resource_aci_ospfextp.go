@@ -151,6 +151,8 @@ func setL3outOspfExternalPolicyAttributes(ospfExtP *models.L3outOspfExternalPoli
 		return d, err
 	}
 
+	d.Set("l3_outside_dn", GetParentDn(dn, fmt.Sprintf("/ospfExtP")))
+
 	d.Set("annotation", ospfExtPMap["annotation"])
 	d.Set("area_cost", ospfExtPMap["areaCost"])
 	d.Set("area_ctrl", ospfExtPMap["areaCtrl"])
