@@ -86,7 +86,7 @@ func setCloudEndpointSelectorforExternalEPgsAttributes(cloudExtEPSelector *model
 	dn := d.Id()
 	d.SetId(cloudExtEPSelector.DistinguishedName)
 	d.Set("description", cloudExtEPSelector.Description)
-	
+
 	if dn != cloudExtEPSelector.DistinguishedName {
 		d.Set("cloud_external_epg_dn", "")
 	}

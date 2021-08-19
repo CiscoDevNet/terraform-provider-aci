@@ -121,7 +121,7 @@ func setCloudAWSProviderAttributes(cloudAwsProvider *models.CloudAWSProvider, d 
 	dn := d.Id()
 	d.SetId(cloudAwsProvider.DistinguishedName)
 	d.Set("description", cloudAwsProvider.Description)
-	
+
 	if dn != cloudAwsProvider.DistinguishedName {
 		d.Set("tenant_dn", "")
 	}
@@ -129,7 +129,7 @@ func setCloudAWSProviderAttributes(cloudAwsProvider *models.CloudAWSProvider, d 
 	if err != nil {
 		return d, err
 	}
-	d.Set("tenant_dn",GetParentDn(dn, fmt.Sprintf("/awsprovider")))
+	d.Set("tenant_dn", GetParentDn(dn, fmt.Sprintf("/awsprovider")))
 	d.Set("access_key_id", cloudAwsProviderMap["accessKeyId"])
 	d.Set("account_id", cloudAwsProviderMap["accountId"])
 	d.Set("annotation", cloudAwsProviderMap["annotation"])
