@@ -181,7 +181,7 @@ func setL3outPathAttachmentAttributes(l3extRsPathL3OutAtt *models.L3outPathAttac
 		return d, err
 	}
 
-	d.Set("logical_interface_profile_dn", GetParentDn(dn,fmt.Sprintf("/rspathL3OutAtt-[%s]",l3extRsPathL3OutAttMap["tDn"])))
+	d.Set("logical_interface_profile_dn", GetParentDn(dn, fmt.Sprintf("/rspathL3OutAtt-[%s]", l3extRsPathL3OutAttMap["tDn"])))
 
 	d.Set("target_dn", l3extRsPathL3OutAttMap["tDn"])
 

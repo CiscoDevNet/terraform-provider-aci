@@ -150,7 +150,7 @@ func setL3OutsideAttributes(l3extOut *models.L3Outside, d *schema.ResourceData) 
 	dn := d.Id()
 	d.SetId(l3extOut.DistinguishedName)
 	d.Set("description", l3extOut.Description)
-	
+
 	if dn != l3extOut.DistinguishedName {
 		d.Set("tenant_dn", "")
 	}

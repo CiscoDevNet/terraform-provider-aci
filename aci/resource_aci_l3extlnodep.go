@@ -124,7 +124,7 @@ func setLogicalNodeProfileAttributes(l3extLNodeP *models.LogicalNodeProfile, d *
 		return d, err
 	}
 
-	d.Set("l3_outside_dn", GetParentDn(dn, fmt.Sprintf("/lnodep-%s",  l3extLNodePMap["name"])))
+	d.Set("l3_outside_dn", GetParentDn(dn, fmt.Sprintf("/lnodep-%s", l3extLNodePMap["name"])))
 	d.Set("name", l3extLNodePMap["name"])
 
 	d.Set("annotation", l3extLNodePMap["annotation"])

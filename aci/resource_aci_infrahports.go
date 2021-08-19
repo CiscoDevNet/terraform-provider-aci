@@ -81,7 +81,7 @@ func setAccessPortSelectorAttributes(infraHPortS *models.AccessPortSelector, d *
 	dn := d.Id()
 	d.SetId(infraHPortS.DistinguishedName)
 	d.Set("description", infraHPortS.Description)
-	
+
 	if dn != infraHPortS.DistinguishedName {
 		d.Set("leaf_interface_profile_dn", "")
 	}

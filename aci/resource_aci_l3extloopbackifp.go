@@ -75,7 +75,7 @@ func setLoopBackInterfaceProfileAttributes(l3extLoopBackIfP *models.LoopBackInte
 	if err != nil {
 		return d, err
 	}
-	d.Set("fabric_node_dn", GetParentDn(dn,fmt.Sprintf("/lbp-[%s]", l3extLoopBackIfPMap["addr"])))
+	d.Set("fabric_node_dn", GetParentDn(dn, fmt.Sprintf("/lbp-[%s]", l3extLoopBackIfPMap["addr"])))
 	d.Set("addr", l3extLoopBackIfPMap["addr"])
 	d.Set("annotation", l3extLoopBackIfPMap["annotation"])
 	d.Set("name_alias", l3extLoopBackIfPMap["nameAlias"])

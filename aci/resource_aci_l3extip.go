@@ -83,7 +83,7 @@ func setL3outPathAttachmentSecondaryIpAttributes(l3extIp *models.L3outPathAttach
 		return d, err
 	}
 
-	d.Set("l3out_path_attachment_dn", GetParentDn(dn,fmt.Sprintf("/addr-[%s]", l3extIpMap["addr"])))
+	d.Set("l3out_path_attachment_dn", GetParentDn(dn, fmt.Sprintf("/addr-[%s]", l3extIpMap["addr"])))
 
 	d.Set("addr", l3extIpMap["addr"])
 	d.Set("annotation", l3extIpMap["annotation"])

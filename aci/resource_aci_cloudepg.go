@@ -167,7 +167,7 @@ func setCloudEPgAttributes(cloudEPg *models.CloudEPg, d *schema.ResourceData) (*
 	dn := d.Id()
 	d.SetId(cloudEPg.DistinguishedName)
 	d.Set("description", cloudEPg.Description)
-	
+
 	if dn != cloudEPg.DistinguishedName {
 		d.Set("cloud_applicationcontainer_dn", "")
 	}
