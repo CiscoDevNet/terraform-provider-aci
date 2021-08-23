@@ -96,7 +96,7 @@ func setHSRPInterfacePolicyAttributes(hsrpIfPol *models.HSRPInterfacePolicy, d *
 	if err != nil {
 		return d, err
 	}
-
+	d.Set("tenant_dn", GetParentDn(dn, fmt.Sprintf("/hsrpIfPol-%s", hsrpIfPolMap["name"])))
 	d.Set("name", hsrpIfPolMap["name"])
 
 	d.Set("annotation", hsrpIfPolMap["annotation"])

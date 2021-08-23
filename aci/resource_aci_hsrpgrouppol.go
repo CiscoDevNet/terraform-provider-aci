@@ -165,7 +165,7 @@ func setHSRPGroupPolicyAttributes(hsrpGroupPol *models.HSRPGroupPolicy, d *schem
 	if err != nil {
 		return d, err
 	}
-
+	d.Set("tenant_dn", GetParentDn(dn, fmt.Sprintf("/hsrpGroupPol-%s", hsrpGroupPolMap["name"])))
 	d.Set("name", hsrpGroupPolMap["name"])
 
 	d.Set("annotation", hsrpGroupPolMap["annotation"])

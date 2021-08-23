@@ -200,6 +200,8 @@ func setOSPFTimersPolicyAttributes(ospfCtxPol *models.OSPFTimersPolicy, d *schem
 	if err != nil {
 		return d, err
 	}
+
+	d.Set("tenant_dn", GetParentDn(dn, fmt.Sprintf("/ospfCtxP-%s", ospfCtxPolMap["name"])))
 	d.Set("name", ospfCtxPolMap["name"])
 
 	d.Set("annotation", ospfCtxPolMap["annotation"])

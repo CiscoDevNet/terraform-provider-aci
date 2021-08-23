@@ -76,6 +76,7 @@ func setL3outBGPProtocolProfileAttributes(bgpProtP *models.L3outBGPProtocolProfi
 	if err != nil {
 		return d, err
 	}
+	d.Set("logical_node_profile_dn", GetParentDn(dn, fmt.Sprintf("/protp")))
 	d.Set("annotation", bgpProtPMap["annotation"])
 	d.Set("name_alias", bgpProtPMap["nameAlias"])
 	return d, nil
