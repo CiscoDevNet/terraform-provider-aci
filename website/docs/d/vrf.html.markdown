@@ -13,7 +13,7 @@ Data source for ACI VRF
 
 ```hcl
 data "aci_vrf" "dev_ctx" {
-  tenant_dn  = "${aci_tenant.dev_tenant.id}"
+  tenant_dn  = aci_tenant.dev_tenant.id
   name       = "foo_ctx"
 }
 ```

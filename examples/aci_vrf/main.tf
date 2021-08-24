@@ -19,5 +19,13 @@ resource "aci_tenant" "terraform_ten" {
 
 resource "aci_vrf" "vrf1" {
   tenant_dn = aci_tenant.terraform_ten.id
-  name      = "vrf1"
+  bd_enforced_enable = "no"
+  knw_mcast_act      = "permit"
+  name               = var.vrf_name
+  pc_enf_dir         = "ingress"
+  pc_enf_pref        = "enforced"
+  relation_fv_rs_ctx_to_bgp_ctx_af_pol {
+    af                     = "ipv4-ucast"
+    tn_bgp_ctx_af_pol_name = "test_bgp"
+  }
 }
