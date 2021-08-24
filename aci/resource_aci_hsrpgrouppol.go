@@ -69,10 +69,9 @@ func resourceAciHSRPGroupPolicy() *schema.Resource {
 			},
 
 			"name_alias": &schema.Schema{
-				Type:         schema.TypeString,
-				Optional:     true,
-				Computed:     true,
-				ValidateFunc: validateNonEmptyString(),
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
 			},
 
 			"preempt_delay_min": &schema.Schema{
