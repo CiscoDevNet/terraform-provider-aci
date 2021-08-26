@@ -90,7 +90,7 @@ func resourceAciBgpPeerConnectivityProfile() *schema.Resource {
 			},
 
 			"peer_ctrl": &schema.Schema{
-				Type:     schema.TypeString,
+				Type:     schema.TypeList,
 				Optional: true,
 				Computed: true,
 				Elem: &schema.Schema{
@@ -103,7 +103,7 @@ func resourceAciBgpPeerConnectivityProfile() *schema.Resource {
 			},
 
 			"private_a_sctrl": &schema.Schema{
-				Type:     schema.TypeString,
+				Type:     schema.TypeList,
 				Optional: true,
 				Computed: true,
 				Elem: &schema.Schema{
