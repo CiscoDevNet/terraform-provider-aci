@@ -90,7 +90,7 @@ func resourceAciBgpPeerConnectivityProfile() *schema.Resource {
 			},
 
 			"peer_ctrl": &schema.Schema{
-				Type:     schema.TypeString,
+				Type:     schema.TypeList,
 				Optional: true,
 				Computed: true,
 				Elem: &schema.Schema{
@@ -103,7 +103,7 @@ func resourceAciBgpPeerConnectivityProfile() *schema.Resource {
 			},
 
 			"private_a_sctrl": &schema.Schema{
-				Type:     schema.TypeString,
+				Type:     schema.TypeList,
 				Optional: true,
 				Computed: true,
 				Elem: &schema.Schema{
@@ -249,9 +249,12 @@ func setBgpPeerConnectivityProfileAttributes(bgpPeerP *models.BgpPeerConnectivit
 	d.Set("name_alias", bgpPeerPMap["nameAlias"])
 	peerCtrlGet := make([]string, 0, 1)
 	for _, val := range strings.Split(bgpPeerPMap["peerCtrl"], ",") {
+		fmt.Printf("val: %v\n", val)
 		peerCtrlGet = append(peerCtrlGet, strings.Trim(val, " "))
+		fmt.Printf("peerCtrlGet: %v\n", peerCtrlGet)
 	}
 	sort.Strings(peerCtrlGet)
+	fmt.Printf("peerCtrlGet: %v\n", peerCtrlGet)
 	if len(peerCtrlGet) == 1 && peerCtrlGet[0] == "" {
 		d.Set("peer_ctrl", make([]string, 0, 1))
 	} else {
