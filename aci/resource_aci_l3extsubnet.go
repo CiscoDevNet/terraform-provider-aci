@@ -286,7 +286,11 @@ func resourceAciL3ExtSubnetUpdate(ctx context.Context, d *schema.ResourceData, m
 
 	l3extSubnetAttr := models.L3ExtSubnetAttributes{}
 	if Aggregate, ok := d.GetOk("aggregate"); ok {
-		l3extSubnetAttr.Aggregate = Aggregate.(string)
+		agg := Aggregate.(string)
+		if agg == "none" {
+			agg = ""
+		}
+		l3extSubnetAttr.Aggregate = agg
 	}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		l3extSubnetAttr.Annotation = Annotation.(string)
