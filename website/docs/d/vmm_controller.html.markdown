@@ -49,7 +49,7 @@ data "aci_vmm_controller" "example" {
 * `msft_config_issues` - (Optional) msftConfigIssues.
 * `n1kv_stats_mode` - (Optional) n1kv statistics enable.
 * `port` - (Optional) Port. Port
-* `root_cont_name` - (Optional) Top level container name.
+* `root_cont_name` - Top level container name.
 * `scope` - (Optional) The VMM control policy scope.
 * `seq_num` - (Optional) An ISIS link-state packet sequence number.
 * `stats_mode` - (Optional) The statistics mode.
