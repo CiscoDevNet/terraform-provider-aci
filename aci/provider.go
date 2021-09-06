@@ -203,6 +203,8 @@ func Provider() *schema.Provider {
 			"aci_l3out_vpc_member":                         resourceAciL3outVPCMember(),
 			"aci_endpoint_security_group_selector":         resourceAciEndpointSecurityGroupSelector(),
 			"aci_endpoint_security_group":                  resourceAciEndpointSecurityGroup(),
+			"aci_bfd_interface_policy":                     resourceAciBFDInterfacePolicy(),
+			"aci_l3_interface_policy":                      resourceAciL3InterfacePolicy(),
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
@@ -356,6 +358,9 @@ func Provider() *schema.Provider {
 			"aci_l3out_vpc_member":                         dataSourceAciL3outVPCMember(),
 			"aci_endpoint_security_group_selector":         dataSourceAciEndpointSecurityGroupSelector(),
 			"aci_endpoint_security_group":                  dataSourceAciEndpointSecurityGroup(),
+			"aci_bfd_interface_policy":                     dataSourceAciBFDInterfacePolicy(),
+			"aci_l3_interface_policy":                      dataSourceAciL3InterfacePolicy(),
+			"aci_fabric_node":                              dataSourceAciFabricNodeOrg(),
 		},
 
 		ConfigureFunc: configureClient,
