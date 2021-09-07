@@ -13,8 +13,8 @@ Data source for ACI Fabric Node
 
 ```hcl
 data "aci_fabric_node" "example" {
-  fabric_pod_dn  = aci_fabric_pod.example.id
-  fabric_node_id  = "example"
+  fabric_pod_dn  = "topology/pod-1"
+  fabric_node_id  = "101"
 }
 ```
 
