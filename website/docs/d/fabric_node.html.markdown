@@ -30,5 +30,9 @@ data "aci_fabric_node" "example" {
 * `fabric_st` - (Optional) Fabric state for object Fabric Node.
 * `fabric_node_id` - (Optional) The identifier of object Fabric Node.
 * `last_state_mod_ts` - (Optional) Last state mode time stamp for object Fabric Node.
+* `address` - (Optional) IP address of object Fabric Node.
+* `name` - (Optional) Name of object Fabric Node.
+* `node_type` - (Optional) Fabric Node type of object Fabric Node.
+* `role` - (Optional) Fabric Node role of object Fabric Node.
 * `name_alias` - (Optional) Name alias for object Fabric Node.
 * `description` - (Optional) Description for object Fabric Node.

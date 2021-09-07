@@ -3,6 +3,7 @@ package aci
 import (
 	"context"
 	"fmt"
+
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
@@ -51,13 +52,31 @@ func dataSourceAciFabricNodeOrg() *schema.Resource {
 				Computed: true,
 			},
 
-			"last_state_mod_ts": &schema.Schema{
+			"name_alias": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
 			},
 
-			"name_alias": &schema.Schema{
+			"address": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+
+			"name": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+
+			"node_type": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+
+			"role": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
@@ -86,13 +105,13 @@ func dataSourceAciFabricNodeReadOrg(ctx context.Context, d *schema.ResourceData,
 	return nil
 }
 
-func getRemoteFabricNodeOrg(client *client.Client, dn string) (*models.OrgFabricNode, error) {
+func getRemoteFabricNodeOrg(client *client.Client, dn string) (*models.TopologyFabricNode, error) {
 	fabricNodeCont, err := client.Get(dn)
 	if err != nil {
 		return nil, err
 	}
 
-	fabricNode := models.OrgFabricNodeFromContainer(fabricNodeCont)
+	fabricNode := models.TopologyFabricNodeFromContainer(fabricNodeCont)
 
 	if fabricNode.DistinguishedName == "" {
 		return nil, fmt.Errorf("FabricNode %s not found", fabricNode.DistinguishedName)
@@ -101,7 +120,7 @@ func getRemoteFabricNodeOrg(client *client.Client, dn string) (*models.OrgFabric
 	return fabricNode, nil
 }
 
-func setFabricNodeAttributesOrg(fabricNode *models.OrgFabricNode, d *schema.ResourceData) *schema.ResourceData {
+func setFabricNodeAttributesOrg(fabricNode *models.TopologyFabricNode, d *schema.ResourceData) *schema.ResourceData {
 	d.SetId(fabricNode.DistinguishedName)
 	d.Set("description", fabricNode.Description)
 	dn := d.Id()
@@ -119,7 +138,10 @@ func setFabricNodeAttributesOrg(fabricNode *models.OrgFabricNode, d *schema.Reso
 	d.Set("apic_type", fabricNodeMap["apicType"])
 	d.Set("fabric_st", fabricNodeMap["fabricSt"])
 	d.Set("fabric_node_id", fabricNodeMap["id"])
-	d.Set("last_state_mod_ts", fabricNodeMap["lastStateModTs"])
 	d.Set("name_alias", fabricNodeMap["nameAlias"])
+	d.Set("address", fabricNodeMap["address"])
+	d.Set("name", fabricNodeMap["name"])
+	d.Set("node_type", fabricNodeMap["nodeType"])
+	d.Set("role", fabricNodeMap["role"])
 	return d
 }
