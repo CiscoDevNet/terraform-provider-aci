@@ -33,4 +33,4 @@ data "aci_fabric_node" "example" {
 * `node_type` - (Optional) Fabric Node type of object Fabric Node.
 * `role` - (Optional) Fabric Node role of object Fabric Node.
 * `name_alias` - (Optional) Name alias for object Fabric Node.
-* `description` - (Optional) Description for object Fabric Node.
+
