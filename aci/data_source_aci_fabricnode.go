@@ -17,7 +17,7 @@ func dataSourceAciFabricNodeOrg() *schema.Resource {
 
 		SchemaVersion: 1,
 
-		Schema: AppendBaseAttrSchema(map[string]*schema.Schema{
+		Schema: map[string]*schema.Schema{
 			"fabric_pod_dn": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
@@ -81,7 +81,7 @@ func dataSourceAciFabricNodeOrg() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
-		}),
+		},
 	}
 }
 
@@ -122,7 +122,7 @@ func getRemoteFabricNodeOrg(client *client.Client, dn string) (*models.TopologyF
 
 func setFabricNodeAttributesOrg(fabricNode *models.TopologyFabricNode, d *schema.ResourceData) *schema.ResourceData {
 	d.SetId(fabricNode.DistinguishedName)
-	d.Set("description", fabricNode.Description)
+
 	dn := d.Id()
 	if dn != fabricNode.DistinguishedName {
 		d.Set("fabric_pod_dn", "")
