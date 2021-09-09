@@ -9,6 +9,13 @@ description: |-
 # aci_bfd_interface_policy #
 Data source for ACI BFD Interface Policy
 
+## API Information ##
+* `Class` - bfdIfPol
+* `Distinguished Named` - uni/tn-{name}/bfdIfPol-{name}
+
+## GUI Information ##
+* `Location` - Tenant > Policies> Protocol > BFD
+
 ## Example Usage ##
 
 ```hcl
@@ -23,7 +30,6 @@ data "aci_bfd_interface_policy" "example" {
 * `name` - (Required) name of object BFD Interface Policy.
 
 ## Attribute Reference
-
 * `id` - Attribute id set to the Dn of the BFD Interface Policy.
 * `admin_st` - (Optional) Administrative state of the BFD Interface Policy.
 * `annotation` - (Optional) Annotation for object BFD Interface Policy.

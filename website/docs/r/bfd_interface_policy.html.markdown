@@ -9,6 +9,15 @@ description: |-
 # aci_bfd_interface_policy #
 Manages ACI BFD Interface Policy
 
+## API Information ##
+
+* `Class` - bfdIfPol
+* `Distinguished Named` - uni/tn-{name}/bfdIfPol-{name}
+
+## GUI Information ##
+
+* `Location` - Tenant > Policies> Protocol > BFD
+
 ## Example Usage ##
 
 ```hcl
