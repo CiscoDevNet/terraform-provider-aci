@@ -60,7 +60,7 @@ func TestAccAciBFDInterfacePolicy_update(t *testing.T) {
 func testAccCheckAciBFDInterfacePolicyConfig_basic(description string) string {
 	return fmt.Sprintf(`
 	resource "aci_bfd_interface_policy" "test" {
-		tenant_dn  = "uni/tn-Atul_tenant"
+		tenant_dn  = aci_tenant.example.id
 		description = "%s"
 		name  = "example"
   		admin_st = "disabled"
