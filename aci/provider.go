@@ -205,6 +205,8 @@ func Provider() *schema.Provider {
 			"aci_endpoint_security_group":                  resourceAciEndpointSecurityGroup(),
 			"aci_endpoint_security_group_epg_selector":     resourceAciEndpointSecurityGroupEPgSelector(),
 			"aci_endpoint_security_group_tag_selector":     resourceAciEndpointSecurityGroupTagSelector(),
+			"aci_bfd_interface_policy":                     resourceAciBFDInterfacePolicy(),
+			"aci_l3_interface_policy":                      resourceAciL3InterfacePolicy(),
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
@@ -358,8 +360,14 @@ func Provider() *schema.Provider {
 			"aci_l3out_vpc_member":                         dataSourceAciL3outVPCMember(),
 			"aci_endpoint_security_group_selector":         dataSourceAciEndpointSecurityGroupSelector(),
 			"aci_endpoint_security_group":                  dataSourceAciEndpointSecurityGroup(),
+<<<<<<< HEAD
 			"aci_endpoint_security_group_epg_selector":     dataSourceAciEndpointSecurityGroupEPgSelector(),
 			"aci_endpoint_security_group_tag_selector":     dataSourceAciEndpointSecurityGroupTagSelector(),
+=======
+			"aci_bfd_interface_policy":                     dataSourceAciBFDInterfacePolicy(),
+			"aci_l3_interface_policy":                      dataSourceAciL3InterfacePolicy(),
+			"aci_fabric_node":                              dataSourceAciFabricNodeOrg(),
+>>>>>>> 43307ba (S1 dev (#578))
 		},
 
 		ConfigureFunc: configureClient,
