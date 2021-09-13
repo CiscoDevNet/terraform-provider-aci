@@ -14,7 +14,7 @@ Manages ACI L3 Interface Policy
 * `Distinguished Named` - uni/fabric/l3IfP-{name}
 
 ## GUI Information ##
-* `Location` - Fabric > Fabric Policies > Policies > Interface > L3 Interface > Create L3 Interface Policy
+* `Location` - Fabric -> Fabric Policies -> Policies -> Interface -> L3 Interface -> Create L3 Interface Policy
 
 ## Example Usage ##
 
