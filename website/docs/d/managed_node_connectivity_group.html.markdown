@@ -31,5 +31,4 @@ data "aci_managed_node_connectivity_group" "example" {
 ## Attribute Reference ##
 * `id` - Attribute id set to the Dn of the Managed Node Connectivity Group.
 * `annotation` - (Optional) Annotation of object Managed Node Connectivity Group.
-* `name_alias` - (Optional) Name Alias of object Managed Node Connectivity Group.
-* `description` - (Optional) Description for object Access Switch Policy Group.
+
