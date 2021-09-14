@@ -22,6 +22,8 @@ Manages ACI Spine Switch Policy Group
 resource "aci_spine_switch_policy_group" "example" {
   name  = "example"
   annotation = "orchestrator:terraform"
+  name_alias = "example"
+  description = "from terraform"
 }
 ```
 
