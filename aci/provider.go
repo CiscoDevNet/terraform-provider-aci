@@ -207,6 +207,8 @@ func Provider() *schema.Provider {
 			"aci_l3_interface_policy":                      resourceAciL3InterfacePolicy(),
 			"aci_access_switch_policy_group":               resourceAciAccessSwitchPolicyGroup(),
 			"aci_managed_node_connectivity_group":          resourceAciManagedNodeConnectivityGroup(),
+			"aci_vpc_domain_policy":                        resourceAciVPCDomainPolicy(),
+			"aci_spine_switch_policy_group":                resourceAciSpineSwitchPolicyGroup(),
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
@@ -365,6 +367,8 @@ func Provider() *schema.Provider {
 			"aci_fabric_node":                              dataSourceAciFabricNodeOrg(),
 			"aci_access_switch_policy_group":               dataSourceAciAccessSwitchPolicyGroup(),
 			"aci_managed_node_connectivity_group":          dataSourceAciManagedNodeConnectivityGroup(),
+			"aci_vpc_domain_policy":                        dataSourceAciVPCDomainPolicy(),
+			"aci_spine_switch_policy_group":                dataSourceAciSpineSwitchPolicyGroup(),
 		},
 
 		ConfigureFunc: configureClient,
