@@ -71,11 +71,11 @@ func testAccCheckAciRecurringWindowConfig_basic(annotation string) string {
 		proc_break = "none"
 		proc_cap = "unlimited"
 		time_cap = "unlimited"
-		annotation = "testing"
+		annotation = "%s"
 		name_alias = "example"
 	}
 
-	`)
+	`, annotation)
 }
 
 func testAccCheckAciRecurringWindowExists(name string, recurring_window *models.RecurringWindow) resource.TestCheckFunc {
@@ -160,7 +160,7 @@ func testAccCheckAciRecurringWindowAttributes(annotation string, recurring_windo
 			return fmt.Errorf("Bad recurring_window TimeCap %s", recurring_window.TimeCap)
 		}
 
-		if "testing" != recurring_window.Annotation {
+		if annotation != recurring_window.Annotation {
 			return fmt.Errorf("Bad recurring_window Annotation %s", recurring_window.Annotation)
 		}
 
