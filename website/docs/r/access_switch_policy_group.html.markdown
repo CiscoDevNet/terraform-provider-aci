@@ -65,5 +65,5 @@ An existing AccessSwitchPolicyGroup can be [imported][docs-import] into this res
 
 
 ```
-terraform import access_switch_policy_group.example <Dn>
+terraform import aci_access_switch_policy_group.example <Dn>
 ```

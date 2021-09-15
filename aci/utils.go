@@ -2,7 +2,9 @@ package aci
 
 import (
 	"fmt"
+	"log"
 	"reflect"
+	"regexp"
 	"sort"
 	"strings"
 
@@ -142,6 +144,24 @@ func validateCommaSeparatedStringInSlice(valid []string, ignoreCase bool, zeroVa
 				es = append(es, fmt.Errorf("unexpected duplicate values in %s : %s", k, val))
 			}
 			elemap[val] = true
+		}
+		return
+	}
+}
+
+func validateColonSeparatedTimeStamp() schema.SchemaValidateFunc {
+	return func(i interface{}, k string) (s []string, es []error) {
+		v, ok := i.(string)
+		if !ok {
+			es = append(es, fmt.Errorf("expected type of %s to be string", k))
+			return
+		}
+		log.Printf("v: %v\n", v)
+		res, err := regexp.MatchString(`^(\d)+(:)(\d){0,2}(:)(\d){0,2}(:)(\d){0,2}(.)(\d){3}$`, v)
+		log.Printf("res: %v\n", res)
+		if !res {
+			log.Printf("err: %v\n", err)
+			es = append(es, fmt.Errorf("Invalid Something something"))
 		}
 		return
 	}
