@@ -32,7 +32,7 @@ resource "aci_vpc_domain_policy" "example" {
 ## Argument Reference ##
 * `name` - (Required) Name of object VPC Domain Policy.
 * `annotation` - (Optional) Annotation of object VPC Domain Policy.
-* `dead_intvl` - (Optional) The vPC peer dead interval time of object VPC Domain Policy. Range: "5" - "600". Default value is "200".
+* `dead_intvl` - (Optional) The VPC peer dead interval time of object VPC Domain Policy. Range: "5" - "600". Default value is "200".
 * `name_alias` - (Optional) Name Alias of object VPC Domain Policy.
 * `description` - (Optional) Description of object VPC Domain Policy.
 
@@ -44,5 +44,5 @@ An existing VPCDomainPolicy can be [imported][docs-import] into this resource vi
 
 
 ```
-terraform import vpc_domain_policy.example <Dn>
+terraform import aci_vpc_domain_policy.example <Dn>
 ```

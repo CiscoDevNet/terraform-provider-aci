@@ -47,5 +47,5 @@ An existing SpineSwitchPolicyGroup can be [imported][docs-import] into this reso
 
 
 ```
-terraform import spine_switch_policy_group.example <Dn>
+terraform import aci_spine_switch_policy_group.example <Dn>
 ```

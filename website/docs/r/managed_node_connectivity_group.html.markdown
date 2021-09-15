@@ -38,5 +38,5 @@ An existing ManagedNodeConnectivityGroup can be [imported][docs-import] into thi
 
 
 ```
-terraform import managed_node_connectivity_group.example <Dn>
+terraform import aci_managed_node_connectivity_group.example <Dn>
 ```

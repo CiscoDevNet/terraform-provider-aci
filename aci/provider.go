@@ -209,6 +209,7 @@ func Provider() *schema.Provider {
 			"aci_managed_node_connectivity_group":          resourceAciManagedNodeConnectivityGroup(),
 			"aci_vpc_domain_policy":                        resourceAciVPCDomainPolicy(),
 			"aci_spine_switch_policy_group":                resourceAciSpineSwitchPolicyGroup(),
+			"aci_recurring_window":                         resourceAciRecurringWindow(),
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
@@ -369,6 +370,7 @@ func Provider() *schema.Provider {
 			"aci_managed_node_connectivity_group":          dataSourceAciManagedNodeConnectivityGroup(),
 			"aci_vpc_domain_policy":                        dataSourceAciVPCDomainPolicy(),
 			"aci_spine_switch_policy_group":                dataSourceAciSpineSwitchPolicyGroup(),
+			"aci_recurring_window":                         dataSourceAciRecurringWindow(),
 		},
 
 		ConfigureFunc: configureClient,
