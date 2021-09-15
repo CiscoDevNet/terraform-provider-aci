@@ -32,5 +32,5 @@ data "aci_vpc_domain_policy" "example" {
 * `id` - Attribute id set to the Dn of the VPC Domain Policy.
 * `annotation` - (Optional) Annotation of object VPC Domain Policy.
 * `name_alias` - (Optional) Name Alias of object VPC Domain Policy.
-* `dead_intvl` - (Optional) The vPC peer dead interval time of object VPC Domain Policy
+* `dead_intvl` - (Optional) The VPC peer dead interval time of object VPC Domain Policy
 * `description` - (Optional) Description of object VPC Domain Policy.
