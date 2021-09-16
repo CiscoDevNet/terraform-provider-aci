@@ -38,6 +38,9 @@ func dataSourceAciAccessSwitchPolicyGroupRead(ctx context.Context, d *schema.Res
 		return diag.FromErr(err)
 	}
 	d.SetId(dn)
-	setAccessSwitchPolicyGroupAttributes(infraAccNodePGrp, d)
+	_, err = setAccessSwitchPolicyGroupAttributes(infraAccNodePGrp, d)
+	if err != nil {
+		return diag.FromErr(err)
+	}
 	return nil
 }

@@ -210,6 +210,7 @@ func Provider() *schema.Provider {
 			"aci_vpc_domain_policy":                        resourceAciVPCDomainPolicy(),
 			"aci_spine_switch_policy_group":                resourceAciSpineSwitchPolicyGroup(),
 			"aci_recurring_window":                         resourceAciRecurringWindow(),
+			"aci_file_remote_path":                         resourceAciRemotePathofaFile(),
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
@@ -371,6 +372,7 @@ func Provider() *schema.Provider {
 			"aci_vpc_domain_policy":                        dataSourceAciVPCDomainPolicy(),
 			"aci_spine_switch_policy_group":                dataSourceAciSpineSwitchPolicyGroup(),
 			"aci_recurring_window":                         dataSourceAciRecurringWindow(),
+			"aci_file_remote_path":                         dataSourceAciRemotePathofaFile(),
 		},
 
 		ConfigureFunc: configureClient,

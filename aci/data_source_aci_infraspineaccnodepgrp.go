@@ -38,6 +38,9 @@ func dataSourceAciSpineSwitchPolicyGroupRead(ctx context.Context, d *schema.Reso
 		return diag.FromErr(err)
 	}
 	d.SetId(dn)
-	setSpineSwitchPolicyGroupAttributes(infraSpineAccNodePGrp, d)
+	_, err = setSpineSwitchPolicyGroupAttributes(infraSpineAccNodePGrp, d)
+	if err != nil {
+		return diag.FromErr(err)
+	}
 	return nil
 }
