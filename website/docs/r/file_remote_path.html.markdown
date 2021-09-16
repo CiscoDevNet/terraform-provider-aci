@@ -42,7 +42,7 @@ resource "aci_file_remote_path" "example" {
 * `identity_private_key_passphrase` - (Optional)  Passphrase given at the identity key creation. Should be set if and only if `identity_private_key_contents` is set.
 * `protocol` - (Optional) Transfer prtocol to be used for data export of object File Remote Path .Allowed values are "ftp", "scp" and "sftp". Default value is "sftp". Type: String. Value "ftp" cannot be set if `auth_type` is equal to "useSshKeyContents".
 * `remote_path` - (Optional) Path where data will reside in the destination of object File Remote Path.
-* `remote_port` - (Optional) Remote port for data export destination of object File Remote Path.
+* `remote_port` - (Optional) Remote port for data export destination of object File Remote Path. Range: "0" - "65535". Default value is "0".
 * `user_name` - (Optional) Username to be used to transfer data to destination of object File Remote Path.
 * `user_passwd` - (Optional) Password. Password to be used to transfer data to destination of object File Remote Path.
 * `relation_file_rs_a_remote_host_to_epg` - (Optional) Represents the relation to a Attachable Target Group (class fvATg). A source relation to the endpoint group through which the remote host is reachable. Type: String.
