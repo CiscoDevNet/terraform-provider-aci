@@ -33,7 +33,7 @@ data "aci_file_remote_path" "example" {
 * `name_alias` - (Optional) Name Alias of object File Remote Path.
 * `auth_type` - (Optional) Authentication Type Choice.
 * `host` - (Optional) Hostname or IP for export destination of object File Remote Path.
-* `protocol` - (Optional) Protocol. Transfer prtocol to be used for data export of object File Remote Path.
+* `protocol` - (Optional) Transfer prtocol to be used for data export of object File Remote Path.
 * `remote_path` - (Optional) Path where data will reside in the destination of object File Remote Path.
 * `remote_port` - (Optional) Remote port for data export destination of object File Remote Path.
 * `user_name` - (Optional) Username to be used to transfer data to destination of object File Remote Path.
