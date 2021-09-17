@@ -38,6 +38,9 @@ func dataSourceAciManagedNodeConnectivityGroupRead(ctx context.Context, d *schem
 		return diag.FromErr(err)
 	}
 	d.SetId(dn)
-	setManagedNodeConnectivityGroupAttributes(mgmtGrp, d)
+	_, err = setManagedNodeConnectivityGroupAttributes(mgmtGrp, d)
+	if err != nil {
+		return diag.FromErr(err)
+	}
 	return nil
 }

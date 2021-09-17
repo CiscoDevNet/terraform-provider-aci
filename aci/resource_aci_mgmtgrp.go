@@ -55,12 +55,15 @@ func getRemoteManagedNodeConnectivityGroup(client *client.Client, dn string) (*m
 	return mgmtGrp, nil
 }
 
-func setManagedNodeConnectivityGroupAttributes(mgmtGrp *models.ManagedNodeConnectivityGroup, d *schema.ResourceData) *schema.ResourceData {
+func setManagedNodeConnectivityGroupAttributes(mgmtGrp *models.ManagedNodeConnectivityGroup, d *schema.ResourceData) (*schema.ResourceData, error) {
 	d.SetId(mgmtGrp.DistinguishedName)
-	mgmtGrpMap, _ := mgmtGrp.ToMap()
+	mgmtGrpMap, err := mgmtGrp.ToMap()
+	if err != nil {
+		return nil, err
+	}
 	d.Set("annotation", mgmtGrpMap["annotation"])
 	d.Set("name", mgmtGrpMap["name"])
-	return d
+	return d, nil
 }
 
 func resourceAciManagedNodeConnectivityGroupImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -71,7 +74,10 @@ func resourceAciManagedNodeConnectivityGroupImport(d *schema.ResourceData, m int
 	if err != nil {
 		return nil, err
 	}
-	schemaFilled := setManagedNodeConnectivityGroupAttributes(mgmtGrp, d)
+	schemaFilled, err := setManagedNodeConnectivityGroupAttributes(mgmtGrp, d)
+	if err != nil {
+		return nil, err
+	}
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 	return []*schema.ResourceData{schemaFilled}, nil
 }

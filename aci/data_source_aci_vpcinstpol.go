@@ -43,6 +43,6 @@ func dataSourceAciVPCDomainPolicyRead(ctx context.Context, d *schema.ResourceDat
 		return diag.FromErr(err)
 	}
 	d.SetId(dn)
-	setVPCDomainPolicyAttributes(vpcInstPol, d)
+	_, err = setVPCDomainPolicyAttributes(vpcInstPol, d)
 	return nil
 }

@@ -51,15 +51,18 @@ func getRemoteVPCDomainPolicy(client *client.Client, dn string) (*models.VPCDoma
 	return vpcInstPol, nil
 }
 
-func setVPCDomainPolicyAttributes(vpcInstPol *models.VPCDomainPolicy, d *schema.ResourceData) *schema.ResourceData {
+func setVPCDomainPolicyAttributes(vpcInstPol *models.VPCDomainPolicy, d *schema.ResourceData) (*schema.ResourceData, error) {
 	d.SetId(vpcInstPol.DistinguishedName)
 	d.Set("description", vpcInstPol.Description)
-	vpcInstPolMap, _ := vpcInstPol.ToMap()
+	vpcInstPolMap, err := vpcInstPol.ToMap()
+	if err != nil {
+		return nil, err
+	}
 	d.Set("annotation", vpcInstPolMap["annotation"])
 	d.Set("dead_intvl", vpcInstPolMap["deadIntvl"])
 	d.Set("name", vpcInstPolMap["name"])
 	d.Set("name_alias", vpcInstPolMap["nameAlias"])
-	return d
+	return d, nil
 }
 
 func resourceAciVPCDomainPolicyImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -70,7 +73,10 @@ func resourceAciVPCDomainPolicyImport(d *schema.ResourceData, m interface{}) ([]
 	if err != nil {
 		return nil, err
 	}
-	schemaFilled := setVPCDomainPolicyAttributes(vpcInstPol, d)
+	schemaFilled, err := setVPCDomainPolicyAttributes(vpcInstPol, d)
+	if err != nil {
+		return nil, err
+	}
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 	return []*schema.ResourceData{schemaFilled}, nil
 }

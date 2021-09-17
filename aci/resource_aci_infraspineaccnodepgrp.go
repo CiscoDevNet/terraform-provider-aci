@@ -76,14 +76,17 @@ func getRemoteSpineSwitchPolicyGroup(client *client.Client, dn string) (*models.
 	return infraSpineAccNodePGrp, nil
 }
 
-func setSpineSwitchPolicyGroupAttributes(infraSpineAccNodePGrp *models.SpineSwitchPolicyGroup, d *schema.ResourceData) *schema.ResourceData {
+func setSpineSwitchPolicyGroupAttributes(infraSpineAccNodePGrp *models.SpineSwitchPolicyGroup, d *schema.ResourceData) (*schema.ResourceData, error) {
 	d.SetId(infraSpineAccNodePGrp.DistinguishedName)
 	d.Set("description", infraSpineAccNodePGrp.Description)
-	infraSpineAccNodePGrpMap, _ := infraSpineAccNodePGrp.ToMap()
+	infraSpineAccNodePGrpMap, err := infraSpineAccNodePGrp.ToMap()
+	if err != nil {
+		return nil, err
+	}
 	d.Set("annotation", infraSpineAccNodePGrpMap["annotation"])
 	d.Set("name", infraSpineAccNodePGrpMap["name"])
 	d.Set("name_alias", infraSpineAccNodePGrpMap["nameAlias"])
-	return d
+	return d, nil
 }
 
 func resourceAciSpineSwitchPolicyGroupImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -94,7 +97,10 @@ func resourceAciSpineSwitchPolicyGroupImport(d *schema.ResourceData, m interface
 	if err != nil {
 		return nil, err
 	}
-	schemaFilled := setSpineSwitchPolicyGroupAttributes(infraSpineAccNodePGrp, d)
+	schemaFilled, err := setSpineSwitchPolicyGroupAttributes(infraSpineAccNodePGrp, d)
+	if err != nil {
+		return nil, err
+	}
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 	return []*schema.ResourceData{schemaFilled}, nil
 }

@@ -140,7 +140,10 @@ func getRemoteAccessSwitchPolicyGroup(client *client.Client, dn string) (*models
 func setAccessSwitchPolicyGroupAttributes(infraAccNodePGrp *models.AccessSwitchPolicyGroup, d *schema.ResourceData) (*schema.ResourceData, error) {
 	d.SetId(infraAccNodePGrp.DistinguishedName)
 	d.Set("description", infraAccNodePGrp.Description)
-	infraAccNodePGrpMap, _ := infraAccNodePGrp.ToMap()
+	infraAccNodePGrpMap, err := infraAccNodePGrp.ToMap()
+	if err != nil {
+		return nil, err
+	}
 	d.Set("annotation", infraAccNodePGrpMap["annotation"])
 	d.Set("name", infraAccNodePGrpMap["name"])
 	d.Set("name_alias", infraAccNodePGrpMap["nameAlias"])
