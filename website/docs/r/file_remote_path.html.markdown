@@ -44,7 +44,7 @@ resource "aci_file_remote_path" "example" {
 * `remote_path` - (Optional) Path where data will reside in the destination of object File Remote Path.
 * `remote_port` - (Optional) Remote port for data export destination of object File Remote Path. Range: "0" - "65535". Default value is "0".
 * `user_name` - (Optional) Username to be used to transfer data to destination of object File Remote Path.
-* `user_passwd` - (Optional) Password. Password to be used to transfer data to destination of object File Remote Path.
+* `user_passwd` - (Optional) Password to be used to transfer data to destination of object File Remote Path. Must be set if `auth_type` is equal to "usePassword".
 * `relation_file_rs_a_remote_host_to_epg` - (Optional) Represents the relation to a Attachable Target Group (class fvATg). A source relation to the endpoint group through which the remote host is reachable. Type: String.
 * `relation_file_rs_a_remote_host_to_epp` - (Optional) Represents the relation to a Relation to Remote Host  Reachability EPP (class fvAREpP). A source relation to the abstract representation of the resolvable endpoint profile. Type: String.
 * `description` - (Optional) Description of object File Remote Path.
