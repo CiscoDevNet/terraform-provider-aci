@@ -21,7 +21,7 @@ resource "aci_file_remote_path" "example" {
   host = "cisco.com"
   protocol = "sftp"
   remote_path = "example_remote_path"
-  remote_port = "example_remote_part"
+  remote_port = "0"
   user_name = "example_user_name"
   user_passwd = "password"
   name_alias = "example_name_alias"
