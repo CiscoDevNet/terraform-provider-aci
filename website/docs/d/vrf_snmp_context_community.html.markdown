@@ -41,5 +41,4 @@ data "aci_vrf_snmp_context_community" "example" {
 * `annotation` - (Optional) Annotation of object SNMP Community.
 * `name_alias` - (Optional) Name Alias of object SNMP Community.
 * `description` - (Optional) Description of object SNMP Community.
-* `name_alias` - (Optional) Name alias of object SNMP Community.
 
