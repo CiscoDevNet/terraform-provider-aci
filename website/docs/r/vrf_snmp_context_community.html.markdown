@@ -24,9 +24,9 @@ Manages ACI SNMP Community
 
 ```hcl
 resource "aci_vrf_snmp_context_community" "example" {
-  name 	      = "test"
+  	vrf_dn      = aci_vrf.test.id
+	name 	      = "test"
 	description = "From Terraform"
-	vrf_dn      = aci_vrf.test.id
 	annotation  = "Test_Annotation"
 	name_alias  = "Test_name_alias"
 }

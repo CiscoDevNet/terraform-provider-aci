@@ -26,7 +26,7 @@ Data source for ACI Recurring Window
 
 ```hcl
 data "aci_recurring_window" "example" {
-  scheduler_dn  = aci_scheduler.example.id
+  scheduler_dn  = aci_trigger_scheduler.example.id
   name  = "example"
 }
 ```
