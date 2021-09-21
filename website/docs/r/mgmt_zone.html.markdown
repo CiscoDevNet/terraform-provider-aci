@@ -78,5 +78,5 @@ An existing InBManagedNodesZone can be [imported][docs-import] into this resourc
 [docs-import]: https://www.terraform.io/docs/import/index.html
 
 ```
-terraform import aci_in_b_managed_nodes_zone.example <Dn>
+terraform import aci_mgmt_zone.example <Dn>
 ```
