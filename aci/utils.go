@@ -156,12 +156,24 @@ func validateColonSeparatedTimeStamp() schema.SchemaValidateFunc {
 			es = append(es, fmt.Errorf("expected type of %s to be string", k))
 			return
 		}
-		log.Printf("v: %v\n", v)
 		res, err := regexp.MatchString(`^(\d)+(:)(\d){0,2}(:)(\d){0,2}(:)(\d){0,2}(.)(\d){3}$`, v)
-		log.Printf("res: %v\n", res)
 		if !res {
 			log.Printf("err: %v\n", err)
-			es = append(es, fmt.Errorf("Invalid Something something"))
+			es = append(es, fmt.Errorf("Invalid Time Stamp"))
+		}
+		return
+	}
+}
+
+func validateRemoteFilePath() schema.SchemaValidateFunc {
+	return func(i interface{}, k string) (s []string, es []error) {
+		v, ok := i.(string)
+		if !ok {
+			es = append(es, fmt.Errorf("expected type of %s to be string", k))
+			return
+		}
+		if len(v) >= 1 && v[0] != '/' {
+			es = append(es, fmt.Errorf("The first character of remote_path should be '/'"))
 		}
 		return
 	}

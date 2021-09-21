@@ -6,36 +6,36 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/container"
 )
+
 const (
-	DnfileRemotePath                = "uni/fabric/path-%s"
-	RnfileRemotePath                = "path-%s"
-	ParentDnfileRemotePath          = "uni/fabric"
+	DnfileRemotePath        = "uni/fabric/path-%s"
+	RnfileRemotePath        = "path-%s"
+	ParentDnfileRemotePath  = "uni/fabric"
 	FileremotepathClassName = "fileRemotePath"
 )
 
 type RemotePathofaFile struct {
 	BaseAttributes
 	NameAliasAttribute
-    RemotePathofaFileAttributes 
+	RemotePathofaFileAttributes
 }
-  
+
 type RemotePathofaFileAttributes struct {
-    Annotation       string `json:",omitempty"`
-    AuthType       string `json:",omitempty"`
-    Host       string `json:",omitempty"`
-    IdentityPrivateKeyContents       string `json:",omitempty"`
-    IdentityPrivateKeyPassphrase       string `json:",omitempty"`
-    // IdentityPublicKeyContents       string `json:",omitempty"`
-    Name       string `json:",omitempty"`
-    Protocol       string `json:",omitempty"`
-    RemotePath       string `json:",omitempty"`
-    RemotePort       string `json:",omitempty"`
-    UserName       string `json:",omitempty"`
-    UserPasswd       string `json:",omitempty"`
-    } 
+	Annotation                   string `json:",omitempty"`
+	AuthType                     string `json:",omitempty"`
+	Host                         string `json:",omitempty"`
+	IdentityPrivateKeyContents   string `json:",omitempty"`
+	IdentityPrivateKeyPassphrase string `json:",omitempty"`
+	Name                         string `json:",omitempty"`
+	Protocol                     string `json:",omitempty"`
+	RemotePath                   string `json:",omitempty"`
+	RemotePort                   string `json:",omitempty"`
+	UserName                     string `json:",omitempty"`
+	UserPasswd                   string `json:",omitempty"`
+}
 
 func NewRemotePathofaFile(fileRemotePathRn, parentDn, description, nameAlias string, fileRemotePathAttr RemotePathofaFileAttributes) *RemotePathofaFile {
-	dn := fmt.Sprintf("%s/%s", parentDn, fileRemotePathRn)  
+	dn := fmt.Sprintf("%s/%s", parentDn, fileRemotePathRn)
 	return &RemotePathofaFile{
 		BaseAttributes: BaseAttributes{
 			DistinguishedName: dn,
@@ -47,7 +47,7 @@ func NewRemotePathofaFile(fileRemotePathRn, parentDn, description, nameAlias str
 		NameAliasAttribute: NameAliasAttribute{
 			NameAlias: nameAlias,
 		},
-        RemotePathofaFileAttributes: fileRemotePathAttr, 
+		RemotePathofaFileAttributes: fileRemotePathAttr,
 	}
 }
 
@@ -63,19 +63,18 @@ func (fileRemotePath *RemotePathofaFile) ToMap() (map[string]string, error) {
 	for key, value := range alias {
 		A(fileRemotePathMap, key, value)
 	}
-    A(fileRemotePathMap, "annotation",fileRemotePath.Annotation)
-    A(fileRemotePathMap, "authType",fileRemotePath.AuthType)
-    A(fileRemotePathMap, "host",fileRemotePath.Host)
-    A(fileRemotePathMap, "identityPrivateKeyContents",fileRemotePath.IdentityPrivateKeyContents)
-    A(fileRemotePathMap, "identityPrivateKeyPassphrase",fileRemotePath.IdentityPrivateKeyPassphrase)
-    // A(fileRemotePathMap, "identityPublicKeyContents",fileRemotePath.IdentityPublicKeyContents)
-    A(fileRemotePathMap, "name",fileRemotePath.Name)
-    A(fileRemotePathMap, "protocol",fileRemotePath.Protocol)
-    A(fileRemotePathMap, "remotePath",fileRemotePath.RemotePath)
-    A(fileRemotePathMap, "remotePort",fileRemotePath.RemotePort)
-    A(fileRemotePathMap, "userName",fileRemotePath.UserName)
-    A(fileRemotePathMap, "userPasswd",fileRemotePath.UserPasswd)
-    return fileRemotePathMap, err
+	A(fileRemotePathMap, "annotation", fileRemotePath.Annotation)
+	A(fileRemotePathMap, "authType", fileRemotePath.AuthType)
+	A(fileRemotePathMap, "host", fileRemotePath.Host)
+	A(fileRemotePathMap, "identityPrivateKeyContents", fileRemotePath.IdentityPrivateKeyContents)
+	A(fileRemotePathMap, "identityPrivateKeyPassphrase", fileRemotePath.IdentityPrivateKeyPassphrase)
+	A(fileRemotePathMap, "name", fileRemotePath.Name)
+	A(fileRemotePathMap, "protocol", fileRemotePath.Protocol)
+	A(fileRemotePathMap, "remotePath", fileRemotePath.RemotePath)
+	A(fileRemotePathMap, "remotePort", fileRemotePath.RemotePort)
+	A(fileRemotePathMap, "userName", fileRemotePath.UserName)
+	A(fileRemotePathMap, "userPasswd", fileRemotePath.UserPasswd)
+	return fileRemotePathMap, err
 }
 
 func RemotePathofaFileFromContainerList(cont *container.Container, index int) *RemotePathofaFile {
@@ -91,20 +90,19 @@ func RemotePathofaFileFromContainerList(cont *container.Container, index int) *R
 		NameAliasAttribute{
 			NameAlias: G(RemotePathofaFileCont, "nameAlias"),
 		},
-        RemotePathofaFileAttributes{
-        Annotation : G(RemotePathofaFileCont, "annotation"),
-        AuthType : G(RemotePathofaFileCont, "authType"),
-        Host : G(RemotePathofaFileCont, "host"),
-        IdentityPrivateKeyContents : G(RemotePathofaFileCont, "identityPrivateKeyContents"),
-        IdentityPrivateKeyPassphrase : G(RemotePathofaFileCont, "identityPrivateKeyPassphrase"),
-        // IdentityPublicKeyContents : G(RemotePathofaFileCont, "identityPublicKeyContents"),
-        Name : G(RemotePathofaFileCont, "name"),
-        Protocol : G(RemotePathofaFileCont, "protocol"),
-        RemotePath : G(RemotePathofaFileCont, "remotePath"),
-        RemotePort : G(RemotePathofaFileCont, "remotePort"),
-        UserName : G(RemotePathofaFileCont, "userName"),
-        UserPasswd : G(RemotePathofaFileCont, "userPasswd"),
-        },
+		RemotePathofaFileAttributes{
+			Annotation:                   G(RemotePathofaFileCont, "annotation"),
+			AuthType:                     G(RemotePathofaFileCont, "authType"),
+			Host:                         G(RemotePathofaFileCont, "host"),
+			IdentityPrivateKeyContents:   G(RemotePathofaFileCont, "identityPrivateKeyContents"),
+			IdentityPrivateKeyPassphrase: G(RemotePathofaFileCont, "identityPrivateKeyPassphrase"),
+			Name:                         G(RemotePathofaFileCont, "name"),
+			Protocol:                     G(RemotePathofaFileCont, "protocol"),
+			RemotePath:                   G(RemotePathofaFileCont, "remotePath"),
+			RemotePort:                   G(RemotePathofaFileCont, "remotePort"),
+			UserName:                     G(RemotePathofaFileCont, "userName"),
+			UserPasswd:                   G(RemotePathofaFileCont, "userPasswd"),
+		},
 	}
 }
 
