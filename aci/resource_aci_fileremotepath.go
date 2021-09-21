@@ -66,9 +66,10 @@ func resourceAciRemotePathofaFile() *schema.Resource {
 				}, false),
 			},
 			"remote_path": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
+				Type:         schema.TypeString,
+				Optional:     true,
+				Computed:     true,
+				ValidateFunc: validateRemoteFilePath(),
 			},
 			"remote_port": &schema.Schema{
 				Type:     schema.TypeString,
