@@ -6,7 +6,7 @@ description: |-
   Data source for ACI SNMP Community
 ---
 
-# aci_snmp_community #
+# aci_vrf_snmp_context_community #
 
 Data source for ACI SNMP Community
 
