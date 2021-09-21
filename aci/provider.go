@@ -212,6 +212,7 @@ func Provider() *schema.Provider {
 			"aci_recurring_window":                         resourceAciRecurringWindow(),
 			"aci_file_remote_path":                         resourceAciRemotePathofaFile(),
 			"aci_vrf_snmp_context_community":               resourceAciSNMPCommunity(),
+			"aci_mgmt_zone":                                resourceAciManagedNodesZone(),
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
@@ -375,6 +376,7 @@ func Provider() *schema.Provider {
 			"aci_recurring_window":                         dataSourceAciRecurringWindow(),
 			"aci_file_remote_path":                         dataSourceAciRemotePathofaFile(),
 			"aci_vrf_snmp_context_community":               dataSourceAciSNMPCommunity(),
+			"aci_mgmt_zone":                                dataSourceAciManagedNodesZone(),
 		},
 
 		ConfigureFunc: configureClient,
