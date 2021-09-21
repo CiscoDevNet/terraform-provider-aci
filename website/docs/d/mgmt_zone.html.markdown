@@ -1,12 +1,12 @@
 ---
 layout: "aci"
-page_title: "ACI: aci_in_b_managed_nodes_zone"
+page_title: "ACI: aci_mgmt_zone"
 sidebar_current: "docs-aci-data-source-in_b_managed_nodes_zone"
 description: |-
   Data source for ACI Management Zone
 ---
 
-# aci_in_b_managed_nodes_zone
+# aci_mgmt_zone
 
 Data source for ACI Management Zone
 
@@ -22,13 +22,13 @@ Data source for ACI Management Zone
 ## Example Usage
 
 ```hcl
-data "aci_in_b_managed_nodes_zone" "example" {
+data "aci_mgmt_zone" "example" {
   managed_node_connectivity_group_dn  = aci_managed_node_connectivity_group.example.id
   type = "in_band"
   name = "inb_zone"
 }
 
-data "aci_in_b_managed_nodes_zone" "example" {
+data "aci_mgmt_zone" "example" {
   managed_node_connectivity_group_dn  = aci_managed_node_connectivity_group.example.id
   type = "out_of_band"
   name = "oob_zone"

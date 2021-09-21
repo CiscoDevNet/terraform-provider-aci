@@ -1,12 +1,12 @@
 ---
 layout: "aci"
-page_title: "ACI: aci_in_b_managed_nodes_zone"
+page_title: "ACI: aci_mgmt_zone"
 sidebar_current: "docs-aci-resource-in_b_managed_nodes_zone"
 description: |-
   Manages ACI Management Zone
 ---
 
-# aci_in_b_managed_nodes_zone
+# aci_mgmt_zone
 
 Manages ACI Management Zone
 
