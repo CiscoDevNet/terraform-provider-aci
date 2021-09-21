@@ -6,7 +6,7 @@ description: |-
   Manages ACI SNMP Community
 ---
 
-# aci_snmp_community #
+# aci_vrf_snmp_context_community #
 
 Manages ACI SNMP Community
 
@@ -47,5 +47,5 @@ An existing SNMPCommunity can be [imported][docs-import] into this resource via 
 
 
 ```
-terraform import aci_snmp_community.example <Dn>
+terraform import aci_vrf_snmp_context_community.example <Dn>
 ```
