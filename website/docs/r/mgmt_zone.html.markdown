@@ -17,7 +17,7 @@ Manages ACI Management Zone
 
 ## GUI Information
 
-- `Location` -
+- `Location` - Tenants -> mgmt -> Managed Node Connectivity Groups -> Create Managed Node Connectivity Group -> Policy
 
 ## Example Usage
 
