@@ -12,8 +12,8 @@ Data source for ACI Management Zone
 
 ## API Information
 
-- `Class` - mgmtInBZone
-- `Distinguished Named` - uni/infra/funcprof/grp-{name}/inbzone
+- `Class` - mgmtInBZone and mgmtOoBZone
+- `Distinguished Named` - uni/infra/funcprof/grp-{name}/inbzone and uni/infra/funcprof/grp-{name}/oobzone
 
 ## GUI Information
 

@@ -12,8 +12,8 @@ Manages ACI Management Zone
 
 ## API Information
 
-- `Class` - mgmtInBZone
-- `Distinguished Named` - uni/infra/funcprof/grp-{name}/inbzone
+- `Class` - mgmtInBZone and mgmtOoBZone
+- `Distinguished Named` - uni/infra/funcprof/grp-{name}/inbzone and uni/infra/funcprof/grp-{name}/oobzone
 
 ## GUI Information
 
@@ -23,7 +23,7 @@ Manages ACI Management Zone
 
 ```hcl
 resource "aci_mgmt_zone" "example" {
-  managed_node_connectivity_group_dn  = data.aci_managed_node_connectivity_group.example.id
+  managed_node_connectivity_group_dn  = aci_managed_node_connectivity_group.example.id
   type = "in_band"
   name = "inb_zone"
   name_alias = "zone_tag"
