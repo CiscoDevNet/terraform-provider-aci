@@ -14,7 +14,7 @@ func dataSourceAciSNMPCommunity() *schema.Resource {
 		ReadContext:   dataSourceAciSNMPCommunityReadContext,
 		SchemaVersion: 1,
 		Schema: AppendBaseAttrSchema(AppendNameAliasAttrSchema(map[string]*schema.Schema{
-			"vrf_dn": &schema.Schema{
+			"vrf_snmp_context_dn": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
 			},
@@ -29,9 +29,9 @@ func dataSourceAciSNMPCommunity() *schema.Resource {
 func dataSourceAciSNMPCommunityReadContext(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	aciClient := m.(*client.Client)
 	name := d.Get("name").(string)
-	VRFDn := d.Get("vrf_dn").(string)
-	rn := fmt.Sprintf("snmpctx/community-%s", name)
-	dn := fmt.Sprintf("%s/%s", VRFDn, rn)
+	VRFSNMPCtxDn := d.Get("vrf_snmp_context_dn").(string)
+	rn := fmt.Sprintf("community-%s", name)
+	dn := fmt.Sprintf("%s/%s", VRFSNMPCtxDn, rn)
 	snmpCommunityP, err := getRemoteSNMPCommunity(aciClient, dn)
 	if err != nil {
 		return diag.FromErr(err)

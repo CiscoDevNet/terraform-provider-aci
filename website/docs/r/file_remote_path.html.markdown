@@ -40,7 +40,7 @@ resource "aci_file_remote_path" "example" {
 * `auth_type` - (Optional) Authentication Type Choice. Allowed values are "usePassword" and "useSshKeyContents". Default value is "usePassword". Type: String.
 * `identity_private_key_contents` - (Optional) SSH Private Key File contents for datatransfer. Must be set if `auth_type` is equal to "useSshKeyContents".
 * `identity_private_key_passphrase` - (Optional)  Passphrase given at the identity key creation. Should be set if and only if `identity_private_key_contents` is set.
-* `protocol` - (Optional) Transfer prtocol to be used for data export of object File Remote Path .Allowed values are "ftp", "scp" and "sftp". Default value is "sftp". Type: String. Value "ftp" cannot be set if `auth_type` is equal to "useSshKeyContents".
+* `protocol` - (Optional) Transfer protocol to be used for data export of object File Remote Path .Allowed values are "ftp", "scp" and "sftp". Default value is "sftp". Type: String. Value "ftp" cannot be set if `auth_type` is equal to "useSshKeyContents".
 * `remote_path` - (Optional) Path where data will reside in the destination of object File Remote Path(The first character of remote_path should be '/').
 * `remote_port` - (Optional) Remote port for data export destination of object File Remote Path. Range: "0" - "65535". Default value is "0".
 * `user_name` - (Optional) Username to be used to transfer data to destination of object File Remote Path.

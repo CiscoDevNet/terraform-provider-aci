@@ -42,7 +42,7 @@ resource "aci_node_mgmt_epg" "example2" {
 }
 
 resource "aci_mgmt_zone" "example" {
-  managed_node_connectivity_group_dn  = data.aci_managed_node_connectivity_group.example.id
+  managed_node_connectivity_group_dn  = aci_managed_node_connectivity_group.example.id
   type = "in_band"
   name = "inb_zone"
   name_alias = "zone_tag"
@@ -56,7 +56,7 @@ resource "aci_mgmt_zone" "example" {
 }
 
 resource "aci_mgmt_zone" "example2" {
-  managed_node_connectivity_group_dn  = data.aci_managed_node_connectivity_group.example.id
+  managed_node_connectivity_group_dn  = aci_managed_node_connectivity_group.example.id
   type = "out_of_band"
   name = "oob_zone"
   name_alias = "zone_tag"
