@@ -13,10 +13,10 @@ provider "aci" {
     insecure = true
 }
 
-resource "aci_snmp_community" "foosnmp_community" {
-	name 		= "test"
+resource "aci_vrf_snmp_context_community" "example" {
+	vrf_snmp_context_dn = aci_vrf_snmp_context.test.id
+	name = "test"
 	description = "From Terraform"
-	vrf_dn = aci_vrf.test.id
 	annotation = "Test_Annotation"
 	name_alias = "Test_name_alias"
 }

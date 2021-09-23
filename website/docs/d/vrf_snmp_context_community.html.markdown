@@ -26,14 +26,14 @@ Data source for ACI SNMP Community
 
 ```hcl
 data "aci_vrf_snmp_context_community" "example" {
-  vrf_dn  = aci_vrf.example.id
+  vrf_snmp_context_dn  = aci_vrf_snmp_context.example.id
   name  = "example"
 }
 ```
 
 ## Argument Reference ##
 
-* `vrf_dn` - (Required) Distinguished name of parent VRF object.
+* `vrf_snmp_context_dn` - (Required) Distinguished name of parent VRF SNMP Context object.
 * `name` - (Required) name of object SNMP Community.
 
 ## Attribute Reference ##

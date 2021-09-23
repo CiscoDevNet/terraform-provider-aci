@@ -24,7 +24,7 @@ func resourceAciSNMPCommunity() *schema.Resource {
 
 		SchemaVersion: 1,
 		Schema: AppendBaseAttrSchema(AppendNameAliasAttrSchema(map[string]*schema.Schema{
-			"vrf_dn": &schema.Schema{
+			"vrf_snmp_context_dn": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
 				ForceNew: true,
@@ -60,7 +60,7 @@ func setSNMPCommunityAttributes(snmpCommunityP *models.SNMPCommunity, d *schema.
 	d.Set("name", snmpCommunityPMap["name"])
 	d.Set("name_alias", snmpCommunityPMap["nameAlias"])
 	d.Set("annotation", snmpCommunityPMap["annotation"])
-	d.Set("vrf_dn", GetParentDn(d.Id(), fmt.Sprintf("/snmpctx/community-%s", snmpCommunityPMap["name"])))
+	d.Set("vrf_snmp_context_dn", GetParentDn(d.Id(), fmt.Sprintf("/community-%s", snmpCommunityPMap["name"])))
 
 	return d, nil
 }
@@ -86,7 +86,7 @@ func resourceAciSNMPCommunityCreate(ctx context.Context, d *schema.ResourceData,
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
 	name := d.Get("name").(string)
-	VRFDn := d.Get("vrf_dn").(string)
+	VRFSNMPCtxDn := d.Get("vrf_snmp_context_dn").(string)
 
 	snmpCommunityPAttr := models.SNMPCommunityAttributes{}
 	nameAlias := ""
@@ -102,7 +102,7 @@ func resourceAciSNMPCommunityCreate(ctx context.Context, d *schema.ResourceData,
 	if Name, ok := d.GetOk("name"); ok {
 		snmpCommunityPAttr.Name = Name.(string)
 	}
-	snmpCommunityP := models.NewSNMPCommunity(fmt.Sprintf("snmpctx/community-%s", name), VRFDn, desc, nameAlias, snmpCommunityPAttr)
+	snmpCommunityP := models.NewSNMPCommunity(fmt.Sprintf("community-%s", name), VRFSNMPCtxDn, desc, nameAlias, snmpCommunityPAttr)
 
 	err := aciClient.Save(snmpCommunityP)
 	if err != nil {
@@ -119,7 +119,7 @@ func resourceAciSNMPCommunityUpdate(ctx context.Context, d *schema.ResourceData,
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
 	name := d.Get("name").(string)
-	VRFDn := d.Get("vrf_dn").(string)
+	VRFSNMPCtxDn := d.Get("vrf_snmp_context_dn").(string)
 	snmpCommunityPAttr := models.SNMPCommunityAttributes{}
 	nameAlias := ""
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
@@ -135,7 +135,7 @@ func resourceAciSNMPCommunityUpdate(ctx context.Context, d *schema.ResourceData,
 	if Name, ok := d.GetOk("name"); ok {
 		snmpCommunityPAttr.Name = Name.(string)
 	}
-	snmpCommunityP := models.NewSNMPCommunity(fmt.Sprintf("snmpctx/community-%s", name), VRFDn, desc, nameAlias, snmpCommunityPAttr)
+	snmpCommunityP := models.NewSNMPCommunity(fmt.Sprintf("community-%s", name), VRFSNMPCtxDn, desc, nameAlias, snmpCommunityPAttr)
 
 	snmpCommunityP.Status = "modified"
 	err := aciClient.Save(snmpCommunityP)
