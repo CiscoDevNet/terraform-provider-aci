@@ -110,17 +110,17 @@ func setContractConsumerAttributes(fvRsCons *models.ContractConsumer, d *schema.
 		d.Set("application_epg_dn", "")
 	}
 
-	// d.Set("application_epg_dn", GetParentDn(fvRsCons.DistinguishedName))
 	fvRsConsMap, err := fvRsCons.ToMap()
 	if err != nil {
 		return d, err
 	}
+	d.Set("application_epg_dn", GetParentDn(fvRsCons.DistinguishedName, fmt.Sprintf("/rsprov-%s", fvRsConsMap["tnVzBrCPName"])))
 
 	tnVzBrCPName := GetMOName(d.Get("contract_dn").(string))
 	if tnVzBrCPName != fvRsConsMap["tnVzBrCPName"] {
 		d.Set("contract_dn", "")
 	}
-
+	d.Set("contract_dn", GetParentDn(fvRsCons.DistinguishedName, fmt.Sprintf("/rsprov-%s", fvRsConsMap["tnVzBrCPName"])))
 	d.Set("annotation", fvRsConsMap["annotation"])
 	d.Set("prio", fvRsConsMap["prio"])
 	return d, nil
@@ -138,11 +138,12 @@ func setContractProviderAttributes(fvRsProv *models.ContractProvider, d *schema.
 	if err != nil {
 		return d, err
 	}
+	d.Set("application_epg_dn", GetParentDn(fvRsProv.DistinguishedName, fmt.Sprintf("/rsprov-%s", fvRsProvMap["tnVzBrCPName"])))
 	tnVzBrCPName := GetMOName(d.Get("contract_dn").(string))
 	if tnVzBrCPName != fvRsProvMap["tnVzBrCPName"] {
 		d.Set("contract_dn", "")
 	}
-
+	d.Set("contract_dn", GetParentDn(fvRsProv.DistinguishedName, fmt.Sprintf("/rsprov-%s", fvRsProvMap["tnVzBrCPName"])))
 	d.Set("annotation", fvRsProvMap["annotation"])
 	d.Set("match_t", fvRsProvMap["matchT"])
 	d.Set("prio", fvRsProvMap["prio"])
@@ -254,7 +255,7 @@ func resourceAciContractProviderCreate(ctx context.Context, d *schema.ResourceDa
 		d.SetId(fvRsCons.DistinguishedName)
 
 	} else {
-		return diag.Errorf("Contract Type: Value must be from [provider, consumer]")
+		return diag.Errorf(fmt.Sprintf("Contract Type: Value must be from [provider, consumer] = %s", contractType))
 	}
 
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
@@ -367,7 +368,7 @@ func resourceAciContractProviderRead(ctx context.Context, d *schema.ResourceData
 		}
 
 	} else {
-		return diag.Errorf("Contract Type: Value must be from [provider, consumer]")
+		return diag.Errorf(fmt.Sprintf("Contract Type: Value must be from [provider, consumer] = %s", contractType))
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
