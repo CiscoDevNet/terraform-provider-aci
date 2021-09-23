@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
@@ -20,7 +21,7 @@ func resourceAciManagedNodesZone() *schema.Resource {
 		DeleteContext: resourceAciManagedNodesZoneDelete,
 
 		Importer: &schema.ResourceImporter{
-			State: resourceAciInBManagedNodesZoneImport,
+			State: resourceAciManagedNodesZoneImport,
 		},
 
 		SchemaVersion: 1,
@@ -86,10 +87,18 @@ func resourceAciManagedNodesZone() *schema.Resource {
 
 func resourceAciManagedNodesZoneImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
 	log.Printf("[DEBUG] %s: Beginning Import", d.Id())
-	if d.Get("type").(string) == "in_band" {
+
+	splitStr := strings.Split(d.Id(), "/")
+	rn := splitStr[len(splitStr)-1]
+	if rn == "inbzone" {
+		d.Set("type", "in_band")
 		return resourceAciInBManagedNodesZoneImport(d, m)
+	} else if rn == "oobzone" {
+		d.Set("type", "out_of_band")
+		return resourceAciOOBManagedNodesZoneImport(d, m)
 	}
-	return resourceAciOOBManagedNodesZoneImport(d, m)
+
+	return nil, fmt.Errorf("Applied DN doesn't belong to mgmtInBZone | mgmtOoBZone")
 }
 
 func resourceAciManagedNodesZoneCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
