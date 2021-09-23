@@ -92,9 +92,11 @@ func resourceAciManagedNodesZoneImport(d *schema.ResourceData, m interface{}) ([
 	rn := splitStr[len(splitStr)-1]
 	if rn == "inbzone" {
 		d.Set("type", "in_band")
+		d.Set("managed_node_connectivity_group_dn", GetParentDn(d.Id(), "/inbzone"))
 		return resourceAciInBManagedNodesZoneImport(d, m)
 	} else if rn == "oobzone" {
 		d.Set("type", "out_of_band")
+		d.Set("managed_node_connectivity_group_dn", GetParentDn(d.Id(), "/oobzone"))
 		return resourceAciOOBManagedNodesZoneImport(d, m)
 	}
 
