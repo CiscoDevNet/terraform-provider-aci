@@ -24,7 +24,7 @@ Manages ACI SNMP Community
 
 ```hcl
 resource "aci_vrf_snmp_context_community" "example" {
-	vrf_dn = aci_vrf.test.id
+	vrf_snmp_context_dn = aci_vrf_snmp_context.test.id
 	name = "test"
 	description = "From Terraform"
 	annotation = "Test_Annotation"
@@ -34,7 +34,7 @@ resource "aci_vrf_snmp_context_community" "example" {
 
 ## Argument Reference ##
 
-* `vrf_dn` - (Required) Distinguished name of parent VRF object.
+* `vrf_snmp_context_dn` - (Required) Distinguished name of parent VRF SNMP Context object.
 * `name` - (Required) Name of object SNMP Community.
 * `annotation` - (Optional) Annotation of object SNMP Community.
 * `description` - (Optional) Description of object SNMP Community.
