@@ -109,7 +109,7 @@ func setAnyAttributes(vzAny *models.Any, d *schema.ResourceData) (*schema.Resour
 	if err != nil {
 		return d, err
 	}
-
+	d.Set("vrf_dn", GetParentDn(vzAny.DistinguishedName, fmt.Sprintf("/any")))
 	d.Set("annotation", vzAnyMap["annotation"])
 	d.Set("match_t", vzAnyMap["matchT"])
 	d.Set("name_alias", vzAnyMap["nameAlias"])

@@ -27,6 +27,7 @@ func resourceAciEndpointSecurityGroup() *schema.Resource {
 
 		SchemaVersion: 1,
 		Schema: AppendBaseAttrSchema(AppendNameAliasAttrSchema(map[string]*schema.Schema{
+
 			"application_profile_dn": {
 				Type:     schema.TypeString,
 				Required: true,
@@ -229,6 +230,7 @@ func setEndpointSecurityGroupAttributes(fvESg *models.EndpointSecurityGroup, d *
 	if err != nil {
 		return d, err
 	}
+	d.Set("application_profile_dn", GetParentDn(fvESg.DistinguishedName, fmt.Sprintf("/esg-sample")))
 	d.Set("annotation", fvESgMap["annotation"])
 	d.Set("flood_on_encap", fvESgMap["floodOnEncap"])
 	d.Set("match_t", fvESgMap["matchT"])
