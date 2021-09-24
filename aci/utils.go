@@ -175,7 +175,7 @@ func validateNameAttribute() schema.SchemaValidateFunc {
 
 		c := strings.Contains(v, " ")
 		if c {
-			es = append(es, fmt.Errorf("Invalid Name, contains space in it"))
+			es = append(es, fmt.Errorf("property name failed validation for '%s'", v))
 		}
 		return
 	}
