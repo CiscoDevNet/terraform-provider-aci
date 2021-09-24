@@ -14,7 +14,7 @@ Data source for ACI Fabric Node
 * `Distinguished Named` - topology/pod-{id}/node-{id}
 
 ## GUI Information ##
-* `Location` - Go to help & tool > object store browser > enter fabricNode in Class or DN or URL field then click Run Query
+* `Location` - Go to help & tool -> object store browser -> enter fabricNode in Class or DN or URL field then click Run Query
 
 ## Example Usage ##
 

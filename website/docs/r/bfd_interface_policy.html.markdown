@@ -16,7 +16,7 @@ Manages ACI BFD Interface Policy
 
 ## GUI Information ##
 
-* `Location` - Tenant > Policies> Protocol > BFD
+* `Location` - Tenant -> Policies -> Protocol -> BFD
 
 ## Example Usage ##
 
