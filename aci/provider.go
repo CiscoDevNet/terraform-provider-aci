@@ -207,6 +207,15 @@ func Provider() *schema.Provider {
 			"aci_endpoint_security_group_tag_selector":     resourceAciEndpointSecurityGroupTagSelector(),
 			"aci_bfd_interface_policy":                     resourceAciBFDInterfacePolicy(),
 			"aci_l3_interface_policy":                      resourceAciL3InterfacePolicy(),
+			"aci_access_switch_policy_group":               resourceAciAccessSwitchPolicyGroup(),
+			"aci_managed_node_connectivity_group":          resourceAciManagedNodeConnectivityGroup(),
+			"aci_vpc_domain_policy":                        resourceAciVPCDomainPolicy(),
+			"aci_spine_switch_policy_group":                resourceAciSpineSwitchPolicyGroup(),
+			"aci_recurring_window":                         resourceAciRecurringWindow(),
+			"aci_file_remote_path":                         resourceAciRemotePathofaFile(),
+			"aci_vrf_snmp_context_community":               resourceAciSNMPCommunity(),
+			"aci_mgmt_zone":                                resourceAciManagedNodesZone(),
+			"aci_vrf_snmp_context":                         resourceAciSNMPContextProfile(),
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
@@ -360,14 +369,20 @@ func Provider() *schema.Provider {
 			"aci_l3out_vpc_member":                         dataSourceAciL3outVPCMember(),
 			"aci_endpoint_security_group_selector":         dataSourceAciEndpointSecurityGroupSelector(),
 			"aci_endpoint_security_group":                  dataSourceAciEndpointSecurityGroup(),
-<<<<<<< HEAD
 			"aci_endpoint_security_group_epg_selector":     dataSourceAciEndpointSecurityGroupEPgSelector(),
 			"aci_endpoint_security_group_tag_selector":     dataSourceAciEndpointSecurityGroupTagSelector(),
-=======
 			"aci_bfd_interface_policy":                     dataSourceAciBFDInterfacePolicy(),
 			"aci_l3_interface_policy":                      dataSourceAciL3InterfacePolicy(),
 			"aci_fabric_node":                              dataSourceAciFabricNodeOrg(),
->>>>>>> 43307ba (S1 dev (#578))
+			"aci_access_switch_policy_group":               dataSourceAciAccessSwitchPolicyGroup(),
+			"aci_managed_node_connectivity_group":          dataSourceAciManagedNodeConnectivityGroup(),
+			"aci_vpc_domain_policy":                        dataSourceAciVPCDomainPolicy(),
+			"aci_spine_switch_policy_group":                dataSourceAciSpineSwitchPolicyGroup(),
+			"aci_recurring_window":                         dataSourceAciRecurringWindow(),
+			"aci_file_remote_path":                         dataSourceAciRemotePathofaFile(),
+			"aci_vrf_snmp_context_community":               dataSourceAciSNMPCommunity(),
+			"aci_mgmt_zone":                                dataSourceAciManagedNodesZone(),
+			"aci_vrf_snmp_context":                         dataSourceAciSNMPContextProfile(),
 		},
 
 		ConfigureFunc: configureClient,

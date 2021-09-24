@@ -101,7 +101,10 @@ func dataSourceAciFabricNodeReadOrg(ctx context.Context, d *schema.ResourceData,
 		return diag.FromErr(err)
 	}
 	d.SetId(dn)
-	setFabricNodeAttributesOrg(fabricNode, d)
+	_, err = setFabricNodeAttributesOrg(fabricNode, d)
+	if err != nil {
+		return diag.FromErr(err)
+	}
 	return nil
 }
 
@@ -120,14 +123,17 @@ func getRemoteFabricNodeOrg(client *client.Client, dn string) (*models.TopologyF
 	return fabricNode, nil
 }
 
-func setFabricNodeAttributesOrg(fabricNode *models.TopologyFabricNode, d *schema.ResourceData) *schema.ResourceData {
+func setFabricNodeAttributesOrg(fabricNode *models.TopologyFabricNode, d *schema.ResourceData) (*schema.ResourceData, error) {
 	d.SetId(fabricNode.DistinguishedName)
 
 	dn := d.Id()
 	if dn != fabricNode.DistinguishedName {
 		d.Set("fabric_pod_dn", "")
 	}
-	fabricNodeMap, _ := fabricNode.ToMap()
+	fabricNodeMap, err := fabricNode.ToMap()
+	if err != nil {
+		return nil, err
+	}
 
 	d.Set("fabric_pod_dn", GetParentDn(dn, fmt.Sprintf("/node-%s", fabricNodeMap["id"])))
 
@@ -143,5 +149,5 @@ func setFabricNodeAttributesOrg(fabricNode *models.TopologyFabricNode, d *schema
 	d.Set("name", fabricNodeMap["name"])
 	d.Set("node_type", fabricNodeMap["nodeType"])
 	d.Set("role", fabricNodeMap["role"])
-	return d
+	return d, nil
 }

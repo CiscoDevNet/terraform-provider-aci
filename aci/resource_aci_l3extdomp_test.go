@@ -64,6 +64,7 @@ func testAccCheckAciL3DomainProfileConfig_basic(description string) string {
 		name  = "example"
 		annotation  = "example"
 		name_alias  = "example"
+		description = "%s"
 	}
 	`, description)
 }
