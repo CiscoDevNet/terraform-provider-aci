@@ -58,6 +58,9 @@ func dataSourceAciL3InterfacePolicyRead(ctx context.Context, d *schema.ResourceD
 		return diag.FromErr(err)
 	}
 	d.SetId(dn)
-	setL3InterfacePolicyAttributes(l3IfPol, d)
+	_, err = setL3InterfacePolicyAttributes(l3IfPol, d)
+	if err != nil {
+		return diag.FromErr(err)
+	}
 	return nil
 }

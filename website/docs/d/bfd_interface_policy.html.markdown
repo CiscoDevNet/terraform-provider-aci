@@ -14,7 +14,7 @@ Data source for ACI BFD Interface Policy
 * `Distinguished Named` - uni/tn-{name}/bfdIfPol-{name}
 
 ## GUI Information ##
-* `Location` - Tenant > Policies> Protocol > BFD
+* `Location` - Tenant -> Policies -> Protocol -> BFD
 
 ## Example Usage ##
 

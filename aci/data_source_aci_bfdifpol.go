@@ -100,6 +100,9 @@ func dataSourceAciBFDInterfacePolicyRead(ctx context.Context, d *schema.Resource
 		return diag.FromErr(err)
 	}
 	d.SetId(dn)
-	setBFDInterfacePolicyAttributes(bfdIfPol, d)
+	_, err = setBFDInterfacePolicyAttributes(bfdIfPol, d)
+	if err != nil {
+		return diag.FromErr(err)
+	}
 	return nil
 }
