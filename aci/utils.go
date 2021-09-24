@@ -165,6 +165,22 @@ func validateColonSeparatedTimeStamp() schema.SchemaValidateFunc {
 	}
 }
 
+func validateNameAttribute() schema.SchemaValidateFunc {
+	return func(i interface{}, k string) (s []string, es []error) {
+		v, ok := i.(string)
+		if !ok {
+			es = append(es, fmt.Errorf("expected type of %s to be string", k))
+			return
+		}
+
+		c := strings.Contains(v, " ")
+		if c {
+			es = append(es, fmt.Errorf("Invalid Name, contains space in it"))
+		}
+		return
+	}
+}
+
 func validateRemoteFilePath() schema.SchemaValidateFunc {
 	return func(i interface{}, k string) (s []string, es []error) {
 		v, ok := i.(string)
