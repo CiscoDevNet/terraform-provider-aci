@@ -69,7 +69,10 @@ func getRemoteL3InterfacePolicy(client *client.Client, dn string) (*models.L3Int
 func setL3InterfacePolicyAttributes(l3IfPol *models.L3InterfacePolicy, d *schema.ResourceData) (*schema.ResourceData, error) {
 	d.SetId(l3IfPol.DistinguishedName)
 	d.Set("description", l3IfPol.Description)
-	l3IfPolMap, _ := l3IfPol.ToMap()
+	l3IfPolMap, err := l3IfPol.ToMap()
+	if err != nil {
+		return nil, err
+	}
 	d.Set("name", l3IfPolMap["name"])
 	d.Set("annotation", l3IfPolMap["annotation"])
 	d.Set("bfd_isis", l3IfPolMap["bfdIsis"])

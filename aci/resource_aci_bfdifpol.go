@@ -121,7 +121,11 @@ func setBFDInterfacePolicyAttributes(bfdIfPol *models.BFDInterfacePolicy, d *sch
 	if dn != bfdIfPol.DistinguishedName {
 		d.Set("tenant_dn", "")
 	}
-	bfdIfPolMap, _ := bfdIfPol.ToMap()
+	bfdIfPolMap, err := bfdIfPol.ToMap()
+
+	if err != nil {
+		return nil, err
+	}
 
 	d.Set("tenant_dn", GetParentDn(dn, fmt.Sprintf("/bfdIfPol-%s", bfdIfPolMap["name"])))
 
