@@ -19,9 +19,7 @@ Data source for ACI Endpoint Control
 
 ## Example Usage ##
 ```hcl
-data "aci_endpoint_control_policy" "example" {
-  name  = "example"
-}
+data "aci_endpoint_control_policy" "example" {}
 ```
 
 ## Argument Reference ##
