@@ -214,6 +214,10 @@ func Provider() *schema.Provider {
 			"aci_vrf_snmp_context_community":               resourceAciSNMPCommunity(),
 			"aci_mgmt_zone":                                resourceAciManagedNodesZone(),
 			"aci_vrf_snmp_context":                         resourceAciSNMPContextProfile(),
+			"aci_endpoint_ip_aging_profile":                resourceAciIPAgingPolicy(),
+			"aci_mgmt_preference":                          resourceAciMgmtconnectivitypreference(),
+			"aci_endpoint_controls":                        resourceAciEndpointControlPolicy(),
+			"aci_fabric_node_control":                      resourceAciFabricNodeControl(),
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
@@ -379,6 +383,10 @@ func Provider() *schema.Provider {
 			"aci_vrf_snmp_context_community":               dataSourceAciSNMPCommunity(),
 			"aci_mgmt_zone":                                dataSourceAciManagedNodesZone(),
 			"aci_vrf_snmp_context":                         dataSourceAciSNMPContextProfile(),
+			"aci_endpoint_ip_aging_profile":                dataSourceAciIPAgingPolicy(),
+			"aci_mgmt_preference":                          dataSourceAciMgmtconnectivitypreference(),
+			"aci_endpoint_controls":                        dataSourceAciEndpointControlPolicy(),
+			"aci_fabric_node_control":                      dataSourceAciFabricNodeControl(),
 		},
 
 		ConfigureFunc: configureClient,
