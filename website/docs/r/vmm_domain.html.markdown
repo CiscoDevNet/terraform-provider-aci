@@ -37,7 +37,19 @@ Manages ACI VMM Domain
 	} 
 ```
 ## Argument Reference ##
-* `provider_profile_dn` - (Required) Distinguished name of parent ProviderProfile object.
+* `provider_profile_dn` - (Required) Distinguished name of parent Provider Profile object.
+  * Here is a map of vendor and Provide Profile object dn for reference.
+
+		| Vendor         | provider_profile_dn     |
+		| -----------    | -----------             |
+		| Microsoft      |  uni/vmmp-Microsoft     |
+		| CloudFoundry   | uni/vmmp-CloudFoundry   |
+		| OpenShift      | uni/vmmp-OpenShift      |
+		| OpenStack      | uni/vmmp-OpenStack      |
+		| VMware         | uni/vmmp-VMware         |
+		| Kubernetes     | uni/vmmp-Kubernetes     |
+		| Redhat         |  uni/vmmp-Redhat        |
+
 * `name` - (Required) name of Object vmm_domain.
 * `access_mode` - (Optional) access_mode for object vmm_domain. Allowed values are "read-write" and "read-only". Default is "read-write".
 * `annotation` - (Optional) annotation for object vmm_domain.
