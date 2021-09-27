@@ -82,7 +82,7 @@ func setCloudCIDRPoolAttributes(cloudCidr *models.CloudCIDRPool, d *schema.Resou
 	if err != nil {
 		return d, err
 	}
-	d.Set("cloud_context_profile_dn", GetParentDn(cloudCidr.DistinguishedName, fmt.Sprintf("/cidr-[%s]", cloudCidrMap["addr"])))
+	d.Set("cloud_context_profile_dn", GetParentDn(dn, fmt.Sprintf("/cidr-[%s]", cloudCidrMap["addr"])))
 	d.Set("addr", cloudCidrMap["addr"])
 	d.Set("annotation", cloudCidrMap["annotation"])
 	d.Set("name_alias", cloudCidrMap["nameAlias"])

@@ -103,7 +103,7 @@ func setBGPTimersPolicyAttributes(bgpCtxPol *models.BGPTimersPolicy, d *schema.R
 	if err != nil {
 		return d, err
 	}
-
+	d.Set("tenant_dn", GetParentDn(dn, fmt.Sprintf("/bgpCtxP-%s", bgpCtxPolMap["name"])))
 	d.Set("name", bgpCtxPolMap["name"])
 
 	d.Set("annotation", bgpCtxPolMap["annotation"])

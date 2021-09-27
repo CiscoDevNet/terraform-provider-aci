@@ -142,6 +142,7 @@ func setSubnetAttributes(fvSubnet *models.Subnet, d *schema.ResourceData) (*sche
 		return d, err
 	}
 
+	d.Set("parent_dn", GetParentDn(dn, fmt.Sprintf("/subnet-[%s]", fvSubnetMap["ip"])))
 	d.Set("ip", fvSubnetMap["ip"])
 
 	d.Set("annotation", fvSubnetMap["annotation"])

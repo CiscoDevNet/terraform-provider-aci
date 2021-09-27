@@ -254,7 +254,6 @@ func setApplicationEPGAttributes(fvAEPg *models.ApplicationEPG, d *schema.Resour
 	dn := d.Id()
 	d.SetId(fvAEPg.DistinguishedName)
 	d.Set("description", fvAEPg.Description)
-	// d.Set("application_profile_dn", GetParentDn(fvAEPg.DistinguishedName))
 	if dn != fvAEPg.DistinguishedName {
 		d.Set("application_profile_dn", "")
 	}
@@ -262,6 +261,9 @@ func setApplicationEPGAttributes(fvAEPg *models.ApplicationEPG, d *schema.Resour
 	if err != nil {
 		return d, err
 	}
+
+	d.Set("application_profile_dn", GetParentDn(dn, fmt.Sprintf("/epg-%s", fvAEPgMap["name"])))
+
 	d.Set("name", fvAEPgMap["name"])
 
 	d.Set("annotation", fvAEPgMap["annotation"])

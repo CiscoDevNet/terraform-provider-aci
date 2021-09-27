@@ -71,8 +71,9 @@ func setCloudApplicationcontainerAttributes(cloudApp *models.CloudApplicationcon
 	if err != nil {
 		return d, err
 	}
+	d.Set("tenant_dn", GetParentDn(dn, fmt.Sprintf("/cloudapp-%s", cloudAppMap["name"])))
+
 	d.Set("name", cloudAppMap["name"])
-	d.Set("tenant_dn", GetParentDn(cloudApp.DistinguishedName, fmt.Sprintf("/cloudapp-%s", cloudAppMap["name"])))
 
 	d.Set("annotation", cloudAppMap["annotation"])
 	d.Set("name_alias", cloudAppMap["nameAlias"])

@@ -76,6 +76,7 @@ func setImportedContractAttributes(vzCPIf *models.ImportedContract, d *schema.Re
 	if err != nil {
 		return d, err
 	}
+	d.Set("tenant_dn", GetParentDn(dn, fmt.Sprintf("/cif-%s", vzCPIfMap["name"])))
 
 	d.Set("name", vzCPIfMap["name"])
 

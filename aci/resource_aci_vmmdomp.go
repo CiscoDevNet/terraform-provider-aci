@@ -284,7 +284,7 @@ func getRemoteVMMDomain(client *client.Client, dn string) (*models.VMMDomain, er
 func setVMMDomainAttributes(vmmDomP *models.VMMDomain, d *schema.ResourceData) (*schema.ResourceData, error) {
 	dn := d.Id()
 	d.SetId(vmmDomP.DistinguishedName)
-	// d.Set("provider_profile_dn", GetParentDn(vmmDomP.DistinguishedName))
+
 	if dn != vmmDomP.DistinguishedName {
 		d.Set("provider_profile_dn", "")
 	}
@@ -292,6 +292,8 @@ func setVMMDomainAttributes(vmmDomP *models.VMMDomain, d *schema.ResourceData) (
 	if err != nil {
 		return d, err
 	}
+
+	d.Set("provider_profile_dn", GetParentDn(dn, fmt.Sprintf("/dom-%s", vmmDomPMap["name"])))
 	d.Set("name", vmmDomPMap["name"])
 
 	d.Set("access_mode", vmmDomPMap["accessMode"])

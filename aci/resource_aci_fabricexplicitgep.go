@@ -86,8 +86,12 @@ func setVPCExplicitProtectionGroupAttributes(fabricExplicitGEp *models.VPCExplic
 
 	d.Set("annotation", fabricExplicitGEpMap["annotation"])
 	d.Set("vpc_explicit_protection_group_id", fabricExplicitGEpMap["id"])
+	d.Set("switch1", fabricExplicitGEpMap["switch1"])
+	d.Set("switch2", fabricExplicitGEpMap["switch2"])
+
 	sw1 := d.Get("switch1").(string)
 	sw2 := d.Get("switch2").(string)
+
 	if sw1 != fabricExplicitGEpMap["switch1"] && sw1 != fabricExplicitGEpMap["switch2"] {
 		d.Set("switch1", "")
 	}
