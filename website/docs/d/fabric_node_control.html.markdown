@@ -14,7 +14,7 @@ Data source for ACI Fabric Node Control
 * `Distinguished Named` - uni/fabric/nodecontrol-{name}
 
 ## GUI Information ##
-* `Location` - Fabric -> Fabric Policies -> Monitoring -> Fabric Node Controls
+* `Location` - Fabric -> Fabric Policies -> Policies -> Monitoring -> Fabric Node Controls
 
 ## Example Usage ##
 ```hcl
