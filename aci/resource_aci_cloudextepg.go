@@ -180,7 +180,6 @@ func setCloudExternalEPgAttributes(cloudExtEPg *models.CloudExternalEPg, d *sche
 	dn := d.Id()
 	d.SetId(cloudExtEPg.DistinguishedName)
 	d.Set("description", cloudExtEPg.Description)
-	// d.Set("cloud_applicationcontainer_dn", GetParentDn(cloudExtEPg.DistinguishedName))
 	if dn != cloudExtEPg.DistinguishedName {
 		d.Set("cloud_applicationcontainer_dn", "")
 	}
@@ -190,6 +189,7 @@ func setCloudExternalEPgAttributes(cloudExtEPg *models.CloudExternalEPg, d *sche
 	}
 
 	d.Set("name", cloudExtEPgMap["name"])
+	d.Set("cloud_applicationcontainer_dn", GetParentDn(cloudExtEPg.DistinguishedName, fmt.Sprintf("/cloudextepg-%s", cloudExtEPgMap["name"])))
 
 	d.Set("annotation", cloudExtEPgMap["annotation"])
 	d.Set("exception_tag", cloudExtEPgMap["exceptionTag"])
