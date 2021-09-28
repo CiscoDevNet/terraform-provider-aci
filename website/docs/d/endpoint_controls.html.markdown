@@ -6,7 +6,7 @@ description: |-
   Data source for ACI Endpoint Control 
 ---
 
-# aci_endpoint_control #
+# aci_endpoint_controls #
 Data source for ACI Endpoint Control 
 
 
