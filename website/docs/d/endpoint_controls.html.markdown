@@ -1,7 +1,7 @@
 ---
 layout: "aci"
-page_title: "ACI: aci_endpoint_control"
-sidebar_current: "docs-aci-data-source-endpoint_control"
+page_title: "ACI: aci_endpoint_controls"
+sidebar_current: "docs-aci-data-source-endpoint_controls"
 description: |-
   Data source for ACI Endpoint Control 
 ---
@@ -19,11 +19,8 @@ Data source for ACI Endpoint Control
 
 ## Example Usage ##
 ```hcl
-data "aci_endpoint_control_policy" "example" {}
+data "aci_endpoint_controls" "example" {}
 ```
-
-## Argument Reference ##
-* `name` - (Required) name of object Endpoint Control.
 
 ## Attribute Reference ##
 * `id` - Attribute id set to the Dn of the Endpoint Control.
