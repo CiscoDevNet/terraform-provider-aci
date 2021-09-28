@@ -13,22 +13,22 @@ Data source for ACI VMM Domain
 
 ```hcl
 data "aci_vmm_domain" "dev_vmmdom" {
-  provider_profile_dn  = "${aci_provider_profile.example.id}"
+  provider_profile_dn  = "uni/vmmp-VMware"
   name                 = "demo_vmmdomp"
 }
 ```
 ## Argument Reference ##
 * `provider_profile_dn` - (Required) Distinguished name of parent Provider Profile object.
-  * Here is a map of vendor and Provide Profile object dn for reference.
+  * Here is a map of vendor and provider_profile_dn for reference.
 
         | Vendor         | provider_profile_dn     |
         | -----------    | -----------             |
         | Microsoft      |  uni/vmmp-Microsoft     |
-        | CloudFoundry   | uni/vmmp-CloudFoundry   |
-        | OpenShift      | uni/vmmp-OpenShift      |
-        | OpenStack      | uni/vmmp-OpenStack      |
-        | VMware         | uni/vmmp-VMware         |
-        | Kubernetes     | uni/vmmp-Kubernetes     |
+        | CloudFoundry   |  uni/vmmp-CloudFoundry  |
+        | OpenShift      |  uni/vmmp-OpenShift     |
+        | OpenStack      |  uni/vmmp-OpenStack     |
+        | VMware         |  uni/vmmp-VMware        |
+        | Kubernetes     |  uni/vmmp-Kubernetes    |
         | Redhat         |  uni/vmmp-Redhat        |
 
 * `name` - (Required) name of Object vmm_domain.
