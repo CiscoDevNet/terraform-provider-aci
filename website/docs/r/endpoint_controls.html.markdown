@@ -6,7 +6,7 @@ description: |-
   Manages ACI Endpoint Control 
 ---
 
-# aci_endpoint_control #
+# aci_endpoint_controls #
 Manages ACI Endpoint Control 
 
 ## API Information ##
