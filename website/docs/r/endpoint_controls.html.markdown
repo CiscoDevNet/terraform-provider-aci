@@ -1,7 +1,7 @@
 ---
 layout: "aci"
-page_title: "ACI: aci_endpoint_control"
-sidebar_current: "docs-aci-resource-endpoint_control"
+page_title: "ACI: aci_endpoint_controls"
+sidebar_current: "docs-aci-resource-endpoint_controls"
 description: |-
   Manages ACI Endpoint Control 
 ---
@@ -19,7 +19,7 @@ Manages ACI Endpoint Control
 
 ## Example Usage ##
 ```hcl
-resource "aci_endpoint_control" "example" {
+resource "aci_endpoint_controls" "example" {
   admin_st = "disabled"
   annotation = "orchestrator:terraform"
   hold_intvl = "1800"
@@ -31,7 +31,7 @@ resource "aci_endpoint_control" "example" {
 ```
 
 ## NOTE ##
-User can use resource of type `aci_endpoint_control` to change configuration of object Endpoint Control. User cannot create more than one instances of object Endpoint Control.
+User can use resource of type `aci_endpoint_controls` to change configuration of object Endpoint Control. User cannot create more than one instances of object Endpoint Control.
 
 ## Argument Reference ##
 * `annotation` - (Optional) Annotation of object Endpoint Control.
@@ -51,5 +51,5 @@ An existing EndpointControl can be [imported][docs-import] into this resource vi
 
 
 ```
-terraform import aci_endpoint_control.example <Dn>
+terraform import aci_endpoint_controls.example <Dn>
 ```
