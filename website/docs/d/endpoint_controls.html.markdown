@@ -31,4 +31,3 @@ data "aci_endpoint_controls" "example" {}
 * `rogue_ep_detect_intvl` - (Optional)  Rogue Endpoint Detection Interval of object Endpoint Control.
 * `rogue_ep_detect_mult` - (Optional)  Rogue Endpoint Detection Multiplication Factor of object Endpoint Control.
 * `description` - (Optional) Description of object Endpoint Control.
-* `name_alias` - (Optional) Name alias of object Endpoint Control.
