@@ -449,6 +449,7 @@ func resourceAciBgpPeerConnectivityProfileUpdate(d *schema.ResourceData, m inter
 		}
 
 		bgpLocalAsnP := models.NewLocalAutonomousSystemProfile(fmt.Sprintf("localasn"), PeerConnectivityProfileDn, desc, bgpLocalAsnPAttr)
+		bgpLocalAsnP.Status = "modified"
 
 		err = aciClient.Save(bgpLocalAsnP)
 		if err != nil {
@@ -464,6 +465,8 @@ func resourceAciBgpPeerConnectivityProfileUpdate(d *schema.ResourceData, m inter
 		}
 
 		bgpAsP := models.NewBgpAutonomousSystemProfile(fmt.Sprintf("as"), PeerConnectivityProfileDn, desc, bgpAsPAttr)
+		bgpAsP.Status = "modified"
+
 		err = aciClient.Save(bgpAsP)
 		if err != nil {
 			return err
@@ -570,7 +573,7 @@ func resourceAciBgpPeerConnectivityProfileDelete(d *schema.ResourceData, m inter
 	if err != nil {
 		return err
 	}
-	
+
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
