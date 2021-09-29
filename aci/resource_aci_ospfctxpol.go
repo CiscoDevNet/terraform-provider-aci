@@ -4,8 +4,6 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"sort"
-	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
@@ -47,15 +45,14 @@ func resourceAciOSPFTimersPolicy() *schema.Resource {
 			},
 
 			"ctrl": &schema.Schema{
-				Type:     schema.TypeList,
-				Optional: true,
-				Elem: &schema.Schema{
-					Type: schema.TypeString,
-					ValidateFunc: validation.StringInSlice([]string{
-						"name-lookup",
-						"pfx-suppress",
-					}, false),
-				},
+				Type:             schema.TypeString,
+				Optional:         true,
+				DiffSuppressFunc: suppressBitMaskDiffFunc(),
+				ValidateFunc: schema.SchemaValidateFunc(validateCommaSeparatedStringInSlice([]string{
+					"name-lookup",
+					"pfx-suppress",
+					"",
+				}, false, "")),
 			},
 
 			"dist": &schema.Schema{
@@ -203,22 +200,11 @@ func setOSPFTimersPolicyAttributes(ospfCtxPol *models.OSPFTimersPolicy, d *schem
 	if err != nil {
 		return d, err
 	}
-
-	d.Set("tenant_dn", GetParentDn(dn, fmt.Sprintf("/ospfCtxP-%s", ospfCtxPolMap["name"])))
 	d.Set("name", ospfCtxPolMap["name"])
 
 	d.Set("annotation", ospfCtxPolMap["annotation"])
 	d.Set("bw_ref", ospfCtxPolMap["bwRef"])
-	ctrlGet := make([]string, 0, 1)
-	for _, val := range strings.Split(ospfCtxPolMap["ctrl"], ",") {
-		ctrlGet = append(ctrlGet, strings.Trim(val, " "))
-	}
-	sort.Strings(ctrlGet)
-	if len(ctrlGet) == 1 && ctrlGet[0] == "" {
-		d.Set("ctrl", make([]string, 0, 1))
-	} else {
-		d.Set("ctrl", ctrlGet)
-	}
+	d.Set("ctrl", ospfCtxPolMap["ctrl"])
 	d.Set("dist", ospfCtxPolMap["dist"])
 	d.Set("gr_ctrl", ospfCtxPolMap["grCtrl"])
 	d.Set("lsa_arrival_intvl", ospfCtxPolMap["lsaArrivalIntvl"])
@@ -280,12 +266,9 @@ func resourceAciOSPFTimersPolicyCreate(ctx context.Context, d *schema.ResourceDa
 		ospfCtxPolAttr.BwRef = BwRef.(string)
 	}
 	if Ctrl, ok := d.GetOk("ctrl"); ok {
-		CtrlList := make([]string, 0, 1)
-		for _, val := range Ctrl.([]interface{}) {
-			CtrlList = append(CtrlList, val.(string))
-		}
-		Ctrl := strings.Join(CtrlList, ",")
-		ospfCtxPolAttr.Ctrl = Ctrl
+		ospfCtxPolAttr.Ctrl = Ctrl.(string)
+	} else {
+		ospfCtxPolAttr.Ctrl = "{}"
 	}
 	if Dist, ok := d.GetOk("dist"); ok {
 		ospfCtxPolAttr.Dist = Dist.(string)
@@ -376,12 +359,9 @@ func resourceAciOSPFTimersPolicyUpdate(ctx context.Context, d *schema.ResourceDa
 		ospfCtxPolAttr.BwRef = BwRef.(string)
 	}
 	if Ctrl, ok := d.GetOk("ctrl"); ok {
-		CtrlList := make([]string, 0, 1)
-		for _, val := range Ctrl.([]interface{}) {
-			CtrlList = append(CtrlList, val.(string))
-		}
-		Ctrl := strings.Join(CtrlList, ",")
-		ospfCtxPolAttr.Ctrl = Ctrl
+		ospfCtxPolAttr.Ctrl = Ctrl.(string)
+	} else {
+		ospfCtxPolAttr.Ctrl = "{}"
 	}
 	if Dist, ok := d.GetOk("dist"); ok {
 		ospfCtxPolAttr.Dist = Dist.(string)

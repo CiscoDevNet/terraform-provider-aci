@@ -130,7 +130,6 @@ func setCloudContextProfileAttributes(cloudCtxProfile *models.CloudContextProfil
 	if err != nil {
 		return d, err
 	}
-	d.Set("tenant_dn", GetParentDn(dn, fmt.Sprintf("/ctxprofile-%s", GetMOName(cloudCtxProfile.DistinguishedName))))
 
 	d.Set("name", GetMOName(cloudCtxProfile.DistinguishedName))
 

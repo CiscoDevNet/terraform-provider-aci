@@ -116,7 +116,6 @@ func setL2OutsideAttributes(l2extOut *models.L2Outside, d *schema.ResourceData) 
 	}
 
 	d.Set("name", l2extOutMap["name"])
-	d.Set("tenant_dn", GetParentDn(l2extOut.DistinguishedName, fmt.Sprintf("/l2out-%s", l2extOutMap["name"])))
 
 	d.Set("annotation", l2extOutMap["annotation"])
 	d.Set("name_alias", l2extOutMap["nameAlias"])

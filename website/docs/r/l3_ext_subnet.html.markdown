@@ -30,7 +30,7 @@ Manages ACI l3 extension subnet
 
 - `external_network_instance_profile_dn` - (Required) Distinguished name of parent External Network Instance Profile object.
 - `ip` - (Required) IP address of Object l3 extension subnet.
-- `aggregate` - (Optional) Aggregate Routes for l3 extension subnet. Allowed values are "import-rtctrl", "export-rtctrl", "shared-rtctrl" and "none". Multiple comma-delimited values are allowed. e.g., "export-rtctrl,import-rtctrl". 
+- `aggregate` - (Optional) Aggregate Routes for l3 extension subnet. Allowed values are "import-rtctrl", "export-rtctrl" and "shared-rtctrl". Multiple comma-delimited values are allowed. e.g., "export-rtctrl,import-rtctrl". 
 - `annotation` - (Optional) Annotation for object l3 extension subnet.
 - `description` - (Optional) Description for object l3 extension subnet.
 - `name_alias` - (Optional) Name alias for object l3 extension subnet.

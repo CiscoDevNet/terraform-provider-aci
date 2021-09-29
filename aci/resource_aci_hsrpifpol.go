@@ -4,14 +4,11 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"sort"
-	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciHSRPInterfacePolicy() *schema.Resource {
@@ -41,15 +38,14 @@ func resourceAciHSRPInterfacePolicy() *schema.Resource {
 			},
 
 			"ctrl": &schema.Schema{
-				Type:     schema.TypeList,
-				Optional: true,
-				Elem: &schema.Schema{
-					Type: schema.TypeString,
-					ValidateFunc: validation.StringInSlice([]string{
-						"bfd",
-						"bia",
-					}, false),
-				},
+				Type:             schema.TypeString,
+				Optional:         true,
+				DiffSuppressFunc: suppressBitMaskDiffFunc(),
+				ValidateFunc: schema.SchemaValidateFunc(validateCommaSeparatedStringInSlice([]string{
+					"bfd",
+					"bia",
+					"",
+				}, false, "")),
 			},
 
 			"delay": &schema.Schema{
@@ -100,20 +96,11 @@ func setHSRPInterfacePolicyAttributes(hsrpIfPol *models.HSRPInterfacePolicy, d *
 	if err != nil {
 		return d, err
 	}
-	d.Set("tenant_dn", GetParentDn(dn, fmt.Sprintf("/hsrpIfPol-%s", hsrpIfPolMap["name"])))
+
 	d.Set("name", hsrpIfPolMap["name"])
 
 	d.Set("annotation", hsrpIfPolMap["annotation"])
-	ctrlGet := make([]string, 0, 1)
-	for _, val := range strings.Split(hsrpIfPolMap["ctrl"], ",") {
-		ctrlGet = append(ctrlGet, strings.Trim(val, " "))
-	}
-	sort.Strings(ctrlGet)
-	if len(ctrlGet) == 1 && ctrlGet[0] == "" {
-		d.Set("ctrl", make([]string, 0, 1))
-	} else {
-		d.Set("ctrl", ctrlGet)
-	}
+	d.Set("ctrl", hsrpIfPolMap["ctrl"])
 	d.Set("delay", hsrpIfPolMap["delay"])
 	d.Set("name_alias", hsrpIfPolMap["nameAlias"])
 	d.Set("reload_delay", hsrpIfPolMap["reloadDelay"])
@@ -159,12 +146,9 @@ func resourceAciHSRPInterfacePolicyCreate(ctx context.Context, d *schema.Resourc
 		hsrpIfPolAttr.Annotation = "{}"
 	}
 	if ctrl, ok := d.GetOk("ctrl"); ok {
-		ctrlList := make([]string, 0, 1)
-		for _, val := range ctrl.([]interface{}) {
-			ctrlList = append(ctrlList, val.(string))
-		}
-		ctrl := strings.Join(ctrlList, ",")
-		hsrpIfPolAttr.Ctrl = ctrl
+		hsrpIfPolAttr.Ctrl = ctrl.(string)
+	} else {
+		hsrpIfPolAttr.Ctrl = "{}"
 	}
 	if Delay, ok := d.GetOk("delay"); ok {
 		hsrpIfPolAttr.Delay = Delay.(string)
@@ -205,12 +189,9 @@ func resourceAciHSRPInterfacePolicyUpdate(ctx context.Context, d *schema.Resourc
 		hsrpIfPolAttr.Annotation = "{}"
 	}
 	if ctrl, ok := d.GetOk("ctrl"); ok {
-		ctrlList := make([]string, 0, 1)
-		for _, val := range ctrl.([]interface{}) {
-			ctrlList = append(ctrlList, val.(string))
-		}
-		ctrl := strings.Join(ctrlList, ",")
-		hsrpIfPolAttr.Ctrl = ctrl
+		hsrpIfPolAttr.Ctrl = ctrl.(string)
+	} else {
+		hsrpIfPolAttr.Ctrl = "{}"
 	}
 	if Delay, ok := d.GetOk("delay"); ok {
 		hsrpIfPolAttr.Delay = Delay.(string)

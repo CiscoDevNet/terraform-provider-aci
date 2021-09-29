@@ -4,8 +4,6 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"sort"
-	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
@@ -41,16 +39,15 @@ func resourceAciBgpPeerConnectivityProfile() *schema.Resource {
 			},
 
 			"addr_t_ctrl": &schema.Schema{
-				Type:     schema.TypeList,
-				Optional: true,
-				Computed: true,
-				Elem: &schema.Schema{
-					Type: schema.TypeString,
-					ValidateFunc: validation.StringInSlice([]string{
-						"af-ucast",
-						"af-mcast",
-					}, false),
-				},
+				Type:             schema.TypeString,
+				Optional:         true,
+				Computed:         true,
+				DiffSuppressFunc: suppressBitMaskDiffFunc(),
+				ValidateFunc: schema.SchemaValidateFunc(validateCommaSeparatedStringInSlice([]string{
+					"af-mcast",
+					"af-ucast",
+					"",
+				}, false, "")),
 			},
 
 			"allowed_self_as_cnt": &schema.Schema{
@@ -60,20 +57,19 @@ func resourceAciBgpPeerConnectivityProfile() *schema.Resource {
 			},
 
 			"ctrl": &schema.Schema{
-				Type:     schema.TypeList,
-				Optional: true,
-				Computed: true,
-				Elem: &schema.Schema{
-					Type: schema.TypeString,
-					ValidateFunc: validation.StringInSlice([]string{
-						"allow-self-as",
-						"as-override",
-						"dis-peer-as-check",
-						"nh-self",
-						"send-com",
-						"send-ext-com",
-					}, false),
-				},
+				Type:             schema.TypeString,
+				Optional:         true,
+				Computed:         true,
+				DiffSuppressFunc: suppressBitMaskDiffFunc(),
+				ValidateFunc: schema.SchemaValidateFunc(validateCommaSeparatedStringInSlice([]string{
+					"allow-self-as",
+					"as-override",
+					"dis-peer-as-check",
+					"nh-self",
+					"send-com",
+					"send-ext-com",
+					"",
+				}, false, "")),
 			},
 
 			"name_alias": &schema.Schema{
@@ -90,30 +86,28 @@ func resourceAciBgpPeerConnectivityProfile() *schema.Resource {
 			},
 
 			"peer_ctrl": &schema.Schema{
-				Type:     schema.TypeList,
-				Optional: true,
-				Computed: true,
-				Elem: &schema.Schema{
-					Type: schema.TypeString,
-					ValidateFunc: validation.StringInSlice([]string{
-						"bfd",
-						"dis-conn-check",
-					}, false),
-				},
+				Type:             schema.TypeString,
+				Optional:         true,
+				Computed:         true,
+				DiffSuppressFunc: suppressBitMaskDiffFunc(),
+				ValidateFunc: schema.SchemaValidateFunc(validateCommaSeparatedStringInSlice([]string{
+					"bfd",
+					"dis-conn-check",
+					"",
+				}, false, "")),
 			},
 
 			"private_a_sctrl": &schema.Schema{
-				Type:     schema.TypeList,
-				Optional: true,
-				Computed: true,
-				Elem: &schema.Schema{
-					Type: schema.TypeString,
-					ValidateFunc: validation.StringInSlice([]string{
-						"remove-all",
-						"remove-exclusive",
-						"replace-as",
-					}, false),
-				},
+				Type:             schema.TypeString,
+				Optional:         true,
+				Computed:         true,
+				DiffSuppressFunc: suppressBitMaskDiffFunc(),
+				ValidateFunc: schema.SchemaValidateFunc(validateCommaSeparatedStringInSlice([]string{
+					"remove-all",
+					"remove-exclusive",
+					"replace-as",
+					"",
+				}, false, "")),
 			},
 
 			"ttl": &schema.Schema{
@@ -219,54 +213,17 @@ func setBgpPeerConnectivityProfileAttributes(bgpPeerP *models.BgpPeerConnectivit
 	if err != nil {
 		return d, err
 	}
-	d.Set("parent_dn", GetParentDn(dn, fmt.Sprintf("/peerP-[%s]", bgpPeerPMap["addr"])))
 
 	d.Set("addr", bgpPeerPMap["addr"])
 
 	d.Set("addr", bgpPeerPMap["addr"])
-	addrTCtrlGet := make([]string, 0, 1)
-	for _, val := range strings.Split(bgpPeerPMap["addrTCtrl"], ",") {
-		addrTCtrlGet = append(addrTCtrlGet, strings.Trim(val, " "))
-	}
-	sort.Strings(addrTCtrlGet)
-	if len(addrTCtrlGet) == 1 && addrTCtrlGet[0] == "" {
-		d.Set("addr_t_ctrl", make([]string, 0, 1))
-	} else {
-		d.Set("addr_t_ctrl", addrTCtrlGet)
-	}
+	d.Set("addr_t_ctrl", bgpPeerPMap["addrTCtrl"])
 	d.Set("allowed_self_as_cnt", bgpPeerPMap["allowedSelfAsCnt"])
 	d.Set("annotation", bgpPeerPMap["annotation"])
-	ctrlGet := make([]string, 0, 1)
-	for _, val := range strings.Split(bgpPeerPMap["ctrl"], ",") {
-		ctrlGet = append(ctrlGet, strings.Trim(val, " "))
-	}
-	sort.Strings(ctrlGet)
-	if len(ctrlGet) == 1 && ctrlGet[0] == "" {
-		d.Set("ctrl", make([]string, 0, 1))
-	} else {
-		d.Set("ctrl", ctrlGet)
-	}
+	d.Set("ctrl", bgpPeerPMap["ctrl"])
 	d.Set("name_alias", bgpPeerPMap["nameAlias"])
-	peerCtrlGet := make([]string, 0, 1)
-	for _, val := range strings.Split(bgpPeerPMap["peerCtrl"], ",") {
-		peerCtrlGet = append(peerCtrlGet, strings.Trim(val, " "))
-	}
-	sort.Strings(peerCtrlGet)
-	if len(peerCtrlGet) == 1 && peerCtrlGet[0] == "" {
-		d.Set("peer_ctrl", make([]string, 0, 1))
-	} else {
-		d.Set("peer_ctrl", peerCtrlGet)
-	}
-	privateASctrlGet := make([]string, 0, 1)
-	for _, val := range strings.Split(bgpPeerPMap["privateASctrl"], ",") {
-		privateASctrlGet = append(privateASctrlGet, strings.Trim(val, " "))
-	}
-	sort.Strings(privateASctrlGet)
-	if len(privateASctrlGet) == 1 && privateASctrlGet[0] == "" {
-		d.Set("private_a_sctrl", make([]string, 0, 1))
-	} else {
-		d.Set("private_a_sctrl", privateASctrlGet)
-	}
+	d.Set("peer_ctrl", bgpPeerPMap["peerCtrl"])
+	d.Set("private_a_sctrl", bgpPeerPMap["privateASctrl"])
 	d.Set("ttl", bgpPeerPMap["ttl"])
 	d.Set("weight", bgpPeerPMap["weight"])
 	return d, nil
@@ -327,12 +284,7 @@ func resourceAciBgpPeerConnectivityProfileCreate(ctx context.Context, d *schema.
 		bgpPeerPAttr.Addr = Addr.(string)
 	}
 	if AddrTCtrl, ok := d.GetOk("addr_t_ctrl"); ok {
-		addrTCtrlList := make([]string, 0, 1)
-		for _, val := range AddrTCtrl.([]interface{}) {
-			addrTCtrlList = append(addrTCtrlList, val.(string))
-		}
-		AddrTCtrl := strings.Join(addrTCtrlList, ",")
-		bgpPeerPAttr.AddrTCtrl = AddrTCtrl
+		bgpPeerPAttr.AddrTCtrl = AddrTCtrl.(string)
 	}
 	if AllowedSelfAsCnt, ok := d.GetOk("allowed_self_as_cnt"); ok {
 		bgpPeerPAttr.AllowedSelfAsCnt = AllowedSelfAsCnt.(string)
@@ -343,12 +295,7 @@ func resourceAciBgpPeerConnectivityProfileCreate(ctx context.Context, d *schema.
 		bgpPeerPAttr.Annotation = "{}"
 	}
 	if Ctrl, ok := d.GetOk("ctrl"); ok {
-		ctrlList := make([]string, 0, 1)
-		for _, val := range Ctrl.([]interface{}) {
-			ctrlList = append(ctrlList, val.(string))
-		}
-		Ctrl := strings.Join(ctrlList, ",")
-		bgpPeerPAttr.Ctrl = Ctrl
+		bgpPeerPAttr.Ctrl = Ctrl.(string)
 	}
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		bgpPeerPAttr.NameAlias = NameAlias.(string)
@@ -357,20 +304,10 @@ func resourceAciBgpPeerConnectivityProfileCreate(ctx context.Context, d *schema.
 		bgpPeerPAttr.Password = Password.(string)
 	}
 	if PeerCtrl, ok := d.GetOk("peer_ctrl"); ok {
-		peerCtrlList := make([]string, 0, 1)
-		for _, val := range PeerCtrl.([]interface{}) {
-			peerCtrlList = append(peerCtrlList, val.(string))
-		}
-		PeerCtrl := strings.Join(peerCtrlList, ",")
-		bgpPeerPAttr.PeerCtrl = PeerCtrl
+		bgpPeerPAttr.PeerCtrl = PeerCtrl.(string)
 	}
 	if PrivateASctrl, ok := d.GetOk("private_a_sctrl"); ok {
-		privateASctrlList := make([]string, 0, 1)
-		for _, val := range PrivateASctrl.([]interface{}) {
-			privateASctrlList = append(privateASctrlList, val.(string))
-		}
-		PrivateASctrl := strings.Join(privateASctrlList, ",")
-		bgpPeerPAttr.PrivateASctrl = PrivateASctrl
+		bgpPeerPAttr.PrivateASctrl = PrivateASctrl.(string)
 	}
 	if Ttl, ok := d.GetOk("ttl"); ok {
 		bgpPeerPAttr.Ttl = Ttl.(string)
@@ -463,12 +400,7 @@ func resourceAciBgpPeerConnectivityProfileUpdate(ctx context.Context, d *schema.
 		bgpPeerPAttr.Addr = Addr.(string)
 	}
 	if AddrTCtrl, ok := d.GetOk("addr_t_ctrl"); ok {
-		addrTCtrlList := make([]string, 0, 1)
-		for _, val := range AddrTCtrl.([]interface{}) {
-			addrTCtrlList = append(addrTCtrlList, val.(string))
-		}
-		AddrTCtrl := strings.Join(addrTCtrlList, ",")
-		bgpPeerPAttr.AddrTCtrl = AddrTCtrl
+		bgpPeerPAttr.AddrTCtrl = AddrTCtrl.(string)
 	}
 	if AllowedSelfAsCnt, ok := d.GetOk("allowed_self_as_cnt"); ok {
 		bgpPeerPAttr.AllowedSelfAsCnt = AllowedSelfAsCnt.(string)
@@ -479,34 +411,19 @@ func resourceAciBgpPeerConnectivityProfileUpdate(ctx context.Context, d *schema.
 		bgpPeerPAttr.Annotation = "{}"
 	}
 	if Ctrl, ok := d.GetOk("ctrl"); ok {
-		ctrlList := make([]string, 0, 1)
-		for _, val := range Ctrl.([]interface{}) {
-			ctrlList = append(ctrlList, val.(string))
-		}
-		Ctrl := strings.Join(ctrlList, ",")
-		bgpPeerPAttr.Ctrl = Ctrl
+		bgpPeerPAttr.Ctrl = Ctrl.(string)
 	}
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		bgpPeerPAttr.NameAlias = NameAlias.(string)
 	}
-	if PeerCtrl, ok := d.GetOk("peer_ctrl"); ok {
-		peerCtrlList := make([]string, 0, 1)
-		for _, val := range PeerCtrl.([]interface{}) {
-			peerCtrlList = append(peerCtrlList, val.(string))
-		}
-		PeerCtrl := strings.Join(peerCtrlList, ",")
-		bgpPeerPAttr.PeerCtrl = PeerCtrl
+	if Password, ok := d.GetOk("password"); ok {
+		bgpPeerPAttr.Password = Password.(string)
 	}
 	if PeerCtrl, ok := d.GetOk("peer_ctrl"); ok {
 		bgpPeerPAttr.PeerCtrl = PeerCtrl.(string)
 	}
 	if PrivateASctrl, ok := d.GetOk("private_a_sctrl"); ok {
-		privateASctrlList := make([]string, 0, 1)
-		for _, val := range PrivateASctrl.([]interface{}) {
-			privateASctrlList = append(privateASctrlList, val.(string))
-		}
-		PrivateASctrl := strings.Join(privateASctrlList, ",")
-		bgpPeerPAttr.PrivateASctrl = PrivateASctrl
+		bgpPeerPAttr.PrivateASctrl = PrivateASctrl.(string)
 	}
 	if Ttl, ok := d.GetOk("ttl"); ok {
 		bgpPeerPAttr.Ttl = Ttl.(string)
