@@ -168,10 +168,10 @@ func setISISLevelAttributes(isisLvlComps []*models.ISISLevel, d *schema.Resource
 		lvl["name_alias"] = lvlMap["nameAlias"]
 		lvl["lsp_fast_flood"] = lvlMap["lspFastFlood"]
 		lvl["lsp_gen_init_intvl"] = lvlMap["lspGenInitIntvl"]
-		lvl["lsp_gen_max_intvl"] = lvlMap["lspGenSecIntvl"]
+		lvl["lsp_gen_max_intvl"] = lvlMap["lspGenMaxIntvl"]
 		lvl["spf_comp_init_intvl"] = lvlMap["spfCompInitIntvl"]
 		lvl["spf_comp_max_intvl"] = lvlMap["spfCompMaxIntvl"]
-		lvl["spf_comp_sec_intvl"] = lvlMap["lspGenSecIntvl"]
+		lvl["spf_comp_sec_intvl"] = lvlMap["spfCompSecIntvl"]
 		lvl["isis_level_type"] = lvlMap["type"]
 		lvl["description"] = lvlMap["description"]
 		lvl["lsp_gen_sec_intvl"] = lvlMap["lspGenSecIntvl"]
@@ -237,6 +237,8 @@ func resourceAciISISDomainPolicyCreate(ctx context.Context, d *schema.ResourceDa
 		for _, val := range levelsList {
 			isisLvlAttr := models.ISISLevelAttributes{}
 			isisLvl := val.(map[string]interface{})
+			desc := ""
+			nameAlias := ""
 			isisLvlDn := isisDomPol.DistinguishedName
 			if isisLvl["lsp_fast_flood"] != nil {
 				isisLvlAttr.LspFastFlood = isisLvl["lsp_fast_flood"].(string)
@@ -265,10 +267,22 @@ func resourceAciISISDomainPolicyCreate(ctx context.Context, d *schema.ResourceDa
 			if isisLvl["isis_level_type"] != nil {
 				isisLvlAttr.ISISLevel_type = isisLvl["isis_level_type"].(string)
 			}
+			if isisLvl["annotation"] != nil {
+				isisLvlAttr.Annotation = isisLvl["annotation"].(string)
+			} else {
+				isisLvlAttr.Annotation = "{}"
+			}
+			if isisLvl["description"] != nil {
+				desc = isisLvl["description"].(string)
+			}
+			if isisLvl["name_alias"] != nil {
+				nameAlias = isisLvl["name_alias"].(string)
+			}
+			
 		}
-		d.Set("isis_level", lvlCompIDS)
+		d.Set("isis_level_ids", lvlCompIDS)
 	} else {
-		d.Set("isis_level", lvlCompIDS)
+		d.Set("isis_level_ids", lvlCompIDS)
 	}
 
 	d.SetId(isisDomPol.DistinguishedName)
