@@ -94,8 +94,7 @@ func resourceAciISISDomainPolicy() *schema.Resource {
 							},
 							"isis_level_type": &schema.Schema{
 								Type:     schema.TypeString,
-								Optional: true,
-								Computed: true,
+								Required: true,
 								ValidateFunc: validation.StringInSlice([]string{
 									"l1",
 									"l2",
@@ -237,9 +236,14 @@ func resourceAciISISDomainPolicyCreate(ctx context.Context, d *schema.ResourceDa
 		for _, val := range levelsList {
 			isisLvlAttr := models.ISISLevelAttributes{}
 			isisLvl := val.(map[string]interface{})
+
 			desc := ""
 			nameAlias := ""
 			isisLvlDn := isisDomPol.DistinguishedName
+
+			isisLvlAttr.ISISLevel_type = isisLvl["isis_level_type"].(string)
+			isis_level_type := isisLvl["isis_level_type"].(string)
+
 			if isisLvl["lsp_fast_flood"] != nil {
 				isisLvlAttr.LspFastFlood = isisLvl["lsp_fast_flood"].(string)
 			}
@@ -264,9 +268,7 @@ func resourceAciISISDomainPolicyCreate(ctx context.Context, d *schema.ResourceDa
 			if isisLvl["spf_comp_sec_intvl"] != nil {
 				isisLvlAttr.SpfCompSecIntvl = isisLvl["spf_comp_sec_intvl"].(string)
 			}
-			if isisLvl["isis_level_type"] != nil {
-				isisLvlAttr.ISISLevel_type = isisLvl["isis_level_type"].(string)
-			}
+
 			if isisLvl["annotation"] != nil {
 				isisLvlAttr.Annotation = isisLvl["annotation"].(string)
 			} else {
@@ -278,7 +280,12 @@ func resourceAciISISDomainPolicyCreate(ctx context.Context, d *schema.ResourceDa
 			if isisLvl["name_alias"] != nil {
 				nameAlias = isisLvl["name_alias"].(string)
 			}
-			
+			isisLvlComp := models.NewISISLevel(fmt.Sprintf("lvl-%s", isis_level_type), isisLvlDn, desc, nameAlias, isisLvlAttr)
+			err := aciClient.Save(isisLvlComp)
+			if err != nil {
+				return diag.FromErr(err)
+			}
+			lvlCompIDS = append(lvlCompIDS, isisLvlComp.DistinguishedName)
 		}
 		d.Set("isis_level_ids", lvlCompIDS)
 	} else {
@@ -325,6 +332,77 @@ func resourceAciISISDomainPolicyUpdate(ctx context.Context, d *schema.ResourceDa
 		return diag.FromErr(err)
 	}
 
+	if d.HasChange("isis_level") {
+		isisComp := d.Get("isis_level_ids").([]interface{})
+		for _, val := range isisComp {
+			isisCompDN := val.(string)
+			err := aciClient.DeleteByDn(isisCompDN, "isisLvlComp")
+			if err != nil {
+				return diag.FromErr(err)
+			}
+		}
+
+		comps := d.Get("isis_level")
+		isisCompIDS := make([]string, 0, 1)
+
+		isisComps := comps.([]interface{})
+		for _, val := range isisComps {
+			isisLvlAttr := models.ISISLevelAttributes{}
+			isisLvl := val.(map[string]interface{})
+
+			desc := ""
+			nameAlias := ""
+			isisLvlDn := isisDomPol.DistinguishedName
+
+			isisLvlAttr.ISISLevel_type = isisLvl["isis_level_type"].(string)
+			isis_level_type := isisLvl["isis_level_type"].(string)
+
+			if isisLvl["lsp_fast_flood"] != nil {
+				isisLvlAttr.LspFastFlood = isisLvl["lsp_fast_flood"].(string)
+			}
+			if isisLvl["lsp_gen_init_intvl"] != nil {
+				isisLvlAttr.LspGenInitIntvl = isisLvl["lsp_gen_init_intvl"].(string)
+			}
+			if isisLvl["lsp_gen_max_intvl"] != nil {
+				isisLvlAttr.LspGenMaxIntvl = isisLvl["lsp_gen_max_intvl"].(string)
+			}
+			if isisLvl["lsp_gen_sec_intvl"] != nil {
+				isisLvlAttr.LspGenSecIntvl = isisLvl["lsp_gen_max_intvl"].(string)
+			}
+			if isisLvl["name"] != nil {
+				isisLvlAttr.Name = isisLvl["name"].(string)
+			}
+			if isisLvl["spf_comp_init_intvl"] != nil {
+				isisLvlAttr.SpfCompInitIntvl = isisLvl["spf_comp_init_intvl"].(string)
+			}
+			if isisLvl["spf_comp_max_intvl"] != nil {
+				isisLvlAttr.SpfCompMaxIntvl = isisLvl["spf_comp_max_intvl"].(string)
+			}
+			if isisLvl["spf_comp_sec_intvl"] != nil {
+				isisLvlAttr.SpfCompSecIntvl = isisLvl["spf_comp_sec_intvl"].(string)
+			}
+
+			if isisLvl["annotation"] != nil {
+				isisLvlAttr.Annotation = isisLvl["annotation"].(string)
+			} else {
+				isisLvlAttr.Annotation = "{}"
+			}
+			if isisLvl["description"] != nil {
+				desc = isisLvl["description"].(string)
+			}
+			if isisLvl["name_alias"] != nil {
+				nameAlias = isisLvl["name_alias"].(string)
+			}
+			isisLvlComp := models.NewISISLevel(fmt.Sprintf("lvl-%s", isis_level_type), isisLvlDn, desc, nameAlias, isisLvlAttr)
+			err := aciClient.Save(isisLvlComp)
+			if err != nil {
+				return diag.FromErr(err)
+			}
+			isisCompIDS = append(isisCompIDS, isisLvlComp.DistinguishedName)
+		}
+		d.Set("isis_level_ids", isisCompIDS)
+	}
+
 	d.SetId(isisDomPol.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 	return resourceAciISISDomainPolicyRead(ctx, d, m)
@@ -345,6 +423,25 @@ func resourceAciISISDomainPolicyRead(ctx context.Context, d *schema.ResourceData
 		return nil
 	}
 
+	comps := d.Get("isis_level_ids").([]interface{})
+	lvlComps := make([]*models.ISISLevel, 0, 1)
+
+	for _, val := range comps {
+		lvlCompDN := val.(string)
+		lvlComp, err := getRemoteISISLevel(aciClient, lvlCompDN)
+		if err != nil {
+			return diag.FromErr(err)
+		}
+		lvlComps = append(lvlComps, lvlComp)
+	}
+
+	_, err = setISISLevelAttributes(lvlComps, d)
+
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
+
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 	return nil
 }
@@ -357,6 +454,16 @@ func resourceAciISISDomainPolicyDelete(ctx context.Context, d *schema.ResourceDa
 	if err != nil {
 		return diag.FromErr(err)
 	}
+
+	comps := d.Get("isis_level_ids").([]interface{})
+	for _, val := range comps {
+		isisLvlCompDN := val.(string)
+		err := aciClient.DeleteByDn(isisLvlCompDN, "isisLvlComp")
+		if err != nil {
+			return diag.FromErr(err)
+		}
+	}
+
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 	d.SetId("")
 	return diag.FromErr(err)
