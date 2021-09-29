@@ -290,6 +290,7 @@ func setVMMControllerAttributes(vmmCtrlrP *models.VMMController, d *schema.Resou
 	} else {
 		d.Set("msft_config_issues", msftConfigIssuesGet)
 	}
+	d.Set("vmm_domain_dn", GetParentDn(vmmCtrlrP.DistinguishedName, fmt.Sprintf("/ctrlr-%s", vmmCtrlrPMap["name"])))
 	d.Set("n1kv_stats_mode", vmmCtrlrPMap["n1kvStatsMode"])
 	d.Set("name", vmmCtrlrPMap["name"])
 	d.Set("port", vmmCtrlrPMap["port"])

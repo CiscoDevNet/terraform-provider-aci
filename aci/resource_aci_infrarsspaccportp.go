@@ -75,7 +75,7 @@ func setInterfaceProfileAttributes(infraRsSpAccPortP *models.InterfaceProfile, d
 	if err != nil {
 		return d, err
 	}
-
+	d.Set("spine_profile_dn", GetParentDn(infraRsSpAccPortP.DistinguishedName, fmt.Sprintf("/rsspAccPortP-%s", infraRsSpAccPortPMap["tDn"])))
 	d.Set("tdn", infraRsSpAccPortPMap["tDn"])
 	d.Set("annotation", infraRsSpAccPortPMap["annotation"])
 

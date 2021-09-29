@@ -76,7 +76,6 @@ func setNodeBlockAttributesMG(fabricNodeBlk *models.NodeBlockMG, d *schema.Resou
 	dn := d.Id()
 	d.SetId(fabricNodeBlk.DistinguishedName)
 	d.Set("description", fabricNodeBlk.Description)
-	// d.Set("pod_maintenance_group_dn", GetParentDn(fabricNodeBlk.DistinguishedName))
 	if dn != fabricNodeBlk.DistinguishedName {
 		d.Set("pod_maintenance_group_dn", "")
 	}
@@ -86,6 +85,7 @@ func setNodeBlockAttributesMG(fabricNodeBlk *models.NodeBlockMG, d *schema.Resou
 		return d, err
 	}
 
+	d.Set("pod_maintenance_group_dn", GetParentDn(fabricNodeBlk.DistinguishedName, fmt.Sprintf("nodeblk-%s", fabricNodeBlkMap["name"])))
 	d.Set("name", fabricNodeBlkMap["name"])
 
 	d.Set("annotation", fabricNodeBlkMap["annotation"])
