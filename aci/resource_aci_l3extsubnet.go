@@ -79,7 +79,13 @@ func resourceAciL3ExtSubnet() *schema.Resource {
 					Schema: map[string]*schema.Schema{
 						"tn_rtctrl_profile_name": {
 							Type:     schema.TypeString,
-							Required: true,
+							Optional: true,
+							// ConflictsWith: []string{"tn_rtctrl_profile_dn"},
+							Deprecated: "use tn_rtctrl_profile_dn instead",
+						},
+						"tn_rtctrl_profile_dn": {
+							Type:     schema.TypeString,
+							Optional: true,
 						},
 						"direction": {
 							Type:     schema.TypeString,
@@ -236,7 +242,17 @@ func resourceAciL3ExtSubnetCreate(d *schema.ResourceData, m interface{}) error {
 		relationParamList := relationTol3extRsSubnetToProfile.(*schema.Set).List()
 		for _, relationParam := range relationParamList {
 			paramMap := relationParam.(map[string]interface{})
-			err = aciClient.CreateRelationl3extRsSubnetToProfileFromL3ExtSubnet(l3extSubnet.DistinguishedName, paramMap["tn_rtctrl_profile_name"].(string), paramMap["direction"].(string))
+			var relationParamName string
+			if paramMap["tn_rtctrl_profile_dn"] != "" && paramMap["tn_rtctrl_profile_name"] != "" {
+				return fmt.Errorf("Usage of both tn_rtctrl_profile_dn and tn_rtctrl_profile_name parameters is not recommended. tn_rtctrl_profile_name parameter will be deprecated use tn_rtctrl_profile_dn instead.")
+			} else if paramMap["tn_rtctrl_profile_name"] != "" {
+				relationParamName = paramMap["tn_rtctrl_profile_name"].(string)
+			} else if paramMap["tn_rtctrl_profile_dn"] != "" {
+				relationParamName = GetMOName(paramMap["tn_rtctrl_profile_dn"].(string))
+			} else {
+				return fmt.Errorf("tn_rtctrl_profile_dn is required to generate Route Control Profile")
+			}
+			err = aciClient.CreateRelationl3extRsSubnetToProfileFromL3ExtSubnet(l3extSubnet.DistinguishedName, relationParamName, paramMap["direction"].(string))
 			if err != nil {
 				return err
 			}
