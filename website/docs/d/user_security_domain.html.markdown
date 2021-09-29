@@ -6,7 +6,7 @@ description: |-
   Data source for ACI User Security Domain
 ---
 
-# aci_user_domain #
+# aci_user_security_domain #
 Data source for ACI User Domain
 
 ## API Information ##
@@ -19,7 +19,7 @@ Data source for ACI User Domain
 ## Example Usage ##
 
 ```hcl
-data "aci_user_domain" "example" {
+data "aci_user_security_domain" "example" {
   local_user_dn  = aci_local_user.example.id
   name  = "example"
 }
