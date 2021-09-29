@@ -137,6 +137,7 @@ func setMgmtStaticNodeAttributes(mgmtRsOoBStNode *models.OutofbandStaticNode, mg
 		d.Set("t_dn", mgmtRsInBStNodeMap["tDn"])
 		d.Set("v6_addr", mgmtRsInBStNodeMap["v6Addr"])
 		d.Set("v6_gw", mgmtRsInBStNodeMap["v6Gw"])
+		d.Set("management_epg_dn", GetParentDn(mgmtRsInBStNode.DistinguishedName, fmt.Sprintf("/rsinBStNode-%s", mgmtRsInBStNodeMap["tDn"])))
 
 	} else {
 		mgmtRsOoBStNodeMap, err := mgmtRsOoBStNode.ToMap()
@@ -150,6 +151,8 @@ func setMgmtStaticNodeAttributes(mgmtRsOoBStNode *models.OutofbandStaticNode, mg
 		d.Set("gw", mgmtRsOoBStNodeMap["gw"])
 		d.Set("v6_addr", mgmtRsOoBStNodeMap["v6Addr"])
 		d.Set("v6_gw", mgmtRsOoBStNodeMap["v6Gw"])
+		d.Set("management_epg_dn", GetParentDn(mgmtRsInBStNode.DistinguishedName, fmt.Sprintf("/rsooBStNode-%s", mgmtRsOoBStNodeMap["tDn"])))
+
 	}
 
 	return d, nil

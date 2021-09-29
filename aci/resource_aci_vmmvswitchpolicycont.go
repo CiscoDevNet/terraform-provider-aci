@@ -116,7 +116,7 @@ func setVSwitchPolicyGroupAttributes(vmmVSwitchPolicyCont *models.VSwitchPolicyG
 	if err != nil {
 		return d, err
 	}
-
+	d.Set("vmm_domain_dn", GetParentDn(vmmVSwitchPolicyCont.DistinguishedName, fmt.Sprintf("/vswitchpolcont")))
 	d.Set("annotation", vmmVSwitchPolicyContMap["annotation"])
 	d.Set("name_alias", vmmVSwitchPolicyContMap["nameAlias"])
 	return d, nil
