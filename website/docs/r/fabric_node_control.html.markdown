@@ -31,7 +31,7 @@ resource "aci_fabric_node_control" "example" {
 ## Argument Reference ##
 * `name` - (Required) Name of object Fabric Node Control.
 * `annotation` - (Optional) Annotation of object Fabric Node Control.
-* `control` - (Optional) Fabric node control bitmask of object Fabric Node Control. Allowed value is "Dom" and "None". Default value is "None".
+* `control` - (Optional) Fabric node control bitmask of object Fabric Node Control. Allowed values are "Dom" and "None". Default value is "None".
 * `feature_sel` - (Optional) Feature Selection of object Fabric Node Control. Allowed values are "analytics", "netflow" and "telemetry". Default value is "telemetry". 
 * `description` - (Optional) Description of object Fabric Node Control.
 * `name_alias` - (Optional) Name Alias of object Fabric Node Control.
