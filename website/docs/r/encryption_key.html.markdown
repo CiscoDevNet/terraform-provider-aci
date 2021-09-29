@@ -1,62 +1,53 @@
 ---
 layout: "aci"
-page_title: "ACI: aci_aes_encryption_passphraseand_keysfor_config_export(and_import)"
-sidebar_current: "docs-aci-resource-aes_encryption_passphraseand_keysfor_config_export(and_import)"
+page_title: "ACI: aci_encryption_key"
+sidebar_current: "docs-aci-resource-aci_encryption_key"
 description: |-
-  Manages ACI AES Encryption Passphrase and Keys for Config Export (and Import)
+  Manages ACI AES Encryption Passphrase and Keys for Config Export and Import
 ---
 
-# aci_aes_encryption_passphraseand_keysfor_config_export(and_import) #
-
-Manages ACI AES Encryption Passphrase and Keys for Config Export (and Import)
+# aci_encryption_key #
+Manages ACI AES Encryption Passphrase and Keys for Config Export and Import
 
 ## API Information ##
-
 * `Class` - pkiExportEncryptionKey
 * `Distinguished Named` - uni/exportcryptkey
 
 ## GUI Information ##
-
-* `Location` - 
-
+* `Location` - System -> System Settings -> Global AES Encryption Settings for all Configuration Import and Export
 
 ## Example Usage ##
-
 ```hcl
-resource "aci_aes_encryption_passphraseand_keysfor_config_export(and_import)" "example" {
-
+resource "aci_encryption_key" "example" {
+  description = "from terraform"
   annotation = "orchestrator:terraform"
-  clear_encryption_key = "false"
-
-  passphrase = 
-  passphrase_key_derivation_version = "0"
-  strong_encryption_enabled = "false"
+  name_alias = "example_name_alias"
+  clear_encryption_key = "no"
+  passphrase = "example_passphrase"
+  passphrase_key_derivation_version = "v1"
+  strong_encryption_enabled = "yes"
 }
 ```
 
+## NOTE ##
+User can use resource of type aci_encryption_key to change configuration of object AES Encryption Passphrase and Keys for Config Export and Import. User cannot create more than one instances of object AES Encryption Passphrase and Keys for Config Export and Import.
+
 ## Argument Reference ##
-
-
-
-* `annotation` - (Optional) Annotation of object AES Encryption Passphrase and Keys for Config Export (and Import).
-
-* `clear_encryption_key` - (Optional) Pushbutton property to clear the encryption key, if configured.Setting this property to true will trigger the clearing of all fields in this mo,
-             set the strongEncryptionEnabled policy to False and keyConfigured to False. There is no
-             method to recover the previous passphrase before the clear operation. Allowed values are "no", "yes", and default value is "false". Type: String.
-* `passphrase` - (Optional) passphrase.The encryption parameters cannot be modified by a client request - only via a passphrase changeSetting this passphrase to blank/empty will trigger the clearing of all fields in this mo,
-             set the strongEncryptionEnabled policy to False and keyConfigured to False. There is no
-             method to recover the previous passphrase before the clear operation.
-* `passphrase_key_derivation_version` - (Optional) passphraseKeyDerivationVersion.Version of the algorithm used - used for forward compatibility Allowed values are "v1", and default value is "0". Type: String.
-* `strong_encryption_enabled` - (Optional) Strong Encryption Enabled for configuration export and import.Toggle to choose between weak and strong encryption - this flag can be set to True
-           only when keyConfigured=True Allowed values are "no", "yes", and default value is "false". Type: String.
+* `annotation` - (Optional) Annotation of object AES Encryption Passphrase and Keys for Config Export and Import.
+* `clear_encryption_key` - (Optional) Parameter to clear the encryption key, if configured. Allowed values are "yes" and "no". Type: String.
+* `passphrase` - (Optional) Parameter to set the passphrase of object AES Encryption Passphrase and Keys for Config Export and Import
+* `passphrase_key_derivation_version` - (Optional) Version of the algorithm used for forward compatibility. Allowed value is "v1". Default value is "v1".
+* `strong_encryption_enabled` - (Optional) Parameter indicating whether encryption is weak or strong. This parameter can be set if and only if `passphrase` is set. Allowed values are "yes" and "no". Type: String.
+* `description` - (Optional) Description of object AES Encryption Passphrase and Keys for Config Export and Import.
+* `name_alias` - (Optional) Name Alias of object AES Encryption Passphrase and Keys for Config Export and Import.
 
 
 ## Importing ##
 
-An existing AESEncryptionPassphraseandKeysforConfigExport(andImport) can be [imported][docs-import] into this resource via its Dn, via the following command:
+An existing AESEncryptionPassphraseandKeysforConfigExportandImport can be [imported][docs-import] into this resource via its Dn, via the following command:
 [docs-import]: https://www.terraform.io/docs/import/index.html
 
 
 ```
-terraform import aci_aes_encryption_passphraseand_keysfor_config_export(and_import).example <Dn>
+terraform import aci_encryption_key.example <Dn>
 ```
