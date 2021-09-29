@@ -30,12 +30,10 @@ func resourceAciFabricNodeControl() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
-				Elem: &schema.Schema{
-					Type: schema.TypeString,
-					ValidateFunc: validation.StringInSlice([]string{
-						"Dom",
-					}, false),
-				},
+				ValidateFunc: validation.StringInSlice([]string{
+					"Dom",
+					"None",
+				}, false),
 			},
 			"feature_sel": &schema.Schema{
 				Type:     schema.TypeString,
@@ -76,7 +74,11 @@ func setFabricNodeControlAttributes(fabricNodeControl *models.FabricNodeControl,
 		return d, err
 	}
 	d.Set("annotation", fabricNodeControlMap["annotation"])
-	d.Set("control", fabricNodeControlMap["control"])
+	if fabricNodeControlMap["control"] == "" {
+		d.Set("control", "None")
+	} else {
+		d.Set("control", fabricNodeControlMap["control"])
+	}
 	d.Set("feature_sel", fabricNodeControlMap["featureSel"])
 	d.Set("name", fabricNodeControlMap["name"])
 	d.Set("name_alias", fabricNodeControlMap["nameAlias"])
