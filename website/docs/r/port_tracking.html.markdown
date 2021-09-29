@@ -25,12 +25,13 @@ Manages ACI Port Tracking
 ```hcl
 resource "aci_port_tracking" "example" {
 
-  admin_st = "off"
-  annotation = "orchestrator:terraform"
-  delay = "120"
-  include_apic_ports = "false"
-  minlinks = "0"
-
+    admin_st           = "off"
+    annotation         = "orchestrator:terraform"
+    delay              = "120"
+    include_apic_ports = "no"
+    minlinks           = "0"
+    name_alias         = "port_tracking_alias"
+    description        = "From Terraform"
 }
 ```
 ## NOTE ##
@@ -39,7 +40,9 @@ User can use resource of type aci_port_tracking to change configuration of objec
 ## Argument Reference ##
 
 
-* `annotation` - (Optional) Annotation of object Port Tracking.
+* `annotation` - (Optional) Annotation of object Port Tracking. Type: String.
+* `name_alias` - (Optional) Name Alias of object Port Tracking. Type: String.
+* `description` - (Optional) Description of object Port Tracking. Type: String.
 * `admin_st` - (Optional) Port Tracking State.The administrative state of the object or policy. Allowed values are "off", "on". Type: String.
 * `delay` - (Optional) Delay Timeout.The administrative port delay. Allowed range is "1"-"300". Type: String.
 * `include_apic_ports` - (Optional) Include APIC Ports when port tracking is triggered. Allowed values are "no", "yes". Type: String.

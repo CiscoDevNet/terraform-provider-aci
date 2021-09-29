@@ -32,6 +32,7 @@ data "aci_endpoint_loop_protection" "example" {}
 * `id` - Attribute id set to the Dn of the Endpoint Loop Protection Policy.
 * `annotation` - (Optional) Annotation of object Endpoint Loop Protection Policy.
 * `name_alias` - (Optional) Name Alias of object Endpoint Loop Protection Policy.
+* `description` - (Optional) Description of object Endpoint Loop Protection.
 * `action` - (Optional) Action. Sets the action to take when a loop is detected.
 * `admin_st` - (Optional) Admin State. The administrative state of the object or policy.
 * `loop_detect_intvl` - (Optional) Loop Detection Interval. Sets the loop detection interval, which specifies the time to detect a loop.

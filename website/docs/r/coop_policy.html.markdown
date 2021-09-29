@@ -25,8 +25,10 @@ Manages ACI COOP Policy
 ```hcl
 resource "aci_coop_policy" "example" {
 
-  annotation = "orchestrator:terraform"
-  type = "compatible"
+  annotation  = "orchestrator:terraform"
+  type        = "compatible"
+  name_alias  = "alias_coop_policy"
+  description = "From Terraform"
 
 }
 ```
@@ -38,6 +40,8 @@ User can use resource of type aci_coop_policy to change configuration of object 
 
 * `annotation` - (Optional) Annotation of object COOP Group Policy.
 * `type` - (Optional) Authentication type.The specific type of the object or component. Allowed values are "compatible", "strict". Type: String.
+* `name_alias` - (Optional) Name Alias of object COOP Group Policy. Type: String.
+* `description` - (Optional) Description of object COOP Group Policy. Type: String.
 
 
 ## Importing ##

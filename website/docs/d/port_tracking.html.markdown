@@ -38,3 +38,4 @@ data "aci_port_tracking" "example" {}
 * `delay` - (Optional) Delay Timeout. The administrative port delay.
 * `include_apic_ports` - (Optional) Include APIC Ports when port tracking is triggered. 
 * `minlinks` - (Optional) Minimum links left up before trigger. 
+* `description` - (Optional) Description of object Port Tracking.
