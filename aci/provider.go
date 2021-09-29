@@ -228,6 +228,7 @@ func Provider() *schema.Provider {
 			"aci_user_security_domain_role":                resourceAciUserRole(),
 			"aci_console_authentication":                   resourceAciConsoleAuthenticationMethod(),
 			"aci_error_disable_recovery":                   resourceAciErrorDisabledRecoveryPolicy(),
+			"aci_isis_domain_policy":                       resourceAciISISDomainPolicy(),
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
