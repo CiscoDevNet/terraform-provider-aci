@@ -35,12 +35,9 @@ func dataSourceAciL3outOspfExternalPolicy() *schema.Resource {
 			},
 
 			"area_ctrl": &schema.Schema{
-				Type:     schema.TypeList,
+				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
-				Elem: &schema.Schema{
-					Type: schema.TypeString,
-				},
 			},
 
 			"area_id": &schema.Schema{

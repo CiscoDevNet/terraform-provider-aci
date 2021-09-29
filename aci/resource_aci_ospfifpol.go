@@ -151,8 +151,6 @@ func setOSPFInterfacePolicyAttributes(ospfIfPol *models.OSPFInterfacePolicy, d *
 		return d, err
 	}
 
-	d.Set("tenant_dn", GetParentDn(dn, fmt.Sprintf("/ospfIfPol-%s", ospfIfPolMap["name"])))
-
 	d.Set("name", ospfIfPolMap["name"])
 
 	d.Set("annotation", ospfIfPolMap["annotation"])

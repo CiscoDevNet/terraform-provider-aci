@@ -28,12 +28,9 @@ func dataSourceAciBgpPeerConnectivityProfile() *schema.Resource {
 			},
 
 			"addr_t_ctrl": &schema.Schema{
-				Type:     schema.TypeList,
+				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
-				Elem: &schema.Schema{
-					Type: schema.TypeString,
-				},
 			},
 
 			"allowed_self_as_cnt": &schema.Schema{
@@ -49,12 +46,9 @@ func dataSourceAciBgpPeerConnectivityProfile() *schema.Resource {
 			},
 
 			"ctrl": &schema.Schema{
-				Type:     schema.TypeList,
+				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
-				Elem: &schema.Schema{
-					Type: schema.TypeString,
-				},
 			},
 
 			"name_alias": &schema.Schema{
@@ -70,21 +64,15 @@ func dataSourceAciBgpPeerConnectivityProfile() *schema.Resource {
 			},
 
 			"peer_ctrl": &schema.Schema{
-				Type:     schema.TypeList,
+				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
-				Elem: &schema.Schema{
-					Type: schema.TypeString,
-				},
 			},
 
 			"private_a_sctrl": &schema.Schema{
-				Type:     schema.TypeList,
+				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
-				Elem: &schema.Schema{
-					Type: schema.TypeString,
-				},
 			},
 
 			"ttl": &schema.Schema{

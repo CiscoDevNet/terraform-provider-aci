@@ -4,8 +4,6 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"reflect"
-	"sort"
 	"strconv"
 	"strings"
 
@@ -43,18 +41,16 @@ func resourceAciL3outOspfExternalPolicy() *schema.Resource {
 			},
 
 			"area_ctrl": &schema.Schema{
-				Type:     schema.TypeList,
-				Optional: true,
-				Computed: true,
-				Elem: &schema.Schema{
-					Type: schema.TypeString,
-					ValidateFunc: validation.StringInSlice([]string{
-						"redistribute",
-						"summary",
-						"suppress-fa",
-						"unspecified",
-					}, false),
-				},
+				Type:             schema.TypeString,
+				Optional:         true,
+				Computed:         true,
+				DiffSuppressFunc: suppressBitMaskDiffFunc(),
+				ValidateFunc: schema.SchemaValidateFunc(validateCommaSeparatedStringInSlice([]string{
+					"redistribute",
+					"summary",
+					"suppress-fa",
+					"unspecified",
+				}, false, "unspecified")),
 			},
 
 			"area_id": &schema.Schema{
@@ -62,21 +58,18 @@ func resourceAciL3outOspfExternalPolicy() *schema.Resource {
 				Optional: true,
 				Computed: true,
 				StateFunc: func(val interface{}) string {
-					if val.(string) == "backbone" {
-						return "backbone"
-					} else {
-						numList := strings.Split(val.(string), ".")
-						ip := []string{"0", "0", "0", "0"}
-						if val.(string) != "" && len(numList) <= 4 {
-							for i := 1; i <= len(numList); i++ {
-								ip[4-i] = numList[len(numList)-i]
-							}
+					numList := strings.Split(val.(string), ".")
+					ip := []string{"0", "0", "0", "0"}
+					if val.(string) != "" && len(numList) <= 4 {
+						for i := 1; i <= len(numList); i++ {
+							ip[4-i] = numList[len(numList)-i]
 						}
-						return strings.Join(ip, ".")
 					}
+					return strings.Join(ip, ".")
 				},
 				ValidateFunc: schema.SchemaValidateFunc(validateOspfIp()),
 			},
+
 			"area_type": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -113,9 +106,6 @@ func validateOspfIp() schema.SchemaValidateFunc {
 		val, ok := i.(string)
 		if !ok {
 			es = append(es, fmt.Errorf("expected type of %s to be string", k))
-			return
-		}
-		if val == "backbone" {
 			return
 		}
 		numList := strings.Split(val, ".")
@@ -161,35 +151,12 @@ func setL3outOspfExternalPolicyAttributes(ospfExtP *models.L3outOspfExternalPoli
 		return d, err
 	}
 
-	d.Set("l3_outside_dn", GetParentDn(dn, fmt.Sprintf("/ospfExtP")))
-
 	d.Set("annotation", ospfExtPMap["annotation"])
 	d.Set("area_cost", ospfExtPMap["areaCost"])
 	d.Set("area_ctrl", ospfExtPMap["areaCtrl"])
 	if ospfExtPMap["areaCtrl"] == "" {
-		d.Set("area_ctrl", []string{
-			"unspecified",
-		})
+		d.Set("area_ctrl", "unspecified")
 	} else {
-		areaCtrlGet := make([]string, 0, 1)
-		for _, val := range strings.Split(ospfExtPMap["areaCtrl"], ",") {
-			areaCtrlGet = append(areaCtrlGet, strings.Trim(val, " "))
-		}
-		sort.Strings(areaCtrlGet)
-		if areaCtrlIntr, ok := d.GetOk("area_ctrl"); ok {
-			areaCtrlAct := make([]string, 0, 1)
-			for _, val := range areaCtrlIntr.([]interface{}) {
-				areaCtrlAct = append(areaCtrlAct, val.(string))
-			}
-			sort.Strings(areaCtrlAct)
-			if reflect.DeepEqual(areaCtrlAct, areaCtrlGet) {
-				d.Set("area_ctrl", d.Get("area_ctrl").([]interface{}))
-			} else {
-				d.Set("area_ctrl", areaCtrlGet)
-			}
-		} else {
-			d.Set("area_ctrl", areaCtrlGet)
-		}
 		d.Set("area_ctrl", ospfExtPMap["areaCtrl"])
 	}
 	d.Set("area_id", ospfExtPMap["areaId"])
@@ -236,14 +203,8 @@ func resourceAciL3outOspfExternalPolicyCreate(ctx context.Context, d *schema.Res
 		ospfExtPAttr.AreaCost = AreaCost.(string)
 	}
 	if AreaCtrl, ok := d.GetOk("area_ctrl"); ok {
-		areaCtrlList := make([]string, 0, 1)
-		for _, val := range AreaCtrl.([]interface{}) {
-			areaCtrlList = append(areaCtrlList, val.(string))
-		}
-		AreaCtrl := strings.Join(areaCtrlList, ",")
-		ospfExtPAttr.AreaCtrl = AreaCtrl
+		ospfExtPAttr.AreaCtrl = AreaCtrl.(string)
 	}
-
 	if AreaId, ok := d.GetOk("area_id"); ok {
 		ospfExtPAttr.AreaId = AreaId.(string)
 	}
@@ -287,12 +248,7 @@ func resourceAciL3outOspfExternalPolicyUpdate(ctx context.Context, d *schema.Res
 		ospfExtPAttr.AreaCost = AreaCost.(string)
 	}
 	if AreaCtrl, ok := d.GetOk("area_ctrl"); ok {
-		areaCtrlList := make([]string, 0, 1)
-		for _, val := range AreaCtrl.([]interface{}) {
-			areaCtrlList = append(areaCtrlList, val.(string))
-		}
-		AreaCtrl := strings.Join(areaCtrlList, ",")
-		ospfExtPAttr.AreaCtrl = AreaCtrl
+		ospfExtPAttr.AreaCtrl = AreaCtrl.(string)
 	}
 	if AreaId, ok := d.GetOk("area_id"); ok {
 		ospfExtPAttr.AreaId = AreaId.(string)

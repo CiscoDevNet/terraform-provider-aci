@@ -50,8 +50,7 @@ func resourceAciL3ExtSubnet() *schema.Resource {
 					"import-rtctrl",
 					"export-rtctrl",
 					"shared-rtctrl",
-					"none",
-				}, false, "none")),
+				}, false, "")),
 			},
 
 			"name_alias": &schema.Schema{
@@ -119,7 +118,7 @@ func setL3ExtSubnetAttributes(l3extSubnet *models.L3ExtSubnet, d *schema.Resourc
 	dn := d.Id()
 	d.SetId(l3extSubnet.DistinguishedName)
 	d.Set("description", l3extSubnet.Description)
-
+	// d.Set("external_network_instance_profile_dn", GetParentDn(l3extSubnet.DistinguishedName))
 	if dn != l3extSubnet.DistinguishedName {
 		d.Set("external_network_instance_profile_dn", "")
 	}
@@ -127,16 +126,9 @@ func setL3ExtSubnetAttributes(l3extSubnet *models.L3ExtSubnet, d *schema.Resourc
 	if err != nil {
 		return d, err
 	}
-
-	d.Set("external_network_instance_profile_dn", GetParentDn(dn, fmt.Sprintf("/extsubnet-[%s]", l3extSubnetMap["ip"])))
 	d.Set("ip", l3extSubnetMap["ip"])
 
-	if l3extSubnetMap["aggregate"] == "" {
-		d.Set("aggregate", "none")
-	} else {
-		d.Set("aggregate", l3extSubnetMap["aggregate"])
-	}
-
+	d.Set("aggregate", l3extSubnetMap["aggregate"])
 	d.Set("annotation", l3extSubnetMap["annotation"])
 	d.Set("ip", l3extSubnetMap["ip"])
 	d.Set("name_alias", l3extSubnetMap["nameAlias"])
@@ -202,11 +194,7 @@ func resourceAciL3ExtSubnetCreate(ctx context.Context, d *schema.ResourceData, m
 
 	l3extSubnetAttr := models.L3ExtSubnetAttributes{}
 	if Aggregate, ok := d.GetOk("aggregate"); ok {
-		agg := Aggregate.(string)
-		if agg == "none" {
-			agg = ""
-		}
-		l3extSubnetAttr.Aggregate = agg
+		l3extSubnetAttr.Aggregate = Aggregate.(string)
 	}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		l3extSubnetAttr.Annotation = Annotation.(string)
@@ -286,11 +274,7 @@ func resourceAciL3ExtSubnetUpdate(ctx context.Context, d *schema.ResourceData, m
 
 	l3extSubnetAttr := models.L3ExtSubnetAttributes{}
 	if Aggregate, ok := d.GetOk("aggregate"); ok {
-		agg := Aggregate.(string)
-		if agg == "none" {
-			agg = ""
-		}
-		l3extSubnetAttr.Aggregate = agg
+		l3extSubnetAttr.Aggregate = Aggregate.(string)
 	}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		l3extSubnetAttr.Annotation = Annotation.(string)

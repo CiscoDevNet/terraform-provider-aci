@@ -34,12 +34,9 @@ func dataSourceAciHSRPInterfacePolicy() *schema.Resource {
 			},
 
 			"ctrl": &schema.Schema{
-				Type:     schema.TypeList,
+				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
-				Elem: &schema.Schema{
-					Type: schema.TypeString,
-				},
 			},
 
 			"delay": &schema.Schema{
