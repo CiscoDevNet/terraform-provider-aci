@@ -221,6 +221,7 @@ func Provider() *schema.Provider {
 			"aci_coop_policy":                              resourceAciCOOPGroupPolicy(),
 			"aci_endpoint_loop_protection":                 resourceAciEPLoopProtectionPolicy(),
 			"aci_port_tracking":                            resourceAciPortTracking(),
+			"aci_user_security_domain":                     resourceAciUserDomain(),
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
@@ -393,6 +394,7 @@ func Provider() *schema.Provider {
 			"aci_coop_policy":                              dataSourceAciCOOPGroupPolicy(),
 			"aci_endpoint_loop_protection":                 dataSourceAciEPLoopProtectionPolicy(),
 			"aci_port_tracking":                            dataSourceAciPortTracking(),
+			"aci_user_security_domain":                     dataSourceAciUserDomain(),
 		},
 
 		ConfigureFunc: configureClient,
