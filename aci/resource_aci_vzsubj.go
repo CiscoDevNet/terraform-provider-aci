@@ -164,7 +164,6 @@ func setContractSubjectAttributes(vzSubj *models.ContractSubject, d *schema.Reso
 	dn := d.Id()
 	d.SetId(vzSubj.DistinguishedName)
 	d.Set("description", vzSubj.Description)
-	// d.Set("contract_dn", GetParentDn(vzSubj.DistinguishedName))
 	if dn != vzSubj.DistinguishedName {
 		d.Set("contract_dn", "")
 	}
@@ -172,6 +171,7 @@ func setContractSubjectAttributes(vzSubj *models.ContractSubject, d *schema.Reso
 	if err != nil {
 		return d, err
 	}
+	d.Set("contract_dn", GetParentDn(dn, fmt.Sprintf("/subj-%s", vzSubjMap["name"])))
 
 	d.Set("name", vzSubjMap["name"])
 

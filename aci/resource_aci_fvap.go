@@ -86,7 +86,6 @@ func setApplicationProfileAttributes(fvAp *models.ApplicationProfile, d *schema.
 	dn := d.Id()
 	d.SetId(fvAp.DistinguishedName)
 	d.Set("description", fvAp.Description)
-	// d.Set("tenant_dn", GetParentDn(fvAp.DistinguishedName))
 	if dn != fvAp.DistinguishedName {
 		d.Set("tenant_dn", "")
 	}
@@ -94,6 +93,8 @@ func setApplicationProfileAttributes(fvAp *models.ApplicationProfile, d *schema.
 	if err != nil {
 		return d, err
 	}
+
+	d.Set("tenant_dn", GetParentDn(dn, fmt.Sprintf("/ap-%s", fvApMap["name"])))
 
 	d.Set("name", fvApMap["name"])
 

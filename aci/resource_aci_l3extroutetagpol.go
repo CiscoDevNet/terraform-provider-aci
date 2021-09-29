@@ -78,6 +78,7 @@ func setL3outRouteTagPolicyAttributes(l3extRouteTagPol *models.L3outRouteTagPoli
 		return d, err
 	}
 
+	d.Set("tenant_dn", GetParentDn(dn, fmt.Sprintf("/rttag-%s", l3extRouteTagPolMap["name"])))
 	d.Set("name", l3extRouteTagPolMap["name"])
 
 	d.Set("annotation", l3extRouteTagPolMap["annotation"])

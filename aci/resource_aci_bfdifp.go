@@ -96,7 +96,7 @@ func setBFDInterfaceProfileAttributes(bfdIfP *models.BFDInterfaceProfile, d *sch
 	if err != nil {
 		return d, err
 	}
-
+	d.Set("logical_interface_profile_dn", GetParentDn(dn, fmt.Sprintf("/bfdIfP")))
 	d.Set("annotation", bfdIfPMap["annotation"])
 	d.Set("key_id", bfdIfPMap["keyId"])
 	d.Set("name_alias", bfdIfPMap["nameAlias"])

@@ -115,7 +115,7 @@ func setCloudVpnGatewayAttributes(cloudRouterP *models.CloudVpnGateway, d *schem
 	}
 
 	d.Set("name", cloudRouterPMap["name"])
-
+	d.Set("cloud_context_profile_dn", GetParentDn(cloudRouterP.DistinguishedName, fmt.Sprintf("/routerp-%s", cloudRouterPMap["name"])))
 	d.Set("annotation", cloudRouterPMap["annotation"])
 	d.Set("name_alias", cloudRouterPMap["nameAlias"])
 	d.Set("num_instances", cloudRouterPMap["numInstances"])

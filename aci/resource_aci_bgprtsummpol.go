@@ -87,6 +87,7 @@ func setBgpRouteSummarizationAttributes(bgpRtSummPol *models.BgpRouteSummarizati
 	if err != nil {
 		return d, err
 	}
+	d.Set("tenant_dn", GetParentDn(dn, fmt.Sprintf("/bgprtsum-%s", bgpRtSummPolMap["name"])))
 
 	d.Set("name", bgpRtSummPolMap["name"])
 

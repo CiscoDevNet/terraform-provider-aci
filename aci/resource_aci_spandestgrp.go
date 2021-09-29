@@ -64,14 +64,14 @@ func setSPANDestinationGroupAttributes(spanDestGrp *models.SPANDestinationGroup,
 	dn := d.Id()
 	d.SetId(spanDestGrp.DistinguishedName)
 	d.Set("description", spanDestGrp.Description)
-	// d.Set("tenant_dn", GetParentDn(spanDestGrp.DistinguishedName))
+
 	if dn != spanDestGrp.DistinguishedName {
 		d.Set("tenant_dn", "")
 	}
 	spanDestGrpMap, _ := spanDestGrp.ToMap()
 
 	d.Set("name", spanDestGrpMap["name"])
-
+	d.Set("tenant_dn", GetParentDn(spanDestGrp.DistinguishedName, fmt.Sprintf("destgrp-%s", spanDestGrpMap["name"])))
 	d.Set("annotation", spanDestGrpMap["annotation"])
 	d.Set("name_alias", spanDestGrpMap["nameAlias"])
 	return d

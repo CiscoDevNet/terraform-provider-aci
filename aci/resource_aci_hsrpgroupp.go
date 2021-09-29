@@ -143,7 +143,7 @@ func setHSRPGroupProfileAttributes(hsrpGroupP *models.HSRPGroupProfile, d *schem
 	if err != nil {
 		return d, err
 	}
-
+	d.Set("l3out_hsrp_interface_profile_dn", GetParentDn(hsrpGroupP.DistinguishedName, fmt.Sprintf("/hsrpGroupP-%s", hsrpGroupPMap["name"])))
 	d.Set("name", hsrpGroupPMap["name"])
 	d.Set("annotation", hsrpGroupPMap["annotation"])
 	if hsrpGroupPMap["configIssues"] == "" {

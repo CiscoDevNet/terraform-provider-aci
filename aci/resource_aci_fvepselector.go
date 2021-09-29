@@ -62,6 +62,7 @@ func setEndpointSecurityGroupSelectorAttributes(fvEPSelector *models.EndpointSec
 	if err != nil {
 		return d, err
 	}
+	d.Set("endpoint_security_group_dn", GetParentDn(fvEPSelector.DistinguishedName, fmt.Sprintf("/endpoint_security_group_selector")))
 	d.Set("annotation", fvEPSelectorMap["annotation"])
 	d.Set("match_expression", fvEPSelectorMap["matchExpression"])
 	d.Set("name", fvEPSelectorMap["name"])

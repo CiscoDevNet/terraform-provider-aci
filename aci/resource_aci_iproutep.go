@@ -105,7 +105,7 @@ func setL3outStaticRouteAttributes(ipRouteP *models.L3outStaticRoute, d *schema.
 		return d, err
 	}
 	d.Set("ip", ipRoutePMap["ip"])
-
+	d.Set("fabric_node_dn", GetParentDn(dn, fmt.Sprintf("rt-[%s]", ipRoutePMap["ip"])))
 	d.Set("aggregate", ipRoutePMap["aggregate"])
 	d.Set("annotation", ipRoutePMap["annotation"])
 	d.Set("ip", ipRoutePMap["ip"])

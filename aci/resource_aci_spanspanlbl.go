@@ -70,13 +70,13 @@ func setSPANSourcedestinationGroupMatchLabelAttributes(spanSpanLbl *models.SPANS
 	dn := d.Id()
 	d.SetId(spanSpanLbl.DistinguishedName)
 	d.Set("description", spanSpanLbl.Description)
-	// d.Set("span_source_group_dn", GetParentDn(spanSpanLbl.DistinguishedName))
 	if dn != spanSpanLbl.DistinguishedName {
 		d.Set("span_source_group_dn", "")
 	}
 	spanSpanLblMap, _ := spanSpanLbl.ToMap()
 
 	d.Set("name", spanSpanLblMap["name"])
+	d.Set("span_source_group_dn", GetParentDn(spanSpanLbl.DistinguishedName, fmt.Sprintf("spanlbl-%s", spanSpanLblMap["name"])))
 
 	d.Set("annotation", spanSpanLblMap["annotation"])
 	d.Set("name_alias", spanSpanLblMap["nameAlias"])

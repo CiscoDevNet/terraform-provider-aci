@@ -191,7 +191,7 @@ func setVirtualLogicalInterfaceProfileAttributes(l3extVirtualLIfP *models.Virtua
 	if err != nil {
 		return d, err
 	}
-
+	d.Set("logical_interface_profile_dn", GetParentDn(dn, fmt.Sprintf("/vlifp-[%s]-[%s]", l3extVirtualLIfPMap["nodeDn"], l3extVirtualLIfPMap["encap"])))
 	d.Set("node_dn", l3extVirtualLIfPMap["nodeDn"])
 	d.Set("encap", l3extVirtualLIfPMap["encap"])
 	d.Set("addr", l3extVirtualLIfPMap["addr"])

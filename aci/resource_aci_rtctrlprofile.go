@@ -83,6 +83,8 @@ func setRouteControlProfileAttributes(rtctrlProfile *models.RouteControlProfile,
 	if err != nil {
 		return d, err
 	}
+
+	d.Set("parent_dn", GetParentDn(dn, fmt.Sprintf("/prof-%s", rtctrlProfileMap["name"])))
 	d.Set("name", rtctrlProfileMap["name"])
 	d.Set("annotation", rtctrlProfileMap["annotation"])
 	d.Set("name_alias", rtctrlProfileMap["nameAlias"])
