@@ -25,11 +25,14 @@ Manages ACI Endpoint Loop Protection
 ```hcl
 resource "aci_endpoint_loop_protection" "example" {
   
-  action = ["port-disable"]
-  admin_st = "disabled"
-  annotation = "orchestrator:terraform"
+  action            = ["port-disable"]
+  admin_st          = "disabled"
+  annotation        = "orchestrator:terraform"
   loop_detect_intvl = "60"
-  loop_detect_mult = "4"
+  loop_detect_mult  = "4"
+  name_alias        = "endpoint_loop_protection_alias"
+  description       = "From Terraform"
+
 
 }
 ```
@@ -39,6 +42,8 @@ User can use resource of type aci_endpoint_loop_protection to change configurati
 ## Argument Reference ##
 
 * `annotation` - (Optional) Annotation of object Endpoint Loop Protection Policy.
+* `name_alias` - (Optional) Name Alias of object Endpoint Loop Protection. Type: String.
+* `description` - (Optional) Description of object Endpoint Loop Protection. Type: String.
 * `action` - (Optional) Action.Sets the action to take when a loop is detected. Allowed values are "bd-learn-disable", "port-disable". Type: List.
 * `admin_st` - (Optional) Admin State.The administrative state of the object or policy. Allowed values are "disabled", "enabled". Type: String.
 * `loop_detect_intvl` - (Optional) Loop Detection Interval.Sets the loop detection interval, which specifies the time to detect a loop. Allowed range is "30"-"300". Type: String.

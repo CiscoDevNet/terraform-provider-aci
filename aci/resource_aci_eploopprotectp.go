@@ -84,23 +84,27 @@ func setEPLoopProtectionPolicyAttributes(epLoopProtectP *models.EPLoopProtection
 		return nil, err
 	}
 	actionGet := make([]string, 0, 1)
-	for _, val := range strings.Split(epLoopProtectPMap["action"], ",") {
-		actionGet = append(actionGet, strings.Trim(val, " "))
-	}
-	sort.Strings(actionGet)
-	if actionIntr, ok := d.GetOk("action"); ok {
-		actionAct := make([]string, 0, 1)
-		for _, val := range actionIntr.([]interface{}) {
-			actionAct = append(actionAct, val.(string))
+	if epLoopProtectPMap["action"] == "" {
+		d.Set("action", actionGet)
+	} else {
+		for _, val := range strings.Split(epLoopProtectPMap["action"], ",") {
+			actionGet = append(actionGet, strings.Trim(val, " "))
 		}
-		sort.Strings(actionAct)
-		if reflect.DeepEqual(actionAct, actionGet) {
-			d.Set("action", d.Get("action").([]interface{}))
+		sort.Strings(actionGet)
+		if actionIntr, ok := d.GetOk("action"); ok {
+			actionAct := make([]string, 0, 1)
+			for _, val := range actionIntr.([]interface{}) {
+				actionAct = append(actionAct, val.(string))
+			}
+			sort.Strings(actionAct)
+			if reflect.DeepEqual(actionAct, actionGet) {
+				d.Set("action", d.Get("action").([]interface{}))
+			} else {
+				d.Set("action", actionGet)
+			}
 		} else {
 			d.Set("action", actionGet)
 		}
-	} else {
-		d.Set("action", actionGet)
 	}
 	d.Set("admin_st", epLoopProtectPMap["adminSt"])
 	d.Set("annotation", epLoopProtectPMap["annotation"])
@@ -149,6 +153,8 @@ func resourceAciEPLoopProtectionPolicyCreate(ctx context.Context, d *schema.Reso
 		}
 		Action := strings.Join(actionList, ",")
 		epLoopProtectPAttr.Action = Action
+	} else {
+		epLoopProtectPAttr.Action = "{}"
 	}
 
 	if AdminSt, ok := d.GetOk("admin_st"); ok {
@@ -200,8 +206,9 @@ func resourceAciEPLoopProtectionPolicyUpdate(ctx context.Context, d *schema.Reso
 		}
 		Action := strings.Join(actionList, ",")
 		epLoopProtectPAttr.Action = Action
+	} else {
+		epLoopProtectPAttr.Action = "{}"
 	}
-
 	if AdminSt, ok := d.GetOk("admin_st"); ok {
 		epLoopProtectPAttr.AdminSt = AdminSt.(string)
 	}

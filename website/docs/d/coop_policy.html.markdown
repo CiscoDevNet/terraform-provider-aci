@@ -33,3 +33,4 @@ data "aci_coop_policy" "example" {}
 * `annotation` - (Optional) Annotation of object COOP Group Policy.
 * `name_alias` - (Optional) Name Alias of object COOP Group Policy.
 * `type` - (Optional) Authentication type. The specific type of the object or component.
+* `description` - (Optional) Description of object COOP Group Policy.
