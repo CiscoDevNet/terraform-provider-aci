@@ -36,7 +36,7 @@ resource "aci_user_security_domain" "example" {
 * `description` - (Optional) Description of object User Security Domain.
 
 ## Importing ##
-An existing UserSecurityDomain can be [imported][docs-import] into this resource via its Dn, via the following command:
+An existing User Security Domain can be [imported][docs-import] into this resource via its Dn, via the following command:
 [docs-import]: https://www.terraform.io/docs/import/index.html
 
 ```

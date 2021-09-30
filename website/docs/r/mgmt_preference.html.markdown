@@ -37,7 +37,7 @@ User can use resource of type `aci_mgmt_preference` to change configuration of o
 
 ## Importing ##
 
-An existing MgmtPreference can be [imported][docs-import] into this resource via its Dn, via the following command:
+An existing Mgmt Preference can be [imported][docs-import] into this resource via its Dn, via the following command:
 [docs-import]: https://www.terraform.io/docs/import/index.html
 
 

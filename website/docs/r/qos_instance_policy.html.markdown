@@ -15,10 +15,6 @@ Manages ACI QOS Instance Policy
 * `Class` - qosInstPol
 * `Distinguished Named` - uni/infra/qosinst-{name}
 
-## GUI Information ##
-
-* `Location` - 
-
 
 ## Example Usage ##
 
