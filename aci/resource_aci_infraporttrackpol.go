@@ -220,7 +220,7 @@ func resourceAciPortTrackingDelete(ctx context.Context, d *schema.ResourceData, 
 	var diags diag.Diagnostics
 	diags = append(diags, diag.Diagnostic{
 		Severity: diag.Warning,
-		Summary:  "Resource with class name epLoopProtectP cannot be deleted",
+		Summary:  "Resource with class name infraPortTrackPol cannot be deleted",
 	})
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 	return diags
