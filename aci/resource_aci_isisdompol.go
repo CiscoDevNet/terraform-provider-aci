@@ -45,7 +45,6 @@ func resourceAciISISDomainPolicy() *schema.Resource {
 				Type:     schema.TypeList,
 				Optional: true,
 				Computed: true,
-				MaxItems: 1,
 				Elem: &schema.Resource{
 					Schema: AppendBaseAttrSchema(AppendNameAliasAttrSchema(
 						map[string]*schema.Schema{
@@ -145,7 +144,7 @@ func getRemoteISISLevel(client *client.Client, dn string) (*models.ISISLevel, er
 	return isisLvlComp, nil
 }
 
-func setISISDomainPolicyAttributes(isisDomPol *models.ISISDomainPolicy, d *schema.ResourceData) (*schema.ResourceData, error) {
+func setISISDomainPolicyAttributes(isisDomPol *models.ISISDomainPolicy, d *schema.ResourceData, m interface{}) (*schema.ResourceData, error) {
 	d.SetId(isisDomPol.DistinguishedName)
 	d.Set("description", isisDomPol.Description)
 	isisDomPolMap, err := isisDomPol.ToMap()
@@ -157,6 +156,9 @@ func setISISDomainPolicyAttributes(isisDomPol *models.ISISDomainPolicy, d *schem
 	d.Set("name", isisDomPolMap["name"])
 	d.Set("redistrib_metric", isisDomPolMap["redistribMetric"])
 	d.Set("name_alias", isisDomPolMap["nameAlias"])
+	isisdn := isisDomPol.DistinguishedName
+	aciClient := m.(*client.Client)
+	aciClient.BaseURL.Query().Get()
 	return d, nil
 }
 func setISISLevelAttributes(isisLvlComps []*models.ISISLevel, d *schema.ResourceData) (*schema.ResourceData, error) {
@@ -434,7 +436,7 @@ func resourceAciISISDomainPolicyRead(ctx context.Context, d *schema.ResourceData
 		d.SetId("")
 		return diag.FromErr(err)
 	}
-	_, err = setISISDomainPolicyAttributes(isisDomPol, d)
+	_, err = setISISDomainPolicyAttributes(isisDomPol, d, m)
 	if err != nil {
 		d.SetId("")
 		return nil
