@@ -24,7 +24,6 @@ Manages ACI Port Tracking
 
 ```hcl
 resource "aci_port_tracking" "example" {
-
     admin_st           = "off"
     annotation         = "orchestrator:terraform"
     delay              = "120"
@@ -45,7 +44,7 @@ User can use resource of type aci_port_tracking to change configuration of objec
 * `description` - (Optional) Description of object Port Tracking. Type: String.
 * `admin_st` - (Optional) Port Tracking State.The administrative state of the object or policy. Allowed values are "off", "on". Type: String.
 * `delay` - (Optional) Delay Timeout.The administrative port delay. Allowed range is "1"-"300". Type: String.
-* `include_apic_ports` - (Optional) Include APIC Ports when port tracking is triggered. Allowed values are "no", "yes". Type: String.
+* `include_apic_ports` - (Optional) Include APIC Ports when port tracking is triggered. Allowed values are "no", "yes". Type: String.(Note: attribute include_apic_ports is supported for version 5 and above of APIC)
 * `minlinks` - (Optional) Minimum links left up before trigger. Allowed range is "0"-"48". Type: String.
 
 

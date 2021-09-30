@@ -24,7 +24,6 @@ Manages ACI MCP Instance Policy
 
 ```hcl
 resource "aci_mcp_instance_policy" "example" {
-
   admin_st         = "disabled"
   annotation       = "orchestrator:terraform"
   name_alias       = "mcp_instance_alias"

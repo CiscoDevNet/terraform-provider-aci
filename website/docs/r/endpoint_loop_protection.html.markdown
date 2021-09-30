@@ -24,7 +24,6 @@ Manages ACI Endpoint Loop Protection
 
 ```hcl
 resource "aci_endpoint_loop_protection" "example" {
-  
   action            = ["port-disable"]
   admin_st          = "disabled"
   annotation        = "orchestrator:terraform"
@@ -32,8 +31,6 @@ resource "aci_endpoint_loop_protection" "example" {
   loop_detect_mult  = "4"
   name_alias        = "endpoint_loop_protection_alias"
   description       = "From Terraform"
-
-
 }
 ```
 ## NOTE ##
