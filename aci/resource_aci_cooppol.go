@@ -172,7 +172,7 @@ func resourceAciCOOPGroupPolicyDelete(ctx context.Context, d *schema.ResourceDat
 	var diags diag.Diagnostics
 	diags = append(diags, diag.Diagnostic{
 		Severity: diag.Warning,
-		Summary:  "Resource with class name epLoopProtectP cannot be deleted",
+		Summary:  "Resource with class name coopPol cannot be deleted",
 	})
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 	return diags

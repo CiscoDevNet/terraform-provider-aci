@@ -223,6 +223,7 @@ func Provider() *schema.Provider {
 			"aci_port_tracking":                            resourceAciPortTracking(),
 			"aci_user_security_domain":                     resourceAciUserDomain(),
 			"aci_encryption_key":                           resourceAciAESEncryptionPassphraseandKeysforConfigExportImport(),
+			"aci_mcp_instance_policy":                      resourceAciMiscablingProtocolInstancePolicy(),
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
@@ -397,6 +398,7 @@ func Provider() *schema.Provider {
 			"aci_port_tracking":                            dataSourceAciPortTracking(),
 			"aci_user_security_domain":                     dataSourceAciUserDomain(),
 			"aci_encryption_key":                           dataSourceAciAESEncryptionPassphraseandKeysforConfigExportImport(),
+			"aci_mcp_instance_policy":                      dataSourceAciMiscablingProtocolInstancePolicy(),
 		},
 
 		ConfigureFunc: configureClient,
