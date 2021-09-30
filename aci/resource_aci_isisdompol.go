@@ -100,7 +100,7 @@ func resourceAciISISDomainPolicy() *schema.Resource {
 							"isis_level_type": &schema.Schema{
 								Type:     schema.TypeString,
 								Optional: true,
-								Computed: true,
+								Default:  "l1",
 								ValidateFunc: validation.StringInSlice([]string{
 									"l1",
 									"l2",
@@ -365,9 +365,11 @@ func resourceAciISISDomainPolicyUpdate(ctx context.Context, d *schema.ResourceDa
 			desc := ""
 			nameAlias := ""
 			isisLvlDn := isisDomPol.DistinguishedName
-
-			isisLvlAttr.ISISLevel_type = isisLvl["isis_level_type"].(string)
-			isis_level_type := isisLvl["isis_level_type"].(string)
+			isis_level_type := ""
+			if isisLvl["isis_level_type"] != nil {
+				isisLvlAttr.ISISLevel_type = isisLvl["isis_level_type"].(string)
+				isis_level_type = isisLvl["isis_level_type"].(string)
+			}
 
 			if isisLvl["lsp_fast_flood"] != nil {
 				isisLvlAttr.LspFastFlood = isisLvl["lsp_fast_flood"].(string)
