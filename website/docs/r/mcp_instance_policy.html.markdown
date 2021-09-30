@@ -6,7 +6,7 @@ description: |-
   Manages ACI MCP Instance Policy
 ---
 
-# aci_mis-cabling_protocol_instance_policy #
+# aci_mcp_instance_policy #
 
 Manages ACI MCP Instance Policy
 
@@ -24,7 +24,6 @@ Manages ACI MCP Instance Policy
 
 ```hcl
 resource "aci_mcp_instance_policy" "example" {
-
   admin_st         = "disabled"
   annotation       = "orchestrator:terraform"
   name_alias       = "mcp_instance_alias"

@@ -14,7 +14,6 @@ provider "aci" {
 }
 
 resource "aci_mcp_instance_policy" "example" {
-
     admin_st         = "disabled"
     annotation       = "orchestrator:terraform"
     name_alias       = "mcp_instance_alias"
@@ -26,5 +25,4 @@ resource "aci_mcp_instance_policy" "example" {
     loop_protect_act = "port-disable"
     tx_freq          = "2"
     tx_freq_msec     = "0"
-
 }

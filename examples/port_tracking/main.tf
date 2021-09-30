@@ -14,7 +14,6 @@ provider "aci" {
 }
 
 resource "aci_port_tracking" "example" {
-
     admin_st           = "off"
     annotation         = "orchestrator:terraform"
     delay              = "120"
