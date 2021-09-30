@@ -48,6 +48,11 @@ func resourceAciISISDomainPolicy() *schema.Resource {
 				Elem: &schema.Resource{
 					Schema: AppendBaseAttrSchema(AppendNameAliasAttrSchema(
 						map[string]*schema.Schema{
+							"id": &schema.Schema{
+								Type:     schema.TypeString,
+								Computed: true,
+							},
+
 							"lsp_fast_flood": &schema.Schema{
 								Type:     schema.TypeString,
 								Optional: true,
@@ -94,7 +99,8 @@ func resourceAciISISDomainPolicy() *schema.Resource {
 							},
 							"isis_level_type": &schema.Schema{
 								Type:     schema.TypeString,
-								Required: true,
+								Optional: true,
+								Computed: true,
 								ValidateFunc: validation.StringInSlice([]string{
 									"l1",
 									"l2",
@@ -239,10 +245,16 @@ func resourceAciISISDomainPolicyCreate(ctx context.Context, d *schema.ResourceDa
 
 			desc := ""
 			nameAlias := ""
+			isis_level_type := ""
 			isisLvlDn := isisDomPol.DistinguishedName
 
-			isisLvlAttr.ISISLevel_type = isisLvl["isis_level_type"].(string)
-			isis_level_type := isisLvl["isis_level_type"].(string)
+			// isisLvlAttr.ISISLevel_type = isisLvl["isis_level_type"].(string)
+			// isis_level_type := isisLvl["isis_level_type"].(string)
+
+			if isisLvl["isis_level_type"] != nil {
+				isisLvlAttr.ISISLevel_type = isisLvl["isis_level_type"].(string)
+				isis_level_type = isisLvl["isis_level_type"].(string)
+			}
 
 			if isisLvl["lsp_fast_flood"] != nil {
 				isisLvlAttr.LspFastFlood = isisLvl["lsp_fast_flood"].(string)
