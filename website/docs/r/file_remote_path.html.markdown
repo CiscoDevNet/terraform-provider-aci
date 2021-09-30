@@ -51,7 +51,7 @@ resource "aci_file_remote_path" "example" {
 
 ## Importing ##
 
-An existing RemotePathofaFile can be [imported][docs-import] into this resource via its Dn, via the following command:
+An existing File Remote Path can be [imported][docs-import] into this resource via its Dn, via the following command:
 [docs-import]: https://www.terraform.io/docs/import/index.html
 
 
