@@ -45,6 +45,7 @@ func resourceAciISISDomainPolicy() *schema.Resource {
 				Type:     schema.TypeList,
 				Optional: true,
 				Computed: true,
+				MaxItems: 1,
 				Elem: &schema.Resource{
 					Schema: AppendBaseAttrSchema(AppendNameAliasAttrSchema(
 						map[string]*schema.Schema{
@@ -100,7 +101,7 @@ func resourceAciISISDomainPolicy() *schema.Resource {
 							"isis_level_type": &schema.Schema{
 								Type:     schema.TypeString,
 								Optional: true,
-								Default:  "l1",
+								Computed: true,
 								ValidateFunc: validation.StringInSlice([]string{
 									"l1",
 									"l2",
@@ -345,14 +346,14 @@ func resourceAciISISDomainPolicyUpdate(ctx context.Context, d *schema.ResourceDa
 	}
 
 	if d.HasChange("isis_level") {
-		isisComp := d.Get("isis_level_ids").([]interface{})
-		for _, val := range isisComp {
-			isisCompDN := val.(string)
-			err := aciClient.DeleteByDn(isisCompDN, "isisLvlComp")
-			if err != nil {
-				return diag.FromErr(err)
-			}
-		}
+		// isisComp := d.Get("isis_level_ids").([]interface{})
+		// for _, val := range isisComp {
+		// 	isisCompDN := val.(string)
+		// 	err := aciClient.DeleteByDn(isisCompDN, "isisLvlComp")
+		// 	if err != nil {
+		// 		return diag.FromErr(err)
+		// 	}
+		// }
 
 		comps := d.Get("isis_level")
 		isisCompIDS := make([]string, 0, 1)
@@ -407,7 +408,9 @@ func resourceAciISISDomainPolicyUpdate(ctx context.Context, d *schema.ResourceDa
 			if isisLvl["name_alias"] != nil {
 				nameAlias = isisLvl["name_alias"].(string)
 			}
+
 			isisLvlComp := models.NewISISLevel(fmt.Sprintf("lvl-%s", isis_level_type), isisLvlDn, desc, nameAlias, isisLvlAttr)
+			isisLvlComp.Status = "modified"
 			err := aciClient.Save(isisLvlComp)
 			if err != nil {
 				return diag.FromErr(err)
