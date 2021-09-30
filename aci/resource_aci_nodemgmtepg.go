@@ -309,6 +309,7 @@ func setInBandManagementEPgAttributes(mgmtInB *models.InBandManagementEPg, d *sc
 	}
 
 	d.Set("name", mgmtInBMap["name"])
+	d.Set("management_profile_dn", GetParentDn(mgmtInB.DistinguishedName, fmt.Sprintf("/inb-[%s]", mgmtInBMap["name"])))
 
 	d.Set("annotation", mgmtInBMap["annotation"])
 	d.Set("encap", mgmtInBMap["encap"])
@@ -335,6 +336,7 @@ func setOutOfBandManagementEPgAttributes(mgmtOoB *models.OutOfBandManagementEPg,
 	}
 
 	d.Set("name", mgmtOoBMap["name"])
+	d.Set("management_profile_dn", GetParentDn(mgmtOoB.DistinguishedName, fmt.Sprintf("/oob-[%s]", mgmtOoBMap["name"])))
 
 	d.Set("annotation", mgmtOoBMap["annotation"])
 	d.Set("name_alias", mgmtOoBMap["nameAlias"])
