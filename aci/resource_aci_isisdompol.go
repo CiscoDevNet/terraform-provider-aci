@@ -145,6 +145,16 @@ func getRemoteISISLevel(client *client.Client, dn string) (*models.ISISLevel, er
 }
 
 func setISISDomainPolicyAttributes(isisDomPol *models.ISISDomainPolicy, d *schema.ResourceData, m interface{}) (*schema.ResourceData, error) {
+	log.Println("inside setISISDomainPolicyAttributes")
+	isisdn := isisDomPol.DistinguishedName
+	aciClient := m.(*client.Client)
+	url := "/api/node/mo/" + isisdn + ".json"
+	log.Printf("url: %v\n", url)
+	cont, err := aciClient.GetViaURL(url)
+	if err != nil {
+		return nil, err
+	}
+	log.Printf("cont: %v\n", cont)
 	d.SetId(isisDomPol.DistinguishedName)
 	d.Set("description", isisDomPol.Description)
 	isisDomPolMap, err := isisDomPol.ToMap()
@@ -156,11 +166,14 @@ func setISISDomainPolicyAttributes(isisDomPol *models.ISISDomainPolicy, d *schem
 	d.Set("name", isisDomPolMap["name"])
 	d.Set("redistrib_metric", isisDomPolMap["redistribMetric"])
 	d.Set("name_alias", isisDomPolMap["nameAlias"])
-	isisdn := isisDomPol.DistinguishedName
-	aciClient := m.(*client.Client)
-	aciClient.BaseURL.Query().Get()
+
+	// if err != nil {
+	// 	return nil, err
+	// }
+
 	return d, nil
 }
+
 func setISISLevelAttributes(isisLvlComps []*models.ISISLevel, d *schema.ResourceData) (*schema.ResourceData, error) {
 	ISISLvlSet := make([]interface{}, 0, 1)
 
@@ -198,7 +211,7 @@ func resourceAciISISDomainPolicyImport(d *schema.ResourceData, m interface{}) ([
 	if err != nil {
 		return nil, err
 	}
-	schemaFilled, err := setISISDomainPolicyAttributes(isisDomPol, d)
+	schemaFilled, err := setISISDomainPolicyAttributes(isisDomPol, d, m)
 	if err != nil {
 		return nil, err
 	}
