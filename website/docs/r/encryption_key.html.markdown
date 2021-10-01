@@ -14,7 +14,7 @@ Manages ACI AES Encryption Passphrase and Keys for Config Export and Import
 * `Distinguished Named` - uni/exportcryptkey
 
 ## GUI Information ##
-* `Location` - System -> System Settings -> Global AES Encryption Settings for all Configuration Import and Export
+* `Location` - System -> System Settings -> Global AES Passphrase Encryption Settings -> Policy
 
 ## Example Usage ##
 ```hcl
