@@ -29,7 +29,7 @@ func resourceAciAESEncryptionPassphraseandKeysforConfigExportImport() *schema.Re
 			"clear_encryption_key": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
-				Computed: true,
+				Default:  "no",
 				ValidateFunc: validation.StringInSlice([]string{
 					"no",
 					"yes",
@@ -108,7 +108,7 @@ func resourceAciAESEncryptionPassphraseandKeysforConfigExportImportCreate(ctx co
 	log.Printf("[DEBUG] AESEncryptionPassphraseandKeysforConfigExport(andImport): Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
-	var clearEncryptionKeyOk, strongEncryptionEnabledOk bool
+	var clearEncryptionKeyOk, strongEncryptionEnabledOk, passphraseOk bool
 	var clearEncryptionKeyVal, strongEncryptionEnabledVal string
 	pkiExportEncryptionKeyAttr := models.AESEncryptionPassphraseandKeysforConfigExportImportAttributes{}
 	nameAlias := ""
@@ -129,6 +129,7 @@ func resourceAciAESEncryptionPassphraseandKeysforConfigExportImportCreate(ctx co
 
 	if Passphrase, ok := d.GetOk("passphrase"); ok {
 		pkiExportEncryptionKeyAttr.Passphrase = Passphrase.(string)
+		passphraseOk = ok
 	}
 
 	if PassphraseKeyDerivationVersion, ok := d.GetOk("passphrase_key_derivation_version"); ok {
@@ -144,6 +145,11 @@ func resourceAciAESEncryptionPassphraseandKeysforConfigExportImportCreate(ctx co
 	if clearEncryptionKeyOk && strongEncryptionEnabledOk && clearEncryptionKeyVal == "yes" && strongEncryptionEnabledVal == "yes" {
 		return diag.FromErr(fmt.Errorf("clear_encryption_key and strong_encryption_enabled both cannot be set 'yes' simultaneously"))
 	}
+
+	if passphraseOk && clearEncryptionKeyVal == "yes" {
+		return diag.FromErr(fmt.Errorf("clear_encryption_key should be set 'no' when passphrase is set"))
+	}
+
 	pkiExportEncryptionKey := models.NewAESEncryptionPassphraseandKeysforConfigExportImport(fmt.Sprintf("exportcryptkey"), "uni", desc, nameAlias, pkiExportEncryptionKeyAttr)
 	pkiExportEncryptionKey.Status = "modified"
 	err := aciClient.Save(pkiExportEncryptionKey)
@@ -159,7 +165,7 @@ func resourceAciAESEncryptionPassphraseandKeysforConfigExportImportUpdate(ctx co
 	log.Printf("[DEBUG] AESEncryptionPassphraseandKeysforConfigExport(andImport): Beginning Update")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
-	var clearEncryptionKeyOk, strongEncryptionEnabledOk bool
+	var clearEncryptionKeyOk, strongEncryptionEnabledOk, passphraseOk bool
 	var clearEncryptionKeyVal, strongEncryptionEnabledVal string
 	pkiExportEncryptionKeyAttr := models.AESEncryptionPassphraseandKeysforConfigExportImportAttributes{}
 	nameAlias := ""
@@ -181,6 +187,7 @@ func resourceAciAESEncryptionPassphraseandKeysforConfigExportImportUpdate(ctx co
 
 	if Passphrase, ok := d.GetOk("passphrase"); ok {
 		pkiExportEncryptionKeyAttr.Passphrase = Passphrase.(string)
+		passphraseOk = ok
 	}
 
 	if PassphraseKeyDerivationVersion, ok := d.GetOk("passphrase_key_derivation_version"); ok {
@@ -195,6 +202,11 @@ func resourceAciAESEncryptionPassphraseandKeysforConfigExportImportUpdate(ctx co
 	if clearEncryptionKeyOk && strongEncryptionEnabledOk && clearEncryptionKeyVal == "yes" && strongEncryptionEnabledVal == "yes" {
 		return diag.FromErr(fmt.Errorf("clear_encryption_key and strong_encryption_enabled both cannot be set 'yes' simultaneously"))
 	}
+
+	if passphraseOk && clearEncryptionKeyVal == "yes" {
+		return diag.FromErr(fmt.Errorf("clear_encryption_key should be set 'no' when passphrase is set"))
+	}
+
 	pkiExportEncryptionKey := models.NewAESEncryptionPassphraseandKeysforConfigExportImport(fmt.Sprintf("exportcryptkey"), "uni", desc, nameAlias, pkiExportEncryptionKeyAttr)
 	pkiExportEncryptionKey.Status = "modified"
 	err := aciClient.Save(pkiExportEncryptionKey)

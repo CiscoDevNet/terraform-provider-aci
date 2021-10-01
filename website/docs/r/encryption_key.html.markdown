@@ -34,10 +34,10 @@ User can use resource of type aci_encryption_key to change configuration of obje
 
 ## Argument Reference ##
 * `annotation` - (Optional) Annotation of object AES Encryption Passphrase and Keys for Config Export and Import.
-* `clear_encryption_key` - (Optional) Parameter to clear the encryption key, if configured. Allowed values are "yes" and "no". Type: String.
-* `passphrase` - (Optional) Parameter to set the passphrase of object AES Encryption Passphrase and Keys for Config Export and Import
+* `passphrase` - (Optional) Parameter to set the passphrase of object AES Encryption Passphrase and Keys for Config Export and Import. Length of `passphrase` should be between 16 - 32 characters. 
+* `strong_encryption_enabled` - (Optional) Parameter indicating whether encryption is weak or strong. This parameter can be set if and only if `passphrase` is set. Allowed values are "yes" and "no". Type: String. 
+* `clear_encryption_key` - (Optional) Parameter to clear the encryption key, if configured. Allowed values are "yes" and "no". Default value is "no". Type: String. (If `passphrase` is set then `clear_encryption_key` should be `no`. Also, `clear_encryption_key` and `strong_encryption_enabled` both cannot be set `yes` simultaneously.)
 * `passphrase_key_derivation_version` - (Optional) Version of the algorithm used for forward compatibility. Allowed value is "v1". Default value is "v1".
-* `strong_encryption_enabled` - (Optional) Parameter indicating whether encryption is weak or strong. This parameter can be set if and only if `passphrase` is set. Allowed values are "yes" and "no". Type: String.
 * `description` - (Optional) Description of object AES Encryption Passphrase and Keys for Config Export and Import.
 * `name_alias` - (Optional) Name Alias of object AES Encryption Passphrase and Keys for Config Export and Import.
 
