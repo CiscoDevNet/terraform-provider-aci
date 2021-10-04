@@ -86,6 +86,7 @@ func resourceAciL3ExtSubnet() *schema.Resource {
 						"tn_rtctrl_profile_dn": {
 							Type:     schema.TypeString,
 							Optional: true,
+							// ConflictsWith: []string{"tn_rtctrl_profile_name"},
 						},
 						"direction": {
 							Type:     schema.TypeString,
@@ -244,7 +245,7 @@ func resourceAciL3ExtSubnetCreate(d *schema.ResourceData, m interface{}) error {
 			paramMap := relationParam.(map[string]interface{})
 			var relationParamName string
 			if paramMap["tn_rtctrl_profile_dn"] != "" && paramMap["tn_rtctrl_profile_name"] != "" {
-				return fmt.Errorf("Usage of both tn_rtctrl_profile_dn and tn_rtctrl_profile_name parameters is not recommended. tn_rtctrl_profile_name parameter will be deprecated use tn_rtctrl_profile_dn instead.")
+				return fmt.Errorf("Usage of both tn_rtctrl_profile_dn and tn_rtctrl_profile_name parameters is not supported. tn_rtctrl_profile_name parameter will be deprecated use tn_rtctrl_profile_dn instead.")
 			} else if paramMap["tn_rtctrl_profile_name"] != "" {
 				relationParamName = paramMap["tn_rtctrl_profile_name"].(string)
 			} else if paramMap["tn_rtctrl_profile_dn"] != "" {

@@ -9,7 +9,14 @@ description: |-
 # aci_l3_ext_subnet #
 Manages ACI l3 extension subnet
 
-Tenant -> Networking -> L3Outs -> External EPGs -> Subnets -> Route Control Profile
+## API Information ##
+
+* `Class` - l3extSubnet
+* `Distinguished Named` - uni/tn-{tenant}/out-{L3Out}/instP-{external EPG}/extsubnet-[{ip}]
+
+## GUI Information ##
+
+* `Location` - Tenant -> Networking -> L3Outs -> External EPGs -> Subnets -> Route Control Profile
 
 ## Example Usage ##
 

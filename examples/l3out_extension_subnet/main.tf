@@ -8,9 +8,9 @@ terraform {
 
 #configure provider with your cisco aci credentials.
 provider "aci" {
-  username = "admin"                  # <APIC username>
-  password = "ins3965!"               # <APIC pwd>
-  url      = "https://10.23.248.103/" # <cloud APIC URL>
+  username = ""                  # <APIC username>
+  password = ""               # <APIC pwd>
+  url      = "" # <cloud APIC URL>
   insecure = true
 }
 
@@ -67,7 +67,7 @@ resource "aci_l3_ext_subnet" "l3out_extepg_subnet" {
   }
 }
 
-// The below was of represnting tn_rtctrl_profile_name parameter will be deprecated.
+// The below example uses tn_rtctrl_profile_name parameter which is being deprecated in favor of the above example using tn_rtctrl_profile_dn.
 resource "aci_l3_ext_subnet" "l3out_extepg_subnet02" {
   external_network_instance_profile_dn = aci_external_network_instance_profile.l3out_extepg.id
   ip                                   = "10.10.10.10/16"
