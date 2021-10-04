@@ -225,6 +225,8 @@ func Provider() *schema.Provider {
 			"aci_encryption_key":                           resourceAciAESEncryptionPassphraseandKeysforConfigExportImport(),
 			"aci_mcp_instance_policy":                      resourceAciMiscablingProtocolInstancePolicy(),
 			"aci_qos_instance_policy":                      resourceAciQOSInstancePolicy(),
+			"aci_user_security_domain_role":                resourceAciUserRole(),
+			"aci_console_authentication":                   resourceAciConsoleAuthenticationMethod(),
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
@@ -401,6 +403,8 @@ func Provider() *schema.Provider {
 			"aci_encryption_key":                           dataSourceAciAESEncryptionPassphraseandKeysforConfigExportImport(),
 			"aci_mcp_instance_policy":                      dataSourceAciMiscablingProtocolInstancePolicy(),
 			"aci_qos_instance_policy":                      dataSourceAciQOSInstancePolicy(),
+			"aci_user_security_domain_role":                dataSourceAciUserRole(),
+			"aci_console_authentication":                   dataSourceAciConsoleAuthenticationMethod(),
 		},
 
 		ConfigureFunc: configureClient,
