@@ -108,8 +108,6 @@ func resourceAciAESEncryptionPassphraseandKeysforConfigExportImportCreate(ctx co
 	log.Printf("[DEBUG] AESEncryptionPassphraseandKeysforConfigExport(andImport): Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
-	var clearEncryptionKeyOk, strongEncryptionEnabledOk, passphraseOk bool
-	var clearEncryptionKeyVal, strongEncryptionEnabledVal string
 	pkiExportEncryptionKeyAttr := models.AESEncryptionPassphraseandKeysforConfigExportImportAttributes{}
 	nameAlias := ""
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
@@ -123,13 +121,10 @@ func resourceAciAESEncryptionPassphraseandKeysforConfigExportImportCreate(ctx co
 
 	if ClearEncryptionKey, ok := d.GetOk("clear_encryption_key"); ok {
 		pkiExportEncryptionKeyAttr.ClearEncryptionKey = ClearEncryptionKey.(string)
-		clearEncryptionKeyOk = ok
-		clearEncryptionKeyVal = ClearEncryptionKey.(string)
 	}
 
 	if Passphrase, ok := d.GetOk("passphrase"); ok {
 		pkiExportEncryptionKeyAttr.Passphrase = Passphrase.(string)
-		passphraseOk = ok
 	}
 
 	if PassphraseKeyDerivationVersion, ok := d.GetOk("passphrase_key_derivation_version"); ok {
@@ -138,16 +133,6 @@ func resourceAciAESEncryptionPassphraseandKeysforConfigExportImportCreate(ctx co
 
 	if StrongEncryptionEnabled, ok := d.GetOk("strong_encryption_enabled"); ok {
 		pkiExportEncryptionKeyAttr.StrongEncryptionEnabled = StrongEncryptionEnabled.(string)
-		strongEncryptionEnabledOk = ok
-		strongEncryptionEnabledVal = StrongEncryptionEnabled.(string)
-	}
-
-	if clearEncryptionKeyOk && strongEncryptionEnabledOk && clearEncryptionKeyVal == "yes" && strongEncryptionEnabledVal == "yes" {
-		return diag.FromErr(fmt.Errorf("clear_encryption_key and strong_encryption_enabled both cannot be set 'yes' simultaneously"))
-	}
-
-	if passphraseOk && clearEncryptionKeyVal == "yes" {
-		return diag.FromErr(fmt.Errorf("clear_encryption_key should be set 'no' when passphrase is set"))
 	}
 
 	pkiExportEncryptionKey := models.NewAESEncryptionPassphraseandKeysforConfigExportImport(fmt.Sprintf("exportcryptkey"), "uni", desc, nameAlias, pkiExportEncryptionKeyAttr)
@@ -165,8 +150,6 @@ func resourceAciAESEncryptionPassphraseandKeysforConfigExportImportUpdate(ctx co
 	log.Printf("[DEBUG] AESEncryptionPassphraseandKeysforConfigExport(andImport): Beginning Update")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
-	var clearEncryptionKeyOk, strongEncryptionEnabledOk, passphraseOk bool
-	var clearEncryptionKeyVal, strongEncryptionEnabledVal string
 	pkiExportEncryptionKeyAttr := models.AESEncryptionPassphraseandKeysforConfigExportImportAttributes{}
 	nameAlias := ""
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
@@ -181,13 +164,10 @@ func resourceAciAESEncryptionPassphraseandKeysforConfigExportImportUpdate(ctx co
 
 	if ClearEncryptionKey, ok := d.GetOk("clear_encryption_key"); ok {
 		pkiExportEncryptionKeyAttr.ClearEncryptionKey = ClearEncryptionKey.(string)
-		clearEncryptionKeyOk = ok
-		clearEncryptionKeyVal = ClearEncryptionKey.(string)
 	}
 
 	if Passphrase, ok := d.GetOk("passphrase"); ok {
 		pkiExportEncryptionKeyAttr.Passphrase = Passphrase.(string)
-		passphraseOk = ok
 	}
 
 	if PassphraseKeyDerivationVersion, ok := d.GetOk("passphrase_key_derivation_version"); ok {
@@ -196,15 +176,6 @@ func resourceAciAESEncryptionPassphraseandKeysforConfigExportImportUpdate(ctx co
 
 	if StrongEncryptionEnabled, ok := d.GetOk("strong_encryption_enabled"); ok {
 		pkiExportEncryptionKeyAttr.StrongEncryptionEnabled = StrongEncryptionEnabled.(string)
-		strongEncryptionEnabledOk = ok
-		strongEncryptionEnabledVal = StrongEncryptionEnabled.(string)
-	}
-	if clearEncryptionKeyOk && strongEncryptionEnabledOk && clearEncryptionKeyVal == "yes" && strongEncryptionEnabledVal == "yes" {
-		return diag.FromErr(fmt.Errorf("clear_encryption_key and strong_encryption_enabled both cannot be set 'yes' simultaneously"))
-	}
-
-	if passphraseOk && clearEncryptionKeyVal == "yes" {
-		return diag.FromErr(fmt.Errorf("clear_encryption_key should be set 'no' when passphrase is set"))
 	}
 
 	pkiExportEncryptionKey := models.NewAESEncryptionPassphraseandKeysforConfigExportImport(fmt.Sprintf("exportcryptkey"), "uni", desc, nameAlias, pkiExportEncryptionKeyAttr)
