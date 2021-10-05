@@ -30,7 +30,8 @@ resource "aci_encryption_key" "example" {
 ```
 
 ## NOTE ##
-User can use resource of type aci_encryption_key to change configuration of object AES Encryption Passphrase and Keys for Config Export and Import. User cannot create more than one instances of object AES Encryption Passphrase and Keys for Config Export and Import.
+* User can use resource of type aci_encryption_key to change configuration of object AES Encryption Passphrase and Keys for Config Export and Import. User cannot create more than one instances of object AES Encryption Passphrase and Keys for Config Export and Import.
+* If `passphrase` is set then `clear_encryption_key` should be `no`. Also, `clear_encryption_key` and `strong_encryption_enabled` both should not be set `yes` simultaneously.
 
 ## Argument Reference ##
 * `annotation` - (Optional) Annotation of object AES Encryption Passphrase and Keys for Config Export and Import.
@@ -51,6 +52,3 @@ An existing AES Encryption Passphrase and Keys for Config Export and Import can 
 ```
 terraform import aci_encryption_key.example <Dn>
 ```
-
-## NOTE ##
-* If `passphrase` is set then `clear_encryption_key` should be `no`. Also, `clear_encryption_key` and `strong_encryption_enabled` both should not be set `yes` simultaneously.
