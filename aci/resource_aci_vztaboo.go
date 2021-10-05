@@ -64,7 +64,6 @@ func setTabooContractAttributes(vzTaboo *models.TabooContract, d *schema.Resourc
 	dn := d.Id()
 	d.SetId(vzTaboo.DistinguishedName)
 	d.Set("description", vzTaboo.Description)
-	// d.Set("tenant_dn", GetParentDn(vzTaboo.DistinguishedName))
 	if dn != vzTaboo.DistinguishedName {
 		d.Set("tenant_dn", "")
 	}
@@ -75,7 +74,7 @@ func setTabooContractAttributes(vzTaboo *models.TabooContract, d *schema.Resourc
 	}
 
 	d.Set("name", vzTabooMap["name"])
-
+	d.Set("tenant_dn", GetParentDn(dn, fmt.Sprintf("taboo-%s", vzTabooMap["name"])))
 	d.Set("annotation", vzTabooMap["annotation"])
 	d.Set("name_alias", vzTabooMap["nameAlias"])
 	return d, nil
