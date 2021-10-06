@@ -27,7 +27,7 @@ resource "aci_mgmt_preference" "example" {
 ```
 
 ## NOTE ##
-User can use resource of type `aci_mgmt_preference` to change configuration of object Mgmt Preference. User cannot create more than one instances of object Mgmt Preference.
+Users can use the resource of type `aci_mgmt_preference` to change the configuration of the object Mgmt Preference. Users cannot create more than one instance of object Mgmt Preference.
 
 ## Argument Reference ##
 * `interface_pref` - (Optional) Management interface that has to be used. Allowed values are "inband" and "ooband". 
