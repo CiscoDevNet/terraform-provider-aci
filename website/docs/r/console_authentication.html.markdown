@@ -34,7 +34,7 @@ resource "aci_console_authentication" "example" {
 ```
 
 ## NOTE ##
-User can use resource of type aci_console_authentication to change configuration of object Console Authentication. User cannot create more than one instances of object Console Authentication.
+Users can use the resource of type aci_console_authentication to change the configuration of the object Console Authentication. Users cannot create more than one instance of object Console Authentication.
 
 ## Argument Reference ##
 

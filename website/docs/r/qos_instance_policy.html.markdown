@@ -35,7 +35,7 @@ resource "aci_qos_instance_policy" "example" {
 }
 ```
 ## NOTE ##
-User can use resource of type aci_qos_instance_policy to change configuration of object QOS Instance Policy. User cannot create more than one instances of object QOS Instance Policy.
+Users can use the resource of type aci_qos_instance_policy to change the configuration of the object QOS Instance Policy. Users cannot create more than one instance of object QOS Instance Policy.
 
 ## Argument Reference ##
 

@@ -39,7 +39,7 @@ resource "aci_mcp_instance_policy" "example" {
 ```
 
 ## NOTE ##
-User can use resource of type aci_mcp_instance_policy to change configuration of object MCP Instance Policy. User cannot create more than one instances of object MCP Instance Policy.
+Users can use the resource of type aci_mcp_instance_policy to change the configuration of the object MCP Instance Policy. Users cannot create more than one instance of object MCP Instance Policy.
 
 ## Argument Reference ##
 

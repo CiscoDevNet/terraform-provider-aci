@@ -26,5 +26,4 @@ resource "aci_error_disable_recovery" "example" {
     name                = "example"
     annotation          = "orchestrator:terraform"
     }
-    edr_event_ids       = []
 }

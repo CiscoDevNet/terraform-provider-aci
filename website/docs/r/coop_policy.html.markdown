@@ -32,12 +32,12 @@ resource "aci_coop_policy" "example" {
 ```
 
 ## NOTE ##
-User can use resource of type aci_coop_policy to change configuration of object COOP Group Policy. User cannot create more than one instances of object COOP Group Policy.
+Users can use the resource of type aci_coop_policy to change the configuration of the object COOP Policy. Users cannot create more than one instance of object COOP Policy.
 
 ## Argument Reference ##
 
 * `annotation` - (Optional) Annotation of object COOP Group Policy.
-* `type` - (Optional) Authentication type.The specific type of the object or component. Allowed values are "compatible", "strict". Type: String.
+* `type` - (Optional) Authentication type.The specific type of object or component. Allowed values are "compatible", "strict". Type: String.
 * `name_alias` - (Optional) Name Alias of object COOP Group Policy. Type: String.
 * `description` - (Optional) Description of object COOP Group Policy. Type: String.
 
