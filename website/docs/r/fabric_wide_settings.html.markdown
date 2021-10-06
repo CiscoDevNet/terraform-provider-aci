@@ -36,6 +36,9 @@ resource "aci_fabric_wide_settings" "example" {
 }
 ```
 
+## NOTE ##
+Users can use the resource of type `aci_fabric_wide_settings` to change the configuration of the object Fabric Wide Settings. Users cannot create more than one instance of object Fabric Wide Settings.
+
 ## Argument Reference ##
 * `name` - (Optional) Name of object Fabric-Wide Settings Policy.
 * `annotation` - (Optional) Annotation of object Fabric-Wide Settings Policy.
