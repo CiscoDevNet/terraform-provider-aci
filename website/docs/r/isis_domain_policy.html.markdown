@@ -43,7 +43,7 @@ resource "aci_isis_domain_policy" "example" {
 ```
 
 ## NOTE ##
-User can use resource of type aci_isis_domain_policy to change configuration of object ISIS Domain Policy. User cannot create more than one instances of object  ISIS Domain Policy.
+Users can use the resource of type `aci_isis_domain_policy` to change the configuration of the object ISIS Domain Policy. Users cannot create more than one instance of object ISIS Domain Policy.
 
 ## Argument Reference ##
 * `annotation` - (Optional) Annotation of object ISIS Domain Policy.
