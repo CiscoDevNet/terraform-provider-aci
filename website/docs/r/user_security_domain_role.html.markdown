@@ -25,6 +25,7 @@ Manages ACI User Security Domain Role
 ```hcl
 resource "aci_user_security_domain_role" "example" {
   user_domain_dn  = aci_user_security_domain.example.id
+  annotation      = "orchestrator:terraform"
   name            = "example"
   priv_type       = "readPriv"
   name_alias      = "user_role_alias"
@@ -39,7 +40,7 @@ resource "aci_user_security_domain_role" "example" {
 * `annotation` - (Optional) Annotation of object User Security Domain Role. Type: String.
 * `name_alias` - (Optional) Name Alias of object User Security Domain Role. Type: String.
 * `description` - (Optional) Description of object User Security Domain Role. Type: String.
-* `priv_type` - (Optional) Privilege Type.The privilege type for a user role. Allowed values are "readPriv", "writePriv". Type: String.
+* `priv_type` - (Optional) Privilege Type.The privilege type for a user role. Allowed values are "readPriv", "writePriv", Default value is "readPriv". Type: String.
 
 
 ## Importing ##

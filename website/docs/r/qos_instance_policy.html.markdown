@@ -35,7 +35,7 @@ resource "aci_qos_instance_policy" "example" {
 }
 ```
 ## NOTE ##
-User can use resource of type aci_qos_instance_policy to change configuration of object QOS Instance Policy. User cannot create more than one instances of object QOS Instance Policy.
+Users can use the resource of type aci_qos_instance_policy to change the configuration of the object QOS Instance Policy. Users cannot create more than one instance of object QOS Instance Policy.
 
 ## Argument Reference ##
 
@@ -43,15 +43,15 @@ User can use resource of type aci_qos_instance_policy to change configuration of
 * `annotation` - (Optional) Annotation of object QOS Instance Policy.
 * `description` - (Optional) Description for object QOS Instance Policy. Type: String.
 * `name_alias` - (Optional) Name Alias for object QOS Instance Policy. Type: String.
-* `etrap_age_timer` - (Optional) E-trap flow age out timer.
-* `etrap_bw_thresh` - (Optional) Track activeness of elephant flow.
-* `etrap_byte_ct` - (Optional) E-trap elephant flow identifier.
-* `etrap_st` - (Optional) E-trap enable knob.E-trap parameters Allowed values are "no", "yes". Type: String.
+* `etrap_age_timer` - (Optional) E-trap flow age out timer. Min Allowed Value is "0".
+* `etrap_bw_thresh` - (Optional) Track activeness of elephant flow. Min Allowed Value is "0".
+* `etrap_byte_ct` - (Optional) E-trap elephant flow identifier. Min Allowed Value is "0".
+* `etrap_st` - (Optional) E-trap enable knob. E-trap parameters. Allowed values are "no", "yes". Type: String.
 * `fabric_flush_interval` - (Optional) Fabric Flush Interval in ms. Allowed range is "100"-"1000". Type: String.
-* `fabric_flush_st` - (Optional) Fabric PFC Flush enable knob.Fabric Flush parameters Allowed values are "no", "yes". Type: String.
-* `ctrl` - (Optional) Global Control Settings.The control state. Allowed values are "dot1p-preserve", "none". Type: String.
-* `uburst_spine_queues` - (Optional) micro burst spine queues percent.Global microburst spine % queues Allowed range is "0"-"100". Type: String
-* `uburst_tor_queues` - (Optional) micro burst tor queues percent.Global microburst tor % queues Allowed range is "0"-"100". Type: String
+* `fabric_flush_st` - (Optional) Fabric PFC Flush enable knob. Fabric Flush parameters Allowed values are "no", "yes". Type: String.
+* `ctrl` - (Optional) Global Control Settings. The control state. Allowed values are "dot1p-preserve", "none". Type: String.
+* `uburst_spine_queues` - (Optional) Micro burst spine queues percent. Allowed range is "0"-"100". Type: String
+* `uburst_tor_queues` - (Optional) Micro burst tor queues percent. Allowed range is "0"-"100". Type: String
 
 
 ## Importing ##

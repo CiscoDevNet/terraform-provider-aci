@@ -34,5 +34,5 @@ data "aci_qos_instance_policy" "example" {}
 * `fabric_flush_interval` - (Optional) Fabric Flush Interval in ms. 
 * `fabric_flush_st` - (Optional) Fabric PFC Flush enable knob. Fabric Flush parameters
 * `ctrl` - (Optional) Global Control Settings. The control state.
-* `uburst_spine_queues` - (Optional) micro burst spine queues percent. Global microburst spine % queues
-* `uburst_tor_queues` - (Optional) micro burst tor queues percent. Global microburst tor % queues
+* `uburst_spine_queues` - (Optional) Micro burst spine queues percent.
+* `uburst_tor_queues` - (Optional) Micro burst tor queues percent.

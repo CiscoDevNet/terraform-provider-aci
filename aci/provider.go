@@ -227,6 +227,7 @@ func Provider() *schema.Provider {
 			"aci_qos_instance_policy":                      resourceAciQOSInstancePolicy(),
 			"aci_user_security_domain_role":                resourceAciUserRole(),
 			"aci_console_authentication":                   resourceAciConsoleAuthenticationMethod(),
+			"aci_error_disable_recovery":                   resourceAciErrorDisabledRecoveryPolicy(),
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
@@ -405,6 +406,7 @@ func Provider() *schema.Provider {
 			"aci_qos_instance_policy":                      dataSourceAciQOSInstancePolicy(),
 			"aci_user_security_domain_role":                dataSourceAciUserRole(),
 			"aci_console_authentication":                   dataSourceAciConsoleAuthenticationMethod(),
+			"aci_error_disable_recovery":                   dataSourceAciErrorDisabledRecoveryPolicy(),
 		},
 
 		ConfigureFunc: configureClient,
