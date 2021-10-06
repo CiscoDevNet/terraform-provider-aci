@@ -29,7 +29,7 @@ resource "aci_endpoint_ip_aging_profile" "example" {
 ```
 
 ## NOTE ##
-User can use resource of type `aci_endpoint_ip_aging_profile` to change configuration of object Endpoint IP Aging Profile. User cannot create more than one instances of object Endpoint IP Aging Profile.
+Users can use the resource of type `aci_endpoint_ip_aging_profile` to change the configuration of the object Endpoint IP Aging Profile. Users cannot create more than one instance of object Endpoint IP Aging Profile.
 
 ## Argument Reference ##
 * `admin_st` - (Optional) The administrative state of the object Endpoint IP Aging Profile. Allowed values are "disabled" and "enabled".

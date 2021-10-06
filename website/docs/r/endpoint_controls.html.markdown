@@ -31,7 +31,7 @@ resource "aci_endpoint_controls" "example" {
 ```
 
 ## NOTE ##
-User can use resource of type `aci_endpoint_controls` to change configuration of object Endpoint Control. User cannot create more than one instances of object Endpoint Control.
+Users can use the resource of type `aci_endpoint_controls` to change the configuration of the object Endpoint Control. Users cannot create more than one instance of object Endpoint Control.
 
 ## Argument Reference ##
 * `annotation` - (Optional) Annotation of object Endpoint Control.
