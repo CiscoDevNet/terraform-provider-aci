@@ -80,13 +80,11 @@ func resourceAciL3ExtSubnet() *schema.Resource {
 						"tn_rtctrl_profile_name": {
 							Type:     schema.TypeString,
 							Optional: true,
-							// ConflictsWith: []string{"tn_rtctrl_profile_dn"},
 							Deprecated: "use tn_rtctrl_profile_dn instead",
 						},
 						"tn_rtctrl_profile_dn": {
 							Type:     schema.TypeString,
 							Optional: true,
-							// ConflictsWith: []string{"tn_rtctrl_profile_name"},
 						},
 						"direction": {
 							Type:     schema.TypeString,
