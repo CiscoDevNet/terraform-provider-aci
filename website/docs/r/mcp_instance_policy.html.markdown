@@ -45,7 +45,7 @@ Users can use the resource of type aci_mcp_instance_policy to change the configu
 
 
 * `annotation` - (Optional) Annotation of object MCP Instance Policy.
-* `admin_st` - (Optional) Admin State.The administrative state of the object or policy. Allowed values are "disabled", "enabled". Type: String.
+* `admin_st` - (Optional) Admin State. The administrative state of the object or policy. Allowed values are "disabled", "enabled". Type: String.
 * `description` - (Optional) Description for object MCP Instance Policy. Type: String.
 * `name_alias` - (Optional) Name Alias for object MCP Instance Policy. Type: String.
 * `ctrl` - (Optional) Controls. The control state. Allowed values are "pdu-per-vlan", "stateful-ha". Type: List.
@@ -53,8 +53,8 @@ Users can use the resource of type aci_mcp_instance_policy to change the configu
 * `key` - (Required) Secret Key. The key or password used to uniquely identify this configuration object.
 * `loop_detect_mult` - (Optional) Loop Detection Multiplier. Allowed range is "1"-"255". Type: String.
 * `loop_protect_act` - (Optional) Loop Protection Action. Allowed values are "port-disable","none". Type: String.
-* `tx_freq` - (Optional) Transmission Frequency.Sets the transmission frequency of the instance advertisements. Allowed range is "0"-"300". Type: String.(Note: For value less than "2", loop_protect_act attribute needs to be "port-disable", Accepted Range of tx_freq is 100ms to 300s so total value of tx_freq & tx_freq_msec should in Accepted range.)
-* `tx_freq_msec` - (Optional) Transmission Frequency.Sets the transmission frequency of mcp advertisements in milliseconds Allowed range is "0"-"999". Type: String.(Note: For value "0" of tx_freq, range of tx_freq_msec is  "100"-"999".)
+* `tx_freq` - (Optional) Transmission Frequency. Sets the transmission frequency of the instance advertisements. Allowed range is "0"-"300". Type: String.(Note: For value less than "2", loop_protect_act attribute needs to be "port-disable", Accepted Range of tx_freq is 100ms to 300s so total value of tx_freq & tx_freq_msec should in Accepted range.)
+* `tx_freq_msec` - (Optional) Transmission Frequency. Sets the transmission frequency of mcp advertisements in milliseconds Allowed range is "0"-"999". Type: String.(Note: For value "0" of tx_freq, range of tx_freq_msec is  "100"-"999".)
 
 
 ## Importing ##
