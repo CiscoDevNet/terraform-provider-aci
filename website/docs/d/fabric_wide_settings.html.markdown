@@ -26,6 +26,7 @@ data "aci_fabric_wide_settings" "example" {}
 
 ## Attribute Reference ##
 * `id` - Attribute id set to the Dn of the Fabric-Wide Settings Policy.
+* `name` - (Optional) Name of object Fabric-Wide Settings Policy.
 * `annotation` - (Optional) Annotation of object Fabric-Wide Settings Policy.
 * `description` - (Optional) Description of object Fabric-Wide Settings Policy.
 * `name_alias` - (Optional) Name alias of object Fabric-Wide Settings Policy.
