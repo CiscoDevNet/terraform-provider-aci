@@ -198,6 +198,7 @@ func resourceAciErrorDisabledRecoveryPolicyCreate(ctx context.Context, d *schema
 		edrErrDisRecoverPolAttr.Name = Name.(string)
 	}
 	edrErrDisRecoverPol := models.NewErrorDisabledRecoveryPolicy(fmt.Sprintf("infra/edrErrDisRecoverPol-%s", name), "uni", desc, nameAlias, edrErrDisRecoverPolAttr)
+	edrErrDisRecoverPol.Status = "modified"
 	err := aciClient.Save(edrErrDisRecoverPol)
 	if err != nil {
 		return diag.FromErr(err)
