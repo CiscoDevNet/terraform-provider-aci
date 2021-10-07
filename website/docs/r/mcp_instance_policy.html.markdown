@@ -48,7 +48,7 @@ Users can use the resource of type aci_mcp_instance_policy to change the configu
 * `admin_st` - (Optional) Admin State. The administrative state of the object or policy. Allowed values are "disabled", "enabled". Type: String.
 * `description` - (Optional) Description for object MCP Instance Policy. Type: String.
 * `name_alias` - (Optional) Name Alias for object MCP Instance Policy. Type: String.
-* `ctrl` - (Optional) Controls.The control state. Allowed values are "pdu-per-vlan", "stateful-ha". Type: List.
+* `ctrl` - (Optional) Controls. The control state. Allowed values are "pdu-per-vlan", "stateful-ha". Type: List.
 * `init_delay_time` - (Optional) Init Delay Time. Allowed range is "0"-"1800". Type: String.
 * `key` - (Required) Secret Key. The key or password used to uniquely identify this configuration object.
 * `loop_detect_mult` - (Optional) Loop Detection Multiplier. Allowed range is "1"-"255". Type: String.
