@@ -228,6 +228,7 @@ func Provider() *schema.Provider {
 			"aci_user_security_domain_role":                resourceAciUserRole(),
 			"aci_console_authentication":                   resourceAciConsoleAuthenticationMethod(),
 			"aci_error_disable_recovery":                   resourceAciErrorDisabledRecoveryPolicy(),
+			"aci_fabric_wide_settings":                     resourceAciFabricWideSettingsPolicy(),
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
@@ -407,6 +408,7 @@ func Provider() *schema.Provider {
 			"aci_user_security_domain_role":                dataSourceAciUserRole(),
 			"aci_console_authentication":                   dataSourceAciConsoleAuthenticationMethod(),
 			"aci_error_disable_recovery":                   dataSourceAciErrorDisabledRecoveryPolicy(),
+			"aci_fabric_wide_settings":                     dataSourceAciFabricWideSettingsPolicy(),
 		},
 
 		ConfigureFunc: configureClient,
