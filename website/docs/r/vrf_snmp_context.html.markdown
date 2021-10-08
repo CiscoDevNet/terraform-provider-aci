@@ -35,7 +35,7 @@ resource "aci_vrf_snmp_context" "example" {
 * `name_alias` - (Optional) Name Alias of object VRF SNMP Context.
 
 ## Importing ##
-An existing SNMPContextProfile can be [imported][docs-import] into this resource via its Dn, via the following command:
+An existing VRF SNMP Context can be [imported][docs-import] into this resource via its Dn, via the following command:
 [docs-import]: https://www.terraform.io/docs/import/index.html
 
 ```
