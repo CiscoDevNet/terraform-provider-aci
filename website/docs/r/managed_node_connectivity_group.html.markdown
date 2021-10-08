@@ -33,7 +33,7 @@ resource "aci_managed_node_connectivity_group" "example" {
 
 ## Importing ##
 
-An existing ManagedNodeConnectivityGroup can be [imported][docs-import] into this resource via its Dn, via the following command:
+An existing Managed Node Connectivity Group can be [imported][docs-import] into this resource via its Dn, via the following command:
 [docs-import]: https://www.terraform.io/docs/import/index.html
 
 

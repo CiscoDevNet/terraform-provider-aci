@@ -205,3 +205,14 @@ func suppressBitMaskDiffFunc() func(k, old, new string, d *schema.ResourceData) 
 		return reflect.DeepEqual(oldList, newList)
 	}
 }
+
+func G(cont *container.Container, key string) string {
+	return StripQuotes(cont.S(key).String())
+}
+
+func StripQuotes(word string) string {
+	if strings.HasPrefix(word, "\"") && strings.HasSuffix(word, "\"") {
+		return strings.TrimSuffix(strings.TrimPrefix(word, "\""), "\"")
+	}
+	return word
+}
