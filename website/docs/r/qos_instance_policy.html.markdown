@@ -50,8 +50,8 @@ Users can use the resource of type aci_qos_instance_policy to change the configu
 * `fabric_flush_interval` - (Optional) Fabric Flush Interval in ms. Allowed range is "100"-"1000". Type: String.
 * `fabric_flush_st` - (Optional) Fabric PFC Flush enable knob. Fabric Flush parameters Allowed values are "no", "yes". Type: String.
 * `ctrl` - (Optional) Global Control Settings. The control state. Allowed values are "dot1p-preserve", "none". Type: String.
-* `uburst_spine_queues` - (Optional) Micro burst spine queues percent. Allowed range is "0"-"100". Type: String.
-* `uburst_tor_queues` - (Optional) Micro burst tor queues percent. Allowed range is "0"-"100". Type: String.
+* `uburst_spine_queues` - (Optional) Micro burst spine queues percent. Allowed range is "0"-"100". Type: String. (Note: attribute uburst_spine_queues is supported for version 5 and above of APIC)
+* `uburst_tor_queues` - (Optional) Micro burst tor queues percent. Allowed range is "0"-"100". Type: String. (Note: attribute uburst_tor_queues is supported for version 5 and above of APIC)
 
 
 ## Importing ##
