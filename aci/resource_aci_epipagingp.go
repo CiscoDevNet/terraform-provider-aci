@@ -103,8 +103,8 @@ func resourceAciIPAgingPolicyCreate(ctx context.Context, d *schema.ResourceData,
 	epIpAgingPAttr.Name = "default"
 
 	epIpAgingP := models.NewIPAgingPolicy(fmt.Sprintf("infra/ipAgingP-%s", name), "uni", desc, nameAlias, epIpAgingPAttr)
-	err := aciClient.Save(epIpAgingP)
 	epIpAgingP.Status = "modified"
+	err := aciClient.Save(epIpAgingP)
 	if err != nil {
 		return diag.FromErr(err)
 	}
