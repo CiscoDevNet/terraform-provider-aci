@@ -50,7 +50,7 @@ Users can use the resource of type `aci_fabric_wide_settings` to change the conf
 * `enforce_subnet_check` - (Optional) Enforce subnet check of object Fabric-Wide Settings Policy. Allowed values are "yes" and "no".
 * `opflexp_authenticate_clients` - (Optional) Opflexp Client Certificates for authentication of object Fabric-Wide Settings Policy. Allowed values are "yes" and "no".
 * `opflexp_use_ssl` - (Optional) SSL transport for Opflexp indicator of object Fabric-Wide Settings Policy. Allowed values are "yes" and "no".
-* `restrict_infra_vlan_traffic` - (Optional) Intra Leaf Communication traffic indicator of object Fabric-Wide Settings Policy. Allowed values are "yes" and "no".
+* `restrict_infra_vlan_traffic` - (Optional) Intra Leaf Communication traffic indicator of object Fabric-Wide Settings Policy. Allowed values are "yes" and "no". (Note: attribute restrict_infra_vlan_traffic is supported for version 5 and above of APIC)
 * `unicast_xr_ep_learn_disable` - (Optional) Disable xrLeanrs indicator of object Fabric-Wide Settings Policy. Allowed values are "yes" and "no".
 * `validate_overlapping_vlans` - (Optional) Validate Overlapping VLANS indicator of object Fabric-Wide Settings Policy. Allowed values are "yes" and "no".
 
