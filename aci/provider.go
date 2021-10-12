@@ -232,6 +232,8 @@ func Provider() *schema.Provider {
 			"aci_authentication_properties":                resourceAciAAAAuthentication(),
 			"aci_duo_provider_group":                       resourceAciDuoProviderGroup(),
 			"aci_ldap_provider":                            resourceAciLDAPProvider(),
+			"aci_radius_provider_group":                    resourceAciRADIUSProviderGroup(),
+			"aci_ldap_group_map_rule":                      resourceAciLDAPGroupMapRule(),
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
@@ -416,6 +418,8 @@ func Provider() *schema.Provider {
 			"aci_duo_provider_group":                       dataSourceAciDuoProviderGroup(),
 			"aci_ldap_provider":                            dataSourceAciLDAPProvider(),
 			"aci_saml_certificate":                         dataSourceAciKeypairforSAMLEncryption(),
+			"aci_radius_provider_group":                    dataSourceAciRADIUSProviderGroup(),
+			"aci_ldap_group_map_rule":                      dataSourceAciLDAPGroupMapRule(),
 		},
 
 		ConfigureFunc: configureClient,
