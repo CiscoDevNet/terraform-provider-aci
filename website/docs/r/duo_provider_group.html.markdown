@@ -33,7 +33,7 @@ resource "aci_duo_provider_group" "example" {
 * `auth_choice` - (Optional) Authentication choice of object Duo Provider Group. Allowed values are "CiscoAVPair" and "LdapGroupMap". Default value is "CiscoAVPair". Type: String.
 * `provider_type` - (Optional) Type of the Auth Provider. Allowed values are "ldap" and "radius". Default value is "radius". Type: String.
 * `ldap_group_map_ref` - (Optional) Reference to LDAP Group Map containing user's group membership info.
-* `sec_fac_auth_methods` - (Optional) Second factor authentication methods. Allowed values are "auto", "passcode", "phone" and "push". Default value is ["auto"]. Type: List.
+* `sec_fac_auth_methods` - (Optional) Second factor authentication methods. Allowed values are "auto", "passcode", "phone" and "push". Default value is "auto". Type: List.
 * `name_alias` - (Optional) Name alias of object Duo Provider Group.
 * `description` - (Optional) Description of object Duo Provider Group.
 
