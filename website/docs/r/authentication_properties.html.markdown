@@ -10,8 +10,8 @@ description: |-
 Manages ACI AAA Authentication Properties and Default Radius Authentication Settings
 
 ## API Information ##
-* `Class` - aaaAuthRealm && aaaPingEp
-* `Distinguished Named` - uni/userext/authrealm && uni/userext/pingext
+* `Class` - aaaAuthRealm & aaaPingEp
+* `Distinguished Named` - uni/userext/authrealm & uni/userext/pingext
 
 ## GUI Information ##
 * `Location` - Admin -> AAA -> Authentication -> AAA -> Policy
@@ -31,7 +31,8 @@ resource "aci_authentication_properties" "example" {
 ```
 
 ## NOTE ##
-Users can use the resource of type `aci_authentication_properties` to change the configuration of the object AAA Authentication Properties and Default Radius Authentication Settings. Users cannot create more than one instance of object AAA Authentication Properties and Default Radius Authentication Settings.
+* Users can use the resource of type `aci_authentication_properties` to change the configuration of the object AAA Authentication Properties and Default Radius Authentication Settings. Users cannot create more than one instance of object AAA Authentication Properties and Default Radius Authentication Settings.
+* Parameters `ping_check`, `retries` and `timeout` are specific to aaaPingEp class. 
 
 ## Argument Reference ##
 * `annotation` - (Optional) Annotation of objects AAA Authentication Properties and Default Radius Authentication Settings.
