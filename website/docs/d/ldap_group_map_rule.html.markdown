@@ -32,8 +32,8 @@ data "aci_ldap_group_map_rule" "example" {
 
 ## Argument Reference ##
 
-* `name` - (Required) name of object LDAP Group Map Rule.
-* `type` - (Required) type of object LDAP Group MAp Rule. Allowed Values are "duo" and "ldap".
+* `name` - (Required) Name of object LDAP Group Map Rule.
+* `type` - (Required) Type of object LDAP Group MAp Rule. Allowed Values are "duo" and "ldap".
 
 ## Attribute Reference ##
 * `id` - Attribute id set to the Dn of the LDAP Group Map Rule.

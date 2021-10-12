@@ -27,7 +27,7 @@ data "aci_radius_provider_group" "example" {
 
 ## Argument Reference ##
 
-* `name` - (Required) name of object RADIUS Provider Group.
+* `name` - (Required) Name of object RADIUS Provider Group.
 
 ## Attribute Reference ##
 * `id` - Attribute id set to the Dn of the RADIUS Provider Group.
