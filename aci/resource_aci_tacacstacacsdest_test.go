@@ -61,7 +61,7 @@ func testAccCheckAciTACACSDestinationConfig_basic(description string) string {
 	return fmt.Sprintf(`
 	resource "aci_tacacs_accounting_destination" "footacacs_destination" {
 		description = "%s"
-		tacacs_accounting_dn = aci_tacacs_accounting.aci_tacacs_accounting_destination.id
+		tacacs_accounting_dn = aci_tacacs_accounting.test.id
 		host = "test"
 		port = "49"
 		name = "test_name_example"
