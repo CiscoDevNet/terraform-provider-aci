@@ -216,3 +216,17 @@ func StripQuotes(word string) string {
 	}
 	return word
 }
+
+func checkAtleasOne() schema.SchemaValidateFunc {
+	return func(i interface{}, k string) (s []string, es []error) {
+		v, ok := i.(string)
+		if !ok {
+			es = append(es, fmt.Errorf("expected type of %s to be string", k))
+			return
+		}
+		if v < "1" {
+			es = append(es, fmt.Errorf("Property is out of range"))
+		}
+		return
+	}
+}

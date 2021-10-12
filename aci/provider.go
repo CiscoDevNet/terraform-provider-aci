@@ -229,6 +229,9 @@ func Provider() *schema.Provider {
 			"aci_console_authentication":                   resourceAciConsoleAuthenticationMethod(),
 			"aci_error_disable_recovery":                   resourceAciErrorDisabledRecoveryPolicy(),
 			"aci_fabric_wide_settings":                     resourceAciFabricWideSettingsPolicy(),
+			"aci_authentication_properties":                resourceAciAAAAuthentication(),
+			"aci_duo_provider_group":                       resourceAciDuoProviderGroup(),
+			"aci_ldap_provider":                            resourceAciLDAPProvider(),
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
@@ -409,6 +412,10 @@ func Provider() *schema.Provider {
 			"aci_console_authentication":                   dataSourceAciConsoleAuthenticationMethod(),
 			"aci_error_disable_recovery":                   dataSourceAciErrorDisabledRecoveryPolicy(),
 			"aci_fabric_wide_settings":                     dataSourceAciFabricWideSettingsPolicy(),
+			"aci_authentication_properties":                dataSourceAciAAAAuthentication(),
+			"aci_duo_provider_group":                       dataSourceAciDuoProviderGroup(),
+			"aci_ldap_provider":                            dataSourceAciLDAPProvider(),
+			"aci_saml_certificate":                         dataSourceAciKeypairforSAMLEncryption(),
 		},
 
 		ConfigureFunc: configureClient,
