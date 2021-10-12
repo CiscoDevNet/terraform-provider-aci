@@ -11,7 +11,6 @@ Data source for ACI TACACS Accounting Destination
 
 
 ## API Information ##
-
 * `Class` - tacacsTacacsDest
 * `Distinguished Named` - uni/fabric/tacacsgroup-{name}/tacacsdest-{host}-port-{port}
 
