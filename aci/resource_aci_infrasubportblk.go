@@ -107,7 +107,7 @@ func setAccessSubPortBlockAttributes(infraSubPortBlk *models.AccessSubPortBlock,
 	infraSubPortBlkMap, _ := infraSubPortBlk.ToMap()
 
 	d.Set("name", infraSubPortBlkMap["name"])
-
+	d.Set("access_port_selector_dn", GetParentDn(dn, fmt.Sprintf("/subportblk-%s", infraSubPortBlkMap["name"])))
 	d.Set("annotation", infraSubPortBlkMap["annotation"])
 	d.Set("from_card", infraSubPortBlkMap["fromCard"])
 	d.Set("from_port", infraSubPortBlkMap["fromPort"])
