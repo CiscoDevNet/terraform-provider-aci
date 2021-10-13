@@ -20,8 +20,8 @@ resource "aci_ldap_provider" "example" {
 	annotation = "example_annotation"
 	name_alias = "example_name_alias"
 	ssl_validation_level = "strict"
-	attribute = "example_attribute_value"
-	basedn = "example_basedn_value"
+	attribute = "CiscoAvPair"
+	basedn = "CN=Users,DC=host,DC=com"
 	enable_ssl = "yes"
 	filter = "sAMAccountName=$userid"
 	key = "example_key_value"
@@ -30,6 +30,6 @@ resource "aci_ldap_provider" "example" {
 	monitoring_user = "example_monitoring_user_value"
 	port = "389"
 	retries = "1"
-	rootdn = "test_rootdn_value"
+	rootdn = "CN=admin,CN=Users,DC=host,DC=com"
 	timeout = "30"
 }

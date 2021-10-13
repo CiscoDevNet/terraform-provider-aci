@@ -26,8 +26,8 @@ resource "aci_ldap_provider" "example" {
 	annotation = "example_annotation"
 	name_alias = "example_name_alias"
 	ssl_validation_level = "strict"
-	attribute = "example_attribute_value"
-	basedn = "example_basedn_value"
+	attribute = "CiscoAvPair"
+	basedn = "CN=Users,DC=host,DC=com"
 	enable_ssl = "yes"
 	filter = "sAMAccountName=$userid"
 	key = "example_key_value"
@@ -36,7 +36,7 @@ resource "aci_ldap_provider" "example" {
 	monitoring_user = "example_monitoring_user_value"
 	port = "389"
 	retries = "1"
-	rootdn = "test_rootdn_value"
+	rootdn = "CN=admin,CN=Users,DC=host,DC=com"
 	timeout = "30"
 }
 ```
@@ -48,7 +48,7 @@ resource "aci_ldap_provider" "example" {
 * `description` - (Optional) Description of object LDAP Provider.
 * `name_alias` - (Optional) Name alias of object LDAP Provider.
 * `ssl_validation_level` - (Optional) The LDAP Server SSL Certificate validation level. Allowed values are "permissive" and "strict". Default value is "strict". Type: String.
-* `attribute` - (Optional) The attribute to be downloaded that contains user role and domain information.
+* `attribute` - (Optional) The attribute to be downloaded that contains user role and domain information. Default value is "CiscoAVPair".
 * `basedn` - (Optional) The LDAP base DN to be used in a user search. 
 * `enable_ssl` - (Optional) A property for enabling an SSL connection with the LDAP provider. Allowed values are "no" and "yes". Default value is "no". Type: String.
 * `filter` - (Optional) The LDAP filter to be used in a user search. Default value is "sAMAccountName=$userid".

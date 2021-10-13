@@ -104,7 +104,7 @@ func resourceAciLDAPProvider() *schema.Resource {
 				Type:         schema.TypeString,
 				Optional:     true,
 				Computed:     true,
-				ValidateFunc: checkAtleasOne(),
+				ValidateFunc: checkAtleastOne(),
 			},
 			"rootdn": &schema.Schema{
 				Type:     schema.TypeString,
