@@ -217,7 +217,7 @@ func StripQuotes(word string) string {
 	return word
 }
 
-func checkAtleasOne() schema.SchemaValidateFunc {
+func checkAtleastOne() schema.SchemaValidateFunc {
 	return func(i interface{}, k string) (s []string, es []error) {
 		v, ok := i.(string)
 		if !ok {
