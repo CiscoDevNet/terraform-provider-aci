@@ -15,10 +15,11 @@ Data source for ACI LDAP Group Map Rule
 
 * `Class` - aaaLdapGroupMapRule
 * `Distinguished Named` - uni/userext/duoext/ldapgroupmaprule-{name}
-
+                          uni/userext/ldapext/ldapgroupmaprule-{name}
 ## GUI Information ##
 
-* `Location` - Admin -> AAA -> Authentication -> LDAP -> LDAP Group Map Rules & Admin -> AAA -> Authentication -> DUO -> LDAP -> LDAP Group Map Rules 
+* `Location` - Admin -> AAA -> Authentication -> LDAP -> LDAP Group Map Rules & 
+               Admin -> AAA -> Authentication -> DUO -> LDAP -> Group Map Rules 
 
 
 ## Example Usage ##
@@ -40,3 +41,4 @@ data "aci_ldap_group_map_rule" "example" {
 * `annotation` - (Optional) Annotation of object LDAP Group Map Rule.
 * `name_alias` - (Optional) Name Alias of object LDAP Group Map Rule.
 * `groupdn` - (Optional) LDAP Group DN to compare with LDAP search query for user's membership. 
+* `description` - (Optional) Description of object LDAP Group Map Rule.

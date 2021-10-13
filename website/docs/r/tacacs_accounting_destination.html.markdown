@@ -33,7 +33,7 @@ resource "aci_tacacs_accounting_destination" "example" {
 ## Argument Reference ##
 * `tacacs_accounting_dn` - (Required) Distinguished name of parent TACACS Accounting object..
 * `host` - (Required) Host or IP address of object TACACS Accounting Destination.
-* `port` - (Required) Port of object TACACS Accounting Destination. Allowed Range: "1" - "65535". Default value: "49".
+* `port` - (Optional) Port of object TACACS Accounting Destination. Allowed Range: "1" - "65535". Default value: "49".
 * `annotation` - (Optional) Annotation of object TACACS Accounting Destination.
 * `name_alias` - (Optional) Name Alias of object TACACS Accounting Destination.
 * `name` - (Optional) Name of object TACACS Accounting Destination.
