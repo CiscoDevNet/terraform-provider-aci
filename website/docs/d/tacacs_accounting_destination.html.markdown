@@ -15,7 +15,7 @@ Data source for ACI TACACS Accounting Destination
 * `Distinguished Named` - uni/fabric/tacacsgroup-{name}/tacacsdest-{host}-port-{port}
 
 ## GUI Information ##
-* `Location` - Admin -> AAA -> External Data Collectors -> TACACS -> TACACS Destinations
+* `Location` - Admin -> External Data Collectors -> Monitoring Destinations ->TACACS -> TACACS Destinations
 
 ## Example Usage ##
 ```hcl
