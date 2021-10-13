@@ -14,11 +14,11 @@ Manages ACI LDAP Group Map Rule
 
 * `Class` - aaaLdapGroupMapRule
 * `Distinguished Named` - uni/userext/duoext/ldapgroupmaprule-{name}
-
+                          uni/userext/duoext/ldapgroupmaprule-{name}
 ## GUI Information ##
 
-* `Location` - Admin -> AAA -> Authentication -> LDAP -> LDAP Group Map Rules & Admin -> AAA -> Authentication -> DUO -> LDAP -> LDAP Group Map Rules
-
+* `Location` - Admin -> AAA -> Authentication -> LDAP -> LDAP Group Map Rules & 
+               Admin -> AAA -> Authentication -> DUO -> LDAP -> Group Map Rules
 
 ## Example Usage ##
 
@@ -26,7 +26,7 @@ Manages ACI LDAP Group Map Rule
 resource "aci_ldap_group_map_rule" "example" {
   name        = "example"
   annotation  = "orchestrator:terraform"
-  groupdn     = ""
+  groupdn     = "groupdn_example"
   type        = "duo"
   description = "From Terraform"
   name_alias  = "ldap_group_map_rule_alias"
