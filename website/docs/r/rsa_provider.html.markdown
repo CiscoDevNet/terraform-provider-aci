@@ -36,8 +36,6 @@ resource "aci_rsa_provider" "example" {
   monitoring_user        = "default"
   retries                = "1"
   timeout                = "5"
-  aaa_rs_prov_to_epp     = aci_resource.example.id
-  aaa_rs_sec_prov_to_epg = aci_resource.example.id
 }
 ```
 

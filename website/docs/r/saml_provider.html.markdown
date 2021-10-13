@@ -45,8 +45,6 @@ resource "aci_saml_provider" "example" {
   want_assertions_signed    = "yes"
   want_requests_signed      = "yes"
   want_response_signed      = "yes"
-  aaa_rs_prov_to_epp        = aci_resource.example.id
-  aaa_rs_sec_prov_to_epg    = aci_resource.example.id
 }
 ```
 
