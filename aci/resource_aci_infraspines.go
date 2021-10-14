@@ -92,6 +92,7 @@ func setSwitchSpineAssociationAttributes(infraSpineS *models.SwitchSpineAssociat
 
 	d.Set("name", infraSpineSMap["name"])
 	d.Set("spine_switch_association_type", infraSpineSMap["type"])
+	d.Set("spine_profile_dn", GetParentDn(dn, fmt.Sprintf("/spines-%s-typ-%s", infraSpineSMap["name"], infraSpineSMap["type"])))
 	d.Set("annotation", infraSpineSMap["annotation"])
 	d.Set("name_alias", infraSpineSMap["nameAlias"])
 
