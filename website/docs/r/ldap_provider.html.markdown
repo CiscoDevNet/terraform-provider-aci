@@ -59,7 +59,7 @@ resource "aci_ldap_provider" "example" {
 * `port` - (Optional) The service port number for the LDAP service. Allowed range: "1" - "65535". Default value is "389".
 * `retries` - (Optional) Retry count of object LDAP Provider. Allowed range: "1" - "5". Default value is "1".
 * `rootdn` - (Optional) The root DN or bind DN of the LDAP provider.
-* `timeout` - (Optional) The timeout for communication with an LDAP provider server. Allowed range: "5" - "60". Default value is "30".
+* `timeout` - (Optional) The timeout for communication with an LDAP provider server. Allowed range: "5" - "60". Default value is "30". (NOTE: For "duo" LDAP providers, the value of timeout should be greater than or equal to "30".)
 * `relation_aaa_rs_prov_to_epp` - (Optional) Represents the relation to a Relation to AProvider Reachability EPP (class fvAREpP). Type: String.
 * `relation_aaa_rs_sec_prov_to_epg` - (Optional) Represents the relation to a Attachable Target Group (class fvATg). A source relation to the endpoint group through which the provider server is reachable. Type: String.
 
