@@ -79,7 +79,7 @@ func setAccessAccessGroupAttributes(infraRsAccBaseGrp *models.AccessAccessGroup,
 	if err != nil {
 		return d, err
 	}
-
+	d.Set("access_port_selector_dn", GetParentDn(dn, fmt.Sprintf("/rsaccBaseGrp")))
 	d.Set("annotation", infraRsAccBaseGrpMap["annotation"])
 	d.Set("fex_id", infraRsAccBaseGrpMap["fexId"])
 	d.Set("tdn", infraRsAccBaseGrpMap["tDn"])
