@@ -38,3 +38,4 @@ data "aci_tacacs_accounting" "example" {
 * `id` - Attribute id set to the Dn of the TACACS Accounting.
 * `annotation` - (Optional) Annotation of object TACACS Accounting.
 * `name_alias` - (Optional) Name Alias of object TACACS Accounting.
+* `description` - (Optional) Description of object TACACS Accounting.
