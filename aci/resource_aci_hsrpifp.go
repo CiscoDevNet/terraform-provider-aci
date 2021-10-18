@@ -83,7 +83,7 @@ func setL3outHSRPInterfaceProfileAttributes(hsrpIfP *models.L3outHSRPInterfacePr
 	if err != nil {
 		return d, err
 	}
-	d.Set("logical_interface_profile_dn", GetParentDn(hsrpIfP.DistinguishedName, "hsrpIfP"))
+	d.Set("logical_interface_profile_dn", GetParentDn(hsrpIfP.DistinguishedName, "/hsrpIfP"))
 	d.Set("annotation", hsrpIfPMap["annotation"])
 	d.Set("name_alias", hsrpIfPMap["nameAlias"])
 	d.Set("version", hsrpIfPMap["version"])
