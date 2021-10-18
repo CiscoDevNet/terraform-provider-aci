@@ -17,7 +17,7 @@ Manages ACI LDAP Group Map Rule
                           uni/userext/ldapext/ldapgroupmaprule-{name}
 ## GUI Information ##
 
-* `Location` - Admin -> AAA -> Authentication -> LDAP -> LDAP Group Map Rules &   Admin -> AAA -> Authentication -> DUO -> LDAP -> Group Map Rules
+* `Location` - Admin -> AAA -> Authentication -> LDAP -> LDAP Group Map Rules & <br>Admin -> AAA -> Authentication -> DUO -> LDAP -> Group Map Rules
 
 ## Example Usage ##
 
