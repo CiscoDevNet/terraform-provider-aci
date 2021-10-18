@@ -239,6 +239,7 @@ func Provider() *schema.Provider {
 			"aci_tacacs_accounting":                        resourceAciTACACSMonitoringDestinationGroup(),
 			"aci_rsa_provider":                             resourceAciRSAProvider(),
 			"aci_saml_provider":                            resourceAciSAMLProvider(),
+			"aci_login_domain":                             resourceAciLoginDomain(),
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
@@ -430,6 +431,7 @@ func Provider() *schema.Provider {
 			"aci_tacacs_accounting":                        dataSourceAciTACACSMonitoringDestinationGroup(),
 			"aci_rsa_provider":                             dataSourceAciRSAProvider(),
 			"aci_saml_provider":                            dataSourceAciSAMLProvider(),
+			"aci_login_domain":                             dataSourceAciLoginDomain(),
 		},
 
 		ConfigureFunc: configureClient,

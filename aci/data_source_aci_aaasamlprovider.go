@@ -39,22 +39,12 @@ func dataSourceAciSAMLProvider() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
-			"key": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
 			"metadata_url": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
 			},
 			"monitor_server": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-			"monitoring_password": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
