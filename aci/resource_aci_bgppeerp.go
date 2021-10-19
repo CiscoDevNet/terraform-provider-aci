@@ -57,6 +57,16 @@ func resourceAciBgpPeerConnectivityProfile() *schema.Resource {
 				}, false, "")),
 			},
 
+			"admin_st": {
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"disabled",
+					"enabled",
+				}, false),
+			},
+
 			"allowed_self_as_cnt": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -160,6 +170,28 @@ func resourceAciBgpPeerConnectivityProfile() *schema.Resource {
 
 				Optional: true,
 			},
+			"relation_bgp_rs_peer_to_profile": &schema.Schema{
+				Type:        schema.TypeSet,
+				Optional:    true,
+				Description: "Create relation to rtctrlProfile",
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"direction": {
+							Optional: true,
+							Type:     schema.TypeString,
+							ValidateFunc: validation.StringInSlice([]string{
+								"export",
+								"import",
+							}, false),
+						},
+
+						"target_dn": {
+							Required: true,
+							Type:     schema.TypeString,
+						},
+					},
+				},
+			},
 		}),
 	}
 }
@@ -221,8 +253,7 @@ func setBgpPeerConnectivityProfileAttributes(bgpPeerP *models.BgpPeerConnectivit
 		return d, err
 	}
 
-	d.Set("addr", bgpPeerPMap["addr"])
-
+	d.Set("admin_st", bgpPeerPMap["adminSt"])
 	d.Set("addr", bgpPeerPMap["addr"])
 	d.Set("addr_t_ctrl", bgpPeerPMap["addrTCtrl"])
 	d.Set("allowed_self_as_cnt", bgpPeerPMap["allowedSelfAsCnt"])
@@ -331,6 +362,9 @@ func resourceAciBgpPeerConnectivityProfileCreate(ctx context.Context, d *schema.
 	if Weight, ok := d.GetOk("weight"); ok {
 		bgpPeerPAttr.Weight = Weight.(string)
 	}
+	if AdminSt, ok := d.GetOk("admin_st"); ok {
+		bgpPeerPAttr.AdminSt = AdminSt.(string)
+	}
 	bgpPeerP := models.NewBgpPeerConnectivityProfile(fmt.Sprintf("peerP-[%s]", addr), parentDn, desc, bgpPeerPAttr)
 
 	err := aciClient.Save(bgpPeerP)
@@ -379,6 +413,13 @@ func resourceAciBgpPeerConnectivityProfileCreate(ctx context.Context, d *schema.
 
 	}
 
+	if relationTobgpRsPeerToProfile, ok := d.GetOk("relation_bgp_rs_peer_to_profile"); ok {
+		relationParamList := toStringList(relationTobgpRsPeerToProfile.(*schema.Set).List())
+		for _, relationParam := range relationParamList {
+			checkDns = append(checkDns, relationParam)
+		}
+	}
+
 	d.Partial(true)
 	err = checkTDn(aciClient, checkDns)
 	if err != nil {
@@ -393,6 +434,21 @@ func resourceAciBgpPeerConnectivityProfileCreate(ctx context.Context, d *schema.
 			return diag.FromErr(err)
 		}
 
+	}
+
+	if relationTobgpRsPeerToProfile, ok := d.GetOk("relation_bgp_rs_peer_to_profile"); ok {
+		relationParamList := relationTobgpRsPeerToProfile.(*schema.Set).List()
+		for _, relationParam := range relationParamList {
+			paramMap := relationParam.(map[string]interface{})
+			err = aciClient.CreateRelationbgpRsPeerToProfile(bgpPeerP.DistinguishedName, bgpPeerPAttr.Annotation, paramMap["direction"].(string), paramMap["target_dn"].(string))
+
+			if err != nil {
+				return err
+			}
+			d.Partial(true)
+			d.SetPartial("relation_bgp_rs_peer_to_profile")
+			d.Partial(false)
+		}
 	}
 
 	d.SetId(bgpPeerP.DistinguishedName)
@@ -456,7 +512,14 @@ func resourceAciBgpPeerConnectivityProfileUpdate(ctx context.Context, d *schema.
 	if Weight, ok := d.GetOk("weight"); ok {
 		bgpPeerPAttr.Weight = Weight.(string)
 	}
+<<<<<<< HEAD
 	bgpPeerP := models.NewBgpPeerConnectivityProfile(fmt.Sprintf("peerP-[%s]", addr), parentDn, desc, bgpPeerPAttr)
+=======
+	if AdminSt, ok := d.GetOk("admin_st"); ok {
+		bgpPeerPAttr.AdminSt = AdminSt.(string)
+	}
+	bgpPeerP := models.NewBgpPeerConnectivityProfile(fmt.Sprintf("peerP-[%s]", addr), LogicalNodeProfileDn, desc, bgpPeerPAttr)
+>>>>>>> add admin_st and bgp peer to profile relation
 
 	bgpPeerP.Status = "modified"
 
@@ -510,6 +573,16 @@ func resourceAciBgpPeerConnectivityProfileUpdate(ctx context.Context, d *schema.
 
 	}
 
+	if d.HasChange("relation_bgp_rs_peer_to_profile") {
+		oldRel, newRel := d.GetChange("relation_bgp_rs_peer_to_profile")
+		oldRelSet := oldRel.(*schema.Set)
+		newRelSet := newRel.(*schema.Set)
+		relToCreate := toStringList(newRelSet.Difference(oldRelSet).List())
+		for _, relDn := range relToCreate {
+			checkDns = append(checkDns, relDn)
+		}
+	}
+
 	d.Partial(true)
 	err = checkTDn(aciClient, checkDns)
 	if err != nil {
@@ -524,6 +597,31 @@ func resourceAciBgpPeerConnectivityProfileUpdate(ctx context.Context, d *schema.
 			return diag.FromErr(err)
 		}
 
+	}
+
+	if d.HasChange("relation_bgp_rs_peer_to_profile") {
+		oldRel, newRel := d.GetChange("relation_bgp_rs_peer_to_profile")
+		oldRelList := oldRel.(*schema.Set).List()
+		newRelList := newRel.(*schema.Set).List()
+		for _, relationParam := range oldRelList {
+			paramMap := relationParam.(map[string]interface{})
+			err = aciClient.DeleteRelationbgpRsPeerToProfile(bgpPeerP.DistinguishedName, paramMap["target_dn"].(string), paramMap["direction"].(string))
+
+			if err != nil {
+				return err
+			}
+		}
+		for _, relationParam := range newRelList {
+			paramMap := relationParam.(map[string]interface{})
+			err = aciClient.CreateRelationbgpRsPeerToProfile(bgpPeerP.DistinguishedName, bgpPeerPAttr.Annotation, paramMap["direction"].(string), paramMap["target_dn"].(string))
+
+			if err != nil {
+				return err
+			}
+		}
+		d.Partial(true)
+		d.SetPartial("relation_bgp_rs_peer_to_profile")
+		d.Partial(false)
 	}
 
 	d.SetId(bgpPeerP.DistinguishedName)
@@ -581,6 +679,13 @@ func resourceAciBgpPeerConnectivityProfileRead(ctx context.Context, d *schema.Re
 				d.Set("relation_bgp_rs_peer_pfx_pol", "")
 			}
 		}
+	}
+
+	bgpRsPeerToProfileData, err := aciClient.ReadRelationbgpRsPeerToProfile(dn)
+	if err != nil {
+		log.Printf("[DEBUG] Error while reading relation bgpRsPeerToProfile %v", err)
+	} else {
+		d.Set("relation_bgp_rs_peer_to_profile", bgpRsPeerToProfileData)
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
