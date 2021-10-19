@@ -96,7 +96,7 @@ func setStaticPathAttributes(fvRsPathAtt *models.StaticPath, d *schema.ResourceD
 	if err != nil {
 		return d, err
 	}
-	d.Set("application_epg_dn", GetParentDn(fvRsPathAtt.DistinguishedName, fmt.Sprintf("/rspathAtt-%s", fvRsPathAttMap["tDn"])))
+	d.Set("application_epg_dn", GetParentDn(fvRsPathAtt.DistinguishedName, fmt.Sprintf("/rspathAtt-[%s]", fvRsPathAttMap["tDn"])))
 	if dn != fvRsPathAtt.DistinguishedName {
 		d.Set("application_epg_dn", "")
 	}
