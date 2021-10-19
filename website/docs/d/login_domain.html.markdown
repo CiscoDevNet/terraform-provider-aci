@@ -39,7 +39,6 @@ data "aci_login_domain" "example" {
 * `annotation` - (Optional) Annotation of object Login Domain.
 * `name_alias` - (Optional) Name Alias of object Login Domain.
 * `description` - (Optional) Description of object Login Domain.
-* `domain_auth_name` - (Optional) Name of child object Domain Auth.
 * `provider_group` - (Optional) Provider Group. An AAA configuration provider group is a group of remote servers supporting the same AAA protocol that will be used for authentication and authorization. When a provider group is specified, only the servers within that group will be used for authentication and authorization. If no provider group is specified, all servers supporting the realm of AAA protocols will be used for authentication and authorization.
 * `realm` - (Optional) Realm. The security method for processing authentication requests. The realm allows the protected resources on the associated server to be partitioned into a set of protection spaces, each with its own authentication authorization database.
 * `realm_sub_type` - (Optional) Realm subtype of object Login Domain.

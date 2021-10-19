@@ -56,8 +56,8 @@ resource "aci_saml_provider" "example" {
 * `name_alias` - (Optional) Name Alias of object SAML Provider. Type: String.
 * `description` - (Optional) Description of object SAML Provider. Type: String.
 * `entity_id` - (Optional) Entity ID. Type: String.
-* `gui_banner_message` - (Optional) Gui Redirect Banner Message. Type: String.
-* `https_proxy` - (Optional) Https Proxy to reach IDP's Metadata URL. Type: String. (Note: Value passed for "https_proxy" attribute should be a URL)
+* `gui_banner_message` - (Optional) Gui Redirect Banner Message. Type: String. (Note: Value passed for "https_proxy" attribute should be a URL)
+* `https_proxy` - (Optional) Https Proxy to reach IDP's Metadata URL. Type: String.
 * `id_p` - (Optional) Identity Provider. Allowed values are "adfs", "okta", "ping identity". Default value is "adfs". Type: String.
 * `key` - (Optional) Key. A password for the AAA provider database. Type: String.
 * `metadata_url` - (Optional) Metadata Url provided by IDP. Type: String.
