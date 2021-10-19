@@ -31,11 +31,6 @@ func resourceAciLoginDomain() *schema.Resource {
 				Required: true,
 				ForceNew: true,
 			},
-			"domain_auth_name": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
 			"provider_group": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -99,7 +94,6 @@ func setAuthenticationMethodfortheDomainAttributes(aaaDomainAuth *models.Authent
 		return nil, err
 	}
 	d.Set("annotation", aaaDomainAuthMap["annotation"])
-	d.Set("domain_auth_name", aaaDomainAuthMap["name"])
 	d.Set("provider_group", aaaDomainAuthMap["providerGroup"])
 	d.Set("realm", aaaDomainAuthMap["realm"])
 	d.Set("realm_sub_type", aaaDomainAuthMap["realmSubType"])
@@ -141,7 +135,6 @@ func resourceAciLoginDomainCreate(ctx context.Context, d *schema.ResourceData, m
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
 	name := d.Get("name").(string)
-	//LoginDomainDn := fmt.Sprintf("uni/userext/logindomain-%s", name)
 	aaaLoginDomainAttr := models.LoginDomainAttributes{}
 	aaaDomainAuthAttr := models.AuthenticationMethodfortheDomainAttributes{}
 	nameAlias := ""
@@ -162,10 +155,6 @@ func resourceAciLoginDomainCreate(ctx context.Context, d *schema.ResourceData, m
 
 	if ProviderGroup, ok := d.GetOk("provider_group"); ok {
 		aaaDomainAuthAttr.ProviderGroup = ProviderGroup.(string)
-	}
-
-	if DomainAuthName, ok := d.GetOk("domain_auth_name"); ok {
-		aaaDomainAuthAttr.Name = DomainAuthName.(string)
 	}
 
 	if Realm, ok := d.GetOk("realm"); ok {
@@ -197,7 +186,6 @@ func resourceAciLoginDomainUpdate(ctx context.Context, d *schema.ResourceData, m
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
 	name := d.Get("name").(string)
-	//LoginDomainDn := fmt.Sprintf("uni/userext/logindomain-%s", name)
 	aaaLoginDomainAttr := models.LoginDomainAttributes{}
 	aaaDomainAuthAttr := models.AuthenticationMethodfortheDomainAttributes{}
 	nameAlias := ""
@@ -219,10 +207,6 @@ func resourceAciLoginDomainUpdate(ctx context.Context, d *schema.ResourceData, m
 
 	if ProviderGroup, ok := d.GetOk("provider_group"); ok {
 		aaaDomainAuthAttr.ProviderGroup = ProviderGroup.(string)
-	}
-
-	if DomainAuthName, ok := d.GetOk("domain_auth_name"); ok {
-		aaaDomainAuthAttr.Name = DomainAuthName.(string)
 	}
 
 	if Realm, ok := d.GetOk("realm"); ok {

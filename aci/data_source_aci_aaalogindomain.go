@@ -19,11 +19,6 @@ func dataSourceAciLoginDomain() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
-			"domain_auth_name": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
 			"name": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,

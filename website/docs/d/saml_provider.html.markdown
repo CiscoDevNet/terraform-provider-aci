@@ -43,10 +43,8 @@ data "aci_saml_provider" "example" {
 * `gui_banner_message` - (Optional) Gui Redirect Banner Message. 
 * `https_proxy` - (Optional) Https Proxy to reach IDP's Metadata URL. 
 * `id_p` - (Optional) Identity Provider. 
-* `key` - (Optional) Key. A password for the AAA provider database.
 * `metadata_url` - (Optional) Metadata Url provided by IDP. 
 * `monitor_server` - (Optional) Periodic Server Monitoring. 
-* `monitoring_password` - (Optional) Periodic Server Monitoring Password. 
 * `monitoring_user` - (Optional) Periodic Server Monitoring Username. 
 * `retries` - (Optional) Retries. null
 * `sig_alg` - (Optional) Signature Algorithm. 
