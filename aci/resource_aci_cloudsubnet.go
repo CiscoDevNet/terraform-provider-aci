@@ -115,7 +115,7 @@ func setCloudSubnetAttributes(cloudSubnet *models.CloudSubnet, d *schema.Resourc
 	}
 	d.Set("ip", cloudSubnetMap["ip"])
 	d.Set("name", cloudSubnetMap["name"])
-
+	d.Set("cloud_cidr_pool_dn", GetParentDn(dn, fmt.Sprintf("/subnet-[%s]", cloudSubnetMap["ip"])))
 	d.Set("annotation", cloudSubnetMap["annotation"])
 	d.Set("name_alias", cloudSubnetMap["nameAlias"])
 	d.Set("scope", cloudSubnetMap["scope"])

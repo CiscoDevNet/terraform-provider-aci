@@ -108,7 +108,7 @@ func setRangesAttributes(fvnsEncapBlk *models.Ranges, d *schema.ResourceData) (*
 	d.Set("name_alias", fvnsEncapBlkMap["nameAlias"])
 	d.Set("role", fvnsEncapBlkMap["role"])
 	d.Set("to", fvnsEncapBlkMap["to"])
-	d.Set("vlan_pool_dn", GetParentDn(dn, fmt.Sprintf("from-[%s]-to-[%s]", fvnsEncapBlkMap["from"], fvnsEncapBlkMap["to"])))
+	d.Set("vlan_pool_dn", GetParentDn(dn, fmt.Sprintf("/from-[%s]-to-[%s]", fvnsEncapBlkMap["from"], fvnsEncapBlkMap["to"])))
 	return d, nil
 }
 
