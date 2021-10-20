@@ -6,34 +6,35 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/container"
 )
+
 const (
-	DnaaaRsaProvider                = "uni/userext/rsaext/rsaprovider-%s"
-	RnaaaRsaProvider                = "rsaprovider-%s"
-	ParentDnaaaRsaProvider          = "uni/userext/rsaext"
+	DnaaaRsaProvider        = "uni/userext/rsaext/rsaprovider-%s"
+	RnaaaRsaProvider        = "rsaprovider-%s"
+	ParentDnaaaRsaProvider  = "uni/userext/rsaext"
 	AaarsaproviderClassName = "aaaRsaProvider"
 )
 
 type RSAProvider struct {
 	BaseAttributes
 	NameAliasAttribute
-    RSAProviderAttributes 
+	RSAProviderAttributes
 }
-  
+
 type RSAProviderAttributes struct {
-    Annotation       string `json:",omitempty"`
-    AuthPort       string `json:",omitempty"`
-    AuthProtocol       string `json:",omitempty"`
-    Key       string `json:",omitempty"`
-    MonitorServer       string `json:",omitempty"`
-    MonitoringPassword       string `json:",omitempty"`
-    MonitoringUser       string `json:",omitempty"`
-    Name       string `json:",omitempty"`
-    Retries       string `json:",omitempty"`
-    Timeout       string `json:",omitempty"`
-    } 
+	Annotation         string `json:",omitempty"`
+	AuthPort           string `json:",omitempty"`
+	AuthProtocol       string `json:",omitempty"`
+	Key                string `json:",omitempty"`
+	MonitorServer      string `json:",omitempty"`
+	MonitoringPassword string `json:",omitempty"`
+	MonitoringUser     string `json:",omitempty"`
+	Name               string `json:",omitempty"`
+	Retries            string `json:",omitempty"`
+	Timeout            string `json:",omitempty"`
+}
 
 func NewRSAProvider(aaaRsaProviderRn, parentDn, description, nameAlias string, aaaRsaProviderAttr RSAProviderAttributes) *RSAProvider {
-	dn := fmt.Sprintf("%s/%s", parentDn, aaaRsaProviderRn)  
+	dn := fmt.Sprintf("%s/%s", parentDn, aaaRsaProviderRn)
 	return &RSAProvider{
 		BaseAttributes: BaseAttributes{
 			DistinguishedName: dn,
@@ -45,7 +46,7 @@ func NewRSAProvider(aaaRsaProviderRn, parentDn, description, nameAlias string, a
 		NameAliasAttribute: NameAliasAttribute{
 			NameAlias: nameAlias,
 		},
-        RSAProviderAttributes: aaaRsaProviderAttr, 
+		RSAProviderAttributes: aaaRsaProviderAttr,
 	}
 }
 
@@ -61,17 +62,17 @@ func (aaaRsaProvider *RSAProvider) ToMap() (map[string]string, error) {
 	for key, value := range alias {
 		A(aaaRsaProviderMap, key, value)
 	}
-    A(aaaRsaProviderMap, "annotation",aaaRsaProvider.Annotation)
-    A(aaaRsaProviderMap, "authPort",aaaRsaProvider.AuthPort)
-    A(aaaRsaProviderMap, "authProtocol",aaaRsaProvider.AuthProtocol)
-    A(aaaRsaProviderMap, "key",aaaRsaProvider.Key)
-    A(aaaRsaProviderMap, "monitorServer",aaaRsaProvider.MonitorServer)
-    A(aaaRsaProviderMap, "monitoringPassword",aaaRsaProvider.MonitoringPassword)
-    A(aaaRsaProviderMap, "monitoringUser",aaaRsaProvider.MonitoringUser)
-    A(aaaRsaProviderMap, "name",aaaRsaProvider.Name)
-    A(aaaRsaProviderMap, "retries",aaaRsaProvider.Retries)
-    A(aaaRsaProviderMap, "timeout",aaaRsaProvider.Timeout)
-    return aaaRsaProviderMap, err
+	A(aaaRsaProviderMap, "annotation", aaaRsaProvider.Annotation)
+	A(aaaRsaProviderMap, "authPort", aaaRsaProvider.AuthPort)
+	A(aaaRsaProviderMap, "authProtocol", aaaRsaProvider.AuthProtocol)
+	A(aaaRsaProviderMap, "key", aaaRsaProvider.Key)
+	A(aaaRsaProviderMap, "monitorServer", aaaRsaProvider.MonitorServer)
+	A(aaaRsaProviderMap, "monitoringPassword", aaaRsaProvider.MonitoringPassword)
+	A(aaaRsaProviderMap, "monitoringUser", aaaRsaProvider.MonitoringUser)
+	A(aaaRsaProviderMap, "name", aaaRsaProvider.Name)
+	A(aaaRsaProviderMap, "retries", aaaRsaProvider.Retries)
+	A(aaaRsaProviderMap, "timeout", aaaRsaProvider.Timeout)
+	return aaaRsaProviderMap, err
 }
 
 func RSAProviderFromContainerList(cont *container.Container, index int) *RSAProvider {
@@ -87,18 +88,18 @@ func RSAProviderFromContainerList(cont *container.Container, index int) *RSAProv
 		NameAliasAttribute{
 			NameAlias: G(RSAProviderCont, "nameAlias"),
 		},
-        RSAProviderAttributes{
-        Annotation : G(RSAProviderCont, "annotation"),
-        AuthPort : G(RSAProviderCont, "authPort"),
-        AuthProtocol : G(RSAProviderCont, "authProtocol"),
-        Key : G(RSAProviderCont, "key"),
-        MonitorServer : G(RSAProviderCont, "monitorServer"),
-        MonitoringPassword : G(RSAProviderCont, "monitoringPassword"),
-        MonitoringUser : G(RSAProviderCont, "monitoringUser"),
-        Name : G(RSAProviderCont, "name"),
-        Retries : G(RSAProviderCont, "retries"),
-        Timeout : G(RSAProviderCont, "timeout"),
-        },
+		RSAProviderAttributes{
+			Annotation:         G(RSAProviderCont, "annotation"),
+			AuthPort:           G(RSAProviderCont, "authPort"),
+			AuthProtocol:       G(RSAProviderCont, "authProtocol"),
+			Key:                G(RSAProviderCont, "key"),
+			MonitorServer:      G(RSAProviderCont, "monitorServer"),
+			MonitoringPassword: G(RSAProviderCont, "monitoringPassword"),
+			MonitoringUser:     G(RSAProviderCont, "monitoringUser"),
+			Name:               G(RSAProviderCont, "name"),
+			Retries:            G(RSAProviderCont, "retries"),
+			Timeout:            G(RSAProviderCont, "timeout"),
+		},
 	}
 }
 

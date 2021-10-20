@@ -44,5 +44,3 @@ func (sm *ServiceManager) ListTACACSDestination(tacacs_monitoring_destination_gr
 	list := models.TACACSDestinationListFromContainer(cont)
 	return list, err
 }
-
-

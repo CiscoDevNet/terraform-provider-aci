@@ -6,26 +6,27 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/container"
 )
+
 const (
-	DntacacsGroup                = "uni/fabric/tacacsgroup-%s"
-	RntacacsGroup                = "tacacsgroup-%s"
-	ParentDntacacsGroup          = "uni/fabric"
+	DntacacsGroup        = "uni/fabric/tacacsgroup-%s"
+	RntacacsGroup        = "tacacsgroup-%s"
+	ParentDntacacsGroup  = "uni/fabric"
 	TacacsgroupClassName = "tacacsGroup"
 )
 
 type TACACSMonitoringDestinationGroup struct {
 	BaseAttributes
 	NameAliasAttribute
-    TACACSMonitoringDestinationGroupAttributes 
+	TACACSMonitoringDestinationGroupAttributes
 }
-  
+
 type TACACSMonitoringDestinationGroupAttributes struct {
-    Annotation       string `json:",omitempty"`
-    Name       string `json:",omitempty"`
-    } 
+	Annotation string `json:",omitempty"`
+	Name       string `json:",omitempty"`
+}
 
 func NewTACACSMonitoringDestinationGroup(tacacsGroupRn, parentDn, description, nameAlias string, tacacsGroupAttr TACACSMonitoringDestinationGroupAttributes) *TACACSMonitoringDestinationGroup {
-	dn := fmt.Sprintf("%s/%s", parentDn, tacacsGroupRn)  
+	dn := fmt.Sprintf("%s/%s", parentDn, tacacsGroupRn)
 	return &TACACSMonitoringDestinationGroup{
 		BaseAttributes: BaseAttributes{
 			DistinguishedName: dn,
@@ -37,7 +38,7 @@ func NewTACACSMonitoringDestinationGroup(tacacsGroupRn, parentDn, description, n
 		NameAliasAttribute: NameAliasAttribute{
 			NameAlias: nameAlias,
 		},
-        TACACSMonitoringDestinationGroupAttributes: tacacsGroupAttr, 
+		TACACSMonitoringDestinationGroupAttributes: tacacsGroupAttr,
 	}
 }
 
@@ -53,9 +54,9 @@ func (tacacsGroup *TACACSMonitoringDestinationGroup) ToMap() (map[string]string,
 	for key, value := range alias {
 		A(tacacsGroupMap, key, value)
 	}
-    A(tacacsGroupMap, "annotation",tacacsGroup.Annotation)
-    A(tacacsGroupMap, "name",tacacsGroup.Name)
-    return tacacsGroupMap, err
+	A(tacacsGroupMap, "annotation", tacacsGroup.Annotation)
+	A(tacacsGroupMap, "name", tacacsGroup.Name)
+	return tacacsGroupMap, err
 }
 
 func TACACSMonitoringDestinationGroupFromContainerList(cont *container.Container, index int) *TACACSMonitoringDestinationGroup {
@@ -71,10 +72,10 @@ func TACACSMonitoringDestinationGroupFromContainerList(cont *container.Container
 		NameAliasAttribute{
 			NameAlias: G(TACACSMonitoringDestinationGroupCont, "nameAlias"),
 		},
-        TACACSMonitoringDestinationGroupAttributes{
-        Annotation : G(TACACSMonitoringDestinationGroupCont, "annotation"),
-        Name : G(TACACSMonitoringDestinationGroupCont, "name"),
-        },
+		TACACSMonitoringDestinationGroupAttributes{
+			Annotation: G(TACACSMonitoringDestinationGroupCont, "annotation"),
+			Name:       G(TACACSMonitoringDestinationGroupCont, "name"),
+		},
 	}
 }
 
