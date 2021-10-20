@@ -9,6 +9,15 @@ description: |-
 # aci_l3_ext_subnet #
 Manages ACI l3 extension subnet
 
+## API Information ##
+
+* `Class` - l3extSubnet
+* `Distinguished Named` - uni/tn-{tenant}/out-{L3Out}/instP-{external EPG}/extsubnet-[{ip}]
+
+## GUI Information ##
+
+* `Location` - Tenant -> Networking -> L3Outs -> External EPGs -> Subnets -> Route Control Profile
+
 ## Example Usage ##
 
 ```hcl
@@ -20,7 +29,11 @@ Manages ACI l3 extension subnet
 	  aggregate                             = "shared-rtctrl"
 	  annotation                            = "tag_ext_subnet"
 	  name_alias                            = "alias_ext_subnet"
-	  scope                                 = ["import-security"]
+	  scope                                 = ["import-rtctrl", "export-rtctrl", "import-security"]
+	  relation_l3ext_rs_subnet_to_profile {
+		tn_rtctrl_profile_dn  = aci_bgp_route_control_profile.bgp_route_control_profile.id
+		direction = "import"
+	  }
 	}
 
 ```
@@ -34,10 +47,12 @@ Manages ACI l3 extension subnet
 * `name_alias` - (Optional) name_alias for object l3 extension subnet.
 * `scope` - (Optional) The list of domain applicable to the capability. Allowed values are "import-rtctrl", "export-rtctrl", "import-security", "shared-security" and "shared-rtctrl". Default is "import-security".
 
-* `relation_l3ext_rs_subnet_to_profile` - (Optional) Relation to class rtctrlProfile. Cardinality - N_TO_M. Type - Set of Map.
-                
+* `relation_l3ext_rs_subnet_to_profile` - (Optional) Relation to Route Control Profile (class rtctrlProfile). Cardinality - N_TO_ONE. Type - Set of Map.
+	* `relation_l3ext_rs_subnet_to_profile.tn_rtctrl_profile_name` - **Deprecated** (Required if tn_rtctrl_profile_dn is not used)(Optional) Associates the external EPGs with the route control profiles.
+	* `relation_l3ext_rs_subnet_to_profile.tn_rtctrl_profile_dn` - (Optional) Associates the external EPGs with the route control profiles.
+	* `relation_l3ext_rs_subnet_to_profile.direction` - (Required) Relation to configure route map for each BGP peer in the inbound and outbound directions.
 * `relation_l3ext_rs_subnet_to_rt_summ` - (Optional) Relation to class rtsumARtSummPol. Cardinality - N_TO_ONE. Type - String.
-                
+
 
 
 ## Attribute Reference
