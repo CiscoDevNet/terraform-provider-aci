@@ -242,6 +242,7 @@ func Provider() *schema.Provider {
 			"aci_login_domain":                             resourceAciLoginDomain(),
 			"aci_default_authentication":                   resourceAciDefaultAuthenticationMethodforallLogins(),
 			"aci_tacacs_provider_group":                    resourceAciTACACSPlusProviderGroup(),
+			"aci_ldap_group_map":                           resourceAciLDAPGroupMap(),
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
@@ -436,6 +437,7 @@ func Provider() *schema.Provider {
 			"aci_login_domain":                             dataSourceAciLoginDomain(),
 			"aci_default_authentication":                   dataSourceAciDefaultAuthenticationMethodforallLogins(),
 			"aci_tacacs_provider_group":                    dataSourceAciTACACSPlusProviderGroup(),
+			"aci_ldap_group_map":                           dataSourceAciLDAPGroupMap(),
 		},
 
 		ConfigureFunc: configureClient,

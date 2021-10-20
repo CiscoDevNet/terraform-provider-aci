@@ -6,26 +6,27 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/container"
 )
+
 const (
-	DninfraSpineAccNodePGrp                = "uni/infra/funcprof/spaccnodepgrp-%s"
-	RninfraSpineAccNodePGrp                = "spaccnodepgrp-%s"
-	ParentDninfraSpineAccNodePGrp          = "uni/infra/funcprof"
+	DninfraSpineAccNodePGrp        = "uni/infra/funcprof/spaccnodepgrp-%s"
+	RninfraSpineAccNodePGrp        = "spaccnodepgrp-%s"
+	ParentDninfraSpineAccNodePGrp  = "uni/infra/funcprof"
 	InfraspineaccnodepgrpClassName = "infraSpineAccNodePGrp"
 )
 
 type SpineSwitchPolicyGroup struct {
 	BaseAttributes
 	NameAliasAttribute
-    SpineSwitchPolicyGroupAttributes 
+	SpineSwitchPolicyGroupAttributes
 }
-  
+
 type SpineSwitchPolicyGroupAttributes struct {
-    Annotation       string `json:",omitempty"`
-    Name       string `json:",omitempty"`
-    } 
+	Annotation string `json:",omitempty"`
+	Name       string `json:",omitempty"`
+}
 
 func NewSpineSwitchPolicyGroup(infraSpineAccNodePGrpRn, parentDn, description, nameAlias string, infraSpineAccNodePGrpAttr SpineSwitchPolicyGroupAttributes) *SpineSwitchPolicyGroup {
-	dn := fmt.Sprintf("%s/%s", parentDn, infraSpineAccNodePGrpRn)  
+	dn := fmt.Sprintf("%s/%s", parentDn, infraSpineAccNodePGrpRn)
 	return &SpineSwitchPolicyGroup{
 		BaseAttributes: BaseAttributes{
 			DistinguishedName: dn,
@@ -37,7 +38,7 @@ func NewSpineSwitchPolicyGroup(infraSpineAccNodePGrpRn, parentDn, description, n
 		NameAliasAttribute: NameAliasAttribute{
 			NameAlias: nameAlias,
 		},
-        SpineSwitchPolicyGroupAttributes: infraSpineAccNodePGrpAttr, 
+		SpineSwitchPolicyGroupAttributes: infraSpineAccNodePGrpAttr,
 	}
 }
 
@@ -53,9 +54,9 @@ func (infraSpineAccNodePGrp *SpineSwitchPolicyGroup) ToMap() (map[string]string,
 	for key, value := range alias {
 		A(infraSpineAccNodePGrpMap, key, value)
 	}
-    A(infraSpineAccNodePGrpMap, "annotation",infraSpineAccNodePGrp.Annotation)
-    A(infraSpineAccNodePGrpMap, "name",infraSpineAccNodePGrp.Name)
-    return infraSpineAccNodePGrpMap, err
+	A(infraSpineAccNodePGrpMap, "annotation", infraSpineAccNodePGrp.Annotation)
+	A(infraSpineAccNodePGrpMap, "name", infraSpineAccNodePGrp.Name)
+	return infraSpineAccNodePGrpMap, err
 }
 
 func SpineSwitchPolicyGroupFromContainerList(cont *container.Container, index int) *SpineSwitchPolicyGroup {
@@ -71,10 +72,10 @@ func SpineSwitchPolicyGroupFromContainerList(cont *container.Container, index in
 		NameAliasAttribute{
 			NameAlias: G(SpineSwitchPolicyGroupCont, "nameAlias"),
 		},
-        SpineSwitchPolicyGroupAttributes{
-        Annotation : G(SpineSwitchPolicyGroupCont, "annotation"),
-        Name : G(SpineSwitchPolicyGroupCont, "name"),
-        },
+		SpineSwitchPolicyGroupAttributes{
+			Annotation: G(SpineSwitchPolicyGroupCont, "annotation"),
+			Name:       G(SpineSwitchPolicyGroupCont, "name"),
+		},
 	}
 }
 

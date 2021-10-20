@@ -6,27 +6,28 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/container"
 )
+
 const (
-	DnmgmtConnectivityPrefs                = "uni/fabric/connectivityPrefs"
-	RnmgmtConnectivityPrefs                = "connectivityPrefs"
-	ParentDnmgmtConnectivityPrefs          = "uni/fabric"
+	DnmgmtConnectivityPrefs        = "uni/fabric/connectivityPrefs"
+	RnmgmtConnectivityPrefs        = "connectivityPrefs"
+	ParentDnmgmtConnectivityPrefs  = "uni/fabric"
 	MgmtconnectivityprefsClassName = "mgmtConnectivityPrefs"
 )
 
 type Mgmtconnectivitypreference struct {
-	BaseAttributes 
+	BaseAttributes
 	NameAliasAttribute
-    MgmtconnectivitypreferenceAttributes 
+	MgmtconnectivitypreferenceAttributes
 }
-  
+
 type MgmtconnectivitypreferenceAttributes struct {
-    Annotation       string `json:",omitempty"`
-    InterfacePref       string `json:",omitempty"`
-    Name       string `json:",omitempty"`
-    } 
+	Annotation    string `json:",omitempty"`
+	InterfacePref string `json:",omitempty"`
+	Name          string `json:",omitempty"`
+}
 
 func NewMgmtconnectivitypreference(mgmtConnectivityPrefsRn, parentDn, description, nameAlias string, mgmtConnectivityPrefsAttr MgmtconnectivitypreferenceAttributes) *Mgmtconnectivitypreference {
-	dn := fmt.Sprintf("%s/%s", parentDn, mgmtConnectivityPrefsRn)  
+	dn := fmt.Sprintf("%s/%s", parentDn, mgmtConnectivityPrefsRn)
 	return &Mgmtconnectivitypreference{
 		BaseAttributes: BaseAttributes{
 			DistinguishedName: dn,
@@ -38,7 +39,7 @@ func NewMgmtconnectivitypreference(mgmtConnectivityPrefsRn, parentDn, descriptio
 		NameAliasAttribute: NameAliasAttribute{
 			NameAlias: nameAlias,
 		},
-        MgmtconnectivitypreferenceAttributes: mgmtConnectivityPrefsAttr, 
+		MgmtconnectivitypreferenceAttributes: mgmtConnectivityPrefsAttr,
 	}
 }
 
@@ -54,10 +55,10 @@ func (mgmtConnectivityPrefs *Mgmtconnectivitypreference) ToMap() (map[string]str
 	for key, value := range alias {
 		A(mgmtConnectivityPrefsMap, key, value)
 	}
-    A(mgmtConnectivityPrefsMap, "annotation",mgmtConnectivityPrefs.Annotation)
-    A(mgmtConnectivityPrefsMap, "interfacePref",mgmtConnectivityPrefs.InterfacePref)
-    A(mgmtConnectivityPrefsMap, "name",mgmtConnectivityPrefs.Name)
-    return mgmtConnectivityPrefsMap, err
+	A(mgmtConnectivityPrefsMap, "annotation", mgmtConnectivityPrefs.Annotation)
+	A(mgmtConnectivityPrefsMap, "interfacePref", mgmtConnectivityPrefs.InterfacePref)
+	A(mgmtConnectivityPrefsMap, "name", mgmtConnectivityPrefs.Name)
+	return mgmtConnectivityPrefsMap, err
 }
 
 func MgmtconnectivitypreferenceFromContainerList(cont *container.Container, index int) *Mgmtconnectivitypreference {
@@ -73,11 +74,11 @@ func MgmtconnectivitypreferenceFromContainerList(cont *container.Container, inde
 		NameAliasAttribute{
 			NameAlias: G(MgmtconnectivitypreferenceCont, "nameAlias"),
 		},
-        MgmtconnectivitypreferenceAttributes{
-        Annotation : G(MgmtconnectivitypreferenceCont, "annotation"),
-        InterfacePref : G(MgmtconnectivitypreferenceCont, "interfacePref"),
-        Name : G(MgmtconnectivitypreferenceCont, "name"),
-        },
+		MgmtconnectivitypreferenceAttributes{
+			Annotation:    G(MgmtconnectivitypreferenceCont, "annotation"),
+			InterfacePref: G(MgmtconnectivitypreferenceCont, "interfacePref"),
+			Name:          G(MgmtconnectivitypreferenceCont, "name"),
+		},
 	}
 }
 
