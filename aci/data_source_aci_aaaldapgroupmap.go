@@ -5,6 +5,7 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func dataSourceAciLDAPGroupMap() *schema.Resource {
