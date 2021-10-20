@@ -9,6 +9,7 @@ import (
 	"github.com/ciscoecosystem/aci-go-client/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciLDAPGroupMap() *schema.Resource {
@@ -54,7 +55,7 @@ func getRemoteLDAPGroupMap(client *client.Client, dn string) (*models.LDAPGroupM
 	return aaaLdapGroupMap, nil
 }
 
-func setLDAPGroupMapAttributes(aaaLdapGroupMap *models.LDAPGroupMap, d *schema.ResourceData) *schema.ResourceData {
+func setLDAPGroupMapAttributes(aaaLdapGroupMap *models.LDAPGroupMap, d *schema.ResourceData) (*schema.ResourceData, error) {
 	d.SetId(aaaLdapGroupMap.DistinguishedName)
 	d.Set("description", aaaLdapGroupMap.Description)
 	aaaLdapGroupMapMap, err := aaaLdapGroupMap.ToMap()
@@ -118,6 +119,7 @@ func resourceAciLDAPGroupMapUpdate(ctx context.Context, d *schema.ResourceData, 
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
 	name := d.Get("name").(string)
+	groupType := d.Get("type").(string)
 	aaaLdapGroupMapAttr := models.LDAPGroupMapAttributes{}
 	nameAlias := ""
 	if NameAlias, ok := d.GetOk("name_alias"); ok {

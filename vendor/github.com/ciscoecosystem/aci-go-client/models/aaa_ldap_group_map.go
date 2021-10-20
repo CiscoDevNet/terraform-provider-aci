@@ -21,7 +21,8 @@ type LDAPGroupMap struct {
 }
 
 type LDAPGroupMapAttributes struct {
-	Name string `json:",omitempty"`
+	Name       string `json:",omitempty"`
+	Annotation string `json:",omitempty"`
 }
 
 func NewLDAPGroupMap(aaaLdapGroupMapRn, parentDn, description, nameAlias string, aaaLdapGroupMapAttr LDAPGroupMapAttributes) *LDAPGroupMap {
@@ -71,7 +72,8 @@ func LDAPGroupMapFromContainerList(cont *container.Container, index int) *LDAPGr
 			NameAlias: G(LDAPGroupMapCont, "nameAlias"),
 		},
 		LDAPGroupMapAttributes{
-			Name: G(LDAPGroupMapCont, "name"),
+			Name:       G(LDAPGroupMapCont, "name"),
+			Annotation: G(LDAPGroupMapCont, "annotation"),
 		},
 	}
 }
