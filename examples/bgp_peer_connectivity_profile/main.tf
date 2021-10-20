@@ -54,6 +54,16 @@ resource "aci_bgp_peer_connectivity_profile" "node_bgp_peer" {
   as_number           = "27500"
   local_asn           = "10"
   local_asn_propagate = "dual-as"
+  admin_st            = "enabled"
+
+  relation_bgp_rs_peer_to_profile {
+    direction = "import"
+    target_dn = "uni/tn-tenant01/prof-test"
+  }
+  relation_bgp_rs_peer_to_profile {
+    direction = "export"
+    target_dn = "uni/tn-tenant01/prof-data"
+  }
 }
 
 resource "aci_logical_interface_profile" "logical_interface_profile" {
@@ -100,4 +110,14 @@ resource "aci_bgp_peer_connectivity_profile" "interface_bgp_peer" {
   as_number           = "27500"
   local_asn           = "10"
   local_asn_propagate = "dual-as"
+  admin_st            = "enabled"
+
+  relation_bgp_rs_peer_to_profile {
+    direction = "import"
+    target_dn = "uni/tn-tenant01/prof-test"
+  }
+  relation_bgp_rs_peer_to_profile {
+    direction = "export"
+    target_dn = "uni/tn-tenant01/prof-data"
+  }
 }

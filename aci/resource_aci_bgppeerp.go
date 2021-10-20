@@ -512,14 +512,10 @@ func resourceAciBgpPeerConnectivityProfileUpdate(ctx context.Context, d *schema.
 	if Weight, ok := d.GetOk("weight"); ok {
 		bgpPeerPAttr.Weight = Weight.(string)
 	}
-<<<<<<< HEAD
-	bgpPeerP := models.NewBgpPeerConnectivityProfile(fmt.Sprintf("peerP-[%s]", addr), parentDn, desc, bgpPeerPAttr)
-=======
 	if AdminSt, ok := d.GetOk("admin_st"); ok {
 		bgpPeerPAttr.AdminSt = AdminSt.(string)
 	}
-	bgpPeerP := models.NewBgpPeerConnectivityProfile(fmt.Sprintf("peerP-[%s]", addr), LogicalNodeProfileDn, desc, bgpPeerPAttr)
->>>>>>> add admin_st and bgp peer to profile relation
+	bgpPeerP := models.NewBgpPeerConnectivityProfile(fmt.Sprintf("peerP-[%s]", addr), parentDn, desc, bgpPeerPAttr)
 
 	bgpPeerP.Status = "modified"
 
