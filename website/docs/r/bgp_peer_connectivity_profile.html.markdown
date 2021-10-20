@@ -31,7 +31,7 @@ resource "aci_bgp_peer_connectivity_profile" "example" {
   as_number           = "1"
   local_asn           = "15"
   local_asn_propagate = "dual-as"
-  admin_st            = "enabled"
+  admin_state         = "enabled"
 
   relation_bgp_rs_peer_to_profile {
     direction = "import"
@@ -61,7 +61,7 @@ resource "aci_bgp_peer_connectivity_profile" "example" {
   as_number           = "1"
   local_asn           = "15"
   local_asn_propagate = "dual-as"
-  admin_st            = "enabled"
+  admin_state         = "enabled"
 
   relation_bgp_rs_peer_to_profile {
     direction = "import"
@@ -81,7 +81,7 @@ resource "aci_bgp_peer_connectivity_profile" "example" {
 - `addr` - (Required) The peer IP address.
 - `addr_t_ctrl` - (Optional) Ucast/Mcast Addr Type AF Control. (Multiple Comma-Delimited values are allowed. E.g., "af-mcast,af-ucast"). Apply "" to clear all the values.  
   Allowed values: "af-mcast", "af-ucast". Default value: "af-ucast".
-- `admin_st` - (Optional) The administrative state of the object or policy. Allowed values are "disabled", "enabled", and default value is "enabled". Type: String.
+- `admin_state` - (Optional) The administrative state of the object or policy. Allowed values are "disabled", "enabled", and default value is "enabled". Type: String.
 - `allowed_self_as_cnt` - (Optional) The number of occurrences of a local Autonomous System Number (ASN). Default value: "3".
 - `description` - (Optional) Description for object bgp peer connectivity profile.
 - `annotation` - (Optional) Annotation for object bgp peer connectivity profile.
@@ -103,7 +103,7 @@ resource "aci_bgp_peer_connectivity_profile" "example" {
 - `relation_bgp_rs_peer_pfx_pol` - (Optional) Relation to class bgpPeerPfxPol. Cardinality - N_TO_ONE. Type - String.
 - `relation_bgp_rs_peer_to_profile` - (Optional) A block representing the relation to a Route Control Profile (class rtctrlProfile). Type: Block.
   * `direction` - (Optional) The connector direction. Allowed values are "export", "import", and default value is "import". Type: String.
-  * `target_dn` - (Required) The distinguished name of the target. Type: String
+  * `target_dn` - (Required) The distinguished name of the target Route Map for Route Control Profile. Type: String.
 
 ## Attribute Reference
 

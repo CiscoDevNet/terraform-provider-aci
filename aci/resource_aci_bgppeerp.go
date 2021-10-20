@@ -57,7 +57,7 @@ func resourceAciBgpPeerConnectivityProfile() *schema.Resource {
 				}, false, "")),
 			},
 
-			"admin_st": {
+			"admin_state": {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
@@ -253,7 +253,7 @@ func setBgpPeerConnectivityProfileAttributes(bgpPeerP *models.BgpPeerConnectivit
 		return d, err
 	}
 
-	d.Set("admin_st", bgpPeerPMap["adminSt"])
+	d.Set("admin_state", bgpPeerPMap["adminSt"])
 	d.Set("addr", bgpPeerPMap["addr"])
 	d.Set("addr_t_ctrl", bgpPeerPMap["addrTCtrl"])
 	d.Set("allowed_self_as_cnt", bgpPeerPMap["allowedSelfAsCnt"])
@@ -362,7 +362,7 @@ func resourceAciBgpPeerConnectivityProfileCreate(ctx context.Context, d *schema.
 	if Weight, ok := d.GetOk("weight"); ok {
 		bgpPeerPAttr.Weight = Weight.(string)
 	}
-	if AdminSt, ok := d.GetOk("admin_st"); ok {
+	if AdminSt, ok := d.GetOk("admin_state"); ok {
 		bgpPeerPAttr.AdminSt = AdminSt.(string)
 	}
 	bgpPeerP := models.NewBgpPeerConnectivityProfile(fmt.Sprintf("peerP-[%s]", addr), parentDn, desc, bgpPeerPAttr)
@@ -512,7 +512,7 @@ func resourceAciBgpPeerConnectivityProfileUpdate(ctx context.Context, d *schema.
 	if Weight, ok := d.GetOk("weight"); ok {
 		bgpPeerPAttr.Weight = Weight.(string)
 	}
-	if AdminSt, ok := d.GetOk("admin_st"); ok {
+	if AdminSt, ok := d.GetOk("admin_state"); ok {
 		bgpPeerPAttr.AdminSt = AdminSt.(string)
 	}
 	bgpPeerP := models.NewBgpPeerConnectivityProfile(fmt.Sprintf("peerP-[%s]", addr), parentDn, desc, bgpPeerPAttr)
