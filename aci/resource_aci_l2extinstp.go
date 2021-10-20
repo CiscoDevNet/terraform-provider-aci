@@ -208,7 +208,7 @@ func setL2outExternalEpgAttributes(l2extInstP *models.L2outExternalEpg, d *schem
 	}
 
 	d.Set("name", l2extInstPMap["name"])
-
+	d.Set("l2_outside_dn", GetParentDn(dn, fmt.Sprintf("/instP-%s", l2extInstPMap["name"])))
 	d.Set("annotation", l2extInstPMap["annotation"])
 	d.Set("exception_tag", l2extInstPMap["exceptionTag"])
 	d.Set("flood_on_encap", l2extInstPMap["floodOnEncap"])
