@@ -244,6 +244,7 @@ func Provider() *schema.Provider {
 			"aci_tacacs_provider_group":                    resourceAciTACACSPlusProviderGroup(),
 			"aci_tacacs_provider":                          resourceAciTACACSProvider(),
 			"aci_saml_provider_group":                      resourceAciSAMLProviderGroup(),
+			"aci_ldap_group_map":                           resourceAciLDAPGroupMap(),
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
@@ -440,6 +441,7 @@ func Provider() *schema.Provider {
 			"aci_tacacs_provider_group":                    dataSourceAciTACACSPlusProviderGroup(),
 			"aci_tacacs_provider":                          dataSourceAciTACACSProvider(),
 			"aci_saml_provider_group":                      dataSourceAciSAMLProviderGroup(),
+			"aci_ldap_group_map":                           dataSourceAciLDAPGroupMap(),
 		},
 
 		ConfigureFunc: configureClient,
