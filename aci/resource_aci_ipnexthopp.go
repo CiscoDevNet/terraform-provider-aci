@@ -92,9 +92,7 @@ func setL3outStaticRouteNextHopAttributes(ipNexthopP *models.L3outStaticRouteNex
 	d.SetId(ipNexthopP.DistinguishedName)
 	d.Set("description", ipNexthopP.Description)
 	dn := d.Id()
-	if dn != ipNexthopP.DistinguishedName {
-		d.Set("static_route_dn", "")
-	}
+
 	ipNexthopPMap, err := ipNexthopP.ToMap()
 
 	if err != nil {
@@ -102,7 +100,7 @@ func setL3outStaticRouteNextHopAttributes(ipNexthopP *models.L3outStaticRouteNex
 	}
 
 	d.Set("nh_addr", ipNexthopPMap["nhAddr"])
-	d.Set("static_route_dn", GetParentDn(dn, fmt.Sprintf("/nh-[%s]", ipNexthopPMap["nh_addr"])))
+	d.Set("static_route_dn", GetParentDn(dn, fmt.Sprintf("/nh-[%s]", ipNexthopPMap["nhAddr"])))
 	d.Set("annotation", ipNexthopPMap["annotation"])
 	d.Set("name_alias", ipNexthopPMap["nameAlias"])
 	d.Set("pref", ipNexthopPMap["pref"])
