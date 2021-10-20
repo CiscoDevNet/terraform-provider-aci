@@ -54,7 +54,7 @@ resource "aci_bgp_peer_connectivity_profile" "node_bgp_peer" {
   as_number           = "27500"
   local_asn           = "10"
   local_asn_propagate = "dual-as"
-  admin_st            = "enabled"
+  admin_state         = "enabled"
 
   relation_bgp_rs_peer_to_profile {
     direction = "import"
@@ -110,7 +110,7 @@ resource "aci_bgp_peer_connectivity_profile" "interface_bgp_peer" {
   as_number           = "27500"
   local_asn           = "10"
   local_asn_propagate = "dual-as"
-  admin_st            = "enabled"
+  admin_state         = "enabled"
 
   relation_bgp_rs_peer_to_profile {
     direction = "import"
