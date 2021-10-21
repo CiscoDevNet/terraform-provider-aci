@@ -120,7 +120,7 @@ func setContractConsumerAttributes(fvRsCons *models.ContractConsumer, d *schema.
 	if tnVzBrCPName != fvRsConsMap["tnVzBrCPName"] {
 		d.Set("contract_dn", "")
 	}
-	d.Set("contract_dn", fvRsProvMap["tDn"])
+	d.Set("contract_dn", fvRsConsMap["tDn"])
 	d.Set("annotation", fvRsConsMap["annotation"])
 	d.Set("prio", fvRsConsMap["prio"])
 	return d, nil
