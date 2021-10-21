@@ -276,7 +276,7 @@ func setDomainAttributes(fvRsDomAtt *models.FVDomain, d *schema.ResourceData) (*
 	}
 
 	d.Set("tdn", fvRsDomAttMap["tDn"])
-	d.Set("application_epg_dn", GetParentDn(fvRsDomAtt.DistinguishedName, fmt.Sprintf("/rsdomAtt-%s", fvRsDomAttMap["tDn"])))
+	d.Set("application_epg_dn", GetParentDn(fvRsDomAtt.DistinguishedName, fmt.Sprintf("/rsdomAtt-[%s]", fvRsDomAttMap["tDn"])))
 	d.Set("annotation", fvRsDomAttMap["annotation"])
 	d.Set("binding_type", fvRsDomAttMap["bindingType"])
 	if fvRsDomAttMap["classPref"] == "useg" {
