@@ -177,8 +177,7 @@ func resourceAciBgpPeerConnectivityProfile() *schema.Resource {
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"direction": {
-							Optional: true,
-							Default:  "import",
+							Required: true,
 							Type:     schema.TypeString,
 							ValidateFunc: validation.StringInSlice([]string{
 								"export",
