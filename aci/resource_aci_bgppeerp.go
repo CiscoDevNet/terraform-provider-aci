@@ -443,11 +443,8 @@ func resourceAciBgpPeerConnectivityProfileCreate(ctx context.Context, d *schema.
 			err = aciClient.CreateRelationbgpRsPeerToProfile(bgpPeerP.DistinguishedName, bgpPeerPAttr.Annotation, paramMap["direction"].(string), paramMap["target_dn"].(string))
 
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
-			d.Partial(true)
-			d.SetPartial("relation_bgp_rs_peer_to_profile")
-			d.Partial(false)
 		}
 	}
 
@@ -604,7 +601,7 @@ func resourceAciBgpPeerConnectivityProfileUpdate(ctx context.Context, d *schema.
 			err = aciClient.DeleteRelationbgpRsPeerToProfile(bgpPeerP.DistinguishedName, paramMap["target_dn"].(string), paramMap["direction"].(string))
 
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 		}
 		for _, relationParam := range newRelList {
@@ -612,12 +609,9 @@ func resourceAciBgpPeerConnectivityProfileUpdate(ctx context.Context, d *schema.
 			err = aciClient.CreateRelationbgpRsPeerToProfile(bgpPeerP.DistinguishedName, bgpPeerPAttr.Annotation, paramMap["direction"].(string), paramMap["target_dn"].(string))
 
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 		}
-		d.Partial(true)
-		d.SetPartial("relation_bgp_rs_peer_to_profile")
-		d.Partial(false)
 	}
 
 	d.SetId(bgpPeerP.DistinguishedName)

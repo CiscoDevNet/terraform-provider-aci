@@ -98,3 +98,54 @@ func (sm *ServiceManager) ReadRelationbgpRsPeerPfxPolFromBgpPeerConnectivityProf
 	}
 
 }
+
+func (sm *ServiceManager) CreateRelationbgpRsPeerToProfile(parentDn, annotation, direction string, tDn string) error {
+	dn := fmt.Sprintf("%s/rspeerToProfile-[%s]-%s", parentDn, tDn, direction)
+	containerJSON := []byte(fmt.Sprintf(`{
+		"%s": {
+			"attributes": {
+				"dn": "%s",
+				"annotation": "%s",
+				"tDn": "%s",
+				"direction": "%s"
+			}
+		}
+	}`, "bgpRsPeerToProfile", dn, annotation, tDn, direction))
+
+	jsonPayload, err := container.ParseJSON(containerJSON)
+	if err != nil {
+		return err
+	}
+
+	req, err := sm.client.MakeRestRequest("POST", fmt.Sprintf("%s.json", sm.MOURL), jsonPayload, true)
+	if err != nil {
+		return err
+	}
+	cont, _, err := sm.client.Do(req)
+	if err != nil {
+		return err
+	}
+	fmt.Printf("%+v", cont)
+	return nil
+}
+
+func (sm *ServiceManager) DeleteRelationbgpRsPeerToProfile(parentDn, tDn, direction string) error {
+	dn := fmt.Sprintf("%s/rspeerToProfile-[%s]-%s", parentDn, tDn, direction)
+	return sm.DeleteByDn(dn, "bgpRsPeerToProfile")
+}
+
+func (sm *ServiceManager) ReadRelationbgpRsPeerToProfile(parentDn string) (interface{}, error) {
+	dnUrl := fmt.Sprintf("%s/%s/%s.json", models.BaseurlStr, parentDn, "bgpRsPeerToProfile")
+	cont, err := sm.GetViaURL(dnUrl)
+	contList := models.ListFromContainer(cont, "bgpRsPeerToProfile")
+
+	st := make([]map[string]string, 0)
+	for _, contItem := range contList {
+		paramMap := make(map[string]string)
+		paramMap["tDn"] = models.G(contItem, "tDn")
+		paramMap["direction"] = models.G(contItem, "direction")
+
+		st = append(st, paramMap)
+	}
+	return st, err
+}
