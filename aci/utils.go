@@ -230,3 +230,18 @@ func checkAtleastOne() schema.SchemaValidateFunc {
 		return
 	}
 }
+
+func validateIntRange(a, b string) schema.SchemaValidateFunc {
+	return func(i interface{}, k string) (s []string, es []error) {
+		v, ok := i.(string)
+		if !ok {
+			es = append(es, fmt.Errorf("expected type of %s to be string", k))
+			return
+		}
+
+		if v < a || v > b {
+			es = append(es, fmt.Errorf("property is out of range"))
+		}
+		return
+	}
+}
