@@ -120,7 +120,7 @@ func setContractConsumerAttributes(fvRsCons *models.ContractConsumer, d *schema.
 	if tnVzBrCPName != fvRsConsMap["tnVzBrCPName"] {
 		d.Set("contract_dn", "")
 	}
-	d.Set("contract_dn", GetParentDn(fvRsCons.DistinguishedName, fmt.Sprintf("/rsprov-%s", fvRsConsMap["tnVzBrCPName"])))
+	d.Set("contract_dn", fvRsProvMap["tDn"])
 	d.Set("annotation", fvRsConsMap["annotation"])
 	d.Set("prio", fvRsConsMap["prio"])
 	return d, nil
@@ -143,7 +143,7 @@ func setContractProviderAttributes(fvRsProv *models.ContractProvider, d *schema.
 	if tnVzBrCPName != fvRsProvMap["tnVzBrCPName"] {
 		d.Set("contract_dn", "")
 	}
-	d.Set("contract_dn", GetParentDn(fvRsProv.DistinguishedName, fmt.Sprintf("/rsprov-%s", fvRsProvMap["tnVzBrCPName"])))
+	d.Set("contract_dn", fvRsProvMap["tDn"])
 	d.Set("annotation", fvRsProvMap["annotation"])
 	d.Set("match_t", fvRsProvMap["matchT"])
 	d.Set("prio", fvRsProvMap["prio"])

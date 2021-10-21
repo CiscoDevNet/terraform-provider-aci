@@ -20,6 +20,8 @@ type ContractConsumerAttributes struct {
 	Annotation string `json:",omitempty"`
 
 	Prio string `json:",omitempty"`
+
+	TDn string `json:",omitempty"`
 }
 
 func NewContractConsumer(fvRsConsRn, parentDn string, fvRsConsattr ContractConsumerAttributes) *ContractConsumer {
@@ -48,6 +50,8 @@ func (fvRsCons *ContractConsumer) ToMap() (map[string]string, error) {
 
 	A(fvRsConsMap, "prio", fvRsCons.Prio)
 
+	A(fvRsConsMap, "tDn", fvRsCons.TDn)
+
 	return fvRsConsMap, err
 }
 
@@ -69,6 +73,8 @@ func ContractConsumerFromContainerList(cont *container.Container, index int) *Co
 			Annotation: G(ContractConsumerCont, "annotation"),
 
 			Prio: G(ContractConsumerCont, "prio"),
+
+			TDn: G(ContractConsumerCont, "tDn"),
 		},
 	}
 }
