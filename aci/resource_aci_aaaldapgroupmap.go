@@ -34,7 +34,7 @@ func resourceAciLDAPGroupMap() *schema.Resource {
 			"type": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
-				ForceNew: true
+				ForceNew: true,
 				ValidateFunc: validation.StringInSlice([]string{
 					"ldap",
 					"duo",
