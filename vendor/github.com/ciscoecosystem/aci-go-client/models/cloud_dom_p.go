@@ -1,6 +1,5 @@
 package models
 
-
 import (
 	"fmt"
 	"strconv"
@@ -12,26 +11,19 @@ const ClouddompClassName = "cloudDomP"
 
 type CloudDomainProfile struct {
 	BaseAttributes
-    CloudDomainProfileAttributes 
+	CloudDomainProfileAttributes
 }
-  
+
 type CloudDomainProfileAttributes struct {
-	
-    
-	Annotation       string `json:",omitempty"`
-	
-    
-	NameAlias       string `json:",omitempty"`
-	
-    
-	SiteId       string `json:",omitempty"`
-	
-    
+	Annotation string `json:",omitempty"`
+
+	NameAlias string `json:",omitempty"`
+
+	SiteId string `json:",omitempty"`
 }
-   
 
 func NewCloudDomainProfile(cloudDomPRn, parentDn, description string, cloudDomPattr CloudDomainProfileAttributes) *CloudDomainProfile {
-	dn := fmt.Sprintf("%s/%s", parentDn, cloudDomPRn)  
+	dn := fmt.Sprintf("%s/%s", parentDn, cloudDomPRn)
 	return &CloudDomainProfile{
 		BaseAttributes: BaseAttributes{
 			DistinguishedName: dn,
@@ -40,9 +32,8 @@ func NewCloudDomainProfile(cloudDomPRn, parentDn, description string, cloudDomPa
 			ClassName:         ClouddompClassName,
 			Rn:                cloudDomPRn,
 		},
-        
+
 		CloudDomainProfileAttributes: cloudDomPattr,
-         
 	}
 }
 
@@ -52,18 +43,11 @@ func (cloudDomP *CloudDomainProfile) ToMap() (map[string]string, error) {
 		return nil, err
 	}
 
-	
-    
-	A(cloudDomPMap, "annotation",cloudDomP.Annotation)
-	
-    
-	A(cloudDomPMap, "nameAlias",cloudDomP.NameAlias)
-	
-    
-	A(cloudDomPMap, "siteId",cloudDomP.SiteId)
-	
-    
-	
+	A(cloudDomPMap, "annotation", cloudDomP.Annotation)
+
+	A(cloudDomPMap, "nameAlias", cloudDomP.NameAlias)
+
+	A(cloudDomPMap, "siteId", cloudDomP.SiteId)
 
 	return cloudDomPMap, err
 }
@@ -79,21 +63,15 @@ func CloudDomainProfileFromContainerList(cont *container.Container, index int) *
 			ClassName:         ClouddompClassName,
 			Rn:                G(CloudDomainProfileCont, "rn"),
 		},
-        
+
 		CloudDomainProfileAttributes{
-		
-        
-	        Annotation : G(CloudDomainProfileCont, "annotation"),
-		
-        
-	        NameAlias : G(CloudDomainProfileCont, "nameAlias"),
-		
-        
-	        SiteId : G(CloudDomainProfileCont, "siteId"),
-		
-        		
-        },
-        
+
+			Annotation: G(CloudDomainProfileCont, "annotation"),
+
+			NameAlias: G(CloudDomainProfileCont, "nameAlias"),
+
+			SiteId: G(CloudDomainProfileCont, "siteId"),
+		},
 	}
 }
 

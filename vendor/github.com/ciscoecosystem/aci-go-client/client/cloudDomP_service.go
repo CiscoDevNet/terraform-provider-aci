@@ -4,23 +4,9 @@ import (
 	"fmt"
 
 	"github.com/ciscoecosystem/aci-go-client/models"
-
-
-
-	
-
-
 )
 
-
-
-
-
-
-
-
-
-func (sm *ServiceManager) CreateCloudDomainProfile(description string, cloudDomPattr models.CloudDomainProfileAttributes) (*models.CloudDomainProfile, error) {	
+func (sm *ServiceManager) CreateCloudDomainProfile(description string, cloudDomPattr models.CloudDomainProfileAttributes) (*models.CloudDomainProfile, error) {
 	rn := fmt.Sprintf("clouddomp")
 	parentDn := fmt.Sprintf("uni")
 	cloudDomP := models.NewCloudDomainProfile(rn, parentDn, description, cloudDomPattr)
@@ -29,7 +15,7 @@ func (sm *ServiceManager) CreateCloudDomainProfile(description string, cloudDomP
 }
 
 func (sm *ServiceManager) ReadCloudDomainProfile() (*models.CloudDomainProfile, error) {
-	dn := fmt.Sprintf("uni/clouddomp")    
+	dn := fmt.Sprintf("uni/clouddomp")
 	cont, err := sm.Get(dn)
 	if err != nil {
 		return nil, err
@@ -49,7 +35,7 @@ func (sm *ServiceManager) UpdateCloudDomainProfile(description string, cloudDomP
 	parentDn := fmt.Sprintf("uni")
 	cloudDomP := models.NewCloudDomainProfile(rn, parentDn, description, cloudDomPattr)
 
-    cloudDomP.Status = "modified"
+	cloudDomP.Status = "modified"
 	err := sm.Save(cloudDomP)
 	return cloudDomP, err
 
@@ -57,13 +43,11 @@ func (sm *ServiceManager) UpdateCloudDomainProfile(description string, cloudDomP
 
 func (sm *ServiceManager) ListCloudDomainProfile() ([]*models.CloudDomainProfile, error) {
 
-	baseurlStr := "/api/node/class"	
-	dnUrl := fmt.Sprintf("%s/uni/cloudDomP.json", baseurlStr )
-    
-    cont, err := sm.GetViaURL(dnUrl)
+	baseurlStr := "/api/node/class"
+	dnUrl := fmt.Sprintf("%s/uni/cloudDomP.json", baseurlStr)
+
+	cont, err := sm.GetViaURL(dnUrl)
 	list := models.CloudDomainProfileListFromContainer(cont)
 
 	return list, err
 }
-
-

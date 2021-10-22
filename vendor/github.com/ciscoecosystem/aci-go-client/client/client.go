@@ -3,6 +3,7 @@ package client
 import (
 	"bytes"
 	"crypto/tls"
+	"encoding/base64"
 	"errors"
 	"fmt"
 	"io/ioutil"
@@ -57,6 +58,7 @@ type Client struct {
 	reqTimeoutSet      bool
 	reqTimeoutVal      uint32
 	proxyUrl           string
+	proxyCreds         string
 	preserveBaseUrlRef bool
 	skipLoggingPayload bool
 	appUserName        string
@@ -107,6 +109,12 @@ func AppUserName(appUserName string) Option {
 func ProxyUrl(pUrl string) Option {
 	return func(client *Client) {
 		client.proxyUrl = pUrl
+	}
+}
+
+func ProxyCreds(pcreds string) Option {
+	return func(client *Client) {
+		client.proxyCreds = pcreds
 	}
 }
 
@@ -211,31 +219,55 @@ func NewClient(clientUrl, username string, options ...Option) *Client {
 }
 
 func (c *Client) configProxy(transport *http.Transport) *http.Transport {
+	log.Printf("[DEBUG]: Using Proxy Server: %s ", c.proxyUrl)
 	pUrl, err := url.Parse(c.proxyUrl)
 	if err != nil {
 		log.Fatal(err)
 	}
 	transport.Proxy = http.ProxyURL(pUrl)
+
+	if c.proxyCreds != "" {
+		basicAuth := "Basic " + base64.StdEncoding.EncodeToString([]byte(c.proxyCreds))
+		transport.ProxyConnectHeader = http.Header{}
+		transport.ProxyConnectHeader.Add("Proxy-Authorization", basicAuth)
+	}
 	return transport
 
 }
 
 func (c *Client) useInsecureHTTPClient(insecure bool) *http.Transport {
 	// proxyUrl, _ := url.Parse("http://10.0.1.167:3128")
-	transport := &http.Transport{
-		TLSClientConfig: &tls.Config{
-			CipherSuites: []uint16{
-				tls.TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA,
-				tls.TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA,
-				tls.TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256,
-				tls.TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,
-				tls.TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,
-			},
-			PreferServerCipherSuites: true,
-			InsecureSkipVerify:       insecure,
-			MinVersion:               tls.VersionTLS11,
-			MaxVersion:               tls.VersionTLS12,
+
+	transport := http.DefaultTransport.(*http.Transport)
+
+	// transport := &http.Transport{
+	// 	TLSClientConfig: &tls.Config{
+	// 		CipherSuites: []uint16{
+	// 			tls.TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA,
+	// 			tls.TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA,
+	// 			tls.TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256,
+	// 			tls.TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,
+	// 			tls.TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,
+	// 		},
+	// 		PreferServerCipherSuites: true,
+	// 		InsecureSkipVerify:       insecure,
+	// 		MinVersion:               tls.VersionTLS11,
+	// 		MaxVersion:               tls.VersionTLS12,
+	// 	},
+	// }
+
+	transport.TLSClientConfig = &tls.Config{
+		CipherSuites: []uint16{
+			tls.TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA,
+			tls.TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA,
+			tls.TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256,
+			tls.TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,
+			tls.TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,
 		},
+		PreferServerCipherSuites: true,
+		InsecureSkipVerify:       insecure,
+		MinVersion:               tls.VersionTLS11,
+		MaxVersion:               tls.VersionTLS12,
 	}
 
 	return transport
@@ -379,9 +411,9 @@ func (c *Client) Authenticate() error {
 	}
 
 	obj, _, err := c.Do(req)
-
 	c.skipLoggingPayload = false
 	if err != nil {
+		log.Printf("[DEBUG]: ERROR %s", err)
 		return err
 	}
 	if obj == nil {
