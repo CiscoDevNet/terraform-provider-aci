@@ -7,10 +7,10 @@ import (
 	"github.com/ciscoecosystem/aci-go-client/models"
 )
 
-func (sm *ServiceManager) CreateFCDomain(name string, description string, fcDomPattr models.FCDomainAttributes) (*models.FCDomain, error) {
+func (sm *ServiceManager) CreateFCDomain(name string, fcDomPattr models.FCDomainAttributes) (*models.FCDomain, error) {
 	rn := fmt.Sprintf("fc-%s", name)
 	parentDn := fmt.Sprintf("uni")
-	fcDomP := models.NewFCDomain(rn, parentDn, description, fcDomPattr)
+	fcDomP := models.NewFCDomain(rn, parentDn, fcDomPattr)
 	err := sm.Save(fcDomP)
 	return fcDomP, err
 }
@@ -31,10 +31,10 @@ func (sm *ServiceManager) DeleteFCDomain(name string) error {
 	return sm.DeleteByDn(dn, models.FcdompClassName)
 }
 
-func (sm *ServiceManager) UpdateFCDomain(name string, description string, fcDomPattr models.FCDomainAttributes) (*models.FCDomain, error) {
+func (sm *ServiceManager) UpdateFCDomain(name string, fcDomPattr models.FCDomainAttributes) (*models.FCDomain, error) {
 	rn := fmt.Sprintf("fc-%s", name)
 	parentDn := fmt.Sprintf("uni")
-	fcDomP := models.NewFCDomain(rn, parentDn, description, fcDomPattr)
+	fcDomP := models.NewFCDomain(rn, parentDn, fcDomPattr)
 
 	fcDomP.Status = "modified"
 	err := sm.Save(fcDomP)

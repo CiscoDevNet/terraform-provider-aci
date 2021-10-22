@@ -58,8 +58,9 @@ func (sm *ServiceManager) CreateRelationinfraRsSpineAccNodePGrpFromSwitchAssocia
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tDn": "%s","annotation":"orchestrator:terraform"
-								
+				"dn": "%s",
+				"tDn": "%s",
+				"annotation":"orchestrator:terraform"
 			}
 		}
 	}`, "infraRsSpineAccNodePGrp", dn, tDn))

@@ -1,6 +1,5 @@
 package models
 
-
 import (
 	"fmt"
 	"strconv"
@@ -12,30 +11,21 @@ const CloudregionClassName = "cloudRegion"
 
 type CloudProvidersRegion struct {
 	BaseAttributes
-    CloudProvidersRegionAttributes 
+	CloudProvidersRegionAttributes
 }
-  
+
 type CloudProvidersRegionAttributes struct {
-	
-	
 	Name string `json:",omitempty"`
-	
-	
-    
-	AdminSt       string `json:",omitempty"`
-	
-    
-	Annotation       string `json:",omitempty"`
-	
-    
-	NameAlias       string `json:",omitempty"`
-	
-    
+
+	AdminSt string `json:",omitempty"`
+
+	Annotation string `json:",omitempty"`
+
+	NameAlias string `json:",omitempty"`
 }
-   
 
 func NewCloudProvidersRegion(cloudRegionRn, parentDn, description string, cloudRegionattr CloudProvidersRegionAttributes) *CloudProvidersRegion {
-	dn := fmt.Sprintf("%s/%s", parentDn, cloudRegionRn)  
+	dn := fmt.Sprintf("%s/%s", parentDn, cloudRegionRn)
 	return &CloudProvidersRegion{
 		BaseAttributes: BaseAttributes{
 			DistinguishedName: dn,
@@ -44,9 +34,8 @@ func NewCloudProvidersRegion(cloudRegionRn, parentDn, description string, cloudR
 			ClassName:         CloudregionClassName,
 			Rn:                cloudRegionRn,
 		},
-        
+
 		CloudProvidersRegionAttributes: cloudRegionattr,
-         
 	}
 }
 
@@ -56,22 +45,13 @@ func (cloudRegion *CloudProvidersRegion) ToMap() (map[string]string, error) {
 		return nil, err
 	}
 
-	
-	
-	A(cloudRegionMap, "name",cloudRegion.Name)
-	
-	
-    
-	A(cloudRegionMap, "adminSt",cloudRegion.AdminSt)
-	
-    
-	A(cloudRegionMap, "annotation",cloudRegion.Annotation)
-	
-    
-	A(cloudRegionMap, "nameAlias",cloudRegion.NameAlias)
-	
-    
-	
+	A(cloudRegionMap, "name", cloudRegion.Name)
+
+	A(cloudRegionMap, "adminSt", cloudRegion.AdminSt)
+
+	A(cloudRegionMap, "annotation", cloudRegion.Annotation)
+
+	A(cloudRegionMap, "nameAlias", cloudRegion.NameAlias)
 
 	return cloudRegionMap, err
 }
@@ -87,25 +67,17 @@ func CloudProvidersRegionFromContainerList(cont *container.Container, index int)
 			ClassName:         CloudregionClassName,
 			Rn:                G(CloudProvidersRegionCont, "rn"),
 		},
-        
+
 		CloudProvidersRegionAttributes{
-		
-		
-			Name : G(CloudProvidersRegionCont, "name"),
-		
-		
-        
-	        AdminSt : G(CloudProvidersRegionCont, "adminSt"),
-		
-        
-	        Annotation : G(CloudProvidersRegionCont, "annotation"),
-		
-        
-	        NameAlias : G(CloudProvidersRegionCont, "nameAlias"),
-		
-        		
-        },
-        
+
+			Name: G(CloudProvidersRegionCont, "name"),
+
+			AdminSt: G(CloudProvidersRegionCont, "adminSt"),
+
+			Annotation: G(CloudProvidersRegionCont, "annotation"),
+
+			NameAlias: G(CloudProvidersRegionCont, "nameAlias"),
+		},
 	}
 }
 

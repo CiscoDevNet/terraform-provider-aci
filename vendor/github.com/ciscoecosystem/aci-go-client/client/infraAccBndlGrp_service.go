@@ -5,7 +5,7 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/container"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func (sm *ServiceManager) CreatePCVPCInterfacePolicyGroup(name string, description string, infraAccBndlGrpattr models.PCVPCInterfacePolicyGroupAttributes) (*models.PCVPCInterfacePolicyGroup, error) {
@@ -389,12 +389,12 @@ func (sm *ServiceManager) CreateRelationinfraRsNetflowMonitorPolFromPCVPCInterfa
 		return err
 	}
 
-	_, _, err = sm.client.Do(req)
+	cont, _, err := sm.client.Do(req)
 	if err != nil {
 		return err
 	}
 
-	return nil
+	return CheckForErrors(cont, "POST", sm.client.skipLoggingPayload)
 }
 
 func (sm *ServiceManager) DeleteRelationinfraRsNetflowMonitorPolFromPCVPCInterfacePolicyGroup(parentDn, tnNetflowMonitorPolName, fltType string) error {
