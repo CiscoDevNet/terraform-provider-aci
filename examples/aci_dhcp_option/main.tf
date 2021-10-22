@@ -14,6 +14,6 @@ provider "aci" {
 }
 
 data "aci_dhcp_option" "example" {
-  dhcp_option_policy_dn  = aci_dhcp_option_policy.example.id
-  name  = "example"
+  dhcp_option_policy_dn = aci_dhcp_option_policy.example.id
+  name                  = "example"
 }

@@ -14,9 +14,9 @@ provider "aci" {
 }
 
 resource "aci_firmware_group" "example" {
-  name  = "example"
-  annotation  = "example"
-  description = "from terraform"
-  name_alias  = "example"
-  firmware_group_type  = "range"
+  name                = "example"
+  annotation          = "example"
+  description         = "from terraform"
+  name_alias          = "example"
+  firmware_group_type = "range"
 }

@@ -1,12 +1,12 @@
 ---
 layout: "aci"
-page_title: "ACI: aci_v_switch_policy_group"
-sidebar_current: "docs-aci-data-source-v_switch_policy_group"
+page_title: "ACI: aci_vswitch_policy"
+sidebar_current: "docs-aci-data-source-vswitch_policy"
 description: |-
   Data source for ACI VSwitch Policy Group
 ---
 
-# aci_v_switch_policy_group #
+# aci_vswitch_policy #
 
 Data source for ACI VSwitch Policy Group
 

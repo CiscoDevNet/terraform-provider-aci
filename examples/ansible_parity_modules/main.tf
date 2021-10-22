@@ -15,9 +15,9 @@ provider "aci" {
 
 
 resource "aci_local_user" "foolocal_user" {
-  name          = "user_demo1"
-  pwd           = "123456786"
-  description   = "This user is created by terraform"
+  name        = "user_demo1"
+  pwd         = "123456786"
+  description = "This user is created by terraform"
 }
 
 resource "aci_pod_maintenance_group" "foopod_maintenance_group" {
@@ -35,12 +35,12 @@ resource "aci_tenant" "test_tenant1" {
 
 resource "aci_monitoring_policy" "foomonitoring_policy" {
   tenant_dn = aci_tenant.test_tenant1.id
-  name = "monepgpol1"
+  name      = "monepgpol1"
 }
 
 resource "aci_action_rule_profile" "fooaction_rule_profile" {
   tenant_dn = aci_tenant.test_tenant1.id
-  name = "rtctrlAttrP1"
+  name      = "rtctrlAttrP1"
 }
 
 resource "aci_trigger_scheduler" "footrigger_scheduler" {
@@ -53,32 +53,32 @@ resource "aci_physical_domain" "foophysical_domain" {
 
 resource "aci_taboo_contract" "footaboo_contract" {
   tenant_dn = aci_tenant.test_tenant1.id
-  name = "vztaboo1"
+  name      = "vztaboo1"
 }
 
 resource "aci_leaf_profile" "tf_leaf_prof" {
-    name = "tf_leaf_prof1"
+  name = "tf_leaf_prof1"
 }
 
 resource "aci_switch_association" "fooswitch_association" {
-  leaf_profile_dn = aci_leaf_profile.tf_leaf_prof.id
-  name = "infraLeafs1"
+  leaf_profile_dn         = aci_leaf_profile.tf_leaf_prof.id
+  name                    = "infraLeafs1"
   switch_association_type = "ALL"
 }
 
 resource "aci_span_destination_group" "foospan_destination_group" {
   tenant_dn = aci_tenant.test_tenant1.id
-  name = "spanDestGrp1"
+  name      = "spanDestGrp1"
 }
 
 resource "aci_span_source_group" "foospan_source_group" {
   tenant_dn = aci_tenant.test_tenant1.id
-  name = "spanSrcGrp1"
+  name      = "spanSrcGrp1"
 }
 
 resource "aci_span_sourcedestination_group_match_label" "foospan_sourcedestination_group_match_label" {
   span_source_group_dn = aci_span_source_group.foospan_source_group.id
-  name = "spanLbl1"
+  name                 = "spanLbl1"
 }
 
 resource "aci_vlan_pool" "foovlan_pool" {
@@ -98,12 +98,12 @@ resource "aci_vxlan_pool" "foovxlan_pool" {
 }
 
 resource "aci_vsan_pool" "foovsan_pool" {
-  name = "vsanInstP1"
+  name       = "vsanInstP1"
   alloc_mode = "static"
 }
 
 resource "aci_attachable_access_entity_profile" "tst1" {
-    name = "infraAttEntity1"
+  name = "infraAttEntity1"
 }
 
 resource "aci_firmware_group" "foofirmware_group" {
@@ -123,8 +123,8 @@ resource "aci_fc_domain" "foofc_domain" {
 }
 
 resource "aci_fabric_node_member" "foofabric_node_member" {
-  name = "te1"
-  serial = "127"
+  name    = "te1"
+  serial  = "127"
   node_id = "127"
 }
 
@@ -137,35 +137,35 @@ resource "aci_cdp_interface_policy" "foocdp_interface_policy" {
 }
 
 resource "aci_leaf_interface_profile" "test_leaf_profile" {
-    name = "demo_leaf_profile"
+  name = "demo_leaf_profile"
 }
 
 resource "aci_access_port_selector" "test_selector" {
-    leaf_interface_profile_dn = aci_leaf_interface_profile.test_leaf_profile.id
-    name = "tf_test"
-    access_port_selector_type = "default"
+  leaf_interface_profile_dn = aci_leaf_interface_profile.test_leaf_profile.id
+  name                      = "tf_test"
+  access_port_selector_type = "default"
 }
 
 resource "aci_access_sub_port_block" "fooaccess_sub_port_block" {
   access_port_selector_dn = aci_access_port_selector.test_selector.id
-  name = "infraSubportBlk1"
+  name                    = "infraSubportBlk1"
 }
 
 resource "aci_vpc_explicit_protection_group" "foovpc_explicit_protection_group" {
-  name = "FabricExplicitGrp1"
-  switch1 = "145"
-  switch2 = "123"
+  name                             = "FabricExplicitGrp1"
+  switch1                          = "145"
+  switch2                          = "123"
   vpc_explicit_protection_group_id = "10"
 }
 
 resource "aci_node_block_maintgrp" "foonode_block_maintgrp" {
   pod_maintenance_group_dn = aci_pod_maintenance_group.foopod_maintenance_group.id
-  name = "fabricNodeBlkMG"
+  name                     = "fabricNodeBlkMG"
 }
 
 resource "aci_node_block_firmware" "foonode_block_firmware" {
- firmware_group_dn = aci_firmware_group.foofirmware_group.id
- name = "fabricNodeBlkFW" 
+  firmware_group_dn = aci_firmware_group.foofirmware_group.id
+  name              = "fabricNodeBlkFW"
 }
 
 resource "aci_configuration_import_policy" "fooconfiguration_import_policy" {

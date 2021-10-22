@@ -32,9 +32,9 @@ resource "aci_l3out_path_attachment" "example" {
 }
 
 resource "aci_l3out_path_attachment_secondary_ip" "example" {
-  l3out_path_attachment_dn  = aci_l3out_path_attachment.example.id
-  addr  = "10.0.0.1/24"
-  annotation  = "example"
-  ipv6_dad = "disabled"
-  name_alias  = "example"
+  l3out_path_attachment_dn = aci_l3out_path_attachment.example.id
+  addr                     = "10.0.0.1/24"
+  annotation               = "example"
+  ipv6_dad                 = "disabled"
+  name_alias               = "example"
 }

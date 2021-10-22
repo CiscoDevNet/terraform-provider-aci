@@ -113,7 +113,7 @@ func testAccCheckAciNodeBlockDestroyMG(s *terraform.State) error {
 
 	for _, rs := range s.RootModule().Resources {
 
-		if rs.Type == "aci_maintanence_group_node" {
+		if rs.Type == "aci_maintenance_group_node" {
 			cont, err := client.Get(rs.Primary.ID)
 			node_block := models.NodeBlockFromContainerMG(cont)
 			if err == nil {

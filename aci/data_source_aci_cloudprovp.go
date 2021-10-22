@@ -27,7 +27,7 @@ func dataSourceAciCloudProviderProfile() *schema.Resource {
 			"annotation": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
-				Default:  "orchestrator:terraform",
+				Computed: true,
 			},
 		},
 	}

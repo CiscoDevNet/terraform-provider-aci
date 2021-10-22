@@ -4,8 +4,8 @@ resource "aci_tenant" "tenant_for_contract" {
 }
 
 resource "aci_l4_l7_service_graph_template" "rest_abs_graph" {
-  tenant_dn                         = aci_tenant.tenant_for_contract.id
-  name                              = "testgraph"
+  tenant_dn = aci_tenant.tenant_for_contract.id
+  name      = "testgraph"
 }
 
 resource "aci_contract" "rs_prov_contract" {
@@ -41,11 +41,11 @@ resource "aci_contract" "intra_epg_contract" {
 // Taboo Contract
 resource "aci_taboo_contract" "rest_taboo_con" {
   tenant_dn = aci_tenant.tenant_for_epg.id
-  name = "testcon"
+  name      = "testcon"
 }
 
 // Imported Contract
 resource "aci_imported_contract" "rest_vz_cons_if" {
   tenant_dn = aci_tenant.tenant_for_epg.id
-  name       = "testcontract"
+  name      = "testcontract"
 }

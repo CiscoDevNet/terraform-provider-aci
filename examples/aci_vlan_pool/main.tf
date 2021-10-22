@@ -14,7 +14,7 @@ provider "aci" {
 }
 
 resource "aci_vlan_pool" "example" {
-  name  = "example"
+  name        = "example"
   description = "From Terraform"
   alloc_mode  = "static"
   annotation  = "example"

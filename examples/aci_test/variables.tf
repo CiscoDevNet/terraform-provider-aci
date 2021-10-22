@@ -1,5 +1,5 @@
 variable "bd_subnet" {
-  type    = "string"
+  type    = string
   default = "1.1.1.1/24"
 }
 
@@ -44,7 +44,7 @@ variable "aci_vm2_name" {
 }
 
 variable "gateway" {
-    default = "1.1.1.1"
+  default = "1.1.1.1"
 }
 
 variable "domain_name" {
@@ -56,11 +56,11 @@ variable "vsphere_template" {
 }
 
 variable "folder" {
-    default = "CLEUR-workshop"
+  default = "CLEUR-workshop"
 }
 
 variable "dns_list" {
-  default = ["172.23.136.143","172.23.136.144"]
+  default = ["172.23.136.143", "172.23.136.144"]
 }
 
 variable "dns_search" {

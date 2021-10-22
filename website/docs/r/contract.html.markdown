@@ -42,7 +42,7 @@ Manages ACI Contract
 
 * `filter.filter_entry` - (Optional) To manage filter entries for particular filter from the contract resource. It has following attributes.
 * `filter.filter_entry.filter_entry_name` - (Required) Name of Object filter entry.
-* `filter.filterentry.entry_annotation` - (Optional) Annotation for object filter entry.
+* `filter.filter_entry.entry_annotation` - (Optional) Annotation for object filter entry.
 * `filter.filter_entry.entry_description` - (Optional) Description for the filter entry.
 * `filter.filter_entry.apply_to_frag` - (Optional) Flag to determine whether to apply changes to fragment. Allowed values are "yes" and "no". Default is "no".
 * `filter.filter_entry.arp_opc` - (Optional) Open peripheral codes. Allowed values are "unspecified", "req" and "reply". Default is "unspecified".

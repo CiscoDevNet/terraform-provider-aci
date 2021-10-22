@@ -14,9 +14,9 @@ provider "aci" {
 }
 
 resource "aci_fex_bundle_group" "example" {
-  fex_profile_dn  = aci_fex_profile.example.id
-  name            = "example"
-  annotation      = "example"
-  name_alias      = "example"
-  description     = "from terraform"
+  fex_profile_dn = aci_fex_profile.example.id
+  name           = "example"
+  annotation     = "example"
+  name_alias     = "example"
+  description    = "from terraform"
 }

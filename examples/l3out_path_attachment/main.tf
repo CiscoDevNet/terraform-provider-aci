@@ -20,7 +20,7 @@ resource "aci_tenant" "footenant" {
   annotation  = "tenant_1_tag"
   name_alias  = "alias_tenant"
 }
-	  
+
 resource "aci_l3_outside" "fool3_outside" {
   tenant_dn      = aci_tenant.footenant.id
   description    = "sample aci_l3_outside"
@@ -50,7 +50,7 @@ resource "aci_logical_interface_profile" "foological_interface_profile" {
   name_alias              = "alias_prof"
   prio                    = "unspecified"
   tag                     = "black"
-}	  
+}
 
 
 resource "aci_l3out_path_attachment" "fool3out_path_attachment" {

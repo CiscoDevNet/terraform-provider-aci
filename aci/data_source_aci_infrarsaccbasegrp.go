@@ -37,9 +37,6 @@ func dataSourceAciAccessGroup() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
-				DefaultFunc: func() (interface{}, error) {
-					return "orchestrator:terraform", nil
-				},
 			},
 		},
 	}

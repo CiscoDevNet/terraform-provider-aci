@@ -18,7 +18,7 @@ resource "aci_tenant" "terraform_ten" {
 }
 
 resource "aci_vrf" "vrf1" {
-  tenant_dn = aci_tenant.terraform_ten.id
+  tenant_dn          = aci_tenant.terraform_ten.id
   bd_enforced_enable = "no"
   knw_mcast_act      = "permit"
   name               = var.vrf_name

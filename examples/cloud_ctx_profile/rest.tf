@@ -4,16 +4,16 @@ resource "aci_rest" "rest_l3_ext_out" {
 
   content = {
     "name" = "cloudcontext-test"
-    "children" =  [
-        {"cloudRsToCtx" = {
-            "attributes"= {
-                "status"= "created,modified",
-                "tnFvCtxName"= "user-vrf-demo1"
-              }
-          }
+    "children" = [
+      { "cloudRsToCtx" = {
+        "attributes" = {
+          "status"      = "created,modified",
+          "tnFvCtxName" = "user-vrf-demo1"
         }
+        }
+      }
     ]
-}
+  }
 
 
 }

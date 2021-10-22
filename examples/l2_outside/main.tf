@@ -19,17 +19,17 @@ resource "aci_tenant" "foo_tenant" {
 }
 
 resource "aci_l2_outside" "fool2_outside" {
-  tenant_dn  = aci_tenant.foo_tenant.id
+  tenant_dn   = aci_tenant.foo_tenant.id
   description = "from terraform"
-  name  = "l2_outside_1"
+  name        = "l2_outside_1"
   annotation  = "l2_outside_tag"
   name_alias  = "example"
   target_dscp = "AF11"
 }
 
-data "aci_l2_outside" "example9"{
-  tenant_dn  = aci_tenant.foo_tenant.id
-  name  = aci_l2_outside.fool2_outside.name
+data "aci_l2_outside" "example9" {
+  tenant_dn = aci_tenant.foo_tenant.id
+  name      = aci_l2_outside.fool2_outside.name
 }
 
 output "name9" {

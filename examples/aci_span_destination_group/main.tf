@@ -20,5 +20,5 @@ resource "aci_tenant" "test_tenant1" {
 
 resource "aci_span_destination_group" "foospan_destination_group" {
   tenant_dn = aci_tenant.test_tenant1.id
-  name = "spanDestGrp1"
+  name      = "spanDestGrp1"
 }

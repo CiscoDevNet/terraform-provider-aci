@@ -36,7 +36,7 @@ func dataSourceAciCloudProvidersRegion() *schema.Resource {
 			"annotation": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
-				Default:  "orchestrator:terraform",
+				Computed: true,
 			},
 			"name_alias": &schema.Schema{
 				Type:     schema.TypeString,

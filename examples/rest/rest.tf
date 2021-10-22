@@ -17,7 +17,7 @@ resource "aci_rest" "madebyresttf" {
 # }
 
 resource "aci_rest" "madebyrest_yaml" {
-  path       = "/api/mo/uni.json"
+  path    = "/api/mo/uni.json"
   payload = <<EOF
 {
         "fvTenant": {

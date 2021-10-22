@@ -14,7 +14,7 @@ provider "aci" {
 }
 
 resource "aci_vxlan_pool" "example" {
-  name  = "example"
+  name        = "example"
   annotation  = "example"
   name_alias  = "name_alias_for_vxlan"
   description = "From Teraform"

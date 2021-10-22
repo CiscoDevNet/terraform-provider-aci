@@ -1,5 +1,5 @@
 resource "aci_rest" "rest_con_export" {
-  path       = "api/node/mo/uni/tn-tf_tenant/cif-exported_contract.json"
+  path    = "api/node/mo/uni/tn-tf_tenant/cif-exported_contract.json"
   payload = <<EOF
   "vzCPIf": {
     "attributes": {

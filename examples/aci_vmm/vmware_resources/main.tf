@@ -59,7 +59,7 @@ resource "vsphere_virtual_machine" "aci_vm1" {
   #   resource_pool_id = data.vsphere_compute_cluster.cl.resource_pool_id
 
   resource_pool_id = data.vsphere_host.host.resource_pool_id
-  scsi_type = data.vsphere_virtual_machine.template.scsi_type
+  scsi_type        = data.vsphere_virtual_machine.template.scsi_type
   disk {
     label = "disk0"
     size  = data.vsphere_virtual_machine.template.disks.0.size

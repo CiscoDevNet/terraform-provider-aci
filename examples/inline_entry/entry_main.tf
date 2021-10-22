@@ -27,7 +27,7 @@ resource "aci_contract" "democontract" {
   scope       = "context"
   target_dscp = "VA"
   prio        = "unspecified"
-  filter  {
+  filter {
     filter_name = "abcd"
     description = "first filter from contract resource"
     annotation  = "tag_filter"
@@ -39,7 +39,7 @@ resource "aci_contract" "democontract" {
       ether_t           = "ipv4"
       prot              = "tcp"
     }
-    filter_entry  {
+    filter_entry {
       description       = "hello world"
       filter_entry_name = "check_entry2"
       d_from_port       = "443"

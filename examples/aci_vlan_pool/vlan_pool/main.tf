@@ -14,6 +14,6 @@ provider "aci" {
 }
 
 resource "aci_vlan_pool" "VLAN-POOL" {
-  name  = "VLAN-POOL"
-  alloc_mode  = "static"
+  name       = "VLAN-POOL"
+  alloc_mode = "static"
 }

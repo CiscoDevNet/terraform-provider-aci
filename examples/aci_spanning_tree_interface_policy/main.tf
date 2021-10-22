@@ -21,9 +21,9 @@ resource "aci_spanning_tree_interface_policy" "example" {
 }
 
 data "aci_spanning_tree_interface_policy" "example" {
-  name  = "example"
+  name = "example"
 }
- 
+
 output "name" {
   value = data.aci_spanning_tree_interface_policy.example
 }

@@ -19,11 +19,11 @@ resource "aci_tenant" "tenant01" {
 }
 
 resource "aci_l3_outside" "l3_outside" {
-  tenant_dn      = aci_tenant.tenant01.id
-  name           = "demo_l3out"
-  annotation     = "tag_l3out"
-  name_alias     = "alias_out"
-  target_dscp    = "unspecified"
+  tenant_dn   = aci_tenant.tenant01.id
+  name        = "demo_l3out"
+  annotation  = "tag_l3out"
+  name_alias  = "alias_out"
+  target_dscp = "unspecified"
 }
 
 resource "aci_logical_node_profile" "logical_node_profile" {
