@@ -65,14 +65,13 @@ func testAccCheckAciCloudAWSProviderConfig_basic(description string) string {
 	}
 
 	resource "aci_cloud_aws_provider" "foocloud_aws_provider" {
-		tenant_dn         = "${aci_tenant.footenant.id}"
+		tenant_dn         = aci_tenant.footenant.id
 		description       = "%s"
 		account_id		  = "310368696476"
 		annotation        = "tag_aws"
 		is_trusted		  = "yes"
 		email			  = "testacc@example.com"
 	}
-	  
 	`, description)
 }
 

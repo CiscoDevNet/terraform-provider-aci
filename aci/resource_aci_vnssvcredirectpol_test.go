@@ -61,15 +61,15 @@ func testAccCheckAciServiceRedirectPolicyConfig_basic(description string) string
 	return fmt.Sprintf(`
 
 	resource "aci_service_redirect_policy" "example" {
-		tenant_dn  = "${aci_tenant.tenentcheck.id}"
-		name  = "check"
-		dest_type = "L3"
-		max_threshold_percent = "50"
-		hashing_algorithm = "sip"
-		description = "%s"
-		anycast_enabled = "yes"
+		tenant_dn              = aci_tenant.tenentcheck.id
+		name                   = "check"
+		dest_type              = "L3"
+		max_threshold_percent  = "50"
+		hashing_algorithm      = "sip"
+		description            = "%s"
+		anycast_enabled        = "yes"
 		resilient_hash_enabled = "no"
-		threshold_enable = "yes"
+		threshold_enable       = "yes"
 	}
 	`, description)
 }

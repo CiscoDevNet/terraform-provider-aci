@@ -61,7 +61,7 @@ func testAccCheckAciL3outBgpExternalPolicyConfig_basic(description string) strin
 	return fmt.Sprintf(`
 
 	resource "aci_l3out_bgp_external_policy" "fool3out_bgp_external_policy" {
-		l3_outside_dn  = "${aci_l3_outside.example.id}"
+		l3_outside_dn  = aci_l3_outside.example.id
 		description = "%s"
   		annotation  = "example"
   		name_alias  = "example"

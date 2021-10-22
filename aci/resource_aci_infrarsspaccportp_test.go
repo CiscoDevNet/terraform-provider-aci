@@ -60,9 +60,9 @@ func TestAccAciInterfaceProfile_update(t *testing.T) {
 func testAccCheckAciInterfaceProfileConfig_basic(annotation string) string {
 	return fmt.Sprintf(`
 	resource "aci_spine_port_selector" "foointerface_profile" {
-		spine_profile_dn  = "${aci_spine_profile.foospine_profile.id}"
-		tdn  = "${aci_spine_interface_profile.foospine_interface_profile.id}"
-		annotation  = "%s"
+		spine_profile_dn = aci_spine_profile.foospine_profile.id
+		tdn              = aci_spine_interface_profile.foospine_interface_profile.id
+		annotation       = "%s"
 	}
 	`, annotation)
 }

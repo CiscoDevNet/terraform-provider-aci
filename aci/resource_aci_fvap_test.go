@@ -69,7 +69,7 @@ func testAccCheckAciApplicationProfileConfig_basic(description, prio string) str
 		description = "This tenant is created by terraform ACI provider"
 	}
 	resource "aci_application_profile" "fooapplication_profile" {
-		tenant_dn   = "${aci_tenant.tenant_for_ap.id}"
+		tenant_dn   = aci_tenant.tenant_for_ap.id
 		description = "%s"
 		name        = "demo_ap"
 		annotation  = "tag_ap"

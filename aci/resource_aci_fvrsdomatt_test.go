@@ -59,12 +59,12 @@ func testAccCheckAciFVDomainConfig_basic() string {
 	return fmt.Sprintf(`
 
 	resource "aci_epg_to_domain" "check" {
-		application_epg_dn  = "${aci_application_epg.fooapplication_epg.id}"
-		tdn = "${aci_fc_domain.foofc_domain.id}"
+		application_epg_dn    = aci_application_epg.fooapplication_epg.id
+		tdn                   = aci_fc_domain.foofc_domain.id
 		vmm_allow_promiscuous = "accept"
-		vmm_forged_transmits = "reject"
-		vmm_mac_changes = "accept"
-		epg_cos = "Cos0"
+		vmm_forged_transmits  = "reject"
+		vmm_mac_changes       = "accept"
+		epg_cos               = "Cos0"
 	}
 
 	`)

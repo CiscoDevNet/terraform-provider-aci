@@ -66,7 +66,7 @@ func testAccCheckAciVRFConfig_basic(description, ip_data_plane_learning string) 
 	}
 
 	resource "aci_vrf" "foovrf" {
-		tenant_dn   		   = "${aci_tenant.tenant_for_vrf.id}"
+		tenant_dn   		   = aci_tenant.tenant_for_vrf.id
 		description 		   = "%s"
 		name                   = "demo_vrf"
 		annotation             = "tag_vrf"
@@ -77,7 +77,6 @@ func testAccCheckAciVRFConfig_basic(description, ip_data_plane_learning string) 
 		pc_enf_dir             = "egress"
 		pc_enf_pref            = "unenforced"
 	}
-	  
 	`, description, ip_data_plane_learning)
 }
 

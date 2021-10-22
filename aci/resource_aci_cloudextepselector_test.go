@@ -66,18 +66,18 @@ func testAccCheckAciCloudEndpointSelectorforExternalEPgsConfig_basic(description
 	}
 
 	resource "aci_cloud_applicationcontainer" "foocloud_applicationcontainer" {
-		tenant_dn   = "${aci_tenant.footenant.id}"
+		tenant_dn   = aci_tenant.footenant.id
 		name        = "demo_app"
 		annotation  = "tag_app"
 	}
 
 	resource "aci_cloud_external_epg" "foocloud_external_epg" {
-		cloud_applicationcontainer_dn = "${aci_cloud_applicationcontainer.foocloud_applicationcontainer.id}"
+		cloud_applicationcontainer_dn = aci_cloud_applicationcontainer.foocloud_applicationcontainer.id
 		name                          = "cloud_ext_epg"
 	}
 
 	resource "aci_cloud_endpoint_selectorfor_external_epgs" "foocloud_endpoint_selectorfor_external_epgs" {
-		cloud_external_epg_dn = "${aci_cloud_external_epg.foocloud_external_epg.id}"
+		cloud_external_epg_dn  = aci_cloud_external_epg.foocloud_external_epg.id
 		description            = "%s"
 		name                   = "ext_ep_selector"
 		annotation             = "tag_ext_selector"

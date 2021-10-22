@@ -1,10 +1,3 @@
-# provider "aci" {
-#   username = ""
-#   password = ""
-#   url      = ""
-#   insecure = true
-# }
-
 terraform {
   required_providers {
     aci = {

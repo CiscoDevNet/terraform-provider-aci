@@ -60,15 +60,15 @@ func TestAccAciOutofbandStaticNode_update(t *testing.T) {
 func testAccCheckAciOutofbandStaticNodeConfig_basic(description string) string {
 	return fmt.Sprintf(`
 	resource "aci_static_node_mgmt_address" "test" {
-		management_epg_dn  = "${aci_node_mgmt_epg.foo_aci_node_mgmt_epg.id}"
-		description = "%s"
+		management_epg_dn = aci_node_mgmt_epg.foo_aci_node_mgmt_epg.id
+		description       = "%s"
 		t_dn              = "topology/pod-1/node-1"
 		type              = "out_of_band"
 		addr              = "10.20.30.40/20"
 		annotation        = "example"
 		gw                = "10.20.30.41"
-  		v6_addr           = "1::40/64"
-  		v6_gw             = "1::21"
+		v6_addr           = "1::40/64"
+		v6_gw             = "1::21"
 	}
 	`, description)
 }

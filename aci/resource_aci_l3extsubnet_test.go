@@ -61,14 +61,14 @@ func testAccCheckAciL3ExtSubnetConfig_basic(description, aggregate string) strin
 	return fmt.Sprintf(`
 
 	resource "aci_l3_ext_subnet" "foosubnet" {
-	  # external_network_instance_profile_dn  = "${aci_external_network_instance_profile.example.id}"
-	  external_network_instance_profile_dn  = "uni/tn-check_tenantnk/out-demo_l3out/instP-demo_inst_prof"
-	  description                           = "%s"
-	  ip                                    = "0.0.0.0/0"
-	  aggregate                             = "%s"
-	  annotation                            = "tag_ext_subnet"
-	  name_alias                            = "alias_ext_subnet"
-	  scope                                 = ["import-security"]
+		# external_network_instance_profile_dn = aci_external_network_instance_profile.example.id
+		external_network_instance_profile_dn  = "uni/tn-check_tenantnk/out-demo_l3out/instP-demo_inst_prof"
+		description                           = "%s"
+		ip                                    = "0.0.0.0/0"
+		aggregate                             = "%s"
+		annotation                            = "tag_ext_subnet"
+		name_alias                            = "alias_ext_subnet"
+		scope                                 = ["import-security"]
 	}
 	`, description, aggregate)
 }

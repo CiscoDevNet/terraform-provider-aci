@@ -21,7 +21,7 @@ resource "aci_tenant" "footenant" {
 	  }
 
   resource "aci_l3_outside" "fool3_outside" {
-        tenant_dn      = "${aci_tenant.footenant.id}"
+        tenant_dn      = aci_tenant.footenant.id
         description    = "aci_l3_outside"
         name           = "demo_l3out"
         annotation     = "tag_l3out"
@@ -31,7 +31,7 @@ resource "aci_tenant" "footenant" {
     }
 
  resource "aci_external_network_instance_profile" "fooexternal_network_instance_profile" {
-        l3_outside_dn  = "${aci_l3_outside.fool3_outside.id}"
+        l3_outside_dn  = aci_l3_outside.fool3_outside.id
         description    = "aci_external_network_instance_profile"
         name           = "demo_inst_prof"
         annotation     = "tag_network_profile"
@@ -45,7 +45,7 @@ resource "aci_tenant" "footenant" {
     }
 
 resource "aci_l3_ext_subnet" "foosubnet" {
-      external_network_instance_profile_dn  = "${aci_external_network_instance_profile.fooexternal_network_instance_profile.id}"
+      external_network_instance_profile_dn  = aci_external_network_instance_profile.fooexternal_network_instance_profile.id
       description                           = "Sample L3 External subnet"
       ip                                    = "10.0.3.28/27"
       aggregate                             = "shared-rtctrl"

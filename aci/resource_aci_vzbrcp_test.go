@@ -61,7 +61,7 @@ func testAccCheckAciContractConfig_basic(description, scope string) string {
 	return fmt.Sprintf(`
 
 	resource "aci_contract" "foocontract" {
-		tenant_dn   = "${aci_tenant.example.id}"
+		tenant_dn   = aci_tenant.example.id
 		description = "%s"
 		name        = "demo_contract"
 		annotation  = "tag_contract"
@@ -70,7 +70,6 @@ func testAccCheckAciContractConfig_basic(description, scope string) string {
 		scope       = "%s"
 		target_dscp = "unspecified"
 	}
-	  
 	`, description, scope)
 }
 

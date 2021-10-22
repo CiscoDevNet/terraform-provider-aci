@@ -63,13 +63,12 @@ func testAccCheckAciImportedContractConfig_basic(description string) string {
 	
 
 	resource "aci_imported_contract" "fooimported_contract" {
-		  tenant_dn  = "${aci_tenant.example.id}"
+		tenant_dn   = aci_tenant.example.id
 		description = "%s"
-		
-		name  = "example"
-		  annotation  = "example"
-		  name_alias  = "example"
-		}
+		name        = "example"
+		annotation  = "example"
+		name_alias  = "example"
+	}
 	`, description)
 }
 

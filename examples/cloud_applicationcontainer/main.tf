@@ -21,7 +21,7 @@ resource "aci_tenant" "footenant" {
 	  }
 
 resource "aci_cloud_applicationcontainer" "foo_clou_app" {
-  tenant_dn   = "${aci_tenant.footenant.id}"
+  tenant_dn   = aci_tenant.footenant.id
   name        = "demo_cloud_app"
   description = "aci_cloud_applicationcontainer from terraform"
   annotation  = "tag_cloud_app"

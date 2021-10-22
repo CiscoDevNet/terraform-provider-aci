@@ -60,11 +60,11 @@ func TestAccAciFexBundleGroup_update(t *testing.T) {
 func testAccCheckAciFexBundleGroupConfig_basic(description string) string {
 	return fmt.Sprintf(`
 	resource "aci_fex_bundle_group" "example" {
-		fex_profile_dn  = "${aci_fex_profile.example.id}"
-		description = "%s"
-		name  = "fex_grp_check"
-		annotation  = "fex_grp_check"
-	  	name_alias  = "fex_grp_check"
+		fex_profile_dn = aci_fex_profile.example.id
+		description    = "%s"
+		name           = "fex_grp_check"
+		annotation     = "fex_grp_check"
+		name_alias     = "fex_grp_check"
 	}
 	`, description)
 }

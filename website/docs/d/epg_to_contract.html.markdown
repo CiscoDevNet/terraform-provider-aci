@@ -14,7 +14,7 @@ Data source for ACI EPG to contract relationship.
 
 ```hcl
 data "aci_epg_to_contract" "example" {
-    application_epg_dn = "${aci_application_epg.demo.id}"
+    application_epg_dn = aci_application_epg.demo.id
     contract_name  = "example"
     contract_type = "consumer"
 }

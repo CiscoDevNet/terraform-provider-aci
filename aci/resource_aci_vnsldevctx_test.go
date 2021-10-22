@@ -64,13 +64,13 @@ func testAccCheckAciLogicalDeviceContextConfig_basic(description string) string 
 	}
 
 	resource "aci_logical_device_context" "test" {
-		tenant_dn  = "${aci_tenant.example.id}"
-		description = "%s"
-		annotation  = "test"
-		context  = "test"
-		ctrct_name_or_lbl  = "any"
-		graph_name_or_lbl  = "any"
-		name_alias  = "test"
+		tenant_dn         = aci_tenant.example.id
+		description       = "%s"
+		annotation        = "test"
+		context           = "test"
+		ctrct_name_or_lbl = "any"
+		graph_name_or_lbl = "any"
+		name_alias        = "test"
 		node_name_or_lbl  = "any"
 	}
 	`, description)

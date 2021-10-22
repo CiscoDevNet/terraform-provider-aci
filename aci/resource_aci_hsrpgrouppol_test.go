@@ -60,19 +60,19 @@ func TestAccAciHSRPGroupPolicy_update(t *testing.T) {
 func testAccCheckAciHSRPGroupPolicyConfig_basic(description string) string {
 	return fmt.Sprintf(`
 		resource "aci_hsrp_group_policy" "foohsrp_group_policy" {
-		tenant_dn  = "${aci_tenant.example.id}"
-		name  = "example"
-		annotation  = "example"
-		description = "%s"
-		ctrl = "preempt"
-		hello_intvl  = "3000"
-		hold_intvl  = "10000"
-		name_alias  = "example"
-		preempt_delay_min  = "60"
-		preempt_delay_reload  = "60"
-		preempt_delay_sync  = "60"
-		prio  = "100"
-		timeout  = "60"
+		tenant_dn              = aci_tenant.example.id
+		name                   = "example"
+		annotation             = "example"
+		description            = "%s"
+		ctrl                   = "preempt"
+		hello_intvl            = "3000"
+		hold_intvl             = "10000"
+		name_alias             = "example"
+		preempt_delay_min      = "60"
+		preempt_delay_reload   = "60"
+		preempt_delay_sync     = "60"
+		prio                   = "100"
+		timeout                = "60"
 		hsrp_group_policy_type = "md5"
 	}
 	`, description)

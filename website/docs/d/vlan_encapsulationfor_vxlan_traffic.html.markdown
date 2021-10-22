@@ -13,7 +13,7 @@ Data source for ACI Vlan Encapsulation for Vxlan Traffic
 
 ```hcl
 data "aci_vlan_encapsulationfor_vxlan_traffic" "dev_vlan_traffic" {
-  attachable_access_entity_profile_dn  = "${aci_attachable_access_entity_profile.example.id}"
+  attachable_access_entity_profile_dn  = aci_attachable_access_entity_profile.example.id
 }
 ```
 ## Argument Reference ##

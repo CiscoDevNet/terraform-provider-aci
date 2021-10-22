@@ -66,15 +66,14 @@ func testAccCheckAciInfraNodeBlockConfig_basic(description string) string {
 	return fmt.Sprintf(`
 
 	resource "aci_node_block" "foonode_block" {
-		  switch_association_dn  = "${aci_leaf_selector.example.id}"
+		switch_association_dn = aci_leaf_selector.example.id
 		description = "%s"
-
-		name  = "example"
-		  annotation  = "example"
-		  from_  = "105"
-		  name_alias  = "example"
-		  to_  = "106"
-		}
+		name        = "example"
+		annotation  = "example"
+		from_       = "105"
+		name_alias  = "example"
+		to_         = "106"
+	}
 	`, description)
 }
 

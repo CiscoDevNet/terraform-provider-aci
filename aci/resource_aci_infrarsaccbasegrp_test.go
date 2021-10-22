@@ -70,15 +70,15 @@ func testAccCheckAciAccessAccessGroupConfig_basic(fexID string) string {
 	resource "aci_fex_bundle_group" "example" {
 		fex_profile_dn  = aci_fex_profile.example.id
 		name            = "example"
-	  }
+	}
 	resource "aci_fex_profile" "example" {
 		name        = "fex_prof"
 	}
 	resource "aci_access_group" "fooaccess_access_group" {
-		access_port_selector_dn  = "${aci_access_port_selector.example.id}"
+		access_port_selector_dn  = aci_access_port_selector.example.id
 		annotation = "check"
 		fex_id  = "%s"
-		tdn  = "${aci_fex_bundle_group.example.id}"
+		tdn  = aci_fex_bundle_group.example.id
 	}
 	`, fexID)
 }

@@ -69,7 +69,7 @@ func testAccCheckAciAccessPortSelectorConfig_basic(description, access_port_sele
 		name        = "demo_leaf_profile"
 	}	
 	resource "aci_access_port_selector" "fooaccess_port_selector" {
-		leaf_interface_profile_dn = "${aci_leaf_interface_profile.example.id}"
+		leaf_interface_profile_dn = aci_leaf_interface_profile.example.id
 		description               = "%s"
 		name                      = "demo_port_selector"
 		access_port_selector_type = "%s"

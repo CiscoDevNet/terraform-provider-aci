@@ -61,7 +61,7 @@ func testAccCheckAciLogicalInterfaceProfileConfig_basic(description, tag string)
 	return fmt.Sprintf(`
 
 	resource "aci_logical_interface_profile" "foological_interface_profile" {
-		# logical_node_profile_dn = "${aci_logical_node_profile.example.id}"
+		# logical_node_profile_dn = aci_logical_node_profile.example.id
 		logical_node_profile_dn = "uni/tn-check_tenantnk/out-demo_l3out/lnodep-demo_node_one"
 		description             = "%s"
 		name                    = "demo_int_prof"
@@ -69,7 +69,7 @@ func testAccCheckAciLogicalInterfaceProfileConfig_basic(description, tag string)
 		name_alias              = "alias_prof"
 		prio                    = "unspecified"
 		tag                     = "%s"
-	  }	  
+	}	  
 	`, description, tag)
 }
 

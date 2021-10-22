@@ -61,7 +61,7 @@ func testAccCheckAciAccessPortBlockConfig_basic(description, from_port string) s
 	return fmt.Sprintf(`
 
 	resource "aci_access_port_block" "fooaccess_port_block" {
-		//access_port_selector_dn = "${aci_access_port_selector.example.id}"
+		//access_port_selector_dn = aci_access_port_selector.example.id
 		access_port_selector_dn = "uni/infra/accportprof-demo_leaf_profile/hports-demo_port_selector-typ-range"
 		description             = "%s"
 		name                    = "demo_port_block"
@@ -72,7 +72,6 @@ func testAccCheckAciAccessPortBlockConfig_basic(description, from_port string) s
 		to_card                 = "3"
 		to_port                 = "3"
 	}
-	  
 	`, description, from_port)
 }
 

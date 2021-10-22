@@ -61,7 +61,7 @@ func testAccCheckAciLogicalNodeProfileConfig_basic(description, tag string) stri
 	return fmt.Sprintf(`
 
 	resource "aci_logical_node_profile" "foological_node_profile" {
-		# l3_outside_dn = "${aci_l3_outside.example.id}"
+		# l3_outside_dn = aci_l3_outside.example.id
 		l3_outside_dn = "uni/tn-check_tenantnk/out-demo_l3out"
 		description   = "%s"
 		name          = "demo_node"

@@ -66,18 +66,18 @@ func testAccCheckAciCloudEndpointSelectorConfig_basic(description, match_express
 	}
 
 	resource "aci_cloud_applicationcontainer" "foocloud_applicationcontainer" {
-		tenant_dn   = "${aci_tenant.footenant.id}"
+		tenant_dn   = aci_tenant.footenant.id
 		name        = "demo_app"
 		annotation  = "tag_app"
 	}
 
 	resource "aci_cloud_epg" "foocloud_epg" {
-		cloud_applicationcontainer_dn = "${aci_cloud_applicationcontainer.foocloud_applicationcontainer.id}"
+		cloud_applicationcontainer_dn = aci_cloud_applicationcontainer.foocloud_applicationcontainer.id
 		name                          = "cloud_epg"
 	}
 
 	resource "aci_cloud_endpoint_selector" "foocloud_endpoint_selector" {
-		cloud_epg_dn    = "${aci_cloud_epg.foocloud_epg.id}"
+		cloud_epg_dn     = aci_cloud_epg.foocloud_epg.id
 		description      = "%s"
 		name             = "ep_select"
 		annotation       = "tag_ep"

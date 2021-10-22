@@ -61,23 +61,22 @@ func testAccCheckAciNodeBlockConfig_basic(description string) string {
 	return fmt.Sprintf(`
 
 	resource "aci_firmware_group" "example" {
-		name  = "example"
-		annotation  = "example"
-		description = "from terraform"
-		name_alias  = "example"
+		name                 = "example"
+		annotation           = "example"
+		description          = "from terraform"
+		name_alias           = "example"
 		firmware_group_type  = "range"
-	  }
+	}
 
 	resource "aci_node_block_firmware" "foonode_block_firmware" {
-		  firmware_group_dn  = "${aci_firmware_group.example.id}"
-		description = "%s"
-		
-		name  = "crest_test_vishwa"
-		  annotation  = "example"
-		  from_  = "1"
-		  name_alias  = "example"
-		  to_  = "5"
-		}
+		firmware_group_dn = aci_firmware_group.example.id
+		description       = "%s"
+		name              = "crest_test_vishwa"
+		annotation        = "example"
+		from_             = "1"
+		name_alias        = "example"
+		to_               = "5"
+	}
 	`, description)
 }
 

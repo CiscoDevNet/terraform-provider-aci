@@ -61,12 +61,12 @@ func testAccCheckAciSPANSourceGroupConfig_basic(description string) string {
 	return fmt.Sprintf(`
 
 	resource "aci_span_source_group" "foospan_source_group" {
-		tenant_dn  = "${aci_tenant.example.id}"
+		tenant_dn   = aci_tenant.example.id
 		description = "%s"
-		name  = "example"
-		admin_st  = "enabled"
-	    annotation  = "example"
-    	name_alias  = "example"
+		name        = "example"
+		admin_st    = "enabled"
+		annotation  = "example"
+		name_alias  = "example"
 	}
 	`, description)
 }

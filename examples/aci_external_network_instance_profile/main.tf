@@ -23,7 +23,7 @@ resource "aci_l3_outside" "example" {
 }
 
 resource "aci_external_network_instance_profile" "fooexternal_network_instance_profile" {
-	l3_outside_dn  = "${aci_l3_outside.example.id}"
+	l3_outside_dn  = aci_l3_outside.example.id
 	description    = "%s"
 	name           = "demo_inst_prof"
 	annotation     = "tag_network_profile"

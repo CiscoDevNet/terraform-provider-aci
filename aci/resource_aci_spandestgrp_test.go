@@ -61,11 +61,11 @@ func testAccCheckAciSPANDestinationGroupConfig_basic(description string) string 
 	return fmt.Sprintf(`
 
 	resource "aci_span_destination_group" "foospan_destination_group" {
-		tenant_dn  = "${aci_tenant.example.id}"
+		tenant_dn   = aci_tenant.example.id
 		description = "%s"
-		name  = "example"
+		name        = "example"
 		annotation  = "example"
-	    name_alias  = "example"
+		name_alias  = "example"
 	}
 	`, description)
 }

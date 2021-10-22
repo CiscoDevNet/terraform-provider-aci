@@ -15,7 +15,7 @@ provider "aci" {
 }
 
 resource "aci_bgp_address_family_context" "example" {
-  tenant_dn     = "${aci_tenant.tenentcheck.id}"
+  tenant_dn     = aci_tenant.tenentcheck.id
   name          = "one"
   description   = "from terraform"
   annotation    = "example"

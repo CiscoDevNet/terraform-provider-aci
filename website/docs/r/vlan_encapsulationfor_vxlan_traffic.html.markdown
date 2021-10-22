@@ -14,7 +14,7 @@ Manages ACI Vlan Encapsulation for Vxlan Traffic
 ```hcl
 resource "aci_vlan_encapsulationfor_vxlan_traffic" "example" {
   description                          = "from terraform"
-  attachable_access_entity_profile_dn  = "${aci_attachable_access_entity_profile.example.id}"
+  attachable_access_entity_profile_dn  = aci_attachable_access_entity_profile.example.id
   annotation                           = "tag_traffic"
   name_alias                           = "alias_traffic"
 }

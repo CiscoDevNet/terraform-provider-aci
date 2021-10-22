@@ -66,13 +66,13 @@ func testAccCheckAciCloudEPgConfig_basic(description, match_t string) string {
 	}
 
 	resource "aci_cloud_applicationcontainer" "foocloud_applicationcontainer" {
-		tenant_dn   = "${aci_tenant.footenant.id}"
+		tenant_dn   = aci_tenant.footenant.id
 		name        = "demo_app"
 		annotation  = "tag_app"
 	}
 
 	resource "aci_cloud_epg" "foocloud_epg" {
-		cloud_applicationcontainer_dn = "${aci_cloud_applicationcontainer.foocloud_applicationcontainer.id}"
+		cloud_applicationcontainer_dn = aci_cloud_applicationcontainer.foocloud_applicationcontainer.id
 		description                   = "%s"
 		name                          = "cloud_epg"
 		annotation                    = "tag_epg"
@@ -83,7 +83,6 @@ func testAccCheckAciCloudEPgConfig_basic(description, match_t string) string {
 		pref_gr_memb                  = "exclude"
 		prio                          = "unspecified"
 	}
-	  
 	`, description, match_t)
 }
 

@@ -61,13 +61,13 @@ func testAccCheckAciSwitchAssociationConfig_basic(description string) string {
 	return fmt.Sprintf(`
 
 	resource "aci_leaf_selector" "fooswitch_association" {
-		leaf_profile_dn  = "${aci_leaf_profile.example.id}"
-		description = "%s"
-		name  = "example"
-		switch_association_type  = "range"
-		annotation  = "example"
-	    name_alias  = "example"
-		}
+		leaf_profile_dn         = aci_leaf_profile.example.id
+		description             = "%s"
+		name                    = "example"
+		switch_association_type = "range"
+		annotation              = "example"
+		name_alias              = "example"
+	}
 	`, description)
 }
 

@@ -60,13 +60,13 @@ func TestAccAciL3outStaticRouteNextHop_update(t *testing.T) {
 func testAccCheckAciL3outStaticRouteNextHopConfig_basic(description string) string {
 	return fmt.Sprintf(`
 	resource "aci_l3out_static_route_next_hop" "fool3out_static_route_next_hop" {
-		static_route_dn  = "${aci_l3out_static_route.example.id}"
-		nh_addr  = "10.0.0.2"
-		description = "%s"
-  		annotation  = "example"
-  		name_alias  = "example"
-  		pref = "unspecified"
-  		nexthop_profile_type = "prefix"
+		static_route_dn      = aci_l3out_static_route.example.id
+		nh_addr              = "10.0.0.2"
+		description          = "%s"
+		annotation           = "example"
+		name_alias           = "example"
+		pref                 = "unspecified"
+		nexthop_profile_type = "prefix"
 	}
 	`, description)
 }

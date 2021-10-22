@@ -16,7 +16,7 @@ Data source for ACI Cloud Context Profile
 ```hcl
 
 data "aci_cloud_context_profile" "sample_prof" {
-  tenant_dn  = "${aci_tenant.dev_tenant.id}"
+  tenant_dn  = aci_tenant.dev_tenant.id
   name       = "demo_cloud_ctx_prof"
 }
 

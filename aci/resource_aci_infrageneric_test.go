@@ -61,9 +61,9 @@ func testAccCheckAciAccessGenericConfig_basic(description string) string {
 	return fmt.Sprintf(`
 
 	resource "aci_access_generic" "fooaccess_generic" {
-		attachable_access_entity_profile_dn  = "${aci_attachable_access_entity_profile.example.id}"
+		attachable_access_entity_profile_dn = aci_attachable_access_entity_profile.example.id
 		description = "%s"
-		name  = "default"
+		name        = "default"
 		annotation  = "example"
 		name_alias  = "access_generic"
 	}

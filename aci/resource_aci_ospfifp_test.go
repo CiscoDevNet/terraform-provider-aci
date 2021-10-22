@@ -61,7 +61,7 @@ func testAccCheckAciOSPFInterfaceProfileConfig_basic(description string) string 
 	return fmt.Sprintf(`
 
 	resource "aci_l3out_ospf_interface_profile" "test" {
-		logical_interface_profile_dn = "${aci_logical_interface_profile.example.id}"
+		logical_interface_profile_dn = aci_logical_interface_profile.example.id
 		description                  = "%s"
 		annotation                   = "example"
 		auth_key                     = "example"

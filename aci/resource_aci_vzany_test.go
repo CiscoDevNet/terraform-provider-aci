@@ -61,8 +61,8 @@ func testAccCheckAciAnyConfig_basic(description, match_t string) string {
 	return fmt.Sprintf(`
 
 	resource "aci_vrf" "example" {
-		tenant_dn              = "${aci_tenant.example.id}"
-		name                   = "demo_vrf"
+		tenant_dn = aci_tenant.example.id
+		name      = "demo_vrf"
 	}
 	resource "aci_any" "fooany" {
 		vrf_dn       = aci_vrf.example.id

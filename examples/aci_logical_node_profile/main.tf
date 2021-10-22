@@ -26,7 +26,7 @@ resource "aci_l3_outside" "example" {
 		target_dscp    = "unspecified"
 }
 resource "aci_logical_node_profile" "foological_node_profile" {
-	l3_outside_dn = "${aci_l3_outside.example.id}"
+	l3_outside_dn = aci_l3_outside.example.id
 	description   = "From Terraform"
 	name          = "demo_node"
 	annotation    = "tag_node"

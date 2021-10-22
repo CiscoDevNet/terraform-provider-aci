@@ -65,15 +65,14 @@ func testAccCheckAciVlanEncapsulationforVxlanTrafficConfig_basic(description, na
 		name        = "demo_entity_prof"
 		annotation  = "tag_entity"
 		name_alias  = "alias_entity"
-	  }
+	}
 	
 	resource "aci_vlan_encapsulationfor_vxlan_traffic" "foovlan_encapsulationfor_vxlan_traffic" {
-		attachable_access_entity_profile_dn = "${aci_attachable_access_entity_profile.example.id}"
+		attachable_access_entity_profile_dn = aci_attachable_access_entity_profile.example.id
 		description                         = "%s"
 		annotation                          = "tag_traffic"
 		name_alias                          = "%s"
 	}
-	  
 	`, description, name_alias)
 }
 

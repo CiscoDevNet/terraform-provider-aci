@@ -66,18 +66,17 @@ func testAccCheckAciNodeBlockConfig_basicMG(description string) string {
 		description = "from terraform"
 		name_alias  = "aliasing"
 		pod_maintenance_group_type  = "ALL"
-	  }
+	}
 
 	resource "aci_maintenance_group_node" "foonode_block_maintgrp" {
-		  pod_maintenance_group_dn  = "${aci_pod_maintenance_group.example.id}"
+		pod_maintenance_group_dn = aci_pod_maintenance_group.example.id
 		description = %s
-		
-		name  = "example"
-		  annotation  = "example"
-		  from_  = "1"
-		  name_alias  = "example"
-		  to_  = "1"
-		}
+		name        = "example"
+		annotation  = "example"
+		from_       = "1"
+		name_alias  = "example"
+		to_         = "1"
+	}
 	`, description)
 }
 

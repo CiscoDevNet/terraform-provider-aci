@@ -64,13 +64,13 @@ func testAccCheckAciApplicationEPGConfig_basic(description, prio string) string 
 		}
 	  
 		resource "aci_application_profile" "app_profile_for_epg" {
-			tenant_dn   = "${aci_tenant.tenant_for_epg.id}"
+			tenant_dn   = aci_tenant.tenant_for_epg.id
 			name        = "ap_for_epg"
 			description = "This app profile is created by terraform ACI providers"
 		}
 
 		resource "aci_application_epg" "fooapplication_epg" {
-			application_profile_dn  = "${aci_application_profile.app_profile_for_epg.id}"
+			application_profile_dn  = aci_application_profile.app_profile_for_epg.id
 			name  					= "demo_epg"
 			description 			= "%s"
 			annotation  			= "tag_epg"
@@ -78,7 +78,7 @@ func testAccCheckAciApplicationEPGConfig_basic(description, prio string) string 
 			flood_on_encap  		= "disabled"
 			fwd_ctrl  				= "none"
 			has_mcast_source  		= "no"
-			is_attr_based_epg  	= "no"
+			is_attr_based_epg  	    = "no"
 			match_t  				= "AtleastOne"
 			name_alias  			= "alias_epg"
 			pc_enf_pref  			= "unenforced"

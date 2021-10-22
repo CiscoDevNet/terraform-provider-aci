@@ -63,13 +63,13 @@ func testAccCheckAciL4L7ServiceGraphTemplateConfig_basic(description string) str
 		name = "testacc"
 	}
 	resource "aci_l4_l7_service_graph_template" "test" {
-		tenant_dn  = "${aci_tenant.example.id}"
+		tenant_dn   = aci_tenant.example.id
 		description = "%s"
-		name  = "test"
+		name        = "test"
 		annotation  = "example"
 		name_alias  = "example"
-		l4_l7_service_graph_template_type  = "legacy"
-		ui_template_type  = "ONE_NODE_ADC_ONE_ARM"
+		l4_l7_service_graph_template_type = "legacy"
+		ui_template_type                  = "ONE_NODE_ADC_ONE_ARM"
 	}
 	`, description)
 }

@@ -61,16 +61,14 @@ func testAccCheckAciFabricNodeConfig_basic(description string) string {
 	return fmt.Sprintf(`
 
 	resource "aci_logical_node_to_fabric_node" "foofabric_node" {
-		   logical_node_profile_dn  = "uni/tn-demo_dev_tenant/out-demo_l3out/lnodep-demo_node"
-		  #logical_node_profile_dn  = "${aci_logical_node_profile.example.id}"
-		  
-		
-		  tdn  = "topology/pod-1/node-201"
-		  annotation  = "%s"
-		  config_issues  = "none"
-		  rtr_id  = "10.0.1.1"
-		  rtr_id_loop_back  = "no"
-		}
+		logical_node_profile_dn = "uni/tn-demo_dev_tenant/out-demo_l3out/lnodep-demo_node"
+		#logical_node_profile_dn = aci_logical_node_profile.example.id
+		tdn              = "topology/pod-1/node-201"
+		annotation       = "%s"
+		config_issues    = "none"
+		rtr_id           = "10.0.1.1"
+		rtr_id_loop_back = "no"
+	}
 	`, description)
 }
 

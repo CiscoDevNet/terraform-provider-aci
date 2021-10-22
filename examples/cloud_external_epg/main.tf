@@ -19,13 +19,13 @@ provider "aci" {
 	}
 
 	resource "aci_cloud_applicationcontainer" "foocloud_applicationcontainer" {
-		tenant_dn   = "${aci_tenant.footenant.id}"
+		tenant_dn   = aci_tenant.footenant.id
 		name        = "demo_app"
 		annotation  = "tag_app"
 	}
 
 	resource "aci_cloud_external_epg" "foocloud_external_epg" {
-		cloud_applicationcontainer_dn = "${aci_cloud_applicationcontainer.foocloud_applicationcontainer.id}"
+		cloud_applicationcontainer_dn = aci_cloud_applicationcontainer.foocloud_applicationcontainer.id
 		description                   = "sample cloud external epg"
 		name                          = "cloud_ext_epg"
 		annotation                    = "tag_ext_epg"

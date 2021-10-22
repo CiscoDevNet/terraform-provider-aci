@@ -64,20 +64,20 @@ func testAccCheckAciSubnetConfig_basic(description, Ctrl string) string {
 		description = "This tenant is created by terraform ACI provider"
 	}
 	resource "aci_bridge_domain" "bd_for_subnet" {
-		tenant_dn = "${aci_tenant.tenant_for_subnet.id}"
+		tenant_dn = aci_tenant.tenant_for_subnet.id
 		name      = "bd_for_subnet"
 	}
 
 	resource "aci_subnet" "foosubnet" {
-		parent_dn = "${aci_bridge_domain.bd_for_subnet.id}"
-		description      = "%s"
-		ip               = "10.0.3.28/27"
-		annotation       = "tag_subnet"
-		ctrl             = ["nd"]
-		name_alias       = "alias_subnet"
-		preferred        = "no"
-		scope            = ["private"]
-		virtual          = "yes"
+		parent_dn   = aci_bridge_domain.bd_for_subnet.id
+		description = "%s"
+		ip          = "10.0.3.28/27"
+		annotation  = "tag_subnet"
+		ctrl        = ["nd"]
+		name_alias  = "alias_subnet"
+		preferred   = "no"
+		scope       = ["private"]
+		virtual     = "yes"
 	} 
 	`, description)
 }

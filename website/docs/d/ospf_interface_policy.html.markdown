@@ -14,7 +14,7 @@ Data source for ACI OSPF Interface Policy
 
 ```hcl
 data "aci_ospf_interface_policy" "dev_ospf_pol" {
-  tenant_dn  = "${aci_tenant.dev_tenant.id}"
+  tenant_dn  = aci_tenant.dev_tenant.id
   name       = "foo_ospf_pol"
 }
 ```

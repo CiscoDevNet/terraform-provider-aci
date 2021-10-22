@@ -63,17 +63,17 @@ func testAccCheckAciStaticPathConfig_basic(description string) string {
 	
 
 	resource "aci_epg_to_static_path" "foostatic_path" {
-		   application_epg_dn  = "uni/tn-demo_dev_tenant/ap-demo_ap/epg-demo_epg"
-		  #application_epg_dn  = "${aci_application_epg.example.id}"
-		  description = "%s"
+		application_epg_dn  = "uni/tn-demo_dev_tenant/ap-demo_ap/epg-demo_epg"
+		#application_epg_dn  = aci_application_epg.example.id
+		description = "%s"
 		
-		  tdn            = "topology/pod-1/paths-101/pathep-[eth1/1]"
-		  annotation     = "example"
-		  instr_imedcy   = "immediate"
-		  mode           = "regular"
-		  encap          = "vlan-1000"
-		  primary_encap  = "unknown"
-		}
+		tdn            = "topology/pod-1/paths-101/pathep-[eth1/1]"
+		annotation     = "example"
+		instr_imedcy   = "immediate"
+		mode           = "regular"
+		encap          = "vlan-1000"
+		primary_encap  = "unknown"
+	}
 	`, description)
 }
 

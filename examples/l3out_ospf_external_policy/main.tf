@@ -16,7 +16,7 @@ provider "aci" {
 
 resource "aci_l3out_ospf_external_policy" "example" {
 
-  l3_outside_dn  = "${aci_l3_outside.example.id}"
+  l3_outside_dn  = aci_l3_outside.example.id
   annotation  = "example"
   area_cost  = "1"
   area_ctrl = "redistribute,summary"

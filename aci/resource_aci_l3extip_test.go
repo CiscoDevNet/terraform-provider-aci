@@ -61,13 +61,13 @@ func testAccCheckAciL3outPathAttachmentSecondaryIpConfig_basic(description strin
 	return fmt.Sprintf(`
 
 	resource "aci_l3out_path_attachment_secondary_ip" "fool3out_path_attachment_secondary_ip" {
-		#l3out_path_attachment_dn  = "${aci_leaf_port.example.id}"
-		l3out_path_attachment_dn  = "uni/tn-tenant_1/out-l3_outside_1/lnodep-logical_node_profile_1/lifp-logical_interface_profile_1/rspathL3OutAtt-[topology/pod-1/paths-101/pathep-[eth1/1]]"
+		#l3out_path_attachment_dn = aci_leaf_port.example.id
+		l3out_path_attachment_dn = "uni/tn-tenant_1/out-l3_outside_1/lnodep-logical_node_profile_1/lifp-logical_interface_profile_1/rspathL3OutAtt-[topology/pod-1/paths-101/pathep-[eth1/1]]"
 		description = "%s"
-		addr  = "10.0.0.1/24"
-  		annotation  = "example"
-  		ipv6_dad = "disabled"
-  		name_alias  = "example"
+		addr        = "10.0.0.1/24"
+		annotation  = "example"
+		ipv6_dad    = "disabled"
+		name_alias  = "example"
 	}
 	`, description)
 }

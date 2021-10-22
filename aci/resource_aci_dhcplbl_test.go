@@ -61,16 +61,15 @@ func testAccCheckAciBDDHCPLabelConfig_basic(description string) string {
 	return fmt.Sprintf(`
 
 	resource "aci_bd_dhcp_label" "foobd_dhcp_label" {
-		#bridge_domain_dn  = "${aci_bridge_domain.example.id}"
+		#bridge_domain_dn = aci_bridge_domain.example.id
 		bridge_domain_dn  = "uni/tn-check_tenantnk/BD-demo_bd"
 		description = "%s"
-		
-		name  = "example"
-		  annotation  = "example"
-		  name_alias  = "example"
-		  owner  = "tenant"
-		  tag  = "blanched-almond"
-		}
+		name        = "example"
+		annotation  = "example"
+		name_alias  = "example"
+		owner       = "tenant"
+		tag         = "blanched-almond"
+	}
 	`, description)
 }
 

@@ -66,7 +66,7 @@ func testAccCheckAciCloudProvidersRegionConfig_basic(description, admin_st strin
 	return fmt.Sprintf(`
 
 	resource "aci_cloud_providers_region" "foocloud_providers_region" {
-		cloud_provider_profile_dn = "${aci_cloud_provider_profile.example.id}"
+		cloud_provider_profile_dn = aci_cloud_provider_profile.example.id
 		description               = "%s"
 		name                      = "us-east-1"
 		admin_st                  = "%s"

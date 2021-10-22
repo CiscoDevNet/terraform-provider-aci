@@ -61,7 +61,7 @@ func testAccCheckAciBGPTimersPolicyConfig_basic(description string) string {
 	return fmt.Sprintf(`
 
 	resource "aci_bgp_timers" "test" {
-		tenant_dn    = "${aci_tenant.tenentcheck.id}"
+		tenant_dn    = aci_tenant.tenentcheck.id
 		name         = "one"
 		description  = "%s"
 		annotation   = "example"

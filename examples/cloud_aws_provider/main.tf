@@ -21,7 +21,7 @@ resource "aci_tenant" "footenant" {
 	  }
 
 resource "aci_cloud_aws_provider" "foocloud_aws_provider" {
-		tenant_dn         = "${aci_tenant.footenant.id}"
+		tenant_dn         = aci_tenant.footenant.id
 		description       = "aws account config"
 		access_key_id     = "access_key"
 		account_id        = "acc_id"
