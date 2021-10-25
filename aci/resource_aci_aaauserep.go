@@ -686,13 +686,12 @@ func resourceAciUserManagementRead(ctx context.Context, d *schema.ResourceData, 
 
 func resourceAciUserManagementDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
-	aciClient := m.(*client.Client)
-	dn := d.Id()
-	err := aciClient.DeleteByDn(dn, "aaaUserEp")
-	if err != nil {
-		return diag.FromErr(err)
-	}
+	var diags diag.Diagnostics
+	diags = append(diags, diag.Diagnostic{
+		Severity: diag.Warning,
+		Summary:  "Resource with class name aaaUserEp cannot be deleted",
+	})
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 	d.SetId("")
-	return diag.FromErr(err)
+	return diags
 }
