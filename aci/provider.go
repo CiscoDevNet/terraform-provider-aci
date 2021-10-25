@@ -58,6 +58,12 @@ func Provider() *schema.Provider {
 				DefaultFunc: schema.EnvDefaultFunc("ACI_PROXY_CREDS", nil),
 				Description: "Proxy server credentials in the form of username:password",
 			},
+			"validate_relation_dn": &schema.Schema{
+				Type:        schema.TypeBool,
+				Optional:    true,
+				Default:     true,
+				Description: "Flag to validate if a object with entered relation Dn exists in the APIC.",
+			},
 		},
 
 		ResourcesMap: map[string]*schema.Resource{
@@ -245,6 +251,7 @@ func Provider() *schema.Provider {
 			"aci_tacacs_provider":                          resourceAciTACACSProvider(),
 			"aci_saml_provider_group":                      resourceAciSAMLProviderGroup(),
 			"aci_ldap_group_map":                           resourceAciLDAPGroupMap(),
+			"aci_global_security":                          resourceAciUserManagement(),
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
@@ -442,6 +449,7 @@ func Provider() *schema.Provider {
 			"aci_tacacs_provider":                          dataSourceAciTACACSProvider(),
 			"aci_saml_provider_group":                      dataSourceAciSAMLProviderGroup(),
 			"aci_ldap_group_map":                           dataSourceAciLDAPGroupMap(),
+			"aci_global_security":                          dataSourceAciUserManagement(),
 		},
 
 		ConfigureFunc: configureClient,
@@ -450,14 +458,15 @@ func Provider() *schema.Provider {
 
 func configureClient(d *schema.ResourceData) (interface{}, error) {
 	config := Config{
-		Username:   d.Get("username").(string),
-		Password:   d.Get("password").(string),
-		URL:        d.Get("url").(string),
-		IsInsecure: d.Get("insecure").(bool),
-		PrivateKey: d.Get("private_key").(string),
-		Certname:   d.Get("cert_name").(string),
-		ProxyUrl:   d.Get("proxy_url").(string),
-		ProxyCreds: d.Get("proxy_creds").(string),
+		Username:           d.Get("username").(string),
+		Password:           d.Get("password").(string),
+		URL:                d.Get("url").(string),
+		IsInsecure:         d.Get("insecure").(bool),
+		PrivateKey:         d.Get("private_key").(string),
+		Certname:           d.Get("cert_name").(string),
+		ProxyUrl:           d.Get("proxy_url").(string),
+		ProxyCreds:         d.Get("proxy_creds").(string),
+		ValidateRelationDn: d.Get("validate_relation_dn").(bool),
 	}
 
 	if err := config.Valid(); err != nil {
@@ -502,12 +511,13 @@ func (c Config) getClient() interface{} {
 
 // Config
 type Config struct {
-	Username   string
-	Password   string
-	URL        string
-	IsInsecure bool
-	PrivateKey string
-	Certname   string
-	ProxyUrl   string
-	ProxyCreds string
+	Username           string
+	Password           string
+	URL                string
+	IsInsecure         bool
+	PrivateKey         string
+	Certname           string
+	ProxyUrl           string
+	ProxyCreds         string
+	ValidateRelationDn bool
 }
