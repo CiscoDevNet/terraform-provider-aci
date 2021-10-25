@@ -7,5 +7,3 @@ require (
 	github.com/ghodss/yaml v1.0.0
 	github.com/hashicorp/terraform-plugin-sdk/v2 v2.4.3
 )
-
-replace github.com/ciscoecosystem/aci-go-client => ../../ciscoecosystem/aci-go-client
