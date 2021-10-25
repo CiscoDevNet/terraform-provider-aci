@@ -68,6 +68,11 @@ func GetMOName(dn string) string {
 }
 
 func checkTDn(client *client.Client, dns []string) error {
+
+	if !client.ValidateRelationDn {
+		return nil
+	}
+	log.Printf("relation Dns being validated: %v", dns)
 	flag := false
 	var errMessage string
 
