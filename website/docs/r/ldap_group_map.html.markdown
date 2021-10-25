@@ -17,7 +17,7 @@ Manages ACI LDAP Group Map
 
 ## GUI Information ##
 
-* `Location` - Admin -> AAA -> Authentication -> LDAP -> LDAP Group Maps
+* `Location` - Admin -> AAA -> Authentication -> LDAP -> LDAP Group Maps & Admin -> AAA -> Authentication -> DUO -> LDAP -> Group Maps
 
 
 ## Example Usage ##
