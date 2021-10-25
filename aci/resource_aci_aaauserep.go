@@ -655,7 +655,7 @@ func resourceAciUserManagementRead(ctx context.Context, d *schema.ResourceData, 
 		}
 	}
 
-	_, err = aciClient.Get("userext/pkiext/webtokendata")
+	_, err = aciClient.Get(dn + "/pkiext/webtokendata")
 	if err == nil {
 		pkiWebTokenDn := dn + "/pkiext/webtokendata"
 		pkiWebTokenData, err := getRemoteWebTokenData(aciClient, pkiWebTokenDn)
