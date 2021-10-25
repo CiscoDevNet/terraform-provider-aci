@@ -67,22 +67,6 @@ func dataSourceAciUserManagement() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
-
-			"jwt_api_key": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-			"jwt_private_key": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-			"jwt_public_key": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
 			"maximum_validity_period": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,

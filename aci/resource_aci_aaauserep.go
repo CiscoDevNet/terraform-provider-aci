@@ -96,22 +96,6 @@ func resourceAciUserManagement() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
-
-			"jwt_api_key": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-			"jwt_private_key": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-			"jwt_public_key": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
 			"maximum_validity_period": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -244,9 +228,6 @@ func setWebTokenDataAttributes(pkiWebTokenData *models.WebTokenData, d *schema.R
 	if err != nil {
 		return d, err
 	}
-	d.Set("jwt_api_key", pkiWebTokenDataMap["jwtApiKey"])
-	d.Set("jwt_private_key", pkiWebTokenDataMap["jwtPrivateKey"])
-	d.Set("jwt_public_key", pkiWebTokenDataMap["jwtPublicKey"])
 	d.Set("maximum_validity_period", pkiWebTokenDataMap["maximumValidityPeriod"])
 	sessionRecordFlagsGet := make([]string, 0, 1)
 	for _, val := range strings.Split(pkiWebTokenDataMap["sessionRecordFlags"], ",") {
@@ -307,6 +288,7 @@ func resourceAciUserManagementCreate(ctx context.Context, d *schema.ResourceData
 		aaaUserEpAttr.PwdStrengthCheck = PwdStrengthCheck.(string)
 	}
 	aaaUserEp := models.NewUserManagement(fmt.Sprintf("userext"), "uni", desc, nameAlias, aaaUserEpAttr)
+	aaaUserEp.Status = "modified"
 	err := aciClient.Save(aaaUserEp)
 	if err != nil {
 		return diag.FromErr(err)
@@ -346,6 +328,7 @@ func resourceAciUserManagementCreate(ctx context.Context, d *schema.ResourceData
 
 	if aaaPwdProfileOk {
 		aaaPwdProfile := models.NewPasswordChangeExpirationPolicy(fmt.Sprintf("userext/pwdprofile"), "uni", desc, nameAlias, aaaPwdProfileAttr)
+		aaaPwdProfile.Status = "modified"
 		err = aciClient.Save(aaaPwdProfile)
 		if err != nil {
 			return diag.FromErr(err)
@@ -376,6 +359,7 @@ func resourceAciUserManagementCreate(ctx context.Context, d *schema.ResourceData
 
 	if aaaBlockLoginProfileOk {
 		aaaBlockLoginProfile := models.NewBlockUserLoginsPolicy(fmt.Sprintf("userext/blockloginp"), "uni", desc, nameAlias, aaaBlockLoginProfileAttr)
+		aaaBlockLoginProfile.Status = "modified"
 		err = aciClient.Save(aaaBlockLoginProfile)
 		if err != nil {
 			return diag.FromErr(err)
@@ -392,21 +376,6 @@ func resourceAciUserManagementCreate(ctx context.Context, d *schema.ResourceData
 	pkiWebTokenDataAttr := models.WebTokenDataAttributes{}
 
 	pkiWebTokenDataOk := false
-
-	if JwtApiKey, ok := d.GetOk("jwt_api_key"); ok {
-		pkiWebTokenDataOk = ok
-		pkiWebTokenDataAttr.JwtApiKey = JwtApiKey.(string)
-	}
-
-	if JwtPrivateKey, ok := d.GetOk("jwt_private_key"); ok {
-		pkiWebTokenDataOk = ok
-		pkiWebTokenDataAttr.JwtPrivateKey = JwtPrivateKey.(string)
-	}
-
-	if JwtPublicKey, ok := d.GetOk("jwt_public_key"); ok {
-		pkiWebTokenDataOk = ok
-		pkiWebTokenDataAttr.JwtPublicKey = JwtPublicKey.(string)
-	}
 
 	if MaximumValidityPeriod, ok := d.GetOk("maximum_validity_period"); ok {
 		pkiWebTokenDataOk = ok
@@ -435,6 +404,7 @@ func resourceAciUserManagementCreate(ctx context.Context, d *schema.ResourceData
 	if pkiWebTokenDataOk {
 
 		pkiWebTokenData := models.NewWebTokenData(fmt.Sprintf("userext/pkiext/webtokendata"), "uni", desc, nameAlias, pkiWebTokenDataAttr)
+		pkiWebTokenData.Status = "modified"
 		err := aciClient.Save(pkiWebTokenData)
 		if err != nil {
 			return diag.FromErr(err)
@@ -529,6 +499,7 @@ func resourceAciUserManagementUpdate(ctx context.Context, d *schema.ResourceData
 
 	if aaaPwdProfileOk {
 		aaaPwdProfile := models.NewPasswordChangeExpirationPolicy(fmt.Sprintf("userext/pwdprofile"), "uni", desc, nameAlias, aaaPwdProfileAttr)
+		aaaPwdProfile.Status = "modified"
 		err = aciClient.Save(aaaPwdProfile)
 		if err != nil {
 			return diag.FromErr(err)
@@ -559,6 +530,7 @@ func resourceAciUserManagementUpdate(ctx context.Context, d *schema.ResourceData
 
 	if aaaBlockLoginProfileOk {
 		aaaBlockLoginProfile := models.NewBlockUserLoginsPolicy(fmt.Sprintf("userext/blockloginp"), "uni", desc, nameAlias, aaaBlockLoginProfileAttr)
+		aaaBlockLoginProfile.Status = "modified"
 		err = aciClient.Save(aaaBlockLoginProfile)
 		if err != nil {
 			return diag.FromErr(err)
@@ -575,21 +547,6 @@ func resourceAciUserManagementUpdate(ctx context.Context, d *schema.ResourceData
 	pkiWebTokenDataAttr := models.WebTokenDataAttributes{}
 
 	pkiWebTokenDataOk := false
-
-	if JwtApiKey, ok := d.GetOk("jwt_api_key"); ok {
-		pkiWebTokenDataOk = ok
-		pkiWebTokenDataAttr.JwtApiKey = JwtApiKey.(string)
-	}
-
-	if JwtPrivateKey, ok := d.GetOk("jwt_private_key"); ok {
-		pkiWebTokenDataOk = ok
-		pkiWebTokenDataAttr.JwtPrivateKey = JwtPrivateKey.(string)
-	}
-
-	if JwtPublicKey, ok := d.GetOk("jwt_public_key"); ok {
-		pkiWebTokenDataOk = ok
-		pkiWebTokenDataAttr.JwtPublicKey = JwtPublicKey.(string)
-	}
 
 	if MaximumValidityPeriod, ok := d.GetOk("maximum_validity_period"); ok {
 		pkiWebTokenDataOk = ok
@@ -618,6 +575,7 @@ func resourceAciUserManagementUpdate(ctx context.Context, d *schema.ResourceData
 
 	if pkiWebTokenDataOk {
 		pkiWebTokenData := models.NewWebTokenData(fmt.Sprintf("userext/pkiext/webtokendata"), "uni", desc, nameAlias, pkiWebTokenDataAttr)
+		pkiWebTokenData.Status = "modified"
 		err := aciClient.Save(pkiWebTokenData)
 		if err != nil {
 			return diag.FromErr(err)

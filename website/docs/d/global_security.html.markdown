@@ -43,9 +43,6 @@ A warning will be displayed when a user logs in within this number of days of an
 * `enable_login_block` - (Optional) Enable blocking of user logins after failed attempts. Allowed values are "disable", "enable", and default value is "disable". Type: String.
 * `max_failed_attempts` - (Optional) Maximum continuous failed logins before blocking user.max failed login attempts before blocking user login Allowed range is 1-15 and default value is "5".
 * `max_failed_attempts_window` - (Optional) Time period for maximum continuous failed logins.times in minutes for max login failures to occur before blocking the user Allowed range is 1-720 and default value is "5".
-* `jwt_api_key` - (Optional) jwtApiKey.
-* `jwt_private_key` - (Optional) jwtPrivateKey.
-* `jwt_public_key` - (Optional) jwtPublicKey.
 * `maximum_validity_period` - (Optional) Maximum Validity Period in hours.The maximum validity period for a webt oken. Allowed range is 4-24 and default value is "24".
 * `session_record_flags` - (Optional) Session Recording Options.Enables or disables a refresh in the session records. Allowed values are "login", "logout", "refresh", and default value is "7". Type: List.
 * `ui_idle_timeout_seconds` - (Optional) GUI Idle Timeout in Seconds.The maximum interval time the GUI remains idle before login needs to be refreshed. Allowed range is 60-65525 and default value is "1200".
