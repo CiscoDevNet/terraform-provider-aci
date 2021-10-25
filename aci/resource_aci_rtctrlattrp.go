@@ -73,7 +73,7 @@ func setActionRuleProfileAttributes(rtctrlAttrP *models.ActionRuleProfile, d *sc
 		return d, err
 	}
 	d.Set("name", rtctrlAttrPMap["name"])
-
+	d.Set("tenant_dn", GetParentDn(dn, fmt.Sprintf("/attr-%s", rtctrlAttrPMap["name"])))
 	d.Set("annotation", rtctrlAttrPMap["annotation"])
 	d.Set("name_alias", rtctrlAttrPMap["nameAlias"])
 	return d, nil
