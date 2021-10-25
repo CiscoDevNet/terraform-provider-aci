@@ -44,6 +44,8 @@ resource "aci_tacacs_provider" "example" {
 
 * `name` - (Required) Name of object TACACS Provider.
 * `annotation` - (Optional) Annotation of object TACACS Provider.
+* `description` - (Optional) Description of object TACACS Provider. Type: String.
+* `name_alias` - (Optional) Name Alias of object TACACS Provider. Type: String.
 * `auth_protocol` - (Optional) TACACS Authentication Protocol. The TACACS authentication protocol. Allowed values are "chap", "mschap", "pap". Default value is "pap". Type: String.
 * `key` - (Optional) Key. A password for the AAA provider database. Type: String.
 * `monitor_server` - (Optional) Periodic Server Monitoring. Allowed values are "disabled", "enabled". Default value is "disabled". Type: String.
