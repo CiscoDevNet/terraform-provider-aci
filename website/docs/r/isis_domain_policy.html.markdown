@@ -33,6 +33,7 @@ resource "aci_isis_domain_policy" "example" {
   spf_comp_max_intvl = "8000"
   spf_comp_sec_intvl = "50"
   isis_level_name = "example"
+  isis_level_type = "l1"
 }
 ```
 
@@ -52,8 +53,8 @@ Users can use the resource of type `aci_isis_domain_policy` to change the config
 * `spf_comp_init_intvl` - (Optional) The SPF computation frequency initial wait interval.  Allowed range: "50" - "120000".
 * `spf_comp_max_intvl` - (Optional) The SPF computation frequency maximum wait interval.  Allowed range: "50" - "120000".
 * `spf_comp_sec_intvl` - (Optional) The SPF computation frequency second wait interval. Allowed range: "50" - "120000".
-* `isis_level_name` - (Optional) (Optional) The type of ISIS Level object.
-
+* `isis_level_name` - (Optional) (Optional) The name of ISIS Level object.
+* `isis_level_type` - (Optional) The type of ISIS Level object. Allowed values are "l1" and "l2". Default value is "l1".
 
 ## Importing ##
 An existing ISIS DomainPolicy can be [imported][docs-import] into this resource via its Dn, via the following command:

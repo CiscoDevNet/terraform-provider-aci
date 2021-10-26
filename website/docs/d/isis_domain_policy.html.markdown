@@ -38,5 +38,6 @@ data "aci_isis_domain_policy" "example" {}
 * `spf_comp_init_intvl` - (Optional) The SPF computation frequency initial wait interval. 
 * `spf_comp_max_intvl` - (Optional) The SPF computation frequency maximum wait interval.  
 * `spf_comp_sec_intvl` - (Optional) The SPF computation frequency second wait interval.
-* `isis_level_name` - (Optional) The type of ISIS Level object. 
+* `isis_level_name` - (Optional) The name of ISIS Level object. 
+* `isis_level_type` - (Optional) The type of ISIS Level object.
 
