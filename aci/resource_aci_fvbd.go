@@ -71,15 +71,18 @@ func resourceAciBridgeDomain() *schema.Resource {
 				}, false),
 			},
 
-			"ep_move_detect_mode": &schema.Schema{
-				Type:     schema.TypeString,
+			"ep_move_detect_mode": {
+				Type:     schema.TypeList,
 				Optional: true,
 				Computed: true,
-				ValidateFunc: validation.StringInSlice([]string{
-					"garp",
-				}, false),
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+					ValidateFunc: validation.StringInSlice([]string{
+						"garp",
+						"disable",
+					}, false),
+				},
 			},
-
 			"host_based_routing": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -451,9 +454,20 @@ func resourceAciBridgeDomainCreate(ctx context.Context, d *schema.ResourceData, 
 	if EpClear, ok := d.GetOk("ep_clear"); ok {
 		fvBDAttr.EpClear = EpClear.(string)
 	}
+
 	if EpMoveDetectMode, ok := d.GetOk("ep_move_detect_mode"); ok {
-		fvBDAttr.EpMoveDetectMode = EpMoveDetectMode.(string)
+		epMoveDetectModeList := make([]string, 0, 1)
+		for _, val := range EpMoveDetectMode.([]interface{}) {
+			epMoveDetectModeList = append(epMoveDetectModeList, val.(string))
+		}
+		EpMoveDetectMode := strings.Join(epMoveDetectModeList, ",")
+		if EpMoveDetectMode == "disable" {
+			fvBDAttr.EpMoveDetectMode = "{}"
+		} else {
+			fvBDAttr.EpMoveDetectMode = EpMoveDetectMode
+		}
 	}
+
 	if HostBasedRouting, ok := d.GetOk("host_based_routing"); ok {
 		fvBDAttr.HostBasedRouting = HostBasedRouting.(string)
 	}
@@ -726,9 +740,20 @@ func resourceAciBridgeDomainUpdate(ctx context.Context, d *schema.ResourceData, 
 	if EpClear, ok := d.GetOk("ep_clear"); ok {
 		fvBDAttr.EpClear = EpClear.(string)
 	}
+
 	if EpMoveDetectMode, ok := d.GetOk("ep_move_detect_mode"); ok {
-		fvBDAttr.EpMoveDetectMode = EpMoveDetectMode.(string)
+		epMoveDetectModeList := make([]string, 0, 1)
+		for _, val := range EpMoveDetectMode.([]interface{}) {
+			epMoveDetectModeList = append(epMoveDetectModeList, val.(string))
+		}
+		EpMoveDetectMode := strings.Join(epMoveDetectModeList, ",")
+		if EpMoveDetectMode == "disable" {
+			fvBDAttr.EpMoveDetectMode = "{}"
+		} else {
+			fvBDAttr.EpMoveDetectMode = EpMoveDetectMode
+		}
 	}
+
 	if HostBasedRouting, ok := d.GetOk("host_based_routing"); ok {
 		fvBDAttr.HostBasedRouting = HostBasedRouting.(string)
 	}
