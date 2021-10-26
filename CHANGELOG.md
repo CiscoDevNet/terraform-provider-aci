@@ -7,6 +7,7 @@ IMPROVEMENTS:
 - Update dependancy versions
 - Fix examples formating in examples directory
 - Add examples for resources without examples
+- Add support for admin_state attribute and relation_bgp_rs_peer_to_profile relation
 
 BUG FIXES:
 - Add support for aci_bgp_peer_connectivity_profile to be defined at interface level and node level
