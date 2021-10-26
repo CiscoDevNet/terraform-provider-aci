@@ -31,6 +31,7 @@ func resourceAciTACACSSource() *schema.Resource {
 			"parent_dn": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				ForceNew: true,
 				Default:  "uni/fabric/moncommon",
 			},
 			"incl": &schema.Schema{
