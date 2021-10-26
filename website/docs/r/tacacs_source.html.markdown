@@ -21,7 +21,7 @@ resource "aci_tacacs_source" "example" {
   parent_dn   = parent_resource.example.id
   name        = "example"
   annotation  = "orchestrator:terraform"
-  incl        = ["audit,session"]
+  incl        = ["audit","session"]
   min_sev     = "info"
   name_alias  = "tacacs_source_alias"
   description = "From Terraform"
@@ -35,7 +35,7 @@ resource "aci_tacacs_source" "example" {
 * `annotation` - (Optional) Annotation of object TACACS Source.
 * `name_alias` - (Optional) Name Alias of object TACACS Source. Type: String.
 * `description` - (Optional) Description of object TACACS Source. Type: String.
-* `incl` - (Optional) Include Action. The information to include for the call home source. Allowed values are "audit", "events", "faults" and "session". Default value is "audit,session". Type: List.
+* `incl` - (Optional) Include Action. The information to include for the call home source. Allowed values are "audit", "events", "faults" and "session". Default value is ["audit","session"]. Type: List.
 * `min_sev` - (Optional) minSev. Allowed values are "cleared", "critical", "info", "major", "minor" and "warning". Default value is "info". Type: String.
 * `relation_tacacs_rs_dest_group` - (Optional) Represents the relation to a TACACS Destination Group (class tacacsGroup). Type: String.
 
