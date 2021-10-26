@@ -50,6 +50,11 @@ func dataSourceAciISISDomainPolicy() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"isis_level_type": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
 			"spf_comp_init_intvl": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
