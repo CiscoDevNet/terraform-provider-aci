@@ -1,21 +1,23 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciContractProvider() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciContractProviderCreate,
-		Update: resourceAciContractProviderUpdate,
-		Read:   resourceAciContractProviderRead,
-		Delete: resourceAciContractProviderDelete,
+		CreateContext: resourceAciContractProviderCreate,
+		UpdateContext: resourceAciContractProviderUpdate,
+		ReadContext:   resourceAciContractProviderRead,
+		DeleteContext: resourceAciContractProviderDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciContractProviderImport,
@@ -60,6 +62,9 @@ func resourceAciContractProvider() *schema.Resource {
 				Computed: true,
 				ValidateFunc: validation.StringInSlice([]string{
 					"unspecified",
+					"level6",
+					"level5",
+					"level4",
 					"level3",
 					"level2",
 					"level1",
@@ -97,7 +102,7 @@ func getRemoteContractProvider(client *client.Client, dn string) (*models.Contra
 	return fvRsProv, nil
 }
 
-func setContractConsumerAttributes(fvRsCons *models.ContractConsumer, d *schema.ResourceData) *schema.ResourceData {
+func setContractConsumerAttributes(fvRsCons *models.ContractConsumer, d *schema.ResourceData) (*schema.ResourceData, error) {
 	dn := d.Id()
 	d.SetId(fvRsCons.DistinguishedName)
 
@@ -106,7 +111,10 @@ func setContractConsumerAttributes(fvRsCons *models.ContractConsumer, d *schema.
 	}
 
 	// d.Set("application_epg_dn", GetParentDn(fvRsCons.DistinguishedName))
-	fvRsConsMap, _ := fvRsCons.ToMap()
+	fvRsConsMap, err := fvRsCons.ToMap()
+	if err != nil {
+		return d, err
+	}
 
 	tnVzBrCPName := GetMOName(d.Get("contract_dn").(string))
 	if tnVzBrCPName != fvRsConsMap["tnVzBrCPName"] {
@@ -115,10 +123,10 @@ func setContractConsumerAttributes(fvRsCons *models.ContractConsumer, d *schema.
 
 	d.Set("annotation", fvRsConsMap["annotation"])
 	d.Set("prio", fvRsConsMap["prio"])
-	return d
+	return d, nil
 }
 
-func setContractProviderAttributes(fvRsProv *models.ContractProvider, d *schema.ResourceData) *schema.ResourceData {
+func setContractProviderAttributes(fvRsProv *models.ContractProvider, d *schema.ResourceData) (*schema.ResourceData, error) {
 	dn := d.Id()
 	d.SetId(fvRsProv.DistinguishedName)
 
@@ -126,7 +134,10 @@ func setContractProviderAttributes(fvRsProv *models.ContractProvider, d *schema.
 		d.Set("application_epg_dn", "")
 	}
 	// d.Set("application_epg_dn", GetParentDn(fvRsProv.DistinguishedName))
-	fvRsProvMap, _ := fvRsProv.ToMap()
+	fvRsProvMap, err := fvRsProv.ToMap()
+	if err != nil {
+		return d, err
+	}
 	tnVzBrCPName := GetMOName(d.Get("contract_dn").(string))
 	if tnVzBrCPName != fvRsProvMap["tnVzBrCPName"] {
 		d.Set("contract_dn", "")
@@ -135,7 +146,7 @@ func setContractProviderAttributes(fvRsProv *models.ContractProvider, d *schema.
 	d.Set("annotation", fvRsProvMap["annotation"])
 	d.Set("match_t", fvRsProvMap["matchT"])
 	d.Set("prio", fvRsProvMap["prio"])
-	return d
+	return d, nil
 }
 
 func resourceAciContractProviderImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -156,7 +167,10 @@ func resourceAciContractProviderImport(d *schema.ResourceData, m interface{}) ([
 		name := fvRsProvMap["tnVzBrCPName"]
 		pDN := GetParentDn(dn, fmt.Sprintf("/rsprov-%s", name))
 		d.Set("application_epg_dn", pDN)
-		schemaFilled = setContractProviderAttributes(fvRsProv, d)
+		schemaFilled, err = setContractProviderAttributes(fvRsProv, d)
+		if err != nil {
+			return nil, err
+		}
 
 	} else if contractType == "consumer" {
 		fvRsCons, err := getRemoteContractConsumer(aciClient, dn)
@@ -168,7 +182,10 @@ func resourceAciContractProviderImport(d *schema.ResourceData, m interface{}) ([
 		name := fvRsConsMap["tnVzBrCPName"]
 		pDN := GetParentDn(dn, fmt.Sprintf("/rscons-%s", name))
 		d.Set("application_epg_dn", pDN)
-		schemaFilled = setContractConsumerAttributes(fvRsCons, d)
+		schemaFilled, err = setContractConsumerAttributes(fvRsCons, d)
+		if err != nil {
+			return nil, err
+		}
 
 	} else {
 		return nil, fmt.Errorf("Contract Type: Value must be from [provider, consumer]")
@@ -179,7 +196,7 @@ func resourceAciContractProviderImport(d *schema.ResourceData, m interface{}) ([
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciContractProviderCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciContractProviderCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 
 	aciClient := m.(*client.Client)
 
@@ -209,13 +226,8 @@ func resourceAciContractProviderCreate(d *schema.ResourceData, m interface{}) er
 
 		err := aciClient.Save(fvRsProv)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-
-		d.SetPartial("tnVzBrCPName")
-
-		d.Partial(false)
 
 		d.SetId(fvRsProv.DistinguishedName)
 
@@ -236,26 +248,21 @@ func resourceAciContractProviderCreate(d *schema.ResourceData, m interface{}) er
 
 		err := aciClient.Save(fvRsCons)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-
-		d.SetPartial("tnVzBrCPName")
-
-		d.Partial(false)
 
 		d.SetId(fvRsCons.DistinguishedName)
 
 	} else {
-		return fmt.Errorf("Contract Type: Value must be from [provider, consumer]")
+		return diag.Errorf("Contract Type: Value must be from [provider, consumer]")
 	}
 
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciContractProviderRead(d, m)
+	return resourceAciContractProviderRead(ctx, d, m)
 }
 
-func resourceAciContractProviderUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciContractProviderUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 
 	aciClient := m.(*client.Client)
 
@@ -288,13 +295,8 @@ func resourceAciContractProviderUpdate(d *schema.ResourceData, m interface{}) er
 		err := aciClient.Save(fvRsProv)
 
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-
-		d.SetPartial("tnVzBrCPName")
-
-		d.Partial(false)
 
 		d.SetId(fvRsProv.DistinguishedName)
 
@@ -318,27 +320,22 @@ func resourceAciContractProviderUpdate(d *schema.ResourceData, m interface{}) er
 		err := aciClient.Save(fvRsCons)
 
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-
-		d.SetPartial("tnVzBrCPName")
-
-		d.Partial(false)
 
 		d.SetId(fvRsCons.DistinguishedName)
 
 	} else {
-		return fmt.Errorf("Contract Type: Value must be from [provider, consumer]")
+		return diag.Errorf("Contract Type: Value must be from [provider, consumer]")
 	}
 
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciContractProviderRead(d, m)
+	return resourceAciContractProviderRead(ctx, d, m)
 
 }
 
-func resourceAciContractProviderRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciContractProviderRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -351,7 +348,11 @@ func resourceAciContractProviderRead(d *schema.ResourceData, m interface{}) erro
 			d.SetId("")
 			return nil
 		}
-		setContractProviderAttributes(fvRsProv, d)
+		_, err = setContractProviderAttributes(fvRsProv, d)
+		if err != nil {
+			d.SetId("")
+			return nil
+		}
 
 	} else if contractType == "consumer" {
 		fvRsCons, err := getRemoteContractConsumer(aciClient, dn)
@@ -359,10 +360,14 @@ func resourceAciContractProviderRead(d *schema.ResourceData, m interface{}) erro
 			d.SetId("")
 			return nil
 		}
-		setContractConsumerAttributes(fvRsCons, d)
+		_, err = setContractConsumerAttributes(fvRsCons, d)
+		if err != nil {
+			d.SetId("")
+			return nil
+		}
 
 	} else {
-		return fmt.Errorf("Contract Type: Value must be from [provider, consumer]")
+		return diag.Errorf("Contract Type: Value must be from [provider, consumer]")
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
@@ -370,7 +375,7 @@ func resourceAciContractProviderRead(d *schema.ResourceData, m interface{}) erro
 	return nil
 }
 
-func resourceAciContractProviderDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciContractProviderDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -380,25 +385,25 @@ func resourceAciContractProviderDelete(d *schema.ResourceData, m interface{}) er
 	if contractType == "provider" {
 		err := aciClient.DeleteByDn(dn, "fvRsProv")
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 
 		log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 		d.SetId("")
-		return err
+		return diag.FromErr(err)
 
 	} else if contractType == "consumer" {
 		err := aciClient.DeleteByDn(dn, "fvRsCons")
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 
 		log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 		d.SetId("")
-		return err
+		return diag.FromErr(err)
 
 	} else {
-		return fmt.Errorf("Contract Type: Value must be from [provider, consumer]")
+		return diag.Errorf("Contract Type: Value must be from [provider, consumer]")
 	}
 
 }

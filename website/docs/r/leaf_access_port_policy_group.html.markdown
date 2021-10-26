@@ -13,16 +13,17 @@ Manages ACI Leaf Access Port Policy Group
 
 ```hcl
 	resource "aci_leaf_access_port_policy_group" "fooleaf_access_port_policy_group" {
-		description = "%s"
+		description = "From Terraform"
 		name        = "demo_access_port"
 		annotation  = "tag_ports"
-		name_alias  = "%s"
+		name_alias  = "name_alias"
 	} 
 ```
 ## Argument Reference ##
-* `name` - (Required) name of Object leaf_access_port_policy_group.
-* `annotation` - (Optional) annotation for object leaf_access_port_policy_group.
-* `name_alias` - (Optional) name_alias for object leaf_access_port_policy_group.
+* `name` - (Required) Name of Object leaf access port policy group.
+* `description` - (Optional) Description for object leaf access port policy group.
+* `annotation` - (Optional) Annotation for object leaf access port policy group.
+* `name_alias` - (Optional) Name alias for object leaf access port policy group.
 
 * `relation_infra_rs_span_v_src_grp` - (Optional) Relation to class spanVSrcGrp. Cardinality - N_TO_M. Type - Set of String.
                 
@@ -39,6 +40,8 @@ Manages ACI Leaf Access Port Policy Group
 * `relation_infra_rs_h_if_pol` - (Optional) Relation to class fabricHIfPol. Cardinality - N_TO_ONE. Type - String.
                 
 * `relation_infra_rs_netflow_monitor_pol` - (Optional) Relation to class netflowMonitorPol. Cardinality - N_TO_M. Type - Set of Map.
+	- `flt_type` - (Required) Netflow IP filter type. Allowed values: "ce", "ipv4", "ipv6". 
+	- `target_dn` - (Required) Distinguished name of target Netflow Monitor object.
                 
 * `relation_infra_rs_l2_port_auth_pol` - (Optional) Relation to class l2PortAuthPol. Cardinality - N_TO_ONE. Type - String.
                 

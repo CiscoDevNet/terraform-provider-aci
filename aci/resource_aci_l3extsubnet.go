@@ -1,6 +1,7 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"reflect"
@@ -9,16 +10,17 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciL3ExtSubnet() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciL3ExtSubnetCreate,
-		Update: resourceAciL3ExtSubnetUpdate,
-		Read:   resourceAciL3ExtSubnetRead,
-		Delete: resourceAciL3ExtSubnetDelete,
+		CreateContext: resourceAciL3ExtSubnetCreate,
+		UpdateContext: resourceAciL3ExtSubnetUpdate,
+		ReadContext:   resourceAciL3ExtSubnetRead,
+		DeleteContext: resourceAciL3ExtSubnetDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciL3ExtSubnetImport,
@@ -40,14 +42,15 @@ func resourceAciL3ExtSubnet() *schema.Resource {
 			},
 
 			"aggregate": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-				ValidateFunc: validation.StringInSlice([]string{
+				Type:             schema.TypeString,
+				Optional:         true,
+				Computed:         true,
+				DiffSuppressFunc: suppressBitMaskDiffFunc(),
+				ValidateFunc: schema.SchemaValidateFunc(validateCommaSeparatedStringInSlice([]string{
 					"import-rtctrl",
 					"export-rtctrl",
 					"shared-rtctrl",
-				}, false),
+				}, false, "")),
 			},
 
 			"name_alias": &schema.Schema{
@@ -78,8 +81,8 @@ func resourceAciL3ExtSubnet() *schema.Resource {
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"tn_rtctrl_profile_name": {
-							Type:     schema.TypeString,
-							Optional: true,
+							Type:       schema.TypeString,
+							Optional:   true,
 							Deprecated: "use tn_rtctrl_profile_dn instead",
 						},
 						"tn_rtctrl_profile_dn": {
@@ -116,7 +119,7 @@ func getRemoteL3ExtSubnet(client *client.Client, dn string) (*models.L3ExtSubnet
 	return l3extSubnet, nil
 }
 
-func setL3ExtSubnetAttributes(l3extSubnet *models.L3ExtSubnet, d *schema.ResourceData) *schema.ResourceData {
+func setL3ExtSubnetAttributes(l3extSubnet *models.L3ExtSubnet, d *schema.ResourceData) (*schema.ResourceData, error) {
 	dn := d.Id()
 	d.SetId(l3extSubnet.DistinguishedName)
 	d.Set("description", l3extSubnet.Description)
@@ -124,8 +127,10 @@ func setL3ExtSubnetAttributes(l3extSubnet *models.L3ExtSubnet, d *schema.Resourc
 	if dn != l3extSubnet.DistinguishedName {
 		d.Set("external_network_instance_profile_dn", "")
 	}
-	l3extSubnetMap, _ := l3extSubnet.ToMap()
-
+	l3extSubnetMap, err := l3extSubnet.ToMap()
+	if err != nil {
+		return d, err
+	}
 	d.Set("ip", l3extSubnetMap["ip"])
 
 	d.Set("aggregate", l3extSubnetMap["aggregate"])
@@ -153,7 +158,7 @@ func setL3ExtSubnetAttributes(l3extSubnet *models.L3ExtSubnet, d *schema.Resourc
 		d.Set("scope", scpGet)
 	}
 
-	return d
+	return d, nil
 }
 
 func resourceAciL3ExtSubnetImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -167,18 +172,23 @@ func resourceAciL3ExtSubnetImport(d *schema.ResourceData, m interface{}) ([]*sch
 	if err != nil {
 		return nil, err
 	}
-	l3extSubnetMap, _ := l3extSubnet.ToMap()
+	l3extSubnetMap, err := l3extSubnet.ToMap()
+	if err != nil {
+		return nil, err
+	}
 	ip := l3extSubnetMap["ip"]
 	pDN := GetParentDn(dn, fmt.Sprintf("/extsubnet-[%s]", ip))
 	d.Set("external_network_instance_profile_dn", pDN)
-	schemaFilled := setL3ExtSubnetAttributes(l3extSubnet, d)
-
+	schemaFilled, err := setL3ExtSubnetAttributes(l3extSubnet, d)
+	if err != nil {
+		return nil, err
+	}
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciL3ExtSubnetCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciL3ExtSubnetCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] Subnet: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -214,13 +224,8 @@ func resourceAciL3ExtSubnetCreate(d *schema.ResourceData, m interface{}) error {
 
 	err := aciClient.Save(l3extSubnet)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.SetPartial("ip")
-
-	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
 
@@ -232,7 +237,7 @@ func resourceAciL3ExtSubnetCreate(d *schema.ResourceData, m interface{}) error {
 	d.Partial(true)
 	err = checkTDn(aciClient, checkDns)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Partial(false)
 
@@ -243,43 +248,36 @@ func resourceAciL3ExtSubnetCreate(d *schema.ResourceData, m interface{}) error {
 			paramMap := relationParam.(map[string]interface{})
 			var relationParamName string
 			if paramMap["tn_rtctrl_profile_dn"] != "" && paramMap["tn_rtctrl_profile_name"] != "" {
-				return fmt.Errorf("Usage of both tn_rtctrl_profile_dn and tn_rtctrl_profile_name parameters is not supported. tn_rtctrl_profile_name parameter will be deprecated use tn_rtctrl_profile_dn instead.")
+				return diag.FromErr(fmt.Errorf("Usage of both tn_rtctrl_profile_dn and tn_rtctrl_profile_name parameters is not supported. tn_rtctrl_profile_name parameter will be deprecated use tn_rtctrl_profile_dn instead."))
 			} else if paramMap["tn_rtctrl_profile_name"] != "" {
 				relationParamName = paramMap["tn_rtctrl_profile_name"].(string)
 			} else if paramMap["tn_rtctrl_profile_dn"] != "" {
 				relationParamName = GetMOName(paramMap["tn_rtctrl_profile_dn"].(string))
 			} else {
-				return fmt.Errorf("tn_rtctrl_profile_dn is required to generate Route Control Profile")
+				return diag.FromErr(fmt.Errorf("tn_rtctrl_profile_dn is required to generate Route Control Profile"))
 			}
 			err = aciClient.CreateRelationl3extRsSubnetToProfileFromL3ExtSubnet(l3extSubnet.DistinguishedName, relationParamName, paramMap["direction"].(string))
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
-			d.Partial(true)
-			d.SetPartial("relation_l3ext_rs_subnet_to_profile")
-			d.Partial(false)
 		}
-
 	}
 	if relationTol3extRsSubnetToRtSumm, ok := d.GetOk("relation_l3ext_rs_subnet_to_rt_summ"); ok {
 		relationParam := relationTol3extRsSubnetToRtSumm.(string)
 		err = aciClient.CreateRelationl3extRsSubnetToRtSummFromL3ExtSubnet(l3extSubnet.DistinguishedName, relationParam)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_l3ext_rs_subnet_to_rt_summ")
-		d.Partial(false)
 
 	}
 
 	d.SetId(l3extSubnet.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciL3ExtSubnetRead(d, m)
+	return resourceAciL3ExtSubnetRead(ctx, d, m)
 }
 
-func resourceAciL3ExtSubnetUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciL3ExtSubnetUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] Subnet: Beginning Update")
 
 	aciClient := m.(*client.Client)
@@ -319,13 +317,8 @@ func resourceAciL3ExtSubnetUpdate(d *schema.ResourceData, m interface{}) error {
 	err := aciClient.Save(l3extSubnet)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.SetPartial("ip")
-
-	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
 
@@ -337,7 +330,7 @@ func resourceAciL3ExtSubnetUpdate(d *schema.ResourceData, m interface{}) error {
 	d.Partial(true)
 	err = checkTDn(aciClient, checkDns)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Partial(false)
 
@@ -349,7 +342,7 @@ func resourceAciL3ExtSubnetUpdate(d *schema.ResourceData, m interface{}) error {
 			paramMap := relationParam.(map[string]interface{})
 			err = aciClient.DeleteRelationl3extRsSubnetToProfileFromL3ExtSubnet(l3extSubnet.DistinguishedName, paramMap["tn_rtctrl_profile_name"].(string), paramMap["direction"].(string))
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 		}
@@ -357,11 +350,8 @@ func resourceAciL3ExtSubnetUpdate(d *schema.ResourceData, m interface{}) error {
 			paramMap := relationParam.(map[string]interface{})
 			err = aciClient.CreateRelationl3extRsSubnetToProfileFromL3ExtSubnet(l3extSubnet.DistinguishedName, paramMap["tn_rtctrl_profile_name"].(string), paramMap["direction"].(string))
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
-			d.Partial(true)
-			d.SetPartial("relation_l3ext_rs_subnet_to_profile")
-			d.Partial(false)
 		}
 
 	}
@@ -369,26 +359,23 @@ func resourceAciL3ExtSubnetUpdate(d *schema.ResourceData, m interface{}) error {
 		_, newRelParam := d.GetChange("relation_l3ext_rs_subnet_to_rt_summ")
 		err = aciClient.DeleteRelationl3extRsSubnetToRtSummFromL3ExtSubnet(l3extSubnet.DistinguishedName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 		err = aciClient.CreateRelationl3extRsSubnetToRtSummFromL3ExtSubnet(l3extSubnet.DistinguishedName, newRelParam.(string))
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_l3ext_rs_subnet_to_rt_summ")
-		d.Partial(false)
 
 	}
 
 	d.SetId(l3extSubnet.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciL3ExtSubnetRead(d, m)
+	return resourceAciL3ExtSubnetRead(ctx, d, m)
 
 }
 
-func resourceAciL3ExtSubnetRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciL3ExtSubnetRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -400,7 +387,11 @@ func resourceAciL3ExtSubnetRead(d *schema.ResourceData, m interface{}) error {
 		d.SetId("")
 		return nil
 	}
-	setL3ExtSubnetAttributes(l3extSubnet, d)
+	_, err = setL3ExtSubnetAttributes(l3extSubnet, d)
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 
 	l3extRsSubnetToProfileData, err := aciClient.ReadRelationl3extRsSubnetToProfileFromL3ExtSubnet(dn)
 	if err != nil {
@@ -429,18 +420,18 @@ func resourceAciL3ExtSubnetRead(d *schema.ResourceData, m interface{}) error {
 	return nil
 }
 
-func resourceAciL3ExtSubnetDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciL3ExtSubnetDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "l3extSubnet")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
 }

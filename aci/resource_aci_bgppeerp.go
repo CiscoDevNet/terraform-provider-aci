@@ -1,21 +1,23 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciBgpPeerConnectivityProfile() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciBgpPeerConnectivityProfileCreate,
-		Update: resourceAciBgpPeerConnectivityProfileUpdate,
-		Read:   resourceAciBgpPeerConnectivityProfileRead,
-		Delete: resourceAciBgpPeerConnectivityProfileDelete,
+		CreateContext: resourceAciBgpPeerConnectivityProfileCreate,
+		UpdateContext: resourceAciBgpPeerConnectivityProfileUpdate,
+		ReadContext:   resourceAciBgpPeerConnectivityProfileRead,
+		DeleteContext: resourceAciBgpPeerConnectivityProfileDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciBgpPeerConnectivityProfileImport,
@@ -25,8 +27,15 @@ func resourceAciBgpPeerConnectivityProfile() *schema.Resource {
 
 		Schema: AppendBaseAttrSchema(map[string]*schema.Schema{
 			"logical_node_profile_dn": &schema.Schema{
+				Type:       schema.TypeString,
+				Optional:   true,
+				ForceNew:   true,
+				Deprecated: "use parent_dn instead",
+			},
+
+			"parent_dn": &schema.Schema{
 				Type:     schema.TypeString,
-				Required: true,
+				Optional: true,
 				ForceNew: true,
 			},
 
@@ -200,14 +209,17 @@ func getRemoteBgpAutonomousSystemProfileFromBgpPeerConnectivityProfile(client *c
 	return bgpAsP, nil
 }
 
-func setBgpPeerConnectivityProfileAttributes(bgpPeerP *models.BgpPeerConnectivityProfile, d *schema.ResourceData) *schema.ResourceData {
+func setBgpPeerConnectivityProfileAttributes(bgpPeerP *models.BgpPeerConnectivityProfile, d *schema.ResourceData) (*schema.ResourceData, error) {
 	d.SetId(bgpPeerP.DistinguishedName)
 	d.Set("description", bgpPeerP.Description)
 	dn := d.Id()
 	if dn != bgpPeerP.DistinguishedName {
-		d.Set("logical_node_profile_dn", "")
+		d.Set("parent_dn", "")
 	}
-	bgpPeerPMap, _ := bgpPeerP.ToMap()
+	bgpPeerPMap, err := bgpPeerP.ToMap()
+	if err != nil {
+		return d, err
+	}
 
 	d.Set("addr", bgpPeerPMap["addr"])
 
@@ -221,22 +233,28 @@ func setBgpPeerConnectivityProfileAttributes(bgpPeerP *models.BgpPeerConnectivit
 	d.Set("private_a_sctrl", bgpPeerPMap["privateASctrl"])
 	d.Set("ttl", bgpPeerPMap["ttl"])
 	d.Set("weight", bgpPeerPMap["weight"])
-	return d
+	return d, nil
 }
 
-func setBgpAutonomousSystemProfileAttributesFromBgpPeerConnectivityProfile(bgpAsP *models.BgpAutonomousSystemProfile, d *schema.ResourceData) *schema.ResourceData {
-	bgpAsPMap, _ := bgpAsP.ToMap()
+func setBgpAutonomousSystemProfileAttributesFromBgpPeerConnectivityProfile(bgpAsP *models.BgpAutonomousSystemProfile, d *schema.ResourceData) (*schema.ResourceData, error) {
+	bgpAsPMap, err := bgpAsP.ToMap()
+	if err != nil {
+		return d, err
+	}
 	d.Set("as_number", bgpAsPMap["asn"])
-	return d
+	return d, nil
 }
 
-func setLocalAutonomousSystemProfileAttributesFromBgpPeerConnectivityProfile(bgpLocalAsnP *models.LocalAutonomousSystemProfile, d *schema.ResourceData) *schema.ResourceData {
+func setLocalAutonomousSystemProfileAttributesFromBgpPeerConnectivityProfile(bgpLocalAsnP *models.LocalAutonomousSystemProfile, d *schema.ResourceData) (*schema.ResourceData, error) {
 
-	bgpLocalAsnPMap, _ := bgpLocalAsnP.ToMap()
+	bgpLocalAsnPMap, err := bgpLocalAsnP.ToMap()
+	if err != nil {
+		return d, err
+	}
 
 	d.Set("local_asn_propagate", bgpLocalAsnPMap["asnPropagate"])
 	d.Set("local_asn", bgpLocalAsnPMap["localAsn"])
-	return d
+	return d, nil
 }
 
 func resourceAciBgpPeerConnectivityProfileImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -246,25 +264,36 @@ func resourceAciBgpPeerConnectivityProfileImport(d *schema.ResourceData, m inter
 	dn := d.Id()
 
 	bgpPeerP, err := getRemoteBgpPeerConnectivityProfile(aciClient, dn)
-
 	if err != nil {
 		return nil, err
 	}
-	schemaFilled := setBgpPeerConnectivityProfileAttributes(bgpPeerP, d)
+	schemaFilled, err := setBgpPeerConnectivityProfileAttributes(bgpPeerP, d)
+	if err != nil {
+		return nil, err
+	}
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciBgpPeerConnectivityProfileCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciBgpPeerConnectivityProfileCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] BgpPeerConnectivityProfile: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
 
 	addr := d.Get("addr").(string)
+	var parentDn string
 
-	LogicalNodeProfileDn := d.Get("logical_node_profile_dn").(string)
+	if d.Get("logical_node_profile_dn").(string) != "" && d.Get("parent_dn").(string) != "" {
+		return diag.FromErr(fmt.Errorf("Usage of both parent_dn and logical_node_profile_dn parameters is not supported. logical_node_profile_dn parameter will be deprecated use parent_dn instead."))
+	} else if d.Get("parent_dn").(string) != "" {
+		parentDn = d.Get("parent_dn").(string)
+	} else if d.Get("logical_node_profile_dn").(string) != "" {
+		parentDn = d.Get("logical_node_profile_dn").(string)
+	} else {
+		return diag.FromErr(fmt.Errorf("parent_dn is required to create a BGP Peer Connectivity Profile"))
+	}
 
 	bgpPeerPAttr := models.BgpPeerConnectivityProfileAttributes{}
 	if Addr, ok := d.GetOk("addr"); ok {
@@ -302,11 +331,11 @@ func resourceAciBgpPeerConnectivityProfileCreate(d *schema.ResourceData, m inter
 	if Weight, ok := d.GetOk("weight"); ok {
 		bgpPeerPAttr.Weight = Weight.(string)
 	}
-	bgpPeerP := models.NewBgpPeerConnectivityProfile(fmt.Sprintf("peerP-[%s]", addr), LogicalNodeProfileDn, desc, bgpPeerPAttr)
+	bgpPeerP := models.NewBgpPeerConnectivityProfile(fmt.Sprintf("peerP-[%s]", addr), parentDn, desc, bgpPeerPAttr)
 
 	err := aciClient.Save(bgpPeerP)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	PeerConnectivityProfileDn := bgpPeerP.DistinguishedName
 
@@ -324,7 +353,7 @@ func resourceAciBgpPeerConnectivityProfileCreate(d *schema.ResourceData, m inter
 
 		err = aciClient.Save(bgpLocalAsnP)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 	}
 
@@ -338,15 +367,9 @@ func resourceAciBgpPeerConnectivityProfileCreate(d *schema.ResourceData, m inter
 		bgpAsP := models.NewBgpAutonomousSystemProfile(fmt.Sprintf("as"), PeerConnectivityProfileDn, desc, bgpAsPAttr)
 		err = aciClient.Save(bgpAsP)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 	}
-
-	d.Partial(true)
-
-	d.SetPartial("addr")
-
-	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
 
@@ -359,7 +382,7 @@ func resourceAciBgpPeerConnectivityProfileCreate(d *schema.ResourceData, m inter
 	d.Partial(true)
 	err = checkTDn(aciClient, checkDns)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Partial(false)
 
@@ -367,29 +390,35 @@ func resourceAciBgpPeerConnectivityProfileCreate(d *schema.ResourceData, m inter
 		relationParam := GetMOName(relationTobgpRsPeerPfxPol.(string))
 		err = aciClient.CreateRelationbgpRsPeerPfxPolFromBgpPeerConnectivityProfile(bgpPeerP.DistinguishedName, relationParam)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_bgp_rs_peer_pfx_pol")
-		d.Partial(false)
 
 	}
 
 	d.SetId(bgpPeerP.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciBgpPeerConnectivityProfileRead(d, m)
+	return resourceAciBgpPeerConnectivityProfileRead(ctx, d, m)
 }
 
-func resourceAciBgpPeerConnectivityProfileUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciBgpPeerConnectivityProfileUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] BgpPeerConnectivityProfile: Beginning Update")
 
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
 
 	addr := d.Get("addr").(string)
+	var parentDn string
 
-	LogicalNodeProfileDn := d.Get("logical_node_profile_dn").(string)
+	if d.Get("logical_node_profile_dn").(string) != "" && d.Get("parent_dn").(string) != "" {
+		return diag.FromErr(fmt.Errorf("Usage of both parent_dn and logical_node_profile_dn parameters is not supported. logical_node_profile_dn parameter will be deprecated use parent_dn instead."))
+	} else if d.Get("parent_dn").(string) != "" {
+		parentDn = d.Get("parent_dn").(string)
+	} else if d.Get("logical_node_profile_dn").(string) != "" {
+		parentDn = d.Get("logical_node_profile_dn").(string)
+	} else {
+		return diag.FromErr(fmt.Errorf("parent_dn is required to update a BGP Peer Connectivity Profile"))
+	}
 
 	bgpPeerPAttr := models.BgpPeerConnectivityProfileAttributes{}
 	if Addr, ok := d.GetOk("addr"); ok {
@@ -427,14 +456,14 @@ func resourceAciBgpPeerConnectivityProfileUpdate(d *schema.ResourceData, m inter
 	if Weight, ok := d.GetOk("weight"); ok {
 		bgpPeerPAttr.Weight = Weight.(string)
 	}
-	bgpPeerP := models.NewBgpPeerConnectivityProfile(fmt.Sprintf("peerP-[%s]", addr), LogicalNodeProfileDn, desc, bgpPeerPAttr)
+	bgpPeerP := models.NewBgpPeerConnectivityProfile(fmt.Sprintf("peerP-[%s]", addr), parentDn, desc, bgpPeerPAttr)
 
 	bgpPeerP.Status = "modified"
 
 	err := aciClient.Save(bgpPeerP)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	PeerConnectivityProfileDn := bgpPeerP.DistinguishedName
@@ -453,7 +482,7 @@ func resourceAciBgpPeerConnectivityProfileUpdate(d *schema.ResourceData, m inter
 
 		err = aciClient.Save(bgpLocalAsnP)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 	}
 
@@ -469,15 +498,9 @@ func resourceAciBgpPeerConnectivityProfileUpdate(d *schema.ResourceData, m inter
 
 		err = aciClient.Save(bgpAsP)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 	}
-
-	d.Partial(true)
-
-	d.SetPartial("addr")
-
-	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
 
@@ -490,7 +513,7 @@ func resourceAciBgpPeerConnectivityProfileUpdate(d *schema.ResourceData, m inter
 	d.Partial(true)
 	err = checkTDn(aciClient, checkDns)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Partial(false)
 
@@ -498,22 +521,19 @@ func resourceAciBgpPeerConnectivityProfileUpdate(d *schema.ResourceData, m inter
 		_, newRelParam := d.GetChange("relation_bgp_rs_peer_pfx_pol")
 		err = aciClient.CreateRelationbgpRsPeerPfxPolFromBgpPeerConnectivityProfile(bgpPeerP.DistinguishedName, GetMOName(newRelParam.(string)))
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_bgp_rs_peer_pfx_pol")
-		d.Partial(false)
 
 	}
 
 	d.SetId(bgpPeerP.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciBgpPeerConnectivityProfileRead(d, m)
+	return resourceAciBgpPeerConnectivityProfileRead(ctx, d, m)
 
 }
 
-func resourceAciBgpPeerConnectivityProfileRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciBgpPeerConnectivityProfileRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -525,7 +545,11 @@ func resourceAciBgpPeerConnectivityProfileRead(d *schema.ResourceData, m interfa
 		d.SetId("")
 		return nil
 	}
-	setBgpPeerConnectivityProfileAttributes(bgpPeerP, d)
+	_, err = setBgpPeerConnectivityProfileAttributes(bgpPeerP, d)
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 
 	if _, ok := d.GetOk("as_number"); ok {
 		bgpAsP, err := getRemoteBgpAutonomousSystemProfileFromBgpPeerConnectivityProfile(aciClient, fmt.Sprintf("%s/as", dn))
@@ -564,18 +588,18 @@ func resourceAciBgpPeerConnectivityProfileRead(d *schema.ResourceData, m interfa
 	return nil
 }
 
-func resourceAciBgpPeerConnectivityProfileDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciBgpPeerConnectivityProfileDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "bgpPeerP")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
 }

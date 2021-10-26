@@ -6,8 +6,8 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
 func TestAccAciL3ExtSubnet_Basic(t *testing.T) {
@@ -20,16 +20,11 @@ func TestAccAciL3ExtSubnet_Basic(t *testing.T) {
 		CheckDestroy: testAccCheckAciL3ExtSubnetDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckAciL3ExtSubnetConfig_basic(description, "shared-rtctrl"),
+				Config: testAccCheckAciL3ExtSubnetConfig_basic(description, "import-rtctrl"),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckAciL3ExtSubnetExists("aci_l3_ext_subnet.foosubnet", &subnet),
-					testAccCheckAciL3ExtSubnetAttributes(description, "shared-rtctrl", &subnet),
+					testAccCheckAciL3ExtSubnetAttributes(description, "import-rtctrl", &subnet),
 				),
-			},
-			{
-				ResourceName:      "aci_l3_ext_subnet",
-				ImportState:       true,
-				ImportStateVerify: true,
 			},
 		},
 	})
@@ -45,10 +40,10 @@ func TestAccAciL3ExtSubnet_update(t *testing.T) {
 		CheckDestroy: testAccCheckAciL3ExtSubnetDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckAciL3ExtSubnetConfig_basic(description, "shared-rtctrl"),
+				Config: testAccCheckAciL3ExtSubnetConfig_basic(description, "import-rtctrl"),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckAciL3ExtSubnetExists("aci_l3_ext_subnet.foosubnet", &subnet),
-					testAccCheckAciL3ExtSubnetAttributes(description, "shared-rtctrl", &subnet),
+					testAccCheckAciL3ExtSubnetAttributes(description, "import-rtctrl", &subnet),
 				),
 			},
 			{
@@ -66,13 +61,14 @@ func testAccCheckAciL3ExtSubnetConfig_basic(description, aggregate string) strin
 	return fmt.Sprintf(`
 
 	resource "aci_l3_ext_subnet" "foosubnet" {
-	  external_network_instance_profile_dn  = "${aci_external_network_instance_profile.example.id}"
-	  description                           = "%s"
-	  ip                                    = "10.0.3.28/27"
-	  aggregate                             = "%s"
-	  annotation                            = "tag_ext_subnet"
-	  name_alias                            = "alias_ext_subnet"
-	  scope                                 = ["import-security"]
+		# external_network_instance_profile_dn = aci_external_network_instance_profile.example.id
+		external_network_instance_profile_dn  = "uni/tn-check_tenantnk/out-demo_l3out/instP-demo_inst_prof"
+		description                           = "%s"
+		ip                                    = "0.0.0.0/0"
+		aggregate                             = "%s"
+		annotation                            = "tag_ext_subnet"
+		name_alias                            = "alias_ext_subnet"
+		scope                                 = ["import-security"]
 	}
 	`, description, aggregate)
 }
@@ -132,7 +128,7 @@ func testAccCheckAciL3ExtSubnetAttributes(description, aggregate string, subnet 
 			return fmt.Errorf("Bad subnet Description %s", subnet.Description)
 		}
 
-		if "10.0.3.28/27" != subnet.Ip {
+		if "0.0.0.0/0" != subnet.Ip {
 			return fmt.Errorf("Bad subnet ip %s", subnet.Ip)
 		}
 

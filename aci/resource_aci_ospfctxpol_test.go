@@ -6,8 +6,8 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
 func TestAccAciOSPFTimersPolicy_Basic(t *testing.T) {
@@ -62,7 +62,7 @@ func testAccCheckAciOSPFTimersPolicyConfig_basic(description string) string {
 
 	resource "aci_ospf_timers" "test" {
 		tenant_dn           = "uni/tn-aaaaa"
-		name                = "one"
+		name                = "ospf_timers_1"
 		annotation          = "example"
 		description 		= "%s"
 		bw_ref              = "30000"
@@ -144,7 +144,7 @@ func testAccCheckAciOSPFTimersPolicyAttributes(description string, ospf_timers_p
 			return fmt.Errorf("Bad ospf_timers_policy Description %s", ospf_timers_policy.Description)
 		}
 
-		if "one" != ospf_timers_policy.Name {
+		if "ospf_timers_1" != ospf_timers_policy.Name {
 			return fmt.Errorf("Bad ospf_timers_policy name %s", ospf_timers_policy.Name)
 		}
 

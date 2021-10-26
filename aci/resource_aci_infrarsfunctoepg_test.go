@@ -6,8 +6,8 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
 func TestAccAciEPGsUsingFunction_Basic(t *testing.T) {
@@ -59,13 +59,15 @@ func testAccCheckAciEPGsUsingFunctionConfig_basic(encap string) string {
 	return fmt.Sprintf(`
 
 	resource "aci_epgs_using_function" "fooep_gs_using_function" {
-		  access_generic_dn  = "${aci_access_generic.fooaccess_generic.id}"
-		  annotation  = "example"
-		  tdn  = "${aci_application_epg.epg1.id}"
-		  encap  = "%s"
-		  mode  = "regular"
-		  primary_encap  = "vlan-7"
-		}
+		access_generic_dn = "uni/infra/attentp-demo_entity_prof/gen-default"
+		#access_generic_dn = aci_access_generic.fooaccess_generic.id
+		annotation     = "example"
+		tdn            = "uni/tn-crest_vishwa_test/ap-demo_ap/epg-demo_epg"
+		#tdn           = aci_application_epg.epg1.id
+		encap          = "%s"
+		mode           = "regular"
+		primary_encap  = "vlan-7"
+	}
 	`, encap)
 }
 

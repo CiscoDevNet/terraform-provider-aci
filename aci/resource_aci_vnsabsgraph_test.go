@@ -6,8 +6,8 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
 func TestAccAciL4L7ServiceGraphTemplate_Basic(t *testing.T) {
@@ -59,14 +59,17 @@ func TestAccAciL4L7ServiceGraphTemplate_update(t *testing.T) {
 
 func testAccCheckAciL4L7ServiceGraphTemplateConfig_basic(description string) string {
 	return fmt.Sprintf(`
+	resource "aci_tenant" "example" {
+		name = "testacc"
+	}
 	resource "aci_l4_l7_service_graph_template" "test" {
-		tenant_dn  = "${aci_tenant.tenentcheck.id}"
+		tenant_dn   = aci_tenant.example.id
 		description = "%s"
-		name  = "test"
+		name        = "test"
 		annotation  = "example"
 		name_alias  = "example"
-		l4_l7_service_graph_template_type  = "legacy"
-		ui_template_type  = "ONE_NODE_ADC_ONE_ARM"
+		l4_l7_service_graph_template_type = "legacy"
+		ui_template_type                  = "ONE_NODE_ADC_ONE_ARM"
 	}
 	`, description)
 }

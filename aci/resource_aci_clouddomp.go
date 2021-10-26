@@ -1,20 +1,22 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func resourceAciCloudDomainProfile() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciCloudDomainProfileCreate,
-		Update: resourceAciCloudDomainProfileUpdate,
-		Read:   resourceAciCloudDomainProfileRead,
-		Delete: resourceAciCloudDomainProfileDelete,
+		CreateContext: resourceAciCloudDomainProfileCreate,
+		UpdateContext: resourceAciCloudDomainProfileUpdate,
+		ReadContext:   resourceAciCloudDomainProfileRead,
+		DeleteContext: resourceAciCloudDomainProfileDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciCloudDomainProfileImport,
@@ -52,15 +54,18 @@ func getRemoteCloudDomainProfile(client *client.Client, dn string) (*models.Clou
 	return cloudDomP, nil
 }
 
-func setCloudDomainProfileAttributes(cloudDomP *models.CloudDomainProfile, d *schema.ResourceData) *schema.ResourceData {
+func setCloudDomainProfileAttributes(cloudDomP *models.CloudDomainProfile, d *schema.ResourceData) (*schema.ResourceData, error) {
 	d.SetId(cloudDomP.DistinguishedName)
 	d.Set("description", cloudDomP.Description)
-	cloudDomPMap, _ := cloudDomP.ToMap()
+	cloudDomPMap, err := cloudDomP.ToMap()
+	if err != nil {
+		return d, err
+	}
 
 	d.Set("annotation", cloudDomPMap["annotation"])
 	d.Set("name_alias", cloudDomPMap["nameAlias"])
 	d.Set("site_id", cloudDomPMap["siteId"])
-	return d
+	return d, nil
 }
 
 func resourceAciCloudDomainProfileImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -74,14 +79,17 @@ func resourceAciCloudDomainProfileImport(d *schema.ResourceData, m interface{}) 
 	if err != nil {
 		return nil, err
 	}
-	schemaFilled := setCloudDomainProfileAttributes(cloudDomP, d)
+	schemaFilled, err := setCloudDomainProfileAttributes(cloudDomP, d)
+	if err != nil {
+		return nil, err
+	}
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciCloudDomainProfileCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciCloudDomainProfileCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] CloudDomainProfile: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -99,20 +107,20 @@ func resourceAciCloudDomainProfileCreate(d *schema.ResourceData, m interface{}) 
 	}
 	cloudDomP := models.NewCloudDomainProfile(fmt.Sprintf("clouddomp"), "uni", desc, cloudDomPAttr)
 
+	cloudDomP.Status = "modified"
+
 	err := aciClient.Save(cloudDomP)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-	d.Partial(false)
 
 	d.SetId(cloudDomP.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciCloudDomainProfileRead(d, m)
+	return resourceAciCloudDomainProfileRead(ctx, d, m)
 }
 
-func resourceAciCloudDomainProfileUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciCloudDomainProfileUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] CloudDomainProfile: Beginning Update")
 
 	aciClient := m.(*client.Client)
@@ -137,19 +145,17 @@ func resourceAciCloudDomainProfileUpdate(d *schema.ResourceData, m interface{}) 
 	err := aciClient.Save(cloudDomP)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-	d.Partial(false)
 
 	d.SetId(cloudDomP.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciCloudDomainProfileRead(d, m)
+	return resourceAciCloudDomainProfileRead(ctx, d, m)
 
 }
 
-func resourceAciCloudDomainProfileRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciCloudDomainProfileRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -161,25 +167,39 @@ func resourceAciCloudDomainProfileRead(d *schema.ResourceData, m interface{}) er
 		d.SetId("")
 		return nil
 	}
-	setCloudDomainProfileAttributes(cloudDomP, d)
+	_, err = setCloudDomainProfileAttributes(cloudDomP, d)
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 
 	return nil
 }
 
-func resourceAciCloudDomainProfileDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciCloudDomainProfileDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
-	dn := d.Id()
-	err := aciClient.DeleteByDn(dn, "cloudDomP")
+
+	cloudDomPAttr := models.CloudDomainProfileAttributes{}
+	cloudDomPAttr.Annotation = "{}"
+	cloudDomPAttr.NameAlias = "{}"
+	cloudDomPAttr.SiteId = "0"
+
+	cloudDomP := models.NewCloudDomainProfile(fmt.Sprintf("clouddomp"), "uni", "{}", cloudDomPAttr)
+
+	cloudDomP.Status = "modified"
+
+	err := aciClient.Save(cloudDomP)
+
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
 }

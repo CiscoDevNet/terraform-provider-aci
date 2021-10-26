@@ -1,21 +1,23 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciMaintenancePolicy() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciMaintenancePolicyCreate,
-		Update: resourceAciMaintenancePolicyUpdate,
-		Read:   resourceAciMaintenancePolicyRead,
-		Delete: resourceAciMaintenancePolicyDelete,
+		CreateContext: resourceAciMaintenancePolicyCreate,
+		UpdateContext: resourceAciMaintenancePolicyUpdate,
+		ReadContext:   resourceAciMaintenancePolicyRead,
+		DeleteContext: resourceAciMaintenancePolicyDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciMaintenancePolicyImport,
@@ -146,10 +148,13 @@ func getRemoteMaintenancePolicy(client *client.Client, dn string) (*models.Maint
 	return maintMaintP, nil
 }
 
-func setMaintenancePolicyAttributes(maintMaintP *models.MaintenancePolicy, d *schema.ResourceData) *schema.ResourceData {
+func setMaintenancePolicyAttributes(maintMaintP *models.MaintenancePolicy, d *schema.ResourceData) (*schema.ResourceData, error) {
 	d.SetId(maintMaintP.DistinguishedName)
 	d.Set("description", maintMaintP.Description)
-	maintMaintPMap, _ := maintMaintP.ToMap()
+	maintMaintPMap, err := maintMaintP.ToMap()
+	if err != nil {
+		return d, err
+	}
 
 	d.Set("name", maintMaintPMap["name"])
 
@@ -163,7 +168,7 @@ func setMaintenancePolicyAttributes(maintMaintP *models.MaintenancePolicy, d *sc
 	d.Set("run_mode", maintMaintPMap["runMode"])
 	d.Set("version", maintMaintPMap["version"])
 	d.Set("version_check_override", maintMaintPMap["versionCheckOverride"])
-	return d
+	return d, nil
 }
 
 func resourceAciMaintenancePolicyImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -177,14 +182,17 @@ func resourceAciMaintenancePolicyImport(d *schema.ResourceData, m interface{}) (
 	if err != nil {
 		return nil, err
 	}
-	schemaFilled := setMaintenancePolicyAttributes(maintMaintP, d)
+	schemaFilled, err := setMaintenancePolicyAttributes(maintMaintP, d)
+	if err != nil {
+		return nil, err
+	}
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciMaintenancePolicyCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciMaintenancePolicyCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] MaintenancePolicy: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -228,13 +236,8 @@ func resourceAciMaintenancePolicyCreate(d *schema.ResourceData, m interface{}) e
 
 	err := aciClient.Save(maintMaintP)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.SetPartial("name")
-
-	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
 
@@ -256,7 +259,7 @@ func resourceAciMaintenancePolicyCreate(d *schema.ResourceData, m interface{}) e
 	d.Partial(true)
 	err = checkTDn(aciClient, checkDns)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Partial(false)
 
@@ -265,43 +268,34 @@ func resourceAciMaintenancePolicyCreate(d *schema.ResourceData, m interface{}) e
 		relationParamName := GetMOName(relationParam)
 		err = aciClient.CreateRelationmaintRsPolSchedulerFromMaintenancePolicy(maintMaintP.DistinguishedName, relationParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_maint_rs_pol_scheduler")
-		d.Partial(false)
 
 	}
 	if relationTomaintRsPolNotif, ok := d.GetOk("relation_maint_rs_pol_notif"); ok {
 		relationParam := relationTomaintRsPolNotif.(string)
 		err = aciClient.CreateRelationmaintRsPolNotifFromMaintenancePolicy(maintMaintP.DistinguishedName, relationParam)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_maint_rs_pol_notif")
-		d.Partial(false)
 
 	}
 	if relationTotrigRsTriggerable, ok := d.GetOk("relation_trig_rs_triggerable"); ok {
 		relationParam := relationTotrigRsTriggerable.(string)
 		err = aciClient.CreateRelationtrigRsTriggerableFromMaintenancePolicy(maintMaintP.DistinguishedName, relationParam)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_trig_rs_triggerable")
-		d.Partial(false)
 
 	}
 
 	d.SetId(maintMaintP.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciMaintenancePolicyRead(d, m)
+	return resourceAciMaintenancePolicyRead(ctx, d, m)
 }
 
-func resourceAciMaintenancePolicyUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciMaintenancePolicyUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] MaintenancePolicy: Beginning Update")
 
 	aciClient := m.(*client.Client)
@@ -349,13 +343,8 @@ func resourceAciMaintenancePolicyUpdate(d *schema.ResourceData, m interface{}) e
 	err := aciClient.Save(maintMaintP)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.SetPartial("name")
-
-	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
 
@@ -377,7 +366,7 @@ func resourceAciMaintenancePolicyUpdate(d *schema.ResourceData, m interface{}) e
 	d.Partial(true)
 	err = checkTDn(aciClient, checkDns)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Partial(false)
 
@@ -386,48 +375,39 @@ func resourceAciMaintenancePolicyUpdate(d *schema.ResourceData, m interface{}) e
 		newRelParamName := GetMOName(newRelParam.(string))
 		err = aciClient.CreateRelationmaintRsPolSchedulerFromMaintenancePolicy(maintMaintP.DistinguishedName, newRelParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_maint_rs_pol_scheduler")
-		d.Partial(false)
 
 	}
 	if d.HasChange("relation_maint_rs_pol_notif") {
 		_, newRelParam := d.GetChange("relation_maint_rs_pol_notif")
 		err = aciClient.DeleteRelationmaintRsPolNotifFromMaintenancePolicy(maintMaintP.DistinguishedName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 		err = aciClient.CreateRelationmaintRsPolNotifFromMaintenancePolicy(maintMaintP.DistinguishedName, newRelParam.(string))
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_maint_rs_pol_notif")
-		d.Partial(false)
 
 	}
 	if d.HasChange("relation_trig_rs_triggerable") {
 		_, newRelParam := d.GetChange("relation_trig_rs_triggerable")
 		err = aciClient.CreateRelationtrigRsTriggerableFromMaintenancePolicy(maintMaintP.DistinguishedName, newRelParam.(string))
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_trig_rs_triggerable")
-		d.Partial(false)
 
 	}
 
 	d.SetId(maintMaintP.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciMaintenancePolicyRead(d, m)
+	return resourceAciMaintenancePolicyRead(ctx, d, m)
 
 }
 
-func resourceAciMaintenancePolicyRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciMaintenancePolicyRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -439,7 +419,11 @@ func resourceAciMaintenancePolicyRead(d *schema.ResourceData, m interface{}) err
 		d.SetId("")
 		return nil
 	}
-	setMaintenancePolicyAttributes(maintMaintP, d)
+	_, err = setMaintenancePolicyAttributes(maintMaintP, d)
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 
 	maintRsPolSchedulerData, err := aciClient.ReadRelationmaintRsPolSchedulerFromMaintenancePolicy(dn)
 	if err != nil {
@@ -488,18 +472,18 @@ func resourceAciMaintenancePolicyRead(d *schema.ResourceData, m interface{}) err
 	return nil
 }
 
-func resourceAciMaintenancePolicyDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciMaintenancePolicyDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "maintMaintP")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
 }

@@ -6,13 +6,13 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
 func TestAccAciFabricNode_Basic(t *testing.T) {
 	var fabric_node models.FabricNode
-	description := "fabric_node created while acceptance testing"
+	description := "fabric_node"
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
@@ -26,18 +26,13 @@ func TestAccAciFabricNode_Basic(t *testing.T) {
 					testAccCheckAciFabricNodeAttributes(description, &fabric_node),
 				),
 			},
-			{
-				ResourceName:      "aci_logical_node_to_fabric_node",
-				ImportState:       true,
-				ImportStateVerify: true,
-			},
 		},
 	})
 }
 
 func TestAccAciFabricNode_update(t *testing.T) {
 	var fabric_node models.FabricNode
-	description := "fabric_node created while acceptance testing"
+	description := "fabric_node"
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
@@ -66,15 +61,14 @@ func testAccCheckAciFabricNodeConfig_basic(description string) string {
 	return fmt.Sprintf(`
 
 	resource "aci_logical_node_to_fabric_node" "foofabric_node" {
-		  logical_node_profile_dn  = "${aci_logical_node_profile.example.id}"
-		description = "%s"
-		
-		tdn  = "example"
-		  annotation  = "example"
-		  config_issues  = "none"
-		  rtr_id  = "example"
-		  rtr_id_loop_back  = "no"
-		}
+		logical_node_profile_dn = "uni/tn-demo_dev_tenant/out-demo_l3out/lnodep-demo_node"
+		#logical_node_profile_dn = aci_logical_node_profile.example.id
+		tdn              = "topology/pod-1/node-201"
+		annotation       = "%s"
+		config_issues    = "none"
+		rtr_id           = "10.0.1.1"
+		rtr_id_loop_back = "no"
+	}
 	`, description)
 }
 
@@ -129,23 +123,15 @@ func testAccCheckAciFabricNodeDestroy(s *terraform.State) error {
 func testAccCheckAciFabricNodeAttributes(description string, fabric_node *models.FabricNode) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 
-		if description != fabric_node.Description {
-			return fmt.Errorf("Bad fabric_node Description %s", fabric_node.Description)
-		}
-
-		if "example" != fabric_node.TDn {
+		if "topology/pod-1/node-201" != fabric_node.TDn {
 			return fmt.Errorf("Bad fabric_node t_dn %s", fabric_node.TDn)
 		}
 
-		if "example" != fabric_node.Annotation {
+		if description != fabric_node.Annotation {
 			return fmt.Errorf("Bad fabric_node annotation %s", fabric_node.Annotation)
 		}
 
-		if "none" != fabric_node.ConfigIssues {
-			return fmt.Errorf("Bad fabric_node config_issues %s", fabric_node.ConfigIssues)
-		}
-
-		if "example" != fabric_node.RtrId {
+		if "10.0.1.1" != fabric_node.RtrId {
 			return fmt.Errorf("Bad fabric_node rtr_id %s", fabric_node.RtrId)
 		}
 

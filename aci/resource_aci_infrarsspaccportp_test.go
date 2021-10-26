@@ -6,8 +6,8 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
 func TestAccAciInterfaceProfile_Basic(t *testing.T) {
@@ -59,11 +59,10 @@ func TestAccAciInterfaceProfile_update(t *testing.T) {
 
 func testAccCheckAciInterfaceProfileConfig_basic(annotation string) string {
 	return fmt.Sprintf(`
-
 	resource "aci_spine_port_selector" "foointerface_profile" {
-		spine_profile_dn  = "${aci_spine_profile.example.id}"
-		tdn  = "${aci_spine_interface_profile.example.id}"
-		annotation  = "%s"
+		spine_profile_dn = aci_spine_profile.foospine_profile.id
+		tdn              = aci_spine_interface_profile.foospine_interface_profile.id
+		annotation       = "%s"
 	}
 	`, annotation)
 }

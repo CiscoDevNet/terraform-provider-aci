@@ -1,16 +1,18 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func dataSourceAciSwitchSpineAssociation() *schema.Resource {
 	return &schema.Resource{
 
-		Read: dataSourceAciSwitchSpineAssociationRead,
+		ReadContext: dataSourceAciSwitchSpineAssociationRead,
 
 		SchemaVersion: 1,
 
@@ -39,7 +41,7 @@ func dataSourceAciSwitchSpineAssociation() *schema.Resource {
 	}
 }
 
-func dataSourceAciSwitchSpineAssociationRead(d *schema.ResourceData, m interface{}) error {
+func dataSourceAciSwitchSpineAssociationRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	aciClient := m.(*client.Client)
 
 	name := d.Get("name").(string)
@@ -54,9 +56,12 @@ func dataSourceAciSwitchSpineAssociationRead(d *schema.ResourceData, m interface
 	infraSpineS, err := getRemoteSwitchSpineAssociation(aciClient, dn)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.SetId(dn)
-	setSwitchSpineAssociationAttributes(infraSpineS, d)
+	_, err = setSwitchSpineAssociationAttributes(infraSpineS, d)
+	if err != nil {
+		return diag.FromErr(err)
+	}
 	return nil
 }

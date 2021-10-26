@@ -15,7 +15,7 @@ provider "aci" {
 }
 
 resource "aci_hsrp_interface_policy" "example" {
-  tenant_dn    = "${aci_tenant.tenentcheck.id}"
+  tenant_dn    = aci_tenant.tenentcheck.id
   name         = "one"
   annotation   = "example"
   description  = "from terraform"

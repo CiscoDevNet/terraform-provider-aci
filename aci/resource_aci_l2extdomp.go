@@ -1,6 +1,7 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"reflect"
@@ -8,15 +9,16 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func resourceAciL2Domain() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciL2DomainCreate,
-		Update: resourceAciL2DomainUpdate,
-		Read:   resourceAciL2DomainRead,
-		Delete: resourceAciL2DomainDelete,
+		CreateContext: resourceAciL2DomainCreate,
+		UpdateContext: resourceAciL2DomainUpdate,
+		ReadContext:   resourceAciL2DomainRead,
+		DeleteContext: resourceAciL2DomainDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciL2DomainImport,
@@ -24,14 +26,22 @@ func resourceAciL2Domain() *schema.Resource {
 
 		SchemaVersion: 1,
 
-		Schema: AppendBaseAttrSchema(map[string]*schema.Schema{
-
+		Schema: map[string]*schema.Schema{
 			"name": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
 				ForceNew: true,
 			},
 
+			"annotation": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				// Default:  "orchestrator:terraform",
+				Computed: true,
+				DefaultFunc: func() (interface{}, error) {
+					return "orchestrator:terraform", nil
+				},
+			},
 			"name_alias": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -63,7 +73,7 @@ func resourceAciL2Domain() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
-		}),
+		},
 	}
 }
 func getRemoteL2Domain(client *client.Client, dn string) (*models.L2Domain, error) {
@@ -81,16 +91,19 @@ func getRemoteL2Domain(client *client.Client, dn string) (*models.L2Domain, erro
 	return l2extDomP, nil
 }
 
-func setL2DomainAttributes(l2extDomP *models.L2Domain, d *schema.ResourceData) *schema.ResourceData {
+func setL2DomainAttributes(l2extDomP *models.L2Domain, d *schema.ResourceData) (*schema.ResourceData, error) {
 
 	d.SetId(l2extDomP.DistinguishedName)
-	l2extDomPMap, _ := l2extDomP.ToMap()
+	l2extDomPMap, err := l2extDomP.ToMap()
+	if err != nil {
+		return d, err
+	}
 
 	d.Set("name", l2extDomPMap["name"])
 
 	d.Set("annotation", l2extDomPMap["annotation"])
 	d.Set("name_alias", l2extDomPMap["nameAlias"])
-	return d
+	return d, nil
 }
 
 func resourceAciL2DomainImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -104,14 +117,17 @@ func resourceAciL2DomainImport(d *schema.ResourceData, m interface{}) ([]*schema
 	if err != nil {
 		return nil, err
 	}
-	schemaFilled := setL2DomainAttributes(l2extDomP, d)
+	schemaFilled, err := setL2DomainAttributes(l2extDomP, d)
+	if err != nil {
+		return nil, err
+	}
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciL2DomainCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciL2DomainCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] L2Domain: Beginning Creation")
 	aciClient := m.(*client.Client)
 
@@ -130,13 +146,8 @@ func resourceAciL2DomainCreate(d *schema.ResourceData, m interface{}) error {
 
 	err := aciClient.Save(l2extDomP)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.SetPartial("name")
-
-	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
 
@@ -170,7 +181,7 @@ func resourceAciL2DomainCreate(d *schema.ResourceData, m interface{}) error {
 	d.Partial(true)
 	err = checkTDn(aciClient, checkDns)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Partial(false)
 
@@ -178,33 +189,24 @@ func resourceAciL2DomainCreate(d *schema.ResourceData, m interface{}) error {
 		relationParam := relationToinfraRsVlanNs.(string)
 		err = aciClient.CreateRelationinfraRsVlanNsFromL2Domain(l2extDomP.DistinguishedName, relationParam)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_infra_rs_vlan_ns")
-		d.Partial(false)
 
 	}
 	if relationToinfraRsVlanNsDef, ok := d.GetOk("relation_infra_rs_vlan_ns_def"); ok {
 		relationParam := relationToinfraRsVlanNsDef.(string)
 		err = aciClient.CreateRelationinfraRsVlanNsDefFromL2Domain(l2extDomP.DistinguishedName, relationParam)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_infra_rs_vlan_ns_def")
-		d.Partial(false)
 
 	}
 	if relationToinfraRsVipAddrNs, ok := d.GetOk("relation_infra_rs_vip_addr_ns"); ok {
 		relationParam := relationToinfraRsVipAddrNs.(string)
 		err = aciClient.CreateRelationinfraRsVipAddrNsFromL2Domain(l2extDomP.DistinguishedName, relationParam)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_infra_rs_vip_addr_ns")
-		d.Partial(false)
 
 	}
 	if relationToextnwRsOut, ok := d.GetOk("relation_extnw_rs_out"); ok {
@@ -213,32 +215,26 @@ func resourceAciL2DomainCreate(d *schema.ResourceData, m interface{}) error {
 			err = aciClient.CreateRelationextnwRsOutFromL2Domain(l2extDomP.DistinguishedName, relationParam)
 
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
-			d.Partial(true)
-			d.SetPartial("relation_extnw_rs_out")
-			d.Partial(false)
 		}
 	}
 	if relationToinfraRsDomVxlanNsDef, ok := d.GetOk("relation_infra_rs_dom_vxlan_ns_def"); ok {
 		relationParam := relationToinfraRsDomVxlanNsDef.(string)
 		err = aciClient.CreateRelationinfraRsDomVxlanNsDefFromL2Domain(l2extDomP.DistinguishedName, relationParam)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_infra_rs_dom_vxlan_ns_def")
-		d.Partial(false)
 
 	}
 
 	d.SetId(l2extDomP.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciL2DomainRead(d, m)
+	return resourceAciL2DomainRead(ctx, d, m)
 }
 
-func resourceAciL2DomainUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciL2DomainUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] L2Domain: Beginning Update")
 
 	aciClient := m.(*client.Client)
@@ -261,13 +257,8 @@ func resourceAciL2DomainUpdate(d *schema.ResourceData, m interface{}) error {
 	err := aciClient.Save(l2extDomP)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.SetPartial("name")
-
-	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
 
@@ -306,7 +297,7 @@ func resourceAciL2DomainUpdate(d *schema.ResourceData, m interface{}) error {
 	d.Partial(true)
 	err = checkTDn(aciClient, checkDns)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Partial(false)
 
@@ -314,41 +305,32 @@ func resourceAciL2DomainUpdate(d *schema.ResourceData, m interface{}) error {
 		_, newRelParam := d.GetChange("relation_infra_rs_vlan_ns")
 		err = aciClient.DeleteRelationinfraRsVlanNsFromL2Domain(l2extDomP.DistinguishedName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 		err = aciClient.CreateRelationinfraRsVlanNsFromL2Domain(l2extDomP.DistinguishedName, newRelParam.(string))
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_infra_rs_vlan_ns")
-		d.Partial(false)
 
 	}
 	if d.HasChange("relation_infra_rs_vlan_ns_def") {
 		_, newRelParam := d.GetChange("relation_infra_rs_vlan_ns_def")
 		err = aciClient.CreateRelationinfraRsVlanNsDefFromL2Domain(l2extDomP.DistinguishedName, newRelParam.(string))
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_infra_rs_vlan_ns_def")
-		d.Partial(false)
 
 	}
 	if d.HasChange("relation_infra_rs_vip_addr_ns") {
 		_, newRelParam := d.GetChange("relation_infra_rs_vip_addr_ns")
 		err = aciClient.DeleteRelationinfraRsVipAddrNsFromL2Domain(l2extDomP.DistinguishedName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 		err = aciClient.CreateRelationinfraRsVipAddrNsFromL2Domain(l2extDomP.DistinguishedName, newRelParam.(string))
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_infra_rs_vip_addr_ns")
-		d.Partial(false)
 
 	}
 	if d.HasChange("relation_extnw_rs_out") {
@@ -360,11 +342,8 @@ func resourceAciL2DomainUpdate(d *schema.ResourceData, m interface{}) error {
 		for _, relDn := range relToCreate {
 			err = aciClient.CreateRelationextnwRsOutFromL2Domain(l2extDomP.DistinguishedName, relDn)
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
-			d.Partial(true)
-			d.SetPartial("relation_extnw_rs_out")
-			d.Partial(false)
 
 		}
 
@@ -373,22 +352,18 @@ func resourceAciL2DomainUpdate(d *schema.ResourceData, m interface{}) error {
 		_, newRelParam := d.GetChange("relation_infra_rs_dom_vxlan_ns_def")
 		err = aciClient.CreateRelationinfraRsDomVxlanNsDefFromL2Domain(l2extDomP.DistinguishedName, newRelParam.(string))
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_infra_rs_dom_vxlan_ns_def")
-		d.Partial(false)
-
 	}
 
 	d.SetId(l2extDomP.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciL2DomainRead(d, m)
+	return resourceAciL2DomainRead(ctx, d, m)
 
 }
 
-func resourceAciL2DomainRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciL2DomainRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -400,7 +375,11 @@ func resourceAciL2DomainRead(d *schema.ResourceData, m interface{}) error {
 		d.SetId("")
 		return nil
 	}
-	setL2DomainAttributes(l2extDomP, d)
+	_, err = setL2DomainAttributes(l2extDomP, d)
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 
 	infraRsVlanNsData, err := aciClient.ReadRelationinfraRsVlanNsFromL2Domain(dn)
 
@@ -489,18 +468,18 @@ func resourceAciL2DomainRead(d *schema.ResourceData, m interface{}) error {
 	return nil
 }
 
-func resourceAciL2DomainDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciL2DomainDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "l2extDomP")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
 }

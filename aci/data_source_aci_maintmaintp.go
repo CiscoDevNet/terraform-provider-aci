@@ -1,16 +1,18 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func dataSourceAciMaintenancePolicy() *schema.Resource {
 	return &schema.Resource{
 
-		Read: dataSourceAciMaintenancePolicyRead,
+		ReadContext: dataSourceAciMaintenancePolicyRead,
 
 		SchemaVersion: 1,
 
@@ -78,7 +80,7 @@ func dataSourceAciMaintenancePolicy() *schema.Resource {
 	}
 }
 
-func dataSourceAciMaintenancePolicyRead(d *schema.ResourceData, m interface{}) error {
+func dataSourceAciMaintenancePolicyRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	aciClient := m.(*client.Client)
 
 	name := d.Get("name").(string)
@@ -90,8 +92,11 @@ func dataSourceAciMaintenancePolicyRead(d *schema.ResourceData, m interface{}) e
 	maintMaintP, err := getRemoteMaintenancePolicy(aciClient, dn)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	setMaintenancePolicyAttributes(maintMaintP, d)
+	_, err = setMaintenancePolicyAttributes(maintMaintP, d)
+	if err != nil {
+		return diag.FromErr(err)
+	}
 	return nil
 }

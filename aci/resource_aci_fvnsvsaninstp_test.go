@@ -6,8 +6,8 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
 func TestAccAciVSANPool_Basic(t *testing.T) {
@@ -25,11 +25,6 @@ func TestAccAciVSANPool_Basic(t *testing.T) {
 					testAccCheckAciVSANPoolExists("aci_vsan_pool.foovsan_pool", &vsan_pool),
 					testAccCheckAciVSANPoolAttributes(description, &vsan_pool),
 				),
-			},
-			{
-				ResourceName:      "aci_vsan_pool",
-				ImportState:       true,
-				ImportStateVerify: true,
 			},
 		},
 	})
@@ -70,7 +65,7 @@ func testAccCheckAciVSANPoolConfig_basic(description string) string {
 		
 		name  = "example"
 		
-		  alloc_mode  = "dynamic"
+		  alloc_mode  = "static"
 		  annotation  = "example"
 		  name_alias  = "example"
 		}
@@ -136,7 +131,7 @@ func testAccCheckAciVSANPoolAttributes(description string, vsan_pool *models.VSA
 			return fmt.Errorf("Bad vsan_pool name %s", vsan_pool.Name)
 		}
 
-		if "dynamic" != vsan_pool.AllocMode {
+		if "static" != vsan_pool.AllocMode {
 			return fmt.Errorf("Bad vsan_pool alloc_mode %s", vsan_pool.AllocMode)
 		}
 

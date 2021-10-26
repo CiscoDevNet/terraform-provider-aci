@@ -6,8 +6,8 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
 func TestAccAciL3outStaticRouteNextHop_Basic(t *testing.T) {
@@ -59,15 +59,14 @@ func TestAccAciL3outStaticRouteNextHop_update(t *testing.T) {
 
 func testAccCheckAciL3outStaticRouteNextHopConfig_basic(description string) string {
 	return fmt.Sprintf(`
-
 	resource "aci_l3out_static_route_next_hop" "fool3out_static_route_next_hop" {
-		static_route_dn  = "${aci_static_route.example.id}"
-		nh_addr  = "example"
-		description = "%s"
-  		annotation  = "example"
-  		name_alias  = "example"
-  		pref = "unspecified"
-  		nexthop_profile_type = "none"
+		static_route_dn      = aci_l3out_static_route.example.id
+		nh_addr              = "10.0.0.2"
+		description          = "%s"
+		annotation           = "example"
+		name_alias           = "example"
+		pref                 = "unspecified"
+		nexthop_profile_type = "prefix"
 	}
 	`, description)
 }
@@ -127,7 +126,7 @@ func testAccCheckAciL3outStaticRouteNextHopAttributes(description string, l3out_
 			return fmt.Errorf("Bad l3out_static_route_next_hop Description %s", l3out_static_route_next_hop.Description)
 		}
 
-		if "example" != l3out_static_route_next_hop.NhAddr {
+		if "10.0.0.2" != l3out_static_route_next_hop.NhAddr {
 			return fmt.Errorf("Bad l3out_static_route_next_hop nh_addr %s", l3out_static_route_next_hop.NhAddr)
 		}
 
@@ -139,15 +138,11 @@ func testAccCheckAciL3outStaticRouteNextHopAttributes(description string, l3out_
 			return fmt.Errorf("Bad l3out_static_route_next_hop name_alias %s", l3out_static_route_next_hop.NameAlias)
 		}
 
-		if "example" != l3out_static_route_next_hop.NhAddr {
-			return fmt.Errorf("Bad l3out_static_route_next_hop nh_addr %s", l3out_static_route_next_hop.NhAddr)
-		}
-
 		if "unspecified" != l3out_static_route_next_hop.Pref {
 			return fmt.Errorf("Bad l3out_static_route_next_hop pref %s", l3out_static_route_next_hop.Pref)
 		}
 
-		if "none" != l3out_static_route_next_hop.NexthopProfile_type {
+		if "prefix" != l3out_static_route_next_hop.NexthopProfile_type {
 			return fmt.Errorf("Bad l3out_static_route_next_hop nexthop_profile_type %s", l3out_static_route_next_hop.NexthopProfile_type)
 		}
 

@@ -1,21 +1,23 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func dataSourceAciDHCPOption() *schema.Resource {
 	return &schema.Resource{
 
-		Read: dataSourceAciDHCPOptionRead,
+		ReadContext: dataSourceAciDHCPOptionRead,
 
 		SchemaVersion: 1,
 
-		Schema: AppendBaseAttrSchema(map[string]*schema.Schema{
+		Schema: map[string]*schema.Schema{
 			"dhcp_option_policy_dn": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
@@ -24,12 +26,6 @@ func dataSourceAciDHCPOption() *schema.Resource {
 			"name": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
-			},
-
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
 			},
 
 			"data": &schema.Schema{
@@ -49,11 +45,16 @@ func dataSourceAciDHCPOption() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
-		}),
+			"annotation": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+		},
 	}
 }
 
-func dataSourceAciDHCPOptionRead(d *schema.ResourceData, m interface{}) error {
+func dataSourceAciDHCPOptionRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	aciClient := m.(*client.Client)
 
 	name := d.Get("name").(string)
@@ -66,10 +67,13 @@ func dataSourceAciDHCPOptionRead(d *schema.ResourceData, m interface{}) error {
 	dhcpOption, err := getRemoteDHCPOption(aciClient, dn)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.SetId(dn)
-	setDHCPOptionAttributes(dhcpOption, d)
+	_, err = setDHCPOptionAttributes(dhcpOption, d)
+	if err != nil {
+		return diag.FromErr(err)
+	}
 	return nil
 }
 
@@ -88,7 +92,7 @@ func getRemoteDHCPOption(client *client.Client, dn string) (*models.DHCPOption, 
 	return dhcpOption, nil
 }
 
-func setDHCPOptionAttributes(dhcpOption *models.DHCPOption, d *schema.ResourceData) *schema.ResourceData {
+func setDHCPOptionAttributes(dhcpOption *models.DHCPOption, d *schema.ResourceData) (*schema.ResourceData, error) {
 	dn := d.Id()
 	d.SetId(dhcpOption.DistinguishedName)
 	//d.Set("description", dhcpOption.Description)
@@ -96,7 +100,10 @@ func setDHCPOptionAttributes(dhcpOption *models.DHCPOption, d *schema.ResourceDa
 	if dn != dhcpOption.DistinguishedName {
 		d.Set("dhcp_option_policy_dn", "")
 	}
-	dhcpOptionMap, _ := dhcpOption.ToMap()
+	dhcpOptionMap, err := dhcpOption.ToMap()
+	if err != nil {
+		return d, err
+	}
 
 	d.Set("name", dhcpOptionMap["name"])
 
@@ -104,5 +111,5 @@ func setDHCPOptionAttributes(dhcpOption *models.DHCPOption, d *schema.ResourceDa
 	d.Set("data", dhcpOptionMap["data"])
 	d.Set("dhcp_option_id", dhcpOptionMap["id"])
 	d.Set("name_alias", dhcpOptionMap["nameAlias"])
-	return d
+	return d, nil
 }

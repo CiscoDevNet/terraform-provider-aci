@@ -20,13 +20,13 @@ data "aci_bgp_route_control_profile" "check" {
 
 data "aci_bgp_route_control_profile" "check" {
   parent_dn = aci_l3_outside.example.id
-  name      = "one"
+  name      = "bgp_route_control_profile_1"
 }
 ```
 
 ## Argument Reference
 
-- `parent_dn` - (Required) Distinguished name of parent object.
+- `parent_dn` - (Required) Distinguished name of the parent object.
 - `name` - (Required) Name of router control profile object.
 
 ## Attribute Reference

@@ -6,46 +6,47 @@ description: |-
   Manages ACI Application EPG
 ---
 
-# aci_application_epg #
+# aci_application_epg
+
 Manages ACI Application EPG
 
-## Example Usage ##
+## Example Usage
 
 ```hcl
 resource "aci_application_epg" "fooapplication_epg" {
-  application_profile_dn  = "${aci_application_profile.app_profile_for_epg.id}"
-  name                    = "demo_epg"
-  description             = "%s"
-  annotation              = "tag_epg"
-  exception_tag           = "0"
-  flood_on_encap          = "disabled"
-  fwd_ctrl                = "none"
-  has_mcast_source        = "no"
-  is_attr_based_epg       = "no"
-  match_t                 = "AtleastOne"
-  name_alias              = "alias_epg"
-  pc_enf_pref             = "unenforced"
-  pref_gr_memb            = "exclude"
-  prio                    = "unspecified"
-  shutdown                = "no"
+    application_profile_dn  = aci_application_profile.app_profile_for_epg.id
+    name  					        = "demo_epg"
+    description 			      = "from terraform"
+    annotation  			      = "tag_epg"
+    exception_tag 		    	= "0"
+    flood_on_encap  	      = "disabled"
+    fwd_ctrl  			      	= "none"
+    has_mcast_source     		= "no"
+    is_attr_based_epg     	= "no"
+    match_t  				        = "AtleastOne"
+    name_alias  		      	= "alias_epg"
+    pc_enf_pref  		      	= "unenforced"
+    pref_gr_memb  	    		= "exclude"
+    prio  				        	= "unspecified"
+    shutdown  		      		= "no"
 }
 ```
 
 ## Argument Reference ##
-* `application_profile_dn` - (Required) Distinguished name of parent ApplicationProfile object.
-* `name` - (Required) name of Object application_epg.
-* `annotation` - (Optional) annotation for object application_epg.
-* `exception_tag` - (Optional) exception_tag for object application_epg. Range: "0" - "512" .
+* `name` - (Required) Name of Object application epg.
+* `annotation` - (Optional) Annotation for object application epg.
+* `description` - (Optional) Description for object application epg.
+* `exception_tag` - (Optional) Exception tag for object application epg. Range: "0" - "512" .
 * `flood_on_encap` - (Optional) Control at EPG level if the traffic L2 Multicast/Broadcast and Link Local Layer should be flooded only on ENCAP or based on bridg-domain settings. Allowed values are "disabled" and "enabled". Default is "disabled".
 * `fwd_ctrl` - (Optional) Forwarding control at EPG level. Allowed values are "none" and "proxy-arp". Default is "none".
 * `has_mcast_source` - (Optional) If the source for the EPG is multicast or not. Allowed values are "yes" and "no". Default values is "no".
-* `is_attr_based_epg` - (Optional) If the EPG is attribute based or not. Allowed values are "yes" and "no". Default is "yes".
+* `is_attr_based_epg` - (Optional) If the EPG is attribute based or not. Allowed values are "yes" and "no". Default is "no".
 * `match_t` - (Optional) The provider label match criteria for EPG. Allowed values are "All", "AtleastOne", "AtmostOne", "None". Default is "AtleastOne".
-* `name_alias` - (Optional) name_alias for object application_epg.
+* `name_alias` - (Optional) Name alias for object application epg.
 * `pc_enf_pref` - (Optional) The preferred policy control. Allowed values are "unenforced" and "enforced". Default is "unenforced".
 * `pref_gr_memb` - (Optional) Represents parameter used to determine if EPg is part of a group that does not a contract for communication. Allowed values are "exclude" and "include". Default is "exclude".
-* `prio` - (Optional) qos priority class id. Allowed values are "unspecified", "level1", "level2", "level3", "level4", "level5" and "level6". Default is "unspecified".
-* `shutdown` - (Optional) shutdown for object application_epg. Allowed values are "yes" and "no". Default is "no".
+* `prio` - (Optional) QoS priority class id. Allowed values are "unspecified", "level1", "level2", "level3", "level4","level5" and "level6". By default the value is inherited from the parent application profile.
+* `shutdown` - (Optional) Shutdown for object application epg. Allowed values are "yes" and "no". Default is "no".
 
 * `relation_fv_rs_bd` - (Required) Relation to Bridge domain associated with EPG (Point to class fvBD). Cardinality - N_TO_ONE. Type - String.
 
@@ -78,13 +79,12 @@ resource "aci_application_epg" "fooapplication_epg" {
 
 * `relation_fv_rs_intra_epg` - (Optional) Relation to Intra EPG Contract (Point to class vzBrCP). Cardinality - N_TO_M. Type - Set of String.
 
-
 ## Attribute Reference
 
 The only attribute that this resource exports is the `id`, which is set to the
 Dn of the Application EPG.
 
-## Importing ##
+## Importing
 
 An existing Application EPG can be [imported][docs-import] into this resource via its Dn, via the following command:
 [docs-import]: https://www.terraform.io/docs/import/index.html

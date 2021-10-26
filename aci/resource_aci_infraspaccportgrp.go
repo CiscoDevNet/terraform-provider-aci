@@ -1,20 +1,22 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func resourceAciSpineAccessPortPolicyGroup() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciSpineAccessPortPolicyGroupCreate,
-		Update: resourceAciSpineAccessPortPolicyGroupUpdate,
-		Read:   resourceAciSpineAccessPortPolicyGroupRead,
-		Delete: resourceAciSpineAccessPortPolicyGroupDelete,
+		CreateContext: resourceAciSpineAccessPortPolicyGroupCreate,
+		UpdateContext: resourceAciSpineAccessPortPolicyGroupUpdate,
+		ReadContext:   resourceAciSpineAccessPortPolicyGroupRead,
+		DeleteContext: resourceAciSpineAccessPortPolicyGroupDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciSpineAccessPortPolicyGroupImport,
@@ -79,16 +81,19 @@ func getRemoteSpineAccessPortPolicyGroup(client *client.Client, dn string) (*mod
 	return infraSpAccPortGrp, nil
 }
 
-func setSpineAccessPortPolicyGroupAttributes(infraSpAccPortGrp *models.SpineAccessPortPolicyGroup, d *schema.ResourceData) *schema.ResourceData {
+func setSpineAccessPortPolicyGroupAttributes(infraSpAccPortGrp *models.SpineAccessPortPolicyGroup, d *schema.ResourceData) (*schema.ResourceData, error) {
 	d.SetId(infraSpAccPortGrp.DistinguishedName)
 	d.Set("description", infraSpAccPortGrp.Description)
-	infraSpAccPortGrpMap, _ := infraSpAccPortGrp.ToMap()
+	infraSpAccPortGrpMap, err := infraSpAccPortGrp.ToMap()
+	if err != nil {
+		return d, err
+	}
 
 	d.Set("name", infraSpAccPortGrpMap["name"])
 
 	d.Set("annotation", infraSpAccPortGrpMap["annotation"])
 	d.Set("name_alias", infraSpAccPortGrpMap["nameAlias"])
-	return d
+	return d, nil
 }
 
 func resourceAciSpineAccessPortPolicyGroupImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -102,14 +107,18 @@ func resourceAciSpineAccessPortPolicyGroupImport(d *schema.ResourceData, m inter
 	if err != nil {
 		return nil, err
 	}
-	schemaFilled := setSpineAccessPortPolicyGroupAttributes(infraSpAccPortGrp, d)
+	schemaFilled, err := setSpineAccessPortPolicyGroupAttributes(infraSpAccPortGrp, d)
+
+	if err != nil {
+		return nil, err
+	}
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciSpineAccessPortPolicyGroupCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciSpineAccessPortPolicyGroupCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] SpineAccessPortPolicyGroup: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -129,13 +138,8 @@ func resourceAciSpineAccessPortPolicyGroupCreate(d *schema.ResourceData, m inter
 
 	err := aciClient.Save(infraSpAccPortGrp)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.SetPartial("name")
-
-	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
 
@@ -167,7 +171,7 @@ func resourceAciSpineAccessPortPolicyGroupCreate(d *schema.ResourceData, m inter
 	d.Partial(true)
 	err = checkTDn(aciClient, checkDns)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Partial(false)
 
@@ -176,68 +180,48 @@ func resourceAciSpineAccessPortPolicyGroupCreate(d *schema.ResourceData, m inter
 		relationParamName := models.GetMOName(relationParam)
 		err = aciClient.CreateRelationinfraRsHIfPolFromSpineAccessPortPolicyGroup(infraSpAccPortGrp.DistinguishedName, relationParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_infra_rs_h_if_pol")
-		d.Partial(false)
-
 	}
 	if relationToinfraRsCdpIfPol, ok := d.GetOk("relation_infra_rs_cdp_if_pol"); ok {
 		relationParam := relationToinfraRsCdpIfPol.(string)
 		relationParamName := models.GetMOName(relationParam)
 		err = aciClient.CreateRelationinfraRsCdpIfPolFromSpineAccessPortPolicyGroup(infraSpAccPortGrp.DistinguishedName, relationParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_infra_rs_cdp_if_pol")
-		d.Partial(false)
-
 	}
 	if relationToinfraRsCoppIfPol, ok := d.GetOk("relation_infra_rs_copp_if_pol"); ok {
 		relationParam := relationToinfraRsCoppIfPol.(string)
 		relationParamName := models.GetMOName(relationParam)
 		err = aciClient.CreateRelationinfraRsCoppIfPolFromSpineAccessPortPolicyGroup(infraSpAccPortGrp.DistinguishedName, relationParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_infra_rs_copp_if_pol")
-		d.Partial(false)
-
 	}
 	if relationToinfraRsAttEntP, ok := d.GetOk("relation_infra_rs_att_ent_p"); ok {
 		relationParam := relationToinfraRsAttEntP.(string)
 		err = aciClient.CreateRelationinfraRsAttEntPFromSpineAccessPortPolicyGroup(infraSpAccPortGrp.DistinguishedName, relationParam)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_infra_rs_att_ent_p")
-		d.Partial(false)
-
 	}
 	if relationToinfraRsMacsecIfPol, ok := d.GetOk("relation_infra_rs_macsec_if_pol"); ok {
 		relationParam := relationToinfraRsMacsecIfPol.(string)
 		relationParamName := models.GetMOName(relationParam)
 		err = aciClient.CreateRelationinfraRsMacsecIfPolFromSpineAccessPortPolicyGroup(infraSpAccPortGrp.DistinguishedName, relationParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_infra_rs_macsec_if_pol")
-		d.Partial(false)
-
 	}
 
 	d.SetId(infraSpAccPortGrp.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciSpineAccessPortPolicyGroupRead(d, m)
+	return resourceAciSpineAccessPortPolicyGroupRead(ctx, d, m)
 }
 
-func resourceAciSpineAccessPortPolicyGroupUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciSpineAccessPortPolicyGroupUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] SpineAccessPortPolicyGroup: Beginning Update")
 
 	aciClient := m.(*client.Client)
@@ -261,13 +245,8 @@ func resourceAciSpineAccessPortPolicyGroupUpdate(d *schema.ResourceData, m inter
 	err := aciClient.Save(infraSpAccPortGrp)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.SetPartial("name")
-
-	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
 
@@ -299,7 +278,7 @@ func resourceAciSpineAccessPortPolicyGroupUpdate(d *schema.ResourceData, m inter
 	d.Partial(true)
 	err = checkTDn(aciClient, checkDns)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Partial(false)
 
@@ -308,73 +287,53 @@ func resourceAciSpineAccessPortPolicyGroupUpdate(d *schema.ResourceData, m inter
 		newRelParamName := models.GetMOName(newRelParam.(string))
 		err = aciClient.CreateRelationinfraRsHIfPolFromSpineAccessPortPolicyGroup(infraSpAccPortGrp.DistinguishedName, newRelParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_infra_rs_h_if_pol")
-		d.Partial(false)
-
 	}
 	if d.HasChange("relation_infra_rs_cdp_if_pol") {
 		_, newRelParam := d.GetChange("relation_infra_rs_cdp_if_pol")
 		newRelParamName := models.GetMOName(newRelParam.(string))
 		err = aciClient.CreateRelationinfraRsCdpIfPolFromSpineAccessPortPolicyGroup(infraSpAccPortGrp.DistinguishedName, newRelParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_infra_rs_cdp_if_pol")
-		d.Partial(false)
-
 	}
 	if d.HasChange("relation_infra_rs_copp_if_pol") {
 		_, newRelParam := d.GetChange("relation_infra_rs_copp_if_pol")
 		newRelParamName := models.GetMOName(newRelParam.(string))
 		err = aciClient.CreateRelationinfraRsCoppIfPolFromSpineAccessPortPolicyGroup(infraSpAccPortGrp.DistinguishedName, newRelParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_infra_rs_copp_if_pol")
-		d.Partial(false)
-
 	}
 	if d.HasChange("relation_infra_rs_att_ent_p") {
 		_, newRelParam := d.GetChange("relation_infra_rs_att_ent_p")
 		err = aciClient.DeleteRelationinfraRsAttEntPFromSpineAccessPortPolicyGroup(infraSpAccPortGrp.DistinguishedName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 		err = aciClient.CreateRelationinfraRsAttEntPFromSpineAccessPortPolicyGroup(infraSpAccPortGrp.DistinguishedName, newRelParam.(string))
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_infra_rs_att_ent_p")
-		d.Partial(false)
-
 	}
 	if d.HasChange("relation_infra_rs_macsec_if_pol") {
 		_, newRelParam := d.GetChange("relation_infra_rs_macsec_if_pol")
 		newRelParamName := models.GetMOName(newRelParam.(string))
 		err = aciClient.CreateRelationinfraRsMacsecIfPolFromSpineAccessPortPolicyGroup(infraSpAccPortGrp.DistinguishedName, newRelParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_infra_rs_macsec_if_pol")
-		d.Partial(false)
-
 	}
 
 	d.SetId(infraSpAccPortGrp.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciSpineAccessPortPolicyGroupRead(d, m)
+	return resourceAciSpineAccessPortPolicyGroupRead(ctx, d, m)
 
 }
 
-func resourceAciSpineAccessPortPolicyGroupRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciSpineAccessPortPolicyGroupRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -386,7 +345,11 @@ func resourceAciSpineAccessPortPolicyGroupRead(d *schema.ResourceData, m interfa
 		d.SetId("")
 		return nil
 	}
-	setSpineAccessPortPolicyGroupAttributes(infraSpAccPortGrp, d)
+	_, err = setSpineAccessPortPolicyGroupAttributes(infraSpAccPortGrp, d)
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 
 	infraRsHIfPolData, err := aciClient.ReadRelationinfraRsHIfPolFromSpineAccessPortPolicyGroup(dn)
 	if err != nil {
@@ -450,18 +413,18 @@ func resourceAciSpineAccessPortPolicyGroupRead(d *schema.ResourceData, m interfa
 	return nil
 }
 
-func resourceAciSpineAccessPortPolicyGroupDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciSpineAccessPortPolicyGroupDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "infraSpAccPortGrp")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
 }

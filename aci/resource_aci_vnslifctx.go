@@ -1,21 +1,23 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciLogicalInterfaceContext() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciLogicalInterfaceContextCreate,
-		Update: resourceAciLogicalInterfaceContextUpdate,
-		Read:   resourceAciLogicalInterfaceContextRead,
-		Delete: resourceAciLogicalInterfaceContextDelete,
+		CreateContext: resourceAciLogicalInterfaceContextCreate,
+		UpdateContext: resourceAciLogicalInterfaceContextUpdate,
+		ReadContext:   resourceAciLogicalInterfaceContextRead,
+		DeleteContext: resourceAciLogicalInterfaceContextDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciLogicalInterfaceContextImport,
@@ -120,7 +122,7 @@ func getRemoteLogicalInterfaceContext(client *client.Client, dn string) (*models
 	return vnsLIfCtx, nil
 }
 
-func setLogicalInterfaceContextAttributes(vnsLIfCtx *models.LogicalInterfaceContext, d *schema.ResourceData) *schema.ResourceData {
+func setLogicalInterfaceContextAttributes(vnsLIfCtx *models.LogicalInterfaceContext, d *schema.ResourceData) (*schema.ResourceData, error) {
 
 	dn := d.Id()
 	d.SetId(vnsLIfCtx.DistinguishedName)
@@ -130,7 +132,10 @@ func setLogicalInterfaceContextAttributes(vnsLIfCtx *models.LogicalInterfaceCont
 		d.Set("logical_device_context_dn", "")
 	}
 
-	vnsLIfCtxMap, _ := vnsLIfCtx.ToMap()
+	vnsLIfCtxMap, err := vnsLIfCtx.ToMap()
+	if err != nil {
+		return d, err
+	}
 
 	d.Set("conn_name_or_lbl", vnsLIfCtxMap["connNameOrLbl"])
 
@@ -138,7 +143,7 @@ func setLogicalInterfaceContextAttributes(vnsLIfCtx *models.LogicalInterfaceCont
 	d.Set("l3_dest", vnsLIfCtxMap["l3Dest"])
 	d.Set("name_alias", vnsLIfCtxMap["nameAlias"])
 	d.Set("permit_log", vnsLIfCtxMap["permitLog"])
-	return d
+	return d, nil
 }
 
 func resourceAciLogicalInterfaceContextImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -152,14 +157,17 @@ func resourceAciLogicalInterfaceContextImport(d *schema.ResourceData, m interfac
 	if err != nil {
 		return nil, err
 	}
-	schemaFilled := setLogicalInterfaceContextAttributes(vnsLIfCtx, d)
+	schemaFilled, err := setLogicalInterfaceContextAttributes(vnsLIfCtx, d)
+	if err != nil {
+		return nil, err
+	}
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciLogicalInterfaceContextCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciLogicalInterfaceContextCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] LogicalInterfaceContext: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -190,13 +198,8 @@ func resourceAciLogicalInterfaceContextCreate(d *schema.ResourceData, m interfac
 
 	err := aciClient.Save(vnsLIfCtx)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.SetPartial("conn_name_or_lbl")
-
-	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
 
@@ -243,7 +246,7 @@ func resourceAciLogicalInterfaceContextCreate(d *schema.ResourceData, m interfac
 	d.Partial(true)
 	err = checkTDn(aciClient, checkDns)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Partial(false)
 
@@ -252,44 +255,31 @@ func resourceAciLogicalInterfaceContextCreate(d *schema.ResourceData, m interfac
 		relationParamName := GetMOName(relationParam)
 		err = aciClient.CreateRelationvnsRsLIfCtxToCustQosPolFromLogicalInterfaceContext(vnsLIfCtx.DistinguishedName, relationParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_vns_rs_l_if_ctx_to_cust_qos_pol")
-		d.Partial(false)
-
 	}
 	if relationTovnsRsLIfCtxToSvcEPgPol, ok := d.GetOk("relation_vns_rs_l_if_ctx_to_svc_e_pg_pol"); ok {
 		relationParam := relationTovnsRsLIfCtxToSvcEPgPol.(string)
 		err = aciClient.CreateRelationvnsRsLIfCtxToSvcEPgPolFromLogicalInterfaceContext(vnsLIfCtx.DistinguishedName, relationParam)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_vns_rs_l_if_ctx_to_svc_e_pg_pol")
-		d.Partial(false)
 
 	}
 	if relationTovnsRsLIfCtxToSvcRedirectPol, ok := d.GetOk("relation_vns_rs_l_if_ctx_to_svc_redirect_pol"); ok {
 		relationParam := relationTovnsRsLIfCtxToSvcRedirectPol.(string)
 		err = aciClient.CreateRelationvnsRsLIfCtxToSvcRedirectPolFromLogicalInterfaceContext(vnsLIfCtx.DistinguishedName, relationParam)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_vns_rs_l_if_ctx_to_svc_redirect_pol")
-		d.Partial(false)
 
 	}
 	if relationTovnsRsLIfCtxToLIf, ok := d.GetOk("relation_vns_rs_l_if_ctx_to_l_if"); ok {
 		relationParam := relationTovnsRsLIfCtxToLIf.(string)
 		err = aciClient.CreateRelationvnsRsLIfCtxToLIfFromLogicalInterfaceContext(vnsLIfCtx.DistinguishedName, relationParam)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_vns_rs_l_if_ctx_to_l_if")
-		d.Partial(false)
 
 	}
 	if relationTovnsRsLIfCtxToOutDef, ok := d.GetOk("relation_vns_rs_l_if_ctx_to_out_def"); ok {
@@ -297,56 +287,40 @@ func resourceAciLogicalInterfaceContextCreate(d *schema.ResourceData, m interfac
 		relationParamName := GetMOName(relationParam)
 		err = aciClient.CreateRelationvnsRsLIfCtxToOutDefFromLogicalInterfaceContext(vnsLIfCtx.DistinguishedName, relationParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_vns_rs_l_if_ctx_to_out_def")
-		d.Partial(false)
-
 	}
 	if relationTovnsRsLIfCtxToInstP, ok := d.GetOk("relation_vns_rs_l_if_ctx_to_inst_p"); ok {
 		relationParam := relationTovnsRsLIfCtxToInstP.(string)
 		relationParamName := GetMOName(relationParam)
 		err = aciClient.CreateRelationvnsRsLIfCtxToInstPFromLogicalInterfaceContext(vnsLIfCtx.DistinguishedName, relationParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_vns_rs_l_if_ctx_to_inst_p")
-		d.Partial(false)
-
 	}
 	if relationTovnsRsLIfCtxToBD, ok := d.GetOk("relation_vns_rs_l_if_ctx_to_bd"); ok {
 		relationParam := relationTovnsRsLIfCtxToBD.(string)
 		err = aciClient.CreateRelationvnsRsLIfCtxToBDFromLogicalInterfaceContext(vnsLIfCtx.DistinguishedName, relationParam)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_vns_rs_l_if_ctx_to_bd")
-		d.Partial(false)
-
 	}
 
 	if relationTovnsRsLIfCtxToOut, ok := d.GetOk("relation_vns_rs_l_if_ctx_to_out"); ok {
 		relationParam := relationTovnsRsLIfCtxToOut.(string)
 		err = aciClient.CreateRelationvnsRsLIfCtxToOutFromLogicalInterfaceContext(vnsLIfCtx.DistinguishedName, relationParam)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_vns_rs_l_if_ctx_to_out")
-		d.Partial(false)
-
 	}
 
 	d.SetId(vnsLIfCtx.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciLogicalInterfaceContextRead(d, m)
+	return resourceAciLogicalInterfaceContextRead(ctx, d, m)
 }
 
-func resourceAciLogicalInterfaceContextUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciLogicalInterfaceContextUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] LogicalInterfaceContext: Beginning Update")
 
 	aciClient := m.(*client.Client)
@@ -381,13 +355,8 @@ func resourceAciLogicalInterfaceContextUpdate(d *schema.ResourceData, m interfac
 	err := aciClient.Save(vnsLIfCtx)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.SetPartial("conn_name_or_lbl")
-
-	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
 
@@ -434,7 +403,7 @@ func resourceAciLogicalInterfaceContextUpdate(d *schema.ResourceData, m interfac
 	d.Partial(true)
 	err = checkTDn(aciClient, checkDns)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Partial(false)
 
@@ -443,56 +412,43 @@ func resourceAciLogicalInterfaceContextUpdate(d *schema.ResourceData, m interfac
 		newRelParamName := GetMOName(newRelParam.(string))
 		err = aciClient.CreateRelationvnsRsLIfCtxToCustQosPolFromLogicalInterfaceContext(vnsLIfCtx.DistinguishedName, newRelParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_vns_rs_l_if_ctx_to_cust_qos_pol")
-		d.Partial(false)
 
 	}
 	if d.HasChange("relation_vns_rs_l_if_ctx_to_svc_e_pg_pol") {
 		_, newRelParam := d.GetChange("relation_vns_rs_l_if_ctx_to_svc_e_pg_pol")
 		err = aciClient.DeleteRelationvnsRsLIfCtxToSvcEPgPolFromLogicalInterfaceContext(vnsLIfCtx.DistinguishedName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 		err = aciClient.CreateRelationvnsRsLIfCtxToSvcEPgPolFromLogicalInterfaceContext(vnsLIfCtx.DistinguishedName, newRelParam.(string))
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_vns_rs_l_if_ctx_to_svc_e_pg_pol")
-		d.Partial(false)
-
 	}
 	if d.HasChange("relation_vns_rs_l_if_ctx_to_svc_redirect_pol") {
 		_, newRelParam := d.GetChange("relation_vns_rs_l_if_ctx_to_svc_redirect_pol")
 		err = aciClient.DeleteRelationvnsRsLIfCtxToSvcRedirectPolFromLogicalInterfaceContext(vnsLIfCtx.DistinguishedName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 		err = aciClient.CreateRelationvnsRsLIfCtxToSvcRedirectPolFromLogicalInterfaceContext(vnsLIfCtx.DistinguishedName, newRelParam.(string))
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_vns_rs_l_if_ctx_to_svc_redirect_pol")
-		d.Partial(false)
 
 	}
 	if d.HasChange("relation_vns_rs_l_if_ctx_to_l_if") {
 		_, newRelParam := d.GetChange("relation_vns_rs_l_if_ctx_to_l_if")
 		err = aciClient.DeleteRelationvnsRsLIfCtxToLIfFromLogicalInterfaceContext(vnsLIfCtx.DistinguishedName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 		err = aciClient.CreateRelationvnsRsLIfCtxToLIfFromLogicalInterfaceContext(vnsLIfCtx.DistinguishedName, newRelParam.(string))
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_vns_rs_l_if_ctx_to_l_if")
-		d.Partial(false)
 
 	}
 	if d.HasChange("relation_vns_rs_l_if_ctx_to_out_def") {
@@ -500,11 +456,8 @@ func resourceAciLogicalInterfaceContextUpdate(d *schema.ResourceData, m interfac
 		newRelParamName := GetMOName(newRelParam.(string))
 		err = aciClient.CreateRelationvnsRsLIfCtxToOutDefFromLogicalInterfaceContext(vnsLIfCtx.DistinguishedName, newRelParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_vns_rs_l_if_ctx_to_out_def")
-		d.Partial(false)
 
 	}
 	if d.HasChange("relation_vns_rs_l_if_ctx_to_inst_p") {
@@ -512,56 +465,45 @@ func resourceAciLogicalInterfaceContextUpdate(d *schema.ResourceData, m interfac
 		newRelParamName := GetMOName(newRelParam.(string))
 		err = aciClient.DeleteRelationvnsRsLIfCtxToInstPFromLogicalInterfaceContext(vnsLIfCtx.DistinguishedName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 		err = aciClient.CreateRelationvnsRsLIfCtxToInstPFromLogicalInterfaceContext(vnsLIfCtx.DistinguishedName, newRelParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_vns_rs_l_if_ctx_to_inst_p")
-		d.Partial(false)
 
 	}
 	if d.HasChange("relation_vns_rs_l_if_ctx_to_bd") {
 		_, newRelParam := d.GetChange("relation_vns_rs_l_if_ctx_to_bd")
 		err = aciClient.DeleteRelationvnsRsLIfCtxToBDFromLogicalInterfaceContext(vnsLIfCtx.DistinguishedName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 		err = aciClient.CreateRelationvnsRsLIfCtxToBDFromLogicalInterfaceContext(vnsLIfCtx.DistinguishedName, newRelParam.(string))
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_vns_rs_l_if_ctx_to_bd")
-		d.Partial(false)
-
 	}
 	if d.HasChange("relation_vns_rs_l_if_ctx_to_out") {
 		_, newRelParam := d.GetChange("relation_vns_rs_l_if_ctx_to_out")
 		err = aciClient.DeleteRelationvnsRsLIfCtxToOutFromLogicalInterfaceContext(vnsLIfCtx.DistinguishedName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 		err = aciClient.CreateRelationvnsRsLIfCtxToOutFromLogicalInterfaceContext(vnsLIfCtx.DistinguishedName, newRelParam.(string))
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_vns_rs_l_if_ctx_to_out")
-		d.Partial(false)
-
 	}
 
 	d.SetId(vnsLIfCtx.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciLogicalInterfaceContextRead(d, m)
+	return resourceAciLogicalInterfaceContextRead(ctx, d, m)
 
 }
 
-func resourceAciLogicalInterfaceContextRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciLogicalInterfaceContextRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -573,7 +515,12 @@ func resourceAciLogicalInterfaceContextRead(d *schema.ResourceData, m interface{
 		d.SetId("")
 		return nil
 	}
-	setLogicalInterfaceContextAttributes(vnsLIfCtx, d)
+	_, err = setLogicalInterfaceContextAttributes(vnsLIfCtx, d)
+
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 
 	vnsRsLIfCtxToCustQosPolData, err := aciClient.ReadRelationvnsRsLIfCtxToCustQosPolFromLogicalInterfaceContext(dn)
 	if err != nil {
@@ -691,18 +638,18 @@ func resourceAciLogicalInterfaceContextRead(d *schema.ResourceData, m interface{
 	return nil
 }
 
-func resourceAciLogicalInterfaceContextDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciLogicalInterfaceContextDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "vnsLIfCtx")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
 }

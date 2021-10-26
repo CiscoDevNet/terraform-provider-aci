@@ -6,9 +6,9 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/acctest"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/acctest"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
 func TestAccAciCloudContextProfile_Basic(t *testing.T) {
@@ -37,24 +37,24 @@ func testAccCheckAciCloudContextProfileConfig_basic(fv_tenant_name, cloud_ctx_pr
 	return fmt.Sprintf(`
 
 	resource "aci_tenant" "footenant" {
-		name 		= "%s"
+		name 		= "%s" 
 		description = "tenant created while acceptance testing"
 
 	}
 
 	resource "aci_vrf" "vrf1" {
-		tenant_dn = "${aci_tenant.footenant.id}"
+		tenant_dn = aci_tenant.footenant.id
 		name      = "acc-vrf"
 	}
 
 	resource "aci_cloud_context_profile" "foocloud_context_profile" {
 		name 		             = "%s"
 		description              = "cloud_context_profile created while acceptance testing"
-		tenant_dn                = "${aci_tenant.footenant.id}"
+		tenant_dn                = aci_tenant.footenant.id
 		primary_cidr             = "10.230.231.1/16"
 		region                   = "us-west-1"
 		cloud_vendor			 = "aws"
-		relation_cloud_rs_to_ctx = "${aci_vrf.vrf1.id}"
+		relation_cloud_rs_to_ctx = aci_vrf.vrf1.id
 	}
 
 	`, fv_tenant_name, cloud_ctx_profile_name)

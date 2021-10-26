@@ -1,5 +1,5 @@
 variable "bd_subnet" {
-  type    = "string"
+  type    = string
   default = "1.1.1.1/24"
 }
 

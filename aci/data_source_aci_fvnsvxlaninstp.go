@@ -1,16 +1,18 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func dataSourceAciVXLANPool() *schema.Resource {
 	return &schema.Resource{
 
-		Read: dataSourceAciVXLANPoolRead,
+		ReadContext: dataSourceAciVXLANPoolRead,
 
 		SchemaVersion: 1,
 
@@ -30,7 +32,7 @@ func dataSourceAciVXLANPool() *schema.Resource {
 	}
 }
 
-func dataSourceAciVXLANPoolRead(d *schema.ResourceData, m interface{}) error {
+func dataSourceAciVXLANPoolRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	aciClient := m.(*client.Client)
 
 	name := d.Get("name").(string)
@@ -42,7 +44,7 @@ func dataSourceAciVXLANPoolRead(d *schema.ResourceData, m interface{}) error {
 	fvnsVxlanInstP, err := getRemoteVXLANPool(aciClient, dn)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	setVXLANPoolAttributes(fvnsVxlanInstP, d)
 	return nil

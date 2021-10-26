@@ -1,21 +1,23 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciFirmwarePolicy() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciFirmwarePolicyCreate,
-		Update: resourceAciFirmwarePolicyUpdate,
-		Read:   resourceAciFirmwarePolicyRead,
-		Delete: resourceAciFirmwarePolicyDelete,
+		CreateContext: resourceAciFirmwarePolicyCreate,
+		UpdateContext: resourceAciFirmwarePolicyUpdate,
+		ReadContext:   resourceAciFirmwarePolicyRead,
+		DeleteContext: resourceAciFirmwarePolicyDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciFirmwarePolicyImport,
@@ -98,10 +100,13 @@ func getRemoteFirmwarePolicy(client *client.Client, dn string) (*models.Firmware
 	return firmwareFwP, nil
 }
 
-func setFirmwarePolicyAttributes(firmwareFwP *models.FirmwarePolicy, d *schema.ResourceData) *schema.ResourceData {
+func setFirmwarePolicyAttributes(firmwareFwP *models.FirmwarePolicy, d *schema.ResourceData) (*schema.ResourceData, error) {
 	d.SetId(firmwareFwP.DistinguishedName)
 	d.Set("description", firmwareFwP.Description)
-	firmwareFwPMap, _ := firmwareFwP.ToMap()
+	firmwareFwPMap, err := firmwareFwP.ToMap()
+	if err != nil {
+		return d, err
+	}
 
 	d.Set("name", firmwareFwPMap["name"])
 
@@ -112,7 +117,7 @@ func setFirmwarePolicyAttributes(firmwareFwP *models.FirmwarePolicy, d *schema.R
 	d.Set("name_alias", firmwareFwPMap["nameAlias"])
 	d.Set("version", firmwareFwPMap["version"])
 	d.Set("version_check_override", firmwareFwPMap["versionCheckOverride"])
-	return d
+	return d, nil
 }
 
 func resourceAciFirmwarePolicyImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -126,14 +131,17 @@ func resourceAciFirmwarePolicyImport(d *schema.ResourceData, m interface{}) ([]*
 	if err != nil {
 		return nil, err
 	}
-	schemaFilled := setFirmwarePolicyAttributes(firmwareFwP, d)
+	schemaFilled, err := setFirmwarePolicyAttributes(firmwareFwP, d)
+	if err != nil {
+		return nil, err
+	}
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciFirmwarePolicyCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciFirmwarePolicyCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] FirmwarePolicy: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -168,21 +176,16 @@ func resourceAciFirmwarePolicyCreate(d *schema.ResourceData, m interface{}) erro
 
 	err := aciClient.Save(firmwareFwP)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.SetPartial("name")
-
-	d.Partial(false)
 
 	d.SetId(firmwareFwP.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciFirmwarePolicyRead(d, m)
+	return resourceAciFirmwarePolicyRead(ctx, d, m)
 }
 
-func resourceAciFirmwarePolicyUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciFirmwarePolicyUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] FirmwarePolicy: Beginning Update")
 
 	aciClient := m.(*client.Client)
@@ -221,22 +224,17 @@ func resourceAciFirmwarePolicyUpdate(d *schema.ResourceData, m interface{}) erro
 	err := aciClient.Save(firmwareFwP)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.SetPartial("name")
-
-	d.Partial(false)
 
 	d.SetId(firmwareFwP.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciFirmwarePolicyRead(d, m)
+	return resourceAciFirmwarePolicyRead(ctx, d, m)
 
 }
 
-func resourceAciFirmwarePolicyRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciFirmwarePolicyRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -248,25 +246,29 @@ func resourceAciFirmwarePolicyRead(d *schema.ResourceData, m interface{}) error 
 		d.SetId("")
 		return nil
 	}
-	setFirmwarePolicyAttributes(firmwareFwP, d)
+	_, err = setFirmwarePolicyAttributes(firmwareFwP, d)
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 
 	return nil
 }
 
-func resourceAciFirmwarePolicyDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciFirmwarePolicyDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "firmwareFwP")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
 }

@@ -6,8 +6,8 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
 func TestAccAciLLDPInterfacePolicy_Basic(t *testing.T) {
@@ -25,11 +25,6 @@ func TestAccAciLLDPInterfacePolicy_Basic(t *testing.T) {
 					testAccCheckAciLLDPInterfacePolicyExists("aci_lldp_interface_policy.foolldp_interface_policy", &lldp_interface_policy),
 					testAccCheckAciLLDPInterfacePolicyAttributes(description, "enabled", &lldp_interface_policy),
 				),
-			},
-			{
-				ResourceName:      "aci_lldp_interface_policy",
-				ImportState:       true,
-				ImportStateVerify: true,
 			},
 		},
 	})

@@ -6,8 +6,8 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
 func TestAccAciConfigurationExportPolicy_Basic(t *testing.T) {
@@ -25,11 +25,6 @@ func TestAccAciConfigurationExportPolicy_Basic(t *testing.T) {
 					testAccCheckAciConfigurationExportPolicyExists("aci_configuration_export_policy.fooconfiguration_export_policy", &configuration_export_policy),
 					testAccCheckAciConfigurationExportPolicyAttributes(description, &configuration_export_policy),
 				),
-			},
-			{
-				ResourceName:      "aci_configuration_export_policy",
-				ImportState:       true,
-				ImportStateVerify: true,
 			},
 		},
 	})
@@ -66,17 +61,16 @@ func testAccCheckAciConfigurationExportPolicyConfig_basic(description string) st
 	return fmt.Sprintf(`
 
 	resource "aci_configuration_export_policy" "fooconfiguration_export_policy" {
-		description = "%s"
-		
-		name  = "example"
-		  admin_st  = "untriggered"
-		  annotation  = "example"
-		  format  = "json"
-		  include_secure_fields  = "no"
-		  max_snapshot_count  = "example"
-		  name_alias  = "example"
-		  snapshot  = "yes"
-		  target_dn  = "example"
+		name                  = "example"
+		description           = "%s"
+		admin_st              = "untriggered"
+		annotation            = "example"
+		format                = "json"
+		include_secure_fields = "yes"
+		max_snapshot_count    = "10"
+		name_alias            = "example"
+		snapshot              = "yes"
+		target_dn             = "uni/tn-crest_test_kishan_tenant"
 		}
 	`, description)
 }
@@ -152,11 +146,11 @@ func testAccCheckAciConfigurationExportPolicyAttributes(description string, conf
 			return fmt.Errorf("Bad configuration_export_policy format %s", configuration_export_policy.Format)
 		}
 
-		if "no" != configuration_export_policy.IncludeSecureFields {
+		if "yes" != configuration_export_policy.IncludeSecureFields {
 			return fmt.Errorf("Bad configuration_export_policy include_secure_fields %s", configuration_export_policy.IncludeSecureFields)
 		}
 
-		if "example" != configuration_export_policy.MaxSnapshotCount {
+		if "10" != configuration_export_policy.MaxSnapshotCount {
 			return fmt.Errorf("Bad configuration_export_policy max_snapshot_count %s", configuration_export_policy.MaxSnapshotCount)
 		}
 
@@ -168,7 +162,7 @@ func testAccCheckAciConfigurationExportPolicyAttributes(description string, conf
 			return fmt.Errorf("Bad configuration_export_policy snapshot %s", configuration_export_policy.Snapshot)
 		}
 
-		if "example" != configuration_export_policy.TargetDn {
+		if "uni/tn-crest_test_kishan_tenant" != configuration_export_policy.TargetDn {
 			return fmt.Errorf("Bad configuration_export_policy target_dn %s", configuration_export_policy.TargetDn)
 		}
 

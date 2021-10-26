@@ -1,23 +1,31 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func dataSourceAciBgpPeerConnectivityProfile() *schema.Resource {
 	return &schema.Resource{
 
-		Read: dataSourceAciBgpPeerConnectivityProfileRead,
+		ReadContext: dataSourceAciBgpPeerConnectivityProfileRead,
 
 		SchemaVersion: 1,
 
 		Schema: AppendBaseAttrSchema(map[string]*schema.Schema{
 			"logical_node_profile_dn": &schema.Schema{
+				Type:       schema.TypeString,
+				Optional:   true,
+				Deprecated: "use parent_dn instead",
+			},
+
+			"parent_dn": &schema.Schema{
 				Type:     schema.TypeString,
-				Required: true,
+				Optional: true,
 			},
 
 			"addr": &schema.Schema{
@@ -106,36 +114,54 @@ func dataSourceAciBgpPeerConnectivityProfile() *schema.Resource {
 	}
 }
 
-func dataSourceAciBgpPeerConnectivityProfileRead(d *schema.ResourceData, m interface{}) error {
+func dataSourceAciBgpPeerConnectivityProfileRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	aciClient := m.(*client.Client)
 
 	addr := d.Get("addr").(string)
+	var parentDn string
 
 	rn := fmt.Sprintf("peerP-[%s]", addr)
-	LogicalNodeProfileDn := d.Get("logical_node_profile_dn").(string)
+	if d.Get("logical_node_profile_dn").(string) != "" && d.Get("parent_dn").(string) != "" {
+		return diag.FromErr(fmt.Errorf("Usage of both parent_dn and logical_node_profile_dn parameters is not supported. logical_node_profile_dn parameter will be deprecated use parent_dn instead."))
+	} else if d.Get("parent_dn").(string) != "" {
+		parentDn = d.Get("parent_dn").(string)
+	} else if d.Get("logical_node_profile_dn").(string) != "" {
+		parentDn = d.Get("logical_node_profile_dn").(string)
+	} else {
+		return diag.FromErr(fmt.Errorf("parent_dn is required to query a BGP Peer Connectivity Profile"))
+	}
 
-	dn := fmt.Sprintf("%s/%s", LogicalNodeProfileDn, rn)
+	dn := fmt.Sprintf("%s/%s", parentDn, rn)
 
 	bgpPeerP, err := getRemoteBgpPeerConnectivityProfile(aciClient, dn)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	d.SetId(dn)
-	setBgpPeerConnectivityProfileAttributes(bgpPeerP, d)
+	_, err = setBgpPeerConnectivityProfileAttributes(bgpPeerP, d)
+	if err != nil {
+		return diag.FromErr(err)
+	}
 
 	bgpAsP, err := getRemoteBgpAutonomousSystemProfileFromBgpPeerConnectivityProfile(aciClient, fmt.Sprintf("%s/as", dn))
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	setBgpAutonomousSystemProfileAttributesFromBgpPeerConnectivityProfile(bgpAsP, d)
+	_, err = setBgpAutonomousSystemProfileAttributesFromBgpPeerConnectivityProfile(bgpAsP, d)
+	if err != nil {
+		return diag.FromErr(err)
+	}
 
 	bgpLocalAsnP, err := getRemoteLocalAutonomousSystemProfileFromBgpPeerConnectivityProfile(aciClient, fmt.Sprintf("%s/localasn", dn))
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	setLocalAutonomousSystemProfileAttributesFromBgpPeerConnectivityProfile(bgpLocalAsnP, d)
+	_, err = setLocalAutonomousSystemProfileAttributesFromBgpPeerConnectivityProfile(bgpLocalAsnP, d)
+	if err != nil {
+		return diag.FromErr(err)
+	}
 
 	return nil
 }

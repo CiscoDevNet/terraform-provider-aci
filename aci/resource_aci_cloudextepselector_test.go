@@ -6,8 +6,8 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
 func TestAccAciCloudEndpointSelectorforExternalEPgs_Basic(t *testing.T) {
@@ -25,11 +25,6 @@ func TestAccAciCloudEndpointSelectorforExternalEPgs_Basic(t *testing.T) {
 					testAccCheckAciCloudEndpointSelectorforExternalEPgsExists("aci_cloud_endpoint_selectorfor_external_epgs.foocloud_endpoint_selectorfor_external_epgs", &cloud_endpoint_selectorfor_external_epgs),
 					testAccCheckAciCloudEndpointSelectorforExternalEPgsAttributes(description, "0.0.0.0/0", &cloud_endpoint_selectorfor_external_epgs),
 				),
-			},
-			{
-				ResourceName:      "aci_cloud_endpoint_selectorfor_external_epgs",
-				ImportState:       true,
-				ImportStateVerify: true,
 			},
 		},
 	})
@@ -71,18 +66,18 @@ func testAccCheckAciCloudEndpointSelectorforExternalEPgsConfig_basic(description
 	}
 
 	resource "aci_cloud_applicationcontainer" "foocloud_applicationcontainer" {
-		tenant_dn   = "${aci_tenant.footenant.id}"
+		tenant_dn   = aci_tenant.footenant.id
 		name        = "demo_app"
 		annotation  = "tag_app"
 	}
 
 	resource "aci_cloud_external_epg" "foocloud_external_epg" {
-		cloud_applicationcontainer_dn = "${aci_cloud_applicationcontainer.foocloud_applicationcontainer.id}"
+		cloud_applicationcontainer_dn = aci_cloud_applicationcontainer.foocloud_applicationcontainer.id
 		name                          = "cloud_ext_epg"
 	}
 
 	resource "aci_cloud_endpoint_selectorfor_external_epgs" "foocloud_endpoint_selectorfor_external_epgs" {
-		cloud_external_epg_dn = "${aci_cloud_external_epg.foocloud_external_epg.id}"
+		cloud_external_epg_dn  = aci_cloud_external_epg.foocloud_external_epg.id
 		description            = "%s"
 		name                   = "ext_ep_selector"
 		annotation             = "tag_ext_selector"

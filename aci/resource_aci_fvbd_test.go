@@ -6,8 +6,8 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
 func TestAccAciBridgeDomain_Basic(t *testing.T) {
@@ -25,11 +25,6 @@ func TestAccAciBridgeDomain_Basic(t *testing.T) {
 					testAccCheckAciBridgeDomainExists("aci_bridge_domain.foobridge_domain", &bridge_domain),
 					testAccCheckAciBridgeDomainAttributes(description, "yes", &bridge_domain),
 				),
-			},
-			{
-				ResourceName:      "aci_bridge_domain",
-				ImportState:       true,
-				ImportStateVerify: true,
 			},
 		},
 	})
@@ -69,7 +64,7 @@ func testAccCheckAciBridgeDomainConfig_basic(description, ipv6_mcast_allow strin
 		description = "This tenant is created by terraform ACI provider"
 	}
 	resource "aci_bridge_domain" "foobridge_domain" {
-		tenant_dn                   = "${aci_tenant.tenant_for_bd.id}"
+		tenant_dn                   = aci_tenant.tenant_for_bd.id
 		description                 = "%s"
 		name                        = "demo_bd"
 		optimize_wan_bandwidth      = "no"
@@ -93,7 +88,6 @@ func testAccCheckAciBridgeDomainConfig_basic(description, ipv6_mcast_allow strin
 		unk_mcast_act               = "flood"
 		vmac                        = "not-applicable"
 	}
-	  
 	`, description, ipv6_mcast_allow)
 }
 

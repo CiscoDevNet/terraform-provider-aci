@@ -14,7 +14,7 @@ Data source for ACI BGP Best Path Policy
 
 ```hcl
 data "aci_bgp_best_path_policy" "example" {
-  tenant_dn  = "${aci_tenant.example.id}"
+  tenant_dn  = aci_tenant.example.id
   name  = "example"
 }
 ```

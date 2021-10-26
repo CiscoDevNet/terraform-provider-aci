@@ -6,8 +6,8 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
 func TestAccAciVlanEncapsulationforVxlanTraffic_Basic(t *testing.T) {
@@ -25,11 +25,6 @@ func TestAccAciVlanEncapsulationforVxlanTraffic_Basic(t *testing.T) {
 					testAccCheckAciVlanEncapsulationforVxlanTrafficExists("aci_vlan_encapsulationfor_vxlan_traffic.foovlan_encapsulationfor_vxlan_traffic", &vlan_encapsulationfor_vxlan_traffic),
 					testAccCheckAciVlanEncapsulationforVxlanTrafficAttributes(description, "alias_heavy_traffic", &vlan_encapsulationfor_vxlan_traffic),
 				),
-			},
-			{
-				ResourceName:      "aci_vlan_encapsulationfor_vxlan_traffic",
-				ImportState:       true,
-				ImportStateVerify: true,
 			},
 		},
 	})
@@ -65,13 +60,19 @@ func TestAccAciVlanEncapsulationforVxlanTraffic_update(t *testing.T) {
 func testAccCheckAciVlanEncapsulationforVxlanTrafficConfig_basic(description, name_alias string) string {
 	return fmt.Sprintf(`
 
+	resource "aci_attachable_access_entity_profile" "example" {
+		description = "AAEP description"
+		name        = "demo_entity_prof"
+		annotation  = "tag_entity"
+		name_alias  = "alias_entity"
+	}
+	
 	resource "aci_vlan_encapsulationfor_vxlan_traffic" "foovlan_encapsulationfor_vxlan_traffic" {
-		attachable_access_entity_profile_dn = "${aci_attachable_access_entity_profile.example.id}"
+		attachable_access_entity_profile_dn = aci_attachable_access_entity_profile.example.id
 		description                         = "%s"
 		annotation                          = "tag_traffic"
 		name_alias                          = "%s"
 	}
-	  
 	`, description, name_alias)
 }
 

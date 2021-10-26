@@ -1,16 +1,18 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func dataSourceAciOSPFInterfacePolicy() *schema.Resource {
 	return &schema.Resource{
 
-		Read: dataSourceAciOSPFInterfacePolicyRead,
+		ReadContext: dataSourceAciOSPFInterfacePolicyRead,
 
 		SchemaVersion: 1,
 
@@ -91,7 +93,7 @@ func dataSourceAciOSPFInterfacePolicy() *schema.Resource {
 	}
 }
 
-func dataSourceAciOSPFInterfacePolicyRead(d *schema.ResourceData, m interface{}) error {
+func dataSourceAciOSPFInterfacePolicyRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	aciClient := m.(*client.Client)
 
 	name := d.Get("name").(string)
@@ -104,9 +106,14 @@ func dataSourceAciOSPFInterfacePolicyRead(d *schema.ResourceData, m interface{})
 	ospfIfPol, err := getRemoteOSPFInterfacePolicy(aciClient, dn)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.SetId(dn)
-	setOSPFInterfacePolicyAttributes(ospfIfPol, d)
+	_, err = setOSPFInterfacePolicyAttributes(ospfIfPol, d)
+
+	if err != nil {
+		return diag.FromErr(err)
+	}
+
 	return nil
 }

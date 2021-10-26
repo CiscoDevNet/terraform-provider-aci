@@ -13,15 +13,22 @@ Data source for ACI BGP Peer Connectivity Profile
 ## Example Usage
 
 ```hcl
+// Loopback Association
 data "aci_bgp_peer_connectivity_profile" "example" {
-  logical_node_profile_dn  = "${aci_logical_node_profile.example.id}"
+  parent_dn  = aci_logical_node_profile.example.id
   addr  = "10.0.0.1"
+}
+
+// Connected Association
+data "aci_bgp_peer_connectivity_profile" "example" {
+  parent_dn  = aci_l3out_path_attachment.example.id
+  addr  = "10.0.0.2"
 }
 ```
 
 ## Argument Reference
 
-- `logical_node_profile_dn` - (Required) Distinguished name of parent logical node profile object.
+- `parent_dn` - (Required) Distinguished name of parent logical node profile or L3-out Path Attachment object.
 - `addr` - (Required) The peer IP address.
 
 ## Attribute Reference

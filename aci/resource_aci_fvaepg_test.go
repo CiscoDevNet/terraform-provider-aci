@@ -6,8 +6,8 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
 func TestAccAciApplicationEPG_Basic(t *testing.T) {
@@ -25,11 +25,6 @@ func TestAccAciApplicationEPG_Basic(t *testing.T) {
 					testAccCheckAciApplicationEPGExists("aci_application_epg.fooapplication_epg", &application_epg),
 					testAccCheckAciApplicationEPGAttributes(description, "unspecified", &application_epg),
 				),
-			},
-			{
-				ResourceName:      "aci_application_epg",
-				ImportState:       true,
-				ImportStateVerify: true,
 			},
 		},
 	})
@@ -69,13 +64,13 @@ func testAccCheckAciApplicationEPGConfig_basic(description, prio string) string 
 		}
 	  
 		resource "aci_application_profile" "app_profile_for_epg" {
-			tenant_dn   = "${aci_tenant.tenant_for_epg.id}"
+			tenant_dn   = aci_tenant.tenant_for_epg.id
 			name        = "ap_for_epg"
 			description = "This app profile is created by terraform ACI providers"
 		}
 
 		resource "aci_application_epg" "fooapplication_epg" {
-			application_profile_dn  = "${aci_application_profile.app_profile_for_epg.id}"
+			application_profile_dn  = aci_application_profile.app_profile_for_epg.id
 			name  					= "demo_epg"
 			description 			= "%s"
 			annotation  			= "tag_epg"
@@ -83,7 +78,7 @@ func testAccCheckAciApplicationEPGConfig_basic(description, prio string) string 
 			flood_on_encap  		= "disabled"
 			fwd_ctrl  				= "none"
 			has_mcast_source  		= "no"
-			is_attr_based_epg  	= "no"
+			is_attr_based_epg  	    = "no"
 			match_t  				= "AtleastOne"
 			name_alias  			= "alias_epg"
 			pc_enf_pref  			= "unenforced"
@@ -163,10 +158,6 @@ func testAccCheckAciApplicationEPGAttributes(description, prio string, applicati
 
 		if "disabled" != application_epg.FloodOnEncap {
 			return fmt.Errorf("Bad application_epg flood_on_encap %s", application_epg.FloodOnEncap)
-		}
-
-		if "none" != application_epg.FwdCtrl {
-			return fmt.Errorf("Bad application_epg fwd_ctrl %s", application_epg.FwdCtrl)
 		}
 
 		if "no" != application_epg.HasMcastSource {

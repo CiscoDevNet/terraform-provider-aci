@@ -1,6 +1,7 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"reflect"
@@ -8,15 +9,17 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciLeafAccessPortPolicyGroup() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciLeafAccessPortPolicyGroupCreate,
-		Update: resourceAciLeafAccessPortPolicyGroupUpdate,
-		Read:   resourceAciLeafAccessPortPolicyGroupRead,
-		Delete: resourceAciLeafAccessPortPolicyGroupDelete,
+		CreateContext: resourceAciLeafAccessPortPolicyGroupCreate,
+		UpdateContext: resourceAciLeafAccessPortPolicyGroupUpdate,
+		ReadContext:   resourceAciLeafAccessPortPolicyGroupRead,
+		DeleteContext: resourceAciLeafAccessPortPolicyGroupDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciLeafAccessPortPolicyGroupImport,
@@ -79,13 +82,18 @@ func resourceAciLeafAccessPortPolicyGroup() *schema.Resource {
 				Optional: true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
-						"tn_netflow_monitor_pol_name": {
+						"target_dn": {
 							Type:     schema.TypeString,
 							Required: true,
 						},
 						"flt_type": {
 							Type:     schema.TypeString,
 							Required: true,
+							ValidateFunc: validation.StringInSlice([]string{
+								"ipv4",
+								"ipv6",
+								"ce",
+							}, false),
 						},
 					},
 				},
@@ -194,16 +202,18 @@ func getRemoteLeafAccessPortPolicyGroup(client *client.Client, dn string) (*mode
 	return infraAccPortGrp, nil
 }
 
-func setLeafAccessPortPolicyGroupAttributes(infraAccPortGrp *models.LeafAccessPortPolicyGroup, d *schema.ResourceData) *schema.ResourceData {
+func setLeafAccessPortPolicyGroupAttributes(infraAccPortGrp *models.LeafAccessPortPolicyGroup, d *schema.ResourceData) (*schema.ResourceData, error) {
 	d.SetId(infraAccPortGrp.DistinguishedName)
 	d.Set("description", infraAccPortGrp.Description)
-	infraAccPortGrpMap, _ := infraAccPortGrp.ToMap()
-
+	infraAccPortGrpMap, err := infraAccPortGrp.ToMap()
+	if err != nil {
+		return d, err
+	}
 	d.Set("name", infraAccPortGrpMap["name"])
 
 	d.Set("annotation", infraAccPortGrpMap["annotation"])
 	d.Set("name_alias", infraAccPortGrpMap["nameAlias"])
-	return d
+	return d, nil
 }
 
 func resourceAciLeafAccessPortPolicyGroupImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -217,14 +227,18 @@ func resourceAciLeafAccessPortPolicyGroupImport(d *schema.ResourceData, m interf
 	if err != nil {
 		return nil, err
 	}
-	schemaFilled := setLeafAccessPortPolicyGroupAttributes(infraAccPortGrp, d)
+	schemaFilled, err := setLeafAccessPortPolicyGroupAttributes(infraAccPortGrp, d)
+
+	if err != nil {
+		return nil, err
+	}
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciLeafAccessPortPolicyGroupCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciLeafAccessPortPolicyGroupCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] LeafAccessPortPolicyGroup: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -244,13 +258,8 @@ func resourceAciLeafAccessPortPolicyGroupCreate(d *schema.ResourceData, m interf
 
 	err := aciClient.Save(infraAccPortGrp)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.SetPartial("name")
-
-	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
 
@@ -381,7 +390,7 @@ func resourceAciLeafAccessPortPolicyGroupCreate(d *schema.ResourceData, m interf
 	d.Partial(true)
 	err = checkTDn(aciClient, checkDns)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Partial(false)
 
@@ -392,11 +401,8 @@ func resourceAciLeafAccessPortPolicyGroupCreate(d *schema.ResourceData, m interf
 			err = aciClient.CreateRelationinfraRsSpanVSrcGrpFromLeafAccessPortPolicyGroup(infraAccPortGrp.DistinguishedName, relationParamName)
 
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
-			d.Partial(true)
-			d.SetPartial("relation_infra_rs_span_v_src_grp")
-			d.Partial(false)
 		}
 	}
 	if relationToinfraRsStormctrlIfPol, ok := d.GetOk("relation_infra_rs_stormctrl_if_pol"); ok {
@@ -404,11 +410,8 @@ func resourceAciLeafAccessPortPolicyGroupCreate(d *schema.ResourceData, m interf
 		relationParamName := GetMOName(relationParam)
 		err = aciClient.CreateRelationinfraRsStormctrlIfPolFromLeafAccessPortPolicyGroup(infraAccPortGrp.DistinguishedName, relationParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_infra_rs_stormctrl_if_pol")
-		d.Partial(false)
 
 	}
 	if relationToinfraRsPoeIfPol, ok := d.GetOk("relation_infra_rs_poe_if_pol"); ok {
@@ -416,23 +419,16 @@ func resourceAciLeafAccessPortPolicyGroupCreate(d *schema.ResourceData, m interf
 		relationParamName := GetMOName(relationParam)
 		err = aciClient.CreateRelationinfraRsPoeIfPolFromLeafAccessPortPolicyGroup(infraAccPortGrp.DistinguishedName, relationParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_infra_rs_poe_if_pol")
-		d.Partial(false)
-
 	}
 	if relationToinfraRsLldpIfPol, ok := d.GetOk("relation_infra_rs_lldp_if_pol"); ok {
 		relationParam := relationToinfraRsLldpIfPol.(string)
 		relationParamName := GetMOName(relationParam)
 		err = aciClient.CreateRelationinfraRsLldpIfPolFromLeafAccessPortPolicyGroup(infraAccPortGrp.DistinguishedName, relationParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_infra_rs_lldp_if_pol")
-		d.Partial(false)
 
 	}
 	if relationToinfraRsMacsecIfPol, ok := d.GetOk("relation_infra_rs_macsec_if_pol"); ok {
@@ -440,11 +436,8 @@ func resourceAciLeafAccessPortPolicyGroupCreate(d *schema.ResourceData, m interf
 		relationParamName := GetMOName(relationParam)
 		err = aciClient.CreateRelationinfraRsMacsecIfPolFromLeafAccessPortPolicyGroup(infraAccPortGrp.DistinguishedName, relationParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_infra_rs_macsec_if_pol")
-		d.Partial(false)
 
 	}
 	if relationToinfraRsQosDppIfPol, ok := d.GetOk("relation_infra_rs_qos_dpp_if_pol"); ok {
@@ -452,23 +445,16 @@ func resourceAciLeafAccessPortPolicyGroupCreate(d *schema.ResourceData, m interf
 		relationParamName := GetMOName(relationParam)
 		err = aciClient.CreateRelationinfraRsQosDppIfPolFromLeafAccessPortPolicyGroup(infraAccPortGrp.DistinguishedName, relationParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_infra_rs_qos_dpp_if_pol")
-		d.Partial(false)
-
 	}
 	if relationToinfraRsHIfPol, ok := d.GetOk("relation_infra_rs_h_if_pol"); ok {
 		relationParam := relationToinfraRsHIfPol.(string)
 		relationParamName := GetMOName(relationParam)
 		err = aciClient.CreateRelationinfraRsHIfPolFromLeafAccessPortPolicyGroup(infraAccPortGrp.DistinguishedName, relationParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_infra_rs_h_if_pol")
-		d.Partial(false)
 
 	}
 	if relationToinfraRsNetflowMonitorPol, ok := d.GetOk("relation_infra_rs_netflow_monitor_pol"); ok {
@@ -476,13 +462,10 @@ func resourceAciLeafAccessPortPolicyGroupCreate(d *schema.ResourceData, m interf
 		relationParamList := relationToinfraRsNetflowMonitorPol.(*schema.Set).List()
 		for _, relationParam := range relationParamList {
 			paramMap := relationParam.(map[string]interface{})
-			err = aciClient.CreateRelationinfraRsNetflowMonitorPolFromLeafAccessPortPolicyGroup(infraAccPortGrp.DistinguishedName, paramMap["tn_netflow_monitor_pol_name"].(string), paramMap["flt_type"].(string))
+			err = aciClient.CreateRelationinfraRsNetflowMonitorPolFromLeafAccessPortPolicyGroup(infraAccPortGrp.DistinguishedName, GetMOName(paramMap["target_dn"].(string)), paramMap["flt_type"].(string))
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
-			d.Partial(true)
-			d.SetPartial("relation_infra_rs_netflow_monitor_pol")
-			d.Partial(false)
 		}
 
 	}
@@ -491,11 +474,8 @@ func resourceAciLeafAccessPortPolicyGroupCreate(d *schema.ResourceData, m interf
 		relationParamName := GetMOName(relationParam)
 		err = aciClient.CreateRelationinfraRsL2PortAuthPolFromLeafAccessPortPolicyGroup(infraAccPortGrp.DistinguishedName, relationParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_infra_rs_l2_port_auth_pol")
-		d.Partial(false)
 
 	}
 	if relationToinfraRsMcpIfPol, ok := d.GetOk("relation_infra_rs_mcp_if_pol"); ok {
@@ -503,23 +483,16 @@ func resourceAciLeafAccessPortPolicyGroupCreate(d *schema.ResourceData, m interf
 		relationParamName := GetMOName(relationParam)
 		err = aciClient.CreateRelationinfraRsMcpIfPolFromLeafAccessPortPolicyGroup(infraAccPortGrp.DistinguishedName, relationParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_infra_rs_mcp_if_pol")
-		d.Partial(false)
-
 	}
 	if relationToinfraRsL2PortSecurityPol, ok := d.GetOk("relation_infra_rs_l2_port_security_pol"); ok {
 		relationParam := relationToinfraRsL2PortSecurityPol.(string)
 		relationParamName := GetMOName(relationParam)
 		err = aciClient.CreateRelationinfraRsL2PortSecurityPolFromLeafAccessPortPolicyGroup(infraAccPortGrp.DistinguishedName, relationParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_infra_rs_l2_port_security_pol")
-		d.Partial(false)
 
 	}
 	if relationToinfraRsCoppIfPol, ok := d.GetOk("relation_infra_rs_copp_if_pol"); ok {
@@ -527,11 +500,8 @@ func resourceAciLeafAccessPortPolicyGroupCreate(d *schema.ResourceData, m interf
 		relationParamName := GetMOName(relationParam)
 		err = aciClient.CreateRelationinfraRsCoppIfPolFromLeafAccessPortPolicyGroup(infraAccPortGrp.DistinguishedName, relationParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_infra_rs_copp_if_pol")
-		d.Partial(false)
 
 	}
 	if relationToinfraRsSpanVDestGrp, ok := d.GetOk("relation_infra_rs_span_v_dest_grp"); ok {
@@ -541,11 +511,8 @@ func resourceAciLeafAccessPortPolicyGroupCreate(d *schema.ResourceData, m interf
 			err = aciClient.CreateRelationinfraRsSpanVDestGrpFromLeafAccessPortPolicyGroup(infraAccPortGrp.DistinguishedName, relationParamName)
 
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
-			d.Partial(true)
-			d.SetPartial("relation_infra_rs_span_v_dest_grp")
-			d.Partial(false)
 		}
 	}
 	if relationToinfraRsDwdmIfPol, ok := d.GetOk("relation_infra_rs_dwdm_if_pol"); ok {
@@ -553,11 +520,8 @@ func resourceAciLeafAccessPortPolicyGroupCreate(d *schema.ResourceData, m interf
 		relationParamName := GetMOName(relationParam)
 		err = aciClient.CreateRelationinfraRsDwdmIfPolFromLeafAccessPortPolicyGroup(infraAccPortGrp.DistinguishedName, relationParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_infra_rs_dwdm_if_pol")
-		d.Partial(false)
 
 	}
 	if relationToinfraRsQosPfcIfPol, ok := d.GetOk("relation_infra_rs_qos_pfc_if_pol"); ok {
@@ -565,11 +529,8 @@ func resourceAciLeafAccessPortPolicyGroupCreate(d *schema.ResourceData, m interf
 		relationParamName := GetMOName(relationParam)
 		err = aciClient.CreateRelationinfraRsQosPfcIfPolFromLeafAccessPortPolicyGroup(infraAccPortGrp.DistinguishedName, relationParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_infra_rs_qos_pfc_if_pol")
-		d.Partial(false)
 
 	}
 	if relationToinfraRsQosSdIfPol, ok := d.GetOk("relation_infra_rs_qos_sd_if_pol"); ok {
@@ -577,11 +538,8 @@ func resourceAciLeafAccessPortPolicyGroupCreate(d *schema.ResourceData, m interf
 		relationParamName := GetMOName(relationParam)
 		err = aciClient.CreateRelationinfraRsQosSdIfPolFromLeafAccessPortPolicyGroup(infraAccPortGrp.DistinguishedName, relationParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_infra_rs_qos_sd_if_pol")
-		d.Partial(false)
 
 	}
 	if relationToinfraRsMonIfInfraPol, ok := d.GetOk("relation_infra_rs_mon_if_infra_pol"); ok {
@@ -589,11 +547,8 @@ func resourceAciLeafAccessPortPolicyGroupCreate(d *schema.ResourceData, m interf
 		relationParamName := GetMOName(relationParam)
 		err = aciClient.CreateRelationinfraRsMonIfInfraPolFromLeafAccessPortPolicyGroup(infraAccPortGrp.DistinguishedName, relationParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_infra_rs_mon_if_infra_pol")
-		d.Partial(false)
 
 	}
 	if relationToinfraRsFcIfPol, ok := d.GetOk("relation_infra_rs_fc_if_pol"); ok {
@@ -601,11 +556,8 @@ func resourceAciLeafAccessPortPolicyGroupCreate(d *schema.ResourceData, m interf
 		relationParamName := GetMOName(relationParam)
 		err = aciClient.CreateRelationinfraRsFcIfPolFromLeafAccessPortPolicyGroup(infraAccPortGrp.DistinguishedName, relationParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_infra_rs_fc_if_pol")
-		d.Partial(false)
 
 	}
 	if relationToinfraRsQosIngressDppIfPol, ok := d.GetOk("relation_infra_rs_qos_ingress_dpp_if_pol"); ok {
@@ -613,11 +565,8 @@ func resourceAciLeafAccessPortPolicyGroupCreate(d *schema.ResourceData, m interf
 		relationParamName := GetMOName(relationParam)
 		err = aciClient.CreateRelationinfraRsQosIngressDppIfPolFromLeafAccessPortPolicyGroup(infraAccPortGrp.DistinguishedName, relationParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_infra_rs_qos_ingress_dpp_if_pol")
-		d.Partial(false)
 
 	}
 	if relationToinfraRsCdpIfPol, ok := d.GetOk("relation_infra_rs_cdp_if_pol"); ok {
@@ -625,11 +574,8 @@ func resourceAciLeafAccessPortPolicyGroupCreate(d *schema.ResourceData, m interf
 		relationParamName := GetMOName(relationParam)
 		err = aciClient.CreateRelationinfraRsCdpIfPolFromLeafAccessPortPolicyGroup(infraAccPortGrp.DistinguishedName, relationParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_infra_rs_cdp_if_pol")
-		d.Partial(false)
 
 	}
 	if relationToinfraRsL2IfPol, ok := d.GetOk("relation_infra_rs_l2_if_pol"); ok {
@@ -637,11 +583,8 @@ func resourceAciLeafAccessPortPolicyGroupCreate(d *schema.ResourceData, m interf
 		relationParamName := GetMOName(relationParam)
 		err = aciClient.CreateRelationinfraRsL2IfPolFromLeafAccessPortPolicyGroup(infraAccPortGrp.DistinguishedName, relationParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_infra_rs_l2_if_pol")
-		d.Partial(false)
 
 	}
 	if relationToinfraRsStpIfPol, ok := d.GetOk("relation_infra_rs_stp_if_pol"); ok {
@@ -649,11 +592,8 @@ func resourceAciLeafAccessPortPolicyGroupCreate(d *schema.ResourceData, m interf
 		relationParamName := GetMOName(relationParam)
 		err = aciClient.CreateRelationinfraRsStpIfPolFromLeafAccessPortPolicyGroup(infraAccPortGrp.DistinguishedName, relationParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_infra_rs_stp_if_pol")
-		d.Partial(false)
 
 	}
 	if relationToinfraRsQosEgressDppIfPol, ok := d.GetOk("relation_infra_rs_qos_egress_dpp_if_pol"); ok {
@@ -661,43 +601,34 @@ func resourceAciLeafAccessPortPolicyGroupCreate(d *schema.ResourceData, m interf
 		relationParamName := GetMOName(relationParam)
 		err = aciClient.CreateRelationinfraRsQosEgressDppIfPolFromLeafAccessPortPolicyGroup(infraAccPortGrp.DistinguishedName, relationParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_infra_rs_qos_egress_dpp_if_pol")
-		d.Partial(false)
 
 	}
 	if relationToinfraRsAttEntP, ok := d.GetOk("relation_infra_rs_att_ent_p"); ok {
 		relationParam := relationToinfraRsAttEntP.(string)
 		err = aciClient.CreateRelationinfraRsAttEntPFromLeafAccessPortPolicyGroup(infraAccPortGrp.DistinguishedName, relationParam)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_infra_rs_att_ent_p")
-		d.Partial(false)
 
 	}
 	if relationToinfraRsL2InstPol, ok := d.GetOk("relation_infra_rs_l2_inst_pol"); ok {
 		relationParam := relationToinfraRsL2InstPol.(string)
 		err = aciClient.CreateRelationinfraRsL2InstPolFromLeafAccessPortPolicyGroup(infraAccPortGrp.DistinguishedName, relationParam)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_infra_rs_l2_inst_pol")
-		d.Partial(false)
 
 	}
 
 	d.SetId(infraAccPortGrp.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciLeafAccessPortPolicyGroupRead(d, m)
+	return resourceAciLeafAccessPortPolicyGroupRead(ctx, d, m)
 }
 
-func resourceAciLeafAccessPortPolicyGroupUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciLeafAccessPortPolicyGroupUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] LeafAccessPortPolicyGroup: Beginning Update")
 
 	aciClient := m.(*client.Client)
@@ -721,13 +652,8 @@ func resourceAciLeafAccessPortPolicyGroupUpdate(d *schema.ResourceData, m interf
 	err := aciClient.Save(infraAccPortGrp)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.SetPartial("name")
-
-	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
 
@@ -866,7 +792,7 @@ func resourceAciLeafAccessPortPolicyGroupUpdate(d *schema.ResourceData, m interf
 	d.Partial(true)
 	err = checkTDn(aciClient, checkDns)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Partial(false)
 
@@ -881,7 +807,7 @@ func resourceAciLeafAccessPortPolicyGroupUpdate(d *schema.ResourceData, m interf
 			relDnName := GetMOName(relDn)
 			err = aciClient.DeleteRelationinfraRsSpanVSrcGrpFromLeafAccessPortPolicyGroup(infraAccPortGrp.DistinguishedName, relDnName)
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 		}
@@ -890,11 +816,8 @@ func resourceAciLeafAccessPortPolicyGroupUpdate(d *schema.ResourceData, m interf
 			relDnName := GetMOName(relDn)
 			err = aciClient.CreateRelationinfraRsSpanVSrcGrpFromLeafAccessPortPolicyGroup(infraAccPortGrp.DistinguishedName, relDnName)
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
-			d.Partial(true)
-			d.SetPartial("relation_infra_rs_span_v_src_grp")
-			d.Partial(false)
 
 		}
 
@@ -904,11 +827,8 @@ func resourceAciLeafAccessPortPolicyGroupUpdate(d *schema.ResourceData, m interf
 		newRelParamName := GetMOName(newRelParam.(string))
 		err = aciClient.CreateRelationinfraRsStormctrlIfPolFromLeafAccessPortPolicyGroup(infraAccPortGrp.DistinguishedName, newRelParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_infra_rs_stormctrl_if_pol")
-		d.Partial(false)
 
 	}
 	if d.HasChange("relation_infra_rs_poe_if_pol") {
@@ -916,15 +836,12 @@ func resourceAciLeafAccessPortPolicyGroupUpdate(d *schema.ResourceData, m interf
 		newRelParamName := GetMOName(newRelParam.(string))
 		err = aciClient.DeleteRelationinfraRsPoeIfPolFromLeafAccessPortPolicyGroup(infraAccPortGrp.DistinguishedName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 		err = aciClient.CreateRelationinfraRsPoeIfPolFromLeafAccessPortPolicyGroup(infraAccPortGrp.DistinguishedName, newRelParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_infra_rs_poe_if_pol")
-		d.Partial(false)
 
 	}
 	if d.HasChange("relation_infra_rs_lldp_if_pol") {
@@ -932,11 +849,8 @@ func resourceAciLeafAccessPortPolicyGroupUpdate(d *schema.ResourceData, m interf
 		newRelParamName := GetMOName(newRelParam.(string))
 		err = aciClient.CreateRelationinfraRsLldpIfPolFromLeafAccessPortPolicyGroup(infraAccPortGrp.DistinguishedName, newRelParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_infra_rs_lldp_if_pol")
-		d.Partial(false)
 
 	}
 	if d.HasChange("relation_infra_rs_macsec_if_pol") {
@@ -944,11 +858,8 @@ func resourceAciLeafAccessPortPolicyGroupUpdate(d *schema.ResourceData, m interf
 		newRelParamName := GetMOName(newRelParam.(string))
 		err = aciClient.CreateRelationinfraRsMacsecIfPolFromLeafAccessPortPolicyGroup(infraAccPortGrp.DistinguishedName, newRelParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_infra_rs_macsec_if_pol")
-		d.Partial(false)
 
 	}
 	if d.HasChange("relation_infra_rs_qos_dpp_if_pol") {
@@ -956,11 +867,8 @@ func resourceAciLeafAccessPortPolicyGroupUpdate(d *schema.ResourceData, m interf
 		newRelParamName := GetMOName(newRelParam.(string))
 		err = aciClient.CreateRelationinfraRsQosDppIfPolFromLeafAccessPortPolicyGroup(infraAccPortGrp.DistinguishedName, newRelParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_infra_rs_qos_dpp_if_pol")
-		d.Partial(false)
 
 	}
 	if d.HasChange("relation_infra_rs_h_if_pol") {
@@ -968,11 +876,8 @@ func resourceAciLeafAccessPortPolicyGroupUpdate(d *schema.ResourceData, m interf
 		newRelParamName := GetMOName(newRelParam.(string))
 		err = aciClient.CreateRelationinfraRsHIfPolFromLeafAccessPortPolicyGroup(infraAccPortGrp.DistinguishedName, newRelParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_infra_rs_h_if_pol")
-		d.Partial(false)
 
 	}
 	if d.HasChange("relation_infra_rs_netflow_monitor_pol") {
@@ -981,21 +886,18 @@ func resourceAciLeafAccessPortPolicyGroupUpdate(d *schema.ResourceData, m interf
 		newRelList := newRel.(*schema.Set).List()
 		for _, relationParam := range oldRelList {
 			paramMap := relationParam.(map[string]interface{})
-			err = aciClient.DeleteRelationinfraRsNetflowMonitorPolFromLeafAccessPortPolicyGroup(infraAccPortGrp.DistinguishedName, paramMap["tn_netflow_monitor_pol_name"].(string), paramMap["flt_type"].(string))
+			err = aciClient.DeleteRelationinfraRsNetflowMonitorPolFromLeafAccessPortPolicyGroup(infraAccPortGrp.DistinguishedName, GetMOName(paramMap["target_dn"].(string)), paramMap["flt_type"].(string))
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 		}
 		for _, relationParam := range newRelList {
 			paramMap := relationParam.(map[string]interface{})
-			err = aciClient.CreateRelationinfraRsNetflowMonitorPolFromLeafAccessPortPolicyGroup(infraAccPortGrp.DistinguishedName, paramMap["tn_netflow_monitor_pol_name"].(string), paramMap["flt_type"].(string))
+			err = aciClient.CreateRelationinfraRsNetflowMonitorPolFromLeafAccessPortPolicyGroup(infraAccPortGrp.DistinguishedName, GetMOName(paramMap["target_dn"].(string)), paramMap["flt_type"].(string))
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
-			d.Partial(true)
-			d.SetPartial("relation_infra_rs_netflow_monitor_pol")
-			d.Partial(false)
 		}
 
 	}
@@ -1004,11 +906,8 @@ func resourceAciLeafAccessPortPolicyGroupUpdate(d *schema.ResourceData, m interf
 		newRelParamName := GetMOName(newRelParam.(string))
 		err = aciClient.CreateRelationinfraRsL2PortAuthPolFromLeafAccessPortPolicyGroup(infraAccPortGrp.DistinguishedName, newRelParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_infra_rs_l2_port_auth_pol")
-		d.Partial(false)
 
 	}
 	if d.HasChange("relation_infra_rs_mcp_if_pol") {
@@ -1016,11 +915,8 @@ func resourceAciLeafAccessPortPolicyGroupUpdate(d *schema.ResourceData, m interf
 		newRelParamName := GetMOName(newRelParam.(string))
 		err = aciClient.CreateRelationinfraRsMcpIfPolFromLeafAccessPortPolicyGroup(infraAccPortGrp.DistinguishedName, newRelParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_infra_rs_mcp_if_pol")
-		d.Partial(false)
 
 	}
 	if d.HasChange("relation_infra_rs_l2_port_security_pol") {
@@ -1028,11 +924,8 @@ func resourceAciLeafAccessPortPolicyGroupUpdate(d *schema.ResourceData, m interf
 		newRelParamName := GetMOName(newRelParam.(string))
 		err = aciClient.CreateRelationinfraRsL2PortSecurityPolFromLeafAccessPortPolicyGroup(infraAccPortGrp.DistinguishedName, newRelParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_infra_rs_l2_port_security_pol")
-		d.Partial(false)
 
 	}
 	if d.HasChange("relation_infra_rs_copp_if_pol") {
@@ -1040,12 +933,8 @@ func resourceAciLeafAccessPortPolicyGroupUpdate(d *schema.ResourceData, m interf
 		newRelParamName := GetMOName(newRelParam.(string))
 		err = aciClient.CreateRelationinfraRsCoppIfPolFromLeafAccessPortPolicyGroup(infraAccPortGrp.DistinguishedName, newRelParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_infra_rs_copp_if_pol")
-		d.Partial(false)
-
 	}
 	if d.HasChange("relation_infra_rs_span_v_dest_grp") {
 		oldRel, newRel := d.GetChange("relation_infra_rs_span_v_dest_grp")
@@ -1058,7 +947,7 @@ func resourceAciLeafAccessPortPolicyGroupUpdate(d *schema.ResourceData, m interf
 			relDnName := GetMOName(relDn)
 			err = aciClient.DeleteRelationinfraRsSpanVDestGrpFromLeafAccessPortPolicyGroup(infraAccPortGrp.DistinguishedName, relDnName)
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 		}
@@ -1067,11 +956,8 @@ func resourceAciLeafAccessPortPolicyGroupUpdate(d *schema.ResourceData, m interf
 			relDnName := GetMOName(relDn)
 			err = aciClient.CreateRelationinfraRsSpanVDestGrpFromLeafAccessPortPolicyGroup(infraAccPortGrp.DistinguishedName, relDnName)
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
-			d.Partial(true)
-			d.SetPartial("relation_infra_rs_span_v_dest_grp")
-			d.Partial(false)
 
 		}
 
@@ -1081,11 +967,8 @@ func resourceAciLeafAccessPortPolicyGroupUpdate(d *schema.ResourceData, m interf
 		newRelParamName := GetMOName(newRelParam.(string))
 		err = aciClient.CreateRelationinfraRsDwdmIfPolFromLeafAccessPortPolicyGroup(infraAccPortGrp.DistinguishedName, newRelParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_infra_rs_dwdm_if_pol")
-		d.Partial(false)
 
 	}
 	if d.HasChange("relation_infra_rs_qos_pfc_if_pol") {
@@ -1093,11 +976,8 @@ func resourceAciLeafAccessPortPolicyGroupUpdate(d *schema.ResourceData, m interf
 		newRelParamName := GetMOName(newRelParam.(string))
 		err = aciClient.CreateRelationinfraRsQosPfcIfPolFromLeafAccessPortPolicyGroup(infraAccPortGrp.DistinguishedName, newRelParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_infra_rs_qos_pfc_if_pol")
-		d.Partial(false)
 
 	}
 	if d.HasChange("relation_infra_rs_qos_sd_if_pol") {
@@ -1105,11 +985,8 @@ func resourceAciLeafAccessPortPolicyGroupUpdate(d *schema.ResourceData, m interf
 		newRelParamName := GetMOName(newRelParam.(string))
 		err = aciClient.CreateRelationinfraRsQosSdIfPolFromLeafAccessPortPolicyGroup(infraAccPortGrp.DistinguishedName, newRelParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_infra_rs_qos_sd_if_pol")
-		d.Partial(false)
 
 	}
 	if d.HasChange("relation_infra_rs_mon_if_infra_pol") {
@@ -1117,11 +994,8 @@ func resourceAciLeafAccessPortPolicyGroupUpdate(d *schema.ResourceData, m interf
 		newRelParamName := GetMOName(newRelParam.(string))
 		err = aciClient.CreateRelationinfraRsMonIfInfraPolFromLeafAccessPortPolicyGroup(infraAccPortGrp.DistinguishedName, newRelParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_infra_rs_mon_if_infra_pol")
-		d.Partial(false)
 
 	}
 	if d.HasChange("relation_infra_rs_fc_if_pol") {
@@ -1129,11 +1003,8 @@ func resourceAciLeafAccessPortPolicyGroupUpdate(d *schema.ResourceData, m interf
 		newRelParamName := GetMOName(newRelParam.(string))
 		err = aciClient.CreateRelationinfraRsFcIfPolFromLeafAccessPortPolicyGroup(infraAccPortGrp.DistinguishedName, newRelParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_infra_rs_fc_if_pol")
-		d.Partial(false)
 
 	}
 	if d.HasChange("relation_infra_rs_qos_ingress_dpp_if_pol") {
@@ -1141,11 +1012,8 @@ func resourceAciLeafAccessPortPolicyGroupUpdate(d *schema.ResourceData, m interf
 		newRelParamName := GetMOName(newRelParam.(string))
 		err = aciClient.CreateRelationinfraRsQosIngressDppIfPolFromLeafAccessPortPolicyGroup(infraAccPortGrp.DistinguishedName, newRelParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_infra_rs_qos_ingress_dpp_if_pol")
-		d.Partial(false)
 
 	}
 	if d.HasChange("relation_infra_rs_cdp_if_pol") {
@@ -1153,11 +1021,8 @@ func resourceAciLeafAccessPortPolicyGroupUpdate(d *schema.ResourceData, m interf
 		newRelParamName := GetMOName(newRelParam.(string))
 		err = aciClient.CreateRelationinfraRsCdpIfPolFromLeafAccessPortPolicyGroup(infraAccPortGrp.DistinguishedName, newRelParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_infra_rs_cdp_if_pol")
-		d.Partial(false)
 
 	}
 	if d.HasChange("relation_infra_rs_l2_if_pol") {
@@ -1165,23 +1030,16 @@ func resourceAciLeafAccessPortPolicyGroupUpdate(d *schema.ResourceData, m interf
 		newRelParamName := GetMOName(newRelParam.(string))
 		err = aciClient.CreateRelationinfraRsL2IfPolFromLeafAccessPortPolicyGroup(infraAccPortGrp.DistinguishedName, newRelParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_infra_rs_l2_if_pol")
-		d.Partial(false)
-
 	}
 	if d.HasChange("relation_infra_rs_stp_if_pol") {
 		_, newRelParam := d.GetChange("relation_infra_rs_stp_if_pol")
 		newRelParamName := GetMOName(newRelParam.(string))
 		err = aciClient.CreateRelationinfraRsStpIfPolFromLeafAccessPortPolicyGroup(infraAccPortGrp.DistinguishedName, newRelParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_infra_rs_stp_if_pol")
-		d.Partial(false)
 
 	}
 	if d.HasChange("relation_infra_rs_qos_egress_dpp_if_pol") {
@@ -1189,52 +1047,43 @@ func resourceAciLeafAccessPortPolicyGroupUpdate(d *schema.ResourceData, m interf
 		newRelParamName := GetMOName(newRelParam.(string))
 		err = aciClient.CreateRelationinfraRsQosEgressDppIfPolFromLeafAccessPortPolicyGroup(infraAccPortGrp.DistinguishedName, newRelParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_infra_rs_qos_egress_dpp_if_pol")
-		d.Partial(false)
 
 	}
 	if d.HasChange("relation_infra_rs_att_ent_p") {
 		_, newRelParam := d.GetChange("relation_infra_rs_att_ent_p")
 		err = aciClient.DeleteRelationinfraRsAttEntPFromLeafAccessPortPolicyGroup(infraAccPortGrp.DistinguishedName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 		err = aciClient.CreateRelationinfraRsAttEntPFromLeafAccessPortPolicyGroup(infraAccPortGrp.DistinguishedName, newRelParam.(string))
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_infra_rs_att_ent_p")
-		d.Partial(false)
 
 	}
 	if d.HasChange("relation_infra_rs_l2_inst_pol") {
 		_, newRelParam := d.GetChange("relation_infra_rs_l2_inst_pol")
 		err = aciClient.DeleteRelationinfraRsL2InstPolFromLeafAccessPortPolicyGroup(infraAccPortGrp.DistinguishedName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 		err = aciClient.CreateRelationinfraRsL2InstPolFromLeafAccessPortPolicyGroup(infraAccPortGrp.DistinguishedName, newRelParam.(string))
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_infra_rs_l2_inst_pol")
-		d.Partial(false)
 
 	}
 
 	d.SetId(infraAccPortGrp.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciLeafAccessPortPolicyGroupRead(d, m)
+	return resourceAciLeafAccessPortPolicyGroupRead(ctx, d, m)
 
 }
 
-func resourceAciLeafAccessPortPolicyGroupRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciLeafAccessPortPolicyGroupRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -1246,8 +1095,11 @@ func resourceAciLeafAccessPortPolicyGroupRead(d *schema.ResourceData, m interfac
 		d.SetId("")
 		return nil
 	}
-	setLeafAccessPortPolicyGroupAttributes(infraAccPortGrp, d)
-
+	_, err = setLeafAccessPortPolicyGroupAttributes(infraAccPortGrp, d)
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 	infraRsSpanVSrcGrpData, err := aciClient.ReadRelationinfraRsSpanVSrcGrpFromLeafAccessPortPolicyGroup(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation infraRsSpanVSrcGrp %v", err)
@@ -1358,9 +1210,24 @@ func resourceAciLeafAccessPortPolicyGroupRead(d *schema.ResourceData, m interfac
 	infraRsNetflowMonitorPolData, err := aciClient.ReadRelationinfraRsNetflowMonitorPolFromLeafAccessPortPolicyGroup(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation infraRsNetflowMonitorPol %v", err)
-
 	} else {
-		d.Set("relation_infra_rs_netflow_monitor_pol", infraRsNetflowMonitorPolData)
+		if _, ok := d.GetOk("relation_infra_rs_netflow_monitor_pol"); ok {
+			relationParamList := d.Get("relation_infra_rs_netflow_monitor_pol").(*schema.Set).List()
+			tfList := make([]map[string]string, 0)
+			for _, relationParam := range relationParamList {
+				paramMap := relationParam.(map[string]interface{})
+				params := map[string]string{
+					"tnNetflowMonitorPolName": GetMOName(paramMap["target_dn"].(string)),
+					"fltType":                 paramMap["flt_type"].(string),
+				}
+				tfList = append(tfList, params)
+			}
+
+			infraRsNetflowMonitorPolDataList := infraRsNetflowMonitorPolData.([]map[string]string)
+			if !reflect.DeepEqual(tfList, infraRsNetflowMonitorPolDataList) {
+				d.Set("relation_infra_rs_netflow_monitor_pol", make([]string, 0, 1))
+			}
+		}
 	}
 
 	infraRsL2PortAuthPolData, err := aciClient.ReadRelationinfraRsL2PortAuthPolFromLeafAccessPortPolicyGroup(dn)
@@ -1610,18 +1477,18 @@ func resourceAciLeafAccessPortPolicyGroupRead(d *schema.ResourceData, m interfac
 	return nil
 }
 
-func resourceAciLeafAccessPortPolicyGroupDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciLeafAccessPortPolicyGroupDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "infraAccPortGrp")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
 }

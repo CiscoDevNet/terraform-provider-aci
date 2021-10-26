@@ -1,20 +1,22 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func resourceAciSecurityDomain() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciSecurityDomainCreate,
-		Update: resourceAciSecurityDomainUpdate,
-		Read:   resourceAciSecurityDomainRead,
-		Delete: resourceAciSecurityDomainDelete,
+		CreateContext: resourceAciSecurityDomainCreate,
+		UpdateContext: resourceAciSecurityDomainUpdate,
+		ReadContext:   resourceAciSecurityDomainRead,
+		DeleteContext: resourceAciSecurityDomainDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciSecurityDomainImport,
@@ -53,16 +55,19 @@ func getRemoteSecurityDomain(client *client.Client, dn string) (*models.Security
 	return aaaDomain, nil
 }
 
-func setSecurityDomainAttributes(aaaDomain *models.SecurityDomain, d *schema.ResourceData) *schema.ResourceData {
+func setSecurityDomainAttributes(aaaDomain *models.SecurityDomain, d *schema.ResourceData) (*schema.ResourceData, error) {
 	d.SetId(aaaDomain.DistinguishedName)
 	d.Set("description", aaaDomain.Description)
-	aaaDomainMap, _ := aaaDomain.ToMap()
+	aaaDomainMap, err := aaaDomain.ToMap()
+	if err != nil {
+		return d, err
+	}
 
 	d.Set("name", aaaDomainMap["name"])
 
 	d.Set("annotation", aaaDomainMap["annotation"])
 	d.Set("name_alias", aaaDomainMap["nameAlias"])
-	return d
+	return d, nil
 }
 
 func resourceAciSecurityDomainImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -76,14 +81,17 @@ func resourceAciSecurityDomainImport(d *schema.ResourceData, m interface{}) ([]*
 	if err != nil {
 		return nil, err
 	}
-	schemaFilled := setSecurityDomainAttributes(aaaDomain, d)
+	schemaFilled, err := setSecurityDomainAttributes(aaaDomain, d)
+	if err != nil {
+		return nil, err
+	}
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciSecurityDomainCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciSecurityDomainCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] SecurityDomain: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -103,21 +111,16 @@ func resourceAciSecurityDomainCreate(d *schema.ResourceData, m interface{}) erro
 
 	err := aciClient.Save(aaaDomain)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.SetPartial("name")
-
-	d.Partial(false)
 
 	d.SetId(aaaDomain.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciSecurityDomainRead(d, m)
+	return resourceAciSecurityDomainRead(ctx, d, m)
 }
 
-func resourceAciSecurityDomainUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciSecurityDomainUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] SecurityDomain: Beginning Update")
 
 	aciClient := m.(*client.Client)
@@ -141,22 +144,17 @@ func resourceAciSecurityDomainUpdate(d *schema.ResourceData, m interface{}) erro
 	err := aciClient.Save(aaaDomain)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.SetPartial("name")
-
-	d.Partial(false)
 
 	d.SetId(aaaDomain.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciSecurityDomainRead(d, m)
+	return resourceAciSecurityDomainRead(ctx, d, m)
 
 }
 
-func resourceAciSecurityDomainRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciSecurityDomainRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -168,25 +166,29 @@ func resourceAciSecurityDomainRead(d *schema.ResourceData, m interface{}) error 
 		d.SetId("")
 		return nil
 	}
-	setSecurityDomainAttributes(aaaDomain, d)
+	_, err = setSecurityDomainAttributes(aaaDomain, d)
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 
 	return nil
 }
 
-func resourceAciSecurityDomainDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciSecurityDomainDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "aaaDomain")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
 }

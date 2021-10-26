@@ -1,16 +1,18 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func dataSourceAciLACPPolicy() *schema.Resource {
 	return &schema.Resource{
 
-		Read: dataSourceAciLACPPolicyRead,
+		ReadContext: dataSourceAciLACPPolicyRead,
 
 		SchemaVersion: 1,
 
@@ -57,7 +59,7 @@ func dataSourceAciLACPPolicy() *schema.Resource {
 	}
 }
 
-func dataSourceAciLACPPolicyRead(d *schema.ResourceData, m interface{}) error {
+func dataSourceAciLACPPolicyRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	aciClient := m.(*client.Client)
 
 	name := d.Get("name").(string)
@@ -69,8 +71,11 @@ func dataSourceAciLACPPolicyRead(d *schema.ResourceData, m interface{}) error {
 	lacpLagPol, err := getRemoteLACPPolicy(aciClient, dn)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	setLACPPolicyAttributes(lacpLagPol, d)
+	_, err = setLACPPolicyAttributes(lacpLagPol, d)
+	if err != nil {
+		return diag.FromErr(err)
+	}
 	return nil
 }

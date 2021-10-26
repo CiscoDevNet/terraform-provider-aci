@@ -42,5 +42,5 @@ resource "aci_tenant" "test" {
 # resource "aci_epg" "testepg" {}
 
 resource "aci_vrf" "imp_vrf" {
-  
+
 }

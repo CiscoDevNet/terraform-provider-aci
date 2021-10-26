@@ -4,11 +4,10 @@ import (
 	"fmt"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
-func Provider() terraform.ResourceProvider {
+func Provider() *schema.Provider {
 	return &schema.Provider{
 		Schema: map[string]*schema.Schema{
 			"username": &schema.Schema{
@@ -53,6 +52,12 @@ func Provider() terraform.ResourceProvider {
 				DefaultFunc: schema.EnvDefaultFunc("ACI_PROXY_URL", nil),
 				Description: "Proxy Server URL with port number",
 			},
+			"proxy_creds": &schema.Schema{
+				Type:        schema.TypeString,
+				Optional:    true,
+				DefaultFunc: schema.EnvDefaultFunc("ACI_PROXY_CREDS", nil),
+				Description: "Proxy server credentials in the form of username:password",
+			},
 		},
 
 		ResourcesMap: map[string]*schema.Resource{
@@ -94,7 +99,6 @@ func Provider() terraform.ResourceProvider {
 			"aci_l3_ext_subnet":                            resourceAciL3ExtSubnet(),
 			"aci_cloud_applicationcontainer":               resourceAciCloudApplicationcontainer(),
 			"aci_cloud_aws_provider":                       resourceAciCloudAWSProvider(),
-			"aci_autonomous_system_profile":                resourceAciAutonomousSystemProfile(),
 			"aci_cloud_cidr_pool":                          resourceAciCloudCIDRPool(),
 			"aci_cloud_domain_profile":                     resourceAciCloudDomainProfile(),
 			"aci_cloud_context_profile":                    resourceAciCloudContextProfile(),
@@ -102,10 +106,7 @@ func Provider() terraform.ResourceProvider {
 			"aci_cloud_endpoint_selectorfor_external_epgs": resourceAciCloudEndpointSelectorforExternalEPgs(),
 			"aci_cloud_endpoint_selector":                  resourceAciCloudEndpointSelector(),
 			"aci_cloud_external_epg":                       resourceAciCloudExternalEPg(),
-			"aci_cloud_provider_profile":                   resourceAciCloudProviderProfile(),
-			"aci_cloud_providers_region":                   resourceAciCloudProvidersRegion(),
 			"aci_cloud_subnet":                             resourceAciCloudSubnet(),
-			"aci_cloud_availability_zone":                  resourceAciCloudAvailabilityZone(),
 			"aci_local_user":                               resourceAciLocalUser(),
 			"aci_pod_maintenance_group":                    resourceAciPODMaintenanceGroup(),
 			"aci_maintenance_policy":                       resourceAciMaintenancePolicy(),
@@ -370,6 +371,7 @@ func configureClient(d *schema.ResourceData) (interface{}, error) {
 		PrivateKey: d.Get("private_key").(string),
 		Certname:   d.Get("cert_name").(string),
 		ProxyUrl:   d.Get("proxy_url").(string),
+		ProxyCreds: d.Get("proxy_creds").(string),
 	}
 
 	if err := config.Valid(); err != nil {
@@ -404,11 +406,11 @@ func (c Config) Valid() error {
 func (c Config) getClient() interface{} {
 	if c.Password != "" {
 
-		return client.GetClient(c.URL, c.Username, client.Password(c.Password), client.Insecure(c.IsInsecure), client.ProxyUrl(c.ProxyUrl))
+		return client.GetClient(c.URL, c.Username, client.Password(c.Password), client.Insecure(c.IsInsecure), client.ProxyUrl(c.ProxyUrl), client.ProxyCreds(c.ProxyCreds))
 
 	} else {
 
-		return client.GetClient(c.URL, c.Username, client.PrivateKey(c.PrivateKey), client.AdminCert(c.Certname), client.Insecure(c.IsInsecure), client.ProxyUrl(c.ProxyUrl))
+		return client.GetClient(c.URL, c.Username, client.PrivateKey(c.PrivateKey), client.AdminCert(c.Certname), client.Insecure(c.IsInsecure), client.ProxyUrl(c.ProxyUrl), client.ProxyCreds(c.ProxyCreds))
 	}
 }
 
@@ -421,4 +423,5 @@ type Config struct {
 	PrivateKey string
 	Certname   string
 	ProxyUrl   string
+	ProxyCreds string
 }

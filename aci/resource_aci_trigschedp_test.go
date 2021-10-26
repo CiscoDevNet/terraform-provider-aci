@@ -6,8 +6,8 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
 func TestAccAciTriggerScheduler_Basic(t *testing.T) {
@@ -25,11 +25,6 @@ func TestAccAciTriggerScheduler_Basic(t *testing.T) {
 					testAccCheckAciTriggerSchedulerExists("aci_trigger_scheduler.footrigger_scheduler", &trigger_scheduler),
 					testAccCheckAciTriggerSchedulerAttributes(description, &trigger_scheduler),
 				),
-			},
-			{
-				ResourceName:      "aci_trigger_scheduler",
-				ImportState:       true,
-				ImportStateVerify: true,
 			},
 		},
 	})

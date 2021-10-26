@@ -1,21 +1,23 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciLinkLevelPolicy() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciLinkLevelPolicyCreate,
-		Update: resourceAciLinkLevelPolicyUpdate,
-		Read:   resourceAciLinkLevelPolicyRead,
-		Delete: resourceAciLinkLevelPolicyDelete,
+		CreateContext: resourceAciLinkLevelPolicyCreate,
+		UpdateContext: resourceAciLinkLevelPolicyUpdate,
+		ReadContext:   resourceAciLinkLevelPolicyRead,
+		DeleteContext: resourceAciLinkLevelPolicyDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciLinkLevelPolicyImport,
@@ -104,10 +106,13 @@ func getRemoteLinkLevelPolicy(client *client.Client, dn string) (*models.LinkLev
 	return fabricHIfPol, nil
 }
 
-func setLinkLevelPolicyAttributes(fabricHIfPol *models.LinkLevelPolicy, d *schema.ResourceData) *schema.ResourceData {
+func setLinkLevelPolicyAttributes(fabricHIfPol *models.LinkLevelPolicy, d *schema.ResourceData) (*schema.ResourceData, error) {
 	d.SetId(fabricHIfPol.DistinguishedName)
 	d.Set("description", fabricHIfPol.Description)
-	fabricHIfPolMap, _ := fabricHIfPol.ToMap()
+	fabricHIfPolMap, err := fabricHIfPol.ToMap()
+	if err != nil {
+		return d, err
+	}
 
 	d.Set("name", fabricHIfPolMap["name"])
 
@@ -117,7 +122,7 @@ func setLinkLevelPolicyAttributes(fabricHIfPol *models.LinkLevelPolicy, d *schem
 	d.Set("link_debounce", fabricHIfPolMap["linkDebounce"])
 	d.Set("name_alias", fabricHIfPolMap["nameAlias"])
 	d.Set("speed", fabricHIfPolMap["speed"])
-	return d
+	return d, nil
 }
 
 func resourceAciLinkLevelPolicyImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -131,14 +136,17 @@ func resourceAciLinkLevelPolicyImport(d *schema.ResourceData, m interface{}) ([]
 	if err != nil {
 		return nil, err
 	}
-	schemaFilled := setLinkLevelPolicyAttributes(fabricHIfPol, d)
+	schemaFilled, err := setLinkLevelPolicyAttributes(fabricHIfPol, d)
+	if err != nil {
+		return nil, err
+	}
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciLinkLevelPolicyCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciLinkLevelPolicyCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] LinkLevelPolicy: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -170,21 +178,16 @@ func resourceAciLinkLevelPolicyCreate(d *schema.ResourceData, m interface{}) err
 
 	err := aciClient.Save(fabricHIfPol)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.SetPartial("name")
-
-	d.Partial(false)
 
 	d.SetId(fabricHIfPol.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciLinkLevelPolicyRead(d, m)
+	return resourceAciLinkLevelPolicyRead(ctx, d, m)
 }
 
-func resourceAciLinkLevelPolicyUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciLinkLevelPolicyUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] LinkLevelPolicy: Beginning Update")
 
 	aciClient := m.(*client.Client)
@@ -220,22 +223,17 @@ func resourceAciLinkLevelPolicyUpdate(d *schema.ResourceData, m interface{}) err
 	err := aciClient.Save(fabricHIfPol)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.SetPartial("name")
-
-	d.Partial(false)
 
 	d.SetId(fabricHIfPol.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciLinkLevelPolicyRead(d, m)
+	return resourceAciLinkLevelPolicyRead(ctx, d, m)
 
 }
 
-func resourceAciLinkLevelPolicyRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciLinkLevelPolicyRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -247,25 +245,29 @@ func resourceAciLinkLevelPolicyRead(d *schema.ResourceData, m interface{}) error
 		d.SetId("")
 		return nil
 	}
-	setLinkLevelPolicyAttributes(fabricHIfPol, d)
+	_, err = setLinkLevelPolicyAttributes(fabricHIfPol, d)
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 
 	return nil
 }
 
-func resourceAciLinkLevelPolicyDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciLinkLevelPolicyDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "fabricHIfPol")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
 }

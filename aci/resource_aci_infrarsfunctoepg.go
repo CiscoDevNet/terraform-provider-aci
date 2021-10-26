@@ -1,21 +1,23 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciEPGsUsingFunction() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciEPGsUsingFunctionCreate,
-		Update: resourceAciEPGsUsingFunctionUpdate,
-		Read:   resourceAciEPGsUsingFunctionRead,
-		Delete: resourceAciEPGsUsingFunctionDelete,
+		CreateContext: resourceAciEPGsUsingFunctionCreate,
+		UpdateContext: resourceAciEPGsUsingFunctionUpdate,
+		ReadContext:   resourceAciEPGsUsingFunctionRead,
+		DeleteContext: resourceAciEPGsUsingFunctionDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciEPGsUsingFunctionImport,
@@ -23,11 +25,21 @@ func resourceAciEPGsUsingFunction() *schema.Resource {
 
 		SchemaVersion: 1,
 
-		Schema: AppendBaseAttrSchema(map[string]*schema.Schema{
+		Schema: map[string]*schema.Schema{
 			"access_generic_dn": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
 				ForceNew: true,
+			},
+
+			"annotation": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				// Default:  "orchestrator:terraform",
+				Computed: true,
+				DefaultFunc: func() (interface{}, error) {
+					return "orchestrator:terraform", nil
+				},
 			},
 
 			"tdn": &schema.Schema{
@@ -67,7 +79,7 @@ func resourceAciEPGsUsingFunction() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
-		}),
+		},
 	}
 }
 func getRemoteEPGsUsingFunction(client *client.Client, dn string) (*models.EPGsUsingFunction, error) {
@@ -85,22 +97,25 @@ func getRemoteEPGsUsingFunction(client *client.Client, dn string) (*models.EPGsU
 	return infraRsFuncToEpg, nil
 }
 
-func setEPGsUsingFunctionAttributes(infraRsFuncToEpg *models.EPGsUsingFunction, d *schema.ResourceData) *schema.ResourceData {
+func setEPGsUsingFunctionAttributes(infraRsFuncToEpg *models.EPGsUsingFunction, d *schema.ResourceData) (*schema.ResourceData, error) {
 	dn := d.Id()
 	d.SetId(infraRsFuncToEpg.DistinguishedName)
 	if dn != infraRsFuncToEpg.DistinguishedName {
 		d.Set("access_generic_dn", "")
 	}
-	infraRsFuncToEpgMap, _ := infraRsFuncToEpg.ToMap()
+	infraRsFuncToEpgMap, err := infraRsFuncToEpg.ToMap()
+
+	if err != nil {
+		return d, err
+	}
 
 	d.Set("tdn", infraRsFuncToEpgMap["tDn"])
-
 	d.Set("annotation", infraRsFuncToEpgMap["annotation"])
 	d.Set("encap", infraRsFuncToEpgMap["encap"])
 	d.Set("instr_imedcy", infraRsFuncToEpgMap["instrImedcy"])
 	d.Set("mode", infraRsFuncToEpgMap["mode"])
 	d.Set("primary_encap", infraRsFuncToEpgMap["primaryEncap"])
-	return d
+	return d, nil
 }
 
 func resourceAciEPGsUsingFunctionImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -114,19 +129,27 @@ func resourceAciEPGsUsingFunctionImport(d *schema.ResourceData, m interface{}) (
 	if err != nil {
 		return nil, err
 	}
-	infraRsFuncToEpgMap, _ := infraRsFuncToEpg.ToMap()
+	infraRsFuncToEpgMap, err := infraRsFuncToEpg.ToMap()
+
+	if err != nil {
+		return nil, err
+	}
 
 	tDn := infraRsFuncToEpgMap["tDn"]
 	pDN := GetParentDn(dn, fmt.Sprintf("/rsfuncToEpg-[%s]", tDn))
 	d.Set("access_generic_dn", pDN)
-	schemaFilled := setEPGsUsingFunctionAttributes(infraRsFuncToEpg, d)
+	schemaFilled, err := setEPGsUsingFunctionAttributes(infraRsFuncToEpg, d)
+
+	if err != nil {
+		return nil, err
+	}
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciEPGsUsingFunctionCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciEPGsUsingFunctionCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] EPGsUsingFunction: Beginning Creation")
 	aciClient := m.(*client.Client)
 
@@ -157,21 +180,16 @@ func resourceAciEPGsUsingFunctionCreate(d *schema.ResourceData, m interface{}) e
 
 	err := aciClient.Save(infraRsFuncToEpg)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.SetPartial("tdn")
-
-	d.Partial(false)
 
 	d.SetId(infraRsFuncToEpg.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciEPGsUsingFunctionRead(d, m)
+	return resourceAciEPGsUsingFunctionRead(ctx, d, m)
 }
 
-func resourceAciEPGsUsingFunctionUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciEPGsUsingFunctionUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] EPGsUsingFunction: Beginning Update")
 
 	aciClient := m.(*client.Client)
@@ -206,22 +224,17 @@ func resourceAciEPGsUsingFunctionUpdate(d *schema.ResourceData, m interface{}) e
 	err := aciClient.Save(infraRsFuncToEpg)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.SetPartial("tdn")
-
-	d.Partial(false)
 
 	d.SetId(infraRsFuncToEpg.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciEPGsUsingFunctionRead(d, m)
+	return resourceAciEPGsUsingFunctionRead(ctx, d, m)
 
 }
 
-func resourceAciEPGsUsingFunctionRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciEPGsUsingFunctionRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -233,25 +246,30 @@ func resourceAciEPGsUsingFunctionRead(d *schema.ResourceData, m interface{}) err
 		d.SetId("")
 		return nil
 	}
-	setEPGsUsingFunctionAttributes(infraRsFuncToEpg, d)
+	_, err = setEPGsUsingFunctionAttributes(infraRsFuncToEpg, d)
+
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 
 	return nil
 }
 
-func resourceAciEPGsUsingFunctionDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciEPGsUsingFunctionDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "infraRsFuncToEpg")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
 }

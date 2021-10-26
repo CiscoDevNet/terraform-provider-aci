@@ -6,8 +6,8 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
 func TestAccAciL3outPathAttachmentSecondaryIp_Basic(t *testing.T) {
@@ -61,13 +61,13 @@ func testAccCheckAciL3outPathAttachmentSecondaryIpConfig_basic(description strin
 	return fmt.Sprintf(`
 
 	resource "aci_l3out_path_attachment_secondary_ip" "fool3out_path_attachment_secondary_ip" {
-		#l3out_path_attachment_dn  = "${aci_leaf_port.example.id}"
-		l3out_path_attachment_dn  = "uni/tn-check_tenantnk/out-crest_test_rutvik_l3out/lnodep-crest_test_rutvik_node/lifp-crest_test_rutvik_int_prof/rspathL3OutAtt-[topology/pod-1/paths-101/pathep-[eth1/26]]"
+		#l3out_path_attachment_dn = aci_leaf_port.example.id
+		l3out_path_attachment_dn = "uni/tn-tenant_1/out-l3_outside_1/lnodep-logical_node_profile_1/lifp-logical_interface_profile_1/rspathL3OutAtt-[topology/pod-1/paths-101/pathep-[eth1/1]]"
 		description = "%s"
-		addr  = "10.0.0.1/24"
-  		annotation  = "example"
-  		ipv6_dad = "disabled"
-  		name_alias  = "example"
+		addr        = "10.0.0.1/24"
+		annotation  = "example"
+		ipv6_dad    = "disabled"
+		name_alias  = "example"
 	}
 	`, description)
 }

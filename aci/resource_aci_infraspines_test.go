@@ -6,8 +6,8 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
 func TestAccAciSwitchSpineAssociation_Basic(t *testing.T) {
@@ -60,12 +60,16 @@ func TestAccAciSwitchSpineAssociation_update(t *testing.T) {
 func testAccCheckAciSwitchSpineAssociationConfig_basic(description string) string {
 	return fmt.Sprintf(`
 
+	resource "aci_spine_profile" "foospine_profile" {		
+		name  = "spine_profile_1"
+	}
+
 	resource "aci_spine_switch_association" "fooswitch_association" {
-		spine_profile_dn  = "${aci_spine_profile.example.id}"
+		spine_profile_dn  = aci_spine_profile.foospine_profile.id
 		description = "%s"
-		name  = "example"
+		name  = "spine_switch_association_1"
 		spine_switch_association_type  = "range"
-		annotation  = "example"
+		annotation  = "spine_switch_association_tag"
 		name_alias  = "example"
 	}
 	`, description)
@@ -126,7 +130,7 @@ func testAccCheckAciSwitchSpineAssociationAttributes(description string, switch_
 			return fmt.Errorf("Bad switch_association Description %s", switch_association.Description)
 		}
 
-		if "example" != switch_association.Name {
+		if "spine_switch_association_1" != switch_association.Name {
 			return fmt.Errorf("Bad switch_association name %s", switch_association.Name)
 		}
 
@@ -134,7 +138,7 @@ func testAccCheckAciSwitchSpineAssociationAttributes(description string, switch_
 			return fmt.Errorf("Bad switch_association switch_association_type %s", switch_association.SwitchAssociationType)
 		}
 
-		if "example" != switch_association.Annotation {
+		if "spine_switch_association_tag" != switch_association.Annotation {
 			return fmt.Errorf("Bad switch_association annotation %s", switch_association.Annotation)
 		}
 

@@ -1,16 +1,18 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func dataSourceAciSubnet() *schema.Resource {
 	return &schema.Resource{
 
-		Read: dataSourceAciSubnetRead,
+		ReadContext: dataSourceAciSubnetRead,
 
 		SchemaVersion: 1,
 
@@ -64,7 +66,7 @@ func dataSourceAciSubnet() *schema.Resource {
 	}
 }
 
-func dataSourceAciSubnetRead(d *schema.ResourceData, m interface{}) error {
+func dataSourceAciSubnetRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	aciClient := m.(*client.Client)
 
 	ip := d.Get("ip").(string)
@@ -77,9 +79,12 @@ func dataSourceAciSubnetRead(d *schema.ResourceData, m interface{}) error {
 	fvSubnet, err := getRemoteSubnet(aciClient, dn)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.SetId(dn)
-	setSubnetAttributes(fvSubnet, d)
+	_, err = setSubnetAttributes(fvSubnet, d)
+	if err != nil {
+		return diag.FromErr(err)
+	}
 	return nil
 }

@@ -1,20 +1,22 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func resourceAciFexBundleGroup() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciFexBundleGroupCreate,
-		Update: resourceAciFexBundleGroupUpdate,
-		Read:   resourceAciFexBundleGroupRead,
-		Delete: resourceAciFexBundleGroupDelete,
+		CreateContext: resourceAciFexBundleGroupCreate,
+		UpdateContext: resourceAciFexBundleGroupUpdate,
+		ReadContext:   resourceAciFexBundleGroupRead,
+		DeleteContext: resourceAciFexBundleGroupDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciFexBundleGroupImport,
@@ -70,20 +72,23 @@ func getRemoteFexBundleGroup(client *client.Client, dn string) (*models.FexBundl
 	return infraFexBndlGrp, nil
 }
 
-func setFexBundleGroupAttributes(infraFexBndlGrp *models.FexBundleGroup, d *schema.ResourceData) *schema.ResourceData {
+func setFexBundleGroupAttributes(infraFexBndlGrp *models.FexBundleGroup, d *schema.ResourceData) (*schema.ResourceData, error) {
 	dn := d.Id()
 	d.SetId(infraFexBndlGrp.DistinguishedName)
 	d.Set("description", infraFexBndlGrp.Description)
 	if dn != infraFexBndlGrp.DistinguishedName {
 		d.Set("fex_profile_dn", "")
 	}
-	infraFexBndlGrpMap, _ := infraFexBndlGrp.ToMap()
+	infraFexBndlGrpMap, err := infraFexBndlGrp.ToMap()
+	if err != nil {
+		return d, err
+	}
 
 	d.Set("name", infraFexBndlGrpMap["name"])
 
 	d.Set("annotation", infraFexBndlGrpMap["annotation"])
 	d.Set("name_alias", infraFexBndlGrpMap["nameAlias"])
-	return d
+	return d, nil
 }
 
 func resourceAciFexBundleGroupImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -97,19 +102,24 @@ func resourceAciFexBundleGroupImport(d *schema.ResourceData, m interface{}) ([]*
 	if err != nil {
 		return nil, err
 	}
-	infraFexBndlGrpMap, _ := infraFexBndlGrp.ToMap()
-
+	infraFexBndlGrpMap, err := infraFexBndlGrp.ToMap()
+	if err != nil {
+		return nil, err
+	}
 	name := infraFexBndlGrpMap["name"]
 	pDN := GetParentDn(dn, fmt.Sprintf("/fexbundle-%s", name))
 	d.Set("fex_profile_dn", pDN)
-	schemaFilled := setFexBundleGroupAttributes(infraFexBndlGrp, d)
+	schemaFilled, err := setFexBundleGroupAttributes(infraFexBndlGrp, d)
+	if err != nil {
+		return nil, err
+	}
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciFexBundleGroupCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciFexBundleGroupCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] FexBundleGroup: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -131,13 +141,8 @@ func resourceAciFexBundleGroupCreate(d *schema.ResourceData, m interface{}) erro
 
 	err := aciClient.Save(infraFexBndlGrp)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.SetPartial("name")
-
-	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
 
@@ -156,7 +161,7 @@ func resourceAciFexBundleGroupCreate(d *schema.ResourceData, m interface{}) erro
 	d.Partial(true)
 	err = checkTDn(aciClient, checkDns)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Partial(false)
 
@@ -165,11 +170,8 @@ func resourceAciFexBundleGroupCreate(d *schema.ResourceData, m interface{}) erro
 		relationParamName := GetMOName(relationParam)
 		err = aciClient.CreateRelationinfraRsMonFexInfraPolFromFexBundleGroup(infraFexBndlGrp.DistinguishedName, relationParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_infra_rs_mon_fex_infra_pol")
-		d.Partial(false)
 
 	}
 	if relationToinfraRsFexBndlGrpToAggrIf, ok := d.GetOk("relation_infra_rs_fex_bndl_grp_to_aggr_if"); ok {
@@ -178,21 +180,19 @@ func resourceAciFexBundleGroupCreate(d *schema.ResourceData, m interface{}) erro
 			err = aciClient.CreateRelationinfraRsFexBndlGrpToAggrIfFromFexBundleGroup(infraFexBndlGrp.DistinguishedName, relationParam)
 
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
-			d.Partial(true)
-			d.SetPartial("relation_infra_rs_fex_bndl_grp_to_aggr_if")
-			d.Partial(false)
+
 		}
 	}
 
 	d.SetId(infraFexBndlGrp.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciFexBundleGroupRead(d, m)
+	return resourceAciFexBundleGroupRead(ctx, d, m)
 }
 
-func resourceAciFexBundleGroupUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciFexBundleGroupUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] FexBundleGroup: Beginning Update")
 
 	aciClient := m.(*client.Client)
@@ -218,13 +218,8 @@ func resourceAciFexBundleGroupUpdate(d *schema.ResourceData, m interface{}) erro
 	err := aciClient.Save(infraFexBndlGrp)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.SetPartial("name")
-
-	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
 
@@ -247,7 +242,7 @@ func resourceAciFexBundleGroupUpdate(d *schema.ResourceData, m interface{}) erro
 	d.Partial(true)
 	err = checkTDn(aciClient, checkDns)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Partial(false)
 
@@ -256,11 +251,8 @@ func resourceAciFexBundleGroupUpdate(d *schema.ResourceData, m interface{}) erro
 		newRelParamName := GetMOName(newRelParam.(string))
 		err = aciClient.CreateRelationinfraRsMonFexInfraPolFromFexBundleGroup(infraFexBndlGrp.DistinguishedName, newRelParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_infra_rs_mon_fex_infra_pol")
-		d.Partial(false)
 
 	}
 	if d.HasChange("relation_infra_rs_fex_bndl_grp_to_aggr_if") {
@@ -272,11 +264,8 @@ func resourceAciFexBundleGroupUpdate(d *schema.ResourceData, m interface{}) erro
 		for _, relDn := range relToCreate {
 			err = aciClient.CreateRelationinfraRsFexBndlGrpToAggrIfFromFexBundleGroup(infraFexBndlGrp.DistinguishedName, relDn)
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
-			d.Partial(true)
-			d.SetPartial("relation_infra_rs_fex_bndl_grp_to_aggr_if")
-			d.Partial(false)
 
 		}
 
@@ -285,11 +274,11 @@ func resourceAciFexBundleGroupUpdate(d *schema.ResourceData, m interface{}) erro
 	d.SetId(infraFexBndlGrp.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciFexBundleGroupRead(d, m)
+	return resourceAciFexBundleGroupRead(ctx, d, m)
 
 }
 
-func resourceAciFexBundleGroupRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciFexBundleGroupRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -301,7 +290,11 @@ func resourceAciFexBundleGroupRead(d *schema.ResourceData, m interface{}) error 
 		d.SetId("")
 		return nil
 	}
-	setFexBundleGroupAttributes(infraFexBndlGrp, d)
+	_, err = setFexBundleGroupAttributes(infraFexBndlGrp, d)
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 
 	infraRsMonFexInfraPolData, err := aciClient.ReadRelationinfraRsMonFexInfraPolFromFexBundleGroup(dn)
 	if err != nil {
@@ -329,18 +322,18 @@ func resourceAciFexBundleGroupRead(d *schema.ResourceData, m interface{}) error 
 	return nil
 }
 
-func resourceAciFexBundleGroupDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciFexBundleGroupDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "infraFexBndlGrp")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
 }

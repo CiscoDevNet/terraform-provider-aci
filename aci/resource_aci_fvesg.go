@@ -1,6 +1,7 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"reflect"
@@ -8,16 +9,17 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciEndpointSecurityGroup() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciEndpointSecurityGroupCreate,
-		Update: resourceAciEndpointSecurityGroupUpdate,
-		Read:   resourceAciEndpointSecurityGroupRead,
-		Delete: resourceAciEndpointSecurityGroupDelete,
+		CreateContext: resourceAciEndpointSecurityGroupCreate,
+		UpdateContext: resourceAciEndpointSecurityGroupUpdate,
+		ReadContext:   resourceAciEndpointSecurityGroupRead,
+		DeleteContext: resourceAciEndpointSecurityGroupDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciEndpointSecurityGroupImport,
@@ -220,11 +222,13 @@ func getRemoteEndpointSecurityGroup(client *client.Client, dn string) (*models.E
 	return fvESg, nil
 }
 
-func setEndpointSecurityGroupAttributes(fvESg *models.EndpointSecurityGroup, d *schema.ResourceData) *schema.ResourceData {
+func setEndpointSecurityGroupAttributes(fvESg *models.EndpointSecurityGroup, d *schema.ResourceData) (*schema.ResourceData, error) {
 	d.SetId(fvESg.DistinguishedName)
 	d.Set("description", fvESg.Description)
-	fvESgMap, _ := fvESg.ToMap()
-	d.Set("application_profile_dn", GetParentDn(fvESg.DistinguishedName, fmt.Sprintf("/esg-%s", fvESgMap["name"])))
+	fvESgMap, err := fvESg.ToMap()
+	if err != nil {
+		return d, err
+	}
 	d.Set("annotation", fvESgMap["annotation"])
 	d.Set("flood_on_encap", fvESgMap["floodOnEncap"])
 	d.Set("match_t", fvESgMap["matchT"])
@@ -233,7 +237,7 @@ func setEndpointSecurityGroupAttributes(fvESg *models.EndpointSecurityGroup, d *
 	d.Set("pref_gr_memb", fvESgMap["prefGrMemb"])
 	d.Set("prio", fvESgMap["prio"])
 	d.Set("name_alias", fvESgMap["nameAlias"])
-	return d
+	return d, nil
 }
 
 func resourceAciEndpointSecurityGroupImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -244,12 +248,15 @@ func resourceAciEndpointSecurityGroupImport(d *schema.ResourceData, m interface{
 	if err != nil {
 		return nil, err
 	}
-	schemaFilled := setEndpointSecurityGroupAttributes(fvESg, d)
+	schemaFilled, err := setEndpointSecurityGroupAttributes(fvESg, d)
+	if err != nil {
+		return nil, err
+	}
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciEndpointSecurityGroupCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciEndpointSecurityGroupCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] EndpointSecurityGroup: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -294,11 +301,8 @@ func resourceAciEndpointSecurityGroupCreate(d *schema.ResourceData, m interface{
 
 	err := aciClient.Save(fvESg)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-	d.SetPartial("name")
-	d.Partial(false)
 	checkDns := make([]string, 0, 1)
 
 	if relationTofvRsCons, ok := d.GetOk("relation_fv_rs_cons"); ok {
@@ -358,7 +362,7 @@ func resourceAciEndpointSecurityGroupCreate(d *schema.ResourceData, m interface{
 	d.Partial(true)
 	err = checkTDn(aciClient, checkDns)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Partial(false)
 
@@ -369,11 +373,8 @@ func resourceAciEndpointSecurityGroupCreate(d *schema.ResourceData, m interface{
 
 			err = aciClient.CreateRelationfvRsCons(fvESg.DistinguishedName, fvESgAttr.Annotation, paramMap["prio"].(string), GetMOName(paramMap["target_dn"].(string)))
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
-			d.Partial(true)
-			d.SetPartial("relation_fv_rs_cons")
-			d.Partial(false)
 		}
 	}
 
@@ -384,11 +385,8 @@ func resourceAciEndpointSecurityGroupCreate(d *schema.ResourceData, m interface{
 
 			err = aciClient.CreateRelationfvRsConsIf(fvESg.DistinguishedName, fvESgAttr.Annotation, paramMap["prio"].(string), GetMOName(paramMap["target_dn"].(string)))
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
-			d.Partial(true)
-			d.SetPartial("relation_fv_rs_cons_if")
-			d.Partial(false)
 		}
 	}
 
@@ -396,11 +394,8 @@ func resourceAciEndpointSecurityGroupCreate(d *schema.ResourceData, m interface{
 		relationParam := relationTofvRsCustQosPol.(string)
 		err = aciClient.CreateRelationfvRsCustQosPol(fvESg.DistinguishedName, fvESgAttr.Annotation, GetMOName(relationParam))
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_fv_rs_cust_qos_pol")
-		d.Partial(false)
 
 	}
 
@@ -409,11 +404,8 @@ func resourceAciEndpointSecurityGroupCreate(d *schema.ResourceData, m interface{
 		for _, relationParam := range relationParamList {
 			err = aciClient.CreateRelationfvRsIntraEpg(fvESg.DistinguishedName, fvESgAttr.Annotation, GetMOName(relationParam))
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
-			d.Partial(true)
-			d.SetPartial("relation_fv_rs_intra_epg")
-			d.Partial(false)
 		}
 	}
 
@@ -422,11 +414,8 @@ func resourceAciEndpointSecurityGroupCreate(d *schema.ResourceData, m interface{
 		for _, relationParam := range relationParamList {
 			err = aciClient.CreateRelationfvRsProtBy(fvESg.DistinguishedName, fvESgAttr.Annotation, GetMOName(relationParam))
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
-			d.Partial(true)
-			d.SetPartial("relation_fv_rs_prot_by")
-			d.Partial(false)
 		}
 	}
 
@@ -437,11 +426,8 @@ func resourceAciEndpointSecurityGroupCreate(d *schema.ResourceData, m interface{
 
 			err = aciClient.CreateRelationfvRsProv(fvESg.DistinguishedName, fvESgAttr.Annotation, paramMap["match_t"].(string), paramMap["prio"].(string), GetMOName(paramMap["target_dn"].(string)))
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
-			d.Partial(true)
-			d.SetPartial("relation_fv_rs_prov")
-			d.Partial(false)
 		}
 	}
 
@@ -449,11 +435,8 @@ func resourceAciEndpointSecurityGroupCreate(d *schema.ResourceData, m interface{
 		relationParam := relationTofvRsScope.(string)
 		err = aciClient.CreateRelationfvRsScope(fvESg.DistinguishedName, fvESgAttr.Annotation, GetMOName(relationParam))
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_fv_rs_scope")
-		d.Partial(false)
 
 	}
 
@@ -463,20 +446,17 @@ func resourceAciEndpointSecurityGroupCreate(d *schema.ResourceData, m interface{
 			err = aciClient.CreateRelationfvRsSecInherited(fvESg.DistinguishedName, fvESgAttr.Annotation, relationParam)
 
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
-			d.Partial(true)
-			d.SetPartial("relation_fv_rs_sec_inherited")
-			d.Partial(false)
 		}
 	}
 
 	d.SetId(fvESg.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
-	return resourceAciEndpointSecurityGroupRead(d, m)
+	return resourceAciEndpointSecurityGroupRead(ctx, d, m)
 }
 
-func resourceAciEndpointSecurityGroupUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciEndpointSecurityGroupUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] EndpointSecurityGroup: Beginning Update")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -522,11 +502,8 @@ func resourceAciEndpointSecurityGroupUpdate(d *schema.ResourceData, m interface{
 	fvESg.Status = "modified"
 	err := aciClient.Save(fvESg)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-	d.SetPartial("name")
-	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
 
@@ -605,7 +582,7 @@ func resourceAciEndpointSecurityGroupUpdate(d *schema.ResourceData, m interface{
 	d.Partial(true)
 	err = checkTDn(aciClient, checkDns)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Partial(false)
 
@@ -618,7 +595,7 @@ func resourceAciEndpointSecurityGroupUpdate(d *schema.ResourceData, m interface{
 
 			err = aciClient.DeleteRelationfvRsCons(fvESg.DistinguishedName, GetMOName(paramMap["target_dn"].(string)))
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 		}
 		for _, relationParam := range newRelList {
@@ -626,12 +603,9 @@ func resourceAciEndpointSecurityGroupUpdate(d *schema.ResourceData, m interface{
 
 			err = aciClient.CreateRelationfvRsCons(fvESg.DistinguishedName, fvESgAttr.Annotation, paramMap["prio"].(string), GetMOName(paramMap["target_dn"].(string)))
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 		}
-		d.Partial(true)
-		d.SetPartial("relation_fv_rs_cons")
-		d.Partial(false)
 	}
 	if d.HasChange("relation_fv_rs_cons_if") || d.HasChange("annotation") {
 		oldRel, newRel := d.GetChange("relation_fv_rs_cons_if")
@@ -642,7 +616,7 @@ func resourceAciEndpointSecurityGroupUpdate(d *schema.ResourceData, m interface{
 
 			err = aciClient.DeleteRelationfvRsConsIf(fvESg.DistinguishedName, GetMOName(paramMap["target_dn"].(string)))
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 		}
 		for _, relationParam := range newRelList {
@@ -650,26 +624,20 @@ func resourceAciEndpointSecurityGroupUpdate(d *schema.ResourceData, m interface{
 
 			err = aciClient.CreateRelationfvRsConsIf(fvESg.DistinguishedName, fvESgAttr.Annotation, paramMap["prio"].(string), GetMOName(paramMap["target_dn"].(string)))
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 		}
-		d.Partial(true)
-		d.SetPartial("relation_fv_rs_cons_if")
-		d.Partial(false)
 	}
 	if d.HasChange("relation_fv_rs_cust_qos_pol") || d.HasChange("annotation") {
 		_, newRelParam := d.GetChange("relation_fv_rs_cust_qos_pol")
 		err = aciClient.DeleteRelationfvRsCustQosPol(fvESg.DistinguishedName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 		err = aciClient.CreateRelationfvRsCustQosPol(fvESg.DistinguishedName, fvESgAttr.Annotation, GetMOName(newRelParam.(string)))
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_fv_rs_cust_qos_pol")
-		d.Partial(false)
 
 	}
 	if d.HasChange("relation_fv_rs_intra_epg") || d.HasChange("annotation") {
@@ -682,17 +650,14 @@ func resourceAciEndpointSecurityGroupUpdate(d *schema.ResourceData, m interface{
 		for _, relDn := range relToDelete {
 			err = aciClient.DeleteRelationfvRsIntraEpg(fvESg.DistinguishedName, GetMOName(relDn))
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 		}
 		for _, relDn := range relToCreate {
 			err = aciClient.CreateRelationfvRsIntraEpg(fvESg.DistinguishedName, fvESgAttr.Annotation, GetMOName(relDn))
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
-			d.Partial(true)
-			d.SetPartial("relation_fv_rs_intra_epg")
-			d.Partial(false)
 		}
 	}
 	if d.HasChange("relation_fv_rs_prot_by") || d.HasChange("annotation") {
@@ -705,17 +670,14 @@ func resourceAciEndpointSecurityGroupUpdate(d *schema.ResourceData, m interface{
 		for _, relDn := range relToDelete {
 			err = aciClient.DeleteRelationfvRsProtBy(fvESg.DistinguishedName, GetMOName(relDn))
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 		}
 		for _, relDn := range relToCreate {
 			err = aciClient.CreateRelationfvRsProtBy(fvESg.DistinguishedName, fvESgAttr.Annotation, GetMOName(relDn))
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
-			d.Partial(true)
-			d.SetPartial("relation_fv_rs_prot_by")
-			d.Partial(false)
 		}
 	}
 	if d.HasChange("relation_fv_rs_prov") || d.HasChange("annotation") {
@@ -727,7 +689,7 @@ func resourceAciEndpointSecurityGroupUpdate(d *schema.ResourceData, m interface{
 
 			err = aciClient.DeleteRelationfvRsProv(fvESg.DistinguishedName, GetMOName(paramMap["target_dn"].(string)))
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 		}
 		for _, relationParam := range newRelList {
@@ -735,26 +697,20 @@ func resourceAciEndpointSecurityGroupUpdate(d *schema.ResourceData, m interface{
 
 			err = aciClient.CreateRelationfvRsProv(fvESg.DistinguishedName, fvESgAttr.Annotation, paramMap["match_t"].(string), paramMap["prio"].(string), GetMOName(paramMap["target_dn"].(string)))
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 		}
-		d.Partial(true)
-		d.SetPartial("relation_fv_rs_prov")
-		d.Partial(false)
 	}
 	if d.HasChange("relation_fv_rs_scope") || d.HasChange("annotation") {
 		_, newRelParam := d.GetChange("relation_fv_rs_scope")
 		err = aciClient.DeleteRelationfvRsScope(fvESg.DistinguishedName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 		err = aciClient.CreateRelationfvRsScope(fvESg.DistinguishedName, fvESgAttr.Annotation, GetMOName(newRelParam.(string)))
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_fv_rs_scope")
-		d.Partial(false)
 
 	}
 	if d.HasChange("relation_fv_rs_sec_inherited") || d.HasChange("annotation") {
@@ -768,36 +724,37 @@ func resourceAciEndpointSecurityGroupUpdate(d *schema.ResourceData, m interface{
 			err = aciClient.DeleteRelationfvRsSecInherited(fvESg.DistinguishedName, relDn)
 
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 		}
 		for _, relDn := range relToCreate {
 			err = aciClient.CreateRelationfvRsSecInherited(fvESg.DistinguishedName, fvESgAttr.Annotation, relDn)
 
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
-			d.Partial(true)
-			d.SetPartial("relation_fv_rs_sec_inherited")
-			d.Partial(false)
 		}
 	}
 
 	d.SetId(fvESg.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
-	return resourceAciEndpointSecurityGroupRead(d, m)
+	return resourceAciEndpointSecurityGroupRead(ctx, d, m)
 }
 
-func resourceAciEndpointSecurityGroupRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciEndpointSecurityGroupRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	fvESg, err := getRemoteEndpointSecurityGroup(aciClient, dn)
 	if err != nil {
 		d.SetId("")
-		return err
+		return diag.FromErr(err)
 	}
-	setEndpointSecurityGroupAttributes(fvESg, d)
+	_, err = setEndpointSecurityGroupAttributes(fvESg, d)
+	if err != nil {
+		d.SetId("")
+		return diag.FromErr(err)
+	}
 
 	fvRsConsData, err := aciClient.ReadRelationfvRsCons(dn)
 	if err != nil {
@@ -909,15 +866,15 @@ func resourceAciEndpointSecurityGroupRead(d *schema.ResourceData, m interface{})
 	return nil
 }
 
-func resourceAciEndpointSecurityGroupDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciEndpointSecurityGroupDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "fvESg")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
 }

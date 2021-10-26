@@ -6,8 +6,8 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
 func TestAccAciSecurityDomain_Basic(t *testing.T) {
@@ -62,7 +62,7 @@ func testAccCheckAciSecurityDomainConfig_basic(description string) string {
 
 	resource "aci_aaa_domain" "foosecurity_domain" {
 		description = "%s"
-		name  = "example"
+		name  = "aaa_domain_1"
 		annotation  = "example"
 		name_alias  = "example"
 	}
@@ -124,7 +124,7 @@ func testAccCheckAciSecurityDomainAttributes(description string, security_domain
 			return fmt.Errorf("Bad aaa domain Description %s", security_domain.Description)
 		}
 
-		if "example" != security_domain.Name {
+		if "aaa_domain_1" != security_domain.Name {
 			return fmt.Errorf("Bad aaa domain name %s", security_domain.Name)
 		}
 

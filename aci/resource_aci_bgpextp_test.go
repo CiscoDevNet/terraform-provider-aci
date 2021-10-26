@@ -6,8 +6,8 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
 func TestAccAciL3outBgpExternalPolicy_Basic(t *testing.T) {
@@ -61,7 +61,7 @@ func testAccCheckAciL3outBgpExternalPolicyConfig_basic(description string) strin
 	return fmt.Sprintf(`
 
 	resource "aci_l3out_bgp_external_policy" "fool3out_bgp_external_policy" {
-		l3_outside_dn  = "${aci_l3_outside.example.id}"
+		l3_outside_dn  = aci_l3_outside.example.id
 		description = "%s"
   		annotation  = "example"
   		name_alias  = "example"

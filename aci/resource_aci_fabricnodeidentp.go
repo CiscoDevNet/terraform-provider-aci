@@ -1,21 +1,23 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciFabricNodeMember() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciFabricNodeMemberCreate,
-		Update: resourceAciFabricNodeMemberUpdate,
-		Read:   resourceAciFabricNodeMemberRead,
-		Delete: resourceAciFabricNodeMemberDelete,
+		CreateContext: resourceAciFabricNodeMemberCreate,
+		UpdateContext: resourceAciFabricNodeMemberUpdate,
+		ReadContext:   resourceAciFabricNodeMemberRead,
+		DeleteContext: resourceAciFabricNodeMemberDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciFabricNodeMemberImport,
@@ -32,9 +34,11 @@ func resourceAciFabricNodeMember() *schema.Resource {
 			},
 
 			"name": &schema.Schema{
-				Type:     schema.TypeString,
-				Required: true,
-				ForceNew: true,
+				Type: schema.TypeString,
+				// Required: true,
+				// ForceNew: true,
+				Optional: true,
+				Computed: true,
 			},
 
 			"ext_pool_id": &schema.Schema{
@@ -105,10 +109,13 @@ func getRemoteFabricNodeMember(client *client.Client, dn string) (*models.Fabric
 	return fabricNodeIdentP, nil
 }
 
-func setFabricNodeMemberAttributes(fabricNodeIdentP *models.FabricNodeMember, d *schema.ResourceData) *schema.ResourceData {
+func setFabricNodeMemberAttributes(fabricNodeIdentP *models.FabricNodeMember, d *schema.ResourceData) (*schema.ResourceData, error) {
 	d.SetId(fabricNodeIdentP.DistinguishedName)
 	d.Set("description", fabricNodeIdentP.Description)
-	fabricNodeIdentPMap, _ := fabricNodeIdentP.ToMap()
+	fabricNodeIdentPMap, err := fabricNodeIdentP.ToMap()
+	if err != nil {
+		return d, err
+	}
 
 	d.Set("serial", fabricNodeIdentPMap["serial"])
 	d.Set("name", fabricNodeIdentPMap["name"])
@@ -120,8 +127,7 @@ func setFabricNodeMemberAttributes(fabricNodeIdentP *models.FabricNodeMember, d 
 	d.Set("node_type", fabricNodeIdentPMap["nodeType"])
 	d.Set("pod_id", fabricNodeIdentPMap["podId"])
 	d.Set("role", fabricNodeIdentPMap["role"])
-	d.Set("serial", fabricNodeIdentPMap["serial"])
-	return d
+	return d, nil
 }
 
 func resourceAciFabricNodeMemberImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -135,14 +141,17 @@ func resourceAciFabricNodeMemberImport(d *schema.ResourceData, m interface{}) ([
 	if err != nil {
 		return nil, err
 	}
-	schemaFilled := setFabricNodeMemberAttributes(fabricNodeIdentP, d)
+	schemaFilled, err := setFabricNodeMemberAttributes(fabricNodeIdentP, d)
+	if err != nil {
+		return nil, err
+	}
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciFabricNodeMemberCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciFabricNodeMemberCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] FabricNodeMember: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -179,28 +188,20 @@ func resourceAciFabricNodeMemberCreate(d *schema.ResourceData, m interface{}) er
 	if Role, ok := d.GetOk("role"); ok {
 		fabricNodeIdentPAttr.Role = Role.(string)
 	}
-	if Serial, ok := d.GetOk("serial"); ok {
-		fabricNodeIdentPAttr.Serial = Serial.(string)
-	}
 	fabricNodeIdentP := models.NewFabricNodeMember(fmt.Sprintf("controller/nodeidentpol/nodep-%s", serial), "uni", desc, fabricNodeIdentPAttr)
 
 	err := aciClient.Save(fabricNodeIdentP)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.SetPartial("serial")
-
-	d.Partial(false)
 
 	d.SetId(fabricNodeIdentP.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciFabricNodeMemberRead(d, m)
+	return resourceAciFabricNodeMemberRead(ctx, d, m)
 }
 
-func resourceAciFabricNodeMemberUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciFabricNodeMemberUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] FabricNodeMember: Beginning Update")
 
 	aciClient := m.(*client.Client)
@@ -237,9 +238,6 @@ func resourceAciFabricNodeMemberUpdate(d *schema.ResourceData, m interface{}) er
 	if Role, ok := d.GetOk("role"); ok {
 		fabricNodeIdentPAttr.Role = Role.(string)
 	}
-	if Serial, ok := d.GetOk("serial"); ok {
-		fabricNodeIdentPAttr.Serial = Serial.(string)
-	}
 	fabricNodeIdentP := models.NewFabricNodeMember(fmt.Sprintf("controller/nodeidentpol/nodep-%s", serial), "uni", desc, fabricNodeIdentPAttr)
 
 	fabricNodeIdentP.Status = "modified"
@@ -247,22 +245,17 @@ func resourceAciFabricNodeMemberUpdate(d *schema.ResourceData, m interface{}) er
 	err := aciClient.Save(fabricNodeIdentP)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.SetPartial("serial")
-
-	d.Partial(false)
 
 	d.SetId(fabricNodeIdentP.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciFabricNodeMemberRead(d, m)
+	return resourceAciFabricNodeMemberRead(ctx, d, m)
 
 }
 
-func resourceAciFabricNodeMemberRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciFabricNodeMemberRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -274,25 +267,28 @@ func resourceAciFabricNodeMemberRead(d *schema.ResourceData, m interface{}) erro
 		d.SetId("")
 		return nil
 	}
-	setFabricNodeMemberAttributes(fabricNodeIdentP, d)
-
+	_, err = setFabricNodeMemberAttributes(fabricNodeIdentP, d)
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 
 	return nil
 }
 
-func resourceAciFabricNodeMemberDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciFabricNodeMemberDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "fabricNodeIdentP")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
 }

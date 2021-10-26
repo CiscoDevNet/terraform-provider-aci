@@ -21,7 +21,7 @@ resource "aci_tenant" "tenentcheck" {
 }
 
 resource "aci_bgp_peer_prefix" "example" {
-  tenant_dn    = "${aci_tenant.tenentcheck.id}"
+  tenant_dn    = aci_tenant.tenentcheck.id
   name         = "one"
   description  = "from terraform"
   action       = "shut"

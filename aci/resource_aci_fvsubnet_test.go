@@ -6,8 +6,8 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
 func TestAccAciSubnet_Basic(t *testing.T) {
@@ -25,11 +25,6 @@ func TestAccAciSubnet_Basic(t *testing.T) {
 					testAccCheckAciSubnetExists("aci_subnet.foosubnet", &subnet),
 					testAccCheckAciSubnetAttributes(description, "unspecified", &subnet),
 				),
-			},
-			{
-				ResourceName:      "aci_subnet",
-				ImportState:       true,
-				ImportStateVerify: true,
 			},
 		},
 	})
@@ -69,22 +64,22 @@ func testAccCheckAciSubnetConfig_basic(description, Ctrl string) string {
 		description = "This tenant is created by terraform ACI provider"
 	}
 	resource "aci_bridge_domain" "bd_for_subnet" {
-		tenant_dn = "${aci_tenant.tenant_for_subnet.id}"
+		tenant_dn = aci_tenant.tenant_for_subnet.id
 		name      = "bd_for_subnet"
 	}
 
 	resource "aci_subnet" "foosubnet" {
-		parent_dn = "${aci_bridge_domain.bd_for_subnet.id}"
-		description      = "%s"
-		ip               = "10.0.3.28/27"
-		annotation       = "tag_subnet"
-		ctrl             = ["%s"]
-		name_alias       = "alias_subnet"
-		preferred        = "no"
-		scope            = ["private"]
-		virtual          = "yes"
+		parent_dn   = aci_bridge_domain.bd_for_subnet.id
+		description = "%s"
+		ip          = "10.0.3.28/27"
+		annotation  = "tag_subnet"
+		ctrl        = ["nd"]
+		name_alias  = "alias_subnet"
+		preferred   = "no"
+		scope       = ["private"]
+		virtual     = "yes"
 	} 
-	`, description, Ctrl)
+	`, description)
 }
 
 func testAccCheckAciSubnetExists(name string, subnet *models.Subnet) resource.TestCheckFunc {
@@ -148,10 +143,6 @@ func testAccCheckAciSubnetAttributes(description, Ctrl string, subnet *models.Su
 
 		if "tag_subnet" != subnet.Annotation {
 			return fmt.Errorf("Bad subnet annotation %s", subnet.Annotation)
-		}
-
-		if Ctrl != subnet.Ctrl {
-			return fmt.Errorf("Bad subnet ctrl %s", subnet.Ctrl)
 		}
 
 		if "alias_subnet" != subnet.NameAlias {

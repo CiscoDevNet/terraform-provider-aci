@@ -1,21 +1,23 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciL3outStaticRoute() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciL3outStaticRouteCreate,
-		Update: resourceAciL3outStaticRouteUpdate,
-		Read:   resourceAciL3outStaticRouteRead,
-		Delete: resourceAciL3outStaticRouteDelete,
+		CreateContext: resourceAciL3outStaticRouteCreate,
+		UpdateContext: resourceAciL3outStaticRouteUpdate,
+		ReadContext:   resourceAciL3outStaticRouteRead,
+		DeleteContext: resourceAciL3outStaticRouteDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciL3outStaticRouteImport,
@@ -91,15 +93,17 @@ func getRemoteL3outStaticRoute(client *client.Client, dn string) (*models.L3outS
 	return ipRouteP, nil
 }
 
-func setL3outStaticRouteAttributes(ipRouteP *models.L3outStaticRoute, d *schema.ResourceData) *schema.ResourceData {
+func setL3outStaticRouteAttributes(ipRouteP *models.L3outStaticRoute, d *schema.ResourceData) (*schema.ResourceData, error) {
 	d.SetId(ipRouteP.DistinguishedName)
 	d.Set("description", ipRouteP.Description)
 	dn := d.Id()
 	if dn != ipRouteP.DistinguishedName {
 		d.Set("fabric_node_dn", "")
 	}
-	ipRoutePMap, _ := ipRouteP.ToMap()
-
+	ipRoutePMap, err := ipRouteP.ToMap()
+	if err != nil {
+		return d, err
+	}
 	d.Set("ip", ipRoutePMap["ip"])
 
 	d.Set("aggregate", ipRoutePMap["aggregate"])
@@ -112,7 +116,7 @@ func setL3outStaticRouteAttributes(ipRouteP *models.L3outStaticRoute, d *schema.
 	} else {
 		d.Set("rt_ctrl", ipRoutePMap["rtCtrl"])
 	}
-	return d
+	return d, nil
 }
 
 func resourceAciL3outStaticRouteImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -126,14 +130,16 @@ func resourceAciL3outStaticRouteImport(d *schema.ResourceData, m interface{}) ([
 	if err != nil {
 		return nil, err
 	}
-	schemaFilled := setL3outStaticRouteAttributes(ipRouteP, d)
-
+	schemaFilled, err := setL3outStaticRouteAttributes(ipRouteP, d)
+	if err != nil {
+		return nil, err
+	}
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciL3outStaticRouteCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciL3outStaticRouteCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] L3outStaticRoute: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -167,13 +173,8 @@ func resourceAciL3outStaticRouteCreate(d *schema.ResourceData, m interface{}) er
 
 	err := aciClient.Save(ipRouteP)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.SetPartial("ip")
-
-	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
 
@@ -186,7 +187,7 @@ func resourceAciL3outStaticRouteCreate(d *schema.ResourceData, m interface{}) er
 	d.Partial(true)
 	err = checkTDn(aciClient, checkDns)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Partial(false)
 
@@ -194,21 +195,18 @@ func resourceAciL3outStaticRouteCreate(d *schema.ResourceData, m interface{}) er
 		relationParam := relationToipRsRouteTrack.(string)
 		err = aciClient.CreateRelationipRsRouteTrackFromL3outStaticRoute(ipRouteP.DistinguishedName, relationParam)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_ip_rs_route_track")
-		d.Partial(false)
 
 	}
 
 	d.SetId(ipRouteP.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciL3outStaticRouteRead(d, m)
+	return resourceAciL3outStaticRouteRead(ctx, d, m)
 }
 
-func resourceAciL3outStaticRouteUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciL3outStaticRouteUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] L3outStaticRoute: Beginning Update")
 
 	aciClient := m.(*client.Client)
@@ -246,13 +244,8 @@ func resourceAciL3outStaticRouteUpdate(d *schema.ResourceData, m interface{}) er
 	err := aciClient.Save(ipRouteP)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.SetPartial("ip")
-
-	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
 
@@ -265,7 +258,7 @@ func resourceAciL3outStaticRouteUpdate(d *schema.ResourceData, m interface{}) er
 	d.Partial(true)
 	err = checkTDn(aciClient, checkDns)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Partial(false)
 
@@ -273,26 +266,23 @@ func resourceAciL3outStaticRouteUpdate(d *schema.ResourceData, m interface{}) er
 		_, newRelParam := d.GetChange("relation_ip_rs_route_track")
 		err = aciClient.DeleteRelationipRsRouteTrackFromL3outStaticRoute(ipRouteP.DistinguishedName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 		err = aciClient.CreateRelationipRsRouteTrackFromL3outStaticRoute(ipRouteP.DistinguishedName, newRelParam.(string))
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_ip_rs_route_track")
-		d.Partial(false)
 
 	}
 
 	d.SetId(ipRouteP.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciL3outStaticRouteRead(d, m)
+	return resourceAciL3outStaticRouteRead(ctx, d, m)
 
 }
 
-func resourceAciL3outStaticRouteRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciL3outStaticRouteRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -304,8 +294,11 @@ func resourceAciL3outStaticRouteRead(d *schema.ResourceData, m interface{}) erro
 		d.SetId("")
 		return nil
 	}
-	setL3outStaticRouteAttributes(ipRouteP, d)
-
+	_, err = setL3outStaticRouteAttributes(ipRouteP, d)
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 	ipRsRouteTrackData, err := aciClient.ReadRelationipRsRouteTrackFromL3outStaticRoute(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation ipRsRouteTrack %v", err)
@@ -325,18 +318,18 @@ func resourceAciL3outStaticRouteRead(d *schema.ResourceData, m interface{}) erro
 	return nil
 }
 
-func resourceAciL3outStaticRouteDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciL3outStaticRouteDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "ipRouteP")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
 }

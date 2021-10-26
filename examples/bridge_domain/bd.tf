@@ -18,7 +18,7 @@ resource "aci_bridge_domain" "demobd" {
   limit_ip_learn_to_subnets      = "yes"
   mcast_allow                    = "yes"
   multi_dst_pkt_act              = "bd-flood"
-  bridge_domain_type                           = "regular"
+  bridge_domain_type             = "regular"
   unicast_route                  = "no"
   unk_mac_ucast_act              = "flood"
   unk_mcast_act                  = "flood"
@@ -27,7 +27,7 @@ resource "aci_bridge_domain" "demobd" {
   relation_fv_rs_bd_to_relay_p   = aci_rest.rest_dhcp_RelayP.id     # Relation to DHCP Relay policy
   relation_fv_rs_abd_pol_mon_pol = aci_rest.rest_mon_epg_pol.id     # Relation to Monitors policy
   relation_fv_rs_bd_flood_to     = [aci_filter.bd_flood_filter.id]  # Relation to Contract Filters
-  relation_fv_rs_bd_to_fhs       = aci_rest.rest_fhs_bd_pol.id     # Relation to FHS policy
+  relation_fv_rs_bd_to_fhs       = aci_rest.rest_fhs_bd_pol.id      # Relation to FHS policy
 
   relation_fv_rs_bd_to_netflow_monitor_pol {
     tn_netflow_monitor_pol_name = aci_rest.rest_net_flow_pol.id

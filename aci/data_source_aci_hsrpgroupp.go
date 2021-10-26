@@ -1,16 +1,18 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func dataSourceAciHSRPGroupProfile() *schema.Resource {
 	return &schema.Resource{
 
-		Read: dataSourceAciHSRPGroupProfileRead,
+		ReadContext: dataSourceAciHSRPGroupProfileRead,
 
 		SchemaVersion: 1,
 
@@ -82,7 +84,7 @@ func dataSourceAciHSRPGroupProfile() *schema.Resource {
 	}
 }
 
-func dataSourceAciHSRPGroupProfileRead(d *schema.ResourceData, m interface{}) error {
+func dataSourceAciHSRPGroupProfileRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	aciClient := m.(*client.Client)
 
 	name := d.Get("name").(string)
@@ -95,10 +97,14 @@ func dataSourceAciHSRPGroupProfileRead(d *schema.ResourceData, m interface{}) er
 	hsrpGroupP, err := getRemoteHSRPGroupProfile(aciClient, dn)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	d.SetId(dn)
-	setHSRPGroupProfileAttributes(hsrpGroupP, d)
+	_, err = setHSRPGroupProfileAttributes(hsrpGroupP, d)
+
+	if err != nil {
+		return diag.FromErr(err)
+	}
 	return nil
 }

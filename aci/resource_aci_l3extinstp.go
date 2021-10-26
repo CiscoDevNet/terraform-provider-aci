@@ -1,6 +1,7 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"reflect"
@@ -8,16 +9,17 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciExternalNetworkInstanceProfile() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciExternalNetworkInstanceProfileCreate,
-		Update: resourceAciExternalNetworkInstanceProfileUpdate,
-		Read:   resourceAciExternalNetworkInstanceProfileRead,
-		Delete: resourceAciExternalNetworkInstanceProfileDelete,
+		CreateContext: resourceAciExternalNetworkInstanceProfileCreate,
+		UpdateContext: resourceAciExternalNetworkInstanceProfileUpdate,
+		ReadContext:   resourceAciExternalNetworkInstanceProfileRead,
+		DeleteContext: resourceAciExternalNetworkInstanceProfileDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciExternalNetworkInstanceProfileImport,
@@ -88,6 +90,9 @@ func resourceAciExternalNetworkInstanceProfile() *schema.Resource {
 				Computed: true,
 				ValidateFunc: validation.StringInSlice([]string{
 					"unspecified",
+					"level6",
+					"level5",
+					"level4",
 					"level3",
 					"level2",
 					"level1",
@@ -210,15 +215,18 @@ func getRemoteExternalNetworkInstanceProfile(client *client.Client, dn string) (
 	return l3extInstP, nil
 }
 
-func setExternalNetworkInstanceProfileAttributes(l3extInstP *models.ExternalNetworkInstanceProfile, d *schema.ResourceData) *schema.ResourceData {
+func setExternalNetworkInstanceProfileAttributes(l3extInstP *models.ExternalNetworkInstanceProfile, d *schema.ResourceData) (*schema.ResourceData, error) {
 	dn := d.Id()
 	d.SetId(l3extInstP.DistinguishedName)
 	d.Set("description", l3extInstP.Description)
-	// d.Set("l3_outside_dn", GetParentDn(l3extInstP.DistinguishedName))
+
 	if dn != l3extInstP.DistinguishedName {
 		d.Set("l3_outside_dn", "")
 	}
-	l3extInstPMap, _ := l3extInstP.ToMap()
+	l3extInstPMap, err := l3extInstP.ToMap()
+	if err != nil {
+		return d, err
+	}
 
 	d.Set("name", l3extInstPMap["name"])
 
@@ -230,7 +238,7 @@ func setExternalNetworkInstanceProfileAttributes(l3extInstP *models.ExternalNetw
 	d.Set("pref_gr_memb", l3extInstPMap["prefGrMemb"])
 	d.Set("prio", l3extInstPMap["prio"])
 	d.Set("target_dscp", l3extInstPMap["targetDscp"])
-	return d
+	return d, nil
 }
 
 func resourceAciExternalNetworkInstanceProfileImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -244,18 +252,23 @@ func resourceAciExternalNetworkInstanceProfileImport(d *schema.ResourceData, m i
 	if err != nil {
 		return nil, err
 	}
-	l3extInstPMap, _ := l3extInstP.ToMap()
+	l3extInstPMap, err := l3extInstP.ToMap()
+	if err != nil {
+		return nil, err
+	}
 	name := l3extInstPMap["name"]
 	pDN := GetParentDn(dn, fmt.Sprintf("/instP-%s", name))
 	d.Set("l3_outside_dn", pDN)
-	schemaFilled := setExternalNetworkInstanceProfileAttributes(l3extInstP, d)
-
+	schemaFilled, err := setExternalNetworkInstanceProfileAttributes(l3extInstP, d)
+	if err != nil {
+		return nil, err
+	}
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciExternalNetworkInstanceProfileCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciExternalNetworkInstanceProfileCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] ExternalNetworkInstanceProfile: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -294,15 +307,10 @@ func resourceAciExternalNetworkInstanceProfileCreate(d *schema.ResourceData, m i
 	l3extInstP := models.NewExternalNetworkInstanceProfile(fmt.Sprintf("instP-%s", name), L3OutsideDn, desc, l3extInstPAttr)
 
 	err := aciClient.Save(l3extInstP)
+
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.SetPartial("name")
-
-	d.Partial(false)
-
 	checkDns := make([]string, 0, 1)
 
 	if relationTofvRsSecInherited, ok := d.GetOk("relation_fv_rs_sec_inherited"); ok {
@@ -365,7 +373,7 @@ func resourceAciExternalNetworkInstanceProfileCreate(d *schema.ResourceData, m i
 	d.Partial(true)
 	err = checkTDn(aciClient, checkDns)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Partial(false)
 
@@ -375,11 +383,8 @@ func resourceAciExternalNetworkInstanceProfileCreate(d *schema.ResourceData, m i
 			err = aciClient.CreateRelationfvRsSecInheritedFromExternalNetworkInstanceProfile(l3extInstP.DistinguishedName, relationParam)
 
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
-			d.Partial(true)
-			d.SetPartial("relation_fv_rs_sec_inherited")
-			d.Partial(false)
 		}
 	}
 	if relationTofvRsProv, ok := d.GetOk("relation_fv_rs_prov"); ok {
@@ -389,33 +394,24 @@ func resourceAciExternalNetworkInstanceProfileCreate(d *schema.ResourceData, m i
 			err = aciClient.CreateRelationfvRsProvFromExternalNetworkInstanceProfile(l3extInstP.DistinguishedName, relationParamName)
 
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
-			d.Partial(true)
-			d.SetPartial("relation_fv_rs_prov")
-			d.Partial(false)
 		}
 	}
 	if relationTol3extRsL3InstPToDomP, ok := d.GetOk("relation_l3ext_rs_l3_inst_p_to_dom_p"); ok {
 		relationParam := relationTol3extRsL3InstPToDomP.(string)
 		err = aciClient.CreateRelationl3extRsL3InstPToDomPFromExternalNetworkInstanceProfile(l3extInstP.DistinguishedName, relationParam)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_l3ext_rs_l3_inst_p_to_dom_p")
-		d.Partial(false)
 
 	}
 	if relationTol3extRsInstPToNatMappingEPg, ok := d.GetOk("relation_l3ext_rs_inst_p_to_nat_mapping_epg"); ok {
 		relationParam := relationTol3extRsInstPToNatMappingEPg.(string)
 		err = aciClient.CreateRelationl3extRsInstPToNatMappingEPgFromExternalNetworkInstanceProfile(l3extInstP.DistinguishedName, relationParam)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_l3ext_rs_inst_p_to_nat_mapping_epg")
-		d.Partial(false)
 
 	}
 	if relationTofvRsConsIf, ok := d.GetOk("relation_fv_rs_cons_if"); ok {
@@ -425,11 +421,8 @@ func resourceAciExternalNetworkInstanceProfileCreate(d *schema.ResourceData, m i
 			err = aciClient.CreateRelationfvRsConsIfFromExternalNetworkInstanceProfile(l3extInstP.DistinguishedName, relationParamName)
 
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
-			d.Partial(true)
-			d.SetPartial("relation_fv_rs_cons_if")
-			d.Partial(false)
 		}
 	}
 	if relationTofvRsCustQosPol, ok := d.GetOk("relation_fv_rs_cust_qos_pol"); ok {
@@ -437,11 +430,8 @@ func resourceAciExternalNetworkInstanceProfileCreate(d *schema.ResourceData, m i
 		relationParamName := GetMOName(relationParam)
 		err = aciClient.CreateRelationfvRsCustQosPolFromExternalNetworkInstanceProfile(l3extInstP.DistinguishedName, relationParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_fv_rs_cust_qos_pol")
-		d.Partial(false)
 
 	}
 	if relationTol3extRsInstPToProfile, ok := d.GetOk("relation_l3ext_rs_inst_p_to_profile"); ok {
@@ -451,11 +441,8 @@ func resourceAciExternalNetworkInstanceProfileCreate(d *schema.ResourceData, m i
 			paramMap := relationParam.(map[string]interface{})
 			err = aciClient.CreateRelationl3extRsInstPToProfileFromExternalNetworkInstanceProfile(l3extInstP.DistinguishedName, paramMap["tn_rtctrl_profile_name"].(string), paramMap["direction"].(string))
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
-			d.Partial(true)
-			d.SetPartial("relation_l3ext_rs_inst_p_to_profile")
-			d.Partial(false)
 		}
 
 	}
@@ -466,11 +453,8 @@ func resourceAciExternalNetworkInstanceProfileCreate(d *schema.ResourceData, m i
 			err = aciClient.CreateRelationfvRsConsFromExternalNetworkInstanceProfile(l3extInstP.DistinguishedName, relationParamName)
 
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
-			d.Partial(true)
-			d.SetPartial("relation_fv_rs_cons")
-			d.Partial(false)
 		}
 	}
 	if relationTofvRsProtBy, ok := d.GetOk("relation_fv_rs_prot_by"); ok {
@@ -480,11 +464,8 @@ func resourceAciExternalNetworkInstanceProfileCreate(d *schema.ResourceData, m i
 			err = aciClient.CreateRelationfvRsProtByFromExternalNetworkInstanceProfile(l3extInstP.DistinguishedName, relationParamName)
 
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
-			d.Partial(true)
-			d.SetPartial("relation_fv_rs_prot_by")
-			d.Partial(false)
 		}
 	}
 	if relationTofvRsIntraEpg, ok := d.GetOk("relation_fv_rs_intra_epg"); ok {
@@ -494,21 +475,18 @@ func resourceAciExternalNetworkInstanceProfileCreate(d *schema.ResourceData, m i
 			err = aciClient.CreateRelationfvRsIntraEpgFromExternalNetworkInstanceProfile(l3extInstP.DistinguishedName, relationParamName)
 
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
-			d.Partial(true)
-			d.SetPartial("relation_fv_rs_intra_epg")
-			d.Partial(false)
 		}
 	}
 
 	d.SetId(l3extInstP.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciExternalNetworkInstanceProfileRead(d, m)
+	return resourceAciExternalNetworkInstanceProfileRead(ctx, d, m)
 }
 
-func resourceAciExternalNetworkInstanceProfileUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciExternalNetworkInstanceProfileUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] ExternalNetworkInstanceProfile: Beginning Update")
 
 	aciClient := m.(*client.Client)
@@ -552,13 +530,8 @@ func resourceAciExternalNetworkInstanceProfileUpdate(d *schema.ResourceData, m i
 	err := aciClient.Save(l3extInstP)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.SetPartial("name")
-
-	d.Partial(false)
 
 	checkDns := make([]string, 0, 1)
 
@@ -646,7 +619,7 @@ func resourceAciExternalNetworkInstanceProfileUpdate(d *schema.ResourceData, m i
 	d.Partial(true)
 	err = checkTDn(aciClient, checkDns)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Partial(false)
 
@@ -660,7 +633,7 @@ func resourceAciExternalNetworkInstanceProfileUpdate(d *schema.ResourceData, m i
 		for _, relDn := range relToDelete {
 			err = aciClient.DeleteRelationfvRsSecInheritedFromExternalNetworkInstanceProfile(l3extInstP.DistinguishedName, relDn)
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 		}
@@ -668,12 +641,8 @@ func resourceAciExternalNetworkInstanceProfileUpdate(d *schema.ResourceData, m i
 		for _, relDn := range relToCreate {
 			err = aciClient.CreateRelationfvRsSecInheritedFromExternalNetworkInstanceProfile(l3extInstP.DistinguishedName, relDn)
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
-			d.Partial(true)
-			d.SetPartial("relation_fv_rs_sec_inherited")
-			d.Partial(false)
-
 		}
 
 	}
@@ -686,23 +655,25 @@ func resourceAciExternalNetworkInstanceProfileUpdate(d *schema.ResourceData, m i
 
 		for _, relDn := range relToDelete {
 			relDnName := GetMOName(relDn)
+			if relDnName == "" {
+				relDnName = relDn
+			}
 			err = aciClient.DeleteRelationfvRsProvFromExternalNetworkInstanceProfile(l3extInstP.DistinguishedName, relDnName)
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 		}
 
 		for _, relDn := range relToCreate {
 			relDnName := GetMOName(relDn)
+			if relDnName == "" {
+				relDnName = relDn
+			}
 			err = aciClient.CreateRelationfvRsProvFromExternalNetworkInstanceProfile(l3extInstP.DistinguishedName, relDnName)
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
-			d.Partial(true)
-			d.SetPartial("relation_fv_rs_prov")
-			d.Partial(false)
-
 		}
 
 	}
@@ -710,28 +681,21 @@ func resourceAciExternalNetworkInstanceProfileUpdate(d *schema.ResourceData, m i
 		_, newRelParam := d.GetChange("relation_l3ext_rs_l3_inst_p_to_dom_p")
 		err = aciClient.CreateRelationl3extRsL3InstPToDomPFromExternalNetworkInstanceProfile(l3extInstP.DistinguishedName, newRelParam.(string))
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_l3ext_rs_l3_inst_p_to_dom_p")
-		d.Partial(false)
-
 	}
 	if d.HasChange("relation_l3ext_rs_inst_p_to_nat_mapping_epg") {
 		_, newRelParam := d.GetChange("relation_l3ext_rs_inst_p_to_nat_mapping_epg")
 		err = aciClient.DeleteRelationl3extRsInstPToNatMappingEPgFromExternalNetworkInstanceProfile(l3extInstP.DistinguishedName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 		err = aciClient.CreateRelationl3extRsInstPToNatMappingEPgFromExternalNetworkInstanceProfile(l3extInstP.DistinguishedName, newRelParam.(string))
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_l3ext_rs_inst_p_to_nat_mapping_epg")
-		d.Partial(false)
-
 	}
+
 	if d.HasChange("relation_fv_rs_cons_if") {
 		oldRel, newRel := d.GetChange("relation_fv_rs_cons_if")
 		oldRelSet := oldRel.(*schema.Set)
@@ -743,7 +707,7 @@ func resourceAciExternalNetworkInstanceProfileUpdate(d *schema.ResourceData, m i
 			relDnName := GetMOName(relDn)
 			err = aciClient.DeleteRelationfvRsConsIfFromExternalNetworkInstanceProfile(l3extInstP.DistinguishedName, relDnName)
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 		}
@@ -752,12 +716,8 @@ func resourceAciExternalNetworkInstanceProfileUpdate(d *schema.ResourceData, m i
 			relDnName := GetMOName(relDn)
 			err = aciClient.CreateRelationfvRsConsIfFromExternalNetworkInstanceProfile(l3extInstP.DistinguishedName, relDnName)
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
-			d.Partial(true)
-			d.SetPartial("relation_fv_rs_cons_if")
-			d.Partial(false)
-
 		}
 
 	}
@@ -766,11 +726,8 @@ func resourceAciExternalNetworkInstanceProfileUpdate(d *schema.ResourceData, m i
 		newRelParamName := GetMOName(newRelParam.(string))
 		err = aciClient.CreateRelationfvRsCustQosPolFromExternalNetworkInstanceProfile(l3extInstP.DistinguishedName, newRelParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_fv_rs_cust_qos_pol")
-		d.Partial(false)
 
 	}
 	if d.HasChange("relation_l3ext_rs_inst_p_to_profile") {
@@ -781,7 +738,7 @@ func resourceAciExternalNetworkInstanceProfileUpdate(d *schema.ResourceData, m i
 			paramMap := relationParam.(map[string]interface{})
 			err = aciClient.DeleteRelationl3extRsInstPToProfileFromExternalNetworkInstanceProfile(l3extInstP.DistinguishedName, paramMap["tn_rtctrl_profile_name"].(string), paramMap["direction"].(string))
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 		}
@@ -789,11 +746,8 @@ func resourceAciExternalNetworkInstanceProfileUpdate(d *schema.ResourceData, m i
 			paramMap := relationParam.(map[string]interface{})
 			err = aciClient.CreateRelationl3extRsInstPToProfileFromExternalNetworkInstanceProfile(l3extInstP.DistinguishedName, paramMap["tn_rtctrl_profile_name"].(string), paramMap["direction"].(string))
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
-			d.Partial(true)
-			d.SetPartial("relation_l3ext_rs_inst_p_to_profile")
-			d.Partial(false)
 		}
 
 	}
@@ -808,7 +762,7 @@ func resourceAciExternalNetworkInstanceProfileUpdate(d *schema.ResourceData, m i
 			relDnName := GetMOName(relDn)
 			err = aciClient.DeleteRelationfvRsConsFromExternalNetworkInstanceProfile(l3extInstP.DistinguishedName, relDnName)
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 		}
@@ -817,11 +771,8 @@ func resourceAciExternalNetworkInstanceProfileUpdate(d *schema.ResourceData, m i
 			relDnName := GetMOName(relDn)
 			err = aciClient.CreateRelationfvRsConsFromExternalNetworkInstanceProfile(l3extInstP.DistinguishedName, relDnName)
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
-			d.Partial(true)
-			d.SetPartial("relation_fv_rs_cons")
-			d.Partial(false)
 
 		}
 
@@ -837,7 +788,7 @@ func resourceAciExternalNetworkInstanceProfileUpdate(d *schema.ResourceData, m i
 			relDnName := GetMOName(relDn)
 			err = aciClient.DeleteRelationfvRsProtByFromExternalNetworkInstanceProfile(l3extInstP.DistinguishedName, relDnName)
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 		}
@@ -846,11 +797,8 @@ func resourceAciExternalNetworkInstanceProfileUpdate(d *schema.ResourceData, m i
 			relDnName := GetMOName(relDn)
 			err = aciClient.CreateRelationfvRsProtByFromExternalNetworkInstanceProfile(l3extInstP.DistinguishedName, relDnName)
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
-			d.Partial(true)
-			d.SetPartial("relation_fv_rs_prot_by")
-			d.Partial(false)
 
 		}
 
@@ -866,7 +814,7 @@ func resourceAciExternalNetworkInstanceProfileUpdate(d *schema.ResourceData, m i
 			relDnName := GetMOName(relDn)
 			err = aciClient.DeleteRelationfvRsIntraEpgFromExternalNetworkInstanceProfile(l3extInstP.DistinguishedName, relDnName)
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 		}
@@ -875,11 +823,8 @@ func resourceAciExternalNetworkInstanceProfileUpdate(d *schema.ResourceData, m i
 			relDnName := GetMOName(relDn)
 			err = aciClient.CreateRelationfvRsIntraEpgFromExternalNetworkInstanceProfile(l3extInstP.DistinguishedName, relDnName)
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
-			d.Partial(true)
-			d.SetPartial("relation_fv_rs_intra_epg")
-			d.Partial(false)
 
 		}
 
@@ -888,11 +833,11 @@ func resourceAciExternalNetworkInstanceProfileUpdate(d *schema.ResourceData, m i
 	d.SetId(l3extInstP.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciExternalNetworkInstanceProfileRead(d, m)
+	return resourceAciExternalNetworkInstanceProfileRead(ctx, d, m)
 
 }
 
-func resourceAciExternalNetworkInstanceProfileRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciExternalNetworkInstanceProfileRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -904,7 +849,11 @@ func resourceAciExternalNetworkInstanceProfileRead(d *schema.ResourceData, m int
 		d.SetId("")
 		return nil
 	}
-	setExternalNetworkInstanceProfileAttributes(l3extInstP, d)
+	_, err = setExternalNetworkInstanceProfileAttributes(l3extInstP, d)
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 
 	fvRsSecInheritedData, err := aciClient.ReadRelationfvRsSecInheritedFromExternalNetworkInstanceProfile(dn)
 	if err != nil {
@@ -919,35 +868,37 @@ func resourceAciExternalNetworkInstanceProfileRead(d *schema.ResourceData, m int
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation fvRsProv %v", err)
 		d.Set("relation_fv_rs_prov", make([]string, 0, 1))
-
 	} else {
 		if _, ok := d.GetOk("relation_fv_rs_prov"); ok {
 			relationParamList := toStringList(d.Get("relation_fv_rs_prov").(*schema.Set).List())
-			tfList := make([]string, 0, 1)
-			for _, relationParam := range relationParamList {
-				relationParamName := GetMOName(relationParam)
-				tfList = append(tfList, relationParamName)
-			}
 			fvRsProvDataList := toStringList(fvRsProvData.(*schema.Set).List())
-			sort.Strings(tfList)
-			sort.Strings(fvRsProvDataList)
-
-			if !reflect.DeepEqual(tfList, fvRsProvDataList) {
-				d.Set("relation_fv_rs_prov", make([]string, 0, 1))
+			relationToDelete := make([]string, 0, 1)
+			for _, val := range fvRsProvDataList {
+				contains := false
+				for _, relationParam := range relationParamList {
+					if val == GetMOName(relationParam) {
+						contains = true
+						break
+					}
+				}
+				if !contains {
+					relationToDelete = append(relationToDelete, val)
+				}
 			}
+			d.Set("relation_fv_rs_prov", append(relationParamList, relationToDelete...))
 		}
 	}
 
 	l3extRsL3InstPToDomPData, err := aciClient.ReadRelationl3extRsL3InstPToDomPFromExternalNetworkInstanceProfile(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation l3extRsL3InstPToDomP %v", err)
-		d.Set("relation_fv_rs_nd_pfx_pol", "")
+		d.Set("relation_l3ext_rs_l3_inst_p_to_dom_p", "")
 
 	} else {
 		if _, ok := d.GetOk("relation_l3ext_rs_l3_inst_p_to_dom_p"); ok {
 			tfName := d.Get("relation_l3ext_rs_l3_inst_p_to_dom_p").(string)
 			if tfName != l3extRsL3InstPToDomPData {
-				d.Set("relation_fv_rs_nd_pfx_pol", "")
+				d.Set("relation_l3ext_rs_l3_inst_p_to_dom_p", "")
 			}
 		}
 	}
@@ -1085,18 +1036,18 @@ func resourceAciExternalNetworkInstanceProfileRead(d *schema.ResourceData, m int
 	return nil
 }
 
-func resourceAciExternalNetworkInstanceProfileDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciExternalNetworkInstanceProfileDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "l3extInstP")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
 }

@@ -6,38 +6,40 @@ description: |-
   Manages ACI Spanning Tree Interface Policy
 ---
 
-# aci_spanning_tree_interface_policy #
+# aci_spanning_tree_interface_policy
 
 Manages ACI Spanning Tree Interface Policy
 
-## API Information ##
+## API Information
 
-* `Class` - stpIfPol
-* `Distinguished Named` - uni/infra/ifPol-{name}
+- `Class` - stpIfPol
+- `Distinguished Named` - uni/infra/ifPol-{name}
 
-## GUI Information ##
+## GUI Information
 
-* `Location` - Fabric > Access Policies > Policies > Interface > Spanning Tree Interface
+- `Location` - Fabric > Access Policies > Policies > Interface > Spanning Tree Interface
 
-## Example Usage ##
+## Example Usage
 
 ```hcl
 resource "aci_spanning_tree_interface_policy" "example" {
-  name  = "example"
-  annotation = "orchestrator:terraform"
-  description = "This was created by terraform"
-  ctrl = ["unspecified"]
+  name        = "spanning_tree_interface_policy"
+  annotation  = "spanning_tree_interface_policy_tag"
+  description = "from terraform"
+  name_alias = "spanning_tree_interface_policy_alias"
+  ctrl        = ["unspecified"]
 }
 ```
 
-## Argument Reference ##
+## Argument Reference
 
-* `name` - (Required) Name of object Spanning Tree Interface Policy.
-* `annotation` - (Optional) Annotation of object Spanning Tree Interface Policy.
-* `description` - (Optional) Description of object Spanning Tree Interface Policy.
-* `ctrl` - (Optional) Interface controls. Allowed values are "bpdu-filter", "bpdu-guard", "unspecified", and default value is "unspecified". Type: List.
+- `name` - (Required) Name of object Spanning Tree Interface Policy.
+- `annotation` - (Optional) Annotation of object Spanning Tree Interface Policy.
+- `name_alias` - (Optional) Name alias of object Spanning Tree Interface Policy.
+- `description` - (Optional) Description of object Spanning Tree Interface Policy.
+- `ctrl` - (Optional) Interface controls. Allowed values are "bpdu-filter", "bpdu-guard", "unspecified". The default value is "unspecified". Unspecified value should not be added along with other allowed values. Type: List.
 
-## Importing ##
+## Importing
 
 An existing SpanningTreeInterfacePolicy can be [imported][docs-import] into this resource via its Dn, via the following command:
 [docs-import]: https://www.terraform.io/docs/import/index.html

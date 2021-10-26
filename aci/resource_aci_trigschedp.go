@@ -1,20 +1,22 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func resourceAciTriggerScheduler() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciTriggerSchedulerCreate,
-		Update: resourceAciTriggerSchedulerUpdate,
-		Read:   resourceAciTriggerSchedulerRead,
-		Delete: resourceAciTriggerSchedulerDelete,
+		CreateContext: resourceAciTriggerSchedulerCreate,
+		UpdateContext: resourceAciTriggerSchedulerUpdate,
+		ReadContext:   resourceAciTriggerSchedulerRead,
+		DeleteContext: resourceAciTriggerSchedulerDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciTriggerSchedulerImport,
@@ -53,16 +55,20 @@ func getRemoteTriggerScheduler(client *client.Client, dn string) (*models.Trigge
 	return trigSchedP, nil
 }
 
-func setTriggerSchedulerAttributes(trigSchedP *models.TriggerScheduler, d *schema.ResourceData) *schema.ResourceData {
+func setTriggerSchedulerAttributes(trigSchedP *models.TriggerScheduler, d *schema.ResourceData) (*schema.ResourceData, error) {
 	d.SetId(trigSchedP.DistinguishedName)
 	d.Set("description", trigSchedP.Description)
-	trigSchedPMap, _ := trigSchedP.ToMap()
+	trigSchedPMap, err := trigSchedP.ToMap()
+
+	if err != nil {
+		return d, err
+	}
 
 	d.Set("name", trigSchedPMap["name"])
 
 	d.Set("annotation", trigSchedPMap["annotation"])
 	d.Set("name_alias", trigSchedPMap["nameAlias"])
-	return d
+	return d, nil
 }
 
 func resourceAciTriggerSchedulerImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -76,14 +82,18 @@ func resourceAciTriggerSchedulerImport(d *schema.ResourceData, m interface{}) ([
 	if err != nil {
 		return nil, err
 	}
-	schemaFilled := setTriggerSchedulerAttributes(trigSchedP, d)
+	schemaFilled, err := setTriggerSchedulerAttributes(trigSchedP, d)
+
+	if err != nil {
+		return nil, err
+	}
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciTriggerSchedulerCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciTriggerSchedulerCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] TriggerScheduler: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -103,21 +113,16 @@ func resourceAciTriggerSchedulerCreate(d *schema.ResourceData, m interface{}) er
 
 	err := aciClient.Save(trigSchedP)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.SetPartial("name")
-
-	d.Partial(false)
 
 	d.SetId(trigSchedP.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciTriggerSchedulerRead(d, m)
+	return resourceAciTriggerSchedulerRead(ctx, d, m)
 }
 
-func resourceAciTriggerSchedulerUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciTriggerSchedulerUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] TriggerScheduler: Beginning Update")
 
 	aciClient := m.(*client.Client)
@@ -141,22 +146,17 @@ func resourceAciTriggerSchedulerUpdate(d *schema.ResourceData, m interface{}) er
 	err := aciClient.Save(trigSchedP)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.SetPartial("name")
-
-	d.Partial(false)
 
 	d.SetId(trigSchedP.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciTriggerSchedulerRead(d, m)
+	return resourceAciTriggerSchedulerRead(ctx, d, m)
 
 }
 
-func resourceAciTriggerSchedulerRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciTriggerSchedulerRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -168,25 +168,30 @@ func resourceAciTriggerSchedulerRead(d *schema.ResourceData, m interface{}) erro
 		d.SetId("")
 		return nil
 	}
-	setTriggerSchedulerAttributes(trigSchedP, d)
+	_, err = setTriggerSchedulerAttributes(trigSchedP, d)
+
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 
 	return nil
 }
 
-func resourceAciTriggerSchedulerDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciTriggerSchedulerDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "trigSchedP")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
 }

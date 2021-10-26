@@ -15,7 +15,7 @@ provider "aci" {
 }
 
 resource "aci_bgp_timers" "example1" {
-  tenant_dn    = "${aci_tenant.tenentcheck.id}"
+  tenant_dn    = aci_tenant.tenentcheck.id
   name         = "one"
   annotation   = "example"
   gr_ctrl      = "helper"

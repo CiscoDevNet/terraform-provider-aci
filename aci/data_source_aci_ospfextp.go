@@ -1,16 +1,18 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func dataSourceAciL3outOspfExternalPolicy() *schema.Resource {
 	return &schema.Resource{
 
-		Read: dataSourceAciL3outOspfExternalPolicyRead,
+		ReadContext: dataSourceAciL3outOspfExternalPolicyRead,
 
 		SchemaVersion: 1,
 
@@ -65,7 +67,7 @@ func dataSourceAciL3outOspfExternalPolicy() *schema.Resource {
 	}
 }
 
-func dataSourceAciL3outOspfExternalPolicyRead(d *schema.ResourceData, m interface{}) error {
+func dataSourceAciL3outOspfExternalPolicyRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	aciClient := m.(*client.Client)
 
 	rn := fmt.Sprintf("ospfExtP")
@@ -76,9 +78,12 @@ func dataSourceAciL3outOspfExternalPolicyRead(d *schema.ResourceData, m interfac
 	ospfExtP, err := getRemoteL3outOspfExternalPolicy(aciClient, dn)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.SetId(dn)
-	setL3outOspfExternalPolicyAttributes(ospfExtP, d)
+	_, err = setL3outOspfExternalPolicyAttributes(ospfExtP, d)
+	if err != nil {
+		return diag.FromErr(err)
+	}
 	return nil
 }

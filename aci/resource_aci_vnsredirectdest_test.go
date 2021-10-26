@@ -6,8 +6,8 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
 func TestAccAciDestinationofredirectedtraffic_Basic(t *testing.T) {
@@ -61,12 +61,12 @@ func testAccCheckAciDestinationofredirectedtrafficConfig_basic(description strin
 	return fmt.Sprintf(`
 
 	resource "aci_destination_of_redirected_traffic" "example" {
-		service_redirect_policy_dn  = "${aci_service_redirect_policy.example.id}"
-		ip  = "1.2.3.4"
-		mac = "12:25:56:98:45:74"
-		ip2 = "10.20.30.40"
-		dest_name = "last"
-		pod_id = "5"
+		service_redirect_policy_dn  = aci_service_redirect_policy.example.id
+		ip          = "1.2.3.4"
+		mac         = "12:25:56:98:45:74"
+		ip2         = "10.20.30.40"
+		dest_name   = "last"
+		pod_id      = "5"
 		description = "%s"
 	}
 	`, description)

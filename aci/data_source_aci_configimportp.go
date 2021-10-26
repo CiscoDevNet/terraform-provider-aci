@@ -1,16 +1,18 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func dataSourceAciConfigurationImportPolicy() *schema.Resource {
 	return &schema.Resource{
 
-		Read: dataSourceAciConfigurationImportPolicyRead,
+		ReadContext: dataSourceAciConfigurationImportPolicyRead,
 
 		SchemaVersion: 1,
 
@@ -66,7 +68,7 @@ func dataSourceAciConfigurationImportPolicy() *schema.Resource {
 	}
 }
 
-func dataSourceAciConfigurationImportPolicyRead(d *schema.ResourceData, m interface{}) error {
+func dataSourceAciConfigurationImportPolicyRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	aciClient := m.(*client.Client)
 
 	name := d.Get("name").(string)
@@ -78,8 +80,11 @@ func dataSourceAciConfigurationImportPolicyRead(d *schema.ResourceData, m interf
 	configImportP, err := getRemoteConfigurationImportPolicy(aciClient, dn)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	setConfigurationImportPolicyAttributes(configImportP, d)
+	_, err = setConfigurationImportPolicyAttributes(configImportP, d)
+	if err != nil {
+		return diag.FromErr(err)
+	}
 	return nil
 }

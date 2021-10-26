@@ -20,9 +20,9 @@ resource "aci_filter_entry" "https" {
 }
 
 resource "aci_filter_entry" "icmp" {
-  name        = "icmp"
-  filter_dn   = aci_filter.allow_icmp.id
-  ether_t     = "ip"
-  prot        = "icmp"
-  stateful    = "yes"
+  name      = "icmp"
+  filter_dn = aci_filter.allow_icmp.id
+  ether_t   = "ip"
+  prot      = "icmp"
+  stateful  = "yes"
 }

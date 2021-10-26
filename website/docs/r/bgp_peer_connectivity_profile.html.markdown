@@ -13,29 +13,50 @@ Manages ACI BGP Peer Connectivity Profile
 ## Example Usage
 
 ```hcl
+// Loopback Association
 resource "aci_bgp_peer_connectivity_profile" "example" {
-  logical_node_profile_dn = "${aci_logical_node_profile.example.id}"
-  addr                    = "10.0.0.1"
-  description             = "from terraform"
-  addr_t_ctrl             = "af-mcast,af-ucast"
-  allowed_self_as_cnt     = "3"
-  annotation              = "example"
-  ctrl                    = "allow-self-as"
-  name_alias              = "example"
-  password                = "example"
-  peer_ctrl               = "bfd"
-  private_a_sctrl         = "remove-all,remove-exclusive"
-  ttl                     = "1"
-  weight                  = "1"
-  as_number               = "1"
-  local_asn               = "15"
-  local_asn_propagate     = "dual-as"
+  parent_dn           = aci_logical_node_profile.example.id
+  addr                = "10.0.0.1"
+  description         = "from terraform"
+  addr_t_ctrl         = "af-mcast,af-ucast"
+  allowed_self_as_cnt = "3"
+  annotation          = "example"
+  ctrl                = "allow-self-as"
+  name_alias          = "example"
+  password            = "example"
+  peer_ctrl           = "bfd"
+  private_a_sctrl     = "remove-all,remove-exclusive"
+  ttl                 = "1"
+  weight              = "1"
+  as_number           = "1"
+  local_asn           = "15"
+  local_asn_propagate = "dual-as"
+}
+
+// Connected Association
+resource "aci_bgp_peer_connectivity_profile" "example" {
+  parent_dn           = aci_l3out_path_attachment.example.id
+  addr                = "10.0.0.2"
+  description         = "from terraform"
+  addr_t_ctrl         = "af-mcast,af-ucast"
+  allowed_self_as_cnt = "3"
+  annotation          = "example"
+  ctrl                = "allow-self-as"
+  name_alias          = "example"
+  password            = "example"
+  peer_ctrl           = "bfd"
+  private_a_sctrl     = "remove-all,remove-exclusive"
+  ttl                 = "1"
+  weight              = "1"
+  as_number           = "1"
+  local_asn           = "15"
+  local_asn_propagate = "dual-as"
 }
 ```
 
 ## Argument Reference
 
-- `logical_node_profile_dn` - (Required) Distinguished name of parent logical node profile object.
+- `parent_dn` - (Required) Distinguished name of parent logical node profile or L3-out Path Attachment object.
 - `addr` - (Required) The peer IP address.
 - `addr_t_ctrl` - (Optional) Ucast/Mcast Addr Type AF Control. (Multiple Comma-Delimited values are allowed. E.g., "af-mcast,af-ucast"). Apply "" to clear all the values.  
   Allowed values: "af-mcast", "af-ucast". Default value: "af-ucast".

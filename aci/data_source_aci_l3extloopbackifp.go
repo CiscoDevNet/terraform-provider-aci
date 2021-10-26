@@ -1,16 +1,18 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func dataSourceAciLoopBackInterfaceProfile() *schema.Resource {
 	return &schema.Resource{
 
-		Read: dataSourceAciLoopBackInterfaceProfileRead,
+		ReadContext: dataSourceAciLoopBackInterfaceProfileRead,
 
 		SchemaVersion: 1,
 
@@ -40,7 +42,7 @@ func dataSourceAciLoopBackInterfaceProfile() *schema.Resource {
 	}
 }
 
-func dataSourceAciLoopBackInterfaceProfileRead(d *schema.ResourceData, m interface{}) error {
+func dataSourceAciLoopBackInterfaceProfileRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	aciClient := m.(*client.Client)
 
 	addr := d.Get("addr").(string)
@@ -53,10 +55,13 @@ func dataSourceAciLoopBackInterfaceProfileRead(d *schema.ResourceData, m interfa
 	l3extLoopBackIfP, err := getRemoteLoopBackInterfaceProfile(aciClient, dn)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	d.SetId(dn)
-	setLoopBackInterfaceProfileAttributes(l3extLoopBackIfP, d)
+	_, err = setLoopBackInterfaceProfileAttributes(l3extLoopBackIfP, d)
+	if err != nil {
+		return diag.FromErr(err)
+	}
 	return nil
 }

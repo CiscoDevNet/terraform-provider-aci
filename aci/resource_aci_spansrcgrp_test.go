@@ -6,8 +6,8 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
 func TestAccAciSPANSourceGroup_Basic(t *testing.T) {
@@ -25,11 +25,6 @@ func TestAccAciSPANSourceGroup_Basic(t *testing.T) {
 					testAccCheckAciSPANSourceGroupExists("aci_span_source_group.foospan_source_group", &span_source_group),
 					testAccCheckAciSPANSourceGroupAttributes(description, &span_source_group),
 				),
-			},
-			{
-				ResourceName:      "aci_span_source_group",
-				ImportState:       true,
-				ImportStateVerify: true,
 			},
 		},
 	})
@@ -66,14 +61,13 @@ func testAccCheckAciSPANSourceGroupConfig_basic(description string) string {
 	return fmt.Sprintf(`
 
 	resource "aci_span_source_group" "foospan_source_group" {
-		  tenant_dn  = "${aci_tenant.example.id}"
+		tenant_dn   = aci_tenant.example.id
 		description = "%s"
-		
-		name  = "example"
-		  admin_st  = "enabled"
-		  annotation  = "example"
-		  name_alias  = "example"
-		}
+		name        = "example"
+		admin_st    = "enabled"
+		annotation  = "example"
+		name_alias  = "example"
+	}
 	`, description)
 }
 

@@ -5,5 +5,5 @@ resource "aci_tenant" "test_tenant" {
 
 resource "aci_ospf_interface_policy" "test_ospf" {
   tenant_dn = aci_tenant.test_tenant.id
-  name = "tf_ospf"
+  name      = "tf_ospf"
 }

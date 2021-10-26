@@ -6,8 +6,8 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
 func TestAccAciLACPPolicy_Basic(t *testing.T) {
@@ -25,11 +25,6 @@ func TestAccAciLACPPolicy_Basic(t *testing.T) {
 					testAccCheckAciLACPPolicyExists("aci_lacp_policy.foolacp_policy", &lacp_policy),
 					testAccCheckAciLACPPolicyAttributes(description, "off", &lacp_policy),
 				),
-			},
-			{
-				ResourceName:      "aci_lacp_policy",
-				ImportState:       true,
-				ImportStateVerify: true,
 			},
 		},
 	})
@@ -154,7 +149,7 @@ func testAccCheckAciLACPPolicyAttributes(description, mode string, lacp_policy *
 			return fmt.Errorf("Bad lacp_policy mode %s", lacp_policy.Mode)
 		}
 
-		if "example" != lacp_policy.NameAlias {
+		if "alias_lacp" != lacp_policy.NameAlias {
 			return fmt.Errorf("Bad lacp_policy name_alias %s", lacp_policy.NameAlias)
 		}
 

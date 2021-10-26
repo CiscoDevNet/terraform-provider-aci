@@ -6,20 +6,20 @@ description: |-
   Data source for ACI Spanning Tree Interface Policy
 ---
 
-# aci_spanning_tree_interface_policy #
+# aci_spanning_tree_interface_policy
 
 Data source for ACI Spanning Tree Interface Policy
 
-## API Information ##
+## API Information
 
-* `Class` - stpIfPol
-* `Distinguished Named` - uni/infra/ifPol-{name}
+- `Class` - stpIfPol
+- `Distinguished Named` - uni/infra/ifPol-{name}
 
-## GUI Information ##
+## GUI Information
 
-* `Location` - Fabric > Access Policies > Policies > Interface > Spanning Tree Interface
+- `Location` - Fabric > Access Policies > Policies > Interface > Spanning Tree Interface
 
-## Example Usage ##
+## Example Usage
 
 ```hcl
 data "aci_spanning_tree_interface_policy" "example" {
@@ -27,11 +27,11 @@ data "aci_spanning_tree_interface_policy" "example" {
 }
 ```
 
-## Argument Reference ##
+## Argument Reference
 
-* `name` - (Required) name of object Spanning Tree Interface Policy.
+- `name` - (Required) Name of object Spanning Tree Interface Policy.
 
-## Attribute Reference ##
+## Attribute Reference
 
 * `id` - Attribute id set to the Dn of the Spanning Tree Interface Policy.
 * `annotation` - (Optional) Annotation of object Spanning Tree Interface Policy.

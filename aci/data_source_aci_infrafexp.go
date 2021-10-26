@@ -1,16 +1,18 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func dataSourceAciFEXProfile() *schema.Resource {
 	return &schema.Resource{
 
-		Read: dataSourceAciFEXProfileRead,
+		ReadContext: dataSourceAciFEXProfileRead,
 
 		SchemaVersion: 1,
 
@@ -30,7 +32,7 @@ func dataSourceAciFEXProfile() *schema.Resource {
 	}
 }
 
-func dataSourceAciFEXProfileRead(d *schema.ResourceData, m interface{}) error {
+func dataSourceAciFEXProfileRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	aciClient := m.(*client.Client)
 
 	name := d.Get("name").(string)
@@ -42,8 +44,11 @@ func dataSourceAciFEXProfileRead(d *schema.ResourceData, m interface{}) error {
 	infraFexP, err := getRemoteFEXProfile(aciClient, dn)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	setFEXProfileAttributes(infraFexP, d)
+	_, err = setFEXProfileAttributes(infraFexP, d)
+	if err != nil {
+		return diag.FromErr(err)
+	}
 	return nil
 }

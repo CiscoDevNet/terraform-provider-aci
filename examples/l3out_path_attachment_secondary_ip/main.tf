@@ -15,7 +15,6 @@ provider "aci" {
 }
 
 resource "aci_l3out_path_attachment" "example" {
-
   logical_interface_profile_dn = aci_logical_interface_profile.example.id
   target_dn                    = "topology/pod-1/paths-101/pathep-[eth1/1]"
   if_inst_t                    = "ext-svi"
@@ -30,15 +29,12 @@ resource "aci_l3out_path_attachment" "example" {
   mode                         = "native"
   mtu                          = "inherit"
   target_dscp                  = "AF11"
-
 }
 
 resource "aci_l3out_path_attachment_secondary_ip" "example" {
-
-  l3out_path_attachment_dn  = "${aci_l3out_path_attachment.example.id}"
-  addr  = "10.0.0.1/24"
-  annotation  = "example"
-  ipv6_dad = "disabled"
-  name_alias  = "example"
-
+  l3out_path_attachment_dn = aci_l3out_path_attachment.example.id
+  addr                     = "10.0.0.1/24"
+  annotation               = "example"
+  ipv6_dad                 = "disabled"
+  name_alias               = "example"
 }

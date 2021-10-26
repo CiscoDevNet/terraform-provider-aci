@@ -1,16 +1,18 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func dataSourceAciL3outStaticRouteNextHop() *schema.Resource {
 	return &schema.Resource{
 
-		Read: dataSourceAciL3outStaticRouteNextHopRead,
+		ReadContext: dataSourceAciL3outStaticRouteNextHopRead,
 
 		SchemaVersion: 1,
 
@@ -52,7 +54,7 @@ func dataSourceAciL3outStaticRouteNextHop() *schema.Resource {
 	}
 }
 
-func dataSourceAciL3outStaticRouteNextHopRead(d *schema.ResourceData, m interface{}) error {
+func dataSourceAciL3outStaticRouteNextHopRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	aciClient := m.(*client.Client)
 
 	nhAddr := d.Get("nh_addr").(string)
@@ -65,9 +67,13 @@ func dataSourceAciL3outStaticRouteNextHopRead(d *schema.ResourceData, m interfac
 	ipNexthopP, err := getRemoteL3outStaticRouteNextHop(aciClient, dn)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.SetId(dn)
-	setL3outStaticRouteNextHopAttributes(ipNexthopP, d)
+	_, err = setL3outStaticRouteNextHopAttributes(ipNexthopP, d)
+
+	if err != nil {
+		return diag.FromErr(err)
+	}
 	return nil
 }

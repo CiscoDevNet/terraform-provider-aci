@@ -1,20 +1,22 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func resourceAciLeafInterfaceProfile() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciLeafInterfaceProfileCreate,
-		Update: resourceAciLeafInterfaceProfileUpdate,
-		Read:   resourceAciLeafInterfaceProfileRead,
-		Delete: resourceAciLeafInterfaceProfileDelete,
+		CreateContext: resourceAciLeafInterfaceProfileCreate,
+		UpdateContext: resourceAciLeafInterfaceProfileUpdate,
+		ReadContext:   resourceAciLeafInterfaceProfileRead,
+		DeleteContext: resourceAciLeafInterfaceProfileDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciLeafInterfaceProfileImport,
@@ -53,16 +55,18 @@ func getRemoteLeafInterfaceProfile(client *client.Client, dn string) (*models.Le
 	return infraAccPortP, nil
 }
 
-func setLeafInterfaceProfileAttributes(infraAccPortP *models.LeafInterfaceProfile, d *schema.ResourceData) *schema.ResourceData {
+func setLeafInterfaceProfileAttributes(infraAccPortP *models.LeafInterfaceProfile, d *schema.ResourceData) (*schema.ResourceData, error) {
 	d.SetId(infraAccPortP.DistinguishedName)
 	d.Set("description", infraAccPortP.Description)
-	infraAccPortPMap, _ := infraAccPortP.ToMap()
-
+	infraAccPortPMap, err := infraAccPortP.ToMap()
+	if err != nil {
+		return d, err
+	}
 	d.Set("name", infraAccPortPMap["name"])
 
 	d.Set("annotation", infraAccPortPMap["annotation"])
 	d.Set("name_alias", infraAccPortPMap["nameAlias"])
-	return d
+	return d, nil
 }
 
 func resourceAciLeafInterfaceProfileImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -76,14 +80,16 @@ func resourceAciLeafInterfaceProfileImport(d *schema.ResourceData, m interface{}
 	if err != nil {
 		return nil, err
 	}
-	schemaFilled := setLeafInterfaceProfileAttributes(infraAccPortP, d)
-
+	schemaFilled, err := setLeafInterfaceProfileAttributes(infraAccPortP, d)
+	if err != nil {
+		return nil, err
+	}
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciLeafInterfaceProfileCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciLeafInterfaceProfileCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] LeafInterfaceProfile: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -103,21 +109,19 @@ func resourceAciLeafInterfaceProfileCreate(d *schema.ResourceData, m interface{}
 
 	err := aciClient.Save(infraAccPortP)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Partial(true)
-
-	d.SetPartial("name")
 
 	d.Partial(false)
 
 	d.SetId(infraAccPortP.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciLeafInterfaceProfileRead(d, m)
+	return resourceAciLeafInterfaceProfileRead(ctx, d, m)
 }
 
-func resourceAciLeafInterfaceProfileUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciLeafInterfaceProfileUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] LeafInterfaceProfile: Beginning Update")
 
 	aciClient := m.(*client.Client)
@@ -141,22 +145,20 @@ func resourceAciLeafInterfaceProfileUpdate(d *schema.ResourceData, m interface{}
 	err := aciClient.Save(infraAccPortP)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Partial(true)
-
-	d.SetPartial("name")
 
 	d.Partial(false)
 
 	d.SetId(infraAccPortP.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciLeafInterfaceProfileRead(d, m)
+	return resourceAciLeafInterfaceProfileRead(ctx, d, m)
 
 }
 
-func resourceAciLeafInterfaceProfileRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciLeafInterfaceProfileRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -168,25 +170,28 @@ func resourceAciLeafInterfaceProfileRead(d *schema.ResourceData, m interface{}) 
 		d.SetId("")
 		return nil
 	}
-	setLeafInterfaceProfileAttributes(infraAccPortP, d)
-
+	_, err = setLeafInterfaceProfileAttributes(infraAccPortP, d)
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 
 	return nil
 }
 
-func resourceAciLeafInterfaceProfileDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciLeafInterfaceProfileDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "infraAccPortP")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
 }

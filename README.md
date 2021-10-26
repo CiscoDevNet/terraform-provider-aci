@@ -3,7 +3,9 @@
 Requirements
 ------------
 
-- [Terraform](https://www.terraform.io/downloads.html) v0.11.7
+- [Terraform](https://www.terraform.io/downloads.html) 
+  - v0.12 and higher (ACI Provider v1.0.0 or higher)
+  - v0.11.x or below (ACI Provider v0.7.1 or below)
 
 - [Go](https://golang.org/doc/install) Latest Version
 
@@ -57,7 +59,7 @@ resource "aci_tenant" "test-tenant" {
 }
 
 resource "aci_app_profile" "test-app" {
-  tenant_dn   = "${aci_tenant.test-tenant.id}"
+  tenant_dn   = aci_tenant.test-tenant.id
   name        = "test-app"
   description = "This app profile is created by terraform"
 }

@@ -6,8 +6,8 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
 func TestAccAciL3DomainProfile_Basic(t *testing.T) {
@@ -25,11 +25,6 @@ func TestAccAciL3DomainProfile_Basic(t *testing.T) {
 					testAccCheckAciL3DomainProfileExists("aci_l3_domain_profile.fool3_domain_profile", &l3_domain_profile),
 					testAccCheckAciL3DomainProfileAttributes(description, &l3_domain_profile),
 				),
-			},
-			{
-				ResourceName:      "aci_l3_domain_profile",
-				ImportState:       true,
-				ImportStateVerify: true,
 			},
 		},
 	})
@@ -66,12 +61,10 @@ func testAccCheckAciL3DomainProfileConfig_basic(description string) string {
 	return fmt.Sprintf(`
 
 	resource "aci_l3_domain_profile" "fool3_domain_profile" {
-		description = "%s"
-		
 		name  = "example"
-		  annotation  = "example"
-		  name_alias  = "example"
-		}
+		annotation  = "example"
+		name_alias  = "example"
+	}
 	`, description)
 }
 
@@ -125,10 +118,6 @@ func testAccCheckAciL3DomainProfileDestroy(s *terraform.State) error {
 
 func testAccCheckAciL3DomainProfileAttributes(description string, l3_domain_profile *models.L3DomainProfile) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
-
-		if description != l3_domain_profile.Description {
-			return fmt.Errorf("Bad l3_domain_profile Description %s", l3_domain_profile.Description)
-		}
 
 		if "example" != l3_domain_profile.Name {
 			return fmt.Errorf("Bad l3_domain_profile name %s", l3_domain_profile.Name)

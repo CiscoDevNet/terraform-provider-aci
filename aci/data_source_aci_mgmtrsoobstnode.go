@@ -1,17 +1,19 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func dataSourceAciMgmtStaticNode() *schema.Resource {
 	return &schema.Resource{
 
-		Read: dataSourceAciAciMgmtStaticNodeRead,
+		ReadContext: dataSourceAciAciMgmtStaticNodeRead,
 
 		SchemaVersion: 1,
 
@@ -68,7 +70,7 @@ func dataSourceAciMgmtStaticNode() *schema.Resource {
 	}
 }
 
-func dataSourceAciAciMgmtStaticNodeRead(d *schema.ResourceData, m interface{}) error {
+func dataSourceAciAciMgmtStaticNodeRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	aciClient := m.(*client.Client)
 
 	tDn := d.Get("t_dn").(string)
@@ -83,11 +85,14 @@ func dataSourceAciAciMgmtStaticNodeRead(d *schema.ResourceData, m interface{}) e
 
 		mgmtRsInBStNode, err := getRemoteInbandStaticNode(aciClient, dn)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 
 		d.SetId(dn)
-		setMgmtStaticNodeAttributes(nil, mgmtRsInBStNode, "in_band", d)
+		_, err = setMgmtStaticNodeAttributes(nil, mgmtRsInBStNode, "in_band", d)
+		if err != nil {
+			return diag.FromErr(err)
+		}
 
 	} else {
 		rn := fmt.Sprintf("rsooBStNode-[%s]", tDn)
@@ -97,11 +102,14 @@ func dataSourceAciAciMgmtStaticNodeRead(d *schema.ResourceData, m interface{}) e
 
 		mgmtRsOoBStNode, err := getRemoteOutofbandStaticNode(aciClient, dn)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 
 		d.SetId(dn)
-		setMgmtStaticNodeAttributes(mgmtRsOoBStNode, nil, "out_of_band", d)
+		_, err = setMgmtStaticNodeAttributes(mgmtRsOoBStNode, nil, "out_of_band", d)
+		if err != nil {
+			return diag.FromErr(err)
+		}
 	}
 	return nil
 }

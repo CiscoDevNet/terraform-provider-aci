@@ -1,22 +1,24 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciContract() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciContractCreate,
-		Update: resourceAciContractUpdate,
-		Read:   resourceAciContractRead,
-		Delete: resourceAciContractDelete,
+		CreateContext: resourceAciContractCreate,
+		UpdateContext: resourceAciContractUpdate,
+		ReadContext:   resourceAciContractRead,
+		DeleteContext: resourceAciContractDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciContractImport,
@@ -485,7 +487,7 @@ func getRemoteFilterEntryFromContract(client *client.Client, dn string) (*models
 	return vzEntry, nil
 }
 
-func setContractAttributes(vzBrCP *models.Contract, d *schema.ResourceData) *schema.ResourceData {
+func setContractAttributes(vzBrCP *models.Contract, d *schema.ResourceData) (*schema.ResourceData, error) {
 	dn := d.Id()
 	d.SetId(vzBrCP.DistinguishedName)
 	d.Set("description", vzBrCP.Description)
@@ -493,8 +495,10 @@ func setContractAttributes(vzBrCP *models.Contract, d *schema.ResourceData) *sch
 	if dn != vzBrCP.DistinguishedName {
 		d.Set("tenant_dn", "")
 	}
-	vzBrCPMap, _ := vzBrCP.ToMap()
-
+	vzBrCPMap, err := vzBrCP.ToMap()
+	if err != nil {
+		return d, err
+	}
 	d.Set("name", vzBrCPMap["name"])
 
 	d.Set("annotation", vzBrCPMap["annotation"])
@@ -502,10 +506,10 @@ func setContractAttributes(vzBrCP *models.Contract, d *schema.ResourceData) *sch
 	d.Set("prio", vzBrCPMap["prio"])
 	d.Set("scope", vzBrCPMap["scope"])
 	d.Set("target_dscp", vzBrCPMap["targetDscp"])
-	return d
+	return d, nil
 }
 
-func setFilterAttributesFromContract(vzfilters []*models.Filter, vzEntries []*models.FilterEntry, d *schema.ResourceData) *schema.ResourceData {
+func setFilterAttributesFromContract(vzfilters []*models.Filter, vzEntries []*models.FilterEntry, d *schema.ResourceData) (*schema.ResourceData, error) {
 	log.Println("Check .... :", vzfilters)
 	log.Println("Check ... Filter :", vzEntries)
 	filterSet := make([]interface{}, 0, 1)
@@ -514,7 +518,10 @@ func setFilterAttributesFromContract(vzfilters []*models.Filter, vzEntries []*mo
 		fMap["description"] = filter.Description
 		fMap["id"] = filter.DistinguishedName
 
-		vzFilterMap, _ := filter.ToMap()
+		vzFilterMap, err := filter.ToMap()
+		if err != nil {
+			return d, err
+		}
 		fMap["filter_name"] = vzFilterMap["name"]
 		fMap["annotation"] = vzFilterMap["annotation"]
 		fMap["name_alias"] = vzFilterMap["nameAlias"]
@@ -522,7 +529,10 @@ func setFilterAttributesFromContract(vzfilters []*models.Filter, vzEntries []*mo
 		entrySet := make([]interface{}, 0, 1)
 		for _, entry := range vzEntries {
 			if strings.Contains(entry.DistinguishedName, filter.DistinguishedName) {
-				entryMap := setFilterEntryAttributesFromContract(entry, d)
+				entryMap, err := setFilterEntryAttributesFromContract(entry, d)
+				if err != nil {
+					return d, err
+				}
 				entrySet = append(entrySet, entryMap)
 			}
 		}
@@ -531,10 +541,10 @@ func setFilterAttributesFromContract(vzfilters []*models.Filter, vzEntries []*mo
 	}
 	log.Println("Check ...:", filterSet)
 	d.Set("filter", filterSet)
-	return d
+	return d, nil
 }
 
-func setFilterEntryAttributesFromContract(vzentry *models.FilterEntry, d *schema.ResourceData) map[string]interface{} {
+func setFilterEntryAttributesFromContract(vzentry *models.FilterEntry, d *schema.ResourceData) (map[string]interface{}, error) {
 	eMap := make(map[string]interface{})
 	constantPortMapping := map[string]string{
 		"smtp":        "25",
@@ -550,7 +560,10 @@ func setFilterEntryAttributesFromContract(vzentry *models.FilterEntry, d *schema
 	eMap["id"] = vzentry.DistinguishedName
 	eMap["entry_description"] = vzentry.Description
 
-	vzEntryMap, _ := vzentry.ToMap()
+	vzEntryMap, err := vzentry.ToMap()
+	if err != nil {
+		return eMap, err
+	}
 	eMap["filter_entry_name"] = vzEntryMap["name"]
 	eMap["entry_annotation"] = vzEntryMap["annotation"]
 	eMap["apply_to_frag"] = vzEntryMap["applyToFrag"]
@@ -575,7 +588,7 @@ func setFilterEntryAttributesFromContract(vzentry *models.FilterEntry, d *schema
 	} else {
 		eMap["d_to_port"] = vzEntryMap["dToPort"]
 	}
-	return eMap
+	return eMap, nil
 }
 
 func resourceAciContractImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -589,18 +602,23 @@ func resourceAciContractImport(d *schema.ResourceData, m interface{}) ([]*schema
 	if err != nil {
 		return nil, err
 	}
-	vzBrCPMap, _ := vzBrCP.ToMap()
+	vzBrCPMap, err := vzBrCP.ToMap()
+	if err != nil {
+		return nil, err
+	}
 	name := vzBrCPMap["name"]
 	pDN := GetParentDn(dn, fmt.Sprintf("/brc-%s", name))
 	d.Set("tenant_dn", pDN)
-	schemaFilled := setContractAttributes(vzBrCP, d)
-
+	schemaFilled, err := setContractAttributes(vzBrCP, d)
+	if err != nil {
+		return nil, err
+	}
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciContractCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciContractCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] Contract: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -631,7 +649,7 @@ func resourceAciContractCreate(d *schema.ResourceData, m interface{}) error {
 
 	err := aciClient.Save(vzBrCP)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	filterIDS := make([]string, 0, 1)
@@ -659,7 +677,7 @@ func resourceAciContractCreate(d *schema.ResourceData, m interface{}) error {
 
 			err := aciClient.Save(vzFilter)
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 			if filter["filter_entry"] != nil {
@@ -725,7 +743,7 @@ func resourceAciContractCreate(d *schema.ResourceData, m interface{}) error {
 					vzFilterEntry := models.NewFilterEntry(fmt.Sprintf("e-%s", entryName), filterDn, entryDesc, vzEntryAttr)
 					err := aciClient.Save(vzFilterEntry)
 					if err != nil {
-						return err
+						return diag.FromErr(err)
 					}
 
 					filterentryIDS = append(filterentryIDS, vzFilterEntry.DistinguishedName)
@@ -745,12 +763,6 @@ func resourceAciContractCreate(d *schema.ResourceData, m interface{}) error {
 		d.Set("filter_entry_ids", filterentryIDS)
 	}
 
-	d.Partial(true)
-
-	d.SetPartial("name")
-
-	d.Partial(false)
-
 	checkDns := make([]string, 0, 1)
 
 	if relationTovzRsGraphAtt, ok := d.GetOk("relation_vz_rs_graph_att"); ok {
@@ -761,7 +773,7 @@ func resourceAciContractCreate(d *schema.ResourceData, m interface{}) error {
 	d.Partial(true)
 	err = checkTDn(aciClient, checkDns)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Partial(false)
 
@@ -770,21 +782,18 @@ func resourceAciContractCreate(d *schema.ResourceData, m interface{}) error {
 		relationParamName := GetMOName(relationParam)
 		err = aciClient.CreateRelationvzRsGraphAttFromContract(vzBrCP.DistinguishedName, relationParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_vz_rs_graph_att")
-		d.Partial(false)
 
 	}
 
 	d.SetId(vzBrCP.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciContractRead(d, m)
+	return resourceAciContractRead(ctx, d, m)
 }
 
-func resourceAciContractUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciContractUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] Contract: Beginning Update")
 
 	aciClient := m.(*client.Client)
@@ -819,7 +828,7 @@ func resourceAciContractUpdate(d *schema.ResourceData, m interface{}) error {
 	err := aciClient.Save(vzBrCP)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	if d.HasChange("filter") {
@@ -828,7 +837,7 @@ func resourceAciContractUpdate(d *schema.ResourceData, m interface{}) error {
 			filterDN := val.(string)
 			err := aciClient.DeleteByDn(filterDN, "vzFilter")
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 		}
 
@@ -857,7 +866,7 @@ func resourceAciContractUpdate(d *schema.ResourceData, m interface{}) error {
 			// vzFilter.Status = "modified"
 			err := aciClient.Save(vzFilter)
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 			if filter["filter_entry"] != nil {
@@ -923,7 +932,7 @@ func resourceAciContractUpdate(d *schema.ResourceData, m interface{}) error {
 					vzFilterEntry := models.NewFilterEntry(fmt.Sprintf("e-%s", entryName), filterDn, entryDesc, vzEntryAttr)
 					err := aciClient.Save(vzFilterEntry)
 					if err != nil {
-						return err
+						return diag.FromErr(err)
 					}
 
 					filterentryIDS = append(filterentryIDS, vzFilterEntry.DistinguishedName)
@@ -937,12 +946,6 @@ func resourceAciContractUpdate(d *schema.ResourceData, m interface{}) error {
 		d.Set("filter_entry_ids", filterentryIDS)
 	}
 
-	d.Partial(true)
-
-	d.SetPartial("name")
-
-	d.Partial(false)
-
 	checkDns := make([]string, 0, 1)
 
 	if d.HasChange("relation_vz_rs_graph_att") {
@@ -953,7 +956,7 @@ func resourceAciContractUpdate(d *schema.ResourceData, m interface{}) error {
 	d.Partial(true)
 	err = checkTDn(aciClient, checkDns)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Partial(false)
 
@@ -962,26 +965,23 @@ func resourceAciContractUpdate(d *schema.ResourceData, m interface{}) error {
 		newRelParamName := GetMOName(newRelParam.(string))
 		err = aciClient.DeleteRelationvzRsGraphAttFromContract(vzBrCP.DistinguishedName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 		err = aciClient.CreateRelationvzRsGraphAttFromContract(vzBrCP.DistinguishedName, newRelParamName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		d.Partial(true)
-		d.SetPartial("relation_vz_rs_graph_att")
-		d.Partial(false)
 
 	}
 
 	d.SetId(vzBrCP.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciContractRead(d, m)
+	return resourceAciContractRead(ctx, d, m)
 
 }
 
-func resourceAciContractRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciContractRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -993,8 +993,11 @@ func resourceAciContractRead(d *schema.ResourceData, m interface{}) error {
 		d.SetId("")
 		return nil
 	}
-	setContractAttributes(vzBrCP, d)
-
+	_, err = setContractAttributes(vzBrCP, d)
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 	filters := d.Get("filter_ids").([]interface{})
 	log.Println("Check ... :", filters)
 	vzFilters := make([]*models.Filter, 0, 1)
@@ -1014,8 +1017,11 @@ func resourceAciContractRead(d *schema.ResourceData, m interface{}) error {
 			vzFilters = append(vzFilters, vzfilter)
 		}
 	}
-	setFilterAttributesFromContract(vzFilters, vzEntries, d)
-
+	_, err = setFilterAttributesFromContract(vzFilters, vzEntries, d)
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 	vzRsGraphAttData, err := aciClient.ReadRelationvzRsGraphAttFromContract(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation vzRsGraphAtt %v", err)
@@ -1035,14 +1041,14 @@ func resourceAciContractRead(d *schema.ResourceData, m interface{}) error {
 	return nil
 }
 
-func resourceAciContractDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciContractDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "vzBrCP")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	filters := d.Get("filter_ids").([]interface{})
@@ -1050,12 +1056,12 @@ func resourceAciContractDelete(d *schema.ResourceData, m interface{}) error {
 		filterDN := val.(string)
 		err := aciClient.DeleteByDn(filterDN, "vzFilter")
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
 }

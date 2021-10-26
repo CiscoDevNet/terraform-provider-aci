@@ -1,6 +1,6 @@
 package aci
 
-import "github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+import "github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 
 func GetBaseAttrSchema() map[string]*schema.Schema {
 	return map[string]*schema.Schema{
@@ -12,7 +12,10 @@ func GetBaseAttrSchema() map[string]*schema.Schema {
 		"annotation": &schema.Schema{
 			Type:     schema.TypeString,
 			Optional: true,
-			Default:  "orchestrator:terraform",
+			Computed: true,
+			DefaultFunc: func() (interface{}, error) {
+				return "orchestrator:terraform", nil
+			},
 		},
 	}
 }

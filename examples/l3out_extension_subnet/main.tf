@@ -8,8 +8,8 @@ terraform {
 
 #configure provider with your cisco aci credentials.
 provider "aci" {
-  username = ""                  # <APIC username>
-  password = ""               # <APIC pwd>
+  username = "" # <APIC username>
+  password = "" # <APIC pwd>
   url      = "" # <cloud APIC URL>
   insecure = true
 }

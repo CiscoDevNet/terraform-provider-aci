@@ -1,21 +1,23 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciCloudAWSProvider() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciCloudAWSProviderCreate,
-		Update: resourceAciCloudAWSProviderUpdate,
-		Read:   resourceAciCloudAWSProviderRead,
-		Delete: resourceAciCloudAWSProviderDelete,
+		CreateContext: resourceAciCloudAWSProviderCreate,
+		UpdateContext: resourceAciCloudAWSProviderUpdate,
+		ReadContext:   resourceAciCloudAWSProviderRead,
+		DeleteContext: resourceAciCloudAWSProviderDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciCloudAWSProviderImport,
@@ -115,7 +117,7 @@ func getRemoteCloudAWSProvider(client *client.Client, dn string) (*models.CloudA
 	return cloudAwsProvider, nil
 }
 
-func setCloudAWSProviderAttributes(cloudAwsProvider *models.CloudAWSProvider, d *schema.ResourceData) *schema.ResourceData {
+func setCloudAWSProviderAttributes(cloudAwsProvider *models.CloudAWSProvider, d *schema.ResourceData) (*schema.ResourceData, error) {
 	dn := d.Id()
 	d.SetId(cloudAwsProvider.DistinguishedName)
 	d.Set("description", cloudAwsProvider.Description)
@@ -123,8 +125,10 @@ func setCloudAWSProviderAttributes(cloudAwsProvider *models.CloudAWSProvider, d 
 	if dn != cloudAwsProvider.DistinguishedName {
 		d.Set("tenant_dn", "")
 	}
-	cloudAwsProviderMap, _ := cloudAwsProvider.ToMap()
-
+	cloudAwsProviderMap, err := cloudAwsProvider.ToMap()
+	if err != nil {
+		return d, err
+	}
 	d.Set("access_key_id", cloudAwsProviderMap["accessKeyId"])
 	d.Set("account_id", cloudAwsProviderMap["accountId"])
 	d.Set("annotation", cloudAwsProviderMap["annotation"])
@@ -135,8 +139,8 @@ func setCloudAWSProviderAttributes(cloudAwsProvider *models.CloudAWSProvider, d 
 	d.Set("name_alias", cloudAwsProviderMap["nameAlias"])
 	d.Set("provider_id", cloudAwsProviderMap["providerId"])
 	d.Set("region", cloudAwsProviderMap["region"])
-	d.Set("secret_access_key", cloudAwsProviderMap["secretAccessKey"])
-	return d
+	//d.Set("secret_access_key", cloudAwsProviderMap["secretAccessKey"])
+	return d, nil
 }
 
 func resourceAciCloudAWSProviderImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -152,14 +156,16 @@ func resourceAciCloudAWSProviderImport(d *schema.ResourceData, m interface{}) ([
 	}
 	pDN := GetParentDn(dn, fmt.Sprintf("/awsprovider"))
 	d.Set("tenant_dn", pDN)
-	schemaFilled := setCloudAWSProviderAttributes(cloudAwsProvider, d)
-
+	schemaFilled, err := setCloudAWSProviderAttributes(cloudAwsProvider, d)
+	if err != nil {
+		return nil, err
+	}
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciCloudAWSProviderCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciCloudAWSProviderCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] CloudAWSProvider: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -205,18 +211,16 @@ func resourceAciCloudAWSProviderCreate(d *schema.ResourceData, m interface{}) er
 
 	err := aciClient.Save(cloudAwsProvider)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-	d.Partial(false)
 
 	d.SetId(cloudAwsProvider.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciCloudAWSProviderRead(d, m)
+	return resourceAciCloudAWSProviderRead(ctx, d, m)
 }
 
-func resourceAciCloudAWSProviderUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciCloudAWSProviderUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] CloudAWSProvider: Beginning Update")
 
 	aciClient := m.(*client.Client)
@@ -267,7 +271,7 @@ func resourceAciCloudAWSProviderUpdate(d *schema.ResourceData, m interface{}) er
 	err := aciClient.Save(cloudAwsProvider)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.Partial(true)
 	d.Partial(false)
@@ -275,11 +279,11 @@ func resourceAciCloudAWSProviderUpdate(d *schema.ResourceData, m interface{}) er
 	d.SetId(cloudAwsProvider.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciCloudAWSProviderRead(d, m)
+	return resourceAciCloudAWSProviderRead(ctx, d, m)
 
 }
 
-func resourceAciCloudAWSProviderRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciCloudAWSProviderRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -291,25 +295,28 @@ func resourceAciCloudAWSProviderRead(d *schema.ResourceData, m interface{}) erro
 		d.SetId("")
 		return nil
 	}
-	setCloudAWSProviderAttributes(cloudAwsProvider, d)
-
+	_, err = setCloudAWSProviderAttributes(cloudAwsProvider, d)
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 
 	return nil
 }
 
-func resourceAciCloudAWSProviderDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciCloudAWSProviderDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "cloudAwsProvider")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
 }

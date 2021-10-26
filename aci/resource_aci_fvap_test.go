@@ -6,8 +6,8 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
 func TestAccAciApplicationProfile_Basic(t *testing.T) {
@@ -69,7 +69,7 @@ func testAccCheckAciApplicationProfileConfig_basic(description, prio string) str
 		description = "This tenant is created by terraform ACI provider"
 	}
 	resource "aci_application_profile" "fooapplication_profile" {
-		tenant_dn   = "${aci_tenant.tenant_for_ap.id}"
+		tenant_dn   = aci_tenant.tenant_for_ap.id
 		description = "%s"
 		name        = "demo_ap"
 		annotation  = "tag_ap"

@@ -6,8 +6,8 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
 func TestAccAciL2InterfacePolicy_Basic(t *testing.T) {
@@ -25,11 +25,6 @@ func TestAccAciL2InterfacePolicy_Basic(t *testing.T) {
 					testAccCheckAciL2InterfacePolicyExists("aci_l2_interface_policy.fool2_interface_policy", &l2_interface_policy),
 					testAccCheckAciL2InterfacePolicyAttributes(description, "global", &l2_interface_policy),
 				),
-			},
-			{
-				ResourceName:      "aci_l2_interface_policy",
-				ImportState:       true,
-				ImportStateVerify: true,
 			},
 		},
 	})

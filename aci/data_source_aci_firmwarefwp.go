@@ -1,16 +1,18 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func dataSourceAciFirmwarePolicy() *schema.Resource {
 	return &schema.Resource{
 
-		Read: dataSourceAciFirmwarePolicyRead,
+		ReadContext: dataSourceAciFirmwarePolicyRead,
 
 		SchemaVersion: 1,
 
@@ -60,7 +62,7 @@ func dataSourceAciFirmwarePolicy() *schema.Resource {
 	}
 }
 
-func dataSourceAciFirmwarePolicyRead(d *schema.ResourceData, m interface{}) error {
+func dataSourceAciFirmwarePolicyRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	aciClient := m.(*client.Client)
 
 	name := d.Get("name").(string)
@@ -72,8 +74,11 @@ func dataSourceAciFirmwarePolicyRead(d *schema.ResourceData, m interface{}) erro
 	firmwareFwP, err := getRemoteFirmwarePolicy(aciClient, dn)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	setFirmwarePolicyAttributes(firmwareFwP, d)
+	_, err = setFirmwarePolicyAttributes(firmwareFwP, d)
+	if err != nil {
+		return diag.FromErr(err)
+	}
 	return nil
 }

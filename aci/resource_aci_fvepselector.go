@@ -1,20 +1,22 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func resourceAciEndpointSecurityGroupSelector() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciEndpointSecurityGroupSelectorCreate,
-		Update: resourceAciEndpointSecurityGroupSelectorUpdate,
-		Read:   resourceAciEndpointSecurityGroupSelectorRead,
-		Delete: resourceAciEndpointSecurityGroupSelectorDelete,
+		CreateContext: resourceAciEndpointSecurityGroupSelectorCreate,
+		UpdateContext: resourceAciEndpointSecurityGroupSelectorUpdate,
+		ReadContext:   resourceAciEndpointSecurityGroupSelectorRead,
+		DeleteContext: resourceAciEndpointSecurityGroupSelectorDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciEndpointSecurityGroupSelectorImport,
@@ -53,16 +55,18 @@ func getRemoteEndpointSecurityGroupSelector(client *client.Client, dn string) (*
 	return fvEPSelector, nil
 }
 
-func setEndpointSecurityGroupSelectorAttributes(fvEPSelector *models.EndpointSecurityGroupSelector, d *schema.ResourceData) *schema.ResourceData {
+func setEndpointSecurityGroupSelectorAttributes(fvEPSelector *models.EndpointSecurityGroupSelector, d *schema.ResourceData) (*schema.ResourceData, error) {
 	d.SetId(fvEPSelector.DistinguishedName)
 	d.Set("description", fvEPSelector.Description)
-	fvEPSelectorMap, _ := fvEPSelector.ToMap()
-	d.Set("endpoint_security_group_dn", GetParentDn(fvEPSelector.DistinguishedName, fmt.Sprintf("/epselector-[%s]")))
+	fvEPSelectorMap, err := fvEPSelector.ToMap()
+	if err != nil {
+		return d, err
+	}
 	d.Set("annotation", fvEPSelectorMap["annotation"])
 	d.Set("match_expression", fvEPSelectorMap["matchExpression"])
 	d.Set("name", fvEPSelectorMap["name"])
 	d.Set("name_alias", fvEPSelectorMap["nameAlias"])
-	return d
+	return d, nil
 }
 
 func resourceAciEndpointSecurityGroupSelectorImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -73,12 +77,15 @@ func resourceAciEndpointSecurityGroupSelectorImport(d *schema.ResourceData, m in
 	if err != nil {
 		return nil, err
 	}
-	schemaFilled := setEndpointSecurityGroupSelectorAttributes(fvEPSelector, d)
+	schemaFilled, err := setEndpointSecurityGroupSelectorAttributes(fvEPSelector, d)
+	if err != nil {
+		return nil, err
+	}
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciEndpointSecurityGroupSelectorCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciEndpointSecurityGroupSelectorCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] EndpointSecurityGroupSelector: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -107,18 +114,15 @@ func resourceAciEndpointSecurityGroupSelectorCreate(d *schema.ResourceData, m in
 
 	err := aciClient.Save(fvEPSelector)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-	d.SetPartial("name")
-	d.Partial(false)
 
 	d.SetId(fvEPSelector.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
-	return resourceAciEndpointSecurityGroupSelectorRead(d, m)
+	return resourceAciEndpointSecurityGroupSelectorRead(ctx, d, m)
 }
 
-func resourceAciEndpointSecurityGroupSelectorUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciEndpointSecurityGroupSelectorUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] EndpointSecurityGroupSelector: Beginning Update")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -148,41 +152,42 @@ func resourceAciEndpointSecurityGroupSelectorUpdate(d *schema.ResourceData, m in
 	fvEPSelector.Status = "modified"
 	err := aciClient.Save(fvEPSelector)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-	d.SetPartial("name")
-	d.Partial(false)
 
 	d.SetId(fvEPSelector.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
-	return resourceAciEndpointSecurityGroupSelectorRead(d, m)
+	return resourceAciEndpointSecurityGroupSelectorRead(ctx, d, m)
 }
 
-func resourceAciEndpointSecurityGroupSelectorRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciEndpointSecurityGroupSelectorRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	fvEPSelector, err := getRemoteEndpointSecurityGroupSelector(aciClient, dn)
 	if err != nil {
 		d.SetId("")
-		return err
+		return diag.FromErr(err)
 	}
-	setEndpointSecurityGroupSelectorAttributes(fvEPSelector, d)
+	_, err = setEndpointSecurityGroupSelectorAttributes(fvEPSelector, d)
+	if err != nil {
+		d.SetId("")
+		return diag.FromErr(err)
+	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 	return nil
 }
 
-func resourceAciEndpointSecurityGroupSelectorDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciEndpointSecurityGroupSelectorDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "fvEPSelector")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
 }

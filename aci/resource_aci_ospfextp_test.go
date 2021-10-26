@@ -6,8 +6,8 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
 func TestAccAciL3outOspfExternalPolicy_Basic(t *testing.T) {
@@ -61,15 +61,15 @@ func testAccCheckAciL3outOspfExternalPolicyConfig_basic(description string) stri
 	return fmt.Sprintf(`
 
 	resource "aci_l3out_ospf_external_policy" "fool3out_ospf_external_policy" {
-		l3_outside_dn  = "${aci_l3_outside.example.id}"
-		description = "%s"
-  		annotation  = "example"
-  		area_cost  = "1"
-  		area_ctrl = "redistribute"
-  		area_id  = "0.0.0.1"
-  		area_type = "nssa"
-  		multipod_internal = "no"
-  		name_alias  = "example"
+		l3_outside_dn     = aci_l3_outside.example.id
+		description       = "%s"
+		annotation        = "example"
+		area_cost         = "1"
+		area_ctrl         = "redistribute"
+		area_id           = "0.0.0.1"
+		area_type         = "nssa"
+		multipod_internal = "no"
+		name_alias        = "example"
 	}
 	`, description)
 }

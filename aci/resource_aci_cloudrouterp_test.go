@@ -6,8 +6,8 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
 func TestAccAciCloudVpnGateway_Basic(t *testing.T) {
@@ -59,17 +59,15 @@ func TestAccAciCloudVpnGateway_update(t *testing.T) {
 
 func testAccCheckAciCloudVpnGatewayConfig_basic(description string) string {
 	return fmt.Sprintf(`
-
-	resource "aci_cloud_vpn_gateway" "example" {
-		cloud_context_profile_dn  = "${aci_cloud_context_profile.example.id}"
-	  description = "%s"
-	
-	  name  = "example_name"
-		annotation  = "example_annotation"
-		name_alias  = "example_alias"
+	resource "aci_cloud_vpn_gateway" "foocloud_vpn_gateway" {
+		cloud_context_profile_dn  = aci_cloud_context_profile.foocloud_context_profile.id
+		description    = "%s"
+		name           = "example_name"
+		annotation     = "example_annotation"
+		name_alias     = "example_alias"
 		num_instances  = "1"
 		cloud_router_profile_type  = "vpn-gw"
-	  }
+	}
 	`, description)
 }
 

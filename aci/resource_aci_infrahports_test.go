@@ -6,8 +6,8 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
 func TestAccAciAccessPortSelector_Basic(t *testing.T) {
@@ -65,8 +65,11 @@ func TestAccAciAccessPortSelector_update(t *testing.T) {
 func testAccCheckAciAccessPortSelectorConfig_basic(description, access_port_selector_type string) string {
 	return fmt.Sprintf(`
 
+	resource "aci_leaf_interface_profile" "example" {
+		name        = "demo_leaf_profile"
+	}	
 	resource "aci_access_port_selector" "fooaccess_port_selector" {
-		leaf_interface_profile_dn = "${aci_leaf_interface_profile.example.id}"
+		leaf_interface_profile_dn = aci_leaf_interface_profile.example.id
 		description               = "%s"
 		name                      = "demo_port_selector"
 		access_port_selector_type = "%s"

@@ -1,20 +1,22 @@
 package aci
 
 import (
+	"context"
 	"fmt"
 	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func resourceAciFEXProfile() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAciFEXProfileCreate,
-		Update: resourceAciFEXProfileUpdate,
-		Read:   resourceAciFEXProfileRead,
-		Delete: resourceAciFEXProfileDelete,
+		CreateContext: resourceAciFEXProfileCreate,
+		UpdateContext: resourceAciFEXProfileUpdate,
+		ReadContext:   resourceAciFEXProfileRead,
+		DeleteContext: resourceAciFEXProfileDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciFEXProfileImport,
@@ -38,6 +40,7 @@ func resourceAciFEXProfile() *schema.Resource {
 		}),
 	}
 }
+
 func getRemoteFEXProfile(client *client.Client, dn string) (*models.FEXProfile, error) {
 	infraFexPCont, err := client.Get(dn)
 	if err != nil {
@@ -53,16 +56,19 @@ func getRemoteFEXProfile(client *client.Client, dn string) (*models.FEXProfile, 
 	return infraFexP, nil
 }
 
-func setFEXProfileAttributes(infraFexP *models.FEXProfile, d *schema.ResourceData) *schema.ResourceData {
+func setFEXProfileAttributes(infraFexP *models.FEXProfile, d *schema.ResourceData) (*schema.ResourceData, error) {
 	d.SetId(infraFexP.DistinguishedName)
 	d.Set("description", infraFexP.Description)
-	infraFexPMap, _ := infraFexP.ToMap()
+	infraFexPMap, err := infraFexP.ToMap()
+	if err != nil {
+		return d, err
+	}
 
 	d.Set("name", infraFexPMap["name"])
 
 	d.Set("annotation", infraFexPMap["annotation"])
 	d.Set("name_alias", infraFexPMap["nameAlias"])
-	return d
+	return d, nil
 }
 
 func resourceAciFEXProfileImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -76,14 +82,17 @@ func resourceAciFEXProfileImport(d *schema.ResourceData, m interface{}) ([]*sche
 	if err != nil {
 		return nil, err
 	}
-	schemaFilled := setFEXProfileAttributes(infraFexP, d)
+	schemaFilled, err := setFEXProfileAttributes(infraFexP, d)
+	if err != nil {
+		return nil, err
+	}
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciFEXProfileCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAciFEXProfileCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] FEXProfile: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -105,21 +114,16 @@ func resourceAciFEXProfileCreate(d *schema.ResourceData, m interface{}) error {
 
 	err := aciClient.Save(infraFexP)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.SetPartial("name")
-
-	d.Partial(false)
 
 	d.SetId(infraFexP.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
-	return resourceAciFEXProfileRead(d, m)
+	return resourceAciFEXProfileRead(ctx, d, m)
 }
 
-func resourceAciFEXProfileUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAciFEXProfileUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] FEXProfile: Beginning Update")
 
 	aciClient := m.(*client.Client)
@@ -143,22 +147,17 @@ func resourceAciFEXProfileUpdate(d *schema.ResourceData, m interface{}) error {
 	err := aciClient.Save(infraFexP)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-	d.Partial(true)
-
-	d.SetPartial("name")
-
-	d.Partial(false)
 
 	d.SetId(infraFexP.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
-	return resourceAciFEXProfileRead(d, m)
+	return resourceAciFEXProfileRead(ctx, d, m)
 
 }
 
-func resourceAciFEXProfileRead(d *schema.ResourceData, m interface{}) error {
+func resourceAciFEXProfileRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
@@ -170,25 +169,29 @@ func resourceAciFEXProfileRead(d *schema.ResourceData, m interface{}) error {
 		d.SetId("")
 		return nil
 	}
-	setFEXProfileAttributes(infraFexP, d)
+	_, err = setFEXProfileAttributes(infraFexP, d)
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 
 	return nil
 }
 
-func resourceAciFEXProfileDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAciFEXProfileDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 	err := aciClient.DeleteByDn(dn, "infraFexP")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return err
+	return diag.FromErr(err)
 }

@@ -6,8 +6,8 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
 func TestAccAciContractProvider_Basic(t *testing.T) {
@@ -66,15 +66,14 @@ func testAccCheckAciContractProviderConfig_basic(description string) string {
 	return fmt.Sprintf(`
 
 	resource "aci_contract_provider" "foocontract_provider" {
-		  application_epg_dn  = "${aci_application_epg.example.id}"
-		description = "%s"
-		
-		tnVzBrCPName  = "example"
-		  annotation  = "example"
-		  match_t  = "All"
-		  prio  = "unspecified"
-		  tn_vz_br_cp_name  = "example"
-		}
+		application_epg_dn = aci_application_epg.example.id
+		description        = "%s"
+		tnVzBrCPName       = "example"
+		annotation         = "example"
+		match_t            = "All"
+		prio               = "unspecified"
+		tn_vz_br_cp_name   = "example"
+	}
 	`, description)
 }
 
