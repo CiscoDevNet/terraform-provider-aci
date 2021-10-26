@@ -22,8 +22,13 @@ Manages ACI Ranges
 ## Example Usage ##
 
 ```hcl
-resource "aci_ranges" "example" {
-  vlan_pool_dn  = aci_vlan_pool.example.id
+resource "aci_vlan_pool" "vlan_pool_1" {
+  name       = "VLANPool1"
+  alloc_mode = "static"
+}
+
+resource "aci_ranges" "range_1" {
+  vlan_pool_dn  = aci_vlan_pool.vlan_pool_1.id
   description   = "From Terraform"
   from          = "vlan-1"
   to            = "vlan-2"
@@ -36,7 +41,7 @@ resource "aci_ranges" "example" {
 
 ## Argument Reference ##
 
-* `vlan_pool_dn` - (Required) Distinguished name of parent VLAN Pool object.
+* `vlan_pool_dn` - (Required) Distinguished name of parent VLAN Pool object (from aci_vlan_pool resource/data source).
 * `from` - (Required) From of Object VLAN Pool ranges. Allowed value min: vlan-1, max: vlan-4094.
 * `to` - (Required) To of Object VLAN Pool ranges. Allowed value min: vlan-1, max: vlan-4094.
 * `alloc_mode` - (Optional) Alloc mode for object VLAN Pool ranges.  Allowed values: "dynamic", "static", "inherit". Default is "inherit".
