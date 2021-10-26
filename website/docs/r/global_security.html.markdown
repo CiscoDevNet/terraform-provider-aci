@@ -26,6 +26,7 @@ Manages ACI Global Security
 resource "aci_global_security" "example" {
   annotation = "orchestrator:terraform"
   description = "from terraform"
+  name_alias = "global_security"
   pwd_strength_check = "yes"
   change_count = "2"
   change_during_interval = "enable"
@@ -38,7 +39,7 @@ resource "aci_global_security" "example" {
   max_failed_attempts = "5"
   max_failed_attempts_window = "5"
   maximum_validity_period = "24"
-  session_record_flags = ["7"]
+  session_record_flags = ["login", "logout", "refresh"]
   ui_idle_timeout_seconds = "1200"
   webtoken_timeout_seconds = "600"
   relation_aaa_rs_to_user_ep = aci_global_security.example2.id
@@ -49,6 +50,7 @@ resource "aci_global_security" "example" {
 
 * `annotation` - (Optional) Annotation of object Global Security.
 * `description` - (Optional) Description of object Global Security.
+* `name_alias` - (Optional) Name alias of object Global Security.
 * `pwd_strength_check` - (Optional) Password Strength Check.The password strength check specifies if the system enforces the strength of the user password. Allowed values are "no", "yes", and default value is "yes". Type: String.
 * `change_count` - (Optional) Number of Password Changes in Interval.The number of password changes allowed within the change interval. Allowed range is 0-10 and default value is "2".
 * `change_during_interval` - (Optional) Password Policy.The change count/change interval policy selector. This property enables you to select an option for enforcing password change. Allowed values are "disable", "enable", and default value is "enable". Type: String.
@@ -62,7 +64,7 @@ A warning will be displayed when a user logs in within this number of days of an
 * `max_failed_attempts` - (Optional) Maximum continuous failed logins before blocking user.max failed login attempts before blocking user login Allowed range is 1-15 and default value is "5".
 * `max_failed_attempts_window` - (Optional) Time period for maximum continuous failed logins.times in minutes for max login failures to occur before blocking the user Allowed range is 1-720 and default value is "5".
 * `maximum_validity_period` - (Optional) Maximum Validity Period in hours.The maximum validity period for a webt oken. Allowed range is 4-24 and default value is "24".
-* `session_record_flags` - (Optional) Session Recording Options.Enables or disables a refresh in the session records. Allowed values are "login", "logout", "refresh", and default value is "7". Type: List.
+* `session_record_flags` - (Optional) Session Recording Options.Enables or disables a refresh in the session records. Allowed values are "login", "logout", "refresh" and default value is ["login", "logout", "refresh"]. Type: List.
 * `ui_idle_timeout_seconds` - (Optional) GUI Idle Timeout in Seconds.The maximum interval time the GUI remains idle before login needs to be refreshed. Allowed range is 60-65525 and default value is "1200".
 * `webtoken_timeout_seconds` - (Optional) Timeout in Seconds.The web token timeout interval. Allowed range is 300-9600 and default value is "600".
 

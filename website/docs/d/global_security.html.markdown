@@ -31,6 +31,7 @@ data "aci_global_security" "example" {}
 * `id` - Attribute id set to the Dn of the Global Security.
 * `annotation` - (Optional) Annotation of object Global Security.
 * `description` - (Optional) Description of object Global Security.
+* `name_alias` - (Optional) Name alias of object Global Security.
 * `pwd_strength_check` - (Optional) Password Strength Check.The password strength check specifies if the system enforces the strength of the user password. Allowed values are "no", "yes", and default value is "yes". Type: String.
 * `change_count` - (Optional) Number of Password Changes in Interval.The number of password changes allowed within the change interval. Allowed range is 0-10 and default value is "2".
 * `change_during_interval` - (Optional) Password Policy.The change count/change interval policy selector. This property enables you to select an option for enforcing password change. Allowed values are "disable", "enable", and default value is "enable". Type: String.
