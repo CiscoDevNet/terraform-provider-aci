@@ -65,10 +65,6 @@ github.com/cheggaaa/pb v1.0.27/go.mod h1:pQciLPpbU0oxA0h+VJYYLxO+XeDQb5pZijXscXH
 github.com/chzyer/logex v1.1.10/go.mod h1:+Ywpsq7O8HXn0nuIou7OrIPyXbp3wmkHB+jjWRnGsAI=
 github.com/chzyer/readline v0.0.0-20180603132655-2972be24d48e/go.mod h1:nSuG5e5PlCu98SY8svDHJxuZscDgtXS6KTTbou5AhLI=
 github.com/chzyer/test v0.0.0-20180213035817-a1ea475d72b1/go.mod h1:Q3SI9o4m/ZMnBNeIyt5eFwwo7qiLfzFZmjNmxjkiQlU=
-github.com/ciscoecosystem/aci-go-client v1.12.31 h1:EUA8XGFNxYe19XIeXMazihkU19GfOUYa8w7k8xchKFA=
-github.com/ciscoecosystem/aci-go-client v1.12.31/go.mod h1:pGK3tDhR/D4+P5f6utT1V7TQQxDw2fL7j79QXeVk6po=
-github.com/ciscoecosystem/aci-go-client v1.12.32 h1:zihz5f3nxn5snEzVq8KNcUKPnH1r3DXRTpZVqjEhds4=
-github.com/ciscoecosystem/aci-go-client v1.12.32/go.mod h1:pGK3tDhR/D4+P5f6utT1V7TQQxDw2fL7j79QXeVk6po=
 github.com/ciscoecosystem/aci-go-client v1.12.36 h1:2CqLn+9H5LcwVDfMlU7W66+x09iYzABpmBzmQF47Onw=
 github.com/ciscoecosystem/aci-go-client v1.12.36/go.mod h1:pGK3tDhR/D4+P5f6utT1V7TQQxDw2fL7j79QXeVk6po=
 github.com/client9/misspell v0.3.4/go.mod h1:qj6jICC3Q7zFZvVWo7KLAzC3yx5G7kyvSDkc90ppPyw=

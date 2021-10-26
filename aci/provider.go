@@ -253,6 +253,9 @@ func Provider() *schema.Provider {
 			"aci_ldap_group_map":                           resourceAciLDAPGroupMap(),
 			"aci_global_security":                          resourceAciUserManagement(),
 			"aci_login_domain_provider":                    resourceAciProviderGroupMember(),
+			"aci_tacacs_source":                            resourceAciTACACSSource(),
+			"aci_isis_domain_policy":                       resourceAciISISDomainPolicy(),
+			"aci_radius_provider":                          resourceAciRADIUSProvider(),
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
@@ -452,6 +455,9 @@ func Provider() *schema.Provider {
 			"aci_ldap_group_map":                           dataSourceAciLDAPGroupMap(),
 			"aci_global_security":                          dataSourceAciUserManagement(),
 			"aci_login_domain_provider":                    dataSourceAciProviderGroupMember(),
+			"aci_tacacs_source":                            dataSourceAciTACACSSource(),
+			"aci_isis_domain_policy":                       dataSourceAciISISDomainPolicy(),
+			"aci_radius_provider":                          dataSourceAciRADIUSProvider(),
 		},
 
 		ConfigureFunc: configureClient,
