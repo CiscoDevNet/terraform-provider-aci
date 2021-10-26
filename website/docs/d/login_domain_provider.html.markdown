@@ -12,6 +12,13 @@ Data source for ACI Login Domain Provider
 
 ## API Information ##
 * `Class` - aaaProviderRef
+* `Distinguished Named`<br>
+[1] uni/userext/duoext/duoprovidergroup-{name}/providerref-{name}<br>
+[2] uni/userext/rsaext/rsaprovidergroup-{name}/providerref-{name}<br>
+[3] uni/userext/samlext/samlprovidergroup-{name}/providerref-{name}<br>
+[4] uni/userext/tacacsext/tacacsplusprovidergroup-{name}/providerref-{name}<br>
+[5] uni/userext/radiusext/radiusprovidergroup-{name}/providerref-{name}<br>
+[6] uni/userext/ldapext/ldapprovidergroup-{name}/providerref-{name}<br>
 
 ## Example Usage ##
 ```hcl
