@@ -39,7 +39,7 @@ func resourceAciProviderGroupMember() *schema.Resource {
 				Type:         schema.TypeString,
 				Optional:     true,
 				Computed:     true,
-				ValidateFunc: validation.Any(validateIntRange("0", "16"), validation.StringInSlice([]string{"lowest-available"}, false)),
+				ValidateFunc: validation.Any(validateIntRange(0, 16), validation.StringInSlice([]string{"lowest-available"}, false)),
 			},
 		})),
 	}

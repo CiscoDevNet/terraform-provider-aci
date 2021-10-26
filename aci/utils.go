@@ -6,6 +6,7 @@ import (
 	"reflect"
 	"regexp"
 	"sort"
+	"strconv"
 	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
@@ -236,7 +237,7 @@ func checkAtleastOne() schema.SchemaValidateFunc {
 	}
 }
 
-func validateIntRange(a, b string) schema.SchemaValidateFunc {
+func validateIntRange(a, b int) schema.SchemaValidateFunc {
 	return func(i interface{}, k string) (s []string, es []error) {
 		v, ok := i.(string)
 		if !ok {
@@ -244,8 +245,16 @@ func validateIntRange(a, b string) schema.SchemaValidateFunc {
 			return
 		}
 
-		if v < a || v > b {
+		vint, err := strconv.Atoi(v)
+
+		if err != nil {
+			es = append(es, err)
+			return
+		}
+
+		if vint < a || vint > b {
 			es = append(es, fmt.Errorf("property is out of range"))
+			return
 		}
 		return
 	}
