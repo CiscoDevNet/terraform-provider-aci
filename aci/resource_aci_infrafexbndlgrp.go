@@ -85,7 +85,7 @@ func setFexBundleGroupAttributes(infraFexBndlGrp *models.FexBundleGroup, d *sche
 	}
 
 	d.Set("name", infraFexBndlGrpMap["name"])
-
+	d.Set("fex_profile_dn", GetParentDn(dn, fmt.Sprintf("/fexbundle-%s", infraFexBndlGrpMap["name"])))
 	d.Set("annotation", infraFexBndlGrpMap["annotation"])
 	d.Set("name_alias", infraFexBndlGrpMap["nameAlias"])
 	return d, nil
