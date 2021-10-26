@@ -14,7 +14,7 @@ provider "aci" {
 }
 
 resource "aci_tacacs_source" "example" {
-    parent_dn   = parent_resource.example.id
+    parent_dn   = "uni/fabric/moncommon"
     name        = "example"
     annotation  = "orchestrator:terraform"
     incl        = ["audit","session"]
