@@ -13,7 +13,7 @@ Manages ACI TACACS Source
 ## API Information ##
 
 * `Class` - tacacsSrc
-* `Distinguished Named` - <br>
+* `Supported Distinguished Named` - <br>
 [1] uni/tn-{name}/monepg-{name}/tarepg-{scope}/tacacssrc-{name}<br>
 [2] uni/infra/moninfra-{name}/tarinfra-{scope}/tacacssrc-{name}<br>
 [3] uni/fabric/monfab-{name}/tarfab-{scope}/tacacssrc-{name}<br>
