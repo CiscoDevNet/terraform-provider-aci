@@ -114,7 +114,7 @@ func setContractConsumerAttributes(fvRsCons *models.ContractConsumer, d *schema.
 	if err != nil {
 		return d, err
 	}
-	d.Set("application_epg_dn", GetParentDn(fvRsCons.DistinguishedName, fmt.Sprintf("/rsprov-%s", fvRsConsMap["tnVzBrCPName"])))
+	d.Set("application_epg_dn", GetParentDn(fvRsCons.DistinguishedName, fmt.Sprintf("/rscons-%s", fvRsConsMap["tnVzBrCPName"])))
 
 	tnVzBrCPName := GetMOName(d.Get("contract_dn").(string))
 	if tnVzBrCPName != fvRsConsMap["tnVzBrCPName"] {
