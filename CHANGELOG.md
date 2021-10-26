@@ -1,3 +1,19 @@
+## 1.0.0 (October 25, 2021)
+BREAKING CHANGE:
+- Migration to Terraform Provider SDK v2. Remove support for Terraform v0.11.x or below
+- Fix and update netflow monitor relation in aci_leaf_access_port_policy_group and aci_leaf_access_bundle_policy_group
+
+IMPROVEMENTS:
+- Update dependancy versions
+- Fix examples formating in examples directory
+- Add examples for resources without examples
+
+BUG FIXES:
+- Add support for aci_bgp_peer_connectivity_profile to be defined at interface level and node level
+- Fix multiple idempotency issues accross resources
+- Fix issues found during testing of resources with TF provider SDK v2
+- Add forced replacement of resource if path or class_name is changed in aci_rest
+
 ## 0.7.1 (June 25, 2021)
 BREAKING CHANGE:
 - Change aci_dhcp_relay_policy relation_dhcp_rs_prov argument from list of string to block definition to accomodate the addr argument.
