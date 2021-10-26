@@ -12,7 +12,7 @@ Data source for ACI Login Domain Provider
 
 ## API Information ##
 * `Class` - aaaProviderRef
-* `Distinguished Named`<br>
+* `Suppoerted Distinguished Names`<br>
 [1] uni/userext/duoext/duoprovidergroup-{name}/providerref-{name}<br>
 [2] uni/userext/rsaext/rsaprovidergroup-{name}/providerref-{name}<br>
 [3] uni/userext/samlext/samlprovidergroup-{name}/providerref-{name}<br>
