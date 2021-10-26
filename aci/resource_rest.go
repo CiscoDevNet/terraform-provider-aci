@@ -39,6 +39,7 @@ func resourceAciRest() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ForceNew: true,
 			},
 			"content": &schema.Schema{
 				Type:     schema.TypeMap,
