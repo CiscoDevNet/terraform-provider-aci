@@ -18,7 +18,7 @@ Manages ACI TACACS Source
 
 ```hcl
 resource "aci_tacacs_source" "example" {
-  parent_dn   = parent_resource.example.id
+  parent_dn   = "uni/fabric/moncommon"
   name        = "example"
   annotation  = "orchestrator:terraform"
   incl        = ["audit","session"]
@@ -30,8 +30,8 @@ resource "aci_tacacs_source" "example" {
 
 ## Argument Reference ##
 
-* `parent_dn` - (Required) Distinguished name of parent object of TACACS Source.
 * `name` - (Required) Name of object TACACS Source.
+* `parent_dn` - (Optional) Distinguished name of parent object of TACACS Source. Default value is "uni/fabric/moncommon". Type: String.
 * `annotation` - (Optional) Annotation of object TACACS Source.
 * `name_alias` - (Optional) Name Alias of object TACACS Source. Type: String.
 * `description` - (Optional) Description of object TACACS Source. Type: String.

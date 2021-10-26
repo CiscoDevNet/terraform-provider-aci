@@ -30,8 +30,8 @@ func resourceAciTACACSSource() *schema.Resource {
 		Schema: AppendBaseAttrSchema(AppendNameAliasAttrSchema(map[string]*schema.Schema{
 			"parent_dn": &schema.Schema{
 				Type:     schema.TypeString,
-				Required: true,
-				ForceNew: true,
+				Optional: true,
+				Default:  "uni/fabric/moncommon",
 			},
 			"incl": &schema.Schema{
 				Type:     schema.TypeList,

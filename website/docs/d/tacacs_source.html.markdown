@@ -20,17 +20,16 @@ Data source for ACI TACACS Source
 
 ```hcl
 data "aci_tacacs_source" "example" {
-  parent_dn  = parent_resource.example.id
   name  = "example"
 }
 ```
 
 ## Argument Reference ##
 
-* `parent_dn` - (Required) Distinguished name of parent object of TACACS Source.
 * `name` - (Required) name of object TACACS Source.
 
 ## Attribute Reference ##
+* `parent_dn` - (Optional) Distinguished name of parent object of TACACS Source.
 * `id` - Attribute id set to the Dn of the TACACS Source.
 * `annotation` - (Optional) Annotation of object TACACS Source.
 * `name_alias` - (Optional) Name Alias of object TACACS Source.
