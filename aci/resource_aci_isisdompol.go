@@ -66,6 +66,12 @@ func resourceAciISISDomainPolicy() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"isis_level_type": &schema.Schema{
+				Type:         schema.TypeString,
+				Optional:     true,
+				Default:      "l1",
+				ValidateFunc: validation.StringInSlice([]string{"l1", "l2"}, false),
+			},
 			"spf_comp_init_intvl": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -142,6 +148,7 @@ func setISISLevelAttributes(isisLvlComp *models.ISISLevel, d *schema.ResourceDat
 	d.Set("spf_comp_max_intvl", isisLvlCompMap["spfCompMaxIntvl"])
 	d.Set("spf_comp_sec_intvl", isisLvlCompMap["spfCompSecIntvl"])
 	d.Set("name_alias", isisLvlCompMap["nameAlias"])
+	d.Set("isis_level_type", isisLvlCompMap["type"])
 	return d, nil
 }
 
@@ -229,7 +236,9 @@ func resourceAciISISDomainPolicyCreate(ctx context.Context, d *schema.ResourceDa
 		isisLvlCompAttr.SpfCompSecIntvl = SpfCompSecIntvl.(string)
 	}
 
-	isisLvlCompAttr.ISISLevel_type = "l1"
+	if IsisLevlType, ok := d.GetOk("isis_level_type"); ok {
+		isisLvlCompAttr.ISISLevel_type = IsisLevlType.(string)
+	}
 
 	isisLvlComp := models.NewISISLevel(fmt.Sprintf("lvl-%s", isisLvlCompAttr.ISISLevel_type), isisDomPol.DistinguishedName, desc, nameAlias, isisLvlCompAttr)
 	isisLvlComp.Status = "modified"
@@ -310,7 +319,9 @@ func resourceAciISISDomainPolicyUpdate(ctx context.Context, d *schema.ResourceDa
 		isisLvlCompAttr.SpfCompSecIntvl = SpfCompSecIntvl.(string)
 	}
 
-	isisLvlCompAttr.ISISLevel_type = "l1"
+	if IsisLevlType, ok := d.GetOk("isis_level_type"); ok {
+		isisLvlCompAttr.ISISLevel_type = IsisLevlType.(string)
+	}
 
 	isisLvlComp := models.NewISISLevel(fmt.Sprintf("lvl-%s", isisLvlCompAttr.ISISLevel_type), isisDomPol.DistinguishedName, desc, nameAlias, isisLvlCompAttr)
 
