@@ -73,7 +73,7 @@ func setMonitoringPolicyAttributes(monEPGPol *models.MonitoringPolicy, d *schema
 		return d, err
 	}
 	d.Set("name", monEPGPolMap["name"])
-
+	d.Set("tenant_dn", GetParentDn(dn, fmt.Sprintf("/monepg-%s", monEPGPolMap["name"])))
 	d.Set("annotation", monEPGPolMap["annotation"])
 	d.Set("name_alias", monEPGPolMap["nameAlias"])
 	return d, nil
