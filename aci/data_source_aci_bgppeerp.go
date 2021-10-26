@@ -17,9 +17,15 @@ func dataSourceAciBgpPeerConnectivityProfile() *schema.Resource {
 		SchemaVersion: 1,
 
 		Schema: AppendBaseAttrSchema(map[string]*schema.Schema{
+			"logical_node_profile_dn": &schema.Schema{
+				Type:       schema.TypeString,
+				Optional:   true,
+				Deprecated: "use parent_dn instead",
+			},
+
 			"parent_dn": &schema.Schema{
 				Type:     schema.TypeString,
-				Required: true,
+				Optional: true,
 			},
 
 			"addr": &schema.Schema{
@@ -112,11 +118,20 @@ func dataSourceAciBgpPeerConnectivityProfileRead(ctx context.Context, d *schema.
 	aciClient := m.(*client.Client)
 
 	addr := d.Get("addr").(string)
+	var parentDn string
 
 	rn := fmt.Sprintf("peerP-[%s]", addr)
-	ParentDn := d.Get("parent_dn").(string)
+	if d.Get("logical_node_profile_dn").(string) != "" && d.Get("parent_dn").(string) != "" {
+		return diag.FromErr(fmt.Errorf("Usage of both parent_dn and logical_node_profile_dn parameters is not supported. logical_node_profile_dn parameter will be deprecated use parent_dn instead."))
+	} else if d.Get("parent_dn").(string) != "" {
+		parentDn = d.Get("parent_dn").(string)
+	} else if d.Get("logical_node_profile_dn").(string) != "" {
+		parentDn = d.Get("logical_node_profile_dn").(string)
+	} else {
+		return diag.FromErr(fmt.Errorf("parent_dn is required to query a BGP Peer Connectivity Profile"))
+	}
 
-	dn := fmt.Sprintf("%s/%s", ParentDn, rn)
+	dn := fmt.Sprintf("%s/%s", parentDn, rn)
 
 	bgpPeerP, err := getRemoteBgpPeerConnectivityProfile(aciClient, dn)
 

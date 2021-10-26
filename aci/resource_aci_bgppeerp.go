@@ -26,9 +26,16 @@ func resourceAciBgpPeerConnectivityProfile() *schema.Resource {
 		SchemaVersion: 1,
 
 		Schema: AppendBaseAttrSchema(map[string]*schema.Schema{
+			"logical_node_profile_dn": &schema.Schema{
+				Type:       schema.TypeString,
+				Optional:   true,
+				ForceNew:   true,
+				Deprecated: "use parent_dn instead",
+			},
+
 			"parent_dn": &schema.Schema{
 				Type:     schema.TypeString,
-				Required: true,
+				Optional: true,
 				ForceNew: true,
 			},
 
@@ -276,8 +283,17 @@ func resourceAciBgpPeerConnectivityProfileCreate(ctx context.Context, d *schema.
 	desc := d.Get("description").(string)
 
 	addr := d.Get("addr").(string)
+	var parentDn string
 
-	ParentDn := d.Get("parent_dn").(string)
+	if d.Get("logical_node_profile_dn").(string) != "" && d.Get("parent_dn").(string) != "" {
+		return diag.FromErr(fmt.Errorf("Usage of both parent_dn and logical_node_profile_dn parameters is not supported. logical_node_profile_dn parameter will be deprecated use parent_dn instead."))
+	} else if d.Get("parent_dn").(string) != "" {
+		parentDn = d.Get("parent_dn").(string)
+	} else if d.Get("logical_node_profile_dn").(string) != "" {
+		parentDn = d.Get("logical_node_profile_dn").(string)
+	} else {
+		return diag.FromErr(fmt.Errorf("parent_dn is required to create a BGP Peer Connectivity Profile"))
+	}
 
 	bgpPeerPAttr := models.BgpPeerConnectivityProfileAttributes{}
 	if Addr, ok := d.GetOk("addr"); ok {
@@ -315,7 +331,7 @@ func resourceAciBgpPeerConnectivityProfileCreate(ctx context.Context, d *schema.
 	if Weight, ok := d.GetOk("weight"); ok {
 		bgpPeerPAttr.Weight = Weight.(string)
 	}
-	bgpPeerP := models.NewBgpPeerConnectivityProfile(fmt.Sprintf("peerP-[%s]", addr), ParentDn, desc, bgpPeerPAttr)
+	bgpPeerP := models.NewBgpPeerConnectivityProfile(fmt.Sprintf("peerP-[%s]", addr), parentDn, desc, bgpPeerPAttr)
 
 	err := aciClient.Save(bgpPeerP)
 	if err != nil {
@@ -392,8 +408,17 @@ func resourceAciBgpPeerConnectivityProfileUpdate(ctx context.Context, d *schema.
 	desc := d.Get("description").(string)
 
 	addr := d.Get("addr").(string)
+	var parentDn string
 
-	ParentDn := d.Get("parent_dn").(string)
+	if d.Get("logical_node_profile_dn").(string) != "" && d.Get("parent_dn").(string) != "" {
+		return diag.FromErr(fmt.Errorf("Usage of both parent_dn and logical_node_profile_dn parameters is not supported. logical_node_profile_dn parameter will be deprecated use parent_dn instead."))
+	} else if d.Get("parent_dn").(string) != "" {
+		parentDn = d.Get("parent_dn").(string)
+	} else if d.Get("logical_node_profile_dn").(string) != "" {
+		parentDn = d.Get("logical_node_profile_dn").(string)
+	} else {
+		return diag.FromErr(fmt.Errorf("parent_dn is required to update a BGP Peer Connectivity Profile"))
+	}
 
 	bgpPeerPAttr := models.BgpPeerConnectivityProfileAttributes{}
 	if Addr, ok := d.GetOk("addr"); ok {
@@ -431,7 +456,7 @@ func resourceAciBgpPeerConnectivityProfileUpdate(ctx context.Context, d *schema.
 	if Weight, ok := d.GetOk("weight"); ok {
 		bgpPeerPAttr.Weight = Weight.(string)
 	}
-	bgpPeerP := models.NewBgpPeerConnectivityProfile(fmt.Sprintf("peerP-[%s]", addr), ParentDn, desc, bgpPeerPAttr)
+	bgpPeerP := models.NewBgpPeerConnectivityProfile(fmt.Sprintf("peerP-[%s]", addr), parentDn, desc, bgpPeerPAttr)
 
 	bgpPeerP.Status = "modified"
 
