@@ -21,11 +21,9 @@ resource "aci_endpoint_security_group" "terraform_inherit_esg" {
   application_profile_dn       = aci_application_profile.terraform_ap.id
   name                         = "tf_inherit_esg"
   description                  = "create relation sec_inherited"
-  flood_on_encap               = "disabled"
   match_t                      = "None"
   pc_enf_pref                  = "unenforced"
   pref_gr_memb                 = "exclude"
-  prio                         = "unspecified"
   relation_fv_rs_sec_inherited = [aci_endpoint_security_group.terraform_esg.id]
 }
 
