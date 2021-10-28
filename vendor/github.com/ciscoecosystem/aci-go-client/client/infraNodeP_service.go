@@ -112,7 +112,7 @@ func (sm *ServiceManager) CreateRelationinfraRsAccPortPFromLeafProfile(parentDn,
 				"dn": "%s","tDn": "%s","annotation":"orchestrator:terraform"				
 			}
 		}
-	}`, "infraRsAccPortP",tDn, dn))
+	}`, "infraRsAccPortP", tDn, dn))
 
 	jsonPayload, err := container.ParseJSON(containerJSON)
 	if err != nil {

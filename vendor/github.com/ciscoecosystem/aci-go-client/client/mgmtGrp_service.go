@@ -9,7 +9,7 @@ import (
 func (sm *ServiceManager) CreateManagedNodeConnectivityGroup(name string, description string, mgmtGrpattr models.ManagedNodeConnectivityGroupAttributes) (*models.ManagedNodeConnectivityGroup, error) {
 	rn := fmt.Sprintf("infra/funcprof/grp-%s", name)
 	parentDn := fmt.Sprintf("uni")
-	mgmtGrp := models.NewManagedNodeConnectivityGroup(rn, parentDn,  mgmtGrpattr)
+	mgmtGrp := models.NewManagedNodeConnectivityGroup(rn, parentDn, mgmtGrpattr)
 	err := sm.Save(mgmtGrp)
 	return mgmtGrp, err
 }

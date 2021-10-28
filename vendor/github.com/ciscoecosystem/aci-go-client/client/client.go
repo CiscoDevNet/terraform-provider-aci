@@ -62,6 +62,7 @@ type Client struct {
 	preserveBaseUrlRef bool
 	skipLoggingPayload bool
 	appUserName        string
+	ValidateRelationDn bool
 	*ServiceManager
 }
 
@@ -115,6 +116,12 @@ func ProxyUrl(pUrl string) Option {
 func ProxyCreds(pcreds string) Option {
 	return func(client *Client) {
 		client.proxyCreds = pcreds
+	}
+}
+
+func ValidateRelationDn(validateRelationDn bool) Option {
+	return func(client *Client) {
+		client.ValidateRelationDn = validateRelationDn
 	}
 }
 

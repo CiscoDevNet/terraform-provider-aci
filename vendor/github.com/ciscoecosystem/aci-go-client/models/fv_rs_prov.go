@@ -22,6 +22,8 @@ type ContractProviderAttributes struct {
 	MatchT string `json:",omitempty"`
 
 	Prio string `json:",omitempty"`
+
+	TDn string `json:",omitempty"`
 }
 
 func NewContractProvider(fvRsProvRn, parentDn string, fvRsProvattr ContractProviderAttributes) *ContractProvider {
@@ -52,6 +54,8 @@ func (fvRsProv *ContractProvider) ToMap() (map[string]string, error) {
 
 	A(fvRsProvMap, "prio", fvRsProv.Prio)
 
+	A(fvRsProvMap, "tDn", fvRsProv.TDn)
+
 	return fvRsProvMap, err
 }
 
@@ -75,6 +79,8 @@ func ContractProviderFromContainerList(cont *container.Container, index int) *Co
 			MatchT: G(ContractProviderCont, "matchT"),
 
 			Prio: G(ContractProviderCont, "prio"),
+
+			TDn: G(ContractProviderCont, "tDn"),
 		},
 	}
 }
