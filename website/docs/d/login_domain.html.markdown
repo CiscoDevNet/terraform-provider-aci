@@ -13,7 +13,7 @@ Data source for ACI Login Domain
 
 ## API Information ##
 
-* `Class` - aaaLoginDomain
+* `Class` - aaaLoginDomain and aaaDomainAuth
 * `Distinguished Named` - uni/userext/logindomain-{name}
 
 ## GUI Information ##
