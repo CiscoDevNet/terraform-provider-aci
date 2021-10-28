@@ -6,26 +6,27 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/container"
 )
+
 const (
-	DninfraAccNodePGrp                = "uni/infra/funcprof/accnodepgrp-%s"
-	RninfraAccNodePGrp                = "accnodepgrp-%s"
-	ParentDninfraAccNodePGrp          = "uni/infra/funcprof"
+	DninfraAccNodePGrp        = "uni/infra/funcprof/accnodepgrp-%s"
+	RninfraAccNodePGrp        = "accnodepgrp-%s"
+	ParentDninfraAccNodePGrp  = "uni/infra/funcprof"
 	InfraaccnodepgrpClassName = "infraAccNodePGrp"
 )
 
 type AccessSwitchPolicyGroup struct {
 	BaseAttributes
 	NameAliasAttribute
-    AccessSwitchPolicyGroupAttributes 
+	AccessSwitchPolicyGroupAttributes
 }
-  
+
 type AccessSwitchPolicyGroupAttributes struct {
-    Annotation       string `json:",omitempty"`
-    Name       string `json:",omitempty"`
-    } 
+	Annotation string `json:",omitempty"`
+	Name       string `json:",omitempty"`
+}
 
 func NewAccessSwitchPolicyGroup(infraAccNodePGrpRn, parentDn, description, nameAlias string, infraAccNodePGrpAttr AccessSwitchPolicyGroupAttributes) *AccessSwitchPolicyGroup {
-	dn := fmt.Sprintf("%s/%s", parentDn, infraAccNodePGrpRn)  
+	dn := fmt.Sprintf("%s/%s", parentDn, infraAccNodePGrpRn)
 	return &AccessSwitchPolicyGroup{
 		BaseAttributes: BaseAttributes{
 			DistinguishedName: dn,
@@ -37,7 +38,7 @@ func NewAccessSwitchPolicyGroup(infraAccNodePGrpRn, parentDn, description, nameA
 		NameAliasAttribute: NameAliasAttribute{
 			NameAlias: nameAlias,
 		},
-        AccessSwitchPolicyGroupAttributes: infraAccNodePGrpAttr, 
+		AccessSwitchPolicyGroupAttributes: infraAccNodePGrpAttr,
 	}
 }
 
@@ -53,9 +54,9 @@ func (infraAccNodePGrp *AccessSwitchPolicyGroup) ToMap() (map[string]string, err
 	for key, value := range alias {
 		A(infraAccNodePGrpMap, key, value)
 	}
-    A(infraAccNodePGrpMap, "annotation",infraAccNodePGrp.Annotation)
-    A(infraAccNodePGrpMap, "name",infraAccNodePGrp.Name)
-    return infraAccNodePGrpMap, err
+	A(infraAccNodePGrpMap, "annotation", infraAccNodePGrp.Annotation)
+	A(infraAccNodePGrpMap, "name", infraAccNodePGrp.Name)
+	return infraAccNodePGrpMap, err
 }
 
 func AccessSwitchPolicyGroupFromContainerList(cont *container.Container, index int) *AccessSwitchPolicyGroup {
@@ -71,10 +72,10 @@ func AccessSwitchPolicyGroupFromContainerList(cont *container.Container, index i
 		NameAliasAttribute{
 			NameAlias: G(AccessSwitchPolicyGroupCont, "nameAlias"),
 		},
-        AccessSwitchPolicyGroupAttributes{
-        Annotation : G(AccessSwitchPolicyGroupCont, "annotation"),
-        Name : G(AccessSwitchPolicyGroupCont, "name"),
-        },
+		AccessSwitchPolicyGroupAttributes{
+			Annotation: G(AccessSwitchPolicyGroupCont, "annotation"),
+			Name:       G(AccessSwitchPolicyGroupCont, "name"),
+		},
 	}
 }
 

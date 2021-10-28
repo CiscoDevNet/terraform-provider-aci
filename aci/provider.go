@@ -58,6 +58,12 @@ func Provider() *schema.Provider {
 				DefaultFunc: schema.EnvDefaultFunc("ACI_PROXY_CREDS", nil),
 				Description: "Proxy server credentials in the form of username:password",
 			},
+			"validate_relation_dn": &schema.Schema{
+				Type:        schema.TypeBool,
+				Optional:    true,
+				Default:     true,
+				Description: "Flag to validate if a object with entered relation Dn exists in the APIC.",
+			},
 		},
 
 		ResourcesMap: map[string]*schema.Resource{
@@ -231,6 +237,27 @@ func Provider() *schema.Provider {
 			"aci_console_authentication":                   resourceAciConsoleAuthenticationMethod(),
 			"aci_error_disable_recovery":                   resourceAciErrorDisabledRecoveryPolicy(),
 			"aci_fabric_wide_settings":                     resourceAciFabricWideSettingsPolicy(),
+			"aci_authentication_properties":                resourceAciAAAAuthentication(),
+			"aci_duo_provider_group":                       resourceAciDuoProviderGroup(),
+			"aci_ldap_provider":                            resourceAciLDAPProvider(),
+			"aci_radius_provider_group":                    resourceAciRADIUSProviderGroup(),
+			"aci_ldap_group_map_rule":                      resourceAciLDAPGroupMapRule(),
+			"aci_tacacs_accounting_destination":            resourceAciTACACSDestination(),
+			"aci_ldap_group_map_rule_to_group_map":         resourceAciLDAPGroupMapruleref(),
+			"aci_tacacs_accounting":                        resourceAciTACACSMonitoringDestinationGroup(),
+			"aci_rsa_provider":                             resourceAciRSAProvider(),
+			"aci_saml_provider":                            resourceAciSAMLProvider(),
+			"aci_login_domain":                             resourceAciLoginDomain(),
+			"aci_default_authentication":                   resourceAciDefaultAuthenticationMethodforallLogins(),
+			"aci_tacacs_provider_group":                    resourceAciTACACSPlusProviderGroup(),
+			"aci_tacacs_provider":                          resourceAciTACACSProvider(),
+			"aci_saml_provider_group":                      resourceAciSAMLProviderGroup(),
+			"aci_ldap_group_map":                           resourceAciLDAPGroupMap(),
+			"aci_global_security":                          resourceAciUserManagement(),
+			"aci_login_domain_provider":                    resourceAciProviderGroupMember(),
+			"aci_tacacs_source":                            resourceAciTACACSSource(),
+			"aci_isis_domain_policy":                       resourceAciISISDomainPolicy(),
+			"aci_radius_provider":                          resourceAciRADIUSProvider(),
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
@@ -413,6 +440,28 @@ func Provider() *schema.Provider {
 			"aci_console_authentication":                   dataSourceAciConsoleAuthenticationMethod(),
 			"aci_error_disable_recovery":                   dataSourceAciErrorDisabledRecoveryPolicy(),
 			"aci_fabric_wide_settings":                     dataSourceAciFabricWideSettingsPolicy(),
+			"aci_authentication_properties":                dataSourceAciAAAAuthentication(),
+			"aci_duo_provider_group":                       dataSourceAciDuoProviderGroup(),
+			"aci_ldap_provider":                            dataSourceAciLDAPProvider(),
+			"aci_saml_certificate":                         dataSourceAciKeypairforSAMLEncryption(),
+			"aci_radius_provider_group":                    dataSourceAciRADIUSProviderGroup(),
+			"aci_ldap_group_map_rule":                      dataSourceAciLDAPGroupMapRule(),
+			"aci_tacacs_accounting_destination":            dataSourceAciTACACSDestination(),
+			"aci_ldap_group_map_rule_to_group_map":         dataSourceAciLDAPGroupMapruleref(),
+			"aci_tacacs_accounting":                        dataSourceAciTACACSMonitoringDestinationGroup(),
+			"aci_rsa_provider":                             dataSourceAciRSAProvider(),
+			"aci_saml_provider":                            dataSourceAciSAMLProvider(),
+			"aci_login_domain":                             dataSourceAciLoginDomain(),
+			"aci_default_authentication":                   dataSourceAciDefaultAuthenticationMethodforallLogins(),
+			"aci_tacacs_provider_group":                    dataSourceAciTACACSPlusProviderGroup(),
+			"aci_tacacs_provider":                          dataSourceAciTACACSProvider(),
+			"aci_saml_provider_group":                      dataSourceAciSAMLProviderGroup(),
+			"aci_ldap_group_map":                           dataSourceAciLDAPGroupMap(),
+			"aci_global_security":                          dataSourceAciUserManagement(),
+			"aci_login_domain_provider":                    dataSourceAciProviderGroupMember(),
+			"aci_tacacs_source":                            dataSourceAciTACACSSource(),
+			"aci_isis_domain_policy":                       dataSourceAciISISDomainPolicy(),
+			"aci_radius_provider":                          dataSourceAciRADIUSProvider(),
 		},
 
 		ConfigureFunc: configureClient,
@@ -421,14 +470,15 @@ func Provider() *schema.Provider {
 
 func configureClient(d *schema.ResourceData) (interface{}, error) {
 	config := Config{
-		Username:   d.Get("username").(string),
-		Password:   d.Get("password").(string),
-		URL:        d.Get("url").(string),
-		IsInsecure: d.Get("insecure").(bool),
-		PrivateKey: d.Get("private_key").(string),
-		Certname:   d.Get("cert_name").(string),
-		ProxyUrl:   d.Get("proxy_url").(string),
-		ProxyCreds: d.Get("proxy_creds").(string),
+		Username:           d.Get("username").(string),
+		Password:           d.Get("password").(string),
+		URL:                d.Get("url").(string),
+		IsInsecure:         d.Get("insecure").(bool),
+		PrivateKey:         d.Get("private_key").(string),
+		Certname:           d.Get("cert_name").(string),
+		ProxyUrl:           d.Get("proxy_url").(string),
+		ProxyCreds:         d.Get("proxy_creds").(string),
+		ValidateRelationDn: d.Get("validate_relation_dn").(bool),
 	}
 
 	if err := config.Valid(); err != nil {
@@ -463,22 +513,23 @@ func (c Config) Valid() error {
 func (c Config) getClient() interface{} {
 	if c.Password != "" {
 
-		return client.GetClient(c.URL, c.Username, client.Password(c.Password), client.Insecure(c.IsInsecure), client.ProxyUrl(c.ProxyUrl), client.ProxyCreds(c.ProxyCreds))
+		return client.GetClient(c.URL, c.Username, client.Password(c.Password), client.Insecure(c.IsInsecure), client.ProxyUrl(c.ProxyUrl), client.ProxyCreds(c.ProxyCreds), client.ValidateRelationDn(c.ValidateRelationDn))
 
 	} else {
 
-		return client.GetClient(c.URL, c.Username, client.PrivateKey(c.PrivateKey), client.AdminCert(c.Certname), client.Insecure(c.IsInsecure), client.ProxyUrl(c.ProxyUrl), client.ProxyCreds(c.ProxyCreds))
+		return client.GetClient(c.URL, c.Username, client.PrivateKey(c.PrivateKey), client.AdminCert(c.Certname), client.Insecure(c.IsInsecure), client.ProxyUrl(c.ProxyUrl), client.ProxyCreds(c.ProxyCreds), client.ValidateRelationDn(c.ValidateRelationDn))
 	}
 }
 
 // Config
 type Config struct {
-	Username   string
-	Password   string
-	URL        string
-	IsInsecure bool
-	PrivateKey string
-	Certname   string
-	ProxyUrl   string
-	ProxyCreds string
+	Username           string
+	Password           string
+	URL                string
+	IsInsecure         bool
+	PrivateKey         string
+	Certname           string
+	ProxyUrl           string
+	ProxyCreds         string
+	ValidateRelationDn bool
 }

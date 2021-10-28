@@ -6,30 +6,31 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/container"
 )
+
 const (
-	DnepControlP                = "uni/infra/epCtrlP-%s"
-	RnepControlP                = "epCtrlP-%s"
-	ParentDnepControlP          = "uni/infra"
+	DnepControlP        = "uni/infra/epCtrlP-%s"
+	RnepControlP        = "epCtrlP-%s"
+	ParentDnepControlP  = "uni/infra"
 	EpcontrolpClassName = "epControlP"
 )
 
 type EndpointControlPolicy struct {
 	BaseAttributes
 	NameAliasAttribute
-    EndpointControlPolicyAttributes 
+	EndpointControlPolicyAttributes
 }
-  
+
 type EndpointControlPolicyAttributes struct {
-    AdminSt       string `json:",omitempty"`
-    Annotation       string `json:",omitempty"`
-    HoldIntvl       string `json:",omitempty"`
-    Name       string `json:",omitempty"`
-    RogueEpDetectIntvl       string `json:",omitempty"`
-    RogueEpDetectMult       string `json:",omitempty"`
-    } 
+	AdminSt            string `json:",omitempty"`
+	Annotation         string `json:",omitempty"`
+	HoldIntvl          string `json:",omitempty"`
+	Name               string `json:",omitempty"`
+	RogueEpDetectIntvl string `json:",omitempty"`
+	RogueEpDetectMult  string `json:",omitempty"`
+}
 
 func NewEndpointControlPolicy(epControlPRn, parentDn, description, nameAlias string, epControlPAttr EndpointControlPolicyAttributes) *EndpointControlPolicy {
-	dn := fmt.Sprintf("%s/%s", parentDn, epControlPRn)  
+	dn := fmt.Sprintf("%s/%s", parentDn, epControlPRn)
 	return &EndpointControlPolicy{
 		BaseAttributes: BaseAttributes{
 			DistinguishedName: dn,
@@ -41,7 +42,7 @@ func NewEndpointControlPolicy(epControlPRn, parentDn, description, nameAlias str
 		NameAliasAttribute: NameAliasAttribute{
 			NameAlias: nameAlias,
 		},
-        EndpointControlPolicyAttributes: epControlPAttr, 
+		EndpointControlPolicyAttributes: epControlPAttr,
 	}
 }
 
@@ -57,13 +58,13 @@ func (epControlP *EndpointControlPolicy) ToMap() (map[string]string, error) {
 	for key, value := range alias {
 		A(epControlPMap, key, value)
 	}
-    A(epControlPMap, "adminSt",epControlP.AdminSt)
-    A(epControlPMap, "annotation",epControlP.Annotation)
-    A(epControlPMap, "holdIntvl",epControlP.HoldIntvl)
-    A(epControlPMap, "name",epControlP.Name)
-    A(epControlPMap, "rogueEpDetectIntvl",epControlP.RogueEpDetectIntvl)
-    A(epControlPMap, "rogueEpDetectMult",epControlP.RogueEpDetectMult)
-    return epControlPMap, err
+	A(epControlPMap, "adminSt", epControlP.AdminSt)
+	A(epControlPMap, "annotation", epControlP.Annotation)
+	A(epControlPMap, "holdIntvl", epControlP.HoldIntvl)
+	A(epControlPMap, "name", epControlP.Name)
+	A(epControlPMap, "rogueEpDetectIntvl", epControlP.RogueEpDetectIntvl)
+	A(epControlPMap, "rogueEpDetectMult", epControlP.RogueEpDetectMult)
+	return epControlPMap, err
 }
 
 func EndpointControlPolicyFromContainerList(cont *container.Container, index int) *EndpointControlPolicy {
@@ -79,14 +80,14 @@ func EndpointControlPolicyFromContainerList(cont *container.Container, index int
 		NameAliasAttribute{
 			NameAlias: G(EndpointControlPolicyCont, "nameAlias"),
 		},
-        EndpointControlPolicyAttributes{
-        AdminSt : G(EndpointControlPolicyCont, "adminSt"),
-        Annotation : G(EndpointControlPolicyCont, "annotation"),
-        HoldIntvl : G(EndpointControlPolicyCont, "holdIntvl"),
-        Name : G(EndpointControlPolicyCont, "name"),
-        RogueEpDetectIntvl : G(EndpointControlPolicyCont, "rogueEpDetectIntvl"),
-        RogueEpDetectMult : G(EndpointControlPolicyCont, "rogueEpDetectMult"),
-        },
+		EndpointControlPolicyAttributes{
+			AdminSt:            G(EndpointControlPolicyCont, "adminSt"),
+			Annotation:         G(EndpointControlPolicyCont, "annotation"),
+			HoldIntvl:          G(EndpointControlPolicyCont, "holdIntvl"),
+			Name:               G(EndpointControlPolicyCont, "name"),
+			RogueEpDetectIntvl: G(EndpointControlPolicyCont, "rogueEpDetectIntvl"),
+			RogueEpDetectMult:  G(EndpointControlPolicyCont, "rogueEpDetectMult"),
+		},
 	}
 }
 
