@@ -12,7 +12,7 @@ Manages ACI Error Disable Recovery
 
 ## API Information ##
 
-* `Class` - edrErrDisRecoverPol
+* `Class` - edrErrDisRecoverPol and edrEventP
 * `Distinguished Named` - uni/infra/edrErrDisRecoverPol-{name}
 
 ## GUI Information ##
