@@ -32,6 +32,8 @@ resource "aci_endpoint_security_group" "example" {
   pc_enf_pref = "unenforced"
   pref_gr_memb = "exclude"
 
+relation_fv_rs_scope = aci_vrf.example.id
+
   relation_fv_rs_cons {
     prio = "unspecified"
     target_dn = aci_contract.example.id
@@ -52,8 +54,6 @@ resource "aci_endpoint_security_group" "example" {
     target_dn = aci_contract.example.id
   }
 
-  relation_fv_rs_scope = aci_vrf.example.id
-
   relation_fv_rs_sec_inherited = [aci_application_epg.example.id]
 }
 ```
@@ -70,6 +70,8 @@ resource "aci_endpoint_security_group" "example" {
 - `pref_gr_memb` - (Optional) Preferred Group Member parameter is used to determine
   if EPg is part of a group that allows
   a contract for communication. Allowed values are "exclude", "include", and default value is "exclude". Type: String.
+
+- `relation_fv_rs_scope` - (Required) Represents the relation to a Private Network (class fvCtx). Type: String.
 
 - `relation_fv_rs_cons` - (Optional) A block representing the relation to a Contract Consumer (class vzBrCP). The Consumer contract profile information. Type: Block.
 
@@ -90,8 +92,6 @@ resource "aci_endpoint_security_group" "example" {
   - `match_t` - (Optional) The matched EPG type. Allowed values are "All", "AtleastOne", "AtmostOne", "None", and default value is "AtleastOne". Type: String.
   - `prio` - (Optional) The system class determines the quality of service and priority for the consumer traffic. Allowed values are "level1", "level2", "level3", "level4", "level5", "level6", "unspecified", and default value is "unspecified". Type: String.
   - `target_dn` - (Required) The distinguished name of the target contract. Type: String.
-
-- `relation_fv_rs_scope` - (Optional) Represents the relation to a Private Network (class fvCtx). Type: String.
 
 - `relation_fv_rs_sec_inherited` - (Optional) Represents the relation to a Security inheritance (class fvEPg). It represents that the EPg is inheriting security configuration from another EPg. Type: List.
 
