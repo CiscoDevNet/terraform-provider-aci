@@ -1,26 +1,21 @@
 package client
 
-
-
 import (
-	
 	"fmt"
 
-	"github.com/ciscoecosystem/aci-go-client/models"
 	"github.com/ciscoecosystem/aci-go-client/container"
-	
+	"github.com/ciscoecosystem/aci-go-client/models"
 )
 
-
-func (sm *ServiceManager) CreateSpineSwitchPolicyGroup(name string, description string, nameAlias string, infraSpineAccNodePGrpAttr models.SpineSwitchPolicyGroupAttributes) (*models.SpineSwitchPolicyGroup, error) {	
-	rn := fmt.Sprintf(models.RninfraSpineAccNodePGrp , name)
-	parentDn := fmt.Sprintf(models.ParentDninfraSpineAccNodePGrp, )
+func (sm *ServiceManager) CreateSpineSwitchPolicyGroup(name string, description string, nameAlias string, infraSpineAccNodePGrpAttr models.SpineSwitchPolicyGroupAttributes) (*models.SpineSwitchPolicyGroup, error) {
+	rn := fmt.Sprintf(models.RninfraSpineAccNodePGrp, name)
+	parentDn := fmt.Sprintf(models.ParentDninfraSpineAccNodePGrp)
 	infraSpineAccNodePGrp := models.NewSpineSwitchPolicyGroup(rn, parentDn, description, nameAlias, infraSpineAccNodePGrpAttr)
 	err := sm.Save(infraSpineAccNodePGrp)
 	return infraSpineAccNodePGrp, err
 }
 
-func (sm *ServiceManager) ReadSpineSwitchPolicyGroup(name string, ) (*models.SpineSwitchPolicyGroup, error) {
+func (sm *ServiceManager) ReadSpineSwitchPolicyGroup(name string) (*models.SpineSwitchPolicyGroup, error) {
 	dn := fmt.Sprintf(models.DninfraSpineAccNodePGrp, name)
 	cont, err := sm.Get(dn)
 	if err != nil {
@@ -30,23 +25,23 @@ func (sm *ServiceManager) ReadSpineSwitchPolicyGroup(name string, ) (*models.Spi
 	return infraSpineAccNodePGrp, nil
 }
 
-func (sm *ServiceManager) DeleteSpineSwitchPolicyGroup(name string, ) error {
+func (sm *ServiceManager) DeleteSpineSwitchPolicyGroup(name string) error {
 	dn := fmt.Sprintf(models.DninfraSpineAccNodePGrp, name)
 	return sm.DeleteByDn(dn, models.InfraspineaccnodepgrpClassName)
 }
 
 func (sm *ServiceManager) UpdateSpineSwitchPolicyGroup(name string, description string, nameAlias string, infraSpineAccNodePGrpAttr models.SpineSwitchPolicyGroupAttributes) (*models.SpineSwitchPolicyGroup, error) {
-	rn := fmt.Sprintf(models.RninfraSpineAccNodePGrp , name)
-	parentDn := fmt.Sprintf(models.ParentDninfraSpineAccNodePGrp, )
+	rn := fmt.Sprintf(models.RninfraSpineAccNodePGrp, name)
+	parentDn := fmt.Sprintf(models.ParentDninfraSpineAccNodePGrp)
 	infraSpineAccNodePGrp := models.NewSpineSwitchPolicyGroup(rn, parentDn, description, nameAlias, infraSpineAccNodePGrpAttr)
-    infraSpineAccNodePGrp.Status = "modified"
+	infraSpineAccNodePGrp.Status = "modified"
 	err := sm.Save(infraSpineAccNodePGrp)
 	return infraSpineAccNodePGrp, err
 }
 
-func (sm *ServiceManager) ListSpineSwitchPolicyGroup() ([]*models.SpineSwitchPolicyGroup, error) {	
+func (sm *ServiceManager) ListSpineSwitchPolicyGroup() ([]*models.SpineSwitchPolicyGroup, error) {
 	dnUrl := fmt.Sprintf("%s/uni/infra/funcprof/infraSpineAccNodePGrp.json", models.BaseurlStr)
-    cont, err := sm.GetViaURL(dnUrl)
+	cont, err := sm.GetViaURL(dnUrl)
 	list := models.SpineSwitchPolicyGroupListFromContainer(cont)
 	return list, err
 }
@@ -63,7 +58,6 @@ func (sm *ServiceManager) CreateRelationinfraRsIaclSpineProfile(parentDn, annota
 		}
 	}`, "infraRsIaclSpineProfile", dn, annotation, tnIaclSpineProfileName))
 
-	
 	jsonPayload, err := container.ParseJSON(containerJSON)
 	if err != nil {
 		return err
@@ -80,17 +74,17 @@ func (sm *ServiceManager) CreateRelationinfraRsIaclSpineProfile(parentDn, annota
 	return nil
 }
 
-func (sm *ServiceManager) DeleteRelationinfraRsIaclSpineProfile(parentDn string) error{
+func (sm *ServiceManager) DeleteRelationinfraRsIaclSpineProfile(parentDn string) error {
 	dn := fmt.Sprintf("%s/rsiaclSpineProfile", parentDn)
-	return sm.DeleteByDn(dn , "infraRsIaclSpineProfile")
+	return sm.DeleteByDn(dn, "infraRsIaclSpineProfile")
 }
 
-func (sm *ServiceManager) ReadRelationinfraRsIaclSpineProfile(parentDn string) (interface{},error) {	
-	dnUrl := fmt.Sprintf("%s/%s/%s.json",models.BaseurlStr,parentDn,"infraRsIaclSpineProfile")
+func (sm *ServiceManager) ReadRelationinfraRsIaclSpineProfile(parentDn string) (interface{}, error) {
+	dnUrl := fmt.Sprintf("%s/%s/%s.json", models.BaseurlStr, parentDn, "infraRsIaclSpineProfile")
 	cont, err := sm.GetViaURL(dnUrl)
-	contList := models.ListFromContainer(cont,"infraRsIaclSpineProfile")
-	
-		if len(contList) > 0 {
+	contList := models.ListFromContainer(cont, "infraRsIaclSpineProfile")
+
+	if len(contList) > 0 {
 		dat := models.G(contList[0], "tnIaclSpineProfileName")
 		return dat, err
 	} else {
@@ -110,7 +104,6 @@ func (sm *ServiceManager) CreateRelationinfraRsSpineBfdIpv4InstPol(parentDn, ann
 		}
 	}`, "infraRsSpineBfdIpv4InstPol", dn, annotation, tnBfdIpv4InstPolName))
 
-	
 	jsonPayload, err := container.ParseJSON(containerJSON)
 	if err != nil {
 		return err
@@ -127,17 +120,17 @@ func (sm *ServiceManager) CreateRelationinfraRsSpineBfdIpv4InstPol(parentDn, ann
 	return nil
 }
 
-func (sm *ServiceManager) DeleteRelationinfraRsSpineBfdIpv4InstPol(parentDn string) error{
+func (sm *ServiceManager) DeleteRelationinfraRsSpineBfdIpv4InstPol(parentDn string) error {
 	dn := fmt.Sprintf("%s/rsspineBfdIpv4InstPol", parentDn)
-	return sm.DeleteByDn(dn , "infraRsSpineBfdIpv4InstPol")
+	return sm.DeleteByDn(dn, "infraRsSpineBfdIpv4InstPol")
 }
 
-func (sm *ServiceManager) ReadRelationinfraRsSpineBfdIpv4InstPol(parentDn string) (interface{},error) {	
-	dnUrl := fmt.Sprintf("%s/%s/%s.json",models.BaseurlStr,parentDn,"infraRsSpineBfdIpv4InstPol")
+func (sm *ServiceManager) ReadRelationinfraRsSpineBfdIpv4InstPol(parentDn string) (interface{}, error) {
+	dnUrl := fmt.Sprintf("%s/%s/%s.json", models.BaseurlStr, parentDn, "infraRsSpineBfdIpv4InstPol")
 	cont, err := sm.GetViaURL(dnUrl)
-	contList := models.ListFromContainer(cont,"infraRsSpineBfdIpv4InstPol")
-	
-		if len(contList) > 0 {
+	contList := models.ListFromContainer(cont, "infraRsSpineBfdIpv4InstPol")
+
+	if len(contList) > 0 {
 		dat := models.G(contList[0], "tnBfdIpv4InstPolName")
 		return dat, err
 	} else {
@@ -157,7 +150,6 @@ func (sm *ServiceManager) CreateRelationinfraRsSpineBfdIpv6InstPol(parentDn, ann
 		}
 	}`, "infraRsSpineBfdIpv6InstPol", dn, annotation, tnBfdIpv6InstPolName))
 
-	
 	jsonPayload, err := container.ParseJSON(containerJSON)
 	if err != nil {
 		return err
@@ -174,17 +166,17 @@ func (sm *ServiceManager) CreateRelationinfraRsSpineBfdIpv6InstPol(parentDn, ann
 	return nil
 }
 
-func (sm *ServiceManager) DeleteRelationinfraRsSpineBfdIpv6InstPol(parentDn string) error{
+func (sm *ServiceManager) DeleteRelationinfraRsSpineBfdIpv6InstPol(parentDn string) error {
 	dn := fmt.Sprintf("%s/rsspineBfdIpv6InstPol", parentDn)
-	return sm.DeleteByDn(dn , "infraRsSpineBfdIpv6InstPol")
+	return sm.DeleteByDn(dn, "infraRsSpineBfdIpv6InstPol")
 }
 
-func (sm *ServiceManager) ReadRelationinfraRsSpineBfdIpv6InstPol(parentDn string) (interface{},error) {	
-	dnUrl := fmt.Sprintf("%s/%s/%s.json",models.BaseurlStr,parentDn,"infraRsSpineBfdIpv6InstPol")
+func (sm *ServiceManager) ReadRelationinfraRsSpineBfdIpv6InstPol(parentDn string) (interface{}, error) {
+	dnUrl := fmt.Sprintf("%s/%s/%s.json", models.BaseurlStr, parentDn, "infraRsSpineBfdIpv6InstPol")
 	cont, err := sm.GetViaURL(dnUrl)
-	contList := models.ListFromContainer(cont,"infraRsSpineBfdIpv6InstPol")
-	
-		if len(contList) > 0 {
+	contList := models.ListFromContainer(cont, "infraRsSpineBfdIpv6InstPol")
+
+	if len(contList) > 0 {
 		dat := models.G(contList[0], "tnBfdIpv6InstPolName")
 		return dat, err
 	} else {
@@ -204,7 +196,6 @@ func (sm *ServiceManager) CreateRelationinfraRsSpineCoppProfile(parentDn, annota
 		}
 	}`, "infraRsSpineCoppProfile", dn, annotation, tnCoppSpineProfileName))
 
-	
 	jsonPayload, err := container.ParseJSON(containerJSON)
 	if err != nil {
 		return err
@@ -221,17 +212,17 @@ func (sm *ServiceManager) CreateRelationinfraRsSpineCoppProfile(parentDn, annota
 	return nil
 }
 
-func (sm *ServiceManager) DeleteRelationinfraRsSpineCoppProfile(parentDn string) error{
+func (sm *ServiceManager) DeleteRelationinfraRsSpineCoppProfile(parentDn string) error {
 	dn := fmt.Sprintf("%s/rsspineCoppProfile", parentDn)
-	return sm.DeleteByDn(dn , "infraRsSpineCoppProfile")
+	return sm.DeleteByDn(dn, "infraRsSpineCoppProfile")
 }
 
-func (sm *ServiceManager) ReadRelationinfraRsSpineCoppProfile(parentDn string) (interface{},error) {	
-	dnUrl := fmt.Sprintf("%s/%s/%s.json",models.BaseurlStr,parentDn,"infraRsSpineCoppProfile")
+func (sm *ServiceManager) ReadRelationinfraRsSpineCoppProfile(parentDn string) (interface{}, error) {
+	dnUrl := fmt.Sprintf("%s/%s/%s.json", models.BaseurlStr, parentDn, "infraRsSpineCoppProfile")
 	cont, err := sm.GetViaURL(dnUrl)
-	contList := models.ListFromContainer(cont,"infraRsSpineCoppProfile")
-	
-		if len(contList) > 0 {
+	contList := models.ListFromContainer(cont, "infraRsSpineCoppProfile")
+
+	if len(contList) > 0 {
 		dat := models.G(contList[0], "tnCoppSpineProfileName")
 		return dat, err
 	} else {
@@ -251,7 +242,6 @@ func (sm *ServiceManager) CreateRelationinfraRsSpinePGrpToCdpIfPol(parentDn, ann
 		}
 	}`, "infraRsSpinePGrpToCdpIfPol", dn, annotation, tnCdpIfPolName))
 
-	
 	jsonPayload, err := container.ParseJSON(containerJSON)
 	if err != nil {
 		return err
@@ -268,17 +258,17 @@ func (sm *ServiceManager) CreateRelationinfraRsSpinePGrpToCdpIfPol(parentDn, ann
 	return nil
 }
 
-func (sm *ServiceManager) DeleteRelationinfraRsSpinePGrpToCdpIfPol(parentDn string) error{
+func (sm *ServiceManager) DeleteRelationinfraRsSpinePGrpToCdpIfPol(parentDn string) error {
 	dn := fmt.Sprintf("%s/rsspinePGrpToCdpIfPol", parentDn)
-	return sm.DeleteByDn(dn , "infraRsSpinePGrpToCdpIfPol")
+	return sm.DeleteByDn(dn, "infraRsSpinePGrpToCdpIfPol")
 }
 
-func (sm *ServiceManager) ReadRelationinfraRsSpinePGrpToCdpIfPol(parentDn string) (interface{},error) {	
-	dnUrl := fmt.Sprintf("%s/%s/%s.json",models.BaseurlStr,parentDn,"infraRsSpinePGrpToCdpIfPol")
+func (sm *ServiceManager) ReadRelationinfraRsSpinePGrpToCdpIfPol(parentDn string) (interface{}, error) {
+	dnUrl := fmt.Sprintf("%s/%s/%s.json", models.BaseurlStr, parentDn, "infraRsSpinePGrpToCdpIfPol")
 	cont, err := sm.GetViaURL(dnUrl)
-	contList := models.ListFromContainer(cont,"infraRsSpinePGrpToCdpIfPol")
-	
-		if len(contList) > 0 {
+	contList := models.ListFromContainer(cont, "infraRsSpinePGrpToCdpIfPol")
+
+	if len(contList) > 0 {
 		dat := models.G(contList[0], "tnCdpIfPolName")
 		return dat, err
 	} else {
@@ -298,7 +288,6 @@ func (sm *ServiceManager) CreateRelationinfraRsSpinePGrpToLldpIfPol(parentDn, an
 		}
 	}`, "infraRsSpinePGrpToLldpIfPol", dn, annotation, tnLldpIfPolName))
 
-	
 	jsonPayload, err := container.ParseJSON(containerJSON)
 	if err != nil {
 		return err
@@ -315,21 +304,20 @@ func (sm *ServiceManager) CreateRelationinfraRsSpinePGrpToLldpIfPol(parentDn, an
 	return nil
 }
 
-func (sm *ServiceManager) DeleteRelationinfraRsSpinePGrpToLldpIfPol(parentDn string) error{
+func (sm *ServiceManager) DeleteRelationinfraRsSpinePGrpToLldpIfPol(parentDn string) error {
 	dn := fmt.Sprintf("%s/rsspinePGrpToLldpIfPol", parentDn)
-	return sm.DeleteByDn(dn , "infraRsSpinePGrpToLldpIfPol")
+	return sm.DeleteByDn(dn, "infraRsSpinePGrpToLldpIfPol")
 }
 
-func (sm *ServiceManager) ReadRelationinfraRsSpinePGrpToLldpIfPol(parentDn string) (interface{},error) {	
-	dnUrl := fmt.Sprintf("%s/%s/%s.json",models.BaseurlStr,parentDn,"infraRsSpinePGrpToLldpIfPol")
+func (sm *ServiceManager) ReadRelationinfraRsSpinePGrpToLldpIfPol(parentDn string) (interface{}, error) {
+	dnUrl := fmt.Sprintf("%s/%s/%s.json", models.BaseurlStr, parentDn, "infraRsSpinePGrpToLldpIfPol")
 	cont, err := sm.GetViaURL(dnUrl)
-	contList := models.ListFromContainer(cont,"infraRsSpinePGrpToLldpIfPol")
-	
-		if len(contList) > 0 {
+	contList := models.ListFromContainer(cont, "infraRsSpinePGrpToLldpIfPol")
+
+	if len(contList) > 0 {
 		dat := models.G(contList[0], "tnLldpIfPolName")
 		return dat, err
 	} else {
 		return nil, err
 	}
 }
-

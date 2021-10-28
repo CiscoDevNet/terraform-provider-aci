@@ -1,26 +1,21 @@
 package client
 
-
-
 import (
-	
 	"fmt"
 
-	"github.com/ciscoecosystem/aci-go-client/models"
 	"github.com/ciscoecosystem/aci-go-client/container"
-	
+	"github.com/ciscoecosystem/aci-go-client/models"
 )
 
-
-func (sm *ServiceManager) CreateAccessSwitchPolicyGroup(name string, description string, nameAlias string, infraAccNodePGrpAttr models.AccessSwitchPolicyGroupAttributes) (*models.AccessSwitchPolicyGroup, error) {	
-	rn := fmt.Sprintf(models.RninfraAccNodePGrp , name)
-	parentDn := fmt.Sprintf(models.ParentDninfraAccNodePGrp, )
+func (sm *ServiceManager) CreateAccessSwitchPolicyGroup(name string, description string, nameAlias string, infraAccNodePGrpAttr models.AccessSwitchPolicyGroupAttributes) (*models.AccessSwitchPolicyGroup, error) {
+	rn := fmt.Sprintf(models.RninfraAccNodePGrp, name)
+	parentDn := fmt.Sprintf(models.ParentDninfraAccNodePGrp)
 	infraAccNodePGrp := models.NewAccessSwitchPolicyGroup(rn, parentDn, description, nameAlias, infraAccNodePGrpAttr)
 	err := sm.Save(infraAccNodePGrp)
 	return infraAccNodePGrp, err
 }
 
-func (sm *ServiceManager) ReadAccessSwitchPolicyGroup(name string, ) (*models.AccessSwitchPolicyGroup, error) {
+func (sm *ServiceManager) ReadAccessSwitchPolicyGroup(name string) (*models.AccessSwitchPolicyGroup, error) {
 	dn := fmt.Sprintf(models.DninfraAccNodePGrp, name)
 	cont, err := sm.Get(dn)
 	if err != nil {
@@ -30,23 +25,23 @@ func (sm *ServiceManager) ReadAccessSwitchPolicyGroup(name string, ) (*models.Ac
 	return infraAccNodePGrp, nil
 }
 
-func (sm *ServiceManager) DeleteAccessSwitchPolicyGroup(name string, ) error {
+func (sm *ServiceManager) DeleteAccessSwitchPolicyGroup(name string) error {
 	dn := fmt.Sprintf(models.DninfraAccNodePGrp, name)
 	return sm.DeleteByDn(dn, models.InfraaccnodepgrpClassName)
 }
 
 func (sm *ServiceManager) UpdateAccessSwitchPolicyGroup(name string, description string, nameAlias string, infraAccNodePGrpAttr models.AccessSwitchPolicyGroupAttributes) (*models.AccessSwitchPolicyGroup, error) {
-	rn := fmt.Sprintf(models.RninfraAccNodePGrp , name)
-	parentDn := fmt.Sprintf(models.ParentDninfraAccNodePGrp, )
+	rn := fmt.Sprintf(models.RninfraAccNodePGrp, name)
+	parentDn := fmt.Sprintf(models.ParentDninfraAccNodePGrp)
 	infraAccNodePGrp := models.NewAccessSwitchPolicyGroup(rn, parentDn, description, nameAlias, infraAccNodePGrpAttr)
-    infraAccNodePGrp.Status = "modified"
+	infraAccNodePGrp.Status = "modified"
 	err := sm.Save(infraAccNodePGrp)
 	return infraAccNodePGrp, err
 }
 
-func (sm *ServiceManager) ListAccessSwitchPolicyGroup() ([]*models.AccessSwitchPolicyGroup, error) {	
+func (sm *ServiceManager) ListAccessSwitchPolicyGroup() ([]*models.AccessSwitchPolicyGroup, error) {
 	dnUrl := fmt.Sprintf("%s/uni/infra/funcprof/infraAccNodePGrp.json", models.BaseurlStr)
-    cont, err := sm.GetViaURL(dnUrl)
+	cont, err := sm.GetViaURL(dnUrl)
 	list := models.AccessSwitchPolicyGroupListFromContainer(cont)
 	return list, err
 }
@@ -63,7 +58,6 @@ func (sm *ServiceManager) CreateRelationinfraRsBfdIpv4InstPol(parentDn, annotati
 		}
 	}`, "infraRsBfdIpv4InstPol", dn, annotation, tnBfdIpv4InstPolName))
 
-	
 	jsonPayload, err := container.ParseJSON(containerJSON)
 	if err != nil {
 		return err
@@ -80,17 +74,17 @@ func (sm *ServiceManager) CreateRelationinfraRsBfdIpv4InstPol(parentDn, annotati
 	return nil
 }
 
-func (sm *ServiceManager) DeleteRelationinfraRsBfdIpv4InstPol(parentDn string) error{
+func (sm *ServiceManager) DeleteRelationinfraRsBfdIpv4InstPol(parentDn string) error {
 	dn := fmt.Sprintf("%s/rsbfdIpv4InstPol", parentDn)
-	return sm.DeleteByDn(dn , "infraRsBfdIpv4InstPol")
+	return sm.DeleteByDn(dn, "infraRsBfdIpv4InstPol")
 }
 
-func (sm *ServiceManager) ReadRelationinfraRsBfdIpv4InstPol(parentDn string) (interface{},error) {	
-	dnUrl := fmt.Sprintf("%s/%s/%s.json",models.BaseurlStr,parentDn,"infraRsBfdIpv4InstPol")
+func (sm *ServiceManager) ReadRelationinfraRsBfdIpv4InstPol(parentDn string) (interface{}, error) {
+	dnUrl := fmt.Sprintf("%s/%s/%s.json", models.BaseurlStr, parentDn, "infraRsBfdIpv4InstPol")
 	cont, err := sm.GetViaURL(dnUrl)
-	contList := models.ListFromContainer(cont,"infraRsBfdIpv4InstPol")
-	
-		if len(contList) > 0 {
+	contList := models.ListFromContainer(cont, "infraRsBfdIpv4InstPol")
+
+	if len(contList) > 0 {
 		dat := models.G(contList[0], "tnBfdIpv4InstPolName")
 		return dat, err
 	} else {
@@ -110,7 +104,6 @@ func (sm *ServiceManager) CreateRelationinfraRsBfdIpv6InstPol(parentDn, annotati
 		}
 	}`, "infraRsBfdIpv6InstPol", dn, annotation, tnBfdIpv6InstPolName))
 
-	
 	jsonPayload, err := container.ParseJSON(containerJSON)
 	if err != nil {
 		return err
@@ -127,17 +120,17 @@ func (sm *ServiceManager) CreateRelationinfraRsBfdIpv6InstPol(parentDn, annotati
 	return nil
 }
 
-func (sm *ServiceManager) DeleteRelationinfraRsBfdIpv6InstPol(parentDn string) error{
+func (sm *ServiceManager) DeleteRelationinfraRsBfdIpv6InstPol(parentDn string) error {
 	dn := fmt.Sprintf("%s/rsbfdIpv6InstPol", parentDn)
-	return sm.DeleteByDn(dn , "infraRsBfdIpv6InstPol")
+	return sm.DeleteByDn(dn, "infraRsBfdIpv6InstPol")
 }
 
-func (sm *ServiceManager) ReadRelationinfraRsBfdIpv6InstPol(parentDn string) (interface{},error) {	
-	dnUrl := fmt.Sprintf("%s/%s/%s.json",models.BaseurlStr,parentDn,"infraRsBfdIpv6InstPol")
+func (sm *ServiceManager) ReadRelationinfraRsBfdIpv6InstPol(parentDn string) (interface{}, error) {
+	dnUrl := fmt.Sprintf("%s/%s/%s.json", models.BaseurlStr, parentDn, "infraRsBfdIpv6InstPol")
 	cont, err := sm.GetViaURL(dnUrl)
-	contList := models.ListFromContainer(cont,"infraRsBfdIpv6InstPol")
-	
-		if len(contList) > 0 {
+	contList := models.ListFromContainer(cont, "infraRsBfdIpv6InstPol")
+
+	if len(contList) > 0 {
 		dat := models.G(contList[0], "tnBfdIpv6InstPolName")
 		return dat, err
 	} else {
@@ -157,7 +150,6 @@ func (sm *ServiceManager) CreateRelationinfraRsBfdMhIpv4InstPol(parentDn, annota
 		}
 	}`, "infraRsBfdMhIpv4InstPol", dn, annotation, tnBfdMhIpv4InstPolName))
 
-	
 	jsonPayload, err := container.ParseJSON(containerJSON)
 	if err != nil {
 		return err
@@ -174,17 +166,17 @@ func (sm *ServiceManager) CreateRelationinfraRsBfdMhIpv4InstPol(parentDn, annota
 	return nil
 }
 
-func (sm *ServiceManager) DeleteRelationinfraRsBfdMhIpv4InstPol(parentDn string) error{
+func (sm *ServiceManager) DeleteRelationinfraRsBfdMhIpv4InstPol(parentDn string) error {
 	dn := fmt.Sprintf("%s/rsbfdMhIpv4InstPol", parentDn)
-	return sm.DeleteByDn(dn , "infraRsBfdMhIpv4InstPol")
+	return sm.DeleteByDn(dn, "infraRsBfdMhIpv4InstPol")
 }
 
-func (sm *ServiceManager) ReadRelationinfraRsBfdMhIpv4InstPol(parentDn string) (interface{},error) {	
-	dnUrl := fmt.Sprintf("%s/%s/%s.json",models.BaseurlStr,parentDn,"infraRsBfdMhIpv4InstPol")
+func (sm *ServiceManager) ReadRelationinfraRsBfdMhIpv4InstPol(parentDn string) (interface{}, error) {
+	dnUrl := fmt.Sprintf("%s/%s/%s.json", models.BaseurlStr, parentDn, "infraRsBfdMhIpv4InstPol")
 	cont, err := sm.GetViaURL(dnUrl)
-	contList := models.ListFromContainer(cont,"infraRsBfdMhIpv4InstPol")
-	
-		if len(contList) > 0 {
+	contList := models.ListFromContainer(cont, "infraRsBfdMhIpv4InstPol")
+
+	if len(contList) > 0 {
 		dat := models.G(contList[0], "tnBfdMhIpv4InstPolName")
 		return dat, err
 	} else {
@@ -204,7 +196,6 @@ func (sm *ServiceManager) CreateRelationinfraRsBfdMhIpv6InstPol(parentDn, annota
 		}
 	}`, "infraRsBfdMhIpv6InstPol", dn, annotation, tnBfdMhIpv6InstPolName))
 
-	
 	jsonPayload, err := container.ParseJSON(containerJSON)
 	if err != nil {
 		return err
@@ -221,17 +212,17 @@ func (sm *ServiceManager) CreateRelationinfraRsBfdMhIpv6InstPol(parentDn, annota
 	return nil
 }
 
-func (sm *ServiceManager) DeleteRelationinfraRsBfdMhIpv6InstPol(parentDn string) error{
+func (sm *ServiceManager) DeleteRelationinfraRsBfdMhIpv6InstPol(parentDn string) error {
 	dn := fmt.Sprintf("%s/rsbfdMhIpv6InstPol", parentDn)
-	return sm.DeleteByDn(dn , "infraRsBfdMhIpv6InstPol")
+	return sm.DeleteByDn(dn, "infraRsBfdMhIpv6InstPol")
 }
 
-func (sm *ServiceManager) ReadRelationinfraRsBfdMhIpv6InstPol(parentDn string) (interface{},error) {	
-	dnUrl := fmt.Sprintf("%s/%s/%s.json",models.BaseurlStr,parentDn,"infraRsBfdMhIpv6InstPol")
+func (sm *ServiceManager) ReadRelationinfraRsBfdMhIpv6InstPol(parentDn string) (interface{}, error) {
+	dnUrl := fmt.Sprintf("%s/%s/%s.json", models.BaseurlStr, parentDn, "infraRsBfdMhIpv6InstPol")
 	cont, err := sm.GetViaURL(dnUrl)
-	contList := models.ListFromContainer(cont,"infraRsBfdMhIpv6InstPol")
-	
-		if len(contList) > 0 {
+	contList := models.ListFromContainer(cont, "infraRsBfdMhIpv6InstPol")
+
+	if len(contList) > 0 {
 		dat := models.G(contList[0], "tnBfdMhIpv6InstPolName")
 		return dat, err
 	} else {
@@ -251,7 +242,6 @@ func (sm *ServiceManager) CreateRelationinfraRsEquipmentFlashConfigPol(parentDn,
 		}
 	}`, "infraRsEquipmentFlashConfigPol", dn, annotation, tnEquipmentFlashConfigPolName))
 
-	
 	jsonPayload, err := container.ParseJSON(containerJSON)
 	if err != nil {
 		return err
@@ -268,17 +258,17 @@ func (sm *ServiceManager) CreateRelationinfraRsEquipmentFlashConfigPol(parentDn,
 	return nil
 }
 
-func (sm *ServiceManager) DeleteRelationinfraRsEquipmentFlashConfigPol(parentDn string) error{
+func (sm *ServiceManager) DeleteRelationinfraRsEquipmentFlashConfigPol(parentDn string) error {
 	dn := fmt.Sprintf("%s/rsequipmentFlashConfigPol", parentDn)
-	return sm.DeleteByDn(dn , "infraRsEquipmentFlashConfigPol")
+	return sm.DeleteByDn(dn, "infraRsEquipmentFlashConfigPol")
 }
 
-func (sm *ServiceManager) ReadRelationinfraRsEquipmentFlashConfigPol(parentDn string) (interface{},error) {	
-	dnUrl := fmt.Sprintf("%s/%s/%s.json",models.BaseurlStr,parentDn,"infraRsEquipmentFlashConfigPol")
+func (sm *ServiceManager) ReadRelationinfraRsEquipmentFlashConfigPol(parentDn string) (interface{}, error) {
+	dnUrl := fmt.Sprintf("%s/%s/%s.json", models.BaseurlStr, parentDn, "infraRsEquipmentFlashConfigPol")
 	cont, err := sm.GetViaURL(dnUrl)
-	contList := models.ListFromContainer(cont,"infraRsEquipmentFlashConfigPol")
-	
-		if len(contList) > 0 {
+	contList := models.ListFromContainer(cont, "infraRsEquipmentFlashConfigPol")
+
+	if len(contList) > 0 {
 		dat := models.G(contList[0], "tnEquipmentFlashConfigPolName")
 		return dat, err
 	} else {
@@ -298,7 +288,6 @@ func (sm *ServiceManager) CreateRelationinfraRsFcFabricPol(parentDn, annotation,
 		}
 	}`, "infraRsFcFabricPol", dn, annotation, tnFcFabricPolName))
 
-	
 	jsonPayload, err := container.ParseJSON(containerJSON)
 	if err != nil {
 		return err
@@ -315,17 +304,17 @@ func (sm *ServiceManager) CreateRelationinfraRsFcFabricPol(parentDn, annotation,
 	return nil
 }
 
-func (sm *ServiceManager) DeleteRelationinfraRsFcFabricPol(parentDn string) error{
+func (sm *ServiceManager) DeleteRelationinfraRsFcFabricPol(parentDn string) error {
 	dn := fmt.Sprintf("%s/rsfcFabricPol", parentDn)
-	return sm.DeleteByDn(dn , "infraRsFcFabricPol")
+	return sm.DeleteByDn(dn, "infraRsFcFabricPol")
 }
 
-func (sm *ServiceManager) ReadRelationinfraRsFcFabricPol(parentDn string) (interface{},error) {	
-	dnUrl := fmt.Sprintf("%s/%s/%s.json",models.BaseurlStr,parentDn,"infraRsFcFabricPol")
+func (sm *ServiceManager) ReadRelationinfraRsFcFabricPol(parentDn string) (interface{}, error) {
+	dnUrl := fmt.Sprintf("%s/%s/%s.json", models.BaseurlStr, parentDn, "infraRsFcFabricPol")
 	cont, err := sm.GetViaURL(dnUrl)
-	contList := models.ListFromContainer(cont,"infraRsFcFabricPol")
-	
-		if len(contList) > 0 {
+	contList := models.ListFromContainer(cont, "infraRsFcFabricPol")
+
+	if len(contList) > 0 {
 		dat := models.G(contList[0], "tnFcFabricPolName")
 		return dat, err
 	} else {
@@ -345,7 +334,6 @@ func (sm *ServiceManager) CreateRelationinfraRsFcInstPol(parentDn, annotation, t
 		}
 	}`, "infraRsFcInstPol", dn, annotation, tnFcInstPolName))
 
-	
 	jsonPayload, err := container.ParseJSON(containerJSON)
 	if err != nil {
 		return err
@@ -362,17 +350,17 @@ func (sm *ServiceManager) CreateRelationinfraRsFcInstPol(parentDn, annotation, t
 	return nil
 }
 
-func (sm *ServiceManager) DeleteRelationinfraRsFcInstPol(parentDn string) error{
+func (sm *ServiceManager) DeleteRelationinfraRsFcInstPol(parentDn string) error {
 	dn := fmt.Sprintf("%s/rsfcInstPol", parentDn)
-	return sm.DeleteByDn(dn , "infraRsFcInstPol")
+	return sm.DeleteByDn(dn, "infraRsFcInstPol")
 }
 
-func (sm *ServiceManager) ReadRelationinfraRsFcInstPol(parentDn string) (interface{},error) {	
-	dnUrl := fmt.Sprintf("%s/%s/%s.json",models.BaseurlStr,parentDn,"infraRsFcInstPol")
+func (sm *ServiceManager) ReadRelationinfraRsFcInstPol(parentDn string) (interface{}, error) {
+	dnUrl := fmt.Sprintf("%s/%s/%s.json", models.BaseurlStr, parentDn, "infraRsFcInstPol")
 	cont, err := sm.GetViaURL(dnUrl)
-	contList := models.ListFromContainer(cont,"infraRsFcInstPol")
-	
-		if len(contList) > 0 {
+	contList := models.ListFromContainer(cont, "infraRsFcInstPol")
+
+	if len(contList) > 0 {
 		dat := models.G(contList[0], "tnFcInstPolName")
 		return dat, err
 	} else {
@@ -392,7 +380,6 @@ func (sm *ServiceManager) CreateRelationinfraRsIaclLeafProfile(parentDn, annotat
 		}
 	}`, "infraRsIaclLeafProfile", dn, annotation, tnIaclLeafProfileName))
 
-	
 	jsonPayload, err := container.ParseJSON(containerJSON)
 	if err != nil {
 		return err
@@ -409,17 +396,17 @@ func (sm *ServiceManager) CreateRelationinfraRsIaclLeafProfile(parentDn, annotat
 	return nil
 }
 
-func (sm *ServiceManager) DeleteRelationinfraRsIaclLeafProfile(parentDn string) error{
+func (sm *ServiceManager) DeleteRelationinfraRsIaclLeafProfile(parentDn string) error {
 	dn := fmt.Sprintf("%s/rsiaclLeafProfile", parentDn)
-	return sm.DeleteByDn(dn , "infraRsIaclLeafProfile")
+	return sm.DeleteByDn(dn, "infraRsIaclLeafProfile")
 }
 
-func (sm *ServiceManager) ReadRelationinfraRsIaclLeafProfile(parentDn string) (interface{},error) {	
-	dnUrl := fmt.Sprintf("%s/%s/%s.json",models.BaseurlStr,parentDn,"infraRsIaclLeafProfile")
+func (sm *ServiceManager) ReadRelationinfraRsIaclLeafProfile(parentDn string) (interface{}, error) {
+	dnUrl := fmt.Sprintf("%s/%s/%s.json", models.BaseurlStr, parentDn, "infraRsIaclLeafProfile")
 	cont, err := sm.GetViaURL(dnUrl)
-	contList := models.ListFromContainer(cont,"infraRsIaclLeafProfile")
-	
-		if len(contList) > 0 {
+	contList := models.ListFromContainer(cont, "infraRsIaclLeafProfile")
+
+	if len(contList) > 0 {
 		dat := models.G(contList[0], "tnIaclLeafProfileName")
 		return dat, err
 	} else {
@@ -439,7 +426,6 @@ func (sm *ServiceManager) CreateRelationinfraRsL2NodeAuthPol(parentDn, annotatio
 		}
 	}`, "infraRsL2NodeAuthPol", dn, annotation, tnL2NodeAuthPolName))
 
-	
 	jsonPayload, err := container.ParseJSON(containerJSON)
 	if err != nil {
 		return err
@@ -456,17 +442,17 @@ func (sm *ServiceManager) CreateRelationinfraRsL2NodeAuthPol(parentDn, annotatio
 	return nil
 }
 
-func (sm *ServiceManager) DeleteRelationinfraRsL2NodeAuthPol(parentDn string) error{
+func (sm *ServiceManager) DeleteRelationinfraRsL2NodeAuthPol(parentDn string) error {
 	dn := fmt.Sprintf("%s/rsl2NodeAuthPol", parentDn)
-	return sm.DeleteByDn(dn , "infraRsL2NodeAuthPol")
+	return sm.DeleteByDn(dn, "infraRsL2NodeAuthPol")
 }
 
-func (sm *ServiceManager) ReadRelationinfraRsL2NodeAuthPol(parentDn string) (interface{},error) {	
-	dnUrl := fmt.Sprintf("%s/%s/%s.json",models.BaseurlStr,parentDn,"infraRsL2NodeAuthPol")
+func (sm *ServiceManager) ReadRelationinfraRsL2NodeAuthPol(parentDn string) (interface{}, error) {
+	dnUrl := fmt.Sprintf("%s/%s/%s.json", models.BaseurlStr, parentDn, "infraRsL2NodeAuthPol")
 	cont, err := sm.GetViaURL(dnUrl)
-	contList := models.ListFromContainer(cont,"infraRsL2NodeAuthPol")
-	
-		if len(contList) > 0 {
+	contList := models.ListFromContainer(cont, "infraRsL2NodeAuthPol")
+
+	if len(contList) > 0 {
 		dat := models.G(contList[0], "tnL2NodeAuthPolName")
 		return dat, err
 	} else {
@@ -486,7 +472,6 @@ func (sm *ServiceManager) CreateRelationinfraRsLeafCoppProfile(parentDn, annotat
 		}
 	}`, "infraRsLeafCoppProfile", dn, annotation, tnCoppLeafProfileName))
 
-	
 	jsonPayload, err := container.ParseJSON(containerJSON)
 	if err != nil {
 		return err
@@ -503,17 +488,17 @@ func (sm *ServiceManager) CreateRelationinfraRsLeafCoppProfile(parentDn, annotat
 	return nil
 }
 
-func (sm *ServiceManager) DeleteRelationinfraRsLeafCoppProfile(parentDn string) error{
+func (sm *ServiceManager) DeleteRelationinfraRsLeafCoppProfile(parentDn string) error {
 	dn := fmt.Sprintf("%s/rsleafCoppProfile", parentDn)
-	return sm.DeleteByDn(dn , "infraRsLeafCoppProfile")
+	return sm.DeleteByDn(dn, "infraRsLeafCoppProfile")
 }
 
-func (sm *ServiceManager) ReadRelationinfraRsLeafCoppProfile(parentDn string) (interface{},error) {	
-	dnUrl := fmt.Sprintf("%s/%s/%s.json",models.BaseurlStr,parentDn,"infraRsLeafCoppProfile")
+func (sm *ServiceManager) ReadRelationinfraRsLeafCoppProfile(parentDn string) (interface{}, error) {
+	dnUrl := fmt.Sprintf("%s/%s/%s.json", models.BaseurlStr, parentDn, "infraRsLeafCoppProfile")
 	cont, err := sm.GetViaURL(dnUrl)
-	contList := models.ListFromContainer(cont,"infraRsLeafCoppProfile")
-	
-		if len(contList) > 0 {
+	contList := models.ListFromContainer(cont, "infraRsLeafCoppProfile")
+
+	if len(contList) > 0 {
 		dat := models.G(contList[0], "tnCoppLeafProfileName")
 		return dat, err
 	} else {
@@ -533,7 +518,6 @@ func (sm *ServiceManager) CreateRelationinfraRsLeafPGrpToCdpIfPol(parentDn, anno
 		}
 	}`, "infraRsLeafPGrpToCdpIfPol", dn, annotation, tnCdpIfPolName))
 
-	
 	jsonPayload, err := container.ParseJSON(containerJSON)
 	if err != nil {
 		return err
@@ -550,17 +534,17 @@ func (sm *ServiceManager) CreateRelationinfraRsLeafPGrpToCdpIfPol(parentDn, anno
 	return nil
 }
 
-func (sm *ServiceManager) DeleteRelationinfraRsLeafPGrpToCdpIfPol(parentDn string) error{
+func (sm *ServiceManager) DeleteRelationinfraRsLeafPGrpToCdpIfPol(parentDn string) error {
 	dn := fmt.Sprintf("%s/rsleafPGrpToCdpIfPol", parentDn)
-	return sm.DeleteByDn(dn , "infraRsLeafPGrpToCdpIfPol")
+	return sm.DeleteByDn(dn, "infraRsLeafPGrpToCdpIfPol")
 }
 
-func (sm *ServiceManager) ReadRelationinfraRsLeafPGrpToCdpIfPol(parentDn string) (interface{},error) {	
-	dnUrl := fmt.Sprintf("%s/%s/%s.json",models.BaseurlStr,parentDn,"infraRsLeafPGrpToCdpIfPol")
+func (sm *ServiceManager) ReadRelationinfraRsLeafPGrpToCdpIfPol(parentDn string) (interface{}, error) {
+	dnUrl := fmt.Sprintf("%s/%s/%s.json", models.BaseurlStr, parentDn, "infraRsLeafPGrpToCdpIfPol")
 	cont, err := sm.GetViaURL(dnUrl)
-	contList := models.ListFromContainer(cont,"infraRsLeafPGrpToCdpIfPol")
-	
-		if len(contList) > 0 {
+	contList := models.ListFromContainer(cont, "infraRsLeafPGrpToCdpIfPol")
+
+	if len(contList) > 0 {
 		dat := models.G(contList[0], "tnCdpIfPolName")
 		return dat, err
 	} else {
@@ -580,7 +564,6 @@ func (sm *ServiceManager) CreateRelationinfraRsLeafPGrpToLldpIfPol(parentDn, ann
 		}
 	}`, "infraRsLeafPGrpToLldpIfPol", dn, annotation, tnLldpIfPolName))
 
-	
 	jsonPayload, err := container.ParseJSON(containerJSON)
 	if err != nil {
 		return err
@@ -597,17 +580,17 @@ func (sm *ServiceManager) CreateRelationinfraRsLeafPGrpToLldpIfPol(parentDn, ann
 	return nil
 }
 
-func (sm *ServiceManager) DeleteRelationinfraRsLeafPGrpToLldpIfPol(parentDn string) error{
+func (sm *ServiceManager) DeleteRelationinfraRsLeafPGrpToLldpIfPol(parentDn string) error {
 	dn := fmt.Sprintf("%s/rsleafPGrpToLldpIfPol", parentDn)
-	return sm.DeleteByDn(dn , "infraRsLeafPGrpToLldpIfPol")
+	return sm.DeleteByDn(dn, "infraRsLeafPGrpToLldpIfPol")
 }
 
-func (sm *ServiceManager) ReadRelationinfraRsLeafPGrpToLldpIfPol(parentDn string) (interface{},error) {	
-	dnUrl := fmt.Sprintf("%s/%s/%s.json",models.BaseurlStr,parentDn,"infraRsLeafPGrpToLldpIfPol")
+func (sm *ServiceManager) ReadRelationinfraRsLeafPGrpToLldpIfPol(parentDn string) (interface{}, error) {
+	dnUrl := fmt.Sprintf("%s/%s/%s.json", models.BaseurlStr, parentDn, "infraRsLeafPGrpToLldpIfPol")
 	cont, err := sm.GetViaURL(dnUrl)
-	contList := models.ListFromContainer(cont,"infraRsLeafPGrpToLldpIfPol")
-	
-		if len(contList) > 0 {
+	contList := models.ListFromContainer(cont, "infraRsLeafPGrpToLldpIfPol")
+
+	if len(contList) > 0 {
 		dat := models.G(contList[0], "tnLldpIfPolName")
 		return dat, err
 	} else {
@@ -627,7 +610,6 @@ func (sm *ServiceManager) CreateRelationinfraRsMonNodeInfraPol(parentDn, annotat
 		}
 	}`, "infraRsMonNodeInfraPol", dn, annotation, tnMonInfraPolName))
 
-	
 	jsonPayload, err := container.ParseJSON(containerJSON)
 	if err != nil {
 		return err
@@ -644,17 +626,17 @@ func (sm *ServiceManager) CreateRelationinfraRsMonNodeInfraPol(parentDn, annotat
 	return nil
 }
 
-func (sm *ServiceManager) DeleteRelationinfraRsMonNodeInfraPol(parentDn string) error{
+func (sm *ServiceManager) DeleteRelationinfraRsMonNodeInfraPol(parentDn string) error {
 	dn := fmt.Sprintf("%s/rsmonNodeInfraPol", parentDn)
-	return sm.DeleteByDn(dn , "infraRsMonNodeInfraPol")
+	return sm.DeleteByDn(dn, "infraRsMonNodeInfraPol")
 }
 
-func (sm *ServiceManager) ReadRelationinfraRsMonNodeInfraPol(parentDn string) (interface{},error) {	
-	dnUrl := fmt.Sprintf("%s/%s/%s.json",models.BaseurlStr,parentDn,"infraRsMonNodeInfraPol")
+func (sm *ServiceManager) ReadRelationinfraRsMonNodeInfraPol(parentDn string) (interface{}, error) {
+	dnUrl := fmt.Sprintf("%s/%s/%s.json", models.BaseurlStr, parentDn, "infraRsMonNodeInfraPol")
 	cont, err := sm.GetViaURL(dnUrl)
-	contList := models.ListFromContainer(cont,"infraRsMonNodeInfraPol")
-	
-		if len(contList) > 0 {
+	contList := models.ListFromContainer(cont, "infraRsMonNodeInfraPol")
+
+	if len(contList) > 0 {
 		dat := models.G(contList[0], "tnMonInfraPolName")
 		return dat, err
 	} else {
@@ -674,7 +656,6 @@ func (sm *ServiceManager) CreateRelationinfraRsMstInstPol(parentDn, annotation, 
 		}
 	}`, "infraRsMstInstPol", dn, annotation, tnStpInstPolName))
 
-	
 	jsonPayload, err := container.ParseJSON(containerJSON)
 	if err != nil {
 		return err
@@ -691,17 +672,17 @@ func (sm *ServiceManager) CreateRelationinfraRsMstInstPol(parentDn, annotation, 
 	return nil
 }
 
-func (sm *ServiceManager) DeleteRelationinfraRsMstInstPol(parentDn string) error{
+func (sm *ServiceManager) DeleteRelationinfraRsMstInstPol(parentDn string) error {
 	dn := fmt.Sprintf("%s/rsmstInstPol", parentDn)
-	return sm.DeleteByDn(dn , "infraRsMstInstPol")
+	return sm.DeleteByDn(dn, "infraRsMstInstPol")
 }
 
-func (sm *ServiceManager) ReadRelationinfraRsMstInstPol(parentDn string) (interface{},error) {	
-	dnUrl := fmt.Sprintf("%s/%s/%s.json",models.BaseurlStr,parentDn,"infraRsMstInstPol")
+func (sm *ServiceManager) ReadRelationinfraRsMstInstPol(parentDn string) (interface{}, error) {
+	dnUrl := fmt.Sprintf("%s/%s/%s.json", models.BaseurlStr, parentDn, "infraRsMstInstPol")
 	cont, err := sm.GetViaURL(dnUrl)
-	contList := models.ListFromContainer(cont,"infraRsMstInstPol")
-	
-		if len(contList) > 0 {
+	contList := models.ListFromContainer(cont, "infraRsMstInstPol")
+
+	if len(contList) > 0 {
 		dat := models.G(contList[0], "tnStpInstPolName")
 		return dat, err
 	} else {
@@ -721,7 +702,6 @@ func (sm *ServiceManager) CreateRelationinfraRsNetflowNodePol(parentDn, annotati
 		}
 	}`, "infraRsNetflowNodePol", dn, annotation, tnNetflowNodePolName))
 
-	
 	jsonPayload, err := container.ParseJSON(containerJSON)
 	if err != nil {
 		return err
@@ -738,17 +718,17 @@ func (sm *ServiceManager) CreateRelationinfraRsNetflowNodePol(parentDn, annotati
 	return nil
 }
 
-func (sm *ServiceManager) DeleteRelationinfraRsNetflowNodePol(parentDn string) error{
+func (sm *ServiceManager) DeleteRelationinfraRsNetflowNodePol(parentDn string) error {
 	dn := fmt.Sprintf("%s/rsnetflowNodePol", parentDn)
-	return sm.DeleteByDn(dn , "infraRsNetflowNodePol")
+	return sm.DeleteByDn(dn, "infraRsNetflowNodePol")
 }
 
-func (sm *ServiceManager) ReadRelationinfraRsNetflowNodePol(parentDn string) (interface{},error) {	
-	dnUrl := fmt.Sprintf("%s/%s/%s.json",models.BaseurlStr,parentDn,"infraRsNetflowNodePol")
+func (sm *ServiceManager) ReadRelationinfraRsNetflowNodePol(parentDn string) (interface{}, error) {
+	dnUrl := fmt.Sprintf("%s/%s/%s.json", models.BaseurlStr, parentDn, "infraRsNetflowNodePol")
 	cont, err := sm.GetViaURL(dnUrl)
-	contList := models.ListFromContainer(cont,"infraRsNetflowNodePol")
-	
-		if len(contList) > 0 {
+	contList := models.ListFromContainer(cont, "infraRsNetflowNodePol")
+
+	if len(contList) > 0 {
 		dat := models.G(contList[0], "tnNetflowNodePolName")
 		return dat, err
 	} else {
@@ -768,7 +748,6 @@ func (sm *ServiceManager) CreateRelationinfraRsPoeInstPol(parentDn, annotation, 
 		}
 	}`, "infraRsPoeInstPol", dn, annotation, tnPoeInstPolName))
 
-	
 	jsonPayload, err := container.ParseJSON(containerJSON)
 	if err != nil {
 		return err
@@ -785,17 +764,17 @@ func (sm *ServiceManager) CreateRelationinfraRsPoeInstPol(parentDn, annotation, 
 	return nil
 }
 
-func (sm *ServiceManager) DeleteRelationinfraRsPoeInstPol(parentDn string) error{
+func (sm *ServiceManager) DeleteRelationinfraRsPoeInstPol(parentDn string) error {
 	dn := fmt.Sprintf("%s/rspoeInstPol", parentDn)
-	return sm.DeleteByDn(dn , "infraRsPoeInstPol")
+	return sm.DeleteByDn(dn, "infraRsPoeInstPol")
 }
 
-func (sm *ServiceManager) ReadRelationinfraRsPoeInstPol(parentDn string) (interface{},error) {	
-	dnUrl := fmt.Sprintf("%s/%s/%s.json",models.BaseurlStr,parentDn,"infraRsPoeInstPol")
+func (sm *ServiceManager) ReadRelationinfraRsPoeInstPol(parentDn string) (interface{}, error) {
+	dnUrl := fmt.Sprintf("%s/%s/%s.json", models.BaseurlStr, parentDn, "infraRsPoeInstPol")
 	cont, err := sm.GetViaURL(dnUrl)
-	contList := models.ListFromContainer(cont,"infraRsPoeInstPol")
-	
-		if len(contList) > 0 {
+	contList := models.ListFromContainer(cont, "infraRsPoeInstPol")
+
+	if len(contList) > 0 {
 		dat := models.G(contList[0], "tnPoeInstPolName")
 		return dat, err
 	} else {
@@ -815,7 +794,6 @@ func (sm *ServiceManager) CreateRelationinfraRsTopoctrlFastLinkFailoverInstPol(p
 		}
 	}`, "infraRsTopoctrlFastLinkFailoverInstPol", dn, annotation, tnTopoctrlFastLinkFailoverInstPolName))
 
-	
 	jsonPayload, err := container.ParseJSON(containerJSON)
 	if err != nil {
 		return err
@@ -832,17 +810,17 @@ func (sm *ServiceManager) CreateRelationinfraRsTopoctrlFastLinkFailoverInstPol(p
 	return nil
 }
 
-func (sm *ServiceManager) DeleteRelationinfraRsTopoctrlFastLinkFailoverInstPol(parentDn string) error{
+func (sm *ServiceManager) DeleteRelationinfraRsTopoctrlFastLinkFailoverInstPol(parentDn string) error {
 	dn := fmt.Sprintf("%s/rstopoctrlFastLinkFailoverInstPol", parentDn)
-	return sm.DeleteByDn(dn , "infraRsTopoctrlFastLinkFailoverInstPol")
+	return sm.DeleteByDn(dn, "infraRsTopoctrlFastLinkFailoverInstPol")
 }
 
-func (sm *ServiceManager) ReadRelationinfraRsTopoctrlFastLinkFailoverInstPol(parentDn string) (interface{},error) {	
-	dnUrl := fmt.Sprintf("%s/%s/%s.json",models.BaseurlStr,parentDn,"infraRsTopoctrlFastLinkFailoverInstPol")
+func (sm *ServiceManager) ReadRelationinfraRsTopoctrlFastLinkFailoverInstPol(parentDn string) (interface{}, error) {
+	dnUrl := fmt.Sprintf("%s/%s/%s.json", models.BaseurlStr, parentDn, "infraRsTopoctrlFastLinkFailoverInstPol")
 	cont, err := sm.GetViaURL(dnUrl)
-	contList := models.ListFromContainer(cont,"infraRsTopoctrlFastLinkFailoverInstPol")
-	
-		if len(contList) > 0 {
+	contList := models.ListFromContainer(cont, "infraRsTopoctrlFastLinkFailoverInstPol")
+
+	if len(contList) > 0 {
 		dat := models.G(contList[0], "tnTopoctrlFastLinkFailoverInstPolName")
 		return dat, err
 	} else {
@@ -862,7 +840,6 @@ func (sm *ServiceManager) CreateRelationinfraRsTopoctrlFwdScaleProfPol(parentDn,
 		}
 	}`, "infraRsTopoctrlFwdScaleProfPol", dn, annotation, tnTopoctrlFwdScaleProfilePolName))
 
-	
 	jsonPayload, err := container.ParseJSON(containerJSON)
 	if err != nil {
 		return err
@@ -879,21 +856,20 @@ func (sm *ServiceManager) CreateRelationinfraRsTopoctrlFwdScaleProfPol(parentDn,
 	return nil
 }
 
-func (sm *ServiceManager) DeleteRelationinfraRsTopoctrlFwdScaleProfPol(parentDn string) error{
+func (sm *ServiceManager) DeleteRelationinfraRsTopoctrlFwdScaleProfPol(parentDn string) error {
 	dn := fmt.Sprintf("%s/rstopoctrlFwdScaleProfPol", parentDn)
-	return sm.DeleteByDn(dn , "infraRsTopoctrlFwdScaleProfPol")
+	return sm.DeleteByDn(dn, "infraRsTopoctrlFwdScaleProfPol")
 }
 
-func (sm *ServiceManager) ReadRelationinfraRsTopoctrlFwdScaleProfPol(parentDn string) (interface{},error) {	
-	dnUrl := fmt.Sprintf("%s/%s/%s.json",models.BaseurlStr,parentDn,"infraRsTopoctrlFwdScaleProfPol")
+func (sm *ServiceManager) ReadRelationinfraRsTopoctrlFwdScaleProfPol(parentDn string) (interface{}, error) {
+	dnUrl := fmt.Sprintf("%s/%s/%s.json", models.BaseurlStr, parentDn, "infraRsTopoctrlFwdScaleProfPol")
 	cont, err := sm.GetViaURL(dnUrl)
-	contList := models.ListFromContainer(cont,"infraRsTopoctrlFwdScaleProfPol")
-	
-		if len(contList) > 0 {
+	contList := models.ListFromContainer(cont, "infraRsTopoctrlFwdScaleProfPol")
+
+	if len(contList) > 0 {
 		dat := models.G(contList[0], "tnTopoctrlFwdScaleProfilePolName")
 		return dat, err
 	} else {
 		return nil, err
 	}
 }
-

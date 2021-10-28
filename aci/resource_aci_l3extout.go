@@ -507,6 +507,7 @@ func resourceAciL3OutsideRead(ctx context.Context, d *schema.ResourceData, m int
 		d.SetId("")
 		return nil
 	}
+
 	l3extRsDampeningPolData, err := aciClient.ReadRelationl3extRsDampeningPolFromL3Outside(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation l3extRsDampeningPol %v", err)
