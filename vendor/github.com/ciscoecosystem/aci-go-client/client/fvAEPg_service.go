@@ -64,6 +64,7 @@ func (sm *ServiceManager) CreateRelationfvRsBdFromApplicationEPG(parentDn, tnFvB
 			}
 		}
 	}`, "fvRsBd", dn, tnFvBDName))
+
 	jsonPayload, err := container.ParseJSON(containerJSON)
 	if err != nil {
 		return err
