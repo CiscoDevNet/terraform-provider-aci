@@ -32,5 +32,4 @@ resource "aci_global_security" "example" {
   session_record_flags = ["login", "logout", "refresh"]
   ui_idle_timeout_seconds = "1200"
   webtoken_timeout_seconds = "600"
-  relation_aaa_rs_to_user_ep = aci_global_security.example2.id
 }
