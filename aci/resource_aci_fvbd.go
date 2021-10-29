@@ -1066,6 +1066,10 @@ func resourceAciBridgeDomainRead(ctx context.Context, d *schema.ResourceData, m 
 	dn := d.Id()
 	fvBD, err := getRemoteBridgeDomain(aciClient, dn)
 
+	if fvBD.EpMoveDetectMode == "" {
+		fvBD.EpMoveDetectMode = "disable"
+	}
+
 	if err != nil {
 		d.SetId("")
 		return nil
