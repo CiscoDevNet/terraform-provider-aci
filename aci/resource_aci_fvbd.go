@@ -71,17 +71,14 @@ func resourceAciBridgeDomain() *schema.Resource {
 				}, false),
 			},
 
-			"ep_move_detect_mode": {
-				Type:     schema.TypeList,
+			"ep_move_detect_mode": &schema.Schema{
+				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
-				Elem: &schema.Schema{
-					Type: schema.TypeString,
-					ValidateFunc: validation.StringInSlice([]string{
-						"garp",
-						"disable",
-					}, false),
-				},
+				ValidateFunc: validation.StringInSlice([]string{
+					"garp",
+					"disable",
+				}, false),
 			},
 			"host_based_routing": &schema.Schema{
 				Type:     schema.TypeString,
@@ -456,15 +453,10 @@ func resourceAciBridgeDomainCreate(ctx context.Context, d *schema.ResourceData, 
 	}
 
 	if EpMoveDetectMode, ok := d.GetOk("ep_move_detect_mode"); ok {
-		epMoveDetectModeList := make([]string, 0, 1)
-		for _, val := range EpMoveDetectMode.([]interface{}) {
-			epMoveDetectModeList = append(epMoveDetectModeList, val.(string))
-		}
-		EpMoveDetectMode := strings.Join(epMoveDetectModeList, ",")
 		if EpMoveDetectMode == "disable" {
 			fvBDAttr.EpMoveDetectMode = "{}"
 		} else {
-			fvBDAttr.EpMoveDetectMode = EpMoveDetectMode
+			fvBDAttr.EpMoveDetectMode = EpMoveDetectMode.(string)
 		}
 	}
 
@@ -742,15 +734,10 @@ func resourceAciBridgeDomainUpdate(ctx context.Context, d *schema.ResourceData, 
 	}
 
 	if EpMoveDetectMode, ok := d.GetOk("ep_move_detect_mode"); ok {
-		epMoveDetectModeList := make([]string, 0, 1)
-		for _, val := range EpMoveDetectMode.([]interface{}) {
-			epMoveDetectModeList = append(epMoveDetectModeList, val.(string))
-		}
-		EpMoveDetectMode := strings.Join(epMoveDetectModeList, ",")
 		if EpMoveDetectMode == "disable" {
 			fvBDAttr.EpMoveDetectMode = "{}"
 		} else {
-			fvBDAttr.EpMoveDetectMode = EpMoveDetectMode
+			fvBDAttr.EpMoveDetectMode = EpMoveDetectMode.(string)
 		}
 	}
 
