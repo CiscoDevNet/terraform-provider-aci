@@ -2,7 +2,6 @@ package client
 
 import (
 	"fmt"
-	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/container"
 	"github.com/ciscoecosystem/aci-go-client/models"
@@ -57,7 +56,6 @@ func (sm *ServiceManager) ListApplicationEPG(application_profile string, tenant 
 
 func (sm *ServiceManager) CreateRelationfvRsBdFromApplicationEPG(parentDn, tnFvBDName string) error {
 	dn := fmt.Sprintf("%s/rsbd", parentDn)
-	log.Printf("DNN Service %s", dn)
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
@@ -66,11 +64,8 @@ func (sm *ServiceManager) CreateRelationfvRsBdFromApplicationEPG(parentDn, tnFvB
 			}
 		}
 	}`, "fvRsBd", dn, tnFvBDName))
-	log.Printf("CContainerJSON %s", containerJSON)
 	jsonPayload, err := container.ParseJSON(containerJSON)
-	log.Printf("JJSON PAYLOAD %s", jsonPayload)
 	if err != nil {
-		log.Printf("IN ERR")
 		return err
 	}
 
