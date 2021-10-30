@@ -11,7 +11,7 @@ resource "aci_bridge_domain" "demobd" {
   optimize_wan_bandwidth         = "no"
   arp_flood                      = "no"
   ep_clear                       = "no"
-  ep_move_detect_mode            = ["garp"]
+  ep_move_detect_mode            = "garp"
   intersite_bum_traffic_allow    = "yes"
   intersite_l2_stretch           = "yes"
   ip_learning                    = "yes"
