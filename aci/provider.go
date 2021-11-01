@@ -203,6 +203,7 @@ func Provider() *schema.Provider {
 			"aci_l3out_vpc_member":                         resourceAciL3outVPCMember(),
 			"aci_endpoint_security_group_selector":         resourceAciEndpointSecurityGroupSelector(),
 			"aci_endpoint_security_group":                  resourceAciEndpointSecurityGroup(),
+			"aci_endpoint_security_group_epg_selector":     resourceAciEndpointSecurityGroupEPgSelector(),
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
@@ -356,6 +357,7 @@ func Provider() *schema.Provider {
 			"aci_l3out_vpc_member":                         dataSourceAciL3outVPCMember(),
 			"aci_endpoint_security_group_selector":         dataSourceAciEndpointSecurityGroupSelector(),
 			"aci_endpoint_security_group":                  dataSourceAciEndpointSecurityGroup(),
+			"aci_endpoint_security_group_epg_selector":     dataSourceAciEndpointSecurityGroupEPgSelector(),
 		},
 
 		ConfigureFunc: configureClient,

@@ -5,5 +5,6 @@ go 1.12
 require (
 	github.com/ciscoecosystem/aci-go-client v1.14.0
 	github.com/ghodss/yaml v1.0.0
+	github.com/hashicorp/terraform-plugin-sdk v1.17.2 // indirect
 	github.com/hashicorp/terraform-plugin-sdk/v2 v2.4.3
 )
