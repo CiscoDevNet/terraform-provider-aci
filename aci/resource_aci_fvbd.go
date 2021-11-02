@@ -77,9 +77,9 @@ func resourceAciBridgeDomain() *schema.Resource {
 				Computed: true,
 				ValidateFunc: validation.StringInSlice([]string{
 					"garp",
+					"disable",
 				}, false),
 			},
-
 			"host_based_routing": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -451,9 +451,15 @@ func resourceAciBridgeDomainCreate(ctx context.Context, d *schema.ResourceData, 
 	if EpClear, ok := d.GetOk("ep_clear"); ok {
 		fvBDAttr.EpClear = EpClear.(string)
 	}
+
 	if EpMoveDetectMode, ok := d.GetOk("ep_move_detect_mode"); ok {
-		fvBDAttr.EpMoveDetectMode = EpMoveDetectMode.(string)
+		if EpMoveDetectMode == "disable" {
+			fvBDAttr.EpMoveDetectMode = "{}"
+		} else {
+			fvBDAttr.EpMoveDetectMode = EpMoveDetectMode.(string)
+		}
 	}
+
 	if HostBasedRouting, ok := d.GetOk("host_based_routing"); ok {
 		fvBDAttr.HostBasedRouting = HostBasedRouting.(string)
 	}
@@ -726,9 +732,15 @@ func resourceAciBridgeDomainUpdate(ctx context.Context, d *schema.ResourceData, 
 	if EpClear, ok := d.GetOk("ep_clear"); ok {
 		fvBDAttr.EpClear = EpClear.(string)
 	}
+
 	if EpMoveDetectMode, ok := d.GetOk("ep_move_detect_mode"); ok {
-		fvBDAttr.EpMoveDetectMode = EpMoveDetectMode.(string)
+		if EpMoveDetectMode == "disable" {
+			fvBDAttr.EpMoveDetectMode = "{}"
+		} else {
+			fvBDAttr.EpMoveDetectMode = EpMoveDetectMode.(string)
+		}
 	}
+
 	if HostBasedRouting, ok := d.GetOk("host_based_routing"); ok {
 		fvBDAttr.HostBasedRouting = HostBasedRouting.(string)
 	}
@@ -1053,6 +1065,10 @@ func resourceAciBridgeDomainRead(ctx context.Context, d *schema.ResourceData, m 
 
 	dn := d.Id()
 	fvBD, err := getRemoteBridgeDomain(aciClient, dn)
+
+	if fvBD.EpMoveDetectMode == "" {
+		fvBD.EpMoveDetectMode = "disable"
+	}
 
 	if err != nil {
 		d.SetId("")
