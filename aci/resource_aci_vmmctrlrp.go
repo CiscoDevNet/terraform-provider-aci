@@ -395,7 +395,7 @@ func resourceAciVMMControllerCreate(ctx context.Context, d *schema.ResourceData,
 	if VxlanDeplPref, ok := d.GetOk("vxlan_depl_pref"); ok {
 		vmmCtrlrPAttr.VxlanDeplPref = VxlanDeplPref.(string)
 	}
-	vmmCtrlrP := models.NewVMMController(fmt.Sprintf("ctrlr-%s", name), VMMDomainDn, "", nameAlias, vmmCtrlrPAttr)
+	vmmCtrlrP := models.NewVMMController(fmt.Sprintf("ctrlr-%s", name), VMMDomainDn, nameAlias, vmmCtrlrPAttr)
 
 	err := aciClient.Save(vmmCtrlrP)
 	if err != nil {
@@ -624,7 +624,7 @@ func resourceAciVMMControllerUpdate(ctx context.Context, d *schema.ResourceData,
 	if VxlanDeplPref, ok := d.GetOk("vxlan_depl_pref"); ok {
 		vmmCtrlrPAttr.VxlanDeplPref = VxlanDeplPref.(string)
 	}
-	vmmCtrlrP := models.NewVMMController(fmt.Sprintf("ctrlr-%s", name), VMMDomainDn, "", nameAlias, vmmCtrlrPAttr)
+	vmmCtrlrP := models.NewVMMController(fmt.Sprintf("ctrlr-%s", name), VMMDomainDn, nameAlias, vmmCtrlrPAttr)
 
 	vmmCtrlrP.Status = "modified"
 	err := aciClient.Save(vmmCtrlrP)
