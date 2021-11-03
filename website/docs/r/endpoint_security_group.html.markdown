@@ -32,7 +32,7 @@ resource "aci_endpoint_security_group" "example" {
   pc_enf_pref = "unenforced"
   pref_gr_memb = "exclude"
 
-relation_fv_rs_scope = aci_vrf.example.id
+  relation_fv_rs_scope = aci_vrf.example.id
 
   relation_fv_rs_cons {
     prio = "unspecified"

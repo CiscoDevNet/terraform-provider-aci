@@ -32,6 +32,7 @@ data "aci_endpoint_security_group_selector" "example" {
 
 * `endpoint_security_group_dn` - (Required) Distinguished name of parent Endpoint Security Group object.
 * `name` - (Required) Name of object Endpoint Security Group Selector.
+* `match_expression` - (Optional) Expression used to define matching tags.
 
 ## Attribute Reference ##
 
@@ -39,4 +40,3 @@ data "aci_endpoint_security_group_selector" "example" {
 * `annotation` - (Optional) Annotation of object Endpoint Security Group Selector.
 * `description` - (Optional) Description of object Endpoint Security Group Selector.
 * `name_alias` - (Optional) Name Alias of object Endpoint Security Group Selector.
-* `match_expression` - (Optional) Expression used to define matching tagTags.
