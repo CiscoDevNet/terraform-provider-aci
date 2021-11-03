@@ -12,12 +12,12 @@ import (
 )
 
 func TestAccAciEndpointSecurityGroupEPgSelector_Basic(t *testing.T) {
-	var endpoint_security_group_e_pg_selector models.EndpointSecurityGroupEPgSelector
+	var endpoint_security_group_epg_selector models.EndpointSecurityGroupEPgSelector
 	fv_tenant_name := acctest.RandString(5)
 	fv_ap_name := acctest.RandString(5)
-	fv_e_sg_name := acctest.RandString(5)
-	fv_e_pg_selector_name := acctest.RandString(5)
-	description := "endpoint_security_group_e_pg_selector created while acceptance testing"
+	fv_esg_name := acctest.RandString(5)
+	fv_epg_selector_name := acctest.RandString(5)
+	description := "endpoint_security_group_epg_selector created while acceptance testing"
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
@@ -25,10 +25,10 @@ func TestAccAciEndpointSecurityGroupEPgSelector_Basic(t *testing.T) {
 		CheckDestroy: testAccCheckAciEndpointSecurityGroupEPgSelectorDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckAciEndpointSecurityGroupEPgSelectorConfig_basic(fv_tenant_name, fv_ap_name, fv_e_sg_name, fv_e_pg_selector_name),
+				Config: testAccCheckAciEndpointSecurityGroupEPgSelectorConfig_basic(fv_tenant_name, fv_ap_name, fv_esg_name, fv_epg_selector_name),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAciEndpointSecurityGroupEPgSelectorExists("aci_endpoint_security_group_e_pg_selector.fooendpoint_security_group_e_pg_selector", &endpoint_security_group_e_pg_selector),
-					testAccCheckAciEndpointSecurityGroupEPgSelectorAttributes(fv_tenant_name, fv_ap_name, fv_e_sg_name, fv_e_pg_selector_name, description, &endpoint_security_group_e_pg_selector),
+					testAccCheckAciEndpointSecurityGroupEPgSelectorExists("aci_endpoint_security_group_epg_selector.fooendpoint_security_group_epg_selector", &endpoint_security_group_epg_selector),
+					testAccCheckAciEndpointSecurityGroupEPgSelectorAttributes(fv_tenant_name, fv_ap_name, fv_esg_name, fv_epg_selector_name, description, &endpoint_security_group_epg_selector),
 				),
 			},
 		},
@@ -36,12 +36,12 @@ func TestAccAciEndpointSecurityGroupEPgSelector_Basic(t *testing.T) {
 }
 
 func TestAccAciEndpointSecurityGroupEPgSelector_Update(t *testing.T) {
-	var endpoint_security_group_e_pg_selector models.EndpointSecurityGroupEPgSelector
+	var endpoint_security_group_epg_selector models.EndpointSecurityGroupEPgSelector
 	fv_tenant_name := acctest.RandString(5)
 	fv_ap_name := acctest.RandString(5)
-	fv_e_sg_name := acctest.RandString(5)
-	fv_e_pg_selector_name := acctest.RandString(5)
-	description := "endpoint_security_group_e_pg_selector created while acceptance testing"
+	fv_esg_name := acctest.RandString(5)
+	fv_epg_selector_name := acctest.RandString(5)
+	description := "endpoint_security_group_epg_selector created while acceptance testing"
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
@@ -49,24 +49,24 @@ func TestAccAciEndpointSecurityGroupEPgSelector_Update(t *testing.T) {
 		CheckDestroy: testAccCheckAciEndpointSecurityGroupEPgSelectorDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckAciEndpointSecurityGroupEPgSelectorConfig_basic(fv_tenant_name, fv_ap_name, fv_e_sg_name, fv_e_pg_selector_name),
+				Config: testAccCheckAciEndpointSecurityGroupEPgSelectorConfig_basic(fv_tenant_name, fv_ap_name, fv_esg_name, fv_epg_selector_name),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAciEndpointSecurityGroupEPgSelectorExists("aci_endpoint_security_group_e_pg_selector.fooendpoint_security_group_e_pg_selector", &endpoint_security_group_e_pg_selector),
-					testAccCheckAciEndpointSecurityGroupEPgSelectorAttributes(fv_tenant_name, fv_ap_name, fv_e_sg_name, fv_e_pg_selector_name, description, &endpoint_security_group_e_pg_selector),
+					testAccCheckAciEndpointSecurityGroupEPgSelectorExists("aci_endpoint_security_group_epg_selector.fooendpoint_security_group_epg_selector", &endpoint_security_group_epg_selector),
+					testAccCheckAciEndpointSecurityGroupEPgSelectorAttributes(fv_tenant_name, fv_ap_name, fv_esg_name, fv_epg_selector_name, description, &endpoint_security_group_epg_selector),
 				),
 			},
 			{
-				Config: testAccCheckAciEndpointSecurityGroupEPgSelectorConfig_basic(fv_tenant_name, fv_ap_name, fv_e_sg_name, fv_e_pg_selector_name),
+				Config: testAccCheckAciEndpointSecurityGroupEPgSelectorConfig_basic(fv_tenant_name, fv_ap_name, fv_esg_name, fv_epg_selector_name),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAciEndpointSecurityGroupEPgSelectorExists("aci_endpoint_security_group_e_pg_selector.fooendpoint_security_group_e_pg_selector", &endpoint_security_group_e_pg_selector),
-					testAccCheckAciEndpointSecurityGroupEPgSelectorAttributes(fv_tenant_name, fv_ap_name, fv_e_sg_name, fv_e_pg_selector_name, description, &endpoint_security_group_e_pg_selector),
+					testAccCheckAciEndpointSecurityGroupEPgSelectorExists("aci_endpoint_security_group_epg_selector.fooendpoint_security_group_epg_selector", &endpoint_security_group_epg_selector),
+					testAccCheckAciEndpointSecurityGroupEPgSelectorAttributes(fv_tenant_name, fv_ap_name, fv_esg_name, fv_epg_selector_name, description, &endpoint_security_group_epg_selector),
 				),
 			},
 		},
 	})
 }
 
-func testAccCheckAciEndpointSecurityGroupEPgSelectorConfig_basic(fv_tenant_name, fv_ap_name, fv_e_sg_name, fv_e_pg_selector_name string) string {
+func testAccCheckAciEndpointSecurityGroupEPgSelectorConfig_basic(fv_tenant_name, fv_ap_name, fv_esg_name, fv_epg_selector_name string) string {
 	return fmt.Sprintf(`
 
 	resource "aci_tenant" "footenant" {
@@ -87,16 +87,16 @@ func testAccCheckAciEndpointSecurityGroupEPgSelectorConfig_basic(fv_tenant_name,
 		application_profile_dn = aci_application_profile.fooapplication_profile.id
 	}
 
-	resource "aci_endpoint_security_group_e_pg_selector" "fooendpoint_security_group_e_pg_selector" {
+	resource "aci_endpoint_security_group_epg_selector" "fooendpoint_security_group_epg_selector" {
 		name 		= "%s"
-		description = "endpoint_security_group_e_pg_selector created while acceptance testing"
+		description = "endpoint_security_group_epg_selector created while acceptance testing"
 		endpoint_security_group_dn = aci_endpoint_security_group.fooendpoint_security_group.id
 	}
 
-	`, fv_tenant_name, fv_ap_name, fv_e_sg_name, fv_e_pg_selector_name)
+	`, fv_tenant_name, fv_ap_name, fv_esg_name, fv_epg_selector_name)
 }
 
-func testAccCheckAciEndpointSecurityGroupEPgSelectorExists(name string, endpoint_security_group_e_pg_selector *models.EndpointSecurityGroupEPgSelector) resource.TestCheckFunc {
+func testAccCheckAciEndpointSecurityGroupEPgSelectorExists(name string, endpoint_security_group_epg_selector *models.EndpointSecurityGroupEPgSelector) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 		rs, ok := s.RootModule().Resources[name]
 
@@ -115,11 +115,11 @@ func testAccCheckAciEndpointSecurityGroupEPgSelectorExists(name string, endpoint
 			return err
 		}
 
-		endpoint_security_group_e_pg_selectorFound := models.EndpointSecurityGroupEPgSelectorFromContainer(cont)
-		if endpoint_security_group_e_pg_selectorFound.DistinguishedName != rs.Primary.ID {
+		endpoint_security_group_epg_selectorFound := models.EndpointSecurityGroupEPgSelectorFromContainer(cont)
+		if endpoint_security_group_epg_selectorFound.DistinguishedName != rs.Primary.ID {
 			return fmt.Errorf("Endpoint Security Group EPg Selector %s not found", rs.Primary.ID)
 		}
-		*endpoint_security_group_e_pg_selector = *endpoint_security_group_e_pg_selectorFound
+		*endpoint_security_group_epg_selector = *endpoint_security_group_epg_selectorFound
 		return nil
 	}
 }
@@ -127,11 +127,11 @@ func testAccCheckAciEndpointSecurityGroupEPgSelectorExists(name string, endpoint
 func testAccCheckAciEndpointSecurityGroupEPgSelectorDestroy(s *terraform.State) error {
 	client := testAccProvider.Meta().(*client.Client)
 	for _, rs := range s.RootModule().Resources {
-		if rs.Type == "aci_endpoint_security_group_e_pg_selector" {
+		if rs.Type == "aci_endpoint_security_group_epg_selector" {
 			cont, err := client.Get(rs.Primary.ID)
-			endpoint_security_group_e_pg_selector := models.EndpointSecurityGroupEPgSelectorFromContainer(cont)
+			endpoint_security_group_epg_selector := models.EndpointSecurityGroupEPgSelectorFromContainer(cont)
 			if err == nil {
-				return fmt.Errorf("Endpoint Security Group EPg Selector %s Still exists", endpoint_security_group_e_pg_selector.DistinguishedName)
+				return fmt.Errorf("Endpoint Security Group EPg Selector %s Still exists", endpoint_security_group_epg_selector.DistinguishedName)
 			}
 		} else {
 			continue
@@ -140,10 +140,10 @@ func testAccCheckAciEndpointSecurityGroupEPgSelectorDestroy(s *terraform.State) 
 	return nil
 }
 
-func testAccCheckAciEndpointSecurityGroupEPgSelectorAttributes(fv_tenant_name, fv_ap_name, fv_e_sg_name, fv_e_pg_selector_name, description string, endpoint_security_group_e_pg_selector *models.EndpointSecurityGroupEPgSelector) resource.TestCheckFunc {
+func testAccCheckAciEndpointSecurityGroupEPgSelectorAttributes(fv_tenant_name, fv_ap_name, fv_esg_name, fv_epg_selector_name, description string, endpoint_security_group_epg_selector *models.EndpointSecurityGroupEPgSelector) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
-		if description != endpoint_security_group_e_pg_selector.Description {
-			return fmt.Errorf("Bad endpoint_security_group_e_pg_selector Description %s", endpoint_security_group_e_pg_selector.Description)
+		if description != endpoint_security_group_epg_selector.Description {
+			return fmt.Errorf("Bad endpoint_security_group_epg_selector Description %s", endpoint_security_group_epg_selector.Description)
 		}
 		return nil
 	}

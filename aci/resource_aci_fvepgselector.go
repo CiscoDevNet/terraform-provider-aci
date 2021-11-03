@@ -39,13 +39,7 @@ func resourceAciEndpointSecurityGroupEPgSelector() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
-
-			"relation_fv_rs_match_e_pg": {
-				Type: schema.TypeString,
-
-				Optional:    true,
-				Description: "Create relation to fvEPg",
-			}})),
+		})),
 	}
 }
 
@@ -122,37 +116,6 @@ func resourceAciEndpointSecurityGroupEPgSelectorCreate(ctx context.Context, d *s
 	if err != nil {
 		return diag.FromErr(err)
 	}
-	d.Partial(true)
-	//d.SetPartial("name")
-	d.Partial(false)
-	checkDns := make([]string, 0, 1)
-
-	if relationTofvRsMatchEPg, ok := d.GetOk("relation_fv_rs_match_e_pg"); ok {
-		relationParam := relationTofvRsMatchEPg.(string)
-		checkDns = append(checkDns, relationParam)
-
-	}
-
-	d.Partial(true)
-	err = checkTDn(aciClient, checkDns)
-	if err != nil {
-		return diag.FromErr(err)
-	}
-	d.Partial(false)
-
-	if relationTofvRsMatchEPg, ok := d.GetOk("relation_fv_rs_match_e_pg"); ok {
-		relationParam := relationTofvRsMatchEPg.(string)
-		err = aciClient.CreateRelationfvRsMatchEPg(fvEPgSelector.DistinguishedName, fvEPgSelectorAttr.Annotation, relationParam)
-
-		if err != nil {
-			return diag.FromErr(err)
-		}
-		d.Partial(true)
-		//d.SetPartial("relation_fv_rs_match_e_pg")
-		d.Partial(false)
-
-	}
-
 	d.SetId(fvEPgSelector.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 	return resourceAciEndpointSecurityGroupEPgSelectorRead(ctx, d, m)
@@ -190,42 +153,6 @@ func resourceAciEndpointSecurityGroupEPgSelectorUpdate(ctx context.Context, d *s
 	if err != nil {
 		return diag.FromErr(err)
 	}
-	d.Partial(true)
-	//d.SetPartial("name")
-	d.Partial(false)
-
-	checkDns := make([]string, 0, 1)
-
-	if d.HasChange("relation_fv_rs_match_e_pg") || d.HasChange("annotation") {
-		_, newRelParam := d.GetChange("relation_fv_rs_match_e_pg")
-		checkDns = append(checkDns, newRelParam.(string))
-
-	}
-
-	d.Partial(true)
-	err = checkTDn(aciClient, checkDns)
-	if err != nil {
-		return diag.FromErr(err)
-	}
-	d.Partial(false)
-
-	if d.HasChange("relation_fv_rs_match_e_pg") || d.HasChange("annotation") {
-		_, newRelParam := d.GetChange("relation_fv_rs_match_e_pg")
-		err = aciClient.DeleteRelationfvRsMatchEPg(fvEPgSelector.DistinguishedName)
-		if err != nil {
-			return diag.FromErr(err)
-		}
-		err = aciClient.CreateRelationfvRsMatchEPg(fvEPgSelector.DistinguishedName, fvEPgSelectorAttr.Annotation, newRelParam.(string))
-
-		if err != nil {
-			return diag.FromErr(err)
-		}
-		d.Partial(true)
-		//d.SetPartial("relation_fv_rs_match_e_pg")
-		d.Partial(false)
-
-	}
-
 	d.SetId(fvEPgSelector.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 	return resourceAciEndpointSecurityGroupEPgSelectorRead(ctx, d, m)
@@ -244,19 +171,6 @@ func resourceAciEndpointSecurityGroupEPgSelectorRead(ctx context.Context, d *sch
 	if err != nil {
 		d.SetId("")
 		return nil
-	}
-
-	fvRsMatchEPgData, err := aciClient.ReadRelationfvRsMatchEPg(dn)
-	if err != nil {
-		log.Printf("[DEBUG] Error while reading relation fvRsMatchEPg %v", err)
-		d.Set("relation_fv_rs_match_e_pg", "")
-	} else {
-		if _, ok := d.GetOk("relation_fv_rs_match_e_pg"); ok {
-			tfName := d.Get("relation_fv_rs_match_e_pg").(string)
-			if tfName != fvRsMatchEPgData {
-				d.Set("relation_fv_rs_match_e_pg", "")
-			}
-		}
 	}
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 	return nil
