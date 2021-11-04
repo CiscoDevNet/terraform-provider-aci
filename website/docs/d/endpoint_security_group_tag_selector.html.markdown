@@ -41,7 +41,6 @@ data "aci_endpoint_security_group_tag_selector" "example" {
 ## Attribute Reference ##
 * `id` - Attribute id set to the Dn of the Endpoint Security Group Tag Selector.
 * `annotation` - (Optional) Annotation of object Endpoint Security Group Tag Selector.
-* `name_alias` - (Optional) Name Alias of object Endpoint Security Group Tag Selector.
 * `match_key` - (Optional) Key of Tag to be associated with. 
 * `match_value` - (Optional) Value of Tag to be associated with. 
 * `value_operator` - (Optional) Match Value Operator. 

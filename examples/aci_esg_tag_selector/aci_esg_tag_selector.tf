@@ -16,12 +16,11 @@ resource "aci_endpoint_security_group" "terraform_esg" {
 
 # create selector
 resource "aci_endpoint_security_group_tag_selector" "terraform_tag_selector" {
-    endpoint_security_group_dn  = aci_endpoint_security_group.terraform_esg.id
-    match_key                    = "example"
-    match_value                  = "example1"
-    value_operator               = "regex"
-    description                  = "Tag Selector"
-    
+  endpoint_security_group_dn = aci_endpoint_security_group.terraform_esg.id
+  match_key                  = "example"
+  match_value                = "example1"
+  value_operator             = "equals"
+  description                = "Tag Selector"
 }
 
 

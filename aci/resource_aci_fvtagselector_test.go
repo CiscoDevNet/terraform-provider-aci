@@ -15,7 +15,7 @@ func TestAccAciEndpointSecurityGroupTagSelector_Basic(t *testing.T) {
 	var endpoint_security_group_tag_selector models.EndpointSecurityGroupTagSelector
 	fv_tenant_name := acctest.RandString(5)
 	fv_ap_name := acctest.RandString(5)
-	fv_e_sg_name := acctest.RandString(5)
+	fv_esg_name := acctest.RandString(5)
 	fv_tag_selector_name := acctest.RandString(5)
 	description := "endpoint_security_group_tag_selector created while acceptance testing"
 
@@ -25,10 +25,10 @@ func TestAccAciEndpointSecurityGroupTagSelector_Basic(t *testing.T) {
 		CheckDestroy: testAccCheckAciEndpointSecurityGroupTagSelectorDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckAciEndpointSecurityGroupTagSelectorConfig_basic(fv_tenant_name, fv_ap_name, fv_e_sg_name, fv_tag_selector_name),
+				Config: testAccCheckAciEndpointSecurityGroupTagSelectorConfig_basic(fv_tenant_name, fv_ap_name, fv_esg_name, fv_tag_selector_name),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckAciEndpointSecurityGroupTagSelectorExists("aci_endpoint_security_group_tag_selector.fooendpoint_security_group_tag_selector", &endpoint_security_group_tag_selector),
-					testAccCheckAciEndpointSecurityGroupTagSelectorAttributes(fv_tenant_name, fv_ap_name, fv_e_sg_name, fv_tag_selector_name, description, &endpoint_security_group_tag_selector),
+					testAccCheckAciEndpointSecurityGroupTagSelectorAttributes(fv_tenant_name, fv_ap_name, fv_esg_name, fv_tag_selector_name, description, &endpoint_security_group_tag_selector),
 				),
 			},
 		},
@@ -39,7 +39,7 @@ func TestAccAciEndpointSecurityGroupTagSelector_Update(t *testing.T) {
 	var endpoint_security_group_tag_selector models.EndpointSecurityGroupTagSelector
 	fv_tenant_name := acctest.RandString(5)
 	fv_ap_name := acctest.RandString(5)
-	fv_e_sg_name := acctest.RandString(5)
+	fv_esg_name := acctest.RandString(5)
 	fv_tag_selector_name := acctest.RandString(5)
 	description := "endpoint_security_group_tag_selector created while acceptance testing"
 
@@ -49,24 +49,24 @@ func TestAccAciEndpointSecurityGroupTagSelector_Update(t *testing.T) {
 		CheckDestroy: testAccCheckAciEndpointSecurityGroupTagSelectorDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckAciEndpointSecurityGroupTagSelectorConfig_basic(fv_tenant_name, fv_ap_name, fv_e_sg_name, fv_tag_selector_name),
+				Config: testAccCheckAciEndpointSecurityGroupTagSelectorConfig_basic(fv_tenant_name, fv_ap_name, fv_esg_name, fv_tag_selector_name),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckAciEndpointSecurityGroupTagSelectorExists("aci_endpoint_security_group_tag_selector.fooendpoint_security_group_tag_selector", &endpoint_security_group_tag_selector),
-					testAccCheckAciEndpointSecurityGroupTagSelectorAttributes(fv_tenant_name, fv_ap_name, fv_e_sg_name, fv_tag_selector_name, description, &endpoint_security_group_tag_selector),
+					testAccCheckAciEndpointSecurityGroupTagSelectorAttributes(fv_tenant_name, fv_ap_name, fv_esg_name, fv_tag_selector_name, description, &endpoint_security_group_tag_selector),
 				),
 			},
 			{
-				Config: testAccCheckAciEndpointSecurityGroupTagSelectorConfig_basic(fv_tenant_name, fv_ap_name, fv_e_sg_name, fv_tag_selector_name),
+				Config: testAccCheckAciEndpointSecurityGroupTagSelectorConfig_basic(fv_tenant_name, fv_ap_name, fv_esg_name, fv_tag_selector_name),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckAciEndpointSecurityGroupTagSelectorExists("aci_endpoint_security_group_tag_selector.fooendpoint_security_group_tag_selector", &endpoint_security_group_tag_selector),
-					testAccCheckAciEndpointSecurityGroupTagSelectorAttributes(fv_tenant_name, fv_ap_name, fv_e_sg_name, fv_tag_selector_name, description, &endpoint_security_group_tag_selector),
+					testAccCheckAciEndpointSecurityGroupTagSelectorAttributes(fv_tenant_name, fv_ap_name, fv_esg_name, fv_tag_selector_name, description, &endpoint_security_group_tag_selector),
 				),
 			},
 		},
 	})
 }
 
-func testAccCheckAciEndpointSecurityGroupTagSelectorConfig_basic(fv_tenant_name, fv_ap_name, fv_e_sg_name, fv_tag_selector_name string) string {
+func testAccCheckAciEndpointSecurityGroupTagSelectorConfig_basic(fv_tenant_name, fv_ap_name, fv_esg_name, fv_tag_selector_name string) string {
 	return fmt.Sprintf(`
 
 	resource "aci_tenant" "footenant" {
@@ -93,7 +93,7 @@ func testAccCheckAciEndpointSecurityGroupTagSelectorConfig_basic(fv_tenant_name,
 		endpoint_security_group_dn = aci_endpoint_security_group.fooendpoint_security_group.id
 	}
 
-	`, fv_tenant_name, fv_ap_name, fv_e_sg_name, fv_tag_selector_name)
+	`, fv_tenant_name, fv_ap_name, fv_esg_name, fv_tag_selector_name)
 }
 
 func testAccCheckAciEndpointSecurityGroupTagSelectorExists(name string, endpoint_security_group_tag_selector *models.EndpointSecurityGroupTagSelector) resource.TestCheckFunc {
@@ -140,7 +140,7 @@ func testAccCheckAciEndpointSecurityGroupTagSelectorDestroy(s *terraform.State) 
 	return nil
 }
 
-func testAccCheckAciEndpointSecurityGroupTagSelectorAttributes(fv_tenant_name, fv_ap_name, fv_e_sg_name, fv_tag_selector_name, description string, endpoint_security_group_tag_selector *models.EndpointSecurityGroupTagSelector) resource.TestCheckFunc {
+func testAccCheckAciEndpointSecurityGroupTagSelectorAttributes(fv_tenant_name, fv_ap_name, fv_esg_name, fv_tag_selector_name, description string, endpoint_security_group_tag_selector *models.EndpointSecurityGroupTagSelector) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 		if description != endpoint_security_group_tag_selector.Description {
 			return fmt.Errorf("Bad endpoint_security_group_tag_selector Description %s", endpoint_security_group_tag_selector.Description)
