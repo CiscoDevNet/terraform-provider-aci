@@ -1,14 +1,14 @@
 ---
 layout: "aci"
-page_title: "ACI: aci_endpoint_security_group_e_pg_selector"
-sidebar_current: "docs-aci-data-source-endpoint_security_group_e_pg_selector"
+page_title: "ACI: aci_endpoint_security_group_epg_selector"
+sidebar_current: "docs-aci-data-source-endpoint_security_group_epg_selector"
 description: |-
-  Data source for ACI Endpoint Security Group EPg Selector
+  Data source for ACI Endpoint Security Group EPG Selector
 ---
 
-# aci_endpoint_security_group_e_pg_selector #
+# aci_endpoint_security_group_epg_selector #
 
-Data source for ACI Endpoint Security Group EPg Selector
+Data source for ACI Endpoint Security Group EPG Selector
 
 
 ## API Information ##
@@ -24,7 +24,7 @@ Data source for ACI Endpoint Security Group EPg Selector
 ## Example Usage ##
 
 ```hcl
-data "aci_endpoint_security_group_e_pg_selector" "example" {
+data "aci_endpoint_security_group_epg_selector" "example" {
   endpoint_security_group_dn  = aci_endpoint_security_group.example.id
   match_epg_dn  = aci_application_epg.example.id 
 }
@@ -32,10 +32,10 @@ data "aci_endpoint_security_group_e_pg_selector" "example" {
 
 ## Argument Reference ##
 
-* `endpoint_security_group_dn` - (Required) Distinguished name of parent EndpointSecurityGroup object.
+* `endpoint_security_group_dn` - (Required) Distinguished name of parent Endpoint Security Group object.
 * `match_epg_dn` - (Required) EPG Dn to be associated. 
 
 ## Attribute Reference ##
-* `id` - Attribute id set to the Dn of the Endpoint Security Group EPg Selector.
-* `annotation` - (Optional) Annotation of object Endpoint Security Group EPg Selector.
-* `name_alias` - (Optional) Name Alias of object Endpoint Security Group EPg Selector.
+* `id` - Attribute id set to the Dn of the Endpoint Security Group EPG Selector.
+* `annotation` - (Optional) Annotation of object Endpoint Security Group EPG Selector.
+* `name_alias` - (Optional) Name Alias of object Endpoint Security Group EPG Selector.
