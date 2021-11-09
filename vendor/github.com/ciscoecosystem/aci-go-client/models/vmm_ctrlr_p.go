@@ -38,12 +38,11 @@ type VMMControllerAttributes struct {
 	VxlanDeplPref    string `json:",omitempty"`
 }
 
-func NewVMMController(vmmCtrlrPRn, parentDn, description, nameAlias string, vmmCtrlrPAttr VMMControllerAttributes) *VMMController {
+func NewVMMController(vmmCtrlrPRn, parentDn, nameAlias string, vmmCtrlrPAttr VMMControllerAttributes) *VMMController {
 	dn := fmt.Sprintf("%s/%s", parentDn, vmmCtrlrPRn)
 	return &VMMController{
 		BaseAttributes: BaseAttributes{
 			DistinguishedName: dn,
-			Description:       description,
 			Status:            "created, modified",
 			ClassName:         VmmctrlrpClassName,
 			Rn:                vmmCtrlrPRn,
@@ -90,7 +89,6 @@ func VMMControllerFromContainerList(cont *container.Container, index int) *VMMCo
 	return &VMMController{
 		BaseAttributes{
 			DistinguishedName: G(VMMControllerCont, "dn"),
-			Description:       G(VMMControllerCont, "descr"),
 			Status:            G(VMMControllerCont, "status"),
 			ClassName:         VmmctrlrpClassName,
 			Rn:                G(VMMControllerCont, "rn"),

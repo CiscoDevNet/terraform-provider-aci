@@ -12,7 +12,7 @@ import (
 func (sm *ServiceManager) CreateVMMController(name string, vmm_domain string, provider_profile_vendor string, description string, nameAlias string, vmmCtrlrPAttr models.VMMControllerAttributes) (*models.VMMController, error) {
 	rn := fmt.Sprintf(models.RnvmmCtrlrP, name)
 	parentDn := fmt.Sprintf(models.ParentDnvmmCtrlrP, provider_profile_vendor, vmm_domain)
-	vmmCtrlrP := models.NewVMMController(rn, parentDn, description, nameAlias, vmmCtrlrPAttr)
+	vmmCtrlrP := models.NewVMMController(rn, parentDn, nameAlias, vmmCtrlrPAttr)
 	err := sm.Save(vmmCtrlrP)
 	return vmmCtrlrP, err
 }
@@ -35,7 +35,7 @@ func (sm *ServiceManager) DeleteVMMController(name string, vmm_domain string, pr
 func (sm *ServiceManager) UpdateVMMController(name string, vmm_domain string, provider_profile_vendor string, description string, nameAlias string, vmmCtrlrPAttr models.VMMControllerAttributes) (*models.VMMController, error) {
 	rn := fmt.Sprintf(models.RnvmmCtrlrP, name)
 	parentDn := fmt.Sprintf(models.ParentDnvmmCtrlrP, provider_profile_vendor, vmm_domain)
-	vmmCtrlrP := models.NewVMMController(rn, parentDn, description, nameAlias, vmmCtrlrPAttr)
+	vmmCtrlrP := models.NewVMMController(rn, parentDn, nameAlias, vmmCtrlrPAttr)
 	vmmCtrlrP.Status = "modified"
 	err := sm.Save(vmmCtrlrP)
 	return vmmCtrlrP, err
