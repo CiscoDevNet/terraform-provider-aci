@@ -204,6 +204,7 @@ func Provider() *schema.Provider {
 			"aci_endpoint_security_group_selector":         resourceAciEndpointSecurityGroupSelector(),
 			"aci_endpoint_security_group":                  resourceAciEndpointSecurityGroup(),
 			"aci_endpoint_security_group_epg_selector":     resourceAciEndpointSecurityGroupEPgSelector(),
+			"aci_endpoint_security_group_tag_selector":     resourceAciEndpointSecurityGroupTagSelector(),
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
@@ -358,6 +359,7 @@ func Provider() *schema.Provider {
 			"aci_endpoint_security_group_selector":         dataSourceAciEndpointSecurityGroupSelector(),
 			"aci_endpoint_security_group":                  dataSourceAciEndpointSecurityGroup(),
 			"aci_endpoint_security_group_epg_selector":     dataSourceAciEndpointSecurityGroupEPgSelector(),
+			"aci_endpoint_security_group_tag_selector":     dataSourceAciEndpointSecurityGroupTagSelector(),
 		},
 
 		ConfigureFunc: configureClient,
