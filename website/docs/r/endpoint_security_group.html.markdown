@@ -71,7 +71,7 @@ resource "aci_endpoint_security_group" "example" {
   if EPg is part of a group that allows
   a contract for communication. Allowed values are "exclude", "include", and default value is "exclude". Type: String.
 
-- `relation_fv_rs_scope` - (Required) Represents the relation to a Private Network (class fvCtx). Type: String.
+- `relation_fv_rs_scope` - (Required) Represents the relation to a VRF (class fvCtx). Type: String.
 
 - `relation_fv_rs_cons` - (Optional) A block representing the relation to a Contract Consumer (class vzBrCP). The Consumer contract profile information. Type: Block.
 
