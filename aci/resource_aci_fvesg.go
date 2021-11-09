@@ -32,15 +32,6 @@ func resourceAciEndpointSecurityGroup() *schema.Resource {
 				Required: true,
 				ForceNew: true,
 			},
-			"flood_on_encap": {
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-				ValidateFunc: validation.StringInSlice([]string{
-					"disabled",
-					"enabled",
-				}, false),
-			},
 			"match_t": {
 				Type:     schema.TypeString,
 				Optional: true,
@@ -75,21 +66,6 @@ func resourceAciEndpointSecurityGroup() *schema.Resource {
 					"include",
 				}, false),
 			},
-			"prio": {
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-				ValidateFunc: validation.StringInSlice([]string{
-					"level1",
-					"level2",
-					"level3",
-					"level4",
-					"level5",
-					"level6",
-					"unspecified",
-				}, false),
-			},
-
 			"relation_fv_rs_cons": {
 				Type:        schema.TypeSet,
 				Optional:    true,
