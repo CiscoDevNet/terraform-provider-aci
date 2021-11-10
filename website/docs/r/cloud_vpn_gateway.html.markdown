@@ -5,7 +5,7 @@ page_title: "ACI: aci_cloud_vpn_gateway"
 sidebar_current: "docs-aci-resource-cloud_vpn_gateway"
 description: |-
   Manages ACI Cloud Vpn Gateway
---- 
+---
 
 # aci_cloud_vpn_gateway #
 Manages ACI Cloud Vpn Gateway.
