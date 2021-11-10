@@ -69,6 +69,7 @@ func resourceAciCloudSubnet() *schema.Resource {
 					"infra-router",
 					"user",
 					"gateway",
+					"transit",
 				}, false),
 			},
 
