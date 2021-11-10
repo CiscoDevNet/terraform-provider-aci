@@ -1,3 +1,7 @@
+## 1.0.1 (November 09, 2021)
+BUG FIXES:
+- Fix aci_cloud_vpn_gateway documentation subcategory issue
+
 ## 1.0.0 (November 09, 2021)
 BREAKING CHANGE:
 - Migration to Terraform Provider SDK v2. Remove support for Terraform v0.11.x or below
