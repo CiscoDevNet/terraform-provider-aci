@@ -1,4 +1,5 @@
 ---
+subcategory: "Fabric Inventory"
 layout: "aci"
 page_title: "ACI: aci_fabric_path_ep"
 sidebar_current: "docs-aci-data-source-fabric_path_ep"

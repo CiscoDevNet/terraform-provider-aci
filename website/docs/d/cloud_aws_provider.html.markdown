@@ -1,4 +1,5 @@
 ---
+subcategory: "Cloud"
 layout: "aci"
 page_title: "ACI: aci_cloud_aws_provider"
 sidebar_current: "docs-aci-data-source-cloud_aws_provider"

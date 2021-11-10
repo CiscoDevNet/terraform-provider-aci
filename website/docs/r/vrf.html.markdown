@@ -1,4 +1,5 @@
 ---
+subcategory: "Networking"
 layout: "aci"
 page_title: "ACI: aci_vrf"
 sidebar_current: "docs-aci-resource-vrf"

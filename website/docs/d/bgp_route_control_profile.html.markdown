@@ -1,4 +1,5 @@
 ---
+subcategory: "L3Out"
 layout: "aci"
 page_title: "ACI: aci_bgp_route_control_profile"
 sidebar_current: "docs-aci-data-source-bgp_route_control_profile"

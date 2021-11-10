@@ -1,19 +1,28 @@
-## 1.0.0 (October 25, 2021)
+## 1.0.0 (November 09, 2021)
 BREAKING CHANGE:
 - Migration to Terraform Provider SDK v2. Remove support for Terraform v0.11.x or below
 - Fix and update netflow monitor relation in aci_leaf_access_port_policy_group and aci_leaf_access_bundle_policy_group
+- Fix tcp_rules from string to list in aci_filter_entry
 
 IMPROVEMENTS:
-- Update dependancy versions
-- Fix examples formating in examples directory
-- Add examples for resources without examples
+- Add ESG Tag Selector and ESG EPG Selector resources and data sources
 - Add support for admin_state attribute and relation_bgp_rs_peer_to_profile relation
+- Add support for aci_bgp_peer_connectivity_profile to be defined at interface level and node level
+- Add ability to disable endpoint learning (garp) in aci_bridge_domain
+- Add support for level4 - level6 to aci_application_epg prio attribute
+- Deprecate tn_rtctrl_profile_name and add replacement tn_rtctrl_profile_dn in aci_subnet
+- Add references for provider_profile_dn in vmm_domain
+- Update dependancy versions
 
 BUG FIXES:
-- Add support for aci_bgp_peer_connectivity_profile to be defined at interface level and node level
-- Fix multiple idempotency issues accross resources
+- Fix multiple idempotency issues across resources
 - Fix issues found during testing of resources with TF provider SDK v2
 - Add forced replacement of resource if path or class_name is changed in aci_rest
+- Fix ESG Selector required parameter and documentation
+- Fix VMM Controller descr argument not supported issue
+- Fix ASN and Local ASN update function
+- Fix multiple documentation issues
+- Fix examples formating in examples directory and add examples for resources without examples
 
 ## 0.7.1 (June 25, 2021)
 BREAKING CHANGE:

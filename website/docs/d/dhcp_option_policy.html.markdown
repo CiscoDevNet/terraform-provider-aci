@@ -1,4 +1,5 @@
 ---
+subcategory: "Tenant Policies"
 layout: "aci"
 page_title: "ACI: aci_dhcp_option_policy"
 sidebar_current: "docs-aci-data-source-dhcp_option_policy"

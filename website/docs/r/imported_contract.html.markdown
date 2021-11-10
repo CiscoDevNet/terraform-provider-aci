@@ -1,4 +1,5 @@
 ---
+subcategory: "Contract"
 layout: "aci"
 page_title: "ACI: aci_imported_contract"
 sidebar_current: "docs-aci-resource-imported_contract"

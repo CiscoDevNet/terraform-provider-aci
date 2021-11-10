@@ -1,4 +1,5 @@
 ---
+subcategory: "Cloud"
 layout: "aci"
 page_title: "ACI: aci_cloud_vpn_gateway"
 sidebar_current: "docs-aci-data-source-cloud_vpn_gateway"

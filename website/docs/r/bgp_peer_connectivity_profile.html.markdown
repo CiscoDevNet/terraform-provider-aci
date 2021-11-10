@@ -1,4 +1,5 @@
 ---
+subcategory: "L3Out"
 layout: "aci"
 page_title: "ACI: aci_bgp_peer_connectivity_profile"
 sidebar_current: "docs-aci-resource-bgp_peer_connectivity_profile"

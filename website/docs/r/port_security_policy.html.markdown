@@ -1,4 +1,5 @@
 ---
+subcategory: "Access Policies"
 layout: "aci"
 page_title: "ACI: aci_port_security_policy"
 sidebar_current: "docs-aci-resource-port_security_policy"

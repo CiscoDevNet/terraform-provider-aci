@@ -1,4 +1,5 @@
 ---
+subcategory: "Firmware"
 layout: "aci"
 page_title: "ACI: aci_maintenance_policy"
 sidebar_current: "docs-aci-resource-maintenance_policy"

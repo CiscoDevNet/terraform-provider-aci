@@ -1,4 +1,5 @@
 ---
+subcategory: "Monitoring"
 layout: "aci"
 page_title: "ACI: aci_span_source_group"
 sidebar_current: "docs-aci-resource-span_source_group"

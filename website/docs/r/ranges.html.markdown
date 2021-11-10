@@ -1,9 +1,10 @@
 ---
+subcategory: "Access Policies"
 layout: "aci"
 page_title: "ACI: aci_ranges"
 sidebar_current: "docs-aci-resource-ranges"
 description: |-
-  Manages ACI Ranges
+  Manages ACI VLAN Pool Ranges
 ---
 
 # aci_ranges #

@@ -1,4 +1,5 @@
 ---
+subcategory: "Fabric Inventory"
 layout: "aci"
 page_title: "ACI: aci_system"
 sidebar_current: "docs-aci-data-source-system"

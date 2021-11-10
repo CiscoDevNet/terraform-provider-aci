@@ -1,4 +1,5 @@
 ---
+subcategory: "L3Out"
 layout: "aci"
 page_title: "ACI: aci_l3out_path_attachment"
 sidebar_current: "docs-aci-resource-l3out_path_attachment"

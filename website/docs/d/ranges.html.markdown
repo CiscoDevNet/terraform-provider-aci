@@ -1,9 +1,10 @@
 ---
+subcategory: "Access Policies"
 layout: "aci"
 page_title: "ACI: aci_ranges"
 sidebar_current: "docs-aci-data-source-ranges"
 description: |-
-  Data source for ACI Ranges
+  Data source for ACI VLAN Pool Ranges
 ---
 
 # aci_ranges #
@@ -23,7 +24,7 @@ data "aci_ranges" "example" {
 
 ## Argument Reference ##
 
-* `vlan_pool_dn` - (Required) Distinguished name of parent VLANPool object.
+* `vlan_pool_dn` - (Required) Distinguished name of parent VLAN Pool object.
 * `from` - (Required) from of Object ranges.
 * `to` - (Required) to of Object ranges.
 

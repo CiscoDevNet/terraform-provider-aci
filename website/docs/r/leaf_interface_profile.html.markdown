@@ -1,4 +1,5 @@
 ---
+subcategory: "Access Policies"
 layout: "aci"
 page_title: "ACI: aci_leaf_interface_profile"
 sidebar_current: "docs-aci-resource-leaf_interface_profile"

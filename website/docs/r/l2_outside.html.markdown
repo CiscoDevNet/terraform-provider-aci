@@ -1,4 +1,5 @@
 ---
+subcategory: "L2Out"
 layout: "aci"
 page_title: "ACI: aci_l2_outside"
 sidebar_current: "docs-aci-resource-l2_outside"
