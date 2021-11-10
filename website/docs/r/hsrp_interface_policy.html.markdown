@@ -1,4 +1,5 @@
 ---
+subcategory: "Tenant Policies"
 layout: "aci"
 page_title: "ACI: aci_hsrp_interface_policy"
 sidebar_current: "docs-aci-resource-hsrp_interface_policy"

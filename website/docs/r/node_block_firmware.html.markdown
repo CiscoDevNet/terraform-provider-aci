@@ -1,4 +1,5 @@
 ---
+subcategory: "Firmware"
 layout: "aci"
 page_title: "ACI: aci_node_block_firmware"
 sidebar_current: "docs-aci-resource-node_block_firmware"

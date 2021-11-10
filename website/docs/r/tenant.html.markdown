@@ -1,4 +1,5 @@
 ---
+subcategory: "Application Management"
 layout: "aci"
 page_title: "ACI: aci_tenant"
 sidebar_current: "docs-aci-resource-tenant"

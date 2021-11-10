@@ -1,4 +1,5 @@
 ---
+subcategory: "Access Policies"
 layout: "aci"
 page_title: "ACI: aci_vlan_pool"
 sidebar_current: "docs-aci-data-source-vlan_pool"

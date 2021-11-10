@@ -1,4 +1,5 @@
 ---
+subcategory: "L4-L7 Services"
 layout: "aci"
 page_title: "ACI: aci_destination_of_redirected_traffic"
 sidebar_current: "docs-aci-resource-destination_of_redirected_traffic"

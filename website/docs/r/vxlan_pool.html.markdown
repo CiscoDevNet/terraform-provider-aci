@@ -1,4 +1,5 @@
 ---
+subcategory: "Access Policies"
 layout: "aci"
 page_title: "ACI: aci_vxlan_pool"
 sidebar_current: "docs-aci-resource-vxlan_pool"

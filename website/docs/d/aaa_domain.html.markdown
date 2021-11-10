@@ -1,4 +1,5 @@
 ---
+subcategory: "AAA"
 layout: "aci"
 page_title: "ACI: aci_aaa_domain"
 sidebar_current: "docs-aci-data-source-aaa_domain"

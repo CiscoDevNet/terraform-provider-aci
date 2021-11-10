@@ -1,4 +1,5 @@
 ---
+subcategory: "L4-L7 Services"
 layout: "aci"
 page_title: "ACI: aci_service_redirect_policy"
 sidebar_current: "docs-aci-data-source-service_redirect_policy"

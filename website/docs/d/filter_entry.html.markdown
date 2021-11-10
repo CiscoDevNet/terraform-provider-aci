@@ -1,4 +1,5 @@
 ---
+subcategory: "Contract"
 layout: "aci"
 page_title: "ACI: aci_filter_entry"
 sidebar_current: "docs-aci-data-source-filter_entry"

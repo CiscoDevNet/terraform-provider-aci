@@ -1,4 +1,5 @@
 ---
+subcategory: "Monitoring"
 layout: "aci"
 page_title: "ACI: aci_span_destination_group"
 sidebar_current: "docs-aci-data-source-span_destination_group"

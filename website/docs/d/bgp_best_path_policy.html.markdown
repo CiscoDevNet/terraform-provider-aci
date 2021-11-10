@@ -1,4 +1,5 @@
 ---
+subcategory: "Tenant Policies"
 layout: "aci"
 page_title: "ACI: aci_bgp_best_path_policy"
 sidebar_current: "docs-aci-data-source-bgp_best_path_policy"

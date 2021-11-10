@@ -1,4 +1,5 @@
 ---
+subcategory: "Fabric Inventory"
 layout: "aci"
 page_title: "ACI: aci_fabric_node_member"
 sidebar_current: "docs-aci-resource-fabric_node_member"

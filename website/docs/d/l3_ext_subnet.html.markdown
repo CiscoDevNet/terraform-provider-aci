@@ -1,4 +1,5 @@
 ---
+subcategory: "L3Out"
 layout: "aci"
 page_title: "ACI: aci_l3_ext_subnet"
 sidebar_current: "docs-aci-data-source-l3_ext_subnet"

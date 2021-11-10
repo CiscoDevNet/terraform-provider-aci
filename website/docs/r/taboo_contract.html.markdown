@@ -1,4 +1,5 @@
 ---
+subcategory: "Contract"
 layout: "aci"
 page_title: "ACI: aci_taboo_contract"
 sidebar_current: "docs-aci-resource-taboo_contract"

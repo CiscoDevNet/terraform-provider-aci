@@ -1,4 +1,5 @@
 ---
+subcategory: "Node Management"
 layout: "aci"
 page_title: "ACI: aci_static_node_mgmt_address"
 sidebar_current: "docs-aci-data-source-static_node_mgmt_address"

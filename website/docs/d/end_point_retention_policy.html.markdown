@@ -1,4 +1,5 @@
 ---
+subcategory: "Tenant Policies"
 layout: "aci"
 page_title: "ACI: aci_end_point_retention_policy"
 sidebar_current: "docs-aci-data-source-end_point_retention_policy"
