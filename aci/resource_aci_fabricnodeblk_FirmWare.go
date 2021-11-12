@@ -86,7 +86,7 @@ func setNodeBlockAttributesFW(fabricNodeBlk *models.NodeBlockFW, d *schema.Resou
 	}
 
 	d.Set("name", fabricNodeBlkMap["name"])
-	d.Set("firmware_group_dn", GetParentDn(fabricNodeBlk.DistinguishedName, fmt.Sprintf("nodeblk-%s", fabricNodeBlkMap["name"])))
+	d.Set("firmware_group_dn", GetParentDn(fabricNodeBlk.DistinguishedName, fmt.Sprintf("/nodeblk-%s", fabricNodeBlkMap["name"])))
 
 	d.Set("annotation", fabricNodeBlkMap["annotation"])
 	d.Set("from_", fabricNodeBlkMap["from_"])
