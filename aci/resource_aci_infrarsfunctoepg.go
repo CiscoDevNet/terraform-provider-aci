@@ -108,7 +108,6 @@ func setEPGsUsingFunctionAttributes(infraRsFuncToEpg *models.EPGsUsingFunction, 
 	if err != nil {
 		return d, err
 	}
-	d.Set("access_generic_dn", GetParentDn(infraRsFuncToEpg.DistinguishedName, fmt.Sprintf("/rsfuncToEpg-[%s]", infraRsFuncToEpgMap["tDn"])))
 	d.Set("tdn", infraRsFuncToEpgMap["tDn"])
 	d.Set("annotation", infraRsFuncToEpgMap["annotation"])
 	d.Set("encap", infraRsFuncToEpgMap["encap"])
