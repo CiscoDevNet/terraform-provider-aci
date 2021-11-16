@@ -88,7 +88,7 @@ func setSPANSourceGroupAttributes(spanSrcGrp *models.SPANSourceGroup, d *schema.
 	spanSrcGrpMap, _ := spanSrcGrp.ToMap()
 
 	d.Set("name", spanSrcGrpMap["name"])
-	d.Set("tenant_dn", GetParentDn(spanSrcGrp.DistinguishedName, fmt.Sprintf("srcgrp-%s", spanSrcGrpMap["name"])))
+	d.Set("tenant_dn", GetParentDn(spanSrcGrp.DistinguishedName, fmt.Sprintf("/srcgrp-%s", spanSrcGrpMap["name"])))
 	d.Set("admin_st", spanSrcGrpMap["adminSt"])
 	d.Set("annotation", spanSrcGrpMap["annotation"])
 	d.Set("name_alias", spanSrcGrpMap["nameAlias"])
