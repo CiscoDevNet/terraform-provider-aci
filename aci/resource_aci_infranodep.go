@@ -617,6 +617,12 @@ func resourceAciLeafProfileRead(ctx context.Context, d *schema.ResourceData, m i
 	leafSelectors := make([]*models.SwitchAssociation, 0, 1)
 	nodeBlocks := make([]*models.NodeBlock, 0, 1)
 	selectors := d.Get("leaf_selector_ids").([]interface{})
+	if _, ok := d.GetOk("leaf_selector_ids"); !ok {
+		d.Set("leaf_selector_ids", make([]string, 0, 1))
+	}
+	if _, ok := d.GetOk("node_block_ids"); !ok {
+		d.Set("node_block_ids", make([]string, 0, 1))
+	}
 	for _, val := range selectors {
 		selectorDn := val.(string)
 		selector, err := getRemoteSwitchAssociationFromLeafP(aciClient, selectorDn)
