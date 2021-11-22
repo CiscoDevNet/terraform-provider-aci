@@ -85,7 +85,7 @@ func setNodeBlockAttributesMG(fabricNodeBlk *models.NodeBlockMG, d *schema.Resou
 		return d, err
 	}
 
-	d.Set("pod_maintenance_group_dn", GetParentDn(fabricNodeBlk.DistinguishedName, fmt.Sprintf("nodeblk-%s", fabricNodeBlkMap["name"])))
+	d.Set("pod_maintenance_group_dn", GetParentDn(fabricNodeBlk.DistinguishedName, fmt.Sprintf("/nodeblk-%s", fabricNodeBlkMap["name"])))
 	d.Set("name", fabricNodeBlkMap["name"])
 
 	d.Set("annotation", fabricNodeBlkMap["annotation"])
