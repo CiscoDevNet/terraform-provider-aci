@@ -259,6 +259,9 @@ func Provider() *schema.Provider {
 			"aci_isis_domain_policy":                       resourceAciISISDomainPolicy(),
 			"aci_radius_provider":                          resourceAciRADIUSProvider(),
 			"aci_interface_blacklist":                      resourceAciOutofServiceFabricPath(),
+			"aci_route_control_context":                    resourceAciRouteControlContext(),
+			"aci_match_rule":                               resourceAciMatchRule(),
+			"aci_match_route_destination_rule":             resourceAciMatchRouteDestinationRule(),
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
@@ -464,6 +467,9 @@ func Provider() *schema.Provider {
 			"aci_isis_domain_policy":                       dataSourceAciISISDomainPolicy(),
 			"aci_radius_provider":                          dataSourceAciRADIUSProvider(),
 			"aci_interface_blacklist":                      dataSourceAciOutofServiceFabricPath(),
+			"aci_route_control_context":                    dataSourceAciRouteControlContext(),
+			"aci_match_rule":                               dataSourceAciMatchRule(),
+			"aci_match_route_destination_rule":             dataSourceAciMatchRouteDestinationRule(),
 		},
 
 		ConfigureFunc: configureClient,
