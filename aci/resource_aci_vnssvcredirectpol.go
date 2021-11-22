@@ -406,7 +406,7 @@ func resourceAciServiceRedirectPolicyRead(ctx context.Context, d *schema.Resourc
 		d.Set("relation_vns_rs_ipsla_monitoring_pol", "")
 
 	} else {
-		d.Set("relation_vns_rs_ipsla_monitoring_pol", vnsRsIPSLAMonitoringPolData)
+		d.Set("relation_vns_rs_ipsla_monitoring_pol", vnsRsIPSLAMonitoringPolData.(string))
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())

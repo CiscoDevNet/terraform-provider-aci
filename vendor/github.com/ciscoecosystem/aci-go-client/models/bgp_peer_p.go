@@ -36,6 +36,8 @@ type BgpPeerConnectivityProfileAttributes struct {
 	Ttl string `json:",omitempty"`
 
 	Weight string `json:",omitempty"`
+
+	AdminSt string `json:",omitempty"`
 }
 
 func NewBgpPeerConnectivityProfile(bgpPeerPRn, parentDn, description string, bgpPeerPattr BgpPeerConnectivityProfileAttributes) *BgpPeerConnectivityProfile {
@@ -81,6 +83,8 @@ func (bgpPeerP *BgpPeerConnectivityProfile) ToMap() (map[string]string, error) {
 
 	A(bgpPeerPMap, "weight", bgpPeerP.Weight)
 
+	A(bgpPeerPMap, "adminSt", bgpPeerP.AdminSt)
+
 	return bgpPeerPMap, err
 }
 
@@ -119,6 +123,8 @@ func BgpPeerConnectivityProfileFromContainerList(cont *container.Container, inde
 			Ttl: G(BgpPeerConnectivityProfileCont, "ttl"),
 
 			Weight: G(BgpPeerConnectivityProfileCont, "weight"),
+
+			AdminSt: G(BgpPeerConnectivityProfileCont, "adminSt"),
 		},
 	}
 }

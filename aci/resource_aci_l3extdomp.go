@@ -377,12 +377,7 @@ func resourceAciL3DomainProfileRead(ctx context.Context, d *schema.ResourceData,
 		d.Set("relation_infra_rs_vlan_ns", "")
 
 	} else {
-		if _, ok := d.GetOk("relation_infra_rs_vlan_ns"); ok {
-			tfName := d.Get("relation_infra_rs_vlan_ns").(string)
-			if tfName != infraRsVlanNsData {
-				d.Set("relation_infra_rs_vlan_ns", "")
-			}
-		}
+		d.Set("relation_infra_rs_vlan_ns", infraRsVlanNsData.(string))
 	}
 
 	infraRsVlanNsDefData, err := aciClient.ReadRelationinfraRsVlanNsDefFromL3DomainProfile(dn)
@@ -391,12 +386,7 @@ func resourceAciL3DomainProfileRead(ctx context.Context, d *schema.ResourceData,
 		d.Set("relation_infra_rs_vlan_ns_def", "")
 
 	} else {
-		if _, ok := d.GetOk("relation_infra_rs_vlan_ns_def"); ok {
-			tfName := d.Get("relation_infra_rs_vlan_ns_def").(string)
-			if tfName != infraRsVlanNsDefData {
-				d.Set("relation_infra_rs_vlan_ns_def", "")
-			}
-		}
+		d.Set("relation_infra_rs_vlan_ns_def", infraRsVlanNsDefData.(string))
 	}
 
 	infraRsVipAddrNsData, err := aciClient.ReadRelationinfraRsVipAddrNsFromL3DomainProfile(dn)
@@ -405,12 +395,7 @@ func resourceAciL3DomainProfileRead(ctx context.Context, d *schema.ResourceData,
 		d.Set("relation_infra_rs_vip_addr_ns", "")
 
 	} else {
-		if _, ok := d.GetOk("relation_infra_rs_vip_addr_ns"); ok {
-			tfName := d.Get("relation_infra_rs_vip_addr_ns").(string)
-			if tfName != infraRsVipAddrNsData {
-				d.Set("relation_infra_rs_vip_addr_ns", "")
-			}
-		}
+		d.Set("relation_infra_rs_vip_addr_ns", infraRsVipAddrNsData.(string))
 	}
 
 	extnwRsOutData, err := aciClient.ReadRelationextnwRsOutFromL3DomainProfile(dn)
@@ -419,7 +404,7 @@ func resourceAciL3DomainProfileRead(ctx context.Context, d *schema.ResourceData,
 		d.Set("relation_extnw_rs_out", make([]string, 0, 1))
 
 	} else {
-		d.Set("relation_extnw_rs_out", extnwRsOutData)
+		d.Set("relation_extnw_rs_out", toStringList(extnwRsOutData.(*schema.Set).List()))
 	}
 
 	infraRsDomVxlanNsDefData, err := aciClient.ReadRelationinfraRsDomVxlanNsDefFromL3DomainProfile(dn)
@@ -428,12 +413,7 @@ func resourceAciL3DomainProfileRead(ctx context.Context, d *schema.ResourceData,
 		d.Set("relation_infra_rs_dom_vxlan_ns_def", "")
 
 	} else {
-		if _, ok := d.GetOk("relation_infra_rs_dom_vxlan_ns_def"); ok {
-			tfName := d.Get("relation_infra_rs_dom_vxlan_ns_def").(string)
-			if tfName != infraRsDomVxlanNsDefData {
-				d.Set("relation_infra_rs_dom_vxlan_ns_def", "")
-			}
-		}
+		d.Set("relation_infra_rs_dom_vxlan_ns_def", infraRsDomVxlanNsDefData.(string))
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
