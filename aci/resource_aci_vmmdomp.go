@@ -219,13 +219,13 @@ func resourceAciVMMDomain() *schema.Resource {
 				Optional: true,
 			},
 			"relation_vmm_rs_default_cdp_if_pol": &schema.Schema{
-				Type: schema.TypeString,
-
+				Type:     schema.TypeString,
+				Computed: true,
 				Optional: true,
 			},
 			"relation_vmm_rs_default_lacp_lag_pol": &schema.Schema{
-				Type: schema.TypeString,
-
+				Type:     schema.TypeString,
+				Computed: true,
 				Optional: true,
 			},
 			"relation_infra_rs_vlan_ns_def": &schema.Schema{
@@ -239,13 +239,13 @@ func resourceAciVMMDomain() *schema.Resource {
 				Optional: true,
 			},
 			"relation_vmm_rs_default_lldp_if_pol": &schema.Schema{
-				Type: schema.TypeString,
-
+				Type:     schema.TypeString,
+				Computed: true,
 				Optional: true,
 			},
 			"relation_vmm_rs_default_stp_if_pol": &schema.Schema{
-				Type: schema.TypeString,
-
+				Type:     schema.TypeString,
+				Computed: true,
 				Optional: true,
 			},
 			"relation_infra_rs_dom_vxlan_ns_def": &schema.Schema{
@@ -254,13 +254,13 @@ func resourceAciVMMDomain() *schema.Resource {
 				Optional: true,
 			},
 			"relation_vmm_rs_default_fw_pol": &schema.Schema{
-				Type: schema.TypeString,
-
+				Type:     schema.TypeString,
+				Computed: true,
 				Optional: true,
 			},
 			"relation_vmm_rs_default_l2_inst_pol": &schema.Schema{
-				Type: schema.TypeString,
-
+				Type:     schema.TypeString,
+				Computed: true,
 				Optional: true,
 			},
 		},
@@ -874,12 +874,7 @@ func resourceAciVMMDomainRead(ctx context.Context, d *schema.ResourceData, m int
 		d.Set("relation_vmm_rs_pref_enhanced_lag_pol", "")
 
 	} else {
-		if _, ok := d.GetOk("relation_vmm_rs_pref_enhanced_lag_pol"); ok {
-			tfName := d.Get("relation_vmm_rs_pref_enhanced_lag_pol").(string)
-			if tfName != vmmRsPrefEnhancedLagPolData {
-				d.Set("relation_vmm_rs_pref_enhanced_lag_pol", "")
-			}
-		}
+		d.Set("relation_vmm_rs_pref_enhanced_lag_pol", vmmRsPrefEnhancedLagPolData.(string))
 	}
 
 	infraRsVlanNsData, err := aciClient.ReadRelationinfraRsVlanNsFromVMMDomain(dn)
@@ -888,12 +883,7 @@ func resourceAciVMMDomainRead(ctx context.Context, d *schema.ResourceData, m int
 		d.Set("relation_infra_rs_vlan_ns", "")
 
 	} else {
-		if _, ok := d.GetOk("relation_infra_rs_vlan_ns"); ok {
-			tfName := d.Get("relation_infra_rs_vlan_ns").(string)
-			if tfName != infraRsVlanNsData {
-				d.Set("relation_infra_rs_vlan_ns", "")
-			}
-		}
+		d.Set("relation_infra_rs_vlan_ns", infraRsVlanNsData.(string))
 	}
 
 	vmmRsDomMcastAddrNsData, err := aciClient.ReadRelationvmmRsDomMcastAddrNsFromVMMDomain(dn)
@@ -902,12 +892,7 @@ func resourceAciVMMDomainRead(ctx context.Context, d *schema.ResourceData, m int
 		d.Set("relation_vmm_rs_dom_mcast_addr_ns", "")
 
 	} else {
-		if _, ok := d.GetOk("relation_vmm_rs_dom_mcast_addr_ns"); ok {
-			tfName := d.Get("relation_vmm_rs_dom_mcast_addr_ns").(string)
-			if tfName != vmmRsDomMcastAddrNsData {
-				d.Set("relation_vmm_rs_dom_mcast_addr_ns", "")
-			}
-		}
+		d.Set("relation_vmm_rs_dom_mcast_addr_ns", vmmRsDomMcastAddrNsData.(string))
 	}
 
 	vmmRsDefaultCdpIfPolData, err := aciClient.ReadRelationvmmRsDefaultCdpIfPolFromVMMDomain(dn)
@@ -916,12 +901,7 @@ func resourceAciVMMDomainRead(ctx context.Context, d *schema.ResourceData, m int
 		d.Set("relation_vmm_rs_default_cdp_if_pol", "")
 
 	} else {
-		if _, ok := d.GetOk("relation_vmm_rs_default_cdp_if_pol"); ok {
-			tfName := GetMOName(d.Get("relation_vmm_rs_default_cdp_if_pol").(string))
-			if tfName != vmmRsDefaultCdpIfPolData {
-				d.Set("relation_vmm_rs_default_cdp_if_pol", "")
-			}
-		}
+		d.Set("relation_vmm_rs_default_cdp_if_pol", vmmRsDefaultCdpIfPolData.(string))
 	}
 
 	vmmRsDefaultLacpLagPolData, err := aciClient.ReadRelationvmmRsDefaultLacpLagPolFromVMMDomain(dn)
@@ -930,12 +910,7 @@ func resourceAciVMMDomainRead(ctx context.Context, d *schema.ResourceData, m int
 		d.Set("relation_vmm_rs_default_lacp_lag_pol", "")
 
 	} else {
-		if _, ok := d.GetOk("relation_vmm_rs_default_lacp_lag_pol"); ok {
-			tfName := GetMOName(d.Get("relation_vmm_rs_default_lacp_lag_pol").(string))
-			if tfName != vmmRsDefaultLacpLagPolData {
-				d.Set("relation_vmm_rs_default_lacp_lag_pol", "")
-			}
-		}
+		d.Set("relation_vmm_rs_default_lacp_lag_pol", vmmRsDefaultLacpLagPolData.(string))
 	}
 
 	infraRsVlanNsDefData, err := aciClient.ReadRelationinfraRsVlanNsDefFromVMMDomain(dn)
@@ -944,12 +919,7 @@ func resourceAciVMMDomainRead(ctx context.Context, d *schema.ResourceData, m int
 		d.Set("relation_infra_rs_vlan_ns_def", "")
 
 	} else {
-		if _, ok := d.GetOk("relation_infra_rs_vlan_ns_def"); ok {
-			tfName := d.Get("relation_infra_rs_vlan_ns_def").(string)
-			if tfName != infraRsVlanNsDefData {
-				d.Set("relation_infra_rs_vlan_ns_def", "")
-			}
-		}
+		d.Set("relation_infra_rs_vlan_ns_def", infraRsVlanNsDefData.(string))
 	}
 
 	infraRsVipAddrNsData, err := aciClient.ReadRelationinfraRsVipAddrNsFromVMMDomain(dn)
@@ -958,12 +928,7 @@ func resourceAciVMMDomainRead(ctx context.Context, d *schema.ResourceData, m int
 		d.Set("relation_infra_rs_vip_addr_ns", "")
 
 	} else {
-		if _, ok := d.GetOk("relation_infra_rs_vip_addr_ns"); ok {
-			tfName := d.Get("relation_infra_rs_vip_addr_ns").(string)
-			if tfName != infraRsVipAddrNsData {
-				d.Set("relation_infra_rs_vip_addr_ns", "")
-			}
-		}
+		d.Set("relation_infra_rs_vip_addr_ns", infraRsVipAddrNsData.(string))
 	}
 
 	vmmRsDefaultLldpIfPolData, err := aciClient.ReadRelationvmmRsDefaultLldpIfPolFromVMMDomain(dn)
@@ -972,12 +937,7 @@ func resourceAciVMMDomainRead(ctx context.Context, d *schema.ResourceData, m int
 		d.Set("relation_vmm_rs_default_lldp_if_pol", "")
 
 	} else {
-		if _, ok := d.GetOk("relation_vmm_rs_default_lldp_if_pol"); ok {
-			tfName := GetMOName(d.Get("relation_vmm_rs_default_lldp_if_pol").(string))
-			if tfName != vmmRsDefaultLldpIfPolData {
-				d.Set("relation_vmm_rs_default_lldp_if_pol", "")
-			}
-		}
+		d.Set("relation_vmm_rs_default_lldp_if_pol", vmmRsDefaultLldpIfPolData.(string))
 	}
 
 	vmmRsDefaultStpIfPolData, err := aciClient.ReadRelationvmmRsDefaultStpIfPolFromVMMDomain(dn)
@@ -986,12 +946,7 @@ func resourceAciVMMDomainRead(ctx context.Context, d *schema.ResourceData, m int
 		d.Set("relation_vmm_rs_default_stp_if_pol", "")
 
 	} else {
-		if _, ok := d.GetOk("relation_vmm_rs_default_stp_if_pol"); ok {
-			tfName := GetMOName(d.Get("relation_vmm_rs_default_stp_if_pol").(string))
-			if tfName != vmmRsDefaultStpIfPolData {
-				d.Set("relation_vmm_rs_default_stp_if_pol", "")
-			}
-		}
+		d.Set("relation_vmm_rs_default_stp_if_pol", vmmRsDefaultStpIfPolData.(string))
 	}
 
 	infraRsDomVxlanNsDefData, err := aciClient.ReadRelationinfraRsDomVxlanNsDefFromVMMDomain(dn)
@@ -1000,12 +955,7 @@ func resourceAciVMMDomainRead(ctx context.Context, d *schema.ResourceData, m int
 		d.Set("relation_infra_rs_dom_vxlan_ns_def", "")
 
 	} else {
-		if _, ok := d.GetOk("relation_infra_rs_dom_vxlan_ns_def"); ok {
-			tfName := d.Get("relation_infra_rs_dom_vxlan_ns_def").(string)
-			if tfName != infraRsDomVxlanNsDefData {
-				d.Set("relation_infra_rs_dom_vxlan_ns_def", "")
-			}
-		}
+		d.Set("relation_infra_rs_dom_vxlan_ns_def", infraRsDomVxlanNsDefData.(string))
 	}
 
 	vmmRsDefaultFwPolData, err := aciClient.ReadRelationvmmRsDefaultFwPolFromVMMDomain(dn)
@@ -1014,12 +964,7 @@ func resourceAciVMMDomainRead(ctx context.Context, d *schema.ResourceData, m int
 		d.Set("relation_vmm_rs_default_fw_pol", "")
 
 	} else {
-		if _, ok := d.GetOk("relation_vmm_rs_default_fw_pol"); ok {
-			tfName := GetMOName(d.Get("relation_vmm_rs_default_fw_pol").(string))
-			if tfName != vmmRsDefaultFwPolData {
-				d.Set("relation_vmm_rs_default_fw_pol", "")
-			}
-		}
+		d.Set("relation_vmm_rs_default_fw_pol", vmmRsDefaultFwPolData.(string))
 	}
 
 	vmmRsDefaultL2InstPolData, err := aciClient.ReadRelationvmmRsDefaultL2InstPolFromVMMDomain(dn)
@@ -1028,12 +973,7 @@ func resourceAciVMMDomainRead(ctx context.Context, d *schema.ResourceData, m int
 		d.Set("relation_vmm_rs_default_l2_inst_pol", "")
 
 	} else {
-		if _, ok := d.GetOk("relation_vmm_rs_default_l2_inst_pol"); ok {
-			tfName := GetMOName(d.Get("relation_vmm_rs_default_l2_inst_pol").(string))
-			if tfName != vmmRsDefaultL2InstPolData {
-				d.Set("relation_vmm_rs_default_l2_inst_pol", "")
-			}
-		}
+		d.Set("relation_vmm_rs_default_l2_inst_pol", vmmRsDefaultL2InstPolData.(string))
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())

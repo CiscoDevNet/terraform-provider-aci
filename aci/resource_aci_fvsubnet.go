@@ -571,21 +571,7 @@ func resourceAciSubnetRead(ctx context.Context, d *schema.ResourceData, m interf
 		d.Set("relation_fv_rs_bd_subnet_to_out", make([]string, 0, 1))
 
 	} else {
-		if _, ok := d.GetOk("relation_fv_rs_bd_subnet_to_out"); ok {
-			relationParamList := toStringList(d.Get("relation_fv_rs_bd_subnet_to_out").(*schema.Set).List())
-			tfList := make([]string, 0, 1)
-			for _, relationParam := range relationParamList {
-				relationParamName := GetMOName(relationParam)
-				tfList = append(tfList, relationParamName)
-			}
-			fvRsBDSubnetToOutDataList := toStringList(fvRsBDSubnetToOutData.(*schema.Set).List())
-			sort.Strings(tfList)
-			sort.Strings(fvRsBDSubnetToOutDataList)
-
-			if !reflect.DeepEqual(tfList, fvRsBDSubnetToOutDataList) {
-				d.Set("relation_fv_rs_bd_subnet_to_out", make([]string, 0, 1))
-			}
-		}
+		d.Set("relation_fv_rs_bd_subnet_to_out", toStringList(fvRsBDSubnetToOutData.(*schema.Set).List()))
 	}
 
 	fvRsNdPfxPolData, err := aciClient.ReadRelationfvRsNdPfxPolFromSubnet(dn)
@@ -594,12 +580,7 @@ func resourceAciSubnetRead(ctx context.Context, d *schema.ResourceData, m interf
 		d.Set("relation_fv_rs_nd_pfx_pol", "")
 
 	} else {
-		if _, ok := d.GetOk("relation_fv_rs_nd_pfx_pol"); ok {
-			tfName := GetMOName(d.Get("relation_fv_rs_nd_pfx_pol").(string))
-			if tfName != fvRsNdPfxPolData {
-				d.Set("relation_fv_rs_nd_pfx_pol", "")
-			}
-		}
+		d.Set("relation_fv_rs_nd_pfx_pol", fvRsNdPfxPolData.(string))
 	}
 
 	fvRsBDSubnetToProfileData, err := aciClient.ReadRelationfvRsBDSubnetToProfileFromSubnet(dn)
@@ -608,12 +589,7 @@ func resourceAciSubnetRead(ctx context.Context, d *schema.ResourceData, m interf
 		d.Set("relation_fv_rs_bd_subnet_to_profile", "")
 
 	} else {
-		if _, ok := d.GetOk("relation_fv_rs_bd_subnet_to_profile"); ok {
-			tfName := GetMOName(d.Get("relation_fv_rs_bd_subnet_to_profile").(string))
-			if tfName != fvRsBDSubnetToProfileData {
-				d.Set("relation_fv_rs_bd_subnet_to_profile", "")
-			}
-		}
+		d.Set("relation_fv_rs_bd_subnet_to_profile", fvRsBDSubnetToProfileData.(string))
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())

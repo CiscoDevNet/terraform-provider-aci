@@ -431,12 +431,7 @@ func resourceAciMaintenancePolicyRead(ctx context.Context, d *schema.ResourceDat
 		d.Set("relation_maint_rs_pol_scheduler", "")
 
 	} else {
-		if _, ok := d.GetOk("relation_maint_rs_pol_scheduler"); ok {
-			tfName := GetMOName(d.Get("relation_maint_rs_pol_scheduler").(string))
-			if tfName != maintRsPolSchedulerData {
-				d.Set("relation_maint_rs_pol_scheduler", "")
-			}
-		}
+		d.Set("relation_maint_rs_pol_scheduler", maintRsPolSchedulerData.(string))
 	}
 
 	maintRsPolNotifData, err := aciClient.ReadRelationmaintRsPolNotifFromMaintenancePolicy(dn)
@@ -445,12 +440,7 @@ func resourceAciMaintenancePolicyRead(ctx context.Context, d *schema.ResourceDat
 		d.Set("relation_maint_rs_pol_notif", "")
 
 	} else {
-		if _, ok := d.GetOk("relation_maint_rs_pol_notif"); ok {
-			tfName := d.Get("relation_maint_rs_pol_notif").(string)
-			if tfName != maintRsPolNotifData {
-				d.Set("relation_maint_rs_pol_notif", "")
-			}
-		}
+		d.Set("relation_maint_rs_pol_notif", maintRsPolNotifData.(string))
 	}
 
 	trigRsTriggerableData, err := aciClient.ReadRelationtrigRsTriggerableFromMaintenancePolicy(dn)
@@ -459,12 +449,7 @@ func resourceAciMaintenancePolicyRead(ctx context.Context, d *schema.ResourceDat
 		d.Set("relation_trig_rs_triggerable", "")
 
 	} else {
-		if _, ok := d.GetOk("relation_trig_rs_triggerable"); ok {
-			tfName := d.Get("relation_trig_rs_triggerable").(string)
-			if tfName != trigRsTriggerableData {
-				d.Set("relation_trig_rs_triggerable", "")
-			}
-		}
+		d.Set("relation_trig_rs_triggerable", trigRsTriggerableData.(string))
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())

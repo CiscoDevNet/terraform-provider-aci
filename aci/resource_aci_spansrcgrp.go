@@ -260,12 +260,7 @@ func resourceAciSPANSourceGroupRead(ctx context.Context, d *schema.ResourceData,
 		d.Set("relation_span_rs_src_grp_to_filter_grp", "")
 
 	} else {
-		if _, ok := d.GetOk("relation_span_rs_src_grp_to_filter_grp"); ok {
-			tfName := d.Get("relation_span_rs_src_grp_to_filter_grp").(string)
-			if tfName != spanRsSrcGrpToFilterGrpData {
-				d.Set("relation_span_rs_src_grp_to_filter_grp", "")
-			}
-		}
+		d.Set("relation_span_rs_src_grp_to_filter_grp", spanRsSrcGrpToFilterGrpData.(string))
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())

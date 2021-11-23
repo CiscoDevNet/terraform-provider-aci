@@ -261,7 +261,7 @@ func resourceAciAttachableAccessEntityProfileRead(ctx context.Context, d *schema
 		d.Set("relation_infra_rs_dom_p", make([]string, 0, 1))
 
 	} else {
-		d.Set("relation_infra_rs_dom_p", infraRsDomPData)
+		d.Set("relation_infra_rs_dom_p", toStringList(infraRsDomPData.(*schema.Set).List()))
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())

@@ -118,8 +118,8 @@ func resourceAciCloudEPg() *schema.Resource {
 				Set:      schema.HashString,
 			},
 			"relation_fv_rs_cust_qos_pol": &schema.Schema{
-				Type: schema.TypeString,
-
+				Type:     schema.TypeString,
+				Computed: true,
 				Optional: true,
 			},
 			"relation_fv_rs_cons": &schema.Schema{
@@ -129,8 +129,8 @@ func resourceAciCloudEPg() *schema.Resource {
 				Set:      schema.HashString,
 			},
 			"relation_cloud_rs_cloud_epg_ctx": &schema.Schema{
-				Type: schema.TypeString,
-
+				Type:     schema.TypeString,
+				Computed: true,
 				Optional: true,
 			},
 			"relation_fv_rs_prot_by": &schema.Schema{
@@ -740,7 +740,7 @@ func resourceAciCloudEPgRead(ctx context.Context, d *schema.ResourceData, m inte
 		d.Set("relation_fv_rs_sec_inherited", make([]interface{}, 0, 1))
 
 	} else {
-		d.Set("relation_fv_rs_sec_inherited", fvRsSecInheritedData)
+		d.Set("relation_fv_rs_sec_inherited", toStringList(fvRsSecInheritedData.(*schema.Set).List()))
 	}
 
 	fvRsProvData, err := aciClient.ReadRelationfvRsProvFromCloudEPg(dn)
@@ -749,21 +749,7 @@ func resourceAciCloudEPgRead(ctx context.Context, d *schema.ResourceData, m inte
 		d.Set("relation_fv_rs_prov", make([]string, 0, 1))
 
 	} else {
-		if _, ok := d.GetOk("relation_fv_rs_prov"); ok {
-			relationParamList := toStringList(d.Get("relation_fv_rs_prov").(*schema.Set).List())
-			tfList := make([]string, 0, 1)
-			for _, relationParam := range relationParamList {
-				relationParamName := GetMOName(relationParam)
-				tfList = append(tfList, relationParamName)
-			}
-			fvRsProvDataList := toStringList(fvRsProvData.(*schema.Set).List())
-			sort.Strings(tfList)
-			sort.Strings(fvRsProvDataList)
-
-			if !reflect.DeepEqual(tfList, fvRsProvDataList) {
-				d.Set("relation_fv_rs_prov", make([]string, 0, 1))
-			}
-		}
+		d.Set("relation_fv_rs_prov", toStringList(fvRsProvData.(*schema.Set).List()))
 	}
 
 	fvRsConsIfData, err := aciClient.ReadRelationfvRsConsIfFromCloudEPg(dn)
@@ -772,21 +758,7 @@ func resourceAciCloudEPgRead(ctx context.Context, d *schema.ResourceData, m inte
 		d.Set("relation_fv_rs_cons_if", make([]string, 0, 1))
 
 	} else {
-		if _, ok := d.GetOk("relation_fv_rs_cons_if"); ok {
-			relationParamList := toStringList(d.Get("relation_fv_rs_cons_if").(*schema.Set).List())
-			tfList := make([]string, 0, 1)
-			for _, relationParam := range relationParamList {
-				relationParamName := GetMOName(relationParam)
-				tfList = append(tfList, relationParamName)
-			}
-			fvRsConsIfDataList := toStringList(fvRsConsIfData.(*schema.Set).List())
-			sort.Strings(tfList)
-			sort.Strings(fvRsConsIfDataList)
-
-			if !reflect.DeepEqual(tfList, fvRsConsIfDataList) {
-				d.Set("relation_fv_rs_cons_if", make([]string, 0, 1))
-			}
-		}
+		d.Set("relation_fv_rs_cons_if", toStringList(fvRsConsIfData.(*schema.Set).List()))
 	}
 
 	fvRsCustQosPolData, err := aciClient.ReadRelationfvRsCustQosPolFromCloudEPg(dn)
@@ -795,12 +767,7 @@ func resourceAciCloudEPgRead(ctx context.Context, d *schema.ResourceData, m inte
 		d.Set("relation_fv_rs_cust_qos_pol", "")
 
 	} else {
-		if _, ok := d.GetOk("relation_fv_rs_cust_qos_pol"); ok {
-			tfName := GetMOName(d.Get("relation_fv_rs_cust_qos_pol").(string))
-			if tfName != fvRsCustQosPolData {
-				d.Set("relation_fv_rs_cust_qos_pol", "")
-			}
-		}
+		d.Set("relation_fv_rs_cust_qos_pol", fvRsCustQosPolData.(string))
 	}
 
 	fvRsConsData, err := aciClient.ReadRelationfvRsConsFromCloudEPg(dn)
@@ -809,21 +776,7 @@ func resourceAciCloudEPgRead(ctx context.Context, d *schema.ResourceData, m inte
 		d.Set("relation_fv_rs_cons", make([]string, 0, 1))
 
 	} else {
-		if _, ok := d.GetOk("relation_fv_rs_cons"); ok {
-			relationParamList := toStringList(d.Get("relation_fv_rs_cons").(*schema.Set).List())
-			tfList := make([]string, 0, 1)
-			for _, relationParam := range relationParamList {
-				relationParamName := GetMOName(relationParam)
-				tfList = append(tfList, relationParamName)
-			}
-			fvRsConsDataList := toStringList(fvRsConsData.(*schema.Set).List())
-			sort.Strings(tfList)
-			sort.Strings(fvRsConsDataList)
-
-			if !reflect.DeepEqual(tfList, fvRsConsDataList) {
-				d.Set("relation_fv_rs_cons", make([]string, 0, 1))
-			}
-		}
+		d.Set("relation_fv_rs_cons", toStringList(fvRsConsData.(*schema.Set).List()))
 	}
 
 	cloudRsCloudEPgCtxData, err := aciClient.ReadRelationcloudRsCloudEPgCtxFromCloudEPg(dn)
@@ -832,12 +785,7 @@ func resourceAciCloudEPgRead(ctx context.Context, d *schema.ResourceData, m inte
 		d.Set("relation_cloud_rs_cloud_epg_ctx", "")
 
 	} else {
-		if _, ok := d.GetOk("relation_cloud_rs_cloud_epg_ctx"); ok {
-			tfName := GetMOName(d.Get("relation_cloud_rs_cloud_epg_ctx").(string))
-			if tfName != cloudRsCloudEPgCtxData {
-				d.Set("relation_cloud_rs_cloud_epg_ctx", "")
-			}
-		}
+		d.Set("relation_cloud_rs_cloud_epg_ctx", cloudRsCloudEPgCtxData.(string))
 	}
 
 	fvRsProtByData, err := aciClient.ReadRelationfvRsProtByFromCloudEPg(dn)
@@ -846,21 +794,7 @@ func resourceAciCloudEPgRead(ctx context.Context, d *schema.ResourceData, m inte
 		d.Set("relation_fv_rs_prot_by", make([]string, 0, 1))
 
 	} else {
-		if _, ok := d.GetOk("relation_fv_rs_prot_by"); ok {
-			relationParamList := toStringList(d.Get("relation_fv_rs_prot_by").(*schema.Set).List())
-			tfList := make([]string, 0, 1)
-			for _, relationParam := range relationParamList {
-				relationParamName := GetMOName(relationParam)
-				tfList = append(tfList, relationParamName)
-			}
-			fvRsProtByDataList := toStringList(fvRsProtByData.(*schema.Set).List())
-			sort.Strings(tfList)
-			sort.Strings(fvRsProtByDataList)
-
-			if !reflect.DeepEqual(tfList, fvRsProtByDataList) {
-				d.Set("relation_fv_rs_prot_by", make([]string, 0, 1))
-			}
-		}
+		d.Set("relation_fv_rs_prot_by", toStringList(fvRsProtByData.(*schema.Set).List()))
 	}
 
 	fvRsIntraEpgData, err := aciClient.ReadRelationfvRsIntraEpgFromCloudEPg(dn)

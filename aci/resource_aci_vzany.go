@@ -4,8 +4,6 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"reflect"
-	"sort"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
@@ -425,21 +423,7 @@ func resourceAciAnyRead(ctx context.Context, d *schema.ResourceData, m interface
 		d.Set("relation_vz_rs_any_to_cons", make([]string, 0, 1))
 
 	} else {
-		if _, ok := d.GetOk("relation_vz_rs_any_to_cons"); ok {
-			relationParamList := toStringList(d.Get("relation_vz_rs_any_to_cons").(*schema.Set).List())
-			tfList := make([]string, 0, 1)
-			for _, relationParam := range relationParamList {
-				relationParamName := GetMOName(relationParam)
-				tfList = append(tfList, relationParamName)
-			}
-			vzRsAnyToConsDataList := toStringList(vzRsAnyToConsData.(*schema.Set).List())
-			sort.Strings(tfList)
-			sort.Strings(vzRsAnyToConsDataList)
-
-			if !reflect.DeepEqual(tfList, vzRsAnyToConsDataList) {
-				d.Set("relation_vz_rs_any_to_cons", make([]string, 0, 1))
-			}
-		}
+		d.Set("relation_vz_rs_any_to_cons", toStringList(vzRsAnyToConsData.(*schema.Set).List()))
 	}
 
 	vzRsAnyToConsIfData, err := aciClient.ReadRelationvzRsAnyToConsIfFromAny(dn)
@@ -448,44 +432,15 @@ func resourceAciAnyRead(ctx context.Context, d *schema.ResourceData, m interface
 		d.Set("relation_vz_rs_any_to_cons_if", make([]string, 0, 1))
 
 	} else {
-		if _, ok := d.GetOk("relation_vz_rs_any_to_cons_if"); ok {
-			relationParamList := toStringList(d.Get("relation_vz_rs_any_to_cons_if").(*schema.Set).List())
-			tfList := make([]string, 0, 1)
-			for _, relationParam := range relationParamList {
-				relationParamName := GetMOName(relationParam)
-				tfList = append(tfList, relationParamName)
-			}
-			vzRsAnyToConsIfDataList := toStringList(vzRsAnyToConsIfData.(*schema.Set).List())
-			sort.Strings(tfList)
-			sort.Strings(vzRsAnyToConsIfDataList)
-
-			if !reflect.DeepEqual(tfList, vzRsAnyToConsIfDataList) {
-				d.Set("relation_vz_rs_any_to_cons_if", make([]string, 0, 1))
-			}
-		}
+		d.Set("relation_vz_rs_any_to_cons_if", toStringList(vzRsAnyToConsIfData.(*schema.Set).List()))
 	}
 
 	vzRsAnyToProvData, err := aciClient.ReadRelationvzRsAnyToProvFromAny(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation vzRsAnyToProv %v", err)
 		d.Set("relation_vz_rs_any_to_prov", make([]string, 0, 1))
-
 	} else {
-		if _, ok := d.GetOk("relation_vz_rs_any_to_prov"); ok {
-			relationParamList := toStringList(d.Get("relation_vz_rs_any_to_prov").(*schema.Set).List())
-			tfList := make([]string, 0, 1)
-			for _, relationParam := range relationParamList {
-				relationParamName := GetMOName(relationParam)
-				tfList = append(tfList, relationParamName)
-			}
-			vzRsAnyToProvDataList := toStringList(vzRsAnyToProvData.(*schema.Set).List())
-			sort.Strings(tfList)
-			sort.Strings(vzRsAnyToProvDataList)
-
-			if !reflect.DeepEqual(tfList, vzRsAnyToProvDataList) {
-				d.Set("relation_vz_rs_any_to_prov", make([]string, 0, 1))
-			}
-		}
+		d.Set("relation_vz_rs_any_to_prov", toStringList(vzRsAnyToProvData.(*schema.Set).List()))
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())

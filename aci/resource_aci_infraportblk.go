@@ -353,12 +353,7 @@ func resourceAciAccessPortBlockRead(ctx context.Context, d *schema.ResourceData,
 		d.Set("relation_infra_rs_acc_bndl_subgrp", "")
 
 	} else {
-		if _, ok := d.GetOk("relation_infra_rs_acc_bndl_subgrp"); ok {
-			tfName := GetMOName(d.Get("relation_infra_rs_acc_bndl_subgrp").(string))
-			if tfName != infraRsAccBndlSubgrpData {
-				d.Set("relation_infra_rs_acc_bndl_subgrp", "")
-			}
-		}
+		d.Set("relation_infra_rs_acc_bndl_subgrp", infraRsAccBndlSubgrpData.(string))
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
