@@ -230,11 +230,11 @@ func setEndpointSecurityGroupAttributes(fvESg *models.EndpointSecurityGroup, d *
 	if err != nil {
 		return d, err
 	}
-	d.Set("application_profile_dn", GetParentDn(fvESg.DistinguishedName, fmt.Sprintf("/esg-sample")))
 	d.Set("annotation", fvESgMap["annotation"])
 	d.Set("flood_on_encap", fvESgMap["floodOnEncap"])
 	d.Set("match_t", fvESgMap["matchT"])
 	d.Set("name", fvESgMap["name"])
+	d.Set("application_profile_dn", GetParentDn(fvESg.DistinguishedName, fmt.Sprintf("/esg-%s", fvESgMap["name"])))
 	d.Set("pc_enf_pref", fvESgMap["pcEnfPref"])
 	d.Set("pref_gr_memb", fvESgMap["prefGrMemb"])
 	d.Set("prio", fvESgMap["prio"])
