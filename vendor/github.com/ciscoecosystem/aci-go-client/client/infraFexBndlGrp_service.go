@@ -92,7 +92,7 @@ func (sm *ServiceManager) ReadRelationinfraRsMonFexInfraPolFromFexBundleGroup(pa
 	contList := models.ListFromContainer(cont, "infraRsMonFexInfraPol")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnMonInfraPolName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err

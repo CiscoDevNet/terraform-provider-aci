@@ -45,8 +45,8 @@ func resourceAciTenant() *schema.Resource {
 				Set:      schema.HashString,
 			},
 			"relation_fv_rs_tenant_mon_pol": &schema.Schema{
-				Type: schema.TypeString,
-
+				Type:     schema.TypeString,
+				Computed: true,
 				Optional: true,
 			},
 		}),
@@ -290,7 +290,7 @@ func resourceAciTenantRead(ctx context.Context, d *schema.ResourceData, m interf
 		d.Set("relation_fv_rs_tn_deny_rule", make([]string, 0, 1))
 
 	} else {
-		d.Set("relation_fv_rs_tn_deny_rule", fvRsTnDenyRuleData)
+		d.Set("relation_fv_rs_tn_deny_rule", toStringList(fvRsTnDenyRuleData.(*schema.Set).List()))
 	}
 
 	fvRsTenantMonPolData, err := aciClient.ReadRelationfvRsTenantMonPolFromTenant(dn)
@@ -299,12 +299,7 @@ func resourceAciTenantRead(ctx context.Context, d *schema.ResourceData, m interf
 		d.Set("relation_fv_rs_tenant_mon_pol", "")
 
 	} else {
-		if _, ok := d.GetOk("relation_fv_rs_tenant_mon_pol"); ok {
-			tfName := GetMOName(d.Get("relation_fv_rs_tenant_mon_pol").(string))
-			if tfName != fvRsTenantMonPolData {
-				d.Set("relation_fv_rs_tenant_mon_pol", "")
-			}
-		}
+		d.Set("relation_fv_rs_tenant_mon_pol", fvRsTenantMonPolData.(string))
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())

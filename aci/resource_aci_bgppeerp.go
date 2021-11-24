@@ -155,8 +155,8 @@ func resourceAciBgpPeerConnectivityProfile() *schema.Resource {
 			},
 
 			"relation_bgp_rs_peer_pfx_pol": &schema.Schema{
-				Type: schema.TypeString,
-
+				Type:     schema.TypeString,
+				Computed: true,
 				Optional: true,
 			},
 		}),
@@ -497,9 +497,6 @@ func resourceAciBgpPeerConnectivityProfileUpdate(ctx context.Context, d *schema.
 		PeerCtrl := strings.Join(peerCtrlList, ",")
 		bgpPeerPAttr.PeerCtrl = PeerCtrl
 	}
-	if PeerCtrl, ok := d.GetOk("peer_ctrl"); ok {
-		bgpPeerPAttr.PeerCtrl = PeerCtrl.(string)
-	}
 	if PrivateASctrl, ok := d.GetOk("private_a_sctrl"); ok {
 		privateASctrlList := make([]string, 0, 1)
 		for _, val := range PrivateASctrl.([]interface{}) {
@@ -630,12 +627,7 @@ func resourceAciBgpPeerConnectivityProfileRead(ctx context.Context, d *schema.Re
 		d.Set("relation_bgp_rs_peer_pfx_pol", "")
 
 	} else {
-		if _, ok := d.GetOk("relation_bgp_rs_peer_pfx_pol"); ok {
-			tfName := GetMOName(d.Get("relation_bgp_rs_peer_pfx_pol").(string))
-			if tfName != bgpRsPeerPfxPolData {
-				d.Set("relation_bgp_rs_peer_pfx_pol", "")
-			}
-		}
+		d.Set("relation_bgp_rs_peer_pfx_pol", bgpRsPeerPfxPolData.(string))
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())

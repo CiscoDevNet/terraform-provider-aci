@@ -54,8 +54,8 @@ func resourceAciLeafBreakoutPortGroup() *schema.Resource {
 			},
 
 			"relation_infra_rs_mon_brkout_infra_pol": &schema.Schema{
-				Type: schema.TypeString,
-
+				Type:     schema.TypeString,
+				Computed: true,
 				Optional: true,
 			},
 		}),
@@ -251,12 +251,7 @@ func resourceAciLeafBreakoutPortGroupRead(ctx context.Context, d *schema.Resourc
 		d.Set("relation_infra_rs_mon_brkout_infra_pol", "")
 
 	} else {
-		if relDn, ok := d.GetOk("relation_infra_rs_mon_brkout_infra_pol"); ok {
-			tfName := GetMOName(relDn.(string))
-			if tfName != infraRsMonBrkoutInfraPolData {
-				d.Set("relation_infra_rs_mon_brkout_infra_pol", "")
-			}
-		}
+		d.Set("relation_infra_rs_mon_brkout_infra_pol", infraRsMonBrkoutInfraPolData.(string))
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())

@@ -98,7 +98,7 @@ func (sm *ServiceManager) ReadRelationl3extRsLIfPToNetflowMonitorPolFromLogicalI
 
 	for _, contItem := range contList {
 		paramMap := make(map[string]string)
-		paramMap["tnNetflowMonitorPolName"] = models.G(contItem, "tnNetflowMonitorPolName")
+		paramMap["tnNetflowMonitorPolName"] = models.G(contItem, "tDn")
 		paramMap["fltType"] = models.G(contItem, "fltType")
 
 		st = append(st, paramMap)
@@ -195,7 +195,7 @@ func (sm *ServiceManager) ReadRelationl3extRsEgressQosDppPolFromLogicalInterface
 	contList := models.ListFromContainer(cont, "l3extRsEgressQosDppPol")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnQosDppPolName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -239,7 +239,7 @@ func (sm *ServiceManager) ReadRelationl3extRsIngressQosDppPolFromLogicalInterfac
 	contList := models.ListFromContainer(cont, "l3extRsIngressQosDppPol")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnQosDppPolName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -283,7 +283,7 @@ func (sm *ServiceManager) ReadRelationl3extRsLIfPCustQosPolFromLogicalInterfaceP
 	contList := models.ListFromContainer(cont, "l3extRsLIfPCustQosPol")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnQosCustomPolName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -327,7 +327,7 @@ func (sm *ServiceManager) ReadRelationl3extRsArpIfPolFromLogicalInterfaceProfile
 	contList := models.ListFromContainer(cont, "l3extRsArpIfPol")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnArpIfPolName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -371,7 +371,7 @@ func (sm *ServiceManager) ReadRelationl3extRsNdIfPolFromLogicalInterfaceProfile(
 	contList := models.ListFromContainer(cont, "l3extRsNdIfPol")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnNdIfPolName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err

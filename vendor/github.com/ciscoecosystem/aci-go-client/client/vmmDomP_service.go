@@ -237,7 +237,7 @@ func (sm *ServiceManager) ReadRelationvmmRsDefaultCdpIfPolFromVMMDomain(parentDn
 	contList := models.ListFromContainer(cont, "vmmRsDefaultCdpIfPol")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnCdpIfPolName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -281,7 +281,7 @@ func (sm *ServiceManager) ReadRelationvmmRsDefaultLacpLagPolFromVMMDomain(parent
 	contList := models.ListFromContainer(cont, "vmmRsDefaultLacpLagPol")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnLacpLagPolName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -418,7 +418,7 @@ func (sm *ServiceManager) ReadRelationvmmRsDefaultLldpIfPolFromVMMDomain(parentD
 	contList := models.ListFromContainer(cont, "vmmRsDefaultLldpIfPol")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnLldpIfPolName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -462,7 +462,7 @@ func (sm *ServiceManager) ReadRelationvmmRsDefaultStpIfPolFromVMMDomain(parentDn
 	contList := models.ListFromContainer(cont, "vmmRsDefaultStpIfPol")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnStpIfPolName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -550,7 +550,7 @@ func (sm *ServiceManager) ReadRelationvmmRsDefaultFwPolFromVMMDomain(parentDn st
 	contList := models.ListFromContainer(cont, "vmmRsDefaultFwPol")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnNwsFwPolName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -594,7 +594,7 @@ func (sm *ServiceManager) ReadRelationvmmRsDefaultL2InstPolFromVMMDomain(parentD
 	contList := models.ListFromContainer(cont, "vmmRsDefaultL2InstPol")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnL2InstPolName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err

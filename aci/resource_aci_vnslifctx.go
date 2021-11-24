@@ -65,8 +65,8 @@ func resourceAciLogicalInterfaceContext() *schema.Resource {
 			},
 
 			"relation_vns_rs_l_if_ctx_to_cust_qos_pol": &schema.Schema{
-				Type: schema.TypeString,
-
+				Type:     schema.TypeString,
+				Computed: true,
 				Optional: true,
 			},
 			"relation_vns_rs_l_if_ctx_to_svc_e_pg_pol": &schema.Schema{
@@ -85,13 +85,13 @@ func resourceAciLogicalInterfaceContext() *schema.Resource {
 				Optional: true,
 			},
 			"relation_vns_rs_l_if_ctx_to_out_def": &schema.Schema{
-				Type: schema.TypeString,
-
+				Type:     schema.TypeString,
+				Computed: true,
 				Optional: true,
 			},
 			"relation_vns_rs_l_if_ctx_to_inst_p": &schema.Schema{
-				Type: schema.TypeString,
-
+				Type:     schema.TypeString,
+				Computed: true,
 				Optional: true,
 			},
 			"relation_vns_rs_l_if_ctx_to_bd": &schema.Schema{
@@ -284,16 +284,14 @@ func resourceAciLogicalInterfaceContextCreate(ctx context.Context, d *schema.Res
 	}
 	if relationTovnsRsLIfCtxToOutDef, ok := d.GetOk("relation_vns_rs_l_if_ctx_to_out_def"); ok {
 		relationParam := relationTovnsRsLIfCtxToOutDef.(string)
-		relationParamName := GetMOName(relationParam)
-		err = aciClient.CreateRelationvnsRsLIfCtxToOutDefFromLogicalInterfaceContext(vnsLIfCtx.DistinguishedName, relationParamName)
+		err = aciClient.CreateRelationvnsRsLIfCtxToOutDefFromLogicalInterfaceContext(vnsLIfCtx.DistinguishedName, relationParam)
 		if err != nil {
 			return diag.FromErr(err)
 		}
 	}
 	if relationTovnsRsLIfCtxToInstP, ok := d.GetOk("relation_vns_rs_l_if_ctx_to_inst_p"); ok {
 		relationParam := relationTovnsRsLIfCtxToInstP.(string)
-		relationParamName := GetMOName(relationParam)
-		err = aciClient.CreateRelationvnsRsLIfCtxToInstPFromLogicalInterfaceContext(vnsLIfCtx.DistinguishedName, relationParamName)
+		err = aciClient.CreateRelationvnsRsLIfCtxToInstPFromLogicalInterfaceContext(vnsLIfCtx.DistinguishedName, relationParam)
 		if err != nil {
 			return diag.FromErr(err)
 		}
@@ -462,12 +460,11 @@ func resourceAciLogicalInterfaceContextUpdate(ctx context.Context, d *schema.Res
 	}
 	if d.HasChange("relation_vns_rs_l_if_ctx_to_inst_p") {
 		_, newRelParam := d.GetChange("relation_vns_rs_l_if_ctx_to_inst_p")
-		newRelParamName := GetMOName(newRelParam.(string))
 		err = aciClient.DeleteRelationvnsRsLIfCtxToInstPFromLogicalInterfaceContext(vnsLIfCtx.DistinguishedName)
 		if err != nil {
 			return diag.FromErr(err)
 		}
-		err = aciClient.CreateRelationvnsRsLIfCtxToInstPFromLogicalInterfaceContext(vnsLIfCtx.DistinguishedName, newRelParamName)
+		err = aciClient.CreateRelationvnsRsLIfCtxToInstPFromLogicalInterfaceContext(vnsLIfCtx.DistinguishedName, newRelParam.(string))
 		if err != nil {
 			return diag.FromErr(err)
 		}
@@ -528,12 +525,7 @@ func resourceAciLogicalInterfaceContextRead(ctx context.Context, d *schema.Resou
 		d.Set("relation_vns_rs_l_if_ctx_to_cust_qos_pol", "")
 
 	} else {
-		if _, ok := d.GetOk("relation_vns_rs_l_if_ctx_to_cust_qos_pol"); ok {
-			tfName := GetMOName(d.Get("relation_vns_rs_l_if_ctx_to_cust_qos_pol").(string))
-			if tfName != vnsRsLIfCtxToCustQosPolData {
-				d.Set("relation_vns_rs_l_if_ctx_to_cust_qos_pol", "")
-			}
-		}
+		d.Set("relation_vns_rs_l_if_ctx_to_cust_qos_pol", vnsRsLIfCtxToCustQosPolData.(string))
 	}
 
 	vnsRsLIfCtxToSvcEPgPolData, err := aciClient.ReadRelationvnsRsLIfCtxToSvcEPgPolFromLogicalInterfaceContext(dn)
@@ -542,12 +534,7 @@ func resourceAciLogicalInterfaceContextRead(ctx context.Context, d *schema.Resou
 		d.Set("relation_vns_rs_l_if_ctx_to_svc_e_pg_pol", "")
 
 	} else {
-		if _, ok := d.GetOk("relation_vns_rs_l_if_ctx_to_svc_e_pg_pol"); ok {
-			tfName := d.Get("relation_vns_rs_l_if_ctx_to_svc_e_pg_pol").(string)
-			if tfName != vnsRsLIfCtxToSvcEPgPolData {
-				d.Set("relation_vns_rs_l_if_ctx_to_svc_e_pg_pol", "")
-			}
-		}
+		d.Set("relation_vns_rs_l_if_ctx_to_svc_e_pg_pol", vnsRsLIfCtxToSvcEPgPolData.(string))
 	}
 
 	vnsRsLIfCtxToSvcRedirectPolData, err := aciClient.ReadRelationvnsRsLIfCtxToSvcRedirectPolFromLogicalInterfaceContext(dn)
@@ -556,12 +543,7 @@ func resourceAciLogicalInterfaceContextRead(ctx context.Context, d *schema.Resou
 		d.Set("relation_vns_rs_l_if_ctx_to_svc_redirect_pol", "")
 
 	} else {
-		if _, ok := d.GetOk("relation_vns_rs_l_if_ctx_to_svc_redirect_pol"); ok {
-			tfName := d.Get("relation_vns_rs_l_if_ctx_to_svc_redirect_pol").(string)
-			if tfName != vnsRsLIfCtxToSvcRedirectPolData {
-				d.Set("relation_vns_rs_l_if_ctx_to_svc_redirect_pol", "")
-			}
-		}
+		d.Set("relation_vns_rs_l_if_ctx_to_svc_redirect_pol", vnsRsLIfCtxToSvcRedirectPolData.(string))
 	}
 
 	vnsRsLIfCtxToLIfData, err := aciClient.ReadRelationvnsRsLIfCtxToLIfFromLogicalInterfaceContext(dn)
@@ -570,12 +552,7 @@ func resourceAciLogicalInterfaceContextRead(ctx context.Context, d *schema.Resou
 		d.Set("relation_vns_rs_l_if_ctx_to_l_if", "")
 
 	} else {
-		if _, ok := d.GetOk("relation_vns_rs_l_if_ctx_to_l_if"); ok {
-			tfName := d.Get("relation_vns_rs_l_if_ctx_to_l_if").(string)
-			if tfName != vnsRsLIfCtxToLIfData {
-				d.Set("relation_vns_rs_l_if_ctx_to_l_if", "")
-			}
-		}
+		d.Set("relation_vns_rs_l_if_ctx_to_l_if", vnsRsLIfCtxToLIfData.(string))
 	}
 
 	vnsRsLIfCtxToOutDefData, err := aciClient.ReadRelationvnsRsLIfCtxToOutDefFromLogicalInterfaceContext(dn)
@@ -584,12 +561,7 @@ func resourceAciLogicalInterfaceContextRead(ctx context.Context, d *schema.Resou
 		d.Set("relation_vns_rs_l_if_ctx_to_out_def", "")
 
 	} else {
-		if _, ok := d.GetOk("relation_vns_rs_l_if_ctx_to_out_def"); ok {
-			tfName := GetMOName(d.Get("relation_vns_rs_l_if_ctx_to_out_def").(string))
-			if tfName != vnsRsLIfCtxToOutDefData {
-				d.Set("relation_vns_rs_l_if_ctx_to_out_def", "")
-			}
-		}
+		d.Set("relation_vns_rs_l_if_ctx_to_out_def", vnsRsLIfCtxToOutDefData.(string))
 	}
 
 	vnsRsLIfCtxToInstPData, err := aciClient.ReadRelationvnsRsLIfCtxToInstPFromLogicalInterfaceContext(dn)
@@ -598,12 +570,7 @@ func resourceAciLogicalInterfaceContextRead(ctx context.Context, d *schema.Resou
 		d.Set("relation_vns_rs_l_if_ctx_to_inst_p", "")
 
 	} else {
-		if _, ok := d.GetOk("relation_vns_rs_l_if_ctx_to_inst_p"); ok {
-			tfName := GetMOName(d.Get("relation_vns_rs_l_if_ctx_to_inst_p").(string))
-			if tfName != vnsRsLIfCtxToInstPData {
-				d.Set("relation_vns_rs_l_if_ctx_to_inst_p", "")
-			}
-		}
+		d.Set("relation_vns_rs_l_if_ctx_to_inst_p", vnsRsLIfCtxToInstPData.(string))
 	}
 
 	vnsRsLIfCtxToBDData, err := aciClient.ReadRelationvnsRsLIfCtxToBDFromLogicalInterfaceContext(dn)
@@ -611,12 +578,7 @@ func resourceAciLogicalInterfaceContextRead(ctx context.Context, d *schema.Resou
 		log.Printf("[DEBUG] Error while reading relation vnsRsLIfCtxToBD %v", err)
 		d.Set("relation_vns_rs_l_if_ctx_to_bd", "")
 	} else {
-		if _, ok := d.GetOk("relation_vns_rs_l_if_ctx_to_bd"); ok {
-			tfName := d.Get("relation_vns_rs_l_if_ctx_to_bd").(string)
-			if tfName != vnsRsLIfCtxToBDData {
-				d.Set("relation_vns_rs_l_if_ctx_to_bd", "")
-			}
-		}
+		d.Set("relation_vns_rs_l_if_ctx_to_bd", vnsRsLIfCtxToBDData.(string))
 	}
 
 	vnsRsLIfCtxToOutData, err := aciClient.ReadRelationvnsRsLIfCtxToOutFromLogicalInterfaceContext(dn)
@@ -625,12 +587,7 @@ func resourceAciLogicalInterfaceContextRead(ctx context.Context, d *schema.Resou
 		d.Set("relation_vns_rs_l_if_ctx_to_out", "")
 
 	} else {
-		if _, ok := d.GetOk("relation_vns_rs_l_if_ctx_to_out"); ok {
-			tfName := d.Get("relation_vns_rs_l_if_ctx_to_out").(string)
-			if tfName != vnsRsLIfCtxToOutData {
-				d.Set("relation_vns_rs_l_if_ctx_to_out", "")
-			}
-		}
+		d.Set("relation_vns_rs_l_if_ctx_to_out", vnsRsLIfCtxToOutData.(string))
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())

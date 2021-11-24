@@ -148,7 +148,7 @@ func (sm *ServiceManager) ReadRelationfvRsProvFromCloudExternalEPg(parentDn stri
 		F: schema.HashString,
 	}
 	for _, contItem := range contList {
-		dat := models.G(contItem, "tnVzBrCPName")
+		dat := models.G(contItem, "tDn")
 		st.Add(dat)
 	}
 	return st, err
@@ -198,7 +198,7 @@ func (sm *ServiceManager) ReadRelationfvRsConsIfFromCloudExternalEPg(parentDn st
 		F: schema.HashString,
 	}
 	for _, contItem := range contList {
-		dat := models.G(contItem, "tnVzCPIfName")
+		dat := models.G(contItem, "tDn")
 		st.Add(dat)
 	}
 	return st, err
@@ -241,7 +241,7 @@ func (sm *ServiceManager) ReadRelationfvRsCustQosPolFromCloudExternalEPg(parentD
 	contList := models.ListFromContainer(cont, "fvRsCustQosPol")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnQosCustomPolName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -292,7 +292,7 @@ func (sm *ServiceManager) ReadRelationfvRsConsFromCloudExternalEPg(parentDn stri
 		F: schema.HashString,
 	}
 	for _, contItem := range contList {
-		dat := models.G(contItem, "tnVzBrCPName")
+		dat := models.G(contItem, "tDn")
 		st.Add(dat)
 	}
 	return st, err
@@ -335,7 +335,7 @@ func (sm *ServiceManager) ReadRelationcloudRsCloudEPgCtxFromCloudExternalEPg(par
 	contList := models.ListFromContainer(cont, "cloudRsCloudEPgCtx")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnFvCtxName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -386,7 +386,7 @@ func (sm *ServiceManager) ReadRelationfvRsProtByFromCloudExternalEPg(parentDn st
 		F: schema.HashString,
 	}
 	for _, contItem := range contList {
-		dat := models.G(contItem, "tnVzTabooName")
+		dat := models.G(contItem, "tDn")
 		st.Add(dat)
 	}
 	return st, err
@@ -436,7 +436,7 @@ func (sm *ServiceManager) ReadRelationfvRsIntraEpgFromCloudExternalEPg(parentDn 
 		F: schema.HashString,
 	}
 	for _, contItem := range contList {
-		dat := models.G(contItem, "tnVzBrCPName")
+		dat := models.G(contItem, "tDn")
 		st.Add(dat)
 	}
 	return st, err

@@ -4,8 +4,6 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"reflect"
-	"sort"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
@@ -461,16 +459,7 @@ func resourceAciVirtualLogicalInterfaceProfileRead(ctx context.Context, d *schem
 		log.Printf("[DEBUG] Error while reading relation l3extRsDynPathAtt %v", err)
 		d.Set("relation_l3ext_rs_dyn_path_att", make([]string, 0, 1))
 	} else {
-		if _, ok := d.GetOk("relation_l3ext_rs_dyn_path_att"); ok {
-			relationParamList := toStringList(d.Get("relation_l3ext_rs_dyn_path_att").(*schema.Set).List())
-			l3extRsDynPathAttDataList := toStringList(l3extRsDynPathAttData.(*schema.Set).List())
-			sort.Strings(relationParamList)
-			sort.Strings(l3extRsDynPathAttDataList)
-
-			if !reflect.DeepEqual(relationParamList, l3extRsDynPathAttDataList) {
-				d.Set("relation_l3ext_rs_dyn_path_att", make([]string, 0, 1))
-			}
-		}
+		d.Set("relation_l3ext_rs_dyn_path_att", toStringList(l3extRsDynPathAttData.(*schema.Set).List()))
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())

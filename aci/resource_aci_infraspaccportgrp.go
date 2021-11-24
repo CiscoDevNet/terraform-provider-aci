@@ -357,10 +357,7 @@ func resourceAciSpineAccessPortPolicyGroupRead(ctx context.Context, d *schema.Re
 		d.Set("relation_infra_rs_h_if_pol", "")
 
 	} else {
-		name := models.GetMOName(d.Get("relation_infra_rs_h_if_pol").(string))
-		if name != infraRsHIfPolData {
-			d.Set("relation_infra_rs_h_if_pol", "")
-		}
+		d.Set("relation_infra_rs_h_if_pol", infraRsHIfPolData.(string))
 	}
 
 	infraRsCdpIfPolData, err := aciClient.ReadRelationinfraRsCdpIfPolFromSpineAccessPortPolicyGroup(dn)
@@ -369,10 +366,7 @@ func resourceAciSpineAccessPortPolicyGroupRead(ctx context.Context, d *schema.Re
 		d.Set("relation_infra_rs_cdp_if_pol", "")
 
 	} else {
-		name := models.GetMOName(d.Get("relation_infra_rs_cdp_if_pol").(string))
-		if name != infraRsCdpIfPolData {
-			d.Set("relation_infra_rs_cdp_if_pol", "")
-		}
+		d.Set("relation_infra_rs_cdp_if_pol", infraRsCdpIfPolData.(string))
 	}
 
 	infraRsCoppIfPolData, err := aciClient.ReadRelationinfraRsCoppIfPolFromSpineAccessPortPolicyGroup(dn)
@@ -381,10 +375,7 @@ func resourceAciSpineAccessPortPolicyGroupRead(ctx context.Context, d *schema.Re
 		d.Set("relation_infra_rs_copp_if_pol", "")
 
 	} else {
-		name := models.GetMOName(d.Get("relation_infra_rs_copp_if_pol").(string))
-		if name != infraRsCoppIfPolData {
-			d.Set("relation_infra_rs_copp_if_pol", "")
-		}
+		d.Set("relation_infra_rs_copp_if_pol", infraRsCoppIfPolData.(string))
 	}
 
 	infraRsAttEntPData, err := aciClient.ReadRelationinfraRsAttEntPFromSpineAccessPortPolicyGroup(dn)
@@ -393,7 +384,7 @@ func resourceAciSpineAccessPortPolicyGroupRead(ctx context.Context, d *schema.Re
 		d.Set("relation_infra_rs_att_ent_p", "")
 
 	} else {
-		d.Set("relation_infra_rs_att_ent_p", infraRsAttEntPData)
+		d.Set("relation_infra_rs_att_ent_p", infraRsAttEntPData.(string))
 	}
 
 	infraRsMacsecIfPolData, err := aciClient.ReadRelationinfraRsMacsecIfPolFromSpineAccessPortPolicyGroup(dn)
@@ -402,10 +393,7 @@ func resourceAciSpineAccessPortPolicyGroupRead(ctx context.Context, d *schema.Re
 		d.Set("relation_infra_rs_macsec_if_pol", "")
 
 	} else {
-		name := models.GetMOName(d.Get("relation_infra_rs_macsec_if_pol").(string))
-		if name != infraRsMacsecIfPolData {
-			d.Set("relation_infra_rs_macsec_if_pol", "")
-		}
+		d.Set("relation_infra_rs_macsec_if_pol", infraRsMacsecIfPolData.(string))
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
