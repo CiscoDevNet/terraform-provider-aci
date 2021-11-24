@@ -108,8 +108,8 @@ func resourceAciL3Outside() *schema.Resource {
 				},
 			},
 			"relation_l3ext_rs_ectx": &schema.Schema{
-				Type: schema.TypeString,
-
+				Type:     schema.TypeString,
+				Computed: true,
 				Optional: true,
 			},
 			"relation_l3ext_rs_out_to_bd_public_subnet_holder": &schema.Schema{
@@ -288,7 +288,7 @@ func resourceAciL3OutsideCreate(ctx context.Context, d *schema.ResourceData, m i
 		relationParamList := relationTol3extRsDampeningPol.(*schema.Set).List()
 		for _, relationParam := range relationParamList {
 			paramMap := relationParam.(map[string]interface{})
-			err = aciClient.CreateRelationl3extRsDampeningPolFromL3Outside(l3extOut.DistinguishedName, paramMap["tn_rtctrl_profile_name"].(string), paramMap["af"].(string))
+			err = aciClient.CreateRelationl3extRsDampeningPolFromL3Outside(l3extOut.DistinguishedName, GetMOName(paramMap["tn_rtctrl_profile_name"].(string)), paramMap["af"].(string))
 			if err != nil {
 				return diag.FromErr(err)
 			}
@@ -421,7 +421,7 @@ func resourceAciL3OutsideUpdate(ctx context.Context, d *schema.ResourceData, m i
 		newRelList := newRel.(*schema.Set).List()
 		for _, relationParam := range oldRelList {
 			paramMap := relationParam.(map[string]interface{})
-			err = aciClient.DeleteRelationl3extRsDampeningPolFromL3Outside(l3extOut.DistinguishedName, paramMap["tn_rtctrl_profile_name"].(string), paramMap["af"].(string))
+			err = aciClient.DeleteRelationl3extRsDampeningPolFromL3Outside(l3extOut.DistinguishedName, GetMOName(paramMap["tn_rtctrl_profile_name"].(string)), paramMap["af"].(string))
 			if err != nil {
 				return diag.FromErr(err)
 			}
@@ -429,7 +429,7 @@ func resourceAciL3OutsideUpdate(ctx context.Context, d *schema.ResourceData, m i
 		}
 		for _, relationParam := range newRelList {
 			paramMap := relationParam.(map[string]interface{})
-			err = aciClient.CreateRelationl3extRsDampeningPolFromL3Outside(l3extOut.DistinguishedName, paramMap["tn_rtctrl_profile_name"].(string), paramMap["af"].(string))
+			err = aciClient.CreateRelationl3extRsDampeningPolFromL3Outside(l3extOut.DistinguishedName, GetMOName(paramMap["tn_rtctrl_profile_name"].(string)), paramMap["af"].(string))
 			if err != nil {
 				return diag.FromErr(err)
 			}
@@ -515,7 +515,15 @@ func resourceAciL3OutsideRead(ctx context.Context, d *schema.ResourceData, m int
 		log.Printf("[DEBUG] Error while reading relation l3extRsDampeningPol %v", err)
 
 	} else {
-		d.Set("relation_l3ext_rs_dampening_pol", l3extRsDampeningPolData)
+		relParamList := make([]map[string]string, 0, 1)
+		relParams := l3extRsDampeningPolData.([]map[string]string)
+		for _, obj := range relParams {
+			relParamList = append(relParamList, map[string]string{
+				"tn_rtctrl_profile_name": obj["tnRtctrlProfileName"],
+				"af":                     obj["af"],
+			})
+		}
+		d.Set("relation_l3ext_rs_dampening_pol", relParamList)
 	}
 
 	l3extRsEctxData, err := aciClient.ReadRelationl3extRsEctxFromL3Outside(dn)
@@ -524,12 +532,7 @@ func resourceAciL3OutsideRead(ctx context.Context, d *schema.ResourceData, m int
 		d.Set("relation_l3ext_rs_ectx", "")
 
 	} else {
-		if _, ok := d.GetOk("relation_l3ext_rs_ectx"); ok {
-			tfName := GetMOName(d.Get("relation_l3ext_rs_ectx").(string))
-			if tfName != l3extRsEctxData {
-				d.Set("relation_l3ext_rs_ectx", "")
-			}
-		}
+		d.Set("relation_l3ext_rs_ectx", l3extRsEctxData.(string))
 	}
 
 	l3extRsOutToBDPublicSubnetHolderData, err := aciClient.ReadRelationl3extRsOutToBDPublicSubnetHolderFromL3Outside(dn)
@@ -538,15 +541,7 @@ func resourceAciL3OutsideRead(ctx context.Context, d *schema.ResourceData, m int
 		d.Set("relation_l3ext_rs_out_to_bd_public_subnet_holder", make([]string, 0, 1))
 
 	} else {
-		if _, ok := d.GetOk("relation_l3ext_rs_out_to_bd_public_subnet_holder"); ok {
-			relationParamList := toStringList(d.Get("relation_l3ext_rs_out_to_bd_public_subnet_holder").(*schema.Set).List())
-			l3extRsOutToBDPublicSubnetHolderDataList := toStringList(l3extRsOutToBDPublicSubnetHolderData.(*schema.Set).List())
-			sort.Strings(relationParamList)
-			sort.Strings(l3extRsOutToBDPublicSubnetHolderDataList)
-			if !reflect.DeepEqual(relationParamList, l3extRsOutToBDPublicSubnetHolderDataList) {
-				d.Set("relation_l3ext_rs_out_to_bd_public_subnet_holder", make([]string, 0, 1))
-			}
-		}
+		d.Set("relation_l3ext_rs_out_to_bd_public_subnet_holder", toStringList(l3extRsOutToBDPublicSubnetHolderData.(*schema.Set).List()))
 	}
 
 	l3extRsInterleakPolData, err := aciClient.ReadRelationl3extRsInterleakPolFromL3Outside(dn)
@@ -555,12 +550,7 @@ func resourceAciL3OutsideRead(ctx context.Context, d *schema.ResourceData, m int
 		d.Set("relation_l3ext_rs_interleak_pol", "")
 
 	} else {
-		if _, ok := d.GetOk("relation_l3ext_rs_interleak_pol"); ok {
-			tfName := GetMOName(d.Get("relation_l3ext_rs_interleak_pol").(string))
-			if tfName != l3extRsInterleakPolData {
-				d.Set("relation_l3ext_rs_interleak_pol", "")
-			}
-		}
+		d.Set("relation_l3ext_rs_interleak_pol", l3extRsInterleakPolData.(string))
 	}
 
 	l3extRsL3DomAttData, err := aciClient.ReadRelationl3extRsL3DomAttFromL3Outside(dn)
@@ -569,12 +559,7 @@ func resourceAciL3OutsideRead(ctx context.Context, d *schema.ResourceData, m int
 		d.Set("relation_l3ext_rs_l3_dom_att", "")
 
 	} else {
-		if _, ok := d.GetOk("relation_l3ext_rs_l3_dom_att"); ok {
-			tfName := d.Get("relation_l3ext_rs_l3_dom_att").(string)
-			if tfName != l3extRsL3DomAttData {
-				d.Set("relation_l3ext_rs_l3_dom_att", "")
-			}
-		}
+		d.Set("relation_l3ext_rs_l3_dom_att", l3extRsL3DomAttData.(string))
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())

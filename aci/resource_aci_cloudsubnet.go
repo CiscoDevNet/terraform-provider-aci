@@ -370,12 +370,7 @@ func resourceAciCloudSubnetRead(ctx context.Context, d *schema.ResourceData, m i
 		d.Set("relation_cloud_rs_subnet_to_flow_log", "")
 
 	} else {
-		if _, ok := d.GetOk("relation_cloud_rs_subnet_to_flow_log"); ok {
-			tfName := GetMOName(d.Get("relation_cloud_rs_subnet_to_flow_log").(string))
-			if tfName != cloudRsSubnetToFlowLogData {
-				d.Set("relation_cloud_rs_subnet_to_flow_log", "")
-			}
-		}
+		d.Set("relation_cloud_rs_subnet_to_flow_log", cloudRsSubnetToFlowLogData.(string))
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())

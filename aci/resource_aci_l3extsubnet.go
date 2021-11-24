@@ -253,7 +253,7 @@ func resourceAciL3ExtSubnetCreate(ctx context.Context, d *schema.ResourceData, m
 		relationParamList := relationTol3extRsSubnetToProfile.(*schema.Set).List()
 		for _, relationParam := range relationParamList {
 			paramMap := relationParam.(map[string]interface{})
-			err = aciClient.CreateRelationl3extRsSubnetToProfileFromL3ExtSubnet(l3extSubnet.DistinguishedName, paramMap["tn_rtctrl_profile_name"].(string), paramMap["direction"].(string))
+			err = aciClient.CreateRelationl3extRsSubnetToProfileFromL3ExtSubnet(l3extSubnet.DistinguishedName, GetMOName(paramMap["tn_rtctrl_profile_name"].(string)), paramMap["direction"].(string))
 			if err != nil {
 				return diag.FromErr(err)
 			}
@@ -341,7 +341,7 @@ func resourceAciL3ExtSubnetUpdate(ctx context.Context, d *schema.ResourceData, m
 		newRelList := newRel.(*schema.Set).List()
 		for _, relationParam := range oldRelList {
 			paramMap := relationParam.(map[string]interface{})
-			err = aciClient.DeleteRelationl3extRsSubnetToProfileFromL3ExtSubnet(l3extSubnet.DistinguishedName, paramMap["tn_rtctrl_profile_name"].(string), paramMap["direction"].(string))
+			err = aciClient.DeleteRelationl3extRsSubnetToProfileFromL3ExtSubnet(l3extSubnet.DistinguishedName, GetMOName(paramMap["tn_rtctrl_profile_name"].(string)), paramMap["direction"].(string))
 			if err != nil {
 				return diag.FromErr(err)
 			}
@@ -349,7 +349,7 @@ func resourceAciL3ExtSubnetUpdate(ctx context.Context, d *schema.ResourceData, m
 		}
 		for _, relationParam := range newRelList {
 			paramMap := relationParam.(map[string]interface{})
-			err = aciClient.CreateRelationl3extRsSubnetToProfileFromL3ExtSubnet(l3extSubnet.DistinguishedName, paramMap["tn_rtctrl_profile_name"].(string), paramMap["direction"].(string))
+			err = aciClient.CreateRelationl3extRsSubnetToProfileFromL3ExtSubnet(l3extSubnet.DistinguishedName, GetMOName(paramMap["tn_rtctrl_profile_name"].(string)), paramMap["direction"].(string))
 			if err != nil {
 				return diag.FromErr(err)
 			}
@@ -399,7 +399,15 @@ func resourceAciL3ExtSubnetRead(ctx context.Context, d *schema.ResourceData, m i
 		log.Printf("[DEBUG] Error while reading relation l3extRsSubnetToProfile %v", err)
 
 	} else {
-		d.Set("relation_l3ext_rs_subnet_to_profile", l3extRsSubnetToProfileData)
+		relParamList := make([]map[string]string, 0, 1)
+		relParams := l3extRsSubnetToProfileData.([]map[string]string)
+		for _, obj := range relParams {
+			relParamList = append(relParamList, map[string]string{
+				"tn_rtctrl_profile_name": obj["tnRtctrlProfileName"],
+				"direction":              obj["direction"],
+			})
+		}
+		d.Set("relation_l3ext_rs_subnet_to_profile", relParamList)
 	}
 
 	l3extRsSubnetToRtSummData, err := aciClient.ReadRelationl3extRsSubnetToRtSummFromL3ExtSubnet(dn)
@@ -408,12 +416,7 @@ func resourceAciL3ExtSubnetRead(ctx context.Context, d *schema.ResourceData, m i
 		d.Set("relation_l3ext_rs_subnet_to_rt_summ", "")
 
 	} else {
-		if _, ok := d.GetOk("relation_l3ext_rs_subnet_to_rt_summ"); ok {
-			tfName := d.Get("relation_l3ext_rs_subnet_to_rt_summ").(string)
-			if tfName != l3extRsSubnetToRtSummData {
-				d.Set("relation_l3ext_rs_subnet_to_rt_summ", "")
-			}
-		}
+		d.Set("relation_l3ext_rs_subnet_to_rt_summ", l3extRsSubnetToRtSummData.(string))
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())

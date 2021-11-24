@@ -98,7 +98,7 @@ func (sm *ServiceManager) ReadRelationvzRsAnyToConsFromAny(parentDn string) (int
 		F: schema.HashString,
 	}
 	for _, contItem := range contList {
-		dat := models.G(contItem, "tnVzBrCPName")
+		dat := models.G(contItem, "tDn")
 		st.Add(dat)
 	}
 	return st, err
@@ -142,13 +142,13 @@ func (sm *ServiceManager) ReadRelationvzRsAnyToConsIfFromAny(parentDn string) (i
 	dnUrl := fmt.Sprintf("%s/%s/%s.json", baseurlStr, parentDn, "vzRsAnyToConsIf")
 	cont, err := sm.GetViaURL(dnUrl)
 
-	contList := models.ListFromContainer(cont, "vzRsAnyToConsIf")
+	contList := models.ListFromContainer(cont, "tDn")
 
 	st := &schema.Set{
 		F: schema.HashString,
 	}
 	for _, contItem := range contList {
-		dat := models.G(contItem, "tnVzCPIfName")
+		dat := models.G(contItem, "tDn")
 		st.Add(dat)
 	}
 	return st, err
@@ -198,7 +198,7 @@ func (sm *ServiceManager) ReadRelationvzRsAnyToProvFromAny(parentDn string) (int
 		F: schema.HashString,
 	}
 	for _, contItem := range contList {
-		dat := models.G(contItem, "tnVzBrCPName")
+		dat := models.G(contItem, "tDn")
 		st.Add(dat)
 	}
 	return st, err

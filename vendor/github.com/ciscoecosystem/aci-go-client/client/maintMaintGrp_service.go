@@ -90,7 +90,7 @@ func (sm *ServiceManager) ReadRelationmaintRsMgrppFromPODMaintenanceGroup(parent
 	contList := models.ListFromContainer(cont, "maintRsMgrpp")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnMaintMaintPName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err

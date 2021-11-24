@@ -1028,12 +1028,7 @@ func resourceAciContractRead(ctx context.Context, d *schema.ResourceData, m inte
 		d.Set("relation_vz_rs_graph_att", "")
 
 	} else {
-		if _, ok := d.GetOk("relation_vz_rs_graph_att"); ok {
-			tfName := GetMOName(d.Get("relation_vz_rs_graph_att").(string))
-			if tfName != vzRsGraphAttData {
-				d.Set("relation_vz_rs_graph_att", "")
-			}
-		}
+		d.Set("relation_vz_rs_graph_att", vzRsGraphAttData.(string))
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())

@@ -311,7 +311,7 @@ func resourceAciDestinationofredirectedtrafficRead(ctx context.Context, d *schem
 		d.Set("relation_vns_rs_redirect_health_group", "")
 
 	} else {
-		d.Set("relation_vns_rs_redirect_health_group", vnsRsRedirectHealthGroupData)
+		d.Set("relation_vns_rs_redirect_health_group", vnsRsRedirectHealthGroupData.(string))
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())

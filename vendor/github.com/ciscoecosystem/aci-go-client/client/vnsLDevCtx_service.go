@@ -146,7 +146,7 @@ func (sm *ServiceManager) ReadRelationvnsRsLDevCtxToRtrCfgFromLogicalDeviceConte
 	contList := models.ListFromContainer(cont, "vnsRsLDevCtxToRtrCfg")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnVnsRtrCfgName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err

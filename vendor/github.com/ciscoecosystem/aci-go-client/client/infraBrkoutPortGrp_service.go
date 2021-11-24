@@ -91,7 +91,7 @@ func (sm *ServiceManager) ReadRelationinfraRsMonBrkoutInfraPolFromLeafBreakoutPo
 	contList := models.ListFromContainer(cont, "infraRsMonBrkoutInfraPol")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnMonInfraPolName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err

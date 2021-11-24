@@ -73,28 +73,28 @@ func resourceAciLogicalInterfaceProfile() *schema.Resource {
 			},
 
 			"relation_l3ext_rs_egress_qos_dpp_pol": &schema.Schema{
-				Type: schema.TypeString,
-
+				Type:     schema.TypeString,
+				Computed: true,
 				Optional: true,
 			},
 			"relation_l3ext_rs_ingress_qos_dpp_pol": &schema.Schema{
-				Type: schema.TypeString,
-
+				Type:     schema.TypeString,
+				Computed: true,
 				Optional: true,
 			},
 			"relation_l3ext_rs_l_if_p_cust_qos_pol": &schema.Schema{
-				Type: schema.TypeString,
-
+				Type:     schema.TypeString,
+				Computed: true,
 				Optional: true,
 			},
 			"relation_l3ext_rs_arp_if_pol": &schema.Schema{
-				Type: schema.TypeString,
-
+				Type:     schema.TypeString,
+				Computed: true,
 				Optional: true,
 			},
 			"relation_l3ext_rs_nd_if_pol": &schema.Schema{
-				Type: schema.TypeString,
-
+				Type:     schema.TypeString,
+				Computed: true,
 				Optional: true,
 			},
 		}),
@@ -236,7 +236,7 @@ func resourceAciLogicalInterfaceProfileCreate(ctx context.Context, d *schema.Res
 		relationParamList := relationTol3extRsLIfPToNetflowMonitorPol.(*schema.Set).List()
 		for _, relationParam := range relationParamList {
 			paramMap := relationParam.(map[string]interface{})
-			err = aciClient.CreateRelationl3extRsLIfPToNetflowMonitorPolFromLogicalInterfaceProfile(l3extLIfP.DistinguishedName, paramMap["tn_netflow_monitor_pol_name"].(string), paramMap["flt_type"].(string))
+			err = aciClient.CreateRelationl3extRsLIfPToNetflowMonitorPolFromLogicalInterfaceProfile(l3extLIfP.DistinguishedName, GetMOName(paramMap["tn_netflow_monitor_pol_name"].(string)), paramMap["flt_type"].(string))
 			if err != nil {
 				return diag.FromErr(err)
 
@@ -378,7 +378,7 @@ func resourceAciLogicalInterfaceProfileUpdate(ctx context.Context, d *schema.Res
 		newRelList := newRel.(*schema.Set).List()
 		for _, relationParam := range oldRelList {
 			paramMap := relationParam.(map[string]interface{})
-			err = aciClient.DeleteRelationl3extRsLIfPToNetflowMonitorPolFromLogicalInterfaceProfile(l3extLIfP.DistinguishedName, paramMap["tn_netflow_monitor_pol_name"].(string), paramMap["flt_type"].(string))
+			err = aciClient.DeleteRelationl3extRsLIfPToNetflowMonitorPolFromLogicalInterfaceProfile(l3extLIfP.DistinguishedName, GetMOName(paramMap["tn_netflow_monitor_pol_name"].(string)), paramMap["flt_type"].(string))
 			if err != nil {
 				return diag.FromErr(err)
 
@@ -387,7 +387,7 @@ func resourceAciLogicalInterfaceProfileUpdate(ctx context.Context, d *schema.Res
 		}
 		for _, relationParam := range newRelList {
 			paramMap := relationParam.(map[string]interface{})
-			err = aciClient.CreateRelationl3extRsLIfPToNetflowMonitorPolFromLogicalInterfaceProfile(l3extLIfP.DistinguishedName, paramMap["tn_netflow_monitor_pol_name"].(string), paramMap["flt_type"].(string))
+			err = aciClient.CreateRelationl3extRsLIfPToNetflowMonitorPolFromLogicalInterfaceProfile(l3extLIfP.DistinguishedName, GetMOName(paramMap["tn_netflow_monitor_pol_name"].(string)), paramMap["flt_type"].(string))
 			if err != nil {
 				return diag.FromErr(err)
 
@@ -473,7 +473,15 @@ func resourceAciLogicalInterfaceProfileRead(ctx context.Context, d *schema.Resou
 		log.Printf("[DEBUG] Error while reading relation l3extRsLIfPToNetflowMonitorPol %v", err)
 
 	} else {
-		d.Set("relation_l3ext_rs_l_if_p_to_netflow_monitor_pol", l3extRsLIfPToNetflowMonitorPolData)
+		relParamList := make([]map[string]string, 0, 1)
+		relParams := l3extRsLIfPToNetflowMonitorPolData.([]map[string]string)
+		for _, obj := range relParams {
+			relParamList = append(relParamList, map[string]string{
+				"tn_netflow_monitor_pol_name": obj["tnNetflowMonitorPolName"],
+				"flt_type":                    obj["fltType"],
+			})
+		}
+		d.Set("relation_l3ext_rs_l_if_p_to_netflow_monitor_pol", relParamList)
 	}
 
 	l3extRsEgressQosDppPolData, err := aciClient.ReadRelationl3extRsEgressQosDppPolFromLogicalInterfaceProfile(dn)
@@ -482,12 +490,7 @@ func resourceAciLogicalInterfaceProfileRead(ctx context.Context, d *schema.Resou
 		d.Set("relation_l3ext_rs_egress_qos_dpp_pol", "")
 
 	} else {
-		if _, ok := d.GetOk("relation_l3ext_rs_egress_qos_dpp_pol"); ok {
-			tfName := GetMOName(d.Get("relation_l3ext_rs_egress_qos_dpp_pol").(string))
-			if tfName != l3extRsEgressQosDppPolData {
-				d.Set("relation_l3ext_rs_egress_qos_dpp_pol", "")
-			}
-		}
+		d.Set("relation_l3ext_rs_egress_qos_dpp_pol", l3extRsEgressQosDppPolData.(string))
 	}
 
 	l3extRsIngressQosDppPolData, err := aciClient.ReadRelationl3extRsIngressQosDppPolFromLogicalInterfaceProfile(dn)
@@ -496,12 +499,7 @@ func resourceAciLogicalInterfaceProfileRead(ctx context.Context, d *schema.Resou
 		d.Set("relation_l3ext_rs_ingress_qos_dpp_pol", "")
 
 	} else {
-		if _, ok := d.GetOk("relation_l3ext_rs_ingress_qos_dpp_pol"); ok {
-			tfName := GetMOName(d.Get("relation_l3ext_rs_ingress_qos_dpp_pol").(string))
-			if tfName != l3extRsIngressQosDppPolData {
-				d.Set("relation_l3ext_rs_ingress_qos_dpp_pol", "")
-			}
-		}
+		d.Set("relation_l3ext_rs_ingress_qos_dpp_pol", l3extRsIngressQosDppPolData.(string))
 	}
 
 	l3extRsLIfPCustQosPolData, err := aciClient.ReadRelationl3extRsLIfPCustQosPolFromLogicalInterfaceProfile(dn)
@@ -510,12 +508,7 @@ func resourceAciLogicalInterfaceProfileRead(ctx context.Context, d *schema.Resou
 		d.Set("relation_l3ext_rs_l_if_p_cust_qos_pol", "")
 
 	} else {
-		if _, ok := d.GetOk("relation_l3ext_rs_l_if_p_cust_qos_pol"); ok {
-			tfName := GetMOName(d.Get("relation_l3ext_rs_l_if_p_cust_qos_pol").(string))
-			if tfName != l3extRsLIfPCustQosPolData {
-				d.Set("relation_l3ext_rs_l_if_p_cust_qos_pol", "")
-			}
-		}
+		d.Set("relation_l3ext_rs_l_if_p_cust_qos_pol", l3extRsLIfPCustQosPolData.(string))
 	}
 
 	l3extRsArpIfPolData, err := aciClient.ReadRelationl3extRsArpIfPolFromLogicalInterfaceProfile(dn)
@@ -524,12 +517,7 @@ func resourceAciLogicalInterfaceProfileRead(ctx context.Context, d *schema.Resou
 		d.Set("relation_l3ext_rs_arp_if_pol", "")
 
 	} else {
-		if _, ok := d.GetOk("relation_l3ext_rs_arp_if_pol"); ok {
-			tfName := GetMOName(d.Get("relation_l3ext_rs_arp_if_pol").(string))
-			if tfName != l3extRsArpIfPolData {
-				d.Set("relation_l3ext_rs_arp_if_pol", "")
-			}
-		}
+		d.Set("relation_l3ext_rs_arp_if_pol", l3extRsArpIfPolData.(string))
 	}
 
 	l3extRsNdIfPolData, err := aciClient.ReadRelationl3extRsNdIfPolFromLogicalInterfaceProfile(dn)
@@ -538,12 +526,7 @@ func resourceAciLogicalInterfaceProfileRead(ctx context.Context, d *schema.Resou
 		d.Set("relation_l3ext_rs_nd_if_pol", "")
 
 	} else {
-		if _, ok := d.GetOk("relation_l3ext_rs_nd_if_pol"); ok {
-			tfName := GetMOName(d.Get("relation_l3ext_rs_nd_if_pol").(string))
-			if tfName != l3extRsNdIfPolData {
-				d.Set("relation_l3ext_rs_nd_if_pol", "")
-			}
-		}
+		d.Set("relation_l3ext_rs_nd_if_pol", l3extRsNdIfPolData.(string))
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())

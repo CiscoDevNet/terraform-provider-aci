@@ -266,12 +266,7 @@ func resourceAciSwitchAssociationRead(ctx context.Context, d *schema.ResourceDat
 		d.Set("relation_infra_rs_acc_node_p_grp", "")
 
 	} else {
-		if _, ok := d.GetOk("relation_infra_rs_acc_node_p_grp"); ok {
-			tfName := GetMOName(d.Get("relation_infra_rs_acc_node_p_grp").(string))
-			if tfName != infraRsAccNodePGrpData {
-				d.Set("relation_infra_rs_acc_node_p_grp", "")
-			}
-		}
+		d.Set("relation_infra_rs_acc_node_p_grp", infraRsAccNodePGrpData.(string))
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())

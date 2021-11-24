@@ -148,7 +148,7 @@ func (sm *ServiceManager) ReadRelationfvRsProvFromExternalNetworkInstanceProfile
 		F: schema.HashString,
 	}
 	for _, contItem := range contList {
-		dat := models.G(contItem, "tnVzBrCPName")
+		dat := models.G(contItem, "tDn")
 		st.Add(dat)
 	}
 	return st, err
@@ -291,7 +291,7 @@ func (sm *ServiceManager) ReadRelationfvRsConsIfFromExternalNetworkInstanceProfi
 		F: schema.HashString,
 	}
 	for _, contItem := range contList {
-		dat := models.G(contItem, "tnVzCPIfName")
+		dat := models.G(contItem, "tDn")
 		st.Add(dat)
 	}
 	return st, err
@@ -334,7 +334,7 @@ func (sm *ServiceManager) ReadRelationfvRsCustQosPolFromExternalNetworkInstanceP
 	contList := models.ListFromContainer(cont, "fvRsCustQosPol")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnQosCustomPolName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -385,7 +385,7 @@ func (sm *ServiceManager) ReadRelationl3extRsInstPToProfileFromExternalNetworkIn
 
 	for _, contItem := range contList {
 		paramMap := make(map[string]string)
-		paramMap["tnRtctrlProfileName"] = models.G(contItem, "tnRtctrlProfileName")
+		paramMap["tnRtctrlProfileName"] = models.G(contItem, "tDn")
 		paramMap["direction"] = models.G(contItem, "direction")
 
 		st = append(st, paramMap)
@@ -439,7 +439,7 @@ func (sm *ServiceManager) ReadRelationfvRsConsFromExternalNetworkInstanceProfile
 		F: schema.HashString,
 	}
 	for _, contItem := range contList {
-		dat := models.G(contItem, "tnVzBrCPName")
+		dat := models.G(contItem, "tDn")
 		st.Add(dat)
 	}
 	return st, err
@@ -489,7 +489,7 @@ func (sm *ServiceManager) ReadRelationfvRsProtByFromExternalNetworkInstanceProfi
 		F: schema.HashString,
 	}
 	for _, contItem := range contList {
-		dat := models.G(contItem, "tnVzTabooName")
+		dat := models.G(contItem, "tDn")
 		st.Add(dat)
 	}
 	return st, err
@@ -539,7 +539,7 @@ func (sm *ServiceManager) ReadRelationfvRsIntraEpgFromExternalNetworkInstancePro
 		F: schema.HashString,
 	}
 	for _, contItem := range contList {
-		dat := models.G(contItem, "tnVzBrCPName")
+		dat := models.G(contItem, "tDn")
 		st.Add(dat)
 	}
 	return st, err

@@ -91,13 +91,13 @@ func resourceAciVRF() *schema.Resource {
 			},
 
 			"relation_fv_rs_ospf_ctx_pol": &schema.Schema{
-				Type: schema.TypeString,
-
+				Type:     schema.TypeString,
+				Computed: true,
 				Optional: true,
 			},
 			"relation_fv_rs_vrf_validation_pol": &schema.Schema{
-				Type: schema.TypeString,
-
+				Type:     schema.TypeString,
+				Computed: true,
 				Optional: true,
 			},
 			"relation_fv_rs_ctx_mcast_to": &schema.Schema{
@@ -139,13 +139,13 @@ func resourceAciVRF() *schema.Resource {
 				},
 			},
 			"relation_fv_rs_ctx_to_ep_ret": &schema.Schema{
-				Type: schema.TypeString,
-
+				Type:     schema.TypeString,
+				Computed: true,
 				Optional: true,
 			},
 			"relation_fv_rs_bgp_ctx_pol": &schema.Schema{
-				Type: schema.TypeString,
-
+				Type:     schema.TypeString,
+				Computed: true,
 				Optional: true,
 			},
 			"relation_fv_rs_ctx_mon_pol": &schema.Schema{
@@ -154,8 +154,8 @@ func resourceAciVRF() *schema.Resource {
 				Optional: true,
 			},
 			"relation_fv_rs_ctx_to_ext_route_tag_pol": &schema.Schema{
-				Type: schema.TypeString,
-
+				Type:     schema.TypeString,
+				Computed: true,
 				Optional: true,
 			},
 			"relation_fv_rs_ctx_to_bgp_ctx_af_pol": &schema.Schema{
@@ -364,7 +364,7 @@ func resourceAciVRFCreate(ctx context.Context, d *schema.ResourceData, m interfa
 		relationParamList := relationTofvRsCtxToEigrpCtxAfPol.(*schema.Set).List()
 		for _, relationParam := range relationParamList {
 			paramMap := relationParam.(map[string]interface{})
-			err = aciClient.CreateRelationfvRsCtxToEigrpCtxAfPolFromVRF(fvCtx.DistinguishedName, paramMap["tn_eigrp_ctx_af_pol_name"].(string), paramMap["af"].(string))
+			err = aciClient.CreateRelationfvRsCtxToEigrpCtxAfPolFromVRF(fvCtx.DistinguishedName, GetMOName(paramMap["tn_eigrp_ctx_af_pol_name"].(string)), paramMap["af"].(string))
 			if err != nil {
 				return diag.FromErr(err)
 			}
@@ -377,7 +377,7 @@ func resourceAciVRFCreate(ctx context.Context, d *schema.ResourceData, m interfa
 		relationParamList := relationTofvRsCtxToOspfCtxPol.(*schema.Set).List()
 		for _, relationParam := range relationParamList {
 			paramMap := relationParam.(map[string]interface{})
-			err = aciClient.CreateRelationfvRsCtxToOspfCtxPolFromVRF(fvCtx.DistinguishedName, paramMap["tn_ospf_ctx_pol_name"].(string), paramMap["af"].(string))
+			err = aciClient.CreateRelationfvRsCtxToOspfCtxPolFromVRF(fvCtx.DistinguishedName, GetMOName(paramMap["tn_ospf_ctx_pol_name"].(string)), paramMap["af"].(string))
 			if err != nil {
 				return diag.FromErr(err)
 			}
@@ -426,7 +426,7 @@ func resourceAciVRFCreate(ctx context.Context, d *schema.ResourceData, m interfa
 		relationParamList := relationTofvRsCtxToBgpCtxAfPol.(*schema.Set).List()
 		for _, relationParam := range relationParamList {
 			paramMap := relationParam.(map[string]interface{})
-			err = aciClient.CreateRelationfvRsCtxToBgpCtxAfPolFromVRF(fvCtx.DistinguishedName, paramMap["tn_bgp_ctx_af_pol_name"].(string), paramMap["af"].(string))
+			err = aciClient.CreateRelationfvRsCtxToBgpCtxAfPolFromVRF(fvCtx.DistinguishedName, GetMOName(paramMap["tn_bgp_ctx_af_pol_name"].(string)), paramMap["af"].(string))
 			if err != nil {
 				return diag.FromErr(err)
 			}
@@ -574,7 +574,7 @@ func resourceAciVRFUpdate(ctx context.Context, d *schema.ResourceData, m interfa
 		newRelList := newRel.(*schema.Set).List()
 		for _, relationParam := range oldRelList {
 			paramMap := relationParam.(map[string]interface{})
-			err = aciClient.DeleteRelationfvRsCtxToEigrpCtxAfPolFromVRF(fvCtx.DistinguishedName, paramMap["tn_eigrp_ctx_af_pol_name"].(string), paramMap["af"].(string))
+			err = aciClient.DeleteRelationfvRsCtxToEigrpCtxAfPolFromVRF(fvCtx.DistinguishedName, GetMOName(paramMap["tn_eigrp_ctx_af_pol_name"].(string)), paramMap["af"].(string))
 			if err != nil {
 				return diag.FromErr(err)
 			}
@@ -582,7 +582,7 @@ func resourceAciVRFUpdate(ctx context.Context, d *schema.ResourceData, m interfa
 		}
 		for _, relationParam := range newRelList {
 			paramMap := relationParam.(map[string]interface{})
-			err = aciClient.CreateRelationfvRsCtxToEigrpCtxAfPolFromVRF(fvCtx.DistinguishedName, paramMap["tn_eigrp_ctx_af_pol_name"].(string), paramMap["af"].(string))
+			err = aciClient.CreateRelationfvRsCtxToEigrpCtxAfPolFromVRF(fvCtx.DistinguishedName, GetMOName(paramMap["tn_eigrp_ctx_af_pol_name"].(string)), paramMap["af"].(string))
 			if err != nil {
 				return diag.FromErr(err)
 			}
@@ -596,7 +596,7 @@ func resourceAciVRFUpdate(ctx context.Context, d *schema.ResourceData, m interfa
 		newRelList := newRel.(*schema.Set).List()
 		for _, relationParam := range oldRelList {
 			paramMap := relationParam.(map[string]interface{})
-			err = aciClient.DeleteRelationfvRsCtxToOspfCtxPolFromVRF(fvCtx.DistinguishedName, paramMap["tn_ospf_ctx_pol_name"].(string), paramMap["af"].(string))
+			err = aciClient.DeleteRelationfvRsCtxToOspfCtxPolFromVRF(fvCtx.DistinguishedName, GetMOName(paramMap["tn_ospf_ctx_pol_name"].(string)), paramMap["af"].(string))
 			if err != nil {
 				return diag.FromErr(err)
 			}
@@ -604,7 +604,7 @@ func resourceAciVRFUpdate(ctx context.Context, d *schema.ResourceData, m interfa
 		}
 		for _, relationParam := range newRelList {
 			paramMap := relationParam.(map[string]interface{})
-			err = aciClient.CreateRelationfvRsCtxToOspfCtxPolFromVRF(fvCtx.DistinguishedName, paramMap["tn_ospf_ctx_pol_name"].(string), paramMap["af"].(string))
+			err = aciClient.CreateRelationfvRsCtxToOspfCtxPolFromVRF(fvCtx.DistinguishedName, GetMOName(paramMap["tn_ospf_ctx_pol_name"].(string)), paramMap["af"].(string))
 			if err != nil {
 				return diag.FromErr(err)
 			}
@@ -658,7 +658,7 @@ func resourceAciVRFUpdate(ctx context.Context, d *schema.ResourceData, m interfa
 		newRelList := newRel.(*schema.Set).List()
 		for _, relationParam := range oldRelList {
 			paramMap := relationParam.(map[string]interface{})
-			err = aciClient.DeleteRelationfvRsCtxToBgpCtxAfPolFromVRF(fvCtx.DistinguishedName, paramMap["tn_bgp_ctx_af_pol_name"].(string), paramMap["af"].(string))
+			err = aciClient.DeleteRelationfvRsCtxToBgpCtxAfPolFromVRF(fvCtx.DistinguishedName, GetMOName(paramMap["tn_bgp_ctx_af_pol_name"].(string)), paramMap["af"].(string))
 			if err != nil {
 				return diag.FromErr(err)
 			}
@@ -666,7 +666,7 @@ func resourceAciVRFUpdate(ctx context.Context, d *schema.ResourceData, m interfa
 		}
 		for _, relationParam := range newRelList {
 			paramMap := relationParam.(map[string]interface{})
-			err = aciClient.CreateRelationfvRsCtxToBgpCtxAfPolFromVRF(fvCtx.DistinguishedName, paramMap["tn_bgp_ctx_af_pol_name"].(string), paramMap["af"].(string))
+			err = aciClient.CreateRelationfvRsCtxToBgpCtxAfPolFromVRF(fvCtx.DistinguishedName, GetMOName(paramMap["tn_bgp_ctx_af_pol_name"].(string)), paramMap["af"].(string))
 			if err != nil {
 				return diag.FromErr(err)
 			}
@@ -706,12 +706,7 @@ func resourceAciVRFRead(ctx context.Context, d *schema.ResourceData, m interface
 		d.Set("relation_fv_rs_ospf_ctx_pol", "")
 
 	} else {
-		if _, ok := d.GetOk("relation_fv_rs_ospf_ctx_pol"); ok {
-			tfName := GetMOName(d.Get("relation_fv_rs_ospf_ctx_pol").(string))
-			if tfName != fvRsOspfCtxPolData {
-				d.Set("relation_fv_rs_ospf_ctx_pol", "")
-			}
-		}
+		d.Set("relation_fv_rs_ospf_ctx_pol", fvRsOspfCtxPolData.(string))
 	}
 
 	fvRsVrfValidationPolData, err := aciClient.ReadRelationfvRsVrfValidationPolFromVRF(dn)
@@ -720,12 +715,7 @@ func resourceAciVRFRead(ctx context.Context, d *schema.ResourceData, m interface
 		d.Set("relation_fv_rs_vrf_validation_pol", "")
 
 	} else {
-		if _, ok := d.GetOk("relation_fv_rs_vrf_validation_pol"); ok {
-			tfName := GetMOName(d.Get("relation_fv_rs_vrf_validation_pol").(string))
-			if tfName != fvRsVrfValidationPolData {
-				d.Set("relation_fv_rs_vrf_validation_pol", "")
-			}
-		}
+		d.Set("relation_fv_rs_vrf_validation_pol", fvRsVrfValidationPolData.(string))
 	}
 
 	fvRsCtxMcastToData, err := aciClient.ReadRelationfvRsCtxMcastToFromVRF(dn)
@@ -734,7 +724,7 @@ func resourceAciVRFRead(ctx context.Context, d *schema.ResourceData, m interface
 		d.Set("relation_fv_rs_ctx_mcast_to", fvRsCtxMcastToData)
 
 	} else {
-		d.Set("relation_fv_rs_ctx_mcast_to", fvRsCtxMcastToData)
+		d.Set("relation_fv_rs_ctx_mcast_to", toStringList(fvRsCtxMcastToData.(*schema.Set).List()))
 	}
 
 	fvRsCtxToEigrpCtxAfPolData, err := aciClient.ReadRelationfvRsCtxToEigrpCtxAfPolFromVRF(dn)
@@ -742,7 +732,15 @@ func resourceAciVRFRead(ctx context.Context, d *schema.ResourceData, m interface
 		log.Printf("[DEBUG] Error while reading relation fvRsCtxToEigrpCtxAfPol %v", err)
 
 	} else {
-		d.Set("relation_fv_rs_ctx_to_eigrp_ctx_af_pol", fvRsCtxToEigrpCtxAfPolData)
+		relParamList := make([]map[string]string, 0, 1)
+		relParams := fvRsCtxToEigrpCtxAfPolData.([]map[string]string)
+		for _, obj := range relParams {
+			relParamList = append(relParamList, map[string]string{
+				"tn_eigrp_ctx_af_pol_name": obj["tnEigrpCtxAfPolName"],
+				"af":                       obj["af"],
+			})
+		}
+		d.Set("relation_fv_rs_ctx_to_eigrp_ctx_af_pol", relParamList)
 	}
 
 	fvRsCtxToOspfCtxPolData, err := aciClient.ReadRelationfvRsCtxToOspfCtxPolFromVRF(dn)
@@ -750,7 +748,15 @@ func resourceAciVRFRead(ctx context.Context, d *schema.ResourceData, m interface
 		log.Printf("[DEBUG] Error while reading relation fvRsCtxToOspfCtxPol %v", err)
 
 	} else {
-		d.Set("relation_fv_rs_ctx_to_ospf_ctx_pol", fvRsCtxToOspfCtxPolData)
+		relParamList := make([]map[string]string, 0, 1)
+		relParams := fvRsCtxToOspfCtxPolData.([]map[string]string)
+		for _, obj := range relParams {
+			relParamList = append(relParamList, map[string]string{
+				"tn_ospf_ctx_pol_name": obj["tnOspfCtxPolName"],
+				"af":                   obj["af"],
+			})
+		}
+		d.Set("relation_fv_rs_ctx_to_ospf_ctx_pol", relParamList)
 	}
 
 	fvRsCtxToEpRetData, err := aciClient.ReadRelationfvRsCtxToEpRetFromVRF(dn)
@@ -759,12 +765,7 @@ func resourceAciVRFRead(ctx context.Context, d *schema.ResourceData, m interface
 		d.Set("relation_fv_rs_ctx_to_ep_ret", "")
 
 	} else {
-		if _, ok := d.GetOk("relation_fv_rs_ctx_to_ep_ret"); ok {
-			tfName := GetMOName(d.Get("relation_fv_rs_ctx_to_ep_ret").(string))
-			if tfName != fvRsCtxToEpRetData {
-				d.Set("relation_fv_rs_ctx_to_ep_ret", "")
-			}
-		}
+		d.Set("relation_fv_rs_ctx_to_ep_ret", fvRsCtxToEpRetData.(string))
 	}
 
 	fvRsBgpCtxPolData, err := aciClient.ReadRelationfvRsBgpCtxPolFromVRF(dn)
@@ -773,12 +774,7 @@ func resourceAciVRFRead(ctx context.Context, d *schema.ResourceData, m interface
 		d.Set("relation_fv_rs_bgp_ctx_pol", "")
 
 	} else {
-		if _, ok := d.GetOk("relation_fv_rs_bgp_ctx_pol"); ok {
-			tfName := GetMOName(d.Get("relation_fv_rs_bgp_ctx_pol").(string))
-			if tfName != fvRsBgpCtxPolData {
-				d.Set("relation_fv_rs_bgp_ctx_pol", "")
-			}
-		}
+		d.Set("relation_fv_rs_bgp_ctx_pol", fvRsBgpCtxPolData.(string))
 	}
 
 	fvRsCtxMonPolData, err := aciClient.ReadRelationfvRsCtxMonPolFromVRF(dn)
@@ -787,12 +783,7 @@ func resourceAciVRFRead(ctx context.Context, d *schema.ResourceData, m interface
 		d.Set("relation_fv_rs_ctx_mon_pol", "")
 
 	} else {
-		if _, ok := d.GetOk("relation_fv_rs_ctx_mon_pol"); ok {
-			tfName := GetMOName(d.Get("relation_fv_rs_ctx_mon_pol").(string))
-			if tfName != fvRsCtxMonPolData {
-				d.Set("relation_fv_rs_ctx_mon_pol", "")
-			}
-		}
+		d.Set("relation_fv_rs_ctx_mon_pol", fvRsCtxMonPolData.(string))
 	}
 
 	fvRsCtxToExtRouteTagPolData, err := aciClient.ReadRelationfvRsCtxToExtRouteTagPolFromVRF(dn)
@@ -801,12 +792,7 @@ func resourceAciVRFRead(ctx context.Context, d *schema.ResourceData, m interface
 		d.Set("relation_fv_rs_ctx_to_ext_route_tag_pol", "")
 
 	} else {
-		if _, ok := d.GetOk("relation_fv_rs_ctx_to_ext_route_tag_pol"); ok {
-			tfName := GetMOName(d.Get("relation_fv_rs_ctx_to_ext_route_tag_pol").(string))
-			if tfName != fvRsCtxToExtRouteTagPolData {
-				d.Set("relation_fv_rs_ctx_to_ext_route_tag_pol", "")
-			}
-		}
+		d.Set("relation_fv_rs_ctx_to_ext_route_tag_pol", fvRsCtxToExtRouteTagPolData.(string))
 	}
 
 	fvRsCtxToBgpCtxAfPolData, err := aciClient.ReadRelationfvRsCtxToBgpCtxAfPolFromVRF(dn)
@@ -814,7 +800,15 @@ func resourceAciVRFRead(ctx context.Context, d *schema.ResourceData, m interface
 		log.Printf("[DEBUG] Error while reading relation fvRsCtxToBgpCtxAfPol %v", err)
 
 	} else {
-		d.Set("relation_fv_rs_ctx_to_bgp_ctx_af_pol", fvRsCtxToBgpCtxAfPolData)
+		relParamList := make([]map[string]string, 0, 1)
+		relParams := fvRsCtxToBgpCtxAfPolData.([]map[string]string)
+		for _, obj := range relParams {
+			relParamList = append(relParamList, map[string]string{
+				"tn_bgp_ctx_af_pol_name": obj["tnBgpCtxAfPolName"],
+				"af":                     obj["af"],
+			})
+		}
+		d.Set("relation_fv_rs_ctx_to_bgp_ctx_af_pol", relParamList)
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
