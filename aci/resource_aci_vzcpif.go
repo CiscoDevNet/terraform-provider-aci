@@ -268,12 +268,7 @@ func resourceAciImportedContractRead(ctx context.Context, d *schema.ResourceData
 		d.Set("relation_vz_rs_if", "")
 
 	} else {
-		if _, ok := d.GetOk("relation_vz_rs_if"); ok {
-			tfName := GetMOName(d.Get("relation_vz_rs_if").(string))
-			if tfName != vzRsIfData {
-				d.Set("relation_vz_rs_if", "")
-			}
-		}
+		d.Set("relation_vz_rs_if", vzRsIfData.(string))
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
