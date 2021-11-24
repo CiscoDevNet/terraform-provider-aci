@@ -315,13 +315,7 @@ func resourceAciL3outStaticRouteNextHopRead(ctx context.Context, d *schema.Resou
 		d.Set("relation_ip_rs_nexthop_route_track", "")
 
 	} else {
-		if _, ok := d.GetOk("relation_ip_rs_nexthop_route_track"); ok {
-			tfName := d.Get("relation_ip_rs_nexthop_route_track").(string)
-			if tfName != ipRsNexthopRouteTrackData {
-				d.Set("relation_ip_rs_nexthop_route_track", "")
-			}
-		}
-
+		d.Set("relation_ip_rs_nexthop_route_track", ipRsNexthopRouteTrackData.(string))
 	}
 
 	ipRsNHTrackMemberData, err := aciClient.ReadRelationipRsNHTrackMemberFromL3outStaticRouteNextHop(dn)
@@ -330,13 +324,7 @@ func resourceAciL3outStaticRouteNextHopRead(ctx context.Context, d *schema.Resou
 		d.Set("relation_ip_rs_nh_track_member", "")
 
 	} else {
-		if _, ok := d.GetOk("relation_ip_rs_nh_track_member"); ok {
-			tfName := d.Get("relation_ip_rs_nh_track_member").(string)
-			if tfName != ipRsNHTrackMemberData {
-				d.Set("relation_ip_rs_nh_track_member", "")
-			}
-		}
-
+		d.Set("relation_ip_rs_nh_track_member", ipRsNHTrackMemberData.(string))
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())

@@ -365,12 +365,7 @@ func resourceAciHSRPGroupProfileRead(ctx context.Context, d *schema.ResourceData
 		log.Printf("[DEBUG] Error while reading relation hsrpRsGroupPol %v", err)
 		d.Set("relation_hsrp_rs_group_pol", "")
 	} else {
-		if _, ok := d.GetOk("relation_hsrp_rs_group_pol"); ok {
-			tfName := GetMOName(d.Get("relation_hsrp_rs_group_pol").(string))
-			if tfName != hsrpRsGroupPolData {
-				d.Set("relation_hsrp_rs_group_pol", "")
-			}
-		}
+		d.Set("relation_hsrp_rs_group_pol", hsrpRsGroupPolData.(string))
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())

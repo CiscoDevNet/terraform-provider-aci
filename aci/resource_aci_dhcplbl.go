@@ -61,8 +61,8 @@ func resourceAciBDDHCPLabel() *schema.Resource {
 			},
 
 			"relation_dhcp_rs_dhcp_option_pol": &schema.Schema{
-				Type: schema.TypeString,
-
+				Type:     schema.TypeString,
+				Computed: true,
 				Optional: true,
 			},
 		}),
@@ -277,12 +277,7 @@ func resourceAciBDDHCPLabelRead(ctx context.Context, d *schema.ResourceData, m i
 		log.Printf("[DEBUG] Error while reading relation dhcpRsDhcpOptionPol %v", err)
 		d.Set("relation_dhcp_rs_dhcp_option_pol", "")
 	} else {
-		if _, ok := d.GetOk("relation_dhcp_rs_dhcp_option_pol"); ok {
-			tfName := GetMOName(d.Get("relation_dhcp_rs_dhcp_option_pol").(string))
-			if tfName != dhcpRsDhcpOptionPolData {
-				d.Set("relation_dhcp_rs_dhcp_option_pol", "")
-			}
-		}
+		d.Set("relation_dhcp_rs_dhcp_option_pol", dhcpRsDhcpOptionPolData.(string))
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())

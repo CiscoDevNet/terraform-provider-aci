@@ -49,8 +49,8 @@ func resourceAciL3outHSRPInterfaceProfile() *schema.Resource {
 			},
 
 			"relation_hsrp_rs_if_pol": &schema.Schema{
-				Type: schema.TypeString,
-
+				Type:     schema.TypeString,
+				Computed: true,
 				Optional: true,
 			},
 		}),
@@ -253,13 +253,7 @@ func resourceAciL3outHSRPInterfaceProfileRead(ctx context.Context, d *schema.Res
 		d.Set("relation_hsrp_rs_if_pol", "")
 
 	} else {
-		if _, ok := d.GetOk("relation_hsrp_rs_if_pol"); ok {
-			tfName := GetMOName(d.Get("relation_hsrp_rs_if_pol").(string))
-			if tfName != hsrpRsIfPolData {
-				d.Set("relation_hsrp_rs_if_pol", "")
-			}
-		}
-
+		d.Set("relation_hsrp_rs_if_pol", hsrpRsIfPolData.(string))
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())

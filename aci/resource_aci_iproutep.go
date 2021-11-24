@@ -97,9 +97,6 @@ func setL3outStaticRouteAttributes(ipRouteP *models.L3outStaticRoute, d *schema.
 	d.SetId(ipRouteP.DistinguishedName)
 	d.Set("description", ipRouteP.Description)
 	dn := d.Id()
-	// if dn != ipRouteP.DistinguishedName {
-	// 	d.Set("fabric_node_dn", "")
-	// }
 	ipRoutePMap, err := ipRouteP.ToMap()
 	if err != nil {
 		return d, err
@@ -306,12 +303,7 @@ func resourceAciL3outStaticRouteRead(ctx context.Context, d *schema.ResourceData
 		d.Set("relation_ip_rs_route_track", "")
 
 	} else {
-		if _, ok := d.GetOk("relation_ip_rs_route_track"); ok {
-			tfName := d.Get("relation_ip_rs_route_track").(string)
-			if tfName != ipRsRouteTrackData {
-				d.Set("relation_ip_rs_route_track", "")
-			}
-		}
+		d.Set("relation_ip_rs_route_track", ipRsRouteTrackData.(string))
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())

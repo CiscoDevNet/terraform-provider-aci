@@ -61,8 +61,8 @@ func resourceAciBFDInterfaceProfile() *schema.Resource {
 			},
 
 			"relation_bfd_rs_if_pol": &schema.Schema{
-				Type: schema.TypeString,
-
+				Type:     schema.TypeString,
+				Computed: true,
 				Optional: true,
 			},
 		}),
@@ -278,12 +278,7 @@ func resourceAciBFDInterfaceProfileRead(ctx context.Context, d *schema.ResourceD
 		d.Set("relation_bfd_rs_if_pol", "")
 
 	} else {
-		if _, ok := d.GetOk("relation_bfd_rs_if_pol"); ok {
-			tfName := GetMOName(d.Get("relation_bfd_rs_if_pol").(string))
-			if tfName != bfdRsIfPolData {
-				d.Set("relation_bfd_rs_if_pol", "")
-			}
-		}
+		d.Set("relation_bfd_rs_if_pol", bfdRsIfPolData.(string))
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())

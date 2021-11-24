@@ -4,8 +4,6 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"reflect"
-	"sort"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
@@ -149,8 +147,8 @@ func resourceAciL2outExternalEpg() *schema.Resource {
 				Set:      schema.HashString,
 			},
 			"relation_fv_rs_cust_qos_pol": &schema.Schema{
-				Type: schema.TypeString,
-
+				Type:     schema.TypeString,
+				Computed: true,
 				Optional: true,
 			},
 			"relation_fv_rs_cons": &schema.Schema{
@@ -762,16 +760,7 @@ func resourceAciL2outExternalEpgRead(ctx context.Context, d *schema.ResourceData
 		d.Set("relation_fv_rs_sec_inherited", make([]string, 0, 1))
 
 	} else {
-		if _, ok := d.GetOk("relation_fv_rs_sec_inherited"); ok {
-			relationParamList := toStringList(d.Get("relation_fv_rs_sec_inherited").(*schema.Set).List())
-			fvRsSecInheritedDataList := toStringList(fvRsSecInheritedData.(*schema.Set).List())
-			sort.Strings(relationParamList)
-			sort.Strings(fvRsSecInheritedDataList)
-
-			if !reflect.DeepEqual(relationParamList, fvRsSecInheritedDataList) {
-				d.Set("relation_fv_rs_sec_inherited", make([]string, 0, 1))
-			}
-		}
+		d.Set("relation_fv_rs_sec_inherited", toStringList(fvRsSecInheritedData.(*schema.Set).List()))
 	}
 	fvRsProvData, err := aciClient.ReadRelationfvRsProvFromL2outExternalEpg(dn)
 	if err != nil {
@@ -779,21 +768,7 @@ func resourceAciL2outExternalEpgRead(ctx context.Context, d *schema.ResourceData
 		d.Set("relation_fv_rs_prov", make([]string, 0, 1))
 
 	} else {
-		if _, ok := d.GetOk("relation_fv_rs_prov"); ok {
-			relationParamList := toStringList(d.Get("relation_fv_rs_prov").(*schema.Set).List())
-			tfList := make([]string, 0, 1)
-			for _, relationParam := range relationParamList {
-				relationParamName := GetMOName(relationParam)
-				tfList = append(tfList, relationParamName)
-			}
-			fvRsProvDataList := toStringList(fvRsProvData.(*schema.Set).List())
-			sort.Strings(tfList)
-			sort.Strings(fvRsProvDataList)
-
-			if !reflect.DeepEqual(tfList, fvRsProvDataList) {
-				d.Set("relation_fv_rs_prov", make([]string, 0, 1))
-			}
-		}
+		d.Set("relation_fv_rs_prov", toStringList(fvRsProvData.(*schema.Set).List()))
 	}
 	fvRsConsIfData, err := aciClient.ReadRelationfvRsConsIfFromL2outExternalEpg(dn)
 	if err != nil {
@@ -801,21 +776,7 @@ func resourceAciL2outExternalEpgRead(ctx context.Context, d *schema.ResourceData
 		d.Set("relation_fv_rs_cons_if", make([]string, 0, 1))
 
 	} else {
-		if _, ok := d.GetOk("relation_fv_rs_cons_if"); ok {
-			relationParamList := toStringList(d.Get("relation_fv_rs_cons_if").(*schema.Set).List())
-			tfList := make([]string, 0, 1)
-			for _, relationParam := range relationParamList {
-				relationParamName := GetMOName(relationParam)
-				tfList = append(tfList, relationParamName)
-			}
-			fvRsConsIfDataList := toStringList(fvRsConsIfData.(*schema.Set).List())
-			sort.Strings(tfList)
-			sort.Strings(fvRsConsIfDataList)
-
-			if !reflect.DeepEqual(tfList, fvRsConsIfDataList) {
-				d.Set("relation_fv_rs_cons_if", make([]string, 0, 1))
-			}
-		}
+		d.Set("relation_fv_rs_cons_if", fvRsConsIfData.(*schema.Set).List())
 	}
 	fvRsCustQosPolData, err := aciClient.ReadRelationfvRsCustQosPolFromL2outExternalEpg(dn)
 	if err != nil {
@@ -823,13 +784,7 @@ func resourceAciL2outExternalEpgRead(ctx context.Context, d *schema.ResourceData
 		d.Set("relation_fv_rs_cust_qos_pol", "")
 
 	} else {
-		if _, ok := d.GetOk("relation_fv_rs_cust_qos_pol"); ok {
-			tfName := GetMOName(d.Get("relation_fv_rs_cust_qos_pol").(string))
-			if tfName != fvRsCustQosPolData {
-				d.Set("relation_fv_rs_cust_qos_pol", "")
-			}
-		}
-
+		d.Set("relation_fv_rs_cust_qos_pol", fvRsCustQosPolData.(string))
 	}
 
 	fvRsConsData, err := aciClient.ReadRelationfvRsConsFromL2outExternalEpg(dn)
@@ -838,21 +793,7 @@ func resourceAciL2outExternalEpgRead(ctx context.Context, d *schema.ResourceData
 		d.Set("relation_fv_rs_cons", make([]string, 0, 1))
 
 	} else {
-		if _, ok := d.GetOk("relation_fv_rs_cons"); ok {
-			relationParamList := toStringList(d.Get("relation_fv_rs_cons").(*schema.Set).List())
-			tfList := make([]string, 0, 1)
-			for _, relationParam := range relationParamList {
-				relationParamName := GetMOName(relationParam)
-				tfList = append(tfList, relationParamName)
-			}
-			fvRsConsDataList := toStringList(fvRsConsData.(*schema.Set).List())
-			sort.Strings(tfList)
-			sort.Strings(fvRsConsDataList)
-
-			if !reflect.DeepEqual(tfList, fvRsConsDataList) {
-				d.Set("relation_fv_rs_cons", make([]string, 0, 1))
-			}
-		}
+		d.Set("relation_fv_rs_cons", fvRsConsData.(*schema.Set).List())
 	}
 	l2extRsL2InstPToDomPData, err := aciClient.ReadRelationl2extRsL2InstPToDomPFromL2outExternalEpg(dn)
 	if err != nil {
@@ -860,13 +801,7 @@ func resourceAciL2outExternalEpgRead(ctx context.Context, d *schema.ResourceData
 		d.Set("relation_l2ext_rs_l2_inst_p_to_dom_p", "")
 
 	} else {
-		if _, ok := d.GetOk("relation_l2ext_rs_l2_inst_p_to_dom_p"); ok {
-			tfName := d.Get("relation_l2ext_rs_l2_inst_p_to_dom_p").(string)
-			if tfName != l2extRsL2InstPToDomPData {
-				d.Set("relation_l2ext_rs_l2_inst_p_to_dom_p", "")
-			}
-		}
-
+		d.Set("relation_l2ext_rs_l2_inst_p_to_dom_p", l2extRsL2InstPToDomPData.(string))
 	}
 
 	fvRsProtByData, err := aciClient.ReadRelationfvRsProtByFromL2outExternalEpg(dn)
@@ -875,21 +810,7 @@ func resourceAciL2outExternalEpgRead(ctx context.Context, d *schema.ResourceData
 		d.Set("relation_fv_rs_prot_by", make([]string, 0, 1))
 
 	} else {
-		if _, ok := d.GetOk("relation_fv_rs_prot_by"); ok {
-			relationParamList := toStringList(d.Get("relation_fv_rs_prot_by").(*schema.Set).List())
-			tfList := make([]string, 0, 1)
-			for _, relationParam := range relationParamList {
-				relationParamName := GetMOName(relationParam)
-				tfList = append(tfList, relationParamName)
-			}
-			fvRsProtByDataList := toStringList(fvRsProtByData.(*schema.Set).List())
-			sort.Strings(tfList)
-			sort.Strings(fvRsProtByDataList)
-
-			if !reflect.DeepEqual(tfList, fvRsProtByDataList) {
-				d.Set("relation_fv_rs_prot_by", make([]string, 0, 1))
-			}
-		}
+		d.Set("relation_fv_rs_prot_by", toStringList(fvRsProtByData.(*schema.Set).List()))
 	}
 	fvRsIntraEpgData, err := aciClient.ReadRelationfvRsIntraEpgFromL2outExternalEpg(dn)
 	if err != nil {
@@ -897,21 +818,7 @@ func resourceAciL2outExternalEpgRead(ctx context.Context, d *schema.ResourceData
 		d.Set("relation_fv_rs_intra_epg", make([]string, 0, 1))
 
 	} else {
-		if _, ok := d.GetOk("relation_fv_rs_intra_epg"); ok {
-			relationParamList := toStringList(d.Get("relation_fv_rs_intra_epg").(*schema.Set).List())
-			tfList := make([]string, 0, 1)
-			for _, relationParam := range relationParamList {
-				relationParamName := GetMOName(relationParam)
-				tfList = append(tfList, relationParamName)
-			}
-			fvRsIntraEpgDataList := toStringList(fvRsIntraEpgData.(*schema.Set).List())
-			sort.Strings(tfList)
-			sort.Strings(fvRsIntraEpgDataList)
-
-			if !reflect.DeepEqual(tfList, fvRsIntraEpgDataList) {
-				d.Set("relation_fv_rs_intra_epg", make([]string, 0, 1))
-			}
-		}
+		d.Set("relation_fv_rs_intra_epg", toStringList(fvRsIntraEpgData.(*schema.Set).List()))
 	}
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 

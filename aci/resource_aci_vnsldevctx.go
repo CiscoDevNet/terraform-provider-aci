@@ -321,12 +321,7 @@ func resourceAciLogicalDeviceContextRead(ctx context.Context, d *schema.Resource
 		d.Set("relation_vns_rs_l_dev_ctx_to_l_dev", "")
 
 	} else {
-		if _, ok := d.GetOk("relation_vns_rs_l_dev_ctx_to_l_dev"); ok {
-			tfName := d.Get("relation_vns_rs_l_dev_ctx_to_l_dev").(string)
-			if tfName != vnsRsLDevCtxToLDevData {
-				d.Set("relation_vns_rs_l_dev_ctx_to_l_dev", "")
-			}
-		}
+		d.Set("relation_vns_rs_l_dev_ctx_to_l_dev", vnsRsLDevCtxToLDevData.(string))
 	}
 
 	vnsRsLDevCtxToRtrCfgData, err := aciClient.ReadRelationvnsRsLDevCtxToRtrCfgFromLogicalDeviceContext(dn)
@@ -335,12 +330,7 @@ func resourceAciLogicalDeviceContextRead(ctx context.Context, d *schema.Resource
 		d.Set("relation_vns_rs_l_dev_ctx_to_rtr_cfg", "")
 
 	} else {
-		if _, ok := d.GetOk("relation_vns_rs_l_dev_ctx_to_rtr_cfg"); ok {
-			tfName := GetMOName(d.Get("relation_vns_rs_l_dev_ctx_to_rtr_cfg").(string))
-			if tfName != vnsRsLDevCtxToRtrCfgData {
-				d.Set("relation_vns_rs_l_dev_ctx_to_rtr_cfg", "")
-			}
-		}
+		d.Set("relation_vns_rs_l_dev_ctx_to_rtr_cfg", vnsRsLDevCtxToRtrCfgData.(string))
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
