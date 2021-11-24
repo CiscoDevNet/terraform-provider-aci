@@ -206,7 +206,7 @@ func (sm *ServiceManager) CreateRelationextnwRsOutFromL2Domain(parentDn, tDn str
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s",tDn:"%s"			
+				"dn": "%s","tDn":"%s"			
 			}
 		}
 	}`, "extnwRsOut", dn, tDn))

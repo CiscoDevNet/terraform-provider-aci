@@ -62,7 +62,7 @@ func (sm *ServiceManager) CreateRelationinfraRsAccCardPFromLeafProfile(parentDn,
 				"dn": "%s","tDn": "%s","annotation":"orchestrator:terraform"				
 			}
 		}
-	}`, "infraRsAccCardP", tDn, dn))
+	}`, "infraRsAccCardP", dn, tDn))
 
 	jsonPayload, err := container.ParseJSON(containerJSON)
 	if err != nil {
@@ -112,7 +112,7 @@ func (sm *ServiceManager) CreateRelationinfraRsAccPortPFromLeafProfile(parentDn,
 				"dn": "%s","tDn": "%s","annotation":"orchestrator:terraform"				
 			}
 		}
-	}`, "infraRsAccPortP", tDn, dn))
+	}`, "infraRsAccPortP", dn, tDn))
 
 	jsonPayload, err := container.ParseJSON(containerJSON)
 	if err != nil {

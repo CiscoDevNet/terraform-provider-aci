@@ -408,11 +408,10 @@ func (sm *ServiceManager) CreateRelationvmmRsVxlanNsDef(parentDn, annotation, tD
 		"%s": {
 			"attributes": {
 				"dn": "%s",
-				"annotation": "%s",
 				"tDn": "%s"
 			}
 		}
-	}`, "vmmRsVxlanNsDef", dn, annotation, tDn))
+	}`, "vmmRsVxlanNsDef", dn, tDn))
 
 	jsonPayload, err := container.ParseJSON(containerJSON)
 	if err != nil {

@@ -98,7 +98,7 @@ func (sm *ServiceManager) ReadRelationinfraRsSpanVSrcGrpFromLeafAccessPortPolicy
 		F: schema.HashString,
 	}
 	for _, contItem := range contList {
-		dat := models.G(contItem, "tnSpanVSrcGrpName")
+		dat := models.G(contItem, "tDn")
 		st.Add(dat)
 	}
 	return st, err
@@ -141,7 +141,7 @@ func (sm *ServiceManager) ReadRelationinfraRsStormctrlIfPolFromLeafAccessPortPol
 	contList := models.ListFromContainer(cont, "infraRsStormctrlIfPol")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnStormctrlIfPolName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -190,7 +190,7 @@ func (sm *ServiceManager) ReadRelationinfraRsPoeIfPolFromLeafAccessPortPolicyGro
 	contList := models.ListFromContainer(cont, "infraRsPoeIfPol")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnPoeIfPolName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -234,7 +234,7 @@ func (sm *ServiceManager) ReadRelationinfraRsLldpIfPolFromLeafAccessPortPolicyGr
 	contList := models.ListFromContainer(cont, "infraRsLldpIfPol")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnLldpIfPolName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -278,7 +278,7 @@ func (sm *ServiceManager) ReadRelationinfraRsMacsecIfPolFromLeafAccessPortPolicy
 	contList := models.ListFromContainer(cont, "infraRsMacsecIfPol")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnMacsecIfPolName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -322,7 +322,7 @@ func (sm *ServiceManager) ReadRelationinfraRsQosDppIfPolFromLeafAccessPortPolicy
 	contList := models.ListFromContainer(cont, "infraRsQosDppIfPol")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnQosDppPolName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -366,7 +366,7 @@ func (sm *ServiceManager) ReadRelationinfraRsHIfPolFromLeafAccessPortPolicyGroup
 	contList := models.ListFromContainer(cont, "infraRsHIfPol")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnFabricHIfPolName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -417,7 +417,7 @@ func (sm *ServiceManager) ReadRelationinfraRsNetflowMonitorPolFromLeafAccessPort
 
 	for _, contItem := range contList {
 		paramMap := make(map[string]string)
-		paramMap["tnNetflowMonitorPolName"] = models.G(contItem, "tnNetflowMonitorPolName")
+		paramMap["tnNetflowMonitorPolName"] = models.G(contItem, "tDn")
 		paramMap["fltType"] = models.G(contItem, "fltType")
 
 		st = append(st, paramMap)
@@ -464,7 +464,7 @@ func (sm *ServiceManager) ReadRelationinfraRsL2PortAuthPolFromLeafAccessPortPoli
 	contList := models.ListFromContainer(cont, "infraRsL2PortAuthPol")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnL2PortAuthPolName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -508,7 +508,7 @@ func (sm *ServiceManager) ReadRelationinfraRsMcpIfPolFromLeafAccessPortPolicyGro
 	contList := models.ListFromContainer(cont, "infraRsMcpIfPol")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnMcpIfPolName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -552,7 +552,7 @@ func (sm *ServiceManager) ReadRelationinfraRsL2PortSecurityPolFromLeafAccessPort
 	contList := models.ListFromContainer(cont, "infraRsL2PortSecurityPol")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnL2PortSecurityPolName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -596,7 +596,7 @@ func (sm *ServiceManager) ReadRelationinfraRsCoppIfPolFromLeafAccessPortPolicyGr
 	contList := models.ListFromContainer(cont, "infraRsCoppIfPol")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnCoppIfPolName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -647,7 +647,7 @@ func (sm *ServiceManager) ReadRelationinfraRsSpanVDestGrpFromLeafAccessPortPolic
 		F: schema.HashString,
 	}
 	for _, contItem := range contList {
-		dat := models.G(contItem, "tnSpanVDestGrpName")
+		dat := models.G(contItem, "tDn")
 		st.Add(dat)
 	}
 	return st, err
@@ -690,7 +690,7 @@ func (sm *ServiceManager) ReadRelationinfraRsDwdmIfPolFromLeafAccessPortPolicyGr
 	contList := models.ListFromContainer(cont, "infraRsDwdmIfPol")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnDwdmIfPolName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -734,7 +734,7 @@ func (sm *ServiceManager) ReadRelationinfraRsQosPfcIfPolFromLeafAccessPortPolicy
 	contList := models.ListFromContainer(cont, "infraRsQosPfcIfPol")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnQosPfcIfPolName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -778,7 +778,7 @@ func (sm *ServiceManager) ReadRelationinfraRsQosSdIfPolFromLeafAccessPortPolicyG
 	contList := models.ListFromContainer(cont, "infraRsQosSdIfPol")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnQosSdIfPolName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -822,7 +822,7 @@ func (sm *ServiceManager) ReadRelationinfraRsMonIfInfraPolFromLeafAccessPortPoli
 	contList := models.ListFromContainer(cont, "infraRsMonIfInfraPol")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnMonInfraPolName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -866,7 +866,7 @@ func (sm *ServiceManager) ReadRelationinfraRsFcIfPolFromLeafAccessPortPolicyGrou
 	contList := models.ListFromContainer(cont, "infraRsFcIfPol")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnFcIfPolName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -910,7 +910,7 @@ func (sm *ServiceManager) ReadRelationinfraRsQosIngressDppIfPolFromLeafAccessPor
 	contList := models.ListFromContainer(cont, "infraRsQosIngressDppIfPol")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnQosDppPolName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -954,7 +954,7 @@ func (sm *ServiceManager) ReadRelationinfraRsCdpIfPolFromLeafAccessPortPolicyGro
 	contList := models.ListFromContainer(cont, "infraRsCdpIfPol")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnCdpIfPolName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -998,7 +998,7 @@ func (sm *ServiceManager) ReadRelationinfraRsL2IfPolFromLeafAccessPortPolicyGrou
 	contList := models.ListFromContainer(cont, "infraRsL2IfPol")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnL2IfPolName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -1042,7 +1042,7 @@ func (sm *ServiceManager) ReadRelationinfraRsStpIfPolFromLeafAccessPortPolicyGro
 	contList := models.ListFromContainer(cont, "infraRsStpIfPol")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnStpIfPolName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -1086,7 +1086,7 @@ func (sm *ServiceManager) ReadRelationinfraRsQosEgressDppIfPolFromLeafAccessPort
 	contList := models.ListFromContainer(cont, "infraRsQosEgressDppIfPol")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnQosDppPolName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err

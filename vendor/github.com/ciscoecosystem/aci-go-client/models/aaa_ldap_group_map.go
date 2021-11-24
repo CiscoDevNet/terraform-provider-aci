@@ -55,6 +55,7 @@ func (aaaLdapGroupMap *LDAPGroupMap) ToMap() (map[string]string, error) {
 		A(aaaLdapGroupMapMap, key, value)
 	}
 	A(aaaLdapGroupMapMap, "name", aaaLdapGroupMap.Name)
+	A(aaaLdapGroupMapMap, "annotation", aaaLdapGroupMap.Annotation)
 	return aaaLdapGroupMapMap, err
 }
 
