@@ -91,7 +91,7 @@ func (sm *ServiceManager) ReadRelationfvRsBdFromApplicationEPG(parentDn string) 
 	contList := models.ListFromContainer(cont, "fvRsBd")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnFvBDName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -135,7 +135,7 @@ func (sm *ServiceManager) ReadRelationfvRsCustQosPolFromApplicationEPG(parentDn 
 	contList := models.ListFromContainer(cont, "fvRsCustQosPol")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnQosCustomPolName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -286,7 +286,7 @@ func (sm *ServiceManager) ReadRelationfvRsProvFromApplicationEPG(parentDn string
 		F: schema.HashString,
 	}
 	for _, contItem := range contList {
-		dat := models.G(contItem, "tnVzBrCPName")
+		dat := models.G(contItem, "tDn")
 		st.Add(dat)
 	}
 	return st, err
@@ -381,7 +381,7 @@ func (sm *ServiceManager) ReadRelationfvRsConsIfFromApplicationEPG(parentDn stri
 		F: schema.HashString,
 	}
 	for _, contItem := range contList {
-		dat := models.G(contItem, "tnVzCPIfName")
+		dat := models.G(contItem, "tDn")
 		st.Add(dat)
 	}
 	return st, err
@@ -529,7 +529,7 @@ func (sm *ServiceManager) ReadRelationfvRsDppPolFromApplicationEPG(parentDn stri
 	contList := models.ListFromContainer(cont, "fvRsDppPol")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnQosDppPolName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -580,7 +580,7 @@ func (sm *ServiceManager) ReadRelationfvRsConsFromApplicationEPG(parentDn string
 		F: schema.HashString,
 	}
 	for _, contItem := range contList {
-		dat := models.G(contItem, "tnVzBrCPName")
+		dat := models.G(contItem, "tDn")
 		st.Add(dat)
 	}
 	return st, err
@@ -673,7 +673,7 @@ func (sm *ServiceManager) ReadRelationfvRsTrustCtrlFromApplicationEPG(parentDn s
 	contList := models.ListFromContainer(cont, "fvRsTrustCtrl")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnFhsTrustCtrlPolName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -774,7 +774,7 @@ func (sm *ServiceManager) ReadRelationfvRsProtByFromApplicationEPG(parentDn stri
 		F: schema.HashString,
 	}
 	for _, contItem := range contList {
-		dat := models.G(contItem, "tnVzTabooName")
+		dat := models.G(contItem, "tDn")
 		st.Add(dat)
 	}
 	return st, err
@@ -822,7 +822,7 @@ func (sm *ServiceManager) ReadRelationfvRsAEPgMonPolFromApplicationEPG(parentDn 
 	contList := models.ListFromContainer(cont, "fvRsAEPgMonPol")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnMonEPGPolName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -873,7 +873,7 @@ func (sm *ServiceManager) ReadRelationfvRsIntraEpgFromApplicationEPG(parentDn st
 		F: schema.HashString,
 	}
 	for _, contItem := range contList {
-		dat := models.G(contItem, "tnVzBrCPName")
+		dat := models.G(contItem, "tDn")
 		st.Add(dat)
 	}
 	return st, err

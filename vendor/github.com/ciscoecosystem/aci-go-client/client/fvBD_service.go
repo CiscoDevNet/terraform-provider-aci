@@ -96,7 +96,7 @@ func (sm *ServiceManager) ReadRelationfvRsBDToProfileFromBridgeDomain(parentDn s
 	contList := models.ListFromContainer(cont, "fvRsBDToProfile")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnRtctrlProfileName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -140,7 +140,7 @@ func (sm *ServiceManager) ReadRelationfvRsMldsnFromBridgeDomain(parentDn string)
 	contList := models.ListFromContainer(cont, "fvRsMldsn")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnMldSnoopPolName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -189,7 +189,7 @@ func (sm *ServiceManager) ReadRelationfvRsABDPolMonPolFromBridgeDomain(parentDn 
 	contList := models.ListFromContainer(cont, "fvRsABDPolMonPol")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnMonEPGPolName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -233,7 +233,7 @@ func (sm *ServiceManager) ReadRelationfvRsBDToNdPFromBridgeDomain(parentDn strin
 	contList := models.ListFromContainer(cont, "fvRsBDToNdP")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnNdIfPolName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -332,7 +332,7 @@ func (sm *ServiceManager) ReadRelationfvRsBDToFhsFromBridgeDomain(parentDn strin
 	contList := models.ListFromContainer(cont, "fvRsBDToFhs")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnFhsBDPolName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -381,7 +381,7 @@ func (sm *ServiceManager) ReadRelationfvRsBDToRelayPFromBridgeDomain(parentDn st
 	contList := models.ListFromContainer(cont, "fvRsBDToRelayP")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnDhcpRelayPName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -425,7 +425,7 @@ func (sm *ServiceManager) ReadRelationfvRsCtxFromBridgeDomain(parentDn string) (
 	contList := models.ListFromContainer(cont, "fvRsCtx")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnFvCtxName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -476,7 +476,7 @@ func (sm *ServiceManager) ReadRelationfvRsBDToNetflowMonitorPolFromBridgeDomain(
 
 	for _, contItem := range contList {
 		paramMap := make(map[string]string)
-		paramMap["tnNetflowMonitorPolName"] = models.G(contItem, "tnNetflowMonitorPolName")
+		paramMap["tnNetflowMonitorPolName"] = models.G(contItem, "tDn")
 		paramMap["fltType"] = models.G(contItem, "fltType")
 
 		st = append(st, paramMap)
@@ -523,7 +523,7 @@ func (sm *ServiceManager) ReadRelationfvRsIgmpsnFromBridgeDomain(parentDn string
 	contList := models.ListFromContainer(cont, "fvRsIgmpsn")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnIgmpSnoopPolName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -567,7 +567,7 @@ func (sm *ServiceManager) ReadRelationfvRsBdToEpRetFromBridgeDomain(parentDn str
 	contList := models.ListFromContainer(cont, "fvRsBdToEpRet")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnFvEpRetPolName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -618,7 +618,7 @@ func (sm *ServiceManager) ReadRelationfvRsBDToOutFromBridgeDomain(parentDn strin
 		F: schema.HashString,
 	}
 	for _, contItem := range contList {
-		dat := models.G(contItem, "tnL3extOutName")
+		dat := models.G(contItem, "tDn")
 		st.Add(dat)
 	}
 	return st, err

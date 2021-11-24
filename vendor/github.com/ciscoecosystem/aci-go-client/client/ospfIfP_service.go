@@ -91,7 +91,7 @@ func (sm *ServiceManager) ReadRelationospfRsIfPolFromInterfaceProfile(parentDn s
 	contList := models.ListFromContainer(cont, "ospfRsIfPol")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnOspfIfPolName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err

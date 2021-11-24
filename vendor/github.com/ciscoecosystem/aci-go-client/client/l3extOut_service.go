@@ -98,7 +98,7 @@ func (sm *ServiceManager) ReadRelationl3extRsDampeningPolFromL3Outside(parentDn 
 
 	for _, contItem := range contList {
 		paramMap := make(map[string]string)
-		paramMap["tnRtctrlProfileName"] = models.G(contItem, "tnRtctrlProfileName")
+		paramMap["tnRtctrlProfileName"] = models.G(contItem, "tDn")
 		paramMap["af"] = models.G(contItem, "af")
 
 		st = append(st, paramMap)
@@ -145,7 +145,7 @@ func (sm *ServiceManager) ReadRelationl3extRsEctxFromL3Outside(parentDn string) 
 	contList := models.ListFromContainer(cont, "l3extRsEctx")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnFvCtxName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -239,7 +239,7 @@ func (sm *ServiceManager) ReadRelationl3extRsInterleakPolFromL3Outside(parentDn 
 	contList := models.ListFromContainer(cont, "l3extRsInterleakPol")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnRtctrlProfileName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err

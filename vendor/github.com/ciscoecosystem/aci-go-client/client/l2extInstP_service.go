@@ -154,7 +154,7 @@ func (sm *ServiceManager) ReadRelationfvRsProvFromL2outExternalEpg(parentDn stri
 		F: schema.HashString,
 	}
 	for _, contItem := range contList {
-		dat := models.G(contItem, "tnVzBrCPName")
+		dat := models.G(contItem, "tDn")
 		st.Add(dat)
 	}
 	return st, err
@@ -207,7 +207,7 @@ func (sm *ServiceManager) ReadRelationfvRsConsIfFromL2outExternalEpg(parentDn st
 		F: schema.HashString,
 	}
 	for _, contItem := range contList {
-		dat := models.G(contItem, "tnVzCPIfName")
+		dat := models.G(contItem, "tDn")
 		st.Add(dat)
 	}
 	return st, err
@@ -253,7 +253,7 @@ func (sm *ServiceManager) ReadRelationfvRsCustQosPolFromL2outExternalEpg(parentD
 	contList := models.ListFromContainer(cont, "fvRsCustQosPol")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnQosCustomPolName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -307,7 +307,7 @@ func (sm *ServiceManager) ReadRelationfvRsConsFromL2outExternalEpg(parentDn stri
 		F: schema.HashString,
 	}
 	for _, contItem := range contList {
-		dat := models.G(contItem, "tnVzBrCPName")
+		dat := models.G(contItem, "tDn")
 		st.Add(dat)
 	}
 	return st, err
@@ -405,7 +405,7 @@ func (sm *ServiceManager) ReadRelationfvRsProtByFromL2outExternalEpg(parentDn st
 		F: schema.HashString,
 	}
 	for _, contItem := range contList {
-		dat := models.G(contItem, "tnVzTabooName")
+		dat := models.G(contItem, "tDn")
 		st.Add(dat)
 	}
 	return st, err
@@ -458,7 +458,7 @@ func (sm *ServiceManager) ReadRelationfvRsIntraEpgFromL2outExternalEpg(parentDn 
 		F: schema.HashString,
 	}
 	for _, contItem := range contList {
-		dat := models.G(contItem, "tnVzBrCPName")
+		dat := models.G(contItem, "tDn")
 		st.Add(dat)
 	}
 	return st, err

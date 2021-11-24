@@ -148,7 +148,7 @@ func (sm *ServiceManager) ReadRelationvzRsAnyToConsIfFromAny(parentDn string) (i
 		F: schema.HashString,
 	}
 	for _, contItem := range contList {
-		dat := models.G(contItem, "tnVzCPIfName")
+		dat := models.G(contItem, "tDn")
 		st.Add(dat)
 	}
 	return st, err

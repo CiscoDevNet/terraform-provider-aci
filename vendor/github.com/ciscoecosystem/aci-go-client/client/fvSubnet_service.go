@@ -98,7 +98,7 @@ func (sm *ServiceManager) ReadRelationfvRsBDSubnetToOutFromSubnet(parentDn strin
 		F: schema.HashString,
 	}
 	for _, contItem := range contList {
-		dat := models.G(contItem, "tnL3extOutName")
+		dat := models.G(contItem, "tDn")
 		st.Add(dat)
 	}
 	return st, err
@@ -146,7 +146,7 @@ func (sm *ServiceManager) ReadRelationfvRsNdPfxPolFromSubnet(parentDn string) (i
 	contList := models.ListFromContainer(cont, "fvRsNdPfxPol")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnNdPfxPolName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -195,7 +195,7 @@ func (sm *ServiceManager) ReadRelationfvRsBDSubnetToProfileFromSubnet(parentDn s
 	contList := models.ListFromContainer(cont, "fvRsBDSubnetToProfile")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnRtctrlProfileName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err

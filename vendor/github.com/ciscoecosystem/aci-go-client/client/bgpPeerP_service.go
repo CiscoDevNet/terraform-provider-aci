@@ -91,7 +91,7 @@ func (sm *ServiceManager) ReadRelationbgpRsPeerPfxPolFromBgpPeerConnectivityProf
 	contList := models.ListFromContainer(cont, "bgpRsPeerPfxPol")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnBgpPeerPfxPolName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
