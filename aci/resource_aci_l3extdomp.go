@@ -53,8 +53,8 @@ func resourceAciL3DomainProfile() *schema.Resource {
 				Optional: true,
 			},
 			"relation_infra_rs_vlan_ns_def": &schema.Schema{
-				Type: schema.TypeString,
-
+				Type:     schema.TypeString,
+				Computed: true,
 				Optional: true,
 			},
 			"relation_infra_rs_vip_addr_ns": &schema.Schema{
@@ -69,8 +69,8 @@ func resourceAciL3DomainProfile() *schema.Resource {
 				Set:      schema.HashString,
 			},
 			"relation_infra_rs_dom_vxlan_ns_def": &schema.Schema{
-				Type: schema.TypeString,
-
+				Type:     schema.TypeString,
+				Computed: true,
 				Optional: true,
 			},
 		},
