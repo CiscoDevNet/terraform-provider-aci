@@ -45,7 +45,7 @@ func resourceAciL3outBGPProtocolProfile() *schema.Resource {
 
 			"relation_bgp_rs_bgp_node_ctx_pol": &schema.Schema{
 				Type:     schema.TypeString,
-				Computed: true,
+				Default:  "uni/tn-common/bgpCtxP-default",
 				Optional: true,
 			},
 		},

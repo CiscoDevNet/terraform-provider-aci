@@ -45,7 +45,7 @@ func resourceAciFexBundleGroup() *schema.Resource {
 
 			"relation_infra_rs_mon_fex_infra_pol": &schema.Schema{
 				Type:     schema.TypeString,
-				Computed: true,
+				Default:  "uni/infra/moninfra-default",
 				Optional: true,
 			},
 

@@ -62,7 +62,7 @@ func resourceAciBDDHCPLabel() *schema.Resource {
 
 			"relation_dhcp_rs_dhcp_option_pol": &schema.Schema{
 				Type:     schema.TypeString,
-				Computed: true,
+				Default:  "uni/tn-common/dhcpoptpol-default",
 				Optional: true,
 			},
 		}),

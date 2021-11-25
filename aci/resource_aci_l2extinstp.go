@@ -148,7 +148,7 @@ func resourceAciL2outExternalEpg() *schema.Resource {
 			},
 			"relation_fv_rs_cust_qos_pol": &schema.Schema{
 				Type:     schema.TypeString,
-				Computed: true,
+				Default:  "uni/tn-common/qoscustom-default",
 				Optional: true,
 			},
 			"relation_fv_rs_cons": &schema.Schema{

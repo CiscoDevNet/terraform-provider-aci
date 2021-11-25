@@ -168,11 +168,11 @@ func resourceAciNodeManagementEPg() *schema.Resource {
 			"relation_fv_rs_cust_qos_pol": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
-				Computed: true,
+				Default:  "uni/tn-common/qoscustom-default",
 			},
 			"relation_mgmt_rs_mgmt_bd": &schema.Schema{
 				Type:     schema.TypeString,
-				Computed: true,
+				Default:  "uni/tn-common/BD-default",
 				Optional: true,
 			},
 			"relation_fv_rs_cons": &schema.Schema{
@@ -217,7 +217,7 @@ func resourceAciNodeManagementEPg() *schema.Resource {
 			"relation_mgmt_rs_oo_b_ctx": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
-				Computed: true,
+				Default:  "uni/tn-mgmt/ctx-oob",
 			},
 		}),
 	}

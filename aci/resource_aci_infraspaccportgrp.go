@@ -40,27 +40,26 @@ func resourceAciSpineAccessPortPolicyGroup() *schema.Resource {
 
 			"relation_infra_rs_h_if_pol": &schema.Schema{
 				Type:     schema.TypeString,
-				Computed: true,
+				Default:  "uni/infra/hintfpol-default",
 				Optional: true,
 			},
 			"relation_infra_rs_cdp_if_pol": &schema.Schema{
 				Type:     schema.TypeString,
-				Computed: true,
+				Default:  "uni/infra/cdpIfP-default",
 				Optional: true,
 			},
 			"relation_infra_rs_copp_if_pol": &schema.Schema{
 				Type:     schema.TypeString,
-				Computed: true,
+				Default:  "uni/infra/coppifpol-default",
 				Optional: true,
 			},
 			"relation_infra_rs_att_ent_p": &schema.Schema{
 				Type:     schema.TypeString,
-				Computed: true,
 				Optional: true,
 			},
 			"relation_infra_rs_macsec_if_pol": &schema.Schema{
 				Type:     schema.TypeString,
-				Computed: true,
+				Default:  "uni/infra/macsecifp-default",
 				Optional: true,
 			},
 		}),
