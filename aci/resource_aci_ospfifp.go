@@ -63,7 +63,7 @@ func resourceAciOSPFInterfaceProfile() *schema.Resource {
 
 			"relation_ospf_rs_if_pol": &schema.Schema{
 				Type:     schema.TypeString,
-				Computed: true,
+				Default:  "uni/tn-common/ospfIfPol-default",
 				Optional: true,
 			},
 		}),

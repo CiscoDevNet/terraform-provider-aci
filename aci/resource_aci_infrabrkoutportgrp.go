@@ -55,7 +55,7 @@ func resourceAciLeafBreakoutPortGroup() *schema.Resource {
 
 			"relation_infra_rs_mon_brkout_infra_pol": &schema.Schema{
 				Type:     schema.TypeString,
-				Computed: true,
+				Default:  "uni/infra/moninfra-default",
 				Optional: true,
 			},
 		}),

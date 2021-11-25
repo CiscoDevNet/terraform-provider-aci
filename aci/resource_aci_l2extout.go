@@ -77,7 +77,7 @@ func resourceAciL2Outside() *schema.Resource {
 
 			"relation_l2ext_rs_e_bd": &schema.Schema{
 				Type:     schema.TypeString,
-				Computed: true,
+				Default:  "uni/tn-common/BD-default",
 				Optional: true,
 			},
 			"relation_l2ext_rs_l2_dom_att": &schema.Schema{

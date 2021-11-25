@@ -107,8 +107,8 @@ func resourceAciHSRPGroupProfile() *schema.Resource {
 			},
 
 			"relation_hsrp_rs_group_pol": &schema.Schema{
-				Type: schema.TypeString,
-
+				Type:     schema.TypeString,
+				Default:  "uni/tn-common/hsrpGroupPol-default",
 				Optional: true,
 			},
 		}),

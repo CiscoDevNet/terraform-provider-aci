@@ -68,7 +68,7 @@ func resourceAciCloudVpnGateway() *schema.Resource {
 
 			"relation_cloud_rs_to_vpn_gw_pol": &schema.Schema{
 				Type:     schema.TypeString,
-				Computed: true,
+				Default:  "uni/tn-common/vpngwpol-default",
 				Optional: true,
 			},
 			"relation_cloud_rs_to_direct_conn_pol": &schema.Schema{
@@ -78,7 +78,7 @@ func resourceAciCloudVpnGateway() *schema.Resource {
 			},
 			"relation_cloud_rs_to_host_router_pol": &schema.Schema{
 				Type:     schema.TypeString,
-				Computed: true,
+				Default:  "uni/tn-common/hostrouterpol-default",
 				Optional: true,
 			},
 		}),

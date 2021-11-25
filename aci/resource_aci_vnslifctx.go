@@ -66,7 +66,7 @@ func resourceAciLogicalInterfaceContext() *schema.Resource {
 
 			"relation_vns_rs_l_if_ctx_to_cust_qos_pol": &schema.Schema{
 				Type:     schema.TypeString,
-				Computed: true,
+				Default:  "uni/tn-common/qoscustom-default",
 				Optional: true,
 			},
 			"relation_vns_rs_l_if_ctx_to_svc_e_pg_pol": &schema.Schema{
