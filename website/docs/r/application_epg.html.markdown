@@ -81,11 +81,6 @@ Manages ACI Application EPG
 
 * `relation_fv_rs_intra_epg` - (Optional) Relation to Intra EPG Contract (Point to class vzBrCP). Cardinality - N_TO_M. Type - Set of String.
 
-* `relation_fv_rs_graph_def` - (Optional) Relation to Intra EPG Contract (Point to class vzGraphCont). Cardinality - N_TO_M. Type - Set of String.
-
-* `relation_fv_rs_prov_def` - (Optional) Relation to Intra EPG Contract (Point to class vzCtrctEPgCont). Cardinality - N_TO_M. Type - Set of String.
-
-* `relation_fv_rs_path_att` - (Optional) Relation to Intra EPG Contract (Point to class fabricPathEp). Cardinality - N_TO_M. Type - Set of String.
 
 ## Attribute Reference
 
