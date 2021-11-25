@@ -239,8 +239,8 @@ func resourceAciVMMController() *schema.Resource {
 				Description: "Create relation to fvns:VxlanInstP",
 			},
 			"relation_vmm_rs_vxlan_ns_def": {
-				Type: schema.TypeString,
-
+				Type:        schema.TypeString,
+				Computed:    true,
 				Optional:    true,
 				Description: "Create relation to fvns:AInstP",
 			}}),
@@ -517,7 +517,7 @@ func resourceAciVMMControllerCreate(ctx context.Context, d *schema.ResourceData,
 		relationParamList := relationTovmmRsVmmCtrlrP.(*schema.Set).List()
 		for _, relationParam := range relationParamList {
 			paramMap := relationParam.(map[string]interface{})
-			err = aciClient.CreateRelationvmmRsVmmCtrlrP(vmmCtrlrP.DistinguishedName, vmmCtrlrPAttr.Annotation, paramMap["epg_depl_pref"].(string), GetMOName(paramMap["target_dn"].(string)))
+			err = aciClient.CreateRelationvmmRsVmmCtrlrP(vmmCtrlrP.DistinguishedName, vmmCtrlrPAttr.Annotation, paramMap["epg_depl_pref"].(string), paramMap["target_dn"].(string))
 
 			if err != nil {
 				return diag.FromErr(err)
@@ -779,7 +779,7 @@ func resourceAciVMMControllerUpdate(ctx context.Context, d *schema.ResourceData,
 		newRelList := newRel.(*schema.Set).List()
 		for _, relationParam := range oldRelList {
 			paramMap := relationParam.(map[string]interface{})
-			err = aciClient.DeleteRelationvmmRsVmmCtrlrP(vmmCtrlrP.DistinguishedName, GetMOName(paramMap["target_dn"].(string)))
+			err = aciClient.DeleteRelationvmmRsVmmCtrlrP(vmmCtrlrP.DistinguishedName, paramMap["target_dn"].(string))
 
 			if err != nil {
 				return diag.FromErr(err)
@@ -787,7 +787,7 @@ func resourceAciVMMControllerUpdate(ctx context.Context, d *schema.ResourceData,
 		}
 		for _, relationParam := range newRelList {
 			paramMap := relationParam.(map[string]interface{})
-			err = aciClient.CreateRelationvmmRsVmmCtrlrP(vmmCtrlrP.DistinguishedName, vmmCtrlrPAttr.Annotation, paramMap["epg_depl_pref"].(string), GetMOName(paramMap["target_dn"].(string)))
+			err = aciClient.CreateRelationvmmRsVmmCtrlrP(vmmCtrlrP.DistinguishedName, vmmCtrlrPAttr.Annotation, paramMap["epg_depl_pref"].(string), paramMap["target_dn"].(string))
 
 			if err != nil {
 				return diag.FromErr(err)
@@ -884,7 +884,15 @@ func resourceAciVMMControllerRead(ctx context.Context, d *schema.ResourceData, m
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation vmmRsVmmCtrlrP %v", err)
 	} else {
-		d.Set("relation_vmm_rs_vmm_ctrlr_p", vmmRsVmmCtrlrPData)
+		relParams := make([]map[string]string, 0, 1)
+		relParamsList := vmmRsVmmCtrlrPData.([]map[string]string)
+		for _, obj := range relParamsList {
+			relParams = append(relParams, map[string]string{
+				"epg_depl_pref": obj["epgDeplPref"],
+				"target_dn":     obj["tDn"],
+			})
+		}
+		d.Set("relation_vmm_rs_vmm_ctrlr_p", relParams)
 	}
 
 	vmmRsVxlanNsData, err := aciClient.ReadRelationvmmRsVxlanNs(dn)
