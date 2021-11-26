@@ -19,6 +19,7 @@ resource "aci_pod_maintenance_group" "example" {
   description = "from terraform"
   name_alias  = "aliasing"
   pod_maintenance_group_type  = "ALL"
+  annotation = "aci_pod_maintenance_group_annotation"
 }
 ```
 

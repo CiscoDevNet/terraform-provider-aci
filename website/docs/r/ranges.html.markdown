@@ -33,6 +33,7 @@ resource "aci_ranges" "example" {
 * `alloc_mode` - (Optional) Alloc mode for object ranges.  Allowed values: "dynamic", "static", "inherit". Default is "inherit".
 * `annotation` - (Optional) Annotation for object ranges.
 * `name_alias` - (Optional) Name alias for object ranges.
+* `description` - (Optional) Description for object ranges.
 * `role` - (Optional) System role type.  Allowed values: "external", "internal".  Default is "external".
 
 ## Attribute Reference ##
