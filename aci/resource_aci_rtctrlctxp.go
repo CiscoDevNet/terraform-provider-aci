@@ -52,6 +52,12 @@ func resourceAciRouteControlContext() *schema.Resource {
 				Computed: true,
 			},
 
+			"set_rule": {
+				Type:        schema.TypeString,
+				Optional:    true,
+				Description: "Create relation to rtctrl:AttrP",
+			},
+
 			"relation_rtctrl_rs_ctx_p_to_subj_p": {
 				Type:        schema.TypeSet,
 				Elem:        &schema.Schema{Type: schema.TypeString},
@@ -111,8 +117,9 @@ func resourceAciRouteControlContextCreate(ctx context.Context, d *schema.Resourc
 	desc := d.Get("description").(string)
 	name := d.Get("name").(string)
 	RouteControlProfileDn := d.Get("route_control_profile_dn").(string)
-
 	rtctrlCtxPAttr := models.RouteControlContextAttributes{}
+	rtctrlScopeAttr := models.RouteContextScopeAttributes{}
+
 	nameAlias := ""
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		nameAlias = NameAlias.(string)
@@ -135,13 +142,28 @@ func resourceAciRouteControlContextCreate(ctx context.Context, d *schema.Resourc
 		rtctrlCtxPAttr.Order = Order.(string)
 	}
 	rtctrlCtxP := models.NewRouteControlContext(fmt.Sprintf("ctx-%s", name), RouteControlProfileDn, desc, nameAlias, rtctrlCtxPAttr)
-
 	err := aciClient.Save(rtctrlCtxP)
 	if err != nil {
 		return diag.FromErr(err)
 	}
-
+	if SetRule, ok := d.GetOk("set_rule"); ok {
+		rtctrlScope := models.NewRouteContextScope(fmt.Sprintf("ctx-%s/scp", name), RouteControlProfileDn, desc, nameAlias, rtctrlScopeAttr)
+		err = aciClient.Save(rtctrlScope)
+		if err != nil {
+			return diag.FromErr(err)
+		}
+		set_rule := SetRule.(string)
+		err = aciClient.CreateRelationrtctrlRsScopeToAttrP(rtctrlScope.DistinguishedName, rtctrlScopeAttr.Annotation, GetMOName(set_rule))
+		if err != nil {
+			return diag.FromErr(err)
+		}
+	}
 	checkDns := make([]string, 0, 1)
+
+	err = checkTDn(aciClient, checkDns)
+	if err != nil {
+		return diag.FromErr(err)
+	}
 
 	if relationTortctrlRsCtxPToSubjP, ok := d.GetOk("relation_rtctrl_rs_ctx_p_to_subj_p"); ok {
 		relationParamList := toStringList(relationTortctrlRsCtxPToSubjP.(*schema.Set).List())
@@ -178,6 +200,7 @@ func resourceAciRouteControlContextUpdate(ctx context.Context, d *schema.Resourc
 	name := d.Get("name").(string)
 	RouteControlProfileDn := d.Get("route_control_profile_dn").(string)
 	rtctrlCtxPAttr := models.RouteControlContextAttributes{}
+	rtctrlScopeAttr := models.RouteContextScopeAttributes{}
 	nameAlias := ""
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		nameAlias = NameAlias.(string)
@@ -200,12 +223,32 @@ func resourceAciRouteControlContextUpdate(ctx context.Context, d *schema.Resourc
 	if Order, ok := d.GetOk("order"); ok {
 		rtctrlCtxPAttr.Order = Order.(string)
 	}
-	rtctrlCtxP := models.NewRouteControlContext(fmt.Sprintf("ctx-%s", name), RouteControlProfileDn, desc, nameAlias, rtctrlCtxPAttr)
 
+	rtctrlCtxP := models.NewRouteControlContext(fmt.Sprintf("ctx-%s", name), RouteControlProfileDn, desc, nameAlias, rtctrlCtxPAttr)
 	rtctrlCtxP.Status = "modified"
 	err := aciClient.Save(rtctrlCtxP)
 	if err != nil {
 		return diag.FromErr(err)
+	}
+	if d.HasChange("set_rule") {
+		_, relationParam := d.GetChange("set_rule")
+		if !reflect.ValueOf(relationParam).IsZero() {
+			rtctrlScope := models.NewRouteContextScope(fmt.Sprintf("ctx-%s/scp", name), RouteControlProfileDn, desc, nameAlias, rtctrlScopeAttr)
+			err := aciClient.Save(rtctrlScope)
+			if err != nil {
+				return diag.FromErr(err)
+			}
+			err = aciClient.CreateRelationrtctrlRsScopeToAttrP(rtctrlScope.DistinguishedName, rtctrlScopeAttr.Annotation, GetMOName(relationParam.(string)))
+			if err != nil {
+				return diag.FromErr(err)
+			}
+		} else {
+			dn := fmt.Sprintf("%s/%s", RouteControlProfileDn, fmt.Sprintf("ctx-%s/scp", name))
+			err := aciClient.DeleteByDn(dn, "rtctrlScope")
+			if err != nil {
+				return diag.FromErr(err)
+			}
+		}
 	}
 
 	checkDns := make([]string, 0, 1)
