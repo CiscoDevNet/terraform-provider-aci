@@ -1,4 +1,5 @@
 ---
+subcategory: "Tenant Policies"
 layout: "aci"
 page_title: "ACI: aci_match_route_destination_rule"
 sidebar_current: "docs-aci-resource-match_route_destination_rule"
@@ -17,8 +18,7 @@ Manages ACI Match Route Destination Rule
 
 ## GUI Information ##
 
-* `Location` - 
-
+* `Location` - Tenant -> Policies -> Protocol -> Match Rules -> Match Prefix
 
 ## Example Usage ##
 
@@ -39,7 +39,6 @@ resource "aci_match_route_destination_rule" "destination" {
 * `ip` - (Required) Ip of object Match Route Destination Rule.
 * `annotation` - (Optional) Annotation of object Match Route Destination Rule.
 * `aggregate` - (Optional) Aggregated Route. Allowed values are "false", "true" and default value is "false". Type: String.
-
 * `from_pfx_len` - (Optional) Start of Prefix Length. Allowed range is 0-128 and default value is "0".
 * `ip` - (Optional) Match IP Address.
 * `to_pfx_len` - (Optional) End of Prefix Length. Allowed range is 0-128 and default value is "0".
