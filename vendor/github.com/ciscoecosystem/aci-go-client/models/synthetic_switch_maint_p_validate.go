@@ -2,8 +2,9 @@ package models
 
 import (
 	"fmt"
-	"github.com/ciscoecosystem/aci-go-client/container"
 	"strconv"
+
+	"github.com/ciscoecosystem/aci-go-client/container"
 )
 
 const SyntheticSwitchMaintPValidateClassName = "syntheticSwitchMaintPValidate"
@@ -20,6 +21,7 @@ type SwitchMaintPValidateAttributes struct {
 	ExtMngdBy          string `json:",omitempty"`
 	LcOwn              string `json:",omitempty"`
 	ModTs              string `json:",omitempty"`
+	Name               string `json:",omitempty"`
 	Reason             string `json:",omitempty"`
 	Recommended_action string `json:",omitempty"`
 	Result             string `json:",omitempty"`
@@ -52,6 +54,7 @@ func (syntheticSwitchMaintPValidate *SwitchMaintPValidate) ToMap() (map[string]s
 	A(syntheticSwitchMaintPValidateMap, "extmngdby", syntheticSwitchMaintPValidate.ExtMngdBy)
 	A(syntheticSwitchMaintPValidateMap, "lcOwn", syntheticSwitchMaintPValidate.LcOwn)
 	A(syntheticSwitchMaintPValidateMap, "modTs", syntheticSwitchMaintPValidate.ModTs)
+	A(syntheticSwitchMaintPValidateMap, "name", syntheticSwitchMaintPValidate.Name)
 	A(syntheticSwitchMaintPValidateMap, "reason", syntheticSwitchMaintPValidate.Reason)
 	A(syntheticSwitchMaintPValidateMap, "recommended_action", syntheticSwitchMaintPValidate.Recommended_action)
 	A(syntheticSwitchMaintPValidateMap, "result", syntheticSwitchMaintPValidate.Result)
@@ -77,6 +80,7 @@ func SwitchMaintPValidateFromContainerList(cont *container.Container, index int)
 			ExtMngdBy:          G(SwitchMaintPValidateCont, "extmngdby"),
 			LcOwn:              G(SwitchMaintPValidateCont, "lcOwn"),
 			ModTs:              G(SwitchMaintPValidateCont, "modTs"),
+			Name:               G(SwitchMaintPValidateCont, "name"),
 			Reason:             G(SwitchMaintPValidateCont, "reason"),
 			Recommended_action: G(SwitchMaintPValidateCont, "recommended_action"),
 			Result:             G(SwitchMaintPValidateCont, "result"),
@@ -101,3 +105,4 @@ func SwitchMaintPValidateListFromContainer(cont *container.Container) []*SwitchM
 
 	return arr
 }
+
