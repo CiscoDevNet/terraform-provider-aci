@@ -1,4 +1,5 @@
 ---
+subcategory: "Tenant Policies"
 layout: "aci"
 page_title: "ACI: aci_match_rule"
 sidebar_current: "docs-aci-resource-match_rule"
@@ -18,7 +19,6 @@ Manages ACI Match Rule
 ## GUI Information ##
 
 * `Location` - Tenant -> Policies -> Protocol -> Match Rules
-
 
 ## Example Usage ##
 
