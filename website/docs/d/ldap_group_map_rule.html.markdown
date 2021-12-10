@@ -1,4 +1,5 @@
 ---
+subcategory: "AAA"
 layout: "aci"
 page_title: "ACI: aci_ldap_group_map_rule"
 sidebar_current: "docs-aci-data-source-ldap_group_map_rule"

@@ -1,4 +1,5 @@
 ---
+subcategory: "AAA"
 layout: "aci"
 page_title: "ACI: aci_authentication_properties"
 sidebar_current: "docs-aci-data-source-authentication_properties"

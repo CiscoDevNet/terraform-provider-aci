@@ -1,4 +1,5 @@
 ---
+subcategory: "Node Management"
 layout: "aci"
 page_title: "ACI: aci_managed_node_connectivity_group"
 sidebar_current: "docs-aci-data-source-managed_node_connectivity_group"

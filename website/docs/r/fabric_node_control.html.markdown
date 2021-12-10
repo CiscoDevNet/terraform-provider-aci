@@ -1,4 +1,5 @@
 ---
+subcategory: "Fabric Policies"
 layout: "aci"
 page_title: "ACI: aci_fabric_node_control"
 sidebar_current: "docs-aci-resource-fabric_node_control"

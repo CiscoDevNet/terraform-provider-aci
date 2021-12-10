@@ -1,4 +1,5 @@
 ---
+subcategory: "System Settings"
 layout: "aci"
 page_title: "ACI: aci_coop_policy"
 sidebar_current: "docs-aci-data-source-coop_policy"

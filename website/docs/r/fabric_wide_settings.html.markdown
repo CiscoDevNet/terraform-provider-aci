@@ -1,4 +1,5 @@
 ---
+subcategory: "System Settings"
 layout: "aci"
 page_title: "ACI: aci_fabric_wide_settings"
 sidebar_current: "docs-aci-resource-fabric_wide_settings"
