@@ -1,4 +1,5 @@
 ---
+subcategory: "AAA"
 layout: "aci"
 page_title: "ACI: aci_ldap_provider"
 sidebar_current: "docs-aci-resource-ldap_provider"

@@ -1,4 +1,5 @@
 ---
+subcategory: "Scheduler"
 layout: "aci"
 page_title: "ACI: aci_recurring_window"
 sidebar_current: "docs-aci-data-source-recurring_window"

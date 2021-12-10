@@ -1,4 +1,5 @@
 ---
+subcategory: "AAA"
 layout: "aci"
 page_title: "ACI: aci_rsa_provider"
 sidebar_current: "docs-aci-resource-rsa_provider"

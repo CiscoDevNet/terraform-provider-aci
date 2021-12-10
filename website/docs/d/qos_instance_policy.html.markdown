@@ -1,4 +1,5 @@
 ---
+subcategory: "Access Policies"
 layout: "aci"
 page_title: "ACI: aci_qos_instance_policy"
 sidebar_current: "docs-aci-data-source-qos_instance_policy"
@@ -15,6 +16,10 @@ Data source for ACI QOS Instance Policy
 
 * `Class` - qosInstPol
 * `Distinguished Named` - uni/infra/qosinst-{name}
+
+## GUI Information ##
+
+* `Location` - Fabric -> Access Policies -> Policies -> Global -> QOS Class
 
 ## Example Usage ##
 
