@@ -28,8 +28,8 @@ resource "aci_match_route_destination_rule" "destination" {
   ip  = "10.1.1.1"
   aggregate = "no"
   annotation = "orchestrator:terraform"
-  from_pfx_len = "0"
-  to_pfx_len = "0"
+  greater_than_mask = "0"
+  less_than_mask = "0"
 }
 ```
 
@@ -39,9 +39,9 @@ resource "aci_match_route_destination_rule" "destination" {
 * `ip` - (Required) Ip of object Match Route Destination Rule.
 * `annotation` - (Optional) Annotation of object Match Route Destination Rule.
 * `aggregate` - (Optional) Aggregated Route. Allowed values are "false", "true" and default value is "false". Type: String.
-* `from_pfx_len` - (Optional) Start of Prefix Length. Allowed range is 0-128 and default value is "0".
+* `greater_than_mask` - (Optional) Start of Prefix Length. Allowed range is 0-128 and default value is "0".
 * `ip` - (Optional) Match IP Address.
-* `to_pfx_len` - (Optional) End of Prefix Length. Allowed range is 0-128 and default value is "0".
+* `less_than_mask` - (Optional) End of Prefix Length. Allowed range is 0-128 and default value is "0".
 
 
 ## Importing ##

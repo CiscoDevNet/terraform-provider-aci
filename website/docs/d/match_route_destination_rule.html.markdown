@@ -42,6 +42,6 @@ data "aci_match_route_destination_rule" "example" {
 * `annotation` - (Optional) Annotation of object Match Route Destination Rule.
 * `name_alias` - (Optional) Name Alias of object Match Route Destination Rule.
 * `aggregate` - (Optional) Aggregated Route. Aggregated Route
-* `from_pfx_len` - (Optional) Start of Prefix Length. Prefix list range
+* `greater_than_mask` - (Optional) Start of Prefix Length. Prefix list range
 * `ip` - (Optional) Match IP Address. null
-* `to_pfx_len` - (Optional) End of Prefix Length. 
+* `less_than_mask` - (Optional) End of Prefix Length. 

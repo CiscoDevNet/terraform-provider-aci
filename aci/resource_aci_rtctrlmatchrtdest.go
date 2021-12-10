@@ -39,7 +39,7 @@ func resourceAciMatchRouteDestinationRule() *schema.Resource {
 					"yes",
 				}, false),
 			},
-			"from_pfx_len": {
+			"greater_than_mask": {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
@@ -54,7 +54,7 @@ func resourceAciMatchRouteDestinationRule() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
-			"to_pfx_len": {
+			"less_than_mask": {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
@@ -84,10 +84,10 @@ func setMatchRouteDestinationRuleAttributes(rtctrlMatchRtDest *models.MatchRoute
 	}
 	d.Set("aggregate", rtctrlMatchRtDestMap["aggregate"])
 	d.Set("annotation", rtctrlMatchRtDestMap["annotation"])
-	d.Set("from_pfx_len", rtctrlMatchRtDestMap["fromPfxLen"])
+	d.Set("greater_than_mask", rtctrlMatchRtDestMap["fromPfxLen"])
 	d.Set("ip", rtctrlMatchRtDestMap["ip"])
 	d.Set("name", rtctrlMatchRtDestMap["name"])
-	d.Set("to_pfx_len", rtctrlMatchRtDestMap["toPfxLen"])
+	d.Set("less_than_mask", rtctrlMatchRtDestMap["toPfxLen"])
 	d.Set("name_alias", rtctrlMatchRtDestMap["nameAlias"])
 	return d, nil
 }
@@ -130,7 +130,7 @@ func resourceAciMatchRouteDestinationRuleCreate(ctx context.Context, d *schema.R
 		rtctrlMatchRtDestAttr.Aggregate = Aggregate.(string)
 	}
 
-	if FromPfxLen, ok := d.GetOk("from_pfx_len"); ok {
+	if FromPfxLen, ok := d.GetOk("greater_than_mask"); ok {
 		rtctrlMatchRtDestAttr.FromPfxLen = FromPfxLen.(string)
 	}
 
@@ -142,7 +142,7 @@ func resourceAciMatchRouteDestinationRuleCreate(ctx context.Context, d *schema.R
 		rtctrlMatchRtDestAttr.Name = Name.(string)
 	}
 
-	if ToPfxLen, ok := d.GetOk("to_pfx_len"); ok {
+	if ToPfxLen, ok := d.GetOk("less_than_mask"); ok {
 		rtctrlMatchRtDestAttr.ToPfxLen = ToPfxLen.(string)
 	}
 	rtctrlMatchRtDest := models.NewMatchRouteDestinationRule(fmt.Sprintf("dest-[%s]", ip), MatchRuleDn, desc, nameAlias, rtctrlMatchRtDestAttr)
@@ -179,7 +179,7 @@ func resourceAciMatchRouteDestinationRuleUpdate(ctx context.Context, d *schema.R
 		rtctrlMatchRtDestAttr.Aggregate = Aggregate.(string)
 	}
 
-	if FromPfxLen, ok := d.GetOk("from_pfx_len"); ok {
+	if FromPfxLen, ok := d.GetOk("greater_than_mask"); ok {
 		rtctrlMatchRtDestAttr.FromPfxLen = FromPfxLen.(string)
 	}
 
@@ -191,7 +191,7 @@ func resourceAciMatchRouteDestinationRuleUpdate(ctx context.Context, d *schema.R
 		rtctrlMatchRtDestAttr.Name = Name.(string)
 	}
 
-	if ToPfxLen, ok := d.GetOk("to_pfx_len"); ok {
+	if ToPfxLen, ok := d.GetOk("less_than_mask"); ok {
 		rtctrlMatchRtDestAttr.ToPfxLen = ToPfxLen.(string)
 	}
 	rtctrlMatchRtDest := models.NewMatchRouteDestinationRule(fmt.Sprintf("dest-[%s]", ip), MatchRuleDn, desc, nameAlias, rtctrlMatchRtDestAttr)

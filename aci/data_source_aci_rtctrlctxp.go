@@ -35,6 +35,11 @@ func dataSourceAciRouteControlContext() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"set_rule": {
+				Type:        schema.TypeString,
+				Optional:    true,
+				Description: "Create relation to rtctrl:AttrP",
+			},
 		})),
 	}
 }
