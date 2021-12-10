@@ -258,6 +258,7 @@ func Provider() *schema.Provider {
 			"aci_tacacs_source":                            resourceAciTACACSSource(),
 			"aci_isis_domain_policy":                       resourceAciISISDomainPolicy(),
 			"aci_radius_provider":                          resourceAciRADIUSProvider(),
+			"aci_interface_blacklist":                      resourceAciOutofServiceFabricPath(),
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
@@ -462,6 +463,7 @@ func Provider() *schema.Provider {
 			"aci_tacacs_source":                            dataSourceAciTACACSSource(),
 			"aci_isis_domain_policy":                       dataSourceAciISISDomainPolicy(),
 			"aci_radius_provider":                          dataSourceAciRADIUSProvider(),
+			"aci_interface_blacklist":                      dataSourceAciOutofServiceFabricPath(),
 		},
 
 		ConfigureFunc: configureClient,
