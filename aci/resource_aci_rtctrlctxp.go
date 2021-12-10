@@ -6,6 +6,7 @@ import (
 	"log"
 	"reflect"
 	"sort"
+	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
@@ -99,14 +100,46 @@ func resourceAciRouteControlContextImport(d *schema.ResourceData, m interface{})
 	log.Printf("[DEBUG] %s: Beginning Import", d.Id())
 	aciClient := m.(*client.Client)
 	dn := d.Id()
-	rtctrlCtxP, err := getRemoteRouteControlContext(aciClient, dn)
+
+	baseurlStr := "/api/node/mo"
+	dnUrl := fmt.Sprintf("%s/%s.json?rsp-subtree=full", baseurlStr, dn)
+	rtctrlCtxPCont, err := aciClient.GetViaURL(dnUrl)
 	if err != nil {
 		return nil, err
 	}
+
+	rtctrlCtxP := models.RouteControlContextFromContainer(rtctrlCtxPCont)
+	if rtctrlCtxP.DistinguishedName == "" {
+		return nil, fmt.Errorf("RouteControlContext %s not found", rtctrlCtxP.DistinguishedName)
+	}
+
 	schemaFilled, err := setRouteControlContextAttributes(rtctrlCtxP, d)
 	if err != nil {
 		return nil, err
 	}
+
+	splitDn := strings.Split(dn, fmt.Sprintf("/ctx-%s", d.Get("name")))
+	d.Set("route_control_profile_dn", splitDn[0])
+
+	ctxChildContList, err := rtctrlCtxPCont.S("imdata").Index(0).S(models.RtctrlctxpClassName, "children").Children()
+	if err != nil {
+		return nil, err
+	}
+	for _, childCont := range ctxChildContList {
+		if childCont.Exists(models.RtctrlscopeClassName) {
+			scopeChildContList, err := childCont.S(models.RtctrlscopeClassName, "children").Children()
+			if err != nil {
+				return nil, err
+			}
+			for _, scopeChildCont := range scopeChildContList {
+				if scopeChildCont.Exists("rtctrlRsScopeToAttrP") {
+					setRule := models.G(scopeChildCont.S("rtctrlRsScopeToAttrP", "attributes"), "tDn")
+					d.Set("set_rule", setRule)
+				}
+			}
+		}
+	}
+
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 	return []*schema.ResourceData{schemaFilled}, nil
 }

@@ -26,21 +26,21 @@ func dataSourceAciMatchRouteDestinationRule() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
-			"from_pfx_len": {
+			"greater_than_mask": {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
 			},
 			"ip": {
 				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
+				Required: true,
 			},
 			"name": {
 				Type:     schema.TypeString,
-				Required: true,
+				Optional: true,
+				Computed: true,
 			},
-			"to_pfx_len": {
+			"less_than_mask": {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,

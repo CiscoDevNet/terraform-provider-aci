@@ -40,7 +40,6 @@ resource "aci_match_route_destination_rule" "destination" {
 * `annotation` - (Optional) Annotation of object Match Route Destination Rule.
 * `aggregate` - (Optional) Aggregated Route. Allowed values are "false", "true" and default value is "false". Type: String.
 * `greater_than_mask` - (Optional) Start of Prefix Length. Allowed range is 0-128 and default value is "0".
-* `ip` - (Optional) Match IP Address.
 * `less_than_mask` - (Optional) End of Prefix Length. Allowed range is 0-128 and default value is "0".
 
 
