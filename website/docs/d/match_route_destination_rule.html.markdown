@@ -11,7 +11,6 @@ description: |-
 
 Data source for ACI Match Route Destination Rule
 
-
 ## API Information ##
 
 * `Class` - rtctrlMatchRtDest
@@ -20,8 +19,6 @@ Data source for ACI Match Route Destination Rule
 ## GUI Information ##
 
 * `Location` - Tenant -> Policies -> Protocol -> Match Rules -> Match Prefix
-
-
 
 ## Example Usage ##
 
@@ -43,5 +40,4 @@ data "aci_match_route_destination_rule" "example" {
 * `name_alias` - (Optional) Name Alias of object Match Route Destination Rule.
 * `aggregate` - (Optional) Aggregated Route. Aggregated Route
 * `greater_than_mask` - (Optional) Start of Prefix Length. Prefix list range
-* `ip` - (Optional) Match IP Address. null
 * `less_than_mask` - (Optional) End of Prefix Length. 

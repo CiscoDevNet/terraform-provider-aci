@@ -29,7 +29,7 @@ resource "aci_route_control_context" "control" {
   action = "permit"
   annotation = "orchestrator:terraform"
   order = "0"
-  set_rule = "uni/tn-tf_tenant/prof-bgp_route_control_profile_1/ctx-control/scp/rsScopeToAttrP-test"
+  set_rule = aci_action_rule_profile.set_rule1.id
   relation_rtctrl_rs_ctx_p_to_subj_p = [aci_match_rule.rule.id]
 }
 ```
