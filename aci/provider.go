@@ -263,6 +263,7 @@ func Provider() *schema.Provider {
 			"aci_match_rule":                               resourceAciMatchRule(),
 			"aci_match_route_destination_rule":             resourceAciMatchRouteDestinationRule(),
 			"aci_annotation":                               resourceAciAnnotation(),
+			"aci_tag":                                      resourceAciTag(),
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
@@ -472,6 +473,7 @@ func Provider() *schema.Provider {
 			"aci_match_rule":                               dataSourceAciMatchRule(),
 			"aci_match_route_destination_rule":             dataSourceAciMatchRouteDestinationRule(),
 			"aci_annotation":                               dataSourceAciAnnotation(),
+			"aci_tag":                                      dataSourceAciTag(),
 		},
 
 		ConfigureFunc: configureClient,
