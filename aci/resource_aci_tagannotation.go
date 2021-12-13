@@ -77,6 +77,7 @@ func resourceAciAnnotationImport(d *schema.ResourceData, m interface{}) ([]*sche
 	if err != nil {
 		return nil, err
 	}
+	d.Set("parent_dn", GetParentDn(dn, fmt.Sprintf("/"+models.RnTagAnnotation, d.Get("key"))))
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 	return []*schema.ResourceData{schemaFilled}, nil
 }

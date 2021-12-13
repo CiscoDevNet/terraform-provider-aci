@@ -77,6 +77,7 @@ func resourceAciTagImport(d *schema.ResourceData, m interface{}) ([]*schema.Reso
 	if err != nil {
 		return nil, err
 	}
+	d.Set("parent_dn", GetParentDn(dn, fmt.Sprintf("/"+models.RnTagTag, d.Get("key"))))
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 	return []*schema.ResourceData{schemaFilled}, nil
 }

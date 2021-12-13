@@ -17,7 +17,7 @@ Data source for ACI Tag
 
 ## GUI Information ##
 
-* `Location` - Under every object as Tag in recent APIC versions.
+* `Location` - Under every object as Policy Tags in the Operational tab in recent APIC versions.
 
 ## Example Usage ##
 
