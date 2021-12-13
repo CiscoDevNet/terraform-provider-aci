@@ -1,3 +1,7 @@
+## 1.2.0 (December 13, 2021)
+IMPROVEMENTS:
+- Add new resources and data sources: aci_tag and aci_annotation
+
 ## 1.1.0 (December 10, 2021)
 IMPROVEMENTS:
 - Add new resources and data sources: aci_access_switch_policy_group, aci_authentication_properties, aci_bfd_interface_policy, aci_console_authentication, aci_coop_policy, aci_default_authentication, aci_duo_provider_group, aci_encryption_key, aci_endpoint_controls, aci_endpoint_ip_aging_profile, aci_endpoint_loop_protection, aci_error_disable_recovery, aci_fabric_node_control, aci_fabric_wide_settings, aci_file_remote_path, aci_global_security, aci_interface_blacklist, aci_isis_domain_policy, aci_l3_interface_policy, aci_ldap_group_map, aci_ldap_group_map_rule, aci_ldap_group_map_rule_to_group_map, aci_ldap_provider, aci_login_domain, aci_login_domain_provider, aci_managed_node_connectivity_group, aci_mcp_instance_policy, aci_mgmt_preference, aci_mgmt_zone, aci_port_tracking, aci_qos_instance_policy, aci_radius_provider, aci_radius_provider_group, aci_recurring_window, aci_rsa_provider, aci_saml_provider, aci_saml_provider_group, aci_spine_switch_policy_group, aci_tacacs_accounting, aci_tacacs_accounting_destination, aci_tacacs_provider, aci_tacacs_provider_group, aci_tacacs_source, aci_user_security_domain, aci_user_security_domain_role, aci_vpc_domain_policy, aci_vrf_snmp_context, aci_vrf_snmp_context_community, aci_match_rule, aci_match_route_destination_rule, aci_route_control_context
