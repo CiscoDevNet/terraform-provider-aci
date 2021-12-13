@@ -46,6 +46,8 @@ func TestAccAciApplicationProfile_Basic(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "relation_fv_rs_ap_mon_pol", ""),
 					resource.TestCheckResourceAttr(resourceName, "annotation", "orchestrator:terraform"), // comparing with default value of annotation
 					resource.TestCheckResourceAttr(resourceName, "prio", "unspecified"),                  // comparing with default value of prio
+					resource.TestCheckResourceAttr(resourceName, "name", rName),
+					resource.TestCheckResourceAttr(resourceName, "tenant_dn", fmt.Sprintf("uni/tn-%s", rName)),
 				),
 			},
 			{
@@ -58,6 +60,8 @@ func TestAccAciApplicationProfile_Basic(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "relation_fv_rs_ap_mon_pol", ""),
 					resource.TestCheckResourceAttr(resourceName, "annotation", "tag"),                                    // comparing annotation with value which is given in configuration
 					resource.TestCheckResourceAttr(resourceName, "prio", "level1"),                                       // comparing prio with value which is given in configuration
+					resource.TestCheckResourceAttr(resourceName, "name", rName),
+					resource.TestCheckResourceAttr(resourceName, "tenant_dn", fmt.Sprintf("uni/tn-%s", rName)),
 					testAccCheckAciApplicationProfileIdEqual(&application_profile_default, &application_profile_updated), // this function will check whether id or dn of both resource are same or not to make sure updation is performed on the same resource
 				),
 			},
