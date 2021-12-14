@@ -14,6 +14,8 @@ github.com/agext/levenshtein
 github.com/apparentlymart/go-cidr/cidr
 # github.com/apparentlymart/go-textseg v1.0.0
 github.com/apparentlymart/go-textseg/textseg
+# github.com/apparentlymart/go-textseg/v13 v13.0.0
+github.com/apparentlymart/go-textseg/v13/textseg
 # github.com/aws/aws-sdk-go v1.25.3
 github.com/aws/aws-sdk-go/aws
 github.com/aws/aws-sdk-go/aws/awserr
@@ -76,7 +78,7 @@ github.com/golang/protobuf/ptypes/any
 github.com/golang/protobuf/ptypes/duration
 github.com/golang/protobuf/ptypes/empty
 github.com/golang/protobuf/ptypes/timestamp
-# github.com/google/go-cmp v0.5.2
+# github.com/google/go-cmp v0.5.6
 github.com/google/go-cmp/cmp
 github.com/google/go-cmp/cmp/internal/diff
 github.com/google/go-cmp/cmp/internal/flags
@@ -111,7 +113,7 @@ github.com/hashicorp/go-plugin/internal/plugin
 github.com/hashicorp/go-safetemp
 # github.com/hashicorp/go-uuid v1.0.1
 github.com/hashicorp/go-uuid
-# github.com/hashicorp/go-version v1.2.1
+# github.com/hashicorp/go-version v1.3.0
 github.com/hashicorp/go-version
 # github.com/hashicorp/hcl/v2 v2.3.0
 github.com/hashicorp/hcl/v2
@@ -123,7 +125,7 @@ github.com/hashicorp/logutils
 github.com/hashicorp/terraform-exec/internal/version
 github.com/hashicorp/terraform-exec/tfexec
 github.com/hashicorp/terraform-exec/tfinstall
-# github.com/hashicorp/terraform-json v0.8.0
+# github.com/hashicorp/terraform-json v0.13.0
 github.com/hashicorp/terraform-json
 # github.com/hashicorp/terraform-plugin-go v0.2.1
 github.com/hashicorp/terraform-plugin-go/tfprotov5
@@ -163,7 +165,7 @@ github.com/jstemmer/go-junit-report/parser
 github.com/mattn/go-colorable
 # github.com/mattn/go-isatty v0.0.10
 github.com/mattn/go-isatty
-# github.com/mitchellh/copystructure v1.0.0
+# github.com/mitchellh/copystructure v1.2.0
 github.com/mitchellh/copystructure
 # github.com/mitchellh/go-homedir v1.1.0
 github.com/mitchellh/go-homedir
@@ -173,7 +175,7 @@ github.com/mitchellh/go-testing-interface
 github.com/mitchellh/go-wordwrap
 # github.com/mitchellh/mapstructure v1.1.2
 github.com/mitchellh/mapstructure
-# github.com/mitchellh/reflectwalk v1.0.1
+# github.com/mitchellh/reflectwalk v1.0.2
 github.com/mitchellh/reflectwalk
 # github.com/oklog/run v1.0.0
 github.com/oklog/run
@@ -185,7 +187,7 @@ github.com/ulikunitz/xz/lzma
 # github.com/vmihailenco/msgpack v4.0.4+incompatible
 github.com/vmihailenco/msgpack
 github.com/vmihailenco/msgpack/codes
-# github.com/zclconf/go-cty v1.2.1
+# github.com/zclconf/go-cty v1.9.1
 github.com/zclconf/go-cty/cty
 github.com/zclconf/go-cty/cty/convert
 github.com/zclconf/go-cty/cty/function
@@ -252,7 +254,7 @@ golang.org/x/oauth2/jwt
 golang.org/x/sys/cpu
 golang.org/x/sys/internal/unsafeheader
 golang.org/x/sys/unix
-# golang.org/x/text v0.3.3
+# golang.org/x/text v0.3.5
 golang.org/x/text/secure/bidirule
 golang.org/x/text/transform
 golang.org/x/text/unicode/bidi

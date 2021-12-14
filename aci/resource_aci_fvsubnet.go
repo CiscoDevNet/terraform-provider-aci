@@ -316,6 +316,14 @@ func resourceAciSubnetCreate(ctx context.Context, d *schema.ResourceData, m inte
 		for _, val := range ctrlInp.([]interface{}) {
 			ctrlList = append(ctrlList, val.(string))
 		}
+		err := checkDuplicate(ctrlList)
+		if err != nil {
+			return diag.FromErr(err)
+		}
+		err = checkWhetherListContainOnlyParameter(ctrlList, "unspecified")
+		if err != nil {
+			return diag.FromErr(err)
+		}
 		ctrl := strings.Join(ctrlList, ",")
 		fvSubnetAttr.Ctrl = ctrl
 	}
@@ -332,6 +340,10 @@ func resourceAciSubnetCreate(ctx context.Context, d *schema.ResourceData, m inte
 		scopeList := make([]string, 0, 1)
 		for _, val := range scIntr.([]interface{}) {
 			scopeList = append(scopeList, val.(string))
+		}
+		err := checkDuplicate(scopeList)
+		if err != nil {
+			return diag.FromErr(err)
 		}
 		Scope := strings.Join(scopeList, ",")
 		fvSubnetAttr.Scope = Scope
@@ -427,6 +439,14 @@ func resourceAciSubnetUpdate(ctx context.Context, d *schema.ResourceData, m inte
 		for _, val := range ctrlInp.([]interface{}) {
 			ctrlList = append(ctrlList, val.(string))
 		}
+		err := checkDuplicate(ctrlList)
+		if err != nil {
+			return diag.FromErr(err)
+		}
+		err = checkWhetherListContainOnlyParameter(ctrlList, "unspecified")
+		if err != nil {
+			return diag.FromErr(err)
+		}
 		ctrl := strings.Join(ctrlList, ",")
 		fvSubnetAttr.Ctrl = ctrl
 	}
@@ -443,6 +463,10 @@ func resourceAciSubnetUpdate(ctx context.Context, d *schema.ResourceData, m inte
 		scopeList := make([]string, 0, 1)
 		for _, val := range scIntr.([]interface{}) {
 			scopeList = append(scopeList, val.(string))
+		}
+		err := checkDuplicate(scopeList)
+		if err != nil {
+			return diag.FromErr(err)
 		}
 		Scope := strings.Join(scopeList, ",")
 		fvSubnetAttr.Scope = Scope
