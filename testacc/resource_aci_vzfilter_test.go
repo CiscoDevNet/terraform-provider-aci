@@ -36,34 +36,33 @@ func TestAccAciFilter_Basic(t *testing.T) {
 				ExpectError: regexp.MustCompile(`Missing required argument`),
 			},
 			{
-				// step terraform will create application profile with only required arguements i.e. name and tenant_dn
-				Config: CreateAccFilterConfig(rName), // configuration to create application profile with required fields only
+				
+				Config: CreateAccFilterConfig(rName), 
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAciFilterExists(resourceName, &filter_default), // this function will check whether any resource is exist or not in state file with given resource name
-					// now will compare value of all attributes with default for given resource
-					resource.TestCheckResourceAttr(resourceName, "description", ""), // no default value for description so comparing with ""
+					testAccCheckAciFilterExists(resourceName, &filter_default), 
+					resource.TestCheckResourceAttr(resourceName, "description", ""), 
 					resource.TestCheckResourceAttr(resourceName, "name_alias", ""),
 					resource.TestCheckResourceAttr(resourceName, "relation_vz_rs_filt_graph_att", ""),
 					resource.TestCheckResourceAttr(resourceName, "relation_vz_rs_fwd_r_flt_p_att", ""),
-					resource.TestCheckResourceAttr(resourceName, "relation_vz_rs_rev_r_flt_p_att", ""),   // no default value for name_alias so comparing with ""
-					resource.TestCheckResourceAttr(resourceName, "annotation", "orchestrator:terraform"), // comparing with default value of annotation
+					resource.TestCheckResourceAttr(resourceName, "relation_vz_rs_rev_r_flt_p_att", ""),   
+					resource.TestCheckResourceAttr(resourceName, "annotation", "orchestrator:terraform"), 
 					resource.TestCheckResourceAttr(resourceName, "name", rName),
 					resource.TestCheckResourceAttr(resourceName, "tenant_dn", fmt.Sprintf("uni/tn-%s", rName)),
 				),
 			},
 			{
-				Config: CreateAccFilterConfigWithOptionalValues(rName), // configuration to update optional filelds
+				Config: CreateAccFilterConfigWithOptionalValues(rName), 
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckAciFilterExists(resourceName, &filter_updated),
-					resource.TestCheckResourceAttr(resourceName, "description", "From Terraform"), // comparing description with value which is given in configuration
-					resource.TestCheckResourceAttr(resourceName, "name_alias", "alias_filter"),    // comparing name_alias with value which is given in configuration
+					resource.TestCheckResourceAttr(resourceName, "description", "From Terraform"), 
+					resource.TestCheckResourceAttr(resourceName, "name_alias", "alias_filter"),    
 					resource.TestCheckResourceAttr(resourceName, "annotation", "tag_filter"),
 					resource.TestCheckResourceAttr(resourceName, "relation_vz_rs_filt_graph_att", ""),
 					resource.TestCheckResourceAttr(resourceName, "relation_vz_rs_fwd_r_flt_p_att", ""),
 					resource.TestCheckResourceAttr(resourceName, "relation_vz_rs_rev_r_flt_p_att", ""),
 					resource.TestCheckResourceAttr(resourceName, "name", rName),
-					resource.TestCheckResourceAttr(resourceName, "tenant_dn", fmt.Sprintf("uni/tn-%s", rName)), // comparing prio with value which is given in configuration
-					testAccCheckAciFilterIdEqual(&filter_default, &filter_updated),                             // this function will check whether id or dn of both resource are same or not to make sure updation is performed on the same resource
+					resource.TestCheckResourceAttr(resourceName, "tenant_dn", fmt.Sprintf("uni/tn-%s", rName)), 
+					testAccCheckAciFilterIdEqual(&filter_default, &filter_updated),                             
 				),
 			},
 			{
@@ -72,32 +71,32 @@ func TestAccAciFilter_Basic(t *testing.T) {
 				ImportStateVerify: true,
 			},
 			{
-				Config:      CreateAccFilterRemovingRequiredField(), // configuration to update optional filelds
+				Config:      CreateAccFilterRemovingRequiredField(),
 				ExpectError: regexp.MustCompile(`Missing required argument`),
 			},
 			{
-				Config:      CreateAccFilterConfigUpdatedName(rName, longrName), // passing invalid name for application profile
+				Config:      CreateAccFilterConfigUpdatedName(rName, longrName), 
 				ExpectError: regexp.MustCompile(fmt.Sprintf("property name of flt-%s failed validation for value '%s'", longrName, longrName)),
 			},
 			{
-				Config: CreateAccFilterConfigWithParentAndName(rName, rOther), // creating resource with same parent name and different resource name
+				Config: CreateAccFilterConfigWithParentAndName(rName, rOther), 
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckAciFilterExists(resourceName, &filter_updated),
-					resource.TestCheckResourceAttr(resourceName, "name", rOther),                               // comparing name attribute of applicaiton profile
-					resource.TestCheckResourceAttr(resourceName, "tenant_dn", fmt.Sprintf("uni/tn-%s", rName)), // comparing tenant_dn attribute of application profile
-					testAccCheckAciFilterIdNotEqual(&filter_default, &filter_updated),                          // checking whether id or dn of both resource are different because name changed and terraform need to create another resource
+					resource.TestCheckResourceAttr(resourceName, "name", rOther),                              
+					resource.TestCheckResourceAttr(resourceName, "tenant_dn", fmt.Sprintf("uni/tn-%s", rName)), 
+					testAccCheckAciFilterIdNotEqual(&filter_default, &filter_updated),                          
 				),
 			},
 			{
-				Config: CreateAccFilterConfig(rName), // creating resource with required parameters only
+				Config: CreateAccFilterConfig(rName), 
 			},
 			{
-				Config: CreateAccFilterConfigWithParentAndName(prOther, rName), // creating resource with same name but different parent resource name
+				Config: CreateAccFilterConfigWithParentAndName(prOther, rName), 
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckAciFilterExists(resourceName, &filter_updated),
 					resource.TestCheckResourceAttr(resourceName, "name", rName),
 					resource.TestCheckResourceAttr(resourceName, "tenant_dn", fmt.Sprintf("uni/tn-%s", prOther)),
-					testAccCheckAciFilterIdNotEqual(&filter_default, &filter_updated), // checking whether id or dn of both resource are different because tenant_dn changed and terraform need to create another resource
+					testAccCheckAciFilterIdNotEqual(&filter_default, &filter_updated), 
 				),
 			},
 		},
@@ -107,41 +106,41 @@ func TestAccAciFilter_Basic(t *testing.T) {
 
 func TestAccFilter_NegativeCases(t *testing.T) {
 	rName := makeTestVariable(acctest.RandString(5))
-	longDescAnnotation := acctest.RandString(129)                                     // creating random string of 129 characters
-	longNameAlias := acctest.RandString(64)                                           // creating random string of 64 characters                                              // creating random string of 6 characters
-	randomParameter := acctest.RandStringFromCharSet(5, "abcdefghijklmnopqrstuvwxyz") // creating random string of 5 characters (to give as random parameter)
-	randomValue := acctest.RandString(5)                                              // creating random string of 5 characters (to give as random value of random parameter)
+	longDescAnnotation := acctest.RandString(129)                                     
+	longNameAlias := acctest.RandString(64)                                                                                        
+	randomParameter := acctest.RandStringFromCharSet(5, "abcdefghijklmnopqrstuvwxyz") 
+	randomValue := acctest.RandString(5)                                              
 	resource.ParallelTest(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
 		CheckDestroy: testAccCheckAciFilterDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: CreateAccFilterConfig(rName), // creating application profile with required arguements only
+				Config: CreateAccFilterConfig(rName), 
 			},
 			{
-				Config:      CreateAccFilterWithInValidTenantDn(rName),                                       // checking application profile creation with invalid tenant_dn value
-				ExpectError: regexp.MustCompile(`unknown property value (.)+, name dn, class vzFilter (.)+`), // test step expect error which should be match with defined regex
+				Config:      CreateAccFilterWithInValidTenantDn(rName),                                      
+				ExpectError: regexp.MustCompile(`unknown property value (.)+, name dn, class vzFilter (.)+`), 
 			},
 			{
-				Config:      CreateAccFilterUpdatedAttr(rName, "description", longDescAnnotation), // checking application profile creation with invalid description value
+				Config:      CreateAccFilterUpdatedAttr(rName, "description", longDescAnnotation), 
 				ExpectError: regexp.MustCompile(`property descr of (.)+ failed validation for value '(.)+'`),
 			},
 			{
-				Config:      CreateAccFilterUpdatedAttr(rName, "annotation", longDescAnnotation), // checking application profile creation with invalid annotation value
+				Config:      CreateAccFilterUpdatedAttr(rName, "annotation", longDescAnnotation), 
 				ExpectError: regexp.MustCompile(`property annotation of (.)+ failed validation for value '(.)+'`),
 			},
 			{
-				Config:      CreateAccFilterUpdatedAttr(rName, "name_alias", longNameAlias), // checking application profile creation with invalid name_alias value
+				Config:      CreateAccFilterUpdatedAttr(rName, "name_alias", longNameAlias), 
 				ExpectError: regexp.MustCompile(`property nameAlias of (.)+ failed validation for value '(.)+'`),
 			},
 
 			{
-				Config:      CreateAccFilterUpdatedAttr(rName, randomParameter, randomValue), // checking application profile creation with randomly created parameter and value
+				Config:      CreateAccFilterUpdatedAttr(rName, randomParameter, randomValue), 
 				ExpectError: regexp.MustCompile(`An argument named (.)+ is not expected here.`),
 			},
 			{
-				Config: CreateAccFilterConfig(rName), // creating application profile with required arguements only
+				Config: CreateAccFilterConfig(rName), 
 			},
 		},
 	})
