@@ -379,6 +379,7 @@ func testAccCheckAciFilterExists(name string, filter *models.Filter) resource.Te
 }
 
 func testAccCheckAciFilterDestroy(s *terraform.State) error {
+	fmt.Println("=== STEP  testing filter destroy")
 	client := testAccProvider.Meta().(*client.Client)
 
 	for _, rs := range s.RootModule().Resources {
