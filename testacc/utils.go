@@ -261,5 +261,5 @@ func StringListtoStringWithoutQuoted(list []string) string {
 }
 
 func makeTestVariable(s string) string {
-	return "acctest" + s
+	return "acctest_" + s
 }
