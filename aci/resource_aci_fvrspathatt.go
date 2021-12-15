@@ -89,7 +89,6 @@ func getRemoteStaticPath(client *client.Client, dn string) (*models.StaticPath, 
 }
 
 func setStaticPathAttributes(fvRsPathAtt *models.StaticPath, d *schema.ResourceData) (*schema.ResourceData, error) {
-	dn := d.Id()
 	d.SetId(fvRsPathAtt.DistinguishedName)
 	fvRsPathAttMap, err := fvRsPathAtt.ToMap()
 
