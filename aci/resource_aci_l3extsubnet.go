@@ -258,7 +258,7 @@ func resourceAciL3ExtSubnetCreate(ctx context.Context, d *schema.ResourceData, m
 		relationParamList := relationTol3extRsSubnetToProfile.(*schema.Set).List()
 		for _, relationParam := range relationParamList {
 			paramMap := relationParam.(map[string]interface{})
-<<<<<<< HEAD
+
 			var relationParamName string
 			if paramMap["tn_rtctrl_profile_dn"] != "" && paramMap["tn_rtctrl_profile_name"] != "" {
 				return diag.FromErr(fmt.Errorf("Usage of both tn_rtctrl_profile_dn and tn_rtctrl_profile_name parameters is not supported. tn_rtctrl_profile_name parameter will be deprecated use tn_rtctrl_profile_dn instead."))
@@ -270,9 +270,7 @@ func resourceAciL3ExtSubnetCreate(ctx context.Context, d *schema.ResourceData, m
 				return diag.FromErr(fmt.Errorf("tn_rtctrl_profile_dn is required to generate Route Control Profile"))
 			}
 			err = aciClient.CreateRelationl3extRsSubnetToProfileFromL3ExtSubnet(l3extSubnet.DistinguishedName, relationParamName, paramMap["direction"].(string))
-=======
-			err = aciClient.CreateRelationl3extRsSubnetToProfileFromL3ExtSubnet(l3extSubnet.DistinguishedName, GetMOName(paramMap["tn_rtctrl_profile_name"].(string)), paramMap["direction"].(string))
->>>>>>> eb354528 (Rel updates (#747))
+
 			if err != nil {
 				return diag.FromErr(err)
 			}
