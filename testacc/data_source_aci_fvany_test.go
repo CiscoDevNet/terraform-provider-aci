@@ -32,6 +32,7 @@ func TestAccAciAnyDataSource_Basic(t *testing.T) {
 					resource.TestCheckResourceAttrPair(dataSourceName, "annotation", resourceName, "annotation"),
 					resource.TestCheckResourceAttrPair(dataSourceName, "match_t", resourceName, "match_t"),
 					resource.TestCheckResourceAttrPair(dataSourceName, "pref_gr_memb", resourceName, "pref_gr_memb"),
+					resource.TestCheckResourceAttrPair(dataSourceName, "vrf_dn", resourceName, "vrf_dn"),
 				),
 			},
 			{

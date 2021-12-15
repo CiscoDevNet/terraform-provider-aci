@@ -37,6 +37,7 @@ func TestAccAciAny_Basic(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr(resourceName, "match_t", "AtleastOne"),
 					resource.TestCheckResourceAttr(resourceName, "pref_gr_memb", "disabled"),
+					resource.TestCheckResourceAttr(resourceName, "vrf_dn", fmt.Sprintf("uni/tn-%s/ctx-%s", rName, rName)),
 				),
 			},
 			{
@@ -48,6 +49,7 @@ func TestAccAciAny_Basic(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "annotation", "tag_any"),
 					resource.TestCheckResourceAttr(resourceName, "match_t", "AtmostOne"),
 					resource.TestCheckResourceAttr(resourceName, "pref_gr_memb", "enabled"),
+					resource.TestCheckResourceAttr(resourceName, "vrf_dn", fmt.Sprintf("uni/tn-%s/ctx-%s", rName, rName)),
 					testAccCheckAciAnyIdEqual(&any_default, &any_updated),
 				),
 			},

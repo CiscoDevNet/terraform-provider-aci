@@ -164,6 +164,10 @@ func TestAccAciVRF_NegativeCases(t *testing.T) {
 				ExpectError: regexp.MustCompile(`expected pc_enf_dir to be one of (.)+, got (.)+`),
 			},
 			{
+				Config:      CreateAccVRFUpdatedAttr(rName, "pc_enf_pref", randomValue),
+				ExpectError: regexp.MustCompile(`expected pc_enf_pref to be one of (.)+, got (.)+`),
+			},
+			{
 				Config: CreateAccVRFConfig(rName),
 			},
 		},
