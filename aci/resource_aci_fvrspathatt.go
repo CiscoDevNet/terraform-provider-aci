@@ -98,7 +98,7 @@ func setStaticPathAttributes(fvRsPathAtt *models.StaticPath, d *schema.ResourceD
 	d.Set("application_epg_dn", GetParentDn(fvRsPathAtt.DistinguishedName, fmt.Sprintf("/rspathAtt-[%s]", fvRsPathAttMap["tDn"])))
 
 	d.Set("tdn", fvRsPathAttMap["tDn"])
-
+	d.Set("description", fvRsPathAttMap["descr"])
 	d.Set("annotation", fvRsPathAttMap["annotation"])
 	d.Set("encap", fvRsPathAttMap["encap"])
 	d.Set("instr_imedcy", fvRsPathAttMap["instrImedcy"])
