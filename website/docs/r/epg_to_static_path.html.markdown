@@ -29,8 +29,8 @@ resource "aci_epg_to_static_path" "example" {
 
 * `application_epg_dn` - (Required) Distinguished name of parent ApplicationEPG object.
 * `tdn` - (Required) tdn of Object Static Path.
+* `encap` - (Required) Encapsulation of the Static Path.
 * `annotation` - (Optional) Annotation for object Static Path.
-* `encap` - (Optional) Encapsulation of the Static Path.
 * `instr_imedcy` - (Optional) Immediacy of the Static Path.
 Allowed values: "immediate", "lazy". Default value: "lazy"
 * `mode` - (Optional) Mode of the static association with the path.

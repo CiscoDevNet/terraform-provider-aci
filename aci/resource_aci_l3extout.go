@@ -236,6 +236,10 @@ func resourceAciL3OutsideCreate(ctx context.Context, d *schema.ResourceData, m i
 		for _, val := range EnforceRtctrl.([]interface{}) {
 			enforceRtctrlList = append(enforceRtctrlList, val.(string))
 		}
+		err := checkDuplicate(enforceRtctrlList)
+		if err != nil {
+			return diag.FromErr(err)
+		}
 		EnforceRtctrl := strings.Join(enforceRtctrlList, ",")
 		l3extOutAttr.EnforceRtctrl = EnforceRtctrl
 	}
@@ -360,6 +364,10 @@ func resourceAciL3OutsideUpdate(ctx context.Context, d *schema.ResourceData, m i
 		enforceRtctrlList := make([]string, 0, 1)
 		for _, val := range EnforceRtctrl.([]interface{}) {
 			enforceRtctrlList = append(enforceRtctrlList, val.(string))
+		}
+		err := checkDuplicate(enforceRtctrlList)
+		if err != nil {
+			return diag.FromErr(err)
 		}
 		EnforceRtctrl := strings.Join(enforceRtctrlList, ",")
 		l3extOutAttr.EnforceRtctrl = EnforceRtctrl
