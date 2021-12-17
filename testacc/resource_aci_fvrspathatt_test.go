@@ -195,7 +195,7 @@ func TestAccAciStaticPath_MultipleCreateDelete(t *testing.T) {
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciSubnetDestroy,
+		CheckDestroy: testAccCheckAciStaticPathDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: CreateAccStaticPathsConfig(rName),

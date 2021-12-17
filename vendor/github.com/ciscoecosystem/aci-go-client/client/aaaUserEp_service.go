@@ -97,4 +97,3 @@ func (sm *ServiceManager) ReadRelationaaaRsToUserEp(parentDn string) (interface{
 		return nil, err
 	}
 }
-

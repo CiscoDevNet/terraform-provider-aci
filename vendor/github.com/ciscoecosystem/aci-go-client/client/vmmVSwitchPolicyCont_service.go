@@ -3,6 +3,7 @@ package client
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/container"
 	"github.com/ciscoecosystem/aci-go-client/models"
@@ -101,7 +102,7 @@ func (sm *ServiceManager) CreateRelationvmmRsVswitchExporterPol(parentDn, annota
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
+	log.Printf("%+v", cont)
 	return nil
 }
 
@@ -151,7 +152,7 @@ func (sm *ServiceManager) CreateRelationvmmRsVswitchOverrideCdpIfPol(parentDn, a
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
+	log.Printf("%+v", cont)
 	return nil
 }
 
@@ -197,7 +198,7 @@ func (sm *ServiceManager) CreateRelationvmmRsVswitchOverrideFwPol(parentDn, anno
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
+	log.Printf("%+v", cont)
 	return nil
 }
 
@@ -243,7 +244,7 @@ func (sm *ServiceManager) CreateRelationvmmRsVswitchOverrideLacpPol(parentDn, an
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
+	log.Printf("%+v", cont)
 	return nil
 }
 
@@ -289,7 +290,7 @@ func (sm *ServiceManager) CreateRelationvmmRsVswitchOverrideLldpIfPol(parentDn, 
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
+	log.Printf("%+v", cont)
 	return nil
 }
 
@@ -335,7 +336,7 @@ func (sm *ServiceManager) CreateRelationvmmRsVswitchOverrideMcpIfPol(parentDn, a
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
+	log.Printf("%+v", cont)
 	return nil
 }
 
@@ -381,7 +382,7 @@ func (sm *ServiceManager) CreateRelationvmmRsVswitchOverrideMtuPol(parentDn, ann
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
+	log.Printf("%+v", cont)
 	return nil
 }
 
@@ -427,7 +428,7 @@ func (sm *ServiceManager) CreateRelationvmmRsVswitchOverrideStpPol(parentDn, ann
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
+	log.Printf("%+v", cont)
 	return nil
 }
 

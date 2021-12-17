@@ -2,6 +2,7 @@ package client
 
 import (
 	"fmt"
+	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/container"
 	"github.com/ciscoecosystem/aci-go-client/models"
@@ -78,7 +79,7 @@ func (sm *ServiceManager) CreateRelationvnsRsConnToCtxTermFromFunctionConnector(
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
+	log.Printf("%+v", cont)
 
 	return nil
 }
@@ -128,7 +129,7 @@ func (sm *ServiceManager) CreateRelationvnsRsConnToFltFromFunctionConnector(pare
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
+	log.Printf("%+v", cont)
 
 	return nil
 }
@@ -178,7 +179,7 @@ func (sm *ServiceManager) CreateRelationvnsRsMConnAttFromFunctionConnector(paren
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
+	log.Printf("%+v", cont)
 
 	return nil
 }
@@ -228,7 +229,7 @@ func (sm *ServiceManager) CreateRelationvnsRsConnToAConnFromFunctionConnector(pa
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
+	log.Printf("%+v", cont)
 
 	return nil
 }

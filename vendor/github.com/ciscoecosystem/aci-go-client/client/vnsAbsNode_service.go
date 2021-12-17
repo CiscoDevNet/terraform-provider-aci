@@ -2,6 +2,7 @@ package client
 
 import (
 	"fmt"
+	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/container"
 	"github.com/ciscoecosystem/aci-go-client/models"
@@ -78,7 +79,7 @@ func (sm *ServiceManager) CreateRelationvnsRsNodeToAbsFuncProfFromFunctionNode(p
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
+	log.Printf("%+v", cont)
 
 	return nil
 }
@@ -128,7 +129,7 @@ func (sm *ServiceManager) CreateRelationvnsRsNodeToLDevFromFunctionNode(parentDn
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
+	log.Printf("%+v", cont)
 
 	return nil
 }
@@ -178,7 +179,7 @@ func (sm *ServiceManager) CreateRelationvnsRsNodeToMFuncFromFunctionNode(parentD
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
+	log.Printf("%+v", cont)
 
 	return nil
 }
@@ -228,7 +229,7 @@ func (sm *ServiceManager) CreateRelationvnsRsDefaultScopeToTermFromFunctionNode(
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
+	log.Printf("%+v", cont)
 
 	return nil
 }
@@ -278,7 +279,7 @@ func (sm *ServiceManager) CreateRelationvnsRsNodeToCloudLDevFromFunctionNode(par
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
+	log.Printf("%+v", cont)
 
 	return nil
 }

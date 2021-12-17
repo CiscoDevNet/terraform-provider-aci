@@ -2,6 +2,7 @@ package client
 
 import (
 	"fmt"
+	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/container"
 	"github.com/ciscoecosystem/aci-go-client/models"
@@ -78,7 +79,7 @@ func (sm *ServiceManager) CreateRelationinfraRsHIfPolFromSpineAccessPortPolicyGr
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
+	log.Printf("%+v", cont)
 
 	return nil
 }
@@ -123,7 +124,7 @@ func (sm *ServiceManager) CreateRelationinfraRsCdpIfPolFromSpineAccessPortPolicy
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
+	log.Printf("%+v", cont)
 
 	return nil
 }
@@ -168,7 +169,7 @@ func (sm *ServiceManager) CreateRelationinfraRsCoppIfPolFromSpineAccessPortPolic
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
+	log.Printf("%+v", cont)
 
 	return nil
 }
@@ -213,7 +214,7 @@ func (sm *ServiceManager) CreateRelationinfraRsAttEntPFromSpineAccessPortPolicyG
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
+	log.Printf("%+v", cont)
 
 	return nil
 }
@@ -263,7 +264,7 @@ func (sm *ServiceManager) CreateRelationinfraRsMacsecIfPolFromSpineAccessPortPol
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
+	log.Printf("%+v", cont)
 
 	return nil
 }

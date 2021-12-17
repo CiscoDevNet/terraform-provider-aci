@@ -3,6 +3,7 @@ package client
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/container"
 	"github.com/ciscoecosystem/aci-go-client/models"
@@ -72,7 +73,7 @@ func (sm *ServiceManager) CreateRelationvmmRsAcc(parentDn, annotation, tDn strin
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
+	log.Printf("%+v", cont)
 	return nil
 }
 
@@ -118,7 +119,7 @@ func (sm *ServiceManager) CreateRelationvmmRsCtrlrPMonPol(parentDn, annotation, 
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
+	log.Printf("%+v", cont)
 	return nil
 }
 
@@ -164,7 +165,7 @@ func (sm *ServiceManager) CreateRelationvmmRsMcastAddrNs(parentDn, annotation, t
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
+	log.Printf("%+v", cont)
 	return nil
 }
 
@@ -210,7 +211,7 @@ func (sm *ServiceManager) CreateRelationvmmRsMgmtEPg(parentDn, annotation, tDn s
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
+	log.Printf("%+v", cont)
 	return nil
 }
 
@@ -256,7 +257,7 @@ func (sm *ServiceManager) CreateRelationvmmRsToExtDevMgr(parentDn, annotation, t
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
+	log.Printf("%+v", cont)
 	return nil
 }
 
@@ -332,7 +333,7 @@ func (sm *ServiceManager) CreateRelationvmmRsVmmCtrlrP(parentDn, annotation, epg
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
+	log.Printf("%+v", cont)
 	return nil
 }
 
@@ -380,7 +381,7 @@ func (sm *ServiceManager) CreateRelationvmmRsVxlanNs(parentDn, annotation, tDn s
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
+	log.Printf("%+v", cont)
 	return nil
 }
 
@@ -425,7 +426,7 @@ func (sm *ServiceManager) CreateRelationvmmRsVxlanNsDef(parentDn, annotation, tD
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
+	log.Printf("%+v", cont)
 	return nil
 }
 

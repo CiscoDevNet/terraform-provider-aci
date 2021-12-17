@@ -2,6 +2,7 @@ package client
 
 import (
 	"fmt"
+	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/container"
 	"github.com/ciscoecosystem/aci-go-client/models"
@@ -78,7 +79,7 @@ func (sm *ServiceManager) CreateRelationvnsRsLIfCtxToCustQosPolFromLogicalInterf
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
+	log.Printf("%+v", cont)
 
 	return nil
 }
@@ -123,7 +124,7 @@ func (sm *ServiceManager) CreateRelationvnsRsLIfCtxToSvcEPgPolFromLogicalInterfa
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
+	log.Printf("%+v", cont)
 
 	return nil
 }
@@ -173,7 +174,7 @@ func (sm *ServiceManager) CreateRelationvnsRsLIfCtxToSvcRedirectPolFromLogicalIn
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
+	log.Printf("%+v", cont)
 
 	return nil
 }
@@ -223,7 +224,7 @@ func (sm *ServiceManager) CreateRelationvnsRsLIfCtxToLIfFromLogicalInterfaceCont
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
+	log.Printf("%+v", cont)
 
 	return nil
 }
@@ -273,7 +274,7 @@ func (sm *ServiceManager) CreateRelationvnsRsLIfCtxToOutDefFromLogicalInterfaceC
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
+	log.Printf("%+v", cont)
 
 	return nil
 }
@@ -318,7 +319,7 @@ func (sm *ServiceManager) CreateRelationvnsRsLIfCtxToInstPFromLogicalInterfaceCo
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
+	log.Printf("%+v", cont)
 
 	return nil
 }
@@ -368,7 +369,7 @@ func (sm *ServiceManager) CreateRelationvnsRsLIfCtxToBDFromLogicalInterfaceConte
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
+	log.Printf("%+v", cont)
 
 	return nil
 }
@@ -418,7 +419,7 @@ func (sm *ServiceManager) CreateRelationvnsRsLIfCtxToOutFromLogicalInterfaceCont
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
+	log.Printf("%+v", cont)
 
 	return nil
 }

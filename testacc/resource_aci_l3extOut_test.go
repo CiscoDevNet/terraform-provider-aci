@@ -84,7 +84,7 @@ func TestAccAciL3Outside_Basic(t *testing.T) {
 				),
 			},
 			{
-				Config: CreateAccL3OutsideConfig(rName), 
+				Config: CreateAccL3OutsideConfig(rName),
 			},
 			{
 				Config: CreateAccl3outsideConfigWithAnotherTenantDn(prOther, rName),
