@@ -555,6 +555,11 @@ func resourceAciSubnetRead(ctx context.Context, d *schema.ResourceData, m interf
 	dn := d.Id()
 	fvSubnet, err := getRemoteSubnet(aciClient, dn)
 
+	if Ip, ok := d.GetOk("ip"); ok {
+		fvSubnet.Ip = Ip.(string)
+		fvSubnet.DistinguishedName = dn
+	}
+
 	if err != nil {
 		d.SetId("")
 		return nil
