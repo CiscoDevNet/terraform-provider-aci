@@ -248,7 +248,7 @@ func TestAccAciEndpointSecurityGroup_MultipleCreateDelete(t *testing.T) {
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciStaticPathDestroy,
+		CheckDestroy: testAccCheckAciEndpointSecurityGroupDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: CreateAccEndpointSecurityGroupsConfig(rName),
