@@ -132,21 +132,24 @@ func getRemoteSubnet(client *client.Client, dn string) (*models.Subnet, error) {
 
 func setSubnetAttributes(fvSubnet *models.Subnet, d *schema.ResourceData) (*schema.ResourceData, error) {
 	dn := d.Id()
-	d.SetId(fvSubnet.DistinguishedName)
+	ip := d.Get("ip").(string)
+	d.Set("ip", ip)
 	d.Set("description", fvSubnet.Description)
 	if dn != fvSubnet.DistinguishedName {
-		d.Set("parent_dn", "")
+		d.SetId(dn)
 	}
 	fvSubnetMap, err := fvSubnet.ToMap()
 	if err != nil {
 		return d, err
 	}
 
+<<<<<<< HEAD
 	d.Set("parent_dn", GetParentDn(dn, fmt.Sprintf("/subnet-[%s]", fvSubnetMap["ip"])))
 	d.Set("ip", fvSubnetMap["ip"])
 
+=======
+>>>>>>> Fix fo IPV6 discrepancy- change in set function
 	d.Set("annotation", fvSubnetMap["annotation"])
-	d.Set("ip", fvSubnetMap["ip"])
 	d.Set("name_alias", fvSubnetMap["nameAlias"])
 	d.Set("preferred", fvSubnetMap["preferred"])
 
@@ -555,17 +558,13 @@ func resourceAciSubnetRead(ctx context.Context, d *schema.ResourceData, m interf
 	dn := d.Id()
 	fvSubnet, err := getRemoteSubnet(aciClient, dn)
 
-	if Ip, ok := d.GetOk("ip"); ok {
-		fvSubnet.Ip = Ip.(string)
-		fvSubnet.DistinguishedName = dn
-	}
-
 	if err != nil {
 		d.SetId("")
 		return nil
 	}
 	_, err = setSubnetAttributes(fvSubnet, d)
 	if err != nil {
+		log.Printf("ERRORERROR")
 		d.SetId("")
 		return nil
 	}
