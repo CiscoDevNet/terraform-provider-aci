@@ -564,7 +564,6 @@ func resourceAciSubnetRead(ctx context.Context, d *schema.ResourceData, m interf
 	}
 	_, err = setSubnetAttributes(fvSubnet, d)
 	if err != nil {
-		log.Printf("ERRORERROR")
 		d.SetId("")
 		return nil
 	}
