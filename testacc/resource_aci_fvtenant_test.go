@@ -81,7 +81,7 @@ func TestAccAciTenant_Basic(t *testing.T) {
 	})
 }
 
-func TestAccTenant_NegativeCases(t *testing.T) {
+func TestAccAciTenant_NegativeCases(t *testing.T) {
 	rName := makeTestVariable(acctest.RandString(5))
 	longDescAnnotation := acctest.RandString(129)
 	longNameAlias := acctest.RandString(64)
@@ -118,7 +118,7 @@ func TestAccTenant_NegativeCases(t *testing.T) {
 	})
 }
 
-func TestAccTenant_reltionalParameters(t *testing.T) {
+func TestAccAciTenant_reltionalParameters(t *testing.T) {
 	var tenant_default models.Tenant
 	var tenant_rel1 models.Tenant
 	var tenant_rel2 models.Tenant
@@ -169,7 +169,7 @@ func TestAccTenant_reltionalParameters(t *testing.T) {
 	})
 }
 
-func TestAccTenant_MultipleCreateDelete(t *testing.T) {
+func TestAccAciTenant_MultipleCreateDelete(t *testing.T) {
 	rName := makeTestVariable(acctest.RandString(5))
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },

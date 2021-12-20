@@ -174,7 +174,7 @@ func TestAccAciVRF_NegativeCases(t *testing.T) {
 	})
 }
 
-func TestAccVRF_MultipleCreateDelete(t *testing.T) {
+func TestAccAciVRF_MultipleCreateDelete(t *testing.T) {
 	rName := makeTestVariable(acctest.RandString(5))
 	resource.ParallelTest(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
@@ -188,7 +188,7 @@ func TestAccVRF_MultipleCreateDelete(t *testing.T) {
 	})
 }
 
-func TestAccVRF_RelationParameters(t *testing.T) {
+func TestAccAciVRF_RelationParameters(t *testing.T) {
 	var vrf_default models.VRF
 	var vrf_rel1 models.VRF
 	var vrf_rel2 models.VRF

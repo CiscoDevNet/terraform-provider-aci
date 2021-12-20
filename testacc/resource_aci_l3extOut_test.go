@@ -349,7 +349,7 @@ func TestAccAciL3Outside_NegativeCases(t *testing.T) {
 			},
 			{
 				Config:      CreateAccL3OutsideUpdatedAttrList(rName, "enforce_rtctrl", StringListtoString([]string{"export", "export"})),
-				ExpectError: regexp.MustCompile(`duplication in list`),
+				ExpectError: regexp.MustCompile(`duplication is not supported in list`),
 			},
 			{
 				Config:      CreateAccL3OutsideUpdatedAttr(rName, "target_dscp", randomValue),
@@ -628,7 +628,7 @@ func CreateAccl3outsideConfigWithInvalidTenantdn(rName string) string {
 }
 
 func CreateAccL3OutsideConfig(rName string) string {
-	fmt.Println("=== STEP testing L3Outside creation with name")
+	fmt.Println("=== STEP testing L3Outside creation with required parameters only")
 	resource := fmt.Sprintf(`
 	resource "aci_tenant" "test" {
 		name        = "%s"

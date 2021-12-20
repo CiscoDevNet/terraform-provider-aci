@@ -389,7 +389,7 @@ func TestAccAciBridgeDomain_RelationParameters(t *testing.T) {
 	})
 }
 
-func TestAccBridgeDomain_MultipleCreateDelete(t *testing.T) {
+func TestAccAciBridgeDomain_MultipleCreateDelete(t *testing.T) {
 	rName := makeTestVariable(acctest.RandString(5))
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },

@@ -115,7 +115,7 @@ func TestAccAciSubnet_Basic(t *testing.T) {
 	})
 }
 
-func TestAccSubnet_Update(t *testing.T) {
+func TestAccAciSubnet_Update(t *testing.T) {
 	var subnet_default models.Subnet
 	var subnet_updated models.Subnet
 	resourceName := "aci_subnet.test"
@@ -250,7 +250,7 @@ func TestAccSubnet_Update(t *testing.T) {
 	})
 }
 
-func TestAccSubnet_NegativeCases(t *testing.T) {
+func TestAccAciSubnet_NegativeCases(t *testing.T) {
 	rName := makeTestVariable(acctest.RandString(5))
 	ip, _ := acctest.RandIpAddress("10.20.0.0/16")
 	ip = fmt.Sprintf("%s/16", ip)
@@ -296,7 +296,7 @@ func TestAccSubnet_NegativeCases(t *testing.T) {
 			},
 			{
 				Config:      CreateAccSubnetUpdatedAttrList(rName, ip, "scope", StringListtoString([]string{"public", "public"})),
-				ExpectError: regexp.MustCompile(`duplication in list`),
+				ExpectError: regexp.MustCompile(`duplication is not supported in list`),
 			},
 			{
 				Config:      CreateAccSubnetUpdatedAttrList(rName, ip, "scope", StringListtoString([]string{"private", "public"})),
@@ -312,7 +312,7 @@ func TestAccSubnet_NegativeCases(t *testing.T) {
 			},
 			{
 				Config:      CreateAccSubnetUpdatedAttrList(rName, ip, "ctrl", StringListtoString([]string{"nd", "nd"})),
-				ExpectError: regexp.MustCompile(`duplication in list`),
+				ExpectError: regexp.MustCompile(`duplication is not supported in list`),
 			},
 			{
 				Config:      CreateAccSubnetUpdatedAttrList(rName, ip, "ctrl", StringListtoString([]string{"unspecified", "nd"})),
@@ -329,7 +329,7 @@ func TestAccSubnet_NegativeCases(t *testing.T) {
 	})
 }
 
-func TestAccSubnet_reltionalParameters(t *testing.T) {
+func TestAccAciSubnet_reltionalParameters(t *testing.T) {
 	var subnet_default models.Subnet
 	var subnet_rel1 models.Subnet
 	var subnet_rel2 models.Subnet
@@ -386,7 +386,7 @@ func TestAccSubnet_reltionalParameters(t *testing.T) {
 	})
 }
 
-func TestAccSubnet_MultipleCreateDelete(t *testing.T) {
+func TestAccAciSubnet_MultipleCreateDelete(t *testing.T) {
 	rName := makeTestVariable(acctest.RandString(5))
 	ip, _ := acctest.RandIpAddress("10.20.0.0/16")
 	ip1 := fmt.Sprintf("%s/16", ip)

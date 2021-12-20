@@ -104,7 +104,7 @@ func TestAccAciApplicationProfile_Basic(t *testing.T) {
 	})
 }
 
-func TestAccApplicationProfile_Update(t *testing.T) {
+func TestAccAciApplicationProfile_Update(t *testing.T) {
 	var application_profile_default models.ApplicationProfile
 	var application_profile_updated models.ApplicationProfile
 	resourceName := "aci_application_profile.test"
@@ -165,7 +165,7 @@ func TestAccApplicationProfile_Update(t *testing.T) {
 	})
 }
 
-func TestAccApplicationProfile_NegativeCases(t *testing.T) {
+func TestAccAciApplicationProfile_NegativeCases(t *testing.T) {
 	rName := makeTestVariable(acctest.RandString(5))
 	longDescAnnotation := acctest.RandString(129)                                     // creating random string of 129 characters
 	longNameAlias := acctest.RandString(64)                                           // creating random string of 64 characters                                              // creating random string of 6 characters
@@ -210,7 +210,7 @@ func TestAccApplicationProfile_NegativeCases(t *testing.T) {
 	})
 }
 
-func TestAccApplicationProfile_reltionalParameters(t *testing.T) {
+func TestAccAciApplicationProfile_reltionalParameters(t *testing.T) {
 	var application_profile_default models.ApplicationProfile
 	var application_profile_rel1 models.ApplicationProfile
 	var application_profile_rel2 models.ApplicationProfile
@@ -257,7 +257,7 @@ func TestAccApplicationProfile_reltionalParameters(t *testing.T) {
 	})
 }
 
-func TestAccApplicationProfile_MultipleCreateDelete(t *testing.T) {
+func TestAccAciApplicationProfile_MultipleCreateDelete(t *testing.T) {
 	rName := makeTestVariable(acctest.RandString(5))
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },

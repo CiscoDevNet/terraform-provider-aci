@@ -489,7 +489,7 @@ func TestAccAciContractSubject_RelationParameters(t *testing.T) {
 	})
 }
 
-func TestAccContractSubject_MultipleCreateDelete(t *testing.T) {
+func TestAccAciContractSubject_MultipleCreateDelete(t *testing.T) {
 	rName := makeTestVariable(acctest.RandString(5))
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },

@@ -224,6 +224,7 @@ func resourceAciEndpointSecurityGroupImport(d *schema.ResourceData, m interface{
 	if err != nil {
 		return nil, err
 	}
+	d.Set("application_profile_dn", GetParentDn(dn, fmt.Sprintf("/esg-%s", fvESg.Name)))
 	schemaFilled, err := setEndpointSecurityGroupAttributes(fvESg, d)
 	if err != nil {
 		return nil, err

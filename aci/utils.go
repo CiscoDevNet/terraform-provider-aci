@@ -282,6 +282,29 @@ func GetQuoted(s string) string {
 	return ans
 }
 
+func validateIntRange(a, b int) schema.SchemaValidateFunc {
+	return func(i interface{}, k string) (s []string, es []error) {
+		v, ok := i.(string)
+		if !ok {
+			es = append(es, fmt.Errorf("expected type of %s to be string", k))
+			return
+		}
+
+		vint, err := strconv.Atoi(v)
+
+		if err != nil {
+			es = append(es, err)
+			return
+		}
+
+		if vint < a || vint > b {
+			es = append(es, fmt.Errorf("property is out of range"))
+			return
+		}
+		return
+	}
+}
+
 func StringListtoString(list []string) string {
 	val := ""
 	val = val + "["
@@ -310,7 +333,7 @@ func checkDuplicate(arr []string) error {
 	for i := 0; i < len(arr)-1; i++ {
 		for j := i + 1; j < len(arr); j++ {
 			if arr[i] == arr[j] {
-				return fmt.Errorf("duplication in list")
+				return fmt.Errorf("duplication is not supported in list")
 			}
 		}
 	}

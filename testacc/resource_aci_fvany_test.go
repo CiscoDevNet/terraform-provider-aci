@@ -159,7 +159,7 @@ func TestAccAciAny_NegativeCases(t *testing.T) {
 	})
 }
 
-func TestAccAny_reltionalParameters(t *testing.T) {
+func TestAccAciAny_reltionalParameters(t *testing.T) {
 	var any_default models.Any
 	var any_rel1 models.Any
 	var any_rel2 models.Any
@@ -219,7 +219,7 @@ func TestAccAny_reltionalParameters(t *testing.T) {
 	})
 }
 
-func TestAccAny_MultipleCreateDelete(t *testing.T) {
+func TestAccAciAny_MultipleCreateDelete(t *testing.T) {
 	rName := makeTestVariable(acctest.RandString(5))
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
