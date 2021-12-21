@@ -39,10 +39,10 @@ func resourceAciExternalNetworkInstanceProfile() *schema.Resource {
 			},
 
 			"exception_tag": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-				ValidateFunc: validateIntRange(0,512),
+				Type:         schema.TypeString,
+				Optional:     true,
+				Computed:     true,
+				ValidateFunc: validateIntRange(0, 512),
 			},
 
 			"flood_on_encap": &schema.Schema{
