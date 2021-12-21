@@ -79,7 +79,7 @@ func TestAccAciL3Outside_Basic(t *testing.T) {
 			{
 				Config: CreateAccl3outsideConfigWithAnotherName(rName, rOther),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckl3OutsideExists(resourceName, &l3outside_default),
+					testAccCheckl3OutsideExists(resourceName, &l3outside_updated),
 					testAccCheckAciL3OutsideIdNotEqual(&l3outside_default, &l3outside_updated),
 				),
 			},
@@ -89,7 +89,7 @@ func TestAccAciL3Outside_Basic(t *testing.T) {
 			{
 				Config: CreateAccl3outsideConfigWithAnotherTenantDn(prOther, rName),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckl3OutsideExists(resourceName, &l3outside_default),
+					testAccCheckl3OutsideExists(resourceName, &l3outside_updated),
 					testAccCheckAciL3OutsideIdNotEqual(&l3outside_default, &l3outside_updated),
 				),
 			},
@@ -568,7 +568,7 @@ func CreateAccl3outsideConfigUpdateWithoutName(rName string) string {
 }
 
 func CreateAccl3outsideConfigUpdateWithInvalidName(parentName, rName string) string {
-	fmt.Println("=== STEP  Basic: testing L3outside update without giving Name")
+	fmt.Printf("=== STEP  Basic: testing L3outside creation with parent resource name %s and name %s\n", parentName, rName)
 	resource := fmt.Sprintf(`
 	resource "aci_tenant" "test" {
 		name  = "%s"
