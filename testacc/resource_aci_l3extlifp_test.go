@@ -44,7 +44,7 @@ func TestAccAciLogicalInterfaceProfile_Basic(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "name", rName),
 					resource.TestCheckResourceAttr(resourceName, "name_alias", ""),
 					resource.TestCheckResourceAttr(resourceName, "prio", "unspecified"),
-					resource.TestCheckResourceAttr(resourceName, "tag", "yellow-green"),
+					resource.TestCheckResourceAttrSet(resourceName, "tag"),
 					resource.TestCheckResourceAttr(resourceName, "relation_l3ext_rs_l_if_p_to_netflow_monitor_pol.#", "0"),
 				),
 			},
