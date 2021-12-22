@@ -66,6 +66,10 @@ func TestAccAciEndpointSecurityGroupSelector_Basic(t *testing.T) {
 				ImportStateVerify: true,
 			},
 			{
+				Config:      CreateAccEndpointSecurityGroupSelectorRemovingRequiredField(),
+				ExpectError: regexp.MustCompile(`Missing required argument`),
+			},
+			{
 				Config:      CreateAccEndpointSecurityGroupSelectorConfigWithRequiredParams(rName, rName),
 				ExpectError: regexp.MustCompile(`Invalid IP Address`),
 			},
@@ -399,12 +403,12 @@ func CreateAccEndpointSecurityGroupSelectorConfigWithOptionalValues(rName, ip st
 
 func CreateAccEndpointSecurityGroupSelectorRemovingRequiredField() string {
 	fmt.Println("=== STEP  Basic: testing endpoint_security_group_selector creation with optional parameters")
-	resource := fmt.Sprintf(`
+	resource := fmt.Sprintln(`
 	resource "aci_endpoint_security_group_selector" "test" {
 		description = "created while acceptance testing"
-		annotation = "orchestrator:terraform_testacc"
+		annotation = "tag"
 		name_alias = "test_endpoint_security_group_selector"
-		
+		name = "test_endpoint_security_group_selector_name"
 	}
 	`)
 
