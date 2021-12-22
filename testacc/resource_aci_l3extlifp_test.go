@@ -79,7 +79,7 @@ func TestAccAciLogicalInterfaceProfile_Basic(t *testing.T) {
 				Config: CreateAccLogicalInterfaceProfileConfig(rName),
 			},
 			{
-				Config: CreateAccl3outsideConfigWithAnotherLogicalNodeProfileDn(prOther, rName),
+				Config: CreateAccLogicalInterfaceProfileConfigWithAnotherLogicalNodeProfileDn(prOther, rName),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckLogicalInterfaceProfileExists(resourceName, &logicalInterfaceProfile_updated),
 					testAccCheckAciLogicalInterfaceIdNotEqual(&logicalInterfaceProfile_default, &logicalInterfaceProfile_updated),
@@ -238,7 +238,7 @@ func TestAccAciLogicalInterfaceProfile_NegativeCases(t *testing.T) {
 				Config: CreateAccLogicalInterfaceProfileConfig(rName),
 			},
 			{
-				Config:      CreateAccl3outsideConfigWithInvalidLogicalNodeProfiledn(rName),
+				Config:      CreateAccLogicalInterfaceProfileConfigWithInvalidLogicalNodeProfiledn(rName),
 				ExpectError: regexp.MustCompile(`unknown property value (.)+, name dn, class l3extLIfP (.)+`),
 			},
 			{
@@ -448,7 +448,7 @@ func CreateAccLogicalInterfaceProfileConfigWithAnotherName(parentName, rName str
 	return resource
 }
 
-func CreateAccl3outsideConfigWithAnotherLogicalNodeProfileDn(parentName, rName string) string {
+func CreateAccLogicalInterfaceProfileConfigWithAnotherLogicalNodeProfileDn(parentName, rName string) string {
 	fmt.Printf("=== STEP  Basic: testing LogicalInterfaceProfile creation with different parent %s \n", parentName)
 	resource := fmt.Sprintf(`
 	resource "aci_tenant" "test" {
@@ -472,7 +472,7 @@ func CreateAccl3outsideConfigWithAnotherLogicalNodeProfileDn(parentName, rName s
 	return resource
 }
 
-func CreateAccl3outsideConfigWithInvalidLogicalNodeProfiledn(rName string) string {
+func CreateAccLogicalInterfaceProfileConfigWithInvalidLogicalNodeProfiledn(rName string) string {
 	fmt.Printf("=== STEP  Basic: testing LogicalInterfaceProfile creation with invalid Logical Node Profile dn \n")
 	resource := fmt.Sprintf(`
 	resource "aci_tenant" "test" {
