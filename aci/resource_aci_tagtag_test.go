@@ -6,6 +6,7 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/acctest"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
@@ -145,9 +146,6 @@ func testAccCheckAciTagAttributes(planner_tenant_tmpl_name, planner_match_tenant
 			return fmt.Errorf("Bad tag_tag %s", GetMOName(tag.DistinguishedName))
 		}
 
-		if fv_tenant_name != GetMOName(GetParentDn(tag.DistinguishedName)) {
-			return fmt.Errorf(" Bad fv_tenant %s", GetMOName(GetParentDn(tag.DistinguishedName)))
-		}
 		if description != tag.Description {
 			return fmt.Errorf("Bad tag Description %s", tag.Description)
 		}

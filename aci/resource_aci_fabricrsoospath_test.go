@@ -6,6 +6,7 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/acctest"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
@@ -110,4 +111,14 @@ func testAccCheckAciOutofServiceFabricPathDestroy(s *terraform.State) error {
 		}
 	}
 	return nil
+}
+
+func testAccCheckAciOutofServiceFabricPathAttributes(planner_tenant_tmpl_name string, outof_service_fabric_path *models.OutofServiceFabricPath) resource.TestCheckFunc {
+	return func(s *terraform.State) error {
+		if planner_tenant_tmpl_name != GetMOName(outof_service_fabric_path.DistinguishedName) {
+			return fmt.Errorf("Bad planner_tenant_tmpl_name %s", GetMOName(outof_service_fabric_path.DistinguishedName))
+		}
+
+		return nil
+	}
 }

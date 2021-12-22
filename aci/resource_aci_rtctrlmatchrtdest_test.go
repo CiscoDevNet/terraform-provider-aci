@@ -6,6 +6,7 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/acctest"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
@@ -137,9 +138,6 @@ func testAccCheckAciMatchRouteDestinationRuleAttributes(fv_tenant_name, rtctrl_s
 			return fmt.Errorf("Bad rtctrl_match_rt_dest %s", GetMOName(match_route_destination_rule.DistinguishedName))
 		}
 
-		if rtctrl_subj_p_name != GetMOName(GetParentDn(match_route_destination_rule.DistinguishedName)) {
-			return fmt.Errorf(" Bad rtctrl_subj_p %s", GetMOName(GetParentDn(match_route_destination_rule.DistinguishedName)))
-		}
 		if description != match_route_destination_rule.Description {
 			return fmt.Errorf("Bad match_route_destination_rule Description %s", match_route_destination_rule.Description)
 		}

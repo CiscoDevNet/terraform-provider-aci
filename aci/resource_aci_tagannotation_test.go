@@ -6,15 +6,16 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/acctest"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
 func TestAccAciAnnotation_Basic(t *testing.T) {
+	var annotation models.Annotation
 	tag_annotation_key := acctest.RandString(5)
 	tag_annotation_value := acctest.RandString(5)
 	tenant_name := acctest.RandString(5)
-	description := "annotation created while acceptance testing"
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
@@ -25,7 +26,7 @@ func TestAccAciAnnotation_Basic(t *testing.T) {
 				Config: testAccCheckAciAnnotationConfig_basic(tenant_name, tag_annotation_key, tag_annotation_value),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckAciAnnotationExists("aci_annotation.fooannotation", &annotation),
-					testAccCheckAciAnnotationAttributes(tenant_name, tag_annotation_key, tag_annotation_value),
+					testAccCheckAciAnnotationAttributes(tenant_name, tag_annotation_key, tag_annotation_value, &annotation),
 				),
 			},
 		},
@@ -33,10 +34,10 @@ func TestAccAciAnnotation_Basic(t *testing.T) {
 }
 
 func TestAccAciAnnotation_Update(t *testing.T) {
+	var annotation models.Annotation
 	tag_annotation_key := acctest.RandString(5)
+	tenant_name := acctest.RandString(5)
 	tag_annotation_value := acctest.RandString(5)
-	tag_annotation_parent_dn := "uni/tn-common"
-	description := "annotation created while acceptance testing"
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
@@ -47,14 +48,14 @@ func TestAccAciAnnotation_Update(t *testing.T) {
 				Config: testAccCheckAciAnnotationConfig_basic(tenant_name, tag_annotation_key, tag_annotation_value),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckAciAnnotationExists("aci_annotation.fooannotation", &annotation),
-					testAccCheckAciAnnotationAttributes(tenant_name, tag_annotation_key, tag_annotation_value),
+					testAccCheckAciAnnotationAttributes(tenant_name, tag_annotation_key, tag_annotation_value, &annotation),
 				),
 			},
 			{
 				Config: testAccCheckAciAnnotationConfig_basic(tenant_name, tag_annotation_key, tag_annotation_value),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckAciAnnotationExists("aci_annotation.fooannotation", &annotation),
-					testAccCheckAciAnnotationAttributes(tenant_name, tag_annotation_key, tag_annotation_value),
+					testAccCheckAciAnnotationAttributes(tenant_name, tag_annotation_key, tag_annotation_value, &annotation),
 				),
 			},
 		},
@@ -126,13 +127,10 @@ func testAccCheckAciAnnotationDestroy(s *terraform.State) error {
 
 func testAccCheckAciAnnotationAttributes(tenant_name, key, value string, annotation *models.Annotation) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
-		if tag_annotation_key != GetMOName(annotation.DistinguishedName) {
+		if key != GetMOName(annotation.DistinguishedName) {
 			return fmt.Errorf("Bad tag_annotation %s", GetMOName(annotation.DistinguishedName))
 		}
 
-		if tenant_name != GetMOName(GetParentDn(annotation.DistinguishedName)) {
-			return fmt.Errorf(" Bad tenant_name %s", GetMOName(GetParentDn(annotation.DistinguishedName)))
-		}
 		if value != annotation.Value {
 			return fmt.Errorf("Bad annotation value %s", annotation.Value)
 		}

@@ -288,7 +288,7 @@ func checkWhetherListContainOnlyParameter(arr []string, val string) error {
 	if vis && len(arr) > 1 {
 		return fmt.Errorf("%s should't be used along with other values", val)
 	}
-	return nil 
+	return nil
 }
 
 func validateIntRange(a, b int) schema.SchemaValidateFunc {
