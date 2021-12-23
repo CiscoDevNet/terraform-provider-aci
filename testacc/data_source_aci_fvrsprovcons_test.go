@@ -58,7 +58,7 @@ func TestAccAciEPGToContractDataSource_Basic(t *testing.T) {
 }
 
 func CreateAccEPGToContractUpdatedConfigDataSourceRandomAttr(rName, attribute, value string) string {
-	fmt.Println("=== STEP  Basic: Testing EPG to Contract data source with updated resource")
+	fmt.Println("=== STEP  Basic: Testing EPG to Contract data source with Random Attribute")
 	resource := fmt.Sprintf(`
 	resource "aci_tenant" "test"{
 		name = "%s"
@@ -273,7 +273,7 @@ func CreateAccEPGToContractDSWithoutContract(rName string) string {
 	return resource
 }
 func CreateAccEPGToContractDSWithoutContractType(rName string) string {
-	fmt.Println("=== STEP  Basic: Testing EPG to Contract data source without Application EPG")
+	fmt.Println("=== STEP  Basic: Testing EPG to Contract data source without Contract Type")
 	resource := fmt.Sprintf(`
 	resource "aci_tenant" "test"{
 		name = "%s"

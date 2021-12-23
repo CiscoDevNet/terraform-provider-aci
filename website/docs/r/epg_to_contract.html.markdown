@@ -31,7 +31,7 @@ resource "aci_epg_to_contract" "example" {
 - `contract_type` - (Required) Type of relationship. Allowed values are "consumer" and "provider".
 - `annotation` - (Optional) Annotation for EPg to contract relationship.
 - `description` - (Optional) Description for EPg to contract relationship.
-- `match_t` - (Optional) Provider matching criteria. Allowed values: "All", "AtleastOne", "AtmostOne", "None". Default value: "AtleastOne".
+- `match_t` - (Optional) Provider matching criteria. Allowed values: "All", "AtleastOne", "AtmostOne", "None". Default value: "AtleastOne". This attribute is supported only for resources with "contract_type" with value "provider"
 - `prio` - (Optional) Priority of relation object. Allowed values: "unspecified", "level1", "level2", "level3", "level4", "level5", "level6". Default value: "unspecified".
 
 ## Attribute Reference
