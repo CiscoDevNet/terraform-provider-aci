@@ -680,7 +680,7 @@ func CreateAccL3ExtSubnetConfigWithOptionalValues(fvTenantName, l3extOutName, l3
 }
 
 func CreateAccL3ExtSubnetRemovingRequiredField() string {
-	fmt.Println("=== STEP  Basic: testing l3_ext_subnet creation with optional parameters")
+	fmt.Println("=== STEP  Basic: testing l3_ext_subnet updation without required parameters")
 	resource := fmt.Sprintln(`
 	resource "aci_l3_ext_subnet" "test" {
 		description = "created while acceptance testing"

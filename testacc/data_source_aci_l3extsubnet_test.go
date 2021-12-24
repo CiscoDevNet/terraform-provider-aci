@@ -136,7 +136,7 @@ func CreateAccL3ExtSubnetDSConfig(fvTenantName, l3extOutName, l3extInstPName, ip
 }
 
 func CreateAccL3ExtSubnetDSUpdateRandomAttr(fvTenantName, l3extOutName, l3extInstPName, ip, attribute, value string) string {
-	fmt.Printf("=== STEP  testing l3_ext_subnet data source creation with %s = %s\n", attribute, value)
+	fmt.Println("=== STEP  testing l3_ext_subnet data source with Random Attribute")
 	resource := fmt.Sprintf(`
 	
 	resource "aci_tenant" "test" {
@@ -199,7 +199,7 @@ func CreateAccL3ExtSubnetDSWithInvalidParentDn(fvTenantName, l3extOutName, l3ext
 }
 
 func CreateAccL3ExtSubnetDSUpdate(fvTenantName, l3extOutName, l3extInstPName, ip, attribute, value string) string {
-	fmt.Printf("=== STEP  testing l3_ext_subnet data source creation with %s = %s\n", attribute, value)
+	fmt.Println("=== STEP  testing l3_ext_subnet data source with updated resources")
 	resource := fmt.Sprintf(`
 	
 	resource "aci_tenant" "test" {
