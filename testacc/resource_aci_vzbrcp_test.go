@@ -51,7 +51,7 @@ func TestAccAciContract_Basic(t *testing.T) {
 				),
 			},
 			{
-				Config: CreateAccContractConfigOptional(rName),
+				Config: CreateAccContractConfigOptionalWithoutFilterParameter(rName),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckAciContractExists(resourceName, &contract_updated),
 					resource.TestCheckResourceAttr(resourceName, "annotation", "test_annotation"),
@@ -73,21 +73,12 @@ func TestAccAciContract_Basic(t *testing.T) {
 				ImportStateVerify: true,
 			},
 			{
-				Config:      CreateAccContractRemovingRequiredField(),
-				ExpectError: regexp.MustCompile(`Missing required argument`),
-			},
-			{
-				Config:      CreateAccContractWithoutRequiredFieldFilter(rName),
-				ExpectError: regexp.MustCompile(`Missing required argument`),
-			},
-			{
-				Config:      CreateAccContractWithoutRequiredFieldFilterEntry(rName),
-				ExpectError: regexp.MustCompile(`Missing required argument`),
-			},
-			{
-				Config: CreateAccContractConfigWithFilterResources(rName),
+				Config: CreateAccContractConfigOptional(rName),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckAciContractExists(resourceName, &contract_updated),
+					resource.TestCheckResourceAttr(resourceName, "annotation", "test_annotation"),
+					resource.TestCheckResourceAttr(resourceName, "description", "test_description"),
+					resource.TestCheckResourceAttr(resourceName, "filter.#", "1"),
 					resource.TestCheckResourceAttr(resourceName, "filter.0.annotation", ""),
 					resource.TestCheckResourceAttr(resourceName, "filter.0.description", ""),
 					resource.TestCheckResourceAttr(resourceName, "filter.0.filter_name", rName),
@@ -109,9 +100,29 @@ func TestAccAciContract_Basic(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "filter.0.filter_entry.0.s_to_port", "0"),
 					resource.TestCheckResourceAttr(resourceName, "filter.0.filter_entry.0.stateful", "no"),
 					resource.TestCheckResourceAttr(resourceName, "filter.0.filter_entry.0.tcp_rules", "unspecified"),
+					resource.TestCheckResourceAttr(resourceName, "name", rName),
+					resource.TestCheckResourceAttr(resourceName, "name_alias", "test_alias"),
+					resource.TestCheckResourceAttr(resourceName, "prio", "level1"),
+					resource.TestCheckResourceAttr(resourceName, "relation_vz_rs_graph_att", ""),
+					resource.TestCheckResourceAttr(resourceName, "scope", "tenant"),
+					resource.TestCheckResourceAttr(resourceName, "target_dscp", "CS0"),
+					resource.TestCheckResourceAttr(resourceName, "tenant_dn", fmt.Sprintf("uni/tn-%s", rName)),
 					testAccCheckAciContractdEqual(&contract_default, &contract_updated),
 				),
 			},
+			{
+				Config:      CreateAccContractRemovingRequiredField(),
+				ExpectError: regexp.MustCompile(`Missing required argument`),
+			},
+			{
+				Config:      CreateAccContractWithoutRequiredFieldFilter(rName),
+				ExpectError: regexp.MustCompile(`Missing required argument`),
+			},
+			{
+				Config:      CreateAccContractWithoutRequiredFieldFilterEntry(rName),
+				ExpectError: regexp.MustCompile(`Missing required argument`),
+			},
+			
 			{
 				Config: CreateAccContractConfigWithFilterResourcesOptional(rName),
 				Check: resource.ComposeTestCheckFunc(
@@ -1134,8 +1145,8 @@ func CreateAccContractConfigWithFilterResources(rName string) string {
 	return resource
 }
 
-func CreateAccContractConfigOptional(rName string) string {
-	fmt.Println("=== STEP  testing contract creation with optional parameters")
+func CreateAccContractConfigOptionalWithoutFilterParameter(rName string) string {
+	fmt.Println("=== STEP  testing contract creation with optional parameters without filter parameter")
 	resource := fmt.Sprintf(`
 	resource "aci_tenant" "test"{
 		name = "%s"
@@ -1152,6 +1163,33 @@ func CreateAccContractConfigOptional(rName string) string {
 		target_dscp = "CS0"
 	}
 	`, rName, rName)
+	return resource
+}
+
+func CreateAccContractConfigOptional(rName string) string {
+	fmt.Println("=== STEP  testing contract creation with optional parameters")
+	resource := fmt.Sprintf(`
+	resource "aci_tenant" "test"{
+		name = "%s"
+	}
+
+	resource "aci_contract" "test" {
+		tenant_dn = aci_tenant.test.id
+		name = "%s"
+		annotation = "test_annotation"
+		description = "test_description"
+		name_alias = "test_alias"
+		prio = "level1"
+		scope = "tenant"
+		target_dscp = "CS0"
+		filter {
+			filter_name = "%s"
+			filter_entry {
+			  filter_entry_name = "%s"
+			}
+		}
+	}
+	`, rName, rName, rName, rName)
 	return resource
 }
 
