@@ -31,6 +31,5 @@ data "aci_epg_to_contract" "example" {
 
 - `id` - Attribute id set to the Dn of the provider/consumer contract.
 - `annotation` - (Optional) annotation for EPg to contract relationship.
-- `description` - (Optional) annotation for EPg to contract relationship.
 - `match_t` - (Optional) Provider matching criteria.
 - `prio` - (Optional) Priority of relation object.

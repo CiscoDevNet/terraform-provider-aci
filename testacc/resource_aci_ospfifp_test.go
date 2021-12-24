@@ -315,7 +315,7 @@ func CreateAccL3outOspfInterfaceProfileConfigWithRequiredParams(rName, randomVal
 }
 
 func CreateAccL3outOspfInterfaceProfileUpdatedAttr(rName, attribute, value string) string {
-	fmt.Println("=== STEP  testing l3out_ospf_interface_profile creation with required arguements only")
+	fmt.Printf("=== STEP  testing l3out_ospf_interface_profile creation with : %s=%s \n", attribute, value)
 	resource := fmt.Sprintf(`
 	
 	resource "aci_tenant" "test" {
@@ -495,20 +495,6 @@ func CreateAccL3outOspfInterfaceProfileConfigWithOptionalValues(fvTenantName, l3
 		auth_type = "md5"
 	}
 	`, fvTenantName, l3extOutName, l3extLNodePName, l3extLIfPName, randomValue)
-
-	return resource
-}
-
-func CreateAccL3outOspfInterfaceProfileRemovingRequiredField() string {
-	fmt.Println("=== STEP  Basic: testing l3out_ospf_interface_profile creation with optional parameters")
-	resource := fmt.Sprintf(`
-	resource "aci_l3out_ospf_interface_profile" "test" {
-		description = "created while acceptance testing"
-		annotation = "orchestrator:terraform_testacc"
-		name_alias = "test_l3out_ospf_interface_profile"
-		auth_key = ""auth_key_id = "2"auth_key_id = ""auth_type = "md5"
-	}
-	`)
 
 	return resource
 }

@@ -257,7 +257,7 @@ func CreateAccL3outOspfInterfaceProfileDSWithoutLogicalInterfaceProfile(rName st
 }
 
 func CreateAccL3outOspfInterfaceProfileDSWithoutAuthKey(rName string) string {
-	fmt.Println("=== STEP  Basic: testing contract subject reading without giving name")
+	fmt.Println("=== STEP  Basic: testing contract subject reading without giving auth key")
 	resource := fmt.Sprintf(`
 	resource "aci_tenant" "test" {
 		name 		= "%s"

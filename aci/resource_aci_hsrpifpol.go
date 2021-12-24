@@ -128,7 +128,6 @@ func resourceAciHSRPInterfacePolicyImport(d *schema.ResourceData, m interface{})
 	dn := d.Id()
 
 	hsrpIfPol, err := getRemoteHSRPInterfacePolicy(aciClient, dn)
-
 	if err != nil {
 		return nil, err
 	}
@@ -137,7 +136,7 @@ func resourceAciHSRPInterfacePolicyImport(d *schema.ResourceData, m interface{})
 	if err != nil {
 		return nil, err
 	}
-
+	d.Set("tenant_dn", GetParentDn(dn, fmt.Sprintf("/hsrpIfPol-%s", hsrpIfPol.Name)))
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
