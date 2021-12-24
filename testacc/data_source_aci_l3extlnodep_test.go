@@ -105,7 +105,7 @@ func CreateAccLogicalNodeProfileDataSourceUpdate(rName, attribute, value string)
 }
 
 func CreateAccLogicalNodeProfileDataSource(rName string) string {
-	fmt.Println("=== STEP  Basic: testing any data source reading with giving name")
+	fmt.Println("=== STEP  Basic: testing any data source reading with required arguements only")
 	resource := fmt.Sprintf(`
 	resource "aci_tenant" "test" {
 		name = "%s"

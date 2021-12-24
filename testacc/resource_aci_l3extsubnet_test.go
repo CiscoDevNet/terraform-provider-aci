@@ -149,15 +149,6 @@ func TestAccAciL3ExtSubnet_Update(t *testing.T) {
 				),
 			},
 			{
-				Config: CreateAccL3ExtSubnetUpdatedAttrList(rName, rName, rName, ip, "scope", StringListtoString([]string{"export-rtctrl"})),
-				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAciL3ExtSubnetExists(resourceName, &l3_ext_subnet_updated),
-					resource.TestCheckResourceAttr(resourceName, "scope.#", "1"),
-					resource.TestCheckResourceAttr(resourceName, "scope.0", "export-rtctrl"),
-					testAccCheckAciL3ExtSubnetIdEqual(&l3_ext_subnet_default, &l3_ext_subnet_updated),
-				),
-			},
-			{
 				Config: CreateAccL3ExtSubnetUpdatedAttrList(rName, rName, rName, ip, "scope", StringListtoString([]string{"shared-rtctrl"})),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckAciL3ExtSubnetExists(resourceName, &l3_ext_subnet_updated),

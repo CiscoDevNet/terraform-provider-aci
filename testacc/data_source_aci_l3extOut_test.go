@@ -61,7 +61,7 @@ func TestAccAciL3OutsideDataSource_Basic(t *testing.T) {
 }
 
 func CreateAccL3OutsideDataSource(rName string) string {
-	fmt.Println("=== STEP  Basic: testing l3outside data source reading with giving name")
+	fmt.Println("=== STEP  Basic: testing l3outside data source reading with required arguements only")
 	resource := fmt.Sprintf(`
 	resource "aci_tenant" "test" {
 		name        = "%s"

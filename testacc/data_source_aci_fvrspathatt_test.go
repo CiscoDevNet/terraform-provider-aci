@@ -155,7 +155,7 @@ func CreateAccStaticPathConfigDataSource(rName string) string {
 }
 
 func CreateAccStaticPathDSWithInvalidEpg(rName string) string {
-	fmt.Println("=== STEP  Basic: testing epg_to_static_path reading with invalid name")
+	fmt.Println("=== STEP  Basic: testing epg_to_static_path reading with invalid application_epg_dn")
 	resource := fmt.Sprintf(`
 	resource "aci_tenant" "test" {
 		name = "%s"

@@ -301,7 +301,7 @@ func testAccCheckAciAnyIdNotEqual(any1, any2 *models.Any) resource.TestCheckFunc
 }
 
 func CreateAccAnyWithoutVRFdn(rName string) string {
-	fmt.Println("=== STEP  Basic: testing any creation without giving Name")
+	fmt.Println("=== STEP  Basic: testing any creation without vrf_dn")
 	resource := fmt.Sprintf(`
 	resource "aci_tenant" "test" {
 		name = %s
@@ -316,15 +316,8 @@ func CreateAccAnyWithoutVRFdn(rName string) string {
 	return resource
 }
 func CreateAccAnyConfigUpdateWithoutVRFdn(rName string) string {
-	fmt.Println("=== STEP  Basic: testing any update without giving Name")
-	resource := fmt.Sprintf(`
-	resource "aci_tenant" "test" {
-		name = "%s"
-	}
-	resource "aci_vrf" "test" {
-		tenant_dn = aci_tenant.test.id
-		name  = "%s"
-	}
+	fmt.Println("=== STEP  Basic: testing any update without required arguement")
+	resource := fmt.Sprintln(`
 	resource "aci_any" "test" {
 		description  = "vzAny Description1"
 		annotation   = "tag_any"
@@ -368,7 +361,7 @@ func CreateAccAnyConfigWithInvaliVRFdn(rName string) string {
 	return resource
 }
 func CreateAccAnyConfig(rName string) string {
-	fmt.Println("=== STEP testing any creation with name")
+	fmt.Println("=== STEP testing any creation with required arguement")
 	resource := fmt.Sprintf(`
 	resource "aci_tenant" "test" {
 		name = "%s"

@@ -54,7 +54,7 @@ func TestAccAciAnyDataSource_Basic(t *testing.T) {
 }
 
 func CreateAccAnyDataSource(rName string) string {
-	fmt.Println("=== STEP  Basic: testing any data source reading with giving name")
+	fmt.Println("=== STEP  Basic: testing any data source reading with required arguements")
 	resource := fmt.Sprintf(`
 	resource "aci_tenant" "test" {
 		name = "%s"
@@ -119,7 +119,7 @@ func CreateAccAnyDataSourceUpdate(rName, attribute, value string) string {
 }
 
 func CreateAccAnyDSWithInvalidVRFdn(rName string) string {
-	fmt.Println("=== STEP  Basic: testing any data source reading with invalid name")
+	fmt.Println("=== STEP  Basic: testing any data source reading with invalid vrf_dn")
 	resource := fmt.Sprintf(`
 	resource "aci_tenant" "test" {
 		name = "%s"
@@ -140,7 +140,7 @@ func CreateAccAnyDSWithInvalidVRFdn(rName string) string {
 }
 
 func CreateAccAnyDSWithoutVRFdn(rName string) string {
-	fmt.Println("=== STEP  Basic: testing any data source reading without giving name")
+	fmt.Println("=== STEP  Basic: testing any data source reading without giving vrf_dn")
 	resource := fmt.Sprintf(`
 	resource "aci_tenant" "test" {
 		name = %s

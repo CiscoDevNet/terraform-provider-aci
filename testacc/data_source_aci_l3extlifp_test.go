@@ -63,7 +63,7 @@ func TestAccAciLogicalInterfaceProfileDataSource_Basic(t *testing.T) {
 }
 
 func CreateAccAciLogicalInterfaceProfileDataSource(rName string) string {
-	fmt.Println("=== STEP  Basic: testing LogicalInterfaceProfile data source reading with giving name")
+	fmt.Println("=== STEP  Basic: testing LogicalInterfaceProfile data source reading with required arguments only")
 	resource := fmt.Sprintf(`
 	resource "aci_tenant" "test" {
 		name  = "%s"

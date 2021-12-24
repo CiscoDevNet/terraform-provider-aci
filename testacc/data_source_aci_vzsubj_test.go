@@ -62,7 +62,7 @@ func TestAccAciContractSubjectDataSource_Basic(t *testing.T) {
 }
 
 func CreateAccContractSubjectUpdatedConfigDataSourceRandomAttr(rName, attribute, value string) string {
-	fmt.Println("=== STEP  Basic: Testing contract subject data source with updated resource")
+	fmt.Println("=== STEP  Basic: Testing contract subject data source with random attribute")
 	resource := fmt.Sprintf(`
 	resource "aci_tenant" "test" {
 		name = "%s"

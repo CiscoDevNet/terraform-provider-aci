@@ -453,7 +453,7 @@ func TestAccAciExternalNetworkInstanceProfile_MultipleCreateDelete(t *testing.T)
 }
 
 func CreateAccExternalNetworkInstanceProfileConfigWithInvalidL3Out(rName string) string {
-	fmt.Println("=== STEP  testing external_network_instance_profile updation with invalid tenant_dn")
+	fmt.Println("=== STEP  testing external_network_instance_profile updation with invalid l3_outside_dn")
 	resource := fmt.Sprintf(`
 	resource "aci_tenant" "test"{
 		name = "%s"

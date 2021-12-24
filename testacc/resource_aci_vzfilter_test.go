@@ -275,7 +275,7 @@ func CreateAccFilterWithoutName(rName string) string {
 }
 
 func CreateAccFilterWithoutTenant(rName string) string {
-	fmt.Println("=== STEP  Basic: testing filter creation without giving name")
+	fmt.Println("=== STEP  Basic: testing filter creation without giving tenant_dn")
 	resource := fmt.Sprintf(`
 
 	resource "aci_filter" "test" {
@@ -288,8 +288,12 @@ func CreateAccFilterWithoutTenant(rName string) string {
 func CreateAccFilterWithoutFilter(rName string) string {
 	fmt.Println("=== STEP  Basic: testing filter creation without creating tenant")
 	resource := fmt.Sprintf(`
-	resource "aci_filter" "test" {
+	resource "aci_tenant" "test"{
 		name = "%s"
+	}
+
+	resource "aci_filter" "test" {
+		tenant_dn = 
 	}
 	`, rName)
 	return resource
@@ -329,7 +333,7 @@ func CreateAccFilterConfigWithOptionalValues(rName string) string {
 }
 
 func CreateAccFilterRemovingRequiredField() string {
-	fmt.Println("=== STEP  Basic: testing filter creation with optional parameters")
+	fmt.Println("=== STEP  Basic: testing filter updation without optional parameters")
 	resource := fmt.Sprintln(`
 
 	resource "aci_filter" "test" {
