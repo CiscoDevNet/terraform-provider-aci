@@ -120,6 +120,7 @@ func resourceAciBFDInterfaceProfileImport(d *schema.ResourceData, m interface{})
 		return nil, err
 	}
 
+	d.Set("logical_interface_profile_dn", GetParentDn(dn,"/bfdIfP"))
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
