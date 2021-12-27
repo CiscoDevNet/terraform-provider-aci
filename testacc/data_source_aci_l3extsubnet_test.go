@@ -105,7 +105,7 @@ func CreateL3ExtSubnetDSWithoutRequired(fvTenantName, l3extOutName, l3extInstPNa
 }
 
 func CreateAccL3ExtSubnetDSConfig(fvTenantName, l3extOutName, l3extInstPName, ip string) string {
-	fmt.Println("=== STEP  testing l3_ext_subnet data source creation with required arguements only")
+	fmt.Println("=== STEP  testing l3_ext_subnet data source creation with required arguments only")
 	resource := fmt.Sprintf(`
 	
 	resource "aci_tenant" "test" {

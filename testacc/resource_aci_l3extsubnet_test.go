@@ -399,7 +399,7 @@ func TestAccAciL3ExtSubnet_MultipleCreateDelete(t *testing.T) {
 }
 
 func CreateAccL3ExtSubnetsConfig(fvTenantName, l3extOutName, l3extInstPName, ip string) string {
-	fmt.Println("=== STEP  testing multiple l3_ext_subnet creation with required arguements only")
+	fmt.Println("=== STEP  testing multiple l3_ext_subnet creation with required arguments only")
 	resource := fmt.Sprintf(`
 	
 	resource "aci_tenant" "test" {
@@ -571,7 +571,7 @@ func CreateL3ExtSubnetWithoutRequired(fvTenantName, l3extOutName, l3extInstPName
 }
 
 func CreateAccL3ExtSubnetConfigWithRequiredParams(rName, ip string) string {
-	fmt.Println("=== STEP  testing l3_ext_subnet creation with required arguements only")
+	fmt.Println("=== STEP  testing l3_ext_subnet creation with required arguments only")
 	resource := fmt.Sprintf(`
 	
 	resource "aci_tenant" "test" {
@@ -597,7 +597,7 @@ func CreateAccL3ExtSubnetConfigWithRequiredParams(rName, ip string) string {
 }
 
 func CreateAccL3ExtSubnetConfig(fvTenantName, l3extOutName, l3extInstPName, ip string) string {
-	fmt.Println("=== STEP  testing l3_ext_subnet creation with required arguements only")
+	fmt.Println("=== STEP  testing l3_ext_subnet creation with required arguments only")
 	resource := fmt.Sprintf(`
 	
 	resource "aci_tenant" "test" {

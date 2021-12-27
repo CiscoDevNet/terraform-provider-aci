@@ -302,7 +302,7 @@ func CreateEndpointSecurityGroupSelectorWithoutRequired(rName, ip, attrName stri
 }
 
 func CreateAccEndpointSecurityGroupSelectorConfigWithRequiredParams(rName, ip string) string {
-	fmt.Println("=== STEP  testing endpoint_security_group_selector creation with required arguements only")
+	fmt.Println("=== STEP  testing endpoint_security_group_selector creation with required arguments only")
 	resource := fmt.Sprintf(`
 	
 	resource "aci_tenant" "test" {
@@ -328,7 +328,7 @@ func CreateAccEndpointSecurityGroupSelectorConfigWithRequiredParams(rName, ip st
 }
 
 func CreateAccEndpointSecurityGroupSelectorConfig(rName, ip string) string {
-	fmt.Println("=== STEP  testing endpoint_security_group_selector creation with required arguements only")
+	fmt.Println("=== STEP  testing endpoint_security_group_selector creation with required arguments only")
 	resource := fmt.Sprintf(`
 	
 	resource "aci_tenant" "test" {

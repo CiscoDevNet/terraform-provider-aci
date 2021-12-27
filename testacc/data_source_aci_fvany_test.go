@@ -54,7 +54,7 @@ func TestAccAciAnyDataSource_Basic(t *testing.T) {
 }
 
 func CreateAccAnyDataSource(rName string) string {
-	fmt.Println("=== STEP  Basic: testing any data source reading with required arguements")
+	fmt.Println("=== STEP  Basic: testing any data source reading with required arguments")
 	resource := fmt.Sprintf(`
 	resource "aci_tenant" "test" {
 		name = "%s"

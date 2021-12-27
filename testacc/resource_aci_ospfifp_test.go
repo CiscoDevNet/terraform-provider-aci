@@ -279,7 +279,7 @@ func CreateL3outOspfInterfaceProfileWithoutRequired(fvTenantName, l3extOutName, 
 }
 
 func CreateAccL3outOspfInterfaceProfileConfigWithRequiredParams(rName, randomValue string) string {
-	fmt.Println("=== STEP  testing l3out_ospf_interface_profile creation with required arguements only")
+	fmt.Println("=== STEP  testing l3out_ospf_interface_profile creation with required arguments only")
 	resource := fmt.Sprintf(`
 	
 	resource "aci_tenant" "test" {
@@ -352,7 +352,7 @@ func CreateAccL3outOspfInterfaceProfileUpdatedAttr(rName, attribute, value strin
 }
 
 func CreateAccL3outOspfInterfaceProfileConfigUpdateWithoutRequiredParameters(rName, attribute, value string) string {
-	fmt.Println("=== STEP  testing l3out_ospf_interface_profile updation without required arguements")
+	fmt.Println("=== STEP  testing l3out_ospf_interface_profile updation without required arguments")
 	resource := fmt.Sprintf(`
 	
 	resource "aci_tenant" "test" {
@@ -388,7 +388,7 @@ func CreateAccL3outOspfInterfaceProfileConfigUpdateWithoutRequiredParameters(rNa
 }
 
 func CreateAccL3outOspfInterfaceProfileConfig(fvTenantName, l3extOutName, l3extLNodePName, l3extLIfPName, randomValue string) string {
-	fmt.Println("=== STEP  testing l3out_ospf_interface_profile creation with required arguements only")
+	fmt.Println("=== STEP  testing l3out_ospf_interface_profile creation with required arguments only")
 	resource := fmt.Sprintf(`
 	resource "aci_tenant" "test" {
 		name 		= "%s"

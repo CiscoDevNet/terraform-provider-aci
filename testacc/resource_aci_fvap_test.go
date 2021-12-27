@@ -26,17 +26,17 @@ func TestAccAciApplicationProfile_Basic(t *testing.T) {
 		CheckDestroy: testAccCheckAciApplicationProfileDestroy,
 		Steps: []resource.TestStep{
 			{
-				// terraform will try to create application profile without required arguement tenant_dn
+				// terraform will try to create application profile without required argument tenant_dn
 				Config:      CreateAccApplicationProfileWithoutTenant(rName), // configuration to check creation of application profile without tenant
 				ExpectError: regexp.MustCompile(`Missing required argument`), // test step expect error which should be match with defined regex
 			},
 			{
-				// terraform will try to create application profile without required arguement name
+				// terraform will try to create application profile without required argument name
 				Config:      CreateAccApplicationProfileWithoutName(rName), // configuration to check creation of application profile without tenant
 				ExpectError: regexp.MustCompile(`Missing required argument`),
 			},
 			{
-				// step terraform will create application profile with only required arguements i.e. name and tenant_dn
+				// step terraform will create application profile with only required arguments i.e. name and tenant_dn
 				Config: CreateAccApplicationProfileConfig(rName), // configuration to create application profile with required fields only
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckAciApplicationProfileExists(resourceName, &application_profile_default), // this function will check whether any resource is exist or not in state file with given resource name
@@ -115,7 +115,7 @@ func TestAccAciApplicationProfile_Update(t *testing.T) {
 		CheckDestroy: testAccCheckAciApplicationProfileDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: CreateAccApplicationProfileConfig(rName), // creating application profile with required arguements only
+				Config: CreateAccApplicationProfileConfig(rName), // creating application profile with required arguments only
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckAciApplicationProfileExists(resourceName, &application_profile_default),
 				),
@@ -177,7 +177,7 @@ func TestAccAciApplicationProfile_NegativeCases(t *testing.T) {
 		CheckDestroy: testAccCheckAciApplicationProfileDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: CreateAccApplicationProfileConfig(rName), // creating application profile with required arguements only
+				Config: CreateAccApplicationProfileConfig(rName), // creating application profile with required arguments only
 			},
 			{
 				Config:      CreateAccApplicationProfileWithInValidTenantDn(rName),                       // checking application profile creation with invalid tenant_dn value
@@ -204,7 +204,7 @@ func TestAccAciApplicationProfile_NegativeCases(t *testing.T) {
 				ExpectError: regexp.MustCompile(`An argument named (.)+ is not expected here.`),
 			},
 			{
-				Config: CreateAccApplicationProfileConfig(rName), // creating application profile with required arguements only
+				Config: CreateAccApplicationProfileConfig(rName), // creating application profile with required arguments only
 			},
 		},
 	})
@@ -227,7 +227,7 @@ func TestAccAciApplicationProfile_reltionalParameters(t *testing.T) {
 			{
 				Config: CreateAccApplicationProfileConfig(rName),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAciApplicationProfileExists(resourceName, &application_profile_default), // creating application profile with required arguements only
+					testAccCheckAciApplicationProfileExists(resourceName, &application_profile_default), // creating application profile with required arguments only
 					resource.TestCheckResourceAttr(resourceName, "relation_fv_rs_ap_mon_pol", ""),       // checking value of relation_fv_rs_ap_mon_pol parameter for given configuration
 				),
 			},
@@ -378,7 +378,7 @@ func CreateAccApplicationProfileConfigWithParentAndName(prName, rName string) st
 }
 
 func CreateAccApplicationProfileConfig(rName string) string {
-	fmt.Println("=== STEP  testing application profile creation with required arguements")
+	fmt.Println("=== STEP  testing application profile creation with required arguments")
 	resource := fmt.Sprintf(`
 	resource "aci_tenant" "test" {
 		name = "%s"

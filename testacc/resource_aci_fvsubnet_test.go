@@ -496,7 +496,7 @@ func CreateSubnetWithoutIP(rName string) string {
 }
 
 func CreateAccSubnetConfig(rName, ip string) string {
-	fmt.Println("=== STEP  testing subnet creation with required arguements only")
+	fmt.Println("=== STEP  testing subnet creation with required arguments only")
 	resource := fmt.Sprintf(`
 	resource "aci_tenant" "test"{
 		name = "%s"

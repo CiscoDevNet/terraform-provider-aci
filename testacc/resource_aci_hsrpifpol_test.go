@@ -343,7 +343,7 @@ func CreateHsrpInterfacePolicyWithoutRequired(fvTenantName, rName, attrName stri
 }
 
 func CreateAccHsrpInterfacePolicyConfigUpdatedRequiredParams(rName, rName2 string) string {
-	fmt.Println("=== STEP  testing hsrp_interface_policy updation using required arguements")
+	fmt.Println("=== STEP  testing hsrp_interface_policy updation using required arguments")
 	resource := fmt.Sprintf(`
 	
 	resource "aci_tenant" "test" {
@@ -360,7 +360,7 @@ func CreateAccHsrpInterfacePolicyConfigUpdatedRequiredParams(rName, rName2 strin
 }
 
 func CreateAccHsrpInterfacePolicyConfigUpdateWithoutRequiredArguments(rName, attribute, value string) string {
-	fmt.Println("=== STEP  testing hsrp_interface_policy updation without required arguements")
+	fmt.Println("=== STEP  testing hsrp_interface_policy updation without required arguments")
 	resource := fmt.Sprintf(`
 	resource "aci_tenant" "test" {
 		name 		= "%s"
@@ -392,7 +392,7 @@ func CreateAccHsrpInterfacePolicyConfigInvalidName(rName string) string {
 }
 
 func CreateAccHsrpInterfacePolicyConfig(fvTenantName, rName string) string {
-	fmt.Println("=== STEP  testing hsrp_interface_policy creation with required arguements only")
+	fmt.Println("=== STEP  testing hsrp_interface_policy creation with required arguments only")
 	resource := fmt.Sprintf(`
 	
 	resource "aci_tenant" "test" {

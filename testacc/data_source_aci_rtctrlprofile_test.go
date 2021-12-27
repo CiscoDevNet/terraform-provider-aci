@@ -115,7 +115,15 @@ func CreateAccBgpRouteControlProfileDSUpdateRandomAttr(fvTenantName, rName, attr
 }
 
 func CreateAccBgpRouteControlProfileDSConfig(fvTenantName, rName string) string {
+<<<<<<< HEAD
+<<<<<<< HEAD
 	fmt.Println("=== STEP  Testing bgp_route_control_profile Data Source creation with required arguements only")
+=======
+	fmt.Println("=== STEP  Testing bgp_route_control_profile Data Source creation with required arguments only")
+>>>>>>> f70b9a12 (updated typo of argument)
+=======
+	fmt.Println("=== STEP  Testing bgp_route_control_profile Data Source creation with required arguments only")
+>>>>>>> f70b9a12ba23ca0b20bcf43464445aa3601ca1b3
 	resource := fmt.Sprintf(`
 	
 	resource "aci_tenant" "test" {

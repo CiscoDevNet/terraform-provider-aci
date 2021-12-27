@@ -300,7 +300,7 @@ func CreateAccFilterWithoutFilter(rName string) string {
 }
 
 func CreateAccFilterConfig(rName string) string {
-	fmt.Println("=== STEP  testing filter creation with required arguements")
+	fmt.Println("=== STEP  testing filter creation with required arguments")
 	resource := fmt.Sprintf(`
 	resource "aci_tenant" "test" {
 		name = "%s"

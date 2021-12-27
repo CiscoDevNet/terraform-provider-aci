@@ -155,7 +155,7 @@ func CreateAccEndpointSecurityGroupSelectorDataSourceUpdateRandomAttr(rName, ip,
 }
 
 func CreateAccEndpointSecurityGroupSelectorDSConfig(rName, ip string) string {
-	fmt.Println("=== STEP  testing endpoint_security_group_selector data source creation with required arguements only")
+	fmt.Println("=== STEP  testing endpoint_security_group_selector data source creation with required arguments only")
 	resource := fmt.Sprintf(`
 	
 	resource "aci_tenant" "test" {

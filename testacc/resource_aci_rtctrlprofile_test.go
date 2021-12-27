@@ -327,7 +327,7 @@ func CreateAccBgpRouteControlProfileConfigL3Outside(ParentName, rName string) st
 }
 
 func CreateAccBgpRouteControlProfileConfig(fvTenantName, rName string) string {
-	fmt.Println("=== STEP  Testing bgp_route_control_profile creation with required arguements only")
+	fmt.Println("=== STEP  Testing bgp_route_control_profile creation with required arguments only")
 	resource := fmt.Sprintf(`
 	
 	resource "aci_tenant" "test" {

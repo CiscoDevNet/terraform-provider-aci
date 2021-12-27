@@ -76,10 +76,9 @@ func CreateAccLogicalNodeProfileDSWithoutName(rName string) string {
 	  data "aci_logical_node_profile" "test" {
         l3_outside_dn = aci_l3_outside.test.id
 	  }
-	`, rName, rName,rName)
+	`, rName, rName, rName)
 	return resource
 }
-
 
 func CreateAccLogicalNodeProfileDataSourceUpdate(rName, attribute, value string) string {
 	fmt.Printf("=== STEP  testing any data source update for attribute: %s = %s \n", attribute, value)
@@ -105,7 +104,7 @@ func CreateAccLogicalNodeProfileDataSourceUpdate(rName, attribute, value string)
 }
 
 func CreateAccLogicalNodeProfileDataSource(rName string) string {
-	fmt.Println("=== STEP  Basic: testing any data source reading with required arguements only")
+	fmt.Println("=== STEP  Basic: testing any data source reading with required arguments only")
 	resource := fmt.Sprintf(`
 	resource "aci_tenant" "test" {
 		name = "%s"

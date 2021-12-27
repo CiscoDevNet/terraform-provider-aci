@@ -316,7 +316,7 @@ func CreateAccAnyWithoutVRFdn(rName string) string {
 	return resource
 }
 func CreateAccAnyConfigUpdateWithoutVRFdn(rName string) string {
-	fmt.Println("=== STEP  Basic: testing any update without required arguement")
+	fmt.Println("=== STEP  Basic: testing any update without required argument")
 	resource := fmt.Sprintln(`
 	resource "aci_any" "test" {
 		description  = "vzAny Description1"
@@ -361,7 +361,7 @@ func CreateAccAnyConfigWithInvaliVRFdn(rName string) string {
 	return resource
 }
 func CreateAccAnyConfig(rName string) string {
-	fmt.Println("=== STEP testing any creation with required arguement")
+	fmt.Println("=== STEP testing any creation with required argument")
 	resource := fmt.Sprintf(`
 	resource "aci_tenant" "test" {
 		name = "%s"
