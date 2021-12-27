@@ -134,7 +134,6 @@ func setCloudSubnetAttributes(cloudSubnet *models.CloudSubnet, d *schema.Resourc
 	} else {
 		d.Set("scope", scopeGet)
 	}
-	//	d.Set("scope", cloudSubnetMap["scope"])
 	d.Set("usage", cloudSubnetMap["usage"])
 	return d, nil
 }
