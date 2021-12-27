@@ -1104,7 +1104,7 @@ func resourceAciLeafAccessPortPolicyGroupRead(ctx context.Context, d *schema.Res
 		d.Set("relation_infra_rs_span_v_src_grp", make([]string, 0, 1))
 
 	} else {
-		d.Set("relation_infra_rs_span_v_src_grp", toStringList(infraRsSpanVSrcGrpData.(*schema.Set).List()))
+		setRelationAttribute(d, "relation_infra_rs_span_v_src_grp", toStringList(infraRsSpanVSrcGrpData.(*schema.Set).List()))
 	}
 
 	infraRsStormctrlIfPolData, err := aciClient.ReadRelationinfraRsStormctrlIfPolFromLeafAccessPortPolicyGroup(dn)
@@ -1113,7 +1113,7 @@ func resourceAciLeafAccessPortPolicyGroupRead(ctx context.Context, d *schema.Res
 		d.Set("relation_infra_rs_stormctrl_if_pol", "")
 
 	} else {
-		d.Set("relation_infra_rs_stormctrl_if_pol", infraRsStormctrlIfPolData.(string))
+		setRelationAttribute(d, "relation_infra_rs_stormctrl_if_pol", infraRsStormctrlIfPolData.(string))
 	}
 
 	infraRsPoeIfPolData, err := aciClient.ReadRelationinfraRsPoeIfPolFromLeafAccessPortPolicyGroup(dn)
@@ -1122,7 +1122,7 @@ func resourceAciLeafAccessPortPolicyGroupRead(ctx context.Context, d *schema.Res
 		d.Set("relation_infra_rs_poe_if_pol", "")
 
 	} else {
-		d.Set("relation_infra_rs_poe_if_pol", infraRsPoeIfPolData.(string))
+		setRelationAttribute(d, "relation_infra_rs_poe_if_pol", infraRsPoeIfPolData.(string))
 	}
 
 	infraRsLldpIfPolData, err := aciClient.ReadRelationinfraRsLldpIfPolFromLeafAccessPortPolicyGroup(dn)
@@ -1131,7 +1131,7 @@ func resourceAciLeafAccessPortPolicyGroupRead(ctx context.Context, d *schema.Res
 		d.Set("relation_infra_rs_lldp_if_pol", "")
 
 	} else {
-		d.Set("relation_infra_rs_lldp_if_pol", infraRsLldpIfPolData.(string))
+		setRelationAttribute(d, "relation_infra_rs_lldp_if_pol", infraRsLldpIfPolData.(string))
 	}
 
 	infraRsMacsecIfPolData, err := aciClient.ReadRelationinfraRsMacsecIfPolFromLeafAccessPortPolicyGroup(dn)
@@ -1140,7 +1140,7 @@ func resourceAciLeafAccessPortPolicyGroupRead(ctx context.Context, d *schema.Res
 		d.Set("relation_infra_rs_macsec_if_pol", "")
 
 	} else {
-		d.Set("relation_infra_rs_macsec_if_pol", infraRsMacsecIfPolData.(string))
+		setRelationAttribute(d, "relation_infra_rs_macsec_if_pol", infraRsMacsecIfPolData.(string))
 	}
 
 	infraRsQosDppIfPolData, err := aciClient.ReadRelationinfraRsQosDppIfPolFromLeafAccessPortPolicyGroup(dn)
@@ -1149,7 +1149,7 @@ func resourceAciLeafAccessPortPolicyGroupRead(ctx context.Context, d *schema.Res
 		d.Set("relation_infra_rs_qos_dpp_if_pol", "")
 
 	} else {
-		d.Set("relation_infra_rs_qos_dpp_if_pol", infraRsQosDppIfPolData.(string))
+		setRelationAttribute(d, "relation_infra_rs_qos_dpp_if_pol", infraRsQosDppIfPolData.(string))
 	}
 
 	infraRsHIfPolData, err := aciClient.ReadRelationinfraRsHIfPolFromLeafAccessPortPolicyGroup(dn)
@@ -1158,7 +1158,7 @@ func resourceAciLeafAccessPortPolicyGroupRead(ctx context.Context, d *schema.Res
 		d.Set("relation_infra_rs_h_if_pol", "")
 
 	} else {
-		d.Set("relation_infra_rs_h_if_pol", infraRsHIfPolData.(string))
+		setRelationAttribute(d, "relation_infra_rs_h_if_pol", infraRsHIfPolData.(string))
 	}
 
 	infraRsNetflowMonitorPolData, err := aciClient.ReadRelationinfraRsNetflowMonitorPolFromLeafAccessPortPolicyGroup(dn)
@@ -1182,7 +1182,7 @@ func resourceAciLeafAccessPortPolicyGroupRead(ctx context.Context, d *schema.Res
 		d.Set("relation_infra_rs_l2_port_auth_pol", "")
 
 	} else {
-		d.Set("relation_infra_rs_l2_port_auth_pol", infraRsL2PortAuthPolData.(string))
+		setRelationAttribute(d, "relation_infra_rs_l2_port_auth_pol", infraRsL2PortAuthPolData.(string))
 	}
 
 	infraRsMcpIfPolData, err := aciClient.ReadRelationinfraRsMcpIfPolFromLeafAccessPortPolicyGroup(dn)
@@ -1191,7 +1191,7 @@ func resourceAciLeafAccessPortPolicyGroupRead(ctx context.Context, d *schema.Res
 		d.Set("relation_infra_rs_mcp_if_pol", "")
 
 	} else {
-		d.Set("relation_infra_rs_mcp_if_pol", infraRsMcpIfPolData.(string))
+		setRelationAttribute(d, "relation_infra_rs_mcp_if_pol", infraRsMcpIfPolData.(string))
 	}
 
 	infraRsL2PortSecurityPolData, err := aciClient.ReadRelationinfraRsL2PortSecurityPolFromLeafAccessPortPolicyGroup(dn)
@@ -1200,7 +1200,7 @@ func resourceAciLeafAccessPortPolicyGroupRead(ctx context.Context, d *schema.Res
 		d.Set("relation_infra_rs_l2_port_security_pol", "")
 
 	} else {
-		d.Set("relation_infra_rs_l2_port_security_pol", infraRsL2PortSecurityPolData.(string))
+		setRelationAttribute(d, "relation_infra_rs_l2_port_security_pol", infraRsL2PortSecurityPolData.(string))
 	}
 
 	infraRsCoppIfPolData, err := aciClient.ReadRelationinfraRsCoppIfPolFromLeafAccessPortPolicyGroup(dn)
@@ -1209,7 +1209,7 @@ func resourceAciLeafAccessPortPolicyGroupRead(ctx context.Context, d *schema.Res
 		d.Set("relation_infra_rs_copp_if_pol", "")
 
 	} else {
-		d.Set("relation_infra_rs_copp_if_pol", infraRsCoppIfPolData.(string))
+		setRelationAttribute(d, "relation_infra_rs_copp_if_pol", infraRsCoppIfPolData.(string))
 	}
 
 	infraRsSpanVDestGrpData, err := aciClient.ReadRelationinfraRsSpanVDestGrpFromLeafAccessPortPolicyGroup(dn)
@@ -1218,7 +1218,7 @@ func resourceAciLeafAccessPortPolicyGroupRead(ctx context.Context, d *schema.Res
 		d.Set("relation_infra_rs_span_v_dest_grp", make([]string, 0, 1))
 
 	} else {
-		d.Set("relation_infra_rs_span_v_dest_grp", toStringList(infraRsSpanVDestGrpData.(*schema.Set).List()))
+		setRelationAttribute(d, "relation_infra_rs_span_v_dest_grp", toStringList(infraRsSpanVDestGrpData.(*schema.Set).List()))
 	}
 
 	infraRsDwdmIfPolData, err := aciClient.ReadRelationinfraRsDwdmIfPolFromLeafAccessPortPolicyGroup(dn)
@@ -1227,7 +1227,7 @@ func resourceAciLeafAccessPortPolicyGroupRead(ctx context.Context, d *schema.Res
 		d.Set("relation_infra_rs_dwdm_if_pol", "")
 
 	} else {
-		d.Set("relation_infra_rs_dwdm_if_pol", infraRsDwdmIfPolData.(string))
+		setRelationAttribute(d, "relation_infra_rs_dwdm_if_pol", infraRsDwdmIfPolData.(string))
 	}
 
 	infraRsQosPfcIfPolData, err := aciClient.ReadRelationinfraRsQosPfcIfPolFromLeafAccessPortPolicyGroup(dn)
@@ -1236,7 +1236,7 @@ func resourceAciLeafAccessPortPolicyGroupRead(ctx context.Context, d *schema.Res
 		d.Set("relation_infra_rs_qos_pfc_if_pol", "")
 
 	} else {
-		d.Set("relation_infra_rs_qos_pfc_if_pol", infraRsQosPfcIfPolData.(string))
+		setRelationAttribute(d, "relation_infra_rs_qos_pfc_if_pol", infraRsQosPfcIfPolData.(string))
 	}
 
 	infraRsQosSdIfPolData, err := aciClient.ReadRelationinfraRsQosSdIfPolFromLeafAccessPortPolicyGroup(dn)
@@ -1245,7 +1245,7 @@ func resourceAciLeafAccessPortPolicyGroupRead(ctx context.Context, d *schema.Res
 		d.Set("relation_infra_rs_qos_sd_if_pol", "")
 
 	} else {
-		d.Set("relation_infra_rs_qos_sd_if_pol", infraRsQosSdIfPolData.(string))
+		setRelationAttribute(d, "relation_infra_rs_qos_sd_if_pol", infraRsQosSdIfPolData.(string))
 	}
 
 	infraRsMonIfInfraPolData, err := aciClient.ReadRelationinfraRsMonIfInfraPolFromLeafAccessPortPolicyGroup(dn)
@@ -1254,7 +1254,7 @@ func resourceAciLeafAccessPortPolicyGroupRead(ctx context.Context, d *schema.Res
 		d.Set("relation_infra_rs_mon_if_infra_pol", "")
 
 	} else {
-		d.Set("relation_infra_rs_mon_if_infra_pol", infraRsMonIfInfraPolData.(string))
+		setRelationAttribute(d, "relation_infra_rs_mon_if_infra_pol", infraRsMonIfInfraPolData.(string))
 	}
 
 	infraRsFcIfPolData, err := aciClient.ReadRelationinfraRsFcIfPolFromLeafAccessPortPolicyGroup(dn)
@@ -1263,7 +1263,7 @@ func resourceAciLeafAccessPortPolicyGroupRead(ctx context.Context, d *schema.Res
 		d.Set("relation_infra_rs_fc_if_pol", "")
 
 	} else {
-		d.Set("relation_infra_rs_fc_if_pol", infraRsFcIfPolData.(string))
+		setRelationAttribute(d, "relation_infra_rs_fc_if_pol", infraRsFcIfPolData.(string))
 	}
 
 	infraRsQosIngressDppIfPolData, err := aciClient.ReadRelationinfraRsQosIngressDppIfPolFromLeafAccessPortPolicyGroup(dn)
@@ -1272,7 +1272,7 @@ func resourceAciLeafAccessPortPolicyGroupRead(ctx context.Context, d *schema.Res
 		d.Set("relation_infra_rs_qos_ingress_dpp_if_pol", "")
 
 	} else {
-		d.Set("relation_infra_rs_qos_ingress_dpp_if_pol", infraRsQosIngressDppIfPolData.(string))
+		setRelationAttribute(d, "relation_infra_rs_qos_ingress_dpp_if_pol", infraRsQosIngressDppIfPolData.(string))
 	}
 
 	infraRsCdpIfPolData, err := aciClient.ReadRelationinfraRsCdpIfPolFromLeafAccessPortPolicyGroup(dn)
@@ -1281,7 +1281,7 @@ func resourceAciLeafAccessPortPolicyGroupRead(ctx context.Context, d *schema.Res
 		d.Set("relation_infra_rs_cdp_if_pol", "")
 
 	} else {
-		d.Set("relation_infra_rs_cdp_if_pol", infraRsCdpIfPolData.(string))
+		setRelationAttribute(d, "relation_infra_rs_cdp_if_pol", infraRsCdpIfPolData.(string))
 	}
 
 	infraRsL2IfPolData, err := aciClient.ReadRelationinfraRsL2IfPolFromLeafAccessPortPolicyGroup(dn)
@@ -1290,7 +1290,7 @@ func resourceAciLeafAccessPortPolicyGroupRead(ctx context.Context, d *schema.Res
 		d.Set("relation_infra_rs_l2_if_pol", "")
 
 	} else {
-		d.Set("relation_infra_rs_l2_if_pol", infraRsL2IfPolData.(string))
+		setRelationAttribute(d, "relation_infra_rs_l2_if_pol", infraRsL2IfPolData.(string))
 	}
 
 	infraRsStpIfPolData, err := aciClient.ReadRelationinfraRsStpIfPolFromLeafAccessPortPolicyGroup(dn)
@@ -1299,7 +1299,7 @@ func resourceAciLeafAccessPortPolicyGroupRead(ctx context.Context, d *schema.Res
 		d.Set("relation_infra_rs_stp_if_pol", "")
 
 	} else {
-		d.Set("relation_infra_rs_stp_if_pol", infraRsStpIfPolData.(string))
+		setRelationAttribute(d, "relation_infra_rs_stp_if_pol", infraRsStpIfPolData.(string))
 	}
 
 	infraRsQosEgressDppIfPolData, err := aciClient.ReadRelationinfraRsQosEgressDppIfPolFromLeafAccessPortPolicyGroup(dn)
@@ -1308,7 +1308,7 @@ func resourceAciLeafAccessPortPolicyGroupRead(ctx context.Context, d *schema.Res
 		d.Set("relation_infra_rs_qos_egress_dpp_if_pol", "")
 
 	} else {
-		d.Set("relation_infra_rs_qos_egress_dpp_if_pol", infraRsQosEgressDppIfPolData.(string))
+		setRelationAttribute(d, "relation_infra_rs_qos_egress_dpp_if_pol", infraRsQosEgressDppIfPolData.(string))
 	}
 
 	infraRsAttEntPData, err := aciClient.ReadRelationinfraRsAttEntPFromLeafAccessPortPolicyGroup(dn)
@@ -1317,7 +1317,7 @@ func resourceAciLeafAccessPortPolicyGroupRead(ctx context.Context, d *schema.Res
 		d.Set("relation_infra_rs_att_ent_p", "")
 
 	} else {
-		d.Set("relation_infra_rs_att_ent_p", infraRsAttEntPData.(string))
+		setRelationAttribute(d, "relation_infra_rs_att_ent_p", infraRsAttEntPData.(string))
 	}
 
 	infraRsL2InstPolData, err := aciClient.ReadRelationinfraRsL2InstPolFromLeafAccessPortPolicyGroup(dn)
@@ -1326,7 +1326,7 @@ func resourceAciLeafAccessPortPolicyGroupRead(ctx context.Context, d *schema.Res
 		d.Set("relation_infra_rs_l2_inst_pol", "")
 
 	} else {
-		d.Set("relation_infra_rs_l2_inst_pol", infraRsL2InstPolData.(string))
+		setRelationAttribute(d, "relation_infra_rs_l2_inst_pol", infraRsL2InstPolData.(string))
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())

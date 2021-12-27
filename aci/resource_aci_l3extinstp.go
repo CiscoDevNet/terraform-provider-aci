@@ -859,7 +859,7 @@ func resourceAciExternalNetworkInstanceProfileRead(ctx context.Context, d *schem
 		d.Set("relation_fv_rs_sec_inherited", make([]string, 0, 1))
 
 	} else {
-		d.Set("relation_fv_rs_sec_inherited", toStringList(fvRsSecInheritedData.(*schema.Set).List()))
+		setRelationAttribute(d, "relation_fv_rs_sec_inherited", toStringList(fvRsSecInheritedData.(*schema.Set).List()))
 	}
 
 	fvRsProvData, err := aciClient.ReadRelationfvRsProvFromExternalNetworkInstanceProfile(dn)
@@ -867,7 +867,7 @@ func resourceAciExternalNetworkInstanceProfileRead(ctx context.Context, d *schem
 		log.Printf("[DEBUG] Error while reading relation fvRsProv %v", err)
 		d.Set("relation_fv_rs_prov", make([]string, 0, 1))
 	} else {
-		d.Set("relation_fv_rs_prov", toStringList(fvRsProvData.(*schema.Set).List()))
+		setRelationAttribute(d, "relation_fv_rs_prov", toStringList(fvRsProvData.(*schema.Set).List()))
 	}
 
 	l3extRsL3InstPToDomPData, err := aciClient.ReadRelationl3extRsL3InstPToDomPFromExternalNetworkInstanceProfile(dn)
@@ -876,7 +876,7 @@ func resourceAciExternalNetworkInstanceProfileRead(ctx context.Context, d *schem
 		d.Set("relation_l3ext_rs_l3_inst_p_to_dom_p", "")
 
 	} else {
-		d.Set("relation_l3ext_rs_l3_inst_p_to_dom_p", l3extRsL3InstPToDomPData.(string))
+		setRelationAttribute(d, "relation_l3ext_rs_l3_inst_p_to_dom_p", l3extRsL3InstPToDomPData.(string))
 	}
 
 	l3extRsInstPToNatMappingEPgData, err := aciClient.ReadRelationl3extRsInstPToNatMappingEPgFromExternalNetworkInstanceProfile(dn)
@@ -885,7 +885,7 @@ func resourceAciExternalNetworkInstanceProfileRead(ctx context.Context, d *schem
 		d.Set("relation_l3ext_rs_inst_p_to_nat_mapping_epg", "")
 
 	} else {
-		d.Set("relation_l3ext_rs_inst_p_to_nat_mapping_epg", l3extRsInstPToNatMappingEPgData.(string))
+		setRelationAttribute(d, "relation_l3ext_rs_inst_p_to_nat_mapping_epg", l3extRsInstPToNatMappingEPgData.(string))
 	}
 
 	fvRsConsIfData, err := aciClient.ReadRelationfvRsConsIfFromExternalNetworkInstanceProfile(dn)
@@ -894,7 +894,7 @@ func resourceAciExternalNetworkInstanceProfileRead(ctx context.Context, d *schem
 		d.Set("relation_fv_rs_cons_if", make([]string, 0, 1))
 
 	} else {
-		d.Set("relation_fv_rs_cons_if", toStringList(fvRsConsIfData.(*schema.Set).List()))
+		setRelationAttribute(d, "relation_fv_rs_cons_if", toStringList(fvRsConsIfData.(*schema.Set).List()))
 	}
 
 	fvRsCustQosPolData, err := aciClient.ReadRelationfvRsCustQosPolFromExternalNetworkInstanceProfile(dn)
@@ -903,7 +903,7 @@ func resourceAciExternalNetworkInstanceProfileRead(ctx context.Context, d *schem
 		d.Set("relation_fv_rs_cust_qos_pol", "")
 
 	} else {
-		d.Set("relation_fv_rs_cust_qos_pol", fvRsCustQosPolData.(string))
+		setRelationAttribute(d, "relation_fv_rs_cust_qos_pol", fvRsCustQosPolData.(string))
 	}
 
 	l3extRsInstPToProfileData, err := aciClient.ReadRelationl3extRsInstPToProfileFromExternalNetworkInstanceProfile(dn)
@@ -928,7 +928,7 @@ func resourceAciExternalNetworkInstanceProfileRead(ctx context.Context, d *schem
 		d.Set("relation_fv_rs_cons", make([]string, 0, 1))
 
 	} else {
-		d.Set("relation_fv_rs_cons", toStringList(fvRsConsData.(*schema.Set).List()))
+		setRelationAttribute(d, "relation_fv_rs_cons", toStringList(fvRsConsData.(*schema.Set).List()))
 	}
 
 	fvRsProtByData, err := aciClient.ReadRelationfvRsProtByFromExternalNetworkInstanceProfile(dn)
@@ -937,7 +937,7 @@ func resourceAciExternalNetworkInstanceProfileRead(ctx context.Context, d *schem
 		d.Set("relation_fv_rs_prot_by", make([]string, 0, 1))
 
 	} else {
-		d.Set("relation_fv_rs_prot_by", toStringList(fvRsProtByData.(*schema.Set).List()))
+		setRelationAttribute(d, "relation_fv_rs_prot_by", toStringList(fvRsProtByData.(*schema.Set).List()))
 	}
 
 	fvRsIntraEpgData, err := aciClient.ReadRelationfvRsIntraEpgFromExternalNetworkInstanceProfile(dn)
@@ -946,7 +946,7 @@ func resourceAciExternalNetworkInstanceProfileRead(ctx context.Context, d *schem
 		d.Set("relation_fv_rs_intra_epg", make([]string, 0, 1))
 
 	} else {
-		d.Set("relation_fv_rs_intra_epg", toStringList(fvRsIntraEpgData.(*schema.Set).List()))
+		setRelationAttribute(d, "relation_fv_rs_intra_epg", toStringList(fvRsIntraEpgData.(*schema.Set).List()))
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())

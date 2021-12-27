@@ -34,6 +34,23 @@ func toStringList(configured []interface{}) []string {
 	return vs
 }
 
+func setRelationAttribute(d *schema.ResourceData, relation string, data interface{}) {
+	if _, ok := d.GetOk("annotation"); ok {
+		if _, ok := d.GetOk(relation); ok {
+			d.Set(relation, data)
+		} else {
+			switch data.(type) {
+			case string:
+				d.Set(relation, "")
+			case []interface{}:
+				d.Set(relation, make([]string, 0, 1))
+			}
+		}
+	} else {
+		d.Set(relation, data)
+	}
+}
+
 func preparePayload(className string, inputMap map[string]string) (*container.Container, error) {
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {

@@ -65,8 +65,8 @@ func resourceAciLogicalInterfaceContext() *schema.Resource {
 			},
 
 			"relation_vns_rs_l_if_ctx_to_cust_qos_pol": &schema.Schema{
-				Type:     schema.TypeString,
-				Default:  "uni/tn-common/qoscustom-default",
+				Type: schema.TypeString,
+
 				Optional: true,
 			},
 			"relation_vns_rs_l_if_ctx_to_svc_e_pg_pol": &schema.Schema{
@@ -525,7 +525,7 @@ func resourceAciLogicalInterfaceContextRead(ctx context.Context, d *schema.Resou
 		d.Set("relation_vns_rs_l_if_ctx_to_cust_qos_pol", "")
 
 	} else {
-		d.Set("relation_vns_rs_l_if_ctx_to_cust_qos_pol", vnsRsLIfCtxToCustQosPolData.(string))
+		setRelationAttribute(d, "relation_vns_rs_l_if_ctx_to_cust_qos_pol", vnsRsLIfCtxToCustQosPolData.(string))
 	}
 
 	vnsRsLIfCtxToSvcEPgPolData, err := aciClient.ReadRelationvnsRsLIfCtxToSvcEPgPolFromLogicalInterfaceContext(dn)
@@ -534,7 +534,7 @@ func resourceAciLogicalInterfaceContextRead(ctx context.Context, d *schema.Resou
 		d.Set("relation_vns_rs_l_if_ctx_to_svc_e_pg_pol", "")
 
 	} else {
-		d.Set("relation_vns_rs_l_if_ctx_to_svc_e_pg_pol", vnsRsLIfCtxToSvcEPgPolData.(string))
+		setRelationAttribute(d, "relation_vns_rs_l_if_ctx_to_svc_e_pg_pol", vnsRsLIfCtxToSvcEPgPolData.(string))
 	}
 
 	vnsRsLIfCtxToSvcRedirectPolData, err := aciClient.ReadRelationvnsRsLIfCtxToSvcRedirectPolFromLogicalInterfaceContext(dn)
@@ -543,7 +543,7 @@ func resourceAciLogicalInterfaceContextRead(ctx context.Context, d *schema.Resou
 		d.Set("relation_vns_rs_l_if_ctx_to_svc_redirect_pol", "")
 
 	} else {
-		d.Set("relation_vns_rs_l_if_ctx_to_svc_redirect_pol", vnsRsLIfCtxToSvcRedirectPolData.(string))
+		setRelationAttribute(d, "relation_vns_rs_l_if_ctx_to_svc_redirect_pol", vnsRsLIfCtxToSvcRedirectPolData.(string))
 	}
 
 	vnsRsLIfCtxToLIfData, err := aciClient.ReadRelationvnsRsLIfCtxToLIfFromLogicalInterfaceContext(dn)
@@ -552,7 +552,7 @@ func resourceAciLogicalInterfaceContextRead(ctx context.Context, d *schema.Resou
 		d.Set("relation_vns_rs_l_if_ctx_to_l_if", "")
 
 	} else {
-		d.Set("relation_vns_rs_l_if_ctx_to_l_if", vnsRsLIfCtxToLIfData.(string))
+		setRelationAttribute(d, "relation_vns_rs_l_if_ctx_to_l_if", vnsRsLIfCtxToLIfData.(string))
 	}
 
 	vnsRsLIfCtxToOutDefData, err := aciClient.ReadRelationvnsRsLIfCtxToOutDefFromLogicalInterfaceContext(dn)
@@ -561,7 +561,7 @@ func resourceAciLogicalInterfaceContextRead(ctx context.Context, d *schema.Resou
 		d.Set("relation_vns_rs_l_if_ctx_to_out_def", "")
 
 	} else {
-		d.Set("relation_vns_rs_l_if_ctx_to_out_def", vnsRsLIfCtxToOutDefData.(string))
+		setRelationAttribute(d, "relation_vns_rs_l_if_ctx_to_out_def", vnsRsLIfCtxToOutDefData.(string))
 	}
 
 	vnsRsLIfCtxToInstPData, err := aciClient.ReadRelationvnsRsLIfCtxToInstPFromLogicalInterfaceContext(dn)
@@ -570,7 +570,7 @@ func resourceAciLogicalInterfaceContextRead(ctx context.Context, d *schema.Resou
 		d.Set("relation_vns_rs_l_if_ctx_to_inst_p", "")
 
 	} else {
-		d.Set("relation_vns_rs_l_if_ctx_to_inst_p", vnsRsLIfCtxToInstPData.(string))
+		setRelationAttribute(d, "relation_vns_rs_l_if_ctx_to_inst_p", vnsRsLIfCtxToInstPData.(string))
 	}
 
 	vnsRsLIfCtxToBDData, err := aciClient.ReadRelationvnsRsLIfCtxToBDFromLogicalInterfaceContext(dn)
@@ -578,7 +578,7 @@ func resourceAciLogicalInterfaceContextRead(ctx context.Context, d *schema.Resou
 		log.Printf("[DEBUG] Error while reading relation vnsRsLIfCtxToBD %v", err)
 		d.Set("relation_vns_rs_l_if_ctx_to_bd", "")
 	} else {
-		d.Set("relation_vns_rs_l_if_ctx_to_bd", vnsRsLIfCtxToBDData.(string))
+		setRelationAttribute(d, "relation_vns_rs_l_if_ctx_to_bd", vnsRsLIfCtxToBDData.(string))
 	}
 
 	vnsRsLIfCtxToOutData, err := aciClient.ReadRelationvnsRsLIfCtxToOutFromLogicalInterfaceContext(dn)
@@ -587,7 +587,7 @@ func resourceAciLogicalInterfaceContextRead(ctx context.Context, d *schema.Resou
 		d.Set("relation_vns_rs_l_if_ctx_to_out", "")
 
 	} else {
-		d.Set("relation_vns_rs_l_if_ctx_to_out", vnsRsLIfCtxToOutData.(string))
+		setRelationAttribute(d, "relation_vns_rs_l_if_ctx_to_out", vnsRsLIfCtxToOutData.(string))
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())

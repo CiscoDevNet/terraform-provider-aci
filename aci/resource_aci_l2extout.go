@@ -76,8 +76,8 @@ func resourceAciL2Outside() *schema.Resource {
 			},
 
 			"relation_l2ext_rs_e_bd": &schema.Schema{
-				Type:     schema.TypeString,
-				Default:  "uni/tn-common/BD-default",
+				Type: schema.TypeString,
+
 				Optional: true,
 			},
 			"relation_l2ext_rs_l2_dom_att": &schema.Schema{
@@ -322,7 +322,7 @@ func resourceAciL2OutsideRead(ctx context.Context, d *schema.ResourceData, m int
 		d.Set("relation_l2ext_rs_e_bd", "")
 
 	} else {
-		d.Set("relation_l2ext_rs_e_bd", l2extRsEBdData.(string))
+		setRelationAttribute(d, "relation_l2ext_rs_e_bd", l2extRsEBdData.(string))
 	}
 
 	l2extRsL2DomAttData, err := aciClient.ReadRelationl2extRsL2DomAttFromL2Outside(dn)
@@ -331,7 +331,7 @@ func resourceAciL2OutsideRead(ctx context.Context, d *schema.ResourceData, m int
 		d.Set("relation_l2ext_rs_l2_dom_att", "")
 
 	} else {
-		d.Set("relation_l2ext_rs_l2_dom_att", l2extRsL2DomAttData.(string))
+		setRelationAttribute(d, "relation_l2ext_rs_l2_dom_att", l2extRsL2DomAttData.(string))
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())

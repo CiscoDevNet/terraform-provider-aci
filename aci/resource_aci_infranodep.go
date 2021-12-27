@@ -647,7 +647,7 @@ func resourceAciLeafProfileRead(ctx context.Context, d *schema.ResourceData, m i
 		d.Set("relation_infra_rs_acc_card_p", make([]string, 0, 1))
 
 	} else {
-		d.Set("relation_infra_rs_acc_card_p", toStringList(infraRsAccCardPData.(*schema.Set).List()))
+		setRelationAttribute(d, "relation_infra_rs_acc_card_p", toStringList(infraRsAccCardPData.(*schema.Set).List()))
 	}
 
 	infraRsAccPortPData, err := aciClient.ReadRelationinfraRsAccPortPFromLeafProfile(dn)
@@ -656,7 +656,7 @@ func resourceAciLeafProfileRead(ctx context.Context, d *schema.ResourceData, m i
 		d.Set("relation_infra_rs_acc_port_p", make([]string, 0, 1))
 
 	} else {
-		d.Set("relation_infra_rs_acc_port_p", toStringList(infraRsAccPortPData.(*schema.Set).List()))
+		setRelationAttribute(d, "relation_infra_rs_acc_port_p", toStringList(infraRsAccPortPData.(*schema.Set).List()))
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())

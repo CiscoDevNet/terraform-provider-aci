@@ -431,7 +431,7 @@ func resourceAciMaintenancePolicyRead(ctx context.Context, d *schema.ResourceDat
 		d.Set("relation_maint_rs_pol_scheduler", "")
 
 	} else {
-		d.Set("relation_maint_rs_pol_scheduler", maintRsPolSchedulerData.(string))
+		setRelationAttribute(d, "relation_maint_rs_pol_scheduler", maintRsPolSchedulerData.(string))
 	}
 
 	maintRsPolNotifData, err := aciClient.ReadRelationmaintRsPolNotifFromMaintenancePolicy(dn)
@@ -440,7 +440,7 @@ func resourceAciMaintenancePolicyRead(ctx context.Context, d *schema.ResourceDat
 		d.Set("relation_maint_rs_pol_notif", "")
 
 	} else {
-		d.Set("relation_maint_rs_pol_notif", maintRsPolNotifData.(string))
+		setRelationAttribute(d, "relation_maint_rs_pol_notif", maintRsPolNotifData.(string))
 	}
 
 	trigRsTriggerableData, err := aciClient.ReadRelationtrigRsTriggerableFromMaintenancePolicy(dn)
@@ -449,7 +449,7 @@ func resourceAciMaintenancePolicyRead(ctx context.Context, d *schema.ResourceDat
 		d.Set("relation_trig_rs_triggerable", "")
 
 	} else {
-		d.Set("relation_trig_rs_triggerable", trigRsTriggerableData.(string))
+		setRelationAttribute(d, "relation_trig_rs_triggerable", trigRsTriggerableData.(string))
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())

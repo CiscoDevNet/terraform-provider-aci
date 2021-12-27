@@ -67,8 +67,8 @@ func resourceAciCloudVpnGateway() *schema.Resource {
 			},
 
 			"relation_cloud_rs_to_vpn_gw_pol": &schema.Schema{
-				Type:     schema.TypeString,
-				Default:  "uni/tn-common/vpngwpol-default",
+				Type: schema.TypeString,
+
 				Optional: true,
 			},
 			"relation_cloud_rs_to_direct_conn_pol": &schema.Schema{
@@ -77,8 +77,8 @@ func resourceAciCloudVpnGateway() *schema.Resource {
 				Optional: true,
 			},
 			"relation_cloud_rs_to_host_router_pol": &schema.Schema{
-				Type:     schema.TypeString,
-				Default:  "uni/tn-common/hostrouterpol-default",
+				Type: schema.TypeString,
+
 				Optional: true,
 			},
 		}),
@@ -340,7 +340,7 @@ func resourceAciCloudVpnGatewayRead(ctx context.Context, d *schema.ResourceData,
 		d.Set("relation_cloud_rs_to_vpn_gw_pol", "")
 
 	} else {
-		d.Set("relation_cloud_rs_to_vpn_gw_pol", cloudRsToVpnGwPolData.(string))
+		setRelationAttribute(d, "relation_cloud_rs_to_vpn_gw_pol", cloudRsToVpnGwPolData.(string))
 	}
 
 	cloudRsToDirectConnPolData, err := aciClient.ReadRelationcloudRsToDirectConnPolFromCloudVpnGateway(dn)
@@ -349,7 +349,7 @@ func resourceAciCloudVpnGatewayRead(ctx context.Context, d *schema.ResourceData,
 		d.Set("relation_cloud_rs_to_direct_conn_pol", "")
 
 	} else {
-		d.Set("relation_cloud_rs_to_direct_conn_pol", cloudRsToDirectConnPolData.(string))
+		setRelationAttribute(d, "relation_cloud_rs_to_direct_conn_pol", cloudRsToDirectConnPolData.(string))
 	}
 
 	cloudRsToHostRouterPolData, err := aciClient.ReadRelationcloudRsToHostRouterPolFromCloudVpnGateway(dn)
@@ -358,7 +358,7 @@ func resourceAciCloudVpnGatewayRead(ctx context.Context, d *schema.ResourceData,
 		d.Set("relation_cloud_rs_to_host_router_pol", "")
 
 	} else {
-		d.Set("relation_cloud_rs_to_host_router_pol", cloudRsToHostRouterPolData.(string))
+		setRelationAttribute(d, "relation_cloud_rs_to_host_router_pol", cloudRsToHostRouterPolData.(string))
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())

@@ -311,12 +311,7 @@ func resourceAciTACACSSourceRead(ctx context.Context, d *schema.ResourceData, m 
 		log.Printf("[DEBUG] Error while reading relation tacacsRsDestGroup %v", err)
 		d.Set("relation_tacacs_rs_dest_group", "")
 	} else {
-		if _, ok := d.GetOk("relation_tacacs_rs_dest_group"); ok {
-			tfName := d.Get("relation_tacacs_rs_dest_group").(string)
-			if tfName != tacacsRsDestGroupData {
-				d.Set("relation_tacacs_rs_dest_group", "")
-			}
-		}
+		setRelationAttribute(d, "relation_tacacs_rs_dest_group", tacacsRsDestGroupData)
 	}
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 	return nil

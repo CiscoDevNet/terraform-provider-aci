@@ -39,18 +39,18 @@ func resourceAciSpineAccessPortPolicyGroup() *schema.Resource {
 			},
 
 			"relation_infra_rs_h_if_pol": &schema.Schema{
-				Type:     schema.TypeString,
-				Default:  "uni/infra/hintfpol-default",
+				Type: schema.TypeString,
+
 				Optional: true,
 			},
 			"relation_infra_rs_cdp_if_pol": &schema.Schema{
-				Type:     schema.TypeString,
-				Default:  "uni/infra/cdpIfP-default",
+				Type: schema.TypeString,
+
 				Optional: true,
 			},
 			"relation_infra_rs_copp_if_pol": &schema.Schema{
-				Type:     schema.TypeString,
-				Default:  "uni/infra/coppifpol-default",
+				Type: schema.TypeString,
+
 				Optional: true,
 			},
 			"relation_infra_rs_att_ent_p": &schema.Schema{
@@ -58,8 +58,8 @@ func resourceAciSpineAccessPortPolicyGroup() *schema.Resource {
 				Optional: true,
 			},
 			"relation_infra_rs_macsec_if_pol": &schema.Schema{
-				Type:     schema.TypeString,
-				Default:  "uni/infra/macsecifp-default",
+				Type: schema.TypeString,
+
 				Optional: true,
 			},
 		}),
@@ -356,7 +356,7 @@ func resourceAciSpineAccessPortPolicyGroupRead(ctx context.Context, d *schema.Re
 		d.Set("relation_infra_rs_h_if_pol", "")
 
 	} else {
-		d.Set("relation_infra_rs_h_if_pol", infraRsHIfPolData.(string))
+		setRelationAttribute(d, "relation_infra_rs_h_if_pol", infraRsHIfPolData.(string))
 	}
 
 	infraRsCdpIfPolData, err := aciClient.ReadRelationinfraRsCdpIfPolFromSpineAccessPortPolicyGroup(dn)
@@ -365,7 +365,7 @@ func resourceAciSpineAccessPortPolicyGroupRead(ctx context.Context, d *schema.Re
 		d.Set("relation_infra_rs_cdp_if_pol", "")
 
 	} else {
-		d.Set("relation_infra_rs_cdp_if_pol", infraRsCdpIfPolData.(string))
+		setRelationAttribute(d, "relation_infra_rs_cdp_if_pol", infraRsCdpIfPolData.(string))
 	}
 
 	infraRsCoppIfPolData, err := aciClient.ReadRelationinfraRsCoppIfPolFromSpineAccessPortPolicyGroup(dn)
@@ -374,7 +374,7 @@ func resourceAciSpineAccessPortPolicyGroupRead(ctx context.Context, d *schema.Re
 		d.Set("relation_infra_rs_copp_if_pol", "")
 
 	} else {
-		d.Set("relation_infra_rs_copp_if_pol", infraRsCoppIfPolData.(string))
+		setRelationAttribute(d, "relation_infra_rs_copp_if_pol", infraRsCoppIfPolData.(string))
 	}
 
 	infraRsAttEntPData, err := aciClient.ReadRelationinfraRsAttEntPFromSpineAccessPortPolicyGroup(dn)
@@ -383,7 +383,7 @@ func resourceAciSpineAccessPortPolicyGroupRead(ctx context.Context, d *schema.Re
 		d.Set("relation_infra_rs_att_ent_p", "")
 
 	} else {
-		d.Set("relation_infra_rs_att_ent_p", infraRsAttEntPData.(string))
+		setRelationAttribute(d, "relation_infra_rs_att_ent_p", infraRsAttEntPData.(string))
 	}
 
 	infraRsMacsecIfPolData, err := aciClient.ReadRelationinfraRsMacsecIfPolFromSpineAccessPortPolicyGroup(dn)
@@ -392,7 +392,7 @@ func resourceAciSpineAccessPortPolicyGroupRead(ctx context.Context, d *schema.Re
 		d.Set("relation_infra_rs_macsec_if_pol", "")
 
 	} else {
-		d.Set("relation_infra_rs_macsec_if_pol", infraRsMacsecIfPolData.(string))
+		setRelationAttribute(d, "relation_infra_rs_macsec_if_pol", infraRsMacsecIfPolData.(string))
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())

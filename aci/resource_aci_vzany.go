@@ -423,7 +423,7 @@ func resourceAciAnyRead(ctx context.Context, d *schema.ResourceData, m interface
 		d.Set("relation_vz_rs_any_to_cons", make([]string, 0, 1))
 
 	} else {
-		d.Set("relation_vz_rs_any_to_cons", toStringList(vzRsAnyToConsData.(*schema.Set).List()))
+		setRelationAttribute(d, "relation_vz_rs_any_to_cons", toStringList(vzRsAnyToConsData.(*schema.Set).List()))
 	}
 
 	vzRsAnyToConsIfData, err := aciClient.ReadRelationvzRsAnyToConsIfFromAny(dn)
@@ -432,7 +432,7 @@ func resourceAciAnyRead(ctx context.Context, d *schema.ResourceData, m interface
 		d.Set("relation_vz_rs_any_to_cons_if", make([]string, 0, 1))
 
 	} else {
-		d.Set("relation_vz_rs_any_to_cons_if", toStringList(vzRsAnyToConsIfData.(*schema.Set).List()))
+		setRelationAttribute(d, "relation_vz_rs_any_to_cons_if", toStringList(vzRsAnyToConsIfData.(*schema.Set).List()))
 	}
 
 	vzRsAnyToProvData, err := aciClient.ReadRelationvzRsAnyToProvFromAny(dn)
@@ -440,7 +440,7 @@ func resourceAciAnyRead(ctx context.Context, d *schema.ResourceData, m interface
 		log.Printf("[DEBUG] Error while reading relation vzRsAnyToProv %v", err)
 		d.Set("relation_vz_rs_any_to_prov", make([]string, 0, 1))
 	} else {
-		d.Set("relation_vz_rs_any_to_prov", toStringList(vzRsAnyToProvData.(*schema.Set).List()))
+		setRelationAttribute(d, "relation_vz_rs_any_to_prov", toStringList(vzRsAnyToProvData.(*schema.Set).List()))
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())

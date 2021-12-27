@@ -846,7 +846,7 @@ func resourceAciVMMControllerRead(ctx context.Context, d *schema.ResourceData, m
 		log.Printf("[DEBUG] Error while reading relation vmmRsAcc %v", err)
 		d.Set("relation_vmm_rs_acc", "")
 	} else {
-		d.Set("relation_vmm_rs_acc", vmmRsAccData.(string))
+		setRelationAttribute(d, "relation_vmm_rs_acc", vmmRsAccData.(string))
 	}
 
 	vmmRsCtrlrPMonPolData, err := aciClient.ReadRelationvmmRsCtrlrPMonPol(dn)
@@ -854,7 +854,7 @@ func resourceAciVMMControllerRead(ctx context.Context, d *schema.ResourceData, m
 		log.Printf("[DEBUG] Error while reading relation vmmRsCtrlrPMonPol %v", err)
 		d.Set("relation_vmm_rs_ctrlr_p_mon_pol", "")
 	} else {
-		d.Set("relation_vmm_rs_ctrlr_p_mon_pol", vmmRsCtrlrPMonPolData.(string))
+		setRelationAttribute(d, "relation_vmm_rs_ctrlr_p_mon_pol", vmmRsCtrlrPMonPolData.(string))
 	}
 
 	vmmRsMcastAddrNsData, err := aciClient.ReadRelationvmmRsMcastAddrNs(dn)
@@ -862,7 +862,7 @@ func resourceAciVMMControllerRead(ctx context.Context, d *schema.ResourceData, m
 		log.Printf("[DEBUG] Error while reading relation vmmRsMcastAddrNs %v", err)
 		d.Set("relation_vmm_rs_mcast_addr_ns", "")
 	} else {
-		d.Set("relation_vmm_rs_mcast_addr_ns", vmmRsMcastAddrNsData.(string))
+		setRelationAttribute(d, "relation_vmm_rs_mcast_addr_ns", vmmRsMcastAddrNsData.(string))
 	}
 
 	vmmRsMgmtEPgData, err := aciClient.ReadRelationvmmRsMgmtEPg(dn)
@@ -870,14 +870,14 @@ func resourceAciVMMControllerRead(ctx context.Context, d *schema.ResourceData, m
 		log.Printf("[DEBUG] Error while reading relation vmmRsMgmtEPg %v", err)
 		d.Set("relation_vmm_rs_mgmt_e_pg", "")
 	} else {
-		d.Set("relation_vmm_rs_mgmt_e_pg", vmmRsMgmtEPgData.(string))
+		setRelationAttribute(d, "relation_vmm_rs_mgmt_e_pg", vmmRsMgmtEPgData.(string))
 	}
 	vmmRsToExtDevMgrData, err := aciClient.ReadRelationvmmRsToExtDevMgr(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation vmmRsToExtDevMgr %v", err)
 		d.Set("relation_vmm_rs_to_ext_dev_mgr", make([]string, 0, 1))
 	} else {
-		d.Set("relation_vmm_rs_to_ext_dev_mgr", toStringList(vmmRsToExtDevMgrData.(*schema.Set).List()))
+		setRelationAttribute(d, "relation_vmm_rs_to_ext_dev_mgr", toStringList(vmmRsToExtDevMgrData.(*schema.Set).List()))
 	}
 
 	vmmRsVmmCtrlrPData, err := aciClient.ReadRelationvmmRsVmmCtrlrP(dn)
@@ -900,7 +900,7 @@ func resourceAciVMMControllerRead(ctx context.Context, d *schema.ResourceData, m
 		log.Printf("[DEBUG] Error while reading relation vmmRsVxlanNs %v", err)
 		d.Set("relation_vmm_rs_vxlan_ns", "")
 	} else {
-		d.Set("relation_vmm_rs_vxlan_ns", vmmRsVxlanNsData.(string))
+		setRelationAttribute(d, "relation_vmm_rs_vxlan_ns", vmmRsVxlanNsData.(string))
 	}
 
 	vmmRsVxlanNsDefData, err := aciClient.ReadRelationvmmRsVxlanNsDef(dn)
@@ -908,7 +908,7 @@ func resourceAciVMMControllerRead(ctx context.Context, d *schema.ResourceData, m
 		log.Printf("[DEBUG] Error while reading relation vmmRsVxlanNsDef %v", err)
 		d.Set("relation_vmm_rs_vxlan_ns_def", "")
 	} else {
-		d.Set("relation_vmm_rs_vxlan_ns_def", vmmRsVxlanNsDefData.(string))
+		setRelationAttribute(d, "relation_vmm_rs_vxlan_ns_def", vmmRsVxlanNsDefData.(string))
 	}
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 	return nil

@@ -706,7 +706,7 @@ func resourceAciVRFRead(ctx context.Context, d *schema.ResourceData, m interface
 		d.Set("relation_fv_rs_ospf_ctx_pol", "")
 
 	} else {
-		d.Set("relation_fv_rs_ospf_ctx_pol", fvRsOspfCtxPolData.(string))
+		setRelationAttribute(d, "relation_fv_rs_ospf_ctx_pol", fvRsOspfCtxPolData.(string))
 	}
 
 	fvRsVrfValidationPolData, err := aciClient.ReadRelationfvRsVrfValidationPolFromVRF(dn)
@@ -715,7 +715,7 @@ func resourceAciVRFRead(ctx context.Context, d *schema.ResourceData, m interface
 		d.Set("relation_fv_rs_vrf_validation_pol", "")
 
 	} else {
-		d.Set("relation_fv_rs_vrf_validation_pol", fvRsVrfValidationPolData.(string))
+		setRelationAttribute(d, "relation_fv_rs_vrf_validation_pol", fvRsVrfValidationPolData.(string))
 	}
 
 	fvRsCtxMcastToData, err := aciClient.ReadRelationfvRsCtxMcastToFromVRF(dn)
@@ -724,7 +724,7 @@ func resourceAciVRFRead(ctx context.Context, d *schema.ResourceData, m interface
 		d.Set("relation_fv_rs_ctx_mcast_to", fvRsCtxMcastToData)
 
 	} else {
-		d.Set("relation_fv_rs_ctx_mcast_to", toStringList(fvRsCtxMcastToData.(*schema.Set).List()))
+		setRelationAttribute(d, "relation_fv_rs_ctx_mcast_to", toStringList(fvRsCtxMcastToData.(*schema.Set).List()))
 	}
 
 	fvRsCtxToEigrpCtxAfPolData, err := aciClient.ReadRelationfvRsCtxToEigrpCtxAfPolFromVRF(dn)
@@ -765,7 +765,7 @@ func resourceAciVRFRead(ctx context.Context, d *schema.ResourceData, m interface
 		d.Set("relation_fv_rs_ctx_to_ep_ret", "")
 
 	} else {
-		d.Set("relation_fv_rs_ctx_to_ep_ret", fvRsCtxToEpRetData.(string))
+		setRelationAttribute(d, "relation_fv_rs_ctx_to_ep_ret", fvRsCtxToEpRetData.(string))
 	}
 
 	fvRsBgpCtxPolData, err := aciClient.ReadRelationfvRsBgpCtxPolFromVRF(dn)
@@ -774,7 +774,7 @@ func resourceAciVRFRead(ctx context.Context, d *schema.ResourceData, m interface
 		d.Set("relation_fv_rs_bgp_ctx_pol", "")
 
 	} else {
-		d.Set("relation_fv_rs_bgp_ctx_pol", fvRsBgpCtxPolData.(string))
+		setRelationAttribute(d, "relation_fv_rs_bgp_ctx_pol", fvRsBgpCtxPolData.(string))
 	}
 
 	fvRsCtxMonPolData, err := aciClient.ReadRelationfvRsCtxMonPolFromVRF(dn)
@@ -783,7 +783,7 @@ func resourceAciVRFRead(ctx context.Context, d *schema.ResourceData, m interface
 		d.Set("relation_fv_rs_ctx_mon_pol", "")
 
 	} else {
-		d.Set("relation_fv_rs_ctx_mon_pol", fvRsCtxMonPolData.(string))
+		setRelationAttribute(d, "relation_fv_rs_ctx_mon_pol", fvRsCtxMonPolData.(string))
 	}
 
 	fvRsCtxToExtRouteTagPolData, err := aciClient.ReadRelationfvRsCtxToExtRouteTagPolFromVRF(dn)
@@ -792,7 +792,7 @@ func resourceAciVRFRead(ctx context.Context, d *schema.ResourceData, m interface
 		d.Set("relation_fv_rs_ctx_to_ext_route_tag_pol", "")
 
 	} else {
-		d.Set("relation_fv_rs_ctx_to_ext_route_tag_pol", fvRsCtxToExtRouteTagPolData.(string))
+		setRelationAttribute(d, "relation_fv_rs_ctx_to_ext_route_tag_pol", fvRsCtxToExtRouteTagPolData.(string))
 	}
 
 	fvRsCtxToBgpCtxAfPolData, err := aciClient.ReadRelationfvRsCtxToBgpCtxAfPolFromVRF(dn)

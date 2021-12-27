@@ -470,7 +470,7 @@ func resourceAciFCDomainRead(ctx context.Context, d *schema.ResourceData, m inte
 		d.Set("relation_infra_rs_vlan_ns", "")
 
 	} else {
-		d.Set("relation_infra_rs_vlan_ns", infraRsVlanNsData.(string))
+		setRelationAttribute(d, "relation_infra_rs_vlan_ns", infraRsVlanNsData.(string))
 	}
 
 	fcRsVsanNsData, err := aciClient.ReadRelationfcRsVsanNsFromFCDomain(dn)
@@ -479,7 +479,7 @@ func resourceAciFCDomainRead(ctx context.Context, d *schema.ResourceData, m inte
 		d.Set("relation_fc_rs_vsan_ns", "")
 
 	} else {
-		d.Set("relation_fc_rs_vsan_ns", fcRsVsanNsData.(string))
+		setRelationAttribute(d, "relation_fc_rs_vsan_ns", fcRsVsanNsData.(string))
 	}
 
 	fcRsVsanAttrData, err := aciClient.ReadRelationfcRsVsanAttrFromFCDomain(dn)
@@ -488,7 +488,7 @@ func resourceAciFCDomainRead(ctx context.Context, d *schema.ResourceData, m inte
 		d.Set("relation_fc_rs_vsan_attr", "")
 
 	} else {
-		d.Set("relation_fc_rs_vsan_attr", fcRsVsanAttrData.(string))
+		setRelationAttribute(d, "relation_fc_rs_vsan_attr", fcRsVsanAttrData.(string))
 	}
 
 	infraRsVlanNsDefData, err := aciClient.ReadRelationinfraRsVlanNsDefFromFCDomain(dn)
@@ -497,7 +497,7 @@ func resourceAciFCDomainRead(ctx context.Context, d *schema.ResourceData, m inte
 		d.Set("relation_infra_rs_vlan_ns_def", "")
 
 	} else {
-		d.Set("relation_infra_rs_vlan_ns_def", infraRsVlanNsDefData.(string))
+		setRelationAttribute(d, "relation_infra_rs_vlan_ns_def", infraRsVlanNsDefData.(string))
 	}
 
 	infraRsVipAddrNsData, err := aciClient.ReadRelationinfraRsVipAddrNsFromFCDomain(dn)
@@ -506,7 +506,7 @@ func resourceAciFCDomainRead(ctx context.Context, d *schema.ResourceData, m inte
 		d.Set("relation_infra_rs_vip_addr_ns", "")
 
 	} else {
-		d.Set("relation_infra_rs_vip_addr_ns", infraRsVipAddrNsData.(string))
+		setRelationAttribute(d, "relation_infra_rs_vip_addr_ns", infraRsVipAddrNsData.(string))
 	}
 
 	infraRsDomVxlanNsDefData, err := aciClient.ReadRelationinfraRsDomVxlanNsDefFromFCDomain(dn)
@@ -515,7 +515,7 @@ func resourceAciFCDomainRead(ctx context.Context, d *schema.ResourceData, m inte
 		d.Set("relation_infra_rs_dom_vxlan_ns_def", "")
 
 	} else {
-		d.Set("relation_infra_rs_dom_vxlan_ns_def", infraRsDomVxlanNsDefData.(string))
+		setRelationAttribute(d, "relation_infra_rs_dom_vxlan_ns_def", infraRsDomVxlanNsDefData.(string))
 	}
 
 	fcRsVsanAttrDefData, err := aciClient.ReadRelationfcRsVsanAttrDefFromFCDomain(dn)
@@ -524,7 +524,7 @@ func resourceAciFCDomainRead(ctx context.Context, d *schema.ResourceData, m inte
 		d.Set("relation_fc_rs_vsan_attr_def", "")
 
 	} else {
-		d.Set("relation_fc_rs_vsan_attr_def", fcRsVsanAttrDefData.(string))
+		setRelationAttribute(d, "relation_fc_rs_vsan_attr_def", fcRsVsanAttrDefData.(string))
 	}
 
 	fcRsVsanNsDefData, err := aciClient.ReadRelationfcRsVsanNsDefFromFCDomain(dn)
@@ -533,7 +533,7 @@ func resourceAciFCDomainRead(ctx context.Context, d *schema.ResourceData, m inte
 		d.Set("relation_fc_rs_vsan_ns_def", "")
 
 	} else {
-		d.Set("relation_fc_rs_vsan_ns_def", fcRsVsanNsDefData.(string))
+		setRelationAttribute(d, "relation_fc_rs_vsan_ns_def", fcRsVsanNsDefData.(string))
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())

@@ -310,7 +310,7 @@ func resourceAciLogicalNodeProfileRead(ctx context.Context, d *schema.ResourceDa
 		log.Printf("[DEBUG] Error while reading relation l3extRsNodeL3OutAtt %v", err)
 
 	} else {
-		d.Set("relation_l3ext_rs_node_l3_out_att", l3extRsNodeL3OutAttData)
+		setRelationAttribute(d, "relation_l3ext_rs_node_l3_out_att", l3extRsNodeL3OutAttData)
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())

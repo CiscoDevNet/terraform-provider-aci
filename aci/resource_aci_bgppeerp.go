@@ -172,8 +172,8 @@ func resourceAciBgpPeerConnectivityProfile() *schema.Resource {
 			},
 
 			"relation_bgp_rs_peer_pfx_pol": &schema.Schema{
-				Type:     schema.TypeString,
-				Default:  "uni/tn-common/bgpPfxP-default",
+				Type: schema.TypeString,
+
 				Optional: true,
 			},
 			"relation_bgp_rs_peer_to_profile": &schema.Schema{
@@ -743,14 +743,14 @@ func resourceAciBgpPeerConnectivityProfileRead(ctx context.Context, d *schema.Re
 		d.Set("relation_bgp_rs_peer_pfx_pol", "")
 
 	} else {
-		d.Set("relation_bgp_rs_peer_pfx_pol", bgpRsPeerPfxPolData.(string))
+		setRelationAttribute(d, "relation_bgp_rs_peer_pfx_pol", bgpRsPeerPfxPolData.(string))
 	}
 
 	bgpRsPeerToProfileData, err := aciClient.ReadRelationbgpRsPeerToProfile(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation bgpRsPeerToProfile %v", err)
 	} else {
-		d.Set("relation_bgp_rs_peer_to_profile", bgpRsPeerToProfileData)
+		setRelationAttribute(d, "relation_bgp_rs_peer_to_profile", bgpRsPeerToProfileData)
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())

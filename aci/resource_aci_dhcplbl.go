@@ -61,8 +61,8 @@ func resourceAciBDDHCPLabel() *schema.Resource {
 			},
 
 			"relation_dhcp_rs_dhcp_option_pol": &schema.Schema{
-				Type:     schema.TypeString,
-				Default:  "uni/tn-common/dhcpoptpol-default",
+				Type: schema.TypeString,
+
 				Optional: true,
 			},
 		}),
@@ -277,7 +277,7 @@ func resourceAciBDDHCPLabelRead(ctx context.Context, d *schema.ResourceData, m i
 		log.Printf("[DEBUG] Error while reading relation dhcpRsDhcpOptionPol %v", err)
 		d.Set("relation_dhcp_rs_dhcp_option_pol", "")
 	} else {
-		d.Set("relation_dhcp_rs_dhcp_option_pol", dhcpRsDhcpOptionPolData.(string))
+		setRelationAttribute(d, "relation_dhcp_rs_dhcp_option_pol", dhcpRsDhcpOptionPolData.(string))
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())

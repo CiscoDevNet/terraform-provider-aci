@@ -277,7 +277,7 @@ func resourceAciSwitchSpineAssociationRead(ctx context.Context, d *schema.Resour
 		d.Set("relation_infra_rs_spine_acc_node_p_grp", "")
 
 	} else {
-		d.Set("relation_infra_rs_spine_acc_node_p_grp", infraRsSpineAccNodePGrpData.(string))
+		setRelationAttribute(d, "relation_infra_rs_spine_acc_node_p_grp", infraRsSpineAccNodePGrpData.(string))
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())

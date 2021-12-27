@@ -1088,7 +1088,7 @@ func resourceAciPCVPCInterfacePolicyGroupRead(ctx context.Context, d *schema.Res
 		d.Set("relation_infra_rs_span_v_src_grp", make([]string, 0, 1))
 
 	} else {
-		d.Set("relation_infra_rs_span_v_src_grp", toStringList(infraRsSpanVSrcGrpData.(*schema.Set).List()))
+		setRelationAttribute(d, "relation_infra_rs_span_v_src_grp", toStringList(infraRsSpanVSrcGrpData.(*schema.Set).List()))
 	}
 
 	infraRsStormctrlIfPolData, err := aciClient.ReadRelationinfraRsStormctrlIfPolFromPCVPCInterfacePolicyGroup(dn)
@@ -1097,7 +1097,7 @@ func resourceAciPCVPCInterfacePolicyGroupRead(ctx context.Context, d *schema.Res
 		d.Set("relation_infra_rs_stormctrl_if_pol", "")
 
 	} else {
-		d.Set("relation_infra_rs_stormctrl_if_pol", infraRsStormctrlIfPolData.(string))
+		setRelationAttribute(d, "relation_infra_rs_stormctrl_if_pol", infraRsStormctrlIfPolData.(string))
 	}
 
 	infraRsLldpIfPolData, err := aciClient.ReadRelationinfraRsLldpIfPolFromPCVPCInterfacePolicyGroup(dn)
@@ -1106,7 +1106,7 @@ func resourceAciPCVPCInterfacePolicyGroupRead(ctx context.Context, d *schema.Res
 		d.Set("relation_infra_rs_lldp_if_pol", "")
 
 	} else {
-		d.Set("relation_infra_rs_lldp_if_pol", infraRsLldpIfPolData.(string))
+		setRelationAttribute(d, "relation_infra_rs_lldp_if_pol", infraRsLldpIfPolData.(string))
 	}
 
 	infraRsMacsecIfPolData, err := aciClient.ReadRelationinfraRsMacsecIfPolFromPCVPCInterfacePolicyGroup(dn)
@@ -1115,7 +1115,7 @@ func resourceAciPCVPCInterfacePolicyGroupRead(ctx context.Context, d *schema.Res
 		d.Set("relation_infra_rs_macsec_if_pol", "")
 
 	} else {
-		d.Set("relation_infra_rs_macsec_if_pol", infraRsMacsecIfPolData.(string))
+		setRelationAttribute(d, "relation_infra_rs_macsec_if_pol", infraRsMacsecIfPolData.(string))
 	}
 
 	infraRsQosDppIfPolData, err := aciClient.ReadRelationinfraRsQosDppIfPolFromPCVPCInterfacePolicyGroup(dn)
@@ -1124,7 +1124,7 @@ func resourceAciPCVPCInterfacePolicyGroupRead(ctx context.Context, d *schema.Res
 		d.Set("relation_infra_rs_qos_dpp_if_pol", "")
 
 	} else {
-		d.Set("relation_infra_rs_qos_dpp_if_pol", infraRsQosDppIfPolData.(string))
+		setRelationAttribute(d, "relation_infra_rs_qos_dpp_if_pol", infraRsQosDppIfPolData.(string))
 	}
 
 	infraRsHIfPolData, err := aciClient.ReadRelationinfraRsHIfPolFromPCVPCInterfacePolicyGroup(dn)
@@ -1133,7 +1133,7 @@ func resourceAciPCVPCInterfacePolicyGroupRead(ctx context.Context, d *schema.Res
 		d.Set("relation_infra_rs_h_if_pol", "")
 
 	} else {
-		d.Set("relation_infra_rs_h_if_pol", infraRsHIfPolData.(string))
+		setRelationAttribute(d, "relation_infra_rs_h_if_pol", infraRsHIfPolData.(string))
 	}
 
 	infraRsNetflowMonitorPolData, err := aciClient.ReadRelationinfraRsNetflowMonitorPolFromPCVPCInterfacePolicyGroup(dn)
@@ -1158,7 +1158,7 @@ func resourceAciPCVPCInterfacePolicyGroupRead(ctx context.Context, d *schema.Res
 		d.Set("relation_infra_rs_l2_port_auth_pol", "")
 
 	} else {
-		d.Set("relation_infra_rs_l2_port_auth_pol", infraRsL2PortAuthPolData.(string))
+		setRelationAttribute(d, "relation_infra_rs_l2_port_auth_pol", infraRsL2PortAuthPolData.(string))
 	}
 
 	infraRsMcpIfPolData, err := aciClient.ReadRelationinfraRsMcpIfPolFromPCVPCInterfacePolicyGroup(dn)
@@ -1167,7 +1167,7 @@ func resourceAciPCVPCInterfacePolicyGroupRead(ctx context.Context, d *schema.Res
 		d.Set("relation_infra_rs_mcp_if_pol", "")
 
 	} else {
-		d.Set("relation_infra_rs_mcp_if_pol", infraRsMcpIfPolData.(string))
+		setRelationAttribute(d, "relation_infra_rs_mcp_if_pol", infraRsMcpIfPolData.(string))
 	}
 
 	infraRsL2PortSecurityPolData, err := aciClient.ReadRelationinfraRsL2PortSecurityPolFromPCVPCInterfacePolicyGroup(dn)
@@ -1176,7 +1176,7 @@ func resourceAciPCVPCInterfacePolicyGroupRead(ctx context.Context, d *schema.Res
 		d.Set("relation_infra_rs_l2_port_security_pol", "")
 
 	} else {
-		d.Set("relation_infra_rs_l2_port_security_pol", infraRsL2PortSecurityPolData.(string))
+		setRelationAttribute(d, "relation_infra_rs_l2_port_security_pol", infraRsL2PortSecurityPolData.(string))
 	}
 
 	infraRsCoppIfPolData, err := aciClient.ReadRelationinfraRsCoppIfPolFromPCVPCInterfacePolicyGroup(dn)
@@ -1185,7 +1185,7 @@ func resourceAciPCVPCInterfacePolicyGroupRead(ctx context.Context, d *schema.Res
 		d.Set("relation_infra_rs_copp_if_pol", "")
 
 	} else {
-		d.Set("relation_infra_rs_copp_if_pol", infraRsCoppIfPolData.(string))
+		setRelationAttribute(d, "relation_infra_rs_copp_if_pol", infraRsCoppIfPolData.(string))
 	}
 
 	infraRsSpanVDestGrpData, err := aciClient.ReadRelationinfraRsSpanVDestGrpFromPCVPCInterfacePolicyGroup(dn)
@@ -1194,7 +1194,7 @@ func resourceAciPCVPCInterfacePolicyGroupRead(ctx context.Context, d *schema.Res
 		d.Set("relation_infra_rs_span_v_dest_grp", make([]string, 0, 1))
 
 	} else {
-		d.Set("relation_infra_rs_span_v_dest_grp", toStringList(infraRsSpanVDestGrpData.(*schema.Set).List()))
+		setRelationAttribute(d, "relation_infra_rs_span_v_dest_grp", toStringList(infraRsSpanVDestGrpData.(*schema.Set).List()))
 	}
 
 	infraRsLacpPolData, err := aciClient.ReadRelationinfraRsLacpPolFromPCVPCInterfacePolicyGroup(dn)
@@ -1203,7 +1203,7 @@ func resourceAciPCVPCInterfacePolicyGroupRead(ctx context.Context, d *schema.Res
 		d.Set("relation_infra_rs_lacp_pol", "")
 
 	} else {
-		d.Set("relation_infra_rs_lacp_pol", infraRsLacpPolData.(string))
+		setRelationAttribute(d, "relation_infra_rs_lacp_pol", infraRsLacpPolData.(string))
 	}
 
 	infraRsCdpIfPolData, err := aciClient.ReadRelationinfraRsCdpIfPolFromPCVPCInterfacePolicyGroup(dn)
@@ -1212,7 +1212,7 @@ func resourceAciPCVPCInterfacePolicyGroupRead(ctx context.Context, d *schema.Res
 		d.Set("relation_infra_rs_cdp_if_pol", "")
 
 	} else {
-		d.Set("relation_infra_rs_cdp_if_pol", infraRsCdpIfPolData.(string))
+		setRelationAttribute(d, "relation_infra_rs_cdp_if_pol", infraRsCdpIfPolData.(string))
 	}
 
 	infraRsQosPfcIfPolData, err := aciClient.ReadRelationinfraRsQosPfcIfPolFromPCVPCInterfacePolicyGroup(dn)
@@ -1221,7 +1221,7 @@ func resourceAciPCVPCInterfacePolicyGroupRead(ctx context.Context, d *schema.Res
 		d.Set("relation_infra_rs_qos_pfc_if_pol", "")
 
 	} else {
-		d.Set("relation_infra_rs_qos_pfc_if_pol", infraRsQosPfcIfPolData.(string))
+		setRelationAttribute(d, "relation_infra_rs_qos_pfc_if_pol", infraRsQosPfcIfPolData.(string))
 	}
 
 	infraRsQosSdIfPolData, err := aciClient.ReadRelationinfraRsQosSdIfPolFromPCVPCInterfacePolicyGroup(dn)
@@ -1230,7 +1230,7 @@ func resourceAciPCVPCInterfacePolicyGroupRead(ctx context.Context, d *schema.Res
 		d.Set("relation_infra_rs_qos_sd_if_pol", "")
 
 	} else {
-		d.Set("relation_infra_rs_qos_sd_if_pol", infraRsQosSdIfPolData.(string))
+		setRelationAttribute(d, "relation_infra_rs_qos_sd_if_pol", infraRsQosSdIfPolData.(string))
 	}
 
 	infraRsMonIfInfraPolData, err := aciClient.ReadRelationinfraRsMonIfInfraPolFromPCVPCInterfacePolicyGroup(dn)
@@ -1239,7 +1239,7 @@ func resourceAciPCVPCInterfacePolicyGroupRead(ctx context.Context, d *schema.Res
 		d.Set("relation_infra_rs_mon_if_infra_pol", "")
 
 	} else {
-		d.Set("relation_infra_rs_mon_if_infra_pol", infraRsMonIfInfraPolData.(string))
+		setRelationAttribute(d, "relation_infra_rs_mon_if_infra_pol", infraRsMonIfInfraPolData.(string))
 	}
 
 	infraRsFcIfPolData, err := aciClient.ReadRelationinfraRsFcIfPolFromPCVPCInterfacePolicyGroup(dn)
@@ -1248,7 +1248,7 @@ func resourceAciPCVPCInterfacePolicyGroupRead(ctx context.Context, d *schema.Res
 		d.Set("relation_infra_rs_fc_if_pol", "")
 
 	} else {
-		d.Set("relation_infra_rs_fc_if_pol", infraRsFcIfPolData.(string))
+		setRelationAttribute(d, "relation_infra_rs_fc_if_pol", infraRsFcIfPolData.(string))
 	}
 
 	infraRsQosIngressDppIfPolData, err := aciClient.ReadRelationinfraRsQosIngressDppIfPolFromPCVPCInterfacePolicyGroup(dn)
@@ -1257,7 +1257,7 @@ func resourceAciPCVPCInterfacePolicyGroupRead(ctx context.Context, d *schema.Res
 		d.Set("relation_infra_rs_qos_ingress_dpp_if_pol", "")
 
 	} else {
-		d.Set("relation_infra_rs_qos_ingress_dpp_if_pol", infraRsQosIngressDppIfPolData.(string))
+		setRelationAttribute(d, "relation_infra_rs_qos_ingress_dpp_if_pol", infraRsQosIngressDppIfPolData.(string))
 	}
 
 	infraRsQosEgressDppIfPolData, err := aciClient.ReadRelationinfraRsQosEgressDppIfPolFromPCVPCInterfacePolicyGroup(dn)
@@ -1266,7 +1266,7 @@ func resourceAciPCVPCInterfacePolicyGroupRead(ctx context.Context, d *schema.Res
 		d.Set("relation_infra_rs_qos_egress_dpp_if_pol", "")
 
 	} else {
-		d.Set("relation_infra_rs_qos_egress_dpp_if_pol", infraRsQosEgressDppIfPolData.(string))
+		setRelationAttribute(d, "relation_infra_rs_qos_egress_dpp_if_pol", infraRsQosEgressDppIfPolData.(string))
 	}
 
 	infraRsL2IfPolData, err := aciClient.ReadRelationinfraRsL2IfPolFromPCVPCInterfacePolicyGroup(dn)
@@ -1275,7 +1275,7 @@ func resourceAciPCVPCInterfacePolicyGroupRead(ctx context.Context, d *schema.Res
 		d.Set("relation_infra_rs_l2_if_pol", "")
 
 	} else {
-		d.Set("relation_infra_rs_l2_if_pol", infraRsL2IfPolData.(string))
+		setRelationAttribute(d, "relation_infra_rs_l2_if_pol", infraRsL2IfPolData.(string))
 	}
 
 	infraRsStpIfPolData, err := aciClient.ReadRelationinfraRsStpIfPolFromPCVPCInterfacePolicyGroup(dn)
@@ -1284,7 +1284,7 @@ func resourceAciPCVPCInterfacePolicyGroupRead(ctx context.Context, d *schema.Res
 		d.Set("relation_infra_rs_stp_if_pol", "")
 
 	} else {
-		d.Set("relation_infra_rs_stp_if_pol", infraRsStpIfPolData.(string))
+		setRelationAttribute(d, "relation_infra_rs_stp_if_pol", infraRsStpIfPolData.(string))
 	}
 
 	infraRsAttEntPData, err := aciClient.ReadRelationinfraRsAttEntPFromPCVPCInterfacePolicyGroup(dn)
@@ -1293,7 +1293,7 @@ func resourceAciPCVPCInterfacePolicyGroupRead(ctx context.Context, d *schema.Res
 		d.Set("relation_infra_rs_att_ent_p", "")
 
 	} else {
-		d.Set("relation_infra_rs_att_ent_p", infraRsAttEntPData)
+		setRelationAttribute(d, "relation_infra_rs_att_ent_p", infraRsAttEntPData)
 	}
 
 	infraRsL2InstPolData, err := aciClient.ReadRelationinfraRsL2InstPolFromPCVPCInterfacePolicyGroup(dn)
@@ -1302,7 +1302,7 @@ func resourceAciPCVPCInterfacePolicyGroupRead(ctx context.Context, d *schema.Res
 		d.Set("relation_infra_rs_l2_inst_pol", "")
 
 	} else {
-		d.Set("relation_infra_rs_l2_inst_pol", infraRsL2InstPolData.(string))
+		setRelationAttribute(d, "relation_infra_rs_l2_inst_pol", infraRsL2InstPolData.(string))
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())

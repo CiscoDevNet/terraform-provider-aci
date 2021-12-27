@@ -147,8 +147,8 @@ func resourceAciL2outExternalEpg() *schema.Resource {
 				Set:      schema.HashString,
 			},
 			"relation_fv_rs_cust_qos_pol": &schema.Schema{
-				Type:     schema.TypeString,
-				Default:  "uni/tn-common/qoscustom-default",
+				Type: schema.TypeString,
+
 				Optional: true,
 			},
 			"relation_fv_rs_cons": &schema.Schema{
@@ -760,7 +760,7 @@ func resourceAciL2outExternalEpgRead(ctx context.Context, d *schema.ResourceData
 		d.Set("relation_fv_rs_sec_inherited", make([]string, 0, 1))
 
 	} else {
-		d.Set("relation_fv_rs_sec_inherited", toStringList(fvRsSecInheritedData.(*schema.Set).List()))
+		setRelationAttribute(d, "relation_fv_rs_sec_inherited", toStringList(fvRsSecInheritedData.(*schema.Set).List()))
 	}
 	fvRsProvData, err := aciClient.ReadRelationfvRsProvFromL2outExternalEpg(dn)
 	if err != nil {
@@ -768,7 +768,7 @@ func resourceAciL2outExternalEpgRead(ctx context.Context, d *schema.ResourceData
 		d.Set("relation_fv_rs_prov", make([]string, 0, 1))
 
 	} else {
-		d.Set("relation_fv_rs_prov", toStringList(fvRsProvData.(*schema.Set).List()))
+		setRelationAttribute(d, "relation_fv_rs_prov", toStringList(fvRsProvData.(*schema.Set).List()))
 	}
 	fvRsConsIfData, err := aciClient.ReadRelationfvRsConsIfFromL2outExternalEpg(dn)
 	if err != nil {
@@ -776,7 +776,7 @@ func resourceAciL2outExternalEpgRead(ctx context.Context, d *schema.ResourceData
 		d.Set("relation_fv_rs_cons_if", make([]string, 0, 1))
 
 	} else {
-		d.Set("relation_fv_rs_cons_if", fvRsConsIfData.(*schema.Set).List())
+		setRelationAttribute(d, "relation_fv_rs_cons_if", fvRsConsIfData.(*schema.Set).List())
 	}
 	fvRsCustQosPolData, err := aciClient.ReadRelationfvRsCustQosPolFromL2outExternalEpg(dn)
 	if err != nil {
@@ -784,7 +784,7 @@ func resourceAciL2outExternalEpgRead(ctx context.Context, d *schema.ResourceData
 		d.Set("relation_fv_rs_cust_qos_pol", "")
 
 	} else {
-		d.Set("relation_fv_rs_cust_qos_pol", fvRsCustQosPolData.(string))
+		setRelationAttribute(d, "relation_fv_rs_cust_qos_pol", fvRsCustQosPolData.(string))
 	}
 
 	fvRsConsData, err := aciClient.ReadRelationfvRsConsFromL2outExternalEpg(dn)
@@ -793,7 +793,7 @@ func resourceAciL2outExternalEpgRead(ctx context.Context, d *schema.ResourceData
 		d.Set("relation_fv_rs_cons", make([]string, 0, 1))
 
 	} else {
-		d.Set("relation_fv_rs_cons", fvRsConsData.(*schema.Set).List())
+		setRelationAttribute(d, "relation_fv_rs_cons", fvRsConsData.(*schema.Set).List())
 	}
 	l2extRsL2InstPToDomPData, err := aciClient.ReadRelationl2extRsL2InstPToDomPFromL2outExternalEpg(dn)
 	if err != nil {
@@ -801,7 +801,7 @@ func resourceAciL2outExternalEpgRead(ctx context.Context, d *schema.ResourceData
 		d.Set("relation_l2ext_rs_l2_inst_p_to_dom_p", "")
 
 	} else {
-		d.Set("relation_l2ext_rs_l2_inst_p_to_dom_p", l2extRsL2InstPToDomPData.(string))
+		setRelationAttribute(d, "relation_l2ext_rs_l2_inst_p_to_dom_p", l2extRsL2InstPToDomPData.(string))
 	}
 
 	fvRsProtByData, err := aciClient.ReadRelationfvRsProtByFromL2outExternalEpg(dn)
@@ -810,7 +810,7 @@ func resourceAciL2outExternalEpgRead(ctx context.Context, d *schema.ResourceData
 		d.Set("relation_fv_rs_prot_by", make([]string, 0, 1))
 
 	} else {
-		d.Set("relation_fv_rs_prot_by", toStringList(fvRsProtByData.(*schema.Set).List()))
+		setRelationAttribute(d, "relation_fv_rs_prot_by", toStringList(fvRsProtByData.(*schema.Set).List()))
 	}
 	fvRsIntraEpgData, err := aciClient.ReadRelationfvRsIntraEpgFromL2outExternalEpg(dn)
 	if err != nil {
@@ -818,7 +818,7 @@ func resourceAciL2outExternalEpgRead(ctx context.Context, d *schema.ResourceData
 		d.Set("relation_fv_rs_intra_epg", make([]string, 0, 1))
 
 	} else {
-		d.Set("relation_fv_rs_intra_epg", toStringList(fvRsIntraEpgData.(*schema.Set).List()))
+		setRelationAttribute(d, "relation_fv_rs_intra_epg", toStringList(fvRsIntraEpgData.(*schema.Set).List()))
 	}
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 

@@ -533,7 +533,7 @@ func resourceAciL3OutsideRead(ctx context.Context, d *schema.ResourceData, m int
 		d.Set("relation_l3ext_rs_ectx", "")
 
 	} else {
-		d.Set("relation_l3ext_rs_ectx", l3extRsEctxData.(string))
+		setRelationAttribute(d, "relation_l3ext_rs_ectx", l3extRsEctxData.(string))
 	}
 
 	l3extRsOutToBDPublicSubnetHolderData, err := aciClient.ReadRelationl3extRsOutToBDPublicSubnetHolderFromL3Outside(dn)
@@ -542,7 +542,7 @@ func resourceAciL3OutsideRead(ctx context.Context, d *schema.ResourceData, m int
 		d.Set("relation_l3ext_rs_out_to_bd_public_subnet_holder", make([]string, 0, 1))
 
 	} else {
-		d.Set("relation_l3ext_rs_out_to_bd_public_subnet_holder", toStringList(l3extRsOutToBDPublicSubnetHolderData.(*schema.Set).List()))
+		setRelationAttribute(d, "relation_l3ext_rs_out_to_bd_public_subnet_holder", toStringList(l3extRsOutToBDPublicSubnetHolderData.(*schema.Set).List()))
 	}
 
 	l3extRsInterleakPolData, err := aciClient.ReadRelationl3extRsInterleakPolFromL3Outside(dn)
@@ -551,7 +551,7 @@ func resourceAciL3OutsideRead(ctx context.Context, d *schema.ResourceData, m int
 		d.Set("relation_l3ext_rs_interleak_pol", "")
 
 	} else {
-		d.Set("relation_l3ext_rs_interleak_pol", l3extRsInterleakPolData.(string))
+		setRelationAttribute(d, "relation_l3ext_rs_interleak_pol", l3extRsInterleakPolData.(string))
 	}
 
 	l3extRsL3DomAttData, err := aciClient.ReadRelationl3extRsL3DomAttFromL3Outside(dn)
@@ -560,7 +560,7 @@ func resourceAciL3OutsideRead(ctx context.Context, d *schema.ResourceData, m int
 		d.Set("relation_l3ext_rs_l3_dom_att", "")
 
 	} else {
-		d.Set("relation_l3ext_rs_l3_dom_att", l3extRsL3DomAttData.(string))
+		setRelationAttribute(d, "relation_l3ext_rs_l3_dom_att", l3extRsL3DomAttData.(string))
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())

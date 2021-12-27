@@ -403,7 +403,7 @@ func resourceAciConfigurationImportPolicyRead(ctx context.Context, d *schema.Res
 		d.Set("relation_config_rs_import_source", "")
 
 	} else {
-		d.Set("relation_config_rs_import_source", configRsImportSourceData.(string))
+		setRelationAttribute(d, "relation_config_rs_import_source", configRsImportSourceData.(string))
 	}
 
 	trigRsTriggerableData, err := aciClient.ReadRelationtrigRsTriggerableFromConfigurationImportPolicy(dn)
@@ -412,7 +412,7 @@ func resourceAciConfigurationImportPolicyRead(ctx context.Context, d *schema.Res
 		d.Set("relation_trig_rs_triggerable", "")
 
 	} else {
-		d.Set("relation_trig_rs_triggerable", trigRsTriggerableData.(string))
+		setRelationAttribute(d, "relation_trig_rs_triggerable", trigRsTriggerableData.(string))
 	}
 
 	configRsRemotePathData, err := aciClient.ReadRelationconfigRsRemotePathFromConfigurationImportPolicy(dn)
@@ -421,7 +421,7 @@ func resourceAciConfigurationImportPolicyRead(ctx context.Context, d *schema.Res
 		d.Set("relation_config_rs_remote_path", "")
 
 	} else {
-		d.Set("relation_config_rs_remote_path", configRsRemotePathData.(string))
+		setRelationAttribute(d, "relation_config_rs_remote_path", configRsRemotePathData.(string))
 
 	}
 

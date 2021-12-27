@@ -1028,7 +1028,7 @@ func resourceAciContractRead(ctx context.Context, d *schema.ResourceData, m inte
 		d.Set("relation_vz_rs_graph_att", "")
 
 	} else {
-		d.Set("relation_vz_rs_graph_att", vzRsGraphAttData.(string))
+		setRelationAttribute(d, "relation_vz_rs_graph_att", vzRsGraphAttData.(string))
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())

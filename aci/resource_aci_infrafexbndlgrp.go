@@ -44,8 +44,8 @@ func resourceAciFexBundleGroup() *schema.Resource {
 			},
 
 			"relation_infra_rs_mon_fex_infra_pol": &schema.Schema{
-				Type:     schema.TypeString,
-				Default:  "uni/infra/moninfra-default",
+				Type: schema.TypeString,
+
 				Optional: true,
 			},
 
@@ -303,7 +303,7 @@ func resourceAciFexBundleGroupRead(ctx context.Context, d *schema.ResourceData, 
 		d.Set("relation_infra_rs_mon_fex_infra_pol", "")
 
 	} else {
-		d.Set("relation_infra_rs_mon_fex_infra_pol", infraRsMonFexInfraPolData.(string))
+		setRelationAttribute(d, "relation_infra_rs_mon_fex_infra_pol", infraRsMonFexInfraPolData.(string))
 	}
 
 	infraRsFexBndlGrpToAggrIfData, err := aciClient.ReadRelationinfraRsFexBndlGrpToAggrIfFromFexBundleGroup(dn)
@@ -312,7 +312,7 @@ func resourceAciFexBundleGroupRead(ctx context.Context, d *schema.ResourceData, 
 		d.Set("relation_infra_rs_fex_bndl_grp_to_aggr_if", make([]string, 0, 1))
 
 	} else {
-		d.Set("relation_infra_rs_fex_bndl_grp_to_aggr_if", toStringList(infraRsFexBndlGrpToAggrIfData.(*schema.Set).List()))
+		setRelationAttribute(d, "relation_infra_rs_fex_bndl_grp_to_aggr_if", toStringList(infraRsFexBndlGrpToAggrIfData.(*schema.Set).List()))
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())

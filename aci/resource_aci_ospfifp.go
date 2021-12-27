@@ -62,8 +62,8 @@ func resourceAciOSPFInterfaceProfile() *schema.Resource {
 			},
 
 			"relation_ospf_rs_if_pol": &schema.Schema{
-				Type:     schema.TypeString,
-				Default:  "uni/tn-common/ospfIfPol-default",
+				Type: schema.TypeString,
+
 				Optional: true,
 			},
 		}),
@@ -279,7 +279,7 @@ func resourceAciOSPFInterfaceProfileRead(ctx context.Context, d *schema.Resource
 		d.Set("relation_ospf_rs_if_pol", "")
 
 	} else {
-		d.Set("relation_ospf_rs_if_pol", ospfRsIfPolData.(string))
+		setRelationAttribute(d, "relation_ospf_rs_if_pol", ospfRsIfPolData.(string))
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())

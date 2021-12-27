@@ -266,7 +266,7 @@ func resourceAciSwitchAssociationRead(ctx context.Context, d *schema.ResourceDat
 		d.Set("relation_infra_rs_acc_node_p_grp", "")
 
 	} else {
-		d.Set("relation_infra_rs_acc_node_p_grp", infraRsAccNodePGrpData.(string))
+		setRelationAttribute(d, "relation_infra_rs_acc_node_p_grp", infraRsAccNodePGrpData.(string))
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())

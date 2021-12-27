@@ -241,7 +241,7 @@ func resourceAciFirmwareGroupRead(ctx context.Context, d *schema.ResourceData, m
 		d.Set("relation_firmware_rs_fwgrpp", "")
 
 	} else {
-		d.Set("relation_firmware_rs_fwgrpp", firmwareRsFwgrppData.(string))
+		setRelationAttribute(d, "relation_firmware_rs_fwgrpp", firmwareRsFwgrppData.(string))
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())

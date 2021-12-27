@@ -459,7 +459,7 @@ func resourceAciVirtualLogicalInterfaceProfileRead(ctx context.Context, d *schem
 		log.Printf("[DEBUG] Error while reading relation l3extRsDynPathAtt %v", err)
 		d.Set("relation_l3ext_rs_dyn_path_att", make([]string, 0, 1))
 	} else {
-		d.Set("relation_l3ext_rs_dyn_path_att", toStringList(l3extRsDynPathAttData.(*schema.Set).List()))
+		setRelationAttribute(d, "relation_l3ext_rs_dyn_path_att", toStringList(l3extRsDynPathAttData.(*schema.Set).List()))
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())

@@ -1086,7 +1086,7 @@ func resourceAciBridgeDomainRead(ctx context.Context, d *schema.ResourceData, m 
 		d.Set("relation_fv_rs_bd_to_profile", "")
 
 	} else {
-		d.Set("relation_fv_rs_bd_to_profile", fvRsBDToProfileData.(string))
+		setRelationAttribute(d, "relation_fv_rs_bd_to_profile", fvRsBDToProfileData.(string))
 	}
 
 	fvRsMldsnData, err := aciClient.ReadRelationfvRsMldsnFromBridgeDomain(dn)
@@ -1095,7 +1095,7 @@ func resourceAciBridgeDomainRead(ctx context.Context, d *schema.ResourceData, m 
 		d.Set("relation_fv_rs_mldsn", "")
 
 	} else {
-		d.Set("relation_fv_rs_mldsn", fvRsMldsnData.(string))
+		setRelationAttribute(d, "relation_fv_rs_mldsn", fvRsMldsnData.(string))
 	}
 
 	fvRsABDPolMonPolData, err := aciClient.ReadRelationfvRsABDPolMonPolFromBridgeDomain(dn)
@@ -1104,7 +1104,7 @@ func resourceAciBridgeDomainRead(ctx context.Context, d *schema.ResourceData, m 
 		d.Set("relation_fv_rs_abd_pol_mon_pol", "")
 
 	} else {
-		d.Set("relation_fv_rs_abd_pol_mon_pol", fvRsABDPolMonPolData.(string))
+		setRelationAttribute(d, "relation_fv_rs_abd_pol_mon_pol", fvRsABDPolMonPolData.(string))
 	}
 
 	fvRsBDToNdPData, err := aciClient.ReadRelationfvRsBDToNdPFromBridgeDomain(dn)
@@ -1113,7 +1113,7 @@ func resourceAciBridgeDomainRead(ctx context.Context, d *schema.ResourceData, m 
 		d.Set("relation_fv_rs_bd_to_nd_p", "")
 
 	} else {
-		d.Set("relation_fv_rs_bd_to_nd_p", fvRsBDToNdPData.(string))
+		setRelationAttribute(d, "relation_fv_rs_bd_to_nd_p", fvRsBDToNdPData.(string))
 	}
 
 	fvRsBdFloodToData, err := aciClient.ReadRelationfvRsBdFloodToFromBridgeDomain(dn)
@@ -1122,7 +1122,7 @@ func resourceAciBridgeDomainRead(ctx context.Context, d *schema.ResourceData, m 
 		d.Set("relation_fv_rs_bd_flood_to", make([]string, 0, 1))
 
 	} else {
-		d.Set("relation_fv_rs_bd_flood_to", fvRsBdFloodToData)
+		setRelationAttribute(d, "relation_fv_rs_bd_flood_to", fvRsBdFloodToData)
 	}
 
 	fvRsBDToFhsData, err := aciClient.ReadRelationfvRsBDToFhsFromBridgeDomain(dn)
@@ -1131,7 +1131,7 @@ func resourceAciBridgeDomainRead(ctx context.Context, d *schema.ResourceData, m 
 		d.Set("relation_fv_rs_bd_to_fhs", "")
 
 	} else {
-		d.Set("relation_fv_rs_bd_to_fhs", fvRsBDToFhsData.(string))
+		setRelationAttribute(d, "relation_fv_rs_bd_to_fhs", fvRsBDToFhsData.(string))
 	}
 
 	fvRsBDToRelayPData, err := aciClient.ReadRelationfvRsBDToRelayPFromBridgeDomain(dn)
@@ -1140,7 +1140,7 @@ func resourceAciBridgeDomainRead(ctx context.Context, d *schema.ResourceData, m 
 		d.Set("relation_fv_rs_bd_to_relay_p", "")
 
 	} else {
-		d.Set("relation_fv_rs_bd_to_relay_p", fvRsBDToRelayPData.(string))
+		setRelationAttribute(d, "relation_fv_rs_bd_to_relay_p", fvRsBDToRelayPData.(string))
 	}
 
 	fvRsCtxData, err := aciClient.ReadRelationfvRsCtxFromBridgeDomain(dn)
@@ -1149,7 +1149,7 @@ func resourceAciBridgeDomainRead(ctx context.Context, d *schema.ResourceData, m 
 		d.Set("relation_fv_rs_ctx", "")
 
 	} else {
-		d.Set("relation_fv_rs_ctx", fvRsCtxData.(string))
+		setRelationAttribute(d, "relation_fv_rs_ctx", fvRsCtxData.(string))
 	}
 
 	fvRsBDToNetflowMonitorPolData, err := aciClient.ReadRelationfvRsBDToNetflowMonitorPolFromBridgeDomain(dn)
@@ -1174,7 +1174,7 @@ func resourceAciBridgeDomainRead(ctx context.Context, d *schema.ResourceData, m 
 		d.Set("relation_fv_rs_igmpsn", "")
 
 	} else {
-		d.Set("relation_fv_rs_igmpsn", fvRsIgmpsnData.(string))
+		setRelationAttribute(d, "relation_fv_rs_igmpsn", fvRsIgmpsnData.(string))
 	}
 
 	fvRsBdToEpRetData, err := aciClient.ReadRelationfvRsBdToEpRetFromBridgeDomain(dn)
@@ -1183,7 +1183,7 @@ func resourceAciBridgeDomainRead(ctx context.Context, d *schema.ResourceData, m 
 		d.Set("relation_fv_rs_bd_to_ep_ret", "")
 
 	} else {
-		d.Set("relation_fv_rs_bd_to_ep_ret", fvRsBdToEpRetData.(string))
+		setRelationAttribute(d, "relation_fv_rs_bd_to_ep_ret", fvRsBdToEpRetData.(string))
 	}
 
 	fvRsBDToOutData, err := aciClient.ReadRelationfvRsBDToOutFromBridgeDomain(dn)
@@ -1192,7 +1192,7 @@ func resourceAciBridgeDomainRead(ctx context.Context, d *schema.ResourceData, m 
 		d.Set("relation_fv_rs_bd_to_out", make([]string, 0, 1))
 
 	} else {
-		d.Set("relation_fv_rs_bd_to_out", toStringList(fvRsBDToOutData.(*schema.Set).List()))
+		setRelationAttribute(d, "relation_fv_rs_bd_to_out", toStringList(fvRsBDToOutData.(*schema.Set).List()))
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())

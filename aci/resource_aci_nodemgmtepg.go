@@ -1196,7 +1196,7 @@ func inBandManagementEPgRead(ctx context.Context, d *schema.ResourceData, m inte
 		d.Set("relation_fv_rs_sec_inherited", make([]string, 0, 1))
 
 	} else {
-		d.Set("relation_fv_rs_sec_inherited", toStringList(fvRsSecInheritedData.(*schema.Set).List()))
+		setRelationAttribute(d, "relation_fv_rs_sec_inherited", toStringList(fvRsSecInheritedData.(*schema.Set).List()))
 	}
 	fvRsProvData, err := aciClient.ReadRelationfvRsProvFromInBandManagementEPg(dn)
 	if err != nil {
@@ -1204,7 +1204,7 @@ func inBandManagementEPgRead(ctx context.Context, d *schema.ResourceData, m inte
 		d.Set("relation_fv_rs_prov", make([]string, 0, 1))
 
 	} else {
-		d.Set("relation_fv_rs_prov", toStringList(fvRsProvData.(*schema.Set).List()))
+		setRelationAttribute(d, "relation_fv_rs_prov", toStringList(fvRsProvData.(*schema.Set).List()))
 	}
 	fvRsConsIfData, err := aciClient.ReadRelationfvRsConsIfFromInBandManagementEPg(dn)
 	if err != nil {
@@ -1212,7 +1212,7 @@ func inBandManagementEPgRead(ctx context.Context, d *schema.ResourceData, m inte
 		d.Set("relation_fv_rs_cons_if", make([]string, 0, 1))
 
 	} else {
-		d.Set("relation_fv_rs_cons_if", toStringList(fvRsConsIfData.(*schema.Set).List()))
+		setRelationAttribute(d, "relation_fv_rs_cons_if", toStringList(fvRsConsIfData.(*schema.Set).List()))
 	}
 	fvRsCustQosPolData, err := aciClient.ReadRelationfvRsCustQosPolFromInBandManagementEPg(dn)
 	if err != nil {
@@ -1220,7 +1220,7 @@ func inBandManagementEPgRead(ctx context.Context, d *schema.ResourceData, m inte
 		d.Set("relation_fv_rs_cust_qos_pol", "")
 
 	} else {
-		d.Set("relation_fv_rs_cust_qos_pol", fvRsCustQosPolData.(string))
+		setRelationAttribute(d, "relation_fv_rs_cust_qos_pol", fvRsCustQosPolData.(string))
 	}
 
 	mgmtRsMgmtBDData, err := aciClient.ReadRelationmgmtRsMgmtBDFromInBandManagementEPg(dn)
@@ -1229,7 +1229,7 @@ func inBandManagementEPgRead(ctx context.Context, d *schema.ResourceData, m inte
 		d.Set("relation_mgmt_rs_mgmt_bd", "")
 
 	} else {
-		d.Set("relation_mgmt_rs_mgmt_bd", mgmtRsMgmtBDData.(string))
+		setRelationAttribute(d, "relation_mgmt_rs_mgmt_bd", mgmtRsMgmtBDData.(string))
 	}
 
 	fvRsConsData, err := aciClient.ReadRelationfvRsConsFromInBandManagementEPg(dn)
@@ -1238,7 +1238,7 @@ func inBandManagementEPgRead(ctx context.Context, d *schema.ResourceData, m inte
 		d.Set("relation_fv_rs_cons", make([]string, 0, 1))
 
 	} else {
-		d.Set("relation_fv_rs_cons", toStringList(fvRsConsData.(*schema.Set).List()))
+		setRelationAttribute(d, "relation_fv_rs_cons", toStringList(fvRsConsData.(*schema.Set).List()))
 	}
 	fvRsProtByData, err := aciClient.ReadRelationfvRsProtByFromInBandManagementEPg(dn)
 	if err != nil {
@@ -1246,7 +1246,7 @@ func inBandManagementEPgRead(ctx context.Context, d *schema.ResourceData, m inte
 		d.Set("relation_fv_rs_prot_by", make([]string, 0, 1))
 
 	} else {
-		d.Set("relation_fv_rs_prot_by", toStringList(fvRsProtByData.(*schema.Set).List()))
+		setRelationAttribute(d, "relation_fv_rs_prot_by", toStringList(fvRsProtByData.(*schema.Set).List()))
 	}
 	mgmtRsInBStNodeData, err := aciClient.ReadRelationmgmtRsInBStNodeFromInBandManagementEPg(dn)
 	if err != nil {
@@ -1254,7 +1254,7 @@ func inBandManagementEPgRead(ctx context.Context, d *schema.ResourceData, m inte
 		d.Set("relation_mgmt_rs_in_b_st_node", make([]string, 0, 1))
 
 	} else {
-		d.Set("relation_mgmt_rs_in_b_st_node", toStringList(mgmtRsInBStNodeData.(*schema.Set).List()))
+		setRelationAttribute(d, "relation_mgmt_rs_in_b_st_node", toStringList(mgmtRsInBStNodeData.(*schema.Set).List()))
 	}
 	fvRsIntraEpgData, err := aciClient.ReadRelationfvRsIntraEpgFromInBandManagementEPg(dn)
 	if err != nil {
@@ -1262,7 +1262,7 @@ func inBandManagementEPgRead(ctx context.Context, d *schema.ResourceData, m inte
 		d.Set("relation_fv_rs_intra_epg", make([]string, 0, 1))
 
 	} else {
-		d.Set("relation_fv_rs_intra_epg", toStringList(fvRsIntraEpgData.(*schema.Set).List()))
+		setRelationAttribute(d, "relation_fv_rs_intra_epg", toStringList(fvRsIntraEpgData.(*schema.Set).List()))
 	}
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 
@@ -1294,7 +1294,7 @@ func outOfBandManagementEPgRead(ctx context.Context, d *schema.ResourceData, m i
 		d.Set("relation_mgmt_rs_oo_b_prov", make([]string, 0, 1))
 
 	} else {
-		d.Set("relation_mgmt_rs_oo_b_prov", toStringList(mgmtRsOoBProvData.(*schema.Set).List()))
+		setRelationAttribute(d, "relation_mgmt_rs_oo_b_prov", toStringList(mgmtRsOoBProvData.(*schema.Set).List()))
 	}
 	mgmtRsOoBStNodeData, err := aciClient.ReadRelationmgmtRsOoBStNodeFromOutOfBandManagementEPg(dn)
 	if err != nil {
@@ -1302,7 +1302,7 @@ func outOfBandManagementEPgRead(ctx context.Context, d *schema.ResourceData, m i
 		d.Set("relation_mgmt_rs_oo_b_st_node", make([]string, 0, 1))
 
 	} else {
-		d.Set("relation_mgmt_rs_oo_b_st_node", toStringList(mgmtRsOoBStNodeData.(*schema.Set).List()))
+		setRelationAttribute(d, "relation_mgmt_rs_oo_b_st_node", toStringList(mgmtRsOoBStNodeData.(*schema.Set).List()))
 	}
 	mgmtRsOoBCtxData, err := aciClient.ReadRelationmgmtRsOoBCtxFromOutOfBandManagementEPg(dn)
 	if err != nil {
@@ -1310,7 +1310,7 @@ func outOfBandManagementEPgRead(ctx context.Context, d *schema.ResourceData, m i
 		d.Set("relation_mgmt_rs_oo_b_ctx", "")
 
 	} else {
-		d.Set("relation_mgmt_rs_oo_b_ctx", mgmtRsOoBCtxData.(string))
+		setRelationAttribute(d, "relation_mgmt_rs_oo_b_ctx", mgmtRsOoBCtxData.(string))
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())

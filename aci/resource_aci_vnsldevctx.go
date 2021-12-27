@@ -321,7 +321,7 @@ func resourceAciLogicalDeviceContextRead(ctx context.Context, d *schema.Resource
 		d.Set("relation_vns_rs_l_dev_ctx_to_l_dev", "")
 
 	} else {
-		d.Set("relation_vns_rs_l_dev_ctx_to_l_dev", vnsRsLDevCtxToLDevData.(string))
+		setRelationAttribute(d, "relation_vns_rs_l_dev_ctx_to_l_dev", vnsRsLDevCtxToLDevData.(string))
 	}
 
 	vnsRsLDevCtxToRtrCfgData, err := aciClient.ReadRelationvnsRsLDevCtxToRtrCfgFromLogicalDeviceContext(dn)
@@ -330,7 +330,7 @@ func resourceAciLogicalDeviceContextRead(ctx context.Context, d *schema.Resource
 		d.Set("relation_vns_rs_l_dev_ctx_to_rtr_cfg", "")
 
 	} else {
-		d.Set("relation_vns_rs_l_dev_ctx_to_rtr_cfg", vnsRsLDevCtxToRtrCfgData.(string))
+		setRelationAttribute(d, "relation_vns_rs_l_dev_ctx_to_rtr_cfg", vnsRsLDevCtxToRtrCfgData.(string))
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())

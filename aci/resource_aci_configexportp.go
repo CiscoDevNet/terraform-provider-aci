@@ -430,7 +430,7 @@ func resourceAciConfigurationExportPolicyRead(ctx context.Context, d *schema.Res
 		d.Set("relation_config_rs_export_destination", "")
 
 	} else {
-		d.Set("relation_config_rs_export_destination", configRsExportDestinationData.(string))
+		setRelationAttribute(d, "relation_config_rs_export_destination", configRsExportDestinationData.(string))
 	}
 
 	trigRsTriggerableData, err := aciClient.ReadRelationtrigRsTriggerableFromConfigurationExportPolicy(dn)
@@ -439,7 +439,7 @@ func resourceAciConfigurationExportPolicyRead(ctx context.Context, d *schema.Res
 		d.Set("relation_trig_rs_triggerable", "")
 
 	} else {
-		d.Set("relation_trig_rs_triggerable", trigRsTriggerableData.(string))
+		setRelationAttribute(d, "relation_trig_rs_triggerable", trigRsTriggerableData.(string))
 	}
 
 	configRsRemotePathData, err := aciClient.ReadRelationconfigRsRemotePathFromConfigurationExportPolicy(dn)
@@ -448,7 +448,7 @@ func resourceAciConfigurationExportPolicyRead(ctx context.Context, d *schema.Res
 		d.Set("relation_config_rs_remote_path", "")
 
 	} else {
-		d.Set("relation_config_rs_remote_path", configRsRemotePathData.(string))
+		setRelationAttribute(d, "relation_config_rs_remote_path", configRsRemotePathData.(string))
 	}
 
 	configRsExportSchedulerData, err := aciClient.ReadRelationconfigRsExportSchedulerFromConfigurationExportPolicy(dn)
@@ -457,7 +457,7 @@ func resourceAciConfigurationExportPolicyRead(ctx context.Context, d *schema.Res
 		d.Set("relation_config_rs_export_scheduler", "")
 
 	} else {
-		d.Set("relation_config_rs_export_scheduler", configRsExportSchedulerData.(string))
+		setRelationAttribute(d, "relation_config_rs_export_scheduler", configRsExportSchedulerData.(string))
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())

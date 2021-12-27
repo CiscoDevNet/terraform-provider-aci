@@ -571,7 +571,7 @@ func resourceAciSubnetRead(ctx context.Context, d *schema.ResourceData, m interf
 		d.Set("relation_fv_rs_bd_subnet_to_out", make([]string, 0, 1))
 
 	} else {
-		d.Set("relation_fv_rs_bd_subnet_to_out", toStringList(fvRsBDSubnetToOutData.(*schema.Set).List()))
+		setRelationAttribute(d, "relation_fv_rs_bd_subnet_to_out", toStringList(fvRsBDSubnetToOutData.(*schema.Set).List()))
 	}
 
 	fvRsNdPfxPolData, err := aciClient.ReadRelationfvRsNdPfxPolFromSubnet(dn)
@@ -580,7 +580,7 @@ func resourceAciSubnetRead(ctx context.Context, d *schema.ResourceData, m interf
 		d.Set("relation_fv_rs_nd_pfx_pol", "")
 
 	} else {
-		d.Set("relation_fv_rs_nd_pfx_pol", fvRsNdPfxPolData.(string))
+		setRelationAttribute(d, "relation_fv_rs_nd_pfx_pol", fvRsNdPfxPolData.(string))
 	}
 
 	fvRsBDSubnetToProfileData, err := aciClient.ReadRelationfvRsBDSubnetToProfileFromSubnet(dn)
@@ -589,7 +589,7 @@ func resourceAciSubnetRead(ctx context.Context, d *schema.ResourceData, m interf
 		d.Set("relation_fv_rs_bd_subnet_to_profile", "")
 
 	} else {
-		d.Set("relation_fv_rs_bd_subnet_to_profile", fvRsBDSubnetToProfileData.(string))
+		setRelationAttribute(d, "relation_fv_rs_bd_subnet_to_profile", fvRsBDSubnetToProfileData.(string))
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())

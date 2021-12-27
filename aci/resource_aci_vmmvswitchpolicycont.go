@@ -545,7 +545,7 @@ func resourceAciVSwitchPolicyGroupRead(ctx context.Context, d *schema.ResourceDa
 		log.Printf("[DEBUG] Error while reading relation vmmRsVswitchOverrideCdpIfPol %v", err)
 		d.Set("relation_vmm_rs_vswitch_override_cdp_if_pol", "")
 	} else {
-		d.Set("relation_vmm_rs_vswitch_override_cdp_if_pol", vmmRsVswitchOverrideCdpIfPolData.(string))
+		setRelationAttribute(d, "relation_vmm_rs_vswitch_override_cdp_if_pol", vmmRsVswitchOverrideCdpIfPolData.(string))
 	}
 
 	vmmRsVswitchOverrideFwPolData, err := aciClient.ReadRelationvmmRsVswitchOverrideFwPol(dn)
@@ -553,7 +553,7 @@ func resourceAciVSwitchPolicyGroupRead(ctx context.Context, d *schema.ResourceDa
 		log.Printf("[DEBUG] Error while reading relation vmmRsVswitchOverrideFwPol %v", err)
 		d.Set("relation_vmm_rs_vswitch_override_fw_pol", "")
 	} else {
-		d.Set("relation_vmm_rs_vswitch_override_fw_pol", vmmRsVswitchOverrideFwPolData.(string))
+		setRelationAttribute(d, "relation_vmm_rs_vswitch_override_fw_pol", vmmRsVswitchOverrideFwPolData.(string))
 	}
 
 	vmmRsVswitchOverrideLacpPolData, err := aciClient.ReadRelationvmmRsVswitchOverrideLacpPol(dn)
@@ -561,7 +561,7 @@ func resourceAciVSwitchPolicyGroupRead(ctx context.Context, d *schema.ResourceDa
 		log.Printf("[DEBUG] Error while reading relation vmmRsVswitchOverrideLacpPol %v", err)
 		d.Set("relation_vmm_rs_vswitch_override_lacp_pol", "")
 	} else {
-		d.Set("relation_vmm_rs_vswitch_override_lacp_pol", vmmRsVswitchOverrideLacpPolData.(string))
+		setRelationAttribute(d, "relation_vmm_rs_vswitch_override_lacp_pol", vmmRsVswitchOverrideLacpPolData.(string))
 	}
 
 	vmmRsVswitchOverrideLldpIfPolData, err := aciClient.ReadRelationvmmRsVswitchOverrideLldpIfPol(dn)
@@ -569,7 +569,7 @@ func resourceAciVSwitchPolicyGroupRead(ctx context.Context, d *schema.ResourceDa
 		log.Printf("[DEBUG] Error while reading relation vmmRsVswitchOverrideLldpIfPol %v", err)
 		d.Set("relation_vmm_rs_vswitch_override_lldp_if_pol", "")
 	} else {
-		d.Set("relation_vmm_rs_vswitch_override_lldp_if_pol", vmmRsVswitchOverrideLldpIfPolData.(string))
+		setRelationAttribute(d, "relation_vmm_rs_vswitch_override_lldp_if_pol", vmmRsVswitchOverrideLldpIfPolData.(string))
 	}
 
 	vmmRsVswitchOverrideMcpIfPolData, err := aciClient.ReadRelationvmmRsVswitchOverrideMcpIfPol(dn)
@@ -577,7 +577,7 @@ func resourceAciVSwitchPolicyGroupRead(ctx context.Context, d *schema.ResourceDa
 		log.Printf("[DEBUG] Error while reading relation vmmRsVswitchOverrideMcpIfPol %v", err)
 		d.Set("relation_vmm_rs_vswitch_override_mcp_if_pol", "")
 	} else {
-		d.Set("relation_vmm_rs_vswitch_override_mcp_if_pol", vmmRsVswitchOverrideMcpIfPolData.(string))
+		setRelationAttribute(d, "relation_vmm_rs_vswitch_override_mcp_if_pol", vmmRsVswitchOverrideMcpIfPolData.(string))
 	}
 
 	vmmRsVswitchOverrideMtuPolData, err := aciClient.ReadRelationvmmRsVswitchOverrideMtuPol(dn)
@@ -585,7 +585,7 @@ func resourceAciVSwitchPolicyGroupRead(ctx context.Context, d *schema.ResourceDa
 		log.Printf("[DEBUG] Error while reading relation vmmRsVswitchOverrideMtuPol %v", err)
 		d.Set("relation_vmm_rs_vswitch_override_mtu_pol", "")
 	} else {
-		d.Set("relation_vmm_rs_vswitch_override_mtu_pol", vmmRsVswitchOverrideMtuPolData.(string))
+		setRelationAttribute(d, "relation_vmm_rs_vswitch_override_mtu_pol", vmmRsVswitchOverrideMtuPolData.(string))
 	}
 
 	vmmRsVswitchOverrideStpPolData, err := aciClient.ReadRelationvmmRsVswitchOverrideStpPol(dn)
@@ -593,7 +593,7 @@ func resourceAciVSwitchPolicyGroupRead(ctx context.Context, d *schema.ResourceDa
 		log.Printf("[DEBUG] Error while reading relation vmmRsVswitchOverrideStpPol %v", err)
 		d.Set("relation_vmm_rs_vswitch_override_stp_pol", "")
 	} else {
-		d.Set("relation_vmm_rs_vswitch_override_stp_pol", vmmRsVswitchOverrideStpPolData.(string))
+		setRelationAttribute(d, "relation_vmm_rs_vswitch_override_stp_pol", vmmRsVswitchOverrideStpPolData.(string))
 	}
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 	return nil

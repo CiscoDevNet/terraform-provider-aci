@@ -578,7 +578,7 @@ func resourceAciFunctionNodeRead(ctx context.Context, d *schema.ResourceData, m 
 		log.Printf("[DEBUG] Error while reading relation vnsRsNodeToAbsFuncProf %v", err)
 		d.Set("relation_vns_rs_node_to_abs_func_prof", "")
 	} else {
-		d.Set("relation_vns_rs_node_to_abs_func_prof", vnsRsNodeToAbsFuncProfData.(string))
+		setRelationAttribute(d, "relation_vns_rs_node_to_abs_func_prof", vnsRsNodeToAbsFuncProfData.(string))
 	}
 
 	vnsRsNodeToLDevData, err := aciClient.ReadRelationvnsRsNodeToLDevFromFunctionNode(dn)
@@ -586,7 +586,7 @@ func resourceAciFunctionNodeRead(ctx context.Context, d *schema.ResourceData, m 
 		log.Printf("[DEBUG] Error while reading relation vnsRsNodeToLDev %v", err)
 		d.Set("relation_vns_rs_node_to_l_dev", "")
 	} else {
-		d.Set("relation_vns_rs_node_to_l_dev", vnsRsNodeToLDevData.(string))
+		setRelationAttribute(d, "relation_vns_rs_node_to_l_dev", vnsRsNodeToLDevData.(string))
 	}
 
 	vnsRsNodeToMFuncData, err := aciClient.ReadRelationvnsRsNodeToMFuncFromFunctionNode(dn)
@@ -594,7 +594,7 @@ func resourceAciFunctionNodeRead(ctx context.Context, d *schema.ResourceData, m 
 		log.Printf("[DEBUG] Error while reading relation vnsRsNodeToMFunc %v", err)
 		d.Set("relation_vns_rs_node_to_m_func", "")
 	} else {
-		d.Set("relation_vns_rs_node_to_m_func", vnsRsNodeToMFuncData.(string))
+		setRelationAttribute(d, "relation_vns_rs_node_to_m_func", vnsRsNodeToMFuncData.(string))
 	}
 
 	vnsRsDefaultScopeToTermData, err := aciClient.ReadRelationvnsRsDefaultScopeToTermFromFunctionNode(dn)
@@ -602,7 +602,7 @@ func resourceAciFunctionNodeRead(ctx context.Context, d *schema.ResourceData, m 
 		log.Printf("[DEBUG] Error while reading relation vnsRsDefaultScopeToTerm %v", err)
 		d.Set("relation_vns_rs_default_scope_to_term", "")
 	} else {
-		d.Set("relation_vns_rs_default_scope_to_term", vnsRsDefaultScopeToTermData.(string))
+		setRelationAttribute(d, "relation_vns_rs_default_scope_to_term", vnsRsDefaultScopeToTermData.(string))
 	}
 
 	vnsRsNodeToCloudLDevData, err := aciClient.ReadRelationvnsRsNodeToCloudLDevFromFunctionNode(dn)
@@ -610,7 +610,7 @@ func resourceAciFunctionNodeRead(ctx context.Context, d *schema.ResourceData, m 
 		log.Printf("[DEBUG] Error while reading relation vnsRsNodeToCloudLDev %v", err)
 		d.Set("relation_vns_rs_node_to_cloud_l_dev", "")
 	} else {
-		d.Set("relation_vns_rs_node_to_cloud_l_dev", vnsRsNodeToCloudLDevData.(string))
+		setRelationAttribute(d, "relation_vns_rs_node_to_cloud_l_dev", vnsRsNodeToCloudLDevData.(string))
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())

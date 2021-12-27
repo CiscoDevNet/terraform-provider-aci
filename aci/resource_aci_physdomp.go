@@ -331,7 +331,7 @@ func resourceAciPhysicalDomainRead(ctx context.Context, d *schema.ResourceData, 
 		d.Set("relation_infra_rs_vlan_ns", "")
 
 	} else {
-		d.Set("relation_infra_rs_vlan_ns", infraRsVlanNsData.(string))
+		setRelationAttribute(d, "relation_infra_rs_vlan_ns", infraRsVlanNsData.(string))
 	}
 
 	infraRsVlanNsDefData, err := aciClient.ReadRelationinfraRsVlanNsDefFromPhysicalDomain(dn)
@@ -340,7 +340,7 @@ func resourceAciPhysicalDomainRead(ctx context.Context, d *schema.ResourceData, 
 		d.Set("relation_infra_rs_vlan_ns_def", "")
 
 	} else {
-		d.Set("relation_infra_rs_vlan_ns_def", infraRsVlanNsDefData.(string))
+		setRelationAttribute(d, "relation_infra_rs_vlan_ns_def", infraRsVlanNsDefData.(string))
 	}
 
 	infraRsVipAddrNsData, err := aciClient.ReadRelationinfraRsVipAddrNsFromPhysicalDomain(dn)
@@ -349,7 +349,7 @@ func resourceAciPhysicalDomainRead(ctx context.Context, d *schema.ResourceData, 
 		d.Set("relation_infra_rs_vip_addr_ns", "")
 
 	} else {
-		d.Set("relation_infra_rs_vip_addr_ns", infraRsVipAddrNsData.(string))
+		setRelationAttribute(d, "relation_infra_rs_vip_addr_ns", infraRsVipAddrNsData.(string))
 	}
 
 	infraRsDomVxlanNsDefData, err := aciClient.ReadRelationinfraRsDomVxlanNsDefFromPhysicalDomain(dn)
@@ -358,7 +358,7 @@ func resourceAciPhysicalDomainRead(ctx context.Context, d *schema.ResourceData, 
 		d.Set("relation_infra_rs_dom_vxlan_ns_def", "")
 
 	} else {
-		d.Set("relation_infra_rs_dom_vxlan_ns_def", infraRsDomVxlanNsDefData.(string))
+		setRelationAttribute(d, "relation_infra_rs_dom_vxlan_ns_def", infraRsDomVxlanNsDefData.(string))
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())

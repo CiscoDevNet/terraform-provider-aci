@@ -107,8 +107,8 @@ func resourceAciHSRPGroupProfile() *schema.Resource {
 			},
 
 			"relation_hsrp_rs_group_pol": &schema.Schema{
-				Type:     schema.TypeString,
-				Default:  "uni/tn-common/hsrpGroupPol-default",
+				Type: schema.TypeString,
+
 				Optional: true,
 			},
 		}),
@@ -365,7 +365,7 @@ func resourceAciHSRPGroupProfileRead(ctx context.Context, d *schema.ResourceData
 		log.Printf("[DEBUG] Error while reading relation hsrpRsGroupPol %v", err)
 		d.Set("relation_hsrp_rs_group_pol", "")
 	} else {
-		d.Set("relation_hsrp_rs_group_pol", hsrpRsGroupPolData.(string))
+		setRelationAttribute(d, "relation_hsrp_rs_group_pol", hsrpRsGroupPolData.(string))
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())

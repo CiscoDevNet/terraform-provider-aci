@@ -313,7 +313,7 @@ func resourceAciFilterRead(ctx context.Context, d *schema.ResourceData, m interf
 		d.Set("relation_vz_rs_filt_graph_att", "")
 
 	} else {
-		d.Set("relation_vz_rs_filt_graph_att", vzRsFiltGraphAttData.(string))
+		setRelationAttribute(d, "relation_vz_rs_filt_graph_att", vzRsFiltGraphAttData.(string))
 	}
 
 	vzRsFwdRFltPAttData, err := aciClient.ReadRelationvzRsFwdRFltPAttFromFilter(dn)
@@ -322,7 +322,7 @@ func resourceAciFilterRead(ctx context.Context, d *schema.ResourceData, m interf
 		d.Set("relation_vz_rs_fwd_r_flt_p_att", "")
 
 	} else {
-		d.Set("relation_vz_rs_fwd_r_flt_p_att", vzRsFwdRFltPAttData.(string))
+		setRelationAttribute(d, "relation_vz_rs_fwd_r_flt_p_att", vzRsFwdRFltPAttData.(string))
 	}
 
 	vzRsRevRFltPAttData, err := aciClient.ReadRelationvzRsRevRFltPAttFromFilter(dn)
@@ -331,7 +331,7 @@ func resourceAciFilterRead(ctx context.Context, d *schema.ResourceData, m interf
 		d.Set("relation_vz_rs_rev_r_flt_p_att", "")
 
 	} else {
-		d.Set("relation_vz_rs_rev_r_flt_p_att", vzRsRevRFltPAttData.(string))
+		setRelationAttribute(d, "relation_vz_rs_rev_r_flt_p_att", vzRsRevRFltPAttData.(string))
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())

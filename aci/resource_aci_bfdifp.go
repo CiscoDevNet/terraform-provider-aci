@@ -62,7 +62,6 @@ func resourceAciBFDInterfaceProfile() *schema.Resource {
 
 			"relation_bfd_rs_if_pol": &schema.Schema{
 				Type:     schema.TypeString,
-				Default:  "uni/tn-common/bfdIfPol-default",
 				Optional: true,
 			},
 		}),
@@ -278,7 +277,7 @@ func resourceAciBFDInterfaceProfileRead(ctx context.Context, d *schema.ResourceD
 		d.Set("relation_bfd_rs_if_pol", "")
 
 	} else {
-		d.Set("relation_bfd_rs_if_pol", bfdRsIfPolData.(string))
+		setRelationAttribute(d, "relation_bfd_rs_if_pol", bfdRsIfPolData)
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())

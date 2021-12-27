@@ -490,7 +490,7 @@ func resourceAciLogicalInterfaceProfileRead(ctx context.Context, d *schema.Resou
 		d.Set("relation_l3ext_rs_egress_qos_dpp_pol", "")
 
 	} else {
-		d.Set("relation_l3ext_rs_egress_qos_dpp_pol", l3extRsEgressQosDppPolData.(string))
+		setRelationAttribute(d, "relation_l3ext_rs_egress_qos_dpp_pol", l3extRsEgressQosDppPolData.(string))
 	}
 
 	l3extRsIngressQosDppPolData, err := aciClient.ReadRelationl3extRsIngressQosDppPolFromLogicalInterfaceProfile(dn)
@@ -499,7 +499,7 @@ func resourceAciLogicalInterfaceProfileRead(ctx context.Context, d *schema.Resou
 		d.Set("relation_l3ext_rs_ingress_qos_dpp_pol", "")
 
 	} else {
-		d.Set("relation_l3ext_rs_ingress_qos_dpp_pol", l3extRsIngressQosDppPolData.(string))
+		setRelationAttribute(d, "relation_l3ext_rs_ingress_qos_dpp_pol", l3extRsIngressQosDppPolData.(string))
 	}
 
 	l3extRsLIfPCustQosPolData, err := aciClient.ReadRelationl3extRsLIfPCustQosPolFromLogicalInterfaceProfile(dn)
@@ -508,7 +508,7 @@ func resourceAciLogicalInterfaceProfileRead(ctx context.Context, d *schema.Resou
 		d.Set("relation_l3ext_rs_l_if_p_cust_qos_pol", "")
 
 	} else {
-		d.Set("relation_l3ext_rs_l_if_p_cust_qos_pol", l3extRsLIfPCustQosPolData.(string))
+		setRelationAttribute(d, "relation_l3ext_rs_l_if_p_cust_qos_pol", l3extRsLIfPCustQosPolData.(string))
 	}
 
 	l3extRsArpIfPolData, err := aciClient.ReadRelationl3extRsArpIfPolFromLogicalInterfaceProfile(dn)
@@ -517,7 +517,7 @@ func resourceAciLogicalInterfaceProfileRead(ctx context.Context, d *schema.Resou
 		d.Set("relation_l3ext_rs_arp_if_pol", "")
 
 	} else {
-		d.Set("relation_l3ext_rs_arp_if_pol", l3extRsArpIfPolData.(string))
+		setRelationAttribute(d, "relation_l3ext_rs_arp_if_pol", l3extRsArpIfPolData.(string))
 	}
 
 	l3extRsNdIfPolData, err := aciClient.ReadRelationl3extRsNdIfPolFromLogicalInterfaceProfile(dn)
@@ -526,7 +526,7 @@ func resourceAciLogicalInterfaceProfileRead(ctx context.Context, d *schema.Resou
 		d.Set("relation_l3ext_rs_nd_if_pol", "")
 
 	} else {
-		d.Set("relation_l3ext_rs_nd_if_pol", l3extRsNdIfPolData.(string))
+		setRelationAttribute(d, "relation_l3ext_rs_nd_if_pol", l3extRsNdIfPolData.(string))
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())

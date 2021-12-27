@@ -268,7 +268,7 @@ func resourceAciPODMaintenanceGroupRead(ctx context.Context, d *schema.ResourceD
 		d.Set("relation_maint_rs_mgrpp", "")
 
 	} else {
-		d.Set("relation_maint_rs_mgrpp", maintRsMgrppData.(string))
+		setRelationAttribute(d, "relation_maint_rs_mgrpp", maintRsMgrppData.(string))
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())

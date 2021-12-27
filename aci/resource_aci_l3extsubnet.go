@@ -433,7 +433,7 @@ func resourceAciL3ExtSubnetRead(ctx context.Context, d *schema.ResourceData, m i
 		d.Set("relation_l3ext_rs_subnet_to_rt_summ", "")
 
 	} else {
-		d.Set("relation_l3ext_rs_subnet_to_rt_summ", l3extRsSubnetToRtSummData.(string))
+		setRelationAttribute(d, "relation_l3ext_rs_subnet_to_rt_summ", l3extRsSubnetToRtSummData.(string))
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())

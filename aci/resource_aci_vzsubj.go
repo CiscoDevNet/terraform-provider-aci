@@ -462,7 +462,7 @@ func resourceAciContractSubjectRead(ctx context.Context, d *schema.ResourceData,
 		d.Set("relation_vz_rs_subj_graph_att", "")
 
 	} else {
-		d.Set("relation_vz_rs_subj_graph_att", vzRsSubjGraphAttData.(string))
+		setRelationAttribute(d, "relation_vz_rs_subj_graph_att", vzRsSubjGraphAttData.(string))
 	}
 
 	vzRsSdwanPolData, err := aciClient.ReadRelationvzRsSdwanPolFromContractSubject(dn)
@@ -471,7 +471,7 @@ func resourceAciContractSubjectRead(ctx context.Context, d *schema.ResourceData,
 		d.Set("relation_vz_rs_sdwan_pol", "")
 
 	} else {
-		d.Set("relation_vz_rs_sdwan_pol", vzRsSdwanPolData.(string))
+		setRelationAttribute(d, "relation_vz_rs_sdwan_pol", vzRsSdwanPolData.(string))
 	}
 
 	vzRsSubjFiltAttData, err := aciClient.ReadRelationvzRsSubjFiltAttFromContractSubject(dn)
@@ -480,7 +480,7 @@ func resourceAciContractSubjectRead(ctx context.Context, d *schema.ResourceData,
 		d.Set("relation_vz_rs_subj_filt_att", make([]string, 0, 1))
 
 	} else {
-		d.Set("relation_vz_rs_subj_filt_att", toStringList(vzRsSubjFiltAttData.(*schema.Set).List()))
+		setRelationAttribute(d, "relation_vz_rs_subj_filt_att", toStringList(vzRsSubjFiltAttData.(*schema.Set).List()))
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())

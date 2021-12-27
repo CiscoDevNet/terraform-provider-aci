@@ -253,7 +253,7 @@ func resourceAciL3outHSRPInterfaceProfileRead(ctx context.Context, d *schema.Res
 		d.Set("relation_hsrp_rs_if_pol", "")
 
 	} else {
-		d.Set("relation_hsrp_rs_if_pol", hsrpRsIfPolData.(string))
+		setRelationAttribute(d, "relation_hsrp_rs_if_pol", hsrpRsIfPolData.(string))
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())

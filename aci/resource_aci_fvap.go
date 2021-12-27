@@ -280,7 +280,7 @@ func resourceAciApplicationProfileRead(ctx context.Context, d *schema.ResourceDa
 		d.Set("relation_fv_rs_ap_mon_pol", "")
 
 	} else {
-		d.Set("relation_fv_rs_ap_mon_pol", fvRsApMonPolData.(string))
+		setRelationAttribute(d, "relation_fv_rs_ap_mon_pol", fvRsApMonPolData.(string))
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())

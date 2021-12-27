@@ -740,7 +740,7 @@ func resourceAciCloudEPgRead(ctx context.Context, d *schema.ResourceData, m inte
 		d.Set("relation_fv_rs_sec_inherited", make([]interface{}, 0, 1))
 
 	} else {
-		d.Set("relation_fv_rs_sec_inherited", toStringList(fvRsSecInheritedData.(*schema.Set).List()))
+		setRelationAttribute(d, "relation_fv_rs_sec_inherited", toStringList(fvRsSecInheritedData.(*schema.Set).List()))
 	}
 
 	fvRsProvData, err := aciClient.ReadRelationfvRsProvFromCloudEPg(dn)
@@ -749,7 +749,7 @@ func resourceAciCloudEPgRead(ctx context.Context, d *schema.ResourceData, m inte
 		d.Set("relation_fv_rs_prov", make([]string, 0, 1))
 
 	} else {
-		d.Set("relation_fv_rs_prov", toStringList(fvRsProvData.(*schema.Set).List()))
+		setRelationAttribute(d, "relation_fv_rs_prov", toStringList(fvRsProvData.(*schema.Set).List()))
 	}
 
 	fvRsConsIfData, err := aciClient.ReadRelationfvRsConsIfFromCloudEPg(dn)
@@ -758,7 +758,7 @@ func resourceAciCloudEPgRead(ctx context.Context, d *schema.ResourceData, m inte
 		d.Set("relation_fv_rs_cons_if", make([]string, 0, 1))
 
 	} else {
-		d.Set("relation_fv_rs_cons_if", toStringList(fvRsConsIfData.(*schema.Set).List()))
+		setRelationAttribute(d, "relation_fv_rs_cons_if", toStringList(fvRsConsIfData.(*schema.Set).List()))
 	}
 
 	fvRsCustQosPolData, err := aciClient.ReadRelationfvRsCustQosPolFromCloudEPg(dn)
@@ -767,7 +767,7 @@ func resourceAciCloudEPgRead(ctx context.Context, d *schema.ResourceData, m inte
 		d.Set("relation_fv_rs_cust_qos_pol", "")
 
 	} else {
-		d.Set("relation_fv_rs_cust_qos_pol", fvRsCustQosPolData.(string))
+		setRelationAttribute(d, "relation_fv_rs_cust_qos_pol", fvRsCustQosPolData.(string))
 	}
 
 	fvRsConsData, err := aciClient.ReadRelationfvRsConsFromCloudEPg(dn)
@@ -776,7 +776,7 @@ func resourceAciCloudEPgRead(ctx context.Context, d *schema.ResourceData, m inte
 		d.Set("relation_fv_rs_cons", make([]string, 0, 1))
 
 	} else {
-		d.Set("relation_fv_rs_cons", toStringList(fvRsConsData.(*schema.Set).List()))
+		setRelationAttribute(d, "relation_fv_rs_cons", toStringList(fvRsConsData.(*schema.Set).List()))
 	}
 
 	cloudRsCloudEPgCtxData, err := aciClient.ReadRelationcloudRsCloudEPgCtxFromCloudEPg(dn)
@@ -785,7 +785,7 @@ func resourceAciCloudEPgRead(ctx context.Context, d *schema.ResourceData, m inte
 		d.Set("relation_cloud_rs_cloud_epg_ctx", "")
 
 	} else {
-		d.Set("relation_cloud_rs_cloud_epg_ctx", cloudRsCloudEPgCtxData.(string))
+		setRelationAttribute(d, "relation_cloud_rs_cloud_epg_ctx", cloudRsCloudEPgCtxData.(string))
 	}
 
 	fvRsProtByData, err := aciClient.ReadRelationfvRsProtByFromCloudEPg(dn)
@@ -794,7 +794,7 @@ func resourceAciCloudEPgRead(ctx context.Context, d *schema.ResourceData, m inte
 		d.Set("relation_fv_rs_prot_by", make([]string, 0, 1))
 
 	} else {
-		d.Set("relation_fv_rs_prot_by", toStringList(fvRsProtByData.(*schema.Set).List()))
+		setRelationAttribute(d, "relation_fv_rs_prot_by", toStringList(fvRsProtByData.(*schema.Set).List()))
 	}
 
 	fvRsIntraEpgData, err := aciClient.ReadRelationfvRsIntraEpgFromCloudEPg(dn)

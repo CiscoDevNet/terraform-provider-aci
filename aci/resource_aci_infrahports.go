@@ -281,7 +281,7 @@ func resourceAciAccessPortSelectorRead(ctx context.Context, d *schema.ResourceDa
 		d.Set("relation_infra_rs_acc_base_grp", "")
 
 	} else {
-		d.Set("relation_infra_rs_acc_base_grp", infraRsAccBaseGrpData.(string))
+		setRelationAttribute(d, "relation_infra_rs_acc_base_grp", infraRsAccBaseGrpData.(string))
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())

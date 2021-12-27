@@ -377,12 +377,7 @@ func resourceAciTACACSProviderRead(ctx context.Context, d *schema.ResourceData, 
 		log.Printf("[DEBUG] Error while reading relation aaaRsProvToEpp %v", err)
 		d.Set("relation_aaa_rs_prov_to_epp", "")
 	} else {
-		if _, ok := d.GetOk("relation_aaa_rs_prov_to_epp"); ok {
-			tfName := d.Get("relation_aaa_rs_prov_to_epp").(string)
-			if tfName != aaaRsProvToEppData {
-				d.Set("relation_aaa_rs_prov_to_epp", "")
-			}
-		}
+		setRelationAttribute(d, "relation_aaa_rs_prov_to_epp", aaaRsProvToEppData)
 	}
 
 	aaaRsSecProvToEpgData, err := aciClient.ReadRelationaaaRsSecProvToEpg(dn)
@@ -390,12 +385,7 @@ func resourceAciTACACSProviderRead(ctx context.Context, d *schema.ResourceData, 
 		log.Printf("[DEBUG] Error while reading relation aaaRsSecProvToEpg %v", err)
 		d.Set("relation_aaa_rs_sec_prov_to_epg", "")
 	} else {
-		if _, ok := d.GetOk("relation_aaa_rs_sec_prov_to_epg"); ok {
-			tfName := d.Get("relation_aaa_rs_sec_prov_to_epg").(string)
-			if tfName != aaaRsSecProvToEpgData {
-				d.Set("relation_aaa_rs_sec_prov_to_epg", "")
-			}
-		}
+		setRelationAttribute(d, "relation_aaa_rs_sec_prov_to_epg", aaaRsSecProvToEpgData)
 	}
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 	return nil

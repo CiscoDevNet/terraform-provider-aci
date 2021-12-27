@@ -303,7 +303,7 @@ func resourceAciL3outStaticRouteRead(ctx context.Context, d *schema.ResourceData
 		d.Set("relation_ip_rs_route_track", "")
 
 	} else {
-		d.Set("relation_ip_rs_route_track", ipRsRouteTrackData.(string))
+		setRelationAttribute(d, "relation_ip_rs_route_track", ipRsRouteTrackData.(string))
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())

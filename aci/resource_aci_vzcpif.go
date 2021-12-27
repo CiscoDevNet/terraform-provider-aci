@@ -268,7 +268,7 @@ func resourceAciImportedContractRead(ctx context.Context, d *schema.ResourceData
 		d.Set("relation_vz_rs_if", "")
 
 	} else {
-		d.Set("relation_vz_rs_if", vzRsIfData.(string))
+		setRelationAttribute(d, "relation_vz_rs_if", vzRsIfData.(string))
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())

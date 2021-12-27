@@ -116,8 +116,8 @@ func resourceAciEndpointSecurityGroup() *schema.Resource {
 				},
 			},
 			"relation_fv_rs_cust_qos_pol": {
-				Type:        schema.TypeString,
-				Default:     "uni/tn-common/qoscustom-default",
+				Type: schema.TypeString,
+
 				Optional:    true,
 				Description: "Create relation to qos:CustomPol",
 			},
@@ -170,8 +170,8 @@ func resourceAciEndpointSecurityGroup() *schema.Resource {
 				},
 			},
 			"relation_fv_rs_scope": {
-				Type:        schema.TypeString,
-				Default:     "uni/tn-common/qoscustom-default",
+				Type: schema.TypeString,
+
 				Optional:    true,
 				Description: "Create relation to fv:Ctx",
 			},
@@ -766,21 +766,21 @@ func resourceAciEndpointSecurityGroupRead(ctx context.Context, d *schema.Resourc
 		log.Printf("[DEBUG] Error while reading relation fvRsCustQosPol %v", err)
 		d.Set("fv_rs_cust_qos_pol", "")
 	} else {
-		d.Set("relation_fv_rs_cust_qos_pol", fvRsCustQosPolData.(string))
+		setRelationAttribute(d, "relation_fv_rs_cust_qos_pol", fvRsCustQosPolData.(string))
 	}
 	fvRsIntraEpgData, err := aciClient.ReadRelationfvRsIntraEpg(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation fvRsIntraEpg %v", err)
 		d.Set("relation_fv_rs_intra_epg", make([]string, 0, 1))
 	} else {
-		d.Set("relation_fv_rs_intra_epg", toStringList(fvRsIntraEpgData.(*schema.Set).List()))
+		setRelationAttribute(d, "relation_fv_rs_intra_epg", toStringList(fvRsIntraEpgData.(*schema.Set).List()))
 	}
 	fvRsProtByData, err := aciClient.ReadRelationfvRsProtBy(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation fvRsProtBy %v", err)
 		d.Set("relation_fv_rs_prot_by", make([]string, 0, 1))
 	} else {
-		d.Set("relation_fv_rs_prot_by", toStringList(fvRsProtByData.(*schema.Set).List()))
+		setRelationAttribute(d, "relation_fv_rs_prot_by", toStringList(fvRsProtByData.(*schema.Set).List()))
 	}
 
 	fvRsProvData, err := aciClient.ReadRelationfvRsProv(dn)
@@ -804,14 +804,14 @@ func resourceAciEndpointSecurityGroupRead(ctx context.Context, d *schema.Resourc
 		log.Printf("[DEBUG] Error while reading relation fvRsScope %v", err)
 		d.Set("fv_rs_scope", "")
 	} else {
-		d.Set("relation_fv_rs_scope", fvRsScopeData.(string))
+		setRelationAttribute(d, "relation_fv_rs_scope", fvRsScopeData.(string))
 	}
 	fvRsSecInheritedData, err := aciClient.ReadRelationfvRsSecInherited(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation fvRsSecInherited %v", err)
 		d.Set("relation_fv_rs_sec_inherited", make([]string, 0, 1))
 	} else {
-		d.Set("relation_fv_rs_sec_inherited", toStringList(fvRsSecInheritedData.(*schema.Set).List()))
+		setRelationAttribute(d, "relation_fv_rs_sec_inherited", toStringList(fvRsSecInheritedData.(*schema.Set).List()))
 	}
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 	return nil

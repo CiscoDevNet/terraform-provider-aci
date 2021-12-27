@@ -387,7 +387,7 @@ func resourceAciL2DomainRead(ctx context.Context, d *schema.ResourceData, m inte
 		d.Set("relation_infra_rs_vlan_ns", "")
 
 	} else {
-		d.Set("relation_infra_rs_vlan_ns", infraRsVlanNsData.(string))
+		setRelationAttribute(d, "relation_infra_rs_vlan_ns", infraRsVlanNsData.(string))
 	}
 
 	infraRsVlanNsDefData, err := aciClient.ReadRelationinfraRsVlanNsDefFromL2Domain(dn)
@@ -397,7 +397,7 @@ func resourceAciL2DomainRead(ctx context.Context, d *schema.ResourceData, m inte
 		d.Set("relation_infra_rs_vlan_ns_def", "")
 
 	} else {
-		d.Set("relation_infra_rs_vlan_ns_def", infraRsVlanNsDefData.(string))
+		setRelationAttribute(d, "relation_infra_rs_vlan_ns_def", infraRsVlanNsDefData.(string))
 	}
 
 	infraRsVipAddrNsData, err := aciClient.ReadRelationinfraRsVipAddrNsFromL2Domain(dn)
@@ -407,7 +407,7 @@ func resourceAciL2DomainRead(ctx context.Context, d *schema.ResourceData, m inte
 		d.Set("relation_infra_rs_vip_addr_ns", "")
 
 	} else {
-		d.Set("relation_infra_rs_vip_addr_ns", infraRsVipAddrNsData.(string))
+		setRelationAttribute(d, "relation_infra_rs_vip_addr_ns", infraRsVipAddrNsData.(string))
 	}
 
 	extnwRsOutData, err := aciClient.ReadRelationextnwRsOutFromL2Domain(dn)
@@ -417,7 +417,7 @@ func resourceAciL2DomainRead(ctx context.Context, d *schema.ResourceData, m inte
 		d.Set("relation_extnw_rs_out", make([]string, 0, 1))
 
 	} else {
-		d.Set("relation_extnw_rs_out", toStringList(extnwRsOutData.(*schema.Set).List()))
+		setRelationAttribute(d, "relation_extnw_rs_out", toStringList(extnwRsOutData.(*schema.Set).List()))
 	}
 
 	infraRsDomVxlanNsDefData, err := aciClient.ReadRelationinfraRsDomVxlanNsDefFromL2Domain(dn)
@@ -427,7 +427,7 @@ func resourceAciL2DomainRead(ctx context.Context, d *schema.ResourceData, m inte
 		d.Set("relation_infra_rs_dom_vxlan_ns_def", "")
 
 	} else {
-		d.Set("relation_infra_rs_dom_vxlan_ns_def", infraRsDomVxlanNsDefData.(string))
+		setRelationAttribute(d, "relation_infra_rs_dom_vxlan_ns_def", infraRsDomVxlanNsDefData.(string))
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
