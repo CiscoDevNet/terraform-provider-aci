@@ -88,7 +88,7 @@ func CreateL3outBfdInterfaceProfileDataSourceWithoutRequired(rName string) strin
 }
 
 func CreateAccL3outBfdInterfaceProfileConfigDataSource(rName string) string {
-	fmt.Println("=== STEP  Testing l3out_bfd_interface_profile data source creation with required arguements only")
+	fmt.Println("=== STEP  Testing l3out_bfd_interface_profile data source creation with required arguments only")
 	resource := fmt.Sprintf(`
 	
 	resource "aci_tenant" "test" {

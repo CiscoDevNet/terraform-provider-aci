@@ -19,7 +19,7 @@ func TestAccAciL3outBfdInterfaceProfile_Basic(t *testing.T) {
 	rName := makeTestVariable(acctest.RandString(5))
 	pNameUpdated := makeTestVariable(acctest.RandString(5))
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:	  func(){ testAccPreCheck(t) },
+		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
 		CheckDestroy: testAccCheckAciL3outBfdInterfaceProfileDestroy,
 		Steps: []resource.TestStep{
@@ -32,16 +32,15 @@ func TestAccAciL3outBfdInterfaceProfile_Basic(t *testing.T) {
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckAciL3outBfdInterfaceProfileExists(resourceName, &l3out_bfd_interface_profile_default),
 					resource.TestCheckResourceAttr(resourceName, "logical_interface_profile_dn", fmt.Sprintf("uni/tn-%s/out-%s/lnodep-%s/lifp-%s", rName, rName, rName, rName)),
-					resource.TestCheckResourceAttr(resourceName, "annotation","orchestrator:terraform"),
-					resource.TestCheckResourceAttr(resourceName, "description",""),
-					resource.TestCheckResourceAttr(resourceName, "name_alias",""),
+					resource.TestCheckResourceAttr(resourceName, "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr(resourceName, "description", ""),
+					resource.TestCheckResourceAttr(resourceName, "name_alias", ""),
 					resource.TestCheckResourceAttr(resourceName, "key_id", "1"),
 					resource.TestCheckResourceAttr(resourceName, "interface_profile_type", "none"),
-					
 				),
 			},
 			{
-				Config: CreateAccL3outBfdInterfaceProfileConfigWithOptionalValues(rName), 
+				Config: CreateAccL3outBfdInterfaceProfileConfigWithOptionalValues(rName),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckAciL3outBfdInterfaceProfileExists(resourceName, &l3out_bfd_interface_profile_updated),
 					resource.TestCheckResourceAttr(resourceName, "logical_interface_profile_dn", fmt.Sprintf("uni/tn-%s/out-%s/lnodep-%s/lifp-%s", rName, rName, rName, rName)),
@@ -51,13 +50,13 @@ func TestAccAciL3outBfdInterfaceProfile_Basic(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "key", "1234"),
 					resource.TestCheckResourceAttr(resourceName, "key_id", "255"),
 					resource.TestCheckResourceAttr(resourceName, "interface_profile_type", "sha1"),
-					testAccCheckAciL3outBfdInterfaceProfileIdEqual(&l3out_bfd_interface_profile_default,&l3out_bfd_interface_profile_updated),
+					testAccCheckAciL3outBfdInterfaceProfileIdEqual(&l3out_bfd_interface_profile_default, &l3out_bfd_interface_profile_updated),
 				),
-			},  
+			},
 			{
-				ResourceName:      resourceName,
-				ImportState:       true,
-				ImportStateVerify: true,
+				ResourceName:            resourceName,
+				ImportState:             true,
+				ImportStateVerify:       true,
 				ImportStateVerifyIgnore: []string{"key"},
 			},
 			{
@@ -72,7 +71,7 @@ func TestAccAciL3outBfdInterfaceProfile_Basic(t *testing.T) {
 				Config: CreateAccL3outBfdInterfaceProfileConfig(rName),
 			},
 			{
-				Config: CreateAccL3outBfdInterfaceProfileUpdateWithoutRequiredParams(),
+				Config:      CreateAccL3outBfdInterfaceProfileUpdateWithoutRequiredParams(),
 				ExpectError: regexp.MustCompile(`Missing required argument`),
 			},
 			{
@@ -88,7 +87,7 @@ func TestAccAciL3outBfdInterfaceProfile_Update(t *testing.T) {
 	resourceName := "aci_l3out_bfd_interface_profile.test"
 	rName := makeTestVariable(acctest.RandString(5))
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:	  func(){ testAccPreCheck(t) },
+		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
 		CheckDestroy: testAccCheckAciL3outBfdInterfaceProfileDestroy,
 		Steps: []resource.TestStep{
@@ -104,7 +103,7 @@ func TestAccAciL3outBfdInterfaceProfile_Update(t *testing.T) {
 					testAccCheckAciL3outBfdInterfaceProfileExists(resourceName, &l3out_bfd_interface_profile_updated),
 					resource.TestCheckResourceAttr(resourceName, "logical_interface_profile_dn", fmt.Sprintf("uni/tn-%s/out-%s/lnodep-%s/lifp-%s", rName, rName, rName, rName)),
 					resource.TestCheckResourceAttr(resourceName, "key_id", "100"),
-					testAccCheckAciL3outBfdInterfaceProfileIdEqual(&l3out_bfd_interface_profile_default,&l3out_bfd_interface_profile_updated),
+					testAccCheckAciL3outBfdInterfaceProfileIdEqual(&l3out_bfd_interface_profile_default, &l3out_bfd_interface_profile_updated),
 				),
 			},
 		},
@@ -117,7 +116,7 @@ func TestAccAciL3outBfdInterfaceProfile_Negative(t *testing.T) {
 	randomValue := makeTestVariable(acctest.RandString(5))
 
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:	  func(){ testAccPreCheck(t) },
+		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
 		CheckDestroy: testAccCheckAciL3outBfdInterfaceProfileDestroy,
 		Steps: []resource.TestStep{
@@ -133,40 +132,40 @@ func TestAccAciL3outBfdInterfaceProfile_Negative(t *testing.T) {
 				ExpectError: regexp.MustCompile(`failed validation for value '(.)+'`),
 			},
 			{
-				Config:      CreateAccL3outBfdInterfaceProfileUpdatedAttr(rName , "annotation", acctest.RandString(129)),
+				Config:      CreateAccL3outBfdInterfaceProfileUpdatedAttr(rName, "annotation", acctest.RandString(129)),
 				ExpectError: regexp.MustCompile(`failed validation for value '(.)+'`),
 			},
 			{
-				Config:      CreateAccL3outBfdInterfaceProfileUpdatedAttr(rName , "key", acctest.RandString(129)),
+				Config:      CreateAccL3outBfdInterfaceProfileUpdatedAttr(rName, "key", acctest.RandString(129)),
 				ExpectError: regexp.MustCompile(`failed validation for value '(.)+'`),
 			},
 			{
-				Config:      CreateAccL3outBfdInterfaceProfileUpdatedAttr(rName , "name_alias", acctest.RandString(64)),
+				Config:      CreateAccL3outBfdInterfaceProfileUpdatedAttr(rName, "name_alias", acctest.RandString(64)),
 				ExpectError: regexp.MustCompile(`failed validation for value '(.)+'`),
 			},
 			{
-				Config:      CreateAccL3outBfdInterfaceProfileUpdatedAttr(rName , "key_id", randomValue),
+				Config:      CreateAccL3outBfdInterfaceProfileUpdatedAttr(rName, "key_id", randomValue),
 				ExpectError: regexp.MustCompile(`unknown property value (.)+, name keyId, class bfdIfP (.)+`),
 			},
 			{
-				Config:      CreateAccL3outBfdInterfaceProfileUpdatedAttr(rName , "key_id", "0"),
+				Config:      CreateAccL3outBfdInterfaceProfileUpdatedAttr(rName, "key_id", "0"),
 				ExpectError: regexp.MustCompile(`Property keyId of (.)+ is out of range`),
 			},
 			{
-				Config:      CreateAccL3outBfdInterfaceProfileUpdatedAttr(rName , "key_id", "-10"),
+				Config:      CreateAccL3outBfdInterfaceProfileUpdatedAttr(rName, "key_id", "-10"),
 				ExpectError: regexp.MustCompile(`unknown property value (.)+, name keyId, class bfdIfP (.)+`),
 			},
 			{
-				Config:      CreateAccL3outBfdInterfaceProfileUpdatedAttr(rName , "key_id", "256"),
+				Config:      CreateAccL3outBfdInterfaceProfileUpdatedAttr(rName, "key_id", "256"),
 				ExpectError: regexp.MustCompile(`unknown property value (.)+, name keyId, class bfdIfP (.)+`),
 			},
 			{
-				Config:      CreateAccL3outBfdInterfaceProfileUpdatedAttr(rName , "interface_profile_type", randomValue),
+				Config:      CreateAccL3outBfdInterfaceProfileUpdatedAttr(rName, "interface_profile_type", randomValue),
 				ExpectError: regexp.MustCompile(`expected(.)+to be one of(.)+, got(.)+`),
 			},
-			
+
 			{
-				Config:      CreateAccL3outBfdInterfaceProfileUpdatedAttr(rName , randomParameter, randomValue),
+				Config:      CreateAccL3outBfdInterfaceProfileUpdatedAttr(rName, randomParameter, randomValue),
 				ExpectError: regexp.MustCompile(`An argument named(.)+is not expected here.`),
 			},
 			{
@@ -190,7 +189,7 @@ func TestAccAciL3outBfdInterfaceProfile_MultipleCreateDelete(t *testing.T) {
 	})
 }
 
-func CreateAccL3outBfdInterfaceProfileMultiple(rName  string) string {
+func CreateAccL3outBfdInterfaceProfileMultiple(rName string) string {
 	fmt.Println("=== STEP Testing Multiple l3out_bfd_interface_profile creation")
 	resource := fmt.Sprintf(`
 	
@@ -257,17 +256,17 @@ func testAccCheckAciL3outBfdInterfaceProfileExists(name string, l3out_bfd_interf
 	}
 }
 
-func testAccCheckAciL3outBfdInterfaceProfileDestroy(s *terraform.State) error {	
+func testAccCheckAciL3outBfdInterfaceProfileDestroy(s *terraform.State) error {
 	fmt.Println("=== STEP Testing l3out_bfd_interface_profile destroy")
 	client := testAccProvider.Meta().(*client.Client)
 	for _, rs := range s.RootModule().Resources {
-		 if rs.Type == "aci_l3out_bfd_interface_profile" {
-			cont,err := client.Get(rs.Primary.ID)
+		if rs.Type == "aci_l3out_bfd_interface_profile" {
+			cont, err := client.Get(rs.Primary.ID)
 			l3out_bfd_interface_profile := models.BFDInterfaceProfileFromContainer(cont)
 			if err == nil {
-				return fmt.Errorf("L3out Bfd Interface Profile %s Still exists",l3out_bfd_interface_profile.DistinguishedName)
+				return fmt.Errorf("L3out Bfd Interface Profile %s Still exists", l3out_bfd_interface_profile.DistinguishedName)
 			}
-		}else{
+		} else {
 			continue
 		}
 	}
@@ -297,7 +296,7 @@ func CreateL3outBfdInterfaceProfileWithoutRequired() string {
 	resource := fmt.Sprintln(`
 	resource "aci_l3out_bfd_interface_profile" "test" {
 		}
-	`,)
+	`)
 	return resource
 }
 
@@ -327,13 +326,12 @@ func CreateAccL3outBfdInterfaceProfileConfigWithRequiredParams(rName, pNameupdat
 	resource "aci_l3out_bfd_interface_profile" "test" {
 		logical_interface_profile_dn  = aci_logical_interface_profile.test.id
 	}
-	`, rName, rName, rName, pNameupdated )
+	`, rName, rName, rName, pNameupdated)
 	return resource
 }
 
-
-func CreateAccL3outBfdInterfaceProfileConfig(rName  string) string {
-	fmt.Println("=== STEP Testing l3out_bfd_interface_profile creation with required arguement only")
+func CreateAccL3outBfdInterfaceProfileConfig(rName string) string {
+	fmt.Println("=== STEP Testing l3out_bfd_interface_profile creation with required argument only")
 	resource := fmt.Sprintf(`
 	
 	resource "aci_tenant" "test" {
@@ -362,7 +360,7 @@ func CreateAccL3outBfdInterfaceProfileConfig(rName  string) string {
 	return resource
 }
 
-func CreateAccL3outBfdInterfaceProfileWithInValidParentDn(rName  string) string {
+func CreateAccL3outBfdInterfaceProfileWithInValidParentDn(rName string) string {
 	fmt.Println("=== STEP  Negative Case: Testing l3out_bfd_interface_profile creation with invalid parent Dn")
 	resource := fmt.Sprintf(`
 	
@@ -384,10 +382,9 @@ func CreateAccL3outBfdInterfaceProfileWithInValidParentDn(rName  string) string 
 	resource "aci_l3out_bfd_interface_profile" "test" {
 		logical_interface_profile_dn  = aci_logical_node_profile.test.id	
 	}
-	`, rName, rName, rName, )
+	`, rName, rName, rName)
 	return resource
 }
-
 
 func CreateAccL3outBfdInterfaceProfileConfigWithOptionalValues(rName string) string {
 	fmt.Println("=== STEP  Basic: Testing l3out_bfd_interface_profile creation with optional parameters")
@@ -438,7 +435,7 @@ func CreateAccL3outBfdInterfaceProfileUpdateWithoutRequiredParams() string {
 	return resource
 }
 
-func CreateAccL3outBfdInterfaceProfileUpdatedAttr(rName, attribute,value string) string {
+func CreateAccL3outBfdInterfaceProfileUpdatedAttr(rName, attribute, value string) string {
 	fmt.Printf("=== STEP Testing l3out_bfd_interface_profile attribute: %s=%s \n", attribute, value)
 	resource := fmt.Sprintf(`
 	
@@ -465,6 +462,6 @@ func CreateAccL3outBfdInterfaceProfileUpdatedAttr(rName, attribute,value string)
 		logical_interface_profile_dn  = aci_logical_interface_profile.test.id
 		%s = "%s"
 	}
-	`, rName, rName, rName, rName ,attribute,value)
+	`, rName, rName, rName, rName, attribute, value)
 	return resource
 }

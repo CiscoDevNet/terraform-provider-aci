@@ -122,7 +122,7 @@ func CreateAccAAADomainDSConfigWithRandomAttr(rName, key, value string) string {
 }
 
 func CreateAccAAADomainDSConfig(rName string) string {
-	fmt.Println("=== STEP  testing aaa_domain data source with required arguements only")
+	fmt.Println("=== STEP  testing aaa_domain data source with required arguments only")
 	resource := fmt.Sprintf(`
 	
 	resource "aci_aaa_domain" "test" {
@@ -135,4 +135,3 @@ func CreateAccAAADomainDSConfig(rName string) string {
 	`, rName)
 	return resource
 }
-
