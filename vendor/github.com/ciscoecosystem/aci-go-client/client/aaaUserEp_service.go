@@ -1,27 +1,23 @@
 package client
 
-
-
 import (
-	
 	"fmt"
+	"log"
 
-	"github.com/ciscoecosystem/aci-go-client/models"
 	"github.com/ciscoecosystem/aci-go-client/container"
-	
+	"github.com/ciscoecosystem/aci-go-client/models"
 )
 
-
-func (sm *ServiceManager) CreateUserManagement(description string, nameAlias string, aaaUserEpAttr models.UserManagementAttributes) (*models.UserManagement, error) {	
-	rn := fmt.Sprintf(models.RnaaaUserEp , )
-	parentDn := fmt.Sprintf(models.ParentDnaaaUserEp, )
+func (sm *ServiceManager) CreateUserManagement(description string, nameAlias string, aaaUserEpAttr models.UserManagementAttributes) (*models.UserManagement, error) {
+	rn := fmt.Sprintf(models.RnaaaUserEp)
+	parentDn := fmt.Sprintf(models.ParentDnaaaUserEp)
 	aaaUserEp := models.NewUserManagement(rn, parentDn, description, nameAlias, aaaUserEpAttr)
 	err := sm.Save(aaaUserEp)
 	return aaaUserEp, err
 }
 
 func (sm *ServiceManager) ReadUserManagement() (*models.UserManagement, error) {
-	dn := fmt.Sprintf(models.DnaaaUserEp, )
+	dn := fmt.Sprintf(models.DnaaaUserEp)
 	cont, err := sm.Get(dn)
 	if err != nil {
 		return nil, err
@@ -31,22 +27,22 @@ func (sm *ServiceManager) ReadUserManagement() (*models.UserManagement, error) {
 }
 
 func (sm *ServiceManager) DeleteUserManagement() error {
-	dn := fmt.Sprintf(models.DnaaaUserEp, )
+	dn := fmt.Sprintf(models.DnaaaUserEp)
 	return sm.DeleteByDn(dn, models.AaauserepClassName)
 }
 
 func (sm *ServiceManager) UpdateUserManagement(description string, nameAlias string, aaaUserEpAttr models.UserManagementAttributes) (*models.UserManagement, error) {
-	rn := fmt.Sprintf(models.RnaaaUserEp , )
-	parentDn := fmt.Sprintf(models.ParentDnaaaUserEp, )
+	rn := fmt.Sprintf(models.RnaaaUserEp)
+	parentDn := fmt.Sprintf(models.ParentDnaaaUserEp)
 	aaaUserEp := models.NewUserManagement(rn, parentDn, description, nameAlias, aaaUserEpAttr)
-    aaaUserEp.Status = "modified"
+	aaaUserEp.Status = "modified"
 	err := sm.Save(aaaUserEp)
 	return aaaUserEp, err
 }
 
-func (sm *ServiceManager) ListUserManagement() ([]*models.UserManagement, error) {	
+func (sm *ServiceManager) ListUserManagement() ([]*models.UserManagement, error) {
 	dnUrl := fmt.Sprintf("%s/uni/aaaUserEp.json", models.BaseurlStr)
-    cont, err := sm.GetViaURL(dnUrl)
+	cont, err := sm.GetViaURL(dnUrl)
 	list := models.UserManagementListFromContainer(cont)
 	return list, err
 }
@@ -63,7 +59,6 @@ func (sm *ServiceManager) CreateRelationaaaRsToUserEp(parentDn, annotation, tDn 
 		}
 	}`, "aaaRsToUserEp", dn, annotation, tDn))
 
-	
 	jsonPayload, err := container.ParseJSON(containerJSON)
 	if err != nil {
 		return err
@@ -76,21 +71,21 @@ func (sm *ServiceManager) CreateRelationaaaRsToUserEp(parentDn, annotation, tDn 
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
+	log.Printf("%+v", cont)
 	return nil
 }
 
-func (sm *ServiceManager) DeleteRelationaaaRsToUserEp(parentDn string) error{
+func (sm *ServiceManager) DeleteRelationaaaRsToUserEp(parentDn string) error {
 	dn := fmt.Sprintf("%s/rstoUserEp", parentDn)
-	return sm.DeleteByDn(dn , "aaaRsToUserEp")
+	return sm.DeleteByDn(dn, "aaaRsToUserEp")
 }
 
-func (sm *ServiceManager) ReadRelationaaaRsToUserEp(parentDn string) (interface{},error) {	
-	dnUrl := fmt.Sprintf("%s/%s/%s.json",models.BaseurlStr,parentDn,"aaaRsToUserEp")
+func (sm *ServiceManager) ReadRelationaaaRsToUserEp(parentDn string) (interface{}, error) {
+	dnUrl := fmt.Sprintf("%s/%s/%s.json", models.BaseurlStr, parentDn, "aaaRsToUserEp")
 	cont, err := sm.GetViaURL(dnUrl)
-	contList := models.ListFromContainer(cont,"aaaRsToUserEp")
-	
-		if len(contList) > 0 {
+	contList := models.ListFromContainer(cont, "aaaRsToUserEp")
+
+	if len(contList) > 0 {
 		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {

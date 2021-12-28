@@ -2,6 +2,7 @@ package client
 
 import (
 	"fmt"
+	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/container"
 	"github.com/ciscoecosystem/aci-go-client/models"
@@ -70,7 +71,7 @@ func (sm *ServiceManager) CreateRelationinfraRsBfdIpv4InstPol(parentDn, annotati
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
+	log.Printf("%+v", cont)
 	return nil
 }
 
@@ -116,7 +117,7 @@ func (sm *ServiceManager) CreateRelationinfraRsBfdIpv6InstPol(parentDn, annotati
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
+	log.Printf("%+v", cont)
 	return nil
 }
 
@@ -162,7 +163,7 @@ func (sm *ServiceManager) CreateRelationinfraRsBfdMhIpv4InstPol(parentDn, annota
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
+	log.Printf("%+v", cont)
 	return nil
 }
 
@@ -208,7 +209,7 @@ func (sm *ServiceManager) CreateRelationinfraRsBfdMhIpv6InstPol(parentDn, annota
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
+	log.Printf("%+v", cont)
 	return nil
 }
 
@@ -254,7 +255,7 @@ func (sm *ServiceManager) CreateRelationinfraRsEquipmentFlashConfigPol(parentDn,
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
+	log.Printf("%+v", cont)
 	return nil
 }
 
@@ -300,7 +301,7 @@ func (sm *ServiceManager) CreateRelationinfraRsFcFabricPol(parentDn, annotation,
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
+	log.Printf("%+v", cont)
 	return nil
 }
 
@@ -346,7 +347,7 @@ func (sm *ServiceManager) CreateRelationinfraRsFcInstPol(parentDn, annotation, t
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
+	log.Printf("%+v", cont)
 	return nil
 }
 
@@ -392,7 +393,7 @@ func (sm *ServiceManager) CreateRelationinfraRsIaclLeafProfile(parentDn, annotat
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
+	log.Printf("%+v", cont)
 	return nil
 }
 
@@ -438,7 +439,7 @@ func (sm *ServiceManager) CreateRelationinfraRsL2NodeAuthPol(parentDn, annotatio
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
+	log.Printf("%+v", cont)
 	return nil
 }
 
@@ -484,7 +485,7 @@ func (sm *ServiceManager) CreateRelationinfraRsLeafCoppProfile(parentDn, annotat
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
+	log.Printf("%+v", cont)
 	return nil
 }
 
@@ -530,7 +531,7 @@ func (sm *ServiceManager) CreateRelationinfraRsLeafPGrpToCdpIfPol(parentDn, anno
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
+	log.Printf("%+v", cont)
 	return nil
 }
 
@@ -576,7 +577,7 @@ func (sm *ServiceManager) CreateRelationinfraRsLeafPGrpToLldpIfPol(parentDn, ann
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
+	log.Printf("%+v", cont)
 	return nil
 }
 
@@ -622,7 +623,7 @@ func (sm *ServiceManager) CreateRelationinfraRsMonNodeInfraPol(parentDn, annotat
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
+	log.Printf("%+v", cont)
 	return nil
 }
 
@@ -668,7 +669,7 @@ func (sm *ServiceManager) CreateRelationinfraRsMstInstPol(parentDn, annotation, 
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
+	log.Printf("%+v", cont)
 	return nil
 }
 
@@ -714,7 +715,7 @@ func (sm *ServiceManager) CreateRelationinfraRsNetflowNodePol(parentDn, annotati
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
+	log.Printf("%+v", cont)
 	return nil
 }
 
@@ -760,7 +761,7 @@ func (sm *ServiceManager) CreateRelationinfraRsPoeInstPol(parentDn, annotation, 
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
+	log.Printf("%+v", cont)
 	return nil
 }
 
@@ -806,7 +807,7 @@ func (sm *ServiceManager) CreateRelationinfraRsTopoctrlFastLinkFailoverInstPol(p
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
+	log.Printf("%+v", cont)
 	return nil
 }
 
@@ -852,7 +853,7 @@ func (sm *ServiceManager) CreateRelationinfraRsTopoctrlFwdScaleProfPol(parentDn,
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
+	log.Printf("%+v", cont)
 	return nil
 }
 
