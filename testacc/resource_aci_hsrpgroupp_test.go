@@ -47,6 +47,7 @@ func TestAccAciL3outHsrpInterfaceGroup_Basic(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "ip", "10.20.30.40"),
 					resource.TestCheckResourceAttr(resourceName, "ip_obtain_mode", "admin"),
 					resource.TestCheckResourceAttr(resourceName, "mac", "00:00:00:00:00:00"),
+					resource.TestCheckResourceAttr(resourceName, "relation_hsrp_rs_group_pol", ""),
 				),
 			},
 			{
@@ -65,6 +66,7 @@ func TestAccAciL3outHsrpInterfaceGroup_Basic(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "mac", "02:10:45:00:00:56"),
 					resource.TestCheckResourceAttr(resourceName, "l3out_hsrp_interface_profile_dn", fmt.Sprintf("uni/tn-%s/out-%s/lnodep-%s/lifp-%s/hsrpIfP", rName, rName, rName, rName)),
 					resource.TestCheckResourceAttr(resourceName, "name", rName),
+					resource.TestCheckResourceAttr(resourceName, "relation_hsrp_rs_group_pol", ""),
 					testAccCheckAciL3outHsrpInterfaceGroupIdEqual(&l3out_hsrp_interface_group_default, &l3out_hsrp_interface_group_updated),
 				),
 			},
@@ -279,7 +281,58 @@ func TestAccAciL3outHsrpInterfaceGroup_Negative(t *testing.T) {
 				ExpectError: regexp.MustCompile(`Invalid Configuration VIP configuration should be NULL, if learn/auto configuration is enabled.`),
 			},
 			{
+				Config:      CreateAccL3outHsrpInterfaceGroupForAdminAF6(rName2, rName2, rName2, rName2, rName2),
+				ExpectError: regexp.MustCompile(`Invalid Configuration HSRP V1 group is V4 only group`),
+			},
+			{
 				Config: CreateAccL3outHsrpInterfaceGroupConfig(rName1, rName1, rName1, rName1, rName1),
+			},
+		},
+	})
+}
+
+func TestAccAciL3outHsrpInterfaceGroup_RelationParameter(t *testing.T) {
+	relName1 := makeTestVariable(acctest.RandString(5))
+	relName2 := makeTestVariable(acctest.RandString(5))
+	var l3out_hsrp_interface_group_default models.HSRPGroupProfile
+	var l3out_hsrp_interface_group_updated models.HSRPGroupProfile
+	resourceName := "aci_l3out_hsrp_interface_group.test"
+	rName := makeTestVariable(acctest.RandString(5))
+	resource.ParallelTest(t, resource.TestCase{
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testAccProviders,
+		CheckDestroy: testAccCheckAciL3outHsrpInterfaceGroupDestroy,
+		Steps: []resource.TestStep{
+			{
+				Config: CreateAccL3outHsrpInterfaceGroupConfig(rName, rName, rName, rName, rName),
+				Check: resource.ComposeTestCheckFunc(
+					testAccCheckAciL3outHsrpInterfaceGroupExists(resourceName, &l3out_hsrp_interface_group_default),
+					resource.TestCheckResourceAttr(resourceName, "relation_hsrp_rs_group_pol", ""),
+				),
+			},
+			{
+				Config: CreateAccL3outHsrpInterfaceGroupConfigRel(rName, rName, rName, rName, rName, relName1),
+				Check: resource.ComposeTestCheckFunc(
+					testAccCheckAciL3outHsrpInterfaceGroupExists(resourceName, &l3out_hsrp_interface_group_updated),
+					resource.TestCheckResourceAttr(resourceName, "relation_hsrp_rs_group_pol", fmt.Sprintf("uni/tn-%s/hsrpGroupPol-%s", rName, relName1)),
+					testAccCheckAciL3outHsrpInterfaceGroupIdEqual(&l3out_hsrp_interface_group_default, &l3out_hsrp_interface_group_updated),
+				),
+			},
+			{
+				Config: CreateAccL3outHsrpInterfaceGroupConfigRel(rName, rName, rName, rName, rName, relName2),
+				Check: resource.ComposeTestCheckFunc(
+					testAccCheckAciL3outHsrpInterfaceGroupExists(resourceName, &l3out_hsrp_interface_group_updated),
+					resource.TestCheckResourceAttr(resourceName, "relation_hsrp_rs_group_pol", fmt.Sprintf("uni/tn-%s/hsrpGroupPol-%s", rName, relName2)),
+					testAccCheckAciL3outHsrpInterfaceGroupIdEqual(&l3out_hsrp_interface_group_default, &l3out_hsrp_interface_group_updated),
+				),
+			},
+			{
+				Config: CreateAccL3outHsrpInterfaceGroupConfig(rName, rName, rName, rName, rName),
+				Check: resource.ComposeTestCheckFunc(
+					testAccCheckAciL3outHsrpInterfaceGroupExists(resourceName, &l3out_hsrp_interface_group_default),
+					resource.TestCheckResourceAttr(resourceName, "relation_hsrp_rs_group_pol", ""),
+					testAccCheckAciL3outHsrpInterfaceGroupIdEqual(&l3out_hsrp_interface_group_default, &l3out_hsrp_interface_group_updated),
+				),
 			},
 		},
 	})
@@ -488,6 +541,47 @@ func CreateAccL3outHsrpInterfaceGroupConfigs(rName string) string {
 		ip = "10.20.30.50"
 	}
 	`, rName, rName, rName, rName, rName+"1", rName+"2", rName+"3")
+	return resource
+}
+
+func CreateAccL3outHsrpInterfaceGroupConfigRel(fvTenantName, l3extOutName, l3extLNodePName, l3extLIfPName, rName, relName string) string {
+	fmt.Printf("=== STEP  testing l3out_hsrp_interface_group creation with relation resource name %s\n", relName)
+	resource := fmt.Sprintf(`
+	resource "aci_tenant" "test" {
+		name 		= "%s"
+	}
+	
+	resource "aci_l3_outside" "test" {
+		name 		= "%s"
+		tenant_dn = aci_tenant.test.id
+	}
+	
+	resource "aci_logical_node_profile" "test" {
+		name 		= "%s"
+		l3_outside_dn = aci_l3_outside.test.id
+	}
+
+  	resource "aci_logical_interface_profile" "test" {
+    	logical_node_profile_dn = aci_logical_node_profile.test.id
+    	name = "%s"
+  	}
+	
+	resource "aci_l3out_hsrp_interface_profile" "test" {
+		logical_interface_profile_dn = aci_logical_interface_profile.test.id
+	}
+	
+	resource "aci_l3out_hsrp_interface_group" "test" {
+		l3out_hsrp_interface_profile_dn  = aci_l3out_hsrp_interface_profile.test.id
+		name  = "%s"
+    	ip = "10.20.30.40"
+		relation_hsrp_rs_group_pol = aci_hsrp_group_policy.test.id
+	}
+
+	resource "aci_hsrp_group_policy" "test" {
+		tenant_dn = aci_tenant.test.id
+		name = "%s"
+	  }
+	`, fvTenantName, l3extOutName, l3extLNodePName, l3extLIfPName, rName, relName)
 	return resource
 }
 
@@ -750,6 +844,45 @@ func CreateAccL3outHsrpInterfaceGroupForAuto(fvTenantName, l3extOutName, l3extLN
 		name  = "%s"
 		ip_obtain_mode = "auto"
 		ip = "1.2.3.4"
+	}
+	`, fvTenantName, l3extOutName, l3extLNodePName, l3extLIfPName, rName)
+	return resource
+}
+
+func CreateAccL3outHsrpInterfaceGroupForAdminAF6(fvTenantName, l3extOutName, l3extLNodePName, l3extLIfPName, rName string) string {
+	fmt.Println("=== STEP  testing l3out_hsrp_interface_group when ip_obtain_mode is admin and group_af is ipv6")
+	resource := fmt.Sprintf(`
+	resource "aci_tenant" "test" {
+		name 		= "%s"
+		description = "tenant created while acceptance testing"
+	
+	}
+	
+	resource "aci_l3_outside" "test" {
+		name 		= "%s"
+		tenant_dn = aci_tenant.test.id
+	}
+	
+	resource "aci_logical_node_profile" "test" {
+		name 		= "%s"
+		l3_outside_dn = aci_l3_outside.test.id
+	}
+
+  	resource "aci_logical_interface_profile" "test" {
+    	logical_node_profile_dn = aci_logical_node_profile.test.id
+    	name = "%s"
+  	}
+	
+	resource "aci_l3out_hsrp_interface_profile" "test" {
+		logical_interface_profile_dn = aci_logical_interface_profile.test.id
+	}
+	
+	resource "aci_l3out_hsrp_interface_group" "test" {
+		l3out_hsrp_interface_profile_dn  = aci_l3out_hsrp_interface_profile.test.id
+		name  = "%s"
+		ip_obtain_mode = "admin"
+		group_af = "ipv6"
+		ip = "2001:0db8:85a3:0000:0000:8a2e:0370:7334"
 	}
 	`, fvTenantName, l3extOutName, l3extLNodePName, l3extLIfPName, rName)
 	return resource
