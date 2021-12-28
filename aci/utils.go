@@ -282,29 +282,6 @@ func GetQuoted(s string) string {
 	return ans
 }
 
-func validateIntRange(a, b int) schema.SchemaValidateFunc {
-	return func(i interface{}, k string) (s []string, es []error) {
-		v, ok := i.(string)
-		if !ok {
-			es = append(es, fmt.Errorf("expected type of %s to be string", k))
-			return
-		}
-
-		vint, err := strconv.Atoi(v)
-
-		if err != nil {
-			es = append(es, err)
-			return
-		}
-
-		if vint < a || vint > b {
-			es = append(es, fmt.Errorf("property is out of range"))
-			return
-		}
-		return
-	}
-}
-
 func StringListtoString(list []string) string {
 	val := ""
 	val = val + "["
