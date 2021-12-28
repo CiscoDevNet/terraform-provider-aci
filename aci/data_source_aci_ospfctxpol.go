@@ -40,9 +40,12 @@ func dataSourceAciOSPFTimersPolicy() *schema.Resource {
 			},
 
 			"ctrl": &schema.Schema{
-				Type:     schema.TypeString,
+				Type:     schema.TypeList,
 				Optional: true,
 				Computed: true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
 			},
 
 			"dist": &schema.Schema{

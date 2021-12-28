@@ -19,7 +19,7 @@ resource "aci_l3out_ospf_external_policy" "example" {
   annotation     = "example"
   description    = "from terraform"
   area_cost      = "1"
-  area_ctrl      = "redistribute,summary"
+  area_ctrl      = ["redistribute", "summary"]
   area_id        = "0.0.0.1"
   area_type      = "nssa"
   multipod_internal = "no"
@@ -34,7 +34,7 @@ resource "aci_l3out_ospf_external_policy" "example" {
 - `description` - (Optional) Description for object L3-out OSPF External Policy.
 - `area_cost` - (Optional) The OSPF Area cost. Default value: "1".
 - `area_ctrl` - (Optional) The controls of redistribution and summary LSA generation into NSSA and Stub areas.  
-  Allowed values: "redistribute", "summary", "suppress-fa", "unspecified" (Multiple Comma-Delimited values are allowed. E.g., "redistribute,summary"). Default value: "redistribute,summary".
+  Allowed values: "redistribute", "summary", "suppress-fa", "unspecified"  Default value: ["redistribute","summary"].
 - `area_id` - (Optional) The OSPF Area ID.
 - `area_type` - (Optional) The area type.  
   Allowed values: "nssa", "regular", "stub". Default value: "nssa".

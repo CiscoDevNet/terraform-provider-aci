@@ -94,6 +94,8 @@ func setOspfRouteSummarizationAttributes(ospfRtSummPol *models.OspfRouteSummariz
 	if err != nil {
 		return d, err
 	}
+	d.Set("tenant_dn", GetParentDn(dn, fmt.Sprintf("/ospfrtsumm-%s", ospfRtSummPolMap["name"])))
+
 	d.Set("name", ospfRtSummPolMap["name"])
 
 	d.Set("annotation", ospfRtSummPolMap["annotation"])

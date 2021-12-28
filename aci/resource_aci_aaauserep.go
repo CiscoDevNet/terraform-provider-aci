@@ -673,12 +673,7 @@ func resourceAciUserManagementRead(ctx context.Context, d *schema.ResourceData, 
 		log.Printf("[DEBUG] Error while reading relation aaaRsToUserEp %v", err)
 		d.Set("relation_aaa_rs_to_user_ep", "")
 	} else {
-		if _, ok := d.GetOk("relation_aaa_rs_to_user_ep"); ok {
-			tfName := d.Get("relation_aaa_rs_to_user_ep").(string)
-			if tfName != aaaRsToUserEpData {
-				d.Set("relation_aaa_rs_to_user_ep", "")
-			}
-		}
+		setRelationAttribute(d, "relation_aaa_rs_to_user_ep", aaaRsToUserEpData)
 	}
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 	return nil

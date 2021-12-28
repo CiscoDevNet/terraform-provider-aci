@@ -119,7 +119,7 @@ func setDHCPRelayPolicyAttributes(dhcpRelayP *models.DHCPRelayPolicy, d *schema.
 	if err != nil {
 		return d, err
 	}
-
+	d.Set("tenant_dn", GetParentDn(dn, fmt.Sprintf("/relayp-%s", dhcpRelayPMap["name"])))
 	d.Set("name", dhcpRelayPMap["name"])
 
 	d.Set("annotation", dhcpRelayPMap["annotation"])
@@ -325,12 +325,12 @@ func resourceAciDHCPRelayPolicyRead(ctx context.Context, d *schema.ResourceData,
 
 	} else {
 		dhcpRsProvMap := dhcpRsProvData.([]map[string]string)
-		st := make([]map[string]string, 0)
+		st := make([]map[string]string, 0, 1)
 		for _, dhcpRsProvObj := range dhcpRsProvMap {
-			obj := make(map[string]string, 0)
-			obj["addr"] = dhcpRsProvObj["addr"]
-			obj["tdn"] = dhcpRsProvObj["tDn"]
-			st = append(st, obj)
+			st = append(st, map[string]string{
+				"tdn":  dhcpRsProvObj["tDn"],
+				"addr": dhcpRsProvObj["addr"],
+			})
 		}
 		d.Set("relation_dhcp_rs_prov", st)
 	}

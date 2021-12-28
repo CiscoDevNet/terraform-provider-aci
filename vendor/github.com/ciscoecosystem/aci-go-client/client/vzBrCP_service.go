@@ -95,7 +95,7 @@ func (sm *ServiceManager) ReadRelationvzRsGraphAttFromContract(parentDn string) 
 	contList := models.ListFromContainer(cont, "vzRsGraphAtt")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnVnsAbsGraphName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err

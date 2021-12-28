@@ -81,7 +81,7 @@ func setBgpBestPathPolicyAttributes(bgpBestPathCtrlPol *models.BgpBestPathPolicy
 	if err != nil {
 		return d, err
 	}
-
+	d.Set("tenant_dn", GetParentDn(dn, fmt.Sprintf("/bestpath-%s", bgpBestPathCtrlPolMap["name"])))
 	d.Set("name", bgpBestPathCtrlPolMap["name"])
 
 	d.Set("annotation", bgpBestPathCtrlPolMap["annotation"])

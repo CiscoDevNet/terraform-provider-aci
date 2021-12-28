@@ -346,12 +346,12 @@ func (sm *ServiceManager) ReadRelationvmmRsVmmCtrlrP(parentDn string) (interface
 	cont, err := sm.GetViaURL(dnUrl)
 	contList := models.ListFromContainer(cont, "vmmRsVmmCtrlrP")
 
-	st := &schema.Set{
-		F: schema.HashString,
-	}
+	st := make([]map[string]string, 0, 1)
 	for _, contItem := range contList {
-		dat := models.G(contItem, "tDn")
-		st.Add(dat)
+		paramMap := make(map[string]string)
+		paramMap["epgDeplPref"] = models.G(contItem, "epgDeplPref")
+		paramMap["tDn"] = models.G(contItem, "tDn")
+		st = append(st, paramMap)
 	}
 	return st, err
 }
@@ -408,11 +408,10 @@ func (sm *ServiceManager) CreateRelationvmmRsVxlanNsDef(parentDn, annotation, tD
 		"%s": {
 			"attributes": {
 				"dn": "%s",
-				"annotation": "%s",
 				"tDn": "%s"
 			}
 		}
-	}`, "vmmRsVxlanNsDef", dn, annotation, tDn))
+	}`, "vmmRsVxlanNsDef", dn, tDn))
 
 	jsonPayload, err := container.ParseJSON(containerJSON)
 	if err != nil {

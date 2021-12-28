@@ -74,7 +74,7 @@ func setAccessGenericAttributes(infraGeneric *models.AccessGeneric, d *schema.Re
 	}
 
 	d.Set("name", infraGenericMap["name"])
-
+	d.Set("attachable_access_entity_profile_dn", GetParentDn(dn, fmt.Sprintf("/gen-%s", infraGenericMap["name"])))
 	d.Set("annotation", infraGenericMap["annotation"])
 	d.Set("name_alias", infraGenericMap["nameAlias"])
 	return d, nil

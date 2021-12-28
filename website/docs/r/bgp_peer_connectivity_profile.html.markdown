@@ -19,14 +19,14 @@ resource "aci_bgp_peer_connectivity_profile" "example" {
   parent_dn           = aci_logical_node_profile.example.id
   addr                = "10.0.0.1"
   description         = "from terraform"
-  addr_t_ctrl         = "af-mcast,af-ucast"
+  addr_t_ctrl         = ["af-mcast", "af-ucast"]
   allowed_self_as_cnt = "3"
   annotation          = "example"
-  ctrl                = "allow-self-as"
+  ctrl                = ["allow-self-as"]
   name_alias          = "example"
   password            = "example"
-  peer_ctrl           = "bfd"
-  private_a_sctrl     = "remove-all,remove-exclusive"
+  peer_ctrl           = ["bfd"]
+  private_a_sctrl     = ["remove-all", "remove-exclusive"]
   ttl                 = "1"
   weight              = "1"
   as_number           = "1"
@@ -86,15 +86,11 @@ resource "aci_bgp_peer_connectivity_profile" "example" {
 - `allowed_self_as_cnt` - (Optional) The number of occurrences of a local Autonomous System Number (ASN). Default value: "3".
 - `description` - (Optional) Description for object bgp peer connectivity profile.
 - `annotation` - (Optional) Annotation for object bgp peer connectivity profile.
-- `ctrl` - (Optional)
-  The peer controls specify which Border Gateway Protocol (BGP) attributes are sent to a peer. (Multiple Comma-Delimited values are allowed. E.g., "allow-self-as,as-override"). Apply "" to clear all the values.  
-   Allowed values: "allow-self-as", "as-override", "dis-peer-as-check", "nh-self", "send-com", "send-ext-com". Default value: "".
+- `ctrl` - (Optional) The peer controls specify which Border Gateway Protocol (BGP) attributes are sent to a peer.Allowed values: "allow-self-as", "as-override", "dis-peer-as-check", "nh-self", "send-com", "send-ext-com".
 - `name_alias` - (Optional) Name alias for object bgp peer connectivity profile.
 - `password` - (Optional, Sensitive) Peer password. If `password` is set, the peer password will reset when terraform configuration is applied.
-- `peer_ctrl` - (Optional) The peer controls. (Multiple Comma-Delimited values are allowed. E.g., "bfd,dis-conn-check"). Apply "" to clear all the values.
-  Allowed values: "bfd", "dis-conn-check". Default value: "".
-- `private_a_sctrl` - (Optional) Remove private AS. (Multiple Comma-Delimited values are allowed. E.g., "remove-all,remove-exclusive"). Apply "" to clear all the values.
-  Allowed values: "remove-all", "remove-exclusive", "replace-as". Default value: "".
+- `peer_ctrl` - (Optional) The peer controls. Allowed values: "bfd", "dis-conn-check". 
+- `private_a_sctrl` - (Optional) Remove private AS. Allowed values: "remove-all", "remove-exclusive", "replace-as".
 - `ttl` - (Optional) Specifies time to live (TTL). Default value: "1".
 - `weight` - (Optional) The weight of the fault in calculating the health score of an object. A higher weight causes a higher degradation of the health score of the affected object. Default value: "0".
 - `as_number` - (Optional) A number that uniquely identifies an autonomous system.

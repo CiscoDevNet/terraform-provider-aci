@@ -63,6 +63,7 @@ Allowed values: "unspecified", "ftpData", "smtp", "dns", "http","pop3", "https",
 Allowed values: "unspecified", "ftpData", "smtp", "dns", "http","pop3", "https", "rtsp"
 * `filter.filter_entry.stateful` - (Optional) Determines if entry is stateful or not. Allowed values are "yes" and "no". Default is "no".
 * `filter.filter_entry.tcp_rules` - (Optional) TCP Session Rules. Allowed values are "unspecified", "est", "syn", "ack", "fin" and "rst". Default is "unspecified".
+* `relation_vz_rs_graph_att` - (Optional) Relation to class vzRsGraphAtt. Cardinality - N_TO_ONE. Type - String.
 
 ## Attribute Reference
 

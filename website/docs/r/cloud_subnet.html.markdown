@@ -39,8 +39,6 @@ Manages ACI Cloud Subnet
 * `scope` - (Optional) The domain applicable to the capability. Allowed values are "public", "private" and "shared". Default is "private".
 * `usage` - (Optional) The usage of the port. This property shows how the port is used. Allowed values are "user", "gateway" and "infra-router". Default is "user". To make any subnet a Gateway subnet use `usage` = "gateway".	
 * `zone` - (Optional) [AWS Only] Availability zone where the subnet must be deployed. This property can carry both the actual zone or the ACI logical zone name. In the former case, the driver directly uses the value of this property. In the latter case, the Connector has to first resolve the mapping from ACI logical zone to the actual AWS zone. This parameter is required in APIC v5.0 or higher
-
-* `relation_cloud_rs_zone_attach` - (Optional) Relation to class cloudZone. Cardinality - N_TO_ONE. Type - String.
                 
 * `relation_cloud_rs_subnet_to_flow_log` - (Optional) Relation to class cloudAwsFlowLogPol. Cardinality - N_TO_ONE. Type - String.
                 

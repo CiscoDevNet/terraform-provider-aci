@@ -4,8 +4,6 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"reflect"
-	"sort"
 	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
@@ -617,6 +615,12 @@ func resourceAciLeafProfileRead(ctx context.Context, d *schema.ResourceData, m i
 	leafSelectors := make([]*models.SwitchAssociation, 0, 1)
 	nodeBlocks := make([]*models.NodeBlock, 0, 1)
 	selectors := d.Get("leaf_selector_ids").([]interface{})
+	if _, ok := d.GetOk("leaf_selector_ids"); !ok {
+		d.Set("leaf_selector_ids", make([]string, 0, 1))
+	}
+	if _, ok := d.GetOk("node_block_ids"); !ok {
+		d.Set("node_block_ids", make([]string, 0, 1))
+	}
 	for _, val := range selectors {
 		selectorDn := val.(string)
 		selector, err := getRemoteSwitchAssociationFromLeafP(aciClient, selectorDn)
@@ -643,15 +647,7 @@ func resourceAciLeafProfileRead(ctx context.Context, d *schema.ResourceData, m i
 		d.Set("relation_infra_rs_acc_card_p", make([]string, 0, 1))
 
 	} else {
-		if _, ok := d.GetOk("relation_infra_rs_acc_card_p"); ok {
-			relationParamList := toStringList(d.Get("relation_infra_rs_acc_card_p").(*schema.Set).List())
-			infraRsAccCardPDataList := toStringList(infraRsAccCardPData.(*schema.Set).List())
-			sort.Strings(relationParamList)
-			sort.Strings(infraRsAccCardPDataList)
-			if !reflect.DeepEqual(relationParamList, infraRsAccCardPDataList) {
-				d.Set("relation_infra_rs_acc_card_p", make([]string, 0, 1))
-			}
-		}
+		setRelationAttribute(d, "relation_infra_rs_acc_card_p", toStringList(infraRsAccCardPData.(*schema.Set).List()))
 	}
 
 	infraRsAccPortPData, err := aciClient.ReadRelationinfraRsAccPortPFromLeafProfile(dn)
@@ -660,15 +656,7 @@ func resourceAciLeafProfileRead(ctx context.Context, d *schema.ResourceData, m i
 		d.Set("relation_infra_rs_acc_port_p", make([]string, 0, 1))
 
 	} else {
-		if _, ok := d.GetOk("relation_infra_rs_acc_port_p"); ok {
-			relationParamList := toStringList(d.Get("relation_infra_rs_acc_port_p").(*schema.Set).List())
-			infraRsAccPortPDataList := toStringList(infraRsAccPortPData.(*schema.Set).List())
-			sort.Strings(relationParamList)
-			sort.Strings(infraRsAccPortPDataList)
-			if !reflect.DeepEqual(relationParamList, infraRsAccPortPDataList) {
-				d.Set("relation_infra_rs_acc_port_p", make([]string, 0, 1))
-			}
-		}
+		setRelationAttribute(d, "relation_infra_rs_acc_port_p", toStringList(infraRsAccPortPData.(*schema.Set).List()))
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())

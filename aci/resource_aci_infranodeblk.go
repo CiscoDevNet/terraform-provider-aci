@@ -76,7 +76,7 @@ func setNodeBlockAttributes(infraNodeBlk *models.NodeBlock, d *schema.ResourceDa
 	dn := d.Id()
 	d.SetId(infraNodeBlk.DistinguishedName)
 	d.Set("description", infraNodeBlk.Description)
-	// d.Set("switch_association_dn", GetParentDn(infraNodeBlk.DistinguishedName))
+
 	if dn != infraNodeBlk.DistinguishedName {
 		d.Set("switch_association_dn", "")
 	}
@@ -86,7 +86,7 @@ func setNodeBlockAttributes(infraNodeBlk *models.NodeBlock, d *schema.ResourceDa
 	}
 
 	d.Set("name", infraNodeBlkMap["name"])
-
+	d.Set("switch_association_dn", GetParentDn(infraNodeBlk.DistinguishedName, fmt.Sprintf("/nodeblk-%s", infraNodeBlkMap["name"])))
 	d.Set("annotation", infraNodeBlkMap["annotation"])
 	d.Set("from_", infraNodeBlkMap["from_"])
 	d.Set("name_alias", infraNodeBlkMap["nameAlias"])

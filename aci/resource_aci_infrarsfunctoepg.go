@@ -108,7 +108,6 @@ func setEPGsUsingFunctionAttributes(infraRsFuncToEpg *models.EPGsUsingFunction, 
 	if err != nil {
 		return d, err
 	}
-
 	d.Set("tdn", infraRsFuncToEpgMap["tDn"])
 	d.Set("annotation", infraRsFuncToEpgMap["annotation"])
 	d.Set("encap", infraRsFuncToEpgMap["encap"])

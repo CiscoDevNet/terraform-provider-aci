@@ -91,7 +91,7 @@ func (sm *ServiceManager) ReadRelationbgpRsBgpNodeCtxPolFromL3outBGPProtocolProf
 	contList := models.ListFromContainer(cont, "bgpRsBgpNodeCtxPol")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnBgpCtxPolName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err

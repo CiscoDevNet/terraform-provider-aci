@@ -6,7 +6,6 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/container"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func (sm *ServiceManager) CreateVSwitchPolicyGroup(vmm_domain string, provider_profile_vendor string, description string, nameAlias string, vmmVSwitchPolicyContAttr models.VSwitchPolicyGroupAttributes) (*models.VSwitchPolicyGroup, error) {
@@ -116,12 +115,14 @@ func (sm *ServiceManager) ReadRelationvmmRsVswitchExporterPol(parentDn string) (
 	cont, err := sm.GetViaURL(dnUrl)
 	contList := models.ListFromContainer(cont, "vmmRsVswitchExporterPol")
 
-	st := &schema.Set{
-		F: schema.HashString,
-	}
+	st := make([]map[string]string, 0, 1)
 	for _, contItem := range contList {
-		dat := models.G(contItem, "tDn")
-		st.Add(dat)
+		paramMap := make(map[string]string)
+		paramMap["activeFlowTimeOut"] = models.G(contItem, "activeFlowTimeOut")
+		paramMap["idleFlowTimeOut"] = models.G(contItem, "idleFlowTimeOut")
+		paramMap["samplingRate"] = models.G(contItem, "samplingRate")
+		paramMap["tDn"] = models.G(contItem, "tDn")
+		st = append(st, paramMap)
 	}
 	return st, err
 }

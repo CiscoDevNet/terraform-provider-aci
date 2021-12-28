@@ -55,8 +55,8 @@ Manages ACI l3 extension subnet
 	* `relation_l3ext_rs_subnet_to_profile.tn_rtctrl_profile_dn` - (Optional) Associates the external EPGs with the route control profiles.
 	* `relation_l3ext_rs_subnet_to_profile.direction` - (Required) Relation to configure route map for each BGP peer in the inbound and outbound directions.
 
-- `relation_l3ext_rs_subnet_to_profile` - (Optional) Relation to class rtctrlProfile. Cardinality - N_TO_M. Type - Set of Map.
-- `relation_l3ext_rs_subnet_to_rt_summ` - (Optional) Relation to class rtsumARtSummPol. Cardinality - N_TO_ONE. Type - String.
+* `relation_l3ext_rs_subnet_to_profile` - (Optional) Relation to class rtctrlProfile. Cardinality - N_TO_M. Type - Set of Map.
+* `relation_l3ext_rs_subnet_to_rt_summ` - (Optional) Relation to class rtsumARtSummPol. Cardinality - N_TO_ONE. Type - String.
 
 ## Attribute Reference
 

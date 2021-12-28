@@ -81,7 +81,7 @@ func setAccessPortSelectorAttributes(infraHPortS *models.AccessPortSelector, d *
 	dn := d.Id()
 	d.SetId(infraHPortS.DistinguishedName)
 	d.Set("description", infraHPortS.Description)
-	// d.Set("leaf_interface_profile_dn", GetParentDn(infraHPortS.DistinguishedName))
+
 	if dn != infraHPortS.DistinguishedName {
 		d.Set("leaf_interface_profile_dn", "")
 	}
@@ -89,6 +89,7 @@ func setAccessPortSelectorAttributes(infraHPortS *models.AccessPortSelector, d *
 	if err != nil {
 		return d, err
 	}
+	d.Set("leaf_interface_profile_dn", GetParentDn(dn, fmt.Sprintf("/hports-%s-typ-%s", infraHPortSMap["name"], infraHPortSMap["type"])))
 
 	d.Set("name", infraHPortSMap["name"])
 
@@ -280,12 +281,7 @@ func resourceAciAccessPortSelectorRead(ctx context.Context, d *schema.ResourceDa
 		d.Set("relation_infra_rs_acc_base_grp", "")
 
 	} else {
-		if _, ok := d.GetOk("relation_infra_rs_acc_base_grp"); ok {
-			tfName := d.Get("relation_infra_rs_acc_base_grp").(string)
-			if tfName != infraRsAccBaseGrpData {
-				d.Set("relation_infra_rs_acc_base_grp", "")
-			}
-		}
+		setRelationAttribute(d, "relation_infra_rs_acc_base_grp", infraRsAccBaseGrpData.(string))
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())

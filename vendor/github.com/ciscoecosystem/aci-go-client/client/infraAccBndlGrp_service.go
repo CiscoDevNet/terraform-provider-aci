@@ -98,7 +98,7 @@ func (sm *ServiceManager) ReadRelationinfraRsSpanVSrcGrpFromPCVPCInterfacePolicy
 		F: schema.HashString,
 	}
 	for _, contItem := range contList {
-		dat := models.G(contItem, "tnSpanVSrcGrpName")
+		dat := models.G(contItem, "tDn")
 		st.Add(dat)
 	}
 	return st, err
@@ -186,7 +186,7 @@ func (sm *ServiceManager) ReadRelationinfraRsStormctrlIfPolFromPCVPCInterfacePol
 	contList := models.ListFromContainer(cont, "infraRsStormctrlIfPol")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnStormctrlIfPolName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -230,7 +230,7 @@ func (sm *ServiceManager) ReadRelationinfraRsLldpIfPolFromPCVPCInterfacePolicyGr
 	contList := models.ListFromContainer(cont, "infraRsLldpIfPol")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnLldpIfPolName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -274,7 +274,7 @@ func (sm *ServiceManager) ReadRelationinfraRsMacsecIfPolFromPCVPCInterfacePolicy
 	contList := models.ListFromContainer(cont, "infraRsMacsecIfPol")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnMacsecIfPolName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -318,7 +318,7 @@ func (sm *ServiceManager) ReadRelationinfraRsQosDppIfPolFromPCVPCInterfacePolicy
 	contList := models.ListFromContainer(cont, "infraRsQosDppIfPol")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnQosDppPolName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -362,7 +362,7 @@ func (sm *ServiceManager) ReadRelationinfraRsHIfPolFromPCVPCInterfacePolicyGroup
 	contList := models.ListFromContainer(cont, "infraRsHIfPol")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnFabricHIfPolName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -413,7 +413,7 @@ func (sm *ServiceManager) ReadRelationinfraRsNetflowMonitorPolFromPCVPCInterface
 
 	for _, contItem := range contList {
 		paramMap := make(map[string]string)
-		paramMap["tnNetflowMonitorPolName"] = models.G(contItem, "tnNetflowMonitorPolName")
+		paramMap["tnNetflowMonitorPolName"] = models.G(contItem, "tDn")
 		paramMap["fltType"] = models.G(contItem, "fltType")
 
 		st = append(st, paramMap)
@@ -460,7 +460,7 @@ func (sm *ServiceManager) ReadRelationinfraRsL2PortAuthPolFromPCVPCInterfacePoli
 	contList := models.ListFromContainer(cont, "infraRsL2PortAuthPol")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnL2PortAuthPolName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -504,7 +504,7 @@ func (sm *ServiceManager) ReadRelationinfraRsMcpIfPolFromPCVPCInterfacePolicyGro
 	contList := models.ListFromContainer(cont, "infraRsMcpIfPol")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnMcpIfPolName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -548,7 +548,7 @@ func (sm *ServiceManager) ReadRelationinfraRsL2PortSecurityPolFromPCVPCInterface
 	contList := models.ListFromContainer(cont, "infraRsL2PortSecurityPol")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnL2PortSecurityPolName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -592,7 +592,7 @@ func (sm *ServiceManager) ReadRelationinfraRsCoppIfPolFromPCVPCInterfacePolicyGr
 	contList := models.ListFromContainer(cont, "infraRsCoppIfPol")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnCoppIfPolName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -643,7 +643,7 @@ func (sm *ServiceManager) ReadRelationinfraRsSpanVDestGrpFromPCVPCInterfacePolic
 		F: schema.HashString,
 	}
 	for _, contItem := range contList {
-		dat := models.G(contItem, "tnSpanVDestGrpName")
+		dat := models.G(contItem, "tDn")
 		st.Add(dat)
 	}
 	return st, err
@@ -686,7 +686,7 @@ func (sm *ServiceManager) ReadRelationinfraRsLacpPolFromPCVPCInterfacePolicyGrou
 	contList := models.ListFromContainer(cont, "infraRsLacpPol")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnLacpLagPolName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -730,7 +730,7 @@ func (sm *ServiceManager) ReadRelationinfraRsCdpIfPolFromPCVPCInterfacePolicyGro
 	contList := models.ListFromContainer(cont, "infraRsCdpIfPol")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnCdpIfPolName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -774,7 +774,7 @@ func (sm *ServiceManager) ReadRelationinfraRsQosPfcIfPolFromPCVPCInterfacePolicy
 	contList := models.ListFromContainer(cont, "infraRsQosPfcIfPol")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnQosPfcIfPolName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -818,7 +818,7 @@ func (sm *ServiceManager) ReadRelationinfraRsQosSdIfPolFromPCVPCInterfacePolicyG
 	contList := models.ListFromContainer(cont, "infraRsQosSdIfPol")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnQosSdIfPolName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -862,7 +862,7 @@ func (sm *ServiceManager) ReadRelationinfraRsMonIfInfraPolFromPCVPCInterfacePoli
 	contList := models.ListFromContainer(cont, "infraRsMonIfInfraPol")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnMonInfraPolName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -906,7 +906,7 @@ func (sm *ServiceManager) ReadRelationinfraRsFcIfPolFromPCVPCInterfacePolicyGrou
 	contList := models.ListFromContainer(cont, "infraRsFcIfPol")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnFcIfPolName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -950,7 +950,7 @@ func (sm *ServiceManager) ReadRelationinfraRsQosIngressDppIfPolFromPCVPCInterfac
 	contList := models.ListFromContainer(cont, "infraRsQosIngressDppIfPol")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnQosDppPolName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -994,7 +994,7 @@ func (sm *ServiceManager) ReadRelationinfraRsQosEgressDppIfPolFromPCVPCInterface
 	contList := models.ListFromContainer(cont, "infraRsQosEgressDppIfPol")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnQosDppPolName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -1038,7 +1038,7 @@ func (sm *ServiceManager) ReadRelationinfraRsL2IfPolFromPCVPCInterfacePolicyGrou
 	contList := models.ListFromContainer(cont, "infraRsL2IfPol")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnL2IfPolName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -1082,7 +1082,7 @@ func (sm *ServiceManager) ReadRelationinfraRsStpIfPolFromPCVPCInterfacePolicyGro
 	contList := models.ListFromContainer(cont, "infraRsStpIfPol")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnStpIfPolName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err

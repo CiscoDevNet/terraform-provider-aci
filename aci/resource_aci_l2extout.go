@@ -116,6 +116,7 @@ func setL2OutsideAttributes(l2extOut *models.L2Outside, d *schema.ResourceData) 
 	}
 
 	d.Set("name", l2extOutMap["name"])
+	d.Set("tenant_dn", GetParentDn(l2extOut.DistinguishedName, fmt.Sprintf("/l2out-%s", l2extOutMap["name"])))
 
 	d.Set("annotation", l2extOutMap["annotation"])
 	d.Set("name_alias", l2extOutMap["nameAlias"])
@@ -321,12 +322,7 @@ func resourceAciL2OutsideRead(ctx context.Context, d *schema.ResourceData, m int
 		d.Set("relation_l2ext_rs_e_bd", "")
 
 	} else {
-		if _, ok := d.GetOk("relation_l2ext_rs_e_bd"); ok {
-			tfName := d.Get("relation_l2ext_rs_e_bd").(string)
-			if GetMOName(tfName) != l2extRsEBdData {
-				d.Set("relation_l2ext_rs_e_bd", "")
-			}
-		}
+		setRelationAttribute(d, "relation_l2ext_rs_e_bd", l2extRsEBdData.(string))
 	}
 
 	l2extRsL2DomAttData, err := aciClient.ReadRelationl2extRsL2DomAttFromL2Outside(dn)
@@ -335,12 +331,7 @@ func resourceAciL2OutsideRead(ctx context.Context, d *schema.ResourceData, m int
 		d.Set("relation_l2ext_rs_l2_dom_att", "")
 
 	} else {
-		if _, ok := d.GetOk("relation_l2ext_rs_l2_dom_att"); ok {
-			tfName := d.Get("relation_l2ext_rs_l2_dom_att").(string)
-			if tfName != l2extRsL2DomAttData {
-				d.Set("relation_l2ext_rs_l2_dom_att", "")
-			}
-		}
+		setRelationAttribute(d, "relation_l2ext_rs_l2_dom_att", l2extRsL2DomAttData.(string))
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
