@@ -122,7 +122,7 @@ func TestAccAciContract_Basic(t *testing.T) {
 				Config:      CreateAccContractWithoutRequiredFieldFilterEntry(rName),
 				ExpectError: regexp.MustCompile(`Missing required argument`),
 			},
-			
+
 			{
 				Config: CreateAccContractConfigWithFilterResourcesOptional(rName),
 				Check: resource.ComposeTestCheckFunc(

@@ -184,6 +184,22 @@ func TestAccAciL3outHsrpInterfaceGroup_Update(t *testing.T) {
 				),
 			},
 			{
+				Config: CreateAccL3outHsrpInterfaceGroupUpdatedAttr(rName1, rName1, rName1, rName1, rName1, "group_id", "255"),
+				Check: resource.ComposeTestCheckFunc(
+					testAccCheckAciL3outHsrpInterfaceGroupExists(resourceName, &l3out_hsrp_interface_group_updated),
+					resource.TestCheckResourceAttr(resourceName, "group_id", "255"),
+					testAccCheckAciL3outHsrpInterfaceGroupIdEqual(&l3out_hsrp_interface_group_default, &l3out_hsrp_interface_group_updated),
+				),
+			},
+			{
+				Config: CreateAccL3outHsrpInterfaceGroupUpdatedAttr(rName1, rName1, rName1, rName1, rName1, "group_id", "4095"),
+				Check: resource.ComposeTestCheckFunc(
+					testAccCheckAciL3outHsrpInterfaceGroupExists(resourceName, &l3out_hsrp_interface_group_updated),
+					resource.TestCheckResourceAttr(resourceName, "group_id", "4095"),
+					testAccCheckAciL3outHsrpInterfaceGroupIdEqual(&l3out_hsrp_interface_group_default, &l3out_hsrp_interface_group_updated),
+				),
+			},
+			{
 				Config: CreateAccL3outHsrpInterfaceGroupUpdatedAttr(rName1, rName1, rName1, rName1, rName1, "group_id", "2025"),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckAciL3outHsrpInterfaceGroupExists(resourceName, &l3out_hsrp_interface_group_updated),

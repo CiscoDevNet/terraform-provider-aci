@@ -37,7 +37,7 @@ resource "aci_l3out_hsrp_interface_group" "example" {
 - `description` - (Optional) Description for L3out HSRP interface group object.
 - `config_issues` - (Optional) Configuration issues for L3out HSRP interface group object. Allowed values are "GroupMac-Conflicts-Other-Group", "GroupName-Conflicts-Other-Group", "GroupVIP-Conflicts-Other-Group", "Multiple-Version-On-Interface", "Secondary-vip-conflicts-if-ip", "Secondary-vip-subnet-mismatch", "group-vip-conflicts-if-ip", "group-vip-subnet-mismatch" and "none". Default value is "none".
 - `group_af` - (Optional) Group type for L3out HSRP interface group object. Allowed values are "ipv4" and "ipv6". Default value is "ipv4".
-- `group_id` - (Optional) Group id for L3out HSRP interface group object. Allowed range for HSRP v1 "0" - "255" and for HSRP v2 "0" - "4096". Default value is "0".
+- `group_id` - (Optional) Group id for L3out HSRP interface group object. Allowed range for HSRP v1 "0" - "255" and for HSRP v2 "0" - "4095". Default value is "0".
 - `group_name` - (Optional) Group name for L3out HSRP interface group object.
 - `ip` - (Optional) IP address for L3out HSRP interface group object.
 - `ip_obtain_mode` - (Optional) IP obtain mode for L3out HSRP interface group object. Allowed values are "admin", "auto" and "learn". Default value is "admin".

@@ -268,7 +268,7 @@ func TestAccAciSubnet_NegativeCases(t *testing.T) {
 			},
 			{
 				Config:      CreateAccSubnetWithInValidParentDn(rName, ip),
-				ExpectError: regexp.MustCompile(`configured object (.)+ not found (.)+,`),
+				ExpectError: regexp.MustCompile(`is not valid bridge_domain_dn`),
 			},
 			{
 				Config:      CreateAccSubnetUpdatedAttr(rName, ip, "description", longDescAnnotation),
@@ -548,20 +548,15 @@ func CreateAccSubnetsConfig(rName, ip1, ip2, ip3 string) string {
 func CreateAccSubnetWithInValidParentDn(rName, ip string) string {
 	fmt.Println("=== STEP  Negative Case: testing subnet creation with invalid parent_dn")
 	resource := fmt.Sprintf(`
-	resource "aci_tenant" "test" {
-		name = "%s"
-	}
-
-	resource "aci_bridge_domain" "test"{
-		tenant_dn = aci_tenant.test.id
+	resource "aci_fc_domain" "test" {
 		name = "%s"
 	}
 
 	resource "aci_subnet" "test" {
-		parent_dn = "${aci_bridge_domain.test.id}xyz"
+		parent_dn = aci_fc_domain.test.id
 		ip = "%s"
 	}
-	`, rName, rName, ip)
+	`, rName, ip)
 	return resource
 }
 

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"reflect"
+	"regexp"
 	"sort"
 	"strings"
 
@@ -253,6 +254,10 @@ func checkForConflictingVRF(client *client.Client, tenantDN, bdName, vrfDn, ip s
 }
 
 func checkForConflictingIP(client *client.Client, parentDN string, ip string) error {
+	bdRegex := `^uni\/tn-[a-zA-Z0-9_.-]+\/BD-[a-zA-Z0-9_.-]+$`
+	if match, _ := regexp.MatchString(bdRegex, parentDN); !match {
+		return fmt.Errorf("%s is not valid bridge_domain_dn", parentDN)
+	}
 	tokens := strings.Split(parentDN, "/")
 	bdName := (strings.Split(tokens[2], "-"))[1]
 	tenantDn := fmt.Sprintf("%s/%s", tokens[0], tokens[1])
