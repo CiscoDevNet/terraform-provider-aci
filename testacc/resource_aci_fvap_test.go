@@ -222,7 +222,7 @@ func TestAccAciApplicationProfile_reltionalParameters(t *testing.T) {
 		PreCheck:          func() { testAccPreCheck(t) },
 		ProviderFactories: testAccProviders,
 		CheckDestroy:      testAccCheckAciApplicationProfileDestroy,
-		Steps: []resource.TestStep{git
+		Steps: []resource.TestStep{
 			{
 				Config: CreateAccApplicationProfileConfig(rName),
 				Check: resource.ComposeTestCheckFunc(
