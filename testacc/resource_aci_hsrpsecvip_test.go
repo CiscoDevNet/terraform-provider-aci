@@ -64,7 +64,7 @@ func TestAccAciL3outHSRPSecondaryVIP_Basic(t *testing.T) {
 				ImportStateVerify: true,
 			},
 			{
-				Config:      CreateAccL3outHSRPSecondaryVIPWithInavalidIP(rName, ip),
+				Config:      CreateAccL3outHSRPSecondaryVIPWithInvalidIP(rName),
 				ExpectError: regexp.MustCompile(`unknown property value (.)+`),
 			},
 			{
@@ -234,7 +234,7 @@ func TestAccAciL3outHSRPSecondaryVIP_MulipleCreateDelete(t *testing.T) {
 	})
 }
 
-func CreateAccL3outHSRPSecondaryVIPWithInavalidIP(rName, ip string) string {
+func CreateAccL3outHSRPSecondaryVIPWithInvalidIP(rName string) string {
 	fmt.Println("=== STEP  Basic: testing l3out_hsrp_secondary_vip creation with invalid IP")
 	resource := fmt.Sprintf(`
 	resource "aci_tenant" "test" {
@@ -268,9 +268,9 @@ func CreateAccL3outHSRPSecondaryVIPWithInavalidIP(rName, ip string) string {
 
 	resource "aci_l3out_hsrp_secondary_vip" "test" {
 		l3out_hsrp_interface_group_dn  = aci_l3out_hsrp_interface_group.test.id
-		ip  = "%s0"
+		ip  = "%s"
 	}
-	`, rName, rName, rName, rName, rName, ip)
+	`, rName, rName, rName, rName, rName, rName)
 	return resource
 }
 
