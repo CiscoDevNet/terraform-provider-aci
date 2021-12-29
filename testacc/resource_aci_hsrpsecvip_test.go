@@ -21,9 +21,9 @@ func TestAccAciL3outHSRPSecondaryVIP_Basic(t *testing.T) {
 	ip, _ := acctest.RandIpAddress("10.1.0.0/16")
 	ipUpdated, _ := acctest.RandIpAddress("10.2.0.0/16")
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciL3outHSRPSecondaryVIPDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviders,
+		CheckDestroy:      testAccCheckAciL3outHSRPSecondaryVIPDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config:      CreateL3outHSRPSecondaryVIPWithoutRequired(rName, rName, rName, rName, rName, ip, "l3out_hsrp_interface_group_dn"),
@@ -103,9 +103,9 @@ func TestAccAciL3outHSRPSecondaryVIP_Update(t *testing.T) {
 	rName := makeTestVariable(acctest.RandString(5))
 	ip, _ := acctest.RandIpAddress("10.3.0.0/16")
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciL3outHSRPSecondaryVIPDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviders,
+		CheckDestroy:      testAccCheckAciL3outHSRPSecondaryVIPDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: CreateAccL3outHSRPSecondaryVIPConfig(rName, rName, rName, rName, rName, ip),
@@ -179,9 +179,9 @@ func TestAccAciL3outHSRPSecondaryVIP_Negative(t *testing.T) {
 	randomParameter := acctest.RandStringFromCharSet(5, "abcdefghijklmnopqrstuvwxyz")
 	randomValue := acctest.RandString(5)
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciL3outHSRPSecondaryVIPDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviders,
+		CheckDestroy:      testAccCheckAciL3outHSRPSecondaryVIPDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: CreateAccL3outHSRPSecondaryVIPConfig(rName, rName, rName, rName, rName, ip),
@@ -223,9 +223,9 @@ func TestAccAciL3outHSRPSecondaryVIP_MulipleCreateDelete(t *testing.T) {
 	ip2, _ := acctest.RandIpAddress("10.6.0.0/16")
 	ip3, _ := acctest.RandIpAddress("10.7.0.0/16")
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciL3outHSRPSecondaryVIPDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviders,
+		CheckDestroy:      testAccCheckAciL3outHSRPSecondaryVIPDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: CreateAccL3outHSRPSecondaryVIPConfigs(rName, rName, rName, rName, rName, ip1, ip2, ip3),

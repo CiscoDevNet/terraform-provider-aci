@@ -20,9 +20,9 @@ func TestAccAciBgpRouteControlProfile_Basic(t *testing.T) {
 	rNameUpdated := makeTestVariable(acctest.RandString(5))
 
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciBgpRouteControlProfileDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviders,
+		CheckDestroy:      testAccCheckAciBgpRouteControlProfileDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config:      CreateBgpRouteControlProfileWithoutRequired(rName, rName, "parent_dn"),
@@ -115,9 +115,9 @@ func TestAccAciBgpRouteControlProfile_Negative(t *testing.T) {
 	randomValue := makeTestVariable(acctest.RandString(5))
 
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciBgpRouteControlProfileDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviders,
+		CheckDestroy:      testAccCheckAciBgpRouteControlProfileDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: CreateAccBgpRouteControlProfileConfig(rName, rName),
@@ -157,9 +157,9 @@ func TestAccAciBgpRouteControlProfile_Negative(t *testing.T) {
 func TestAccAciBgpRouteControlProfile_Multiple(t *testing.T) {
 	rName := makeTestVariable(acctest.RandString(5))
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciBgpRouteControlProfileDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviders,
+		CheckDestroy:      testAccCheckAciBgpRouteControlProfileDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: CreateAccBgpRouteControlProfileConfigs(rName, rName),

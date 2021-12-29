@@ -16,9 +16,9 @@ func TestAccAciEPGToContractDataSource_Basic(t *testing.T) {
 	randomParameter := acctest.RandStringFromCharSet(10, "abcdefghijklmnopqrstuvwxyz")
 	randomValue := acctest.RandString(10)
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciEPGToContractDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviders,
+		CheckDestroy:      testAccCheckAciEPGToContractDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config:      CreateAccEPGToContractDSWithoutApplicationEPG(rName),

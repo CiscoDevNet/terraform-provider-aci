@@ -21,9 +21,9 @@ func TestAccAciApplicationProfile_Basic(t *testing.T) {
 	prOther := makeTestVariable(acctest.RandString(5))        // randomly created string of 5 alphanumeric characters' for another parent resource name
 	longrName := acctest.RandString(65)                       // randomly created string of 65 alphanumeric characters' for negative resource name test case
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciApplicationProfileDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviders,
+		CheckDestroy:      testAccCheckAciApplicationProfileDestroy,
 		Steps: []resource.TestStep{
 			{
 				// terraform will try to create application profile without required argument tenant_dn
@@ -110,9 +110,9 @@ func TestAccAciApplicationProfile_Update(t *testing.T) {
 	resourceName := "aci_application_profile.test"
 	rName := makeTestVariable(acctest.RandString(5))
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciApplicationProfileDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviders,
+		CheckDestroy:      testAccCheckAciApplicationProfileDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: CreateAccApplicationProfileConfig(rName), // creating application profile with required arguments only
@@ -172,9 +172,9 @@ func TestAccAciApplicationProfile_NegativeCases(t *testing.T) {
 	randomParameter := acctest.RandStringFromCharSet(5, "abcdefghijklmnopqrstuvwxyz") // creating random string of 5 characters (to give as random parameter)
 	randomValue := acctest.RandString(5)                                              // creating random string of 5 characters (to give as random value of random parameter)
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciApplicationProfileDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviders,
+		CheckDestroy:      testAccCheckAciApplicationProfileDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: CreateAccApplicationProfileConfig(rName), // creating application profile with required arguments only
@@ -219,11 +219,10 @@ func TestAccAciApplicationProfile_reltionalParameters(t *testing.T) {
 	relRes1 := makeTestVariable(acctest.RandString(5)) // randomly created name for relational resoruce
 	relRes2 := makeTestVariable(acctest.RandString(5)) // randomly created name for relational resoruce
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:  func() { testAccPreCheck(t) },
-		Providers: testAccProviders,
-
-		CheckDestroy: testAccCheckAciApplicationProfileDestroy,
-		Steps: []resource.TestStep{
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviders,
+		CheckDestroy:      testAccCheckAciApplicationProfileDestroy,
+		Steps: []resource.TestStep{git
 			{
 				Config: CreateAccApplicationProfileConfig(rName),
 				Check: resource.ComposeTestCheckFunc(
@@ -260,9 +259,9 @@ func TestAccAciApplicationProfile_reltionalParameters(t *testing.T) {
 func TestAccAciApplicationProfile_MultipleCreateDelete(t *testing.T) {
 	rName := makeTestVariable(acctest.RandString(5))
 	resource.Test(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciApplicationProfileDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviders,
+		CheckDestroy:      testAccCheckAciApplicationProfileDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: CreateAccApplicationProfilesConfig(rName),

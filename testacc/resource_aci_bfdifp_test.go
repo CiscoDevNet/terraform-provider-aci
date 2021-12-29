@@ -19,9 +19,9 @@ func TestAccAciL3outBfdInterfaceProfile_Basic(t *testing.T) {
 	rName := makeTestVariable(acctest.RandString(5))
 	pNameUpdated := makeTestVariable(acctest.RandString(5))
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciL3outBfdInterfaceProfileDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviders,
+		CheckDestroy:      testAccCheckAciL3outBfdInterfaceProfileDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config:      CreateL3outBfdInterfaceProfileWithoutRequired(),
@@ -87,9 +87,9 @@ func TestAccAciL3outBfdInterfaceProfile_Update(t *testing.T) {
 	resourceName := "aci_l3out_bfd_interface_profile.test"
 	rName := makeTestVariable(acctest.RandString(5))
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciL3outBfdInterfaceProfileDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviders,
+		CheckDestroy:      testAccCheckAciL3outBfdInterfaceProfileDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: CreateAccL3outBfdInterfaceProfileConfig(rName),
@@ -116,9 +116,9 @@ func TestAccAciL3outBfdInterfaceProfile_Negative(t *testing.T) {
 	randomValue := makeTestVariable(acctest.RandString(5))
 
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciL3outBfdInterfaceProfileDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviders,
+		CheckDestroy:      testAccCheckAciL3outBfdInterfaceProfileDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: CreateAccL3outBfdInterfaceProfileConfig(rName),
@@ -178,9 +178,9 @@ func TestAccAciL3outBfdInterfaceProfile_Negative(t *testing.T) {
 func TestAccAciL3outBfdInterfaceProfile_MultipleCreateDelete(t *testing.T) {
 	rName := makeTestVariable(acctest.RandString(5))
 	resource.Test(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciL3outBfdInterfaceProfileDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviders,
+		CheckDestroy:      testAccCheckAciL3outBfdInterfaceProfileDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: CreateAccL3outBfdInterfaceProfileMultiple(rName),

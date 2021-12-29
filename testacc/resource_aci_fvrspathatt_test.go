@@ -25,9 +25,9 @@ func TestAccAciStaticPath_Basic(t *testing.T) {
 	rName := makeTestVariable(acctest.RandString(5))
 	rOtherName := makeTestVariable(acctest.RandString(5))
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciStaticPathDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviders,
+		CheckDestroy:      testAccCheckAciStaticPathDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config:      CreateStaticPathWithoutApplicationEpg(),
@@ -112,9 +112,9 @@ func TestAccAciStaticPath_Update(t *testing.T) {
 	resourceName := "aci_epg_to_static_path.test"
 	rName := makeTestVariable(acctest.RandString(5))
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciStaticPathDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviders,
+		CheckDestroy:      testAccCheckAciStaticPathDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: CreateAccStaticPathConfigForUpdate(rName),
@@ -140,9 +140,9 @@ func TestAccAciStaticPath_NegativCases(t *testing.T) {
 	randomParameter := acctest.RandStringFromCharSet(5, "abcdefghijklmnopqrstuvwxyz")
 	randomValue := acctest.RandString(5)
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciStaticPathDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviders,
+		CheckDestroy:      testAccCheckAciStaticPathDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: CreateAccStaticPathConfigNegative(rName),
@@ -193,9 +193,9 @@ func TestAccAciStaticPath_NegativCases(t *testing.T) {
 func TestAccAciStaticPath_MultipleCreateDelete(t *testing.T) {
 	rName := makeTestVariable(acctest.RandString(5))
 	resource.Test(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciStaticPathDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviders,
+		CheckDestroy:      testAccCheckAciStaticPathDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: CreateAccStaticPathsConfig(rName),

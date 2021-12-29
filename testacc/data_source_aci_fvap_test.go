@@ -16,9 +16,9 @@ func TestAccAciApplicationProfileDataSource_Basic(t *testing.T) {
 	randomValue := acctest.RandString(5)
 	rName := makeTestVariable(acctest.RandString(5))
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciApplicationProfileDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviders,
+		CheckDestroy:      testAccCheckAciApplicationProfileDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config:      CreateAccApplicationProfileDSWithoutTenant(rName), // creating data source for application profile without required argument tenant_dn

@@ -16,9 +16,9 @@ func TestAccAciStaticPathDataSource_Basic(t *testing.T) {
 	randomValue := acctest.RandString(5)
 	rName := makeTestVariable(acctest.RandString(5))
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciStaticPathDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviders,
+		CheckDestroy:      testAccCheckAciStaticPathDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config:      CreateAccStaticPathDSWithoutEpg(),

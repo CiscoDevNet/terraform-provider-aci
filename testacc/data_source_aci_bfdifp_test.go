@@ -17,9 +17,9 @@ func TestAccAciL3outBfdInterfaceProfileDataSource_Basic(t *testing.T) {
 	rName := makeTestVariable(acctest.RandString(5))
 
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciL3outBfdInterfaceProfileDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviders,
+		CheckDestroy:      testAccCheckAciL3outBfdInterfaceProfileDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config:      CreateL3outBfdInterfaceProfileDataSourceWithoutRequired(rName),

@@ -3,7 +3,6 @@ package testacc
 import (
 	"fmt"
 	"regexp"
-	"strings"
 	"testing"
 
 	"github.com/ciscoecosystem/aci-go-client/client"

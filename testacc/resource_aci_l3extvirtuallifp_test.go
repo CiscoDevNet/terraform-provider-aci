@@ -23,9 +23,9 @@ func TestAccAciL3outFloatingSVI_Basic(t *testing.T) {
 	encap := "vlan-20"
 	encapUpdated := "vlan-60"
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciL3outFloatingSVIDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviders,
+		CheckDestroy:      testAccCheckAciL3outFloatingSVIDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config:      CreateL3outFloatingSVIWithoutRequired(rName, rName, rName, rName, nodeDn, encap, "logical_interface_profile_dn"),
@@ -139,9 +139,9 @@ func TestAccAciL3outFloatingSVI_Update(t *testing.T) {
 	nodeDn := "topology/pod-1/node-111"
 	encap := "vlan-20"
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciL3outFloatingSVIDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviders,
+		CheckDestroy:      testAccCheckAciL3outFloatingSVIDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: CreateAccL3outFloatingSVIConfig(rName, rName, rName, rName, nodeDn, encap),
@@ -340,9 +340,9 @@ func TestAccAciL3outFloatingSVI_Negative(t *testing.T) {
 	randomValue := makeTestVariable(acctest.RandString(5))
 
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciL3outFloatingSVIDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviders,
+		CheckDestroy:      testAccCheckAciL3outFloatingSVIDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: CreateAccL3outFloatingSVIConfig(rName, rName, rName, rName, nodeDn, encap),
@@ -415,9 +415,9 @@ func TestAccAciL3outFloatingSVI_MultipleCreateDelete(t *testing.T) {
 	node_dn := "topology/pod-1/node-111"
 	encap := "vlan-"
 	resource.Test(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciL3outFloatingSVIDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviders,
+		CheckDestroy:      testAccCheckAciL3outFloatingSVIDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: CreateAccL3outFloatingSVIsConfig(rName, rName, rName, rName, node_dn, encap),

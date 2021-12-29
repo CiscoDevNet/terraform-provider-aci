@@ -1,31 +1,63 @@
 package testacc
 
 import (
-	// "fmt"
-	// "github.com/hashicorp/terraform-plugin-sdk/v2/helper/acctest"
-	// "github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"io/ioutil"
+	"log"
+	"os"
+
+	"testing"
+
+	"github.com/ciscoecosystem/aci-go-client/client"
+	"github.com/ciscoecosystem/aci-go-client/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/terraform-providers/terraform-provider-aci/aci"
-	"os"
-	// "regexp"
-	"testing"
 )
 
 //TODO: check password is not showing in state file
 
-var testAccProviders map[string]*schema.Provider
+var testAccProviders map[string]func() (*schema.Provider, error)
 var testAccProvider *schema.Provider
+var systemInfo *models.System
 
 func init() {
 	testAccProvider = aci.Provider()
-	testAccProviders = map[string]*schema.Provider{
-		"aci": testAccProvider,
+	testAccProviders = map[string]func() (*schema.Provider, error){
+		"aci": func() (*schema.Provider, error) {
+			return testAccProvider, nil
+		},
 	}
+	log.SetOutput(ioutil.Discard)
+	systemInfo = fetchSysInfo()
 }
 func TestProvider(t *testing.T) {
 	if err := aci.Provider().InternalValidate(); err != nil {
 		t.Fatalf("err: %s", err)
 	}
+}
+
+func sharedAciClient() *client.Client {
+	config := aci.Config{
+		Username:   os.Getenv("ACI_USERNAME"),
+		Password:   os.Getenv("ACI_PASSWORD"),
+		URL:        os.Getenv("ACI_URL"),
+		PrivateKey: os.Getenv("ACI_PRIVATE_KEY"),
+		Certname:   os.Getenv("ACI_CERT_NAME"),
+		ProxyUrl:   os.Getenv("ACI_PROXY_URL"),
+		ProxyCreds: os.Getenv("ACI_PROXY_CREDS"),
+		IsInsecure: true,
+	}
+	return config.GetClient().(*client.Client)
+}
+
+func fetchSysInfo() *models.System {
+
+	aciClient := sharedAciClient()
+	topSystemCont, err := aciClient.GetViaURL("/api/node/class/topSystem.json")
+	if err != nil {
+		log.Panic("System info not found:", err)
+	}
+
+	return models.SystemListFromContainer(topSystemCont)[0]
 }
 
 func TestProvider_impl(t *testing.T) {

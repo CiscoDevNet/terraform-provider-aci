@@ -16,9 +16,9 @@ func TestAccAciL3outHsrpInterfaceGroupDataSource_Basic(t *testing.T) {
 	randomParameter := acctest.RandStringFromCharSet(5, "abcdefghijklmnopqrstuvwxyz")
 	randomValue := acctest.RandString(5)
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciL3outHsrpInterfaceGroupDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviders,
+		CheckDestroy:      testAccCheckAciL3outHsrpInterfaceGroupDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config:      CreateL3outHsrpInterfaceGroupDSWithoutRequired(rName, rName, rName, rName, rName, "l3out_hsrp_interface_profile_dn"),

@@ -18,9 +18,9 @@ func TestAccAciL3ExtSubnetDataSource_Basic(t *testing.T) {
 	randomParameter := acctest.RandStringFromCharSet(5, "abcdefghijklmnopqrstuvwxyz")
 	randomValue := acctest.RandString(5)
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciL3ExtSubnetDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviders,
+		CheckDestroy:      testAccCheckAciL3ExtSubnetDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config:      CreateL3ExtSubnetDSWithoutRequired(rName, rName, rName, ip, "external_network_instance_profile_dn"),

@@ -22,9 +22,9 @@ func TestAccAciL3Outside_Basic(t *testing.T) {
 	prOther := makeTestVariable(acctest.RandString(5))
 	longrName := acctest.RandString(65)
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciL3OutsideDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviders,
+		CheckDestroy:      testAccCheckAciL3OutsideDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config:      CreateAccL3OutsideWithoutName(rName),
@@ -118,9 +118,9 @@ func TestAccAciL3Outside_Update(t *testing.T) {
 	resourceName := "aci_l3_outside.test"
 	rName := makeTestVariable(acctest.RandString(5))
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciL3OutsideDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviders,
+		CheckDestroy:      testAccCheckAciL3OutsideDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: CreateAccL3OutsideConfig(rName),
@@ -316,9 +316,9 @@ func TestAccAciL3Outside_NegativeCases(t *testing.T) {
 	randomParameter := acctest.RandStringFromCharSet(5, "abcdefghijklmnopqrstuvwxyz")
 	randomValue := acctest.RandString(5)
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciL3OutsideDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviders,
+		CheckDestroy:      testAccCheckAciL3OutsideDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: CreateAccL3OutsideConfig(rName),
@@ -374,9 +374,9 @@ func TestAccAciL3Outside_reltionalParameters(t *testing.T) {
 	rsRelName1 := acctest.RandString(5)
 	rsRelName2 := acctest.RandString(5)
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciL3OutsideDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviders,
+		CheckDestroy:      testAccCheckAciL3OutsideDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: CreateAccL3OutsideConfig(rName),
@@ -437,9 +437,9 @@ func TestAccAciL3Outside_reltionalParameters(t *testing.T) {
 func TestAccAciL3Outside_MultipleCreateDelete(t *testing.T) {
 	rName := makeTestVariable(acctest.RandString(5))
 	resource.Test(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciL3OutsideDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviders,
+		CheckDestroy:      testAccCheckAciL3OutsideDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: CreateAccL3OutsideConfigMultiple(rName),

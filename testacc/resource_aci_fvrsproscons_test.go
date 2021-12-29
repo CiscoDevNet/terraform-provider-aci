@@ -22,9 +22,9 @@ func TestAccAciEPGToContract_Basic(t *testing.T) {
 	randomValue := acctest.RandString(5)
 
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciEPGToContractDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviders,
+		CheckDestroy:      testAccCheckAciEPGToContractDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config:      CreateAccEPGToContractWithoutApplicationEPG(rName),
@@ -123,9 +123,9 @@ func TestAccAciEPGToContract_Update(t *testing.T) {
 	rName := makeTestVariable(acctest.RandString(5))
 
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciEPGToContractDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviders,
+		CheckDestroy:      testAccCheckAciEPGToContractDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: CreateAccEPGToContractProvConfig(rName),
@@ -209,9 +209,9 @@ func TestAccAciEPGToContract_NegativeCases(t *testing.T) {
 	randomValue := acctest.RandString(10)
 
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciEPGToContractDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviders,
+		CheckDestroy:      testAccCheckAciEPGToContractDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: CreateAccEPGToContractConfig(rName),
@@ -251,9 +251,9 @@ func TestAccAciEPGToContracts_MultipleCreateDelete(t *testing.T) {
 	rName := makeTestVariable(acctest.RandString(5))
 	rName2 := makeTestVariable(acctest.RandString(5))
 	resource.Test(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciEPGToContractDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviders,
+		CheckDestroy:      testAccCheckAciEPGToContractDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: CreateAccEPGToContractsConfig(rName, rName2),

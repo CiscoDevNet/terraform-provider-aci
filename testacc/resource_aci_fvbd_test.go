@@ -22,9 +22,9 @@ func TestAccAciBridgeDomain_Basic(t *testing.T) {
 	longrName := acctest.RandString(65)
 
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciBridgeDomainDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviders,
+		CheckDestroy:      testAccCheckAciBridgeDomainDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config:      CreateAccBridgeDomainWithoutTenant(rName),
@@ -149,9 +149,9 @@ func TestAccAciBridgeDomain_Update(t *testing.T) {
 	resourceName := "aci_bridge_domain.test"
 	rName := acctest.RandString(5)
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciBridgeDomainDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviders,
+		CheckDestroy:      testAccCheckAciBridgeDomainDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: CreateAccBridgeDomainConfig(rName),
@@ -190,9 +190,9 @@ func TestAccAciBridgeDomain_NegativeCases(t *testing.T) {
 	randomValue := acctest.RandString(10)
 
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciBridgeDomainDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviders,
+		CheckDestroy:      testAccCheckAciBridgeDomainDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: CreateAccBridgeDomainConfig(rName),
@@ -309,9 +309,9 @@ func TestAccAciBridgeDomain_RelationParameters(t *testing.T) {
 	randomName1 := makeTestVariable(acctest.RandString(5))
 	randomName2 := makeTestVariable(acctest.RandString(5))
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciBridgeDomainDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviders,
+		CheckDestroy:      testAccCheckAciBridgeDomainDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: CreateAccBridgeDomainConfig(rName),
@@ -392,9 +392,9 @@ func TestAccAciBridgeDomain_RelationParameters(t *testing.T) {
 func TestAccAciBridgeDomain_MultipleCreateDelete(t *testing.T) {
 	rName := makeTestVariable(acctest.RandString(5))
 	resource.Test(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciBridgeDomainDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviders,
+		CheckDestroy:      testAccCheckAciBridgeDomainDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: CreateAccBDsConfig(rName),

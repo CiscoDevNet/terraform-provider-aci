@@ -22,9 +22,9 @@ func TestAccAciApplicationEPG_Basic(t *testing.T) {
 	longrName := acctest.RandString(65)
 
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciApplicationEPGDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviders,
+		CheckDestroy:      testAccCheckAciApplicationEPGDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config:      CreateAccApplicationEPGWithoutApplicationProfile(rName),
@@ -150,9 +150,9 @@ func TestAccAciApplicationEPG_Update(t *testing.T) {
 	resourceName := "aci_application_epg.test"
 	rName := acctest.RandString(5)
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciApplicationEPGDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviders,
+		CheckDestroy:      testAccCheckAciApplicationEPGDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: CreateAccApplicationEPGConfig(rName),
@@ -303,9 +303,9 @@ func TestAccAciApplicationEPG_NegativeCases(t *testing.T) {
 	randomValue := acctest.RandString(12)
 
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciApplicationEPGDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviders,
+		CheckDestroy:      testAccCheckAciApplicationEPGDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: CreateAccApplicationEPGConfig(rName),
@@ -386,9 +386,9 @@ func TestAccAciApplicationEPG_RelationParameters(t *testing.T) {
 	randomName1 := acctest.RandString(5)
 	randomName2 := acctest.RandString(5)
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciApplicationEPGDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviders,
+		CheckDestroy:      testAccCheckAciApplicationEPGDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: CreateAccApplicationEPGConfig(rName),
@@ -511,9 +511,9 @@ func TestAccAciApplicationEPG_RelationParameters(t *testing.T) {
 func TestAccApplicationEpg_MultipleCreateDelete(t *testing.T) {
 	rName := makeTestVariable(acctest.RandString(5))
 	resource.Test(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciApplicationEPGDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviders,
+		CheckDestroy:      testAccCheckAciApplicationEPGDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: CreateAcEPGsConfig(rName),

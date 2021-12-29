@@ -21,9 +21,9 @@ func TestAccAciImportedContract_Basic(t *testing.T) {
 	prOther := makeTestVariable(acctest.RandString(5))
 	longrName := acctest.RandString(65)
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciImportedContractDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviders,
+		CheckDestroy:      testAccCheckAciImportedContractDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config:      CreateAccImportedContractWithoutTenant(rName),
@@ -102,9 +102,9 @@ func TestAccAciImportedContract_NegativeCases(t *testing.T) {
 	randomParameter := acctest.RandStringFromCharSet(5, "abcdefghijklmnopqrstuvwxyz")
 	randomValue := acctest.RandString(5)
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciImportedContractDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviders,
+		CheckDestroy:      testAccCheckAciImportedContractDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: CreateAccImportedContractConfig(rName),
@@ -140,9 +140,9 @@ func TestAccAciImportedContract_NegativeCases(t *testing.T) {
 func TestAccAciImportedContract_MultipleCreateDelete(t *testing.T) {
 	rName := makeTestVariable(acctest.RandString(5))
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciImportedContractDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviders,
+		CheckDestroy:      testAccCheckAciImportedContractDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: CreateAccImportedContractsConfig(rName),

@@ -16,9 +16,9 @@ func TestAccAciHsrpInterfacePolicyDataSource_Basic(t *testing.T) {
 	randomParameter := acctest.RandStringFromCharSet(10, "abcdefghijklmnopqrstuvwxyz")
 	randomValue := acctest.RandString(10)
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciHsrpInterfacePolicyDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviders,
+		CheckDestroy:      testAccCheckAciHsrpInterfacePolicyDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config:      CreateAccHsrpInterfacePolicyDSWithoutTenant(rName),

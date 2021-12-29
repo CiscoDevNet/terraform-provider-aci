@@ -18,9 +18,9 @@ func TestAccAciEndpointSecurityGroupSelectorDataSource_Basic(t *testing.T) {
 	randomParameter := acctest.RandStringFromCharSet(5, "abcdefghijklmnopqrstuvwxyz")
 	randomValue := acctest.RandString(5)
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciEndpointSecurityGroupSelectorDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviders,
+		CheckDestroy:      testAccCheckAciEndpointSecurityGroupSelectorDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config:      CreateEndpointSecurityGroupSelectorDSWithoutRequired(rName, ip, "endpoint_security_group_dn"),

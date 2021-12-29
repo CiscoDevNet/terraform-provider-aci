@@ -21,9 +21,9 @@ func TestAccAciContract_Basic(t *testing.T) {
 	prOther := makeTestVariable(acctest.RandString(5))
 	longrName := acctest.RandString(65)
 	resource.Test(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciContractDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviders,
+		CheckDestroy:      testAccCheckAciContractDestroy,
 		Steps: []resource.TestStep{
 
 			{
@@ -186,9 +186,9 @@ func TestAccAciContract_Update(t *testing.T) {
 	resourceName := "aci_contract.test"
 	rName := makeTestVariable(acctest.RandString(5))
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciContractDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviders,
+		CheckDestroy:      testAccCheckAciContractDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: CreateAccContractConfig(rName),
@@ -710,9 +710,9 @@ func TestAccAciContract_NegativeCases(t *testing.T) {
 	randomValue := acctest.RandString(5)
 	longrName := acctest.RandString(65)
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciContractDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviders,
+		CheckDestroy:      testAccCheckAciContractDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: CreateAccContractConfig(rName),
@@ -895,9 +895,9 @@ func TestAccAciContract_NegativeCases(t *testing.T) {
 func TestAccAciContract_MultipleCreateDestroy(t *testing.T) {
 	rName := makeTestVariable(acctest.RandString(5))
 	resource.Test(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciContractDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviders,
+		CheckDestroy:      testAccCheckAciContractDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: CreateAccContractConfigMultiple(rName),

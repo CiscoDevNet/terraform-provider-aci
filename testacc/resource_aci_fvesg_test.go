@@ -21,9 +21,9 @@ func TestAccAciEndpointSecurityGroup_Basic(t *testing.T) {
 	prOther := makeTestVariable(acctest.RandString(5))
 	longrName := acctest.RandString(65)
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciEndpointSecurityGroupDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviders,
+		CheckDestroy:      testAccCheckAciEndpointSecurityGroupDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config:      CreateAccEndpointSecurityGroupWithoutAP(rName),
@@ -119,9 +119,9 @@ func TestAccAciEndpointSecurityGroup_Update(t *testing.T) {
 	resourceName := "aci_endpoint_security_group.test"
 	rName := makeTestVariable(acctest.RandString(5))
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciEndpointSecurityGroupDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviders,
+		CheckDestroy:      testAccCheckAciEndpointSecurityGroupDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: CreateAccEndpointSecurityGroupConfig(rName),
@@ -188,9 +188,9 @@ func TestAccAciEndpointSecurityGroup_NegativeCases(t *testing.T) {
 	randomValue := acctest.RandString(5)
 	rName := makeTestVariable(acctest.RandString(5))
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciEndpointSecurityGroupDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviders,
+		CheckDestroy:      testAccCheckAciEndpointSecurityGroupDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: CreateAccEndpointSecurityGroupConfig(rName),
@@ -245,9 +245,9 @@ func TestAccAciEndpointSecurityGroup_NegativeCases(t *testing.T) {
 func TestAccAciEndpointSecurityGroup_MultipleCreateDelete(t *testing.T) {
 	rName := makeTestVariable(acctest.RandString(5))
 	resource.Test(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciEndpointSecurityGroupDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviders,
+		CheckDestroy:      testAccCheckAciEndpointSecurityGroupDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: CreateAccEndpointSecurityGroupsConfig(rName),

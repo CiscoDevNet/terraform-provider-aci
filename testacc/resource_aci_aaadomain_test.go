@@ -19,9 +19,9 @@ func TestAccAciAAADomain_Basic(t *testing.T) {
 	rName := makeTestVariable(acctest.RandString(5))
 	rNameUpdated := makeTestVariable(acctest.RandString(5))
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciAAADomainDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviders,
+		CheckDestroy:      testAccCheckAciAAADomainDestroy,
 		Steps: []resource.TestStep{
 
 			{
@@ -79,9 +79,9 @@ func TestAccAciAAADomain_Negative(t *testing.T) {
 	randomParameter := acctest.RandStringFromCharSet(5, "abcdefghijklmnopqrstuvwxyz")
 	randomValue := makeTestVariable(acctest.RandString(5))
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciAAADomainDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviders,
+		CheckDestroy:      testAccCheckAciAAADomainDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: CreateAccAAADomainConfig(rName),
@@ -112,9 +112,9 @@ func TestAccAciAAADomain_Negative(t *testing.T) {
 func TestAccAciAAADomain_MultipleCreateDelete(t *testing.T) {
 	rName := makeTestVariable(acctest.RandString(5))
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciAAADomainDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviders,
+		CheckDestroy:      testAccCheckAciAAADomainDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: CreateAccAAADomainConfigMultiple(rName),

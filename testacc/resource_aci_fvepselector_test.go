@@ -23,9 +23,9 @@ func TestAccAciEndpointSecurityGroupSelector_Basic(t *testing.T) {
 	ipother, _ := acctest.RandIpAddress("10.21.0.0/17")
 	ipother = fmt.Sprintf("%s/17", ipother)
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciEndpointSecurityGroupSelectorDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviders,
+		CheckDestroy:      testAccCheckAciEndpointSecurityGroupSelectorDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config:      CreateEndpointSecurityGroupSelectorWithoutRequired(rName, ip, "endpoint_security_group_dn"),
@@ -107,9 +107,9 @@ func TestAccAciEndpointSecurityGroupSelector_Negative(t *testing.T) {
 	randomParameter := acctest.RandStringFromCharSet(5, "abcdefghijklmnopqrstuvwxyz")
 	randomValue := makeTestVariable(acctest.RandString(5))
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciEndpointSecurityGroupSelectorDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviders,
+		CheckDestroy:      testAccCheckAciEndpointSecurityGroupSelectorDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: CreateAccEndpointSecurityGroupSelectorConfig(rName, ip),
@@ -153,9 +153,9 @@ func TestAccAciEndpointSecurityGroupSelector_MultipleCreateDelete(t *testing.T) 
 	ip3, _ := acctest.RandIpAddress("10.34.0.0/20")
 	ip3 = fmt.Sprintf("%s/20", ip3)
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciEndpointSecurityGroupSelectorDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviders,
+		CheckDestroy:      testAccCheckAciEndpointSecurityGroupSelectorDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: CreateAccEndpointSecurityGroupSelectorsConfig(rName, ip1, ip2, ip3),

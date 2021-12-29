@@ -19,9 +19,9 @@ func TestAccAciL3outFloatingSVIDataSource_Basic(t *testing.T) {
 	rName := makeTestVariable(acctest.RandString(5))
 
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciL3outFloatingSVIDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviders,
+		CheckDestroy:      testAccCheckAciL3outFloatingSVIDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config:      CreateAccL3outFloatingSVIConfigDataSourceWithoutParentDn(rName, rName, rName, rName, node_dn, encap),

@@ -21,9 +21,9 @@ func TestAccAciVRF_Basic(t *testing.T) {
 	prOther := makeTestVariable(acctest.RandString(5))
 	longrName := acctest.RandString(65)
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciVRFDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviders,
+		CheckDestroy:      testAccCheckAciVRFDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config:      CreateAccVRFWithoutTenant(rName),
@@ -120,9 +120,9 @@ func TestAccAciVRF_NegativeCases(t *testing.T) {
 	randomParameter := acctest.RandStringFromCharSet(5, "abcdefghijklmnopqrstuvwxyz")
 	randomValue := acctest.RandString(5)
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciVRFDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviders,
+		CheckDestroy:      testAccCheckAciVRFDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: CreateAccVRFConfig(rName),
@@ -177,9 +177,9 @@ func TestAccAciVRF_NegativeCases(t *testing.T) {
 func TestAccAciVRF_MultipleCreateDelete(t *testing.T) {
 	rName := makeTestVariable(acctest.RandString(5))
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciVRFDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviders,
+		CheckDestroy:      testAccCheckAciVRFDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: CreateAccVRFsConfig(rName),
@@ -197,9 +197,9 @@ func TestAccAciVRF_RelationParameters(t *testing.T) {
 	relRes1 := makeTestVariable(acctest.RandString(5))
 	relRes2 := makeTestVariable(acctest.RandString(5))
 	resource.Test(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciVRFDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviders,
+		CheckDestroy:      testAccCheckAciVRFDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: CreateAccVRFConfig(rName),

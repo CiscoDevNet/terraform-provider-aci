@@ -22,9 +22,9 @@ func TestAccAciContractSubject_Basic(t *testing.T) {
 	longerName := acctest.RandString(65)
 
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciContractSubjectDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviders,
+		CheckDestroy:      testAccCheckAciContractSubjectDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config:      CreateAccContractSubjectWithoutContract(rName),
@@ -112,9 +112,9 @@ func TestAccAciContractSubject_Update(t *testing.T) {
 	resourceName := "aci_contract_subject.test"
 	rName := makeTestVariable(acctest.RandString(5))
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciContractSubjectDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviders,
+		CheckDestroy:      testAccCheckAciContractSubjectDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: CreateAccContractSubjectConfig(rName),
@@ -374,9 +374,9 @@ func TestAccAciContractSubject_NegativeCases(t *testing.T) {
 	randomValue := acctest.RandString(10)
 
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciContractSubjectDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviders,
+		CheckDestroy:      testAccCheckAciContractSubjectDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: CreateAccContractSubjectConfig(rName),
@@ -438,9 +438,9 @@ func TestAccAciContractSubject_RelationParameters(t *testing.T) {
 	randomName2 := makeTestVariable(acctest.RandString(5))
 
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciContractSubjectDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviders,
+		CheckDestroy:      testAccCheckAciContractSubjectDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: CreateAccContractSubjectConfig(rName),
@@ -492,9 +492,9 @@ func TestAccAciContractSubject_RelationParameters(t *testing.T) {
 func TestAccAciContractSubject_MultipleCreateDelete(t *testing.T) {
 	rName := makeTestVariable(acctest.RandString(5))
 	resource.Test(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciContractSubjectDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviders,
+		CheckDestroy:      testAccCheckAciContractSubjectDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: CreateAccContractSubjectsConfig(rName),

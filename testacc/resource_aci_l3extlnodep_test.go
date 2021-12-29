@@ -22,9 +22,9 @@ func TestAccAciLogicalNodeProfile_Basic(t *testing.T) {
 	prOther := makeTestVariable(acctest.RandString(5))
 	longrName := acctest.RandString(65)
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciLogicalNodeProfileDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviders,
+		CheckDestroy:      testAccCheckAciLogicalNodeProfileDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config:      CreateAccLogicalNodeProfileWithoutName(rName),
@@ -112,9 +112,9 @@ func TestAccAciLogicalNodeProfile_NegativeCases(t *testing.T) {
 	randomParameter := acctest.RandStringFromCharSet(5, "abcdefghijklmnopqrstuvwxyz")
 	randomValue := acctest.RandString(5)
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciLogicalNodeProfileDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviders,
+		CheckDestroy:      testAccCheckAciLogicalNodeProfileDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: CreateAccLogicalNodeProfileConfig(rName),
@@ -152,9 +152,9 @@ func TestAccAciLogicalNodeProfile_NegativeCases(t *testing.T) {
 func TestAccAciLogicalNodeProfile_MultipleCreateDelete(t *testing.T) {
 	rName := makeTestVariable(acctest.RandString(5))
 	resource.Test(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciLogicalNodeProfileDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviders,
+		CheckDestroy:      testAccCheckAciLogicalNodeProfileDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: CreateAccLogicalNodeProfileConfigMultiple(rName),
@@ -169,9 +169,9 @@ func TestAccAciLogicalNodeProfile_Update(t *testing.T) {
 	resourceName := "aci_logical_node_profile.test"
 	rName := makeTestVariable(acctest.RandString(5))
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciLogicalNodeProfileDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviders,
+		CheckDestroy:      testAccCheckAciLogicalNodeProfileDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: CreateAccLogicalNodeProfileConfig(rName),

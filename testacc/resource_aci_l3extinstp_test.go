@@ -21,9 +21,9 @@ func TestAccAciExternalNetworkInstanceProfile_Basic(t *testing.T) {
 	rOther := makeTestVariable(acctest.RandString(5))
 	longrName := acctest.RandString(65)
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciExternalNetworkInstanceProfileDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviders,
+		CheckDestroy:      testAccCheckAciExternalNetworkInstanceProfileDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config:      CreateAccExternalNetworkInstanceProfileWithoutL3Out(rName),
@@ -123,9 +123,9 @@ func TestAccAciExternalNetworkInstanceProfile_Update(t *testing.T) {
 	resourceName := "aci_external_network_instance_profile.test"
 	rName := acctest.RandString(5)
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciExternalNetworkInstanceProfileDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviders,
+		CheckDestroy:      testAccCheckAciExternalNetworkInstanceProfileDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: CreateAccExternalNetworkInstanceProfileConfig(rName),
@@ -376,9 +376,9 @@ func TestAccAciExternalNetworkInstanceProfile_Negative(t *testing.T) {
 	randomParameter := acctest.RandStringFromCharSet(10, "abcdefghijklmnopqrstuvwxyz")
 	randomValue := acctest.RandString(10)
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciExternalNetworkInstanceProfileDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviders,
+		CheckDestroy:      testAccCheckAciExternalNetworkInstanceProfileDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: CreateAccExternalNetworkInstanceProfileConfig(rName),
@@ -441,9 +441,9 @@ func TestAccAciExternalNetworkInstanceProfile_Negative(t *testing.T) {
 func TestAccAciExternalNetworkInstanceProfile_MultipleCreateDelete(t *testing.T) {
 	rName := makeTestVariable(acctest.RandString(5))
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciExternalNetworkInstanceProfileDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviders,
+		CheckDestroy:      testAccCheckAciExternalNetworkInstanceProfileDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: CreateAccExternalNetworkInstanceProfileConfigs(rName),

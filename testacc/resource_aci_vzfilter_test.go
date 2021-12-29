@@ -23,9 +23,9 @@ func TestAccAciFilter_Basic(t *testing.T) {
 	prOther := makeTestVariable(acctest.RandString(5))
 
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciFilterDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviders,
+		CheckDestroy:      testAccCheckAciFilterDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config:      CreateAccFilterWithoutName(rName),
@@ -111,9 +111,9 @@ func TestAccAciFilter_NegativeCases(t *testing.T) {
 	randomParameter := acctest.RandStringFromCharSet(5, "abcdefghijklmnopqrstuvwxyz")
 	randomValue := acctest.RandString(5)
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciFilterDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviders,
+		CheckDestroy:      testAccCheckAciFilterDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: CreateAccFilterConfig(rName),
@@ -149,9 +149,9 @@ func TestAccAciFilter_NegativeCases(t *testing.T) {
 func TestAccAciFilter_MultipleCreateDelete(t *testing.T) {
 	rName := makeTestVariable(acctest.RandString(5))
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciFilterDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviders,
+		CheckDestroy:      testAccCheckAciFilterDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: CreateAccFiltersConfig(rName),

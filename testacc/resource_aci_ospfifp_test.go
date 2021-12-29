@@ -21,9 +21,9 @@ func TestAccAciL3outOspfInterfaceProfile_Basic(t *testing.T) {
 	randomValue := acctest.RandString(5)
 	randomValueUpdated := acctest.RandString(5)
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciL3outOspfInterfaceProfileDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviders,
+		CheckDestroy:      testAccCheckAciL3outOspfInterfaceProfileDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config:      CreateL3outOspfInterfaceProfileWithoutRequired(rName, rName, rName, rName, "logical_interface_profile_dn"),
@@ -93,9 +93,9 @@ func TestAccAciL3outOspfInterfaceProfile_Update(t *testing.T) {
 	rName := makeTestVariable(acctest.RandString(5))
 	randomValue := acctest.RandString(5)
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciL3outOspfInterfaceProfileDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviders,
+		CheckDestroy:      testAccCheckAciL3outOspfInterfaceProfileDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: CreateAccL3outOspfInterfaceProfileConfig(rName, rName, rName, rName, randomValue),
@@ -125,9 +125,9 @@ func TestAccAciL3outOspfInterfaceProfile_Negative(t *testing.T) {
 	randomValue := makeTestVariable(acctest.RandString(5))
 
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciL3outOspfInterfaceProfileDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviders,
+		CheckDestroy:      testAccCheckAciL3outOspfInterfaceProfileDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: CreateAccL3outOspfInterfaceProfileConfig(rName, rName, rName, rName, randomValue),

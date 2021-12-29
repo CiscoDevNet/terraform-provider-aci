@@ -16,9 +16,9 @@ func TestAccAciL3OutsideDataSource_Basic(t *testing.T) {
 	randomParameter := acctest.RandStringFromCharSet(5, "abcdefghijklmnopqrstuvwxyz")
 	randomValue := acctest.RandString(5)
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciL3OutsideDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviders,
+		CheckDestroy:      testAccCheckAciL3OutsideDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config:      CreateAccL3OutsideDSConfigWithoutName(rName),

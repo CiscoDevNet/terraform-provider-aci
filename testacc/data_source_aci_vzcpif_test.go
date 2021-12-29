@@ -16,9 +16,9 @@ func TestAccAciImportedContractDataSource_Basic(t *testing.T) {
 	randomValue := acctest.RandString(5)
 	rName := makeTestVariable(acctest.RandString(5))
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciImportedContractDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviders,
+		CheckDestroy:      testAccCheckAciImportedContractDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config:      CreateAccImportedContractDSWithoutTenant(rName),

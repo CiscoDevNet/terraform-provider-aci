@@ -17,9 +17,9 @@ func TestAccAciL3outHSRPSecondaryVIPDataSource_Basic(t *testing.T) {
 	rName := makeTestVariable(acctest.RandString(5))
 	ip, _ := acctest.RandIpAddress("10.5.0.0/16")
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciL3outHSRPSecondaryVIPDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviders,
+		CheckDestroy:      testAccCheckAciL3outHSRPSecondaryVIPDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config:      CreateL3outHSRPSecondaryVIPDSWithoutRequired(rName, rName, rName, rName, rName, ip, "l3out_hsrp_interface_group_dn"),

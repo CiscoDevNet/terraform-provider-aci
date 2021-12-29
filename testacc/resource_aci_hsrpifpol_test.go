@@ -19,9 +19,9 @@ func TestAccAciHsrpInterfacePolicy_Basic(t *testing.T) {
 	rName := makeTestVariable(acctest.RandString(5))
 	rNameUpdated := makeTestVariable(acctest.RandString(5))
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciHsrpInterfacePolicyDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviders,
+		CheckDestroy:      testAccCheckAciHsrpInterfacePolicyDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config:      CreateHsrpInterfacePolicyWithoutRequired(rName, rName, "tenant_dn"),
@@ -105,9 +105,9 @@ func TestAccAciHsrpInterfacePolicy_Update(t *testing.T) {
 	resourceName := "aci_hsrp_interface_policy.test"
 	rName := makeTestVariable(acctest.RandString(5))
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciHsrpInterfacePolicyDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviders,
+		CheckDestroy:      testAccCheckAciHsrpInterfacePolicyDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: CreateAccHsrpInterfacePolicyConfig(rName, rName),
@@ -155,9 +155,9 @@ func TestAccAciHsrpInterfacePolicy_Negative(t *testing.T) {
 	randomValue := makeTestVariable(acctest.RandString(5))
 
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciHsrpInterfacePolicyDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviders,
+		CheckDestroy:      testAccCheckAciHsrpInterfacePolicyDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: CreateAccHsrpInterfacePolicyConfig(rName, rName),
@@ -208,9 +208,9 @@ func TestAccAciHsrpInterfacePolicy_Negative(t *testing.T) {
 func TestAccHsrpInterfacePolicy_MultipleCreateDelete(t *testing.T) {
 	rName := makeTestVariable(acctest.RandString(5))
 	resource.Test(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciHsrpInterfacePolicyDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviders,
+		CheckDestroy:      testAccCheckAciHsrpInterfacePolicyDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: CreateAccAciHsrpInterfaceProfilesConfig(rName),

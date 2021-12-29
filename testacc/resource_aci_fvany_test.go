@@ -20,9 +20,9 @@ func TestAccAciAny_Basic(t *testing.T) {
 	rName := makeTestVariable(acctest.RandString(5))
 	rOther := makeTestVariable(acctest.RandString(5))
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciAnyDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviders,
+		CheckDestroy:      testAccCheckAciAnyDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config:      CreateAccAnyWithoutVRFdn(rName),
@@ -81,9 +81,9 @@ func TestAccAciAny_Update(t *testing.T) {
 	resourceName := "aci_any.test"
 	rName := makeTestVariable(acctest.RandString(5))
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciAnyDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviders,
+		CheckDestroy:      testAccCheckAciAnyDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: CreateAccAnyConfig(rName),
@@ -117,9 +117,9 @@ func TestAccAciAny_NegativeCases(t *testing.T) {
 	randomParameter := acctest.RandStringFromCharSet(5, "abcdefghijklmnopqrstuvwxyz")
 	randomValue := acctest.RandString(5)
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciAnyDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviders,
+		CheckDestroy:      testAccCheckAciAnyDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: CreateAccAnyConfig(rName),
@@ -168,9 +168,9 @@ func TestAccAciAny_reltionalParameters(t *testing.T) {
 	rsRelName1 := acctest.RandString(5)
 	rsRelName2 := acctest.RandString(5)
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciAnyDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviders,
+		CheckDestroy:      testAccCheckAciAnyDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: CreateAccAnyConfig(rName),
@@ -222,9 +222,9 @@ func TestAccAciAny_reltionalParameters(t *testing.T) {
 func TestAccAciAny_MultipleCreateDelete(t *testing.T) {
 	rName := makeTestVariable(acctest.RandString(5))
 	resource.Test(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciAnyDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviders,
+		CheckDestroy:      testAccCheckAciAnyDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: CreateAccAnyConfigMultiple(rName),

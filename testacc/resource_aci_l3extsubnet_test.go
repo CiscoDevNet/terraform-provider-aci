@@ -23,9 +23,9 @@ func TestAccAciL3ExtSubnet_Basic(t *testing.T) {
 	ipUpdated, _ := acctest.RandIpAddress("10.0.2.0/17")
 	ipUpdated = fmt.Sprintf("%s/17", ipUpdated)
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciL3ExtSubnetDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviders,
+		CheckDestroy:      testAccCheckAciL3ExtSubnetDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config:      CreateL3ExtSubnetWithoutRequired(rName, rName, rName, ip, "external_network_instance_profile_dn"),
@@ -113,9 +113,9 @@ func TestAccAciL3ExtSubnet_Update(t *testing.T) {
 	rName := makeTestVariable(acctest.RandString(5))
 	ip := "0.0.0.0/0"
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciL3ExtSubnetDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviders,
+		CheckDestroy:      testAccCheckAciL3ExtSubnetDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: CreateAccL3ExtSubnetConfig(rName, rName, rName, ip),
@@ -328,9 +328,9 @@ func TestAccAciL3ExtSubnet_Negative(t *testing.T) {
 	randomParameter := acctest.RandStringFromCharSet(5, "abcdefghijklmnopqrstuvwxyz")
 	randomValue := makeTestVariable(acctest.RandString(5))
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciL3ExtSubnetDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviders,
+		CheckDestroy:      testAccCheckAciL3ExtSubnetDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: CreateAccL3ExtSubnetConfig(rName, rName, rName, ip),
@@ -387,9 +387,9 @@ func TestAccAciL3ExtSubnet_MultipleCreateDelete(t *testing.T) {
 	ip, _ := acctest.RandIpAddress("10.0.4.0/19")
 	ip = fmt.Sprintf("%s/19", ip)
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciL3ExtSubnetDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviders,
+		CheckDestroy:      testAccCheckAciL3ExtSubnetDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: CreateAccL3ExtSubnetsConfig(rName, rName, rName, ip),

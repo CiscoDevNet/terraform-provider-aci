@@ -19,9 +19,9 @@ func TestAccAciL3outHsrpInterfaceGroup_Basic(t *testing.T) {
 	rName := makeTestVariable(acctest.RandString(5))
 	rNameUpdated := makeTestVariable(acctest.RandString(5))
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciL3outHsrpInterfaceGroupDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviders,
+		CheckDestroy:      testAccCheckAciL3outHsrpInterfaceGroupDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config:      CreateL3outHsrpInterfaceGroupWithoutRequired(rName, rName, rName, rName, rName, "l3out_hsrp_interface_profile_dn"),
@@ -116,9 +116,9 @@ func TestAccAciL3outHsrpInterfaceGroup_Update(t *testing.T) {
 	rName1 := makeTestVariable(acctest.RandString(5))
 	rName2 := makeTestVariable(acctest.RandString(5))
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciL3outHsrpInterfaceGroupDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviders,
+		CheckDestroy:      testAccCheckAciL3outHsrpInterfaceGroupDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: CreateAccL3outHsrpInterfaceGroupConfigWithIPObtainModeLearn(rName1, rName1, rName1, rName1, rName1),
@@ -225,9 +225,9 @@ func TestAccAciL3outHsrpInterfaceGroup_Negative(t *testing.T) {
 	randomParameter := acctest.RandStringFromCharSet(5, "abcdefghijklmnopqrstuvwxyz")
 	randomValue := makeTestVariable(acctest.RandString(5))
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciL3outHsrpInterfaceGroupDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviders,
+		CheckDestroy:      testAccCheckAciL3outHsrpInterfaceGroupDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: CreateAccL3outHsrpInterfaceGroupConfig(rName1, rName1, rName1, rName1, rName1),
@@ -315,9 +315,9 @@ func TestAccAciL3outHsrpInterfaceGroup_RelationParameter(t *testing.T) {
 	resourceName := "aci_l3out_hsrp_interface_group.test"
 	rName := makeTestVariable(acctest.RandString(5))
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciL3outHsrpInterfaceGroupDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviders,
+		CheckDestroy:      testAccCheckAciL3outHsrpInterfaceGroupDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: CreateAccL3outHsrpInterfaceGroupConfig(rName, rName, rName, rName, rName),
@@ -357,9 +357,9 @@ func TestAccAciL3outHsrpInterfaceGroup_RelationParameter(t *testing.T) {
 func TestAccAciL3outHsrpInterfaceGroup_MultipleCreateDelete(t *testing.T) {
 	rName := makeTestVariable(acctest.RandString(5))
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciL3outHsrpInterfaceGroupDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviders,
+		CheckDestroy:      testAccCheckAciL3outHsrpInterfaceGroupDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: CreateAccL3outHsrpInterfaceGroupConfigs(rName),

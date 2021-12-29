@@ -23,9 +23,9 @@ func TestAccAciSubnet_Basic(t *testing.T) {
 	ipother, _ := acctest.RandIpAddress("10.21.0.0/16")
 	ipother = fmt.Sprintf("%s/16", ipother)
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciSubnetDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviders,
+		CheckDestroy:      testAccCheckAciSubnetDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config:      CreateSubnetWithoutParentDn(ip),
@@ -123,9 +123,9 @@ func TestAccAciSubnet_Update(t *testing.T) {
 	ip, _ := acctest.RandIpAddress("10.20.0.0/16")
 	ip = fmt.Sprintf("%s/16", ip)
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciSubnetDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviders,
+		CheckDestroy:      testAccCheckAciSubnetDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: CreateAccSubnetConfig(rName, ip),
@@ -259,9 +259,9 @@ func TestAccAciSubnet_NegativeCases(t *testing.T) {
 	randomParameter := acctest.RandStringFromCharSet(5, "abcdefghijklmnopqrstuvwxyz")
 	randomValue := acctest.RandString(5)
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciSubnetDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviders,
+		CheckDestroy:      testAccCheckAciSubnetDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: CreateAccSubnetConfig(rName, ip),
@@ -340,9 +340,9 @@ func TestAccAciSubnet_reltionalParameters(t *testing.T) {
 	relRes1 := makeTestVariable(acctest.RandString(5))
 	relRes2 := makeTestVariable(acctest.RandString(5))
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciSubnetDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviders,
+		CheckDestroy:      testAccCheckAciSubnetDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: CreateAccSubnetConfig(rName, ip),
@@ -393,9 +393,9 @@ func TestAccAciSubnet_MultipleCreateDelete(t *testing.T) {
 	ip2 := fmt.Sprintf("%s/17", ip)
 	ip3 := fmt.Sprintf("%s/18", ip)
 	resource.Test(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciSubnetDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviders,
+		CheckDestroy:      testAccCheckAciSubnetDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: CreateAccSubnetsConfig(rName, ip1, ip2, ip3),

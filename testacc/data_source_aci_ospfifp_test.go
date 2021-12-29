@@ -16,9 +16,9 @@ func TestAccAciL3outOspfInterfaceProfileDataSource_Basic(t *testing.T) {
 	randomParameter := acctest.RandStringFromCharSet(10, "abcdefghijklmnopqrstuvwxyz")
 	randomValue := acctest.RandString(10)
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciL3outOspfInterfaceProfileDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviders,
+		CheckDestroy:      testAccCheckAciL3outOspfInterfaceProfileDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config:      CreateAccL3outOspfInterfaceProfileDSWithoutLogicalInterfaceProfile(rName),
