@@ -553,7 +553,7 @@ func CreateL3outFloatingSVIWithoutRequired(fvTenantName, l3extOutName, l3extLNod
 }
 
 func CreateAccL3outFloatingSVIConfigWithUpdatedRequiredParams(rName, nodeDn, encap string) string {
-	fmt.Println("=== STEP  testing l3out_floating_svi updation of required arguements")
+	fmt.Println("=== STEP  testing l3out_floating_svi updation of required arguments")
 	resource := fmt.Sprintf(
 		`
 	resource "aci_tenant" "test" {
@@ -590,7 +590,7 @@ func CreateAccL3outFloatingSVIConfigWithUpdatedRequiredParams(rName, nodeDn, enc
 }
 
 func CreateAccL3outFloatingSVIConfig(fvTenantName, l3extOutName, l3extLNodePName, l3extLIfPName, nodeDn, encap string) string {
-	fmt.Println("=== STEP  testing l3out_floating_svi creation with required arguements only")
+	fmt.Println("=== STEP  testing l3out_floating_svi creation with required arguments only")
 	resource := fmt.Sprintf(`
 	
 	resource "aci_tenant" "test" {
@@ -628,7 +628,7 @@ func CreateAccL3outFloatingSVIConfig(fvTenantName, l3extOutName, l3extLNodePName
 }
 
 func CreateAccL3outFloatingSVIsConfig(fvTenantName, l3extOutName, l3extLNodePName, l3extLIfPName, nodeDn, encap string) string {
-	fmt.Println("=== STEP  testing Multiple l3out_floating_svi creation with required arguements only")
+	fmt.Println("=== STEP  testing Multiple l3out_floating_svi creation with required arguments only")
 	resource := fmt.Sprintf(`
 	
 	resource "aci_tenant" "test" {

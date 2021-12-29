@@ -74,7 +74,7 @@ func TestAccAciL3outFloatingSVIDataSource_Basic(t *testing.T) {
 }
 
 func CreateAccL3outFloatingSVIConfigDataSource(fvTenantName, l3extOutName, l3extLNodePName, l3extLIfPName, node_dn, encap string) string {
-	fmt.Println("=== STEP  testing l3out_floating_svi creation with required arguements only")
+	fmt.Println("=== STEP  testing l3out_floating_svi creation with required arguments only")
 	resource := fmt.Sprintf(`
 	
 	resource "aci_tenant" "test" {
@@ -305,7 +305,7 @@ func CreateAccL3outFloatingSVIDSWithInvalidParentDn(fvTenantName, l3extOutName, 
 }
 
 func CreateAccL3outFloatingSVIDataSourceUpdate(fvTenantName, l3extOutName, l3extLNodePName, l3extLIfPName, node_dn, encap, key, value string) string {
-	fmt.Println("=== STEP  testing l3out_floating_svi updation with required arguements only")
+	fmt.Println("=== STEP  testing l3out_floating_svi updation with required arguments only")
 	resource := fmt.Sprintf(`
 	
 	resource "aci_tenant" "test" {
