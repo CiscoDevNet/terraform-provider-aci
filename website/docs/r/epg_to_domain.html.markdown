@@ -76,9 +76,9 @@ Allowed values: "immediate", "lazy", "pre-provision". Default value: "lazy"
 * `switching_mode` - (Optional) Switching mode for object domain.
 Allowed values: "native", "AVE". Default value: "native"
 
-* `vmm_allow_promiscuous` - (Optional) Allow promiscuous for object Vmm security policy.
-* `vmm_forged_transmits` - (Optional) Forged transmits for object Vmm security policy.
-* `vmm_mac_changes` - (Optional) Mac changes for object Vmm security policy.
+* `vmm_allow_promiscuous` - (Optional) Allow promiscuous for object Vmm security policy. Allowed values: "reject" and "accept". Default value is "reject".
+* `vmm_forged_transmits` - (Optional) Forged transmits for object Vmm security policy.Allowed values: "reject" and "accept". Default value is "reject".
+* `vmm_mac_changes` - (Optional) Mac changes for object Vmm security policy. Allowed values: "reject" and "accept". Default value is "reject".
 
 ## Attribute Reference
 
