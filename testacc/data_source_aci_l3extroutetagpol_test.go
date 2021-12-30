@@ -17,12 +17,12 @@ func TestAccAciL3outRouteTagPolicyDataSource_Basic(t *testing.T) {
 	rName := makeTestVariable(acctest.RandString(5))
 
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:	  func(){ testAccPreCheck(t) },
-		ProviderFactories:    testAccProviders,
-		CheckDestroy: testAccCheckAciL3outRouteTagPolicyDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviders,
+		CheckDestroy:      testAccCheckAciL3outRouteTagPolicyDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config:      CreateL3outRouteTagPolicyDSWithoutRequired(rName, rName,"tenant_dn"),
+				Config:      CreateL3outRouteTagPolicyDSWithoutRequired(rName, rName, "tenant_dn"),
 				ExpectError: regexp.MustCompile(`Missing required argument`),
 			},
 			{
@@ -32,7 +32,7 @@ func TestAccAciL3outRouteTagPolicyDataSource_Basic(t *testing.T) {
 			{
 				Config: CreateAccL3outRouteTagPolicyConfigDataSource(rName, rName),
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttrPair(dataSourceName, "tenant_dn", resourceName, "tenant_dn",),
+					resource.TestCheckResourceAttrPair(dataSourceName, "tenant_dn", resourceName, "tenant_dn"),
 					resource.TestCheckResourceAttrPair(dataSourceName, "description", resourceName, "description"),
 					resource.TestCheckResourceAttrPair(dataSourceName, "annotation", resourceName, "annotation"),
 					resource.TestCheckResourceAttrPair(dataSourceName, "name_alias", resourceName, "name_alias"),
@@ -44,7 +44,7 @@ func TestAccAciL3outRouteTagPolicyDataSource_Basic(t *testing.T) {
 				Config:      CreateAccL3outRouteTagPolicyDataSourceUpdate(rName, rName, randomParameter, randomValue),
 				ExpectError: regexp.MustCompile(`An argument named (.)+ is not expected here.`),
 			},
-			
+
 			{
 				Config:      CreateAccL3outRouteTagPolicyDSWithInvalidParentDn(rName, rName),
 				ExpectError: regexp.MustCompile(`(.)+ Object may not exists`),
@@ -80,7 +80,7 @@ func CreateAccL3outRouteTagPolicyDataSourceUpdatedResource(rName, key, value str
 		]
 	}
 
-	`,rName, rName, key, value)
+	`, rName, rName, key, value)
 	return resource
 }
 
@@ -188,6 +188,6 @@ func CreateAccL3outRouteTagPolicyDataSourceUpdate(fvTenantName, rName, key, valu
 			aci_l3out_route_tag_policy.test
 		]
 	}
-	`, fvTenantName, rName,key,value)
+	`, fvTenantName, rName, key, value)
 	return resource
 }
