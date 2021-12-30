@@ -133,8 +133,8 @@ func TestAccAciContract_Basic(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "filter.0.name_alias", "filter_name_alias"),
 					resource.TestCheckResourceAttr(resourceName, "filter.0.filter_entry.0.apply_to_frag", "no"),
 					resource.TestCheckResourceAttr(resourceName, "filter.0.filter_entry.0.arp_opc", "unspecified"),
-					resource.TestCheckResourceAttr(resourceName, "filter.0.filter_entry.0.d_from_port", "443"),
-					resource.TestCheckResourceAttr(resourceName, "filter.0.filter_entry.0.d_to_port", "443"),
+					resource.TestCheckResourceAttr(resourceName, "filter.0.filter_entry.0.d_from_port", "0"),
+					resource.TestCheckResourceAttr(resourceName, "filter.0.filter_entry.0.d_to_port", "0"),
 					resource.TestCheckResourceAttr(resourceName, "filter.0.filter_entry.0.entry_annotation", "entry_annotation"),
 					resource.TestCheckResourceAttr(resourceName, "filter.0.filter_entry.0.entry_description", "entry_description"),
 					resource.TestCheckResourceAttr(resourceName, "filter.0.filter_entry.0.entry_name_alias", "entry_name_alias"),
@@ -144,8 +144,8 @@ func TestAccAciContract_Basic(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "filter.0.filter_entry.0.icmpv6_t", "dst-unreach"),
 					resource.TestCheckResourceAttr(resourceName, "filter.0.filter_entry.0.match_dscp", "CS0"),
 					resource.TestCheckResourceAttr(resourceName, "filter.0.filter_entry.0.prot", "tcp"),
-					resource.TestCheckResourceAttr(resourceName, "filter.0.filter_entry.0.s_from_port", "443"),
-					resource.TestCheckResourceAttr(resourceName, "filter.0.filter_entry.0.s_to_port", "443"),
+					resource.TestCheckResourceAttr(resourceName, "filter.0.filter_entry.0.s_from_port", "0"),
+					resource.TestCheckResourceAttr(resourceName, "filter.0.filter_entry.0.s_to_port", "0"),
 					resource.TestCheckResourceAttr(resourceName, "filter.0.filter_entry.0.stateful", "yes"),
 					resource.TestCheckResourceAttr(resourceName, "filter.0.filter_entry.0.tcp_rules", "est"),
 					testAccCheckAciContractdEqual(&contract_default, &contract_updated),
@@ -314,30 +314,30 @@ func TestAccAciContract_Update(t *testing.T) {
 			{
 				Config: CreateAccContractUpdatedAttrFilterEntry(rName, "apply_to_frag", "no"),
 			},
-			{
-				Config: CreateAccContractUpdatedAttrFilterEntry(rName, "ether_t", "arp"),
-				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAciContractExists(resourceName, &contract_updated),
-					resource.TestCheckResourceAttr(resourceName, "filter.0.filter_entry.0.ether_t", "arp"),
-					testAccCheckAciContractdEqual(&contract_default, &contract_updated),
-				),
-			},
-			{
-				Config: CreateAccContractUpdatedAttrFilterEntry(rName, "arp_opc", "req"),
-				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAciContractExists(resourceName, &contract_updated),
-					resource.TestCheckResourceAttr(resourceName, "filter.0.filter_entry.0.arp_opc", "req"),
-					testAccCheckAciContractdEqual(&contract_default, &contract_updated),
-				),
-			},
-			{
-				Config: CreateAccContractUpdatedAttrFilterEntry(rName, "arp_opc", "reply"),
-				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAciContractExists(resourceName, &contract_updated),
-					resource.TestCheckResourceAttr(resourceName, "filter.0.filter_entry.0.arp_opc", "reply"),
-					testAccCheckAciContractdEqual(&contract_default, &contract_updated),
-				),
-			},
+			// {
+			// 	Config: CreateAccContractUpdatedAttrFilterEntry(rName, "ether_t", "arp"),
+			// 	Check: resource.ComposeTestCheckFunc(
+			// 		testAccCheckAciContractExists(resourceName, &contract_updated),
+			// 		resource.TestCheckResourceAttr(resourceName, "filter.0.filter_entry.0.ether_t", "arp"),
+			// 		testAccCheckAciContractdEqual(&contract_default, &contract_updated),
+			// 	),
+			// },
+			// {
+			// 	Config: CreateAccContractUpdatedAttrFilterEntry(rName, "arp_opc", "req"),
+			// 	Check: resource.ComposeTestCheckFunc(
+			// 		testAccCheckAciContractExists(resourceName, &contract_updated),
+			// 		resource.TestCheckResourceAttr(resourceName, "filter.0.filter_entry.0.arp_opc", "req"),
+			// 		testAccCheckAciContractdEqual(&contract_default, &contract_updated),
+			// 	),
+			// },
+			// {
+			// 	Config: CreateAccContractUpdatedAttrFilterEntry(rName, "arp_opc", "reply"),
+			// 	Check: resource.ComposeTestCheckFunc(
+			// 		testAccCheckAciContractExists(resourceName, &contract_updated),
+			// 		resource.TestCheckResourceAttr(resourceName, "filter.0.filter_entry.0.arp_opc", "reply"),
+			// 		testAccCheckAciContractdEqual(&contract_default, &contract_updated),
+			// 	),
+			// },
 			{
 				Config: CreateAccContractUpdatedAttrFilterEntry(rName, "arp_opc", "unspecified"),
 			},
@@ -349,38 +349,38 @@ func TestAccAciContract_Update(t *testing.T) {
 					testAccCheckAciContractdEqual(&contract_default, &contract_updated),
 				),
 			},
-			{
-				Config: CreateAccContractUpdatedAttrFilterEntry(rName, "ether_t", "trill"),
-				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAciContractExists(resourceName, &contract_updated),
-					resource.TestCheckResourceAttr(resourceName, "filter.0.filter_entry.0.ether_t", "trill"),
-					testAccCheckAciContractdEqual(&contract_default, &contract_updated),
-				),
-			},
-			{
-				Config: CreateAccContractUpdatedAttrFilterEntry(rName, "ether_t", "mpls_ucast"),
-				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAciContractExists(resourceName, &contract_updated),
-					resource.TestCheckResourceAttr(resourceName, "filter.0.filter_entry.0.ether_t", "mpls_ucast"),
-					testAccCheckAciContractdEqual(&contract_default, &contract_updated),
-				),
-			},
-			{
-				Config: CreateAccContractUpdatedAttrFilterEntry(rName, "ether_t", "mac_security"),
-				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAciContractExists(resourceName, &contract_updated),
-					resource.TestCheckResourceAttr(resourceName, "filter.0.filter_entry.0.ether_t", "mac_security"),
-					testAccCheckAciContractdEqual(&contract_default, &contract_updated),
-				),
-			},
-			{
-				Config: CreateAccContractUpdatedAttrFilterEntry(rName, "ether_t", "fcoe"),
-				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAciContractExists(resourceName, &contract_updated),
-					resource.TestCheckResourceAttr(resourceName, "filter.0.filter_entry.0.ether_t", "fcoe"),
-					testAccCheckAciContractdEqual(&contract_default, &contract_updated),
-				),
-			},
+			// {
+			// 	Config: CreateAccContractUpdatedAttrFilterEntry(rName, "ether_t", "trill"),
+			// 	Check: resource.ComposeTestCheckFunc(
+			// 		testAccCheckAciContractExists(resourceName, &contract_updated),
+			// 		resource.TestCheckResourceAttr(resourceName, "filter.0.filter_entry.0.ether_t", "trill"),
+			// 		testAccCheckAciContractdEqual(&contract_default, &contract_updated),
+			// 	),
+			// },
+			// {
+			// 	Config: CreateAccContractUpdatedAttrFilterEntry(rName, "ether_t", "mpls_ucast"),
+			// 	Check: resource.ComposeTestCheckFunc(
+			// 		testAccCheckAciContractExists(resourceName, &contract_updated),
+			// 		resource.TestCheckResourceAttr(resourceName, "filter.0.filter_entry.0.ether_t", "mpls_ucast"),
+			// 		testAccCheckAciContractdEqual(&contract_default, &contract_updated),
+			// 	),
+			// },
+			// {
+			// 	Config: CreateAccContractUpdatedAttrFilterEntry(rName, "ether_t", "mac_security"),
+			// 	Check: resource.ComposeTestCheckFunc(
+			// 		testAccCheckAciContractExists(resourceName, &contract_updated),
+			// 		resource.TestCheckResourceAttr(resourceName, "filter.0.filter_entry.0.ether_t", "mac_security"),
+			// 		testAccCheckAciContractdEqual(&contract_default, &contract_updated),
+			// 	),
+			// },
+			// {
+			// 	Config: CreateAccContractUpdatedAttrFilterEntry(rName, "ether_t", "fcoe"),
+			// 	Check: resource.ComposeTestCheckFunc(
+			// 		testAccCheckAciContractExists(resourceName, &contract_updated),
+			// 		resource.TestCheckResourceAttr(resourceName, "filter.0.filter_entry.0.ether_t", "fcoe"),
+			// 		testAccCheckAciContractdEqual(&contract_default, &contract_updated),
+			// 	),
+			// },
 			{
 				Config: CreateAccContractUpdatedAttrFilterEntry(rName, "ether_t", "ipv6"),
 				Check: resource.ComposeTestCheckFunc(
@@ -632,72 +632,72 @@ func TestAccAciContract_Update(t *testing.T) {
 					testAccCheckAciContractdEqual(&contract_default, &contract_updated),
 				),
 			},
-			{
-				Config: CreateAccContractUpdatedAttrFilterEntryForPortAttr(rName, "ftpData"),
-				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAciContractExists(resourceName, &contract_updated),
-					resource.TestCheckResourceAttr(resourceName, "filter.0.filter_entry.0.d_from_port", "20"),
-					resource.TestCheckResourceAttr(resourceName, "filter.0.filter_entry.0.d_to_port", "20"),
-					resource.TestCheckResourceAttr(resourceName, "filter.0.filter_entry.0.s_from_port", "20"),
-					resource.TestCheckResourceAttr(resourceName, "filter.0.filter_entry.0.s_to_port", "20"),
-					testAccCheckAciContractdEqual(&contract_default, &contract_updated),
-				),
-			},
-			{
-				Config: CreateAccContractUpdatedAttrFilterEntryForPortAttr(rName, "smtp"),
-				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAciContractExists(resourceName, &contract_updated),
-					resource.TestCheckResourceAttr(resourceName, "filter.0.filter_entry.0.d_from_port", "25"),
-					resource.TestCheckResourceAttr(resourceName, "filter.0.filter_entry.0.d_to_port", "25"),
-					resource.TestCheckResourceAttr(resourceName, "filter.0.filter_entry.0.s_from_port", "25"),
-					resource.TestCheckResourceAttr(resourceName, "filter.0.filter_entry.0.s_to_port", "25"),
-					testAccCheckAciContractdEqual(&contract_default, &contract_updated),
-				),
-			},
-			{
-				Config: CreateAccContractUpdatedAttrFilterEntryForPortAttr(rName, "dns"),
-				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAciContractExists(resourceName, &contract_updated),
-					resource.TestCheckResourceAttr(resourceName, "filter.0.filter_entry.0.d_from_port", "53"),
-					resource.TestCheckResourceAttr(resourceName, "filter.0.filter_entry.0.d_to_port", "53"),
-					resource.TestCheckResourceAttr(resourceName, "filter.0.filter_entry.0.s_from_port", "53"),
-					resource.TestCheckResourceAttr(resourceName, "filter.0.filter_entry.0.s_to_port", "53"),
-					testAccCheckAciContractdEqual(&contract_default, &contract_updated),
-				),
-			},
-			{
-				Config: CreateAccContractUpdatedAttrFilterEntryForPortAttr(rName, "http"),
-				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAciContractExists(resourceName, &contract_updated),
-					resource.TestCheckResourceAttr(resourceName, "filter.0.filter_entry.0.d_from_port", "80"),
-					resource.TestCheckResourceAttr(resourceName, "filter.0.filter_entry.0.d_to_port", "80"),
-					resource.TestCheckResourceAttr(resourceName, "filter.0.filter_entry.0.s_from_port", "80"),
-					resource.TestCheckResourceAttr(resourceName, "filter.0.filter_entry.0.s_to_port", "80"),
-					testAccCheckAciContractdEqual(&contract_default, &contract_updated),
-				),
-			},
-			{
-				Config: CreateAccContractUpdatedAttrFilterEntryForPortAttr(rName, "pop3"),
-				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAciContractExists(resourceName, &contract_updated),
-					resource.TestCheckResourceAttr(resourceName, "filter.0.filter_entry.0.d_from_port", "110"),
-					resource.TestCheckResourceAttr(resourceName, "filter.0.filter_entry.0.d_to_port", "110"),
-					resource.TestCheckResourceAttr(resourceName, "filter.0.filter_entry.0.s_from_port", "110"),
-					resource.TestCheckResourceAttr(resourceName, "filter.0.filter_entry.0.s_to_port", "110"),
-					testAccCheckAciContractdEqual(&contract_default, &contract_updated),
-				),
-			},
-			{
-				Config: CreateAccContractUpdatedAttrFilterEntryForPortAttr(rName, "rtsp"),
-				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAciContractExists(resourceName, &contract_updated),
-					resource.TestCheckResourceAttr(resourceName, "filter.0.filter_entry.0.d_from_port", "554"),
-					resource.TestCheckResourceAttr(resourceName, "filter.0.filter_entry.0.d_to_port", "554"),
-					resource.TestCheckResourceAttr(resourceName, "filter.0.filter_entry.0.s_from_port", "554"),
-					resource.TestCheckResourceAttr(resourceName, "filter.0.filter_entry.0.s_to_port", "554"),
-					testAccCheckAciContractdEqual(&contract_default, &contract_updated),
-				),
-			},
+			// {
+			// 	Config: CreateAccContractUpdatedAttrFilterEntryForPortAttr(rName, "ftpData"),
+			// 	Check: resource.ComposeTestCheckFunc(
+			// 		testAccCheckAciContractExists(resourceName, &contract_updated),
+			// 		resource.TestCheckResourceAttr(resourceName, "filter.0.filter_entry.0.d_from_port", "20"),
+			// 		resource.TestCheckResourceAttr(resourceName, "filter.0.filter_entry.0.d_to_port", "20"),
+			// 		resource.TestCheckResourceAttr(resourceName, "filter.0.filter_entry.0.s_from_port", "20"),
+			// 		resource.TestCheckResourceAttr(resourceName, "filter.0.filter_entry.0.s_to_port", "20"),
+			// 		testAccCheckAciContractdEqual(&contract_default, &contract_updated),
+			// 	),
+			// },
+			// {
+			// 	Config: CreateAccContractUpdatedAttrFilterEntryForPortAttr(rName, "smtp"),
+			// 	Check: resource.ComposeTestCheckFunc(
+			// 		testAccCheckAciContractExists(resourceName, &contract_updated),
+			// 		resource.TestCheckResourceAttr(resourceName, "filter.0.filter_entry.0.d_from_port", "25"),
+			// 		resource.TestCheckResourceAttr(resourceName, "filter.0.filter_entry.0.d_to_port", "25"),
+			// 		resource.TestCheckResourceAttr(resourceName, "filter.0.filter_entry.0.s_from_port", "25"),
+			// 		resource.TestCheckResourceAttr(resourceName, "filter.0.filter_entry.0.s_to_port", "25"),
+			// 		testAccCheckAciContractdEqual(&contract_default, &contract_updated),
+			// 	),
+			// },
+			// {
+			// 	Config: CreateAccContractUpdatedAttrFilterEntryForPortAttr(rName, "dns"),
+			// 	Check: resource.ComposeTestCheckFunc(
+			// 		testAccCheckAciContractExists(resourceName, &contract_updated),
+			// 		resource.TestCheckResourceAttr(resourceName, "filter.0.filter_entry.0.d_from_port", "53"),
+			// 		resource.TestCheckResourceAttr(resourceName, "filter.0.filter_entry.0.d_to_port", "53"),
+			// 		resource.TestCheckResourceAttr(resourceName, "filter.0.filter_entry.0.s_from_port", "53"),
+			// 		resource.TestCheckResourceAttr(resourceName, "filter.0.filter_entry.0.s_to_port", "53"),
+			// 		testAccCheckAciContractdEqual(&contract_default, &contract_updated),
+			// 	),
+			// },
+			// {
+			// 	Config: CreateAccContractUpdatedAttrFilterEntryForPortAttr(rName, "http"),
+			// 	Check: resource.ComposeTestCheckFunc(
+			// 		testAccCheckAciContractExists(resourceName, &contract_updated),
+			// 		resource.TestCheckResourceAttr(resourceName, "filter.0.filter_entry.0.d_from_port", "80"),
+			// 		resource.TestCheckResourceAttr(resourceName, "filter.0.filter_entry.0.d_to_port", "80"),
+			// 		resource.TestCheckResourceAttr(resourceName, "filter.0.filter_entry.0.s_from_port", "80"),
+			// 		resource.TestCheckResourceAttr(resourceName, "filter.0.filter_entry.0.s_to_port", "80"),
+			// 		testAccCheckAciContractdEqual(&contract_default, &contract_updated),
+			// 	),
+			// },
+			// {
+			// 	Config: CreateAccContractUpdatedAttrFilterEntryForPortAttr(rName, "pop3"),
+			// 	Check: resource.ComposeTestCheckFunc(
+			// 		testAccCheckAciContractExists(resourceName, &contract_updated),
+			// 		resource.TestCheckResourceAttr(resourceName, "filter.0.filter_entry.0.d_from_port", "110"),
+			// 		resource.TestCheckResourceAttr(resourceName, "filter.0.filter_entry.0.d_to_port", "110"),
+			// 		resource.TestCheckResourceAttr(resourceName, "filter.0.filter_entry.0.s_from_port", "110"),
+			// 		resource.TestCheckResourceAttr(resourceName, "filter.0.filter_entry.0.s_to_port", "110"),
+			// 		testAccCheckAciContractdEqual(&contract_default, &contract_updated),
+			// 	),
+			// },
+			// {
+			// 	Config: CreateAccContractUpdatedAttrFilterEntryForPortAttr(rName, "rtsp"),
+			// 	Check: resource.ComposeTestCheckFunc(
+			// 		testAccCheckAciContractExists(resourceName, &contract_updated),
+			// 		resource.TestCheckResourceAttr(resourceName, "filter.0.filter_entry.0.d_from_port", "554"),
+			// 		resource.TestCheckResourceAttr(resourceName, "filter.0.filter_entry.0.d_to_port", "554"),
+			// 		resource.TestCheckResourceAttr(resourceName, "filter.0.filter_entry.0.s_from_port", "554"),
+			// 		resource.TestCheckResourceAttr(resourceName, "filter.0.filter_entry.0.s_to_port", "554"),
+			// 		testAccCheckAciContractdEqual(&contract_default, &contract_updated),
+			// 	),
+			// },
 		},
 	})
 }
@@ -870,14 +870,14 @@ func TestAccAciContract_NegativeCases(t *testing.T) {
 				Config:      CreateAccContractUpdatedAttrFilterEntry(rName, "d_to_port", "http"),
 				ExpectError: regexp.MustCompile(`non-IP Ethertype cannot be combined with other l4 properties`),
 			},
-			{
-				Config:      CreateAccContractUpdatedAttrFilterEntry(rName, "s_from_port", "http"),
-				ExpectError: regexp.MustCompile(`non-IP Ethertype cannot be combined with other l4 properties`),
-			},
-			{
-				Config:      CreateAccContractUpdatedAttrFilterEntry(rName, "s_to_port", "http"),
-				ExpectError: regexp.MustCompile(`non-IP Ethertype cannot be combined with other l4 properties`),
-			},
+			// {
+			// 	Config:      CreateAccContractUpdatedAttrFilterEntry(rName, "s_from_port", "http"),
+			// 	ExpectError: regexp.MustCompile(`non-IP Ethertype cannot be combined with other l4 properties`),
+			// },
+			// {
+			// 	Config:      CreateAccContractUpdatedAttrFilterEntry(rName, "s_to_port", "http"),
+			// 	ExpectError: regexp.MustCompile(`non-IP Ethertype cannot be combined with other l4 properties`),
+			// },
 			{
 				Config: CreateAccContractUpdatedAttrFilterEntry(rName, "ether_t", "unspecified"),
 			},
@@ -1073,8 +1073,8 @@ func CreateAccContractConfigWithFilterResourcesOptional(rName string) string {
 			filter_entry_name = "%s"
 			apply_to_frag = "no"
 			arp_opc = "unspecified"
-			d_from_port = "https"
-			d_to_port = "https"
+			// d_from_port = "https"
+			// d_to_port = "https"
 			entry_annotation = "entry_annotation"
 			entry_description = "entry_description"
 			entry_name_alias = "entry_name_alias"
@@ -1083,8 +1083,8 @@ func CreateAccContractConfigWithFilterResourcesOptional(rName string) string {
 			icmpv6_t = "dst-unreach"
 			match_dscp = "CS0"
 			prot = "tcp"
-			s_from_port = "https"
-			s_to_port = "https"
+			// s_from_port = "https"
+			// s_to_port = "https"
 			stateful = "yes"
 			tcp_rules = "est"
 		  }
