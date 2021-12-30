@@ -100,6 +100,10 @@ func TestAccAciFVDomain_Basic(t *testing.T) {
 				ImportStateVerifyIgnore: []string{"vmm_allow_promiscuous", "vmm_forged_transmits", "vmm_mac_changes", "vmm_id"},
 			},
 			{
+				Config:      CreateAccFVDomainConfigUpdateWithoutRequired(),
+				ExpectError: regexp.MustCompile(`Missing required argument`),
+			},
+			{
 				Config: CreateAccFVDomainConfigWithEpgAndDomainName(rName, rother),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckAciFVDomainExists(resourceName, &epg_to_domain_updated),
@@ -644,6 +648,36 @@ func CreateAccFVDomainConfigWithEpgAndDomainName(r1, r2 string) string {
 		tdn                   = aci_vmm_domain.test.id
 	  }
 	`, r1, r1, r1, r2)
+	return resource
+}
+
+func CreateAccFVDomainConfigUpdateWithoutRequired() string {
+	fmt.Println("=== STEP  Basic: testing epg to domain update without required parameters")
+	resource := fmt.Sprintln(`	  
+	 resource "aci_epg_to_domain" "test" {
+		annotation 			= "from_terraform"
+  		binding_type          = "dynamicBinding"
+  		allow_micro_seg       = "true"
+  		delimiter             = ""
+  		encap                 = "vlan-5"
+  		epg_cos               = "Cos5"
+  		epg_cos_pref          = "enabled"
+  		instr_imedcy          = "immediate"
+  		lag_policy_name       = "lag_policy_name"
+  		netflow_dir           = "ingress"
+  		netflow_pref          = "enabled"
+  		num_ports             = "3"
+  		port_allocation       = "fixed"
+  		primary_encap         = "vlan-4"
+  		primary_encap_inner   = "vlan-6"
+  		res_imedcy            = "immediate"
+  		secondary_encap_inner = "vlan-7"
+  		switching_mode        = "AVE"
+  		vmm_allow_promiscuous = "accept"
+  		vmm_forged_transmits  = "accept"
+  		vmm_mac_changes       = "accept"
+	  }
+	`)
 	return resource
 }
 
