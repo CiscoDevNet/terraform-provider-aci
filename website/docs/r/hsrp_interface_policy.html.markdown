@@ -32,7 +32,7 @@ resource "aci_hsrp_interface_policy" "example" {
 * `name` - (Required) Name of HSRP interface policy object.
 * `annotation` - (Optional) Annotation for HSRP interface policy object.
 * `description` - (Optional) Description for HSRP interface policy object.
-* `ctrl` - (Optional) Control state for HSRP interface policy object. It is in the form of comma separated string and allowed values are "bia" and "bfd".
+* `ctrl` - (Optional) List of control states for HSRP interface policy object. Allowed values are "bia" and "bfd".
 * `delay` - (Optional) Administrative port delay for HSRP interface policy object.Range: "0" to "10000". Default value is "0".
 * `name_alias` - (Optional) Name alias for HSRP interface policy object.
 * `reload_delay` - (Optional) Reload delay for HSRP interface policy object.Range: "0" to "10000". Default value is "0".
