@@ -610,12 +610,7 @@ func resourceAciInBManagedNodesZoneRead(ctx context.Context, d *schema.ResourceD
 		log.Printf("[DEBUG] Error while reading relation mgmtRsAddrInst %v", err)
 		d.Set("relation_mgmt_rs_addr_inst", "")
 	} else {
-		if _, ok := d.GetOk("relation_mgmt_rs_addr_inst"); ok {
-			tfName := d.Get("relation_mgmt_rs_addr_inst").(string)
-			if tfName != mgmtRsAddrInstData {
-				d.Set("relation_mgmt_rs_addr_inst", "")
-			}
-		}
+		setRelationAttribute(d, "relation_mgmt_rs_addr_inst", mgmtRsAddrInstData)
 	}
 
 	mgmtRsInBData, err := aciClient.ReadRelationmgmtRsInB(dn)
@@ -623,12 +618,7 @@ func resourceAciInBManagedNodesZoneRead(ctx context.Context, d *schema.ResourceD
 		log.Printf("[DEBUG] Error while reading relation mgmtRsInB %v", err)
 		d.Set("relation_mgmt_rs_in_b", "")
 	} else {
-		if _, ok := d.GetOk("relation_mgmt_rs_in_b"); ok {
-			tfName := d.Get("relation_mgmt_rs_in_b").(string)
-			if tfName != mgmtRsInBData {
-				d.Set("relation_mgmt_rs_in_b", "")
-			}
-		}
+		setRelationAttribute(d, "relation_mgmt_rs_in_b", mgmtRsInBData)
 	}
 
 	mgmtRsInbEpgData, err := aciClient.ReadRelationmgmtRsInbEpg(dn)
@@ -636,12 +626,7 @@ func resourceAciInBManagedNodesZoneRead(ctx context.Context, d *schema.ResourceD
 		log.Printf("[DEBUG] Error while reading relation mgmtRsInbEpg %v", err)
 		d.Set("relation_mgmt_rs_inb_epg", "")
 	} else {
-		if _, ok := d.GetOk("relation_mgmt_rs_inb_epg"); ok {
-			tfName := d.Get("relation_mgmt_rs_inb_epg").(string)
-			if tfName != mgmtRsInbEpgData {
-				d.Set("relation_mgmt_rs_inb_epg", "")
-			}
-		}
+		setRelationAttribute(d, "relation_mgmt_rs_inb_epg", mgmtRsInbEpgData)
 	}
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 	return nil
@@ -667,12 +652,7 @@ func resourceAciOOBManagedNodesZoneRead(ctx context.Context, d *schema.ResourceD
 		log.Printf("[DEBUG] Error while reading relation mgmtRsAddrInst %v", err)
 		d.Set("relation_mgmt_rs_addr_inst", "")
 	} else {
-		if _, ok := d.GetOk("relation_mgmt_rs_addr_inst"); ok {
-			tfName := d.Get("relation_mgmt_rs_addr_inst").(string)
-			if tfName != mgmtRsAddrInstData {
-				d.Set("relation_mgmt_rs_addr_inst", "")
-			}
-		}
+		setRelationAttribute(d, "relation_mgmt_rs_addr_inst", mgmtRsAddrInstData)
 	}
 
 	mgmtRsOoBData, err := aciClient.ReadRelationmgmtRsOoB(dn)
@@ -680,12 +660,7 @@ func resourceAciOOBManagedNodesZoneRead(ctx context.Context, d *schema.ResourceD
 		log.Printf("[DEBUG] Error while reading relation mgmtRsOoB %v", err)
 		d.Set("relation_mgmt_rs_oo_b", "")
 	} else {
-		if _, ok := d.GetOk("relation_mgmt_rs_oo_b"); ok {
-			tfName := d.Get("relation_mgmt_rs_oo_b").(string)
-			if tfName != mgmtRsOoBData {
-				d.Set("relation_mgmt_rs_oo_b", "")
-			}
-		}
+		setRelationAttribute(d, "relation_mgmt_rs_oo_b", mgmtRsOoBData)
 	}
 
 	mgmtRsOobEpgData, err := aciClient.ReadRelationmgmtRsOobEpg(dn)
@@ -693,12 +668,7 @@ func resourceAciOOBManagedNodesZoneRead(ctx context.Context, d *schema.ResourceD
 		log.Printf("[DEBUG] Error while reading relation mgmtRsOobEpg %v", err)
 		d.Set("relation_mgmt_rs_oob_epg", "")
 	} else {
-		if _, ok := d.GetOk("relation_mgmt_rs_oob_epg"); ok {
-			tfName := d.Get("relation_mgmt_rs_oob_epg").(string)
-			if tfName != mgmtRsOobEpgData {
-				d.Set("relation_mgmt_rs_oob_epg", "")
-			}
-		}
+		setRelationAttribute(d, "relation_mgmt_rs_oob_epg", mgmtRsOobEpgData)
 	}
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 	return nil

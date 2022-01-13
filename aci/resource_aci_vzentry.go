@@ -238,7 +238,6 @@ func setFilterEntryAttributes(vzEntry *models.FilterEntry, d *schema.ResourceDat
 	dn := d.Id()
 	d.SetId(vzEntry.DistinguishedName)
 	d.Set("description", vzEntry.Description)
-	// d.Set("filter_dn", GetParentDn(vzEntry.DistinguishedName))
 	if dn != vzEntry.DistinguishedName {
 		d.Set("filter_dn", "")
 	}
@@ -247,6 +246,9 @@ func setFilterEntryAttributes(vzEntry *models.FilterEntry, d *schema.ResourceDat
 		return d, err
 	}
 	log.Println("Check .... :", d.Get("d_from_port"))
+
+	d.Set("filter_dn", GetParentDn(dn, fmt.Sprintf("/e-%s", vzEntryMap["name"])))
+
 	d.Set("name", vzEntryMap["name"])
 
 	d.Set("annotation", vzEntryMap["annotation"])

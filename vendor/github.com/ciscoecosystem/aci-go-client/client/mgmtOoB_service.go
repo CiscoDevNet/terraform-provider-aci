@@ -100,7 +100,7 @@ func (sm *ServiceManager) ReadRelationmgmtRsOoBProvFromOutOfBandManagementEPg(pa
 		F: schema.HashString,
 	}
 	for _, contItem := range contList {
-		dat := models.G(contItem, "tnVzOOBBrCPName")
+		dat := models.G(contItem, "tDn")
 		st.Add(dat)
 	}
 	return st, err
@@ -195,7 +195,7 @@ func (sm *ServiceManager) ReadRelationmgmtRsOoBCtxFromOutOfBandManagementEPg(par
 	contList := models.ListFromContainer(cont, "mgmtRsOoBCtx")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnFvCtxName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err

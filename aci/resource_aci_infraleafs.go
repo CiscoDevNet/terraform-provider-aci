@@ -82,16 +82,15 @@ func setSwitchAssociationAttributes(infraLeafS *models.SwitchAssociation, d *sch
 	dn := d.Id()
 	d.SetId(infraLeafS.DistinguishedName)
 	d.Set("description", infraLeafS.Description)
-	// d.Set("leaf_profile_dn", GetParentDn(infraLeafS.DistinguishedName))
+
 	if dn != infraLeafS.DistinguishedName {
 		d.Set("leaf_profile_dn", "")
 	}
 	infraLeafSMap, _ := infraLeafS.ToMap()
 
 	d.Set("name", infraLeafSMap["name"])
-
 	d.Set("switch_association_type", infraLeafSMap["type"])
-
+	d.Set("leaf_profile_dn", GetParentDn(infraLeafS.DistinguishedName, fmt.Sprintf("/leaves-%s-typ-%s", infraLeafSMap["name"], infraLeafSMap["type"])))
 	d.Set("annotation", infraLeafSMap["annotation"])
 	d.Set("name_alias", infraLeafSMap["nameAlias"])
 	return d
@@ -267,12 +266,7 @@ func resourceAciSwitchAssociationRead(ctx context.Context, d *schema.ResourceDat
 		d.Set("relation_infra_rs_acc_node_p_grp", "")
 
 	} else {
-		if _, ok := d.GetOk("relation_infra_rs_acc_node_p_grp"); ok {
-			tfName := GetMOName(d.Get("relation_infra_rs_acc_node_p_grp").(string))
-			if tfName != infraRsAccNodePGrpData {
-				d.Set("relation_infra_rs_acc_node_p_grp", "")
-			}
-		}
+		setRelationAttribute(d, "relation_infra_rs_acc_node_p_grp", infraRsAccNodePGrpData.(string))
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())

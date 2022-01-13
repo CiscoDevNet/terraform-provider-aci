@@ -34,6 +34,25 @@ func toStringList(configured []interface{}) []string {
 	return vs
 }
 
+func setRelationAttribute(d *schema.ResourceData, relation string, data interface{}) {
+	// annotation is one of the base attributes for all terraform resources.
+	// we use annotation to check whether function is used for Terraform execution or Terraformer import.
+	if _, ok := d.GetOk("annotation"); ok {
+		if _, ok := d.GetOk(relation); ok {
+			d.Set(relation, data)
+		} else {
+			switch data.(type) {
+			case string:
+				d.Set(relation, "")
+			case []string:
+				d.Set(relation, make([]string, 0, 1))
+			}
+		}
+	} else {
+		d.Set(relation, data)
+	}
+}
+
 func preparePayload(className string, inputMap map[string]string) (*container.Container, error) {
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {

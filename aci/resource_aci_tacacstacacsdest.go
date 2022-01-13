@@ -328,12 +328,7 @@ func resourceAciTACACSDestinationRead(ctx context.Context, d *schema.ResourceDat
 		log.Printf("[DEBUG] Error while reading relation fileRsARemoteHostToEpg %v", err)
 		d.Set("relation_file_rs_a_remote_host_to_epg", "")
 	} else {
-		if _, ok := d.GetOk("relation_file_rs_a_remote_host_to_epg"); ok {
-			tfName := d.Get("relation_file_rs_a_remote_host_to_epg").(string)
-			if tfName != fileRsARemoteHostToEpgData {
-				d.Set("relation_file_rs_a_remote_host_to_epg", "")
-			}
-		}
+		setRelationAttribute(d, "relation_file_rs_a_remote_host_to_epg", fileRsARemoteHostToEpgData)
 	}
 
 	fileRsARemoteHostToEppData, err := aciClient.ReadRelationfileRsARemoteHostToEpp(dn)
@@ -341,12 +336,7 @@ func resourceAciTACACSDestinationRead(ctx context.Context, d *schema.ResourceDat
 		log.Printf("[DEBUG] Error while reading relation fileRsARemoteHostToEpp %v", err)
 		d.Set("relation_file_rs_a_remote_host_to_epp", "")
 	} else {
-		if _, ok := d.GetOk("relation_file_rs_a_remote_host_to_epp"); ok {
-			tfName := d.Get("relation_file_rs_a_remote_host_to_epp").(string)
-			if tfName != fileRsARemoteHostToEppData {
-				d.Set("relation_file_rs_a_remote_host_to_epp", "")
-			}
-		}
+		setRelationAttribute(d, "relation_file_rs_a_remote_host_to_epp", fileRsARemoteHostToEppData)
 	}
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 	return nil

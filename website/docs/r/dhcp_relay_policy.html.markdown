@@ -39,8 +39,8 @@ resource "aci_dhcp_relay_policy" "example" {
 - `owner` - (Optional) Owner of the target relay servers. Allowed values are "infra" and "tenant". Default value is "infra".
 
 - `relation_dhcp_rs_prov` - (Optional) List of relation to class fvEPg. Cardinality - N_TO_M. Type - Set of String.
-- `relation_dhcp_rs_prov.tdn` - (Required) target Dn of the class fvEPg.
-- `relation_dhcp_rs_prov.addr` - (Required) IP address for relation dhcpRsProv.
+    - `relation_dhcp_rs_prov.tdn` - (Required) target Dn of the class fvEPg.
+    - `relation_dhcp_rs_prov.addr` - (Required) IP address for relation dhcpRsProv.
 
 ## Attribute Reference
 

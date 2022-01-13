@@ -54,7 +54,7 @@ func (sm *ServiceManager) ListL3outHSRPInterfaceProfile(logical_interface_profil
 }
 
 func (sm *ServiceManager) CreateRelationhsrpRsIfPolFromL3outHSRPInterfaceProfile(parentDn, tnHsrpIfPolName string) error {
-	dn := fmt.Sprintf("%s/hsrpIfP/rsIfPol", parentDn)
+	dn := fmt.Sprintf("%s/rsIfPol", parentDn)
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
@@ -92,7 +92,7 @@ func (sm *ServiceManager) ReadRelationhsrpRsIfPolFromL3outHSRPInterfaceProfile(p
 	contList := models.ListFromContainer(cont, "hsrpRsIfPol")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnHsrpIfPolName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err

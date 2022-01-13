@@ -80,7 +80,6 @@ func setFilterAttributes(vzFilter *models.Filter, d *schema.ResourceData) (*sche
 	dn := d.Id()
 	d.SetId(vzFilter.DistinguishedName)
 	d.Set("description", vzFilter.Description)
-	// d.Set("tenant_dn", GetParentDn(vzFilter.DistinguishedName))
 	if dn != vzFilter.DistinguishedName {
 		d.Set("tenant_dn", "")
 	}
@@ -88,6 +87,8 @@ func setFilterAttributes(vzFilter *models.Filter, d *schema.ResourceData) (*sche
 	if err != nil {
 		return d, err
 	}
+	d.Set("tenant_dn", GetParentDn(dn, fmt.Sprintf("/flt-%s", vzFilterMap["name"])))
+
 	d.Set("name", vzFilterMap["name"])
 
 	d.Set("annotation", vzFilterMap["annotation"])
@@ -312,12 +313,7 @@ func resourceAciFilterRead(ctx context.Context, d *schema.ResourceData, m interf
 		d.Set("relation_vz_rs_filt_graph_att", "")
 
 	} else {
-		if _, ok := d.GetOk("relation_vz_rs_filt_graph_att"); ok {
-			tfName := GetMOName(d.Get("relation_vz_rs_filt_graph_att").(string))
-			if tfName != vzRsFiltGraphAttData {
-				d.Set("relation_vz_rs_filt_graph_att", "")
-			}
-		}
+		setRelationAttribute(d, "relation_vz_rs_filt_graph_att", vzRsFiltGraphAttData.(string))
 	}
 
 	vzRsFwdRFltPAttData, err := aciClient.ReadRelationvzRsFwdRFltPAttFromFilter(dn)
@@ -326,12 +322,7 @@ func resourceAciFilterRead(ctx context.Context, d *schema.ResourceData, m interf
 		d.Set("relation_vz_rs_fwd_r_flt_p_att", "")
 
 	} else {
-		if _, ok := d.GetOk("relation_vz_rs_fwd_r_flt_p_att"); ok {
-			tfName := d.Get("relation_vz_rs_fwd_r_flt_p_att").(string)
-			if tfName != vzRsFwdRFltPAttData {
-				d.Set("relation_vz_rs_fwd_r_flt_p_att", "")
-			}
-		}
+		setRelationAttribute(d, "relation_vz_rs_fwd_r_flt_p_att", vzRsFwdRFltPAttData.(string))
 	}
 
 	vzRsRevRFltPAttData, err := aciClient.ReadRelationvzRsRevRFltPAttFromFilter(dn)
@@ -340,12 +331,7 @@ func resourceAciFilterRead(ctx context.Context, d *schema.ResourceData, m interf
 		d.Set("relation_vz_rs_rev_r_flt_p_att", "")
 
 	} else {
-		if _, ok := d.GetOk("relation_vz_rs_rev_r_flt_p_att"); ok {
-			tfName := d.Get("relation_vz_rs_rev_r_flt_p_att").(string)
-			if tfName != vzRsRevRFltPAttData {
-				d.Set("relation_vz_rs_rev_r_flt_p_att", "")
-			}
-		}
+		setRelationAttribute(d, "relation_vz_rs_rev_r_flt_p_att", vzRsRevRFltPAttData.(string))
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())

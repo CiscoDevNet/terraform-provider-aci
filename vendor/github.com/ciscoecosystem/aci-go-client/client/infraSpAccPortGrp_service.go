@@ -91,7 +91,7 @@ func (sm *ServiceManager) ReadRelationinfraRsHIfPolFromSpineAccessPortPolicyGrou
 	contList := models.ListFromContainer(cont, "infraRsHIfPol")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnFabricHIfPolName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -136,7 +136,7 @@ func (sm *ServiceManager) ReadRelationinfraRsCdpIfPolFromSpineAccessPortPolicyGr
 	contList := models.ListFromContainer(cont, "infraRsCdpIfPol")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnCdpIfPolName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -181,7 +181,7 @@ func (sm *ServiceManager) ReadRelationinfraRsCoppIfPolFromSpineAccessPortPolicyG
 	contList := models.ListFromContainer(cont, "infraRsCoppIfPol")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnCoppIfPolName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -276,7 +276,7 @@ func (sm *ServiceManager) ReadRelationinfraRsMacsecIfPolFromSpineAccessPortPolic
 	contList := models.ListFromContainer(cont, "infraRsMacsecIfPol")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnMacsecIfPolName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err

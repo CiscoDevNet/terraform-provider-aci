@@ -90,7 +90,6 @@ func resourceAciDHCPOptionPolicy() *schema.Resource {
 				Type:     schema.TypeList,
 				Optional: true,
 				Elem:     &schema.Schema{Type: schema.TypeString},
-				Computed: true,
 			},
 		}),
 	}
@@ -139,6 +138,8 @@ func setDHCPOptionPolicyAttributes(dhcpOptionPol *models.DHCPOptionPolicy, d *sc
 		return d, err
 	}
 
+	d.Set("tenant_dn", GetParentDn(dn, fmt.Sprintf("/dhcpoptpol-%s", dhcpOptionPolMap["name"])))
+
 	d.Set("name", dhcpOptionPolMap["name"])
 
 	d.Set("annotation", dhcpOptionPolMap["annotation"])
@@ -180,6 +181,12 @@ func resourceAciDHCPOptionPolicyImport(d *schema.ResourceData, m interface{}) ([
 	if err != nil {
 		return nil, err
 	}
+
+	dhcpOptionPolMap, _ := dhcpOptionPol.ToMap()
+
+	name := dhcpOptionPolMap["name"]
+	pDN := GetParentDn(dn, fmt.Sprintf("/dhcpoptpol-%s", name))
+	d.Set("tenant_dn", pDN)
 	schemaFilled, err := setDHCPOptionPolicyAttributes(dhcpOptionPol, d)
 	if err != nil {
 		return nil, err

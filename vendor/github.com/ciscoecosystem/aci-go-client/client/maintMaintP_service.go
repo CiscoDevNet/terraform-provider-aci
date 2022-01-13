@@ -90,7 +90,7 @@ func (sm *ServiceManager) ReadRelationmaintRsPolSchedulerFromMaintenancePolicy(p
 	contList := models.ListFromContainer(cont, "maintRsPolScheduler")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnTrigSchedPName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err

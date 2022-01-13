@@ -430,13 +430,11 @@ func resourceAciContract() *schema.Resource {
 				Type:     schema.TypeList,
 				Optional: true,
 				Elem:     &schema.Schema{Type: schema.TypeString},
-				Computed: true,
 			},
 
 			"filter_entry_ids": &schema.Schema{
 				Type:     schema.TypeList,
 				Optional: true,
-				Computed: true,
 				Elem:     &schema.Schema{Type: schema.TypeString},
 			},
 		}),
@@ -491,7 +489,6 @@ func setContractAttributes(vzBrCP *models.Contract, d *schema.ResourceData) (*sc
 	dn := d.Id()
 	d.SetId(vzBrCP.DistinguishedName)
 	d.Set("description", vzBrCP.Description)
-	// d.Set("tenant_dn", GetParentDn(vzBrCP.DistinguishedName))
 	if dn != vzBrCP.DistinguishedName {
 		d.Set("tenant_dn", "")
 	}
@@ -499,6 +496,9 @@ func setContractAttributes(vzBrCP *models.Contract, d *schema.ResourceData) (*sc
 	if err != nil {
 		return d, err
 	}
+
+	d.Set("tenant_dn", GetParentDn(dn, fmt.Sprintf("/brc-%s", vzBrCPMap["name"])))
+
 	d.Set("name", vzBrCPMap["name"])
 
 	d.Set("annotation", vzBrCPMap["annotation"])
@@ -1028,12 +1028,7 @@ func resourceAciContractRead(ctx context.Context, d *schema.ResourceData, m inte
 		d.Set("relation_vz_rs_graph_att", "")
 
 	} else {
-		if _, ok := d.GetOk("relation_vz_rs_graph_att"); ok {
-			tfName := GetMOName(d.Get("relation_vz_rs_graph_att").(string))
-			if tfName != vzRsGraphAttData {
-				d.Set("relation_vz_rs_graph_att", "")
-			}
-		}
+		setRelationAttribute(d, "relation_vz_rs_graph_att", vzRsGraphAttData.(string))
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())

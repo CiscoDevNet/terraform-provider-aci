@@ -80,7 +80,7 @@ func setX509CertificateAttributes(aaaUserCert *models.X509Certificate, d *schema
 	}
 
 	d.Set("name", aaaUserCertMap["name"])
-
+	d.Set("local_user_dn", GetParentDn(dn, fmt.Sprintf("/usercert-%s", aaaUserCertMap["name"])))
 	d.Set("annotation", aaaUserCertMap["annotation"])
 	data := strings.Replace(aaaUserCertMap["data"], "\\r", "\r", -1)
 	data = strings.Replace(data, "\\n", "\n", -1)

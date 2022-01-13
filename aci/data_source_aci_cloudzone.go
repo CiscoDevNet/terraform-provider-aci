@@ -34,6 +34,15 @@ func dataSourceAciCloudAvailabilityZone() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+
+			"annotation": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+				DefaultFunc: func() (interface{}, error) {
+					return "orchestrator:terraform", nil
+				},
+			},
 		},
 	}
 }

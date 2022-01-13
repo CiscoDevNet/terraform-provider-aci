@@ -91,7 +91,7 @@ func (sm *ServiceManager) ReadRelationvnsRsLIfCtxToCustQosPolFromLogicalInterfac
 	contList := models.ListFromContainer(cont, "vnsRsLIfCtxToCustQosPol")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnQosCustomPolName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -253,7 +253,7 @@ func (sm *ServiceManager) CreateRelationvnsRsLIfCtxToOutDefFromLogicalInterfaceC
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tnL3extOutDefName": "%s"
+				"dn": "%s","tDn": "%s"
 								
 			}
 		}
@@ -286,7 +286,7 @@ func (sm *ServiceManager) ReadRelationvnsRsLIfCtxToOutDefFromLogicalInterfaceCon
 	contList := models.ListFromContainer(cont, "vnsRsLIfCtxToOutDef")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnL3extOutDefName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -298,7 +298,7 @@ func (sm *ServiceManager) CreateRelationvnsRsLIfCtxToInstPFromLogicalInterfaceCo
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s","tnFvEPgName": "%s"
+				"dn": "%s","tDn": "%s"
 								
 			}
 		}
@@ -336,7 +336,7 @@ func (sm *ServiceManager) ReadRelationvnsRsLIfCtxToInstPFromLogicalInterfaceCont
 	contList := models.ListFromContainer(cont, "vnsRsLIfCtxToInstP")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnFvEPgName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err

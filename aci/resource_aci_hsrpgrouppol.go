@@ -69,10 +69,9 @@ func resourceAciHSRPGroupPolicy() *schema.Resource {
 			},
 
 			"name_alias": &schema.Schema{
-				Type:         schema.TypeString,
-				Optional:     true,
-				Computed:     true,
-				ValidateFunc: validateNonEmptyString(),
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
 			},
 
 			"preempt_delay_min": &schema.Schema{
@@ -165,7 +164,7 @@ func setHSRPGroupPolicyAttributes(hsrpGroupPol *models.HSRPGroupPolicy, d *schem
 	if err != nil {
 		return d, err
 	}
-
+	d.Set("tenant_dn", GetParentDn(dn, fmt.Sprintf("/hsrpGroupPol-%s", hsrpGroupPolMap["name"])))
 	d.Set("name", hsrpGroupPolMap["name"])
 
 	d.Set("annotation", hsrpGroupPolMap["annotation"])

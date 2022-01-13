@@ -91,7 +91,7 @@ func (sm *ServiceManager) ReadRelationfvRsOspfCtxPolFromVRF(parentDn string) (in
 	contList := models.ListFromContainer(cont, "fvRsOspfCtxPol")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnOspfCtxPolName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -135,7 +135,7 @@ func (sm *ServiceManager) ReadRelationfvRsVrfValidationPolFromVRF(parentDn strin
 	contList := models.ListFromContainer(cont, "fvRsVrfValidationPol")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnL3extVrfValidationPolName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -231,7 +231,7 @@ func (sm *ServiceManager) ReadRelationfvRsCtxToEigrpCtxAfPolFromVRF(parentDn str
 
 	for _, contItem := range contList {
 		paramMap := make(map[string]string)
-		paramMap["tnEigrpCtxAfPolName"] = models.G(contItem, "tnEigrpCtxAfPolName")
+		paramMap["tnEigrpCtxAfPolName"] = models.G(contItem, "tDn")
 		paramMap["af"] = models.G(contItem, "af")
 
 		st = append(st, paramMap)
@@ -285,7 +285,7 @@ func (sm *ServiceManager) ReadRelationfvRsCtxToOspfCtxPolFromVRF(parentDn string
 
 	for _, contItem := range contList {
 		paramMap := make(map[string]string)
-		paramMap["tnOspfCtxPolName"] = models.G(contItem, "tnOspfCtxPolName")
+		paramMap["tnOspfCtxPolName"] = models.G(contItem, "tDn")
 		paramMap["af"] = models.G(contItem, "af")
 
 		st = append(st, paramMap)
@@ -332,7 +332,7 @@ func (sm *ServiceManager) ReadRelationfvRsCtxToEpRetFromVRF(parentDn string) (in
 	contList := models.ListFromContainer(cont, "fvRsCtxToEpRet")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnFvEpRetPolName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -376,7 +376,7 @@ func (sm *ServiceManager) ReadRelationfvRsBgpCtxPolFromVRF(parentDn string) (int
 	contList := models.ListFromContainer(cont, "fvRsBgpCtxPol")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnBgpCtxPolName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -425,7 +425,7 @@ func (sm *ServiceManager) ReadRelationfvRsCtxMonPolFromVRF(parentDn string) (int
 	contList := models.ListFromContainer(cont, "fvRsCtxMonPol")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnMonEPGPolName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -469,7 +469,7 @@ func (sm *ServiceManager) ReadRelationfvRsCtxToExtRouteTagPolFromVRF(parentDn st
 	contList := models.ListFromContainer(cont, "fvRsCtxToExtRouteTagPol")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnL3extRouteTagPolName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -520,7 +520,7 @@ func (sm *ServiceManager) ReadRelationfvRsCtxToBgpCtxAfPolFromVRF(parentDn strin
 
 	for _, contItem := range contList {
 		paramMap := make(map[string]string)
-		paramMap["tnBgpCtxAfPolName"] = models.G(contItem, "tnBgpCtxAfPolName")
+		paramMap["tnBgpCtxAfPolName"] = models.G(contItem, "tDn")
 		paramMap["af"] = models.G(contItem, "af")
 
 		st = append(st, paramMap)

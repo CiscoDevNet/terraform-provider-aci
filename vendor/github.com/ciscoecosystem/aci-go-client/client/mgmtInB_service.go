@@ -152,7 +152,7 @@ func (sm *ServiceManager) ReadRelationfvRsProvFromInBandManagementEPg(parentDn s
 		F: schema.HashString,
 	}
 	for _, contItem := range contList {
-		dat := models.G(contItem, "tnVzBrCPName")
+		dat := models.G(contItem, "tDn")
 		st.Add(dat)
 	}
 	return st, err
@@ -204,7 +204,7 @@ func (sm *ServiceManager) ReadRelationfvRsConsIfFromInBandManagementEPg(parentDn
 		F: schema.HashString,
 	}
 	for _, contItem := range contList {
-		dat := models.G(contItem, "tnVzCPIfName")
+		dat := models.G(contItem, "tDn")
 		st.Add(dat)
 	}
 	return st, err
@@ -248,7 +248,7 @@ func (sm *ServiceManager) ReadRelationfvRsCustQosPolFromInBandManagementEPg(pare
 	contList := models.ListFromContainer(cont, "fvRsCustQosPol")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnQosCustomPolName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -293,7 +293,7 @@ func (sm *ServiceManager) ReadRelationmgmtRsMgmtBDFromInBandManagementEPg(parent
 	contList := models.ListFromContainer(cont, "mgmtRsMgmtBD")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnFvBDName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -346,7 +346,7 @@ func (sm *ServiceManager) ReadRelationfvRsConsFromInBandManagementEPg(parentDn s
 		F: schema.HashString,
 	}
 	for _, contItem := range contList {
-		dat := models.G(contItem, "tnVzBrCPName")
+		dat := models.G(contItem, "tDn")
 		st.Add(dat)
 	}
 	return st, err
@@ -398,7 +398,7 @@ func (sm *ServiceManager) ReadRelationfvRsProtByFromInBandManagementEPg(parentDn
 		F: schema.HashString,
 	}
 	for _, contItem := range contList {
-		dat := models.G(contItem, "tnVzTabooName")
+		dat := models.G(contItem, "tDn")
 		st.Add(dat)
 	}
 	return st, err
@@ -502,7 +502,7 @@ func (sm *ServiceManager) ReadRelationfvRsIntraEpgFromInBandManagementEPg(parent
 		F: schema.HashString,
 	}
 	for _, contItem := range contList {
-		dat := models.G(contItem, "tnVzBrCPName")
+		dat := models.G(contItem, "tDn")
 		st.Add(dat)
 	}
 	return st, err

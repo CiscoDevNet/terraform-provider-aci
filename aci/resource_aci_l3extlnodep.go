@@ -115,7 +115,7 @@ func setLogicalNodeProfileAttributes(l3extLNodeP *models.LogicalNodeProfile, d *
 	dn := d.Id()
 	d.SetId(l3extLNodeP.DistinguishedName)
 	d.Set("description", l3extLNodeP.Description)
-	// d.Set("l3_outside_dn", GetParentDn(l3extLNodeP.DistinguishedName))
+
 	if dn != l3extLNodeP.DistinguishedName {
 		d.Set("l3_outside_dn", "")
 	}
@@ -123,6 +123,8 @@ func setLogicalNodeProfileAttributes(l3extLNodeP *models.LogicalNodeProfile, d *
 	if err != nil {
 		return d, err
 	}
+
+	d.Set("l3_outside_dn", GetParentDn(dn, fmt.Sprintf("/lnodep-%s", l3extLNodePMap["name"])))
 	d.Set("name", l3extLNodePMap["name"])
 
 	d.Set("annotation", l3extLNodePMap["annotation"])
@@ -308,7 +310,7 @@ func resourceAciLogicalNodeProfileRead(ctx context.Context, d *schema.ResourceDa
 		log.Printf("[DEBUG] Error while reading relation l3extRsNodeL3OutAtt %v", err)
 
 	} else {
-		d.Set("relation_l3ext_rs_node_l3_out_att", l3extRsNodeL3OutAttData)
+		setRelationAttribute(d, "relation_l3ext_rs_node_l3_out_att", l3extRsNodeL3OutAttData)
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())

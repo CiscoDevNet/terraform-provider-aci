@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"sort"
+	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
@@ -51,14 +53,17 @@ func resourceAciCloudSubnet() *schema.Resource {
 			},
 
 			"scope": &schema.Schema{
-				Type:     schema.TypeString,
+				Type:     schema.TypeList,
 				Optional: true,
 				Computed: true,
-				ValidateFunc: validation.StringInSlice([]string{
-					"private",
-					"public",
-					"shared",
-				}, false),
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+					ValidateFunc: validation.StringInSlice([]string{
+						"private",
+						"public",
+						"shared",
+					}, false),
+				},
 			},
 
 			"usage": &schema.Schema{
@@ -69,6 +74,7 @@ func resourceAciCloudSubnet() *schema.Resource {
 					"infra-router",
 					"user",
 					"gateway",
+					"transit",
 				}, false),
 			},
 
@@ -118,7 +124,16 @@ func setCloudSubnetAttributes(cloudSubnet *models.CloudSubnet, d *schema.Resourc
 
 	d.Set("annotation", cloudSubnetMap["annotation"])
 	d.Set("name_alias", cloudSubnetMap["nameAlias"])
-	d.Set("scope", cloudSubnetMap["scope"])
+	scopeGet := make([]string, 0, 1)
+	for _, val := range strings.Split(cloudSubnetMap["scope"], ",") {
+		scopeGet = append(scopeGet, strings.Trim(val, " "))
+	}
+	sort.Strings(scopeGet)
+	if len(scopeGet) == 1 && scopeGet[0] == "" {
+		d.Set("scope", make([]string, 0, 1))
+	} else {
+		d.Set("scope", scopeGet)
+	}
 	d.Set("usage", cloudSubnetMap["usage"])
 	return d, nil
 }
@@ -175,7 +190,12 @@ func resourceAciCloudSubnetCreate(ctx context.Context, d *schema.ResourceData, m
 		cloudSubnetAttr.NameAlias = NameAlias.(string)
 	}
 	if Scope, ok := d.GetOk("scope"); ok {
-		cloudSubnetAttr.Scope = Scope.(string)
+		scopeList := make([]string, 0, 1)
+		for _, val := range Scope.([]interface{}) {
+			scopeList = append(scopeList, val.(string))
+		}
+		Scope := strings.Join(scopeList, ",")
+		cloudSubnetAttr.Scope = Scope
 	}
 	if Usage, ok := d.GetOk("usage"); ok {
 		cloudSubnetAttr.Usage = Usage.(string)
@@ -254,7 +274,12 @@ func resourceAciCloudSubnetUpdate(ctx context.Context, d *schema.ResourceData, m
 		cloudSubnetAttr.NameAlias = NameAlias.(string)
 	}
 	if Scope, ok := d.GetOk("scope"); ok {
-		cloudSubnetAttr.Scope = Scope.(string)
+		scopeList := make([]string, 0, 1)
+		for _, val := range Scope.([]interface{}) {
+			scopeList = append(scopeList, val.(string))
+		}
+		Scope := strings.Join(scopeList, ",")
+		cloudSubnetAttr.Scope = Scope
 	}
 	if Usage, ok := d.GetOk("usage"); ok {
 		cloudSubnetAttr.Usage = Usage.(string)
@@ -332,14 +357,10 @@ func resourceAciCloudSubnetRead(ctx context.Context, d *schema.ResourceData, m i
 	cloudRsZoneAttachData, err := aciClient.ReadRelationcloudRsZoneAttachFromCloudSubnet(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation cloudRsZoneAttach %v", err)
-		d.Set("relation_cloud_rs_zone_attach", "")
+		d.Set("zone", "")
 
 	} else {
-		if subnetZone, ok := d.GetOk("zone"); ok {
-			if subnetZone.(string) != cloudRsZoneAttachData {
-				d.Set("zone", "")
-			}
-		}
+		d.Set("zone", cloudRsZoneAttachData.(string))
 	}
 
 	cloudRsSubnetToFlowLogData, err := aciClient.ReadRelationcloudRsSubnetToFlowLogFromCloudSubnet(dn)
@@ -348,12 +369,7 @@ func resourceAciCloudSubnetRead(ctx context.Context, d *schema.ResourceData, m i
 		d.Set("relation_cloud_rs_subnet_to_flow_log", "")
 
 	} else {
-		if _, ok := d.GetOk("relation_cloud_rs_subnet_to_flow_log"); ok {
-			tfName := GetMOName(d.Get("relation_cloud_rs_subnet_to_flow_log").(string))
-			if tfName != cloudRsSubnetToFlowLogData {
-				d.Set("relation_cloud_rs_subnet_to_flow_log", "")
-			}
-		}
+		setRelationAttribute(d, "relation_cloud_rs_subnet_to_flow_log", cloudRsSubnetToFlowLogData.(string))
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())

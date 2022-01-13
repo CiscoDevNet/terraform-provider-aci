@@ -50,7 +50,8 @@ func resourceAciL3ExtSubnet() *schema.Resource {
 					"import-rtctrl",
 					"export-rtctrl",
 					"shared-rtctrl",
-				}, false, "")),
+					"none",
+				}, false, "none")),
 			},
 
 			"name_alias": &schema.Schema{
@@ -123,7 +124,7 @@ func setL3ExtSubnetAttributes(l3extSubnet *models.L3ExtSubnet, d *schema.Resourc
 	dn := d.Id()
 	d.SetId(l3extSubnet.DistinguishedName)
 	d.Set("description", l3extSubnet.Description)
-	// d.Set("external_network_instance_profile_dn", GetParentDn(l3extSubnet.DistinguishedName))
+
 	if dn != l3extSubnet.DistinguishedName {
 		d.Set("external_network_instance_profile_dn", "")
 	}
@@ -131,9 +132,16 @@ func setL3ExtSubnetAttributes(l3extSubnet *models.L3ExtSubnet, d *schema.Resourc
 	if err != nil {
 		return d, err
 	}
+
+	d.Set("external_network_instance_profile_dn", GetParentDn(dn, fmt.Sprintf("/extsubnet-[%s]", l3extSubnetMap["ip"])))
 	d.Set("ip", l3extSubnetMap["ip"])
 
-	d.Set("aggregate", l3extSubnetMap["aggregate"])
+	if l3extSubnetMap["aggregate"] == "" {
+		d.Set("aggregate", "none")
+	} else {
+		d.Set("aggregate", l3extSubnetMap["aggregate"])
+	}
+
 	d.Set("annotation", l3extSubnetMap["annotation"])
 	d.Set("ip", l3extSubnetMap["ip"])
 	d.Set("name_alias", l3extSubnetMap["nameAlias"])
@@ -199,7 +207,11 @@ func resourceAciL3ExtSubnetCreate(ctx context.Context, d *schema.ResourceData, m
 
 	l3extSubnetAttr := models.L3ExtSubnetAttributes{}
 	if Aggregate, ok := d.GetOk("aggregate"); ok {
-		l3extSubnetAttr.Aggregate = Aggregate.(string)
+		agg := Aggregate.(string)
+		if agg == "none" {
+			agg = ""
+		}
+		l3extSubnetAttr.Aggregate = agg
 	}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		l3extSubnetAttr.Annotation = Annotation.(string)
@@ -246,6 +258,7 @@ func resourceAciL3ExtSubnetCreate(ctx context.Context, d *schema.ResourceData, m
 		relationParamList := relationTol3extRsSubnetToProfile.(*schema.Set).List()
 		for _, relationParam := range relationParamList {
 			paramMap := relationParam.(map[string]interface{})
+
 			var relationParamName string
 			if paramMap["tn_rtctrl_profile_dn"] != "" && paramMap["tn_rtctrl_profile_name"] != "" {
 				return diag.FromErr(fmt.Errorf("Usage of both tn_rtctrl_profile_dn and tn_rtctrl_profile_name parameters is not supported. tn_rtctrl_profile_name parameter will be deprecated use tn_rtctrl_profile_dn instead."))
@@ -257,6 +270,7 @@ func resourceAciL3ExtSubnetCreate(ctx context.Context, d *schema.ResourceData, m
 				return diag.FromErr(fmt.Errorf("tn_rtctrl_profile_dn is required to generate Route Control Profile"))
 			}
 			err = aciClient.CreateRelationl3extRsSubnetToProfileFromL3ExtSubnet(l3extSubnet.DistinguishedName, relationParamName, paramMap["direction"].(string))
+
 			if err != nil {
 				return diag.FromErr(err)
 			}
@@ -289,7 +303,11 @@ func resourceAciL3ExtSubnetUpdate(ctx context.Context, d *schema.ResourceData, m
 
 	l3extSubnetAttr := models.L3ExtSubnetAttributes{}
 	if Aggregate, ok := d.GetOk("aggregate"); ok {
-		l3extSubnetAttr.Aggregate = Aggregate.(string)
+		agg := Aggregate.(string)
+		if agg == "none" {
+			agg = ""
+		}
+		l3extSubnetAttr.Aggregate = agg
 	}
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		l3extSubnetAttr.Annotation = Annotation.(string)
@@ -340,7 +358,7 @@ func resourceAciL3ExtSubnetUpdate(ctx context.Context, d *schema.ResourceData, m
 		newRelList := newRel.(*schema.Set).List()
 		for _, relationParam := range oldRelList {
 			paramMap := relationParam.(map[string]interface{})
-			err = aciClient.DeleteRelationl3extRsSubnetToProfileFromL3ExtSubnet(l3extSubnet.DistinguishedName, paramMap["tn_rtctrl_profile_name"].(string), paramMap["direction"].(string))
+			err = aciClient.DeleteRelationl3extRsSubnetToProfileFromL3ExtSubnet(l3extSubnet.DistinguishedName, GetMOName(paramMap["tn_rtctrl_profile_name"].(string)), paramMap["direction"].(string))
 			if err != nil {
 				return diag.FromErr(err)
 			}
@@ -348,7 +366,7 @@ func resourceAciL3ExtSubnetUpdate(ctx context.Context, d *schema.ResourceData, m
 		}
 		for _, relationParam := range newRelList {
 			paramMap := relationParam.(map[string]interface{})
-			err = aciClient.CreateRelationl3extRsSubnetToProfileFromL3ExtSubnet(l3extSubnet.DistinguishedName, paramMap["tn_rtctrl_profile_name"].(string), paramMap["direction"].(string))
+			err = aciClient.CreateRelationl3extRsSubnetToProfileFromL3ExtSubnet(l3extSubnet.DistinguishedName, GetMOName(paramMap["tn_rtctrl_profile_name"].(string)), paramMap["direction"].(string))
 			if err != nil {
 				return diag.FromErr(err)
 			}
@@ -398,7 +416,15 @@ func resourceAciL3ExtSubnetRead(ctx context.Context, d *schema.ResourceData, m i
 		log.Printf("[DEBUG] Error while reading relation l3extRsSubnetToProfile %v", err)
 
 	} else {
-		d.Set("relation_l3ext_rs_subnet_to_profile", l3extRsSubnetToProfileData)
+		relParamList := make([]map[string]string, 0, 1)
+		relParams := l3extRsSubnetToProfileData.([]map[string]string)
+		for _, obj := range relParams {
+			relParamList = append(relParamList, map[string]string{
+				"tn_rtctrl_profile_name": obj["tnRtctrlProfileName"],
+				"direction":              obj["direction"],
+			})
+		}
+		d.Set("relation_l3ext_rs_subnet_to_profile", relParamList)
 	}
 
 	l3extRsSubnetToRtSummData, err := aciClient.ReadRelationl3extRsSubnetToRtSummFromL3ExtSubnet(dn)
@@ -407,12 +433,7 @@ func resourceAciL3ExtSubnetRead(ctx context.Context, d *schema.ResourceData, m i
 		d.Set("relation_l3ext_rs_subnet_to_rt_summ", "")
 
 	} else {
-		if _, ok := d.GetOk("relation_l3ext_rs_subnet_to_rt_summ"); ok {
-			tfName := d.Get("relation_l3ext_rs_subnet_to_rt_summ").(string)
-			if tfName != l3extRsSubnetToRtSummData {
-				d.Set("relation_l3ext_rs_subnet_to_rt_summ", "")
-			}
-		}
+		setRelationAttribute(d, "relation_l3ext_rs_subnet_to_rt_summ", l3extRsSubnetToRtSummData.(string))
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
