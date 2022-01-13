@@ -42,7 +42,7 @@ func setRelationAttribute(d *schema.ResourceData, relation string, data interfac
 			switch data.(type) {
 			case string:
 				d.Set(relation, "")
-			case []interface{}:
+			case []string:
 				d.Set(relation, make([]string, 0, 1))
 			}
 		}
