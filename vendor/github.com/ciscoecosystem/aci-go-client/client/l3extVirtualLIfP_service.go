@@ -6,7 +6,6 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/container"
 	"github.com/ciscoecosystem/aci-go-client/models"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func (sm *ServiceManager) CreateVirtualLogicalInterfaceProfile(encap string, nodeDn string, logical_interface_profile string, logical_node_profile string, l3_outside string, tenant string, description string, l3extVirtualLIfPattr models.VirtualLogicalInterfaceProfileAttributes) (*models.VirtualLogicalInterfaceProfile, error) {
@@ -55,15 +54,18 @@ func (sm *ServiceManager) ListVirtualLogicalInterfaceProfile(logical_interface_p
 	return list, err
 }
 
-func (sm *ServiceManager) CreateRelationl3extRsDynPathAttFromLogicalInterfaceProfile(parentDn, tDn string) error {
+func (sm *ServiceManager) CreateRelationl3extRsDynPathAttFromLogicalInterfaceProfile(parentDn, tDn, addr string) error {
 	dn := fmt.Sprintf("%s/rsdynPathAtt-[%s]", parentDn, tDn)
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
-				"dn": "%s", "annotation":"orchestrator:terraform"				
+				"dn": "%s",
+				"annotation":"orchestrator:terraform",
+				"tDn":"%s",
+				"floatingAddr":"%s"				
 			}
 		}
-	}`, "l3extRsDynPathAtt", dn))
+	}`, "l3extRsDynPathAtt", dn, tDn, addr))
 
 	jsonPayload, err := container.ParseJSON(containerJSON)
 	if err != nil {
@@ -96,12 +98,13 @@ func (sm *ServiceManager) ReadRelationl3extRsDynPathAttFromLogicalInterfaceProfi
 
 	contList := models.ListFromContainer(cont, "l3extRsDynPathAtt")
 
-	st := &schema.Set{
-		F: schema.HashString,
-	}
+	st := make([]map[string]string, 0)
 	for _, contItem := range contList {
-		dat := models.G(contItem, "tDn")
-		st.Add(dat)
+		paramMap := make(map[string]string)
+		paramMap["tDn"] = models.G(contItem, "tDn")
+		paramMap["floatingAddr"] = models.G(contItem, "floatingAddr")
+
+		st = append(st, paramMap)
 	}
 	return st, err
 

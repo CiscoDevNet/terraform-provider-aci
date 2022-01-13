@@ -154,9 +154,19 @@ func resourceAciVirtualLogicalInterfaceProfile() *schema.Resource {
 
 			"relation_l3ext_rs_dyn_path_att": &schema.Schema{
 				Type:     schema.TypeSet,
-				Elem:     &schema.Schema{Type: schema.TypeString},
 				Optional: true,
-				Set:      schema.HashString,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"tdn": {
+							Type:     schema.TypeString,
+							Required: true,
+						},
+						"flaoting_address": {
+							Type:     schema.TypeString,
+							Required: true,
+						},
+					},
+				},
 			},
 		}),
 	}
@@ -288,31 +298,29 @@ func resourceAciVirtualLogicalInterfaceProfileCreate(ctx context.Context, d *sch
 		return diag.FromErr(err)
 	}
 
-	checkDns := make([]string, 0, 1)
+	checkDns := make([]string, 0, 1)	
 
 	if relationTol3extRsDynPathAtt, ok := d.GetOk("relation_l3ext_rs_dyn_path_att"); ok {
-		relationParamList := toStringList(relationTol3extRsDynPathAtt.(*schema.Set).List())
+		relationParamList := relationTol3extRsDynPathAtt.(*schema.Set).List()
 		for _, relationParam := range relationParamList {
-			checkDns = append(checkDns, relationParam)
+			paramMap := relationParam.(map[string]interface{})
+			checkDns = append(checkDns, paramMap["tdn"].(string))
 		}
 	}
 
-	d.Partial(true)
 	err = checkTDn(aciClient, checkDns)
 	if err != nil {
 		return diag.FromErr(err)
 	}
-	d.Partial(false)
 
 	if relationTol3extRsDynPathAtt, ok := d.GetOk("relation_l3ext_rs_dyn_path_att"); ok {
-		relationParamList := toStringList(relationTol3extRsDynPathAtt.(*schema.Set).List())
+		relationParamList := relationTol3extRsDynPathAtt.(*schema.Set).List()
 		for _, relationParam := range relationParamList {
-			err = aciClient.CreateRelationl3extRsDynPathAttFromLogicalInterfaceProfile(l3extVirtualLIfP.DistinguishedName, relationParam)
-
+			paramMap := relationParam.(map[string]interface{})
+			err = aciClient.CreateRelationl3extRsDynPathAttFromLogicalInterfaceProfile(l3extVirtualLIfP.DistinguishedName, paramMap["tdn"].(string), paramMap["flaoting_address"].(string))
 			if err != nil {
 				return diag.FromErr(err)
 			}
-
 		}
 	}
 
@@ -383,48 +391,39 @@ func resourceAciVirtualLogicalInterfaceProfileUpdate(ctx context.Context, d *sch
 	if err != nil {
 		return diag.FromErr(err)
 	}
-
 	checkDns := make([]string, 0, 1)
 
-	if d.HasChange("relation_l3ext_rs_dyn_path_att") {
-		oldRel, newRel := d.GetChange("relation_l3ext_rs_dyn_path_att")
-		oldRelSet := oldRel.(*schema.Set)
-		newRelSet := newRel.(*schema.Set)
-		relToCreate := toStringList(newRelSet.Difference(oldRelSet).List())
-
-		for _, relDn := range relToCreate {
-			checkDns = append(checkDns, relDn)
+	if relationTol3extRsDynPathAtt, ok := d.GetOk("relation_l3ext_rs_dyn_path_att"); ok {
+		relationParamList := relationTol3extRsDynPathAtt.(*schema.Set).List()
+		for _, relationParam := range relationParamList {
+			paramMap := relationParam.(map[string]interface{})
+			checkDns = append(checkDns, paramMap["tdn"].(string))
 		}
 	}
 
-	d.Partial(true)
 	err = checkTDn(aciClient, checkDns)
 	if err != nil {
 		return diag.FromErr(err)
 	}
-	d.Partial(false)
 
 	if d.HasChange("relation_l3ext_rs_dyn_path_att") {
 		oldRel, newRel := d.GetChange("relation_l3ext_rs_dyn_path_att")
-		oldRelSet := oldRel.(*schema.Set)
-		newRelSet := newRel.(*schema.Set)
-		relToDelete := toStringList(oldRelSet.Difference(newRelSet).List())
-		relToCreate := toStringList(newRelSet.Difference(oldRelSet).List())
-
-		for _, relDn := range relToDelete {
-			err = aciClient.DeleteRelationl3extRsDynPathAttFromLogicalInterfaceProfile(l3extVirtualLIfP.DistinguishedName, relDn)
+		oldRelList := oldRel.(*schema.Set).List()
+		newRelList := newRel.(*schema.Set).List()
+		for _, relationParam := range oldRelList {
+			paramMap := relationParam.(map[string]interface{})
+			err = aciClient.DeleteRelationl3extRsDynPathAttFromLogicalInterfaceProfile(l3extVirtualLIfP.DistinguishedName, paramMap["tdn"].(string))
 			if err != nil {
 				return diag.FromErr(err)
 			}
 
 		}
-
-		for _, relDn := range relToCreate {
-			err = aciClient.CreateRelationl3extRsDynPathAttFromLogicalInterfaceProfile(l3extVirtualLIfP.DistinguishedName, relDn)
+		for _, relationParam := range newRelList {
+			paramMap := relationParam.(map[string]interface{})
+			err = aciClient.CreateRelationl3extRsDynPathAttFromLogicalInterfaceProfile(l3extVirtualLIfP.DistinguishedName, paramMap["tdn"].(string), paramMap["flaoting_address"].(string))
 			if err != nil {
 				return diag.FromErr(err)
 			}
-
 		}
 
 	}
@@ -459,7 +458,15 @@ func resourceAciVirtualLogicalInterfaceProfileRead(ctx context.Context, d *schem
 		log.Printf("[DEBUG] Error while reading relation l3extRsDynPathAtt %v", err)
 		setRelationAttribute(d, "relation_l3ext_rs_dyn_path_att", make([]interface{}, 0, 1))
 	} else {
-		setRelationAttribute(d, "relation_l3ext_rs_dyn_path_att", toStringList(l3extRsDynPathAttData.(*schema.Set).List()))
+		l3extRsDynPathAttMap := l3extRsDynPathAttData.([]map[string]string)
+		st := make([]map[string]string, 0)
+		for _, l3extRsDynPathObj := range l3extRsDynPathAttMap {
+			obj := make(map[string]string, 0)
+			obj["tdn"] = l3extRsDynPathObj["tDn"]
+			obj["flaoting_address"] = l3extRsDynPathObj["floatingAddr"]
+			st = append(st, obj)
+		}
+		d.Set("relation_l3ext_rs_dyn_path_att", st)
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
