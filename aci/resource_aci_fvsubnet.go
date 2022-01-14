@@ -148,6 +148,7 @@ func setSubnetAttributes(fvSubnet *models.Subnet, d *schema.ResourceData) (*sche
 	if ipAddressUser.Equal(ipAddressFVSubnet) && ipNetworkUser.String() == ipNetworkFVSubnet.String() {
 		fvSubnetMap["ip"] = ip
 	}
+	d.Set("ip", fvSubnetMap["ip"])
 	d.Set("parent_dn", GetParentDn(dn, fmt.Sprintf("/subnet-[%s]", fvSubnetMap["ip"])))
 	d.Set("annotation", fvSubnetMap["annotation"])
 	d.Set("name_alias", fvSubnetMap["nameAlias"])
