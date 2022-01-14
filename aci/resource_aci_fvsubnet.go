@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"net"
 	"reflect"
 	"sort"
 	"strings"
@@ -132,23 +133,24 @@ func getRemoteSubnet(client *client.Client, dn string) (*models.Subnet, error) {
 
 func setSubnetAttributes(fvSubnet *models.Subnet, d *schema.ResourceData) (*schema.ResourceData, error) {
 	dn := d.Id()
-	ip := d.Get("ip").(string)
-	d.Set("ip", ip)
+
 	d.Set("description", fvSubnet.Description)
 	if dn != fvSubnet.DistinguishedName {
-		d.SetId(dn)
+		d.Set("parent_dn", "")
 	}
 	fvSubnetMap, err := fvSubnet.ToMap()
 	if err != nil {
 		return d, err
 	}
-
-<<<<<<< HEAD
+	ip := d.Get("ip").(string)
+	ipAddressUser, ipNetworkUser, _ := net.ParseCIDR(ip)
+	ipAddressFVSubnet, ipNetworkFVSubnet, _ := net.ParseCIDR(fvSubnetMap["ip"])
+	if ipAddressUser.Equal(ipAddressFVSubnet) && ipNetworkUser.String() == ipNetworkFVSubnet.String() {
+		fvSubnetMap["ip"] = ip
+	}
 	d.Set("parent_dn", GetParentDn(dn, fmt.Sprintf("/subnet-[%s]", fvSubnetMap["ip"])))
-	d.Set("ip", fvSubnetMap["ip"])
-
-=======
->>>>>>> Fix fo IPV6 discrepancy- change in set function
+	log.Printf("DNDN %d", dn)
+	log.Printf("FVSUBNET %d", fvSubnet.DistinguishedName)
 	d.Set("annotation", fvSubnetMap["annotation"])
 	d.Set("name_alias", fvSubnetMap["nameAlias"])
 	d.Set("preferred", fvSubnetMap["preferred"])
@@ -564,6 +566,7 @@ func resourceAciSubnetRead(ctx context.Context, d *schema.ResourceData, m interf
 	}
 	_, err = setSubnetAttributes(fvSubnet, d)
 	if err != nil {
+		log.Printf("ERRORERROR")
 		d.SetId("")
 		return nil
 	}
