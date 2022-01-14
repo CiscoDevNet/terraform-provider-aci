@@ -149,8 +149,6 @@ func setSubnetAttributes(fvSubnet *models.Subnet, d *schema.ResourceData) (*sche
 		fvSubnetMap["ip"] = ip
 	}
 	d.Set("parent_dn", GetParentDn(dn, fmt.Sprintf("/subnet-[%s]", fvSubnetMap["ip"])))
-	log.Printf("DNDN %d", dn)
-	log.Printf("FVSUBNET %d", fvSubnet.DistinguishedName)
 	d.Set("annotation", fvSubnetMap["annotation"])
 	d.Set("name_alias", fvSubnetMap["nameAlias"])
 	d.Set("preferred", fvSubnetMap["preferred"])
@@ -566,7 +564,6 @@ func resourceAciSubnetRead(ctx context.Context, d *schema.ResourceData, m interf
 	}
 	_, err = setSubnetAttributes(fvSubnet, d)
 	if err != nil {
-		log.Printf("ERRORERROR")
 		d.SetId("")
 		return nil
 	}
