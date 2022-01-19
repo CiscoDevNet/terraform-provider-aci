@@ -143,12 +143,10 @@ func setSubnetAttributes(fvSubnet *models.Subnet, d *schema.ResourceData) (*sche
 	if ip != fvSubnetMap["ip"] {
 		ipAddressUser, ipNetworkUser, _ := net.ParseCIDR(ip)
 		ipAddressQuery, ipNetworkQuery, _ := net.ParseCIDR(fvSubnetMap["ip"])
-		parentUser := GetParentDn(dn, fmt.Sprintf("/subnet-[%s]", ip))
-		parentQuery := GetParentDn(fvSubnet.DistinguishedName, fmt.Sprintf("/subnet-[%s]", fvSubnetMap["ip"]))
-		if ipAddressUser.Equal(ipAddressQuery) && ipNetworkUser.String() == ipNetworkQuery.String() {
+		parentDnUser := GetParentDn(dn, fmt.Sprintf("/subnet-[%s]", ip))
+		parentDnQuery := GetParentDn(fvSubnet.DistinguishedName, fmt.Sprintf("/subnet-[%s]", fvSubnetMap["ip"]))
+		if ipAddressUser.Equal(ipAddressQuery) && ipNetworkUser.String() == ipNetworkQuery.String() && parentDnUser == parentDnQuery {
 			fvSubnetMap["ip"] = ip
-		}
-		if parentUser == parentQuery {
 			fvSubnet.DistinguishedName = dn
 		}
 	}
