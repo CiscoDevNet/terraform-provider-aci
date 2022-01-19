@@ -192,6 +192,10 @@ func setL3outOspfExternalPolicyAttributes(ospfExtP *models.L3outOspfExternalPoli
 		}
 		d.Set("area_ctrl", ospfExtPMap["areaCtrl"])
 	}
+	areaId := d.Get("area_id").(string)
+	if areaId == "0.0.0.0" {
+		ospfExtPMap["areaId"] = "0.0.0.0"
+	}
 	d.Set("area_id", ospfExtPMap["areaId"])
 	d.Set("area_type", ospfExtPMap["areaType"])
 	d.Set("multipod_internal", ospfExtPMap["multipodInternal"])
