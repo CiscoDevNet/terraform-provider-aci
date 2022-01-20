@@ -21,7 +21,7 @@ resource "aci_l3_outside" "fool3_outside" {
   description    = "from terraform"
   name           = "demo_l3out"
   annotation     = "tag_l3out"
-  enforce_rtctrl = "export"
+  enforce_rtctrl = ["export"]
   name_alias     = "alias_out"
   target_dscp    = "unspecified"
 }
