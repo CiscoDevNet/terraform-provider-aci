@@ -62,7 +62,7 @@ func resourceAciL3outOspfExternalPolicy() *schema.Resource {
 				Optional: true,
 				Computed: true,
 				StateFunc: func(val interface{}) string {
-					if val.(string) == "backbone" {
+					if val.(string) == "backbone" || val.(string) == "0" || val.(string) == "0.0.0.0" {
 						return "backbone"
 					} else {
 						numList := strings.Split(val.(string), ".")
@@ -192,10 +192,6 @@ func setL3outOspfExternalPolicyAttributes(ospfExtP *models.L3outOspfExternalPoli
 		}
 		d.Set("area_ctrl", ospfExtPMap["areaCtrl"])
 	}
-	areaId := d.Get("area_id").(string)
-	if areaId == "0.0.0.0" {
-		ospfExtPMap["areaId"] = "0.0.0.0"
-	}
 	d.Set("area_id", ospfExtPMap["areaId"])
 	d.Set("area_type", ospfExtPMap["areaType"])
 	d.Set("multipod_internal", ospfExtPMap["multipodInternal"])
@@ -206,11 +202,8 @@ func setL3outOspfExternalPolicyAttributes(ospfExtP *models.L3outOspfExternalPoli
 func resourceAciL3outOspfExternalPolicyImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
 	log.Printf("[DEBUG] %s: Beginning Import", d.Id())
 	aciClient := m.(*client.Client)
-
 	dn := d.Id()
-
 	ospfExtP, err := getRemoteL3outOspfExternalPolicy(aciClient, dn)
-
 	if err != nil {
 		return nil, err
 	}
@@ -218,7 +211,6 @@ func resourceAciL3outOspfExternalPolicyImport(d *schema.ResourceData, m interfac
 	if err != nil {
 		return nil, err
 	}
-
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
@@ -331,7 +323,6 @@ func resourceAciL3outOspfExternalPolicyRead(ctx context.Context, d *schema.Resou
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)
-
 	dn := d.Id()
 	ospfExtP, err := getRemoteL3outOspfExternalPolicy(aciClient, dn)
 
@@ -344,7 +335,6 @@ func resourceAciL3outOspfExternalPolicyRead(ctx context.Context, d *schema.Resou
 		d.SetId("")
 		return nil
 	}
-
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 
 	return nil
