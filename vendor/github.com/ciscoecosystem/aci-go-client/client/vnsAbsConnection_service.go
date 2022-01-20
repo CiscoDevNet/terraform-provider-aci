@@ -2,6 +2,7 @@ package client
 
 import (
 	"fmt"
+	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/container"
 	"github.com/ciscoecosystem/aci-go-client/models"
@@ -78,7 +79,7 @@ func (sm *ServiceManager) CreateRelationvnsRsAbsCopyConnectionFromConnection(par
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
+	log.Printf("%+v", cont)
 
 	return CheckForErrors(cont, "POST", sm.client.skipLoggingPayload)
 }
@@ -129,7 +130,7 @@ func (sm *ServiceManager) CreateRelationvnsRsAbsConnectionConnsFromConnection(pa
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
+	log.Printf("%+v", cont)
 
 	return CheckForErrors(cont, "POST", sm.client.skipLoggingPayload)
 }

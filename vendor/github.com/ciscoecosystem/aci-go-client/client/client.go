@@ -8,6 +8,8 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"math"
+	"math/rand"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -40,7 +42,10 @@ const authAppPayload = `{
 // Default timeout for NGINX in ACI is 90 Seconds.
 // Allow the client to set a shorter or longer time depending on their
 // environment
-const DefaultReqTimeoutVal uint32 = 100
+const DefaultReqTimeoutVal int = 100
+const DefaultBackoffMinDelay int = 4
+const DefaultBackoffMaxDelay int = 60
+const DefaultBackoffDelayFactor float64 = 3
 const DefaultMOURL = "/api/node/mo"
 
 // Client is the main entry point
@@ -63,6 +68,10 @@ type Client struct {
 	skipLoggingPayload bool
 	appUserName        string
 	ValidateRelationDn bool
+	maxRetries         int
+	backoffMinDelay    int
+	backoffMaxDelay    int
+	backoffDelayFactor float64
 	*ServiceManager
 }
 
@@ -122,6 +131,30 @@ func ProxyCreds(pcreds string) Option {
 func ValidateRelationDn(validateRelationDn bool) Option {
 	return func(client *Client) {
 		client.ValidateRelationDn = validateRelationDn
+	}
+}
+
+func MaxRetries(maxRetries int) Option {
+	return func(client *Client) {
+		client.maxRetries = maxRetries
+	}
+}
+
+func BackoffMinDelay(backoffMinDelay int) Option {
+	return func(client *Client) {
+		client.backoffMinDelay = backoffMinDelay
+	}
+}
+
+func BackoffMaxDelay(backoffMaxDelay int) Option {
+	return func(client *Client) {
+		client.backoffMaxDelay = backoffMaxDelay
+	}
+}
+
+func BackoffDelayFactor(backoffDelayFactor float64) Option {
+	return func(client *Client) {
+		client.backoffDelayFactor = backoffDelayFactor
 	}
 }
 
@@ -420,7 +453,7 @@ func (c *Client) Authenticate() error {
 	obj, _, err := c.Do(req)
 	c.skipLoggingPayload = false
 	if err != nil {
-		log.Printf("[DEBUG]: ERROR %s", err)
+		log.Printf("[DEBUG] Authentication ERROR: %s", err)
 		return err
 	}
 	if obj == nil {
@@ -463,57 +496,108 @@ func StrtoInt(s string, startIndex int, bitSize int) (int64, error) {
 
 }
 func (c *Client) Do(req *http.Request) (*container.Container, *http.Response, error) {
-	log.Printf("[DEBUG] Begining DO method %s", req.URL.String())
-	resp, err := c.httpClient.Do(req)
-	if err != nil {
-		return nil, nil, err
-	}
-	if !c.skipLoggingPayload {
-		log.Printf("\n\n\n HTTP request: %v", req.Body)
-	}
-	log.Printf("\nHTTP Request: %s %s", req.Method, req.URL.String())
-	if !c.skipLoggingPayload {
-		log.Printf("\nHTTP Response: %d %s %v", resp.StatusCode, resp.Status, resp)
-	} else {
-		log.Printf("\nHTTP Response: %d %s", resp.StatusCode, resp.Status)
-	}
+	log.Printf("[DEBUG] Begining Do method %s", req.URL.String())
 
-	bodyBytes, err := ioutil.ReadAll(resp.Body)
-	bodyStr := string(bodyBytes)
-	resp.Body.Close()
-	if !c.skipLoggingPayload {
-		log.Printf("\n HTTP response unique string %s %s %s", req.Method, req.URL.String(), bodyStr)
+	for attempts := 0; ; attempts++ {
+		log.Printf("[TRACE] HTTP Request Method and URL: %s %s", req.Method, req.URL.String())
+		if !c.skipLoggingPayload {
+			log.Printf("[TRACE] HTTP Request Body: %v", req.Body)
+		}
+
+		resp, err := c.httpClient.Do(req)
+		if err != nil {
+			if ok := c.backoff(attempts); !ok {
+				log.Printf("[ERROR] HTTP Connection error occured: %+v", err)
+				log.Printf("[DEBUG] Exit from Do method")
+				return nil, nil, err
+			} else {
+				log.Printf("[ERROR] HTTP Connection failed: %s, retries: %v", err, attempts)
+				continue
+			}
+		}
+
+		if !c.skipLoggingPayload {
+			log.Printf("[TRACE] HTTP Response: %d %s %v", resp.StatusCode, resp.Status, resp)
+		} else {
+			log.Printf("[TRACE] HTTP Response: %d %s", resp.StatusCode, resp.Status)
+		}
+
+		bodyBytes, err := ioutil.ReadAll(resp.Body)
+		bodyStr := string(bodyBytes)
+		resp.Body.Close()
+		if !c.skipLoggingPayload {
+			log.Printf("[DEBUG] HTTP response unique string %s %s %s", req.Method, req.URL.String(), bodyStr)
+		}
+
+		if resp.StatusCode < 500 || resp.StatusCode > 504 {
+			obj, err := container.ParseJSON(bodyBytes)
+			if err != nil {
+				log.Printf("[ERROR] Error occured while json parsing %+v", err)
+				log.Printf("[DEBUG] Exit from Do method")
+				return nil, resp, err
+			}
+
+			log.Printf("[DEBUG] Exit from Do method")
+			return obj, resp, nil
+		} else {
+			if ok := c.backoff(attempts); !ok {
+				obj, err := container.ParseJSON(bodyBytes)
+				if err != nil {
+					log.Printf("[ERROR] Error occured while json parsing %+v with HTTP StatusCode 500-504", err)
+					log.Printf("[DEBUG] Exit from Do method")
+					return nil, resp, err
+				}
+
+				log.Printf("[DEBUG] Exit from Do method")
+				return obj, resp, nil
+			} else {
+				log.Printf("[ERROR] HTTP Request failed: StatusCode %v, Retries: %v", resp.StatusCode, attempts)
+				continue
+			}
+		}
 	}
-	obj, err := container.ParseJSON(bodyBytes)
-
-	if err != nil {
-
-		log.Printf("Error occured while json parsing %+v", err)
-		return nil, resp, err
-	}
-	log.Printf("[DEBUG] Exit from do method")
-	return obj, resp, err
-
 }
 
 func (c *Client) DoRaw(req *http.Request) (*http.Response, error) {
+	log.Printf("[DEBUG] Begining DoRaw method %s", req.URL.String())
 
-	resp, err := c.httpClient.Do(req)
-	if err != nil {
-		return nil, err
-	}
+	for attempts := 0; ; attempts++ {
+		log.Printf("[TRACE] HTTP Request Method and URL: %s %s", req.Method, req.URL.String())
+		if !c.skipLoggingPayload {
+			log.Printf("[TRACE] HTTP Request Body: %v", req.Body)
+		}
 
-	if !c.skipLoggingPayload {
-		log.Printf("\n\n\n HTTP request: %v", req.Body)
-	}
-	log.Printf("\nHTTP Request: %s %s", req.Method, req.URL.String())
-	if !c.skipLoggingPayload {
-		log.Printf("\nHTTP Response: %d %s %v", resp.StatusCode, resp.Status, resp)
-	} else {
-		log.Printf("\nHTTP Response: %d %s", resp.StatusCode, resp.Status)
-	}
+		resp, err := c.httpClient.Do(req)
+		if err != nil {
+			if ok := c.backoff(attempts); !ok {
+				log.Printf("[ERROR] HTTP Connection error occured: %+v", err)
+				log.Printf("[DEBUG] Exit from DoRaw method")
+				return nil, err
+			} else {
+				log.Printf("[ERROR] HTTP Connection failed: %s, retries: %v", err, attempts)
+				continue
+			}
+		}
 
-	return resp, err
+		if !c.skipLoggingPayload {
+			log.Printf("[TRACE] HTTP Response: %d %s %v", resp.StatusCode, resp.Status, resp)
+		} else {
+			log.Printf("[TRACE] HTTP Response: %d %s", resp.StatusCode, resp.Status)
+		}
+
+		if resp.StatusCode < 500 || resp.StatusCode > 504 {
+			log.Printf("[DEBUG] Exit from DoRaw method")
+			return resp, nil
+		} else {
+			if ok := c.backoff(attempts); !ok {
+				log.Printf("[DEBUG] Exit from DoRaw method")
+				return resp, nil
+			} else {
+				log.Printf("[ERROR] HTTP Request failed: StatusCode %v, Retries: %v", resp.StatusCode, attempts)
+				continue
+			}
+		}
+	}
 }
 
 func stripQuotes(word string) string {
@@ -521,4 +605,39 @@ func stripQuotes(word string) string {
 		return strings.TrimSuffix(strings.TrimPrefix(word, "\""), "\"")
 	}
 	return word
+}
+
+func (c *Client) backoff(attempts int) bool {
+	log.Printf("[DEBUG] Begining backoff method: attempts %v on %v", attempts, c.maxRetries)
+	if attempts >= c.maxRetries {
+		log.Printf("[DEBUG] Exit from backoff method with return value false")
+		return false
+	}
+
+	minDelay := time.Duration(DefaultBackoffMinDelay) * time.Second
+	if c.backoffMinDelay != 0 {
+		minDelay = time.Duration(c.backoffMinDelay) * time.Second
+	}
+
+	maxDelay := time.Duration(DefaultBackoffMaxDelay) * time.Second
+	if c.backoffMaxDelay != 0 {
+		maxDelay = time.Duration(c.backoffMaxDelay) * time.Second
+	}
+
+	factor := DefaultBackoffDelayFactor
+	if c.backoffDelayFactor != 0 {
+		factor = c.backoffDelayFactor
+	}
+
+	min := float64(minDelay)
+	backoff := min * math.Pow(factor, float64(attempts))
+	if backoff > float64(maxDelay) {
+		backoff = float64(maxDelay)
+	}
+	backoff = (rand.Float64()/2+0.5)*(backoff-min) + min
+	backoffDuration := time.Duration(backoff)
+	log.Printf("[TRACE] Starting sleeping for %v", backoffDuration.Round(time.Second))
+	time.Sleep(backoffDuration)
+	log.Printf("[DEBUG] Exit from backoff method with return value true")
+	return true
 }

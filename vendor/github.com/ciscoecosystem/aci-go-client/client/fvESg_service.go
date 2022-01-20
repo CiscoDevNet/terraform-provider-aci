@@ -3,6 +3,7 @@ package client
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/container"
 	"github.com/ciscoecosystem/aci-go-client/models"
@@ -100,7 +101,7 @@ func (sm *ServiceManager) CreateRelationfvRsCons(parentDn, annotation, prio stri
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
+	log.Printf("%+v", cont)
 	return nil
 }
 
@@ -176,7 +177,7 @@ func (sm *ServiceManager) CreateRelationfvRsConsIf(parentDn, annotation, prio st
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
+	log.Printf("%+v", cont)
 	return nil
 }
 
@@ -224,7 +225,7 @@ func (sm *ServiceManager) CreateRelationfvRsCustQosPol(parentDn, annotation, tnQ
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
+	log.Printf("%+v", cont)
 	return nil
 }
 
@@ -270,7 +271,7 @@ func (sm *ServiceManager) CreateRelationfvRsIntraEpg(parentDn, annotation, tnVzB
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
+	log.Printf("%+v", cont)
 	return nil
 }
 
@@ -318,7 +319,7 @@ func (sm *ServiceManager) CreateRelationfvRsProtBy(parentDn, annotation, tnVzTab
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
+	log.Printf("%+v", cont)
 	return nil
 }
 
@@ -395,7 +396,7 @@ func (sm *ServiceManager) CreateRelationfvRsProv(parentDn, annotation, matchT st
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
+	log.Printf("%+v", cont)
 	return nil
 }
 
@@ -444,7 +445,7 @@ func (sm *ServiceManager) CreateRelationfvRsScope(parentDn, annotation, tnFvCtxN
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
+	log.Printf("%+v", cont)
 	return nil
 }
 
@@ -490,7 +491,7 @@ func (sm *ServiceManager) CreateRelationfvRsSecInherited(parentDn, annotation, t
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
+	log.Printf("%+v", cont)
 	return nil
 }
 

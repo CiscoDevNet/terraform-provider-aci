@@ -91,14 +91,20 @@ func CheckForErrors(cont *container.Container, method string, skipLoggingPayload
 	if number > 0 {
 
 		if imdata.Exists("error") {
-
-			if models.StripQuotes(imdata.Path("error.attributes.code").String()) == "103" {
+			errorCode := models.StripQuotes(imdata.Path("error.attributes.code").String())
+			// Ignore errors of type "Cannot create object"
+			if errorCode == "103" {
 				if !skipLoggingPayload {
 					log.Printf("[DEBUG] Exit from error 103 %v", cont)
 				}
 				return nil
+			} else if method == "DELETE" && (errorCode == "1" || errorCode == "107") { // Ignore errors of type "Cannot delete object"
+				if !skipLoggingPayload {
+					log.Printf("[DEBUG] Exit from error 1 or 107 %v", cont)
+				}
+				return nil
 			} else {
-				if models.StripQuotes(imdata.Path("error.attributes.text").String()) == "" && models.StripQuotes(imdata.Path("error.attributes.code").String()) == "403" {
+				if models.StripQuotes(imdata.Path("error.attributes.text").String()) == "" && errorCode == "403" {
 					if !skipLoggingPayload {
 						log.Printf("[DEBUG] Exit from authentication error 403 %v", cont)
 					}

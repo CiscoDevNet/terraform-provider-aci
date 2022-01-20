@@ -105,4 +105,3 @@ func SwitchMaintPValidateListFromContainer(cont *container.Container) []*SwitchM
 
 	return arr
 }
-

@@ -2,6 +2,7 @@ package client
 
 import (
 	"fmt"
+	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/container"
 	"github.com/ciscoecosystem/aci-go-client/models"
@@ -81,7 +82,7 @@ func (sm *ServiceManager) CreateRelationinfraRsVlanNsFromL2Domain(parentDn, tnFv
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
+	log.Printf("%+v", cont)
 
 	return nil
 }
@@ -131,7 +132,7 @@ func (sm *ServiceManager) CreateRelationinfraRsVlanNsDefFromL2Domain(parentDn, t
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
+	log.Printf("%+v", cont)
 
 	return nil
 }
@@ -176,7 +177,7 @@ func (sm *ServiceManager) CreateRelationinfraRsVipAddrNsFromL2Domain(parentDn, t
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
+	log.Printf("%+v", cont)
 
 	return nil
 }
@@ -225,7 +226,7 @@ func (sm *ServiceManager) CreateRelationextnwRsOutFromL2Domain(parentDn, tDn str
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
+	log.Printf("%+v", cont)
 
 	return nil
 }
@@ -272,7 +273,7 @@ func (sm *ServiceManager) CreateRelationinfraRsDomVxlanNsDefFromL2Domain(parentD
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
+	log.Printf("%+v", cont)
 
 	return nil
 }

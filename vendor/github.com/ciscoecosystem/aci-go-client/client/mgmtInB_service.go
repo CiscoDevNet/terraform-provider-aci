@@ -2,6 +2,7 @@ package client
 
 import (
 	"fmt"
+	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/container"
 	"github.com/ciscoecosystem/aci-go-client/models"
@@ -79,7 +80,7 @@ func (sm *ServiceManager) CreateRelationfvRsSecInheritedFromInBandManagementEPg(
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
+	log.Printf("%+v", cont)
 
 	return nil
 }
@@ -131,7 +132,7 @@ func (sm *ServiceManager) CreateRelationfvRsProvFromInBandManagementEPg(parentDn
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
+	log.Printf("%+v", cont)
 
 	return nil
 }
@@ -183,7 +184,7 @@ func (sm *ServiceManager) CreateRelationfvRsConsIfFromInBandManagementEPg(parent
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
+	log.Printf("%+v", cont)
 
 	return nil
 }
@@ -235,7 +236,7 @@ func (sm *ServiceManager) CreateRelationfvRsCustQosPolFromInBandManagementEPg(pa
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
+	log.Printf("%+v", cont)
 
 	return nil
 }
@@ -280,7 +281,7 @@ func (sm *ServiceManager) CreateRelationmgmtRsMgmtBDFromInBandManagementEPg(pare
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
+	log.Printf("%+v", cont)
 
 	return nil
 }
@@ -325,7 +326,7 @@ func (sm *ServiceManager) CreateRelationfvRsConsFromInBandManagementEPg(parentDn
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
+	log.Printf("%+v", cont)
 
 	return nil
 }
@@ -377,7 +378,7 @@ func (sm *ServiceManager) CreateRelationfvRsProtByFromInBandManagementEPg(parent
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
+	log.Printf("%+v", cont)
 
 	return nil
 }
@@ -429,7 +430,7 @@ func (sm *ServiceManager) CreateRelationmgmtRsInBStNodeFromInBandManagementEPg(p
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
+	log.Printf("%+v", cont)
 
 	return nil
 }
@@ -481,7 +482,7 @@ func (sm *ServiceManager) CreateRelationfvRsIntraEpgFromInBandManagementEPg(pare
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
+	log.Printf("%+v", cont)
 
 	return nil
 }
