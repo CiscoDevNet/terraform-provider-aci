@@ -19,7 +19,7 @@ type Annotation struct {
 }
 
 type AnnotationAttributes struct {
-	Key string `json:",omitempty"`
+	Key   string `json:",omitempty"`
 	Value string `json:",omitempty"`
 }
 
@@ -58,7 +58,7 @@ func AnnotationFromContainerList(cont *container.Container, index int) *Annotati
 			ClassName:         TagAnnotationClassName,
 		},
 		AnnotationAttributes{
-			Key: G(AnnotationCont, "key"),
+			Key:   G(AnnotationCont, "key"),
 			Value: G(AnnotationCont, "value"),
 		},
 	}

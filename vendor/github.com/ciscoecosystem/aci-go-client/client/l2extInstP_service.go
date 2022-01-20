@@ -2,6 +2,7 @@ package client
 
 import (
 	"fmt"
+	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/container"
 	"github.com/ciscoecosystem/aci-go-client/models"
@@ -80,7 +81,7 @@ func (sm *ServiceManager) CreateRelationfvRsSecInheritedFromL2outExternalEpg(par
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
+	log.Printf("%+v", cont)
 
 	return nil
 }
@@ -133,7 +134,7 @@ func (sm *ServiceManager) CreateRelationfvRsProvFromL2outExternalEpg(parentDn, t
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
+	log.Printf("%+v", cont)
 
 	return nil
 }
@@ -186,7 +187,7 @@ func (sm *ServiceManager) CreateRelationfvRsConsIfFromL2outExternalEpg(parentDn,
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
+	log.Printf("%+v", cont)
 
 	return nil
 }
@@ -240,7 +241,7 @@ func (sm *ServiceManager) CreateRelationfvRsCustQosPolFromL2outExternalEpg(paren
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
+	log.Printf("%+v", cont)
 
 	return nil
 }
@@ -286,7 +287,7 @@ func (sm *ServiceManager) CreateRelationfvRsConsFromL2outExternalEpg(parentDn, t
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
+	log.Printf("%+v", cont)
 
 	return nil
 }
@@ -338,7 +339,7 @@ func (sm *ServiceManager) CreateRelationl2extRsL2InstPToDomPFromL2outExternalEpg
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
+	log.Printf("%+v", cont)
 
 	return nil
 }
@@ -384,7 +385,7 @@ func (sm *ServiceManager) CreateRelationfvRsProtByFromL2outExternalEpg(parentDn,
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
+	log.Printf("%+v", cont)
 
 	return nil
 }
@@ -437,7 +438,7 @@ func (sm *ServiceManager) CreateRelationfvRsIntraEpgFromL2outExternalEpg(parentD
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
+	log.Printf("%+v", cont)
 
 	return nil
 }

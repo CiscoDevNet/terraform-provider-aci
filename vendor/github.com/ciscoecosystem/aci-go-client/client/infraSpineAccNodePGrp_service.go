@@ -2,6 +2,7 @@ package client
 
 import (
 	"fmt"
+	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/container"
 	"github.com/ciscoecosystem/aci-go-client/models"
@@ -70,7 +71,7 @@ func (sm *ServiceManager) CreateRelationinfraRsIaclSpineProfile(parentDn, annota
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
+	log.Printf("%+v", cont)
 	return nil
 }
 
@@ -116,7 +117,7 @@ func (sm *ServiceManager) CreateRelationinfraRsSpineBfdIpv4InstPol(parentDn, ann
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
+	log.Printf("%+v", cont)
 	return nil
 }
 
@@ -162,7 +163,7 @@ func (sm *ServiceManager) CreateRelationinfraRsSpineBfdIpv6InstPol(parentDn, ann
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
+	log.Printf("%+v", cont)
 	return nil
 }
 
@@ -208,7 +209,7 @@ func (sm *ServiceManager) CreateRelationinfraRsSpineCoppProfile(parentDn, annota
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
+	log.Printf("%+v", cont)
 	return nil
 }
 
@@ -254,7 +255,7 @@ func (sm *ServiceManager) CreateRelationinfraRsSpinePGrpToCdpIfPol(parentDn, ann
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
+	log.Printf("%+v", cont)
 	return nil
 }
 
@@ -300,7 +301,7 @@ func (sm *ServiceManager) CreateRelationinfraRsSpinePGrpToLldpIfPol(parentDn, an
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%+v", cont)
+	log.Printf("%+v", cont)
 	return nil
 }
 
