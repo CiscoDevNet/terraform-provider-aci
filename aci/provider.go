@@ -2,6 +2,8 @@ package aci
 
 import (
 	"fmt"
+	"os"
+	"strconv"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -14,55 +16,78 @@ func Provider() *schema.Provider {
 				Type:        schema.TypeString,
 				Required:    true,
 				DefaultFunc: schema.EnvDefaultFunc("ACI_USERNAME", nil),
-				Description: "Username for the APIC Account",
+				Description: "Username for the APIC Account. This can also be set as the ACI_USERNAME environment variable.",
 			},
 			"password": &schema.Schema{
 				Type:        schema.TypeString,
 				Optional:    true,
 				DefaultFunc: schema.EnvDefaultFunc("ACI_PASSWORD", nil),
-				Description: "Password for the APIC Account",
+				Description: "Password for the APIC Account. This can also be set as the ACI_PASSWORD environment variable.",
 			},
 			"url": &schema.Schema{
 				Type:        schema.TypeString,
 				Required:    true,
 				DefaultFunc: schema.EnvDefaultFunc("ACI_URL", nil),
-				Description: "URL of the Cisco ACI web interface",
+				Description: "URL of the Cisco ACI web interface. This can also be set as the ACI_URL environment variable.",
 			},
 			"insecure": &schema.Schema{
-				Type:        schema.TypeBool,
-				Optional:    true,
-				Default:     true,
-				Description: "Allow insecure HTTPS client",
+				Type:     schema.TypeBool,
+				Optional: true,
+				DefaultFunc: func() (interface{}, error) {
+					if v := os.Getenv("ACI_INSECURE"); v != "" {
+						return strconv.ParseBool(v)
+					}
+					return true, nil
+				},
+				Description: "Allow insecure HTTPS client. This can also be set as the ACI_INSECURE environment variable. Defaults to `true`.",
 			},
 			"private_key": &schema.Schema{
 				Type:        schema.TypeString,
 				Optional:    true,
 				DefaultFunc: schema.EnvDefaultFunc("ACI_PRIVATE_KEY", nil),
-				Description: "Private key path for signature calculation",
+				Description: "Private key path for signature calculation. This can also be set as the ACI_PRIVATE_KEY environment variable.",
 			},
 			"cert_name": &schema.Schema{
 				Type:        schema.TypeString,
 				Optional:    true,
 				DefaultFunc: schema.EnvDefaultFunc("ACI_CERT_NAME", nil),
-				Description: "Certificate name for the User in Cisco ACI.",
+				Description: "Certificate name for the User in Cisco ACI. This can also be set as the ACI_CERT_NAME environment variable.",
 			},
 			"proxy_url": &schema.Schema{
 				Type:        schema.TypeString,
 				Optional:    true,
 				DefaultFunc: schema.EnvDefaultFunc("ACI_PROXY_URL", nil),
-				Description: "Proxy Server URL with port number",
+				Description: "Proxy Server URL with port number. This can also be set as the ACI_PROXY_URL environment variable.",
 			},
 			"proxy_creds": &schema.Schema{
 				Type:        schema.TypeString,
 				Optional:    true,
 				DefaultFunc: schema.EnvDefaultFunc("ACI_PROXY_CREDS", nil),
-				Description: "Proxy server credentials in the form of username:password",
+				Description: "Proxy server credentials in the form of username:password. This can also be set as the ACI_PROXY_CREDS environment variable.",
 			},
 			"validate_relation_dn": &schema.Schema{
 				Type:        schema.TypeBool,
 				Optional:    true,
 				Default:     true,
-				Description: "Flag to validate if a object with entered relation Dn exists in the APIC.",
+				Description: "Flag to validate if a object with entered relation Dn exists in the APIC. Defaults to `true`.",
+			},
+			"retries": {
+				Type:     schema.TypeInt,
+				Optional: true,
+				DefaultFunc: func() (interface{}, error) {
+					if v := os.Getenv("ACI_RETRIES"); v != "" {
+						return strconv.Atoi(v)
+					}
+					return 2, nil
+				},
+				ValidateFunc: func(val interface{}, key string) (warns []string, errs []error) {
+					v := val.(int)
+					if v < 0 || v > 9 {
+						errs = append(errs, fmt.Errorf("%q must be between 0 and 9 inclusive, got: %d", key, v))
+					}
+					return
+				},
+				Description: "Number of retries for REST API calls. This can also be set as the ACI_RETRIES environment variable. Defaults to `2`.",
 			},
 		},
 
@@ -491,6 +516,7 @@ func configureClient(d *schema.ResourceData) (interface{}, error) {
 		ProxyUrl:           d.Get("proxy_url").(string),
 		ProxyCreds:         d.Get("proxy_creds").(string),
 		ValidateRelationDn: d.Get("validate_relation_dn").(bool),
+		MaxRetries:         d.Get("retries").(int),
 	}
 
 	if err := config.Valid(); err != nil {
@@ -525,11 +551,11 @@ func (c Config) Valid() error {
 func (c Config) getClient() interface{} {
 	if c.Password != "" {
 
-		return client.GetClient(c.URL, c.Username, client.Password(c.Password), client.Insecure(c.IsInsecure), client.ProxyUrl(c.ProxyUrl), client.ProxyCreds(c.ProxyCreds), client.ValidateRelationDn(c.ValidateRelationDn))
+		return client.GetClient(c.URL, c.Username, client.Password(c.Password), client.Insecure(c.IsInsecure), client.ProxyUrl(c.ProxyUrl), client.ProxyCreds(c.ProxyCreds), client.ValidateRelationDn(c.ValidateRelationDn), client.MaxRetries(c.MaxRetries))
 
 	} else {
 
-		return client.GetClient(c.URL, c.Username, client.PrivateKey(c.PrivateKey), client.AdminCert(c.Certname), client.Insecure(c.IsInsecure), client.ProxyUrl(c.ProxyUrl), client.ProxyCreds(c.ProxyCreds), client.ValidateRelationDn(c.ValidateRelationDn))
+		return client.GetClient(c.URL, c.Username, client.PrivateKey(c.PrivateKey), client.AdminCert(c.Certname), client.Insecure(c.IsInsecure), client.ProxyUrl(c.ProxyUrl), client.ProxyCreds(c.ProxyCreds), client.ValidateRelationDn(c.ValidateRelationDn), client.MaxRetries(c.MaxRetries))
 	}
 }
 
@@ -544,4 +570,5 @@ type Config struct {
 	ProxyUrl           string
 	ProxyCreds         string
 	ValidateRelationDn bool
+	MaxRetries         int
 }

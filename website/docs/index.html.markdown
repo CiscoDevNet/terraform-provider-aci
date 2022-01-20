@@ -136,15 +136,15 @@ Argument Reference
 ------------------
 Following arguments are supported with Cisco ACI terraform provider.
 
- * `username` - (Required) This is the Cisco APIC username, which is required to authenticate with CISCO APIC.
- * `password` - (Optional) Password of the user mentioned in username argument. It is required when you want to use token-based authentication.
- * `private-key` - (Optional) Path to the private key for which x509 certificate has been calculated for the user mentioned in `username`.
- * `url` - (Required) URL for CISCO APIC.
- * `insecure` - (Optional) This determines whether to use insecure HTTP connection or not. Default value is `true`.  
+ * `username` - (Required) This is the Cisco APIC username, which is required to authenticate with Cisco APIC. This can also be set as the ACI_USERNAME environment variable.
+ * `password` - (Optional) Password of the user mentioned in username argument. It is required when you want to use token-based authentication. This can also be set as the ACI_PASSWORD environment variable.
+ * `private-key` - (Optional) Path to the private key for which x509 certificate has been calculated for the user mentioned in `username`. This can also be set as the ACI_PRIVATE_KEY environment variable.
+ * `url` - (Required) URL for Cisco APIC (ex: "https://10.0.0.1"). This can also be set as the ACI_URL environment variable.
+ * `insecure` - (Optional) This determines whether to use insecure HTTP connection or not. This can also be set as the ACI_INSECURE environment variable. Default value is `true`.  
  * `validate_relation_dn` - (Optional) Flag to validate if a object with added relation Dn exists in the APIC. Type: Bool, Default: "true". 
- * `cert_name` - (Optional) Certificate name for the User in Cisco ACI.
- * `proxy_url` - (Optional) Proxy Server URL with port number.
- * `proxy_creds` - (Optional) Proxy server credentials in the form of username:password.
-
+ * `cert_name` - (Optional) Certificate name for the User in Cisco ACI. This can also be set as the ACI_CERT_NAME environment variable.
+ * `proxy_url` - (Optional) Proxy Server URL with port number. This can also be set as the ACI_PROXY_URL environment variable.
+ * `proxy_creds` - (Optional) Proxy server credentials in the form of username:password. This can also be set as the ACI_PROXY_CREDS environment variable.
+ * `retries` - (Optional) Number of retries for REST API calls failure due to connection issues or HTTP Error Code 500-504. This can also be set as the ACI_RETRIES environment variable. Defaults to `2`.
 
 ~> NOTE: `password` or `private-key` either of one is required.
