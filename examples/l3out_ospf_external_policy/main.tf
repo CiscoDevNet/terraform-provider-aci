@@ -21,7 +21,7 @@ resource "aci_l3out_ospf_external_policy" "example" {
   area_cost         = "1"
   area_ctrl         = ["redistribute"]
   area_id           = "0.0.0.1"
-  area_type         = "regular"
+  area_type         = "nssa"
   multipod_internal = "no"
   name_alias        = "example"
 
