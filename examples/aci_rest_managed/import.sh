@@ -1,0 +1,1 @@
+terraform import aci_rest.fvTenant fvTenant:uni/tn-EXAMPLE_TENANT 

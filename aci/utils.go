@@ -278,3 +278,12 @@ func validateIntRange(a, b int) schema.SchemaValidateFunc {
 		return
 	}
 }
+
+func containsString(s []string, e string) bool {
+	for _, a := range s {
+		if a == e {
+			return true
+		}
+	}
+	return false
+}
