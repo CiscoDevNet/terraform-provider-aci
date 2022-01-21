@@ -24,7 +24,7 @@ Manages ACI Route Control Context
 
 ```hcl
 resource "aci_route_control_context" "control" {
-  route_control_profile_dn  = aci_bgp_route_control_profile.bgp.id
+  route_control_profile_dn  = aci_route_control_profile.bgp.id
   name  = "control"
   action = "permit"
   annotation = "orchestrator:terraform"

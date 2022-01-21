@@ -10,54 +10,54 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
-func TestAccAciRouteControlProfile_Basic(t *testing.T) {
+func TestAccAciBgpRouteControlProfile_Basic(t *testing.T) {
 	var route_control_profile models.RouteControlProfile
 	description := "route_control_profile created while acceptance testing"
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciRouteControlProfileDestroy,
+		CheckDestroy: testAccCheckAciBgpRouteControlProfileDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckAciRouteControlProfileConfig_basic(description),
+				Config: testAccCheckAciBgpRouteControlProfileConfig_basic(description),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAciRouteControlProfileExists("aci_route_control_profile.test", &route_control_profile),
-					testAccCheckAciRouteControlProfileAttributes(description, &route_control_profile),
+					testAccCheckAciBgpRouteControlProfileExists("aci_bgp_route_control_profile.test", &route_control_profile),
+					testAccCheckAciBgpRouteControlProfileAttributes(description, &route_control_profile),
 				),
 			},
 		},
 	})
 }
 
-func TestAccAciRouteControlProfile_update(t *testing.T) {
+func TestAccAciBgpRouteControlProfile_update(t *testing.T) {
 	var route_control_profile models.RouteControlProfile
 	description := "route_control_profile created while acceptance testing"
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAciRouteControlProfileDestroy,
+		CheckDestroy: testAccCheckAciBgpRouteControlProfileDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckAciRouteControlProfileConfig_basic(description),
+				Config: testAccCheckAciBgpRouteControlProfileConfig_basic(description),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAciRouteControlProfileExists("aci_route_control_profile.test", &route_control_profile),
-					testAccCheckAciRouteControlProfileAttributes(description, &route_control_profile),
+					testAccCheckAciBgpRouteControlProfileExists("aci_bgp_route_control_profile.test", &route_control_profile),
+					testAccCheckAciBgpRouteControlProfileAttributes(description, &route_control_profile),
 				),
 			},
 			{
-				Config: testAccCheckAciRouteControlProfileConfig_basic(description),
+				Config: testAccCheckAciBgpRouteControlProfileConfig_basic(description),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAciRouteControlProfileExists("aci_route_control_profile.test", &route_control_profile),
-					testAccCheckAciRouteControlProfileAttributes(description, &route_control_profile),
+					testAccCheckAciBgpRouteControlProfileExists("aci_bgp_route_control_profile.test", &route_control_profile),
+					testAccCheckAciBgpRouteControlProfileAttributes(description, &route_control_profile),
 				),
 			},
 		},
 	})
 }
 
-func testAccCheckAciRouteControlProfileConfig_basic(description string) string {
+func testAccCheckAciBgpRouteControlProfileConfig_basic(description string) string {
 	return fmt.Sprintf(`
 
 	resource "aci_tenant" "foo_tenant" {
@@ -73,7 +73,7 @@ func testAccCheckAciRouteControlProfileConfig_basic(description string) string {
 		target_dscp    = "unspecified"
 	}	
 
-	resource "aci_route_control_profile" "test" {
+	resource "aci_bgp_route_control_profile" "test" {
 		parent_dn                  = aci_l3_outside.fool3_outside.id
 		name                       = "one"
 		annotation                 = "example"
@@ -84,7 +84,7 @@ func testAccCheckAciRouteControlProfileConfig_basic(description string) string {
 	`, description)
 }
 
-func testAccCheckAciRouteControlProfileExists(name string, route_control_profile *models.RouteControlProfile) resource.TestCheckFunc {
+func testAccCheckAciBgpRouteControlProfileExists(name string, route_control_profile *models.RouteControlProfile) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 		rs, ok := s.RootModule().Resources[name]
 
@@ -112,12 +112,12 @@ func testAccCheckAciRouteControlProfileExists(name string, route_control_profile
 	}
 }
 
-func testAccCheckAciRouteControlProfileDestroy(s *terraform.State) error {
+func testAccCheckAciBgpRouteControlProfileDestroy(s *terraform.State) error {
 	client := testAccProvider.Meta().(*client.Client)
 
 	for _, rs := range s.RootModule().Resources {
 
-		if rs.Type == "aci_route_control_profile" {
+		if rs.Type == "aci_bgp_route_control_profile" {
 			cont, err := client.Get(rs.Primary.ID)
 			route_control_profile := models.RouteControlProfileFromContainer(cont)
 			if err == nil {
@@ -132,7 +132,7 @@ func testAccCheckAciRouteControlProfileDestroy(s *terraform.State) error {
 	return nil
 }
 
-func testAccCheckAciRouteControlProfileAttributes(description string, route_control_profile *models.RouteControlProfile) resource.TestCheckFunc {
+func testAccCheckAciBgpRouteControlProfileAttributes(description string, route_control_profile *models.RouteControlProfile) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 
 		if description != route_control_profile.Description {

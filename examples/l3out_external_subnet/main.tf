@@ -49,9 +49,9 @@ resource "aci_external_network_instance_profile" "l3out_extepg" {
   name          = "l3out_extepg"
 }
 
-resource "aci_bgp_route_control_profile" "bgp_route_control_profile" {
+resource "aci_route_control_profile" "route_control_profile" {
   parent_dn = aci_tenant.tenant01.id
-  name      = "bgp_route_control_profile"
+  name      = "route_control_profile"
 }
 
 resource "aci_l3_ext_subnet" "l3out_extepg_subnet" {
@@ -62,7 +62,7 @@ resource "aci_l3_ext_subnet" "l3out_extepg_subnet" {
   name_alias                           = "alias_ext_subnet"
   scope                                = ["import-rtctrl", "export-rtctrl", "import-security"]
   relation_l3ext_rs_subnet_to_profile {
-    tn_rtctrl_profile_dn = aci_bgp_route_control_profile.bgp_route_control_profile.id
+    tn_rtctrl_profile_dn = aci_route_control_profile.route_control_profile.id
     direction            = "import"
   }
 }
