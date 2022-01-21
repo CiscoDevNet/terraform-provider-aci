@@ -40,6 +40,11 @@ func resourceAciSubnet() *schema.Resource {
 				Type:     schema.TypeString,
 				Required: true,
 				ForceNew: true,
+				StateFunc: func(val interface{}) string {
+					ipAddressUser, ipNetworkUser, _ := net.ParseCIDR(val.(string))
+					prefix := strings.Split(ipNetworkUser.String(), "/")[1]
+					return ipAddressUser.String() + "/" + prefix
+				},
 			},
 
 			"ctrl": &schema.Schema{
@@ -137,18 +142,6 @@ func setSubnetAttributes(fvSubnet *models.Subnet, d *schema.ResourceData) (*sche
 	fvSubnetMap, err := fvSubnet.ToMap()
 	if err != nil {
 		return d, err
-	}
-
-	ip := d.Get("ip").(string)
-	if ip != fvSubnetMap["ip"] {
-		ipAddressUser, ipNetworkUser, _ := net.ParseCIDR(ip)
-		ipAddressQuery, ipNetworkQuery, _ := net.ParseCIDR(fvSubnetMap["ip"])
-		parentDnUser := GetParentDn(dn, fmt.Sprintf("/subnet-[%s]", ip))
-		parentDnQuery := GetParentDn(fvSubnet.DistinguishedName, fmt.Sprintf("/subnet-[%s]", fvSubnetMap["ip"]))
-		if ipAddressUser.Equal(ipAddressQuery) && ipNetworkUser.String() == ipNetworkQuery.String() && parentDnUser == parentDnQuery {
-			fvSubnetMap["ip"] = ip
-			fvSubnet.DistinguishedName = dn
-		}
 	}
 
 	if dn != fvSubnet.DistinguishedName {
