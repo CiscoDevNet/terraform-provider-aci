@@ -18,9 +18,9 @@ resource "aci_tenant" "tenant_for_route_control" {
   description = "This tenant is created by terraform ACI provider"
 }
 
-resource "aci_bgp_route_control_profile" "example" {
+resource "aci_route_control_profile" "example" {
   parent_dn                  = aci_tenant.tenant_for_route_control.id
-  name                       = "bgp_route_profile01"
+  name                       = "route_profile01"
   description                = "from terraform"
   route_control_profile_type = "global"
 }
@@ -36,7 +36,7 @@ resource "aci_match_rule" "rule" {
 }
 
 resource "aci_route_control_context" "control" {
-  route_control_profile_dn  = aci_bgp_route_control_profile.example.id
+  route_control_profile_dn  = aci_route_control_profile.example.id
   name  = "control"
   action = "permit"
   order = "0"

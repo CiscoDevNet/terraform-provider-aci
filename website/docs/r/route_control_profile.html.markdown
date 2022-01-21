@@ -1,32 +1,32 @@
 ---
 subcategory: "L3Out"
 layout: "aci"
-page_title: "ACI: aci_bgp_route_control_profile"
-sidebar_current: "docs-aci-resource-bgp_route_control_profile"
+page_title: "ACI: aci_route_control_profile"
+sidebar_current: "docs-aci-resource-route_control_profile"
 description: |-
-  Manages ACI BGP Route Control Profile
+  Manages ACI Route Control Profile
 ---
 
-# aci_bgp_route_control_profile
-!> **WARNING:** This resource is deprecated and will be removed in the next major version use aci_route_control_profile instead
-Manages ACI BGP Route Control Profile
+# aci_route_control_profile
+
+Manages ACI Route Control Profile
 
 ## Example Usage
 
 ```hcl
-resource "aci_bgp_route_control_profile" "example" {
+resource "aci_route_control_profile" "example" {
   parent_dn                  = aci_tenant.tenentcheck.id
   name                       = "one"
-  annotation                 = "bgp_route_control_profile_tag"
+  annotation                 = "route_control_profile_tag"
   description                = "from terraform"
   name_alias                 = "example"
   route_control_profile_type = "global"
 }
 
-resource "aci_bgp_route_control_profile" "example" {
+resource "aci_route_control_profile" "example" {
   parent_dn                  = aci_l3_outside.example.id
-  name                       = "bgp_route_control_profile_1"
-  annotation                 = "bgp_route_control_profile_tag"
+  name                       = "route_control_profile_1"
+  annotation                 = "route_control_profile_tag"
   description                = "from terraform"
   name_alias                 = "example"
   route_control_profile_type = "global"
@@ -52,5 +52,5 @@ An existing Route Control Profile can be [imported][docs-import] into this resou
 [docs-import]: https://www.terraform.io/docs/import/index.html
 
 ```
-terraform import aci_bgp_route_control_profile.example <Dn>
+terraform import aci_route_control_profile.example <Dn>
 ```

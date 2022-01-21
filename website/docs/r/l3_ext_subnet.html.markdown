@@ -33,7 +33,7 @@ Manages ACI l3 extension subnet
 	  name_alias                            = "alias_ext_subnet"
 	  scope                                 = ["import-rtctrl", "export-rtctrl", "import-security"]
 	  relation_l3ext_rs_subnet_to_profile {
-		tn_rtctrl_profile_dn  = aci_bgp_route_control_profile.bgp_route_control_profile.id
+		tn_rtctrl_profile_dn  = aci_route_control_profile.bgp_route_control_profile.id
 		direction = "import"
 	  }
 	}
@@ -45,7 +45,7 @@ Manages ACI l3 extension subnet
 ## Argument Reference ##
 * `external_network_instance_profile_dn` - (Required) Distinguished name of parent ExternalNetworkInstanceProfile object.
 * `ip` - (Required) ip of Object l3 extension subnet.
-* `aggregate` - (Optional) Aggregate Routes for l3 extension subnet. Allowed values are "import-rtctrl", "export-rtctrl" and "shared-rtctrl".
+* `aggregate` - (Optional) Aggregate Routes for l3 extension subnet. Allowed values are "import-rtctrl", "export-rtctrl","shared-rtctrl" and "none".
 * `annotation` - (Optional) annotation for object l3 extension subnet.
 * `name_alias` - (Optional) name_alias for object l3 extension subnet.
 * `scope` - (Optional) The list of domain applicable to the capability. Allowed values are "import-rtctrl", "export-rtctrl", "import-security", "shared-security" and "shared-rtctrl". Default is "import-security".
