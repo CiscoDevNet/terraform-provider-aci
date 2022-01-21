@@ -35,7 +35,7 @@ resource "aci_l3out_ospf_external_policy" "example" {
 - `area_cost` - (Optional) The OSPF Area cost. Default value: "1".
 - `area_ctrl` - (Optional) The controls of redistribution and summary LSA generation into NSSA and Stub areas.  
   Allowed values: "redistribute", "summary", "suppress-fa", "unspecified"  Default value: ["redistribute", "summary"].
-- `area_id` - (Optional) The OSPF Area ID.
+- `area_id` - (Optional) The OSPF Area ID. "backbone", "0" and "0.0.0.0" are converted to "backbone" automatically in the plan phase and in the state by the provider.
 - `area_type` - (Optional) The area type.  
   Allowed values: "nssa", "regular", "stub". Default value: "nssa".
 - `multipod_internal` - (Optional) Start OSPF in WAN instance instead of the default. Value "yes" can be set only under infra tenant. Allowed values: "no", "yes". Default value: "no".
