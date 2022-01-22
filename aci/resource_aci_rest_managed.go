@@ -1,4 +1,4 @@
-package provider
+package aci
 
 import (
 	"context"
@@ -6,21 +6,34 @@ import (
 	"log"
 	"strings"
 
+	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/container"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
-func resourceAciRest() *schema.Resource {
+// List of attributes to be not stored in state
+var IgnoreAttr = []string{"extMngdBy", "lcOwn", "modTs", "monPolDn", "uid", "dn", "rn", "configQual", "configSt", "virtualIp", "annotation"}
+
+// List of attributes to be only written to state from config
+var WriteOnlyAttr = []string{"childAction"}
+
+// List of classes where 'rsp-prop-include=config-only' does not return the desired objects/properties
+var FullClasses = []string{"firmwareFwGrp", "maintMaintGrp", "maintMaintP", "firmwareFwP"}
+
+// List of classes which do not support annotations
+var NoAnnotationClasses = []string{"tagTag"}
+
+func resourceAciRestManaged() *schema.Resource {
 	return &schema.Resource{
 		Description: "Manages ACI Model Objects via REST API calls. This resource can only manage a single API object and its direct children. It is able to read the state and therefore reconcile configuration drift.",
 
-		CreateContext: resourceAciRestCreate,
-		UpdateContext: resourceAciRestUpdate,
-		ReadContext:   resourceAciRestRead,
-		DeleteContext: resourceAciRestDelete,
+		CreateContext: resourceAciRestManagedCreate,
+		UpdateContext: resourceAciRestManagedUpdate,
+		ReadContext:   resourceAciRestManagedRead,
+		DeleteContext: resourceAciRestManagedDelete,
 		Importer: &schema.ResourceImporter{
-			StateContext: resourceAciRestImport,
+			StateContext: resourceAciRestManagedImport,
 		},
 
 		Schema: map[string]*schema.Schema{
@@ -86,7 +99,7 @@ func resourceAciRest() *schema.Resource {
 	}
 }
 
-func getAciRest(d *schema.ResourceData, c *container.Container) diag.Diagnostics {
+func getAciRestManaged(d *schema.ResourceData, c *container.Container) diag.Diagnostics {
 	className := d.Get("class_name").(string)
 	dn := d.Get("dn").(string)
 	d.SetId(dn)
@@ -150,113 +163,67 @@ func getAciRest(d *schema.ResourceData, c *container.Container) diag.Diagnostics
 	return nil
 }
 
-func resourceAciRestReadHelper(ctx context.Context, d *schema.ResourceData, meta interface{}, expectObject bool) diag.Diagnostics {
+func resourceAciRestManagedReadHelper(ctx context.Context, d *schema.ResourceData, m interface{}, expectObject bool) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
-	for attempts := 0; ; attempts++ {
-		getChildren := false
-		if len(d.Get("child").(*schema.Set).List()) > 0 {
-			getChildren = true
-		}
-		cont, diags := ApicRest(d, meta, "GET", getChildren)
-		if diags.HasError() {
-			if ok := backoff(attempts, meta.(apiClient).Retries); !ok {
-				return diags
-			}
-			log.Printf("[ERROR] Failed to read object: %s, retries: %v", diags[0].Summary, attempts)
-			continue
-		}
+	getChildren := false
+	if len(d.Get("child").(*schema.Set).List()) > 0 {
+		getChildren = true
+	}
+	cont, diags := MakeAciRestManagedQuery(d, m, "GET", getChildren)
+	if diags.HasError() {
+		return diags
+	}
 
-		// Check if we received an empty response without errors -> object has been deleted
-		if cont == nil && diags == nil && !expectObject {
-			d.SetId("")
-			return nil
-		}
+	// Check if we received an empty response without errors -> object has been deleted
+	if cont == nil && diags == nil && !expectObject {
+		d.SetId("")
+		return nil
+	}
 
-		diags = getAciRest(d, cont)
-		if !diags.HasError() {
-			break
-		}
-		if ok := backoff(attempts, meta.(apiClient).Retries); !ok {
-			return diags
-		}
-		log.Printf("[ERROR] Failed to decode response after reading object: %s, retries: %v", diags[0].Summary, attempts)
+	diags = getAciRestManaged(d, cont)
+	if diags.HasError() {
+		return diags
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 	return nil
 }
 
-func resourceAciRestCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	if meta.(apiClient).IsMock {
-		d.SetId(d.Get("dn").(string))
-		return nil
-	}
-
+func resourceAciRestManagedCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Create", d.Id())
 
-	for attempts := 0; ; attempts++ {
-		_, diags := ApicRest(d, meta, "POST", false)
-		if !diags.HasError() {
-			break
-		}
-		if ok := backoff(attempts, meta.(apiClient).Retries); !ok {
-			return diags
-		}
-		log.Printf("[ERROR] Failed to create object: %s, retries: %v", diags[0].Summary, attempts)
+	_, diags := MakeAciRestManagedQuery(d, m, "POST", false)
+	if diags.HasError() {
+		return diags
 	}
 
 	log.Printf("[DEBUG] %s: Create finished successfully", d.Id())
-	return resourceAciRestReadHelper(ctx, d, meta, true)
+	return resourceAciRestManagedReadHelper(ctx, d, m, true)
 }
 
-func resourceAciRestUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	if meta.(apiClient).IsMock {
-		return nil
-	}
-
+func resourceAciRestManagedUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Update", d.Id())
 
-	for attempts := 0; ; attempts++ {
-		_, diags := ApicRest(d, meta, "POST", false)
-		if !diags.HasError() {
-			break
-		}
-		if ok := backoff(attempts, meta.(apiClient).Retries); !ok {
-			return diags
-		}
-		log.Printf("[ERROR] Failed to update object: %s, retries: %v", diags[0].Summary, attempts)
+	_, diags := MakeAciRestManagedQuery(d, m, "POST", false)
+	if diags.HasError() {
+		return diags
 	}
 
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
-	return resourceAciRestReadHelper(ctx, d, meta, true)
+	return resourceAciRestManagedReadHelper(ctx, d, m, true)
 }
 
-func resourceAciRestRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	if meta.(apiClient).IsMock {
-		return nil
-	}
-
-	return resourceAciRestReadHelper(ctx, d, meta, false)
+func resourceAciRestManagedRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+	return resourceAciRestManagedReadHelper(ctx, d, m, false)
 }
 
-func resourceAciRestDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	if meta.(apiClient).IsMock {
-		d.SetId("")
-		return nil
-	}
-
+func resourceAciRestManagedDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
-	for attempts := 0; ; attempts++ {
-		_, diags := ApicRest(d, meta, "DELETE", false)
-		if !diags.HasError() {
-			break
-		}
-		if ok := backoff(attempts, meta.(apiClient).Retries); !ok {
-			return diags
-		}
-		log.Printf("[ERROR] Failed to delete object: %s, retries: %v", diags[0].Summary, attempts)
+	_, diags := MakeAciRestManagedQuery(d, m, "DELETE", false)
+	if diags.HasError() {
+		return diags
 	}
 
 	d.SetId("")
@@ -264,7 +231,7 @@ func resourceAciRestDelete(ctx context.Context, d *schema.ResourceData, meta int
 	return nil
 }
 
-func resourceAciRestImport(ctx context.Context, d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
+func resourceAciRestManagedImport(ctx context.Context, d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
 	log.Printf("[DEBUG] %s: Beginning Import", d.Id())
 
 	parts := strings.SplitN(d.Id(), ":", 2)
@@ -277,10 +244,67 @@ func resourceAciRestImport(ctx context.Context, d *schema.ResourceData, meta int
 	d.Set("class_name", parts[0])
 	d.SetId(parts[1])
 
-	if diags := resourceAciRestReadHelper(ctx, d, meta, true); diags.HasError() {
+	if diags := resourceAciRestManagedReadHelper(ctx, d, m, true); diags.HasError() {
 		return nil, fmt.Errorf("Could not read object when importing: %s", diags[0].Summary)
 	}
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 	return []*schema.ResourceData{d}, nil
+}
+
+func MakeAciRestManagedQuery(d *schema.ResourceData, m interface{}, method string, children bool) (*container.Container, diag.Diagnostics) {
+	aciClient := m.(*client.Client)
+	path := "/api/mo/" + d.Get("dn").(string) + ".json"
+	className := d.Get("class_name").(string)
+	if method == "GET" {
+		if children {
+			path += "?rsp-subtree=children"
+		} else if !containsString(FullClasses, className) {
+			path += "?rsp-prop-include=config-only"
+		}
+	}
+	var cont *container.Container = nil
+	var err error
+
+	if method == "POST" {
+		content := d.Get("content")
+		contentStrMap := toStrMap(content.(map[string]interface{}))
+
+		childrenSet := make([]interface{}, 0, 1)
+
+		for _, child := range d.Get("child").(*schema.Set).List() {
+			childMap := make(map[string]interface{})
+			childClassName := child.(map[string]interface{})["class_name"]
+			childContent := child.(map[string]interface{})["content"]
+			childMap["class_name"] = childClassName.(string)
+			childMap["content"] = toStrMap(childContent.(map[string]interface{}))
+			childrenSet = append(childrenSet, childMap)
+		}
+
+		cont, err = preparePayload(className, contentStrMap, childrenSet)
+		if err != nil {
+			return nil, diag.FromErr(err)
+		}
+	}
+
+	req, err := aciClient.MakeRestRequest(method, path, cont, true)
+	if err != nil {
+		return nil, diag.FromErr(err)
+	}
+	respCont, _, err := aciClient.Do(req)
+	if err != nil {
+		return respCont, diag.FromErr(err)
+	}
+	if respCont.S("imdata").Index(0).String() == "{}" {
+		return nil, nil
+	}
+	err = client.CheckForErrors(respCont, method, false)
+	if err != nil {
+		return respCont, diag.FromErr(err)
+	}
+	if method == "POST" {
+		return cont, nil
+	} else {
+		return respCont, nil
+	}
 }
