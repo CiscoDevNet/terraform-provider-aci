@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"net"
 	"reflect"
 	"sort"
 	"strings"
@@ -39,6 +40,16 @@ func resourceAciSubnet() *schema.Resource {
 				Type:     schema.TypeString,
 				Required: true,
 				ForceNew: true,
+				StateFunc: func(val interface{}) string {
+					splitVal := strings.Split(val.(string), "/")
+					if len(splitVal) <= 1 {
+						ip := net.ParseIP(val.(string))
+						return ip.String()
+					} else {
+						ip := net.ParseIP(splitVal[0])
+						return ip.String() + "/" + splitVal[1]
+					}
+				},
 			},
 
 			"ctrl": &schema.Schema{
@@ -134,19 +145,19 @@ func setSubnetAttributes(fvSubnet *models.Subnet, d *schema.ResourceData) (*sche
 	dn := d.Id()
 	d.SetId(fvSubnet.DistinguishedName)
 	d.Set("description", fvSubnet.Description)
-	if dn != fvSubnet.DistinguishedName {
-		d.Set("parent_dn", "")
-	}
 	fvSubnetMap, err := fvSubnet.ToMap()
 	if err != nil {
 		return d, err
 	}
 
-	d.Set("parent_dn", GetParentDn(dn, fmt.Sprintf("/subnet-[%s]", fvSubnetMap["ip"])))
-	d.Set("ip", fvSubnetMap["ip"])
+	if dn != fvSubnet.DistinguishedName {
+		d.Set("parent_dn", "")
+	} else {
+		d.Set("parent_dn", GetParentDn(dn, fmt.Sprintf("/subnet-[%s]", fvSubnetMap["ip"])))
+	}
 
-	d.Set("annotation", fvSubnetMap["annotation"])
 	d.Set("ip", fvSubnetMap["ip"])
+	d.Set("annotation", fvSubnetMap["annotation"])
 	d.Set("name_alias", fvSubnetMap["nameAlias"])
 	d.Set("preferred", fvSubnetMap["preferred"])
 

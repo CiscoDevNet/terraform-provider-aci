@@ -56,5 +56,5 @@ An existing Subnet can be [imported][docs-import] into this resource via its Dn,
 [docs-import]: https://www.terraform.io/docs/import/index.html
 
 ```
-terraform import aci_subnet.example <Dn>
+terraform import aci_subnet.example "<Dn>"
 ```
