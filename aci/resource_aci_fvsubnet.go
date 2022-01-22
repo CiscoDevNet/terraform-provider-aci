@@ -42,8 +42,13 @@ func resourceAciSubnet() *schema.Resource {
 				ForceNew: true,
 				StateFunc: func(val interface{}) string {
 					splitVal := strings.Split(val.(string), "/")
-					ip := net.ParseIP(splitVal[0])
-					return ip.String() + "/" + splitVal[1]
+					if len(splitVal) <= 1 {
+						ip := net.ParseIP(val.(string))
+						return ip.String()
+					} else {
+						ip := net.ParseIP(splitVal[0])
+						return ip.String() + "/" + splitVal[1]
+					}
 				},
 			},
 
