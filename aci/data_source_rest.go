@@ -10,9 +10,9 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
-func datasourceAciRest() *schema.Resource {
+func dataSourceAciRest() *schema.Resource {
 	return &schema.Resource{
-		ReadContext: datasourceAciRestRead,
+		ReadContext: dataSourceAciRestRead,
 
 		SchemaVersion: 1,
 
@@ -64,7 +64,7 @@ func datasourceAciRest() *schema.Resource {
 	}
 }
 
-func datasourceAciRestRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func dataSourceAciRestRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] Rest data source: Beginning Read")
 
 	aciClient := m.(*client.Client)

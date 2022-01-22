@@ -53,7 +53,7 @@ func setRelationAttribute(d *schema.ResourceData, relation string, data interfac
 	}
 }
 
-func preparePayload(className string, inputMap map[string]string) (*container.Container, error) {
+func preparePayload(className string, inputMap map[string]string, children []interface{}) (*container.Container, error) {
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
 			"attributes": {
@@ -68,8 +68,24 @@ func preparePayload(className string, inputMap map[string]string) (*container.Co
 	for key, value := range inputMap {
 		cont.Set(value, className, "attributes", key)
 	}
-	return cont, nil
+	cont.Array(className, "children")
+	if children != nil {
+		for _, child := range children {
+			childMap := child.(map[string]interface{})
+			childClassName := childMap["class_name"].(string)
+			childContent := childMap["content"].(map[string]string)
 
+			childCont := container.New()
+			childCont.Object(childClassName)
+			childCont.Object(childClassName, "attributes")
+
+			for attr, value := range childContent {
+				childCont.Set(value, childClassName, "attributes", attr)
+			}
+			cont.ArrayAppend(childCont.Data(), className, "children")
+		}
+	}
+	return cont, nil
 }
 
 func GetMOName(dn string) string {

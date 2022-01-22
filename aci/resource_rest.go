@@ -130,7 +130,7 @@ func PostAndSetStatus(d *schema.ResourceData, m interface{}, status string) (*co
 
 		if classNameIntf, ok := d.GetOk("class_name"); ok {
 			className := classNameIntf.(string)
-			cont, err = preparePayload(className, contentStrMap)
+			cont, err = preparePayload(className, contentStrMap, nil)
 			if err != nil {
 				return nil, err
 			}

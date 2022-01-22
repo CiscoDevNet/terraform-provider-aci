@@ -1,8 +1,8 @@
-data "aci_rest" "fvTenant" {
-  dn = "uni/tn-EXAMPLE_TENANT_DATA"
+data "aci_rest_managed" "fvTenant" {
+  dn = "uni/tn-infra"
 }
 
-resource "aci_rest" "fvTenant" {
+resource "aci_rest_managed" "fvTenant1" {
   dn         = "uni/tn-EXAMPLE_TENANT"
   class_name = "fvTenant"
   content = {
@@ -11,7 +11,7 @@ resource "aci_rest" "fvTenant" {
   }
 }
 
-resource "aci_rest" "mgmtConnectivityPrefs" {
+resource "aci_rest_managed" "mgmtConnectivityPrefs" {
   dn         = "uni/fabric/connectivityPrefs"
   class_name = "mgmtConnectivityPrefs"
   content = {
@@ -19,11 +19,11 @@ resource "aci_rest" "mgmtConnectivityPrefs" {
   }
 }
 
-resource "aci_rest" "fvTenant" {
-  dn         = "uni/tn-EXAMPLE_TENANT"
+resource "aci_rest_managed" "fvTenant2" {
+  dn         = "uni/tn-EXAMPLE_TENANT2"
   class_name = "fvTenant"
   content = {
-    name = "EXAMPLE_TENANT"
+    name = "EXAMPLE_TENANT2"
   }
 
   child {
