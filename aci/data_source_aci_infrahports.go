@@ -59,14 +59,16 @@ func dataSourceAciAccessPortSelectorRead(ctx context.Context, d *schema.Resource
 	dn := fmt.Sprintf("%s/%s", LeafInterfaceProfileDn, rn)
 
 	infraHPortS, err := getRemoteAccessPortSelector(aciClient, dn)
-
 	if err != nil {
 		return diag.FromErr(err)
 	}
+
 	d.SetId(dn)
+
 	_, err = setAccessPortSelectorAttributes(infraHPortS, d)
 	if err != nil {
 		return diag.FromErr(err)
 	}
+
 	return nil
 }

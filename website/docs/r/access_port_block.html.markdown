@@ -29,7 +29,7 @@ Manages ACI Access Port Block
 
 ## Argument Reference
 
-- `access_port_selector_dn` - (Required) Distinguished name of parent Access Port Selector object.
+- `access_port_selector_dn` - (Required) Distinguished name of parent Access Port Selector or Spine Access Port Selector object.
 - `name` - (Optional) name of Object Access Port Block.
 - `annotation` - (Optional) Annotation for object Access Port Block.
 - `description` - (Optional) Description for object Access Port Block.

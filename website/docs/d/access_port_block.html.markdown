@@ -24,7 +24,7 @@ data "aci_access_port_block" "dev_port_blk" {
 
 ## Argument Reference
 
-- `access_port_selector_dn` - (Required) Distinguished name of parent Access Port Selector object.
+- `access_port_selector_dn` - (Required) Distinguished name of parent Access Port Selector or Spine Access Port Selector object.
 - `name` - (Required) Name of Object Access Port Block.
 
 ## Attribute Reference
