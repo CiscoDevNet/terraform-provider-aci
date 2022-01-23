@@ -12,7 +12,7 @@ Data source for ACI User Domain
 
 ## API Information ##
 * `Class` - aaaUserDomain
-* `Distinguished Named` - uni/userext/user-{name}/userdomain-{name}
+* `Distinguished Name` - uni/userext/user-{name}/userdomain-{name}
 
 ## GUI Information ##
 * `Location` - Admin -> AAA -> Users -> User -> Add User Domain

@@ -15,7 +15,7 @@ Data source for ACI Global Security
 ## API Information ##
 
 * `Class` - aaaUserEp | aaaPwdProfile | aaaBlockLoginProfile | pkiWebTokenData
-* `Distinguished Named` - uni/userext | uni/userext/pwdprofile | uni/userext/blockloginp | uni/userext/pkiext/webtokendata
+* `Distinguished Name` - uni/userext | uni/userext/pwdprofile | uni/userext/blockloginp | uni/userext/pkiext/webtokendata
 
 ## GUI Information ##
 

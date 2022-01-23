@@ -15,7 +15,7 @@ Data source for ACI Console Authentication
 ## API Information ##
 
 * `Class` - aaaConsoleAuth
-* `Distinguished Named` - uni/userext/authrealm/consoleauth
+* `Distinguished Name` - uni/userext/authrealm/consoleauth
 
 ## GUI Information ##
 

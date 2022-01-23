@@ -15,7 +15,7 @@ Data source for ACI LDAP Group Map
 ## API Information ##
 
 * `Class` - aaaLdapGroupMap
-* `Distinguished Named` - uni/userext/ldapext/ldapgroupmap-{name} and uni/userext/duoext/ldapgroupmap-{name}
+* `Distinguished Name` - uni/userext/ldapext/ldapgroupmap-{name} and uni/userext/duoext/ldapgroupmap-{name}
 
 ## GUI Information ##
 

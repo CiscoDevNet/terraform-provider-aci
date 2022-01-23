@@ -14,7 +14,7 @@ Manages ACI VRF
 ## API Information ##
 
 * `Class` - fvCtx
-* `Distinguished Named` - uni/tn-{name}/ctx-{name}
+* `Distinguished Name` - uni/tn-{name}/ctx-{name}
 
 ## GUI Information ##
 

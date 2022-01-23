@@ -14,7 +14,7 @@ Data source for ACI Endpoint Security Group
 ## API Information ##
 
 * `Class` - fvESg
-* `Distinguished Named` - uni/tn-{name}/ap-{name}/esg-{name}
+* `Distinguished Name` - uni/tn-{name}/ap-{name}/esg-{name}
 
 ## GUI Information ##
 

@@ -15,7 +15,7 @@ Data source for ACI TACACS Provider
 ## API Information ##
 
 * `Class` - aaaTacacsPlusProvider
-* `Distinguished Named` - uni/userext/tacacsext/tacacsplusprovider-{name}
+* `Distinguished Name` - uni/userext/tacacsext/tacacsplusprovider-{name}
 
 ## GUI Information ##
 

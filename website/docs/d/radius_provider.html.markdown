@@ -13,7 +13,7 @@ Data source for ACI RADIUS Provider
 
 ## API Information ##
 * `Class` - aaaRadiusProvider
-* `Distinguished Named` - uni/userext/duoext/radiusprovider-{name} & uni/userext/radiusext/radiusprovider-{name}
+* `Distinguished Name` - uni/userext/duoext/radiusprovider-{name} & uni/userext/radiusext/radiusprovider-{name}
 
 ## GUI Information ##
 * `Location` - Admin -> AAA -> Authentication -> RADIUS & Admin -> AAA -> Authentication -> DUO -> Radius

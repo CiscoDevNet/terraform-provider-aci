@@ -13,7 +13,7 @@ Manages ACI BFD Interface Policy
 ## API Information ##
 
 * `Class` - bfdIfPol
-* `Distinguished Named` - uni/tn-{name}/bfdIfPol-{name}
+* `Distinguished Name` - uni/tn-{name}/bfdIfPol-{name}
 
 ## GUI Information ##
 

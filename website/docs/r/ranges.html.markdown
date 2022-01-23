@@ -14,7 +14,7 @@ Manages ACI Ranges
 ## API Information ##
 
 * `Class` - fvnsEncapBlk
-* `Distinguished Named` - uni/infra/vlanns-[{name}]-dynamic/from-[{vlan-num}]-to-[{vlan-num}]
+* `Distinguished Name` - uni/infra/vlanns-[{name}]-dynamic/from-[{vlan-num}]-to-[{vlan-num}]
 
 ## GUI Information ##
 

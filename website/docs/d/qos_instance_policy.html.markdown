@@ -15,7 +15,7 @@ Data source for ACI QOS Instance Policy
 ## API Information ##
 
 * `Class` - qosInstPol
-* `Distinguished Named` - uni/infra/qosinst-{name}
+* `Distinguished Name` - uni/infra/qosinst-{name}
 
 ## GUI Information ##
 

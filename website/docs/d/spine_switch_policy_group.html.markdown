@@ -13,7 +13,7 @@ Data source for ACI Spine Switch Policy Group
 
 ## API Information ##
 * `Class` - infraSpineAccNodePGrp
-* `Distinguished Named` - uni/infra/funcprof/spaccnodepgrp-{name}
+* `Distinguished Name` - uni/infra/funcprof/spaccnodepgrp-{name}
 
 ## GUI Information ##
 * `Location` - Fabric -> Access Policies -> Switches -> Spine Switches -> Policy Groups -> Create Spine Switch Policy Group

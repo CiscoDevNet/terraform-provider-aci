@@ -14,7 +14,7 @@ Manages ACI l3 extension subnet
 ## API Information ##
 
 * `Class` - l3extSubnet
-* `Distinguished Named` - uni/tn-{tenant}/out-{L3Out}/instP-{external EPG}/extsubnet-[{ip}]
+* `Distinguished Name` - uni/tn-{tenant}/out-{L3Out}/instP-{external EPG}/extsubnet-[{ip}]
 
 ## GUI Information ##
 

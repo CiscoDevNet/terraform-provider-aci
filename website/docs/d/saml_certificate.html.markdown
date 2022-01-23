@@ -13,7 +13,7 @@ Data source for ACI SAML Encryption Certificate
 
 ## API Information ##
 * `Class` - aaaSamlEncCert
-* `Distinguished Named` - uni/userext/samlext/samlenccert-{name}
+* `Distinguished Name` - uni/userext/samlext/samlenccert-{name}
 
 ## GUI Information ##
 * `Location` - Admin -> AAA -> Authentication -> Management -> Public Key for SAML Encryption

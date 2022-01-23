@@ -14,7 +14,7 @@ Manages ACI Bridge Domain
 ## API Information
 
 - `Class` - fvBD
-- `Distinguished Named` - uni/tn-{name}/BD-{name}
+- `Distinguished Name` - uni/tn-{name}/BD-{name}
 
 ## GUI Information
 

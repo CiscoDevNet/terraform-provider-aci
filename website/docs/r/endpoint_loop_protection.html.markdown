@@ -14,7 +14,7 @@ Manages ACI Endpoint Loop Protection
 ## API Information ##
 
 * `Class` - epLoopProtectP
-* `Distinguished Named` - uni/infra/epLoopProtectP-{name}
+* `Distinguished Name` - uni/infra/epLoopProtectP-{name}
 
 ## GUI Information ##
 

@@ -15,7 +15,7 @@ Data source for ACI Error Disable Recovery
 ## API Information ##
 
 * `Class` - edrErrDisRecoverPol and edrEventP
-* `Distinguished Named` - uni/infra/edrErrDisRecoverPol-{name}
+* `Distinguished Name` - uni/infra/edrErrDisRecoverPol-{name}
 
 ## GUI Information ##
 

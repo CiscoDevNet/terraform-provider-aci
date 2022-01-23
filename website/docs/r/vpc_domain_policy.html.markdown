@@ -12,7 +12,7 @@ Manages ACI VPC Domain Policy
 
 ## API Information ##
 * `Class` - vpcInstPol
-* `Distinguished Named` - uni/fabric/vpcInst-{name}
+* `Distinguished Name` - uni/fabric/vpcInst-{name}
 
 ## GUI Information ##
 * `Location` - Fabric -> Access Policies -> Policies -> Switch -> VPC Domain -> Create VPC Domain Policy

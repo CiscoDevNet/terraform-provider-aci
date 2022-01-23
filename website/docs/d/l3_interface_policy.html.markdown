@@ -12,7 +12,7 @@ Data source for ACI L3 Interface Policy
 
 ## API Information ##
 * `Class` - l3IfPol
-* `Distinguished Named` - uni/fabric/l3IfP-{name}
+* `Distinguished Name` - uni/fabric/l3IfP-{name}
 
 ## GUI Information ##
 * `Location` - Fabric -> Fabric Policies -> Policies -> Interface -> L3 Interface -> Create L3 Interface Policy

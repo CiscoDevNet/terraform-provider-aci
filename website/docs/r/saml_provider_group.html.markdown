@@ -14,7 +14,7 @@ Manages ACI SAML Provider Group
 ## API Information ##
 
 * `Class` - aaaSamlProviderGroup
-* `Distinguished Named` - uni/userext/samlext/samlprovidergroup-{name}
+* `Distinguished Name` - uni/userext/samlext/samlprovidergroup-{name}
 
 
 ## Example Usage ##

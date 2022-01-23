@@ -15,7 +15,7 @@ Data source for ACI MCP Instance Policy
 ## API Information ##
 
 * `Class` - mcpInstPol
-* `Distinguished Named` - uni/infra/mcpInstP-{name}
+* `Distinguished Name` - uni/infra/mcpInstP-{name}
 
 ## GUI Information ##
 

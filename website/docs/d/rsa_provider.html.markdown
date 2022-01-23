@@ -15,7 +15,7 @@ Data source for ACI RSA Provider
 ## API Information ##
 
 * `Class` - aaaRsaProvider
-* `Distinguished Named` - uni/userext/rsaext/rsaprovider-{name}
+* `Distinguished Name` - uni/userext/rsaext/rsaprovider-{name}
 
 ## GUI Information ##
 

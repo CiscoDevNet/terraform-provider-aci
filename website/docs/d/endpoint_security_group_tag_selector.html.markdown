@@ -15,7 +15,7 @@ Data source for ACI Endpoint Security Group Tag Selector
 ## API Information ##
 
 * `Class` - fvTagSelector
-* `Distinguished Named` - uni/tn-{name}/ap-{name}/esg-{name}/tagselectorkey-[{matchKey}]-value-[{matchValue}]
+* `Distinguished Name` - uni/tn-{name}/ap-{name}/esg-{name}/tagselectorkey-[{matchKey}]-value-[{matchValue}]
 
 ## GUI Information ##
 

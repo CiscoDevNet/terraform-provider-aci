@@ -14,7 +14,7 @@ Data source for ACI VMM Controller
 ## API Information ##
 
 * `Class` - vmmCtrlrP
-* `Distinguished Named` - uni/vmmp-{vendor}/dom-{name}/ctrlr-{name}
+* `Distinguished Name` - uni/vmmp-{vendor}/dom-{name}/ctrlr-{name}
 
 ## GUI Information ##
 

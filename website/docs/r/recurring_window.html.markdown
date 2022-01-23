@@ -14,7 +14,7 @@ Manages ACI Recurring Window
 ## API Information ##
 
 * `Class` - trigRecurrWindowP
-* `Distinguished Named` - uni/fabric/schedp-{name}/recurrwinp-{name}
+* `Distinguished Name` - uni/fabric/schedp-{name}/recurrwinp-{name}
 
 ## GUI Information ##
 

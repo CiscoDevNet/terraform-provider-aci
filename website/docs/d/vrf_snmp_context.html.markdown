@@ -13,7 +13,7 @@ Data source for ACI VRF SNMP Context
 
 ## API Information ##
 * `Class` - snmpCtxP
-* `Distinguished Named` - uni/tn-{name}/ctx-{name}/snmpctx
+* `Distinguished Name` - uni/tn-{name}/ctx-{name}/snmpctx
 
 ## GUI Information ##
 * `Location` - Tenants -> Networking -> VRF -> Policy -> Create SNMP Context
