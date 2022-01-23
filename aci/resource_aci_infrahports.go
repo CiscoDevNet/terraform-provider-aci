@@ -62,6 +62,7 @@ func resourceAciAccessPortSelector() *schema.Resource {
 		}),
 	}
 }
+
 func getRemoteAccessPortSelector(client *client.Client, dn string) (*models.AccessPortSelector, error) {
 	infraHPortSCont, err := client.Get(dn)
 	if err != nil {
@@ -89,15 +90,13 @@ func setAccessPortSelectorAttributes(infraHPortS *models.AccessPortSelector, d *
 	if err != nil {
 		return d, err
 	}
+
 	d.Set("leaf_interface_profile_dn", GetParentDn(dn, fmt.Sprintf("/hports-%s-typ-%s", infraHPortSMap["name"], infraHPortSMap["type"])))
-
 	d.Set("name", infraHPortSMap["name"])
-
-	d.Set("access_port_selector_type", infraHPortSMap["type"])
-
-	d.Set("annotation", infraHPortSMap["annotation"])
 	d.Set("name_alias", infraHPortSMap["nameAlias"])
+	d.Set("annotation", infraHPortSMap["annotation"])
 	d.Set("access_port_selector_type", infraHPortSMap["type"])
+
 	return d, nil
 }
 
@@ -108,14 +107,15 @@ func resourceAciAccessPortSelectorImport(d *schema.ResourceData, m interface{}) 
 	dn := d.Id()
 
 	infraHPortS, err := getRemoteAccessPortSelector(aciClient, dn)
-
 	if err != nil {
 		return nil, err
 	}
+
 	infraHPortSMap, err := infraHPortS.ToMap()
 	if err != nil {
 		return nil, err
 	}
+
 	name := infraHPortSMap["name"]
 	ptype := infraHPortSMap["type"]
 	pDN := GetParentDn(dn, fmt.Sprintf("/hports-%s-typ-%s", name, ptype))
@@ -134,11 +134,8 @@ func resourceAciAccessPortSelectorCreate(ctx context.Context, d *schema.Resource
 	log.Printf("[DEBUG] AccessPortSelector: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
-
 	name := d.Get("name").(string)
-
 	access_port_selector_type := d.Get("access_port_selector_type").(string)
-
 	LeafInterfaceProfileDn := d.Get("leaf_interface_profile_dn").(string)
 
 	infraHPortSAttr := models.AccessPortSelectorAttributes{}
@@ -180,7 +177,6 @@ func resourceAciAccessPortSelectorCreate(ctx context.Context, d *schema.Resource
 		if err != nil {
 			return diag.FromErr(err)
 		}
-
 	}
 
 	d.SetId(infraHPortS.DistinguishedName)
@@ -247,7 +243,6 @@ func resourceAciAccessPortSelectorUpdate(ctx context.Context, d *schema.Resource
 		if err != nil {
 			return diag.FromErr(err)
 		}
-
 	}
 
 	d.SetId(infraHPortS.DistinguishedName)
@@ -300,7 +295,7 @@ func resourceAciAccessPortSelectorDelete(ctx context.Context, d *schema.Resource
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
-
 	d.SetId("")
+
 	return diag.FromErr(err)
 }
