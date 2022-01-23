@@ -59,13 +59,11 @@ func setSpineInterfaceProfileAttributes(infraSpAccPortP *models.SpineInterfacePr
 	d.SetId(infraSpAccPortP.DistinguishedName)
 	d.Set("description", infraSpAccPortP.Description)
 	infraSpAccPortPMap, err := infraSpAccPortP.ToMap()
-
 	if err != nil {
 		return d, err
 	}
 
 	d.Set("name", infraSpAccPortPMap["name"])
-
 	d.Set("annotation", infraSpAccPortPMap["annotation"])
 	d.Set("name_alias", infraSpAccPortPMap["nameAlias"])
 	return d, nil
@@ -83,7 +81,6 @@ func resourceAciSpineInterfaceProfileImport(d *schema.ResourceData, m interface{
 		return nil, err
 	}
 	schemaFilled, err := setSpineInterfaceProfileAttributes(infraSpAccPortP, d)
-
 	if err != nil {
 		return nil, err
 	}
@@ -168,8 +165,8 @@ func resourceAciSpineInterfaceProfileRead(ctx context.Context, d *schema.Resourc
 		d.SetId("")
 		return nil
 	}
-	_, err = setSpineInterfaceProfileAttributes(infraSpAccPortP, d)
 
+	_, err = setSpineInterfaceProfileAttributes(infraSpAccPortP, d)
 	if err != nil {
 		d.SetId("")
 		return nil

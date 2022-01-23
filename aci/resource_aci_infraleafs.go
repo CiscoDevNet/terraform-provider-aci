@@ -263,7 +263,7 @@ func resourceAciSwitchAssociationRead(ctx context.Context, d *schema.ResourceDat
 	infraRsAccNodePGrpData, err := aciClient.ReadRelationinfraRsAccNodePGrpFromSwitchAssociation(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation infraRsAccNodePGrp %v", err)
-		d.Set("relation_infra_rs_acc_node_p_grp", "")
+		setRelationAttribute(d, "relation_infra_rs_acc_node_p_grp", "")
 
 	} else {
 		setRelationAttribute(d, "relation_infra_rs_acc_node_p_grp", infraRsAccNodePGrpData.(string))
