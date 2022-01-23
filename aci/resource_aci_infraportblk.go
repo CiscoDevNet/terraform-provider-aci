@@ -350,7 +350,7 @@ func resourceAciAccessPortBlockRead(ctx context.Context, d *schema.ResourceData,
 	infraRsAccBndlSubgrpData, err := aciClient.ReadRelationinfraRsAccBndlSubgrpFromAccessPortBlock(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation infraRsAccBndlSubgrp %v", err)
-		d.Set("relation_infra_rs_acc_bndl_subgrp", "")
+		setRelationAttribute(d, "relation_infra_rs_acc_bndl_subgrp", "")
 
 	} else {
 		setRelationAttribute(d, "relation_infra_rs_acc_bndl_subgrp", infraRsAccBndlSubgrpData.(string))

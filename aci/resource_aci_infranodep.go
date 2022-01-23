@@ -195,8 +195,8 @@ func setLeafProfileAttributes(infraNodeP *models.LeafProfile, d *schema.Resource
 	if err != nil {
 		return d, err
 	}
-	d.Set("name", infraNodePMap["name"])
 
+	d.Set("name", infraNodePMap["name"])
 	d.Set("annotation", infraNodePMap["annotation"])
 	d.Set("name_alias", infraNodePMap["nameAlias"])
 	return d, nil
@@ -256,14 +256,15 @@ func resourceAciLeafProfileImport(d *schema.ResourceData, m interface{}) ([]*sch
 	dn := d.Id()
 
 	infraNodeP, err := getRemoteLeafProfile(aciClient, dn)
-
 	if err != nil {
 		return nil, err
 	}
+
 	schemaFilled, err := setLeafProfileAttributes(infraNodeP, d)
 	if err != nil {
 		return nil, err
 	}
+
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
@@ -642,6 +643,7 @@ func resourceAciLeafProfileRead(ctx context.Context, d *schema.ResourceData, m i
 		return nil
 	}
 	infraRsAccCardPData, err := aciClient.ReadRelationinfraRsAccCardPFromLeafProfile(dn)
+	log.Printf("[TRACE] infraRsAccCardP %v", infraRsAccCardPData)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation infraRsAccCardP %v", err)
 		setRelationAttribute(d, "relation_infra_rs_acc_card_p", make([]interface{}, 0, 1))

@@ -62,8 +62,8 @@ func setLeafInterfaceProfileAttributes(infraAccPortP *models.LeafInterfaceProfil
 	if err != nil {
 		return d, err
 	}
-	d.Set("name", infraAccPortPMap["name"])
 
+	d.Set("name", infraAccPortPMap["name"])
 	d.Set("annotation", infraAccPortPMap["annotation"])
 	d.Set("name_alias", infraAccPortPMap["nameAlias"])
 	return d, nil
@@ -84,6 +84,7 @@ func resourceAciLeafInterfaceProfileImport(d *schema.ResourceData, m interface{}
 	if err != nil {
 		return nil, err
 	}
+
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
@@ -170,11 +171,13 @@ func resourceAciLeafInterfaceProfileRead(ctx context.Context, d *schema.Resource
 		d.SetId("")
 		return nil
 	}
+
 	_, err = setLeafInterfaceProfileAttributes(infraAccPortP, d)
 	if err != nil {
 		d.SetId("")
 		return nil
 	}
+
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 
 	return nil
