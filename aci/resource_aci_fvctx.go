@@ -721,8 +721,7 @@ func resourceAciVRFRead(ctx context.Context, d *schema.ResourceData, m interface
 	fvRsCtxMcastToData, err := aciClient.ReadRelationfvRsCtxMcastToFromVRF(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation fvRsCtxMcastTo %v", err)
-		d.Set("relation_fv_rs_ctx_mcast_to", fvRsCtxMcastToData)
-
+		setRelationAttribute(d, "relation_fv_rs_ctx_mcast_to", make([]interface{}, 0, 1))
 	} else {
 		setRelationAttribute(d, "relation_fv_rs_ctx_mcast_to", toStringList(fvRsCtxMcastToData.(*schema.Set).List()))
 	}

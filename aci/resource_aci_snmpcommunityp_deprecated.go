@@ -11,12 +11,13 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
-func resourceAciSNMPCommunity() *schema.Resource {
+func resourceAciSNMPCommunityDeprecated() *schema.Resource {
 	return &schema.Resource{
-		CreateContext: resourceAciSNMPCommunityCreate,
-		UpdateContext: resourceAciSNMPCommunityUpdate,
-		ReadContext:   resourceAciSNMPCommunityRead,
-		DeleteContext: resourceAciSNMPCommunityDelete,
+		DeprecationMessage: "Use aci_snmp_community resource instead",
+		CreateContext:      resourceAciSNMPCommunityCreateDeprecated,
+		UpdateContext:      resourceAciSNMPCommunityUpdateDeprecated,
+		ReadContext:        resourceAciSNMPCommunityReadDeprecated,
+		DeleteContext:      resourceAciSNMPCommunityDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: resourceAciSNMPCommunityImport,
@@ -24,7 +25,7 @@ func resourceAciSNMPCommunity() *schema.Resource {
 
 		SchemaVersion: 1,
 		Schema: AppendBaseAttrSchema(AppendNameAliasAttrSchema(map[string]*schema.Schema{
-			"parent_dn": &schema.Schema{
+			"vrf_snmp_context_dn": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
 				ForceNew: true,
@@ -39,26 +40,12 @@ func resourceAciSNMPCommunity() *schema.Resource {
 	}
 }
 
-func getRemoteSNMPCommunity(client *client.Client, dn string) (*models.SNMPCommunity, error) {
-	snmpCommunityPCont, err := client.Get(dn)
-	if err != nil {
-		return nil, err
-	}
-
-	snmpCommunityP := models.SNMPCommunityFromContainer(snmpCommunityPCont)
-	if snmpCommunityP.DistinguishedName == "" {
-		return nil, fmt.Errorf("SNMP Community %s not found", snmpCommunityP.DistinguishedName)
-	}
-
-	return snmpCommunityP, nil
-}
-
-func setSNMPCommunityAttributes(snmpCommunityP *models.SNMPCommunity, d *schema.ResourceData) (*schema.ResourceData, error) {
+func setSNMPCommunityAttributesDeprecated(snmpCommunityP *models.SNMPCommunity, d *schema.ResourceData) (*schema.ResourceData, error) {
 	dn := d.Id()
 	d.SetId(snmpCommunityP.DistinguishedName)
 	d.Set("description", snmpCommunityP.Description)
 	if dn != snmpCommunityP.DistinguishedName {
-		d.Set("parent_dn", "")
+		d.Set("vrf_snmp_context_dn", "")
 	}
 
 	snmpCommunityPMap, err := snmpCommunityP.ToMap()
@@ -69,12 +56,12 @@ func setSNMPCommunityAttributes(snmpCommunityP *models.SNMPCommunity, d *schema.
 	d.Set("name", snmpCommunityPMap["name"])
 	d.Set("name_alias", snmpCommunityPMap["nameAlias"])
 	d.Set("annotation", snmpCommunityPMap["annotation"])
-	d.Set("parent_dn", GetParentDn(d.Id(), fmt.Sprintf("/community-%s", snmpCommunityPMap["name"])))
+	d.Set("vrf_snmp_context_dn", GetParentDn(d.Id(), fmt.Sprintf("/community-%s", snmpCommunityPMap["name"])))
 
 	return d, nil
 }
 
-func resourceAciSNMPCommunityImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
+func resourceAciSNMPCommunityImportDeprecated(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
 	log.Printf("[DEBUG] %s: Beginning Import", d.Id())
 	aciClient := m.(*client.Client)
 	dn := d.Id()
@@ -84,7 +71,7 @@ func resourceAciSNMPCommunityImport(d *schema.ResourceData, m interface{}) ([]*s
 		return nil, err
 	}
 
-	schemaFilled, err := setSNMPCommunityAttributes(snmpCommunityP, d)
+	schemaFilled, err := setSNMPCommunityAttributesDeprecated(snmpCommunityP, d)
 	if err != nil {
 		return nil, err
 	}
@@ -93,12 +80,12 @@ func resourceAciSNMPCommunityImport(d *schema.ResourceData, m interface{}) ([]*s
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciSNMPCommunityCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceAciSNMPCommunityCreateDeprecated(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] SNMPCommunity: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
 	name := d.Get("name").(string)
-	SNMPPolicyDn := d.Get("parent_dn").(string)
+	SNMPPolicyDn := d.Get("vrf_snmp_context_dn").(string)
 
 	snmpCommunityPAttr := models.SNMPCommunityAttributes{}
 
@@ -126,15 +113,15 @@ func resourceAciSNMPCommunityCreate(ctx context.Context, d *schema.ResourceData,
 
 	d.SetId(snmpCommunityP.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
-	return resourceAciSNMPCommunityRead(ctx, d, m)
+	return resourceAciSNMPCommunityReadDeprecated(ctx, d, m)
 }
 
-func resourceAciSNMPCommunityUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceAciSNMPCommunityUpdateDeprecated(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] SNMPCommunity: Beginning Update")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
 	name := d.Get("name").(string)
-	SNMPPolicyDn := d.Get("parent_dn").(string)
+	SNMPPolicyDn := d.Get("vrf_snmp_context_dn").(string)
 
 	snmpCommunityPAttr := models.SNMPCommunityAttributes{}
 
@@ -164,10 +151,10 @@ func resourceAciSNMPCommunityUpdate(ctx context.Context, d *schema.ResourceData,
 
 	d.SetId(snmpCommunityP.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
-	return resourceAciSNMPCommunityRead(ctx, d, m)
+	return resourceAciSNMPCommunityReadDeprecated(ctx, d, m)
 }
 
-func resourceAciSNMPCommunityRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceAciSNMPCommunityReadDeprecated(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 	aciClient := m.(*client.Client)
 	dn := d.Id()
@@ -178,7 +165,7 @@ func resourceAciSNMPCommunityRead(ctx context.Context, d *schema.ResourceData, m
 		return diag.FromErr(err)
 	}
 
-	_, err = setSNMPCommunityAttributes(snmpCommunityP, d)
+	_, err = setSNMPCommunityAttributesDeprecated(snmpCommunityP, d)
 	if err != nil {
 		d.SetId("")
 		return nil
@@ -186,19 +173,4 @@ func resourceAciSNMPCommunityRead(ctx context.Context, d *schema.ResourceData, m
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 	return nil
-}
-
-func resourceAciSNMPCommunityDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
-	aciClient := m.(*client.Client)
-	dn := d.Id()
-
-	err := aciClient.DeleteByDn(dn, "snmpCommunityP")
-	if err != nil {
-		return diag.FromErr(err)
-	}
-
-	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
-	d.SetId("")
-	return diag.FromErr(err)
 }

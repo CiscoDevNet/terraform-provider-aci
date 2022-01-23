@@ -13,12 +13,20 @@ provider "aci" {
   insecure = true
 }
 
-resource "aci_vrf_snmp_context_community" "example" {
-  vrf_snmp_context_dn = aci_vrf_snmp_context.example.id
-  name                = "test"
-  description         = "From Terraform"
-  annotation          = "Test_Annotation"
-  name_alias          = "Test_name_alias"
+resource "aci_snmp_community" "public" {
+  parent_dn   = "uni/fabric/snmppol-default"
+  name        = "public"
+  description = "from terraform"
+  annotation  = "aci_snmp_community"
+  name_alias  = "example"
+}
+
+resource "aci_snmp_community" "public_vrf" {
+  parent_dn   = aci_vrf_snmp_context.example.id
+  name        = "public"
+  description = "from terraform"
+  annotation  = "aci_snmp_community"
+  name_alias  = "example"
 }
 
 resource "aci_vrf_snmp_context" "example" {

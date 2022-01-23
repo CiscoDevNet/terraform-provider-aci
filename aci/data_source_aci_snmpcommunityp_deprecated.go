@@ -10,12 +10,13 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
-func dataSourceAciSNMPCommunity() *schema.Resource {
+func dataSourceAciSNMPCommunityDeprecated() *schema.Resource {
 	return &schema.Resource{
-		ReadContext:   dataSourceAciSNMPCommunityRead,
-		SchemaVersion: 1,
+		DeprecationMessage: "Use aci_snmp_community data source instead",
+		ReadContext:        dataSourceAciSNMPCommunityReadDeprecated,
+		SchemaVersion:      1,
 		Schema: AppendBaseAttrSchema(AppendNameAliasAttrSchema(map[string]*schema.Schema{
-			"parent_dn": &schema.Schema{
+			"vrf_snmp_context_dn": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
 			},
@@ -27,10 +28,10 @@ func dataSourceAciSNMPCommunity() *schema.Resource {
 	}
 }
 
-func dataSourceAciSNMPCommunityRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func dataSourceAciSNMPCommunityReadDeprecated(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	aciClient := m.(*client.Client)
 	name := d.Get("name").(string)
-	parentDn := d.Get("parent_dn").(string)
+	parentDn := d.Get("vrf_snmp_context_dn").(string)
 	dn := fmt.Sprintf(models.DnsnmpCommunityP, parentDn, name)
 
 	snmpCommunityP, err := getRemoteSNMPCommunity(aciClient, dn)
@@ -40,7 +41,7 @@ func dataSourceAciSNMPCommunityRead(ctx context.Context, d *schema.ResourceData,
 
 	d.SetId(dn)
 
-	_, err = setSNMPCommunityAttributes(snmpCommunityP, d)
+	_, err = setSNMPCommunityAttributesDeprecated(snmpCommunityP, d)
 	if err != nil {
 		return diag.FromErr(err)
 	}
