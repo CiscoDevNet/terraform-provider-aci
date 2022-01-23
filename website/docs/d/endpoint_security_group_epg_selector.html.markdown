@@ -15,7 +15,7 @@ Data source for ACI Endpoint Security Group EPG Selector
 ## API Information ##
 
 * `Class` - fvEPgSelector
-* `Distinguished Named` - uni/tn-{name}/ap-{name}/esg-{name}/epgselector-[{matchEpgDn}]
+* `Distinguished Name` - uni/tn-{name}/ap-{name}/esg-{name}/epgselector-[{matchEpgDn}]
 
 ## GUI Information ##
 

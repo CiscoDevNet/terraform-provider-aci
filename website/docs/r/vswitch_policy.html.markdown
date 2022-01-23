@@ -14,7 +14,7 @@ Manages ACI VSwitch Policy
 ## API Information
 
 - `Class` - vmmVSwitchPolicyCont
-- `Distinguished Named` - uni/vmmp-{vendor}/dom-{name}/vswitchpolcont
+- `Distinguished Name` - uni/vmmp-{vendor}/dom-{name}/vswitchpolcont
 
 ## GUI Information
 

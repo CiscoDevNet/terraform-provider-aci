@@ -12,7 +12,7 @@ Manages ACI Endpoint Control
 
 ## API Information ##
 * `Class` - epControlP
-* `Distinguished Named` - uni/infra/epCtrlP-{name}
+* `Distinguished Name` - uni/infra/epCtrlP-{name}
 
 ## GUI Information ##
 * `Location` - System -> System Settings -> Endpoint Controls -> Rouge EP Control -> Policy

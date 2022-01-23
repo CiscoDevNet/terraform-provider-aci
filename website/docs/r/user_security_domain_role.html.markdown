@@ -14,7 +14,7 @@ Manages ACI User Security Domain Role
 ## API Information ##
 
 * `Class` - aaaUserRole
-* `Distinguished Named` - uni/userext/user-{name}/userdomain-{name}/role-{name}
+* `Distinguished Name` - uni/userext/user-{name}/userdomain-{name}/role-{name}
 
 ## GUI Information ##
 

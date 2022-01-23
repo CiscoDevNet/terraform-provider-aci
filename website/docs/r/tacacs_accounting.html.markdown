@@ -14,7 +14,7 @@ Manages ACI TACACS Accounting
 ## API Information ##
 
 * `Class` - tacacsGroup
-* `Distinguished Named` - uni/fabric/tacacsgroup-{name}
+* `Distinguished Name` - uni/fabric/tacacsgroup-{name}
 
 ## GUI Information ##
 

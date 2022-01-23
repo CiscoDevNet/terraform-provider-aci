@@ -14,7 +14,7 @@ Manages ACI VMM Credential
 ## API Information ##
 
 * `Class` - vmmUsrAccP
-* `Distinguished Named` - uni/vmmp-{vendor}/dom-{name}/usracc-{name}
+* `Distinguished Name` - uni/vmmp-{vendor}/dom-{name}/usracc-{name}
 
 ## GUI Information ##
 

@@ -13,7 +13,7 @@ Data source for ACI Tag
 ## API Information ##
 
 * `Class` - tagTag
-* `Distinguished Named` - {parent_dn}/tagKey-{key}
+* `Distinguished Name` - {parent_dn}/tagKey-{key}
 
 ## GUI Information ##
 

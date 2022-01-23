@@ -13,7 +13,7 @@ Manages ACI Annotation
 ## API Information ##
 
 * `Class` - tagAnnotation
-* `Distinguished Named` - {parent_dn}/annotationKey-[{key}]
+* `Distinguished Name` - {parent_dn}/annotationKey-[{key}]
 
 ## GUI Information ##
 

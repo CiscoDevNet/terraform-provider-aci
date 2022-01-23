@@ -13,7 +13,7 @@ Data source for ACI Managed Node Connectivity Group
 
 ## API Information ##
 * `Class` - mgmtGrp
-* `Distinguished Named` - uni/infra/funcprof/grp-{name}
+* `Distinguished Name` - uni/infra/funcprof/grp-{name}
 
 ## GUI Information ##
 * `Location` - Tenants -> mgmt -> Managed Node Connectivity Groups -> Create Managed Node Connectivity Group

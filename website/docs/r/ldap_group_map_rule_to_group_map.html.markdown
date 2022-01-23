@@ -12,7 +12,7 @@ Manages ACI LDAP Group Map Rule to Group Map Ref
 
 ## API Information ##
 * `Class` - aaaLdapGroupMapRuleRef
-* `Distinguished Named` - uni/userext/ldapext/ldapgroupmap-{name}/ldapgroupmapruleref-{name} & uni/userext/ldapext/ldapgroupmap-{name}/ldapgroupmapruleref-{name}
+* `Distinguished Name` - uni/userext/ldapext/ldapgroupmap-{name}/ldapgroupmapruleref-{name} & uni/userext/ldapext/ldapgroupmap-{name}/ldapgroupmapruleref-{name}
 
 ## GUI Information ##
 * `Location` - Admin -> AAA -> Authentication -> LDAP -> LDAP Group Maps -> Rules & Admin -> AAA -> Authentication -> DUO -> LDAP -> Group Maps -> Rules

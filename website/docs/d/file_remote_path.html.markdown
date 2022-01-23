@@ -12,7 +12,7 @@ Data source for ACI Remote Path of a File
 
 ## API Information ##
 * `Class` - fileRemotePath
-* `Distinguished Named` - uni/fabric/path-{name}
+* `Distinguished Name` - uni/fabric/path-{name}
 
 ## GUI Information ##
 * `Location` - Admin -> Import/Export -> Remote Locations -> Create Remote Location

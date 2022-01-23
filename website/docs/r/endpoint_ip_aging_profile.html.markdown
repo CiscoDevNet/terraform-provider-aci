@@ -12,7 +12,7 @@ Manages ACI Endpoint IP Aging Profile
 
 ## API Information ##
 * `Class` - epIpAgingP
-* `Distinguished Named` - uni/infra/ipAgingP-{name}
+* `Distinguished Name` - uni/infra/ipAgingP-{name}
 
 ## GUI Information ##
 * `Location` - System -> System Settings -> Endpoint Controls -> IP Aging -> Policy

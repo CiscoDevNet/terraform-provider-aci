@@ -13,7 +13,7 @@ Data source for ACI Duo Provider Group
 
 ## API Information ##
 * `Class` - aaaDuoProviderGroup
-* `Distinguished Named` - uni/userext/duoext/duoprovidergroup-{name}
+* `Distinguished Name` - uni/userext/duoext/duoprovidergroup-{name}
 
 ## Example Usage ##
 

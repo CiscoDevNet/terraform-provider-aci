@@ -15,7 +15,7 @@ Data source for ACI SAML Provider
 ## API Information ##
 
 * `Class` - aaaSamlProvider
-* `Distinguished Named` - uni/userext/samlext/samlprovider-{name}
+* `Distinguished Name` - uni/userext/samlext/samlprovider-{name}
 
 ## GUI Information ##
 

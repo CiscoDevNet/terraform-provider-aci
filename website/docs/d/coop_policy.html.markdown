@@ -15,7 +15,7 @@ Data source for ACI COOP Policy
 ## API Information ##
 
 * `Class` - coopPol
-* `Distinguished Named` - uni/fabric/pol-{name}
+* `Distinguished Name` - uni/fabric/pol-{name}
 
 ## GUI Information ##
 

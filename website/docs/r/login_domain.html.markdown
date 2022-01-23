@@ -14,7 +14,7 @@ Manages ACI Login Domain
 ## API Information ##
 
 * `Class` - aaaLoginDomain and aaaDomainAuth
-* `Distinguished Named` - uni/userext/logindomain-{name}
+* `Distinguished Name` - uni/userext/logindomain-{name}
 
 ## GUI Information ##
 

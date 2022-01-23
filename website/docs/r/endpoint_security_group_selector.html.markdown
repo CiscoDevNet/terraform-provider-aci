@@ -14,7 +14,7 @@ Manages ACI Endpoint Security Group Selector
 ## API Information ##
 
 * `Class` - fvEPSelector
-* `Distinguished Named` - uni/tn-{name}/ap-{name}/esg-{name}/epselector-{[matchExpression]}
+* `Distinguished Name` - uni/tn-{name}/ap-{name}/esg-{name}/epselector-{[matchExpression]}
 
 ## GUI Information ##
 

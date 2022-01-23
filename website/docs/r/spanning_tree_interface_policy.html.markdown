@@ -14,7 +14,7 @@ Manages ACI Spanning Tree Interface Policy
 ## API Information
 
 - `Class` - stpIfPol
-- `Distinguished Named` - uni/infra/ifPol-{name}
+- `Distinguished Name` - uni/infra/ifPol-{name}
 
 ## GUI Information
 

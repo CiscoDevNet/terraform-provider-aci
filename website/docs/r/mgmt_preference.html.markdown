@@ -12,7 +12,7 @@ Manages ACI Mgmt Preference
 
 ## API Information ##
 * `Class` - mgmtConnectivityPrefs
-* `Distinguished Named` - uni/fabric/connectivityPrefs
+* `Distinguished Name` - uni/fabric/connectivityPrefs
 
 ## GUI Information ##
 * `Location` - System -> System Settings -> APIC Connectivity Profile -> Policy

@@ -12,7 +12,7 @@ Manages ACI LDAP Provider
 
 ## API Information ##
 * `Class` - aaaLdapProvider
-* `Distinguished Named` - uni/userext/ldapext/ldapprovider-{name} & uni/userext/duoext/ldapprovider-{name}
+* `Distinguished Name` - uni/userext/ldapext/ldapprovider-{name} & uni/userext/duoext/ldapprovider-{name}
 
 ## GUI Information ##
 * `Location` - Admin -> AAA -> Authentication -> LDAP -> Providers & Admin -> AAA -> Authentication -> DUO -> LDAP -> Providers

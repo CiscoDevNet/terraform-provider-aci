@@ -14,7 +14,7 @@ Manages ACI interface blacklist which is the equivalent of disabling an interfac
 ## API Information ##
 
 * `Class` - fabricRsOosPath
-* `Distinguished Named` - uni/fabric/outofsvc/rsoosPath-[{tDn}]
+* `Distinguished Name` - uni/fabric/outofsvc/rsoosPath-[{tDn}]
 
 ## GUI Information ##
 

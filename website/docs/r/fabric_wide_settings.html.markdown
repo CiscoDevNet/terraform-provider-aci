@@ -12,7 +12,7 @@ Manages ACI Fabric-Wide Settings Policy
 
 ## API Information ##
 * `Class` - infraSetPol
-* `Distinguished Named` - uni/infra/settings
+* `Distinguished Name` - uni/infra/settings
 
 ## GUI Information ##
 * `Location` - System -> System Settings -> Fabric-Wide Settings 

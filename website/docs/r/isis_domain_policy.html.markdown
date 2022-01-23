@@ -12,7 +12,7 @@ Manages ACI ISIS Domain Policy amd ISIS Level
 
 ## API Information ##
 * `Class` - isisDomPol & isisLvlComp
-* `Distinguished Named` - uni/fabric/isisDomP-{name} & uni/fabric/isisDomP-{name}/lvl-{type}
+* `Distinguished Name` - uni/fabric/isisDomP-{name} & uni/fabric/isisDomP-{name}/lvl-{type}
 
 ## GUI Information ##
 * `Location` - System -> System Settings -> ISIS Policy

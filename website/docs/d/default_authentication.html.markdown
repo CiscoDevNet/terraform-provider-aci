@@ -14,7 +14,7 @@ Data source for ACI Default Authentication Method for all Logins
 ## API Information ##
 
 * `Class` - aaaDefaultAuth
-* `Distinguished Named` - uni/userext/authrealm/defaultauth
+* `Distinguished Name` - uni/userext/authrealm/defaultauth
 
 ## GUI Information ##
 * `Location` - Admin -> AAA -> Authentication -> AAA -> Default Authentication

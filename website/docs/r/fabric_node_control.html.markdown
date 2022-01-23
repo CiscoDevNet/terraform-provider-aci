@@ -12,7 +12,7 @@ Manages ACI Fabric Node Control
 
 ## API Information ##
 * `Class` - fabricNodeControl
-* `Distinguished Named` - uni/fabric/nodecontrol-{name}
+* `Distinguished Name` - uni/fabric/nodecontrol-{name}
 
 ## GUI Information ##
 * `Location` - Fabric -> Fabric Policies -> Policies -> Monitoring -> Fabric Node Controls

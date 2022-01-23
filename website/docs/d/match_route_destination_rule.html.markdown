@@ -14,7 +14,7 @@ Data source for ACI Match Route Destination Rule
 ## API Information ##
 
 * `Class` - rtctrlMatchRtDest
-* `Distinguished Named` - uni/tn-{name}/subj-{name}/dest-[{ip}]
+* `Distinguished Name` - uni/tn-{name}/subj-{name}/dest-[{ip}]
 
 ## GUI Information ##
 

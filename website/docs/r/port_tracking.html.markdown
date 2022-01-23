@@ -14,7 +14,7 @@ Manages ACI Port Tracking
 ## API Information ##
 
 * `Class` - infraPortTrackPol
-* `Distinguished Named` - uni/infra/trackEqptFabP-{name}
+* `Distinguished Name` - uni/infra/trackEqptFabP-{name}
 
 ## GUI Information ##
 

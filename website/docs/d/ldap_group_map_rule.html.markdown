@@ -15,7 +15,7 @@ Data source for ACI LDAP Group Map Rule
 ## API Information ##
 
 * `Class` - aaaLdapGroupMapRule
-* `Distinguished Named` - uni/userext/duoext/ldapgroupmaprule-{name}
+* `Distinguished Name` - uni/userext/duoext/ldapgroupmaprule-{name}
                           uni/userext/ldapext/ldapgroupmaprule-{name}
 ## GUI Information ##
 

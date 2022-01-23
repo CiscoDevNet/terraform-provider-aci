@@ -15,7 +15,7 @@ Data source for ACI SNMP Community
 ## API Information ##
 
 * `Class` - snmpCommunityP
-* `Distinguished Named` - uni/tn-{name}/ctx-{name}/snmpctx/community-{name}
+* `Distinguished Name` - uni/tn-{name}/ctx-{name}/snmpctx/community-{name}
 
 ## GUI Information ##
 

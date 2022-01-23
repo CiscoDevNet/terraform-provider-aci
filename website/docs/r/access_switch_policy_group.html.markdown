@@ -14,7 +14,7 @@ Manages ACI Access Switch Policy Group
 ## API Information ##
 
 * `Class` - infraAccNodePGrp
-* `Distinguished Named` - uni/infra/funcprof/accnodepgrp-{name}
+* `Distinguished Name` - uni/infra/funcprof/accnodepgrp-{name}
 
 ## GUI Information ##
 

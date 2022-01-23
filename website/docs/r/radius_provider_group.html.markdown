@@ -14,7 +14,7 @@ Manages ACI RADIUS Provider Group
 ## API Information ##
 
 * `Class` - aaaRadiusProviderGroup
-* `Distinguished Named` - uni/userext/radiusext/radiusprovidergroup-{name}
+* `Distinguished Name` - uni/userext/radiusext/radiusprovidergroup-{name}
 
 
 ## Example Usage ##

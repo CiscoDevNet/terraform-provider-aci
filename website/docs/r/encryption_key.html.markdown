@@ -12,7 +12,7 @@ Manages ACI AES Encryption Passphrase and Keys for Config Export and Import
 
 ## API Information ##
 * `Class` - pkiExportEncryptionKey
-* `Distinguished Named` - uni/exportcryptkey
+* `Distinguished Name` - uni/exportcryptkey
 
 ## GUI Information ##
 * `Location` - System -> System Settings -> Global AES Passphrase Encryption Settings -> Policy

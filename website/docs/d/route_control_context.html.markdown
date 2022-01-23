@@ -15,7 +15,7 @@ Data source for ACI Route Control Context
 ## API Information ##
 
 * `Class` - rtctrlCtxP
-* `Distinguished Named` - uni/tn-{name}/prof-{name}/ctx-{name}
+* `Distinguished Name` - uni/tn-{name}/prof-{name}/ctx-{name}
 
 ## GUI Information ##
 

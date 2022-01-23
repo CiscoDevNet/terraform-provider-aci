@@ -12,7 +12,7 @@ Data source for ACI AES Encryption Passphrase and Keys for Config Export and Imp
 
 ## API Information ##
 * `Class` - pkiExportEncryptionKey
-* `Distinguished Named` - uni/exportcryptkey
+* `Distinguished Name` - uni/exportcryptkey
 
 ## GUI Information ##
 * `Location` - System -> System Settings -> Global AES Passphrase Encryption Settings -> Policy

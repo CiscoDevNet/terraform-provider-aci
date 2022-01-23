@@ -14,7 +14,7 @@ Manages ACI Match Rule
 ## API Information ##
 
 * `Class` - rtctrlSubjP
-* `Distinguished Named` - uni/tn-{name}/subj-{name}
+* `Distinguished Name` - uni/tn-{name}/subj-{name}
 
 ## GUI Information ##
 

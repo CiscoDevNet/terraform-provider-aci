@@ -12,7 +12,7 @@ Manages ACI TACACS + Provider Group
 
 ## API Information ##
 * `Class` - aaaTacacsPlusProviderGroup
-* `Distinguished Named` - uni/userext/tacacsext/tacacsplusprovidergroup-{name}
+* `Distinguished Name` - uni/userext/tacacsext/tacacsplusprovidergroup-{name}
 
 
 ## Example Usage ##

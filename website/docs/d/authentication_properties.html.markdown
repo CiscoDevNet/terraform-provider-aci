@@ -13,7 +13,7 @@ Data source for ACI AAA Authentication Properties and Default Radius Authenticat
 
 ## API Information ##
 * `Class` - aaaAuthRealm && aaaPingEp
-* `Distinguished Named` - uni/userext/authrealm && uni/userext/pingext
+* `Distinguished Name` - uni/userext/authrealm && uni/userext/pingext
 
 ## GUI Information ##
 * `Location` - Admin -> AAA -> Authentication -> AAA -> Policy
