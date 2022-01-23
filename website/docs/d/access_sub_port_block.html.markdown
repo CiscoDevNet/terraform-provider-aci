@@ -19,7 +19,7 @@ data "aci_access_sub_port_block" "example" {
 }
 ```
 ## Argument Reference ##
-* `access_port_selector_dn` - (Required) Distinguished name of parent AccessPortSelector object.
+* `access_port_selector_dn` - (Required) Distinguished name of parent Access Port Selector or Spine Access Port Selector object.
 * `name` - (Required) Name of Object access sub port block.
 
 
