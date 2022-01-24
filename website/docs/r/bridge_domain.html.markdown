@@ -91,7 +91,7 @@ Manages ACI Bridge Domain
 * `relation_fv_rs_bd_flood_to` - (Optional) Relation to Contract Filters (Point to class vzFilter). Cardinality - N_TO_M. Type - Set of String.
 <!-- Tenants -> Contracts -> Filters -->
 
-* `relation_fv_rs_bd_to_fhs` - (Optional) Relation First Hop Security Feature Policies (Point to class fhsBDPol). Cardinality - N_TO_ONE. Type - String.
+* `relation_fv_rs_bd_to_fhs` - (Optional) Relation First Hop Security Feature Policies (Point to class fhsBDPol). Requires unicast_route to be set to "yes". Cardinality - N_TO_ONE. Type - String.
 
 * `relation_fv_rs_bd_to_relay_p` - (Optional) Relation to DHCP Relay policy (Point to class dhcpRelayP). Cardinality - N_TO_ONE. Type - String.
 

@@ -23,11 +23,11 @@ resource "aci_bridge_domain" "demobd" {
   unk_mac_ucast_act              = "flood"
   unk_mcast_act                  = "flood"
   vmac                           = "not-applicable"
-  relation_fv_rs_bd_to_profile   = aci_rest.rest_rt_ctrl_profile.id # Relation to L3Outs Route Map For Import and Export Route Control
+  relation_fv_rs_bd_to_profile   = aci_route_control_profile.example.id  # Relation to L3Outs Route Map For Import and Export Route Control
   relation_fv_rs_bd_to_relay_p   = aci_rest.rest_dhcp_RelayP.id     # Relation to DHCP Relay policy
   relation_fv_rs_abd_pol_mon_pol = aci_rest.rest_mon_epg_pol.id     # Relation to Monitors policy
   relation_fv_rs_bd_flood_to     = [aci_filter.bd_flood_filter.id]  # Relation to Contract Filters
-  relation_fv_rs_bd_to_fhs       = aci_rest.rest_fhs_bd_pol.id      # Relation to FHS policy
+  relation_fv_rs_bd_to_fhs       = aci_rest.rest_fhs_bd_pol.id      # Relation to FHS policy. Requires unicast_route to be set to "yes"
 
   relation_fv_rs_bd_to_netflow_monitor_pol {
     tn_netflow_monitor_pol_name = aci_rest.rest_net_flow_pol.id

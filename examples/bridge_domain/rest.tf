@@ -7,15 +7,10 @@ resource "aci_rest" "rest_l3_ext_out" {
   }
 }
 
-resource "aci_rest" "rest_rt_ctrl_profile" {
-  path       = "api/node/mo/${aci_rest.rest_l3_ext_out.id}/prof-testprof.json"
-  class_name = "rtctrlProfile"
-
-  content = {
-    "name" = "testprof"
-  }
+resource "aci_route_control_profile" "example" {
+  parent_dn                  = aci_tenant.tenant_for_bridge_domain.id
+  name                       = "testprof"
 }
-
 
 resource "aci_rest" "rest_dhcp_RelayP" {
   path       = "api/node/mo/${aci_tenant.tenant_for_bridge_domain.id}/relayp-testrelay.json"
