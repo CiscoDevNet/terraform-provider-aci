@@ -205,13 +205,13 @@ func setEndpointSecurityGroupAttributes(fvESg *models.EndpointSecurityGroup, d *
 		return d, err
 	}
 	d.Set("annotation", fvESgMap["annotation"])
-	d.Set("flood_on_encap", fvESgMap["floodOnEncap"])
+
 	d.Set("match_t", fvESgMap["matchT"])
 	d.Set("name", fvESgMap["name"])
 	d.Set("application_profile_dn", GetParentDn(fvESg.DistinguishedName, fmt.Sprintf("/esg-%s", fvESgMap["name"])))
 	d.Set("pc_enf_pref", fvESgMap["pcEnfPref"])
 	d.Set("pref_gr_memb", fvESgMap["prefGrMemb"])
-	d.Set("prio", fvESgMap["prio"])
+
 	d.Set("name_alias", fvESgMap["nameAlias"])
 	return d, nil
 }
@@ -224,6 +224,7 @@ func resourceAciEndpointSecurityGroupImport(d *schema.ResourceData, m interface{
 	if err != nil {
 		return nil, err
 	}
+	d.Set("application_profile_dn", GetParentDn(dn, fmt.Sprintf("/esg-%s", fvESg.Name)))
 	schemaFilled, err := setEndpointSecurityGroupAttributes(fvESg, d)
 	if err != nil {
 		return nil, err
@@ -250,10 +251,6 @@ func resourceAciEndpointSecurityGroupCreate(ctx context.Context, d *schema.Resou
 		fvESgAttr.Annotation = "{}"
 	}
 
-	if FloodOnEncap, ok := d.GetOk("flood_on_encap"); ok {
-		fvESgAttr.FloodOnEncap = FloodOnEncap.(string)
-	}
-
 	if MatchT, ok := d.GetOk("match_t"); ok {
 		fvESgAttr.MatchT = MatchT.(string)
 	}
@@ -270,9 +267,6 @@ func resourceAciEndpointSecurityGroupCreate(ctx context.Context, d *schema.Resou
 		fvESgAttr.PrefGrMemb = PrefGrMemb.(string)
 	}
 
-	if Prio, ok := d.GetOk("prio"); ok {
-		fvESgAttr.Prio = Prio.(string)
-	}
 	fvESg := models.NewEndpointSecurityGroup(fmt.Sprintf("esg-%s", name), ApplicationProfileDn, desc, nameAlias, fvESgAttr)
 
 	err := aciClient.Save(fvESg)
@@ -449,10 +443,6 @@ func resourceAciEndpointSecurityGroupUpdate(ctx context.Context, d *schema.Resou
 		fvESgAttr.Annotation = "{}"
 	}
 
-	if FloodOnEncap, ok := d.GetOk("flood_on_encap"); ok {
-		fvESgAttr.FloodOnEncap = FloodOnEncap.(string)
-	}
-
 	if MatchT, ok := d.GetOk("match_t"); ok {
 		fvESgAttr.MatchT = MatchT.(string)
 	}
@@ -469,9 +459,6 @@ func resourceAciEndpointSecurityGroupUpdate(ctx context.Context, d *schema.Resou
 		fvESgAttr.PrefGrMemb = PrefGrMemb.(string)
 	}
 
-	if Prio, ok := d.GetOk("prio"); ok {
-		fvESgAttr.Prio = Prio.(string)
-	}
 	fvESg := models.NewEndpointSecurityGroup(fmt.Sprintf("esg-%s", name), ApplicationProfileDn, desc, nameAlias, fvESgAttr)
 
 	fvESg.Status = "modified"

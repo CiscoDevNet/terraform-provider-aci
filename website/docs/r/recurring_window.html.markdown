@@ -44,6 +44,7 @@ resource "aci_recurring_window" "example" {
 * `scheduler_dn` - (Required) Distinguished name of parent Scheduler object.
 * `name` - (Required) Name of object Recurring Window.
 * `annotation` - (Optional) Annotation of object Recurring Window.
+* `name_alias` - (Optional) Name Alias of object Recurring Window.
 * `concur_cap` - (Optional) Maximum Concurrent Tasks. The concurrency capacity limit. This is the maximum number of tasks that can be processed concurrently. Range: "1" - "65535". Default value is "unlimited"(If user sets "0" as a value, provider will accept it but it'll set it as "unlimited"). Type: String.
 * `day` - (Optional) Recurring Window Schedule Day. The day of the week that the recurring window begins. Allowed values are "Friday", "Monday", "Saturday", "Sunday", "Thursday", "Tuesday", "Wednesday", "even-day", "every-day", "odd-day", and default value is "every-day". Type: String.
 * `hour` - (Optional) Schedule Hour. The hour that the recurring window begins. Range: "0" - "23". Default value is "0". 

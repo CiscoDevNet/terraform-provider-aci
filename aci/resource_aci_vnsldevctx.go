@@ -28,6 +28,7 @@ func resourceAciLogicalDeviceContext() *schema.Resource {
 			"tenant_dn": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
+				ForceNew: true,
 			},
 
 			"ctrct_name_or_lbl": &schema.Schema{
@@ -99,7 +100,7 @@ func setLogicalDeviceContextAttributes(vnsLDevCtx *models.LogicalDeviceContext, 
 	if err != nil {
 		return d, err
 	}
-
+	d.Set("tenant_dn", GetParentDn(vnsLDevCtx.DistinguishedName, fmt.Sprintf("/ldevCtx-c-%s-g-%s-n-%s", vnsLDevCtxMap["ctrctNameOrLbl"], vnsLDevCtxMap["graphNameOrLbl"], vnsLDevCtxMap["nodeNameOrLbl"])))
 	d.Set("ctrct_name_or_lbl", vnsLDevCtxMap["ctrctNameOrLbl"])
 	d.Set("graph_name_or_lbl", vnsLDevCtxMap["graphNameOrLbl"])
 	d.Set("node_name_or_lbl", vnsLDevCtxMap["nodeNameOrLbl"])

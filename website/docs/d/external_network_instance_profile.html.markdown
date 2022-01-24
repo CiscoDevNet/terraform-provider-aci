@@ -29,6 +29,7 @@ data "aci_external_network_instance_profile" "dev_ext_net_prof" {
 
 - `id` - Attribute id set to the Dn of the External Network Instance Profile.
 - `annotation` - (Optional) Annotation for object external network instance profile.
+- `description` - (Optional) Specifies the description of the external network instance profile.
 - `exception_tag` - (Optional) Exception tag for object external network instance profile.
 - `flood_on_encap` - (Optional) Control at EPG level if the traffic L2 Multicast/Broadcast and Link Local Layer should be flooded only on ENCAP or based on bridg-domain settings.
 - `match_t` - (Optional) The provider label match criteria.

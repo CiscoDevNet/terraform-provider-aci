@@ -58,6 +58,11 @@ func resourceAciPODMaintenanceGroup() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"range",
+					"ALL",
+					"ALL_IN_POD",
+				}, false),
 			},
 
 			"relation_maint_rs_mgrpp": &schema.Schema{

@@ -234,8 +234,8 @@ func resourceAciBridgeDomain() *schema.Resource {
 				Optional: true,
 			},
 			"relation_fv_rs_mldsn": &schema.Schema{
-				Type:     schema.TypeString,
-				Computed: true,
+				Type: schema.TypeString,
+
 				Optional: true,
 			},
 			"relation_fv_rs_abd_pol_mon_pol": &schema.Schema{
@@ -244,8 +244,8 @@ func resourceAciBridgeDomain() *schema.Resource {
 				Optional: true,
 			},
 			"relation_fv_rs_bd_to_nd_p": &schema.Schema{
-				Type:     schema.TypeString,
-				Computed: true,
+				Type: schema.TypeString,
+
 				Optional: true,
 			},
 			"relation_fv_rs_bd_flood_to": &schema.Schema{
@@ -265,8 +265,8 @@ func resourceAciBridgeDomain() *schema.Resource {
 				Optional: true,
 			},
 			"relation_fv_rs_ctx": &schema.Schema{
-				Type:     schema.TypeString,
-				Computed: true,
+				Type: schema.TypeString,
+
 				Optional: true,
 			},
 			"relation_fv_rs_bd_to_netflow_monitor_pol": &schema.Schema{
@@ -286,13 +286,13 @@ func resourceAciBridgeDomain() *schema.Resource {
 				},
 			},
 			"relation_fv_rs_igmpsn": &schema.Schema{
-				Type:     schema.TypeString,
-				Computed: true,
+				Type: schema.TypeString,
+
 				Optional: true,
 			},
 			"relation_fv_rs_bd_to_ep_ret": &schema.Schema{
-				Type:     schema.TypeString,
-				Computed: true,
+				Type: schema.TypeString,
+
 				Optional: true,
 			},
 			"relation_fv_rs_bd_to_out": &schema.Schema{
@@ -338,7 +338,11 @@ func setBridgeDomainAttributes(fvBD *models.BridgeDomain, d *schema.ResourceData
 	d.Set("annotation", fvBDMap["annotation"])
 	d.Set("arp_flood", fvBDMap["arpFlood"])
 	d.Set("ep_clear", fvBDMap["epClear"])
-	d.Set("ep_move_detect_mode", fvBDMap["epMoveDetectMode"])
+	if fvBDMap["epMoveDetectMode"] == "" {
+		d.Set("ep_move_detect_mode", "disable")
+	} else {
+		d.Set("ep_move_detect_mode", fvBDMap["epMoveDetectMode"])
+	}
 	d.Set("host_based_routing", fvBDMap["hostBasedRouting"])
 	d.Set("intersite_bum_traffic_allow", fvBDMap["intersiteBumTrafficAllow"])
 	d.Set("intersite_l2_stretch", fvBDMap["intersiteL2Stretch"])

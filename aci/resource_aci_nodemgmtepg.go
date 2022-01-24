@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
@@ -222,7 +223,7 @@ func resourceAciNodeManagementEPg() *schema.Resource {
 
 func resourceAciNodeManagementEPgImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
 	log.Printf("[DEBUG] %s: Beginning Import", d.Id())
-	if d.Get("type").(string) == "in_band" {
+	if strings.Contains(d.Id(), "/inb-") {
 		return inBandManagementEPgImport(d, m)
 	}
 	return outOfBandManagementEPgImport(d, m)

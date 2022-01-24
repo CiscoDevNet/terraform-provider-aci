@@ -362,6 +362,10 @@ func resourceAciVMMControllerCreate(ctx context.Context, d *schema.ResourceData,
 		for _, val := range MsftConfigIssues.([]interface{}) {
 			msftConfigIssuesList = append(msftConfigIssuesList, val.(string))
 		}
+		err := checkDuplicate(msftConfigIssuesList)
+		if err != nil {
+			return diag.FromErr(err)
+		}
 		MsftConfigIssues := strings.Join(msftConfigIssuesList, ",")
 		vmmCtrlrPAttr.MsftConfigIssues = MsftConfigIssues
 	}
@@ -590,6 +594,10 @@ func resourceAciVMMControllerUpdate(ctx context.Context, d *schema.ResourceData,
 		msftConfigIssuesList := make([]string, 0, 1)
 		for _, val := range MsftConfigIssues.([]interface{}) {
 			msftConfigIssuesList = append(msftConfigIssuesList, val.(string))
+		}
+		err := checkDuplicate(msftConfigIssuesList)
+		if err != nil {
+			return diag.FromErr(err)
 		}
 		MsftConfigIssues := strings.Join(msftConfigIssuesList, ",")
 		vmmCtrlrPAttr.MsftConfigIssues = MsftConfigIssues

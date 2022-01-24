@@ -73,28 +73,28 @@ func resourceAciLogicalInterfaceProfile() *schema.Resource {
 			},
 
 			"relation_l3ext_rs_egress_qos_dpp_pol": &schema.Schema{
-				Type:     schema.TypeString,
-				Computed: true,
+				Type: schema.TypeString,
+
 				Optional: true,
 			},
 			"relation_l3ext_rs_ingress_qos_dpp_pol": &schema.Schema{
-				Type:     schema.TypeString,
-				Computed: true,
+				Type: schema.TypeString,
+
 				Optional: true,
 			},
 			"relation_l3ext_rs_l_if_p_cust_qos_pol": &schema.Schema{
-				Type:     schema.TypeString,
-				Computed: true,
+				Type: schema.TypeString,
+
 				Optional: true,
 			},
 			"relation_l3ext_rs_arp_if_pol": &schema.Schema{
-				Type:     schema.TypeString,
-				Computed: true,
+				Type: schema.TypeString,
+
 				Optional: true,
 			},
 			"relation_l3ext_rs_nd_if_pol": &schema.Schema{
-				Type:     schema.TypeString,
-				Computed: true,
+				Type: schema.TypeString,
+
 				Optional: true,
 			},
 		}),

@@ -74,6 +74,7 @@ func resourceAciLACPPolicy() *schema.Resource {
 					"passive",
 					"mac-pin",
 					"mac-pin-nicload",
+					"explicit-failover",
 				}, false),
 			},
 
@@ -176,6 +177,10 @@ func resourceAciLACPPolicyCreate(ctx context.Context, d *schema.ResourceData, m 
 		for _, val := range tp {
 			ctrls = append(ctrls, val.(string))
 		}
+		err := checkDuplicate(ctrls)
+		if err != nil {
+			return diag.FromErr(err)
+		}
 		lacpLagPolAttr.Ctrl = strings.Join(ctrls, ",")
 	}
 	if MaxLinks, ok := d.GetOk("max_links"); ok {
@@ -222,6 +227,10 @@ func resourceAciLACPPolicyUpdate(ctx context.Context, d *schema.ResourceData, m 
 		ctrls := make([]string, 0, 1)
 		for _, val := range tp {
 			ctrls = append(ctrls, val.(string))
+		}
+		err := checkDuplicate(ctrls)
+		if err != nil {
+			return diag.FromErr(err)
 		}
 		lacpLagPolAttr.Ctrl = strings.Join(ctrls, ",")
 	}

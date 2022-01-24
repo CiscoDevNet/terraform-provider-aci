@@ -50,7 +50,7 @@ resource "aci_l3out_floating_svi" "example" {
 - `description` - (Optional) Description for L3out floating SVI object.
 - `autostate` - (Optional) Autostate for L3out floating SVI object. Allowed values are "disabled" and "enabled". Default value is "disabled".
 - `encap_scope` - (Optional) Encap scope for L3out floating SVI object. Allowed values are "ctx" and "local". Default value is "local".
-- `if_inst_t` - (Optional) Interface type for L3out floating SVI object. Allowed values are "ext-svi", "l3-port", "sub-interface" and "unspecified". Default value is "unspecified".
+- `if_inst_t` - (Optional) Interface type for L3out floating SVI object. Allowed values are "ext-svi", "l3-port", "sub-interface".
 - `ipv6_dad` - (Optional) IPv6 dad for L3out floating SVI object. Allowed values are "disabled" and "enabled". Default value is "enabled".
 - `ll_addr` - (Optional) Link local address for L3out floating SVI object. Default value: "::".
 - `mac` - (Optional) MAC address for L3out floating SVI object.

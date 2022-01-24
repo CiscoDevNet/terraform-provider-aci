@@ -483,6 +483,14 @@ func resourceAciFilterEntryCreate(ctx context.Context, d *schema.ResourceData, m
 		for _, val := range TcpRules.([]interface{}) {
 			tcpRulesList = append(tcpRulesList, val.(string))
 		}
+		err := checkDuplicate(tcpRulesList)
+		if err != nil {
+			return diag.FromErr(err)
+		}
+		err = checkWhetherListContainOnlyParameter(tcpRulesList, "unspecified")
+		if err != nil {
+			return diag.FromErr(err)
+		}
 		TcpRules := strings.Join(tcpRulesList, ",")
 		vzEntryAttr.TcpRules = TcpRules
 	}
@@ -558,6 +566,14 @@ func resourceAciFilterEntryUpdate(ctx context.Context, d *schema.ResourceData, m
 		tcpRulesList := make([]string, 0, 1)
 		for _, val := range TcpRules.([]interface{}) {
 			tcpRulesList = append(tcpRulesList, val.(string))
+		}
+		err := checkDuplicate(tcpRulesList)
+		if err != nil {
+			return diag.FromErr(err)
+		}
+		err = checkWhetherListContainOnlyParameter(tcpRulesList, "unspecified")
+		if err != nil {
+			return diag.FromErr(err)
 		}
 		TcpRules := strings.Join(tcpRulesList, ",")
 		vzEntryAttr.TcpRules = TcpRules

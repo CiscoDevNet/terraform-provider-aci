@@ -186,7 +186,6 @@ func resourceAciCloudDomainProfileDelete(ctx context.Context, d *schema.Resource
 	cloudDomPAttr := models.CloudDomainProfileAttributes{}
 	cloudDomPAttr.Annotation = "{}"
 	cloudDomPAttr.NameAlias = "{}"
-	cloudDomPAttr.SiteId = "0"
 
 	cloudDomP := models.NewCloudDomainProfile(fmt.Sprintf("clouddomp"), "uni", "{}", cloudDomPAttr)
 

@@ -49,7 +49,7 @@ func dataSourceAciPortTrackingReadContext(ctx context.Context, d *schema.Resourc
 
 	rn := fmt.Sprintf("infra/trackEqptFabP-%s", name)
 	dn := fmt.Sprintf("uni/%s", rn)
-	infraPortTrackPol, err := getRemotePortTracking(aciClient, dn)
+	infraPortTrackPol, err := GetRemotePortTracking(aciClient, dn)
 	if err != nil {
 		return diag.FromErr(err)
 	}

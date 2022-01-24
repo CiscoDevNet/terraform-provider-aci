@@ -34,7 +34,8 @@ Manages ACI External Network Instance Profile
 - `l3_outside_dn` - (Required) Distinguished name of parent L3Outside object.
 - `name` - (Required) Name of Object external network instance profile.
 - `annotation` - (Optional) Annotation for object external network instance profile.
-- `exception_tag` - (Optional) Exception tag for object external network instance profile. Allowed value range is "0" - "512".
+- `description` - (Optional) Specifies the description of the external network instance profile.
+- `exception_tag` - (Optional) Exception tag for object external network instance profile. 
 - `flood_on_encap` - (Optional) Control at EPG level if the traffic L2 Multicast/Broadcast and Link Local Layer should be flooded only on ENCAP or based on bridg-domain settings. Allowed values are "disabled" and "enabled". Default value is "disabled".
 - `match_t` - (Optional) The provider label match criteria. Allowed values are "All", "AtleastOne", "AtmostOne" and "None". Default is "AtleastOne".
 - `name_alias` - (Optional) Name alias for object external network instance profile.

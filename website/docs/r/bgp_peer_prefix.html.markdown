@@ -37,7 +37,7 @@ resource "aci_bgp_peer_prefix" "example" {
 * `max_pfx` - (Optional) Maximum number of prefixes allowed from the peer for BGP peer prefix object. Default value is "20000".
 * `name_alias` - (Optional) Name alias for BGP peer prefix object.
 * `restart_time` - (Optional) The period of time in minutes before restarting the peer when the prefix limit is reached for BGP peer prefix object. Default value is "infinite".
-* `thresh` - (Optional) Threshold percentage of the maximum number of prefixes before a warning is issued for BGP peer prefix object. Default value is "75".
+* `thresh` - (Optional) Threshold percentage of the maximum number of prefixes before a warning is issued for BGP peer prefix object. Range of thresh is "1" to "100". Default value is "75".
  
 
 

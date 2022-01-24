@@ -62,6 +62,7 @@ func resourceAciL3outOspfExternalPolicy() *schema.Resource {
 				Optional: true,
 				Computed: true,
 				StateFunc: func(val interface{}) string {
+<<<<<<< HEAD
 					if val.(string) == "backbone" || val.(string) == "0" || val.(string) == "0.0.0.0" {
 						return "backbone"
 					} else {
@@ -71,9 +72,22 @@ func resourceAciL3outOspfExternalPolicy() *schema.Resource {
 							for i := 1; i <= len(numList); i++ {
 								ip[4-i] = numList[len(numList)-i]
 							}
+=======
+					l := []string{"backbone", "0", "0.0", "0.0.0", "0.0.0.0"}
+					for _, litem := range l {
+						if val.(string) == litem {
+							return "backbone"
+>>>>>>> 96fa442a (Cds sp3 testacc (#112))
 						}
-						return strings.Join(ip, ".")
 					}
+					numList := strings.Split(val.(string), ".")
+					ip := []string{"0", "0", "0", "0"}
+					if val.(string) != "" && len(numList) <= 4 {
+						for i := 1; i <= len(numList); i++ {
+							ip[4-i] = numList[len(numList)-i]
+						}
+					}
+					return strings.Join(ip, ".")
 				},
 				ValidateFunc: schema.SchemaValidateFunc(validateOspfIp()),
 			},
@@ -165,7 +179,6 @@ func setL3outOspfExternalPolicyAttributes(ospfExtP *models.L3outOspfExternalPoli
 
 	d.Set("annotation", ospfExtPMap["annotation"])
 	d.Set("area_cost", ospfExtPMap["areaCost"])
-	d.Set("area_ctrl", ospfExtPMap["areaCtrl"])
 	if ospfExtPMap["areaCtrl"] == "" {
 		d.Set("area_ctrl", []string{
 			"unspecified",
@@ -190,7 +203,6 @@ func setL3outOspfExternalPolicyAttributes(ospfExtP *models.L3outOspfExternalPoli
 		} else {
 			d.Set("area_ctrl", areaCtrlGet)
 		}
-		d.Set("area_ctrl", ospfExtPMap["areaCtrl"])
 	}
 	d.Set("area_id", ospfExtPMap["areaId"])
 	d.Set("area_type", ospfExtPMap["areaType"])
@@ -235,6 +247,14 @@ func resourceAciL3outOspfExternalPolicyCreate(ctx context.Context, d *schema.Res
 		areaCtrlList := make([]string, 0, 1)
 		for _, val := range AreaCtrl.([]interface{}) {
 			areaCtrlList = append(areaCtrlList, val.(string))
+		}
+		err := checkDuplicate(areaCtrlList)
+		if err != nil {
+			return diag.FromErr(err)
+		}
+		err = checkWhetherListContainOnlyParameter(areaCtrlList, "unspecified")
+		if err != nil {
+			return diag.FromErr(err)
 		}
 		AreaCtrl := strings.Join(areaCtrlList, ",")
 		ospfExtPAttr.AreaCtrl = AreaCtrl
@@ -286,6 +306,14 @@ func resourceAciL3outOspfExternalPolicyUpdate(ctx context.Context, d *schema.Res
 		areaCtrlList := make([]string, 0, 1)
 		for _, val := range AreaCtrl.([]interface{}) {
 			areaCtrlList = append(areaCtrlList, val.(string))
+		}
+		err := checkDuplicate(areaCtrlList)
+		if err != nil {
+			return diag.FromErr(err)
+		}
+		err = checkWhetherListContainOnlyParameter(areaCtrlList, "unspecified")
+		if err != nil {
+			return diag.FromErr(err)
 		}
 		AreaCtrl := strings.Join(areaCtrlList, ",")
 		ospfExtPAttr.AreaCtrl = AreaCtrl

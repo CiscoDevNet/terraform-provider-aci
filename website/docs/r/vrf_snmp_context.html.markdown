@@ -31,7 +31,7 @@ resource "aci_vrf_snmp_context" "example" {
 
 ## Argument Reference ##
 * `vrf_dn` - (Required) Distinguished name of parent VRF object.
-* `name` - (Required) Name of object VRF SNMP Context
+* `name` - (Optional) Name of object VRF SNMP Context
 * `annotation` - (Optional) Annotation of object VRF SNMP Context.
 * `name_alias` - (Optional) Name Alias of object VRF SNMP Context.
 

@@ -33,10 +33,10 @@ resource "aci_lacp_policy" "example" {
 - `name` - (Required) Name of Object LACP Policy.
 - `description` - (Optional) Description for object LACP Policy.
 - `annotation` - (Optional) Annotation for object LACP Policy.
-- `ctrl` - (Optional) List of LAG control properties. Allowed values are "symmetric-hash", "susp-individual", "graceful-conv", "load-defer" and "fast-sel-hot-stdby". default value is \["fast-sel-hot-stdby", "graceful-conv", "susp-individual"\]
+- `ctrl` - (Optional) List of LAG control properties. Allowed values are "symmetric-hash", "susp-individual", "graceful-conv", "load-defer", and "fast-sel-hot-stdby". default value is \["fast-sel-hot-stdby", "graceful-conv", "susp-individual"\]
 - `max_links` - (Optional) Maximum number of links. Allowed value range is "1" - "16". Default is "16".
 - `min_links` - (Optional) Minimum number of links in port channel. Allowed value range is "1" - "16". Default is "1".
-- `mode` - (Optional) policy mode. Allowed values are "off", "active", "passive", "mac-pin" and "mac-pin-nicload". Default is "off".
+- `mode` - (Optional) policy mode. Allowed values are "off", "active", "passive", "mac-pin", "explicit-failover" and "mac-pin-nicload". Default is "off".
 - `name_alias` - (Optional) Name alias for object LACP Policy.
 
 ## Attribute Reference

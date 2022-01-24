@@ -295,6 +295,7 @@ func validateIntRange(a, b int) schema.SchemaValidateFunc {
 	}
 }
 
+<<<<<<< HEAD
 func validateIntBetweenFromString(min, max int) schema.SchemaValidateFunc {
 	return func(i interface{}, k string) (warnings []string, errors []error) {
 		v, ok := i.(string)
@@ -351,4 +352,58 @@ func getOldObjectsNotInNew(keyName string, oldSet, newSet *schema.Set) (oldObjec
 		}
 	}
 	return oldObjects
+=======
+func GetQuoted(s string) string {
+	ans := "\"" + s + "\""
+	return ans
+}
+
+func StringListtoString(list []string) string {
+	val := ""
+	val = val + "["
+	for i := 0; i < len(list)-1; i++ {
+		val = val + GetQuoted(list[i])
+		val = val + ","
+	}
+	val = val + GetQuoted(list[len(list)-1])
+	val = val + "]"
+	return val
+}
+
+func StringListtoStringWithoutQuoted(list []string) string {
+	val := ""
+	val = val + "["
+	for i := 0; i < len(list)-1; i++ {
+		val = val + list[i]
+		val = val + ","
+	}
+	val = val + list[len(list)-1]
+	val = val + "]"
+	return val
+}
+
+func checkDuplicate(arr []string) error {
+	for i := 0; i < len(arr)-1; i++ {
+		for j := i + 1; j < len(arr); j++ {
+			if arr[i] == arr[j] {
+				return fmt.Errorf("duplication is not supported in list")
+			}
+		}
+	}
+	return nil
+}
+
+func checkWhetherListContainOnlyParameter(arr []string, val string) error {
+	vis := false
+	for i := 0; i < len(arr); i++ {
+		if arr[i] == val {
+			vis = true
+			break
+		}
+	}
+	if vis && len(arr) > 1 {
+		return fmt.Errorf("%s should not be used along with other values", val)
+	}
+	return nil
+>>>>>>> 032c5ccc (Acceptance testing (#133))
 }

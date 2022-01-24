@@ -395,6 +395,10 @@ func checkForConflictingVRF(client *client.Client, tenantDN, bdName, vrfDn, ip s
 }
 
 func checkForConflictingIP(client *client.Client, parentDN string, ip string) error {
+	bdRegex := `^uni\/tn-[a-zA-Z0-9_.-]+\/BD-[a-zA-Z0-9_.-]+$`
+	if match, _ := regexp.MatchString(bdRegex, parentDN); !match {
+		return fmt.Errorf("%s is not valid bridge_domain_dn", parentDN)
+	}
 	tokens := strings.Split(parentDN, "/")
 	bdName := (strings.Split(tokens[2], "-"))[1]
 	tenantDn := fmt.Sprintf("%s/%s", tokens[0], tokens[1])
@@ -463,6 +467,14 @@ func resourceAciSubnetCreate(ctx context.Context, d *schema.ResourceData, m inte
 		for _, val := range ctrlInp.([]interface{}) {
 			ctrlList = append(ctrlList, val.(string))
 		}
+		err := checkDuplicate(ctrlList)
+		if err != nil {
+			return diag.FromErr(err)
+		}
+		err = checkWhetherListContainOnlyParameter(ctrlList, "unspecified")
+		if err != nil {
+			return diag.FromErr(err)
+		}
 		ctrl := strings.Join(ctrlList, ",")
 		fvSubnetAttr.Ctrl = ctrl
 	}
@@ -479,6 +491,10 @@ func resourceAciSubnetCreate(ctx context.Context, d *schema.ResourceData, m inte
 		scopeList := make([]string, 0, 1)
 		for _, val := range scIntr.([]interface{}) {
 			scopeList = append(scopeList, val.(string))
+		}
+		err := checkDuplicate(scopeList)
+		if err != nil {
+			return diag.FromErr(err)
 		}
 		Scope := strings.Join(scopeList, ",")
 		fvSubnetAttr.Scope = Scope
@@ -644,6 +660,14 @@ func resourceAciSubnetUpdate(ctx context.Context, d *schema.ResourceData, m inte
 		for _, val := range ctrlInp.([]interface{}) {
 			ctrlList = append(ctrlList, val.(string))
 		}
+		err := checkDuplicate(ctrlList)
+		if err != nil {
+			return diag.FromErr(err)
+		}
+		err = checkWhetherListContainOnlyParameter(ctrlList, "unspecified")
+		if err != nil {
+			return diag.FromErr(err)
+		}
 		ctrl := strings.Join(ctrlList, ",")
 		fvSubnetAttr.Ctrl = ctrl
 	}
@@ -660,6 +684,10 @@ func resourceAciSubnetUpdate(ctx context.Context, d *schema.ResourceData, m inte
 		scopeList := make([]string, 0, 1)
 		for _, val := range scIntr.([]interface{}) {
 			scopeList = append(scopeList, val.(string))
+		}
+		err := checkDuplicate(scopeList)
+		if err != nil {
+			return diag.FromErr(err)
 		}
 		Scope := strings.Join(scopeList, ",")
 		fvSubnetAttr.Scope = Scope
