@@ -287,7 +287,7 @@ func resourceAciTenantRead(ctx context.Context, d *schema.ResourceData, m interf
 	fvRsTnDenyRuleData, err := aciClient.ReadRelationfvRsTnDenyRuleFromTenant(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation fvRsTnDenyRule %v", err)
-		d.Set("relation_fv_rs_tn_deny_rule", make([]string, 0, 1))
+		setRelationAttribute(d, "relation_fv_rs_tn_deny_rule", make([]interface{}, 0, 1))
 
 	} else {
 		setRelationAttribute(d, "relation_fv_rs_tn_deny_rule", toStringList(fvRsTnDenyRuleData.(*schema.Set).List()))

@@ -771,14 +771,14 @@ func resourceAciEndpointSecurityGroupRead(ctx context.Context, d *schema.Resourc
 	fvRsIntraEpgData, err := aciClient.ReadRelationfvRsIntraEpg(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation fvRsIntraEpg %v", err)
-		d.Set("relation_fv_rs_intra_epg", make([]string, 0, 1))
+		setRelationAttribute(d, "relation_fv_rs_intra_epg", make([]interface{}, 0, 1))
 	} else {
 		setRelationAttribute(d, "relation_fv_rs_intra_epg", toStringList(fvRsIntraEpgData.(*schema.Set).List()))
 	}
 	fvRsProtByData, err := aciClient.ReadRelationfvRsProtBy(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation fvRsProtBy %v", err)
-		d.Set("relation_fv_rs_prot_by", make([]string, 0, 1))
+		setRelationAttribute(d, "relation_fv_rs_prot_by", make([]interface{}, 0, 1))
 	} else {
 		setRelationAttribute(d, "relation_fv_rs_prot_by", toStringList(fvRsProtByData.(*schema.Set).List()))
 	}
@@ -809,7 +809,7 @@ func resourceAciEndpointSecurityGroupRead(ctx context.Context, d *schema.Resourc
 	fvRsSecInheritedData, err := aciClient.ReadRelationfvRsSecInherited(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation fvRsSecInherited %v", err)
-		d.Set("relation_fv_rs_sec_inherited", make([]string, 0, 1))
+		setRelationAttribute(d, "relation_fv_rs_sec_inherited", make([]interface{}, 0, 1))
 	} else {
 		setRelationAttribute(d, "relation_fv_rs_sec_inherited", toStringList(fvRsSecInheritedData.(*schema.Set).List()))
 	}

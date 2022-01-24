@@ -10,7 +10,6 @@ resource "aci_contract" "democontract" {
   scope                    = "context"
   target_dscp              = "VA"
   prio                     = "unspecified"
-  relation_vz_rs_graph_att = aci_rest.rest_abs_graph.id # Relation to vnsAbsGraph class. Cardinality - N_TO_ONE
 }
 
 resource "aci_contract_subject" "foocontract_subject" {
@@ -25,4 +24,21 @@ resource "aci_contract_subject" "foocontract_subject" {
   rev_flt_ports = "yes"
   target_dscp   = "CS0"
 }
+
+resource "aci_contract_subject" "Web_subject1" {
+  contract_dn                  = aci_contract.democontract.id
+  name                         = "Subject"
+  relation_vz_rs_subj_filt_att = [aci_filter.allow_https.id, aci_filter.allow_icmp.id]
+}
+
+resource "aci_filter" "allow_https" {
+  tenant_dn = aci_tenant.tenant_for_contract.id
+  name      = "allow_https"
+}
+
+resource "aci_filter" "allow_icmp" {
+  tenant_dn = aci_tenant.tenant_for_contract.id
+  name      = "allow_icmp"
+}
+
 

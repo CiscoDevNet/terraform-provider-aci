@@ -251,8 +251,7 @@ func resourceAciSpineProfileRead(ctx context.Context, d *schema.ResourceData, m 
 	infraRsSpAccPortPData, err := aciClient.ReadRelationinfraRsSpAccPortPFromSpineProfile(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation infraRsSpAccPortP %v", err)
-		d.Set("relation_infra_rs_sp_acc_port_p", make([]interface{}, 0, 1))
-
+		setRelationAttribute(d, "relation_infra_rs_sp_acc_port_p", make([]interface{}, 0, 1))
 	} else {
 		setRelationAttribute(d, "relation_infra_rs_sp_acc_port_p", toStringList(infraRsSpAccPortPData.(*schema.Set).List()))
 	}
