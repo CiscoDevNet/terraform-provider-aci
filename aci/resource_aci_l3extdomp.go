@@ -401,8 +401,7 @@ func resourceAciL3DomainProfileRead(ctx context.Context, d *schema.ResourceData,
 	extnwRsOutData, err := aciClient.ReadRelationextnwRsOutFromL3DomainProfile(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation extnwRsOut %v", err)
-		d.Set("relation_extnw_rs_out", make([]string, 0, 1))
-
+		setRelationAttribute(d, "relation_extnw_rs_out", make([]interface{}, 0, 1))
 	} else {
 		setRelationAttribute(d, "relation_extnw_rs_out", toStringList(extnwRsOutData.(*schema.Set).List()))
 	}

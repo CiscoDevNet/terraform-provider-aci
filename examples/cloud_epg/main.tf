@@ -13,8 +13,6 @@ provider "aci" {
   insecure = true
 }
 
-
-
 resource "aci_tenant" "footenant" {
   description = "Tenant created while acceptance testing"
   name        = "demo_tenant"

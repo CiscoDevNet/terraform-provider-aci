@@ -346,7 +346,7 @@ func resourceAciRouteControlContextRead(ctx context.Context, d *schema.ResourceD
 	rtctrlRsCtxPToSubjPData, err := aciClient.ReadRelationrtctrlRsCtxPToSubjP(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation rtctrlRsCtxPToSubjP %v", err)
-		d.Set("relation_rtctrl_rs_ctx_p_to_subj_p", make([]string, 0, 1))
+		setRelationAttribute(d, "relation_rtctrl_rs_ctx_p_to_subj_p", make([]interface{}, 0, 1))
 	} else {
 		if _, ok := d.GetOk("relation_rtctrl_rs_ctx_p_to_subj_p"); ok {
 			relationParamList := toStringList(d.Get("relation_rtctrl_rs_ctx_p_to_subj_p").(*schema.Set).List())
@@ -359,7 +359,7 @@ func resourceAciRouteControlContextRead(ctx context.Context, d *schema.ResourceD
 			sort.Strings(tfList)
 			sort.Strings(rtctrlRsCtxPToSubjPDataList)
 			if !reflect.DeepEqual(tfList, rtctrlRsCtxPToSubjPDataList) {
-				d.Set("relation_rtctrl_rs_ctx_p_to_subj_p", make([]string, 0, 1))
+				setRelationAttribute(d, "relation_rtctrl_rs_ctx_p_to_subj_p", make([]interface{}, 0, 1))
 			}
 		}
 	}

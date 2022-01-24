@@ -477,8 +477,7 @@ func resourceAciContractSubjectRead(ctx context.Context, d *schema.ResourceData,
 	vzRsSubjFiltAttData, err := aciClient.ReadRelationvzRsSubjFiltAttFromContractSubject(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation vzRsSubjFiltAtt %v", err)
-		d.Set("relation_vz_rs_subj_filt_att", make([]string, 0, 1))
-
+		setRelationAttribute(d, "relation_vz_rs_subj_filt_att", make([]interface{}, 0, 1))
 	} else {
 		setRelationAttribute(d, "relation_vz_rs_subj_filt_att", toStringList(vzRsSubjFiltAttData.(*schema.Set).List()))
 	}

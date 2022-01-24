@@ -309,8 +309,7 @@ func resourceAciFexBundleGroupRead(ctx context.Context, d *schema.ResourceData, 
 	infraRsFexBndlGrpToAggrIfData, err := aciClient.ReadRelationinfraRsFexBndlGrpToAggrIfFromFexBundleGroup(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation infraRsFexBndlGrpToAggrIf %v", err)
-		d.Set("relation_infra_rs_fex_bndl_grp_to_aggr_if", make([]string, 0, 1))
-
+		setRelationAttribute(d, "relation_infra_rs_fex_bndl_grp_to_aggr_if", make([]interface{}, 0, 1))
 	} else {
 		setRelationAttribute(d, "relation_infra_rs_fex_bndl_grp_to_aggr_if", toStringList(infraRsFexBndlGrpToAggrIfData.(*schema.Set).List()))
 	}

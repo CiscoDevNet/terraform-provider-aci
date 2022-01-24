@@ -413,8 +413,7 @@ func resourceAciConnectionRead(ctx context.Context, d *schema.ResourceData, m in
 	vnsRsAbsCopyConnectionData, err := aciClient.ReadRelationvnsRsAbsCopyConnectionFromConnection(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation vnsRsAbsCopyConnection %v", err)
-		d.Set("relation_vns_rs_abs_copy_connection", make([]string, 0, 1))
-
+		setRelationAttribute(d, "relation_vns_rs_abs_copy_connection", make([]interface{}, 0, 1))
 	} else {
 		setRelationAttribute(d, "relation_vns_rs_abs_copy_connection", toStringList(vnsRsAbsCopyConnectionData.(*schema.Set).List()))
 	}
@@ -422,8 +421,7 @@ func resourceAciConnectionRead(ctx context.Context, d *schema.ResourceData, m in
 	vnsRsAbsConnectionConnsData, err := aciClient.ReadRelationvnsRsAbsConnectionConnsFromConnection(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation vnsRsAbsConnectionConns %v", err)
-		d.Set("relation_vns_rs_abs_connection_conns", make([]string, 0, 1))
-
+		setRelationAttribute(d, "relation_vns_rs_abs_connection_conns", make([]interface{}, 0, 1))
 	} else {
 		setRelationAttribute(d, "relation_vns_rs_abs_connection_conns", toStringList(vnsRsAbsConnectionConnsData.(*schema.Set).List()))
 	}

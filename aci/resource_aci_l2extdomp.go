@@ -414,8 +414,7 @@ func resourceAciL2DomainRead(ctx context.Context, d *schema.ResourceData, m inte
 
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation extnwRsOut %v", err)
-		d.Set("relation_extnw_rs_out", make([]string, 0, 1))
-
+		setRelationAttribute(d, "relation_extnw_rs_out", make([]interface{}, 0, 1))
 	} else {
 		setRelationAttribute(d, "relation_extnw_rs_out", toStringList(extnwRsOutData.(*schema.Set).List()))
 	}

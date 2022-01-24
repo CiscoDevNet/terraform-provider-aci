@@ -644,8 +644,7 @@ func resourceAciLeafProfileRead(ctx context.Context, d *schema.ResourceData, m i
 	infraRsAccCardPData, err := aciClient.ReadRelationinfraRsAccCardPFromLeafProfile(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation infraRsAccCardP %v", err)
-		d.Set("relation_infra_rs_acc_card_p", make([]string, 0, 1))
-
+		setRelationAttribute(d, "relation_infra_rs_acc_card_p", make([]interface{}, 0, 1))
 	} else {
 		setRelationAttribute(d, "relation_infra_rs_acc_card_p", toStringList(infraRsAccCardPData.(*schema.Set).List()))
 	}
@@ -653,8 +652,7 @@ func resourceAciLeafProfileRead(ctx context.Context, d *schema.ResourceData, m i
 	infraRsAccPortPData, err := aciClient.ReadRelationinfraRsAccPortPFromLeafProfile(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation infraRsAccPortP %v", err)
-		d.Set("relation_infra_rs_acc_port_p", make([]string, 0, 1))
-
+		setRelationAttribute(d, "relation_infra_rs_acc_port_p", make([]interface{}, 0, 1))
 	} else {
 		setRelationAttribute(d, "relation_infra_rs_acc_port_p", toStringList(infraRsAccPortPData.(*schema.Set).List()))
 	}

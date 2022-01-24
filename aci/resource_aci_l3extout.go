@@ -539,8 +539,7 @@ func resourceAciL3OutsideRead(ctx context.Context, d *schema.ResourceData, m int
 	l3extRsOutToBDPublicSubnetHolderData, err := aciClient.ReadRelationl3extRsOutToBDPublicSubnetHolderFromL3Outside(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation l3extRsOutToBDPublicSubnetHolder %v", err)
-		d.Set("relation_l3ext_rs_out_to_bd_public_subnet_holder", make([]string, 0, 1))
-
+		setRelationAttribute(d, "relation_l3ext_rs_out_to_bd_public_subnet_holder", make([]interface{}, 0, 1))
 	} else {
 		setRelationAttribute(d, "relation_l3ext_rs_out_to_bd_public_subnet_holder", toStringList(l3extRsOutToBDPublicSubnetHolderData.(*schema.Set).List()))
 	}

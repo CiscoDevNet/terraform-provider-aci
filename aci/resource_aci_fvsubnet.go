@@ -579,8 +579,7 @@ func resourceAciSubnetRead(ctx context.Context, d *schema.ResourceData, m interf
 	fvRsBDSubnetToOutData, err := aciClient.ReadRelationfvRsBDSubnetToOutFromSubnet(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation fvRsBDSubnetToOut %v", err)
-		d.Set("relation_fv_rs_bd_subnet_to_out", make([]string, 0, 1))
-
+		setRelationAttribute(d, "relation_fv_rs_bd_subnet_to_out", make([]interface{}, 0, 1))
 	} else {
 		setRelationAttribute(d, "relation_fv_rs_bd_subnet_to_out", toStringList(fvRsBDSubnetToOutData.(*schema.Set).List()))
 	}

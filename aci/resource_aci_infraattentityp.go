@@ -258,8 +258,7 @@ func resourceAciAttachableAccessEntityProfileRead(ctx context.Context, d *schema
 	infraRsDomPData, err := aciClient.ReadRelationinfraRsDomPFromAttachableAccessEntityProfile(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation infraRsDomP %v", err)
-		d.Set("relation_infra_rs_dom_p", make([]string, 0, 1))
-
+		setRelationAttribute(d, "relation_infra_rs_dom_p", make([]interface{}, 0, 1))
 	} else {
 		setRelationAttribute(d, "relation_infra_rs_dom_p", toStringList(infraRsDomPData.(*schema.Set).List()))
 	}

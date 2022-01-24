@@ -875,7 +875,7 @@ func resourceAciVMMControllerRead(ctx context.Context, d *schema.ResourceData, m
 	vmmRsToExtDevMgrData, err := aciClient.ReadRelationvmmRsToExtDevMgr(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation vmmRsToExtDevMgr %v", err)
-		d.Set("relation_vmm_rs_to_ext_dev_mgr", make([]string, 0, 1))
+		setRelationAttribute(d, "relation_vmm_rs_to_ext_dev_mgr", make([]interface{}, 0, 1))
 	} else {
 		setRelationAttribute(d, "relation_vmm_rs_to_ext_dev_mgr", toStringList(vmmRsToExtDevMgrData.(*schema.Set).List()))
 	}

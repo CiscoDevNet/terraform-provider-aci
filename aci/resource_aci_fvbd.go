@@ -1119,8 +1119,7 @@ func resourceAciBridgeDomainRead(ctx context.Context, d *schema.ResourceData, m 
 	fvRsBdFloodToData, err := aciClient.ReadRelationfvRsBdFloodToFromBridgeDomain(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation fvRsBdFloodTo %v", err)
-		d.Set("relation_fv_rs_bd_flood_to", make([]string, 0, 1))
-
+		setRelationAttribute(d, "relation_fv_rs_bd_flood_to", make([]interface{}, 0, 1))
 	} else {
 		setRelationAttribute(d, "relation_fv_rs_bd_flood_to", fvRsBdFloodToData)
 	}
@@ -1189,8 +1188,7 @@ func resourceAciBridgeDomainRead(ctx context.Context, d *schema.ResourceData, m 
 	fvRsBDToOutData, err := aciClient.ReadRelationfvRsBDToOutFromBridgeDomain(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation fvRsBDToOut %v", err)
-		d.Set("relation_fv_rs_bd_to_out", make([]string, 0, 1))
-
+		setRelationAttribute(d, "relation_fv_rs_bd_to_out", make([]interface{}, 0, 1))
 	} else {
 		setRelationAttribute(d, "relation_fv_rs_bd_to_out", toStringList(fvRsBDToOutData.(*schema.Set).List()))
 	}

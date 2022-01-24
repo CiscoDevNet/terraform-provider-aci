@@ -757,24 +757,21 @@ func resourceAciL2outExternalEpgRead(ctx context.Context, d *schema.ResourceData
 	fvRsSecInheritedData, err := aciClient.ReadRelationfvRsSecInheritedFromL2outExternalEpg(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation fvRsSecInherited %v", err)
-		d.Set("relation_fv_rs_sec_inherited", make([]string, 0, 1))
-
+		setRelationAttribute(d, "relation_fv_rs_sec_inherited", make([]interface{}, 0, 1))
 	} else {
 		setRelationAttribute(d, "relation_fv_rs_sec_inherited", toStringList(fvRsSecInheritedData.(*schema.Set).List()))
 	}
 	fvRsProvData, err := aciClient.ReadRelationfvRsProvFromL2outExternalEpg(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation fvRsProv %v", err)
-		d.Set("relation_fv_rs_prov", make([]string, 0, 1))
-
+		setRelationAttribute(d, "relation_fv_rs_prov", make([]interface{}, 0, 1))
 	} else {
 		setRelationAttribute(d, "relation_fv_rs_prov", toStringList(fvRsProvData.(*schema.Set).List()))
 	}
 	fvRsConsIfData, err := aciClient.ReadRelationfvRsConsIfFromL2outExternalEpg(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation fvRsConsIf %v", err)
-		d.Set("relation_fv_rs_cons_if", make([]string, 0, 1))
-
+		setRelationAttribute(d, "relation_fv_rs_cons_if", make([]interface{}, 0, 1))
 	} else {
 		setRelationAttribute(d, "relation_fv_rs_cons_if", fvRsConsIfData.(*schema.Set).List())
 	}
@@ -790,8 +787,7 @@ func resourceAciL2outExternalEpgRead(ctx context.Context, d *schema.ResourceData
 	fvRsConsData, err := aciClient.ReadRelationfvRsConsFromL2outExternalEpg(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation fvRsCons %v", err)
-		d.Set("relation_fv_rs_cons", make([]string, 0, 1))
-
+		setRelationAttribute(d, "relation_fv_rs_cons", make([]interface{}, 0, 1))
 	} else {
 		setRelationAttribute(d, "relation_fv_rs_cons", fvRsConsData.(*schema.Set).List())
 	}
@@ -807,16 +803,14 @@ func resourceAciL2outExternalEpgRead(ctx context.Context, d *schema.ResourceData
 	fvRsProtByData, err := aciClient.ReadRelationfvRsProtByFromL2outExternalEpg(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation fvRsProtBy %v", err)
-		d.Set("relation_fv_rs_prot_by", make([]string, 0, 1))
-
+		setRelationAttribute(d, "relation_fv_rs_prot_by", make([]interface{}, 0, 1))
 	} else {
 		setRelationAttribute(d, "relation_fv_rs_prot_by", toStringList(fvRsProtByData.(*schema.Set).List()))
 	}
 	fvRsIntraEpgData, err := aciClient.ReadRelationfvRsIntraEpgFromL2outExternalEpg(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation fvRsIntraEpg %v", err)
-		d.Set("relation_fv_rs_intra_epg", make([]string, 0, 1))
-
+		setRelationAttribute(d, "relation_fv_rs_intra_epg", make([]interface{}, 0, 1))
 	} else {
 		setRelationAttribute(d, "relation_fv_rs_intra_epg", toStringList(fvRsIntraEpgData.(*schema.Set).List()))
 	}
