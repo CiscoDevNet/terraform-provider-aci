@@ -57,7 +57,7 @@ func resourceAciAAAAuthentication() *schema.Resource {
 	}
 }
 
-func getRemoteDefaultRadiusAuthenticationSettings(client *client.Client, dn string) (*models.DefaultRadiusAuthenticationSettings, error) {
+func GetRemoteDefaultRadiusAuthenticationSettings(client *client.Client, dn string) (*models.DefaultRadiusAuthenticationSettings, error) {
 	aaaPingEpCont, err := client.Get(dn)
 	if err != nil {
 		return nil, err
@@ -69,7 +69,7 @@ func getRemoteDefaultRadiusAuthenticationSettings(client *client.Client, dn stri
 	return aaaPingEp, nil
 }
 
-func getRemoteAAAAuthentication(client *client.Client, dn string) (*models.AAAAuthentication, error) {
+func GetRemoteAAAAuthentication(client *client.Client, dn string) (*models.AAAAuthentication, error) {
 	aaaAuthRealmCont, err := client.Get(dn)
 	if err != nil {
 		return nil, err
@@ -113,7 +113,7 @@ func resourceAciAAAAuthenticationImport(d *schema.ResourceData, m interface{}) (
 	log.Printf("[DEBUG] %s: Beginning Import", d.Id())
 	aciClient := m.(*client.Client)
 	dn := d.Id()
-	aaaAuthRealm, err := getRemoteAAAAuthentication(aciClient, dn)
+	aaaAuthRealm, err := GetRemoteAAAAuthentication(aciClient, dn)
 	if err != nil {
 		return nil, err
 	}
@@ -246,7 +246,7 @@ func resourceAciAAAAuthenticationRead(ctx context.Context, d *schema.ResourceDat
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 	aciClient := m.(*client.Client)
 	dnauthrealm := "uni/userext/authrealm"
-	aaaAuthRealm, err := getRemoteAAAAuthentication(aciClient, dnauthrealm)
+	aaaAuthRealm, err := GetRemoteAAAAuthentication(aciClient, dnauthrealm)
 	if err != nil {
 		d.SetId("")
 		return diag.FromErr(err)
@@ -257,7 +257,7 @@ func resourceAciAAAAuthenticationRead(ctx context.Context, d *schema.ResourceDat
 		return nil
 	}
 	dnpingep := "uni/userext/pingext"
-	aaaPingEp, err := getRemoteDefaultRadiusAuthenticationSettings(aciClient, dnpingep)
+	aaaPingEp, err := GetRemoteDefaultRadiusAuthenticationSettings(aciClient, dnpingep)
 	if err != nil {
 		d.SetId("")
 		return diag.FromErr(err)

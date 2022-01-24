@@ -91,13 +91,13 @@ func resourceAciVRF() *schema.Resource {
 			},
 
 			"relation_fv_rs_ospf_ctx_pol": &schema.Schema{
-				Type:     schema.TypeString,
-				Computed: true,
+				Type: schema.TypeString,
+
 				Optional: true,
 			},
 			"relation_fv_rs_vrf_validation_pol": &schema.Schema{
-				Type:     schema.TypeString,
-				Computed: true,
+				Type: schema.TypeString,
+
 				Optional: true,
 			},
 			"relation_fv_rs_ctx_mcast_to": &schema.Schema{
@@ -116,8 +116,9 @@ func resourceAciVRF() *schema.Resource {
 							Required: true,
 						},
 						"af": {
-							Type:     schema.TypeString,
-							Required: true,
+							Type:         schema.TypeString,
+							Required:     true,
+							ValidateFunc: validation.StringInSlice([]string{"ipv4-ucast", "ipv6-ucast"}, false),
 						},
 					},
 				},
@@ -132,20 +133,21 @@ func resourceAciVRF() *schema.Resource {
 							Required: true,
 						},
 						"af": {
-							Type:     schema.TypeString,
-							Required: true,
+							Type:         schema.TypeString,
+							Required:     true,
+							ValidateFunc: validation.StringInSlice([]string{"ipv4-ucast", "ipv6-ucast"}, false),
 						},
 					},
 				},
 			},
 			"relation_fv_rs_ctx_to_ep_ret": &schema.Schema{
-				Type:     schema.TypeString,
-				Computed: true,
+				Type: schema.TypeString,
+
 				Optional: true,
 			},
 			"relation_fv_rs_bgp_ctx_pol": &schema.Schema{
-				Type:     schema.TypeString,
-				Computed: true,
+				Type: schema.TypeString,
+
 				Optional: true,
 			},
 			"relation_fv_rs_ctx_mon_pol": &schema.Schema{
@@ -154,8 +156,8 @@ func resourceAciVRF() *schema.Resource {
 				Optional: true,
 			},
 			"relation_fv_rs_ctx_to_ext_route_tag_pol": &schema.Schema{
-				Type:     schema.TypeString,
-				Computed: true,
+				Type: schema.TypeString,
+
 				Optional: true,
 			},
 			"relation_fv_rs_ctx_to_bgp_ctx_af_pol": &schema.Schema{
@@ -168,8 +170,9 @@ func resourceAciVRF() *schema.Resource {
 							Required: true,
 						},
 						"af": {
-							Type:     schema.TypeString,
-							Required: true,
+							Type:         schema.TypeString,
+							Required:     true,
+							ValidateFunc: validation.StringInSlice([]string{"ipv4-ucast", "ipv6-ucast"}, false),
 						},
 					},
 				},

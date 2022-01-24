@@ -83,7 +83,7 @@ func dataSourceAciSystem() *schema.Resource {
 				Computed: true,
 			},
 
-			"boot_strap_tate": &schema.Schema{
+			"boot_strap_state": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
@@ -350,7 +350,6 @@ func getRemoteSystem(client *client.Client, dn string) (*models.System, error) {
 
 func setSystemAttributes(topSystem *models.System, d *schema.ResourceData) (*schema.ResourceData, error) {
 	d.SetId(topSystem.DistinguishedName)
-	d.Set("description", topSystem.Description)
 
 	topSystemMap, err := topSystem.ToMap()
 
@@ -367,7 +366,7 @@ func setSystemAttributes(topSystem *models.System, d *schema.ResourceData) (*sch
 	d.Set("rldirect_mode", topSystemMap["rldirectMode"])
 	d.Set("role", topSystemMap["role"])
 	d.Set("server_type", topSystemMap["serverType"])
-	d.Set("bootstrap_state", topSystemMap["bootstrapState"])
+	d.Set("boot_strap_state", topSystemMap["bootstrapState"])
 	d.Set("child_action", topSystemMap["childAction"])
 	d.Set("config_issues", topSystemMap["configIssues"])
 	d.Set("control_plane_mtu", topSystemMap["controlPlaneMTU"])

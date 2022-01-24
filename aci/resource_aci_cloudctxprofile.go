@@ -101,7 +101,7 @@ func resourceAciCloudContextProfile() *schema.Resource {
 	}
 }
 
-func getRemoteCloudContextProfile(client *client.Client, dn string) (*models.CloudContextProfile, error) {
+func GetRemoteCloudContextProfile(client *client.Client, dn string) (*models.CloudContextProfile, error) {
 	baseurlStr := "/api/node/mo"
 	dnUrl := fmt.Sprintf("%s/%s.json?rsp-subtree=children", baseurlStr, dn)
 	cloudCtxProfileCont, err := client.GetViaURL(dnUrl)
@@ -148,7 +148,7 @@ func resourceAciCloudContextProfileImport(d *schema.ResourceData, m interface{})
 
 	dn := d.Id()
 
-	cloudCtxProfile, err := getRemoteCloudContextProfile(aciClient, dn)
+	cloudCtxProfile, err := GetRemoteCloudContextProfile(aciClient, dn)
 
 	if err != nil {
 		return nil, err
@@ -379,7 +379,7 @@ func resourceAciCloudContextProfileRead(ctx context.Context, d *schema.ResourceD
 	aciClient := m.(*client.Client)
 
 	dn := d.Id()
-	cloudCtxProfile, err := getRemoteCloudContextProfile(aciClient, dn)
+	cloudCtxProfile, err := GetRemoteCloudContextProfile(aciClient, dn)
 
 	if err != nil {
 		return diag.FromErr(err)

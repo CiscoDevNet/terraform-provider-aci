@@ -62,7 +62,7 @@ func resourceAciAESEncryptionPassphraseandKeysforConfigExportImport() *schema.Re
 	}
 }
 
-func getRemoteAESEncryptionPassphraseandKeysforConfigExportImport(client *client.Client, dn string) (*models.AESEncryptionPassphraseandKeysforConfigExportImport, error) {
+func GetRemoteAESEncryptionPassphraseandKeysforConfigExportImport(client *client.Client, dn string) (*models.AESEncryptionPassphraseandKeysforConfigExportImport, error) {
 	pkiExportEncryptionKeyCont, err := client.Get(dn)
 	if err != nil {
 		return nil, err
@@ -92,7 +92,7 @@ func resourceAciAESEncryptionPassphraseandKeysforConfigExportImportImport(d *sch
 	log.Printf("[DEBUG] %s: Beginning Import", d.Id())
 	aciClient := m.(*client.Client)
 	dn := d.Id()
-	pkiExportEncryptionKey, err := getRemoteAESEncryptionPassphraseandKeysforConfigExportImport(aciClient, dn)
+	pkiExportEncryptionKey, err := GetRemoteAESEncryptionPassphraseandKeysforConfigExportImport(aciClient, dn)
 	if err != nil {
 		return nil, err
 	}
@@ -193,7 +193,7 @@ func resourceAciAESEncryptionPassphraseandKeysforConfigExportImportRead(ctx cont
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 	aciClient := m.(*client.Client)
 	dn := d.Id()
-	pkiExportEncryptionKey, err := getRemoteAESEncryptionPassphraseandKeysforConfigExportImport(aciClient, dn)
+	pkiExportEncryptionKey, err := GetRemoteAESEncryptionPassphraseandKeysforConfigExportImport(aciClient, dn)
 	if err != nil {
 		d.SetId("")
 		return diag.FromErr(err)

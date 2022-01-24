@@ -73,7 +73,7 @@ func dataSourceAciFabricWideSettingsPolicyRead(ctx context.Context, d *schema.Re
 
 	rn := fmt.Sprintf("infra/settings")
 	dn := fmt.Sprintf("uni/%s", rn)
-	infraSetPol, err := getRemoteFabricWideSettingsPolicy(aciClient, dn)
+	infraSetPol, err := GetRemoteFabricWideSettingsPolicy(aciClient, dn)
 	if err != nil {
 		return diag.FromErr(err)
 	}

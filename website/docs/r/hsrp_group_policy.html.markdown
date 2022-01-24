@@ -47,19 +47,19 @@ resource "aci_hsrp_group_policy" "example" {
 
 - `hold_intvl` - (Optional) The period of time before declaring that the neighbor is down. Default value: "10000".
 
-- `key` - (Optional) The key or password used to uniquely identify this configuration object. If `key` is set, the object key will reset when terraform configuration is applied. Default value: "cisco".
+- `key` - (Optional) The key or password used to uniquely identify this configuration object. If `key` is set, the object key will reset when terraform configuration is applied. 
 
 - `name_alias` - (Optional) Name alias for object hsrp group policy.
 
-- `preempt_delay_min` - (Optional) HSRP Group's Minimum Preemption delay. Default value: "0".
+- `preempt_delay_min` - (Optional) HSRP Group's Minimum Preemption delay. Allowed range: "0" - "3600". Default value: "0".
 
-- `preempt_delay_reload` - (Optional) Preemption delay after switch reboot. Default value: "0".
+- `preempt_delay_reload` - (Optional) Preemption delay after switch reboot. Allowed range: "0" - "3600". Default value: "0".
 
-- `preempt_delay_sync` - (Optional) Maximum number of seconds to allow IPredundancy clients to prevent preemption. Default value: "0".
+- `preempt_delay_sync` - (Optional) Maximum number of seconds to allow IPredundancy clients to prevent preemption. Allowed range: "0" - "3600". Default value: "0".
 
-- `prio` - (Optional) The QoS priority class ID. Default value: "100".
+- `prio` - (Optional) The QoS priority class ID. Allowed range: "0" - "255". Default value: "100".
 
-- `timeout` - (Optional) Amount of time between authentication attempts. Default value: "0".
+- `timeout` - (Optional) Amount of time between authentication attempts. Allowed range: "0" - "32767". Default value: "0".
 
 - `hsrp_group_policy_type` - (Optional) The specific type of the object or component.  
   Allowed values: "md5", "simple". Default value: "simple".

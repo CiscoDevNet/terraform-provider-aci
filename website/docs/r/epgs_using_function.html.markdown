@@ -35,7 +35,7 @@ resource "aci_epgs_using_function" "example" {
 Allowed values: "immediate", "lazy". Default value: "lazy".
 * `mode` - (Optional) Bgp domain mode.
 Allowed values: "regular", "native", "untagged". Default value: "regular"
-* `primary_encap` - (Optional) Primary encap for object EPGs Using Function.
+* `primary_encap` - (Optional) Primary encap for object EPGs Using Function. Default value is "unknown".
 
 ## Attribute Reference
 

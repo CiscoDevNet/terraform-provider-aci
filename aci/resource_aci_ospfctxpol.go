@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"reflect"
 	"sort"
 	"strings"
 
@@ -49,6 +50,7 @@ func resourceAciOSPFTimersPolicy() *schema.Resource {
 			"ctrl": &schema.Schema{
 				Type:     schema.TypeList,
 				Optional: true,
+				Computed: true,
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
 					ValidateFunc: validation.StringInSlice([]string{
@@ -211,11 +213,22 @@ func setOSPFTimersPolicyAttributes(ospfCtxPol *models.OSPFTimersPolicy, d *schem
 	d.Set("bw_ref", ospfCtxPolMap["bwRef"])
 	ctrlGet := make([]string, 0, 1)
 	for _, val := range strings.Split(ospfCtxPolMap["ctrl"], ",") {
-		ctrlGet = append(ctrlGet, strings.Trim(val, " "))
+		if val != "" {
+			ctrlGet = append(ctrlGet, strings.Trim(val, " "))
+		}
 	}
 	sort.Strings(ctrlGet)
-	if len(ctrlGet) == 1 && ctrlGet[0] == "" {
-		d.Set("ctrl", make([]string, 0, 1))
+	if ctrlInp, ok := d.GetOk("ctrl"); ok {
+		ctrlAct := make([]string, 0, 1)
+		for _, val := range ctrlInp.([]interface{}) {
+			ctrlAct = append(ctrlAct, val.(string))
+		}
+		sort.Strings(ctrlAct)
+		if reflect.DeepEqual(ctrlAct, ctrlGet) {
+			d.Set("ctrl", d.Get("ctrl").([]interface{}))
+		} else {
+			d.Set("ctrl", ctrlGet)
+		}
 	} else {
 		d.Set("ctrl", ctrlGet)
 	}
@@ -283,6 +296,10 @@ func resourceAciOSPFTimersPolicyCreate(ctx context.Context, d *schema.ResourceDa
 		CtrlList := make([]string, 0, 1)
 		for _, val := range Ctrl.([]interface{}) {
 			CtrlList = append(CtrlList, val.(string))
+		}
+		err := checkDuplicate(CtrlList)
+		if err != nil {
+			return diag.FromErr(err)
 		}
 		Ctrl := strings.Join(CtrlList, ",")
 		ospfCtxPolAttr.Ctrl = Ctrl
@@ -379,6 +396,10 @@ func resourceAciOSPFTimersPolicyUpdate(ctx context.Context, d *schema.ResourceDa
 		CtrlList := make([]string, 0, 1)
 		for _, val := range Ctrl.([]interface{}) {
 			CtrlList = append(CtrlList, val.(string))
+		}
+		err := checkDuplicate(CtrlList)
+		if err != nil {
+			return diag.FromErr(err)
 		}
 		Ctrl := strings.Join(CtrlList, ",")
 		ospfCtxPolAttr.Ctrl = Ctrl

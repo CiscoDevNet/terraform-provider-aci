@@ -30,7 +30,7 @@ Manages ACI Access Port Block
 ## Argument Reference
 
 - `access_port_selector_dn` - (Required) Distinguished name of parent Access Port Selector object.
-- `name` - (Optional) name of Object Access Port Block.
+- `name` - (Required) name of Object Access Port Block.
 - `annotation` - (Optional) Annotation for object Access Port Block.
 - `description` - (Optional) Description for object Access Port Block.
 - `from_card` - (Optional) The beginning (from-range) of the card range block for the leaf access port block. Allowed value range is 1-100. Default value is "1".

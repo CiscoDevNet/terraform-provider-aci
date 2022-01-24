@@ -45,8 +45,8 @@ func resourceAciTenant() *schema.Resource {
 				Set:      schema.HashString,
 			},
 			"relation_fv_rs_tenant_mon_pol": &schema.Schema{
-				Type:     schema.TypeString,
-				Computed: true,
+				Type: schema.TypeString,
+
 				Optional: true,
 			},
 		}),

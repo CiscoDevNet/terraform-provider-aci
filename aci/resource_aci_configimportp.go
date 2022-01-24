@@ -137,8 +137,6 @@ func setConfigurationImportPolicyAttributes(configImportP *models.ConfigurationI
 	}
 
 	d.Set("name", configImportPMap["name"])
-
-	d.Set("admin_st", configImportPMap["adminSt"])
 	d.Set("annotation", configImportPMap["annotation"])
 	d.Set("fail_on_decrypt_errors", configImportPMap["failOnDecryptErrors"])
 	d.Set("file_name", configImportPMap["fileName"])

@@ -78,6 +78,7 @@ func resourceAciEndpointSecurityGroupSelectorImport(d *schema.ResourceData, m in
 	if err != nil {
 		return nil, err
 	}
+	d.Set("endpoint_security_group_dn", GetParentDn(dn, fmt.Sprintf("/epselector-[%s]", fvEPSelector.MatchExpression)))
 	schemaFilled, err := setEndpointSecurityGroupSelectorAttributes(fvEPSelector, d)
 	if err != nil {
 		return nil, err

@@ -44,7 +44,7 @@ func dataSourceAciAAAAuthenticationRead(ctx context.Context, d *schema.ResourceD
 
 	rnrealm := fmt.Sprintf("userext/authrealm")
 	dnrealm := fmt.Sprintf("uni/%s", rnrealm)
-	aaaAuthRealm, err := getRemoteAAAAuthentication(aciClient, dnrealm)
+	aaaAuthRealm, err := GetRemoteAAAAuthentication(aciClient, dnrealm)
 	if err != nil {
 		return diag.FromErr(err)
 	}
@@ -55,7 +55,7 @@ func dataSourceAciAAAAuthenticationRead(ctx context.Context, d *schema.ResourceD
 	}
 	rnpingep := fmt.Sprintf("userext/pingext")
 	dnpingep := fmt.Sprintf("uni/%s", rnpingep)
-	aaaPingEp, err := getRemoteDefaultRadiusAuthenticationSettings(aciClient, dnpingep)
+	aaaPingEp, err := GetRemoteDefaultRadiusAuthenticationSettings(aciClient, dnpingep)
 	if err != nil {
 		return diag.FromErr(err)
 	}

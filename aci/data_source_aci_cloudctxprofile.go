@@ -33,6 +33,18 @@ func dataSourceAciCloudContextProfile() *schema.Resource {
 				Computed: true,
 			},
 
+			"primary_cidr": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+
+			"region": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+
 			"type": &schema.Schema{
 				Type:        schema.TypeString,
 				Optional:    true,
@@ -53,7 +65,7 @@ func dataSourceAciCloudContextProfileRead(ctx context.Context, d *schema.Resourc
 
 	dn := fmt.Sprintf("%s/%s", TenantDn, rn)
 
-	cloudCtxProfile, err := getRemoteCloudContextProfile(aciClient, dn)
+	cloudCtxProfile, err := GetRemoteCloudContextProfile(aciClient, dn)
 
 	if err != nil {
 		return diag.FromErr(err)

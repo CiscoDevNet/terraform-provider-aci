@@ -34,7 +34,7 @@ func dataSourceAciAESEncryptionPassphraseandKeysforConfigExportImportRead(ctx co
 
 	rn := fmt.Sprintf("exportcryptkey")
 	dn := fmt.Sprintf("uni/%s", rn)
-	pkiExportEncryptionKey, err := getRemoteAESEncryptionPassphraseandKeysforConfigExportImport(aciClient, dn)
+	pkiExportEncryptionKey, err := GetRemoteAESEncryptionPassphraseandKeysforConfigExportImport(aciClient, dn)
 	if err != nil {
 		return diag.FromErr(err)
 	}

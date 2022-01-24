@@ -41,3 +41,4 @@ data "aci_match_rule" "example" {
 * `id` - Attribute id set to the Dn of the Match Rule.
 * `annotation` - (Optional) Annotation of object Match Rule.
 * `name_alias` - (Optional) Name Alias of object Match Rule.
+* `description` - (Optional) Description of object Match Rule.

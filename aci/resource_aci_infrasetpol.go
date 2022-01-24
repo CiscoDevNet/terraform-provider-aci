@@ -117,7 +117,7 @@ func resourceAciFabricWideSettingsPolicy() *schema.Resource {
 	}
 }
 
-func getRemoteFabricWideSettingsPolicy(client *client.Client, dn string) (*models.FabricWideSettingsPolicy, error) {
+func GetRemoteFabricWideSettingsPolicy(client *client.Client, dn string) (*models.FabricWideSettingsPolicy, error) {
 	infraSetPolCont, err := client.Get(dn)
 	if err != nil {
 		return nil, err
@@ -155,7 +155,7 @@ func resourceAciFabricWideSettingsPolicyImport(d *schema.ResourceData, m interfa
 	log.Printf("[DEBUG] %s: Beginning Import", d.Id())
 	aciClient := m.(*client.Client)
 	dn := d.Id()
-	infraSetPol, err := getRemoteFabricWideSettingsPolicy(aciClient, dn)
+	infraSetPol, err := GetRemoteFabricWideSettingsPolicy(aciClient, dn)
 	if err != nil {
 		return nil, err
 	}
@@ -304,7 +304,7 @@ func resourceAciFabricWideSettingsPolicyRead(ctx context.Context, d *schema.Reso
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 	aciClient := m.(*client.Client)
 	dn := d.Id()
-	infraSetPol, err := getRemoteFabricWideSettingsPolicy(aciClient, dn)
+	infraSetPol, err := GetRemoteFabricWideSettingsPolicy(aciClient, dn)
 	if err != nil {
 		d.SetId("")
 		return diag.FromErr(err)

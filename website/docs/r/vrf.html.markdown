@@ -58,12 +58,18 @@ resource "aci_vrf" "foovrf" {
 - `relation_fv_rs_vrf_validation_pol` - (Optional) Relation to class l3extVrfValidationPol. Cardinality - N_TO_ONE. Type - String.
 - `relation_fv_rs_ctx_mcast_to` - (Optional) Relation to class vzFilter. Cardinality - N_TO_M. Type - [Set of String].
 - `relation_fv_rs_ctx_to_eigrp_ctx_af_pol` - (Optional) Relation to class eigrpCtxAfPol. Cardinality - N_TO_M. Type - [Set of Map].
+- `relation_fv_rs_ctx_to_eigrp_ctx_af_pol.tn_eigrp_ctx_af_pol_name` - (Required) Dn of class eigrpCtxAfPol. 
+- `relation_fv_rs_ctx_to_eigrp_ctx_af_pol.af` - (Required) Address family. Allowed values are "ipv4-ucast" and "ipv6-ucast".
 - `relation_fv_rs_ctx_to_ospf_ctx_pol` - (Optional) Relation to class ospfCtxPol. Cardinality - N_TO_M. Type - [Set of Map].
+- `relation_fv_rs_ctx_to_ospf_ctx_pol.tn_ospf_ctx_pol_name` - (Required) Dn of class ospfCtxPol. 
+- `relation_fv_rs_ctx_to_ospf_ctx_pol.af` - (Required) Address family. Allowed values are "ipv4-ucast" and "ipv6-ucast".
 - `relation_fv_rs_ctx_to_ep_ret` - (Optional) Relation to class fvEpRetPol. Cardinality - N_TO_ONE. Type - String.
 - `relation_fv_rs_bgp_ctx_pol` - (Optional) Relation to class bgpCtxPol. Cardinality - N_TO_ONE. Type - String.
 - `relation_fv_rs_ctx_mon_pol` - (Optional) Relation to class monEPGPol. Cardinality - N_TO_ONE. Type - String.
 - `relation_fv_rs_ctx_to_ext_route_tag_pol` - (Optional) Relation to class l3extRouteTagPol. Cardinality - N_TO_ONE. Type - String.
 - `relation_fv_rs_ctx_to_bgp_ctx_af_pol` - (Optional) Relation to class bgpCtxAfPol. Cardinality - N_TO_M. Type - [Set of Map].
+- `relation_fv_rs_ctx_to_bgp_ctx_af_pol.tn_bgp_ctx_af_pol_name` - (Required) Dn of class bgpCtxAfPol.
+- `relation_fv_rs_ctx_to_bgp_ctx_af_pol.af` - (Required) Address family. Allowed values are "ipv4-ucast" and "ipv6-ucast".
 
 Note: In the APIC GUI,a VRF (fvCtx) was called a "Context"or "PrivateNetwork."
 

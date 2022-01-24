@@ -89,6 +89,7 @@ func resourceAciDHCPOptionPolicy() *schema.Resource {
 			"dhcp_option_ids": &schema.Schema{
 				Type:     schema.TypeList,
 				Optional: true,
+				Computed: true,
 				Elem:     &schema.Schema{Type: schema.TypeString},
 			},
 		}),

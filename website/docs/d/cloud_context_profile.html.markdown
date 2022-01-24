@@ -33,3 +33,6 @@ data "aci_cloud_context_profile" "sample_prof" {
 - `id` - Attribute id set to the Dn of the Cloud Context profile.
 - `description` - Description of object Cloud Context profile.
 - `annotation` - Annotation for object Cloud Context profile.
+- `type` - The specific type of the object or component. Allowed values are "regular", "shadow", "hosted" and "container-overlay". Default is "regular".
+- `primary_cidr` - Primary CIDR block of Cloud Context profile. 
+- `region` - AWS region in which profile is created.
