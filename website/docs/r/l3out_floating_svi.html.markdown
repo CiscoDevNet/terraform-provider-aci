@@ -51,7 +51,12 @@ resource "aci_l3out_floating_svi" "example" {
 - `mtu` - (Optional) Administrative MTU port on the aggregated interface for L3out floating SVI object. Range of allowed values is "576" to "9216". Default value is "inherit".
 - `target_dscp` - (Optional) Target DSCP for L3out floating SVI object. Allowed values are "AF11", "AF12", "AF13", "AF21", "AF22", "AF23", "AF31", "AF32", "AF33", "AF41", "AF42", "AF43", "CS0", "CS1", "CS2", "CS3", "CS4", "CS5", "CS6", "CS7", "EF", "VA" and "unspecified". Default value is "unspecified".
 
-- `relation_l3ext_rs_dyn_path_att` - (Optional) Relation to class infraDomP. Cardinality - N_TO_M. Type - Set of String.
+- `relation_l3ext_rs_dyn_path_att` - (Optional) Map of relation to class infraDomP.
+  - `tdn` - (Required) The distinguished name of the target.
+  - `floating_address` - (Optional) Floating address of the target.
+  - `forged_transmit` - (Optional) A configuration option that allows virtual machines to send frames with a mac address that is different from the one specified in the virtual-nic adapter configuration.
+  - `mac_change` - (Optional) The status of the mac address change support for port groups in an external VMM controller, such as a Vcenter.
+  - `prom_mode` - (Optional) The status of promiscuous mode support status for port groups in an external VMM controller, such as a Vcenter. This needs to be turned on only for service devices in the cloud, not for Enterprise AVE service deployments.
 
 ## Attribute Reference
 

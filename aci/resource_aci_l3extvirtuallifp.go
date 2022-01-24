@@ -161,9 +161,37 @@ func resourceAciVirtualLogicalInterfaceProfile() *schema.Resource {
 							Type:     schema.TypeString,
 							Required: true,
 						},
-						"flaoting_address": {
+						"floating_address": {
 							Type:     schema.TypeString,
-							Required: true,
+							Optional: true,
+							Computed: true,
+						},
+						"forged_transmit": {
+							Type:     schema.TypeString,
+							Optional: true,
+							Computed: true,
+							ValidateFunc: validation.StringInSlice([]string{
+								"Disabled",
+								"Enabled",
+							}, false),
+						},
+						"mac_change": {
+							Type:     schema.TypeString,
+							Optional: true,
+							Computed: true,
+							ValidateFunc: validation.StringInSlice([]string{
+								"Disabled",
+								"Enabled",
+							}, false),
+						},
+						"prom_mode": {
+							Type:     schema.TypeString,
+							Optional: true,
+							Computed: true,
+							ValidateFunc: validation.StringInSlice([]string{
+								"Disabled",
+								"Enabled",
+							}, false),
 						},
 					},
 				},
@@ -298,7 +326,7 @@ func resourceAciVirtualLogicalInterfaceProfileCreate(ctx context.Context, d *sch
 		return diag.FromErr(err)
 	}
 
-	checkDns := make([]string, 0, 1)	
+	checkDns := make([]string, 0, 1)
 
 	if relationTol3extRsDynPathAtt, ok := d.GetOk("relation_l3ext_rs_dyn_path_att"); ok {
 		relationParamList := relationTol3extRsDynPathAtt.(*schema.Set).List()
@@ -317,7 +345,7 @@ func resourceAciVirtualLogicalInterfaceProfileCreate(ctx context.Context, d *sch
 		relationParamList := relationTol3extRsDynPathAtt.(*schema.Set).List()
 		for _, relationParam := range relationParamList {
 			paramMap := relationParam.(map[string]interface{})
-			err = aciClient.CreateRelationl3extRsDynPathAttFromLogicalInterfaceProfile(l3extVirtualLIfP.DistinguishedName, paramMap["tdn"].(string), paramMap["flaoting_address"].(string))
+			err = aciClient.CreateRelationl3extRsDynPathAttFromLogicalInterfaceProfile(l3extVirtualLIfP.DistinguishedName, paramMap["tdn"].(string), paramMap["floating_address"].(string), paramMap["forged_transmit"].(string), paramMap["mac_change"].(string), paramMap["prom_mode"].(string))
 			if err != nil {
 				return diag.FromErr(err)
 			}
@@ -420,7 +448,7 @@ func resourceAciVirtualLogicalInterfaceProfileUpdate(ctx context.Context, d *sch
 		}
 		for _, relationParam := range newRelList {
 			paramMap := relationParam.(map[string]interface{})
-			err = aciClient.CreateRelationl3extRsDynPathAttFromLogicalInterfaceProfile(l3extVirtualLIfP.DistinguishedName, paramMap["tdn"].(string), paramMap["flaoting_address"].(string))
+			err = aciClient.CreateRelationl3extRsDynPathAttFromLogicalInterfaceProfile(l3extVirtualLIfP.DistinguishedName, paramMap["tdn"].(string), paramMap["floating_address"].(string), paramMap["forged_transmit"].(string), paramMap["mac_change"].(string), paramMap["prom_mode"].(string))
 			if err != nil {
 				return diag.FromErr(err)
 			}
@@ -463,7 +491,10 @@ func resourceAciVirtualLogicalInterfaceProfileRead(ctx context.Context, d *schem
 		for _, l3extRsDynPathObj := range l3extRsDynPathAttMap {
 			obj := make(map[string]string, 0)
 			obj["tdn"] = l3extRsDynPathObj["tDn"]
-			obj["flaoting_address"] = l3extRsDynPathObj["floatingAddr"]
+			obj["floating_address"] = l3extRsDynPathObj["floatingAddr"]
+			obj["forged_transmit"] = l3extRsDynPathObj["forgedTransmit"]
+			obj["mac_change"] = l3extRsDynPathObj["macChange"]
+			obj["prom_mode"] = l3extRsDynPathObj["promMode"]
 			st = append(st, obj)
 		}
 		d.Set("relation_l3ext_rs_dyn_path_att", st)

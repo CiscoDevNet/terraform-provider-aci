@@ -54,7 +54,7 @@ func (sm *ServiceManager) ListVirtualLogicalInterfaceProfile(logical_interface_p
 	return list, err
 }
 
-func (sm *ServiceManager) CreateRelationl3extRsDynPathAttFromLogicalInterfaceProfile(parentDn, tDn, addr string) error {
+func (sm *ServiceManager) CreateRelationl3extRsDynPathAttFromLogicalInterfaceProfile(parentDn, tDn, addr, forgedTransmit, macChange, promMode string) error {
 	dn := fmt.Sprintf("%s/rsdynPathAtt-[%s]", parentDn, tDn)
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
@@ -62,10 +62,13 @@ func (sm *ServiceManager) CreateRelationl3extRsDynPathAttFromLogicalInterfacePro
 				"dn": "%s",
 				"annotation":"orchestrator:terraform",
 				"tDn":"%s",
-				"floatingAddr":"%s"				
+				"floatingAddr":"%s",
+				"forgedTransmit":"%s",
+				"macChange":"%s",
+				"promMode":"%s"				
 			}
 		}
-	}`, "l3extRsDynPathAtt", dn, tDn, addr))
+	}`, "l3extRsDynPathAtt", dn, tDn, addr, forgedTransmit, macChange, promMode))
 
 	jsonPayload, err := container.ParseJSON(containerJSON)
 	if err != nil {
@@ -103,6 +106,9 @@ func (sm *ServiceManager) ReadRelationl3extRsDynPathAttFromLogicalInterfaceProfi
 		paramMap := make(map[string]string)
 		paramMap["tDn"] = models.G(contItem, "tDn")
 		paramMap["floatingAddr"] = models.G(contItem, "floatingAddr")
+		paramMap["forgedTransmit"] = models.G(contItem, "forgedTransmit")
+		paramMap["macChange"] = models.G(contItem, "macChange")
+		paramMap["promMode"] = models.G(contItem, "promMode")
 
 		st = append(st, paramMap)
 	}
