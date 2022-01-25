@@ -15,13 +15,13 @@ func TestAccAciDuoProviderGroupDataSource_Basic(t *testing.T) {
 	randomParameter := acctest.RandStringFromCharSet(10, "abcdefghijklmnopqrstuvwxyz")
 	randomValue := acctest.RandString(10)
 	rName := makeTestVariable(acctest.RandString(5))
-	
+
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:	  func(){ testAccPreCheck(t) },
-		ProviderFactories:    testAccProviders,
-		CheckDestroy: testAccCheckAciDuoProviderGroupDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviders,
+		CheckDestroy:      testAccCheckAciDuoProviderGroupDestroy,
 		Steps: []resource.TestStep{
-			
+
 			{
 				Config:      CreateDuoProviderGroupDSWithoutRequired(rName, "name"),
 				ExpectError: regexp.MustCompile(`Missing required argument`),
@@ -29,7 +29,7 @@ func TestAccAciDuoProviderGroupDataSource_Basic(t *testing.T) {
 			{
 				Config: CreateAccDuoProviderGroupConfigDataSource(rName),
 				Check: resource.ComposeTestCheckFunc(
-					
+
 					resource.TestCheckResourceAttrPair(dataSourceName, "name", resourceName, "name"),
 					resource.TestCheckResourceAttrPair(dataSourceName, "description", resourceName, "description"),
 					resource.TestCheckResourceAttrPair(dataSourceName, "annotation", resourceName, "annotation"),
@@ -39,14 +39,13 @@ func TestAccAciDuoProviderGroupDataSource_Basic(t *testing.T) {
 					resource.TestCheckResourceAttrPair(dataSourceName, "provider_type", resourceName, "provider_type"),
 					resource.TestCheckResourceAttrPair(dataSourceName, "sec_fac_auth_methods.#", resourceName, "sec_fac_auth_methods.#"),
 					resource.TestCheckResourceAttrPair(dataSourceName, "sec_fac_auth_methods.0", resourceName, "sec_fac_auth_methods.0"),
-					
 				),
 			},
 			{
 				Config:      CreateAccDuoProviderGroupDataSourceUpdate(rName, randomParameter, randomValue),
 				ExpectError: regexp.MustCompile(`An argument named (.)+ is not expected here.`),
 			},
-			
+
 			{
 				Config:      CreateAccDuoProviderGroupDSWithInvalidName(rName),
 				ExpectError: regexp.MustCompile(`(.)+ Object may not exists`),
@@ -60,7 +59,6 @@ func TestAccAciDuoProviderGroupDataSource_Basic(t *testing.T) {
 		},
 	})
 }
-
 
 func CreateAccDuoProviderGroupConfigDataSource(rName string) string {
 	fmt.Println("=== STEP  testing duo_provider_group Data Source with required arguments only")
@@ -81,7 +79,7 @@ func CreateAccDuoProviderGroupConfigDataSource(rName string) string {
 }
 
 func CreateDuoProviderGroupDSWithoutRequired(rName, attrName string) string {
-	fmt.Println("=== STEP  Basic: testing duo_provider_group Data Source without ",attrName)
+	fmt.Println("=== STEP  Basic: testing duo_provider_group Data Source without ", attrName)
 	rBlock := `
 	
 	resource "aci_duo_provider_group" "test" {
@@ -99,9 +97,8 @@ func CreateDuoProviderGroupDSWithoutRequired(rName, attrName string) string {
 	}
 		`
 	}
-	return fmt.Sprintf(rBlock,rName)
+	return fmt.Sprintf(rBlock, rName)
 }
-
 
 func CreateAccDuoProviderGroupDSWithInvalidName(rName string) string {
 	fmt.Println("=== STEP  testing duo_provider_group Data Source with invalid name")
@@ -136,7 +133,7 @@ func CreateAccDuoProviderGroupDataSourceUpdate(rName, key, value string) string 
 		%s = "%s"
 		depends_on = [ aci_duo_provider_group.test ]
 	}
-	`, rName,key,value)
+	`, rName, key, value)
 	return resource
 }
 
@@ -155,6 +152,6 @@ func CreateAccDuoProviderGroupDataSourceUpdatedResource(rName, key, value string
 		name  = aci_duo_provider_group.test.name
 		depends_on = [ aci_duo_provider_group.test ]
 	}
-	`, rName,key,value)
+	`, rName, key, value)
 	return resource
 }

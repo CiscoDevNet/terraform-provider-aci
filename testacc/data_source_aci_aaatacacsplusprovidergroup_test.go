@@ -15,13 +15,13 @@ func TestAccAciTACACSPlusProviderGroupDataSource_Basic(t *testing.T) {
 	randomParameter := acctest.RandStringFromCharSet(10, "abcdefghijklmnopqrstuvwxyz")
 	randomValue := acctest.RandString(10)
 	rName := makeTestVariable(acctest.RandString(5))
-	
+
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:	  func(){ testAccPreCheck(t) },
-		ProviderFactories:    testAccProviders,
-		CheckDestroy: testAccCheckAciTACACSPlusProviderGroupDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviders,
+		CheckDestroy:      testAccCheckAciTACACSPlusProviderGroupDestroy,
 		Steps: []resource.TestStep{
-			
+
 			{
 				Config:      CreateTACACSPlusProviderGroupDSWithoutRequired(rName, "name"),
 				ExpectError: regexp.MustCompile(`Missing required argument`),
@@ -29,19 +29,18 @@ func TestAccAciTACACSPlusProviderGroupDataSource_Basic(t *testing.T) {
 			{
 				Config: CreateAccTACACSPlusProviderGroupConfigDataSource(rName),
 				Check: resource.ComposeTestCheckFunc(
-					
+
 					resource.TestCheckResourceAttrPair(dataSourceName, "name", resourceName, "name"),
 					resource.TestCheckResourceAttrPair(dataSourceName, "description", resourceName, "description"),
 					resource.TestCheckResourceAttrPair(dataSourceName, "annotation", resourceName, "annotation"),
 					resource.TestCheckResourceAttrPair(dataSourceName, "name_alias", resourceName, "name_alias"),
-					
 				),
 			},
 			{
 				Config:      CreateAccTACACSPlusProviderGroupDataSourceUpdate(rName, randomParameter, randomValue),
 				ExpectError: regexp.MustCompile(`An argument named (.)+ is not expected here.`),
 			},
-			
+
 			{
 				Config:      CreateAccTACACSPlusProviderGroupDSWithInvalidName(rName),
 				ExpectError: regexp.MustCompile(`(.)+ Object may not exists`),
@@ -55,7 +54,6 @@ func TestAccAciTACACSPlusProviderGroupDataSource_Basic(t *testing.T) {
 		},
 	})
 }
-
 
 func CreateAccTACACSPlusProviderGroupConfigDataSource(rName string) string {
 	fmt.Println("=== STEP  testing tacacs_provider_group Data Source with required arguments only")
@@ -76,7 +74,7 @@ func CreateAccTACACSPlusProviderGroupConfigDataSource(rName string) string {
 }
 
 func CreateTACACSPlusProviderGroupDSWithoutRequired(rName, attrName string) string {
-	fmt.Println("=== STEP  Basic: testing tacacs_provider_group Data Source without ",attrName)
+	fmt.Println("=== STEP  Basic: testing tacacs_provider_group Data Source without ", attrName)
 	rBlock := `
 	
 	resource "aci_tacacs_provider_group" "test" {
@@ -94,9 +92,8 @@ func CreateTACACSPlusProviderGroupDSWithoutRequired(rName, attrName string) stri
 	}
 		`
 	}
-	return fmt.Sprintf(rBlock,rName)
+	return fmt.Sprintf(rBlock, rName)
 }
-
 
 func CreateAccTACACSPlusProviderGroupDSWithInvalidName(rName string) string {
 	fmt.Println("=== STEP  testing tacacs_provider_group Data Source with invalid name")
@@ -131,7 +128,7 @@ func CreateAccTACACSPlusProviderGroupDataSourceUpdate(rName, key, value string) 
 		%s = "%s"
 		depends_on = [ aci_tacacs_provider_group.test ]
 	}
-	`, rName,key,value)
+	`, rName, key, value)
 	return resource
 }
 
@@ -150,6 +147,6 @@ func CreateAccTACACSPlusProviderGroupDataSourceUpdatedResource(rName, key, value
 		name  = aci_tacacs_provider_group.test.name
 		depends_on = [ aci_tacacs_provider_group.test ]
 	}
-	`, rName,key,value)
+	`, rName, key, value)
 	return resource
 }
