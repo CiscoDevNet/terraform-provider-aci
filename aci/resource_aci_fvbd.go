@@ -381,6 +381,120 @@ func resourceAciBridgeDomainImport(d *schema.ResourceData, m interface{}) ([]*sc
 	if err != nil {
 		return nil, err
 	}
+	fvRsBDToProfileData, err := aciClient.ReadRelationfvRsBDToProfileFromBridgeDomain(dn)
+	if err != nil {
+		log.Printf("[DEBUG] Error while reading relation fvRsBDToProfile %v", err)
+		d.Set("relation_fv_rs_bd_to_profile", "")
+
+	} else {
+		d.Set("relation_fv_rs_bd_to_profile", fvRsBDToProfileData.(string))
+	}
+
+	fvRsMldsnData, err := aciClient.ReadRelationfvRsMldsnFromBridgeDomain(dn)
+	if err != nil {
+		log.Printf("[DEBUG] Error while reading relation fvRsMldsn %v", err)
+		d.Set("relation_fv_rs_mldsn", "")
+
+	} else {
+		d.Set("relation_fv_rs_mldsn", fvRsMldsnData.(string))
+	}
+
+	fvRsABDPolMonPolData, err := aciClient.ReadRelationfvRsABDPolMonPolFromBridgeDomain(dn)
+	if err != nil {
+		log.Printf("[DEBUG] Error while reading relation fvRsABDPolMonPol %v", err)
+		d.Set("relation_fv_rs_abd_pol_mon_pol", "")
+
+	} else {
+		d.Set("relation_fv_rs_abd_pol_mon_pol", fvRsABDPolMonPolData.(string))
+	}
+
+	fvRsBDToNdPData, err := aciClient.ReadRelationfvRsBDToNdPFromBridgeDomain(dn)
+	if err != nil {
+		log.Printf("[DEBUG] Error while reading relation fvRsBDToNdP %v", err)
+		d.Set("relation_fv_rs_bd_to_nd_p", "")
+
+	} else {
+		d.Set("relation_fv_rs_bd_to_nd_p", fvRsBDToNdPData.(string))
+	}
+
+	fvRsBdFloodToData, err := aciClient.ReadRelationfvRsBdFloodToFromBridgeDomain(dn)
+	if err != nil {
+		log.Printf("[DEBUG] Error while reading relation fvRsBdFloodTo %v", err)
+		d.Set("relation_fv_rs_bd_flood_to", make([]string, 0, 1))
+
+	} else {
+		d.Set("relation_fv_rs_bd_flood_to", fvRsBdFloodToData)
+	}
+
+	fvRsBDToFhsData, err := aciClient.ReadRelationfvRsBDToFhsFromBridgeDomain(dn)
+	if err != nil {
+		log.Printf("[DEBUG] Error while reading relation fvRsBDToFhs %v", err)
+		d.Set("relation_fv_rs_bd_to_fhs", "")
+
+	} else {
+		d.Set("relation_fv_rs_bd_to_fhs", fvRsBDToFhsData.(string))
+	}
+
+	fvRsBDToRelayPData, err := aciClient.ReadRelationfvRsBDToRelayPFromBridgeDomain(dn)
+	if err != nil {
+		log.Printf("[DEBUG] Error while reading relation fvRsBDToRelayP %v", err)
+		d.Set("relation_fv_rs_bd_to_relay_p", "")
+
+	} else {
+		d.Set("relation_fv_rs_bd_to_relay_p", fvRsBDToRelayPData.(string))
+	}
+
+	fvRsCtxData, err := aciClient.ReadRelationfvRsCtxFromBridgeDomain(dn)
+	if err != nil {
+		log.Printf("[DEBUG] Error while reading relation fvRsCtx %v", err)
+		d.Set("relation_fv_rs_ctx", "")
+
+	} else {
+		d.Set("relation_fv_rs_ctx", fvRsCtxData.(string))
+	}
+
+	fvRsBDToNetflowMonitorPolData, err := aciClient.ReadRelationfvRsBDToNetflowMonitorPolFromBridgeDomain(dn)
+	if err != nil {
+		log.Printf("[DEBUG] Error while reading relation fvRsBDToNetflowMonitorPol %v", err)
+
+	} else {
+		listRelMap := make([]map[string]string, 0, 1)
+		listfvRsBDToNetflowMonitorPolData := fvRsBDToNetflowMonitorPolData.([]map[string]string)
+		for _, obj := range listfvRsBDToNetflowMonitorPolData {
+			listRelMap = append(listRelMap, map[string]string{
+				"tn_netflow_monitor_pol_name": obj["tnNetflowMonitorPolName"],
+				"flt_type":                    obj["fltType"],
+			})
+		}
+		d.Set("relation_fv_rs_bd_to_netflow_monitor_pol", listRelMap)
+	}
+
+	fvRsIgmpsnData, err := aciClient.ReadRelationfvRsIgmpsnFromBridgeDomain(dn)
+	if err != nil {
+		log.Printf("[DEBUG] Error while reading relation fvRsIgmpsn %v", err)
+		d.Set("relation_fv_rs_igmpsn", "")
+
+	} else {
+		d.Set("relation_fv_rs_igmpsn", fvRsIgmpsnData.(string))
+	}
+
+	fvRsBdToEpRetData, err := aciClient.ReadRelationfvRsBdToEpRetFromBridgeDomain(dn)
+	if err != nil {
+		log.Printf("[DEBUG] Error while reading relation fvRsBdToEpRet %v", err)
+		d.Set("relation_fv_rs_bd_to_ep_ret", "")
+
+	} else {
+		d.Set("relation_fv_rs_bd_to_ep_ret", fvRsBdToEpRetData.(string))
+	}
+
+	fvRsBDToOutData, err := aciClient.ReadRelationfvRsBDToOutFromBridgeDomain(dn)
+	if err != nil {
+		log.Printf("[DEBUG] Error while reading relation fvRsBDToOut %v", err)
+		d.Set("relation_fv_rs_bd_to_out", make([]string, 0, 1))
+
+	} else {
+		d.Set("relation_fv_rs_bd_to_out", toStringList(fvRsBDToOutData.(*schema.Set).List()))
+	}
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
