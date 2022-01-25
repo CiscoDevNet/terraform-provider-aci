@@ -55,8 +55,8 @@ resource "aci_l3out_floating_svi" "example" {
   - `tdn` - (Required) The distinguished name of the target.
   - `floating_address` - (Optional) Floating address of the target.
   - `forged_transmit` - (Optional) A configuration option that allows virtual machines to send frames with a mac address that is different from the one specified in the virtual-nic adapter configuration.
-  - `mac_change` - (Optional) The status of the mac address change support for port groups in an external VMM controller, such as a Vcenter.
-  - `prom_mode` - (Optional) The status of promiscuous mode support status for port groups in an external VMM controller, such as a Vcenter. This needs to be turned on only for service devices in the cloud, not for Enterprise AVE service deployments.
+  - `mac_change` - (Optional) The status of the mac address change support for port groups in an external VMM controller, such as a vCenter.
+  - `promiscuous_mode` - (Optional) The status of promiscuous mode support status for port groups in an external VMM controller, such as a vCenter. This needs to be turned on only for service devices in the cloud, not for Enterprise AVE service deployments.
 
 ## Attribute Reference
 

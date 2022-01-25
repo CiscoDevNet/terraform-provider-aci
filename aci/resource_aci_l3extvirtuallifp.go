@@ -184,7 +184,7 @@ func resourceAciVirtualLogicalInterfaceProfile() *schema.Resource {
 								"Enabled",
 							}, false),
 						},
-						"prom_mode": {
+						"promiscuous_mode": {
 							Type:     schema.TypeString,
 							Optional: true,
 							Computed: true,
@@ -345,7 +345,7 @@ func resourceAciVirtualLogicalInterfaceProfileCreate(ctx context.Context, d *sch
 		relationParamList := relationTol3extRsDynPathAtt.(*schema.Set).List()
 		for _, relationParam := range relationParamList {
 			paramMap := relationParam.(map[string]interface{})
-			err = aciClient.CreateRelationl3extRsDynPathAttFromLogicalInterfaceProfile(l3extVirtualLIfP.DistinguishedName, paramMap["tdn"].(string), paramMap["floating_address"].(string), paramMap["forged_transmit"].(string), paramMap["mac_change"].(string), paramMap["prom_mode"].(string))
+			err = aciClient.CreateRelationl3extRsDynPathAttFromLogicalInterfaceProfile(l3extVirtualLIfP.DistinguishedName, paramMap["tdn"].(string), paramMap["floating_address"].(string), paramMap["forged_transmit"].(string), paramMap["mac_change"].(string), paramMap["promiscuous_mode"].(string))
 			if err != nil {
 				return diag.FromErr(err)
 			}
@@ -448,7 +448,7 @@ func resourceAciVirtualLogicalInterfaceProfileUpdate(ctx context.Context, d *sch
 		}
 		for _, relationParam := range newRelList {
 			paramMap := relationParam.(map[string]interface{})
-			err = aciClient.CreateRelationl3extRsDynPathAttFromLogicalInterfaceProfile(l3extVirtualLIfP.DistinguishedName, paramMap["tdn"].(string), paramMap["floating_address"].(string), paramMap["forged_transmit"].(string), paramMap["mac_change"].(string), paramMap["prom_mode"].(string))
+			err = aciClient.CreateRelationl3extRsDynPathAttFromLogicalInterfaceProfile(l3extVirtualLIfP.DistinguishedName, paramMap["tdn"].(string), paramMap["floating_address"].(string), paramMap["forged_transmit"].(string), paramMap["mac_change"].(string), paramMap["promiscuous_mode"].(string))
 			if err != nil {
 				return diag.FromErr(err)
 			}
@@ -494,10 +494,10 @@ func resourceAciVirtualLogicalInterfaceProfileRead(ctx context.Context, d *schem
 			obj["floating_address"] = l3extRsDynPathObj["floatingAddr"]
 			obj["forged_transmit"] = l3extRsDynPathObj["forgedTransmit"]
 			obj["mac_change"] = l3extRsDynPathObj["macChange"]
-			obj["prom_mode"] = l3extRsDynPathObj["promMode"]
+			obj["promiscuous_mode"] = l3extRsDynPathObj["promMode"]
 			st = append(st, obj)
 		}
-		d.Set("relation_l3ext_rs_dyn_path_att", st)
+		setRelationAttribute(d, "relation_l3ext_rs_dyn_path_att", st)
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
