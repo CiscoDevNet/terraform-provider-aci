@@ -62,7 +62,6 @@ func resourceAciL3outOspfExternalPolicy() *schema.Resource {
 				Optional: true,
 				Computed: true,
 				StateFunc: func(val interface{}) string {
-<<<<<<< HEAD
 					if val.(string) == "backbone" || val.(string) == "0" || val.(string) == "0.0.0.0" {
 						return "backbone"
 					} else {
@@ -72,12 +71,6 @@ func resourceAciL3outOspfExternalPolicy() *schema.Resource {
 							for i := 1; i <= len(numList); i++ {
 								ip[4-i] = numList[len(numList)-i]
 							}
-=======
-					l := []string{"backbone", "0", "0.0", "0.0.0", "0.0.0.0"}
-					for _, litem := range l {
-						if val.(string) == litem {
-							return "backbone"
->>>>>>> 96fa442a (Cds sp3 testacc (#112))
 						}
 					}
 					numList := strings.Split(val.(string), ".")
