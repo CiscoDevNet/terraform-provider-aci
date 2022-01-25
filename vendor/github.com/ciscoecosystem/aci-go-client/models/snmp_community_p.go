@@ -8,9 +8,8 @@ import (
 )
 
 const (
-	DnsnmpCommunityP        = "uni/tn-%s/ctx-%s/snmpctx/community-%s"
+	DnsnmpCommunityP        = "%s/community-%s"
 	RnsnmpCommunityP        = "community-%s"
-	ParentDnsnmpCommunityP  = "uni/tn-%s/ctx-%s/snmpctx"
 	SnmpcommunitypClassName = "snmpCommunityP"
 )
 
@@ -47,15 +46,18 @@ func (snmpCommunityP *SNMPCommunity) ToMap() (map[string]string, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	alias, err := snmpCommunityP.NameAliasAttribute.ToMap()
 	if err != nil {
 		return nil, err
 	}
+
 	for key, value := range alias {
 		A(snmpCommunityPMap, key, value)
 	}
-	A(snmpCommunityPMap, "name", snmpCommunityP.Name)
+
 	A(snmpCommunityPMap, "annotation", snmpCommunityP.Annotation)
+	A(snmpCommunityPMap, "name", snmpCommunityP.Name)
 	return snmpCommunityPMap, err
 }
 
@@ -73,8 +75,8 @@ func SNMPCommunityFromContainerList(cont *container.Container, index int) *SNMPC
 			NameAlias: G(SNMPCommunityCont, "nameAlias"),
 		},
 		SNMPCommunityAttributes{
-			Name:       G(SNMPCommunityCont, "name"),
 			Annotation: G(SNMPCommunityCont, "annotation"),
+			Name:       G(SNMPCommunityCont, "name"),
 		},
 	}
 }
@@ -86,8 +88,10 @@ func SNMPCommunityFromContainer(cont *container.Container) *SNMPCommunity {
 func SNMPCommunityListFromContainer(cont *container.Container) []*SNMPCommunity {
 	length, _ := strconv.Atoi(G(cont, "totalCount"))
 	arr := make([]*SNMPCommunity, length)
+
 	for i := 0; i < length; i++ {
 		arr[i] = SNMPCommunityFromContainerList(cont, i)
 	}
+
 	return arr
 }
