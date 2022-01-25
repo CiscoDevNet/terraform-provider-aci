@@ -87,8 +87,8 @@ func TestAccAciAESEncryptionPassphraseandKeysforConfigExportImport_Negative(t *t
 		t.Errorf("reading initial config of pkiExportEncryptionKey")
 	}
 	resource.Test(t, resource.TestCase{
-		PreCheck:	  func(){ testAccPreCheck(t) },
-		ProviderFactories:    testAccProviders,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviders,
 		Steps: []resource.TestStep{
 			{
 				Config: CreateAccAESEncryptionPassphraseandKeysforConfigExportImportConfig(),

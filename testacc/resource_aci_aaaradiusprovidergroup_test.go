@@ -83,9 +83,9 @@ func TestAccAciRADIUSProviderGroup_Negative(t *testing.T) {
 	randomParameter := acctest.RandStringFromCharSet(5, "abcdefghijklmnopqrstuvwxyz")
 	randomValue := acctest.RandString(5)
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:	  func(){ testAccPreCheck(t) },
-		ProviderFactories:    testAccProviders,
-		CheckDestroy: testAccCheckAciRADIUSProviderGroupDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviders,
+		CheckDestroy:      testAccCheckAciRADIUSProviderGroupDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: CreateAccRADIUSProviderGroupConfig(rName),
@@ -118,9 +118,9 @@ func TestAccAciRADIUSProviderGroup_Negative(t *testing.T) {
 func TestAccAciRADIUSProviderGroup_MultipleCreateDelete(t *testing.T) {
 	rName := makeTestVariable(acctest.RandString(5))
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:	  func(){ testAccPreCheck(t) },
-		ProviderFactories:    testAccProviders,
-		CheckDestroy: testAccCheckAciRADIUSProviderGroupDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviders,
+		CheckDestroy:      testAccCheckAciRADIUSProviderGroupDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: CreateAccRADIUSProviderGroupConfigMultiple(rName),
@@ -161,13 +161,13 @@ func testAccCheckAciRADIUSProviderGroupDestroy(s *terraform.State) error {
 	fmt.Println("=== STEP  testing radius_provider_group destroy")
 	client := testAccProvider.Meta().(*client.Client)
 	for _, rs := range s.RootModule().Resources {
-		 if rs.Type == "aci_radius_provider_group" {
-			cont,err := client.Get(rs.Primary.ID)
+		if rs.Type == "aci_radius_provider_group" {
+			cont, err := client.Get(rs.Primary.ID)
 			radius_provider_group := models.RADIUSProviderGroupFromContainer(cont)
 			if err == nil {
-				return fmt.Errorf("RADIUS Provider Group %s Still exists",radius_provider_group.DistinguishedName)
+				return fmt.Errorf("RADIUS Provider Group %s Still exists", radius_provider_group.DistinguishedName)
 			}
-		}else{
+		} else {
 			continue
 		}
 	}
@@ -193,7 +193,7 @@ func testAccCheckAciRADIUSProviderGroupIdNotEqual(m1, m2 *models.RADIUSProviderG
 }
 
 func CreateRADIUSProviderGroupWithoutRequired(rName, attrName string) string {
-	fmt.Println("=== STEP  Basic: testing radius_provider_group creation without ",attrName)
+	fmt.Println("=== STEP  Basic: testing radius_provider_group creation without ", attrName)
 	rBlock := `
 
 	`
@@ -206,7 +206,7 @@ func CreateRADIUSProviderGroupWithoutRequired(rName, attrName string) string {
 	}
 		`
 	}
-	return fmt.Sprintf(rBlock,rName)
+	return fmt.Sprintf(rBlock, rName)
 }
 
 func CreateAccRADIUSProviderGroupConfigWithRequiredParams(rName string) string {
@@ -221,7 +221,7 @@ func CreateAccRADIUSProviderGroupConfigWithRequiredParams(rName string) string {
 	return resource
 }
 func CreateAccRADIUSProviderGroupConfigUpdatedName(rName string) string {
-	fmt.Println("=== STEP  testing radius_provider_group creation with invalid name = ",rName)
+	fmt.Println("=== STEP  testing radius_provider_group creation with invalid name = ", rName)
 	resource := fmt.Sprintf(`
 
 	resource "aci_radius_provider_group" "test" {
@@ -287,7 +287,7 @@ func CreateAccRADIUSProviderGroupRemovingRequiredField() string {
 	return resource
 }
 
-func CreateAccRADIUSProviderGroupUpdatedAttr(rName,attribute,value string) string {
+func CreateAccRADIUSProviderGroupUpdatedAttr(rName, attribute, value string) string {
 	fmt.Printf("=== STEP  testing radius_provider_group attribute: %s = %s \n", attribute, value)
 	resource := fmt.Sprintf(`
 
@@ -296,6 +296,6 @@ func CreateAccRADIUSProviderGroupUpdatedAttr(rName,attribute,value string) strin
 		name  = "%s"
 		%s = "%s"
 	}
-	`, rName,attribute,value)
+	`, rName, attribute, value)
 	return resource
 }
