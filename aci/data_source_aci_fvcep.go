@@ -2,6 +2,7 @@ package aci
 
 import (
 	"fmt"
+	"regexp"
 	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
@@ -132,18 +133,18 @@ func extractInfo(con *container.Container) (obj map[string]interface{}, dn strin
 	infoMap["vlan"] = models.G(con, "encap")
 
 	dnInfoList := strings.Split(dnString, "/")
-	tenantInfo := strings.Split(dnInfoList[1], "-")
+	tenantInfo := regexp.MustCompile("-").Split(dnInfoList[1], 2)
 	if tenantInfo[0] == "tn" {
 		infoMap["tenant_name"] = tenantInfo[1]
 
-		level2Info := strings.Split(dnInfoList[2], "-")
+		level2Info := regexp.MustCompile("-").Split(dnInfoList[2], 2)
 		if level2Info[0] == "ctx" {
 			infoMap["vrf_name"] = level2Info[1]
 
 		} else if level2Info[0] == "ap" {
 			infoMap["application_profile_name"] = level2Info[1]
 
-			level3Info := strings.Split(dnInfoList[3], "-")
+			level3Info := regexp.MustCompile("-").Split(dnInfoList[3], 2)
 			if level3Info[0] == "epg" {
 				infoMap["epg_name"] = level3Info[1]
 			} else {
@@ -153,7 +154,7 @@ func extractInfo(con *container.Container) (obj map[string]interface{}, dn strin
 		} else if level2Info[0] == "l2out" {
 			infoMap["l2out_name"] = level2Info[1]
 
-			level3Info := strings.Split(dnInfoList[3], "-")
+			level3Info := regexp.MustCompile("-").Split(dnInfoList[3], 2)
 			if level3Info[0] == "instP" {
 				infoMap["instance_profile_name"] = level3Info[1]
 			} else {
