@@ -1,3 +1,41 @@
+## 2.0.0 (January 27, 2021)
+BREAKING CHANGE:
+- Remove aci_application_epg unused relationship relation_fv_rs_graph_def to avoid idempotency issues.
+- aci_bgp_peer_connectivity_profile attributes addr_t_ctrl, ctrl, peer_ctrl and private_a_sctrl changed from string to list of strings.
+- aci_hsrp_interface_policy attribute ctrl changed from string to list of strings.
+- aci_l3out_ospf_external_policy attribute area_ctrl changed from string to list of strings.
+- aci_ospf_timers attribute ctrl changed from string to list of strings.
+- aci_cloud_subnet attribute scope changed froms tring to list of strings.
+
+Most of those changes will require changes to your Terraform plan and your state file.
+At your own risk you can either manually modify your state file or use the following commands:
+```
+terraform state rm the_resource_type.name_of_your_resource
+terraform import the_resource_type.name_of_your_resource dn_of_your_object
+```
+
+BEHAVIOR CHANGE:
+- Add support for the new aci-go-client retries mechanism when connection fails or server errors in provider and set default to 2 retries
+
+IMPROVEMENTS:
+- Improve aci_l3out_vpc_member example
+- ParentDn and relation updates to prepare for Terraformer support
+- Rename aci_bpg_route_control_policy to aci_route_control_policy and deprecate aci_bpg_route_control_policy
+- Rename aci_spine_port_selector to aci_spine_interface_profile_selector and deprecate aci_spine_port_selector
+- Add support for relationship import in aci_bridge_domain
+- Add inline block support for relation_l3ext_rs_dyn_path_att in aci_l3out_floating_svi
+- Add new resources and data sources: aci_rest_managed, aci_spine_access_port_selector, aci_snmp_community
+- Deprecation of aci_vrf_snmp_context_community
+- Add spine_selector block to aci_spine_profile
+
+BUG FIXES:
+- Fix idempotency issue with area_id backbone/0.0.0.0 in aci_l3out_ospf_external_policy
+- Fix idempotency issue with different IPv6 syntax in aci_subnet
+- Fix ep_move_detect code location making aci_bridge_domain crash if bridge domain was not present on APIC
+- Fix various empty relationship value when relationship was not set in resources creating idempotency issues
+- Fix incorrect field extraction in the aci_client_end_point datasource
+- Various documentation fixes
+
 ## 1.2.0 (December 13, 2021)
 IMPROVEMENTS:
 - Add new resources and data sources: aci_tag and aci_annotation
