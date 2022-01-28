@@ -31,4 +31,11 @@ resource "aci_l3out_floating_svi" "example" {
   mtu                          = "580"
   target_dscp                  = "CS1"
   userdom                      = ":all:"
+  relation_l3ext_rs_dyn_path_att {
+    tdn = data.aci_physical_domain.dom.id
+    floating_address = "10.20.30.254/16"
+    forged_transmit = "Disabled"
+    mac_change = "Disabled"
+    promiscuous_mode = "Disabled"
+  }
 }

@@ -30,6 +30,13 @@ resource "aci_l3out_floating_svi" "example" {
   mode                         = "untagged"
   mtu                          = "580"
   target_dscp                  = "CS1"
+  relation_l3ext_rs_dyn_path_att {
+    tdn = data.aci_physical_domain.dom.id
+    floating_address = "10.21.0.254/24"
+    forged_transmit = "Disabled"
+    mac_change = "Disabled"
+    promiscuous_mode = "Disabled"
+  }
 }
 ```
 
@@ -51,7 +58,7 @@ resource "aci_l3out_floating_svi" "example" {
 - `mtu` - (Optional) Administrative MTU port on the aggregated interface for L3out floating SVI object. Range of allowed values is "576" to "9216". Default value is "inherit".
 - `target_dscp` - (Optional) Target DSCP for L3out floating SVI object. Allowed values are "AF11", "AF12", "AF13", "AF21", "AF22", "AF23", "AF31", "AF32", "AF33", "AF41", "AF42", "AF43", "CS0", "CS1", "CS2", "CS3", "CS4", "CS5", "CS6", "CS7", "EF", "VA" and "unspecified". Default value is "unspecified".
 
-- `relation_l3ext_rs_dyn_path_att` - (Optional) Map of relation to class infraDomP.
+- `relation_l3ext_rs_dyn_path_att` - (Optional) A block representing the relation to a Domain (class infraDomP). Type: Block.
   - `tdn` - (Required) The distinguished name of the target.
   - `floating_address` - (Optional) Floating address of the target.
   - `forged_transmit` - (Optional) A configuration option that allows virtual machines to send frames with a mac address that is different from the one specified in the virtual-nic adapter configuration.
