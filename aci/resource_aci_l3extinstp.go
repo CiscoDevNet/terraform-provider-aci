@@ -143,12 +143,14 @@ func resourceAciExternalNetworkInstanceProfile() *schema.Resource {
 			"relation_l3ext_rs_l3_inst_p_to_dom_p": &schema.Schema{
 				Type: schema.TypeString,
 
-				Optional: true,
+				Optional:   true,
+				Deprecated: "relation_l3ext_rs_l3_inst_p_to_dom_p attribute is no longer available",
 			},
 			"relation_l3ext_rs_inst_p_to_nat_mapping_epg": &schema.Schema{
 				Type: schema.TypeString,
 
-				Optional: true,
+				Optional:   true,
+				Deprecated: "relation_l3ext_rs_inst_p_to_nat_mapping_epg attribute is no longer available",
 			},
 			"relation_fv_rs_cons_if": &schema.Schema{
 				Type:     schema.TypeSet,
@@ -157,9 +159,10 @@ func resourceAciExternalNetworkInstanceProfile() *schema.Resource {
 				Set:      schema.HashString,
 			},
 			"relation_fv_rs_cust_qos_pol": &schema.Schema{
-				Type:     schema.TypeString,
-				Computed: true,
-				Optional: true,
+				Type:       schema.TypeString,
+				Computed:   true,
+				Optional:   true,
+				Deprecated: "relation_fv_rs_cust_qos_pol attribute is no longer available",
 			},
 			"relation_l3ext_rs_inst_p_to_profile": &schema.Schema{
 				Type:     schema.TypeSet,
@@ -190,10 +193,11 @@ func resourceAciExternalNetworkInstanceProfile() *schema.Resource {
 				Set:      schema.HashString,
 			},
 			"relation_fv_rs_intra_epg": &schema.Schema{
-				Type:     schema.TypeSet,
-				Elem:     &schema.Schema{Type: schema.TypeString},
-				Optional: true,
-				Set:      schema.HashString,
+				Type:       schema.TypeSet,
+				Elem:       &schema.Schema{Type: schema.TypeString},
+				Optional:   true,
+				Set:        schema.HashString,
+				Deprecated: "relation_fv_rs_intra_epg attribute is no longer available",
 			},
 		}),
 	}
