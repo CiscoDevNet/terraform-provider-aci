@@ -45,14 +45,10 @@ Manages ACI External Network Instance Profile
 
 - `relation_fv_rs_sec_inherited` - (Optional) Relation to class fvEPg. Cardinality - N_TO_M. Type - Set of String.
 - `relation_fv_rs_prov` - (Optional) Relation to class vzBrCP. Cardinality - N_TO_M. Type - Set of String.
-- `relation_l3ext_rs_l3_inst_p_to_dom_p` - (Optional) Relation to class extnwDomP. Cardinality - N_TO_ONE. Type - String.
-- `relation_l3ext_rs_inst_p_to_nat_mapping_epg` - (Optional) Relation to class fvAEPg. Cardinality - N_TO_ONE. Type - String.
 - `relation_fv_rs_cons_if` - (Optional) Relation to class vzCPIf. Cardinality - N_TO_M. Type - Set of String.
-- `relation_fv_rs_cust_qos_pol` - (Optional) Relation to class qosCustomPol. Cardinality - N_TO_ONE. Type - String.
 - `relation_l3ext_rs_inst_p_to_profile` - (Optional) Relation to class rtctrlProfile. Cardinality - N_TO_M. Type - Set of Map.
 - `relation_fv_rs_cons` - (Optional) Relation to class vzBrCP. Cardinality - N_TO_M. Type - Set of String.
 - `relation_fv_rs_prot_by` - (Optional) Relation to class vzTaboo. Cardinality - N_TO_M. Type - Set of String.
-- `relation_fv_rs_intra_epg` - (Optional) Relation to class vzBrCP. Cardinality - N_TO_M. Type - Set of String.
 
 ## Attribute Reference
 
