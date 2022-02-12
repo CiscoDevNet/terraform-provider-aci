@@ -21,6 +21,17 @@ resource "aci_vlan_pool" "example" {
   annotation  = "example"
   name_alias  = "example"
 }
+
+resource "aci_ranges" "range_1" {
+  vlan_pool_dn  = aci_vlan_pool.example.id
+  description   = "From Terraform"
+  from          = "vlan-1"
+  to            = "vlan-2"
+  alloc_mode    = "inherit"
+  annotation    = "example"
+  name_alias    = "name_alias"
+  role          = "external"
+}
 ```
 
 ## Argument Reference ##
