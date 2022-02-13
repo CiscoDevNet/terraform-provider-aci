@@ -13,12 +13,12 @@ Manages ACI Leaf Interface Profile
 ## Example Usage ##
 
 ```hcl
-	resource "aci_leaf_interface_profile" "fooleaf_interface_profile" {
-		description = "From Terraform"
-		name        = "demo_leaf_profile"
-		annotation  = "tag_leaf"
-		name_alias  = "name_alias"
-	}
+resource "aci_leaf_interface_profile" "fooleaf_interface_profile" {
+	description = "From Terraform"
+	name        = "demo_leaf_profile"
+	annotation  = "tag_leaf"
+	name_alias  = "name_alias"
+}
 ```
 ## Argument Reference ##
 * `name` - (Required) Name of Object leaf interface profile.
