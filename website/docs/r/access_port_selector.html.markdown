@@ -14,14 +14,14 @@ Manages ACI Access Port Selector
 ## Example Usage
 
 ```hcl
-	resource "aci_access_port_selector" "fooaccess_port_selector" {
-		leaf_interface_profile_dn = aci_leaf_interface_profile.example.id
-		description               = "from terraform"
-		name                      = "demo_port_selector"
-		access_port_selector_type = "ALL"
-		annotation                = "tag_port_selector"
-		name_alias                = "alias_port_selector"
-	}
+resource "aci_access_port_selector" "fooaccess_port_selector" {
+	leaf_interface_profile_dn = aci_leaf_interface_profile.example.id
+	description               = "from terraform"
+	name                      = "demo_port_selector"
+	access_port_selector_type = "ALL"
+	annotation                = "tag_port_selector"
+	name_alias                = "alias_port_selector"
+}
 ```
 
 ## Argument Reference
