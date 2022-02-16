@@ -43,7 +43,7 @@ func dataSourceAciConsoleAuthenticationMethodReadContext(ctx context.Context, d 
 
 	rn := fmt.Sprintf("userext/authrealm/consoleauth")
 	dn := fmt.Sprintf("uni/%s", rn)
-	aaaConsoleAuth, err := getRemoteConsoleAuthenticationMethod(aciClient, dn)
+	aaaConsoleAuth, err := GetRemoteConsoleAuthenticationMethod(aciClient, dn)
 	if err != nil {
 		return diag.FromErr(err)
 	}

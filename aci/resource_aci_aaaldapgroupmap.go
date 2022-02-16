@@ -65,6 +65,7 @@ func setLDAPGroupMapAttributes(aaaLdapGroupMap *models.LDAPGroupMap, d *schema.R
 	}
 	d.Set("name", aaaLdapGroupMapMap["name"])
 	d.Set("name_alias", aaaLdapGroupMapMap["nameAlias"])
+	d.Set("annotation", aaaLdapGroupMapMap["annotation"])
 	return d, nil
 }
 

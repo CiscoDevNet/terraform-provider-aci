@@ -23,7 +23,7 @@ resource "aci_local_user" "example" {
     clear_pwd_history   = "no"
     description         = "from terraform"
     email               = "example@email.com"
-    expiration          = "2030-01-01 00:00:00"
+    expiration          = "2030-12-12T00:00:00.000+00:00"
     expires             = "yes"
     first_name          = "fname"
     last_name           = "lname"
@@ -45,7 +45,7 @@ resource "aci_local_user" "example" {
   Allowed values: "active", "inactive". Default value: "active".
 - `annotation` - (Optional) Annotation for object locally authenticated user.
 - `cert_attribute` - (Optional) cert-attribute for object locally authenticated user.
-- `clear_pwd_history` - (Optional) Allows the administrator to clear the password history of a locally-authenticated user. This is a trigger type attribute, So the value will reset to "no" once histry is cleared. Allowed values: "no", "yes". Default value: no.
+- `clear_pwd_history` - (Optional) Allows the administrator to clear the password history of a locally-authenticated user. This is a trigger type attribute, So the value will reset to "no" once histry is cleared. Allowed values: "no", "yes".
 - `description` - (Optional) Specifies a description of the policy definition.
 - `email` - (Optional) The email address of the locally-authenticated user.
 - `expiration` - (Optional) The expiration date of the locally-authenticated user account. The expires property must be enabled to activate an expiration date in format: YYYY-MM-DD HH:MM:SS. Default value: "never".

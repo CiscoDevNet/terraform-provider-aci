@@ -17,6 +17,21 @@ var testAccProviders map[string]func() (*schema.Provider, error)
 var testAccProvider *schema.Provider
 var systemInfo *models.System
 var providerProfileDn string = "uni/vmmp-VMware"
+var certificate_terraformuser string = `
+-----BEGIN CERTIFICATE-----
+MIICMjCCAZugAwIBAgIJAMqfErBhyJ/MMA0GCSqGSIb3DQEBCwUAMDIxCzAJBgNV
+BAYTAkFVMRMwEQYDVQQIDApTb21lLVN0YXRlMQ4wDAYDVQQKDAVjaXNjbzAeFw0y
+MjAyMDIwMjE4MzBaFw0yMjAzMDQwMjE4MzBaMDIxCzAJBgNVBAYTAkFVMRMwEQYD
+VQQIDApTb21lLVN0YXRlMQ4wDAYDVQQKDAVjaXNjbzCBnzANBgkqhkiG9w0BAQEF
+AAOBjQAwgYkCgYEAqsd9v1p8RhFJ0kFsIRhLmTsk71ezZWKXfYVH/dvOHUgiRASY
+c/XxrKf6OHSzDVayqrRl+kH1s08qdEVR+CzghZerYfCF6tXmfE2sAkkLQJStPpUW
+8x8oGFGXsqE8FGwoVM0NYhNk8Mb5qGYG3RkrUe/iA7ciGWc5XXplGW4t7CMCAwEA
+AaNQME4wHQYDVR0OBBYEFBnezWx5WfUKJ7TVq9GaCK7keOZIMB8GA1UdIwQYMBaA
+FBnezWx5WfUKJ7TVq9GaCK7keOZIMAwGA1UdEwQFMAMBAf8wDQYJKoZIhvcNAQEL
+BQADgYEAOwT6w5d5GeZo8dFtWDLQMPC2zG8G5gZKe8BDbkoo1iYPDEr/mwd40FDI
+iPS+W0nUlIiYmbdg8oBOvPOdaPxdvlzunRHenDg3rrUoT6v+fEG84PTKMKFveP/P
+6QmNWpq9VtLOWnOWCJSuojYd5Ss//hDLbgmTcCmK0VOmQlAW9qA=
+-----END CERTIFICATE-----`
 
 const region = "us-west-1"
 const cloudVendor = "aws"
@@ -43,6 +58,16 @@ const fabDn3 = "topology/pod-1/node-111"
 const fabDn4 = "topology/pod-1/node-1"
 const vmmProvProfileDn = "uni/vmmp-VMware"
 const vmmProvProfileDnOther = "uni/vmmp-OpenShift"
+const fabricNodeMemNodeId1 = "301"
+const fabricNodeMemNodeId2 = "302"
+const fabricNodeMemNodeId3 = "303"
+const fabricNodeMemNodeId4 = "304"
+const fabricNodeMemNodeId5 = "306"
+const pathEp1 = "topology/pod-1/paths-101/pathep-[eth1/1]"
+const pathEp2 = "topology/pod-1/paths-101/pathep-[eth1/12]"
+const pathEp3 = "topology/pod-1/paths-101/pathep-[eth1/6]"
+const pathEp4 = "topology/pod-1/paths-101/pathep-[eth1/17]"
+const pathEp5 = "topology/pod-1/paths-101/pathep-[eth1/34]"
 
 func init() {
 	testAccProvider = aci.Provider()

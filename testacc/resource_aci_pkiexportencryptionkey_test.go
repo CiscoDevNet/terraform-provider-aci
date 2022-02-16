@@ -173,11 +173,11 @@ func testAccCheckAciAESEncryptionPassphraseandKeysforConfigExportImportExists(na
 		rs, ok := s.RootModule().Resources[name]
 
 		if !ok {
-			return fmt.Errorf("AES Encryption Passphraseand KeysforConfig Export Import %s not found", name)
+			return fmt.Errorf("AES Encryption Passphrase and Keys for Config Export Import %s not found", name)
 		}
 
 		if rs.Primary.ID == "" {
-			return fmt.Errorf("No AES Encryption Passphraseand KeysforConfig Export Import dn was set")
+			return fmt.Errorf("No AES Encryption Passphrase and Keys for Config Export Import dn was set")
 		}
 
 		client := testAccProvider.Meta().(*client.Client)
@@ -189,7 +189,7 @@ func testAccCheckAciAESEncryptionPassphraseandKeysforConfigExportImportExists(na
 
 		encryption_keyFound := models.AESEncryptionPassphraseandKeysforConfigExportImportFromContainer(cont)
 		if encryption_keyFound.DistinguishedName != rs.Primary.ID {
-			return fmt.Errorf("AES Encryption Passphraseand KeysforConfig Export Import %s not found", rs.Primary.ID)
+			return fmt.Errorf("AES Encryption Passphrase and KeysforConfig Export Import %s not found", rs.Primary.ID)
 		}
 		*encryption_key = *encryption_keyFound
 		return nil
@@ -206,7 +206,7 @@ func testAccCheckAciAESEncryptionPassphraseandKeysforConfigExportImportIdEqual(m
 }
 
 func CreateAccAESEncryptionPassphraseandKeysforConfigExportImportConfig() string {
-	fmt.Println("=== STEP  Basic: testing encryption_key creation with required parameters")
+	fmt.Println("=== STEP  Basic: testing encryption_key")
 	resource := fmt.Sprintf(`
 	
 	resource "aci_encryption_key" "test" {}

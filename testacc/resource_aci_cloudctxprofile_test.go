@@ -116,6 +116,7 @@ func TestAccAciCloudContextProfile_Basic(t *testing.T) {
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckAciCloudContextProfileExists(resourceName, &cloud_context_profile_updated),
 					resource.TestCheckResourceAttr(resourceName, "tenant_dn", fmt.Sprintf("uni/tn-%s", rNameUpdated)),
+					resource.TestCheckResourceAttr(resourceName, "relation_cloud_rs_to_ctx", fmt.Sprintf("uni/tn-%s/ctx-%s", rNameUpdated, rNameUpdated)),
 					resource.TestCheckResourceAttr(resourceName, "name", rName),
 					testAccCheckAciCloudContextProfileIdNotEqual(&cloud_context_profile_default, &cloud_context_profile_updated),
 				),
@@ -128,6 +129,7 @@ func TestAccAciCloudContextProfile_Basic(t *testing.T) {
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckAciCloudContextProfileExists(resourceName, &cloud_context_profile_updated),
 					resource.TestCheckResourceAttr(resourceName, "tenant_dn", fmt.Sprintf("uni/tn-%s", rName)),
+					resource.TestCheckResourceAttr(resourceName, "relation_cloud_rs_to_ctx", fmt.Sprintf("uni/tn-%s/ctx-%s", rName, rName)),
 					resource.TestCheckResourceAttr(resourceName, "name", rNameUpdated),
 					testAccCheckAciCloudContextProfileIdNotEqual(&cloud_context_profile_default, &cloud_context_profile_updated),
 				),

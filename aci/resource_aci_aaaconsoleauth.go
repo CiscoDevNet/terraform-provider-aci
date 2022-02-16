@@ -57,7 +57,7 @@ func resourceAciConsoleAuthenticationMethod() *schema.Resource {
 	}
 }
 
-func getRemoteConsoleAuthenticationMethod(client *client.Client, dn string) (*models.ConsoleAuthenticationMethod, error) {
+func GetRemoteConsoleAuthenticationMethod(client *client.Client, dn string) (*models.ConsoleAuthenticationMethod, error) {
 	aaaConsoleAuthCont, err := client.Get(dn)
 	if err != nil {
 		return nil, err
@@ -88,7 +88,7 @@ func resourceAciConsoleAuthenticationMethodImport(d *schema.ResourceData, m inte
 	log.Printf("[DEBUG] %s: Beginning Import", d.Id())
 	aciClient := m.(*client.Client)
 	dn := d.Id()
-	aaaConsoleAuth, err := getRemoteConsoleAuthenticationMethod(aciClient, dn)
+	aaaConsoleAuth, err := GetRemoteConsoleAuthenticationMethod(aciClient, dn)
 	if err != nil {
 		return nil, err
 	}
@@ -179,7 +179,7 @@ func resourceAciConsoleAuthenticationMethodRead(ctx context.Context, d *schema.R
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 	aciClient := m.(*client.Client)
 	dn := d.Id()
-	aaaConsoleAuth, err := getRemoteConsoleAuthenticationMethod(aciClient, dn)
+	aaaConsoleAuth, err := GetRemoteConsoleAuthenticationMethod(aciClient, dn)
 	if err != nil {
 		d.SetId("")
 		return diag.FromErr(err)

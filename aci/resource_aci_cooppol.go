@@ -39,7 +39,7 @@ func resourceAciCOOPGroupPolicy() *schema.Resource {
 	}
 }
 
-func getRemoteCOOPGroupPolicy(client *client.Client, dn string) (*models.COOPGroupPolicy, error) {
+func GetRemoteCOOPGroupPolicy(client *client.Client, dn string) (*models.COOPGroupPolicy, error) {
 	coopPolCont, err := client.Get(dn)
 	if err != nil {
 		return nil, err
@@ -68,7 +68,7 @@ func resourceAciCOOPGroupPolicyImport(d *schema.ResourceData, m interface{}) ([]
 	log.Printf("[DEBUG] %s: Beginning Import", d.Id())
 	aciClient := m.(*client.Client)
 	dn := d.Id()
-	coopPol, err := getRemoteCOOPGroupPolicy(aciClient, dn)
+	coopPol, err := GetRemoteCOOPGroupPolicy(aciClient, dn)
 	if err != nil {
 		return nil, err
 	}
@@ -151,7 +151,7 @@ func resourceAciCOOPGroupPolicyRead(ctx context.Context, d *schema.ResourceData,
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 	aciClient := m.(*client.Client)
 	dn := d.Id()
-	coopPol, err := getRemoteCOOPGroupPolicy(aciClient, dn)
+	coopPol, err := GetRemoteCOOPGroupPolicy(aciClient, dn)
 	if err != nil {
 		d.SetId("")
 		return diag.FromErr(err)

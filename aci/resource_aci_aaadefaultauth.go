@@ -66,7 +66,7 @@ func resourceAciDefaultAuthenticationMethodforallLogins() *schema.Resource {
 	}
 }
 
-func getRemoteDefaultAuthenticationMethodforallLogins(client *client.Client, dn string) (*models.DefaultAuthenticationMethodforallLogins, error) {
+func GetRemoteDefaultAuthenticationMethodforallLogins(client *client.Client, dn string) (*models.DefaultAuthenticationMethodforallLogins, error) {
 	aaaDefaultAuthCont, err := client.Get(dn)
 	if err != nil {
 		return nil, err
@@ -98,7 +98,7 @@ func resourceAciDefaultAuthenticationMethodforallLoginsImport(d *schema.Resource
 	log.Printf("[DEBUG] %s: Beginning Import", d.Id())
 	aciClient := m.(*client.Client)
 	dn := d.Id()
-	aaaDefaultAuth, err := getRemoteDefaultAuthenticationMethodforallLogins(aciClient, dn)
+	aaaDefaultAuth, err := GetRemoteDefaultAuthenticationMethodforallLogins(aciClient, dn)
 	if err != nil {
 		return nil, err
 	}
@@ -203,7 +203,7 @@ func resourceAciDefaultAuthenticationMethodforallLoginsRead(ctx context.Context,
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 	aciClient := m.(*client.Client)
 	dn := d.Id()
-	aaaDefaultAuth, err := getRemoteDefaultAuthenticationMethodforallLogins(aciClient, dn)
+	aaaDefaultAuth, err := GetRemoteDefaultAuthenticationMethodforallLogins(aciClient, dn)
 	if err != nil {
 		d.SetId("")
 		return diag.FromErr(err)

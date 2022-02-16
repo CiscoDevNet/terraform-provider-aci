@@ -264,7 +264,7 @@ func testAccCheckAciPortTrackingIdEqual(m1, m2 *models.PortTracking) resource.Te
 }
 
 func CreateAccPortTrackingConfig() string {
-	fmt.Println("=== STEP  testing port_tracking creation with required arguments only")
+	fmt.Println("=== STEP  testing port_tracking creation")
 	resource := fmt.Sprintf(`
 	
 	resource "aci_port_tracking" "test" {}

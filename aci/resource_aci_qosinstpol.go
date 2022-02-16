@@ -87,7 +87,7 @@ func resourceAciQOSInstancePolicy() *schema.Resource {
 	}
 }
 
-func getRemoteQOSInstancePolicy(client *client.Client, dn string) (*models.QOSInstancePolicy, error) {
+func GetRemoteQOSInstancePolicy(client *client.Client, dn string) (*models.QOSInstancePolicy, error) {
 	qosInstPolCont, err := client.Get(dn)
 	if err != nil {
 		return nil, err
@@ -128,7 +128,7 @@ func resourceAciQOSInstancePolicyImport(d *schema.ResourceData, m interface{}) (
 	log.Printf("[DEBUG] %s: Beginning Import", d.Id())
 	aciClient := m.(*client.Client)
 	dn := d.Id()
-	qosInstPol, err := getRemoteQOSInstancePolicy(aciClient, dn)
+	qosInstPol, err := GetRemoteQOSInstancePolicy(aciClient, dn)
 	if err != nil {
 		return nil, err
 	}
@@ -274,7 +274,7 @@ func resourceAciQOSInstancePolicyRead(ctx context.Context, d *schema.ResourceDat
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 	aciClient := m.(*client.Client)
 	dn := d.Id()
-	qosInstPol, err := getRemoteQOSInstancePolicy(aciClient, dn)
+	qosInstPol, err := GetRemoteQOSInstancePolicy(aciClient, dn)
 	if err != nil {
 		d.SetId("")
 		return diag.FromErr(err)

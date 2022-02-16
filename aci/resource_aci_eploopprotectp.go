@@ -64,7 +64,7 @@ func resourceAciEPLoopProtectionPolicy() *schema.Resource {
 	}
 }
 
-func getRemoteEPLoopProtectionPolicy(client *client.Client, dn string) (*models.EPLoopProtectionPolicy, error) {
+func GetRemoteEPLoopProtectionPolicy(client *client.Client, dn string) (*models.EPLoopProtectionPolicy, error) {
 	epLoopProtectPCont, err := client.Get(dn)
 	if err != nil {
 		return nil, err
@@ -118,7 +118,7 @@ func resourceAciEPLoopProtectionPolicyImport(d *schema.ResourceData, m interface
 	log.Printf("[DEBUG] %s: Beginning Import", d.Id())
 	aciClient := m.(*client.Client)
 	dn := d.Id()
-	epLoopProtectP, err := getRemoteEPLoopProtectionPolicy(aciClient, dn)
+	epLoopProtectP, err := GetRemoteEPLoopProtectionPolicy(aciClient, dn)
 	if err != nil {
 		return nil, err
 	}
@@ -150,6 +150,10 @@ func resourceAciEPLoopProtectionPolicyCreate(ctx context.Context, d *schema.Reso
 		actionList := make([]string, 0, 1)
 		for _, val := range Action.([]interface{}) {
 			actionList = append(actionList, val.(string))
+		}
+		err := checkDuplicate(actionList)
+		if err != nil {
+			return diag.FromErr(err)
 		}
 		Action := strings.Join(actionList, ",")
 		epLoopProtectPAttr.Action = Action
@@ -204,6 +208,10 @@ func resourceAciEPLoopProtectionPolicyUpdate(ctx context.Context, d *schema.Reso
 		for _, val := range Action.([]interface{}) {
 			actionList = append(actionList, val.(string))
 		}
+		err := checkDuplicate(actionList)
+		if err != nil {
+			return diag.FromErr(err)
+		}
 		Action := strings.Join(actionList, ",")
 		epLoopProtectPAttr.Action = Action
 	} else {
@@ -239,7 +247,7 @@ func resourceAciEPLoopProtectionPolicyRead(ctx context.Context, d *schema.Resour
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 	aciClient := m.(*client.Client)
 	dn := d.Id()
-	epLoopProtectP, err := getRemoteEPLoopProtectionPolicy(aciClient, dn)
+	epLoopProtectP, err := GetRemoteEPLoopProtectionPolicy(aciClient, dn)
 	if err != nil {
 		d.SetId("")
 		return diag.FromErr(err)

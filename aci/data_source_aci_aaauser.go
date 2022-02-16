@@ -95,12 +95,6 @@ func dataSourceAciLocalUser() *schema.Resource {
 				Computed: true,
 			},
 
-			"pwd": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
 			"pwd_life_time": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,

@@ -238,6 +238,9 @@ func GetQuoted(s string) string {
 
 func StringListtoString(list []string) string {
 	val := ""
+	if len(list) == 1 && list[0] == "" {
+		return "[]"
+	}
 	val = val + "["
 	for i := 0; i < len(list)-1; i++ {
 		val = val + GetQuoted(list[i])
@@ -262,4 +265,13 @@ func StringListtoStringWithoutQuoted(list []string) string {
 
 func makeTestVariable(s string) string {
 	return "acctest_" + s
+}
+
+func convertToStringArray(s string) []string {
+	arr := make([]string, 0, 1)
+	splitted := strings.Split(s, ",")
+	for _, item := range splitted {
+		arr = append(arr, item)
+	}
+	return arr
 }

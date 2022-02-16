@@ -63,7 +63,7 @@ func dataSourceAciErrorDisabledRecoveryPolicyReadContext(ctx context.Context, d 
 
 	rn := fmt.Sprintf("infra/edrErrDisRecoverPol-%s", name)
 	dn := fmt.Sprintf("uni/%s", rn)
-	edrErrDisRecoverPol, err := getRemoteErrorDisabledRecoveryPolicy(aciClient, dn)
+	edrErrDisRecoverPol, err := GetRemoteErrorDisabledRecoveryPolicy(aciClient, dn)
 	if err != nil {
 		return diag.FromErr(err)
 	}
@@ -81,7 +81,7 @@ func dataSourceAciErrorDisabledRecoveryPolicyReadContext(ctx context.Context, d 
 
 	for _, val := range events {
 		edrEventDn := val
-		edrEvent, err := getRemoteErrorDisabledRecoveryEvent(aciClient, edrEventDn)
+		edrEvent, err := GetRemoteErrorDisabledRecoveryEvent(aciClient, edrEventDn)
 		if err != nil {
 			return diag.FromErr(err)
 		}

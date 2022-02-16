@@ -53,7 +53,7 @@ func TestAccAciAESEncryptionPassphraseandKeysforConfigExportImportDataSource_Bas
 }
 
 func CreateAccAESEncryptionPassphraseandKeysforConfigExportImportConfigDataSource() string {
-	fmt.Println("=== STEP  testing encryption_key Data Source with required arguments only")
+	fmt.Println("=== STEP  testing encryption_key Data Source")
 	resource := fmt.Sprintf(`
 	
 	resource "aci_encryption_key" "test" {

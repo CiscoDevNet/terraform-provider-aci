@@ -37,7 +37,6 @@ data "aci_mcp_instance_policy" "example" {}
 * `admin_st` - (Optional) Admin State. The administrative state of the object or policy.
 * `ctrl` - (Optional) Controls. The control state.
 * `init_delay_time` - (Optional) Init Delay Time. 
-* `key` - (optional) Secret Key. The key or password used to uniquely identify this configuration object.
 * `loop_detect_mult` - (Optional) Loop Detection Multiplier. 
 * `loop_protect_act` - (Optional) Loop Protection Action. 
 * `tx_freq` - (Optional) Transmission Frequency. Sets the transmission frequency of the instance advertisements.

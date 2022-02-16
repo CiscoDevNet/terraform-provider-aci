@@ -98,7 +98,7 @@ func resourceAciErrorDisabledRecoveryPolicy() *schema.Resource {
 	}
 }
 
-func getRemoteErrorDisabledRecoveryPolicy(client *client.Client, dn string) (*models.ErrorDisabledRecoveryPolicy, error) {
+func GetRemoteErrorDisabledRecoveryPolicy(client *client.Client, dn string) (*models.ErrorDisabledRecoveryPolicy, error) {
 	edrErrDisRecoverPolCont, err := client.Get(dn)
 	if err != nil {
 		return nil, err
@@ -110,7 +110,7 @@ func getRemoteErrorDisabledRecoveryPolicy(client *client.Client, dn string) (*mo
 	return edrErrDisRecoverPol, nil
 }
 
-func getRemoteErrorDisabledRecoveryEvent(client *client.Client, dn string) (*models.ErrorDisabledRecoveryEvent, error) {
+func GetRemoteErrorDisabledRecoveryEvent(client *client.Client, dn string) (*models.ErrorDisabledRecoveryEvent, error) {
 	edrEventPCont, err := client.Get(dn)
 	if err != nil {
 		return nil, err
@@ -162,7 +162,7 @@ func resourceAciErrorDisabledRecoveryPolicyImport(d *schema.ResourceData, m inte
 	log.Printf("[DEBUG] %s: Beginning Import", d.Id())
 	aciClient := m.(*client.Client)
 	dn := d.Id()
-	edrErrDisRecoverPol, err := getRemoteErrorDisabledRecoveryPolicy(aciClient, dn)
+	edrErrDisRecoverPol, err := GetRemoteErrorDisabledRecoveryPolicy(aciClient, dn)
 	if err != nil {
 		return nil, err
 	}
@@ -353,7 +353,7 @@ func resourceAciErrorDisabledRecoveryPolicyRead(ctx context.Context, d *schema.R
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 	aciClient := m.(*client.Client)
 	dn := d.Id()
-	edrErrDisRecoverPol, err := getRemoteErrorDisabledRecoveryPolicy(aciClient, dn)
+	edrErrDisRecoverPol, err := GetRemoteErrorDisabledRecoveryPolicy(aciClient, dn)
 	if err != nil {
 		d.SetId("")
 		return diag.FromErr(err)
@@ -369,7 +369,7 @@ func resourceAciErrorDisabledRecoveryPolicyRead(ctx context.Context, d *schema.R
 
 	for _, val := range events {
 		edrEventDn := val.(string)
-		edrEvent, err := getRemoteErrorDisabledRecoveryEvent(aciClient, edrEventDn)
+		edrEvent, err := GetRemoteErrorDisabledRecoveryEvent(aciClient, edrEventDn)
 		if err != nil {
 			return diag.FromErr(err)
 		}
