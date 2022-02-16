@@ -27,8 +27,8 @@ Manages ACI Login Domain
 resource "aci_login_domain" "example" {
   name             = "example"
   annotation       = "orchestrator:terraform"
-  provider_group   = "example" 
-  realm            = "local"
+  provider_group   = "60" 
+  realm            = "none"
   realm_sub_type   = "default"
   description      = "From Terraform"
   name_alias       = "login_domain_alias"

@@ -48,7 +48,7 @@ func dataSourceAciDefaultAuthenticationMethodforallLoginsRead(ctx context.Contex
 
 	rn := fmt.Sprintf("userext/authrealm/defaultauth")
 	dn := fmt.Sprintf("uni/%s", rn)
-	aaaDefaultAuth, err := getRemoteDefaultAuthenticationMethodforallLogins(aciClient, dn)
+	aaaDefaultAuth, err := GetRemoteDefaultAuthenticationMethodforallLogins(aciClient, dn)
 	if err != nil {
 		return diag.FromErr(err)
 	}

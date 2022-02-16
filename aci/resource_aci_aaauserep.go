@@ -134,7 +134,7 @@ func resourceAciUserManagement() *schema.Resource {
 	}
 }
 
-func getRemoteUserManagement(client *client.Client, dn string) (*models.UserManagement, error) {
+func GetRemoteUserManagement(client *client.Client, dn string) (*models.UserManagement, error) {
 	aaaUserEpCont, err := client.Get(dn)
 	if err != nil {
 		return nil, err
@@ -159,7 +159,7 @@ func setUserManagementAttributes(aaaUserEp *models.UserManagement, d *schema.Res
 	return d, nil
 }
 
-func getRemotePasswordChangeExpirationPolicy(client *client.Client, dn string) (*models.PasswordChangeExpirationPolicy, error) {
+func GetRemotePasswordChangeExpirationPolicy(client *client.Client, dn string) (*models.PasswordChangeExpirationPolicy, error) {
 	aaaPwdProfileCont, err := client.Get(dn)
 	if err != nil {
 		return nil, err
@@ -185,7 +185,7 @@ func setPasswordChangeExpirationPolicyAttributes(aaaPwdProfile *models.PasswordC
 	return d, nil
 }
 
-func getRemoteBlockUserLoginsPolicy(client *client.Client, dn string) (*models.BlockUserLoginsPolicy, error) {
+func GetRemoteBlockUserLoginsPolicy(client *client.Client, dn string) (*models.BlockUserLoginsPolicy, error) {
 	aaaBlockLoginProfileCont, err := client.Get(dn)
 	if err != nil {
 		return nil, err
@@ -210,7 +210,7 @@ func setBlockUserLoginsPolicyAttributes(aaaBlockLoginProfile *models.BlockUserLo
 	return d, nil
 }
 
-func getRemoteWebTokenData(client *client.Client, dn string) (*models.WebTokenData, error) {
+func GetRemoteWebTokenData(client *client.Client, dn string) (*models.WebTokenData, error) {
 	pkiWebTokenDataCont, err := client.Get(dn)
 	if err != nil {
 		return nil, err
@@ -257,7 +257,7 @@ func resourceAciUserManagementImport(d *schema.ResourceData, m interface{}) ([]*
 	log.Printf("[DEBUG] %s: Beginning Import", d.Id())
 	aciClient := m.(*client.Client)
 	dn := d.Id()
-	aaaUserEp, err := getRemoteUserManagement(aciClient, dn)
+	aaaUserEp, err := GetRemoteUserManagement(aciClient, dn)
 	if err != nil {
 		return nil, err
 	}
@@ -387,6 +387,10 @@ func resourceAciUserManagementCreate(ctx context.Context, d *schema.ResourceData
 		sessionRecordFlagsList := make([]string, 0, 1)
 		for _, val := range SessionRecordFlags.([]interface{}) {
 			sessionRecordFlagsList = append(sessionRecordFlagsList, val.(string))
+		}
+		err := checkDuplicate(sessionRecordFlagsList)
+		if err != nil {
+			return diag.FromErr(err)
 		}
 		SessionRecordFlags := strings.Join(sessionRecordFlagsList, ",")
 		pkiWebTokenDataAttr.SessionRecordFlags = SessionRecordFlags
@@ -559,6 +563,10 @@ func resourceAciUserManagementUpdate(ctx context.Context, d *schema.ResourceData
 		for _, val := range SessionRecordFlags.([]interface{}) {
 			sessionRecordFlagsList = append(sessionRecordFlagsList, val.(string))
 		}
+		err := checkDuplicate(sessionRecordFlagsList)
+		if err != nil {
+			return diag.FromErr(err)
+		}
 		SessionRecordFlags := strings.Join(sessionRecordFlagsList, ",")
 		pkiWebTokenDataAttr.SessionRecordFlags = SessionRecordFlags
 	}
@@ -618,7 +626,7 @@ func resourceAciUserManagementRead(ctx context.Context, d *schema.ResourceData, 
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 	aciClient := m.(*client.Client)
 	dn := d.Id()
-	aaaUserEp, err := getRemoteUserManagement(aciClient, dn)
+	aaaUserEp, err := GetRemoteUserManagement(aciClient, dn)
 	if err != nil {
 		d.SetId("")
 		return nil
@@ -632,7 +640,7 @@ func resourceAciUserManagementRead(ctx context.Context, d *schema.ResourceData, 
 	_, err = aciClient.Get(dn + "/pwdprofile")
 	if err == nil {
 		aaaPwdProfileDn := dn + "/pwdprofile"
-		aaaPwdProfile, err := getRemotePasswordChangeExpirationPolicy(aciClient, aaaPwdProfileDn)
+		aaaPwdProfile, err := GetRemotePasswordChangeExpirationPolicy(aciClient, aaaPwdProfileDn)
 		if err != nil {
 			return diag.FromErr(err)
 		}
@@ -645,7 +653,7 @@ func resourceAciUserManagementRead(ctx context.Context, d *schema.ResourceData, 
 	_, err = aciClient.Get(dn + "/blockloginp")
 	if err == nil {
 		aaaBlockLoginProfileDn := dn + "/blockloginp"
-		aaaBlockLoginProfile, err := getRemoteBlockUserLoginsPolicy(aciClient, aaaBlockLoginProfileDn)
+		aaaBlockLoginProfile, err := GetRemoteBlockUserLoginsPolicy(aciClient, aaaBlockLoginProfileDn)
 		if err != nil {
 			return diag.FromErr(err)
 		}
@@ -658,7 +666,7 @@ func resourceAciUserManagementRead(ctx context.Context, d *schema.ResourceData, 
 	_, err = aciClient.Get(dn + "/pkiext/webtokendata")
 	if err == nil {
 		pkiWebTokenDn := dn + "/pkiext/webtokendata"
-		pkiWebTokenData, err := getRemoteWebTokenData(aciClient, pkiWebTokenDn)
+		pkiWebTokenData, err := GetRemoteWebTokenData(aciClient, pkiWebTokenDn)
 		if err != nil {
 			return diag.FromErr(err)
 		}

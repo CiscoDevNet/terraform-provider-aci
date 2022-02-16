@@ -52,7 +52,7 @@ func dataSourceAciEPLoopProtectionPolicyReadContext(ctx context.Context, d *sche
 
 	rn := fmt.Sprintf("infra/epLoopProtectP-%s", name)
 	dn := fmt.Sprintf("uni/%s", rn)
-	epLoopProtectP, err := getRemoteEPLoopProtectionPolicy(aciClient, dn)
+	epLoopProtectP, err := GetRemoteEPLoopProtectionPolicy(aciClient, dn)
 	if err != nil {
 		return diag.FromErr(err)
 	}

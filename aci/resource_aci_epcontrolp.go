@@ -54,7 +54,7 @@ func resourceAciEndpointControlPolicy() *schema.Resource {
 	}
 }
 
-func getRemoteEndpointControlPolicy(client *client.Client, dn string) (*models.EndpointControlPolicy, error) {
+func GetRemoteEndpointControlPolicy(client *client.Client, dn string) (*models.EndpointControlPolicy, error) {
 	epControlPCont, err := client.Get(dn)
 	if err != nil {
 		return nil, err
@@ -86,7 +86,7 @@ func resourceAciEndpointControlPolicyImport(d *schema.ResourceData, m interface{
 	log.Printf("[DEBUG] %s: Beginning Import", d.Id())
 	aciClient := m.(*client.Client)
 	dn := d.Id()
-	epControlP, err := getRemoteEndpointControlPolicy(aciClient, dn)
+	epControlP, err := GetRemoteEndpointControlPolicy(aciClient, dn)
 	if err != nil {
 		return nil, err
 	}
@@ -193,7 +193,7 @@ func resourceAciEndpointControlPolicyRead(ctx context.Context, d *schema.Resourc
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 	aciClient := m.(*client.Client)
 	dn := d.Id()
-	epControlP, err := getRemoteEndpointControlPolicy(aciClient, dn)
+	epControlP, err := GetRemoteEndpointControlPolicy(aciClient, dn)
 	if err != nil {
 		d.SetId("")
 		return nil

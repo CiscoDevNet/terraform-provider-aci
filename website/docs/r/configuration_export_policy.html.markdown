@@ -32,7 +32,7 @@ resource "aci_configuration_export_policy" "example" {
 
 - `name` - (Required) Name of Object configuration export policy.
 - `admin_st` - (Optional) Admin state of the export policy. A policy can be triggered at any time by setting the admin_st to triggered. The value on APIC will reset back to untriggered once trigger is done. 
-  Allowed values: "untriggered", "triggered". Default value is "untriggered".
+  Allowed values: "untriggered", "triggered".
 - `annotation` - (Optional) Annotation for object configuration export policy.
 - `description` - (Optional) Description for object configuration export policy.
 - `format` - (Optional) Export data format.

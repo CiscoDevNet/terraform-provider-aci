@@ -99,7 +99,7 @@ func dataSourceAciUserManagementRead(d *schema.ResourceData, m interface{}) erro
 
 	rn := fmt.Sprintf("userext")
 	dn := fmt.Sprintf("uni/%s", rn)
-	aaaUserEp, err := getRemoteUserManagement(aciClient, dn)
+	aaaUserEp, err := GetRemoteUserManagement(aciClient, dn)
 	if err != nil {
 		return err
 	}
@@ -107,7 +107,7 @@ func dataSourceAciUserManagementRead(d *schema.ResourceData, m interface{}) erro
 	_, err = aciClient.Get(dn + "/pwdprofile")
 	if err == nil {
 		aaaPwdProfileDn := dn + "/pwdprofile"
-		aaaPwdProfile, err := getRemotePasswordChangeExpirationPolicy(aciClient, aaaPwdProfileDn)
+		aaaPwdProfile, err := GetRemotePasswordChangeExpirationPolicy(aciClient, aaaPwdProfileDn)
 		if err != nil {
 			return err
 		}
@@ -120,7 +120,7 @@ func dataSourceAciUserManagementRead(d *schema.ResourceData, m interface{}) erro
 	_, err = aciClient.Get(dn + "/blockloginp")
 	if err == nil {
 		aaaBlockLoginProfileDn := dn + "/blockloginp"
-		aaaBlockLoginProfile, err := getRemoteBlockUserLoginsPolicy(aciClient, aaaBlockLoginProfileDn)
+		aaaBlockLoginProfile, err := GetRemoteBlockUserLoginsPolicy(aciClient, aaaBlockLoginProfileDn)
 		if err != nil {
 			return err
 		}
@@ -133,7 +133,7 @@ func dataSourceAciUserManagementRead(d *schema.ResourceData, m interface{}) erro
 	_, err = aciClient.Get(dn + "/pkiext/webtokendata")
 	if err == nil {
 		pkiWebTokenDn := dn + "/pkiext/webtokendata"
-		pkiWebTokenData, err := getRemoteWebTokenData(aciClient, pkiWebTokenDn)
+		pkiWebTokenData, err := GetRemoteWebTokenData(aciClient, pkiWebTokenDn)
 		if err != nil {
 			return err
 		}

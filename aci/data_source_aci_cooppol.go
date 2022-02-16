@@ -34,7 +34,7 @@ func dataSourceAciCOOPGroupPolicyReadContext(ctx context.Context, d *schema.Reso
 
 	rn := fmt.Sprintf("fabric/pol-%s", name)
 	dn := fmt.Sprintf("uni/%s", rn)
-	coopPol, err := getRemoteCOOPGroupPolicy(aciClient, dn)
+	coopPol, err := GetRemoteCOOPGroupPolicy(aciClient, dn)
 	if err != nil {
 		return diag.FromErr(err)
 	}

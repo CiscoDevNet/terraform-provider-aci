@@ -299,7 +299,7 @@ func testAccCheckAciFabricWideSettingsPolicyIdEqual(m1, m2 *models.FabricWideSet
 }
 
 func CreateAccFabricWideSettingsPolicyConfig() string {
-	fmt.Println("=== STEP  testing fabric_wide_settings_policy creation with required arguments only")
+	fmt.Println("=== STEP  testing fabric_wide_settings_policy creation")
 	resource := fmt.Sprintf(`
 
 	resource "aci_fabric_wide_settings" "test" {}
