@@ -498,8 +498,15 @@ func StrtoInt(s string, startIndex int, bitSize int) (int64, error) {
 func (c *Client) Do(req *http.Request) (*container.Container, *http.Response, error) {
 	log.Printf("[DEBUG] Begining Do method %s", req.URL.String())
 
+	// retain the request body across multiple attempts
+	var body []byte
+	if req.Body != nil {
+		body, _ = ioutil.ReadAll(req.Body)
+	}
+
 	for attempts := 0; ; attempts++ {
 		log.Printf("[TRACE] HTTP Request Method and URL: %s %s", req.Method, req.URL.String())
+		req.Body = ioutil.NopCloser(bytes.NewBuffer(body))
 		if !c.skipLoggingPayload {
 			log.Printf("[TRACE] HTTP Request Body: %v", req.Body)
 		}
@@ -529,7 +536,7 @@ func (c *Client) Do(req *http.Request) (*container.Container, *http.Response, er
 			log.Printf("[DEBUG] HTTP response unique string %s %s %s", req.Method, req.URL.String(), bodyStr)
 		}
 
-		if resp.StatusCode < 500 || resp.StatusCode > 504 {
+		if (resp.StatusCode < 500 || resp.StatusCode > 504) && resp.StatusCode != 405 {
 			obj, err := container.ParseJSON(bodyBytes)
 			if err != nil {
 				log.Printf("[ERROR] Error occured while json parsing %+v", err)
@@ -543,7 +550,7 @@ func (c *Client) Do(req *http.Request) (*container.Container, *http.Response, er
 			if ok := c.backoff(attempts); !ok {
 				obj, err := container.ParseJSON(bodyBytes)
 				if err != nil {
-					log.Printf("[ERROR] Error occured while json parsing %+v with HTTP StatusCode 500-504", err)
+					log.Printf("[ERROR] Error occured while json parsing %+v with HTTP StatusCode 405, 500-504", err)
 					log.Printf("[DEBUG] Exit from Do method")
 					return nil, resp, err
 				}
@@ -561,8 +568,15 @@ func (c *Client) Do(req *http.Request) (*container.Container, *http.Response, er
 func (c *Client) DoRaw(req *http.Request) (*http.Response, error) {
 	log.Printf("[DEBUG] Begining DoRaw method %s", req.URL.String())
 
+	// retain the request body across multiple attempts
+	var body []byte
+	if req.Body != nil {
+		body, _ = ioutil.ReadAll(req.Body)
+	}
+
 	for attempts := 0; ; attempts++ {
 		log.Printf("[TRACE] HTTP Request Method and URL: %s %s", req.Method, req.URL.String())
+		req.Body = ioutil.NopCloser(bytes.NewBuffer(body))
 		if !c.skipLoggingPayload {
 			log.Printf("[TRACE] HTTP Request Body: %v", req.Body)
 		}
@@ -585,7 +599,7 @@ func (c *Client) DoRaw(req *http.Request) (*http.Response, error) {
 			log.Printf("[TRACE] HTTP Response: %d %s", resp.StatusCode, resp.Status)
 		}
 
-		if resp.StatusCode < 500 || resp.StatusCode > 504 {
+		if (resp.StatusCode < 500 || resp.StatusCode > 504) && resp.StatusCode != 405 {
 			log.Printf("[DEBUG] Exit from DoRaw method")
 			return resp, nil
 		} else {

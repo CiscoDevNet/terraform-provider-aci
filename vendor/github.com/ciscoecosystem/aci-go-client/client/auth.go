@@ -177,7 +177,7 @@ func loadPrivateKey(path string) (*rsa.PrivateKey, error) {
 		}
 	}
 
-	log.Printf("[DEBUG] priavte key read finish  inside loadPrivateKey")
+	log.Printf("[DEBUG] private key read finish inside loadPrivateKey")
 
 	if err != nil {
 		return nil, err
