@@ -1,4 +1,11 @@
-## 2.0.0 (January 27, 2021)
+## 2.0.1 (February 27, 2022)
+BUG FIXES:
+- Fix some documentation examples identation
+- Fix some import examples
+- Update aci-go-client to v1.23.2 to improve retry mechanism
+- Removed unused module attributes for aci_external_network_instance_profile
+
+## 2.0.0 (January 27, 2022)
 BREAKING CHANGE:
 - Remove aci_application_epg unused relationship relation_fv_rs_graph_def to avoid idempotency issues.
 - aci_bgp_peer_connectivity_profile attributes addr_t_ctrl, ctrl, peer_ctrl and private_a_sctrl changed from string to list of strings.
