@@ -44,6 +44,7 @@ func resourceAciBGPAddressFamilyContextPolicy() *schema.Resource {
 				Computed: true,
 				ValidateFunc: validation.StringInSlice([]string{
 					"host-rt-leak",
+					"none",
 				}, false),
 			},
 
@@ -165,7 +166,11 @@ func resourceAciBGPAddressFamilyContextPolicyCreate(ctx context.Context, d *sche
 		bgpCtxAfPolAttr.Annotation = "{}"
 	}
 	if Ctrl, ok := d.GetOk("ctrl"); ok {
-		bgpCtxAfPolAttr.Ctrl = Ctrl.(string)
+		if Ctrl == "none" {
+			bgpCtxAfPolAttr.Ctrl = "0"
+		} else if Ctrl == "host-rt-leak" {
+			bgpCtxAfPolAttr.Ctrl = "1"
+		}
 	}
 	if EDist, ok := d.GetOk("e_dist"); ok {
 		bgpCtxAfPolAttr.EDist = EDist.(string)
@@ -215,7 +220,11 @@ func resourceAciBGPAddressFamilyContextPolicyUpdate(ctx context.Context, d *sche
 		bgpCtxAfPolAttr.Annotation = "{}"
 	}
 	if Ctrl, ok := d.GetOk("ctrl"); ok {
-		bgpCtxAfPolAttr.Ctrl = Ctrl.(string)
+		if Ctrl == "none" {
+			bgpCtxAfPolAttr.Ctrl = "0"
+		} else if Ctrl == "host-rt-leak" {
+			bgpCtxAfPolAttr.Ctrl = "1"
+		}
 	}
 	if EDist, ok := d.GetOk("e_dist"); ok {
 		bgpCtxAfPolAttr.EDist = EDist.(string)
@@ -264,6 +273,11 @@ func resourceAciBGPAddressFamilyContextPolicyRead(ctx context.Context, d *schema
 		d.SetId("")
 		return nil
 	}
+
+	if bgpCtxAfPol.Ctrl == "" {
+		bgpCtxAfPol.Ctrl = "none"
+	}
+
 	_, err = setBGPAddressFamilyContextPolicyAttributes(bgpCtxAfPol, d)
 	if err != nil {
 		d.SetId("")
