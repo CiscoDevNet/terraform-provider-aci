@@ -169,29 +169,29 @@ func resourceAciVirtualLogicalInterfaceProfile() *schema.Resource {
 						"forged_transmit": {
 							Type:     schema.TypeString,
 							Optional: true,
-							Computed: true,
 							ValidateFunc: validation.StringInSlice([]string{
 								"Disabled",
 								"Enabled",
 							}, false),
+							Default: "Disabled",
 						},
 						"mac_change": {
 							Type:     schema.TypeString,
 							Optional: true,
-							Computed: true,
 							ValidateFunc: validation.StringInSlice([]string{
 								"Disabled",
 								"Enabled",
 							}, false),
+							Default: "Disabled",
 						},
 						"promiscuous_mode": {
 							Type:     schema.TypeString,
 							Optional: true,
-							Computed: true,
 							ValidateFunc: validation.StringInSlice([]string{
 								"Disabled",
 								"Enabled",
 							}, false),
+							Default: "Disabled",
 						},
 					},
 				},
