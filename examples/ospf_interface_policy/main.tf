@@ -23,7 +23,7 @@ resource "aci_ospf_interface_policy" "fooospf_interface_policy" {
   name         = "demo_ospfpol"
   annotation   = "tag_ospf"
   cost         = "unspecified"
-  ctrl         = "unspecified"
+  ctrl         = ["advert-subnet", "bfd"]
   dead_intvl   = "40"
   hello_intvl  = "10"
   name_alias   = "alias_ospf"
