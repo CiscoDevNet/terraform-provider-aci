@@ -162,20 +162,35 @@ func resourceAciFilterEntry() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
-				ValidateFunc: validation.StringInSlice([]string{
-					"unspecified",
-					"icmp",
-					"igmp",
-					"tcp",
-					"egp",
-					"igp",
-					"udp",
-					"icmpv6",
-					"eigrp",
-					"ospfigp",
-					"pim",
-					"l2tp",
-				}, false),
+				StateFunc: func(val interface{}) string {
+					if val.(string) == "8" {
+						return "egp"
+					} else if val.(string) == "88" {
+						return "eigrp"
+					} else if val.(string) == "1" {
+						return "icmp"
+					} else if val.(string) == "58" {
+						return "icmpv6"
+					} else if val.(string) == "2" {
+						return "igmp"
+					} else if val.(string) == "9" {
+						return "igp"
+					} else if val.(string) == "115" {
+						return "l2tp"
+					} else if val.(string) == "89" {
+						return "ospfigp"
+					} else if val.(string) == "103" {
+						return "pim"
+					} else if val.(string) == "6" {
+						return "tcp"
+					} else if val.(string) == "17" {
+						return "udp"
+					} else if val.(string) == "0" {
+						return "unspecified"
+					}
+					return val.(string)
+				},
+				ValidateFunc: schema.SchemaValidateFunc(validateIP()),
 			},
 
 			"s_from_port": &schema.Schema{
@@ -219,6 +234,31 @@ func resourceAciFilterEntry() *schema.Resource {
 		}),
 	}
 }
+
+func validateIP() schema.SchemaValidateFunc {
+	return func(i interface{}, k string) (s []string, err []error) {
+		protocol_value, _ := i.(string)
+		protocol := make([]string, 0)
+		protocol = []string{"unspecified", "icmp", "igmp", "tcp", "egp", "igp", "udp", "icmpv6", "eigrp", "ospfigp", "pim", "l2tp"}
+		for ip_value := 0; ip_value <= 255; ip_value++ {
+			ip_value_string := fmt.Sprintf("%d", ip_value)
+			protocol = append(protocol, ip_value_string)
+		}
+		not_found := false
+		for _, prot := range protocol {
+			if protocol_value == prot {
+				return
+			} else {
+				not_found = true
+			}
+		}
+		if not_found {
+			err = append(err, fmt.Errorf("expected prot to be one of [unspecified icmp igmp tcp egp igp udp icmpv6 eigrp ospfigp pim l2tp 0-255], got %s", protocol_value))
+		}
+		return
+	}
+}
+
 func getRemoteFilterEntry(client *client.Client, dn string) (*models.FilterEntry, error) {
 	vzEntryCont, err := client.Get(dn)
 	if err != nil {
