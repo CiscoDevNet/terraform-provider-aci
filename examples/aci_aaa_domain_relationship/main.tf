@@ -34,10 +34,10 @@ output "name6" {
 }
 
 resource "aci_aaa_domain_relationship" "foodomain_relationship_parent_object" {
-  name      = resource.aci_aaa_domain.foosecurity_domain.name
-  parent_dn = aci_tenant.footenant.id
+  aaa_domain_dn = resource.aci_aaa_domain.foosecurity_domain.id
+  parent_dn     = aci_tenant.footenant.id
 }
 
 output "t_name6" {
-  value = resource.aci_aaa_domain_relationship.foodomain_relationship_parent_object.name
+  value = resource.aci_aaa_domain_relationship.foodomain_relationship_parent_object.id
 }

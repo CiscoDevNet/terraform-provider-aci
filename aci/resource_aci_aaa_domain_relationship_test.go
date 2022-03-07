@@ -68,8 +68,15 @@ func testAccCheckAciDomainRelationshipConfig_basic(fv_tenant_name, aaa_domain_re
 		name 		= "%s"
 	}
 
+	resource "aci_aaa_domain" "foosecurity_domain" {
+		name        = "%s"
+		description = "from terraform"
+		annotation  = "aaa_domain_tag"
+		name_alias  = "example"
+	}
+
 	resource "aci_aaa_domain_relationship" "fooaaa_domain_relationship" {
-		name 		= "%s"
+		aaa_domain_dn 		= aci_aaa_domain.foosecurity_domain.id
 		parent_dn = aci_tenant.footenant.id
 	}
 

@@ -29,7 +29,7 @@ func resourceAciDomainRelationship() *schema.Resource {
 				Required: true,
 				ForceNew: true,
 			},
-			"name": {
+			"aaa_domain_dn": {
 				Type:     schema.TypeString,
 				Required: true,
 				ForceNew: true,
@@ -60,7 +60,7 @@ func setAaaDomainRelationshipAttributes(aaaDomainRef *models.AaaDomainRef, d *sc
 	if err != nil {
 		return d, err
 	}
-	d.Set("name", aaaDomainRefMap["name"])
+	d.Set("name", GetMOName(aaaDomainRef.DistinguishedName))
 	d.Set("name_alias", aaaDomainRefMap["nameAlias"])
 	return d, nil
 }
@@ -84,7 +84,7 @@ func resourceAciDomainRelationshipImport(d *schema.ResourceData, m interface{}) 
 func resourceAciDomainRelationshipCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] AaaDomainRef: Beginning Creation")
 	aciClient := m.(*client.Client)
-	name := d.Get("name").(string)
+	name := GetMOName(d.Get("aaa_domain_dn").(string))
 	parent_dn := d.Get("parent_dn").(string)
 
 	aaaDomainRefAttr := models.AaaDomainRefAttributes{}
