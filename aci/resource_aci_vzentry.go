@@ -6,6 +6,7 @@ import (
 	"log"
 	"reflect"
 	"sort"
+	"strconv"
 	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
@@ -190,7 +191,7 @@ func resourceAciFilterEntry() *schema.Resource {
 					}
 					return val.(string)
 				},
-				ValidateFunc: schema.SchemaValidateFunc(validateIP()),
+				ValidateFunc: schema.SchemaValidateFunc(validateProtocol()),
 			},
 
 			"s_from_port": &schema.Schema{
@@ -235,26 +236,20 @@ func resourceAciFilterEntry() *schema.Resource {
 	}
 }
 
-func validateIP() schema.SchemaValidateFunc {
-	return func(i interface{}, k string) (s []string, err []error) {
-		protocol_value, _ := i.(string)
-		protocol := make([]string, 0)
-		protocol = []string{"unspecified", "icmp", "igmp", "tcp", "egp", "igp", "udp", "icmpv6", "eigrp", "ospfigp", "pim", "l2tp"}
-		for ip_value := 0; ip_value <= 255; ip_value++ {
-			ip_value_string := fmt.Sprintf("%d", ip_value)
-			protocol = append(protocol, ip_value_string)
-		}
-		not_found := false
-		for _, prot := range protocol {
-			if protocol_value == prot {
+func validateProtocol() schema.SchemaValidateFunc {
+	return func(input interface{}, value string) (output []string, err []error) {
+		protocol_input, _ := input.(string)
+		protocols := []string{"unspecified", "icmp", "igmp", "tcp", "egp", "igp", "udp", "icmpv6", "eigrp", "ospfigp", "pim", "l2tp"}
+		for _, protocol := range protocols {
+			if protocol_input == protocol {
 				return
-			} else {
-				not_found = true
 			}
 		}
-		if not_found {
-			err = append(err, fmt.Errorf("expected prot to be one of [unspecified icmp igmp tcp egp igp udp icmpv6 eigrp ospfigp pim l2tp 0-255], got %s", protocol_value))
+		protocol_id, atoi_error := strconv.Atoi(protocol_input)
+		if atoi_error == nil && protocol_id >= 0 && protocol_id <= 255 {
+			return
 		}
+		err = append(err, fmt.Errorf("expected prot to be one of [unspecified icmp igmp tcp egp igp udp icmpv6 eigrp ospfigp pim l2tp] or a number between 0 and 255, got %s", protocol_input))
 		return
 	}
 }
