@@ -43,7 +43,7 @@ resource "aci_bfd_interface_policy" "example" {
 * `name` - (Required) Name of object BFD Interface Policy.
 * `admin_st` - (Optional) Administrative state of the object BFD Interface Policy. Allowed values are "disabled" and "enabled". Default is "enabled".
 * `annotation` - (Optional) Annotation for object BFD Interface Policy.
-* `ctrl` - (Optional) Control state for object BFD Interface Policy. Allowed value is "opt-subif".
+* `ctrl` - (Optional) Control state for object BFD Interface Policy. Allowed values are "opt-subif" and "none". Default is "none".
 * `detect_mult` - (Optional) Detection multiplier for object BFD Interface Policy. Range: "1" - "50". Default value is "3".
 * `echo_admin_st` - (Optional) Echo mode indicator for object BFD Interface Policy. Allowed values are "disabled" and "enabled". Default is "enabled".  
 * `echo_rx_intvl` - (Optional) Echo rx interval for object BFD Interface Policy. Range: "50" - "999". Default value is "50".

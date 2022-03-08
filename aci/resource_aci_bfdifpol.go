@@ -53,7 +53,7 @@ func resourceAciBFDInterfacePolicy() *schema.Resource {
 				Optional: true,
 				Computed: true,
 				ValidateFunc: validation.StringInSlice([]string{
-					"opt-subif",
+					"opt-subif", "none",
 				}, false),
 			},
 
@@ -183,7 +183,11 @@ func resourceAciBFDInterfacePolicyCreate(ctx context.Context, d *schema.Resource
 		bfdIfPolAttr.Annotation = "{}"
 	}
 	if Ctrl, ok := d.GetOk("ctrl"); ok {
-		bfdIfPolAttr.Ctrl = Ctrl.(string)
+		if Ctrl == "none" {
+			bfdIfPolAttr.Ctrl = "0"
+		} else {
+			bfdIfPolAttr.Ctrl = Ctrl.(string)
+		}
 	}
 	if DetectMult, ok := d.GetOk("detect_mult"); ok {
 		bfdIfPolAttr.DetectMult = DetectMult.(string)
@@ -243,7 +247,11 @@ func resourceAciBFDInterfacePolicyUpdate(ctx context.Context, d *schema.Resource
 		bfdIfPolAttr.Annotation = "{}"
 	}
 	if Ctrl, ok := d.GetOk("ctrl"); ok {
-		bfdIfPolAttr.Ctrl = Ctrl.(string)
+		if Ctrl == "none" {
+			bfdIfPolAttr.Ctrl = "0"
+		} else {
+			bfdIfPolAttr.Ctrl = Ctrl.(string)
+		}
 	}
 	if DetectMult, ok := d.GetOk("detect_mult"); ok {
 		bfdIfPolAttr.DetectMult = DetectMult.(string)
