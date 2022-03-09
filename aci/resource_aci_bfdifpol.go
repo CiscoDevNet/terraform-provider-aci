@@ -53,7 +53,8 @@ func resourceAciBFDInterfacePolicy() *schema.Resource {
 				Optional: true,
 				Computed: true,
 				ValidateFunc: validation.StringInSlice([]string{
-					"opt-subif", "none",
+					"opt-subif",
+					"none",
 				}, false),
 			},
 
@@ -307,6 +308,11 @@ func resourceAciBFDInterfacePolicyRead(ctx context.Context, d *schema.ResourceDa
 		d.SetId("")
 		return nil
 	}
+
+	if bfdIfPol.Ctrl == "" {
+		bfdIfPol.Ctrl = "none"
+	}
+
 	setBFDInterfacePolicyAttributes(bfdIfPol, d)
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
