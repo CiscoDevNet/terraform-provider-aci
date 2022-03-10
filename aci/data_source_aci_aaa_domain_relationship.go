@@ -18,7 +18,7 @@ func dataSourceAciDomainRelationship() *schema.Resource {
 				Type:     schema.TypeString,
 				Required: true,
 			},
-			"name": {
+			"aaa_domain_dn": {
 				Type:     schema.TypeString,
 				Required: true,
 			},
@@ -28,7 +28,7 @@ func dataSourceAciDomainRelationship() *schema.Resource {
 
 func dataSourceAciDomainRelationshipRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	aciClient := m.(*client.Client)
-	name := d.Get("name").(string)
+	name := GetMOName(d.Get("aaa_domain_dn").(string))
 	parent_dn := d.Get("parent_dn").(string)
 	rn := fmt.Sprintf("domain-%s", name)
 	dn := fmt.Sprintf("%s/%s", parent_dn, rn)
