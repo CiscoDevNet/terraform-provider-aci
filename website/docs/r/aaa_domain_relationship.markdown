@@ -1,7 +1,6 @@
 ---
 subcategory: "AAA"
 layout: "aci"
-subcategory: "AAA"
 page_title: "ACI: aci_aaa_domain_relationship"
 sidebar_current: "docs-aci-resource-aaa_domain_relationship"
 description: |-
@@ -19,7 +18,7 @@ Manages ACI AAA Domain Relationship for Parent Object
 
 ## GUI Information ##
 
-* `Location` Security Domain list under the Parent Object 
+* `Location` - Security Domain list under the Parent Object 
 
 
 ## Example Usage ##

@@ -60,7 +60,7 @@ func setAaaDomainRelationshipAttributes(aaaDomainRef *models.AaaDomainRef, d *sc
 	if err != nil {
 		return d, err
 	}
-	d.Set("name", GetMOName(aaaDomainRef.DistinguishedName))
+	d.Set("name", GetMOName(dn))
 	d.Set("name_alias", aaaDomainRefMap["nameAlias"])
 	return d, nil
 }
@@ -88,6 +88,7 @@ func resourceAciDomainRelationshipCreate(ctx context.Context, d *schema.Resource
 	parent_dn := d.Get("parent_dn").(string)
 
 	aaaDomainRefAttr := models.AaaDomainRefAttributes{}
+	aaaDomainRefAttr.Name = name
 
 	nameAlias := ""
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
@@ -100,9 +101,6 @@ func resourceAciDomainRelationshipCreate(ctx context.Context, d *schema.Resource
 		aaaDomainRefAttr.Annotation = "{}"
 	}
 
-	if Name, ok := d.GetOk("name"); ok {
-		aaaDomainRefAttr.Name = Name.(string)
-	}
 	aaaDomainRef := models.NewAaaDomainRef(fmt.Sprintf(models.RnaaaDomainRef, name), parent_dn, nameAlias, aaaDomainRefAttr)
 
 	err := aciClient.Save(aaaDomainRef)
@@ -122,6 +120,7 @@ func resourceAciDomainRelationshipUpdate(ctx context.Context, d *schema.Resource
 	parent_dn := d.Get("parent_dn").(string)
 
 	aaaDomainRefAttr := models.AaaDomainRefAttributes{}
+	aaaDomainRefAttr.Name = name
 
 	nameAlias := ""
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
@@ -134,9 +133,6 @@ func resourceAciDomainRelationshipUpdate(ctx context.Context, d *schema.Resource
 		aaaDomainRefAttr.Annotation = "{}"
 	}
 
-	if Name, ok := d.GetOk("name"); ok {
-		aaaDomainRefAttr.Name = Name.(string)
-	}
 	aaaDomainRef := models.NewAaaDomainRef(fmt.Sprintf("domain-%s", name), parent_dn, nameAlias, aaaDomainRefAttr)
 
 	aaaDomainRef.Status = "modified"
