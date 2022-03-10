@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 	"net"
-	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
@@ -86,38 +85,14 @@ func resourceAciDHCPRelayPolicy() *schema.Resource {
 							Type:     schema.TypeString,
 							Required: true,
 							StateFunc: func(val interface{}) string {
-								splitVal := strings.Split(val.(string), "/")
-								if len(splitVal) <= 1 {
-									ip := net.ParseIP(val.(string))
-									return ip.String()
-								} else {
-									ip := net.ParseIP(splitVal[0])
-									return ip.String() + "/" + splitVal[1]
-								}
+								return net.ParseIP(val.(string)).String()
 							},
-							ValidateFunc: schema.SchemaValidateFunc(validateIPAddress()),
+							ValidateFunc: validation.IsIPAddress,
 						},
 					},
 				},
 			},
 		}),
-	}
-}
-
-func validateIPAddress() schema.SchemaValidateFunc {
-	return func(input interface{}, attribute string) (output []string, err []error) {
-		ip_address_input := input.(string)
-		ip := net.ParseIP("0.0.0.0")
-		splitVal := strings.Split(ip_address_input, "/")
-		if len(splitVal) <= 1 {
-			ip = net.ParseIP(ip_address_input)
-		} else {
-			ip = net.ParseIP(splitVal[0])
-		}
-		if ip == nil {
-			err = append(err, fmt.Errorf("expected %s to contain a valid IP, got: %s", attribute, ip_address_input))
-		}
-		return
 	}
 }
 
