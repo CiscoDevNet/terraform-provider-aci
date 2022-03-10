@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"net"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
@@ -81,9 +82,12 @@ func resourceAciDHCPRelayPolicy() *schema.Resource {
 							ValidateFunc: validation.StringIsNotEmpty,
 						},
 						"addr": {
-							Type:         schema.TypeString,
-							Required:     true,
-							ValidateFunc: validation.IsIPv4Address,
+							Type:     schema.TypeString,
+							Required: true,
+							StateFunc: func(val interface{}) string {
+								return net.ParseIP(val.(string)).String()
+							},
+							ValidateFunc: validation.IsIPAddress,
 						},
 					},
 				},
@@ -91,6 +95,7 @@ func resourceAciDHCPRelayPolicy() *schema.Resource {
 		}),
 	}
 }
+
 func getRemoteDHCPRelayPolicy(client *client.Client, dn string) (*models.DHCPRelayPolicy, error) {
 	dhcpRelayPCont, err := client.Get(dn)
 	if err != nil {
