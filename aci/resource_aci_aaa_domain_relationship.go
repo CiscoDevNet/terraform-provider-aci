@@ -14,7 +14,6 @@ import (
 func resourceAciDomainRelationship() *schema.Resource {
 	return &schema.Resource{
 		CreateContext: resourceAciDomainRelationshipCreate,
-		UpdateContext: resourceAciDomainRelationshipUpdate,
 		ReadContext:   resourceAciDomainRelationshipRead,
 		DeleteContext: resourceAciDomainRelationshipDelete,
 
@@ -60,7 +59,7 @@ func setAaaDomainRelationshipAttributes(aaaDomainRef *models.AaaDomainRef, d *sc
 	if err != nil {
 		return d, err
 	}
-	d.Set("name", GetMOName(dn))
+	d.Set("name", aaaDomainRef.Name)
 	d.Set("name_alias", aaaDomainRefMap["nameAlias"])
 	return d, nil
 }
@@ -110,40 +109,6 @@ func resourceAciDomainRelationshipCreate(ctx context.Context, d *schema.Resource
 
 	d.SetId(aaaDomainRef.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
-	return resourceAciDomainRelationshipRead(ctx, d, m)
-}
-
-func resourceAciDomainRelationshipUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	log.Printf("[DEBUG] AaaDomainRef: Beginning Update")
-	aciClient := m.(*client.Client)
-	name := d.Get("name").(string)
-	parent_dn := d.Get("parent_dn").(string)
-
-	aaaDomainRefAttr := models.AaaDomainRefAttributes{}
-	aaaDomainRefAttr.Name = name
-
-	nameAlias := ""
-	if NameAlias, ok := d.GetOk("name_alias"); ok {
-		nameAlias = NameAlias.(string)
-	}
-
-	if Annotation, ok := d.GetOk("annotation"); ok {
-		aaaDomainRefAttr.Annotation = Annotation.(string)
-	} else {
-		aaaDomainRefAttr.Annotation = "{}"
-	}
-
-	aaaDomainRef := models.NewAaaDomainRef(fmt.Sprintf("domain-%s", name), parent_dn, nameAlias, aaaDomainRefAttr)
-
-	aaaDomainRef.Status = "modified"
-
-	err := aciClient.Save(aaaDomainRef)
-	if err != nil {
-		return diag.FromErr(err)
-	}
-
-	d.SetId(aaaDomainRef.DistinguishedName)
-	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 	return resourceAciDomainRelationshipRead(ctx, d, m)
 }
 
