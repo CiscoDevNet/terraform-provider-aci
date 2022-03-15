@@ -61,18 +61,30 @@ func (sm *ServiceManager) CreateRelationl3extRsDynPathAttFromLogicalInterfacePro
 			"attributes": {
 				"dn": "%s",
 				"annotation":"orchestrator:terraform",
-				"tDn":"%s",
-				"floatingAddr":"%s",
-				"forgedTransmit":"%s",
-				"macChange":"%s",
-				"promMode":"%s"				
+				"tDn":"%s"
 			}
 		}
-	}`, "l3extRsDynPathAtt", dn, tDn, addr, forgedTransmit, macChange, promMode))
+	}`, "l3extRsDynPathAtt", dn, tDn))
 
 	jsonPayload, err := container.ParseJSON(containerJSON)
 	if err != nil {
 		return err
+	}
+
+	if addr != "" {
+		jsonPayload.Set(addr, "l3extRsDynPathAtt", "attributes", "floatingAddr")
+	}
+
+	if forgedTransmit != "" {
+		jsonPayload.Set(forgedTransmit, "l3extRsDynPathAtt", "attributes", "forgedTransmit")
+	}
+
+	if macChange != "" {
+		jsonPayload.Set(macChange, "l3extRsDynPathAtt", "attributes", "macChange")
+	}
+
+	if promMode != "" {
+		jsonPayload.Set(promMode, "l3extRsDynPathAtt", "attributes", "promMode")
 	}
 
 	req, err := sm.client.MakeRestRequest("POST", fmt.Sprintf("%s.json", sm.MOURL), jsonPayload, true)
@@ -84,9 +96,10 @@ func (sm *ServiceManager) CreateRelationl3extRsDynPathAttFromLogicalInterfacePro
 	if err != nil {
 		return err
 	}
+
 	log.Printf("%+v", cont)
 
-	return nil
+	return CheckForErrors(cont, "POST", sm.client.skipLoggingPayload)
 }
 
 func (sm *ServiceManager) DeleteRelationl3extRsDynPathAttFromLogicalInterfaceProfile(parentDn, tDn string) error {
