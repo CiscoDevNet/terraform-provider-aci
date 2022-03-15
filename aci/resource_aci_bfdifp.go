@@ -173,7 +173,7 @@ func resourceAciBFDInterfaceProfileCreate(ctx context.Context, d *schema.Resourc
 	if relationTobfdRsIfPol, ok := d.GetOk("relation_bfd_rs_if_pol"); ok {
 		relationParam := relationTobfdRsIfPol.(string)
 		relationParamName := GetMOName(relationParam)
-		err = aciClient.CreateRelationbfdRsIfPolFromInterfaceProfile(bfdIfP.DistinguishedName, relationParamName)
+		err = aciClient.CreateRelationbfdRsIfPolFromInterfaceProfile(LogicalInterfaceProfileDn, relationParamName)
 		if err != nil {
 			return diag.FromErr(err)
 		}
@@ -239,7 +239,7 @@ func resourceAciBFDInterfaceProfileUpdate(ctx context.Context, d *schema.Resourc
 	if d.HasChange("relation_bfd_rs_if_pol") {
 		_, newRelParam := d.GetChange("relation_bfd_rs_if_pol")
 		newRelParamName := GetMOName(newRelParam.(string))
-		err = aciClient.CreateRelationbfdRsIfPolFromInterfaceProfile(bfdIfP.DistinguishedName, newRelParamName)
+		err = aciClient.CreateRelationbfdRsIfPolFromInterfaceProfile(LogicalInterfaceProfileDn, newRelParamName)
 		if err != nil {
 			return diag.FromErr(err)
 		}
