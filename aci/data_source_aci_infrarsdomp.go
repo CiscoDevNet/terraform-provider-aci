@@ -34,9 +34,9 @@ func dataSourceAciInfraRsDomP() *schema.Resource {
 
 func dataSourceAciInfraRsDomPRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	aciClient := m.(*client.Client)
-	tDn := d.Get("tDn").(string)
+	t_dn := d.Get("tDn").(string)
 	AttachableAccessEntityProfileDn := d.Get("attachable_access_entity_profile_dn").(string)
-	rn := fmt.Sprintf("rsdomP-[%s]", tDn)
+	rn := fmt.Sprintf("rsdomP-[%s]", t_dn)
 	dn := fmt.Sprintf("%s/%s", AttachableAccessEntityProfileDn, rn)
 
 	infraRsDomP, err := getRemoteInfraRsDomP(aciClient, dn)

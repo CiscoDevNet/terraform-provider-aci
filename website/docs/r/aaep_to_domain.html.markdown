@@ -45,5 +45,5 @@ An existing Domain can be [imported][docs-import] into this resource via its Dn,
 
 
 ```
-terraform import aci_domain.example <Dn>
+terraform import aci_aaep_to_domain.example <Dn>
 ```
