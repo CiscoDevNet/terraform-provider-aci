@@ -170,6 +170,10 @@ func resourceAciVRF() *schema.Resource {
 						"af": {
 							Type:     schema.TypeString,
 							Required: true,
+							ValidateFunc: validation.StringInSlice([]string{
+								"ipv4-ucast",
+								"ipv6-ucast",
+							}, false),
 						},
 					},
 				},

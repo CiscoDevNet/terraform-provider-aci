@@ -36,7 +36,7 @@ resource "aci_vrf" "foovrf" {
   pc_enf_pref            = "unenforced"
   relation_fv_rs_ctx_to_bgp_ctx_af_pol {
     af                     = "ipv4-ucast"
-    tn_bgp_ctx_af_pol_name = "test_bgp"
+    tn_bgp_ctx_af_pol_name = aci_bgp_address_family_context.example.id
   }
 }
 ```
@@ -63,7 +63,10 @@ resource "aci_vrf" "foovrf" {
 - `relation_fv_rs_bgp_ctx_pol` - (Optional) Relation to class bgpCtxPol. Cardinality - N_TO_ONE. Type - String.
 - `relation_fv_rs_ctx_mon_pol` - (Optional) Relation to class monEPGPol. Cardinality - N_TO_ONE. Type - String.
 - `relation_fv_rs_ctx_to_ext_route_tag_pol` - (Optional) Relation to class l3extRouteTagPol. Cardinality - N_TO_ONE. Type - String.
-- `relation_fv_rs_ctx_to_bgp_ctx_af_pol` - (Optional) Relation to class bgpCtxAfPol. Cardinality - N_TO_M. Type - [Set of Map].
+- `relation_fv_rs_ctx_to_bgp_ctx_af_pol` - (Optional) A block representing the relationship to class bgpCtxAfPol. Cardinality - N_TO_M. Type - Block.
+  * `af` - (Required) The BGP address family. Allowed values are "ipv4-ucast", "ipv6-ucast", and default value is "ipv4-ucast". Type: String.
+  * `tn_bgp_ctx_af_pol_name` - (Required) Distinguished name (DN) of the BGP address family context policy object. Type: String.
+
 
 Note: In the APIC GUI,a VRF (fvCtx) was called a "Context"or "PrivateNetwork."
 
