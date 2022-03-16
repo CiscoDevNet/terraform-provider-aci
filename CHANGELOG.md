@@ -1,3 +1,18 @@
+## 2.1.0 (March 16, 2022)
+IMPROVEMENTS:
+- Allow user to enter value between 0-255 for "prot" attribute in aci_filter_entry (#820)
+- Add support for aci_vrf_to_bgp_address_family_context resource and data source
+- Add aci_aaa_domain_relationship resource and data source to map AAA domain relationship for the parent object
+
+BUG FIXES:
+- Add option none to aci_bgp_address_family_context and aci_bfd_interface_policy ctrl attribute (#813)
+- Update ctrl attribute definition in aci_ospf_interface_policy documentation and example (#816)
+- Add capability to accept IPv4 and IPv6 addresses in aci_dhcp_relay_policy (#823)
+- Fix aci_l3out_bfd_interface_profile relationship to bfd policy not created issue
+- Add example of relation_l3ext_rs_dyn_path_att for resource aci_l3out_floating_svi
+- Fix forged_transmit, mac_change and promiscuous_mode default values in aci_l3out_floating_svi
+- Add input validation for af sub-attribute in aci_vrf relation_fv_rs_ctx_to_bgp_ctx_af_pol attribute and fix documentation and examples.
+
 ## 2.0.1 (February 27, 2022)
 BUG FIXES:
 - Fix some documentation examples identation
