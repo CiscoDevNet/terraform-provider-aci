@@ -109,6 +109,14 @@ func resourceAciSpineAccessPortSelectorImport(d *schema.ResourceData, m interfac
 		return nil, err
 	}
 
+	infraRsSpAccGrpData, err := aciClient.ReadRelationinfraRsSpAccGrp(dn)
+	if err != nil {
+		log.Printf("[DEBUG] Error while reading relation infraRsSpAccGrp %v", err)
+		d.Set("relation_infra_rs_sp_acc_grp", "")
+	} else {
+		d.Set("relation_infra_rs_sp_acc_grp", infraRsSpAccGrpData.(string))
+	}
+
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
