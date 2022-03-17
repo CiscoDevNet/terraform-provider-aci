@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"regexp"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
@@ -427,25 +428,27 @@ func resourceAciDomainCreate(ctx context.Context, d *schema.ResourceData, m inte
 	if err != nil {
 		return diag.FromErr(err)
 	}
+	vmmp_match, err := regexp.MatchString("uni/vmmp-.*", tDn)
 
-	vmmSecPAttr := models.VMMSecurityPolicyAttributes{}
-	if AllowPromiscuous, ok := d.GetOk("vmm_allow_promiscuous"); ok {
-		vmmSecPAttr.AllowPromiscuous = AllowPromiscuous.(string)
-	}
-	if ForgedTransmits, ok := d.GetOk("vmm_forged_transmits"); ok {
-		vmmSecPAttr.ForgedTransmits = ForgedTransmits.(string)
-	}
-	if MacChanges, ok := d.GetOk("vmm_mac_changes"); ok {
-		vmmSecPAttr.MacChanges = MacChanges.(string)
-	}
-	vmmSecP := models.NewVMMSecurityPolicy(fmt.Sprintf("sec"), fvRsDomAtt.DistinguishedName, "", vmmSecPAttr)
+	if vmmp_match && err == nil {
+		vmmSecPAttr := models.VMMSecurityPolicyAttributes{}
+		if AllowPromiscuous, ok := d.GetOk("vmm_allow_promiscuous"); ok {
+			vmmSecPAttr.AllowPromiscuous = AllowPromiscuous.(string)
+		}
+		if ForgedTransmits, ok := d.GetOk("vmm_forged_transmits"); ok {
+			vmmSecPAttr.ForgedTransmits = ForgedTransmits.(string)
+		}
+		if MacChanges, ok := d.GetOk("vmm_mac_changes"); ok {
+			vmmSecPAttr.MacChanges = MacChanges.(string)
+		}
+		vmmSecP := models.NewVMMSecurityPolicy("sec", fvRsDomAtt.DistinguishedName, "", vmmSecPAttr)
 
-	err = aciClient.Save(vmmSecP)
-	if err != nil {
-		return diag.FromErr(err)
+		err = aciClient.Save(vmmSecP)
+		if err != nil {
+			return diag.FromErr(err)
+		}
+		d.Set("vmm_id", vmmSecP.DistinguishedName)
 	}
-	d.Set("vmm_id", vmmSecP.DistinguishedName)
-
 	d.SetId(fvRsDomAtt.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
@@ -536,27 +539,29 @@ func resourceAciDomainUpdate(ctx context.Context, d *schema.ResourceData, m inte
 	if err != nil {
 		return diag.FromErr(err)
 	}
+	vmmp_match, err := regexp.MatchString("uni/vmmp-.*", fvRsDomAtt.DistinguishedName)
 
-	vmmSecPAttr := models.VMMSecurityPolicyAttributes{}
-	if AllowPromiscuous, ok := d.GetOk("vmm_allow_promiscuous"); ok {
-		vmmSecPAttr.AllowPromiscuous = AllowPromiscuous.(string)
-	}
-	if ForgedTransmits, ok := d.GetOk("vmm_forged_transmits"); ok {
-		vmmSecPAttr.ForgedTransmits = ForgedTransmits.(string)
-	}
-	if MacChanges, ok := d.GetOk("vmm_mac_changes"); ok {
-		vmmSecPAttr.MacChanges = MacChanges.(string)
-	}
-	vmmSecP := models.NewVMMSecurityPolicy(fmt.Sprintf("sec"), fvRsDomAtt.DistinguishedName, "", vmmSecPAttr)
+	if vmmp_match && err == nil {
+		vmmSecPAttr := models.VMMSecurityPolicyAttributes{}
+		if AllowPromiscuous, ok := d.GetOk("vmm_allow_promiscuous"); ok {
+			vmmSecPAttr.AllowPromiscuous = AllowPromiscuous.(string)
+		}
+		if ForgedTransmits, ok := d.GetOk("vmm_forged_transmits"); ok {
+			vmmSecPAttr.ForgedTransmits = ForgedTransmits.(string)
+		}
+		if MacChanges, ok := d.GetOk("vmm_mac_changes"); ok {
+			vmmSecPAttr.MacChanges = MacChanges.(string)
+		}
+		vmmSecP := models.NewVMMSecurityPolicy("sec", fvRsDomAtt.DistinguishedName, "", vmmSecPAttr)
 
-	vmmSecP.Status = "modified"
+		vmmSecP.Status = "modified"
 
-	err = aciClient.Save(vmmSecP)
-	if err != nil {
-		return diag.FromErr(err)
+		err = aciClient.Save(vmmSecP)
+		if err != nil {
+			return diag.FromErr(err)
+		}
+		d.Set("vmm_id", vmmSecP.DistinguishedName)
 	}
-	d.Set("vmm_id", vmmSecP.DistinguishedName)
-
 	d.SetId(fvRsDomAtt.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
