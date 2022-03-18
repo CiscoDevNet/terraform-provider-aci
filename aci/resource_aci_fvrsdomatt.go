@@ -430,7 +430,11 @@ func resourceAciDomainCreate(ctx context.Context, d *schema.ResourceData, m inte
 	}
 	vmmp_match, err := regexp.MatchString("uni/vmmp-.*", tDn)
 
-	if vmmp_match && err == nil {
+	if err != nil {
+		return diag.FromErr(err)
+	}
+
+	if vmmp_match {
 		vmmSecPAttr := models.VMMSecurityPolicyAttributes{}
 		if AllowPromiscuous, ok := d.GetOk("vmm_allow_promiscuous"); ok {
 			vmmSecPAttr.AllowPromiscuous = AllowPromiscuous.(string)
@@ -541,7 +545,11 @@ func resourceAciDomainUpdate(ctx context.Context, d *schema.ResourceData, m inte
 	}
 	vmmp_match, err := regexp.MatchString("uni/vmmp-.*", fvRsDomAtt.DistinguishedName)
 
-	if vmmp_match && err == nil {
+	if err != nil {
+		return diag.FromErr(err)
+	}
+
+	if vmmp_match {
 		vmmSecPAttr := models.VMMSecurityPolicyAttributes{}
 		if AllowPromiscuous, ok := d.GetOk("vmm_allow_promiscuous"); ok {
 			vmmSecPAttr.AllowPromiscuous = AllowPromiscuous.(string)
