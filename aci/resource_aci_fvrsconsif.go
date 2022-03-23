@@ -60,7 +60,7 @@ func getRemoteContractInterfaceRelationship(client *client.Client, dn string) (*
 	}
 	fvRsConsIf := models.ContractInterfaceRelationshipFromContainer(fvRsConsIfCont)
 	if fvRsConsIf.DistinguishedName == "" {
-		return nil, fmt.Errorf("ContractInterfaceRelationship %s not found", fvRsConsIf.DistinguishedName)
+		return nil, fmt.Errorf("Contract Interface Relationship %s not found", dn)
 	}
 	return fvRsConsIf, nil
 }
@@ -75,8 +75,9 @@ func setContractInterfaceRelationshipAttributes(fvRsConsIf *models.ContractInter
 	if err != nil {
 		return d, err
 	}
-	d.Set("application_epg_dn", GetParentDn(dn, fmt.Sprintf("/epg-%s", fvRsConsIfMap["name"])))
+	d.Set("application_epg_dn", GetParentDn(dn, fmt.Sprintf("/"+models.RnfvRsConsIf, fvRsConsIfMap["tnVzCPIfName"])))
 	d.Set("prio", fvRsConsIfMap["prio"])
+	d.Set("annotation", fvRsConsIfMap["annotation"])
 	d.Set("contract_interface_dn", fvRsConsIfMap["tDn"])
 	return d, nil
 }
