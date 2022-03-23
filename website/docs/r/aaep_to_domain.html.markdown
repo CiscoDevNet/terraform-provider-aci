@@ -18,7 +18,7 @@ Manages ACI Attachable Access Entity Profile  - VMM, Physical or External domain
 
 ## GUI Information ##
 
-* `Location` - Attachable Access Entity Profile -> Domains Associated to Interfaces
+* `Location` - Fabric -> Access Policies -> Policies -> Global -> AAEP
 
 
 ## Example Usage ##
@@ -26,7 +26,7 @@ Manages ACI Attachable Access Entity Profile  - VMM, Physical or External domain
 ```hcl
 resource "aci_aaep_to_domain" "foo_aaep_to_domain" {
   attachable_access_entity_profile_dn = aci_attachable_access_entity_profile.fooattachable_access_entity_profile.id
-  t_dn                                = aci_l3_domain_profile.fool3_domain_profile.id
+  domain_dn                           = aci_l3_domain_profile.fool3_domain_profile.id
 }
 ```
 
@@ -34,8 +34,7 @@ resource "aci_aaep_to_domain" "foo_aaep_to_domain" {
 
 * `attachable_access_entity_profile_dn` - (Required) Distinguished name of the parent AttachableAccessEntityProfile object.
 * `annotation` - (Optional) Annotation of the object Domain.
-
-* `t_dn` - (Optional) Target-dn.The virtual machine manager domain profile.
+* `domain_dn` - (Optional) Target-dn.The virtual machine manager domain profile.
 
 
 ## Importing ##

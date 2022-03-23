@@ -14,6 +14,7 @@ import (
 func resourceAciInfraRsDomP() *schema.Resource {
 	return &schema.Resource{
 		CreateContext: resourceAciInfraRsDomPCreate,
+		UpdateContext: resourceAciInfraRsDomPUpdate,
 		ReadContext:   resourceAciInfraRsDomPRead,
 		DeleteContext: resourceAciInfraRsDomPDelete,
 
@@ -33,7 +34,7 @@ func resourceAciInfraRsDomP() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
-			"t_dn": {
+			"domain_dn": {
 				Type:     schema.TypeString,
 				Required: true,
 				ForceNew: true,
@@ -65,7 +66,7 @@ func setInfraRsDomPAttributes(infraRsDomP *models.InfraRsDomP, d *schema.Resourc
 		return d, err
 	}
 	d.Set("annotation", infraRsDomPMap["annotation"])
-	d.Set("t_dn", infraRsDomPMap["tDn"])
+	d.Set("domain_dn", infraRsDomPMap["tDn"])
 	return d, nil
 }
 
@@ -88,7 +89,7 @@ func resourceAciInfraRsDomPImport(d *schema.ResourceData, m interface{}) ([]*sch
 func resourceAciInfraRsDomPCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] InfraRsDomP: Beginning Creation")
 	aciClient := m.(*client.Client)
-	tDn := d.Get("t_dn").(string)
+	tDn := d.Get("domain_dn").(string)
 	AttachableAccessEntityProfileDn := d.Get("attachable_access_entity_profile_dn").(string)
 
 	infraRsDomPAttr := models.InfraRsDomPAttributes{}
@@ -99,7 +100,7 @@ func resourceAciInfraRsDomPCreate(ctx context.Context, d *schema.ResourceData, m
 		infraRsDomPAttr.Annotation = "{}"
 	}
 
-	if TDn, ok := d.GetOk("t_dn"); ok {
+	if TDn, ok := d.GetOk("domain_dn"); ok {
 		infraRsDomPAttr.TDn = TDn.(string)
 	}
 	infraRsDomP := models.NewInfraRsDomP(fmt.Sprintf(models.RninfraRsDomP, tDn), AttachableAccessEntityProfileDn, infraRsDomPAttr)
@@ -111,6 +112,36 @@ func resourceAciInfraRsDomPCreate(ctx context.Context, d *schema.ResourceData, m
 
 	d.SetId(infraRsDomP.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
+	return resourceAciInfraRsDomPRead(ctx, d, m)
+}
+
+func resourceAciInfraRsDomPUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+	log.Printf("[DEBUG] InfraRsDomP: Beginning Update")
+	aciClient := m.(*client.Client)
+	tDn := d.Get("domain_dn").(string)
+	AttachableAccessEntityProfileDn := d.Get("attachable_access_entity_profile_dn").(string)
+
+	infraRsDomPAttr := models.InfraRsDomPAttributes{}
+
+	if Annotation, ok := d.GetOk("annotation"); ok {
+		infraRsDomPAttr.Annotation = Annotation.(string)
+	} else {
+		infraRsDomPAttr.Annotation = "{}"
+	}
+
+	if TDn, ok := d.GetOk("domain_dn"); ok {
+		infraRsDomPAttr.TDn = TDn.(string)
+	}
+	infraRsDomP := models.NewInfraRsDomP(fmt.Sprintf(models.RninfraRsDomP, tDn), AttachableAccessEntityProfileDn, infraRsDomPAttr)
+
+	infraRsDomP.Status = "modified"
+
+	err := aciClient.Save(infraRsDomP)
+	if err != nil {
+		return diag.FromErr(err)
+	}
+	d.SetId(infraRsDomP.DistinguishedName)
+	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 	return resourceAciInfraRsDomPRead(ctx, d, m)
 }
 
