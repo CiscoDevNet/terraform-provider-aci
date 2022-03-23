@@ -137,7 +137,7 @@ func testAccCheckAciContractInterfaceRelationshipDestroy(s *terraform.State) err
 	return nil
 }
 
-func testAccCheckAciContractInterfaceRelationshipAttributes(fv_tenant_name, fv_ap_name, fv_ae_pg_name, fv_rs_cons_if_name, contract_interface *models.ContractInterfaceRelationship) resource.TestCheckFunc {
+func testAccCheckAciContractInterfaceRelationshipAttributes(fv_tenant_name, fv_ap_name, fv_ae_pg_name, fv_rs_cons_if_name string, contract_interface *models.ContractInterfaceRelationship) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 		if fv_rs_cons_if_name != GetMOName(contract_interface.DistinguishedName) {
 			return fmt.Errorf("Bad fv_rs_cons_if %s", GetMOName(contract_interface.DistinguishedName))

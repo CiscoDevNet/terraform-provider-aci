@@ -44,11 +44,6 @@ func resourceAciContractInterfaceRelationship() *schema.Resource {
 					"unspecified",
 				}, false),
 			},
-			// "tn_vz_cp_if_name": {
-			// 	Type:     schema.TypeString,
-			// 	Required: true,
-			// 	ForceNew: true,
-			// },
 			"contract_interface_dn": {
 				Type:     schema.TypeString,
 				Required: true,
@@ -80,6 +75,7 @@ func setContractInterfaceRelationshipAttributes(fvRsConsIf *models.ContractInter
 	if err != nil {
 		return d, err
 	}
+	d.Set("application_epg_dn", GetParentDn(dn, fmt.Sprintf("/epg-%s", fvRsConsIfMap["name"])))
 	d.Set("prio", fvRsConsIfMap["prio"])
 	d.Set("contract_interface_dn", fvRsConsIfMap["tDn"])
 	return d, nil
@@ -155,7 +151,7 @@ func resourceAciContractInterfaceRelationshipUpdate(ctx context.Context, d *sche
 	if TnVzCPIfName, ok := d.GetOk("tnVzCPIfName"); ok {
 		fvRsConsIfAttr.TnVzCPIfName = TnVzCPIfName.(string)
 	}
-	fvRsConsIf := models.NewContractInterfaceRelationship(fmt.Sprintf("rsconsIf-%s", tnVzCPIfName), ApplicationEPGDn, fvRsConsIfAttr)
+	fvRsConsIf := models.NewContractInterfaceRelationship(fmt.Sprintf(models.RnfvRsConsIf, tnVzCPIfName), ApplicationEPGDn, fvRsConsIfAttr)
 
 	fvRsConsIf.Status = "modified"
 
@@ -195,7 +191,7 @@ func resourceAciContractInterfaceRelationshipDelete(ctx context.Context, d *sche
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 
-	err := aciClient.DeleteByDn(dn, "fvRsConsIf")
+	err := aciClient.DeleteByDn(dn, models.FvrsconsifClassName)
 	if err != nil {
 		return diag.FromErr(err)
 	}

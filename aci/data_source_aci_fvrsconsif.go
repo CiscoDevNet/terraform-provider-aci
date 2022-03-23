@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
+	"github.com/ciscoecosystem/aci-go-client/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -35,7 +36,7 @@ func dataSourceAciContractInterfaceRelationshipRead(ctx context.Context, d *sche
 	aciClient := m.(*client.Client)
 	tnVzCPIfName := GetMOName(d.Get("contract_interface_dn").(string))
 	ApplicationEPGDn := d.Get("application_epg_dn").(string)
-	rn := fmt.Sprintf("rsconsIf-%s", tnVzCPIfName)
+	rn := fmt.Sprintf(models.RnfvRsConsIf, tnVzCPIfName)
 	dn := fmt.Sprintf("%s/%s", ApplicationEPGDn, rn)
 
 	fvRsConsIf, err := getRemoteContractInterfaceRelationship(aciClient, dn)

@@ -7,9 +7,9 @@ terraform {
 }
 
 provider "aci" {
-  username = "admin"
-  password = "ins3965!"
-  url      = "https://10.23.248.120"
+  username = ""
+  password = ""
+  url      = ""
   insecure = true
 }
 
@@ -29,7 +29,7 @@ resource "aci_contract" "tenant_contract" {
 }
 resource "aci_imported_contract" "contract_interface" {
   tenant_dn         = aci_tenant.tenant_epg.id
-  name              = "exported_contract_from_tenant_epg"
+  name              = "contract_interface_from_tenant_epg"
 }
 
 resource "aci_application_profile" "tenant_ap" {
@@ -46,4 +46,3 @@ resource "aci_epg_to_contract_interface" "epg_contract_interface" {
   application_epg_dn = aci_application_epg.application_epg.id
   contract_interface_dn = aci_imported_contract.contract_interface.id
 }
-

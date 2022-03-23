@@ -1,4 +1,5 @@
 ---
+subcategory: "Application Management"
 layout: "aci"
 page_title: "ACI: aci_contract_interface"
 sidebar_current: "docs-aci-resource-contract_interface"
@@ -13,7 +14,7 @@ Manages ACI Contract Interface
 ## API Information ##
 
 * `Class` - fvRsConsIf
-* `Distinguished Name` - uni/tn-{name}/ap-{name}/epg-{name}/rsconsIf-{tnVzCPIfName}
+* `Distinguished Name` - uni/tn-{name}/ap-{name}/epg-{name}/rsconsIf-{contract_interface_name}
 
 ## GUI Information ##
 
@@ -25,7 +26,7 @@ Manages ACI Contract Interface
 ```hcl
 resource "aci_contract_interface" "example" {
   application_epg_dn  = aci_application_epg.example.id
-  tnVzCPIfName  = "example"
+  contract_interface_dn = aci_imported_contract.contract_interface.id
   prio = "unspecified"
 
 }
@@ -34,7 +35,7 @@ resource "aci_contract_interface" "example" {
 ## Argument Reference ##
 
 * `application_epg_dn` - (Required) Distinguished name of the parent ApplicationEPG object.
-* `tnVzCPIfName` - (Required) TnVzCPIfName of the object Contract Interface.
+* `contract_interface_dn` - (Required) Distinguished name of the object Contract Interface.
 * `annotation` - (Optional) Annotation of the object Contract Interface.
 * `prio` - (Optional) prio.The contract interface priority. Allowed values are "level1", "level2", "level3", "level4", "level5", "level6", "unspecified", and default value is "unspecified". Type: String.
 
