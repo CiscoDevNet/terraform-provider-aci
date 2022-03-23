@@ -44,6 +44,6 @@ resource "aci_application_epg" "application_epg" {
 
 resource "aci_epg_to_contract_interface" "epg_contract_interface" {
   application_epg_dn = aci_application_epg.application_epg.id
-  tn_vz_cp_if_name      = aci_imported_contract.contract_interface.name
+  contract_interface_dn = aci_imported_contract.contract_interface.id
 }
 

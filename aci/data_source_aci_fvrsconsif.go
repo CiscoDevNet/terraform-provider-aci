@@ -23,7 +23,7 @@ func dataSourceAciContractInterfaceRelationship() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
-			"tn_vz_cp_if_name": {
+			"contract_interface_dn": {
 				Type:     schema.TypeString,
 				Required: true,
 			},
@@ -33,7 +33,7 @@ func dataSourceAciContractInterfaceRelationship() *schema.Resource {
 
 func dataSourceAciContractInterfaceRelationshipRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	aciClient := m.(*client.Client)
-	tnVzCPIfName := d.Get("tnVzCPIfName").(string)
+	tnVzCPIfName := GetMOName(d.Get("contract_interface_dn").(string))
 	ApplicationEPGDn := d.Get("application_epg_dn").(string)
 	rn := fmt.Sprintf("rsconsIf-%s", tnVzCPIfName)
 	dn := fmt.Sprintf("%s/%s", ApplicationEPGDn, rn)

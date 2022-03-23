@@ -44,7 +44,12 @@ func resourceAciContractInterfaceRelationship() *schema.Resource {
 					"unspecified",
 				}, false),
 			},
-			"tn_vz_cp_if_name": {
+			// "tn_vz_cp_if_name": {
+			// 	Type:     schema.TypeString,
+			// 	Required: true,
+			// 	ForceNew: true,
+			// },
+			"contract_interface_dn": {
 				Type:     schema.TypeString,
 				Required: true,
 				ForceNew: true,
@@ -76,7 +81,7 @@ func setContractInterfaceRelationshipAttributes(fvRsConsIf *models.ContractInter
 		return d, err
 	}
 	d.Set("prio", fvRsConsIfMap["prio"])
-	d.Set("tn_vz_cp_if_name", fvRsConsIfMap["tnVzCPIfName"])
+	d.Set("contract_interface_dn", fvRsConsIfMap["tDn"])
 	return d, nil
 }
 
@@ -99,7 +104,7 @@ func resourceAciContractInterfaceRelationshipImport(d *schema.ResourceData, m in
 func resourceAciContractInterfaceRelationshipCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] ContractInterfaceRelationship: Beginning Creation")
 	aciClient := m.(*client.Client)
-	tnVzCPIfName := d.Get("tn_vz_cp_if_name").(string)
+	tnVzCPIfName := GetMOName(d.Get("contract_interface_dn").(string))
 	ApplicationEPGDn := d.Get("application_epg_dn").(string)
 
 	fvRsConsIfAttr := models.ContractInterfaceRelationshipAttributes{}
@@ -114,7 +119,7 @@ func resourceAciContractInterfaceRelationshipCreate(ctx context.Context, d *sche
 		fvRsConsIfAttr.Prio = Prio.(string)
 	}
 
-	if TnVzCPIfName, ok := d.GetOk("tn_vz_cp_if_name"); ok {
+	if TnVzCPIfName, ok := d.GetOk("tnVzCPIfName"); ok {
 		fvRsConsIfAttr.TnVzCPIfName = TnVzCPIfName.(string)
 	}
 	fvRsConsIf := models.NewContractInterfaceRelationship(fmt.Sprintf(models.RnfvRsConsIf, tnVzCPIfName), ApplicationEPGDn, fvRsConsIfAttr)
@@ -132,7 +137,7 @@ func resourceAciContractInterfaceRelationshipCreate(ctx context.Context, d *sche
 func resourceAciContractInterfaceRelationshipUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] ContractInterfaceRelationship: Beginning Update")
 	aciClient := m.(*client.Client)
-	tnVzCPIfName := d.Get("tn_vz_cp_if_name").(string)
+	tnVzCPIfName := GetMOName(d.Get("contract_interface_dn").(string))
 	ApplicationEPGDn := d.Get("application_epg_dn").(string)
 
 	fvRsConsIfAttr := models.ContractInterfaceRelationshipAttributes{}
@@ -147,7 +152,7 @@ func resourceAciContractInterfaceRelationshipUpdate(ctx context.Context, d *sche
 		fvRsConsIfAttr.Prio = Prio.(string)
 	}
 
-	if TnVzCPIfName, ok := d.GetOk("tn_vz_cp_if_name"); ok {
+	if TnVzCPIfName, ok := d.GetOk("tnVzCPIfName"); ok {
 		fvRsConsIfAttr.TnVzCPIfName = TnVzCPIfName.(string)
 	}
 	fvRsConsIf := models.NewContractInterfaceRelationship(fmt.Sprintf("rsconsIf-%s", tnVzCPIfName), ApplicationEPGDn, fvRsConsIfAttr)
