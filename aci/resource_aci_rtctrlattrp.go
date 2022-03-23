@@ -23,26 +23,18 @@ func resourceAciActionRuleProfile() *schema.Resource {
 		},
 
 		SchemaVersion: 1,
-
-		Schema: AppendBaseAttrSchema(map[string]*schema.Schema{
-			"tenant_dn": &schema.Schema{
+		Schema: AppendBaseAttrSchema(AppendNameAliasAttrSchema(map[string]*schema.Schema{
+			"tenant_dn": {
 				Type:     schema.TypeString,
 				Required: true,
 				ForceNew: true,
 			},
-
-			"name": &schema.Schema{
+			"name": {
 				Type:     schema.TypeString,
 				Required: true,
 				ForceNew: true,
 			},
-
-			"name_alias": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-		}),
+		})),
 	}
 }
 func getRemoteActionRuleProfile(client *client.Client, dn string) (*models.ActionRuleProfile, error) {
@@ -64,7 +56,6 @@ func setActionRuleProfileAttributes(rtctrlAttrP *models.ActionRuleProfile, d *sc
 	dn := d.Id()
 	d.SetId(rtctrlAttrP.DistinguishedName)
 	d.Set("description", rtctrlAttrP.Description)
-	// d.Set("tenant_dn", GetParentDn(rtctrlAttrP.DistinguishedName))
 	if dn != rtctrlAttrP.DistinguishedName {
 		d.Set("tenant_dn", "")
 	}
@@ -72,9 +63,8 @@ func setActionRuleProfileAttributes(rtctrlAttrP *models.ActionRuleProfile, d *sc
 	if err != nil {
 		return d, err
 	}
-	d.Set("name", rtctrlAttrPMap["name"])
-	d.Set("tenant_dn", GetParentDn(dn, fmt.Sprintf("/attr-%s", rtctrlAttrPMap["name"])))
 	d.Set("annotation", rtctrlAttrPMap["annotation"])
+	d.Set("name", rtctrlAttrPMap["name"])
 	d.Set("name_alias", rtctrlAttrPMap["nameAlias"])
 	return d, nil
 }
@@ -90,13 +80,6 @@ func resourceAciActionRuleProfileImport(d *schema.ResourceData, m interface{}) (
 	if err != nil {
 		return nil, err
 	}
-	rtctrlAttrPMap, err := rtctrlAttrP.ToMap()
-	if err != nil {
-		return nil, err
-	}
-	name := rtctrlAttrPMap["name"]
-	pDN := GetParentDn(dn, fmt.Sprintf("/attr-%s", name))
-	d.Set("tenant_dn", pDN)
 	schemaFilled, err := setActionRuleProfileAttributes(rtctrlAttrP, d)
 	if err != nil {
 		return nil, err
@@ -116,15 +99,21 @@ func resourceAciActionRuleProfileCreate(ctx context.Context, d *schema.ResourceD
 	TenantDn := d.Get("tenant_dn").(string)
 
 	rtctrlAttrPAttr := models.ActionRuleProfileAttributes{}
+
+	nameAlias := ""
+	if NameAlias, ok := d.GetOk("name_alias"); ok {
+		nameAlias = NameAlias.(string)
+	}
+
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		rtctrlAttrPAttr.Annotation = Annotation.(string)
 	} else {
 		rtctrlAttrPAttr.Annotation = "{}"
 	}
-	if NameAlias, ok := d.GetOk("name_alias"); ok {
-		rtctrlAttrPAttr.NameAlias = NameAlias.(string)
+	if Name, ok := d.GetOk("name"); ok {
+		rtctrlAttrPAttr.Name = Name.(string)
 	}
-	rtctrlAttrP := models.NewActionRuleProfile(fmt.Sprintf("attr-%s", name), TenantDn, desc, rtctrlAttrPAttr)
+	rtctrlAttrP := models.NewActionRuleProfile(fmt.Sprintf(models.RnrtctrlAttrP, name), TenantDn, desc, nameAlias, rtctrlAttrPAttr)
 
 	err := aciClient.Save(rtctrlAttrP)
 	if err != nil {
@@ -148,15 +137,21 @@ func resourceAciActionRuleProfileUpdate(ctx context.Context, d *schema.ResourceD
 	TenantDn := d.Get("tenant_dn").(string)
 
 	rtctrlAttrPAttr := models.ActionRuleProfileAttributes{}
+	nameAlias := ""
+	if NameAlias, ok := d.GetOk("name_alias"); ok {
+		nameAlias = NameAlias.(string)
+	}
+
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		rtctrlAttrPAttr.Annotation = Annotation.(string)
 	} else {
 		rtctrlAttrPAttr.Annotation = "{}"
 	}
-	if NameAlias, ok := d.GetOk("name_alias"); ok {
-		rtctrlAttrPAttr.NameAlias = NameAlias.(string)
+
+	if Name, ok := d.GetOk("name"); ok {
+		rtctrlAttrPAttr.Name = Name.(string)
 	}
-	rtctrlAttrP := models.NewActionRuleProfile(fmt.Sprintf("attr-%s", name), TenantDn, desc, rtctrlAttrPAttr)
+	rtctrlAttrP := models.NewActionRuleProfile(fmt.Sprintf(models.RnrtctrlAttrP, name), TenantDn, desc, nameAlias, rtctrlAttrPAttr)
 
 	rtctrlAttrP.Status = "modified"
 
@@ -183,7 +178,7 @@ func resourceAciActionRuleProfileRead(ctx context.Context, d *schema.ResourceDat
 
 	if err != nil {
 		d.SetId("")
-		return nil
+		return diag.FromErr(err)
 	}
 	_, err = setActionRuleProfileAttributes(rtctrlAttrP, d)
 	if err != nil {

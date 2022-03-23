@@ -16,23 +16,21 @@ func dataSourceAciActionRuleProfile() *schema.Resource {
 
 		SchemaVersion: 1,
 
-		Schema: AppendBaseAttrSchema(map[string]*schema.Schema{
-			"tenant_dn": &schema.Schema{
+		Schema: AppendBaseAttrSchema(AppendNameAliasAttrSchema(map[string]*schema.Schema{
+			"tenant_dn": {
 				Type:     schema.TypeString,
 				Required: true,
 			},
-
-			"name": &schema.Schema{
-				Type:     schema.TypeString,
-				Required: true,
-			},
-
-			"name_alias": &schema.Schema{
+			"annotation": {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
 			},
-		}),
+			"name": {
+				Type:     schema.TypeString,
+				Required: true,
+			},
+		})),
 	}
 }
 
