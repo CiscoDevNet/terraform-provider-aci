@@ -63,8 +63,9 @@ func setActionRuleProfileAttributes(rtctrlAttrP *models.ActionRuleProfile, d *sc
 	if err != nil {
 		return d, err
 	}
-	d.Set("annotation", rtctrlAttrPMap["annotation"])
 	d.Set("name", rtctrlAttrPMap["name"])
+	d.Set("tenant_dn", GetParentDn(dn, fmt.Sprintf("/attr-%s", rtctrlAttrPMap["name"])))
+	d.Set("annotation", rtctrlAttrPMap["annotation"])
 	d.Set("name_alias", rtctrlAttrPMap["nameAlias"])
 	return d, nil
 }
@@ -80,6 +81,13 @@ func resourceAciActionRuleProfileImport(d *schema.ResourceData, m interface{}) (
 	if err != nil {
 		return nil, err
 	}
+	rtctrlAttrPMap, err := rtctrlAttrP.ToMap()
+	if err != nil {
+		return nil, err
+	}
+	name := rtctrlAttrPMap["name"]
+	pDN := GetParentDn(dn, fmt.Sprintf("/attr-%s", name))
+	d.Set("tenant_dn", pDN)
 	schemaFilled, err := setActionRuleProfileAttributes(rtctrlAttrP, d)
 	if err != nil {
 		return nil, err
