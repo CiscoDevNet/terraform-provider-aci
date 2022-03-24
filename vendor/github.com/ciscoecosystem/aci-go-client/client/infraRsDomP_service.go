@@ -6,48 +6,35 @@ import (
 	"github.com/ciscoecosystem/aci-go-client/models"
 )
 
-func (sm *ServiceManager) CreateDomain(tDn string, attachable_access_entity_profile string, description string, infraRsDomPattr models.DomainAttributes) (*models.Domain, error) {
-	rn := fmt.Sprintf("rsdomP-[%s]", tDn)
-	parentDn := fmt.Sprintf("uni/infra/attentp-%s", attachable_access_entity_profile)
-	infraRsDomP := models.NewDomain(rn, parentDn, description, infraRsDomPattr)
+func (sm *ServiceManager) CreateInfraRsDomP(tDn string, attachable_access_entity_profile string, infraRsDomPAttr models.InfraRsDomPAttributes) (*models.InfraRsDomP, error) {
+	rn := fmt.Sprintf(models.RninfraRsDomP, tDn)
+	parentDn := fmt.Sprintf(models.ParentDninfraRsDomP, attachable_access_entity_profile)
+	infraRsDomP := models.NewInfraRsDomP(rn, parentDn, infraRsDomPAttr)
 	err := sm.Save(infraRsDomP)
 	return infraRsDomP, err
 }
 
-func (sm *ServiceManager) ReadDomain(tDn string, attachable_access_entity_profile string) (*models.Domain, error) {
-	dn := fmt.Sprintf("uni/infra/attentp-%s/rsdomP-[%s]", attachable_access_entity_profile, tDn)
+func (sm *ServiceManager) ReadInfraRsDomP(tDn string, attachable_access_entity_profile string) (*models.InfraRsDomP, error) {
+	dn := fmt.Sprintf(models.DninfraRsDomP, attachable_access_entity_profile, tDn)
+
 	cont, err := sm.Get(dn)
 	if err != nil {
 		return nil, err
 	}
 
-	infraRsDomP := models.DomainFromContainer(cont)
+	infraRsDomP := models.InfraRsDomPFromContainer(cont)
 	return infraRsDomP, nil
 }
 
-func (sm *ServiceManager) DeleteDomain(tDn string, attachable_access_entity_profile string) error {
-	dn := fmt.Sprintf("uni/infra/attentp-%s/rsdomP-[%s]", attachable_access_entity_profile, tDn)
+func (sm *ServiceManager) DeleteInfraRsDomP(tDn string, attachable_access_entity_profile string) error {
+	dn := fmt.Sprintf(models.DninfraRsDomP, attachable_access_entity_profile, tDn)
 	return sm.DeleteByDn(dn, models.InfrarsdompClassName)
 }
 
-func (sm *ServiceManager) UpdateDomain(tDn string, attachable_access_entity_profile string, description string, infraRsDomPattr models.DomainAttributes) (*models.Domain, error) {
-	rn := fmt.Sprintf("rsdomP-[%s]", tDn)
-	parentDn := fmt.Sprintf("uni/infra/attentp-%s", attachable_access_entity_profile)
-	infraRsDomP := models.NewDomain(rn, parentDn, description, infraRsDomPattr)
-
-	infraRsDomP.Status = "modified"
-	err := sm.Save(infraRsDomP)
-	return infraRsDomP, err
-
-}
-
-func (sm *ServiceManager) ListDomain(attachable_access_entity_profile string) ([]*models.Domain, error) {
-
-	baseurlStr := "/api/node/class"
-	dnUrl := fmt.Sprintf("%s/uni/infra/attentp-%s/infraRsDomP.json", baseurlStr, attachable_access_entity_profile)
-
+func (sm *ServiceManager) ListInfraRsDomP(attachable_access_entity_profile string) ([]*models.InfraRsDomP, error) {
+	parentDn := fmt.Sprintf(models.ParentDninfraRsDomP, attachable_access_entity_profile)
+	dnUrl := fmt.Sprintf("%s/%s/infraRsDomP.json", models.BaseurlStr, parentDn)
 	cont, err := sm.GetViaURL(dnUrl)
-	list := models.DomainListFromContainer(cont)
-
+	list := models.InfraRsDomPListFromContainer(cont)
 	return list, err
 }

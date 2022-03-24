@@ -11,30 +11,32 @@ description: |-
 
 Manages ACI Action Rule Profile
 
+## API Information ##
+
+* `Class` - rtctrlAttrP
+* `Distinguished Name` - uni/tn-{name}/attr-{name}
+
+## GUI Information ##
+
+* `Location` - Tenant > Policies > Protocols > Set Rules
+
 ## Example Usage ##
 
 ```hcl
 resource "aci_action_rule_profile" "example" {
-    tenant_dn  = aci_tenant.example.id
-    description = "From Terraform"
-    name  = "example"
-    annotation  = "example"
-    name_alias  = "example"
+  tenant_dn  = aci_tenant.example.id
+  name       = "Rule-1"
+  annotation = "orchestrator:terraform"
 }
 ```
 
 ## Argument Reference ##
 
-* `tenant_dn` - (Required) Distinguished name of parent Tenant object.
-* `name` - (Required) Name of Object action rule profile.
-* `annotation` - (Optional) Annotation for object action rule profile.
-* `description` - (Optional) Description for action rule profile.
-* `name_alias` - (Optional) Name alias for object action rule profile.
-
-## Attribute Reference
-
-The only attribute that this resource exports is the `id`, which is set to the
-Dn of the Action Rule Profile.
+* `tenant_dn` - (Required) Distinguished name of the parent Tenant object.
+* `name` - (Required) Name of the object Action Rule Profile.
+* `annotation` - (Optional) Annotation of the object Action Rule Profile.
+* `description` - (Optional) Description of the object Action Rule Profile.
+* `name_alias` - (Optional) Name alias of the object Action Rule Profile.
 
 ## Importing ##
 
