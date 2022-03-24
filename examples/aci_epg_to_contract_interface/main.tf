@@ -46,11 +46,13 @@ resource "aci_application_epg" "application_epg" {
 resource "aci_epg_to_contract_interface" "epg_contract_interface" {
   application_epg_dn    = aci_application_epg.application_epg.id
   contract_interface_dn = aci_imported_contract.contract_interface.id
+  prio                  = "unspecified"
 }
 
 data "aci_epg_to_contract_interface" "example" {
   application_epg_dn    = aci_epg_to_contract_interface.epg_contract_interface.application_epg_dn
   contract_interface_dn = aci_epg_to_contract_interface.epg_contract_interface.contract_interface_dn
+  prio                  = aci_epg_to_contract_interface.epg_contract_interface.prio
 }
 
 output "name" {

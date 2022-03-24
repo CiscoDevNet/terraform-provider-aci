@@ -35,7 +35,7 @@ data "aci_epg_to_contract_interface" "example" {
 ## Argument Reference ##
 
 * `application_epg_dn` - (Required) Distinguished name of the parent Application EPG object.
-* `contract_interface_dn` - (Required) Distinguished name of object Contract Interface object.
+* `contract_interface_dn` - (Required) Distinguished name of the Contract Interface object.
 
 ## Attribute Reference ##
 * `id` - Attribute id set to the Dn of the Contract Interface Relationship object.

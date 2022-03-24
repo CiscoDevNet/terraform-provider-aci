@@ -121,11 +121,7 @@ func resourceAciActionRuleProfileCreate(ctx context.Context, d *schema.ResourceD
 	if Name, ok := d.GetOk("name"); ok {
 		rtctrlAttrPAttr.Name = Name.(string)
 	}
-<<<<<<< HEAD
 	rtctrlAttrP := models.NewActionRuleProfile(fmt.Sprintf(models.RnrtctrlAttrP, name), TenantDn, desc, nameAlias, rtctrlAttrPAttr)
-=======
-	rtctrlAttrP := models.NewActionRuleProfile(fmt.Sprintf("attr-%s", name), TenantDn, desc, rtctrlAttrPAttr)
->>>>>>> 90647ee... Made documentation changes
 
 	err := aciClient.Save(rtctrlAttrP)
 	if err != nil {
@@ -163,15 +159,8 @@ func resourceAciActionRuleProfileUpdate(ctx context.Context, d *schema.ResourceD
 	if Name, ok := d.GetOk("name"); ok {
 		rtctrlAttrPAttr.Name = Name.(string)
 	}
-<<<<<<< HEAD
-<<<<<<< HEAD
+
 	rtctrlAttrP := models.NewActionRuleProfile(fmt.Sprintf(models.RnrtctrlAttrP, name), TenantDn, desc, nameAlias, rtctrlAttrPAttr)
-=======
-	rtctrlAttrP := models.NewActionRuleProfile(fmt.Sprintf("attr-%s", name), TenantDn, desc, "", rtctrlAttrPAttr)
->>>>>>> a6f3f13... Checked import, datasource, idempotency and changed the docs file as mentioned in PR
-=======
-	rtctrlAttrP := models.NewActionRuleProfile(fmt.Sprintf("attr-%s", name), TenantDn, desc, rtctrlAttrPAttr)
->>>>>>> 90647ee... Made documentation changes
 
 	rtctrlAttrP.Status = "modified"
 
