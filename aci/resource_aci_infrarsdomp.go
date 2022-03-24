@@ -50,7 +50,7 @@ func getRemoteInfraRsDomP(client *client.Client, dn string) (*models.InfraRsDomP
 	}
 	infraRsDomP := models.InfraRsDomPFromContainer(infraRsDomPCont)
 	if infraRsDomP.DistinguishedName == "" {
-		return nil, fmt.Errorf("InfraRsDomP %s not found", infraRsDomP.DistinguishedName)
+		return nil, fmt.Errorf("InfraRsDomP %s not found", dn)
 	}
 	return infraRsDomP, nil
 }
@@ -61,6 +61,7 @@ func setInfraRsDomPAttributes(infraRsDomP *models.InfraRsDomP, d *schema.Resourc
 	if dn != infraRsDomP.DistinguishedName {
 		d.Set("attachable_access_entity_profile_dn", "")
 	}
+	d.Set("attachable_access_entity_profile_dn", GetParentDn(dn, fmt.Sprintf("/%s", fmt.Sprintf(models.RninfraRsDomP, d.Get("domain_dn")))))
 	infraRsDomPMap, err := infraRsDomP.ToMap()
 	if err != nil {
 		return d, err

@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
+	"github.com/ciscoecosystem/aci-go-client/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -36,7 +37,7 @@ func dataSourceAciInfraRsDomPRead(ctx context.Context, d *schema.ResourceData, m
 	aciClient := m.(*client.Client)
 	domain_dn := d.Get("tDn").(string)
 	AttachableAccessEntityProfileDn := d.Get("attachable_access_entity_profile_dn").(string)
-	rn := fmt.Sprintf("rsdomP-[%s]", domain_dn)
+	rn := fmt.Sprintf(models.RninfraRsDomP, domain_dn)
 	dn := fmt.Sprintf("%s/%s", AttachableAccessEntityProfileDn, rn)
 
 	infraRsDomP, err := getRemoteInfraRsDomP(aciClient, dn)
