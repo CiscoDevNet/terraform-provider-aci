@@ -159,6 +159,7 @@ func resourceAciActionRuleProfileUpdate(ctx context.Context, d *schema.ResourceD
 	if Name, ok := d.GetOk("name"); ok {
 		rtctrlAttrPAttr.Name = Name.(string)
 	}
+
 	rtctrlAttrP := models.NewActionRuleProfile(fmt.Sprintf(models.RnrtctrlAttrP, name), TenantDn, desc, nameAlias, rtctrlAttrPAttr)
 
 	rtctrlAttrP.Status = "modified"
