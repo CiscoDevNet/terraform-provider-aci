@@ -7,10 +7,16 @@ import (
 	"github.com/ciscoecosystem/aci-go-client/container"
 )
 
-const RtctrlattrpClassName = "rtctrlAttrP"
+const (
+	DnrtctrlAttrP        = "uni/tn-%s/attr-%s"
+	RnrtctrlAttrP        = "attr-%s"
+	ParentDnrtctrlAttrP  = "uni/tn-%s"
+	RtctrlattrpClassName = "rtctrlAttrP"
+)
 
 type ActionRuleProfile struct {
 	BaseAttributes
+	NameAliasAttribute
 	ActionRuleProfileAttributes
 }
 
@@ -22,7 +28,7 @@ type ActionRuleProfileAttributes struct {
 	NameAlias string `json:",omitempty"`
 }
 
-func NewActionRuleProfile(rtctrlAttrPRn, parentDn, description string, rtctrlAttrPattr ActionRuleProfileAttributes) *ActionRuleProfile {
+func NewActionRuleProfile(rtctrlAttrPRn, parentDn, description, nameAlias string, rtctrlAttrPAttr ActionRuleProfileAttributes) *ActionRuleProfile {
 	dn := fmt.Sprintf("%s/%s", parentDn, rtctrlAttrPRn)
 	return &ActionRuleProfile{
 		BaseAttributes: BaseAttributes{
@@ -32,8 +38,10 @@ func NewActionRuleProfile(rtctrlAttrPRn, parentDn, description string, rtctrlAtt
 			ClassName:         RtctrlattrpClassName,
 			Rn:                rtctrlAttrPRn,
 		},
-
-		ActionRuleProfileAttributes: rtctrlAttrPattr,
+		NameAliasAttribute: NameAliasAttribute{
+			NameAlias: nameAlias,
+		},
+		ActionRuleProfileAttributes: rtctrlAttrPAttr,
 	}
 }
 
@@ -43,17 +51,21 @@ func (rtctrlAttrP *ActionRuleProfile) ToMap() (map[string]string, error) {
 		return nil, err
 	}
 
-	A(rtctrlAttrPMap, "name", rtctrlAttrP.Name)
+	alias, err := rtctrlAttrP.NameAliasAttribute.ToMap()
+	if err != nil {
+		return nil, err
+	}
+
+	for key, value := range alias {
+		A(rtctrlAttrPMap, key, value)
+	}
 
 	A(rtctrlAttrPMap, "annotation", rtctrlAttrP.Annotation)
-
-	A(rtctrlAttrPMap, "nameAlias", rtctrlAttrP.NameAlias)
-
+	A(rtctrlAttrPMap, "name", rtctrlAttrP.Name)
 	return rtctrlAttrPMap, err
 }
 
 func ActionRuleProfileFromContainerList(cont *container.Container, index int) *ActionRuleProfile {
-
 	ActionRuleProfileCont := cont.S("imdata").Index(index).S(RtctrlattrpClassName, "attributes")
 	return &ActionRuleProfile{
 		BaseAttributes{
@@ -63,14 +75,14 @@ func ActionRuleProfileFromContainerList(cont *container.Container, index int) *A
 			ClassName:         RtctrlattrpClassName,
 			Rn:                G(ActionRuleProfileCont, "rn"),
 		},
-
+		NameAliasAttribute{
+			NameAlias: G(ActionRuleProfileCont, "nameAlias"),
+		},
 		ActionRuleProfileAttributes{
 
 			Name: G(ActionRuleProfileCont, "name"),
 
 			Annotation: G(ActionRuleProfileCont, "annotation"),
-
-			NameAlias: G(ActionRuleProfileCont, "nameAlias"),
 		},
 	}
 }
