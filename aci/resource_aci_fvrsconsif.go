@@ -102,7 +102,7 @@ func resourceAciContractInterfaceRelationshipCreate(ctx context.Context, d *sche
 	log.Printf("[DEBUG] ContractInterfaceRelationship: Beginning Creation")
 	aciClient := m.(*client.Client)
 	tnVzCPIfName := GetMOName(d.Get("contract_interface_dn").(string))
-	ApplicationEPGDn := d.Get("application_epg_dn").(string)
+	applicationEpgDn := d.Get("application_epg_dn").(string)
 
 	fvRsConsIfAttr := models.ContractInterfaceRelationshipAttributes{}
 
@@ -119,7 +119,7 @@ func resourceAciContractInterfaceRelationshipCreate(ctx context.Context, d *sche
 	if TnVzCPIfName, ok := d.GetOk("tnVzCPIfName"); ok {
 		fvRsConsIfAttr.TnVzCPIfName = TnVzCPIfName.(string)
 	}
-	fvRsConsIf := models.NewContractInterfaceRelationship(fmt.Sprintf(models.RnfvRsConsIf, tnVzCPIfName), ApplicationEPGDn, fvRsConsIfAttr)
+	fvRsConsIf := models.NewContractInterfaceRelationship(fmt.Sprintf(models.RnfvRsConsIf, tnVzCPIfName), applicationEpgDn, fvRsConsIfAttr)
 
 	err := aciClient.Save(fvRsConsIf)
 	if err != nil {
@@ -135,7 +135,7 @@ func resourceAciContractInterfaceRelationshipUpdate(ctx context.Context, d *sche
 	log.Printf("[DEBUG] ContractInterfaceRelationship: Beginning Update")
 	aciClient := m.(*client.Client)
 	tnVzCPIfName := GetMOName(d.Get("contract_interface_dn").(string))
-	ApplicationEPGDn := d.Get("application_epg_dn").(string)
+	applicationEpgDn := d.Get("application_epg_dn").(string)
 
 	fvRsConsIfAttr := models.ContractInterfaceRelationshipAttributes{}
 
@@ -152,7 +152,7 @@ func resourceAciContractInterfaceRelationshipUpdate(ctx context.Context, d *sche
 	if TnVzCPIfName, ok := d.GetOk("tnVzCPIfName"); ok {
 		fvRsConsIfAttr.TnVzCPIfName = TnVzCPIfName.(string)
 	}
-	fvRsConsIf := models.NewContractInterfaceRelationship(fmt.Sprintf(models.RnfvRsConsIf, tnVzCPIfName), ApplicationEPGDn, fvRsConsIfAttr)
+	fvRsConsIf := models.NewContractInterfaceRelationship(fmt.Sprintf(models.RnfvRsConsIf, tnVzCPIfName), applicationEpgDn, fvRsConsIfAttr)
 
 	fvRsConsIf.Status = "modified"
 
