@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"reflect"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
@@ -44,7 +45,7 @@ func resourceAciDHCPOptionPolicy() *schema.Resource {
 			},
 
 			"dhcp_option": &schema.Schema{
-				Type:     schema.TypeList,
+				Type:     schema.TypeSet,
 				Optional: true,
 				Computed: true,
 				Elem: &schema.Resource{
@@ -225,7 +226,7 @@ func resourceAciDHCPOptionPolicyCreate(ctx context.Context, d *schema.ResourceDa
 	}
 
 	if options, ok := d.GetOk("dhcp_option"); ok {
-		dhcpOptions := options.([]interface{})
+		dhcpOptions := options.(*schema.Set).List()
 		for _, val := range dhcpOptions {
 			dhcpOptionAttr := models.DHCPOptionAttributes{}
 			dhcpOption := val.(map[string]interface{})
@@ -292,26 +293,33 @@ func resourceAciDHCPOptionPolicyUpdate(ctx context.Context, d *schema.ResourceDa
 	}
 
 	if d.HasChange("dhcp_option") {
-		old_options, _ := d.GetChange("dhcp_option")
+		old_options, new_options := d.GetChange("dhcp_option")
+		getDifference := differenceInMaps(old_options.(*schema.Set), new_options.(*schema.Set))
+		listDNToDelete := make([]string, 0)
+		for i := 0; i < len(getDifference); i++ {
+			for key, value := range getDifference[i].(map[string]interface{}) {
+				if key == "id" {
+					listDNToDelete = append(listDNToDelete, value.(string))
+				}
+			}
+		}
 
-		for _, optionParam := range old_options.([]interface{}) {
-			optionMap := optionParam.(map[string]interface{})
-			err := aciClient.DeleteByDn(optionMap["id"].(string), "dhcpOption")
-			if err != nil {
-				return diag.FromErr(err)
+		for _, value := range listDNToDelete {
+			if value != "" {
+				err := aciClient.DeleteByDn(value, "dhcpOption")
+				if err != nil {
+					return diag.FromErr(err)
+				}
 			}
 		}
 
 		if options, ok := d.GetOk("dhcp_option"); ok {
-			dhcpOptions := options.([]interface{})
+			dhcpOptions := options.(*schema.Set).List()
 			for _, val := range dhcpOptions {
 				dhcpOptionAttr := models.DHCPOptionAttributes{}
 				dhcpOption := val.(map[string]interface{})
-
 				name := dhcpOption["name"].(string)
-
 				DHCPOptionPolicyDn := dhcpOptionPol.DistinguishedName
-
 				if dhcpOption["annotation"] != nil {
 					dhcpOptionAttr.Annotation = dhcpOption["annotation"].(string)
 				} else {
@@ -331,6 +339,7 @@ func resourceAciDHCPOptionPolicyUpdate(ctx context.Context, d *schema.ResourceDa
 				if err != nil {
 					return diag.FromErr(err)
 				}
+
 			}
 		}
 	}
@@ -390,4 +399,36 @@ func resourceAciDHCPOptionPolicyDelete(ctx context.Context, d *schema.ResourceDa
 
 	d.SetId("")
 	return diag.FromErr(err)
+}
+
+func mergeMaps(maps ...map[string]interface{}) map[string]interface{} {
+	result := make(map[string]interface{})
+	for _, individualMap := range maps {
+		for k, v := range individualMap {
+			result[k] = v
+		}
+	}
+	return result
+}
+
+func differenceInMaps(mapSlice1, mapSlice2 *schema.Set) []interface{} {
+	var difference []interface{}
+	for i := 0; i < 2; i++ {
+		for _, s1 := range mapSlice1.List() {
+			found := false
+			for _, s2 := range mapSlice2.List() {
+				if reflect.DeepEqual(s1, s2) {
+					found = true
+					break
+				}
+			}
+			if !found {
+				difference = append(difference, s1)
+			}
+		}
+		if i == 0 {
+			mapSlice1, mapSlice2 = mapSlice2, mapSlice1
+		}
+	}
+	return difference
 }
