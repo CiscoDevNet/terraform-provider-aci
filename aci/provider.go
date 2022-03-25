@@ -297,6 +297,7 @@ func Provider() *schema.Provider {
 			"aci_tag":                                      resourceAciTag(),
 			"aci_spine_access_port_selector":               resourceAciSpineAccessPortSelector(),
 			"aci_aaa_domain_relationship":                  resourceAciDomainRelationship(),
+			"aci_aaep_to_domain":                           resourceAciInfraRsDomP(),
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
@@ -515,6 +516,7 @@ func Provider() *schema.Provider {
 			"aci_tag":                                      dataSourceAciTag(),
 			"aci_spine_access_port_selector":               dataSourceAciSpineAccessPortSelector(),
 			"aci_aaa_domain_relationship":                  dataSourceAciDomainRelationship(),
+			"aci_aaep_to_domain":                           dataSourceAciInfraRsDomP(),
 		},
 
 		ConfigureFunc: configureClient,
