@@ -8,26 +8,34 @@ description: |-
 ---
 
 # aci_action_rule_profile #
+
 Data source for ACI Action Rule Profile
+
+## API Information ##
+
+* `Class` - rtctrlAttrP
+* `Distinguished Name` - uni/tn-{name}/attr-{name}
+
+## GUI Information ##
+
+* `Location` - Tenant > Policies > Protocols > Set Rules
 
 ## Example Usage ##
 
 ```hcl
 data "aci_action_rule_profile" "example" {
-
-  tenant_dn  = aci_tenant.example.id
-  name  = "example"
+  tenant_dn = aci_tenant.example.id
+  name      = "Rule-1"
 }
 ```
+
 ## Argument Reference ##
+
 * `tenant_dn` - (Required) Distinguished name of parent Tenant object.
-* `name` - (Required) name of Object action_rule_profile.
+* `name` - (Required) Name of object Action Rule Profile.
 
-
-
-## Attribute Reference
-
+## Attribute Reference ##
 * `id` - Attribute id set to the Dn of the Action Rule Profile.
-* `annotation` - (Optional) Annotation for object action rule profile.
-* `name_alias` - (Optional) Name alias for object action rule profile.
-* `description` - (Optional) Description for action rule profile.
+* `annotation` - (Optional) Annotation of object Action Rule Profile.
+* `name_alias` - (Optional) Name Alias of object Action Rule Profile.
+* `description` - (Optional) Description of object Action Rule Profile.

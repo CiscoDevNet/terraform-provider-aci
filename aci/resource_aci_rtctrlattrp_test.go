@@ -6,12 +6,15 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/acctest"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
 func TestAccAciActionRuleProfile_Basic(t *testing.T) {
 	var action_rule_profile models.ActionRuleProfile
+	fv_tenant_name := acctest.RandString(5)
+	rtctrl_attr_p_name := acctest.RandString(5)
 	description := "action_rule_profile created while acceptance testing"
 
 	resource.Test(t, resource.TestCase{
@@ -20,18 +23,20 @@ func TestAccAciActionRuleProfile_Basic(t *testing.T) {
 		CheckDestroy: testAccCheckAciActionRuleProfileDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckAciActionRuleProfileConfig_basic(description),
+				Config: testAccCheckAciActionRuleProfileConfig_basic(fv_tenant_name, rtctrl_attr_p_name),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckAciActionRuleProfileExists("aci_action_rule_profile.fooaction_rule_profile", &action_rule_profile),
-					testAccCheckAciActionRuleProfileAttributes(description, &action_rule_profile),
+					testAccCheckAciActionRuleProfileAttributes(fv_tenant_name, rtctrl_attr_p_name, description, &action_rule_profile),
 				),
 			},
 		},
 	})
 }
 
-func TestAccAciActionRuleProfile_update(t *testing.T) {
+func TestAccAciActionRuleProfile_Update(t *testing.T) {
 	var action_rule_profile models.ActionRuleProfile
+	fv_tenant_name := acctest.RandString(5)
+	rtctrl_attr_p_name := acctest.RandString(5)
 	description := "action_rule_profile created while acceptance testing"
 
 	resource.Test(t, resource.TestCase{
@@ -40,34 +45,39 @@ func TestAccAciActionRuleProfile_update(t *testing.T) {
 		CheckDestroy: testAccCheckAciActionRuleProfileDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckAciActionRuleProfileConfig_basic(description),
+				Config: testAccCheckAciActionRuleProfileConfig_basic(fv_tenant_name, rtctrl_attr_p_name),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckAciActionRuleProfileExists("aci_action_rule_profile.fooaction_rule_profile", &action_rule_profile),
-					testAccCheckAciActionRuleProfileAttributes(description, &action_rule_profile),
+					testAccCheckAciActionRuleProfileAttributes(fv_tenant_name, rtctrl_attr_p_name, description, &action_rule_profile),
 				),
 			},
 			{
-				Config: testAccCheckAciActionRuleProfileConfig_basic(description),
+				Config: testAccCheckAciActionRuleProfileConfig_basic(fv_tenant_name, rtctrl_attr_p_name),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckAciActionRuleProfileExists("aci_action_rule_profile.fooaction_rule_profile", &action_rule_profile),
-					testAccCheckAciActionRuleProfileAttributes(description, &action_rule_profile),
+					testAccCheckAciActionRuleProfileAttributes(fv_tenant_name, rtctrl_attr_p_name, description, &action_rule_profile),
 				),
 			},
 		},
 	})
 }
 
-func testAccCheckAciActionRuleProfileConfig_basic(description string) string {
+func testAccCheckAciActionRuleProfileConfig_basic(fv_tenant_name, rtctrl_attr_p_name string) string {
 	return fmt.Sprintf(`
 
+	resource "aci_tenant" "footenant" {
+		name 		= "%s"
+		description = "tenant created while acceptance testing"
+
+	}
+
 	resource "aci_action_rule_profile" "fooaction_rule_profile" {
-		  	tenant_dn  = aci_tenant.example.id
-			description = "%s"
-			name  = "example"
-		  	annotation  = "example"
-		  	name_alias  = "example"
-		}
-	`, description)
+		name 		= "%s"
+		description = "action_rule_profile created while acceptance testing"
+		tenant_dn = aci_tenant.footenant.id
+	}
+
+	`, fv_tenant_name, rtctrl_attr_p_name)
 }
 
 func testAccCheckAciActionRuleProfileExists(name string, action_rule_profile *models.ActionRuleProfile) resource.TestCheckFunc {
@@ -118,25 +128,18 @@ func testAccCheckAciActionRuleProfileDestroy(s *terraform.State) error {
 	return nil
 }
 
-func testAccCheckAciActionRuleProfileAttributes(description string, action_rule_profile *models.ActionRuleProfile) resource.TestCheckFunc {
+func testAccCheckAciActionRuleProfileAttributes(fv_tenant_name, rtctrl_attr_p_name, description string, action_rule_profile *models.ActionRuleProfile) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
+		if rtctrl_attr_p_name != GetMOName(action_rule_profile.DistinguishedName) {
+			return fmt.Errorf("Bad rtctrl_attr_p %s", GetMOName(action_rule_profile.DistinguishedName))
+		}
 
+		if fv_tenant_name != GetMOName(GetParentDn(action_rule_profile.DistinguishedName, action_rule_profile.Rn)) {
+			return fmt.Errorf(" Bad fv_tenant %s", GetMOName(GetParentDn(action_rule_profile.DistinguishedName, action_rule_profile.Rn)))
+		}
 		if description != action_rule_profile.Description {
 			return fmt.Errorf("Bad action_rule_profile Description %s", action_rule_profile.Description)
 		}
-
-		if "example" != action_rule_profile.Name {
-			return fmt.Errorf("Bad action_rule_profile name %s", action_rule_profile.Name)
-		}
-
-		if "example" != action_rule_profile.Annotation {
-			return fmt.Errorf("Bad action_rule_profile annotation %s", action_rule_profile.Annotation)
-		}
-
-		if "example" != action_rule_profile.NameAlias {
-			return fmt.Errorf("Bad action_rule_profile name_alias %s", action_rule_profile.NameAlias)
-		}
-
 		return nil
 	}
 }
