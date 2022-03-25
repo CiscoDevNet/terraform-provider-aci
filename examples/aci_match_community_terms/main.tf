@@ -1,0 +1,39 @@
+terraform {
+  required_providers {
+    aci = {
+      source = "ciscodevnet/aci"
+    }
+  }
+}
+
+provider "aci" {
+  username = ""
+  password = ""
+  url      = ""
+  insecure = true
+}
+
+resource "aci_tenant" "tenant_for_match_rules" {
+  name        = "tenant_for_match_rules"
+  description = "This tenant is created by terraform ACI provider"
+}
+
+resource "aci_match_rule" "match_rule" {
+  tenant_dn  = aci_tenant.tenant_for_match_rules.id
+  name  = "match_rule"
+}
+
+resource "aci_match_community_terms" "community_terms" {
+  match_rule_dn = aci_match_rule.match_rule.id
+  name  = "community_terms"
+  description = "This is community terms"
+}
+
+data "aci_match_community_terms" "example" {
+  match_rule_dn = aci_match_community_terms.community_terms.match_rule_dn
+  name  = aci_match_community_terms.community_terms.name
+}
+
+output "name" {
+  value = data.aci_match_community_terms.example
+}

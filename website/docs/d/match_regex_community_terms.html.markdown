@@ -19,7 +19,7 @@ Data source for ACI Match Rule Based on Community Regular Expression
 
 ## GUI Information ##
 
-* `Location` - Tenant -> Policies -> Protocol -> Match rules -> match_regex_community_terms
+* `Location` - Tenant -> Policies -> Protocol -> Match rules -> Match Regex Community Terms
 
 
 
