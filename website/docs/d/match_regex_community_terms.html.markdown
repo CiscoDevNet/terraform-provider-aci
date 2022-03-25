@@ -34,11 +34,11 @@ data "aci_match_regex_community_terms" "example" {
 
 ## Argument Reference ##
 
-* `match_rule_dn` - (Required) Distinguished name of parent MatchRule object.
-* `community_type` - (Required) Community Type of object Match Rule Based on Community Regular Expression.
+* `match_rule_dn` - (Required) Distinguished name of parent Match Rule object.
+* `community_type` - (Required) Community Type of the Match Rule Based on Community Regular Expression object.
 
 ## Attribute Reference ##
 * `id` - Attribute id set to the Dn of the Match Rule Based on Community Regular Expression.
-* `annotation` - (Optional) Annotation of object Match Rule Based on Community Regular Expression.
-* `community_type` - (Optional) Community Type of the object Match Rule Based on Community Regular Expression.
-* `regex` - (Optional) Regular Expression. A regular expression used to specify a pattern to match against an input string.
+* `annotation` - (Optional) Annotation of the Match Rule Based on Community Regular Expression object.
+* `community_type` - (Optional) Community Type of the Match Rule Based on Community Regular Expression object.
+* `regex` - (Optional) Regular Expression. A regular expression used to specify a pattern to match against the community string.

@@ -44,9 +44,9 @@ func dataSourceAciMatchRuleBasedonCommunityRegularExpression() *schema.Resource 
 func dataSourceAciMatchRuleBasedonCommunityRegularExpressionRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	aciClient := m.(*client.Client)
 	commType := d.Get("community_type").(string)
-	MatchRuleDn := d.Get("match_rule_dn").(string)
+	matchRuleDn := d.Get("match_rule_dn").(string)
 	rn := fmt.Sprintf(models.RnrtctrlMatchCommRegexTerm, commType)
-	dn := fmt.Sprintf("%s/%s", MatchRuleDn, rn)
+	dn := fmt.Sprintf("%s/%s", matchRuleDn, rn)
 
 	rtctrlMatchCommRegexTerm, err := getRemoteMatchRuleBasedonCommunityRegularExpression(aciClient, dn)
 	if err != nil {

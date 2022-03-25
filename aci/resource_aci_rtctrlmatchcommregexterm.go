@@ -60,7 +60,7 @@ func getRemoteMatchRuleBasedonCommunityRegularExpression(client *client.Client, 
 	}
 	rtctrlMatchCommRegexTerm := models.MatchRuleBasedonCommunityRegularExpressionFromContainer(rtctrlMatchCommRegexTermCont)
 	if rtctrlMatchCommRegexTerm.DistinguishedName == "" {
-		return nil, fmt.Errorf("MatchRuleBasedonCommunityRegularExpression %s not found", rtctrlMatchCommRegexTerm.DistinguishedName)
+		return nil, fmt.Errorf("MatchRuleBasedonCommunityRegularExpression %s not found", dn)
 	}
 	return rtctrlMatchCommRegexTerm, nil
 }
@@ -106,7 +106,7 @@ func resourceAciMatchRuleBasedonCommunityRegularExpressionCreate(ctx context.Con
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
 	commType := d.Get("community_type").(string)
-	MatchRuleDn := d.Get("match_rule_dn").(string)
+	matchRuleDn := d.Get("match_rule_dn").(string)
 
 	rtctrlMatchCommRegexTermAttr := models.MatchRuleBasedonCommunityRegularExpressionAttributes{}
 
@@ -132,7 +132,7 @@ func resourceAciMatchRuleBasedonCommunityRegularExpressionCreate(ctx context.Con
 	if Regex, ok := d.GetOk("regex"); ok {
 		rtctrlMatchCommRegexTermAttr.Regex = Regex.(string)
 	}
-	rtctrlMatchCommRegexTerm := models.NewMatchRuleBasedonCommunityRegularExpression(fmt.Sprintf(models.RnrtctrlMatchCommRegexTerm, commType), MatchRuleDn, desc, nameAlias, rtctrlMatchCommRegexTermAttr)
+	rtctrlMatchCommRegexTerm := models.NewMatchRuleBasedonCommunityRegularExpression(fmt.Sprintf(models.RnrtctrlMatchCommRegexTerm, commType), matchRuleDn, desc, nameAlias, rtctrlMatchCommRegexTermAttr)
 
 	err := aciClient.Save(rtctrlMatchCommRegexTerm)
 	if err != nil {
@@ -149,7 +149,7 @@ func resourceAciMatchRuleBasedonCommunityRegularExpressionUpdate(ctx context.Con
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
 	commType := d.Get("community_type").(string)
-	MatchRuleDn := d.Get("match_rule_dn").(string)
+	matchRuleDn := d.Get("match_rule_dn").(string)
 
 	rtctrlMatchCommRegexTermAttr := models.MatchRuleBasedonCommunityRegularExpressionAttributes{}
 
@@ -175,7 +175,7 @@ func resourceAciMatchRuleBasedonCommunityRegularExpressionUpdate(ctx context.Con
 	if Regex, ok := d.GetOk("regex"); ok {
 		rtctrlMatchCommRegexTermAttr.Regex = Regex.(string)
 	}
-	rtctrlMatchCommRegexTerm := models.NewMatchRuleBasedonCommunityRegularExpression(fmt.Sprintf(models.RnrtctrlMatchCommRegexTerm, commType), MatchRuleDn, desc, nameAlias, rtctrlMatchCommRegexTermAttr)
+	rtctrlMatchCommRegexTerm := models.NewMatchRuleBasedonCommunityRegularExpression(fmt.Sprintf(models.RnrtctrlMatchCommRegexTerm, commType), matchRuleDn, desc, nameAlias, rtctrlMatchCommRegexTermAttr)
 
 	rtctrlMatchCommRegexTerm.Status = "modified"
 

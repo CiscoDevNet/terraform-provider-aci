@@ -34,10 +34,10 @@ resource "aci_match_regex_community_terms" "example" {
 
 ## Argument Reference ##
 
-* `match_rule_dn` - (Required) Distinguished name of the parent MatchRule object.
-* `annotation` - (Optional) Annotation of the object Match Rule Based on Community Regular Expression.
-* `community_type` - (Optional) Community Type of the object Match Rule Based on Community Regular Expression. Allowed values are "extended", "regular", and default value is "regular". Type: String.
-* `regex` - (Optional) Regular Expression.A regular expression used to specify a pattern to match against an input string.
+* `match_rule_dn` - (Required) Distinguished name of the parent Match Rule object.
+* `annotation` - (Optional) Annotation of the Match Rule Based on Community Regular Expression object.
+* `community_type` - (Optional) Community Type of the Match Rule Based on Community Regular Expression object. Allowed values are "extended", "regular", and default value is "regular". Type: String.
+* `regex` - (Optional) Regular Expression.A regular expression used to specify a pattern to match against the community string.
 
 
 ## Importing ##
