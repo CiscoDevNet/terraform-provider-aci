@@ -26,3 +26,8 @@ resource "aci_aaep_to_domain" "foo_aaep_to_domain" {
   attachable_access_entity_profile_dn = aci_attachable_access_entity_profile.foo_attachable_access_entity_profile.id
   domain_dn                           = aci_l3_domain_profile.foo_l3_domain_profile.id
 }
+
+data "aci_aaep_to_domain" "data_aaep_to_domain" {
+  attachable_access_entity_profile_dn = aci_aaep_to_domain.foo_aaep_to_domain.attachable_access_entity_profile_dn
+  domain_dn                           = aci_aaep_to_domain.foo_aaep_to_domain.domain_dn
+}

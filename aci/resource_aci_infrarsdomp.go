@@ -91,7 +91,7 @@ func resourceAciInfraRsDomPCreate(ctx context.Context, d *schema.ResourceData, m
 	log.Printf("[DEBUG] InfraRsDomP: Beginning Creation")
 	aciClient := m.(*client.Client)
 	tDn := d.Get("domain_dn").(string)
-	AttachableAccessEntityProfileDn := d.Get("attachable_access_entity_profile_dn").(string)
+	attachableAccessEntityProfileDn := d.Get("attachable_access_entity_profile_dn").(string)
 
 	infraRsDomPAttr := models.InfraRsDomPAttributes{}
 
@@ -104,7 +104,7 @@ func resourceAciInfraRsDomPCreate(ctx context.Context, d *schema.ResourceData, m
 	if TDn, ok := d.GetOk("domain_dn"); ok {
 		infraRsDomPAttr.TDn = TDn.(string)
 	}
-	infraRsDomP := models.NewInfraRsDomP(fmt.Sprintf(models.RninfraRsDomP, tDn), AttachableAccessEntityProfileDn, infraRsDomPAttr)
+	infraRsDomP := models.NewInfraRsDomP(fmt.Sprintf(models.RninfraRsDomP, tDn), attachableAccessEntityProfileDn, infraRsDomPAttr)
 
 	err := aciClient.Save(infraRsDomP)
 	if err != nil {
@@ -120,7 +120,7 @@ func resourceAciInfraRsDomPUpdate(ctx context.Context, d *schema.ResourceData, m
 	log.Printf("[DEBUG] InfraRsDomP: Beginning Update")
 	aciClient := m.(*client.Client)
 	tDn := d.Get("domain_dn").(string)
-	AttachableAccessEntityProfileDn := d.Get("attachable_access_entity_profile_dn").(string)
+	attachableAccessEntityProfileDn := d.Get("attachable_access_entity_profile_dn").(string)
 
 	infraRsDomPAttr := models.InfraRsDomPAttributes{}
 
@@ -133,7 +133,7 @@ func resourceAciInfraRsDomPUpdate(ctx context.Context, d *schema.ResourceData, m
 	if TDn, ok := d.GetOk("domain_dn"); ok {
 		infraRsDomPAttr.TDn = TDn.(string)
 	}
-	infraRsDomP := models.NewInfraRsDomP(fmt.Sprintf(models.RninfraRsDomP, tDn), AttachableAccessEntityProfileDn, infraRsDomPAttr)
+	infraRsDomP := models.NewInfraRsDomP(fmt.Sprintf(models.RninfraRsDomP, tDn), attachableAccessEntityProfileDn, infraRsDomPAttr)
 
 	infraRsDomP.Status = "modified"
 
