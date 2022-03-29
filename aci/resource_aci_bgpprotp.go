@@ -30,7 +30,6 @@ func resourceAciL3outBGPProtocolProfile() *schema.Resource {
 				Required: true,
 				ForceNew: true,
 			},
-
 			"name_alias": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -41,13 +40,11 @@ func resourceAciL3outBGPProtocolProfile() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
-
 			"annotation": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Default:  "orchestrator:terraform",
 			},
-
 			"relation_bgp_rs_best_path_ctrl_pol": &schema.Schema{
 				Type: schema.TypeString,
 
@@ -163,8 +160,8 @@ func resourceAciL3outBGPProtocolProfileCreate(ctx context.Context, d *schema.Res
 	d.Partial(false)
 
 	if relationTobgpRsBestPathCtrlPol, ok := d.GetOk("relation_bgp_rs_best_path_ctrl_pol"); ok {
-		relationParam := relationTobgpRsBestPathCtrlPol.(string)
-		err = aciClient.CreateRelationbgpRsBestPathCtrlPol(bgpProtP.DistinguishedName, bgpProtPAttr.Annotation, GetMOName(relationParam))
+		relationParam := GetMOName(relationTobgpRsBestPathCtrlPol.(string))
+		err = aciClient.CreateRelationbgpRsBestPathCtrlPol(bgpProtP.DistinguishedName, bgpProtPAttr.Annotation, relationParam)
 		if err != nil {
 			return diag.FromErr(err)
 		}
@@ -283,8 +280,8 @@ func resourceAciL3outBGPProtocolProfileRead(ctx context.Context, d *schema.Resou
 		d.Set("relation_bgp_rs_best_path_ctrl_pol", "")
 	} else {
 		if _, ok := d.GetOk("relation_bgp_rs_best_path_ctrl_pol"); ok {
-			tfName := GetMOName(d.Get("relation_bgp_rs_best_path_ctrl_pol").(string))
-			if tfName != bgpRsBestPathCtrlPolData {
+			bgp_rs_best_path_ctrl_pol := GetMOName(d.Get("relation_bgp_rs_best_path_ctrl_pol").(string))
+			if bgp_rs_best_path_ctrl_pol != bgpRsBestPathCtrlPolData {
 				d.Set("relation_bgp_rs_best_path_ctrl_pol", "")
 			}
 		}
@@ -296,8 +293,8 @@ func resourceAciL3outBGPProtocolProfileRead(ctx context.Context, d *schema.Resou
 		d.Set("relation_bgp_rs_bgp_node_ctx_pol", "")
 	} else {
 		if _, ok := d.GetOk("relation_bgp_rs_bgp_node_ctx_pol"); ok {
-			tfName := GetMOName(d.Get("relation_bgp_rs_bgp_node_ctx_pol").(string))
-			if tfName != bgpRsBgpNodeCtxPolData {
+			bgp_rs_node_ctx_pol := GetMOName(d.Get("relation_bgp_rs_bgp_node_ctx_pol").(string))
+			if bgp_rs_node_ctx_pol != bgpRsBgpNodeCtxPolData {
 				d.Set("relation_bgp_rs_bgp_node_ctx_pol", "")
 			}
 		}
