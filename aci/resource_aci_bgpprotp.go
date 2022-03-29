@@ -36,6 +36,11 @@ func resourceAciL3outBGPProtocolProfile() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"name": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
 
 			"annotation": &schema.Schema{
 				Type:     schema.TypeString,
@@ -43,6 +48,11 @@ func resourceAciL3outBGPProtocolProfile() *schema.Resource {
 				Default:  "orchestrator:terraform",
 			},
 
+			"relation_bgp_rs_best_path_ctrl_pol": &schema.Schema{
+				Type: schema.TypeString,
+
+				Optional: true,
+			},
 			"relation_bgp_rs_bgp_node_ctx_pol": &schema.Schema{
 				Type: schema.TypeString,
 
@@ -76,9 +86,11 @@ func setL3outBGPProtocolProfileAttributes(bgpProtP *models.L3outBGPProtocolProfi
 	if err != nil {
 		return d, err
 	}
-	d.Set("logical_node_profile_dn", GetParentDn(dn, fmt.Sprintf("/protp")))
+	d.Set("logical_node_profile_dn", GetParentDn(dn, fmt.Sprintf("/%s", models.RnbgpProtP)))
 	d.Set("annotation", bgpProtPMap["annotation"])
+	d.Set("name", bgpProtPMap["name"])
 	d.Set("name_alias", bgpProtPMap["nameAlias"])
+
 	return d, nil
 }
 
@@ -108,22 +120,34 @@ func resourceAciL3outBGPProtocolProfileCreate(ctx context.Context, d *schema.Res
 	LogicalNodeProfileDn := d.Get("logical_node_profile_dn").(string)
 
 	bgpProtPAttr := models.L3outBGPProtocolProfileAttributes{}
+	if Name, ok := d.GetOk("name"); ok {
+		bgpProtPAttr.Name = Name.(string)
+	}
+
+	nameAlias := ""
+	if NameAlias, ok := d.GetOk("name_alias"); ok {
+		nameAlias = NameAlias.(string)
+	}
+
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		bgpProtPAttr.Annotation = Annotation.(string)
 	} else {
 		bgpProtPAttr.Annotation = "{}"
 	}
-	if NameAlias, ok := d.GetOk("name_alias"); ok {
-		bgpProtPAttr.NameAlias = NameAlias.(string)
-	}
-	bgpProtP := models.NewL3outBGPProtocolProfile(fmt.Sprintf("protp"), LogicalNodeProfileDn, bgpProtPAttr)
+
+	bgpProtP := models.NewL3outBGPProtocolProfile(fmt.Sprintf(models.RnbgpProtP), LogicalNodeProfileDn, nameAlias, bgpProtPAttr)
 
 	err := aciClient.Save(bgpProtP)
 	if err != nil {
 		return diag.FromErr(err)
 	}
-
 	checkDns := make([]string, 0, 1)
+
+	if relationTobgpRsBestPathCtrlPol, ok := d.GetOk("relation_bgp_rs_best_path_ctrl_pol"); ok {
+		relationParam := relationTobgpRsBestPathCtrlPol.(string)
+		checkDns = append(checkDns, relationParam)
+
+	}
 
 	if relationTobgpRsBgpNodeCtxPol, ok := d.GetOk("relation_bgp_rs_bgp_node_ctx_pol"); ok {
 		relationParam := relationTobgpRsBgpNodeCtxPol.(string)
@@ -138,49 +162,67 @@ func resourceAciL3outBGPProtocolProfileCreate(ctx context.Context, d *schema.Res
 	}
 	d.Partial(false)
 
+	if relationTobgpRsBestPathCtrlPol, ok := d.GetOk("relation_bgp_rs_best_path_ctrl_pol"); ok {
+		relationParam := relationTobgpRsBestPathCtrlPol.(string)
+		err = aciClient.CreateRelationbgpRsBestPathCtrlPol(bgpProtP.DistinguishedName, bgpProtPAttr.Annotation, GetMOName(relationParam))
+		if err != nil {
+			return diag.FromErr(err)
+		}
+
+	}
+
 	if relationTobgpRsBgpNodeCtxPol, ok := d.GetOk("relation_bgp_rs_bgp_node_ctx_pol"); ok {
 		relationParam := GetMOName(relationTobgpRsBgpNodeCtxPol.(string))
 		err = aciClient.CreateRelationbgpRsBgpNodeCtxPolFromL3outBGPProtocolProfile(bgpProtP.DistinguishedName, relationParam)
 		if err != nil {
 			return diag.FromErr(err)
 		}
+
 	}
 
 	d.SetId(bgpProtP.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
-
 	return resourceAciL3outBGPProtocolProfileRead(ctx, d, m)
 }
 
 func resourceAciL3outBGPProtocolProfileUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] L3outBGPProtocolProfile: Beginning Update")
-
 	aciClient := m.(*client.Client)
-
 	LogicalNodeProfileDn := d.Get("logical_node_profile_dn").(string)
 
 	bgpProtPAttr := models.L3outBGPProtocolProfileAttributes{}
+	nameAlias := ""
+	if NameAlias, ok := d.GetOk("name_alias"); ok {
+		nameAlias = NameAlias.(string)
+	}
+
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		bgpProtPAttr.Annotation = Annotation.(string)
 	} else {
 		bgpProtPAttr.Annotation = "{}"
 	}
-	if NameAlias, ok := d.GetOk("name_alias"); ok {
-		bgpProtPAttr.NameAlias = NameAlias.(string)
+
+	if Name, ok := d.GetOk("name"); ok {
+		bgpProtPAttr.Name = Name.(string)
 	}
-	bgpProtP := models.NewL3outBGPProtocolProfile(fmt.Sprintf("protp"), LogicalNodeProfileDn, bgpProtPAttr)
+	bgpProtP := models.NewL3outBGPProtocolProfile(fmt.Sprintf(models.RnbgpProtP), LogicalNodeProfileDn, nameAlias, bgpProtPAttr)
 
 	bgpProtP.Status = "modified"
 
 	err := aciClient.Save(bgpProtP)
-
 	if err != nil {
 		return diag.FromErr(err)
 	}
 
 	checkDns := make([]string, 0, 1)
 
-	if d.HasChange("relation_bgp_rs_bgp_node_ctx_pol") {
+	if d.HasChange("relation_bgp_rs_best_path_ctrl_pol") || d.HasChange("annotation") {
+		_, newRelParam := d.GetChange("relation_bgp_rs_best_path_ctrl_pol")
+		checkDns = append(checkDns, newRelParam.(string))
+
+	}
+
+	if d.HasChange("relation_bgp_rs_bgp_node_ctx_pol") || d.HasChange("annotation") {
 		_, newRelParam := d.GetChange("relation_bgp_rs_bgp_node_ctx_pol")
 		checkDns = append(checkDns, newRelParam.(string))
 
@@ -193,7 +235,19 @@ func resourceAciL3outBGPProtocolProfileUpdate(ctx context.Context, d *schema.Res
 	}
 	d.Partial(false)
 
-	if d.HasChange("relation_bgp_rs_bgp_node_ctx_pol") {
+	if d.HasChange("relation_bgp_rs_best_path_ctrl_pol") || d.HasChange("annotation") {
+		_, newRelParam := d.GetChange("relation_bgp_rs_best_path_ctrl_pol")
+		err = aciClient.DeleteRelationbgpRsBestPathCtrlPol(bgpProtP.DistinguishedName)
+		if err != nil {
+			return diag.FromErr(err)
+		}
+		err = aciClient.CreateRelationbgpRsBestPathCtrlPol(bgpProtP.DistinguishedName, bgpProtPAttr.Annotation, GetMOName(newRelParam.(string)))
+		if err != nil {
+			return diag.FromErr(err)
+		}
+
+	}
+	if d.HasChange("relation_bgp_rs_bgp_node_ctx_pol") || d.HasChange("annotation") {
 		_, newRelParam := d.GetChange("relation_bgp_rs_bgp_node_ctx_pol")
 		err = aciClient.CreateRelationbgpRsBgpNodeCtxPolFromL3outBGPProtocolProfile(bgpProtP.DistinguishedName, GetMOName(newRelParam.(string)))
 		if err != nil {
@@ -204,19 +258,15 @@ func resourceAciL3outBGPProtocolProfileUpdate(ctx context.Context, d *schema.Res
 
 	d.SetId(bgpProtP.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
-
 	return resourceAciL3outBGPProtocolProfileRead(ctx, d, m)
-
 }
 
 func resourceAciL3outBGPProtocolProfileRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
-
 	aciClient := m.(*client.Client)
-
 	dn := d.Id()
-	bgpProtP, err := getRemoteL3outBGPProtocolProfile(aciClient, dn)
 
+	bgpProtP, err := getRemoteL3outBGPProtocolProfile(aciClient, dn)
 	if err != nil {
 		d.SetId("")
 		return nil
@@ -226,32 +276,47 @@ func resourceAciL3outBGPProtocolProfileRead(ctx context.Context, d *schema.Resou
 		d.SetId("")
 		return nil
 	}
+
+	bgpRsBestPathCtrlPolData, err := aciClient.ReadRelationbgpRsBestPathCtrlPol(dn)
+	if err != nil {
+		log.Printf("[DEBUG] Error while reading relation bgpRsBestPathCtrlPol %v", err)
+		d.Set("relation_bgp_rs_best_path_ctrl_pol", "")
+	} else {
+		if _, ok := d.GetOk("relation_bgp_rs_best_path_ctrl_pol"); ok {
+			tfName := GetMOName(d.Get("relation_bgp_rs_best_path_ctrl_pol").(string))
+			if tfName != bgpRsBestPathCtrlPolData {
+				d.Set("relation_bgp_rs_best_path_ctrl_pol", "")
+			}
+		}
+	}
+
 	bgpRsBgpNodeCtxPolData, err := aciClient.ReadRelationbgpRsBgpNodeCtxPolFromL3outBGPProtocolProfile(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation bgpRsBgpNodeCtxPol %v", err)
 		d.Set("relation_bgp_rs_bgp_node_ctx_pol", "")
-
 	} else {
-		setRelationAttribute(d, "relation_bgp_rs_bgp_node_ctx_pol", bgpRsBgpNodeCtxPolData.(string))
+		if _, ok := d.GetOk("relation_bgp_rs_bgp_node_ctx_pol"); ok {
+			tfName := GetMOName(d.Get("relation_bgp_rs_bgp_node_ctx_pol").(string))
+			if tfName != bgpRsBgpNodeCtxPolData {
+				d.Set("relation_bgp_rs_bgp_node_ctx_pol", "")
+			}
+		}
 	}
-
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
-
 	return nil
 }
 
 func resourceAciL3outBGPProtocolProfileDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
-
 	aciClient := m.(*client.Client)
 	dn := d.Id()
+
 	err := aciClient.DeleteByDn(dn, "bgpProtP")
 	if err != nil {
 		return diag.FromErr(err)
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
-
 	d.SetId("")
 	return diag.FromErr(err)
 }
