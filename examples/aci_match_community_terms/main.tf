@@ -7,9 +7,9 @@ terraform {
 }
 
 provider "aci" {
-  username = ""
-  password = ""
-  url      = ""
+  username = "admin"
+  password = "ins3965!"
+  url      = "https://10.23.248.120"
   insecure = true
 }
 
@@ -27,6 +27,12 @@ resource "aci_match_community_terms" "community_terms" {
   match_rule_dn = aci_match_rule.match_rule.id
   name  = "community_terms"
   description = "This is community terms"
+
+  // match_community_factors {
+  //   community = ""
+  //   scope = "transitive"
+  // }
+
 }
 
 data "aci_match_community_terms" "example" {
