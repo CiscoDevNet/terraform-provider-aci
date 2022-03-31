@@ -279,12 +279,17 @@ func resourceAciL3outBGPProtocolProfileRead(ctx context.Context, d *schema.Resou
 		log.Printf("[DEBUG] Error while reading relation bgpRsBestPathCtrlPol %v", err)
 		d.Set("relation_bgp_rs_best_path_ctrl_pol", "")
 	} else {
-		if _, ok := d.GetOk("relation_bgp_rs_best_path_ctrl_pol"); ok {
-			bgp_rs_best_path_ctrl_pol := GetMOName(d.Get("relation_bgp_rs_best_path_ctrl_pol").(string))
-			if bgp_rs_best_path_ctrl_pol != bgpRsBestPathCtrlPolData {
-				d.Set("relation_bgp_rs_best_path_ctrl_pol", "")
-			}
-		}
+		// if _, ok := d.GetOk("relation_bgp_rs_best_path_ctrl_pol"); ok {
+		// 	bgp_rs_best_path_ctrl_pol := GetMOName(d.Get("relation_bgp_rs_best_path_ctrl_pol").(string))
+		// 	log.Printf("[DEBUG] GetMOName bgpRsBestPathCtrlPol %v", bgp_rs_best_path_ctrl_pol)
+		// 	log.Printf("[DEBUG] bgpRsBestPathCtrlPolData %v", bgpRsBestPathCtrlPolData)
+		// 	if bgp_rs_best_path_ctrl_pol != bgpRsBestPathCtrlPolData {
+		// 		d.Set("relation_bgp_rs_best_path_ctrl_pol", "")
+		// 	}
+		// }
+		// setRelationAttribute(d, "relation_bgp_rs_best_path_ctrl_pol", bgpRsBestPathCtrlPolData)
+		d.Set("relation_bgp_rs_best_path_ctrl_pol", bgpRsBestPathCtrlPolData)
+		log.Printf("[DEBUG] d.get relation_bgp_rs_best_path_ctrl_pol %v", d.Get("relation_bgp_rs_best_path_ctrl_pol"))
 	}
 
 	bgpRsBgpNodeCtxPolData, err := aciClient.ReadRelationbgpRsBgpNodeCtxPolFromL3outBGPProtocolProfile(dn)
@@ -292,12 +297,16 @@ func resourceAciL3outBGPProtocolProfileRead(ctx context.Context, d *schema.Resou
 		log.Printf("[DEBUG] Error while reading relation bgpRsBgpNodeCtxPol %v", err)
 		d.Set("relation_bgp_rs_bgp_node_ctx_pol", "")
 	} else {
-		if _, ok := d.GetOk("relation_bgp_rs_bgp_node_ctx_pol"); ok {
-			bgp_rs_node_ctx_pol := GetMOName(d.Get("relation_bgp_rs_bgp_node_ctx_pol").(string))
-			if bgp_rs_node_ctx_pol != bgpRsBgpNodeCtxPolData {
-				d.Set("relation_bgp_rs_bgp_node_ctx_pol", "")
-			}
-		}
+		// if _, ok := d.GetOk("relation_bgp_rs_bgp_node_ctx_pol"); ok {
+		// 	bgp_rs_node_ctx_pol := GetMOName(d.Get("relation_bgp_rs_bgp_node_ctx_pol").(string))
+		// 	log.Printf("[DEBUG] GetMOName bgp_rs_node_ctx_pol %v", bgp_rs_node_ctx_pol)
+		// 	log.Printf("[DEBUG] bgpRsBgpNodeCtxPolData %v", bgpRsBgpNodeCtxPolData)
+		// 	if bgp_rs_node_ctx_pol != bgpRsBgpNodeCtxPolData {
+		// 		d.Set("relation_bgp_rs_bgp_node_ctx_pol", "")
+		// 	}
+		// }
+		// setRelationAttribute(d, "relation_bgp_rs_bgp_node_ctx_pol", bgpRsBgpNodeCtxPolData)
+		d.Set("relation_bgp_rs_bgp_node_ctx_pol", bgpRsBgpNodeCtxPolData)
 	}
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 	return nil
