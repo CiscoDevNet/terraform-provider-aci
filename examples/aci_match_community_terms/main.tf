@@ -29,17 +29,20 @@ resource "aci_match_community_terms" "community_terms" {
   description = "This is community terms"
 
   // match_community_factors {
-  //   community = ""
-  //   scope = "transitive"
+  //   community = "regular:as2-nn2:4:15"
+  //   scope = "non-transitive"
   // }
-
+  match_community_factors {
+    community = "regular:as2-nn2:4:16"
+    scope = "transitive"
+  }
 }
 
-data "aci_match_community_terms" "example" {
-  match_rule_dn = aci_match_community_terms.community_terms.match_rule_dn
-  name  = aci_match_community_terms.community_terms.name
-}
+// data "aci_match_community_terms" "example" {
+//   match_rule_dn = aci_match_community_terms.community_terms.match_rule_dn
+//   name  = aci_match_community_terms.community_terms.name
+// }
 
-output "name" {
-  value = data.aci_match_community_terms.example
-}
+// output "name" {
+//   value = data.aci_match_community_terms.example
+// }

@@ -38,7 +38,7 @@ func resourceAciMatchCommunityTerm() *schema.Resource {
 			"match_community_factors": &schema.Schema{
 				Type:        schema.TypeSet,
 				Optional:    true,
-				Description: "Create relation to Community Terms",
+				Description: "Create Community Factors",
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"scope": {
@@ -66,6 +66,7 @@ func resourceAciMatchCommunityTerm() *schema.Resource {
 
 func getRemoteMatchCommunityTerm(client *client.Client, dn string) (*models.MatchCommunityTerm, error) {
 	rtctrlMatchCommTermCont, err := client.Get(dn)
+
 	if err != nil {
 		return nil, err
 	}
@@ -96,6 +97,7 @@ func setMatchCommunityTermAttributes(rtctrlMatchCommTerm *models.MatchCommunityT
 
 func getRemoteMatchCommunityFactor(client *client.Client, dn string) (*models.MatchCommunityFactor, error) {
 	rtctrlMatchCommFactorCont, err := client.Get(dn)
+
 	if err != nil {
 		return nil, err
 	}
@@ -106,22 +108,20 @@ func getRemoteMatchCommunityFactor(client *client.Client, dn string) (*models.Ma
 	return rtctrlMatchCommFactor, nil
 }
 
-func setMatchCommunityFactorAttributes(rtctrlMatchCommFactor *models.MatchCommunityFactor, d *schema.ResourceData) (*schema.ResourceData, error) {
-	dn := d.Id()
-	d.SetId(rtctrlMatchCommFactor.DistinguishedName)
-	d.Set("description", rtctrlMatchCommFactor.Description)
-	if dn != rtctrlMatchCommFactor.DistinguishedName {
-		d.Set("match_community_term_dn", "")
-	}
+func setMatchCommunityFactorAttributes(rtctrlMatchCommFactor *models.MatchCommunityFactor, d map[string]string) (map[string]string, error) {
+
 	rtctrlMatchCommFactorMap, err := rtctrlMatchCommFactor.ToMap()
 	if err != nil {
 		return d, err
 	}
-	d.Set("annotation", rtctrlMatchCommFactorMap["annotation"])
-	d.Set("community", rtctrlMatchCommFactorMap["community"])
-	d.Set("name", rtctrlMatchCommFactorMap["name"])
-	d.Set("scope", rtctrlMatchCommFactorMap["scope"])
-	d.Set("name_alias", rtctrlMatchCommFactorMap["nameAlias"])
+	log.Printf("[CHECK] FACTOR MAP %v", rtctrlMatchCommFactorMap)
+
+	d = map[string]string{
+		"community":   rtctrlMatchCommFactorMap["community"],
+		"scope":       rtctrlMatchCommFactorMap["scope"],
+		"description": rtctrlMatchCommFactor.Description,
+	}
+
 	return d, nil
 }
 
@@ -129,14 +129,37 @@ func resourceAciMatchCommunityTermImport(d *schema.ResourceData, m interface{}) 
 	log.Printf("[DEBUG] %s: Beginning Import", d.Id())
 	aciClient := m.(*client.Client)
 	dn := d.Id()
+	log.Printf("[CHECK] IMPORT dn %s", dn)
 	rtctrlMatchCommTerm, err := getRemoteMatchCommunityTerm(aciClient, dn)
 	if err != nil {
 		return nil, err
 	}
+
 	schemaFilled, err := setMatchCommunityTermAttributes(rtctrlMatchCommTerm, d)
+	log.Printf("[CHECK] schemaFilled TERM %s", schemaFilled)
 	if err != nil {
 		return nil, err
 	}
+
+	rtctrlMatchCommFactors, err := aciClient.ListMatchCommFactorsFromCommunityTerm(dn)
+	log.Printf("[CHECK] IMPORT2 %v", rtctrlMatchCommFactors)
+	if err != nil {
+		log.Printf("[DEBUG] Error while reading relation rtctrlMatchCommFactor %v", err)
+	}
+
+	st := make([]map[string]string, 0, 1)
+
+	for _, factor := range rtctrlMatchCommFactors {
+
+		factorSet, err := setMatchCommunityFactorAttributes(factor, make(map[string]string))
+		if err != nil {
+			return nil, err
+		}
+		st = append(st, factorSet)
+	}
+	log.Printf("[DEBUG] FACTOR SETS %v", st)
+	d.Set("match_community_factors", st)
+
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 	return []*schema.ResourceData{schemaFilled}, nil
 }
@@ -181,9 +204,7 @@ func resourceAciMatchCommunityTermCreate(ctx context.Context, d *schema.Resource
 			rtctrlMatchCommFactorAttr.Community = factorMap["community"].(string)
 			rtctrlMatchCommFactorAttr.Annotation = rtctrlMatchCommTerm.Annotation
 
-			rtctrlMatchCommFactor := models.NewMatchCommunityFactor(fmt.Sprintf(models.RnrtctrlMatchCommFactor, rtctrlMatchCommFactorAttr.Community), rtctrlMatchCommTerm.DistinguishedName, factorMap["description"].(string), nil, rtctrlMatchCommFactorAttr)
-			// err = aciClient.CreateMatchCommunityFactor(factorMap["community"].(string), name, rtctrlMatchCommTerm.Annotation, factorMap["scope"].(string))
-			// CreateMatchCommunityFactor(community string, match_community_term string, match_rule string, tenant string, description string, nameAlias string, rtctrlMatchCommFactorAttr models.MatchCommunityFactorAttributes)
+			rtctrlMatchCommFactor := models.NewMatchCommunityFactor(fmt.Sprintf(models.RnrtctrlMatchCommFactor, rtctrlMatchCommFactorAttr.Community), rtctrlMatchCommTerm.DistinguishedName, factorMap["description"].(string), "", rtctrlMatchCommFactorAttr)
 
 			err := aciClient.Save(rtctrlMatchCommFactor)
 			if err != nil {
@@ -228,29 +249,46 @@ func resourceAciMatchCommunityTermUpdate(ctx context.Context, d *schema.Resource
 	if err != nil {
 		return diag.FromErr(err)
 	}
+	if d.HasChange("match_community_factors") || d.HasChange("annotation") {
+		previousmatchCommunityFactors, matchCommunityFactors := d.GetChange("match_community_factors")
 
-	// if d.HasChange("match_community_factors") {
-	// 	oldRel, newRel := d.GetChange("match_community_factors")
-	// 	oldRelList := oldRel.(*schema.Set).List()
-	// 	newRelList := newRel.(*schema.Set).List()
-	// 	for _, relationParam := range oldRelList {
-	// 		paramMap := relationParam.(map[string]interface{})
-	// 		err = aciClient.DeleteMatchCommunityFactor(rtctrlMatchCommTerm.DistinguishedName, paramMap["community"].(string), paramMap["scope"].(string))
+		oldFactors := previousmatchCommunityFactors.(*schema.Set).List()
+		factors := matchCommunityFactors.(*schema.Set).List()
+		for _, oldFactor := range oldFactors {
+			found := false
+			oldFactorMap := oldFactor.(map[string]interface{})
+			for _, factor := range factors {
+				factorMap := factor.(map[string]interface{})
+				if factorMap["community"].(string) == oldFactorMap["community"].(string) {
+					found = true
+					break
+				}
+			}
+			if !found {
+				dn := rtctrlMatchCommTerm.DistinguishedName + fmt.Sprintf("/"+models.RnrtctrlMatchCommFactor, oldFactorMap["community"].(string))
 
-	// 		if err != nil {
-	// 			return diag.FromErr(err)
-	// 		}
-	// 	}
-	// 	for _, relationParam := range newRelList {
-	// 		paramMap := relationParam.(map[string]interface{})
-	// 		err = aciClient.CreateMatchCommunityFactor(rtctrlMatchCommTerm.DistinguishedName, rtctrlMatchCommTerm.Annotation, paramMap["community"].(string), paramMap["scope"].(string))
+				err := aciClient.DeleteByDn(dn, "rtctrlMatchCommFactor")
+				if err != nil {
+					return diag.FromErr(err)
+				}
+			}
+		}
+		for _, factor := range factors {
+			factorMap := factor.(map[string]interface{})
 
-	// 		if err != nil {
-	// 			return diag.FromErr(err)
-	// 		}
-	// 	}
-	// }
-	// CreateMatchCommunityFactor(community string, match_community_term string, match_rule string, tenant string, description string, nameAlias string, rtctrlMatchCommFactorAttr models.MatchCommunityFactorAttributes)
+			rtctrlMatchCommFactorAttr := models.MatchCommunityFactorAttributes{}
+			rtctrlMatchCommFactorAttr.Scope = factorMap["scope"].(string)
+			rtctrlMatchCommFactorAttr.Community = factorMap["community"].(string)
+			rtctrlMatchCommFactorAttr.Annotation = rtctrlMatchCommTerm.Annotation
+
+			rtctrlMatchCommFactor := models.NewMatchCommunityFactor(fmt.Sprintf(models.RnrtctrlMatchCommFactor, rtctrlMatchCommFactorAttr.Community), rtctrlMatchCommTerm.DistinguishedName, factorMap["description"].(string), "", rtctrlMatchCommFactorAttr)
+
+			err := aciClient.Save(rtctrlMatchCommFactor)
+			if err != nil {
+				return diag.FromErr(err)
+			}
+		}
+	}
 
 	d.SetId(rtctrlMatchCommTerm.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
@@ -274,61 +312,27 @@ func resourceAciMatchCommunityTermRead(ctx context.Context, d *schema.ResourceDa
 		return nil
 	}
 
-	// ReadMatchCommunityFactor(community string, match_community_term string, match_rule string, tenant string) and delete
-	// matchCommunityFactorData, err := aciClient.ReadMatchCommunityFactor(dn)
-
-	// if err != nil {
-	// 	log.Printf("[DEBUG] Error while reading relation rtctrlMatchCommFactor %v", err)
-	// 	d.Set("match_community_factors", make([]map[string]string, 0))
-
-	// } else {
-	// 	matchCommunityFactorMap := matchCommunityFactorData.([]map[string]string)
-	// 	st := make([]map[string]string, 0, 1)
-	// 	for _, matchCommunityFactorObj := range matchCommunityFactorMap {
-	// 		st = append(st, map[string]string{
-	// 			"community": matchCommunityFactorObj["community"],
-	// 			"scope":     matchCommunityFactorObj["scope"],
-	// 		})
-	// 	}
-	// 	d.Set("match_community_factors", st)
-	// }
-
 	if matchCommunityFactors, ok := d.GetOk("match_community_factors"); ok {
 		factors := matchCommunityFactors.(*schema.Set).List()
+		st := make([]map[string]string, 0, 1)
+
 		for _, factor := range factors {
 			factorMap := factor.(map[string]interface{})
-			dn := rtctrlMatchCommTerm.DistinguishedName + fmt.Sprintf(models.RnrtctrlMatchCommFactor, factorMap["community"].(string))
-
-			// replace by get and set
+			dn := rtctrlMatchCommTerm.DistinguishedName + fmt.Sprintf("/"+models.RnrtctrlMatchCommFactor, factorMap["community"].(string))
 
 			rtctrlMatchCommFactor, err := getRemoteMatchCommunityFactor(aciClient, dn)
+
 			if err != nil {
 				d.SetId("")
 				return diag.FromErr(err)
 			}
-
-			_, err = setMatchCommunityFactorAttributes(rtctrlMatchCommFactor, d)
+			factorSet, err := setMatchCommunityFactorAttributes(rtctrlMatchCommFactor, make(map[string]string))
 			if err != nil {
-				d.SetId("")
-				return nil
+				return diag.FromErr(err)
 			}
-
-			// aciClient.ReadMatchCommunityFactor(dn)
-
-			// rtctrlMatchCommFactorAttr := models.MatchCommunityFactorAttributes{}
-			// rtctrlMatchCommFactorAttr.Scope = factorMap["scope"].(string)
-			// rtctrlMatchCommFactorAttr.Community = factorMap["community"].(string)
-			// rtctrlMatchCommFactorAttr.Annotation = rtctrlMatchCommTerm.Annotation
-
-			// rtctrlMatchCommFactor := models.NewMatchCommunityFactor(fmt.Sprintf(models.RnrtctrlMatchCommFactor, rtctrlMatchCommFactorAttr.Community), rtctrlMatchCommTerm.DistinguishedName, factorMap["description"].(string), nil, rtctrlMatchCommFactorAttr)
-			// // err = aciClient.CreateMatchCommunityFactor(factorMap["community"].(string), name, rtctrlMatchCommTerm.Annotation, factorMap["scope"].(string))
-			// // CreateMatchCommunityFactor(community string, match_community_term string, match_rule string, tenant string, description string, nameAlias string, rtctrlMatchCommFactorAttr models.MatchCommunityFactorAttributes)
-
-			// err := aciClient.Save(rtctrlMatchCommFactor)
-			// if err != nil {
-			// 	return diag.FromErr(err)
-			// }
+			st = append(st, factorSet)
 		}
+		d.Set("match_community_factors", st)
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())

@@ -8,4 +8,4 @@ require (
 	github.com/hashicorp/terraform-plugin-sdk/v2 v2.4.3
 )
 
-replace github.com/ciscoecosystem/aci-go-client => /Users/anvjain/AT/aci-go-client
+replace github.com/ciscoecosystem/aci-go-client => /Users/anvjain/Terraform/AT/aci-go-client

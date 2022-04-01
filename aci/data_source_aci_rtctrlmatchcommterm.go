@@ -28,6 +28,10 @@ func dataSourceAciMatchCommunityTerm() *schema.Resource {
 				Type:     schema.TypeString,
 				Required: true,
 			},
+			"match_community_factors": {
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 		})),
 	}
 }
