@@ -38,12 +38,13 @@ func resourceAciMatchCommunityTerm() *schema.Resource {
 			"match_community_factors": &schema.Schema{
 				Type:        schema.TypeSet,
 				Optional:    true,
+				Computed:    true,
 				Description: "Create Community Factors",
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"scope": {
-							Required: true,
 							Type:     schema.TypeString,
+							Required: true,
 							ValidateFunc: validation.StringInSlice([]string{
 								"transitive",
 								"non-transitive",
