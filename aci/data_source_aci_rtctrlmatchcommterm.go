@@ -81,23 +81,21 @@ func dataSourceAciMatchCommunityTermRead(ctx context.Context, d *schema.Resource
 	}
 
 	rtctrlMatchCommFactors, err := aciClient.ListMatchCommFactorsFromCommunityTerm(dn)
-
 	if err != nil {
 		return diag.FromErr(err)
 	}
 	d.SetId(dn)
 
-	st := make([]map[string]string, 0, 1)
+	matchCommFactors := make([]map[string]string, 0, 1)
 
 	for _, factor := range rtctrlMatchCommFactors {
-
 		factorSet, err := setMatchCommunityFactorAttributes(factor, make(map[string]string))
 		if err != nil {
 			return diag.FromErr(err)
 		}
-		st = append(st, factorSet)
+		matchCommFactors = append(matchCommFactors, factorSet)
 	}
-	d.Set("match_community_factors", st)
+	d.Set("match_community_factors", matchCommFactors)
 
 	return nil
 }

@@ -69,7 +69,6 @@ func resourceAciMatchCommunityTerm() *schema.Resource {
 
 func getRemoteMatchCommunityTerm(client *client.Client, dn string) (*models.MatchCommunityTerm, error) {
 	rtctrlMatchCommTermCont, err := client.Get(dn)
-
 	if err != nil {
 		return nil, err
 	}
@@ -100,7 +99,6 @@ func setMatchCommunityTermAttributes(rtctrlMatchCommTerm *models.MatchCommunityT
 
 func getRemoteMatchCommunityFactor(client *client.Client, dn string) (*models.MatchCommunityFactor, error) {
 	rtctrlMatchCommFactorCont, err := client.Get(dn)
-
 	if err != nil {
 		return nil, err
 	}
@@ -112,12 +110,10 @@ func getRemoteMatchCommunityFactor(client *client.Client, dn string) (*models.Ma
 }
 
 func setMatchCommunityFactorAttributes(rtctrlMatchCommFactor *models.MatchCommunityFactor, d map[string]string) (map[string]string, error) {
-
 	rtctrlMatchCommFactorMap, err := rtctrlMatchCommFactor.ToMap()
 	if err != nil {
 		return d, err
 	}
-	log.Printf("[CHECK] FACTOR MAP %v", rtctrlMatchCommFactorMap)
 
 	d = map[string]string{
 		"community":   rtctrlMatchCommFactorMap["community"],
@@ -132,25 +128,22 @@ func resourceAciMatchCommunityTermImport(d *schema.ResourceData, m interface{}) 
 	log.Printf("[DEBUG] %s: Beginning Import", d.Id())
 	aciClient := m.(*client.Client)
 	dn := d.Id()
-	log.Printf("[CHECK] IMPORT dn %s", dn)
 	rtctrlMatchCommTerm, err := getRemoteMatchCommunityTerm(aciClient, dn)
 	if err != nil {
 		return nil, err
 	}
 
 	schemaFilled, err := setMatchCommunityTermAttributes(rtctrlMatchCommTerm, d)
-	log.Printf("[CHECK] schemaFilled TERM %s", schemaFilled)
 	if err != nil {
 		return nil, err
 	}
 
 	rtctrlMatchCommFactors, err := aciClient.ListMatchCommFactorsFromCommunityTerm(dn)
-	log.Printf("[CHECK] IMPORT2 %v", rtctrlMatchCommFactors)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation rtctrlMatchCommFactor %v", err)
 	}
 
-	st := make([]map[string]string, 0, 1)
+	matchCommFactors := make([]map[string]string, 0, 1)
 
 	for _, factor := range rtctrlMatchCommFactors {
 
@@ -158,10 +151,9 @@ func resourceAciMatchCommunityTermImport(d *schema.ResourceData, m interface{}) 
 		if err != nil {
 			return nil, err
 		}
-		st = append(st, factorSet)
+		matchCommFactors = append(matchCommFactors, factorSet)
 	}
-	log.Printf("[DEBUG] FACTOR SETS %v", st)
-	d.Set("match_community_factors", st)
+	d.Set("match_community_factors", matchCommFactors)
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 	return []*schema.ResourceData{schemaFilled}, nil
@@ -253,9 +245,9 @@ func resourceAciMatchCommunityTermUpdate(ctx context.Context, d *schema.Resource
 		return diag.FromErr(err)
 	}
 	if d.HasChange("match_community_factors") || d.HasChange("annotation") {
-		previousmatchCommunityFactors, matchCommunityFactors := d.GetChange("match_community_factors")
+		previousMatchCommunityFactors, matchCommunityFactors := d.GetChange("match_community_factors")
 
-		oldFactors := previousmatchCommunityFactors.(*schema.Set).List()
+		oldFactors := previousMatchCommunityFactors.(*schema.Set).List()
 		factors := matchCommunityFactors.(*schema.Set).List()
 		for _, oldFactor := range oldFactors {
 			found := false
@@ -286,7 +278,6 @@ func resourceAciMatchCommunityTermUpdate(ctx context.Context, d *schema.Resource
 
 			found := false
 			changed := false
-			var rtctrlMatchCommFactor *models.MatchCommunityFactor
 
 			for _, oldFactor := range oldFactors {
 				oldFactorMap := oldFactor.(map[string]interface{})
@@ -299,7 +290,7 @@ func resourceAciMatchCommunityTermUpdate(ctx context.Context, d *schema.Resource
 				}
 			}
 			if !found || changed {
-				rtctrlMatchCommFactor = models.NewMatchCommunityFactor(fmt.Sprintf(models.RnrtctrlMatchCommFactor, rtctrlMatchCommFactorAttr.Community), rtctrlMatchCommTerm.DistinguishedName, factorMap["description"].(string), "", rtctrlMatchCommFactorAttr)
+				rtctrlMatchCommFactor := models.NewMatchCommunityFactor(fmt.Sprintf(models.RnrtctrlMatchCommFactor, rtctrlMatchCommFactorAttr.Community), rtctrlMatchCommTerm.DistinguishedName, factorMap["description"].(string), "", rtctrlMatchCommFactorAttr)
 				err := aciClient.Save(rtctrlMatchCommFactor)
 				if err != nil {
 					return diag.FromErr(err)
@@ -332,14 +323,12 @@ func resourceAciMatchCommunityTermRead(ctx context.Context, d *schema.ResourceDa
 
 	if matchCommunityFactors, ok := d.GetOk("match_community_factors"); ok {
 		factors := matchCommunityFactors.(*schema.Set).List()
-		st := make([]map[string]string, 0, 1)
+		matchCommFactors := make([]map[string]string, 0, 1)
 
 		for _, factor := range factors {
 			factorMap := factor.(map[string]interface{})
 			dn := rtctrlMatchCommTerm.DistinguishedName + fmt.Sprintf("/"+models.RnrtctrlMatchCommFactor, factorMap["community"].(string))
-
 			rtctrlMatchCommFactor, err := getRemoteMatchCommunityFactor(aciClient, dn)
-
 			if err != nil {
 				d.SetId("")
 				return diag.FromErr(err)
@@ -348,9 +337,9 @@ func resourceAciMatchCommunityTermRead(ctx context.Context, d *schema.ResourceDa
 			if err != nil {
 				return diag.FromErr(err)
 			}
-			st = append(st, factorSet)
+			matchCommFactors = append(matchCommFactors, factorSet)
 		}
-		d.Set("match_community_factors", st)
+		d.Set("match_community_factors", matchCommFactors)
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())

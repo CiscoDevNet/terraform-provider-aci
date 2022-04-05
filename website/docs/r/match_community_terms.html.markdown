@@ -46,7 +46,7 @@ resource "aci_match_community_terms" "example" {
 * `name` - (Required) Name of the Match Community Term object.
 * `annotation` - (Optional) Annotation of the Match Community Term object.
 * `match_community_factors` - (Optional) Match Community Factor object.Type: Block.
-  * `community` - (Required) The community of the Match Community Factor Object. Type: String.
+  * `community` - (Required) The community of the Match Community Factor object. Type: String.
   * `scope` - (Optional) The scope of the Match Community Factor object. Allowed values are "transitive", "non-transitive", and default value is "transitive". Type: String.
   * `description` - (Optional) The description of the Match Community Factor object.
 
