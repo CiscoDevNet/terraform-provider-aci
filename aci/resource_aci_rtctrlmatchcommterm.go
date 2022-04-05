@@ -44,7 +44,8 @@ func resourceAciMatchCommunityTerm() *schema.Resource {
 					Schema: map[string]*schema.Schema{
 						"scope": {
 							Type:     schema.TypeString,
-							Required: true,
+							Optional: true,
+							Computed: true,
 							ValidateFunc: validation.StringInSlice([]string{
 								"transitive",
 								"non-transitive",
@@ -254,18 +255,22 @@ func resourceAciMatchCommunityTermUpdate(ctx context.Context, d *schema.Resource
 		previousmatchCommunityFactors, matchCommunityFactors := d.GetChange("match_community_factors")
 
 		oldFactors := previousmatchCommunityFactors.(*schema.Set).List()
+		log.Printf("[TEST] oldfactors %v : ", oldFactors)
 		factors := matchCommunityFactors.(*schema.Set).List()
+		log.Printf("[TEST] newfactors %v : ", factors)
 		for _, oldFactor := range oldFactors {
 			found := false
 			oldFactorMap := oldFactor.(map[string]interface{})
 			for _, factor := range factors {
 				factorMap := factor.(map[string]interface{})
 				if factorMap["community"].(string) == oldFactorMap["community"].(string) {
+					log.Printf("[TEST] BREAK  : ")
 					found = true
 					break
 				}
 			}
 			if !found {
+				log.Printf("[TEST] NOT FOUND  ")
 				dn := rtctrlMatchCommTerm.DistinguishedName + fmt.Sprintf("/"+models.RnrtctrlMatchCommFactor, oldFactorMap["community"].(string))
 
 				err := aciClient.DeleteByDn(dn, "rtctrlMatchCommFactor")
@@ -275,6 +280,7 @@ func resourceAciMatchCommunityTermUpdate(ctx context.Context, d *schema.Resource
 			}
 		}
 		for _, factor := range factors {
+			log.Printf("[TEST] SECOND FOR LOOP  : ")
 			factorMap := factor.(map[string]interface{})
 
 			rtctrlMatchCommFactorAttr := models.MatchCommunityFactorAttributes{}
