@@ -7,20 +7,25 @@ import (
 	"github.com/ciscoecosystem/aci-go-client/container"
 )
 
-const BgpprotpClassName = "bgpProtP"
+const (
+	DnbgpProtP        = "uni/tn-%s/out-%s/lnodep-%s/protp"
+	RnbgpProtP        = "protp"
+	ParentDnbgpProtP  = "uni/tn-%s/out-%s/lnodep-%s"
+	BgpprotpClassName = "bgpProtP"
+)
 
 type L3outBGPProtocolProfile struct {
 	BaseAttributes
+	NameAliasAttribute
 	L3outBGPProtocolProfileAttributes
 }
 
 type L3outBGPProtocolProfileAttributes struct {
 	Annotation string `json:",omitempty"`
-
-	NameAlias string `json:",omitempty"`
+	Name       string `json:",omitempty"`
 }
 
-func NewL3outBGPProtocolProfile(bgpProtPRn, parentDn string, bgpProtPattr L3outBGPProtocolProfileAttributes) *L3outBGPProtocolProfile {
+func NewL3outBGPProtocolProfile(bgpProtPRn, parentDn, nameAlias string, bgpProtPattr L3outBGPProtocolProfileAttributes) *L3outBGPProtocolProfile {
 	dn := fmt.Sprintf("%s/%s", parentDn, bgpProtPRn)
 	return &L3outBGPProtocolProfile{
 		BaseAttributes: BaseAttributes{
@@ -29,7 +34,9 @@ func NewL3outBGPProtocolProfile(bgpProtPRn, parentDn string, bgpProtPattr L3outB
 			ClassName:         BgpprotpClassName,
 			Rn:                bgpProtPRn,
 		},
-
+		NameAliasAttribute: NameAliasAttribute{
+			NameAlias: nameAlias,
+		},
 		L3outBGPProtocolProfileAttributes: bgpProtPattr,
 	}
 }
@@ -40,10 +47,17 @@ func (bgpProtP *L3outBGPProtocolProfile) ToMap() (map[string]string, error) {
 		return nil, err
 	}
 
+	alias, err := bgpProtP.NameAliasAttribute.ToMap()
+	if err != nil {
+		return nil, err
+	}
+
+	for key, value := range alias {
+		A(bgpProtPMap, key, value)
+	}
+
 	A(bgpProtPMap, "annotation", bgpProtP.Annotation)
-
-	A(bgpProtPMap, "nameAlias", bgpProtP.NameAlias)
-
+	A(bgpProtPMap, "name", bgpProtP.Name)
 	return bgpProtPMap, err
 }
 
@@ -57,12 +71,14 @@ func L3outBGPProtocolProfileFromContainerList(cont *container.Container, index i
 			ClassName:         BgpprotpClassName,
 			Rn:                G(L3outBGPProtocolProfileCont, "rn"),
 		},
-
+		NameAliasAttribute{
+			NameAlias: G(L3outBGPProtocolProfileCont, "nameAlias"),
+		},
 		L3outBGPProtocolProfileAttributes{
 
 			Annotation: G(L3outBGPProtocolProfileCont, "annotation"),
 
-			NameAlias: G(L3outBGPProtocolProfileCont, "nameAlias"),
+			Name: G(L3outBGPProtocolProfileCont, "name"),
 		},
 	}
 }
@@ -74,11 +90,9 @@ func L3outBGPProtocolProfileFromContainer(cont *container.Container) *L3outBGPPr
 
 func L3outBGPProtocolProfileListFromContainer(cont *container.Container) []*L3outBGPProtocolProfile {
 	length, _ := strconv.Atoi(G(cont, "totalCount"))
-
 	arr := make([]*L3outBGPProtocolProfile, length)
 
 	for i := 0; i < length; i++ {
-
 		arr[i] = L3outBGPProtocolProfileFromContainerList(cont, i)
 	}
 

@@ -57,6 +57,7 @@ func resourceAciMatchCommunityTerm() *schema.Resource {
 						},
 						"description": {
 							Optional: true,
+							Computed: true,
 							Type:     schema.TypeString,
 						},
 					},
@@ -255,22 +256,18 @@ func resourceAciMatchCommunityTermUpdate(ctx context.Context, d *schema.Resource
 		previousmatchCommunityFactors, matchCommunityFactors := d.GetChange("match_community_factors")
 
 		oldFactors := previousmatchCommunityFactors.(*schema.Set).List()
-		log.Printf("[TEST] oldfactors %v : ", oldFactors)
 		factors := matchCommunityFactors.(*schema.Set).List()
-		log.Printf("[TEST] newfactors %v : ", factors)
 		for _, oldFactor := range oldFactors {
 			found := false
 			oldFactorMap := oldFactor.(map[string]interface{})
 			for _, factor := range factors {
 				factorMap := factor.(map[string]interface{})
 				if factorMap["community"].(string) == oldFactorMap["community"].(string) {
-					log.Printf("[TEST] BREAK  : ")
 					found = true
 					break
 				}
 			}
 			if !found {
-				log.Printf("[TEST] NOT FOUND  ")
 				dn := rtctrlMatchCommTerm.DistinguishedName + fmt.Sprintf("/"+models.RnrtctrlMatchCommFactor, oldFactorMap["community"].(string))
 
 				err := aciClient.DeleteByDn(dn, "rtctrlMatchCommFactor")
@@ -280,7 +277,6 @@ func resourceAciMatchCommunityTermUpdate(ctx context.Context, d *schema.Resource
 			}
 		}
 		for _, factor := range factors {
-			log.Printf("[TEST] SECOND FOR LOOP  : ")
 			factorMap := factor.(map[string]interface{})
 
 			rtctrlMatchCommFactorAttr := models.MatchCommunityFactorAttributes{}
@@ -288,11 +284,26 @@ func resourceAciMatchCommunityTermUpdate(ctx context.Context, d *schema.Resource
 			rtctrlMatchCommFactorAttr.Community = factorMap["community"].(string)
 			rtctrlMatchCommFactorAttr.Annotation = rtctrlMatchCommTerm.Annotation
 
-			rtctrlMatchCommFactor := models.NewMatchCommunityFactor(fmt.Sprintf(models.RnrtctrlMatchCommFactor, rtctrlMatchCommFactorAttr.Community), rtctrlMatchCommTerm.DistinguishedName, factorMap["description"].(string), "", rtctrlMatchCommFactorAttr)
+			found := false
+			changed := false
+			var rtctrlMatchCommFactor *models.MatchCommunityFactor
 
-			err := aciClient.Save(rtctrlMatchCommFactor)
-			if err != nil {
-				return diag.FromErr(err)
+			for _, oldFactor := range oldFactors {
+				oldFactorMap := oldFactor.(map[string]interface{})
+				if factorMap["community"].(string) == oldFactorMap["community"].(string) {
+					found = true
+					if factorMap["scope"].(string) != oldFactorMap["scope"].(string) || factorMap["description"].(string) != oldFactorMap["description"].(string) {
+						changed = true
+					}
+					break
+				}
+			}
+			if !found || changed {
+				rtctrlMatchCommFactor = models.NewMatchCommunityFactor(fmt.Sprintf(models.RnrtctrlMatchCommFactor, rtctrlMatchCommFactorAttr.Community), rtctrlMatchCommTerm.DistinguishedName, factorMap["description"].(string), "", rtctrlMatchCommFactorAttr)
+				err := aciClient.Save(rtctrlMatchCommFactor)
+				if err != nil {
+					return diag.FromErr(err)
+				}
 			}
 		}
 	}

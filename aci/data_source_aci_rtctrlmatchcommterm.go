@@ -8,6 +8,7 @@ import (
 	"github.com/ciscoecosystem/aci-go-client/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func dataSourceAciMatchCommunityTerm() *schema.Resource {
@@ -28,9 +29,33 @@ func dataSourceAciMatchCommunityTerm() *schema.Resource {
 				Type:     schema.TypeString,
 				Required: true,
 			},
-			"match_community_factors": {
-				Type:     schema.TypeString,
-				Optional: true,
+			"match_community_factors": &schema.Schema{
+				Type:        schema.TypeSet,
+				Optional:    true,
+				Computed:    true,
+				Description: "Create Community Factors",
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"scope": {
+							Type:     schema.TypeString,
+							Optional: true,
+							Computed: true,
+							ValidateFunc: validation.StringInSlice([]string{
+								"transitive",
+								"non-transitive",
+							}, false),
+						},
+						"community": {
+							Required: true,
+							Type:     schema.TypeString,
+						},
+						"description": {
+							Optional: true,
+							Computed: true,
+							Type:     schema.TypeString,
+						},
+					},
+				},
 			},
 		})),
 	}
@@ -56,9 +81,11 @@ func dataSourceAciMatchCommunityTermRead(ctx context.Context, d *schema.Resource
 	}
 
 	rtctrlMatchCommFactors, err := aciClient.ListMatchCommFactorsFromCommunityTerm(dn)
+
 	if err != nil {
 		return diag.FromErr(err)
 	}
+	d.SetId(dn)
 
 	st := make([]map[string]string, 0, 1)
 

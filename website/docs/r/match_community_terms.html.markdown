@@ -28,7 +28,15 @@ resource "aci_match_community_terms" "example" {
   match_rule_dn  = aci_match_rule.example.id
   name  = "example"
   annotation = "orchestrator:terraform"
+}
 
+resource "aci_match_community_terms" "example" {
+  match_rule_dn  = aci_match_rule.example.id
+  name  = "example"
+  match_community_factors {
+    community = "regular:as2-nn2:4:15"
+    scope     = "non-transitive"
+  }
 }
 ```
 
@@ -37,7 +45,10 @@ resource "aci_match_community_terms" "example" {
 * `match_rule_dn` - (Required) Distinguished name of the parent Match Rule object.
 * `name` - (Required) Name of the Match Community Term object.
 * `annotation` - (Optional) Annotation of the Match Community Term object.
-
+* `match_community_factors` - (Optional) Match Community Factor object.Type: Block.
+  * `community` - (Required) The community of the Match Community Factor Object. Type: String.
+  * `scope` - (Optional) The scope of the Match Community Factor object. Allowed values are "transitive", "non-transitive", and default value is "transitive". Type: String.
+  * `description` - (Optional) The description of the Match Community Factor object.
 
 
 ## Importing ##
