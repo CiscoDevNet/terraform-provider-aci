@@ -46,13 +46,11 @@ func resourceAciL3outBGPProtocolProfile() *schema.Resource {
 				Default:  "orchestrator:terraform",
 			},
 			"relation_bgp_rs_best_path_ctrl_pol": &schema.Schema{
-				Type: schema.TypeString,
-
+				Type:     schema.TypeString,
 				Optional: true,
 			},
 			"relation_bgp_rs_bgp_node_ctx_pol": &schema.Schema{
-				Type: schema.TypeString,
-
+				Type:     schema.TypeString,
 				Optional: true,
 			},
 		},
@@ -174,7 +172,6 @@ func resourceAciL3outBGPProtocolProfileCreate(ctx context.Context, d *schema.Res
 		if err != nil {
 			return diag.FromErr(err)
 		}
-
 	}
 
 	d.SetId(bgpProtP.DistinguishedName)
@@ -280,7 +277,6 @@ func resourceAciL3outBGPProtocolProfileRead(ctx context.Context, d *schema.Resou
 		d.Set("relation_bgp_rs_best_path_ctrl_pol", "")
 	} else {
 		d.Set("relation_bgp_rs_best_path_ctrl_pol", bgpRsBestPathCtrlPolData)
-		log.Printf("[DEBUG] d.get relation_bgp_rs_best_path_ctrl_pol %v", d.Get("relation_bgp_rs_best_path_ctrl_pol"))
 	}
 
 	bgpRsBgpNodeCtxPolData, err := aciClient.ReadRelationbgpRsBgpNodeCtxPolFromL3outBGPProtocolProfile(dn)
