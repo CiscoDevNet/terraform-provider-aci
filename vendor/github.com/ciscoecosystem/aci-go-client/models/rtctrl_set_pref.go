@@ -21,10 +21,10 @@ type RtctrlSetPref struct {
 }
 
 type RtctrlSetPrefAttributes struct {
-	Annotation         string `json:",omitempty"`
-	LocalPref          string `json:",omitempty"`
-	Name               string `json:",omitempty"`
-	RtctrlSetPref_type string `json:",omitempty"`
+	Annotation string `json:",omitempty"`
+	LocalPref  string `json:",omitempty"`
+	Name       string `json:",omitempty"`
+	Type       string `json:",omitempty"`
 }
 
 func NewRtctrlSetPref(rtctrlSetPrefRn, parentDn, description, nameAlias string, rtctrlSetPrefAttr RtctrlSetPrefAttributes) *RtctrlSetPref {
@@ -62,7 +62,7 @@ func (rtctrlSetPref *RtctrlSetPref) ToMap() (map[string]string, error) {
 	A(rtctrlSetPrefMap, "annotation", rtctrlSetPref.Annotation)
 	A(rtctrlSetPrefMap, "localPref", rtctrlSetPref.LocalPref)
 	A(rtctrlSetPrefMap, "name", rtctrlSetPref.Name)
-	A(rtctrlSetPrefMap, "type", rtctrlSetPref.RtctrlSetPref_type)
+	A(rtctrlSetPrefMap, "type", rtctrlSetPref.Type)
 	return rtctrlSetPrefMap, err
 }
 
@@ -80,10 +80,10 @@ func RtctrlSetPrefFromContainerList(cont *container.Container, index int) *Rtctr
 			NameAlias: G(RtctrlSetPrefCont, "nameAlias"),
 		},
 		RtctrlSetPrefAttributes{
-			Annotation:         G(RtctrlSetPrefCont, "annotation"),
-			LocalPref:          G(RtctrlSetPrefCont, "localPref"),
-			Name:               G(RtctrlSetPrefCont, "name"),
-			RtctrlSetPref_type: G(RtctrlSetPrefCont, "type"),
+			Annotation: G(RtctrlSetPrefCont, "annotation"),
+			LocalPref:  G(RtctrlSetPrefCont, "localPref"),
+			Name:       G(RtctrlSetPrefCont, "name"),
+			Type:       G(RtctrlSetPrefCont, "type"),
 		},
 	}
 }
