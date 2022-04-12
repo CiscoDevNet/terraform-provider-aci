@@ -97,12 +97,12 @@ func getRemoteDHCPOptionPolicy(client *client.Client, dn string) (*models.DHCPOp
 	}
 	dhcpOptionPol := models.DHCPOptionPolicyFromContainer(dhcpOptionPolCont)
 	if dhcpOptionPol.DistinguishedName == "" {
-		return nil, fmt.Errorf("DHCPOptionPolicy %s not found", dhcpOptionPol.DistinguishedName)
+		return nil, fmt.Errorf("DHCPOptionPolicy %s not found", dn)
 	}
 	return dhcpOptionPol, nil
 }
 
-func getRemoteDHCPOptionFromDHCPOptionPolicy(client *client.Client, dn string) ([]*models.DHCPOption, error) {
+func getRemoteDHCPOptionsFromDHCPOptionPolicy(client *client.Client, dn string) ([]*models.DHCPOption, error) {
 	dhcpOptionCont, err := client.GetViaURL(fmt.Sprintf("%s/%s/%s.json", "/api/node/class", dn, "dhcpOption"))
 	if err != nil {
 		return nil, err
@@ -112,7 +112,7 @@ func getRemoteDHCPOptionFromDHCPOptionPolicy(client *client.Client, dn string) (
 
 	for _, option := range dhcpOption {
 		if option.DistinguishedName == "" {
-			return nil, fmt.Errorf("DHCPOption %s not found", option.DistinguishedName)
+			return nil, fmt.Errorf("DHCPOption %s not found", dn)
 		}
 	}
 
@@ -184,7 +184,7 @@ func resourceAciDHCPOptionPolicyImport(d *schema.ResourceData, m interface{}) ([
 		return nil, err
 	}
 
-	dhcpOptions, err := getRemoteDHCPOptionFromDHCPOptionPolicy(aciClient, dn)
+	dhcpOptions, err := getRemoteDHCPOptionsFromDHCPOptionPolicy(aciClient, dn)
 	if err != nil {
 		return nil, err
 	}
@@ -369,13 +369,13 @@ func resourceAciDHCPOptionPolicyRead(ctx context.Context, d *schema.ResourceData
 		return nil
 	}
 
-	dhcpOptions, err := getRemoteDHCPOptionFromDHCPOptionPolicy(aciClient, dn)
+	dhcpOptions, err := getRemoteDHCPOptionsFromDHCPOptionPolicy(aciClient, dn)
 	if err != nil {
 		return diag.FromErr(err)
 	}
 
-	_, err_option := setDHCPOptionAttributesFromDHCPOptionPolicy(dhcpOptions, d)
-	if err_option != nil {
+	_, err_options := setDHCPOptionAttributesFromDHCPOptionPolicy(dhcpOptions, d)
+	if err_options != nil {
 		d.SetId("")
 		return nil
 	}
@@ -399,16 +399,6 @@ func resourceAciDHCPOptionPolicyDelete(ctx context.Context, d *schema.ResourceDa
 
 	d.SetId("")
 	return diag.FromErr(err)
-}
-
-func mergeMaps(maps ...map[string]interface{}) map[string]interface{} {
-	result := make(map[string]interface{})
-	for _, individualMap := range maps {
-		for k, v := range individualMap {
-			result[k] = v
-		}
-	}
-	return result
 }
 
 func differenceInMaps(mapSlice1, mapSlice2 *schema.Set) []interface{} {
