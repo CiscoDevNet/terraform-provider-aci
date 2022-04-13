@@ -39,6 +39,7 @@ resource "aci_epg_to_domain" "example" {
   vmm_allow_promiscuous = "accept"
   vmm_forged_transmits  = "reject"
   vmm_mac_changes       = "accept"
+  custom_epg_name       = "epg_lab"
 }
 ```
 ## Argument Reference ##
@@ -50,6 +51,7 @@ resource "aci_epg_to_domain" "example" {
 Allowed values: "none", "staticBinding", "dynamicBinding", "ephemeral". Default value: "none"
 * `allow_micro_seg` - (Optional) Boolean flag for allow micro segment. default value will be "false".
 "true" maps to class_pref="useg" and "false maps to class_pref="encap" 
+* `custom_epg_name` - (Optional) Custom Epg name for object Domain.
 * `delimiter` - (Optional) Delimiter for object Domain.
 * `encap` - (Optional) Port encapsulation.
 * `encap_mode` - (Optional) Encap mode for object Domain.

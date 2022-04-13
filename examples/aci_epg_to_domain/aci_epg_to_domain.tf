@@ -20,5 +20,6 @@ resource "aci_epg_to_domain" "terraform_epg_domain" {
   vmm_allow_promiscuous = "accept"
   vmm_forged_transmits  = "reject"
   vmm_mac_changes       = "accept"
+  custom_epg_name       = "epg_lab"
 }
 
