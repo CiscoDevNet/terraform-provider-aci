@@ -23,6 +23,8 @@ type FVDomainAttributes struct {
 
 	ClassPref string `json:",omitempty"`
 
+	CustomEpgName string `json:",omitempty"`
+
 	Delimiter string `json:",omitempty"`
 
 	Encap string `json:",omitempty"`
@@ -85,6 +87,8 @@ func (fvRsDomAtt *FVDomain) ToMap() (map[string]string, error) {
 
 	A(fvRsDomAttMap, "classPref", fvRsDomAtt.ClassPref)
 
+	A(fvRsDomAttMap, "customEpgName", fvRsDomAtt.CustomEpgName)
+
 	A(fvRsDomAttMap, "delimiter", fvRsDomAtt.Delimiter)
 
 	A(fvRsDomAttMap, "encap", fvRsDomAtt.Encap)
@@ -141,6 +145,8 @@ func FVDomainFromContainerList(cont *container.Container, index int) *FVDomain {
 			BindingType: G(DomainCont, "bindingType"),
 
 			ClassPref: G(DomainCont, "classPref"),
+
+			CustomEpgName: G(DomainCont, "customEpgName"),
 
 			Delimiter: G(DomainCont, "delimiter"),
 
