@@ -35,37 +35,12 @@ func resourceAciRtctrlSetAddComm() *schema.Resource {
 				Required: true,
 				ForceNew: true,
 			},
-			"name": {
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
 			"set_criteria": {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
 				ValidateFunc: validation.StringInSlice([]string{
 					"append",
-				}, false),
-			},
-			"type": {
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-				ValidateFunc: validation.StringInSlice([]string{
-					"as-path",
-					"community",
-					"dampening-pol",
-					"ip-nh",
-					"local-pref",
-					"metric",
-					"metric-type",
-					"nh-unchanged",
-					"ospf-fwd-addr",
-					"ospf-nssa",
-					"redist-multipath",
-					"rt-tag",
-					"rt-weight",
 				}, false),
 			},
 		})),
@@ -98,9 +73,7 @@ func setRtctrlSetAddCommAttributes(rtctrlSetAddComm *models.RtctrlSetAddComm, d 
 	d.Set("action_rule_profile_dn", GetParentDn(dn, fmt.Sprintf("/saddcomm-%s", rtctrlSetAddCommMap["community"])))
 	d.Set("annotation", rtctrlSetAddCommMap["annotation"])
 	d.Set("community", rtctrlSetAddCommMap["community"])
-	d.Set("name", rtctrlSetAddCommMap["name"])
 	d.Set("set_criteria", rtctrlSetAddCommMap["setCriteria"])
-	d.Set("type", rtctrlSetAddCommMap["Type"])
 	d.Set("name_alias", rtctrlSetAddCommMap["nameAlias"])
 	return d, nil
 }
@@ -145,17 +118,10 @@ func resourceAciRtctrlSetAddCommCreate(ctx context.Context, d *schema.ResourceDa
 		rtctrlSetAddCommAttr.Community = Community.(string)
 	}
 
-	if Name, ok := d.GetOk("name"); ok {
-		rtctrlSetAddCommAttr.Name = Name.(string)
-	}
-
 	if SetCriteria, ok := d.GetOk("set_criteria"); ok {
 		rtctrlSetAddCommAttr.SetCriteria = SetCriteria.(string)
 	}
 
-	if Type, ok := d.GetOk("type"); ok {
-		rtctrlSetAddCommAttr.Type = Type.(string)
-	}
 	rtctrlSetAddComm := models.NewRtctrlSetAddComm(fmt.Sprintf(models.RnrtctrlSetAddComm, community), ActionRuleProfileDn, desc, nameAlias, rtctrlSetAddCommAttr)
 
 	err := aciClient.Save(rtctrlSetAddComm)
@@ -192,17 +158,10 @@ func resourceAciRtctrlSetAddCommUpdate(ctx context.Context, d *schema.ResourceDa
 		rtctrlSetAddCommAttr.Community = Community.(string)
 	}
 
-	if Name, ok := d.GetOk("name"); ok {
-		rtctrlSetAddCommAttr.Name = Name.(string)
-	}
-
 	if SetCriteria, ok := d.GetOk("set_criteria"); ok {
 		rtctrlSetAddCommAttr.SetCriteria = SetCriteria.(string)
 	}
 
-	if Type, ok := d.GetOk("type"); ok {
-		rtctrlSetAddCommAttr.Type = Type.(string)
-	}
 	rtctrlSetAddComm := models.NewRtctrlSetAddComm(fmt.Sprintf(models.RnrtctrlSetAddComm, community), ActionRuleProfileDn, desc, nameAlias, rtctrlSetAddCommAttr)
 
 	rtctrlSetAddComm.Status = "modified"

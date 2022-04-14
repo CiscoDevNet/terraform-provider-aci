@@ -24,7 +24,7 @@ resource "aci_action_rule_profile" "foo_action_rule_profile" {
   tenant_dn   = aci_tenant.foo_tenant.id
 }
 
-resource "aci_action_rule_profile_additional_communities" "foo_rtctrl_set_add_comm" {
+resource "aci_action_rule_additional_communities" "foo_rtctrl_set_add_comm" {
   community              = "no-advertise"
   description            = "additional communities created while acceptance testing"
   action_rule_profile_dn = aci_action_rule_profile.foo_action_rule_profile.id

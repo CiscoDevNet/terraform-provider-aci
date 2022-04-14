@@ -26,7 +26,7 @@ func TestAccAciRtctrlSetAddComm_Basic(t *testing.T) {
 			{
 				Config: testAccCheckAciRtctrlSetAddCommConfig_basic(fv_tenant_name, rtctrl_attr_p_name, rtctrl_set_add_comm_name),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAciRtctrlSetAddCommExists("aci_action_rule_profile_additional_communities.foo_rtctrl_set_add_comm", &rtctrl_set_add_comm),
+					testAccCheckAciRtctrlSetAddCommExists("aci_action_rule_additional_communities.foo_rtctrl_set_add_comm", &rtctrl_set_add_comm),
 					testAccCheckAciRtctrlSetAddCommAttributes(fv_tenant_name, rtctrl_attr_p_name, rtctrl_set_add_comm_name, description, &rtctrl_set_add_comm),
 				),
 			},
@@ -49,14 +49,14 @@ func TestAccAciRtctrlSetAddComm_Update(t *testing.T) {
 			{
 				Config: testAccCheckAciRtctrlSetAddCommConfig_basic(fv_tenant_name, rtctrl_attr_p_name, rtctrl_set_add_comm_name),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAciRtctrlSetAddCommExists("aci_action_rule_profile_additional_communities.foo_rtctrl_set_add_comm", &rtctrl_set_add_comm),
+					testAccCheckAciRtctrlSetAddCommExists("aci_action_rule_additional_communities.foo_rtctrl_set_add_comm", &rtctrl_set_add_comm),
 					testAccCheckAciRtctrlSetAddCommAttributes(fv_tenant_name, rtctrl_attr_p_name, rtctrl_set_add_comm_name, description, &rtctrl_set_add_comm),
 				),
 			},
 			{
 				Config: testAccCheckAciRtctrlSetAddCommConfig_basic(fv_tenant_name, rtctrl_attr_p_name, rtctrl_set_add_comm_name),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAciRtctrlSetAddCommExists("aci_action_rule_profile_additional_communities.foo_rtctrl_set_add_comm", &rtctrl_set_add_comm),
+					testAccCheckAciRtctrlSetAddCommExists("aci_action_rule_additional_communities.foo_rtctrl_set_add_comm", &rtctrl_set_add_comm),
 					testAccCheckAciRtctrlSetAddCommAttributes(fv_tenant_name, rtctrl_attr_p_name, rtctrl_set_add_comm_name, description, &rtctrl_set_add_comm),
 				),
 			},
@@ -78,7 +78,7 @@ func testAccCheckAciRtctrlSetAddCommConfig_basic(fv_tenant_name, rtctrl_attr_p_n
 		tenant_dn   = aci_tenant.foo_tenant.id
 	}
 
-	resource "aci_action_rule_profile_additional_communities" "foo_rtctrl_set_add_comm" {
+	resource "aci_action_rule_additional_communities" "foo_rtctrl_set_add_comm" {
 		name                   = "%s"
 		community              = "no-advertise"
 		description            = "rtctrl_set_add_comm created while acceptance testing"
@@ -119,7 +119,7 @@ func testAccCheckAciRtctrlSetAddCommExists(name string, rtctrl_set_add_comm *mod
 func testAccCheckAciRtctrlSetAddCommDestroy(s *terraform.State) error {
 	client := testAccProvider.Meta().(*client.Client)
 	for _, rs := range s.RootModule().Resources {
-		if rs.Type == "aci_action_rule_profile_additional_communities" {
+		if rs.Type == "aci_action_rule_additional_communities" {
 			cont, err := client.Get(rs.Primary.ID)
 			rtctrl_set_add_comm := models.RtctrlSetAddCommFromContainer(cont)
 			if err == nil {

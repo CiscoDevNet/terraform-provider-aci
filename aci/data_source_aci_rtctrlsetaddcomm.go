@@ -28,17 +28,7 @@ func dataSourceAciRtctrlSetAddComm() *schema.Resource {
 				Type:     schema.TypeString,
 				Required: true,
 			},
-			"name": {
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
 			"set_criteria": {
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-			"type": {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
