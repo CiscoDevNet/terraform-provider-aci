@@ -33,7 +33,6 @@ data "aci_epg_to_domain" "temp" {
 * `binding_type` - (Optional) Binding type for object Domain.
 * `allow_micro_seg` - (Optional) Boolean flag for allow micro segment. default value will be "false".
 "true" maps to class_pref="useg" and "false maps to class_pref="encap"
-* `custom_epg_name` - (Optional) Custom EPG name used as name of the VMM port group for the domain.
 * `delimiter` - (Optional) Delimiter for object Domain.
 * `encap` - (Optional) Port encapsulation.
 * `encap_mode` - (Optional) Encap mode for object Domain.
