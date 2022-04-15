@@ -19,11 +19,6 @@ func dataSourceAciRtctrlSetAddComm() *schema.Resource {
 				Type:     schema.TypeString,
 				Required: true,
 			},
-			"annotation": {
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
 			"community": {
 				Type:     schema.TypeString,
 				Required: true,
