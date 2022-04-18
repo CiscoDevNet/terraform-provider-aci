@@ -28,6 +28,7 @@ resource "aci_action_rule_profile" "example" {
   name          = "Rule-1"
   annotation    = "orchestrator:terraform"
   set_route_tag = 100
+  set_preference = 100
 }
 ```
 
@@ -39,6 +40,7 @@ resource "aci_action_rule_profile" "example" {
 * `description` - (Optional) Description of the Action Rule Profile object.
 * `name_alias` - (Optional) Name alias of the Action Rule Profile object.
 * `set_route_tag` - (Optional) Set Route Tag of the Action Rule Profile object.
+* `set_preference` - (Optional) Set Preference of the Action Rule Profile object.
 
 ## Importing ##
 

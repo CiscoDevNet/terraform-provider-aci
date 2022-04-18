@@ -40,3 +40,4 @@ data "aci_action_rule_profile" "example" {
 * `name_alias` - (Optional) Name Alias of the Action Rule Profile object.
 * `description` - (Optional) Description of the Action Rule Profile object.
 * `set_route_tag` - (Optional) Set Route Tag of the Action Rule Profile object.
+* `set_preference` - (Optional) Set Preference of the Action Rule Profile object.
