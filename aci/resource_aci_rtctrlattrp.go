@@ -38,6 +38,10 @@ func resourceAciActionRuleProfile() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
+			"set_preference": {
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 		})),
 	}
 }
@@ -73,7 +77,6 @@ func setActionRuleProfileAttributes(rtctrlAttrP *models.ActionRuleProfile, d *sc
 	d.Set("name_alias", rtctrlAttrPMap["nameAlias"])
 	return d, nil
 }
-
 func getRemoteRtctrlSetTag(client *client.Client, dn string) (*models.RtctrlSetTag, error) {
 	rtctrlSetTagCont, err := client.Get(dn)
 	if err != nil {
@@ -92,6 +95,27 @@ func setRtctrlSetTagAttributes(rtctrlSetTag *models.RtctrlSetTag, d *schema.Reso
 		return d, err
 	}
 	d.Set("set_route_tag", rtctrlSetTagMap["tag"])
+	return d, nil
+}
+
+func getRemoteRtctrlSetPref(client *client.Client, dn string) (*models.RtctrlSetPref, error) {
+	rtctrlSetPrefCont, err := client.Get(dn)
+	if err != nil {
+		return nil, err
+	}
+	rtctrlSetPref := models.RtctrlSetPrefFromContainer(rtctrlSetPrefCont)
+	if rtctrlSetPref.DistinguishedName == "" {
+		return nil, fmt.Errorf("rtctrlSetPref %s not found", dn)
+	}
+	return rtctrlSetPref, nil
+}
+
+func setRtctrlSetPrefAttributes(rtctrlSetPref *models.RtctrlSetPref, d *schema.ResourceData) (*schema.ResourceData, error) {
+	rtctrlSetPrefMap, err := rtctrlSetPref.ToMap()
+	if err != nil {
+		return d, err
+	}
+	d.Set("set_preference", rtctrlSetPrefMap["localPref"])
 	return d, nil
 }
 
@@ -119,7 +143,6 @@ func resourceAciActionRuleProfileImport(d *schema.ResourceData, m interface{}) (
 	}
 
 	// rtctrlSetTag - Beginning Import
-
 	setRouteTagDn := rtctrlAttrP.DistinguishedName + fmt.Sprintf("/"+models.RnrtctrlSetTag)
 	rtctrlSetTag, err := getRemoteRtctrlSetTag(aciClient, setRouteTagDn)
 	if err == nil {
@@ -130,8 +153,20 @@ func resourceAciActionRuleProfileImport(d *schema.ResourceData, m interface{}) (
 		}
 		log.Printf("[DEBUG] %s: rtctrlSetTag - Import finished successfully", setRouteTagDn)
 	}
-
 	// rtctrlSetTag - Import finished successfully
+
+	// rtctrlSetPref - Beginning Import
+	setPrefDn := rtctrlAttrP.DistinguishedName + fmt.Sprintf("/"+models.RnrtctrlSetPref)
+	rtctrlSetPref, err := getRemoteRtctrlSetPref(aciClient, setPrefDn)
+	if err == nil {
+		log.Printf("[DEBUG] %s: rtctrlSetPref - Beginning Import", setPrefDn)
+		_, err = setRtctrlSetPrefAttributes(rtctrlSetPref, d)
+		if err != nil {
+			return nil, err
+		}
+		log.Printf("[DEBUG] %s: rtctrlSetPref - Import finished successfully", setPrefDn)
+	}
+	// rtctrlSetPref - Import finished successfully
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
@@ -185,6 +220,24 @@ func resourceAciActionRuleProfileCreate(ctx context.Context, d *schema.ResourceD
 
 		log.Printf("[DEBUG] %s: Creation finished successfully", rtctrlSetTag.DistinguishedName)
 		resourceAciRtctrlSetTagRead(ctx, rtctrlSetTag.DistinguishedName, d, m)
+	}
+
+	// rtctrlSetPref - Operations
+	if setPref, ok := d.GetOk("set_preference"); ok {
+
+		log.Printf("[DEBUG] rtctrlSetPref: Beginning Creation")
+
+		rtctrlSetPrefAttr := models.RtctrlSetPrefAttributes{}
+		rtctrlSetPrefAttr.LocalPref = setPref.(string)
+		rtctrlSetPref := models.NewRtctrlSetPref(fmt.Sprintf(models.RnrtctrlSetPref), rtctrlAttrP.DistinguishedName, "", "", rtctrlSetPrefAttr)
+
+		creation_err := aciClient.Save(rtctrlSetPref)
+		if creation_err != nil {
+			return diag.FromErr(creation_err)
+		}
+
+		log.Printf("[DEBUG] %s: Creation finished successfully", rtctrlSetPref.DistinguishedName)
+		resourceAciRtctrlSetPrefRead(ctx, rtctrlSetPref.DistinguishedName, d, m)
 	}
 
 	d.SetId(rtctrlAttrP.DistinguishedName)
@@ -269,29 +322,50 @@ func resourceAciActionRuleProfileUpdate(ctx context.Context, d *schema.ResourceD
 		}
 	}
 
+	// rtctrlSetPref - Operations
+	if d.HasChange("set_preference") {
+
+		if setPref, ok := d.GetOk("set_preference"); ok {
+
+			log.Printf("[DEBUG] rtctrlSetPref - Beginning Creation")
+
+			rtctrlSetPrefAttr := models.RtctrlSetPrefAttributes{}
+			rtctrlSetPrefAttr.LocalPref = setPref.(string)
+
+			setPrefDn := rtctrlAttrP.DistinguishedName + fmt.Sprintf("/"+models.RnrtctrlSetPref)
+
+			deletion_err := aciClient.DeleteByDn(setPrefDn, "rtctrlSetPref")
+			if deletion_err != nil {
+				return diag.FromErr(err)
+			}
+
+			rtctrlSetPref := models.NewRtctrlSetPref(fmt.Sprintf(models.RnrtctrlSetPref), rtctrlAttrP.DistinguishedName, "", "", rtctrlSetPrefAttr)
+
+			err := aciClient.Save(rtctrlSetPref)
+			if err != nil {
+				return diag.FromErr(err)
+			}
+
+			log.Printf("[DEBUG] %s: rtctrlSetPref - Creation finished successfully", rtctrlSetPref.DistinguishedName)
+			resourceAciRtctrlSetPrefRead(ctx, rtctrlSetPref.DistinguishedName, d, m)
+		} else {
+			setPrefDn := rtctrlAttrP.DistinguishedName + fmt.Sprintf("/"+models.RnrtctrlSetPref)
+			log.Printf("[DEBUG] %s: rtctrlSetPref - Beginning Destroy", setPrefDn)
+
+			err := aciClient.DeleteByDn(setPrefDn, "rtctrlSetPref")
+			if err != nil {
+				return diag.FromErr(err)
+			}
+
+			log.Printf("[DEBUG] %s: rtctrlSetPref - Destroy finished successfully", setPrefDn)
+		}
+	}
+
 	d.SetId(rtctrlAttrP.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
 	return resourceAciActionRuleProfileRead(ctx, d, m)
 
-}
-
-func resourceAciRtctrlSetTagRead(ctx context.Context, dn string, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	log.Printf("[DEBUG] %s: rtctrlSetTag - Beginning Read", dn)
-	aciClient := m.(*client.Client)
-
-	rtctrlSetTag, err := getRemoteRtctrlSetTag(aciClient, dn)
-	if err != nil {
-		return diag.FromErr(err)
-	}
-
-	_, err = setRtctrlSetTagAttributes(rtctrlSetTag, d)
-	if err != nil {
-		return nil
-	}
-
-	log.Printf("[DEBUG] %s: rtctrlSetTag - Read finished successfully", dn)
-	return nil
 }
 
 func resourceAciActionRuleProfileRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
@@ -313,6 +387,42 @@ func resourceAciActionRuleProfileRead(ctx context.Context, d *schema.ResourceDat
 	}
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 
+	return nil
+}
+
+func resourceAciRtctrlSetTagRead(ctx context.Context, dn string, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+	log.Printf("[DEBUG] %s: rtctrlSetTag - Beginning Read", dn)
+	aciClient := m.(*client.Client)
+
+	rtctrlSetTag, err := getRemoteRtctrlSetTag(aciClient, dn)
+	if err != nil {
+		return diag.FromErr(err)
+	}
+
+	_, err = setRtctrlSetTagAttributes(rtctrlSetTag, d)
+	if err != nil {
+		return nil
+	}
+
+	log.Printf("[DEBUG] %s: rtctrlSetTag - Read finished successfully", dn)
+	return nil
+}
+
+func resourceAciRtctrlSetPrefRead(ctx context.Context, dn string, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+	log.Printf("[DEBUG] %s: rtctrlSetPref - Beginning Read", dn)
+	aciClient := m.(*client.Client)
+
+	rtctrlSetPref, err := getRemoteRtctrlSetPref(aciClient, dn)
+	if err != nil {
+		return diag.FromErr(err)
+	}
+
+	_, err = setRtctrlSetPrefAttributes(rtctrlSetPref, d)
+	if err != nil {
+		return nil
+	}
+
+	log.Printf("[DEBUG] %s: rtctrlSetPref - Read finished successfully", dn)
 	return nil
 }
 

@@ -30,6 +30,10 @@ func dataSourceAciActionRuleProfile() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
+			"set_preference": {
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 		})),
 	}
 }
@@ -56,9 +60,7 @@ func dataSourceAciActionRuleProfileRead(ctx context.Context, d *schema.ResourceD
 	}
 
 	// rtctrlSetTag - Beginning of Read
-
 	setRouteTagDn := rtctrlAttrP.DistinguishedName + fmt.Sprintf("/"+models.RnrtctrlSetTag)
-
 	rtctrlSetTag, err := getRemoteRtctrlSetTag(aciClient, setRouteTagDn)
 	if err == nil {
 		_, err = setRtctrlSetTagAttributes(rtctrlSetTag, d)
@@ -68,5 +70,15 @@ func dataSourceAciActionRuleProfileRead(ctx context.Context, d *schema.ResourceD
 	}
 	// rtctrlSetTag - Read finished successfully
 
+	// rtctrlSetPref - Beginning of Read
+	setPrefDn := rtctrlAttrP.DistinguishedName + fmt.Sprintf("/"+models.RnrtctrlSetPref)
+	rtctrlSetPref, err := getRemoteRtctrlSetPref(aciClient, setPrefDn)
+	if err == nil {
+		_, err = setRtctrlSetPrefAttributes(rtctrlSetPref, d)
+		if err != nil {
+			return diag.FromErr(err)
+		}
+	}
+	// rtctrlSetPref - Read finished successfully
 	return nil
 }
