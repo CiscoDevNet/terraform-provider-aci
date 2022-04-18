@@ -26,7 +26,6 @@ Data source for the ACI Action Rule Profile
 data "aci_action_rule_profile" "example" {
   tenant_dn     = aci_tenant.example.id
   name          = "Rule-1"
-  set_route_tag = 100
 }
 ```
 

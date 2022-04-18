@@ -178,10 +178,10 @@ func resourceAciActionRuleProfileCreate(ctx context.Context, d *schema.ResourceD
 		return diag.FromErr(err)
 	}
 
-	// setRouteTagDn - Operations
+	// rtctrlSetTag - Operations
 	if setRouteTag, ok := d.GetOk("set_route_tag"); ok {
 
-		log.Printf("[DEBUG] RtctrlSetTag: Beginning Creation")
+		log.Printf("[DEBUG] rtctrlSetTag: Beginning Creation")
 
 		rtctrlSetTagAttr := models.RtctrlSetTagAttributes{}
 		rtctrlSetTagAttr.Tag = setRouteTag.(string)
@@ -194,17 +194,6 @@ func resourceAciActionRuleProfileCreate(ctx context.Context, d *schema.ResourceD
 
 		log.Printf("[DEBUG] %s: Creation finished successfully", rtctrlSetTag.DistinguishedName)
 		resourceAciRtctrlSetTagRead(ctx, rtctrlSetTag.DistinguishedName, d, m)
-
-	} else {
-		setRouteTagDn := rtctrlAttrP.DistinguishedName + fmt.Sprintf("/"+models.RnrtctrlSetTag)
-		log.Printf("[DEBUG] %s: rtctrlSetTag - Beginning Destroy", setRouteTagDn)
-
-		err := aciClient.DeleteByDn(setRouteTagDn, "rtctrlSetTag")
-		if err != nil {
-			return diag.FromErr(err)
-		}
-
-		log.Printf("[DEBUG] %s: rtctrlSetTag - Destroy finished successfully", setRouteTagDn)
 	}
 
 	d.SetId(rtctrlAttrP.DistinguishedName)
@@ -249,9 +238,10 @@ func resourceAciActionRuleProfileUpdate(ctx context.Context, d *schema.ResourceD
 		return diag.FromErr(err)
 	}
 
-	// setRouteTagDn - Operations
-	if setRouteTag, ok := d.GetOk("set_route_tag"); ok {
-		if d.HasChange("set_route_tag") {
+	// rtctrlSetTag - Operations
+	if d.HasChange("set_route_tag") {
+
+		if setRouteTag, ok := d.GetOk("set_route_tag"); ok {
 
 			log.Printf("[DEBUG] rtctrlSetTag - Beginning Creation")
 
@@ -274,17 +264,18 @@ func resourceAciActionRuleProfileUpdate(ctx context.Context, d *schema.ResourceD
 
 			log.Printf("[DEBUG] %s: rtctrlSetTag - Creation finished successfully", rtctrlSetTag.DistinguishedName)
 			resourceAciRtctrlSetTagRead(ctx, rtctrlSetTag.DistinguishedName, d, m)
-		}
-	} else {
-		setRouteTagDn := rtctrlAttrP.DistinguishedName + fmt.Sprintf("/"+models.RnrtctrlSetTag)
-		log.Printf("[DEBUG] %s: rtctrlSetTag - Beginning Destroy", setRouteTagDn)
 
-		err := aciClient.DeleteByDn(setRouteTagDn, "rtctrlSetTag")
-		if err != nil {
-			return diag.FromErr(err)
-		}
+		} else {
+			setRouteTagDn := rtctrlAttrP.DistinguishedName + fmt.Sprintf("/"+models.RnrtctrlSetTag)
+			log.Printf("[DEBUG] %s: rtctrlSetTag - Beginning Destroy", setRouteTagDn)
 
-		log.Printf("[DEBUG] %s: rtctrlSetTag - Destroy finished successfully", setRouteTagDn)
+			err := aciClient.DeleteByDn(setRouteTagDn, "rtctrlSetTag")
+			if err != nil {
+				return diag.FromErr(err)
+			}
+
+			log.Printf("[DEBUG] %s: rtctrlSetTag - Destroy finished successfully", setRouteTagDn)
+		}
 	}
 
 	d.SetId(rtctrlAttrP.DistinguishedName)
