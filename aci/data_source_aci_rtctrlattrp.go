@@ -22,11 +22,6 @@ func dataSourceAciActionRuleProfile() *schema.Resource {
 				Type:     schema.TypeString,
 				Required: true,
 			},
-			"annotation": {
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
 			"name": {
 				Type:     schema.TypeString,
 				Required: true,
@@ -69,8 +64,6 @@ func dataSourceAciActionRuleProfileRead(ctx context.Context, d *schema.ResourceD
 
 	err = checkTDn(aciClient, checkDns)
 	if err == nil {
-		setRouteTagDn := rtctrlAttrP.DistinguishedName + fmt.Sprintf("/"+models.RnrtctrlSetTag)
-
 		rtctrlSetTag, err := getRemoteRtctrlSetTag(aciClient, setRouteTagDn)
 		if err != nil {
 			return diag.FromErr(err)
