@@ -34,6 +34,10 @@ func dataSourceAciActionRuleProfile() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
+			"set_weight": {
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 		})),
 	}
 }
@@ -80,5 +84,28 @@ func dataSourceAciActionRuleProfileRead(ctx context.Context, d *schema.ResourceD
 		}
 	}
 	// rtctrlSetPref - Read finished successfully
+
+	// rtctrlSetWeight - Beginning of Read
+	setWeightCheckDns := make([]string, 0, 1)
+
+	setWeightDn := rtctrlAttrP.DistinguishedName + fmt.Sprintf("/"+models.RnrtctrlSetWeight)
+
+	setWeightCheckDns = append(setWeightCheckDns, setWeightDn)
+
+	err = checkTDn(aciClient, setWeightCheckDns)
+	if err == nil {
+
+		rtctrlSetWeight, err := getRemoteRtctrlSetWeight(aciClient, setWeightDn)
+		if err != nil {
+			return diag.FromErr(err)
+		}
+
+		_, err = setRtctrlSetWeightAttributes(rtctrlSetWeight, d)
+		if err != nil {
+			return diag.FromErr(err)
+		}
+	}
+	// rtctrlSetWeight - Read finished successfully
+
 	return nil
 }
