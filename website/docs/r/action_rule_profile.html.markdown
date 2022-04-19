@@ -30,6 +30,7 @@ resource "aci_action_rule_profile" "example" {
   set_route_tag = 100
   set_preference = 100
   set_weight = 100
+  set_metric = 100
 }
 ```
 
@@ -43,6 +44,7 @@ resource "aci_action_rule_profile" "example" {
 * `set_route_tag` - (Optional) Set Route Tag of the Action Rule Profile object.
 * `set_preference` - (Optional) Set Preference of the Action Rule Profile object.
 * `set_weight` - (Optional) Set Weight of the Action Rule Profile object.
+* `set_metric` - (Optional) Set Metric of the Action Rule Profile object.
 
 ## Importing ##
 

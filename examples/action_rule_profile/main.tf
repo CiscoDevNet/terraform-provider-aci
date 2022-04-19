@@ -23,4 +23,5 @@ resource "aci_action_rule_profile" "example" {
   set_route_tag  = 100
   set_preference = 100
   set_weight     = 100
+  set_metric     = 100
 }
