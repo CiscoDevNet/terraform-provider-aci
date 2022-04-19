@@ -22,4 +22,5 @@ resource "aci_action_rule_profile" "example" {
   name_alias     = "example"
   set_route_tag  = 100
   set_preference = 100
+  set_weight     = 100
 }
