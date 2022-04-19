@@ -8,6 +8,7 @@ import (
 	"github.com/ciscoecosystem/aci-go-client/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func dataSourceAciActionRuleProfile() *schema.Resource {
@@ -41,6 +42,14 @@ func dataSourceAciActionRuleProfile() *schema.Resource {
 			"set_metric": {
 				Type:     schema.TypeString,
 				Optional: true,
+			},
+			"set_metric_type": {
+				Type:     schema.TypeString,
+				Optional: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"ospf-type1",
+					"ospf-type2",
+				}, false),
 			},
 		})),
 	}
@@ -132,6 +141,28 @@ func dataSourceAciActionRuleProfileRead(ctx context.Context, d *schema.ResourceD
 		}
 	}
 	// rtctrlSetRtMetric - Read finished successfully
+
+	// rtctrlSetRtMetricType - Beginning of Read
+	setRtMetricTypeCheckDns := make([]string, 0, 1)
+
+	setRtMetricTypeDn := rtctrlAttrP.DistinguishedName + fmt.Sprintf("/"+models.RnrtctrlSetRtMetricType)
+
+	setRtMetricTypeCheckDns = append(setRtMetricTypeCheckDns, setRtMetricTypeDn)
+
+	err = checkTDn(aciClient, setRtMetricTypeCheckDns)
+	if err == nil {
+
+		rtctrlSetRtMetricType, err := getRemoteRtctrlSetRtMetricType(aciClient, setRtMetricTypeDn)
+		if err != nil {
+			return diag.FromErr(err)
+		}
+
+		_, err = setRtctrlSetRtMetricTypeAttributes(rtctrlSetRtMetricType, d)
+		if err != nil {
+			return diag.FromErr(err)
+		}
+	}
+	// rtctrlSetRtMetricType - Read finished successfully
 
 	return nil
 }
