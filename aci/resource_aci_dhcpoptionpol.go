@@ -103,20 +103,9 @@ func getRemoteDHCPOptionPolicy(client *client.Client, dn string) (*models.DHCPOp
 }
 
 func getRemoteDHCPOptionsFromDHCPOptionPolicy(client *client.Client, dn string) ([]*models.DHCPOption, error) {
-	dhcpOptionCont, err := client.GetViaURL(fmt.Sprintf("%s/%s/%s.json", "/api/node/class", dn, "dhcpOption"))
-	if err != nil {
-		return nil, err
-	}
-
-	dhcpOption := models.DHCPOptionListFromContainer(dhcpOptionCont)
-
-	for _, option := range dhcpOption {
-		if option.DistinguishedName == "" {
-			return nil, fmt.Errorf("DHCPOption %s not found", dn)
-		}
-	}
-
-	return dhcpOption, nil
+	dhcpOptionCont, _ := client.GetViaURL(fmt.Sprintf("%s/%s/%s.json", "/api/node/class", dn, "dhcpOption"))
+	dhcpOptions := models.DHCPOptionListFromContainer(dhcpOptionCont)
+	return dhcpOptions, nil
 }
 
 func setDHCPOptionPolicyAttributes(dhcpOptionPol *models.DHCPOptionPolicy, d *schema.ResourceData) (*schema.ResourceData, error) {
@@ -295,21 +284,15 @@ func resourceAciDHCPOptionPolicyUpdate(ctx context.Context, d *schema.ResourceDa
 	if d.HasChange("dhcp_option") {
 		old_options, new_options := d.GetChange("dhcp_option")
 		getDifference := differenceInMaps(old_options.(*schema.Set), new_options.(*schema.Set))
-		listDNToDelete := make([]string, 0)
-		for i := 0; i < len(getDifference); i++ {
-			for key, value := range getDifference[i].(map[string]interface{}) {
+		for _, get_diff := range getDifference {
+			for key, value := range get_diff.(map[string]interface{}) {
 				if key == "id" {
-					listDNToDelete = append(listDNToDelete, value.(string))
+					err := aciClient.DeleteByDn(value.(string), "dhcpOption")
+					if err != nil {
+						return diag.FromErr(err)
+					}
 				}
-			}
-		}
 
-		for _, value := range listDNToDelete {
-			if value != "" {
-				err := aciClient.DeleteByDn(value, "dhcpOption")
-				if err != nil {
-					return diag.FromErr(err)
-				}
 			}
 		}
 
@@ -403,7 +386,7 @@ func resourceAciDHCPOptionPolicyDelete(ctx context.Context, d *schema.ResourceDa
 
 func differenceInMaps(mapSlice1, mapSlice2 *schema.Set) []interface{} {
 	var difference []interface{}
-	for i := 0; i < 2; i++ {
+	for i := 0; i < 1; i++ {
 		for _, s1 := range mapSlice1.List() {
 			found := false
 			for _, s2 := range mapSlice2.List() {
