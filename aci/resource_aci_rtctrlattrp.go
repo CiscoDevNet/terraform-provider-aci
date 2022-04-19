@@ -325,6 +325,30 @@ func resourceAciActionRuleProfileImport(d *schema.ResourceData, m interface{}) (
 	}
 	// rtctrlSetNh - Import finished successfully
 
+	// rtctrlSetRtMetric - Beginning Import
+	setRtMetricCheckDns := make([]string, 0, 1)
+
+	setRtMetricDn := rtctrlAttrP.DistinguishedName + fmt.Sprintf("/"+models.RnrtctrlSetRtMetric)
+
+	setRtMetricCheckDns = append(setRtMetricCheckDns, setRtMetricDn)
+
+	err = checkTDn(aciClient, setRtMetricCheckDns)
+	if err == nil {
+		log.Printf("[DEBUG] %s: rtctrlSetRtMetric - Beginning Import", setRtMetricDn)
+
+		rtctrlSetRtMetric, err := getRemoteRtctrlSetRtMetric(aciClient, setRtMetricDn)
+		if err != nil {
+			return nil, err
+		}
+
+		_, err = setRtctrlSetRtMetricAttributes(rtctrlSetRtMetric, d)
+		if err != nil {
+			return nil, err
+		}
+		log.Printf("[DEBUG] %s: rtctrlSetRtMetric - Import finished successfully", setRtMetricDn)
+	}
+	// rtctrlSetRtMetric - Import finished successfully
+
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
@@ -467,7 +491,6 @@ func resourceAciActionRuleProfileCreate(ctx context.Context, d *schema.ResourceD
 
 		log.Printf("[DEBUG] %s: Creation finished successfully", rtctrlSetNh.DistinguishedName)
 		resourceAciRtctrlSetNhRead(ctx, rtctrlSetNh.DistinguishedName, d, m)
-
 	}
 
 	d.SetId(rtctrlAttrP.DistinguishedName)

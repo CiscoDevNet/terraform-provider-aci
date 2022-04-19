@@ -31,8 +31,11 @@ resource "aci_action_rule_profile" "example" {
   set_preference = 100
   set_weight = 100
   set_metric = 100
+<<<<<<< HEAD
   set_metric_type = "ospf-type1"
   set_next_hop    = "1.1.1.1"
+=======
+>>>>>>> 95657ef (Added Set Metric option to the Action Rule Profile resource)
 }
 ```
 
