@@ -46,6 +46,10 @@ func resourceAciActionRuleProfile() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
+			"set_metric": {
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 		})),
 	}
 }
@@ -144,6 +148,27 @@ func setRtctrlSetWeightAttributes(rtctrlSetWeight *models.RtctrlSetWeight, d *sc
 	return d, nil
 }
 
+func getRemoteRtctrlSetRtMetric(client *client.Client, dn string) (*models.RtctrlSetRtMetric, error) {
+	rtctrlSetRtMetricCont, err := client.Get(dn)
+	if err != nil {
+		return nil, err
+	}
+	rtctrlSetRtMetric := models.RtctrlSetRtMetricFromContainer(rtctrlSetRtMetricCont)
+	if rtctrlSetRtMetric.DistinguishedName == "" {
+		return nil, fmt.Errorf("rtctrlSetRtMetric %s not found", dn)
+	}
+	return rtctrlSetRtMetric, nil
+}
+
+func setRtctrlSetRtMetricAttributes(rtctrlSetRtMetric *models.RtctrlSetRtMetric, d *schema.ResourceData) (*schema.ResourceData, error) {
+	rtctrlSetRtMetricMap, err := rtctrlSetRtMetric.ToMap()
+	if err != nil {
+		return d, err
+	}
+	d.Set("set_metric", rtctrlSetRtMetricMap["metric"])
+	return d, nil
+}
+
 func resourceAciActionRuleProfileImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
 	log.Printf("[DEBUG] %s: Beginning Import", d.Id())
 	aciClient := m.(*client.Client)
@@ -216,6 +241,30 @@ func resourceAciActionRuleProfileImport(d *schema.ResourceData, m interface{}) (
 		log.Printf("[DEBUG] %s: rtctrlSetWeight - Import finished successfully", setWeightDn)
 	}
 	// rtctrlSetWeight - Import finished successfully
+
+	// rtctrlSetRtMetric - Beginning Import
+	setRtMetricCheckDns := make([]string, 0, 1)
+
+	setRtMetricDn := rtctrlAttrP.DistinguishedName + fmt.Sprintf("/"+models.RnrtctrlSetRtMetric)
+
+	setRtMetricCheckDns = append(setRtMetricCheckDns, setRtMetricDn)
+
+	err = checkTDn(aciClient, setRtMetricCheckDns)
+	if err == nil {
+		log.Printf("[DEBUG] %s: rtctrlSetRtMetric - Beginning Import", setRtMetricDn)
+
+		rtctrlSetRtMetric, err := getRemoteRtctrlSetRtMetric(aciClient, setRtMetricDn)
+		if err != nil {
+			return nil, err
+		}
+
+		_, err = setRtctrlSetRtMetricAttributes(rtctrlSetRtMetric, d)
+		if err != nil {
+			return nil, err
+		}
+		log.Printf("[DEBUG] %s: rtctrlSetRtMetric - Import finished successfully", setRtMetricDn)
+	}
+	// rtctrlSetRtMetric - Import finished successfully
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
@@ -305,7 +354,24 @@ func resourceAciActionRuleProfileCreate(ctx context.Context, d *schema.ResourceD
 
 		log.Printf("[DEBUG] %s: Creation finished successfully", rtctrlSetWeight.DistinguishedName)
 		resourceAciRtctrlSetWeightRead(ctx, rtctrlSetWeight.DistinguishedName, d, m)
+	}
 
+	// rtctrlSetRtMetric - Operations
+	if setRtMetric, ok := d.GetOk("set_metric"); ok {
+
+		log.Printf("[DEBUG] rtctrlSetRtMetric: Beginning Creation")
+
+		rtctrlSetRtMetricAttr := models.RtctrlSetRtMetricAttributes{}
+		rtctrlSetRtMetricAttr.Metric = setRtMetric.(string)
+		rtctrlSetRtMetric := models.NewRtctrlSetRtMetric(fmt.Sprintf(models.RnrtctrlSetRtMetric), rtctrlAttrP.DistinguishedName, "", "", rtctrlSetRtMetricAttr)
+
+		creation_err := aciClient.Save(rtctrlSetRtMetric)
+		if creation_err != nil {
+			return diag.FromErr(creation_err)
+		}
+
+		log.Printf("[DEBUG] %s: Creation finished successfully", rtctrlSetRtMetric.DistinguishedName)
+		resourceAciRtctrlSetRtMetricRead(ctx, rtctrlSetRtMetric.DistinguishedName, d, m)
 	}
 
 	d.SetId(rtctrlAttrP.DistinguishedName)
@@ -468,6 +534,45 @@ func resourceAciActionRuleProfileUpdate(ctx context.Context, d *schema.ResourceD
 		}
 	}
 
+	// rtctrlSetRtMetric - Operations
+	if d.HasChange("set_metric") {
+
+		if setRtMetric, ok := d.GetOk("set_metric"); ok {
+
+			log.Printf("[DEBUG] rtctrlSetRtMetric - Beginning Creation")
+
+			rtctrlSetRtMetricAttr := models.RtctrlSetRtMetricAttributes{}
+			rtctrlSetRtMetricAttr.Metric = setRtMetric.(string)
+
+			setRtMetricDn := rtctrlAttrP.DistinguishedName + fmt.Sprintf("/"+models.RnrtctrlSetRtMetric)
+
+			deletion_err := aciClient.DeleteByDn(setRtMetricDn, "rtctrlSetRtMetric")
+			if deletion_err != nil {
+				return diag.FromErr(err)
+			}
+
+			rtctrlSetRtMetric := models.NewRtctrlSetRtMetric(fmt.Sprintf(models.RnrtctrlSetRtMetric), rtctrlAttrP.DistinguishedName, "", "", rtctrlSetRtMetricAttr)
+
+			err := aciClient.Save(rtctrlSetRtMetric)
+			if err != nil {
+				return diag.FromErr(err)
+			}
+
+			log.Printf("[DEBUG] %s: rtctrlSetRtMetric - Creation finished successfully", rtctrlSetRtMetric.DistinguishedName)
+			resourceAciRtctrlSetRtMetricRead(ctx, rtctrlSetRtMetric.DistinguishedName, d, m)
+		} else {
+			setRtMetricDn := rtctrlAttrP.DistinguishedName + fmt.Sprintf("/"+models.RnrtctrlSetRtMetric)
+			log.Printf("[DEBUG] %s: rtctrlSetRtMetric - Beginning Destroy", setRtMetricDn)
+
+			err := aciClient.DeleteByDn(setRtMetricDn, "rtctrlSetRtMetric")
+			if err != nil {
+				return diag.FromErr(err)
+			}
+
+			log.Printf("[DEBUG] %s: rtctrlSetRtMetric - Destroy finished successfully", setRtMetricDn)
+		}
+	}
+
 	d.SetId(rtctrlAttrP.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
@@ -548,6 +653,24 @@ func resourceAciRtctrlSetWeightRead(ctx context.Context, dn string, d *schema.Re
 	}
 
 	log.Printf("[DEBUG] %s: rtctrlSetWeight - Read finished successfully", dn)
+	return nil
+}
+
+func resourceAciRtctrlSetRtMetricRead(ctx context.Context, dn string, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+	log.Printf("[DEBUG] %s: rtctrlSetRtMetric - Beginning Read", dn)
+	aciClient := m.(*client.Client)
+
+	rtctrlSetRtMetric, err := getRemoteRtctrlSetRtMetric(aciClient, dn)
+	if err != nil {
+		return diag.FromErr(err)
+	}
+
+	_, err = setRtctrlSetRtMetricAttributes(rtctrlSetRtMetric, d)
+	if err != nil {
+		return nil
+	}
+
+	log.Printf("[DEBUG] %s: rtctrlSetRtMetric - Read finished successfully", dn)
 	return nil
 }
 

@@ -38,6 +38,10 @@ func dataSourceAciActionRuleProfile() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
+			"set_metric": {
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 		})),
 	}
 }
@@ -106,6 +110,28 @@ func dataSourceAciActionRuleProfileRead(ctx context.Context, d *schema.ResourceD
 		}
 	}
 	// rtctrlSetWeight - Read finished successfully
+
+	// rtctrlSetRtMetric - Beginning of Read
+	setRtMetricCheckDns := make([]string, 0, 1)
+
+	setRtMetricDn := rtctrlAttrP.DistinguishedName + fmt.Sprintf("/"+models.RnrtctrlSetRtMetric)
+
+	setRtMetricCheckDns = append(setRtMetricCheckDns, setRtMetricDn)
+
+	err = checkTDn(aciClient, setRtMetricCheckDns)
+	if err == nil {
+
+		rtctrlSetRtMetric, err := getRemoteRtctrlSetRtMetric(aciClient, setRtMetricDn)
+		if err != nil {
+			return diag.FromErr(err)
+		}
+
+		_, err = setRtctrlSetRtMetricAttributes(rtctrlSetRtMetric, d)
+		if err != nil {
+			return diag.FromErr(err)
+		}
+	}
+	// rtctrlSetRtMetric - Read finished successfully
 
 	return nil
 }
