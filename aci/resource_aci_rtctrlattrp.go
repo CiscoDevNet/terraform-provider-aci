@@ -9,6 +9,7 @@ import (
 	"github.com/ciscoecosystem/aci-go-client/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciActionRuleProfile() *schema.Resource {
@@ -49,6 +50,14 @@ func resourceAciActionRuleProfile() *schema.Resource {
 			"set_metric": {
 				Type:     schema.TypeString,
 				Optional: true,
+			},
+			"set_metric_type": {
+				Type:     schema.TypeString,
+				Optional: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"ospf-type1",
+					"ospf-type2",
+				}, false),
 			},
 		})),
 	}
@@ -169,6 +178,27 @@ func setRtctrlSetRtMetricAttributes(rtctrlSetRtMetric *models.RtctrlSetRtMetric,
 	return d, nil
 }
 
+func getRemoteRtctrlSetRtMetricType(client *client.Client, dn string) (*models.RtctrlSetRtMetricType, error) {
+	rtctrlSetRtMetricTypeCont, err := client.Get(dn)
+	if err != nil {
+		return nil, err
+	}
+	rtctrlSetRtMetricType := models.RtctrlSetRtMetricTypeFromContainer(rtctrlSetRtMetricTypeCont)
+	if rtctrlSetRtMetricType.DistinguishedName == "" {
+		return nil, fmt.Errorf("rtctrlSetRtMetricType %s not found", dn)
+	}
+	return rtctrlSetRtMetricType, nil
+}
+
+func setRtctrlSetRtMetricTypeAttributes(rtctrlSetRtMetricType *models.RtctrlSetRtMetricType, d *schema.ResourceData) (*schema.ResourceData, error) {
+	rtctrlSetRtMetricTypeMap, err := rtctrlSetRtMetricType.ToMap()
+	if err != nil {
+		return d, err
+	}
+	d.Set("set_metric_type", rtctrlSetRtMetricTypeMap["metricType"])
+	return d, nil
+}
+
 func resourceAciActionRuleProfileImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
 	log.Printf("[DEBUG] %s: Beginning Import", d.Id())
 	aciClient := m.(*client.Client)
@@ -265,6 +295,30 @@ func resourceAciActionRuleProfileImport(d *schema.ResourceData, m interface{}) (
 		log.Printf("[DEBUG] %s: rtctrlSetRtMetric - Import finished successfully", setRtMetricDn)
 	}
 	// rtctrlSetRtMetric - Import finished successfully
+
+	// rtctrlSetRtMetricType - Beginning Import
+	setRtMetricTypeCheckDns := make([]string, 0, 1)
+
+	setRtMetricTypeDn := rtctrlAttrP.DistinguishedName + fmt.Sprintf("/"+models.RnrtctrlSetRtMetricType)
+
+	setRtMetricTypeCheckDns = append(setRtMetricTypeCheckDns, setRtMetricTypeDn)
+
+	err = checkTDn(aciClient, setRtMetricTypeCheckDns)
+	if err == nil {
+		log.Printf("[DEBUG] %s: rtctrlSetRtMetricType - Beginning Import", setRtMetricTypeDn)
+
+		rtctrlSetRtMetricType, err := getRemoteRtctrlSetRtMetricType(aciClient, setRtMetricTypeDn)
+		if err != nil {
+			return nil, err
+		}
+
+		_, err = setRtctrlSetRtMetricTypeAttributes(rtctrlSetRtMetricType, d)
+		if err != nil {
+			return nil, err
+		}
+		log.Printf("[DEBUG] %s: rtctrlSetRtMetricType - Import finished successfully", setRtMetricTypeDn)
+	}
+	// rtctrlSetRtMetricType - Import finished successfully
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
@@ -372,6 +426,24 @@ func resourceAciActionRuleProfileCreate(ctx context.Context, d *schema.ResourceD
 
 		log.Printf("[DEBUG] %s: Creation finished successfully", rtctrlSetRtMetric.DistinguishedName)
 		resourceAciRtctrlSetRtMetricRead(ctx, rtctrlSetRtMetric.DistinguishedName, d, m)
+	}
+
+	// rtctrlSetRtMetricType - Operations
+	if setRtMetricType, ok := d.GetOk("set_metric_type"); ok {
+
+		log.Printf("[DEBUG] rtctrlSetRtMetricType: Beginning Creation")
+
+		rtctrlSetRtMetricTypeAttr := models.RtctrlSetRtMetricTypeAttributes{}
+		rtctrlSetRtMetricTypeAttr.MetricType = setRtMetricType.(string)
+		rtctrlSetRtMetricType := models.NewRtctrlSetRtMetricType(fmt.Sprintf(models.RnrtctrlSetRtMetricType), rtctrlAttrP.DistinguishedName, "", "", rtctrlSetRtMetricTypeAttr)
+
+		creation_err := aciClient.Save(rtctrlSetRtMetricType)
+		if creation_err != nil {
+			return diag.FromErr(creation_err)
+		}
+
+		log.Printf("[DEBUG] %s: Creation finished successfully", rtctrlSetRtMetricType.DistinguishedName)
+		resourceAciRtctrlSetRtMetricTypeRead(ctx, rtctrlSetRtMetricType.DistinguishedName, d, m)
 	}
 
 	d.SetId(rtctrlAttrP.DistinguishedName)
@@ -573,6 +645,44 @@ func resourceAciActionRuleProfileUpdate(ctx context.Context, d *schema.ResourceD
 		}
 	}
 
+	// rtctrlSetRtMetricType - Operations
+	if d.HasChange("set_metric_type") {
+
+		if setRtMetricType, ok := d.GetOk("set_metric_type"); ok {
+
+			log.Printf("[DEBUG] rtctrlSetRtMetricType - Beginning Creation")
+
+			rtctrlSetRtMetricTypeAttr := models.RtctrlSetRtMetricTypeAttributes{}
+			rtctrlSetRtMetricTypeAttr.MetricType = setRtMetricType.(string)
+
+			setRtMetricTypeDn := rtctrlAttrP.DistinguishedName + fmt.Sprintf("/"+models.RnrtctrlSetRtMetricType)
+
+			deletion_err := aciClient.DeleteByDn(setRtMetricTypeDn, "rtctrlSetRtMetricType")
+			if deletion_err != nil {
+				return diag.FromErr(err)
+			}
+
+			rtctrlSetRtMetricType := models.NewRtctrlSetRtMetricType(fmt.Sprintf(models.RnrtctrlSetRtMetricType), rtctrlAttrP.DistinguishedName, "", "", rtctrlSetRtMetricTypeAttr)
+
+			err := aciClient.Save(rtctrlSetRtMetricType)
+			if err != nil {
+				return diag.FromErr(err)
+			}
+
+			log.Printf("[DEBUG] %s: rtctrlSetRtMetricType - Creation finished successfully", rtctrlSetRtMetricType.DistinguishedName)
+			resourceAciRtctrlSetRtMetricTypeRead(ctx, rtctrlSetRtMetricType.DistinguishedName, d, m)
+		} else {
+			setRtMetricTypeDn := rtctrlAttrP.DistinguishedName + fmt.Sprintf("/"+models.RnrtctrlSetRtMetricType)
+			log.Printf("[DEBUG] %s: rtctrlSetRtMetricType - Beginning Destroy", setRtMetricTypeDn)
+
+			err := aciClient.DeleteByDn(setRtMetricTypeDn, "rtctrlSetRtMetricType")
+			if err != nil {
+				return diag.FromErr(err)
+			}
+
+			log.Printf("[DEBUG] %s: rtctrlSetRtMetricType - Destroy finished successfully", setRtMetricTypeDn)
+		}
+	}
 	d.SetId(rtctrlAttrP.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
@@ -671,6 +781,24 @@ func resourceAciRtctrlSetRtMetricRead(ctx context.Context, dn string, d *schema.
 	}
 
 	log.Printf("[DEBUG] %s: rtctrlSetRtMetric - Read finished successfully", dn)
+	return nil
+}
+
+func resourceAciRtctrlSetRtMetricTypeRead(ctx context.Context, dn string, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+	log.Printf("[DEBUG] %s: rtctrlSetRtMetricType - Beginning Read", dn)
+	aciClient := m.(*client.Client)
+
+	rtctrlSetRtMetricType, err := getRemoteRtctrlSetRtMetricType(aciClient, dn)
+	if err != nil {
+		return diag.FromErr(err)
+	}
+
+	_, err = setRtctrlSetRtMetricTypeAttributes(rtctrlSetRtMetricType, d)
+	if err != nil {
+		return nil
+	}
+
+	log.Printf("[DEBUG] %s: rtctrlSetRtMetricType - Read finished successfully", dn)
 	return nil
 }
 
