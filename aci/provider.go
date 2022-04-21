@@ -300,6 +300,7 @@ func Provider() *schema.Provider {
 			"aci_spine_access_port_selector":               resourceAciSpineAccessPortSelector(),
 			"aci_aaa_domain_relationship":                  resourceAciDomainRelationship(),
 			"aci_aaep_to_domain":                           resourceAciInfraRsDomP(),
+			"aci_action_rule_additional_communities":       resourceAciRtctrlSetAddComm(),
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
@@ -521,6 +522,7 @@ func Provider() *schema.Provider {
 			"aci_spine_access_port_selector":               dataSourceAciSpineAccessPortSelector(),
 			"aci_aaa_domain_relationship":                  dataSourceAciDomainRelationship(),
 			"aci_aaep_to_domain":                           dataSourceAciInfraRsDomP(),
+			"aci_action_rule_additional_communities":       dataSourceAciRtctrlSetAddComm(),
 		},
 
 		ConfigureFunc: configureClient,
