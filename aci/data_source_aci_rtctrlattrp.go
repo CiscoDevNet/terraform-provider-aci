@@ -51,6 +51,10 @@ func dataSourceAciActionRuleProfile() *schema.Resource {
 					"ospf-type2",
 				}, false),
 			},
+			"set_next_hop": {
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 		})),
 	}
 }
@@ -163,6 +167,28 @@ func dataSourceAciActionRuleProfileRead(ctx context.Context, d *schema.ResourceD
 		}
 	}
 	// rtctrlSetRtMetricType - Read finished successfully
+
+	// rtctrlSetNh - Beginning of Read
+	setNhCheckDns := make([]string, 0, 1)
+
+	setNhDn := rtctrlAttrP.DistinguishedName + fmt.Sprintf("/"+models.RnrtctrlSetNh)
+
+	setNhCheckDns = append(setNhCheckDns, setNhDn)
+
+	err = checkTDn(aciClient, setNhCheckDns)
+	if err == nil {
+
+		rtctrlSetNh, err := getRemoteRtctrlSetNh(aciClient, setNhDn)
+		if err != nil {
+			return diag.FromErr(err)
+		}
+
+		_, err = setRtctrlSetNhAttributes(rtctrlSetNh, d)
+		if err != nil {
+			return diag.FromErr(err)
+		}
+	}
+	// rtctrlSetNh - Read finished successfully
 
 	return nil
 }
