@@ -40,8 +40,7 @@ func resourceAciStaticPath() *schema.Resource {
 
 			"encap": &schema.Schema{
 				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
+				Required: true,
 			},
 
 			"instr_imedcy": &schema.Schema{
