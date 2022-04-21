@@ -25,4 +25,5 @@ resource "aci_action_rule_profile" "example" {
   set_weight      = 100
   set_metric      = 100
   set_metric_type = "ospf-type1"
+  set_next_hop    = "1.1.1.1"
 }

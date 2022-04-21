@@ -44,3 +44,4 @@ data "aci_action_rule_profile" "example" {
 * `set_weight` - (Optional) Set Weight of the Action Rule Profile object.
 * `set_metric` - (Optional) Set Metric of the Action Rule Profile object.
 * `set_metric_type` - (Optional) Set Metric Type of the Action Rule Profile object. Allowed values are "ospf-type1", "ospf-type2".
+* `set_next_hop` - (Optional) Set Next Hop of the Action Rule Profile object.
