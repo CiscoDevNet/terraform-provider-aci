@@ -119,27 +119,18 @@ func resourceAciActionRuleProfileImport(d *schema.ResourceData, m interface{}) (
 	}
 
 	// rtctrlSetTag - Beginning Import
-	checkDns := make([]string, 0, 1)
 
 	setRouteTagDn := rtctrlAttrP.DistinguishedName + fmt.Sprintf("/"+models.RnrtctrlSetTag)
-
-	checkDns = append(checkDns, setRouteTagDn)
-
-	err = checkTDn(aciClient, checkDns)
+	rtctrlSetTag, err := getRemoteRtctrlSetTag(aciClient, setRouteTagDn)
 	if err == nil {
 		log.Printf("[DEBUG] %s: rtctrlSetTag - Beginning Import", setRouteTagDn)
-
-		rtctrlSetTag, err := getRemoteRtctrlSetTag(aciClient, setRouteTagDn)
-		if err != nil {
-			return nil, err
-		}
-
 		_, err = setRtctrlSetTagAttributes(rtctrlSetTag, d)
 		if err != nil {
 			return nil, err
 		}
 		log.Printf("[DEBUG] %s: rtctrlSetTag - Import finished successfully", setRouteTagDn)
 	}
+
 	// rtctrlSetTag - Import finished successfully
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())

@@ -56,19 +56,11 @@ func dataSourceAciActionRuleProfileRead(ctx context.Context, d *schema.ResourceD
 	}
 
 	// rtctrlSetTag - Beginning of Read
-	checkDns := make([]string, 0, 1)
 
 	setRouteTagDn := rtctrlAttrP.DistinguishedName + fmt.Sprintf("/"+models.RnrtctrlSetTag)
 
-	checkDns = append(checkDns, setRouteTagDn)
-
-	err = checkTDn(aciClient, checkDns)
+	rtctrlSetTag, err := getRemoteRtctrlSetTag(aciClient, setRouteTagDn)
 	if err == nil {
-		rtctrlSetTag, err := getRemoteRtctrlSetTag(aciClient, setRouteTagDn)
-		if err != nil {
-			return diag.FromErr(err)
-		}
-
 		_, err = setRtctrlSetTagAttributes(rtctrlSetTag, d)
 		if err != nil {
 			return diag.FromErr(err)
