@@ -373,6 +373,30 @@ func resourceAciActionRuleProfileImport(d *schema.ResourceData, m interface{}) (
 	}
 	// rtctrlSetRtMetricType - Import finished successfully
 
+	// rtctrlSetNh - Beginning Import
+	setNhCheckDns := make([]string, 0, 1)
+
+	setNhDn := rtctrlAttrP.DistinguishedName + fmt.Sprintf("/"+models.RnrtctrlSetNh)
+
+	setNhCheckDns = append(setNhCheckDns, setNhDn)
+
+	err = checkTDn(aciClient, setNhCheckDns)
+	if err == nil {
+		log.Printf("[DEBUG] %s: rtctrlSetNh - Beginning Import", setNhDn)
+
+		rtctrlSetNh, err := getRemoteRtctrlSetNh(aciClient, setNhDn)
+		if err != nil {
+			return nil, err
+		}
+
+		_, err = setRtctrlSetNhAttributes(rtctrlSetNh, d)
+		if err != nil {
+			return nil, err
+		}
+		log.Printf("[DEBUG] %s: rtctrlSetNh - Import finished successfully", setNhDn)
+	}
+	// rtctrlSetNh - Import finished successfully
+
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
