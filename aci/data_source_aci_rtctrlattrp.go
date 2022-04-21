@@ -103,20 +103,9 @@ func dataSourceAciActionRuleProfileRead(ctx context.Context, d *schema.ResourceD
 	// rtctrlSetPref - Read finished successfully
 
 	// rtctrlSetWeight - Beginning of Read
-	setWeightCheckDns := make([]string, 0, 1)
-
 	setWeightDn := rtctrlAttrP.DistinguishedName + fmt.Sprintf("/"+models.RnrtctrlSetWeight)
-
-	setWeightCheckDns = append(setWeightCheckDns, setWeightDn)
-
-	err = checkTDn(aciClient, setWeightCheckDns)
+	rtctrlSetWeight, err := getRemoteRtctrlSetWeight(aciClient, setWeightDn)
 	if err == nil {
-
-		rtctrlSetWeight, err := getRemoteRtctrlSetWeight(aciClient, setWeightDn)
-		if err != nil {
-			return diag.FromErr(err)
-		}
-
 		_, err = setRtctrlSetWeightAttributes(rtctrlSetWeight, d)
 		if err != nil {
 			return diag.FromErr(err)
@@ -125,20 +114,9 @@ func dataSourceAciActionRuleProfileRead(ctx context.Context, d *schema.ResourceD
 	// rtctrlSetWeight - Read finished successfully
 
 	// rtctrlSetRtMetric - Beginning of Read
-	setRtMetricCheckDns := make([]string, 0, 1)
-
 	setRtMetricDn := rtctrlAttrP.DistinguishedName + fmt.Sprintf("/"+models.RnrtctrlSetRtMetric)
-
-	setRtMetricCheckDns = append(setRtMetricCheckDns, setRtMetricDn)
-
-	err = checkTDn(aciClient, setRtMetricCheckDns)
+	rtctrlSetRtMetric, err := getRemoteRtctrlSetRtMetric(aciClient, setRtMetricDn)
 	if err == nil {
-
-		rtctrlSetRtMetric, err := getRemoteRtctrlSetRtMetric(aciClient, setRtMetricDn)
-		if err != nil {
-			return diag.FromErr(err)
-		}
-
 		_, err = setRtctrlSetRtMetricAttributes(rtctrlSetRtMetric, d)
 		if err != nil {
 			return diag.FromErr(err)
@@ -147,20 +125,9 @@ func dataSourceAciActionRuleProfileRead(ctx context.Context, d *schema.ResourceD
 	// rtctrlSetRtMetric - Read finished successfully
 
 	// rtctrlSetRtMetricType - Beginning of Read
-	setRtMetricTypeCheckDns := make([]string, 0, 1)
-
 	setRtMetricTypeDn := rtctrlAttrP.DistinguishedName + fmt.Sprintf("/"+models.RnrtctrlSetRtMetricType)
-
-	setRtMetricTypeCheckDns = append(setRtMetricTypeCheckDns, setRtMetricTypeDn)
-
-	err = checkTDn(aciClient, setRtMetricTypeCheckDns)
+	rtctrlSetRtMetricType, err := getRemoteRtctrlSetRtMetricType(aciClient, setRtMetricTypeDn)
 	if err == nil {
-
-		rtctrlSetRtMetricType, err := getRemoteRtctrlSetRtMetricType(aciClient, setRtMetricTypeDn)
-		if err != nil {
-			return diag.FromErr(err)
-		}
-
 		_, err = setRtctrlSetRtMetricTypeAttributes(rtctrlSetRtMetricType, d)
 		if err != nil {
 			return diag.FromErr(err)
@@ -169,20 +136,9 @@ func dataSourceAciActionRuleProfileRead(ctx context.Context, d *schema.ResourceD
 	// rtctrlSetRtMetricType - Read finished successfully
 
 	// rtctrlSetNh - Beginning of Read
-	setNhCheckDns := make([]string, 0, 1)
-
 	setNhDn := rtctrlAttrP.DistinguishedName + fmt.Sprintf("/"+models.RnrtctrlSetNh)
-
-	setNhCheckDns = append(setNhCheckDns, setNhDn)
-
-	err = checkTDn(aciClient, setNhCheckDns)
+	rtctrlSetNh, err := getRemoteRtctrlSetNh(aciClient, setNhDn)
 	if err == nil {
-
-		rtctrlSetNh, err := getRemoteRtctrlSetNh(aciClient, setNhDn)
-		if err != nil {
-			return diag.FromErr(err)
-		}
-
 		_, err = setRtctrlSetNhAttributes(rtctrlSetNh, d)
 		if err != nil {
 			return diag.FromErr(err)
