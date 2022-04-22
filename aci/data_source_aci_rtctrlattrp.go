@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
+	"github.com/ciscoecosystem/aci-go-client/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -21,14 +22,13 @@ func dataSourceAciActionRuleProfile() *schema.Resource {
 				Type:     schema.TypeString,
 				Required: true,
 			},
-			"annotation": {
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
 			"name": {
 				Type:     schema.TypeString,
 				Required: true,
+			},
+			"set_route_tag": {
+				Type:     schema.TypeString,
+				Optional: true,
 			},
 		})),
 	}
@@ -54,5 +54,19 @@ func dataSourceAciActionRuleProfileRead(ctx context.Context, d *schema.ResourceD
 	if err != nil {
 		return diag.FromErr(err)
 	}
+
+	// rtctrlSetTag - Beginning of Read
+
+	setRouteTagDn := rtctrlAttrP.DistinguishedName + fmt.Sprintf("/"+models.RnrtctrlSetTag)
+
+	rtctrlSetTag, err := getRemoteRtctrlSetTag(aciClient, setRouteTagDn)
+	if err == nil {
+		_, err = setRtctrlSetTagAttributes(rtctrlSetTag, d)
+		if err != nil {
+			return diag.FromErr(err)
+		}
+	}
+	// rtctrlSetTag - Read finished successfully
+
 	return nil
 }

@@ -15,9 +15,10 @@ provider "aci" {
 
 resource "aci_action_rule_profile" "example" {
 
-  tenant_dn   = aci_tenant.example.id
-  description = "From Terraform"
-  name        = "example"
-  annotation  = "example"
-  name_alias  = "example"
+  tenant_dn     = aci_tenant.example.id
+  description   = "From Terraform"
+  name          = "example"
+  annotation    = "example"
+  name_alias    = "example"
+  set_route_tag = 100
 }
