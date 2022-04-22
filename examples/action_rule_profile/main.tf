@@ -13,8 +13,11 @@ provider "aci" {
   insecure = true
 }
 
-resource "aci_action_rule_profile" "example" {
+resource "aci_tenant" "example" {
+  name = "tf_l3out_tenant"
+}
 
+resource "aci_action_rule_profile" "example" {
   tenant_dn       = aci_tenant.example.id
   description     = "From Terraform"
   name            = "example"
@@ -26,4 +29,10 @@ resource "aci_action_rule_profile" "example" {
   set_metric      = 100
   set_metric_type = "ospf-type1"
   set_next_hop    = "1.1.1.1"
+  set_communities = {
+    community = "no-advertise"
+    criteria  = "replace"
+  }
+  next_hop_propagation = "nh-unchanged"
+  multipath            = "redist-multipath"
 }

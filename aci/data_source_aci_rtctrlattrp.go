@@ -8,6 +8,7 @@ import (
 	"github.com/ciscoecosystem/aci-go-client/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func dataSourceAciActionRuleProfile() *schema.Resource {
@@ -25,6 +26,27 @@ func dataSourceAciActionRuleProfile() *schema.Resource {
 			"name": {
 				Type:     schema.TypeString,
 				Required: true,
+			},
+			"set_communities": {
+				Optional: true,
+				Type:     schema.TypeMap,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+			},
+			"next_hop_propagation": {
+				Type:     schema.TypeString,
+				Optional: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"nh-unchanged",
+				}, false),
+			},
+			"multipath": {
+				Type:     schema.TypeString,
+				Optional: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"nh-unchanged",
+				}, false),
 			},
 			"set_route_tag": {
 				Type:     schema.TypeString,
@@ -140,6 +162,39 @@ func dataSourceAciActionRuleProfileRead(ctx context.Context, d *schema.ResourceD
 		}
 	}
 	// rtctrlSetNh - Read finished successfully
+
+	// rtctrlSetComm - Beginning of Read
+	setCommDn := rtctrlAttrP.DistinguishedName + fmt.Sprintf("/"+models.RnrtctrlSetComm)
+	rtctrlSetComm, err := getRemoteRtctrlSetComm(aciClient, setCommDn)
+	if err == nil {
+		_, err = setRtctrlSetCommAttributes(rtctrlSetComm, d)
+		if err != nil {
+			return diag.FromErr(err)
+		}
+	}
+	// rtctrlSetComm - Read finished successfully
+
+	// rtctrlSetNhUnchanged - Beginning of Read
+	setNhUnchangedDn := rtctrlAttrP.DistinguishedName + fmt.Sprintf("/"+models.RnrtctrlSetNhUnchanged)
+	rtctrlSetNhUnchanged, err := getRemoteNexthopUnchangedAction(aciClient, setNhUnchangedDn)
+	if err == nil {
+		_, err = setNexthopUnchangedActionAttributes(rtctrlSetNhUnchanged, d)
+		if err != nil {
+			return diag.FromErr(err)
+		}
+	}
+	// rtctrlSetNhUnchanged - Read finished successfully
+
+	// rtctrlSetRedistMultipath - Beginning of Read
+	setRedistMultipathDn := rtctrlAttrP.DistinguishedName + fmt.Sprintf("/"+models.RnrtctrlSetRedistMultipath)
+	rtctrlSetRedistMultipath, err := getRemoteRtctrlSetRedistMultipath(aciClient, setRedistMultipathDn)
+	if err == nil {
+		_, err = setRtctrlSetRedistMultipathAttributes(rtctrlSetRedistMultipath, d)
+		if err != nil {
+			return diag.FromErr(err)
+		}
+	}
+	// rtctrlSetRedistMultipath - Read finished successfully
 
 	return nil
 }

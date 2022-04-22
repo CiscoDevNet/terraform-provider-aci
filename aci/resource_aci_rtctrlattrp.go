@@ -68,6 +68,27 @@ func resourceAciActionRuleProfile() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
+			"set_communities": {
+				Optional: true,
+				Type:     schema.TypeMap,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+			},
+			"next_hop_propagation": {
+				Type:     schema.TypeString,
+				Optional: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"nh-unchanged",
+				}, false),
+			},
+			"multipath": {
+				Type:     schema.TypeString,
+				Optional: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"redist-multipath",
+				}, false),
+			},
 		})),
 	}
 }
@@ -229,6 +250,74 @@ func setRtctrlSetNhAttributes(rtctrlSetNh *models.RtctrlSetNh, d *schema.Resourc
 	return d, nil
 }
 
+func getRemoteRtctrlSetComm(client *client.Client, dn string) (*models.RtctrlSetComm, error) {
+	rtctrlSetCommCont, err := client.Get(dn)
+	if err != nil {
+		return nil, err
+	}
+	rtctrlSetComm := models.RtctrlSetCommFromContainer(rtctrlSetCommCont)
+	if rtctrlSetComm.DistinguishedName == "" {
+		return nil, fmt.Errorf("rtctrlSetComm %s not found", dn)
+	}
+	return rtctrlSetComm, nil
+}
+
+func setRtctrlSetCommAttributes(rtctrlSetComm *models.RtctrlSetComm, d *schema.ResourceData) (*schema.ResourceData, error) {
+	rtctrlSetCommMap, err := rtctrlSetComm.ToMap()
+	if err != nil {
+		return d, err
+	}
+
+	newContent := make(map[string]interface{})
+	newContent["community"] = rtctrlSetCommMap["community"]
+	newContent["criteria"] = rtctrlSetCommMap["setCriteria"]
+	d.Set("set_communities", newContent)
+
+	return d, nil
+}
+
+func getRemoteNexthopUnchangedAction(client *client.Client, dn string) (*models.NexthopUnchangedAction, error) {
+	rtctrlSetNhUnchangedCont, err := client.Get(dn)
+	if err != nil {
+		return nil, err
+	}
+	rtctrlSetNhUnchanged := models.NexthopUnchangedActionFromContainer(rtctrlSetNhUnchangedCont)
+	if rtctrlSetNhUnchanged.DistinguishedName == "" {
+		return nil, fmt.Errorf("NexthopUnchangedAction %s not found", dn)
+	}
+	return rtctrlSetNhUnchanged, nil
+}
+
+func setNexthopUnchangedActionAttributes(rtctrlSetNhUnchanged *models.NexthopUnchangedAction, d *schema.ResourceData) (*schema.ResourceData, error) {
+	rtctrlSetNhUnchangedMap, err := rtctrlSetNhUnchanged.ToMap()
+	if err != nil {
+		return d, err
+	}
+	d.Set("next_hop_propagation", rtctrlSetNhUnchangedMap["type"])
+	return d, nil
+}
+
+func getRemoteRtctrlSetRedistMultipath(client *client.Client, dn string) (*models.RedistributeMultipathAction, error) {
+	rtctrlSetRedistMultipathCont, err := client.Get(dn)
+	if err != nil {
+		return nil, err
+	}
+	rtctrlSetRedistMultipath := models.RedistributeMultipathActionFromContainer(rtctrlSetRedistMultipathCont)
+	if rtctrlSetRedistMultipath.DistinguishedName == "" {
+		return nil, fmt.Errorf("rtctrlSetRedistMultipath %s not found", dn)
+	}
+	return rtctrlSetRedistMultipath, nil
+}
+
+func setRtctrlSetRedistMultipathAttributes(rtctrlSetRedistMultipath *models.RedistributeMultipathAction, d *schema.ResourceData) (*schema.ResourceData, error) {
+	rtctrlSetRedistMultipathMap, err := rtctrlSetRedistMultipath.ToMap()
+	if err != nil {
+		return d, err
+	}
+	d.Set("multipath", rtctrlSetRedistMultipathMap["type"])
+	return d, nil
+}
+
 func resourceAciActionRuleProfileImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
 	log.Printf("[DEBUG] %s: Beginning Import", d.Id())
 	aciClient := m.(*client.Client)
@@ -330,6 +419,45 @@ func resourceAciActionRuleProfileImport(d *schema.ResourceData, m interface{}) (
 	}
 	// rtctrlSetNh - Import finished successfully
 
+	// rtctrlSetComm - Beginning Import
+	setCommDn := rtctrlAttrP.DistinguishedName + fmt.Sprintf("/"+models.RnrtctrlSetComm)
+	rtctrlSetComm, err := getRemoteRtctrlSetComm(aciClient, setCommDn)
+	if err == nil {
+		log.Printf("[DEBUG] %s: rtctrlSetComm - Beginning Import", setCommDn)
+		_, err = setRtctrlSetCommAttributes(rtctrlSetComm, d)
+		if err != nil {
+			return nil, err
+		}
+		log.Printf("[DEBUG] %s: rtctrlSetComm - Import finished successfully", setCommDn)
+	}
+	// rtctrlSetComm - Import finished successfully
+
+	// rtctrlSetNhUnchanged - Beginning Import
+	setNhUnchangedDn := rtctrlAttrP.DistinguishedName + fmt.Sprintf("/"+models.RnrtctrlSetNhUnchanged)
+	rtctrlSetNhUnchanged, err := getRemoteNexthopUnchangedAction(aciClient, setNhUnchangedDn)
+	if err == nil {
+		log.Printf("[DEBUG] %s: rtctrlSetNhUnchanged - Beginning Import", setNhUnchangedDn)
+		_, err := setNexthopUnchangedActionAttributes(rtctrlSetNhUnchanged, d)
+		if err != nil {
+			return nil, err
+		}
+		log.Printf("[DEBUG] %s: rtctrlSetNhUnchanged - Import finished successfully", setNhUnchangedDn)
+	}
+	// rtctrlSetNhUnchanged - Import finished successfully
+
+	// rtctrlSetRedistMultipath - Beginning Import
+	setRedistMultipathDn := rtctrlAttrP.DistinguishedName + fmt.Sprintf("/"+models.RnrtctrlSetRedistMultipath)
+	rtctrlSetRedistMultipath, err := getRemoteRtctrlSetRedistMultipath(aciClient, setRedistMultipathDn)
+	if err == nil {
+		log.Printf("[DEBUG] %s: rtctrlSetRedistMultipath - Beginning Import", setRedistMultipathDn)
+		_, err = setRtctrlSetRedistMultipathAttributes(rtctrlSetRedistMultipath, d)
+		if err != nil {
+			return nil, err
+		}
+		log.Printf("[DEBUG] %s: rtctrlSetRedistMultipath - Import finished successfully", setRedistMultipathDn)
+	}
+	// rtctrlSetRedistMultipath - Import finished successfully
+
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
@@ -368,7 +496,6 @@ func resourceAciActionRuleProfileCreate(ctx context.Context, d *schema.ResourceD
 
 	// rtctrlSetTag - Operations
 	if setRouteTag, ok := d.GetOk("set_route_tag"); ok {
-
 		log.Printf("[DEBUG] rtctrlSetTag: Beginning Creation")
 
 		rtctrlSetTagAttr := models.RtctrlSetTagAttributes{}
@@ -386,7 +513,6 @@ func resourceAciActionRuleProfileCreate(ctx context.Context, d *schema.ResourceD
 
 	// rtctrlSetPref - Operations
 	if setPref, ok := d.GetOk("set_preference"); ok {
-
 		log.Printf("[DEBUG] rtctrlSetPref: Beginning Creation")
 
 		rtctrlSetPrefAttr := models.RtctrlSetPrefAttributes{}
@@ -404,7 +530,6 @@ func resourceAciActionRuleProfileCreate(ctx context.Context, d *schema.ResourceD
 
 	// rtctrlSetWeight - Operations
 	if setWeight, ok := d.GetOk("set_weight"); ok {
-
 		log.Printf("[DEBUG] rtctrlSetWeight: Beginning Creation")
 
 		rtctrlSetWeightAttr := models.RtctrlSetWeightAttributes{}
@@ -422,7 +547,6 @@ func resourceAciActionRuleProfileCreate(ctx context.Context, d *schema.ResourceD
 
 	// rtctrlSetRtMetric - Operations
 	if setRtMetric, ok := d.GetOk("set_metric"); ok {
-
 		log.Printf("[DEBUG] rtctrlSetRtMetric: Beginning Creation")
 
 		rtctrlSetRtMetricAttr := models.RtctrlSetRtMetricAttributes{}
@@ -440,7 +564,6 @@ func resourceAciActionRuleProfileCreate(ctx context.Context, d *schema.ResourceD
 
 	// rtctrlSetRtMetricType - Operations
 	if setRtMetricType, ok := d.GetOk("set_metric_type"); ok {
-
 		log.Printf("[DEBUG] rtctrlSetRtMetricType: Beginning Creation")
 
 		rtctrlSetRtMetricTypeAttr := models.RtctrlSetRtMetricTypeAttributes{}
@@ -458,7 +581,6 @@ func resourceAciActionRuleProfileCreate(ctx context.Context, d *schema.ResourceD
 
 	// rtctrlSetNh - Operations
 	if setNh, ok := d.GetOk("set_next_hop"); ok {
-
 		log.Printf("[DEBUG] rtctrlSetNh: Beginning Creation")
 
 		rtctrlSetNhAttr := models.RtctrlSetNhAttributes{}
@@ -472,6 +594,59 @@ func resourceAciActionRuleProfileCreate(ctx context.Context, d *schema.ResourceD
 
 		log.Printf("[DEBUG] %s: Creation finished successfully", rtctrlSetNh.DistinguishedName)
 		resourceAciRtctrlSetNhRead(ctx, rtctrlSetNh.DistinguishedName, d, m)
+	}
+
+	// rtctrlSetComm - Operations
+	if setComm, ok := d.GetOk("set_communities"); ok {
+		log.Printf("[DEBUG] rtctrlSetComm: Beginning Creation")
+		rtctrlSetCommAttr := models.RtctrlSetCommAttributes{}
+
+		setCommMap := toStrMap(setComm.(map[string]interface{}))
+		rtctrlSetCommAttr.Community = setCommMap["community"]
+		rtctrlSetCommAttr.SetCriteria = setCommMap["criteria"]
+		rtctrlSetComm := models.NewRtctrlSetComm(fmt.Sprintf(models.RnrtctrlSetComm), rtctrlAttrP.DistinguishedName, "", "", rtctrlSetCommAttr)
+
+		creation_err := aciClient.Save(rtctrlSetComm)
+		if creation_err != nil {
+			return diag.FromErr(creation_err)
+		}
+
+		log.Printf("[DEBUG] %s: Creation finished successfully", rtctrlSetComm.DistinguishedName)
+		resourceAciRtctrlSetCommRead(ctx, rtctrlSetComm.DistinguishedName, d, m)
+	}
+
+	// rtctrlSetNhUnchanged - Operations
+	if setNhUnchanged, ok := d.GetOk("next_hop_propagation"); ok {
+		log.Printf("[DEBUG] rtctrlSetNhUnchanged: Beginning Creation")
+		rtctrlSetNhUnchangedAttr := models.NexthopUnchangedActionAttributes{}
+
+		rtctrlSetNhUnchangedAttr.Type = setNhUnchanged.(string)
+		rtctrlSetNhUnchanged := models.NewNexthopUnchangedAction(fmt.Sprintf(models.RnrtctrlSetNhUnchanged), rtctrlAttrP.DistinguishedName, "", "", rtctrlSetNhUnchangedAttr)
+
+		creation_err := aciClient.Save(rtctrlSetNhUnchanged)
+		if creation_err != nil {
+			return diag.FromErr(creation_err)
+		}
+
+		log.Printf("[DEBUG] %s: Creation finished successfully", rtctrlSetNhUnchanged.DistinguishedName)
+		resourceAciNexthopUnchangedActionRead(ctx, rtctrlSetNhUnchanged.DistinguishedName, d, m)
+	}
+
+	// rtctrlSetRedistMultipath - Operations
+	if setRedistMultipath, ok := d.GetOk("multipath"); ok {
+		log.Printf("[DEBUG] rtctrlSetRedistMultipath: Beginning Creation")
+
+		rtctrlSetRedistMultipathAttr := models.RedistributeMultipathActionAttributes{}
+		rtctrlSetRedistMultipathAttr.Type = setRedistMultipath.(string)
+		rtctrlSetRedistMultipath := models.NewRedistributeMultipathAction(fmt.Sprintf(models.RnrtctrlSetRedistMultipath), rtctrlAttrP.DistinguishedName, "", "", rtctrlSetRedistMultipathAttr)
+
+		creation_err := aciClient.Save(rtctrlSetRedistMultipath)
+		if creation_err != nil {
+			return diag.FromErr(creation_err)
+		}
+
+		log.Printf("[DEBUG] %s: Creation finished successfully", rtctrlSetRedistMultipath.DistinguishedName)
+		resourceAciRtctrlSetRedistMultipathRead(ctx, rtctrlSetRedistMultipath.DistinguishedName, d, m)
 	}
 
 	d.SetId(rtctrlAttrP.DistinguishedName)
@@ -518,9 +693,7 @@ func resourceAciActionRuleProfileUpdate(ctx context.Context, d *schema.ResourceD
 
 	// rtctrlSetTag - Operations
 	if d.HasChange("set_route_tag") {
-
 		if setRouteTag, ok := d.GetOk("set_route_tag"); ok {
-
 			log.Printf("[DEBUG] rtctrlSetTag - Beginning Creation")
 
 			rtctrlSetTagAttr := models.RtctrlSetTagAttributes{}
@@ -558,9 +731,7 @@ func resourceAciActionRuleProfileUpdate(ctx context.Context, d *schema.ResourceD
 
 	// rtctrlSetPref - Operations
 	if d.HasChange("set_preference") {
-
 		if setPref, ok := d.GetOk("set_preference"); ok {
-
 			log.Printf("[DEBUG] rtctrlSetPref - Beginning Creation")
 
 			rtctrlSetPrefAttr := models.RtctrlSetPrefAttributes{}
@@ -597,9 +768,7 @@ func resourceAciActionRuleProfileUpdate(ctx context.Context, d *schema.ResourceD
 
 	// rtctrlSetWeight - Operations
 	if d.HasChange("set_weight") {
-
 		if setWeight, ok := d.GetOk("set_weight"); ok {
-
 			log.Printf("[DEBUG] rtctrlSetWeight - Beginning Creation")
 
 			rtctrlSetWeightAttr := models.RtctrlSetWeightAttributes{}
@@ -636,9 +805,7 @@ func resourceAciActionRuleProfileUpdate(ctx context.Context, d *schema.ResourceD
 
 	// rtctrlSetRtMetric - Operations
 	if d.HasChange("set_metric") {
-
 		if setRtMetric, ok := d.GetOk("set_metric"); ok {
-
 			log.Printf("[DEBUG] rtctrlSetRtMetric - Beginning Creation")
 
 			rtctrlSetRtMetricAttr := models.RtctrlSetRtMetricAttributes{}
@@ -675,9 +842,7 @@ func resourceAciActionRuleProfileUpdate(ctx context.Context, d *schema.ResourceD
 
 	// rtctrlSetRtMetricType - Operations
 	if d.HasChange("set_metric_type") {
-
 		if setRtMetricType, ok := d.GetOk("set_metric_type"); ok {
-
 			log.Printf("[DEBUG] rtctrlSetRtMetricType - Beginning Creation")
 
 			rtctrlSetRtMetricTypeAttr := models.RtctrlSetRtMetricTypeAttributes{}
@@ -714,9 +879,7 @@ func resourceAciActionRuleProfileUpdate(ctx context.Context, d *schema.ResourceD
 
 	// rtctrlSetNh - Operations
 	if d.HasChange("set_next_hop") {
-
 		if setNh, ok := d.GetOk("set_next_hop"); ok {
-
 			log.Printf("[DEBUG] rtctrlSetNh - Beginning Creation")
 
 			rtctrlSetNhAttr := models.RtctrlSetNhAttributes{}
@@ -735,7 +898,7 @@ func resourceAciActionRuleProfileUpdate(ctx context.Context, d *schema.ResourceD
 			if err != nil {
 				return diag.FromErr(err)
 			}
-
+			
 			log.Printf("[DEBUG] %s: rtctrlSetNh - Creation finished successfully", rtctrlSetNh.DistinguishedName)
 			resourceAciRtctrlSetNhRead(ctx, rtctrlSetNh.DistinguishedName, d, m)
 		} else {
@@ -751,11 +914,127 @@ func resourceAciActionRuleProfileUpdate(ctx context.Context, d *schema.ResourceD
 		}
 	}
 
+	// rtctrlSetComm - Operations
+	if d.HasChange("set_communities") {
+		if setComm, ok := d.GetOk("set_communities"); ok {
+			log.Printf("[DEBUG] rtctrlSetComm - Beginning Creation")
+
+			rtctrlSetCommAttr := models.RtctrlSetCommAttributes{}
+			setCommMap := toStrMap(setComm.(map[string]interface{}))
+			rtctrlSetCommAttr.Community = setCommMap["community"]
+			rtctrlSetCommAttr.SetCriteria = setCommMap["criteria"]
+
+			setCommDn := rtctrlAttrP.DistinguishedName + fmt.Sprintf("/"+models.RnrtctrlSetComm)
+
+			deletion_err := aciClient.DeleteByDn(setCommDn, "rtctrlSetComm")
+			if deletion_err != nil {
+				return diag.FromErr(err)
+			}
+
+			rtctrlSetComm := models.NewRtctrlSetComm(fmt.Sprintf(models.RnrtctrlSetComm), rtctrlAttrP.DistinguishedName, "", "", rtctrlSetCommAttr)
+
+			err := aciClient.Save(rtctrlSetComm)
+			if err != nil {
+				return diag.FromErr(err)
+			}
+			
+			log.Printf("[DEBUG] %s: rtctrlSetComm - Creation finished successfully", rtctrlSetComm.DistinguishedName)
+			resourceAciRtctrlSetCommRead(ctx, rtctrlSetComm.DistinguishedName, d, m)
+		} else {
+			setCommDn := rtctrlAttrP.DistinguishedName + fmt.Sprintf("/"+models.RnrtctrlSetComm)
+			log.Printf("[DEBUG] %s: rtctrlSetComm - Beginning Destroy", setCommDn)
+
+			err := aciClient.DeleteByDn(setCommDn, "rtctrlSetComm")
+			if err != nil {
+				return diag.FromErr(err)
+			}
+
+			log.Printf("[DEBUG] %s: rtctrlSetComm - Destroy finished successfully", setCommDn)
+		}
+	}
+
+	// rtctrlSetNhUnchanged - Operations
+	if d.HasChange("next_hop_propagation") {
+		if setNhUnchanged, ok := d.GetOk("next_hop_propagation"); ok {
+			log.Printf("[DEBUG] rtctrlSetNhUnchanged - Beginning Creation")
+
+			rtctrlSetNhUnchangedAttr := models.NexthopUnchangedActionAttributes{}
+			rtctrlSetNhUnchangedAttr.Type = setNhUnchanged.(string)
+
+			setNhUnchangedDn := rtctrlAttrP.DistinguishedName + fmt.Sprintf("/"+models.RnrtctrlSetNhUnchanged)
+
+			deletion_err := aciClient.DeleteByDn(setNhUnchangedDn, "rtctrlSetNhUnchanged")
+			if deletion_err != nil {
+				return diag.FromErr(err)
+			}
+
+			rtctrlSetNhUnchanged := models.NewNexthopUnchangedAction(fmt.Sprintf(models.RnrtctrlSetNhUnchanged), rtctrlAttrP.DistinguishedName, "", "", rtctrlSetNhUnchangedAttr)
+
+			err := aciClient.Save(rtctrlSetNhUnchanged)
+			if err != nil {
+				return diag.FromErr(err)
+			}
+
+			log.Printf("[DEBUG] %s: rtctrlSetNhUnchanged - Creation finished successfully", rtctrlSetNhUnchanged.DistinguishedName)
+			resourceAciNexthopUnchangedActionRead(ctx, rtctrlSetNhUnchanged.DistinguishedName, d, m)
+		} else {
+			if _, ok := d.GetOk("multipath"); !ok {
+				setNhUnchangedDn := rtctrlAttrP.DistinguishedName + fmt.Sprintf("/"+models.RnrtctrlSetNhUnchanged)
+				log.Printf("[DEBUG] %s: rtctrlSetNhUnchanged - Beginning Destroy", setNhUnchangedDn)
+
+				err := aciClient.DeleteByDn(setNhUnchangedDn, "rtctrlSetNhUnchanged")
+
+				if err != nil {
+					return diag.FromErr(err)
+				}
+
+				log.Printf("[DEBUG] %s: rtctrlSetNhUnchanged - Destroy finished successfully", setNhUnchangedDn)
+			} else {
+				return diag.FromErr(fmt.Errorf("Invalid Configuration Set Redistribute Multipath action cannot be configured without configuring the Next Hop Propagation"))
+			}
+		}
+	}
+
+	// rtctrlSetRedistMultipath - Operations
+	if d.HasChange("multipath") {
+		if setRedistMultipath, ok := d.GetOk("multipath"); ok {
+			log.Printf("[DEBUG] rtctrlSetRedistMultipath - Beginning Creation")
+
+			rtctrlSetRedistMultipathAttr := models.RedistributeMultipathActionAttributes{}
+			rtctrlSetRedistMultipathAttr.Type = setRedistMultipath.(string)
+
+			setRedistMultipathDn := rtctrlAttrP.DistinguishedName + fmt.Sprintf("/"+models.RnrtctrlSetRedistMultipath)
+
+			deletion_err := aciClient.DeleteByDn(setRedistMultipathDn, "rtctrlSetRedistMultipath")
+			if deletion_err != nil {
+				return diag.FromErr(err)
+			}
+
+			rtctrlSetRedistMultipath := models.NewRedistributeMultipathAction(fmt.Sprintf(models.RnrtctrlSetRedistMultipath), rtctrlAttrP.DistinguishedName, "", "", rtctrlSetRedistMultipathAttr)
+
+			err := aciClient.Save(rtctrlSetRedistMultipath)
+			if err != nil {
+				return diag.FromErr(err)
+			}
+
+			log.Printf("[DEBUG] %s: rtctrlSetRedistMultipath - Creation finished successfully", rtctrlSetRedistMultipath.DistinguishedName)
+			resourceAciRtctrlSetRedistMultipathRead(ctx, rtctrlSetRedistMultipath.DistinguishedName, d, m)
+		} else {
+			setRedistMultipathDn := rtctrlAttrP.DistinguishedName + fmt.Sprintf("/"+models.RnrtctrlSetRedistMultipath)
+			log.Printf("[DEBUG] %s: rtctrlSetRedistMultipath - Beginning Destroy", setRedistMultipathDn)
+
+			err := aciClient.DeleteByDn(setRedistMultipathDn, "rtctrlSetRedistMultipath")
+			if err != nil {
+				return diag.FromErr(err)
+			}
+
+			log.Printf("[DEBUG] %s: rtctrlSetRedistMultipath - Destroy finished successfully", setRedistMultipathDn)
+		}
+	}
 	d.SetId(rtctrlAttrP.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
 	return resourceAciActionRuleProfileRead(ctx, d, m)
-
 }
 
 func resourceAciActionRuleProfileRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
@@ -885,6 +1164,60 @@ func resourceAciRtctrlSetNhRead(ctx context.Context, dn string, d *schema.Resour
 	}
 
 	log.Printf("[DEBUG] %s: rtctrlSetNh - Read finished successfully", dn)
+	return nil
+}
+
+func resourceAciRtctrlSetCommRead(ctx context.Context, dn string, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+	log.Printf("[DEBUG] %s: rtctrlSetComm - Beginning Read", dn)
+	aciClient := m.(*client.Client)
+
+	rtctrlSetComm, err := getRemoteRtctrlSetComm(aciClient, dn)
+	if err != nil {
+		return diag.FromErr(err)
+	}
+
+	_, err = setRtctrlSetCommAttributes(rtctrlSetComm, d)
+	if err != nil {
+		return nil
+	}
+
+	log.Printf("[DEBUG] %s: rtctrlSetComm - Read finished successfully", dn)
+	return nil
+}
+
+func resourceAciNexthopUnchangedActionRead(ctx context.Context, dn string, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+	log.Printf("[DEBUG] %s: rtctrlSetNhUnchanged - Beginning Read", dn)
+	aciClient := m.(*client.Client)
+
+	rtctrlSetNhUnchanged, err := getRemoteNexthopUnchangedAction(aciClient, dn)
+	if err != nil {
+		return diag.FromErr(err)
+	}
+
+	_, err = setNexthopUnchangedActionAttributes(rtctrlSetNhUnchanged, d)
+	if err != nil {
+		return nil
+	}
+
+	log.Printf("[DEBUG] %s: rtctrlSetNhUnchanged - Read finished successfully", dn)
+	return nil
+}
+
+func resourceAciRtctrlSetRedistMultipathRead(ctx context.Context, dn string, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+	log.Printf("[DEBUG] %s: rtctrlSetRedistMultipath - Beginning Read", dn)
+	aciClient := m.(*client.Client)
+
+	rtctrlSetRedistMultipath, err := getRemoteRtctrlSetRedistMultipath(aciClient, dn)
+	if err != nil {
+		return diag.FromErr(err)
+	}
+
+	_, err = setRtctrlSetRedistMultipathAttributes(rtctrlSetRedistMultipath, d)
+	if err != nil {
+		return nil
+	}
+
+	log.Printf("[DEBUG] %s: rtctrlSetRedistMultipath - Read finished successfully", dn)
 	return nil
 }
 

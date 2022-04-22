@@ -26,8 +26,8 @@ Manages ACI Action Rule Profile
 resource "aci_action_rule_profile" "example" {
   tenant_dn       = aci_tenant.example.id
   description     = "From Terraform"
-  name            = "example"
-  annotation      = "example"
+  name            = "Rule-1"
+  annotation      = "orchestrator:terraform"
   name_alias      = "example"
   set_route_tag   = 100
   set_preference  = 100
@@ -35,6 +35,12 @@ resource "aci_action_rule_profile" "example" {
   set_metric      = 100
   set_metric_type = "ospf-type1"
   set_next_hop    = "1.1.1.1"
+  set_communities = {
+    community = "no-advertise"
+    criteria  = "replace"
+  }
+  next_hop_propagation = "nh-unchanged"
+  multipath            = "redist-multipath"
 }
 ```
 
@@ -51,6 +57,9 @@ resource "aci_action_rule_profile" "example" {
 * `set_metric` - (Optional) Set Metric of the Action Rule Profile object. Type: Integer.
 * `set_metric_type` - (Optional) Set Metric Type of the Action Rule Profile object. Allowed values are `ospf-type1`, `ospf-type2`.
 * `set_next_hop` - (Optional) Set Next Hop of the Action Rule Profile object.
+* `set_communities` - (Optional) Set Communities of object Action Rule Profile.
+* `next_hop_propagation` - (Optional) Next Hop Propagation of object Action Rule Profile.
+* `multipath` - (Optional) Multipath of object Action Rule Profile.
 
 ## Importing ##
 
