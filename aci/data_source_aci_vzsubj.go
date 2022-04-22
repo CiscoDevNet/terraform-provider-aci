@@ -7,6 +7,7 @@ import (
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func dataSourceAciContractSubject() *schema.Resource {
@@ -62,6 +63,44 @@ func dataSourceAciContractSubject() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"apply_both_directions": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+				Default:  "yes",
+				ValidateFunc: validation.StringInSlice([]string{
+					"no",
+					"yes",
+				}, false),
+			},
+			"consumer_to_provider": &schema.Schema{
+				Type:     schema.TypeMap,
+				Optional: true,
+				// DiffSuppressFunc: func(k, old, new string, d *schema.ResourceData) bool {
+				// 	if (k == "consumer_to_provider.target_dscp" || k == "consumer_to_provider.prio") && new != old {
+				// 		return false
+				// 	}
+				// 	return true
+				// },
+				Description: "Create InTerm",
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+			},
+			"provider_to_consumer": &schema.Schema{
+				Type:     schema.TypeMap,
+				Optional: true,
+				// DiffSuppressFunc: func(k, old, new string, d *schema.ResourceData) bool {
+				// 	if (k == "provider_to_consumer.target_dscp" || k == "provider_to_consumer.prio") && new != old {
+				// 		return false
+				// 	}
+				// 	return true
+				// },
+				Description: "Create OutTerm",
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+			},
 		}),
 	}
 }
@@ -86,5 +125,37 @@ func dataSourceAciContractSubjectRead(ctx context.Context, d *schema.ResourceDat
 	if err != nil {
 		return diag.FromErr(err)
 	}
+
+	vzInTerm, err := getRemoteInTermSubject(aciClient, dn)
+	if err != nil {
+		return diag.FromErr(err)
+	}
+	if vzInTerm != nil {
+		vzInTermFactor, err := setInTermSubjectAttributes(vzInTerm, make(map[string]string))
+		if err != nil {
+			return diag.FromErr(err)
+		}
+		d.Set("consumer_to_provider", vzInTermFactor)
+	}
+
+	vzOutTerm, err := getRemoteOutTermSubject(aciClient, dn)
+	if err != nil {
+		return diag.FromErr(err)
+	}
+	if vzOutTerm != nil {
+		vzOutTermFactor, err := setOutTermSubjectAttributes(vzOutTerm, make(map[string]string))
+		if err != nil {
+			return diag.FromErr(err)
+		}
+		d.Set("provider_to_consumer", vzOutTermFactor)
+
+	}
+
+	if vzInTerm == nil && vzOutTerm == nil {
+		d.Set("apply_both_directions", "yes")
+	} else {
+		d.Set("apply_both_directions", "no")
+	}
+
 	return nil
 }

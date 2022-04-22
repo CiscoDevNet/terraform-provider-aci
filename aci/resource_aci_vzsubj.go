@@ -93,6 +93,17 @@ func resourceAciContractSubject() *schema.Resource {
 				}, false),
 			},
 
+			"apply_both_directions": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+				Default:  "yes",
+				ValidateFunc: validation.StringInSlice([]string{
+					"no",
+					"yes",
+				}, false),
+			},
+
 			"target_dscp": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -140,6 +151,34 @@ func resourceAciContractSubject() *schema.Resource {
 				Optional: true,
 				Set:      schema.HashString,
 			},
+			"consumer_to_provider": &schema.Schema{
+				Type:     schema.TypeMap,
+				Optional: true,
+				DiffSuppressFunc: func(k, old, new string, d *schema.ResourceData) bool {
+					if (k == "consumer_to_provider.target_dscp" || k == "consumer_to_provider.prio") && new != old {
+						return false
+					}
+					return true
+				},
+				Description: "Create InTerm",
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+			},
+			"provider_to_consumer": &schema.Schema{
+				Type:     schema.TypeMap,
+				Optional: true,
+				DiffSuppressFunc: func(k, old, new string, d *schema.ResourceData) bool {
+					if (k == "provider_to_consumer.target_dscp" || k == "provider_to_consumer.prio") && new != old {
+						return false
+					}
+					return true
+				},
+				Description: "Create OutTerm",
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+			},
 		}),
 	}
 }
@@ -179,7 +218,69 @@ func setContractSubjectAttributes(vzSubj *models.ContractSubject, d *schema.Reso
 	d.Set("prio", vzSubjMap["prio"])
 	d.Set("prov_match_t", vzSubjMap["provMatchT"])
 	d.Set("rev_flt_ports", vzSubjMap["revFltPorts"])
+	d.Set("apply_both_directions", vzSubjMap["applyBothDirections"])
 	d.Set("target_dscp", vzSubjMap["targetDscp"])
+	return d, nil
+}
+
+func getRemoteInTermSubject(client *client.Client, dn string) (*models.InTermSubject, error) {
+
+	vzInTermCont, err := client.Get(dn + "/intmnl")
+	if err != nil {
+		if fmt.Sprint(err) == "Error retrieving Object: Object may not exists" {
+			return nil, nil
+		} else {
+			return nil, err
+		}
+	}
+	vzInTerm := models.InTermSubjectFromContainer(vzInTermCont)
+	if vzInTerm.DistinguishedName == "" {
+		return nil, fmt.Errorf("InTermSubject child of %s not found", dn)
+	}
+	return vzInTerm, nil
+}
+
+func setInTermSubjectAttributes(vzInTerm *models.InTermSubject, d map[string]string) (map[string]string, error) {
+
+	vzInTermMap, err := vzInTerm.ToMap()
+	if err != nil {
+		return d, err
+	}
+	d = map[string]string{
+		"id":          vzInTerm.DistinguishedName,
+		"prio":        vzInTermMap["prio"],
+		"target_dscp": vzInTermMap["targetDscp"],
+	}
+	return d, nil
+}
+
+func getRemoteOutTermSubject(client *client.Client, dn string) (*models.OutTermSubject, error) {
+	vzOutTermCont, err := client.Get(dn + "/outtmnl")
+	if err != nil {
+		if fmt.Sprint(err) == "Error retrieving Object: Object may not exists" {
+			return nil, nil
+		} else {
+			return nil, err
+		}
+	}
+	vzOutTerm := models.OutTermSubjectFromContainer(vzOutTermCont)
+	if vzOutTerm.DistinguishedName == "" {
+		return nil, fmt.Errorf("OutTermSubject child of %s not found", dn)
+	}
+	return vzOutTerm, nil
+}
+
+func setOutTermSubjectAttributes(vzOutTerm *models.OutTermSubject, d map[string]string) (map[string]string, error) {
+
+	vzOutTermMap, err := vzOutTerm.ToMap()
+	if err != nil {
+		return d, err
+	}
+	d = map[string]string{
+		"id":          vzOutTerm.DistinguishedName,
+		"prio":        vzOutTermMap["prio"],
+		"target_dscp": vzOutTermMap["targetDscp"],
+	}
 	return d, nil
 }
 
@@ -243,11 +344,41 @@ func resourceAciContractSubjectCreate(ctx context.Context, d *schema.ResourceDat
 	if TargetDscp, ok := d.GetOk("target_dscp"); ok {
 		vzSubjAttr.TargetDscp = TargetDscp.(string)
 	}
+
 	vzSubj := models.NewContractSubject(fmt.Sprintf("subj-%s", name), ContractDn, desc, vzSubjAttr)
 
 	err := aciClient.Save(vzSubj)
 	if err != nil {
 		return diag.FromErr(err)
+	}
+
+	ApplyBothDirections := d.Get("apply_both_directions")
+	if ApplyBothDirections == "no" {
+
+		vzInTermAttr := models.InTermSubjectAttributes{}
+		if ConsumerToProvider, ok := d.GetOk("consumer_to_provider"); ok {
+			ConsumerToProviderMap := ConsumerToProvider.(map[string]interface{})
+			vzInTermAttr.Prio = ConsumerToProviderMap["prio"].(string)
+			vzInTermAttr.TargetDscp = ConsumerToProviderMap["target_dscp"].(string)
+		}
+		vzInTerm := models.NewInTermSubject(fmt.Sprintf(models.RnvzInTerm), vzSubj.DistinguishedName, desc, "", vzInTermAttr)
+
+		vzOutTermAttr := models.OutTermSubjectAttributes{}
+		if ProviderToConsumer, ok := d.GetOk("provider_to_consumer"); ok {
+			ProviderToConsumerMap := ProviderToConsumer.(map[string]interface{})
+			vzOutTermAttr.Prio = ProviderToConsumerMap["prio"].(string)
+			vzOutTermAttr.TargetDscp = ProviderToConsumerMap["target_dscp"].(string)
+		}
+		vzOutTerm := models.NewOutTermSubject(fmt.Sprintf(models.RnvzOutTerm), vzSubj.DistinguishedName, desc, "", vzOutTermAttr)
+
+		err := aciClient.Save(vzInTerm)
+		if err != nil {
+			return diag.FromErr(err)
+		}
+		error := aciClient.Save(vzOutTerm)
+		if error != nil {
+			return diag.FromErr(error)
+		}
 	}
 
 	checkDns := make([]string, 0, 1)
@@ -296,7 +427,6 @@ func resourceAciContractSubjectCreate(ctx context.Context, d *schema.ResourceDat
 		for _, relationParam := range relationParamList {
 			relationParamName := GetMOName(relationParam)
 			err = aciClient.CreateRelationvzRsSubjFiltAttFromContractSubject(vzSubj.DistinguishedName, relationParamName)
-
 			if err != nil {
 				return diag.FromErr(err)
 			}
@@ -351,6 +481,42 @@ func resourceAciContractSubjectUpdate(ctx context.Context, d *schema.ResourceDat
 
 	if err != nil {
 		return diag.FromErr(err)
+	}
+
+	if d.HasChange("apply_both_directions") || d.HasChange("consumer_to_provider") || d.HasChange("provider_to_consumer") {
+		oldValue, newValue := d.GetChange("apply_both_directions")
+		if !(oldValue == "no" && newValue == "yes") {
+			if d.HasChange("consumer_to_provider") {
+				vzInTermAttr := models.InTermSubjectAttributes{}
+				if ConsumerToProvider, ok := d.GetOk("consumer_to_provider"); ok {
+					ConsumerToProviderMap := ConsumerToProvider.(map[string]interface{})
+					vzInTermAttr.Prio = ConsumerToProviderMap["prio"].(string)
+					vzInTermAttr.TargetDscp = ConsumerToProviderMap["target_dscp"].(string)
+				}
+				vzInTerm := models.NewInTermSubject(fmt.Sprintf(models.RnvzInTerm), vzSubj.DistinguishedName, desc, "", vzInTermAttr)
+
+				vzInTerm.Status = "modified"
+				err := aciClient.Save(vzInTerm)
+				if err != nil {
+					return diag.FromErr(err)
+				}
+			}
+			if d.HasChange("provider_to_consumer") {
+				vzOutTermAttr := models.OutTermSubjectAttributes{}
+				if ProviderToConsumer, ok := d.GetOk("provider_to_consumer"); ok {
+					ProviderToConsumerMap := ProviderToConsumer.(map[string]interface{})
+					vzOutTermAttr.Prio = ProviderToConsumerMap["prio"].(string)
+					vzOutTermAttr.TargetDscp = ProviderToConsumerMap["target_dscp"].(string)
+				}
+				vzOutTerm := models.NewOutTermSubject(fmt.Sprintf(models.RnvzOutTerm), vzSubj.DistinguishedName, desc, "", vzOutTermAttr)
+
+				vzOutTerm.Status = "modified"
+				error := aciClient.Save(vzOutTerm)
+				if error != nil {
+					return diag.FromErr(error)
+				}
+			}
+		}
 	}
 
 	checkDns := make([]string, 0, 1)
@@ -454,6 +620,40 @@ func resourceAciContractSubjectRead(ctx context.Context, d *schema.ResourceData,
 	if err != nil {
 		d.SetId("")
 		return nil
+	}
+
+	vzInTerm, err := getRemoteInTermSubject(aciClient, dn)
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
+	if vzInTerm != nil {
+		vzInTermFactor, err := setInTermSubjectAttributes(vzInTerm, make(map[string]string))
+		if err != nil {
+			d.SetId("")
+			return nil
+		}
+		d.Set("consumer_to_provider", vzInTermFactor)
+	}
+
+	vzOutTerm, err := getRemoteOutTermSubject(aciClient, dn)
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
+	if vzOutTerm != nil {
+		vzOutTermFactor, err := setOutTermSubjectAttributes(vzOutTerm, make(map[string]string))
+		if err != nil {
+			d.SetId("")
+			return nil
+		}
+		d.Set("provider_to_consumer", vzOutTermFactor)
+
+	}
+	if vzInTerm == nil && vzOutTerm == nil {
+		d.Set("apply_both_directions", "yes")
+	} else {
+		d.Set("apply_both_directions", "no")
 	}
 
 	vzRsSubjGraphAttData, err := aciClient.ReadRelationvzRsSubjGraphAttFromContractSubject(dn)

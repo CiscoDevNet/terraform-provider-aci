@@ -41,4 +41,34 @@ resource "aci_filter" "allow_icmp" {
   name      = "allow_icmp"
 }
 
+// apply_both_directions is selected [yes] by default and there is only one filter required
+resource "aci_contract_subject" "contract_subject" {
+  contract_dn   = aci_contract.democontract.id
+  name          = "contract_subject"
+  rev_flt_ports = "no"
+}
 
+// apply_both_directions is not selected and there are two filters (consumer_to_provider and provider_to_consumer)
+resource "aci_contract_subject" "contract_subject_2" {
+  contract_dn   = aci_contract.democontract.id
+  name          = "contract_subject_2"
+  rev_flt_ports = "no"
+  apply_both_directions = "no"
+  consumer_to_provider = {
+    prio = "unspecified"
+    target_dscp = "AF41"
+  }
+  provider_to_consumer  ={
+    prio = "unspecified"
+    target_dscp = "AF32"
+  }
+}
+
+data "aci_contract_subject" "example" {
+  contract_dn = aci_contract_subject.contract_subject_2.contract_dn
+  name          = aci_contract_subject.contract_subject_2.name
+}
+
+output "name" {
+  value = data.aci_contract_subject.example
+}
