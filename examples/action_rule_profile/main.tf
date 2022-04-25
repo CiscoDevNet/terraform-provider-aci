@@ -33,6 +33,6 @@ resource "aci_action_rule_profile" "example" {
     community = "no-advertise"
     criteria  = "replace"
   }
-  next_hop_propagation = "nh-unchanged"
-  multipath            = "redist-multipath"
+  next_hop_propagation = "yes"
+  multipath            = "yes"
 }

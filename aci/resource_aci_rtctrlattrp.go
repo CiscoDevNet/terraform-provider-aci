@@ -9,7 +9,6 @@ import (
 	"github.com/ciscoecosystem/aci-go-client/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciActionRuleProfile() *schema.Resource {
@@ -78,16 +77,10 @@ func resourceAciActionRuleProfile() *schema.Resource {
 			"next_hop_propagation": {
 				Type:     schema.TypeString,
 				Optional: true,
-				ValidateFunc: validation.StringInSlice([]string{
-					"nh-unchanged",
-				}, false),
 			},
 			"multipath": {
 				Type:     schema.TypeString,
 				Optional: true,
-				ValidateFunc: validation.StringInSlice([]string{
-					"redist-multipath",
-				}, false),
 			},
 		})),
 	}
@@ -293,7 +286,9 @@ func setNexthopUnchangedActionAttributes(rtctrlSetNhUnchanged *models.NexthopUnc
 	if err != nil {
 		return d, err
 	}
-	d.Set("next_hop_propagation", rtctrlSetNhUnchangedMap["type"])
+	if rtctrlSetNhUnchangedMap["type"] != "" {
+		d.Set("next_hop_propagation", "yes")
+	}
 	return d, nil
 }
 
@@ -314,7 +309,9 @@ func setRtctrlSetRedistMultipathAttributes(rtctrlSetRedistMultipath *models.Redi
 	if err != nil {
 		return d, err
 	}
-	d.Set("multipath", rtctrlSetRedistMultipathMap["type"])
+	if rtctrlSetRedistMultipathMap["type"] != "" {
+		d.Set("multipath", "yes")
+	}
 	return d, nil
 }
 
@@ -616,11 +613,10 @@ func resourceAciActionRuleProfileCreate(ctx context.Context, d *schema.ResourceD
 	}
 
 	// rtctrlSetNhUnchanged - Operations
-	if setNhUnchanged, ok := d.GetOk("next_hop_propagation"); ok {
+	setNhUnchanged, ok := d.GetOk("next_hop_propagation")
+	if ok && setNhUnchanged == "yes" {
 		log.Printf("[DEBUG] rtctrlSetNhUnchanged: Beginning Creation")
 		rtctrlSetNhUnchangedAttr := models.NexthopUnchangedActionAttributes{}
-
-		rtctrlSetNhUnchangedAttr.Type = setNhUnchanged.(string)
 		rtctrlSetNhUnchanged := models.NewNexthopUnchangedAction(fmt.Sprintf(models.RnrtctrlSetNhUnchanged), rtctrlAttrP.DistinguishedName, "", "", rtctrlSetNhUnchangedAttr)
 
 		creation_err := aciClient.Save(rtctrlSetNhUnchanged)
@@ -633,11 +629,11 @@ func resourceAciActionRuleProfileCreate(ctx context.Context, d *schema.ResourceD
 	}
 
 	// rtctrlSetRedistMultipath - Operations
-	if setRedistMultipath, ok := d.GetOk("multipath"); ok {
+	setRedistMultipath, ok := d.GetOk("multipath")
+	if ok && setRedistMultipath == "yes" {
 		log.Printf("[DEBUG] rtctrlSetRedistMultipath: Beginning Creation")
 
 		rtctrlSetRedistMultipathAttr := models.RedistributeMultipathActionAttributes{}
-		rtctrlSetRedistMultipathAttr.Type = setRedistMultipath.(string)
 		rtctrlSetRedistMultipath := models.NewRedistributeMultipathAction(fmt.Sprintf(models.RnrtctrlSetRedistMultipath), rtctrlAttrP.DistinguishedName, "", "", rtctrlSetRedistMultipathAttr)
 
 		creation_err := aciClient.Save(rtctrlSetRedistMultipath)
@@ -657,6 +653,7 @@ func resourceAciActionRuleProfileCreate(ctx context.Context, d *schema.ResourceD
 
 func resourceAciActionRuleProfileUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] ActionRuleProfile: Beginning Update")
+	next_hop_propagation_flag := true
 
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -963,45 +960,40 @@ func resourceAciActionRuleProfileUpdate(ctx context.Context, d *schema.ResourceD
 
 			setNhUnchangedDn := rtctrlAttrP.DistinguishedName + fmt.Sprintf("/"+models.RnrtctrlSetNhUnchanged)
 
-			deletion_err := aciClient.DeleteByDn(setNhUnchangedDn, "rtctrlSetNhUnchanged")
-			if deletion_err != nil {
-				return diag.FromErr(err)
-			}
+			setNhUnchanged, ok := d.GetOk("next_hop_propagation")
+			if ok && setNhUnchanged == "yes" {
 
-			rtctrlSetNhUnchanged := models.NewNexthopUnchangedAction(fmt.Sprintf(models.RnrtctrlSetNhUnchanged), rtctrlAttrP.DistinguishedName, "", "", rtctrlSetNhUnchangedAttr)
+				log.Printf("[DEBUG] rtctrlSetNhUnchanged - Beginning Creation")
+				rtctrlSetNhUnchangedAttr := models.NexthopUnchangedActionAttributes{}
 
-			err := aciClient.Save(rtctrlSetNhUnchanged)
-			if err != nil {
-				return diag.FromErr(err)
-			}
-
-			log.Printf("[DEBUG] %s: rtctrlSetNhUnchanged - Creation finished successfully", rtctrlSetNhUnchanged.DistinguishedName)
-			resourceAciNexthopUnchangedActionRead(ctx, rtctrlSetNhUnchanged.DistinguishedName, d, m)
-		} else {
-			if _, ok := d.GetOk("multipath"); !ok {
 				setNhUnchangedDn := rtctrlAttrP.DistinguishedName + fmt.Sprintf("/"+models.RnrtctrlSetNhUnchanged)
-				log.Printf("[DEBUG] %s: rtctrlSetNhUnchanged - Beginning Destroy", setNhUnchangedDn)
 
-				err := aciClient.DeleteByDn(setNhUnchangedDn, "rtctrlSetNhUnchanged")
+				deletion_err := aciClient.DeleteByDn(setNhUnchangedDn, "rtctrlSetNhUnchanged")
+				if deletion_err != nil {
+					return diag.FromErr(err)
+				}
 
+				rtctrlSetNhUnchanged := models.NewNexthopUnchangedAction(fmt.Sprintf(models.RnrtctrlSetNhUnchanged), rtctrlAttrP.DistinguishedName, "", "", rtctrlSetNhUnchangedAttr)
+
+				err := aciClient.Save(rtctrlSetNhUnchanged)
 				if err != nil {
 					return diag.FromErr(err)
 				}
 
-				log.Printf("[DEBUG] %s: rtctrlSetNhUnchanged - Destroy finished successfully", setNhUnchangedDn)
-			} else {
-				return diag.FromErr(fmt.Errorf("Invalid Configuration Set Redistribute Multipath action cannot be configured without configuring the Next Hop Propagation"))
+				next_hop_propagation_flag = false
+				log.Printf("[DEBUG] %s: rtctrlSetNhUnchanged - Creation finished successfully", rtctrlSetNhUnchanged.DistinguishedName)
+				resourceAciNexthopUnchangedActionRead(ctx, rtctrlSetNhUnchanged.DistinguishedName, d, m)
 			}
 		}
 	}
 
 	// rtctrlSetRedistMultipath - Operations
 	if d.HasChange("multipath") {
-		if setRedistMultipath, ok := d.GetOk("multipath"); ok {
+		setRedistMultipath, ok := d.GetOk("multipath")
+		if ok && setRedistMultipath == "yes" {
 			log.Printf("[DEBUG] rtctrlSetRedistMultipath - Beginning Creation")
 
 			rtctrlSetRedistMultipathAttr := models.RedistributeMultipathActionAttributes{}
-			rtctrlSetRedistMultipathAttr.Type = setRedistMultipath.(string)
 
 			setRedistMultipathDn := rtctrlAttrP.DistinguishedName + fmt.Sprintf("/"+models.RnrtctrlSetRedistMultipath)
 
@@ -1031,6 +1023,51 @@ func resourceAciActionRuleProfileUpdate(ctx context.Context, d *schema.ResourceD
 			log.Printf("[DEBUG] %s: rtctrlSetRedistMultipath - Destroy finished successfully", setRedistMultipathDn)
 		}
 	}
+
+	// rtctrlSetNhUnchanged - Operations
+	if d.HasChange("next_hop_propagation") || d.Get("next_hop_propagation") == "no" {
+		setNhUnchanged, ok := d.GetOk("next_hop_propagation")
+		if ok && setNhUnchanged == "yes" {
+			if next_hop_propagation_flag {
+				log.Printf("[DEBUG] rtctrlSetNhUnchanged - Beginning Creation")
+				rtctrlSetNhUnchangedAttr := models.NexthopUnchangedActionAttributes{}
+
+				setNhUnchangedDn := rtctrlAttrP.DistinguishedName + fmt.Sprintf("/"+models.RnrtctrlSetNhUnchanged)
+
+				deletion_err := aciClient.DeleteByDn(setNhUnchangedDn, "rtctrlSetNhUnchanged")
+				if deletion_err != nil {
+					return diag.FromErr(err)
+				}
+
+				rtctrlSetNhUnchanged := models.NewNexthopUnchangedAction(fmt.Sprintf(models.RnrtctrlSetNhUnchanged), rtctrlAttrP.DistinguishedName, "", "", rtctrlSetNhUnchangedAttr)
+
+				err := aciClient.Save(rtctrlSetNhUnchanged)
+				if err != nil {
+					return diag.FromErr(err)
+				}
+
+				log.Printf("[DEBUG] %s: rtctrlSetNhUnchanged - Creation finished successfully", rtctrlSetNhUnchanged.DistinguishedName)
+				resourceAciNexthopUnchangedActionRead(ctx, rtctrlSetNhUnchanged.DistinguishedName, d, m)
+			}
+		} else {
+			setRedistMultipath, ok := d.GetOk("multipath")
+			if !ok || setRedistMultipath == "no" {
+				setNhUnchangedDn := rtctrlAttrP.DistinguishedName + fmt.Sprintf("/"+models.RnrtctrlSetNhUnchanged)
+				log.Printf("[DEBUG] %s: rtctrlSetNhUnchanged - Beginning Destroy", setNhUnchangedDn)
+
+				err := aciClient.DeleteByDn(setNhUnchangedDn, "rtctrlSetNhUnchanged")
+
+				if err != nil {
+					return diag.FromErr(err)
+				}
+
+				log.Printf("[DEBUG] %s: rtctrlSetNhUnchanged - Destroy finished successfully", setNhUnchangedDn)
+			} else {
+				return diag.FromErr(fmt.Errorf("Invalid Configuration Set Redistribute Multipath action cannot be configured without configuring the Next Hop Propagation"))
+			}
+		}
+	}
+
 	d.SetId(rtctrlAttrP.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 

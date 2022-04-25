@@ -39,8 +39,8 @@ resource "aci_action_rule_profile" "example" {
     community = "no-advertise"
     criteria  = "replace"
   }
-  next_hop_propagation = "nh-unchanged"
-  multipath            = "redist-multipath"
+  next_hop_propagation = "yes"
+  multipath            = "yes"
 }
 ```
 
@@ -57,9 +57,9 @@ resource "aci_action_rule_profile" "example" {
 * `set_metric` - (Optional) Set Metric of the Action Rule Profile object. Type: Integer.
 * `set_metric_type` - (Optional) Set Metric Type of the Action Rule Profile object. Allowed values are `ospf-type1`, `ospf-type2`.
 * `set_next_hop` - (Optional) Set Next Hop of the Action Rule Profile object.
-* `set_communities` - (Optional) Set Communities of object Action Rule Profile.
-* `next_hop_propagation` - (Optional) Next Hop Propagation of object Action Rule Profile.
-* `multipath` - (Optional) Multipath of object Action Rule Profile.
+* `set_communities` - (Optional and Map of String) Map of the key-value pairs which represents the attributes of Set Communities object. The expected map attributes are ```community``` and ```criteria```.
+* `next_hop_propagation` - (Optional) Next Hop Propagation of the Action Rule Profile object.
+* `multipath` - (Optional) Multipath of the Action Rule Profile object.
 
 ## Importing ##
 

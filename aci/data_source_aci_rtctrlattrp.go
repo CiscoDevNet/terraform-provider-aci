@@ -8,7 +8,6 @@ import (
 	"github.com/ciscoecosystem/aci-go-client/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func dataSourceAciActionRuleProfile() *schema.Resource {
@@ -37,16 +36,10 @@ func dataSourceAciActionRuleProfile() *schema.Resource {
 			"next_hop_propagation": {
 				Type:     schema.TypeString,
 				Optional: true,
-				ValidateFunc: validation.StringInSlice([]string{
-					"nh-unchanged",
-				}, false),
 			},
 			"multipath": {
 				Type:     schema.TypeString,
 				Optional: true,
-				ValidateFunc: validation.StringInSlice([]string{
-					"nh-unchanged",
-				}, false),
 			},
 			"set_route_tag": {
 				Type:     schema.TypeString,
