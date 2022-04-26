@@ -47,7 +47,6 @@ func resourceAciDHCPOptionPolicy() *schema.Resource {
 			"dhcp_option": &schema.Schema{
 				Type:     schema.TypeSet,
 				Optional: true,
-				Computed: true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 
@@ -103,7 +102,11 @@ func getRemoteDHCPOptionPolicy(client *client.Client, dn string) (*models.DHCPOp
 }
 
 func getRemoteDHCPOptionsFromDHCPOptionPolicy(client *client.Client, dn string) ([]*models.DHCPOption, error) {
-	dhcpOptionCont, _ := client.GetViaURL(fmt.Sprintf("%s/%s/%s.json", "/api/node/class", dn, "dhcpOption"))
+	dhcpOptionCont, err := client.GetViaURL(fmt.Sprintf("%s/%s/%s.json", "/api/node/class", dn, "dhcpOption"))
+	// Ignoring error due to Empty Response Body (No DHCP options are present)
+	if err != nil && dhcpOptionCont.S("code").String() != "{}" {
+		return nil, err
+	}
 	dhcpOptions := models.DHCPOptionListFromContainer(dhcpOptionCont)
 	return dhcpOptions, nil
 }
@@ -280,7 +283,6 @@ func resourceAciDHCPOptionPolicyUpdate(ctx context.Context, d *schema.ResourceDa
 	if err != nil {
 		return diag.FromErr(err)
 	}
-
 	if d.HasChange("dhcp_option") {
 		old_options, new_options := d.GetChange("dhcp_option")
 		getDifference := differenceInMaps(old_options.(*schema.Set), new_options.(*schema.Set))
