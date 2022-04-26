@@ -66,7 +66,7 @@ func resourceAciSubjectFilter() *schema.Resource {
 					"level3",
 				}, false),
 			},
-			"tn_vz_filter_name": {
+			"filter_dn": {
 				Type:     schema.TypeString,
 				Required: true,
 				ForceNew: true,
@@ -118,6 +118,10 @@ func setSubjectFilterAttributes(vzRsSubjFiltAtt *models.SubjectFilter, d *schema
 		d.Set("directives", directivesGet)
 	}
 	d.Set("priority_override", vzRsSubjFiltAttMap["priorityOverride"])
+	tnVzFilterName := GetMOName(d.Get("filter_dn").(string))
+	if tnVzFilterName != vzRsSubjFiltAttMap["tnVzFilterName"] {
+		d.Set("filter_dn", "")
+	}
 	d.Set("tn_vz_filter_name", vzRsSubjFiltAttMap["tnVzFilterName"])
 	return d, nil
 }
@@ -141,7 +145,7 @@ func resourceAciSubjectFilterImport(d *schema.ResourceData, m interface{}) ([]*s
 func resourceAciSubjectFilterCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] SubjectFilter: Beginning Creation")
 	aciClient := m.(*client.Client)
-	tnVzFilterName := d.Get("tn_vz_filter_name").(string)
+	tnVzFilterName := GetMOName(d.Get("filter_dn").(string))
 	ContractSubjectDn := d.Get("contract_subject_dn").(string)
 
 	vzRsSubjFiltAttAttr := models.SubjectFilterAttributes{}
@@ -187,7 +191,7 @@ func resourceAciSubjectFilterCreate(ctx context.Context, d *schema.ResourceData,
 func resourceAciSubjectFilterUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] SubjectFilter: Beginning Update")
 	aciClient := m.(*client.Client)
-	tnVzFilterName := d.Get("tn_vz_filter_name").(string)
+	tnVzFilterName := GetMOName(d.Get("filter_dn").(string))
 	ContractSubjectDn := d.Get("contract_subject_dn").(string)
 
 	vzRsSubjFiltAttAttr := models.SubjectFilterAttributes{}

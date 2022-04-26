@@ -7,7 +7,6 @@ import (
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func dataSourceAciContractSubject() *schema.Resource {
@@ -66,40 +65,14 @@ func dataSourceAciContractSubject() *schema.Resource {
 			"apply_both_directions": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
-				ForceNew: true,
-				Default:  "yes",
-				ValidateFunc: validation.StringInSlice([]string{
-					"no",
-					"yes",
-				}, false),
 			},
 			"consumer_to_provider": &schema.Schema{
 				Type:     schema.TypeMap,
 				Optional: true,
-				// DiffSuppressFunc: func(k, old, new string, d *schema.ResourceData) bool {
-				// 	if (k == "consumer_to_provider.target_dscp" || k == "consumer_to_provider.prio") && new != old {
-				// 		return false
-				// 	}
-				// 	return true
-				// },
-				Description: "Create InTerm",
-				Elem: &schema.Schema{
-					Type: schema.TypeString,
-				},
 			},
 			"provider_to_consumer": &schema.Schema{
 				Type:     schema.TypeMap,
 				Optional: true,
-				// DiffSuppressFunc: func(k, old, new string, d *schema.ResourceData) bool {
-				// 	if (k == "provider_to_consumer.target_dscp" || k == "provider_to_consumer.prio") && new != old {
-				// 		return false
-				// 	}
-				// 	return true
-				// },
-				Description: "Create OutTerm",
-				Elem: &schema.Schema{
-					Type: schema.TypeString,
-				},
 			},
 		}),
 	}

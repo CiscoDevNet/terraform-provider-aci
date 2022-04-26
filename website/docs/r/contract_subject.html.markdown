@@ -26,6 +26,28 @@ Manages ACI Contract Subject
 		rev_flt_ports = "yes"
 		target_dscp   = "CS0"
 	}
+
+	resource "aci_contract_subject" "foocontract_subject_2" {
+		contract_dn   = aci_contract.example.id
+		description   = "from terraform"
+		name          = "demo_subject"
+		annotation    = "tag_subject"
+		cons_match_t  = "AtleastOne"
+		name_alias    = "alias_subject"
+		prio          = "level1"
+		prov_match_t  = "AtleastOne"
+		rev_flt_ports = "no"
+		target_dscp   = "CS0"
+		apply_both_directions = "no"
+		consumer_to_provider = {
+			prio = "level2"
+			target_dscp = "AF41"
+		}
+		provider_to_consumer  ={
+			prio = "level3"
+			target_dscp = "AF32"
+		}
+	}
 ```
 
 ## Argument Reference
@@ -44,6 +66,15 @@ Manages ACI Contract Subject
 - `relation_vz_rs_subj_graph_att` - (Optional) Relation to class vnsAbsGraph. Cardinality - N_TO_ONE. Type - String.
 - `relation_vz_rs_sdwan_pol` - (Optional) Relation to class extdevSDWanSlaPol. Cardinality - N_TO_ONE. Type - String.
 - `relation_vz_rs_subj_filt_att` - (Optional) Relation to class vzFilter. Cardinality - N_TO_M. Type - Set of String.
+
+- `apply_both_directions` - (Optional) . By default set to "yes".
+- ` consumer_to_provider` - (Optional)
+    - `prio` - (Optional) The priority level of a sub application running behind an endpoint group, such as an Exchange server.
+    - `target_dscp` - (Optional) The target differentiated services code point (DSCP) of the path attached to the layer 3 outside profile.
+- `provider_to_consumer` - (Optional)
+    - `prio` - (Optional) The priority level of a sub application running behind an endpoint group, such as an Exchange server.
+    - `target_dscp` - (Optional) The target differentiated services code point (DSCP) of the path attached to the layer 3 outside profile.
+
 
 ## Attribute Reference
 

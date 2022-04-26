@@ -29,17 +29,23 @@ resource "aci_contract_subject" "contract_subject" {
   rev_flt_ports = "no"
 }
 
+resource "aci_filter" "test_filter" {
+  tenant_dn   = aci_tenant.tenant_for_contract_filter.id
+  name        = "test_tf_filter"
+  description = "This filter is created by terraform ACI provider."
+}
+
 resource "aci_contract_subject_filter" "contract_subject_filter" {
   contract_subject_dn = aci_contract_subject.contract_subject.id
   action = "permit"
   directives = ["log"]
   priority_override = "default"
-  tn_vz_filter_name = "test_filter"
+  filter_dn = aci_filter.test_filter.id
 }
 
 data "aci_contract_subject_filter" "example" {
   contract_subject_dn  = aci_contract_subject_filter.contract_subject_filter.contract_subject_dn
-  tn_vz_filter_name  = aci_contract_subject_filter.contract_subject_filter.tn_vz_filter_name
+  filter_dn  = aci_contract_subject_filter.contract_subject_filter.filter_dn
 }
 
 output "name" {

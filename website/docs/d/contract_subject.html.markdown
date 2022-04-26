@@ -36,3 +36,10 @@ data "aci_contract_subject" "dev_subject" {
 - `prov_match_t` - (Optional) The subject match criteria across consumers.
 - `rev_flt_ports` - (Optional) Enables filter to apply on ingress and egress traffic.
 - `target_dscp` - (Optional) The target differentiated services code point (DSCP) of the path attached to the layer 3 outside profile.
+- `apply_both_directions` - (Optional) . By default set to "yes".
+- ` consumer_to_provider` - (Optional)
+    - `prio` - (Optional) The priority level of a sub application running behind an endpoint group, such as an Exchange server.
+    - `target_dscp` - (Optional) The target differentiated services code point (DSCP) of the path attached to the layer 3 outside profile.
+- `provider_to_consumer` - (Optional)
+    - `prio` - (Optional) The priority level of a sub application running behind an endpoint group, such as an Exchange server.
+    - `target_dscp` - (Optional) The target differentiated services code point (DSCP) of the path attached to the layer 3 outside profile.

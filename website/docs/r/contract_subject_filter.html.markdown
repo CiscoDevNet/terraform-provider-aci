@@ -26,7 +26,7 @@ Manages ACI Contract Subject Filter
 ```hcl
 resource "aci_contract_subject_filter" "example" {
   contract_subject_dn  = aci_contract_subject.example.id
-  tnVzFilterName  = "example"
+  filter_dn  = aci_filter.example.id
   action = "permit"
   directives = ["none"]
   priority_override = "default"
@@ -37,7 +37,7 @@ resource "aci_contract_subject_filter" "example" {
 ## Argument Reference ##
 
 * `contract_subject_dn` - (Required) Distinguished name of the parent Contract Subject object.
-* `tnVzFilterName` - (Required) TnVzFilterName of the Contract Subject Filter object.
+* `filter_dn` - (Required) Distinguished name of the Filter object.
 * `annotation` - (Optional) Annotation of the Contract Subject Filter object.
 * `action` - (Optional) The action required when the condition is met. Allowed values are "deny", "permit", and default value is "permit". Type: String.
 * `directives` - (Optional) Directives of the Contract Subject Filter object. Allowed values are "log", "no_stats", "none", and default value is "none". Type: List.

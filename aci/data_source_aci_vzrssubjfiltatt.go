@@ -3,7 +3,6 @@ package aci
 import (
 	"context"
 	"fmt"
-	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
@@ -38,7 +37,11 @@ func dataSourceAciSubjectFilter() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
-			"tn_vz_filter_name": {
+			// "tn_vz_filter_name": {
+			// 	Type:     schema.TypeString,
+			// 	Required: true,
+			// },
+			"filter_dn": {
 				Type:     schema.TypeString,
 				Required: true,
 			},
@@ -48,20 +51,15 @@ func dataSourceAciSubjectFilter() *schema.Resource {
 
 func dataSourceAciSubjectFilterRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	aciClient := m.(*client.Client)
-	tnVzFilterName := d.Get("tn_vz_filter_name").(string)
-	log.Printf("[TEST] datasrc name %v : ", tnVzFilterName)
+	tnVzFilterName := GetMOName(d.Get("filter_dn").(string))
 	ContractSubjectDn := d.Get("contract_subject_dn").(string)
-	log.Printf("[TEST] datasrc ContractSubjectDn %v : ", ContractSubjectDn)
 	rn := fmt.Sprintf(models.RnvzRsSubjFiltAtt, tnVzFilterName)
-	log.Printf("[TEST] datasrc rn %v : ", ContractSubjectDn)
 	dn := fmt.Sprintf("%s/%s", ContractSubjectDn, rn)
-	log.Printf("[TEST] datasrc dn %v : ", ContractSubjectDn)
 
 	vzRsSubjFiltAtt, err := getRemoteSubjectFilter(aciClient, dn)
 	if err != nil {
 		return diag.FromErr(err)
 	}
-	log.Printf("[TEST] vzRsSubjFiltAtt %v : ", vzRsSubjFiltAtt)
 
 	d.SetId(dn)
 
