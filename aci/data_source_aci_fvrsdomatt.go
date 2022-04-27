@@ -45,6 +45,12 @@ func dataSourceAciDomain() *schema.Resource {
 				Computed: true,
 			},
 
+			"custom_epg_name": {
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+
 			"delimiter": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,

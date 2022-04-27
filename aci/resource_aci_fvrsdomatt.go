@@ -67,6 +67,12 @@ func resourceAciDomain() *schema.Resource {
 				Computed: true,
 			},
 
+			"custom_epg_name": {
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+
 			"delimiter": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -285,6 +291,7 @@ func setDomainAttributes(fvRsDomAtt *models.FVDomain, d *schema.ResourceData) (*
 	} else {
 		d.Set("allow_micro_seg", false)
 	}
+	d.Set("custom_epg_name", fvRsDomAttMap["customEpgName"])
 	d.Set("delimiter", fvRsDomAttMap["delimiter"])
 	d.Set("encap", fvRsDomAttMap["encap"])
 	d.Set("encap_mode", fvRsDomAttMap["encapMode"])
@@ -373,6 +380,9 @@ func resourceAciDomainCreate(ctx context.Context, d *schema.ResourceData, m inte
 		}
 	} else {
 		fvRsDomAttAttr.ClassPref = "encap"
+	}
+	if CustomEpgName, ok := d.GetOk("custom_epg_name"); ok {
+		fvRsDomAttAttr.CustomEpgName = CustomEpgName.(string)
 	}
 	if Delimiter, ok := d.GetOk("delimiter"); ok {
 		fvRsDomAttAttr.Delimiter = Delimiter.(string)
@@ -486,6 +496,9 @@ func resourceAciDomainUpdate(ctx context.Context, d *schema.ResourceData, m inte
 		}
 	} else {
 		fvRsDomAttAttr.ClassPref = "encap"
+	}
+	if CustomEpgName, ok := d.GetOk("custom_epg_name"); ok {
+		fvRsDomAttAttr.CustomEpgName = CustomEpgName.(string)
 	}
 	if Delimiter, ok := d.GetOk("delimiter"); ok {
 		fvRsDomAttAttr.Delimiter = Delimiter.(string)
