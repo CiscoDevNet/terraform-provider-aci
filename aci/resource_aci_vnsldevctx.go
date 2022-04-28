@@ -61,13 +61,11 @@ func resourceAciLogicalDeviceContext() *schema.Resource {
 			},
 
 			"relation_vns_rs_l_dev_ctx_to_l_dev": &schema.Schema{
-				Type: schema.TypeString,
-
-				Optional: true,
+				Type:     schema.TypeString,
+				Required: true,
 			},
 			"relation_vns_rs_l_dev_ctx_to_rtr_cfg": &schema.Schema{
-				Type: schema.TypeString,
-
+				Type:     schema.TypeString,
 				Optional: true,
 			},
 		}),

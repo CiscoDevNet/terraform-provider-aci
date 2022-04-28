@@ -24,6 +24,7 @@ resource "aci_logical_device_context" "example" {
   description       = "from terraform"
   context           = "ctx1"
   name_alias        = "example"
+  relation_vns_rs_l_dev_ctx_to_l_dev = "uni/tn-MyTenant01/lDevVip-LoadBalancer01"
 }
 
 ```
@@ -34,12 +35,11 @@ resource "aci_logical_device_context" "example" {
 - `ctrct_name_or_lbl` - (Required) Ctrct name or label of Object logical device context.
 - `graph_name_or_lbl` - (Required) Graph name or label of Object logical device context.
 - `node_name_or_lbl` - (Required) Node name or label of Object logical device context.
+- `relation_vns_rs_l_dev_ctx_to_l_dev` - (Required) Relation to either a service device cluster (vnsALDev) or to a proxy object for a logical device cluster (vnsLDevIf). Cardinality - N_TO_ONE. Type - String.
 - `annotation` - (Optional) Annotation for object logical device context.
 - `description` - (Optional) Description for object logical device context.
 - `context` - (Optional) Context for object logical device context.
 - `name_alias` - (Optional) Name alias for object logical device context.
-
-- `relation_vns_rs_l_dev_ctx_to_l_dev` - (Optional) Relation to class vnsALDevIf. Cardinality - N_TO_ONE. Type - String.
 - `relation_vns_rs_l_dev_ctx_to_rtr_cfg` - (Optional) Relation to class vnsRtrCfg. Cardinality - N_TO_ONE. Type - String.
 
 ## Attribute Reference

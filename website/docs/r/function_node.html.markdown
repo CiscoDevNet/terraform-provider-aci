@@ -43,7 +43,7 @@ resource "aci_function_node" "example" {
 - `is_copy` - (Optional) If the device is a copy device.
   Allowed values: "yes", "no". Default value: "no".
 - `managed` - (Optional) Specified if the function is using a managed device.
-  Allowed values: "yes", "no". Default value: "yes".
+  Allowed values: "yes", "no". Default value: "no".
 - `name_alias` - (Optional) Name alias for object function node.
 - `routing_mode` - (Optional) Routing mode for object function node.
   Allowed values: "Redirect", "unspecified". Default value: "unspecified".
