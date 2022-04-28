@@ -844,7 +844,7 @@ func resourceAciAccessSwitchPolicyGroupRead(ctx context.Context, d *schema.Resou
 	infraAccNodePGrp, err := getRemoteAccessSwitchPolicyGroup(aciClient, dn)
 	if err != nil {
 		d.SetId("")
-		return diag.FromErr(err)
+		return nil
 	}
 	setAccessSwitchPolicyGroupAttributes(infraAccNodePGrp, d)
 
