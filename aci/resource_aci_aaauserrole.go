@@ -63,7 +63,7 @@ func getRemoteUserRole(client *client.Client, dn string) (*models.UserRole, erro
 func setUserRoleAttributes(aaaUserRole *models.UserRole, d *schema.ResourceData) (*schema.ResourceData, error) {
 	d.SetId(aaaUserRole.DistinguishedName)
 	d.Set("description", aaaUserRole.Description)
-
+	d.Set("annotation", aaaUserRole.Annotation)
 	aaaUserRoleMap, err := aaaUserRole.ToMap()
 	if err != nil {
 		return nil, err
@@ -171,7 +171,7 @@ func resourceAciUserRoleRead(ctx context.Context, d *schema.ResourceData, m inte
 	aaaUserRole, err := getRemoteUserRole(aciClient, dn)
 	if err != nil {
 		d.SetId("")
-		return diag.FromErr(err)
+		return nil
 	}
 	_, err = setUserRoleAttributes(aaaUserRole, d)
 	if err != nil {

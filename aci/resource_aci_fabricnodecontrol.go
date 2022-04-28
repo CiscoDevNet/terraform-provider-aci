@@ -190,7 +190,7 @@ func resourceAciFabricNodeControlRead(ctx context.Context, d *schema.ResourceDat
 	fabricNodeControl, err := getRemoteFabricNodeControl(aciClient, dn)
 	if err != nil {
 		d.SetId("")
-		return diag.FromErr(err)
+		return nil
 	}
 	_, err = setFabricNodeControlAttributes(fabricNodeControl, d)
 	if err != nil {
