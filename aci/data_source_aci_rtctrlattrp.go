@@ -26,21 +26,6 @@ func dataSourceAciActionRuleProfile() *schema.Resource {
 				Type:     schema.TypeString,
 				Required: true,
 			},
-			"set_communities": {
-				Optional: true,
-				Type:     schema.TypeMap,
-				Elem: &schema.Schema{
-					Type: schema.TypeString,
-				},
-			},
-			"next_hop_propagation": {
-				Type:     schema.TypeString,
-				Optional: true,
-			},
-			"multipath": {
-				Type:     schema.TypeString,
-				Optional: true,
-			},
 			"set_route_tag": {
 				Type:     schema.TypeString,
 				Optional: true,
@@ -62,6 +47,21 @@ func dataSourceAciActionRuleProfile() *schema.Resource {
 				Optional: true,
 			},
 			"set_next_hop": {
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"set_communities": {
+				Optional: true,
+				Type:     schema.TypeMap,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+			},
+			"next_hop_propagation": {
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"multipath": {
 				Type:     schema.TypeString,
 				Optional: true,
 			},

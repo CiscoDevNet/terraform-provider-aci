@@ -9,6 +9,7 @@ import (
 	"github.com/ciscoecosystem/aci-go-client/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciActionRuleProfile() *schema.Resource {
@@ -38,6 +39,7 @@ func resourceAciActionRuleProfile() *schema.Resource {
 				Type:         schema.TypeString,
 				Optional:     true,
 				ValidateFunc: validateIntRange(0, 4294967295),
+				ConflictsWith: []string{"multipath"},
 				Description:  "Invalid Configuration Set nexthop unchanged action cannot be configured along with set route tag action under the set action rule profile.",
 			},
 			"set_preference": {
@@ -77,10 +79,20 @@ func resourceAciActionRuleProfile() *schema.Resource {
 			"next_hop_propagation": {
 				Type:     schema.TypeString,
 				Optional: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"yes",
+					"no",
+				}, false),
 			},
 			"multipath": {
 				Type:     schema.TypeString,
 				Optional: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"yes",
+					"no",
+				}, false),
+				ConflictsWith: []string{"set_route_tag"},
+				Description:   "Invalid Configuration Set nexthop unchanged action cannot be configured along with set route tag action under the set action rule profile.",
 			},
 		})),
 	}
