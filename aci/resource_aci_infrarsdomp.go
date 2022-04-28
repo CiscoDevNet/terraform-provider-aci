@@ -154,7 +154,7 @@ func resourceAciInfraRsDomPRead(ctx context.Context, d *schema.ResourceData, m i
 	infraRsDomP, err := getRemoteInfraRsDomP(aciClient, dn)
 	if err != nil {
 		d.SetId("")
-		return diag.FromErr(err)
+		return nil
 	}
 
 	_, err = setInfraRsDomPAttributes(infraRsDomP, d)

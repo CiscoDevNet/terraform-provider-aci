@@ -153,7 +153,7 @@ func resourceAciMatchRuleRead(ctx context.Context, d *schema.ResourceData, m int
 	rtctrlSubjP, err := getRemoteMatchRule(aciClient, dn)
 	if err != nil {
 		d.SetId("")
-		return diag.FromErr(err)
+		return nil
 	}
 	_, err = setMatchRuleAttributes(rtctrlSubjP, d)
 	if err != nil {

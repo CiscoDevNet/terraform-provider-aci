@@ -277,7 +277,7 @@ func resourceAciQOSInstancePolicyRead(ctx context.Context, d *schema.ResourceDat
 	qosInstPol, err := getRemoteQOSInstancePolicy(aciClient, dn)
 	if err != nil {
 		d.SetId("")
-		return diag.FromErr(err)
+		return nil
 	}
 	_, err = setQOSInstancePolicyAttributes(qosInstPol, d)
 	if err != nil {

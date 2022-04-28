@@ -395,7 +395,7 @@ func resourceAciRADIUSProviderRead(ctx context.Context, d *schema.ResourceData, 
 	aaaRadiusProvider, err := getRemoteRADIUSProvider(aciClient, dn)
 	if err != nil {
 		d.SetId("")
-		return diag.FromErr(err)
+		return nil
 	}
 
 	radius_provider_group := strings.Split(dn, "/")

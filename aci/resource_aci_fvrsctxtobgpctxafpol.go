@@ -164,7 +164,7 @@ func resourceAciBGPAddressFamilyContextPolicyRelationshipRead(ctx context.Contex
 	fvRsCtxToBgpCtxAfPol, err := getRemoteBGPAddressFamilyContextPolicyRelationship(aciClient, dn)
 	if err != nil {
 		d.SetId("")
-		return diag.FromErr(err)
+		return nil
 	}
 
 	_, err = setBGPAddressFamilyContextPolicyRelationshipAttributes(fvRsCtxToBgpCtxAfPol, d)

@@ -342,7 +342,7 @@ func resourceAciISISDomainPolicyRead(ctx context.Context, d *schema.ResourceData
 	isisDomPol, err := getRemoteISISDomainPolicy(aciClient, dn)
 	if err != nil {
 		d.SetId("")
-		return diag.FromErr(err)
+		return nil
 	}
 	_, err = setISISDomainPolicyAttributes(isisDomPol, d)
 	if err != nil {
@@ -369,7 +369,7 @@ func resourceAciISISDomainPolicyRead(ctx context.Context, d *schema.ResourceData
 	if isisCompDn != "" {
 		isisLvlComp, err := getRemoteISISLevel(aciClient, isisCompDn)
 		if err != nil {
-			return diag.FromErr(err)
+			return nil
 		}
 		_, err = setISISLevelAttributes(isisLvlComp, d)
 		if err != nil {

@@ -249,7 +249,7 @@ func resourceAciAAAAuthenticationRead(ctx context.Context, d *schema.ResourceDat
 	aaaAuthRealm, err := getRemoteAAAAuthentication(aciClient, dnauthrealm)
 	if err != nil {
 		d.SetId("")
-		return diag.FromErr(err)
+		return nil
 	}
 	_, err = setAAAAuthenticationAttributes(aaaAuthRealm, d)
 	if err != nil {
@@ -260,7 +260,7 @@ func resourceAciAAAAuthenticationRead(ctx context.Context, d *schema.ResourceDat
 	aaaPingEp, err := getRemoteDefaultRadiusAuthenticationSettings(aciClient, dnpingep)
 	if err != nil {
 		d.SetId("")
-		return diag.FromErr(err)
+		return nil
 	}
 	_, err = setDefaultRadiusAuthenticationSettingsAttributes(aaaPingEp, d)
 	if err != nil {

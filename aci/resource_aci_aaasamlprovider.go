@@ -513,7 +513,7 @@ func resourceAciSAMLProviderRead(ctx context.Context, d *schema.ResourceData, m 
 	aaaSamlProvider, err := getRemoteSAMLProvider(aciClient, dn)
 	if err != nil {
 		d.SetId("")
-		return diag.FromErr(err)
+		return nil
 	}
 	_, err = setSAMLProviderAttributes(aaaSamlProvider, d)
 	if err != nil {

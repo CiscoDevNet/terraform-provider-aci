@@ -245,7 +245,7 @@ func resourceAciLoginDomainRead(ctx context.Context, d *schema.ResourceData, m i
 	aaaLoginDomain, err := getRemoteLoginDomain(aciClient, dn)
 	if err != nil {
 		d.SetId("")
-		return diag.FromErr(err)
+		return nil
 	}
 	_, err = setLoginDomainAttributes(aaaLoginDomain, d)
 	if err != nil {
@@ -256,7 +256,7 @@ func resourceAciLoginDomainRead(ctx context.Context, d *schema.ResourceData, m i
 	aaaDomainAuth, err := getRemoteAuthenticationMethodfortheDomain(aciClient, childDn)
 	if err != nil {
 		d.SetId("")
-		return diag.FromErr(err)
+		return nil
 	}
 	_, err = setAuthenticationMethodfortheDomainAttributes(aaaDomainAuth, d)
 	if err != nil {

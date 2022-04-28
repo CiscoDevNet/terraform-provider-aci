@@ -141,7 +141,7 @@ func resourceAciManagedNodeConnectivityGroupRead(ctx context.Context, d *schema.
 	mgmtGrp, err := getRemoteManagedNodeConnectivityGroup(aciClient, dn)
 	if err != nil {
 		d.SetId("")
-		return diag.FromErr(err)
+		return nil
 	}
 	setManagedNodeConnectivityGroupAttributes(mgmtGrp, d)
 

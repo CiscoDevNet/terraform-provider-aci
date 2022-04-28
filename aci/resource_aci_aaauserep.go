@@ -621,7 +621,7 @@ func resourceAciUserManagementRead(ctx context.Context, d *schema.ResourceData, 
 	aaaUserEp, err := getRemoteUserManagement(aciClient, dn)
 	if err != nil {
 		d.SetId("")
-		return diag.FromErr(err)
+		return nil
 	}
 	_, err = setUserManagementAttributes(aaaUserEp, d)
 	if err != nil {
@@ -634,7 +634,7 @@ func resourceAciUserManagementRead(ctx context.Context, d *schema.ResourceData, 
 		aaaPwdProfileDn := dn + "/pwdprofile"
 		aaaPwdProfile, err := getRemotePasswordChangeExpirationPolicy(aciClient, aaaPwdProfileDn)
 		if err != nil {
-			return diag.FromErr(err)
+			return nil
 		}
 		_, err = setPasswordChangeExpirationPolicyAttributes(aaaPwdProfile, d)
 		if err != nil {

@@ -143,7 +143,7 @@ func resourceAciTACACSPlusProviderGroupRead(ctx context.Context, d *schema.Resou
 	aaaTacacsPlusProviderGroup, err := getRemoteTACACSPlusProviderGroup(aciClient, dn)
 	if err != nil {
 		d.SetId("")
-		return diag.FromErr(err)
+		return nil
 	}
 	_, err = setTACACSPlusProviderGroupAttributes(aaaTacacsPlusProviderGroup, d)
 	if err != nil {

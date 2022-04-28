@@ -298,7 +298,7 @@ func resourceAciTACACSSourceRead(ctx context.Context, d *schema.ResourceData, m 
 	tacacsSrc, err := getRemoteTACACSSource(aciClient, dn)
 	if err != nil {
 		d.SetId("")
-		return diag.FromErr(err)
+		return nil
 	}
 	_, err = setTACACSSourceAttributes(tacacsSrc, d)
 	if err != nil {

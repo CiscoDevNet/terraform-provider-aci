@@ -196,7 +196,7 @@ func resourceAciEndpointControlPolicyRead(ctx context.Context, d *schema.Resourc
 	epControlP, err := getRemoteEndpointControlPolicy(aciClient, dn)
 	if err != nil {
 		d.SetId("")
-		return diag.FromErr(err)
+		return nil
 	}
 	_, err = setEndpointControlPolicyAttributes(epControlP, d)
 	if err != nil {
