@@ -155,7 +155,7 @@ func resourceAciContractSubject() *schema.Resource {
 				Type:     schema.TypeMap,
 				Optional: true,
 				DiffSuppressFunc: func(k, old, new string, d *schema.ResourceData) bool {
-					if (k == "consumer_to_provider.target_dscp" || k == "consumer_to_provider.prio") && new != old {
+					if (k == "consumer_to_provider.target_dscp" || k == "consumer_to_provider.prio" || k == "consumer_to_provider.relation_vz_rs_in_term_graph_att") && new != old {
 						return false
 					}
 					return true
@@ -169,7 +169,7 @@ func resourceAciContractSubject() *schema.Resource {
 				Type:     schema.TypeMap,
 				Optional: true,
 				DiffSuppressFunc: func(k, old, new string, d *schema.ResourceData) bool {
-					if (k == "provider_to_consumer.target_dscp" || k == "provider_to_consumer.prio") && new != old {
+					if (k == "provider_to_consumer.target_dscp" || k == "provider_to_consumer.prio" || k == "provider_to_consumer.relation_vz_rs_out_term_graph_att") && new != old {
 						return false
 					}
 					return true
@@ -247,11 +247,11 @@ func setInTermSubjectAttributes(vzInTerm *models.InTermSubject, d map[string]str
 		return d, err
 	}
 	d = map[string]string{
-		"id":          vzInTerm.DistinguishedName,
-		"prio":        vzInTermMap["prio"],
-		"target_dscp": vzInTermMap["targetDscp"],
+		"id":                               vzInTerm.DistinguishedName,
+		"prio":                             vzInTermMap["prio"],
+		"target_dscp":                      vzInTermMap["targetDscp"],
+		"relation_vz_rs_in_term_graph_att": vzInTermMap["relation_vz_rs_in_term_graph_att"],
 		// "relation_vz_rs_filt_att": vzInTermMap["relation_vz_rs_filt_att"],
-		// "relation_vz_rs_in_term_graph_att": vzInTermMap["relation_vz_rs_in_term_graph_att"],
 	}
 	return d, nil
 }
@@ -348,7 +348,15 @@ func resourceAciContractSubjectCreate(ctx context.Context, d *schema.ResourceDat
 	if TargetDscp, ok := d.GetOk("target_dscp"); ok {
 		vzSubjAttr.TargetDscp = TargetDscp.(string)
 	}
+	ApplyBothDirections := d.Get("apply_both_directions")
+	log.Printf("[TEST] in CREATE ApplyBothDirections : %v", ApplyBothDirections)
 
+	log.Printf("[TEST] in CREATE : %v and %v ", d.Get("consumer_to_provider").(map[string]interface{}), d.Get("provider_to_consumer").(map[string]interface{}))
+	if ApplyBothDirections == "yes " {
+		if (d.Get("consumer_to_provider") != nil || len(d.Get("consumer_to_provider").(map[string]interface{})) != 0) || (d.Get("provider_to_consumer") != nil || len(d.Get("provider_to_consumer").(map[string]interface{})) == 0) {
+			return diag.FromErr(fmt.Errorf("you cannot set consumer_to_provider and provider_to_consumer when apply_both_directions is set to yes [create]"))
+		}
+	}
 	vzSubj := models.NewContractSubject(fmt.Sprintf("subj-%s", name), ContractDn, desc, vzSubjAttr)
 
 	err := aciClient.Save(vzSubj)
@@ -356,37 +364,78 @@ func resourceAciContractSubjectCreate(ctx context.Context, d *schema.ResourceDat
 		return diag.FromErr(err)
 	}
 
-	ApplyBothDirections := d.Get("apply_both_directions")
+	// ApplyBothDirections := d.Get("apply_both_directions")
 	if ApplyBothDirections == "no" {
-
+		var inTermGraphAttribute string
 		vzInTermAttr := models.InTermSubjectAttributes{}
 		if ConsumerToProvider, ok := d.GetOk("consumer_to_provider"); ok {
 			ConsumerToProviderMap := ConsumerToProvider.(map[string]interface{})
 			vzInTermAttr.Prio = ConsumerToProviderMap["prio"].(string)
 			vzInTermAttr.TargetDscp = ConsumerToProviderMap["target_dscp"].(string)
+			inTermGraphAttribute = ConsumerToProviderMap["relation_vz_rs_in_term_graph_att"].(string)
+
 		}
 		vzInTerm := models.NewInTermSubject(fmt.Sprintf(models.RnvzInTerm), vzSubj.DistinguishedName, desc, "", vzInTermAttr)
-
-		vzOutTermAttr := models.OutTermSubjectAttributes{}
-		if ProviderToConsumer, ok := d.GetOk("provider_to_consumer"); ok {
-			ProviderToConsumerMap := ProviderToConsumer.(map[string]interface{})
-			vzOutTermAttr.Prio = ProviderToConsumerMap["prio"].(string)
-			vzOutTermAttr.TargetDscp = ProviderToConsumerMap["target_dscp"].(string)
-		}
-		vzOutTerm := models.NewOutTermSubject(fmt.Sprintf(models.RnvzOutTerm), vzSubj.DistinguishedName, desc, "", vzOutTermAttr)
 
 		err := aciClient.Save(vzInTerm)
 		if err != nil {
 			return diag.FromErr(err)
 		}
+
+		if inTermGraphAttribute != "" {
+
+			d.Partial(true)
+			err = checkTDn(aciClient, []string{inTermGraphAttribute})
+			if err != nil {
+				return diag.FromErr(err)
+			}
+			d.Partial(false)
+
+			err = aciClient.CreateRelationvzRsInTermGraphAtt(vzInTerm.DistinguishedName, vzInTermAttr.Annotation, GetMOName(inTermGraphAttribute))
+			if err != nil {
+				return diag.FromErr(err)
+			}
+
+		}
+
+		vzOutTermAttr := models.OutTermSubjectAttributes{}
+		var outTermGraphAttribute string
+		if ProviderToConsumer, ok := d.GetOk("provider_to_consumer"); ok {
+			ProviderToConsumerMap := ProviderToConsumer.(map[string]interface{})
+			vzOutTermAttr.Prio = ProviderToConsumerMap["prio"].(string)
+			vzOutTermAttr.TargetDscp = ProviderToConsumerMap["target_dscp"].(string)
+			outTermGraphAttribute = ProviderToConsumerMap["relation_vz_rs_out_term_graph_att"].(string)
+		}
+		vzOutTerm := models.NewOutTermSubject(fmt.Sprintf(models.RnvzOutTerm), vzSubj.DistinguishedName, desc, "", vzOutTermAttr)
+
 		error := aciClient.Save(vzOutTerm)
 		if error != nil {
 			return diag.FromErr(error)
 		}
-	} else {
-		return diag.FromErr(fmt.Errorf("you cannot set consumer_to_provider and provider_to_consumer when apply_both_directions is set to yes"))
-	}
 
+		if outTermGraphAttribute != "" {
+
+			d.Partial(true)
+			err = checkTDn(aciClient, []string{outTermGraphAttribute})
+			if err != nil {
+				return diag.FromErr(err)
+			}
+			d.Partial(false)
+
+			err = aciClient.CreateRelationvzRsOutTermGraphAtt(vzOutTerm.DistinguishedName, vzOutTermAttr.Annotation, GetMOName(outTermGraphAttribute))
+			if err != nil {
+				return diag.FromErr(err)
+			}
+
+		}
+	}
+	// else {
+	// 	log.Printf("[TEST] in CREATE : %v and %v ", d.Get("consumer_to_provider"), d.Get("provider_to_consumer"))
+	// 	if (d.Get("consumer_to_provider") != nil && len(d.Get("consumer_to_provider").(map[string]interface{})) != 0) || (d.Get("provider_to_consumer") != nil && len(d.Get("provider_to_consumer").(map[string]interface{})) == 0) {
+	// 		return diag.FromErr(fmt.Errorf("you cannot set consumer_to_provider and provider_to_consumer when apply_both_directions is set to yes [create]"))
+	// 	}
+	// }
+	// passs list of maps to maps
 	checkDns := make([]string, 0, 1)
 
 	if relationTovzRsSubjGraphAtt, ok := d.GetOk("relation_vz_rs_subj_graph_att"); ok {
@@ -479,6 +528,14 @@ func resourceAciContractSubjectUpdate(ctx context.Context, d *schema.ResourceDat
 	if TargetDscp, ok := d.GetOk("target_dscp"); ok {
 		vzSubjAttr.TargetDscp = TargetDscp.(string)
 	}
+
+	ApplyBothDirections := d.Get("apply_both_directions")
+	if ApplyBothDirections == "yes" {
+		if d.HasChange("consumer_to_provider") || d.HasChange("provider_to_consumer") {
+			return diag.FromErr(fmt.Errorf("you cannot set consumer_to_provider and provider_to_consumer when apply_both_directions is set to yes"))
+		}
+	}
+
 	vzSubj := models.NewContractSubject(fmt.Sprintf("subj-%s", name), ContractDn, desc, vzSubjAttr)
 
 	vzSubj.Status = "modified"
@@ -489,16 +546,16 @@ func resourceAciContractSubjectUpdate(ctx context.Context, d *schema.ResourceDat
 		return diag.FromErr(err)
 	}
 
-	ApplyBothDirections := d.Get("apply_both_directions")
-	log.Printf("[TEST] UPDATE : %v ", ApplyBothDirections)
+	// ApplyBothDirections := d.Get("apply_both_directions")
 	if ApplyBothDirections == "no" && (d.HasChange("consumer_to_provider") || d.HasChange("provider_to_consumer")) {
-		log.Printf("[TEST] AM I HERER")
 		if d.HasChange("consumer_to_provider") {
 			vzInTermAttr := models.InTermSubjectAttributes{}
+			var inTermGraphAttribute string
 			if ConsumerToProvider, ok := d.GetOk("consumer_to_provider"); ok {
 				ConsumerToProviderMap := ConsumerToProvider.(map[string]interface{})
 				vzInTermAttr.Prio = ConsumerToProviderMap["prio"].(string)
 				vzInTermAttr.TargetDscp = ConsumerToProviderMap["target_dscp"].(string)
+				inTermGraphAttribute = ConsumerToProviderMap["relation_vz_rs_in_term_graph_att"].(string)
 			}
 			vzInTerm := models.NewInTermSubject(fmt.Sprintf(models.RnvzInTerm), vzSubj.DistinguishedName, desc, "", vzInTermAttr)
 
@@ -507,13 +564,33 @@ func resourceAciContractSubjectUpdate(ctx context.Context, d *schema.ResourceDat
 			if err != nil {
 				return diag.FromErr(err)
 			}
+
+			if inTermGraphAttribute != "" {
+				d.Partial(true)
+				err = checkTDn(aciClient, []string{inTermGraphAttribute})
+				if err != nil {
+					return diag.FromErr(err)
+				}
+				d.Partial(false)
+
+				err = aciClient.DeleteRelationvzRsInTermGraphAtt(vzInTerm.DistinguishedName)
+				if err != nil {
+					return diag.FromErr(err)
+				}
+				err = aciClient.CreateRelationvzRsInTermGraphAtt(vzInTerm.DistinguishedName, vzInTermAttr.Annotation, GetMOName(inTermGraphAttribute))
+				if err != nil {
+					return diag.FromErr(err)
+				}
+			}
 		}
 		if d.HasChange("provider_to_consumer") {
 			vzOutTermAttr := models.OutTermSubjectAttributes{}
+			var outTermGraphAttribute string
 			if ProviderToConsumer, ok := d.GetOk("provider_to_consumer"); ok {
 				ProviderToConsumerMap := ProviderToConsumer.(map[string]interface{})
 				vzOutTermAttr.Prio = ProviderToConsumerMap["prio"].(string)
 				vzOutTermAttr.TargetDscp = ProviderToConsumerMap["target_dscp"].(string)
+				outTermGraphAttribute = ProviderToConsumerMap["relation_vz_rs_out_term_graph_att"].(string)
 			}
 			vzOutTerm := models.NewOutTermSubject(fmt.Sprintf(models.RnvzOutTerm), vzSubj.DistinguishedName, desc, "", vzOutTermAttr)
 
@@ -522,10 +599,29 @@ func resourceAciContractSubjectUpdate(ctx context.Context, d *schema.ResourceDat
 			if error != nil {
 				return diag.FromErr(error)
 			}
+
+			if outTermGraphAttribute != "" {
+				d.Partial(true)
+				err = checkTDn(aciClient, []string{outTermGraphAttribute})
+				if err != nil {
+					return diag.FromErr(err)
+				}
+				d.Partial(false)
+
+				err = aciClient.DeleteRelationvzRsOutTermGraphAtt(vzOutTerm.DistinguishedName)
+				if err != nil {
+					return diag.FromErr(err)
+				}
+				err = aciClient.CreateRelationvzRsOutTermGraphAtt(vzOutTerm.DistinguishedName, vzOutTermAttr.Annotation, GetMOName(outTermGraphAttribute))
+				if err != nil {
+					return diag.FromErr(err)
+				}
+			}
 		}
-	} else {
-		return diag.FromErr(fmt.Errorf("you cannot set consumer_to_provider and provider_to_consumer when apply_both_directions is set to yes"))
 	}
+	// else {
+	// 	return diag.FromErr(fmt.Errorf("you cannot set consumer_to_provider and provider_to_consumer when apply_both_directions is set to yes"))
+	// }
 
 	checkDns := make([]string, 0, 1)
 
@@ -624,26 +720,35 @@ func resourceAciContractSubjectRead(ctx context.Context, d *schema.ResourceData,
 		d.SetId("")
 		return nil
 	}
-	_, err = setContractSubjectAttributes(vzSubj, d)
+	setSubj, err := setContractSubjectAttributes(vzSubj, d)
 	if err != nil {
 		d.SetId("")
 		return nil
 	}
+	log.Printf("[TEST] IN READ SETSUB : %v ", setSubj)
 
 	vzInTerm, err := getRemoteInTermSubject(aciClient, dn)
-	log.Printf("[TEST] vzINTERM in READ is : %v ", vzInTerm)
 	if err != nil {
 		d.SetId("")
 		return nil
 	}
 	if vzInTerm != nil {
 		vzInTermFactor, err := setInTermSubjectAttributes(vzInTerm, make(map[string]string))
-		log.Printf("[TEST] SET in READ is : %v ", vzInTermFactor)
 		if err != nil {
 			d.SetId("")
 			return nil
 		}
+
+		vzRsInTermGraphAttData, err := aciClient.ReadRelationvzRsInTermGraphAtt(vzInTerm.DistinguishedName)
+		if err != nil {
+			log.Printf("[DEBUG] Error while reading relation vzRsInTermGraphAtt %v", err)
+			d.Set("relation_vz_rs_in_term_graph_att", "")
+		} else {
+			vzInTermFactor["relation_vz_rs_in_term_graph_att"] = vzRsInTermGraphAttData.(string)
+		}
+
 		d.Set("consumer_to_provider", vzInTermFactor)
+
 	} else {
 		d.Set("consumer_to_provider", nil)
 	}
@@ -659,7 +764,17 @@ func resourceAciContractSubjectRead(ctx context.Context, d *schema.ResourceData,
 			d.SetId("")
 			return nil
 		}
+
+		vzRsOutTermGraphAttData, err := aciClient.ReadRelationvzRsOutTermGraphAtt(vzOutTerm.DistinguishedName)
+		if err != nil {
+			log.Printf("[DEBUG] Error while reading relation vzRsOutTermGraphAtt %v", err)
+			d.Set("relation_vz_rs_out_term_graph_att", "")
+		} else {
+			vzOutTermFactor["relation_vz_rs_out_term_graph_att"] = vzRsOutTermGraphAttData.(string)
+		}
+
 		d.Set("provider_to_consumer", vzOutTermFactor)
+
 	} else {
 		d.Set("consumer_to_provider", nil)
 	}
