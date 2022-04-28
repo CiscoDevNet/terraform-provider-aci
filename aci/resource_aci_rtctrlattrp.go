@@ -36,20 +36,25 @@ func resourceAciActionRuleProfile() *schema.Resource {
 				ForceNew: true,
 			},
 			"set_route_tag": {
-				Type:     schema.TypeString,
-				Optional: true,
+				Type:         schema.TypeString,
+				Optional:     true,
+				ValidateFunc: validateIntRange(0, 4294967295),
+				Description:  "Invalid Configuration Set nexthop unchanged action cannot be configured along with set route tag action under the set action rule profile.",
 			},
 			"set_preference": {
-				Type:     schema.TypeString,
-				Optional: true,
+				Type:         schema.TypeString,
+				Optional:     true,
+				ValidateFunc: validateIntRange(0, 4294967295),
 			},
 			"set_weight": {
-				Type:     schema.TypeString,
-				Optional: true,
+				Type:         schema.TypeString,
+				Optional:     true,
+				ValidateFunc: validateIntRange(0, 4294967295),
 			},
 			"set_metric": {
-				Type:     schema.TypeString,
-				Optional: true,
+				Type:         schema.TypeString,
+				Optional:     true,
+				ValidateFunc: validateIntRange(0, 4294967295),
 			},
 			"set_metric_type": {
 				Type:     schema.TypeString,
