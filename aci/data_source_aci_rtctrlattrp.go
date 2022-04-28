@@ -8,7 +8,6 @@ import (
 	"github.com/ciscoecosystem/aci-go-client/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func dataSourceAciActionRuleProfile() *schema.Resource {
@@ -46,10 +45,6 @@ func dataSourceAciActionRuleProfile() *schema.Resource {
 			"set_metric_type": {
 				Type:     schema.TypeString,
 				Optional: true,
-				ValidateFunc: validation.StringInSlice([]string{
-					"ospf-type1",
-					"ospf-type2",
-				}, false),
 			},
 			"set_next_hop": {
 				Type:     schema.TypeString,
