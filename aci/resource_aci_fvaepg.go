@@ -208,10 +208,11 @@ func resourceAciApplicationEPG() *schema.Resource {
 				Set:      schema.HashString,
 			},
 			"relation_fv_rs_path_att": &schema.Schema{
-				Type:     schema.TypeSet,
-				Elem:     &schema.Schema{Type: schema.TypeString},
-				Optional: true,
-				Set:      schema.HashString,
+				Type:       schema.TypeSet,
+				Elem:       &schema.Schema{Type: schema.TypeString},
+				Optional:   true,
+				Set:        schema.HashString,
+				Deprecated: "use resource aci_epg_to_static_path instead",
 			},
 			"relation_fv_rs_aepg_mon_pol": &schema.Schema{
 				Type: schema.TypeString,
