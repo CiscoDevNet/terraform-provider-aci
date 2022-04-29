@@ -42,10 +42,12 @@ Manages ACI Contract Subject
 		consumer_to_provider = {
 			prio = "level2"
 			target_dscp = "AF41"
+    		relation_vz_rs_in_term_graph_att = aci_l4_l7_service_graph_template.service_graph2.id
 		}
 		provider_to_consumer  ={
 			prio = "level3"
 			target_dscp = "AF32"
+    		relation_vz_rs_out_term_graph_att = aci_l4_l7_service_graph_template.service_graph2.id
 		}
 	}
 ```
@@ -68,12 +70,14 @@ Manages ACI Contract Subject
 - `relation_vz_rs_subj_filt_att` - (Optional) Relation to class vzFilter. Cardinality - N_TO_M. Type - Set of String.
 
 - `apply_both_directions` - (Optional) . By default set to "yes".
-- ` consumer_to_provider` - (Optional)
+- ` consumer_to_provider` - (Optional) Filter Chain For Consumer to Provider. Class vzInTerm.
     - `prio` - (Optional) The priority level of a sub application running behind an endpoint group, such as an Exchange server.
     - `target_dscp` - (Optional) The target differentiated services code point (DSCP) of the path attached to the layer 3 outside profile.
-- `provider_to_consumer` - (Optional)
+	- `relation_vz_rs_in_term_graph_att` - (Optional) Relation to class L4-L7 Service Graph (vnsAbsGraph).
+- `provider_to_consumer` - (Optional) Filter Chain For Provider to Consumer. Class vzOutTerm
     - `prio` - (Optional) The priority level of a sub application running behind an endpoint group, such as an Exchange server.
     - `target_dscp` - (Optional) The target differentiated services code point (DSCP) of the path attached to the layer 3 outside profile.
+	- `relation_vz_rs_out_term_graph_att` - (Optional) Relation to class L4-L7 Service Graph (vnsAbsGraph).
 
 
 ## Attribute Reference

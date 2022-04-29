@@ -247,11 +247,9 @@ func setInTermSubjectAttributes(vzInTerm *models.InTermSubject, d map[string]str
 		return d, err
 	}
 	d = map[string]string{
-		"id":                               vzInTerm.DistinguishedName,
-		"prio":                             vzInTermMap["prio"],
-		"target_dscp":                      vzInTermMap["targetDscp"],
-		"relation_vz_rs_in_term_graph_att": vzInTermMap["relation_vz_rs_in_term_graph_att"],
-		// "relation_vz_rs_filt_att": vzInTermMap["relation_vz_rs_filt_att"],
+		"id":          vzInTerm.DistinguishedName,
+		"prio":        vzInTermMap["prio"],
+		"target_dscp": vzInTermMap["targetDscp"],
 	}
 	return d, nil
 }
@@ -282,8 +280,6 @@ func setOutTermSubjectAttributes(vzOutTerm *models.OutTermSubject, d map[string]
 		"id":          vzOutTerm.DistinguishedName,
 		"prio":        vzOutTermMap["prio"],
 		"target_dscp": vzOutTermMap["targetDscp"],
-		// "relation_vz_rs_filt_att": vzOutTermMap["relation_vz_rs_filt_att"],
-		// "relation_vz_rs_out_term_graph_att": vzOutTermMap["relation_vz_rs_out_term_graph_att"],
 	}
 	return d, nil
 }
@@ -349,14 +345,15 @@ func resourceAciContractSubjectCreate(ctx context.Context, d *schema.ResourceDat
 		vzSubjAttr.TargetDscp = TargetDscp.(string)
 	}
 	ApplyBothDirections := d.Get("apply_both_directions")
-	log.Printf("[TEST] in CREATE ApplyBothDirections : %v", ApplyBothDirections)
 
-	log.Printf("[TEST] in CREATE : %v and %v ", d.Get("consumer_to_provider").(map[string]interface{}), d.Get("provider_to_consumer").(map[string]interface{}))
 	if ApplyBothDirections == "yes " {
 		if (d.Get("consumer_to_provider") != nil || len(d.Get("consumer_to_provider").(map[string]interface{})) != 0) || (d.Get("provider_to_consumer") != nil || len(d.Get("provider_to_consumer").(map[string]interface{})) == 0) {
-			return diag.FromErr(fmt.Errorf("you cannot set consumer_to_provider and provider_to_consumer when apply_both_directions is set to yes [create]"))
+			d.Set("consumer_to_provider", nil)
+			d.Set("provider_to_consumer", nil)
+			return diag.FromErr(fmt.Errorf("you cannot set consumer_to_provider and provider_to_consumer when apply_both_directions is set to yes"))
 		}
 	}
+
 	vzSubj := models.NewContractSubject(fmt.Sprintf("subj-%s", name), ContractDn, desc, vzSubjAttr)
 
 	err := aciClient.Save(vzSubj)
@@ -364,7 +361,6 @@ func resourceAciContractSubjectCreate(ctx context.Context, d *schema.ResourceDat
 		return diag.FromErr(err)
 	}
 
-	// ApplyBothDirections := d.Get("apply_both_directions")
 	if ApplyBothDirections == "no" {
 		var inTermGraphAttribute string
 		vzInTermAttr := models.InTermSubjectAttributes{}
@@ -429,13 +425,7 @@ func resourceAciContractSubjectCreate(ctx context.Context, d *schema.ResourceDat
 
 		}
 	}
-	// else {
-	// 	log.Printf("[TEST] in CREATE : %v and %v ", d.Get("consumer_to_provider"), d.Get("provider_to_consumer"))
-	// 	if (d.Get("consumer_to_provider") != nil && len(d.Get("consumer_to_provider").(map[string]interface{})) != 0) || (d.Get("provider_to_consumer") != nil && len(d.Get("provider_to_consumer").(map[string]interface{})) == 0) {
-	// 		return diag.FromErr(fmt.Errorf("you cannot set consumer_to_provider and provider_to_consumer when apply_both_directions is set to yes [create]"))
-	// 	}
-	// }
-	// passs list of maps to maps
+
 	checkDns := make([]string, 0, 1)
 
 	if relationTovzRsSubjGraphAtt, ok := d.GetOk("relation_vz_rs_subj_graph_att"); ok {
@@ -528,10 +518,12 @@ func resourceAciContractSubjectUpdate(ctx context.Context, d *schema.ResourceDat
 	if TargetDscp, ok := d.GetOk("target_dscp"); ok {
 		vzSubjAttr.TargetDscp = TargetDscp.(string)
 	}
-
 	ApplyBothDirections := d.Get("apply_both_directions")
+
 	if ApplyBothDirections == "yes" {
 		if d.HasChange("consumer_to_provider") || d.HasChange("provider_to_consumer") {
+			d.Set("consumer_to_provider", nil)
+			d.Set("provider_to_consumer", nil)
 			return diag.FromErr(fmt.Errorf("you cannot set consumer_to_provider and provider_to_consumer when apply_both_directions is set to yes"))
 		}
 	}
@@ -541,12 +533,10 @@ func resourceAciContractSubjectUpdate(ctx context.Context, d *schema.ResourceDat
 	vzSubj.Status = "modified"
 
 	err := aciClient.Save(vzSubj)
-
 	if err != nil {
 		return diag.FromErr(err)
 	}
 
-	// ApplyBothDirections := d.Get("apply_both_directions")
 	if ApplyBothDirections == "no" && (d.HasChange("consumer_to_provider") || d.HasChange("provider_to_consumer")) {
 		if d.HasChange("consumer_to_provider") {
 			vzInTermAttr := models.InTermSubjectAttributes{}
@@ -619,9 +609,6 @@ func resourceAciContractSubjectUpdate(ctx context.Context, d *schema.ResourceDat
 			}
 		}
 	}
-	// else {
-	// 	return diag.FromErr(fmt.Errorf("you cannot set consumer_to_provider and provider_to_consumer when apply_both_directions is set to yes"))
-	// }
 
 	checkDns := make([]string, 0, 1)
 
@@ -720,12 +707,11 @@ func resourceAciContractSubjectRead(ctx context.Context, d *schema.ResourceData,
 		d.SetId("")
 		return nil
 	}
-	setSubj, err := setContractSubjectAttributes(vzSubj, d)
+	_, err = setContractSubjectAttributes(vzSubj, d)
 	if err != nil {
 		d.SetId("")
 		return nil
 	}
-	log.Printf("[TEST] IN READ SETSUB : %v ", setSubj)
 
 	vzInTerm, err := getRemoteInTermSubject(aciClient, dn)
 	if err != nil {

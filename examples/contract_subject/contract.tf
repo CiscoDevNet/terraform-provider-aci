@@ -4,12 +4,12 @@ resource "aci_tenant" "tenant_for_contract" {
 }
 
 resource "aci_contract" "democontract" {
-  tenant_dn                = aci_tenant.tenant_for_contract.id
-  name                     = "test_tf_contract"
-  description              = "This contract is created by terraform ACI provider"
-  scope                    = "context"
-  target_dscp              = "VA"
-  prio                     = "unspecified"
+  tenant_dn   = aci_tenant.tenant_for_contract.id
+  name        = "test_tf_contract"
+  description = "This contract is created by terraform ACI provider"
+  scope       = "context"
+  target_dscp = "VA"
+  prio        = "unspecified"
 }
 
 resource "aci_contract_subject" "foocontract_subject" {
@@ -25,12 +25,6 @@ resource "aci_contract_subject" "foocontract_subject" {
   target_dscp   = "CS0"
 }
 
-resource "aci_contract_subject" "Web_subject1" {
-  contract_dn                  = aci_contract.democontract.id
-  name                         = "Subject"
-  relation_vz_rs_subj_filt_att = [aci_filter.allow_https.id, aci_filter.allow_icmp.id]
-}
-
 resource "aci_filter" "allow_https" {
   tenant_dn = aci_tenant.tenant_for_contract.id
   name      = "allow_https"
@@ -39,6 +33,22 @@ resource "aci_filter" "allow_https" {
 resource "aci_filter" "allow_icmp" {
   tenant_dn = aci_tenant.tenant_for_contract.id
   name      = "allow_icmp"
+}
+
+resource "aci_contract_subject" "Web_subject1" {
+  contract_dn                  = aci_contract.democontract.id
+  name                         = "Subject"
+  relation_vz_rs_subj_filt_att = [aci_filter.allow_https.id, aci_filter.allow_icmp.id]
+}
+
+resource "aci_l4_l7_service_graph_template" "service_graph" {
+  tenant_dn = aci_tenant.tenant_for_contract.id
+  name      = "test_service_graph"
+}
+
+resource "aci_l4_l7_service_graph_template" "service_graph2" {
+  tenant_dn = aci_tenant.tenant_for_contract.id
+  name      = "tf_service_graph"
 }
 
 // apply_both_directions is selected [yes] by default and there is only one filter required
@@ -50,23 +60,25 @@ resource "aci_contract_subject" "contract_subject" {
 
 // apply_both_directions is not selected and there are two filters (consumer_to_provider and provider_to_consumer)
 resource "aci_contract_subject" "contract_subject_2" {
-  contract_dn   = aci_contract.democontract.id
-  name          = "contract_subject_2"
-  rev_flt_ports = "no"
+  contract_dn           = aci_contract_subject.contract_subject.contract_dn
+  name                  = "contract_subject_2"
+  rev_flt_ports         = "no"
   apply_both_directions = "no"
   consumer_to_provider = {
-    prio = "unspecified"
-    target_dscp = "AF41"
+    prio                             = "unspecified"
+    target_dscp                      = "AF41"
+    relation_vz_rs_in_term_graph_att = aci_l4_l7_service_graph_template.service_graph2.id
   }
-  provider_to_consumer  ={
-    prio = "unspecified"
-    target_dscp = "AF32"
+  provider_to_consumer = {
+    prio                              = "unspecified"
+    target_dscp                       = "AF32"
+    relation_vz_rs_out_term_graph_att = aci_l4_l7_service_graph_template.service_graph2.id
   }
 }
 
 data "aci_contract_subject" "example" {
   contract_dn = aci_contract_subject.contract_subject_2.contract_dn
-  name          = aci_contract_subject.contract_subject_2.name
+  name        = aci_contract_subject.contract_subject_2.name
 }
 
 output "name" {
