@@ -25,5 +25,5 @@ resource "aci_logical_device_context" "example" {
   context                            = "ctx1"
   description                        = "from terraform"
   name_alias                         = "example"
-  relation_vns_rs_l_dev_ctx_to_l_dev = "uni/tn-MyTenant01/lDevVip-LoadBalancer01"
+  relation_vns_rs_l_dev_ctx_to_l_dev = "uni/tn-test_acc_tenant/lDevVip-LoadBalancer01"
 }

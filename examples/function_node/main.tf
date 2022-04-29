@@ -20,7 +20,7 @@ resource "aci_function_node" "foofunction_node" {
   func_template_type              = "OTHER"
   func_type                       = "None"
   is_copy                         = "no"
-  managed                         = "yes"
+  managed                         = "no"
   routing_mode                    = "unspecified"
   sequence_number                 = "3"
   share_encap                     = "yes"
