@@ -26,10 +26,10 @@ Manages ACI Action Rule Profile
 resource "aci_action_rule_profile" "example" {
   tenant_dn       = aci_tenant.example.id
   description     = "From Terraform"
-  name            = "Rule-1"
-  annotation      = "orchestrator:terraform"
+  name            = "example"
+  annotation      = "example"
   name_alias      = "example"
-  set_route_tag   = 100 # Can not be configured along with multipath
+  set_route_tag   = 100
   set_preference  = 100
   set_weight      = 100
   set_metric      = 100
@@ -39,8 +39,13 @@ resource "aci_action_rule_profile" "example" {
     community = "no-advertise"
     criteria  = "replace"
   }
-  next_hop_propagation = "yes"
-  multipath            = "yes" # Can not be configured along with set_route_tag
+  next_hop_propagation    = "yes"
+  multipath               = "yes"
+  saspath_prepend_last_as = 10
+  saspath_prepend_asn = {
+    order = 20
+    asn   = 30
+  }
 }
 ```
 
@@ -62,7 +67,8 @@ resource "aci_action_rule_profile" "example" {
   * `community` - (Optional) Community of the Set Communities object. Allowed input formats are `regular:as2-nn2:4:15`, `extended:as4-nn2:5:16`, `no-export` and `no-advertise`. Type: String.
 * `next_hop_propagation` - (Optional) Next Hop Propagation of the Action Rule Profile object. Allowed values are `yes` or `no`. Type: String.
 * `multipath` - (Optional) Multipath of the Action Rule Profile object. Allowed values are `yes` or `no`. Can not be configured along with `set_route_tag`. Type: String.
-
+* `saspath_prepend_last_as` - (Optional) Set As Path - Prepend Last-AS of the Action Rule Profile object. Type: Integer.
+* `saspath_prepend_asn` - (Optional) A block representing the attributes of Set As Path - Prepend AS of the Action Rule Profile object. Type: Block.
 ## Importing ##
 
 An existing Action Rule Profile can be [imported][docs-import] into this resource via its Dn, via the following command:

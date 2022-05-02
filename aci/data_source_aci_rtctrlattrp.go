@@ -65,6 +65,14 @@ func dataSourceAciActionRuleProfile() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
+			"saspath_prepend_last_as": {
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"saspath_prepend_asn": {
+				Type:     schema.TypeMap,
+				Optional: true,
+			},
 		})),
 	}
 }
@@ -188,6 +196,33 @@ func dataSourceAciActionRuleProfileRead(ctx context.Context, d *schema.ResourceD
 		}
 	}
 	// rtctrlSetRedistMultipath - Read finished successfully
+
+	// rtctrlSetASPath - Beginning of Read
+
+	setASPathDn := rtctrlAttrP.DistinguishedName + fmt.Sprintf("/"+models.RnrtctrlSetASPath, "prepend-last-as")
+
+	rtctrlSetASPath, err := getRemoteRtctrlSetASPath(aciClient, setASPathDn)
+	if err == nil {
+		_, err = setRtctrlSetASPathAttributes(rtctrlSetASPath, d)
+		if err != nil {
+			return diag.FromErr(err)
+		}
+	}
+	// rtctrlSetASPath - Read finished successfully
+
+	// rtctrlSetASPathASN - Beginning of Read
+
+	setASNumberDn := rtctrlAttrP.DistinguishedName + "/" + fmt.Sprintf(models.RnrtctrlSetASPath, "prepend")
+
+	rtctrlSetASPathASN, err := getRemoteRtctrlSetASPathASNRelations(aciClient, setASNumberDn)
+
+	if err == nil {
+		_, err = setRtctrlSetASPathASNAttributes(rtctrlSetASPathASN, d)
+		if err != nil {
+			return diag.FromErr(err)
+		}
+	}
+	// rtctrlSetASPathASN - Read finished successfully
 
 	return nil
 }

@@ -33,6 +33,11 @@ resource "aci_action_rule_profile" "example" {
     community = "no-advertise"
     criteria  = "replace"
   }
-  next_hop_propagation = "yes"
-  multipath            = "yes"
+  next_hop_propagation    = "yes"
+  multipath               = "yes"
+  saspath_prepend_last_as = 10
+  saspath_prepend_asn = {
+    order = 20
+    asn   = 30
+  }
 }

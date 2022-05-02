@@ -2,8 +2,11 @@ package aci
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log"
+	"strconv"
+	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
@@ -94,9 +97,19 @@ func resourceAciActionRuleProfile() *schema.Resource {
 				ConflictsWith: []string{"set_route_tag"},
 				Description:   "Invalid Configuration Set nexthop unchanged action cannot be configured along with set route tag action under the set action rule profile.",
 			},
+			"saspath_prepend_last_as": {
+				Type:         schema.TypeString,
+				Optional:     true,
+				ValidateFunc: validateIntRange(1, 10),
+			},
+			"saspath_prepend_asn": {
+				Type:     schema.TypeMap,
+				Optional: true,
+			},
 		})),
 	}
 }
+
 func getRemoteActionRuleProfile(client *client.Client, dn string) (*models.ActionRuleProfile, error) {
 	rtctrlAttrPCont, err := client.Get(dn)
 	if err != nil {
@@ -327,6 +340,92 @@ func setRtctrlSetRedistMultipathAttributes(rtctrlSetRedistMultipath *models.Redi
 	return d, nil
 }
 
+func getRemoteRtctrlSetASPath(client *client.Client, dn string) (*models.SetASPath, error) {
+	rtctrlSetASPathCont, err := client.Get(dn)
+	if err != nil {
+		return nil, err
+	}
+	rtctrlSetASPath := models.SetASPathFromContainer(rtctrlSetASPathCont)
+	if rtctrlSetASPath.DistinguishedName == "" {
+		return nil, fmt.Errorf("RtctrlSetASPath %s not found", dn)
+	}
+	return rtctrlSetASPath, nil
+}
+
+func setRtctrlSetASPathAttributes(rtctrlSetASPath *models.SetASPath, d *schema.ResourceData) (*schema.ResourceData, error) {
+	rtctrlSetASPathMap, err := rtctrlSetASPath.ToMap()
+	if err != nil {
+		return d, err
+	}
+
+	d.Set("saspath_prepend_last_as", rtctrlSetASPathMap["lastnum"])
+	return d, nil
+}
+
+func getRemoteRtctrlSetASPathASNRelations(client *client.Client, dn string) (*models.ASNumber, error) {
+	ReadRelationASNumberData, err := client.ReadRelationASNumber(dn)
+
+	if err == nil {
+		for _, record := range ReadRelationASNumberData {
+			var parsedJson map[string]interface{}
+			err_output := json.Unmarshal([]byte(record.String()), &parsedJson)
+			if err_output == nil {
+
+				parentDN := strings.Split(parsedJson["dn"].(string), "/asn-")
+
+				if parentDN[0] == dn {
+					rtctrlSetASPathASNCont, err := client.Get(parsedJson["dn"].(string))
+
+					if err != nil {
+						return nil, err
+					}
+
+					rtctrlSetASPathASN := models.ASNumberFromContainer(rtctrlSetASPathASNCont)
+
+					if rtctrlSetASPathASN.DistinguishedName == "" {
+						return nil, fmt.Errorf("RtctrlSetASPathASN %s not found", dn)
+					}
+					return rtctrlSetASPathASN, nil
+
+				}
+			} else {
+				return nil, err_output
+			}
+		}
+	} else {
+		return nil, err
+	}
+	return nil, err
+}
+
+func getRemoteRtctrlSetASPathASN(client *client.Client, dn string) (*models.ASNumber, error) {
+	rtctrlSetASPathASNCont, err := client.Get(dn)
+	if err != nil {
+		return nil, err
+	}
+	rtctrlSetASPathASN := models.ASNumberFromContainer(rtctrlSetASPathASNCont)
+	if rtctrlSetASPathASN.DistinguishedName == "" {
+		return nil, fmt.Errorf("RtctrlSetASPathASN %s not found", dn)
+	}
+	return rtctrlSetASPathASN, nil
+}
+
+func setRtctrlSetASPathASNAttributes(rtctrlSetASPathASN *models.ASNumber, d *schema.ResourceData) (*schema.ResourceData, error) {
+	rtctrlSetASPathASNMap, err := rtctrlSetASPathASN.ToMap()
+	if err != nil {
+		return d, err
+	}
+
+	ASNMap := make(map[string]interface{})
+
+	ASNMap["asn"] = rtctrlSetASPathASNMap["asn"]
+	ASNMap["order"] = rtctrlSetASPathASNMap["order"]
+
+	d.Set("saspath_prepend_asn", ASNMap)
+
+	return d, nil
+}
+
 func resourceAciActionRuleProfileImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
 	log.Printf("[DEBUG] %s: Beginning Import", d.Id())
 	aciClient := m.(*client.Client)
@@ -466,6 +565,38 @@ func resourceAciActionRuleProfileImport(d *schema.ResourceData, m interface{}) (
 		log.Printf("[DEBUG] %s: rtctrlSetRedistMultipath - Import finished successfully", setRedistMultipathDn)
 	}
 	// rtctrlSetRedistMultipath - Import finished successfully
+	// rtctrlSetASPath - Beginning Import
+
+	setASPathDn := rtctrlAttrP.DistinguishedName + fmt.Sprintf("/"+models.RnrtctrlSetASPath, "prepend-last-as")
+	rtctrlSetASPath, err := getRemoteRtctrlSetASPath(aciClient, setASPathDn)
+	if err == nil {
+		log.Printf("[DEBUG] %s: rtctrlSetASPath - Beginning Import", setASPathDn)
+		_, err = setRtctrlSetASPathAttributes(rtctrlSetASPath, d)
+		if err != nil {
+			return nil, err
+		}
+		log.Printf("[DEBUG] %s: rtctrlSetASPath - Import finished successfully", setASPathDn)
+	}
+
+	// rtctrlSetASPath - Import finished successfully
+
+	// rtctrlSetASPathASN - Beginning Import
+
+	setASNumberDn := rtctrlAttrP.DistinguishedName + "/" + fmt.Sprintf(models.RnrtctrlSetASPath, "prepend")
+
+	rtctrlSetASPathASN, err := getRemoteRtctrlSetASPathASNRelations(aciClient, setASNumberDn)
+	log.Printf("[DEBUG]: rtctrlSetASPathASN - inside import: %s", rtctrlSetASPathASN)
+
+	if err == nil && rtctrlSetASPathASN != nil {
+		log.Printf("[DEBUG] %s: rtctrlSetASPathASN - Beginning Import", setASNumberDn)
+		_, err = setRtctrlSetASPathASNAttributes(rtctrlSetASPathASN, d)
+		if err != nil {
+			return nil, err
+		}
+		log.Printf("[DEBUG] %s: rtctrlSetASPathASN - Import finished successfully", setASNumberDn)
+	}
+
+	// rtctrlSetASPathASN - Import finished successfully
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
@@ -480,6 +611,20 @@ func resourceAciActionRuleProfileCreate(ctx context.Context, d *schema.ResourceD
 	name := d.Get("name").(string)
 
 	TenantDn := d.Get("tenant_dn").(string)
+
+	if ANSMap, ok := d.GetOk("saspath_prepend_asn"); ok {
+
+		NewANSMap := toStrMap(ANSMap.(map[string]interface{}))
+		Asn, _ := strconv.Atoi(NewANSMap["asn"])
+		if !(Asn >= 0 && Asn <= 4294967295) {
+			return diag.FromErr(fmt.Errorf("ASN must be between 0 and 4294967295"))
+		}
+
+		Order, _ := strconv.Atoi(NewANSMap["order"])
+		if !(Order >= 0 && Order <= 31) {
+			return diag.FromErr(fmt.Errorf("Order must be between 0 and 31"))
+		}
+	}
 
 	rtctrlAttrPAttr := models.ActionRuleProfileAttributes{}
 
@@ -657,6 +802,60 @@ func resourceAciActionRuleProfileCreate(ctx context.Context, d *schema.ResourceD
 		resourceAciRtctrlSetRedistMultipathRead(ctx, rtctrlSetRedistMultipath.DistinguishedName, d, m)
 	}
 
+	// rtctrlSetASPath - Operations
+	if prependLastAS, ok := d.GetOk("saspath_prepend_last_as"); ok {
+
+		log.Printf("[DEBUG] rtctrlSetASPath: Beginning Creation")
+
+		rtctrlSetASPathAttr := models.SetASPathAttributes{}
+		// rtctrlSetASPathAttr.Lastnum = strconv.Itoa(prependLastAS.(int))
+		rtctrlSetASPathAttr.Lastnum = prependLastAS.(string)
+		rtctrlSetASPath := models.NewSetASPath(fmt.Sprintf(models.RnrtctrlSetASPath, "prepend-last-as"), rtctrlAttrP.DistinguishedName, "", "", rtctrlSetASPathAttr)
+
+		creation_err := aciClient.Save(rtctrlSetASPath)
+		if creation_err != nil {
+			return diag.FromErr(creation_err)
+		}
+
+		log.Printf("[DEBUG] %s: Creation finished successfully", rtctrlSetASPath.DistinguishedName)
+		resourceAciRtctrlSetASPathRead(ctx, rtctrlSetASPath.DistinguishedName, d, m)
+	}
+
+	// rtctrlSetASPathASN - Operations
+	if ANSMap, ok := d.GetOk("saspath_prepend_asn"); ok {
+
+		log.Printf("[DEBUG] rtctrlSetASPathASN: Beginning Creation")
+
+		NewANSMap := toStrMap(ANSMap.(map[string]interface{}))
+
+		rtctrlSetASPathASNAttr := models.ASNumberAttributes{}
+
+		rtctrlSetASPathASNAttr.Asn = NewANSMap["asn"]
+		rtctrlSetASPathASNAttr.Order = NewANSMap["order"]
+
+		rtctrlSetASPathAttr := models.SetASPathAttributes{}
+
+		rtctrlSetASPath := models.NewSetASPath(fmt.Sprintf(models.RnrtctrlSetASPath, "prepend"), rtctrlAttrP.DistinguishedName, "", "", rtctrlSetASPathAttr)
+
+		// Parent Object creation
+		parent_creation_err := aciClient.Save(rtctrlSetASPath)
+		if parent_creation_err != nil {
+			return diag.FromErr(parent_creation_err)
+		}
+		log.Printf("[DEBUG] %s: Creation finished successfully", rtctrlSetASPath.DistinguishedName)
+
+		// Child Object creation
+		rtctrlSetASPathASN := models.NewASNumber(fmt.Sprintf(models.RnrtctrlSetASPathASN, NewANSMap["order"]), rtctrlSetASPath.DistinguishedName, "", "", rtctrlSetASPathASNAttr)
+
+		err := aciClient.Save(rtctrlSetASPathASN)
+		if err != nil {
+			return diag.FromErr(err)
+		}
+
+		log.Printf("[DEBUG] %s: Creation finished successfully", rtctrlSetASPathASN.DistinguishedName)
+		resourceAciRtctrlSetASPathASNRead(ctx, rtctrlSetASPathASN.DistinguishedName, d, m)
+	}
+
 	d.SetId(rtctrlAttrP.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
@@ -673,6 +872,20 @@ func resourceAciActionRuleProfileUpdate(ctx context.Context, d *schema.ResourceD
 	name := d.Get("name").(string)
 
 	TenantDn := d.Get("tenant_dn").(string)
+
+	if ANSMap, ok := d.GetOk("saspath_prepend_asn"); ok {
+
+		NewANSMap := toStrMap(ANSMap.(map[string]interface{}))
+		Asn, _ := strconv.Atoi(NewANSMap["asn"])
+		if !(Asn >= 0 && Asn <= 4294967295) {
+			return diag.FromErr(fmt.Errorf("ASN must be between 0 and 4294967295"))
+		}
+
+		Order, _ := strconv.Atoi(NewANSMap["order"])
+		if !(Order >= 0 && Order <= 31) {
+			return diag.FromErr(fmt.Errorf("Order must be between 0 and 31"))
+		}
+	}
 
 	rtctrlAttrPAttr := models.ActionRuleProfileAttributes{}
 	nameAlias := ""
@@ -1071,6 +1284,104 @@ func resourceAciActionRuleProfileUpdate(ctx context.Context, d *schema.ResourceD
 		}
 	}
 
+	// rtctrlSetASPath - Operations
+	if d.HasChange("saspath_prepend_last_as") {
+
+		if prependLastAS, ok := d.GetOk("saspath_prepend_last_as"); ok {
+
+			log.Printf("[DEBUG] rtctrlSetASPath - Beginning Creation")
+
+			rtctrlSetASPathAttr := models.SetASPathAttributes{}
+			// rtctrlSetASPathAttr.Lastnum = strconv.Itoa(prependLastAS.(int))
+			rtctrlSetASPathAttr.Lastnum = prependLastAS.(string)
+
+			setASPathDn := rtctrlAttrP.DistinguishedName + fmt.Sprintf("/"+models.RnrtctrlSetASPath, "prepend-last-as")
+
+			deletion_err := aciClient.DeleteByDn(setASPathDn, "rtctrlSetASPath")
+			if deletion_err != nil {
+				return diag.FromErr(err)
+			}
+
+			rtctrlSetASPath := models.NewSetASPath(fmt.Sprintf(models.RnrtctrlSetASPath, "prepend-last-as"), rtctrlAttrP.DistinguishedName, "", "", rtctrlSetASPathAttr)
+
+			err := aciClient.Save(rtctrlSetASPath)
+			if err != nil {
+				return diag.FromErr(err)
+			}
+
+			log.Printf("[DEBUG] %s: rtctrlSetASPath - Creation finished successfully", rtctrlSetASPath.DistinguishedName)
+			resourceAciRtctrlSetASPathRead(ctx, rtctrlSetASPath.DistinguishedName, d, m)
+
+		} else {
+			setASPathDn := rtctrlAttrP.DistinguishedName + fmt.Sprintf("/"+models.RnrtctrlSetASPath, "prepend-last-as")
+			log.Printf("[DEBUG] %s: rtctrlSetASPath - Beginning Destroy", setASPathDn)
+
+			err := aciClient.DeleteByDn(setASPathDn, "rtctrlSetASPath")
+			if err != nil {
+				return diag.FromErr(err)
+			}
+
+			log.Printf("[DEBUG] %s: rtctrlSetASPath - Destroy finished successfully", setASPathDn)
+		}
+	}
+
+	// rtctrlSetASPathASN - Operations
+	if d.HasChange("saspath_prepend_asn") {
+
+		if ANSMap, ok := d.GetOk("saspath_prepend_asn"); ok {
+
+			log.Printf("[DEBUG] rtctrlSetASPathASN - Beginning Creation")
+
+			NewANSMap := toStrMap(ANSMap.(map[string]interface{}))
+
+			rtctrlSetASPathASNAttr := models.ASNumberAttributes{}
+			rtctrlSetASPathASNAttr.Asn = NewANSMap["asn"]
+			rtctrlSetASPathASNAttr.Order = NewANSMap["order"]
+
+			// Parent Object deletion
+			setASPathDn := rtctrlAttrP.DistinguishedName + fmt.Sprintf("/"+models.RnrtctrlSetASPath, "prepend")
+
+			parent_deletion_err := aciClient.DeleteByDn(setASPathDn, "rtctrlSetASPath")
+			if parent_deletion_err != nil {
+				return diag.FromErr(parent_deletion_err)
+			}
+
+			// Parent Object creation
+			rtctrlSetASPathAttr := models.SetASPathAttributes{}
+
+			rtctrlSetASPath := models.NewSetASPath(fmt.Sprintf(models.RnrtctrlSetASPath, "prepend"), rtctrlAttrP.DistinguishedName, "", "", rtctrlSetASPathAttr)
+
+			parent_creation_err := aciClient.Save(rtctrlSetASPath)
+			if parent_creation_err != nil {
+				return diag.FromErr(parent_creation_err)
+			}
+			log.Printf("[DEBUG] %s: Creation finished successfully", rtctrlSetASPath.DistinguishedName)
+
+			// Child Object creation
+			rtctrlSetASPathASN := models.NewASNumber(fmt.Sprintf(models.RnrtctrlSetASPathASN, NewANSMap["order"]), rtctrlSetASPath.DistinguishedName, "", "", rtctrlSetASPathASNAttr)
+
+			err := aciClient.Save(rtctrlSetASPathASN)
+			if err != nil {
+				return diag.FromErr(err)
+			}
+
+			log.Printf("[DEBUG] %s: rtctrlSetASPathASN - Creation finished successfully", rtctrlSetASPathASN.DistinguishedName)
+			resourceAciRtctrlSetASPathASNRead(ctx, rtctrlSetASPathASN.DistinguishedName, d, m)
+
+		} else {
+			// Parent Object deletion
+			setASPathDn := rtctrlAttrP.DistinguishedName + fmt.Sprintf(models.RnrtctrlSetASPath, "prepend")
+			log.Printf("[DEBUG] %s: rtctrlSetASPath - Beginning Destroy", setASPathDn)
+
+			err := aciClient.DeleteByDn(setASPathDn, "rtctrlSetASPath")
+			if err != nil {
+				return diag.FromErr(err)
+			}
+
+			log.Printf("[DEBUG] %s: rtctrlSetASPath - Destroy finished successfully", setASPathDn)
+		}
+	}
+
 	d.SetId(rtctrlAttrP.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
@@ -1258,6 +1569,42 @@ func resourceAciRtctrlSetRedistMultipathRead(ctx context.Context, dn string, d *
 	}
 
 	log.Printf("[DEBUG] %s: rtctrlSetRedistMultipath - Read finished successfully", dn)
+	return nil
+}
+
+func resourceAciRtctrlSetASPathRead(ctx context.Context, dn string, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+	log.Printf("[DEBUG] %s: rtctrlSetASPath - Beginning Read", dn)
+	aciClient := m.(*client.Client)
+
+	rtctrlSetASPath, err := getRemoteRtctrlSetASPath(aciClient, dn)
+	if err != nil {
+		return diag.FromErr(err)
+	}
+
+	_, err = setRtctrlSetASPathAttributes(rtctrlSetASPath, d)
+	if err != nil {
+		return nil
+	}
+
+	log.Printf("[DEBUG] %s: rtctrlSetASPath - Read finished successfully", dn)
+	return nil
+}
+
+func resourceAciRtctrlSetASPathASNRead(ctx context.Context, dn string, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+	log.Printf("[DEBUG] %s: rtctrlSetASPathASN - Beginning Read", dn)
+	aciClient := m.(*client.Client)
+
+	rtctrlSetASPathASN, err := getRemoteRtctrlSetASPathASN(aciClient, dn)
+	if err != nil {
+		return diag.FromErr(err)
+	}
+
+	_, err = setRtctrlSetASPathASNAttributes(rtctrlSetASPathASN, d)
+	if err != nil {
+		return nil
+	}
+
+	log.Printf("[DEBUG] %s: rtctrlSetASPathASN - Read finished successfully", dn)
 	return nil
 }
 
