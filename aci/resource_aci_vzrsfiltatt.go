@@ -13,15 +13,15 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
-func resourceAciSubjectFilter() *schema.Resource {
+func resourceAciFilterRelationship() *schema.Resource {
 	return &schema.Resource{
-		CreateContext: resourceAciSubjectFilterCreate,
-		UpdateContext: resourceAciSubjectFilterUpdate,
-		ReadContext:   resourceAciSubjectFilterRead,
-		DeleteContext: resourceAciSubjectFilterDelete,
+		CreateContext: resourceAciFilterRelationshipCreate,
+		UpdateContext: resourceAciFilterRelationshipUpdate,
+		ReadContext:   resourceAciFilterRelationshipRead,
+		DeleteContext: resourceAciFilterRelationshipDelete,
 
 		Importer: &schema.ResourceImporter{
-			State: resourceAciSubjectFilterImport,
+			State: resourceAciFilterRelationshipImport,
 		},
 
 		SchemaVersion: 1,
@@ -73,52 +73,56 @@ func resourceAciSubjectFilter() *schema.Resource {
 	}
 }
 
-func getRemoteSubjectFilter(client *client.Client, dn string) (*models.SubjectFilter, error) {
-	vzRsSubjFiltAttCont, err := client.Get(dn)
+func getRemoteFilterRelationship(client *client.Client, dn string) (*models.FilterRelationship, error) {
+	vzRsFiltAttCont, err := client.Get(dn)
 	if err != nil {
 		return nil, err
 	}
-	vzRsSubjFiltAtt := models.SubjectFilterFromContainer(vzRsSubjFiltAttCont)
-	if vzRsSubjFiltAtt.DistinguishedName == "" {
-		return nil, fmt.Errorf("SubjectFilter %s not found", vzRsSubjFiltAtt.DistinguishedName)
+
+	vzRsFiltAtt := models.FilterRelationshipFromContainer(vzRsFiltAttCont)
+	if vzRsFiltAtt.DistinguishedName == "" {
+		return nil, fmt.Errorf("Filter %s not found", vzRsFiltAtt.DistinguishedName)
 	}
-	return vzRsSubjFiltAtt, nil
+	return vzRsFiltAtt, nil
 }
 
-func setSubjectFilterAttributes(vzRsSubjFiltAtt *models.SubjectFilter, d *schema.ResourceData) (*schema.ResourceData, error) {
+func setFilterRelationshipAttributes(vzRsFiltAtt *models.FilterRelationship, d *schema.ResourceData) (*schema.ResourceData, error) {
 	dn := d.Id()
-	d.SetId(vzRsSubjFiltAtt.DistinguishedName)
-	if dn != vzRsSubjFiltAtt.DistinguishedName {
+	d.SetId(vzRsFiltAtt.DistinguishedName)
+	d.Set("description", vzRsFiltAtt.Description)
+	if dn != vzRsFiltAtt.DistinguishedName {
 		d.Set("contract_subject_dn", "")
 	}
-	vzRsSubjFiltAttMap, err := vzRsSubjFiltAtt.ToMap()
+
+	vzRsFiltAttMap, err := vzRsFiltAtt.ToMap()
 	if err != nil {
 		return d, err
 	}
-	d.Set("contract_subject_dn", GetParentDn(vzRsSubjFiltAtt.DistinguishedName, fmt.Sprintf("/rssubjFiltAtt-%s", vzRsSubjFiltAttMap["name"])))
-	d.Set("annotation", vzRsSubjFiltAttMap["annotation"])
-	d.Set("action", vzRsSubjFiltAttMap["action"])
+
+	d.Set("contract_subject_dn", GetParentDn(vzRsFiltAtt.DistinguishedName, fmt.Sprintf("/rsfiltAtt-%s", vzRsFiltAttMap["name"])))
+	d.Set("annotation", vzRsFiltAttMap["annotation"])
+	d.Set("action", vzRsFiltAttMap["action"])
 	directivesGet := make([]string, 0, 1)
-	for _, val := range strings.Split(vzRsSubjFiltAttMap["directives"], ",") {
+	for _, val := range strings.Split(vzRsFiltAttMap["directives"], ",") {
 		directivesGet = append(directivesGet, strings.Trim(val, " "))
 	}
 	d.Set("directives", directivesGet)
-	d.Set("priority_override", vzRsSubjFiltAttMap["priorityOverride"])
-	d.Set("filter_dn", vzRsSubjFiltAttMap["tDn"])
+	d.Set("priority_override", vzRsFiltAttMap["priorityOverride"])
+	d.Set("filter_dn", vzRsFiltAttMap["tDn"])
 	return d, nil
 }
 
-func resourceAciSubjectFilterImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
+func resourceAciFilterRelationshipImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
 	log.Printf("[DEBUG] %s: Beginning Import", d.Id())
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 
-	vzRsSubjFiltAtt, err := getRemoteSubjectFilter(aciClient, dn)
+	vzRsFiltAtt, err := getRemoteFilterRelationship(aciClient, dn)
 	if err != nil {
 		return nil, err
 	}
 
-	schemaFilled, err := setSubjectFilterAttributes(vzRsSubjFiltAtt, d)
+	schemaFilled, err := setFilterRelationshipAttributes(vzRsFiltAtt, d)
 	if err != nil {
 		return nil, err
 	}
@@ -127,22 +131,22 @@ func resourceAciSubjectFilterImport(d *schema.ResourceData, m interface{}) ([]*s
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciSubjectFilterCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	log.Printf("[DEBUG] SubjectFilter: Beginning Creation")
+func resourceAciFilterRelationshipCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+	log.Printf("[DEBUG] Filter: Beginning Creation")
 	aciClient := m.(*client.Client)
 	tnVzFilterName := GetMOName(d.Get("filter_dn").(string))
 	ContractSubjectDn := d.Get("contract_subject_dn").(string)
 
-	vzRsSubjFiltAttAttr := models.SubjectFilterAttributes{}
+	vzRsFiltAttAttr := models.FilterRelationshipAttributes{}
 
 	if Annotation, ok := d.GetOk("annotation"); ok {
-		vzRsSubjFiltAttAttr.Annotation = Annotation.(string)
+		vzRsFiltAttAttr.Annotation = Annotation.(string)
 	} else {
-		vzRsSubjFiltAttAttr.Annotation = "{}"
+		vzRsFiltAttAttr.Annotation = "{}"
 	}
 
 	if Action, ok := d.GetOk("action"); ok {
-		vzRsSubjFiltAttAttr.Action = Action.(string)
+		vzRsFiltAttAttr.Action = Action.(string)
 	}
 
 	if Directives, ok := d.GetOk("directives"); ok {
@@ -151,44 +155,44 @@ func resourceAciSubjectFilterCreate(ctx context.Context, d *schema.ResourceData,
 			directivesList = append(directivesList, val.(string))
 		}
 		Directives := strings.Join(directivesList, ",")
-		vzRsSubjFiltAttAttr.Directives = Directives
+		vzRsFiltAttAttr.Directives = Directives
 	}
 
 	if PriorityOverride, ok := d.GetOk("priority_override"); ok {
-		vzRsSubjFiltAttAttr.PriorityOverride = PriorityOverride.(string)
+		vzRsFiltAttAttr.PriorityOverride = PriorityOverride.(string)
 	}
 
 	if TnVzFilterName, ok := d.GetOk("tn_vz_filter_name"); ok {
-		vzRsSubjFiltAttAttr.TnVzFilterName = TnVzFilterName.(string)
+		vzRsFiltAttAttr.TnVzFilterName = TnVzFilterName.(string)
 	}
-	vzRsSubjFiltAtt := models.NewSubjectFilter(fmt.Sprintf(models.RnvzRsSubjFiltAtt, tnVzFilterName), ContractSubjectDn, vzRsSubjFiltAttAttr)
+	vzRsFiltAtt := models.NewFilterRelationship(fmt.Sprintf(models.RnvzRsFiltAtt, tnVzFilterName), ContractSubjectDn, vzRsFiltAttAttr)
 
-	err := aciClient.Save(vzRsSubjFiltAtt)
+	err := aciClient.Save(vzRsFiltAtt)
 	if err != nil {
 		return diag.FromErr(err)
 	}
 
-	d.SetId(vzRsSubjFiltAtt.DistinguishedName)
+	d.SetId(vzRsFiltAtt.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
-	return resourceAciSubjectFilterRead(ctx, d, m)
+	return resourceAciFilterRelationshipRead(ctx, d, m)
 }
 
-func resourceAciSubjectFilterUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	log.Printf("[DEBUG] SubjectFilter: Beginning Update")
+func resourceAciFilterRelationshipUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+	log.Printf("[DEBUG] Filter: Beginning Update")
 	aciClient := m.(*client.Client)
 	tnVzFilterName := GetMOName(d.Get("filter_dn").(string))
 	ContractSubjectDn := d.Get("contract_subject_dn").(string)
 
-	vzRsSubjFiltAttAttr := models.SubjectFilterAttributes{}
+	vzRsFiltAttAttr := models.FilterRelationshipAttributes{}
 
 	if Annotation, ok := d.GetOk("annotation"); ok {
-		vzRsSubjFiltAttAttr.Annotation = Annotation.(string)
+		vzRsFiltAttAttr.Annotation = Annotation.(string)
 	} else {
-		vzRsSubjFiltAttAttr.Annotation = "{}"
+		vzRsFiltAttAttr.Annotation = "{}"
 	}
 
 	if Action, ok := d.GetOk("action"); ok {
-		vzRsSubjFiltAttAttr.Action = Action.(string)
+		vzRsFiltAttAttr.Action = Action.(string)
 	}
 	if Directives, ok := d.GetOk("directives"); ok {
 		directivesList := make([]string, 0, 1)
@@ -196,42 +200,42 @@ func resourceAciSubjectFilterUpdate(ctx context.Context, d *schema.ResourceData,
 			directivesList = append(directivesList, val.(string))
 		}
 		Directives := strings.Join(directivesList, ",")
-		vzRsSubjFiltAttAttr.Directives = Directives
+		vzRsFiltAttAttr.Directives = Directives
 	}
 
 	if PriorityOverride, ok := d.GetOk("priority_override"); ok {
-		vzRsSubjFiltAttAttr.PriorityOverride = PriorityOverride.(string)
+		vzRsFiltAttAttr.PriorityOverride = PriorityOverride.(string)
 	}
 
 	if TnVzFilterName, ok := d.GetOk("tn_vz_filter_name"); ok {
-		vzRsSubjFiltAttAttr.TnVzFilterName = TnVzFilterName.(string)
+		vzRsFiltAttAttr.TnVzFilterName = TnVzFilterName.(string)
 	}
-	vzRsSubjFiltAtt := models.NewSubjectFilter(fmt.Sprintf(models.RnvzRsSubjFiltAtt, tnVzFilterName), ContractSubjectDn, vzRsSubjFiltAttAttr)
+	vzRsFiltAtt := models.NewFilterRelationship(fmt.Sprintf(models.RnvzRsFiltAtt, tnVzFilterName), ContractSubjectDn, vzRsFiltAttAttr)
 
-	vzRsSubjFiltAtt.Status = "modified"
+	vzRsFiltAtt.Status = "modified"
 
-	err := aciClient.Save(vzRsSubjFiltAtt)
+	err := aciClient.Save(vzRsFiltAtt)
 	if err != nil {
 		return diag.FromErr(err)
 	}
 
-	d.SetId(vzRsSubjFiltAtt.DistinguishedName)
+	d.SetId(vzRsFiltAtt.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
-	return resourceAciSubjectFilterRead(ctx, d, m)
+	return resourceAciFilterRelationshipRead(ctx, d, m)
 }
 
-func resourceAciSubjectFilterRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceAciFilterRelationshipRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 
-	vzRsSubjFiltAtt, err := getRemoteSubjectFilter(aciClient, dn)
+	vzRsFiltAtt, err := getRemoteFilterRelationship(aciClient, dn)
 	if err != nil {
 		d.SetId("")
 		return diag.FromErr(err)
 	}
 
-	_, err = setSubjectFilterAttributes(vzRsSubjFiltAtt, d)
+	_, err = setFilterRelationshipAttributes(vzRsFiltAtt, d)
 	if err != nil {
 		d.SetId("")
 		return nil
@@ -241,12 +245,12 @@ func resourceAciSubjectFilterRead(ctx context.Context, d *schema.ResourceData, m
 	return nil
 }
 
-func resourceAciSubjectFilterDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceAciFilterRelationshipDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 
-	err := aciClient.DeleteByDn(dn, "vzRsSubjFiltAtt")
+	err := aciClient.DeleteByDn(dn, "vzRsFiltAtt")
 	if err != nil {
 		return diag.FromErr(err)
 	}

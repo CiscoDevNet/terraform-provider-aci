@@ -5,16 +5,15 @@ import (
 	"fmt"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/ciscoecosystem/aci-go-client/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
-func dataSourceAciSubjectFilter() *schema.Resource {
+func dataSourceAciFilterRelationship() *schema.Resource {
 	return &schema.Resource{
-		ReadContext:   dataSourceAciSubjectFilterRead,
+		ReadContext:   dataSourceAciFilterRelationshipRead,
 		SchemaVersion: 1,
-		Schema: AppendBaseAttrSchema(map[string]*schema.Schema{
+		Schema: AppendBaseAttrSchema(AppendNameAliasAttrSchema(map[string]*schema.Schema{
 			"contract_subject_dn": {
 				Type:     schema.TypeString,
 				Required: true,
@@ -37,29 +36,29 @@ func dataSourceAciSubjectFilter() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
-			"filter_dn": {
+			"tn_vz_filter_name": {
 				Type:     schema.TypeString,
 				Required: true,
 			},
-		}),
+		})),
 	}
 }
 
-func dataSourceAciSubjectFilterRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func dataSourceAciFilterRelationshipRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	aciClient := m.(*client.Client)
-	tnVzFilterName := GetMOName(d.Get("filter_dn").(string))
+	tnVzFilterName := d.Get("tnVzFilterName").(string)
 	ContractSubjectDn := d.Get("contract_subject_dn").(string)
-	rn := fmt.Sprintf(models.RnvzRsSubjFiltAtt, tnVzFilterName)
+	rn := fmt.Sprintf("rsfiltAtt-%s", tnVzFilterName)
 	dn := fmt.Sprintf("%s/%s", ContractSubjectDn, rn)
 
-	vzRsSubjFiltAtt, err := getRemoteSubjectFilter(aciClient, dn)
+	vzRsFiltAtt, err := getRemoteFilter(aciClient, dn)
 	if err != nil {
 		return diag.FromErr(err)
 	}
 
 	d.SetId(dn)
 
-	_, err = setSubjectFilterAttributes(vzRsSubjFiltAtt, d)
+	_, err = setFilterAttributes(vzRsFiltAtt, d)
 	if err != nil {
 		return diag.FromErr(err)
 	}

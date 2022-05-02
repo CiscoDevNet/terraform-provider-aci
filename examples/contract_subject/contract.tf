@@ -53,7 +53,7 @@ resource "aci_l4_l7_service_graph_template" "service_graph2" {
 
 // apply_both_directions is selected [yes] by default and there is only one filter required
 resource "aci_contract_subject" "contract_subject" {
-  contract_dn   = aci_contract.democontract.id
+  contract_dn   = aci_contract_subject.Web_subject1.contract_dn
   name          = "contract_subject"
   rev_flt_ports = "no"
 }
@@ -67,13 +67,35 @@ resource "aci_contract_subject" "contract_subject_2" {
   consumer_to_provider = {
     prio                             = "unspecified"
     target_dscp                      = "AF41"
-    relation_vz_rs_in_term_graph_att = aci_l4_l7_service_graph_template.service_graph2.id
+    relation_vz_rs_in_term_graph_att = aci_l4_l7_service_graph_template.service_graph.id
   }
   provider_to_consumer = {
     prio                              = "unspecified"
     target_dscp                       = "AF32"
-    relation_vz_rs_out_term_graph_att = aci_l4_l7_service_graph_template.service_graph2.id
+    relation_vz_rs_out_term_graph_att = aci_l4_l7_service_graph_template.service_graph.id
   }
+}
+
+resource "aci_filter" "test_filter" {
+  tenant_dn   = aci_tenant.tenant_for_contract.id
+  name        = "test_tf_filter"
+  description = "This filter is created by terraform ACI provider."
+}
+
+resource "aci_contract_subject_one_way_filter" "contract_subject_filter" {
+  contract_subject_dn = aci_contract_subject.contract_subject_2.consumer_to_provider.id
+  action = "permit"
+  directives = ["log"]
+  priority_override = "default"
+  filter_dn = aci_filter.test_filter.id
+}
+
+resource "aci_contract_subject_one_way_filter" "contract_subject_filter2" {
+  contract_subject_dn = aci_contract_subject.contract_subject_2.provider_to_consumer.id
+  action = "permit"
+  directives = ["log"]
+  priority_override = "default"
+  filter_dn = aci_filter.test_filter.id
 }
 
 data "aci_contract_subject" "example" {

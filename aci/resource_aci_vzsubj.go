@@ -154,6 +154,7 @@ func resourceAciContractSubject() *schema.Resource {
 			"consumer_to_provider": &schema.Schema{
 				Type:     schema.TypeMap,
 				Optional: true,
+				Computed: true,
 				DiffSuppressFunc: func(k, old, new string, d *schema.ResourceData) bool {
 					if (k == "consumer_to_provider.target_dscp" || k == "consumer_to_provider.prio" || k == "consumer_to_provider.relation_vz_rs_in_term_graph_att") && new != old {
 						return false
@@ -168,6 +169,7 @@ func resourceAciContractSubject() *schema.Resource {
 			"provider_to_consumer": &schema.Schema{
 				Type:     schema.TypeMap,
 				Optional: true,
+				Computed: true,
 				DiffSuppressFunc: func(k, old, new string, d *schema.ResourceData) bool {
 					if (k == "provider_to_consumer.target_dscp" || k == "provider_to_consumer.prio" || k == "provider_to_consumer.relation_vz_rs_out_term_graph_att") && new != old {
 						return false
@@ -287,27 +289,28 @@ func setOutTermSubjectAttributes(vzOutTerm *models.OutTermSubject, d map[string]
 func resourceAciContractSubjectImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
 	log.Printf("[DEBUG] %s: Beginning Import", d.Id())
 	aciClient := m.(*client.Client)
-
 	dn := d.Id()
 
 	vzSubj, err := getRemoteContractSubject(aciClient, dn)
-
 	if err != nil {
 		return nil, err
 	}
+
 	vzSubjMap, err := vzSubj.ToMap()
 	if err != nil {
 		return nil, err
 	}
+
 	name := vzSubjMap["name"]
 	pDN := GetParentDn(dn, fmt.Sprintf("/subj-%s", name))
 	d.Set("contract_dn", pDN)
+
 	schemaFilled, err := setContractSubjectAttributes(vzSubj, d)
 	if err != nil {
 		return nil, err
 	}
-	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
+	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
@@ -346,8 +349,8 @@ func resourceAciContractSubjectCreate(ctx context.Context, d *schema.ResourceDat
 	}
 	ApplyBothDirections := d.Get("apply_both_directions")
 
-	if ApplyBothDirections == "yes " {
-		if (d.Get("consumer_to_provider") != nil || len(d.Get("consumer_to_provider").(map[string]interface{})) != 0) || (d.Get("provider_to_consumer") != nil || len(d.Get("provider_to_consumer").(map[string]interface{})) == 0) {
+	if ApplyBothDirections == "yes" {
+		if len(d.Get("consumer_to_provider").(map[string]interface{})) != 0 || len(d.Get("provider_to_consumer").(map[string]interface{})) != 0 {
 			d.Set("consumer_to_provider", nil)
 			d.Set("provider_to_consumer", nil)
 			return diag.FromErr(fmt.Errorf("you cannot set consumer_to_provider and provider_to_consumer when apply_both_directions is set to yes"))
@@ -521,7 +524,7 @@ func resourceAciContractSubjectUpdate(ctx context.Context, d *schema.ResourceDat
 	ApplyBothDirections := d.Get("apply_both_directions")
 
 	if ApplyBothDirections == "yes" {
-		if d.HasChange("consumer_to_provider") || d.HasChange("provider_to_consumer") {
+		if (d.HasChange("consumer_to_provider") || d.HasChange("provider_to_consumer")) && (d.Get("consumer_to_provider") != nil || d.Get("provider_to_consumer") != nil) {
 			d.Set("consumer_to_provider", nil)
 			d.Set("provider_to_consumer", nil)
 			return diag.FromErr(fmt.Errorf("you cannot set consumer_to_provider and provider_to_consumer when apply_both_directions is set to yes"))

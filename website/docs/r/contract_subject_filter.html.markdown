@@ -30,7 +30,6 @@ resource "aci_contract_subject_filter" "example" {
   action = "permit"
   directives = ["none"]
   priority_override = "default"
-
 }
 ```
 
@@ -39,9 +38,9 @@ resource "aci_contract_subject_filter" "example" {
 * `contract_subject_dn` - (Required) Distinguished name of the parent Contract Subject object.
 * `filter_dn` - (Required) Distinguished name of the Filter object.
 * `annotation` - (Optional) Annotation of the Contract Subject Filter object.
-* `action` - (Optional) The action required when the condition is met. Allowed values are "deny", "permit", and default value is "permit". Type: String.
-* `directives` - (Optional) Directives of the Contract Subject Filter object. Allowed values are "log", "no_stats", "none", and default value is "none". Type: List.
-* `priority_override` - (Optional) Priority override of the Contract Subject Filter object. Allowed values are "default", "level1", "level2", "level3", and default value is "default". Type: String.
+* `action` - (Optional) The action required when the condition is met. Allowed values are "deny", "permit", and the default value is "permit". Type: String.
+* `directives` - (Optional) Directives of the Contract Subject Filter object. Allowed values are "log", "no_stats", "none", and the default value is "none". Type: List.
+* `priority_override` - (Optional) Priority override of the Contract Subject Filter object. Allowed values are "default", "level1", "level2", "level3", and the default value is "default". Type: String.
 
 
 ## Importing ##

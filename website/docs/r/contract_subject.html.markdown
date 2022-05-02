@@ -55,13 +55,13 @@ Manages ACI Contract Subject
 ## Argument Reference
 
 - `contract_dn` - (Required) Distinguished name of parent Contract object.
-- `name` - (Required) Name of Object contract subject.
-- `annotation` - (Optional) Annotation for object contract subject.
-- `description` - (Optional) Description for object contract subject.
+- `name` - (Required) Name of the contract subject object.
+- `annotation` - (Optional) Annotation for the contract subject object.
+- `description` - (Optional) Description for the contract subject object.
 - `cons_match_t` - (Optional) The subject match criteria across consumers. Allowed values are "All", "None", "AtmostOne" and "AtleastOne". Default value is "AtleastOne".
-- `name_alias` - (Optional) Name alias for object contract subject.
+- `name_alias` - (Optional) Name alias for the contract subject object.
 - `prio` - (Optional) The priority level of a sub application running behind an endpoint group, such as an Exchange server. Allowed values are "unspecified", "level1", "level2", "level3", "level4", "level5" and "level6". Default is "unspecified.
-- `prov_match_t` - (Optional) The subject match criteria across consumers. Allowed values are "All", "None", "AtmostOne" and "AtleastOne". Default value is "AtleastOne".
+- `prov_match_t` - (Optional) The subject match criteria across providers. Allowed values are "All", "None", "AtmostOne" and "AtleastOne". Default value is "AtleastOne".
 - `rev_flt_ports` - (Optional) Enables filter to apply on ingress and egress traffic. Allowed values are "yes" and "no". Default is "yes".
 - `target_dscp` - (Optional) The target differentiated services code point (DSCP) of the path attached to the layer 3 outside profile. Allowed values are "CS0", "CS1", "AF11", "AF12", "AF13", "CS2", "AF21", "AF22", "AF23", "CS3", "AF31", "AF32", "AF33", "CS4", "AF41", "AF42", "AF43", "CS5", "VA", "EF", "CS6", "CS7" and "unspecified". Default is "unspecified".
 
@@ -69,14 +69,16 @@ Manages ACI Contract Subject
 - `relation_vz_rs_sdwan_pol` - (Optional) Relation to class extdevSDWanSlaPol. Cardinality - N_TO_ONE. Type - String.
 - `relation_vz_rs_subj_filt_att` - (Optional) Relation to class vzFilter. Cardinality - N_TO_M. Type - Set of String.
 
-- `apply_both_directions` - (Optional) . By default set to "yes".
+- `apply_both_directions` - (Optional) Defines if a contract subject allows traffic matching the defined filters for both consumer-to-provider and provider-to-consumer together or if each direction can be defined separately. By default set to "yes".
+  - When set to "yes", the filters defined in the subject are applied for both directions.
+  - When set to "no", the filters for each direction (consumer-to-provider and provider-to-consumer) are defined independently.
 - ` consumer_to_provider` - (Optional) Filter Chain For Consumer to Provider. Class vzInTerm.
-    - `prio` - (Optional) The priority level of a sub application running behind an endpoint group, such as an Exchange server.
-    - `target_dscp` - (Optional) The target differentiated services code point (DSCP) of the path attached to the layer 3 outside profile.
+    - `prio` - (Optional) The priority level to assign to traffic matching the consumer to provider flows.
+    - `target_dscp` - (Optional) The target DSCP to assign to traffic matching the consumer to provider flows.
 	- `relation_vz_rs_in_term_graph_att` - (Optional) Relation to class L4-L7 Service Graph (vnsAbsGraph).
 - `provider_to_consumer` - (Optional) Filter Chain For Provider to Consumer. Class vzOutTerm
-    - `prio` - (Optional) The priority level of a sub application running behind an endpoint group, such as an Exchange server.
-    - `target_dscp` - (Optional) The target differentiated services code point (DSCP) of the path attached to the layer 3 outside profile.
+    - `prio` - (Optional) The priority level to assign to traffic matching the provider to consumer flows.
+    - `target_dscp` - (Optional) The target DSCP to assign to traffic matching the provider to consumer flows.
 	- `relation_vz_rs_out_term_graph_att` - (Optional) Relation to class L4-L7 Service Graph (vnsAbsGraph).
 
 

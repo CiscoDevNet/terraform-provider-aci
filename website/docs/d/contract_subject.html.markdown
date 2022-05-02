@@ -22,27 +22,29 @@ data "aci_contract_subject" "dev_subject" {
 
 ## Argument Reference
 
-- `contract_dn` - (Required) Distinguished name of parent (Contract) object.
+- `contract_dn` - (Required) Distinguished name of parent Contract object.
 - `name` - (Required) name of Object contract_subject.
 
 ## Attribute Reference
 
 - `id` - Attribute id set to the Dn of the Contract Subject.
-- `annotation` - (Optional) Annotation for the object contract subject.
-- `description` - (Optional) Description for the object contract subject.
+- `annotation` - (Optional) Annotation for the contract subject object.
+- `description` - (Optional) Description for the contract subject object.
 - `cons_match_t` - (Optional) The subject match criteria across consumers.
-- `name_alias` - (Optional) Name alias for the object contract subject.
+- `name_alias` - (Optional) Name alias for the contract subject object.
 - `prio` - (Optional) The priority level of a sub application running behind an endpoint group, such as an Exchange server.
-- `prov_match_t` - (Optional) The subject match criteria across consumers.
+- `prov_match_t` - (Optional) The subject match criteria across providers.
 - `rev_flt_ports` - (Optional) Enables filter to apply on ingress and egress traffic.
 - `target_dscp` - (Optional) The target differentiated services code point (DSCP) of the path attached to the layer 3 outside profile.
 
-- `apply_both_directions` - (Optional) . By default set to "yes".
-- ` consumer_to_provider` - (Optional) Filter Chain For Consumer to Provider. Class vzInTerm.
-    - `prio` - (Optional) The priority level of a sub application running behind an endpoint group, such as an Exchange server.
-    - `target_dscp` - (Optional) The target differentiated services code point (DSCP) of the path attached to the layer 3 outside profile.
+- `apply_both_directions` - (Optional) Defines if a contract subject allows traffic matching the defined filters for both consumer-to-provider and provider-to-consumer together or if each direction can be defined separately. By default set to "yes".
+  - When set to "yes", the filters defined in the subject are applied for both directions.
+  - When set to "no", the filters for each direction (consumer-to-provider and provider-to-consumer) are defined independently.
+- ` consumer_to_provider` - (Optional) Filter Chain for Consumer to Provider. Class vzInTerm.
+    - `prio` - (Optional) The priority level to assign to traffic matching the consumer to provider flows.
+    - `target_dscp` - (Optional) The target DSCP to assign to traffic matching the consumer to provider flows.
     - `relation_vz_rs_in_term_graph_att` - (Optional) Relation to class L4-L7 Service Graph (vnsAbsGraph).
-- `provider_to_consumer` - (Optional) Filter Chain For Provider to Consumer. Class vzOutTerm
-    - `prio` - (Optional) The priority level of a sub application running behind an endpoint group, such as an Exchange server.
-    - `target_dscp` - (Optional) The target differentiated services code point (DSCP) of the path attached to the layer 3 outside profile.
+- `provider_to_consumer` - (Optional) Filter Chain for Provider to Consumer. Class vzOutTerm
+    - `prio` - (Optional) The priority level to assign to traffic matching the provider to consumer flows.
+    - `target_dscp` - (Optional) The target DSCP to assign to traffic matching the provider to consumer flows.
     - `relation_vz_rs_out_term_graph_att` - (Optional) Relation to class L4-L7 Service Graph (vnsAbsGraph).
