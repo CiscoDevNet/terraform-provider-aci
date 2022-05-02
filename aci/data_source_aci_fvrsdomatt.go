@@ -3,6 +3,7 @@ package aci
 import (
 	"context"
 	"fmt"
+	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
@@ -88,9 +89,10 @@ func dataSourceAciDomain() *schema.Resource {
 			},
 
 			"lag_policy_name": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
+				Type:       schema.TypeString,
+				Optional:   true,
+				Computed:   true,
+				Deprecated: "see enhanced_lag_policy",
 			},
 
 			"netflow_dir": &schema.Schema{
@@ -146,6 +148,11 @@ func dataSourceAciDomain() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+
+			"enhanced_lag_policy": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 		},
 	}
 }
@@ -170,6 +177,13 @@ func dataSourceAciDomainRead(ctx context.Context, d *schema.ResourceData, m inte
 
 	if err != nil {
 		return diag.FromErr(err)
+	}
+	fvRsVmmVSwitchEnhancedLagPolData, err := aciClient.ReadRelationfvRsVmmVSwitchEnhancedLagPol(dn)
+	if err != nil {
+		log.Printf("[DEBUG] Error while reading relation fvRsVmmVSwitchEnhancedLagPol %v", err)
+		d.Set("enhanced_lag_policy", "")
+	} else {
+		d.Set("enhanced_lag_policy", fvRsVmmVSwitchEnhancedLagPolData.(string))
 	}
 	return nil
 }

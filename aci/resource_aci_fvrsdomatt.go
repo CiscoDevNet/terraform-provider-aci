@@ -133,9 +133,10 @@ func resourceAciDomain() *schema.Resource {
 			},
 
 			"lag_policy_name": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
+				Type:       schema.TypeString,
+				Optional:   true,
+				Computed:   true,
+				Deprecated: "use enhanced_lag_policy instead",
 			},
 
 			"netflow_dir": &schema.Schema{
@@ -236,6 +237,11 @@ func resourceAciDomain() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+			},
+
+			"enhanced_lag_policy": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
 			},
 		},
 	}
@@ -347,6 +353,14 @@ func resourceAciDomainImport(d *schema.ResourceData, m interface{}) ([]*schema.R
 
 	if err != nil {
 		return nil, err
+	}
+
+	fvRsVmmVSwitchEnhancedLagPolData, err := aciClient.ReadRelationfvRsVmmVSwitchEnhancedLagPol(dn)
+	if err != nil {
+		log.Printf("[DEBUG] Error while reading relation fvRsVmmVSwitchEnhancedLagPol %v", err)
+		d.Set("enhanced_lag_policy", "")
+	} else {
+		d.Set("enhanced_lag_policy", fvRsVmmVSwitchEnhancedLagPolData.(string))
 	}
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
@@ -462,6 +476,36 @@ func resourceAciDomainCreate(ctx context.Context, d *schema.ResourceData, m inte
 			return diag.FromErr(err)
 		}
 		d.Set("vmm_id", vmmSecP.DistinguishedName)
+	}
+	checkDns := make([]string, 0, 1)
+
+	if relationTofvRsVmmVSwitchEnhancedLagPol, ok := d.GetOk("enhanced_lag_policy"); ok {
+		fvAEPgLagPolAtt := models.NewApplicationEPGLagPolicy(fmt.Sprintf(models.RnfvAEPgLagPolAtt), fvRsDomAtt.DistinguishedName)
+
+		err := aciClient.Save(fvAEPgLagPolAtt)
+		if err != nil {
+			return diag.FromErr(err)
+		}
+		relationParam := relationTofvRsVmmVSwitchEnhancedLagPol.(string)
+		checkDns = append(checkDns, relationParam)
+
+	}
+
+	d.Partial(true)
+	err = checkTDn(aciClient, checkDns)
+	if err != nil {
+		return diag.FromErr(err)
+	}
+	d.Partial(false)
+
+	if relationTofvRsVmmVSwitchEnhancedLagPol, ok := d.GetOk("enhanced_lag_policy"); ok {
+		relationParam := relationTofvRsVmmVSwitchEnhancedLagPol.(string)
+		err = aciClient.CreateRelationfvRsVmmVSwitchEnhancedLagPol(fvRsDomAtt.DistinguishedName+"/epglagpolatt", fvRsDomAttAttr.Annotation, relationParam)
+
+		if err != nil {
+			return diag.FromErr(err)
+		}
+
 	}
 	d.SetId(fvRsDomAtt.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
@@ -583,6 +627,35 @@ func resourceAciDomainUpdate(ctx context.Context, d *schema.ResourceData, m inte
 		}
 		d.Set("vmm_id", vmmSecP.DistinguishedName)
 	}
+
+	checkDns := make([]string, 0, 1)
+
+	if d.HasChange("enhanced_lag_policy") || d.HasChange("annotation") {
+		_, newRelParam := d.GetChange("enhanced_lag_policy")
+		checkDns = append(checkDns, newRelParam.(string))
+
+	}
+
+	d.Partial(true)
+	err = checkTDn(aciClient, checkDns)
+	if err != nil {
+		return diag.FromErr(err)
+	}
+	d.Partial(false)
+
+	if d.HasChange("enhanced_lag_policy") || d.HasChange("annotation") {
+		_, newRelParam := d.GetChange("enhanced_lag_policy")
+		err = aciClient.DeleteRelationfvRsVmmVSwitchEnhancedLagPol(fvRsDomAtt.DistinguishedName)
+		if err != nil {
+			return diag.FromErr(err)
+		}
+		err = aciClient.CreateRelationfvRsVmmVSwitchEnhancedLagPol(fvRsDomAtt.DistinguishedName+"/epglagpolatt", fvRsDomAttAttr.Annotation, newRelParam.(string))
+
+		if err != nil {
+			return diag.FromErr(err)
+		}
+
+	}
 	d.SetId(fvRsDomAtt.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
@@ -618,6 +691,19 @@ func resourceAciDomainRead(ctx context.Context, d *schema.ResourceData, m interf
 			if err != nil {
 				d.SetId("")
 				return nil
+			}
+		}
+	}
+
+	fvRsVmmVSwitchEnhancedLagPolData, err := aciClient.ReadRelationfvRsVmmVSwitchEnhancedLagPol(dn)
+	if err != nil {
+		log.Printf("[DEBUG] Error while reading relation fvRsVmmVSwitchEnhancedLagPol %v", err)
+		d.Set("enhanced_lag_policy", "")
+	} else {
+		if _, ok := d.GetOk("enhanced_lag_policy"); ok {
+			tfName := d.Get("enhanced_lag_policy").(string)
+			if tfName != fvRsVmmVSwitchEnhancedLagPolData {
+				d.Set("enhanced_lag_policy", "")
 			}
 		}
 	}
