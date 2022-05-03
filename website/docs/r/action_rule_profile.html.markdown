@@ -67,8 +67,11 @@ resource "aci_action_rule_profile" "example" {
   * `community` - (Optional) Community of the Set Communities object. Allowed input formats are `regular:as2-nn2:4:15`, `extended:as4-nn2:5:16`, `no-export` and `no-advertise`. Type: String.
 * `next_hop_propagation` - (Optional) Next Hop Propagation of the Action Rule Profile object. Allowed values are `yes` or `no`. Type: String.
 * `multipath` - (Optional) Multipath of the Action Rule Profile object. Allowed values are `yes` or `no`. Can not be configured along with `set_route_tag`. Type: String.
-* `saspath_prepend_last_as` - (Optional) Set As Path - Prepend Last-AS of the Action Rule Profile object. Type: Integer.
+* `saspath_prepend_last_as` - (Optional) Set As Path - Prepend Last-AS of the Action Rule Profile object. The value must be between 1 to 10. Type: Integer.
 * `saspath_prepend_asn` - (Optional) A block representing the attributes of Set As Path - Prepend AS of the Action Rule Profile object. Type: Block.
+  * `asn` - (Optional) ASN of the Set As Path - Prepend AS object. Type: Integer.
+  * `order` - (Optional) Order of the Set As Path - Prepend AS object. Order must be between 0 to 31. Type: Integer.
+
 ## Importing ##
 
 An existing Action Rule Profile can be [imported][docs-import] into this resource via its Dn, via the following command:

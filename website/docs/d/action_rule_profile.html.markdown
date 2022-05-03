@@ -52,3 +52,5 @@ data "aci_action_rule_profile" "example" {
 * `multipath` - (Optional) Multipath of the Action Rule Profile object.
 * `saspath_prepend_last_as` - (Optional) Set As Path - Prepend Last-AS of the Action Rule Profile object. Type: Integer.
 * `saspath_prepend_asn` - (Optional) A block representing the attributes of Set As Path - Prepend AS of the Action Rule Profile object. Type: Block.
+  * `asn` - (Optional) ASN of the Set As Path - Prepend AS object. Type: Integer.
+  * `order` - (Optional) Order of the Set As Path - Prepend AS object. Type: Integer.
