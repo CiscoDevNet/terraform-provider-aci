@@ -125,6 +125,7 @@ func resourceAciRouteControlContextImport(d *schema.ResourceData, m interface{})
 	if err != nil {
 		return nil, err
 	}
+	rtctrlRsCtxPToSubjPtDnList := make([]string, 0, 1)
 	for _, childCont := range ctxChildContList {
 		if childCont.Exists(models.RtctrlscopeClassName) {
 			scopeChildContList, err := childCont.S(models.RtctrlscopeClassName, "children").Children()
@@ -137,8 +138,12 @@ func resourceAciRouteControlContextImport(d *schema.ResourceData, m interface{})
 					d.Set("set_rule", setRule)
 				}
 			}
+		} else if childCont.Exists("rtctrlRsCtxPToSubjP") {
+			rtctrlRsCtxPToSubjPtDn := models.G(childCont.S("rtctrlRsCtxPToSubjP", "attributes"), "tDn")
+			rtctrlRsCtxPToSubjPtDnList = append(rtctrlRsCtxPToSubjPtDnList, rtctrlRsCtxPToSubjPtDn)
 		}
 	}
+	d.Set("relation_rtctrl_rs_ctx_p_to_subj_p", rtctrlRsCtxPToSubjPtDnList)
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 	return []*schema.ResourceData{schemaFilled}, nil
@@ -191,12 +196,8 @@ func resourceAciRouteControlContextCreate(ctx context.Context, d *schema.Resourc
 			return diag.FromErr(err)
 		}
 	}
-	checkDns := make([]string, 0, 1)
 
-	err = checkTDn(aciClient, checkDns)
-	if err != nil {
-		return diag.FromErr(err)
-	}
+	checkDns := make([]string, 0, 1)
 
 	if relationTortctrlRsCtxPToSubjP, ok := d.GetOk("relation_rtctrl_rs_ctx_p_to_subj_p"); ok {
 		relationParamList := toStringList(relationTortctrlRsCtxPToSubjP.(*schema.Set).List())
@@ -341,6 +342,15 @@ func resourceAciRouteControlContextRead(ctx context.Context, d *schema.ResourceD
 	if err != nil {
 		d.SetId("")
 		return nil
+	}
+
+	rtctrlRsScopeToAttrPtDn, err := aciClient.ReadRelationrtctrlRsScopeToAttrP(dn + "/" + models.RnrtctrlScope)
+	if err != nil {
+		log.Printf("[DEBUG] Error while reading relation rtctrlRsScopeToAttrP %v", err)
+		setRelationAttribute(d, "set_rule", "")
+	} else {
+		setRelationAttribute(d, "set_rule", rtctrlRsScopeToAttrPtDn)
+
 	}
 
 	rtctrlRsCtxPToSubjPData, err := aciClient.ReadRelationrtctrlRsCtxPToSubjP(dn)
