@@ -24,6 +24,7 @@ type SubjectFilterAttributes struct {
 	Action           string `json:",omitempty"`
 	Directives       string `json:",omitempty"`
 	PriorityOverride string `json:",omitempty"`
+	TDn              string `json:",omitempty"`
 	TnVzFilterName   string `json:",omitempty"`
 }
 
@@ -49,6 +50,8 @@ func (vzRsSubjFiltAtt *SubjectFilter) ToMap() (map[string]string, error) {
 	A(vzRsSubjFiltAttMap, "action", vzRsSubjFiltAtt.Action)
 	A(vzRsSubjFiltAttMap, "directives", vzRsSubjFiltAtt.Directives)
 	A(vzRsSubjFiltAttMap, "priorityOverride", vzRsSubjFiltAtt.PriorityOverride)
+	A(vzRsSubjFiltAttMap, "annotation", vzRsSubjFiltAtt.Annotation)
+	A(vzRsSubjFiltAttMap, "tDn", vzRsSubjFiltAtt.TDn)
 	A(vzRsSubjFiltAttMap, "tnVzFilterName", vzRsSubjFiltAtt.TnVzFilterName)
 	return vzRsSubjFiltAttMap, err
 }
@@ -66,6 +69,7 @@ func SubjectFilterFromContainerList(cont *container.Container, index int) *Subje
 			Action:           G(SubjectFilterCont, "action"),
 			Directives:       G(SubjectFilterCont, "directives"),
 			PriorityOverride: G(SubjectFilterCont, "priorityOverride"),
+			TDn:              G(SubjectFilterCont, "tDn"),
 			TnVzFilterName:   G(SubjectFilterCont, "tnVzFilterName"),
 		},
 	}

@@ -36,11 +36,11 @@ func resourceAciActionRuleProfile() *schema.Resource {
 				ForceNew: true,
 			},
 			"set_route_tag": {
-				Type:         schema.TypeString,
-				Optional:     true,
-				ValidateFunc: validateIntRange(0, 4294967295),
+				Type:          schema.TypeString,
+				Optional:      true,
+				ValidateFunc:  validateIntRange(0, 4294967295),
 				ConflictsWith: []string{"multipath"},
-				Description:  "Invalid Configuration Set nexthop unchanged action cannot be configured along with set route tag action under the set action rule profile.",
+				Description:   "Invalid Configuration Set nexthop unchanged action cannot be configured along with set route tag action under the set action rule profile.",
 			},
 			"set_preference": {
 				Type:         schema.TypeString,
@@ -946,7 +946,7 @@ func resourceAciActionRuleProfileUpdate(ctx context.Context, d *schema.ResourceD
 			if err != nil {
 				return diag.FromErr(err)
 			}
-			
+
 			log.Printf("[DEBUG] %s: rtctrlSetComm - Creation finished successfully", rtctrlSetComm.DistinguishedName)
 			resourceAciRtctrlSetCommRead(ctx, rtctrlSetComm.DistinguishedName, d, m)
 		} else {
@@ -964,38 +964,29 @@ func resourceAciActionRuleProfileUpdate(ctx context.Context, d *schema.ResourceD
 
 	// rtctrlSetNhUnchanged - Operations
 	if d.HasChange("next_hop_propagation") {
-		if setNhUnchanged, ok := d.GetOk("next_hop_propagation"); ok {
-			log.Printf("[DEBUG] rtctrlSetNhUnchanged - Beginning Creation")
+		setNhUnchanged, ok := d.GetOk("next_hop_propagation")
+		if ok && setNhUnchanged == "yes" {
 
+			log.Printf("[DEBUG] rtctrlSetNhUnchanged - Beginning Creation")
 			rtctrlSetNhUnchangedAttr := models.NexthopUnchangedActionAttributes{}
-			rtctrlSetNhUnchangedAttr.Type = setNhUnchanged.(string)
 
 			setNhUnchangedDn := rtctrlAttrP.DistinguishedName + fmt.Sprintf("/"+models.RnrtctrlSetNhUnchanged)
 
-			setNhUnchanged, ok := d.GetOk("next_hop_propagation")
-			if ok && setNhUnchanged == "yes" {
-
-				log.Printf("[DEBUG] rtctrlSetNhUnchanged - Beginning Creation")
-				rtctrlSetNhUnchangedAttr := models.NexthopUnchangedActionAttributes{}
-
-				setNhUnchangedDn := rtctrlAttrP.DistinguishedName + fmt.Sprintf("/"+models.RnrtctrlSetNhUnchanged)
-
-				deletion_err := aciClient.DeleteByDn(setNhUnchangedDn, "rtctrlSetNhUnchanged")
-				if deletion_err != nil {
-					return diag.FromErr(err)
-				}
-
-				rtctrlSetNhUnchanged := models.NewNexthopUnchangedAction(fmt.Sprintf(models.RnrtctrlSetNhUnchanged), rtctrlAttrP.DistinguishedName, "", "", rtctrlSetNhUnchangedAttr)
-
-				err := aciClient.Save(rtctrlSetNhUnchanged)
-				if err != nil {
-					return diag.FromErr(err)
-				}
-
-				next_hop_propagation_flag = false
-				log.Printf("[DEBUG] %s: rtctrlSetNhUnchanged - Creation finished successfully", rtctrlSetNhUnchanged.DistinguishedName)
-				resourceAciNexthopUnchangedActionRead(ctx, rtctrlSetNhUnchanged.DistinguishedName, d, m)
+			deletion_err := aciClient.DeleteByDn(setNhUnchangedDn, "rtctrlSetNhUnchanged")
+			if deletion_err != nil {
+				return diag.FromErr(err)
 			}
+
+			rtctrlSetNhUnchanged := models.NewNexthopUnchangedAction(fmt.Sprintf(models.RnrtctrlSetNhUnchanged), rtctrlAttrP.DistinguishedName, "", "", rtctrlSetNhUnchangedAttr)
+
+			err := aciClient.Save(rtctrlSetNhUnchanged)
+			if err != nil {
+				return diag.FromErr(err)
+			}
+
+			next_hop_propagation_flag = false
+			log.Printf("[DEBUG] %s: rtctrlSetNhUnchanged - Creation finished successfully", rtctrlSetNhUnchanged.DistinguishedName)
+			resourceAciNexthopUnchangedActionRead(ctx, rtctrlSetNhUnchanged.DistinguishedName, d, m)
 		}
 	}
 
