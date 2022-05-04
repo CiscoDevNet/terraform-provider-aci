@@ -26,15 +26,21 @@ Manages ACI Action Rule Profile
 resource "aci_action_rule_profile" "example" {
   tenant_dn       = aci_tenant.example.id
   description     = "From Terraform"
-  name            = "example"
-  annotation      = "example"
+  name            = "Rule-1"
+  annotation      = "orchestrator:terraform"
   name_alias      = "example"
-  set_route_tag   = 100
+  set_route_tag   = 100 # Can not be configured along with multipath
   set_preference  = 100
   set_weight      = 100
   set_metric      = 100
   set_metric_type = "ospf-type1"
   set_next_hop    = "1.1.1.1"
+  set_communities = {
+    community = "no-advertise"
+    criteria  = "replace"
+  }
+  next_hop_propagation = "yes"
+  multipath            = "yes" # Can not be configured along with set_route_tag
 }
 ```
 
@@ -45,12 +51,17 @@ resource "aci_action_rule_profile" "example" {
 * `annotation` - (Optional) Annotation of the Action Rule Profile object.
 * `description` - (Optional) Description of the Action Rule Profile object.
 * `name_alias` - (Optional) Name alias of the Action Rule Profile object.
-* `set_route_tag` - (Optional) Set Route Tag of the Action Rule Profile object. Type: Integer.
+* `set_route_tag` - (Optional) Set Route Tag of the Action Rule Profile object. Can not be configured along with `multipath`. Type: Integer.
 * `set_preference` - (Optional) Set Preference of the Action Rule Profile object. Type: Integer.
 * `set_weight` - (Optional) Set Weight of the Action Rule Profile object. Type: Integer.
 * `set_metric` - (Optional) Set Metric of the Action Rule Profile object. Type: Integer.
 * `set_metric_type` - (Optional) Set Metric Type of the Action Rule Profile object. Allowed values are `ospf-type1`, `ospf-type2`.
 * `set_next_hop` - (Optional) Set Next Hop of the Action Rule Profile object.
+* `set_communities` - (Optional) A block representing the attributes of Set Communities object. Type: Block.
+  * `criteria` - (Optional) Criteria of the Set Communities object. Allowed values are `append` or `replace`. Type: String.
+  * `community` - (Optional) Community of the Set Communities object. Allowed input formats are `regular:as2-nn2:4:15`, `extended:as4-nn2:5:16`, `no-export` and `no-advertise`. Type: String.
+* `next_hop_propagation` - (Optional) Next Hop Propagation of the Action Rule Profile object. Allowed values are `yes` or `no`. Type: String.
+* `multipath` - (Optional) Multipath of the Action Rule Profile object. Allowed values are `yes` or `no`. Can not be configured along with `set_route_tag`. Type: String.
 
 ## Importing ##
 

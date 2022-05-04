@@ -50,6 +50,21 @@ func dataSourceAciActionRuleProfile() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
+			"set_communities": {
+				Optional: true,
+				Type:     schema.TypeMap,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+			},
+			"next_hop_propagation": {
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"multipath": {
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 		})),
 	}
 }
@@ -140,6 +155,39 @@ func dataSourceAciActionRuleProfileRead(ctx context.Context, d *schema.ResourceD
 		}
 	}
 	// rtctrlSetNh - Read finished successfully
+
+	// rtctrlSetComm - Beginning of Read
+	setCommDn := rtctrlAttrP.DistinguishedName + fmt.Sprintf("/"+models.RnrtctrlSetComm)
+	rtctrlSetComm, err := getRemoteRtctrlSetComm(aciClient, setCommDn)
+	if err == nil {
+		_, err = setRtctrlSetCommAttributes(rtctrlSetComm, d)
+		if err != nil {
+			return diag.FromErr(err)
+		}
+	}
+	// rtctrlSetComm - Read finished successfully
+
+	// rtctrlSetNhUnchanged - Beginning of Read
+	setNhUnchangedDn := rtctrlAttrP.DistinguishedName + fmt.Sprintf("/"+models.RnrtctrlSetNhUnchanged)
+	rtctrlSetNhUnchanged, err := getRemoteNexthopUnchangedAction(aciClient, setNhUnchangedDn)
+	if err == nil {
+		_, err = setNexthopUnchangedActionAttributes(rtctrlSetNhUnchanged, d)
+		if err != nil {
+			return diag.FromErr(err)
+		}
+	}
+	// rtctrlSetNhUnchanged - Read finished successfully
+
+	// rtctrlSetRedistMultipath - Beginning of Read
+	setRedistMultipathDn := rtctrlAttrP.DistinguishedName + fmt.Sprintf("/"+models.RnrtctrlSetRedistMultipath)
+	rtctrlSetRedistMultipath, err := getRemoteRtctrlSetRedistMultipath(aciClient, setRedistMultipathDn)
+	if err == nil {
+		_, err = setRtctrlSetRedistMultipathAttributes(rtctrlSetRedistMultipath, d)
+		if err != nil {
+			return diag.FromErr(err)
+		}
+	}
+	// rtctrlSetRedistMultipath - Read finished successfully
 
 	return nil
 }

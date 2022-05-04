@@ -29,6 +29,8 @@ type ContractSubjectAttributes struct {
 
 	RevFltPorts string `json:",omitempty"`
 
+	ApplyBothDirections string `json:",omitempty"`
+
 	TargetDscp string `json:",omitempty"`
 }
 
@@ -67,6 +69,8 @@ func (vzSubj *ContractSubject) ToMap() (map[string]string, error) {
 
 	A(vzSubjMap, "revFltPorts", vzSubj.RevFltPorts)
 
+	A(vzSubjMap, "applyBothDirections", vzSubj.ApplyBothDirections)
+
 	A(vzSubjMap, "targetDscp", vzSubj.TargetDscp)
 
 	return vzSubjMap, err
@@ -99,6 +103,8 @@ func ContractSubjectFromContainerList(cont *container.Container, index int) *Con
 			ProvMatchT: G(ContractSubjectCont, "provMatchT"),
 
 			RevFltPorts: G(ContractSubjectCont, "revFltPorts"),
+
+			ApplyBothDirections: G(ContractSubjectCont, "applyBothDirections"),
 
 			TargetDscp: G(ContractSubjectCont, "targetDscp"),
 		},
