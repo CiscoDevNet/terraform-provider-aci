@@ -40,9 +40,9 @@ data "aci_action_rule_profile" "example" {
 * `name_alias` - (Optional) Name Alias of the Action Rule Profile object.
 * `description` - (Optional) Description of the Action Rule Profile object.
 * `set_route_tag` - (Optional) Set Route Tag of the Action Rule Profile object.
-* `set_preference` - (Optional) Set Preference of the Action Rule Profile object. Type: Integer.
-* `set_weight` - (Optional) Set Weight of the Action Rule Profile object. Type: Integer.
-* `set_metric` - (Optional) Set Metric of the Action Rule Profile object. Type: Integer.
+* `set_preference` - (Optional) Set Preference of the Action Rule Profile object.
+* `set_weight` - (Optional) Set Weight of the Action Rule Profile object.
+* `set_metric` - (Optional) Set Metric of the Action Rule Profile object.
 * `set_metric_type` - (Optional) Set Metric Type of the Action Rule Profile object.
 * `set_next_hop` - (Optional) Set Next Hop of the Action Rule Profile object.
 * `set_communities` - (Optional) A block representing the attributes of Set Communities object. Type: Block.

@@ -907,7 +907,7 @@ func resourceAciActionRuleProfileUpdate(ctx context.Context, d *schema.ResourceD
 			if err != nil {
 				return diag.FromErr(err)
 			}
-			
+
 			log.Printf("[DEBUG] %s: rtctrlSetNh - Creation finished successfully", rtctrlSetNh.DistinguishedName)
 			resourceAciRtctrlSetNhRead(ctx, rtctrlSetNh.DistinguishedName, d, m)
 		} else {
