@@ -52,7 +52,7 @@ Allowed values: "none", "staticBinding", "dynamicBinding", "ephemeral". Default 
 * `allow_micro_seg` - (Optional) Boolean flag for allow micro segment. default value will be "false".
 "true" maps to class_pref="useg" and "false maps to class_pref="encap" 
 * `custom_epg_name` - (Optional) Custom EPG name used as name of the VMM port group for the domain.
-* `enhanced_lag_policy` - (Optional) Represents the relation to Enhanced LACP Lag Policy (class lacpEnhancedLagPol).
+* `enhanced_lag_policy` - (Optional) Distinguished Name of the Enhanced LACP LAG Policy (class lacpEnhancedLagPol) to associate with the VMM domain.
 * `delimiter` - (Optional) Delimiter for object Domain.
 * `encap` - (Optional) Port encapsulation.
 * `encap_mode` - (Optional) Encap mode for object Domain.

@@ -480,12 +480,6 @@ func resourceAciDomainCreate(ctx context.Context, d *schema.ResourceData, m inte
 	checkDns := make([]string, 0, 1)
 
 	if relationTofvRsVmmVSwitchEnhancedLagPol, ok := d.GetOk("enhanced_lag_policy"); ok {
-		fvAEPgLagPolAtt := models.NewApplicationEPGLagPolicy(fmt.Sprintf(models.RnfvAEPgLagPolAtt), fvRsDomAtt.DistinguishedName)
-
-		err := aciClient.Save(fvAEPgLagPolAtt)
-		if err != nil {
-			return diag.FromErr(err)
-		}
 		relationParam := relationTofvRsVmmVSwitchEnhancedLagPol.(string)
 		checkDns = append(checkDns, relationParam)
 
@@ -499,9 +493,15 @@ func resourceAciDomainCreate(ctx context.Context, d *schema.ResourceData, m inte
 	d.Partial(false)
 
 	if relationTofvRsVmmVSwitchEnhancedLagPol, ok := d.GetOk("enhanced_lag_policy"); ok {
+		fvAEPgLagPolAtt := models.NewApplicationEPGLagPolicy(fmt.Sprintf(models.RnfvAEPgLagPolAtt), fvRsDomAtt.DistinguishedName, "", "", models.ApplicationEPGLagPolicyAttributes{})
+
+		err := aciClient.Save(fvAEPgLagPolAtt)
+		if err != nil {
+			return diag.FromErr(err)
+		}
+
 		relationParam := relationTofvRsVmmVSwitchEnhancedLagPol.(string)
 		err = aciClient.CreateRelationfvRsVmmVSwitchEnhancedLagPol(fvRsDomAtt.DistinguishedName+"/epglagpolatt", fvRsDomAttAttr.Annotation, relationParam)
-
 		if err != nil {
 			return diag.FromErr(err)
 		}
@@ -698,14 +698,9 @@ func resourceAciDomainRead(ctx context.Context, d *schema.ResourceData, m interf
 	fvRsVmmVSwitchEnhancedLagPolData, err := aciClient.ReadRelationfvRsVmmVSwitchEnhancedLagPol(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation fvRsVmmVSwitchEnhancedLagPol %v", err)
-		d.Set("enhanced_lag_policy", "")
+		setRelationAttribute(d, "enhanced_lag_policy", "")
 	} else {
-		if _, ok := d.GetOk("enhanced_lag_policy"); ok {
-			tfName := d.Get("enhanced_lag_policy").(string)
-			if tfName != fvRsVmmVSwitchEnhancedLagPolData {
-				d.Set("enhanced_lag_policy", "")
-			}
-		}
+		setRelationAttribute(d, "enhanced_lag_policy", fvRsVmmVSwitchEnhancedLagPolData.(string))
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
