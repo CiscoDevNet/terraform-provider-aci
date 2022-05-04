@@ -56,21 +56,21 @@ resource "aci_action_rule_profile" "example" {
 * `annotation` - (Optional) Annotation of the Action Rule Profile object.
 * `description` - (Optional) Description of the Action Rule Profile object.
 * `name_alias` - (Optional) Name alias of the Action Rule Profile object.
-* `set_route_tag` - (Optional) Set Route Tag of the Action Rule Profile object. Can not be configured along with `multipath`. Type: Integer.
-* `set_preference` - (Optional) Set Preference of the Action Rule Profile object. Type: Integer.
-* `set_weight` - (Optional) Set Weight of the Action Rule Profile object. Type: Integer.
-* `set_metric` - (Optional) Set Metric of the Action Rule Profile object. Type: Integer.
+* `set_route_tag` - (Optional) Set Route Tag of the Action Rule Profile object. Can not be configured along with `multipath`.
+* `set_preference` - (Optional) Set Preference of the Action Rule Profile object.
+* `set_weight` - (Optional) Set Weight of the Action Rule Profile object.
+* `set_metric` - (Optional) Set Metric of the Action Rule Profile object.
 * `set_metric_type` - (Optional) Set Metric Type of the Action Rule Profile object. Allowed values are `ospf-type1`, `ospf-type2`.
 * `set_next_hop` - (Optional) Set Next Hop of the Action Rule Profile object.
 * `set_communities` - (Optional) A block representing the attributes of Set Communities object. Type: Block.
-  * `criteria` - (Optional) Criteria of the Set Communities object. Allowed values are `append` or `replace`. Type: String.
-  * `community` - (Optional) Community of the Set Communities object. Allowed input formats are `regular:as2-nn2:4:15`, `extended:as4-nn2:5:16`, `no-export` and `no-advertise`. Type: String.
-* `next_hop_propagation` - (Optional) Next Hop Propagation of the Action Rule Profile object. Allowed values are `yes` or `no`. Type: String.
-* `multipath` - (Optional) Multipath of the Action Rule Profile object. Allowed values are `yes` or `no`. Can not be configured along with `set_route_tag`. Type: String.
-* `saspath_prepend_last_as` - (Optional) Set As Path - Prepend Last-AS of the Action Rule Profile object. The value must be between 1 to 10. Type: Integer.
+  * `criteria` - (Optional) Criteria of the Set Communities object. Allowed values are `append` or `replace`.
+  * `community` - (Optional) Community of the Set Communities object. Allowed input formats are `regular:as2-nn2:4:15`, `extended:as4-nn2:5:16`, `no-export` and `no-advertise`.
+* `next_hop_propagation` - (Optional) Next Hop Propagation of the Action Rule Profile object. Allowed values are `yes` or `no`.
+* `multipath` - (Optional) Multipath of the Action Rule Profile object. Allowed values are `yes` or `no`. Can not be configured along with `set_route_tag`.
+* `saspath_prepend_last_as` - (Optional) Set As Path - Prepend Last-AS of the Action Rule Profile object. The value must be between 1 to 10.
 * `saspath_prepend_asn` - (Optional) A block representing the attributes of Set As Path - Prepend AS of the Action Rule Profile object. Type: Block.
-  * `asn` - (Optional) ASN of the Set As Path - Prepend AS object. Type: Integer.
-  * `order` - (Optional) Order of the Set As Path - Prepend AS object. Order must be between 0 to 31. Type: Integer.
+  * `asn` - (Optional) ASN of the Set As Path - Prepend AS object.
+  * `order` - (Optional) Order of the Set As Path - Prepend AS object. Order must be between 0 to 31.
 
 ## Importing ##
 

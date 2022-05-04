@@ -363,7 +363,7 @@ func setRtctrlSetASPathAttributes(rtctrlSetASPath *models.SetASPath, d *schema.R
 }
 
 func getRemoteRtctrlSetASPathASNRelations(client *client.Client, dn string) (*models.ASNumber, error) {
-	ReadRelationASNumberData, err := client.ReadRelationASNumber(dn)
+	ReadRelationASNumberData, err := client.ReadRelationSetASPathASN(dn)
 
 	if err == nil {
 		for _, record := range ReadRelationASNumberData {
