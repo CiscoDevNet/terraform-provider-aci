@@ -1329,149 +1329,149 @@ func resourceAciActionRuleProfileRead(ctx context.Context, d *schema.ResourceDat
 		return nil
 	}
 
-	// rtctrlSetTag - Beginning Import
+	// rtctrlSetTag - Beginning Read
 	setRouteTagDn := dn + fmt.Sprintf("/"+models.RnrtctrlSetTag)
 	rtctrlSetTag, err := getRemoteRtctrlSetTag(aciClient, setRouteTagDn)
 	if err == nil {
-		log.Printf("[DEBUG] %s: rtctrlSetTag - Beginning Import", setRouteTagDn)
+		log.Printf("[DEBUG] %s: rtctrlSetTag - Beginning Read", setRouteTagDn)
 		_, err = setRtctrlSetTagAttributes(rtctrlSetTag, d)
 		if err != nil {
 			return nil
 		}
-		log.Printf("[DEBUG] %s: rtctrlSetTag - Import finished successfully", setRouteTagDn)
+		log.Printf("[DEBUG] %s: rtctrlSetTag - Read finished successfully", setRouteTagDn)
 	}
-	// rtctrlSetTag - Import finished successfully
+	// rtctrlSetTag - Read finished successfully
 
-	// rtctrlSetPref - Beginning Import
+	// rtctrlSetPref - Beginning Read
 	setPrefDn := dn + fmt.Sprintf("/"+models.RnrtctrlSetPref)
 	rtctrlSetPref, err := getRemoteRtctrlSetPref(aciClient, setPrefDn)
 	if err == nil {
-		log.Printf("[DEBUG] %s: rtctrlSetPref - Beginning Import", setPrefDn)
+		log.Printf("[DEBUG] %s: rtctrlSetPref - Beginning Read", setPrefDn)
 		_, err = setRtctrlSetPrefAttributes(rtctrlSetPref, d)
 		if err != nil {
 			return nil
 		}
-		log.Printf("[DEBUG] %s: rtctrlSetPref - Import finished successfully", setPrefDn)
+		log.Printf("[DEBUG] %s: rtctrlSetPref - Read finished successfully", setPrefDn)
 	}
-	// rtctrlSetPref - Import finished successfully
+	// rtctrlSetPref - Read finished successfully
 
-	// rtctrlSetWeight - Beginning Import
+	// rtctrlSetWeight - Beginning Read
 	setWeightDn := dn + fmt.Sprintf("/"+models.RnrtctrlSetWeight)
 	rtctrlSetWeight, err := getRemoteRtctrlSetWeight(aciClient, setWeightDn)
 	if err == nil {
-		log.Printf("[DEBUG] %s: rtctrlSetWeight - Beginning Import", setWeightDn)
+		log.Printf("[DEBUG] %s: rtctrlSetWeight - Beginning Read", setWeightDn)
 		_, err = setRtctrlSetWeightAttributes(rtctrlSetWeight, d)
 		if err != nil {
 			return nil
 		}
-		log.Printf("[DEBUG] %s: rtctrlSetWeight - Import finished successfully", setWeightDn)
+		log.Printf("[DEBUG] %s: rtctrlSetWeight - Read finished successfully", setWeightDn)
 	}
-	// rtctrlSetWeight - Import finished successfully
+	// rtctrlSetWeight - Read finished successfully
 
-	// rtctrlSetRtMetric - Beginning Import
+	// rtctrlSetRtMetric - Beginning Read
 	setRtMetricDn := dn + fmt.Sprintf("/"+models.RnrtctrlSetRtMetric)
 	rtctrlSetRtMetric, err := getRemoteRtctrlSetRtMetric(aciClient, setRtMetricDn)
 	if err == nil {
-		log.Printf("[DEBUG] %s: rtctrlSetRtMetric - Beginning Import", setRtMetricDn)
+		log.Printf("[DEBUG] %s: rtctrlSetRtMetric - Beginning Read", setRtMetricDn)
 		_, err = setRtctrlSetRtMetricAttributes(rtctrlSetRtMetric, d)
 		if err != nil {
 			return nil
 		}
-		log.Printf("[DEBUG] %s: rtctrlSetRtMetric - Import finished successfully", setRtMetricDn)
+		log.Printf("[DEBUG] %s: rtctrlSetRtMetric - Read finished successfully", setRtMetricDn)
 	}
-	// rtctrlSetRtMetric - Import finished successfully
+	// rtctrlSetRtMetric - Read finished successfully
 
-	// rtctrlSetRtMetricType - Beginning Import
+	// rtctrlSetRtMetricType - Beginning Read
 	setRtMetricTypeDn := dn + fmt.Sprintf("/"+models.RnrtctrlSetRtMetricType)
 	rtctrlSetRtMetricType, err := getRemoteRtctrlSetRtMetricType(aciClient, setRtMetricTypeDn)
 	if err == nil {
-		log.Printf("[DEBUG] %s: rtctrlSetRtMetricType - Beginning Import", setRtMetricTypeDn)
+		log.Printf("[DEBUG] %s: rtctrlSetRtMetricType - Beginning Read", setRtMetricTypeDn)
 		_, err = setRtctrlSetRtMetricTypeAttributes(rtctrlSetRtMetricType, d)
 		if err != nil {
 			return nil
 		}
-		log.Printf("[DEBUG] %s: rtctrlSetRtMetricType - Import finished successfully", setRtMetricTypeDn)
+		log.Printf("[DEBUG] %s: rtctrlSetRtMetricType - Read finished successfully", setRtMetricTypeDn)
 	}
-	// rtctrlSetRtMetricType - Import finished successfully
+	// rtctrlSetRtMetricType - Read finished successfully
 
-	// rtctrlSetNh - Beginning Import
+	// rtctrlSetNh - Beginning Read
 	setNhDn := dn + fmt.Sprintf("/"+models.RnrtctrlSetNh)
 	rtctrlSetNh, err := getRemoteRtctrlSetNh(aciClient, setNhDn)
 	if err == nil {
-		log.Printf("[DEBUG] %s: rtctrlSetNh - Beginning Import", setNhDn)
+		log.Printf("[DEBUG] %s: rtctrlSetNh - Beginning Read", setNhDn)
 		_, err = setRtctrlSetNhAttributes(rtctrlSetNh, d)
 		if err != nil {
 			return nil
 		}
-		log.Printf("[DEBUG] %s: rtctrlSetNh - Import finished successfully", setNhDn)
+		log.Printf("[DEBUG] %s: rtctrlSetNh - Read finished successfully", setNhDn)
 	}
-	// rtctrlSetNh - Import finished successfully
+	// rtctrlSetNh - Read finished successfully
 
-	// rtctrlSetComm - Beginning Import
+	// rtctrlSetComm - Beginning Read
 	setCommDn := dn + fmt.Sprintf("/"+models.RnrtctrlSetComm)
 	rtctrlSetComm, err := getRemoteRtctrlSetComm(aciClient, setCommDn)
 	if err == nil {
-		log.Printf("[DEBUG] %s: rtctrlSetComm - Beginning Import", setCommDn)
+		log.Printf("[DEBUG] %s: rtctrlSetComm - Beginning Read", setCommDn)
 		_, err = setRtctrlSetCommAttributes(rtctrlSetComm, d)
 		if err != nil {
 			return nil
 		}
-		log.Printf("[DEBUG] %s: rtctrlSetComm - Import finished successfully", setCommDn)
+		log.Printf("[DEBUG] %s: rtctrlSetComm - Read finished successfully", setCommDn)
 	}
-	// rtctrlSetComm - Import finished successfully
+	// rtctrlSetComm - Read finished successfully
 
-	// rtctrlSetNhUnchanged - Beginning Import
+	// rtctrlSetNhUnchanged - Beginning Read
 	setNhUnchangedDn := dn + fmt.Sprintf("/"+models.RnrtctrlSetNhUnchanged)
 	rtctrlSetNhUnchanged, err := getRemoteNexthopUnchangedAction(aciClient, setNhUnchangedDn)
 	if err == nil {
-		log.Printf("[DEBUG] %s: rtctrlSetNhUnchanged - Beginning Import", setNhUnchangedDn)
+		log.Printf("[DEBUG] %s: rtctrlSetNhUnchanged - Beginning Read", setNhUnchangedDn)
 		_, err := setNexthopUnchangedActionAttributes(rtctrlSetNhUnchanged, d)
 		if err != nil {
 			return nil
 		}
-		log.Printf("[DEBUG] %s: rtctrlSetNhUnchanged - Import finished successfully", setNhUnchangedDn)
+		log.Printf("[DEBUG] %s: rtctrlSetNhUnchanged - Read finished successfully", setNhUnchangedDn)
 	}
-	// rtctrlSetNhUnchanged - Import finished successfully
+	// rtctrlSetNhUnchanged - Read finished successfully
 
-	// rtctrlSetRedistMultipath - Beginning Import
+	// rtctrlSetRedistMultipath - Beginning Read
 	setRedistMultipathDn := dn + fmt.Sprintf("/"+models.RnrtctrlSetRedistMultipath)
 	rtctrlSetRedistMultipath, err := getRemoteRtctrlSetRedistMultipath(aciClient, setRedistMultipathDn)
 	if err == nil {
-		log.Printf("[DEBUG] %s: rtctrlSetRedistMultipath - Beginning Import", setRedistMultipathDn)
+		log.Printf("[DEBUG] %s: rtctrlSetRedistMultipath - Beginning Read", setRedistMultipathDn)
 		_, err = setRtctrlSetRedistMultipathAttributes(rtctrlSetRedistMultipath, d)
 		if err != nil {
 			return nil
 		}
-		log.Printf("[DEBUG] %s: rtctrlSetRedistMultipath - Import finished successfully", setRedistMultipathDn)
+		log.Printf("[DEBUG] %s: rtctrlSetRedistMultipath - Read finished successfully", setRedistMultipathDn)
 	}
-	// rtctrlSetRedistMultipath - Import finished successfully
+	// rtctrlSetRedistMultipath - Read finished successfully
 
-	// rtctrlSetASPath - Beginning Import
+	// rtctrlSetASPath - Beginning Read
 
 	setASPathPrependLastAsDn := dn + fmt.Sprintf("/"+models.RnrtctrlSetASPath, "prepend-last-as")
 	rtctrlSetASPathPrependLastAs, err := getRemoteRtctrlSetASPath(aciClient, setASPathPrependLastAsDn)
 	if err == nil {
-		log.Printf("[DEBUG] %s: rtctrlSetASPath - Beginning Import", setASPathPrependLastAsDn)
+		log.Printf("[DEBUG] %s: rtctrlSetASPath - Beginning Read", setASPathPrependLastAsDn)
 		_, err = setRtctrlSetASPathAttributes(rtctrlSetASPathPrependLastAs, d)
 		if err != nil {
 			return nil
 		}
-		log.Printf("[DEBUG] %s: rtctrlSetASPath - Import finished successfully", setASPathPrependLastAsDn)
+		log.Printf("[DEBUG] %s: rtctrlSetASPath - Read finished successfully", setASPathPrependLastAsDn)
 	}
 
-	// rtctrlSetASPath - Import finished successfully
+	// rtctrlSetASPath - Read finished successfully
 
-	// rtctrlSetASPathASN - Beginning Import
+	// rtctrlSetASPathASN - Beginning Read
 
 	setASNumberDn := dn + "/" + fmt.Sprintf(models.RnrtctrlSetASPath, "prepend")
-	log.Printf("[DEBUG] %s: rtctrlSetASPathASN - Beginning Import", setASNumberDn)
+	log.Printf("[DEBUG] %s: rtctrlSetASPathASN - Beginning Read", setASNumberDn)
 	_, err = getAndSetRemoteSetASPathASNRelations(aciClient, setASNumberDn, d)
 	if err != nil {
 		return nil
 	}
-	log.Printf("[DEBUG] %s: rtctrlSetASPathASN - Import finished successfully", setASNumberDn)
+	log.Printf("[DEBUG] %s: rtctrlSetASPathASN - Read finished successfully", setASNumberDn)
 
-	// rtctrlSetASPathASN - Import finished successfully
+	// rtctrlSetASPathASN - Read finished successfully
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 
