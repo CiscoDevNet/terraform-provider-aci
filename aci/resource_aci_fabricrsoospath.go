@@ -25,11 +25,14 @@ func resourceAciOutofServiceFabricPath() *schema.Resource {
 		},
 
 		SchemaVersion: 1,
-		Schema: AppendBaseAttrSchema(map[string]*schema.Schema{
+		Schema: map[string]*schema.Schema{
 			"annotation": {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				DefaultFunc: func() (interface{}, error) {
+					return "orchestrator:terraform", nil
+				},
 			},
 			"pod_id": {
 				Type:     schema.TypeInt,
@@ -51,7 +54,7 @@ func resourceAciOutofServiceFabricPath() *schema.Resource {
 				Required: true,
 				ForceNew: true,
 			},
-		}),
+		},
 	}
 }
 
@@ -72,6 +75,49 @@ func setOutofServiceFabricPathAttributes(fabricRsOosPath *models.OutofServiceFab
 	fabricRsOosPathMap, err := fabricRsOosPath.ToMap()
 	if err != nil {
 		return d, err
+	}
+	if fabricRsOosPath.TDn != "" {
+		interfaceRegEx := regexp.MustCompile(`topology/pod-([0-9]+?)/paths-([0-9]+?)/pathep-\[(.*?)\]`)
+		fexRegEx := regexp.MustCompile(`topology/pod-([0-9]+?)/paths-([0-9]+?)/extpaths-([0-9]+?)/pathep-\[(.*?)\]`)
+		matchInterface := interfaceRegEx.FindStringSubmatch(fabricRsOosPath.TDn)
+		if len(matchInterface) > 0 {
+			podId, err := strconv.Atoi(matchInterface[1])
+			if err != nil {
+				return nil, err
+			}
+			d.Set("pod_id", podId)
+
+			nodeId, err := strconv.Atoi(matchInterface[2])
+			if err != nil {
+				return nil, err
+			}
+			d.Set("node_id", nodeId)
+
+			d.Set("interface", matchInterface[3])
+		} else {
+			matchFex := fexRegEx.FindStringSubmatch(fabricRsOosPath.TDn)
+			if len(matchFex) > 0 {
+				podId, err := strconv.Atoi(matchFex[1])
+				if err != nil {
+					return nil, err
+				}
+				d.Set("pod_id", podId)
+
+				nodeId, err := strconv.Atoi(matchFex[2])
+				if err != nil {
+					return nil, err
+				}
+				d.Set("node_id", nodeId)
+
+				fexId, err := strconv.Atoi(matchFex[3])
+				if err != nil {
+					return nil, err
+				}
+				d.Set("fex_id", fexId)
+
+				d.Set("interface", matchFex[4])
+			}
+		}
 	}
 	d.Set("annotation", fabricRsOosPathMap["annotation"])
 	return d, nil
