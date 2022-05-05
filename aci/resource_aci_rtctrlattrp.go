@@ -38,24 +38,24 @@ func resourceAciActionRuleProfile() *schema.Resource {
 			"set_route_tag": {
 				Type:          schema.TypeString,
 				Optional:      true,
-				ValidateFunc:  validateIntRange(0, 4294967295),
-				ConflictsWith: []string{"multipath"},
-				Description:   "Invalid Configuration Set nexthop unchanged action cannot be configured along with set route tag action under the set action rule profile.",
+				ValidateFunc:  validateIntBetweenFromString(0, 4294967295),
+				ConflictsWith: []string{"multipath", "next_hop_propagation"},
+				// Set nexthop unchanged action cannot be configured along with set route tag action under the set action rule profile.
 			},
 			"set_preference": {
 				Type:         schema.TypeString,
 				Optional:     true,
-				ValidateFunc: validateIntRange(0, 4294967295),
+				ValidateFunc: validateIntBetweenFromString(0, 4294967295),
 			},
 			"set_weight": {
 				Type:         schema.TypeString,
 				Optional:     true,
-				ValidateFunc: validateIntRange(0, 4294967295),
+				ValidateFunc: validateIntBetweenFromString(0, 4294967295),
 			},
 			"set_metric": {
 				Type:         schema.TypeString,
 				Optional:     true,
-				ValidateFunc: validateIntRange(0, 4294967295),
+				ValidateFunc: validateIntBetweenFromString(0, 4294967295),
 			},
 			"set_metric_type": {
 				Type:     schema.TypeString,
@@ -83,6 +83,8 @@ func resourceAciActionRuleProfile() *schema.Resource {
 					"yes",
 					"no",
 				}, false),
+				ConflictsWith: []string{"set_route_tag"},
+				// Set nexthop unchanged action cannot be configured along with set route tag action under the set action rule profile.
 			},
 			"multipath": {
 				Type:     schema.TypeString,
@@ -92,11 +94,37 @@ func resourceAciActionRuleProfile() *schema.Resource {
 					"no",
 				}, false),
 				ConflictsWith: []string{"set_route_tag"},
-				Description:   "Invalid Configuration Set nexthop unchanged action cannot be configured along with set route tag action under the set action rule profile.",
+				// Set nexthop unchanged action cannot be configured along with set route tag action under the set action rule profile.
+			},
+			"set_as_path_prepend_last_as": {
+				Type:         schema.TypeString,
+				Optional:     true,
+				ValidateFunc: validateIntBetweenFromString(1, 10),
+			},
+			"set_as_path_prepend_as": {
+				Type:     schema.TypeSet,
+				Optional: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"asn": {
+							Type:         schema.TypeString,
+							Required:     true,
+							ValidateFunc: validateIntBetweenFromString(0, 4294967295),
+							Description:  "ASN must be between 0 and 4294967295",
+						},
+						"order": {
+							Required:     true,
+							Type:         schema.TypeString,
+							ValidateFunc: validateIntBetweenFromString(0, 31),
+							Description:  "Order must be between 0 and 31",
+						},
+					},
+				},
 			},
 		})),
 	}
 }
+
 func getRemoteActionRuleProfile(client *client.Client, dn string) (*models.ActionRuleProfile, error) {
 	rtctrlAttrPCont, err := client.Get(dn)
 	if err != nil {
@@ -129,6 +157,7 @@ func setActionRuleProfileAttributes(rtctrlAttrP *models.ActionRuleProfile, d *sc
 	d.Set("name_alias", rtctrlAttrPMap["nameAlias"])
 	return d, nil
 }
+
 func getRemoteRtctrlSetTag(client *client.Client, dn string) (*models.RtctrlSetTag, error) {
 	rtctrlSetTagCont, err := client.Get(dn)
 	if err != nil {
@@ -327,6 +356,45 @@ func setRtctrlSetRedistMultipathAttributes(rtctrlSetRedistMultipath *models.Redi
 	return d, nil
 }
 
+func getRemoteRtctrlSetASPath(client *client.Client, dn string) (*models.SetASPath, error) {
+	rtctrlSetASPathCont, err := client.Get(dn)
+	if err != nil {
+		return nil, err
+	}
+	rtctrlSetASPath := models.SetASPathFromContainer(rtctrlSetASPathCont)
+	if rtctrlSetASPath.DistinguishedName == "" {
+		return nil, fmt.Errorf("RtctrlSetASPath %s not found", dn)
+	}
+	return rtctrlSetASPath, nil
+}
+
+func setRtctrlSetASPathAttributes(rtctrlSetASPath *models.SetASPath, d *schema.ResourceData) (*schema.ResourceData, error) {
+	rtctrlSetASPathMap, err := rtctrlSetASPath.ToMap()
+	if err != nil {
+		return d, err
+	}
+
+	d.Set("set_as_path_prepend_last_as", rtctrlSetASPathMap["lastnum"])
+	return d, nil
+}
+
+func getAndSetRemoteSetASPathASNs(client *client.Client, dn string, d *schema.ResourceData) (*schema.ResourceData, error) {
+	ReadRelationASNumberData, err := client.ListSetAsPathASNs(dn)
+	if err == nil {
+		ASNList := make([]interface{}, 0)
+		for _, record := range ReadRelationASNumberData {
+			ASNMap := make(map[string]interface{})
+			ASNMap["asn"] = record.Asn
+			ASNMap["order"] = record.Order
+			ASNList = append(ASNList, ASNMap)
+		}
+		d.Set("set_as_path_prepend_as", ASNList)
+	} else {
+		d.Set("set_as_path_prepend_as", nil)
+	}
+	return d, nil
+}
+
 func resourceAciActionRuleProfileImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
 	log.Printf("[DEBUG] %s: Beginning Import", d.Id())
 	aciClient := m.(*client.Client)
@@ -467,6 +535,33 @@ func resourceAciActionRuleProfileImport(d *schema.ResourceData, m interface{}) (
 	}
 	// rtctrlSetRedistMultipath - Import finished successfully
 
+	// rtctrlSetASPath - Beginning Import
+
+	setASPathPrependLastAsDn := rtctrlAttrP.DistinguishedName + fmt.Sprintf("/"+models.RnrtctrlSetASPath, "prepend-last-as")
+	rtctrlSetASPathPrependLastAs, err := getRemoteRtctrlSetASPath(aciClient, setASPathPrependLastAsDn)
+	if err == nil {
+		log.Printf("[DEBUG] %s: rtctrlSetASPath - Beginning Import", setASPathPrependLastAsDn)
+		_, err = setRtctrlSetASPathAttributes(rtctrlSetASPathPrependLastAs, d)
+		if err != nil {
+			return nil, err
+		}
+		log.Printf("[DEBUG] %s: rtctrlSetASPath - Import finished successfully", setASPathPrependLastAsDn)
+	}
+
+	// rtctrlSetASPath - Import finished successfully
+
+	// rtctrlSetASPathASN - Beginning Import
+
+	setASNumberDn := rtctrlAttrP.DistinguishedName + "/" + fmt.Sprintf(models.RnrtctrlSetASPath, "prepend")
+	log.Printf("[DEBUG] %s: rtctrlSetASPathASN - Beginning Import", setASNumberDn)
+	_, err = getAndSetRemoteSetASPathASNs(aciClient, setASNumberDn, d)
+	if err != nil {
+		return nil, err
+	}
+	log.Printf("[DEBUG] %s: rtctrlSetASPathASN - Import finished successfully", setASNumberDn)
+
+	// rtctrlSetASPathASN - Import finished successfully
+
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
@@ -517,7 +612,6 @@ func resourceAciActionRuleProfileCreate(ctx context.Context, d *schema.ResourceD
 		}
 
 		log.Printf("[DEBUG] %s: Creation finished successfully", rtctrlSetTag.DistinguishedName)
-		resourceAciRtctrlSetTagRead(ctx, rtctrlSetTag.DistinguishedName, d, m)
 	}
 
 	// rtctrlSetPref - Operations
@@ -534,7 +628,6 @@ func resourceAciActionRuleProfileCreate(ctx context.Context, d *schema.ResourceD
 		}
 
 		log.Printf("[DEBUG] %s: Creation finished successfully", rtctrlSetPref.DistinguishedName)
-		resourceAciRtctrlSetPrefRead(ctx, rtctrlSetPref.DistinguishedName, d, m)
 	}
 
 	// rtctrlSetWeight - Operations
@@ -551,7 +644,6 @@ func resourceAciActionRuleProfileCreate(ctx context.Context, d *schema.ResourceD
 		}
 
 		log.Printf("[DEBUG] %s: Creation finished successfully", rtctrlSetWeight.DistinguishedName)
-		resourceAciRtctrlSetWeightRead(ctx, rtctrlSetWeight.DistinguishedName, d, m)
 	}
 
 	// rtctrlSetRtMetric - Operations
@@ -568,7 +660,6 @@ func resourceAciActionRuleProfileCreate(ctx context.Context, d *schema.ResourceD
 		}
 
 		log.Printf("[DEBUG] %s: Creation finished successfully", rtctrlSetRtMetric.DistinguishedName)
-		resourceAciRtctrlSetRtMetricRead(ctx, rtctrlSetRtMetric.DistinguishedName, d, m)
 	}
 
 	// rtctrlSetRtMetricType - Operations
@@ -585,7 +676,6 @@ func resourceAciActionRuleProfileCreate(ctx context.Context, d *schema.ResourceD
 		}
 
 		log.Printf("[DEBUG] %s: Creation finished successfully", rtctrlSetRtMetricType.DistinguishedName)
-		resourceAciRtctrlSetRtMetricTypeRead(ctx, rtctrlSetRtMetricType.DistinguishedName, d, m)
 	}
 
 	// rtctrlSetNh - Operations
@@ -602,7 +692,6 @@ func resourceAciActionRuleProfileCreate(ctx context.Context, d *schema.ResourceD
 		}
 
 		log.Printf("[DEBUG] %s: Creation finished successfully", rtctrlSetNh.DistinguishedName)
-		resourceAciRtctrlSetNhRead(ctx, rtctrlSetNh.DistinguishedName, d, m)
 	}
 
 	// rtctrlSetComm - Operations
@@ -621,7 +710,6 @@ func resourceAciActionRuleProfileCreate(ctx context.Context, d *schema.ResourceD
 		}
 
 		log.Printf("[DEBUG] %s: Creation finished successfully", rtctrlSetComm.DistinguishedName)
-		resourceAciRtctrlSetCommRead(ctx, rtctrlSetComm.DistinguishedName, d, m)
 	}
 
 	// rtctrlSetNhUnchanged - Operations
@@ -637,7 +725,6 @@ func resourceAciActionRuleProfileCreate(ctx context.Context, d *schema.ResourceD
 		}
 
 		log.Printf("[DEBUG] %s: Creation finished successfully", rtctrlSetNhUnchanged.DistinguishedName)
-		resourceAciNexthopUnchangedActionRead(ctx, rtctrlSetNhUnchanged.DistinguishedName, d, m)
 	}
 
 	// rtctrlSetRedistMultipath - Operations
@@ -654,7 +741,62 @@ func resourceAciActionRuleProfileCreate(ctx context.Context, d *schema.ResourceD
 		}
 
 		log.Printf("[DEBUG] %s: Creation finished successfully", rtctrlSetRedistMultipath.DistinguishedName)
-		resourceAciRtctrlSetRedistMultipathRead(ctx, rtctrlSetRedistMultipath.DistinguishedName, d, m)
+	}
+
+	// rtctrlSetASPath - Operations
+	if prependLastAS, ok := d.GetOk("set_as_path_prepend_last_as"); ok {
+		log.Printf("[DEBUG] rtctrlSetASPath prepend-last-as: Beginning Creation")
+
+		rtctrlSetASPathAttr := models.SetASPathAttributes{}
+		rtctrlSetASPathAttr.Lastnum = prependLastAS.(string)
+		rtctrlSetASPath := models.NewSetASPath(fmt.Sprintf(models.RnrtctrlSetASPath, "prepend-last-as"), rtctrlAttrP.DistinguishedName, "", "", rtctrlSetASPathAttr)
+
+		creation_err := aciClient.Save(rtctrlSetASPath)
+		if creation_err != nil {
+			return diag.FromErr(creation_err)
+		}
+
+		log.Printf("[DEBUG] %s: Creation finished successfully", rtctrlSetASPath.DistinguishedName)
+	}
+
+	// rtctrlSetASPathASN - Operations
+	if SetAsPathASN, ok := d.GetOk("set_as_path_prepend_as"); ok {
+
+		log.Printf("[DEBUG] rtctrlSetASPath prepend: Beginning Creation of Parent Object")
+
+		// Parent Object creation - begins
+		rtctrlSetASPathAttr := models.SetASPathAttributes{}
+
+		rtctrlSetASPath := models.NewSetASPath(fmt.Sprintf(models.RnrtctrlSetASPath, "prepend"), rtctrlAttrP.DistinguishedName, "", "", rtctrlSetASPathAttr)
+
+		parent_creation_err := aciClient.Save(rtctrlSetASPath)
+		if parent_creation_err != nil {
+			return diag.FromErr(parent_creation_err)
+		}
+
+		log.Printf("[DEBUG] %s: Creation of parent object finished successfully", rtctrlSetASPath.DistinguishedName)
+		log.Printf("[DEBUG] rtctrlSetASPathASN: Beginning Creation of Child Objects")
+
+		SetAsPathASNList := SetAsPathASN.(*schema.Set).List()
+		for _, ASN := range SetAsPathASNList {
+			ASNMap := ASN.(map[string]interface{})
+
+			rtctrlSetASPathASNAttr := models.ASNumberAttributes{}
+			rtctrlSetASPathASNAttr.Asn = ASNMap["asn"].(string)
+			rtctrlSetASPathASNAttr.Order = ASNMap["order"].(string)
+
+			// Child Object creation
+			rtctrlSetASPathASN := models.NewASNumber(fmt.Sprintf(models.RnrtctrlSetASPathASN, ASNMap["order"]), rtctrlSetASPath.DistinguishedName, "", "", rtctrlSetASPathASNAttr)
+
+			err := aciClient.Save(rtctrlSetASPathASN)
+			if err != nil {
+				return diag.FromErr(err)
+			}
+
+			log.Printf("[DEBUG] %s: Creation finished successfully", rtctrlSetASPathASN.DistinguishedName)
+		}
+
+		log.Printf("[DEBUG] %s: Creation of all child objects finished successfully", rtctrlSetASPath.DistinguishedName)
 	}
 
 	d.SetId(rtctrlAttrP.DistinguishedName)
@@ -705,6 +847,20 @@ func resourceAciActionRuleProfileUpdate(ctx context.Context, d *schema.ResourceD
 		if setRouteTag, ok := d.GetOk("set_route_tag"); ok {
 			log.Printf("[DEBUG] rtctrlSetTag - Beginning Creation")
 
+			// Removing multipath and next_hop_propagation
+			setRedistMultipathDn := rtctrlAttrP.DistinguishedName + fmt.Sprintf("/"+models.RnrtctrlSetRedistMultipath)
+			remove_multipath := aciClient.DeleteByDn(setRedistMultipathDn, "rtctrlSetRedistMultipath")
+			if remove_multipath != nil {
+				return diag.FromErr(remove_multipath)
+			}
+
+			setNhUnchangedDn := rtctrlAttrP.DistinguishedName + fmt.Sprintf("/"+models.RnrtctrlSetNhUnchanged)
+			remove_next_hop_propagation := aciClient.DeleteByDn(setNhUnchangedDn, "rtctrlSetNhUnchanged")
+			if remove_next_hop_propagation != nil {
+				return diag.FromErr(remove_next_hop_propagation)
+			}
+
+			//  Set Route Tag object creation
 			rtctrlSetTagAttr := models.RtctrlSetTagAttributes{}
 			rtctrlSetTagAttr.Tag = setRouteTag.(string)
 
@@ -723,8 +879,6 @@ func resourceAciActionRuleProfileUpdate(ctx context.Context, d *schema.ResourceD
 			}
 
 			log.Printf("[DEBUG] %s: rtctrlSetTag - Creation finished successfully", rtctrlSetTag.DistinguishedName)
-			resourceAciRtctrlSetTagRead(ctx, rtctrlSetTag.DistinguishedName, d, m)
-
 		} else {
 			setRouteTagDn := rtctrlAttrP.DistinguishedName + fmt.Sprintf("/"+models.RnrtctrlSetTag)
 			log.Printf("[DEBUG] %s: rtctrlSetTag - Beginning Destroy", setRouteTagDn)
@@ -761,7 +915,6 @@ func resourceAciActionRuleProfileUpdate(ctx context.Context, d *schema.ResourceD
 			}
 
 			log.Printf("[DEBUG] %s: rtctrlSetPref - Creation finished successfully", rtctrlSetPref.DistinguishedName)
-			resourceAciRtctrlSetPrefRead(ctx, rtctrlSetPref.DistinguishedName, d, m)
 		} else {
 			setPrefDn := rtctrlAttrP.DistinguishedName + fmt.Sprintf("/"+models.RnrtctrlSetPref)
 			log.Printf("[DEBUG] %s: rtctrlSetPref - Beginning Destroy", setPrefDn)
@@ -798,7 +951,6 @@ func resourceAciActionRuleProfileUpdate(ctx context.Context, d *schema.ResourceD
 			}
 
 			log.Printf("[DEBUG] %s: rtctrlSetWeight - Creation finished successfully", rtctrlSetWeight.DistinguishedName)
-			resourceAciRtctrlSetWeightRead(ctx, rtctrlSetWeight.DistinguishedName, d, m)
 		} else {
 			setWeightDn := rtctrlAttrP.DistinguishedName + fmt.Sprintf("/"+models.RnrtctrlSetWeight)
 			log.Printf("[DEBUG] %s: rtctrlSetWeight - Beginning Destroy", setWeightDn)
@@ -835,7 +987,6 @@ func resourceAciActionRuleProfileUpdate(ctx context.Context, d *schema.ResourceD
 			}
 
 			log.Printf("[DEBUG] %s: rtctrlSetRtMetric - Creation finished successfully", rtctrlSetRtMetric.DistinguishedName)
-			resourceAciRtctrlSetRtMetricRead(ctx, rtctrlSetRtMetric.DistinguishedName, d, m)
 		} else {
 			setRtMetricDn := rtctrlAttrP.DistinguishedName + fmt.Sprintf("/"+models.RnrtctrlSetRtMetric)
 			log.Printf("[DEBUG] %s: rtctrlSetRtMetric - Beginning Destroy", setRtMetricDn)
@@ -872,7 +1023,6 @@ func resourceAciActionRuleProfileUpdate(ctx context.Context, d *schema.ResourceD
 			}
 
 			log.Printf("[DEBUG] %s: rtctrlSetRtMetricType - Creation finished successfully", rtctrlSetRtMetricType.DistinguishedName)
-			resourceAciRtctrlSetRtMetricTypeRead(ctx, rtctrlSetRtMetricType.DistinguishedName, d, m)
 		} else {
 			setRtMetricTypeDn := rtctrlAttrP.DistinguishedName + fmt.Sprintf("/"+models.RnrtctrlSetRtMetricType)
 			log.Printf("[DEBUG] %s: rtctrlSetRtMetricType - Beginning Destroy", setRtMetricTypeDn)
@@ -909,7 +1059,6 @@ func resourceAciActionRuleProfileUpdate(ctx context.Context, d *schema.ResourceD
 			}
 
 			log.Printf("[DEBUG] %s: rtctrlSetNh - Creation finished successfully", rtctrlSetNh.DistinguishedName)
-			resourceAciRtctrlSetNhRead(ctx, rtctrlSetNh.DistinguishedName, d, m)
 		} else {
 			setNhDn := rtctrlAttrP.DistinguishedName + fmt.Sprintf("/"+models.RnrtctrlSetNh)
 			log.Printf("[DEBUG] %s: rtctrlSetNh - Beginning Destroy", setNhDn)
@@ -948,7 +1097,6 @@ func resourceAciActionRuleProfileUpdate(ctx context.Context, d *schema.ResourceD
 			}
 
 			log.Printf("[DEBUG] %s: rtctrlSetComm - Creation finished successfully", rtctrlSetComm.DistinguishedName)
-			resourceAciRtctrlSetCommRead(ctx, rtctrlSetComm.DistinguishedName, d, m)
 		} else {
 			setCommDn := rtctrlAttrP.DistinguishedName + fmt.Sprintf("/"+models.RnrtctrlSetComm)
 			log.Printf("[DEBUG] %s: rtctrlSetComm - Beginning Destroy", setCommDn)
@@ -986,7 +1134,6 @@ func resourceAciActionRuleProfileUpdate(ctx context.Context, d *schema.ResourceD
 
 			next_hop_propagation_flag = false
 			log.Printf("[DEBUG] %s: rtctrlSetNhUnchanged - Creation finished successfully", rtctrlSetNhUnchanged.DistinguishedName)
-			resourceAciNexthopUnchangedActionRead(ctx, rtctrlSetNhUnchanged.DistinguishedName, d, m)
 		}
 	}
 
@@ -1013,7 +1160,6 @@ func resourceAciActionRuleProfileUpdate(ctx context.Context, d *schema.ResourceD
 			}
 
 			log.Printf("[DEBUG] %s: rtctrlSetRedistMultipath - Creation finished successfully", rtctrlSetRedistMultipath.DistinguishedName)
-			resourceAciRtctrlSetRedistMultipathRead(ctx, rtctrlSetRedistMultipath.DistinguishedName, d, m)
 		} else {
 			setRedistMultipathDn := rtctrlAttrP.DistinguishedName + fmt.Sprintf("/"+models.RnrtctrlSetRedistMultipath)
 			log.Printf("[DEBUG] %s: rtctrlSetRedistMultipath - Beginning Destroy", setRedistMultipathDn)
@@ -1050,7 +1196,6 @@ func resourceAciActionRuleProfileUpdate(ctx context.Context, d *schema.ResourceD
 				}
 
 				log.Printf("[DEBUG] %s: rtctrlSetNhUnchanged - Creation finished successfully", rtctrlSetNhUnchanged.DistinguishedName)
-				resourceAciNexthopUnchangedActionRead(ctx, rtctrlSetNhUnchanged.DistinguishedName, d, m)
 			}
 		} else {
 			setRedistMultipath, ok := d.GetOk("multipath")
@@ -1068,6 +1213,105 @@ func resourceAciActionRuleProfileUpdate(ctx context.Context, d *schema.ResourceD
 			} else {
 				return diag.FromErr(fmt.Errorf("Invalid Configuration Set Redistribute Multipath action cannot be configured without configuring the Next Hop Propagation"))
 			}
+		}
+	}
+
+	// rtctrlSetASPath - Operations
+	if d.HasChange("set_as_path_prepend_last_as") {
+
+		if prependLastAS, ok := d.GetOk("set_as_path_prepend_last_as"); ok {
+
+			log.Printf("[DEBUG] rtctrlSetASPath prepend-last-as - Beginning Creation")
+
+			rtctrlSetASPathAttr := models.SetASPathAttributes{}
+			rtctrlSetASPathAttr.Lastnum = prependLastAS.(string)
+
+			setASPathPrependLastASDn := rtctrlAttrP.DistinguishedName + fmt.Sprintf("/"+models.RnrtctrlSetASPath, "prepend-last-as")
+
+			deletion_err := aciClient.DeleteByDn(setASPathPrependLastASDn, "rtctrlSetASPath")
+			if deletion_err != nil {
+				return diag.FromErr(err)
+			}
+
+			rtctrlSetASPath := models.NewSetASPath(fmt.Sprintf(models.RnrtctrlSetASPath, "prepend-last-as"), rtctrlAttrP.DistinguishedName, "", "", rtctrlSetASPathAttr)
+
+			err := aciClient.Save(rtctrlSetASPath)
+			if err != nil {
+				return diag.FromErr(err)
+			}
+
+			log.Printf("[DEBUG] %s: rtctrlSetASPath - Creation finished successfully", rtctrlSetASPath.DistinguishedName)
+
+		} else {
+			setASPathPrependLastASDn := rtctrlAttrP.DistinguishedName + fmt.Sprintf("/"+models.RnrtctrlSetASPath, "prepend-last-as")
+			log.Printf("[DEBUG] %s: rtctrlSetASPath - Beginning Destroy", setASPathPrependLastASDn)
+
+			err := aciClient.DeleteByDn(setASPathPrependLastASDn, "rtctrlSetASPath")
+			if err != nil {
+				return diag.FromErr(err)
+			}
+
+			log.Printf("[DEBUG] %s: rtctrlSetASPath - Destroy finished successfully", setASPathPrependLastASDn)
+		}
+	}
+
+	// rtctrlSetASPathASN - Operations
+	if d.HasChange("set_as_path_prepend_as") {
+		if SetAsPathASN, ok := d.GetOk("set_as_path_prepend_as"); ok {
+			log.Printf("[DEBUG] rtctrlSetASPathASN prepend - Beginning Creation")
+
+			// Parent Object deletion
+			setASPathPrependDn := rtctrlAttrP.DistinguishedName + fmt.Sprintf("/"+models.RnrtctrlSetASPath, "prepend")
+
+			parent_deletion_err := aciClient.DeleteByDn(setASPathPrependDn, "rtctrlSetASPath")
+			if parent_deletion_err != nil {
+				return diag.FromErr(parent_deletion_err)
+			}
+
+			// Parent Object creation
+			rtctrlSetASPathAttr := models.SetASPathAttributes{}
+			rtctrlSetASPath := models.NewSetASPath(fmt.Sprintf(models.RnrtctrlSetASPath, "prepend"), rtctrlAttrP.DistinguishedName, "", "", rtctrlSetASPathAttr)
+
+			parent_creation_err := aciClient.Save(rtctrlSetASPath)
+			if parent_creation_err != nil {
+				return diag.FromErr(parent_creation_err)
+			}
+
+			log.Printf("[DEBUG] %s: Creation of parent object finished successfully", rtctrlSetASPath.DistinguishedName)
+			log.Printf("[DEBUG] rtctrlSetASPathASN: Beginning Creation of Child Objects")
+
+			SetAsPathASNList := SetAsPathASN.(*schema.Set).List()
+
+			for _, ASN := range SetAsPathASNList {
+				ASNMap := ASN.(map[string]interface{})
+
+				rtctrlSetASPathASNAttr := models.ASNumberAttributes{}
+				rtctrlSetASPathASNAttr.Asn = ASNMap["asn"].(string)
+				rtctrlSetASPathASNAttr.Order = ASNMap["order"].(string)
+
+				// Child Object creation
+				rtctrlSetASPathASN := models.NewASNumber(fmt.Sprintf(models.RnrtctrlSetASPathASN, ASNMap["order"]), rtctrlSetASPath.DistinguishedName, "", "", rtctrlSetASPathASNAttr)
+
+				err := aciClient.Save(rtctrlSetASPathASN)
+				if err != nil {
+					return diag.FromErr(err)
+				}
+				log.Printf("[DEBUG] %s: Creation finished successfully", rtctrlSetASPathASN.DistinguishedName)
+			}
+
+			log.Printf("[DEBUG] %s: Creation of all child objects finished successfully", rtctrlSetASPath.DistinguishedName)
+
+		} else {
+			// Parent Object deletion
+			setASPathPrependDn := rtctrlAttrP.DistinguishedName + fmt.Sprintf("/"+models.RnrtctrlSetASPath, "prepend")
+			log.Printf("[DEBUG] %s: rtctrlSetASPath - Beginning Destroy", setASPathPrependDn)
+
+			err := aciClient.DeleteByDn(setASPathPrependDn, "rtctrlSetASPath")
+			if err != nil {
+				return diag.FromErr(err)
+			}
+
+			log.Printf("[DEBUG] %s: rtctrlSetASPath - Destroy finished successfully", setASPathPrependDn)
 		}
 	}
 
@@ -1094,170 +1338,173 @@ func resourceAciActionRuleProfileRead(ctx context.Context, d *schema.ResourceDat
 		d.SetId("")
 		return nil
 	}
+
+	// rtctrlSetTag - Beginning Read
+	setRouteTagDn := dn + fmt.Sprintf("/"+models.RnrtctrlSetTag)
+	rtctrlSetTag, err := getRemoteRtctrlSetTag(aciClient, setRouteTagDn)
+	if err == nil {
+		log.Printf("[DEBUG] %s: rtctrlSetTag - Beginning Read", setRouteTagDn)
+		_, err = setRtctrlSetTagAttributes(rtctrlSetTag, d)
+		if err != nil {
+			return nil
+		}
+		log.Printf("[DEBUG] %s: rtctrlSetTag - Read finished successfully", setRouteTagDn)
+	} else {
+		d.Set("set_route_tag", "")
+	}
+	// rtctrlSetTag - Read finished successfully
+
+	// rtctrlSetPref - Beginning Read
+	setPrefDn := dn + fmt.Sprintf("/"+models.RnrtctrlSetPref)
+	rtctrlSetPref, err := getRemoteRtctrlSetPref(aciClient, setPrefDn)
+	if err == nil {
+		log.Printf("[DEBUG] %s: rtctrlSetPref - Beginning Read", setPrefDn)
+		_, err = setRtctrlSetPrefAttributes(rtctrlSetPref, d)
+		if err != nil {
+			return nil
+		}
+		log.Printf("[DEBUG] %s: rtctrlSetPref - Read finished successfully", setPrefDn)
+	} else {
+		d.Set("set_preference", "")
+	}
+	// rtctrlSetPref - Read finished successfully
+
+	// rtctrlSetWeight - Beginning Read
+	setWeightDn := dn + fmt.Sprintf("/"+models.RnrtctrlSetWeight)
+	rtctrlSetWeight, err := getRemoteRtctrlSetWeight(aciClient, setWeightDn)
+	if err == nil {
+		log.Printf("[DEBUG] %s: rtctrlSetWeight - Beginning Read", setWeightDn)
+		_, err = setRtctrlSetWeightAttributes(rtctrlSetWeight, d)
+		if err != nil {
+			return nil
+		}
+		log.Printf("[DEBUG] %s: rtctrlSetWeight - Read finished successfully", setWeightDn)
+	} else {
+		d.Set("set_weight", "")
+	}
+	// rtctrlSetWeight - Read finished successfully
+
+	// rtctrlSetRtMetric - Beginning Read
+	setRtMetricDn := dn + fmt.Sprintf("/"+models.RnrtctrlSetRtMetric)
+	rtctrlSetRtMetric, err := getRemoteRtctrlSetRtMetric(aciClient, setRtMetricDn)
+	if err == nil {
+		log.Printf("[DEBUG] %s: rtctrlSetRtMetric - Beginning Read", setRtMetricDn)
+		_, err = setRtctrlSetRtMetricAttributes(rtctrlSetRtMetric, d)
+		if err != nil {
+			return nil
+		}
+		log.Printf("[DEBUG] %s: rtctrlSetRtMetric - Read finished successfully", setRtMetricDn)
+	} else {
+		d.Set("set_metric", "")
+	}
+	// rtctrlSetRtMetric - Read finished successfully
+
+	// rtctrlSetRtMetricType - Beginning Read
+	setRtMetricTypeDn := dn + fmt.Sprintf("/"+models.RnrtctrlSetRtMetricType)
+	rtctrlSetRtMetricType, err := getRemoteRtctrlSetRtMetricType(aciClient, setRtMetricTypeDn)
+	if err == nil {
+		log.Printf("[DEBUG] %s: rtctrlSetRtMetricType - Beginning Read", setRtMetricTypeDn)
+		_, err = setRtctrlSetRtMetricTypeAttributes(rtctrlSetRtMetricType, d)
+		if err != nil {
+			return nil
+		}
+		log.Printf("[DEBUG] %s: rtctrlSetRtMetricType - Read finished successfully", setRtMetricTypeDn)
+	} else {
+		d.Set("set_metric_type", "")
+	}
+	// rtctrlSetRtMetricType - Read finished successfully
+
+	// rtctrlSetNh - Beginning Read
+	setNhDn := dn + fmt.Sprintf("/"+models.RnrtctrlSetNh)
+	rtctrlSetNh, err := getRemoteRtctrlSetNh(aciClient, setNhDn)
+	if err == nil {
+		log.Printf("[DEBUG] %s: rtctrlSetNh - Beginning Read", setNhDn)
+		_, err = setRtctrlSetNhAttributes(rtctrlSetNh, d)
+		if err != nil {
+			return nil
+		}
+		log.Printf("[DEBUG] %s: rtctrlSetNh - Read finished successfully", setNhDn)
+	} else {
+		d.Set("set_next_hop", "")
+	}
+	// rtctrlSetNh - Read finished successfully
+
+	// rtctrlSetComm - Beginning Read
+	setCommDn := dn + fmt.Sprintf("/"+models.RnrtctrlSetComm)
+	rtctrlSetComm, err := getRemoteRtctrlSetComm(aciClient, setCommDn)
+	if err == nil {
+		log.Printf("[DEBUG] %s: rtctrlSetComm - Beginning Read", setCommDn)
+		_, err = setRtctrlSetCommAttributes(rtctrlSetComm, d)
+		if err != nil {
+			return nil
+		}
+		log.Printf("[DEBUG] %s: rtctrlSetComm - Read finished successfully", setCommDn)
+	} else {
+		d.Set("set_communities", nil)
+	}
+	// rtctrlSetComm - Read finished successfully
+
+	// rtctrlSetNhUnchanged - Beginning Read
+	setNhUnchangedDn := dn + fmt.Sprintf("/"+models.RnrtctrlSetNhUnchanged)
+	rtctrlSetNhUnchanged, err := getRemoteNexthopUnchangedAction(aciClient, setNhUnchangedDn)
+	if err == nil {
+		log.Printf("[DEBUG] %s: rtctrlSetNhUnchanged - Beginning Read", setNhUnchangedDn)
+		_, err := setNexthopUnchangedActionAttributes(rtctrlSetNhUnchanged, d)
+		if err != nil {
+			return nil
+		}
+		log.Printf("[DEBUG] %s: rtctrlSetNhUnchanged - Read finished successfully", setNhUnchangedDn)
+	} else {
+		d.Set("next_hop_propagation", "")
+	}
+	// rtctrlSetNhUnchanged - Read finished successfully
+
+	// rtctrlSetRedistMultipath - Beginning Read
+	setRedistMultipathDn := dn + fmt.Sprintf("/"+models.RnrtctrlSetRedistMultipath)
+	rtctrlSetRedistMultipath, err := getRemoteRtctrlSetRedistMultipath(aciClient, setRedistMultipathDn)
+	if err == nil {
+		log.Printf("[DEBUG] %s: rtctrlSetRedistMultipath - Beginning Read", setRedistMultipathDn)
+		_, err = setRtctrlSetRedistMultipathAttributes(rtctrlSetRedistMultipath, d)
+		if err != nil {
+			return nil
+		}
+		log.Printf("[DEBUG] %s: rtctrlSetRedistMultipath - Read finished successfully", setRedistMultipathDn)
+	} else {
+		d.Set("multipath", "")
+	}
+	// rtctrlSetRedistMultipath - Read finished successfully
+
+	// rtctrlSetASPath - Beginning Read
+
+	setASPathPrependLastAsDn := dn + fmt.Sprintf("/"+models.RnrtctrlSetASPath, "prepend-last-as")
+	rtctrlSetASPathPrependLastAs, err := getRemoteRtctrlSetASPath(aciClient, setASPathPrependLastAsDn)
+	if err == nil {
+		log.Printf("[DEBUG] %s: rtctrlSetASPath - Beginning Read", setASPathPrependLastAsDn)
+		_, err = setRtctrlSetASPathAttributes(rtctrlSetASPathPrependLastAs, d)
+		if err != nil {
+			return nil
+		}
+		log.Printf("[DEBUG] %s: rtctrlSetASPath - Read finished successfully", setASPathPrependLastAsDn)
+	} else {
+		d.Set("set_as_path_prepend_last_as", "")
+	}
+
+	// rtctrlSetASPath - Read finished successfully
+
+	// rtctrlSetASPathASN - Beginning Read
+
+	setASNumberDn := dn + "/" + fmt.Sprintf(models.RnrtctrlSetASPath, "prepend")
+	log.Printf("[DEBUG] %s: rtctrlSetASPathASN - Beginning Read", setASNumberDn)
+	_, err = getAndSetRemoteSetASPathASNs(aciClient, setASNumberDn, d)
+	if err != nil {
+		return nil
+	}
+	log.Printf("[DEBUG] %s: rtctrlSetASPathASN - Read finished successfully", setASNumberDn)
+
+	// rtctrlSetASPathASN - Read finished successfully
+
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 
-	return nil
-}
-
-func resourceAciRtctrlSetTagRead(ctx context.Context, dn string, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	log.Printf("[DEBUG] %s: rtctrlSetTag - Beginning Read", dn)
-	aciClient := m.(*client.Client)
-
-	rtctrlSetTag, err := getRemoteRtctrlSetTag(aciClient, dn)
-	if err != nil {
-		return diag.FromErr(err)
-	}
-
-	_, err = setRtctrlSetTagAttributes(rtctrlSetTag, d)
-	if err != nil {
-		return nil
-	}
-
-	log.Printf("[DEBUG] %s: rtctrlSetTag - Read finished successfully", dn)
-	return nil
-}
-
-func resourceAciRtctrlSetPrefRead(ctx context.Context, dn string, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	log.Printf("[DEBUG] %s: rtctrlSetPref - Beginning Read", dn)
-	aciClient := m.(*client.Client)
-
-	rtctrlSetPref, err := getRemoteRtctrlSetPref(aciClient, dn)
-	if err != nil {
-		return diag.FromErr(err)
-	}
-
-	_, err = setRtctrlSetPrefAttributes(rtctrlSetPref, d)
-	if err != nil {
-		return nil
-	}
-
-	log.Printf("[DEBUG] %s: rtctrlSetPref - Read finished successfully", dn)
-	return nil
-}
-
-func resourceAciRtctrlSetWeightRead(ctx context.Context, dn string, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	log.Printf("[DEBUG] %s: rtctrlSetWeight - Beginning Read", dn)
-	aciClient := m.(*client.Client)
-
-	rtctrlSetWeight, err := getRemoteRtctrlSetWeight(aciClient, dn)
-	if err != nil {
-		return diag.FromErr(err)
-	}
-
-	_, err = setRtctrlSetWeightAttributes(rtctrlSetWeight, d)
-	if err != nil {
-		return nil
-	}
-
-	log.Printf("[DEBUG] %s: rtctrlSetWeight - Read finished successfully", dn)
-	return nil
-}
-
-func resourceAciRtctrlSetRtMetricRead(ctx context.Context, dn string, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	log.Printf("[DEBUG] %s: rtctrlSetRtMetric - Beginning Read", dn)
-	aciClient := m.(*client.Client)
-
-	rtctrlSetRtMetric, err := getRemoteRtctrlSetRtMetric(aciClient, dn)
-	if err != nil {
-		return diag.FromErr(err)
-	}
-
-	_, err = setRtctrlSetRtMetricAttributes(rtctrlSetRtMetric, d)
-	if err != nil {
-		return nil
-	}
-
-	log.Printf("[DEBUG] %s: rtctrlSetRtMetric - Read finished successfully", dn)
-	return nil
-}
-
-func resourceAciRtctrlSetRtMetricTypeRead(ctx context.Context, dn string, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	log.Printf("[DEBUG] %s: rtctrlSetRtMetricType - Beginning Read", dn)
-	aciClient := m.(*client.Client)
-
-	rtctrlSetRtMetricType, err := getRemoteRtctrlSetRtMetricType(aciClient, dn)
-	if err != nil {
-		return diag.FromErr(err)
-	}
-
-	_, err = setRtctrlSetRtMetricTypeAttributes(rtctrlSetRtMetricType, d)
-	if err != nil {
-		return nil
-	}
-
-	log.Printf("[DEBUG] %s: rtctrlSetRtMetricType - Read finished successfully", dn)
-	return nil
-}
-
-func resourceAciRtctrlSetNhRead(ctx context.Context, dn string, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	log.Printf("[DEBUG] %s: rtctrlSetNh - Beginning Read", dn)
-	aciClient := m.(*client.Client)
-
-	rtctrlSetNh, err := getRemoteRtctrlSetNh(aciClient, dn)
-	if err != nil {
-		return diag.FromErr(err)
-	}
-
-	_, err = setRtctrlSetNhAttributes(rtctrlSetNh, d)
-	if err != nil {
-		return nil
-	}
-
-	log.Printf("[DEBUG] %s: rtctrlSetNh - Read finished successfully", dn)
-	return nil
-}
-
-func resourceAciRtctrlSetCommRead(ctx context.Context, dn string, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	log.Printf("[DEBUG] %s: rtctrlSetComm - Beginning Read", dn)
-	aciClient := m.(*client.Client)
-
-	rtctrlSetComm, err := getRemoteRtctrlSetComm(aciClient, dn)
-	if err != nil {
-		return diag.FromErr(err)
-	}
-
-	_, err = setRtctrlSetCommAttributes(rtctrlSetComm, d)
-	if err != nil {
-		return nil
-	}
-
-	log.Printf("[DEBUG] %s: rtctrlSetComm - Read finished successfully", dn)
-	return nil
-}
-
-func resourceAciNexthopUnchangedActionRead(ctx context.Context, dn string, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	log.Printf("[DEBUG] %s: rtctrlSetNhUnchanged - Beginning Read", dn)
-	aciClient := m.(*client.Client)
-
-	rtctrlSetNhUnchanged, err := getRemoteNexthopUnchangedAction(aciClient, dn)
-	if err != nil {
-		return diag.FromErr(err)
-	}
-
-	_, err = setNexthopUnchangedActionAttributes(rtctrlSetNhUnchanged, d)
-	if err != nil {
-		return nil
-	}
-
-	log.Printf("[DEBUG] %s: rtctrlSetNhUnchanged - Read finished successfully", dn)
-	return nil
-}
-
-func resourceAciRtctrlSetRedistMultipathRead(ctx context.Context, dn string, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	log.Printf("[DEBUG] %s: rtctrlSetRedistMultipath - Beginning Read", dn)
-	aciClient := m.(*client.Client)
-
-	rtctrlSetRedistMultipath, err := getRemoteRtctrlSetRedistMultipath(aciClient, dn)
-	if err != nil {
-		return diag.FromErr(err)
-	}
-
-	_, err = setRtctrlSetRedistMultipathAttributes(rtctrlSetRedistMultipath, d)
-	if err != nil {
-		return nil
-	}
-
-	log.Printf("[DEBUG] %s: rtctrlSetRedistMultipath - Read finished successfully", dn)
 	return nil
 }
 

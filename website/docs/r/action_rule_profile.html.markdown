@@ -26,10 +26,10 @@ Manages ACI Action Rule Profile
 resource "aci_action_rule_profile" "example" {
   tenant_dn       = aci_tenant.example.id
   description     = "From Terraform"
-  name            = "Rule-1"
-  annotation      = "orchestrator:terraform"
+  name            = "example"
+  annotation      = "example"
   name_alias      = "example"
-  set_route_tag   = 100 # Can not be configured along with multipath
+  set_route_tag   = 100 # Can not be configured along with next_hop_propagation and multipath
   set_preference  = 100
   set_weight      = 100
   set_metric      = 100
@@ -39,8 +39,40 @@ resource "aci_action_rule_profile" "example" {
     community = "no-advertise"
     criteria  = "replace"
   }
-  next_hop_propagation = "yes"
-  multipath            = "yes" # Can not be configured along with set_route_tag
+  set_as_path_prepend_last_as = 10
+  set_as_path_prepend_as {
+    order = 10
+    asn   = 20
+  }
+  set_as_path_prepend_as {
+    order = 20
+    asn   = 30
+  }
+}
+
+resource "aci_action_rule_profile" "example2" {
+  tenant_dn       = aci_tenant.example.id
+  name            = "example2"
+  set_preference  = 100
+  set_weight      = 100
+  set_metric      = 100
+  set_metric_type = "ospf-type1"
+  set_next_hop    = "1.1.1.1"
+  set_communities = {
+    community = "no-advertise"
+    criteria  = "replace"
+  }
+  next_hop_propagation    = "yes" # Can not be configured along with set_route_tag
+  multipath               = "yes" # Can not be configured along with set_route_tag
+  set_as_path_prepend_last_as = 10
+  set_as_path_prepend_as {
+    order = 10
+    asn   = 20
+  }
+  set_as_path_prepend_as {
+    order = 20
+    asn   = 30
+  }
 }
 ```
 
@@ -51,7 +83,7 @@ resource "aci_action_rule_profile" "example" {
 * `annotation` - (Optional) Annotation of the Action Rule Profile object.
 * `description` - (Optional) Description of the Action Rule Profile object.
 * `name_alias` - (Optional) Name alias of the Action Rule Profile object.
-* `set_route_tag` - (Optional) Set Route Tag of the Action Rule Profile object. Can not be configured along with `multipath`. Type: Integer.
+* `set_route_tag` - (Optional) Set Route Tag of the Action Rule Profile object. Can not be configured along with `next_hop_propagation` and `multipath`. Type: Integer.
 * `set_preference` - (Optional) Set Preference of the Action Rule Profile object. Type: Integer.
 * `set_weight` - (Optional) Set Weight of the Action Rule Profile object. Type: Integer.
 * `set_metric` - (Optional) Set Metric of the Action Rule Profile object. Type: Integer.
@@ -60,8 +92,12 @@ resource "aci_action_rule_profile" "example" {
 * `set_communities` - (Optional) A block representing the attributes of Set Communities object. Type: Block.
   * `criteria` - (Optional) Criteria of the Set Communities object. Allowed values are `append` or `replace`. Type: String.
   * `community` - (Optional) Community of the Set Communities object. Allowed input formats are `regular:as2-nn2:4:15`, `extended:as4-nn2:5:16`, `no-export` and `no-advertise`. Type: String.
-* `next_hop_propagation` - (Optional) Next Hop Propagation of the Action Rule Profile object. Allowed values are `yes` or `no`. Type: String.
+* `next_hop_propagation` - (Optional) Next Hop Propagation of the Action Rule Profile object. Allowed values are `yes` or `no`. Can not be configured along with `set_route_tag`. Type: String.
 * `multipath` - (Optional) Multipath of the Action Rule Profile object. Allowed values are `yes` or `no`. Can not be configured along with `set_route_tag`. Type: String.
+* `set_as_path_prepend_last_as` - (Optional) Number of ASN to be prepended to AS Path of the Action Rule Profile object.
+* `set_as_path_prepend_as` - (Optional) A block representing ASNs to be configured as Set As Path - Prepend AS of the Action Rule Profile object. Type: Block.
+  * `asn` - ASN to be prepended to Set AS Path.
+  * `order` - Order in which the ASN should be prepended to Set AS Path.
 
 ## Importing ##
 

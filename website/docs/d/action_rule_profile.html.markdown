@@ -50,3 +50,7 @@ data "aci_action_rule_profile" "example" {
   * `community` - (Optional) Community of the Set Communities object.
 * `next_hop_propagation` - (Optional) Next Hop Propagation of the Action Rule Profile object.
 * `multipath` - (Optional) Multipath of the Action Rule Profile object.
+* `set_as_path_prepend_last_as` - (Optional) Number of ASN prepended to AS Path of the Action Rule Profile object.
+* `set_as_path_prepend_as` - (Optional) A block representing ASNs configured as Set As Path - Prepend AS of the Action Rule Profile object. Type: Block.
+  * `asn` - ASN prepended to Set AS Path.
+  * `order` - Order in which the ASN is prepended to Set AS Path.

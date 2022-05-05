@@ -3,7 +3,6 @@ package client
 import (
 	"fmt"
 
-	"github.com/ciscoecosystem/aci-go-client/container"
 	"github.com/ciscoecosystem/aci-go-client/models"
 )
 
@@ -48,7 +47,7 @@ func (sm *ServiceManager) ListASNumber(set_as_path_criteria string, action_rule_
 	return list, err
 }
 
-func (sm *ServiceManager) ReadRelationSetASPathASN(parentDn string) ([]*container.Container, error) {
+func (sm *ServiceManager) ListSetAsPathASNs(parentDn string) ([]*models.ASNumber, error) {
 	baseurlStr := "/api/node/class"
 	dnUrl := fmt.Sprintf("%s/%s/%s.json", baseurlStr, parentDn, "rtctrlSetASPathASN")
 	cont, err := sm.GetViaURL(dnUrl)
@@ -56,7 +55,7 @@ func (sm *ServiceManager) ReadRelationSetASPathASN(parentDn string) ([]*containe
 	if err != nil {
 		return nil, err
 	} else {
-		contList := models.ListFromContainer(cont, "rtctrlSetASPathASN")
+		contList := models.ASNumberListFromContainer(cont)
 		return contList, nil
 	}
 }
