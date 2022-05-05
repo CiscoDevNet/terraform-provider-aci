@@ -39,14 +39,37 @@ resource "aci_action_rule_profile" "example" {
     community = "no-advertise"
     criteria  = "replace"
   }
-  next_hop_propagation    = "yes" # Can not be configured along with set_route_tag
-  multipath               = "yes" # Can not be configured along with set_route_tag
-  saspath_prepend_last_as = 10
-    saspath_prepend_asn {
+  set_as_path_prepend_last_as = 10
+  set_as_path_prepend_as {
     order = 10
     asn   = 20
   }
-  saspath_prepend_asn {
+  set_as_path_prepend_as {
+    order = 20
+    asn   = 30
+  }
+}
+
+resource "aci_action_rule_profile" "example2" {
+  tenant_dn       = aci_tenant.example.id
+  name            = "example2"
+  set_preference  = 100
+  set_weight      = 100
+  set_metric      = 100
+  set_metric_type = "ospf-type1"
+  set_next_hop    = "1.1.1.1"
+  set_communities = {
+    community = "no-advertise"
+    criteria  = "replace"
+  }
+  next_hop_propagation    = "yes" # Can not be configured along with set_route_tag
+  multipath               = "yes" # Can not be configured along with set_route_tag
+  set_as_path_prepend_last_as = 10
+  set_as_path_prepend_as {
+    order = 10
+    asn   = 20
+  }
+  set_as_path_prepend_as {
     order = 20
     asn   = 30
   }
@@ -71,9 +94,9 @@ resource "aci_action_rule_profile" "example" {
   * `community` - (Optional) Community of the Set Communities object. Allowed input formats are `regular:as2-nn2:4:15`, `extended:as4-nn2:5:16`, `no-export` and `no-advertise`. Type: String.
 * `next_hop_propagation` - (Optional) Next Hop Propagation of the Action Rule Profile object. Allowed values are `yes` or `no`. Can not be configured along with `set_route_tag`. Type: String.
 * `multipath` - (Optional) Multipath of the Action Rule Profile object. Allowed values are `yes` or `no`. Can not be configured along with `set_route_tag`. Type: String.
-* `saspath_prepend_last_as` - (Optional) Number of ASN to be prepended to AS Path of the Action Rule Profile object.
-* `saspath_prepend_asn` - (Optional) A block representing ASNs to be configured as Set As Path - Prepend AS of the Action Rule Profile object. Type: Block.
-  * `asn` - ASN in which the ASN should be prepended to Set AS Path.
+* `set_as_path_prepend_last_as` - (Optional) Number of ASN to be prepended to AS Path of the Action Rule Profile object.
+* `set_as_path_prepend_as` - (Optional) A block representing ASNs to be configured as Set As Path - Prepend AS of the Action Rule Profile object. Type: Block.
+  * `asn` - ASN to be prepended to Set AS Path.
   * `order` - Order in which the ASN should be prepended to Set AS Path.
 
 ## Importing ##

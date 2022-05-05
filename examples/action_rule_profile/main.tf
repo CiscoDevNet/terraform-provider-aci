@@ -33,6 +33,29 @@ resource "aci_action_rule_profile" "example" {
     community = "no-advertise"
     criteria  = "replace"
   }
+  set_as_path_prepend_last_as = 10
+  set_as_path_prepend_as {
+    order = 10
+    asn   = 20
+  }
+  set_as_path_prepend_as {
+    order = 20
+    asn   = 30
+  }
+}
+
+resource "aci_action_rule_profile" "example2" {
+  tenant_dn       = aci_tenant.example.id
+  name            = "example2"
+  set_preference  = 100
+  set_weight      = 100
+  set_metric      = 100
+  set_metric_type = "ospf-type1"
+  set_next_hop    = "1.1.1.1"
+  set_communities = {
+    community = "no-advertise"
+    criteria  = "replace"
+  }
   next_hop_propagation        = "yes" # Can not be configured along with set_route_tag
   multipath                   = "yes" # Can not be configured along with set_route_tag
   set_as_path_prepend_last_as = 10

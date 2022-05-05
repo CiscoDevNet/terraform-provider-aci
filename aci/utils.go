@@ -295,11 +295,11 @@ func validateIntRange(a, b int) schema.SchemaValidateFunc {
 	}
 }
 
-func IntBetween(min, max int) schema.SchemaValidateFunc {
+func validateIntBetweenFromString(min, max int) schema.SchemaValidateFunc {
 	return func(i interface{}, k string) (warnings []string, errors []error) {
 		v, ok := i.(string)
 		if !ok {
-			errors = append(errors, fmt.Errorf("expected type of %s to be integer", k))
+			errors = append(errors, fmt.Errorf("expected input type of %s to be a string containing an integer", k))
 			return warnings, errors
 		}
 

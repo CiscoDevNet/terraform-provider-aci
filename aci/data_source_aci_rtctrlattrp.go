@@ -76,10 +76,10 @@ func dataSourceAciActionRuleProfile() *schema.Resource {
 					Schema: map[string]*schema.Schema{
 						"asn": {
 							Type:     schema.TypeString,
-							Required: true,
+							Optional: true,
 						},
 						"order": {
-							Required: true,
+							Optional: true,
 							Type:     schema.TypeString,
 						},
 					},
@@ -224,7 +224,7 @@ func dataSourceAciActionRuleProfileRead(ctx context.Context, d *schema.ResourceD
 
 	// rtctrlSetASPathASN - Beginning of Read
 	setASNumberDn := rtctrlAttrP.DistinguishedName + "/" + fmt.Sprintf(models.RnrtctrlSetASPath, "prepend")
-	_, err = getAndSetRemoteSetASPathASNRelations(aciClient, setASNumberDn, d)
+	_, err = getAndSetRemoteSetASPathASNs(aciClient, setASNumberDn, d)
 	if err != nil {
 		return diag.FromErr(err)
 	}

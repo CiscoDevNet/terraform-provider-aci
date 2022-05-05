@@ -38,24 +38,24 @@ func resourceAciActionRuleProfile() *schema.Resource {
 			"set_route_tag": {
 				Type:          schema.TypeString,
 				Optional:      true,
-				ValidateFunc:  IntBetween(0, 4294967295),
+				ValidateFunc:  validateIntBetweenFromString(0, 4294967295),
 				ConflictsWith: []string{"multipath", "next_hop_propagation"},
-				Description:   "Invalid Configuration Set nexthop unchanged action cannot be configured along with set route tag action under the set action rule profile.",
+				// Set nexthop unchanged action cannot be configured along with set route tag action under the set action rule profile.
 			},
 			"set_preference": {
 				Type:         schema.TypeString,
 				Optional:     true,
-				ValidateFunc: IntBetween(0, 4294967295),
+				ValidateFunc: validateIntBetweenFromString(0, 4294967295),
 			},
 			"set_weight": {
 				Type:         schema.TypeString,
 				Optional:     true,
-				ValidateFunc: IntBetween(0, 4294967295),
+				ValidateFunc: validateIntBetweenFromString(0, 4294967295),
 			},
 			"set_metric": {
 				Type:         schema.TypeString,
 				Optional:     true,
-				ValidateFunc: IntBetween(0, 4294967295),
+				ValidateFunc: validateIntBetweenFromString(0, 4294967295),
 			},
 			"set_metric_type": {
 				Type:     schema.TypeString,
@@ -84,7 +84,7 @@ func resourceAciActionRuleProfile() *schema.Resource {
 					"no",
 				}, false),
 				ConflictsWith: []string{"set_route_tag"},
-				Description:   "Invalid Configuration Set nexthop unchanged action cannot be configured along with set route tag action under the set action rule profile.",
+				// Set nexthop unchanged action cannot be configured along with set route tag action under the set action rule profile.
 			},
 			"multipath": {
 				Type:     schema.TypeString,
@@ -94,12 +94,12 @@ func resourceAciActionRuleProfile() *schema.Resource {
 					"no",
 				}, false),
 				ConflictsWith: []string{"set_route_tag"},
-				Description:   "Invalid Configuration Set nexthop unchanged action cannot be configured along with set route tag action under the set action rule profile.",
+				// Set nexthop unchanged action cannot be configured along with set route tag action under the set action rule profile.
 			},
 			"set_as_path_prepend_last_as": {
 				Type:         schema.TypeString,
 				Optional:     true,
-				ValidateFunc: IntBetween(1, 10),
+				ValidateFunc: validateIntBetweenFromString(1, 10),
 			},
 			"set_as_path_prepend_as": {
 				Type:     schema.TypeSet,
@@ -109,13 +109,13 @@ func resourceAciActionRuleProfile() *schema.Resource {
 						"asn": {
 							Type:         schema.TypeString,
 							Required:     true,
-							ValidateFunc: IntBetween(0, 4294967295),
+							ValidateFunc: validateIntBetweenFromString(0, 4294967295),
 							Description:  "ASN must be between 0 and 4294967295",
 						},
 						"order": {
 							Required:     true,
 							Type:         schema.TypeString,
-							ValidateFunc: IntBetween(0, 31),
+							ValidateFunc: validateIntBetweenFromString(0, 31),
 							Description:  "Order must be between 0 and 31",
 						},
 					},
@@ -378,9 +378,9 @@ func setRtctrlSetASPathAttributes(rtctrlSetASPath *models.SetASPath, d *schema.R
 	return d, nil
 }
 
-func getAndSetRemoteSetASPathASNRelations(client *client.Client, dn string, d *schema.ResourceData) (*schema.ResourceData, error) {
+func getAndSetRemoteSetASPathASNs(client *client.Client, dn string, d *schema.ResourceData) (*schema.ResourceData, error) {
 	ReadRelationASNumberData, err := client.ListSetAsPathASNs(dn)
-	if err != nil {
+	if err == nil {
 		ASNList := make([]interface{}, 0)
 		for _, record := range ReadRelationASNumberData {
 			ASNMap := make(map[string]interface{})
@@ -389,6 +389,8 @@ func getAndSetRemoteSetASPathASNRelations(client *client.Client, dn string, d *s
 			ASNList = append(ASNList, ASNMap)
 		}
 		d.Set("set_as_path_prepend_as", ASNList)
+	} else {
+		d.Set("set_as_path_prepend_as", nil)
 	}
 	return d, nil
 }
@@ -552,7 +554,7 @@ func resourceAciActionRuleProfileImport(d *schema.ResourceData, m interface{}) (
 
 	setASNumberDn := rtctrlAttrP.DistinguishedName + "/" + fmt.Sprintf(models.RnrtctrlSetASPath, "prepend")
 	log.Printf("[DEBUG] %s: rtctrlSetASPathASN - Beginning Import", setASNumberDn)
-	_, err = getAndSetRemoteSetASPathASNRelations(aciClient, setASNumberDn, d)
+	_, err = getAndSetRemoteSetASPathASNs(aciClient, setASNumberDn, d)
 	if err != nil {
 		return nil, err
 	}
@@ -743,7 +745,7 @@ func resourceAciActionRuleProfileCreate(ctx context.Context, d *schema.ResourceD
 
 	// rtctrlSetASPath - Operations
 	if prependLastAS, ok := d.GetOk("set_as_path_prepend_last_as"); ok {
-		log.Printf("[DEBUG] rtctrlSetASPath: Beginning Creation")
+		log.Printf("[DEBUG] rtctrlSetASPath prepend-last-as: Beginning Creation")
 
 		rtctrlSetASPathAttr := models.SetASPathAttributes{}
 		rtctrlSetASPathAttr.Lastnum = prependLastAS.(string)
@@ -760,7 +762,7 @@ func resourceAciActionRuleProfileCreate(ctx context.Context, d *schema.ResourceD
 	// rtctrlSetASPathASN - Operations
 	if SetAsPathASN, ok := d.GetOk("set_as_path_prepend_as"); ok {
 
-		log.Printf("[DEBUG] rtctrlSetASPathASN: Beginning Creation")
+		log.Printf("[DEBUG] rtctrlSetASPath prepend: Beginning Creation of Parent Object")
 
 		// Parent Object creation - begins
 		rtctrlSetASPathAttr := models.SetASPathAttributes{}
@@ -771,11 +773,12 @@ func resourceAciActionRuleProfileCreate(ctx context.Context, d *schema.ResourceD
 		if parent_creation_err != nil {
 			return diag.FromErr(parent_creation_err)
 		}
-		log.Printf("[DEBUG] %s: Creation finished successfully", rtctrlSetASPath.DistinguishedName)
+
+		log.Printf("[DEBUG] %s: Creation of parent object finished successfully", rtctrlSetASPath.DistinguishedName)
+		log.Printf("[DEBUG] rtctrlSetASPathASN: Beginning Creation of Child Objects")
 
 		SetAsPathASNList := SetAsPathASN.(*schema.Set).List()
 		for _, ASN := range SetAsPathASNList {
-
 			ASNMap := ASN.(map[string]interface{})
 
 			rtctrlSetASPathASNAttr := models.ASNumberAttributes{}
@@ -789,8 +792,11 @@ func resourceAciActionRuleProfileCreate(ctx context.Context, d *schema.ResourceD
 			if err != nil {
 				return diag.FromErr(err)
 			}
+
 			log.Printf("[DEBUG] %s: Creation finished successfully", rtctrlSetASPathASN.DistinguishedName)
 		}
+
+		log.Printf("[DEBUG] %s: Creation of all child objects finished successfully", rtctrlSetASPath.DistinguishedName)
 	}
 
 	d.SetId(rtctrlAttrP.DistinguishedName)
@@ -1215,7 +1221,7 @@ func resourceAciActionRuleProfileUpdate(ctx context.Context, d *schema.ResourceD
 
 		if prependLastAS, ok := d.GetOk("set_as_path_prepend_last_as"); ok {
 
-			log.Printf("[DEBUG] rtctrlSetASPath - Beginning Creation")
+			log.Printf("[DEBUG] rtctrlSetASPath prepend-last-as - Beginning Creation")
 
 			rtctrlSetASPathAttr := models.SetASPathAttributes{}
 			rtctrlSetASPathAttr.Lastnum = prependLastAS.(string)
@@ -1252,7 +1258,7 @@ func resourceAciActionRuleProfileUpdate(ctx context.Context, d *schema.ResourceD
 	// rtctrlSetASPathASN - Operations
 	if d.HasChange("set_as_path_prepend_as") {
 		if SetAsPathASN, ok := d.GetOk("set_as_path_prepend_as"); ok {
-			log.Printf("[DEBUG] rtctrlSetASPathASN - Beginning Creation")
+			log.Printf("[DEBUG] rtctrlSetASPathASN prepend - Beginning Creation")
 
 			// Parent Object deletion
 			setASPathPrependDn := rtctrlAttrP.DistinguishedName + fmt.Sprintf("/"+models.RnrtctrlSetASPath, "prepend")
@@ -1270,7 +1276,9 @@ func resourceAciActionRuleProfileUpdate(ctx context.Context, d *schema.ResourceD
 			if parent_creation_err != nil {
 				return diag.FromErr(parent_creation_err)
 			}
-			log.Printf("[DEBUG] %s: Creation finished successfully", rtctrlSetASPath.DistinguishedName)
+
+			log.Printf("[DEBUG] %s: Creation of parent object finished successfully", rtctrlSetASPath.DistinguishedName)
+			log.Printf("[DEBUG] rtctrlSetASPathASN: Beginning Creation of Child Objects")
 
 			SetAsPathASNList := SetAsPathASN.(*schema.Set).List()
 
@@ -1290,6 +1298,8 @@ func resourceAciActionRuleProfileUpdate(ctx context.Context, d *schema.ResourceD
 				}
 				log.Printf("[DEBUG] %s: Creation finished successfully", rtctrlSetASPathASN.DistinguishedName)
 			}
+
+			log.Printf("[DEBUG] %s: Creation of all child objects finished successfully", rtctrlSetASPath.DistinguishedName)
 
 		} else {
 			// Parent Object deletion
@@ -1339,6 +1349,8 @@ func resourceAciActionRuleProfileRead(ctx context.Context, d *schema.ResourceDat
 			return nil
 		}
 		log.Printf("[DEBUG] %s: rtctrlSetTag - Read finished successfully", setRouteTagDn)
+	} else {
+		d.Set("set_route_tag", "")
 	}
 	// rtctrlSetTag - Read finished successfully
 
@@ -1352,6 +1364,8 @@ func resourceAciActionRuleProfileRead(ctx context.Context, d *schema.ResourceDat
 			return nil
 		}
 		log.Printf("[DEBUG] %s: rtctrlSetPref - Read finished successfully", setPrefDn)
+	} else {
+		d.Set("set_preference", "")
 	}
 	// rtctrlSetPref - Read finished successfully
 
@@ -1365,6 +1379,8 @@ func resourceAciActionRuleProfileRead(ctx context.Context, d *schema.ResourceDat
 			return nil
 		}
 		log.Printf("[DEBUG] %s: rtctrlSetWeight - Read finished successfully", setWeightDn)
+	} else {
+		d.Set("set_weight", "")
 	}
 	// rtctrlSetWeight - Read finished successfully
 
@@ -1378,6 +1394,8 @@ func resourceAciActionRuleProfileRead(ctx context.Context, d *schema.ResourceDat
 			return nil
 		}
 		log.Printf("[DEBUG] %s: rtctrlSetRtMetric - Read finished successfully", setRtMetricDn)
+	} else {
+		d.Set("set_metric", "")
 	}
 	// rtctrlSetRtMetric - Read finished successfully
 
@@ -1391,6 +1409,8 @@ func resourceAciActionRuleProfileRead(ctx context.Context, d *schema.ResourceDat
 			return nil
 		}
 		log.Printf("[DEBUG] %s: rtctrlSetRtMetricType - Read finished successfully", setRtMetricTypeDn)
+	} else {
+		d.Set("set_metric_type", "")
 	}
 	// rtctrlSetRtMetricType - Read finished successfully
 
@@ -1404,6 +1424,8 @@ func resourceAciActionRuleProfileRead(ctx context.Context, d *schema.ResourceDat
 			return nil
 		}
 		log.Printf("[DEBUG] %s: rtctrlSetNh - Read finished successfully", setNhDn)
+	} else {
+		d.Set("set_next_hop", "")
 	}
 	// rtctrlSetNh - Read finished successfully
 
@@ -1417,6 +1439,8 @@ func resourceAciActionRuleProfileRead(ctx context.Context, d *schema.ResourceDat
 			return nil
 		}
 		log.Printf("[DEBUG] %s: rtctrlSetComm - Read finished successfully", setCommDn)
+	} else {
+		d.Set("set_communities", nil)
 	}
 	// rtctrlSetComm - Read finished successfully
 
@@ -1430,6 +1454,8 @@ func resourceAciActionRuleProfileRead(ctx context.Context, d *schema.ResourceDat
 			return nil
 		}
 		log.Printf("[DEBUG] %s: rtctrlSetNhUnchanged - Read finished successfully", setNhUnchangedDn)
+	} else {
+		d.Set("next_hop_propagation", "")
 	}
 	// rtctrlSetNhUnchanged - Read finished successfully
 
@@ -1443,6 +1469,8 @@ func resourceAciActionRuleProfileRead(ctx context.Context, d *schema.ResourceDat
 			return nil
 		}
 		log.Printf("[DEBUG] %s: rtctrlSetRedistMultipath - Read finished successfully", setRedistMultipathDn)
+	} else {
+		d.Set("multipath", "")
 	}
 	// rtctrlSetRedistMultipath - Read finished successfully
 
@@ -1457,6 +1485,8 @@ func resourceAciActionRuleProfileRead(ctx context.Context, d *schema.ResourceDat
 			return nil
 		}
 		log.Printf("[DEBUG] %s: rtctrlSetASPath - Read finished successfully", setASPathPrependLastAsDn)
+	} else {
+		d.Set("set_as_path_prepend_last_as", "")
 	}
 
 	// rtctrlSetASPath - Read finished successfully
@@ -1465,7 +1495,7 @@ func resourceAciActionRuleProfileRead(ctx context.Context, d *schema.ResourceDat
 
 	setASNumberDn := dn + "/" + fmt.Sprintf(models.RnrtctrlSetASPath, "prepend")
 	log.Printf("[DEBUG] %s: rtctrlSetASPathASN - Beginning Read", setASNumberDn)
-	_, err = getAndSetRemoteSetASPathASNRelations(aciClient, setASNumberDn, d)
+	_, err = getAndSetRemoteSetASPathASNs(aciClient, setASNumberDn, d)
 	if err != nil {
 		return nil
 	}
