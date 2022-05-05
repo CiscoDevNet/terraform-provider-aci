@@ -34,13 +34,14 @@ data "aci_epg_to_domain" "temp" {
 * `allow_micro_seg` - (Optional) Boolean flag for allow micro segment. default value will be "false".
 "true" maps to class_pref="useg" and "false maps to class_pref="encap"
 * `custom_epg_name` - (Optional) Custom EPG name used as name of the VMM port group for the domain.
+* `enhanced_lag_policy` - (Optional) Distinguished Name of the Enhanced LACP LAG Policy (class lacpEnhancedLagPol) to associate with the VMM domain.
 * `delimiter` - (Optional) Delimiter for object Domain.
 * `encap` - (Optional) Port encapsulation.
 * `encap_mode` - (Optional) Encap mode for object Domain.
 * `epg_cos` - (Optional) Epg cos for object Domain.
 * `epg_cos_pref` - (Optional) Epg cos pref for object Domain.
 * `instr_imedcy` - (Optional) Determines when policies are pushed to cam.
-* `lag_policy_name` - (Optional) Lag policy name for object Domain.
+* `lag_policy_name` - **Deprecated** (Optional) Lag policy name for object Domain.
 * `netflow_dir` - (Optional) Netflow dir for object Domain.
 * `netflow_pref` - (Optional) Netflow pref for object Domain.
 * `num_ports` - (Optional) Number of ports existing operationally in module

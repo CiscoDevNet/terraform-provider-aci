@@ -26,7 +26,7 @@ resource "aci_epg_to_domain" "example" {
   epg_cos               = "Cos0"
   epg_cos_pref          = "disabled"
   instr_imedcy          = "lazy"
-  lag_policy_name       = "0"
+  enhanced_lag_policy   = "uni/vmmp-VMware/dom-aci_terraform_lab/vswitchpolcont/enlacplagp-lab_lacp"
   netflow_dir           = "both"
   netflow_pref          = "disabled"
   num_ports             = "0"
@@ -52,6 +52,7 @@ Allowed values: "none", "staticBinding", "dynamicBinding", "ephemeral". Default 
 * `allow_micro_seg` - (Optional) Boolean flag for allow micro segment. default value will be "false".
 "true" maps to class_pref="useg" and "false maps to class_pref="encap" 
 * `custom_epg_name` - (Optional) Custom EPG name used as name of the VMM port group for the domain.
+* `enhanced_lag_policy` - (Optional) Distinguished Name of the Enhanced LACP LAG Policy (class lacpEnhancedLagPol) to associate with the VMM domain.
 * `delimiter` - (Optional) Delimiter for object Domain.
 * `encap` - (Optional) Port encapsulation.
 * `encap_mode` - (Optional) Encap mode for object Domain.
@@ -62,7 +63,7 @@ Allowed values: "Cos0", "Cos1", "Cos2", "Cos3", "Cos4", "Cos5", "Cos6", "Cos7". 
 Allowed values: "disabled", "enabled". Default value: "disabled"
 * `instr_imedcy` - (Optional) Determines when policies are pushed to cam.
 Allowed values: "immediate", "lazy". Default value: "lazy"
-* `lag_policy_name` - (Optional) Lag policy name for object Domain.
+* `lag_policy_name` - (Optional) **Deprecated** Lag policy name for object Domain. Use `enhanced_lag_policy` instead.
 * `netflow_dir` - (Optional) Netflow dir for object Domain.
 Allowed values: "ingress", "egress", "both". Default value: "both"
 * `netflow_pref` - (Optional) Netflow pref for object Domain.

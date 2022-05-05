@@ -21,5 +21,6 @@ resource "aci_epg_to_domain" "terraform_epg_domain" {
   vmm_forged_transmits  = "reject"
   vmm_mac_changes       = "accept"
   custom_epg_name       = "epg_lab"
+  enhanced_lag_policy   = "uni/vmmp-VMware/dom-aci_terraform_lab/vswitchpolcont/enlacplagp-lab_lacp"
 }
 
