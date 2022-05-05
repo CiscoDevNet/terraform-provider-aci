@@ -30,10 +30,12 @@ resource "aci_application_epg" "fooapplication_epg" {
     pref_gr_memb  	    		= "exclude"
     prio  				        	= "unspecified"
     shutdown  		      		= "no"
+    relation_fv_rs_bd       = aci_bridge_domain.example.id
 }
 ```
 
 ## Argument Reference ##
+* `application_profile_dn` - (Required) Distinguished Name of the parent application profile.
 * `name` - (Required) Name of Object application epg.
 * `annotation` - (Optional) Annotation for object application epg.
 * `description` - (Optional) Description for object application epg.
@@ -49,7 +51,7 @@ resource "aci_application_epg" "fooapplication_epg" {
 * `prio` - (Optional) QoS priority class id. Allowed values are "unspecified", "level1", "level2", "level3", "level4","level5" and "level6". By default the value is inherited from the parent application profile.
 * `shutdown` - (Optional) Shutdown for object application epg. Allowed values are "yes" and "no". Default is "no".
 
-* `relation_fv_rs_bd` - (Required) Relation to Bridge domain associated with EPG (Point to class fvBD). Cardinality - N_TO_ONE. Type - String.
+* `relation_fv_rs_bd` - (Optional) Relation to the Bridge domain associated with EPG (Point to class fvBD). This attribute is optional because the ACI API does not mandate it **but it is necessary for correct function of the resource.** Cardinality - N_TO_ONE. Type - String.
 
 * `relation_fv_rs_cust_qos_pol` - (Optional) Relation to Custom Quality of Service traffic policy name (Point to class qosCustomPol). Cardinality - N_TO_ONE. Type - String.
 <!-- tenant -> policies -> protocol -> Custom QoS -->
