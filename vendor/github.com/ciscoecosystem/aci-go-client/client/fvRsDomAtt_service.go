@@ -3,6 +3,7 @@ package client
 import (
 	"fmt"
 
+	"github.com/ciscoecosystem/aci-go-client/container"
 	"github.com/ciscoecosystem/aci-go-client/models"
 )
 
@@ -50,4 +51,50 @@ func (sm *ServiceManager) ListFVDomain(application_epg string, application_profi
 	list := models.FVDomainListFromContainer(cont)
 
 	return list, err
+}
+
+func (sm *ServiceManager) CreateRelationfvRsVmmVSwitchEnhancedLagPol(parentDn, annotation, tDn string) error {
+	dn := fmt.Sprintf("%s/rsvmmVSwitchEnhancedLagPol", parentDn)
+	containerJSON := []byte(fmt.Sprintf(`{
+		"%s": {
+			"attributes": {
+				"dn": "%s",
+				"annotation": "%s",
+				"tDn": "%s"
+			}
+		}
+	}`, "fvRsVmmVSwitchEnhancedLagPol", dn, annotation, tDn))
+
+	jsonPayload, err := container.ParseJSON(containerJSON)
+	if err != nil {
+		return err
+	}
+	req, err := sm.client.MakeRestRequest("POST", fmt.Sprintf("%s.json", sm.MOURL), jsonPayload, true)
+	if err != nil {
+		return err
+	}
+	cont, _, err := sm.client.Do(req)
+	if err != nil {
+		return err
+	}
+	fmt.Printf("%+v", cont)
+	return nil
+}
+
+func (sm *ServiceManager) DeleteRelationfvRsVmmVSwitchEnhancedLagPol(parentDn string) error {
+	dn := fmt.Sprintf("%s/rsvmmVSwitchEnhancedLagPol", parentDn)
+	return sm.DeleteByDn(dn, "fvRsVmmVSwitchEnhancedLagPol")
+}
+
+func (sm *ServiceManager) ReadRelationfvRsVmmVSwitchEnhancedLagPol(parentDn string) (interface{}, error) {
+	dnUrl := fmt.Sprintf("%s/%s/%s.json", models.BaseurlStr, parentDn+"/epglagpolatt", "fvRsVmmVSwitchEnhancedLagPol")
+	cont, err := sm.GetViaURL(dnUrl)
+	contList := models.ListFromContainer(cont, "fvRsVmmVSwitchEnhancedLagPol")
+
+	if len(contList) > 0 {
+		dat := models.G(contList[0], "tDn")
+		return dat, err
+	} else {
+		return nil, err
+	}
 }

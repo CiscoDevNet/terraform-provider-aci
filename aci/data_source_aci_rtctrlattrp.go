@@ -65,13 +65,25 @@ func dataSourceAciActionRuleProfile() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
-			"saspath_prepend_last_as": {
+			"set_as_path_prepend_last_as": {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
-			"saspath_prepend_asn": {
-				Type:     schema.TypeMap,
+			"set_as_path_prepend_as": {
+				Type:     schema.TypeSet,
 				Optional: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"asn": {
+							Type:     schema.TypeString,
+							Required: true,
+						},
+						"order": {
+							Required: true,
+							Type:     schema.TypeString,
+						},
+					},
+				},
 			},
 		})),
 	}
@@ -199,11 +211,11 @@ func dataSourceAciActionRuleProfileRead(ctx context.Context, d *schema.ResourceD
 
 	// rtctrlSetASPath - Beginning of Read
 
-	setASPathDn := rtctrlAttrP.DistinguishedName + fmt.Sprintf("/"+models.RnrtctrlSetASPath, "prepend-last-as")
+	setASPathPrependLastASDn := rtctrlAttrP.DistinguishedName + fmt.Sprintf("/"+models.RnrtctrlSetASPath, "prepend-last-as")
 
-	rtctrlSetASPath, err := getRemoteRtctrlSetASPath(aciClient, setASPathDn)
+	rtctrlSetASPathLastAS, err := getRemoteRtctrlSetASPath(aciClient, setASPathPrependLastASDn)
 	if err == nil {
-		_, err = setRtctrlSetASPathAttributes(rtctrlSetASPath, d)
+		_, err = setRtctrlSetASPathAttributes(rtctrlSetASPathLastAS, d)
 		if err != nil {
 			return diag.FromErr(err)
 		}
@@ -211,16 +223,10 @@ func dataSourceAciActionRuleProfileRead(ctx context.Context, d *schema.ResourceD
 	// rtctrlSetASPath - Read finished successfully
 
 	// rtctrlSetASPathASN - Beginning of Read
-
 	setASNumberDn := rtctrlAttrP.DistinguishedName + "/" + fmt.Sprintf(models.RnrtctrlSetASPath, "prepend")
-
-	rtctrlSetASPathASN, err := getRemoteRtctrlSetASPathASNRelations(aciClient, setASNumberDn)
-
-	if err == nil {
-		_, err = setRtctrlSetASPathASNAttributes(rtctrlSetASPathASN, d)
-		if err != nil {
-			return diag.FromErr(err)
-		}
+	_, err = getAndSetRemoteSetASPathASNRelations(aciClient, setASNumberDn, d)
+	if err != nil {
+		return diag.FromErr(err)
 	}
 	// rtctrlSetASPathASN - Read finished successfully
 

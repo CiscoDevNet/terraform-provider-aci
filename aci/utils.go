@@ -295,6 +295,30 @@ func validateIntRange(a, b int) schema.SchemaValidateFunc {
 	}
 }
 
+func IntBetween(min, max int) schema.SchemaValidateFunc {
+	return func(i interface{}, k string) (warnings []string, errors []error) {
+		v, ok := i.(string)
+		if !ok {
+			errors = append(errors, fmt.Errorf("expected type of %s to be integer", k))
+			return warnings, errors
+		}
+
+		vint, err := strconv.Atoi(v)
+
+		if err != nil {
+			errors = append(errors, err)
+			return
+		}
+
+		if vint < min || vint > max {
+			errors = append(errors, fmt.Errorf("expected %s to be in the range (%d - %d), got %s", k, min, max, v))
+			return warnings, errors
+		}
+
+		return warnings, errors
+	}
+}
+
 func containsString(s []string, e string) bool {
 	for _, a := range s {
 		if a == e {

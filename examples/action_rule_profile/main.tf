@@ -23,7 +23,7 @@ resource "aci_action_rule_profile" "example" {
   name            = "example"
   annotation      = "example"
   name_alias      = "example"
-  set_route_tag   = 100
+  set_route_tag   = 100 # Can not be configured along with next_hop_propagation and multipath
   set_preference  = 100
   set_weight      = 100
   set_metric      = 100
@@ -33,10 +33,14 @@ resource "aci_action_rule_profile" "example" {
     community = "no-advertise"
     criteria  = "replace"
   }
-  next_hop_propagation    = "yes"
-  multipath               = "yes"
-  saspath_prepend_last_as = 10
-  saspath_prepend_asn = {
+  next_hop_propagation        = "yes" # Can not be configured along with set_route_tag
+  multipath                   = "yes" # Can not be configured along with set_route_tag
+  set_as_path_prepend_last_as = 10
+  set_as_path_prepend_as {
+    order = 10
+    asn   = 20
+  }
+  set_as_path_prepend_as {
     order = 20
     asn   = 30
   }
