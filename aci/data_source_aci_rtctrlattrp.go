@@ -85,6 +85,13 @@ func dataSourceAciActionRuleProfile() *schema.Resource {
 					},
 				},
 			},
+			"set_dampening": {
+				Optional: true,
+				Type:     schema.TypeMap,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+			},
 		})),
 	}
 }
@@ -229,6 +236,17 @@ func dataSourceAciActionRuleProfileRead(ctx context.Context, d *schema.ResourceD
 		return diag.FromErr(err)
 	}
 	// rtctrlSetASPathASN - Read finished successfully
+
+	// rtctrlSetDamp - Beginning of Read
+	setDampeningDn := rtctrlAttrP.DistinguishedName + fmt.Sprintf("/"+models.RnrtctrlSetDamp)
+	rtctrlSetDamp, err := getRemoteRtctrlSetDamp(aciClient, setDampeningDn)
+	if err == nil {
+		_, err = setRtctrlSetDampAttributes(rtctrlSetDamp, d)
+		if err != nil {
+			return diag.FromErr(err)
+		}
+	}
+	// rtctrlSetDamp - Read finished successfully
 
 	return nil
 }
