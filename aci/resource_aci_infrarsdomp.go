@@ -23,23 +23,26 @@ func resourceAciInfraRsDomP() *schema.Resource {
 		},
 
 		SchemaVersion: 1,
-		Schema: AppendBaseAttrSchema(map[string]*schema.Schema{
+		Schema: map[string]*schema.Schema{
 			"attachable_access_entity_profile_dn": {
 				Type:     schema.TypeString,
 				Required: true,
 				ForceNew: true,
 			},
-			"annotation": {
+			"annotation": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				DefaultFunc: func() (interface{}, error) {
+					return "orchestrator:terraform", nil
+				},
 			},
 			"domain_dn": {
 				Type:     schema.TypeString,
 				Required: true,
 				ForceNew: true,
 			},
-		}),
+		},
 	}
 }
 
@@ -61,11 +64,11 @@ func setInfraRsDomPAttributes(infraRsDomP *models.InfraRsDomP, d *schema.Resourc
 	if dn != infraRsDomP.DistinguishedName {
 		d.Set("attachable_access_entity_profile_dn", "")
 	}
-	d.Set("attachable_access_entity_profile_dn", GetParentDn(dn, fmt.Sprintf("/%s", fmt.Sprintf(models.RninfraRsDomP, d.Get("domain_dn")))))
 	infraRsDomPMap, err := infraRsDomP.ToMap()
 	if err != nil {
 		return d, err
 	}
+	d.Set("attachable_access_entity_profile_dn", GetParentDn(dn, fmt.Sprintf("/rsdomP-[%s]", infraRsDomPMap["tDn"])))
 	d.Set("annotation", infraRsDomPMap["annotation"])
 	d.Set("domain_dn", infraRsDomPMap["tDn"])
 	return d, nil
