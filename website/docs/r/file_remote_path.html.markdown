@@ -37,6 +37,7 @@ resource "aci_file_remote_path" "example" {
 ## Argument Reference ##
 * `name` - (Required) Name of object File Remote Path.
 * `host` - (Required) Hostname or IP for export destination of object File Remote Path.
+* `name_alias` - (Optional) Name alias for object File Remote Path.
 * `annotation` - (Optional) Annotation of object File Remote Path.
 * `auth_type` - (Optional) Authentication Type Choice. Allowed values are "usePassword" and "useSshKeyContents". Default value is "usePassword". Type: String.
 * `identity_private_key_contents` - (Optional) SSH Private Key File contents for datatransfer. Must be set if `auth_type` is equal to "useSshKeyContents".
