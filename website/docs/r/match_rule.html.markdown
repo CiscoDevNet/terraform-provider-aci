@@ -36,7 +36,8 @@ resource "aci_match_rule" "rule" {
 * `tenant_dn` - (Required) Distinguished name of parent Tenant object.
 * `name` - (Required) Name of object Match Rule.
 * `annotation` - (Optional) Annotation of object Match Rule.
-
+* `name_alias` - (Optional) Name alias for object Match Rule.
+* `description` - (Optional) Description of object Match Rule.
 
 
 ## Importing ##
