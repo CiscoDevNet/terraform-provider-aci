@@ -172,8 +172,8 @@ func resourceAciBgpPeerConnectivityProfile() *schema.Resource {
 			},
 
 			"relation_bgp_rs_peer_pfx_pol": &schema.Schema{
-				Type: schema.TypeString,
-
+				Type:     schema.TypeString,
+				Computed: true,
 				Optional: true,
 			},
 			"relation_bgp_rs_peer_to_profile": &schema.Schema{
@@ -344,6 +344,26 @@ func resourceAciBgpPeerConnectivityProfileImport(d *schema.ResourceData, m inter
 	schemaFilled, err := setBgpPeerConnectivityProfileAttributes(bgpPeerP, d)
 	if err != nil {
 		return nil, err
+	}
+
+	bgpAsP, err := getRemoteBgpAutonomousSystemProfileFromBgpPeerConnectivityProfile(aciClient, fmt.Sprintf("%s/as", dn))
+	if err == nil {
+		setBgpAutonomousSystemProfileAttributesFromBgpPeerConnectivityProfile(bgpAsP, d)
+	}
+
+	bgpLocalAsnP, err := getRemoteLocalAutonomousSystemProfileFromBgpPeerConnectivityProfile(aciClient, fmt.Sprintf("%s/localasn", dn))
+	if err == nil {
+		setLocalAutonomousSystemProfileAttributesFromBgpPeerConnectivityProfile(bgpLocalAsnP, d)
+	}
+
+	bgpRsPeerPfxPolData, err := aciClient.ReadRelationbgpRsPeerPfxPolFromBgpPeerConnectivityProfile(dn)
+	if err == nil {
+		d.Set("relation_bgp_rs_peer_pfx_pol", bgpRsPeerPfxPolData.(string))
+	}
+
+	bgpRsPeerToProfileData, err := aciClient.ReadRelationbgpRsPeerToProfile(dn)
+	if err == nil {
+		d.Set("relation_bgp_rs_peer_to_profile", bgpRsPeerToProfileData)
 	}
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
@@ -741,7 +761,6 @@ func resourceAciBgpPeerConnectivityProfileRead(ctx context.Context, d *schema.Re
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation bgpRsPeerPfxPol %v", err)
 		d.Set("relation_bgp_rs_peer_pfx_pol", "")
-
 	} else {
 		setRelationAttribute(d, "relation_bgp_rs_peer_pfx_pol", bgpRsPeerPfxPolData.(string))
 	}
@@ -749,6 +768,7 @@ func resourceAciBgpPeerConnectivityProfileRead(ctx context.Context, d *schema.Re
 	bgpRsPeerToProfileData, err := aciClient.ReadRelationbgpRsPeerToProfile(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation bgpRsPeerToProfile %v", err)
+		setRelationAttribute(d, "relation_bgp_rs_peer_to_profile", nil)
 	} else {
 		setRelationAttribute(d, "relation_bgp_rs_peer_to_profile", bgpRsPeerToProfileData)
 	}
