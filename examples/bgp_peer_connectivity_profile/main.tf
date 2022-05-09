@@ -41,14 +41,14 @@ resource "aci_logical_node_profile" "logical_node_profile" {
 resource "aci_bgp_peer_connectivity_profile" "node_bgp_peer" {
   parent_dn           = aci_logical_node_profile.logical_node_profile.id
   addr                = "10.0.0.1"
-  addr_t_ctrl         = "af-mcast,af-ucast"
+  addr_t_ctrl         = ["af-mcast","af-ucast"]
   allowed_self_as_cnt = "1"
   annotation          = "example"
-  ctrl                = "allow-self-as"
+  ctrl                = ["allow-self-as"]
   name_alias          = "node_bgp_peer"
   password            = "example"
-  peer_ctrl           = "bfd"
-  private_a_sctrl     = "remove-all,remove-exclusive"
+  peer_ctrl           = ["bfd"]
+  private_a_sctrl     = ["remove-all","remove-exclusive"]
   ttl                 = "7"
   weight              = "5"
   as_number           = "27500"
@@ -97,14 +97,14 @@ resource "aci_l3out_path_attachment" "l3out_path_attach" {
 resource "aci_bgp_peer_connectivity_profile" "interface_bgp_peer" {
   parent_dn           = aci_l3out_path_attachment.l3out_path_attach.id
   addr                = "10.0.0.2"
-  addr_t_ctrl         = "af-mcast,af-ucast"
+  addr_t_ctrl         = ["af-mcast","af-ucast"]
   allowed_self_as_cnt = "1"
   annotation          = "example"
-  ctrl                = "allow-self-as"
+  ctrl                = ["allow-self-as"]
   name_alias          = "interface_bgp_peer"
   password            = "example"
-  peer_ctrl           = "bfd"
-  private_a_sctrl     = "remove-all,remove-exclusive"
+  peer_ctrl           = ["bfd"]
+  private_a_sctrl     = ["remove-all","remove-exclusive"]
   ttl                 = "7"
   weight              = "5"
   as_number           = "27500"
