@@ -38,24 +38,24 @@ func resourceAciActionRuleProfile() *schema.Resource {
 			"set_route_tag": {
 				Type:          schema.TypeString,
 				Optional:      true,
-				ValidateFunc:  validateIntBetweenFromString(0, 4294967295),
+				ValidateFunc:  validateIntBetweenFromString(0, 2147483647),
 				ConflictsWith: []string{"multipath", "next_hop_propagation"},
 				// Set nexthop unchanged action cannot be configured along with set route tag action under the set action rule profile.
 			},
 			"set_preference": {
 				Type:         schema.TypeString,
 				Optional:     true,
-				ValidateFunc: validateIntBetweenFromString(0, 4294967295),
+				ValidateFunc: validateIntBetweenFromString(0, 2147483647),
 			},
 			"set_weight": {
 				Type:         schema.TypeString,
 				Optional:     true,
-				ValidateFunc: validateIntBetweenFromString(0, 4294967295),
+				ValidateFunc: validateIntBetweenFromString(0, 2147483647),
 			},
 			"set_metric": {
 				Type:         schema.TypeString,
 				Optional:     true,
-				ValidateFunc: validateIntBetweenFromString(0, 4294967295),
+				ValidateFunc: validateIntBetweenFromString(0, 2147483647),
 			},
 			"set_metric_type": {
 				Type:     schema.TypeString,
@@ -109,8 +109,8 @@ func resourceAciActionRuleProfile() *schema.Resource {
 						"asn": {
 							Type:         schema.TypeString,
 							Required:     true,
-							ValidateFunc: validateIntBetweenFromString(0, 4294967295),
-							Description:  "ASN must be between 0 and 4294967295",
+							ValidateFunc: validateIntBetweenFromString(0, 2147483647),
+							Description:  "ASN must be between 0 and 2147483647",
 						},
 						"order": {
 							Required:     true,
