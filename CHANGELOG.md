@@ -9,6 +9,7 @@ IMPROVEMENTS:
 - Add custom_epg_name attribute to resource aci_epg_to_domain (#841)
 - Add relation_bgp_rs_best_path_ctrl_pol to aci_l3out_bgp_protocol_profile
 - Add enhanced_lag_policy attribute to aci_epg_to_domain (#852)
+- Add support for M1 Mac
 
 BUG FIXES:
 - Update docs for aci_application_epg (#842)
