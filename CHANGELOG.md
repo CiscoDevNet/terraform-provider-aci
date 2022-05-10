@@ -1,3 +1,26 @@
+## 2.2.0 (May 9, 2022)
+IMPROVEMENTS:
+- Add Set As Path, Multipath, Next Hop Propagation, Set Communities, Set Next Hop, Set Metric Type, Set Metric, Set Preference, Set Weight and Set Route Tag options to aci_action_rule_profile (#851, #843)
+- Add aci_action_rule_additional_communities resource and datasource (#840)
+- Add aci_match_regex_community_term and aci_match_community_factor resources and datasources (#835)
+- Add aci_aaep_to_domain resource and data source (#824)
+- Add aci_epg_to_contract_interface resource and datasource (#833)
+- Add deprecation message to attribute relation_fv_rs_path_att
+- Add custom_epg_name attribute to resource aci_epg_to_domain (#841)
+- Add relation_bgp_rs_best_path_ctrl_pol to aci_l3out_bgp_protocol_profile
+- Add enhanced_lag_policy attribute to aci_epg_to_domain (#852)
+
+BUG FIXES:
+- Update docs for aci_application_epg (#842)
+- Change documentation for 'managed' mode in aci_function_node
+- Fix for "encap" in aci_epg_to_static_path should be "Required : true" (#845)
+- Fix aci_route_control_context read and import function to retrieve set_rule and relation_rtctrl_rs_ctx_p_to_subj_p properly
+- Add relation_vns_rs_l_dev_ctx_to_l_dev as Required attribute in aci_logical_device_context
+- Fix idempotency by removing dhcp_option_ids from aci_dhcp_option_policy (#831)
+- Fix to avoid vmmSecP object mapping with not supported domains in aci_epg_to_domain (#830)
+- Fix for import of relation_infra_rs_sp_acc_grp in aci_spine_access_port_selector resource (#829)
+- Fix aci_bgp_peer_connectivity_profile read changes issue
+
 ## 2.1.0 (March 16, 2022)
 IMPROVEMENTS:
 - Allow user to enter value between 0-255 for "prot" attribute in aci_filter_entry (#820)
