@@ -51,7 +51,6 @@ func (sm *ServiceManager) ListSetAsPathASNs(parentDn string) ([]*models.ASNumber
 	baseurlStr := "/api/node/class"
 	dnUrl := fmt.Sprintf("%s/%s/%s.json", baseurlStr, parentDn, "rtctrlSetASPathASN")
 	cont, err := sm.GetViaURL(dnUrl)
-
 	if err != nil {
 		return nil, err
 	} else {

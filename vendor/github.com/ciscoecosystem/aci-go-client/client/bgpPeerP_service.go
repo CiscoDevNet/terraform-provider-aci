@@ -143,7 +143,7 @@ func (sm *ServiceManager) ReadRelationbgpRsPeerToProfile(parentDn string) (inter
 	st := make([]map[string]string, 0)
 	for _, contItem := range contList {
 		paramMap := make(map[string]string)
-		paramMap["tDn"] = models.G(contItem, "tDn")
+		paramMap["target_dn"] = models.G(contItem, "tDn")
 		paramMap["direction"] = models.G(contItem, "direction")
 
 		st = append(st, paramMap)
