@@ -64,14 +64,14 @@ resource "aci_contract_subject" "contract_subject_2" {
   name                  = "contract_subject_2"
   rev_flt_ports         = "no"
   apply_both_directions = "no"
-  consumer_to_provider = {
+  consumer_to_provider {
     prio                             = "unspecified"
-    target_dscp                      = "AF41"
+    target_dscp                      = "AF31"
     relation_vz_rs_in_term_graph_att = aci_l4_l7_service_graph_template.service_graph.id
   }
-  provider_to_consumer = {
+   provider_to_consumer {
     prio                              = "unspecified"
-    target_dscp                       = "AF32"
+    target_dscp                       = "AF42"
     relation_vz_rs_out_term_graph_att = aci_l4_l7_service_graph_template.service_graph.id
   }
 }

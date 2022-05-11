@@ -3,6 +3,7 @@ package aci
 import (
 	"context"
 	"fmt"
+	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
@@ -67,12 +68,60 @@ func dataSourceAciContractSubject() *schema.Resource {
 				Optional: true,
 			},
 			"consumer_to_provider": &schema.Schema{
-				Type:     schema.TypeMap,
+				Type:     schema.TypeSet,
 				Optional: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"id": {
+							Type:     schema.TypeString,
+							Optional: true,
+							Computed: true,
+						},
+						"prio": {
+							Type:     schema.TypeString,
+							Optional: true,
+							Computed: true,
+						},
+						"target_dscp": {
+							Type:     schema.TypeString,
+							Optional: true,
+							Computed: true,
+						},
+						"relation_vz_rs_in_term_graph_att": {
+							Type:     schema.TypeString,
+							Optional: true,
+							Computed: true,
+						},
+					},
+				},
 			},
 			"provider_to_consumer": &schema.Schema{
-				Type:     schema.TypeMap,
+				Type:     schema.TypeSet,
 				Optional: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"id": {
+							Type:     schema.TypeString,
+							Optional: true,
+							Computed: true,
+						},
+						"prio": {
+							Type:     schema.TypeString,
+							Optional: true,
+							Computed: true,
+						},
+						"target_dscp": {
+							Type:     schema.TypeString,
+							Optional: true,
+							Computed: true,
+						},
+						"relation_vz_rs_out_term_graph_att": {
+							Type:     schema.TypeString,
+							Optional: true,
+							Computed: true,
+						},
+					},
+				},
 			},
 		}),
 	}
@@ -103,25 +152,34 @@ func dataSourceAciContractSubjectRead(ctx context.Context, d *schema.ResourceDat
 	if err != nil {
 		return diag.FromErr(err)
 	}
+	log.Printf("[TEST] DATASOURCE vzInTerm : %v ", vzInTerm)
 	if vzInTerm != nil {
-		vzInTermFactor, err := setInTermSubjectAttributes(vzInTerm, make(map[string]string))
+		abc, err := setInTermSubjectAttributes(vzInTerm, d)
 		if err != nil {
 			return diag.FromErr(err)
 		}
-		d.Set("consumer_to_provider", vzInTermFactor)
+		log.Printf("[TEST] in DATA abc : %v ", abc)
+
+		// vzRsInTermGraphAttData, err := aciClient.ReadRelationvzRsInTermGraphAtt(vzInTerm.DistinguishedName)
+		// if err != nil {
+		// 	log.Printf("[DEBUG] Error while reading relation vzRsInTermGraphAtt %v", err)
+		// 	d.Set("relation_vz_rs_in_term_graph_att", "")
+		// } else {
+		// 	d.Set("relation_vz_rs_in_term_graph_att", vzRsInTermGraphAttData.(string))
+		// }
 	}
 
 	vzOutTerm, err := getRemoteOutTermSubject(aciClient, dn)
 	if err != nil {
 		return diag.FromErr(err)
 	}
+	log.Printf("[TEST] DATASOURCE vzOutTerm : %v ", vzOutTerm)
 	if vzOutTerm != nil {
-		vzOutTermFactor, err := setOutTermSubjectAttributes(vzOutTerm, make(map[string]string))
+		bcd, err := setOutTermSubjectAttributes(vzOutTerm, d)
 		if err != nil {
 			return diag.FromErr(err)
 		}
-		d.Set("provider_to_consumer", vzOutTermFactor)
-
+		log.Printf("[TEST] in DATA bcd : %v ", bcd)
 	}
 
 	if vzInTerm == nil && vzOutTerm == nil {
