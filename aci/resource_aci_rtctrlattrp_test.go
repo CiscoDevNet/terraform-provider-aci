@@ -23,7 +23,8 @@ func TestAccAciActionRuleProfile_Basic(t *testing.T) {
 	var set_communities models.RtctrlSetComm
 	var set_dampening models.RtctrlSetDamp
 	var set_as_path_prepend_last_as models.SetASPath
-	var set_as_path_prepend_as models.ASNumber
+	var set_as_path_prepend_as_1 models.ASNumber
+	var set_as_path_prepend_as_2 models.ASNumber
 
 	fv_tenant_name := acctest.RandString(5)
 	rtctrl_attr_p_name := acctest.RandString(5)
@@ -66,7 +67,8 @@ func TestAccAciActionRuleProfile_Basic(t *testing.T) {
 						&set_communities,
 						&set_dampening,
 						&set_as_path_prepend_last_as,
-						&set_as_path_prepend_as,
+						&set_as_path_prepend_as_1,
+						&set_as_path_prepend_as_2,
 					),
 					testAccCheckAciActionRuleProfileAttributes(
 						fv_tenant_name,
@@ -89,7 +91,8 @@ func TestAccAciActionRuleProfile_Basic(t *testing.T) {
 						&set_communities,
 						&set_dampening,
 						&set_as_path_prepend_last_as,
-						&set_as_path_prepend_as,
+						&set_as_path_prepend_as_1,
+						&set_as_path_prepend_as_2,
 					),
 				),
 			},
@@ -108,7 +111,8 @@ func TestAccAciActionRuleProfile_Update(t *testing.T) {
 	var set_communities models.RtctrlSetComm
 	var set_dampening models.RtctrlSetDamp
 	var set_as_path_prepend_last_as models.SetASPath
-	var set_as_path_prepend_as models.ASNumber
+	var set_as_path_prepend_as_1 models.ASNumber
+	var set_as_path_prepend_as_2 models.ASNumber
 
 	fv_tenant_name := acctest.RandString(5)
 	rtctrl_attr_p_name := acctest.RandString(5)
@@ -117,8 +121,8 @@ func TestAccAciActionRuleProfile_Update(t *testing.T) {
 	set_preference_value := acctest.RandIntRange(0, 2147483647)
 	set_weight_value := acctest.RandIntRange(0, 65535)
 	set_as_path_prepend_last_as_value := acctest.RandIntRange(1, 10)
-	set_as_path_prepend_as_order_value := acctest.RandIntRange(0, 31)
-	set_as_path_prepend_as_asn_value := acctest.RandIntRange(1, 2147483647)
+	set_as_path_prepend_as_order_value := acctest.RandIntRange(2, 31)
+	set_as_path_prepend_as_asn_value := acctest.RandIntRange(2, 2147483647)
 	set_metric_value := acctest.RandIntRange(0, 2147483647)
 
 	resource.Test(t, resource.TestCase{
@@ -151,7 +155,8 @@ func TestAccAciActionRuleProfile_Update(t *testing.T) {
 						&set_communities,
 						&set_dampening,
 						&set_as_path_prepend_last_as,
-						&set_as_path_prepend_as,
+						&set_as_path_prepend_as_1,
+						&set_as_path_prepend_as_2,
 					),
 					testAccCheckAciActionRuleProfileAttributes(
 						fv_tenant_name,
@@ -174,7 +179,8 @@ func TestAccAciActionRuleProfile_Update(t *testing.T) {
 						&set_communities,
 						&set_dampening,
 						&set_as_path_prepend_last_as,
-						&set_as_path_prepend_as,
+						&set_as_path_prepend_as_1,
+						&set_as_path_prepend_as_2,
 					),
 				),
 			},
@@ -203,7 +209,8 @@ func TestAccAciActionRuleProfile_Update(t *testing.T) {
 						&set_communities,
 						&set_dampening,
 						&set_as_path_prepend_last_as,
-						&set_as_path_prepend_as,
+						&set_as_path_prepend_as_1,
+						&set_as_path_prepend_as_2,
 					),
 					testAccCheckAciActionRuleProfileAttributes(
 						fv_tenant_name,
@@ -226,7 +233,8 @@ func TestAccAciActionRuleProfile_Update(t *testing.T) {
 						&set_communities,
 						&set_dampening,
 						&set_as_path_prepend_last_as,
-						&set_as_path_prepend_as,
+						&set_as_path_prepend_as_1,
+						&set_as_path_prepend_as_2,
 					),
 				),
 			},
@@ -265,6 +273,10 @@ func testAccCheckAciActionRuleProfileConfig_basic(
 			order = %d
 			asn   = %d
 		  }
+		  set_as_path_prepend_as {
+			order = 1
+			asn   = 1
+		  }
 		set_metric      = %d
 		set_metric_type = "ospf-type1"
 		set_next_hop    = "1.1.1.1"
@@ -296,7 +308,8 @@ func testAccCheckAciActionRuleProfileExists(
 	set_communities *models.RtctrlSetComm,
 	set_dampening *models.RtctrlSetDamp,
 	set_as_path_prepend_last_as *models.SetASPath,
-	set_as_path_prepend_as *models.ASNumber,
+	set_as_path_prepend_as_1 *models.ASNumber,
+	set_as_path_prepend_as_2 *models.ASNumber,
 ) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 		rs, ok := s.RootModule().Resources[name]
@@ -451,12 +464,37 @@ func testAccCheckAciActionRuleProfileExists(
 		// rtctrlSetASPathASN - Beginning of Import
 		set_as_path_prepend_as_dn := rs.Primary.ID + fmt.Sprintf("/"+models.RnrtctrlSetASPath, "prepend")
 		ReadRelationASNumberData, err := client.ListSetAsPathASNs(set_as_path_prepend_as_dn)
+		prepend_asn_dns := make([]interface{}, 0)
 		if err == nil {
 			for _, record := range ReadRelationASNumberData {
-				*set_as_path_prepend_as = *record
+				prepend_asn_dns = append(prepend_asn_dns, record.DistinguishedName)
 			}
 		} else {
 			return fmt.Errorf("Set As Path Prepend Last As %s not found", set_as_path_prepend_as_dn)
+		}
+
+		if len(prepend_asn_dns) == 2 {
+			set_as_path_prepend_as_1_cont, err := client.Get(prepend_asn_dns[0].(string))
+			if err != nil {
+				return err
+			}
+
+			set_as_path_prepend_as_1_found := models.ASNumberFromContainer(set_as_path_prepend_as_1_cont)
+			if set_as_path_prepend_as_1_found.DistinguishedName != prepend_asn_dns[0] {
+				return fmt.Errorf("Set As Path Prepend Last As %s not found", prepend_asn_dns[0])
+			}
+			*set_as_path_prepend_as_1 = *set_as_path_prepend_as_1_found
+
+			set_as_path_prepend_as_2_cont, err := client.Get(prepend_asn_dns[1].(string))
+			if err != nil {
+				return err
+			}
+
+			set_as_path_prepend_as_2_found := models.ASNumberFromContainer(set_as_path_prepend_as_2_cont)
+			if set_as_path_prepend_as_2_found.DistinguishedName != prepend_asn_dns[1] {
+				return fmt.Errorf("Set As Path Prepend Last As %s not found", prepend_asn_dns[1])
+			}
+			*set_as_path_prepend_as_2 = *set_as_path_prepend_as_2_found
 		}
 		// rtctrlSetASPathASN - Import finished successfully
 
@@ -505,7 +543,8 @@ func testAccCheckAciActionRuleProfileAttributes(
 	set_communities *models.RtctrlSetComm,
 	set_dampening *models.RtctrlSetDamp,
 	set_as_path_prepend_last_as *models.SetASPath,
-	set_as_path_prepend_as *models.ASNumber,
+	set_as_path_prepend_as_1 *models.ASNumber,
+	set_as_path_prepend_as_2 *models.ASNumber,
 
 ) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
@@ -571,12 +610,20 @@ func testAccCheckAciActionRuleProfileAttributes(
 			return fmt.Errorf("Bad set_as_path_prepend_last_as Lastnum value %s", set_as_path_prepend_last_as.Lastnum)
 		}
 
-		if strconv.Itoa(set_as_path_prepend_as_order_value) != set_as_path_prepend_as.Order {
-			return fmt.Errorf("Bad set_as_path_prepend_as Order value %s", set_as_path_prepend_as.Order)
+		if strconv.Itoa(set_as_path_prepend_as_order_value) != set_as_path_prepend_as_1.Order {
+			return fmt.Errorf("Bad set_as_path_prepend_as_1 Order value %s", set_as_path_prepend_as_1.Order)
 		}
 
-		if strconv.Itoa(set_as_path_prepend_as_asn_value) != set_as_path_prepend_as.Asn {
-			return fmt.Errorf("Bad set_as_path_prepend_as Asn value %s", set_as_path_prepend_as.Asn)
+		if strconv.Itoa(set_as_path_prepend_as_asn_value) != set_as_path_prepend_as_1.Asn {
+			return fmt.Errorf("Bad set_as_path_prepend_as_1 Asn value %s", set_as_path_prepend_as_1.Asn)
+		}
+
+		if "1" != set_as_path_prepend_as_2.Order {
+			return fmt.Errorf("Bad set_as_path_prepend_as_2 Order value %s", set_as_path_prepend_as_2.Order)
+		}
+
+		if "1" != set_as_path_prepend_as_2.Asn {
+			return fmt.Errorf("Bad set_as_path_prepend_as_2 Asn value %s", set_as_path_prepend_as_2.Asn)
 		}
 
 		return nil
