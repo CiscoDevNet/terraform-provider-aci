@@ -53,7 +53,7 @@ resource "aci_l4_l7_service_graph_template" "service_graph2" {
 
 // apply_both_directions is selected [yes] by default and there is only one filter required
 resource "aci_contract_subject" "contract_subject" {
-  contract_dn   = aci_contract_subject.Web_subject1.contract_dn
+  contract_dn   = aci_contract.democontract.id
   name          = "contract_subject"
   rev_flt_ports = "no"
 }
@@ -83,7 +83,7 @@ resource "aci_filter" "test_filter" {
 }
 
 resource "aci_contract_subject_one_way_filter" "contract_subject_filter" {
-  contract_subject_dn = aci_contract_subject.contract_subject_2.consumer_to_provider.id
+  contract_subject_dn = tolist(aci_contract_subject.contract_subject_2.consumer_to_provider)[0].id
   action = "permit"
   directives = ["log"]
   priority_override = "default"
@@ -91,7 +91,7 @@ resource "aci_contract_subject_one_way_filter" "contract_subject_filter" {
 }
 
 resource "aci_contract_subject_one_way_filter" "contract_subject_filter2" {
-  contract_subject_dn = aci_contract_subject.contract_subject_2.provider_to_consumer.id
+  contract_subject_dn = tolist(aci_contract_subject.contract_subject_2.provider_to_consumer)[0].id
   action = "permit"
   directives = ["log"]
   priority_override = "default"

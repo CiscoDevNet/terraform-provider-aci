@@ -152,34 +152,40 @@ func dataSourceAciContractSubjectRead(ctx context.Context, d *schema.ResourceDat
 	if err != nil {
 		return diag.FromErr(err)
 	}
-	log.Printf("[TEST] DATASOURCE vzInTerm : %v ", vzInTerm)
+
 	if vzInTerm != nil {
-		abc, err := setInTermSubjectAttributes(vzInTerm, d)
+		var vzRsInTermGraphAtt string
+		vzRsInTermGraphAttData, err := aciClient.ReadRelationvzRsInTermGraphAtt(vzInTerm.DistinguishedName)
+		if err != nil {
+			log.Printf("[DEBUG] Error while reading relation vzRsInTermGraphAtt %v", err)
+		} else {
+			vzRsInTermGraphAtt = vzRsInTermGraphAttData.(string)
+		}
+
+		_, err = setInTermSubjectAttributes(vzInTerm, d, vzRsInTermGraphAtt)
 		if err != nil {
 			return diag.FromErr(err)
 		}
-		log.Printf("[TEST] in DATA abc : %v ", abc)
-
-		// vzRsInTermGraphAttData, err := aciClient.ReadRelationvzRsInTermGraphAtt(vzInTerm.DistinguishedName)
-		// if err != nil {
-		// 	log.Printf("[DEBUG] Error while reading relation vzRsInTermGraphAtt %v", err)
-		// 	d.Set("relation_vz_rs_in_term_graph_att", "")
-		// } else {
-		// 	d.Set("relation_vz_rs_in_term_graph_att", vzRsInTermGraphAttData.(string))
-		// }
 	}
 
 	vzOutTerm, err := getRemoteOutTermSubject(aciClient, dn)
 	if err != nil {
 		return diag.FromErr(err)
 	}
-	log.Printf("[TEST] DATASOURCE vzOutTerm : %v ", vzOutTerm)
+
 	if vzOutTerm != nil {
-		bcd, err := setOutTermSubjectAttributes(vzOutTerm, d)
+		var vzRsOutTermGraphAtt string
+		vzRsOutTermGraphAttData, err := aciClient.ReadRelationvzRsOutTermGraphAtt(vzOutTerm.DistinguishedName)
+		if err != nil {
+			log.Printf("[DEBUG] Error while reading relation vzRsOutTermGraphAtt %v", err)
+		} else {
+			vzRsOutTermGraphAtt = vzRsOutTermGraphAttData.(string)
+		}
+
+		_, err = setOutTermSubjectAttributes(vzOutTerm, d, vzRsOutTermGraphAtt)
 		if err != nil {
 			return diag.FromErr(err)
 		}
-		log.Printf("[TEST] in DATA bcd : %v ", bcd)
 	}
 
 	if vzInTerm == nil && vzOutTerm == nil {
