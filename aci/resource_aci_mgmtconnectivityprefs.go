@@ -154,7 +154,7 @@ func resourceAciMgmtconnectivitypreferenceRead(ctx context.Context, d *schema.Re
 	mgmtConnectivityPrefs, err := getRemoteMgmtconnectivitypreference(aciClient, dn)
 	if err != nil {
 		d.SetId("")
-		return diag.FromErr(err)
+		return nil
 	}
 	_, err = setMgmtconnectivitypreferenceAttributes(mgmtConnectivityPrefs, d)
 	if err != nil {

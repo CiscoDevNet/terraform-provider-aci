@@ -142,7 +142,7 @@ func resourceAciTACACSMonitoringDestinationGroupRead(ctx context.Context, d *sch
 	tacacsGroup, err := getRemoteTACACSMonitoringDestinationGroup(aciClient, dn)
 	if err != nil {
 		d.SetId("")
-		return diag.FromErr(err)
+		return nil
 	}
 	_, err = setTACACSMonitoringDestinationGroupAttributes(tacacsGroup, d)
 	if err != nil {

@@ -256,7 +256,7 @@ func resourceAciSpineAccessPortSelectorRead(ctx context.Context, d *schema.Resou
 	infraSHPortS, err := getRemoteSpineAccessPortSelector(aciClient, dn)
 	if err != nil {
 		d.SetId("")
-		return diag.FromErr(err)
+		return nil
 	}
 
 	_, err = setSpineAccessPortSelectorAttributes(infraSHPortS, d)

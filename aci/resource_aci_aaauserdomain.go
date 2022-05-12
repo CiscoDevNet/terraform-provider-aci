@@ -154,7 +154,7 @@ func resourceAciUserDomainRead(ctx context.Context, d *schema.ResourceData, m in
 	aaaUserDomain, err := getRemoteUserDomain(aciClient, dn)
 	if err != nil {
 		d.SetId("")
-		return diag.FromErr(err)
+		return nil
 	}
 	_, err = setUserDomainAttributes(aaaUserDomain, d)
 	if err != nil {

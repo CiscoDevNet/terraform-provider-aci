@@ -723,12 +723,12 @@ func resourceAciEndpointSecurityGroupRead(ctx context.Context, d *schema.Resourc
 	fvESg, err := getRemoteEndpointSecurityGroup(aciClient, dn)
 	if err != nil {
 		d.SetId("")
-		return diag.FromErr(err)
+		return nil
 	}
 	_, err = setEndpointSecurityGroupAttributes(fvESg, d)
 	if err != nil {
 		d.SetId("")
-		return diag.FromErr(err)
+		return nil
 	}
 
 	fvRsConsData, err := aciClient.ReadRelationfvRsCons(dn)

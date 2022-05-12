@@ -206,7 +206,7 @@ func resourceAciDefaultAuthenticationMethodforallLoginsRead(ctx context.Context,
 	aaaDefaultAuth, err := getRemoteDefaultAuthenticationMethodforallLogins(aciClient, dn)
 	if err != nil {
 		d.SetId("")
-		return diag.FromErr(err)
+		return nil
 	}
 	_, err = setDefaultAuthenticationMethodforallLoginsAttributes(aaaDefaultAuth, d)
 	if err != nil {

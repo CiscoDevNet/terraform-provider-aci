@@ -165,7 +165,7 @@ func resourceAciEndpointSecurityGroupEPgSelectorRead(ctx context.Context, d *sch
 	fvEPgSelector, err := getRemoteEndpointSecurityGroupEPgSelector(aciClient, dn)
 	if err != nil {
 		d.SetId("")
-		return diag.FromErr(err)
+		return nil
 	}
 	_, err = setEndpointSecurityGroupEPgSelectorAttributes(fvEPgSelector, d)
 	if err != nil {

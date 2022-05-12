@@ -202,12 +202,12 @@ func resourceAciSpanningTreeInterfacePolicyRead(ctx context.Context, d *schema.R
 	stpIfPol, err := getRemoteSpanningTreeInterfacePolicy(aciClient, dn)
 	if err != nil {
 		d.SetId("")
-		return diag.FromErr(err)
+		return nil
 	}
 	_, err = setSpanningTreeInterfacePolicyAttributes(stpIfPol, d)
 	if err != nil {
 		d.SetId("")
-		return diag.FromErr(err)
+		return nil
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())

@@ -174,7 +174,7 @@ func resourceAciContractInterfaceRelationshipRead(ctx context.Context, d *schema
 	fvRsConsIf, err := getRemoteContractInterfaceRelationship(aciClient, dn)
 	if err != nil {
 		d.SetId("")
-		return diag.FromErr(err)
+		return nil
 	}
 
 	_, err = setContractInterfaceRelationshipAttributes(fvRsConsIf, d)

@@ -411,7 +411,7 @@ func resourceAciRemotePathofaFileRead(ctx context.Context, d *schema.ResourceDat
 	fileRemotePath, err := getRemoteRemotePathofaFile(aciClient, dn)
 	if err != nil {
 		d.SetId("")
-		return diag.FromErr(err)
+		return nil
 	}
 	setRemotePathofaFileAttributes(fileRemotePath, d)
 

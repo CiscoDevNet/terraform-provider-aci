@@ -197,7 +197,7 @@ func resourceAciMatchRuleBasedonCommunityRegularExpressionRead(ctx context.Conte
 	rtctrlMatchCommRegexTerm, err := getRemoteMatchRuleBasedonCommunityRegularExpression(aciClient, dn)
 	if err != nil {
 		d.SetId("")
-		return diag.FromErr(err)
+		return nil
 	}
 
 	_, err = setMatchRuleBasedonCommunityRegularExpressionAttributes(rtctrlMatchCommRegexTerm, d)

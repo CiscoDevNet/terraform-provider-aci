@@ -158,7 +158,7 @@ func resourceAciVPCDomainPolicyRead(ctx context.Context, d *schema.ResourceData,
 	vpcInstPol, err := getRemoteVPCDomainPolicy(aciClient, dn)
 	if err != nil {
 		d.SetId("")
-		return diag.FromErr(err)
+		return nil
 	}
 	setVPCDomainPolicyAttributes(vpcInstPol, d)
 

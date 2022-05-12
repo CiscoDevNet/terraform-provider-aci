@@ -597,7 +597,7 @@ func resourceAciInBManagedNodesZoneRead(ctx context.Context, d *schema.ResourceD
 	mgmtInBZone, err := getRemoteInBManagedNodesZone(aciClient, dn)
 	if err != nil {
 		d.SetId("")
-		return diag.FromErr(err)
+		return nil
 	}
 	_, err = setInBManagedNodesZoneAttributes(mgmtInBZone, d)
 	if err != nil {
@@ -639,7 +639,7 @@ func resourceAciOOBManagedNodesZoneRead(ctx context.Context, d *schema.ResourceD
 	mgmtOoBZone, err := getRemoteOOBManagedNodesZone(aciClient, dn)
 	if err != nil {
 		d.SetId("")
-		return diag.FromErr(err)
+		return nil
 	}
 	_, err = setOOBManagedNodesZoneAttributes(mgmtOoBZone, d)
 	if err != nil {

@@ -313,7 +313,7 @@ func resourceAciMiscablingProtocolInstancePolicyRead(ctx context.Context, d *sch
 	mcpInstPol, err := getRemoteMiscablingProtocolInstancePolicy(aciClient, dn)
 	if err != nil {
 		d.SetId("")
-		return diag.FromErr(err)
+		return nil
 	}
 	_, err = setMiscablingProtocolInstancePolicyAttributes(mcpInstPol, d)
 	if err != nil {

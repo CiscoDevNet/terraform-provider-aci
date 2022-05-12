@@ -154,7 +154,7 @@ func resourceAciLDAPGroupMaprulerefRead(ctx context.Context, d *schema.ResourceD
 	aaaLdapGroupMapRuleRef, err := getRemoteLDAPGroupMapruleref(aciClient, dn)
 	if err != nil {
 		d.SetId("")
-		return diag.FromErr(err)
+		return nil
 	}
 	_, err = setLDAPGroupMaprulerefAttributes(aaaLdapGroupMapRuleRef, d)
 	if err != nil {

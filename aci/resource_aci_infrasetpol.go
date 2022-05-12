@@ -307,7 +307,7 @@ func resourceAciFabricWideSettingsPolicyRead(ctx context.Context, d *schema.Reso
 	infraSetPol, err := getRemoteFabricWideSettingsPolicy(aciClient, dn)
 	if err != nil {
 		d.SetId("")
-		return diag.FromErr(err)
+		return nil
 	}
 	_, err = setFabricWideSettingsPolicyAttributes(infraSetPol, d)
 	if err != nil {

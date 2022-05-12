@@ -1331,7 +1331,7 @@ func resourceAciActionRuleProfileRead(ctx context.Context, d *schema.ResourceDat
 
 	if err != nil {
 		d.SetId("")
-		return diag.FromErr(err)
+		return nil
 	}
 	_, err = setActionRuleProfileAttributes(rtctrlAttrP, d)
 	if err != nil {

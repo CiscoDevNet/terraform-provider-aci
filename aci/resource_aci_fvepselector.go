@@ -168,12 +168,12 @@ func resourceAciEndpointSecurityGroupSelectorRead(ctx context.Context, d *schema
 	fvEPSelector, err := getRemoteEndpointSecurityGroupSelector(aciClient, dn)
 	if err != nil {
 		d.SetId("")
-		return diag.FromErr(err)
+		return nil
 	}
 	_, err = setEndpointSecurityGroupSelectorAttributes(fvEPSelector, d)
 	if err != nil {
 		d.SetId("")
-		return diag.FromErr(err)
+		return nil
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
