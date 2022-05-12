@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"reflect"
 	"sort"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
@@ -287,22 +286,11 @@ func resourceAciLogicalInterfaceRead(ctx context.Context, d *schema.ResourceData
 	vnsRsCIfAttNData, err := aciClient.ReadRelationvnsRsCIfAttN(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation vnsRsCIfAttN %v", err)
-		d.Set("relation_vns_rs_c_if_att_n", make([]string, 0, 1))
+		setRelationAttribute(d, "relation_vns_rs_c_if_att_n", make([]string, 0, 1))
 	} else {
-		if _, ok := d.GetOk("relation_vns_rs_c_if_att_n"); ok {
-			relationParamList := toStringList(d.Get("relation_vns_rs_c_if_att_n").(*schema.Set).List())
-			tfList := make([]string, 0, 1)
-			for _, relationParam := range relationParamList {
-				relationParamName := relationParam
-				tfList = append(tfList, relationParamName)
-			}
-			vnsRsCIfAttNDataList := toStringList(vnsRsCIfAttNData.(*schema.Set).List())
-			sort.Strings(tfList)
-			sort.Strings(vnsRsCIfAttNDataList)
-			if !reflect.DeepEqual(tfList, vnsRsCIfAttNDataList) {
-				d.Set("relation_vns_rs_c_if_att_n", make([]string, 0, 1))
-			}
-		}
+		vnsRsCIfAttNDataList := toStringList(vnsRsCIfAttNData.(*schema.Set).List())
+		sort.Strings(vnsRsCIfAttNDataList)
+		setRelationAttribute(d, "relation_vns_rs_c_if_att_n", vnsRsCIfAttNDataList)
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
