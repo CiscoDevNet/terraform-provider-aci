@@ -203,12 +203,12 @@ func resourceAciEndpointSecurityGroupTagSelectorRead(ctx context.Context, d *sch
 	fvTagSelector, err := getRemoteEndpointSecurityGroupTagSelector(aciClient, dn)
 	if err != nil {
 		d.SetId("")
-		return diag.FromErr(err)
+		return nil
 	}
 	_, err = setEndpointSecurityGroupTagSelectorAttributes(fvTagSelector, d)
 	if err != nil {
 		d.SetId("")
-		return diag.FromErr(err)
+		return nil
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())

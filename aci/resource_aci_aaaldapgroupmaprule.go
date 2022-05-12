@@ -185,7 +185,7 @@ func resourceAciLDAPGroupMapRuleRead(ctx context.Context, d *schema.ResourceData
 	aaaLdapGroupMapRule, err := getRemoteLDAPGroupMapRule(aciClient, dn)
 	if err != nil {
 		d.SetId("")
-		return diag.FromErr(err)
+		return nil
 	}
 	ldap_group_map_rule := strings.Split(dn, "/")
 

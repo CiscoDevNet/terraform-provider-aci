@@ -214,7 +214,7 @@ func resourceAciMatchRouteDestinationRuleRead(ctx context.Context, d *schema.Res
 	rtctrlMatchRtDest, err := getRemoteMatchRouteDestinationRule(aciClient, dn)
 	if err != nil {
 		d.SetId("")
-		return diag.FromErr(err)
+		return nil
 	}
 	_, err = setMatchRouteDestinationRuleAttributes(rtctrlMatchRtDest, d)
 	if err != nil {

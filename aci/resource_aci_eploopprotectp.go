@@ -242,7 +242,7 @@ func resourceAciEPLoopProtectionPolicyRead(ctx context.Context, d *schema.Resour
 	epLoopProtectP, err := getRemoteEPLoopProtectionPolicy(aciClient, dn)
 	if err != nil {
 		d.SetId("")
-		return diag.FromErr(err)
+		return nil
 	}
 	_, err = setEPLoopProtectionPolicyAttributes(epLoopProtectP, d)
 	if err != nil {

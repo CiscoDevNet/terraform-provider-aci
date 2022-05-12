@@ -144,7 +144,7 @@ func resourceAciAnnotationRead(ctx context.Context, d *schema.ResourceData, m in
 	tagAnnotation, err := getRemoteAnnotation(aciClient, dn)
 	if err != nil {
 		d.SetId("")
-		return diag.FromErr(err)
+		return nil
 	}
 	_, err = setAnnotationAttributes(tagAnnotation, d)
 	if err != nil {

@@ -292,7 +292,7 @@ func resourceAciRecurringWindowRead(ctx context.Context, d *schema.ResourceData,
 	trigRecurrWindowP, err := getRemoteRecurringWindow(aciClient, dn)
 	if err != nil {
 		d.SetId("")
-		return diag.FromErr(err)
+		return nil
 	}
 	setRecurringWindowAttributes(trigRecurrWindowP, d)
 

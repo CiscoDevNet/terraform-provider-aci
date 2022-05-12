@@ -155,7 +155,7 @@ func resourceAciIPAgingPolicyRead(ctx context.Context, d *schema.ResourceData, m
 	epIpAgingP, err := getRemoteIPAgingPolicy(aciClient, dn)
 	if err != nil {
 		d.SetId("")
-		return diag.FromErr(err)
+		return nil
 	}
 	_, err = setIPAgingPolicyAttributes(epIpAgingP, d)
 	if err != nil {

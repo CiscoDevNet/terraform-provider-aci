@@ -84,7 +84,7 @@ func dataSourceAciISISDomainPolicyRead(ctx context.Context, d *schema.ResourceDa
 	isisDomPol, err := getRemoteISISDomainPolicy(aciClient, dn)
 	if err != nil {
 		d.SetId("")
-		return diag.FromErr(err)
+		return nil
 	}
 	_, err = setISISDomainPolicyAttributes(isisDomPol, d)
 	if err != nil {

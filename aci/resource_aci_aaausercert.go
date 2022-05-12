@@ -200,7 +200,7 @@ func resourceAciX509CertificateRead(ctx context.Context, d *schema.ResourceData,
 
 	if err != nil {
 		d.SetId("")
-		return diag.FromErr(err)
+		return nil
 	}
 	_, err = setX509CertificateAttributes(aaaUserCert, d)
 	if err != nil {

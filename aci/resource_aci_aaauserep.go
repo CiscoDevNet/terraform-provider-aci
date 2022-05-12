@@ -621,7 +621,7 @@ func resourceAciUserManagementRead(ctx context.Context, d *schema.ResourceData, 
 	aaaUserEp, err := getRemoteUserManagement(aciClient, dn)
 	if err != nil {
 		d.SetId("")
-		return diag.FromErr(err)
+		return nil
 	}
 	_, err = setUserManagementAttributes(aaaUserEp, d)
 	if err != nil {

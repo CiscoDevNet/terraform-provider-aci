@@ -356,7 +356,7 @@ func resourceAciErrorDisabledRecoveryPolicyRead(ctx context.Context, d *schema.R
 	edrErrDisRecoverPol, err := getRemoteErrorDisabledRecoveryPolicy(aciClient, dn)
 	if err != nil {
 		d.SetId("")
-		return diag.FromErr(err)
+		return nil
 	}
 	_, err = setErrorDisabledRecoveryPolicyAttributes(edrErrDisRecoverPol, d)
 	if err != nil {

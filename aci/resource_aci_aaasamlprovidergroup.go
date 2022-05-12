@@ -142,7 +142,7 @@ func resourceAciSAMLProviderGroupRead(ctx context.Context, d *schema.ResourceDat
 	aaaSamlProviderGroup, err := getRemoteSAMLProviderGroup(aciClient, dn)
 	if err != nil {
 		d.SetId("")
-		return diag.FromErr(err)
+		return nil
 	}
 	_, err = setSAMLProviderGroupAttributes(aaaSamlProviderGroup, d)
 	if err != nil {

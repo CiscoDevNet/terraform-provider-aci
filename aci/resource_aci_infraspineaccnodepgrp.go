@@ -387,7 +387,7 @@ func resourceAciSpineSwitchPolicyGroupRead(ctx context.Context, d *schema.Resour
 	infraSpineAccNodePGrp, err := getRemoteSpineSwitchPolicyGroup(aciClient, dn)
 	if err != nil {
 		d.SetId("")
-		return diag.FromErr(err)
+		return nil
 	}
 	setSpineSwitchPolicyGroupAttributes(infraSpineAccNodePGrp, d)
 

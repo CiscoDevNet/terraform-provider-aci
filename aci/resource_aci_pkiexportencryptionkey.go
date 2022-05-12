@@ -196,7 +196,7 @@ func resourceAciAESEncryptionPassphraseandKeysforConfigExportImportRead(ctx cont
 	pkiExportEncryptionKey, err := getRemoteAESEncryptionPassphraseandKeysforConfigExportImport(aciClient, dn)
 	if err != nil {
 		d.SetId("")
-		return diag.FromErr(err)
+		return nil
 	}
 	_, err = setAESEncryptionPassphraseandKeysforConfigExportImportAttributes(pkiExportEncryptionKey, d)
 	if err != nil {

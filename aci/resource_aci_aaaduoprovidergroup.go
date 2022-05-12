@@ -254,7 +254,7 @@ func resourceAciDuoProviderGroupRead(ctx context.Context, d *schema.ResourceData
 	aaaDuoProviderGroup, err := getRemoteDuoProviderGroup(aciClient, dn)
 	if err != nil {
 		d.SetId("")
-		return diag.FromErr(err)
+		return nil
 	}
 	_, err = setDuoProviderGroupAttributes(aaaDuoProviderGroup, d)
 	if err != nil {

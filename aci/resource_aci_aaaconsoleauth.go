@@ -182,7 +182,7 @@ func resourceAciConsoleAuthenticationMethodRead(ctx context.Context, d *schema.R
 	aaaConsoleAuth, err := getRemoteConsoleAuthenticationMethod(aciClient, dn)
 	if err != nil {
 		d.SetId("")
-		return diag.FromErr(err)
+		return nil
 	}
 	_, err = setConsoleAuthenticationMethodAttributes(aaaConsoleAuth, d)
 	if err != nil {

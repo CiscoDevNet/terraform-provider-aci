@@ -515,7 +515,7 @@ func resourceAciVSwitchPolicyGroupRead(ctx context.Context, d *schema.ResourceDa
 	vmmVSwitchPolicyCont, err := getRemoteVSwitchPolicyGroup(aciClient, dn)
 	if err != nil {
 		d.SetId("")
-		return diag.FromErr(err)
+		return nil
 	}
 	_, err = setVSwitchPolicyGroupAttributes(vmmVSwitchPolicyCont, d)
 	if err != nil {

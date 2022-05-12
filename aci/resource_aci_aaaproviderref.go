@@ -178,7 +178,7 @@ func resourceAciProviderGroupMemberRead(ctx context.Context, d *schema.ResourceD
 	aaaProviderRef, err := getRemoteProviderGroupMember(aciClient, dn)
 	if err != nil {
 		d.SetId("")
-		return diag.FromErr(err)
+		return nil
 	}
 	_, err = setProviderGroupMemberAttributes(aaaProviderRef, d)
 	if err != nil {

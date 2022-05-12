@@ -315,7 +315,7 @@ func resourceAciTACACSDestinationRead(ctx context.Context, d *schema.ResourceDat
 	tacacsTacacsDest, err := getRemoteTACACSDestination(aciClient, dn)
 	if err != nil {
 		d.SetId("")
-		return diag.FromErr(err)
+		return nil
 	}
 	_, err = setTACACSDestinationAttributes(tacacsTacacsDest, d)
 	if err != nil {

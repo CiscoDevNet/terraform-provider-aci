@@ -144,7 +144,7 @@ func resourceAciTagRead(ctx context.Context, d *schema.ResourceData, m interface
 	tagTag, err := getRemoteTag(aciClient, dn)
 	if err != nil {
 		d.SetId("")
-		return diag.FromErr(err)
+		return nil
 	}
 	_, err = setTagAttributes(tagTag, d)
 	if err != nil {

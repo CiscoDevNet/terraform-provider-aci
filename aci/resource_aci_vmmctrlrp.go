@@ -833,12 +833,12 @@ func resourceAciVMMControllerRead(ctx context.Context, d *schema.ResourceData, m
 	vmmCtrlrP, err := getRemoteVMMController(aciClient, dn)
 	if err != nil {
 		d.SetId("")
-		return diag.FromErr(err)
+		return nil
 	}
 	_, err = setVMMControllerAttributes(vmmCtrlrP, d)
 	if err != nil {
 		d.SetId("")
-		return diag.FromErr(err)
+		return nil
 	}
 
 	vmmRsAccData, err := aciClient.ReadRelationvmmRsAcc(dn)

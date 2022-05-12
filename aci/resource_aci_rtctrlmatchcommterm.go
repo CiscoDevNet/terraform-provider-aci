@@ -312,7 +312,7 @@ func resourceAciMatchCommunityTermRead(ctx context.Context, d *schema.ResourceDa
 	rtctrlMatchCommTerm, err := getRemoteMatchCommunityTerm(aciClient, dn)
 	if err != nil {
 		d.SetId("")
-		return diag.FromErr(err)
+		return nil
 	}
 
 	_, err = setMatchCommunityTermAttributes(rtctrlMatchCommTerm, d)

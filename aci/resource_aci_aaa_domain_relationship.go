@@ -120,7 +120,7 @@ func resourceAciDomainRelationshipRead(ctx context.Context, d *schema.ResourceDa
 	aaaDomainRef, err := getRemoteAaaDomainRelationship(aciClient, dn)
 	if err != nil {
 		d.SetId("")
-		return diag.FromErr(err)
+		return nil
 	}
 
 	_, err = setAaaDomainRelationshipAttributes(aaaDomainRef, d)

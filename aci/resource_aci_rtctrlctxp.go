@@ -336,7 +336,7 @@ func resourceAciRouteControlContextRead(ctx context.Context, d *schema.ResourceD
 	rtctrlCtxP, err := getRemoteRouteControlContext(aciClient, dn)
 	if err != nil {
 		d.SetId("")
-		return diag.FromErr(err)
+		return nil
 	}
 	_, err = setRouteControlContextAttributes(rtctrlCtxP, d)
 	if err != nil {

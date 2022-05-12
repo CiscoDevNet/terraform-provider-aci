@@ -202,7 +202,7 @@ func resourceAciPortTrackingRead(ctx context.Context, d *schema.ResourceData, m 
 	infraPortTrackPol, err := getRemotePortTracking(aciClient, dn)
 	if err != nil {
 		d.SetId("")
-		return diag.FromErr(err)
+		return nil
 	}
 	_, err = setPortTrackingAttributes(infraPortTrackPol, d)
 	if err != nil {
