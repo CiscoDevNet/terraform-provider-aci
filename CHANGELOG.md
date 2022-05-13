@@ -1,3 +1,7 @@
+## 2.2.1 (May 13, 2022)
+BUG FIXES:
+- Fix 71 resources to not fail if object does not exist when refreshing state.
+
 ## 2.2.0 (May 9, 2022)
 IMPROVEMENTS:
 - Add Set As Path, Multipath, Next Hop Propagation, Set Communities, Set Next Hop, Set Metric Type, Set Metric, Set Preference, Set Weight and Set Route Tag options to aci_action_rule_profile (#851, #843)
