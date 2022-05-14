@@ -36,12 +36,12 @@ func dataSourceAciL4ToL7Devices() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
-			"devtype": {
+			"device_type": {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
 			},
-			"func_type": {
+			"function_type": {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
@@ -65,17 +65,12 @@ func dataSourceAciL4ToL7Devices() *schema.Resource {
 				Type:     schema.TypeString,
 				Required: true,
 			},
-			"package_model": {
+			"promiscuous_mode": {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
 			},
-			"prom_mode": {
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-			"svc_type": {
+			"service_type": {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,

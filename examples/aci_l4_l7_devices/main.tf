@@ -19,17 +19,17 @@ resource "aci_tenant" "terraform_tenant" {
 }
 
 resource "aci_l4_l7_devices" "virtual_device" {
-  tenant_dn     = aci_tenant.terraform_tenant.id
-  name          = "example1"
-  active        = "no"
-  context_aware = "single-Context"
-  devtype       = "VIRTUAL"
-  func_type     = "GoTo"
-  is_copy       = "no"
-  mode          = "legacy-Mode"
-  prom_mode     = "no"
-  svc_type      = "OTHERS"
-  trunking      = "no"
+  tenant_dn        = aci_tenant.terraform_tenant.id
+  name             = "example1"
+  active           = "no"
+  context_aware    = "single-Context"
+  device_type      = "VIRTUAL"
+  function_type    = "GoTo"
+  is_copy          = "no"
+  mode             = "legacy-Mode"
+  promiscuous_mode = "no"
+  service_type     = "OTHERS"
+  trunking         = "no"
   relation_vns_rs_al_dev_to_dom_p {
     target_dn      = "uni/vmmp-VMware/dom-ESX0-leaf102-vds"
     switching_mode = "AVE"
@@ -41,12 +41,12 @@ resource "aci_l4_l7_devices" "physical_device" {
   name                                 = "example2"
   active                               = "no"
   context_aware                        = "single-Context"
-  devtype                              = "PHYSICAL"
-  func_type                            = "GoTo"
+  device_type                          = "PHYSICAL"
+  function_type                        = "GoTo"
   is_copy                              = "no"
   mode                                 = "legacy-Mode"
-  prom_mode                            = "no"
-  svc_type                             = "OTHERS"
+  promiscuous_mode                     = "no"
+  service_type                         = "OTHERS"
   relation_vns_rs_al_dev_to_phys_dom_p = "uni/phys-test_dom"
 }
 

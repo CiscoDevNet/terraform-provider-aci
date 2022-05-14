@@ -49,7 +49,7 @@ func resourceAciL4ToL7Devices() *schema.Resource {
 					"single-Context",
 				}, false),
 			},
-			"devtype": {
+			"device_type": {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
@@ -60,7 +60,7 @@ func resourceAciL4ToL7Devices() *schema.Resource {
 					"VIRTUAL",
 				}, false),
 			},
-			"func_type": {
+			"function_type": {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
@@ -103,12 +103,7 @@ func resourceAciL4ToL7Devices() *schema.Resource {
 				Required: true,
 				ForceNew: true,
 			},
-			"package_model": {
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-			"prom_mode": {
+			"promiscuous_mode": {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
@@ -117,7 +112,7 @@ func resourceAciL4ToL7Devices() *schema.Resource {
 					"yes",
 				}, false),
 			},
-			"svc_type": {
+			"service_type": {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
@@ -170,14 +165,13 @@ func resourceAciL4ToL7Devices() *schema.Resource {
 
 		CustomizeDiff: func(_ context.Context, diff *schema.ResourceDiff, v interface{}) error {
 			// Plan time validation.
-			device_type, _ := diff.GetOk("devtype")
+			device_type, _ := diff.GetOk("device_type")
 			_, virtual_ok := diff.GetOk("relation_vns_rs_al_dev_to_dom_p")
 			_, physical_ok := diff.GetOk("relation_vns_rs_al_dev_to_phys_dom_p")
 			if device_type.(string) == "VIRTUAL" && !virtual_ok {
-				return errors.New(`"relation_vns_rs_al_dev_to_dom_p" is required when "devtype" is VIRTUAL`)
-			}
-			if device_type.(string) == "PHYSICAL" && !physical_ok {
-				return errors.New(`"relation_vns_rs_al_dev_to_phys_dom_p" is required when "devtype" is PHYSICAL`)
+				return errors.New(`"relation_vns_rs_al_dev_to_dom_p" is required when "device_type" is VIRTUAL`)
+			} else if device_type.(string) == "PHYSICAL" && !physical_ok {
+				return errors.New(`"relation_vns_rs_al_dev_to_phys_dom_p" is required when "device_type" is PHYSICAL`)
 			}
 			return nil
 		},
@@ -212,15 +206,14 @@ func setL4ToL7DevicesAttributes(vnsLDevVip *models.L4ToL7Devices, d *schema.Reso
 	d.Set("active", vnsLDevVipMap["activeActive"])
 	d.Set("annotation", vnsLDevVipMap["annotation"])
 	d.Set("context_aware", vnsLDevVipMap["contextAware"])
-	d.Set("devtype", vnsLDevVipMap["devtype"])
-	d.Set("func_type", vnsLDevVipMap["funcType"])
+	d.Set("device_type", vnsLDevVipMap["devtype"])
+	d.Set("function_type", vnsLDevVipMap["funcType"])
 	d.Set("is_copy", vnsLDevVipMap["isCopy"])
 	d.Set("managed", vnsLDevVipMap["managed"])
 	d.Set("mode", vnsLDevVipMap["mode"])
 	d.Set("name", vnsLDevVipMap["name"])
-	d.Set("package_model", vnsLDevVipMap["packageModel"])
-	d.Set("prom_mode", vnsLDevVipMap["promMode"])
-	d.Set("svc_type", vnsLDevVipMap["svcType"])
+	d.Set("promiscuous_mode", vnsLDevVipMap["promMode"])
+	d.Set("service_type", vnsLDevVipMap["svcType"])
 	d.Set("trunking", vnsLDevVipMap["trunking"])
 	d.Set("name_alias", vnsLDevVipMap["nameAlias"])
 	return d, nil
@@ -292,12 +285,12 @@ func resourceAciL4ToL7DevicesCreate(ctx context.Context, d *schema.ResourceData,
 		vnsLDevVipAttr.ContextAware = ContextAware.(string)
 	}
 
-	if Devtype, ok := d.GetOk("devtype"); ok {
-		vnsLDevVipAttr.Devtype = Devtype.(string)
+	if DeviceType, ok := d.GetOk("device_type"); ok {
+		vnsLDevVipAttr.Devtype = DeviceType.(string)
 	}
 
-	if FuncType, ok := d.GetOk("func_type"); ok {
-		vnsLDevVipAttr.FuncType = FuncType.(string)
+	if FunctionType, ok := d.GetOk("function_type"); ok {
+		vnsLDevVipAttr.FuncType = FunctionType.(string)
 	}
 
 	if IsCopy, ok := d.GetOk("is_copy"); ok {
@@ -316,16 +309,12 @@ func resourceAciL4ToL7DevicesCreate(ctx context.Context, d *schema.ResourceData,
 		vnsLDevVipAttr.Name = Name.(string)
 	}
 
-	if PackageModel, ok := d.GetOk("package_model"); ok {
-		vnsLDevVipAttr.PackageModel = PackageModel.(string)
+	if PromiscuousMode, ok := d.GetOk("promiscuous_mode"); ok {
+		vnsLDevVipAttr.PromMode = PromiscuousMode.(string)
 	}
 
-	if PromMode, ok := d.GetOk("prom_mode"); ok {
-		vnsLDevVipAttr.PromMode = PromMode.(string)
-	}
-
-	if SvcType, ok := d.GetOk("svc_type"); ok {
-		vnsLDevVipAttr.SvcType = SvcType.(string)
+	if ServiceType, ok := d.GetOk("service_type"); ok {
+		vnsLDevVipAttr.SvcType = ServiceType.(string)
 	}
 
 	if Trunking, ok := d.GetOk("trunking"); ok {
@@ -416,12 +405,12 @@ func resourceAciL4ToL7DevicesUpdate(ctx context.Context, d *schema.ResourceData,
 		vnsLDevVipAttr.ContextAware = ContextAware.(string)
 	}
 
-	if Devtype, ok := d.GetOk("devtype"); ok {
-		vnsLDevVipAttr.Devtype = Devtype.(string)
+	if DeviceType, ok := d.GetOk("device_type"); ok {
+		vnsLDevVipAttr.Devtype = DeviceType.(string)
 	}
 
-	if FuncType, ok := d.GetOk("func_type"); ok {
-		vnsLDevVipAttr.FuncType = FuncType.(string)
+	if FunctionType, ok := d.GetOk("function_type"); ok {
+		vnsLDevVipAttr.FuncType = FunctionType.(string)
 	}
 
 	if IsCopy, ok := d.GetOk("is_copy"); ok {
@@ -440,16 +429,12 @@ func resourceAciL4ToL7DevicesUpdate(ctx context.Context, d *schema.ResourceData,
 		vnsLDevVipAttr.Name = Name.(string)
 	}
 
-	if PackageModel, ok := d.GetOk("package_model"); ok {
-		vnsLDevVipAttr.PackageModel = PackageModel.(string)
+	if PromiscuousMode, ok := d.GetOk("promiscuous_mode"); ok {
+		vnsLDevVipAttr.PromMode = PromiscuousMode.(string)
 	}
 
-	if PromMode, ok := d.GetOk("prom_mode"); ok {
-		vnsLDevVipAttr.PromMode = PromMode.(string)
-	}
-
-	if SvcType, ok := d.GetOk("svc_type"); ok {
-		vnsLDevVipAttr.SvcType = SvcType.(string)
+	if ServiceType, ok := d.GetOk("service_type"); ok {
+		vnsLDevVipAttr.SvcType = ServiceType.(string)
 	}
 
 	if Trunking, ok := d.GetOk("trunking"); ok {
@@ -535,7 +520,7 @@ func resourceAciL4ToL7DevicesRead(ctx context.Context, d *schema.ResourceData, m
 	vnsLDevVip, err := getRemoteL4ToL7Devices(aciClient, dn)
 	if err != nil {
 		d.SetId("")
-		return diag.FromErr(err)
+		return nil
 	}
 
 	_, err = setL4ToL7DevicesAttributes(vnsLDevVip, d)
