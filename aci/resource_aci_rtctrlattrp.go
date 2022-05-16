@@ -40,22 +40,26 @@ func resourceAciActionRuleProfile() *schema.Resource {
 				Optional:      true,
 				ValidateFunc:  validateIntBetweenFromString(0, 2147483647),
 				ConflictsWith: []string{"multipath", "next_hop_propagation"},
+				Computed:      true,
 				// Set nexthop unchanged action cannot be configured along with set route tag action under the set action rule profile.
 			},
 			"set_preference": {
 				Type:         schema.TypeString,
 				Optional:     true,
 				ValidateFunc: validateIntBetweenFromString(0, 2147483647),
+				Computed:     true,
 			},
 			"set_weight": {
 				Type:         schema.TypeString,
 				Optional:     true,
 				ValidateFunc: validateIntBetweenFromString(0, 2147483647),
+				Computed:     true,
 			},
 			"set_metric": {
 				Type:         schema.TypeString,
 				Optional:     true,
 				ValidateFunc: validateIntBetweenFromString(0, 2147483647),
+				Computed:     true,
 			},
 			"set_metric_type": {
 				Type:     schema.TypeString,
@@ -64,10 +68,12 @@ func resourceAciActionRuleProfile() *schema.Resource {
 					"ospf-type1",
 					"ospf-type2",
 				}, false),
+				Computed: true,
 			},
 			"set_next_hop": {
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"set_communities": {
 				Optional: true,
@@ -75,6 +81,7 @@ func resourceAciActionRuleProfile() *schema.Resource {
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
 				},
+				Computed: true,
 			},
 			"next_hop_propagation": {
 				Type:     schema.TypeString,
@@ -84,6 +91,7 @@ func resourceAciActionRuleProfile() *schema.Resource {
 					"no",
 				}, false),
 				ConflictsWith: []string{"set_route_tag"},
+				Computed:      true,
 				// Set nexthop unchanged action cannot be configured along with set route tag action under the set action rule profile.
 			},
 			"multipath": {
@@ -94,12 +102,14 @@ func resourceAciActionRuleProfile() *schema.Resource {
 					"no",
 				}, false),
 				ConflictsWith: []string{"set_route_tag"},
+				Computed:      true,
 				// Set nexthop unchanged action cannot be configured along with set route tag action under the set action rule profile.
 			},
 			"set_as_path_prepend_last_as": {
 				Type:         schema.TypeString,
 				Optional:     true,
 				ValidateFunc: validateIntBetweenFromString(1, 10),
+				Computed:     true,
 			},
 			"set_as_path_prepend_as": {
 				Type:     schema.TypeSet,
@@ -120,6 +130,7 @@ func resourceAciActionRuleProfile() *schema.Resource {
 						},
 					},
 				},
+				Computed: true,
 			},
 			"set_dampening": {
 				Optional: true,
@@ -127,6 +138,7 @@ func resourceAciActionRuleProfile() *schema.Resource {
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
 				},
+				Computed: true,
 			},
 		})),
 	}
@@ -1547,6 +1559,8 @@ func resourceAciActionRuleProfileRead(ctx context.Context, d *schema.ResourceDat
 			return nil
 		}
 		log.Printf("[DEBUG] %s: rtctrlSetComm - Read finished successfully", setCommDn)
+	} else {
+		d.Set("set_communities", nil)
 	}
 	// rtctrlSetComm - Read finished successfully
 
@@ -1619,6 +1633,8 @@ func resourceAciActionRuleProfileRead(ctx context.Context, d *schema.ResourceDat
 			return nil
 		}
 		log.Printf("[DEBUG] %s: rtctrlSetDamp - Read finished successfully", setDampeningDn)
+	} else {
+		d.Set("set_dampening", nil)
 	}
 	// rtctrlSetDamp - Read finished successfully
 
