@@ -10,7 +10,6 @@ description: |-
 
 Data source for ACI Concrete Interface
 
-
 ## API Information ##
 
 * `Class` - vnsCIf
@@ -19,8 +18,6 @@ Data source for ACI Concrete Interface
 ## GUI Information ##
 
 * `Location` - Tenant -> Services -> Devices -> Concrete Device -> Concrete Interface
-
-
 
 ## Example Usage ##
 

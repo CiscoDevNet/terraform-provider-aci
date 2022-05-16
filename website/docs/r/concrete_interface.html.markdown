@@ -19,7 +19,6 @@ Manages ACI Concrete Interface
 
 * `Location` - Tenant -> Services -> Devices -> Concrete Device -> Concrete Interface
 
-
 ## Example Usage ##
 
 ```hcl
@@ -40,12 +39,10 @@ resource "aci_concrete_interface" "example" {
 * `vnic_name` - (Optional) The concrete interface's vNIC name. Type: String.
 * `relation_vns_rs_c_if_path_att` - (Optional) Represents a relation from Concrete Interface to the Physical Port on the Leaf (class fabricPathEp). Note that this relation is an internal object. Type: String.
 
-
 ## Importing ##
 
-An existing ConcreteInterface can be [imported][docs-import] into this resource via its Dn, via the following command:
+An existing Concrete Interface can be [imported][docs-import] into this resource via its Dn, via the following command:
 [docs-import]: https://www.terraform.io/docs/import/index.html
-
 
 ```
 terraform import aci_concrete_interface.example <Dn>
