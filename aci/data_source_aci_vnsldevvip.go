@@ -120,14 +120,14 @@ func dataSourceAciL4ToL7DevicesRead(ctx context.Context, d *schema.ResourceData,
 
 	vnsLDevVip, err := getRemoteL4ToL7Devices(aciClient, dn)
 	if err != nil {
-		return diag.FromErr(err)
+		return nil
 	}
 
 	d.SetId(dn)
 
 	_, err = setL4ToL7DevicesAttributes(vnsLDevVip, d)
 	if err != nil {
-		return diag.FromErr(err)
+		return nil
 	}
 
 	vnsRsALDevToDomPData, err := aciClient.ReadRelationvnsRsALDevToDomP(dn)
