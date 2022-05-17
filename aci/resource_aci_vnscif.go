@@ -81,7 +81,9 @@ func setConcreteInterfaceAttributes(vnsCIf *models.ConcreteInterface, d *schema.
 	d.Set("name", vnsCIfMap["name"])
 	d.Set("vnic_name", vnsCIfMap["vnicName"])
 	d.Set("name_alias", vnsCIfMap["nameAlias"])
-	d.Set("description", "")
+	/* vnsLDevVip does not support annotation due to which we explicitly set annotation to an empty string to override
+	the default value of annotation in the base attributes file. We do this to overcome an inconsistency between imported
+	configuration and a matching configuration waiting to be pushed.*/
 	d.Set("annotation", "")
 	return d, nil
 }
