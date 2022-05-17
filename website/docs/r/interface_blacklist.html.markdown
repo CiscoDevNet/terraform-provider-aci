@@ -34,7 +34,7 @@ resource "aci_interface_blacklist" "example" {
 
 * `pod_id` - (Required) The Pod ID of the switch that own the interface that need to be disabled.
 * `node_id` - (Required) The Node ID of the switch that own the interface that need to be disabled.
-* `fex_id` - (Required) The FEX ID of the FEX that own the interface that need to be disabled.
+* `fex_id` - (Optional) The FEX ID of the FEX that own the interface that need to be disabled.
 * `interface` - (Required) The interface name of the interface that need to be disabled.
 * `annotation` - (Optional) Annotation of the blacklist object (fabricRsOosPath).
 
