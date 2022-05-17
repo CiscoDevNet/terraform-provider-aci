@@ -54,14 +54,14 @@ func dataSourceAciLogicalInterfaceRead(ctx context.Context, d *schema.ResourceDa
 
 	vnsLIf, err := getRemoteLogicalInterface(aciClient, dn)
 	if err != nil {
-		return diag.FromErr(err)
+		return nil
 	}
 
 	d.SetId(dn)
 
 	_, err = setLogicalInterfaceAttributes(vnsLIf, d)
 	if err != nil {
-		return diag.FromErr(err)
+		return nil
 	}
 
 	vnsRsCIfAttNData, err := aciClient.ReadRelationvnsRsCIfAttN(dn)

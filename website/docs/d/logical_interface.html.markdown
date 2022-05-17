@@ -10,23 +10,21 @@ description: |-
 
 Data source for ACI Logical Interface
 
-
 ## API Information ##
 
 * `Class` - vnsLIf
-* `Distinguished Name` - uni/tn-{tenant_name}/lDevVip-{device_name}/lIf-{cluster_interface_name}
+* `Distinguished Name` - uni/tn-{tenant_name}/lDevVip-{device_name}/lIf-{logical_interface_name}
 
 ## GUI Information ##
 
 * `Location` - Tenant -> Services -> Devices -> Cluster Interfaces
-
 
 ## Example Usage ##
 
 ```hcl
 data "aci_logical_interface" "example" {
   l4_l7_devices_dn  = aci_l4_l7_devices.example.id
-  name  = "example"
+  name              = "example"
 }
 ```
 
@@ -41,4 +39,4 @@ data "aci_logical_interface" "example" {
 * `name_alias` - (Optional) Name Alias of object Logical Interface.
 * `encap` - (Optional) The port encapsulation.
 * `lag_policy_name` - (Optional) Enhanced LAG Policy Name.
-* `relation_vns_rs_c_if_att_n` - (Optional) Represents a relation for Set of Concrete Interfaces from the Device in the Cluster (class vnsCIf). Type: List.
+* `relation_vns_rs_c_if_att_n` - (Optional) Represents the relation between Set of Concrete Interfaces and the Device Cluster (class vnsCIf). Type: List.

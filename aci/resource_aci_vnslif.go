@@ -274,7 +274,7 @@ func resourceAciLogicalInterfaceRead(ctx context.Context, d *schema.ResourceData
 	vnsLIf, err := getRemoteLogicalInterface(aciClient, dn)
 	if err != nil {
 		d.SetId("")
-		return diag.FromErr(err)
+		return nil
 	}
 
 	_, err = setLogicalInterfaceAttributes(vnsLIf, d)
