@@ -38,9 +38,6 @@ resource "aci_l4_l7_devices" "example" {
 resource "aci_concrete_device" "example" {
   l4_l7_devices_dn                 = aci_l4_l7_devices.example.id
   name                             = "tenant1-ASA1"
-  clone_count                      = "0"
-  is_clone_operation               = "no"
-  is_template                      = "no"
   vcenter_name                     = "vcenter"
   vm_name                          = "tenant1-ASA1"
   relation_vns_rs_c_dev_to_ctrlr_p = "uni/vmmp-VMware/dom-ACI-vDS/ctrlr-vcenter"

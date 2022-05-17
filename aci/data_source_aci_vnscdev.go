@@ -20,31 +20,6 @@ func dataSourceAciConcreteDevice() *schema.Resource {
 				Type:     schema.TypeString,
 				Required: true,
 			},
-			"clone_count": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-			"dev_ctx_lbl": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-			"host": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-			"is_clone_operation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-			"is_template": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
 			"name": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
@@ -77,14 +52,14 @@ func dataSourceAciConcreteDeviceRead(ctx context.Context, d *schema.ResourceData
 
 	vnsCDev, err := getRemoteConcreteDevice(aciClient, dn)
 	if err != nil {
-		return diag.FromErr(err)
+		return nil
 	}
 
 	d.SetId(dn)
 
 	_, err = setConcreteDeviceAttributes(vnsCDev, d)
 	if err != nil {
-		return diag.FromErr(err)
+		return nil
 	}
 
 	vnsRsCDevToCtrlrPData, err := aciClient.ReadRelationvnsRsCDevToCtrlrP(dn)

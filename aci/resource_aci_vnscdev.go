@@ -9,7 +9,6 @@ import (
 	"github.com/ciscoecosystem/aci-go-client/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciConcreteDevice() *schema.Resource {
@@ -29,39 +28,6 @@ func resourceAciConcreteDevice() *schema.Resource {
 				Type:     schema.TypeString,
 				Required: true,
 				ForceNew: true,
-			},
-			"clone_count": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-			"dev_ctx_lbl": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-			"host": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-			"is_clone_operation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-				ValidateFunc: validation.StringInSlice([]string{
-					"no",
-					"yes",
-				}, false),
-			},
-			"is_template": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-				ValidateFunc: validation.StringInSlice([]string{
-					"no",
-					"yes",
-				}, false),
 			},
 			"name": &schema.Schema{
 				Type:     schema.TypeString,
@@ -111,11 +77,6 @@ func setConcreteDeviceAttributes(vnsCDev *models.ConcreteDevice, d *schema.Resou
 	} else {
 		d.Set("l4_l7_devices_dn", GetParentDn(vnsCDev.DistinguishedName, fmt.Sprintf("/cDev-%s", vnsCDevMap["name"])))
 	}
-	d.Set("clone_count", vnsCDevMap["cloneCount"])
-	d.Set("dev_ctx_lbl", vnsCDevMap["devCtxLbl"])
-	d.Set("host", vnsCDevMap["host"])
-	d.Set("is_clone_operation", vnsCDevMap["isCloneOperation"])
-	d.Set("is_template", vnsCDevMap["isTemplate"])
 	d.Set("name", vnsCDevMap["name"])
 	d.Set("vcenter_name", vnsCDevMap["vcenterName"])
 	d.Set("vm_name", vnsCDevMap["vmName"])
@@ -163,26 +124,6 @@ func resourceAciConcreteDeviceCreate(ctx context.Context, d *schema.ResourceData
 		vnsCDevAttr.Annotation = Annotation.(string)
 	} else {
 		vnsCDevAttr.Annotation = "{}"
-	}
-
-	if CloneCount, ok := d.GetOk("clone_count"); ok {
-		vnsCDevAttr.CloneCount = CloneCount.(string)
-	}
-
-	if DevCtxLbl, ok := d.GetOk("dev_ctx_lbl"); ok {
-		vnsCDevAttr.DevCtxLbl = DevCtxLbl.(string)
-	}
-
-	if Host, ok := d.GetOk("host"); ok {
-		vnsCDevAttr.Host = Host.(string)
-	}
-
-	if IsCloneOperation, ok := d.GetOk("is_clone_operation"); ok {
-		vnsCDevAttr.IsCloneOperation = IsCloneOperation.(string)
-	}
-
-	if IsTemplate, ok := d.GetOk("is_template"); ok {
-		vnsCDevAttr.IsTemplate = IsTemplate.(string)
 	}
 
 	if Name, ok := d.GetOk("name"); ok {
@@ -250,26 +191,6 @@ func resourceAciConcreteDeviceUpdate(ctx context.Context, d *schema.ResourceData
 		vnsCDevAttr.Annotation = "{}"
 	}
 
-	if CloneCount, ok := d.GetOk("clone_count"); ok {
-		vnsCDevAttr.CloneCount = CloneCount.(string)
-	}
-
-	if DevCtxLbl, ok := d.GetOk("dev_ctx_lbl"); ok {
-		vnsCDevAttr.DevCtxLbl = DevCtxLbl.(string)
-	}
-
-	if Host, ok := d.GetOk("host"); ok {
-		vnsCDevAttr.Host = Host.(string)
-	}
-
-	if IsCloneOperation, ok := d.GetOk("is_clone_operation"); ok {
-		vnsCDevAttr.IsCloneOperation = IsCloneOperation.(string)
-	}
-
-	if IsTemplate, ok := d.GetOk("is_template"); ok {
-		vnsCDevAttr.IsTemplate = IsTemplate.(string)
-	}
-
 	if Name, ok := d.GetOk("name"); ok {
 		vnsCDevAttr.Name = Name.(string)
 	}
@@ -332,7 +253,7 @@ func resourceAciConcreteDeviceRead(ctx context.Context, d *schema.ResourceData, 
 	vnsCDev, err := getRemoteConcreteDevice(aciClient, dn)
 	if err != nil {
 		d.SetId("")
-		return diag.FromErr(err)
+		return nil
 	}
 
 	_, err = setConcreteDeviceAttributes(vnsCDev, d)
