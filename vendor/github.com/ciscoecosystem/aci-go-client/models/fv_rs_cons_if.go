@@ -48,6 +48,7 @@ func (fvRsConsIf *ContractInterfaceRelationship) ToMap() (map[string]string, err
 	A(fvRsConsIfMap, "prio", fvRsConsIf.Prio)
 	A(fvRsConsIfMap, "tnVzCPIfName", fvRsConsIf.TnVzCPIfName)
 	A(fvRsConsIfMap, "tDn", fvRsConsIf.tDn)
+	A(fvRsConsIfMap, "annotation", fvRsConsIf.Annotation)
 	return fvRsConsIfMap, err
 }
 
@@ -64,6 +65,7 @@ func ContractInterfaceRelationshipFromContainerList(cont *container.Container, i
 			Prio:         G(ContractInterfaceRelationshipCont, "prio"),
 			TnVzCPIfName: G(ContractInterfaceRelationshipCont, "tnVzCPIfName"),
 			tDn:          G(ContractInterfaceRelationshipCont, "tDn"),
+			Annotation:   G(ContractInterfaceRelationshipCont, "annotation"),
 		},
 	}
 }

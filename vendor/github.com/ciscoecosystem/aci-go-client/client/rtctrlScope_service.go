@@ -86,7 +86,7 @@ func (sm *ServiceManager) ReadRelationrtctrlRsScopeToAttrP(parentDn string) (int
 	contList := models.ListFromContainer(cont, "rtctrlRsScopeToAttrP")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnRtctrlAttrPName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err

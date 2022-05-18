@@ -46,3 +46,15 @@ func (sm *ServiceManager) ListASNumber(set_as_path_criteria string, action_rule_
 	list := models.ASNumberListFromContainer(cont)
 	return list, err
 }
+
+func (sm *ServiceManager) ListSetAsPathASNs(parentDn string) ([]*models.ASNumber, error) {
+	baseurlStr := "/api/node/class"
+	dnUrl := fmt.Sprintf("%s/%s/%s.json", baseurlStr, parentDn, "rtctrlSetASPathASN")
+	cont, err := sm.GetViaURL(dnUrl)
+	if err != nil {
+		return nil, err
+	} else {
+		contList := models.ASNumberListFromContainer(cont)
+		return contList, nil
+	}
+}
