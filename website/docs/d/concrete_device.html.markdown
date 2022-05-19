@@ -23,20 +23,19 @@ Data source for ACI Concrete Device
 
 ```hcl
 data "aci_concrete_device" "example" {
-  l4_l7_devices_dn  = aci_l4_l7_devices.example.id
-  name              = "example"
+  l4_l7_device_dn = aci_l4_l7_device.example.id
+  name            = "example"
 }
 ```
 
 ## Argument Reference ##
 
-* `l4-l7_devices_dn` - (Required) Distinguished name of parent L4-L7 Devices object.
-* `name` - (Required) Name of object Concrete Device.
+* `l4-l7_device_dn` - (Required) Distinguished name of the parent L4-L7 Device object.
+* `name` - (Required) Name of the Concrete Device object.
 
 ## Attribute Reference ##
 * `id` - Attribute id set to the Dn of the Concrete Device.
-* `annotation` - (Optional) Annotation of object Concrete Device.
-* `name_alias` - (Optional) Name Alias of object Concrete Device.
-* `vcenter_name` - (Optional) The virtual center name on which the device is hosted in the L4-L7 device cluster. It uniquely identifies the virtual center. Type: String.
-* `vm_name` - (Optional) The virtual center VM name on which the device is hosted in the L4-L7 device cluster. It uniquely identifies the VM. Type: String.
-* `relation_vns_rs_c_dev_to_ctrlr_p` - (Optional) Represents the relation from a Concrete Device to a VMM Controller (class vmmCtrlrP). It is an implicit relation to validate the controller profile. Type: String.
+* `annotation` - (Optional) Annotation of the Concrete Device object.
+* `name_alias` - (Optional) Name Alias of the Concrete Device object.
+* `vmm_controller_dn` - (Optional) Distinguished name of the VMM controller object. Type: String.
+* `vm_name` - (Optional) The name of the Virtual Machine (VM) in the vCenter on which the device is hosted in the L4-L7 device cluster. It uniquely identifies the VM. Type: String.

@@ -23,23 +23,21 @@ Manages ACI Concrete Device
 
 ```hcl
 resource "aci_concrete_device" "example" {
-  l4_l7_devices_dn                 = aci_l4_l7_devices.example.id
-  name                             = "tenant1-ASA1"
-  vcenter_name                     = "vcenter"
-  vm_name                          = "tenant1-ASA1"
-  relation_vns_rs_c_dev_to_ctrlr_p = "uni/vmmp-VMware/dom-ACI-vDS/ctrlr-vcenter"
+  l4_l7_device_dn   = aci_l4_l7_device.example.id
+  name              = "example"
+  vmm_controller_dn = "uni/vmmp-VMware/dom-ACI-vDS/ctrlr-vcenter"
+  vm_name           = "tenant1-ASA1"
 }
 ```
 
 ## Argument Reference ##
 
-* `l4-l7_devices_dn` - (Required) Distinguished name of the parent L4-L7 Devices object.
-* `name` - (Required) Name of the object Concrete Device.
-* `annotation` - (Optional) Annotation of the object Concrete Device.
-* `name_alias` - (Optional) Name Alias of object Concrete Device.
-* `vcenter_name` - (Optional) The virtual center name on which the device is hosted in the L4-L7 device cluster. It uniquely identifies the virtual center. Type: String.
-* `vm_name` - (Optional) The virtual center VM name on which the device is hosted in the L4-L7 device cluster. It uniquely identifies the VM. Type: String.
-* `relation_vns_rs_c_dev_to_ctrlr_p` - (Optional) Represents the relation from a Concrete Device to a VMM Controller (class vmmCtrlrP). It is an implicit relation to validate the controller profile. Type: String.
+* `l4-l7_device_dn` - (Required) Distinguished name of the parent L4-L7 Device object.
+* `name` - (Required) Name of the Concrete Device object.
+* `annotation` - (Optional) Annotation of the Concrete Device object.
+* `name_alias` - (Optional) Name Alias of the Concrete Device object.
+* `vmm_controller_dn` - (Optional) Distinguished name of the VMM controller object. Type: String.
+* `vm_name` - (Optional) The name of the Virtual Machine (VM) in the vCenter on which the device in the L4-L7 device cluster is hosted. It uniquely identifies the VM. Type: String.
 
 ## Importing ##
 

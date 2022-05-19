@@ -16,7 +16,7 @@ func dataSourceAciConcreteDevice() *schema.Resource {
 		ReadContext:   dataSourceAciConcreteDeviceRead,
 		SchemaVersion: 1,
 		Schema: AppendBaseAttrSchema(AppendNameAliasAttrSchema(map[string]*schema.Schema{
-			"l4_l7_devices_dn": &schema.Schema{
+			"l4_l7_device_dn": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
 			},
@@ -24,7 +24,7 @@ func dataSourceAciConcreteDevice() *schema.Resource {
 				Type:     schema.TypeString,
 				Required: true,
 			},
-			"vcenter_name": &schema.Schema{
+			"vmm_controller_dn": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
@@ -34,11 +34,6 @@ func dataSourceAciConcreteDevice() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
-			"relation_vns_rs_c_dev_to_ctrlr_p": &schema.Schema{
-				Type:        schema.TypeString,
-				Optional:    true,
-				Description: "Create relation to vmm:CtrlrP",
-			},
 		})),
 	}
 }
@@ -46,9 +41,9 @@ func dataSourceAciConcreteDevice() *schema.Resource {
 func dataSourceAciConcreteDeviceRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	aciClient := m.(*client.Client)
 	name := d.Get("name").(string)
-	L4_L7DevicesDn := d.Get("l4_l7_devices_dn").(string)
+	L4_L7DeviceDn := d.Get("l4_l7_device_dn").(string)
 	rn := fmt.Sprintf(models.RnvnsCDev, name)
-	dn := fmt.Sprintf("%s/%s", L4_L7DevicesDn, rn)
+	dn := fmt.Sprintf("%s/%s", L4_L7DeviceDn, rn)
 
 	vnsCDev, err := getRemoteConcreteDevice(aciClient, dn)
 	if err != nil {
@@ -65,9 +60,9 @@ func dataSourceAciConcreteDeviceRead(ctx context.Context, d *schema.ResourceData
 	vnsRsCDevToCtrlrPData, err := aciClient.ReadRelationvnsRsCDevToCtrlrP(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation vnsRsCDevToCtrlrP %v", err)
-		d.Set("relation_vns_rs_c_dev_to_ctrlr_p", "")
+		d.Set("vmm_controller_dn", "")
 	} else {
-		d.Set("relation_vns_rs_c_dev_to_ctrlr_p", vnsRsCDevToCtrlrPData.(string))
+		d.Set("vmm_controller_dn", vnsRsCDevToCtrlrPData.(string))
 	}
 
 	return nil

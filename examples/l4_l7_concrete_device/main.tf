@@ -18,7 +18,7 @@ resource "aci_tenant" "terraform_tenant" {
   description = "This tenant is created by terraform"
 }
 
-resource "aci_l4_l7_devices" "example" {
+resource "aci_l4_l7_device" "example" {
   tenant_dn     = aci_tenant.terraform_tenant.id
   name          = "tenant1-ASAv"
   active        = "no"
@@ -36,9 +36,8 @@ resource "aci_l4_l7_devices" "example" {
 }
 
 resource "aci_concrete_device" "example" {
-  l4_l7_devices_dn                 = aci_l4_l7_devices.example.id
-  name                             = "tenant1-ASA1"
-  vcenter_name                     = "vcenter"
-  vm_name                          = "tenant1-ASA1"
-  relation_vns_rs_c_dev_to_ctrlr_p = "uni/vmmp-VMware/dom-ACI-vDS/ctrlr-vcenter"
+  l4_l7_device_dn   = aci_l4_l7_device.example.id
+  name              = "example"
+  vmm_controller_dn = "uni/vmmp-VMware/dom-ACI-vDS/ctrlr-vcenter"
+  vm_name           = "tenant1-ASA1"
 }

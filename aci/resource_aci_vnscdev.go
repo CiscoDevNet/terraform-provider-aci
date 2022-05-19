@@ -24,7 +24,7 @@ func resourceAciConcreteDevice() *schema.Resource {
 
 		SchemaVersion: 1,
 		Schema: AppendBaseAttrSchema(AppendNameAliasAttrSchema(map[string]*schema.Schema{
-			"l4_l7_devices_dn": &schema.Schema{
+			"l4_l7_device_dn": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
 				ForceNew: true,
@@ -34,7 +34,7 @@ func resourceAciConcreteDevice() *schema.Resource {
 				Required: true,
 				ForceNew: true,
 			},
-			"vcenter_name": &schema.Schema{
+			"vmm_controller_dn": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
@@ -43,11 +43,6 @@ func resourceAciConcreteDevice() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
-			},
-			"relation_vns_rs_c_dev_to_ctrlr_p": &schema.Schema{
-				Type:        schema.TypeString,
-				Optional:    true,
-				Description: "Create relation to vmm:CtrlrP",
 			},
 		})),
 	}
@@ -73,12 +68,11 @@ func setConcreteDeviceAttributes(vnsCDev *models.ConcreteDevice, d *schema.Resou
 	}
 	dn := d.Id()
 	if dn != vnsCDev.DistinguishedName {
-		d.Set("l4_l7_devices_dn", "")
+		d.Set("l4_l7_device_dn", "")
 	} else {
-		d.Set("l4_l7_devices_dn", GetParentDn(vnsCDev.DistinguishedName, fmt.Sprintf("/cDev-%s", vnsCDevMap["name"])))
+		d.Set("l4_l7_device_dn", GetParentDn(vnsCDev.DistinguishedName, fmt.Sprintf("/"+models.RnvnsCDev, vnsCDevMap["name"])))
 	}
 	d.Set("name", vnsCDevMap["name"])
-	d.Set("vcenter_name", vnsCDevMap["vcenterName"])
 	d.Set("vm_name", vnsCDevMap["vmName"])
 	d.Set("name_alias", vnsCDevMap["nameAlias"])
 	return d, nil
@@ -99,10 +93,11 @@ func resourceAciConcreteDeviceImport(d *schema.ResourceData, m interface{}) ([]*
 	vnsRsCDevToCtrlrPData, err := aciClient.ReadRelationvnsRsCDevToCtrlrP(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation vnsRsCDevToCtrlrP %v", err)
-		d.Set("relation_vns_rs_c_dev_to_ctrlr_p", "")
+		d.Set("vmm_controller_dn", "")
 	} else {
-		d.Set("relation_vns_rs_c_dev_to_ctrlr_p", vnsRsCDevToCtrlrPData.(string))
+		d.Set("vmm_controller_dn", vnsRsCDevToCtrlrPData.(string))
 	}
+
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 	return []*schema.ResourceData{schemaFilled}, nil
 }
@@ -111,7 +106,7 @@ func resourceAciConcreteDeviceCreate(ctx context.Context, d *schema.ResourceData
 	log.Printf("[DEBUG] ConcreteDevice: Beginning Creation")
 	aciClient := m.(*client.Client)
 	name := d.Get("name").(string)
-	L4_L7DevicesDn := d.Get("l4_l7_devices_dn").(string)
+	L4_L7DeviceDn := d.Get("l4_l7_device_dn").(string)
 
 	vnsCDevAttr := models.ConcreteDeviceAttributes{}
 
@@ -130,42 +125,18 @@ func resourceAciConcreteDeviceCreate(ctx context.Context, d *schema.ResourceData
 		vnsCDevAttr.Name = Name.(string)
 	}
 
-	if VcenterName, ok := d.GetOk("vcenter_name"); ok {
-		vnsCDevAttr.VcenterName = VcenterName.(string)
+	if VcenterName, ok := d.GetOk("vmm_controller_dn"); ok {
+		vnsCDevAttr.VcenterName = GetMOName(VcenterName.(string))
 	}
 
 	if VmName, ok := d.GetOk("vm_name"); ok {
 		vnsCDevAttr.VmName = VmName.(string)
 	}
-	vnsCDev := models.NewConcreteDevice(fmt.Sprintf(models.RnvnsCDev, name), L4_L7DevicesDn, nameAlias, vnsCDevAttr)
+	vnsCDev := models.NewConcreteDevice(fmt.Sprintf(models.RnvnsCDev, name), L4_L7DeviceDn, nameAlias, vnsCDevAttr)
 
 	err := aciClient.Save(vnsCDev)
 	if err != nil {
 		return diag.FromErr(err)
-	}
-	checkDns := make([]string, 0, 1)
-
-	if relationTovnsRsCDevToCtrlrP, ok := d.GetOk("relation_vns_rs_c_dev_to_ctrlr_p"); ok {
-		relationParam := relationTovnsRsCDevToCtrlrP.(string)
-		checkDns = append(checkDns, relationParam)
-
-	}
-
-	d.Partial(true)
-	err = checkTDn(aciClient, checkDns)
-	if err != nil {
-		return diag.FromErr(err)
-	}
-	d.Partial(false)
-
-	if relationTovnsRsCDevToCtrlrP, ok := d.GetOk("relation_vns_rs_c_dev_to_ctrlr_p"); ok {
-		relationParam := relationTovnsRsCDevToCtrlrP.(string)
-		err = aciClient.CreateRelationvnsRsCDevToCtrlrP(vnsCDev.DistinguishedName, vnsCDevAttr.Annotation, relationParam)
-
-		if err != nil {
-			return diag.FromErr(err)
-		}
-
 	}
 
 	d.SetId(vnsCDev.DistinguishedName)
@@ -176,7 +147,7 @@ func resourceAciConcreteDeviceUpdate(ctx context.Context, d *schema.ResourceData
 	log.Printf("[DEBUG] ConcreteDevice: Beginning Update")
 	aciClient := m.(*client.Client)
 	name := d.Get("name").(string)
-	L4_L7DevicesDn := d.Get("l4_l7_devices_dn").(string)
+	L4_L7DeviceDn := d.Get("l4_l7_device_dn").(string)
 
 	vnsCDevAttr := models.ConcreteDeviceAttributes{}
 
@@ -195,49 +166,20 @@ func resourceAciConcreteDeviceUpdate(ctx context.Context, d *schema.ResourceData
 		vnsCDevAttr.Name = Name.(string)
 	}
 
-	if VcenterName, ok := d.GetOk("vcenter_name"); ok {
-		vnsCDevAttr.VcenterName = VcenterName.(string)
+	if VcenterName, ok := d.GetOk("vmm_controller_dn"); ok {
+		vnsCDevAttr.VcenterName = GetMOName(VcenterName.(string))
 	}
 
 	if VmName, ok := d.GetOk("vm_name"); ok {
 		vnsCDevAttr.VmName = VmName.(string)
 	}
-	vnsCDev := models.NewConcreteDevice(fmt.Sprintf(models.RnvnsCDev, name), L4_L7DevicesDn, nameAlias, vnsCDevAttr)
+	vnsCDev := models.NewConcreteDevice(fmt.Sprintf(models.RnvnsCDev, name), L4_L7DeviceDn, nameAlias, vnsCDevAttr)
 
 	vnsCDev.Status = "modified"
 
 	err := aciClient.Save(vnsCDev)
 	if err != nil {
 		return diag.FromErr(err)
-	}
-
-	checkDns := make([]string, 0, 1)
-
-	if d.HasChange("relation_vns_rs_c_dev_to_ctrlr_p") || d.HasChange("annotation") {
-		_, newRelParam := d.GetChange("relation_vns_rs_c_dev_to_ctrlr_p")
-		checkDns = append(checkDns, newRelParam.(string))
-
-	}
-
-	d.Partial(true)
-	err = checkTDn(aciClient, checkDns)
-	if err != nil {
-		return diag.FromErr(err)
-	}
-	d.Partial(false)
-
-	if d.HasChange("relation_vns_rs_c_dev_to_ctrlr_p") || d.HasChange("annotation") {
-		_, newRelParam := d.GetChange("relation_vns_rs_c_dev_to_ctrlr_p")
-		err = aciClient.DeleteRelationvnsRsCDevToCtrlrP(vnsCDev.DistinguishedName)
-		if err != nil {
-			return diag.FromErr(err)
-		}
-		err = aciClient.CreateRelationvnsRsCDevToCtrlrP(vnsCDev.DistinguishedName, vnsCDevAttr.Annotation, newRelParam.(string))
-
-		if err != nil {
-			return diag.FromErr(err)
-		}
-
 	}
 
 	d.SetId(vnsCDev.DistinguishedName)
@@ -265,9 +207,9 @@ func resourceAciConcreteDeviceRead(ctx context.Context, d *schema.ResourceData, 
 	vnsRsCDevToCtrlrPData, err := aciClient.ReadRelationvnsRsCDevToCtrlrP(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation vnsRsCDevToCtrlrP %v", err)
-		setRelationAttribute(d, "relation_vns_rs_c_dev_to_ctrlr_p", "")
+		d.Set("vmm_controller_dn", "")
 	} else {
-		setRelationAttribute(d, "relation_vns_rs_c_dev_to_ctrlr_p", vnsRsCDevToCtrlrPData.(string))
+		d.Set("vmm_controller_dn", vnsRsCDevToCtrlrPData.(string))
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
