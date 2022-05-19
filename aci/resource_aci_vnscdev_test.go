@@ -73,16 +73,16 @@ func testAccCheckAciConcreteDeviceConfig_basic(fv_tenant_name, vns_l_dev_vip_nam
 
 	}
 
-	resource "aci_l4_l7_devices" "foo_l4_l7_devices" {
+	resource "aci_l4_l7_device" "foo_l4_l7_device" {
 		name 		= "%s"
-		description = "l4_l7_devices created while acceptance testing"
+		description = "l4_l7_device created while acceptance testing"
 		tenant_dn = aci_tenant.foo_tenant.id
 	}
 
 	resource "aci_concrete_device" "foo_concrete_device" {
 		name 		= "%s"
 		description = "concrete_device created while acceptance testing"
-		l4_l7_devices_dn = aci_l4_l7_devices.foo_l4_l7_devices.id
+		l4_l7_device_dn = aci_l4_l7_device.foo_l4_l7_device.id
 	}
 
 	`, fv_tenant_name, vns_l_dev_vip_name, vns_c_dev_name)
