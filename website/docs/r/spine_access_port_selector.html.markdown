@@ -42,7 +42,7 @@ resource "aci_spine_access_port_selector" "example" {
 * `spine_access_port_selector_type` - (Required) The type of Spine Access Port Selector. Allowed values are "ALL" and "range". Default is "ALL". The "range" can be specified with the resource "aci_access_port_block".
 * `annotation` - (Optional) Annotation of the Spine Access Port Selector.
 * `name_alias` - (Optional) Name Alias of the Spine Access Port Selector.
-
+- `description` - (Optional) Description of object Spine Access Port Selector.
 * `relation_infra_rs_sp_acc_grp` - (Optional) Represents the relation to a Spine Access Group (class infraSpAccGrp). Type: String.
 
 

@@ -41,6 +41,8 @@ resource "aci_route_control_context" "control" {
 * `annotation` - (Optional) Annotation of object Route Control Context.
 * `action` - (Optional) Action. The action required when the condition is met. Allowed values are "deny", "permit", and default value is "permit". Type: String.
 * `order` - (Optional) Local Order.The order of the policy context. Allowed range is 0-9 and default value is "0".
+- `description` - (Optional) Description of object Route Control Context.
+- `name_alias` - (Optional) Name alias of object Route Control Context.
 * `set_rule` - (Optional) Represents the relation to an Attribute Profile (class rtctrlAttrP). Type: String.
 * `relation_rtctrl_rs_ctx_p_to_subj_p` - (Optional) Represents the relation to a Subject Profile (class rtctrlSubjP). Type: List.
 
