@@ -40,13 +40,18 @@ func dataSourceAciFilterRelationship() *schema.Resource {
 				Type:     schema.TypeString,
 				Required: true,
 			},
+			"filter_dn": {
+				Type:     schema.TypeString,
+				Required: true,
+				ForceNew: true,
+			},
 		})),
 	}
 }
 
 func dataSourceAciFilterRelationshipRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	aciClient := m.(*client.Client)
-	tnVzFilterName := d.Get("tnVzFilterName").(string)
+	tnVzFilterName := GetMOName(d.Get("filter_dn").(string))
 	ContractSubjectDn := d.Get("contract_subject_dn").(string)
 	rn := fmt.Sprintf("rsfiltAtt-%s", tnVzFilterName)
 	dn := fmt.Sprintf("%s/%s", ContractSubjectDn, rn)

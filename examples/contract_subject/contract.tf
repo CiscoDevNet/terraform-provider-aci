@@ -81,7 +81,7 @@ resource "aci_contract_subject" "contract_subject_2" {
     target_dscp                      = "AF41"
     relation_vz_rs_in_term_graph_att = aci_l4_l7_service_graph_template.service_graph.id
     relation_vz_rs_filt_att {
-      action = "permit"
+      action = "deny"
       directives = ["log", "no_stats"]
       priority_override = "level2"
       filter_dn = aci_filter.test_filter.id
@@ -89,7 +89,7 @@ resource "aci_contract_subject" "contract_subject_2" {
     relation_vz_rs_filt_att {
       action = "permit"
       directives = ["log"]
-      priority_override = "level2"
+      priority_override = "default"
       filter_dn = aci_filter.tf_filter.id
     }
   }
@@ -98,7 +98,7 @@ resource "aci_contract_subject" "contract_subject_2" {
     target_dscp                       = "AF42"
     relation_vz_rs_out_term_graph_att = aci_l4_l7_service_graph_template.service_graph.id
     relation_vz_rs_filt_att {
-      action = "permit"
+      action = "deny"
       directives = ["log"]
       priority_override = "level2"
       filter_dn = aci_filter.test_filter.id
@@ -106,7 +106,7 @@ resource "aci_contract_subject" "contract_subject_2" {
     relation_vz_rs_filt_att {
       action = "permit"
       directives = ["log", "no_stats"]
-      priority_override = "level2"
+      priority_override = "default"
       filter_dn = aci_filter.tf_filter.id
     }
   }

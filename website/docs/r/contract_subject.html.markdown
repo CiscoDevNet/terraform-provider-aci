@@ -40,14 +40,26 @@ Manages ACI Contract Subject
 		target_dscp   = "CS0"
 		apply_both_directions = "no"
 		consumer_to_provider = {
-			prio = "level2"
-			target_dscp = "AF41"
-    		relation_vz_rs_in_term_graph_att = aci_l4_l7_service_graph_template.service_graph2.id
+			prio                             = "level2"
+			target_dscp                      = "AF41"
+			relation_vz_rs_in_term_graph_att = aci_l4_l7_service_graph_template.service_graph.id
+			relation_vz_rs_filt_att {
+				action = "deny"
+				directives = ["log", "no_stats"]
+				priority_override = "level2"
+				filter_dn = aci_filter.test_filter.id
+			}
 		}
 		provider_to_consumer  ={
 			prio = "level3"
 			target_dscp = "AF32"
     		relation_vz_rs_out_term_graph_att = aci_l4_l7_service_graph_template.service_graph2.id
+			relation_vz_rs_filt_att {
+				action = "permit"
+				directives = ["log", "no_stats"]
+				priority_override = "default"
+				filter_dn = aci_filter.tf_filter.id
+			}
 		}
 	}
 ```
@@ -72,23 +84,23 @@ Manages ACI Contract Subject
 - `apply_both_directions` - (Optional) Defines if a contract subject allows traffic matching the defined filters for both consumer-to-provider and provider-to-consumer together or if each direction can be defined separately. By default set to "yes".
   - When set to "yes", the filters defined in the subject are applied for both directions.
   - When set to "no", the filters for each direction (consumer-to-provider and provider-to-consumer) are defined independently.
-- ` consumer_to_provider` - (Optional) Filter Chain for Consumer to Provider. Class vzInTerm.
+- ` consumer_to_provider` - (Optional) Filter Chain for Consumer to Provider. Class vzInTerm. Type - Block.
     - `prio` - (Optional) The priority level to assign to traffic matching the consumer to provider flows.
     - `target_dscp` - (Optional) The target DSCP to assign to traffic matching the consumer to provider flows.
 	- `relation_vz_rs_in_term_graph_att` - (Optional) Relation to class L4-L7 Service Graph (vnsAbsGraph).
 	-`relation_vz_rs_filt_att` - (Optional) Relation to class Filters (vzRsFiltAtt).
       - `action` - (Optional) The action required when the condition is met. Allowed values are "deny", "permit", and the default value is "permit".
       - `directives` - (Optional) Directives of the Contract Subject Filter object for Consumer to Provider. Allowed values are "log", "no_stats", "none", and the default value is "none".
-      - `priority_override` - (Optional) Priority override of the Consumer to Provider Filter object. Allowed values are "default", "level1", "level2", "level3", and the default value is "default".
+      - `priority_override` - (Optional) Priority override of the Consumer to Provider Filter object. It is only used when action is deny. Allowed values are "default", "level1", "level2", "level3", and the default value is "default".
       - `filter_dn` - (Required) Distinguished name of the Filter object for Consumer to Provider.
-- `provider_to_consumer` - (Optional) Filter Chain For Provider to Consumer. Class vzOutTerm
+- `provider_to_consumer` - (Optional) Filter Chain For Provider to Consumer. Class vzOutTerm. Type - Block.
     - `prio` - (Optional) The priority level to assign to traffic matching the provider to consumer flows.
     - `target_dscp` - (Optional) The target DSCP to assign to traffic matching the provider to consumer flows.
 	- `relation_vz_rs_out_term_graph_att` - (Optional) Relation to class L4-L7 Service Graph (vnsAbsGraph).
 	-`relation_vz_rs_filt_att` - (Optional) (Optional) Relation to class Filters (vzRsFiltAtt).
       - `action` - (Optional) The action required when the condition is met. Allowed values are "deny", "permit", and the default value is "permit".
       - `directives` - (Optional) Directives of the Contract Subject Filter object for Provider to Consumer. Allowed values are "log", "no_stats", "none", and the default value is "none".
-      - `priority_override` - (Optional) Priority override of the Provider to Consumer Filter object. Allowed values are "default", "level1", "level2", "level3", and the default value is "default".
+      - `priority_override` - (Optional) Priority override of the Provider to Consumer Filter object. It is only used when action is deny. Allowed values are "default", "level1", "level2", "level3", and the default value is "default".
       - `filter_dn` - (Required) Distinguished name of the Filter object for Provider to Consumer.
 
 

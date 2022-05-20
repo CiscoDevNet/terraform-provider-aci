@@ -99,7 +99,7 @@ func setFilterRelationshipAttributes(vzRsFiltAtt *models.FilterRelationship, d *
 		return d, err
 	}
 
-	d.Set("contract_subject_dn", GetParentDn(vzRsFiltAtt.DistinguishedName, fmt.Sprintf("/rsfiltAtt-%s", vzRsFiltAttMap["name"])))
+	d.Set("contract_subject_dn", GetParentDn(vzRsFiltAtt.DistinguishedName, fmt.Sprintf("/"+models.RnvzRsFiltAtt, vzRsFiltAttMap["name"])))
 	d.Set("annotation", vzRsFiltAttMap["annotation"])
 	d.Set("action", vzRsFiltAttMap["action"])
 	directivesGet := make([]string, 0, 1)

@@ -95,7 +95,7 @@ func setSubjectFilterAttributes(vzRsSubjFiltAtt *models.SubjectFilter, d *schema
 	if err != nil {
 		return d, err
 	}
-	d.Set("contract_subject_dn", GetParentDn(vzRsSubjFiltAtt.DistinguishedName, fmt.Sprintf("/rssubjFiltAtt-%s", vzRsSubjFiltAttMap["name"])))
+	d.Set("contract_subject_dn", GetParentDn(vzRsSubjFiltAtt.DistinguishedName, fmt.Sprintf("/"+models.RnvzRsSubjFiltAtt, vzRsSubjFiltAttMap["name"])))
 	d.Set("annotation", vzRsSubjFiltAttMap["annotation"])
 	d.Set("action", vzRsSubjFiltAttMap["action"])
 	directivesGet := make([]string, 0, 1)

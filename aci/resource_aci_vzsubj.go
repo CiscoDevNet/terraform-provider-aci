@@ -47,12 +47,12 @@ func resourceAciContractSubject() *schema.Resource {
 						if len(oldInTermFilterList) != len(newInTermFilterList) {
 							result = true
 						} else {
-							for _, inTermOldFilter := range oldInTermFilterList {
-								oldVzRsFiltAttMap := inTermOldFilter.(map[string]interface{})
+							for _, oldInTermFilter := range oldInTermFilterList {
+								oldVzRsFiltAttMap := oldInTermFilter.(map[string]interface{})
 								oldInTermFilterDirectives := oldVzRsFiltAttMap["directives"].(*schema.Set).List()
 								found_same_filter_dn := false
-								for _, inTermNewFilter := range newInTermFilterList {
-									newVzRsFiltAttMap := inTermNewFilter.(map[string]interface{})
+								for _, newInTermFilter := range newInTermFilterList {
+									newVzRsFiltAttMap := newInTermFilter.(map[string]interface{})
 									newInTermFilterDirectives := newVzRsFiltAttMap["directives"].(*schema.Set).List()
 
 									if oldVzRsFiltAttMap["filter_dn"] == newVzRsFiltAttMap["filter_dn"] {
@@ -91,22 +91,17 @@ func resourceAciContractSubject() *schema.Resource {
 
 						oldOutTermFilterList := oldOutTermParam["relation_vz_rs_filt_att"].(*schema.Set).List()
 						newOutTermFilterList := newOutTermParam["relation_vz_rs_filt_att"].(*schema.Set).List()
-						log.Printf("[TEST] oldOutTermFilterList :  %v", oldOutTermFilterList)
-						log.Printf("[TEST] newOutTermFilterList :  %v", newOutTermFilterList)
 
 						if len(oldOutTermFilterList) != len(newOutTermFilterList) {
 							result = true
 						} else {
-							for _, outTermOldFilter := range oldOutTermFilterList {
-								oldVzRsFiltAttMap := outTermOldFilter.(map[string]interface{})
+							for _, oldOutTermFilter := range oldOutTermFilterList {
+								oldVzRsFiltAttMap := oldOutTermFilter.(map[string]interface{})
 								oldOutTermFilterDirectives := oldVzRsFiltAttMap["directives"].(*schema.Set).List()
 								found_same_filter_dn := false
-								for _, outTermNewFilter := range newOutTermFilterList {
-									newVzRsFiltAttMap := outTermNewFilter.(map[string]interface{})
+								for _, newOutTermFilter := range newOutTermFilterList {
+									newVzRsFiltAttMap := newOutTermFilter.(map[string]interface{})
 									newOutTermFilterDirectives := newVzRsFiltAttMap["directives"].(*schema.Set).List()
-									log.Printf("[TEST] oldOutTermFilterDirectives :  %v", oldOutTermFilterDirectives)
-									log.Printf("[TEST] newOutTermFilterDirectives :  %v", newOutTermFilterDirectives)
-									log.Printf("[TEST] COMPARE :  %v", reflect.DeepEqual(oldOutTermFilterDirectives, newOutTermFilterDirectives))
 
 									if oldVzRsFiltAttMap["filter_dn"] == newVzRsFiltAttMap["filter_dn"] {
 										found_same_filter_dn = true
@@ -367,7 +362,7 @@ func resourceAciContractSubject() *schema.Resource {
 											"level2",
 											"level3",
 										}, false),
-										// used when used with deny
+										// Used when action is deny
 									},
 									"filter_dn": {
 										Required: true,
@@ -480,6 +475,7 @@ func resourceAciContractSubject() *schema.Resource {
 											"level2",
 											"level3",
 										}, false),
+										// Used when action is deny
 									},
 									"filter_dn": {
 										Required: true,
@@ -537,7 +533,7 @@ func setContractSubjectAttributes(vzSubj *models.ContractSubject, d *schema.Reso
 
 func getRemoteInTermSubject(client *client.Client, dn string) (*models.InTermSubject, error) {
 
-	vzInTermCont, err := client.Get(dn + "/intmnl")
+	vzInTermCont, err := client.Get(dn + "/" + models.RnvzInTerm)
 	if err != nil {
 		if fmt.Sprint(err) == "Error retrieving Object: Object may not exists" {
 			return nil, nil
@@ -568,7 +564,7 @@ func setInTermSubjectAttributes(vzInTerm *models.InTermSubject, d *schema.Resour
 }
 
 func getRemoteOutTermSubject(client *client.Client, dn string) (*models.OutTermSubject, error) {
-	vzOutTermCont, err := client.Get(dn + "/outtmnl")
+	vzOutTermCont, err := client.Get(dn + "/" + models.RnvzOutTerm)
 	if err != nil {
 		if fmt.Sprint(err) == "Error retrieving Object: Object may not exists" {
 			return nil, nil
@@ -1269,7 +1265,6 @@ func resourceAciContractSubjectRead(ctx context.Context, d *schema.ResourceData,
 	}
 
 	if vzInTerm != nil {
-
 		vzInTermMap, err := setInTermSubjectAttributes(vzInTerm, d)
 		if err != nil {
 			d.SetId("")
@@ -1346,7 +1341,6 @@ func resourceAciContractSubjectRead(ctx context.Context, d *schema.ResourceData,
 		} else {
 			vzOutTermFilterSet := make([]interface{}, 0, 1)
 			for _, vzRsOutTermFilter := range vzRsOutTermFilterAttData {
-
 				vzRsFiltAttMap, err := vzRsOutTermFilter.ToMap()
 				if err != nil {
 					log.Printf("[DEBUG] Error while creating map for relation vzRsOutTermFilterAtt %v", err)

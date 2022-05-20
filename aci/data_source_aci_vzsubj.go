@@ -96,15 +96,18 @@ func dataSourceAciContractSubject() *schema.Resource {
 						"relation_vz_rs_filt_att": {
 							Type:        schema.TypeSet,
 							Optional:    true,
-							Description: "Create relation to vzFilter",
+							Computed:    true,
+							Description: "Represent a relation to vzFilter",
 							Elem: &schema.Resource{
 								Schema: map[string]*schema.Schema{
 									"action": {
 										Optional: true,
+										Computed: true,
 										Type:     schema.TypeString,
 									},
 									"directives": {
 										Optional: true,
+										Computed: true,
 										Type:     schema.TypeList,
 										Elem: &schema.Schema{
 											Type: schema.TypeString,
@@ -112,10 +115,12 @@ func dataSourceAciContractSubject() *schema.Resource {
 									},
 									"priority_override": {
 										Optional: true,
+										Computed: true,
 										Type:     schema.TypeString,
 									},
 									"filter_dn": {
-										Required: true,
+										Optional: true,
+										Computed: true,
 										Type:     schema.TypeString,
 									},
 								},
@@ -152,15 +157,18 @@ func dataSourceAciContractSubject() *schema.Resource {
 						"relation_vz_rs_filt_att": {
 							Type:        schema.TypeSet,
 							Optional:    true,
-							Description: "Create relation to vzFilter",
+							Computed:    true,
+							Description: "Represent a relation to vzFilter",
 							Elem: &schema.Resource{
 								Schema: map[string]*schema.Schema{
 									"action": {
 										Optional: true,
+										Computed: true,
 										Type:     schema.TypeString,
 									},
 									"directives": {
 										Optional: true,
+										Computed: true,
 										Type:     schema.TypeList,
 										Elem: &schema.Schema{
 											Type: schema.TypeString,
@@ -168,10 +176,12 @@ func dataSourceAciContractSubject() *schema.Resource {
 									},
 									"priority_override": {
 										Optional: true,
+										Computed: true,
 										Type:     schema.TypeString,
 									},
 									"filter_dn": {
-										Required: true,
+										Optional: true,
+										Computed: true,
 										Type:     schema.TypeString,
 									},
 								},
@@ -229,7 +239,6 @@ func dataSourceAciContractSubjectRead(ctx context.Context, d *schema.ResourceDat
 		} else {
 			vzInTermFilterSet := make([]interface{}, 0, 1)
 			for _, vzRsInTermFilter := range vzRsInTermFilterAttData {
-
 				vzRsFiltAttMap, err := vzRsInTermFilter.ToMap()
 				if err != nil {
 					log.Printf("[DEBUG] Error while creating map for relation vzRsInTermFilterAtt %v", err)
@@ -279,7 +288,6 @@ func dataSourceAciContractSubjectRead(ctx context.Context, d *schema.ResourceDat
 		} else {
 			vzOutTermFilterSet := make([]interface{}, 0, 1)
 			for _, vzRsOutTermFilter := range vzRsOutTermFilterAttData {
-
 				vzRsFiltAttMap, err := vzRsOutTermFilter.ToMap()
 				if err != nil {
 					log.Printf("[DEBUG] Error while creating map for relation vzRsOutTermFilterAtt %v", err)
@@ -297,13 +305,10 @@ func dataSourceAciContractSubjectRead(ctx context.Context, d *schema.ResourceDat
 				vzOutTermFilterSet = append(vzOutTermFilterSet, outTermFilterMap)
 			}
 			vzOutTermMap["relation_vz_rs_filt_att"] = vzOutTermFilterSet
-
 		}
-
 		vzOutTermSet := make([]interface{}, 0, 1)
 		vzOutTermSet = append(vzOutTermSet, vzOutTermMap)
 		d.Set("provider_to_consumer", vzOutTermSet)
-
 	}
 
 	if vzInTerm == nil && vzOutTerm == nil {
