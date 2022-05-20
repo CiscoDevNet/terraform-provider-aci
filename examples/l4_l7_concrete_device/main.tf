@@ -35,9 +35,14 @@ resource "aci_l4_l7_device" "example" {
   }
 }
 
-resource "aci_concrete_device" "example" {
+resource "aci_concrete_device" "example1" {
   l4_l7_device_dn   = aci_l4_l7_device.example.id
-  name              = "example"
+  name              = "virtual-Device"
   vmm_controller_dn = "uni/vmmp-VMware/dom-ACI-vDS/ctrlr-vcenter"
   vm_name           = "tenant1-ASA1"
+}
+
+resource "aci_concrete_device" "example2" {
+  l4_l7_device_dn   = aci_l4_l7_device.example.id
+  name              = "physical-Device"
 }
