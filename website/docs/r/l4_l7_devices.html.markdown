@@ -1,14 +1,15 @@
 ---
+subcategory: "L4-L7 Services"
 layout: "aci"
-page_title: "ACI: aci_l4_l7_devices"
-sidebar_current: "docs-aci-resource-l4_l7_devices"
+page_title: "ACI: aci_l4_l7_device"
+sidebar_current: "docs-aci-resource-l4_l7_device"
 description: |-
-  Manages ACI L4-L7 Devices
+  Manages ACI L4-L7 Device
 ---
 
-# aci_l4_l7_devices #
+# aci_l4_l7_device #
 
-Manages ACI L4-L7 Devices
+Manages ACI L4-L7 Device
 
 ## API Information ##
 
@@ -25,9 +26,9 @@ Manages ACI L4-L7 Devices
 ### Creating a PHYSICAL Device ###
 
 ```hcl
-resource "aci_l4_l7_devices" "physical_device" {
+resource "aci_l4_l7_device" "example1" {
   tenant_dn                            = aci_tenant.terraform_tenant.id
-  name                                 = "example2"
+  name                                 = "example1"
   active                               = "no"
   context_aware                        = "single-Context"
   device_type                          = "PHYSICAL"
@@ -43,9 +44,9 @@ resource "aci_l4_l7_devices" "physical_device" {
 ### Creating a VIRTUAL Device ###
 
 ```hcl
-resource "aci_l4_l7_devices" "virtual_device" {
+resource "aci_l4_l7_device" "example2" {
   tenant_dn        = aci_tenant.terraform_tenant.id
-  name             = "example1"
+  name             = "example2"
   active           = "no"
   context_aware    = "single-Context"
   device_type      = "VIRTUAL"
@@ -65,28 +66,27 @@ resource "aci_l4_l7_devices" "virtual_device" {
 ## Argument Reference ##
 
 * `tenant_dn` - (Required) Distinguished name of the parent Tenant object.
-* `name` - (Required) Name of the object L4-L7 Devices.
-* `annotation` - (Optional) Annotation of the object L4-L7 Devices.
-* `active` - (Optional) Active mode. Allowed values are "no", "yes", and default value is "no". Type: String.
+* `name` - (Required) Name of the L4-L7 Device.
+* `annotation` - (Optional) Annotation of the L4-L7 Device object.
+* `active` - (Optional) Enables L4-L7 device cluster to operate in active/active mode. Allowed values are "no", "yes", and default value is "no". Type: String.
 * `context_aware` - (Optional) Determines if the L4-L7 device cluster supports multiple contexts (VRFs). Allowed values are "multi-Context", "single-Context", and default value is "single-Context". Type: String.
 * `device_type` - (Optional) Device Type. Allowed values are "CLOUD", "PHYSICAL", "VIRTUAL", and default value is "PHYSICAL". Type: String.
 * `function_type` - (Optional) Function Type of the L4-L7 device cluster. Allowed values are "GoThrough", "GoTo", "L1", "L2", "None", and default value is "GoTo". Type: String.
 * `is_copy` - (Optional) Sets device as a copy. Allowed values are "no", "yes", and default value is "no". Type: String.
-* `mode` - (Optional) Specifies if the device is legacy (classical VLAN/VXLAN) or supports service tag switching (STS). Allowed value is "legacy-Mode", and default value is "legacy-Mode". Type: String.
-* `promiscuous_mode` - (Optional) Promiscuous Mode supports port groups in an external VMM controller, such as a Vcenter. This needs to be turned on only for service devices in the cloud, not for Enterprise AVE service deployments. Allowed values are "no", "yes", and default value is "no". Type: String.
-* `service_type` - (Optional) Service Type. Allowed values are "ADC", "COPY", "FW", "NATIVELB", "OTHERS", and default value is "OTHERS". Type: String.
-* `trunking` - (Optional) Sets trunking port group for virtual devices. Allowed values are "no", "yes", and default value is "no". Type: String.
-* `relation_vns_rs_al_dev_to_dom_p` - (Optional) Represents a relation from L4-L7 Device to a Vmm Domain Profile (class vmmDomP). Type: Block.
-  * `domain_dn` - (Required) Distinguished name of the target. Type: String.
-  * `switching_mode` - (Optional) Switching mode. Allowed values are "native", "AVE", and default value is "native". The value "AVE" is not supported with non-AVE VMM Domain. Type: String.
+* `promiscuous_mode` - (Optional) Enabling Promiscuous Mode supports all the traffic in a port group to reach a VM attached to a promiscuous port. Allowed values are "no", "yes", and default value is "no". Type: String.
+* `service_type` - (Optional) The type of service the L4-L7 device performs. Allowed values are "ADC", "COPY", "FW", "NATIVELB", "OTHERS", and default value is "OTHERS". Type: String.
+* `trunking` - (Optional) Configures the device port group for trunking of virtual devices. Allowed values are "no", "yes", and default value is "no". Type: String.
+* `relation_vns_rs_al_dev_to_dom_p` - (Optional) Represents a relation from L4-L7 Device to a VMM Domain Profile (class vmmDomP). Type: Block.
+  * `domain_dn` - (Required) Distinguished name of the VMM Domain in which the VM is deployed. Type: String.
+  * `switching_mode` - (Optional) Port group switching mode. Allowed values are "native", "AVE", and default value is "native". The value "AVE" is not supported with non-AVE VMM Domain. Type: String.
 * `relation_vns_rs_al_dev_to_phys_dom_p` - (Optional) Represents a relation from L4-L7 Device to a Physical Domain Profile (class physDomP). Type: String.
 
 ## Importing ##
 
-An existing L4-L7Devices can be [imported][docs-import] into this resource via its Dn, via the following command:
+An existing L4-L7 Device can be [imported][docs-import] into this resource via its Dn, via the following command:
 [docs-import]: https://www.terraform.io/docs/import/index.html
 
 
 ```
-terraform import aci_l4-l7_devices.example <Dn>
+terraform import aci_l4-l7_device.example <Dn>
 ```

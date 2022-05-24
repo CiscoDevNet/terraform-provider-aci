@@ -18,7 +18,7 @@ resource "aci_tenant" "terraform_tenant" {
   description = "This tenant is created by terraform"
 }
 
-resource "aci_l4_l7_devices" "virtual_device" {
+resource "aci_l4_l7_devices" "example1" {
   tenant_dn        = aci_tenant.terraform_tenant.id
   name             = "example1"
   active           = "no"
@@ -36,7 +36,7 @@ resource "aci_l4_l7_devices" "virtual_device" {
   }
 }
 
-resource "aci_l4_l7_devices" "physical_device" {
+resource "aci_l4_l7_devices" "example2" {
   tenant_dn                            = aci_tenant.terraform_tenant.id
   name                                 = "example2"
   active                               = "no"

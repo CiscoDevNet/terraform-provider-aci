@@ -165,7 +165,7 @@ func resourceAciL4ToL7Devices() *schema.Resource {
 
 		CustomizeDiff: func(_ context.Context, diff *schema.ResourceDiff, v interface{}) error {
 			// Plan time validation.
-			device_type, _ := diff.GetOk("device_type")
+			device_type := diff.Get("device_type")
 			_, virtual_ok := diff.GetOk("relation_vns_rs_al_dev_to_dom_p")
 			_, physical_ok := diff.GetOk("relation_vns_rs_al_dev_to_phys_dom_p")
 			if device_type.(string) == "VIRTUAL" && !virtual_ok {
@@ -201,7 +201,7 @@ func setL4ToL7DevicesAttributes(vnsLDevVip *models.L4ToL7Devices, d *schema.Reso
 	if dn != vnsLDevVip.DistinguishedName {
 		d.Set("tenant_dn", "")
 	} else {
-		d.Set("tenant_dn", GetParentDn(vnsLDevVip.DistinguishedName, fmt.Sprintf("/lDevVip-%s", vnsLDevVipMap["name"])))
+		d.Set("tenant_dn", GetParentDn(vnsLDevVip.DistinguishedName, fmt.Sprintf("/"+models.RnvnsLDevVip, vnsLDevVipMap["name"])))
 	}
 	d.Set("active", vnsLDevVipMap["activeActive"])
 	d.Set("annotation", vnsLDevVipMap["annotation"])
@@ -331,15 +331,14 @@ func resourceAciL4ToL7DevicesCreate(ctx context.Context, d *schema.ResourceData,
 	if relationTovnsRsALDevToDomP, ok := d.GetOk("relation_vns_rs_al_dev_to_dom_p"); ok {
 		relationParamMap := relationTovnsRsALDevToDomP.(*schema.Set).List()
 		for _, relationParam := range relationParamMap {
-			inner_map := relationParam.(map[string]interface{})
-			checkDns = append(checkDns, fmt.Sprintf("%v", inner_map["domain_dn"]))
+			innerMap := relationParam.(map[string]interface{})
+			checkDns = append(checkDns, innerMap["domain_dn"].(string))
 		}
 	}
 
 	if relationTovnsRsALDevToPhysDomP, ok := d.GetOk("relation_vns_rs_al_dev_to_phys_dom_p"); ok {
 		relationParam := relationTovnsRsALDevToPhysDomP.(string)
 		checkDns = append(checkDns, relationParam)
-
 	}
 
 	d.Partial(true)
@@ -353,12 +352,11 @@ func resourceAciL4ToL7DevicesCreate(ctx context.Context, d *schema.ResourceData,
 		relationParamMap := relationTovnsRsALDevToDomP.(*schema.Set).List()
 		var switchingMode, domainDN string
 		for _, relationParam := range relationParamMap {
-			inner_map := relationParam.(map[string]interface{})
-			switchingMode = fmt.Sprintf("%v", inner_map["switching_mode"])
-			domainDN = fmt.Sprintf("%v", inner_map["domain_dn"])
+			innerMap := relationParam.(map[string]interface{})
+			switchingMode = innerMap["switching_mode"].(string)
+			domainDN = innerMap["domain_dn"].(string)
 		}
 		err = aciClient.CreateRelationvnsRsALDevToDomP(vnsLDevVip.DistinguishedName, vnsLDevVipAttr.Annotation, switchingMode, domainDN)
-
 		if err != nil {
 			return diag.FromErr(err)
 		}
@@ -367,7 +365,6 @@ func resourceAciL4ToL7DevicesCreate(ctx context.Context, d *schema.ResourceData,
 	if relationTovnsRsALDevToPhysDomP, ok := d.GetOk("relation_vns_rs_al_dev_to_phys_dom_p"); ok {
 		relationParam := relationTovnsRsALDevToPhysDomP.(string)
 		err = aciClient.CreateRelationvnsRsALDevToPhysDomP(vnsLDevVip.DistinguishedName, vnsLDevVipAttr.Annotation, relationParam)
-
 		if err != nil {
 			return diag.FromErr(err)
 		}
@@ -455,8 +452,8 @@ func resourceAciL4ToL7DevicesUpdate(ctx context.Context, d *schema.ResourceData,
 		_, newRel := d.GetChange("relation_vns_rs_al_dev_to_dom_p")
 		newRelSet := newRel.(*schema.Set).List()
 		for _, relationParam := range newRelSet {
-			inner_map := relationParam.(map[string]interface{})
-			checkDns = append(checkDns, fmt.Sprintf("%v", inner_map["domain_dn"]))
+			innerMap := relationParam.(map[string]interface{})
+			checkDns = append(checkDns, innerMap["domain_dn"].(string))
 		}
 	}
 
@@ -478,17 +475,15 @@ func resourceAciL4ToL7DevicesUpdate(ctx context.Context, d *schema.ResourceData,
 		newRelParamMap := newRelParam.(*schema.Set).List()
 		var switchingMode, domainDN string
 		for _, newRelationParam := range newRelParamMap {
-			inner_map := newRelationParam.(map[string]interface{})
-			switchingMode = fmt.Sprintf("%v", inner_map["switching_mode"])
-			domainDN = fmt.Sprintf("%v", inner_map["domain_dn"])
+			innerMap := newRelationParam.(map[string]interface{})
+			switchingMode = innerMap["switching_mode"].(string)
+			domainDN = innerMap["domain_dn"].(string)
 		}
 		err = aciClient.DeleteRelationvnsRsALDevToDomP(vnsLDevVip.DistinguishedName)
-
 		if err != nil {
 			return diag.FromErr(err)
 		}
 		err = aciClient.CreateRelationvnsRsALDevToDomP(vnsLDevVip.DistinguishedName, vnsLDevVipAttr.Annotation, switchingMode, domainDN)
-
 		if err != nil {
 			return diag.FromErr(err)
 		}
@@ -500,7 +495,6 @@ func resourceAciL4ToL7DevicesUpdate(ctx context.Context, d *schema.ResourceData,
 			return diag.FromErr(err)
 		}
 		err = aciClient.CreateRelationvnsRsALDevToPhysDomP(vnsLDevVip.DistinguishedName, vnsLDevVipAttr.Annotation, newRelParam.(string))
-
 		if err != nil {
 			return diag.FromErr(err)
 		}
