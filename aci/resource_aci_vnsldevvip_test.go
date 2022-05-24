@@ -15,7 +15,7 @@ func TestAccAciL4ToL7Devices_Basic(t *testing.T) {
 	var l4Tol7_devices models.L4ToL7Devices
 	fv_tenant_name := acctest.RandString(5)
 	vns_l_dev_vip_name := acctest.RandString(5)
-	description := "l4Tol7_devices created while acceptance testing"
+	description := "l4Tol7_device created while acceptance testing"
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
@@ -71,9 +71,9 @@ func testAccCheckAciL4ToL7DevicesConfig_basic(fv_tenant_name, vns_l_dev_vip_name
 
 	}
 
-	resource "aci_l4Tol7_devices" "fool4Tol7_devices" {
+	resource "aci_l4Tol7_device" "fool4Tol7_device" {
 		name 		= "%s"
-		description = "l4Tol7_devices created while acceptance testing"
+		description = "l4Tol7_device created while acceptance testing"
 		tenant_dn = aci_tenant.footenant.id
 	}
 
@@ -85,11 +85,11 @@ func testAccCheckAciL4ToL7DevicesExists(name string, l4Tol7_devices *models.L4To
 		rs, ok := s.RootModule().Resources[name]
 
 		if !ok {
-			return fmt.Errorf("L4ToL7 Devices %s not found", name)
+			return fmt.Errorf("L4ToL7 Device %s not found", name)
 		}
 
 		if rs.Primary.ID == "" {
-			return fmt.Errorf("No L4ToL7 Devices dn was set")
+			return fmt.Errorf("No L4ToL7 Device dn was set")
 		}
 
 		client := testAccProvider.Meta().(*client.Client)
@@ -101,7 +101,7 @@ func testAccCheckAciL4ToL7DevicesExists(name string, l4Tol7_devices *models.L4To
 
 		l4Tol7_devicesFound := models.L4ToL7DevicesFromContainer(cont)
 		if l4Tol7_devicesFound.DistinguishedName != rs.Primary.ID {
-			return fmt.Errorf("L4ToL7 Devices %s not found", rs.Primary.ID)
+			return fmt.Errorf("L4ToL7 Device %s not found", rs.Primary.ID)
 		}
 		*l4Tol7_devices = *l4Tol7_devicesFound
 		return nil
@@ -115,7 +115,7 @@ func testAccCheckAciL4ToL7DevicesDestroy(s *terraform.State) error {
 			cont, err := client.Get(rs.Primary.ID)
 			l4Tol7_devices := models.L4ToL7DevicesFromContainer(cont)
 			if err == nil {
-				return fmt.Errorf("L4ToL7 Devices %s Still exists", l4Tol7_devices.DistinguishedName)
+				return fmt.Errorf("L4ToL7 Device %s Still exists", l4Tol7_devices.DistinguishedName)
 			}
 		} else {
 			continue
@@ -134,7 +134,7 @@ func testAccCheckAciL4ToL7DevicesAttributes(fv_tenant_name, vns_l_dev_vip_name, 
 			return fmt.Errorf(" Bad fv_tenant %s", GetMOName(GetParentDn(l4Tol7_devices.DistinguishedName, l4Tol7_devices.Rn)))
 		}
 		if description != l4Tol7_devices.Description {
-			return fmt.Errorf("Bad l4Tol7_devices Description %s", l4Tol7_devices.Description)
+			return fmt.Errorf("Bad l4Tol7_device Description %s", l4Tol7_devices.Description)
 		}
 		return nil
 	}
