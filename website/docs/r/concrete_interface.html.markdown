@@ -40,6 +40,7 @@ resource "aci_concrete_interface" "example1" {
 resource "aci_concrete_interface" "example2" {
   concrete_device_dn            = aci_concrete_device.concrete.id
   name                          = "g0/4"
+  relation_vns_rs_c_if_path_att = "topology/pod-1/paths-101/pathep-[eth1/2]"
 }
 ```
 
