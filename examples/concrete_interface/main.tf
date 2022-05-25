@@ -18,7 +18,7 @@ resource "aci_tenant" "terraform_tenant" {
   description = "This tenant is created by terraform"
 }
 
-resource "aci_l4_l7_devices" "virtual_device" {
+resource "aci_l4_l7_device" "virtual_device" {
   tenant_dn     = aci_tenant.terraform_tenant.id
   name          = "tenant1-ASAv"
   active        = "no"
@@ -55,7 +55,7 @@ resource "aci_concrete_interface" "example1" {
   relation_vns_rs_c_if_path_att = "topology/pod-1/paths-101/pathep-[eth1/1]"
 }
 
-resource "aci_l4_l7_devices" "physical_device" {
+resource "aci_l4_l7_device" "physical_device" {
   tenant_dn                            = aci_tenant.terraform_tenant.id
   name                                 = "example2"
   active                               = "no"
