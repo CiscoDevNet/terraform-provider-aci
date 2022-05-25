@@ -90,7 +90,7 @@ func dataSourceAciL4ToL7Devices() *schema.Resource {
 					Schema: map[string]*schema.Schema{
 						"domain_dn": &schema.Schema{
 							Type:     schema.TypeString,
-							Required: true,
+							Optional: true,
 						},
 						"switching_mode": &schema.Schema{
 							Type:     schema.TypeString,
