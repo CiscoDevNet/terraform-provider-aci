@@ -302,6 +302,7 @@ func Provider() *schema.Provider {
 			"aci_aaep_to_domain":                           resourceAciInfraRsDomP(),
 			"aci_action_rule_additional_communities":       resourceAciRtctrlSetAddComm(),
 			"aci_concrete_device":                          resourceAciConcreteDevice(),
+			"aci_concrete_interface":                       resourceAciConcreteInterface(),
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
@@ -525,6 +526,7 @@ func Provider() *schema.Provider {
 			"aci_aaep_to_domain":                           dataSourceAciInfraRsDomP(),
 			"aci_action_rule_additional_communities":       dataSourceAciRtctrlSetAddComm(),
 			"aci_concrete_device":                          dataSourceAciConcreteDevice(),
+			"aci_concrete_interface":                       dataSourceAciConcreteInterface(),
 		},
 
 		ConfigureFunc: configureClient,
