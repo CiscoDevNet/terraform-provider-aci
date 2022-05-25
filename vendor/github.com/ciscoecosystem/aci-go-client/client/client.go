@@ -307,7 +307,7 @@ func (c *Client) useInsecureHTTPClient(insecure bool) *http.Transport {
 		PreferServerCipherSuites: true,
 		InsecureSkipVerify:       insecure,
 		MinVersion:               tls.VersionTLS11,
-		MaxVersion:               tls.VersionTLS12,
+		MaxVersion:               tls.VersionTLS13,
 	}
 
 	return transport
