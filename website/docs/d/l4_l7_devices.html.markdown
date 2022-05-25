@@ -50,6 +50,6 @@ data "aci_l4_l7_device" "example" {
 * `service_type` - (Optional) The type of service the L4-L7 device performs. Allowed values are "ADC", "COPY", "FW", "NATIVELB", "OTHERS", and default value is "OTHERS". Type: String.
 * `trunking` - (Optional) Configures the device port group for trunking of virtual devices. Allowed values are "no", "yes", and default value is "no". Type: String.
 * `relation_vns_rs_al_dev_to_dom_p` - (Optional) Represents a relation from L4-L7 Device to a VMM Domain Profile (class vmmDomP). Type: Block.
-  * `domain_dn` - (Required) Distinguished name of the VMM Domain in which the VM is deployed. Type: String.
+  * `domain_dn` - (Optional) Distinguished name of the VMM Domain in which the VM is deployed. Type: String.
   * `switching_mode` - (Optional) Port group switching mode. Allowed values are "native", "AVE", and default value is "native". The value "AVE" is not supported with non-AVE VMM Domain. Type: String.
 * `relation_vns_rs_al_dev_to_phys_dom_p` - (Optional) Represents a relation from L4-L7 Device to a Physical Domain Profile (class physDomP). Type: String.
