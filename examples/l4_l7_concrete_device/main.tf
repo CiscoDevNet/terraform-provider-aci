@@ -42,7 +42,7 @@ resource "aci_concrete_device" "example1" {
   vm_name           = "tenant1-ASA1"
 }
 
-resource "aci_l4_l7_devices" "physical" {
+resource "aci_l4_l7_device" "physical" {
   tenant_dn                            = aci_tenant.terraform_tenant.id
   name                                 = "example2"
   active                               = "no"
