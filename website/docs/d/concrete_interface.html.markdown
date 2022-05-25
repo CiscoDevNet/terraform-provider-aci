@@ -1,4 +1,5 @@
 ---
+subcategory: "L4-L7 Services"
 layout: "aci"
 page_title: "ACI: aci_concrete_interface"
 sidebar_current: "docs-aci-data-source-concrete_interface"
@@ -30,12 +31,12 @@ data "aci_concrete_interface" "example" {
 
 ## Argument Reference ##
 
-* `concrete_device_dn` - (Required) Distinguished name of parent Concrete Device object.
-* `name` - (Required) Name of object Concrete Interface.
+* `concrete_device_dn` - (Required) Distinguished name of the parent Concrete Device object.
+* `name` - (Required) Name of the Concrete Interface object.
 
 ## Attribute Reference ##
 * `id` - Attribute id set to the Dn of the Concrete Interface.
-* `name_alias` - (Optional) Name Alias of object Concrete Interface.
+* `name_alias` - (Optional) Name Alias of the Concrete Interface object.
 * `encap` - (Optional) The port encapsulation. Type: String.
-* `vnic_name` - (Optional) The concrete interface's vNIC name. Type: String.
-* `relation_vns_rs_c_if_path_att` - (Optional) Represents a relation from Concrete Interface to the Physical Port on the Leaf (class fabricPathEp). Note that this relation is an internal object. Type: String.
+* `vnic_name` - (Optional) The virtual NIC (vNIC) name of the L4-L7 Device VM represented by the concrete interface. Type: String.
+* `relation_vns_rs_c_if_path_att` - (Optional) Represents a relation from the Concrete Interface to the Physical Port on the Leaf (class fabricPathEp). Type: String.

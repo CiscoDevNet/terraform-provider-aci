@@ -1,4 +1,5 @@
 ---
+subcategory: "L4-L7 Services"
 layout: "aci"
 page_title: "ACI: aci_concrete_interface"
 sidebar_current: "docs-aci-resource-concrete_interface"
@@ -21,8 +22,10 @@ Manages ACI Concrete Interface
 
 ## Example Usage ##
 
+### Creating an interface for a Virtual Concrete Device ###
+
 ```hcl
-resource "aci_concrete_interface" "example" {
+resource "aci_concrete_interface" "example1" {
   concrete_device_dn            = aci_concrete_device.concrete.id
   name                          = "g0/4"
   encap                         = "unknown"
@@ -31,13 +34,22 @@ resource "aci_concrete_interface" "example" {
 }
 ```
 
+### Creating an interface for a Physical Concrete Device ###
+
+```hcl
+resource "aci_concrete_interface" "example2" {
+  concrete_device_dn            = aci_concrete_device.concrete.id
+  name                          = "g0/4"
+}
+```
+
 ## Argument Reference ##
 
 * `concrete_device_dn` - (Required) Distinguished name of the parent Concrete Device object.
-* `name` - (Required) Name of the object Concrete Interface.
+* `name` - (Required) Name of the Concrete Interface object.
 * `encap` - (Optional) The port encapsulation. Type: String.
-* `vnic_name` - (Optional) The concrete interface's vNIC name. Type: String.
-* `relation_vns_rs_c_if_path_att` - (Optional) Represents a relation from Concrete Interface to the Physical Port on the Leaf (class fabricPathEp). Note that this relation is an internal object. Type: String.
+* `vnic_name` - (Optional) The virtual NIC (vNIC) name of the L4-L7 Device VM represented by the concrete interface. Type: String.
+* `relation_vns_rs_c_if_path_att` - (Optional) Represents a relation from the Concrete Interface to the Physical Port on the Leaf (class fabricPathEp). Type: String.
 
 ## Importing ##
 

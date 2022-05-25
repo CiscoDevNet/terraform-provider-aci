@@ -46,10 +46,17 @@ resource "aci_concrete_device" "concrete" {
   relation_vns_rs_c_dev_to_ctrlr_p = "uni/vmmp-VMware/dom-ACI-vDS/ctrlr-vcenter"
 }
 
-resource "aci_concrete_interface" "example" {
+# Creating an interface for a Virtual Concrete Device
+resource "aci_concrete_interface" "example1" {
   concrete_device_dn            = aci_concrete_device.concrete.id
   name                          = "g0/4"
   encap                         = "unknown"
   vnic_name                     = "Network adapter 5"
   relation_vns_rs_c_if_path_att = "topology/pod-1/paths-101/pathep-[eth1/1]"
+}
+
+# Creating an interface for a Physical Concrete Device
+resource "aci_concrete_interface" "example2" {
+  concrete_device_dn            = aci_concrete_device.concrete.id
+  name                          = "g0/3"
 }

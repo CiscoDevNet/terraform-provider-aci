@@ -75,16 +75,13 @@ func setConcreteInterfaceAttributes(vnsCIf *models.ConcreteInterface, d *schema.
 	if dn != vnsCIf.DistinguishedName {
 		d.Set("concrete_device_dn", "")
 	} else {
-		d.Set("concrete_device_dn", GetParentDn(vnsCIf.DistinguishedName, fmt.Sprintf("/cIf-[%s]", vnsCIfMap["name"])))
+		d.Set("concrete_device_dn", GetParentDn(vnsCIf.DistinguishedName, fmt.Sprintf("/"+models.RnvnsCIf, vnsCIfMap["name"])))
 	}
+	d.Set("annotation", vnsCIfMap["annotation"])
 	d.Set("encap", vnsCIfMap["encap"])
 	d.Set("name", vnsCIfMap["name"])
 	d.Set("vnic_name", vnsCIfMap["vnicName"])
 	d.Set("name_alias", vnsCIfMap["nameAlias"])
-	/* vnsLDevVip does not support annotation due to which we explicitly set annotation to an empty string to override
-	the default value of annotation in the base attributes file. We do this to overcome an inconsistency between imported
-	configuration and a matching configuration waiting to be pushed.*/
-	d.Set("annotation", "")
 	return d, nil
 }
 
@@ -122,6 +119,12 @@ func resourceAciConcreteInterfaceCreate(ctx context.Context, d *schema.ResourceD
 	nameAlias := ""
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		nameAlias = NameAlias.(string)
+	}
+
+	if Annotation, ok := d.GetOk("annotation"); ok {
+		vnsCIfAttr.Annotation = Annotation.(string)
+	} else {
+		vnsCIfAttr.Annotation = "{}"
 	}
 
 	if Encap, ok := d.GetOk("encap"); ok {
@@ -181,6 +184,12 @@ func resourceAciConcreteInterfaceUpdate(ctx context.Context, d *schema.ResourceD
 	nameAlias := ""
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		nameAlias = NameAlias.(string)
+	}
+
+	if Annotation, ok := d.GetOk("annotation"); ok {
+		vnsCIfAttr.Annotation = Annotation.(string)
+	} else {
+		vnsCIfAttr.Annotation = "{}"
 	}
 
 	if Encap, ok := d.GetOk("encap"); ok {
