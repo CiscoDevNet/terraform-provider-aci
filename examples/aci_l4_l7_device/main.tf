@@ -18,7 +18,7 @@ resource "aci_tenant" "terraform_tenant" {
   description = "This tenant is created by terraform"
 }
 
-resource "aci_l4_l7_devices" "example1" {
+resource "aci_l4_l7_device" "example1" {
   tenant_dn        = aci_tenant.terraform_tenant.id
   name             = "example1"
   active           = "no"
@@ -36,7 +36,7 @@ resource "aci_l4_l7_devices" "example1" {
   }
 }
 
-resource "aci_l4_l7_devices" "example2" {
+resource "aci_l4_l7_device" "example2" {
   tenant_dn                            = aci_tenant.terraform_tenant.id
   name                                 = "example2"
   active                               = "no"
@@ -49,4 +49,3 @@ resource "aci_l4_l7_devices" "example2" {
   service_type                         = "OTHERS"
   relation_vns_rs_al_dev_to_phys_dom_p = "uni/phys-test_dom"
 }
-
