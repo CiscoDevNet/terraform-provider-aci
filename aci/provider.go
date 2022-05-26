@@ -304,7 +304,7 @@ func Provider() *schema.Provider {
 			"aci_l4_l7_device":                             resourceAciL4ToL7Devices(),
 			"aci_concrete_device":                          resourceAciConcreteDevice(),
 			"aci_concrete_interface":                       resourceAciConcreteInterface(),
-			"aci_logical_interface":                        resourceAciLogicalInterface(),
+			"aci_l4_l7_logical_interface":                  resourceAciLogicalInterface(),
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
@@ -530,7 +530,7 @@ func Provider() *schema.Provider {
 			"aci_l4_l7_device":                             dataSourceAciL4ToL7Devices(),
 			"aci_concrete_device":                          dataSourceAciConcreteDevice(),
 			"aci_concrete_interface":                       dataSourceAciConcreteInterface(),
-			"aci_logical_interface":                        dataSourceAciLogicalInterface(),
+			"aci_l4_l7_logical_interface":                  dataSourceAciLogicalInterface(),
 		},
 
 		ConfigureFunc: configureClient,

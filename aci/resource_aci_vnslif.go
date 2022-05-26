@@ -168,7 +168,6 @@ func resourceAciLogicalInterfaceCreate(ctx context.Context, d *schema.ResourceDa
 		relationParamList := toStringList(relationTovnsRsCIfAttN.(*schema.Set).List())
 		for _, relationParam := range relationParamList {
 			err = aciClient.CreateRelationvnsRsCIfAttN(vnsLIf.DistinguishedName, vnsLIfAttr.Annotation, relationParam)
-
 			if err != nil {
 				return diag.FromErr(err)
 			}

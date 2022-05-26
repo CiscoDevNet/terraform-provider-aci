@@ -54,11 +54,11 @@ resource "aci_concrete_interface" "virtual_interface" {
   relation_vns_rs_c_if_path_att = "topology/pod-1/paths-101/pathep-[eth1/1]"
 }
 
-resource "aci_logical_interface" "example1" {
+resource "aci_l4_l7_logical_interface" "example1" {
   l4_l7_device_dn            = aci_l4_l7_device.virtual_device.id
   name                       = "example1"
   enhanced_lag_policy_name   = "Lacp"
-  relation_vns_rs_c_if_att_n = ["uni/tn-tf_tenant/lDevVip-tenant1-ASAv/cDev-tenant1-ASA1/cIf-[g0/4]"]
+  relation_vns_rs_c_if_att_n = [aci_concrete_interface.virtual_interface.id]
 }
 
 resource "aci_l4_l7_device" "physical_device" {
@@ -86,9 +86,9 @@ resource "aci_concrete_interface" "physical_interface" {
   relation_vns_rs_c_if_path_att = "topology/pod-1/paths-101/pathep-[eth1/2]"
 }
 
-resource "aci_logical_interface" "example2" {
+resource "aci_l4_l7_logical_interface" "example2" {
   l4_l7_device_dn            = aci_l4_l7_device.physical_device.id
   name                       = "example2"
   encap                      = "vlan-1"
-  relation_vns_rs_c_if_att_n = ["uni/tn-tf_tenant/lDevVip-tenant1-ASAv2/cDev-physical-Device/cIf-[g0/3]"]
+  relation_vns_rs_c_if_att_n = [aci_concrete_interface.physical_interface.id]
 }
