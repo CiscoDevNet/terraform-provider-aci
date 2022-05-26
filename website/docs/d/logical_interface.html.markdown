@@ -1,4 +1,5 @@
 ---
+subcategory: "L4-L7 Services"
 layout: "aci"
 page_title: "ACI: aci_logical_interface"
 sidebar_current: "docs-aci-data-source-logical_interface"
@@ -23,20 +24,20 @@ Data source for ACI Logical Interface
 
 ```hcl
 data "aci_logical_interface" "example" {
-  l4_l7_devices_dn  = aci_l4_l7_devices.example.id
+  l4_l7_devices_dn  = aci_l4_l7_device.example.id
   name              = "example"
 }
 ```
 
 ## Argument Reference ##
 
-* `l4-l7_devices_dn` - (Required) Distinguished name of parent L4-L7Devices object.
-* `name` - (Required) Name of object Logical Interface.
+* `l4-l7_devices_dn` - (Required) Distinguished name of parent L4-L7 Device object.
+* `name` - (Required) Name of the object Logical Interface.
 
 ## Attribute Reference ##
 * `id` - Attribute id set to the Dn of the Logical Interface.
-* `annotation` - (Optional) Annotation of object Logical Interface.
-* `name_alias` - (Optional) Name Alias of object Logical Interface.
-* `encap` - (Optional) The port encapsulation.
-* `lag_policy_name` - (Optional) Enhanced LAG Policy Name.
-* `relation_vns_rs_c_if_att_n` - (Optional) Represents the relation between Set of Concrete Interfaces and the Device Cluster (class vnsCIf). Type: List.
+* `annotation` - (Optional) Annotation of the object Logical Interface.
+* `name_alias` - (Optional) Name Alias of the object Logical Interface.
+* `encap` - (Optional) The port encapsulation to be used with the device. It can only be associated with a physical device. Type: String.
+* `lag_policy_name` - (Optional) Name of the enhanced Lag policy. It can only be associated with a virtual device. Type: String.
+* `relation_vns_rs_c_if_att_n` - (Optional) Represents the relation between a set of Concrete Interfaces and the Device Cluster (class vnsCIf). Type: List.

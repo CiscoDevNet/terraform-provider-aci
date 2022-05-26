@@ -18,24 +18,77 @@ resource "aci_tenant" "terraform_tenant" {
   description = "This tenant is created by terraform"
 }
 
-resource "aci_l4_l7_devices" "devices" {
+resource "aci_l4_l7_device" "virtual_device" {
+  tenant_dn     = aci_tenant.terraform_tenant.id
+  name          = "tenant1-ASAv"
+  active        = "no"
+  context_aware = "single-Context"
+  devtype       = "VIRTUAL"
+  func_type     = "GoTo"
+  is_copy       = "no"
+  mode          = "legacy-Mode"
+  prom_mode     = "no"
+  svc_type      = "FW"
+  trunking      = "no"
+  relation_vns_rs_al_dev_to_dom_p {
+    domain_dn = "uni/vmmp-VMware/dom-ACI-vDS"
+  }
+}
+
+resource "aci_concrete_device" "virtual_concrete" {
+  l4_l7_device_dn                  = aci_l4_l7_device.virtual_device.id
+  name                             = "tenant1-ASA1"
+  clone_count                      = "0"
+  is_clone_operation               = "no"
+  is_template                      = "no"
+  vcenter_name                     = "vcenter"
+  vm_name                          = "tenant1-ASA1"
+  relation_vns_rs_c_dev_to_ctrlr_p = "uni/vmmp-VMware/dom-ACI-vDS/ctrlr-vcenter"
+}
+
+resource "aci_concrete_interface" "virtual_interface" {
+  concrete_device_dn            = aci_concrete_device.virtual_concrete.id
+  name                          = "g0/4"
+  encap                         = "unknown"
+  vnic_name                     = "Network adapter 5"
+  relation_vns_rs_c_if_path_att = "topology/pod-1/paths-101/pathep-[eth1/1]"
+}
+
+resource "aci_logical_interface" "example1" {
+  l4_l7_device_dn            = aci_l4_l7_device.virtual_device.id
+  name                       = "example1"
+  enhanced_lag_policy_name   = "Lacp"
+  relation_vns_rs_c_if_att_n = ["uni/tn-tf_tenant/lDevVip-tenant1-ASAv/cDev-tenant1-ASA1/cIf-[g0/4]"]
+}
+
+resource "aci_l4_l7_device" "physical_device" {
   tenant_dn                            = aci_tenant.terraform_tenant.id
-  name                                 = "example"
+  name                                 = "tenant1-ASAv2"
   active                               = "no"
   context_aware                        = "single-Context"
-  devtype                              = "VIRTUAL"
-  func_type                            = "GoTo"
+  device_type                          = "PHYSICAL"
+  function_type                        = "GoTo"
   is_copy                              = "no"
   mode                                 = "legacy-Mode"
-  prom_mode                            = "no"
-  svc_type                             = "OTHERS"
-  trunking                             = "no"
+  promiscuous_mode                     = "no"
+  service_type                         = "OTHERS"
   relation_vns_rs_al_dev_to_phys_dom_p = "uni/phys-test_dom"
 }
 
-resource "aci_logical_interface" "example" {
-  l4_l7_devices_dn           = aci_l4_l7_devices.devices.id
-  name                       = "example"
-  relation_vns_rs_c_if_att_n = ["uni/tn-tenant1/lDevVip-example/cDev-test/cIf-[g0/0]", "uni/tn-tenant1/lDevVip-example/cDev-test/cIf-[g0/1]"]
+resource "aci_concrete_device" "physical_concrete" {
+  l4_l7_device_dn   = aci_l4_l7_device.physical_device.id
+  name              = "physical-Device"
 }
 
+resource "aci_concrete_interface" "physical_interface" {
+  concrete_device_dn            = aci_concrete_device.physical_concrete.id
+  name                          = "g0/3"
+  relation_vns_rs_c_if_path_att = "topology/pod-1/paths-101/pathep-[eth1/2]"
+}
+
+resource "aci_logical_interface" "example2" {
+  l4_l7_device_dn            = aci_l4_l7_device.physical_device.id
+  name                       = "example2"
+  encap                      = "vlan-1"
+  relation_vns_rs_c_if_att_n = ["uni/tn-tf_tenant/lDevVip-tenant1-ASAv2/cDev-physical-Device/cIf-[g0/3]"]
+}

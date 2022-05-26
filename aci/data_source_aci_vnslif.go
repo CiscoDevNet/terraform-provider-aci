@@ -17,7 +17,7 @@ func dataSourceAciLogicalInterface() *schema.Resource {
 		ReadContext:   dataSourceAciLogicalInterfaceRead,
 		SchemaVersion: 1,
 		Schema: AppendBaseAttrSchema(AppendNameAliasAttrSchema(map[string]*schema.Schema{
-			"l4_l7_devices_dn": {
+			"l4_l7_device_dn": {
 				Type:     schema.TypeString,
 				Required: true,
 			},
@@ -26,7 +26,7 @@ func dataSourceAciLogicalInterface() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
-			"lag_policy_name": {
+			"enhanced_lag_policy_name": {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
@@ -39,7 +39,7 @@ func dataSourceAciLogicalInterface() *schema.Resource {
 				Type:        schema.TypeSet,
 				Elem:        &schema.Schema{Type: schema.TypeString},
 				Optional:    true,
-				Description: "Create relation to vns:CIf",
+				Description: "Create relation to vnsCIf",
 				Set:         schema.HashString,
 			}})),
 	}
@@ -48,7 +48,7 @@ func dataSourceAciLogicalInterface() *schema.Resource {
 func dataSourceAciLogicalInterfaceRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	aciClient := m.(*client.Client)
 	name := d.Get("name").(string)
-	L4_L7DevicesDn := d.Get("l4_l7_devices_dn").(string)
+	L4_L7DevicesDn := d.Get("l4_l7_device_dn").(string)
 	rn := fmt.Sprintf(models.RnvnsLIf, name)
 	dn := fmt.Sprintf("%s/%s", L4_L7DevicesDn, rn)
 
@@ -74,6 +74,5 @@ func dataSourceAciLogicalInterfaceRead(ctx context.Context, d *schema.ResourceDa
 		d.Set("relation_vns_rs_c_if_att_n", vnsRsCIfAttNDataList)
 
 	}
-
 	return nil
 }

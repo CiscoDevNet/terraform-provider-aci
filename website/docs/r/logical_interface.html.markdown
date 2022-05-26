@@ -1,4 +1,5 @@
 ---
+subcategory: "L4-L7 Services"
 layout: "aci"
 page_title: "ACI: aci_logical_interface"
 sidebar_current: "docs-aci-resource-logical_interface"
@@ -21,23 +22,36 @@ Manages ACI Logical Interface
 
 ## Example Usage ##
 
+### Creating a logical interface for a virtual device ###
+
 ```hcl
-resource "aci_logical_interface" "example" {
-  l4_l7_devices_dn  = aci_l4_l7_devices.example.id
-  name              = "example"
-  encap             = "unknown"
-  vns_rs_c_if_att_n = ["uni/tn-tenant1/lDevVip-ok/cDev-test/cIf-[g0/1]"]
+resource "aci_logical_interface" "example1" {
+  l4_l7_device_dn            = aci_l4_l7_device.virtual_device.id
+  name                       = "example1"
+  enhanced_lag_policy_name   = "Lacp"
+  relation_vns_rs_c_if_att_n = ["uni/tn-tf_tenant/lDevVip-tenant1-ASAv/cDev-tenant1-ASA1/cIf-[g0/4]", "uni/tn-tf_tenant/lDevVip-tenant1-ASAv/cDev-tenant1-ASA1/cIf-[g0/5]"]
+}
+```
+
+### Creating a logical interface for a physical device ###
+
+```hcl
+resource "aci_logical_interface" "example2" {
+  l4_l7_device_dn            = aci_l4_l7_device.physical_device.id
+  name                       = "example2"
+  encap                      = "vlan-1"
+  relation_vns_rs_c_if_att_n = ["uni/tn-tf_tenant/lDevVip-tenant1-ASAv2/cDev-physical-Device/cIf-[g0/3]"]
 }
 ```
 
 ## Argument Reference ##
 
-* `l4_l7_devices_dn` - (Required) Distinguished name of the parent L4-L7Devices object.
+* `l4_l7_device_dn` - (Required) Distinguished name of the parent L4-L7 Device object.
 * `name` - (Required) Name of the object Logical Interface.
 * `annotation` - (Optional) Annotation of the object Logical Interface.
-* `encap` - (Optional) The port encapsulation. Type: String.
-* `lag_policy_name` - (Optional) Enhanced LAG Policy Name. Type: String.
-* `relation_vns_rs_c_if_att_n` - (Optional) Represents the relation between Set of Concrete Interfaces and the Device Cluster (class vnsCIf). Type: List.
+* `encap` - (Optional) The port encapsulation to be used with the device. It can only be associated with a physical device. Type: String.
+* `enhanced_lag_policy_name` - (Optional) Name of the enhanced Lag policy. It can only be associated with a virtual device. Type: String.
+* `relation_vns_rs_c_if_att_n` - (Optional) Represents the relation between a set of Concrete Interfaces and the Device Cluster (class vnsCIf). Type: List.
 
 ## Importing ##
 

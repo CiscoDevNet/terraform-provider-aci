@@ -25,7 +25,7 @@ func resourceAciLogicalInterface() *schema.Resource {
 
 		SchemaVersion: 1,
 		Schema: AppendBaseAttrSchema(AppendNameAliasAttrSchema(map[string]*schema.Schema{
-			"l4_l7_devices_dn": {
+			"l4_l7_device_dn": {
 				Type:     schema.TypeString,
 				Required: true,
 				ForceNew: true,
@@ -35,7 +35,7 @@ func resourceAciLogicalInterface() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
-			"lag_policy_name": {
+			"enhanced_lag_policy_name": {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
@@ -49,7 +49,7 @@ func resourceAciLogicalInterface() *schema.Resource {
 				Type:        schema.TypeSet,
 				Elem:        &schema.Schema{Type: schema.TypeString},
 				Optional:    true,
-				Description: "Create relation to vns:CIf",
+				Description: "Create relation to vnsCIf",
 				Set:         schema.HashString,
 			}})),
 	}
@@ -75,13 +75,13 @@ func setLogicalInterfaceAttributes(vnsLIf *models.LogicalInterface, d *schema.Re
 	}
 	dn := d.Id()
 	if dn != vnsLIf.DistinguishedName {
-		d.Set("l4_l7_devices_dn", "")
+		d.Set("l4_l7_device_dn", "")
 	} else {
-		d.Set("l4_l7_devices_dn", GetParentDn(vnsLIf.DistinguishedName, fmt.Sprintf("/lIf-%s", vnsLIfMap["name"])))
+		d.Set("l4_l7_device_dn", GetParentDn(vnsLIf.DistinguishedName, fmt.Sprintf("/"+models.RnvnsLIf, vnsLIfMap["name"])))
 	}
 	d.Set("annotation", vnsLIfMap["annotation"])
 	d.Set("encap", vnsLIfMap["encap"])
-	d.Set("lag_policy_name", vnsLIfMap["lagPolicyName"])
+	d.Set("enhanced_lag_policy_name", vnsLIfMap["lagPolicyName"])
 	d.Set("name", vnsLIfMap["name"])
 	d.Set("name_alias", vnsLIfMap["nameAlias"])
 	return d, nil
@@ -107,7 +107,6 @@ func resourceAciLogicalInterfaceImport(d *schema.ResourceData, m interface{}) ([
 		vnsRsCIfAttNDataList := toStringList(vnsRsCIfAttNData.(*schema.Set).List())
 		sort.Strings(vnsRsCIfAttNDataList)
 		d.Set("relation_vns_rs_c_if_att_n", vnsRsCIfAttNDataList)
-
 	}
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 	return []*schema.ResourceData{schemaFilled}, nil
@@ -117,7 +116,7 @@ func resourceAciLogicalInterfaceCreate(ctx context.Context, d *schema.ResourceDa
 	log.Printf("[DEBUG] LogicalInterface: Beginning Creation")
 	aciClient := m.(*client.Client)
 	name := d.Get("name").(string)
-	L4_L7DevicesDn := d.Get("l4_l7_devices_dn").(string)
+	L4_L7DevicesDn := d.Get("l4_l7_device_dn").(string)
 
 	vnsLIfAttr := models.LogicalInterfaceAttributes{}
 
@@ -136,7 +135,7 @@ func resourceAciLogicalInterfaceCreate(ctx context.Context, d *schema.ResourceDa
 		vnsLIfAttr.Encap = Encap.(string)
 	}
 
-	if LagPolicyName, ok := d.GetOk("lag_policy_name"); ok {
+	if LagPolicyName, ok := d.GetOk("enhanced_lag_policy_name"); ok {
 		vnsLIfAttr.LagPolicyName = LagPolicyName.(string)
 	}
 
@@ -184,7 +183,7 @@ func resourceAciLogicalInterfaceUpdate(ctx context.Context, d *schema.ResourceDa
 	log.Printf("[DEBUG] LogicalInterface: Beginning Update")
 	aciClient := m.(*client.Client)
 	name := d.Get("name").(string)
-	L4_L7DevicesDn := d.Get("l4_l7_devices_dn").(string)
+	L4_L7DevicesDn := d.Get("l4_l7_device_dn").(string)
 
 	vnsLIfAttr := models.LogicalInterfaceAttributes{}
 
@@ -203,7 +202,7 @@ func resourceAciLogicalInterfaceUpdate(ctx context.Context, d *schema.ResourceDa
 		vnsLIfAttr.Encap = Encap.(string)
 	}
 
-	if LagPolicyName, ok := d.GetOk("lag_policy_name"); ok {
+	if LagPolicyName, ok := d.GetOk("enhanced_lag_policy_name"); ok {
 		vnsLIfAttr.LagPolicyName = LagPolicyName.(string)
 	}
 
