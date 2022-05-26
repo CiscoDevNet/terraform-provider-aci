@@ -40,22 +40,26 @@ func resourceAciActionRuleProfile() *schema.Resource {
 				Optional:      true,
 				ValidateFunc:  validateIntBetweenFromString(0, 2147483647),
 				ConflictsWith: []string{"multipath", "next_hop_propagation"},
+				Computed:      true,
 				// Set nexthop unchanged action cannot be configured along with set route tag action under the set action rule profile.
 			},
 			"set_preference": {
 				Type:         schema.TypeString,
 				Optional:     true,
 				ValidateFunc: validateIntBetweenFromString(0, 2147483647),
+				Computed:     true,
 			},
 			"set_weight": {
 				Type:         schema.TypeString,
 				Optional:     true,
 				ValidateFunc: validateIntBetweenFromString(0, 2147483647),
+				Computed:     true,
 			},
 			"set_metric": {
 				Type:         schema.TypeString,
 				Optional:     true,
 				ValidateFunc: validateIntBetweenFromString(0, 2147483647),
+				Computed:     true,
 			},
 			"set_metric_type": {
 				Type:     schema.TypeString,
@@ -64,10 +68,12 @@ func resourceAciActionRuleProfile() *schema.Resource {
 					"ospf-type1",
 					"ospf-type2",
 				}, false),
+				Computed: true,
 			},
 			"set_next_hop": {
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"set_communities": {
 				Optional: true,
@@ -75,6 +81,7 @@ func resourceAciActionRuleProfile() *schema.Resource {
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
 				},
+				Computed: true,
 			},
 			"next_hop_propagation": {
 				Type:     schema.TypeString,
@@ -84,6 +91,7 @@ func resourceAciActionRuleProfile() *schema.Resource {
 					"no",
 				}, false),
 				ConflictsWith: []string{"set_route_tag"},
+				Computed:      true,
 				// Set nexthop unchanged action cannot be configured along with set route tag action under the set action rule profile.
 			},
 			"multipath": {
@@ -94,12 +102,14 @@ func resourceAciActionRuleProfile() *schema.Resource {
 					"no",
 				}, false),
 				ConflictsWith: []string{"set_route_tag"},
+				Computed:      true,
 				// Set nexthop unchanged action cannot be configured along with set route tag action under the set action rule profile.
 			},
 			"set_as_path_prepend_last_as": {
 				Type:         schema.TypeString,
 				Optional:     true,
 				ValidateFunc: validateIntBetweenFromString(1, 10),
+				Computed:     true,
 			},
 			"set_as_path_prepend_as": {
 				Type:     schema.TypeSet,
@@ -120,6 +130,15 @@ func resourceAciActionRuleProfile() *schema.Resource {
 						},
 					},
 				},
+				Computed: true,
+			},
+			"set_dampening": {
+				Optional: true,
+				Type:     schema.TypeMap,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+				Computed: true,
 			},
 		})),
 	}
@@ -395,6 +414,34 @@ func getAndSetRemoteSetASPathASNs(client *client.Client, dn string, d *schema.Re
 	return d, nil
 }
 
+func getRemoteRtctrlSetDamp(client *client.Client, dn string) (*models.RtctrlSetDamp, error) {
+	rtctrlSetDampCont, err := client.Get(dn)
+	if err != nil {
+		return nil, err
+	}
+	rtctrlSetDamp := models.RtctrlSetDampFromContainer(rtctrlSetDampCont)
+	if rtctrlSetDamp.DistinguishedName == "" {
+		return nil, fmt.Errorf("rtctrlSetDamp %s not found", dn)
+	}
+	return rtctrlSetDamp, nil
+}
+
+func setRtctrlSetDampAttributes(rtctrlSetDamp *models.RtctrlSetDamp, d *schema.ResourceData) (*schema.ResourceData, error) {
+	rtctrlSetDampMap, err := rtctrlSetDamp.ToMap()
+	if err != nil {
+		return d, err
+	}
+
+	newContent := make(map[string]interface{})
+	newContent["half_life"] = rtctrlSetDampMap["halfLife"]
+	newContent["reuse"] = rtctrlSetDampMap["reuse"]
+	newContent["suppress"] = rtctrlSetDampMap["suppress"]
+	newContent["max_suppress_time"] = rtctrlSetDampMap["maxSuppressTime"]
+	d.Set("set_dampening", newContent)
+
+	return d, nil
+}
+
 func resourceAciActionRuleProfileImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
 	log.Printf("[DEBUG] %s: Beginning Import", d.Id())
 	aciClient := m.(*client.Client)
@@ -561,6 +608,19 @@ func resourceAciActionRuleProfileImport(d *schema.ResourceData, m interface{}) (
 	log.Printf("[DEBUG] %s: rtctrlSetASPathASN - Import finished successfully", setASNumberDn)
 
 	// rtctrlSetASPathASN - Import finished successfully
+
+	// rtctrlSetDamp - Beginning Import
+	setDampeningDn := rtctrlAttrP.DistinguishedName + fmt.Sprintf("/"+models.RnrtctrlSetDamp)
+	rtctrlSetDamp, err := getRemoteRtctrlSetDamp(aciClient, setDampeningDn)
+	if err == nil {
+		log.Printf("[DEBUG] %s: rtctrlSetDamp - Beginning Import", setDampeningDn)
+		_, err = setRtctrlSetDampAttributes(rtctrlSetDamp, d)
+		if err != nil {
+			return nil, err
+		}
+		log.Printf("[DEBUG] %s: rtctrlSetDamp - Import finished successfully", setDampeningDn)
+	}
+	// rtctrlSetDamp - Import finished successfully
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
@@ -797,6 +857,26 @@ func resourceAciActionRuleProfileCreate(ctx context.Context, d *schema.ResourceD
 		}
 
 		log.Printf("[DEBUG] %s: Creation of all child objects finished successfully", rtctrlSetASPath.DistinguishedName)
+	}
+
+	// rtctrlSetDamp - Operations
+	if setDampening, ok := d.GetOk("set_dampening"); ok {
+		log.Printf("[DEBUG] rtctrlSetDamp: Beginning Creation")
+		rtctrlSetDampAttr := models.RtctrlSetDampAttributes{}
+
+		setDampeningMap := toStrMap(setDampening.(map[string]interface{}))
+		rtctrlSetDampAttr.HalfLife = setDampeningMap["half_life"]
+		rtctrlSetDampAttr.Reuse = setDampeningMap["reuse"]
+		rtctrlSetDampAttr.Suppress = setDampeningMap["suppress"]
+		rtctrlSetDampAttr.MaxSuppressTime = setDampeningMap["max_suppress_time"]
+		rtctrlSetDamp := models.NewRtctrlSetDamp(fmt.Sprintf(models.RnrtctrlSetDamp), rtctrlAttrP.DistinguishedName, "", "", rtctrlSetDampAttr)
+
+		creation_err := aciClient.Save(rtctrlSetDamp)
+		if creation_err != nil {
+			return diag.FromErr(creation_err)
+		}
+
+		log.Printf("[DEBUG] %s: Creation finished successfully", rtctrlSetDamp.DistinguishedName)
 	}
 
 	d.SetId(rtctrlAttrP.DistinguishedName)
@@ -1315,6 +1395,46 @@ func resourceAciActionRuleProfileUpdate(ctx context.Context, d *schema.ResourceD
 		}
 	}
 
+	// rtctrlSetDamp - Operations
+	if d.HasChange("set_dampening") {
+		if setDampening, ok := d.GetOk("set_dampening"); ok {
+			log.Printf("[DEBUG] rtctrlSetDamp - Beginning Creation")
+
+			rtctrlSetDampAttr := models.RtctrlSetDampAttributes{}
+			setDampeningMap := toStrMap(setDampening.(map[string]interface{}))
+			rtctrlSetDampAttr.HalfLife = setDampeningMap["half_life"]
+			rtctrlSetDampAttr.Reuse = setDampeningMap["reuse"]
+			rtctrlSetDampAttr.Suppress = setDampeningMap["suppress"]
+			rtctrlSetDampAttr.MaxSuppressTime = setDampeningMap["max_suppress_time"]
+
+			setDampeningDn := rtctrlAttrP.DistinguishedName + fmt.Sprintf("/"+models.RnrtctrlSetDamp)
+
+			deletion_err := aciClient.DeleteByDn(setDampeningDn, "rtctrlSetDamp")
+			if deletion_err != nil {
+				return diag.FromErr(err)
+			}
+
+			rtctrlSetDamp := models.NewRtctrlSetDamp(fmt.Sprintf(models.RnrtctrlSetDamp), rtctrlAttrP.DistinguishedName, "", "", rtctrlSetDampAttr)
+
+			err := aciClient.Save(rtctrlSetDamp)
+			if err != nil {
+				return diag.FromErr(err)
+			}
+
+			log.Printf("[DEBUG] %s: rtctrlSetDamp - Creation finished successfully", rtctrlSetDamp.DistinguishedName)
+		} else {
+			setDampeningDn := rtctrlAttrP.DistinguishedName + fmt.Sprintf("/"+models.RnrtctrlSetDamp)
+			log.Printf("[DEBUG] %s: rtctrlSetDamp - Beginning Destroy", setDampeningDn)
+
+			err := aciClient.DeleteByDn(setDampeningDn, "rtctrlSetDamp")
+			if err != nil {
+				return diag.FromErr(err)
+			}
+
+			log.Printf("[DEBUG] %s: rtctrlSetDamp - Destroy finished successfully", setDampeningDn)
+		}
+	}
+
 	d.SetId(rtctrlAttrP.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
@@ -1502,6 +1622,21 @@ func resourceAciActionRuleProfileRead(ctx context.Context, d *schema.ResourceDat
 	log.Printf("[DEBUG] %s: rtctrlSetASPathASN - Read finished successfully", setASNumberDn)
 
 	// rtctrlSetASPathASN - Read finished successfully
+
+	// rtctrlSetDamp - Beginning Read
+	setDampeningDn := dn + fmt.Sprintf("/"+models.RnrtctrlSetDamp)
+	rtctrlSetDamp, err := getRemoteRtctrlSetDamp(aciClient, setDampeningDn)
+	if err == nil {
+		log.Printf("[DEBUG] %s: rtctrlSetDamp - Beginning Read", setDampeningDn)
+		_, err = setRtctrlSetDampAttributes(rtctrlSetDamp, d)
+		if err != nil {
+			return nil
+		}
+		log.Printf("[DEBUG] %s: rtctrlSetDamp - Read finished successfully", setDampeningDn)
+	} else {
+		d.Set("set_dampening", nil)
+	}
+	// rtctrlSetDamp - Read finished successfully
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 

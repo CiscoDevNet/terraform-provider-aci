@@ -48,6 +48,12 @@ resource "aci_action_rule_profile" "example" {
     order = 20
     asn   = 30
   }
+  set_dampening = {
+    half_life         = 10 # Half time must be at least 9% of the maximum_suppress_time
+    reuse             = 1
+    suppress          = 10  # Suppress limit must be larger than reuse limit
+    max_suppress_time = 100 # Max Suppress Time - should not be less than suppress limit
+  }
 }
 
 resource "aci_action_rule_profile" "example2" {
@@ -62,8 +68,8 @@ resource "aci_action_rule_profile" "example2" {
     community = "no-advertise"
     criteria  = "replace"
   }
-  next_hop_propagation    = "yes" # Can not be configured along with set_route_tag
-  multipath               = "yes" # Can not be configured along with set_route_tag
+  next_hop_propagation        = "yes" # Can not be configured along with set_route_tag
+  multipath                   = "yes" # Can not be configured along with set_route_tag
   set_as_path_prepend_last_as = 10
   set_as_path_prepend_as {
     order = 10
@@ -98,6 +104,11 @@ resource "aci_action_rule_profile" "example2" {
 * `set_as_path_prepend_as` - (Optional) A block representing ASNs to be configured as Set As Path - Prepend AS of the Action Rule Profile object. Type: Block.
   * `asn` - ASN to be prepended to Set AS Path.
   * `order` - Order in which the ASN should be prepended to Set AS Path.
+* `set_dampening` - (Optional) A block representing the attributes of Set Dampening object. Type: Block.
+  * `half_life` - Half Life of the Set Dampening object, the maximum value for this field is 60 in minutes and the half_life time must be at least 9% of the maximum_suppress_time.
+  * `reuse` - Reuse Limit of the Set Dampening object, the maximum value for this field is 20000.
+  * `suppress` - Suppress Limit of the Set Dampening object, the maximum value for this field is 20000. Suppress limit must be larger than reuse limit.
+  * `max_suppress_time` - Max Suppress Time of the Set Dampening object, the maximum value for this field is 255 in minutes and should not be less than suppress limit.
 
 ## Importing ##
 
