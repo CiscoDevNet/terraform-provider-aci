@@ -49,9 +49,9 @@ resource "aci_action_rule_profile" "example" {
     asn   = 30
   }
   set_dampening = {
-    half_life        = 10 # Half time must be at least 9% of the maximum_suppress_time
-    reuse           = 1
-    suppress        = 10  # Suppress limit must be larger than reuse limit
+    half_life         = 10 # Half time must be at least 9% of the maximum_suppress_time
+    reuse             = 1
+    suppress          = 10  # Suppress limit must be larger than reuse limit
     max_suppress_time = 100 # Max Suppress Time - should not be less than suppress limit
   }
 }
@@ -68,8 +68,8 @@ resource "aci_action_rule_profile" "example2" {
     community = "no-advertise"
     criteria  = "replace"
   }
-  next_hop_propagation    = "yes" # Can not be configured along with set_route_tag
-  multipath               = "yes" # Can not be configured along with set_route_tag
+  next_hop_propagation        = "yes" # Can not be configured along with set_route_tag
+  multipath                   = "yes" # Can not be configured along with set_route_tag
   set_as_path_prepend_last_as = 10
   set_as_path_prepend_as {
     order = 10
