@@ -2,6 +2,7 @@ package aci
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log"
 	"reflect"
@@ -28,6 +29,15 @@ func resourceAciContractSubject() *schema.Resource {
 		SchemaVersion: 1,
 
 		CustomizeDiff: func(_ context.Context, diff *schema.ResourceDiff, v interface{}) error {
+			// ApplyBothDirections := diff.Get("apply_both_directions")
+			if diff.Get("apply_both_directions") == "yes" {
+				if len(diff.Get("consumer_to_provider").(*schema.Set).List()) != 0 || len(diff.Get("provider_to_consumer").(*schema.Set).List()) != 0 {
+					// diff.SetNew("consumer_to_provider", nil)
+					// diff.SetNew("provider_to_consumer", nil)
+					return errors.New("you cannot set consumer_to_provider and provider_to_consumer when apply_both_directions is set to yes")
+				}
+			}
+
 			result := false
 			if diff.HasChange("consumer_to_provider") {
 				old, new := diff.GetChange("consumer_to_provider")
@@ -658,14 +668,6 @@ func resourceAciContractSubjectCreate(ctx context.Context, d *schema.ResourceDat
 	}
 	ApplyBothDirections := d.Get("apply_both_directions")
 
-	if ApplyBothDirections == "yes" {
-		if len(d.Get("consumer_to_provider").(*schema.Set).List()) != 0 || len(d.Get("provider_to_consumer").(*schema.Set).List()) != 0 {
-			d.Set("consumer_to_provider", nil)
-			d.Set("provider_to_consumer", nil)
-			return diag.FromErr(fmt.Errorf("you cannot set consumer_to_provider and provider_to_consumer when apply_both_directions is set to yes"))
-		}
-	}
-
 	vzSubj := models.NewContractSubject(fmt.Sprintf("subj-%s", name), ContractDn, desc, vzSubjAttr)
 
 	err := aciClient.Save(vzSubj)
@@ -943,13 +945,13 @@ func resourceAciContractSubjectUpdate(ctx context.Context, d *schema.ResourceDat
 	}
 	ApplyBothDirections := d.Get("apply_both_directions")
 
-	if ApplyBothDirections == "yes" {
-		if (d.HasChange("consumer_to_provider") || d.HasChange("provider_to_consumer")) && (d.Get("consumer_to_provider") != nil || d.Get("provider_to_consumer") != nil) {
-			d.Set("consumer_to_provider", nil)
-			d.Set("provider_to_consumer", nil)
-			return diag.FromErr(fmt.Errorf("you cannot set consumer_to_provider and provider_to_consumer when apply_both_directions is set to yes"))
-		}
-	}
+	// if ApplyBothDirections == "yes" {
+	// 	if (d.HasChange("consumer_to_provider") || d.HasChange("provider_to_consumer")) && (d.Get("consumer_to_provider") != nil || d.Get("provider_to_consumer") != nil) {
+	// 		d.Set("consumer_to_provider", nil)
+	// 		d.Set("provider_to_consumer", nil)
+	// 		return diag.FromErr(fmt.Errorf("you cannot set consumer_to_provider and provider_to_consumer when apply_both_directions is set to yes"))
+	// 	}
+	// }
 
 	vzSubj := models.NewContractSubject(fmt.Sprintf("subj-%s", name), ContractDn, desc, vzSubjAttr)
 

@@ -158,9 +158,8 @@ func resourceAciSubjectFilterCreate(ctx context.Context, d *schema.ResourceData,
 		vzRsSubjFiltAttAttr.PriorityOverride = PriorityOverride.(string)
 	}
 
-	if TnVzFilterName, ok := d.GetOk("tn_vz_filter_name"); ok {
-		vzRsSubjFiltAttAttr.TnVzFilterName = TnVzFilterName.(string)
-	}
+	vzRsSubjFiltAttAttr.TnVzFilterName = tnVzFilterName
+
 	vzRsSubjFiltAtt := models.NewSubjectFilter(fmt.Sprintf(models.RnvzRsSubjFiltAtt, tnVzFilterName), ContractSubjectDn, vzRsSubjFiltAttAttr)
 
 	err := aciClient.Save(vzRsSubjFiltAtt)
@@ -203,9 +202,8 @@ func resourceAciSubjectFilterUpdate(ctx context.Context, d *schema.ResourceData,
 		vzRsSubjFiltAttAttr.PriorityOverride = PriorityOverride.(string)
 	}
 
-	if TnVzFilterName, ok := d.GetOk("tn_vz_filter_name"); ok {
-		vzRsSubjFiltAttAttr.TnVzFilterName = TnVzFilterName.(string)
-	}
+	vzRsSubjFiltAttAttr.TnVzFilterName = tnVzFilterName
+
 	vzRsSubjFiltAtt := models.NewSubjectFilter(fmt.Sprintf(models.RnvzRsSubjFiltAtt, tnVzFilterName), ContractSubjectDn, vzRsSubjFiltAttAttr)
 
 	vzRsSubjFiltAtt.Status = "modified"

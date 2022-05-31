@@ -162,9 +162,8 @@ func resourceAciFilterRelationshipCreate(ctx context.Context, d *schema.Resource
 		vzRsFiltAttAttr.PriorityOverride = PriorityOverride.(string)
 	}
 
-	if TnVzFilterName, ok := d.GetOk("tn_vz_filter_name"); ok {
-		vzRsFiltAttAttr.TnVzFilterName = TnVzFilterName.(string)
-	}
+	vzRsFiltAttAttr.TnVzFilterName = tnVzFilterName
+
 	vzRsFiltAtt := models.NewFilterRelationship(fmt.Sprintf(models.RnvzRsFiltAtt, tnVzFilterName), ContractSubjectDn, vzRsFiltAttAttr)
 
 	err := aciClient.Save(vzRsFiltAtt)
@@ -207,9 +206,8 @@ func resourceAciFilterRelationshipUpdate(ctx context.Context, d *schema.Resource
 		vzRsFiltAttAttr.PriorityOverride = PriorityOverride.(string)
 	}
 
-	if TnVzFilterName, ok := d.GetOk("tn_vz_filter_name"); ok {
-		vzRsFiltAttAttr.TnVzFilterName = TnVzFilterName.(string)
-	}
+	vzRsFiltAttAttr.TnVzFilterName = tnVzFilterName
+
 	vzRsFiltAtt := models.NewFilterRelationship(fmt.Sprintf(models.RnvzRsFiltAtt, tnVzFilterName), ContractSubjectDn, vzRsFiltAttAttr)
 
 	vzRsFiltAtt.Status = "modified"

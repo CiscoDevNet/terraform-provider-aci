@@ -38,12 +38,11 @@ func dataSourceAciFilterRelationship() *schema.Resource {
 			},
 			"tn_vz_filter_name": {
 				Type:     schema.TypeString,
-				Required: true,
+				Computed: true,
 			},
 			"filter_dn": {
 				Type:     schema.TypeString,
 				Required: true,
-				ForceNew: true,
 			},
 		})),
 	}
