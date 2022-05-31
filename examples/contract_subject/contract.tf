@@ -58,6 +58,18 @@ resource "aci_contract_subject" "contract_subject" {
   rev_flt_ports = "no"
 }
 
+resource "aci_filter" "test_filter" {
+  tenant_dn   = aci_tenant.tenant_for_contract.id
+  name        = "test_tf_filter"
+  description = "This filter is created by terraform ACI provider."
+}
+
+resource "aci_filter" "tf_filter" {
+  tenant_dn   = aci_tenant.tenant_for_contract.id
+  name        = "tf_filter"
+  description = "This filter is created by terraform ACI provider."
+}
+
 // apply_both_directions is not selected and there are two filters (consumer_to_provider and provider_to_consumer)
 resource "aci_contract_subject" "contract_subject_2" {
   contract_dn           = aci_contract_subject.contract_subject.contract_dn
@@ -66,20 +78,38 @@ resource "aci_contract_subject" "contract_subject_2" {
   apply_both_directions = "no"
   consumer_to_provider {
     prio                             = "unspecified"
-    target_dscp                      = "AF31"
+    target_dscp                      = "AF41"
     relation_vz_rs_in_term_graph_att = aci_l4_l7_service_graph_template.service_graph.id
+    relation_vz_rs_filt_att {
+      action = "permit"
+      directives = ["log", "no_stats"]
+      priority_override = "level2"
+      filter_dn = aci_filter.test_filter.id
+    }
+    relation_vz_rs_filt_att {
+      action = "permit"
+      directives = ["log"]
+      priority_override = "level2"
+      filter_dn = aci_filter.tf_filter.id
+    }
   }
-   provider_to_consumer {
+  provider_to_consumer {
     prio                              = "unspecified"
     target_dscp                       = "AF42"
     relation_vz_rs_out_term_graph_att = aci_l4_l7_service_graph_template.service_graph.id
+    relation_vz_rs_filt_att {
+      action = "permit"
+      directives = ["log"]
+      priority_override = "level2"
+      filter_dn = aci_filter.test_filter.id
+    }
+    relation_vz_rs_filt_att {
+      action = "permit"
+      directives = ["log", "no_stats"]
+      priority_override = "level2"
+      filter_dn = aci_filter.tf_filter.id
+    }
   }
-}
-
-resource "aci_filter" "test_filter" {
-  tenant_dn   = aci_tenant.tenant_for_contract.id
-  name        = "test_tf_filter"
-  description = "This filter is created by terraform ACI provider."
 }
 
 resource "aci_contract_subject_one_way_filter" "contract_subject_filter" {

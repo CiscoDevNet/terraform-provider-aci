@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
@@ -92,6 +93,34 @@ func dataSourceAciContractSubject() *schema.Resource {
 							Optional: true,
 							Computed: true,
 						},
+						"relation_vz_rs_filt_att": {
+							Type:        schema.TypeSet,
+							Optional:    true,
+							Description: "Create relation to vzFilter",
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"action": {
+										Optional: true,
+										Type:     schema.TypeString,
+									},
+									"directives": {
+										Optional: true,
+										Type:     schema.TypeList,
+										Elem: &schema.Schema{
+											Type: schema.TypeString,
+										},
+									},
+									"priority_override": {
+										Optional: true,
+										Type:     schema.TypeString,
+									},
+									"filter_dn": {
+										Required: true,
+										Type:     schema.TypeString,
+									},
+								},
+							},
+						},
 					},
 				},
 			},
@@ -119,6 +148,34 @@ func dataSourceAciContractSubject() *schema.Resource {
 							Type:     schema.TypeString,
 							Optional: true,
 							Computed: true,
+						},
+						"relation_vz_rs_filt_att": {
+							Type:        schema.TypeSet,
+							Optional:    true,
+							Description: "Create relation to vzFilter",
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"action": {
+										Optional: true,
+										Type:     schema.TypeString,
+									},
+									"directives": {
+										Optional: true,
+										Type:     schema.TypeList,
+										Elem: &schema.Schema{
+											Type: schema.TypeString,
+										},
+									},
+									"priority_override": {
+										Optional: true,
+										Type:     schema.TypeString,
+									},
+									"filter_dn": {
+										Required: true,
+										Type:     schema.TypeString,
+									},
+								},
+							},
 						},
 					},
 				},
@@ -154,18 +211,48 @@ func dataSourceAciContractSubjectRead(ctx context.Context, d *schema.ResourceDat
 	}
 
 	if vzInTerm != nil {
-		var vzRsInTermGraphAtt string
+		vzInTermMap, err := setInTermSubjectAttributes(vzInTerm, d)
+		if err != nil {
+			return diag.FromErr(err)
+		}
+
 		vzRsInTermGraphAttData, err := aciClient.ReadRelationvzRsInTermGraphAtt(vzInTerm.DistinguishedName)
 		if err != nil {
 			log.Printf("[DEBUG] Error while reading relation vzRsInTermGraphAtt %v", err)
 		} else {
-			vzRsInTermGraphAtt = vzRsInTermGraphAttData.(string)
+			vzInTermMap["relation_vz_rs_in_term_graph_att"] = vzRsInTermGraphAttData.(string)
 		}
 
-		_, err = setInTermSubjectAttributes(vzInTerm, d, vzRsInTermGraphAtt)
+		vzRsInTermFilterAttData, err := aciClient.ListFilterRelationship(vzInTerm.DistinguishedName)
 		if err != nil {
-			return diag.FromErr(err)
+			log.Printf("[DEBUG] Error while reading relation vzRsInTermFilterAtt %v", err)
+		} else {
+			vzInTermFilterSet := make([]interface{}, 0, 1)
+			for _, vzRsInTermFilter := range vzRsInTermFilterAttData {
+
+				vzRsFiltAttMap, err := vzRsInTermFilter.ToMap()
+				if err != nil {
+					log.Printf("[DEBUG] Error while creating map for relation vzRsInTermFilterAtt %v", err)
+				}
+
+				inTermFilterMap := make(map[string]interface{})
+				inTermFilterMap["action"] = vzRsFiltAttMap["action"]
+				inTermFilterMap["priority_override"] = vzRsFiltAttMap["priorityOverride"]
+				inTermFilterMap["filter_dn"] = vzRsFiltAttMap["tDn"]
+				directivesGet := make([]string, 0, 1)
+				for _, val := range strings.Split(vzRsFiltAttMap["directives"], ",") {
+					directivesGet = append(directivesGet, strings.Trim(val, " "))
+				}
+				inTermFilterMap["directives"] = directivesGet
+				vzInTermFilterSet = append(vzInTermFilterSet, inTermFilterMap)
+			}
+			vzInTermMap["relation_vz_rs_filt_att"] = vzInTermFilterSet
+
 		}
+
+		vzInTermSet := make([]interface{}, 0, 1)
+		vzInTermSet = append(vzInTermSet, vzInTermMap)
+		d.Set("consumer_to_provider", vzInTermSet)
 	}
 
 	vzOutTerm, err := getRemoteOutTermSubject(aciClient, dn)
@@ -174,18 +261,49 @@ func dataSourceAciContractSubjectRead(ctx context.Context, d *schema.ResourceDat
 	}
 
 	if vzOutTerm != nil {
-		var vzRsOutTermGraphAtt string
+		vzOutTermMap, err := setOutTermSubjectAttributes(vzOutTerm, d)
+		if err != nil {
+			return diag.FromErr(err)
+		}
+
 		vzRsOutTermGraphAttData, err := aciClient.ReadRelationvzRsOutTermGraphAtt(vzOutTerm.DistinguishedName)
 		if err != nil {
 			log.Printf("[DEBUG] Error while reading relation vzRsOutTermGraphAtt %v", err)
 		} else {
-			vzRsOutTermGraphAtt = vzRsOutTermGraphAttData.(string)
+			vzOutTermMap["relation_vz_rs_out_term_graph_att"] = vzRsOutTermGraphAttData.(string)
 		}
 
-		_, err = setOutTermSubjectAttributes(vzOutTerm, d, vzRsOutTermGraphAtt)
+		vzRsOutTermFilterAttData, err := aciClient.ListFilterRelationship(vzOutTerm.DistinguishedName)
 		if err != nil {
-			return diag.FromErr(err)
+			log.Printf("[DEBUG] Error while reading relation vzRsInTermFilterAtt %v", err)
+		} else {
+			vzOutTermFilterSet := make([]interface{}, 0, 1)
+			for _, vzRsOutTermFilter := range vzRsOutTermFilterAttData {
+
+				vzRsFiltAttMap, err := vzRsOutTermFilter.ToMap()
+				if err != nil {
+					log.Printf("[DEBUG] Error while creating map for relation vzRsOutTermFilterAtt %v", err)
+				}
+
+				outTermFilterMap := make(map[string]interface{})
+				outTermFilterMap["action"] = vzRsFiltAttMap["action"]
+				outTermFilterMap["priority_override"] = vzRsFiltAttMap["priorityOverride"]
+				outTermFilterMap["filter_dn"] = vzRsFiltAttMap["tDn"]
+				directivesGet := make([]string, 0, 1)
+				for _, val := range strings.Split(vzRsFiltAttMap["directives"], ",") {
+					directivesGet = append(directivesGet, strings.Trim(val, " "))
+				}
+				outTermFilterMap["directives"] = directivesGet
+				vzOutTermFilterSet = append(vzOutTermFilterSet, outTermFilterMap)
+			}
+			vzOutTermMap["relation_vz_rs_filt_att"] = vzOutTermFilterSet
+
 		}
+
+		vzOutTermSet := make([]interface{}, 0, 1)
+		vzOutTermSet = append(vzOutTermSet, vzOutTermMap)
+		d.Set("provider_to_consumer", vzOutTermSet)
+
 	}
 
 	if vzInTerm == nil && vzOutTerm == nil {

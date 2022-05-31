@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"reflect"
+	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
@@ -26,6 +28,7 @@ func resourceAciContractSubject() *schema.Resource {
 		SchemaVersion: 1,
 
 		CustomizeDiff: func(_ context.Context, diff *schema.ResourceDiff, v interface{}) error {
+			result := false
 			if diff.HasChange("consumer_to_provider") {
 				old, new := diff.GetChange("consumer_to_provider")
 				oldInTerm := old.(*schema.Set).List()
@@ -35,11 +38,43 @@ func resourceAciContractSubject() *schema.Resource {
 					newInTermParam := newInTerm[0].(map[string]interface{})
 
 					if oldInTermParam["prio"] != newInTermParam["prio"] || oldInTermParam["target_dscp"] != newInTermParam["target_dscp"] || oldInTermParam["relation_vz_rs_in_term_graph_att"] != newInTermParam["relation_vz_rs_in_term_graph_att"] {
-						// || oldInTermParam["relation_vz_rs_subj_filt_att"] != newInTermParam["relation_vz_rs_subj_filt_att"]
-						return nil
-					} else {
-						diff.Clear("consumer_to_provider")
+						result = true
+					} else if oldInTermParam["relation_vz_rs_filt_att"] != newInTermParam["relation_vz_rs_filt_att"] {
+
+						oldInTermFilterList := oldInTermParam["relation_vz_rs_filt_att"].(*schema.Set).List()
+						newInTermFilterList := newInTermParam["relation_vz_rs_filt_att"].(*schema.Set).List()
+
+						if len(oldInTermFilterList) != len(newInTermFilterList) {
+							result = true
+						} else {
+							for _, inTermOldFilter := range oldInTermFilterList {
+								oldVzRsFiltAttMap := inTermOldFilter.(map[string]interface{})
+								oldInTermFilterDirectives := oldVzRsFiltAttMap["directives"].(*schema.Set).List()
+								found_same_filter_dn := false
+								for _, inTermNewFilter := range newInTermFilterList {
+									newVzRsFiltAttMap := inTermNewFilter.(map[string]interface{})
+									newInTermFilterDirectives := newVzRsFiltAttMap["directives"].(*schema.Set).List()
+
+									if oldVzRsFiltAttMap["filter_dn"] == newVzRsFiltAttMap["filter_dn"] {
+										found_same_filter_dn = true
+										if oldVzRsFiltAttMap["action"] != newVzRsFiltAttMap["action"] || oldVzRsFiltAttMap["priority_override"] != newVzRsFiltAttMap["priority_override"] || !reflect.DeepEqual(oldInTermFilterDirectives, newInTermFilterDirectives) {
+											if !(oldVzRsFiltAttMap["priority_override"] == "default" && newVzRsFiltAttMap["priority_override"] == "") {
+												result = true
+												break
+											}
+										}
+
+									}
+								}
+								if !found_same_filter_dn {
+									result = true
+									break
+								}
+							}
+						}
 					}
+				} else {
+					result = true
 				}
 			}
 
@@ -51,12 +86,56 @@ func resourceAciContractSubject() *schema.Resource {
 					oldOutTermParam := oldOutTerm[0].(map[string]interface{})
 					newOutTermParam := newOutTerm[0].(map[string]interface{})
 					if oldOutTermParam["prio"] != newOutTermParam["prio"] || oldOutTermParam["target_dscp"] != newOutTermParam["target_dscp"] || oldOutTermParam["relation_vz_rs_out_term_graph_att"] != newOutTermParam["relation_vz_rs_out_term_graph_att"] {
-						// || oldOutTermParam["relation_vz_rs_subj_filt_att"] != newOutTermParam["relation_vz_rs_subj_filt_att"]
-						return nil
-					} else {
-						diff.Clear("provider_to_consumer")
+						result = true
+					} else if oldOutTermParam["relation_vz_rs_filt_att"] != newOutTermParam["relation_vz_rs_filt_att"] {
+
+						oldOutTermFilterList := oldOutTermParam["relation_vz_rs_filt_att"].(*schema.Set).List()
+						newOutTermFilterList := newOutTermParam["relation_vz_rs_filt_att"].(*schema.Set).List()
+						log.Printf("[TEST] oldOutTermFilterList :  %v", oldOutTermFilterList)
+						log.Printf("[TEST] newOutTermFilterList :  %v", newOutTermFilterList)
+
+						if len(oldOutTermFilterList) != len(newOutTermFilterList) {
+							result = true
+						} else {
+							for _, outTermOldFilter := range oldOutTermFilterList {
+								oldVzRsFiltAttMap := outTermOldFilter.(map[string]interface{})
+								oldOutTermFilterDirectives := oldVzRsFiltAttMap["directives"].(*schema.Set).List()
+								found_same_filter_dn := false
+								for _, outTermNewFilter := range newOutTermFilterList {
+									newVzRsFiltAttMap := outTermNewFilter.(map[string]interface{})
+									newOutTermFilterDirectives := newVzRsFiltAttMap["directives"].(*schema.Set).List()
+									log.Printf("[TEST] oldOutTermFilterDirectives :  %v", oldOutTermFilterDirectives)
+									log.Printf("[TEST] newOutTermFilterDirectives :  %v", newOutTermFilterDirectives)
+									log.Printf("[TEST] COMPARE :  %v", reflect.DeepEqual(oldOutTermFilterDirectives, newOutTermFilterDirectives))
+
+									if oldVzRsFiltAttMap["filter_dn"] == newVzRsFiltAttMap["filter_dn"] {
+										found_same_filter_dn = true
+										if oldVzRsFiltAttMap["action"] != newVzRsFiltAttMap["action"] || oldVzRsFiltAttMap["priority_override"] != newVzRsFiltAttMap["priority_override"] || !reflect.DeepEqual(oldOutTermFilterDirectives, newOutTermFilterDirectives) {
+											if !(oldVzRsFiltAttMap["priority_override"] == "default" && newVzRsFiltAttMap["priority_override"] == "") {
+												result = true
+												break
+											}
+										}
+
+									}
+								}
+								if !found_same_filter_dn {
+									result = true
+									break
+								}
+							}
+						}
 					}
+				} else {
+					result = true
 				}
+			}
+
+			if result {
+				return nil
+			} else {
+				diff.Clear("consumer_to_provider")
+				diff.Clear("provider_to_consumer")
 			}
 			return nil
 		},
@@ -172,13 +251,13 @@ func resourceAciContractSubject() *schema.Resource {
 			},
 
 			"relation_vz_rs_subj_graph_att": &schema.Schema{
-				Type: schema.TypeString,
-
+				Type:     schema.TypeString,
+				Computed: true,
 				Optional: true,
 			},
 			"relation_vz_rs_sdwan_pol": &schema.Schema{
-				Type: schema.TypeString,
-
+				Type:     schema.TypeString,
+				Computed: true,
 				Optional: true,
 			},
 			"relation_vz_rs_subj_filt_att": &schema.Schema{
@@ -249,11 +328,53 @@ func resourceAciContractSubject() *schema.Resource {
 							Optional: true,
 							Computed: true,
 						},
-						"relation_vz_rs_subj_filt_att": &schema.Schema{
-							Type:     schema.TypeSet,
-							Elem:     &schema.Schema{Type: schema.TypeString},
-							Optional: true,
-							Set:      schema.HashString,
+						"relation_vz_rs_filt_att": {
+							Type:        schema.TypeSet,
+							Optional:    true,
+							Computed:    true,
+							Description: "Create relation to vzFilter",
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"action": {
+										Optional: true,
+										Computed: true,
+										Type:     schema.TypeString,
+										ValidateFunc: validation.StringInSlice([]string{
+											"deny",
+											"permit",
+										}, false),
+									},
+									"directives": {
+										Optional: true,
+										Computed: true,
+										Type:     schema.TypeSet,
+										Elem: &schema.Schema{
+											Type: schema.TypeString,
+											ValidateFunc: validation.StringInSlice([]string{
+												"log",
+												"no_stats",
+												"none",
+											}, false),
+										},
+									},
+									"priority_override": {
+										Optional: true,
+										Computed: true,
+										Type:     schema.TypeString,
+										ValidateFunc: validation.StringInSlice([]string{
+											"default",
+											"level1",
+											"level2",
+											"level3",
+										}, false),
+										// used when used with deny
+									},
+									"filter_dn": {
+										Required: true,
+										Type:     schema.TypeString,
+									},
+								},
+							},
 						},
 					},
 				},
@@ -320,6 +441,53 @@ func resourceAciContractSubject() *schema.Resource {
 							Optional: true,
 							Computed: true,
 						},
+						"relation_vz_rs_filt_att": {
+							Type:        schema.TypeSet,
+							Optional:    true,
+							Computed:    true,
+							Description: "Create relation to vzFilter",
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"action": {
+										Optional: true,
+										Computed: true,
+										Type:     schema.TypeString,
+										ValidateFunc: validation.StringInSlice([]string{
+											"deny",
+											"permit",
+										}, false),
+									},
+									"directives": {
+										Optional: true,
+										Computed: true,
+										Type:     schema.TypeSet,
+										Elem: &schema.Schema{
+											Type: schema.TypeString,
+											ValidateFunc: validation.StringInSlice([]string{
+												"log",
+												"no_stats",
+												"none",
+											}, false),
+										},
+									},
+									"priority_override": {
+										Optional: true,
+										Computed: true,
+										Type:     schema.TypeString,
+										ValidateFunc: validation.StringInSlice([]string{
+											"default",
+											"level1",
+											"level2",
+											"level3",
+										}, false),
+									},
+									"filter_dn": {
+										Required: true,
+										Type:     schema.TypeString,
+									},
+								},
+							},
+						},
 					},
 				},
 			},
@@ -384,23 +552,19 @@ func getRemoteInTermSubject(client *client.Client, dn string) (*models.InTermSub
 	return vzInTerm, nil
 }
 
-func setInTermSubjectAttributes(vzInTerm *models.InTermSubject, d *schema.ResourceData, vzRsInTermGraphAtt string) (*schema.ResourceData, error) {
+func setInTermSubjectAttributes(vzInTerm *models.InTermSubject, d *schema.ResourceData) (map[string]interface{}, error) {
 
 	vzInTermMap, err := vzInTerm.ToMap()
 	if err != nil {
-		return d, err
+		return nil, err
 	}
 
-	vzInTermSet := make([]interface{}, 0, 1)
 	cTopMap := make(map[string]interface{})
 	cTopMap["id"] = vzInTerm.DistinguishedName
 	cTopMap["prio"] = vzInTermMap["prio"]
 	cTopMap["target_dscp"] = vzInTermMap["targetDscp"]
-	cTopMap["relation_vz_rs_in_term_graph_att"] = vzRsInTermGraphAtt
-	vzInTermSet = append(vzInTermSet, cTopMap)
 
-	d.Set("consumer_to_provider", vzInTermSet)
-	return d, nil
+	return cTopMap, nil
 }
 
 func getRemoteOutTermSubject(client *client.Client, dn string) (*models.OutTermSubject, error) {
@@ -419,23 +583,20 @@ func getRemoteOutTermSubject(client *client.Client, dn string) (*models.OutTermS
 	return vzOutTerm, nil
 }
 
-func setOutTermSubjectAttributes(vzOutTerm *models.OutTermSubject, d *schema.ResourceData, vzRsOutTermGraphAtt string) (*schema.ResourceData, error) {
+func setOutTermSubjectAttributes(vzOutTerm *models.OutTermSubject, d *schema.ResourceData) (map[string]interface{}, error) {
 
 	vzOutTermMap, err := vzOutTerm.ToMap()
 	if err != nil {
-		return d, err
+		return nil, err
 	}
-	vzOutTermSet := make([]interface{}, 0, 1)
+
 	pTocMap := make(map[string]interface{})
 
 	pTocMap["id"] = vzOutTerm.DistinguishedName
 	pTocMap["prio"] = vzOutTermMap["prio"]
 	pTocMap["target_dscp"] = vzOutTermMap["targetDscp"]
-	pTocMap["relation_vz_rs_out_term_graph_att"] = vzRsOutTermGraphAtt
-	vzOutTermSet = append(vzOutTermSet, pTocMap)
 
-	d.Set("provider_to_consumer", vzOutTermSet)
-	return d, nil
+	return pTocMap, nil
 }
 
 func resourceAciContractSubjectImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -521,12 +682,14 @@ func resourceAciContractSubjectCreate(ctx context.Context, d *schema.ResourceDat
 			consumerToProviderSet := ConsumerToProvider.(*schema.Set).List()
 			for _, val := range consumerToProviderSet {
 				var inTermGraphAttribute string
+				var inTermFilterAtt interface{}
 				ConsumerToProviderMap := val.(map[string]interface{})
 				vzInTermAttr := models.InTermSubjectAttributes{}
 
 				vzInTermAttr.Prio = ConsumerToProviderMap["prio"].(string)
 				vzInTermAttr.TargetDscp = ConsumerToProviderMap["target_dscp"].(string)
 				inTermGraphAttribute = ConsumerToProviderMap["relation_vz_rs_in_term_graph_att"].(string)
+				inTermFilterAtt = ConsumerToProviderMap["relation_vz_rs_filt_att"]
 
 				vzInTerm := models.NewInTermSubject(fmt.Sprintf(models.RnvzInTerm), vzSubj.DistinguishedName, desc, "", vzInTermAttr)
 
@@ -548,6 +711,48 @@ func resourceAciContractSubjectCreate(ctx context.Context, d *schema.ResourceDat
 						return diag.FromErr(err)
 					}
 				}
+
+				inTermFilterList := inTermFilterAtt.(*schema.Set).List()
+				if len(inTermFilterList) > 0 {
+					checkDns := make([]string, 0, 1)
+
+					for _, inTermFilterAttribute := range inTermFilterList {
+						inTermFilterDn := inTermFilterAttribute.(map[string]interface{})["filter_dn"].(string)
+						checkDns = append(checkDns, inTermFilterDn)
+					}
+
+					d.Partial(true)
+					err = checkTDn(aciClient, checkDns)
+					if err != nil {
+						return diag.FromErr(err)
+					}
+					d.Partial(false)
+
+					for _, inTermFilterAttribute := range inTermFilterList {
+						ConsumerToProviderFilterMap := inTermFilterAttribute.(map[string]interface{})
+						vzInTermFilterAttr := models.FilterRelationshipAttributes{}
+						tnVzFilterName := GetMOName(ConsumerToProviderFilterMap["filter_dn"].(string))
+						vzInTermFilterAttr.Action = ConsumerToProviderFilterMap["action"].(string)
+						directivesCheck := ConsumerToProviderFilterMap["directives"]
+						directivesSetList := directivesCheck.(*schema.Set).List()
+
+						directivesList := make([]string, 0, 1)
+						for _, val := range directivesSetList {
+							directivesList = append(directivesList, val.(string))
+						}
+						Directives := strings.Join(directivesList, ",")
+						vzInTermFilterAttr.Directives = Directives
+						vzInTermFilterAttr.PriorityOverride = ConsumerToProviderFilterMap["priority_override"].(string)
+						vzInTermFilterAttr.TnVzFilterName = tnVzFilterName
+
+						_, err = aciClient.CreateFilterRelationship(tnVzFilterName, vzInTerm.DistinguishedName, vzInTermFilterAttr)
+						if err != nil {
+							return diag.FromErr(err)
+						}
+					}
+
+				}
+
 			}
 		} else {
 
@@ -565,12 +770,14 @@ func resourceAciContractSubjectCreate(ctx context.Context, d *schema.ResourceDat
 			providerToConsumerSet := ProviderToConsumer.(*schema.Set).List()
 			for _, val := range providerToConsumerSet {
 				var outTermGraphAttribute string
+				var outTermFilterAtt interface{}
 				ProviderToConsumerMap := val.(map[string]interface{})
 				vzOutTermAttr := models.OutTermSubjectAttributes{}
 
 				vzOutTermAttr.Prio = ProviderToConsumerMap["prio"].(string)
 				vzOutTermAttr.TargetDscp = ProviderToConsumerMap["target_dscp"].(string)
 				outTermGraphAttribute = ProviderToConsumerMap["relation_vz_rs_out_term_graph_att"].(string)
+				outTermFilterAtt = ProviderToConsumerMap["relation_vz_rs_filt_att"]
 
 				vzOutTerm := models.NewOutTermSubject(fmt.Sprintf(models.RnvzOutTerm), vzSubj.DistinguishedName, desc, "", vzOutTermAttr)
 
@@ -592,6 +799,48 @@ func resourceAciContractSubjectCreate(ctx context.Context, d *schema.ResourceDat
 						return diag.FromErr(err)
 					}
 				}
+
+				outTermFilterList := outTermFilterAtt.(*schema.Set).List()
+				if len(outTermFilterList) > 0 {
+					checkDns := make([]string, 0, 1)
+
+					for _, outTermFilterAttribute := range outTermFilterList {
+						outTermFilterDn := outTermFilterAttribute.(map[string]interface{})["filter_dn"].(string)
+						checkDns = append(checkDns, outTermFilterDn)
+					}
+
+					d.Partial(true)
+					err = checkTDn(aciClient, checkDns)
+					if err != nil {
+						return diag.FromErr(err)
+					}
+					d.Partial(false)
+
+					for _, outTermFilterAttribute := range outTermFilterList {
+						ProviderToConsumerFilterMap := outTermFilterAttribute.(map[string]interface{})
+						vzOutTermFilterAttr := models.FilterRelationshipAttributes{}
+						tnVzFilterName := GetMOName(ProviderToConsumerFilterMap["filter_dn"].(string))
+						vzOutTermFilterAttr.Action = ProviderToConsumerFilterMap["action"].(string)
+						directivesCheck := ProviderToConsumerFilterMap["directives"]
+						directivesSetList := directivesCheck.(*schema.Set).List()
+
+						directivesList := make([]string, 0, 1)
+						for _, val := range directivesSetList {
+							directivesList = append(directivesList, val.(string))
+						}
+						Directives := strings.Join(directivesList, ",")
+						vzOutTermFilterAttr.Directives = Directives
+						vzOutTermFilterAttr.PriorityOverride = ProviderToConsumerFilterMap["priority_override"].(string)
+						vzOutTermFilterAttr.TnVzFilterName = tnVzFilterName
+
+						_, err = aciClient.CreateFilterRelationship(tnVzFilterName, vzOutTerm.DistinguishedName, vzOutTermFilterAttr)
+						if err != nil {
+							return diag.FromErr(err)
+						}
+					}
+
+				}
+
 			}
 		} else {
 			vzOutTermAttr := models.OutTermSubjectAttributes{}
@@ -721,12 +970,14 @@ func resourceAciContractSubjectUpdate(ctx context.Context, d *schema.ResourceDat
 				consumerToProviderSet := ConsumerToProvider.(*schema.Set).List()
 				for _, val := range consumerToProviderSet {
 					var inTermGraphAttribute string
+					var inTermFilterAtt interface{}
 					ConsumerToProviderMap := val.(map[string]interface{})
 					vzInTermAttr := models.InTermSubjectAttributes{}
 
 					vzInTermAttr.Prio = ConsumerToProviderMap["prio"].(string)
 					vzInTermAttr.TargetDscp = ConsumerToProviderMap["target_dscp"].(string)
 					inTermGraphAttribute = ConsumerToProviderMap["relation_vz_rs_in_term_graph_att"].(string)
+					inTermFilterAtt = ConsumerToProviderMap["relation_vz_rs_filt_att"]
 
 					vzInTerm := models.NewInTermSubject(fmt.Sprintf(models.RnvzInTerm), vzSubj.DistinguishedName, desc, "", vzInTermAttr)
 					vzInTerm.Status = "modified"
@@ -752,6 +1003,60 @@ func resourceAciContractSubjectUpdate(ctx context.Context, d *schema.ResourceDat
 							return diag.FromErr(err)
 						}
 					}
+
+					old, _ := d.GetChange("consumer_to_provider")
+					oldInTermParam := old.(*schema.Set).List()[0].(map[string]interface{})
+					oldInTermFilterList := oldInTermParam["relation_vz_rs_filt_att"].(*schema.Set).List()
+
+					inTermFilterList := inTermFilterAtt.(*schema.Set).List()
+					if len(inTermFilterList) > 0 {
+						checkDns := make([]string, 0, 1)
+
+						for _, inTermFilterAttribute := range inTermFilterList {
+							inTermFilterDn := inTermFilterAttribute.(map[string]interface{})["filter_dn"].(string)
+							checkDns = append(checkDns, inTermFilterDn)
+						}
+
+						d.Partial(true)
+						err = checkTDn(aciClient, checkDns)
+						if err != nil {
+							return diag.FromErr(err)
+						}
+						d.Partial(false)
+
+						for _, oldInTermFilterAttribute := range oldInTermFilterList {
+							oldInTermFilterMap := oldInTermFilterAttribute.(map[string]interface{})
+							tnVzFilterName := GetMOName(oldInTermFilterMap["filter_dn"].(string))
+							err = aciClient.DeleteFilterRelationship(tnVzFilterName, vzInTerm.DistinguishedName)
+							if err != nil {
+								return diag.FromErr(err)
+							}
+						}
+						for _, inTermFilterAttribute := range inTermFilterList {
+							ConsumerToProviderFilterMap := inTermFilterAttribute.(map[string]interface{})
+							vzInTermFilterAttr := models.FilterRelationshipAttributes{}
+							tnVzFilterName := GetMOName(ConsumerToProviderFilterMap["filter_dn"].(string))
+							vzInTermFilterAttr.Action = ConsumerToProviderFilterMap["action"].(string)
+
+							directivesCheck := ConsumerToProviderFilterMap["directives"]
+							directivesSetList := directivesCheck.(*schema.Set).List()
+							directivesList := make([]string, 0, 1)
+							for _, val := range directivesSetList {
+								directivesList = append(directivesList, val.(string))
+							}
+							Directives := strings.Join(directivesList, ",")
+
+							vzInTermFilterAttr.Directives = Directives
+							vzInTermFilterAttr.PriorityOverride = ConsumerToProviderFilterMap["priority_override"].(string)
+							vzInTermFilterAttr.TnVzFilterName = tnVzFilterName
+
+							_, err = aciClient.CreateFilterRelationship(tnVzFilterName, vzInTerm.DistinguishedName, vzInTermFilterAttr)
+							if err != nil {
+								return diag.FromErr(err)
+							}
+						}
+					}
+
 				}
 			}
 		}
@@ -760,15 +1065,16 @@ func resourceAciContractSubjectUpdate(ctx context.Context, d *schema.ResourceDat
 				providerToConsumerSet := ProviderToConsumer.(*schema.Set).List()
 				for _, val := range providerToConsumerSet {
 					var outTermGraphAttribute string
+					var outTermFilterAtt interface{}
 					ProviderToConsumerMap := val.(map[string]interface{})
 					vzOutTermAttr := models.OutTermSubjectAttributes{}
 
 					vzOutTermAttr.Prio = ProviderToConsumerMap["prio"].(string)
 					vzOutTermAttr.TargetDscp = ProviderToConsumerMap["target_dscp"].(string)
 					outTermGraphAttribute = ProviderToConsumerMap["relation_vz_rs_out_term_graph_att"].(string)
+					outTermFilterAtt = ProviderToConsumerMap["relation_vz_rs_filt_att"]
 
 					vzOutTerm := models.NewOutTermSubject(fmt.Sprintf(models.RnvzOutTerm), vzSubj.DistinguishedName, desc, "", vzOutTermAttr)
-
 					vzOutTerm.Status = "modified"
 					error := aciClient.Save(vzOutTerm)
 					if error != nil {
@@ -791,6 +1097,62 @@ func resourceAciContractSubjectUpdate(ctx context.Context, d *schema.ResourceDat
 						if err != nil {
 							return diag.FromErr(err)
 						}
+					}
+
+					old, _ := d.GetChange("provider_to_consumer")
+					oldOutTermParam := old.(*schema.Set).List()[0].(map[string]interface{})
+					oldOutTermFilterList := oldOutTermParam["relation_vz_rs_filt_att"].(*schema.Set).List()
+
+					outTermFilterList := outTermFilterAtt.(*schema.Set).List()
+					if len(outTermFilterList) > 0 {
+						checkDns := make([]string, 0, 1)
+
+						for _, outTermFilterAttribute := range outTermFilterList {
+							outTermFilterDn := outTermFilterAttribute.(map[string]interface{})["filter_dn"].(string)
+							checkDns = append(checkDns, outTermFilterDn)
+						}
+
+						d.Partial(true)
+						err = checkTDn(aciClient, checkDns)
+						if err != nil {
+							return diag.FromErr(err)
+						}
+						d.Partial(false)
+
+						for _, oldOutTermFilterAttribute := range oldOutTermFilterList {
+							oldOutTermFilterMap := oldOutTermFilterAttribute.(map[string]interface{})
+							tnVzFilterName := GetMOName(oldOutTermFilterMap["filter_dn"].(string))
+							err = aciClient.DeleteFilterRelationship(tnVzFilterName, vzOutTerm.DistinguishedName)
+							if err != nil {
+								return diag.FromErr(err)
+							}
+						}
+
+						for _, outTermFilterAttribute := range outTermFilterList {
+							ProviderToConsumerFilterMap := outTermFilterAttribute.(map[string]interface{})
+							vzOutTermFilterAttr := models.FilterRelationshipAttributes{}
+							tnVzFilterName := GetMOName(ProviderToConsumerFilterMap["filter_dn"].(string))
+							vzOutTermFilterAttr.Action = ProviderToConsumerFilterMap["action"].(string)
+
+							directivesCheck := ProviderToConsumerFilterMap["directives"]
+							directivesSetList := directivesCheck.(*schema.Set).List()
+							directivesList := make([]string, 0, 1)
+							for _, val := range directivesSetList {
+								directivesList = append(directivesList, val.(string))
+							}
+							Directives := strings.Join(directivesList, ",")
+
+							vzOutTermFilterAttr.Directives = Directives
+							vzOutTermFilterAttr.PriorityOverride = ProviderToConsumerFilterMap["priority_override"].(string)
+							vzOutTermFilterAttr.TnVzFilterName = tnVzFilterName
+
+							_, err = aciClient.CreateFilterRelationship(tnVzFilterName, vzOutTerm.DistinguishedName, vzOutTermFilterAttr)
+							if err != nil {
+								return diag.FromErr(err)
+							}
+
+						}
+
 					}
 				}
 			}
@@ -907,19 +1269,52 @@ func resourceAciContractSubjectRead(ctx context.Context, d *schema.ResourceData,
 	}
 
 	if vzInTerm != nil {
-		var vzRsInTermGraphAtt string
-		vzRsInTermGraphAttData, err := aciClient.ReadRelationvzRsInTermGraphAtt(vzInTerm.DistinguishedName)
-		if err != nil {
-			log.Printf("[DEBUG] Error while reading relation vzRsInTermGraphAtt %v", err)
-		} else {
-			vzRsInTermGraphAtt = vzRsInTermGraphAttData.(string)
-		}
 
-		_, err = setInTermSubjectAttributes(vzInTerm, d, vzRsInTermGraphAtt)
+		vzInTermMap, err := setInTermSubjectAttributes(vzInTerm, d)
 		if err != nil {
 			d.SetId("")
 			return nil
 		}
+
+		vzRsInTermGraphAttData, err := aciClient.ReadRelationvzRsInTermGraphAtt(vzInTerm.DistinguishedName)
+		if err != nil {
+			log.Printf("[DEBUG] Error while reading relation vzRsInTermGraphAtt %v", err)
+		} else {
+			vzInTermMap["relation_vz_rs_in_term_graph_att"] = vzRsInTermGraphAttData.(string)
+		}
+
+		vzRsInTermFilterAttData, err := aciClient.ListFilterRelationship(vzInTerm.DistinguishedName)
+		if err != nil {
+			log.Printf("[DEBUG] Error while reading relation vzRsInTermFilterAtt %v", err)
+		} else {
+			vzInTermFilterSet := make([]interface{}, 0, 1)
+			for _, vzRsInTermFilter := range vzRsInTermFilterAttData {
+
+				vzRsFiltAttMap, err := vzRsInTermFilter.ToMap()
+				if err != nil {
+					log.Printf("[DEBUG] Error while creating map for relation vzRsInTermFilterAtt %v", err)
+				}
+
+				inTermFilterMap := make(map[string]interface{})
+				inTermFilterMap["action"] = vzRsFiltAttMap["action"]
+				inTermFilterMap["priority_override"] = vzRsFiltAttMap["priorityOverride"]
+				inTermFilterMap["filter_dn"] = vzRsFiltAttMap["tDn"]
+				directivesGet := make([]string, 0, 1)
+				for _, val := range strings.Split(vzRsFiltAttMap["directives"], ",") {
+					if val != "" {
+						directivesGet = append(directivesGet, strings.Trim(val, " "))
+					}
+				}
+				inTermFilterMap["directives"] = directivesGet
+				vzInTermFilterSet = append(vzInTermFilterSet, inTermFilterMap)
+			}
+			vzInTermMap["relation_vz_rs_filt_att"] = vzInTermFilterSet
+
+		}
+
+		vzInTermSet := make([]interface{}, 0, 1)
+		vzInTermSet = append(vzInTermSet, vzInTermMap)
+		d.Set("consumer_to_provider", vzInTermSet)
 
 	} else {
 		d.Set("consumer_to_provider", nil)
@@ -931,19 +1326,52 @@ func resourceAciContractSubjectRead(ctx context.Context, d *schema.ResourceData,
 		return nil
 	}
 	if vzOutTerm != nil {
-		var vzRsOutTermGraphAtt string
-		vzRsOutTermGraphAttData, err := aciClient.ReadRelationvzRsOutTermGraphAtt(vzOutTerm.DistinguishedName)
-		if err != nil {
-			log.Printf("[DEBUG] Error while reading relation vzRsOutTermGraphAtt %v", err)
-		} else {
-			vzRsOutTermGraphAtt = vzRsOutTermGraphAttData.(string)
-		}
 
-		_, err = setOutTermSubjectAttributes(vzOutTerm, d, vzRsOutTermGraphAtt)
+		vzOutTermMap, err := setOutTermSubjectAttributes(vzOutTerm, d)
 		if err != nil {
 			d.SetId("")
 			return nil
 		}
+
+		vzRsOutTermGraphAttData, err := aciClient.ReadRelationvzRsOutTermGraphAtt(vzOutTerm.DistinguishedName)
+		if err != nil {
+			log.Printf("[DEBUG] Error while reading relation vzRsOutTermGraphAtt %v", err)
+		} else {
+			vzOutTermMap["relation_vz_rs_out_term_graph_att"] = vzRsOutTermGraphAttData.(string)
+		}
+
+		vzRsOutTermFilterAttData, err := aciClient.ListFilterRelationship(vzOutTerm.DistinguishedName)
+		if err != nil {
+			log.Printf("[DEBUG] Error while reading relation vzRsOutTermFilterAtt %v", err)
+		} else {
+			vzOutTermFilterSet := make([]interface{}, 0, 1)
+			for _, vzRsOutTermFilter := range vzRsOutTermFilterAttData {
+
+				vzRsFiltAttMap, err := vzRsOutTermFilter.ToMap()
+				if err != nil {
+					log.Printf("[DEBUG] Error while creating map for relation vzRsOutTermFilterAtt %v", err)
+				}
+
+				outTermFilterMap := make(map[string]interface{})
+				outTermFilterMap["action"] = vzRsFiltAttMap["action"]
+				outTermFilterMap["priority_override"] = vzRsFiltAttMap["priorityOverride"]
+				outTermFilterMap["filter_dn"] = vzRsFiltAttMap["tDn"]
+				directivesGet := make([]string, 0, 1)
+				for _, val := range strings.Split(vzRsFiltAttMap["directives"], ",") {
+					if val != "" {
+						directivesGet = append(directivesGet, strings.Trim(val, " "))
+					}
+				}
+				outTermFilterMap["directives"] = directivesGet
+				vzOutTermFilterSet = append(vzOutTermFilterSet, outTermFilterMap)
+			}
+			vzOutTermMap["relation_vz_rs_filt_att"] = vzOutTermFilterSet
+
+		}
+
+		vzOutTermSet := make([]interface{}, 0, 1)
+		vzOutTermSet = append(vzOutTermSet, vzOutTermMap)
+		d.Set("provider_to_consumer", vzOutTermSet)
 
 	} else {
 		d.Set("provider_to_consumer", nil)
