@@ -29,16 +29,14 @@ func resourceAciContractSubject() *schema.Resource {
 		SchemaVersion: 1,
 
 		CustomizeDiff: func(_ context.Context, diff *schema.ResourceDiff, v interface{}) error {
-			// ApplyBothDirections := diff.Get("apply_both_directions")
 			if diff.Get("apply_both_directions") == "yes" {
 				if len(diff.Get("consumer_to_provider").(*schema.Set).List()) != 0 || len(diff.Get("provider_to_consumer").(*schema.Set).List()) != 0 {
-					// diff.SetNew("consumer_to_provider", nil)
-					// diff.SetNew("provider_to_consumer", nil)
 					return errors.New("you cannot set consumer_to_provider and provider_to_consumer when apply_both_directions is set to yes")
 				}
 			}
 
-			result := false
+			changed_consumer_to_provider := false
+			changed_provider_to_consumer := false
 			if diff.HasChange("consumer_to_provider") {
 				old, new := diff.GetChange("consumer_to_provider")
 				oldInTerm := old.(*schema.Set).List()
@@ -48,14 +46,14 @@ func resourceAciContractSubject() *schema.Resource {
 					newInTermParam := newInTerm[0].(map[string]interface{})
 
 					if oldInTermParam["prio"] != newInTermParam["prio"] || oldInTermParam["target_dscp"] != newInTermParam["target_dscp"] || oldInTermParam["relation_vz_rs_in_term_graph_att"] != newInTermParam["relation_vz_rs_in_term_graph_att"] {
-						result = true
+						changed_consumer_to_provider = true
 					} else if oldInTermParam["relation_vz_rs_filt_att"] != newInTermParam["relation_vz_rs_filt_att"] {
 
 						oldInTermFilterList := oldInTermParam["relation_vz_rs_filt_att"].(*schema.Set).List()
 						newInTermFilterList := newInTermParam["relation_vz_rs_filt_att"].(*schema.Set).List()
 
 						if len(oldInTermFilterList) != len(newInTermFilterList) {
-							result = true
+							changed_consumer_to_provider = true
 						} else {
 							for _, oldInTermFilter := range oldInTermFilterList {
 								oldVzRsFiltAttMap := oldInTermFilter.(map[string]interface{})
@@ -67,24 +65,26 @@ func resourceAciContractSubject() *schema.Resource {
 
 									if oldVzRsFiltAttMap["filter_dn"] == newVzRsFiltAttMap["filter_dn"] {
 										found_same_filter_dn = true
-										if oldVzRsFiltAttMap["action"] != newVzRsFiltAttMap["action"] || oldVzRsFiltAttMap["priority_override"] != newVzRsFiltAttMap["priority_override"] || !reflect.DeepEqual(oldInTermFilterDirectives, newInTermFilterDirectives) {
+										if oldVzRsFiltAttMap["action"] != newVzRsFiltAttMap["action"] || !reflect.DeepEqual(oldInTermFilterDirectives, newInTermFilterDirectives) {
+											changed_consumer_to_provider = true
+											break
+										} else if oldVzRsFiltAttMap["priority_override"] != newVzRsFiltAttMap["priority_override"] {
 											if !(oldVzRsFiltAttMap["priority_override"] == "default" && newVzRsFiltAttMap["priority_override"] == "") {
-												result = true
+												changed_consumer_to_provider = true
 												break
 											}
 										}
-
 									}
 								}
 								if !found_same_filter_dn {
-									result = true
+									changed_consumer_to_provider = true
 									break
 								}
 							}
 						}
 					}
 				} else {
-					result = true
+					changed_consumer_to_provider = true
 				}
 			}
 
@@ -96,14 +96,14 @@ func resourceAciContractSubject() *schema.Resource {
 					oldOutTermParam := oldOutTerm[0].(map[string]interface{})
 					newOutTermParam := newOutTerm[0].(map[string]interface{})
 					if oldOutTermParam["prio"] != newOutTermParam["prio"] || oldOutTermParam["target_dscp"] != newOutTermParam["target_dscp"] || oldOutTermParam["relation_vz_rs_out_term_graph_att"] != newOutTermParam["relation_vz_rs_out_term_graph_att"] {
-						result = true
+						changed_provider_to_consumer = true
 					} else if oldOutTermParam["relation_vz_rs_filt_att"] != newOutTermParam["relation_vz_rs_filt_att"] {
 
 						oldOutTermFilterList := oldOutTermParam["relation_vz_rs_filt_att"].(*schema.Set).List()
 						newOutTermFilterList := newOutTermParam["relation_vz_rs_filt_att"].(*schema.Set).List()
 
 						if len(oldOutTermFilterList) != len(newOutTermFilterList) {
-							result = true
+							changed_provider_to_consumer = true
 						} else {
 							for _, oldOutTermFilter := range oldOutTermFilterList {
 								oldVzRsFiltAttMap := oldOutTermFilter.(map[string]interface{})
@@ -115,9 +115,12 @@ func resourceAciContractSubject() *schema.Resource {
 
 									if oldVzRsFiltAttMap["filter_dn"] == newVzRsFiltAttMap["filter_dn"] {
 										found_same_filter_dn = true
-										if oldVzRsFiltAttMap["action"] != newVzRsFiltAttMap["action"] || oldVzRsFiltAttMap["priority_override"] != newVzRsFiltAttMap["priority_override"] || !reflect.DeepEqual(oldOutTermFilterDirectives, newOutTermFilterDirectives) {
+										if oldVzRsFiltAttMap["action"] != newVzRsFiltAttMap["action"] || !reflect.DeepEqual(oldOutTermFilterDirectives, newOutTermFilterDirectives) {
+											changed_provider_to_consumer = true
+											break
+										} else if oldVzRsFiltAttMap["priority_override"] != newVzRsFiltAttMap["priority_override"] {
 											if !(oldVzRsFiltAttMap["priority_override"] == "default" && newVzRsFiltAttMap["priority_override"] == "") {
-												result = true
+												changed_provider_to_consumer = true
 												break
 											}
 										}
@@ -125,21 +128,21 @@ func resourceAciContractSubject() *schema.Resource {
 									}
 								}
 								if !found_same_filter_dn {
-									result = true
+									changed_provider_to_consumer = true
 									break
 								}
 							}
 						}
 					}
 				} else {
-					result = true
+					changed_provider_to_consumer = true
 				}
 			}
 
-			if result {
-				return nil
-			} else {
+			if !changed_consumer_to_provider {
 				diff.Clear("consumer_to_provider")
+			}
+			if !changed_provider_to_consumer {
 				diff.Clear("provider_to_consumer")
 			}
 			return nil
@@ -944,14 +947,6 @@ func resourceAciContractSubjectUpdate(ctx context.Context, d *schema.ResourceDat
 		vzSubjAttr.TargetDscp = TargetDscp.(string)
 	}
 	ApplyBothDirections := d.Get("apply_both_directions")
-
-	// if ApplyBothDirections == "yes" {
-	// 	if (d.HasChange("consumer_to_provider") || d.HasChange("provider_to_consumer")) && (d.Get("consumer_to_provider") != nil || d.Get("provider_to_consumer") != nil) {
-	// 		d.Set("consumer_to_provider", nil)
-	// 		d.Set("provider_to_consumer", nil)
-	// 		return diag.FromErr(fmt.Errorf("you cannot set consumer_to_provider and provider_to_consumer when apply_both_directions is set to yes"))
-	// 	}
-	// }
 
 	vzSubj := models.NewContractSubject(fmt.Sprintf("subj-%s", name), ContractDn, desc, vzSubjAttr)
 

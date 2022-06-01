@@ -26,7 +26,6 @@ resource "aci_contract_subject" "contract_subject" {
   name          = "demo_subject"
   annotation    = "tag_subject"
   cons_match_t  = "AtleastOne"
-  name_alias    = "alias_subject"
   prio          = "level1"
   prov_match_t  = "AtleastOne"
   rev_flt_ports = "yes"
@@ -46,7 +45,7 @@ resource "aci_l4_l7_service_graph_template" "service_graph2" {
 
 // apply_both_directions is not selected and there are two filters (consumer_to_provider and provider_to_consumer)
 resource "aci_contract_subject" "contract_subject_2" {
-  contract_dn           = aci_contract_subject.contract_subject.contract_dn
+  contract_dn           = aci_contract.democontract.id
   name                  = "contract_subject_2"
   rev_flt_ports         = "no"
   apply_both_directions = "no"
@@ -84,35 +83,6 @@ resource "aci_contract_subject" "contract_subject_2" {
       filter_dn = aci_filter.allow_icmp.id
     }
   }
-}
-
-
-resource "aci_filter" "test_filter" {
-  tenant_dn   = aci_tenant.tenant_for_contract.id
-  name        = "test_tf_filter"
-  description = "This filter is created by terraform ACI provider."
-}
-
-resource "aci_filter" "tf_filter" {
-  tenant_dn   = aci_tenant.tenant_for_contract.id
-  name        = "tf_filter"
-  description = "This filter is created by terraform ACI provider."
-}
-
-resource "aci_contract_subject_one_way_filter" "contract_subject_filter" {
-  contract_subject_dn = tolist(aci_contract_subject.contract_subject_2.consumer_to_provider)[0].id
-  action = "deny"
-  directives = ["log"]
-  priority_override = "default"
-  filter_dn = aci_filter.test_tf_filter.id
-}
-
-resource "aci_contract_subject_one_way_filter" "contract_subject_filter2" {
-  contract_subject_dn = tolist(aci_contract_subject.contract_subject_2.provider_to_consumer)[0].id
-  action = "permit"
-  directives = ["log"]
-  priority_override = "default"
-  filter_dn = aci_filter.tf_filter.id
 }
 
 data "aci_contract_subject" "example" {
