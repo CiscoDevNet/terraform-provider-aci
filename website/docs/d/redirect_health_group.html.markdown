@@ -1,5 +1,5 @@
 ---
-subcategory: "Tenant Policies"
+subcategory: "L4-L7 Services"
 layout: "aci"
 page_title: "ACI: aci_l4_l7_redirect_health_group"
 sidebar_current: "docs-aci-data-source-l4_l7_redirect_health_group"
@@ -38,3 +38,4 @@ data "aci_l4_l7_redirect_health_group" "example" {
 * `id` - Attribute id set to the Dn of the L4-L7 Redirect Health Group.
 * `annotation` - (Optional) Annotation of the L4-L7 Redirect Health Group object.
 * `name_alias` - (Optional) Name Alias of the L4-L7 Redirect Health Group object.
+* `description` - (Optional) Description of the L4-L7 Redirect Health Group object.

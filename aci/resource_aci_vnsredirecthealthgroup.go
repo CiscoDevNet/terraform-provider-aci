@@ -12,14 +12,14 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
-func resourceAciL4_L7RedirectHealthGroup() *schema.Resource {
+func resourceAciL4L7RedirectHealthGroup() *schema.Resource {
 	return &schema.Resource{
-		CreateContext: resourceAciL4_L7RedirectHealthGroupCreate,
-		ReadContext:   resourceAciL4_L7RedirectHealthGroupRead,
-		DeleteContext: resourceAciL4_L7RedirectHealthGroupDelete,
+		CreateContext: resourceAciL4L7RedirectHealthGroupCreate,
+		ReadContext:   resourceAciL4L7RedirectHealthGroupRead,
+		DeleteContext: resourceAciL4L7RedirectHealthGroupDelete,
 
 		Importer: &schema.ResourceImporter{
-			State: resourceAciL4_L7RedirectHealthGroupImport,
+			State: resourceAciL4L7RedirectHealthGroupImport,
 		},
 
 		SchemaVersion: 1,
@@ -38,19 +38,19 @@ func resourceAciL4_L7RedirectHealthGroup() *schema.Resource {
 	}
 }
 
-func getRemoteL4_L7RedirectHealthGroup(client *client.Client, dn string) (*models.L4_L7RedirectHealthGroup, error) {
+func getRemoteL4L7RedirectHealthGroup(client *client.Client, dn string) (*models.L4L7RedirectHealthGroup, error) {
 	vnsRedirectHealthGroupCont, err := client.Get(dn)
 	if err != nil {
 		return nil, err
 	}
-	vnsRedirectHealthGroup := models.L4_L7RedirectHealthGroupFromContainer(vnsRedirectHealthGroupCont)
+	vnsRedirectHealthGroup := models.L4L7RedirectHealthGroupFromContainer(vnsRedirectHealthGroupCont)
 	if vnsRedirectHealthGroup.DistinguishedName == "" {
-		return nil, fmt.Errorf("L4_L7RedirectHealthGroup %s not found", dn)
+		return nil, fmt.Errorf("L4 L7Redirect Health Group %s not found", dn)
 	}
 	return vnsRedirectHealthGroup, nil
 }
 
-func setL4_L7RedirectHealthGroupAttributes(vnsRedirectHealthGroup *models.L4_L7RedirectHealthGroup, d *schema.ResourceData) (*schema.ResourceData, error) {
+func setL4L7RedirectHealthGroupAttributes(vnsRedirectHealthGroup *models.L4L7RedirectHealthGroup, d *schema.ResourceData) (*schema.ResourceData, error) {
 	d.SetId(vnsRedirectHealthGroup.DistinguishedName)
 	d.Set("description", vnsRedirectHealthGroup.Description)
 	vnsRedirectHealthGroupMap, err := vnsRedirectHealthGroup.ToMap()
@@ -69,15 +69,15 @@ func setL4_L7RedirectHealthGroupAttributes(vnsRedirectHealthGroup *models.L4_L7R
 	return d, nil
 }
 
-func resourceAciL4_L7RedirectHealthGroupImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
+func resourceAciL4L7RedirectHealthGroupImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
 	log.Printf("[DEBUG] %s: Beginning Import", d.Id())
 	aciClient := m.(*client.Client)
 	dn := d.Id()
-	vnsRedirectHealthGroup, err := getRemoteL4_L7RedirectHealthGroup(aciClient, dn)
+	vnsRedirectHealthGroup, err := getRemoteL4L7RedirectHealthGroup(aciClient, dn)
 	if err != nil {
 		return nil, err
 	}
-	schemaFilled, err := setL4_L7RedirectHealthGroupAttributes(vnsRedirectHealthGroup, d)
+	schemaFilled, err := setL4L7RedirectHealthGroupAttributes(vnsRedirectHealthGroup, d)
 	if err != nil {
 		return nil, err
 	}
@@ -85,14 +85,14 @@ func resourceAciL4_L7RedirectHealthGroupImport(d *schema.ResourceData, m interfa
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciL4_L7RedirectHealthGroupCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	log.Printf("[DEBUG] L4_L7RedirectHealthGroup: Beginning Creation")
+func resourceAciL4L7RedirectHealthGroupCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+	log.Printf("[DEBUG] L4L7RedirectHealthGroup: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
 	name := d.Get("name").(string)
 	TenantDn := d.Get("tenant_dn").(string)
 
-	vnsRedirectHealthGroupAttr := models.L4_L7RedirectHealthGroupAttributes{}
+	vnsRedirectHealthGroupAttr := models.L4L7RedirectHealthGroupAttributes{}
 
 	nameAlias := ""
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
@@ -108,7 +108,7 @@ func resourceAciL4_L7RedirectHealthGroupCreate(ctx context.Context, d *schema.Re
 	if Name, ok := d.GetOk("name"); ok {
 		vnsRedirectHealthGroupAttr.Name = Name.(string)
 	}
-	vnsRedirectHealthGroup := models.NewL4_L7RedirectHealthGroup(fmt.Sprintf("svcCont/"+models.RnvnsRedirectHealthGroup, name), TenantDn, desc, nameAlias, vnsRedirectHealthGroupAttr)
+	vnsRedirectHealthGroup := models.NewL4L7RedirectHealthGroup(fmt.Sprintf("svcCont/"+models.RnvnsRedirectHealthGroup, name), TenantDn, desc, nameAlias, vnsRedirectHealthGroupAttr)
 
 	err := aciClient.Save(vnsRedirectHealthGroup)
 	if err != nil {
@@ -117,21 +117,21 @@ func resourceAciL4_L7RedirectHealthGroupCreate(ctx context.Context, d *schema.Re
 
 	d.SetId(vnsRedirectHealthGroup.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
-	return resourceAciL4_L7RedirectHealthGroupRead(ctx, d, m)
+	return resourceAciL4L7RedirectHealthGroupRead(ctx, d, m)
 }
 
-func resourceAciL4_L7RedirectHealthGroupRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceAciL4L7RedirectHealthGroupRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 
-	vnsRedirectHealthGroup, err := getRemoteL4_L7RedirectHealthGroup(aciClient, dn)
+	vnsRedirectHealthGroup, err := getRemoteL4L7RedirectHealthGroup(aciClient, dn)
 	if err != nil {
 		d.SetId("")
 		return nil
 	}
 
-	_, err = setL4_L7RedirectHealthGroupAttributes(vnsRedirectHealthGroup, d)
+	_, err = setL4L7RedirectHealthGroupAttributes(vnsRedirectHealthGroup, d)
 	if err != nil {
 		d.SetId("")
 		return nil
@@ -141,7 +141,7 @@ func resourceAciL4_L7RedirectHealthGroupRead(ctx context.Context, d *schema.Reso
 	return nil
 }
 
-func resourceAciL4_L7RedirectHealthGroupDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceAciL4L7RedirectHealthGroupDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 	aciClient := m.(*client.Client)
 	dn := d.Id()
