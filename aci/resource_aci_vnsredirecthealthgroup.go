@@ -45,7 +45,7 @@ func getRemoteL4L7RedirectHealthGroup(client *client.Client, dn string) (*models
 	}
 	vnsRedirectHealthGroup := models.L4L7RedirectHealthGroupFromContainer(vnsRedirectHealthGroupCont)
 	if vnsRedirectHealthGroup.DistinguishedName == "" {
-		return nil, fmt.Errorf("L4 L7Redirect Health Group %s not found", dn)
+		return nil, fmt.Errorf("L4-L7 Redirect Health Group %s not found", dn)
 	}
 	return vnsRedirectHealthGroup, nil
 }
@@ -61,7 +61,7 @@ func setL4L7RedirectHealthGroupAttributes(vnsRedirectHealthGroup *models.L4L7Red
 	if dn != vnsRedirectHealthGroup.DistinguishedName {
 		d.Set("tenant_dn", "")
 	} else {
-		d.Set("tenant_dn", strings.Split(GetParentDn(vnsRedirectHealthGroup.DistinguishedName, fmt.Sprintf("/"+models.RnvnsRedirectHealthGroup, vnsRedirectHealthGroupMap["name"])), "/svcCont")[0])
+		d.Set("tenant_dn", strings.Split(vnsRedirectHealthGroup.DistinguishedName, "/svcCont")[0])
 	}
 	d.Set("annotation", vnsRedirectHealthGroupMap["annotation"])
 	d.Set("name", vnsRedirectHealthGroupMap["name"])
@@ -86,7 +86,7 @@ func resourceAciL4L7RedirectHealthGroupImport(d *schema.ResourceData, m interfac
 }
 
 func resourceAciL4L7RedirectHealthGroupCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	log.Printf("[DEBUG] L4L7RedirectHealthGroup: Beginning Creation")
+	log.Printf("[DEBUG] L4-L7 Redirect Health Group: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
 	name := d.Get("name").(string)
