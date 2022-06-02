@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
+	"github.com/ciscoecosystem/aci-go-client/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -52,7 +53,7 @@ func dataSourceAciFilterRelationshipRead(ctx context.Context, d *schema.Resource
 	aciClient := m.(*client.Client)
 	tnVzFilterName := GetMOName(d.Get("filter_dn").(string))
 	ContractSubjectDn := d.Get("contract_subject_dn").(string)
-	rn := fmt.Sprintf("rsfiltAtt-%s", tnVzFilterName)
+	rn := fmt.Sprintf(models.RnvzRsFiltAtt, tnVzFilterName)
 	dn := fmt.Sprintf("%s/%s", ContractSubjectDn, rn)
 
 	vzRsFiltAtt, err := getRemoteFilter(aciClient, dn)
