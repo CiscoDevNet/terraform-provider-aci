@@ -130,7 +130,6 @@ func setIPSLAMonitoringPolicyAttributes(fvIPSLAMonitoringPol *models.IPSLAMonito
 		d.Set("tenant_dn", GetParentDn(fvIPSLAMonitoringPol.DistinguishedName, fmt.Sprintf("/"+models.RnfvIPSLAMonitoringPol, fvIPSLAMonitoringPolMap["name"])))
 	}
 	d.Set("annotation", fvIPSLAMonitoringPolMap["annotation"])
-	d.Set("http_method", fvIPSLAMonitoringPolMap["httpMethod"])
 	d.Set("http_uri", fvIPSLAMonitoringPolMap["httpUri"])
 	if fvIPSLAMonitoringPolMap["httpVersion"] == "HTTP10" {
 		d.Set("http_version", "HTTP/1.0")
@@ -185,10 +184,6 @@ func resourceAciIPSLAMonitoringPolicyCreate(ctx context.Context, d *schema.Resou
 		fvIPSLAMonitoringPolAttr.Annotation = Annotation.(string)
 	} else {
 		fvIPSLAMonitoringPolAttr.Annotation = "{}"
-	}
-
-	if HttpMethod, ok := d.GetOk("http_method"); ok {
-		fvIPSLAMonitoringPolAttr.HttpMethod = HttpMethod.(string)
 	}
 
 	if HttpUri, ok := d.GetOk("http_uri"); ok {
@@ -271,10 +266,6 @@ func resourceAciIPSLAMonitoringPolicyUpdate(ctx context.Context, d *schema.Resou
 		fvIPSLAMonitoringPolAttr.Annotation = Annotation.(string)
 	} else {
 		fvIPSLAMonitoringPolAttr.Annotation = "{}"
-	}
-
-	if HttpMethod, ok := d.GetOk("http_method"); ok {
-		fvIPSLAMonitoringPolAttr.HttpMethod = HttpMethod.(string)
 	}
 
 	if HttpUri, ok := d.GetOk("http_uri"); ok {

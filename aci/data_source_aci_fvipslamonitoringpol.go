@@ -24,11 +24,6 @@ func dataSourceAciIPSLAMonitoringPolicy() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
-			"http_method": {
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
 			"http_uri": {
 				Type:     schema.TypeString,
 				Optional: true,
