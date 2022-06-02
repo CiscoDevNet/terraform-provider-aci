@@ -308,6 +308,7 @@ func Provider() *schema.Provider {
 			"aci_concrete_interface":                       resourceAciConcreteInterface(),
 			"aci_l4_l7_logical_interface":                  resourceAciLogicalInterface(),
 			"aci_l4_l7_redirect_health_group":              resourceAciL4L7RedirectHealthGroup(),
+			"aci_ip_sla_monitoring_policy":                 resourceAciIPSLAMonitoringPolicy(),
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
@@ -537,6 +538,7 @@ func Provider() *schema.Provider {
 			"aci_concrete_interface":                       dataSourceAciConcreteInterface(),
 			"aci_l4_l7_logical_interface":                  dataSourceAciLogicalInterface(),
 			"aci_l4_l7_redirect_health_group":              dataSourceAciL4L7RedirectHealthGroup(),
+			"aci_ip_sla_monitoring_policy":                 dataSourceAciIPSLAMonitoringPolicy(),
 		},
 
 		ConfigureFunc: configureClient,
