@@ -15,7 +15,7 @@ func dataSourceAciEPgDef() *schema.Resource {
 		ReadContext:   dataSourceAciEPgDefRead,
 		SchemaVersion: 1,
 		Schema: AppendBaseAttrSchema(AppendNameAliasAttrSchema(map[string]*schema.Schema{
-			"leg_v_node_dn": {
+			"legacy_virtual_node_dn": {
 				Type:     schema.TypeString,
 				Required: true,
 			},
@@ -66,9 +66,9 @@ func setEPgDefAttributes(vnsEPgDef *models.EPgDef, d *schema.ResourceData) (*sch
 	}
 	dn := d.Id()
 	if dn != vnsEPgDef.DistinguishedName {
-		d.Set("leg_v_node_dn", "")
+		d.Set("legacy_virtual_node_dn", "")
 	} else {
-		d.Set("leg_v_node_dn", GetParentDn(vnsEPgDef.DistinguishedName, fmt.Sprintf("/"+models.RnvnsEPgDef, vnsEPgDefMap["name"])))
+		d.Set("legacy_virtual_node_dn", GetParentDn(vnsEPgDef.DistinguishedName, fmt.Sprintf("/"+models.RnvnsEPgDef, vnsEPgDefMap["name"])))
 	}
 	d.Set("name", vnsEPgDefMap["name"])
 	d.Set("encap", vnsEPgDefMap["encap"])
