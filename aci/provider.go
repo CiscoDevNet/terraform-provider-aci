@@ -539,6 +539,7 @@ func Provider() *schema.Provider {
 			"aci_l4_l7_logical_interface":                  dataSourceAciLogicalInterface(),
 			"aci_l4_l7_redirect_health_group":              dataSourceAciL4L7RedirectHealthGroup(),
 			"aci_ip_sla_monitoring_policy":                 dataSourceAciIPSLAMonitoringPolicy(),
+			"aci_epg_def":                                  dataSourceAciEPgDef(),
 		},
 
 		ConfigureFunc: configureClient,
