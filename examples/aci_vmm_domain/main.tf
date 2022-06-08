@@ -25,6 +25,7 @@ resource "aci_vmm_domain" "foovmm_domain" {
   delimiter           = "_"
   enable_ave          = "no"
   enable_tag          = "no"
+  enable_vm_folder    = "no"
   encap_mode          = "unknown"
   enf_pref            = "hw"
   ep_inventory_type   = "on-link"

@@ -75,6 +75,12 @@ func dataSourceAciVMMDomain() *schema.Resource {
 				Computed: true,
 			},
 
+			"enable_vm_folder": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+
 			"encap_mode": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,

@@ -52,6 +52,7 @@ data "aci_vmm_domain" "dev_vmmdom" {
 - `delimiter` - (Optional) Delimiter for object vmm domain.
 - `enable_ave` - (Optional) Flag to enable ACI Virtual Edge for object vmm domain.
 - `enable_tag` - (Optional) Flag enable tagging for object vmm domain.
+- `enable_vm_foler` - (Optional) Flag enable vm folder for object vmm domain.
 - `encap_mode` - (Optional) The layer 2 encapsulation protocol to use with the virtual switch.
 - `enf_pref` - (Optional) The switching enforcement preference. This determines whether switches can be done within the virtual switch (Local Switching) or whether all switched traffic must go through the fabric (No Local Switching).
 - `ep_inventory_type` - (Optional) Determines which end point inventory type to use for object VMM domain.
