@@ -35,6 +35,8 @@ type VMMDomainAttributes struct {
 
 	EnableTag string `json:",omitempty"`
 
+	EnableVmFolder string `json:",omitempty"`
+
 	EncapMode string `json:",omitempty"`
 
 	EnfPref string `json:",omitempty"`
@@ -94,6 +96,8 @@ func (vmmDomP *VMMDomain) ToMap() (map[string]string, error) {
 
 	A(vmmDomPMap, "enableTag", vmmDomP.EnableTag)
 
+	A(vmmDomPMap, "enableVmFolder", vmmDomP.EnableVmFolder)
+
 	A(vmmDomPMap, "encapMode", vmmDomP.EncapMode)
 
 	A(vmmDomPMap, "enfPref", vmmDomP.EnfPref)
@@ -147,6 +151,8 @@ func VMMDomainFromContainerList(cont *container.Container, index int) *VMMDomain
 			EnableAVE: G(VMMDomainCont, "enableAVE"),
 
 			EnableTag: G(VMMDomainCont, "enableTag"),
+
+			EnableVmFolder: G(VMMDomainCont, "enableVmFolder"),
 
 			EncapMode: G(VMMDomainCont, "encapMode"),
 

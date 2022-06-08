@@ -116,6 +116,16 @@ func resourceAciVMMDomain() *schema.Resource {
 				}, false),
 			},
 
+			"enable_vm_folder": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"no",
+					"yes",
+				}, false),
+			},
+
 			"encap_mode": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -313,6 +323,7 @@ func setVMMDomainAttributes(vmmDomP *models.VMMDomain, d *schema.ResourceData) (
 	d.Set("delimiter", vmmDomPMap["delimiter"])
 	d.Set("enable_ave", vmmDomPMap["enableAVE"])
 	d.Set("enable_tag", vmmDomPMap["enableTag"])
+	d.Set("enable_vm_folder", vmmDomPMap["enableVmFolder"])
 	d.Set("encap_mode", vmmDomPMap["encapMode"])
 	d.Set("enf_pref", vmmDomPMap["enfPref"])
 	d.Set("ep_inventory_type", vmmDomPMap["epInventoryType"])
@@ -390,6 +401,9 @@ func resourceAciVMMDomainCreate(ctx context.Context, d *schema.ResourceData, m i
 	}
 	if EnableTag, ok := d.GetOk("enable_tag"); ok {
 		vmmDomPAttr.EnableTag = EnableTag.(string)
+	}
+	if EnableVmFolder, ok := d.GetOk("enable_vm_folder"); ok {
+		vmmDomPAttr.EnableVmFolder = EnableVmFolder.(string)
 	}
 	if EncapMode, ok := d.GetOk("encap_mode"); ok {
 		vmmDomPAttr.EncapMode = EncapMode.(string)
@@ -629,6 +643,9 @@ func resourceAciVMMDomainUpdate(ctx context.Context, d *schema.ResourceData, m i
 	}
 	if EnableTag, ok := d.GetOk("enable_tag"); ok {
 		vmmDomPAttr.EnableTag = EnableTag.(string)
+	}
+	if EnableVmFolder, ok := d.GetOk("enable_vm_folder"); ok {
+		vmmDomPAttr.EnableVmFolder = EnableVmFolder.(string)
 	}
 	if EncapMode, ok := d.GetOk("encap_mode"); ok {
 		vmmDomPAttr.EncapMode = EncapMode.(string)
