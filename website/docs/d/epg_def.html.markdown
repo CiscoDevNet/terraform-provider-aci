@@ -7,37 +7,34 @@ description: |-
   Data source for ACI EPg Def
 ---
 
-# aci_e_pg_def #
+# aci_epg_def #
 
 Data source for ACI EPg Def
 
 ## API Information ##
 
 * `Class` - vnsEPgDef
-* `Distinguished Name` - uni/tn-{name}/GraphInst_C-[{ctrctDn}]-G-[{graphDn}]-S-[{scopeDn}]/NodeInst-{name}/LegVNode-{name}/EPgDef-{name}
+* `Distinguished Name` - uni/tn-{tenant_name}/GraphInst_C-[{ctrctDn}]-G-[{graphDn}]-S-[{scopeDn}]/NodeInst-{node_name}/LegVNode-{virtual_node_name}/EPgDef-{name}
 
 ## Example Usage ##
 
 ```hcl
-data "aci_e_pg_def" "example" {
-  name                    = "example"
-  legacy_virtual_node_dn  = join("", ["uni/tn-Symmetric-PBR/GraphInst_C-[uni/tn-Symmetric-PBR/brc-intra-web]",
-  "-G-[uni/tn-Symmetric-PBR/AbsGraph-FW]-S-[uni/tn-Symmetric-PBR/ctx-vrf1]/NodeInst-node1/LegVNode-0"])
+data "aci_epg_def" "example" {
+  logical_context_dn = "uni/tn-Symmetric-PBR/ldevCtx-c-intra-web-g-FW-n-node1/lIfCtx-c-consumer"
 }
 ```
 
 ## Argument Reference ##
-
-* `legacy_virtual_node_dn` - (Required) Distinguished name of the parent Legacy Virtual Node object.
-* `name` - (Required) Name of the EPgDef object.
-
+* `logical_context_dn` - (Required) Distinguished name of the Logical Interface Context.
+* 
 ## Attribute Reference ##
 * `id` - Attribute id set to the Dn of EPgDef.
+* `legacy_virtual_node_dn` - Distinguished name of the parent Legacy Virtual Node object.
+* `name` - Name of the EPgDef object.
 * `annotation` - Annotation of the EPgDef object.
 * `name_alias` - Name Alias of the EPgDef object.
 * `encap` - The VLAN encapsulation tag.
 * `fabric_encap` - The VXLAN encapsulation tag.
 * `delete_pbr_scenario` - The boolean value for deleting Policy Based Routing. 
 * `member_type` - The type of member for the EPgDef object.
-* `logical_context_dn` - Distinguished name of the Logical Interface Context.
 * `router_id` - The IP address of the routing device.

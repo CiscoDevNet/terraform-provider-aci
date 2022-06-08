@@ -15,13 +15,19 @@ func dataSourceAciEPgDef() *schema.Resource {
 		ReadContext:   dataSourceAciEPgDefRead,
 		SchemaVersion: 1,
 		Schema: AppendBaseAttrSchema(AppendNameAliasAttrSchema(map[string]*schema.Schema{
-			"legacy_virtual_node_dn": {
+			"logical_context_dn": {
 				Type:     schema.TypeString,
 				Required: true,
 			},
+			"legacy_virtual_node_dn": {
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
 			"name": {
 				Type:     schema.TypeString,
-				Required: true,
+				Optional: true,
+				Computed: true,
 			},
 			"encap": {
 				Type:     schema.TypeString,
@@ -34,11 +40,6 @@ func dataSourceAciEPgDef() *schema.Resource {
 				Computed: true,
 			},
 			"delete_pbr_scenario": {
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-			"logical_context_dn": {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
@@ -77,11 +78,12 @@ func setEPgDefAttributes(vnsEPgDef *models.EPgDef, d *schema.ResourceData) (*sch
 	d.Set("member_type", vnsEPgDefMap["membType"])
 	d.Set("logical_context_dn", vnsEPgDefMap["lIfCtxDn"])
 	d.Set("router_id", vnsEPgDefMap["rtrId"])
+	d.Set("name_alias", vnsEPgDefMap["nameAlias"])
 	return d, nil
 }
 
 func getRemoteEPgDef(client *client.Client, dn string) (*models.EPgDef, error) {
-	vnsEPgDefCont, err := client.Get(dn)
+	vnsEPgDefCont, err := client.GetViaURL("api/node/class/vnsEPgDef.json?query-target-filter=and(eq(vnsEPgDef.lIfCtxDn," + `"` + dn + `"` + "))")
 	if err != nil {
 		return nil, err
 	}
@@ -94,17 +96,14 @@ func getRemoteEPgDef(client *client.Client, dn string) (*models.EPgDef, error) {
 
 func dataSourceAciEPgDefRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	aciClient := m.(*client.Client)
-	name := d.Get("name").(string)
-	LegVNodeDn := d.Get("leg_v_node_dn").(string)
-	rn := fmt.Sprintf(models.RnvnsEPgDef, name)
-	dn := fmt.Sprintf("%s/%s", LegVNodeDn, rn)
+	LogicalContextDn := d.Get("logical_context_dn").(string)
 
-	vnsEPgDef, err := getRemoteEPgDef(aciClient, dn)
+	vnsEPgDef, err := getRemoteEPgDef(aciClient, LogicalContextDn)
 	if err != nil {
 		return nil
 	}
 
-	d.SetId(dn)
+	d.SetId(vnsEPgDef.DistinguishedName)
 
 	_, err = setEPgDefAttributes(vnsEPgDef, d)
 	if err != nil {
