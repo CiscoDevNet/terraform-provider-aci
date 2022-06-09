@@ -1,8 +1,8 @@
 ---
 subcategory: "L4-L7 Services"
 layout: "aci"
-page_title: "ACI: aci_epg_def"
-sidebar_current: "docs-aci-data-source-epg_def"
+page_title: "ACI: aci_l4_l7_deployed_graph_connector_vlan"
+sidebar_current: "docs-aci-data-source-l4_l7_deployed_graph_connector_vlan"
 description: |-
   Data source for ACI EPg Def
 ---
@@ -19,7 +19,7 @@ Data source for ACI EPg Def
 ## Example Usage ##
 
 ```hcl
-data "aci_epg_def" "example" {
+data "aci_l4_l7_deployed_graph_connector_vlan" "example" {
   logical_context_dn = "uni/tn-Symmetric-PBR/ldevCtx-c-intra-web-g-FW-n-node1/lIfCtx-c-consumer"
 }
 ```
@@ -29,7 +29,6 @@ data "aci_epg_def" "example" {
 * 
 ## Attribute Reference ##
 * `id` - Attribute id set to the Dn of EPgDef.
-* `legacy_virtual_node_dn` - Distinguished name of the parent Legacy Virtual Node object.
 * `name` - Name of the EPgDef object.
 * `annotation` - Annotation of the EPgDef object.
 * `name_alias` - Name Alias of the EPgDef object.

@@ -299,10 +299,10 @@ resource "aci_destination_of_redirected_traffic" "traffic" {
   relation_vns_rs_redirect_health_group = aci_l4_l7_redirect_health_group.health_group.id
 }
 
-data "aci_epg_def" "example1" {
+data "aci_l4_l7_deployed_graph_connector_vlan" "example1" {
   logical_context_dn = aci_logical_interface_context.consumer.id
 }
 
-data "aci_epg_def" "example2" {
+data "aci_l4_l7_deployed_graph_connector_vlan" "example2" {
   logical_context_dn = aci_logical_interface_context.provider.id
 }

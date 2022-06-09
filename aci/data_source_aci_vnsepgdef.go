@@ -19,11 +19,6 @@ func dataSourceAciEPgDef() *schema.Resource {
 				Type:     schema.TypeString,
 				Required: true,
 			},
-			"legacy_virtual_node_dn": {
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
 			"name": {
 				Type:     schema.TypeString,
 				Optional: true,
@@ -61,16 +56,12 @@ func dataSourceAciEPgDef() *schema.Resource {
 func setEPgDefAttributes(vnsEPgDef *models.EPgDef, d *schema.ResourceData) (*schema.ResourceData, error) {
 	d.SetId(vnsEPgDef.DistinguishedName)
 	d.Set("description", vnsEPgDef.Description)
+
 	vnsEPgDefMap, err := vnsEPgDef.ToMap()
 	if err != nil {
 		return d, err
 	}
-	dn := d.Id()
-	if dn != vnsEPgDef.DistinguishedName {
-		d.Set("legacy_virtual_node_dn", "")
-	} else {
-		d.Set("legacy_virtual_node_dn", GetParentDn(vnsEPgDef.DistinguishedName, fmt.Sprintf("/"+models.RnvnsEPgDef, vnsEPgDefMap["name"])))
-	}
+
 	d.Set("name", vnsEPgDefMap["name"])
 	d.Set("encap", vnsEPgDefMap["encap"])
 	d.Set("fabric_encap", vnsEPgDefMap["fabEncap"])
