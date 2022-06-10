@@ -4,12 +4,12 @@ layout: "aci"
 page_title: "ACI: aci_l4_l7_deployed_graph_connector_vlan"
 sidebar_current: "docs-aci-data-source-l4_l7_deployed_graph_connector_vlan"
 description: |-
-  Data source for ACI EPg Def
+  Data Source for ACI L4-L7 Deployed Graph Connector VLAN
 ---
 
 # aci_epg_def #
 
-Data source for ACI EPg Def
+Data Source for ACI L4-L7 Deployed Graph Connector VLAN
 
 ## API Information ##
 

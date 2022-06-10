@@ -44,25 +44,28 @@ resource "aci_application_epg" "consumer_epg" {
   application_profile_dn = aci_application_profile.terraform_ap.id
   name                   = "consumer_epg"
   relation_fv_rs_bd      = aci_bridge_domain.consumer_bd.id
-
 }
 
 resource "aci_application_epg" "provider_epg" {
   application_profile_dn = aci_application_profile.terraform_ap.id
   name                   = "provider_epg"
   relation_fv_rs_bd      = aci_bridge_domain.provider_bd.id
+}
 
+data "aci_vmm_domain" "vmm_dom" {
+  provider_profile_dn  = "uni/vmmp-VMware"
+  name                 = "VMware-VMM"
 }
 
 resource "aci_epg_to_domain" "consumer_epg" {
   application_epg_dn = aci_application_epg.consumer_epg.id
-  tdn                = "uni/vmmp-VMware/dom-VMware-VMM"
+  tdn                = data.aci_vmm_domain.vmm_dom.id
   res_imedcy         = "immediate"
 }
 
 resource "aci_epg_to_domain" "provider_epg" {
   application_epg_dn = aci_application_epg.provider_epg.id
-  tdn                = "uni/vmmp-VMware/dom-VMware-VMM"
+  tdn                = data.aci_vmm_domain.vmm_dom.id
   res_imedcy         = "immediate"
 }
 
@@ -144,7 +147,7 @@ resource "aci_l4_l7_device" "virtual_device" {
   service_type     = "ADC"
   trunking         = "no"
   relation_vns_rs_al_dev_to_dom_p {
-    domain_dn = "uni/vmmp-VMware/dom-VMware-VMM"
+    domain_dn = data.aci_vmm_domain.vmm_dom.id
   }
 }
 
@@ -224,11 +227,15 @@ resource "aci_logical_interface_context" "provider" {
   relation_vns_rs_l_if_ctx_to_svc_redirect_pol = aci_service_redirect_policy.service_policy.id
 }
 
+data "aci_vmm_controller" "controller" {
+  vmm_domain_dn = data.aci_vmm_domain.vmm_dom.id
+  name          = "DMZ-vcenter"
+}
 
 resource "aci_concrete_device" "virtual_concrete" {
   l4_l7_device_dn   = aci_l4_l7_device.virtual_device.id
   name              = "virtual-Device"
-  vmm_controller_dn = "uni/vmmp-VMware/dom-VMware-VMM/ctrlr-DMZ-vcenter"
+  vmm_controller_dn = data.aci_vmm_controller.controller.id
   vm_name           = "VMware-VMM"
 }
 
