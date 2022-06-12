@@ -16,6 +16,10 @@ Data Source for ACI L4-L7 Deployed Graph Connector VLAN
 * `Class` - vnsEPgDef
 * `Distinguished Name` - uni/tn-{tenant_name}/GraphInst_C-[{ctrctDn}]-G-[{graphDn}]-S-[{scopeDn}]/NodeInst-{node_name}/LegVNode-{virtual_node_name}/EPgDef-{name}
 
+## GUI Information ##
+
+* `Location` -  Tenant -> {tenant_name} -> Services -> L4-L7 -> Deployed Graph Instance -> {graph_name} -> Function Connector
+
 ## Example Usage ##
 
 ```hcl
