@@ -1,3 +1,16 @@
+## 2.3.0 (June 11, 2022)
+IMPROVEMENTS:
+Add datasource aci_l4_l7_deployed_graph_connector_vlan
+Add resource and datasource for aci_ip_sla_monitoring_policy (#881)
+Add resources and datasources aci_contract_subject_filter and aci_contract_subject_one_way_filter and support for one-way contracts in aci_contract_subject (#839).
+Add resources and datasources aci_l4_l7_redirect_health_group (vnsRedirectHealthGroup), aci_l4_l7_logical_interface (vnsLIf), aci_l4_l7_device (vnsLDevVip), aci_l4_l7_concrete_interface (vnsCIf) and aci_l4_l7_concrete_device (vnsCDev) (#861, #865, #866, #873, #877)
+Add set_dampening block attribute to the aci_action_rule_profile resource and datasource (#857)
+Add enable_vm_folder attribute to aci_vmm_domain (#888)
+
+BUG FIXES:
+Add example for aci_user_security_domain and aci_security_domain_role
+Set filter_ids and filter_entry_ids to computed in aci_contract to fix idempotency issue (#883)
+
 ## 2.2.1 (May 13, 2022)
 BUG FIXES:
 - Fix 71 resources to not fail if object does not exist when refreshing state.
