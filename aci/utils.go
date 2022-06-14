@@ -327,3 +327,11 @@ func containsString(s []string, e string) bool {
 	}
 	return false
 }
+
+func allowEmpty(e error, a bool) error {
+	if a && e.Error() == "Error retrieving Object: Object may not exists" {
+		return nil
+	} else {
+		return e
+	}
+}

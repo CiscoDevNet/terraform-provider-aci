@@ -19,6 +19,7 @@ data "aci_client_end_point" "check" {
   mac                 = "25:56:68:78:98:74"
   ip                  = "1.2.3.4"
   vlan                = "5"
+  allow_empty_result  = true
 }
 
 ```
@@ -29,6 +30,7 @@ data "aci_client_end_point" "check" {
 - `mac` - (Optional) MAC address of the object client end point.
 - `ip` - (Optional) IP address of the object client end point.
 - `vlan` - (Optional) VLAN for the object client end point.
+- `allow_empty_result` - (Optional) Empty return instead of error when client is not found. Default value is "false". 
 
 ## Attribute Reference
 

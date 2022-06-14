@@ -18,9 +18,8 @@ func dataSourceAciClientEndPoint() *schema.Resource {
 
 		SchemaVersion: 1,
 
-		Schema: AppendBaseAttrSchema(map[string]*schema.Schema{
-			"name": &schema.Schema{
-				Type:     schema.TypeString,
+		Schema: AppendAttrSchemas(map[string]*schema.Schema{
+			"name": &schema.Schema{Type: schema.TypeString,
 				Optional: true,
 				Computed: true,
 			},
@@ -120,7 +119,7 @@ func dataSourceAciClientEndPoint() *schema.Resource {
 					},
 				},
 			},
-		}),
+		}, GetBaseAttrSchema(), GetAllowEmptyAttrSchema()),
 	}
 }
 
@@ -193,7 +192,7 @@ func extractEndpointPaths(cont *container.Container) ([]string, error) {
 	return paths, nil
 }
 
-func getRemoteClientEndPoint(client *client.Client, query string) (objMap []interface{}, objdns []string, err error) {
+func getRemoteClientEndPoint(client *client.Client, query string, allowEmptyResult bool) (objMap []interface{}, objdns []string, err error) {
 	baseURL := "/api/node/class"
 
 	var duURL string
@@ -205,7 +204,7 @@ func getRemoteClientEndPoint(client *client.Client, query string) (objMap []inte
 
 	fvCEpCont, err := client.GetViaURL(duURL)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, allowEmpty(err, allowEmptyResult)
 	}
 
 	objects := make([]interface{}, 0, 1)
@@ -277,7 +276,9 @@ func dataSourceAciClientEndPointRead(d *schema.ResourceData, m interface{}) erro
 		}
 	}
 
-	objects, dns, err := getRemoteClientEndPoint(aciClient, queryString)
+	allowEmptyResult := d.Get("allow_empty_result")
+
+	objects, dns, err := getRemoteClientEndPoint(aciClient, queryString, allowEmptyResult.(bool))
 	if err != nil {
 		return err
 	}
