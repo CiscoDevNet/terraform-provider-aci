@@ -158,8 +158,7 @@ func resourceAciImportedContractCreate(ctx context.Context, d *schema.ResourceDa
 
 	if relationTovzRsIf, ok := d.GetOk("relation_vz_rs_if"); ok {
 		relationParam := relationTovzRsIf.(string)
-		relationParamName := GetMOName(relationParam)
-		err = aciClient.CreateRelationvzRsIfFromImportedContract(vzCPIf.DistinguishedName, relationParamName)
+		err = aciClient.CreateRelationvzRsIfFromImportedContract(vzCPIf.DistinguishedName, relationParam)
 		if err != nil {
 			return diag.FromErr(err)
 
