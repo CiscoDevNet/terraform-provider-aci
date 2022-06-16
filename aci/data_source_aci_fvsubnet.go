@@ -3,8 +3,10 @@ package aci
 import (
 	"context"
 	"fmt"
+	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
+	"github.com/ciscoecosystem/aci-go-client/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -62,6 +64,32 @@ func dataSourceAciSubnet() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			// EP Reachability
+			"next_hop_addr": {
+				Type:          schema.TypeString,
+				Optional:      true,
+				ForceNew:      true,
+				ConflictsWith: []string{"msnlb", "anycast_mac"},
+				Computed:      true,
+			},
+			// MSNLB
+			"msnlb": {
+				Optional: true,
+				Type:     schema.TypeMap,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+				ConflictsWith: []string{"next_hop_addr", "anycast_mac"},
+				Computed:      true,
+			},
+			// Anycast MAC
+			"anycast_mac": {
+				Type:          schema.TypeString,
+				Optional:      true,
+				ForceNew:      true,
+				ConflictsWith: []string{"msnlb", "next_hop_addr"},
+				Computed:      true,
+			},
 		}),
 	}
 }
@@ -86,5 +114,44 @@ func dataSourceAciSubnetRead(ctx context.Context, d *schema.ResourceData, m inte
 	if err != nil {
 		return diag.FromErr(err)
 	}
+
+	// ipNexthopEpP - Beginning Read
+	ipNexthopEpPParentDn := dn + "/epReach"
+	log.Printf("[DEBUG] %s: ipNexthopEpP - Beginning Read with parent DN", ipNexthopEpPParentDn)
+	_, err = getAndSetNexthopEpPReachability(aciClient, ipNexthopEpPParentDn, d)
+	if err == nil {
+		ipNexthopEpPDn := dn + "/epReach/" + fmt.Sprintf(models.RnipNexthopEpP, d.Get("next_hop_addr"))
+		log.Printf("[DEBUG] %s: ipNexthopEpP - Read finished successfully", ipNexthopEpPDn)
+	} else {
+		log.Printf("[DEBUG] %s: ipNexthopEpP - Object not present in the parent", ipNexthopEpPParentDn)
+	}
+	// ipNexthopEpP - Read finished successfully
+
+	// fvEpNlb - Beginning Read
+	fvEpNlbDn := dn + fmt.Sprintf("/"+models.RnfvEpNlb)
+	fvEpNlb, err := getRemoteNlbEndpoint(aciClient, fvEpNlbDn)
+	if err == nil {
+		log.Printf("[DEBUG] %s: fvEpNlb - Beginning Read", fvEpNlbDn)
+		_, err = setNlbEndpointAttributes(fvEpNlb, d)
+		if err != nil {
+			return nil
+		}
+		log.Printf("[DEBUG] %s: fvEpNlb - Read finished successfully", fvEpNlbDn)
+	} else {
+		d.Set("msnlb", nil)
+	}
+	// fvEpNlb - Read finished successfully
+
+	// fvEpAnycast - Beginning of Read
+	log.Printf("[DEBUG] %s: fvEpAnycast - Beginning Read with parent DN", dn)
+	_, err = getAndSetAnycastMac(aciClient, dn, d)
+	if err == nil {
+		fvEpAnycastDn := dn + "/" + fmt.Sprintf(models.RnfvEpAnycast, d.Get("anycast_mac"))
+		log.Printf("[DEBUG] %s: fvEpAnycast - Read finished successfully", fvEpAnycastDn)
+	} else {
+		log.Printf("[DEBUG] %s: fvEpAnycast - Object not present in the parent", dn)
+	}
+	// fvEpAnycast - Read finished successfully
+
 	return nil
 }
