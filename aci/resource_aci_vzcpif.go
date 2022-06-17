@@ -222,12 +222,11 @@ func resourceAciImportedContractUpdate(ctx context.Context, d *schema.ResourceDa
 
 	if d.HasChange("relation_vz_rs_if") {
 		_, newRelParam := d.GetChange("relation_vz_rs_if")
-		newRelParamName := GetMOName(newRelParam.(string))
 		err = aciClient.DeleteRelationvzRsIfFromImportedContract(vzCPIf.DistinguishedName)
 		if err != nil {
 			return diag.FromErr(err)
 		}
-		err = aciClient.CreateRelationvzRsIfFromImportedContract(vzCPIf.DistinguishedName, newRelParamName)
+		err = aciClient.CreateRelationvzRsIfFromImportedContract(vzCPIf.DistinguishedName, newRelParam.(string))
 		if err != nil {
 			return diag.FromErr(err)
 		}
