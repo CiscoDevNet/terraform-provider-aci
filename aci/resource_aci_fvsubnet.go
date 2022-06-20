@@ -871,7 +871,7 @@ func resourceAciSubnetUpdate(ctx context.Context, d *schema.ResourceData, m inte
 			fvEpAnycastAttr := models.AnycastEndpointAttributes{}
 			fvEpAnycastAttr.Mac = anycastMac.(string)
 
-			AnycastMacList, err := aciClient.ListAnycastMacs(fvSubnet.DistinguishedName)
+			AnycastMacList, err := aciClient.ListAnycastEndpoint(fvSubnet.DistinguishedName)
 
 			if err != nil {
 				return diag.FromErr(err)
@@ -893,7 +893,7 @@ func resourceAciSubnetUpdate(ctx context.Context, d *schema.ResourceData, m inte
 
 			log.Printf("[DEBUG] %s: fvEpAnycast - Update finished successfully", fvEpAnycast.DistinguishedName)
 		} else {
-			AnycastMacList, err := aciClient.ListAnycastMacs(fvSubnet.DistinguishedName)
+			AnycastMacList, err := aciClient.ListAnycastEndpoint(fvSubnet.DistinguishedName)
 			if err != nil {
 				return diag.FromErr(err)
 			}
