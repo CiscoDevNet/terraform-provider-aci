@@ -31,6 +31,6 @@ data "aci_client_end_point" "check" {
 
 resource "aci_destination_of_redirected_traffic" "example" {
   service_redirect_policy_dn  = aci_service_redirect_policy.test-srp.id
-  ip                          = "${data.aci_client_end_point.check.fvcep_objects.0.ip}"
-  mac                         = "${data.aci_client_end_point.check.fvcep_objects.0.mac}"
+  ip                          = data.aci_client_end_point.check.fvcep_objects.0.ip
+  mac                         = data.aci_client_end_point.check.fvcep_objects.0.mac
 }
