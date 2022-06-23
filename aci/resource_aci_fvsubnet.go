@@ -128,27 +128,43 @@ func resourceAciSubnet() *schema.Resource {
 			"next_hop_addr": {
 				Type:          schema.TypeString,
 				Optional:      true,
-				ForceNew:      true,
 				ConflictsWith: []string{"msnlb", "anycast_mac"},
-				Computed:      true,
 			},
 			// MSNLB
 			"msnlb": {
-				Optional: true,
-				Type:     schema.TypeMap,
-				Elem: &schema.Schema{
-					Type: schema.TypeString,
-				},
-				Computed:      true,
+				Type:          schema.TypeSet,
+				Optional:      true,
+				MaxItems:      1,
 				ConflictsWith: []string{"next_hop_addr", "anycast_mac"},
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"mac": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+							Default:  "00:00:00:00:00:00",
+						},
+						"group": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+							Default:  "0.0.0.0",
+						},
+						"mode": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+							ValidateFunc: validation.StringInSlice([]string{
+								"mode-mcast--static",
+								"mode-uc",
+								"mode-mcast-igmp",
+							}, false),
+						},
+					},
+				},
 			},
 			// Anycast MAC
 			"anycast_mac": {
 				Type:          schema.TypeString,
 				Optional:      true,
-				ForceNew:      true,
 				ConflictsWith: []string{"msnlb", "next_hop_addr"},
-				Computed:      true,
 			},
 		}),
 	}
@@ -181,10 +197,14 @@ func setNlbEndpointAttributes(fvEpNlb *models.NlbEndpoint, d *schema.ResourceDat
 	if err != nil {
 		return d, err
 	}
-	newContent := make(map[string]interface{})
-	newContent["mode"] = fvEpNlbMap["mode"]
-	newContent["group"] = fvEpNlbMap["group"]
-	newContent["mac"] = fvEpNlbMap["mac"]
+
+	newContent := make([]map[string]string, 0, 1)
+	newContent = append(newContent, map[string]string{
+		"mode":  fvEpNlbMap["mode"],
+		"group": fvEpNlbMap["group"],
+		"mac":   fvEpNlbMap["mac"],
+	})
+
 	d.Set("msnlb", newContent)
 	return d, nil
 }
@@ -532,7 +552,7 @@ func resourceAciSubnetCreate(ctx context.Context, d *schema.ResourceData, m inte
 		log.Printf("[DEBUG] fvEpReachability: Beginning Creation")
 
 		fvEpReachabilityAttr := models.EpReachabilityAttributes{}
-		fvEpReachability := models.NewEpReachability(fmt.Sprintf("epReach"), fvSubnet.DistinguishedName, fvEpReachabilityAttr)
+		fvEpReachability := models.NewEpReachability("epReach", fvSubnet.DistinguishedName, fvEpReachabilityAttr)
 
 		ep_reachability_create_err := aciClient.Save(fvEpReachability)
 		if ep_reachability_create_err != nil {
@@ -553,45 +573,25 @@ func resourceAciSubnetCreate(ctx context.Context, d *schema.ResourceData, m inte
 		if next_hop_addr_create_err != nil {
 			return diag.FromErr(next_hop_addr_create_err)
 		}
-
 		log.Printf("[DEBUG] %s: Creation finished successfully", ipNexthopEpP.DistinguishedName)
-
 	}
 
 	// fvEpNlb - Create
 	if msnlb, ok := d.GetOk("msnlb"); ok {
 		log.Printf("[DEBUG] fvEpNlb: Beginning Creation")
 
+		msnlbMap := msnlb.(*schema.Set).List()[0]
+		innerMap := msnlbMap.(map[string]interface{})
+		var mode, group, mac string
+
+		mode = innerMap["mode"].(string)
+		group = innerMap["group"].(string)
+		mac = innerMap["mac"].(string)
+
 		fvEpNlbAttr := models.NlbEndpointAttributes{}
-
-		msnlbMap := toStrMap(msnlb.(map[string]interface{}))
-
-		fvEpNlbAttr.Mode = msnlbMap["mode"]
-
-		if msnlbMap["mode"] == "mode-mcast--static" || msnlbMap["mode"] == "mode-uc" {
-			fvEpNlbAttr.Mac = msnlbMap["mac"]
-			_, flag := msnlbMap["group"]
-			if flag {
-				if msnlbMap["group"] != "0.0.0.0" && msnlbMap["group"] != "" {
-					return diag.FromErr(fmt.Errorf("Invalid configuration, \"group\" must be \"0.0.0.0\" or empty(\"\") string when the mode is other than \"mode-mcast-igmp\""))
-				}
-			} else {
-				return diag.FromErr(fmt.Errorf("Invalid configuration, \"group\" must be \"0.0.0.0\" or empty(\"\") string when the mode is other than \"mode-mcast-igmp\""))
-			}
-		}
-
-		if msnlbMap["mode"] == "mode-mcast-igmp" {
-			fvEpNlbAttr.Group = msnlbMap["group"]
-			_, flag := msnlbMap["mac"]
-			if flag {
-				if msnlbMap["mac"] != "00:00:00:00:00:00" && msnlbMap["mac"] != "" {
-					return diag.FromErr(fmt.Errorf("Invalid configuration, \"mac\" must be \"00:00:00:00:00:00\" or empty(\"\") string when the mode is \"mode-mcast-igmp\""))
-				}
-			} else {
-				return diag.FromErr(fmt.Errorf("Invalid configuration, \"mac\" must be \"00:00:00:00:00:00\" or empty(\"\") string when the mode is \"mode-mcast-igmp\""))
-			}
-		}
-
+		fvEpNlbAttr.Mac = mac
+		fvEpNlbAttr.Group = group
+		fvEpNlbAttr.Mode = mode
 		fvEpNlb := models.NewNlbEndpoint(fmt.Sprintf(models.RnfvEpNlb), fvSubnet.DistinguishedName, "", "", fvEpNlbAttr)
 
 		msnlb_create_err := aciClient.Save(fvEpNlb)
@@ -614,7 +614,6 @@ func resourceAciSubnetCreate(ctx context.Context, d *schema.ResourceData, m inte
 		if anycast_create_err != nil {
 			return diag.FromErr(anycast_create_err)
 		}
-
 		log.Printf("[DEBUG] %s: Creation finished successfully", fvEpAnycast.DistinguishedName)
 	}
 
@@ -758,145 +757,27 @@ func resourceAciSubnetUpdate(ctx context.Context, d *schema.ResourceData, m inte
 	}
 
 	// fvEpReachability - Update
-	if d.HasChange("next_hop_addr") {
-		if next_hop_addr, ok := d.GetOk("next_hop_addr"); ok {
-			log.Printf("[DEBUG] fvEpReachability - Beginning Update")
+	if d.HasChange("next_hop_addr") || d.HasChange("msnlb") || d.HasChange("anycast_mac") {
 
-			fvEpReachabilityAttr := models.EpReachabilityAttributes{}
-
-			nextHopAddrDn := fvSubnet.DistinguishedName + fmt.Sprintf("/"+models.RnfvEpReachability)
-
-			ep_reachability_delete_error := aciClient.DeleteByDn(nextHopAddrDn, "fvEpReachability")
-			if ep_reachability_delete_error != nil {
-				return diag.FromErr(ep_reachability_delete_error)
-			}
-
-			fvEpReachability := models.NewEpReachability(fmt.Sprintf("epReach"), fvSubnet.DistinguishedName, fvEpReachabilityAttr)
-
-			ep_reachability_update_err := aciClient.Save(fvEpReachability)
-			if ep_reachability_update_err != nil {
-				return diag.FromErr(ep_reachability_update_err)
-			}
-
-			log.Printf("[DEBUG] ipNexthopEpP: Beginning Update")
-
-			ipNexthopEpPAttr := models.NexthopEpPReachabilityAttributes{}
-
-			ipNexthopEpPAttr.NhAddr = next_hop_addr.(string)
-
-			ipNexthopEpP := models.NewNexthopEpPReachability(fmt.Sprintf(models.RnipNexthopEpP, next_hop_addr), fvEpReachability.DistinguishedName, "", "", ipNexthopEpPAttr)
-
-			next_hop_addr_update_err := aciClient.Save(ipNexthopEpP)
-			if next_hop_addr_update_err != nil {
-				return diag.FromErr(next_hop_addr_update_err)
-			}
-
-			log.Printf("[DEBUG] %s: ipNexthopEpP - Update finished successfully", ipNexthopEpP.DistinguishedName)
-
-			log.Printf("[DEBUG] %s: fvEpReachability - Update finished successfully", fvEpReachability.DistinguishedName)
-
-		} else {
-			nextHopAddrDn := fvSubnet.DistinguishedName + fmt.Sprintf("/"+models.RnfvEpReachability)
-			log.Printf("[DEBUG] %s: fvEpReachability - Beginning Destroy", nextHopAddrDn)
-			ep_reachability_delete_error := aciClient.DeleteByDn(nextHopAddrDn, "fvEpReachability")
-			if ep_reachability_delete_error != nil {
-				return diag.FromErr(ep_reachability_delete_error)
-			}
-			log.Printf("[DEBUG] %s: fvEpReachability - Destroy finished successfully", nextHopAddrDn)
+		// Destroying old objects
+		nextHopAddrDn := fvSubnet.DistinguishedName + "/" + models.RnfvEpReachability
+		log.Printf("[DEBUG] %s: fvEpReachability - Beginning Destroy", nextHopAddrDn)
+		ep_reachability_delete_error := aciClient.DeleteByDn(nextHopAddrDn, "fvEpReachability")
+		if ep_reachability_delete_error != nil {
+			return diag.FromErr(ep_reachability_delete_error)
 		}
-	}
+		log.Printf("[DEBUG] %s: fvEpReachability - Destroy finished successfully", nextHopAddrDn)
 
-	// fvEpNlb - Update
-	if d.HasChange("msnlb") {
-		if msnlb, ok := d.GetOk("msnlb"); ok {
-			log.Printf("[DEBUG] fvEpNlb - Beginning Update")
-
-			fvEpNlbAttr := models.NlbEndpointAttributes{}
-			msnlbMap := toStrMap(msnlb.(map[string]interface{}))
-			fvEpNlbAttr.Mode = msnlbMap["mode"]
-
-			if msnlbMap["mode"] == "mode-mcast--static" || msnlbMap["mode"] == "mode-uc" {
-				fvEpNlbAttr.Mac = msnlbMap["mac"]
-				_, flag := msnlbMap["group"]
-				if flag {
-					if msnlbMap["group"] != "0.0.0.0" && msnlbMap["group"] != "" {
-						return diag.FromErr(fmt.Errorf("Invalid configuration, \"group\" must be \"0.0.0.0\" or empty(\"\") string when the mode is other than \"mode-mcast-igmp\""))
-					}
-				} else {
-					return diag.FromErr(fmt.Errorf("Invalid configuration, \"group\" must be \"0.0.0.0\" or empty(\"\") string when the mode is other than \"mode-mcast-igmp\""))
-				}
-			}
-
-			if msnlbMap["mode"] == "mode-mcast-igmp" {
-				fvEpNlbAttr.Group = msnlbMap["group"]
-				_, flag := msnlbMap["mac"]
-				if flag {
-					if msnlbMap["mac"] != "00:00:00:00:00:00" && msnlbMap["mac"] != "" {
-						return diag.FromErr(fmt.Errorf("Invalid configuration, \"mac\" must be \"00:00:00:00:00:00\" or empty(\"\") string when the mode is \"mode-mcast-igmp\""))
-					}
-				} else {
-					return diag.FromErr(fmt.Errorf("Invalid configuration, \"mac\" must be \"00:00:00:00:00:00\" or empty(\"\") string when the mode is \"mode-mcast-igmp\""))
-				}
-			}
-
-			msnlbDn := fvSubnet.DistinguishedName + fmt.Sprintf("/"+models.RnfvEpNlb)
-			deletion_err := aciClient.DeleteByDn(msnlbDn, "fvEpNlb")
-			if deletion_err != nil {
-				return diag.FromErr(err)
-			}
-
-			fvEpNlb := models.NewNlbEndpoint(fmt.Sprintf(models.RnfvEpNlb), fvSubnet.DistinguishedName, "", "", fvEpNlbAttr)
-			msnlb_update_err := aciClient.Save(fvEpNlb)
-			if msnlb_update_err != nil {
-				return diag.FromErr(msnlb_update_err)
-			}
-
-			log.Printf("[DEBUG] %s: fvEpNlb - Update finished successfully", fvEpNlb.DistinguishedName)
-		} else {
-			msnlbDn := fvSubnet.DistinguishedName + fmt.Sprintf("/"+models.RnfvEpNlb)
-			log.Printf("[DEBUG] %s: fvEpNlb - Beginning Destroy", msnlbDn)
-			err := aciClient.DeleteByDn(msnlbDn, "fvEpNlb")
-			if err != nil {
-				return diag.FromErr(err)
-			}
-			log.Printf("[DEBUG] %s: fvEpNlb - Destroy finished successfully", msnlbDn)
+		msnlbDn := fvSubnet.DistinguishedName + fmt.Sprintf("/"+models.RnfvEpNlb)
+		log.Printf("[DEBUG] %s: fvEpNlb - Beginning Destroy", msnlbDn)
+		err := aciClient.DeleteByDn(msnlbDn, "fvEpNlb")
+		if err != nil {
+			return diag.FromErr(err)
 		}
-	}
+		log.Printf("[DEBUG] %s: fvEpNlb - Destroy finished successfully", msnlbDn)
 
-	// fvEpAnycast - Update
-	if d.HasChange("anycast_mac") {
-		if anycastMac, ok := d.GetOk("anycast_mac"); ok {
-			log.Printf("[DEBUG] fvEpAnycast - Beginning Update")
-
-			fvEpAnycastAttr := models.AnycastEndpointAttributes{}
-			fvEpAnycastAttr.Mac = anycastMac.(string)
-
-			AnycastMacList, err := aciClient.ListAnycastEndpoint(fvSubnet.DistinguishedName)
-
-			if err != nil {
-				return diag.FromErr(err)
-			}
-
-			anycastMacDn := fvSubnet.DistinguishedName + "/" + fmt.Sprintf(models.RnfvEpAnycast, AnycastMacList[0].Mac)
-
-			anycastMac_delete_err := aciClient.DeleteByDn(anycastMacDn, "fvEpAnycast")
-			if anycastMac_delete_err != nil {
-				return diag.FromErr(err)
-			}
-
-			fvEpAnycast := models.NewAnycastEndpoint(fmt.Sprintf(models.RnfvEpAnycast, anycastMac), fvSubnet.DistinguishedName, "", "", fvEpAnycastAttr)
-
-			anycast_update_err := aciClient.Save(fvEpAnycast)
-			if anycast_update_err != nil {
-				return diag.FromErr(anycast_update_err)
-			}
-
-			log.Printf("[DEBUG] %s: fvEpAnycast - Update finished successfully", fvEpAnycast.DistinguishedName)
-		} else {
-			AnycastMacList, err := aciClient.ListAnycastEndpoint(fvSubnet.DistinguishedName)
-			if err != nil {
-				return diag.FromErr(err)
-			}
+		AnycastMacList, err := aciClient.ListAnycastEndpoint(fvSubnet.DistinguishedName)
+		if err == nil {
 			anycastMacDn := fvSubnet.DistinguishedName + "/" + fmt.Sprintf(models.RnfvEpAnycast, AnycastMacList[0].Mac)
 			log.Printf("[DEBUG] %s: fvEpAnycast - Beginning Destroy", anycastMacDn)
 			anycastMac_delete_err := aciClient.DeleteByDn(anycastMacDn, "fvEpAnycast")
@@ -904,6 +785,109 @@ func resourceAciSubnetUpdate(ctx context.Context, d *schema.ResourceData, m inte
 				return diag.FromErr(anycastMac_delete_err)
 			}
 			log.Printf("[DEBUG] %s: fvEpAnycast - Destroy finished successfully", anycastMacDn)
+		}
+
+		if d.HasChange("next_hop_addr") {
+			if next_hop_addr, ok := d.GetOk("next_hop_addr"); ok {
+				log.Printf("[DEBUG] fvEpReachability - Beginning Update")
+
+				fvEpReachabilityAttr := models.EpReachabilityAttributes{}
+
+				nextHopAddrDn := fvSubnet.DistinguishedName + "/" + models.RnfvEpReachability
+
+				ep_reachability_delete_error := aciClient.DeleteByDn(nextHopAddrDn, "fvEpReachability")
+				if ep_reachability_delete_error != nil {
+					return diag.FromErr(ep_reachability_delete_error)
+				}
+
+				fvEpReachability := models.NewEpReachability("epReach", fvSubnet.DistinguishedName, fvEpReachabilityAttr)
+
+				ep_reachability_update_err := aciClient.Save(fvEpReachability)
+				if ep_reachability_update_err != nil {
+					return diag.FromErr(ep_reachability_update_err)
+				}
+
+				log.Printf("[DEBUG] ipNexthopEpP: Beginning Update")
+
+				ipNexthopEpPAttr := models.NexthopEpPReachabilityAttributes{}
+
+				ipNexthopEpPAttr.NhAddr = next_hop_addr.(string)
+
+				ipNexthopEpP := models.NewNexthopEpPReachability(fmt.Sprintf(models.RnipNexthopEpP, next_hop_addr), fvEpReachability.DistinguishedName, "", "", ipNexthopEpPAttr)
+
+				next_hop_addr_update_err := aciClient.Save(ipNexthopEpP)
+				if next_hop_addr_update_err != nil {
+					return diag.FromErr(next_hop_addr_update_err)
+				}
+
+				log.Printf("[DEBUG] %s: ipNexthopEpP - Update finished successfully", ipNexthopEpP.DistinguishedName)
+
+				log.Printf("[DEBUG] %s: fvEpReachability - Update finished successfully", fvEpReachability.DistinguishedName)
+			}
+		}
+
+		// fvEpNlb - Update
+		if d.HasChange("msnlb") {
+			if msnlb, ok := d.GetOk("msnlb"); ok {
+				log.Printf("[DEBUG] fvEpNlb: Beginning Creation")
+
+				msnlbDn := fvSubnet.DistinguishedName + "/" + models.RnfvEpNlb
+				deletion_err := aciClient.DeleteByDn(msnlbDn, "fvEpNlb")
+				if deletion_err != nil {
+					return diag.FromErr(err)
+				}
+
+				msnlbMap := msnlb.(*schema.Set).List()[0]
+				innerMap := msnlbMap.(map[string]interface{})
+				var mode, group, mac string
+				mode = innerMap["mode"].(string)
+				group = innerMap["group"].(string)
+				mac = innerMap["mac"].(string)
+
+				fvEpNlbAttr := models.NlbEndpointAttributes{}
+				fvEpNlbAttr.Mac = mac
+				fvEpNlbAttr.Group = group
+				fvEpNlbAttr.Mode = mode
+				fvEpNlb := models.NewNlbEndpoint(fmt.Sprintf(models.RnfvEpNlb), fvSubnet.DistinguishedName, "", "", fvEpNlbAttr)
+
+				msnlb_create_err := aciClient.Save(fvEpNlb)
+				if msnlb_create_err != nil {
+					return diag.FromErr(msnlb_create_err)
+				}
+				log.Printf("[DEBUG] %s: Creation finished successfully", fvEpNlb.DistinguishedName)
+			}
+		}
+
+		// fvEpAnycast - Update
+		if d.HasChange("anycast_mac") {
+			if anycastMac, ok := d.GetOk("anycast_mac"); ok {
+				log.Printf("[DEBUG] fvEpAnycast - Beginning Update")
+
+				fvEpAnycastAttr := models.AnycastEndpointAttributes{}
+				fvEpAnycastAttr.Mac = anycastMac.(string)
+
+				AnycastMacList, err := aciClient.ListAnycastEndpoint(fvSubnet.DistinguishedName)
+
+				if err == nil {
+					anycastMacDn := fvSubnet.DistinguishedName + "/" + fmt.Sprintf(models.RnfvEpAnycast, AnycastMacList[0].Mac)
+					log.Printf("[DEBUG] %s: fvEpAnycast - Beginning Destroy", anycastMacDn)
+
+					anycastMac_delete_err := aciClient.DeleteByDn(anycastMacDn, "fvEpAnycast")
+					if anycastMac_delete_err != nil {
+						return diag.FromErr(err)
+					}
+					log.Printf("[DEBUG] %s: fvEpAnycast - Destroy finished successfully", anycastMacDn)
+				}
+
+				fvEpAnycast := models.NewAnycastEndpoint(fmt.Sprintf(models.RnfvEpAnycast, anycastMac), fvSubnet.DistinguishedName, "", "", fvEpAnycastAttr)
+
+				anycast_update_err := aciClient.Save(fvEpAnycast)
+				if anycast_update_err != nil {
+					return diag.FromErr(anycast_update_err)
+				}
+
+				log.Printf("[DEBUG] %s: fvEpAnycast - Update finished successfully", fvEpAnycast.DistinguishedName)
+			}
 		}
 	}
 

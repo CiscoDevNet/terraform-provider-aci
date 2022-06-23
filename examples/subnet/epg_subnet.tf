@@ -60,10 +60,9 @@ resource "aci_subnet" "foo_epg_subnet_msnlb_mcast_igmp" {
   ctrl        = ["no-default-gateway"]
   preferred   = "no"
   virtual     = "yes"
-  msnlb = {
+  msnlb {
     mode  = "mode-mcast-igmp"
-    group = "224.0.0.1"
-    mac   = "00:00:00:00:00:00"
+    group = "224.0.0.1" # Valid Multicast Address are 224.0.0.0 through 239.255.255.255
   }
 }
 
@@ -75,10 +74,9 @@ resource "aci_subnet" "foo_epg_subnet_msnlb_mcast_static" {
   ctrl        = ["no-default-gateway"]
   preferred   = "no"
   virtual     = "yes"
-  msnlb = {
-    mode  = "mode-mcast--static"
-    group = ""
-    mac   = "03:1F:20:34:89:AA"
+  msnlb {
+    mode = "mode-mcast--static"
+    mac  = "03:1F:20:34:89:AA"
   }
 }
 
@@ -90,9 +88,8 @@ resource "aci_subnet" "foo_epg_subnet_msnlb_mode_uc" {
   ctrl        = ["no-default-gateway"]
   preferred   = "no"
   virtual     = "yes"
-  msnlb = {
-    mode  = "mode-uc"
-    group = "0.0.0.0"
-    mac   = "00:1F:20:34:89:AA"
+  msnlb {
+    mode = "mode-uc"
+    mac  = "00:1F:20:34:89:AA"
   }
 }

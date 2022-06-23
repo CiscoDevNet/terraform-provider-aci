@@ -68,10 +68,9 @@ Class - fvSubnet
 		ctrl        = ["no-default-gateway"]
 		preferred   = "no"
 		virtual     = "yes"
-		msnlb = {
+		msnlb {
 			mode  = "mode-mcast-igmp"
-			group = "224.0.0.1"
-			mac   = "00:00:00:00:00:00"
+			group = "224.0.0.1" # The valid Multicast Address are 224.0.0.0 through 239.255.255.255.
 		}
 	}
 
@@ -84,9 +83,8 @@ Class - fvSubnet
 		ctrl        = ["no-default-gateway"]
 		preferred   = "no"
 		virtual     = "yes"
-		msnlb = {
+		msnlb {
 			mode  = "mode-mcast--static"
-			group = ""
 			mac   = "03:1F:20:34:89:AA"
 		}
 	}
@@ -100,9 +98,8 @@ Class - fvSubnet
 		ctrl        = ["no-default-gateway"]
 		preferred   = "no"
 		virtual     = "yes"
-		msnlb = {
+		msnlb {
 			mode  = "mode-uc"
-			group = "0.0.0.0"
 			mac   = "00:1F:20:34:89:AA"
 		}
 	}
@@ -126,7 +123,7 @@ Class - fvSubnet
 - `next_hop_addr` - (Optional) EP Reachability of the Application EPGs Subnet object. Type - String.
 - `msnlb` - (Optional) A block representing MSNLB of the Application EPGs Subnet object. Type: Block.
    - `mode` - Mode of the MSNLB object, Allowed values are "mode-mcast--static", "mode-uc" and "mode-mcast-igmp". Default is "mode-uc".
-   - `group` - The IGMP mode group IP address of the MSNLB object, must be a valid multicast IP address.
+   - `group` - The IGMP mode group IP address of the MSNLB object. The valid Multicast Address are 224.0.0.0 through 239.255.255.255.
    - `mac` - MAC address of the unicast and static multicast mode of the MSNLB object. The valid static multicast MAC address format is `03:XX:XX:XX:XX:XX`.
 - `anycast_mac` - Anycast MAC of the Application EPGs Subnet object. Type - String.
 ## Attribute Reference

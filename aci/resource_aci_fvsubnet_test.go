@@ -284,10 +284,9 @@ func testAccCheckAciSubnetEPGsMsNlbIgmpConfig_basic(
 		ctrl        = ["no-default-gateway"]
 		preferred   = "no"
 		virtual     = "yes"
-		msnlb = {
+		msnlb {
 		  mode  = "mode-mcast-igmp"
 		  group = "%s"
-		  mac   = "00:00:00:00:00:00"
 		}
 	  }
 

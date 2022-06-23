@@ -68,27 +68,36 @@ func dataSourceAciSubnet() *schema.Resource {
 			"next_hop_addr": {
 				Type:          schema.TypeString,
 				Optional:      true,
-				ForceNew:      true,
 				ConflictsWith: []string{"msnlb", "anycast_mac"},
-				Computed:      true,
 			},
 			// MSNLB
 			"msnlb": {
-				Optional: true,
-				Type:     schema.TypeMap,
-				Elem: &schema.Schema{
-					Type: schema.TypeString,
-				},
+				Type:          schema.TypeSet,
+				Optional:      true,
+				MaxItems:      1,
 				ConflictsWith: []string{"next_hop_addr", "anycast_mac"},
-				Computed:      true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"mac": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"group": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"mode": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+					},
+				},
 			},
 			// Anycast MAC
 			"anycast_mac": {
 				Type:          schema.TypeString,
 				Optional:      true,
-				ForceNew:      true,
 				ConflictsWith: []string{"msnlb", "next_hop_addr"},
-				Computed:      true,
 			},
 		}),
 	}
