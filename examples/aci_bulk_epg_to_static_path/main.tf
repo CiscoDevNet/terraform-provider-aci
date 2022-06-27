@@ -35,15 +35,31 @@ resource "aci_bulk_epg_to_static_path" "example" {
     encap = "vlan-1000"
     description = "this is desc for bulk static path"
     deployment_immediacy = "lazy"
-    mode = "native"
+    mode = "untagged"
     primary_encap = "vlan-700"
   }
   static_path {
     interface_dn                = "topology/pod-1/paths-129/pathep-[eth1/6]"
     encap = "vlan-1001"
-    description = "this is desc for another bulk static path"
+    description = "this is updated desc for another bulk static path"
     deployment_immediacy = "immediate"
     mode = "regular"
     primary_encap = "vlan-800"
+  }
+  static_path {
+    interface_dn                = "topology/pod-1/paths-129/pathep-[eth1/7]"
+    encap = "vlan-1002"
+    description = "this is desc for third bulk static path"
+    deployment_immediacy = "lazy"
+    mode = "untagged"
+    primary_encap = "vlan-900"
+  }
+  static_path {
+    interface_dn                = "topology/pod-1/paths-129/pathep-[eth1/8]"
+    encap = "vlan-1003"
+    description = "this is desc for fourth bulk static path"
+    deployment_immediacy = "lazy"
+    mode = "native"
+    primary_encap = "vlan-100"
   }
 }
