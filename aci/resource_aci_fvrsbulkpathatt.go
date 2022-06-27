@@ -28,7 +28,7 @@ func resourceAciBulkStaticPath() *schema.Resource {
 
 		SchemaVersion: 1,
 
-		Schema: AppendBaseAttrSchema(map[string]*schema.Schema{
+		Schema: map[string]*schema.Schema{
 			"application_epg_dn": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
@@ -80,7 +80,7 @@ func resourceAciBulkStaticPath() *schema.Resource {
 					},
 				},
 			},
-		}),
+		},
 	}
 }
 
