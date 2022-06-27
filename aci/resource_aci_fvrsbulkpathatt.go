@@ -141,6 +141,16 @@ func resourceAciBulkStaticPathUpdate(ctx context.Context, d *schema.ResourceData
 	createPayload := staticPathPayload(create, "create")
 	updatePayload := staticPathPayload(update, "update")
 	deletePayload := staticPathPayload(del, "delete")
+	var payload []interface{}
+	for _, createObj := range createPayload {
+		payload = append(payload, createObj)
+	}
+	for _, updateObj := range updatePayload {
+		payload = append(payload, updateObj)
+	}
+	for _, deleteObj := range deletePayload {
+		payload = append(payload, deleteObj)
+	}
 	// createPayload = append(createPayload, updatePayload, deletePayload)
 
 	contentMap := make(map[string]interface{})
@@ -227,7 +237,8 @@ func bulkStaticPathRequest(aciClient *client.Client, method string, path string,
 }
 
 func diffInStaticPath(oldStaticPath, newStaticPath *schema.Set) ([]interface{}, []interface{}, []interface{}) {
-	var updates []interface{}
+	var updateInOld []interface{}
+	var updateInNew []interface{}
 	var intersection []interface{}
 
 	for _, old := range oldStaticPath.List() {
@@ -235,7 +246,8 @@ func diffInStaticPath(oldStaticPath, newStaticPath *schema.Set) ([]interface{}, 
 			if reflect.DeepEqual(new, old) {
 				intersection = append(intersection, new)
 			} else if old.(map[string]interface{})["interface_dn"] == new.(map[string]interface{})["interface_dn"] {
-				updates = append(updates, new)
+				updateInOld = append(updateInOld, old)
+				updateInNew = append(updateInNew, new)
 			}
 		}
 	}
@@ -243,15 +255,14 @@ func diffInStaticPath(oldStaticPath, newStaticPath *schema.Set) ([]interface{}, 
 		oldStaticPath.Remove(intersec)
 		newStaticPath.Remove(intersec)
 	}
-	for _, update := range updates {
-		oldStaticPath.Remove(update)
-		newStaticPath.Remove(update)
+	for _, updateNew := range updateInNew {
+		newStaticPath.Remove(updateNew)
+	}
+	for _, updateOld := range updateInOld {
+		oldStaticPath.Remove(updateOld)
 	}
 
-	delete := oldStaticPath.List()
-	create := newStaticPath.List()
-
-	return create, delete, updates
+	return newStaticPath.List(), oldStaticPath.List(), updateInNew
 }
 
 func staticPathPayload(staticPathList []interface{}, status string) []interface{} {
