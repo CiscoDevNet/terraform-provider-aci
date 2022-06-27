@@ -4,13 +4,16 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"reflect"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/ciscoecosystem/aci-go-client/container"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
+
+var className = "fvAEPg"
 
 func resourceAciBulkStaticPath() *schema.Resource {
 	return &schema.Resource{
@@ -81,96 +84,27 @@ func resourceAciBulkStaticPath() *schema.Resource {
 	}
 }
 
-// func resourceAciBulkStaticPathImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
-// 	log.Printf("[DEBUG] %s: Beginning Import", d.Id())
-// 	aciClient := m.(*client.Client)
-
-// 	dn := d.Id()
-
-// 	fvRsPathAtt, err := getRemoteStaticPath(aciClient, dn)
-
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	fvRsPathAttMap, err := fvRsPathAtt.ToMap()
-
-// 	if err != nil {
-// 		return nil, err
-// 	}
-
-// 	tDn := fvRsPathAttMap["tDn"]
-// 	pDN := GetParentDn(dn, fmt.Sprintf("/rspathAtt-[%s]", tDn))
-// 	d.Set("application_epg_dn", pDN)
-// 	schemaFilled, err := setStaticPathAttributes(fvRsPathAtt, d)
-
-// 	if err != nil {
-// 		return nil, err
-// 	}
-
-// 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
-
-// 	return []*schema.ResourceData{schemaFilled}, nil
-// }
-
-// func setStaticBulkPathAttributes(fvRsPathAtt *models.StaticPath, d *schema.ResourceData) (*schema.ResourceData, error) {
-// 	d.SetId(fvRsPathAtt.DistinguishedName)
-// 	fvRsPathAttMap, err := fvRsPathAtt.ToMap()
-
-// 	if err != nil {
-// 		return d, err
-// 	}
-// 	d.Set("application_epg_dn", GetParentDn(fvRsPathAtt.DistinguishedName, fmt.Sprintf("/rspathAtt-[%s]", fvRsPathAttMap["tDn"])))
-
-// 	d.Set("tdn", fvRsPathAttMap["tDn"])
-
-// 	d.Set("annotation", fvRsPathAttMap["annotation"])
-// 	d.Set("encap", fvRsPathAttMap["encap"])
-// 	d.Set("instr_imedcy", fvRsPathAttMap["instrImedcy"])
-// 	d.Set("mode", fvRsPathAttMap["mode"])
-// 	d.Set("primary_encap", fvRsPathAttMap["primaryEncap"])
-// 	return d, nil
-// }
-
 func resourceAciBulkStaticPathCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] StaticPath: Beginning Creation")
+
 	aciClient := m.(*client.Client)
 
 	ApplicationEPGDn := d.Get("application_epg_dn").(string)
+	d.Get("static_path").(*schema.Set).List()
+	staticPathSet := staticPathPayload(d.Get("static_path").(*schema.Set).List(), "create")
 
-	fvRsPathAttAttr := models.StaticPathAttributes{}
-	if Annotation, ok := d.GetOk("annotation"); ok {
-		fvRsPathAttAttr.Annotation = Annotation.(string)
-	} else {
-		fvRsPathAttAttr.Annotation = "{}"
+	contentMap := make(map[string]interface{})
+	contentMap["dn"] = ApplicationEPGDn
+	cont, err := preparePayload(className, toStrMap(contentMap), staticPathSet)
+	if err != nil {
+		return diag.FromErr(err)
 	}
 
-	if bulk_static_path_config, ok := d.GetOk("bulk_static_path_config"); ok {
-		staticPaths := bulk_static_path_config.(*schema.Set).List()
-		for _, val := range staticPaths {
-			staticPathAtt := models.StaticPathAttributes{}
-			staticPath := val.(map[string]interface{})
-
-			if staticPath["encap"] != nil {
-				staticPathAtt.Encap = staticPath["encap"].(string)
-			}
-			if staticPath["instr_imedcy"] != nil {
-				staticPathAtt.InstrImedcy = staticPath["instr_imedcy"].(string)
-			}
-			if staticPath["mode"] != nil {
-				staticPathAtt.Mode = staticPath["mode"].(string)
-			}
-			if staticPath["primary_encap"] != nil {
-				staticPathAtt.PrimaryEncap = staticPath["primary_encap"].(string)
-			}
-			fvRsPathAtt := models.NewStaticPath(fmt.Sprintf("rspathAtt-[%s]", staticPath["tDn"]), ApplicationEPGDn, desc, staticPathAtt)
-			err := aciClient.Save(fvRsPathAtt)
-			if err != nil {
-				return diag.FromErr(err)
-			}
-		}
+	_, diags := bulkStaticPathRequest(aciClient, "POST", ApplicationEPGDn, cont)
+	if diags.HasError() {
+		return diags
 	}
-
-	d.SetId(fmt.Sprintf("%s/rspathAtt", ApplicationEPGDn))
+	d.SetId(ApplicationEPGDn)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
 	return resourceAciBulkStaticPathRead(ctx, d, m)
@@ -182,82 +116,224 @@ func resourceAciBulkStaticPathRead(ctx context.Context, d *schema.ResourceData, 
 	aciClient := m.(*client.Client)
 
 	dn := d.Id()
-	fvRsPathAtt, err := getRemoteStaticPath(aciClient, dn)
-
-	if err != nil {
-		d.SetId("")
-		return nil
+	bulkStaticPath, diags := getAciBulkStaticPath(aciClient, dn)
+	if diags.HasError() {
+		return diags
 	}
-	_, err = setStaticPathAttributes(fvRsPathAtt, d)
-
-	if err != nil {
-		d.SetId("")
-		return nil
-	}
+	d = setAciBulkStaticPath(bulkStaticPath, d)
+	d.Set("application_epg_dn", dn)
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 
 	return nil
 }
 
-// func resourceAciBulkStaticPathUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-// 	log.Printf("[DEBUG] StaticPath: Beginning Creation")
-// 	aciClient := m.(*client.Client)
-// 	desc := d.Get("description").(string)
+func resourceAciBulkStaticPathUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+	log.Printf("[DEBUG] %s: Beginning Update", d.Id())
 
-// 	ApplicationEPGDn := d.Get("application_epg_dn").(string)
+	aciClient := m.(*client.Client)
 
-// 	fvRsPathAttAttr := models.StaticPathAttributes{}
-// 	if Annotation, ok := d.GetOk("annotation"); ok {
-// 		fvRsPathAttAttr.Annotation = Annotation.(string)
-// 	} else {
-// 		fvRsPathAttAttr.Annotation = "{}"
-// 	}
+	ApplicationEPGDn := d.Get("application_epg_dn").(string)
 
-// 	if bulk_static_path_config, ok := d.GetOk("bulk_static_path_config"); ok {
-// 		staticPaths := bulk_static_path_config.(*schema.Set).List()
-// 		for _, val := range staticPaths {
-// 			staticPathAtt := models.StaticPathAttributes{}
-// 			staticPath := val.(map[string]interface{})
+	old_static_path, new_static_path := d.GetChange("static_path")
+	create, del, update := diffInStaticPath(old_static_path.(*schema.Set), new_static_path.(*schema.Set))
 
-// 			if staticPath["encap"] != nil {
-// 				staticPathAtt.Encap = staticPath["encap"].(string)
-// 			}
-// 			if staticPath["instr_imedcy"] != nil {
-// 				staticPathAtt.InstrImedcy = staticPath["instr_imedcy"].(string)
-// 			}
-// 			if staticPath["mode"] != nil {
-// 				staticPathAtt.Mode = staticPath["mode"].(string)
-// 			}
-// 			if staticPath["primary_encap"] != nil {
-// 				staticPathAtt.PrimaryEncap = staticPath["primary_encap"].(string)
-// 			}
-// 			fvRsPathAtt := models.NewStaticPath(fmt.Sprintf("rspathAtt-[%s]", staticPath["tDn"]), ApplicationEPGDn, desc, staticPathAtt)
-// 			err := aciClient.Save(fvRsPathAtt)
-// 			if err != nil {
-// 				return diag.FromErr(err)
-// 			}
-// 		}
-// 	}
+	createPayload := staticPathPayload(create, "create")
+	updatePayload := staticPathPayload(update, "update")
+	deletePayload := staticPathPayload(del, "delete")
+	// createPayload = append(createPayload, updatePayload, deletePayload)
 
-// 	d.SetId(fmt.Sprintf("%s/rspathAtt", ApplicationEPGDn))
-// 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
+	contentMap := make(map[string]interface{})
+	contentMap["dn"] = ApplicationEPGDn
 
-// 	return resourceAciBulkStaticPathRead(ctx, d, m)
-// }
+	cont, err := preparePayload(className, toStrMap(contentMap), append(createPayload, deletePayload, updatePayload))
+	if err != nil {
+		return diag.FromErr(err)
+	}
 
-// func resourceAciBulkStaticPathDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-// 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
+	_, diags := bulkStaticPathRequest(aciClient, "POST", ApplicationEPGDn, cont)
+	if diags.HasError() {
+		return diags
+	}
+	d.SetId(ApplicationEPGDn)
+	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
+	return resourceAciBulkStaticPathRead(ctx, d, m)
+}
 
-// 	aciClient := m.(*client.Client)
-// 	dn := d.Id()
-// 	err := aciClient.DeleteByDn(dn, "fvRsPathAtt")
-// 	if err != nil {
-// 		return diag.FromErr(err)
-// 	}
+func getAciBulkStaticPath(aciClient *client.Client, dn string) ([]interface{}, diag.Diagnostics) {
+	resp, diags := bulkStaticPathRequest(aciClient, "GET", dn, nil)
+	if diags.HasError() {
+		return nil, diags
+	}
+	//TODO: get staticPathSet in one search func, Search("imdata", className, "children").Index(0).Data().([]interface{})
+	staticPathSet := resp.S("imdata").Index(0).S(className, "children").S("fvRsPathAtt", "attributes")
+	if staticPathSet == nil {
+		return nil, nil
+	}
+	bulkStaticPath := staticPathSet.Data().([]interface{})
+	return bulkStaticPath, nil
+}
 
-// 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
+func setAciBulkStaticPath(staticPathSet []interface{}, d *schema.ResourceData) *schema.ResourceData {
+	newStaticPathSet := make([]interface{}, 0, 1)
+	for _, staticPath := range staticPathSet {
+		staticPathMap := staticPath.(map[string]interface{})
+		newStaticPathMap := make(map[string]interface{})
+		if descr, ok := staticPathMap["descr"]; ok {
+			newStaticPathMap["description"] = descr.(string)
+		}
+		if immediacy, ok := staticPathMap["instrImedcy"]; ok {
+			newStaticPathMap["deployment_immediacy"] = immediacy.(string)
+		}
+		if mode, ok := staticPathMap["mode"]; ok {
+			newStaticPathMap["mode"] = mode.(string)
+		}
+		if primaryEncap, ok := staticPathMap["primaryEncap"]; ok {
+			newStaticPathMap["primary_encap"] = primaryEncap.(string)
+		}
+		newStaticPathMap["encap"] = staticPathMap["encap"].(string)
+		newStaticPathMap["interface_dn"] = staticPathMap["tDn"].(string)
+		newStaticPathSet = append(newStaticPathSet, newStaticPathMap)
+	}
+	d.Set("static_path", newStaticPathSet)
+	return d
+}
 
-// 	d.SetId("")
-// 	return diag.FromErr(err)
-// }
+func bulkStaticPathRequest(aciClient *client.Client, method string, path string, body *container.Container) (*container.Container, diag.Diagnostics) {
+	url := "/api/mo/" + path + ".json"
+	if method == "GET" {
+		url += "?rsp-subtree=children"
+	}
+	req, err := aciClient.MakeRestRequest(method, url, body, true)
+	if err != nil {
+		return nil, diag.FromErr(err)
+	}
+	respCont, _, err := aciClient.Do(req)
+	if err != nil {
+		return respCont, diag.FromErr(err)
+	}
+	// if respCont.S("imdata").Index(0).String() == "{}" {
+	// 	return nil, nil
+	// }
+	err = client.CheckForErrors(respCont, method, false)
+	if err != nil {
+		return respCont, diag.FromErr(err)
+	}
+	if method == "POST" {
+		return body, nil
+	} else {
+		return respCont, nil
+	}
+}
+
+func diffInStaticPath(oldStaticPath, newStaticPath *schema.Set) ([]interface{}, []interface{}, []interface{}) {
+	var updates []interface{}
+	var intersection []interface{}
+
+	for _, old := range oldStaticPath.List() {
+		for _, new := range newStaticPath.List() {
+			if reflect.DeepEqual(new, old) {
+				intersection = append(intersection, new)
+			} else if old.(map[string]interface{})["interface_dn"] == new.(map[string]interface{})["interface_dn"] {
+				updates = append(updates, new)
+			}
+		}
+	}
+	for _, intersec := range intersection {
+		oldStaticPath.Remove(intersec)
+		newStaticPath.Remove(intersec)
+	}
+	for _, update := range updates {
+		oldStaticPath.Remove(update)
+		newStaticPath.Remove(update)
+	}
+
+	delete := oldStaticPath.List()
+	create := newStaticPath.List()
+
+	return create, delete, updates
+}
+
+func staticPathPayload(staticPathList []interface{}, status string) []interface{} {
+	staticPathSet := make([]interface{}, 0, 1)
+	for _, staticPath := range staticPathList {
+		staticPathMap := make(map[string]interface{})
+		staticPathMap["class_name"] = "fvRsPathAtt"
+		staticPathContent := make(map[string]interface{})
+		staticPath := staticPath.(map[string]interface{})
+		staticPathContent["encap"] = staticPath["encap"]
+		staticPathContent["tDn"] = staticPath["interface_dn"]
+		log.Printf("[DEBUG]: interface_dn in staticPathPayload %s", staticPath["interface_dn"])
+		if descr, ok := staticPath["description"]; ok {
+			staticPathContent["descr"] = descr
+		}
+		if immediacy, ok := staticPath["deployment_immediacy"]; ok {
+			staticPathContent["instrImedcy"] = immediacy
+		}
+		if mode, ok := staticPath["mode"]; ok {
+			staticPathContent["mode"] = mode
+		}
+		if primaryEncap, ok := staticPath["primary_encap"]; ok {
+			staticPathContent["primaryEncap"] = primaryEncap
+		}
+		if status == "delete" {
+			staticPathContent["status"] = "deleted"
+		}
+		//TODO: make map[string]string
+		log.Printf("[DEBUG]: primaryEncap in staticPathPayload %s", staticPath["primary_encap"])
+		log.Printf("[DEBUG]: staticPathContent in staticPathPayload %s", staticPathContent)
+		staticPathMap["content"] = toStrMap(staticPathContent)
+		staticPathSet = append(staticPathSet, staticPathMap)
+	}
+	return staticPathSet
+}
+
+func resourceAciBulkStaticPathDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
+
+	aciClient := m.(*client.Client)
+	ApplicationEPGDn := d.Get("application_epg_dn").(string)
+
+	dn := d.Id()
+	bulkStaticPath, diags := getAciBulkStaticPath(aciClient, dn)
+	if diags.HasError() {
+		return diags
+	}
+	d = setAciBulkStaticPath(bulkStaticPath, d)
+
+	log.Printf("[DEBUG]: bulkStaticPath in Delete: %s", bulkStaticPath)
+	deletePayload := staticPathPayload(d.Get("static_path").(*schema.Set).List(), "delete")
+
+	contentMap := make(map[string]interface{})
+	contentMap["dn"] = ApplicationEPGDn
+	cont, err := preparePayload(className, toStrMap(contentMap), deletePayload)
+	if err != nil {
+		return diag.FromErr(err)
+	}
+
+	_, diags = bulkStaticPathRequest(aciClient, "POST", ApplicationEPGDn, cont)
+	if diags.HasError() {
+		return diags
+	}
+
+	d.SetId("")
+	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
+	return nil
+}
+
+func resourceAciBulkStaticPathImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
+	log.Printf("[DEBUG] %s: Beginning Import", d.Id())
+
+	aciClient := m.(*client.Client)
+	dn := d.Id()
+	d.Set("application_epg_dn", dn)
+
+	bulkStaticPath, diags := getAciBulkStaticPath(aciClient, dn)
+	if diags.HasError() {
+		return nil, fmt.Errorf("could not read static path object when importing: %s", diags[0].Summary)
+	}
+	d = setAciBulkStaticPath(bulkStaticPath, d)
+
+	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
+	return []*schema.ResourceData{d}, nil
+}
