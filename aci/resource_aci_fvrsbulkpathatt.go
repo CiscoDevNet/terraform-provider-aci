@@ -156,7 +156,7 @@ func resourceAciBulkStaticPathUpdate(ctx context.Context, d *schema.ResourceData
 	contentMap := make(map[string]interface{})
 	contentMap["dn"] = ApplicationEPGDn
 
-	cont, err := preparePayload(className, toStrMap(contentMap), append(createPayload, deletePayload, updatePayload))
+	cont, err := preparePayload(className, toStrMap(contentMap), payload)
 	if err != nil {
 		return diag.FromErr(err)
 	}
