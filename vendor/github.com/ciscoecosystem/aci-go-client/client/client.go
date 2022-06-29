@@ -516,7 +516,7 @@ func (c *Client) Do(req *http.Request) (*container.Container, *http.Response, er
 			if ok := c.backoff(attempts); !ok {
 				log.Printf("[ERROR] HTTP Connection error occured: %+v", err)
 				log.Printf("[DEBUG] Exit from Do method")
-				return nil, nil, err
+				return nil, nil, errors.New(fmt.Sprintf("Failed to connect to APIC. Verify that you are connecting to an APIC.\nError message: %+v", err))
 			} else {
 				log.Printf("[ERROR] HTTP Connection failed: %s, retries: %v", err, attempts)
 				continue
@@ -541,7 +541,7 @@ func (c *Client) Do(req *http.Request) (*container.Container, *http.Response, er
 			if err != nil {
 				log.Printf("[ERROR] Error occured while json parsing %+v", err)
 				log.Printf("[DEBUG] Exit from Do method")
-				return nil, resp, err
+				return nil, resp, errors.New(fmt.Sprintf("Failed to parse JSON response from %s. Verify that you are connecting to an APIC.\nHTTP response status: %s\nMessage: %+v", req.URL.String(), resp.Status, err))
 			}
 
 			log.Printf("[DEBUG] Exit from Do method")
@@ -552,7 +552,7 @@ func (c *Client) Do(req *http.Request) (*container.Container, *http.Response, er
 				if err != nil {
 					log.Printf("[ERROR] Error occured while json parsing %+v with HTTP StatusCode 405, 500-504", err)
 					log.Printf("[DEBUG] Exit from Do method")
-					return nil, resp, err
+					return nil, resp, errors.New(fmt.Sprintf("Failed to parse JSON response from %s. Verify that you are connecting to an APIC.\nHTTP response status: %s\nMessage: %+v", req.URL.String(), resp.Status, err))
 				}
 
 				log.Printf("[DEBUG] Exit from Do method")
@@ -586,7 +586,7 @@ func (c *Client) DoRaw(req *http.Request) (*http.Response, error) {
 			if ok := c.backoff(attempts); !ok {
 				log.Printf("[ERROR] HTTP Connection error occured: %+v", err)
 				log.Printf("[DEBUG] Exit from DoRaw method")
-				return nil, err
+				return nil, errors.New(fmt.Sprintf("Failed to connect to APIC. Verify that you are connecting to an APIC.\nError message: %+v", err))
 			} else {
 				log.Printf("[ERROR] HTTP Connection failed: %s, retries: %v", err, attempts)
 				continue
