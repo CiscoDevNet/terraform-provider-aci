@@ -73,7 +73,7 @@ func testAccCheckAciAbstractionofIPAddressBlockConfig_basic(fvns_mcast_addr_inst
 	resource "aci_abstractionof_ipaddress_block" "foo_abstractionof_ipaddress_block" {
 		name 		= "%s"
 		description = "abstractionof_ipaddress_block created while acceptance testing"
-		multicast_address_pool_dn = aci_multicast_address_pool.foo_multicast_address_pool.id
+		multicast_pool_dn = aci_multicast_address_pool.foo_multicast_address_pool.id
 	}
 
 	`, fvns_mcast_addr_inst_p_name, fvns_mcast_addr_blk_name)

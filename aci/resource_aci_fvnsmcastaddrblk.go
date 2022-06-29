@@ -24,25 +24,22 @@ func resourceAciAbstractionofIPAddressBlock() *schema.Resource {
 
 		SchemaVersion: 1,
 		Schema: AppendBaseAttrSchema(AppendNameAliasAttrSchema(map[string]*schema.Schema{
-			"multicast_address_pool_dn": {
+			"multicast_pool_dn": {
 				Type:     schema.TypeString,
 				Required: true,
 				ForceNew: true,
 			},
 			"from": {
 				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
+				Required: true,
 			},
 			"name": {
 				Type:     schema.TypeString,
 				Optional: true,
-				Computed: true,
 			},
 			"to": {
 				Type:     schema.TypeString,
 				Required: true,
-				ForceNew: true,
 			},
 		})),
 	}
@@ -69,9 +66,9 @@ func setAbstractionofIPAddressBlockAttributes(fvnsMcastAddrBlk *models.Abstracti
 	}
 	dn := d.Id()
 	if dn != fvnsMcastAddrBlk.DistinguishedName {
-		d.Set("multicast_address_pool_dn", "")
+		d.Set("multicast_pool_dn", "")
 	} else {
-		d.Set("multicast_address_pool_dn", GetParentDn(fvnsMcastAddrBlk.DistinguishedName, fmt.Sprintf("/"+models.RnfvnsMcastAddrBlk)))
+		d.Set("multicast_pool_dn", GetParentDn(fvnsMcastAddrBlk.DistinguishedName, fmt.Sprintf("/"+models.RnfvnsMcastAddrBlk)))
 	}
 	d.Set("annotation", fvnsMcastAddrBlkMap["annotation"])
 	d.Set("from", fvnsMcastAddrBlkMap["from"])
@@ -101,9 +98,10 @@ func resourceAciAbstractionofIPAddressBlockCreate(ctx context.Context, d *schema
 	log.Printf("[DEBUG] AbstractionofIPAddressBlock: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
-	_from := d.Get("_from").(string)
+	log.Printf("[DEBUG] AbstractionofIPAddressBlock: desc %s", desc)
+	from := d.Get("from").(string)
 	to := d.Get("to").(string)
-	MulticastAddressPoolDn := d.Get("multicast_address_pool_dn").(string)
+	MulticastAddressPoolDn := d.Get("multicast_pool_dn").(string)
 
 	fvnsMcastAddrBlkAttr := models.AbstractionofIPAddressBlockAttributes{}
 
@@ -128,7 +126,7 @@ func resourceAciAbstractionofIPAddressBlockCreate(ctx context.Context, d *schema
 	if To, ok := d.GetOk("to"); ok {
 		fvnsMcastAddrBlkAttr.To = To.(string)
 	}
-	fvnsMcastAddrBlk := models.NewAbstractionofIPAddressBlock(fmt.Sprintf(models.RnfvnsMcastAddrBlk, _from, to), MulticastAddressPoolDn, desc, fvnsMcastAddrBlkAttr)
+	fvnsMcastAddrBlk := models.NewAbstractionofIPAddressBlock(fmt.Sprintf(models.RnfvnsMcastAddrBlk, from, to), MulticastAddressPoolDn, desc, fvnsMcastAddrBlkAttr)
 
 	err := aciClient.Save(fvnsMcastAddrBlk)
 	if err != nil {
@@ -143,9 +141,9 @@ func resourceAciAbstractionofIPAddressBlockUpdate(ctx context.Context, d *schema
 	log.Printf("[DEBUG] AbstractionofIPAddressBlock: Beginning Update")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
-	_from := d.Get("_from").(string)
+	from := d.Get("from").(string)
 	to := d.Get("to").(string)
-	MulticastAddressPoolDn := d.Get("multicast_address_pool_dn").(string)
+	MulticastAddressPoolDn := d.Get("multicast_pool_dn").(string)
 
 	fvnsMcastAddrBlkAttr := models.AbstractionofIPAddressBlockAttributes{}
 
@@ -170,7 +168,7 @@ func resourceAciAbstractionofIPAddressBlockUpdate(ctx context.Context, d *schema
 	if To, ok := d.GetOk("to"); ok {
 		fvnsMcastAddrBlkAttr.To = To.(string)
 	}
-	fvnsMcastAddrBlk := models.NewAbstractionofIPAddressBlock(fmt.Sprintf(models.RnfvnsMcastAddrBlk, _from, to), MulticastAddressPoolDn, desc, fvnsMcastAddrBlkAttr)
+	fvnsMcastAddrBlk := models.NewAbstractionofIPAddressBlock(fmt.Sprintf(models.RnfvnsMcastAddrBlk, from, to), MulticastAddressPoolDn, desc, fvnsMcastAddrBlkAttr)
 
 	fvnsMcastAddrBlk.Status = "modified"
 
