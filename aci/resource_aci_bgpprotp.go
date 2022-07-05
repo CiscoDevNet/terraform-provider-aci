@@ -284,7 +284,7 @@ func resourceAciL3outBGPProtocolProfileRead(ctx context.Context, d *schema.Resou
 		log.Printf("[DEBUG] Error while reading relation bgpRsBgpNodeCtxPol %v", err)
 		setRelationAttribute(d, "relation_bgp_rs_bgp_node_ctx_pol", "")
 	} else {
-		setRelationAttribute(d, "elation_bgp_rs_bgp_node_ctx_pol", bgpRsBgpNodeCtxPolData)
+		setRelationAttribute(d, "relation_bgp_rs_bgp_node_ctx_pol", bgpRsBgpNodeCtxPolData)
 	}
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 	return nil
