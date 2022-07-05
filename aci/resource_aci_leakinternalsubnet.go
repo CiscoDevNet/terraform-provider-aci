@@ -187,13 +187,25 @@ func resourceAciLeakInternalSubnetCreate(ctx context.Context, d *schema.Resource
 	if Scope, ok := d.GetOk("vrf_scope"); ok {
 		leakInternalSubnetAttr.Scope = Scope.(string)
 	}
-	leakInternalSubnet := models.NewLeakInternalSubnet(fmt.Sprintf(models.RnleakInternalSubnet, ip), VRFDn+"/leakroutes", desc, nameAlias, leakInternalSubnetAttr)
 
-	err := aciClient.Save(leakInternalSubnet)
+	// Creation parent(leakRoutes) object
+	leakRoutesAttr := models.InterVRFLeakedRoutesContainerAttributes{}
+	leakRoutes := models.NewInterVRFLeakedRoutesContainer(fmt.Sprintf(models.RnleakRoutes), VRFDn, desc, nameAlias, leakRoutesAttr)
+
+	err := aciClient.Save(leakRoutes)
 	if err != nil {
 		return diag.FromErr(err)
 	}
 
+	// Creation leakInternalSubnet object
+	leakInternalSubnet := models.NewLeakInternalSubnet(fmt.Sprintf(models.RnleakInternalSubnet, ip), leakRoutes.DistinguishedName, desc, nameAlias, leakInternalSubnetAttr)
+
+	err = aciClient.Save(leakInternalSubnet)
+	if err != nil {
+		return diag.FromErr(err)
+	}
+
+	// Creation leakTo objects under leakInternalSubnet
 	leakInternalSubnet.Status = "modified"
 
 	jsonPayload, _, err := aciClient.PrepareModel(leakInternalSubnet)
@@ -236,7 +248,7 @@ func resourceAciLeakInternalSubnetCreate(ctx context.Context, d *schema.Resource
 
 	log.Printf("[DEBUG] leakInternalSubnet object request data: %v", jsonPayload)
 
-	leakToRequestData, err := aciClient.MakeRestRequest("POST", fmt.Sprintf("/api/node/mo/%s/%s.json", VRFDn+"/leakroutes", fmt.Sprintf(models.RnleakInternalSubnet, ip)), jsonPayload, true)
+	leakToRequestData, err := aciClient.MakeRestRequest("POST", fmt.Sprintf("/api/node/mo/%s/%s.json", leakRoutes.DistinguishedName, fmt.Sprintf(models.RnleakInternalSubnet, ip)), jsonPayload, true)
 	if err != nil {
 		return diag.FromErr(err)
 	}
