@@ -102,7 +102,6 @@ func setLeakInternalSubnetAttributes(leakInternalSubnet *models.LeakInternalSubn
 	d.Set("vrf_dn", GetParentDn(dn, fmt.Sprintf("/leakroutes/leakintsubnet-[%s]", leakInternalSubnetMap["ip"])))
 	d.Set("annotation", leakInternalSubnetMap["annotation"])
 	d.Set("ip", leakInternalSubnetMap["ip"])
-	d.Set("name", leakInternalSubnetMap["name"])
 	d.Set("vrf_scope", leakInternalSubnetMap["scope"])
 	d.Set("name_alias", leakInternalSubnetMap["nameAlias"])
 	return d, nil

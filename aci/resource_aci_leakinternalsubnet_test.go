@@ -13,10 +13,13 @@ import (
 
 func TestAccAciLeakInternalSubnet_Basic(t *testing.T) {
 	var leak_internal_subnet models.LeakInternalSubnet
+	var leak_to_1 models.TenantandVRFdestinationforInterVRFLeakedRoutes
+	var leak_to_2 models.TenantandVRFdestinationforInterVRFLeakedRoutes
+
 	fv_tenant_name := acctest.RandString(5)
-	fv_ctx_name := acctest.RandString(5)
-	leak_internal_subnet_name := acctest.RandString(5)
-	description := "leak_internal_subnet created while acceptance testing"
+	fv_dest_vrf_name := acctest.RandString(5)
+	fv_src_vrf_name := acctest.RandString(5)
+	leak_internal_subnet_ip := "1.1.1.10/24"
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
@@ -24,10 +27,10 @@ func TestAccAciLeakInternalSubnet_Basic(t *testing.T) {
 		CheckDestroy: testAccCheckAciLeakInternalSubnetDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckAciLeakInternalSubnetConfig_basic(fv_tenant_name, fv_ctx_name, leak_internal_subnet_name),
+				Config: testAccCheckAciLeakInternalSubnetConfig_basic(fv_tenant_name, fv_src_vrf_name, fv_dest_vrf_name, leak_internal_subnet_ip),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAciLeakInternalSubnetExists("aci_leak_internal_subnet.foo_leak_internal_subnet", &leak_internal_subnet),
-					testAccCheckAciLeakInternalSubnetAttributes(fv_tenant_name, fv_ctx_name, leak_internal_subnet_name, description, &leak_internal_subnet),
+					testAccCheckAciLeakInternalSubnetExists("aci_leak_internal_subnet.foo_leak_internal_subnet", &leak_internal_subnet, &leak_to_1, &leak_to_2),
+					testAccCheckAciLeakInternalSubnetAttributes(fv_tenant_name, fv_src_vrf_name, fv_dest_vrf_name, leak_internal_subnet_ip, &leak_internal_subnet, &leak_to_1, &leak_to_2),
 				),
 			},
 		},
@@ -36,10 +39,13 @@ func TestAccAciLeakInternalSubnet_Basic(t *testing.T) {
 
 func TestAccAciLeakInternalSubnet_Update(t *testing.T) {
 	var leak_internal_subnet models.LeakInternalSubnet
+	var leak_to_1 models.TenantandVRFdestinationforInterVRFLeakedRoutes
+	var leak_to_2 models.TenantandVRFdestinationforInterVRFLeakedRoutes
+
 	fv_tenant_name := acctest.RandString(5)
-	fv_ctx_name := acctest.RandString(5)
-	leak_internal_subnet_name := acctest.RandString(5)
-	description := "leak_internal_subnet created while acceptance testing"
+	fv_dest_vrf_name := acctest.RandString(5)
+	fv_src_vrf_name := acctest.RandString(5)
+	leak_internal_subnet_ip := "1.1.1.20/24"
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
@@ -47,24 +53,24 @@ func TestAccAciLeakInternalSubnet_Update(t *testing.T) {
 		CheckDestroy: testAccCheckAciLeakInternalSubnetDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckAciLeakInternalSubnetConfig_basic(fv_tenant_name, fv_ctx_name, leak_internal_subnet_name),
+				Config: testAccCheckAciLeakInternalSubnetConfig_basic(fv_tenant_name, fv_src_vrf_name, fv_dest_vrf_name, leak_internal_subnet_ip),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAciLeakInternalSubnetExists("aci_leak_internal_subnet.foo_leak_internal_subnet", &leak_internal_subnet),
-					testAccCheckAciLeakInternalSubnetAttributes(fv_tenant_name, fv_ctx_name, leak_internal_subnet_name, description, &leak_internal_subnet),
+					testAccCheckAciLeakInternalSubnetExists("aci_leak_internal_subnet.foo_leak_internal_subnet", &leak_internal_subnet, &leak_to_1, &leak_to_2),
+					testAccCheckAciLeakInternalSubnetAttributes(fv_tenant_name, fv_src_vrf_name, fv_dest_vrf_name, leak_internal_subnet_ip, &leak_internal_subnet, &leak_to_1, &leak_to_2),
 				),
 			},
 			{
-				Config: testAccCheckAciLeakInternalSubnetConfig_basic(fv_tenant_name, fv_ctx_name, leak_internal_subnet_name),
+				Config: testAccCheckAciLeakInternalSubnetConfig_basic(fv_tenant_name, fv_src_vrf_name, fv_dest_vrf_name, leak_internal_subnet_ip),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAciLeakInternalSubnetExists("aci_leak_internal_subnet.foo_leak_internal_subnet", &leak_internal_subnet),
-					testAccCheckAciLeakInternalSubnetAttributes(fv_tenant_name, fv_ctx_name, leak_internal_subnet_name, description, &leak_internal_subnet),
+					testAccCheckAciLeakInternalSubnetExists("aci_leak_internal_subnet.foo_leak_internal_subnet", &leak_internal_subnet, &leak_to_1, &leak_to_2),
+					testAccCheckAciLeakInternalSubnetAttributes(fv_tenant_name, fv_src_vrf_name, fv_dest_vrf_name, leak_internal_subnet_ip, &leak_internal_subnet, &leak_to_1, &leak_to_2),
 				),
 			},
 		},
 	})
 }
 
-func testAccCheckAciLeakInternalSubnetConfig_basic(fv_tenant_name, fv_ctx_name, leak_internal_subnet_name string) string {
+func testAccCheckAciLeakInternalSubnetConfig_basic(fv_tenant_name, fv_src_vrf_name, fv_dest_vrf_name, leak_internal_subnet_ip string) string {
 	return fmt.Sprintf(`
 
 	resource "aci_tenant" "foo_tenant" {
@@ -73,22 +79,35 @@ func testAccCheckAciLeakInternalSubnetConfig_basic(fv_tenant_name, fv_ctx_name, 
 
 	}
 
-	resource "aci_vrf" "foo_vrf" {
+	resource "aci_vrf" "foo_src_vrf" {
+		name 		= "%s"
+		description = "vrf created while acceptance testing"
+		tenant_dn = aci_tenant.foo_tenant.id
+	}
+
+	resource "aci_vrf" "foo_dest_vrf" {
 		name 		= "%s"
 		description = "vrf created while acceptance testing"
 		tenant_dn = aci_tenant.foo_tenant.id
 	}
 
 	resource "aci_leak_internal_subnet" "foo_leak_internal_subnet" {
-		name 		= "%s"
-		description = "leak_internal_subnet created while acceptance testing"
-		vrf_dn = aci_vrf.foo_vrf.id
+		vrf_dn    = aci_vrf.foo_src_vrf.id
+		ip        = "%s"
+		leak_to {
+		  destination_vrf_name    = "default"
+		  destination_tenant_name = "common"
+		}
+		leak_to {
+		  destination_vrf_name    = aci_vrf.foo_dest_vrf.name
+		  destination_tenant_name = aci_tenant.foo_tenant.name
+		  destination_vrf_scope   = "private"
+		}
 	}
-
-	`, fv_tenant_name, fv_ctx_name, leak_internal_subnet_name)
+	`, fv_tenant_name, fv_src_vrf_name, fv_dest_vrf_name, leak_internal_subnet_ip)
 }
 
-func testAccCheckAciLeakInternalSubnetExists(name string, leak_internal_subnet *models.LeakInternalSubnet) resource.TestCheckFunc {
+func testAccCheckAciLeakInternalSubnetExists(name string, leak_internal_subnet *models.LeakInternalSubnet, leak_to_1 *models.TenantandVRFdestinationforInterVRFLeakedRoutes, leak_to_2 *models.TenantandVRFdestinationforInterVRFLeakedRoutes) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 		rs, ok := s.RootModule().Resources[name]
 
@@ -112,6 +131,13 @@ func testAccCheckAciLeakInternalSubnetExists(name string, leak_internal_subnet *
 			return fmt.Errorf("Inter-VRF Leaked EPG/BD Subnet %s not found", rs.Primary.ID)
 		}
 		*leak_internal_subnet = *leak_internal_subnetFound
+
+		// leakTo - Beginning Read
+		leakToObjects, _ := client.ListTenantandVRFdestinationforInterVRFLeakedRoutes(rs.Primary.ID)
+		*leak_to_1 = *leakToObjects[0]
+		*leak_to_2 = *leakToObjects[1]
+		// leakTo - Read finished successfully
+
 		return nil
 	}
 }
@@ -132,18 +158,33 @@ func testAccCheckAciLeakInternalSubnetDestroy(s *terraform.State) error {
 	return nil
 }
 
-func testAccCheckAciLeakInternalSubnetAttributes(fv_tenant_name, fv_ctx_name, leak_internal_subnet_name, description string, leak_internal_subnet *models.LeakInternalSubnet) resource.TestCheckFunc {
+func testAccCheckAciLeakInternalSubnetAttributes(fv_tenant_name, fv_src_vrf_name, fv_dest_vrf_name, leak_internal_subnet_ip string, leak_internal_subnet *models.LeakInternalSubnet, leak_to_1 *models.TenantandVRFdestinationforInterVRFLeakedRoutes, leak_to_2 *models.TenantandVRFdestinationforInterVRFLeakedRoutes) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
-		if leak_internal_subnet_name != GetMOName(leak_internal_subnet.DistinguishedName) {
-			return fmt.Errorf("Bad leak_internal_subnet %s", GetMOName(leak_internal_subnet.DistinguishedName))
+
+		if leak_internal_subnet_ip != leak_internal_subnet.Ip {
+			return fmt.Errorf("Bad leak_internal_subnet IP %s", leak_internal_subnet.Ip)
 		}
 
-		// if fv_ctx_name != GetMOName(GetParentDn(leak_internal_subnet.DistinguishedName)) {
-		// 	return fmt.Errorf(" Bad fv_ctx %s", GetMOName(GetParentDn(leak_internal_subnet.DistinguishedName)))
-		// }
-		if description != leak_internal_subnet.Description {
-			return fmt.Errorf("Bad leak_internal_subnet Description %s", leak_internal_subnet.Description)
+		if leak_internal_subnet.Scope != "private" {
+			return fmt.Errorf("Bad leak_internal_subnet Scope %s", leak_internal_subnet.Scope)
 		}
+
+		if leak_to_1.DestinationCtxName != "default" && leak_to_1.DestinationCtxName != fv_dest_vrf_name {
+			return fmt.Errorf("Bad leakTo - 1 Destination VRF Name %s", leak_to_1.DestinationCtxName)
+		}
+
+		if leak_to_1.DestinationTenantName != "common" && leak_to_1.DestinationTenantName != fv_tenant_name {
+			return fmt.Errorf("Bad leakTo - 1 Destination Tenant Name %s", leak_to_1.DestinationTenantName)
+		}
+
+		if leak_to_2.DestinationCtxName != "default" && leak_to_2.DestinationCtxName != fv_dest_vrf_name {
+			return fmt.Errorf("Bad leakTo - 2 Destination VRF Name %s", leak_to_2.DestinationCtxName)
+		}
+
+		if leak_to_2.DestinationTenantName != "common" && leak_to_2.DestinationTenantName != fv_tenant_name {
+			return fmt.Errorf("Bad leakTo - 2 Destination Tenant Name %s", leak_to_2.DestinationTenantName)
+		}
+
 		return nil
 	}
 }
