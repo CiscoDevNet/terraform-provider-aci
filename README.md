@@ -90,20 +90,28 @@ Note: The value of "cert_name" argument must match the name of the certificate o
 
 Developing The Provider
 -----------------------
-If you want to work on the provider, you'll first need [Go](http://www.golang.org) installed on your machine. You'll also need to correctly setup a [GOPATH](http://golang.org/doc/code.html#GOPATH), as well as adding `$GOPATH/bin` to your `$PATH`.
+If you want to work on the provider, you'll first need [Go](http://www.golang.org) installed on your machine. 
 
 To compile the provider, run `make build`. This will build the provider with sanity checks present in scripts directory and put the provider binary in `$GOPATH/bin` directory.
 
-<strong>Important: </strong>To successfully use the provider you need to have the below configuration in your Terraform plan.
+<strong>Important: </strong>To successfully use the provider you need to follow these steps:
 
-```hcl
-terraform {
-  required_providers {
-    aci = {
-      source = "ciscodevnet/aci"
+- Copy or Symlink the provider from the `$GOPATH/bin` to `~/.terraform.d/plugins/terraform.local/CiscoDevNet/aci/<Version>/<architecture>/` for example:
+  ```bash
+  ln -s ~/go/bin/terraform-provider-aci ~/.terraform.d/plugins/terraform.local/CiscoDevNet/aci/2.3.0/linux_amd64/terraform-provider-aci
+  ```
+
+- Edit the Terraform Provider Configuration to use the local provider.
+
+  ```hcl
+  terraform {
+    required_providers {
+      aci = {
+        source = "terraform.local/CiscoDevNet/aci"
+        version = "2.3.0"
+      }
     }
   }
-}
-```
+  ```
 
 <strong>NOTE:</strong> Currently only resource properties supports the reflecting manual changes made in CISCO ACI. Manual changes to relationship is not taken care by the provider.
