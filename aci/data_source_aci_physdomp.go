@@ -3,6 +3,7 @@ package aci
 import (
 	"context"
 	"fmt"
+	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
@@ -51,5 +52,38 @@ func dataSourceAciPhysicalDomainRead(ctx context.Context, d *schema.ResourceData
 	if err != nil {
 		return diag.FromErr(err)
 	}
+
+	// infraRsVlanNs - Beginning Read
+	log.Printf("[DEBUG] %s: infraRsVlanNs - Beginning Read with parent DN", dn)
+	_, err = getAndSetRelationinfraRsVlanNsFromPhysicalDomain(aciClient, dn, d)
+	if err != nil {
+		log.Printf("[DEBUG] %s: infraRsVlanNs - Read finished successfully", d.Get("relation_infra_rs_vlan_ns"))
+	}
+	// infraRsVlanNs - Read finished successfully
+
+	// infraRsVlanNsDef - Beginning Read
+	log.Printf("[DEBUG] %s: infraRsVlanNsDef - Beginning Read with parent DN", dn)
+	_, err = getAndSetRelationinfraRsVlanNsDefFromPhysicalDomain(aciClient, dn, d)
+	if err != nil {
+		log.Printf("[DEBUG] %s: infraRsVlanNsDef - Read finished successfully", d.Get("relation_infra_rs_vlan_ns_def"))
+	}
+	// infraRsVlanNsDef - Read finished successfully
+
+	// infraRsVipAddrNs - Beginning Read
+	log.Printf("[DEBUG] %s: infraRsVipAddrNs - Beginning Read with parent DN", dn)
+	_, err = getAndSetRelationinfraRsVipAddrNsFromPhysicalDomain(aciClient, dn, d)
+	if err != nil {
+		log.Printf("[DEBUG] %s: infraRsVipAddrNs - Read finished successfully", d.Get("relation_infra_rs_vip_addr_ns"))
+	}
+	// infraRsVipAddrNs - Read finished successfully
+
+	// infraRsDomVxlanNsDef - Beginning Read
+	log.Printf("[DEBUG] %s: infraRsDomVxlanNsDef - Beginning Read with parent DN", dn)
+	_, err = getAndSetRelationinfraRsDomVxlanNsDefFromPhysicalDomain(aciClient, dn, d)
+	if err != nil {
+		log.Printf("[DEBUG] %s: infraRsDomVxlanNsDef - Read finished successfully", d.Get("relation_infra_rs_dom_vxlan_ns_def"))
+	}
+	// infraRsDomVxlanNsDef - Read finished successfully
+
 	return nil
 }
