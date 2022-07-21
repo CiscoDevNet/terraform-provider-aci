@@ -1,3 +1,14 @@
+## 2.4.0 (July 21, 2022)
+IMPROVEMENTS:
+- Allow nil return option for datasource aci_client_end_point (#893)
+- Add next_hop_addr, msnlb and anycast_mac attributes to resource aci_subnet (#895)
+
+BUG FIXES:
+- Fix aci_imported_contract relation_vz_rs_if to properly set the relationship tDn (#894)
+- Fix idempotency issues in aci_l3out_bgp_protocol_profile with relation_bgp_rs_best_path_ctrl_pol attribute (#904)
+- Add documentation for relation_bgp_rs_best_path_ctrl_pol attribute of the aci_l3out_bgp_protocol_profile resource
+- Improve unreachable error messages from aci-go-client
+
 ## 2.3.0 (June 11, 2022)
 IMPROVEMENTS:
 - Add datasource aci_l4_l7_deployed_graph_connector_vlan
