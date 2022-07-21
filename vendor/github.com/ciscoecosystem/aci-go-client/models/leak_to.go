@@ -24,6 +24,7 @@ type TenantandVRFdestinationforInterVRFLeakedRoutesAttributes struct {
 	Name                  string `json:",omitempty"`
 	Scope                 string `json:",omitempty"`
 	DestinationTenantName string `json:",omitempty"`
+	ToCtxDn               string `json:",omitempty"`
 }
 
 func NewTenantandVRFdestinationforInterVRFLeakedRoutes(leakToRn, parentDn, description, nameAlias string, leakToAttr TenantandVRFdestinationforInterVRFLeakedRoutesAttributes) *TenantandVRFdestinationforInterVRFLeakedRoutes {
@@ -59,6 +60,7 @@ func (leakTo *TenantandVRFdestinationforInterVRFLeakedRoutes) ToMap() (map[strin
 	}
 
 	A(leakToMap, "ctxName", leakTo.DestinationCtxName)
+	A(leakToMap, "toCtxDn", leakTo.ToCtxDn)
 	A(leakToMap, "name", leakTo.Name)
 	A(leakToMap, "scope", leakTo.Scope)
 	A(leakToMap, "tenantName", leakTo.DestinationTenantName)
@@ -80,6 +82,7 @@ func TenantandVRFdestinationforInterVRFLeakedRoutesFromContainerList(cont *conta
 		},
 		TenantandVRFdestinationforInterVRFLeakedRoutesAttributes{
 			DestinationCtxName:    G(TenantandVRFdestinationforInterVRFLeakedRoutesCont, "ctxName"),
+			ToCtxDn:               G(TenantandVRFdestinationforInterVRFLeakedRoutesCont, "toCtxDn"),
 			Name:                  G(TenantandVRFdestinationforInterVRFLeakedRoutesCont, "name"),
 			Scope:                 G(TenantandVRFdestinationforInterVRFLeakedRoutesCont, "scope"),
 			DestinationTenantName: G(TenantandVRFdestinationforInterVRFLeakedRoutesCont, "tenantName"),
