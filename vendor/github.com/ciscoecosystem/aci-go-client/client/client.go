@@ -500,13 +500,15 @@ func (c *Client) Do(req *http.Request) (*container.Container, *http.Response, er
 
 	// retain the request body across multiple attempts
 	var body []byte
-	if req.Body != nil {
+	if req.Body != nil && c.maxRetries != 0 {
 		body, _ = ioutil.ReadAll(req.Body)
 	}
 
 	for attempts := 0; ; attempts++ {
 		log.Printf("[TRACE] HTTP Request Method and URL: %s %s", req.Method, req.URL.String())
-		req.Body = ioutil.NopCloser(bytes.NewBuffer(body))
+		if c.maxRetries != 0 {
+			req.Body = ioutil.NopCloser(bytes.NewBuffer(body))
+		}
 		if !c.skipLoggingPayload {
 			log.Printf("[TRACE] HTTP Request Body: %v", req.Body)
 		}
@@ -570,13 +572,15 @@ func (c *Client) DoRaw(req *http.Request) (*http.Response, error) {
 
 	// retain the request body across multiple attempts
 	var body []byte
-	if req.Body != nil {
+	if req.Body != nil && c.maxRetries != 0 {
 		body, _ = ioutil.ReadAll(req.Body)
 	}
 
 	for attempts := 0; ; attempts++ {
 		log.Printf("[TRACE] HTTP Request Method and URL: %s %s", req.Method, req.URL.String())
-		req.Body = ioutil.NopCloser(bytes.NewBuffer(body))
+		if c.maxRetries != 0 {
+			req.Body = ioutil.NopCloser(bytes.NewBuffer(body))
+		}
 		if !c.skipLoggingPayload {
 			log.Printf("[TRACE] HTTP Request Body: %v", req.Body)
 		}
