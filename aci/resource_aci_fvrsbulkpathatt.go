@@ -86,7 +86,7 @@ func resourceAciBulkStaticPath() *schema.Resource {
 }
 
 func resourceAciBulkStaticPathCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	log.Printf("[DEBUG] StaticPath: Beginning Creation")
+	log.Printf("[DEBUG] BulkStaticPath: Beginning Creation")
 
 	aciClient := m.(*client.Client)
 
@@ -313,7 +313,7 @@ func resourceAciBulkStaticPathDelete(ctx context.Context, d *schema.ResourceData
 	}
 	d = setAciBulkStaticPath(bulkStaticPath, d)
 
-	log.Printf("[DEBUG]: bulkStaticPath in Delete: %s", bulkStaticPath)
+	log.Printf("[DEBUG]: BulkStaticPath in Delete: %s", bulkStaticPath)
 	deletePayload := staticPathPayload(d.Get("static_path").(*schema.Set).List(), "delete")
 
 	contentMap := make(map[string]interface{})
