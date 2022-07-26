@@ -175,8 +175,7 @@ func getAciBulkStaticPath(aciClient *client.Client, dn string) ([]interface{}, d
 	if diags.HasError() {
 		return nil, diags
 	}
-	//TODO: get staticPathSet in one search func, Search("imdata", className, "children").Index(0).Data().([]interface{})
-	staticPathSet := resp.S("imdata").Index(0).S(className, "children").S("fvRsPathAtt", "attributes")
+	staticPathSet := resp.S("imdata").S("fvRsPathAtt", "attributes")
 	if staticPathSet == nil {
 		return nil, nil
 	}
