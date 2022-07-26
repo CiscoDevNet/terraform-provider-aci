@@ -184,27 +184,27 @@ func getAciBulkStaticPath(aciClient *client.Client, dn string) ([]interface{}, d
 }
 
 func setAciBulkStaticPath(staticPathSet []interface{}, d *schema.ResourceData) *schema.ResourceData {
-	newStaticPathSet := make([]interface{}, 0, 1)
+	stateStaticPathSet := make([]interface{}, 0, 1)
 	for _, staticPath := range staticPathSet {
 		staticPathMap := staticPath.(map[string]interface{})
-		newStaticPathMap := make(map[string]interface{})
+		stateStaticPathMap := make(map[string]interface{})
 		if descr, ok := staticPathMap["descr"]; ok {
-			newStaticPathMap["description"] = descr.(string)
+			stateStaticPathMap["description"] = descr.(string)
 		}
 		if immediacy, ok := staticPathMap["instrImedcy"]; ok {
-			newStaticPathMap["deployment_immediacy"] = immediacy.(string)
+			stateStaticPathMap["deployment_immediacy"] = immediacy.(string)
 		}
 		if mode, ok := staticPathMap["mode"]; ok {
-			newStaticPathMap["mode"] = mode.(string)
+			stateStaticPathMap["mode"] = mode.(string)
 		}
 		if primaryEncap, ok := staticPathMap["primaryEncap"]; ok {
-			newStaticPathMap["primary_encap"] = primaryEncap.(string)
+			stateStaticPathMap["primary_encap"] = primaryEncap.(string)
 		}
-		newStaticPathMap["encap"] = staticPathMap["encap"].(string)
-		newStaticPathMap["interface_dn"] = staticPathMap["tDn"].(string)
-		newStaticPathSet = append(newStaticPathSet, newStaticPathMap)
+		stateStaticPathMap["encap"] = staticPathMap["encap"].(string)
+		stateStaticPathMap["interface_dn"] = staticPathMap["tDn"].(string)
+		stateStaticPathSet = append(stateStaticPathSet, stateStaticPathMap)
 	}
-	d.Set("static_path", newStaticPathSet)
+	d.Set("static_path", stateStaticPathSet)
 	return d
 }
 
