@@ -91,7 +91,6 @@ func resourceAciBulkStaticPathCreate(ctx context.Context, d *schema.ResourceData
 	aciClient := m.(*client.Client)
 
 	ApplicationEPGDn := d.Get("application_epg_dn").(string)
-	d.Get("static_path").(*schema.Set).List()
 	staticPathSet := staticPathPayload(d.Get("static_path").(*schema.Set).List(), "create")
 
 	contentMap := make(map[string]interface{})
@@ -181,8 +180,7 @@ func getAciBulkStaticPath(aciClient *client.Client, dn string) ([]interface{}, d
 	if staticPathSet == nil {
 		return nil, nil
 	}
-	bulkStaticPath := staticPathSet.Data().([]interface{})
-	return bulkStaticPath, nil
+	return staticPathSet.Data().([]interface{}), nil
 }
 
 func setAciBulkStaticPath(staticPathSet []interface{}, d *schema.ResourceData) *schema.ResourceData {
