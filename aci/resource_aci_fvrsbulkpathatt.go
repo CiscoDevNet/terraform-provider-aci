@@ -231,33 +231,24 @@ func bulkStaticPathRequest(aciClient *client.Client, method string, epgDn string
 	}
 }
 
-func diffInStaticPath(oldStaticPath, newStaticPath *schema.Set) ([]interface{}, []interface{}, []interface{}) {
-	var updateInOld []interface{}
-	var updateInNew []interface{}
-	var intersection []interface{}
+func diffInStaticPath(oldStaticPaths, newStaticPaths *schema.Set) []interface{} {
+	var toDelete []interface{}
 
-	for _, old := range oldStaticPath.List() {
-		for _, new := range newStaticPath.List() {
-			if reflect.DeepEqual(new, old) {
-				intersection = append(intersection, new)
-			} else if old.(map[string]interface{})["interface_dn"] == new.(map[string]interface{})["interface_dn"] {
-				updateInOld = append(updateInOld, old)
-				updateInNew = append(updateInNew, new)
+	for _, old := range oldStaticPaths.List() {
+		found := false
+
+		for _, new := range newStaticPaths.List() {
+			if old.(map[string]interface{})["interface_dn"] == new.(map[string]interface{})["interface_dn"] {
+				found = true
+				break
 			}
 		}
-	}
-	for _, intersec := range intersection {
-		oldStaticPath.Remove(intersec)
-		newStaticPath.Remove(intersec)
-	}
-	for _, updateNew := range updateInNew {
-		newStaticPath.Remove(updateNew)
-	}
-	for _, updateOld := range updateInOld {
-		oldStaticPath.Remove(updateOld)
+		if !found {
+			toDelete = append(toDelete, old)
+		}
 	}
 
-	return newStaticPath.List(), oldStaticPath.List(), updateInNew
+	return toDelete
 }
 
 func staticPathPayload(staticPathList []interface{}, status string) []interface{} {
