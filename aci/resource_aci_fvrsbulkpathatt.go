@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"reflect"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/container"
@@ -136,22 +135,17 @@ func resourceAciBulkStaticPathUpdate(ctx context.Context, d *schema.ResourceData
 	ApplicationEPGDn := d.Get("application_epg_dn").(string)
 
 	old_static_path, new_static_path := d.GetChange("static_path")
-	create, del, update := diffInStaticPath(old_static_path.(*schema.Set), new_static_path.(*schema.Set))
+	del := diffInStaticPath(old_static_path.(*schema.Set), new_static_path.(*schema.Set))
 
-	createPayload := staticPathPayload(create, "create")
-	updatePayload := staticPathPayload(update, "update")
+	createPayload := staticPathPayload(new_static_path.(*schema.Set).List(), "create")
 	deletePayload := staticPathPayload(del, "delete")
 	var payload []interface{}
 	for _, createObj := range createPayload {
 		payload = append(payload, createObj)
 	}
-	for _, updateObj := range updatePayload {
-		payload = append(payload, updateObj)
-	}
 	for _, deleteObj := range deletePayload {
 		payload = append(payload, deleteObj)
 	}
-	// createPayload = append(createPayload, updatePayload, deletePayload)
 
 	contentMap := make(map[string]interface{})
 	contentMap["dn"] = ApplicationEPGDn
@@ -276,7 +270,6 @@ func staticPathPayload(staticPathList []interface{}, status string) []interface{
 		if status == "delete" {
 			staticPathContent["status"] = "deleted"
 		}
-		//TODO: make map[string]string
 		log.Printf("[DEBUG]: primaryEncap in staticPathPayload %s", staticPath["primary_encap"])
 		log.Printf("[DEBUG]: staticPathContent in staticPathPayload %s", staticPathContent)
 		staticPathMap["content"] = toStrMap(staticPathContent)
