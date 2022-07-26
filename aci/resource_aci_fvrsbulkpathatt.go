@@ -208,10 +208,10 @@ func setAciBulkStaticPath(staticPathSet []interface{}, d *schema.ResourceData) *
 	return d
 }
 
-func bulkStaticPathRequest(aciClient *client.Client, method string, path string, body *container.Container) (*container.Container, diag.Diagnostics) {
-	url := "/api/mo/" + path + ".json"
+func bulkStaticPathRequest(aciClient *client.Client, method string, epgDn string, body *container.Container) (*container.Container, diag.Diagnostics) {
+	url := "/api/mo/" + epgDn + ".json"
 	if method == "GET" {
-		url += "?rsp-subtree=children"
+		url += "?query-target=children&target-subtree-class=fvRsPathAtt"
 	}
 	req, err := aciClient.MakeRestRequest(method, url, body, true)
 	if err != nil {
@@ -221,9 +221,6 @@ func bulkStaticPathRequest(aciClient *client.Client, method string, path string,
 	if err != nil {
 		return respCont, diag.FromErr(err)
 	}
-	// if respCont.S("imdata").Index(0).String() == "{}" {
-	// 	return nil, nil
-	// }
 	err = client.CheckForErrors(respCont, method, false)
 	if err != nil {
 		return respCont, diag.FromErr(err)
