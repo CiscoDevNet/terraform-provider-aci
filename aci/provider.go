@@ -309,6 +309,7 @@ func Provider() *schema.Provider {
 			"aci_l4_l7_logical_interface":                  resourceAciLogicalInterface(),
 			"aci_l4_l7_redirect_health_group":              resourceAciL4L7RedirectHealthGroup(),
 			"aci_ip_sla_monitoring_policy":                 resourceAciIPSLAMonitoringPolicy(),
+			"aci_bulk_epg_to_static_path":                  resourceAciBulkStaticPath(),
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
