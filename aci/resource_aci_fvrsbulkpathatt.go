@@ -243,7 +243,6 @@ func staticPathPayload(staticPathList []interface{}, status string) []interface{
 		if status == "delete" {
 			staticPathContent["status"] = "deleted"
 		}
-		log.Printf("[DEBUG]: primaryEncap in staticPathPayload %s", staticPath["primary_encap"])
 		log.Printf("[DEBUG]: staticPathContent in staticPathPayload %s", staticPathContent)
 		staticPathMap["content"] = toStrMap(staticPathContent)
 		staticPathSet = append(staticPathSet, staticPathMap)
@@ -257,14 +256,6 @@ func resourceAciBulkStaticPathDelete(ctx context.Context, d *schema.ResourceData
 	aciClient := m.(*client.Client)
 	ApplicationEPGDn := d.Get("application_epg_dn").(string)
 
-	dn := d.Id()
-	bulkStaticPath, diags := getAciBulkStaticPath(aciClient, dn)
-	if diags.HasError() {
-		return diags
-	}
-	d = setAciBulkStaticPath(bulkStaticPath, d)
-
-	log.Printf("[DEBUG]: BulkStaticPath in Delete: %s", bulkStaticPath)
 	deletePayload := staticPathPayload(d.Get("static_path").(*schema.Set).List(), "delete")
 
 	contentMap := make(map[string]interface{})
@@ -274,7 +265,7 @@ func resourceAciBulkStaticPathDelete(ctx context.Context, d *schema.ResourceData
 		return diag.FromErr(err)
 	}
 
-	_, diags = bulkStaticPathRequest(aciClient, "POST", ApplicationEPGDn, cont)
+	_, diags := bulkStaticPathRequest(aciClient, "POST", ApplicationEPGDn, cont)
 	if diags.HasError() {
 		return diags
 	}
