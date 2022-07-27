@@ -13,8 +13,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
-var className = models.FvaepgClassName
-
 func resourceAciBulkStaticPath() *schema.Resource {
 	return &schema.Resource{
 		CreateContext: resourceAciBulkStaticPathCreate,
@@ -94,7 +92,7 @@ func resourceAciBulkStaticPathCreate(ctx context.Context, d *schema.ResourceData
 
 	contentMap := make(map[string]interface{})
 	contentMap["dn"] = ApplicationEPGDn
-	cont, err := preparePayload(className, toStrMap(contentMap), staticPathSet)
+	cont, err := preparePayload(models.FvaepgClassName, toStrMap(contentMap), staticPathSet)
 	if err != nil {
 		return diag.FromErr(err)
 	}
@@ -150,7 +148,7 @@ func resourceAciBulkStaticPathUpdate(ctx context.Context, d *schema.ResourceData
 	contentMap := make(map[string]interface{})
 	contentMap["dn"] = ApplicationEPGDn
 
-	cont, err := preparePayload(className, toStrMap(contentMap), payload)
+	cont, err := preparePayload(models.FvaepgClassName, toStrMap(contentMap), payload)
 	if err != nil {
 		return diag.FromErr(err)
 	}
@@ -296,7 +294,7 @@ func resourceAciBulkStaticPathDelete(ctx context.Context, d *schema.ResourceData
 
 	contentMap := make(map[string]interface{})
 	contentMap["dn"] = ApplicationEPGDn
-	cont, err := preparePayload(className, toStrMap(contentMap), deletePayload)
+	cont, err := preparePayload(models.FvaepgClassName, toStrMap(contentMap), deletePayload)
 	if err != nil {
 		return diag.FromErr(err)
 	}
