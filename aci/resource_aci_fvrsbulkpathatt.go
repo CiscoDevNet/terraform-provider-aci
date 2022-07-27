@@ -137,13 +137,8 @@ func resourceAciBulkStaticPathUpdate(ctx context.Context, d *schema.ResourceData
 
 	createPayload := staticPathPayload(new_static_path.(*schema.Set).List(), "create")
 	deletePayload := staticPathPayload(del, "delete")
-	var payload []interface{}
-	for _, createObj := range createPayload {
-		payload = append(payload, createObj)
-	}
-	for _, deleteObj := range deletePayload {
-		payload = append(payload, deleteObj)
-	}
+	payload := createPayload
+	payload = append(payload, deletePayload...)
 
 	contentMap := make(map[string]interface{})
 	contentMap["dn"] = ApplicationEPGDn
