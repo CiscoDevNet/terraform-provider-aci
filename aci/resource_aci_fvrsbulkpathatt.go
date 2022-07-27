@@ -133,7 +133,7 @@ func resourceAciBulkStaticPathUpdate(ctx context.Context, d *schema.ResourceData
 	ApplicationEPGDn := d.Get("application_epg_dn").(string)
 
 	old_static_path, new_static_path := d.GetChange("static_path")
-	del := diffInStaticPath(old_static_path.(*schema.Set), new_static_path.(*schema.Set))
+	del := getOldObjectsNotInNew("interface_dn", old_static_path.(*schema.Set), new_static_path.(*schema.Set))
 
 	createPayload := staticPathPayload(new_static_path.(*schema.Set).List(), "create")
 	deletePayload := staticPathPayload(del, "delete")
@@ -216,26 +216,6 @@ func bulkStaticPathRequest(aciClient *client.Client, method string, epgDn string
 	} else {
 		return respCont, nil
 	}
-}
-
-func diffInStaticPath(oldStaticPaths, newStaticPaths *schema.Set) []interface{} {
-	var toDelete []interface{}
-
-	for _, old := range oldStaticPaths.List() {
-		found := false
-
-		for _, new := range newStaticPaths.List() {
-			if old.(map[string]interface{})["interface_dn"] == new.(map[string]interface{})["interface_dn"] {
-				found = true
-				break
-			}
-		}
-		if !found {
-			toDelete = append(toDelete, old)
-		}
-	}
-
-	return toDelete
 }
 
 func staticPathPayload(staticPathList []interface{}, status string) []interface{} {
