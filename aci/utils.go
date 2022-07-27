@@ -339,14 +339,14 @@ func allowEmpty(err error, allow bool) error {
 // getOldObjectsNotInNew returns elements that are in oldSet but not in newSet, based on the given keyName.
 func getOldObjectsNotInNew(keyName string, oldSet, newSet *schema.Set) (oldObjects []interface{}) {
 	for _, oldMap := range oldSet.List() {
-		found := true
+		found := false
 		for _, newMap := range newSet.List() {
 			if oldMap.(map[string]interface{})[keyName] == newMap.(map[string]interface{})[keyName] {
-				found = false
+				found = true
 				break
 			}
 		}
-		if found {
+		if !found {
 			oldObjects = append(oldObjects, oldMap)
 		}
 	}
