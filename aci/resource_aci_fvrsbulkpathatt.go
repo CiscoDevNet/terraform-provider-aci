@@ -113,11 +113,11 @@ func resourceAciBulkStaticPathRead(ctx context.Context, d *schema.ResourceData, 
 	aciClient := m.(*client.Client)
 
 	dn := d.Id()
-	bulkStaticPath, diags := getAciBulkStaticPath(aciClient, dn)
+	bulkStaticPaths, diags := getAciBulkStaticPaths(aciClient, dn)
 	if diags.HasError() {
 		return diags
 	}
-	d = setAciBulkStaticPath(bulkStaticPath, d)
+	d = setAciBulkStaticPath(bulkStaticPaths, d)
 	d.Set("application_epg_dn", dn)
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
@@ -157,7 +157,7 @@ func resourceAciBulkStaticPathUpdate(ctx context.Context, d *schema.ResourceData
 	return resourceAciBulkStaticPathRead(ctx, d, m)
 }
 
-func getAciBulkStaticPath(aciClient *client.Client, dn string) ([]interface{}, diag.Diagnostics) {
+func getAciBulkStaticPaths(aciClient *client.Client, dn string) ([]interface{}, diag.Diagnostics) {
 	resp, diags := bulkStaticPathRequest(aciClient, "GET", dn, nil)
 	if diags.HasError() {
 		return nil, diags
@@ -282,11 +282,11 @@ func resourceAciBulkStaticPathImport(d *schema.ResourceData, m interface{}) ([]*
 	dn := d.Id()
 	d.Set("application_epg_dn", dn)
 
-	bulkStaticPath, diags := getAciBulkStaticPath(aciClient, dn)
+	bulkStaticPaths, diags := getAciBulkStaticPaths(aciClient, dn)
 	if diags.HasError() {
 		return nil, fmt.Errorf("could not read static path object when importing: %s", diags[0].Summary)
 	}
-	d = setAciBulkStaticPath(bulkStaticPath, d)
+	d = setAciBulkStaticPath(bulkStaticPaths, d)
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 	return []*schema.ResourceData{d}, nil
