@@ -310,7 +310,7 @@ func Provider() *schema.Provider {
 			"aci_l4_l7_redirect_health_group":              resourceAciL4L7RedirectHealthGroup(),
 			"aci_ip_sla_monitoring_policy":                 resourceAciIPSLAMonitoringPolicy(),
 			"aci_bulk_epg_to_static_path":                  resourceAciBulkStaticPath(),
-			"aci_leak_internal_subnet":                     resourceAciLeakInternalSubnet(),
+			"aci_vrf_leak_epg_bd_subnet":                   resourceAciLeakInternalSubnet(),
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
@@ -542,7 +542,7 @@ func Provider() *schema.Provider {
 			"aci_l4_l7_redirect_health_group":              dataSourceAciL4L7RedirectHealthGroup(),
 			"aci_ip_sla_monitoring_policy":                 dataSourceAciIPSLAMonitoringPolicy(),
 			"aci_l4_l7_deployed_graph_connector_vlan":      dataSourceAciEPgDef(),
-			"aci_leak_internal_subnet":                     dataSourceAciLeakInternalSubnet(),
+			"aci_vrf_leak_epg_bd_subnet":                   dataSourceAciLeakInternalSubnet(),
 		},
 
 		ConfigureFunc: configureClient,

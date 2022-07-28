@@ -1,12 +1,13 @@
 ---
+subcategory: "Networking"
 layout: "aci"
-page_title: "ACI: aci_leak_internal_subnet"
-sidebar_current: "docs-aci-data-source-leak_internal_subnet"
+page_title: "ACI: aci_vrf_leak_epg_bd_subnet"
+sidebar_current: "docs-aci-data-source-vrf_leak_epg_bd_subnet"
 description: |-
   Data source for ACI Inter-VRF Leaked EPG/BD Subnet
 ---
 
-# aci_leak_internal_subnet #
+# aci_vrf_leak_epg_bd_subnet #
 
 Data source for ACI Inter-VRF Leaked EPG/BD Subnet
 
@@ -24,8 +25,8 @@ Data source for ACI Inter-VRF Leaked EPG/BD Subnet
 ## Example Usage ##
 
 ```hcl
-data "aci_leak_internal_subnet" "internal_subnet" {
-  vrf_dn    = aci_vrf.vrf1.id # Source VRF DN
+data "aci_vrf_leak_epg_bd_subnet" "internal_subnet" {
+  vrf_dn    = aci_vrf.vrf1.id
   ip        = "1.1.20.2/24"
 }
 ```
@@ -39,8 +40,7 @@ data "aci_leak_internal_subnet" "internal_subnet" {
 * `id` - Attribute id set to the Dn of the Inter-VRF Leaked EPG/BD Subnet object.
 * `annotation` - (Optional) Annotation of the Inter-VRF Leaked EPG/BD Subnet object.
 * `name_alias` - (Optional) Name Alias of the Inter-VRF Leaked EPG/BD Subnet object.
-* `vrf_scope` - (Optional) Visibility of the Inter-VRF Leaked EPG/BD Subnet object.
-* `leak_to` - (Optional) A block representing the attributes of `Tenant and VRF destination` for Inter-VRF Leaked Routes object. Type: Block.
-  * `destination_vrf_name` - Name of the destination VRF object, which is mapped with `Tenant and VRF Destinations` object.
-  * `destination_vrf_scope` - Scope of the `Tenant and VRF Destinations` object.
-  * `destination_tenant_name` - Name of the destination Tenant object, which is mapped with `Tenant and VRF Destinations` object.
+* `allow_l3out_advertisement` - (Optional) Visibility of the Inter-VRF Leaked EPG/BD Subnet object.
+* `leak_to` - (Optional) A block representing the attributes of `Tenant and VRF Destinations` for Inter-VRF Leaked Routes object. Type: Block.
+  * `vrf_dn` - Distinguished name of the destination VRF object, which is mapped with `Tenant and VRF Destinations` object.
+  * `allow_l3out_advertisement` - Scope of the destination VRF object, which is mapped with `Tenant and VRF Destinations` object.

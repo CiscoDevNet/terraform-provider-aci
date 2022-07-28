@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"regexp"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/container"
@@ -36,14 +37,15 @@ func resourceAciLeakInternalSubnet() *schema.Resource {
 				Required: true,
 				ForceNew: true,
 			},
-			"vrf_scope": &schema.Schema{
+			// True -> public, False -> private, Default -> false(private)
+			"allow_l3out_advertisement": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				ValidateFunc: validation.StringInSlice([]string{
-					"private",
-					"public",
+					"false", // False -> private
+					"true",  // True -> public
 				}, false),
-				Default: "private",
+				Default: "false",
 			},
 			// Tenant and VRF Destinations
 			"leak_to": {
@@ -51,23 +53,20 @@ func resourceAciLeakInternalSubnet() *schema.Resource {
 				Optional: true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
-						"destination_vrf_name": &schema.Schema{
+						"vrf_dn": &schema.Schema{
 							Type:     schema.TypeString,
-							Optional: true,
+							Required: true,
 						},
-						"destination_vrf_scope": &schema.Schema{
+						// True -> public, False -> private, Default -> "inherit"
+						"allow_l3out_advertisement": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
 							ValidateFunc: validation.StringInSlice([]string{
+								"false", // False -> private
+								"true",  // True -> public
 								"inherit",
-								"private",
-								"public",
 							}, false),
 							Default: "inherit",
-						},
-						"destination_tenant_name": &schema.Schema{
-							Type:     schema.TypeString,
-							Optional: true,
 						},
 					},
 				},
@@ -99,10 +98,15 @@ func setLeakInternalSubnetAttributes(leakInternalSubnet *models.LeakInternalSubn
 	if err != nil {
 		return d, err
 	}
-	d.Set("vrf_dn", GetParentDn(dn, fmt.Sprintf("/leakroutes/leakintsubnet-[%s]", leakInternalSubnetMap["ip"])))
+	d.Set("vrf_dn", GetParentDn(dn, fmt.Sprintf("/%s/%s", models.RnleakRoutes, fmt.Sprintf(models.RnleakInternalSubnet, leakInternalSubnetMap["ip"]))))
 	d.Set("annotation", leakInternalSubnetMap["annotation"])
 	d.Set("ip", leakInternalSubnetMap["ip"])
-	d.Set("vrf_scope", leakInternalSubnetMap["scope"])
+
+	d.Set("allow_l3out_advertisement", "false")
+	if leakInternalSubnetMap["scope"] == "public" {
+		d.Set("allow_l3out_advertisement", "true")
+	}
+
 	d.Set("name_alias", leakInternalSubnetMap["nameAlias"])
 	return d, nil
 }
@@ -112,10 +116,15 @@ func getAndSetLeakToObjects(client *client.Client, dn string, d *schema.Resource
 	if len(leakToObjects) >= 1 {
 		newContent := make([]map[string]string, 0, 1)
 		for _, leakToObject := range leakToObjects {
+			leakToAllowL3OutAdvertisement := "inherit"
+			if leakToObject.Scope == "public" {
+				leakToAllowL3OutAdvertisement = "true"
+			} else if leakToObject.Scope == "private" {
+				leakToAllowL3OutAdvertisement = "false"
+			}
 			newContent = append(newContent, map[string]string{
-				"destination_tenant_name": leakToObject.DestinationTenantName,
-				"destination_vrf_name":    leakToObject.DestinationCtxName,
-				"destination_vrf_scope":   leakToObject.Scope,
+				"vrf_dn":                    leakToObject.ToCtxDn,
+				"allow_l3out_advertisement": leakToAllowL3OutAdvertisement,
 			})
 		}
 		d.Set("leak_to", newContent)
@@ -124,7 +133,6 @@ func getAndSetLeakToObjects(client *client.Client, dn string, d *schema.Resource
 		d.Set("leak_to", nil)
 		log.Printf("[DEBUG]: Could not find existing leakTo objects under the parent DN: %s", dn)
 	}
-
 	return d, nil
 }
 
@@ -161,265 +169,163 @@ func resourceAciLeakInternalSubnetCreate(ctx context.Context, d *schema.Resource
 	desc := d.Get("description").(string)
 	ip := d.Get("ip").(string)
 	VRFDn := d.Get("vrf_dn").(string)
-
-	leakInternalSubnetAttr := models.LeakInternalSubnetAttributes{}
+	leakRoutesDn := VRFDn + "/" + models.RnleakRoutes
 
 	nameAlias := ""
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		nameAlias = NameAlias.(string)
 	}
 
+	annotation := ""
 	if Annotation, ok := d.GetOk("annotation"); ok {
-		leakInternalSubnetAttr.Annotation = Annotation.(string)
+		annotation = Annotation.(string)
 	} else {
-		leakInternalSubnetAttr.Annotation = "{}"
+		annotation = "orchestrator:terraform"
 	}
 
-	if Ip, ok := d.GetOk("ip"); ok {
-		leakInternalSubnetAttr.Ip = Ip.(string)
+	leakInternalAllowL3OutAdvertisement := d.Get("allow_l3out_advertisement").(string)
+
+	// Default "Allow L3Out Advertisement" value is false(private)
+	leakInternalSubnetScope := "private"
+	if leakInternalAllowL3OutAdvertisement == "true" {
+		leakInternalSubnetScope = "public"
 	}
 
-	if Name, ok := d.GetOk("name"); ok {
-		leakInternalSubnetAttr.Name = Name.(string)
+	leakInternalSubnetMap := map[string]interface{}{
+		"class_name": "leakInternalSubnet",
+		"content": map[string]string{
+			"annotation": annotation,
+			"ip":         ip,
+			"scope":      leakInternalSubnetScope,
+			"nameAlias":  nameAlias,
+			"descr":      desc,
+		},
 	}
 
-	if Scope, ok := d.GetOk("vrf_scope"); ok {
-		leakInternalSubnetAttr.Scope = Scope.(string)
-	}
+	leakToList := make([]interface{}, 0)
 
-	// Creation parent(leakRoutes) object
-	leakRoutesAttr := models.InterVRFLeakedRoutesContainerAttributes{}
-	leakRoutes := models.NewInterVRFLeakedRoutesContainer(fmt.Sprintf(models.RnleakRoutes), VRFDn, desc, nameAlias, leakRoutesAttr)
-
-	err := aciClient.Save(leakRoutes)
-	if err != nil {
-		return diag.FromErr(err)
-	}
-
-	// Creation leakInternalSubnet object
-	leakInternalSubnet := models.NewLeakInternalSubnet(fmt.Sprintf(models.RnleakInternalSubnet, ip), leakRoutes.DistinguishedName, desc, nameAlias, leakInternalSubnetAttr)
-
-	err = aciClient.Save(leakInternalSubnet)
-	if err != nil {
-		return diag.FromErr(err)
-	}
-
-	// Creation leakTo objects under leakInternalSubnet
-	leakInternalSubnet.Status = "modified"
-
-	jsonPayload, _, err := aciClient.PrepareModel(leakInternalSubnet)
-	if err != nil {
-		return diag.FromErr(err)
-	}
-	jsonPayload.Array(leakInternalSubnet.ClassName, "children")
-
-	// leakTo - Create Operations
 	if leakToSet, ok := d.GetOk("leak_to"); ok {
-		log.Printf("[DEBUG] leakTo: Beginning Creation")
-
-		leakToList := leakToSet.(*schema.Set).List()
-
-		for _, leakToObject := range leakToList {
-			leakToObjectMap := leakToObject.(map[string]interface{})
-
-			cidrJSON := []byte(fmt.Sprintf(`
-			{
-                "leakTo": {
-                    "attributes": {
-                        "tenantName": "%s",
-                        "ctxName": "%s",
-                        "status": "created",
-                        "scope": "%s"
-                    }
-                }
-            }`, leakToObjectMap["destination_tenant_name"].(string), leakToObjectMap["destination_vrf_name"].(string), leakToObjectMap["destination_vrf_scope"].(string)))
-
-			cidrCon, err := container.ParseJSON(cidrJSON)
-			if err != nil {
-				return diag.FromErr(err)
-			}
-
-			jsonPayload.ArrayAppend(cidrCon.Data(), leakInternalSubnet.ClassName, "children")
+		leakToSetList := leakToSet.(*schema.Set).List()
+		resleakToList, err := getLeakToObjectsWithTenantAndCtxName(leakToSetList)
+		if err != nil {
+			return diag.FromErr(err)
 		}
-
+		leakToList = resleakToList
 	}
-	// leakTo - Create Operations
 
-	log.Printf("[DEBUG] leakInternalSubnet object request data: %v", jsonPayload)
+	log.Printf("[DEBUG]: Final leakToList - inside create: %v", leakToList)
 
-	leakToRequestData, err := aciClient.MakeRestRequest("POST", fmt.Sprintf("/api/node/mo/%s/%s.json", leakRoutes.DistinguishedName, fmt.Sprintf(models.RnleakInternalSubnet, ip)), jsonPayload, true)
+	leakRoutesCont, err := createLeakRoutesObject(leakInternalSubnetMap, leakToList)
 	if err != nil {
 		return diag.FromErr(err)
 	}
 
-	_, _, err = aciClient.Do(leakToRequestData)
+	log.Printf("[DEBUG]: leakRoutesCont - inside create: %v", leakRoutesCont)
+
+	httpRequestPayload, err := aciClient.MakeRestRequest("POST", fmt.Sprintf("/api/node/mo/%s.json", leakRoutesDn), leakRoutesCont, true)
+	if err != nil {
+		return diag.FromErr(err)
+	}
+	log.Printf("[DEBUG]: leakRoutes httpRequestPayload - inside create: %v", httpRequestPayload)
+
+	_, _, err = aciClient.Do(httpRequestPayload)
 	if err != nil {
 		return diag.FromErr(err)
 	}
 
-	d.SetId(leakInternalSubnet.DistinguishedName)
+	leakInternalSubnetDn := leakRoutesDn + "/" + fmt.Sprintf(models.RnleakInternalSubnet, ip)
+	d.SetId(leakInternalSubnetDn)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 	return resourceAciLeakInternalSubnetRead(ctx, d, m)
 }
 
 func resourceAciLeakInternalSubnetUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] LeakInternalSubnet: Beginning Update")
+
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
 	ip := d.Get("ip").(string)
 	VRFDn := d.Get("vrf_dn").(string)
-
-	leakInternalSubnetAttr := models.LeakInternalSubnetAttributes{}
+	leakRoutesDn := VRFDn + "/" + models.RnleakRoutes
+	leakInternalAllowL3OutAdvertisement := d.Get("allow_l3out_advertisement").(string)
 
 	nameAlias := ""
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		nameAlias = NameAlias.(string)
 	}
 
+	annotation := ""
 	if Annotation, ok := d.GetOk("annotation"); ok {
-		leakInternalSubnetAttr.Annotation = Annotation.(string)
+		annotation = Annotation.(string)
 	} else {
-		leakInternalSubnetAttr.Annotation = "{}"
+		annotation = "orchestrator:terraform"
 	}
 
-	if Ip, ok := d.GetOk("ip"); ok {
-		leakInternalSubnetAttr.Ip = Ip.(string)
+	// Default "Allow L3Out Advertisement" value is false(private)
+	leakInternalSubnetScope := "private"
+	if leakInternalAllowL3OutAdvertisement == "true" {
+		leakInternalSubnetScope = "public"
 	}
 
-	if Name, ok := d.GetOk("name"); ok {
-		leakInternalSubnetAttr.Name = Name.(string)
+	leakInternalSubnetMap := map[string]interface{}{
+		"class_name": "leakInternalSubnet",
+		"content": map[string]string{
+			"annotation": annotation,
+			"ip":         ip,
+			"scope":      leakInternalSubnetScope,
+			"nameAlias":  nameAlias,
+			"descr":      desc,
+			"status":     "modified",
+		},
 	}
 
-	if Scope, ok := d.GetOk("vrf_scope"); ok {
-		leakInternalSubnetAttr.Scope = Scope.(string)
-	}
-	leakInternalSubnet := models.NewLeakInternalSubnet(fmt.Sprintf("leakintsubnet-[%s]", ip), VRFDn+"/leakroutes", desc, nameAlias, leakInternalSubnetAttr)
+	leakToList := make([]interface{}, 0, 1)
 
-	leakInternalSubnet.Status = "modified"
-
-	jsonPayload, _, err := aciClient.PrepareModel(leakInternalSubnet)
-	if err != nil {
-		return diag.FromErr(err)
-	}
-	jsonPayload.Array(leakInternalSubnet.ClassName, "children")
-
-	// leakTo - Update Operations
 	if d.HasChange("leak_to") {
-		if leakToSet, ok := d.GetOk("leak_to"); ok {
-			log.Printf("[DEBUG] leakTo: Beginning Creation")
+		oldSchemaObjs, newSchemaObjs := d.GetChange("leak_to")
 
-			// Remove existing leakTo objects
-			leakToObjects, err := aciClient.ListTenantandVRFdestinationforInterVRFLeakedRoutes(leakInternalSubnet.DistinguishedName)
-			if len(leakToObjects) >= 1 {
-				log.Printf("[DEBUG]: leakTo Existing Objects List: %v", leakToObjects)
+		missingOldObjects := getOldObjectsNotInNew("vrf_dn", oldSchemaObjs.(*schema.Set), newSchemaObjs.(*schema.Set))
 
-				existingObjectsPayload, _, err := aciClient.PrepareModel(leakInternalSubnet)
-				if err != nil {
-					return diag.FromErr(err)
-				}
-				existingObjectsPayload.Array(leakInternalSubnet.ClassName, "children")
+		newLeakToList := newSchemaObjs.(*schema.Set).List()
 
-				for _, leakToObject := range leakToObjects {
-					cidrJSON := []byte(fmt.Sprintf(`
-					{
-						"leakTo": {
-							"attributes": {
-								"dn": "%s",
-								"status": "deleted"
-							}
-						}
-					}`, leakToObject.DistinguishedName))
-
-					cidrCon, err := container.ParseJSON(cidrJSON)
-					if err != nil {
-						return diag.FromErr(err)
-					}
-					existingObjectsPayload.ArrayAppend(cidrCon.Data(), leakInternalSubnet.ClassName, "children")
-				}
-
-				leakToRequestData, err := aciClient.MakeRestRequest("POST", fmt.Sprintf("/api/node/mo/%s/%s.json", VRFDn+"/leakroutes", fmt.Sprintf(models.RnleakInternalSubnet, ip)), existingObjectsPayload, true)
-				if err != nil {
-					return diag.FromErr(err)
-				}
-
-				_, _, err = aciClient.Do(leakToRequestData)
-				if err != nil {
-					return diag.FromErr(err)
-				} else {
-					log.Printf("[DEBUG]: leakTo existing objects destroy finished successfully")
-				}
-			} else if err != nil {
-				log.Printf("[DEBUG]: Could not find existing leakTo objects under the parent DN: %s", leakInternalSubnet.DistinguishedName)
+		for _, missingOldObject := range missingOldObjects {
+			leakToMap := map[string]interface{}{
+				"allow_l3out_advertisement": missingOldObject.(map[string]interface{})["allow_l3out_advertisement"],
+				"vrf_dn":                    missingOldObject.(map[string]interface{})["vrf_dn"],
+				"status":                    "deleted",
 			}
-
-			// Create new leakTo objects
-			leakToList := leakToSet.(*schema.Set).List()
-
-			for _, leakToObject := range leakToList {
-				leakToObjectMap := leakToObject.(map[string]interface{})
-
-				cidrJSON := []byte(fmt.Sprintf(`
-				{
-					"leakTo": {
-						"attributes": {
-							"tenantName": "%s",
-							"ctxName": "%s",
-							"status": "created",
-							"scope": "%s"
-						}
-					}
-				}`, leakToObjectMap["destination_tenant_name"].(string), leakToObjectMap["destination_vrf_name"].(string), leakToObjectMap["destination_vrf_scope"].(string)))
-
-				cidrCon, err := container.ParseJSON(cidrJSON)
-				if err != nil {
-					return diag.FromErr(err)
-				}
-
-				jsonPayload.ArrayAppend(cidrCon.Data(), leakInternalSubnet.ClassName, "children")
-			}
-
-		} else {
-			// Remove existing leakTo objects
-			leakToObjects, err := aciClient.ListTenantandVRFdestinationforInterVRFLeakedRoutes(leakInternalSubnet.DistinguishedName)
-			if len(leakToObjects) >= 1 {
-				log.Printf("[DEBUG]: leakTo Existing Objects List: %v", leakToObjects)
-				for _, leakToObject := range leakToObjects {
-					cidrJSON := []byte(fmt.Sprintf(`
-					{
-						"leakTo": {
-							"attributes": {
-								"dn": "%s",
-								"status": "deleted"
-							}
-						}
-					}`, leakToObject.DistinguishedName))
-
-					cidrCon, err := container.ParseJSON(cidrJSON)
-					if err != nil {
-						return diag.FromErr(err)
-					}
-					jsonPayload.ArrayAppend(cidrCon.Data(), leakInternalSubnet.ClassName, "children")
-				}
-			} else if err != nil {
-				log.Printf("[DEBUG]: Could not find existing leakTo objects under the parent DN: %s", leakInternalSubnet.DistinguishedName)
-			}
+			newLeakToList = append(newLeakToList, leakToMap)
 		}
+
+		resLeakToList, err := getLeakToObjectsWithTenantAndCtxName(newLeakToList)
+		if err != nil {
+			return diag.FromErr(err)
+		}
+		leakToList = resLeakToList
 	}
-	// leakTo - Update Operations
 
-	log.Printf("[DEBUG] leakInternalSubnet object request data: %v", jsonPayload)
+	log.Printf("[DEBUG]: Final leakToList - inside update: %v", leakToList)
 
-	leakToRequestData, err := aciClient.MakeRestRequest("POST", fmt.Sprintf("/api/node/mo/%s/%s.json", VRFDn+"/leakroutes", fmt.Sprintf(models.RnleakInternalSubnet, ip)), jsonPayload, true)
+	leakRoutesCont, err := createLeakRoutesObject(leakInternalSubnetMap, leakToList)
 	if err != nil {
 		return diag.FromErr(err)
 	}
 
-	_, _, err = aciClient.Do(leakToRequestData)
+	log.Printf("[DEBUG]: leakRoutesCont - inside update: %v", leakRoutesCont)
+
+	httpRequestPayload, err := aciClient.MakeRestRequest("POST", fmt.Sprintf("/api/node/mo/%s.json", leakRoutesDn), leakRoutesCont, true)
+	if err != nil {
+		return diag.FromErr(err)
+	}
+	log.Printf("[DEBUG]: leakRoutes httpRequestPayload - inside update: %v", httpRequestPayload)
+
+	_, _, err = aciClient.Do(httpRequestPayload)
 	if err != nil {
 		return diag.FromErr(err)
 	}
 
-	d.SetId(leakInternalSubnet.DistinguishedName)
+	leakInternalSubnetDn := leakRoutesDn + "/" + fmt.Sprintf(models.RnleakInternalSubnet, ip)
+	d.SetId(leakInternalSubnetDn)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 	return resourceAciLeakInternalSubnetRead(ctx, d, m)
 }
@@ -467,4 +373,73 @@ func resourceAciLeakInternalSubnetDelete(ctx context.Context, d *schema.Resource
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 	d.SetId("")
 	return diag.FromErr(err)
+}
+
+func createLeakRoutesObject(leakInternalSubnetMap map[string]interface{}, leakToList []interface{}) (*container.Container, error) {
+	log.Printf("[DEBUG] Beginning of createLeakRoutesObject")
+
+	leakRoutesJson := []byte(`
+		{
+			"leakRoutes": {
+				"attributes": {
+				}
+			}
+		}`)
+
+	leakRoutesCont, leakRoutesErr := container.ParseJSON(leakRoutesJson)
+	if leakRoutesErr != nil {
+		return nil, fmt.Errorf("leakRoutes ParseJSON Error: %v", leakRoutesErr)
+	}
+
+	leakInternalSubnetCont, leakInternalSubnetErr := preparePayload(leakInternalSubnetMap["class_name"].(string), leakInternalSubnetMap["content"].(map[string]string), leakToList)
+	if leakInternalSubnetErr != nil {
+		return nil, fmt.Errorf("leakInternalSubnet preparePayload Error: %v", leakInternalSubnetErr)
+	}
+
+	ParentObjectCreationErr := leakRoutesCont.ArrayAppend(leakInternalSubnetCont.Data(), "leakRoutes", "children")
+	if ParentObjectCreationErr != nil {
+		return nil, fmt.Errorf("ParentObjectCreation Error:: %v", ParentObjectCreationErr)
+	}
+	log.Printf("[DEBUG]: createLeakRoutesObject finished successfully")
+	return leakRoutesCont, nil
+}
+
+func getLeakToObjectsWithTenantAndCtxName(leakToObjects []interface{}) ([]interface{}, error) {
+	log.Printf("[DEBUG]: Beginning of getLeakToObjectsWithTenantAndCtxName")
+
+	resLeakToMap := make([]interface{}, 0)
+	for _, leakToObjectInterface := range leakToObjects {
+		leakToObjectMap := leakToObjectInterface.(map[string]interface{})
+		if leakToObjectMap["vrf_dn"].(string) != "" {
+			vrf_dn_pattern := regexp.MustCompile(`tn?-(.+).?/ctx?-([0-9A-Za-z_\-]+).?`)
+			match_list := vrf_dn_pattern.FindStringSubmatch(leakToObjectMap["vrf_dn"].(string))
+			if len(match_list) != 3 {
+				return nil, fmt.Errorf("error occurred during the leak_to vrf_dn parsing: %s", leakToObjectMap["vrf_dn"])
+			}
+			leakToScope := "inherit"
+
+			if leakToObjectMap["allow_l3out_advertisement"] == "true" {
+				leakToScope = "public"
+			} else if leakToObjectMap["allow_l3out_advertisement"] == "false" {
+				leakToScope = "private"
+			}
+
+			leakToStatus := ""
+			if leakToObjectMap["status"] != nil {
+				leakToStatus = leakToObjectMap["status"].(string)
+			}
+
+			leakToMap := map[string]interface{}{
+				"class_name": "leakTo",
+				"content": map[string]string{
+					"ctxName":    match_list[2],
+					"scope":      leakToScope,
+					"tenantName": match_list[1],
+					"status":     leakToStatus,
+				},
+			}
+			resLeakToMap = append(resLeakToMap, leakToMap)
+		}
+	}
+	return resLeakToMap, nil
 }

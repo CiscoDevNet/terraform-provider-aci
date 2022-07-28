@@ -3,8 +3,10 @@ package aci
 import (
 	"context"
 	"fmt"
+	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
+	"github.com/ciscoecosystem/aci-go-client/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -22,7 +24,8 @@ func dataSourceAciLeakInternalSubnet() *schema.Resource {
 				Type:     schema.TypeString,
 				Required: true,
 			},
-			"vrf_scope": &schema.Schema{
+			// True -> public, False -> private, Default -> false(private)
+			"allow_l3out_advertisement": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 			},
@@ -32,15 +35,12 @@ func dataSourceAciLeakInternalSubnet() *schema.Resource {
 				Optional: true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
-						"destination_vrf_name": &schema.Schema{
+						"vrf_dn": &schema.Schema{
 							Type:     schema.TypeString,
-							Optional: true,
+							Required: true,
 						},
-						"destination_vrf_scope": &schema.Schema{
-							Type:     schema.TypeString,
-							Optional: true,
-						},
-						"destination_tenant_name": &schema.Schema{
+						// True -> public, False -> private, Default -> "inherit"
+						"allow_l3out_advertisement": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
 						},
@@ -52,10 +52,11 @@ func dataSourceAciLeakInternalSubnet() *schema.Resource {
 }
 
 func dataSourceAciLeakInternalSubnetRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+	log.Printf("[DEBUG] LeakInternalSubnet: Beginning of data source read")
 	aciClient := m.(*client.Client)
 	ip := d.Get("ip").(string)
 	VRFDn := d.Get("vrf_dn").(string)
-	rn := fmt.Sprintf("leakintsubnet-[%s]", ip)
+	rn := fmt.Sprintf(models.RnleakInternalSubnet, ip)
 	dn := fmt.Sprintf("%s/%s", VRFDn, rn)
 
 	leakInternalSubnet, err := getRemoteLeakInternalSubnet(aciClient, dn)
@@ -76,6 +77,6 @@ func dataSourceAciLeakInternalSubnetRead(ctx context.Context, d *schema.Resource
 		return diag.FromErr(err)
 	}
 	// leakTo - Read finished successfully
-
+	log.Printf("[DEBUG] LeakInternalSubnet: %s data source read finished successfully", d.Id())
 	return nil
 }
