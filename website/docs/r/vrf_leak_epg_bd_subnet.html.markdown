@@ -44,9 +44,9 @@ Tenant and VRF destination for Inter-VRF Leaked Routes
 * `ip` - (Required) IP of the Inter-VRF Leaked EPG/BD Subnet object.
 * `annotation` - (Optional) Annotation of the object Inter-VRF Leaked EPG/BD Subnet.
 * `allow_l3out_advertisement` - (Optional) Visibility of the Inter-VRF Leaked EPG/BD Subnet object. Allowed values are "true", "false" and default value is "false". Type: String.
-* `leak_to` - (Optional) A block representing the attributes of `Tenant and VRF Destinations` for Inter-VRF Leaked Routes object. Type: Block.
-  * `vrf_dn` - (Required) Distinguished name of the destination VRF object, which is mapped with `Tenant and VRF Destinations` object.
-  * `allow_l3out_advertisement` - (Optional) Scope of the destination VRF object, which is mapped with `Tenant and VRF Destinations` object. Allowed values are "inherit", "true", "false" and default value is "inherit". Type: String.
+* `leak_to` - (Optional) A block representing the attributes of `Tenant and VRF Destinations` for the Inter-VRF Leaked Routes object. Type: Block.
+  * `vrf_dn` - (Required) Distinguished name of the destination VRF object, which is mapped to the `Tenant and VRF Destinations` object.
+  * `allow_l3out_advertisement` - (Optional) Scope of the destination VRF object, which is mapped to the `Tenant and VRF Destinations` object. Allowed values are "inherit", "true", "false" and default value is "inherit". Type: String.
 
 ## Importing ##
 

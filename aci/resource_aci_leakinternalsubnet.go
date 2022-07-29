@@ -91,14 +91,16 @@ func setLeakInternalSubnetAttributes(leakInternalSubnet *models.LeakInternalSubn
 	dn := d.Id()
 	d.SetId(leakInternalSubnet.DistinguishedName)
 	d.Set("description", leakInternalSubnet.Description)
-	if dn != leakInternalSubnet.DistinguishedName {
-		d.Set("vrf_dn", "")
-	}
+
 	leakInternalSubnetMap, err := leakInternalSubnet.ToMap()
 	if err != nil {
 		return d, err
 	}
-	d.Set("vrf_dn", GetParentDn(dn, fmt.Sprintf("/%s/%s", models.RnleakRoutes, fmt.Sprintf(models.RnleakInternalSubnet, leakInternalSubnetMap["ip"]))))
+	if dn != leakInternalSubnet.DistinguishedName {
+		d.Set("vrf_dn", "")
+	} else {
+		d.Set("vrf_dn", GetParentDn(dn, fmt.Sprintf("/%s/%s", models.RnleakRoutes, fmt.Sprintf(models.RnleakInternalSubnet, leakInternalSubnetMap["ip"]))))
+	}
 	d.Set("annotation", leakInternalSubnetMap["annotation"])
 	d.Set("ip", leakInternalSubnetMap["ip"])
 
@@ -213,20 +215,15 @@ func resourceAciLeakInternalSubnetCreate(ctx context.Context, d *schema.Resource
 		leakToList = resleakToList
 	}
 
-	log.Printf("[DEBUG]: Final leakToList - inside create: %v", leakToList)
-
 	leakRoutesCont, err := createLeakRoutesObject(leakInternalSubnetMap, leakToList)
 	if err != nil {
 		return diag.FromErr(err)
 	}
 
-	log.Printf("[DEBUG]: leakRoutesCont - inside create: %v", leakRoutesCont)
-
 	httpRequestPayload, err := aciClient.MakeRestRequest("POST", fmt.Sprintf("/api/node/mo/%s.json", leakRoutesDn), leakRoutesCont, true)
 	if err != nil {
 		return diag.FromErr(err)
 	}
-	log.Printf("[DEBUG]: leakRoutes httpRequestPayload - inside create: %v", httpRequestPayload)
 
 	_, _, err = aciClient.Do(httpRequestPayload)
 	if err != nil {
@@ -304,20 +301,15 @@ func resourceAciLeakInternalSubnetUpdate(ctx context.Context, d *schema.Resource
 		leakToList = resLeakToList
 	}
 
-	log.Printf("[DEBUG]: Final leakToList - inside update: %v", leakToList)
-
 	leakRoutesCont, err := createLeakRoutesObject(leakInternalSubnetMap, leakToList)
 	if err != nil {
 		return diag.FromErr(err)
 	}
 
-	log.Printf("[DEBUG]: leakRoutesCont - inside update: %v", leakRoutesCont)
-
 	httpRequestPayload, err := aciClient.MakeRestRequest("POST", fmt.Sprintf("/api/node/mo/%s.json", leakRoutesDn), leakRoutesCont, true)
 	if err != nil {
 		return diag.FromErr(err)
 	}
-	log.Printf("[DEBUG]: leakRoutes httpRequestPayload - inside update: %v", httpRequestPayload)
 
 	_, _, err = aciClient.Do(httpRequestPayload)
 	if err != nil {

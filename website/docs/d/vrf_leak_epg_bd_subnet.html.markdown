@@ -41,6 +41,6 @@ data "aci_vrf_leak_epg_bd_subnet" "internal_subnet" {
 * `annotation` - (Optional) Annotation of the Inter-VRF Leaked EPG/BD Subnet object.
 * `name_alias` - (Optional) Name Alias of the Inter-VRF Leaked EPG/BD Subnet object.
 * `allow_l3out_advertisement` - (Optional) Visibility of the Inter-VRF Leaked EPG/BD Subnet object.
-* `leak_to` - (Optional) A block representing the attributes of `Tenant and VRF Destinations` for Inter-VRF Leaked Routes object. Type: Block.
-  * `vrf_dn` - Distinguished name of the destination VRF object, which is mapped with `Tenant and VRF Destinations` object.
-  * `allow_l3out_advertisement` - Scope of the destination VRF object, which is mapped with `Tenant and VRF Destinations` object.
+* `leak_to` - (Optional) A block representing the attributes of `Tenant and VRF Destinations` for the Inter-VRF Leaked Routes object. Type: Block.
+  * `vrf_dn` - Distinguished name of the destination VRF object, which is mapped to the `Tenant and VRF Destinations` object.
+  * `allow_l3out_advertisement` - Scope of the destination VRF object, which is mapped to the `Tenant and VRF Destinations` object.
