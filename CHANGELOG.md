@@ -1,3 +1,8 @@
+## 2.5.0 (July 29, 2022)
+IMPROVEMENTS:
+- Add aci_vrf_leak_epg_bd_subnet resource and data source (leakRoutes, leakInternalSubnet and leakTo) (#900)
+- Add resource aci_bulk_epg_to_static_path for bulk static path creation (#896)
+
 ## 2.4.0 (July 21, 2022)
 IMPROVEMENTS:
 - Allow nil return option for datasource aci_client_end_point (#893)
