@@ -1,3 +1,7 @@
+## 2.5.1 (July 29, 2022)
+BUG FIX::
+- Add documentation for aci_bulk_epg_to_static_path resource
+
 ## 2.5.0 (July 29, 2022)
 IMPROVEMENTS:
 - Add aci_vrf_leak_epg_bd_subnet resource and data source (leakRoutes, leakInternalSubnet and leakTo) (#900)
