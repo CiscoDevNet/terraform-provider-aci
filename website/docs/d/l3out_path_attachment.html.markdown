@@ -38,6 +38,6 @@ data "aci_l3out_path_attachment" "example" {
 - `ipv6_dad` - (Optional) IPv6 DAD for object L3 out Path Attachment.
 - `ll_addr` - (Optional) The override of the system generated IPv6 link local address.
 - `mac` - (Optional) The MAC address of the path attached to the layer 3 outside profile.
-- `mode` - (Optional) BGP Domain mode.
+- `mode` - (Optional) Switchport mode.
 - `mtu` - (Optional) The maximum transmit unit of the external network.
 - `target_dscp` - (Optional) The target differentiated service code point (DSCP) of the path attached to the layer 3 outside profile.
