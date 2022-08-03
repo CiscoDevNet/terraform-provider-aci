@@ -1,3 +1,7 @@
+## 2.5.2 (August 2, 2022)
+BUG FIX::
+- Fix aci_bulk_epg_to_static_path idempotency and default values when optional attributes are not provided
+
 ## 2.5.1 (July 29, 2022)
 BUG FIX::
 - Add documentation for aci_bulk_epg_to_static_path resource
