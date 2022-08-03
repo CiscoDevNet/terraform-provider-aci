@@ -41,8 +41,8 @@ func resourceAciCloudAccount() *schema.Resource {
 			},
 			"account_id": {
 				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
+				Required: true,
+				ForceNew: true,
 			},
 			"name": {
 				Type:     schema.TypeString,
@@ -73,24 +73,27 @@ func resourceAciCloudAccount() *schema.Resource {
 	}
 }
 
-func getRemoteCloudAccount(client *client.Client, dn string) (*models.Account, error) {
+func getRemoteCloudAccount(client *client.Client, dn string) (*models.CloudAccount, error) {
 	cloudAccountCont, err := client.Get(dn)
 	if err != nil {
 		return nil, err
 	}
-	cloudAccount := models.AccountFromContainer(cloudAccountCont)
+	cloudAccount := models.CloudAccountFromContainer(cloudAccountCont)
 	if cloudAccount.DistinguishedName == "" {
 		return nil, fmt.Errorf("Cloud Account %s not found", cloudAccount.DistinguishedName)
 	}
 	return cloudAccount, nil
 }
 
-func setCloudAccountAttributes(cloudAccount *models.Account, d *schema.ResourceData) (*schema.ResourceData, error) {
+func setCloudAccountAttributes(cloudAccount *models.CloudAccount, d *schema.ResourceData) (*schema.ResourceData, error) {
 	dn := d.Id()
 	d.SetId(cloudAccount.DistinguishedName)
 	if dn != cloudAccount.DistinguishedName {
 		d.Set("tenant_dn", "")
+	} else {
+		d.Set("tenant_dn", GetParentDn(dn, "/act"))
 	}
+
 	cloudAccountMap, err := cloudAccount.ToMap()
 	if err != nil {
 		return d, err
@@ -100,6 +103,8 @@ func setCloudAccountAttributes(cloudAccount *models.Account, d *schema.ResourceD
 	d.Set("name", cloudAccountMap["name"])
 	d.Set("vendor", cloudAccountMap["vendor"])
 	d.Set("name_alias", cloudAccountMap["nameAlias"])
+	d.Set("annotation", cloudAccountMap["annotation"])
+
 	return d, nil
 }
 
@@ -126,7 +131,7 @@ func resourceAciCloudAccountCreate(ctx context.Context, d *schema.ResourceData, 
 	vendor := d.Get("vendor").(string)
 	TenantDn := d.Get("tenant_dn").(string)
 
-	cloudAccountAttr := models.AccountAttributes{}
+	cloudAccountAttr := models.CloudAccountAttributes{}
 
 	nameAlias := ""
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
@@ -154,7 +159,7 @@ func resourceAciCloudAccountCreate(ctx context.Context, d *schema.ResourceData, 
 	if Vendor, ok := d.GetOk("vendor"); ok {
 		cloudAccountAttr.Vendor = Vendor.(string)
 	}
-	cloudAccount := models.NewAccount(fmt.Sprintf(models.RncloudAccount, account_id, vendor), TenantDn, nameAlias, cloudAccountAttr)
+	cloudAccount := models.NewCloudAccount(fmt.Sprintf(models.RncloudAccount, account_id, vendor), TenantDn, nameAlias, cloudAccountAttr)
 
 	err := aciClient.Save(cloudAccount)
 	if err != nil {
@@ -213,7 +218,7 @@ func resourceAciCloudAccountUpdate(ctx context.Context, d *schema.ResourceData, 
 	vendor := d.Get("vendor").(string)
 	TenantDn := d.Get("tenant_dn").(string)
 
-	cloudAccountAttr := models.AccountAttributes{}
+	cloudAccountAttr := models.CloudAccountAttributes{}
 
 	nameAlias := ""
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
@@ -241,7 +246,7 @@ func resourceAciCloudAccountUpdate(ctx context.Context, d *schema.ResourceData, 
 	if Vendor, ok := d.GetOk("vendor"); ok {
 		cloudAccountAttr.Vendor = Vendor.(string)
 	}
-	cloudAccount := models.NewAccount(fmt.Sprintf(models.RncloudAccount, account_id, vendor), TenantDn, nameAlias, cloudAccountAttr)
+	cloudAccount := models.NewCloudAccount(fmt.Sprintf(models.RncloudAccount, account_id, vendor), TenantDn, nameAlias, cloudAccountAttr)
 
 	cloudAccount.Status = "modified"
 

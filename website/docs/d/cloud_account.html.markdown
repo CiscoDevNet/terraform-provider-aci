@@ -19,17 +19,17 @@ Data source for ACI Cloud Account
 
 ## GUI Information ##
 
-* `Location` - Azure APIC -> Application Management -> Tenants
+* `Location` - Cloud APIC -> Application Management -> Tenants
 
 
 
 ## Example Usage ##
 
 ```hcl
-data "aci_account" "example" {
+data "aci_cloud_account" "example" {
   tenant_dn  = aci_tenant.example.id
   account_id  = "example"
-  vendor  = "example"
+  vendor  = "azure"
 }
 ```
 
@@ -41,6 +41,7 @@ data "aci_account" "example" {
 
 ## Attribute Reference ##
 * `id` - Attribute id set to the Dn of the Cloud Account.
+* `name` - (Optional) Name of the Cloud Account object.
 * `annotation` - (Optional) Annotation of the Cloud Account object.
 * `name_alias` - (Optional) Name Alias of the Cloud Account object.
-* `access_type` - (Optional) Account acccess type. How to authenticate to the account (managed=no credentials required (IAM), credentials=using accessKeys)
+* `access_type` - (Optional) Authentication to the Cloud Account (managed=no credentials required (IAM), credentials=using accessKeys).

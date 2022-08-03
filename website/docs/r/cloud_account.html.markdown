@@ -18,23 +18,20 @@ Manages ACI Cloud Account
 
 ## GUI Information ##
 
-* `Location` - Azure APIC -> Application Management -> Tenants
+* `Location` - Cloud APIC -> Application Management -> Tenants
 
 
 ## Example Usage ##
 
 ```hcl
-resource "aci_account" "example" {
+resource "aci_cloud_account" "example" {
   tenant_dn  = aci_tenant.example.id
   account_id  = "example"
   vendor  = "example"
   access_type = "managed"
-  account_id = 
-
-  vendor = "aws"
-
+  account_id = "example"
+  vendor = "azure"
   cloud_rs_account_to_access_policy = aci_resource.example.id
-
   cloud_rs_credentials = aci_resource.example.id
 }
 ```
@@ -44,10 +41,11 @@ resource "aci_account" "example" {
 * `tenant_dn` - (Required) Distinguished name of the parent Tenant object.
 * `account_id` - (Required) ID of the Cloud Account object.
 * `vendor` - (Required) Vendor of the Cloud Account object.
+* `name` - (Optional) Name of the Cloud Account object.
 * `annotation` - (Optional) Annotation of the Cloud Account object.
-* `access_type` - (Optional) Account acccess type.How to authenticate to the account (managed=no credentials required (IAM), credentials=using accessKeys) Allowed values are "credentials", "managed", and default value is "managed". Type: String.
-* `account_id` - (Optional) Account id.An object identifier.
-* `vendor` - (Optional) Account vendor.The vendor of the controller. Allowed values are "aws", "azure", "gcp", "unknown", and default value is "aws". Type: String.
+* `access_type` - (Optional) Authentication to the Cloud Account (managed=no credentials required (IAM), credentials=using accessKeys). Allowed values are "credentials", "managed". Default value is "managed". Type: String.
+* `account_id` - (Optional) Account id. An object identifier.
+* `vendor` - (Optional) The Cloud Account vendor of the controller. Allowed values are "aws", "azure", "gcp", "unknown", and default value is "aws". Type: String.
 
 * `relation_cloud_rs_account_to_access_policy` - (Optional) Represents the relation to a Relation to the Access policy to be used (class cloudAccessPolicy). Relation to CloudAccessPolicy cardianity is n-1 Type: String.
 
@@ -63,5 +61,5 @@ An existing Account can be [imported][docs-import] into this resource via its Dn
 
 
 ```
-terraform import aci_account.example <Dn>
+terraform import aci_cloud_account.example "<Dn>"
 ```
