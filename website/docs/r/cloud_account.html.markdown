@@ -1,10 +1,10 @@
 ---
 subcategory: "Cloud"
 layout: "aci"
-page_title: "ACI: aci_account"
-sidebar_current: "docs-aci-resource-account"
+page_title: "ACI: aci_cloud_account"
+sidebar_current: "docs-aci-resource--cloud-account"
 description: |-
-  Manages ACI Account
+  Manages ACI Cloud Account
 ---
 
 # aci_cloud_account #
@@ -56,7 +56,7 @@ resource "aci_cloud_account" "example" {
 
 ## Importing ##
 
-An existing Account can be [imported][docs-import] into this resource via its Dn, via the following command:
+An existing Cloud Account can be [imported][docs-import] into this resource via its Dn, via the following command:
 [docs-import]: https://www.terraform.io/docs/import/index.html
 
 

@@ -11,15 +11,15 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
-func resourceAciTenanttoaccountassociation() *schema.Resource {
+func resourceAciTenanttoCloudAccountAssociation() *schema.Resource {
 	return &schema.Resource{
-		CreateContext: resourceAciTenanttoaccountassociationCreate,
-		UpdateContext: resourceAciTenanttoaccountassociationUpdate,
-		ReadContext:   resourceAciTenanttoaccountassociationRead,
-		DeleteContext: resourceAciTenanttoaccountassociationDelete,
+		CreateContext: resourceAciTenanttoCloudAccountAssociationCreate,
+		UpdateContext: resourceAciTenanttoCloudAccountAssociationUpdate,
+		ReadContext:   resourceAciTenanttoCloudAccountAssociationRead,
+		DeleteContext: resourceAciTenanttoCloudAccountAssociationDelete,
 
 		Importer: &schema.ResourceImporter{
-			State: resourceAciTenanttoaccountassociationImport,
+			State: resourceAciTenanttoCloudAccountAssociationImport,
 		},
 
 		SchemaVersion: 1,
@@ -29,53 +29,54 @@ func resourceAciTenanttoaccountassociation() *schema.Resource {
 				Required: true,
 				ForceNew: true,
 			},
-			"t_dn": {
+			"cloud_account_dn": {
 				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
+				Required: true,
+				ForceNew: true,
 			},
 		})),
 	}
 }
 
-func getRemoteTenanttoaccountassociation(client *client.Client, dn string) (*models.Tenanttoaccountassociation, error) {
+func getRemoteTenanttoCloudAccountAssociation(client *client.Client, dn string) (*models.TenanttoCloudAccountAssociation, error) {
 	fvRsCloudAccountCont, err := client.Get(dn)
 	if err != nil {
 		return nil, err
 	}
-	fvRsCloudAccount := models.TenanttoaccountassociationFromContainer(fvRsCloudAccountCont)
+	fvRsCloudAccount := models.TenanttoCloudAccountAssociationFromContainer(fvRsCloudAccountCont)
 	if fvRsCloudAccount.DistinguishedName == "" {
-		return nil, fmt.Errorf("Tenanttoaccountassociation %s not found", fvRsCloudAccount.DistinguishedName)
+		return nil, fmt.Errorf("TenanttoCloudAccountAssociation %s not found", fvRsCloudAccount.DistinguishedName)
 	}
 	return fvRsCloudAccount, nil
 }
 
-func setTenanttoaccountassociationAttributes(fvRsCloudAccount *models.Tenanttoaccountassociation, d *schema.ResourceData) (*schema.ResourceData, error) {
+func setTenanttoCloudAccountAssociationAttributes(fvRsCloudAccount *models.TenanttoCloudAccountAssociation, d *schema.ResourceData) (*schema.ResourceData, error) {
 	dn := d.Id()
 	d.SetId(fvRsCloudAccount.DistinguishedName)
-	d.Set("description", fvRsCloudAccount.Description)
 	if dn != fvRsCloudAccount.DistinguishedName {
 		d.Set("tenant_dn", "")
+	} else {
+		d.Set("tenant_dn", GetParentDn(dn, "/rsCloudAccount"))
 	}
 	fvRsCloudAccountMap, err := fvRsCloudAccount.ToMap()
 	if err != nil {
 		return d, err
 	}
 	d.Set("annotation", fvRsCloudAccountMap["annotation"])
-	d.Set("t_dn", fvRsCloudAccountMap["tDn"])
+	d.Set("cloud_account_dn", fvRsCloudAccountMap["tDn"])
 	d.Set("name_alias", fvRsCloudAccountMap["nameAlias"])
 	return d, nil
 }
 
-func resourceAciTenanttoaccountassociationImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
+func resourceAciTenanttoCloudAccountAssociationImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
 	log.Printf("[DEBUG] %s: Beginning Import", d.Id())
 	aciClient := m.(*client.Client)
 	dn := d.Id()
-	fvRsCloudAccount, err := getRemoteTenanttoaccountassociation(aciClient, dn)
+	fvRsCloudAccount, err := getRemoteTenanttoCloudAccountAssociation(aciClient, dn)
 	if err != nil {
 		return nil, err
 	}
-	schemaFilled, err := setTenanttoaccountassociationAttributes(fvRsCloudAccount, d)
+	schemaFilled, err := setTenanttoCloudAccountAssociationAttributes(fvRsCloudAccount, d)
 	if err != nil {
 		return nil, err
 	}
@@ -83,13 +84,12 @@ func resourceAciTenanttoaccountassociationImport(d *schema.ResourceData, m inter
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciTenanttoaccountassociationCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	log.Printf("[DEBUG] Tenanttoaccountassociation: Beginning Creation")
+func resourceAciTenanttoCloudAccountAssociationCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+	log.Printf("[DEBUG] TenanttoCloudAccountAssociation: Beginning Creation")
 	aciClient := m.(*client.Client)
-	desc := d.Get("description").(string)
 	TenantDn := d.Get("tenant_dn").(string)
 
-	fvRsCloudAccountAttr := models.TenanttoaccountassociationAttributes{}
+	fvRsCloudAccountAttr := models.TenanttoCloudAccountAssociationAttributes{}
 
 	nameAlias := ""
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
@@ -102,10 +102,10 @@ func resourceAciTenanttoaccountassociationCreate(ctx context.Context, d *schema.
 		fvRsCloudAccountAttr.Annotation = "{}"
 	}
 
-	if TDn, ok := d.GetOk("t_dn"); ok {
+	if TDn, ok := d.GetOk("cloud_account_dn"); ok {
 		fvRsCloudAccountAttr.TDn = TDn.(string)
 	}
-	fvRsCloudAccount := models.NewTenanttoaccountassociation(fmt.Sprintf(models.RnfvRsCloudAccount), TenantDn, desc, nameAlias, fvRsCloudAccountAttr)
+	fvRsCloudAccount := models.NewTenanttoCloudAccountAssociation(fmt.Sprintf(models.RnfvRsCloudAccount), TenantDn, nameAlias, fvRsCloudAccountAttr)
 
 	err := aciClient.Save(fvRsCloudAccount)
 	if err != nil {
@@ -114,16 +114,15 @@ func resourceAciTenanttoaccountassociationCreate(ctx context.Context, d *schema.
 
 	d.SetId(fvRsCloudAccount.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
-	return resourceAciTenanttoaccountassociationRead(ctx, d, m)
+	return resourceAciTenanttoCloudAccountAssociationRead(ctx, d, m)
 }
 
-func resourceAciTenanttoaccountassociationUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	log.Printf("[DEBUG] Tenanttoaccountassociation: Beginning Update")
+func resourceAciTenanttoCloudAccountAssociationUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+	log.Printf("[DEBUG] TenanttoCloudAccountAssociation: Beginning Update")
 	aciClient := m.(*client.Client)
-	desc := d.Get("description").(string)
 	TenantDn := d.Get("tenant_dn").(string)
 
-	fvRsCloudAccountAttr := models.TenanttoaccountassociationAttributes{}
+	fvRsCloudAccountAttr := models.TenanttoCloudAccountAssociationAttributes{}
 
 	nameAlias := ""
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
@@ -136,10 +135,10 @@ func resourceAciTenanttoaccountassociationUpdate(ctx context.Context, d *schema.
 		fvRsCloudAccountAttr.Annotation = "{}"
 	}
 
-	if TDn, ok := d.GetOk("t_dn"); ok {
+	if TDn, ok := d.GetOk("cloud_account_dn"); ok {
 		fvRsCloudAccountAttr.TDn = TDn.(string)
 	}
-	fvRsCloudAccount := models.NewTenanttoaccountassociation(fmt.Sprintf("rsCloudAccount"), TenantDn, desc, nameAlias, fvRsCloudAccountAttr)
+	fvRsCloudAccount := models.NewTenanttoCloudAccountAssociation(fmt.Sprintf("rsCloudAccount"), TenantDn, nameAlias, fvRsCloudAccountAttr)
 
 	fvRsCloudAccount.Status = "modified"
 
@@ -150,21 +149,21 @@ func resourceAciTenanttoaccountassociationUpdate(ctx context.Context, d *schema.
 
 	d.SetId(fvRsCloudAccount.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
-	return resourceAciTenanttoaccountassociationRead(ctx, d, m)
+	return resourceAciTenanttoCloudAccountAssociationRead(ctx, d, m)
 }
 
-func resourceAciTenanttoaccountassociationRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceAciTenanttoCloudAccountAssociationRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 
-	fvRsCloudAccount, err := getRemoteTenanttoaccountassociation(aciClient, dn)
+	fvRsCloudAccount, err := getRemoteTenanttoCloudAccountAssociation(aciClient, dn)
 	if err != nil {
 		d.SetId("")
 		return diag.FromErr(err)
 	}
 
-	_, err = setTenanttoaccountassociationAttributes(fvRsCloudAccount, d)
+	_, err = setTenanttoCloudAccountAssociationAttributes(fvRsCloudAccount, d)
 	if err != nil {
 		d.SetId("")
 		return nil
@@ -174,7 +173,7 @@ func resourceAciTenanttoaccountassociationRead(ctx context.Context, d *schema.Re
 	return nil
 }
 
-func resourceAciTenanttoaccountassociationDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceAciTenanttoCloudAccountAssociationDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 	aciClient := m.(*client.Client)
 	dn := d.Id()

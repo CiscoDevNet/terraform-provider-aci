@@ -9,9 +9,9 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
-func dataSourceAciTenanttoaccountassociation() *schema.Resource {
+func dataSourceAciTenanttoCloudAccountAssociation() *schema.Resource {
 	return &schema.Resource{
-		ReadContext:   dataSourceAciTenanttoaccountassociationRead,
+		ReadContext:   dataSourceAciTenanttoCloudAccountAssociationRead,
 		SchemaVersion: 1,
 		Schema: AppendBaseAttrSchema(AppendNameAliasAttrSchema(map[string]*schema.Schema{
 			"tenant_dn": {
@@ -23,29 +23,28 @@ func dataSourceAciTenanttoaccountassociation() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
-			"t_dn": {
+			"cloud_account_dn": {
 				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
+				Required: true,
 			},
 		})),
 	}
 }
 
-func dataSourceAciTenanttoaccountassociationRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func dataSourceAciTenanttoCloudAccountAssociationRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	aciClient := m.(*client.Client)
 	TenantDn := d.Get("tenant_dn").(string)
 	rn := fmt.Sprintf("rsCloudAccount")
 	dn := fmt.Sprintf("%s/%s", TenantDn, rn)
 
-	fvRsCloudAccount, err := getRemoteTenanttoaccountassociation(aciClient, dn)
+	fvRsCloudAccount, err := getRemoteTenanttoCloudAccountAssociation(aciClient, dn)
 	if err != nil {
 		return diag.FromErr(err)
 	}
 
 	d.SetId(dn)
 
-	_, err = setTenanttoaccountassociationAttributes(fvRsCloudAccount, d)
+	_, err = setTenanttoCloudAccountAssociationAttributes(fvRsCloudAccount, d)
 	if err != nil {
 		return diag.FromErr(err)
 	}

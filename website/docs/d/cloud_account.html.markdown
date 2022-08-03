@@ -1,10 +1,10 @@
 ---
 subcategory: "Cloud"
 layout: "aci"
-page_title: "ACI: aci_account"
-sidebar_current: "docs-aci-data-source-account"
+page_title: "ACI: aci_cloud_account"
+sidebar_current: "docs-aci-data-source-cloud-account"
 description: |-
-  Data source for ACI Account
+  Data source for ACI Cloud Account
 ---
 
 # aci_cloud_account #
