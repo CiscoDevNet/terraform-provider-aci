@@ -60,7 +60,7 @@ resource "aci_bulk_epg_to_static_path" "example" {
   * `encap` - (Required) Encapsulation to use for the Static Path (for example: vlan-100). Type: String.
   * `deployment_immediacy` - (Optional) Deployment immediacy of the Static Path. Allowed values: "immediate", "lazy". Default value: "lazy". Type: String.
   * `mode` - (Optional) Mode of the static association of the interface. Allowed values: "regular", "native", "untagged". Default value: "regular". Type: String.
-  * `primary_encap` - (Optional) Primary encapsulation for the Static Path object (used for micro-segmentation). Type: String.
+  * `primary_encap` - (Optional) Primary encapsulation for the Static Path object (used for micro-segmentation). Allowed values: "vlan-xxx" or "unknown". Default value: "unknown". Type: String.
 
 ## Attribute Reference
 

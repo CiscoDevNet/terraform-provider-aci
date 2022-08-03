@@ -50,30 +50,31 @@ func resourceAciBulkStaticPath() *schema.Resource {
 						"description": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+							Default:  "",
 						},
 						"deployment_immediacy": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
-							Computed: true,
 							ValidateFunc: validation.StringInSlice([]string{
 								"immediate",
 								"lazy",
 							}, false),
+							Default: "lazy",
 						},
 						"mode": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
-							Computed: true,
 							ValidateFunc: validation.StringInSlice([]string{
 								"regular",
 								"native",
 								"untagged",
 							}, false),
+							Default: "regular",
 						},
 						"primary_encap": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
-							Computed: true,
+							Default:  "unknown",
 						},
 					},
 				},
@@ -232,10 +233,14 @@ func staticPathPayload(staticPathList []interface{}, status string) []interface{
 			staticPathContent["descr"] = descr
 		}
 		if immediacy, ok := staticPath["deployment_immediacy"]; ok {
-			staticPathContent["instrImedcy"] = immediacy
+			if immediacy != "" {
+				staticPathContent["instrImedcy"] = immediacy
+			}
 		}
 		if mode, ok := staticPath["mode"]; ok {
-			staticPathContent["mode"] = mode
+			if mode != "" {
+				staticPathContent["mode"] = mode
+			}
 		}
 		if primaryEncap, ok := staticPath["primary_encap"]; ok {
 			staticPathContent["primaryEncap"] = primaryEncap
