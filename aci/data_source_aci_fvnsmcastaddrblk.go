@@ -10,9 +10,9 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
-func dataSourceAciAbstractionofIPAddressBlock() *schema.Resource {
+func dataSourceAciMulticastAddressBlock() *schema.Resource {
 	return &schema.Resource{
-		ReadContext:   dataSourceAciAbstractionofIPAddressBlockRead,
+		ReadContext:   dataSourceAciMulticastAddressBlockRead,
 		SchemaVersion: 1,
 		Schema: AppendBaseAttrSchema(AppendNameAliasAttrSchema(map[string]*schema.Schema{
 			"multicast_pool_dn": {
@@ -35,7 +35,7 @@ func dataSourceAciAbstractionofIPAddressBlock() *schema.Resource {
 	}
 }
 
-func dataSourceAciAbstractionofIPAddressBlockRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func dataSourceAciMulticastAddressBlockRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	aciClient := m.(*client.Client)
 	from := d.Get("from").(string)
 	to := d.Get("to").(string)
@@ -43,14 +43,14 @@ func dataSourceAciAbstractionofIPAddressBlockRead(ctx context.Context, d *schema
 	rn := fmt.Sprintf(models.RnfvnsMcastAddrBlk, from, to)
 	dn := fmt.Sprintf("%s/%s", MulticastAddressPoolDn, rn)
 
-	fvnsMcastAddrBlk, err := getRemoteAbstractionofIPAddressBlock(aciClient, dn)
+	fvnsMcastAddrBlk, err := getRemoteMulticastAddressBlock(aciClient, dn)
 	if err != nil {
 		return nil
 	}
 
 	d.SetId(dn)
 
-	_, err = setAbstractionofIPAddressBlockAttributes(fvnsMcastAddrBlk, d)
+	_, err = setMulticastAddressBlockAttributes(fvnsMcastAddrBlk, d)
 	if err != nil {
 		return nil
 	}
