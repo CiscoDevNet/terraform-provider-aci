@@ -19,7 +19,8 @@ func dataSourceAciDHCPRelayPolicy() *schema.Resource {
 		Schema: AppendBaseAttrSchema(map[string]*schema.Schema{
 			"tenant_dn": &schema.Schema{
 				Type:     schema.TypeString,
-				Required: true,
+				Default:  "uni/infra",
+				Optional: true,
 			},
 
 			"name": &schema.Schema{
