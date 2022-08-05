@@ -34,8 +34,7 @@ func resourceAciAccessPortBlock() *schema.Resource {
 
 			"name": &schema.Schema{
 				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
+				Required: true,
 				ForceNew: true,
 			},
 

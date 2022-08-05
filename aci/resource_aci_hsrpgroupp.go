@@ -178,7 +178,7 @@ func resourceAciHSRPGroupProfileImport(d *schema.ResourceData, m interface{}) ([
 	if err != nil {
 		return nil, err
 	}
-
+	d.Set("l3out_hsrp_interface_profile_dn", GetParentDn(dn, fmt.Sprintf("/hsrpGroupP-%s", hsrpGroupP.Name)))
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil

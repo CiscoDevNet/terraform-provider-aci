@@ -108,6 +108,7 @@ func setTACACSSourceAttributes(tacacsSrc *models.TACACSSource, d *schema.Resourc
 		for _, val := range inclIntr.([]interface{}) {
 			inclAct = append(inclAct, val.(string))
 		}
+
 		sort.Strings(inclAct)
 		if reflect.DeepEqual(inclAct, inclGet) {
 			d.Set("incl", d.Get("incl").([]interface{}))
@@ -118,9 +119,11 @@ func setTACACSSourceAttributes(tacacsSrc *models.TACACSSource, d *schema.Resourc
 	} else {
 		d.Set("incl", inclGet)
 	}
+	d.Set("parent_dn", GetParentDn(tacacsSrc.DistinguishedName, fmt.Sprintf("/tacacssrc-%s", tacacsSrcMap["name"])))
 	d.Set("min_sev", tacacsSrcMap["minSev"])
 	d.Set("name", tacacsSrcMap["name"])
 	d.Set("name_alias", tacacsSrcMap["nameAlias"])
+	d.Set("annotation", tacacsSrcMap["annotation"])
 	return d, nil
 }
 
@@ -162,6 +165,10 @@ func resourceAciTACACSSourceCreate(ctx context.Context, d *schema.ResourceData, 
 		inclList := make([]string, 0, 1)
 		for _, val := range Incl.([]interface{}) {
 			inclList = append(inclList, val.(string))
+		}
+		err := checkDuplicate(inclList)
+		if err != nil {
+			return diag.FromErr(err)
 		}
 		if len(inclList) == 0 {
 			tacacsSrcAttr.Incl = "none"
@@ -234,6 +241,10 @@ func resourceAciTACACSSourceUpdate(ctx context.Context, d *schema.ResourceData, 
 		inclList := make([]string, 0, 1)
 		for _, val := range Incl.([]interface{}) {
 			inclList = append(inclList, val.(string))
+		}
+		err := checkDuplicate(inclList)
+		if err != nil {
+			return diag.FromErr(err)
 		}
 		if len(inclList) == 0 {
 			tacacsSrcAttr.Incl = "none"

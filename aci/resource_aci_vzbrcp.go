@@ -428,14 +428,20 @@ func resourceAciContract() *schema.Resource {
 
 			"filter_ids": &schema.Schema{
 				Type:     schema.TypeList,
+<<<<<<< HEAD
 				Optional: true,
+=======
+>>>>>>> 032c5ccc (Acceptance testing (#133))
 				Computed: true,
 				Elem:     &schema.Schema{Type: schema.TypeString},
 			},
 
 			"filter_entry_ids": &schema.Schema{
 				Type:     schema.TypeList,
+<<<<<<< HEAD
 				Optional: true,
+=======
+>>>>>>> 032c5ccc (Acceptance testing (#133))
 				Computed: true,
 				Elem:     &schema.Schema{Type: schema.TypeString},
 			},
@@ -576,10 +582,12 @@ func setFilterEntryAttributesFromContract(vzentry *models.FilterEntry, d *schema
 	eMap["match_dscp"] = vzEntryMap["matchDscp"]
 	eMap["entry_name_alias"] = vzEntryMap["nameAlias"]
 	eMap["prot"] = vzEntryMap["prot"]
-	eMap["s_from_port"] = vzEntryMap["sFromPort"]
-	eMap["s_to_port"] = vzEntryMap["sToPort"]
 	eMap["stateful"] = vzEntryMap["stateful"]
-	eMap["tcp_rules"] = vzEntryMap["tcpRules"]
+	if vzEntryMap["tcpRules"] == "" {
+		eMap["tcp_rules"] = "unspecified"
+	} else {
+		eMap["tcp_rules"] = vzEntryMap["tcpRules"]
+	}
 	if v, found := constantPortMapping[vzEntryMap["dFromPort"]]; found {
 		eMap["d_from_port"] = v
 	} else {
@@ -589,6 +597,16 @@ func setFilterEntryAttributesFromContract(vzentry *models.FilterEntry, d *schema
 		eMap["d_to_port"] = v
 	} else {
 		eMap["d_to_port"] = vzEntryMap["dToPort"]
+	}
+	if v, found := constantPortMapping[vzEntryMap["sFromPort"]]; found {
+		eMap["s_from_port"] = v
+	} else {
+		eMap["s_from_port"] = vzEntryMap["sFromPort"]
+	}
+	if v, found := constantPortMapping[vzEntryMap["sToPort"]]; found {
+		eMap["s_to_port"] = v
+	} else {
+		eMap["s_to_port"] = vzEntryMap["sToPort"]
 	}
 	return eMap, nil
 }

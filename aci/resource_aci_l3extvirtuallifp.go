@@ -261,7 +261,7 @@ func resourceAciVirtualLogicalInterfaceProfileImport(d *schema.ResourceData, m i
 	if err != nil {
 		return nil, err
 	}
-
+	d.Set("logical_interface_profile_dn", GetParentDn(dn, fmt.Sprintf("/vlifp-[%s]-[%s]", l3extVirtualLIfP.NodeDn, l3extVirtualLIfP.Encap)))
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil

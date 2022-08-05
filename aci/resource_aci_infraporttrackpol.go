@@ -58,7 +58,7 @@ func resourceAciPortTracking() *schema.Resource {
 	}
 }
 
-func getRemotePortTracking(client *client.Client, dn string) (*models.PortTracking, error) {
+func GetRemotePortTracking(client *client.Client, dn string) (*models.PortTracking, error) {
 	infraPortTrackPolCont, err := client.Get(dn)
 	if err != nil {
 		return nil, err
@@ -90,7 +90,7 @@ func resourceAciPortTrackingImport(d *schema.ResourceData, m interface{}) ([]*sc
 	log.Printf("[DEBUG] %s: Beginning Import", d.Id())
 	aciClient := m.(*client.Client)
 	dn := d.Id()
-	infraPortTrackPol, err := getRemotePortTracking(aciClient, dn)
+	infraPortTrackPol, err := GetRemotePortTracking(aciClient, dn)
 	if err != nil {
 		return nil, err
 	}
@@ -199,7 +199,7 @@ func resourceAciPortTrackingRead(ctx context.Context, d *schema.ResourceData, m 
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 	aciClient := m.(*client.Client)
 	dn := d.Id()
-	infraPortTrackPol, err := getRemotePortTracking(aciClient, dn)
+	infraPortTrackPol, err := GetRemotePortTracking(aciClient, dn)
 	if err != nil {
 		d.SetId("")
 		return nil

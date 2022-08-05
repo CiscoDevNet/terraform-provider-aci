@@ -35,6 +35,12 @@ func dataSourceAciFabricNodeMember() *schema.Resource {
 				Computed: true,
 			},
 
+			"name": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+
 			"name_alias": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,

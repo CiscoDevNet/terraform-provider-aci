@@ -35,3 +35,4 @@ data "aci_fabric_node_member" "example" {
 - `pod_id` - (Optional) pod id
 - `role` - (Optional) system role type
 - `serial` - (Optional) serial number
+- `name` - (Optional) Name of Fabric Node member.

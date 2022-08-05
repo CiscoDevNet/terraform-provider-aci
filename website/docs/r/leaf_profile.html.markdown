@@ -56,11 +56,13 @@ resource "aci_leaf_profile" "example" {
 
 - `leaf_selector` - (Optional) Leaf Selector block to attach with the leaf profile.
 - `leaf_selector.name` - (Required) Name of the leaf selector.
+- `leaf_selector.description` - (Required) Description of the leaf selector.
 - `leaf_selector.switch_association_type` - (Required) Type of switch association.
   Allowed values: "ALL", "range", "ALL_IN_POD"
 
 - `leaf_selector.node_block` - (Optional) Node block to attach with leaf selector.
 - `leaf_selector.node_block.name` - (Required) Name of the node block.
+- `leaf_selector.node_block.description` - (Required) Description of the node block.
 - `leaf_selector.node_block.from_` - (Optional) Start of Node Block range. Range from 1 to 16000. Default value is "1".
 - `leaf_selector.node_block.to_` - (Optional) End of Node Block range. Range from 1 to 16000. Default value is "1".
 

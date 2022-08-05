@@ -31,5 +31,4 @@ data "aci_l3out_hsrp_secondary_vip" "example" {
 - `annotation` - (Optional) Annotation for object L3out HSRP Secondary VIP.
 - `description` - (Optional) Description for object L3out HSRP Secondary VIP.
 - `config_issues` - (Optional) Configuration Issues.
-- `ip` - (Optional) IP address.
 - `name_alias` - (Optional) Name alias for object L3out HSRP Secondary VIP.

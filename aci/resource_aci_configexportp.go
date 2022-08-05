@@ -137,8 +137,6 @@ func setConfigurationExportPolicyAttributes(configExportP *models.ConfigurationE
 		return d, err
 	}
 	d.Set("name", configExportPMap["name"])
-
-	d.Set("admin_st", configExportPMap["adminSt"])
 	d.Set("annotation", configExportPMap["annotation"])
 	d.Set("format", configExportPMap["format"])
 	d.Set("include_secure_fields", configExportPMap["includeSecureFields"])

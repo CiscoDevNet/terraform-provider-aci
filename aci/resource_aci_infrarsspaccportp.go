@@ -34,7 +34,6 @@ func resourceAciInterfaceProfile() *schema.Resource {
 			"annotation": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
-				// Default:  "orchestrator:terraform",
 				Computed: true,
 				DefaultFunc: func() (interface{}, error) {
 					return "orchestrator:terraform", nil

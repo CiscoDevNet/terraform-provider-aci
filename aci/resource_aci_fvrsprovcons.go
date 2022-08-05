@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
@@ -25,7 +26,7 @@ func resourceAciContractProvider() *schema.Resource {
 
 		SchemaVersion: 1,
 
-		Schema: AppendBaseAttrSchema(map[string]*schema.Schema{
+		Schema: map[string]*schema.Schema{
 			"application_epg_dn": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
@@ -70,7 +71,15 @@ func resourceAciContractProvider() *schema.Resource {
 					"level1",
 				}, false),
 			},
-		}),
+			"annotation": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+				DefaultFunc: func() (interface{}, error) {
+					return "orchestrator:terraform", nil
+				},
+			},
+		},
 	}
 }
 
@@ -155,7 +164,12 @@ func resourceAciContractProviderImport(d *schema.ResourceData, m interface{}) ([
 	aciClient := m.(*client.Client)
 
 	dn := d.Id()
-	contractType := d.Get("contract_type").(string)
+	contractType := ""
+	if strings.Contains(dn, "/rsprov") {
+		contractType = "provider"
+	} else if strings.Contains(dn, "/rscons") {
+		contractType = "consumer"
+	}
 	var schemaFilled *schema.ResourceData
 
 	if contractType == "provider" {
@@ -172,6 +186,7 @@ func resourceAciContractProviderImport(d *schema.ResourceData, m interface{}) ([
 		if err != nil {
 			return nil, err
 		}
+		d.Set("contract_type", contractType)
 
 	} else if contractType == "consumer" {
 		fvRsCons, err := getRemoteContractConsumer(aciClient, dn)
@@ -187,6 +202,7 @@ func resourceAciContractProviderImport(d *schema.ResourceData, m interface{}) ([
 		if err != nil {
 			return nil, err
 		}
+		d.Set("contract_type", contractType)
 
 	} else {
 		return nil, fmt.Errorf("Contract Type: Value must be from [provider, consumer]")

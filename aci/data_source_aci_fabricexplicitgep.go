@@ -17,7 +17,7 @@ func dataSourceAciVPCExplicitProtectionGroup() *schema.Resource {
 
 		SchemaVersion: 1,
 
-		Schema: AppendBaseAttrSchema(map[string]*schema.Schema{
+		Schema: map[string]*schema.Schema{
 
 			"name": &schema.Schema{
 				Type:     schema.TypeString,
@@ -29,7 +29,13 @@ func dataSourceAciVPCExplicitProtectionGroup() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
-		}),
+
+			"annotation": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+		},
 	}
 }
 
@@ -73,7 +79,7 @@ func getRemoteVPCExplicitProtectionGroupDS(client *client.Client, dn string) (*m
 
 func setVPCExplicitProtectionGroupAttributesDS(fabricExplicitGEp *models.VPCExplicitProtectionGroup, d *schema.ResourceData) (*schema.ResourceData, error) {
 	d.SetId(fabricExplicitGEp.DistinguishedName)
-	d.Set("description", fabricExplicitGEp.Description)
+
 	fabricExplicitGEpMap, err := fabricExplicitGEp.ToMap()
 	if err != nil {
 		return d, err

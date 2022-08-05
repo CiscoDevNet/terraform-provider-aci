@@ -92,7 +92,7 @@ func resourceAciISISDomainPolicy() *schema.Resource {
 	}
 }
 
-func getRemoteISISDomainPolicy(client *client.Client, dn string) (*models.ISISDomainPolicy, error) {
+func GetRemoteISISDomainPolicy(client *client.Client, dn string) (*models.ISISDomainPolicy, error) {
 	isisDomPolCont, err := client.Get(dn)
 	if err != nil {
 		return nil, err
@@ -104,7 +104,7 @@ func getRemoteISISDomainPolicy(client *client.Client, dn string) (*models.ISISDo
 	return isisDomPol, nil
 }
 
-func getRemoteISISLevel(client *client.Client, dn string) (*models.ISISLevel, error) {
+func GetRemoteISISLevel(client *client.Client, dn string) (*models.ISISLevel, error) {
 	isisLvlCompCont, err := client.Get(dn)
 	if err != nil {
 		return nil, err
@@ -156,7 +156,7 @@ func resourceAciISISDomainPolicyImport(d *schema.ResourceData, m interface{}) ([
 	log.Printf("[DEBUG] %s: Beginning Import", d.Id())
 	aciClient := m.(*client.Client)
 	dn := d.Id()
-	isisDomPol, err := getRemoteISISDomainPolicy(aciClient, dn)
+	isisDomPol, err := GetRemoteISISDomainPolicy(aciClient, dn)
 	if err != nil {
 		return nil, err
 	}
@@ -339,7 +339,7 @@ func resourceAciISISDomainPolicyRead(ctx context.Context, d *schema.ResourceData
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 	aciClient := m.(*client.Client)
 	dn := d.Id()
-	isisDomPol, err := getRemoteISISDomainPolicy(aciClient, dn)
+	isisDomPol, err := GetRemoteISISDomainPolicy(aciClient, dn)
 	if err != nil {
 		d.SetId("")
 		return nil
@@ -349,32 +349,17 @@ func resourceAciISISDomainPolicyRead(ctx context.Context, d *schema.ResourceData
 		d.SetId("")
 		return nil
 	}
-
-	lvlCompUrl := fmt.Sprintf("/api/node/mo/%s.json?query-target=children", dn)
-
-	lvlCompCont, err := aciClient.GetViaURL(lvlCompUrl)
+	isisCompDn := dn + "/lvl-l1"
+	if d.Get("isis_level_type").(string) == "l2" {
+		isisCompDn = dn + "/lvl-l2"
+	}
+	isisLvlComp, err := GetRemoteISISLevel(aciClient, isisCompDn)
 	if err != nil {
 		return diag.FromErr(err)
 	}
-	childCont := lvlCompCont.S("imdata")
-	isisCompDn := ""
-
-	for i := 0; i < len(childCont.Data().([]interface{})); i++ {
-		isisCompId := G(childCont.Index(i).S("isisLvlComp", "attributes"), "dn")
-		if isisCompId != "{}" {
-			isisCompDn = isisCompId
-		}
-	}
-
-	if isisCompDn != "" {
-		isisLvlComp, err := getRemoteISISLevel(aciClient, isisCompDn)
-		if err != nil {
-			return diag.FromErr(err)
-		}
-		_, err = setISISLevelAttributes(isisLvlComp, d)
-		if err != nil {
-			return diag.FromErr(err)
-		}
+	_, err = setISISLevelAttributes(isisLvlComp, d)
+	if err != nil {
+		return diag.FromErr(err)
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())

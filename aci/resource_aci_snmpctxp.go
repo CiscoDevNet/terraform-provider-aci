@@ -31,8 +31,8 @@ func resourceAciSNMPContextProfile() *schema.Resource {
 			},
 			"name": &schema.Schema{
 				Type:     schema.TypeString,
-				Required: true,
-				ForceNew: true,
+				Optional: true,
+				Computed: true,
 			},
 			"annotation": &schema.Schema{
 				Type:     schema.TypeString,

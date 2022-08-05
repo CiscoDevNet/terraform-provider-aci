@@ -29,5 +29,5 @@ data "aci_fex_profile" "example" {
 
 - `id` - Attribute id set to the Dn of the FEX Profile.
 - `annotation` - (Optional) Specifies the annotation of the policy definition.
-- `name_alias` - (Optional) Specifies the description of the policy definition.
+- `description` - (Optional) Specifies the description of the policy definition.
 - `name_alias` - (Optional) Specifies the alias name of the policy definition.

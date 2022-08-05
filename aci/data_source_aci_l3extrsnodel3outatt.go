@@ -16,7 +16,7 @@ func dataSourceAciFabricNode() *schema.Resource {
 
 		SchemaVersion: 1,
 
-		Schema: AppendBaseAttrSchema(map[string]*schema.Schema{
+		Schema: map[string]*schema.Schema{
 			"logical_node_profile_dn": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
@@ -39,12 +39,18 @@ func dataSourceAciFabricNode() *schema.Resource {
 				Computed: true,
 			},
 
+			"annotation": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+
 			"rtr_id_loop_back": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
 			},
-		}),
+		},
 	}
 }
 

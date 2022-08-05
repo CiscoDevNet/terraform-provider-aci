@@ -39,6 +39,8 @@ resource "aci_route_control_context" "control" {
 * `route_control_profile_dn` - (Required) Distinguished name of parent Route Control Profile object.
 * `name` - (Required) Name of object Route Control Context.
 * `annotation` - (Optional) Annotation of object Route Control Context.
+* `description` - (Optional) Description of object Route Control Context.
+* `name_alias` - (Optional) Name Alias of object Route Control Context.
 * `action` - (Optional) Action. The action required when the condition is met. Allowed values are "deny", "permit", and default value is "permit". Type: String.
 * `order` - (Optional) Local Order.The order of the policy context. Allowed range is 0-9 and default value is "0".
 * `set_rule` - (Optional) Represents the relation to an Attribute Profile (class rtctrlAttrP). Type: String.

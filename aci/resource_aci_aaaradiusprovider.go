@@ -129,6 +129,7 @@ func setRADIUSProviderAttributes(radius_type string, aaaRadiusProvider *models.R
 	d.Set("monitoring_user", aaaRadiusProviderMap["monitoringUser"])
 	d.Set("name", aaaRadiusProviderMap["name"])
 	d.Set("retries", aaaRadiusProviderMap["retries"])
+	d.Set("annotation", aaaRadiusProviderMap["annotation"])
 	d.Set("timeout", aaaRadiusProviderMap["timeout"])
 	d.Set("name_alias", aaaRadiusProviderMap["nameAlias"])
 	return d, nil

@@ -49,6 +49,7 @@ func resourceAciLinkLevelPolicy() *schema.Resource {
 				Computed: true,
 				ValidateFunc: validation.StringInSlice([]string{
 					"inherit",
+					"auto-fec",
 					"cl91-rs-fec",
 					"cl74-fc-fec",
 					"ieee-rs-fec",

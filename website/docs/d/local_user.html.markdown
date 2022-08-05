@@ -40,7 +40,6 @@ data "aci_local_user" "example" {
 - `otpenable` - (Optional) flag to enable OTP for the user.
 - `otpkey` - (Optional) OTP-key for object user.
 - `phone` - (Optional) Phone number of the local user.
-- `pwd` - (Optional) System user password.
 - `pwd_life_time` - (Optional) The lifetime of the local user password.
 - `pwd_update_required` - (Optional) A boolean value indicating whether this account needs password update.
 - `rbac_string` - (Optional) RBAC-string of the local user.

@@ -57,6 +57,10 @@ func resourceAciFirmwareDownloadTask() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"yes",
+					"no",
+				}, false),
 			},
 
 			"identity_private_key_contents": &schema.Schema{

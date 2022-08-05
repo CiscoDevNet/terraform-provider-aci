@@ -136,6 +136,14 @@ func resourceAciSpanningTreeInterfacePolicyCreate(ctx context.Context, d *schema
 		for _, val := range Ctrl.([]interface{}) {
 			ctrlList = append(ctrlList, val.(string))
 		}
+		err := checkDuplicate(ctrlList)
+		if err != nil {
+			return diag.FromErr(err)
+		}
+		err = checkWhetherListContainOnlyParameter(ctrlList, "unspecified")
+		if err != nil {
+			return diag.FromErr(err)
+		}
 		Ctrl := strings.Join(ctrlList, ",")
 		stpIfPolAttr.Ctrl = Ctrl
 	}
@@ -175,6 +183,14 @@ func resourceAciSpanningTreeInterfacePolicyUpdate(ctx context.Context, d *schema
 		ctrlList := make([]string, 0, 1)
 		for _, val := range Ctrl.([]interface{}) {
 			ctrlList = append(ctrlList, val.(string))
+		}
+		err := checkDuplicate(ctrlList)
+		if err != nil {
+			return diag.FromErr(err)
+		}
+		err = checkWhetherListContainOnlyParameter(ctrlList, "unspecified")
+		if err != nil {
+			return diag.FromErr(err)
 		}
 		Ctrl := strings.Join(ctrlList, ",")
 		stpIfPolAttr.Ctrl = Ctrl

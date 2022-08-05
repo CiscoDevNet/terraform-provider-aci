@@ -74,7 +74,7 @@ func dataSourceAciQOSInstancePolicyReadContext(ctx context.Context, d *schema.Re
 
 	rn := fmt.Sprintf("infra/qosinst-%s", name)
 	dn := fmt.Sprintf("uni/%s", rn)
-	qosInstPol, err := getRemoteQOSInstancePolicy(aciClient, dn)
+	qosInstPol, err := GetRemoteQOSInstancePolicy(aciClient, dn)
 	if err != nil {
 		return diag.FromErr(err)
 	}

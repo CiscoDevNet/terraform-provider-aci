@@ -41,3 +41,5 @@ data "aci_match_route_destination_rule" "example" {
 * `aggregate` - (Optional) Aggregated Route. Aggregated Route
 * `greater_than_mask` - (Optional) Start of Prefix Length. Prefix list range
 * `less_than_mask` - (Optional) End of Prefix Length. 
+* `description` - (Optional) Description of object Match Route Destination Rule.
+* `name_alias` - (Optional) Name alias of object Match Route Destination Rule.

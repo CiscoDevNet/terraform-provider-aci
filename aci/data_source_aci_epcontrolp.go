@@ -49,7 +49,7 @@ func dataSourceAciEndpointControlPolicyRead(ctx context.Context, d *schema.Resou
 
 	rn := fmt.Sprintf("infra/epCtrlP-%s", name)
 	dn := fmt.Sprintf("uni/%s", rn)
-	epControlP, err := getRemoteEndpointControlPolicy(aciClient, dn)
+	epControlP, err := GetRemoteEndpointControlPolicy(aciClient, dn)
 	if err != nil {
 		return diag.FromErr(err)
 	}

@@ -141,7 +141,7 @@ func setL4L7ServiceGraphTemplateAttributes(vnsAbsGraph *models.L4L7ServiceGraphT
 	}
 
 	d.Set("name", vnsAbsGraphMap["name"])
-
+	d.Set("tenant_dn", GetParentDn(vnsAbsGraph.DistinguishedName, fmt.Sprintf("/AbsGraph-%s", vnsAbsGraphMap["name"])))
 	d.Set("annotation", vnsAbsGraphMap["annotation"])
 	d.Set("name_alias", vnsAbsGraphMap["nameAlias"])
 	d.Set("l4_l7_service_graph_template_type", vnsAbsGraphMap["type"])

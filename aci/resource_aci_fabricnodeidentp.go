@@ -35,10 +35,8 @@ func resourceAciFabricNodeMember() *schema.Resource {
 
 			"name": &schema.Schema{
 				Type: schema.TypeString,
-				// Required: true,
-				// ForceNew: true,
-				Optional: true,
-				Computed: true,
+				Required: true,
+				ForceNew: true,
 			},
 
 			"ext_pool_id": &schema.Schema{

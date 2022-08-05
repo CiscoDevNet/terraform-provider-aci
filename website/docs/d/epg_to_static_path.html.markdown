@@ -32,3 +32,4 @@ data "aci_epg_to_static_path" "example" {
 * `instr_imedcy` - (Optional) Immediacy of the Static Path.
 * `mode` - (Optional) Mode of the static association with the path.
 * `primary_encap` - (Optional) Primary encap for object Static Path.
+* `description` - (Optional) Description for object Static Path.

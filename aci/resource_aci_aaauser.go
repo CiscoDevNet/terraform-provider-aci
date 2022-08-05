@@ -185,7 +185,6 @@ func setLocalUserAttributes(aaaUser *models.LocalUser, d *schema.ResourceData) (
 	d.Set("account_status", aaaUserMap["accountStatus"])
 	d.Set("annotation", aaaUserMap["annotation"])
 	d.Set("cert_attribute", aaaUserMap["certAttribute"])
-	d.Set("clear_pwd_history", aaaUserMap["clearPwdHistory"])
 	d.Set("email", aaaUserMap["email"])
 	d.Set("expiration", aaaUserMap["expiration"])
 	d.Set("expires", aaaUserMap["expires"])
@@ -193,7 +192,9 @@ func setLocalUserAttributes(aaaUser *models.LocalUser, d *schema.ResourceData) (
 	d.Set("last_name", aaaUserMap["lastName"])
 	d.Set("name_alias", aaaUserMap["nameAlias"])
 	d.Set("otpenable", aaaUserMap["otpenable"])
-	d.Set("otpkey", aaaUserMap["otpkey"])
+	if aaaUserMap["otpkey"] == "DISABLEDDISABLED" {
+		d.Set("otpkey", "DISABLEDDISABLED")
+	}
 	d.Set("phone", aaaUserMap["phone"])
 	if aaaUserMap["pwdLifeTime"] == "no-password-expire" {
 		d.Set("pwd_life_time", "0")

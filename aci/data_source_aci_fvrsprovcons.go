@@ -17,14 +17,14 @@ func dataSourceAciContractProvider() *schema.Resource {
 
 		SchemaVersion: 1,
 
-		Schema: AppendBaseAttrSchema(map[string]*schema.Schema{
+		Schema: map[string]*schema.Schema{
 			"application_epg_dn": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
 				ForceNew: true,
 			},
 
-			"contract_name": &schema.Schema{
+			"contract_dn": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
 				ForceNew: true,
@@ -47,14 +47,22 @@ func dataSourceAciContractProvider() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
-		}),
+			"annotation": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+				DefaultFunc: func() (interface{}, error) {
+					return "orchestrator:terraform", nil
+				},
+			},
+		},
 	}
 }
 
 func dataSourceAciContractProviderRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	aciClient := m.(*client.Client)
 	contractType := d.Get("contract_type").(string)
-	tnVzBrCPName := d.Get("contract_name").(string)
+	tnVzBrCPName := GetMOName(d.Get("contract_dn").(string))
 	ApplicationEPGDn := d.Get("application_epg_dn").(string)
 
 	if contractType == "provider" {
@@ -102,7 +110,7 @@ func setContractConsumerDataAttributes(fvRsCons *models.ContractConsumer, d *sch
 		return d, err
 	}
 
-	d.Set("contract_name", fvRsConsMap["tnVzBrCPName"])
+	// d.Set("contract_name", fvRsConsMap["tnVzBrCPName"])
 
 	d.Set("annotation", fvRsConsMap["annotation"])
 	d.Set("prio", fvRsConsMap["prio"])
@@ -117,7 +125,7 @@ func setContractProviderDataAttributes(fvRsProv *models.ContractProvider, d *sch
 	if err != nil {
 		return d, err
 	}
-	d.Set("contract_name", fvRsProvMap["tnVzBrCPName"])
+	// d.Set("contract_name", fvRsProvMap["tnVzBrCPName"])
 
 	d.Set("annotation", fvRsProvMap["annotation"])
 	d.Set("match_t", fvRsProvMap["matchT"])

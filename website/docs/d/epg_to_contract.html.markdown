@@ -16,7 +16,7 @@ Data source for ACI EPG to contract relationship.
 ```hcl
 data "aci_epg_to_contract" "example" {
     application_epg_dn = aci_application_epg.demo.id
-    contract_name  = "example"
+    contract_dn  = aci_contract.demo.id
     contract_type = "consumer"
 }
 ```
@@ -31,6 +31,5 @@ data "aci_epg_to_contract" "example" {
 
 - `id` - Attribute id set to the Dn of the provider/consumer contract.
 - `annotation` - (Optional) annotation for EPg to contract relationship.
-- `description` - (Optional) annotation for EPg to contract relationship.
 - `match_t` - (Optional) Provider matching criteria.
 - `prio` - (Optional) Priority of relation object.

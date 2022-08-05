@@ -33,6 +33,12 @@ func dataSourceAciBgpPeerConnectivityProfile() *schema.Resource {
 				Required: true,
 			},
 
+			"admin_state": {
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+
 			"addr_t_ctrl": &schema.Schema{
 				Type:     schema.TypeList,
 				Optional: true,
@@ -156,23 +162,33 @@ func dataSourceAciBgpPeerConnectivityProfileRead(ctx context.Context, d *schema.
 	if err != nil {
 		return diag.FromErr(err)
 	}
+	_, err = aciClient.Get(fmt.Sprintf("%s/as", dn))
+	if err == nil {
+		bgpAsP, err := getRemoteBgpAutonomousSystemProfileFromBgpPeerConnectivityProfile(aciClient, fmt.Sprintf("%s/as", dn))
+		if err != nil {
+			return diag.FromErr(err)
+		}
+		_, err = setBgpAutonomousSystemProfileAttributesFromBgpPeerConnectivityProfile(bgpAsP, d)
+		if err != nil {
+			return diag.FromErr(err)
+		}
+	} else {
+		d.Set("as_number", "")
+	}
 
-	bgpAsP, err := getRemoteBgpAutonomousSystemProfileFromBgpPeerConnectivityProfile(aciClient, fmt.Sprintf("%s/as", dn))
-	if err != nil {
-		return diag.FromErr(err)
-	}
-	_, err = setBgpAutonomousSystemProfileAttributesFromBgpPeerConnectivityProfile(bgpAsP, d)
-	if err != nil {
-		return diag.FromErr(err)
-	}
-
-	bgpLocalAsnP, err := getRemoteLocalAutonomousSystemProfileFromBgpPeerConnectivityProfile(aciClient, fmt.Sprintf("%s/localasn", dn))
-	if err != nil {
-		return diag.FromErr(err)
-	}
-	_, err = setLocalAutonomousSystemProfileAttributesFromBgpPeerConnectivityProfile(bgpLocalAsnP, d)
-	if err != nil {
-		return diag.FromErr(err)
+	_, err = aciClient.Get(fmt.Sprintf("%s/localasn", dn))
+	if err == nil {
+		bgpLocalAsnP, err := getRemoteLocalAutonomousSystemProfileFromBgpPeerConnectivityProfile(aciClient, fmt.Sprintf("%s/localasn", dn))
+		if err != nil {
+			return diag.FromErr(err)
+		}
+		_, err = setLocalAutonomousSystemProfileAttributesFromBgpPeerConnectivityProfile(bgpLocalAsnP, d)
+		if err != nil {
+			return diag.FromErr(err)
+		}
+	} else {
+		d.Set("local_asn", "")
+		d.Set("local_asn_propagate", "")
 	}
 
 	return nil

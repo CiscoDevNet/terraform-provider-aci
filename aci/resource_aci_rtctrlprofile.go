@@ -108,6 +108,7 @@ func resourceAciRouteControlProfileImport(d *schema.ResourceData, m interface{})
 	if err != nil {
 		return nil, err
 	}
+	d.Set("parent_dn", GetParentDn(dn, fmt.Sprintf("/prof-%s", rtctrlProfile.Name)))
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil

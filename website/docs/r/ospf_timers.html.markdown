@@ -51,7 +51,7 @@ resource "aci_ospf_timers" "example" {
 - `bw_ref` - (Optional) OSPF policy bandwidth for OSPF timers object. Range of allowed values is "1" to "4000000". Default value is "40000".
 - `ctrl` - (Optional) List of Control state for OSPF timers object. Allowed values are "name-lookup" and "pfx-suppress".
 - `dist` - (Optional) Preferred administrative distance for OSPF timers object. Range of allowed values is "1" to "255". Default value is "110".
-- `gr_ctrl` - (Optional) Graceful restart enabled or helper only for OSPF timers object. The allowed value is "helper". The default value is "helper". To deselect the option, just pass `gr_ctrl=""`
+- `gr_ctrl` - (Optional) Graceful restart enabled or helper only for OSPF timers object. The allowed value is "helper". The default value is "". To deselect the option, just pass `gr_ctrl=""`
 - `lsa_arrival_intvl` - (Optional) Minimum interval between the arrivals of lsas for OSPF timers object. The range of allowed values is "10" to "600000". The default value is "1000".
 - `lsa_gp_pacing_intvl` - (Optional) LSA group pacing interval for OSPF timers object. The range of allowed values is "1" to "1800". The default value is "10".
 - `lsa_hold_intvl` - (Optional) Throttle hold interval between LSAs for OSPF timers object. The range of allowed values is "50" to "30000". The default value is "5000".

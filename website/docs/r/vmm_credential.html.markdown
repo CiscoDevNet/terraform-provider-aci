@@ -48,7 +48,7 @@ resource "aci_vmm_credential" "example" {
 
 An existing VMMCredential can be [imported][docs-import] into this resource via its Dn, via the following command:
 [docs-import]: https://www.terraform.io/docs/import/index.html
-
+  
 ```
 terraform import vmm_credential.example <Dn>
 ```

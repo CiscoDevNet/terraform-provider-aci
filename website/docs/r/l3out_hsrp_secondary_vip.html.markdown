@@ -34,7 +34,6 @@ resource "aci_l3out_hsrp_secondary_vip" "example" {
 - `description` - (Optional) Description for object L3out HSRP Secondary VIP.
 - `config_issues` - (Optional) Configuration Issues.  
   Allowed values: "GroupMac-Conflicts-Other-Group", "GroupName-Conflicts-Other-Group", "GroupVIP-Conflicts-Other-Group", "Multiple-Version-On-Interface", "Secondary-vip-conflicts-if-ip", "Secondary-vip-subnet-mismatch", "group-vip-conflicts-if-ip", "group-vip-subnet-mismatch", "none". Default value: "none".
-- `ip` - (Optional) IP address.
 - `name_alias` - (Optional) Name alias for object L3out HSRP Secondary VIP.
 
 ## Attribute Reference

@@ -229,6 +229,10 @@ func resourceAciL3ExtSubnetCreate(ctx context.Context, d *schema.ResourceData, m
 		for _, val := range Scope.([]interface{}) {
 			scpList = append(scpList, val.(string))
 		}
+		err := checkDuplicate(scpList)
+		if err != nil {
+			return diag.FromErr(err)
+		}
 		scp := strings.Join(scpList, ",")
 		l3extSubnetAttr.Scope = scp
 	}
@@ -324,6 +328,10 @@ func resourceAciL3ExtSubnetUpdate(ctx context.Context, d *schema.ResourceData, m
 		scpList := make([]string, 0, 1)
 		for _, val := range Scope.([]interface{}) {
 			scpList = append(scpList, val.(string))
+		}
+		err := checkDuplicate(scpList)
+		if err != nil {
+			return diag.FromErr(err)
 		}
 		scp := strings.Join(scpList, ",")
 		l3extSubnetAttr.Scope = scp

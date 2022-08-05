@@ -68,6 +68,7 @@ func setUserRoleAttributes(aaaUserRole *models.UserRole, d *schema.ResourceData)
 	if err != nil {
 		return nil, err
 	}
+	d.Set("annotation", aaaUserRoleMap["annotation"])
 	d.Set("name", aaaUserRoleMap["name"])
 	d.Set("priv_type", aaaUserRoleMap["privType"])
 	d.Set("name_alias", aaaUserRoleMap["nameAlias"])

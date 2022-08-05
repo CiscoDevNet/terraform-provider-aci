@@ -181,6 +181,10 @@ func resourceAciDuoProviderGroupCreate(ctx context.Context, d *schema.ResourceDa
 		for _, val := range SecFacAuthMethods.([]interface{}) {
 			secFacAuthMethodsList = append(secFacAuthMethodsList, val.(string))
 		}
+		err := checkDuplicate(secFacAuthMethodsList)
+		if err != nil {
+			return diag.FromErr(err)
+		}
 		SecFacAuthMethods := strings.Join(secFacAuthMethodsList, ",")
 		aaaDuoProviderGroupAttr.SecFacAuthMethods = SecFacAuthMethods
 	}
@@ -231,6 +235,10 @@ func resourceAciDuoProviderGroupUpdate(ctx context.Context, d *schema.ResourceDa
 		secFacAuthMethodsList := make([]string, 0, 1)
 		for _, val := range SecFacAuthMethods.([]interface{}) {
 			secFacAuthMethodsList = append(secFacAuthMethodsList, val.(string))
+		}
+		err := checkDuplicate(secFacAuthMethodsList)
+		if err != nil {
+			return diag.FromErr(err)
 		}
 		SecFacAuthMethods := strings.Join(secFacAuthMethodsList, ",")
 		aaaDuoProviderGroupAttr.SecFacAuthMethods = SecFacAuthMethods

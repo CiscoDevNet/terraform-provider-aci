@@ -38,9 +38,11 @@ resource "aci_match_route_destination_rule" "destination" {
 * `match_rule_dn` - (Required) Distinguished name of parent Match Rule object.
 * `ip` - (Required) Ip of object Match Route Destination Rule.
 * `annotation` - (Optional) Annotation of object Match Route Destination Rule.
-* `aggregate` - (Optional) Aggregated Route. Allowed values are "false", "true" and default value is "false". Type: String.
+* `aggregate` - (Optional) Aggregated Route. Allowed values are "yes", "no" and default value is "no". Type: String.
 * `greater_than_mask` - (Optional) Start of Prefix Length. Allowed range is 0-128 and default value is "0".
 * `less_than_mask` - (Optional) End of Prefix Length. Allowed range is 0-128 and default value is "0".
+* `description` - (Optional) Description of object Match Route Destination Rule.
+* `name_alias` - (Optional) Name alias of object Match Route Destination Rule.
 
 
 ## Importing ##

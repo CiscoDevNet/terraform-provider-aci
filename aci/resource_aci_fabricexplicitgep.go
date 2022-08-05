@@ -58,7 +58,7 @@ func resourceAciVPCExplicitProtectionGroup() *schema.Resource {
 	}
 }
 
-func getRemoteVPCExplicitProtectionGroup(client *client.Client, dn string) (*models.VPCExplicitProtectionGroup, error) {
+func GetRemoteVPCExplicitProtectionGroup(client *client.Client, dn string) (*models.VPCExplicitProtectionGroup, error) {
 	baseurlStr := "/api/node/mo"
 	dnUrl := fmt.Sprintf("%s/%s.json?rsp-subtree=children", baseurlStr, dn)
 	fabricExplicitGEpCont, err := client.GetViaURL(dnUrl)
@@ -117,7 +117,7 @@ func resourceAciVPCExplicitProtectionGroupImport(d *schema.ResourceData, m inter
 
 	dn := d.Id()
 
-	fabricExplicitGEp, err := getRemoteVPCExplicitProtectionGroup(aciClient, dn)
+	fabricExplicitGEp, err := GetRemoteVPCExplicitProtectionGroup(aciClient, dn)
 
 	if err != nil {
 		return nil, err
@@ -211,7 +211,7 @@ func resourceAciVPCExplicitProtectionGroupRead(ctx context.Context, d *schema.Re
 	aciClient := m.(*client.Client)
 
 	dn := d.Id()
-	fabricExplicitGEp, err := getRemoteVPCExplicitProtectionGroup(aciClient, dn)
+	fabricExplicitGEp, err := GetRemoteVPCExplicitProtectionGroup(aciClient, dn)
 
 	if err != nil {
 		d.SetId("")

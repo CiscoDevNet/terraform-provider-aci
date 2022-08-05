@@ -87,7 +87,7 @@ func resourceAciMiscablingProtocolInstancePolicy() *schema.Resource {
 	}
 }
 
-func getRemoteMiscablingProtocolInstancePolicy(client *client.Client, dn string) (*models.MiscablingProtocolInstancePolicy, error) {
+func GetRemoteMiscablingProtocolInstancePolicy(client *client.Client, dn string) (*models.MiscablingProtocolInstancePolicy, error) {
 	mcpInstPolCont, err := client.Get(dn)
 	if err != nil {
 		return nil, err
@@ -148,7 +148,7 @@ func resourceAciMiscablingProtocolInstancePolicyImport(d *schema.ResourceData, m
 	log.Printf("[DEBUG] %s: Beginning Import", d.Id())
 	aciClient := m.(*client.Client)
 	dn := d.Id()
-	mcpInstPol, err := getRemoteMiscablingProtocolInstancePolicy(aciClient, dn)
+	mcpInstPol, err := GetRemoteMiscablingProtocolInstancePolicy(aciClient, dn)
 	if err != nil {
 		return nil, err
 	}
@@ -184,6 +184,10 @@ func resourceAciMiscablingProtocolInstancePolicyCreate(ctx context.Context, d *s
 		ctrlList := make([]string, 0, 1)
 		for _, val := range Ctrl.([]interface{}) {
 			ctrlList = append(ctrlList, val.(string))
+		}
+		err := checkDuplicate(ctrlList)
+		if err != nil {
+			return diag.FromErr(err)
 		}
 		Ctrl := strings.Join(ctrlList, ",")
 		mcpInstPolAttr.Ctrl = Ctrl
@@ -259,6 +263,10 @@ func resourceAciMiscablingProtocolInstancePolicyUpdate(ctx context.Context, d *s
 		for _, val := range Ctrl.([]interface{}) {
 			ctrlList = append(ctrlList, val.(string))
 		}
+		err := checkDuplicate(ctrlList)
+		if err != nil {
+			return diag.FromErr(err)
+		}
 		Ctrl := strings.Join(ctrlList, ",")
 		mcpInstPolAttr.Ctrl = Ctrl
 	} else {
@@ -310,7 +318,7 @@ func resourceAciMiscablingProtocolInstancePolicyRead(ctx context.Context, d *sch
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 	aciClient := m.(*client.Client)
 	dn := d.Id()
-	mcpInstPol, err := getRemoteMiscablingProtocolInstancePolicy(aciClient, dn)
+	mcpInstPol, err := GetRemoteMiscablingProtocolInstancePolicy(aciClient, dn)
 	if err != nil {
 		d.SetId("")
 		return nil

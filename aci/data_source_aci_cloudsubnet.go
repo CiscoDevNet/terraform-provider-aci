@@ -40,9 +40,12 @@ func dataSourceAciCloudSubnet() *schema.Resource {
 			},
 
 			"scope": &schema.Schema{
-				Type:     schema.TypeString,
+				Type:     schema.TypeList,
 				Optional: true,
 				Computed: true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
 			},
 
 			"usage": &schema.Schema{

@@ -40,6 +40,7 @@ data "aci_route_control_context" "control" {
 ## Attribute Reference ##
 * `id` - Attribute id set to the Dn of the Route Control Context.
 * `annotation` - (Optional) Annotation of object Route Control Context.
+* `description` - (Optional) Description of object Route Control Context.
 * `name_alias` - (Optional) Name Alias of object Route Control Context.
 * `action` - (Optional) Action. The action required when the condition is met.
 * `order` - (Optional) Local Order. The order of the policy context.

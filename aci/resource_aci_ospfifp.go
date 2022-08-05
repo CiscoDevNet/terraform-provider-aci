@@ -20,7 +20,7 @@ func resourceAciOSPFInterfaceProfile() *schema.Resource {
 		DeleteContext: resourceAciOSPFInterfaceProfileDelete,
 
 		Importer: &schema.ResourceImporter{
-			State: resourceAciInterfaceProfileImport,
+			State: resourceAciOSPFInterfaceProfileImport,
 		},
 
 		SchemaVersion: 1,
@@ -120,7 +120,7 @@ func resourceAciOSPFInterfaceProfileImport(d *schema.ResourceData, m interface{}
 	if err != nil {
 		return nil, err
 	}
-
+	d.Set("logical_interface_profile_dn", GetParentDn(dn, "/ospfIfP"))
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil

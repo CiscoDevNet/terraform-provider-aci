@@ -36,6 +36,7 @@ Allowed values: "immediate", "lazy". Default value: "lazy"
 * `mode` - (Optional) Mode of the static association with the path.
 Allowed values: "regular", "native", "untagged". Default value: "regular"
 * `primary_encap` - (Optional) Primary encap for object Static Path.
+* `description` - (Optional) Description for object Static Path.
 
 ## Attribute Reference
 

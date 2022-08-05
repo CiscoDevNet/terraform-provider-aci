@@ -28,6 +28,7 @@ data "aci_fabric_if_pol" "example" {
 
 * `id` - Attribute id set to the Dn of the fabric if pol.
 * `annotation` - (Optional) Annotation for object fabric if pol.
+* `description` - (Optional) Description for object fabric if pol.
 * `auto_neg` - (Optional) Policy auto-negotiation for object fabric if pol.
 * `fec_mode` - (Optional) Forwarding error correction for object fabric if pol.
 * `link_debounce` - (Optional) Link debounce interval for object fabric if pol.

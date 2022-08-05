@@ -157,8 +157,6 @@ func setMaintenancePolicyAttributes(maintMaintP *models.MaintenancePolicy, d *sc
 	}
 
 	d.Set("name", maintMaintPMap["name"])
-
-	d.Set("admin_st", maintMaintPMap["adminSt"])
 	d.Set("annotation", maintMaintPMap["annotation"])
 	d.Set("graceful", maintMaintPMap["graceful"])
 	d.Set("ignore_compat", maintMaintPMap["ignoreCompat"])

@@ -37,11 +37,6 @@ func dataSourceAciMiscablingProtocolInstancePolicy() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
-			"key": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
 			"loop_detect_mult": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -72,7 +67,7 @@ func dataSourceAciMiscablingProtocolInstancePolicyReadContext(ctx context.Contex
 
 	rn := fmt.Sprintf("infra/mcpInstP-%s", name)
 	dn := fmt.Sprintf("uni/%s", rn)
-	mcpInstPol, err := getRemoteMiscablingProtocolInstancePolicy(aciClient, dn)
+	mcpInstPol, err := GetRemoteMiscablingProtocolInstancePolicy(aciClient, dn)
 	if err != nil {
 		return diag.FromErr(err)
 	}

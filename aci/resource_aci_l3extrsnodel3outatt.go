@@ -25,15 +25,17 @@ func resourceAciFabricNode() *schema.Resource {
 
 		SchemaVersion: 1,
 
-		Schema: AppendBaseAttrSchema(map[string]*schema.Schema{
+		Schema: map[string]*schema.Schema{
 			"logical_node_profile_dn": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
+				ForceNew: true,
 			},
 
 			"tdn": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
+				ForceNew: true,
 			},
 
 			"config_issues": &schema.Schema{
@@ -60,6 +62,15 @@ func resourceAciFabricNode() *schema.Resource {
 				Computed: true,
 			},
 
+			"annotation": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+				DefaultFunc: func() (interface{}, error) {
+					return "orchestrator:terraform", nil
+				},
+			},
+
 			"rtr_id_loop_back": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -79,7 +90,7 @@ func resourceAciFabricNode() *schema.Resource {
 					return false
 				},
 			},
-		}),
+		},
 	}
 }
 func getRemoteFabricNode(client *client.Client, dn string) (*models.FabricNode, error) {

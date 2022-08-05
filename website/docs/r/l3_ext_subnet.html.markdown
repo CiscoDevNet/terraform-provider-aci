@@ -40,8 +40,6 @@ Manages ACI l3 extension subnet
 
 ```
 
-## Argument Reference
-
 ## Argument Reference ##
 * `external_network_instance_profile_dn` - (Required) Distinguished name of parent ExternalNetworkInstanceProfile object.
 * `ip` - (Required) ip of Object l3 extension subnet.

@@ -51,21 +51,21 @@ func resourceAciHSRPGroupPolicy() *schema.Resource {
 				Type:         schema.TypeString,
 				Optional:     true,
 				Computed:     true,
-				ValidateFunc: validateNonEmptyString(),
+				ValidateFunc: validation.NoZeroValues,
 			},
 
 			"hold_intvl": &schema.Schema{
 				Type:         schema.TypeString,
 				Optional:     true,
 				Computed:     true,
-				ValidateFunc: validateNonEmptyString(),
+				ValidateFunc: validation.NoZeroValues,
 			},
 
 			"key": &schema.Schema{
 				Type:         schema.TypeString,
 				Optional:     true,
 				Computed:     true,
-				ValidateFunc: validateNonEmptyString(),
+				ValidateFunc: validation.NoZeroValues,
 			},
 
 			"name_alias": &schema.Schema{
@@ -78,35 +78,35 @@ func resourceAciHSRPGroupPolicy() *schema.Resource {
 				Type:         schema.TypeString,
 				Optional:     true,
 				Computed:     true,
-				ValidateFunc: validateNonEmptyString(),
+				ValidateFunc: validation.NoZeroValues,
 			},
 
 			"preempt_delay_reload": &schema.Schema{
 				Type:         schema.TypeString,
 				Optional:     true,
 				Computed:     true,
-				ValidateFunc: validateNonEmptyString(),
+				ValidateFunc: validation.NoZeroValues,
 			},
 
 			"preempt_delay_sync": &schema.Schema{
 				Type:         schema.TypeString,
 				Optional:     true,
 				Computed:     true,
-				ValidateFunc: validateNonEmptyString(),
+				ValidateFunc: validation.NoZeroValues,
 			},
 
 			"prio": &schema.Schema{
 				Type:         schema.TypeString,
 				Optional:     true,
 				Computed:     true,
-				ValidateFunc: validateNonEmptyString(),
+				ValidateFunc: validation.NoZeroValues,
 			},
 
 			"timeout": &schema.Schema{
 				Type:         schema.TypeString,
 				Optional:     true,
 				Computed:     true,
-				ValidateFunc: validateNonEmptyString(),
+				ValidateFunc: validation.NoZeroValues,
 			},
 
 			"hsrp_group_policy_type": &schema.Schema{
