@@ -18,7 +18,7 @@ Manages ACI Cloud Account
 
 ## GUI Information ##
 
-* `Location` - Cloud APIC -> Application Management -> Tenants
+* `Location` - Cloud APIC -> Application Management -> Tenants -> {tenant_name}
 
 
 ## Example Usage ##
@@ -26,26 +26,22 @@ Manages ACI Cloud Account
 ```hcl
 resource "aci_cloud_account" "example" {
   tenant_dn  = aci_tenant.example.id
-  account_id  = "example"
-  vendor  = "example"
   access_type = "managed"
-  account_id = "example"
+  account_id = "azure_account_id"
   vendor = "azure"
-  cloud_rs_account_to_access_policy = aci_resource.example.id
-  cloud_rs_credentials = aci_resource.example.id
+  cloud_rs_account_to_access_policy = "uni/tn-{tenant_name}/accesspolicy-read-only"
+  cloud_rs_credentials = aci_cloud_creddentials.example.id
 }
 ```
 
 ## Argument Reference ##
 
 * `tenant_dn` - (Required) Distinguished name of the parent Tenant object.
-* `account_id` - (Required) ID of the Cloud Account object.
-* `vendor` - (Required) Vendor of the Cloud Account object.
 * `name` - (Optional) Name of the Cloud Account object.
 * `annotation` - (Optional) Annotation of the Cloud Account object.
-* `access_type` - (Optional) Authentication to the Cloud Account (managed=no credentials required (IAM), credentials=using accessKeys). Allowed values are "credentials", "managed". Default value is "managed". Type: String.
-* `account_id` - (Optional) Account id. An object identifier.
-* `vendor` - (Optional) The Cloud Account vendor of the controller. Allowed values are "aws", "azure", "gcp", "unknown", and default value is "aws". Type: String.
+* `access_type` - (Optional) Authentication type for the Cloud Account (managed=no credentials required (IAM), credentials=using accessKeys). Allowed values are "credentials", "managed". Default value is "managed". Type: String.
+* `account_id` - (Required) ID of the Cloud Account object.
+* `vendor` - (Required) Vendor of the Cloud Account object. Allowed values are "aws", "azure", "gcp", "unknown", and default value is "aws". Type: String.
 
 * `relation_cloud_rs_account_to_access_policy` - (Optional) Represents the relation to a Relation to the Access policy to be used (class cloudAccessPolicy). Relation to CloudAccessPolicy cardianity is n-1 Type: String.
 

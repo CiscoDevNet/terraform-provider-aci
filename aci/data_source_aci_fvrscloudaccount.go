@@ -5,13 +5,14 @@ import (
 	"fmt"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
+	"github.com/ciscoecosystem/aci-go-client/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
-func dataSourceAciTenanttoCloudAccountAssociation() *schema.Resource {
+func dataSourceAciTenantToCloudAccountAssociation() *schema.Resource {
 	return &schema.Resource{
-		ReadContext:   dataSourceAciTenanttoCloudAccountAssociationRead,
+		ReadContext:   dataSourceAciTenantToCloudAccountAssociationRead,
 		SchemaVersion: 1,
 		Schema: AppendBaseAttrSchema(AppendNameAliasAttrSchema(map[string]*schema.Schema{
 			"tenant_dn": {
@@ -31,20 +32,20 @@ func dataSourceAciTenanttoCloudAccountAssociation() *schema.Resource {
 	}
 }
 
-func dataSourceAciTenanttoCloudAccountAssociationRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func dataSourceAciTenantToCloudAccountAssociationRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	aciClient := m.(*client.Client)
 	TenantDn := d.Get("tenant_dn").(string)
-	rn := fmt.Sprintf("rsCloudAccount")
+	rn := fmt.Sprintf(models.RnfvRsCloudAccount)
 	dn := fmt.Sprintf("%s/%s", TenantDn, rn)
 
-	fvRsCloudAccount, err := getRemoteTenanttoCloudAccountAssociation(aciClient, dn)
+	fvRsCloudAccount, err := getRemoteTenantToCloudAccountAssociation(aciClient, dn)
 	if err != nil {
 		return diag.FromErr(err)
 	}
 
 	d.SetId(dn)
 
-	_, err = setTenanttoCloudAccountAssociationAttributes(fvRsCloudAccount, d)
+	_, err = setTenantToCloudAccountAssociationAttributes(fvRsCloudAccount, d)
 	if err != nil {
 		return diag.FromErr(err)
 	}

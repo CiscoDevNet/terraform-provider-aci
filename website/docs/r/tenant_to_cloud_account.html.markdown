@@ -18,7 +18,7 @@ Manages ACI Tenant to Cloud Account association
 
 ## GUI Information ##
 
-* `Location` - Cloud APIC -> Application Management -> Tenants 
+* `Location` - Cloud APIC -> Application Management -> Tenants  -> {tenant_name}
 
 
 ## Example Usage ##
@@ -26,14 +26,14 @@ Manages ACI Tenant to Cloud Account association
 ```hcl
 resource "aci_tenant_to_cloud_account" "example" {
   tenant_dn  = aci_tenant.example.id
-  cloud_account_dn = aci_cloud_account_example.id
+  cloud_account_dn = aci_cloud_account.example.id
 }
 ```
 
 ## Argument Reference ##
 
 * `tenant_dn` - (Required) Distinguished name of the parent Tenant object.
-* `cloud_account_dn` - (Optional) Target-dn. The distinguished name of the target Tenant's Cloud Account object.
+* `cloud_account_dn` - (Optional) The distinguished name of the target Cloud Account object.
 * `annotation` - (Optional) Annotation of the Tenant to Cloud Account association object.
 * `name_alias` - (Optional) Name Alias of the Tenant to Cloud Account association object.
 

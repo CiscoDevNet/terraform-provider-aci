@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
+	"github.com/ciscoecosystem/aci-go-client/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -35,7 +36,7 @@ func dataSourceAciActiveDirectoryRead(ctx context.Context, d *schema.ResourceDat
 	aciClient := m.(*client.Client)
 	active_directory_id := d.Get("active_directory_id").(string)
 	TenantDn := d.Get("tenant_dn").(string)
-	rn := fmt.Sprintf("ad-%s", active_directory_id)
+	rn := fmt.Sprintf(models.RncloudAD, active_directory_id)
 	dn := fmt.Sprintf("%s/%s", TenantDn, rn)
 
 	cloudAD, err := getRemoteActiveDirectory(aciClient, dn)

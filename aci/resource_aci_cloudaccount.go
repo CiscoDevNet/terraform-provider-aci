@@ -78,6 +78,8 @@ func getRemoteCloudAccount(client *client.Client, dn string) (*models.CloudAccou
 	if err != nil {
 		return nil, err
 	}
+
+	log.Printf("GETS :: cloudAccountCont : %s ", cloudAccountCont)
 	cloudAccount := models.CloudAccountFromContainer(cloudAccountCont)
 	if cloudAccount.DistinguishedName == "" {
 		return nil, fmt.Errorf("Cloud Account %s not found", cloudAccount.DistinguishedName)
@@ -159,13 +161,18 @@ func resourceAciCloudAccountCreate(ctx context.Context, d *schema.ResourceData, 
 	if Vendor, ok := d.GetOk("vendor"); ok {
 		cloudAccountAttr.Vendor = Vendor.(string)
 	}
+
+	log.Printf("CREATES :: relationTocloudRsCredentials : %s ", d.Get("relation_cloud_rs_credentials"))
 	cloudAccount := models.NewCloudAccount(fmt.Sprintf(models.RncloudAccount, account_id, vendor), TenantDn, nameAlias, cloudAccountAttr)
 
 	err := aciClient.Save(cloudAccount)
 	if err != nil {
+		log.Printf("IN ERR ----------------------> ")
 		return diag.FromErr(err)
 	}
 	checkDns := make([]string, 0, 1)
+
+	log.Printf("NOOOOOOO ERR ----------------------> ")
 
 	if relationTocloudRsAccountToAccessPolicy, ok := d.GetOk("relation_cloud_rs_account_to_access_policy"); ok {
 		relationParam := relationTocloudRsAccountToAccessPolicy.(string)
@@ -175,7 +182,9 @@ func resourceAciCloudAccountCreate(ctx context.Context, d *schema.ResourceData, 
 
 	if relationTocloudRsCredentials, ok := d.GetOk("relation_cloud_rs_credentials"); ok {
 		relationParam := relationTocloudRsCredentials.(string)
+		log.Printf("CREATES1 :: relationTocloudRsCredentialsrelationParam : %s ", relationParam)
 		checkDns = append(checkDns, relationParam)
+		log.Printf("CREATES11 :: checkDns : %s ", checkDns)
 
 	}
 
@@ -198,7 +207,9 @@ func resourceAciCloudAccountCreate(ctx context.Context, d *schema.ResourceData, 
 
 	if relationTocloudRsCredentials, ok := d.GetOk("relation_cloud_rs_credentials"); ok {
 		relationParam := relationTocloudRsCredentials.(string)
+		log.Printf("CREATES2 :: relationTocloudRsCredentials2 : %s ", relationParam)
 		err = aciClient.CreateRelationcloudRsCredentials(cloudAccount.DistinguishedName, cloudAccountAttr.Annotation, relationParam)
+		log.Printf("CREATESerr :: ERR2 : %s ", err)
 
 		if err != nil {
 			return diag.FromErr(err)
@@ -345,6 +356,7 @@ func resourceAciCloudAccountRead(ctx context.Context, d *schema.ResourceData, m 
 	} else {
 		if _, ok := d.GetOk("relation_cloud_rs_credentials"); ok {
 			tfName := d.Get("relation_cloud_rs_credentials").(string)
+			log.Printf("READ :: relation_cloud_rs_credentials: %s ", tfName)
 			if tfName != cloudRsCredentialsData {
 				d.Set("relation_cloud_rs_credentials", "")
 			}

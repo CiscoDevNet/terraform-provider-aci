@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
+	"github.com/ciscoecosystem/aci-go-client/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -60,7 +61,7 @@ func dataSourceAciAccessCredentialtomanagethecloudresourcesRead(ctx context.Cont
 	aciClient := m.(*client.Client)
 	name := d.Get("name").(string)
 	TenantDn := d.Get("tenant_dn").(string)
-	rn := fmt.Sprintf("credentials-%s", name)
+	rn := fmt.Sprintf(models.RncloudCredentials, name)
 	dn := fmt.Sprintf("%s/%s", TenantDn, rn)
 
 	cloudCredentials, err := getRemoteAccessCredentialtomanagethecloudresources(aciClient, dn)

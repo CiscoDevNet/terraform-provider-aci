@@ -127,7 +127,6 @@ func resourceAciAccessCredentialtomanagethecloudresourcesImport(d *schema.Resour
 func resourceAciAccessCredentialtomanagethecloudresourcesCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] AccessCredentialtomanagethecloudresources: Beginning Creation")
 	aciClient := m.(*client.Client)
-	desc := d.Get("description").(string)
 	name := d.Get("name").(string)
 	TenantDn := d.Get("tenant_dn").(string)
 
@@ -171,7 +170,7 @@ func resourceAciAccessCredentialtomanagethecloudresourcesCreate(ctx context.Cont
 	if RsaPrivateKey, ok := d.GetOk("rsa_private_key"); ok {
 		cloudCredentialsAttr.RsaPrivateKey = RsaPrivateKey.(string)
 	}
-	cloudCredentials := models.NewAccessCredentialtomanagethecloudresources(fmt.Sprintf(models.RncloudCredentials, name), TenantDn, desc, nameAlias, cloudCredentialsAttr)
+	cloudCredentials := models.NewAccessCredentialtomanagethecloudresources(fmt.Sprintf(models.RncloudCredentials, name), TenantDn, nameAlias, cloudCredentialsAttr)
 
 	err := aciClient.Save(cloudCredentials)
 	if err != nil {
@@ -210,7 +209,6 @@ func resourceAciAccessCredentialtomanagethecloudresourcesCreate(ctx context.Cont
 func resourceAciAccessCredentialtomanagethecloudresourcesUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] AccessCredentialtomanagethecloudresources: Beginning Update")
 	aciClient := m.(*client.Client)
-	desc := d.Get("description").(string)
 	name := d.Get("name").(string)
 	TenantDn := d.Get("tenant_dn").(string)
 
@@ -254,7 +252,7 @@ func resourceAciAccessCredentialtomanagethecloudresourcesUpdate(ctx context.Cont
 	if RsaPrivateKey, ok := d.GetOk("rsa_private_key"); ok {
 		cloudCredentialsAttr.RsaPrivateKey = RsaPrivateKey.(string)
 	}
-	cloudCredentials := models.NewAccessCredentialtomanagethecloudresources(fmt.Sprintf("credentials-%s", name), TenantDn, desc, nameAlias, cloudCredentialsAttr)
+	cloudCredentials := models.NewAccessCredentialtomanagethecloudresources(fmt.Sprintf("credentials-%s", name), TenantDn, nameAlias, cloudCredentialsAttr)
 
 	cloudCredentials.Status = "modified"
 

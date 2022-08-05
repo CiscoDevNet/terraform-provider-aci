@@ -19,7 +19,7 @@ Data source for ACI Tenant to Cloud Account association
 
 ## GUI Information ##
 
-* `Location` - Cloud APIC -> Application Management -> Tenants 
+* `Location` - Cloud APIC -> Application Management -> Tenants -> {tenant_name}
 
 
 
@@ -28,14 +28,14 @@ Data source for ACI Tenant to Cloud Account association
 ```hcl
 data "aci_tenant_to_cloud_account" "example" {
   tenant_dn  = aci_tenant.example.id
-  cloud_account_dn = aci_cloud_account_example.id
+  cloud_account_dn = aci_cloud_account.example.id
 }
 ```
 
 ## Argument Reference ##
 
 * `tenant_dn` - (Required) Distinguished name of the parent Tenant object.
-* `cloud_account_dn` - (Optional) Target-dn. The distinguished name of the target Tenant's Cloud Account object.
+* `cloud_account_dn` - (Optional) The distinguished name of the target Cloud Account object.
 
 ## Attribute Reference ##
 * `id` - Attribute id set to Dn of the Tenant to Cloud Account association object.

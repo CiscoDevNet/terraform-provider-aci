@@ -31,8 +31,7 @@ func resourceAciActiveDirectory() *schema.Resource {
 			},
 			"active_directory_id": {
 				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
+				Required: true,
 			},
 			"name": {
 				Type:     schema.TypeString,
@@ -58,7 +57,6 @@ func getRemoteActiveDirectory(client *client.Client, dn string) (*models.ActiveD
 func setActiveDirectoryAttributes(cloudAD *models.ActiveDirectory, d *schema.ResourceData) (*schema.ResourceData, error) {
 	dn := d.Id()
 	d.SetId(cloudAD.DistinguishedName)
-	d.Set("description", cloudAD.Description)
 	if dn != cloudAD.DistinguishedName {
 		d.Set("tenant_dn", "")
 	}
@@ -91,7 +89,6 @@ func resourceAciActiveDirectoryImport(d *schema.ResourceData, m interface{}) ([]
 func resourceAciActiveDirectoryCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] ActiveDirectory: Beginning Creation")
 	aciClient := m.(*client.Client)
-	desc := d.Get("description").(string)
 	active_directory_id := d.Get("active_directory_id").(string)
 	TenantDn := d.Get("tenant_dn").(string)
 
@@ -115,7 +112,7 @@ func resourceAciActiveDirectoryCreate(ctx context.Context, d *schema.ResourceDat
 	if Name, ok := d.GetOk("name"); ok {
 		cloudADAttr.Name = Name.(string)
 	}
-	cloudAD := models.NewActiveDirectory(fmt.Sprintf(models.RncloudAD, active_directory_id), TenantDn, desc, nameAlias, cloudADAttr)
+	cloudAD := models.NewActiveDirectory(fmt.Sprintf(models.RncloudAD, active_directory_id), TenantDn, nameAlias, cloudADAttr)
 
 	err := aciClient.Save(cloudAD)
 	if err != nil {
@@ -130,7 +127,6 @@ func resourceAciActiveDirectoryCreate(ctx context.Context, d *schema.ResourceDat
 func resourceAciActiveDirectoryUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] ActiveDirectory: Beginning Update")
 	aciClient := m.(*client.Client)
-	desc := d.Get("description").(string)
 	active_directory_id := d.Get("active_directory_id").(string)
 	TenantDn := d.Get("tenant_dn").(string)
 
@@ -154,7 +150,7 @@ func resourceAciActiveDirectoryUpdate(ctx context.Context, d *schema.ResourceDat
 	if Name, ok := d.GetOk("name"); ok {
 		cloudADAttr.Name = Name.(string)
 	}
-	cloudAD := models.NewActiveDirectory(fmt.Sprintf("ad-%s", active_directory_id), TenantDn, desc, nameAlias, cloudADAttr)
+	cloudAD := models.NewActiveDirectory(fmt.Sprintf("ad-%s", active_directory_id), TenantDn, nameAlias, cloudADAttr)
 
 	cloudAD.Status = "modified"
 
