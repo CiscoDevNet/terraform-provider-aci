@@ -121,6 +121,7 @@ func setTACACSSourceAttributes(tacacsSrc *models.TACACSSource, d *schema.Resourc
 	d.Set("min_sev", tacacsSrcMap["minSev"])
 	d.Set("name", tacacsSrcMap["name"])
 	d.Set("name_alias", tacacsSrcMap["nameAlias"])
+	d.Set("annotation", tacacsSrcMap["annotation"])
 	return d, nil
 }
 

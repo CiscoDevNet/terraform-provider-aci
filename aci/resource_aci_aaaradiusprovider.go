@@ -131,6 +131,7 @@ func setRADIUSProviderAttributes(radius_type string, aaaRadiusProvider *models.R
 	d.Set("retries", aaaRadiusProviderMap["retries"])
 	d.Set("timeout", aaaRadiusProviderMap["timeout"])
 	d.Set("name_alias", aaaRadiusProviderMap["nameAlias"])
+	d.Set("annotation", aaaRadiusProviderMap["annotation"])
 	return d, nil
 }
 

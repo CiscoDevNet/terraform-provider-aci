@@ -24,11 +24,19 @@ func resourceAciContractInterfaceRelationship() *schema.Resource {
 		},
 
 		SchemaVersion: 1,
-		Schema: AppendBaseAttrSchema(map[string]*schema.Schema{
+		Schema: map[string]*schema.Schema{
 			"application_epg_dn": {
 				Type:     schema.TypeString,
 				Required: true,
 				ForceNew: true,
+			},
+			"annotation": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+				DefaultFunc: func() (interface{}, error) {
+					return "orchestrator:terraform", nil
+				},
 			},
 			"prio": {
 				Type:     schema.TypeString,
@@ -49,7 +57,7 @@ func resourceAciContractInterfaceRelationship() *schema.Resource {
 				Required: true,
 				ForceNew: true,
 			},
-		}),
+		},
 	}
 }
 

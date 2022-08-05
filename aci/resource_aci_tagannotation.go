@@ -23,7 +23,7 @@ func resourceAciAnnotation() *schema.Resource {
 		},
 
 		SchemaVersion: 1,
-		Schema: AppendBaseAttrSchema(map[string]*schema.Schema{
+		Schema: map[string]*schema.Schema{
 			"parent_dn": {
 				Type:     schema.TypeString,
 				Required: true,
@@ -38,7 +38,7 @@ func resourceAciAnnotation() *schema.Resource {
 				Type:     schema.TypeString,
 				Required: true,
 			},
-		}),
+		},
 	}
 }
 

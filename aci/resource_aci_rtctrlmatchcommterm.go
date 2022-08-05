@@ -331,7 +331,7 @@ func resourceAciMatchCommunityTermRead(ctx context.Context, d *schema.ResourceDa
 			rtctrlMatchCommFactor, err := getRemoteMatchCommunityFactor(aciClient, dn)
 			if err != nil {
 				d.SetId("")
-				return diag.FromErr(err)
+				return nil
 			}
 			factorSet, err := setMatchCommunityFactorAttributes(rtctrlMatchCommFactor, make(map[string]string))
 			if err != nil {

@@ -63,7 +63,7 @@ func getRemoteUserRole(client *client.Client, dn string) (*models.UserRole, erro
 func setUserRoleAttributes(aaaUserRole *models.UserRole, d *schema.ResourceData) (*schema.ResourceData, error) {
 	d.SetId(aaaUserRole.DistinguishedName)
 	d.Set("description", aaaUserRole.Description)
-
+	d.Set("annotation", aaaUserRole.Annotation)
 	aaaUserRoleMap, err := aaaUserRole.ToMap()
 	if err != nil {
 		return nil, err
