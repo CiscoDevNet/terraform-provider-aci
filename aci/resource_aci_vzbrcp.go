@@ -26,7 +26,7 @@ func resourceAciContract() *schema.Resource {
 
 		SchemaVersion: 1,
 
-		Schema: AppendBaseAttrSchema(map[string]*schema.Schema{
+		Schema: AppendAttrSchemas(map[string]*schema.Schema{
 			"tenant_dn": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
@@ -114,7 +114,7 @@ func resourceAciContract() *schema.Resource {
 				Optional: true,
 				Computed: true,
 				Elem: &schema.Resource{
-					Schema: map[string]*schema.Schema{
+					Schema: AppendAttrSchemas(map[string]*schema.Schema{
 						"id": &schema.Schema{
 							Type:     schema.TypeString,
 							Computed: true,
@@ -123,18 +123,6 @@ func resourceAciContract() *schema.Resource {
 						"filter_name": &schema.Schema{
 							Type:     schema.TypeString,
 							Required: true,
-						},
-
-						"description": &schema.Schema{
-							Type:     schema.TypeString,
-							Optional: true,
-							Computed: true,
-						},
-
-						"annotation": &schema.Schema{
-							Type:     schema.TypeString,
-							Optional: true,
-							Computed: true,
 						},
 
 						"name_alias": &schema.Schema{
@@ -148,7 +136,7 @@ func resourceAciContract() *schema.Resource {
 							Optional: true,
 							Computed: true,
 							Elem: &schema.Resource{
-								Schema: map[string]*schema.Schema{
+								Schema: AppendAttrSchemas(map[string]*schema.Schema{
 									"id": &schema.Schema{
 										Type:     schema.TypeString,
 										Computed: true,
@@ -157,18 +145,6 @@ func resourceAciContract() *schema.Resource {
 									"filter_entry_name": &schema.Schema{
 										Type:     schema.TypeString,
 										Required: true,
-									},
-
-									"entry_description": &schema.Schema{
-										Type:     schema.TypeString,
-										Optional: true,
-										Computed: true,
-									},
-
-									"entry_annotation": &schema.Schema{
-										Type:     schema.TypeString,
-										Optional: true,
-										Computed: true,
 									},
 
 									"apply_to_frag": &schema.Schema{
@@ -419,10 +395,10 @@ func resourceAciContract() *schema.Resource {
 											"rst",
 										}, false),
 									},
-								},
+								}, GetBaseAttrSchema()),
 							},
 						},
-					},
+					}, GetBaseAttrSchema()),
 				},
 			},
 
@@ -439,7 +415,7 @@ func resourceAciContract() *schema.Resource {
 				Computed: true,
 				Elem:     &schema.Schema{Type: schema.TypeString},
 			},
-		}),
+		}, GetBaseAttrSchema()),
 	}
 }
 func getRemoteContract(client *client.Client, dn string) (*models.Contract, error) {
@@ -560,14 +536,14 @@ func setFilterEntryAttributesFromContract(vzentry *models.FilterEntry, d *schema
 		"unspecified": "0",
 	}
 	eMap["id"] = vzentry.DistinguishedName
-	eMap["entry_description"] = vzentry.Description
+	eMap["description"] = vzentry.Description
 
 	vzEntryMap, err := vzentry.ToMap()
 	if err != nil {
 		return eMap, err
 	}
 	eMap["filter_entry_name"] = vzEntryMap["name"]
-	eMap["entry_annotation"] = vzEntryMap["annotation"]
+	eMap["annotation"] = vzEntryMap["annotation"]
 	eMap["apply_to_frag"] = vzEntryMap["applyToFrag"]
 	eMap["arp_opc"] = vzEntryMap["arpOpc"]
 	eMap["ether_t"] = vzEntryMap["etherT"]
@@ -690,14 +666,14 @@ func resourceAciContractCreate(ctx context.Context, d *schema.ResourceData, m in
 					vzEntry := entry.(map[string]interface{})
 
 					log.Println("Entries ......... :", vzEntry)
-					entryDesc := vzEntry["entry_description"].(string)
+					entryDesc := vzEntry["description"].(string)
 
 					entryName := vzEntry["filter_entry_name"].(string)
 
 					filterDn := vzFilter.DistinguishedName
 
-					if vzEntry["entry_annotation"] != nil {
-						vzEntryAttr.Annotation = vzEntry["entry_annotation"].(string)
+					if vzEntry["annotation"] != nil {
+						vzEntryAttr.Annotation = vzEntry["annotation"].(string)
 					}
 					if vzEntry["apply_to_frag"] != nil {
 						vzEntryAttr.ApplyToFrag = vzEntry["apply_to_frag"].(string)
@@ -879,14 +855,14 @@ func resourceAciContractUpdate(ctx context.Context, d *schema.ResourceData, m in
 					vzEntry := entry.(map[string]interface{})
 
 					log.Println("Entries ......... :", vzEntry)
-					entryDesc := vzEntry["entry_description"].(string)
+					entryDesc := vzEntry["description"].(string)
 
 					entryName := vzEntry["filter_entry_name"].(string)
 
 					filterDn := vzFilter.DistinguishedName
 
-					if vzEntry["entry_annotation"] != nil {
-						vzEntryAttr.Annotation = vzEntry["entry_annotation"].(string)
+					if vzEntry["annotation"] != nil {
+						vzEntryAttr.Annotation = vzEntry["annotation"].(string)
 					}
 					if vzEntry["apply_to_frag"] != nil {
 						vzEntryAttr.ApplyToFrag = vzEntry["apply_to_frag"].(string)
@@ -1002,23 +978,31 @@ func resourceAciContractRead(ctx context.Context, d *schema.ResourceData, m inte
 	}
 	filters := d.Get("filter_ids").([]interface{})
 	log.Println("Check ... :", filters)
+
 	vzFilters := make([]*models.Filter, 0, 1)
 	vzEntries := make([]*models.FilterEntry, 0, 1)
-	for _, val := range filters {
-		filterDN := val.(string)
-		vzfilter, err := getRemoteFilterFromContract(aciClient, filterDN)
-		if err == nil {
-			for _, entry := range d.Get("filter_entry_ids").([]interface{}) {
-				if strings.Contains(entry.(string), filterDN) {
-					vzentry, err := getRemoteFilterEntryFromContract(aciClient, entry.(string))
-					if err == nil {
-						vzEntries = append(vzEntries, vzentry)
+
+	if len(filters) == 0 {
+		d.Set("filter_ids", make([]string, 0, 1))
+		d.Set("filter_entry_ids", make([]string, 0, 1))
+	} else {
+		for _, val := range filters {
+			filterDN := val.(string)
+			vzfilter, err := getRemoteFilterFromContract(aciClient, filterDN)
+			if err == nil {
+				for _, entry := range d.Get("filter_entry_ids").([]interface{}) {
+					if strings.Contains(entry.(string), filterDN) {
+						vzentry, err := getRemoteFilterEntryFromContract(aciClient, entry.(string))
+						if err == nil {
+							vzEntries = append(vzEntries, vzentry)
+						}
 					}
 				}
+				vzFilters = append(vzFilters, vzfilter)
 			}
-			vzFilters = append(vzFilters, vzfilter)
 		}
 	}
+
 	_, err = setFilterAttributesFromContract(vzFilters, vzEntries, d)
 	if err != nil {
 		d.SetId("")
