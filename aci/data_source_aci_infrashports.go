@@ -65,7 +65,7 @@ func dataSourceAciSpineAccessPortSelectorRead(ctx context.Context, d *schema.Res
 	// infraRsSpAccGrp - Beginning Read
 	log.Printf("[DEBUG] %s: infraRsSpAccGrp - Beginning Read with parent DN", dn)
 	_, err = getAndSetReadRelationinfraRsSpAccGrp(aciClient, dn, d)
-	if err != nil {
+	if err == nil {
 		log.Printf("[DEBUG] %s: infraRsSpAccGrp - Read finished successfully", d.Get("relation_infra_rs_sp_acc_grp"))
 	}
 	// infraRsSpAccGrp - Read finished successfully

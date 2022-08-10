@@ -124,7 +124,7 @@ func resourceAciSpineAccessPortSelectorImport(d *schema.ResourceData, m interfac
 	// infraRsSpAccGrp - Beginning Import
 	log.Printf("[DEBUG] %s: infraRsSpAccGrp - Beginning Import with parent DN", dn)
 	_, err = getAndSetReadRelationinfraRsSpAccGrp(aciClient, dn, d)
-	if err != nil {
+	if err == nil {
 		log.Printf("[DEBUG] %s: infraRsSpAccGrp - Import finished successfully", d.Get("relation_infra_rs_sp_acc_grp"))
 	}
 	// infraRsSpAccGrp - Import finished successfully
@@ -280,7 +280,7 @@ func resourceAciSpineAccessPortSelectorRead(ctx context.Context, d *schema.Resou
 	// infraRsSpAccGrp - Beginning Read
 	log.Printf("[DEBUG] %s: infraRsSpAccGrp - Beginning Read with parent DN", dn)
 	_, err = getAndSetReadRelationinfraRsSpAccGrp(aciClient, dn, d)
-	if err != nil {
+	if err == nil {
 		log.Printf("[DEBUG] %s: infraRsSpAccGrp - Read finished successfully", d.Get("relation_infra_rs_sp_acc_grp"))
 	}
 	// infraRsSpAccGrp - Read finished successfully

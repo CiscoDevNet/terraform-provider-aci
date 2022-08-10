@@ -74,7 +74,7 @@ func dataSourceAciAccessPortSelectorRead(ctx context.Context, d *schema.Resource
 	// infraRsAccBaseGrp - Beginning Read
 	log.Printf("[DEBUG] %s: infraRsAccBaseGrp - Beginning Read with parent DN", dn)
 	_, err = getAndSetReadRelationinfraRsAccBaseGrpFromAccessPortSelector(aciClient, dn, d)
-	if err != nil {
+	if err == nil {
 		log.Printf("[DEBUG] %s: infraRsAccBaseGrp - Read finished successfully", d.Get("relation_infra_rs_acc_base_grp"))
 	}
 	// infraRsAccBaseGrp - Read finished successfully

@@ -177,7 +177,7 @@ func resourceAciSpineSwitchPolicyGroupImport(d *schema.ResourceData, m interface
 	// infraRsIaclSpineProfile - Beginning Import
 	log.Printf("[DEBUG] %s: infraRsIaclSpineProfile - Beginning Import with parent DN", dn)
 	_, err = getAndSetReadRelationinfraRsIaclSpineProfile(aciClient, dn, d)
-	if err != nil {
+	if err == nil {
 		log.Printf("[DEBUG] %s: infraRsIaclSpineProfile - Import finished successfully", d.Get("relation_infra_rs_iacl_spine_profile"))
 	}
 	// infraRsIaclSpineProfile - Import finished successfully
@@ -185,7 +185,7 @@ func resourceAciSpineSwitchPolicyGroupImport(d *schema.ResourceData, m interface
 	// infraRsSpineBfdIpv4InstPol - Beginning Import
 	log.Printf("[DEBUG] %s: infraRsSpineBfdIpv4InstPol - Beginning Import with parent DN", dn)
 	_, err = getAndSetReadRelationinfraRsSpineBfdIpv4InstPol(aciClient, dn, d)
-	if err != nil {
+	if err == nil {
 		log.Printf("[DEBUG] %s: infraRsSpineBfdIpv4InstPol - Import finished successfully", d.Get("relation_infra_rs_spine_bfd_ipv4_inst_pol"))
 	}
 	// infraRsSpineBfdIpv4InstPol - Import finished successfully
@@ -193,7 +193,7 @@ func resourceAciSpineSwitchPolicyGroupImport(d *schema.ResourceData, m interface
 	// infraRsSpineBfdIpv6InstPol - Beginning Import
 	log.Printf("[DEBUG] %s: infraRsSpineBfdIpv6InstPol - Beginning Import with parent DN", dn)
 	_, err = getAndSetReadRelationinfraRsSpineBfdIpv6InstPol(aciClient, dn, d)
-	if err != nil {
+	if err == nil {
 		log.Printf("[DEBUG] %s: infraRsSpineBfdIpv6InstPol - Import finished successfully", d.Get("relation_infra_rs_spine_bfd_ipv6_inst_pol"))
 	}
 	// infraRsSpineBfdIpv6InstPol - Import finished successfully
@@ -201,7 +201,7 @@ func resourceAciSpineSwitchPolicyGroupImport(d *schema.ResourceData, m interface
 	// infraRsSpineCoppProfile - Beginning Import
 	log.Printf("[DEBUG] %s: infraRsSpineCoppProfile - Beginning Import with parent DN", dn)
 	_, err = getAndSetReadRelationinfraRsSpineCoppProfile(aciClient, dn, d)
-	if err != nil {
+	if err == nil {
 		log.Printf("[DEBUG] %s: infraRsSpineCoppProfile - Import finished successfully", d.Get("relation_infra_rs_spine_copp_profile"))
 	}
 	// infraRsSpineCoppProfile - Import finished successfully
@@ -209,7 +209,7 @@ func resourceAciSpineSwitchPolicyGroupImport(d *schema.ResourceData, m interface
 	// infraRsSpinePGrpToCdpIfPol - Beginning Import
 	log.Printf("[DEBUG] %s: infraRsSpinePGrpToCdpIfPol - Beginning Import with parent DN", dn)
 	_, err = getAndSetReadRelationinfraRsSpinePGrpToCdpIfPol(aciClient, dn, d)
-	if err != nil {
+	if err == nil {
 		log.Printf("[DEBUG] %s: infraRsSpinePGrpToCdpIfPol - Import finished successfully", d.Get("relation_infra_rs_spine_p_grp_to_cdp_if_pol"))
 	}
 	// infraRsSpinePGrpToCdpIfPol - Import finished successfully
@@ -217,7 +217,7 @@ func resourceAciSpineSwitchPolicyGroupImport(d *schema.ResourceData, m interface
 	// infraRsSpinePGrpToLldpIfPol - Beginning Import
 	log.Printf("[DEBUG] %s: infraRsSpinePGrpToLldpIfPol - Beginning Import with parent DN", dn)
 	_, err = getAndSetReadRelationinfraRsSpinePGrpToLldpIfPol(aciClient, dn, d)
-	if err != nil {
+	if err == nil {
 		log.Printf("[DEBUG] %s: infraRsSpinePGrpToLldpIfPol - Import finished successfully", d.Get("relation_infra_rs_spine_p_grp_to_lldp_if_pol"))
 	}
 	// infraRsSpinePGrpToLldpIfPol - Import finished successfully
@@ -515,7 +515,7 @@ func resourceAciSpineSwitchPolicyGroupRead(ctx context.Context, d *schema.Resour
 	// infraRsIaclSpineProfile - Beginning Read
 	log.Printf("[DEBUG] %s: infraRsIaclSpineProfile - Beginning Read with parent DN", dn)
 	_, err = getAndSetReadRelationinfraRsIaclSpineProfile(aciClient, dn, d)
-	if err != nil {
+	if err == nil {
 		log.Printf("[DEBUG] %s: infraRsIaclSpineProfile - Read finished successfully", d.Get("relation_infra_rs_iacl_spine_profile"))
 	}
 	// infraRsIaclSpineProfile - Read finished successfully
@@ -523,7 +523,7 @@ func resourceAciSpineSwitchPolicyGroupRead(ctx context.Context, d *schema.Resour
 	// infraRsSpineBfdIpv4InstPol - Beginning Read
 	log.Printf("[DEBUG] %s: infraRsSpineBfdIpv4InstPol - Beginning Read with parent DN", dn)
 	_, err = getAndSetReadRelationinfraRsSpineBfdIpv4InstPol(aciClient, dn, d)
-	if err != nil {
+	if err == nil {
 		log.Printf("[DEBUG] %s: infraRsSpineBfdIpv4InstPol - Read finished successfully", d.Get("relation_infra_rs_spine_bfd_ipv4_inst_pol"))
 	}
 	// infraRsSpineBfdIpv4InstPol - Read finished successfully
@@ -531,7 +531,7 @@ func resourceAciSpineSwitchPolicyGroupRead(ctx context.Context, d *schema.Resour
 	// infraRsSpineBfdIpv6InstPol - Beginning Read
 	log.Printf("[DEBUG] %s: infraRsSpineBfdIpv6InstPol - Beginning Read with parent DN", dn)
 	_, err = getAndSetReadRelationinfraRsSpineBfdIpv6InstPol(aciClient, dn, d)
-	if err != nil {
+	if err == nil {
 		log.Printf("[DEBUG] %s: infraRsSpineBfdIpv6InstPol - Read finished successfully", d.Get("relation_infra_rs_spine_bfd_ipv6_inst_pol"))
 	}
 	// infraRsSpineBfdIpv6InstPol - Read finished successfully
@@ -539,7 +539,7 @@ func resourceAciSpineSwitchPolicyGroupRead(ctx context.Context, d *schema.Resour
 	// infraRsSpineCoppProfile - Beginning Read
 	log.Printf("[DEBUG] %s: infraRsSpineCoppProfile - Beginning Read with parent DN", dn)
 	_, err = getAndSetReadRelationinfraRsSpineCoppProfile(aciClient, dn, d)
-	if err != nil {
+	if err == nil {
 		log.Printf("[DEBUG] %s: infraRsSpineCoppProfile - Read finished successfully", d.Get("relation_infra_rs_spine_copp_profile"))
 	}
 	// infraRsSpineCoppProfile - Read finished successfully
@@ -547,7 +547,7 @@ func resourceAciSpineSwitchPolicyGroupRead(ctx context.Context, d *schema.Resour
 	// infraRsSpinePGrpToCdpIfPol - Beginning Read
 	log.Printf("[DEBUG] %s: infraRsSpinePGrpToCdpIfPol - Beginning Read with parent DN", dn)
 	_, err = getAndSetReadRelationinfraRsSpinePGrpToCdpIfPol(aciClient, dn, d)
-	if err != nil {
+	if err == nil {
 		log.Printf("[DEBUG] %s: infraRsSpinePGrpToCdpIfPol - Read finished successfully", d.Get("relation_infra_rs_spine_p_grp_to_cdp_if_pol"))
 	}
 	// infraRsSpinePGrpToCdpIfPol - Read finished successfully
@@ -555,7 +555,7 @@ func resourceAciSpineSwitchPolicyGroupRead(ctx context.Context, d *schema.Resour
 	// infraRsSpinePGrpToLldpIfPol - Beginning Read
 	log.Printf("[DEBUG] %s: infraRsSpinePGrpToLldpIfPol - Beginning Read with parent DN", dn)
 	_, err = getAndSetReadRelationinfraRsSpinePGrpToLldpIfPol(aciClient, dn, d)
-	if err != nil {
+	if err == nil {
 		log.Printf("[DEBUG] %s: infraRsSpinePGrpToLldpIfPol - Read finished successfully", d.Get("relation_infra_rs_spine_p_grp_to_lldp_if_pol"))
 	}
 	// infraRsSpinePGrpToLldpIfPol - Read finished successfully

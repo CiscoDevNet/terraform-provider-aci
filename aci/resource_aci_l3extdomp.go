@@ -184,7 +184,7 @@ func resourceAciL3DomainProfileImport(d *schema.ResourceData, m interface{}) ([]
 	// infraRsVlanNs - Beginning Import
 	log.Printf("[DEBUG] %s: infraRsVlanNs - Beginning Import with parent DN", dn)
 	_, err = getAndSetReadRelationinfraRsVlanNsFromL3DomainProfile(aciClient, dn, d)
-	if err != nil {
+	if err == nil {
 		log.Printf("[DEBUG] %s: infraRsVlanNs - Import finished successfully", d.Get("relation_infra_rs_vlan_ns"))
 	}
 	// infraRsVlanNs - Import finished successfully
@@ -192,7 +192,7 @@ func resourceAciL3DomainProfileImport(d *schema.ResourceData, m interface{}) ([]
 	// infraRsVlanNsDef - Beginning Import
 	log.Printf("[DEBUG] %s: infraRsVlanNsDef - Beginning Import with parent DN", dn)
 	_, err = getAndSetReadRelationinfraRsVlanNsDefFromL3DomainProfile(aciClient, dn, d)
-	if err != nil {
+	if err == nil {
 		log.Printf("[DEBUG] %s: infraRsVlanNsDef - Import finished successfully", d.Get("relation_infra_rs_vlan_ns_def"))
 	}
 	// infraRsVlanNsDef - Import finished successfully
@@ -200,7 +200,7 @@ func resourceAciL3DomainProfileImport(d *schema.ResourceData, m interface{}) ([]
 	// infraRsVipAddrNs - Beginning Import
 	log.Printf("[DEBUG] %s: infraRsVipAddrNs - Beginning Import with parent DN", dn)
 	_, err = getAndSetReadRelationinfraRsVipAddrNsFromL3DomainProfile(aciClient, dn, d)
-	if err != nil {
+	if err == nil {
 		log.Printf("[DEBUG] %s: infraRsVipAddrNs - Import finished successfully", d.Get("relation_infra_rs_vip_addr_ns"))
 	}
 	// infraRsVipAddrNs - Import finished successfully
@@ -208,7 +208,7 @@ func resourceAciL3DomainProfileImport(d *schema.ResourceData, m interface{}) ([]
 	// extnwRsOut - Beginning Import
 	log.Printf("[DEBUG] %s: extnwRsOut - Beginning Import with parent DN", dn)
 	_, err = getAndSetReadRelationextnwRsOutFromL3DomainProfile(aciClient, dn, d)
-	if err != nil {
+	if err == nil {
 		log.Printf("[DEBUG] %s: extnwRsOut - Import finished successfully", d.Get("relation_extnw_rs_out"))
 	}
 	// extnwRsOut - Import finished successfully
@@ -216,7 +216,7 @@ func resourceAciL3DomainProfileImport(d *schema.ResourceData, m interface{}) ([]
 	// infraRsDomVxlanNsDef - Beginning Import
 	log.Printf("[DEBUG] %s: infraRsDomVxlanNsDef - Beginning Import with parent DN", dn)
 	_, err = getAndSetReadRelationinfraRsDomVxlanNsDefFromL3DomainProfile(aciClient, dn, d)
-	if err != nil {
+	if err == nil {
 		log.Printf("[DEBUG] %s: infraRsDomVxlanNsDef - Import finished successfully", d.Get("relation_infra_rs_dom_vxlan_ns_def"))
 	}
 	// infraRsDomVxlanNsDef - Import finished successfully
@@ -474,7 +474,7 @@ func resourceAciL3DomainProfileRead(ctx context.Context, d *schema.ResourceData,
 	// infraRsVlanNs - Beginning Read
 	log.Printf("[DEBUG] %s: infraRsVlanNs - Beginning Read with parent DN", dn)
 	_, err = getAndSetReadRelationinfraRsVlanNsFromL3DomainProfile(aciClient, dn, d)
-	if err != nil {
+	if err == nil {
 		log.Printf("[DEBUG] %s: infraRsVlanNs - Read finished successfully", d.Get("relation_infra_rs_vlan_ns"))
 	}
 	// infraRsVlanNs - Read finished successfully
@@ -482,7 +482,7 @@ func resourceAciL3DomainProfileRead(ctx context.Context, d *schema.ResourceData,
 	// infraRsVlanNsDef - Beginning Read
 	log.Printf("[DEBUG] %s: infraRsVlanNsDef - Beginning Read with parent DN", dn)
 	_, err = getAndSetReadRelationinfraRsVlanNsDefFromL3DomainProfile(aciClient, dn, d)
-	if err != nil {
+	if err == nil {
 		log.Printf("[DEBUG] %s: infraRsVlanNsDef - Read finished successfully", d.Get("relation_infra_rs_vlan_ns_def"))
 	}
 	// infraRsVlanNsDef - Read finished successfully
@@ -490,7 +490,7 @@ func resourceAciL3DomainProfileRead(ctx context.Context, d *schema.ResourceData,
 	// infraRsVipAddrNs - Beginning Read
 	log.Printf("[DEBUG] %s: infraRsVipAddrNs - Beginning Read with parent DN", dn)
 	_, err = getAndSetReadRelationinfraRsVipAddrNsFromL3DomainProfile(aciClient, dn, d)
-	if err != nil {
+	if err == nil {
 		log.Printf("[DEBUG] %s: infraRsVipAddrNs - Read finished successfully", d.Get("relation_infra_rs_vip_addr_ns"))
 	}
 	// infraRsVipAddrNs - Read finished successfully
@@ -498,7 +498,7 @@ func resourceAciL3DomainProfileRead(ctx context.Context, d *schema.ResourceData,
 	// extnwRsOut - Beginning Read
 	log.Printf("[DEBUG] %s: extnwRsOut - Beginning Read with parent DN", dn)
 	_, err = getAndSetReadRelationextnwRsOutFromL3DomainProfile(aciClient, dn, d)
-	if err != nil {
+	if err == nil {
 		log.Printf("[DEBUG] %s: extnwRsOut - Read finished successfully", d.Get("relation_extnw_rs_out"))
 	}
 	// extnwRsOut - Read finished successfully
@@ -506,7 +506,7 @@ func resourceAciL3DomainProfileRead(ctx context.Context, d *schema.ResourceData,
 	// infraRsDomVxlanNsDef - Beginning Read
 	log.Printf("[DEBUG] %s: infraRsDomVxlanNsDef - Beginning Read with parent DN", dn)
 	_, err = getAndSetReadRelationinfraRsDomVxlanNsDefFromL3DomainProfile(aciClient, dn, d)
-	if err != nil {
+	if err == nil {
 		log.Printf("[DEBUG] %s: infraRsDomVxlanNsDef - Read finished successfully", d.Get("relation_infra_rs_dom_vxlan_ns_def"))
 	}
 	// infraRsDomVxlanNsDef - Read finished successfully

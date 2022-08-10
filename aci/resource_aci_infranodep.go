@@ -292,7 +292,7 @@ func resourceAciLeafProfileImport(d *schema.ResourceData, m interface{}) ([]*sch
 	// infraRsAccCardP - Beginning Import
 	log.Printf("[DEBUG] %s: infraRsAccCardP - Beginning Import with parent DN", dn)
 	_, err = getAndSetReadRelationinfraRsAccCardPFromLeafProfile(aciClient, dn, d)
-	if err != nil {
+	if err == nil {
 		log.Printf("[DEBUG] %s: infraRsAccCardP - Import finished successfully", d.Get("relation_infra_rs_acc_card_p"))
 	}
 	// infraRsAccCardP - Import finished successfully
@@ -300,7 +300,7 @@ func resourceAciLeafProfileImport(d *schema.ResourceData, m interface{}) ([]*sch
 	// infraRsAccPortP - Beginning Import
 	log.Printf("[DEBUG] %s: infraRsAccPortP - Beginning Import with parent DN", dn)
 	_, err = getAndSetReadRelationinfraRsAccPortPFromLeafProfile(aciClient, dn, d)
-	if err != nil {
+	if err == nil {
 		log.Printf("[DEBUG] %s: infraRsAccPortP - Import finished successfully", d.Get("relation_infra_rs_acc_port_p"))
 	}
 	// infraRsAccPortP - Import finished successfully
@@ -686,7 +686,7 @@ func resourceAciLeafProfileRead(ctx context.Context, d *schema.ResourceData, m i
 	// infraRsAccCardP - Beginning Read
 	log.Printf("[DEBUG] %s: infraRsAccCardP - Beginning Read with parent DN", dn)
 	_, err = getAndSetReadRelationinfraRsAccCardPFromLeafProfile(aciClient, dn, d)
-	if err != nil {
+	if err == nil {
 		log.Printf("[DEBUG] %s: infraRsAccCardP - Read finished successfully", d.Get("relation_infra_rs_acc_card_p"))
 	}
 	// infraRsAccCardP - Read finished successfully
@@ -694,7 +694,7 @@ func resourceAciLeafProfileRead(ctx context.Context, d *schema.ResourceData, m i
 	// infraRsAccPortP - Beginning Read
 	log.Printf("[DEBUG] %s: infraRsAccPortP - Beginning Read with parent DN", dn)
 	_, err = getAndSetReadRelationinfraRsAccPortPFromLeafProfile(aciClient, dn, d)
-	if err != nil {
+	if err == nil {
 		log.Printf("[DEBUG] %s: infraRsAccPortP - Read finished successfully", d.Get("relation_infra_rs_acc_port_p"))
 	}
 	// infraRsAccPortP - Read finished successfully

@@ -77,7 +77,7 @@ func dataSourceAciPhysicalDomainRead(ctx context.Context, d *schema.ResourceData
 	// infraRsVlanNs - Beginning Read
 	log.Printf("[DEBUG] %s: infraRsVlanNs - Beginning Read with parent DN", dn)
 	_, err = getAndSetRelationinfraRsVlanNsFromPhysicalDomain(aciClient, dn, d)
-	if err != nil {
+	if err == nil {
 		log.Printf("[DEBUG] %s: infraRsVlanNs - Read finished successfully", d.Get("relation_infra_rs_vlan_ns"))
 	}
 	// infraRsVlanNs - Read finished successfully
@@ -85,7 +85,7 @@ func dataSourceAciPhysicalDomainRead(ctx context.Context, d *schema.ResourceData
 	// infraRsVlanNsDef - Beginning Read
 	log.Printf("[DEBUG] %s: infraRsVlanNsDef - Beginning Read with parent DN", dn)
 	_, err = getAndSetRelationinfraRsVlanNsDefFromPhysicalDomain(aciClient, dn, d)
-	if err != nil {
+	if err == nil {
 		log.Printf("[DEBUG] %s: infraRsVlanNsDef - Read finished successfully", d.Get("relation_infra_rs_vlan_ns_def"))
 	}
 	// infraRsVlanNsDef - Read finished successfully
@@ -93,7 +93,7 @@ func dataSourceAciPhysicalDomainRead(ctx context.Context, d *schema.ResourceData
 	// infraRsVipAddrNs - Beginning Read
 	log.Printf("[DEBUG] %s: infraRsVipAddrNs - Beginning Read with parent DN", dn)
 	_, err = getAndSetRelationinfraRsVipAddrNsFromPhysicalDomain(aciClient, dn, d)
-	if err != nil {
+	if err == nil {
 		log.Printf("[DEBUG] %s: infraRsVipAddrNs - Read finished successfully", d.Get("relation_infra_rs_vip_addr_ns"))
 	}
 	// infraRsVipAddrNs - Read finished successfully
@@ -101,7 +101,7 @@ func dataSourceAciPhysicalDomainRead(ctx context.Context, d *schema.ResourceData
 	// infraRsDomVxlanNsDef - Beginning Read
 	log.Printf("[DEBUG] %s: infraRsDomVxlanNsDef - Beginning Read with parent DN", dn)
 	_, err = getAndSetRelationinfraRsDomVxlanNsDefFromPhysicalDomain(aciClient, dn, d)
-	if err != nil {
+	if err == nil {
 		log.Printf("[DEBUG] %s: infraRsDomVxlanNsDef - Read finished successfully", d.Get("relation_infra_rs_dom_vxlan_ns_def"))
 	}
 	// infraRsDomVxlanNsDef - Read finished successfully

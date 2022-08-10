@@ -161,7 +161,7 @@ func dataSourceAciLeafProfileRead(ctx context.Context, d *schema.ResourceData, m
 	// infraRsAccCardP - Beginning Read
 	log.Printf("[DEBUG] %s: infraRsAccCardP - Beginning Read with parent DN", dn)
 	_, err = getAndSetReadRelationinfraRsAccCardPFromLeafProfile(aciClient, dn, d)
-	if err != nil {
+	if err == nil {
 		log.Printf("[DEBUG] %s: infraRsAccCardP - Read finished successfully", d.Get("relation_infra_rs_acc_card_p"))
 	}
 	// infraRsAccCardP - Read finished successfully
@@ -169,7 +169,7 @@ func dataSourceAciLeafProfileRead(ctx context.Context, d *schema.ResourceData, m
 	// infraRsAccPortP - Beginning Read
 	log.Printf("[DEBUG] %s: infraRsAccPortP - Beginning Read with parent DN", dn)
 	_, err = getAndSetReadRelationinfraRsAccPortPFromLeafProfile(aciClient, dn, d)
-	if err != nil {
+	if err == nil {
 		log.Printf("[DEBUG] %s: infraRsAccPortP - Read finished successfully", d.Get("relation_infra_rs_acc_port_p"))
 	}
 	// infraRsAccPortP - Read finished successfully

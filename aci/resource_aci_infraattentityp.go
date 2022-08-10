@@ -110,7 +110,7 @@ func resourceAciAttachableAccessEntityProfileImport(d *schema.ResourceData, m in
 	// infraRsDomP - Beginning Import
 	log.Printf("[DEBUG] %s: infraRsDomP - Beginning Import with parent DN", dn)
 	_, err = getAndSetReadRelationinfraRsDomPFromAttachableAccessEntityProfile(aciClient, dn, d)
-	if err != nil {
+	if err == nil {
 		log.Printf("[DEBUG] %s: infraRsDomP - Import finished successfully", d.Get("relation_infra_rs_dom_p"))
 	}
 	// infraRsDomP - Import finished successfully
@@ -278,7 +278,7 @@ func resourceAciAttachableAccessEntityProfileRead(ctx context.Context, d *schema
 	// infraRsDomP - Beginning Read
 	log.Printf("[DEBUG] %s: infraRsDomP - Beginning Read with parent DN", dn)
 	_, err = getAndSetReadRelationinfraRsDomPFromAttachableAccessEntityProfile(aciClient, dn, d)
-	if err != nil {
+	if err == nil {
 		log.Printf("[DEBUG] %s: infraRsDomP - Read finished successfully", d.Get("relation_infra_rs_dom_p"))
 	}
 	// infraRsDomP - Read finished successfully

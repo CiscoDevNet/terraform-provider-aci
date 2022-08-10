@@ -382,7 +382,7 @@ func resourceAciAccessSwitchPolicyGroupImport(d *schema.ResourceData, m interfac
 	// infraRsBfdIpv4InstPol - Beginning Import
 	log.Printf("[DEBUG] %s: infraRsBfdIpv4InstPol - Beginning Import with parent DN", dn)
 	_, err = getAndSetReadRelationinfraRsBfdIpv4InstPol(aciClient, dn, d)
-	if err != nil {
+	if err == nil {
 		log.Printf("[DEBUG] %s: infraRsBfdIpv4InstPol - Import finished successfully", d.Get("relation_infra_rs_bfd_ipv4_inst_pol"))
 	}
 	// infraRsBfdIpv4InstPol - Import finished successfully
@@ -390,7 +390,7 @@ func resourceAciAccessSwitchPolicyGroupImport(d *schema.ResourceData, m interfac
 	// infraRsBfdIpv6InstPol - Beginning Import
 	log.Printf("[DEBUG] %s: infraRsBfdIpv6InstPol - Beginning Import with parent DN", dn)
 	_, err = getAndSetReadRelationinfraRsBfdIpv6InstPol(aciClient, dn, d)
-	if err != nil {
+	if err == nil {
 		log.Printf("[DEBUG] %s: infraRsBfdIpv6InstPol - Import finished successfully", d.Get("relation_infra_rs_bfd_ipv6_inst_pol"))
 	}
 	// infraRsBfdIpv6InstPol - Import finished successfully
@@ -398,7 +398,7 @@ func resourceAciAccessSwitchPolicyGroupImport(d *schema.ResourceData, m interfac
 	// infraRsBfdMhIpv4InstPol - Beginning Import
 	log.Printf("[DEBUG] %s: infraRsBfdMhIpv4InstPol - Beginning Import with parent DN", dn)
 	_, err = getAndSetReadRelationinfraRsBfdMhIpv4InstPol(aciClient, dn, d)
-	if err != nil {
+	if err == nil {
 		log.Printf("[DEBUG] %s: infraRsBfdMhIpv4InstPol - Import finished successfully", d.Get("relation_infra_rs_bfd_mh_ipv4_inst_pol"))
 	}
 	// infraRsBfdMhIpv4InstPol - Import finished successfully
@@ -406,7 +406,7 @@ func resourceAciAccessSwitchPolicyGroupImport(d *schema.ResourceData, m interfac
 	// infraRsBfdMhIpv6InstPol - Beginning Import
 	log.Printf("[DEBUG] %s: infraRsBfdMhIpv6InstPol - Beginning Import with parent DN", dn)
 	_, err = getAndSetReadRelationinfraRsBfdMhIpv6InstPol(aciClient, dn, d)
-	if err != nil {
+	if err == nil {
 		log.Printf("[DEBUG] %s: infraRsBfdMhIpv6InstPol - Import finished successfully", d.Get("relation_infra_rs_bfd_mh_ipv6_inst_pol"))
 	}
 	// infraRsBfdMhIpv6InstPol - Import finished successfully
@@ -414,7 +414,7 @@ func resourceAciAccessSwitchPolicyGroupImport(d *schema.ResourceData, m interfac
 	// infraRsEquipmentFlashConfigPol - Beginning Import
 	log.Printf("[DEBUG] %s: infraRsEquipmentFlashConfigPol - Beginning Import with parent DN", dn)
 	_, err = getAndSetReadRelationinfraRsEquipmentFlashConfigPol(aciClient, dn, d)
-	if err != nil {
+	if err == nil {
 		log.Printf("[DEBUG] %s: infraRsEquipmentFlashConfigPol - Import finished successfully", d.Get("relation_infra_rs_equipment_flash_config_pol"))
 	}
 	// infraRsEquipmentFlashConfigPol - Import finished successfully
@@ -422,7 +422,7 @@ func resourceAciAccessSwitchPolicyGroupImport(d *schema.ResourceData, m interfac
 	// infraRsFcFabricPol - Beginning Import
 	log.Printf("[DEBUG] %s: infraRsFcFabricPol - Beginning Import with parent DN", dn)
 	_, err = getAndSetReadRelationinfraRsFcFabricPol(aciClient, dn, d)
-	if err != nil {
+	if err == nil {
 		log.Printf("[DEBUG] %s: infraRsFcFabricPol - Import finished successfully", d.Get("relation_infra_rs_fc_fabric_pol"))
 	}
 	// infraRsFcFabricPol - Import finished successfully
@@ -430,7 +430,7 @@ func resourceAciAccessSwitchPolicyGroupImport(d *schema.ResourceData, m interfac
 	// infraRsFcInstPol - Beginning Import
 	log.Printf("[DEBUG] %s: infraRsFcInstPol - Beginning Import with parent DN", dn)
 	_, err = getAndSetReadRelationinfraRsFcInstPol(aciClient, dn, d)
-	if err != nil {
+	if err == nil {
 		log.Printf("[DEBUG] %s: infraRsFcInstPol - Import finished successfully", d.Get("relation_infra_rs_fc_inst_pol"))
 	}
 	// infraRsFcInstPol - Import finished successfully
@@ -438,7 +438,7 @@ func resourceAciAccessSwitchPolicyGroupImport(d *schema.ResourceData, m interfac
 	// infraRsIaclLeafProfile - Beginning Import
 	log.Printf("[DEBUG] %s: infraRsIaclLeafProfile - Beginning Import with parent DN", dn)
 	_, err = getAndSetReadRelationinfraRsIaclLeafProfile(aciClient, dn, d)
-	if err != nil {
+	if err == nil {
 		log.Printf("[DEBUG] %s: infraRsIaclLeafProfile - Import finished successfully", d.Get("relation_infra_rs_iacl_leaf_profile"))
 	}
 	// infraRsIaclLeafProfile - Import finished successfully
@@ -446,7 +446,7 @@ func resourceAciAccessSwitchPolicyGroupImport(d *schema.ResourceData, m interfac
 	// infraRsL2NodeAuthPol - Beginning Import
 	log.Printf("[DEBUG] %s: infraRsL2NodeAuthPol - Beginning Import with parent DN", dn)
 	_, err = getAndSetReadRelationinfraRsL2NodeAuthPol(aciClient, dn, d)
-	if err != nil {
+	if err == nil {
 		log.Printf("[DEBUG] %s: infraRsL2NodeAuthPol - Import finished successfully", d.Get("relation_infra_rs_l2_node_auth_pol"))
 	}
 	// infraRsL2NodeAuthPol - Import finished successfully
@@ -454,7 +454,7 @@ func resourceAciAccessSwitchPolicyGroupImport(d *schema.ResourceData, m interfac
 	// infraRsLeafCoppProfile - Beginning Import
 	log.Printf("[DEBUG] %s: infraRsLeafCoppProfile - Beginning Import with parent DN", dn)
 	_, err = getAndSetReadRelationinfraRsLeafCoppProfile(aciClient, dn, d)
-	if err != nil {
+	if err == nil {
 		log.Printf("[DEBUG] %s: infraRsLeafCoppProfile - Import finished successfully", d.Get("relation_infra_rs_leaf_copp_profile"))
 	}
 	// infraRsLeafCoppProfile - Import finished successfully
@@ -462,7 +462,7 @@ func resourceAciAccessSwitchPolicyGroupImport(d *schema.ResourceData, m interfac
 	// infraRsLeafPGrpToCdpIfPol - Beginning Import
 	log.Printf("[DEBUG] %s: infraRsLeafPGrpToCdpIfPol - Beginning Import with parent DN", dn)
 	_, err = getAndSetReadRelationinfraRsLeafPGrpToCdpIfPol(aciClient, dn, d)
-	if err != nil {
+	if err == nil {
 		log.Printf("[DEBUG] %s: infraRsLeafPGrpToCdpIfPol - Import finished successfully", d.Get("relation_infra_rs_leaf_p_grp_to_cdp_if_pol"))
 	}
 	// infraRsLeafPGrpToCdpIfPol - Import finished successfully
@@ -470,7 +470,7 @@ func resourceAciAccessSwitchPolicyGroupImport(d *schema.ResourceData, m interfac
 	// infraRsLeafPGrpToLldpIfPol - Beginning Import
 	log.Printf("[DEBUG] %s: infraRsLeafPGrpToLldpIfPol - Beginning Import with parent DN", dn)
 	_, err = getAndSetReadRelationinfraRsLeafPGrpToLldpIfPol(aciClient, dn, d)
-	if err != nil {
+	if err == nil {
 		log.Printf("[DEBUG] %s: infraRsLeafPGrpToLldpIfPol - Import finished successfully", d.Get("relation_infra_rs_leaf_p_grp_to_lldp_if_pol"))
 	}
 	// infraRsLeafPGrpToLldpIfPol - Import finished successfully
@@ -478,7 +478,7 @@ func resourceAciAccessSwitchPolicyGroupImport(d *schema.ResourceData, m interfac
 	// infraRsMonNodeInfraPol - Beginning Import
 	log.Printf("[DEBUG] %s: infraRsMonNodeInfraPol - Beginning Import with parent DN", dn)
 	_, err = getAndSetReadRelationinfraRsMonNodeInfraPol(aciClient, dn, d)
-	if err != nil {
+	if err == nil {
 		log.Printf("[DEBUG] %s: infraRsMonNodeInfraPol - Import finished successfully", d.Get("relation_infra_rs_mon_node_infra_pol"))
 	}
 	// infraRsMonNodeInfraPol - Import finished successfully
@@ -486,7 +486,7 @@ func resourceAciAccessSwitchPolicyGroupImport(d *schema.ResourceData, m interfac
 	// infraRsMstInstPol - Beginning Import
 	log.Printf("[DEBUG] %s: infraRsMstInstPol - Beginning Import with parent DN", dn)
 	_, err = getAndSetReadRelationinfraRsMstInstPol(aciClient, dn, d)
-	if err != nil {
+	if err == nil {
 		log.Printf("[DEBUG] %s: infraRsMstInstPol - Import finished successfully", d.Get("relation_infra_rs_mst_inst_pol"))
 	}
 	// infraRsMstInstPol - Import finished successfully
@@ -494,7 +494,7 @@ func resourceAciAccessSwitchPolicyGroupImport(d *schema.ResourceData, m interfac
 	// infraRsNetflowNodePol - Beginning Import
 	log.Printf("[DEBUG] %s: infraRsNetflowNodePol - Beginning Import with parent DN", dn)
 	_, err = getAndSetReadRelationinfraRsNetflowNodePol(aciClient, dn, d)
-	if err != nil {
+	if err == nil {
 		log.Printf("[DEBUG] %s: infraRsNetflowNodePol - Import finished successfully", d.Get("relation_infra_rs_netflow_node_pol"))
 	}
 	// infraRsNetflowNodePol - Import finished successfully
@@ -502,7 +502,7 @@ func resourceAciAccessSwitchPolicyGroupImport(d *schema.ResourceData, m interfac
 	// infraRsPoeInstPol - Beginning Import
 	log.Printf("[DEBUG] %s: infraRsPoeInstPol - Beginning Import with parent DN", dn)
 	_, err = getAndSetReadRelationinfraRsPoeInstPol(aciClient, dn, d)
-	if err != nil {
+	if err == nil {
 		log.Printf("[DEBUG] %s: infraRsPoeInstPol - Import finished successfully", d.Get("relation_infra_rs_poe_inst_pol"))
 	}
 	// infraRsPoeInstPol - Import finished successfully
@@ -510,7 +510,7 @@ func resourceAciAccessSwitchPolicyGroupImport(d *schema.ResourceData, m interfac
 	// infraRsTopoctrlFastLinkFailoverInstPol - Beginning Import
 	log.Printf("[DEBUG] %s: infraRsTopoctrlFastLinkFailoverInstPol - Beginning Import with parent DN", dn)
 	_, err = getAndSetReadRelationinfraRsTopoctrlFastLinkFailoverInstPol(aciClient, dn, d)
-	if err != nil {
+	if err == nil {
 		log.Printf("[DEBUG] %s: infraRsTopoctrlFastLinkFailoverInstPol - Import finished successfully", d.Get("relation_infra_rs_topoctrl_fast_link_failover_inst_pol"))
 	}
 	// infraRsTopoctrlFastLinkFailoverInstPol - Import finished successfully
@@ -518,7 +518,7 @@ func resourceAciAccessSwitchPolicyGroupImport(d *schema.ResourceData, m interfac
 	// infraRsTopoctrlFwdScaleProfPol - Beginning Import
 	log.Printf("[DEBUG] %s: infraRsTopoctrlFwdScaleProfPol - Beginning Import with parent DN", dn)
 	_, err = getAndSetReadRelationinfraRsTopoctrlFwdScaleProfPol(aciClient, dn, d)
-	if err != nil {
+	if err == nil {
 		log.Printf("[DEBUG] %s: infraRsTopoctrlFwdScaleProfPol - Import finished successfully", d.Get("relation_infra_rs_topoctrl_fwd_scale_prof_pol"))
 	}
 	// infraRsTopoctrlFwdScaleProfPol - Import finished successfully
@@ -1212,7 +1212,7 @@ func resourceAciAccessSwitchPolicyGroupRead(ctx context.Context, d *schema.Resou
 	// infraRsBfdIpv4InstPol - Beginning Read
 	log.Printf("[DEBUG] %s: infraRsBfdIpv4InstPol - Beginning Read with parent DN", dn)
 	_, err = getAndSetReadRelationinfraRsBfdIpv4InstPol(aciClient, dn, d)
-	if err != nil {
+	if err == nil {
 		log.Printf("[DEBUG] %s: infraRsBfdIpv4InstPol - Read finished successfully", d.Get("relation_infra_rs_bfd_ipv4_inst_pol"))
 	}
 	// infraRsBfdIpv4InstPol - Read finished successfully
@@ -1220,7 +1220,7 @@ func resourceAciAccessSwitchPolicyGroupRead(ctx context.Context, d *schema.Resou
 	// infraRsBfdIpv6InstPol - Beginning Read
 	log.Printf("[DEBUG] %s: infraRsBfdIpv6InstPol - Beginning Read with parent DN", dn)
 	_, err = getAndSetReadRelationinfraRsBfdIpv6InstPol(aciClient, dn, d)
-	if err != nil {
+	if err == nil {
 		log.Printf("[DEBUG] %s: infraRsBfdIpv6InstPol - Read finished successfully", d.Get("relation_infra_rs_bfd_ipv6_inst_pol"))
 	}
 	// infraRsBfdIpv6InstPol - Read finished successfully
@@ -1228,7 +1228,7 @@ func resourceAciAccessSwitchPolicyGroupRead(ctx context.Context, d *schema.Resou
 	// infraRsBfdMhIpv4InstPol - Beginning Read
 	log.Printf("[DEBUG] %s: infraRsBfdMhIpv4InstPol - Beginning Read with parent DN", dn)
 	_, err = getAndSetReadRelationinfraRsBfdMhIpv4InstPol(aciClient, dn, d)
-	if err != nil {
+	if err == nil {
 		log.Printf("[DEBUG] %s: infraRsBfdMhIpv4InstPol - Read finished successfully", d.Get("relation_infra_rs_bfd_mh_ipv4_inst_pol"))
 	}
 	// infraRsBfdMhIpv4InstPol - Read finished successfully
@@ -1236,7 +1236,7 @@ func resourceAciAccessSwitchPolicyGroupRead(ctx context.Context, d *schema.Resou
 	// infraRsBfdMhIpv6InstPol - Beginning Read
 	log.Printf("[DEBUG] %s: infraRsBfdMhIpv6InstPol - Beginning Read with parent DN", dn)
 	_, err = getAndSetReadRelationinfraRsBfdMhIpv6InstPol(aciClient, dn, d)
-	if err != nil {
+	if err == nil {
 		log.Printf("[DEBUG] %s: infraRsBfdMhIpv6InstPol - Read finished successfully", d.Get("relation_infra_rs_bfd_mh_ipv6_inst_pol"))
 	}
 	// infraRsBfdMhIpv6InstPol - Read finished successfully
@@ -1244,7 +1244,7 @@ func resourceAciAccessSwitchPolicyGroupRead(ctx context.Context, d *schema.Resou
 	// infraRsEquipmentFlashConfigPol - Beginning Read
 	log.Printf("[DEBUG] %s: infraRsEquipmentFlashConfigPol - Beginning Read with parent DN", dn)
 	_, err = getAndSetReadRelationinfraRsEquipmentFlashConfigPol(aciClient, dn, d)
-	if err != nil {
+	if err == nil {
 		log.Printf("[DEBUG] %s: infraRsEquipmentFlashConfigPol - Read finished successfully", d.Get("relation_infra_rs_equipment_flash_config_pol"))
 	}
 	// infraRsEquipmentFlashConfigPol - Read finished successfully
@@ -1252,7 +1252,7 @@ func resourceAciAccessSwitchPolicyGroupRead(ctx context.Context, d *schema.Resou
 	// infraRsFcFabricPol - Beginning Read
 	log.Printf("[DEBUG] %s: infraRsFcFabricPol - Beginning Read with parent DN", dn)
 	_, err = getAndSetReadRelationinfraRsFcFabricPol(aciClient, dn, d)
-	if err != nil {
+	if err == nil {
 		log.Printf("[DEBUG] %s: infraRsFcFabricPol - Read finished successfully", d.Get("relation_infra_rs_fc_fabric_pol"))
 	}
 	// infraRsFcFabricPol - Read finished successfully
@@ -1260,7 +1260,7 @@ func resourceAciAccessSwitchPolicyGroupRead(ctx context.Context, d *schema.Resou
 	// infraRsFcInstPol - Beginning Read
 	log.Printf("[DEBUG] %s: infraRsFcInstPol - Beginning Read with parent DN", dn)
 	_, err = getAndSetReadRelationinfraRsFcInstPol(aciClient, dn, d)
-	if err != nil {
+	if err == nil {
 		log.Printf("[DEBUG] %s: infraRsFcInstPol - Read finished successfully", d.Get("relation_infra_rs_fc_inst_pol"))
 	}
 	// infraRsFcInstPol - Read finished successfully
@@ -1268,7 +1268,7 @@ func resourceAciAccessSwitchPolicyGroupRead(ctx context.Context, d *schema.Resou
 	// infraRsIaclLeafProfile - Beginning Read
 	log.Printf("[DEBUG] %s: infraRsIaclLeafProfile - Beginning Read with parent DN", dn)
 	_, err = getAndSetReadRelationinfraRsIaclLeafProfile(aciClient, dn, d)
-	if err != nil {
+	if err == nil {
 		log.Printf("[DEBUG] %s: infraRsIaclLeafProfile - Read finished successfully", d.Get("relation_infra_rs_iacl_leaf_profile"))
 	}
 	// infraRsIaclLeafProfile - Read finished successfully
@@ -1276,7 +1276,7 @@ func resourceAciAccessSwitchPolicyGroupRead(ctx context.Context, d *schema.Resou
 	// infraRsL2NodeAuthPol - Beginning Read
 	log.Printf("[DEBUG] %s: infraRsL2NodeAuthPol - Beginning Read with parent DN", dn)
 	_, err = getAndSetReadRelationinfraRsL2NodeAuthPol(aciClient, dn, d)
-	if err != nil {
+	if err == nil {
 		log.Printf("[DEBUG] %s: infraRsL2NodeAuthPol - Read finished successfully", d.Get("relation_infra_rs_l2_node_auth_pol"))
 	}
 	// infraRsL2NodeAuthPol - Read finished successfully
@@ -1284,7 +1284,7 @@ func resourceAciAccessSwitchPolicyGroupRead(ctx context.Context, d *schema.Resou
 	// infraRsLeafCoppProfile - Beginning Read
 	log.Printf("[DEBUG] %s: infraRsLeafCoppProfile - Beginning Read with parent DN", dn)
 	_, err = getAndSetReadRelationinfraRsLeafCoppProfile(aciClient, dn, d)
-	if err != nil {
+	if err == nil {
 		log.Printf("[DEBUG] %s: infraRsLeafCoppProfile - Read finished successfully", d.Get("relation_infra_rs_leaf_copp_profile"))
 	}
 	// infraRsLeafCoppProfile - Read finished successfully
@@ -1292,7 +1292,7 @@ func resourceAciAccessSwitchPolicyGroupRead(ctx context.Context, d *schema.Resou
 	// infraRsLeafPGrpToCdpIfPol - Beginning Read
 	log.Printf("[DEBUG] %s: infraRsLeafPGrpToCdpIfPol - Beginning Read with parent DN", dn)
 	_, err = getAndSetReadRelationinfraRsLeafPGrpToCdpIfPol(aciClient, dn, d)
-	if err != nil {
+	if err == nil {
 		log.Printf("[DEBUG] %s: infraRsLeafPGrpToCdpIfPol - Read finished successfully", d.Get("relation_infra_rs_leaf_p_grp_to_cdp_if_pol"))
 	}
 	// infraRsLeafPGrpToCdpIfPol - Read finished successfully
@@ -1300,7 +1300,7 @@ func resourceAciAccessSwitchPolicyGroupRead(ctx context.Context, d *schema.Resou
 	// infraRsLeafPGrpToLldpIfPol - Beginning Read
 	log.Printf("[DEBUG] %s: infraRsLeafPGrpToLldpIfPol - Beginning Read with parent DN", dn)
 	_, err = getAndSetReadRelationinfraRsLeafPGrpToLldpIfPol(aciClient, dn, d)
-	if err != nil {
+	if err == nil {
 		log.Printf("[DEBUG] %s: infraRsLeafPGrpToLldpIfPol - Read finished successfully", d.Get("relation_infra_rs_leaf_p_grp_to_lldp_if_pol"))
 	}
 	// infraRsLeafPGrpToLldpIfPol - Read finished successfully
@@ -1308,7 +1308,7 @@ func resourceAciAccessSwitchPolicyGroupRead(ctx context.Context, d *schema.Resou
 	// infraRsMonNodeInfraPol - Beginning Read
 	log.Printf("[DEBUG] %s: infraRsMonNodeInfraPol - Beginning Read with parent DN", dn)
 	_, err = getAndSetReadRelationinfraRsMonNodeInfraPol(aciClient, dn, d)
-	if err != nil {
+	if err == nil {
 		log.Printf("[DEBUG] %s: infraRsMonNodeInfraPol - Read finished successfully", d.Get("relation_infra_rs_mon_node_infra_pol"))
 	}
 	// infraRsMonNodeInfraPol - Read finished successfully
@@ -1316,7 +1316,7 @@ func resourceAciAccessSwitchPolicyGroupRead(ctx context.Context, d *schema.Resou
 	// infraRsMstInstPol - Beginning Read
 	log.Printf("[DEBUG] %s: infraRsMstInstPol - Beginning Read with parent DN", dn)
 	_, err = getAndSetReadRelationinfraRsMstInstPol(aciClient, dn, d)
-	if err != nil {
+	if err == nil {
 		log.Printf("[DEBUG] %s: infraRsMstInstPol - Read finished successfully", d.Get("relation_infra_rs_mst_inst_pol"))
 	}
 	// infraRsMstInstPol - Read finished successfully
@@ -1324,7 +1324,7 @@ func resourceAciAccessSwitchPolicyGroupRead(ctx context.Context, d *schema.Resou
 	// infraRsNetflowNodePol - Beginning Read
 	log.Printf("[DEBUG] %s: infraRsNetflowNodePol - Beginning Read with parent DN", dn)
 	_, err = getAndSetReadRelationinfraRsNetflowNodePol(aciClient, dn, d)
-	if err != nil {
+	if err == nil {
 		log.Printf("[DEBUG] %s: infraRsNetflowNodePol - Read finished successfully", d.Get("relation_infra_rs_netflow_node_pol"))
 	}
 	// infraRsNetflowNodePol - Read finished successfully
@@ -1332,7 +1332,7 @@ func resourceAciAccessSwitchPolicyGroupRead(ctx context.Context, d *schema.Resou
 	// infraRsPoeInstPol - Beginning Read
 	log.Printf("[DEBUG] %s: infraRsPoeInstPol - Beginning Read with parent DN", dn)
 	_, err = getAndSetReadRelationinfraRsPoeInstPol(aciClient, dn, d)
-	if err != nil {
+	if err == nil {
 		log.Printf("[DEBUG] %s: infraRsPoeInstPol - Read finished successfully", d.Get("relation_infra_rs_poe_inst_pol"))
 	}
 	// infraRsPoeInstPol - Read finished successfully
@@ -1340,7 +1340,7 @@ func resourceAciAccessSwitchPolicyGroupRead(ctx context.Context, d *schema.Resou
 	// infraRsTopoctrlFastLinkFailoverInstPol - Beginning Read
 	log.Printf("[DEBUG] %s: infraRsTopoctrlFastLinkFailoverInstPol - Beginning Read with parent DN", dn)
 	_, err = getAndSetReadRelationinfraRsTopoctrlFastLinkFailoverInstPol(aciClient, dn, d)
-	if err != nil {
+	if err == nil {
 		log.Printf("[DEBUG] %s: infraRsTopoctrlFastLinkFailoverInstPol - Read finished successfully", d.Get("relation_infra_rs_topoctrl_fast_link_failover_inst_pol"))
 	}
 	// infraRsTopoctrlFastLinkFailoverInstPol - Read finished successfully
@@ -1348,7 +1348,7 @@ func resourceAciAccessSwitchPolicyGroupRead(ctx context.Context, d *schema.Resou
 	// infraRsTopoctrlFwdScaleProfPol - Beginning Read
 	log.Printf("[DEBUG] %s: infraRsTopoctrlFwdScaleProfPol - Beginning Read with parent DN", dn)
 	_, err = getAndSetReadRelationinfraRsTopoctrlFwdScaleProfPol(aciClient, dn, d)
-	if err != nil {
+	if err == nil {
 		log.Printf("[DEBUG] %s: infraRsTopoctrlFwdScaleProfPol - Read finished successfully", d.Get("relation_infra_rs_topoctrl_fwd_scale_prof_pol"))
 	}
 	// infraRsTopoctrlFwdScaleProfPol - Read finished successfully
