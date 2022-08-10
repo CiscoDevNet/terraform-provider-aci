@@ -27,7 +27,7 @@ func dataSourceAciSpineAccessPortSelector() *schema.Resource {
 
 			"spine_access_port_selector_type": &schema.Schema{
 				Type:     schema.TypeString,
-				Optional: true,
+				Required: true,
 			},
 			"relation_infra_rs_sp_acc_grp": &schema.Schema{
 				Type:     schema.TypeString,
