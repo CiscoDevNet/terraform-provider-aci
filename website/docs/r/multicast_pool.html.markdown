@@ -1,4 +1,5 @@
 ---
+subcategory: "Access Policies"
 layout: "aci"
 page_title: "ACI: aci_multicast_pool"
 sidebar_current: "docs-aci-resource-multicast_pool"
@@ -17,8 +18,7 @@ Manages ACI Multicast Address Pool
 
 ## GUI Information ##
 
-* `Location` - 
-
+* `Location` - Fabric -> Access Policies -> Pools -> Multicast Address
 
 ## Example Usage ##
 
@@ -45,5 +45,5 @@ An existing MulticastAddressPool can be [imported][docs-import] into this resour
 [docs-import]: https://www.terraform.io/docs/import/index.html
 
 ```
-terraform import aci_multicast_address_pool.example <Dn>
+terraform import aci_multicast_pool.example <Dn>
 ```

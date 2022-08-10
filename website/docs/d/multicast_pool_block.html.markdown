@@ -1,4 +1,5 @@
 ---
+subcategory: "Access Policies"
 layout: "aci"
 page_title: "ACI: aci_multicast_pool_block"
 sidebar_current: "docs-aci-data-source-multicast_pool_block"
@@ -17,8 +18,7 @@ Data source for ACI the Multicast Address Pool Block
 
 ## GUI Information ##
 
-* `Location` - 
-
+* `Location` - Fabric -> Access Policies -> Pools -> Multicast Address -> Address Blocks
 
 ## Example Usage ##
 

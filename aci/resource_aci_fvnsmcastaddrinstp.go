@@ -96,7 +96,7 @@ func resourceAciMulticastAddressPoolCreate(ctx context.Context, d *schema.Resour
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		fvnsMcastAddrInstPAttr.NameAlias = NameAlias.(string)
 	}
-	fvnsMcastAddrInstP := models.NewMulticastAddressPool(fmt.Sprintf("infra/maddrns-%s", name), "uni", desc, fvnsMcastAddrInstPAttr)
+	fvnsMcastAddrInstP := models.NewMulticastAddressPool(fmt.Sprintf(models.RnfvnsMcastAddrInstP, name), models.ParentDnfvnsMcastAddrInstP, desc, fvnsMcastAddrInstPAttr)
 	err := aciClient.Save(fvnsMcastAddrInstP)
 	if err != nil {
 		return diag.FromErr(err)
@@ -127,7 +127,7 @@ func resourceAciMulticastAddressPoolUpdate(ctx context.Context, d *schema.Resour
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		fvnsMcastAddrInstPAttr.NameAlias = NameAlias.(string)
 	}
-	fvnsMcastAddrInstP := models.NewMulticastAddressPool(fmt.Sprintf("infra/maddrns-%s", name), "uni", desc, fvnsMcastAddrInstPAttr)
+	fvnsMcastAddrInstP := models.NewMulticastAddressPool(fmt.Sprintf(models.RnfvnsMcastAddrInstP, name), models.ParentDnfvnsMcastAddrInstP, desc, fvnsMcastAddrInstPAttr)
 	fvnsMcastAddrInstP.Status = "modified"
 
 	err := aciClient.Save(fvnsMcastAddrInstP)

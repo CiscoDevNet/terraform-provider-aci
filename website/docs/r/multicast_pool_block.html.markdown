@@ -1,4 +1,5 @@
 ---
+subcategory: "Access Policies"
 layout: "aci"
 page_title: "ACI: aci_multicast_pool_block"
 sidebar_current: "docs-aci-resource-multicast_pool_block"
@@ -13,12 +14,11 @@ Manages ACI the Multicast Address Pool Block
 ## API Information ##
 
 * `Class` - fvnsMcastAddrBlk
-* `Distinguished Name` - uni/infra/maddrns-{name}/fromaddr-[{from}]-toaddr-[{to}]
+* `Distinguished Name` - uni/infra/maddrns-{name}/fromaddr-[{from}]-toaddr-[{to}
 
 ## GUI Information ##
 
-* `Location` - 
-
+* `Location` - Fabric -> Access Policies -> Pools -> Multicast Address -> Address Blocks
 
 ## Example Usage ##
 
@@ -49,9 +49,9 @@ resource "aci_multicast_pool_block" "example" {
 
 ## Importing ##
 
-An existing AbstractionofIPAddressBlock can be [imported][docs-import] into this resource via its Dn, via the following command:
+An existing MulticastAddressBlock can be [imported][docs-import] into this resource via its Dn, via the following command:
 [docs-import]: https://www.terraform.io/docs/import/index.html
 
 ```
-terraform import aci_abstractionof_ipaddress_block.example <Dn>
+terraform import aci_multicast_pool_block.example <Dn>
 ```

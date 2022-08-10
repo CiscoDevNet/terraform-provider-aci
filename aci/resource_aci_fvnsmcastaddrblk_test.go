@@ -6,6 +6,7 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/acctest"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
@@ -24,7 +25,7 @@ func TestAccAciMulticastAddressBlock_Basic(t *testing.T) {
 			{
 				Config: testAccCheckAciMulticastAddressBlockConfig_basic(fvns_mcast_addr_inst_p_name, fvns_mcast_addr_blk_name),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAciMulticastAddressBlockExists("aci_multicast_address_block.foo_multicast_address_block", &multicast_address_block),
+					testAccCheckAciMulticastAddressBlockExists("aci_multicast_pool_block.foo_multicast_pool_block", &multicast_address_block),
 					testAccCheckAciMulticastAddressBlockAttributes(fvns_mcast_addr_inst_p_name, fvns_mcast_addr_blk_name, description, &multicast_address_block),
 				),
 			},
@@ -46,14 +47,14 @@ func TestAccAciMulticastAddressBlock_Update(t *testing.T) {
 			{
 				Config: testAccCheckAciMulticastAddressBlockConfig_basic(fvns_mcast_addr_inst_p_name, fvns_mcast_addr_blk_name),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAciMulticastAddressBlockExists("aci_multicast_address_block.foo_multicast_address_block", &multicast_address_block),
+					testAccCheckAciMulticastAddressBlockExists("aci_multicast_pool_block.foo_multicast_pool_block", &multicast_address_block),
 					testAccCheckAciMulticastAddressBlockAttributes(fvns_mcast_addr_inst_p_name, fvns_mcast_addr_blk_name, description, &multicast_address_block),
 				),
 			},
 			{
 				Config: testAccCheckAciMulticastAddressBlockConfig_basic(fvns_mcast_addr_inst_p_name, fvns_mcast_addr_blk_name),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAciMulticastAddressBlockExists("aci_multicast_address_block.foo_multicast_address_block", &multicast_address_block),
+					testAccCheckAciMulticastAddressBlockExists("aci_multicast_pool_block.foo_multicast_pool_block", &multicast_address_block),
 					testAccCheckAciMulticastAddressBlockAttributes(fvns_mcast_addr_inst_p_name, fvns_mcast_addr_blk_name, description, &multicast_address_block),
 				),
 			},
@@ -64,16 +65,17 @@ func TestAccAciMulticastAddressBlock_Update(t *testing.T) {
 func testAccCheckAciMulticastAddressBlockConfig_basic(fvns_mcast_addr_inst_p_name, fvns_mcast_addr_blk_name string) string {
 	return fmt.Sprintf(`
 
-	resource "aci_multicast_address_pool" "foo_multicast_address_pool" {
+	resource "aci_multicast_pool" "foo_multicast_pool" {
 		name 		= "%s"
 		description = "multicast_address_pool created while acceptance testing"
-
 	}
 
-	resource "aci_multicast_address_block" "foo_multicast_address_block" {
+	resource "aci_multicast_pool_block" "foo_multicast_pool_block" {
 		name 		= "%s"
 		description = "multicast_address_block created while acceptance testing"
-		multicast_pool_dn = aci_multicast_address_pool.foo_multicast_address_pool.id
+		multicast_pool_dn = aci_multicast_pool.foo_multicast_pool.id
+		from = "224.0.0.0"
+        to = "224.0.0.10"
 	}
 
 	`, fvns_mcast_addr_inst_p_name, fvns_mcast_addr_blk_name)
@@ -110,7 +112,7 @@ func testAccCheckAciMulticastAddressBlockExists(name string, multicast_address_b
 func testAccCheckAciMulticastAddressBlockDestroy(s *terraform.State) error {
 	client := testAccProvider.Meta().(*client.Client)
 	for _, rs := range s.RootModule().Resources {
-		if rs.Type == "aci_multicast_address_block" {
+		if rs.Type == "aci_multicast_pool_block" {
 			cont, err := client.Get(rs.Primary.ID)
 			multicast_address_block := models.MulticastAddressBlockFromContainer(cont)
 			if err == nil {
@@ -125,12 +127,11 @@ func testAccCheckAciMulticastAddressBlockDestroy(s *terraform.State) error {
 
 func testAccCheckAciMulticastAddressBlockAttributes(fvns_mcast_addr_inst_p_name, fvns_mcast_addr_blk_name, description string, multicast_address_block *models.MulticastAddressBlock) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
-		if fvns_mcast_addr_blk_name != GetMOName(multicast_address_block.DistinguishedName) {
-			return fmt.Errorf("Bad fvnsmcast_addr_blk %s", GetMOName(multicast_address_block.DistinguishedName))
+		if fvns_mcast_addr_blk_name != multicast_address_block.Name {
+			return fmt.Errorf("Bad fvnsmcast_addr_blk %s", multicast_address_block.Name)
 		}
-
-		if fvns_mcast_addr_inst_p_name != GetMOName(GetParentDn(multicast_address_block.DistinguishedName, multicast_address_block.Rn)) {
-			return fmt.Errorf(" Bad fvnsmcast_addr_inst_p %s", GetMOName(GetParentDn(multicast_address_block.DistinguishedName, multicast_address_block.Rn)))
+		if fvns_mcast_addr_inst_p_name != GetMOName(GetParentDn(multicast_address_block.DistinguishedName, fmt.Sprintf("/"+models.RnfvnsMcastAddrBlk, multicast_address_block.From, multicast_address_block.To))) {
+			return fmt.Errorf(" Bad fvnsmcast_addr_inst_p %s %s", fvns_mcast_addr_inst_p_name, GetMOName(GetParentDn(multicast_address_block.DistinguishedName, fmt.Sprintf("/"+models.RnfvnsMcastAddrBlk, multicast_address_block.From, multicast_address_block.To))))
 		}
 		if description != multicast_address_block.Description {
 			return fmt.Errorf("Bad multicast_address_block Description %s", multicast_address_block.Description)

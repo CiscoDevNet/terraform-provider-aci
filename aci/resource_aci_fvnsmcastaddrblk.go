@@ -68,7 +68,7 @@ func setMulticastAddressBlockAttributes(fvnsMcastAddrBlk *models.MulticastAddres
 	if dn != fvnsMcastAddrBlk.DistinguishedName {
 		d.Set("multicast_pool_dn", "")
 	} else {
-		d.Set("multicast_pool_dn", GetParentDn(fvnsMcastAddrBlk.DistinguishedName, fmt.Sprintf("/"+models.RnfvnsMcastAddrBlk)))
+		d.Set("multicast_pool_dn", GetParentDn(fvnsMcastAddrBlk.DistinguishedName, fmt.Sprintf("/"+models.RnfvnsMcastAddrBlk, fvnsMcastAddrBlkMap["from"], fvnsMcastAddrBlkMap["to"])))
 	}
 	d.Set("annotation", fvnsMcastAddrBlkMap["annotation"])
 	d.Set("from", fvnsMcastAddrBlkMap["from"])

@@ -6,6 +6,7 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/acctest"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
@@ -23,7 +24,7 @@ func TestAccAciMulticastAddressPool_Basic(t *testing.T) {
 			{
 				Config: testAccCheckAciMulticastAddressPoolConfig_basic(fvns_mcast_addr_inst_p_name),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAciMulticastAddressPoolExists("aci_multicast_address_pool.foo_multicast_address_pool", &multicast_address_pool),
+					testAccCheckAciMulticastAddressPoolExists("aci_multicast_pool.foo_multicast_address_pool", &multicast_address_pool),
 					testAccCheckAciMulticastAddressPoolAttributes(fvns_mcast_addr_inst_p_name, description, &multicast_address_pool),
 				),
 			},
@@ -44,14 +45,14 @@ func TestAccAciMulticastAddressPool_Update(t *testing.T) {
 			{
 				Config: testAccCheckAciMulticastAddressPoolConfig_basic(fvns_mcast_addr_inst_p_name),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAciMulticastAddressPoolExists("aci_multicast_address_pool.foo_multicast_address_pool", &multicast_address_pool),
+					testAccCheckAciMulticastAddressPoolExists("aci_multicast_pool.foo_multicast_address_pool", &multicast_address_pool),
 					testAccCheckAciMulticastAddressPoolAttributes(fvns_mcast_addr_inst_p_name, description, &multicast_address_pool),
 				),
 			},
 			{
 				Config: testAccCheckAciMulticastAddressPoolConfig_basic(fvns_mcast_addr_inst_p_name),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAciMulticastAddressPoolExists("aci_multicast_address_pool.foo_multicast_address_pool", &multicast_address_pool),
+					testAccCheckAciMulticastAddressPoolExists("aci_multicast_pool.foo_multicast_address_pool", &multicast_address_pool),
 					testAccCheckAciMulticastAddressPoolAttributes(fvns_mcast_addr_inst_p_name, description, &multicast_address_pool),
 				),
 			},
@@ -62,7 +63,7 @@ func TestAccAciMulticastAddressPool_Update(t *testing.T) {
 func testAccCheckAciMulticastAddressPoolConfig_basic(fvns_mcast_addr_inst_p_name string) string {
 	return fmt.Sprintf(`
 
-	resource "aci_multicast_address_pool" "foo_multicast_address_pool" {
+	resource "aci_multicast_pool" "foo_multicast_address_pool" {
 		name 		= "%s"
 		description = "multicast_address_pool created while acceptance testing"
 
@@ -102,7 +103,7 @@ func testAccCheckAciMulticastAddressPoolExists(name string, multicast_address_po
 func testAccCheckAciMulticastAddressPoolDestroy(s *terraform.State) error {
 	client := testAccProvider.Meta().(*client.Client)
 	for _, rs := range s.RootModule().Resources {
-		if rs.Type == "aci_multicast_address_pool" {
+		if rs.Type == "aci_multicast_pool" {
 			cont, err := client.Get(rs.Primary.ID)
 			multicast_address_pool := models.MulticastAddressPoolFromContainer(cont)
 			if err == nil {

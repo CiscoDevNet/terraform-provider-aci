@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
+	"github.com/ciscoecosystem/aci-go-client/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -26,8 +27,8 @@ func dataSourceAciMulticastAddressPoolRead(ctx context.Context, d *schema.Resour
 	aciClient := m.(*client.Client)
 	name := d.Get("name").(string)
 
-	rn := fmt.Sprintf("infra/maddrns-%s", name)
-	dn := fmt.Sprintf("uni/%s", rn)
+	rn := fmt.Sprintf(models.RnfvnsMcastAddrInstP, name)
+	dn := fmt.Sprintf("%s/%s", models.ParentDnfvnsMcastAddrInstP, rn)
 
 	fvnsMcastAddrInstP, err := getRemoteMulticastAddressPool(aciClient, dn)
 	if err != nil {
