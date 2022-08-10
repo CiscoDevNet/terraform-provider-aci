@@ -85,7 +85,7 @@ func getAndSetReadRelationinfraRsDomPFromAttachableAccessEntityProfile(client *c
 		d.Set("relation_infra_rs_dom_p", nil)
 		return d, err
 	} else {
-		d.Set("relation_infra_rs_dom_p", infraRsDomPData)
+		d.Set("relation_infra_rs_dom_p", toStringList(infraRsDomPData.(*schema.Set).List()))
 	}
 	return d, nil
 }
@@ -274,14 +274,6 @@ func resourceAciAttachableAccessEntityProfileRead(ctx context.Context, d *schema
 		d.SetId("")
 		return nil
 	}
-
-	// infraRsDomPData, err := aciClient.ReadRelationinfraRsDomPFromAttachableAccessEntityProfile(dn)
-	// if err != nil {
-	// 	log.Printf("[DEBUG] Error while reading relation infraRsDomP %v", err)
-	// 	setRelationAttribute(d, "relation_infra_rs_dom_p", make([]interface{}, 0, 1))
-	// } else {
-	// 	setRelationAttribute(d, "relation_infra_rs_dom_p", toStringList(infraRsDomPData.(*schema.Set).List()))
-	// }
 
 	// infraRsDomP - Beginning Read
 	log.Printf("[DEBUG] %s: infraRsDomP - Beginning Read with parent DN", dn)

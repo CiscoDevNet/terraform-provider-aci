@@ -33,6 +33,7 @@ func dataSourceAciAttachableAccessEntityProfile() *schema.Resource {
 				Type:     schema.TypeSet,
 				Elem:     &schema.Schema{Type: schema.TypeString},
 				Optional: true,
+				Set:      schema.HashString,
 			},
 		}),
 	}
@@ -46,6 +47,7 @@ func dataSourceAciAttachableAccessEntityProfileRead(ctx context.Context, d *sche
 	rn := fmt.Sprintf("infra/attentp-%s", name)
 
 	dn := fmt.Sprintf("uni/%s", rn)
+	log.Printf("[DEBUG] %s: Data Source - Beginning Read", dn)
 
 	infraAttEntityP, err := getRemoteAttachableAccessEntityProfile(aciClient, dn)
 
@@ -66,5 +68,6 @@ func dataSourceAciAttachableAccessEntityProfileRead(ctx context.Context, d *sche
 	}
 	// infraRsDomP - Read finished successfully
 
+	log.Printf("[DEBUG] %s: Data Source - Read finished successfully", dn)
 	return nil
 }

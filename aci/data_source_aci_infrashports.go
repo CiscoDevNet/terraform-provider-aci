@@ -30,9 +30,8 @@ func dataSourceAciSpineAccessPortSelector() *schema.Resource {
 				Optional: true,
 			},
 			"relation_infra_rs_sp_acc_grp": &schema.Schema{
-				Type:        schema.TypeString,
-				Optional:    true,
-				Description: "Create relation to infra:SpAccGrp",
+				Type:     schema.TypeString,
+				Optional: true,
 			},
 		}),
 	}
@@ -49,6 +48,7 @@ func dataSourceAciSpineAccessPortSelectorRead(ctx context.Context, d *schema.Res
 	SpineInterfaceProfileDn := d.Get("spine_interface_profile_dn").(string)
 
 	dn := fmt.Sprintf("%s/%s", SpineInterfaceProfileDn, rn)
+	log.Printf("[DEBUG] %s: Data Source - Beginning Read", dn)
 
 	infraSHPortS, err := getRemoteSpineAccessPortSelector(aciClient, dn)
 	if err != nil {
@@ -70,5 +70,6 @@ func dataSourceAciSpineAccessPortSelectorRead(ctx context.Context, d *schema.Res
 	}
 	// infraRsSpAccGrp - Read finished successfully
 
+	log.Printf("[DEBUG] %s: Data Source - Read finished successfully", dn)
 	return nil
 }

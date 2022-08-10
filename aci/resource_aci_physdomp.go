@@ -96,8 +96,6 @@ func setPhysicalDomainAttributes(physDomP *models.PhysicalDomain, d *schema.Reso
 	return d, nil
 }
 
-// Get and Set Relational attributes
-
 func getAndSetRelationinfraRsVlanNsFromPhysicalDomain(client *client.Client, dn string, d *schema.ResourceData) (*schema.ResourceData, error) {
 	infraRsVlanNsData, err := client.ReadRelationinfraRsVlanNsFromPhysicalDomain(dn)
 	if err != nil {
@@ -145,8 +143,6 @@ func getAndSetRelationinfraRsDomVxlanNsDefFromPhysicalDomain(client *client.Clie
 	}
 	return d, nil
 }
-
-// Get and Set Relational attributes
 
 func resourceAciPhysicalDomainImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
 	log.Printf("[DEBUG] %s: Beginning Import", d.Id())

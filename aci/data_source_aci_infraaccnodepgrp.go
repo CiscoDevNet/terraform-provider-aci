@@ -20,94 +20,76 @@ func dataSourceAciAccessSwitchPolicyGroup() *schema.Resource {
 				Required: true,
 			},
 			"relation_infra_rs_bfd_ipv4_inst_pol": &schema.Schema{
-				Type:        schema.TypeString,
-				Optional:    true,
-				Description: "Create relation to bfd:Ipv4InstPol",
+				Type:     schema.TypeString,
+				Optional: true,
 			},
 			"relation_infra_rs_bfd_ipv6_inst_pol": &schema.Schema{
-				Type:        schema.TypeString,
-				Optional:    true,
-				Description: "Create relation to bfd:Ipv6InstPol",
+				Type:     schema.TypeString,
+				Optional: true,
 			},
 			"relation_infra_rs_bfd_mh_ipv4_inst_pol": &schema.Schema{
-				Type:        schema.TypeString,
-				Optional:    true,
-				Description: "Create relation to bfd:MhIpv4InstPol",
+				Type:     schema.TypeString,
+				Optional: true,
 			},
 			"relation_infra_rs_bfd_mh_ipv6_inst_pol": &schema.Schema{
-				Type:        schema.TypeString,
-				Optional:    true,
-				Description: "Create relation to bfd:MhIpv6InstPol",
+				Type:     schema.TypeString,
+				Optional: true,
 			},
 			"relation_infra_rs_equipment_flash_config_pol": &schema.Schema{
-				Type:        schema.TypeString,
-				Optional:    true,
-				Description: "Create relation to equipment:FlashConfigPol",
+				Type:     schema.TypeString,
+				Optional: true,
 			},
 			"relation_infra_rs_fc_fabric_pol": &schema.Schema{
-				Type:        schema.TypeString,
-				Optional:    true,
-				Description: "Create relation to fc:FabricPol",
+				Type:     schema.TypeString,
+				Optional: true,
 			},
 			"relation_infra_rs_fc_inst_pol": &schema.Schema{
-				Type:        schema.TypeString,
-				Optional:    true,
-				Description: "Create relation to fc:InstPol",
+				Type:     schema.TypeString,
+				Optional: true,
 			},
 			"relation_infra_rs_iacl_leaf_profile": &schema.Schema{
-				Type:        schema.TypeString,
-				Optional:    true,
-				Description: "Create relation to iacl:LeafProfile",
+				Type:     schema.TypeString,
+				Optional: true,
 			},
 			"relation_infra_rs_l2_node_auth_pol": &schema.Schema{
-				Type:        schema.TypeString,
-				Optional:    true,
-				Description: "Create relation to l2:NodeAuthPol",
+				Type:     schema.TypeString,
+				Optional: true,
 			},
 			"relation_infra_rs_leaf_copp_profile": &schema.Schema{
-				Type:        schema.TypeString,
-				Optional:    true,
-				Description: "Create relation to copp:LeafProfile",
+				Type:     schema.TypeString,
+				Optional: true,
 			},
 			"relation_infra_rs_leaf_p_grp_to_cdp_if_pol": &schema.Schema{
-				Type:        schema.TypeString,
-				Optional:    true,
-				Description: "Create relation to cdp:IfPol",
+				Type:     schema.TypeString,
+				Optional: true,
 			},
 			"relation_infra_rs_leaf_p_grp_to_lldp_if_pol": &schema.Schema{
-				Type:        schema.TypeString,
-				Optional:    true,
-				Description: "Create relation to lldp:IfPol",
+				Type:     schema.TypeString,
+				Optional: true,
 			},
 			"relation_infra_rs_mon_node_infra_pol": &schema.Schema{
-				Type:        schema.TypeString,
-				Optional:    true,
-				Description: "Create relation to mon:InfraPol",
+				Type:     schema.TypeString,
+				Optional: true,
 			},
 			"relation_infra_rs_mst_inst_pol": &schema.Schema{
-				Type:        schema.TypeString,
-				Optional:    true,
-				Description: "Create relation to stp:InstPol",
+				Type:     schema.TypeString,
+				Optional: true,
 			},
 			"relation_infra_rs_netflow_node_pol": &schema.Schema{
-				Type:        schema.TypeString,
-				Optional:    true,
-				Description: "Create relation to netflow:NodePol",
+				Type:     schema.TypeString,
+				Optional: true,
 			},
 			"relation_infra_rs_poe_inst_pol": &schema.Schema{
-				Type:        schema.TypeString,
-				Optional:    true,
-				Description: "Create relation to poe:InstPol",
+				Type:     schema.TypeString,
+				Optional: true,
 			},
 			"relation_infra_rs_topoctrl_fast_link_failover_inst_pol": &schema.Schema{
-				Type:        schema.TypeString,
-				Optional:    true,
-				Description: "Create relation to topoctrl:FastLinkFailoverInstPol",
+				Type:     schema.TypeString,
+				Optional: true,
 			},
 			"relation_infra_rs_topoctrl_fwd_scale_prof_pol": &schema.Schema{
-				Type:        schema.TypeString,
-				Optional:    true,
-				Description: "Create relation to topoctrl:FwdScaleProfilePol",
+				Type:     schema.TypeString,
+				Optional: true,
 			},
 		})),
 	}
@@ -119,6 +101,7 @@ func dataSourceAciAccessSwitchPolicyGroupRead(ctx context.Context, d *schema.Res
 
 	rn := fmt.Sprintf("infra/funcprof/accnodepgrp-%s", name)
 	dn := fmt.Sprintf("uni/%s", rn)
+	log.Printf("[DEBUG] %s: Data Source - Beginning Read", dn)
 	infraAccNodePGrp, err := getRemoteAccessSwitchPolicyGroup(aciClient, dn)
 	if err != nil {
 		return diag.FromErr(err)
@@ -273,5 +256,6 @@ func dataSourceAciAccessSwitchPolicyGroupRead(ctx context.Context, d *schema.Res
 	}
 	// infraRsTopoctrlFwdScaleProfPol - Read finished successfully
 
+	log.Printf("[DEBUG] %s: Data Source - Read finished successfully", dn)
 	return nil
 }

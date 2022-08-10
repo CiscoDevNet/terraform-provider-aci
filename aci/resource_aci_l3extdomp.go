@@ -105,13 +105,11 @@ func setL3DomainProfileAttributes(l3extDomP *models.L3DomainProfile, d *schema.R
 	return d, nil
 }
 
-// Get and Set Relational attributes
-
 func getAndSetReadRelationinfraRsVlanNsFromL3DomainProfile(client *client.Client, dn string, d *schema.ResourceData) (*schema.ResourceData, error) {
 	infraRsVlanNsData, err := client.ReadRelationinfraRsVlanNsFromL3DomainProfile(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation infraRsVlanNs %v", err)
-		d.Set("relation_infra_rs_vlan_ns", "")
+		d.Set("relation_infra_rs_vlan_ns", nil)
 		return d, err
 	} else {
 		d.Set("relation_infra_rs_vlan_ns", infraRsVlanNsData.(string))
@@ -123,7 +121,7 @@ func getAndSetReadRelationinfraRsVlanNsDefFromL3DomainProfile(client *client.Cli
 	infraRsVlanNsDefData, err := client.ReadRelationinfraRsVlanNsDefFromL3DomainProfile(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation infraRsVlanNsDef %v", err)
-		d.Set("relation_infra_rs_vlan_ns_def", "")
+		d.Set("relation_infra_rs_vlan_ns_def", nil)
 		return d, err
 	} else {
 		d.Set("relation_infra_rs_vlan_ns_def", infraRsVlanNsDefData.(string))
@@ -135,7 +133,7 @@ func getAndSetReadRelationinfraRsVipAddrNsFromL3DomainProfile(client *client.Cli
 	infraRsVipAddrNsData, err := client.ReadRelationinfraRsVipAddrNsFromL3DomainProfile(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation infraRsVipAddrNs %v", err)
-		d.Set("relation_infra_rs_vip_addr_ns", "")
+		d.Set("relation_infra_rs_vip_addr_ns", nil)
 		return d, err
 	} else {
 		d.Set("relation_infra_rs_vip_addr_ns", infraRsVipAddrNsData.(string))
@@ -150,7 +148,7 @@ func getAndSetReadRelationextnwRsOutFromL3DomainProfile(client *client.Client, d
 		d.Set("relation_extnw_rs_out", nil)
 		return d, err
 	} else {
-		d.Set("relation_extnw_rs_out", extnwRsOutData.(string))
+		d.Set("relation_extnw_rs_out", toStringList(extnwRsOutData.(*schema.Set).List()))
 	}
 	return d, nil
 }
@@ -159,15 +157,13 @@ func getAndSetReadRelationinfraRsDomVxlanNsDefFromL3DomainProfile(client *client
 	infraRsDomVxlanNsDefData, err := client.ReadRelationinfraRsDomVxlanNsDefFromL3DomainProfile(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation infraRsDomVxlanNsDef %v", err)
-		d.Set("relation_infra_rs_dom_vxlan_ns_def", "")
+		d.Set("relation_infra_rs_dom_vxlan_ns_def", nil)
 		return d, err
 	} else {
 		d.Set("relation_infra_rs_dom_vxlan_ns_def", infraRsDomVxlanNsDefData.(string))
 	}
 	return d, nil
 }
-
-// Get and Set Relational attributes
 
 func resourceAciL3DomainProfileImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
 	log.Printf("[DEBUG] %s: Beginning Import", d.Id())
@@ -474,50 +470,6 @@ func resourceAciL3DomainProfileRead(ctx context.Context, d *schema.ResourceData,
 		d.SetId("")
 		return nil
 	}
-
-	// infraRsVlanNsData, err := aciClient.ReadRelationinfraRsVlanNsFromL3DomainProfile(dn)
-	// if err != nil {
-	// 	log.Printf("[DEBUG] Error while reading relation infraRsVlanNs %v", err)
-	// 	d.Set("relation_infra_rs_vlan_ns", "")
-
-	// } else {
-	// 	setRelationAttribute(d, "relation_infra_rs_vlan_ns", infraRsVlanNsData.(string))
-	// }
-
-	// infraRsVlanNsDefData, err := aciClient.ReadRelationinfraRsVlanNsDefFromL3DomainProfile(dn)
-	// if err != nil {
-	// 	log.Printf("[DEBUG] Error while reading relation infraRsVlanNsDef %v", err)
-	// 	d.Set("relation_infra_rs_vlan_ns_def", "")
-
-	// } else {
-	// 	setRelationAttribute(d, "relation_infra_rs_vlan_ns_def", infraRsVlanNsDefData.(string))
-	// }
-
-	// infraRsVipAddrNsData, err := aciClient.ReadRelationinfraRsVipAddrNsFromL3DomainProfile(dn)
-	// if err != nil {
-	// 	log.Printf("[DEBUG] Error while reading relation infraRsVipAddrNs %v", err)
-	// 	d.Set("relation_infra_rs_vip_addr_ns", "")
-
-	// } else {
-	// 	setRelationAttribute(d, "relation_infra_rs_vip_addr_ns", infraRsVipAddrNsData.(string))
-	// }
-
-	// extnwRsOutData, err := aciClient.ReadRelationextnwRsOutFromL3DomainProfile(dn)
-	// if err != nil {
-	// 	log.Printf("[DEBUG] Error while reading relation extnwRsOut %v", err)
-	// 	setRelationAttribute(d, "relation_extnw_rs_out", make([]interface{}, 0, 1))
-	// } else {
-	// 	setRelationAttribute(d, "relation_extnw_rs_out", toStringList(extnwRsOutData.(*schema.Set).List()))
-	// }
-
-	// infraRsDomVxlanNsDefData, err := aciClient.ReadRelationinfraRsDomVxlanNsDefFromL3DomainProfile(dn)
-	// if err != nil {
-	// 	log.Printf("[DEBUG] Error while reading relation infraRsDomVxlanNsDef %v", err)
-	// 	d.Set("relation_infra_rs_dom_vxlan_ns_def", "")
-
-	// } else {
-	// 	setRelationAttribute(d, "relation_infra_rs_dom_vxlan_ns_def", infraRsDomVxlanNsDefData.(string))
-	// }
 
 	// infraRsVlanNs - Beginning Read
 	log.Printf("[DEBUG] %s: infraRsVlanNs - Beginning Read with parent DN", dn)

@@ -29,6 +29,26 @@ func dataSourceAciPhysicalDomain() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"annotation": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"relation_infra_rs_vlan_ns": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"relation_infra_rs_vlan_ns_def": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"relation_infra_rs_vip_addr_ns": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"relation_infra_rs_dom_vxlan_ns_def": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 		}),
 	}
 }
@@ -41,6 +61,7 @@ func dataSourceAciPhysicalDomainRead(ctx context.Context, d *schema.ResourceData
 	rn := fmt.Sprintf("phys-%s", name)
 
 	dn := fmt.Sprintf("uni/%s", rn)
+	log.Printf("[DEBUG] %s: Data Source - Beginning Read", dn)
 
 	physDomP, err := getRemotePhysicalDomain(aciClient, dn)
 
@@ -85,5 +106,6 @@ func dataSourceAciPhysicalDomainRead(ctx context.Context, d *schema.ResourceData
 	}
 	// infraRsDomVxlanNsDef - Read finished successfully
 
+	log.Printf("[DEBUG] %s: Data Source - Read finished successfully", dn)
 	return nil
 }

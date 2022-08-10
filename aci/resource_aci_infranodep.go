@@ -256,7 +256,7 @@ func getAndSetReadRelationinfraRsAccCardPFromLeafProfile(client *client.Client, 
 		d.Set("relation_infra_rs_acc_card_p", nil)
 		return d, err
 	} else {
-		d.Set("relation_infra_rs_acc_card_p", infraRsAccCardPData)
+		d.Set("relation_infra_rs_acc_card_p", toStringList(infraRsAccCardPData.(*schema.Set).List()))
 	}
 	return d, nil
 }
@@ -268,7 +268,7 @@ func getAndSetReadRelationinfraRsAccPortPFromLeafProfile(client *client.Client, 
 		d.Set("relation_infra_rs_acc_port_p", nil)
 		return d, err
 	} else {
-		d.Set("relation_infra_rs_acc_port_p", infraRsAccPortPData)
+		d.Set("relation_infra_rs_acc_port_p", toStringList(infraRsAccPortPData.(*schema.Set).List()))
 	}
 	return d, nil
 }
@@ -682,22 +682,6 @@ func resourceAciLeafProfileRead(ctx context.Context, d *schema.ResourceData, m i
 		d.SetId("")
 		return nil
 	}
-	// infraRsAccCardPData, err := aciClient.ReadRelationinfraRsAccCardPFromLeafProfile(dn)
-	// log.Printf("[TRACE] infraRsAccCardP %v", infraRsAccCardPData)
-	// if err != nil {
-	// 	log.Printf("[DEBUG] Error while reading relation infraRsAccCardP %v", err)
-	// 	setRelationAttribute(d, "relation_infra_rs_acc_card_p", make([]interface{}, 0, 1))
-	// } else {
-	// 	setRelationAttribute(d, "relation_infra_rs_acc_card_p", toStringList(infraRsAccCardPData.(*schema.Set).List()))
-	// }
-
-	// infraRsAccPortPData, err := aciClient.ReadRelationinfraRsAccPortPFromLeafProfile(dn)
-	// if err != nil {
-	// 	log.Printf("[DEBUG] Error while reading relation infraRsAccPortP %v", err)
-	// 	setRelationAttribute(d, "relation_infra_rs_acc_port_p", make([]interface{}, 0, 1))
-	// } else {
-	// 	setRelationAttribute(d, "relation_infra_rs_acc_port_p", toStringList(infraRsAccPortPData.(*schema.Set).List()))
-	// }
 
 	// infraRsAccCardP - Beginning Read
 	log.Printf("[DEBUG] %s: infraRsAccCardP - Beginning Read with parent DN", dn)

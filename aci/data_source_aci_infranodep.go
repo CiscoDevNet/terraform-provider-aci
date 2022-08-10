@@ -20,35 +20,89 @@ func dataSourceAciLeafProfile() *schema.Resource {
 		SchemaVersion: 1,
 
 		Schema: AppendBaseAttrSchema(map[string]*schema.Schema{
-
 			"name": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
+				ForceNew: true,
 			},
-
 			"name_alias": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"leaf_selector": &schema.Schema{
 				Type:     schema.TypeList,
 				Optional: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"name": &schema.Schema{
+							Type:     schema.TypeString,
+							Required: true,
+						},
+						"description": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"id": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"switch_association_type": &schema.Schema{
+							Type:     schema.TypeString,
+							Required: true,
+						},
+						"node_block": &schema.Schema{
+							Type:     schema.TypeList,
+							Optional: true,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"name": &schema.Schema{
+										Type:     schema.TypeString,
+										Required: true,
+									},
+									"description": &schema.Schema{
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+									"id": &schema.Schema{
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+									"from_": &schema.Schema{
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+									"to_": &schema.Schema{
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+								},
+							},
+						},
+					},
+				},
 			},
 			"leaf_selector_ids": &schema.Schema{
 				Type:     schema.TypeList,
 				Optional: true,
+				Elem:     &schema.Schema{Type: schema.TypeString},
 			},
 			"node_block_ids": &schema.Schema{
 				Type:     schema.TypeList,
 				Optional: true,
+				Elem:     &schema.Schema{Type: schema.TypeString},
 			},
 			"relation_infra_rs_acc_card_p": &schema.Schema{
 				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
 				Optional: true,
+				Set:      schema.HashString,
 			},
 			"relation_infra_rs_acc_port_p": &schema.Schema{
 				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
 				Optional: true,
+				Set:      schema.HashString,
 			},
 		}),
 	}
@@ -62,6 +116,7 @@ func dataSourceAciLeafProfileRead(ctx context.Context, d *schema.ResourceData, m
 	rn := fmt.Sprintf("infra/nprof-%s", name)
 
 	dn := fmt.Sprintf("uni/%s", rn)
+	log.Printf("[DEBUG] %s: Data Source - Beginning Read", dn)
 
 	infraNodeP, err := getRemoteLeafProfile(aciClient, dn)
 
@@ -119,5 +174,6 @@ func dataSourceAciLeafProfileRead(ctx context.Context, d *schema.ResourceData, m
 	}
 	// infraRsAccPortP - Read finished successfully
 
+	log.Printf("[DEBUG] %s: Data Source - Read finished successfully", dn)
 	return nil
 }

@@ -20,35 +20,29 @@ func dataSourceAciSpineSwitchPolicyGroup() *schema.Resource {
 				Required: true,
 			},
 			"relation_infra_rs_iacl_spine_profile": &schema.Schema{
-				Type:        schema.TypeString,
-				Optional:    true,
-				Description: "Create relation to iacl:SpineProfile",
+				Type:     schema.TypeString,
+				Optional: true,
 			},
 			"relation_infra_rs_spine_bfd_ipv4_inst_pol": &schema.Schema{
-				Type:        schema.TypeString,
-				Optional:    true,
-				Description: "Create relation to bfd:Ipv4InstPol",
+				Type:     schema.TypeString,
+				Optional: true,
 			},
 			"relation_infra_rs_spine_bfd_ipv6_inst_pol": &schema.Schema{
-				Type:        schema.TypeString,
-				Optional:    true,
-				Description: "Create relation to bfd:Ipv6InstPol",
+				Type:     schema.TypeString,
+				Optional: true,
 			},
 			"relation_infra_rs_spine_copp_profile": &schema.Schema{
-				Type:        schema.TypeString,
-				Optional:    true,
-				Description: "Create relation to copp:SpineProfile",
+				Type:     schema.TypeString,
+				Optional: true,
 			},
 			"relation_infra_rs_spine_p_grp_to_cdp_if_pol": &schema.Schema{
-				Type:        schema.TypeString,
-				Optional:    true,
-				Description: "Create relation to cdp:IfPol",
+				Type:     schema.TypeString,
+				Optional: true,
 			},
 			"relation_infra_rs_spine_p_grp_to_lldp_if_pol": &schema.Schema{
-				Type:        schema.TypeString,
-				Optional:    true,
-				Description: "Create relation to lldp:IfPol",
-			}})),
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 		})),
 	}
 }
@@ -59,6 +53,7 @@ func dataSourceAciSpineSwitchPolicyGroupRead(ctx context.Context, d *schema.Reso
 
 	rn := fmt.Sprintf("infra/funcprof/spaccnodepgrp-%s", name)
 	dn := fmt.Sprintf("uni/%s", rn)
+	log.Printf("[DEBUG] %s: Data Source - Beginning Read", dn)
 	infraSpineAccNodePGrp, err := getRemoteSpineSwitchPolicyGroup(aciClient, dn)
 	if err != nil {
 		return diag.FromErr(err)
@@ -117,5 +112,6 @@ func dataSourceAciSpineSwitchPolicyGroupRead(ctx context.Context, d *schema.Reso
 	}
 	// infraRsSpinePGrpToLldpIfPol - Read finished successfully
 
+	log.Printf("[DEBUG] %s: Data Source - Read finished successfully", dn)
 	return nil
 }

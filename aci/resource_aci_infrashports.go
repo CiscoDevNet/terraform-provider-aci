@@ -121,14 +121,6 @@ func resourceAciSpineAccessPortSelectorImport(d *schema.ResourceData, m interfac
 		return nil, err
 	}
 
-	// infraRsSpAccGrpData, err := aciClient.ReadRelationinfraRsSpAccGrp(dn)
-	// if err != nil {
-	// 	log.Printf("[DEBUG] Error while reading relation infraRsSpAccGrp %v", err)
-	// 	d.Set("relation_infra_rs_sp_acc_grp", "")
-	// } else {
-	// 	d.Set("relation_infra_rs_sp_acc_grp", infraRsSpAccGrpData.(string))
-	// }
-
 	// infraRsSpAccGrp - Beginning Import
 	log.Printf("[DEBUG] %s: infraRsSpAccGrp - Beginning Import with parent DN", dn)
 	_, err = getAndSetReadRelationinfraRsSpAccGrp(aciClient, dn, d)
@@ -284,19 +276,6 @@ func resourceAciSpineAccessPortSelectorRead(ctx context.Context, d *schema.Resou
 		d.SetId("")
 		return nil
 	}
-
-	// infraRsSpAccGrpData, err := aciClient.ReadRelationinfraRsSpAccGrp(dn)
-	// if err != nil {
-	// 	log.Printf("[DEBUG] Error while reading relation infraRsSpAccGrp %v", err)
-	// 	d.Set("relation_infra_rs_sp_acc_grp", "")
-	// } else {
-	// 	if _, ok := d.GetOk("relation_infra_rs_sp_acc_grp"); ok {
-	// 		tfName := d.Get("relation_infra_rs_sp_acc_grp").(string)
-	// 		if tfName != infraRsSpAccGrpData {
-	// 			d.Set("relation_infra_rs_sp_acc_grp", "")
-	// 		}
-	// 	}
-	// }
 
 	// infraRsSpAccGrp - Beginning Read
 	log.Printf("[DEBUG] %s: infraRsSpAccGrp - Beginning Read with parent DN", dn)

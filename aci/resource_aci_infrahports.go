@@ -290,15 +290,6 @@ func resourceAciAccessPortSelectorRead(ctx context.Context, d *schema.ResourceDa
 		return nil
 	}
 
-	// infraRsAccBaseGrpData, err := aciClient.ReadRelationinfraRsAccBaseGrpFromAccessPortSelector(dn)
-	// if err != nil {
-	// 	log.Printf("[DEBUG] Error while reading relation infraRsAccBaseGrp %v", err)
-	// 	d.Set("relation_infra_rs_acc_base_grp", "")
-
-	// } else {
-	// 	setRelationAttribute(d, "relation_infra_rs_acc_base_grp", infraRsAccBaseGrpData.(string))
-	// }
-
 	// infraRsAccBaseGrp - Beginning Read
 	log.Printf("[DEBUG] %s: infraRsAccBaseGrp - Beginning Read with parent DN", dn)
 	_, err = getAndSetReadRelationinfraRsAccBaseGrpFromAccessPortSelector(aciClient, dn, d)

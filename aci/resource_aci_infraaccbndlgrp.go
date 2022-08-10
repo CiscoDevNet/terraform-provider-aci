@@ -222,21 +222,6 @@ func setPCVPCInterfacePolicyGroupAttributes(infraAccBndlGrp *models.PCVPCInterfa
 	return d, nil
 }
 
-// Get and Set Relational attributes
-// Demo code
-// func getAndSetRelationinfraRsVlanNsFromPhysicalDomain(client *client.Client, dn string, d *schema.ResourceData) (*schema.ResourceData, error) {
-// 	infraRsVlanNsData, err := client.ReadRelationinfraRsVlanNsFromPhysicalDomain(dn)
-// 	if err != nil {
-// 		log.Printf("[DEBUG] Error while reading relation infraRsVlanNs %v", err)
-// 		d.Set("relation_infra_rs_vlan_ns", "")
-
-// 	} else {
-// 		d.Set("relation_infra_rs_vlan_ns", infraRsVlanNsData.(string))
-// 	}
-// 	return d, nil
-// }
-
-// Client returns tDn, need to check once again
 func getAndSetReadRelationinfraRsSpanVSrcGrpFromPCVPCInterfacePolicyGroup(client *client.Client, dn string, d *schema.ResourceData) (*schema.ResourceData, error) {
 	infraRsSpanVSrcGrpData, err := client.ReadRelationinfraRsSpanVSrcGrpFromPCVPCInterfacePolicyGroup(dn)
 	if err != nil {
@@ -244,17 +229,16 @@ func getAndSetReadRelationinfraRsSpanVSrcGrpFromPCVPCInterfacePolicyGroup(client
 		d.Set("relation_infra_rs_span_v_src_grp", nil)
 		return d, err
 	} else {
-		d.Set("relation_infra_rs_span_v_src_grp", infraRsSpanVSrcGrpData.(string))
+		d.Set("relation_infra_rs_span_v_src_grp", toStringList(infraRsSpanVSrcGrpData.(*schema.Set).List()))
 	}
 	return d, nil
 }
 
-// Client returns tDn
 func getAndSetReadRelationinfraRsStormctrlIfPolFromPCVPCInterfacePolicyGroup(client *client.Client, dn string, d *schema.ResourceData) (*schema.ResourceData, error) {
 	infraRsStormctrlIfPolData, err := client.ReadRelationinfraRsStormctrlIfPolFromPCVPCInterfacePolicyGroup(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation infraRsStormctrlIfPol %v", err)
-		d.Set("relation_infra_rs_stormctrl_if_pol", "")
+		d.Set("relation_infra_rs_stormctrl_if_pol", nil)
 		return d, err
 	} else {
 		d.Set("relation_infra_rs_stormctrl_if_pol", infraRsStormctrlIfPolData.(string))
@@ -262,12 +246,11 @@ func getAndSetReadRelationinfraRsStormctrlIfPolFromPCVPCInterfacePolicyGroup(cli
 	return d, nil
 }
 
-// Client returns tDn
 func getAndSetReadRelationinfraRsLldpIfPolFromPCVPCInterfacePolicyGroup(client *client.Client, dn string, d *schema.ResourceData) (*schema.ResourceData, error) {
 	infraRsLldpIfPolData, err := client.ReadRelationinfraRsLldpIfPolFromPCVPCInterfacePolicyGroup(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation infraRsLldpIfPol %v", err)
-		d.Set("relation_infra_rs_lldp_if_pol", "")
+		d.Set("relation_infra_rs_lldp_if_pol", nil)
 		return d, err
 	} else {
 		d.Set("relation_infra_rs_lldp_if_pol", infraRsLldpIfPolData.(string))
@@ -275,12 +258,11 @@ func getAndSetReadRelationinfraRsLldpIfPolFromPCVPCInterfacePolicyGroup(client *
 	return d, nil
 }
 
-// Client returns tDn
 func getAndSetReadRelationinfraRsMacsecIfPolFromPCVPCInterfacePolicyGroup(client *client.Client, dn string, d *schema.ResourceData) (*schema.ResourceData, error) {
 	infraRsMacsecIfPolData, err := client.ReadRelationinfraRsMacsecIfPolFromPCVPCInterfacePolicyGroup(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation infraRsMacsecIfPol %v", err)
-		d.Set("relation_infra_rs_macsec_if_pol", "")
+		d.Set("relation_infra_rs_macsec_if_pol", nil)
 		return d, err
 	} else {
 		d.Set("relation_infra_rs_macsec_if_pol", infraRsMacsecIfPolData.(string))
@@ -288,12 +270,11 @@ func getAndSetReadRelationinfraRsMacsecIfPolFromPCVPCInterfacePolicyGroup(client
 	return d, nil
 }
 
-// Client returns tDn
 func getAndSetReadRelationinfraRsQosDppIfPolFromPCVPCInterfacePolicyGroup(client *client.Client, dn string, d *schema.ResourceData) (*schema.ResourceData, error) {
 	infraRsQosDppIfPolData, err := client.ReadRelationinfraRsQosDppIfPolFromPCVPCInterfacePolicyGroup(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation infraRsQosDppIfPol %v", err)
-		d.Set("relation_infra_rs_qos_dpp_if_pol", "")
+		d.Set("relation_infra_rs_qos_dpp_if_pol", nil)
 		return d, err
 	} else {
 		d.Set("relation_infra_rs_qos_dpp_if_pol", infraRsQosDppIfPolData.(string))
@@ -301,12 +282,11 @@ func getAndSetReadRelationinfraRsQosDppIfPolFromPCVPCInterfacePolicyGroup(client
 	return d, nil
 }
 
-// Client returns tDn
 func getAndSetReadRelationinfraRsHIfPolFromPCVPCInterfacePolicyGroup(client *client.Client, dn string, d *schema.ResourceData) (*schema.ResourceData, error) {
 	infraRsHIfPolData, err := client.ReadRelationinfraRsHIfPolFromPCVPCInterfacePolicyGroup(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation infraRsHIfPol %v", err)
-		d.Set("relation_infra_rs_h_if_pol", "")
+		d.Set("relation_infra_rs_h_if_pol", nil)
 		return d, err
 	} else {
 		d.Set("relation_infra_rs_h_if_pol", infraRsHIfPolData.(string))
@@ -314,7 +294,6 @@ func getAndSetReadRelationinfraRsHIfPolFromPCVPCInterfacePolicyGroup(client *cli
 	return d, nil
 }
 
-// Client returns list of items, need to rework
 func getAndSetReadRelationinfraRsNetflowMonitorPolFromPCVPCInterfacePolicyGroup(client *client.Client, dn string, d *schema.ResourceData) (*schema.ResourceData, error) {
 	infraRsNetflowMonitorPolData, err := client.ReadRelationinfraRsNetflowMonitorPolFromPCVPCInterfacePolicyGroup(dn)
 	if err != nil {
@@ -322,17 +301,24 @@ func getAndSetReadRelationinfraRsNetflowMonitorPolFromPCVPCInterfacePolicyGroup(
 		d.Set("relation_infra_rs_netflow_monitor_pol", nil)
 		return d, err
 	} else {
-		d.Set("relation_infra_rs_netflow_monitor_pol", infraRsNetflowMonitorPolData.(string))
+		relParamMapList := make([]map[string]string, 0, 1)
+		relParams := infraRsNetflowMonitorPolData.([]map[string]string)
+		for _, obj := range relParams {
+			relParamMapList = append(relParamMapList, map[string]string{
+				"target_dn": obj["tDn"],
+				"flt_type":  obj["fltType"],
+			})
+		}
+		d.Set("relation_infra_rs_netflow_monitor_pol", relParamMapList)
 	}
 	return d, nil
 }
 
-// Client returns tDn
 func getAndSetReadRelationinfraRsL2PortAuthPolFromPCVPCInterfacePolicyGroup(client *client.Client, dn string, d *schema.ResourceData) (*schema.ResourceData, error) {
 	infraRsL2PortAuthPolData, err := client.ReadRelationinfraRsL2PortAuthPolFromPCVPCInterfacePolicyGroup(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation infraRsL2PortAuthPol %v", err)
-		d.Set("relation_infra_rs_l2_port_auth_pol", "")
+		d.Set("relation_infra_rs_l2_port_auth_pol", nil)
 		return d, err
 	} else {
 		d.Set("relation_infra_rs_l2_port_auth_pol", infraRsL2PortAuthPolData.(string))
@@ -340,12 +326,11 @@ func getAndSetReadRelationinfraRsL2PortAuthPolFromPCVPCInterfacePolicyGroup(clie
 	return d, nil
 }
 
-// Client returns tDn
 func getAndSetReadRelationinfraRsMcpIfPolFromPCVPCInterfacePolicyGroup(client *client.Client, dn string, d *schema.ResourceData) (*schema.ResourceData, error) {
 	infraRsMcpIfPolData, err := client.ReadRelationinfraRsMcpIfPolFromPCVPCInterfacePolicyGroup(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation infraRsMcpIfPol %v", err)
-		d.Set("relation_infra_rs_mcp_if_pol", "")
+		d.Set("relation_infra_rs_mcp_if_pol", nil)
 		return d, err
 	} else {
 		d.Set("relation_infra_rs_mcp_if_pol", infraRsMcpIfPolData.(string))
@@ -353,12 +338,11 @@ func getAndSetReadRelationinfraRsMcpIfPolFromPCVPCInterfacePolicyGroup(client *c
 	return d, nil
 }
 
-// Client returns tDn
 func getAndSetReadRelationinfraRsL2PortSecurityPolFromPCVPCInterfacePolicyGroup(client *client.Client, dn string, d *schema.ResourceData) (*schema.ResourceData, error) {
 	infraRsL2PortSecurityPolData, err := client.ReadRelationinfraRsL2PortSecurityPolFromPCVPCInterfacePolicyGroup(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation infraRsL2PortSecurityPol %v", err)
-		d.Set("relation_infra_rs_l2_port_security_pol", "")
+		d.Set("relation_infra_rs_l2_port_security_pol", nil)
 		return d, err
 	} else {
 		d.Set("relation_infra_rs_l2_port_security_pol", infraRsL2PortSecurityPolData.(string))
@@ -366,12 +350,11 @@ func getAndSetReadRelationinfraRsL2PortSecurityPolFromPCVPCInterfacePolicyGroup(
 	return d, nil
 }
 
-// Client returns tDn
 func getAndSetReadRelationinfraRsCoppIfPolFromPCVPCInterfacePolicyGroup(client *client.Client, dn string, d *schema.ResourceData) (*schema.ResourceData, error) {
 	infraRsCoppIfPolData, err := client.ReadRelationinfraRsCoppIfPolFromPCVPCInterfacePolicyGroup(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation infraRsCoppIfPol %v", err)
-		d.Set("relation_infra_rs_copp_if_pol", "")
+		d.Set("relation_infra_rs_copp_if_pol", nil)
 		return d, err
 	} else {
 		d.Set("relation_infra_rs_copp_if_pol", infraRsCoppIfPolData.(string))
@@ -379,7 +362,6 @@ func getAndSetReadRelationinfraRsCoppIfPolFromPCVPCInterfacePolicyGroup(client *
 	return d, nil
 }
 
-// Client returns tDn, need to check once again
 func getAndSetReadRelationinfraRsSpanVDestGrpFromPCVPCInterfacePolicyGroup(client *client.Client, dn string, d *schema.ResourceData) (*schema.ResourceData, error) {
 	infraRsSpanVDestGrpData, err := client.ReadRelationinfraRsSpanVDestGrpFromPCVPCInterfacePolicyGroup(dn)
 	if err != nil {
@@ -387,17 +369,16 @@ func getAndSetReadRelationinfraRsSpanVDestGrpFromPCVPCInterfacePolicyGroup(clien
 		d.Set("relation_infra_rs_span_v_dest_grp", nil)
 		return d, err
 	} else {
-		d.Set("relation_infra_rs_span_v_dest_grp", infraRsSpanVDestGrpData.(string))
+		d.Set("relation_infra_rs_span_v_dest_grp", toStringList(infraRsSpanVDestGrpData.(*schema.Set).List()))
 	}
 	return d, nil
 }
 
-// Client returns tDn
 func getAndSetReadRelationinfraRsLacpPolFromPCVPCInterfacePolicyGroup(client *client.Client, dn string, d *schema.ResourceData) (*schema.ResourceData, error) {
 	infraRsLacpPolData, err := client.ReadRelationinfraRsLacpPolFromPCVPCInterfacePolicyGroup(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation infraRsLacpPol %v", err)
-		d.Set("relation_infra_rs_lacp_pol", "")
+		d.Set("relation_infra_rs_lacp_pol", nil)
 		return d, err
 	} else {
 		d.Set("relation_infra_rs_lacp_pol", infraRsLacpPolData.(string))
@@ -405,12 +386,11 @@ func getAndSetReadRelationinfraRsLacpPolFromPCVPCInterfacePolicyGroup(client *cl
 	return d, nil
 }
 
-// Client returns tDn
 func getAndSetReadRelationinfraRsCdpIfPolFromPCVPCInterfacePolicyGroup(client *client.Client, dn string, d *schema.ResourceData) (*schema.ResourceData, error) {
 	infraRsCdpIfPolData, err := client.ReadRelationinfraRsCdpIfPolFromPCVPCInterfacePolicyGroup(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation infraRsCdpIfPol %v", err)
-		d.Set("relation_infra_rs_cdp_if_pol", "")
+		d.Set("relation_infra_rs_cdp_if_pol", nil)
 		return d, err
 	} else {
 		d.Set("relation_infra_rs_cdp_if_pol", infraRsCdpIfPolData.(string))
@@ -418,12 +398,11 @@ func getAndSetReadRelationinfraRsCdpIfPolFromPCVPCInterfacePolicyGroup(client *c
 	return d, nil
 }
 
-// Client returns tDn
 func getAndSetReadRelationinfraRsQosPfcIfPolFromPCVPCInterfacePolicyGroup(client *client.Client, dn string, d *schema.ResourceData) (*schema.ResourceData, error) {
 	infraRsQosPfcIfPolData, err := client.ReadRelationinfraRsQosPfcIfPolFromPCVPCInterfacePolicyGroup(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation infraRsQosPfcIfPol %v", err)
-		d.Set("relation_infra_rs_qos_pfc_if_pol", "")
+		d.Set("relation_infra_rs_qos_pfc_if_pol", nil)
 		return d, err
 	} else {
 		d.Set("relation_infra_rs_qos_pfc_if_pol", infraRsQosPfcIfPolData.(string))
@@ -431,12 +410,11 @@ func getAndSetReadRelationinfraRsQosPfcIfPolFromPCVPCInterfacePolicyGroup(client
 	return d, nil
 }
 
-// Client returns tDn
 func getAndSetReadRelationinfraRsQosSdIfPolFromPCVPCInterfacePolicyGroup(client *client.Client, dn string, d *schema.ResourceData) (*schema.ResourceData, error) {
 	infraRsQosSdIfPolData, err := client.ReadRelationinfraRsQosSdIfPolFromPCVPCInterfacePolicyGroup(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation infraRsQosSdIfPol %v", err)
-		d.Set("relation_infra_rs_qos_sd_if_pol", "")
+		d.Set("relation_infra_rs_qos_sd_if_pol", nil)
 		return d, err
 	} else {
 		d.Set("relation_infra_rs_qos_sd_if_pol", infraRsQosSdIfPolData.(string))
@@ -444,12 +422,11 @@ func getAndSetReadRelationinfraRsQosSdIfPolFromPCVPCInterfacePolicyGroup(client 
 	return d, nil
 }
 
-// Client returns tDn
 func getAndSetReadRelationinfraRsMonIfInfraPolFromPCVPCInterfacePolicyGroup(client *client.Client, dn string, d *schema.ResourceData) (*schema.ResourceData, error) {
 	infraRsMonIfInfraPolData, err := client.ReadRelationinfraRsMonIfInfraPolFromPCVPCInterfacePolicyGroup(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation infraRsMonIfInfraPol %v", err)
-		d.Set("relation_infra_rs_mon_if_infra_pol", "")
+		d.Set("relation_infra_rs_mon_if_infra_pol", nil)
 		return d, err
 	} else {
 		d.Set("relation_infra_rs_mon_if_infra_pol", infraRsMonIfInfraPolData.(string))
@@ -457,12 +434,11 @@ func getAndSetReadRelationinfraRsMonIfInfraPolFromPCVPCInterfacePolicyGroup(clie
 	return d, nil
 }
 
-// Client returns tDn
 func getAndSetReadRelationinfraRsFcIfPolFromPCVPCInterfacePolicyGroup(client *client.Client, dn string, d *schema.ResourceData) (*schema.ResourceData, error) {
 	infraRsFcIfPolData, err := client.ReadRelationinfraRsFcIfPolFromPCVPCInterfacePolicyGroup(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation infraRsFcIfPol %v", err)
-		d.Set("relation_infra_rs_fc_if_pol", "")
+		d.Set("relation_infra_rs_fc_if_pol", nil)
 		return d, err
 	} else {
 		d.Set("relation_infra_rs_fc_if_pol", infraRsFcIfPolData.(string))
@@ -470,12 +446,11 @@ func getAndSetReadRelationinfraRsFcIfPolFromPCVPCInterfacePolicyGroup(client *cl
 	return d, nil
 }
 
-// Client returns tDn
 func getAndSetReadRelationinfraRsQosIngressDppIfPolFromPCVPCInterfacePolicyGroup(client *client.Client, dn string, d *schema.ResourceData) (*schema.ResourceData, error) {
 	infraRsQosIngressDppIfPolData, err := client.ReadRelationinfraRsQosIngressDppIfPolFromPCVPCInterfacePolicyGroup(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation infraRsQosIngressDppIfPol %v", err)
-		d.Set("relation_infra_rs_qos_ingress_dpp_if_pol", "")
+		d.Set("relation_infra_rs_qos_ingress_dpp_if_pol", nil)
 		return d, err
 	} else {
 		d.Set("relation_infra_rs_qos_ingress_dpp_if_pol", infraRsQosIngressDppIfPolData.(string))
@@ -483,12 +458,11 @@ func getAndSetReadRelationinfraRsQosIngressDppIfPolFromPCVPCInterfacePolicyGroup
 	return d, nil
 }
 
-// Client returns tDn
 func getAndSetReadRelationinfraRsQosEgressDppIfPolFromPCVPCInterfacePolicyGroup(client *client.Client, dn string, d *schema.ResourceData) (*schema.ResourceData, error) {
 	infraRsQosEgressDppIfPolData, err := client.ReadRelationinfraRsQosEgressDppIfPolFromPCVPCInterfacePolicyGroup(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation infraRsQosEgressDppIfPol %v", err)
-		d.Set("relation_infra_rs_qos_egress_dpp_if_pol", "")
+		d.Set("relation_infra_rs_qos_egress_dpp_if_pol", nil)
 		return d, err
 	} else {
 		d.Set("relation_infra_rs_qos_egress_dpp_if_pol", infraRsQosEgressDppIfPolData.(string))
@@ -496,12 +470,11 @@ func getAndSetReadRelationinfraRsQosEgressDppIfPolFromPCVPCInterfacePolicyGroup(
 	return d, nil
 }
 
-// Client returns tDn
 func getAndSetReadRelationinfraRsL2IfPolFromPCVPCInterfacePolicyGroup(client *client.Client, dn string, d *schema.ResourceData) (*schema.ResourceData, error) {
 	infraRsL2IfPolData, err := client.ReadRelationinfraRsL2IfPolFromPCVPCInterfacePolicyGroup(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation infraRsL2IfPol %v", err)
-		d.Set("relation_infra_rs_l2_if_pol", "")
+		d.Set("relation_infra_rs_l2_if_pol", nil)
 		return d, err
 	} else {
 		d.Set("relation_infra_rs_l2_if_pol", infraRsL2IfPolData.(string))
@@ -509,12 +482,11 @@ func getAndSetReadRelationinfraRsL2IfPolFromPCVPCInterfacePolicyGroup(client *cl
 	return d, nil
 }
 
-// Client returns tDn
 func getAndSetReadRelationinfraRsStpIfPolFromPCVPCInterfacePolicyGroup(client *client.Client, dn string, d *schema.ResourceData) (*schema.ResourceData, error) {
 	infraRsStpIfPolData, err := client.ReadRelationinfraRsStpIfPolFromPCVPCInterfacePolicyGroup(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation infraRsStpIfPol %v", err)
-		d.Set("relation_infra_rs_stp_if_pol", "")
+		d.Set("relation_infra_rs_stp_if_pol", nil)
 		return d, err
 	} else {
 		d.Set("relation_infra_rs_stp_if_pol", infraRsStpIfPolData.(string))
@@ -522,12 +494,11 @@ func getAndSetReadRelationinfraRsStpIfPolFromPCVPCInterfacePolicyGroup(client *c
 	return d, nil
 }
 
-// Client returns tDn
 func getAndSetReadRelationinfraRsAttEntPFromPCVPCInterfacePolicyGroup(client *client.Client, dn string, d *schema.ResourceData) (*schema.ResourceData, error) {
 	infraRsAttEntPData, err := client.ReadRelationinfraRsAttEntPFromPCVPCInterfacePolicyGroup(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation infraRsAttEntP %v", err)
-		d.Set("relation_infra_rs_att_ent_p", "")
+		d.Set("relation_infra_rs_att_ent_p", nil)
 		return d, err
 	} else {
 		d.Set("relation_infra_rs_att_ent_p", infraRsAttEntPData.(string))
@@ -535,20 +506,17 @@ func getAndSetReadRelationinfraRsAttEntPFromPCVPCInterfacePolicyGroup(client *cl
 	return d, nil
 }
 
-// Client returns tDn
 func getAndSetReadRelationinfraRsL2InstPolFromPCVPCInterfacePolicyGroup(client *client.Client, dn string, d *schema.ResourceData) (*schema.ResourceData, error) {
 	infraRsL2InstPolData, err := client.ReadRelationinfraRsL2InstPolFromPCVPCInterfacePolicyGroup(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation infraRsL2InstPol %v", err)
-		d.Set("relation_infra_rs_l2_inst_pol", "")
+		d.Set("relation_infra_rs_l2_inst_pol", nil)
 		return d, err
 	} else {
 		d.Set("relation_infra_rs_l2_inst_pol", infraRsL2InstPolData.(string))
 	}
 	return d, nil
 }
-
-// Get and Set Relational attributes
 
 func resourceAciPCVPCInterfacePolicyGroupImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
 	log.Printf("[DEBUG] %s: Beginning Import", d.Id())
@@ -1603,226 +1571,6 @@ func resourceAciPCVPCInterfacePolicyGroupRead(ctx context.Context, d *schema.Res
 		d.SetId("")
 		return nil
 	}
-	// infraRsSpanVSrcGrpData, err := aciClient.ReadRelationinfraRsSpanVSrcGrpFromPCVPCInterfacePolicyGroup(dn)
-	// if err != nil {
-	// 	log.Printf("[DEBUG] Error while reading relation infraRsSpanVSrcGrp %v", err)
-	// 	setRelationAttribute(d, "relation_infra_rs_span_v_src_grp", make([]interface{}, 0, 1))
-	// } else {
-	// 	setRelationAttribute(d, "relation_infra_rs_span_v_src_grp", toStringList(infraRsSpanVSrcGrpData.(*schema.Set).List()))
-	// }
-
-	// infraRsStormctrlIfPolData, err := aciClient.ReadRelationinfraRsStormctrlIfPolFromPCVPCInterfacePolicyGroup(dn)
-	// if err != nil {
-	// 	log.Printf("[DEBUG] Error while reading relation infraRsStormctrlIfPol %v", err)
-	// 	d.Set("relation_infra_rs_stormctrl_if_pol", "")
-
-	// } else {
-	// 	setRelationAttribute(d, "relation_infra_rs_stormctrl_if_pol", infraRsStormctrlIfPolData.(string))
-	// }
-
-	// infraRsLldpIfPolData, err := aciClient.ReadRelationinfraRsLldpIfPolFromPCVPCInterfacePolicyGroup(dn)
-	// if err != nil {
-	// 	log.Printf("[DEBUG] Error while reading relation infraRsLldpIfPol %v", err)
-	// 	d.Set("relation_infra_rs_lldp_if_pol", "")
-
-	// } else {
-	// 	setRelationAttribute(d, "relation_infra_rs_lldp_if_pol", infraRsLldpIfPolData.(string))
-	// }
-
-	// infraRsMacsecIfPolData, err := aciClient.ReadRelationinfraRsMacsecIfPolFromPCVPCInterfacePolicyGroup(dn)
-	// if err != nil {
-	// 	log.Printf("[DEBUG] Error while reading relation infraRsMacsecIfPol %v", err)
-	// 	d.Set("relation_infra_rs_macsec_if_pol", "")
-
-	// } else {
-	// 	setRelationAttribute(d, "relation_infra_rs_macsec_if_pol", infraRsMacsecIfPolData.(string))
-	// }
-
-	// infraRsQosDppIfPolData, err := aciClient.ReadRelationinfraRsQosDppIfPolFromPCVPCInterfacePolicyGroup(dn)
-	// if err != nil {
-	// 	log.Printf("[DEBUG] Error while reading relation infraRsQosDppIfPol %v", err)
-	// 	d.Set("relation_infra_rs_qos_dpp_if_pol", "")
-
-	// } else {
-	// 	setRelationAttribute(d, "relation_infra_rs_qos_dpp_if_pol", infraRsQosDppIfPolData.(string))
-	// }
-
-	// infraRsHIfPolData, err := aciClient.ReadRelationinfraRsHIfPolFromPCVPCInterfacePolicyGroup(dn)
-	// if err != nil {
-	// 	log.Printf("[DEBUG] Error while reading relation infraRsHIfPol %v", err)
-	// 	d.Set("relation_infra_rs_h_if_pol", "")
-
-	// } else {
-	// 	setRelationAttribute(d, "relation_infra_rs_h_if_pol", infraRsHIfPolData.(string))
-	// }
-
-	// infraRsNetflowMonitorPolData, err := aciClient.ReadRelationinfraRsNetflowMonitorPolFromPCVPCInterfacePolicyGroup(dn)
-	// if err != nil {
-	// 	log.Printf("[DEBUG] Error while reading relation infraRsNetflowMonitorPol %v", err)
-
-	// } else {
-	// 	relParamList := make([]map[string]string, 0, 1)
-	// 	relParams := infraRsNetflowMonitorPolData.([]map[string]string)
-	// 	for _, obj := range relParams {
-	// 		relParamList = append(relParamList, map[string]string{
-	// 			"target_dn": obj["tnNetflowMonitorPolName"],
-	// 			"flt_type":  obj["fltType"],
-	// 		})
-	// 	}
-	// 	d.Set("relation_infra_rs_netflow_monitor_pol", relParamList)
-	// }
-
-	// infraRsL2PortAuthPolData, err := aciClient.ReadRelationinfraRsL2PortAuthPolFromPCVPCInterfacePolicyGroup(dn)
-	// if err != nil {
-	// 	log.Printf("[DEBUG] Error while reading relation infraRsL2PortAuthPol %v", err)
-	// 	d.Set("relation_infra_rs_l2_port_auth_pol", "")
-
-	// } else {
-	// 	setRelationAttribute(d, "relation_infra_rs_l2_port_auth_pol", infraRsL2PortAuthPolData.(string))
-	// }
-
-	// infraRsMcpIfPolData, err := aciClient.ReadRelationinfraRsMcpIfPolFromPCVPCInterfacePolicyGroup(dn)
-	// if err != nil {
-	// 	log.Printf("[DEBUG] Error while reading relation infraRsMcpIfPol %v", err)
-	// 	d.Set("relation_infra_rs_mcp_if_pol", "")
-
-	// } else {
-	// 	setRelationAttribute(d, "relation_infra_rs_mcp_if_pol", infraRsMcpIfPolData.(string))
-	// }
-
-	// infraRsL2PortSecurityPolData, err := aciClient.ReadRelationinfraRsL2PortSecurityPolFromPCVPCInterfacePolicyGroup(dn)
-	// if err != nil {
-	// 	log.Printf("[DEBUG] Error while reading relation infraRsL2PortSecurityPol %v", err)
-	// 	d.Set("relation_infra_rs_l2_port_security_pol", "")
-
-	// } else {
-	// 	setRelationAttribute(d, "relation_infra_rs_l2_port_security_pol", infraRsL2PortSecurityPolData.(string))
-	// }
-
-	// infraRsCoppIfPolData, err := aciClient.ReadRelationinfraRsCoppIfPolFromPCVPCInterfacePolicyGroup(dn)
-	// if err != nil {
-	// 	log.Printf("[DEBUG] Error while reading relation infraRsCoppIfPol %v", err)
-	// 	d.Set("relation_infra_rs_copp_if_pol", "")
-
-	// } else {
-	// 	setRelationAttribute(d, "relation_infra_rs_copp_if_pol", infraRsCoppIfPolData.(string))
-	// }
-
-	// infraRsSpanVDestGrpData, err := aciClient.ReadRelationinfraRsSpanVDestGrpFromPCVPCInterfacePolicyGroup(dn)
-	// if err != nil {
-	// 	log.Printf("[DEBUG] Error while reading relation infraRsSpanVDestGrp %v", err)
-	// 	setRelationAttribute(d, "relation_infra_rs_span_v_dest_grp", make([]interface{}, 0, 1))
-	// } else {
-	// 	setRelationAttribute(d, "relation_infra_rs_span_v_dest_grp", toStringList(infraRsSpanVDestGrpData.(*schema.Set).List()))
-	// }
-
-	// infraRsLacpPolData, err := aciClient.ReadRelationinfraRsLacpPolFromPCVPCInterfacePolicyGroup(dn)
-	// if err != nil {
-	// 	log.Printf("[DEBUG] Error while reading relation infraRsLacpPol %v", err)
-	// 	d.Set("relation_infra_rs_lacp_pol", "")
-
-	// } else {
-	// 	setRelationAttribute(d, "relation_infra_rs_lacp_pol", infraRsLacpPolData.(string))
-	// }
-
-	// infraRsCdpIfPolData, err := aciClient.ReadRelationinfraRsCdpIfPolFromPCVPCInterfacePolicyGroup(dn)
-	// if err != nil {
-	// 	log.Printf("[DEBUG] Error while reading relation infraRsCdpIfPol %v", err)
-	// 	d.Set("relation_infra_rs_cdp_if_pol", "")
-
-	// } else {
-	// 	setRelationAttribute(d, "relation_infra_rs_cdp_if_pol", infraRsCdpIfPolData.(string))
-	// }
-
-	// infraRsQosPfcIfPolData, err := aciClient.ReadRelationinfraRsQosPfcIfPolFromPCVPCInterfacePolicyGroup(dn)
-	// if err != nil {
-	// 	log.Printf("[DEBUG] Error while reading relation infraRsQosPfcIfPol %v", err)
-	// 	d.Set("relation_infra_rs_qos_pfc_if_pol", "")
-
-	// } else {
-	// 	setRelationAttribute(d, "relation_infra_rs_qos_pfc_if_pol", infraRsQosPfcIfPolData.(string))
-	// }
-
-	// infraRsQosSdIfPolData, err := aciClient.ReadRelationinfraRsQosSdIfPolFromPCVPCInterfacePolicyGroup(dn)
-	// if err != nil {
-	// 	log.Printf("[DEBUG] Error while reading relation infraRsQosSdIfPol %v", err)
-	// 	d.Set("relation_infra_rs_qos_sd_if_pol", "")
-
-	// } else {
-	// 	setRelationAttribute(d, "relation_infra_rs_qos_sd_if_pol", infraRsQosSdIfPolData.(string))
-	// }
-
-	// infraRsMonIfInfraPolData, err := aciClient.ReadRelationinfraRsMonIfInfraPolFromPCVPCInterfacePolicyGroup(dn)
-	// if err != nil {
-	// 	log.Printf("[DEBUG] Error while reading relation infraRsMonIfInfraPol %v", err)
-	// 	d.Set("relation_infra_rs_mon_if_infra_pol", "")
-
-	// } else {
-	// 	setRelationAttribute(d, "relation_infra_rs_mon_if_infra_pol", infraRsMonIfInfraPolData.(string))
-	// }
-
-	// infraRsFcIfPolData, err := aciClient.ReadRelationinfraRsFcIfPolFromPCVPCInterfacePolicyGroup(dn)
-	// if err != nil {
-	// 	log.Printf("[DEBUG] Error while reading relation infraRsFcIfPol %v", err)
-	// 	d.Set("relation_infra_rs_fc_if_pol", "")
-
-	// } else {
-	// 	setRelationAttribute(d, "relation_infra_rs_fc_if_pol", infraRsFcIfPolData.(string))
-	// }
-
-	// infraRsQosIngressDppIfPolData, err := aciClient.ReadRelationinfraRsQosIngressDppIfPolFromPCVPCInterfacePolicyGroup(dn)
-	// if err != nil {
-	// 	log.Printf("[DEBUG] Error while reading relation infraRsQosIngressDppIfPol %v", err)
-	// 	d.Set("relation_infra_rs_qos_ingress_dpp_if_pol", "")
-
-	// } else {
-	// 	setRelationAttribute(d, "relation_infra_rs_qos_ingress_dpp_if_pol", infraRsQosIngressDppIfPolData.(string))
-	// }
-
-	// infraRsQosEgressDppIfPolData, err := aciClient.ReadRelationinfraRsQosEgressDppIfPolFromPCVPCInterfacePolicyGroup(dn)
-	// if err != nil {
-	// 	log.Printf("[DEBUG] Error while reading relation infraRsQosEgressDppIfPol %v", err)
-	// 	d.Set("relation_infra_rs_qos_egress_dpp_if_pol", "")
-
-	// } else {
-	// 	setRelationAttribute(d, "relation_infra_rs_qos_egress_dpp_if_pol", infraRsQosEgressDppIfPolData.(string))
-	// }
-
-	// infraRsL2IfPolData, err := aciClient.ReadRelationinfraRsL2IfPolFromPCVPCInterfacePolicyGroup(dn)
-	// if err != nil {
-	// 	log.Printf("[DEBUG] Error while reading relation infraRsL2IfPol %v", err)
-	// 	d.Set("relation_infra_rs_l2_if_pol", "")
-
-	// } else {
-	// 	setRelationAttribute(d, "relation_infra_rs_l2_if_pol", infraRsL2IfPolData.(string))
-	// }
-
-	// infraRsStpIfPolData, err := aciClient.ReadRelationinfraRsStpIfPolFromPCVPCInterfacePolicyGroup(dn)
-	// if err != nil {
-	// 	log.Printf("[DEBUG] Error while reading relation infraRsStpIfPol %v", err)
-	// 	d.Set("relation_infra_rs_stp_if_pol", "")
-
-	// } else {
-	// 	setRelationAttribute(d, "relation_infra_rs_stp_if_pol", infraRsStpIfPolData.(string))
-	// }
-
-	// infraRsAttEntPData, err := aciClient.ReadRelationinfraRsAttEntPFromPCVPCInterfacePolicyGroup(dn)
-	// if err != nil {
-	// 	log.Printf("[DEBUG] Error while reading relation infraRsAttEntP %v", err)
-	// 	d.Set("relation_infra_rs_att_ent_p", "")
-
-	// } else {
-	// 	setRelationAttribute(d, "relation_infra_rs_att_ent_p", infraRsAttEntPData)
-	// }
-
-	// infraRsL2InstPolData, err := aciClient.ReadRelationinfraRsL2InstPolFromPCVPCInterfacePolicyGroup(dn)
-	// if err != nil {
-	// 	log.Printf("[DEBUG] Error while reading relation infraRsL2InstPol %v", err)
-	// 	d.Set("relation_infra_rs_l2_inst_pol", "")
-
-	// } else {
-	// 	setRelationAttribute(d, "relation_infra_rs_l2_inst_pol", infraRsL2InstPolData.(string))
-	// }
 
 	// infraRsSpanVSrcGrp - Beginning Read
 	log.Printf("[DEBUG] %s: infraRsSpanVSrcGrp - Beginning Read with parent DN", dn)
