@@ -2,10 +2,12 @@ package aci
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
+	"github.com/ciscoecosystem/aci-go-client/container"
 	"github.com/ciscoecosystem/aci-go-client/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -24,6 +26,17 @@ func resourceAciCloudAccount() *schema.Resource {
 		},
 
 		SchemaVersion: 1,
+
+		CustomizeDiff: func(_ context.Context, diff *schema.ResourceDiff, v interface{}) error {
+			if diff.Get("access_type") == "credentials" {
+				if diff.Get("cloud_credentials_dn") == "" {
+					return errors.New(`"cloud_credentials_dn" is required when "access_type" is credentials`)
+				}
+			}
+
+			return nil
+		},
+
 		Schema: AppendBaseAttrSchema(AppendNameAliasAttrSchema(map[string]*schema.Schema{
 			"tenant_dn": {
 				Type:     schema.TypeString,
@@ -65,7 +78,7 @@ func resourceAciCloudAccount() *schema.Resource {
 				Optional:    true,
 				Description: "Create relation to cloud:AccessPolicy",
 			},
-			"relation_cloud_rs_credentials": {
+			"cloud_credentials_dn": {
 				Type:        schema.TypeString,
 				Optional:    true,
 				Description: "Create relation to cloud:Credentials",
@@ -79,7 +92,6 @@ func getRemoteCloudAccount(client *client.Client, dn string) (*models.CloudAccou
 		return nil, err
 	}
 
-	log.Printf("GETS :: cloudAccountCont : %s ", cloudAccountCont)
 	cloudAccount := models.CloudAccountFromContainer(cloudAccountCont)
 	if cloudAccount.DistinguishedName == "" {
 		return nil, fmt.Errorf("Cloud Account %s not found", cloudAccount.DistinguishedName)
@@ -93,7 +105,7 @@ func setCloudAccountAttributes(cloudAccount *models.CloudAccount, d *schema.Reso
 	if dn != cloudAccount.DistinguishedName {
 		d.Set("tenant_dn", "")
 	} else {
-		d.Set("tenant_dn", GetParentDn(dn, "/act"))
+		d.Set("tenant_dn", GetParentDn(dn, "/ad"))
 	}
 
 	cloudAccountMap, err := cloudAccount.ToMap()
@@ -133,59 +145,64 @@ func resourceAciCloudAccountCreate(ctx context.Context, d *schema.ResourceData, 
 	vendor := d.Get("vendor").(string)
 	TenantDn := d.Get("tenant_dn").(string)
 
-	cloudAccountAttr := models.CloudAccountAttributes{}
+	cloudAccountSet := make([]interface{}, 0, 1)
+	cloudAccountMap := make(map[string]interface{})
 
-	nameAlias := ""
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
-		nameAlias = NameAlias.(string)
+		cloudAccountMap["nameAlias"] = NameAlias.(string)
 	}
 
 	if Annotation, ok := d.GetOk("annotation"); ok {
-		cloudAccountAttr.Annotation = Annotation.(string)
+		cloudAccountMap["annotation"] = Annotation.(string)
 	} else {
-		cloudAccountAttr.Annotation = "{}"
+		cloudAccountMap["annotation"] = "{}"
 	}
 
 	if AccessType, ok := d.GetOk("access_type"); ok {
-		cloudAccountAttr.AccessType = AccessType.(string)
+		cloudAccountMap["accessType"] = AccessType.(string)
 	}
 
 	if Account_id, ok := d.GetOk("account_id"); ok {
-		cloudAccountAttr.Account_id = Account_id.(string)
+		cloudAccountMap["id"] = Account_id.(string)
 	}
 
 	if Name, ok := d.GetOk("name"); ok {
-		cloudAccountAttr.Name = Name.(string)
+		cloudAccountMap["name"] = Name.(string)
 	}
 
 	if Vendor, ok := d.GetOk("vendor"); ok {
-		cloudAccountAttr.Vendor = Vendor.(string)
+		cloudAccountMap["vendor"] = Vendor.(string)
 	}
 
-	log.Printf("CREATES :: relationTocloudRsCredentials : %s ", d.Get("relation_cloud_rs_credentials"))
-	cloudAccount := models.NewCloudAccount(fmt.Sprintf(models.RncloudAccount, account_id, vendor), TenantDn, nameAlias, cloudAccountAttr)
+	dn := fmt.Sprintf("%s/%s", TenantDn, fmt.Sprintf(models.RncloudAccount, account_id, vendor))
 
-	err := aciClient.Save(cloudAccount)
+	if relationTocloudRsCredentials, ok := d.GetOk("cloud_credentials_dn"); ok {
+
+		cloudAccountCredentialsMap := make(map[string]interface{})
+		cloudAccountCredentialsMap["class_name"] = "cloudRsCredentials"
+		cloudAccountCredentialsContent := make(map[string]interface{})
+
+		cloudAccountCredentialsContent["tDn"] = relationTocloudRsCredentials
+
+		cloudAccountCredentialsMap["content"] = toStrMap(cloudAccountCredentialsContent)
+		cloudAccountSet = append(cloudAccountSet, cloudAccountCredentialsMap)
+	}
+
+	cont, err := preparePayload(models.CloudaccountClassName, toStrMap(cloudAccountMap), cloudAccountSet)
 	if err != nil {
-		log.Printf("IN ERR ----------------------> ")
 		return diag.FromErr(err)
 	}
-	checkDns := make([]string, 0, 1)
 
-	log.Printf("NOOOOOOO ERR ----------------------> ")
+	_, diags := cloudAccountRequest(aciClient, "POST", dn, cont)
+	if diags.HasError() {
+		return diags
+	}
+
+	checkDns := make([]string, 0, 1)
 
 	if relationTocloudRsAccountToAccessPolicy, ok := d.GetOk("relation_cloud_rs_account_to_access_policy"); ok {
 		relationParam := relationTocloudRsAccountToAccessPolicy.(string)
 		checkDns = append(checkDns, relationParam)
-
-	}
-
-	if relationTocloudRsCredentials, ok := d.GetOk("relation_cloud_rs_credentials"); ok {
-		relationParam := relationTocloudRsCredentials.(string)
-		log.Printf("CREATES1 :: relationTocloudRsCredentialsrelationParam : %s ", relationParam)
-		checkDns = append(checkDns, relationParam)
-		log.Printf("CREATES11 :: checkDns : %s ", checkDns)
-
 	}
 
 	d.Partial(true)
@@ -197,27 +214,15 @@ func resourceAciCloudAccountCreate(ctx context.Context, d *schema.ResourceData, 
 
 	if relationTocloudRsAccountToAccessPolicy, ok := d.GetOk("relation_cloud_rs_account_to_access_policy"); ok {
 		relationParam := relationTocloudRsAccountToAccessPolicy.(string)
-		err = aciClient.CreateRelationcloudRsAccountToAccessPolicy(cloudAccount.DistinguishedName, cloudAccountAttr.Annotation, relationParam)
+		err = aciClient.CreateRelationcloudRsAccountToAccessPolicy(dn, "", relationParam)
+		// err = aciClient.CreateRelationcloudRsAccountToAccessPolicy(cloudAccount.DistinguishedName, cloudAccountAttr.Annotation, relationParam)
 
 		if err != nil {
 			return diag.FromErr(err)
 		}
-
 	}
 
-	if relationTocloudRsCredentials, ok := d.GetOk("relation_cloud_rs_credentials"); ok {
-		relationParam := relationTocloudRsCredentials.(string)
-		log.Printf("CREATES2 :: relationTocloudRsCredentials2 : %s ", relationParam)
-		err = aciClient.CreateRelationcloudRsCredentials(cloudAccount.DistinguishedName, cloudAccountAttr.Annotation, relationParam)
-		log.Printf("CREATESerr :: ERR2 : %s ", err)
-
-		if err != nil {
-			return diag.FromErr(err)
-		}
-
-	}
-
-	d.SetId(cloudAccount.DistinguishedName)
+	d.SetId(dn)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 	return resourceAciCloudAccountRead(ctx, d, m)
 }
@@ -229,55 +234,65 @@ func resourceAciCloudAccountUpdate(ctx context.Context, d *schema.ResourceData, 
 	vendor := d.Get("vendor").(string)
 	TenantDn := d.Get("tenant_dn").(string)
 
-	cloudAccountAttr := models.CloudAccountAttributes{}
+	cloudAccountSet := make([]interface{}, 0, 1)
+	cloudAccountMap := make(map[string]interface{})
 
-	nameAlias := ""
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
-		nameAlias = NameAlias.(string)
+		cloudAccountMap["nameAlias"] = NameAlias.(string)
 	}
 
 	if Annotation, ok := d.GetOk("annotation"); ok {
-		cloudAccountAttr.Annotation = Annotation.(string)
+		cloudAccountMap["annotation"] = Annotation.(string)
 	} else {
-		cloudAccountAttr.Annotation = "{}"
+		cloudAccountMap["annotation"] = "{}"
 	}
 
 	if AccessType, ok := d.GetOk("access_type"); ok {
-		cloudAccountAttr.AccessType = AccessType.(string)
+		cloudAccountMap["accessType"] = AccessType.(string)
 	}
 
 	if Account_id, ok := d.GetOk("account_id"); ok {
-		cloudAccountAttr.Account_id = Account_id.(string)
+		cloudAccountMap["id"] = Account_id.(string)
 	}
 
 	if Name, ok := d.GetOk("name"); ok {
-		cloudAccountAttr.Name = Name.(string)
+		cloudAccountMap["name"] = Name.(string)
 	}
 
 	if Vendor, ok := d.GetOk("vendor"); ok {
-		cloudAccountAttr.Vendor = Vendor.(string)
+		cloudAccountMap["vendor"] = Vendor.(string)
 	}
-	cloudAccount := models.NewCloudAccount(fmt.Sprintf(models.RncloudAccount, account_id, vendor), TenantDn, nameAlias, cloudAccountAttr)
 
-	cloudAccount.Status = "modified"
+	dn := fmt.Sprintf("%s/%s", TenantDn, fmt.Sprintf(models.RncloudAccount, account_id, vendor))
 
-	err := aciClient.Save(cloudAccount)
+	if relationTocloudRsCredentials, ok := d.GetOk("cloud_credentials_dn"); ok {
+
+		cloudAccountCredentialsMap := make(map[string]interface{})
+		cloudAccountCredentialsMap["class_name"] = "cloudRsCredentials"
+		cloudAccountCredentialsContent := make(map[string]interface{})
+
+		cloudAccountCredentialsContent["tDn"] = relationTocloudRsCredentials
+
+		cloudAccountCredentialsMap["content"] = toStrMap(cloudAccountCredentialsContent)
+		cloudAccountSet = append(cloudAccountSet, cloudAccountCredentialsMap)
+	}
+
+	cont, err := preparePayload(models.CloudaccountClassName, toStrMap(cloudAccountMap), cloudAccountSet)
 	if err != nil {
 		return diag.FromErr(err)
 	}
+
+	_, diags := cloudAccountRequest(aciClient, "POST", dn, cont)
+	if diags.HasError() {
+		return diags
+	}
+	// cloudAccount.Status = "modified"
 
 	checkDns := make([]string, 0, 1)
 
 	if d.HasChange("relation_cloud_rs_account_to_access_policy") || d.HasChange("annotation") {
 		_, newRelParam := d.GetChange("relation_cloud_rs_account_to_access_policy")
 		checkDns = append(checkDns, newRelParam.(string))
-
-	}
-
-	if d.HasChange("relation_cloud_rs_credentials") || d.HasChange("annotation") {
-		_, newRelParam := d.GetChange("relation_cloud_rs_credentials")
-		checkDns = append(checkDns, newRelParam.(string))
-
 	}
 
 	d.Partial(true)
@@ -289,24 +304,12 @@ func resourceAciCloudAccountUpdate(ctx context.Context, d *schema.ResourceData, 
 
 	if d.HasChange("relation_cloud_rs_account_to_access_policy") || d.HasChange("annotation") {
 		_, newRelParam := d.GetChange("relation_cloud_rs_account_to_access_policy")
-		err = aciClient.DeleteRelationcloudRsAccountToAccessPolicy(cloudAccount.DistinguishedName)
+		err = aciClient.DeleteRelationcloudRsAccountToAccessPolicy(dn)
 		if err != nil {
 			return diag.FromErr(err)
 		}
-		err = aciClient.CreateRelationcloudRsAccountToAccessPolicy(cloudAccount.DistinguishedName, cloudAccountAttr.Annotation, newRelParam.(string))
-
-		if err != nil {
-			return diag.FromErr(err)
-		}
-
-	}
-	if d.HasChange("relation_cloud_rs_credentials") || d.HasChange("annotation") {
-		_, newRelParam := d.GetChange("relation_cloud_rs_credentials")
-		err = aciClient.DeleteRelationcloudRsCredentials(cloudAccount.DistinguishedName)
-		if err != nil {
-			return diag.FromErr(err)
-		}
-		err = aciClient.CreateRelationcloudRsCredentials(cloudAccount.DistinguishedName, cloudAccountAttr.Annotation, newRelParam.(string))
+		err = aciClient.CreateRelationcloudRsAccountToAccessPolicy(dn, "", newRelParam.(string))
+		// err = aciClient.CreateRelationcloudRsAccountToAccessPolicy(cloudAccount.DistinguishedName, cloudAccountAttr.Annotation, newRelParam.(string))
 
 		if err != nil {
 			return diag.FromErr(err)
@@ -314,7 +317,7 @@ func resourceAciCloudAccountUpdate(ctx context.Context, d *schema.ResourceData, 
 
 	}
 
-	d.SetId(cloudAccount.DistinguishedName)
+	d.SetId(dn)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 	return resourceAciCloudAccountRead(ctx, d, m)
 }
@@ -352,13 +355,12 @@ func resourceAciCloudAccountRead(ctx context.Context, d *schema.ResourceData, m 
 	cloudRsCredentialsData, err := aciClient.ReadRelationcloudRsCredentials(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation cloudRsCredentials %v", err)
-		d.Set("relation_cloud_rs_credentials", "")
+		d.Set("cloud_credentials_dn", "")
 	} else {
-		if _, ok := d.GetOk("relation_cloud_rs_credentials"); ok {
-			tfName := d.Get("relation_cloud_rs_credentials").(string)
-			log.Printf("READ :: relation_cloud_rs_credentials: %s ", tfName)
+		if _, ok := d.GetOk("cloud_credentials_dn"); ok {
+			tfName := d.Get("cloud_credentials_dn").(string)
 			if tfName != cloudRsCredentialsData {
-				d.Set("relation_cloud_rs_credentials", "")
+				d.Set("cloud_credentials_dn", "")
 			}
 		}
 	}
@@ -379,4 +381,25 @@ func resourceAciCloudAccountDelete(ctx context.Context, d *schema.ResourceData, 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 	d.SetId("")
 	return diag.FromErr(err)
+}
+
+func cloudAccountRequest(aciClient *client.Client, method string, cloudAccountdn string, body *container.Container) (*container.Container, diag.Diagnostics) {
+	url := "/api/mo/" + cloudAccountdn + ".json"
+	req, err := aciClient.MakeRestRequest(method, url, body, true)
+	if err != nil {
+		return nil, diag.FromErr(err)
+	}
+	respCont, _, err := aciClient.Do(req)
+	if err != nil {
+		return respCont, diag.FromErr(err)
+	}
+	err = client.CheckForErrors(respCont, method, false)
+	if err != nil {
+		return respCont, diag.FromErr(err)
+	}
+	if method == "POST" {
+		return body, nil
+	} else {
+		return respCont, nil
+	}
 }

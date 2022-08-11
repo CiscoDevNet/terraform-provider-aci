@@ -59,7 +59,10 @@ func setActiveDirectoryAttributes(cloudAD *models.ActiveDirectory, d *schema.Res
 	d.SetId(cloudAD.DistinguishedName)
 	if dn != cloudAD.DistinguishedName {
 		d.Set("tenant_dn", "")
+	} else {
+		d.Set("tenant_dn", GetParentDn(dn, "/act"))
 	}
+
 	cloudADMap, err := cloudAD.ToMap()
 	if err != nil {
 		return d, err

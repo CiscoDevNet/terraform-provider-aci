@@ -30,7 +30,7 @@ resource "aci_cloud_account" "example" {
   account_id = "azure_account_id"
   vendor = "azure"
   cloud_rs_account_to_access_policy = "uni/tn-{tenant_name}/accesspolicy-read-only"
-  cloud_rs_credentials = aci_cloud_creddentials.example.id
+  cloud_rs_credentials = aci_cloud_credentials.example.id
 }
 ```
 
@@ -39,9 +39,9 @@ resource "aci_cloud_account" "example" {
 * `tenant_dn` - (Required) Distinguished name of the parent Tenant object.
 * `name` - (Optional) Name of the Cloud Account object.
 * `annotation` - (Optional) Annotation of the Cloud Account object.
-* `access_type` - (Optional) Authentication type for the Cloud Account (managed=no credentials required (IAM), credentials=using accessKeys). Allowed values are "credentials", "managed". Default value is "managed". Type: String.
+* `access_type` - (Optional) Authentication type for the Cloud Account (managed=no credentials required (IAM), credentials=using accessKeys). Allowed values are "credentials", "managed". Type: String.
 * `account_id` - (Required) ID of the Cloud Account object.
-* `vendor` - (Required) Vendor of the Cloud Account object. Allowed values are "aws", "azure", "gcp", "unknown", and default value is "aws". Type: String.
+* `vendor` - (Required) Vendor of the Cloud Account object. Allowed values are "aws", "azure", "gcp", "unknown". Type: String.
 
 * `relation_cloud_rs_account_to_access_policy` - (Optional) Represents the relation to a Relation to the Access policy to be used (class cloudAccessPolicy). Relation to CloudAccessPolicy cardianity is n-1 Type: String.
 
