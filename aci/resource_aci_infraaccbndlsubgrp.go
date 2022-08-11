@@ -34,12 +34,7 @@ func resourceAciOverridePolicyGroup() *schema.Resource {
 				Required: true,
 				ForceNew: true,
 			},
-			"relation_infrars_lacp_if_pol": &schema.Schema{
-				Type:        schema.TypeString,
-				Optional:    true,
-				Description: "Create relation to lacp:IfPol",
-			},
-			"relation_infrars_lacp_interface_pol": &schema.Schema{
+			"port_channel_member": &schema.Schema{
 				Type:        schema.TypeString,
 				Optional:    true,
 				Description: "Create relation to lacp:IfPol",
@@ -125,12 +120,7 @@ func resourceAciOverridePolicyGroupCreate(ctx context.Context, d *schema.Resourc
 	}
 	checkDns := make([]string, 0, 1)
 
-	if relationToinfraRsLacpIfPol, ok := d.GetOk("relation_infrars_lacp_if_pol"); ok {
-		relationParam := relationToinfraRsLacpIfPol.(string)
-		checkDns = append(checkDns, relationParam)
-	}
-
-	if relationToinfraRsLacpInterfacePol, ok := d.GetOk("relation_infrars_lacp_interface_pol"); ok {
+	if relationToinfraRsLacpInterfacePol, ok := d.GetOk("port_channel_member"); ok {
 		relationParam := relationToinfraRsLacpInterfacePol.(string)
 		checkDns = append(checkDns, relationParam)
 	}
@@ -142,15 +132,7 @@ func resourceAciOverridePolicyGroupCreate(ctx context.Context, d *schema.Resourc
 	}
 	d.Partial(false)
 
-	if relationToinfraRsLacpIfPol, ok := d.GetOk("relation_infrars_lacp_if_pol"); ok {
-		relationParam := relationToinfraRsLacpIfPol.(string)
-		err = aciClient.CreateRelationinfraRsLacpIfPol(infraAccBndlSubgrp.DistinguishedName, infraAccBndlSubgrpAttr.Annotation, GetMOName(relationParam))
-		if err != nil {
-			return diag.FromErr(err)
-		}
-	}
-
-	if relationToinfraRsLacpInterfacePol, ok := d.GetOk("relation_infrars_lacp_interface_pol"); ok {
+	if relationToinfraRsLacpInterfacePol, ok := d.GetOk("port_channel_member"); ok {
 		relationParam := relationToinfraRsLacpInterfacePol.(string)
 		err = aciClient.CreateRelationinfraRsLacpInterfacePol(infraAccBndlSubgrp.DistinguishedName, infraAccBndlSubgrpAttr.Annotation, GetMOName(relationParam))
 		if err != nil {
@@ -195,13 +177,8 @@ func resourceAciOverridePolicyGroupUpdate(ctx context.Context, d *schema.Resourc
 
 	checkDns := make([]string, 0, 1)
 
-	if d.HasChange("relation_infrars_lacp_if_pol") || d.HasChange("annotation") {
-		_, newRelParam := d.GetChange("relation_infrars_lacp_if_pol")
-		checkDns = append(checkDns, newRelParam.(string))
-	}
-
-	if d.HasChange("relation_infrars_lacp_interface_pol") || d.HasChange("annotation") {
-		_, newRelParam := d.GetChange("relation_infrars_lacp_interface_pol")
+	if d.HasChange("port_channel_member") || d.HasChange("annotation") {
+		_, newRelParam := d.GetChange("port_channel_member")
 		checkDns = append(checkDns, newRelParam.(string))
 	}
 
@@ -212,20 +189,8 @@ func resourceAciOverridePolicyGroupUpdate(ctx context.Context, d *schema.Resourc
 	}
 	d.Partial(false)
 
-	if d.HasChange("relation_infrars_lacp_if_pol") || d.HasChange("annotation") {
-		_, newRelParam := d.GetChange("relation_infrars_lacp_if_pol")
-		err = aciClient.DeleteRelationinfraRsLacpIfPol(infraAccBndlSubgrp.DistinguishedName)
-		if err != nil {
-			return diag.FromErr(err)
-		}
-		err = aciClient.CreateRelationinfraRsLacpIfPol(infraAccBndlSubgrp.DistinguishedName, infraAccBndlSubgrpAttr.Annotation, GetMOName(newRelParam.(string)))
-		if err != nil {
-			return diag.FromErr(err)
-		}
-	}
-
-	if d.HasChange("relation_infrars_lacp_interface_pol") || d.HasChange("annotation") {
-		_, newRelParam := d.GetChange("relation_infrars_lacp_interface_pol")
+	if d.HasChange("port_channel_member") || d.HasChange("annotation") {
+		_, newRelParam := d.GetChange("port_channel_member")
 		err = aciClient.DeleteRelationinfraRsLacpInterfacePol(infraAccBndlSubgrp.DistinguishedName)
 		if err != nil {
 			return diag.FromErr(err)
@@ -258,28 +223,15 @@ func resourceAciOverridePolicyGroupRead(ctx context.Context, d *schema.ResourceD
 		return nil
 	}
 
-	infraRsLacpIfPolData, err := aciClient.ReadRelationinfraRsLacpIfPol(dn)
-	if err != nil {
-		log.Printf("[DEBUG] Error while reading relation infraRsLacpIfPol %v", err)
-		d.Set("relation_infrars_lacp_if_pol", "")
-	} else {
-		if _, ok := d.GetOk("relation_infrars_lacp_if_pol"); ok {
-			tfName := GetMOName(d.Get("relation_infrars_lacp_if_pol").(string))
-			if tfName != infraRsLacpIfPolData {
-				d.Set("relation_infrars_lacp_if_pol", "")
-			}
-		}
-	}
-
 	infraRsLacpInterfacePolData, err := aciClient.ReadRelationinfraRsLacpInterfacePol(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation infraRsLacpInterfacePol %v", err)
-		d.Set("relation_infrars_lacp_interface_pol", "")
+		d.Set("port_channel_member", "")
 	} else {
-		if _, ok := d.GetOk("relation_infrars_lacp_interface_pol"); ok {
-			tfName := GetMOName(d.Get("relation_infrars_lacp_interface_pol").(string))
+		if _, ok := d.GetOk("port_channel_member"); ok {
+			tfName := GetMOName(d.Get("port_channel_member").(string))
 			if tfName != infraRsLacpInterfacePolData {
-				d.Set("relation_infrars_lacp_interface_pol", "")
+				d.Set("port_channel_member", "")
 			}
 		}
 	}

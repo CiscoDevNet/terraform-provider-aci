@@ -74,7 +74,7 @@ func testAccCheckAciOverridePolicyGroupConfig_basic(infra_acc_bndl_grp_name, inf
 	resource "aci_leaf_access_bundle_policy_sub_group" "test_policy_sub_group" {
 		name 		= "%s"
 		description = "override_policy_group created while acceptance testing"
-		leaf_access_bundle_policy_group_dn = aci_leaf_access_bundle_policy_group.test_policy_group.id
+		port_channel_member = aci_leaf_access_bundle_policy_group.test_policy_group.id
 	}
 
 	`, infra_acc_bndl_grp_name, infra_acc_bndl_subgrp_name)
