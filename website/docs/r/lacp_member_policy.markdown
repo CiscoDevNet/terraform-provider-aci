@@ -1,8 +1,8 @@
 ---
 subcategory: "Access Policies"
 layout: "aci"
-page_title: "ACI: aci_lacpmember_policy"
-sidebar_current: "docs-aci-resource-lacpmember_policy"
+page_title: "ACI: aci_lacp_member_policy"
+sidebar_current: "docs-aci-resource-lacp_member_policy"
 description: |-
   Manages ACI LACP Member Policy
 ---
@@ -23,7 +23,7 @@ Manages ACI LACP Member Policy
 ## Example Usage ##
 
 ```hcl
-resource "aci_lacpmember_policy" "example" {
+resource "aci_lacp_member_policy" "example" {
   name  = "example"
   prio = "32768"
   tx_rate = "normal"
@@ -34,6 +34,7 @@ resource "aci_lacpmember_policy" "example" {
 
 * `name` - (Required) Name of the object LACP Member Policy.
 * `annotation` - (Optional) Annotation of the object LACP Member Policy.
+* `description` - (Optional) Description of the object LACP Member Policy.
 * `name_alias` - (Optional) Name alias.
 * `prio` - (Optional) Priority.Port priority - LACP uses the port priority to decide which ports should be put in standby mode when there is a limitation that prevents all compatible ports from aggregating and which ports should be put into active mode. A higher port priority value means a lower priority for LACP Allowed range is 1-65535 and default value is "32768".
 * `tx_rate` - (Optional) Transmission Rate.The configured transmit rate of the LACP packets. Allowed values are "fast", "normal", and default value is "normal". Type: String.
