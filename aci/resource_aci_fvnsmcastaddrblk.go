@@ -128,6 +128,11 @@ func resourceAciMulticastAddressBlockCreate(ctx context.Context, d *schema.Resou
 	}
 	fvnsMcastAddrBlk := models.NewMulticastAddressBlock(fmt.Sprintf(models.RnfvnsMcastAddrBlk, from, to), MulticastAddressPoolDn, desc, fvnsMcastAddrBlkAttr)
 
+	existingFvnsMcastAddrBlk, existErr := getRemoteMulticastAddressBlock(aciClient, fvnsMcastAddrBlk.DistinguishedName)
+	if existErr == nil {
+		return diag.FromErr(fmt.Errorf("MulticastAddressBlock already configured in pool: %v", existingFvnsMcastAddrBlk))
+	}
+
 	err := aciClient.Save(fvnsMcastAddrBlk)
 	if err != nil {
 		return diag.FromErr(err)
@@ -140,9 +145,11 @@ func resourceAciMulticastAddressBlockCreate(ctx context.Context, d *schema.Resou
 func resourceAciMulticastAddressBlockUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] MulticastAddressBlock: Beginning Update")
 	aciClient := m.(*client.Client)
+	dn := d.Id()
 	desc := d.Get("description").(string)
 	from := d.Get("from").(string)
 	to := d.Get("to").(string)
+	deleted := false
 	MulticastAddressPoolDn := d.Get("multicast_pool_dn").(string)
 
 	fvnsMcastAddrBlkAttr := models.MulticastAddressBlockAttributes{}
@@ -151,6 +158,14 @@ func resourceAciMulticastAddressBlockUpdate(ctx context.Context, d *schema.Resou
 		fvnsMcastAddrBlkAttr.Annotation = Annotation.(string)
 	} else {
 		fvnsMcastAddrBlkAttr.Annotation = "{}"
+	}
+
+	if d.HasChange("from") || d.HasChange("to") {
+		err := aciClient.DeleteByDn(dn, fmt.Sprintf(models.FvnsmcastaddrblkClassName))
+		if err != nil {
+			return diag.FromErr(err)
+		}
+		deleted = true
 	}
 
 	if From, ok := d.GetOk("from"); ok {
@@ -170,7 +185,9 @@ func resourceAciMulticastAddressBlockUpdate(ctx context.Context, d *schema.Resou
 	}
 	fvnsMcastAddrBlk := models.NewMulticastAddressBlock(fmt.Sprintf(models.RnfvnsMcastAddrBlk, from, to), MulticastAddressPoolDn, desc, fvnsMcastAddrBlkAttr)
 
-	fvnsMcastAddrBlk.Status = "modified"
+	if !deleted {
+		fvnsMcastAddrBlk.Status = "modified"
+	}
 
 	err := aciClient.Save(fvnsMcastAddrBlk)
 	if err != nil {
