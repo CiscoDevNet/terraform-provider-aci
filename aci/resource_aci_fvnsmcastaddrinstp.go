@@ -23,14 +23,37 @@ func resourceAciMulticastAddressPool() *schema.Resource {
 		},
 
 		SchemaVersion: 1,
-		Schema: AppendBaseAttrSchema(AppendNameAliasAttrSchema(map[string]*schema.Schema{
-
+		Schema: AppendAttrSchemas(map[string]*schema.Schema{
 			"name": {
 				Type:     schema.TypeString,
 				Required: true,
 				ForceNew: true,
 			},
-		})),
+			"multicast_address_block": {
+				Type:     schema.TypeSet,
+				Optional: true,
+				Elem: &schema.Resource{
+					Schema: AppendAttrSchemas(map[string]*schema.Schema{
+						"dn": {
+							Type:     schema.TypeString,
+							Computed: true,
+						},
+						"from": {
+							Type:     schema.TypeString,
+							Required: true,
+						},
+						"name": {
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"to": {
+							Type:     schema.TypeString,
+							Required: true,
+						},
+					}, GetBaseAttrSchema(), GetNameAliasAttrSchema()),
+				},
+			},
+		}, GetBaseAttrSchema(), GetNameAliasAttrSchema()),
 	}
 }
 
@@ -60,6 +83,35 @@ func setMulticastAddressPoolAttributes(fvnsMcastAddrInstP *models.MulticastAddre
 	return d, nil
 }
 
+func getMulticastAddressBlocks(callType, multicastAddressPool string, client *client.Client, d *schema.ResourceData) []*models.MulticastAddressBlock {
+	log.Printf("[DEBUG] Beginning GET called by %s function for address pool name %s", callType, multicastAddressPool)
+	readMulticastAddressBlockData, err := client.ListMulticastAddressBlock(multicastAddressPool)
+	if err == nil {
+		log.Printf("[DEBUG] Finished GET called by %s successfully with result: %v", callType, d.Get("multicast_address_block"))
+	} else {
+		log.Printf("[DEBUG] Error during GET operation of multicast address blocks: %v", err)
+		readMulticastAddressBlockData = nil
+	}
+	return readMulticastAddressBlockData
+}
+
+func setMulticastAddressBlocks(callType, multicastAddressPool string, readMulticastAddressBlockData []*models.MulticastAddressBlock, client *client.Client, d *schema.ResourceData) {
+	log.Printf("[DEBUG] Beginning SET called by %s function for address blocks %s", callType, readMulticastAddressBlockData)
+	multicastAddressBlockList := make([]interface{}, 0)
+	for _, record := range readMulticastAddressBlockData {
+		multicastAddressBlockMap := make(map[string]interface{})
+		multicastAddressBlockMap["annotation"] = record.Annotation
+		multicastAddressBlockMap["from"] = record.From
+		multicastAddressBlockMap["name"] = record.Name
+		multicastAddressBlockMap["name_alias"] = record.NameAlias
+		multicastAddressBlockMap["to"] = record.To
+		multicastAddressBlockMap["dn"] = fmt.Sprintf(models.DnfvnsMcastAddrBlk, multicastAddressPool, record.From, record.To)
+		multicastAddressBlockList = append(multicastAddressBlockList, multicastAddressBlockMap)
+	}
+	d.Set("multicast_address_block", multicastAddressBlockList)
+	log.Printf("[DEBUG] Finished SET called by %s successfully with result: %v", callType, d.Get("multicast_address_block"))
+}
+
 func resourceAciMulticastAddressPoolImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
 	log.Printf("[DEBUG] %s: Beginning Import", d.Id())
 	aciClient := m.(*client.Client)
@@ -68,12 +120,18 @@ func resourceAciMulticastAddressPoolImport(d *schema.ResourceData, m interface{}
 	if err != nil {
 		return nil, err
 	}
-	schemaFilled, err := setMulticastAddressPoolAttributes(fvnsMcastAddrInstP, d)
+	_, err = setMulticastAddressPoolAttributes(fvnsMcastAddrInstP, d)
 	if err != nil {
 		return nil, err
 	}
+
+	multicastAddressBlocks := getMulticastAddressBlocks("Import", fvnsMcastAddrInstP.Name, aciClient, d)
+	if multicastAddressBlocks != nil {
+		setMulticastAddressBlocks("Import", fvnsMcastAddrInstP.Name, multicastAddressBlocks, aciClient, d)
+	}
+
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
-	return []*schema.ResourceData{schemaFilled}, nil
+	return []*schema.ResourceData{d}, nil
 }
 
 func resourceAciMulticastAddressPoolCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
@@ -102,10 +160,42 @@ func resourceAciMulticastAddressPoolCreate(ctx context.Context, d *schema.Resour
 		return diag.FromErr(err)
 	}
 
+	if multicastAddressBlock, ok := d.GetOk("multicast_address_block"); ok {
+		multicastAddressBlockList := multicastAddressBlock.(*schema.Set).List()
+		multicastAddressBlocks := make([]*models.MulticastAddressBlock, len(multicastAddressBlockList))
+		for index, block := range multicastAddressBlockList {
+			blockMap := block.(map[string]interface{})
+			fvnsMcastAddrBlkAttr := models.MulticastAddressBlockAttributes{}
+			fvnsMcastAddrBlkAttr.Annotation = blockMap["annotation"].(string)
+			fvnsMcastAddrBlkAttr.From = blockMap["from"].(string)
+			fvnsMcastAddrBlkAttr.Name = blockMap["name"].(string)
+			fvnsMcastAddrBlkAttr.To = blockMap["to"].(string)
+			if blockMap["nameAlias"] != nil {
+				fvnsMcastAddrBlkAttr.NameAlias = blockMap["nameAlias"].(string)
+			}
+			desc := ""
+			if blockMap["description"] != nil {
+				desc = blockMap["description"].(string)
+			}
+			fvnsMcastAddrBlk := models.NewMulticastAddressBlock(fmt.Sprintf(models.RnfvnsMcastAddrBlk, fvnsMcastAddrBlkAttr.From, fvnsMcastAddrBlkAttr.To), fvnsMcastAddrInstP.DistinguishedName, desc, fvnsMcastAddrBlkAttr)
+			existingFvnsMcastAddrBlk, existErr := getRemoteMulticastAddressBlock(aciClient, fvnsMcastAddrBlk.DistinguishedName)
+			if existErr == nil {
+				return diag.FromErr(fmt.Errorf("MulticastAddressBlock already configured in pool: %v", existingFvnsMcastAddrBlk))
+			}
+			err := aciClient.Save(fvnsMcastAddrBlk)
+			if err != nil {
+				return diag.FromErr(err)
+			}
+			multicastAddressBlocks[index] = fvnsMcastAddrBlk
+		}
+		setMulticastAddressBlocks("Create", fvnsMcastAddrInstP.Name, multicastAddressBlocks, aciClient, d)
+	}
+
 	d.SetId(fvnsMcastAddrInstP.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 	return resourceAciMulticastAddressPoolRead(ctx, d, m)
 }
+
 func resourceAciMulticastAddressPoolUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] MulticastAddressPool: Beginning Update")
 	aciClient := m.(*client.Client)
@@ -129,10 +219,54 @@ func resourceAciMulticastAddressPoolUpdate(ctx context.Context, d *schema.Resour
 	}
 	fvnsMcastAddrInstP := models.NewMulticastAddressPool(fmt.Sprintf(models.RnfvnsMcastAddrInstP, name), models.ParentDnfvnsMcastAddrInstP, desc, fvnsMcastAddrInstPAttr)
 	fvnsMcastAddrInstP.Status = "modified"
-
 	err := aciClient.Save(fvnsMcastAddrInstP)
 	if err != nil {
 		return diag.FromErr(err)
+	}
+
+	if d.HasChange("multicast_address_block") {
+		oldSchemaObjs, newSchemaObjs := d.GetChange("multicast_address_block")
+		missingOldObjects := getOldObjectsNotInNew("dn", oldSchemaObjs.(*schema.Set), newSchemaObjs.(*schema.Set))
+		foundOldObjects := getOldObjectsInNew("dn", oldSchemaObjs.(*schema.Set), newSchemaObjs.(*schema.Set))
+
+		for _, missingOldObject := range missingOldObjects {
+			err := aciClient.DeleteByDn(missingOldObject.(map[string]interface{})["dn"].(string), fmt.Sprintf(models.FvnsmcastaddrblkClassName))
+			if err != nil {
+				return diag.FromErr(err)
+			}
+		}
+
+		multicastAddressBlockList := newSchemaObjs.(*schema.Set).List()
+		multicastAddressBlocks := make([]*models.MulticastAddressBlock, len(multicastAddressBlockList))
+		for index, block := range multicastAddressBlockList {
+			blockMap := block.(map[string]interface{})
+			log.Printf("[DEBUG] blockMap: %v", blockMap)
+			fvnsMcastAddrBlkAttr := models.MulticastAddressBlockAttributes{}
+			fvnsMcastAddrBlkAttr.Annotation = blockMap["annotation"].(string)
+			fvnsMcastAddrBlkAttr.From = blockMap["from"].(string)
+			fvnsMcastAddrBlkAttr.Name = blockMap["name"].(string)
+			fvnsMcastAddrBlkAttr.To = blockMap["to"].(string)
+			if blockMap["nameAlias"] != nil {
+				fvnsMcastAddrBlkAttr.NameAlias = blockMap["nameAlias"].(string)
+			}
+			desc := ""
+			if blockMap["description"] != nil {
+				desc = blockMap["description"].(string)
+			}
+			fvnsMcastAddrBlk := models.NewMulticastAddressBlock(fmt.Sprintf(models.RnfvnsMcastAddrBlk, fvnsMcastAddrBlkAttr.From, fvnsMcastAddrBlkAttr.To), fvnsMcastAddrInstP.DistinguishedName, desc, fvnsMcastAddrBlkAttr)
+			for _, val := range foundOldObjects {
+				if val == fvnsMcastAddrBlk.DistinguishedName {
+					fvnsMcastAddrBlk.Status = "modified"
+				}
+			}
+			err := aciClient.Save(fvnsMcastAddrBlk)
+			if err != nil {
+				return diag.FromErr(err)
+			}
+			blockMap["dn"] = fvnsMcastAddrBlk.DistinguishedName
+			multicastAddressBlocks[index] = fvnsMcastAddrBlk
+		}
+		setMulticastAddressBlocks("Update", fvnsMcastAddrInstP.Name, multicastAddressBlocks, aciClient, d)
 	}
 
 	d.SetId(fvnsMcastAddrInstP.DistinguishedName)
@@ -155,6 +289,13 @@ func resourceAciMulticastAddressPoolRead(ctx context.Context, d *schema.Resource
 	if err != nil {
 		d.SetId("")
 		return nil
+	}
+
+	if _, ok := d.GetOk("multicast_address_block"); ok {
+		multicastAddressBlocks := getMulticastAddressBlocks("Read", fvnsMcastAddrInstP.Name, aciClient, d)
+		if multicastAddressBlocks != nil {
+			setMulticastAddressBlocks("Read", fvnsMcastAddrInstP.Name, multicastAddressBlocks, aciClient, d)
+		}
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())

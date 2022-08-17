@@ -14,7 +14,7 @@ func dataSourceAciMulticastAddressBlock() *schema.Resource {
 	return &schema.Resource{
 		ReadContext:   dataSourceAciMulticastAddressBlockRead,
 		SchemaVersion: 1,
-		Schema: AppendBaseAttrSchema(AppendNameAliasAttrSchema(map[string]*schema.Schema{
+		Schema: AppendAttrSchemas(map[string]*schema.Schema{
 			"multicast_pool_dn": {
 				Type:     schema.TypeString,
 				Required: true,
@@ -31,7 +31,7 @@ func dataSourceAciMulticastAddressBlock() *schema.Resource {
 				Type:     schema.TypeString,
 				Required: true,
 			},
-		})),
+		}, GetBaseAttrSchema(), GetNameAliasAttrSchema()),
 	}
 }
 
