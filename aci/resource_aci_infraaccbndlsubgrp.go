@@ -11,15 +11,15 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
-func resourceAciOverridePolicyGroup() *schema.Resource {
+func resourceAciOverridePCVPCPolicyGroup() *schema.Resource {
 	return &schema.Resource{
-		CreateContext: resourceAciOverridePolicyGroupCreate,
-		UpdateContext: resourceAciOverridePolicyGroupUpdate,
-		ReadContext:   resourceAciOverridePolicyGroupRead,
-		DeleteContext: resourceAciOverridePolicyGroupDelete,
+		CreateContext: resourceAciOverridePCVPCPolicyGroupCreate,
+		UpdateContext: resourceAciOverridePCVPCPolicyGroupUpdate,
+		ReadContext:   resourceAciOverridePCVPCPolicyGroupRead,
+		DeleteContext: resourceAciOverridePCVPCPolicyGroupDelete,
 
 		Importer: &schema.ResourceImporter{
-			State: resourceAciOverridePolicyGroupImport,
+			State: resourceAciOverridePCVPCPolicyGroupImport,
 		},
 
 		SchemaVersion: 1,
@@ -43,19 +43,19 @@ func resourceAciOverridePolicyGroup() *schema.Resource {
 	}
 }
 
-func getRemoteOverridePolicyGroup(client *client.Client, dn string) (*models.OverridePolicyGroup, error) {
+func getRemoteOverridePCVPCPolicyGroup(client *client.Client, dn string) (*models.OverridePCVPCPolicyGroup, error) {
 	infraAccBndlSubgrpCont, err := client.Get(dn)
 	if err != nil {
 		return nil, err
 	}
-	infraAccBndlSubgrp := models.OverridePolicyGroupFromContainer(infraAccBndlSubgrpCont)
+	infraAccBndlSubgrp := models.OverridePCVPCPolicyGroupFromContainer(infraAccBndlSubgrpCont)
 	if infraAccBndlSubgrp.DistinguishedName == "" {
-		return nil, fmt.Errorf("OverridePolicyGroup %s not found", dn)
+		return nil, fmt.Errorf("OverridePCVPCPolicyGroup %s not found", dn)
 	}
 	return infraAccBndlSubgrp, nil
 }
 
-func setOverridePolicyGroupAttributes(infraAccBndlSubgrp *models.OverridePolicyGroup, d *schema.ResourceData) (*schema.ResourceData, error) {
+func setOverridePCVPCPolicyGroupAttributes(infraAccBndlSubgrp *models.OverridePCVPCPolicyGroup, d *schema.ResourceData) (*schema.ResourceData, error) {
 	d.SetId(infraAccBndlSubgrp.DistinguishedName)
 	d.Set("description", infraAccBndlSubgrp.Description)
 	infraAccBndlSubgrpMap, err := infraAccBndlSubgrp.ToMap()
@@ -74,15 +74,15 @@ func setOverridePolicyGroupAttributes(infraAccBndlSubgrp *models.OverridePolicyG
 	return d, nil
 }
 
-func resourceAciOverridePolicyGroupImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
+func resourceAciOverridePCVPCPolicyGroupImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
 	log.Printf("[DEBUG] %s: Beginning Import", d.Id())
 	aciClient := m.(*client.Client)
 	dn := d.Id()
-	infraAccBndlSubgrp, err := getRemoteOverridePolicyGroup(aciClient, dn)
+	infraAccBndlSubgrp, err := getRemoteOverridePCVPCPolicyGroup(aciClient, dn)
 	if err != nil {
 		return nil, err
 	}
-	schemaFilled, err := setOverridePolicyGroupAttributes(infraAccBndlSubgrp, d)
+	schemaFilled, err := setOverridePCVPCPolicyGroupAttributes(infraAccBndlSubgrp, d)
 	if err != nil {
 		return nil, err
 	}
@@ -90,14 +90,14 @@ func resourceAciOverridePolicyGroupImport(d *schema.ResourceData, m interface{})
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciOverridePolicyGroupCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	log.Printf("[DEBUG] OverridePolicyGroup: Beginning Creation")
+func resourceAciOverridePCVPCPolicyGroupCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+	log.Printf("[DEBUG] OverridePCVPCPolicyGroup: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
 	name := d.Get("name").(string)
 	LeafAccessBundlePolicyGroupDn := d.Get("leaf_access_bundle_policy_group_dn").(string)
 
-	infraAccBndlSubgrpAttr := models.OverridePolicyGroupAttributes{}
+	infraAccBndlSubgrpAttr := models.OverridePCVPCPolicyGroupAttributes{}
 
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		infraAccBndlSubgrpAttr.Annotation = Annotation.(string)
@@ -112,7 +112,7 @@ func resourceAciOverridePolicyGroupCreate(ctx context.Context, d *schema.Resourc
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		infraAccBndlSubgrpAttr.NameAlias = NameAlias.(string)
 	}
-	infraAccBndlSubgrp := models.NewOverridePolicyGroup(fmt.Sprintf(models.RninfraAccBndlSubgrp, name), LeafAccessBundlePolicyGroupDn, desc, infraAccBndlSubgrpAttr)
+	infraAccBndlSubgrp := models.NewOverridePCVPCPolicyGroup(fmt.Sprintf(models.RninfraAccBndlSubgrp, name), LeafAccessBundlePolicyGroupDn, desc, infraAccBndlSubgrpAttr)
 
 	err := aciClient.Save(infraAccBndlSubgrp)
 	if err != nil {
@@ -142,16 +142,16 @@ func resourceAciOverridePolicyGroupCreate(ctx context.Context, d *schema.Resourc
 
 	d.SetId(infraAccBndlSubgrp.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
-	return resourceAciOverridePolicyGroupRead(ctx, d, m)
+	return resourceAciOverridePCVPCPolicyGroupRead(ctx, d, m)
 }
-func resourceAciOverridePolicyGroupUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	log.Printf("[DEBUG] OverridePolicyGroup: Beginning Update")
+func resourceAciOverridePCVPCPolicyGroupUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+	log.Printf("[DEBUG] OverridePCVPCPolicyGroup: Beginning Update")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
 	name := d.Get("name").(string)
 	LeafAccessBundlePolicyGroupDn := d.Get("leaf_access_bundle_policy_group_dn").(string)
 
-	infraAccBndlSubgrpAttr := models.OverridePolicyGroupAttributes{}
+	infraAccBndlSubgrpAttr := models.OverridePCVPCPolicyGroupAttributes{}
 
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		infraAccBndlSubgrpAttr.Annotation = Annotation.(string)
@@ -167,7 +167,7 @@ func resourceAciOverridePolicyGroupUpdate(ctx context.Context, d *schema.Resourc
 		infraAccBndlSubgrpAttr.NameAlias = NameAlias.(string)
 	}
 
-	infraAccBndlSubgrp := models.NewOverridePolicyGroup(fmt.Sprintf(models.RninfraAccBndlSubgrp, name), LeafAccessBundlePolicyGroupDn, desc, infraAccBndlSubgrpAttr)
+	infraAccBndlSubgrp := models.NewOverridePCVPCPolicyGroup(fmt.Sprintf(models.RninfraAccBndlSubgrp, name), LeafAccessBundlePolicyGroupDn, desc, infraAccBndlSubgrpAttr)
 	infraAccBndlSubgrp.Status = "modified"
 
 	err := aciClient.Save(infraAccBndlSubgrp)
@@ -203,21 +203,21 @@ func resourceAciOverridePolicyGroupUpdate(ctx context.Context, d *schema.Resourc
 
 	d.SetId(infraAccBndlSubgrp.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
-	return resourceAciOverridePolicyGroupRead(ctx, d, m)
+	return resourceAciOverridePCVPCPolicyGroupRead(ctx, d, m)
 }
 
-func resourceAciOverridePolicyGroupRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceAciOverridePCVPCPolicyGroupRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 
-	infraAccBndlSubgrp, err := getRemoteOverridePolicyGroup(aciClient, dn)
+	infraAccBndlSubgrp, err := getRemoteOverridePCVPCPolicyGroup(aciClient, dn)
 	if err != nil {
 		d.SetId("")
 		return nil
 	}
 
-	_, err = setOverridePolicyGroupAttributes(infraAccBndlSubgrp, d)
+	_, err = setOverridePCVPCPolicyGroupAttributes(infraAccBndlSubgrp, d)
 	if err != nil {
 		d.SetId("")
 		return nil
@@ -239,7 +239,7 @@ func resourceAciOverridePolicyGroupRead(ctx context.Context, d *schema.ResourceD
 	return nil
 }
 
-func resourceAciOverridePolicyGroupDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceAciOverridePCVPCPolicyGroupDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 	aciClient := m.(*client.Client)
 	dn := d.Id()
