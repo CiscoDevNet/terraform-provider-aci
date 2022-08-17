@@ -488,8 +488,6 @@ func setContractAttributes(vzBrCP *models.Contract, d *schema.ResourceData) (*sc
 }
 
 func setFilterAttributesFromContract(vzfilters []*models.Filter, vzEntries []*models.FilterEntry, d *schema.ResourceData) (*schema.ResourceData, error) {
-	log.Println("Check .... :", vzfilters)
-	log.Println("Check ... Filter :", vzEntries)
 	filterSet := make([]interface{}, 0, 1)
 	for _, filter := range vzfilters {
 		fMap := make(map[string]interface{})
@@ -517,7 +515,6 @@ func setFilterAttributesFromContract(vzfilters []*models.Filter, vzEntries []*mo
 		fMap["filter_entry"] = entrySet
 		filterSet = append(filterSet, fMap)
 	}
-	log.Println("Check ...:", filterSet)
 	d.Set("filter", filterSet)
 	return d, nil
 }
