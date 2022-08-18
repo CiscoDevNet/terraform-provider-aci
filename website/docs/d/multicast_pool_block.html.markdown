@@ -28,7 +28,7 @@ data "aci_multicast_pool" "example-pool" {
 }
 
 data "aci_multicast_pool_block" "example" {
-  multicast_pool_dn  = aci_multicast_pool.example-pool.id
+  multicast_pool_dn  = data.aci_multicast_pool.example-pool.id
   from  = "224.0.0.30"
   to  = "224.0.0.40"
 }
