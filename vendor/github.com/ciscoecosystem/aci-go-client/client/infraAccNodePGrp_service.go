@@ -86,7 +86,7 @@ func (sm *ServiceManager) ReadRelationinfraRsBfdIpv4InstPol(parentDn string) (in
 	contList := models.ListFromContainer(cont, "infraRsBfdIpv4InstPol")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnBfdIpv4InstPolName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -132,7 +132,7 @@ func (sm *ServiceManager) ReadRelationinfraRsBfdIpv6InstPol(parentDn string) (in
 	contList := models.ListFromContainer(cont, "infraRsBfdIpv6InstPol")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnBfdIpv6InstPolName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -178,7 +178,7 @@ func (sm *ServiceManager) ReadRelationinfraRsBfdMhIpv4InstPol(parentDn string) (
 	contList := models.ListFromContainer(cont, "infraRsBfdMhIpv4InstPol")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnBfdMhIpv4InstPolName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -224,7 +224,7 @@ func (sm *ServiceManager) ReadRelationinfraRsBfdMhIpv6InstPol(parentDn string) (
 	contList := models.ListFromContainer(cont, "infraRsBfdMhIpv6InstPol")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnBfdMhIpv6InstPolName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -270,7 +270,7 @@ func (sm *ServiceManager) ReadRelationinfraRsEquipmentFlashConfigPol(parentDn st
 	contList := models.ListFromContainer(cont, "infraRsEquipmentFlashConfigPol")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnEquipmentFlashConfigPolName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -316,7 +316,7 @@ func (sm *ServiceManager) ReadRelationinfraRsFcFabricPol(parentDn string) (inter
 	contList := models.ListFromContainer(cont, "infraRsFcFabricPol")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnFcFabricPolName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -362,7 +362,7 @@ func (sm *ServiceManager) ReadRelationinfraRsFcInstPol(parentDn string) (interfa
 	contList := models.ListFromContainer(cont, "infraRsFcInstPol")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnFcInstPolName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -408,7 +408,7 @@ func (sm *ServiceManager) ReadRelationinfraRsIaclLeafProfile(parentDn string) (i
 	contList := models.ListFromContainer(cont, "infraRsIaclLeafProfile")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnIaclLeafProfileName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -454,7 +454,7 @@ func (sm *ServiceManager) ReadRelationinfraRsL2NodeAuthPol(parentDn string) (int
 	contList := models.ListFromContainer(cont, "infraRsL2NodeAuthPol")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnL2NodeAuthPolName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -500,7 +500,7 @@ func (sm *ServiceManager) ReadRelationinfraRsLeafCoppProfile(parentDn string) (i
 	contList := models.ListFromContainer(cont, "infraRsLeafCoppProfile")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnCoppLeafProfileName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -546,7 +546,7 @@ func (sm *ServiceManager) ReadRelationinfraRsLeafPGrpToCdpIfPol(parentDn string)
 	contList := models.ListFromContainer(cont, "infraRsLeafPGrpToCdpIfPol")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnCdpIfPolName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -592,7 +592,7 @@ func (sm *ServiceManager) ReadRelationinfraRsLeafPGrpToLldpIfPol(parentDn string
 	contList := models.ListFromContainer(cont, "infraRsLeafPGrpToLldpIfPol")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnLldpIfPolName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -638,7 +638,7 @@ func (sm *ServiceManager) ReadRelationinfraRsMonNodeInfraPol(parentDn string) (i
 	contList := models.ListFromContainer(cont, "infraRsMonNodeInfraPol")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnMonInfraPolName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -684,7 +684,7 @@ func (sm *ServiceManager) ReadRelationinfraRsMstInstPol(parentDn string) (interf
 	contList := models.ListFromContainer(cont, "infraRsMstInstPol")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnStpInstPolName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -730,7 +730,7 @@ func (sm *ServiceManager) ReadRelationinfraRsNetflowNodePol(parentDn string) (in
 	contList := models.ListFromContainer(cont, "infraRsNetflowNodePol")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnNetflowNodePolName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -776,7 +776,7 @@ func (sm *ServiceManager) ReadRelationinfraRsPoeInstPol(parentDn string) (interf
 	contList := models.ListFromContainer(cont, "infraRsPoeInstPol")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnPoeInstPolName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -822,7 +822,7 @@ func (sm *ServiceManager) ReadRelationinfraRsTopoctrlFastLinkFailoverInstPol(par
 	contList := models.ListFromContainer(cont, "infraRsTopoctrlFastLinkFailoverInstPol")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnTopoctrlFastLinkFailoverInstPolName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -868,7 +868,7 @@ func (sm *ServiceManager) ReadRelationinfraRsTopoctrlFwdScaleProfPol(parentDn st
 	contList := models.ListFromContainer(cont, "infraRsTopoctrlFwdScaleProfPol")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnTopoctrlFwdScaleProfilePolName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err

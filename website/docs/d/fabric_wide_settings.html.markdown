@@ -32,11 +32,17 @@ data "aci_fabric_wide_settings" "example" {}
 * `description` - (Optional) Description of object Fabric-Wide Settings Policy.
 * `name_alias` - (Optional) Name alias of object Fabric-Wide Settings Policy.
 * `disable_ep_dampening` - (Optional) Disable Ep Dampening knob of object Fabric-Wide Settings Policy. 
+* `domain_validation` - (Optional) Validate that static path is added but no domain is associated to an EPG.
 * `enable_mo_streaming` - (Optional) Enable MO streaming of object Fabric-Wide Settings Policy.  
 * `enable_remote_leaf_direct` - (Optional) Enable remote leaf direct communication of object Fabric-Wide Settings Policy.
 * `enforce_subnet_check` - (Optional) Enforce subnet check of object Fabric-Wide Settings Policy.  
+* `leaf_opflexp_authenticate_clients` - (Optional) Require Opflexp Client Certificates for authentication for Leaf.
+* `leaf_opflexp_use_ssl` - (Optional) Require SSL transport for Opflexp for Leaf.
 * `opflexp_authenticate_clients` - (Optional) Opflexp Client Certificates for authentication of object Fabric-Wide Settings Policy.  
+* `opflexp_ssl_protocols` - (Optional) SSL Opflex versions.
 * `opflexp_use_ssl` - (Optional) SSL transport for Opflexp indicator of object Fabric-Wide Settings Policy. 
+* `policy_sync_node_bringup` - (Optional) Blacklist the Leaf frontpanel port until policy download during first time bringup.
+* `reallocate_gipo` - (Optional) Reallocate gipo such that stretched and non stretched BDs have non overlapping gipos.
 * `restrict_infra_vlan_traffic` - (Optional) Intra Leaf Communication traffic indicator of object Fabric-Wide Settings Policy. 
 * `unicast_xr_ep_learn_disable` - (Optional) Disable xrLeanrs indicator of object Fabric-Wide Settings Policy. 
 * `validate_overlapping_vlans` - (Optional) Validate Overlapping VLANS indicator of object Fabric-Wide Settings Policy.

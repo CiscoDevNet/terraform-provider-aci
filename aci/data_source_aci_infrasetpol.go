@@ -13,8 +13,13 @@ func dataSourceAciFabricWideSettingsPolicy() *schema.Resource {
 	return &schema.Resource{
 		ReadContext:   dataSourceAciFabricWideSettingsPolicyRead,
 		SchemaVersion: 1,
-		Schema: AppendBaseAttrSchema(AppendNameAliasAttrSchema(map[string]*schema.Schema{
+		Schema: AppendAttrSchemas(map[string]*schema.Schema{
 			"disable_ep_dampening": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+			"domain_validation": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
@@ -34,6 +39,16 @@ func dataSourceAciFabricWideSettingsPolicy() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"leaf_opflexp_authenticate_clients": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+			"leaf_opflexp_use_ssl": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
 			"name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -44,7 +59,22 @@ func dataSourceAciFabricWideSettingsPolicy() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"opflexp_ssl_protocols": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
 			"opflexp_use_ssl": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+			"policy_sync_node_bringup": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+			"reallocate_gipo": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
@@ -64,7 +94,7 @@ func dataSourceAciFabricWideSettingsPolicy() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
-		})),
+		}, GetBaseAttrSchema(), GetNameAliasAttrSchema()),
 	}
 }
 
