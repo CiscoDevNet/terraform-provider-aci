@@ -33,7 +33,7 @@ resource "aci_fabric_wide_settings" "example" {
   leaf_opflexp_authenticate_clients = "yes"
   leaf_opflexp_use_ssl = "yes"
   opflexp_authenticate_clients = "yes"
-  opflexp_ssl_protocols = "TLSv1,TLSv1.1,TLSv1.2"
+  opflexp_ssl_protocols = ["TLSv1","TLSv1.1","TLSv1.2"]
   opflexp_use_ssl = "yes"
   policy_sync_node_bringup = "yes"
   reallocate_gipo = "yes"
