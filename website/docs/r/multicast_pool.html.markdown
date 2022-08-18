@@ -25,6 +25,11 @@ Manages ACI Multicast Address Pool
 ```hcl
 resource "aci_multicast_pool" "example-pool" {
   name  = "example-pool"
+  multicast_address_block {
+    from = "224.0.0.40"
+    to = "224.0.0.44"
+    name = "testing-1"
+  }
 }
 ```
 
@@ -34,10 +39,18 @@ resource "aci_multicast_pool" "example-pool" {
 * `annotation` - (Optional) Annotation of the Multicast Address Pool.
 * `description` - (Optional) Description of the Multicast Address Pool.
 * `name_alias` - (Optional) Name Alias of the Multicast Address Pool.
+* `multicast_address_block` - (Optional) Multicast Address Pool Block Configuration. 
+* `multicast_address_block.from` - (Required) First multicast ip of the Multicast Address Pool Block.
+* `multicast_address_block.to` - (Required) Last multicast ip of the Multicast Address Pool Block.
+* `multicast_address_block.name` - (Optional) Name Alias of the Multicast Address Pool Block. 
+* `multicast_address_block.annotation` - (Optional) Annotation of Multicast Address Pool Block.
+* `multicast_address_block.description` - (Optional) Description of Multicast Address Pool Block.
+* `multicast_address_block.name_alias` - (Optional) Name Alias of Multicast Address Pool Block.
 
 ## Attribute Reference ##
 
 * `id` - Attribute id set to the Dn of the Multicast Address Pool.
+* `multicast_address_block.dn` - (Optional) Multicast Address Pool Block Dn. 
 
 ## Importing ##
 
