@@ -86,7 +86,7 @@ func (sm *ServiceManager) ReadRelationinfraRsIaclSpineProfile(parentDn string) (
 	contList := models.ListFromContainer(cont, "infraRsIaclSpineProfile")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnIaclSpineProfileName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -132,7 +132,7 @@ func (sm *ServiceManager) ReadRelationinfraRsSpineBfdIpv4InstPol(parentDn string
 	contList := models.ListFromContainer(cont, "infraRsSpineBfdIpv4InstPol")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnBfdIpv4InstPolName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -178,7 +178,7 @@ func (sm *ServiceManager) ReadRelationinfraRsSpineBfdIpv6InstPol(parentDn string
 	contList := models.ListFromContainer(cont, "infraRsSpineBfdIpv6InstPol")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnBfdIpv6InstPolName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -224,7 +224,7 @@ func (sm *ServiceManager) ReadRelationinfraRsSpineCoppProfile(parentDn string) (
 	contList := models.ListFromContainer(cont, "infraRsSpineCoppProfile")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnCoppSpineProfileName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -270,7 +270,7 @@ func (sm *ServiceManager) ReadRelationinfraRsSpinePGrpToCdpIfPol(parentDn string
 	contList := models.ListFromContainer(cont, "infraRsSpinePGrpToCdpIfPol")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnCdpIfPolName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
@@ -316,7 +316,7 @@ func (sm *ServiceManager) ReadRelationinfraRsSpinePGrpToLldpIfPol(parentDn strin
 	contList := models.ListFromContainer(cont, "infraRsSpinePGrpToLldpIfPol")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnLldpIfPolName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
