@@ -32,7 +32,7 @@ data "aci_fabric_wide_settings" "example" {}
 * `description` - (Optional) Description of object Fabric-Wide Settings Policy.
 * `name_alias` - (Optional) Name alias of object Fabric-Wide Settings Policy.
 * `disable_ep_dampening` - (Optional) Disable Ep Dampening knob of object Fabric-Wide Settings Policy. 
-* `domain_validation` - (Optional) Validate that static path is added but no domain is associated to an EPG.
+* `domain_validation` - (Optional) Validate that the correct physical domain is added before associating a new static path to an EPG.
 * `enable_mo_streaming` - (Optional) Enable MO streaming of object Fabric-Wide Settings Policy.  
 * `enable_remote_leaf_direct` - (Optional) Enable remote leaf direct communication of object Fabric-Wide Settings Policy.
 * `enforce_subnet_check` - (Optional) Enforce subnet check of object Fabric-Wide Settings Policy.  
