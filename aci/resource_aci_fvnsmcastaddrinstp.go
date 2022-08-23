@@ -178,10 +178,6 @@ func resourceAciMulticastAddressPoolCreate(ctx context.Context, d *schema.Resour
 				desc = blockMap["description"].(string)
 			}
 			fvnsMcastAddrBlk := models.NewMulticastAddressBlock(fmt.Sprintf(models.RnfvnsMcastAddrBlk, fvnsMcastAddrBlkAttr.From, fvnsMcastAddrBlkAttr.To), fvnsMcastAddrInstP.DistinguishedName, desc, fvnsMcastAddrBlkAttr)
-			existingFvnsMcastAddrBlk, existErr := getRemoteMulticastAddressBlock(aciClient, fvnsMcastAddrBlk.DistinguishedName)
-			if existErr == nil {
-				return diag.FromErr(fmt.Errorf("MulticastAddressBlock already configured in pool: %v", existingFvnsMcastAddrBlk))
-			}
 			err := aciClient.Save(fvnsMcastAddrBlk)
 			if err != nil {
 				return diag.FromErr(err)
@@ -218,7 +214,6 @@ func resourceAciMulticastAddressPoolUpdate(ctx context.Context, d *schema.Resour
 		fvnsMcastAddrInstPAttr.NameAlias = NameAlias.(string)
 	}
 	fvnsMcastAddrInstP := models.NewMulticastAddressPool(fmt.Sprintf(models.RnfvnsMcastAddrInstP, name), models.ParentDnfvnsMcastAddrInstP, desc, fvnsMcastAddrInstPAttr)
-	fvnsMcastAddrInstP.Status = "modified"
 	err := aciClient.Save(fvnsMcastAddrInstP)
 	if err != nil {
 		return diag.FromErr(err)
@@ -227,7 +222,6 @@ func resourceAciMulticastAddressPoolUpdate(ctx context.Context, d *schema.Resour
 	if d.HasChange("multicast_address_block") {
 		oldSchemaObjs, newSchemaObjs := d.GetChange("multicast_address_block")
 		missingOldObjects := getOldObjectsNotInNew("dn", oldSchemaObjs.(*schema.Set), newSchemaObjs.(*schema.Set))
-		foundOldObjects := getOldObjectsInNew("dn", oldSchemaObjs.(*schema.Set), newSchemaObjs.(*schema.Set))
 
 		for _, missingOldObject := range missingOldObjects {
 			err := aciClient.DeleteByDn(missingOldObject.(map[string]interface{})["dn"].(string), fmt.Sprintf(models.FvnsmcastaddrblkClassName))
@@ -254,11 +248,6 @@ func resourceAciMulticastAddressPoolUpdate(ctx context.Context, d *schema.Resour
 				desc = blockMap["description"].(string)
 			}
 			fvnsMcastAddrBlk := models.NewMulticastAddressBlock(fmt.Sprintf(models.RnfvnsMcastAddrBlk, fvnsMcastAddrBlkAttr.From, fvnsMcastAddrBlkAttr.To), fvnsMcastAddrInstP.DistinguishedName, desc, fvnsMcastAddrBlkAttr)
-			for _, val := range foundOldObjects {
-				if val == fvnsMcastAddrBlk.DistinguishedName {
-					fvnsMcastAddrBlk.Status = "modified"
-				}
-			}
 			err := aciClient.Save(fvnsMcastAddrBlk)
 			if err != nil {
 				return diag.FromErr(err)

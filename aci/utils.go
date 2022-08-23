@@ -352,16 +352,3 @@ func getOldObjectsNotInNew(keyName string, oldSet, newSet *schema.Set) (oldObjec
 	}
 	return oldObjects
 }
-
-// getOldObjectsInNew returns elements that are in oldSet and in newSet, based on the given keyName.
-func getOldObjectsInNew(keyName string, oldSet, newSet *schema.Set) (oldObjects []interface{}) {
-	for _, oldMap := range oldSet.List() {
-		for _, newMap := range newSet.List() {
-			if oldMap.(map[string]interface{})[keyName] == newMap.(map[string]interface{})[keyName] {
-				oldObjects = append(oldObjects, oldMap)
-				break
-			}
-		}
-	}
-	return oldObjects
-}
