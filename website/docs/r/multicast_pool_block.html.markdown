@@ -22,6 +22,8 @@ Manages ACI the Multicast Address Pool Block
 
 ## Example Usage ##
 
+Do not use the `multicast_address_block` from the `aci_multicast_pool` resource in combination with this resource.
+
 ```hcl
 resource "aci_multicast_pool" "example-pool" {
   name  = "example-pool"
