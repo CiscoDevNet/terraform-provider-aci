@@ -96,7 +96,7 @@ func getMulticastAddressBlocks(callType, multicastAddressPool string, client *cl
 }
 
 func setMulticastAddressBlocks(callType, multicastAddressPool string, readMulticastAddressBlockData []*models.MulticastAddressBlock, client *client.Client, d *schema.ResourceData) {
-	log.Printf("[DEBUG] Beginning SET called by %s function for address blocks %s", callType, readMulticastAddressBlockData)
+	log.Printf("[DEBUG] Beginning SET called by %s function for address blocks %v", callType, readMulticastAddressBlockData)
 	multicastAddressBlockList := make([]interface{}, 0)
 	for _, record := range readMulticastAddressBlockData {
 		multicastAddressBlockMap := make(map[string]interface{})

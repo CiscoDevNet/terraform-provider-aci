@@ -75,7 +75,7 @@ func testAccCheckAciMulticastAddressBlockConfig_basic(fvns_mcast_addr_inst_p_nam
 		description = "multicast_address_block created while acceptance testing"
 		multicast_pool_dn = aci_multicast_pool.foo_multicast_pool.id
 		from = "224.0.0.0"
-        to = "224.0.0.10"
+		to = "224.0.0.10"
 	}
 
 	`, fvns_mcast_addr_inst_p_name, fvns_mcast_addr_blk_name)

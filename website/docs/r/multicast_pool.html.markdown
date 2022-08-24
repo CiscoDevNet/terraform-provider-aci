@@ -45,9 +45,9 @@ resource "aci_multicast_pool" "example-pool" {
  * `from` - (Required) First multicast ip of the Multicast Address Pool Block.
  * `to` - (Required) Last multicast ip of the Multicast Address Pool Block.
  * `name` - (Optional) Name Alias of the Multicast Address Pool Block. 
- * `annotation` - (Optional) Annotation of Multicast Address Pool Block.
- * `description` - (Optional) Description of Multicast Address Pool Block.
- * `name_alias` - (Optional) Name Alias of Multicast Address Pool Block.
+ * `annotation` - (Optional) Annotation of the Multicast Address Pool Block.
+ * `description` - (Optional) Description of the Multicast Address Pool Block.
+ * `name_alias` - (Optional) Name Alias of the Multicast Address Pool Block.
 
 ## Attribute Reference ##
 
