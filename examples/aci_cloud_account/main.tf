@@ -6,6 +6,7 @@ terraform {
   }
 }
 
+# Azure cloud APIC
 provider "aci" {
   username = ""
   password = ""
@@ -19,9 +20,10 @@ resource "aci_tenant" "footenant" {
   name        = "test_tenant"
 }
 
+# TESTING access_type = "managed" 
 resource "aci_cloud_account" "foo_cloud_account" {
   tenant_dn   = aci_tenant.footenant.id
-  access_type = "credentials" //credentials or managed
+  access_type = "managed" //credentials or managed
   account_id  = "example_id"
   vendor      = "azure"
 }
@@ -89,36 +91,83 @@ output "aci_tenant_to_cloud_account_output" {
 }
 
 
-# # TESTING access_type = "credentials"
-# resource "aci_tenant" "footenant" {
+# TESTING access_type = "credentials"
+resource "aci_tenant" "azure_cloud_tenant" {
+  description = "sample aci_tenant from terraform"
+  name        = "azure_cloud_tenant"
+}
+
+resource "aci_cloud_ad" "azure_ad" {
+  tenant_dn   = aci_tenant.azure_cloud_tenant.id
+  active_directory_id = "azure_ad_id"
+  # name      = "azure_ad"
+}
+
+resource "aci_cloud_credentials" "azure_credentials" {
+  tenant_dn   = aci_cloud_ad.azure_ad.tenant_dn
+  key_id = "azure_cred_id"
+  name      = "test_cred"
+  # key = "secretkey"  # client secret
+  relation_cloud_rs_ad= aci_cloud_ad.azure_ad.id
+}
+
+resource "aci_cloud_account" "azure_cloud_account" {
+  tenant_dn   = aci_cloud_credentials.azure_credentials.tenant_dn
+  access_type = "credentials" 
+  account_id  = "example_id"
+  vendor      = "azure"
+  cloud_credentials_dn = aci_cloud_credentials.azure_credentials.id
+}
+
+# tenant_to_cloud_account_association
+resource "aci_tenant_to_cloud_account" "tenant_to_azure_cloud_account" {
+  tenant_dn        = aci_tenant.azure_cloud_tenant.id
+  cloud_account_dn = aci_cloud_account.azure_cloud_account.id
+}
+
+
+
+
+# # GCP cloud APIC
+# provider "aci" {
+#   username = ""
+#   password = ""
+#   url      = ""
+#   insecure = true
+# }
+
+# # 1. Creating a GCP cloud account
+# resource "aci_tenant" "gcp_cloud_tenant" {
 #   description = "sample aci_tenant from terraform"
-#   name        = "test_tenant"
+#   name        = "gcp_test_tenant"
 # }
 
-# resource "aci_cloud_ad" "azure_ad" {
-#   tenant_dn   = aci_tenant.footenant.id
-#   active_directory_id = "azure_ad_id"
-#   # name      = "azure_ad"
-# }
-
-# resource "aci_cloud_creddentials" "azure_credentials" {
-#   tenant_dn   = aci_tenant.footenant.id
-#   key_id = " azure_cred_id"
-#   name      = "test_cred"
-#   # client secret?
-#   relation_cloud_rs_ad= aci_cloud_ad.azure_ad.id
-# }
-
-# # tenant_to_cloud_account_association
-# resource "aci_tenant_to_cloud_account" "tenant_to_azure_account" {
-#   tenant_dn        = aci_tenant.footenant.id
-#   cloud_account_dn = aci_cloud_account.azure_account.id
-# }
-
-# resource "aci_cloud_account" "azure_account" {
-#   tenant_dn   = aci_tenant.footenant.id
-#   access_type = "credentials" 
+# # TESTING access_type = "managed" 
+# resource "aci_cloud_account" "foo_cloud_account" {
+#   tenant_dn   = aci_tenant.gcp_cloud_tenant.id
+#   access_type = "credentials" //credentials or managed
 #   account_id  = "example_id"
-#   vendor      = "azure"
-#   relation_cloud_rs_credentials = aci_cloud_creddentials.azure_credentials.id
+#   vendor      = "gcp"
+# }
+
+
+# # TESTING access_type = "credentials" (unmanaged)
+# resource "aci_tenant" "gcp_tenant" {
+#   description = "sample aci_tenant from terraform"
+#   name        = "gcp_tenant"
+# }
+
+# resource "aci_cloud_account" "gcp_cloud_account" {
+#   tenant_dn   = aci_cloud_credentials.gcp_credentials.tenant_dn
+#   access_type = "credentials" //credentials or managed
+#   account_id  = "example_id"
+#   vendor      = "gcp"
+#   cloud_credentials_dn = aci_cloud_credentials.gcp_credentials.id
+# }
+
+# resource "aci_cloud_credentials" "gcp_credentials" {
+#   tenant_dn   = aci_tenant.gcp_tenant.id
+#   key_id = "gcp_cred_id"
+#   name      = "gcp_test_cred"
+#   email= "anvjain@cisco.com"
 # }

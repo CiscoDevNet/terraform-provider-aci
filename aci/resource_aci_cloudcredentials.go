@@ -34,7 +34,7 @@ func resourceAciAccessCredentialtomanagethecloudresources() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
-			"email": {
+			"email": { //only for gcp
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
@@ -49,7 +49,7 @@ func resourceAciAccessCredentialtomanagethecloudresources() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
-			"key_id": {
+			"key_id": { //required for both
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,

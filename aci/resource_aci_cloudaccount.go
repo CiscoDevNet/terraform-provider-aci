@@ -29,9 +29,25 @@ func resourceAciCloudAccount() *schema.Resource {
 
 		CustomizeDiff: func(_ context.Context, diff *schema.ResourceDiff, v interface{}) error {
 			if diff.Get("access_type") == "credentials" {
-				if diff.Get("cloud_credentials_dn") == "" {
-					return errors.New(`"cloud_credentials_dn" is required when "access_type" is credentials`)
+				// if diff.Get("cloud_credentials_dn") == "" {
+				// 	return errors.New(`"cloud_credentials_dn" is required when "access_type" is credentials`)
+				// }
+
+				// diff.NewValueknown  & getokexists ? check if defined
+				// Both these works after apply : yes -> first time it doesn't work.
+				val := diff.NewValueKnown("cloud_credentials_dn")
+				log.Printf("CUST DIFF NewValueKnown IS : %t", val)
+				log.Printf("CUST DIFF cloud_credentials_dn OUT IS : %s", diff.Get("cloud_credentials_dn"))
+				if diff.NewValueKnown("cloud_credentials_dn") {
+					if diff.Get("cloud_credentials_dn") == "" {
+						log.Printf("CUST DIFF cloud_credentials_dn IS ---> : %s", diff.Get("cloud_credentials_dn"))
+						return errors.New(`"cloud_credentials_dn" is required when "access_type" is credentials`)
+					}
 				}
+
+				// value, b := diff.GetOkExists("cloud_credentials_dn")
+				// log.Printf("CUST DIFF NewValueKnown IS : VALUE: %s  ------ b :%s", value, b)
+
 			}
 
 			return nil
@@ -81,6 +97,7 @@ func resourceAciCloudAccount() *schema.Resource {
 			"cloud_credentials_dn": {
 				Type:        schema.TypeString,
 				Optional:    true,
+				Computed:    true,
 				Description: "Create relation to cloud:Credentials",
 			}})),
 	}
@@ -105,7 +122,7 @@ func setCloudAccountAttributes(cloudAccount *models.CloudAccount, d *schema.Reso
 	if dn != cloudAccount.DistinguishedName {
 		d.Set("tenant_dn", "")
 	} else {
-		d.Set("tenant_dn", GetParentDn(dn, "/ad"))
+		d.Set("tenant_dn", GetParentDn(dn, "/act"))
 	}
 
 	cloudAccountMap, err := cloudAccount.ToMap()

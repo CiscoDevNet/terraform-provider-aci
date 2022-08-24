@@ -6,6 +6,7 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/acctest"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
@@ -24,7 +25,7 @@ func TestAccAciActiveDirectory_Basic(t *testing.T) {
 			{
 				Config: testAccCheckAciActiveDirectoryConfig_basic(fv_tenant_name, cloud_ad_name),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAciActiveDirectoryExists("aci_active_directory.fooactive_directory", &active_directory),
+					testAccCheckAciActiveDirectoryExists("aci_cloud_ad.fooactive_directory", &active_directory),
 					testAccCheckAciActiveDirectoryAttributes(fv_tenant_name, cloud_ad_name, description, &active_directory),
 				),
 			},
@@ -46,14 +47,14 @@ func TestAccAciActiveDirectory_Update(t *testing.T) {
 			{
 				Config: testAccCheckAciActiveDirectoryConfig_basic(fv_tenant_name, cloud_ad_name),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAciActiveDirectoryExists("aci_active_directory.fooactive_directory", &active_directory),
+					testAccCheckAciActiveDirectoryExists("aci_cloud_ad.fooactive_directory", &active_directory),
 					testAccCheckAciActiveDirectoryAttributes(fv_tenant_name, cloud_ad_name, description, &active_directory),
 				),
 			},
 			{
 				Config: testAccCheckAciActiveDirectoryConfig_basic(fv_tenant_name, cloud_ad_name),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAciActiveDirectoryExists("aci_active_directory.fooactive_directory", &active_directory),
+					testAccCheckAciActiveDirectoryExists("aci_cloud_ad.fooactive_directory", &active_directory),
 					testAccCheckAciActiveDirectoryAttributes(fv_tenant_name, cloud_ad_name, description, &active_directory),
 				),
 			},
@@ -70,7 +71,7 @@ func testAccCheckAciActiveDirectoryConfig_basic(fv_tenant_name, cloud_ad_name st
 
 	}
 
-	resource "aci_active_directory" "fooactive_directory" {
+	resource "aci_cloud_ad" "fooactive_directory" {
 		name 		= "%s"
 		description = "active_directory created while acceptance testing"
 		tenant_dn = aci_tenant.footenant.id
@@ -110,7 +111,7 @@ func testAccCheckAciActiveDirectoryExists(name string, active_directory *models.
 func testAccCheckAciActiveDirectoryDestroy(s *terraform.State) error {
 	client := testAccProvider.Meta().(*client.Client)
 	for _, rs := range s.RootModule().Resources {
-		if rs.Type == "aci_active_directory" {
+		if rs.Type == "aci_cloud_ad" {
 			cont, err := client.Get(rs.Primary.ID)
 			active_directory := models.ActiveDirectoryFromContainer(cont)
 			if err == nil {

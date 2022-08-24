@@ -6,6 +6,7 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/acctest"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
@@ -24,7 +25,7 @@ func TestAccAciAccessCredentialtomanagethecloudresources_Basic(t *testing.T) {
 			{
 				Config: testAccCheckAciAccessCredentialtomanagethecloudresourcesConfig_basic(fv_tenant_name, cloud_credentials_name),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAciAccessCredentialtomanagethecloudresourcesExists("aci_access_credentialtomanagethecloudresources.fooaccess_credentialtomanagethecloudresources", &access_credentialtomanagethecloudresources),
+					testAccCheckAciAccessCredentialtomanagethecloudresourcesExists("aci_cloud_credentials.fooaccess_credentialtomanagethecloudresources", &access_credentialtomanagethecloudresources),
 					testAccCheckAciAccessCredentialtomanagethecloudresourcesAttributes(fv_tenant_name, cloud_credentials_name, description, &access_credentialtomanagethecloudresources),
 				),
 			},
@@ -46,14 +47,14 @@ func TestAccAciAccessCredentialtomanagethecloudresources_Update(t *testing.T) {
 			{
 				Config: testAccCheckAciAccessCredentialtomanagethecloudresourcesConfig_basic(fv_tenant_name, cloud_credentials_name),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAciAccessCredentialtomanagethecloudresourcesExists("aci_access_credentialtomanagethecloudresources.fooaccess_credentialtomanagethecloudresources", &access_credentialtomanagethecloudresources),
+					testAccCheckAciAccessCredentialtomanagethecloudresourcesExists("aci_cloud_credentials.fooaccess_credentialtomanagethecloudresources", &access_credentialtomanagethecloudresources),
 					testAccCheckAciAccessCredentialtomanagethecloudresourcesAttributes(fv_tenant_name, cloud_credentials_name, description, &access_credentialtomanagethecloudresources),
 				),
 			},
 			{
 				Config: testAccCheckAciAccessCredentialtomanagethecloudresourcesConfig_basic(fv_tenant_name, cloud_credentials_name),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAciAccessCredentialtomanagethecloudresourcesExists("aci_access_credentialtomanagethecloudresources.fooaccess_credentialtomanagethecloudresources", &access_credentialtomanagethecloudresources),
+					testAccCheckAciAccessCredentialtomanagethecloudresourcesExists("aci_cloud_credentials.fooaccess_credentialtomanagethecloudresources", &access_credentialtomanagethecloudresources),
 					testAccCheckAciAccessCredentialtomanagethecloudresourcesAttributes(fv_tenant_name, cloud_credentials_name, description, &access_credentialtomanagethecloudresources),
 				),
 			},
@@ -70,7 +71,7 @@ func testAccCheckAciAccessCredentialtomanagethecloudresourcesConfig_basic(fv_ten
 
 	}
 
-	resource "aci_access_credentialtomanagethecloudresources" "fooaccess_credentialtomanagethecloudresources" {
+	resource "aci_cloud_credentials" "fooaccess_credentialtomanagethecloudresources" {
 		name 		= "%s"
 		description = "access_credentialtomanagethecloudresources created while acceptance testing"
 		tenant_dn = aci_tenant.footenant.id
@@ -110,7 +111,7 @@ func testAccCheckAciAccessCredentialtomanagethecloudresourcesExists(name string,
 func testAccCheckAciAccessCredentialtomanagethecloudresourcesDestroy(s *terraform.State) error {
 	client := testAccProvider.Meta().(*client.Client)
 	for _, rs := range s.RootModule().Resources {
-		if rs.Type == "aci_access_credentialtomanagethecloudresources" {
+		if rs.Type == "aci_cloud_credentials" {
 			cont, err := client.Get(rs.Primary.ID)
 			access_credentialtomanagethecloudresources := models.AccessCredentialtomanagethecloudresourcesFromContainer(cont)
 			if err == nil {

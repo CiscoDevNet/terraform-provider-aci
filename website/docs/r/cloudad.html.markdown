@@ -1,14 +1,15 @@
 ---
+subcategory: "Cloud"
 layout: "aci"
-page_title: "ACI: aci_active_directory"
-sidebar_current: "docs-aci-resource-active_directory"
+page_title: "ACI: aci_cloud_ad"
+sidebar_current: "docs-aci-resource-cloud_ad"
 description: |-
-  Manages ACI Active Directory
+  Manages Cloud ACI Active Directory
 ---
 
-# aci_active_directory #
+# aci_cloud_ad #
 
-Manages ACI Active Directory
+Manages Cloud ACI Active Directory
 
 ## API Information ##
 
@@ -17,16 +18,15 @@ Manages ACI Active Directory
 
 ## GUI Information ##
 
-* `Location` - 
+* `Location` - Cloud APIC -> Application Management -> Tenants  -> {tenant_name}
 
 
 ## Example Usage ##
 
 ```hcl
-resource "aci_active_directory" "example" {
+resource "aci_cloud_ad" "example" {
   tenant_dn  = aci_tenant.example.id
   active_directory_id  = "example"
-  active_directory_id = 
 
 }
 ```
@@ -36,15 +36,15 @@ resource "aci_active_directory" "example" {
 * `tenant_dn` - (Required) Distinguished name of the parent Tenant object.
 * `active_directory_id` - (Required) Active_directory_id of the object Active Directory.
 * `annotation` - (Optional) Annotation of the object Active Directory.
-* `active_directory_id` - (Optional) AD ID.An object identifier.
+* `name` - (Optional) Name of the Active Directory object.
 
 
 ## Importing ##
 
-An existing ActiveDirectory can be [imported][docs-import] into this resource via its Dn, via the following command:
+An existing Active Directory can be [imported][docs-import] into this resource via its Dn, via the following command:
 [docs-import]: https://www.terraform.io/docs/import/index.html
 
 
 ```
-terraform import aci_active_directory.example <Dn>
+terraform import aci_cloud_ad.example <Dn>
 ```
