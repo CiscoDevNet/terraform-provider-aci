@@ -13,6 +13,8 @@ provider "aci" {
   insecure = true
 }
 
+# Do not use the `multicast_address_block` from this resource in combination with the `aci_multicast_pool_block` resource.
+
 resource "aci_multicast_pool" "test-tf-pool" {
   name        = "test-tf-pool"
   description = "This multicast pool is created by terraform"
