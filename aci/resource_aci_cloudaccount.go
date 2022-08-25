@@ -2,7 +2,6 @@ package aci
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"log"
 
@@ -26,32 +25,6 @@ func resourceAciCloudAccount() *schema.Resource {
 		},
 
 		SchemaVersion: 1,
-
-		CustomizeDiff: func(_ context.Context, diff *schema.ResourceDiff, v interface{}) error {
-			if diff.Get("access_type") == "credentials" {
-				// if diff.Get("cloud_credentials_dn") == "" {
-				// 	return errors.New(`"cloud_credentials_dn" is required when "access_type" is credentials`)
-				// }
-
-				// diff.NewValueknown  & getokexists ? check if defined
-				// Both these works after apply : yes -> first time it doesn't work.
-				val := diff.NewValueKnown("cloud_credentials_dn")
-				log.Printf("CUST DIFF NewValueKnown IS : %t", val)
-				log.Printf("CUST DIFF cloud_credentials_dn OUT IS : %s", diff.Get("cloud_credentials_dn"))
-				if diff.NewValueKnown("cloud_credentials_dn") {
-					if diff.Get("cloud_credentials_dn") == "" {
-						log.Printf("CUST DIFF cloud_credentials_dn IS ---> : %s", diff.Get("cloud_credentials_dn"))
-						return errors.New(`"cloud_credentials_dn" is required when "access_type" is credentials`)
-					}
-				}
-
-				// value, b := diff.GetOkExists("cloud_credentials_dn")
-				// log.Printf("CUST DIFF NewValueKnown IS : VALUE: %s  ------ b :%s", value, b)
-
-			}
-
-			return nil
-		},
 
 		Schema: AppendBaseAttrSchema(AppendNameAliasAttrSchema(map[string]*schema.Schema{
 			"tenant_dn": {
@@ -203,6 +176,12 @@ func resourceAciCloudAccountCreate(ctx context.Context, d *schema.ResourceData, 
 
 		cloudAccountCredentialsMap["content"] = toStrMap(cloudAccountCredentialsContent)
 		cloudAccountSet = append(cloudAccountSet, cloudAccountCredentialsMap)
+	} else {
+		if cloudAccountMap["accessType"] == "credentials" {
+			if relationTocloudRsCredentials == "" {
+				return diag.Errorf("'cloud_credentials_dn' is required when 'access_type' is credentials")
+			}
+		}
 	}
 
 	cont, err := preparePayload(models.CloudaccountClassName, toStrMap(cloudAccountMap), cloudAccountSet)
@@ -232,7 +211,6 @@ func resourceAciCloudAccountCreate(ctx context.Context, d *schema.ResourceData, 
 	if relationTocloudRsAccountToAccessPolicy, ok := d.GetOk("relation_cloud_rs_account_to_access_policy"); ok {
 		relationParam := relationTocloudRsAccountToAccessPolicy.(string)
 		err = aciClient.CreateRelationcloudRsAccountToAccessPolicy(dn, "", relationParam)
-		// err = aciClient.CreateRelationcloudRsAccountToAccessPolicy(cloudAccount.DistinguishedName, cloudAccountAttr.Annotation, relationParam)
 
 		if err != nil {
 			return diag.FromErr(err)
@@ -292,6 +270,12 @@ func resourceAciCloudAccountUpdate(ctx context.Context, d *schema.ResourceData, 
 
 		cloudAccountCredentialsMap["content"] = toStrMap(cloudAccountCredentialsContent)
 		cloudAccountSet = append(cloudAccountSet, cloudAccountCredentialsMap)
+	} else {
+		if cloudAccountMap["accessType"] == "credentials" {
+			if relationTocloudRsCredentials == "" {
+				return diag.Errorf("'cloud_credentials_dn' is required when 'access_type' is credentials")
+			}
+		}
 	}
 
 	cont, err := preparePayload(models.CloudaccountClassName, toStrMap(cloudAccountMap), cloudAccountSet)
@@ -303,7 +287,6 @@ func resourceAciCloudAccountUpdate(ctx context.Context, d *schema.ResourceData, 
 	if diags.HasError() {
 		return diags
 	}
-	// cloudAccount.Status = "modified"
 
 	checkDns := make([]string, 0, 1)
 
@@ -326,7 +309,6 @@ func resourceAciCloudAccountUpdate(ctx context.Context, d *schema.ResourceData, 
 			return diag.FromErr(err)
 		}
 		err = aciClient.CreateRelationcloudRsAccountToAccessPolicy(dn, "", newRelParam.(string))
-		// err = aciClient.CreateRelationcloudRsAccountToAccessPolicy(cloudAccount.DistinguishedName, cloudAccountAttr.Annotation, newRelParam.(string))
 
 		if err != nil {
 			return diag.FromErr(err)
