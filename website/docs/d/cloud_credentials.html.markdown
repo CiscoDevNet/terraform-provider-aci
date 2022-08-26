@@ -43,7 +43,7 @@ data "aci_cloud_credentials" "example" {
 * `name_alias` - (Optional) Name Alias of the Cloud Credential object to manage the cloud resources.
 * `client_id` - (Optional) Client ID of the Cloud Credential object.
 * `email` - (Optional) email address of the locally-authenticated user.
-* `http_proxy` - (Optional) Http Proxy to connect to the cloud provider. 
+* `http_proxy` - (Optional) HTTP Proxy to connect to the cloud provider. 
 * `key` - (Optional) The Secret key or password used to uniquely identify the cloud resource configuration object.
 * `key_id` - (Optional) The Access key ID of the cloud resource.
 * `rsa_private_key` - (Optional)  RSA Secret Key of the cloud resource.

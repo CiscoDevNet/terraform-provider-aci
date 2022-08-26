@@ -180,7 +180,6 @@ func resourceAciCloudCredentialsCreate(ctx context.Context, d *schema.ResourceDa
 	if relationTocloudRsAD, ok := d.GetOk("relation_cloud_rs_ad"); ok {
 		relationParam := relationTocloudRsAD.(string)
 		checkDns = append(checkDns, relationParam)
-
 	}
 
 	d.Partial(true)

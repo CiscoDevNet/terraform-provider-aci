@@ -45,10 +45,10 @@ resource "aci_cloud_credentials" "example" {
 * `annotation` - (Optional) Annotation of the Cloud Credential object to manage the cloud resources.
 * `client_id` - (Optional) Client ID of the Cloud Credential object.
 * `email` - (Optional) email address of the locally-authenticated user.
-* `http_proxy` - (Optional) Http Proxy to connect to the cloud provider. 
+* `http_proxy` - (Optional) HTTP Proxy to connect to the cloud provider. 
 * `key` - (Optional) The Secret key or password used to uniquely identify the cloud resource configuration object.
 * `key_id` - (Optional) The Access key ID of the cloud resource.
-* `rsa_private_key` - (Optional)  RSA Secret Key of the cloud resource. Allowed values are and default value is "".
+* `rsa_private_key` - (Optional)  RSA Secret Key of the cloud resource.
 
 * `relation_cloud_rs_ad` - (Optional) Represents the relation to an Azure Active Directory (class cloudAD). Type String.
 
