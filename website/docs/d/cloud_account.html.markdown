@@ -10,7 +10,7 @@ description: |-
 # aci_cloud_account #
 
 Data source for ACI Cloud Account
-
+Note: This data source is supported in Cloud APIC only.
 
 ## API Information ##
 

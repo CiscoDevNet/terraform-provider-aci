@@ -11,15 +11,15 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
-func resourceAciAccessCredentialtomanagethecloudresources() *schema.Resource {
+func resourceAciCloudCredentials() *schema.Resource {
 	return &schema.Resource{
-		CreateContext: resourceAciAccessCredentialtomanagethecloudresourcesCreate,
-		UpdateContext: resourceAciAccessCredentialtomanagethecloudresourcesUpdate,
-		ReadContext:   resourceAciAccessCredentialtomanagethecloudresourcesRead,
-		DeleteContext: resourceAciAccessCredentialtomanagethecloudresourcesDelete,
+		CreateContext: resourceAciCloudCredentialsCreate,
+		UpdateContext: resourceAciCloudCredentialsUpdate,
+		ReadContext:   resourceAciCloudCredentialsRead,
+		DeleteContext: resourceAciCloudCredentialsDelete,
 
 		Importer: &schema.ResourceImporter{
-			State: resourceAciAccessCredentialtomanagethecloudresourcesImport,
+			State: resourceAciCloudCredentialsImport,
 		},
 
 		SchemaVersion: 1,
@@ -49,7 +49,7 @@ func resourceAciAccessCredentialtomanagethecloudresources() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
-			"key_id": { //required for both
+			"key_id": { //required for both (azure and gcp)
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
@@ -64,29 +64,28 @@ func resourceAciAccessCredentialtomanagethecloudresources() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
-
 			"relation_cloud_rs_ad": {
-				Type: schema.TypeString,
-
+				Type:        schema.TypeString,
 				Optional:    true,
+				Computed:    true,
 				Description: "Create relation to cloud:AD",
 			}})),
 	}
 }
 
-func getRemoteAccessCredentialtomanagethecloudresources(client *client.Client, dn string) (*models.AccessCredentialtomanagethecloudresources, error) {
+func getRemoteCloudCredentials(client *client.Client, dn string) (*models.CloudCredentials, error) {
 	cloudCredentialsCont, err := client.Get(dn)
 	if err != nil {
 		return nil, err
 	}
-	cloudCredentials := models.AccessCredentialtomanagethecloudresourcesFromContainer(cloudCredentialsCont)
+	cloudCredentials := models.CloudCredentialsFromContainer(cloudCredentialsCont)
 	if cloudCredentials.DistinguishedName == "" {
-		return nil, fmt.Errorf("AccessCredentialtomanagethecloudresources %s not found", cloudCredentials.DistinguishedName)
+		return nil, fmt.Errorf("CloudCredentials %s not found", cloudCredentials.DistinguishedName)
 	}
 	return cloudCredentials, nil
 }
 
-func setAccessCredentialtomanagethecloudresourcesAttributes(cloudCredentials *models.AccessCredentialtomanagethecloudresources, d *schema.ResourceData) (*schema.ResourceData, error) {
+func setCloudCredentialsAttributes(cloudCredentials *models.CloudCredentials, d *schema.ResourceData) (*schema.ResourceData, error) {
 	dn := d.Id()
 	d.SetId(cloudCredentials.DistinguishedName)
 	d.Set("description", cloudCredentials.Description)
@@ -108,15 +107,15 @@ func setAccessCredentialtomanagethecloudresourcesAttributes(cloudCredentials *mo
 	return d, nil
 }
 
-func resourceAciAccessCredentialtomanagethecloudresourcesImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
+func resourceAciCloudCredentialsImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
 	log.Printf("[DEBUG] %s: Beginning Import", d.Id())
 	aciClient := m.(*client.Client)
 	dn := d.Id()
-	cloudCredentials, err := getRemoteAccessCredentialtomanagethecloudresources(aciClient, dn)
+	cloudCredentials, err := getRemoteCloudCredentials(aciClient, dn)
 	if err != nil {
 		return nil, err
 	}
-	schemaFilled, err := setAccessCredentialtomanagethecloudresourcesAttributes(cloudCredentials, d)
+	schemaFilled, err := setCloudCredentialsAttributes(cloudCredentials, d)
 	if err != nil {
 		return nil, err
 	}
@@ -124,13 +123,13 @@ func resourceAciAccessCredentialtomanagethecloudresourcesImport(d *schema.Resour
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciAccessCredentialtomanagethecloudresourcesCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	log.Printf("[DEBUG] AccessCredentialtomanagethecloudresources: Beginning Creation")
+func resourceAciCloudCredentialsCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+	log.Printf("[DEBUG] CloudCredentials: Beginning Creation")
 	aciClient := m.(*client.Client)
 	name := d.Get("name").(string)
 	TenantDn := d.Get("tenant_dn").(string)
 
-	cloudCredentialsAttr := models.AccessCredentialtomanagethecloudresourcesAttributes{}
+	cloudCredentialsAttr := models.CloudCredentialsAttributes{}
 
 	nameAlias := ""
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
@@ -170,7 +169,7 @@ func resourceAciAccessCredentialtomanagethecloudresourcesCreate(ctx context.Cont
 	if RsaPrivateKey, ok := d.GetOk("rsa_private_key"); ok {
 		cloudCredentialsAttr.RsaPrivateKey = RsaPrivateKey.(string)
 	}
-	cloudCredentials := models.NewAccessCredentialtomanagethecloudresources(fmt.Sprintf(models.RncloudCredentials, name), TenantDn, nameAlias, cloudCredentialsAttr)
+	cloudCredentials := models.NewCloudCredentials(fmt.Sprintf(models.RncloudCredentials, name), TenantDn, nameAlias, cloudCredentialsAttr)
 
 	err := aciClient.Save(cloudCredentials)
 	if err != nil {
@@ -194,25 +193,23 @@ func resourceAciAccessCredentialtomanagethecloudresourcesCreate(ctx context.Cont
 	if relationTocloudRsAD, ok := d.GetOk("relation_cloud_rs_ad"); ok {
 		relationParam := relationTocloudRsAD.(string)
 		err = aciClient.CreateRelationcloudRsAD(cloudCredentials.DistinguishedName, cloudCredentialsAttr.Annotation, relationParam)
-
 		if err != nil {
 			return diag.FromErr(err)
 		}
-
 	}
 
 	d.SetId(cloudCredentials.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
-	return resourceAciAccessCredentialtomanagethecloudresourcesRead(ctx, d, m)
+	return resourceAciCloudCredentialsRead(ctx, d, m)
 }
 
-func resourceAciAccessCredentialtomanagethecloudresourcesUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	log.Printf("[DEBUG] AccessCredentialtomanagethecloudresources: Beginning Update")
+func resourceAciCloudCredentialsUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+	log.Printf("[DEBUG] CloudCredentials: Beginning Update")
 	aciClient := m.(*client.Client)
 	name := d.Get("name").(string)
 	TenantDn := d.Get("tenant_dn").(string)
 
-	cloudCredentialsAttr := models.AccessCredentialtomanagethecloudresourcesAttributes{}
+	cloudCredentialsAttr := models.CloudCredentialsAttributes{}
 
 	nameAlias := ""
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
@@ -252,7 +249,7 @@ func resourceAciAccessCredentialtomanagethecloudresourcesUpdate(ctx context.Cont
 	if RsaPrivateKey, ok := d.GetOk("rsa_private_key"); ok {
 		cloudCredentialsAttr.RsaPrivateKey = RsaPrivateKey.(string)
 	}
-	cloudCredentials := models.NewAccessCredentialtomanagethecloudresources(fmt.Sprintf("credentials-%s", name), TenantDn, nameAlias, cloudCredentialsAttr)
+	cloudCredentials := models.NewCloudCredentials(fmt.Sprintf("credentials-%s", name), TenantDn, nameAlias, cloudCredentialsAttr)
 
 	cloudCredentials.Status = "modified"
 
@@ -266,7 +263,6 @@ func resourceAciAccessCredentialtomanagethecloudresourcesUpdate(ctx context.Cont
 	if d.HasChange("relation_cloud_rs_ad") || d.HasChange("annotation") {
 		_, newRelParam := d.GetChange("relation_cloud_rs_ad")
 		checkDns = append(checkDns, newRelParam.(string))
-
 	}
 
 	d.Partial(true)
@@ -283,30 +279,28 @@ func resourceAciAccessCredentialtomanagethecloudresourcesUpdate(ctx context.Cont
 			return diag.FromErr(err)
 		}
 		err = aciClient.CreateRelationcloudRsAD(cloudCredentials.DistinguishedName, cloudCredentialsAttr.Annotation, newRelParam.(string))
-
 		if err != nil {
 			return diag.FromErr(err)
 		}
-
 	}
 
 	d.SetId(cloudCredentials.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
-	return resourceAciAccessCredentialtomanagethecloudresourcesRead(ctx, d, m)
+	return resourceAciCloudCredentialsRead(ctx, d, m)
 }
 
-func resourceAciAccessCredentialtomanagethecloudresourcesRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceAciCloudCredentialsRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 
-	cloudCredentials, err := getRemoteAccessCredentialtomanagethecloudresources(aciClient, dn)
+	cloudCredentials, err := getRemoteCloudCredentials(aciClient, dn)
 	if err != nil {
 		d.SetId("")
 		return diag.FromErr(err)
 	}
 
-	_, err = setAccessCredentialtomanagethecloudresourcesAttributes(cloudCredentials, d)
+	_, err = setCloudCredentialsAttributes(cloudCredentials, d)
 	if err != nil {
 		d.SetId("")
 		return nil
@@ -317,18 +311,13 @@ func resourceAciAccessCredentialtomanagethecloudresourcesRead(ctx context.Contex
 		log.Printf("[DEBUG] Error while reading relation cloudRsAD %v", err)
 		d.Set("relation_cloud_rs_ad", "")
 	} else {
-		if _, ok := d.GetOk("relation_cloud_rs_ad"); ok {
-			tfName := d.Get("relation_cloud_rs_ad").(string)
-			if tfName != cloudRsADData {
-				d.Set("relation_cloud_rs_ad", "")
-			}
-		}
+		d.Set("relation_cloud_rs_ad", cloudRsADData.(string))
 	}
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 	return nil
 }
 
-func resourceAciAccessCredentialtomanagethecloudresourcesDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceAciCloudCredentialsDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 	aciClient := m.(*client.Client)
 	dn := d.Id()

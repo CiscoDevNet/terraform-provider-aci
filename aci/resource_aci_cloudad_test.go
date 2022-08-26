@@ -12,7 +12,7 @@ import (
 )
 
 func TestAccAciActiveDirectory_Basic(t *testing.T) {
-	var active_directory models.ActiveDirectory
+	var active_directory models.CloudActiveDirectory
 	fv_tenant_name := acctest.RandString(5)
 	cloud_ad_name := acctest.RandString(5)
 	description := "active_directory created while acceptance testing"
@@ -34,7 +34,7 @@ func TestAccAciActiveDirectory_Basic(t *testing.T) {
 }
 
 func TestAccAciActiveDirectory_Update(t *testing.T) {
-	var active_directory models.ActiveDirectory
+	var active_directory models.CloudActiveDirectory
 	fv_tenant_name := acctest.RandString(5)
 	cloud_ad_name := acctest.RandString(5)
 	description := "active_directory created while acceptance testing"
@@ -80,7 +80,7 @@ func testAccCheckAciActiveDirectoryConfig_basic(fv_tenant_name, cloud_ad_name st
 	`, fv_tenant_name, cloud_ad_name)
 }
 
-func testAccCheckAciActiveDirectoryExists(name string, active_directory *models.ActiveDirectory) resource.TestCheckFunc {
+func testAccCheckAciActiveDirectoryExists(name string, active_directory *models.CloudActiveDirectory) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 		rs, ok := s.RootModule().Resources[name]
 
@@ -99,7 +99,7 @@ func testAccCheckAciActiveDirectoryExists(name string, active_directory *models.
 			return err
 		}
 
-		active_directoryFound := models.ActiveDirectoryFromContainer(cont)
+		active_directoryFound := models.CloudActiveDirectoryFromContainer(cont)
 		if active_directoryFound.DistinguishedName != rs.Primary.ID {
 			return fmt.Errorf("Active Directory %s not found", rs.Primary.ID)
 		}
@@ -113,7 +113,7 @@ func testAccCheckAciActiveDirectoryDestroy(s *terraform.State) error {
 	for _, rs := range s.RootModule().Resources {
 		if rs.Type == "aci_cloud_ad" {
 			cont, err := client.Get(rs.Primary.ID)
-			active_directory := models.ActiveDirectoryFromContainer(cont)
+			active_directory := models.CloudActiveDirectoryFromContainer(cont)
 			if err == nil {
 				return fmt.Errorf("Active Directory %s Still exists", active_directory.DistinguishedName)
 			}
@@ -124,7 +124,7 @@ func testAccCheckAciActiveDirectoryDestroy(s *terraform.State) error {
 	return nil
 }
 
-func testAccCheckAciActiveDirectoryAttributes(fv_tenant_name, cloud_ad_name, description string, active_directory *models.ActiveDirectory) resource.TestCheckFunc {
+func testAccCheckAciActiveDirectoryAttributes(fv_tenant_name, cloud_ad_name, description string, active_directory *models.CloudActiveDirectory) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 		if cloud_ad_name != GetMOName(active_directory.DistinguishedName) {
 			return fmt.Errorf("Bad cloudad %s", GetMOName(active_directory.DistinguishedName))

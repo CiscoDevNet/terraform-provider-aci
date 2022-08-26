@@ -4,13 +4,13 @@ layout: "aci"
 page_title: "ACI: aci_cloud_ad"
 sidebar_current: "docs-aci-data-source-cloud_ad"
 description: |-
-  Data source for Cloud ACI Active Directory
+  Data source for ACI Cloud Active Directory
 ---
 
 # aci_cloud_ad #
 
-Data source for Cloud ACI Active Directory
-
+Data source for ACI Cloud Active Directory
+Note: This data source is supported in Cloud APIC only.
 
 ## API Information ##
 
@@ -41,4 +41,4 @@ data "aci_cloud_ad" "example" {
 * `id` - Attribute id set to the Dn of the Active Directory.
 * `annotation` - (Optional) Annotation of the Active Directory object.
 * `name_alias` - (Optional) Name Alias of the Active Directory object.
-* `active_directory_id` - (Optional) Id of the identifier object.
+* `active_directory_id` - (Optional) Id of the Azure Active Directory.

@@ -10,6 +10,7 @@ description: |-
 # aci_tenant_to_cloud_account #
 
 Manages ACI Tenant to Cloud Account association
+Note: This resource is supported in Cloud APIC only.
 
 ## API Information ##
 

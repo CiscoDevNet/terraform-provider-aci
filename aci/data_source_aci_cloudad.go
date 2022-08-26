@@ -10,9 +10,9 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
-func dataSourceAciActiveDirectory() *schema.Resource {
+func dataSourceAciCloudActiveDirectory() *schema.Resource {
 	return &schema.Resource{
-		ReadContext:   dataSourceAciActiveDirectoryRead,
+		ReadContext:   dataSourceAciCloudActiveDirectoryRead,
 		SchemaVersion: 1,
 		Schema: AppendBaseAttrSchema(AppendNameAliasAttrSchema(map[string]*schema.Schema{
 			"tenant_dn": {
@@ -32,21 +32,21 @@ func dataSourceAciActiveDirectory() *schema.Resource {
 	}
 }
 
-func dataSourceAciActiveDirectoryRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func dataSourceAciCloudActiveDirectoryRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	aciClient := m.(*client.Client)
 	active_directory_id := d.Get("active_directory_id").(string)
 	TenantDn := d.Get("tenant_dn").(string)
 	rn := fmt.Sprintf(models.RncloudAD, active_directory_id)
 	dn := fmt.Sprintf("%s/%s", TenantDn, rn)
 
-	cloudAD, err := getRemoteActiveDirectory(aciClient, dn)
+	cloudAD, err := getRemoteCloudActiveDirectory(aciClient, dn)
 	if err != nil {
 		return diag.FromErr(err)
 	}
 
 	d.SetId(dn)
 
-	_, err = setActiveDirectoryAttributes(cloudAD, d)
+	_, err = setCloudActiveDirectoryAttributes(cloudAD, d)
 	if err != nil {
 		return diag.FromErr(err)
 	}

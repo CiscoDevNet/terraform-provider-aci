@@ -4,12 +4,13 @@ layout: "aci"
 page_title: "ACI: aci_cloud_ad"
 sidebar_current: "docs-aci-resource-cloud_ad"
 description: |-
-  Manages Cloud ACI Active Directory
+  Manages ACI Cloud Active Directory
 ---
 
 # aci_cloud_ad #
 
-Manages Cloud ACI Active Directory
+Manages ACI Cloud Active Directory
+Note: This resource is supported in Cloud APIC only.
 
 ## API Information ##
 
@@ -27,14 +28,13 @@ Manages Cloud ACI Active Directory
 resource "aci_cloud_ad" "example" {
   tenant_dn  = aci_tenant.example.id
   active_directory_id  = "example"
-
 }
 ```
 
 ## Argument Reference ##
 
 * `tenant_dn` - (Required) Distinguished name of the parent Tenant object.
-* `active_directory_id` - (Required) Active_directory_id of the object Active Directory.
+* `active_directory_id` - (Required) Id of the Azure Active Directory.
 * `annotation` - (Optional) Annotation of the object Active Directory.
 * `name` - (Optional) Name of the Active Directory object.
 

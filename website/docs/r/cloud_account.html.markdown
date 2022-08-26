@@ -10,6 +10,7 @@ description: |-
 # aci_cloud_account #
 
 Manages ACI Cloud Account
+Note: This resource is supported in Cloud APIC only.
 
 ## API Information ##
 
@@ -39,14 +40,12 @@ resource "aci_cloud_account" "example" {
 * `tenant_dn` - (Required) Distinguished name of the parent Tenant object.
 * `name` - (Optional) Name of the Cloud Account object.
 * `annotation` - (Optional) Annotation of the Cloud Account object.
-* `access_type` - (Optional) Authentication type for the Cloud Account (managed=no credentials required (IAM), credentials=using accessKeys). Allowed values are "credentials", "managed". Type: String.
+* `access_type` - (Optional) Authentication type for the Cloud Account (managed=no credentials required (IAM), credentials=using accessKeys). Allowed values are "credentials" and "managed". Type: String.
 * `account_id` - (Required) ID of the Cloud Account object.
-* `vendor` - (Required) Vendor of the Cloud Account object. Allowed values are "aws", "azure", "gcp", "unknown". Type: String.
+* `vendor` - (Required) Vendor of the Cloud Account object. Allowed values are "aws", "azure", "gcp" and "unknown". Type: String.
 
-* `relation_cloud_rs_account_to_access_policy` - (Optional) Represents the relation to a Relation to the Access policy to be used (class cloudAccessPolicy). Relation to CloudAccessPolicy cardianity is n-1 Type: String.
-
-
-* `relation_cloud_rs_credentials` - (Optional) Represents the relation to a Credentials to use to manage the account (class cloudCredentials). If access type is credentials, relation to the credentials to use Type: String.
+* `relation_cloud_rs_account_to_access_policy` - (Optional) Represents the relation to the Access policy to be used (class cloudAccessPolicy). Type: String.
+* `relation_cloud_rs_credentials` - (Optional) Represents the relation to a Credentials to use to manage the account (class cloudCredentials). If access_type is credentials, relation to the Cloud Credentials to use Type: String.
 
 
 

@@ -20,11 +20,11 @@ resource "aci_tenant" "footenant" {
   name        = "test_tenant"
 }
 
-# TESTING access_type = "managed" 
+# access_type = "managed" 
 resource "aci_cloud_account" "foo_cloud_account" {
   tenant_dn   = aci_tenant.footenant.id
   access_type = "managed" //credentials or managed
-  account_id  = "example_id"
+  account_id  = "example_manged_id"
   vendor      = "azure"
 }
 
@@ -39,29 +39,28 @@ resource "aci_tenant" "azure_tenant" {
 resource "aci_cloud_account" "azure_account" {
   tenant_dn   = aci_tenant.azure_tenant.id
   access_type = "managed"
-  account_id  = "example_id"
+  account_id  = "example_managed_id"
   vendor      = "azure"
 }
 
-# Own Subscription
 resource "aci_tenant_to_cloud_account" "tenant_to_azure_account" {
   tenant_dn        = aci_tenant.azure_tenant.id
   cloud_account_dn = aci_cloud_account.azure_account.id
 }
 
 # 2.1 Shared Subscription (attaching the subscription id from another exiting tenant)
-resource "aci_tenant" "cloud_tenant" {
-  description = "sample aci_tenant from terraform"
-  name        = "cloud_tenant"
-}
-
 resource "aci_cloud_account" "cloud_account" {
   tenant_dn   = aci_tenant.cloud_tenant.id
   access_type = "managed"
   account_id  = "example_account_id"
   name        = "azure_cloud"
   vendor      = "azure"
-# relation_cloud_rs_account_to_access_policy -> is only available in in the most recent version of cloud APIC (>25.0.3)
+# relation_cloud_rs_account_to_access_policy -> is only available in the most recent version of cloud APIC (>25.0.3)
+}
+
+resource "aci_tenant" "cloud_tenant" {
+  description = "sample aci_tenant from terraform"
+  name        = "cloud_tenant"
 }
 
 # Shared Subscription
@@ -91,7 +90,7 @@ output "aci_tenant_to_cloud_account_output" {
 }
 
 
-# TESTING access_type = "credentials"
+# access_type = "credentials"
 resource "aci_tenant" "azure_cloud_tenant" {
   description = "sample aci_tenant from terraform"
   name        = "azure_cloud_tenant"

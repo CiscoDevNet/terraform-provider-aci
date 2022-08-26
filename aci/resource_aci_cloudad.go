@@ -11,15 +11,15 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
-func resourceAciActiveDirectory() *schema.Resource {
+func resourceAciCloudActiveDirectory() *schema.Resource {
 	return &schema.Resource{
-		CreateContext: resourceAciActiveDirectoryCreate,
-		UpdateContext: resourceAciActiveDirectoryUpdate,
-		ReadContext:   resourceAciActiveDirectoryRead,
-		DeleteContext: resourceAciActiveDirectoryDelete,
+		CreateContext: resourceAciCloudActiveDirectoryCreate,
+		UpdateContext: resourceAciCloudActiveDirectoryUpdate,
+		ReadContext:   resourceAciCloudActiveDirectoryRead,
+		DeleteContext: resourceAciCloudActiveDirectoryDelete,
 
 		Importer: &schema.ResourceImporter{
-			State: resourceAciActiveDirectoryImport,
+			State: resourceAciCloudActiveDirectoryImport,
 		},
 
 		SchemaVersion: 1,
@@ -42,19 +42,19 @@ func resourceAciActiveDirectory() *schema.Resource {
 	}
 }
 
-func getRemoteActiveDirectory(client *client.Client, dn string) (*models.ActiveDirectory, error) {
+func getRemoteCloudActiveDirectory(client *client.Client, dn string) (*models.CloudActiveDirectory, error) {
 	cloudADCont, err := client.Get(dn)
 	if err != nil {
 		return nil, err
 	}
-	cloudAD := models.ActiveDirectoryFromContainer(cloudADCont)
+	cloudAD := models.CloudActiveDirectoryFromContainer(cloudADCont)
 	if cloudAD.DistinguishedName == "" {
 		return nil, fmt.Errorf("ActiveDirectory %s not found", cloudAD.DistinguishedName)
 	}
 	return cloudAD, nil
 }
 
-func setActiveDirectoryAttributes(cloudAD *models.ActiveDirectory, d *schema.ResourceData) (*schema.ResourceData, error) {
+func setCloudActiveDirectoryAttributes(cloudAD *models.CloudActiveDirectory, d *schema.ResourceData) (*schema.ResourceData, error) {
 	dn := d.Id()
 	d.SetId(cloudAD.DistinguishedName)
 	if dn != cloudAD.DistinguishedName {
@@ -73,15 +73,15 @@ func setActiveDirectoryAttributes(cloudAD *models.ActiveDirectory, d *schema.Res
 	return d, nil
 }
 
-func resourceAciActiveDirectoryImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
+func resourceAciCloudActiveDirectoryImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
 	log.Printf("[DEBUG] %s: Beginning Import", d.Id())
 	aciClient := m.(*client.Client)
 	dn := d.Id()
-	cloudAD, err := getRemoteActiveDirectory(aciClient, dn)
+	cloudAD, err := getRemoteCloudActiveDirectory(aciClient, dn)
 	if err != nil {
 		return nil, err
 	}
-	schemaFilled, err := setActiveDirectoryAttributes(cloudAD, d)
+	schemaFilled, err := setCloudActiveDirectoryAttributes(cloudAD, d)
 	if err != nil {
 		return nil, err
 	}
@@ -89,13 +89,13 @@ func resourceAciActiveDirectoryImport(d *schema.ResourceData, m interface{}) ([]
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciActiveDirectoryCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceAciCloudActiveDirectoryCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] ActiveDirectory: Beginning Creation")
 	aciClient := m.(*client.Client)
 	active_directory_id := d.Get("active_directory_id").(string)
 	TenantDn := d.Get("tenant_dn").(string)
 
-	cloudADAttr := models.ActiveDirectoryAttributes{}
+	cloudADAttr := models.CloudActiveDirectoryAttributes{}
 
 	nameAlias := ""
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
@@ -115,7 +115,7 @@ func resourceAciActiveDirectoryCreate(ctx context.Context, d *schema.ResourceDat
 	if Name, ok := d.GetOk("name"); ok {
 		cloudADAttr.Name = Name.(string)
 	}
-	cloudAD := models.NewActiveDirectory(fmt.Sprintf(models.RncloudAD, active_directory_id), TenantDn, nameAlias, cloudADAttr)
+	cloudAD := models.NewCloudActiveDirectory(fmt.Sprintf(models.RncloudAD, active_directory_id), TenantDn, nameAlias, cloudADAttr)
 
 	err := aciClient.Save(cloudAD)
 	if err != nil {
@@ -124,16 +124,16 @@ func resourceAciActiveDirectoryCreate(ctx context.Context, d *schema.ResourceDat
 
 	d.SetId(cloudAD.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
-	return resourceAciActiveDirectoryRead(ctx, d, m)
+	return resourceAciCloudActiveDirectoryRead(ctx, d, m)
 }
 
-func resourceAciActiveDirectoryUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceAciCloudActiveDirectoryUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] ActiveDirectory: Beginning Update")
 	aciClient := m.(*client.Client)
 	active_directory_id := d.Get("active_directory_id").(string)
 	TenantDn := d.Get("tenant_dn").(string)
 
-	cloudADAttr := models.ActiveDirectoryAttributes{}
+	cloudADAttr := models.CloudActiveDirectoryAttributes{}
 
 	nameAlias := ""
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
@@ -153,7 +153,7 @@ func resourceAciActiveDirectoryUpdate(ctx context.Context, d *schema.ResourceDat
 	if Name, ok := d.GetOk("name"); ok {
 		cloudADAttr.Name = Name.(string)
 	}
-	cloudAD := models.NewActiveDirectory(fmt.Sprintf("ad-%s", active_directory_id), TenantDn, nameAlias, cloudADAttr)
+	cloudAD := models.NewCloudActiveDirectory(fmt.Sprintf("ad-%s", active_directory_id), TenantDn, nameAlias, cloudADAttr)
 
 	cloudAD.Status = "modified"
 
@@ -164,21 +164,21 @@ func resourceAciActiveDirectoryUpdate(ctx context.Context, d *schema.ResourceDat
 
 	d.SetId(cloudAD.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
-	return resourceAciActiveDirectoryRead(ctx, d, m)
+	return resourceAciCloudActiveDirectoryRead(ctx, d, m)
 }
 
-func resourceAciActiveDirectoryRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceAciCloudActiveDirectoryRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 
-	cloudAD, err := getRemoteActiveDirectory(aciClient, dn)
+	cloudAD, err := getRemoteCloudActiveDirectory(aciClient, dn)
 	if err != nil {
 		d.SetId("")
 		return diag.FromErr(err)
 	}
 
-	_, err = setActiveDirectoryAttributes(cloudAD, d)
+	_, err = setCloudActiveDirectoryAttributes(cloudAD, d)
 	if err != nil {
 		d.SetId("")
 		return nil
@@ -188,7 +188,7 @@ func resourceAciActiveDirectoryRead(ctx context.Context, d *schema.ResourceData,
 	return nil
 }
 
-func resourceAciActiveDirectoryDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceAciCloudActiveDirectoryDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 	aciClient := m.(*client.Client)
 	dn := d.Id()

@@ -167,13 +167,11 @@ func resourceAciCloudAccountCreate(ctx context.Context, d *schema.ResourceData, 
 	dn := fmt.Sprintf("%s/%s", TenantDn, fmt.Sprintf(models.RncloudAccount, account_id, vendor))
 
 	if relationTocloudRsCredentials, ok := d.GetOk("cloud_credentials_dn"); ok {
-
 		cloudAccountCredentialsMap := make(map[string]interface{})
 		cloudAccountCredentialsMap["class_name"] = "cloudRsCredentials"
+
 		cloudAccountCredentialsContent := make(map[string]interface{})
-
 		cloudAccountCredentialsContent["tDn"] = relationTocloudRsCredentials
-
 		cloudAccountCredentialsMap["content"] = toStrMap(cloudAccountCredentialsContent)
 		cloudAccountSet = append(cloudAccountSet, cloudAccountCredentialsMap)
 	} else {
@@ -264,10 +262,9 @@ func resourceAciCloudAccountUpdate(ctx context.Context, d *schema.ResourceData, 
 
 		cloudAccountCredentialsMap := make(map[string]interface{})
 		cloudAccountCredentialsMap["class_name"] = "cloudRsCredentials"
+
 		cloudAccountCredentialsContent := make(map[string]interface{})
-
 		cloudAccountCredentialsContent["tDn"] = relationTocloudRsCredentials
-
 		cloudAccountCredentialsMap["content"] = toStrMap(cloudAccountCredentialsContent)
 		cloudAccountSet = append(cloudAccountSet, cloudAccountCredentialsMap)
 	} else {
@@ -343,12 +340,7 @@ func resourceAciCloudAccountRead(ctx context.Context, d *schema.ResourceData, m 
 		log.Printf("[DEBUG] Error while reading relation cloudRsAccountToAccessPolicy %v", err)
 		d.Set("relation_cloud_rs_account_to_access_policy", "")
 	} else {
-		if _, ok := d.GetOk("relation_cloud_rs_account_to_access_policy"); ok {
-			tfName := d.Get("relation_cloud_rs_account_to_access_policy").(string)
-			if tfName != cloudRsAccountToAccessPolicyData {
-				d.Set("relation_cloud_rs_account_to_access_policy", "")
-			}
-		}
+		d.Set("relation_cloud_rs_account_to_access_policy", cloudRsAccountToAccessPolicyData.(string))
 	}
 
 	cloudRsCredentialsData, err := aciClient.ReadRelationcloudRsCredentials(dn)
@@ -356,12 +348,7 @@ func resourceAciCloudAccountRead(ctx context.Context, d *schema.ResourceData, m 
 		log.Printf("[DEBUG] Error while reading relation cloudRsCredentials %v", err)
 		d.Set("cloud_credentials_dn", "")
 	} else {
-		if _, ok := d.GetOk("cloud_credentials_dn"); ok {
-			tfName := d.Get("cloud_credentials_dn").(string)
-			if tfName != cloudRsCredentialsData {
-				d.Set("cloud_credentials_dn", "")
-			}
-		}
+		d.Set("cloud_credentials_dn", cloudRsCredentialsData.(string))
 	}
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 	return nil

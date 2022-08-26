@@ -20,7 +20,7 @@ resource "aci_tenant" "gcp_cloud_tenant" {
   name        = "gcp_test_tenant"
 }
 
-# TESTING access_type = "managed" 
+# access_type = "managed" 
 resource "aci_cloud_account" "foo_cloud_account" {
   tenant_dn   = aci_tenant.gcp_cloud_tenant.id
   access_type = "credentials" //credentials or managed
@@ -29,7 +29,7 @@ resource "aci_cloud_account" "foo_cloud_account" {
 }
 
 
-# TESTING access_type = "credentials" (unmanaged)
+# access_type = "credentials" (unmanaged)
 resource "aci_tenant" "gcp_tenant" {
   description = "sample aci_tenant from terraform"
   name        = "gcp_tenant"

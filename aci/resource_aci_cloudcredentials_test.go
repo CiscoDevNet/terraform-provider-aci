@@ -12,7 +12,7 @@ import (
 )
 
 func TestAccAciAccessCredentialtomanagethecloudresources_Basic(t *testing.T) {
-	var access_credentialtomanagethecloudresources models.AccessCredentialtomanagethecloudresources
+	var access_credentialtomanagethecloudresources models.CloudCredentials
 	fv_tenant_name := acctest.RandString(5)
 	cloud_credentials_name := acctest.RandString(5)
 	description := "access_credentialtomanagethecloudresources created while acceptance testing"
@@ -34,7 +34,7 @@ func TestAccAciAccessCredentialtomanagethecloudresources_Basic(t *testing.T) {
 }
 
 func TestAccAciAccessCredentialtomanagethecloudresources_Update(t *testing.T) {
-	var access_credentialtomanagethecloudresources models.AccessCredentialtomanagethecloudresources
+	var access_credentialtomanagethecloudresources models.CloudCredentials
 	fv_tenant_name := acctest.RandString(5)
 	cloud_credentials_name := acctest.RandString(5)
 	description := "access_credentialtomanagethecloudresources created while acceptance testing"
@@ -80,16 +80,16 @@ func testAccCheckAciAccessCredentialtomanagethecloudresourcesConfig_basic(fv_ten
 	`, fv_tenant_name, cloud_credentials_name)
 }
 
-func testAccCheckAciAccessCredentialtomanagethecloudresourcesExists(name string, access_credentialtomanagethecloudresources *models.AccessCredentialtomanagethecloudresources) resource.TestCheckFunc {
+func testAccCheckAciAccessCredentialtomanagethecloudresourcesExists(name string, access_credentialtomanagethecloudresources *models.CloudCredentials) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 		rs, ok := s.RootModule().Resources[name]
 
 		if !ok {
-			return fmt.Errorf("Access Credential to manage the cloud resources %s not found", name)
+			return fmt.Errorf("Cloud Credential to manage the cloud resources %s not found", name)
 		}
 
 		if rs.Primary.ID == "" {
-			return fmt.Errorf("No Access Credential to manage the cloud resources dn was set")
+			return fmt.Errorf("No Cloud Credential to manage the cloud resources dn was set")
 		}
 
 		client := testAccProvider.Meta().(*client.Client)
@@ -99,9 +99,9 @@ func testAccCheckAciAccessCredentialtomanagethecloudresourcesExists(name string,
 			return err
 		}
 
-		access_credentialtomanagethecloudresourcesFound := models.AccessCredentialtomanagethecloudresourcesFromContainer(cont)
+		access_credentialtomanagethecloudresourcesFound := models.CloudCredentialsFromContainer(cont)
 		if access_credentialtomanagethecloudresourcesFound.DistinguishedName != rs.Primary.ID {
-			return fmt.Errorf("Access Credential to manage the cloud resources %s not found", rs.Primary.ID)
+			return fmt.Errorf("Cloud Credential to manage the cloud resources %s not found", rs.Primary.ID)
 		}
 		*access_credentialtomanagethecloudresources = *access_credentialtomanagethecloudresourcesFound
 		return nil
@@ -113,9 +113,9 @@ func testAccCheckAciAccessCredentialtomanagethecloudresourcesDestroy(s *terrafor
 	for _, rs := range s.RootModule().Resources {
 		if rs.Type == "aci_cloud_credentials" {
 			cont, err := client.Get(rs.Primary.ID)
-			access_credentialtomanagethecloudresources := models.AccessCredentialtomanagethecloudresourcesFromContainer(cont)
+			access_credentialtomanagethecloudresources := models.CloudCredentialsFromContainer(cont)
 			if err == nil {
-				return fmt.Errorf("Access Credential to manage the cloud resources %s Still exists", access_credentialtomanagethecloudresources.DistinguishedName)
+				return fmt.Errorf("Cloud Credential to manage the cloud resources %s Still exists", access_credentialtomanagethecloudresources.DistinguishedName)
 			}
 		} else {
 			continue
@@ -124,7 +124,7 @@ func testAccCheckAciAccessCredentialtomanagethecloudresourcesDestroy(s *terrafor
 	return nil
 }
 
-func testAccCheckAciAccessCredentialtomanagethecloudresourcesAttributes(fv_tenant_name, cloud_credentials_name, description string, access_credentialtomanagethecloudresources *models.AccessCredentialtomanagethecloudresources) resource.TestCheckFunc {
+func testAccCheckAciAccessCredentialtomanagethecloudresourcesAttributes(fv_tenant_name, cloud_credentials_name, description string, access_credentialtomanagethecloudresources *models.CloudCredentials) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 		if cloud_credentials_name != GetMOName(access_credentialtomanagethecloudresources.DistinguishedName) {
 			return fmt.Errorf("Bad cloud_credentials %s", GetMOName(access_credentialtomanagethecloudresources.DistinguishedName))

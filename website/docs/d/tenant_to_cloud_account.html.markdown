@@ -10,7 +10,7 @@ description: |-
 # aci_tenant_to_cloud_account #
 
 Data source for ACI Tenant to Cloud Account association
-
+Note: This data source is supported in Cloud APIC only.
 
 ## API Information ##
 
