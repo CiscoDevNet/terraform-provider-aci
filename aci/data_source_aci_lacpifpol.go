@@ -19,12 +19,12 @@ func dataSourceAciLACPMemberPolicy() *schema.Resource {
 				Type:     schema.TypeString,
 				Required: true,
 			},
-			"prio": {
+			"priority": {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
 			},
-			"tx_rate": {
+			"transmit_rate": {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,

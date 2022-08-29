@@ -22,6 +22,8 @@ resource "aci_leaf_access_bundle_policy_group" "example" {
 resource "aci_lacp_member_policy" "example" {
   name        = "example"
   description = "This policy member is created by terraform"
+  priority = "32768"
+  transmit_rate = "normal"
 }
 
 resource "aci_leaf_access_bundle_policy_sub_group" "example" {

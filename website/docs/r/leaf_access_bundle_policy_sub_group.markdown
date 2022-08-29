@@ -26,7 +26,7 @@ Manages ACI Override Policy Group
 resource "aci_leaf_access_bundle_policy_sub_group" "example" {
   leaf_access_bundle_policy_group_dn  = aci_leaf_access_bundle_policy_group.example.id
   name  = "example"
-  port_channel_member = aci_resource.example.id
+  port_channel_member = aci_lacp_member_policy.example.id
 }
 ```
 

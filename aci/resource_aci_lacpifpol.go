@@ -30,12 +30,12 @@ func resourceAciLACPMemberPolicy() *schema.Resource {
 				Required: true,
 				ForceNew: true,
 			},
-			"prio": {
+			"priority": {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
 			},
-			"tx_rate": {
+			"transmit_rate": {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
@@ -71,8 +71,8 @@ func setLACPMemberPolicyAttributes(lacpIfPol *models.LACPMemberPolicy, d *schema
 	d.Set("annotation", lacpIfPolMap["annotation"])
 	d.Set("name", lacpIfPolMap["name"])
 	d.Set("name_alias", lacpIfPolMap["nameAlias"])
-	d.Set("prio", lacpIfPolMap["prio"])
-	d.Set("tx_rate", lacpIfPolMap["txRate"])
+	d.Set("priority", lacpIfPolMap["prio"])
+	d.Set("transmit_rate", lacpIfPolMap["txRate"])
 	return d, nil
 }
 
@@ -113,11 +113,11 @@ func resourceAciLACPMemberPolicyCreate(ctx context.Context, d *schema.ResourceDa
 		lacpIfPolAttr.NameAlias = NameAlias.(string)
 	}
 
-	if Prio, ok := d.GetOk("prio"); ok {
+	if Prio, ok := d.GetOk("priority"); ok {
 		lacpIfPolAttr.Prio = Prio.(string)
 	}
 
-	if TxRate, ok := d.GetOk("tx_rate"); ok {
+	if TxRate, ok := d.GetOk("transmit_rate"); ok {
 		lacpIfPolAttr.TxRate = TxRate.(string)
 	}
 	lacpIfPol := models.NewLACPMemberPolicy(fmt.Sprintf(models.RnlacpIfPol, name), models.ParentDnlacpIfPol, desc, lacpIfPolAttr)
@@ -152,15 +152,14 @@ func resourceAciLACPMemberPolicyUpdate(ctx context.Context, d *schema.ResourceDa
 		lacpIfPolAttr.NameAlias = NameAlias.(string)
 	}
 
-	if Prio, ok := d.GetOk("prio"); ok {
+	if Prio, ok := d.GetOk("priority"); ok {
 		lacpIfPolAttr.Prio = Prio.(string)
 	}
 
-	if TxRate, ok := d.GetOk("tx_rate"); ok {
+	if TxRate, ok := d.GetOk("transmit_rate"); ok {
 		lacpIfPolAttr.TxRate = TxRate.(string)
 	}
 	lacpIfPol := models.NewLACPMemberPolicy(fmt.Sprintf(models.RnlacpIfPol, name), models.ParentDnlacpIfPol, desc, lacpIfPolAttr)
-	lacpIfPol.Status = "modified"
 
 	err := aciClient.Save(lacpIfPol)
 	if err != nil {

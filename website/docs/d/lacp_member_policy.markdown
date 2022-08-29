@@ -1,8 +1,8 @@
 ---
 subcategory: "Access Policies"
 layout: "aci"
-page_title: "ACI: aci_lacpmember_policy"
-sidebar_current: "docs-aci-data-source-lacpmember_policy"
+page_title: "ACI: aci_lacp_member_policy"
+sidebar_current: "docs-aci-data-source-lacp_member_policy"
 description: |-
   Data source for ACI LACP Member Policy
 ---
@@ -23,7 +23,7 @@ Data source for ACI LACP Member Policy
 ## Example Usage ##
 
 ```hcl
-data "aci_lacpmember_policy" "example" {
+data "aci_lacp_member_policy" "example" {
   name  = "example"
 }
 ```
@@ -34,8 +34,7 @@ data "aci_lacpmember_policy" "example" {
 
 ## Attribute Reference ##
 * `id` - Attribute id set to the Dn of the LACP Member Policy.
-* `annotation` - (Optional) Annotation of object LACP Member Policy.
-* `name_alias` - (Optional) Name Alias of object LACP Member Policy.
-* `name_alias` - (Optional) Name alias. 
-* `prio` - (Optional) Priority. Port priority - LACP uses the port priority to decide which ports should be put in standby mode when there is a limitation that prevents all compatible ports from aggregating and which ports should be put into active mode. A higher port priority value means a lower priority for LACP
-* `tx_rate` - (Optional) Transmission Rate. The configured transmit rate of the LACP packets.
+* `annotation` - (Optional) Annotation of the object LACP Member Policy.
+* `name_alias` - (Optional) Name Alias of the object LACP Member Policy.
+* `priority` - (Optional) Priority. Port priority - LACP uses the port priority to decide which ports should be put in standby mode when there is a limitation that prevents all compatible ports from aggregating and which ports should be put into active mode. A higher port priority value means a lower priority for LACP
+* `transmit_rate` - (Optional) Transmission Rate. The configured transmit rate of the LACP packets.

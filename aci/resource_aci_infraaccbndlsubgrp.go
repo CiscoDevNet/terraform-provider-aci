@@ -68,10 +68,28 @@ func setOverridePCVPCPolicyGroupAttributes(infraAccBndlSubgrp *models.OverridePC
 	} else {
 		d.Set("leaf_access_bundle_policy_group_dn", GetParentDn(infraAccBndlSubgrp.DistinguishedName, fmt.Sprintf("/"+models.RninfraAccBndlSubgrp, infraAccBndlSubgrpMap["name"])))
 	}
-	d.Set("annotation", infraAccBndlSubgrpMap["annotation"])
+
+	if infraAccBndlSubgrpMap["annotation"] == "" {
+		d.Set("annotation", "orchestrator:terraform")
+	} else {
+		d.Set("annotation", infraAccBndlSubgrpMap["annotation"])
+	}
+
 	d.Set("name", infraAccBndlSubgrpMap["name"])
 	d.Set("name_alias", infraAccBndlSubgrpMap["nameAlias"])
 	return d, nil
+}
+
+func getInfraRsLacpInterfacePolData(callType, parentDn string, client *client.Client) interface{} {
+	log.Printf("[DEBUG] Beginning GET called by %s function for port channel member of %s", callType, parentDn)
+	infraRsLacpInterfacePolData, err := client.ReadRelationinfraRsLacpInterfacePol(parentDn)
+	if err == nil {
+		log.Printf("[DEBUG] Finished GET called by %s successfully with result: %v", callType, infraRsLacpInterfacePolData)
+	} else {
+		log.Printf("[DEBUG] Error during GET operation for port channel member of %v: %v", parentDn, err)
+		infraRsLacpInterfacePolData = nil
+	}
+	return infraRsLacpInterfacePolData
 }
 
 func resourceAciOverridePCVPCPolicyGroupImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -86,6 +104,12 @@ func resourceAciOverridePCVPCPolicyGroupImport(d *schema.ResourceData, m interfa
 	if err != nil {
 		return nil, err
 	}
+
+	infraRsLacpInterfacePolData := getInfraRsLacpInterfacePolData("Import", infraAccBndlSubgrp.DistinguishedName, aciClient)
+	if infraRsLacpInterfacePolData != nil {
+		d.Set("port_channel_member", fmt.Sprintf("uni/infra/lacpifp-%s", infraRsLacpInterfacePolData.(string)))
+	}
+
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 	return []*schema.ResourceData{schemaFilled}, nil
 }
@@ -125,12 +149,10 @@ func resourceAciOverridePCVPCPolicyGroupCreate(ctx context.Context, d *schema.Re
 		checkDns = append(checkDns, relationParam)
 	}
 
-	d.Partial(true)
 	err = checkTDn(aciClient, checkDns)
 	if err != nil {
 		return diag.FromErr(err)
 	}
-	d.Partial(false)
 
 	if relationToinfraRsLacpInterfacePol, ok := d.GetOk("port_channel_member"); ok {
 		relationParam := relationToinfraRsLacpInterfacePol.(string)
@@ -146,6 +168,7 @@ func resourceAciOverridePCVPCPolicyGroupCreate(ctx context.Context, d *schema.Re
 }
 func resourceAciOverridePCVPCPolicyGroupUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] OverridePCVPCPolicyGroup: Beginning Update")
+	deleted := false
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
 	name := d.Get("name").(string)
@@ -167,9 +190,15 @@ func resourceAciOverridePCVPCPolicyGroupUpdate(ctx context.Context, d *schema.Re
 		infraAccBndlSubgrpAttr.NameAlias = NameAlias.(string)
 	}
 
-	infraAccBndlSubgrp := models.NewOverridePCVPCPolicyGroup(fmt.Sprintf(models.RninfraAccBndlSubgrp, name), LeafAccessBundlePolicyGroupDn, desc, infraAccBndlSubgrpAttr)
-	infraAccBndlSubgrp.Status = "modified"
+	if d.HasChange("annotation") || d.HasChange("name_alias") || d.HasChange("description") {
+		err := aciClient.DeleteOverridePCVPCPolicyGroup(name, GetMOName(LeafAccessBundlePolicyGroupDn))
+		if err != nil {
+			return diag.FromErr(err)
+		}
+		deleted = true
+	}
 
+	infraAccBndlSubgrp := models.NewOverridePCVPCPolicyGroup(fmt.Sprintf(models.RninfraAccBndlSubgrp, name), LeafAccessBundlePolicyGroupDn, desc, infraAccBndlSubgrpAttr)
 	err := aciClient.Save(infraAccBndlSubgrp)
 	if err != nil {
 		return diag.FromErr(err)
@@ -177,24 +206,26 @@ func resourceAciOverridePCVPCPolicyGroupUpdate(ctx context.Context, d *schema.Re
 
 	checkDns := make([]string, 0, 1)
 
-	if d.HasChange("port_channel_member") || d.HasChange("annotation") {
+	if d.HasChange("port_channel_member") || deleted {
 		_, newRelParam := d.GetChange("port_channel_member")
 		checkDns = append(checkDns, newRelParam.(string))
 	}
 
-	d.Partial(true)
 	err = checkTDn(aciClient, checkDns)
 	if err != nil {
 		return diag.FromErr(err)
 	}
-	d.Partial(false)
 
-	if d.HasChange("port_channel_member") || d.HasChange("annotation") {
+	if d.HasChange("port_channel_member") || deleted {
 		_, newRelParam := d.GetChange("port_channel_member")
-		err = aciClient.DeleteRelationinfraRsLacpInterfacePol(infraAccBndlSubgrp.DistinguishedName)
-		if err != nil {
-			return diag.FromErr(err)
+
+		if !deleted {
+			err = aciClient.DeleteRelationinfraRsLacpInterfacePol(infraAccBndlSubgrp.DistinguishedName)
+			if err != nil {
+				return diag.FromErr(err)
+			}
 		}
+
 		err = aciClient.CreateRelationinfraRsLacpInterfacePol(infraAccBndlSubgrp.DistinguishedName, infraAccBndlSubgrpAttr.Annotation, GetMOName(newRelParam.(string)))
 		if err != nil {
 			return diag.FromErr(err)
@@ -223,18 +254,11 @@ func resourceAciOverridePCVPCPolicyGroupRead(ctx context.Context, d *schema.Reso
 		return nil
 	}
 
-	infraRsLacpInterfacePolData, err := aciClient.ReadRelationinfraRsLacpInterfacePol(dn)
-	if err != nil {
-		log.Printf("[DEBUG] Error while reading relation infraRsLacpInterfacePol %v", err)
-		d.Set("port_channel_member", "")
-	} else {
-		if _, ok := d.GetOk("port_channel_member"); ok {
-			tfName := GetMOName(d.Get("port_channel_member").(string))
-			if tfName != infraRsLacpInterfacePolData {
-				d.Set("port_channel_member", "")
-			}
-		}
+	infraRsLacpInterfacePolData := getInfraRsLacpInterfacePolData("Read", infraAccBndlSubgrp.DistinguishedName, aciClient)
+	if infraRsLacpInterfacePolData != nil {
+		d.Set("port_channel_member", fmt.Sprintf("uni/infra/lacpifp-%s", infraRsLacpInterfacePolData.(string)))
 	}
+
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 	return nil
 }
