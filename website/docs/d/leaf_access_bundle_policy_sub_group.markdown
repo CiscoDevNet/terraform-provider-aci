@@ -32,9 +32,9 @@ data "aci_leaf_access_bundle_policy_sub_group" "example" {
 ## Argument Reference ##
 
 * `leaf_access_bundle_policy_group_dn` - (Required) Distinguished name of the parent infraAccBndlGrp object.
-* `name` - (Required) Name of the object Override Policy Group.
+* `name` - (Required) Name of the Override Policy Group object.
 
 ## Attribute Reference ##
 * `id` - Attribute id set to the Dn of the Override Policy Group.
-* `annotation` - (Optional) Annotation of the object Override Policy Group.
-* `name_alias` - (Optional) Name Alias of the object Override Policy Group.
+* `annotation` - (Optional) Annotation of the Override Policy Group object.
+* `name_alias` - (Optional) Name Alias of the Override Policy Group object.

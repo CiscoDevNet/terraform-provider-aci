@@ -30,11 +30,11 @@ data "aci_lacp_member_policy" "example" {
 
 ## Argument Reference ##
 
-* `name` - (Required) Name of object LACP Member Policy.
+* `name` - (Required) Name of LACP Member Policy object.
 
 ## Attribute Reference ##
 * `id` - Attribute id set to the Dn of the LACP Member Policy.
-* `annotation` - (Optional) Annotation of the object LACP Member Policy.
-* `name_alias` - (Optional) Name Alias of the object LACP Member Policy.
-* `priority` - (Optional) Priority. Port priority - LACP uses the port priority to decide which ports should be put in standby mode when there is a limitation that prevents all compatible ports from aggregating and which ports should be put into active mode. A higher port priority value means a lower priority for LACP
+* `annotation` - (Optional) Annotation of the LACP Member Policy object.
+* `name_alias` - (Optional) Name Alias of the LACP Member Policy object.
+* `priority` - (Optional) Port priority - LACP uses the port priority to decide which ports should be put in standby mode when there is a limitation that prevents all compatible ports from aggregating and which ports should be put into active mode. A higher port priority value means a lower priority for LACP.
 * `transmit_rate` - (Optional) Transmission Rate. The configured transmit rate of the LACP packets.
