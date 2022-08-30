@@ -4,12 +4,12 @@ layout: "aci"
 page_title: "ACI: aci_multicast_pool"
 sidebar_current: "docs-aci-resource-multicast_pool"
 description: |-
-  Manages ACI Multicast Address Pool
+  Manages the ACI Multicast Address Pool
 ---
 
 # aci_multicast_pool #
 
-Manages ACI Multicast Address Pool
+Manages the ACI Multicast Address Pool
 
 ## API Information ##
 
@@ -42,8 +42,8 @@ resource "aci_multicast_pool" "example-pool" {
 * `description` - (Optional) Description of the Multicast Address Pool.
 * `name_alias` - (Optional) Name Alias of the Multicast Address Pool.
 * `multicast_address_block` - (Optional) Multicast Address Pool Block Configuration. Type: block.
- * `from` - (Required) First multicast ip of the Multicast Address Pool Block.
- * `to` - (Required) Last multicast ip of the Multicast Address Pool Block.
+ * `from` - (Required) First multicast IP of the Multicast Address Pool Block.
+ * `to` - (Required) Last multicast IP of the Multicast Address Pool Block.
  * `name` - (Optional) Name Alias of the Multicast Address Pool Block. 
  * `annotation` - (Optional) Annotation of the Multicast Address Pool Block.
  * `description` - (Optional) Description of the Multicast Address Pool Block.

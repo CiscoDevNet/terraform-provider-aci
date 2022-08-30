@@ -24,13 +24,9 @@ func dataSourceAciMulticastAddressPool() *schema.Resource {
 				Optional: true,
 				Elem: &schema.Resource{
 					Schema: AppendAttrSchemas(map[string]*schema.Schema{
-						"dn": {
-							Type:     schema.TypeString,
-							Computed: true,
-						},
 						"from": {
 							Type:     schema.TypeString,
-							Required: true,
+							Optional: true,
 						},
 						"name": {
 							Type:     schema.TypeString,
@@ -38,7 +34,7 @@ func dataSourceAciMulticastAddressPool() *schema.Resource {
 						},
 						"to": {
 							Type:     schema.TypeString,
-							Required: true,
+							Optional: true,
 						},
 					}, GetBaseAttrSchema(), GetNameAliasAttrSchema()),
 				},

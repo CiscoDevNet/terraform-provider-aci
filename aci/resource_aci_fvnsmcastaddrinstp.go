@@ -34,6 +34,7 @@ func resourceAciMulticastAddressPool() *schema.Resource {
 				Optional: true,
 				Elem: &schema.Resource{
 					Schema: AppendAttrSchemas(map[string]*schema.Schema{
+						// Internally used for updating (delete/re-create) of multicast_address_block
 						"dn": {
 							Type:     schema.TypeString,
 							Computed: true,
@@ -109,7 +110,7 @@ func setMulticastAddressBlocks(callType, multicastAddressPool string, readMultic
 		multicastAddressBlockList = append(multicastAddressBlockList, multicastAddressBlockMap)
 	}
 	d.Set("multicast_address_block", multicastAddressBlockList)
-	log.Printf("[DEBUG] Finished SET called by %s successfully with result: %v", callType, d.Get("multicast_address_block"))
+	log.Printf("[DEBUG] Finished SET called by %s successfully with result: %v", callType, multicastAddressBlockList)
 }
 
 func resourceAciMulticastAddressPoolImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -162,8 +163,8 @@ func resourceAciMulticastAddressPoolCreate(ctx context.Context, d *schema.Resour
 
 	if multicastAddressBlock, ok := d.GetOk("multicast_address_block"); ok {
 		multicastAddressBlockList := multicastAddressBlock.(*schema.Set).List()
-		multicastAddressBlocks := make([]*models.MulticastAddressBlock, len(multicastAddressBlockList))
-		for index, block := range multicastAddressBlockList {
+		multicastAddressBlocks := make([]*models.MulticastAddressBlock, 0)
+		for _, block := range multicastAddressBlockList {
 			blockMap := block.(map[string]interface{})
 			fvnsMcastAddrBlkAttr := models.MulticastAddressBlockAttributes{}
 			fvnsMcastAddrBlkAttr.Annotation = blockMap["annotation"].(string)
@@ -182,7 +183,7 @@ func resourceAciMulticastAddressPoolCreate(ctx context.Context, d *schema.Resour
 			if err != nil {
 				return diag.FromErr(err)
 			}
-			multicastAddressBlocks[index] = fvnsMcastAddrBlk
+			multicastAddressBlocks = append(multicastAddressBlocks, fvnsMcastAddrBlk)
 		}
 		setMulticastAddressBlocks("Create", fvnsMcastAddrInstP.Name, multicastAddressBlocks, aciClient, d)
 	}
@@ -231,8 +232,8 @@ func resourceAciMulticastAddressPoolUpdate(ctx context.Context, d *schema.Resour
 		}
 
 		multicastAddressBlockList := newSchemaObjs.(*schema.Set).List()
-		multicastAddressBlocks := make([]*models.MulticastAddressBlock, len(multicastAddressBlockList))
-		for index, block := range multicastAddressBlockList {
+		multicastAddressBlocks := make([]*models.MulticastAddressBlock, 0)
+		for _, block := range multicastAddressBlockList {
 			blockMap := block.(map[string]interface{})
 			log.Printf("[DEBUG] blockMap: %v", blockMap)
 			fvnsMcastAddrBlkAttr := models.MulticastAddressBlockAttributes{}
@@ -253,7 +254,7 @@ func resourceAciMulticastAddressPoolUpdate(ctx context.Context, d *schema.Resour
 				return diag.FromErr(err)
 			}
 			blockMap["dn"] = fvnsMcastAddrBlk.DistinguishedName
-			multicastAddressBlocks[index] = fvnsMcastAddrBlk
+			multicastAddressBlocks = append(multicastAddressBlocks, fvnsMcastAddrBlk)
 		}
 		setMulticastAddressBlocks("Update", fvnsMcastAddrInstP.Name, multicastAddressBlocks, aciClient, d)
 	}

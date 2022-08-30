@@ -98,7 +98,6 @@ func resourceAciMulticastAddressBlockCreate(ctx context.Context, d *schema.Resou
 	log.Printf("[DEBUG] MulticastAddressBlock: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
-	log.Printf("[DEBUG] MulticastAddressBlock: desc %s", desc)
 	from := d.Get("from").(string)
 	to := d.Get("to").(string)
 	MulticastAddressPoolDn := d.Get("multicast_pool_dn").(string)
