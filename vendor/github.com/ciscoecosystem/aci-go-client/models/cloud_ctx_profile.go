@@ -7,7 +7,12 @@ import (
 	"github.com/ciscoecosystem/aci-go-client/container"
 )
 
-const CloudctxprofileClassName = "cloudCtxProfile"
+const (
+	DncloudCtxProfile        = "uni/tn-%s/ctxprofile-%s"
+	RncloudCtxProfile        = "ctxprofile-%s"
+	ParentDncloudCtxProfile  = "uni/tn-%s"
+	CloudctxprofileClassName = "cloudCtxProfile"
+)
 
 type CloudContextProfile struct {
 	BaseAttributes
@@ -15,11 +20,10 @@ type CloudContextProfile struct {
 }
 
 type CloudContextProfileAttributes struct {
-	Annotation  string `json:",omitempty"`
-	NameAlias   string `json:",omitempty"`
-	Type        string `json:",omitempty"`
-	PrimaryCIDR string `json:",omitempty"`
-	Region      string `json:",omitempty"`
+	Annotation string `json:",omitempty"`
+	NameAlias  string `json:",omitempty"`
+	Type       string `json:",omitempty"`
+	VpcGroup   string `json:",omitempty"`
 }
 
 func NewCloudContextProfile(cloudCtxProfileRn, parentDn, description string, cloudCtxProfileattr CloudContextProfileAttributes) *CloudContextProfile {
@@ -46,8 +50,7 @@ func (cloudCtxProfile *CloudContextProfile) ToMap() (map[string]string, error) {
 	A(cloudCtxProfileMap, "annotation", cloudCtxProfile.Annotation)
 	A(cloudCtxProfileMap, "nameAlias", cloudCtxProfile.NameAlias)
 	A(cloudCtxProfileMap, "type", cloudCtxProfile.Type)
-	A(cloudCtxProfileMap, "primary_cidr", cloudCtxProfile.PrimaryCIDR)
-	A(cloudCtxProfileMap, "region", cloudCtxProfile.Region)
+	A(cloudCtxProfileMap, "vpcGroup", cloudCtxProfile.VpcGroup)
 
 	return cloudCtxProfileMap, err
 }
@@ -55,22 +58,6 @@ func (cloudCtxProfile *CloudContextProfile) ToMap() (map[string]string, error) {
 func CloudContextProfileFromContainerList(cont *container.Container, index int) *CloudContextProfile {
 
 	CloudContextProfileCont := cont.S("imdata").Index(index).S(CloudctxprofileClassName, "attributes")
-	ChildContList, err := cont.S("imdata").Index(index).S(CloudctxprofileClassName, "children").Children()
-	if err != nil {
-		return nil
-	}
-
-	PrimaryCIDR := ""
-	Region := ""
-	for _, childCont := range ChildContList {
-		if childCont.Exists("cloudCidr") {
-			PrimaryCIDR = G(childCont.S("cloudCidr", "attributes"), "addr")
-
-		} else if childCont.Exists("cloudRsCtxProfileToRegion") {
-			Region = GetMOName(G(childCont.S("cloudRsCtxProfileToRegion", "attributes"), "tDn"))
-		}
-
-	}
 	return &CloudContextProfile{
 		BaseAttributes{
 			DistinguishedName: G(CloudContextProfileCont, "dn"),
@@ -81,16 +68,15 @@ func CloudContextProfileFromContainerList(cont *container.Container, index int) 
 		},
 
 		CloudContextProfileAttributes{
-			Annotation:  G(CloudContextProfileCont, "annotation"),
-			NameAlias:   G(CloudContextProfileCont, "nameAlias"),
-			Type:        G(CloudContextProfileCont, "type"),
-			PrimaryCIDR: PrimaryCIDR,
-			Region:      Region,
+			Annotation: G(CloudContextProfileCont, "annotation"),
+			NameAlias:  G(CloudContextProfileCont, "nameAlias"),
+			Type:       G(CloudContextProfileCont, "type"),
+			VpcGroup:   G(CloudContextProfileCont, "vpcGroup"),
 		},
 	}
 }
-func CloudContextProfileFromContainer(cont *container.Container) *CloudContextProfile {
 
+func CloudContextProfileFromContainer(cont *container.Container) *CloudContextProfile {
 	return CloudContextProfileFromContainerList(cont, 0)
 }
 

@@ -12,6 +12,15 @@ description: |-
 Data source for ACI Cloud Context Profile
 <b>Note: This resource is supported in Cloud APIC only. </b>
 
+## API Information ##
+
+* `Class` - cloudCtxProfile
+* `Distinguished Name` - uni/tn-{tenant_name}/ctxprofile-{cloud_context_profile_name}
+
+## GUI Information ##
+
+* `Location` - Cloud Resources -> Cloud Context Profiles
+
 ## Example Usage
 
 ```hcl
@@ -25,11 +34,19 @@ data "aci_cloud_context_profile" "sample_prof" {
 
 ## Argument Reference
 
-- `tenant_dn` - (Required) Distinguished name of parent Tenant object.
-- `name` - (Required) Name of Object Cloud Context profile.
+* `tenant_dn` - (Required) Distinguished name of the parent Tenant object.
+* `name` - (Required) Name of the Cloud Context Profile object.
 
 ## Attribute Reference
 
-- `id` - Attribute id set to the Dn of the Cloud Context profile.
-- `description` - Description of object Cloud Context profile.
-- `annotation` - Annotation for object Cloud Context profile.
+* `id` - Dn of the Cloud Context Profile object.
+* `description` - Description of the Cloud Context Profile object.
+* `annotation` - Annotation of the Cloud Context Profile object.
+* `primary_cidr` - Primary CIDR block of the Cloud Context Profile object.
+* `region` - Region of the Cloud Context Profile object.
+* `cloud_vendor` - Name of the vendor.
+* `name_alias` - Name alias of the Cloud Context Profile object.
+* `type` - Type of the Cloud Context Profile object.
+* `hub_network` - Hub Network Dn which enables Transit Gateway.
+* `relation_cloud_rs_ctx_to_flow_log` - Relation to class cloudAwsFlowLogPol.
+* `relation_cloud_rs_to_ctx` - Relation to class fvCtx.

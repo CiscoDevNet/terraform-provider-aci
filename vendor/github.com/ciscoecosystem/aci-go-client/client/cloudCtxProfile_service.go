@@ -9,7 +9,7 @@ import (
 )
 
 func (sm *ServiceManager) CreateCloudContextProfile(name string, tenant string, description string, cloudCtxProfileattr models.CloudContextProfileAttributes, primaryCidr string, region, vendor string, vrf string) (*models.CloudContextProfile, error) {
-	rn := fmt.Sprintf("ctxprofile-%s", name)
+	rn := fmt.Sprintf(models.RncloudCtxProfile, name)
 	parentDn := tenant
 	cloudCtxProfile := models.NewCloudContextProfile(rn, parentDn, description, cloudCtxProfileattr)
 	jsonPayload, _, err := sm.PrepareModel(cloudCtxProfile)
@@ -80,7 +80,7 @@ func (sm *ServiceManager) CreateCloudContextProfile(name string, tenant string, 
 }
 
 func (sm *ServiceManager) ReadCloudContextProfile(name string, tenant string) (*models.CloudContextProfile, error) {
-	dn := fmt.Sprintf("uni/tn-%s/ctxprofile-%s", tenant, name)
+	dn := fmt.Sprintf(models.DncloudCtxProfile, tenant, name)
 	cont, err := sm.Get(dn)
 	if err != nil {
 		return nil, err
@@ -91,12 +91,12 @@ func (sm *ServiceManager) ReadCloudContextProfile(name string, tenant string) (*
 }
 
 func (sm *ServiceManager) DeleteCloudContextProfile(name string, tenant string) error {
-	dn := fmt.Sprintf("uni/tn-%s/ctxprofile-%s", tenant, name)
+	dn := fmt.Sprintf(models.DncloudCtxProfile, tenant, name)
 	return sm.DeleteByDn(dn, models.CloudctxprofileClassName)
 }
 
 func (sm *ServiceManager) UpdateCloudContextProfile(name string, tenant string, description string, cloudCtxProfileattr models.CloudContextProfileAttributes, primaryCidr string, region, vendor string, vrf string) (*models.CloudContextProfile, error) {
-	rn := fmt.Sprintf("ctxprofile-%s", name)
+	rn := fmt.Sprintf(models.RncloudCtxProfile, name)
 	parentDn := tenant
 	cloudCtxProfile := models.NewCloudContextProfile(rn, parentDn, description, cloudCtxProfileattr)
 	cloudCtxProfile.Status = "modified"
