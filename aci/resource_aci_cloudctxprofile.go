@@ -84,15 +84,13 @@ func resourceAciCloudContextProfile() *schema.Resource {
 			},
 
 			"relation_cloud_rs_ctx_to_flow_log": &schema.Schema{
-				Type: schema.TypeString,
-
+				Type:        schema.TypeString,
 				Optional:    true,
 				Description: "Create relation to cloudAwsFlowLogPol",
 			},
 			"relation_cloud_rs_to_ctx": &schema.Schema{
-				Type: schema.TypeString,
-
-				Optional:    true,
+				Type:        schema.TypeString,
+				Required:    true,
 				Description: "Create relation to fvCtx",
 			},
 			"hub_network": &schema.Schema{

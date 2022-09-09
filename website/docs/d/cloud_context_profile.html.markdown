@@ -48,5 +48,5 @@ data "aci_cloud_context_profile" "sample_prof" {
 * `name_alias` - Name alias of the Cloud Context Profile object.
 * `type` - Type of the Cloud Context Profile object.
 * `hub_network` - Hub Network Dn which enables Transit Gateway.
-* `relation_cloud_rs_ctx_to_flow_log` - Relation to class cloudAwsFlowLogPol.
-* `relation_cloud_rs_to_ctx` - Relation to class fvCtx.
+* `relation_cloud_rs_ctx_to_flow_log` - Relation to a AWS Flow Log Policy (class cloudAwsFlowLogPol).
+* `relation_cloud_rs_to_ctx` - Relation to a VRF (class fvCtx).

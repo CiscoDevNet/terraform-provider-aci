@@ -48,5 +48,5 @@ resource "aci_cloud_context_profile" "foocloud_context_profile" {
 * `name_alias` - (Optional) Name alias of the Cloud Context Profile object.
 * `type` - (Optional) Type of the Cloud Context Profile object. Allowed values are "regular", "shadow", "hosted" and "container-overlay". Default is "regular".
 * `hub_network` - (Optional) Hub Network Dn which enables Transit Gateway.
-* `relation_cloud_rs_ctx_to_flow_log` - (Optional) Relation to class cloudAwsFlowLogPol. Cardinality - N TO ONE. Type - String.
-* `relation_cloud_rs_to_ctx` - (Required) Relation to class fvCtx. Cardinality - N TO ONE. Type - String.
+* `relation_cloud_rs_ctx_to_flow_log` - (Optional) Relation to a AWS Flow Log Policy (class cloudAwsFlowLogPol). Cardinality - N TO ONE. Type - String.
+* `relation_cloud_rs_to_ctx` - (Required) Relation to a VRF (class fvCtx). Cardinality - N TO ONE. Type - String.
