@@ -50,6 +50,18 @@ func dataSourceAciCloudSubnet() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"zone": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"relation_cloud_rs_subnet_to_flow_log": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"subnet_group": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 		}),
 	}
 }

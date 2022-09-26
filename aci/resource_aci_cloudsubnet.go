@@ -90,6 +90,11 @@ func resourceAciCloudSubnet() *schema.Resource {
 
 				Optional: true,
 			},
+			"subnet_group_label": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 		}),
 	}
 }
@@ -135,6 +140,7 @@ func setCloudSubnetAttributes(cloudSubnet *models.CloudSubnet, d *schema.Resourc
 		d.Set("scope", scopeGet)
 	}
 	d.Set("usage", cloudSubnetMap["usage"])
+	d.Set("subnet_group_label", cloudSubnetMap["subnetGroup"])
 	return d, nil
 }
 
@@ -227,6 +233,10 @@ func resourceAciCloudSubnetCreate(ctx context.Context, d *schema.ResourceData, m
 		zoneDn = ""
 	}
 
+	if subnetGroup, ok := d.GetOk("subnet_group_label"); ok {
+		cloudSubnetAttr.SubnetGroup = subnetGroup.(string)
+	}
+
 	cloudSubnet, err := aciClient.CreateCloudSubnet(ip, CloudCIDRPoolDn, desc, cloudSubnetAttr, zoneDn)
 	if err != nil {
 		return diag.FromErr(err)
@@ -309,6 +319,10 @@ func resourceAciCloudSubnetUpdate(ctx context.Context, d *schema.ResourceData, m
 		zoneDn = zone.(string)
 	} else {
 		zoneDn = ""
+	}
+
+	if subnetGroup, ok := d.GetOk("subnet_group_label"); ok {
+		cloudSubnetAttr.SubnetGroup = subnetGroup.(string)
 	}
 
 	cloudSubnet, err := aciClient.UpdateCloudSubnet(ip, CloudCIDRPoolDn, desc, cloudSubnetAttr, zoneDn)

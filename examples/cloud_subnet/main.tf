@@ -47,3 +47,11 @@ resource "aci_cloud_subnet" "cloud_subnet" {
   usage              = "gateway"
   zone               = "uni/clouddomp/provp-aws/region-us-west-1/zone-us-west-1b"
 }
+
+resource "aci_cloud_subnet" "gcp_cloud_subnet" {
+  cloud_cidr_pool_dn = aci_cloud_cidr_pool.cloud_cidr_pool.id
+  ip                 = "10.0.1.0/24"
+  usage              = "gateway"
+  zone               = "uni/clouddomp/provp-gcp/region-asia-east1/zone-default"
+  subnet_group_label = "subnet_group_label" # Applicable only to the GCP vendor
+}
