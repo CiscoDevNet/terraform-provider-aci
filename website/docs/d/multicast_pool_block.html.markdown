@@ -4,12 +4,12 @@ layout: "aci"
 page_title: "ACI: aci_multicast_pool_block"
 sidebar_current: "docs-aci-data-source-multicast_pool_block"
 description: |-
-  Data source for ACI the Multicast Address Pool Block
+  Data source for the ACI Multicast Address Pool Block
 ---
 
 # aci_multicast_pool_block #
 
-Data source for the ACI the Multicast Address Pool Block
+Data source for the ACI Multicast Address Pool Block
 
 ## API Information ##
 
@@ -45,4 +45,4 @@ data "aci_multicast_pool_block" "example" {
 
 ## Attribute Reference ##
 
-* `id` - Attribute id set to the Dn of the of Multicast Address Pool Block.
+* `id` - Attribute id set to the Dn of the Multicast Address Pool Block.

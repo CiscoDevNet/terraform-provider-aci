@@ -4,12 +4,12 @@ layout: "aci"
 page_title: "ACI: aci_multicast_pool_block"
 sidebar_current: "docs-aci-resource-multicast_pool_block"
 description: |-
-  Manages ACI the Multicast Address Pool Block
+  Manages the ACI Multicast Address Pool Block
 ---
 
 # aci_multicast_pool_block #
 
-Manages ACI the Multicast Address Pool Block
+Manages the ACI Multicast Address Pool Block
 
 ## API Information ##
 
@@ -47,7 +47,7 @@ resource "aci_multicast_pool_block" "example" {
 
 ## Attribute Reference ##
 
-* `id` - Attribute id set to the Dn of the of Multicast Address Pool Block.
+* `id` - Attribute id set to the Dn of the Multicast Address Pool Block.
 
 ## Importing ##
 
