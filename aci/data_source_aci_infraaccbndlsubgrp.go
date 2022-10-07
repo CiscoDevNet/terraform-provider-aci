@@ -26,6 +26,7 @@ func dataSourceAciOverridePCVPCPolicyGroup() *schema.Resource {
 			"port_channel_member": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 		}, GetBaseAttrSchema(), GetNameAliasAttrSchema()),
 	}
@@ -52,7 +53,7 @@ func dataSourceAciOverridePCVPCPolicyGroupRead(ctx context.Context, d *schema.Re
 
 	infraRsLacpInterfacePolData := getInfraRsLacpInterfacePolData("Read", infraAccBndlSubgrp.DistinguishedName, aciClient)
 	if infraRsLacpInterfacePolData != nil {
-		d.Set("port_channel_member", fmt.Sprintf("uni/infra/lacpifp-%s", infraRsLacpInterfacePolData.(string)))
+		d.Set("port_channel_member", fmt.Sprintf(models.DnlacpIfPol, infraRsLacpInterfacePolData.(string)))
 	}
 
 	return nil

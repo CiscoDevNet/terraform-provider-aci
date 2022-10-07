@@ -9,7 +9,7 @@ description: |-
 
 # aci_lacpmember_policy #
 
-Data source for ACI LACP Member Policy
+Data source of the ACI LACP Member Policy
 
 ## API Information ##
 

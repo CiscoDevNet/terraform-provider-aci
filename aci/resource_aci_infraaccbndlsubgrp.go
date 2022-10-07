@@ -37,6 +37,7 @@ func resourceAciOverridePCVPCPolicyGroup() *schema.Resource {
 			"port_channel_member": &schema.Schema{
 				Type:        schema.TypeString,
 				Optional:    true,
+				Computed:    true,
 				Description: "Create relation to lacp:IfPol",
 			},
 		}, GetBaseAttrSchema(), GetNameAliasAttrSchema()),
@@ -107,7 +108,7 @@ func resourceAciOverridePCVPCPolicyGroupImport(d *schema.ResourceData, m interfa
 
 	infraRsLacpInterfacePolData := getInfraRsLacpInterfacePolData("Import", infraAccBndlSubgrp.DistinguishedName, aciClient)
 	if infraRsLacpInterfacePolData != nil {
-		d.Set("port_channel_member", fmt.Sprintf("uni/infra/lacpifp-%s", infraRsLacpInterfacePolData.(string)))
+		d.Set("port_channel_member", fmt.Sprintf(models.DnlacpIfPol, infraRsLacpInterfacePolData.(string)))
 	}
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
@@ -256,7 +257,7 @@ func resourceAciOverridePCVPCPolicyGroupRead(ctx context.Context, d *schema.Reso
 
 	infraRsLacpInterfacePolData := getInfraRsLacpInterfacePolData("Read", infraAccBndlSubgrp.DistinguishedName, aciClient)
 	if infraRsLacpInterfacePolData != nil {
-		d.Set("port_channel_member", fmt.Sprintf("uni/infra/lacpifp-%s", infraRsLacpInterfacePolData.(string)))
+		d.Set("port_channel_member", fmt.Sprintf(models.DnlacpIfPol, infraRsLacpInterfacePolData.(string)))
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
