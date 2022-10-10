@@ -23,7 +23,6 @@ func dataSourceAciLeafProfile() *schema.Resource {
 			"name": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
-				ForceNew: true,
 			},
 			"name_alias": &schema.Schema{
 				Type:     schema.TypeString,
@@ -37,7 +36,7 @@ func dataSourceAciLeafProfile() *schema.Resource {
 					Schema: map[string]*schema.Schema{
 						"name": &schema.Schema{
 							Type:     schema.TypeString,
-							Required: true,
+							Optional: true,
 						},
 						"description": &schema.Schema{
 							Type:     schema.TypeString,
@@ -49,7 +48,7 @@ func dataSourceAciLeafProfile() *schema.Resource {
 						},
 						"switch_association_type": &schema.Schema{
 							Type:     schema.TypeString,
-							Required: true,
+							Optional: true,
 						},
 						"node_block": &schema.Schema{
 							Type:     schema.TypeList,
@@ -58,7 +57,7 @@ func dataSourceAciLeafProfile() *schema.Resource {
 								Schema: map[string]*schema.Schema{
 									"name": &schema.Schema{
 										Type:     schema.TypeString,
-										Required: true,
+										Optional: true,
 									},
 									"description": &schema.Schema{
 										Type:     schema.TypeString,

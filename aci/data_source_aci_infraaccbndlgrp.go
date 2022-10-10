@@ -68,11 +68,11 @@ func dataSourceAciPCVPCInterfacePolicyGroup() *schema.Resource {
 					Schema: map[string]*schema.Schema{
 						"target_dn": {
 							Type:     schema.TypeString,
-							Required: true,
+							Optional: true,
 						},
 						"flt_type": {
 							Type:     schema.TypeString,
-							Required: true,
+							Optional: true,
 						},
 					},
 				},
