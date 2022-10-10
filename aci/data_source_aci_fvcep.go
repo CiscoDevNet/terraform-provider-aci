@@ -230,16 +230,15 @@ func getRemoteClientEndPoint(client *client.Client, query string, allowEmptyResu
 		objMap, dn := extractInfo(clientEndPointCont.S("fvCEp", "attributes"))
 
 		// Reading fvIp object properties
-		fvIpObjects := clientEndPointCont.S("fvCEp", "children")
-		fvIp_count, err := fvIpObjects.ArrayCount()
+		fvIpObjects, err := clientEndPointCont.S("fvCEp").Children()
+		if err != nil {
+			return nil, nil, err
+		}
 		ips := make([]string, 0, 1)
 
 		if err == nil {
-			for j := 0; j < fvIp_count; j++ {
-				fvIpContainer, err := fvIpObjects.ArrayElement(j)
-				if err == nil {
-					ips = append(ips, models.G(fvIpContainer.S("fvIp", "attributes"), "addr"))
-				}
+			for j := 0; j < len(fvIpObjects); j++ {
+				ips = append(ips, models.G(fvIpObjects[j].S("fvIp", "attributes"), "addr"))
 			}
 		}
 
@@ -282,21 +281,17 @@ func dataSourceAciClientEndPointRead(d *schema.ResourceData, m interface{}) erro
 		if err != nil {
 			return err
 		}
-
-		macPattern := regexp.MustCompile("cep-(.+)/")
-		tempQueryString := ""
-		for i := 0; i < len(fvIpDns); i++ {
-			if tempQueryString == "" {
-				tempQueryString = fmt.Sprintf("eq(fvCEp.mac, \"%s\")", macPattern.FindStringSubmatch(fvIpDns[i])[1])
-			} else {
+		if len(fvIpDns) != 0 {
+			macPattern := regexp.MustCompile("cep-(.+)/")
+			tempQueryString := fmt.Sprintf("eq(fvCEp.mac, \"%s\")", macPattern.FindStringSubmatch(fvIpDns[0])[1])
+			for i := 1; i < len(fvIpDns); i++ {
 				tempQueryString = fmt.Sprintf("%s,eq(fvCEp.mac, \"%s\")", tempQueryString, macPattern.FindStringSubmatch(fvIpDns[i])[1])
 			}
-		}
-
-		if queryString != "" {
-			queryString = fmt.Sprintf("%s,%s", queryString, tempQueryString)
-		} else {
-			queryString = tempQueryString
+			if queryString != "" {
+				queryString = fmt.Sprintf("%s,%s", queryString, tempQueryString)
+			} else {
+				queryString = tempQueryString
+			}
 		}
 		d.Set("ip", ip)
 	}
