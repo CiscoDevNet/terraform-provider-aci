@@ -22,15 +22,15 @@ resource "aci_vrf" "vrf" {
   name      = "cloudVrf"
 }
 
-resource "aci_cloud_template_external_network" "external_network" {
+resource "aci_cloud_external_network" "external_network" {
 	name = "cloud_external_network"
 	vrf_dn = aci_vrf.vrf.id
 }
 
-data "aci_cloud_template_external_network" "example" {
-  name  = aci_cloud_template_external_network.external_network.name
+data "aci_cloud_external_network" "example" {
+  name  = aci_cloud_external_network.external_network.name
 }
 
 output "name" {
-  value = data.aci_cloud_template_external_network.example
+  value = data.aci_cloud_external_network.example
 }

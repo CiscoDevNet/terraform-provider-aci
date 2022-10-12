@@ -68,6 +68,8 @@ func setCloudTemplateforExternalNetworkAttributes(cloudtemplateExtNetwork *model
 	d.Set("name_alias", cloudtemplateExtNetworkMap["nameAlias"])
 	if cloudtemplateExtNetworkMap["vrfName"] != "" {
 		d.Set("vrf_dn", fmt.Sprintf("uni/tn-infra/ctx-%s", cloudtemplateExtNetworkMap["vrfName"]))
+	} else {
+		d.Set("vrf_dn", "")
 	}
 	return d, nil
 }
