@@ -28,7 +28,6 @@ Manages ACI Cloud External Network.
 resource "aci_cloud_external_network" "example" {
   name  = "example"
   annotation = "orchestrator:terraform"
-  hub_network_name = 
   vrf_dn = aci_vrf.vrf.id
 }
 ```
@@ -43,7 +42,7 @@ resource "aci_cloud_external_network" "example" {
 
 ## Importing ##
 
-An existing Cloud Template for External Network can be [imported][docs-import] into this resource via its Dn, via the following command:
+An existing Cloud External Network can be [imported][docs-import] into this resource via its Dn, via the following command:
 [docs-import]: https://www.terraform.io/docs/import/index.html
 
 

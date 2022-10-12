@@ -117,8 +117,8 @@ func resourceAciCloudTemplateforExternalNetworkCreate(ctx context.Context, d *sc
 		cloudtemplateExtNetworkAttr.Name = Name.(string)
 	}
 
-	if _, ok := d.GetOk("vrf_dn"); ok {
-		cloudtemplateExtNetworkAttr.VrfName = GetMOName(d.Get("vrf_dn").(string))
+	if VrfDn, ok := d.GetOk("vrf_dn"); ok {
+		cloudtemplateExtNetworkAttr.VrfName = GetMOName(VrfDn.(string))
 	}
 	cloudtemplateExtNetwork := models.NewCloudTemplateforExternalNetwork(fmt.Sprintf(models.RncloudtemplateExtNetwork, name), CloudInfraNetworkTemplateDn, nameAlias, cloudtemplateExtNetworkAttr)
 
@@ -159,8 +159,8 @@ func resourceAciCloudTemplateforExternalNetworkUpdate(ctx context.Context, d *sc
 		cloudtemplateExtNetworkAttr.Name = Name.(string)
 	}
 
-	if _, ok := d.GetOk("vrf_dn"); ok {
-		cloudtemplateExtNetworkAttr.VrfName = GetMOName(d.Get("vrf_dn").(string))
+	if VrfDn, ok := d.GetOk("vrf_dn"); ok {
+		cloudtemplateExtNetworkAttr.VrfName = GetMOName(VrfDn.(string))
 	}
 	cloudtemplateExtNetwork := models.NewCloudTemplateforExternalNetwork(fmt.Sprintf(models.RncloudtemplateExtNetwork, name), CloudInfraNetworkTemplateDn, nameAlias, cloudtemplateExtNetworkAttr)
 

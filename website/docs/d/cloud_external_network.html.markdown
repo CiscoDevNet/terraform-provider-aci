@@ -4,7 +4,7 @@ layout: "aci"
 page_title: "ACI: aci_cloud_external_network"
 sidebar_current: "docs-aci-data-source-aci_cloud_external_network"
 description: |-
-  Data source for ACI Template for External Network
+  Data source for ACI Cloud External Network
 ---
 
 # aci_cloud_external_network #
