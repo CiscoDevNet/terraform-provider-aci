@@ -13,20 +13,24 @@ provider "aci" {
   insecure = true
 }
 
+data "aci_tenant" "infra_tenant" {
+  name = "infra"
+}
 
 resource "aci_vrf" "vrf" {
-  tenant_dn = "uni/tn-infra"
+  tenant_dn = data.aci_tenant.infra_tenant.id # Create vrf in infra tenant.
   name      = "cloudVrf"
 }
-# Works only with infra tenant and name set to default
-# resource "aci_cloud_template_infra_network" "infra_network" {
-#   tenant_dn = "uni/tn-infra"
-# 	name = "default"
-# }
 
 resource "aci_cloud_template_external_network" "external_network" {
-  infra_network_template_dn = "uni/tn-infra/infranetwork-default"
-	# hub_network_name = "cloud_external_network"
 	name = "cloud_external_network"
-	vrf_name = aci_vrf.vrf.name
+	vrf_dn = aci_vrf.vrf.id
+}
+
+data "aci_cloud_template_external_network" "example" {
+  name  = aci_cloud_template_external_network.external_network.name
+}
+
+output "name" {
+  value = data.aci_cloud_template_external_network.example
 }

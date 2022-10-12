@@ -1,46 +1,43 @@
 ---
+subcategory: "Cloud"
 layout: "aci"
-page_title: "ACI: aci_templatefor_external_network"
-sidebar_current: "docs-aci-resource-templatefor_external_network"
+page_title: "ACI: aci_cloud_template_external_network"
+sidebar_current: "docs-aci-resource-aci_cloud_template_external_network"
 description: |-
-  Manages ACI Template for External Network
+  Manages ACI Template for cloud External Network
 ---
 
-# aci_templatefor_external_network #
+# aci_cloud_template_external_network #
 
-Manages ACI Template for External Network
+Manages ACI Template for cloud External Network
 
 ## API Information ##
 
 * `Class` - cloudtemplateExtNetwork
-* `Distinguished Name` - uni/tn-{name}/infranetwork-{name}/extnetwork-{name}
+* `Distinguished Name` - uni/tn-{tenant_name}/infranetwork-{name}/extnetwork-{name}
 
 ## GUI Information ##
 
-* `Location` - 
+* `Location` - Tenants -> {tenant_name} -> Application Management -> External Networks
 
 
 ## Example Usage ##
-
+<b>Note: This resource is supported in Cloud APIC version > 25.0 only.</b>
 ```hcl
-resource "aci_templatefor_external_network" "example" {
-  infra_network_template_dn  = aci_infra_network_template.example.id
+resource "aci_cloud_template_external_network" "example" {
   name  = "example"
   annotation = "orchestrator:terraform"
   hub_network_name = 
-
-  vrf_name = "overlay-1"
+  vrf_dn = aci_vrf.vrf.id
 }
 ```
 
 ## Argument Reference ##
 
-* `infra_network_template_dn` - (Required) Distinguished name of the parent InfraNetworkTemplate object.
-* `name` - (Required) Name of the object Template for External Network.
-* `annotation` - (Optional) Annotation of the object Template for External Network.
-
+* `name` - (Required) Name of the Template for cloud External Network object.
+* `annotation` - (Optional) Annotation of the Template for cloud External Network object.
 * `hub_network_name` - (Optional) Hub Network Name.
-* `vrf_name` - (Optional) External Network VRF Name.The VRF name. This name can be up to 64 alphanumeric characters. Allowed values are and default value is "overlay-1".
+* `vrf_dn` - (Required) Distinguished name of the VRF. Note that the VRF has to be created under infra tenant.
 
 
 ## Importing ##
@@ -50,5 +47,5 @@ An existing CloudTemplateforExternalNetwork can be [imported][docs-import] into 
 
 
 ```
-terraform import aci_templatefor_external_network.example <Dn>
+terraform import aci_cloud_template_external_network.example "<Dn>"
 ```

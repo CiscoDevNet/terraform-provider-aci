@@ -24,11 +24,6 @@ func resourceAciCloudTemplateforExternalNetwork() *schema.Resource {
 
 		SchemaVersion: 1,
 		Schema: AppendBaseAttrSchema(AppendNameAliasAttrSchema(map[string]*schema.Schema{
-			"infra_network_template_dn": {
-				Type:     schema.TypeString,
-				Required: true,
-				ForceNew: true,
-			},
 			"hub_network_name": {
 				Type:     schema.TypeString,
 				Optional: true,
@@ -39,7 +34,7 @@ func resourceAciCloudTemplateforExternalNetwork() *schema.Resource {
 				Required: true,
 				ForceNew: true,
 			},
-			"vrf_name": {
+			"vrf_dn": {
 				Type:     schema.TypeString,
 				Required: true,
 			},
@@ -60,21 +55,20 @@ func getRemoteCloudTemplateforExternalNetwork(client *client.Client, dn string) 
 }
 
 func setCloudTemplateforExternalNetworkAttributes(cloudtemplateExtNetwork *models.CloudTemplateforExternalNetwork, d *schema.ResourceData) (*schema.ResourceData, error) {
-	dn := d.Id()
 	d.SetId(cloudtemplateExtNetwork.DistinguishedName)
-	d.Set("description", cloudtemplateExtNetwork.Description)
-	if dn != cloudtemplateExtNetwork.DistinguishedName {
-		d.Set("infra_network_template_dn", "")
-	}
+
 	cloudtemplateExtNetworkMap, err := cloudtemplateExtNetwork.ToMap()
 	if err != nil {
 		return d, err
 	}
+
 	d.Set("annotation", cloudtemplateExtNetworkMap["annotation"])
 	d.Set("hub_network_name", cloudtemplateExtNetworkMap["hubNetworkName"])
 	d.Set("name", cloudtemplateExtNetworkMap["name"])
-	d.Set("vrf_name", cloudtemplateExtNetworkMap["vrfName"])
 	d.Set("name_alias", cloudtemplateExtNetworkMap["nameAlias"])
+	if cloudtemplateExtNetworkMap["vrfName"] != "" {
+		d.Set("vrf_dn", fmt.Sprintf("uni/tn-infra/ctx-%s", cloudtemplateExtNetworkMap["vrfName"]))
+	}
 	return d, nil
 }
 
@@ -97,9 +91,8 @@ func resourceAciCloudTemplateforExternalNetworkImport(d *schema.ResourceData, m 
 func resourceAciCloudTemplateforExternalNetworkCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] CloudTemplateforExternalNetwork: Beginning Creation")
 	aciClient := m.(*client.Client)
-	desc := d.Get("description").(string)
 	name := d.Get("name").(string)
-	CloudInfraNetworkTemplateDn := d.Get("infra_network_template_dn").(string)
+	CloudInfraNetworkTemplateDn := "uni/tn-infra/infranetwork-default"
 
 	cloudtemplateExtNetworkAttr := models.CloudTemplateforExternalNetworkAttributes{}
 
@@ -122,10 +115,10 @@ func resourceAciCloudTemplateforExternalNetworkCreate(ctx context.Context, d *sc
 		cloudtemplateExtNetworkAttr.Name = Name.(string)
 	}
 
-	if VrfName, ok := d.GetOk("vrf_name"); ok {
-		cloudtemplateExtNetworkAttr.VrfName = VrfName.(string)
+	if _, ok := d.GetOk("vrf_dn"); ok {
+		cloudtemplateExtNetworkAttr.VrfName = GetMOName(d.Get("vrf_dn").(string))
 	}
-	cloudtemplateExtNetwork := models.NewCloudTemplateforExternalNetwork(fmt.Sprintf(models.RncloudtemplateExtNetwork, name), CloudInfraNetworkTemplateDn, desc, nameAlias, cloudtemplateExtNetworkAttr)
+	cloudtemplateExtNetwork := models.NewCloudTemplateforExternalNetwork(fmt.Sprintf(models.RncloudtemplateExtNetwork, name), CloudInfraNetworkTemplateDn, nameAlias, cloudtemplateExtNetworkAttr)
 
 	err := aciClient.Save(cloudtemplateExtNetwork)
 	if err != nil {
@@ -140,9 +133,8 @@ func resourceAciCloudTemplateforExternalNetworkCreate(ctx context.Context, d *sc
 func resourceAciCloudTemplateforExternalNetworkUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] CloudTemplateforExternalNetwork: Beginning Update")
 	aciClient := m.(*client.Client)
-	desc := d.Get("description").(string)
 	name := d.Get("name").(string)
-	CloudInfraNetworkTemplateDn := d.Get("infra_network_template_dn").(string)
+	CloudInfraNetworkTemplateDn := "uni/tn-infra/infranetwork-default"
 
 	cloudtemplateExtNetworkAttr := models.CloudTemplateforExternalNetworkAttributes{}
 
@@ -165,10 +157,10 @@ func resourceAciCloudTemplateforExternalNetworkUpdate(ctx context.Context, d *sc
 		cloudtemplateExtNetworkAttr.Name = Name.(string)
 	}
 
-	if VrfName, ok := d.GetOk("vrf_name"); ok {
-		cloudtemplateExtNetworkAttr.VrfName = VrfName.(string)
+	if _, ok := d.GetOk("vrf_dn"); ok {
+		cloudtemplateExtNetworkAttr.VrfName = GetMOName(d.Get("vrf_dn").(string))
 	}
-	cloudtemplateExtNetwork := models.NewCloudTemplateforExternalNetwork(fmt.Sprintf(models.RncloudtemplateExtNetwork, name), CloudInfraNetworkTemplateDn, desc, nameAlias, cloudtemplateExtNetworkAttr)
+	cloudtemplateExtNetwork := models.NewCloudTemplateforExternalNetwork(fmt.Sprintf(models.RncloudtemplateExtNetwork, name), CloudInfraNetworkTemplateDn, nameAlias, cloudtemplateExtNetworkAttr)
 
 	cloudtemplateExtNetwork.Status = "modified"
 

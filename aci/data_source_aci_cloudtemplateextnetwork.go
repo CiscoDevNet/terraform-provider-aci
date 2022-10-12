@@ -15,10 +15,6 @@ func dataSourceAciCloudTemplateforExternalNetwork() *schema.Resource {
 		ReadContext:   dataSourceAciCloudTemplateforExternalNetworkRead,
 		SchemaVersion: 1,
 		Schema: AppendBaseAttrSchema(AppendNameAliasAttrSchema(map[string]*schema.Schema{
-			"infra_network_template_dn": {
-				Type:     schema.TypeString,
-				Required: true,
-			},
 			"annotation": {
 				Type:     schema.TypeString,
 				Optional: true,
@@ -33,7 +29,7 @@ func dataSourceAciCloudTemplateforExternalNetwork() *schema.Resource {
 				Type:     schema.TypeString,
 				Required: true,
 			},
-			"vrf_name": {
+			"vrf_dn": {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
@@ -45,7 +41,7 @@ func dataSourceAciCloudTemplateforExternalNetwork() *schema.Resource {
 func dataSourceAciCloudTemplateforExternalNetworkRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	aciClient := m.(*client.Client)
 	name := d.Get("name").(string)
-	CloudInfraNetworkTemplateDn := d.Get("infra_network_template_dn").(string)
+	CloudInfraNetworkTemplateDn := "uni/tn-infra/infranetwork-default"
 	rn := fmt.Sprintf(models.RncloudtemplateExtNetwork, name)
 	dn := fmt.Sprintf("%s/%s", CloudInfraNetworkTemplateDn, rn)
 

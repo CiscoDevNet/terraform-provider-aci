@@ -1,44 +1,43 @@
 ---
+subcategory: "Cloud"
 layout: "aci"
-page_title: "ACI: aci_templatefor_external_network"
-sidebar_current: "docs-aci-data-source-templatefor_external_network"
+page_title: "ACI: aci_cloud_template_external_network"
+sidebar_current: "docs-aci-data-source-aci_cloud_template_external_network"
 description: |-
   Data source for ACI Template for External Network
 ---
 
-# aci_templatefor_external_network #
+# aci_cloud_template_external_network #
 
-Data source for ACI Template for External Network
+Data source for ACI Template for cloud External Network
 
 
 ## API Information ##
 
 * `Class` - cloudtemplateExtNetwork
-* `Distinguished Name` - uni/tn-{name}/infranetwork-{name}/extnetwork-{name}
+* `Distinguished Name` - uni/tn-{tenant_name}/infranetwork-{name}/extnetwork-{name}
 
 ## GUI Information ##
 
-* `Location` - 
+* `Location` - Tenants -> {tenant_name} -> Application Management -> External Networks
 
 
 
 ## Example Usage ##
-
+<b>Note: This resource is supported in Cloud APIC version > 25.0 only.</b>
 ```hcl
-data "aci_templatefor_external_network" "example" {
-  infra_network_template_dn  = aci_infra_network_template.example.id
+data "aci_cloud_template_external_network" "example" {
   name  = "example"
 }
 ```
 
 ## Argument Reference ##
 
-* `infra_network_template_dn` - (Required) Distinguished name of parent InfraNetworkTemplate object.
-* `name` - (Required) Name of object Template for External Network.
+* `name` - (Required) Name of the Template for cloud External Network object.
 
 ## Attribute Reference ##
-* `id` - Attribute id set to the Dn of the Template for External Network.
-* `annotation` - (Optional) Annotation of object Template for External Network.
-* `name_alias` - (Optional) Name Alias of object Template for External Network.
+* `id` - Attribute id set to the Dn of the Template for cloud External Network object.
+* `annotation` - (Optional) Annotation of the Template for cloud External Network object.
+* `name_alias` - (Optional) Name Alias of the Template for cloud External Network object.
 * `hub_network_name` - (Optional) Hub Network Name. 
-* `vrf_name` - (Optional) External Network VRF Name. The VRF name. This name can be up to 64 alphanumeric characters.
+* `vrf_dn` - (Optional) Distinguished name of the VRF.. Note that the VRF has to be created under infra tenant.
