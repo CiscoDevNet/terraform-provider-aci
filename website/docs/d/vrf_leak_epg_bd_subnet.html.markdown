@@ -20,7 +20,7 @@ Data source for ACI Inter-VRF Leaked EPG/BD Subnet
 ## GUI Information ##
 
 * `Location` - Tenants -> Networking -> VRFs -> Inter-VRF Leaked Routes for EPG -> EPG/BD Subnets
-
+* `Location` - Cloud APIC -> Application Management -> VRFs -> Leak Routes
 
 ## Example Usage ##
 

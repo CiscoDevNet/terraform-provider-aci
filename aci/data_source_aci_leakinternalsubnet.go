@@ -37,7 +37,7 @@ func dataSourceAciLeakInternalSubnet() *schema.Resource {
 					Schema: map[string]*schema.Schema{
 						"vrf_dn": &schema.Schema{
 							Type:     schema.TypeString,
-							Required: true,
+							Optional: true,
 						},
 						// True -> public, False -> private, Default -> "inherit"
 						"allow_l3out_advertisement": &schema.Schema{
@@ -57,7 +57,7 @@ func dataSourceAciLeakInternalSubnetRead(ctx context.Context, d *schema.Resource
 	ip := d.Get("ip").(string)
 	VRFDn := d.Get("vrf_dn").(string)
 	rn := fmt.Sprintf(models.RnleakInternalSubnet, ip)
-	dn := fmt.Sprintf("%s/%s", VRFDn, rn)
+	dn := fmt.Sprintf("%s/%s/%s", VRFDn, models.RnleakRoutes, rn)
 
 	leakInternalSubnet, err := getRemoteLeakInternalSubnet(aciClient, dn)
 	if err != nil {

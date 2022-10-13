@@ -46,6 +46,6 @@ resource "aci_vrf_leak_epg_bd_subnet" "vrf_leak_epg_bd_subnet" {
   }
   leak_to {
     vrf_dn                    = aci_vrf.vrf2.id
-    allow_l3out_advertisement = true
+    allow_l3out_advertisement = true # Must be set as true for the Cloud APIC
   }
 }

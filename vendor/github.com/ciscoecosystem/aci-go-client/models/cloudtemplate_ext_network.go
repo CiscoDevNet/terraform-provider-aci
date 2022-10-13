@@ -25,6 +25,8 @@ type CloudTemplateforExternalNetworkAttributes struct {
 	HubNetworkName string `json:",omitempty"`
 	Name           string `json:",omitempty"`
 	VrfName        string `json:",omitempty"`
+	AllRegion      string `json:",omitempty"`
+	HostRouterName string `json:",omitempty"`
 }
 
 func NewCloudTemplateforExternalNetwork(cloudtemplateExtNetworkRn, parentDn, nameAlias string, cloudtemplateExtNetworkAttr CloudTemplateforExternalNetworkAttributes) *CloudTemplateforExternalNetwork {
@@ -62,6 +64,8 @@ func (cloudtemplateExtNetwork *CloudTemplateforExternalNetwork) ToMap() (map[str
 	A(cloudtemplateExtNetworkMap, "hubNetworkName", cloudtemplateExtNetwork.HubNetworkName)
 	A(cloudtemplateExtNetworkMap, "name", cloudtemplateExtNetwork.Name)
 	A(cloudtemplateExtNetworkMap, "vrfName", cloudtemplateExtNetwork.VrfName)
+	A(cloudtemplateExtNetworkMap, "allRegion", cloudtemplateExtNetwork.AllRegion)
+	A(cloudtemplateExtNetworkMap, "hostRouterName", cloudtemplateExtNetwork.HostRouterName)
 	return cloudtemplateExtNetworkMap, err
 }
 
@@ -82,6 +86,8 @@ func CloudTemplateforExternalNetworkFromContainerList(cont *container.Container,
 			HubNetworkName: G(CloudTemplateforExternalNetworkCont, "hubNetworkName"),
 			Name:           G(CloudTemplateforExternalNetworkCont, "name"),
 			VrfName:        G(CloudTemplateforExternalNetworkCont, "vrfName"),
+			AllRegion:      G(CloudTemplateforExternalNetworkCont, "allRegion"),
+			HostRouterName: G(CloudTemplateforExternalNetworkCont, "hostRouterName"),
 		},
 	}
 }

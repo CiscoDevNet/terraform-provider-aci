@@ -66,7 +66,8 @@ func resourceAciLeakInternalSubnet() *schema.Resource {
 								"true",  // True -> public
 								"inherit",
 							}, false),
-							Default: "inherit",
+							Default:     "inherit",
+							Description: "Must be set as true for the Cloud APIC",
 						},
 					},
 				},
@@ -220,12 +221,17 @@ func resourceAciLeakInternalSubnetCreate(ctx context.Context, d *schema.Resource
 		return diag.FromErr(err)
 	}
 
-	httpRequestPayload, err := aciClient.MakeRestRequest("POST", fmt.Sprintf("/api/node/mo/%s.json", leakRoutesDn), leakRoutesCont, true)
+	httpRequestPayload, err := aciClient.MakeRestRequest("POST", fmt.Sprintf("%s/%s.json", client.DefaultMOURL, leakRoutesDn), leakRoutesCont, true)
 	if err != nil {
 		return diag.FromErr(err)
 	}
 
-	_, _, err = aciClient.Do(httpRequestPayload)
+	respCont, _, err := aciClient.Do(httpRequestPayload)
+	if err != nil {
+		return diag.FromErr(err)
+	}
+
+	err = client.CheckForErrors(respCont, "POST", false)
 	if err != nil {
 		return diag.FromErr(err)
 	}
@@ -272,7 +278,6 @@ func resourceAciLeakInternalSubnetUpdate(ctx context.Context, d *schema.Resource
 			"scope":      leakInternalSubnetScope,
 			"nameAlias":  nameAlias,
 			"descr":      desc,
-			"status":     "modified",
 		},
 	}
 
@@ -306,12 +311,17 @@ func resourceAciLeakInternalSubnetUpdate(ctx context.Context, d *schema.Resource
 		return diag.FromErr(err)
 	}
 
-	httpRequestPayload, err := aciClient.MakeRestRequest("POST", fmt.Sprintf("/api/node/mo/%s.json", leakRoutesDn), leakRoutesCont, true)
+	httpRequestPayload, err := aciClient.MakeRestRequest("POST", fmt.Sprintf("%s/%s.json", client.DefaultMOURL, leakRoutesDn), leakRoutesCont, true)
 	if err != nil {
 		return diag.FromErr(err)
 	}
 
-	_, _, err = aciClient.Do(httpRequestPayload)
+	respCont, _, err := aciClient.Do(httpRequestPayload)
+	if err != nil {
+		return diag.FromErr(err)
+	}
+
+	err = client.CheckForErrors(respCont, "POST", false)
 	if err != nil {
 		return diag.FromErr(err)
 	}
