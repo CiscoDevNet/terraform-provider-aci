@@ -3,11 +3,11 @@ package aci
 import (
 	"context"
 	"fmt"
+	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func dataSourceAciSpineAccessPortSelector() *schema.Resource {
@@ -28,10 +28,10 @@ func dataSourceAciSpineAccessPortSelector() *schema.Resource {
 			"spine_access_port_selector_type": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
-				ValidateFunc: validation.StringInSlice([]string{
-					"ALL",
-					"range",
-				}, false),
+			},
+			"relation_infra_rs_sp_acc_grp": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
 			},
 		}),
 	}
@@ -48,6 +48,7 @@ func dataSourceAciSpineAccessPortSelectorRead(ctx context.Context, d *schema.Res
 	SpineInterfaceProfileDn := d.Get("spine_interface_profile_dn").(string)
 
 	dn := fmt.Sprintf("%s/%s", SpineInterfaceProfileDn, rn)
+	log.Printf("[DEBUG] %s: Data Source - Beginning Read", dn)
 
 	infraSHPortS, err := getRemoteSpineAccessPortSelector(aciClient, dn)
 	if err != nil {
@@ -61,5 +62,14 @@ func dataSourceAciSpineAccessPortSelectorRead(ctx context.Context, d *schema.Res
 		return diag.FromErr(err)
 	}
 
+	// infraRsSpAccGrp - Beginning Read
+	log.Printf("[DEBUG] %s: infraRsSpAccGrp - Beginning Read with parent DN", dn)
+	_, err = getAndSetReadRelationinfraRsSpAccGrp(aciClient, dn, d)
+	if err == nil {
+		log.Printf("[DEBUG] %s: infraRsSpAccGrp - Read finished successfully", d.Get("relation_infra_rs_sp_acc_grp"))
+	}
+	// infraRsSpAccGrp - Read finished successfully
+
+	log.Printf("[DEBUG] %s: Data Source - Read finished successfully", dn)
 	return nil
 }

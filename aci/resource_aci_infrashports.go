@@ -48,11 +48,11 @@ func resourceAciSpineAccessPortSelector() *schema.Resource {
 			},
 
 			"relation_infra_rs_sp_acc_grp": &schema.Schema{
-				Type: schema.TypeString,
-
+				Type:        schema.TypeString,
 				Optional:    true,
 				Description: "Create relation to infra:SpAccGrp",
-			}})),
+			},
+		})),
 	}
 }
 
@@ -93,6 +93,18 @@ func setSpineAccessPortSelectorAttributes(infraSHPortS *models.SpineAccessPortSe
 	return d, nil
 }
 
+func getAndSetReadRelationinfraRsSpAccGrp(client *client.Client, dn string, d *schema.ResourceData) (*schema.ResourceData, error) {
+	infraRsSpAccGrpData, err := client.ReadRelationinfraRsSpAccGrp(dn)
+	if err != nil {
+		log.Printf("[DEBUG] Error while reading relation infraRsSpAccGrp %v", err)
+		d.Set("relation_infra_rs_sp_acc_grp", nil)
+		return d, err
+	} else {
+		d.Set("relation_infra_rs_sp_acc_grp", infraRsSpAccGrpData.(string))
+	}
+	return d, nil
+}
+
 func resourceAciSpineAccessPortSelectorImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
 	log.Printf("[DEBUG] %s: Beginning Import", d.Id())
 	aciClient := m.(*client.Client)
@@ -109,13 +121,13 @@ func resourceAciSpineAccessPortSelectorImport(d *schema.ResourceData, m interfac
 		return nil, err
 	}
 
-	infraRsSpAccGrpData, err := aciClient.ReadRelationinfraRsSpAccGrp(dn)
-	if err != nil {
-		log.Printf("[DEBUG] Error while reading relation infraRsSpAccGrp %v", err)
-		d.Set("relation_infra_rs_sp_acc_grp", "")
-	} else {
-		d.Set("relation_infra_rs_sp_acc_grp", infraRsSpAccGrpData.(string))
+	// infraRsSpAccGrp - Beginning Import
+	log.Printf("[DEBUG] %s: infraRsSpAccGrp - Beginning Import with parent DN", dn)
+	_, err = getAndSetReadRelationinfraRsSpAccGrp(aciClient, dn, d)
+	if err == nil {
+		log.Printf("[DEBUG] %s: infraRsSpAccGrp - Import finished successfully", d.Get("relation_infra_rs_sp_acc_grp"))
 	}
+	// infraRsSpAccGrp - Import finished successfully
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
@@ -265,18 +277,14 @@ func resourceAciSpineAccessPortSelectorRead(ctx context.Context, d *schema.Resou
 		return nil
 	}
 
-	infraRsSpAccGrpData, err := aciClient.ReadRelationinfraRsSpAccGrp(dn)
-	if err != nil {
-		log.Printf("[DEBUG] Error while reading relation infraRsSpAccGrp %v", err)
-		d.Set("relation_infra_rs_sp_acc_grp", "")
-	} else {
-		if _, ok := d.GetOk("relation_infra_rs_sp_acc_grp"); ok {
-			tfName := d.Get("relation_infra_rs_sp_acc_grp").(string)
-			if tfName != infraRsSpAccGrpData {
-				d.Set("relation_infra_rs_sp_acc_grp", "")
-			}
-		}
+	// infraRsSpAccGrp - Beginning Read
+	log.Printf("[DEBUG] %s: infraRsSpAccGrp - Beginning Read with parent DN", dn)
+	_, err = getAndSetReadRelationinfraRsSpAccGrp(aciClient, dn, d)
+	if err == nil {
+		log.Printf("[DEBUG] %s: infraRsSpAccGrp - Read finished successfully", d.Get("relation_infra_rs_sp_acc_grp"))
 	}
+	// infraRsSpAccGrp - Read finished successfully
+
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 	return nil
 }
