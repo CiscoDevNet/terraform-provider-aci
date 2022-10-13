@@ -98,6 +98,20 @@ func resourceAciCloudContextProfile() *schema.Resource {
 				Optional:    true,
 				Description: "hub network to enable transit gateway",
 			},
+			"cloud_brownfield": &schema.Schema{
+				Type:        schema.TypeString,
+				Optional:    true,
+				Description: "Import Brownfield Virtual Network",
+				ForceNew:    true,
+			},
+			"access_policy_type": &schema.Schema{
+				Type:        schema.TypeString,
+				Optional:    true,
+				Description: "Ctx access policy type",
+				ValidateFunc: validation.StringInSlice([]string{
+					"read-only",
+				}, false),
+			},
 		}),
 	}
 }
@@ -162,6 +176,10 @@ func setRelationalAttributes(cloudCtxProfileCont *container.Container, d *schema
 			d.Set("relation_cloud_rs_ctx_to_flow_log", G(childCont.S("cloudRsCtxToFlowLog", "attributes"), "tDn"))
 		} else if childCont.Exists("cloudRsToCtx") {
 			d.Set("relation_cloud_rs_to_ctx", G(childCont.S("cloudRsToCtx", "attributes"), "tDn"))
+		} else if childCont.Exists("cloudBrownfield") {
+			d.Set("cloud_brownfield", G(childCont.S("cloudBrownfield", "children", "cloudIDMapping", "attributes"), "cloudProviderId"))
+		} else if childCont.Exists("cloudRsCtxProfileToAccessPolicy") {
+			d.Set("access_policy_type", GetMOName(G(childCont.S("cloudRsCtxProfileToAccessPolicy", "attributes"), "tDn")))
 		}
 	}
 }
@@ -212,6 +230,11 @@ func resourceAciCloudContextProfileCreate(ctx context.Context, d *schema.Resourc
 		cloudCtxProfileAttr.Type = Type.(string)
 	}
 
+	cloudBrownfield := ""
+	if cloudBrownfield, ok := d.GetOk("cloud_brownfield"); ok {
+		cloudBrownfield = cloudBrownfield.(string)
+	}
+
 	PrimaryCIDR := d.Get("primary_cidr").(string)
 
 	Region := d.Get("region").(string)
@@ -232,6 +255,12 @@ func resourceAciCloudContextProfileCreate(ctx context.Context, d *schema.Resourc
 		checkDns = append(checkDns, temp.(string))
 	}
 
+	accessPolicy := ""
+	if accessPolicy, ok := d.GetOk("access_policy_type"); ok {
+		accessDn := fmt.Sprintf("uni/tn-infra/accesspolicy-%s", accessPolicy.(string))
+		checkDns = append(checkDns, accessDn)
+	}
+
 	d.Partial(true)
 	err := checkTDn(aciClient, checkDns)
 	if err != nil {
@@ -250,7 +279,7 @@ func resourceAciCloudContextProfileCreate(ctx context.Context, d *schema.Resourc
 		return diag.FromErr(fmt.Errorf("Invalid Configuration relation_cloud_rs_to_ctx property cannot be empty for the Cloud APIC"))
 	}
 
-	cloudCtxProfile, err := aciClient.CreateCloudContextProfile(name, TenantDn, desc, cloudCtxProfileAttr, PrimaryCIDR, Region, vendor, cloudRsCtx)
+	cloudCtxProfile, err := aciClient.CreateCloudContextProfile(name, TenantDn, desc, cloudCtxProfileAttr, PrimaryCIDR, Region, vendor, cloudRsCtx, cloudBrownfield, accessPolicy)
 	if err != nil {
 		return diag.FromErr(err)
 	}
@@ -321,6 +350,16 @@ func resourceAciCloudContextProfileUpdate(ctx context.Context, d *schema.Resourc
 		checkDns = append(checkDns, newRelParam.(string))
 	}
 
+	// if d.HasChange("cloud_brownfield") {
+	// 	_, newRelParam := d.GetChange("cloud_brownfield")
+	// 	checkDns = append(checkDns, newRelParam.(string))
+	// }
+
+	if d.HasChange("access_policy_type") {
+		_, newRelParam := d.GetChange("access_policy_type")
+		checkDns = append(checkDns, newRelParam.(string))
+	}
+
 	d.Partial(true)
 	err := checkTDn(aciClient, checkDns)
 	if err != nil {
@@ -339,7 +378,17 @@ func resourceAciCloudContextProfileUpdate(ctx context.Context, d *schema.Resourc
 		return diag.FromErr(fmt.Errorf("Invalid Configuration relation_cloud_rs_to_ctx property cannot be empty for the Cloud APIC"))
 	}
 
-	cloudCtxProfile, err := aciClient.UpdateCloudContextProfile(name, TenantDn, desc, cloudCtxProfileAttr, PrimaryCIDR, Region, vendor, cloudRsCtx)
+	accessPolicy := ""
+	if accessPolicy, ok := d.GetOk("access_policy_type"); ok {
+		accessPolicy = accessPolicy.(string)
+	}
+
+	cloudBrownfield := ""
+	if cloudBrownfield, ok := d.GetOk("cloud_brownfield"); ok {
+		cloudBrownfield = cloudBrownfield.(string)
+	}
+
+	cloudCtxProfile, err := aciClient.UpdateCloudContextProfile(name, TenantDn, desc, cloudCtxProfileAttr, PrimaryCIDR, Region, vendor, cloudRsCtx, cloudBrownfield, accessPolicy)
 
 	if err != nil {
 		return diag.FromErr(err)
