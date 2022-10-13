@@ -66,6 +66,12 @@ func (sm *ServiceManager) CreateCloudContextProfile(name string, tenant string, 
 
 	log.Printf("\n\n\n\n[DEBUG]nkdemo%s\n\n\n\n", jsonPayload.String())
 	jsonPayload.Set(name, cloudCtxProfile.ClassName, "attributes", "name")
+	if cloudCtxProfile.VpcGroup != "" {
+		jsonPayload.Set(cloudCtxProfile.VpcGroup, cloudCtxProfile.ClassName, "attributes", "vpcGroup")
+	}
+	if cloudCtxProfile.Type != "" {
+		jsonPayload.Set(cloudCtxProfile.Type, cloudCtxProfile.ClassName, "attributes", "type")
+	}
 	req, err := sm.client.MakeRestRequest("POST", fmt.Sprintf("/api/node/mo/%s/%s.json", parentDn, rn), jsonPayload, true)
 	if err != nil {
 		return nil, err
@@ -144,6 +150,12 @@ func (sm *ServiceManager) UpdateCloudContextProfile(name string, tenant string, 
 	jsonPayload.ArrayAppend(vrfCon.Data(), cloudCtxProfile.ClassName, "children")
 
 	jsonPayload.Set(name, cloudCtxProfile.ClassName, "attributes", "name")
+	if cloudCtxProfile.VpcGroup != "" {
+		jsonPayload.Set(cloudCtxProfile.VpcGroup, cloudCtxProfile.ClassName, "attributes", "vpcGroup")
+	}
+	if cloudCtxProfile.Type != "" {
+		jsonPayload.Set(cloudCtxProfile.Type, cloudCtxProfile.ClassName, "attributes", "type")
+	}
 	req, err := sm.client.MakeRestRequest("POST", fmt.Sprintf("/api/node/mo/%s/%s.json", parentDn, rn), jsonPayload, true)
 	if err != nil {
 		return nil, err
