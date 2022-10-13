@@ -40,15 +40,31 @@ func dataSourceAciCloudSubnet() *schema.Resource {
 			},
 
 			"scope": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
+				Type:        schema.TypeList,
+				Optional:    true,
+				Computed:    true,
+				Elem:        &schema.Schema{Type: schema.TypeString},
+				Description: "Use the sorted scope list to handle identical changes",
 			},
 
 			"usage": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+			},
+			"zone": &schema.Schema{
+				Type:        schema.TypeString,
+				Optional:    true,
+				Description: "Only applicable to the AWS vendor",
+			},
+			"relation_cloud_rs_subnet_to_flow_log": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"subnet_group_label": &schema.Schema{
+				Type:        schema.TypeString,
+				Optional:    true,
+				Description: "Only applicable to the GCP vendor",
 			},
 		}),
 	}
@@ -64,7 +80,7 @@ func dataSourceAciCloudSubnetRead(ctx context.Context, d *schema.ResourceData, m
 
 	dn := fmt.Sprintf("%s/%s", CloudCIDRPoolDn, rn)
 
-	cloudSubnet, err := getRemoteCloudSubnet(aciClient, dn)
+	cloudSubnet, err := getRemoteCloudSubnet(aciClient, dn, d)
 
 	if err != nil {
 		return diag.FromErr(err)

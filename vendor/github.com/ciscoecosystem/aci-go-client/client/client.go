@@ -18,6 +18,7 @@ import (
 	"time"
 
 	"github.com/ciscoecosystem/aci-go-client/container"
+	"golang.org/x/net/html"
 )
 
 const authPayload = `{
@@ -541,9 +542,14 @@ func (c *Client) Do(req *http.Request) (*container.Container, *http.Response, er
 		if (resp.StatusCode < 500 || resp.StatusCode > 504) && resp.StatusCode != 405 {
 			obj, err := container.ParseJSON(bodyBytes)
 			if err != nil {
-				log.Printf("[ERROR] Error occured while json parsing %+v", err)
+				log.Printf("[ERROR] Error occured while json parsing: %+v", err)
+
+				// If nginx is too busy or the page is not found, APIC's nginx will response with an HTML doc instead of a JSON Response.
+				// In those cases, parse the HTML response for the message and return that to the user
+				htmlErr := c.checkHtmlResp(bodyStr)
+				log.Printf("[ERROR] Error occured while json parsing: %s", htmlErr.Error())
 				log.Printf("[DEBUG] Exit from Do method")
-				return nil, resp, errors.New(fmt.Sprintf("Failed to parse JSON response from %s. Verify that you are connecting to an APIC.\nHTTP response status: %s\nMessage: %+v", req.URL.String(), resp.Status, err))
+				return nil, resp, errors.New(fmt.Sprintf("Failed to parse JSON response from: %s. Verify that you are connecting to an APIC.\nHTTP response status: %s\nMessage: %s", req.URL.String(), resp.Status, htmlErr))
 			}
 
 			log.Printf("[DEBUG] Exit from Do method")
@@ -552,9 +558,14 @@ func (c *Client) Do(req *http.Request) (*container.Container, *http.Response, er
 			if ok := c.backoff(attempts); !ok {
 				obj, err := container.ParseJSON(bodyBytes)
 				if err != nil {
-					log.Printf("[ERROR] Error occured while json parsing %+v with HTTP StatusCode 405, 500-504", err)
+					log.Printf("[ERROR] Error occured while json parsing: %+v with HTTP StatusCode 405, 500-504", err)
+
+					// If nginx is too busy or the page is not found, APIC's nginx will response with an HTML doc instead of a JSON Response.
+					// In those cases, parse the HTML response for the message and return that to the user
+					htmlErr := c.checkHtmlResp(bodyStr)
+					log.Printf("[ERROR] Error occured while json parsing: %s", htmlErr.Error())
 					log.Printf("[DEBUG] Exit from Do method")
-					return nil, resp, errors.New(fmt.Sprintf("Failed to parse JSON response from %s. Verify that you are connecting to an APIC.\nHTTP response status: %s\nMessage: %+v", req.URL.String(), resp.Status, err))
+					return nil, resp, errors.New(fmt.Sprintf("Failed to parse JSON response from: %s. Verify that you are connecting to an APIC.\nHTTP response status: %s\nMessage: %s", req.URL.String(), resp.Status, htmlErr))
 				}
 
 				log.Printf("[DEBUG] Exit from Do method")
@@ -658,4 +669,67 @@ func (c *Client) backoff(attempts int) bool {
 	time.Sleep(backoffDuration)
 	log.Printf("[DEBUG] Exit from backoff method with return value true")
 	return true
+}
+
+// If nginx is too busy or the page is not found, APIC's nginx will response with an HTML doc instead of a JSON Response.
+// In those cases, parse the HTML response for the message and return that to the user
+//
+// Sample Response Body: https://github.com/nginx/nginx-releases/blob/master/html/50x.html
+// <!DOCTYPE html>
+// <html>
+// <head>
+// <title>Error</title>
+// <style>
+//     body {
+//         width: 35em;
+//         margin: 0 auto;
+//         font-family: Tahoma, Verdana, Arial, sans-serif;
+//     }
+// </style>
+// </head>
+// <body>
+// <h1>An error occurred.</h1>
+// <p>Sorry, the page you are looking for is currently unavailable.<br/>
+// Please try again later.</p>
+// <p>If you are the system administrator of this resource then you should check
+// the <a href="http://nginx.org/r/error_log">error log</a> for details.</p>
+// <p><em>Faithfully yours, nginx.</em></p>
+// </body>
+// </html>
+//
+// Sample return error:
+// An error occurred. Sorry, the page you are looking for is currently unavailable. If you are the system administrator of this
+// resource then you should check the error log for details. Faithfully yours, nginx.
+//
+func (c *Client) checkHtmlResp(body string) error {
+	reader := strings.NewReader(body)
+	tokenizer := html.NewTokenizer(reader)
+	errStr := ""
+	prevTag := ""
+	for {
+		tt := tokenizer.Next()
+		if tt == html.ErrorToken {
+			break
+		}
+		tag, _ := tokenizer.TagName()
+		token := tokenizer.Token()
+
+		if prevTag == "a" || prevTag == "p" || prevTag == "body" {
+			data := strings.TrimSpace(token.Data)
+			if data == "" {
+				continue
+			}
+			if errStr == "" {
+				errStr = data
+			} else {
+				errStr = errStr + " " + data
+			}
+		}
+		prevTag = string(tag)
+	}
+	if errStr == "" {
+		errStr = "Empty APIC HTML Response"
+	}
+	log.Printf("[DEBUG] HTML Error Parsing Result: %s", errStr)
+	return fmt.Errorf(errStr)
 }
