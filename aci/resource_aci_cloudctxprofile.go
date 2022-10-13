@@ -231,8 +231,9 @@ func resourceAciCloudContextProfileCreate(ctx context.Context, d *schema.Resourc
 	}
 
 	cloudBrownfield := ""
-	if cloudBrownfield, ok := d.GetOk("cloud_brownfield"); ok {
-		cloudBrownfield = cloudBrownfield.(string)
+	if tmpVar, ok := d.GetOk("cloud_brownfield"); ok {
+		cloudBrownfield = tmpVar.(string)
+		log.Printf("\n\n\n[DEBUG]cloudBrownfield in ctxCreate %v", cloudBrownfield)
 	}
 
 	PrimaryCIDR := d.Get("primary_cidr").(string)
@@ -256,8 +257,9 @@ func resourceAciCloudContextProfileCreate(ctx context.Context, d *schema.Resourc
 	}
 
 	accessPolicy := ""
-	if accessPolicy, ok := d.GetOk("access_policy_type"); ok {
-		accessDn := fmt.Sprintf("uni/tn-infra/accesspolicy-%s", accessPolicy.(string))
+	if tmpVar, ok := d.GetOk("access_policy_type"); ok {
+		accessPolicy = tmpVar.(string)
+		accessDn := fmt.Sprintf("uni/tn-infra/accesspolicy-%s", accessPolicy)
 		checkDns = append(checkDns, accessDn)
 	}
 
@@ -357,7 +359,7 @@ func resourceAciCloudContextProfileUpdate(ctx context.Context, d *schema.Resourc
 
 	if d.HasChange("access_policy_type") {
 		_, newRelParam := d.GetChange("access_policy_type")
-		checkDns = append(checkDns, newRelParam.(string))
+		checkDns = append(checkDns, fmt.Sprintf("uni/tn-infra/accesspolicy-%s", newRelParam.(string)))
 	}
 
 	d.Partial(true)
@@ -379,13 +381,13 @@ func resourceAciCloudContextProfileUpdate(ctx context.Context, d *schema.Resourc
 	}
 
 	accessPolicy := ""
-	if accessPolicy, ok := d.GetOk("access_policy_type"); ok {
-		accessPolicy = accessPolicy.(string)
+	if tmpVar, ok := d.GetOk("access_policy_type"); ok {
+		accessPolicy = tmpVar.(string)
 	}
 
 	cloudBrownfield := ""
-	if cloudBrownfield, ok := d.GetOk("cloud_brownfield"); ok {
-		cloudBrownfield = cloudBrownfield.(string)
+	if tmpVar, ok := d.GetOk("cloud_brownfield"); ok {
+		cloudBrownfield = tmpVar.(string)
 	}
 
 	cloudCtxProfile, err := aciClient.UpdateCloudContextProfile(name, TenantDn, desc, cloudCtxProfileAttr, PrimaryCIDR, Region, vendor, cloudRsCtx, cloudBrownfield, accessPolicy)
