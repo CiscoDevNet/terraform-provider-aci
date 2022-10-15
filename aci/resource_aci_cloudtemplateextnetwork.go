@@ -9,6 +9,7 @@ import (
 	"github.com/ciscoecosystem/aci-go-client/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciCloudTemplateforExternalNetwork() *schema.Resource {
@@ -38,6 +39,22 @@ func resourceAciCloudTemplateforExternalNetwork() *schema.Resource {
 				Type:     schema.TypeString,
 				Required: true,
 			},
+			"all_regions": {
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"yes",
+					"no",
+				}, false),
+			},
+			"host_router_name": {
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+			// By setting all_region = true and host_router_name,it "now" automatically sets region in azure and gcp
+
 		})),
 	}
 }
@@ -47,6 +64,7 @@ func getRemoteCloudTemplateforExternalNetwork(client *client.Client, dn string) 
 	if err != nil {
 		return nil, err
 	}
+	log.Printf("LOGs  GET res : %v   ..", cloudtemplateExtNetworkCont)
 	cloudtemplateExtNetwork := models.CloudTemplateforExternalNetworkFromContainer(cloudtemplateExtNetworkCont)
 	if cloudtemplateExtNetwork.DistinguishedName == "" {
 		return nil, fmt.Errorf("CloudTemplateforExternalNetwork %s not found", cloudtemplateExtNetwork.DistinguishedName)
@@ -61,6 +79,8 @@ func setCloudTemplateforExternalNetworkAttributes(cloudtemplateExtNetwork *model
 	if err != nil {
 		return d, err
 	}
+	log.Printf("LOGs  SET map : %v   ..", cloudtemplateExtNetworkMap)
+	log.Printf("LOGs  SET map region : %v   ..", cloudtemplateExtNetworkMap["allRegion"])
 
 	d.Set("annotation", cloudtemplateExtNetworkMap["annotation"])
 	d.Set("hub_network_name", cloudtemplateExtNetworkMap["hubNetworkName"])
@@ -71,6 +91,8 @@ func setCloudTemplateforExternalNetworkAttributes(cloudtemplateExtNetwork *model
 	} else {
 		d.Set("vrf_dn", "")
 	}
+	d.Set("all_regions", cloudtemplateExtNetworkMap["allRegion"])
+	d.Set("host_router_name", cloudtemplateExtNetworkMap["hostRouterName"])
 	return d, nil
 }
 
@@ -117,9 +139,17 @@ func resourceAciCloudTemplateforExternalNetworkCreate(ctx context.Context, d *sc
 		cloudtemplateExtNetworkAttr.Name = Name.(string)
 	}
 
+	if AllRegions, ok := d.GetOk("all_regions"); ok {
+		cloudtemplateExtNetworkAttr.AllRegion = AllRegions.(string)
+		if AllRegions == "yes" {
+			cloudtemplateExtNetworkAttr.HostRouterName = "default"
+		}
+	}
+
 	if VrfDn, ok := d.GetOk("vrf_dn"); ok {
 		cloudtemplateExtNetworkAttr.VrfName = GetMOName(VrfDn.(string))
 	}
+	log.Printf("LOGs CREATE: %v  ..", cloudtemplateExtNetworkAttr)
 	cloudtemplateExtNetwork := models.NewCloudTemplateforExternalNetwork(fmt.Sprintf(models.RncloudtemplateExtNetwork, name), CloudInfraNetworkTemplateDn, nameAlias, cloudtemplateExtNetworkAttr)
 
 	err := aciClient.Save(cloudtemplateExtNetwork)
@@ -130,6 +160,10 @@ func resourceAciCloudTemplateforExternalNetworkCreate(ctx context.Context, d *sc
 	d.SetId(cloudtemplateExtNetwork.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 	return resourceAciCloudTemplateforExternalNetworkRead(ctx, d, m)
+}
+
+func toBool(AllRegions interface{}) {
+	panic("unimplemented")
 }
 
 func resourceAciCloudTemplateforExternalNetworkUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
@@ -158,10 +192,17 @@ func resourceAciCloudTemplateforExternalNetworkUpdate(ctx context.Context, d *sc
 	if Name, ok := d.GetOk("name"); ok {
 		cloudtemplateExtNetworkAttr.Name = Name.(string)
 	}
+	if AllRegions, ok := d.GetOk("all_regions"); ok {
+		cloudtemplateExtNetworkAttr.AllRegion = AllRegions.(string)
+		if AllRegions == "yes" {
+			cloudtemplateExtNetworkAttr.HostRouterName = "default"
+		}
+	}
 
 	if VrfDn, ok := d.GetOk("vrf_dn"); ok {
 		cloudtemplateExtNetworkAttr.VrfName = GetMOName(VrfDn.(string))
 	}
+	log.Printf("LOGs UPDATE: %v  ..", cloudtemplateExtNetworkAttr)
 	cloudtemplateExtNetwork := models.NewCloudTemplateforExternalNetwork(fmt.Sprintf(models.RncloudtemplateExtNetwork, name), CloudInfraNetworkTemplateDn, nameAlias, cloudtemplateExtNetworkAttr)
 
 	cloudtemplateExtNetwork.Status = "modified"

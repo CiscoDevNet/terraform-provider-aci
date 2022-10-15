@@ -5,7 +5,6 @@ terraform {
     }
   }
 }
-
 provider "aci" {
   username = ""
   password = ""
@@ -25,6 +24,7 @@ resource "aci_vrf" "vrf" {
 resource "aci_cloud_external_network" "external_network" {
 	name = "cloud_external_network"
 	vrf_dn = aci_vrf.vrf.id
+  all_regions = "yes"
 }
 
 data "aci_cloud_external_network" "example" {
