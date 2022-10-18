@@ -11,6 +11,15 @@ description: |-
 
 Manages ACI Destination of redirected traffic
 
+## API Information ##
+
+* `Class` - vnsRedirectDest
+* `Distinguished Name` - uni/tn-{tenant_name}/svcCont/svcRedirectPol-{service_redirect_policy_name}/RedirectDest_ip-[{ip}]
+
+## GUI Information ##
+
+* `Location` - Tenant -> Policies -> Protocol -> L4-L7 Policy-Based Redirect -> L3 Destinations
+
 ## Example Usage
 
 ```hcl
@@ -18,7 +27,6 @@ Manages ACI Destination of redirected traffic
 resource "aci_destination_of_redirected_traffic" "example" {
   service_redirect_policy_dn  = aci_service_redirect_policy.example.id
   ip                          = "1.2.3.4"
-  mac                         = "12:25:56:98:45:74"
   ip2                         = "10.20.30.40"
   dest_name                   = "last"
   pod_id                      = "5"
@@ -31,14 +39,14 @@ resource "aci_destination_of_redirected_traffic" "example" {
 
 ## Argument Reference
 
-- `service_redirect_policy_dn` - (Required) Distinguished name of parent Service Redirect Policy object.
+- `service_redirect_policy_dn` - (Required) Distinguished name of the parent Service Redirect Policy object.
 - `ip` - (Required) The IP address.
-- `mac` - (Required) The MAC address.
-- `annotation` - (Optional) Annotation for object destination of redirected traffic.
-- `description` - (Optional) Description for object destination of redirected traffic.
-- `dest_name` - (Optional) The destination name to which data was exported. This utility creates a summary report containing configuration information, logs and diagnostic data that will help TAC in troubleshooting and resolving a technical issue.
-- `ip2` - (Optional) IP2 for object destination of redirected traffic. Default value: "0.0.0.0"
-- `name_alias` - (Optional) Name alias for object destination of redirected traffic.
+- `mac` - (Optional) The MAC address. This is a required value for APIC prior to Version 5.2 release. This value can be foregone by enabling IPSLA on APIC Version 5.2 and above due to dynamic mac detection feature.
+- `annotation` - (Optional) Annotation for the object destination of redirected traffic.
+- `description` - (Optional) Description for the object destination of redirected traffic.
+- `dest_name` - (Optional) The destination name to which the data was exported. 
+- `ip2` - (Optional) IP2 for the object destination of redirected traffic. Default value: "0.0.0.0"
+- `name_alias` - (Optional) Name alias for the object destination of redirected traffic.
 - `pod_id` - (Optional) The POD identifier. Allowed value range: "1" to "255". Default value: "1"
 
 - `relation_vns_rs_redirect_health_group` - (Optional) Relation to class vns Redirect Health Group. Cardinality - N_TO_ONE. Type - String.
@@ -54,5 +62,5 @@ An existing Destination of redirected traffic can be [imported][docs-import] int
 [docs-import]: https://www.terraform.io/docs/import/index.html
 
 ```
-terraform import aci_destinationofredirectedtraffic.example <Dn>
+terraform import aci_destination_of_redirected_traffic.example <Dn>
 ```
