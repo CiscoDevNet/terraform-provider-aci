@@ -54,7 +54,17 @@ func resourceAciCloudTemplateforExternalNetwork() *schema.Resource {
 				Computed: true,
 			},
 			// By setting all_region = true and host_router_name,it "now" automatically sets region in azure and gcp
-
+			// Add beow section to verfiy the above action
+			// "cloud_vendor": &schema.Schema{
+			// 	Type:        schema.TypeString,
+			// 	Required:    true,
+			// 	Description: "Name of the vendor",
+			// 	ValidateFunc: validation.StringInSlice([]string{
+			// 		"aws",
+			// 		"azure",
+			// 		"gcp",
+			// 	}, false),
+			// },
 		})),
 	}
 }
@@ -64,7 +74,6 @@ func getRemoteCloudTemplateforExternalNetwork(client *client.Client, dn string) 
 	if err != nil {
 		return nil, err
 	}
-	log.Printf("LOGs  GET res : %v   ..", cloudtemplateExtNetworkCont)
 	cloudtemplateExtNetwork := models.CloudTemplateforExternalNetworkFromContainer(cloudtemplateExtNetworkCont)
 	if cloudtemplateExtNetwork.DistinguishedName == "" {
 		return nil, fmt.Errorf("CloudTemplateforExternalNetwork %s not found", cloudtemplateExtNetwork.DistinguishedName)
@@ -79,9 +88,6 @@ func setCloudTemplateforExternalNetworkAttributes(cloudtemplateExtNetwork *model
 	if err != nil {
 		return d, err
 	}
-	log.Printf("LOGs  SET map : %v   ..", cloudtemplateExtNetworkMap)
-	log.Printf("LOGs  SET map region : %v   ..", cloudtemplateExtNetworkMap["allRegion"])
-
 	d.Set("annotation", cloudtemplateExtNetworkMap["annotation"])
 	d.Set("hub_network_name", cloudtemplateExtNetworkMap["hubNetworkName"])
 	d.Set("name", cloudtemplateExtNetworkMap["name"])
@@ -149,7 +155,7 @@ func resourceAciCloudTemplateforExternalNetworkCreate(ctx context.Context, d *sc
 	if VrfDn, ok := d.GetOk("vrf_dn"); ok {
 		cloudtemplateExtNetworkAttr.VrfName = GetMOName(VrfDn.(string))
 	}
-	log.Printf("LOGs CREATE: %v  ..", cloudtemplateExtNetworkAttr)
+
 	cloudtemplateExtNetwork := models.NewCloudTemplateforExternalNetwork(fmt.Sprintf(models.RncloudtemplateExtNetwork, name), CloudInfraNetworkTemplateDn, nameAlias, cloudtemplateExtNetworkAttr)
 
 	err := aciClient.Save(cloudtemplateExtNetwork)
@@ -202,7 +208,7 @@ func resourceAciCloudTemplateforExternalNetworkUpdate(ctx context.Context, d *sc
 	if VrfDn, ok := d.GetOk("vrf_dn"); ok {
 		cloudtemplateExtNetworkAttr.VrfName = GetMOName(VrfDn.(string))
 	}
-	log.Printf("LOGs UPDATE: %v  ..", cloudtemplateExtNetworkAttr)
+
 	cloudtemplateExtNetwork := models.NewCloudTemplateforExternalNetwork(fmt.Sprintf(models.RncloudtemplateExtNetwork, name), CloudInfraNetworkTemplateDn, nameAlias, cloudtemplateExtNetworkAttr)
 
 	cloudtemplateExtNetwork.Status = "modified"
