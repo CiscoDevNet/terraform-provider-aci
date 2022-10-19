@@ -2,7 +2,6 @@ package client
 
 import (
 	"fmt"
-	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/container"
 	"github.com/ciscoecosystem/aci-go-client/models"
@@ -15,26 +14,26 @@ func (sm *ServiceManager) CreateCloudSubnet(ip string, cloud_cidr_pool_dn string
 	cloudSubnet := models.NewCloudSubnet(rn, parentDn, description, cloudSubnetattr)
 	jsonPayload, _, err := sm.PrepareModel(cloudSubnet)
 
-	rsZoneAttachJSON := []byte(fmt.Sprintf(`
-	{
-		"cloudRsZoneAttach": {
-			"attributes": {
-				"annotation": "orchestrator:terraform",
-				"dn": "%s/%s/rszoneAttach",
-				"tDn": "%s"
+	if zoneDn != "" {
+		rsZoneAttachJSON := []byte(fmt.Sprintf(`
+		{
+			"cloudRsZoneAttach": {
+				"attributes": {
+					"annotation": "orchestrator:terraform",
+					"dn": "%s/%s/rszoneAttach",
+					"tDn": "%s"
+				}
 			}
 		}
-	}
-	`, parentDn, rn, zoneDn))
-	zoneCon, err := container.ParseJSON(rsZoneAttachJSON)
-	if err != nil {
-		return nil, err
-	}
+		`, parentDn, rn, zoneDn))
+		zoneCon, err := container.ParseJSON(rsZoneAttachJSON)
+		if err != nil {
+			return nil, err
+		}
 
-	log.Printf("\n[DEBUG]asas %v", zoneCon.Data())
-	jsonPayload.Array(cloudSubnet.ClassName, "children")
-	jsonPayload.ArrayAppend(zoneCon.Data(), cloudSubnet.ClassName, "children")
-	log.Printf("\n\n[DEBUG]asas %s\n\n", jsonPayload.String())
+		jsonPayload.Array(cloudSubnet.ClassName, "children")
+		jsonPayload.ArrayAppend(zoneCon.Data(), cloudSubnet.ClassName, "children")
+	}
 	jsonPayload.Set(ip, cloudSubnet.ClassName, "attributes", "ip")
 
 	req, err := sm.client.MakeRestRequest("POST", fmt.Sprintf("/api/node/mo/%s/%s.json", parentDn, rn), jsonPayload, true)
@@ -90,10 +89,8 @@ func (sm *ServiceManager) UpdateCloudSubnet(ip string, cloud_cidr_pool_dn string
 		return nil, err
 	}
 
-	log.Printf("\n[DEBUG]asas %v", zoneCon.Data())
 	jsonPayload.Array(cloudSubnet.ClassName, "children")
 	jsonPayload.ArrayAppend(zoneCon.Data(), cloudSubnet.ClassName, "children")
-	log.Printf("\n\n[DEBUG]asas %s\n\n", jsonPayload.String())
 	jsonPayload.Set(ip, cloudSubnet.ClassName, "attributes", "ip")
 
 	req, err := sm.client.MakeRestRequest("POST", fmt.Sprintf("/api/node/mo/%s/%s.json", parentDn, rn), jsonPayload, true)
