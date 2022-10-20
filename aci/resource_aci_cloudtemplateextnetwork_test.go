@@ -26,7 +26,7 @@ func TestAccAciCloudTemplateforExternalNetwork_Basic(t *testing.T) {
 			{
 				Config: testAccCheckAciCloudTemplateforExternalNetworkConfig_basic(fv_tenant_name, cloudtemplate_infra_network_name, cloudtemplate_ext_network_name),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAciCloudTemplateforExternalNetworkExists("aci_templatefor_external_network.footemplatefor_external_network", &templatefor_external_network),
+					testAccCheckAciCloudTemplateforExternalNetworkExists("aci_cloud_external_network.footemplatefor_external_network", &templatefor_external_network),
 					testAccCheckAciCloudTemplateforExternalNetworkAttributes(fv_tenant_name, cloudtemplate_infra_network_name, cloudtemplate_ext_network_name, description, &templatefor_external_network),
 				),
 			},
@@ -49,14 +49,14 @@ func TestAccAciCloudTemplateforExternalNetwork_Update(t *testing.T) {
 			{
 				Config: testAccCheckAciCloudTemplateforExternalNetworkConfig_basic(fv_tenant_name, cloudtemplate_infra_network_name, cloudtemplate_ext_network_name),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAciCloudTemplateforExternalNetworkExists("aci_templatefor_external_network.footemplatefor_external_network", &templatefor_external_network),
+					testAccCheckAciCloudTemplateforExternalNetworkExists("aci_cloud_external_network.footemplatefor_external_network", &templatefor_external_network),
 					testAccCheckAciCloudTemplateforExternalNetworkAttributes(fv_tenant_name, cloudtemplate_infra_network_name, cloudtemplate_ext_network_name, description, &templatefor_external_network),
 				),
 			},
 			{
 				Config: testAccCheckAciCloudTemplateforExternalNetworkConfig_basic(fv_tenant_name, cloudtemplate_infra_network_name, cloudtemplate_ext_network_name),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAciCloudTemplateforExternalNetworkExists("aci_templatefor_external_network.footemplatefor_external_network", &templatefor_external_network),
+					testAccCheckAciCloudTemplateforExternalNetworkExists("aci_cloud_external_network.footemplatefor_external_network", &templatefor_external_network),
 					testAccCheckAciCloudTemplateforExternalNetworkAttributes(fv_tenant_name, cloudtemplate_infra_network_name, cloudtemplate_ext_network_name, description, &templatefor_external_network),
 				),
 			},
@@ -79,7 +79,7 @@ func testAccCheckAciCloudTemplateforExternalNetworkConfig_basic(fv_tenant_name, 
 		tenant_dn = aci_tenant.footenant.id
 	}
 
-	resource "aci_templatefor_external_network" "footemplatefor_external_network" {
+	resource "aci_cloud_external_network" "footemplatefor_external_network" {
 		name 		= "%s"
 		description = "templatefor_external_network created while acceptance testing"
 		infra_network_template_dn = aci_infra_network_template.fooinfra_network_template.id
@@ -119,7 +119,7 @@ func testAccCheckAciCloudTemplateforExternalNetworkExists(name string, templatef
 func testAccCheckAciCloudTemplateforExternalNetworkDestroy(s *terraform.State) error {
 	client := testAccProvider.Meta().(*client.Client)
 	for _, rs := range s.RootModule().Resources {
-		if rs.Type == "aci_templatefor_external_network" {
+		if rs.Type == "aci_cloud_external_network" {
 			cont, err := client.Get(rs.Primary.ID)
 			templatefor_external_network := models.CloudTemplateforExternalNetworkFromContainer(cont)
 			if err == nil {

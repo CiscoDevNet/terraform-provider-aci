@@ -27,7 +27,7 @@ func TestAccAciCloudTemplateforVPNNetwork_Basic(t *testing.T) {
 			{
 				Config: testAccCheckAciCloudTemplateforVPNNetworkConfig_basic(fv_tenant_name, cloudtemplate_infra_network_name, cloudtemplate_ext_network_name, cloudtemplate_vpn_network_name),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAciCloudTemplateforVPNNetworkExists("aci_templatefor_vpn_network.footemplatefor_vpn_network", &templatefor_vpn_network),
+					testAccCheckAciCloudTemplateforVPNNetworkExists("aci_cloud_external_network_vpn_network.footemplatefor_vpn_network", &templatefor_vpn_network),
 					testAccCheckAciCloudTemplateforVPNNetworkAttributes(fv_tenant_name, cloudtemplate_infra_network_name, cloudtemplate_ext_network_name, cloudtemplate_vpn_network_name, description, &templatefor_vpn_network),
 				),
 			},
@@ -51,14 +51,14 @@ func TestAccAciCloudTemplateforVPNNetwork_Update(t *testing.T) {
 			{
 				Config: testAccCheckAciCloudTemplateforVPNNetworkConfig_basic(fv_tenant_name, cloudtemplate_infra_network_name, cloudtemplate_ext_network_name, cloudtemplate_vpn_network_name),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAciCloudTemplateforVPNNetworkExists("aci_templatefor_vpn_network.footemplatefor_vpn_network", &templatefor_vpn_network),
+					testAccCheckAciCloudTemplateforVPNNetworkExists("aci_cloud_external_network_vpn_network.footemplatefor_vpn_network", &templatefor_vpn_network),
 					testAccCheckAciCloudTemplateforVPNNetworkAttributes(fv_tenant_name, cloudtemplate_infra_network_name, cloudtemplate_ext_network_name, cloudtemplate_vpn_network_name, description, &templatefor_vpn_network),
 				),
 			},
 			{
 				Config: testAccCheckAciCloudTemplateforVPNNetworkConfig_basic(fv_tenant_name, cloudtemplate_infra_network_name, cloudtemplate_ext_network_name, cloudtemplate_vpn_network_name),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAciCloudTemplateforVPNNetworkExists("aci_templatefor_vpn_network.footemplatefor_vpn_network", &templatefor_vpn_network),
+					testAccCheckAciCloudTemplateforVPNNetworkExists("aci_cloud_external_network_vpn_network.footemplatefor_vpn_network", &templatefor_vpn_network),
 					testAccCheckAciCloudTemplateforVPNNetworkAttributes(fv_tenant_name, cloudtemplate_infra_network_name, cloudtemplate_ext_network_name, cloudtemplate_vpn_network_name, description, &templatefor_vpn_network),
 				),
 			},
@@ -81,16 +81,16 @@ func testAccCheckAciCloudTemplateforVPNNetworkConfig_basic(fv_tenant_name, cloud
 		tenant_dn = aci_tenant.footenant.id
 	}
 
-	resource "aci_templatefor_external_network" "footemplatefor_external_network" {
+	resource "aci_cloud_external_network" "footemplatefor_external_network" {
 		name 		= "%s"
 		description = "templatefor_external_network created while acceptance testing"
 		infra_network_template_dn = aci_infra_network_template.fooinfra_network_template.id
 	}
 
-	resource "aci_templatefor_vpn_network" "footemplatefor_vpn_network" {
+	resource "aci_cloud_external_network_vpn_network" "footemplatefor_vpn_network" {
 		name 		= "%s"
 		description = "templatefor_vpn_network created while acceptance testing"
-		aci_cloud_external_network_dn = aci_templatefor_external_network.footemplatefor_external_network.id
+		aci_cloud_external_network_dn = aci_cloud_external_network.footemplatefor_external_network.id
 	}
 
 	`, fv_tenant_name, cloudtemplate_infra_network_name, cloudtemplate_ext_network_name, cloudtemplate_vpn_network_name)
@@ -127,7 +127,7 @@ func testAccCheckAciCloudTemplateforVPNNetworkExists(name string, templatefor_vp
 func testAccCheckAciCloudTemplateforVPNNetworkDestroy(s *terraform.State) error {
 	client := testAccProvider.Meta().(*client.Client)
 	for _, rs := range s.RootModule().Resources {
-		if rs.Type == "aci_templatefor_vpn_network" {
+		if rs.Type == "aci_cloud_external_network_vpn_network" {
 			cont, err := client.Get(rs.Primary.ID)
 			templatefor_vpn_network := models.TemplateforVPNNetworkFromContainer(cont)
 			if err == nil {
