@@ -39,10 +39,10 @@ data "aci_destination_of_redirected_traffic" "example" {
 ## Attribute Reference
 
 - `id` - Attribute id set to the Dn of the Destination of redirected traffic.
-- `annotation` - (Optional) Annotation for the object destination of redirected traffic.
+- `annotation` - (Optional) Annotation of the destination of redirected traffic object.
 - `destination` - (Optional) Specifies the description of a policy component.
-- `dest_name` - (Optional) The destination name to which data was exported. 
-- `ip2` - (Optional) IP2 for the object destination of redirected traffic.
+- `dest_name` - (Optional) The name of the destination of redirected traffic object. 
+- `ip2` - (Optional) IP2 of the destination of redirected traffic object.
 - `mac` - (Optional) The MAC address.
-- `name_alias` - (Optional) Name alias for the object destination of redirected traffic.
+- `name_alias` - (Optional) Name alias of the destination of redirected traffic object.
 - `pod_id` - (Optional) The Pod identifier.
