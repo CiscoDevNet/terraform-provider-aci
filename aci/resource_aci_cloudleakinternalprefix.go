@@ -134,7 +134,7 @@ func resourceAciLeakInternalPrefixCreate(ctx context.Context, d *schema.Resource
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
 	VRFDn := d.Get("vrf_dn").(string)
-	leakRoutesDn := VRFDn + "/" + models.RnleakRoutes
+	leakRoutesDn := fmt.Sprintf("%s/%s", VRFDn, models.RnleakRoutes)
 
 	nameAlias := ""
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
@@ -202,7 +202,7 @@ func resourceAciLeakInternalPrefixUpdate(ctx context.Context, d *schema.Resource
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
 	VRFDn := d.Get("vrf_dn").(string)
-	leakRoutesDn := VRFDn + "/" + models.RnleakRoutes
+	leakRoutesDn := fmt.Sprintf("%s/%s", VRFDn, models.RnleakRoutes)
 
 	nameAlias := ""
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
