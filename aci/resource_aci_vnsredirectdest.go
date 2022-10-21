@@ -51,7 +51,8 @@ func resourceAciDestinationofredirectedtraffic() *schema.Resource {
 
 			"mac": &schema.Schema{
 				Type:     schema.TypeString,
-				Required: true,
+				Optional: true,
+				Default:  "00:00:00:00:00:00",
 			},
 
 			"name_alias": &schema.Schema{

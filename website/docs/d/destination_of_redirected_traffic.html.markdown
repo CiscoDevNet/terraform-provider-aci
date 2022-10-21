@@ -11,6 +11,15 @@ description: |-
 
 Data source for ACI Destination of redirected traffic
 
+## API Information ##
+
+* `Class` - vnsRedirectDest
+* `Distinguished Name` - uni/tn-{tenant_name}/svcCont/svcRedirectPol-{service_redirect_policy_name}/RedirectDest_ip-[{ip}]
+
+## GUI Information ##
+
+* `Location` - Tenant -> Policies -> Protocol -> L4-L7 Policy-Based Redirect -> L3 Destinations
+
 ## Example Usage
 
 ```hcl
@@ -24,16 +33,16 @@ data "aci_destination_of_redirected_traffic" "example" {
 
 ## Argument Reference
 
-- `service_redirect_policy_dn` - (Required) Distinguished name of parent Service Redirect Policy object.
+- `service_redirect_policy_dn` - (Required) Distinguished name of the parent Service Redirect Policy object.
 - `ip` - (Required) The IP address.
 
 ## Attribute Reference
 
 - `id` - Attribute id set to the Dn of the Destination of redirected traffic.
-- `annotation` - (Optional) Annotation for object destination of redirected traffic.
+- `annotation` - (Optional) Annotation of the destination of redirected traffic object.
 - `destination` - (Optional) Specifies the description of a policy component.
-- `dest_name` - (Optional) The destination name to which data was exported. This utility creates a summary report containing configuration information, logs and diagnostic data that will help TAC in troubleshooting and resolving a technical issue.
-- `ip2` - (Optional) IP2 for object destination of redirected traffic.
+- `dest_name` - (Optional) The name of the destination of redirected traffic object. 
+- `ip2` - (Optional) IP2 of the destination of redirected traffic object.
 - `mac` - (Optional) The MAC address.
-- `name_alias` - (Optional) Name alias for object destination of redirected traffic.
+- `name_alias` - (Optional) Name alias of the destination of redirected traffic object.
 - `pod_id` - (Optional) The Pod identifier.
