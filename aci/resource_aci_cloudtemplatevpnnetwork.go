@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"reflect"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
@@ -45,7 +46,7 @@ func resourceAciCloudTemplateforVPNNetwork() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
-			"cloud_ipsec_tunnel": &schema.Schema{
+			"ipsec_tunnel": {
 				Type:     schema.TypeSet,
 				Optional: true,
 				Computed: true,
@@ -74,6 +75,11 @@ func resourceAciCloudTemplateforVPNNetwork() *schema.Resource {
 							Type:     schema.TypeString,
 							Optional: true,
 							Computed: true,
+						},
+						"bgp_peer_asn": {
+							Type:     schema.TypeString,
+							Required: true,
+							ForceNew: true,
 						},
 					},
 				},
@@ -108,9 +114,6 @@ func setTemplateforVPNNetworkAttributes(cloudtemplateVpnNetwork *models.Template
 	} else {
 		d.Set("aci_cloud_external_network_dn", GetParentDn(dn, "/"+fmt.Sprintf(models.RncloudtemplateVpnNetwork, cloudtemplateVpnNetworkMap["name"])))
 	}
-	log.Printf(" LOGs GET getRemoteCloudTemplateforIpSecTunnel : %v ", dn)
-	log.Printf(" LOGs GET RN : %v ", models.RncloudtemplateIpSecTunnel)
-	log.Printf(" LOGs GET  GetParentDn   %v ", GetParentDn(dn, "/"+fmt.Sprintf(models.RncloudtemplateVpnNetwork, cloudtemplateVpnNetworkMap["name"])))
 
 	d.Set("annotation", cloudtemplateVpnNetworkMap["annotation"])
 	d.Set("name", cloudtemplateVpnNetworkMap["name"])
@@ -121,18 +124,19 @@ func setTemplateforVPNNetworkAttributes(cloudtemplateVpnNetwork *models.Template
 	return d, nil
 }
 
-func getRemoteCloudTemplateforIpSecTunnel(client *client.Client, dn string) (*models.CloudTemplateforIpSectunnel, error) {
-	cloudtemplateIpSecTunnelCont, err := client.Get(dn)
-	if err != nil {
-		return nil, err
-	}
-	log.Printf("LOGs GET getRemoteCloudTemplateforIpSecTunnel : %v ", cloudtemplateIpSecTunnelCont)
-	cloudtemplateIpSecTunnel := models.CloudTemplateforIpSectunnelFromContainer(cloudtemplateIpSecTunnelCont)
-	if cloudtemplateIpSecTunnel.DistinguishedName == "" {
-		return nil, fmt.Errorf("CloudTemplateforIpSectunnel %s not found", cloudtemplateIpSecTunnel.DistinguishedName)
-	}
-	return cloudtemplateIpSecTunnel, nil
-}
+// func getRemoteCloudTemplateforIpSecTunnel(client *client.Client, dn string) (*models.CloudTemplateforIpSectunnel, error) {
+// 	cloudtemplateIpSecTunnelCont, err := client.Get(dn)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+
+// 	log.Printf("LOGs GET getRemoteCloudTemplateforIpSecTunnel : %v ", cloudtemplateIpSecTunnelCont)
+// 	cloudtemplateIpSecTunnel := models.CloudTemplateforIpSectunnelFromContainer(cloudtemplateIpSecTunnelCont)
+// 	if cloudtemplateIpSecTunnel.DistinguishedName == "" {
+// 		return nil, fmt.Errorf("CloudTemplateforIpSectunnel %s not found", cloudtemplateIpSecTunnel.DistinguishedName)
+// 	}
+// 	return cloudtemplateIpSecTunnel, nil
+// }
 
 func setCloudTemplateforIpSecTunnelAttributes(cloudtemplateIpSecTunnel *models.CloudTemplateforIpSectunnel, d map[string]string) (map[string]string, error) {
 
@@ -142,13 +146,27 @@ func setCloudTemplateforIpSecTunnelAttributes(cloudtemplateIpSecTunnel *models.C
 	}
 
 	d = map[string]string{
+		"id":                cloudtemplateIpSecTunnelMap["dn"],
 		"ike_version":       cloudtemplateIpSecTunnelMap["ikeVersion"],
 		"public_ip_address": cloudtemplateIpSecTunnelMap["peeraddr"],
 		"subnet_pool_name":  cloudtemplateIpSecTunnelMap["poolname"],
 		"pre_shared_key":    cloudtemplateIpSecTunnelMap["preSharedKey"],
 	}
 
-	log.Printf("LOGs SET Dd : %v ", d)
+	return d, nil
+}
+
+func getASNfromBGPTPV4Peer(cloudtemplateBgpIpv4 *models.BGPIPv4Peer, d map[string]string) (map[string]string, error) {
+
+	cloudtemplateBgpIpv4Map, err := cloudtemplateBgpIpv4.ToMap()
+	if err != nil {
+		return d, err
+	}
+
+	log.Printf("LOGs getASNfromBGPTPV4Peer ASN : %v ", cloudtemplateBgpIpv4Map["peerasn"])
+	d = map[string]string{
+		"bgp_perr_asn_att": cloudtemplateBgpIpv4Map["peerasn"],
+	}
 	return d, nil
 }
 
@@ -168,7 +186,7 @@ func resourceAciCloudTemplateforVPNNetworkImport(d *schema.ResourceData, m inter
 
 	cloudtemplateIpSecTunnelData, err := aciClient.ListCloudTemplateforIpSectunnel(dn)
 	if err != nil {
-		log.Printf("[DEBUG] Error while reading cloud IPSec Tunnel attributes %v", err)
+		log.Printf("[DEBUG] Error while importing cloud IPSec Tunnel attributes %v", err)
 	}
 	cloudtemplateIpSecTunnelSet := make([]map[string]string, 0, 1)
 	for _, cloudtemplateIpSecTunnel := range cloudtemplateIpSecTunnelData {
@@ -178,14 +196,34 @@ func resourceAciCloudTemplateforVPNNetworkImport(d *schema.ResourceData, m inter
 			d.SetId("")
 			return nil, err
 		}
-		log.Printf("LOGs IN ELSEEE cloudIpSecTunnelAttMap : %v ", cloudIpSecTunnelAttMap)
+		log.Printf("LOGs IMPORT IPSEC cloudIpSecTunnelAttMap : %v    nand TYPE : %v", cloudIpSecTunnelAttMap, reflect.TypeOf(cloudIpSecTunnelAttMap))
+
+		bgpIPv4PeerData, err := aciClient.ListBGPIPv4Peer(cloudIpSecTunnelAttMap["id"])
+		if err != nil {
+			log.Printf("[DEBUG] Error while reading cloud IPSec Tunnel attributes %v", err)
+		}
+		for _, bgpIPv4Peer := range bgpIPv4PeerData {
+			log.Printf("LOGs IMPORT FOR bgpIPv4PeerData : %v ", bgpIPv4Peer)
+			bgpPeerAsnAtt, err := getASNfromBGPTPV4Peer(bgpIPv4Peer, make(map[string]string))
+			if err != nil {
+				d.SetId("")
+				return nil, err
+			}
+			log.Printf("LOGs IMPORT bgpPeerAsnAtt ASN : %v ", bgpPeerAsnAtt["bgp_perr_asn_att"])
+			cloudIpSecTunnelAttMap["bgp_peer_asn"] = bgpPeerAsnAtt["bgp_perr_asn_att"]
+		}
+
 		cloudtemplateIpSecTunnelSet = append(cloudtemplateIpSecTunnelSet, cloudIpSecTunnelAttMap)
-		log.Printf("LOGs IN ELSEEE cloudtemplateIpSecTunnelSet : %v ", cloudtemplateIpSecTunnelSet)
+		log.Printf("LOGs IMPORT IP Tunnel Set : %v ", cloudtemplateIpSecTunnelSet)
 	}
-	d.Set("cloud_ipsec_tunnel", cloudtemplateIpSecTunnelSet)
+	d.Set("ipsec_tunnel", cloudtemplateIpSecTunnelSet)
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 	return []*schema.ResourceData{schemaFilled}, nil
+}
+
+func TypeOf(cloudIpSecTunnelAttMap map[string]string) {
+	panic("unimplemented")
 }
 
 func resourceAciCloudTemplateforVPNNetworkCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
@@ -225,11 +263,11 @@ func resourceAciCloudTemplateforVPNNetworkCreate(ctx context.Context, d *schema.
 		return diag.FromErr(err)
 	}
 	log.Printf("LOGs CREATE cloudtemplateVpnNetwork : %v ", cloudtemplateVpnNetwork)
-	log.Printf("LOGs CREATE d.GetOk.cloud_ipsec_tunnel : %v ", d.Get("cloud_ipsec_tunnel"))
+	log.Printf("LOGs CREATE ipsec_tunnel value : %v ", d.Get("ipsec_tunnel"))
 
-	cloudIpSecTunnelPeers := make([]string, 0, 1)
-	if ipSecTunnelPeers, ok := d.GetOk("cloud_ipsec_tunnel"); ok {
+	if ipSecTunnelPeers, ok := d.GetOk("ipsec_tunnel"); ok {
 		clopudIpSecTunnels := ipSecTunnelPeers.(*schema.Set).List()
+		// Looping throught List of IPSec Tunnels
 		for _, val := range clopudIpSecTunnels {
 			ipSecTunnels := val.(map[string]interface{})
 
@@ -245,7 +283,15 @@ func resourceAciCloudTemplateforVPNNetworkCreate(ctx context.Context, d *schema.
 			if err != nil {
 				return diag.FromErr(err)
 			}
-			cloudIpSecTunnelPeers = append(cloudIpSecTunnelPeers, cloudtemplateIpSecTunnel.DistinguishedName)
+			cloudtemplateBgpIpv4Attr := models.BGPIPv4PeerAttributes{}
+			cloudtemplateBgpIpv4Attr.Peeraddr = "0.0.0.0/0"
+			cloudtemplateBgpIpv4Attr.Peerasn = ipSecTunnels["bgp_peer_asn"].(string)
+
+			cloudtemplateBgpIpv4 := models.NewBGPIPv4Peer(fmt.Sprintf(models.RncloudtemplateBgpIpv4, cloudtemplateBgpIpv4Attr.Peeraddr), cloudtemplateIpSecTunnel.DistinguishedName, cloudtemplateBgpIpv4Attr)
+			err = aciClient.Save(cloudtemplateBgpIpv4)
+			if err != nil {
+				return diag.FromErr(err)
+			}
 		}
 	}
 
@@ -294,9 +340,9 @@ func resourceAciCloudTemplateforVPNNetworkUpdate(ctx context.Context, d *schema.
 	}
 
 	log.Printf("LOGs UPDATE cloudtemplateVpnNetwork : %v ", cloudtemplateVpnNetwork)
-	cloudIpSecTunnelPeers := make([]string, 0, 1)
-	if ipSecTunnelPeers, ok := d.GetOk("cloud_ipsec_tunnel"); ok {
+	if ipSecTunnelPeers, ok := d.GetOk("ipsec_tunnel"); ok {
 		clopudIpSecTunnels := ipSecTunnelPeers.(*schema.Set).List()
+		// Looping throught List of IPSec Tunnels
 		for _, val := range clopudIpSecTunnels {
 			ipSecTunnels := val.(map[string]interface{})
 
@@ -312,7 +358,15 @@ func resourceAciCloudTemplateforVPNNetworkUpdate(ctx context.Context, d *schema.
 			if err != nil {
 				return diag.FromErr(err)
 			}
-			cloudIpSecTunnelPeers = append(cloudIpSecTunnelPeers, cloudtemplateIpSecTunnel.DistinguishedName)
+			cloudtemplateBgpIpv4Attr := models.BGPIPv4PeerAttributes{}
+			cloudtemplateBgpIpv4Attr.Peeraddr = "0.0.0.0/0"
+			cloudtemplateBgpIpv4Attr.Peerasn = ipSecTunnels["bgp_peer_asn"].(string)
+
+			cloudtemplateBgpIpv4 := models.NewBGPIPv4Peer(fmt.Sprintf(models.RncloudtemplateBgpIpv4, cloudtemplateBgpIpv4Attr.Peeraddr), cloudtemplateIpSecTunnel.DistinguishedName, cloudtemplateBgpIpv4Attr)
+			err = aciClient.Save(cloudtemplateBgpIpv4)
+			if err != nil {
+				return diag.FromErr(err)
+			}
 		}
 	}
 
@@ -351,11 +405,26 @@ func resourceAciCloudTemplateforVPNNetworkRead(ctx context.Context, d *schema.Re
 			d.SetId("")
 			return nil
 		}
-		log.Printf("LOGs IN ELSEEE cloudIpSecTunnelAttMap : %v ", cloudIpSecTunnelAttMap)
+
+		bgpIPv4PeerData, err := aciClient.ListBGPIPv4Peer(cloudIpSecTunnelAttMap["id"])
+		if err != nil {
+			log.Printf("[DEBUG] Error while reading cloud IPSec Tunnel attributes %v", err)
+		}
+		for _, bgpIPv4Peer := range bgpIPv4PeerData {
+			log.Printf("LOGs READ FOR bgpIPv4Peer : %v ", bgpIPv4Peer)
+			bgpPeerAsnAtt, err := getASNfromBGPTPV4Peer(bgpIPv4Peer, make(map[string]string))
+			if err != nil {
+				d.SetId("")
+				return nil
+			}
+			log.Printf("LOGs READ ASN : %v ", bgpPeerAsnAtt["bgp_perr_asn_att"])
+			cloudIpSecTunnelAttMap["bgp_peer_asn"] = bgpPeerAsnAtt["bgp_perr_asn_att"]
+		}
+
 		cloudtemplateIpSecTunnelSet = append(cloudtemplateIpSecTunnelSet, cloudIpSecTunnelAttMap)
-		log.Printf("LOGs IN ELSEEE cloudtemplateIpSecTunnelSet : %v ", cloudtemplateIpSecTunnelSet)
+		log.Printf("LOGs READ  cloudtemplateIpSecTunnelSet : %v ", cloudtemplateIpSecTunnelSet)
 	}
-	d.Set("cloud_ipsec_tunnel", cloudtemplateIpSecTunnelSet)
+	d.Set("ipsec_tunnel", cloudtemplateIpSecTunnelSet)
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 	return nil

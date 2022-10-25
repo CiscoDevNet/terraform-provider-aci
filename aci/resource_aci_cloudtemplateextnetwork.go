@@ -53,6 +53,11 @@ func resourceAciCloudTemplateforExternalNetwork() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"vpn_router_name": {
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
 			// By setting all_region = true and host_router_name,it "now" automatically sets region in azure and gcp
 			// Add beow section to verfiy the above action
 			// "cloud_vendor": &schema.Schema{
@@ -99,6 +104,7 @@ func setCloudTemplateforExternalNetworkAttributes(cloudtemplateExtNetwork *model
 	}
 	d.Set("all_regions", cloudtemplateExtNetworkMap["allRegion"])
 	d.Set("host_router_name", cloudtemplateExtNetworkMap["hostRouterName"])
+	d.Set("vpn_router_name", cloudtemplateExtNetworkMap["vpnRouterName"])
 	return d, nil
 }
 
@@ -137,9 +143,13 @@ func resourceAciCloudTemplateforExternalNetworkCreate(ctx context.Context, d *sc
 		cloudtemplateExtNetworkAttr.Annotation = "{}"
 	}
 
-	if HubNetworkName, ok := d.GetOk("hub_network_name"); ok {
-		cloudtemplateExtNetworkAttr.HubNetworkName = HubNetworkName.(string)
-	}
+	// if HubNetworkName, ok := d.GetOk("hub_network_name"); ok {
+	// 	cloudtemplateExtNetworkAttr.HubNetworkName = HubNetworkName.(string)
+	// }
+
+	// following 2 attributes are used only in GCP
+	cloudtemplateExtNetworkAttr.HubNetworkName = "default"
+	cloudtemplateExtNetworkAttr.VpnRouterName = "default"
 
 	if Name, ok := d.GetOk("name"); ok {
 		cloudtemplateExtNetworkAttr.Name = Name.(string)
@@ -147,9 +157,10 @@ func resourceAciCloudTemplateforExternalNetworkCreate(ctx context.Context, d *sc
 
 	if AllRegions, ok := d.GetOk("all_regions"); ok {
 		cloudtemplateExtNetworkAttr.AllRegion = AllRegions.(string)
-		if AllRegions == "yes" {
-			cloudtemplateExtNetworkAttr.HostRouterName = "default"
-		}
+		// if AllRegions == "yes" {
+		// 	cloudtemplateExtNetworkAttr.HostRouterName = "default"
+		// }
+		// only for Azure cloud
 	}
 
 	if VrfDn, ok := d.GetOk("vrf_dn"); ok {
@@ -191,18 +202,22 @@ func resourceAciCloudTemplateforExternalNetworkUpdate(ctx context.Context, d *sc
 		cloudtemplateExtNetworkAttr.Annotation = "{}"
 	}
 
-	if HubNetworkName, ok := d.GetOk("hub_network_name"); ok {
-		cloudtemplateExtNetworkAttr.HubNetworkName = HubNetworkName.(string)
-	}
+	// if HubNetworkName, ok := d.GetOk("hub_network_name"); ok {
+	// 	cloudtemplateExtNetworkAttr.HubNetworkName = HubNetworkName.(string)
+	// }
+
+	// following 2 attributes are used only in GCP
+	cloudtemplateExtNetworkAttr.HubNetworkName = "default"
+	cloudtemplateExtNetworkAttr.VpnRouterName = "default"
 
 	if Name, ok := d.GetOk("name"); ok {
 		cloudtemplateExtNetworkAttr.Name = Name.(string)
 	}
 	if AllRegions, ok := d.GetOk("all_regions"); ok {
 		cloudtemplateExtNetworkAttr.AllRegion = AllRegions.(string)
-		if AllRegions == "yes" {
-			cloudtemplateExtNetworkAttr.HostRouterName = "default"
-		}
+		// if AllRegions == "yes" {
+		// 	cloudtemplateExtNetworkAttr.HostRouterName = "default"
+		// }
 	}
 
 	if VrfDn, ok := d.GetOk("vrf_dn"); ok {
