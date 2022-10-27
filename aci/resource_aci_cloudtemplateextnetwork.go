@@ -143,24 +143,20 @@ func resourceAciCloudTemplateforExternalNetworkCreate(ctx context.Context, d *sc
 		cloudtemplateExtNetworkAttr.Annotation = "{}"
 	}
 
-	// if HubNetworkName, ok := d.GetOk("hub_network_name"); ok {
-	// 	cloudtemplateExtNetworkAttr.HubNetworkName = HubNetworkName.(string)
-	// }
-
-	// following 2 attributes are used only in GCP
-	cloudtemplateExtNetworkAttr.HubNetworkName = "default"
-	cloudtemplateExtNetworkAttr.VpnRouterName = "default"
-
 	if Name, ok := d.GetOk("name"); ok {
 		cloudtemplateExtNetworkAttr.Name = Name.(string)
 	}
 
 	if AllRegions, ok := d.GetOk("all_regions"); ok {
 		cloudtemplateExtNetworkAttr.AllRegion = AllRegions.(string)
-		// if AllRegions == "yes" {
-		// 	cloudtemplateExtNetworkAttr.HostRouterName = "default"
-		// }
-		// only for Azure cloud
+		if AllRegions == "yes" {
+			// Always true for Azure cloud
+			cloudtemplateExtNetworkAttr.HostRouterName = "default"
+		} else {
+			// following 2 attributes are used only in GCP
+			cloudtemplateExtNetworkAttr.HubNetworkName = "default"
+			cloudtemplateExtNetworkAttr.VpnRouterName = "default"
+		}
 	}
 
 	if VrfDn, ok := d.GetOk("vrf_dn"); ok {
@@ -202,22 +198,19 @@ func resourceAciCloudTemplateforExternalNetworkUpdate(ctx context.Context, d *sc
 		cloudtemplateExtNetworkAttr.Annotation = "{}"
 	}
 
-	// if HubNetworkName, ok := d.GetOk("hub_network_name"); ok {
-	// 	cloudtemplateExtNetworkAttr.HubNetworkName = HubNetworkName.(string)
-	// }
-
-	// following 2 attributes are used only in GCP
-	cloudtemplateExtNetworkAttr.HubNetworkName = "default"
-	cloudtemplateExtNetworkAttr.VpnRouterName = "default"
-
 	if Name, ok := d.GetOk("name"); ok {
 		cloudtemplateExtNetworkAttr.Name = Name.(string)
 	}
 	if AllRegions, ok := d.GetOk("all_regions"); ok {
 		cloudtemplateExtNetworkAttr.AllRegion = AllRegions.(string)
-		// if AllRegions == "yes" {
-		// 	cloudtemplateExtNetworkAttr.HostRouterName = "default"
-		// }
+		if AllRegions == "yes" {
+			// Always true for Azure cloud
+			cloudtemplateExtNetworkAttr.HostRouterName = "default"
+		} else {
+			// following 2 attributes are used only in GCP
+			cloudtemplateExtNetworkAttr.HubNetworkName = "default"
+			cloudtemplateExtNetworkAttr.VpnRouterName = "default"
+		}
 	}
 
 	if VrfDn, ok := d.GetOk("vrf_dn"); ok {
