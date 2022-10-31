@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"reflect"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
@@ -142,7 +141,6 @@ func getASNfromBGPTPV4Peer(cloudtemplateBgpIpv4 *models.BGPIPv4Peer, d map[strin
 		return d, err
 	}
 
-	log.Printf("LOGs getASNfromBGPTPV4Peer ASN : %v ", cloudtemplateBgpIpv4Map["peerasn"])
 	d = map[string]string{
 		"bgp_peer_asn_att": cloudtemplateBgpIpv4Map["peerasn"],
 	}
@@ -163,10 +161,12 @@ func resourceAciCloudTemplateforVPNNetworkImport(d *schema.ResourceData, m inter
 		return nil, err
 	}
 
+	log.Printf("[DEBUG] Begining Import of cloud IPSec Tunnel attributes.")
 	cloudtemplateIpSecTunnelData, err := aciClient.ListCloudTemplateforIpSectunnel(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while importing cloud IPSec Tunnel attributes %v", err)
 	}
+
 	cloudtemplateIpSecTunnelSet := make([]map[string]string, 0, 1)
 	for _, cloudtemplateIpSecTunnel := range cloudtemplateIpSecTunnelData {
 
@@ -175,27 +175,26 @@ func resourceAciCloudTemplateforVPNNetworkImport(d *schema.ResourceData, m inter
 			d.SetId("")
 			return nil, err
 		}
-		log.Printf("LOGs IMPORT IPSEC cloudIpSecTunnelAttMap : %v    nand TYPE : %v", cloudIpSecTunnelAttMap, reflect.TypeOf(cloudIpSecTunnelAttMap))
 
+		log.Printf("[DEBUG] Begining Import of cloud BGP IPV4 Peer attributes.")
 		bgpIPv4PeerData, err := aciClient.ListBGPIPv4Peer(cloudtemplateIpSecTunnelDn)
 		if err != nil {
-			log.Printf("[DEBUG] Error while reading cloud IPSec Tunnel attributes %v", err)
+			log.Printf("[DEBUG] Error while importing cloud BGP IPV4 Peer attributes %v", err)
 		}
 		for _, bgpIPv4Peer := range bgpIPv4PeerData {
-			log.Printf("LOGs IMPORT FOR bgpIPv4PeerData : %v ", bgpIPv4Peer)
 			bgpPeerAsnAtt, err := getASNfromBGPTPV4Peer(bgpIPv4Peer, make(map[string]string))
 			if err != nil {
 				d.SetId("")
 				return nil, err
 			}
-			log.Printf("LOGs IMPORT bgpPeerAsnAtt ASN : %v ", bgpPeerAsnAtt["bgp_peer_asn_att"])
 			cloudIpSecTunnelAttMap["bgp_peer_asn"] = bgpPeerAsnAtt["bgp_peer_asn_att"]
 		}
+		log.Printf("[DEBUG] Import of cloud BGP IPV4 Peer finished successfully.")
 
 		cloudtemplateIpSecTunnelSet = append(cloudtemplateIpSecTunnelSet, cloudIpSecTunnelAttMap)
-		log.Printf("LOGs IMPORT IP Tunnel Set : %v ", cloudtemplateIpSecTunnelSet)
 	}
 	d.Set("ipsec_tunnel", cloudtemplateIpSecTunnelSet)
+	log.Printf("[DEBUG] Import of cloud IPSec Tunnel finished successfully.")
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 	return []*schema.ResourceData{schemaFilled}, nil
@@ -241,9 +240,6 @@ func resourceAciCloudTemplateforVPNNetworkCreate(ctx context.Context, d *schema.
 	if err != nil {
 		return diag.FromErr(err)
 	}
-	log.Printf("LOGs CREATE cloudtemplateVpnNetwork : %v ", cloudtemplateVpnNetwork)
-	log.Printf("LOGs CREATE ipsec_tunnel value : %v ", d.Get("ipsec_tunnel"))
-
 	if ipSecTunnelPeers, ok := d.GetOk("ipsec_tunnel"); ok {
 		clopudIpSecTunnels := ipSecTunnelPeers.(*schema.Set).List()
 		// Looping throught List of IPSec Tunnels
@@ -318,7 +314,6 @@ func resourceAciCloudTemplateforVPNNetworkUpdate(ctx context.Context, d *schema.
 		return diag.FromErr(err)
 	}
 
-	log.Printf("LOGs UPDATE cloudtemplateVpnNetwork : %v ", cloudtemplateVpnNetwork)
 	if ipSecTunnelPeers, ok := d.GetOk("ipsec_tunnel"); ok {
 		clopudIpSecTunnels := ipSecTunnelPeers.(*schema.Set).List()
 		// Looping throught List of IPSec Tunnels
@@ -358,7 +353,6 @@ func resourceAciCloudTemplateforVPNNetworkRead(ctx context.Context, d *schema.Re
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 	aciClient := m.(*client.Client)
 	dn := d.Id()
-	log.Printf("LOGs I ENTER READ ")
 
 	cloudtemplateVpnNetwork, err := getRemoteTemplateforVPNNetwork(aciClient, dn)
 	if err != nil {
@@ -372,10 +366,12 @@ func resourceAciCloudTemplateforVPNNetworkRead(ctx context.Context, d *schema.Re
 		return nil
 	}
 
+	log.Printf("[DEBUG] Begining Read of cloud IPSec Tunnel attributes.")
 	cloudtemplateIpSecTunnelData, err := aciClient.ListCloudTemplateforIpSectunnel(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading cloud IPSec Tunnel attributes %v", err)
 	}
+
 	cloudtemplateIpSecTunnelSet := make([]map[string]string, 0, 1)
 	for _, cloudtemplateIpSecTunnel := range cloudtemplateIpSecTunnelData {
 
@@ -384,29 +380,26 @@ func resourceAciCloudTemplateforVPNNetworkRead(ctx context.Context, d *schema.Re
 			d.SetId("")
 			return nil
 		}
-		log.Printf("LOGs READ cloudIpSecTunnelAttMap 443 : %v ", cloudIpSecTunnelAttMap)
 
+		log.Printf("[DEBUG] Begining Read of cloud BGP IPV4 Peer attributes.")
 		bgpIPv4PeerData, err := aciClient.ListBGPIPv4Peer(cloudtemplateIpSecTunnelDn)
 		if err != nil {
-			log.Printf("[DEBUG] Error while reading cloud IPSec Tunnel attributes %v", err)
+			log.Printf("[DEBUG] Error while reading cloud BGP IPV4 Peer attributes %v", err)
 		}
-		log.Printf("LOGs READ FOR bgpIPv4PeerData : %v ", bgpIPv4PeerData)
 		for _, bgpIPv4Peer := range bgpIPv4PeerData {
-			log.Printf("LOGs READ FOR bgpIPv4Peer : %v ", bgpIPv4Peer)
 			bgpPeerAsnAtt, err := getASNfromBGPTPV4Peer(bgpIPv4Peer, make(map[string]string))
 			if err != nil {
 				d.SetId("")
 				return nil
 			}
-			log.Printf("LOGs READ ASN : %v ", bgpPeerAsnAtt["bgp_peer_asn_att"])
 			cloudIpSecTunnelAttMap["bgp_peer_asn"] = bgpPeerAsnAtt["bgp_peer_asn_att"]
-			log.Printf("LOGs READ cloudIpSecTunnelAttMap 448 : %v ", cloudIpSecTunnelAttMap)
 		}
-		log.Printf("LOGs READ cloudIpSecTunnelAttMap 450 : %v ", cloudIpSecTunnelAttMap)
+		log.Printf("[DEBUG] Read cloud BGP IPV4 Peer finished successfully.")
+
 		cloudtemplateIpSecTunnelSet = append(cloudtemplateIpSecTunnelSet, cloudIpSecTunnelAttMap)
-		log.Printf("LOGs READ  cloudtemplateIpSecTunnelSet : %v ", cloudtemplateIpSecTunnelSet)
 	}
 	d.Set("ipsec_tunnel", cloudtemplateIpSecTunnelSet)
+	log.Printf("[DEBUG] Read cloud IPSec Tunnel finished successfully.")
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 	return nil

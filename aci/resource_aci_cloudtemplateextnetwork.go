@@ -58,18 +58,6 @@ func resourceAciCloudTemplateforExternalNetwork() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
-			// By setting all_region = true and host_router_name,it "now" automatically sets region in azure and gcp
-			// Add beow section to verfiy the above action
-			// "cloud_vendor": &schema.Schema{
-			// 	Type:        schema.TypeString,
-			// 	Required:    true,
-			// 	Description: "Name of the vendor",
-			// 	ValidateFunc: validation.StringInSlice([]string{
-			// 		"aws",
-			// 		"azure",
-			// 		"gcp",
-			// 	}, false),
-			// },
 		})),
 	}
 }

@@ -1,0 +1,41 @@
+---
+subcategory: "Cloud"
+layout: "aci"
+page_title: "ACI: aci_cloud_ipsec_tunnel_subnet_pool"
+sidebar_current: "docs-aci-data-source-aci_cloud_ipsec_tunnel_subnet_pool"
+description: |-
+  Data source for the ACI Cloud Subnet Pool for IpSec Tunnels
+---
+
+# aci_cloud_ipsec_tunnel_subnet_pool #
+
+Data source for the ACI Cloud Subnet Pool for IpSec Tunnels
+
+
+## API Information ##
+
+* `Class` - cloudtemplateIpSecTunnelSubnetPool
+* `Distinguished Name` - uni/tn-{tenant_name}/infranetwork-{name}/ipsecsubnetpool-[{subnet_pool}]
+
+## GUI Information ##
+
+* `Location` - Cloud APIC -> Infrastructure -> Inter-Site Connectivity -> Region Management
+
+
+
+## Example Usage ##
+
+```hcl
+data "aci_cloud_ipsec_tunnel_subnet_pool" "example" {
+  subnet_pool_name = "example"
+	subnet_pool = "160.254.10.0/16"
+}
+```
+
+## Argument Reference ##
+
+* `subnet_pool` - (Required) Subnetpool of the Subnet Pool for IpSec Tunnels object.
+
+## Attribute Reference ##
+* `annotation` - (Optional) Annotation of the Subnet Pool for IpSec Tunnels object.
+* `subnet_pool_name` - (Required) Subnet Pool Name of the Subnet Pool for IpSec Tunnels object.

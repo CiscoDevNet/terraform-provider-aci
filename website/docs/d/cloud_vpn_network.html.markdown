@@ -39,7 +39,13 @@ data "aci_cloud_external_network_vpn_network" "example" {
 
 ## Attribute Reference ##
 * `id` - Attribute id set to the Dn of the Cloud VPN Network.
-* `annotation` - (Optional) Annotation of the Cloud VPN Network object.
-* `name_alias` - (Optional) Name Alias of the Cloud VPN Network object.
 * `remote_site_id` - (Optional) Remote Site ID. 
 * `remote_site_name` - (Optional) Remote Site Name. 
+* `ipsec_tunnel` - (Optional) IPSec tunnel destination. Type: Block.
+    * `ike_version` - (Required) IKE version. Allowed values are "ikev1", "ikev2", and default value is "ikev2".
+    * `public_ip_address` - (Required) Peer address of the Cloud IpSec tunnel object.
+    * `subnet_pool_name` - (Required) Subnet Pool Name.
+    * `pre_shared_key` - (Optional) Pre Shared Key for all tunnels to this peeraddr.
+    * `bgp_peer_asn` - (Required) BGP ASN Number. A number that uniquely identifies an autonomous system.
+
+

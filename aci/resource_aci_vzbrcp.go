@@ -657,12 +657,10 @@ func resourceAciContractCreate(ctx context.Context, d *schema.ResourceData, m in
 
 			if filter["filter_entry"] != nil {
 				vzfilterentries := filter["filter_entry"].([]interface{})
-				log.Println("Filter entries ... :", vzfilterentries)
 				for _, entry := range vzfilterentries {
 					vzEntryAttr := models.FilterEntryAttributes{}
 					vzEntry := entry.(map[string]interface{})
 
-					log.Println("Entries ......... :", vzEntry)
 					entryDesc := vzEntry["description"].(string)
 
 					entryName := vzEntry["filter_entry_name"].(string)
@@ -845,12 +843,10 @@ func resourceAciContractUpdate(ctx context.Context, d *schema.ResourceData, m in
 
 			if filter["filter_entry"] != nil {
 				vzfilterentries := filter["filter_entry"].([]interface{})
-				log.Println("Filter entries ... :", vzfilterentries)
 				for _, entry := range vzfilterentries {
 					vzEntryAttr := models.FilterEntryAttributes{}
 					vzEntry := entry.(map[string]interface{})
 
-					log.Println("Entries ......... :", vzEntry)
 					entryDesc := vzEntry["description"].(string)
 
 					entryName := vzEntry["filter_entry_name"].(string)

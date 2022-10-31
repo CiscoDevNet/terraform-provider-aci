@@ -3,6 +3,7 @@ package aci
 import (
 	"context"
 	"fmt"
+	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
@@ -18,11 +19,6 @@ func dataSourceAciCloudTemplateforVPNNetwork() *schema.Resource {
 				Type:     schema.TypeString,
 				Required: true,
 			},
-			"annotation": {
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
 			"name": {
 				Type:     schema.TypeString,
 				Required: true,
@@ -37,6 +33,36 @@ func dataSourceAciCloudTemplateforVPNNetwork() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"ipsec_tunnel": {
+				Type:     schema.TypeSet,
+				Optional: true,
+				Computed: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"ike_version": {
+							Type:     schema.TypeString,
+							Required: true,
+						},
+						"public_ip_address": {
+							Type:     schema.TypeString,
+							Required: true,
+						},
+						"subnet_pool_dn": {
+							Type:     schema.TypeString,
+							Required: true,
+						},
+						"pre_shared_key": {
+							Type:     schema.TypeString,
+							Optional: true,
+							Computed: true,
+						},
+						"bgp_peer_asn": {
+							Type:     schema.TypeString,
+							Required: true,
+						},
+					},
+				},
+			},
 		})),
 	}
 }
@@ -47,6 +73,7 @@ func dataSourceAciCloudTemplateforVPNNetworkRead(ctx context.Context, d *schema.
 	TemplateforExternalNetworkDn := d.Get("aci_cloud_external_network_dn").(string)
 	rn := fmt.Sprintf("vpnnetwork-%s", name)
 	dn := fmt.Sprintf("%s/%s", TemplateforExternalNetworkDn, rn)
+	log.Printf("[DEBUG] %s: Data Source - Beginning Read", dn)
 
 	cloudtemplateVpnNetwork, err := getRemoteTemplateforVPNNetwork(aciClient, dn)
 	if err != nil {
@@ -60,5 +87,41 @@ func dataSourceAciCloudTemplateforVPNNetworkRead(ctx context.Context, d *schema.
 		return diag.FromErr(err)
 	}
 
+	log.Printf("[DEBUG] Data Source - Begining Read of cloud IPSec Tunnel attributes.")
+	cloudtemplateIpSecTunnelData, err := aciClient.ListCloudTemplateforIpSectunnel(dn)
+	if err != nil {
+		log.Printf("[DEBUG] Data Source - Error while reading cloud IPSec Tunnel attributes %v", err)
+	}
+
+	cloudtemplateIpSecTunnelSet := make([]map[string]string, 0, 1)
+	for _, cloudtemplateIpSecTunnel := range cloudtemplateIpSecTunnelData {
+
+		cloudIpSecTunnelAttMap, cloudtemplateIpSecTunnelDn, err := setCloudTemplateforIpSecTunnelAttributes(cloudtemplateIpSecTunnel, make(map[string]string))
+		if err != nil {
+			d.SetId("")
+			return diag.FromErr(err)
+		}
+
+		log.Printf("[DEBUG] Data Source - Begining Read of cloud BGP IPV4 Peer attributes.")
+		bgpIPv4PeerData, err := aciClient.ListBGPIPv4Peer(cloudtemplateIpSecTunnelDn)
+		if err != nil {
+			log.Printf("[DEBUG] Data Source - Error while reading cloud BGP IPV4 Peer attributes %v", err)
+		}
+		for _, bgpIPv4Peer := range bgpIPv4PeerData {
+			bgpPeerAsnAtt, err := getASNfromBGPTPV4Peer(bgpIPv4Peer, make(map[string]string))
+			if err != nil {
+				d.SetId("")
+				return diag.FromErr(err)
+			}
+			cloudIpSecTunnelAttMap["bgp_peer_asn"] = bgpPeerAsnAtt["bgp_peer_asn_att"]
+		}
+		log.Printf("[DEBUG] Data Source - Read cloud BGP IPV4 Peer finished successfully.")
+
+		cloudtemplateIpSecTunnelSet = append(cloudtemplateIpSecTunnelSet, cloudIpSecTunnelAttMap)
+	}
+	d.Set("ipsec_tunnel", cloudtemplateIpSecTunnelSet)
+	log.Printf("[DEBUG] Data Source - Read cloud IPSec Tunnel finished successfully.")
+
+	log.Printf("[DEBUG] %s: Data Source - Read finished successfully", dn)
 	return nil
 }
