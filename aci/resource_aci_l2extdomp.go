@@ -24,55 +24,48 @@ func resourceAciL2Domain() *schema.Resource {
 
 		SchemaVersion: 1,
 
-		Schema: map[string]*schema.Schema{
-			"name": &schema.Schema{
-				Type:     schema.TypeString,
-				Required: true,
-				ForceNew: true,
-			},
+		Schema: AppendAttrSchemas(
+			GetAnnotationAttrSchema(),
+			map[string]*schema.Schema{
+				"name": &schema.Schema{
+					Type:     schema.TypeString,
+					Required: true,
+					ForceNew: true,
+				},
+				"name_alias": &schema.Schema{
+					Type:     schema.TypeString,
+					Optional: true,
+					Computed: true,
+				},
 
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				// Default:  "orchestrator:terraform",
-				Computed: true,
-				DefaultFunc: func() (interface{}, error) {
-					return "orchestrator:terraform", nil
+				"relation_infra_rs_vlan_ns": &schema.Schema{
+					Type: schema.TypeString,
+
+					Optional: true,
+				},
+				"relation_infra_rs_vlan_ns_def": &schema.Schema{
+					Type:     schema.TypeString,
+					Computed: true,
+					Optional: true,
+				},
+				"relation_infra_rs_vip_addr_ns": &schema.Schema{
+					Type: schema.TypeString,
+
+					Optional: true,
+				},
+				"relation_extnw_rs_out": &schema.Schema{
+					Type:     schema.TypeSet,
+					Elem:     &schema.Schema{Type: schema.TypeString},
+					Optional: true,
+					Set:      schema.HashString,
+				},
+				"relation_infra_rs_dom_vxlan_ns_def": &schema.Schema{
+					Type:     schema.TypeString,
+					Optional: true,
+					Computed: true,
 				},
 			},
-			"name_alias": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
-			"relation_infra_rs_vlan_ns": &schema.Schema{
-				Type: schema.TypeString,
-
-				Optional: true,
-			},
-			"relation_infra_rs_vlan_ns_def": &schema.Schema{
-				Type:     schema.TypeString,
-				Computed: true,
-				Optional: true,
-			},
-			"relation_infra_rs_vip_addr_ns": &schema.Schema{
-				Type: schema.TypeString,
-
-				Optional: true,
-			},
-			"relation_extnw_rs_out": &schema.Schema{
-				Type:     schema.TypeSet,
-				Elem:     &schema.Schema{Type: schema.TypeString},
-				Optional: true,
-				Set:      schema.HashString,
-			},
-			"relation_infra_rs_dom_vxlan_ns_def": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-		},
+		),
 	}
 }
 func getRemoteL2Domain(client *client.Client, dn string) (*models.L2Domain, error) {

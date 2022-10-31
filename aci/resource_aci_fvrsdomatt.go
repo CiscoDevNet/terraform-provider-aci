@@ -26,224 +26,217 @@ func resourceAciDomain() *schema.Resource {
 
 		SchemaVersion: 1,
 
-		Schema: map[string]*schema.Schema{
-			"application_epg_dn": &schema.Schema{
-				Type:     schema.TypeString,
-				Required: true,
-				ForceNew: true,
-			},
+		Schema: AppendAttrSchemas(
+			GetAnnotationAttrSchema(),
+			map[string]*schema.Schema{
+				"application_epg_dn": &schema.Schema{
+					Type:     schema.TypeString,
+					Required: true,
+					ForceNew: true,
+				},
 
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				// Default:  "orchestrator:terraform",
-				Computed: true,
-				DefaultFunc: func() (interface{}, error) {
-					return "orchestrator:terraform", nil
+				"tdn": &schema.Schema{
+					Type:     schema.TypeString,
+					Required: true,
+					ForceNew: true,
+				},
+
+				"binding_type": &schema.Schema{
+					Type:     schema.TypeString,
+					Optional: true,
+					Computed: true,
+					ValidateFunc: validation.StringInSlice([]string{
+						"none",
+						"staticBinding",
+						"dynamicBinding",
+						"ephemeral",
+					}, false),
+				},
+
+				"allow_micro_seg": &schema.Schema{
+					Type:     schema.TypeBool,
+					Optional: true,
+					Computed: true,
+				},
+
+				"custom_epg_name": {
+					Type:     schema.TypeString,
+					Optional: true,
+					Computed: true,
+				},
+
+				"delimiter": &schema.Schema{
+					Type:     schema.TypeString,
+					Optional: true,
+					Computed: true,
+				},
+
+				"encap": &schema.Schema{
+					Type:     schema.TypeString,
+					Optional: true,
+					Computed: true,
+				},
+
+				"encap_mode": &schema.Schema{
+					Type:     schema.TypeString,
+					Optional: true,
+					Computed: true,
+					ValidateFunc: validation.StringInSlice([]string{
+						"auto",
+						"vlan",
+						"vxlan",
+					}, false),
+				},
+
+				"epg_cos": &schema.Schema{
+					Type:     schema.TypeString,
+					Optional: true,
+					Computed: true,
+					ValidateFunc: validation.StringInSlice([]string{
+						"Cos0",
+						"Cos1",
+						"Cos2",
+						"Cos3",
+						"Cos4",
+						"Cos5",
+						"Cos6",
+						"Cos7",
+					}, false),
+				},
+
+				"epg_cos_pref": &schema.Schema{
+					Type:     schema.TypeString,
+					Optional: true,
+					Computed: true,
+					ValidateFunc: validation.StringInSlice([]string{
+						"disabled",
+						"enabled",
+					}, false),
+				},
+
+				"instr_imedcy": &schema.Schema{
+					Type:     schema.TypeString,
+					Optional: true,
+					Computed: true,
+					ValidateFunc: validation.StringInSlice([]string{
+						"immediate",
+						"lazy",
+					}, false),
+				},
+
+				"lag_policy_name": &schema.Schema{
+					Type:       schema.TypeString,
+					Optional:   true,
+					Computed:   true,
+					Deprecated: "use enhanced_lag_policy instead",
+				},
+
+				"netflow_dir": &schema.Schema{
+					Type:     schema.TypeString,
+					Optional: true,
+					Computed: true,
+					ValidateFunc: validation.StringInSlice([]string{
+						"both",
+						"ingress",
+						"egress",
+					}, false),
+				},
+
+				"netflow_pref": &schema.Schema{
+					Type:     schema.TypeString,
+					Optional: true,
+					Computed: true,
+					ValidateFunc: validation.StringInSlice([]string{
+						"disabled",
+						"enabled",
+					}, false),
+				},
+
+				"num_ports": &schema.Schema{
+					Type:     schema.TypeString,
+					Optional: true,
+					Computed: true,
+				},
+
+				"port_allocation": &schema.Schema{
+					Type:     schema.TypeString,
+					Optional: true,
+					Computed: true,
+					ValidateFunc: validation.StringInSlice([]string{
+						"none",
+						"elastic",
+						"fixed",
+					}, false),
+				},
+
+				"primary_encap": &schema.Schema{
+					Type:     schema.TypeString,
+					Optional: true,
+					Computed: true,
+				},
+
+				"primary_encap_inner": &schema.Schema{
+					Type:     schema.TypeString,
+					Optional: true,
+					Computed: true,
+				},
+
+				"res_imedcy": &schema.Schema{
+					Type:     schema.TypeString,
+					Optional: true,
+					Computed: true,
+					ValidateFunc: validation.StringInSlice([]string{
+						"lazy",
+						"immediate",
+						"pre-provision",
+					}, false),
+				},
+
+				"secondary_encap_inner": &schema.Schema{
+					Type:     schema.TypeString,
+					Optional: true,
+					Computed: true,
+				},
+
+				"switching_mode": &schema.Schema{
+					Type:     schema.TypeString,
+					Optional: true,
+					Computed: true,
+					ValidateFunc: validation.StringInSlice([]string{
+						"native",
+						"AVE",
+					}, false),
+				},
+
+				"vmm_id": &schema.Schema{
+					Type:     schema.TypeString,
+					Computed: true,
+				},
+
+				"vmm_allow_promiscuous": &schema.Schema{
+					Type:     schema.TypeString,
+					Optional: true,
+					Computed: true,
+				},
+
+				"vmm_forged_transmits": &schema.Schema{
+					Type:     schema.TypeString,
+					Optional: true,
+					Computed: true,
+				},
+
+				"vmm_mac_changes": &schema.Schema{
+					Type:     schema.TypeString,
+					Optional: true,
+					Computed: true,
+				},
+
+				"enhanced_lag_policy": &schema.Schema{
+					Type:     schema.TypeString,
+					Optional: true,
 				},
 			},
-
-			"tdn": &schema.Schema{
-				Type:     schema.TypeString,
-				Required: true,
-				ForceNew: true,
-			},
-
-			"binding_type": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-				ValidateFunc: validation.StringInSlice([]string{
-					"none",
-					"staticBinding",
-					"dynamicBinding",
-					"ephemeral",
-				}, false),
-			},
-
-			"allow_micro_seg": &schema.Schema{
-				Type:     schema.TypeBool,
-				Optional: true,
-				Computed: true,
-			},
-
-			"custom_epg_name": {
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
-			"delimiter": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
-			"encap": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
-			"encap_mode": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-				ValidateFunc: validation.StringInSlice([]string{
-					"auto",
-					"vlan",
-					"vxlan",
-				}, false),
-			},
-
-			"epg_cos": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-				ValidateFunc: validation.StringInSlice([]string{
-					"Cos0",
-					"Cos1",
-					"Cos2",
-					"Cos3",
-					"Cos4",
-					"Cos5",
-					"Cos6",
-					"Cos7",
-				}, false),
-			},
-
-			"epg_cos_pref": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-				ValidateFunc: validation.StringInSlice([]string{
-					"disabled",
-					"enabled",
-				}, false),
-			},
-
-			"instr_imedcy": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-				ValidateFunc: validation.StringInSlice([]string{
-					"immediate",
-					"lazy",
-				}, false),
-			},
-
-			"lag_policy_name": &schema.Schema{
-				Type:       schema.TypeString,
-				Optional:   true,
-				Computed:   true,
-				Deprecated: "use enhanced_lag_policy instead",
-			},
-
-			"netflow_dir": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-				ValidateFunc: validation.StringInSlice([]string{
-					"both",
-					"ingress",
-					"egress",
-				}, false),
-			},
-
-			"netflow_pref": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-				ValidateFunc: validation.StringInSlice([]string{
-					"disabled",
-					"enabled",
-				}, false),
-			},
-
-			"num_ports": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
-			"port_allocation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-				ValidateFunc: validation.StringInSlice([]string{
-					"none",
-					"elastic",
-					"fixed",
-				}, false),
-			},
-
-			"primary_encap": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
-			"primary_encap_inner": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
-			"res_imedcy": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-				ValidateFunc: validation.StringInSlice([]string{
-					"lazy",
-					"immediate",
-					"pre-provision",
-				}, false),
-			},
-
-			"secondary_encap_inner": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
-			"switching_mode": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-				ValidateFunc: validation.StringInSlice([]string{
-					"native",
-					"AVE",
-				}, false),
-			},
-
-			"vmm_id": &schema.Schema{
-				Type:     schema.TypeString,
-				Computed: true,
-			},
-
-			"vmm_allow_promiscuous": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
-			"vmm_forged_transmits": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
-			"vmm_mac_changes": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
-			"enhanced_lag_policy": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-			},
-		},
+		),
 	}
 }
 func getRemoteDomain(client *client.Client, dn string) (*models.FVDomain, error) {

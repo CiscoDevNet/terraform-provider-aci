@@ -25,36 +25,32 @@ func resourceAciOutofServiceFabricPath() *schema.Resource {
 		},
 
 		SchemaVersion: 1,
-		Schema: map[string]*schema.Schema{
-			"annotation": {
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-				DefaultFunc: func() (interface{}, error) {
-					return "orchestrator:terraform", nil
+		Schema: AppendAttrSchemas(
+			GetAnnotationAttrSchema(),
+			map[string]*schema.Schema{
+
+				"pod_id": {
+					Type:     schema.TypeInt,
+					Required: true,
+					ForceNew: true,
+				},
+				"node_id": {
+					Type:     schema.TypeInt,
+					Required: true,
+					ForceNew: true,
+				},
+				"fex_id": {
+					Type:     schema.TypeInt,
+					Optional: true,
+					ForceNew: true,
+				},
+				"interface": {
+					Type:     schema.TypeString,
+					Required: true,
+					ForceNew: true,
 				},
 			},
-			"pod_id": {
-				Type:     schema.TypeInt,
-				Required: true,
-				ForceNew: true,
-			},
-			"node_id": {
-				Type:     schema.TypeInt,
-				Required: true,
-				ForceNew: true,
-			},
-			"fex_id": {
-				Type:     schema.TypeInt,
-				Optional: true,
-				ForceNew: true,
-			},
-			"interface": {
-				Type:     schema.TypeString,
-				Required: true,
-				ForceNew: true,
-			},
-		},
+		),
 	}
 }
 

@@ -24,29 +24,22 @@ func resourceAciInterfaceProfile() *schema.Resource {
 
 		SchemaVersion: 1,
 
-		Schema: map[string]*schema.Schema{
-			"spine_profile_dn": &schema.Schema{
-				Type:     schema.TypeString,
-				Required: true,
-				ForceNew: true,
-			},
+		Schema: AppendAttrSchemas(
+			GetAnnotationAttrSchema(),
+			map[string]*schema.Schema{
+				"spine_profile_dn": &schema.Schema{
+					Type:     schema.TypeString,
+					Required: true,
+					ForceNew: true,
+				},
 
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				// Default:  "orchestrator:terraform",
-				Computed: true,
-				DefaultFunc: func() (interface{}, error) {
-					return "orchestrator:terraform", nil
+				"tdn": &schema.Schema{
+					Type:     schema.TypeString,
+					Required: true,
+					ForceNew: true,
 				},
 			},
-
-			"tdn": &schema.Schema{
-				Type:     schema.TypeString,
-				Required: true,
-				ForceNew: true,
-			},
-		},
+		),
 	}
 }
 func getRemoteInterfaceProfile(client *client.Client, dn string) (*models.InterfaceProfile, error) {

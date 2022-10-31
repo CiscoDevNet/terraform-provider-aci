@@ -24,37 +24,34 @@ func resourceAciVPCExplicitProtectionGroup() *schema.Resource {
 
 		SchemaVersion: 1,
 
-		Schema: map[string]*schema.Schema{
-
-			"name": &schema.Schema{
-				Type:     schema.TypeString,
-				Required: true,
-				ForceNew: true,
+		Schema: AppendAttrSchemas(
+			GetAnnotationAttrSchema(),
+			map[string]*schema.Schema{
+				"name": &schema.Schema{
+					Type:     schema.TypeString,
+					Required: true,
+					ForceNew: true,
+				},
+				"switch1": &schema.Schema{
+					Type:     schema.TypeString,
+					Required: true,
+				},
+				"switch2": &schema.Schema{
+					Type:     schema.TypeString,
+					Required: true,
+				},
+				"vpc_domain_policy": &schema.Schema{
+					Type:     schema.TypeString,
+					Optional: true,
+					Computed: true,
+				},
+				"vpc_explicit_protection_group_id": &schema.Schema{
+					Type:     schema.TypeString,
+					Optional: true,
+					Computed: true,
+				},
 			},
-			"switch1": &schema.Schema{
-				Type:     schema.TypeString,
-				Required: true,
-			},
-			"switch2": &schema.Schema{
-				Type:     schema.TypeString,
-				Required: true,
-			},
-			"vpc_domain_policy": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Default:  "orchestrator:terraform",
-			},
-			"vpc_explicit_protection_group_id": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-		},
+		),
 	}
 }
 

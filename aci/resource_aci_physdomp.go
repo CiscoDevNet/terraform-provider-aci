@@ -24,47 +24,44 @@ func resourceAciPhysicalDomain() *schema.Resource {
 
 		SchemaVersion: 1,
 
-		Schema: map[string]*schema.Schema{
+		Schema: AppendAttrSchemas(
+			GetAnnotationAttrSchema(),
+			map[string]*schema.Schema{
 
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Default:  "orchestrator:terraform",
-			},
+				"name": &schema.Schema{
+					Type:     schema.TypeString,
+					Required: true,
+					ForceNew: true,
+				},
 
-			"name": &schema.Schema{
-				Type:     schema.TypeString,
-				Required: true,
-				ForceNew: true,
-			},
+				"name_alias": &schema.Schema{
+					Type:     schema.TypeString,
+					Optional: true,
+					Computed: true,
+				},
 
-			"name_alias": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
+				"relation_infra_rs_vlan_ns": &schema.Schema{
+					Type: schema.TypeString,
 
-			"relation_infra_rs_vlan_ns": &schema.Schema{
-				Type: schema.TypeString,
+					Optional: true,
+				},
+				"relation_infra_rs_vlan_ns_def": &schema.Schema{
+					Type:     schema.TypeString,
+					Computed: true,
+					Optional: true,
+				},
+				"relation_infra_rs_vip_addr_ns": &schema.Schema{
+					Type: schema.TypeString,
 
-				Optional: true,
+					Optional: true,
+				},
+				"relation_infra_rs_dom_vxlan_ns_def": &schema.Schema{
+					Type:     schema.TypeString,
+					Computed: true,
+					Optional: true,
+				},
 			},
-			"relation_infra_rs_vlan_ns_def": &schema.Schema{
-				Type:     schema.TypeString,
-				Computed: true,
-				Optional: true,
-			},
-			"relation_infra_rs_vip_addr_ns": &schema.Schema{
-				Type: schema.TypeString,
-
-				Optional: true,
-			},
-			"relation_infra_rs_dom_vxlan_ns_def": &schema.Schema{
-				Type:     schema.TypeString,
-				Computed: true,
-				Optional: true,
-			},
-		},
+		),
 	}
 }
 func getRemotePhysicalDomain(client *client.Client, dn string) (*models.PhysicalDomain, error) {

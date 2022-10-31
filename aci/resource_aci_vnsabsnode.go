@@ -38,12 +38,6 @@ func resourceAciFunctionNode() *schema.Resource {
 				ForceNew: true,
 			},
 
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
 			"func_template_type": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,

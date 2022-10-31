@@ -24,40 +24,35 @@ func resourceAciContractInterfaceRelationship() *schema.Resource {
 		},
 
 		SchemaVersion: 1,
-		Schema: map[string]*schema.Schema{
-			"application_epg_dn": {
-				Type:     schema.TypeString,
-				Required: true,
-				ForceNew: true,
-			},
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-				DefaultFunc: func() (interface{}, error) {
-					return "orchestrator:terraform", nil
+		Schema: AppendAttrSchemas(
+			GetAnnotationAttrSchema(),
+			map[string]*schema.Schema{
+				"application_epg_dn": {
+					Type:     schema.TypeString,
+					Required: true,
+					ForceNew: true,
+				},
+				"prio": {
+					Type:     schema.TypeString,
+					Optional: true,
+					Computed: true,
+					ValidateFunc: validation.StringInSlice([]string{
+						"level1",
+						"level2",
+						"level3",
+						"level4",
+						"level5",
+						"level6",
+						"unspecified",
+					}, false),
+				},
+				"contract_interface_dn": {
+					Type:     schema.TypeString,
+					Required: true,
+					ForceNew: true,
 				},
 			},
-			"prio": {
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-				ValidateFunc: validation.StringInSlice([]string{
-					"level1",
-					"level2",
-					"level3",
-					"level4",
-					"level5",
-					"level6",
-					"unspecified",
-				}, false),
-			},
-			"contract_interface_dn": {
-				Type:     schema.TypeString,
-				Required: true,
-				ForceNew: true,
-			},
-		},
+		),
 	}
 }
 

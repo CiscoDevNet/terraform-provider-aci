@@ -40,12 +40,6 @@ func resourceAciDHCPRelayPolicy() *schema.Resource {
 				ForceNew: true,
 			},
 
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
 			"mode": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,

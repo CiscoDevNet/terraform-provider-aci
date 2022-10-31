@@ -23,26 +23,21 @@ func resourceAciInfraRsDomP() *schema.Resource {
 		},
 
 		SchemaVersion: 1,
-		Schema: map[string]*schema.Schema{
-			"attachable_access_entity_profile_dn": {
-				Type:     schema.TypeString,
-				Required: true,
-				ForceNew: true,
-			},
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-				DefaultFunc: func() (interface{}, error) {
-					return "orchestrator:terraform", nil
+		Schema: AppendAttrSchemas(
+			GetAnnotationAttrSchema(),
+			map[string]*schema.Schema{
+				"attachable_access_entity_profile_dn": {
+					Type:     schema.TypeString,
+					Required: true,
+					ForceNew: true,
+				},
+				"domain_dn": {
+					Type:     schema.TypeString,
+					Required: true,
+					ForceNew: true,
 				},
 			},
-			"domain_dn": {
-				Type:     schema.TypeString,
-				Required: true,
-				ForceNew: true,
-			},
-		},
+		),
 	}
 }
 

@@ -27,223 +27,220 @@ func resourceAciVMMController() *schema.Resource {
 		},
 
 		SchemaVersion: 1,
-		Schema: AppendNameAliasAttrSchema(map[string]*schema.Schema{
-			"vmm_domain_dn": {
-				Type:     schema.TypeString,
-				Required: true,
-				ForceNew: true,
-			},
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				// Default:  "orchestrator:terraform",
-				Computed: true,
-				DefaultFunc: func() (interface{}, error) {
-					return "orchestrator:terraform", nil
-				}},
-			"dvs_version": {
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-				ValidateFunc: validation.StringInSlice([]string{
-					"5.1",
-					"5.5",
-					"6.0",
-					"6.5",
-					"6.6",
-					"7.0",
-					"unmanaged",
-				}, false),
-			},
-			"host_or_ip": {
-				Type:     schema.TypeString,
-				Required: true,
-				ForceNew: true,
-			},
-			"inventory_trig_st": {
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-				ValidateFunc: validation.StringInSlice([]string{
-					"autoTriggered",
-					"triggered",
-					"untriggered",
-				}, false),
-			},
-			"mode": {
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-				ValidateFunc: validation.StringInSlice([]string{
-					"cf",
-					"default",
-					"k8s",
-					"n1kv",
-					"nsx",
-					"openshift",
-					"ovs",
-					"rancher",
-					"rhev",
-					"unknown",
-				}, false),
-			},
-			"msft_config_err_msg": {
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-			"msft_config_issues": {
-				Type:     schema.TypeList,
-				Optional: true,
-				Computed: true,
-				Elem: &schema.Schema{
-					Type: schema.TypeString,
+		Schema: AppendAttrSchemas(
+			GetAnnotationAttrSchema(),
+			GetNameAliasAttrSchema(),
+			map[string]*schema.Schema{
+				"vmm_domain_dn": {
+					Type:     schema.TypeString,
+					Required: true,
+					ForceNew: true,
+				},
+				"dvs_version": {
+					Type:     schema.TypeString,
+					Optional: true,
+					Computed: true,
 					ValidateFunc: validation.StringInSlice([]string{
-						"aaacert-invalid",
-						"duplicate-mac-in-inventory",
-						"duplicate-rootContName",
-						"invalid-object-in-inventory",
-						"invalid-rootContName",
-						"inventory-failed",
-						"missing-hostGroup-in-cloud",
-						"missing-rootContName",
-						"not-applicable",
-						"zero-mac-in-inventory",
+						"5.1",
+						"5.5",
+						"6.0",
+						"6.5",
+						"6.6",
+						"7.0",
+						"unmanaged",
 					}, false),
 				},
-			},
-			"n1kv_stats_mode": {
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-				ValidateFunc: validation.StringInSlice([]string{
-					"disabled",
-					"enabled",
-					"unknown",
-				}, false),
-			},
-			"name": {
-				Type:     schema.TypeString,
-				Required: true,
-				ForceNew: true,
-			},
-			"port": {
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-			"root_cont_name": {
-				Type:     schema.TypeString,
-				Required: true,
-				ForceNew: true,
-			},
-			"scope": {
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-				ValidateFunc: validation.StringInSlice([]string{
-					"MicrosoftSCVMM",
-					"cloudfoundry",
-					"iaas",
-					"kubernetes",
-					"network",
-					"nsx",
-					"openshift",
-					"openstack",
-					"rhev",
-					"unmanaged",
-					"vm",
-				}, false),
-			},
-			"seq_num": {
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-			"stats_mode": {
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-				ValidateFunc: validation.StringInSlice([]string{
-					"disabled",
-					"enabled",
-					"unknown",
-				}, false),
-			},
-			"vxlan_depl_pref": {
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-				ValidateFunc: validation.StringInSlice([]string{
-					"nsx",
-					"vxlan",
-				}, false),
-			},
+				"host_or_ip": {
+					Type:     schema.TypeString,
+					Required: true,
+					ForceNew: true,
+				},
+				"inventory_trig_st": {
+					Type:     schema.TypeString,
+					Optional: true,
+					Computed: true,
+					ValidateFunc: validation.StringInSlice([]string{
+						"autoTriggered",
+						"triggered",
+						"untriggered",
+					}, false),
+				},
+				"mode": {
+					Type:     schema.TypeString,
+					Optional: true,
+					Computed: true,
+					ValidateFunc: validation.StringInSlice([]string{
+						"cf",
+						"default",
+						"k8s",
+						"n1kv",
+						"nsx",
+						"openshift",
+						"ovs",
+						"rancher",
+						"rhev",
+						"unknown",
+					}, false),
+				},
+				"msft_config_err_msg": {
+					Type:     schema.TypeString,
+					Optional: true,
+					Computed: true,
+				},
+				"msft_config_issues": {
+					Type:     schema.TypeList,
+					Optional: true,
+					Computed: true,
+					Elem: &schema.Schema{
+						Type: schema.TypeString,
+						ValidateFunc: validation.StringInSlice([]string{
+							"aaacert-invalid",
+							"duplicate-mac-in-inventory",
+							"duplicate-rootContName",
+							"invalid-object-in-inventory",
+							"invalid-rootContName",
+							"inventory-failed",
+							"missing-hostGroup-in-cloud",
+							"missing-rootContName",
+							"not-applicable",
+							"zero-mac-in-inventory",
+						}, false),
+					},
+				},
+				"n1kv_stats_mode": {
+					Type:     schema.TypeString,
+					Optional: true,
+					Computed: true,
+					ValidateFunc: validation.StringInSlice([]string{
+						"disabled",
+						"enabled",
+						"unknown",
+					}, false),
+				},
+				"name": {
+					Type:     schema.TypeString,
+					Required: true,
+					ForceNew: true,
+				},
+				"port": {
+					Type:     schema.TypeString,
+					Optional: true,
+					Computed: true,
+				},
+				"root_cont_name": {
+					Type:     schema.TypeString,
+					Required: true,
+					ForceNew: true,
+				},
+				"scope": {
+					Type:     schema.TypeString,
+					Optional: true,
+					Computed: true,
+					ValidateFunc: validation.StringInSlice([]string{
+						"MicrosoftSCVMM",
+						"cloudfoundry",
+						"iaas",
+						"kubernetes",
+						"network",
+						"nsx",
+						"openshift",
+						"openstack",
+						"rhev",
+						"unmanaged",
+						"vm",
+					}, false),
+				},
+				"seq_num": {
+					Type:     schema.TypeString,
+					Optional: true,
+					Computed: true,
+				},
+				"stats_mode": {
+					Type:     schema.TypeString,
+					Optional: true,
+					Computed: true,
+					ValidateFunc: validation.StringInSlice([]string{
+						"disabled",
+						"enabled",
+						"unknown",
+					}, false),
+				},
+				"vxlan_depl_pref": {
+					Type:     schema.TypeString,
+					Optional: true,
+					Computed: true,
+					ValidateFunc: validation.StringInSlice([]string{
+						"nsx",
+						"vxlan",
+					}, false),
+				},
 
-			"relation_vmm_rs_acc": {
-				Type: schema.TypeString,
+				"relation_vmm_rs_acc": {
+					Type: schema.TypeString,
 
-				Optional:    true,
-				Description: "Create relation to vmm:UsrAccP",
-			},
-			"relation_vmm_rs_ctrlr_p_mon_pol": {
-				Type: schema.TypeString,
+					Optional:    true,
+					Description: "Create relation to vmm:UsrAccP",
+				},
+				"relation_vmm_rs_ctrlr_p_mon_pol": {
+					Type: schema.TypeString,
 
-				Optional:    true,
-				Description: "Create relation to mon:InfraPol",
-			},
-			"relation_vmm_rs_mcast_addr_ns": {
-				Type: schema.TypeString,
+					Optional:    true,
+					Description: "Create relation to mon:InfraPol",
+				},
+				"relation_vmm_rs_mcast_addr_ns": {
+					Type: schema.TypeString,
 
-				Optional:    true,
-				Description: "Create relation to fvns:McastAddrInstP",
-			},
-			"relation_vmm_rs_mgmt_e_pg": {
-				Type: schema.TypeString,
+					Optional:    true,
+					Description: "Create relation to fvns:McastAddrInstP",
+				},
+				"relation_vmm_rs_mgmt_e_pg": {
+					Type: schema.TypeString,
 
-				Optional:    true,
-				Description: "Create relation to fv:EPg",
-			},
-			"relation_vmm_rs_to_ext_dev_mgr": {
-				Type:        schema.TypeSet,
-				Elem:        &schema.Schema{Type: schema.TypeString},
-				Optional:    true,
-				Description: "Create relation to extdev:MgrP",
-				Set:         schema.HashString,
-			},
-			"relation_vmm_rs_vmm_ctrlr_p": {
-				Type:        schema.TypeSet,
-				Optional:    true,
-				Description: "Create relation to vmmCtrlrP",
-				Elem: &schema.Resource{
-					Schema: map[string]*schema.Schema{
-						"epg_depl_pref": {
-							Optional: true,
-							Type:     schema.TypeString,
-							ValidateFunc: validation.StringInSlice([]string{
-								"both",
-								"local",
-							}, false),
-						},
-						"target_dn": {
-							Required: true,
-							Type:     schema.TypeString,
+					Optional:    true,
+					Description: "Create relation to fv:EPg",
+				},
+				"relation_vmm_rs_to_ext_dev_mgr": {
+					Type:        schema.TypeSet,
+					Elem:        &schema.Schema{Type: schema.TypeString},
+					Optional:    true,
+					Description: "Create relation to extdev:MgrP",
+					Set:         schema.HashString,
+				},
+				"relation_vmm_rs_vmm_ctrlr_p": {
+					Type:        schema.TypeSet,
+					Optional:    true,
+					Description: "Create relation to vmmCtrlrP",
+					Elem: &schema.Resource{
+						Schema: map[string]*schema.Schema{
+							"epg_depl_pref": {
+								Optional: true,
+								Type:     schema.TypeString,
+								ValidateFunc: validation.StringInSlice([]string{
+									"both",
+									"local",
+								}, false),
+							},
+							"target_dn": {
+								Required: true,
+								Type:     schema.TypeString,
+							},
 						},
 					},
 				},
-			},
-			"relation_vmm_rs_vxlan_ns": {
-				Type: schema.TypeString,
+				"relation_vmm_rs_vxlan_ns": {
+					Type: schema.TypeString,
 
-				Optional:    true,
-				Description: "Create relation to fvns:VxlanInstP",
+					Optional:    true,
+					Description: "Create relation to fvns:VxlanInstP",
+				},
+				"relation_vmm_rs_vxlan_ns_def": {
+					Type:        schema.TypeString,
+					Computed:    true,
+					Optional:    true,
+					Description: "Create relation to fvns:AInstP",
+				},
 			},
-			"relation_vmm_rs_vxlan_ns_def": {
-				Type:        schema.TypeString,
-				Computed:    true,
-				Optional:    true,
-				Description: "Create relation to fvns:AInstP",
-			}}),
+		),
 	}
 }
 

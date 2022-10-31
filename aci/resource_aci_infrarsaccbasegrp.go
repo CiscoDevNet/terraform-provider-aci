@@ -24,34 +24,28 @@ func resourceAciAccessGroup() *schema.Resource {
 
 		SchemaVersion: 1,
 
-		Schema: map[string]*schema.Schema{
-			"access_port_selector_dn": &schema.Schema{
-				Type:     schema.TypeString,
-				Required: true,
-				ForceNew: true,
-			},
+		Schema: AppendAttrSchemas(
+			GetAnnotationAttrSchema(),
+			map[string]*schema.Schema{
+				"access_port_selector_dn": &schema.Schema{
+					Type:     schema.TypeString,
+					Required: true,
+					ForceNew: true,
+				},
 
-			"fex_id": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
+				"fex_id": &schema.Schema{
+					Type:     schema.TypeString,
+					Optional: true,
+					Computed: true,
+				},
 
-			"tdn": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-				DefaultFunc: func() (interface{}, error) {
-					return "orchestrator:terraform", nil
+				"tdn": &schema.Schema{
+					Type:     schema.TypeString,
+					Optional: true,
+					Computed: true,
 				},
 			},
-		},
+		),
 	}
 }
 func getRemoteAccessAccessGroup(client *client.Client, dn string) (*models.AccessAccessGroup, error) {

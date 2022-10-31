@@ -25,61 +25,54 @@ func resourceAciEPGsUsingFunction() *schema.Resource {
 
 		SchemaVersion: 1,
 
-		Schema: map[string]*schema.Schema{
-			"access_generic_dn": &schema.Schema{
-				Type:     schema.TypeString,
-				Required: true,
-				ForceNew: true,
-			},
+		Schema: AppendAttrSchemas(
+			GetAnnotationAttrSchema(),
+			map[string]*schema.Schema{
+				"access_generic_dn": &schema.Schema{
+					Type:     schema.TypeString,
+					Required: true,
+					ForceNew: true,
+				},
 
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				// Default:  "orchestrator:terraform",
-				Computed: true,
-				DefaultFunc: func() (interface{}, error) {
-					return "orchestrator:terraform", nil
+				"tdn": &schema.Schema{
+					Type:     schema.TypeString,
+					Required: true,
+					ForceNew: true,
+				},
+
+				"encap": &schema.Schema{
+					Type:     schema.TypeString,
+					Required: true,
+				},
+
+				"instr_imedcy": &schema.Schema{
+					Type:     schema.TypeString,
+					Optional: true,
+					Computed: true,
+					ValidateFunc: validation.StringInSlice([]string{
+						"immediate",
+						"lazy",
+					}, false),
+				},
+
+				"mode": &schema.Schema{
+					Type:     schema.TypeString,
+					Optional: true,
+					Computed: true,
+					ValidateFunc: validation.StringInSlice([]string{
+						"regular",
+						"native",
+						"untagged",
+					}, false),
+				},
+
+				"primary_encap": &schema.Schema{
+					Type:     schema.TypeString,
+					Optional: true,
+					Computed: true,
 				},
 			},
-
-			"tdn": &schema.Schema{
-				Type:     schema.TypeString,
-				Required: true,
-				ForceNew: true,
-			},
-
-			"encap": &schema.Schema{
-				Type:     schema.TypeString,
-				Required: true,
-			},
-
-			"instr_imedcy": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-				ValidateFunc: validation.StringInSlice([]string{
-					"immediate",
-					"lazy",
-				}, false),
-			},
-
-			"mode": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-				ValidateFunc: validation.StringInSlice([]string{
-					"regular",
-					"native",
-					"untagged",
-				}, false),
-			},
-
-			"primary_encap": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-		},
+		),
 	}
 }
 func getRemoteEPGsUsingFunction(client *client.Client, dn string) (*models.EPGsUsingFunction, error) {

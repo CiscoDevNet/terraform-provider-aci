@@ -25,255 +25,252 @@ func resourceAciVMMDomain() *schema.Resource {
 
 		SchemaVersion: 1,
 
-		Schema: map[string]*schema.Schema{
-			"provider_profile_dn": &schema.Schema{
-				Type:     schema.TypeString,
-				Required: true,
-				ForceNew: true,
-			},
+		Schema: AppendAttrSchemas(
+			GetAnnotationAttrSchema(),
+			map[string]*schema.Schema{
+				"provider_profile_dn": &schema.Schema{
+					Type:     schema.TypeString,
+					Required: true,
+					ForceNew: true,
+				},
 
-			"name": &schema.Schema{
-				Type:     schema.TypeString,
-				Required: true,
-				ForceNew: true,
-			},
+				"name": &schema.Schema{
+					Type:     schema.TypeString,
+					Required: true,
+					ForceNew: true,
+				},
 
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Default:  "orchestrator:terraform",
-			},
+				"access_mode": &schema.Schema{
+					Type:     schema.TypeString,
+					Optional: true,
+					Computed: true,
+					ValidateFunc: validation.StringInSlice([]string{
+						"read-write",
+						"read-only",
+					}, false),
+				},
 
-			"access_mode": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-				ValidateFunc: validation.StringInSlice([]string{
-					"read-write",
-					"read-only",
-				}, false),
-			},
+				"arp_learning": &schema.Schema{
+					Type:     schema.TypeString,
+					Optional: true,
+					Computed: true,
+					ValidateFunc: validation.StringInSlice([]string{
+						"enabled",
+						"disabled",
+					}, false),
+				},
 
-			"arp_learning": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-				ValidateFunc: validation.StringInSlice([]string{
-					"enabled",
-					"disabled",
-				}, false),
-			},
+				"ave_time_out": &schema.Schema{
+					Type:     schema.TypeString,
+					Optional: true,
+					Computed: true,
+				},
 
-			"ave_time_out": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
+				"config_infra_pg": &schema.Schema{
+					Type:     schema.TypeString,
+					Optional: true,
+					Computed: true,
+					ValidateFunc: validation.StringInSlice([]string{
+						"no",
+						"yes",
+					}, false),
+				},
 
-			"config_infra_pg": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-				ValidateFunc: validation.StringInSlice([]string{
-					"no",
-					"yes",
-				}, false),
-			},
+				"ctrl_knob": &schema.Schema{
+					Type:     schema.TypeString,
+					Optional: true,
+					Computed: true,
+					ValidateFunc: validation.StringInSlice([]string{
+						"none",
+						"epDpVerify",
+					}, false),
+				},
 
-			"ctrl_knob": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-				ValidateFunc: validation.StringInSlice([]string{
-					"none",
-					"epDpVerify",
-				}, false),
-			},
+				"delimiter": &schema.Schema{
+					Type:     schema.TypeString,
+					Optional: true,
+					Computed: true,
+				},
 
-			"delimiter": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
+				"enable_ave": &schema.Schema{
+					Type:     schema.TypeString,
+					Optional: true,
+					Computed: true,
+					ValidateFunc: validation.StringInSlice([]string{
+						"no",
+						"yes",
+					}, false),
+				},
 
-			"enable_ave": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-				ValidateFunc: validation.StringInSlice([]string{
-					"no",
-					"yes",
-				}, false),
-			},
+				"enable_tag": &schema.Schema{
+					Type:     schema.TypeString,
+					Optional: true,
+					Computed: true,
+					ValidateFunc: validation.StringInSlice([]string{
+						"no",
+						"yes",
+					}, false),
+				},
 
-			"enable_tag": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-				ValidateFunc: validation.StringInSlice([]string{
-					"no",
-					"yes",
-				}, false),
-			},
+				"enable_vm_folder": &schema.Schema{
+					Type:     schema.TypeString,
+					Optional: true,
+					Computed: true,
+					ValidateFunc: validation.StringInSlice([]string{
+						"no",
+						"yes",
+					}, false),
+				},
 
-			"enable_vm_folder": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-				ValidateFunc: validation.StringInSlice([]string{
-					"no",
-					"yes",
-				}, false),
-			},
+				"encap_mode": &schema.Schema{
+					Type:     schema.TypeString,
+					Optional: true,
+					Computed: true,
+					ValidateFunc: validation.StringInSlice([]string{
+						"unknown",
+						"vlan",
+						"vxlan",
+					}, false),
+				},
 
-			"encap_mode": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-				ValidateFunc: validation.StringInSlice([]string{
-					"unknown",
-					"vlan",
-					"vxlan",
-				}, false),
-			},
+				"enf_pref": &schema.Schema{
+					Type:     schema.TypeString,
+					Optional: true,
+					Computed: true,
+					ValidateFunc: validation.StringInSlice([]string{
+						"sw",
+						"hw",
+						"unknown",
+					}, false),
+				},
 
-			"enf_pref": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-				ValidateFunc: validation.StringInSlice([]string{
-					"sw",
-					"hw",
-					"unknown",
-				}, false),
-			},
+				"ep_inventory_type": &schema.Schema{
+					Type:     schema.TypeString,
+					Optional: true,
+					Computed: true,
+					ValidateFunc: validation.StringInSlice([]string{
+						"none",
+						"on-link",
+					}, false),
+				},
 
-			"ep_inventory_type": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-				ValidateFunc: validation.StringInSlice([]string{
-					"none",
-					"on-link",
-				}, false),
-			},
+				"ep_ret_time": &schema.Schema{
+					Type:     schema.TypeString,
+					Optional: true,
+					Computed: true,
+				},
 
-			"ep_ret_time": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
+				"hv_avail_monitor": &schema.Schema{
+					Type:     schema.TypeString,
+					Optional: true,
+					Computed: true,
+					ValidateFunc: validation.StringInSlice([]string{
+						"no",
+						"yes",
+					}, false),
+				},
 
-			"hv_avail_monitor": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-				ValidateFunc: validation.StringInSlice([]string{
-					"no",
-					"yes",
-				}, false),
-			},
+				"mcast_addr": &schema.Schema{
+					Type:     schema.TypeString,
+					Optional: true,
+					Computed: true,
+				},
 
-			"mcast_addr": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
+				"mode": &schema.Schema{
+					Type:     schema.TypeString,
+					Optional: true,
+					Computed: true,
+					ValidateFunc: validation.StringInSlice([]string{
+						"default",
+						"n1kv",
+						"unknown",
+						"ovs",
+						"k8s",
+						"rhev",
+						"cf",
+						"openshift",
+					}, false),
+				},
 
-			"mode": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-				ValidateFunc: validation.StringInSlice([]string{
-					"default",
-					"n1kv",
-					"unknown",
-					"ovs",
-					"k8s",
-					"rhev",
-					"cf",
-					"openshift",
-				}, false),
-			},
+				"name_alias": &schema.Schema{
+					Type:     schema.TypeString,
+					Optional: true,
+					Computed: true,
+				},
 
-			"name_alias": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
+				"pref_encap_mode": &schema.Schema{
+					Type:     schema.TypeString,
+					Optional: true,
+					Computed: true,
+					ValidateFunc: validation.StringInSlice([]string{
+						"unspecified",
+						"vlan",
+						"vxlan",
+					}, false),
+				},
 
-			"pref_encap_mode": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-				ValidateFunc: validation.StringInSlice([]string{
-					"unspecified",
-					"vlan",
-					"vxlan",
-				}, false),
-			},
+				"relation_vmm_rs_pref_enhanced_lag_pol": &schema.Schema{
+					Type: schema.TypeString,
 
-			"relation_vmm_rs_pref_enhanced_lag_pol": &schema.Schema{
-				Type: schema.TypeString,
+					Optional: true,
+				},
+				"relation_infra_rs_vlan_ns": &schema.Schema{
+					Type: schema.TypeString,
 
-				Optional: true,
-			},
-			"relation_infra_rs_vlan_ns": &schema.Schema{
-				Type: schema.TypeString,
+					Optional: true,
+				},
+				"relation_vmm_rs_dom_mcast_addr_ns": &schema.Schema{
+					Type: schema.TypeString,
 
-				Optional: true,
-			},
-			"relation_vmm_rs_dom_mcast_addr_ns": &schema.Schema{
-				Type: schema.TypeString,
+					Optional: true,
+				},
+				"relation_vmm_rs_default_cdp_if_pol": &schema.Schema{
+					Type:     schema.TypeString,
+					Computed: true,
+					Optional: true,
+				},
+				"relation_vmm_rs_default_lacp_lag_pol": &schema.Schema{
+					Type:     schema.TypeString,
+					Computed: true,
+					Optional: true,
+				},
+				"relation_infra_rs_vlan_ns_def": &schema.Schema{
+					Type: schema.TypeString,
 
-				Optional: true,
-			},
-			"relation_vmm_rs_default_cdp_if_pol": &schema.Schema{
-				Type:     schema.TypeString,
-				Computed: true,
-				Optional: true,
-			},
-			"relation_vmm_rs_default_lacp_lag_pol": &schema.Schema{
-				Type:     schema.TypeString,
-				Computed: true,
-				Optional: true,
-			},
-			"relation_infra_rs_vlan_ns_def": &schema.Schema{
-				Type: schema.TypeString,
+					Optional: true,
+				},
+				"relation_infra_rs_vip_addr_ns": &schema.Schema{
+					Type: schema.TypeString,
 
-				Optional: true,
-			},
-			"relation_infra_rs_vip_addr_ns": &schema.Schema{
-				Type: schema.TypeString,
+					Optional: true,
+				},
+				"relation_vmm_rs_default_lldp_if_pol": &schema.Schema{
+					Type:     schema.TypeString,
+					Computed: true,
+					Optional: true,
+				},
+				"relation_vmm_rs_default_stp_if_pol": &schema.Schema{
+					Type:     schema.TypeString,
+					Computed: true,
+					Optional: true,
+				},
+				"relation_infra_rs_dom_vxlan_ns_def": &schema.Schema{
+					Type: schema.TypeString,
 
-				Optional: true,
+					Optional: true,
+				},
+				"relation_vmm_rs_default_fw_pol": &schema.Schema{
+					Type:     schema.TypeString,
+					Computed: true,
+					Optional: true,
+				},
+				"relation_vmm_rs_default_l2_inst_pol": &schema.Schema{
+					Type:     schema.TypeString,
+					Computed: true,
+					Optional: true,
+				},
 			},
-			"relation_vmm_rs_default_lldp_if_pol": &schema.Schema{
-				Type:     schema.TypeString,
-				Computed: true,
-				Optional: true,
-			},
-			"relation_vmm_rs_default_stp_if_pol": &schema.Schema{
-				Type:     schema.TypeString,
-				Computed: true,
-				Optional: true,
-			},
-			"relation_infra_rs_dom_vxlan_ns_def": &schema.Schema{
-				Type: schema.TypeString,
-
-				Optional: true,
-			},
-			"relation_vmm_rs_default_fw_pol": &schema.Schema{
-				Type:     schema.TypeString,
-				Computed: true,
-				Optional: true,
-			},
-			"relation_vmm_rs_default_l2_inst_pol": &schema.Schema{
-				Type:     schema.TypeString,
-				Computed: true,
-				Optional: true,
-			},
-		},
+		),
 	}
 }
 func getRemoteVMMDomain(client *client.Client, dn string) (*models.VMMDomain, error) {

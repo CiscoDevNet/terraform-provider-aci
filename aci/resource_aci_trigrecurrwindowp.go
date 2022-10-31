@@ -24,86 +24,80 @@ func resourceAciRecurringWindow() *schema.Resource {
 		},
 
 		SchemaVersion: 1,
-		Schema: AppendNameAliasAttrSchema(map[string]*schema.Schema{
-			"scheduler_dn": &schema.Schema{
-				Type:     schema.TypeString,
-				Required: true,
-				ForceNew: true,
-			},
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				// Default:  "orchestrator:terraform",
-				Computed: true,
-				DefaultFunc: func() (interface{}, error) {
-					return "orchestrator:terraform", nil
+		Schema: AppendAttrSchemas(
+			GetAnnotationAttrSchema(),
+			GetNameAliasAttrSchema(),
+			map[string]*schema.Schema{
+				"scheduler_dn": &schema.Schema{
+					Type:     schema.TypeString,
+					Required: true,
+					ForceNew: true,
 				},
-			},
-			"concur_cap": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
+				"concur_cap": &schema.Schema{
+					Type:     schema.TypeString,
+					Optional: true,
+					Computed: true,
+				},
 
-			"day": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-				ValidateFunc: validation.StringInSlice([]string{
-					"Friday",
-					"Monday",
-					"Saturday",
-					"Sunday",
-					"Thursday",
-					"Tuesday",
-					"Wednesday",
-					"even-day",
-					"every-day",
-					"odd-day",
-				}, false),
-			},
-			"hour": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-			"minute": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-			"name": &schema.Schema{
-				Type:     schema.TypeString,
-				Required: true,
-				ForceNew: true,
-			},
-			"node_upg_interval": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-			"proc_break": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-				ValidateFunc: validation.Any(validation.StringInSlice([]string{
-					"none",
-				}, false), validateColonSeparatedTimeStamp()),
-			},
-			"proc_cap": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-			"time_cap": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-				ValidateFunc: validation.Any(validation.StringInSlice([]string{
-					"unlimited",
-				}, false), validateColonSeparatedTimeStamp()),
-			},
-		}),
+				"day": &schema.Schema{
+					Type:     schema.TypeString,
+					Optional: true,
+					Computed: true,
+					ValidateFunc: validation.StringInSlice([]string{
+						"Friday",
+						"Monday",
+						"Saturday",
+						"Sunday",
+						"Thursday",
+						"Tuesday",
+						"Wednesday",
+						"even-day",
+						"every-day",
+						"odd-day",
+					}, false),
+				},
+				"hour": &schema.Schema{
+					Type:     schema.TypeString,
+					Optional: true,
+					Computed: true,
+				},
+				"minute": &schema.Schema{
+					Type:     schema.TypeString,
+					Optional: true,
+					Computed: true,
+				},
+				"name": &schema.Schema{
+					Type:     schema.TypeString,
+					Required: true,
+					ForceNew: true,
+				},
+				"node_upg_interval": &schema.Schema{
+					Type:     schema.TypeString,
+					Optional: true,
+					Computed: true,
+				},
+				"proc_break": &schema.Schema{
+					Type:     schema.TypeString,
+					Optional: true,
+					Computed: true,
+					ValidateFunc: validation.Any(validation.StringInSlice([]string{
+						"none",
+					}, false), validateColonSeparatedTimeStamp()),
+				},
+				"proc_cap": &schema.Schema{
+					Type:     schema.TypeString,
+					Optional: true,
+					Computed: true,
+				},
+				"time_cap": &schema.Schema{
+					Type:     schema.TypeString,
+					Optional: true,
+					Computed: true,
+					ValidateFunc: validation.Any(validation.StringInSlice([]string{
+						"unlimited",
+					}, false), validateColonSeparatedTimeStamp()),
+				},
+			}),
 	}
 }
 

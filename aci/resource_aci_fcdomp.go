@@ -24,70 +24,66 @@ func resourceAciFCDomain() *schema.Resource {
 
 		SchemaVersion: 1,
 
-		Schema: map[string]*schema.Schema{
+		Schema: AppendAttrSchemas(
+			GetAnnotationAttrSchema(),
+			map[string]*schema.Schema{
+				"name": &schema.Schema{
+					Type:     schema.TypeString,
+					Required: true,
+					ForceNew: true,
+				},
 
-			"name": &schema.Schema{
-				Type:     schema.TypeString,
-				Required: true,
-				ForceNew: true,
+				"name_alias": &schema.Schema{
+					Type:     schema.TypeString,
+					Optional: true,
+					Computed: true,
+				},
+
+				"relation_infra_rs_vlan_ns": &schema.Schema{
+					Type: schema.TypeString,
+
+					Optional: true,
+				},
+				"relation_fc_rs_vsan_ns": &schema.Schema{
+					Type: schema.TypeString,
+
+					Optional: true,
+				},
+				"relation_fc_rs_vsan_attr": &schema.Schema{
+					Type: schema.TypeString,
+
+					Optional: true,
+				},
+				"relation_infra_rs_vlan_ns_def": &schema.Schema{
+					Type: schema.TypeString,
+
+					Optional: true,
+					Computed: true,
+				},
+				"relation_infra_rs_vip_addr_ns": &schema.Schema{
+					Type: schema.TypeString,
+
+					Optional: true,
+				},
+				"relation_infra_rs_dom_vxlan_ns_def": &schema.Schema{
+					Type: schema.TypeString,
+
+					Optional: true,
+				},
+				"relation_fc_rs_vsan_attr_def": &schema.Schema{
+					Type: schema.TypeString,
+
+					Optional: true,
+					Computed: true,
+				},
+				"relation_fc_rs_vsan_ns_def": &schema.Schema{
+					Type: schema.TypeString,
+
+					Optional: true,
+					Computed: true,
+				},
 			},
-
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Default:  "orchestrator:terraform",
-			},
-
-			"name_alias": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
-			"relation_infra_rs_vlan_ns": &schema.Schema{
-				Type: schema.TypeString,
-
-				Optional: true,
-			},
-			"relation_fc_rs_vsan_ns": &schema.Schema{
-				Type: schema.TypeString,
-
-				Optional: true,
-			},
-			"relation_fc_rs_vsan_attr": &schema.Schema{
-				Type: schema.TypeString,
-
-				Optional: true,
-			},
-			"relation_infra_rs_vlan_ns_def": &schema.Schema{
-				Type: schema.TypeString,
-
-				Optional: true,
-				Computed: true,
-			},
-			"relation_infra_rs_vip_addr_ns": &schema.Schema{
-				Type: schema.TypeString,
-
-				Optional: true,
-			},
-			"relation_infra_rs_dom_vxlan_ns_def": &schema.Schema{
-				Type: schema.TypeString,
-
-				Optional: true,
-			},
-			"relation_fc_rs_vsan_attr_def": &schema.Schema{
-				Type: schema.TypeString,
-
-				Optional: true,
-				Computed: true,
-			},
-			"relation_fc_rs_vsan_ns_def": &schema.Schema{
-				Type: schema.TypeString,
-
-				Optional: true,
-				Computed: true,
-			},
-		},
+		),
 	}
 }
 func getRemoteFCDomain(client *client.Client, dn string) (*models.FCDomain, error) {

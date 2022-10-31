@@ -20,6 +20,29 @@ func GetBaseAttrSchema() map[string]*schema.Schema {
 	}
 }
 
+func GetAnnotationAttrSchema() map[string]*schema.Schema {
+	return map[string]*schema.Schema{
+		"annotation": {
+			Type:     schema.TypeString,
+			Optional: true,
+			Computed: true,
+			DefaultFunc: func() (interface{}, error) {
+				return "orchestrator:terraform", nil
+			},
+		},
+	}
+}
+
+func GetDescriptionAttrSchema() map[string]*schema.Schema {
+	return map[string]*schema.Schema{
+		"description": {
+			Type:     schema.TypeString,
+			Optional: true,
+			Computed: true,
+		},
+	}
+}
+
 func GetAllowEmptyAttrSchema() map[string]*schema.Schema {
 	return map[string]*schema.Schema{
 		"allow_empty_result": &schema.Schema{

@@ -23,26 +23,21 @@ func resourceAciSNMPContextProfile() *schema.Resource {
 		},
 
 		SchemaVersion: 1,
-		Schema: AppendNameAliasAttrSchema(map[string]*schema.Schema{
-			"vrf_dn": &schema.Schema{
-				Type:     schema.TypeString,
-				Required: true,
-				ForceNew: true,
-			},
-			"name": &schema.Schema{
-				Type:     schema.TypeString,
-				Required: true,
-				ForceNew: true,
-			},
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-				DefaultFunc: func() (interface{}, error) {
-					return "orchestrator:terraform", nil
+		Schema: AppendAttrSchemas(
+			GetAnnotationAttrSchema(),
+			GetNameAliasAttrSchema(),
+			map[string]*schema.Schema{
+				"vrf_dn": &schema.Schema{
+					Type:     schema.TypeString,
+					Required: true,
+					ForceNew: true,
 				},
-			},
-		}),
+				"name": &schema.Schema{
+					Type:     schema.TypeString,
+					Required: true,
+					ForceNew: true,
+				},
+			}),
 	}
 }
 

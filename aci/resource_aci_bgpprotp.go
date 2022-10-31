@@ -24,36 +24,35 @@ func resourceAciL3outBGPProtocolProfile() *schema.Resource {
 
 		SchemaVersion: 1,
 
-		Schema: map[string]*schema.Schema{
-			"logical_node_profile_dn": &schema.Schema{
-				Type:     schema.TypeString,
-				Required: true,
-				ForceNew: true,
+		Schema: AppendAttrSchemas(
+			GetAnnotationAttrSchema(),
+			map[string]*schema.Schema{
+				"logical_node_profile_dn": &schema.Schema{
+					Type:     schema.TypeString,
+					Required: true,
+					ForceNew: true,
+				},
+				"name_alias": &schema.Schema{
+					Type:     schema.TypeString,
+					Optional: true,
+					Computed: true,
+				},
+				"name": &schema.Schema{
+					Type:     schema.TypeString,
+					Optional: true,
+					Computed: true,
+				},
+
+				"relation_bgp_rs_best_path_ctrl_pol": &schema.Schema{
+					Type:     schema.TypeString,
+					Optional: true,
+				},
+				"relation_bgp_rs_bgp_node_ctx_pol": &schema.Schema{
+					Type:     schema.TypeString,
+					Optional: true,
+				},
 			},
-			"name_alias": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-			"name": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Default:  "orchestrator:terraform",
-			},
-			"relation_bgp_rs_best_path_ctrl_pol": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-			},
-			"relation_bgp_rs_bgp_node_ctx_pol": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-			},
-		},
+		),
 	}
 }
 func getRemoteL3outBGPProtocolProfile(client *client.Client, dn string) (*models.L3outBGPProtocolProfile, error) {
