@@ -118,7 +118,7 @@ func resourceAciCloudContextProfile() *schema.Resource {
 
 func getRemoteCloudContextProfile(client *client.Client, dn string, d *schema.ResourceData) (*models.CloudContextProfile, error) {
 	baseurlStr := "/api/node/mo"
-	dnUrl := fmt.Sprintf("%s/%s.json?rsp-subtree=children", baseurlStr, dn)
+	dnUrl := fmt.Sprintf("%s/%s.json?rsp-subtree=full", baseurlStr, dn)
 	cloudCtxProfileCont, err := client.GetViaURL(dnUrl)
 	if err != nil {
 		return nil, err
@@ -135,6 +135,16 @@ func getRemoteCloudContextProfile(client *client.Client, dn string, d *schema.Re
 
 	return cloudCtxProfile, nil
 }
+
+// func getCloudBrwonField(client *client.Client, parentDn, dn string) error {
+// 	baseurlStr := "/api/node/mo"
+// 	dn := fmt.Sprintf("%s/cloudBrownfield", parentDn)
+// 	cloudCtxProfileCont, err := client.GetViaURL(dn)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+
+// }
 
 func setCloudContextProfileAttributes(cloudCtxProfile *models.CloudContextProfile, d *schema.ResourceData) (*schema.ResourceData, error) {
 	dn := d.Id()
@@ -165,6 +175,7 @@ func setRelationalAttributes(cloudCtxProfileCont *container.Container, d *schema
 
 	CloudVendorPattern := regexp.MustCompile(`uni/clouddomp/provp-(.+)/region-`)
 	for _, childCont := range ChildContList {
+		log.Printf("[DEBUG]: cloudCtxProfileCont children : %v", childCont)
 		if childCont.Exists("cloudCidr") {
 			d.Set("primary_cidr", G(childCont.S("cloudCidr", "attributes"), "addr"))
 		} else if childCont.Exists("cloudRsCtxProfileToRegion") {
@@ -178,8 +189,10 @@ func setRelationalAttributes(cloudCtxProfileCont *container.Container, d *schema
 			d.Set("relation_cloud_rs_to_ctx", G(childCont.S("cloudRsToCtx", "attributes"), "tDn"))
 		} else if childCont.Exists("cloudBrownfield") {
 			d.Set("cloud_brownfield", G(childCont.S("cloudBrownfield", "children", "cloudIDMapping", "attributes"), "cloudProviderId"))
+			log.Printf("\n\n\n\n[DEBUG] cloud_brownfield %s\n\n\n\n", G(childCont.S("cloudBrownfield", "children", "cloudIDMapping", "attributes"), "cloudProviderId"))
 		} else if childCont.Exists("cloudRsCtxProfileToAccessPolicy") {
 			d.Set("access_policy_type", GetMOName(G(childCont.S("cloudRsCtxProfileToAccessPolicy", "attributes"), "tDn")))
+			log.Printf("\n\n\n\n[DEBUG] access policy %s\n\n\n\n", G(childCont.S("cloudRsCtxProfileToAccessPolicy", "attributes"), "tDn"))
 		}
 	}
 }
