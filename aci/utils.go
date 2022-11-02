@@ -361,3 +361,20 @@ func getTargetObjectName(paramMap map[string]interface{}, targetDn, targetName s
 		return paramMap[targetName].(string)
 	}
 }
+
+// Compares two list of strings and sends a new list of strings with only unique strings amoung the two.
+// Reversing the two lists generates a new list with different outputs
+func getStringsFromListNotInOtherList(previousValueList interface{}, newValueList interface{}) (generatedList []interface{}) {
+	for _, oldValue := range previousValueList.([]interface{}) {
+		found := false
+		for _, newValue := range newValueList.([]interface{}) {
+			if oldValue == newValue {
+				found = true
+			}
+		}
+		if !found {
+			generatedList = append(generatedList, oldValue)
+		}
+	}
+	return generatedList
+}

@@ -118,8 +118,10 @@ func dataSourceAciCloudTemplateforVPNNetworkRead(ctx context.Context, d *schema.
 		log.Printf("[DEBUG] Data Source - Read cloud BGP IPV4 Peer finished successfully.")
 
 		cloudtemplateIpSecTunnelSet = append(cloudtemplateIpSecTunnelSet, cloudIpSecTunnelAttMap)
+		log.Printf("LOGs Data Source - cloudtemplateIpSecTunnelSet. : %v ", cloudtemplateIpSecTunnelSet)
 	}
 	d.Set("ipsec_tunnel", cloudtemplateIpSecTunnelSet)
+	log.Printf("LOGs Data Source - d. : %v ", d)
 	log.Printf("[DEBUG] Data Source - Read cloud IPSec Tunnel finished successfully.")
 
 	log.Printf("[DEBUG] %s: Data Source - Read finished successfully", dn)
