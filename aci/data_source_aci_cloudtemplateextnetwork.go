@@ -35,7 +35,7 @@ func dataSourceAciCloudTemplateforExternalNetwork() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
-			"regions": &schema.Schema{
+			"regions": {
 				Type: schema.TypeList,
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
@@ -72,7 +72,6 @@ func dataSourceAciCloudTemplateforExternalNetworkRead(ctx context.Context, d *sc
 	if err != nil {
 		log.Printf("[DEBUG] : Data Source - Error while reading cloud Regions attributes %v", err)
 	}
-	log.Printf("LOGs : Data Source - REGIONS READ regionsData : %v ", regionsData)
 
 	RegionsList := make([]string, 0, 1)
 	for _, regionValue := range regionsData {
@@ -82,12 +81,11 @@ func dataSourceAciCloudTemplateforExternalNetworkRead(ctx context.Context, d *sc
 			d.SetId("")
 			return nil
 		}
-		log.Printf("LOGs : Data Source - REGIONS READ regionsMap : %v ", regionsMap)
 		RegionsList = append(RegionsList, regionsMap["region"])
-		log.Printf("LOGs : Data Source - REGIONS READ RegionsList : %v ", RegionsList)
 	}
 	log.Printf("[DEBUG] : Data Source -  Read cloud regions finished successfully")
 	d.Set("regions", RegionsList)
 
+	log.Printf("[DEBUG] %s: Data Source - Read finished successfully", dn)
 	return nil
 }

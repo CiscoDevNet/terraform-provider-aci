@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"regexp"
+	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/client"
 	"github.com/ciscoecosystem/aci-go-client/models"
@@ -53,7 +55,8 @@ func resourceAciCloudTemplateforVPNNetwork() *schema.Resource {
 					Schema: map[string]*schema.Schema{
 						"ike_version": {
 							Type:     schema.TypeString,
-							Required: true,
+							Optional: true,
+							Default:  "ikev2",
 							ValidateFunc: validation.StringInSlice([]string{
 								"ikev1",
 								"ikev2",
@@ -75,6 +78,14 @@ func resourceAciCloudTemplateforVPNNetwork() *schema.Resource {
 						"bgp_peer_asn": {
 							Type:     schema.TypeString,
 							Required: true,
+						},
+						"source_interfaces": {
+							Type: schema.TypeList,
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+							Optional: true,
+							Computed: true,
 						},
 					},
 				},
@@ -118,18 +129,24 @@ func setTemplateforVPNNetworkAttributes(cloudtemplateVpnNetwork *models.Template
 	return d, nil
 }
 
-func setCloudTemplateforIpSecTunnelAttributes(cloudtemplateIpSecTunnel *models.CloudTemplateforIpSectunnel, d map[string]string) (map[string]string, string, error) {
+func setCloudTemplateforIpSecTunnelAttributes(cloudtemplateIpSecTunnel *models.CloudTemplateforIpSectunnel, d map[string]interface{}) (map[string]interface{}, string, error) {
 	cloudtemplateIpSecTunnelMap, err := cloudtemplateIpSecTunnel.ToMap()
 	if err != nil {
 		return nil, "", err
 	}
 
-	d = map[string]string{
-		"ike_version":       cloudtemplateIpSecTunnelMap["ikeVersion"],
-		"public_ip_address": cloudtemplateIpSecTunnelMap["peeraddr"],
-		"subnet_pool_name":  cloudtemplateIpSecTunnelMap["poolname"],
-		"pre_shared_key":    cloudtemplateIpSecTunnelMap["preSharedKey"],
-	}
+	// d = map[string]string{
+	// 	"ike_version":       cloudtemplateIpSecTunnelMap["ikeVersion"],
+	// 	"public_ip_address": cloudtemplateIpSecTunnelMap["peeraddr"],
+	// 	"subnet_pool_name":  cloudtemplateIpSecTunnelMap["poolname"],
+	// 	"pre_shared_key":    cloudtemplateIpSecTunnelMap["preSharedKey"],
+	// }
+	// change to map string interface
+
+	d["ike_version"] = cloudtemplateIpSecTunnelMap["ikeVersion"]
+	d["public_ip_address"] = cloudtemplateIpSecTunnelMap["peeraddr"]
+	d["subnet_pool_name"] = cloudtemplateIpSecTunnelMap["poolname"]
+	d["pre_shared_key"] = cloudtemplateIpSecTunnelMap["preSharedKey"]
 
 	return d, cloudtemplateIpSecTunnel.DistinguishedName, nil
 }
@@ -145,6 +162,15 @@ func getASNfromBGPTPV4Peer(cloudtemplateBgpIpv4 *models.BGPIPv4Peer, d map[strin
 		"bgp_peer_asn_att": cloudtemplateBgpIpv4Map["peerasn"],
 	}
 	return d, nil
+}
+
+func formatTemplateforIpSectunnelAttributes(cloudtemplateIpSecTunnelSourceInterface *models.CloudTemplateforIpSectunnelSourceInterface) (string, error) {
+	cloudtemplateIpSecTunnelSourceInterfaceMap, err := cloudtemplateIpSecTunnelSourceInterface.ToMap()
+	if err != nil {
+		return "", err
+	}
+	sourceInterface := fmt.Sprintf("gig%s", cloudtemplateIpSecTunnelSourceInterfaceMap["sourceInterfaceId"])
+	return sourceInterface, nil
 }
 
 func resourceAciCloudTemplateforVPNNetworkImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -167,10 +193,10 @@ func resourceAciCloudTemplateforVPNNetworkImport(d *schema.ResourceData, m inter
 		log.Printf("[DEBUG] Error while importing cloud IPSec Tunnel attributes %v", err)
 	}
 
-	cloudtemplateIpSecTunnelSet := make([]map[string]string, 0, 1)
+	cloudtemplateIpSecTunnelSet := make([]map[string]interface{}, 0, 1)
 	for _, cloudtemplateIpSecTunnel := range cloudtemplateIpSecTunnelData {
 
-		cloudIpSecTunnelAttMap, cloudtemplateIpSecTunnelDn, err := setCloudTemplateforIpSecTunnelAttributes(cloudtemplateIpSecTunnel, make(map[string]string))
+		cloudIpSecTunnelAttMap, cloudtemplateIpSecTunnelDn, err := setCloudTemplateforIpSecTunnelAttributes(cloudtemplateIpSecTunnel, make(map[string]interface{}))
 		if err != nil {
 			d.SetId("")
 			return nil, err
@@ -200,7 +226,7 @@ func resourceAciCloudTemplateforVPNNetworkImport(d *schema.ResourceData, m inter
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func TypeOf(cloudIpSecTunnelAttMap map[string]string) {
+func TypeOf(cloudIpSecTunnelAttMap map[string]interface{}) {
 	panic("unimplemented")
 }
 
@@ -267,6 +293,28 @@ func resourceAciCloudTemplateforVPNNetworkCreate(ctx context.Context, d *schema.
 			if err != nil {
 				return diag.FromErr(err)
 			}
+
+			log.Printf("[DEBUG] cloudtemplateIpSecTunnelSourceInterface: Beginning Creation")
+			for _, sourceInterfaces := range ipSecTunnels["source_interfaces"].([]interface{}) {
+				sourceInterfaceAtt := sourceInterfaces.(string)
+				sourceInterfacePattern, err := regexp.MatchString("^gig[0-9]$", sourceInterfaceAtt)
+				if err != nil {
+					return diag.FromErr(err)
+				}
+				_, ipSecTunnelSourceInterfaceVal, _ := strings.Cut(sourceInterfaceAtt, "gig")
+
+				if sourceInterfacePattern {
+					ipSecTunnelSourceInterfaceAttr := models.CloudTemplateforIpSectunnelSourceInterfaceAttributes{}
+					ipSecTunnelSourceInterfaceAttr.SourceInterfaceId = ipSecTunnelSourceInterfaceVal
+
+					ipSecTunnelSourceInterface := models.NewCloudTemplateIpSecTunnelSourceInterface(fmt.Sprintf(models.RncloudtemplateIpSecTunnelSourceInterface, ipSecTunnelSourceInterfaceAttr.SourceInterfaceId), cloudtemplateIpSecTunnel.DistinguishedName, ipSecTunnelSourceInterfaceAttr)
+					err := aciClient.Save(ipSecTunnelSourceInterface)
+					if err != nil {
+						return diag.FromErr(err)
+					}
+				}
+			}
+			log.Printf("[DEBUG] : cloudtemplateIpSecTunnelSourceInterface Creation finished successfully")
 		}
 	}
 
@@ -341,6 +389,28 @@ func resourceAciCloudTemplateforVPNNetworkUpdate(ctx context.Context, d *schema.
 			if err != nil {
 				return diag.FromErr(err)
 			}
+
+			log.Printf("[DEBUG] cloudtemplateIpSecTunnelSourceInterface: Beginning Creation")
+			for _, sourceInterfaces := range ipSecTunnels["source_interfaces"].([]interface{}) {
+				sourceInterfaceAtt := sourceInterfaces.(string)
+				sourceInterfacePattern, err := regexp.MatchString("^gig[0-9]$", sourceInterfaceAtt)
+				if err != nil {
+					return diag.FromErr(err)
+				}
+				_, ipSecTunnelSourceInterfaceVal, _ := strings.Cut(sourceInterfaceAtt, "gig")
+
+				if sourceInterfacePattern {
+					ipSecTunnelSourceInterfaceAttr := models.CloudTemplateforIpSectunnelSourceInterfaceAttributes{}
+					ipSecTunnelSourceInterfaceAttr.SourceInterfaceId = ipSecTunnelSourceInterfaceVal
+
+					ipSecTunnelSourceInterface := models.NewCloudTemplateIpSecTunnelSourceInterface(fmt.Sprintf(models.RncloudtemplateIpSecTunnelSourceInterface, ipSecTunnelSourceInterfaceAttr.SourceInterfaceId), cloudtemplateIpSecTunnel.DistinguishedName, ipSecTunnelSourceInterfaceAttr)
+					err := aciClient.Save(ipSecTunnelSourceInterface)
+					if err != nil {
+						return diag.FromErr(err)
+					}
+				}
+			}
+			log.Printf("[DEBUG] : cloudtemplateIpSecTunnelSourceInterface Creation finished successfully")
 		}
 	}
 
@@ -372,10 +442,10 @@ func resourceAciCloudTemplateforVPNNetworkRead(ctx context.Context, d *schema.Re
 		log.Printf("[DEBUG] Error while reading cloud IPSec Tunnel attributes %v", err)
 	}
 
-	cloudtemplateIpSecTunnelSet := make([]map[string]string, 0, 1)
+	cloudtemplateIpSecTunnelSet := make([]map[string]interface{}, 0, 1)
 	for _, cloudtemplateIpSecTunnel := range cloudtemplateIpSecTunnelData {
 
-		cloudIpSecTunnelAttMap, cloudtemplateIpSecTunnelDn, err := setCloudTemplateforIpSecTunnelAttributes(cloudtemplateIpSecTunnel, make(map[string]string))
+		cloudIpSecTunnelAttMap, cloudtemplateIpSecTunnelDn, err := setCloudTemplateforIpSecTunnelAttributes(cloudtemplateIpSecTunnel, make(map[string]interface{}))
 		if err != nil {
 			d.SetId("")
 			return nil
@@ -395,6 +465,25 @@ func resourceAciCloudTemplateforVPNNetworkRead(ctx context.Context, d *schema.Re
 			cloudIpSecTunnelAttMap["bgp_peer_asn"] = bgpPeerAsnAtt["bgp_peer_asn_att"]
 		}
 		log.Printf("[DEBUG] Read cloud BGP IPV4 Peer finished successfully.")
+
+		log.Printf("[DEBUG] Begining Read of cloud IPSec Tunnel Source Interface attributes.")
+		ipSectunnelSourceInterfaceData, err := aciClient.ListCloudTemplateforIpSectunnelSourceInterface(cloudtemplateIpSecTunnelDn)
+		if err != nil {
+			log.Printf("[DEBUG] Error while reading cloud IPSec Tunnel Source Interface  attributes %v", err)
+		}
+
+		ipSectunnelSourceInterfaceList := make([]string, 0, 1)
+		for _, ipSecTunnelSourceInterfaceValue := range ipSectunnelSourceInterfaceData {
+			ipSectunnelSourceInterfaceName, err := formatTemplateforIpSectunnelAttributes(ipSecTunnelSourceInterfaceValue)
+			// change set to get or format
+			if err != nil {
+				d.SetId("")
+				return nil
+			}
+			ipSectunnelSourceInterfaceList = append(ipSectunnelSourceInterfaceList, ipSectunnelSourceInterfaceName)
+		}
+		cloudIpSecTunnelAttMap["source_interfaces"] = ipSectunnelSourceInterfaceList
+		log.Printf("[DEBUG] : Read cloud IPSec Tunnel Source Interface  finished successfully")
 
 		cloudtemplateIpSecTunnelSet = append(cloudtemplateIpSecTunnelSet, cloudIpSecTunnelAttMap)
 	}
