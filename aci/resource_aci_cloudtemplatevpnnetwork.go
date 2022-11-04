@@ -7,8 +7,8 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/ciscoecosystem/aci-go-client/v2/client"
+	"github.com/ciscoecosystem/aci-go-client/v2/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
@@ -94,19 +94,19 @@ func resourceAciCloudTemplateforVPNNetwork() *schema.Resource {
 	}
 }
 
-func getRemoteTemplateforVPNNetwork(client *client.Client, dn string) (*models.TemplateforVPNNetwork, error) {
+func getRemoteTemplateforVPNNetwork(client *client.Client, dn string) (*models.CloudTemplateforVPNNetwork, error) {
 	cloudtemplateVpnNetworkCont, err := client.Get(dn)
 	if err != nil {
 		return nil, err
 	}
-	cloudtemplateVpnNetwork := models.TemplateforVPNNetworkFromContainer(cloudtemplateVpnNetworkCont)
+	cloudtemplateVpnNetwork := models.CloudTemplateforVPNNetworkFromContainer(cloudtemplateVpnNetworkCont)
 	if cloudtemplateVpnNetwork.DistinguishedName == "" {
 		return nil, fmt.Errorf("TemplateforVPNNetwork %s not found", cloudtemplateVpnNetwork.DistinguishedName)
 	}
 	return cloudtemplateVpnNetwork, nil
 }
 
-func setTemplateforVPNNetworkAttributes(cloudtemplateVpnNetwork *models.TemplateforVPNNetwork, d *schema.ResourceData) (*schema.ResourceData, error) {
+func setTemplateforVPNNetworkAttributes(cloudtemplateVpnNetwork *models.CloudTemplateforVPNNetwork, d *schema.ResourceData) (*schema.ResourceData, error) {
 	dn := d.Id()
 	d.SetId(cloudtemplateVpnNetwork.DistinguishedName)
 
@@ -151,7 +151,7 @@ func setCloudTemplateforIpSecTunnelAttributes(cloudtemplateIpSecTunnel *models.C
 	return d, cloudtemplateIpSecTunnel.DistinguishedName, nil
 }
 
-func getASNfromBGPTPV4Peer(cloudtemplateBgpIpv4 *models.BGPIPv4Peer, d map[string]string) (map[string]string, error) {
+func getASNfromBGPTPV4Peer(cloudtemplateBgpIpv4 *models.CloudTemplateBGPIPv4Peer, d map[string]string) (map[string]string, error) {
 
 	cloudtemplateBgpIpv4Map, err := cloudtemplateBgpIpv4.ToMap()
 	if err != nil {
@@ -203,7 +203,7 @@ func resourceAciCloudTemplateforVPNNetworkImport(d *schema.ResourceData, m inter
 		}
 
 		log.Printf("[DEBUG] Begining Import of cloud BGP IPV4 Peer attributes.")
-		bgpIPv4PeerData, err := aciClient.ListBGPIPv4Peer(cloudtemplateIpSecTunnelDn)
+		bgpIPv4PeerData, err := aciClient.ListCloudTemplateBGPIPv4Peer(cloudtemplateIpSecTunnelDn)
 		if err != nil {
 			log.Printf("[DEBUG] Error while importing cloud BGP IPV4 Peer attributes %v", err)
 		}
@@ -236,7 +236,7 @@ func resourceAciCloudTemplateforVPNNetworkCreate(ctx context.Context, d *schema.
 	name := d.Get("name").(string)
 	TemplateforExternalNetworkDn := d.Get("aci_cloud_external_network_dn").(string)
 
-	cloudtemplateVpnNetworkAttr := models.TemplateforVPNNetworkAttributes{}
+	cloudtemplateVpnNetworkAttr := models.CloudTemplateforVPNNetworkAttributes{}
 
 	nameAlias := ""
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
@@ -260,7 +260,7 @@ func resourceAciCloudTemplateforVPNNetworkCreate(ctx context.Context, d *schema.
 	if RemoteSiteName, ok := d.GetOk("remote_site_name"); ok {
 		cloudtemplateVpnNetworkAttr.RemoteSiteName = RemoteSiteName.(string)
 	}
-	cloudtemplateVpnNetwork := models.NewTemplateforVPNNetwork(fmt.Sprintf(models.RncloudtemplateVpnNetwork, name), TemplateforExternalNetworkDn, nameAlias, cloudtemplateVpnNetworkAttr)
+	cloudtemplateVpnNetwork := models.NewCloudTemplateforVPNNetwork(fmt.Sprintf(models.RncloudtemplateVpnNetwork, name), TemplateforExternalNetworkDn, nameAlias, cloudtemplateVpnNetworkAttr)
 
 	err := aciClient.Save(cloudtemplateVpnNetwork)
 	if err != nil {
@@ -284,11 +284,11 @@ func resourceAciCloudTemplateforVPNNetworkCreate(ctx context.Context, d *schema.
 			if err != nil {
 				return diag.FromErr(err)
 			}
-			cloudtemplateBgpIpv4Attr := models.BGPIPv4PeerAttributes{}
+			cloudtemplateBgpIpv4Attr := models.CloudTemplateBGPIPv4PeerAttributes{}
 			cloudtemplateBgpIpv4Attr.Peeraddr = "0.0.0.0/0"
 			cloudtemplateBgpIpv4Attr.Peerasn = ipSecTunnels["bgp_peer_asn"].(string)
 
-			cloudtemplateBgpIpv4 := models.NewBGPIPv4Peer(fmt.Sprintf(models.RncloudtemplateBgpIpv4, cloudtemplateBgpIpv4Attr.Peeraddr), cloudtemplateIpSecTunnel.DistinguishedName, cloudtemplateBgpIpv4Attr)
+			cloudtemplateBgpIpv4 := models.NewCloudTemplateBGPIPv4Peer(fmt.Sprintf(models.RncloudtemplateBgpIpv4, cloudtemplateBgpIpv4Attr.Peeraddr), cloudtemplateIpSecTunnel.DistinguishedName, cloudtemplateBgpIpv4Attr)
 			err = aciClient.Save(cloudtemplateBgpIpv4)
 			if err != nil {
 				return diag.FromErr(err)
@@ -329,7 +329,7 @@ func resourceAciCloudTemplateforVPNNetworkUpdate(ctx context.Context, d *schema.
 	name := d.Get("name").(string)
 	TemplateforExternalNetworkDn := d.Get("aci_cloud_external_network_dn").(string)
 
-	cloudtemplateVpnNetworkAttr := models.TemplateforVPNNetworkAttributes{}
+	cloudtemplateVpnNetworkAttr := models.CloudTemplateforVPNNetworkAttributes{}
 
 	nameAlias := ""
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
@@ -353,7 +353,7 @@ func resourceAciCloudTemplateforVPNNetworkUpdate(ctx context.Context, d *schema.
 	if RemoteSiteName, ok := d.GetOk("remote_site_name"); ok {
 		cloudtemplateVpnNetworkAttr.RemoteSiteName = RemoteSiteName.(string)
 	}
-	cloudtemplateVpnNetwork := models.NewTemplateforVPNNetwork(fmt.Sprintf(models.RncloudtemplateVpnNetwork, name), TemplateforExternalNetworkDn, nameAlias, cloudtemplateVpnNetworkAttr)
+	cloudtemplateVpnNetwork := models.NewCloudTemplateforVPNNetwork(fmt.Sprintf(models.RncloudtemplateVpnNetwork, name), TemplateforExternalNetworkDn, nameAlias, cloudtemplateVpnNetworkAttr)
 
 	cloudtemplateVpnNetwork.Status = "modified"
 
@@ -380,11 +380,11 @@ func resourceAciCloudTemplateforVPNNetworkUpdate(ctx context.Context, d *schema.
 			if err != nil {
 				return diag.FromErr(err)
 			}
-			cloudtemplateBgpIpv4Attr := models.BGPIPv4PeerAttributes{}
+			cloudtemplateBgpIpv4Attr := models.CloudTemplateBGPIPv4PeerAttributes{}
 			cloudtemplateBgpIpv4Attr.Peeraddr = "0.0.0.0/0"
 			cloudtemplateBgpIpv4Attr.Peerasn = ipSecTunnels["bgp_peer_asn"].(string)
 
-			cloudtemplateBgpIpv4 := models.NewBGPIPv4Peer(fmt.Sprintf(models.RncloudtemplateBgpIpv4, cloudtemplateBgpIpv4Attr.Peeraddr), cloudtemplateIpSecTunnel.DistinguishedName, cloudtemplateBgpIpv4Attr)
+			cloudtemplateBgpIpv4 := models.NewCloudTemplateBGPIPv4Peer(fmt.Sprintf(models.RncloudtemplateBgpIpv4, cloudtemplateBgpIpv4Attr.Peeraddr), cloudtemplateIpSecTunnel.DistinguishedName, cloudtemplateBgpIpv4Attr)
 			err = aciClient.Save(cloudtemplateBgpIpv4)
 			if err != nil {
 				return diag.FromErr(err)
@@ -452,7 +452,7 @@ func resourceAciCloudTemplateforVPNNetworkRead(ctx context.Context, d *schema.Re
 		}
 
 		log.Printf("[DEBUG] Begining Read of cloud BGP IPV4 Peer attributes.")
-		bgpIPv4PeerData, err := aciClient.ListBGPIPv4Peer(cloudtemplateIpSecTunnelDn)
+		bgpIPv4PeerData, err := aciClient.ListCloudTemplateBGPIPv4Peer(cloudtemplateIpSecTunnelDn)
 		if err != nil {
 			log.Printf("[DEBUG] Error while reading cloud BGP IPV4 Peer attributes %v", err)
 		}

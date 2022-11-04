@@ -5,10 +5,7 @@ import (
 	"fmt"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
-<<<<<<< HEAD
 	"github.com/ciscoecosystem/aci-go-client/v2/models"
-=======
->>>>>>> e226b181 ([ignore] Upgrade aci-go-client to v2.0.1)
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )

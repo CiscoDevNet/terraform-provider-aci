@@ -4,15 +4,15 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/ciscoecosystem/aci-go-client/v2/client"
+	"github.com/ciscoecosystem/aci-go-client/v2/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/acctest"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
 func TestAccAciCloudTemplateforVPNNetwork_Basic(t *testing.T) {
-	var templatefor_vpn_network models.TemplateforVPNNetwork
+	var templatefor_vpn_network models.CloudTemplateforVPNNetwork
 	fv_tenant_name := acctest.RandString(5)
 	cloudtemplate_infra_network_name := acctest.RandString(5)
 	cloudtemplate_ext_network_name := acctest.RandString(5)
@@ -36,7 +36,7 @@ func TestAccAciCloudTemplateforVPNNetwork_Basic(t *testing.T) {
 }
 
 func TestAccAciCloudTemplateforVPNNetwork_Update(t *testing.T) {
-	var templatefor_vpn_network models.TemplateforVPNNetwork
+	var templatefor_vpn_network models.CloudTemplateforVPNNetwork
 	fv_tenant_name := acctest.RandString(5)
 	cloudtemplate_infra_network_name := acctest.RandString(5)
 	cloudtemplate_ext_network_name := acctest.RandString(5)
@@ -96,7 +96,7 @@ func testAccCheckAciCloudTemplateforVPNNetworkConfig_basic(fv_tenant_name, cloud
 	`, fv_tenant_name, cloudtemplate_infra_network_name, cloudtemplate_ext_network_name, cloudtemplate_vpn_network_name)
 }
 
-func testAccCheckAciCloudTemplateforVPNNetworkExists(name string, templatefor_vpn_network *models.TemplateforVPNNetwork) resource.TestCheckFunc {
+func testAccCheckAciCloudTemplateforVPNNetworkExists(name string, templatefor_vpn_network *models.CloudTemplateforVPNNetwork) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 		rs, ok := s.RootModule().Resources[name]
 
@@ -115,7 +115,7 @@ func testAccCheckAciCloudTemplateforVPNNetworkExists(name string, templatefor_vp
 			return err
 		}
 
-		templatefor_vpn_networkFound := models.TemplateforVPNNetworkFromContainer(cont)
+		templatefor_vpn_networkFound := models.CloudTemplateforVPNNetworkFromContainer(cont)
 		if templatefor_vpn_networkFound.DistinguishedName != rs.Primary.ID {
 			return fmt.Errorf("Template for VPN Network %s not found", rs.Primary.ID)
 		}
@@ -129,7 +129,7 @@ func testAccCheckAciCloudTemplateforVPNNetworkDestroy(s *terraform.State) error 
 	for _, rs := range s.RootModule().Resources {
 		if rs.Type == "aci_cloud_external_network_vpn_network" {
 			cont, err := client.Get(rs.Primary.ID)
-			templatefor_vpn_network := models.TemplateforVPNNetworkFromContainer(cont)
+			templatefor_vpn_network := models.CloudTemplateforVPNNetworkFromContainer(cont)
 			if err == nil {
 				return fmt.Errorf("Template for VPN Network %s Still exists", templatefor_vpn_network.DistinguishedName)
 			}
@@ -140,7 +140,7 @@ func testAccCheckAciCloudTemplateforVPNNetworkDestroy(s *terraform.State) error 
 	return nil
 }
 
-func testAccCheckAciCloudTemplateforVPNNetworkAttributes(fv_tenant_name, cloudtemplate_infra_network_name, cloudtemplate_ext_network_name, cloudtemplate_vpn_network_name, description string, templatefor_vpn_network *models.TemplateforVPNNetwork) resource.TestCheckFunc {
+func testAccCheckAciCloudTemplateforVPNNetworkAttributes(fv_tenant_name, cloudtemplate_infra_network_name, cloudtemplate_ext_network_name, cloudtemplate_vpn_network_name, description string, templatefor_vpn_network *models.CloudTemplateforVPNNetwork) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 		if cloudtemplate_vpn_network_name != GetMOName(templatefor_vpn_network.DistinguishedName) {
 			return fmt.Errorf("Bad cloudtemplate_vpn_network %s", GetMOName(templatefor_vpn_network.DistinguishedName))

@@ -4,8 +4,9 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/ciscoecosystem/aci-go-client/v2/client"
+	"github.com/ciscoecosystem/aci-go-client/v2/models"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/acctest"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
