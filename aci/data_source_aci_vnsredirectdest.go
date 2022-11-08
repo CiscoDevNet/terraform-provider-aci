@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
+	"github.com/ciscoecosystem/aci-go-client/v2/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -16,7 +17,7 @@ func dataSourceAciDestinationofredirectedtraffic() *schema.Resource {
 
 		SchemaVersion: 1,
 
-		Schema: AppendBaseAttrSchema(map[string]*schema.Schema{
+		Schema: AppendBaseAttrSchema(AppendNameAliasAttrSchema(map[string]*schema.Schema{
 			"service_redirect_policy_dn": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
@@ -44,19 +45,16 @@ func dataSourceAciDestinationofredirectedtraffic() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
-
-			"name_alias": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
 			"pod_id": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
 			},
-		}),
+			"relation_vns_rs_redirect_health_group": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+		})),
 	}
 }
 
@@ -65,7 +63,8 @@ func dataSourceAciDestinationofredirectedtrafficRead(ctx context.Context, d *sch
 
 	ip := d.Get("ip").(string)
 
-	rn := fmt.Sprintf("RedirectDest_ip-[%s]", ip)
+	rn := fmt.Sprintf(models.RnvnsRedirectDest, ip)
+
 	ServiceRedirectPolicyDn := d.Get("service_redirect_policy_dn").(string)
 
 	dn := fmt.Sprintf("%s/%s", ServiceRedirectPolicyDn, rn)
@@ -80,5 +79,9 @@ func dataSourceAciDestinationofredirectedtrafficRead(ctx context.Context, d *sch
 	if err != nil {
 		return diag.FromErr(err)
 	}
+
+	// Importing vnsRsRedirectHealthGroup object
+	_, _ = getAndSetRemoteReadRelationvnsRsRedirectHealthGroup(aciClient, dn, d)
+
 	return nil
 }

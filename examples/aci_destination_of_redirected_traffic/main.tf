@@ -23,9 +23,9 @@ resource "aci_l4_l7_redirect_health_group" "health_group" {
   name      = "example"
 }
 
-resource "aci_service_redirect_policy" "service_policy" {
+resource "aci_service_redirect_policy" "policy_based_redirect_1" {
   tenant_dn              = aci_tenant.terraform_tenant.id
-  name                   = "first"
+  name                   = "pbr_1"
   name_alias             = "name_alias"
   dest_type              = "L3"
   min_threshold_percent  = "30"
@@ -40,8 +40,8 @@ resource "aci_service_redirect_policy" "service_policy" {
 }
 
 // The mac attribute in "aci_destination_of_redirected_traffic" is required for APIC prior to Version 5.2 release.
-resource "aci_destination_of_redirected_traffic" "example" {
-  service_redirect_policy_dn            = aci_service_redirect_policy.service_policy.id
+resource "aci_destination_of_redirected_traffic" "l3_destinations_with_mac" {
+  service_redirect_policy_dn            = aci_service_redirect_policy.policy_based_redirect_1.id
   ip                                    = "1.2.3.4"
   mac                                   = "12:25:56:98:45:74"
   ip2                                   = "10.20.30.40"
@@ -67,9 +67,9 @@ resource "aci_ip_sla_monitoring_policy" "sla" {
   timeout               = "900"
 }
 
-resource "aci_service_redirect_policy" "example" {
+resource "aci_service_redirect_policy" "policy_based_redirect_2" {
   tenant_dn                            = aci_tenant.terraform_tenant.id
-  name                                 = "first"
+  name                                 = "pbr_2"
   name_alias                           = "name_alias"
   dest_type                            = "L3"
   min_threshold_percent                = "30"
@@ -84,10 +84,10 @@ resource "aci_service_redirect_policy" "example" {
   relation_vns_rs_ipsla_monitoring_pol = aci_ip_sla_monitoring_policy.sla.id
 }
 
-resource "aci_destination_of_redirected_traffic" "example" {
-  service_redirect_policy_dn            = aci_service_redirect_policy.service_policy.id
-  ip                                    = "1.2.3.4"
-  ip2                                   = "10.20.30.40"
+resource "aci_destination_of_redirected_traffic" "l3_destinations_withou_mac" {
+  service_redirect_policy_dn            = aci_service_redirect_policy.policy_based_redirect_2.id
+  ip                                    = "1.2.3.5"
+  ip2                                   = "10.20.30.50"
   dest_name                             = "last"
   pod_id                                = "5"
   annotation                            = "load_traffic_dest"
