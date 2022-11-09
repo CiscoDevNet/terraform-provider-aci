@@ -9,6 +9,7 @@ import (
 	"github.com/ciscoecosystem/aci-go-client/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func dataSourceAciCloudTemplateforExternalNetwork() *schema.Resource {
@@ -42,6 +43,25 @@ func dataSourceAciCloudTemplateforExternalNetwork() *schema.Resource {
 				},
 				Optional: true,
 				Computed: true,
+			},
+			"cloud_vendor": {
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"aws",
+					"azure",
+					"gcp",
+				}, false),
+			},
+			"router_type": {
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"c8kv",
+					"tgw",
+				}, false),
 			},
 		})),
 	}
@@ -82,6 +102,10 @@ func dataSourceAciCloudTemplateforExternalNetworkRead(ctx context.Context, d *sc
 			return nil
 		}
 		RegionsList = append(RegionsList, regionsMap["region"])
+		d.Set("cloud_vendor", regionsMap["cloud_vendor"])
+		if regionsMap["cloud_vendor"] != "aws" {
+			d.Set("router_type", "")
+		}
 	}
 	log.Printf("[DEBUG] : Data Source -  Read cloud regions finished successfully")
 	d.Set("regions", RegionsList)

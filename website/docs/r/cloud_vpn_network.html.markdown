@@ -34,6 +34,7 @@ resource "aci_cloud_external_network_vpn_network" "example" {
     public_ip_address = "10.10.10.2"
     subnet_pool_name = aci_cloud_ipsec_tunnel_subnet_pool.ipsec_tunnel_subnet_pool.subnet_pool_name
     bgp_peer_asn = "1000"
+    source_interfaces = ["gig2", "gig3", "gig4"]
   }
 }
 ```
@@ -50,6 +51,7 @@ resource "aci_cloud_external_network_vpn_network" "example" {
     * `subnet_pool_name` - (Required) Subnet Pool Name.
     * `pre_shared_key` - (Optional) Pre Shared Key for all tunnels to this peeraddr.
     * `bgp_peer_asn` - (Required) BGP ASN Number. A number that uniquely identifies an autonomous system.
+    * `source_interfaces` - (Optional) Source Interface Ids of the object for IpSec tunnel Source Interface. It is available only on Azure cAPIC.
 
 
 ## Importing ##

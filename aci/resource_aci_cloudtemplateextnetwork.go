@@ -24,12 +24,22 @@ func resourceAciCloudTemplateforExternalNetwork() *schema.Resource {
 		},
 
 		SchemaVersion: 1,
+
+		CustomizeDiff: func(_ context.Context, diff *schema.ResourceDiff, v interface{}) error {
+			if diff.Get("cloud_vendor") != "gcp" {
+				if diff.Get("all_regions") != "yes" {
+					return fmt.Errorf("all_regions should always be set to yes when using %v cloud APIC", diff.Get("cloud_vendor"))
+				}
+			} else {
+				if diff.Get("all_regions") != "no" {
+					return fmt.Errorf("all_regions should always be set to no when using GCP cloud APIC")
+				}
+			}
+
+			return nil
+		},
+
 		Schema: AppendBaseAttrSchema(AppendNameAliasAttrSchema(map[string]*schema.Schema{
-			"hub_network_name": {
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
 			"name": {
 				Type:     schema.TypeString,
 				Required: true,
@@ -58,7 +68,13 @@ func resourceAciCloudTemplateforExternalNetwork() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
-			"cloud_vendor": &schema.Schema{
+			"hub_network_name": {
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+				ForceNew: true,
+			},
+			"cloud_vendor": {
 				Type:        schema.TypeString,
 				Optional:    true,
 				Computed:    true,
@@ -69,13 +85,24 @@ func resourceAciCloudTemplateforExternalNetwork() *schema.Resource {
 					"gcp",
 				}, false),
 			},
-			"regions": &schema.Schema{
+			"regions": {
 				Type: schema.TypeList,
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
 				},
 				Optional: true,
 				Computed: true,
+			},
+			"router_type": {
+				Type:        schema.TypeString,
+				Optional:    true,
+				Computed:    true,
+				ForceNew:    true,
+				Description: "Parameter used only for AWS cAPIC",
+				ValidateFunc: validation.StringInSlice([]string{
+					"c8kv",
+					"tgw",
+				}, false),
 			},
 		})),
 	}
@@ -112,6 +139,12 @@ func setCloudTemplateforExternalNetworkAttributes(cloudtemplateExtNetwork *model
 	d.Set("all_regions", cloudtemplateExtNetworkMap["allRegion"])
 	d.Set("host_router_name", cloudtemplateExtNetworkMap["hostRouterName"])
 	d.Set("vpn_router_name", cloudtemplateExtNetworkMap["vpnRouterName"])
+
+	if cloudtemplateExtNetworkMap["hubNetworkName"] != "default" && cloudtemplateExtNetworkMap["hubNetworkName"] != "" {
+		d.Set("router_type", "tgw")
+	} else {
+		d.Set("router_type", "c8kv")
+	}
 	return d, nil
 }
 
@@ -150,17 +183,18 @@ func resourceAciCloudTemplateforExternalNetworkImport(d *schema.ResourceData, m 
 
 	RegionsList := make([]string, 0, 1)
 	for _, regionValue := range regionsData {
-
 		regionsMap, err := setCloudProviderandRegionNamesAttributes(regionValue, make(map[string]string))
 		if err != nil {
 			d.SetId("")
 			return nil, err
 		}
-
 		RegionsList = append(RegionsList, regionsMap["region"])
-
+		d.Set("cloud_vendor", regionsMap["cloud_vendor"])
+		if regionsMap["cloud_vendor"] != "aws" {
+			d.Set("router_type", "")
+		}
 	}
-
+	log.Printf("[DEBUG] : Import cloud regions finished successfully")
 	d.Set("regions", RegionsList)
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
@@ -193,9 +227,22 @@ func resourceAciCloudTemplateforExternalNetworkCreate(ctx context.Context, d *sc
 
 	if AllRegions, ok := d.GetOk("all_regions"); ok {
 		cloudtemplateExtNetworkAttr.AllRegion = AllRegions.(string)
-		if AllRegions == "yes" {
-			// Always true for Azure cloud
-			cloudtemplateExtNetworkAttr.HostRouterName = "default"
+		if AllRegions.(string) == "yes" {
+			if cloudVendor == "aws" {
+				if RouterType, ok := d.GetOk("router_type"); ok {
+					if RouterType == "c8kv" {
+						cloudtemplateExtNetworkAttr.HostRouterName = "default"
+					} else {
+						// object class cloudGatewayRouterP
+						if HubNetworkName, ok := d.GetOk("hub_network_name"); ok {
+							cloudtemplateExtNetworkAttr.HubNetworkName = HubNetworkName.(string)
+						}
+					}
+				}
+			} else {
+				// Always true for Azure cloud
+				cloudtemplateExtNetworkAttr.HostRouterName = "default"
+			}
 		} else {
 			// following 2 attributes are used only in GCP
 			cloudtemplateExtNetworkAttr.HubNetworkName = "default"
@@ -262,11 +309,25 @@ func resourceAciCloudTemplateforExternalNetworkUpdate(ctx context.Context, d *sc
 	if Name, ok := d.GetOk("name"); ok {
 		cloudtemplateExtNetworkAttr.Name = Name.(string)
 	}
+
 	if AllRegions, ok := d.GetOk("all_regions"); ok {
 		cloudtemplateExtNetworkAttr.AllRegion = AllRegions.(string)
-		if AllRegions == "yes" {
-			// Always true for Azure cloud
-			cloudtemplateExtNetworkAttr.HostRouterName = "default"
+		if AllRegions.(string) == "yes" {
+			if cloudVendor == "aws" {
+				if RouterType, ok := d.GetOk("router_type"); ok {
+					if RouterType == "c8kv" {
+						cloudtemplateExtNetworkAttr.HostRouterName = "default"
+					} else {
+						// object class cloudGatewayRouterP
+						if HubNetworkName, ok := d.GetOk("hub_network_name"); ok {
+							cloudtemplateExtNetworkAttr.HubNetworkName = HubNetworkName.(string)
+						}
+					}
+				}
+			} else {
+				// Always true for Azure cloud
+				cloudtemplateExtNetworkAttr.HostRouterName = "default"
+			}
 		} else {
 			// following 2 attributes are used only in GCP
 			cloudtemplateExtNetworkAttr.HubNetworkName = "default"
@@ -360,6 +421,10 @@ func resourceAciCloudTemplateforExternalNetworkRead(ctx context.Context, d *sche
 			return nil
 		}
 		RegionsList = append(RegionsList, regionsMap["region"])
+		d.Set("cloud_vendor", regionsMap["cloud_vendor"])
+		if regionsMap["cloud_vendor"] != "aws" {
+			d.Set("router_type", "")
+		}
 	}
 	log.Printf("[DEBUG] : Read cloud regions finished successfully")
 	d.Set("regions", RegionsList)
