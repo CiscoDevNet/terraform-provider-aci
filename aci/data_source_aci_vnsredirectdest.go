@@ -81,7 +81,7 @@ func dataSourceAciDestinationofredirectedtrafficRead(ctx context.Context, d *sch
 	}
 
 	// Importing vnsRsRedirectHealthGroup object
-	_, _ = getAndSetRemoteReadRelationvnsRsRedirectHealthGroup(aciClient, dn, d)
+	getAndSetRemoteReadRelationvnsRsRedirectHealthGroup(aciClient, dn, d)
 
 	return nil
 }

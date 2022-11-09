@@ -84,7 +84,7 @@ resource "aci_service_redirect_policy" "policy_based_redirect_2" {
   relation_vns_rs_ipsla_monitoring_pol = aci_ip_sla_monitoring_policy.sla.id
 }
 
-resource "aci_destination_of_redirected_traffic" "l3_destinations_withou_mac" {
+resource "aci_destination_of_redirected_traffic" "l3_destinations_without_mac" {
   service_redirect_policy_dn            = aci_service_redirect_policy.policy_based_redirect_2.id
   ip                                    = "1.2.3.5"
   ip2                                   = "10.20.30.50"

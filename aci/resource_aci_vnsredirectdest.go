@@ -76,7 +76,7 @@ func getRemoteDestinationofredirectedtraffic(client *client.Client, dn string) (
 	vnsRedirectDest := models.DestinationofredirectedtrafficFromContainer(vnsRedirectDestCont)
 
 	if vnsRedirectDest.DistinguishedName == "" {
-		return nil, fmt.Errorf("Destinationofredirectedtraffic %s not found", dn)
+		return nil, fmt.Errorf("Destination of the redirected traffic: %s not found", dn)
 	}
 
 	return vnsRedirectDest, nil
@@ -143,7 +143,7 @@ func resourceAciDestinationofredirectedtrafficImport(d *schema.ResourceData, m i
 	}
 
 	// Importing vnsRsRedirectHealthGroup object
-	_, _ = getAndSetRemoteReadRelationvnsRsRedirectHealthGroup(aciClient, dn, d)
+	getAndSetRemoteReadRelationvnsRsRedirectHealthGroup(aciClient, dn, d)
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
@@ -160,13 +160,11 @@ func resourceAciDestinationofredirectedtrafficCreate(ctx context.Context, d *sch
 	ServiceRedirectPolicyDn := d.Get("service_redirect_policy_dn").(string)
 
 	vnsRedirectDestAttr := models.DestinationofredirectedtrafficAttributes{}
-	annotation := ""
+
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		vnsRedirectDestAttr.Annotation = Annotation.(string)
-		annotation = Annotation.(string)
 	} else {
 		vnsRedirectDestAttr.Annotation = "{}"
-		annotation = "{}"
 	}
 	if DestName, ok := d.GetOk("dest_name"); ok {
 		vnsRedirectDestAttr.DestName = DestName.(string)
@@ -210,7 +208,7 @@ func resourceAciDestinationofredirectedtrafficCreate(ctx context.Context, d *sch
 
 	if relationTovnsRsRedirectHealthGroup, ok := d.GetOk("relation_vns_rs_redirect_health_group"); ok {
 		relationParam := relationTovnsRsRedirectHealthGroup.(string)
-		err = aciClient.CreateRelationvnsRsRedirectHealthGroup(vnsRedirectDest.DistinguishedName, annotation, relationParam)
+		err = aciClient.CreateRelationvnsRsRedirectHealthGroup(vnsRedirectDest.DistinguishedName, vnsRedirectDest.Annotation, relationParam)
 		if err != nil {
 			return diag.FromErr(err)
 		}
@@ -234,13 +232,10 @@ func resourceAciDestinationofredirectedtrafficUpdate(ctx context.Context, d *sch
 	ServiceRedirectPolicyDn := d.Get("service_redirect_policy_dn").(string)
 
 	vnsRedirectDestAttr := models.DestinationofredirectedtrafficAttributes{}
-	annotation := ""
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		vnsRedirectDestAttr.Annotation = Annotation.(string)
-		annotation = Annotation.(string)
 	} else {
 		vnsRedirectDestAttr.Annotation = "{}"
-		annotation = "{}"
 	}
 	if DestName, ok := d.GetOk("dest_name"); ok {
 		vnsRedirectDestAttr.DestName = DestName.(string)
@@ -291,7 +286,7 @@ func resourceAciDestinationofredirectedtrafficUpdate(ctx context.Context, d *sch
 		if err != nil {
 			return diag.FromErr(err)
 		}
-		err = aciClient.CreateRelationvnsRsRedirectHealthGroup(vnsRedirectDest.DistinguishedName, annotation, newRelParam.(string))
+		err = aciClient.CreateRelationvnsRsRedirectHealthGroup(vnsRedirectDest.DistinguishedName, vnsRedirectDest.Annotation, newRelParam.(string))
 		if err != nil {
 			return diag.FromErr(err)
 		}
@@ -324,7 +319,7 @@ func resourceAciDestinationofredirectedtrafficRead(ctx context.Context, d *schem
 	}
 
 	// Importing vnsRsRedirectHealthGroup object
-	_, _ = getAndSetRemoteReadRelationvnsRsRedirectHealthGroup(aciClient, dn, d)
+	getAndSetRemoteReadRelationvnsRsRedirectHealthGroup(aciClient, dn, d)
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 
