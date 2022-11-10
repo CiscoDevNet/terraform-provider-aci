@@ -320,6 +320,8 @@ func Provider() *schema.Provider {
 			"aci_bulk_epg_to_static_path":                  resourceAciBulkStaticPath(),
 			"aci_vrf_leak_epg_bd_subnet":                   resourceAciLeakInternalSubnet(),
 			"aci_cloud_vrf_leak_routes":                    resourceAciLeakInternalPrefix(),
+			"aci_service_redirect_backup_policy":           resourceAciPBRBackupPolicy(),
+			"aci_pbr_l1_l2_destination":                    resourceAciL1L2RedirectDestTraffic(),
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
@@ -561,6 +563,8 @@ func Provider() *schema.Provider {
 			"aci_l4_l7_deployed_graph_connector_vlan":      dataSourceAciEPgDef(),
 			"aci_vrf_leak_epg_bd_subnet":                   dataSourceAciLeakInternalSubnet(),
 			"aci_cloud_vrf_leak_routes":                    dataSourceAciLeakInternalPrefix(),
+			"aci_service_redirect_backup_policy":           dataSourceAciPBRBackupPolicy(),
+			"aci_pbr_l1_l2_destination":                    dataSourceAciL1L2RedirectDestTraffic(),
 		},
 
 		ConfigureFunc: configureClient,
