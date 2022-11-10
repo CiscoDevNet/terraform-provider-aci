@@ -53,6 +53,7 @@ func dataSourceAciDestinationofredirectedtraffic() *schema.Resource {
 			"relation_vns_rs_redirect_health_group": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 		})),
 	}
