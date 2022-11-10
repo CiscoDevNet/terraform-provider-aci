@@ -28,10 +28,6 @@ github.com/armon/go-socks5 v0.0.0-20160902184237-e75332964ef5 h1:0CwZNZbxp69SHPd
 github.com/armon/go-socks5 v0.0.0-20160902184237-e75332964ef5/go.mod h1:wHh0iHkYZB8zMSxRWpUBQtwG5a7fFgvEO+odwuTv2gs=
 github.com/census-instrumentation/opencensus-proto v0.2.1/go.mod h1:f6KPmirojxKA12rnyqOA5BBL4O983OfeGPqjHWSTneU=
 github.com/cespare/xxhash/v2 v2.1.1/go.mod h1:VGX0DQ3Q6kWi7AoAeZDth3/j3BFtOZR5XLFGgcrjCOs=
-github.com/ciscoecosystem/aci-go-client v1.54.0 h1:fZYJPnj9JXFPN0PFD5O71l1Ejnre/UfZgo3YFh83eqE=
-github.com/ciscoecosystem/aci-go-client v1.54.0/go.mod h1:/ftFFEXD2Ozajs8Zc/Xw/s6bG5+d3DWQzMAifyxu/Es=
-github.com/ciscoecosystem/aci-go-client/v2 v2.0.1 h1:RmaaoJPYAvC5RuM8Iic+/ol3+DbthCnnvRsYCLjdDVY=
-github.com/ciscoecosystem/aci-go-client/v2 v2.0.1/go.mod h1:ZeJuaKr9gTRn5B1CwA3sVSVqnRjVMEcBc8LUX222wf0=
 github.com/ciscoecosystem/aci-go-client/v2 v2.0.2 h1:B/WwSMZ0CE/QgKvnIrKXPyj1g9f4OanY8aggULbwy2E=
 github.com/ciscoecosystem/aci-go-client/v2 v2.0.2/go.mod h1:ZeJuaKr9gTRn5B1CwA3sVSVqnRjVMEcBc8LUX222wf0=
 github.com/client9/misspell v0.3.4/go.mod h1:qj6jICC3Q7zFZvVWo7KLAzC3yx5G7kyvSDkc90ppPyw=
