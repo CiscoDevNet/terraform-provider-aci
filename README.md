@@ -58,10 +58,10 @@ resource "aci_tenant" "test-tenant" {
   description = "This tenant is created by terraform"
 }
 
-resource "aci_app_profile" "test-app" {
+resource "aci_application_profile" "test-app" {
   tenant_dn   = aci_tenant.test-tenant.id
   name        = "test-app"
-  description = "This app profile is created by terraform"
+  description = "This application profile is created by terraform"
 }
 ```
 Note : If you are facing the issue of `invalid character '<' looking for beginning of value` while running `terraform apply`, use signature based authentication in that case, or else use `-parallelism=1` with `terraform plan` and `terraform apply` to limit the concurrency to one thread.
