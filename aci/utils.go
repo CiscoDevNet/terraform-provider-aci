@@ -370,6 +370,7 @@ func getStringsFromListNotInOtherList(previousValueList interface{}, newValueLis
 		for _, newValue := range newValueList.([]interface{}) {
 			if oldValue == newValue {
 				found = true
+				break
 			}
 		}
 		if !found {

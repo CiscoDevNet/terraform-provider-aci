@@ -16,11 +16,11 @@ Data source for ACI Cloud External Network
 ## API Information ##
 
 * `Class` - cloudtemplateExtNetwork
-* `Distinguished Name` - uni/tn-{tenant_name}/infranetwork-{name}/extnetwork-{name}
+* `Distinguished Name` - uni/tn-{tenant_name}/infranetwork-{infra_network_name}/extnetwork-{external_network_name}
 
 ## GUI Information ##
 
-* `Location` - Tenants -> {tenant_name} -> Application Management -> External Networks
+* `Location` - Cloud APIC -> Application Management -> External Networks
 
 
 

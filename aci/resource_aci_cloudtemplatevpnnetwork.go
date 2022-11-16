@@ -135,14 +135,6 @@ func setCloudTemplateforIpSecTunnelAttributes(cloudtemplateIpSecTunnel *models.C
 		return nil, "", err
 	}
 
-	// d = map[string]string{
-	// 	"ike_version":       cloudtemplateIpSecTunnelMap["ikeVersion"],
-	// 	"public_ip_address": cloudtemplateIpSecTunnelMap["peeraddr"],
-	// 	"subnet_pool_name":  cloudtemplateIpSecTunnelMap["poolname"],
-	// 	"pre_shared_key":    cloudtemplateIpSecTunnelMap["preSharedKey"],
-	// }
-	// change to map string interface
-
 	d["ike_version"] = cloudtemplateIpSecTunnelMap["ikeVersion"]
 	d["public_ip_address"] = cloudtemplateIpSecTunnelMap["peeraddr"]
 	d["subnet_pool_name"] = cloudtemplateIpSecTunnelMap["poolname"]

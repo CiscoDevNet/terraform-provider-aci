@@ -10,15 +10,16 @@ description: |-
 # aci_cloud_external_network_vpn_network #
 
 Manages ACI Template for VPN Network
+<b>Note: This resource is supported in Cloud APIC version > 25.0 only.</b>
 
 ## API Information ##
 
 * `Class` - cloudtemplateVpnNetwork
-* `Distinguished Name` - uni/tn-{tenant_name}/infranetwork-{name}/extnetwork-{name}/vpnnetwork-{name}
+* `Distinguished Name` - uni/tn-{tenant_name}/infranetwork-{infra_network_name}/extnetwork-{external_network_name}/vpnnetwork-{vpn_network_name}
 
 ## GUI Information ##
 
-* `Location` -  Tenants -> {tenant_name} -> Application Management -> External Networks -> VPN Networks
+* `Location` -  Cloud APIC -> Application Management -> External Networks -> VPN Networks
 
 
 ## Example Usage ##

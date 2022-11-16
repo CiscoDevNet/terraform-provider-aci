@@ -17,11 +17,6 @@ func dataSourceAciCloudTemplateforExternalNetwork() *schema.Resource {
 		ReadContext:   dataSourceAciCloudTemplateforExternalNetworkRead,
 		SchemaVersion: 1,
 		Schema: AppendBaseAttrSchema(AppendNameAliasAttrSchema(map[string]*schema.Schema{
-			"annotation": {
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
 			"hub_network_name": {
 				Type:     schema.TypeString,
 				Optional: true,

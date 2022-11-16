@@ -15,11 +15,11 @@ Manages ACI Cloud External Network.
 ## API Information ##
 
 * `Class` - cloudtemplateExtNetwork
-* `Distinguished Name` - uni/tn-{tenant_name}/infranetwork-{name}/extnetwork-{name}
+* `Distinguished Name` - uni/tn-{tenant_name}/infranetwork-{infra_network_name}/extnetwork-{external_network_name}
 
 ## GUI Information ##
 
-* `Location` - Tenants -> {tenant_name} -> Application Management -> External Networks
+* `Location` - Cloud APIC -> Application Management -> External Networks
 
 
 ## Example Usage ##
@@ -50,6 +50,7 @@ resource "aci_cloud_external_network" "external_network" {
 ## Argument Reference ##
 
 * `name` - (Required) Name of the Cloud External Network.
+* `name_alias` - (Optional) Name Alias of the Cloud External Network.
 * `annotation` - (Optional) Annotation of the Cloud External Network.
 * `vrf_dn` - (Required) Distinguished name of the VRF. Note that the VRF has to be created under the infra tenant.
 * `hub_network_name` - (Optional) Hub Network name of the Cloud External Network.

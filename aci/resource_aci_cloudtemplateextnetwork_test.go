@@ -14,8 +14,8 @@ import (
 func TestAccAciCloudTemplateforExternalNetwork_Basic(t *testing.T) {
 	var templatefor_external_network models.CloudTemplateforExternalNetwork
 	fv_tenant_name := acctest.RandString(5)
-	cloudtemplate_infra_network_name := acctest.RandString(5)
-	cloudtemplate_ext_network_name := acctest.RandString(5)
+	aci_cloud_external_network_vpn_network := acctest.RandString(5)
+	cloud_external_network := acctest.RandString(5)
 	description := "templatefor_external_network created while acceptance testing"
 
 	resource.Test(t, resource.TestCase{
@@ -24,10 +24,10 @@ func TestAccAciCloudTemplateforExternalNetwork_Basic(t *testing.T) {
 		CheckDestroy: testAccCheckAciCloudTemplateforExternalNetworkDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckAciCloudTemplateforExternalNetworkConfig_basic(fv_tenant_name, cloudtemplate_infra_network_name, cloudtemplate_ext_network_name),
+				Config: testAccCheckAciCloudTemplateforExternalNetworkConfig_basic(fv_tenant_name, aci_cloud_external_network_vpn_network, cloud_external_network),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckAciCloudTemplateforExternalNetworkExists("aci_cloud_external_network.footemplatefor_external_network", &templatefor_external_network),
-					testAccCheckAciCloudTemplateforExternalNetworkAttributes(fv_tenant_name, cloudtemplate_infra_network_name, cloudtemplate_ext_network_name, description, &templatefor_external_network),
+					testAccCheckAciCloudTemplateforExternalNetworkAttributes(fv_tenant_name, aci_cloud_external_network_vpn_network, cloud_external_network, description, &templatefor_external_network),
 				),
 			},
 		},
@@ -37,8 +37,8 @@ func TestAccAciCloudTemplateforExternalNetwork_Basic(t *testing.T) {
 func TestAccAciCloudTemplateforExternalNetwork_Update(t *testing.T) {
 	var templatefor_external_network models.CloudTemplateforExternalNetwork
 	fv_tenant_name := acctest.RandString(5)
-	cloudtemplate_infra_network_name := acctest.RandString(5)
-	cloudtemplate_ext_network_name := acctest.RandString(5)
+	aci_cloud_external_network_vpn_network := acctest.RandString(5)
+	cloud_external_network := acctest.RandString(5)
 	description := "templatefor_external_network created while acceptance testing"
 
 	resource.Test(t, resource.TestCase{
@@ -47,24 +47,24 @@ func TestAccAciCloudTemplateforExternalNetwork_Update(t *testing.T) {
 		CheckDestroy: testAccCheckAciCloudTemplateforExternalNetworkDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckAciCloudTemplateforExternalNetworkConfig_basic(fv_tenant_name, cloudtemplate_infra_network_name, cloudtemplate_ext_network_name),
+				Config: testAccCheckAciCloudTemplateforExternalNetworkConfig_basic(fv_tenant_name, aci_cloud_external_network_vpn_network, cloud_external_network),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckAciCloudTemplateforExternalNetworkExists("aci_cloud_external_network.footemplatefor_external_network", &templatefor_external_network),
-					testAccCheckAciCloudTemplateforExternalNetworkAttributes(fv_tenant_name, cloudtemplate_infra_network_name, cloudtemplate_ext_network_name, description, &templatefor_external_network),
+					testAccCheckAciCloudTemplateforExternalNetworkAttributes(fv_tenant_name, aci_cloud_external_network_vpn_network, cloud_external_network, description, &templatefor_external_network),
 				),
 			},
 			{
-				Config: testAccCheckAciCloudTemplateforExternalNetworkConfig_basic(fv_tenant_name, cloudtemplate_infra_network_name, cloudtemplate_ext_network_name),
+				Config: testAccCheckAciCloudTemplateforExternalNetworkConfig_basic(fv_tenant_name, aci_cloud_external_network_vpn_network, cloud_external_network),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckAciCloudTemplateforExternalNetworkExists("aci_cloud_external_network.footemplatefor_external_network", &templatefor_external_network),
-					testAccCheckAciCloudTemplateforExternalNetworkAttributes(fv_tenant_name, cloudtemplate_infra_network_name, cloudtemplate_ext_network_name, description, &templatefor_external_network),
+					testAccCheckAciCloudTemplateforExternalNetworkAttributes(fv_tenant_name, aci_cloud_external_network_vpn_network, cloud_external_network, description, &templatefor_external_network),
 				),
 			},
 		},
 	})
 }
 
-func testAccCheckAciCloudTemplateforExternalNetworkConfig_basic(fv_tenant_name, cloudtemplate_infra_network_name, cloudtemplate_ext_network_name string) string {
+func testAccCheckAciCloudTemplateforExternalNetworkConfig_basic(fv_tenant_name, aci_cloud_external_network_vpn_network, cloud_external_network string) string {
 	return fmt.Sprintf(`
 
 	resource "aci_tenant" "footenant" {
@@ -85,7 +85,7 @@ func testAccCheckAciCloudTemplateforExternalNetworkConfig_basic(fv_tenant_name, 
 		infra_network_template_dn = aci_infra_network_template.fooinfra_network_template.id
 	}
 
-	`, fv_tenant_name, cloudtemplate_infra_network_name, cloudtemplate_ext_network_name)
+	`, fv_tenant_name, aci_cloud_external_network_vpn_network, cloud_external_network)
 }
 
 func testAccCheckAciCloudTemplateforExternalNetworkExists(name string, templatefor_external_network *models.CloudTemplateforExternalNetwork) resource.TestCheckFunc {
@@ -132,13 +132,13 @@ func testAccCheckAciCloudTemplateforExternalNetworkDestroy(s *terraform.State) e
 	return nil
 }
 
-func testAccCheckAciCloudTemplateforExternalNetworkAttributes(fv_tenant_name, cloudtemplate_infra_network_name, cloudtemplate_ext_network_name, description string, templatefor_external_network *models.CloudTemplateforExternalNetwork) resource.TestCheckFunc {
+func testAccCheckAciCloudTemplateforExternalNetworkAttributes(fv_tenant_name, aci_cloud_external_network_vpn_network, cloud_external_network, description string, templatefor_external_network *models.CloudTemplateforExternalNetwork) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
-		if cloudtemplate_ext_network_name != GetMOName(templatefor_external_network.DistinguishedName) {
+		if cloud_external_network != GetMOName(templatefor_external_network.DistinguishedName) {
 			return fmt.Errorf("Bad cloudtemplate_ext_network %s", GetMOName(templatefor_external_network.DistinguishedName))
 		}
 
-		if cloudtemplate_infra_network_name != GetMOName(GetParentDn(templatefor_external_network.DistinguishedName)) {
+		if aci_cloud_external_network_vpn_network != GetMOName(GetParentDn(templatefor_external_network.DistinguishedName)) {
 			return fmt.Errorf(" Bad cloudtemplate_infra_network %s", GetMOName(GetParentDn(templatefor_external_network.DistinguishedName)))
 		}
 		if description != templatefor_external_network.Description {

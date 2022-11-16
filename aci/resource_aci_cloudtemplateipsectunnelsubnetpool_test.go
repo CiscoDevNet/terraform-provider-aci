@@ -14,8 +14,8 @@ import (
 func TestAccAciSubnetPoolforIpSecTunnels_Basic(t *testing.T) {
 	var subnet_poolfor_ip_sec_tunnels models.SubnetPoolforIpSecTunnels
 	fv_tenant_name := acctest.RandString(5)
-	cloudtemplate_infra_network_name := acctest.RandString(5)
-	cloudtemplate_ip_sec_tunnel_subnet_pool_name := acctest.RandString(5)
+	aci_cloud_external_network_vpn_network := acctest.RandString(5)
+	aci_cloud_ipsec_tunnel_subnet_pool := acctest.RandString(5)
 	description := "subnet_poolfor_ip_sec_tunnels created while acceptance testing"
 
 	resource.Test(t, resource.TestCase{
@@ -24,10 +24,10 @@ func TestAccAciSubnetPoolforIpSecTunnels_Basic(t *testing.T) {
 		CheckDestroy: testAccCheckAciSubnetPoolforIpSecTunnelsDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckAciSubnetPoolforIpSecTunnelsConfig_basic(fv_tenant_name, cloudtemplate_infra_network_name, cloudtemplate_ip_sec_tunnel_subnet_pool_name),
+				Config: testAccCheckAciSubnetPoolforIpSecTunnelsConfig_basic(fv_tenant_name, aci_cloud_external_network_vpn_network, aci_cloud_ipsec_tunnel_subnet_pool),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckAciSubnetPoolforIpSecTunnelsExists("aci_subnet_poolfor_ip_sec_tunnels.foosubnet_poolfor_ip_sec_tunnels", &subnet_poolfor_ip_sec_tunnels),
-					testAccCheckAciSubnetPoolforIpSecTunnelsAttributes(fv_tenant_name, cloudtemplate_infra_network_name, cloudtemplate_ip_sec_tunnel_subnet_pool_name, description, &subnet_poolfor_ip_sec_tunnels),
+					testAccCheckAciSubnetPoolforIpSecTunnelsAttributes(fv_tenant_name, aci_cloud_external_network_vpn_network, aci_cloud_ipsec_tunnel_subnet_pool, description, &subnet_poolfor_ip_sec_tunnels),
 				),
 			},
 		},
@@ -37,8 +37,8 @@ func TestAccAciSubnetPoolforIpSecTunnels_Basic(t *testing.T) {
 func TestAccAciSubnetPoolforIpSecTunnels_Update(t *testing.T) {
 	var subnet_poolfor_ip_sec_tunnels models.SubnetPoolforIpSecTunnels
 	fv_tenant_name := acctest.RandString(5)
-	cloudtemplate_infra_network_name := acctest.RandString(5)
-	cloudtemplate_ip_sec_tunnel_subnet_pool_name := acctest.RandString(5)
+	aci_cloud_external_network_vpn_network := acctest.RandString(5)
+	aci_cloud_ipsec_tunnel_subnet_pool := acctest.RandString(5)
 	description := "subnet_poolfor_ip_sec_tunnels created while acceptance testing"
 
 	resource.Test(t, resource.TestCase{
@@ -47,24 +47,24 @@ func TestAccAciSubnetPoolforIpSecTunnels_Update(t *testing.T) {
 		CheckDestroy: testAccCheckAciSubnetPoolforIpSecTunnelsDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckAciSubnetPoolforIpSecTunnelsConfig_basic(fv_tenant_name, cloudtemplate_infra_network_name, cloudtemplate_ip_sec_tunnel_subnet_pool_name),
+				Config: testAccCheckAciSubnetPoolforIpSecTunnelsConfig_basic(fv_tenant_name, aci_cloud_external_network_vpn_network, aci_cloud_ipsec_tunnel_subnet_pool),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckAciSubnetPoolforIpSecTunnelsExists("aci_subnet_poolfor_ip_sec_tunnels.foosubnet_poolfor_ip_sec_tunnels", &subnet_poolfor_ip_sec_tunnels),
-					testAccCheckAciSubnetPoolforIpSecTunnelsAttributes(fv_tenant_name, cloudtemplate_infra_network_name, cloudtemplate_ip_sec_tunnel_subnet_pool_name, description, &subnet_poolfor_ip_sec_tunnels),
+					testAccCheckAciSubnetPoolforIpSecTunnelsAttributes(fv_tenant_name, aci_cloud_external_network_vpn_network, aci_cloud_ipsec_tunnel_subnet_pool, description, &subnet_poolfor_ip_sec_tunnels),
 				),
 			},
 			{
-				Config: testAccCheckAciSubnetPoolforIpSecTunnelsConfig_basic(fv_tenant_name, cloudtemplate_infra_network_name, cloudtemplate_ip_sec_tunnel_subnet_pool_name),
+				Config: testAccCheckAciSubnetPoolforIpSecTunnelsConfig_basic(fv_tenant_name, aci_cloud_external_network_vpn_network, aci_cloud_ipsec_tunnel_subnet_pool),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckAciSubnetPoolforIpSecTunnelsExists("aci_subnet_poolfor_ip_sec_tunnels.foosubnet_poolfor_ip_sec_tunnels", &subnet_poolfor_ip_sec_tunnels),
-					testAccCheckAciSubnetPoolforIpSecTunnelsAttributes(fv_tenant_name, cloudtemplate_infra_network_name, cloudtemplate_ip_sec_tunnel_subnet_pool_name, description, &subnet_poolfor_ip_sec_tunnels),
+					testAccCheckAciSubnetPoolforIpSecTunnelsAttributes(fv_tenant_name, aci_cloud_external_network_vpn_network, aci_cloud_ipsec_tunnel_subnet_pool, description, &subnet_poolfor_ip_sec_tunnels),
 				),
 			},
 		},
 	})
 }
 
-func testAccCheckAciSubnetPoolforIpSecTunnelsConfig_basic(fv_tenant_name, cloudtemplate_infra_network_name, cloudtemplate_ip_sec_tunnel_subnet_pool_name string) string {
+func testAccCheckAciSubnetPoolforIpSecTunnelsConfig_basic(fv_tenant_name, aci_cloud_external_network_vpn_network, aci_cloud_ipsec_tunnel_subnet_pool string) string {
 	return fmt.Sprintf(`
 
 	resource "aci_tenant" "footenant" {
@@ -85,7 +85,7 @@ func testAccCheckAciSubnetPoolforIpSecTunnelsConfig_basic(fv_tenant_name, cloudt
 		infra_network_template_dn = aci_infra_network_template.fooinfra_network_template.id
 	}
 
-	`, fv_tenant_name, cloudtemplate_infra_network_name, cloudtemplate_ip_sec_tunnel_subnet_pool_name)
+	`, fv_tenant_name, aci_cloud_external_network_vpn_network, aci_cloud_ipsec_tunnel_subnet_pool)
 }
 
 func testAccCheckAciSubnetPoolforIpSecTunnelsExists(name string, subnet_poolfor_ip_sec_tunnels *models.SubnetPoolforIpSecTunnels) resource.TestCheckFunc {
@@ -132,14 +132,14 @@ func testAccCheckAciSubnetPoolforIpSecTunnelsDestroy(s *terraform.State) error {
 	return nil
 }
 
-func testAccCheckAciSubnetPoolforIpSecTunnelsAttributes(fv_tenant_name, cloudtemplate_infra_network_name, cloudtemplate_ip_sec_tunnel_subnet_pool_name, description string, subnet_poolfor_ip_sec_tunnels *models.SubnetPoolforIpSecTunnels) resource.TestCheckFunc {
+func testAccCheckAciSubnetPoolforIpSecTunnelsAttributes(fv_tenant_name, aci_cloud_external_network_vpn_network, aci_cloud_ipsec_tunnel_subnet_pool, description string, subnet_poolfor_ip_sec_tunnels *models.SubnetPoolforIpSecTunnels) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
-		if cloudtemplate_ip_sec_tunnel_subnet_pool_name != GetMOName(subnet_poolfor_ip_sec_tunnels.DistinguishedName) {
+		if aci_cloud_ipsec_tunnel_subnet_pool != GetMOName(subnet_poolfor_ip_sec_tunnels.DistinguishedName) {
 			return fmt.Errorf("Bad cloudtemplate_ip_sec_tunnel_subnet_pool %s", GetMOName(subnet_poolfor_ip_sec_tunnels.DistinguishedName))
 		}
 
-		if cloudtemplate_infra_network_name != GetMOName(GetParentDn(subnet_poolfor_ip_sec_tunnels.DistinguishedName)) {
-			return fmt.Errorf(" Bad cloudtemplate_infra_network %s", GetMOName(GetParentDn(subnet_poolfor_ip_sec_tunnels.DistinguishedName)))
+		if aci_cloud_external_network_vpn_network != GetMOName(GetParentDn(subnet_poolfor_ip_sec_tunnels.DistinguishedName, models.RncloudtemplateIpSecTunnelSubnetPool)) {
+			return fmt.Errorf(" Bad cloudtemplate_infra_network %s", GetMOName(GetParentDn(subnet_poolfor_ip_sec_tunnels.DistinguishedName, models.RncloudtemplateIpSecTunnelSubnetPool)))
 		}
 		if description != subnet_poolfor_ip_sec_tunnels.Description {
 			return fmt.Errorf("Bad subnet_poolfor_ip_sec_tunnels Description %s", subnet_poolfor_ip_sec_tunnels.Description)

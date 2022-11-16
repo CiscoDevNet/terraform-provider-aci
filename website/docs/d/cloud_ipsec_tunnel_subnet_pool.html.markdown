@@ -10,12 +10,13 @@ description: |-
 # aci_cloud_ipsec_tunnel_subnet_pool #
 
 Data source for the ACI Cloud Subnet Pool for IpSec Tunnels
+<b>Note: This resource is supported in Cloud APIC version > 25.0 only.</b>
 
 
 ## API Information ##
 
 * `Class` - cloudtemplateIpSecTunnelSubnetPool
-* `Distinguished Name` - uni/tn-{tenant_name}/infranetwork-{name}/ipsecsubnetpool-[{subnet_pool}]
+* `Distinguished Name` - uni/tn-{tenant_name}/infranetwork-{infra_network_name}/ipsecsubnetpool-[{subnet_pool}]
 
 ## GUI Information ##
 
