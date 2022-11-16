@@ -7,12 +7,13 @@ terraform {
 }
 
 provider "aci" {
-  username = "admin"
-  password = "Ins3965!12345"
-  url      = "https://20.230.92.129"
+  username = ""
+  password = ""
+  url      = ""
   insecure = true
 }
 
+# Import Brownfield Virtual Network in Azure cAPIC
 resource "aci_tenant" "terraform_tenant" {
   name = "unmanaged-tenant1"
 }
@@ -22,6 +23,7 @@ resource "aci_vrf" "vrf" {
   name      = "unmanaged-VRF2"
 }
 
+# Azure cloud
 resource "aci_cloud_context_profile" "ctx1" {
   name                     = "cloud_context_profile"
   description              = "update desc"
@@ -31,5 +33,28 @@ resource "aci_cloud_context_profile" "ctx1" {
   cloud_vendor             = "azure"
   relation_cloud_rs_to_ctx = aci_vrf.vrf.id
   cloud_brownfield         = "/subscriptions/aafaec5f-c828-4651-8504-3a1a01c5daeb/resourceGroups/Unmanaged-test/providers/Microsoft.Network/virtualNetworks/Unmanaged-VNet3"
+  access_policy_type       = "read-only"
+}
+
+# Import Brownfield VPC in AWS cloud APIC
+resource "aci_tenant" "terraform_tenant" {
+  name = "tenant1"
+}
+
+resource "aci_vrf" "vrf" {
+  tenant_dn = aci_tenant.terraform_tenant.id
+  name      = "aws_vrf"
+}
+
+# AWS cloud
+resource "aci_cloud_context_profile" "ctx1" {
+  name                     = "cloud_context_profile"
+  description              = "import brownfield vpc in aws"
+  tenant_dn                = aci_tenant.terraform_tenant.id
+  primary_cidr             = "10.2.0.0/24"
+  region                   = "us-east-1"
+  cloud_vendor             = "aws"
+  relation_cloud_rs_to_ctx = aci_vrf.vrf.id
+  cloud_brownfield         = "vpc-00a844d6354c53502"
   access_policy_type       = "read-only"
 }
