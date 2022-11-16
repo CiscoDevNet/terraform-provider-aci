@@ -2,6 +2,7 @@ package aci
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log"
 	"regexp"
@@ -107,9 +108,12 @@ func resourceAciCloudContextProfile() *schema.Resource {
 			"access_policy_type": &schema.Schema{
 				Type:        schema.TypeString,
 				Optional:    true,
-				Description: "Ctx access policy type",
+				Description: "Cloud context access policy type",
 				ValidateFunc: validation.StringInSlice([]string{
 					"read-only",
+					"routing-only",
+					"inherited",
+					"routing-security",
 				}, false),
 			},
 		}),
@@ -135,16 +139,6 @@ func getRemoteCloudContextProfile(client *client.Client, dn string, d *schema.Re
 
 	return cloudCtxProfile, nil
 }
-
-// func getCloudBrwonField(client *client.Client, parentDn, dn string) error {
-// 	baseurlStr := "/api/node/mo"
-// 	dn := fmt.Sprintf("%s/cloudBrownfield", parentDn)
-// 	cloudCtxProfileCont, err := client.GetViaURL(dn)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-
-// }
 
 func setCloudContextProfileAttributes(cloudCtxProfile *models.CloudContextProfile, d *schema.ResourceData) (*schema.ResourceData, error) {
 	dn := d.Id()
@@ -175,7 +169,6 @@ func setRelationalAttributes(cloudCtxProfileCont *container.Container, d *schema
 
 	CloudVendorPattern := regexp.MustCompile(`uni/clouddomp/provp-(.+)/region-`)
 	for _, childCont := range ChildContList {
-		log.Printf("[DEBUG]: cloudCtxProfileCont children : %v", childCont)
 		if childCont.Exists("cloudCidr") {
 			d.Set("primary_cidr", G(childCont.S("cloudCidr", "attributes"), "addr"))
 		} else if childCont.Exists("cloudRsCtxProfileToRegion") {
@@ -188,11 +181,14 @@ func setRelationalAttributes(cloudCtxProfileCont *container.Container, d *schema
 		} else if childCont.Exists("cloudRsToCtx") {
 			d.Set("relation_cloud_rs_to_ctx", G(childCont.S("cloudRsToCtx", "attributes"), "tDn"))
 		} else if childCont.Exists("cloudBrownfield") {
-			d.Set("cloud_brownfield", G(childCont.S("cloudBrownfield", "children", "cloudIDMapping", "attributes"), "cloudProviderId"))
-			log.Printf("\n\n\n\n[DEBUG] cloud_brownfield %s\n\n\n\n", G(childCont.S("cloudBrownfield", "children", "cloudIDMapping", "attributes"), "cloudProviderId"))
+			var cloudProvider []string
+			err := json.Unmarshal([]byte(G(childCont.S("cloudBrownfield", "children", "cloudIDMapping", "attributes"), "cloudProviderId")), &cloudProvider)
+			if err != nil {
+				log.Printf("[DEBUG]: Failed to set relational attributes : %v", err)
+			}
+			d.Set("cloud_brownfield", cloudProvider[0])
 		} else if childCont.Exists("cloudRsCtxProfileToAccessPolicy") {
 			d.Set("access_policy_type", GetMOName(G(childCont.S("cloudRsCtxProfileToAccessPolicy", "attributes"), "tDn")))
-			log.Printf("\n\n\n\n[DEBUG] access policy %s\n\n\n\n", G(childCont.S("cloudRsCtxProfileToAccessPolicy", "attributes"), "tDn"))
 		}
 	}
 }
@@ -246,7 +242,6 @@ func resourceAciCloudContextProfileCreate(ctx context.Context, d *schema.Resourc
 	cloudBrownfield := ""
 	if tmpVar, ok := d.GetOk("cloud_brownfield"); ok {
 		cloudBrownfield = tmpVar.(string)
-		log.Printf("\n\n\n[DEBUG]cloudBrownfield in ctxCreate %v", cloudBrownfield)
 	}
 
 	PrimaryCIDR := d.Get("primary_cidr").(string)
@@ -364,11 +359,6 @@ func resourceAciCloudContextProfileUpdate(ctx context.Context, d *schema.Resourc
 		_, newRelParam := d.GetChange("hub_network")
 		checkDns = append(checkDns, newRelParam.(string))
 	}
-
-	// if d.HasChange("cloud_brownfield") {
-	// 	_, newRelParam := d.GetChange("cloud_brownfield")
-	// 	checkDns = append(checkDns, newRelParam.(string))
-	// }
 
 	if d.HasChange("access_policy_type") {
 		_, newRelParam := d.GetChange("access_policy_type")
