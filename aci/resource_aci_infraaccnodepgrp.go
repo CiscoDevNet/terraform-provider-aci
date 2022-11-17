@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/ciscoecosystem/aci-go-client/v2/client"
+	"github.com/ciscoecosystem/aci-go-client/v2/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -150,6 +150,222 @@ func setAccessSwitchPolicyGroupAttributes(infraAccNodePGrp *models.AccessSwitchP
 	return d, nil
 }
 
+func getAndSetReadRelationinfraRsBfdIpv4InstPol(client *client.Client, dn string, d *schema.ResourceData) (*schema.ResourceData, error) {
+	infraRsBfdIpv4InstPolData, err := client.ReadRelationinfraRsBfdIpv4InstPol(dn)
+	if err != nil {
+		log.Printf("[DEBUG] Error while reading relation infraRsBfdIpv4InstPol %v", err)
+		d.Set("relation_infra_rs_bfd_ipv4_inst_pol", nil)
+		return d, err
+	} else {
+		d.Set("relation_infra_rs_bfd_ipv4_inst_pol", infraRsBfdIpv4InstPolData.(string))
+	}
+	return d, nil
+}
+
+func getAndSetReadRelationinfraRsBfdIpv6InstPol(client *client.Client, dn string, d *schema.ResourceData) (*schema.ResourceData, error) {
+	infraRsBfdIpv6InstPolData, err := client.ReadRelationinfraRsBfdIpv6InstPol(dn)
+	if err != nil {
+		log.Printf("[DEBUG] Error while reading relation infraRsBfdIpv6InstPol %v", err)
+		d.Set("relation_infra_rs_bfd_ipv6_inst_pol", nil)
+		return d, err
+	} else {
+		d.Set("relation_infra_rs_bfd_ipv6_inst_pol", infraRsBfdIpv6InstPolData.(string))
+	}
+	return d, nil
+}
+
+func getAndSetReadRelationinfraRsBfdMhIpv4InstPol(client *client.Client, dn string, d *schema.ResourceData) (*schema.ResourceData, error) {
+	infraRsBfdMhIpv4InstPolData, err := client.ReadRelationinfraRsBfdMhIpv4InstPol(dn)
+	if err != nil {
+		log.Printf("[DEBUG] Error while reading relation infraRsBfdMhIpv4InstPol %v", err)
+		d.Set("relation_infra_rs_bfd_mh_ipv4_inst_pol", nil)
+		return d, err
+	} else {
+		d.Set("relation_infra_rs_bfd_mh_ipv4_inst_pol", infraRsBfdMhIpv4InstPolData.(string))
+	}
+	return d, nil
+}
+
+func getAndSetReadRelationinfraRsBfdMhIpv6InstPol(client *client.Client, dn string, d *schema.ResourceData) (*schema.ResourceData, error) {
+	infraRsBfdMhIpv6InstPolData, err := client.ReadRelationinfraRsBfdMhIpv6InstPol(dn)
+	if err != nil {
+		log.Printf("[DEBUG] Error while reading relation infraRsBfdMhIpv6InstPol %v", err)
+		d.Set("relation_infra_rs_bfd_mh_ipv6_inst_pol", nil)
+		return d, err
+	} else {
+		d.Set("relation_infra_rs_bfd_mh_ipv6_inst_pol", infraRsBfdMhIpv6InstPolData.(string))
+	}
+	return d, nil
+}
+
+func getAndSetReadRelationinfraRsEquipmentFlashConfigPol(client *client.Client, dn string, d *schema.ResourceData) (*schema.ResourceData, error) {
+	infraRsEquipmentFlashConfigPolData, err := client.ReadRelationinfraRsEquipmentFlashConfigPol(dn)
+	if err != nil {
+		log.Printf("[DEBUG] Error while reading relation infraRsEquipmentFlashConfigPol %v", err)
+		d.Set("relation_infra_rs_equipment_flash_config_pol", nil)
+		return d, err
+	} else {
+		d.Set("relation_infra_rs_equipment_flash_config_pol", infraRsEquipmentFlashConfigPolData.(string))
+	}
+	return d, nil
+}
+
+func getAndSetReadRelationinfraRsFcFabricPol(client *client.Client, dn string, d *schema.ResourceData) (*schema.ResourceData, error) {
+	infraRsFcFabricPolData, err := client.ReadRelationinfraRsFcFabricPol(dn)
+	if err != nil {
+		log.Printf("[DEBUG] Error while reading relation infraRsFcFabricPol %v", err)
+		d.Set("relation_infra_rs_fc_fabric_pol", nil)
+		return d, err
+	} else {
+		d.Set("relation_infra_rs_fc_fabric_pol", infraRsFcFabricPolData.(string))
+	}
+	return d, nil
+}
+
+func getAndSetReadRelationinfraRsFcInstPol(client *client.Client, dn string, d *schema.ResourceData) (*schema.ResourceData, error) {
+	infraRsFcInstPolData, err := client.ReadRelationinfraRsFcInstPol(dn)
+	if err != nil {
+		log.Printf("[DEBUG] Error while reading relation infraRsFcInstPol %v", err)
+		d.Set("relation_infra_rs_fc_inst_pol", nil)
+		return d, err
+	} else {
+		d.Set("relation_infra_rs_fc_inst_pol", infraRsFcInstPolData.(string))
+	}
+	return d, nil
+}
+
+func getAndSetReadRelationinfraRsIaclLeafProfile(client *client.Client, dn string, d *schema.ResourceData) (*schema.ResourceData, error) {
+	infraRsIaclLeafProfileData, err := client.ReadRelationinfraRsIaclLeafProfile(dn)
+	if err != nil {
+		log.Printf("[DEBUG] Error while reading relation infraRsIaclLeafProfile %v", err)
+		d.Set("relation_infra_rs_iacl_leaf_profile", nil)
+		return d, err
+	} else {
+		d.Set("relation_infra_rs_iacl_leaf_profile", infraRsIaclLeafProfileData.(string))
+	}
+	return d, nil
+}
+
+func getAndSetReadRelationinfraRsL2NodeAuthPol(client *client.Client, dn string, d *schema.ResourceData) (*schema.ResourceData, error) {
+	infraRsL2NodeAuthPolData, err := client.ReadRelationinfraRsL2NodeAuthPol(dn)
+	if err != nil {
+		log.Printf("[DEBUG] Error while reading relation infraRsL2NodeAuthPol %v", err)
+		d.Set("relation_infra_rs_l2_node_auth_pol", nil)
+		return d, err
+	} else {
+		d.Set("relation_infra_rs_l2_node_auth_pol", infraRsL2NodeAuthPolData.(string))
+	}
+	return d, nil
+}
+
+func getAndSetReadRelationinfraRsLeafCoppProfile(client *client.Client, dn string, d *schema.ResourceData) (*schema.ResourceData, error) {
+	infraRsLeafCoppProfileData, err := client.ReadRelationinfraRsLeafCoppProfile(dn)
+	if err != nil {
+		log.Printf("[DEBUG] Error while reading relation infraRsLeafCoppProfile %v", err)
+		d.Set("relation_infra_rs_leaf_copp_profile", nil)
+		return d, err
+	} else {
+		d.Set("relation_infra_rs_leaf_copp_profile", infraRsLeafCoppProfileData.(string))
+	}
+	return d, nil
+}
+
+func getAndSetReadRelationinfraRsLeafPGrpToCdpIfPol(client *client.Client, dn string, d *schema.ResourceData) (*schema.ResourceData, error) {
+	infraRsLeafPGrpToCdpIfPolData, err := client.ReadRelationinfraRsLeafPGrpToCdpIfPol(dn)
+	if err != nil {
+		log.Printf("[DEBUG] Error while reading relation infraRsLeafPGrpToCdpIfPol %v", err)
+		d.Set("relation_infra_rs_leaf_p_grp_to_cdp_if_pol", nil)
+		return d, err
+	} else {
+		d.Set("relation_infra_rs_leaf_p_grp_to_cdp_if_pol", infraRsLeafPGrpToCdpIfPolData.(string))
+	}
+	return d, nil
+}
+
+func getAndSetReadRelationinfraRsLeafPGrpToLldpIfPol(client *client.Client, dn string, d *schema.ResourceData) (*schema.ResourceData, error) {
+	infraRsLeafPGrpToLldpIfPolData, err := client.ReadRelationinfraRsLeafPGrpToLldpIfPol(dn)
+	if err != nil {
+		log.Printf("[DEBUG] Error while reading relation infraRsLeafPGrpToLldpIfPol %v", err)
+		d.Set("relation_infra_rs_leaf_p_grp_to_lldp_if_pol", nil)
+		return d, err
+	} else {
+		d.Set("relation_infra_rs_leaf_p_grp_to_lldp_if_pol", infraRsLeafPGrpToLldpIfPolData.(string))
+	}
+	return d, nil
+}
+
+func getAndSetReadRelationinfraRsMonNodeInfraPol(client *client.Client, dn string, d *schema.ResourceData) (*schema.ResourceData, error) {
+	infraRsMonNodeInfraPolData, err := client.ReadRelationinfraRsMonNodeInfraPol(dn)
+	if err != nil {
+		log.Printf("[DEBUG] Error while reading relation infraRsMonNodeInfraPol %v", err)
+		d.Set("relation_infra_rs_mon_node_infra_pol", nil)
+		return d, err
+	} else {
+		d.Set("relation_infra_rs_mon_node_infra_pol", infraRsMonNodeInfraPolData.(string))
+	}
+	return d, nil
+}
+
+func getAndSetReadRelationinfraRsMstInstPol(client *client.Client, dn string, d *schema.ResourceData) (*schema.ResourceData, error) {
+	infraRsMstInstPolData, err := client.ReadRelationinfraRsMstInstPol(dn)
+	if err != nil {
+		log.Printf("[DEBUG] Error while reading relation infraRsMstInstPol %v", err)
+		d.Set("relation_infra_rs_mst_inst_pol", nil)
+		return d, err
+	} else {
+		d.Set("relation_infra_rs_mst_inst_pol", infraRsMstInstPolData.(string))
+	}
+	return d, nil
+}
+
+func getAndSetReadRelationinfraRsNetflowNodePol(client *client.Client, dn string, d *schema.ResourceData) (*schema.ResourceData, error) {
+	infraRsNetflowNodePolData, err := client.ReadRelationinfraRsNetflowNodePol(dn)
+	if err != nil {
+		log.Printf("[DEBUG] Error while reading relation infraRsNetflowNodePol %v", err)
+		d.Set("relation_infra_rs_netflow_node_pol", nil)
+		return d, err
+	} else {
+		d.Set("relation_infra_rs_netflow_node_pol", infraRsNetflowNodePolData.(string))
+	}
+	return d, nil
+}
+
+func getAndSetReadRelationinfraRsPoeInstPol(client *client.Client, dn string, d *schema.ResourceData) (*schema.ResourceData, error) {
+	infraRsPoeInstPolData, err := client.ReadRelationinfraRsPoeInstPol(dn)
+	if err != nil {
+		log.Printf("[DEBUG] Error while reading relation infraRsPoeInstPol %v", err)
+		d.Set("relation_infra_rs_poe_inst_pol", nil)
+		return d, err
+	} else {
+		d.Set("relation_infra_rs_poe_inst_pol", infraRsPoeInstPolData.(string))
+	}
+	return d, nil
+}
+
+func getAndSetReadRelationinfraRsTopoctrlFastLinkFailoverInstPol(client *client.Client, dn string, d *schema.ResourceData) (*schema.ResourceData, error) {
+	infraRsTopoctrlFastLinkFailoverInstPolData, err := client.ReadRelationinfraRsTopoctrlFastLinkFailoverInstPol(dn)
+	if err != nil {
+		log.Printf("[DEBUG] Error while reading relation infraRsTopoctrlFastLinkFailoverInstPol %v", err)
+		d.Set("relation_infra_rs_topoctrl_fast_link_failover_inst_pol", nil)
+		return d, err
+	} else {
+		d.Set("relation_infra_rs_topoctrl_fast_link_failover_inst_pol", infraRsTopoctrlFastLinkFailoverInstPolData.(string))
+	}
+	return d, nil
+}
+
+func getAndSetReadRelationinfraRsTopoctrlFwdScaleProfPol(client *client.Client, dn string, d *schema.ResourceData) (*schema.ResourceData, error) {
+	infraRsTopoctrlFwdScaleProfPolData, err := client.ReadRelationinfraRsTopoctrlFwdScaleProfPol(dn)
+	if err != nil {
+		log.Printf("[DEBUG] Error while reading relation infraRsTopoctrlFwdScaleProfPol %v", err)
+		d.Set("relation_infra_rs_topoctrl_fwd_scale_prof_pol", nil)
+		return d, err
+	} else {
+		d.Set("relation_infra_rs_topoctrl_fwd_scale_prof_pol", infraRsTopoctrlFwdScaleProfPolData.(string))
+	}
+	return d, nil
+}
+
 func resourceAciAccessSwitchPolicyGroupImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
 	log.Printf("[DEBUG] %s: Beginning Import", d.Id())
 	aciClient := m.(*client.Client)
@@ -162,6 +378,151 @@ func resourceAciAccessSwitchPolicyGroupImport(d *schema.ResourceData, m interfac
 	if err != nil {
 		return nil, err
 	}
+
+	// infraRsBfdIpv4InstPol - Beginning Import
+	log.Printf("[DEBUG] %s: infraRsBfdIpv4InstPol - Beginning Import with parent DN", dn)
+	_, err = getAndSetReadRelationinfraRsBfdIpv4InstPol(aciClient, dn, d)
+	if err == nil {
+		log.Printf("[DEBUG] %s: infraRsBfdIpv4InstPol - Import finished successfully", d.Get("relation_infra_rs_bfd_ipv4_inst_pol"))
+	}
+	// infraRsBfdIpv4InstPol - Import finished successfully
+
+	// infraRsBfdIpv6InstPol - Beginning Import
+	log.Printf("[DEBUG] %s: infraRsBfdIpv6InstPol - Beginning Import with parent DN", dn)
+	_, err = getAndSetReadRelationinfraRsBfdIpv6InstPol(aciClient, dn, d)
+	if err == nil {
+		log.Printf("[DEBUG] %s: infraRsBfdIpv6InstPol - Import finished successfully", d.Get("relation_infra_rs_bfd_ipv6_inst_pol"))
+	}
+	// infraRsBfdIpv6InstPol - Import finished successfully
+
+	// infraRsBfdMhIpv4InstPol - Beginning Import
+	log.Printf("[DEBUG] %s: infraRsBfdMhIpv4InstPol - Beginning Import with parent DN", dn)
+	_, err = getAndSetReadRelationinfraRsBfdMhIpv4InstPol(aciClient, dn, d)
+	if err == nil {
+		log.Printf("[DEBUG] %s: infraRsBfdMhIpv4InstPol - Import finished successfully", d.Get("relation_infra_rs_bfd_mh_ipv4_inst_pol"))
+	}
+	// infraRsBfdMhIpv4InstPol - Import finished successfully
+
+	// infraRsBfdMhIpv6InstPol - Beginning Import
+	log.Printf("[DEBUG] %s: infraRsBfdMhIpv6InstPol - Beginning Import with parent DN", dn)
+	_, err = getAndSetReadRelationinfraRsBfdMhIpv6InstPol(aciClient, dn, d)
+	if err == nil {
+		log.Printf("[DEBUG] %s: infraRsBfdMhIpv6InstPol - Import finished successfully", d.Get("relation_infra_rs_bfd_mh_ipv6_inst_pol"))
+	}
+	// infraRsBfdMhIpv6InstPol - Import finished successfully
+
+	// infraRsEquipmentFlashConfigPol - Beginning Import
+	log.Printf("[DEBUG] %s: infraRsEquipmentFlashConfigPol - Beginning Import with parent DN", dn)
+	_, err = getAndSetReadRelationinfraRsEquipmentFlashConfigPol(aciClient, dn, d)
+	if err == nil {
+		log.Printf("[DEBUG] %s: infraRsEquipmentFlashConfigPol - Import finished successfully", d.Get("relation_infra_rs_equipment_flash_config_pol"))
+	}
+	// infraRsEquipmentFlashConfigPol - Import finished successfully
+
+	// infraRsFcFabricPol - Beginning Import
+	log.Printf("[DEBUG] %s: infraRsFcFabricPol - Beginning Import with parent DN", dn)
+	_, err = getAndSetReadRelationinfraRsFcFabricPol(aciClient, dn, d)
+	if err == nil {
+		log.Printf("[DEBUG] %s: infraRsFcFabricPol - Import finished successfully", d.Get("relation_infra_rs_fc_fabric_pol"))
+	}
+	// infraRsFcFabricPol - Import finished successfully
+
+	// infraRsFcInstPol - Beginning Import
+	log.Printf("[DEBUG] %s: infraRsFcInstPol - Beginning Import with parent DN", dn)
+	_, err = getAndSetReadRelationinfraRsFcInstPol(aciClient, dn, d)
+	if err == nil {
+		log.Printf("[DEBUG] %s: infraRsFcInstPol - Import finished successfully", d.Get("relation_infra_rs_fc_inst_pol"))
+	}
+	// infraRsFcInstPol - Import finished successfully
+
+	// infraRsIaclLeafProfile - Beginning Import
+	log.Printf("[DEBUG] %s: infraRsIaclLeafProfile - Beginning Import with parent DN", dn)
+	_, err = getAndSetReadRelationinfraRsIaclLeafProfile(aciClient, dn, d)
+	if err == nil {
+		log.Printf("[DEBUG] %s: infraRsIaclLeafProfile - Import finished successfully", d.Get("relation_infra_rs_iacl_leaf_profile"))
+	}
+	// infraRsIaclLeafProfile - Import finished successfully
+
+	// infraRsL2NodeAuthPol - Beginning Import
+	log.Printf("[DEBUG] %s: infraRsL2NodeAuthPol - Beginning Import with parent DN", dn)
+	_, err = getAndSetReadRelationinfraRsL2NodeAuthPol(aciClient, dn, d)
+	if err == nil {
+		log.Printf("[DEBUG] %s: infraRsL2NodeAuthPol - Import finished successfully", d.Get("relation_infra_rs_l2_node_auth_pol"))
+	}
+	// infraRsL2NodeAuthPol - Import finished successfully
+
+	// infraRsLeafCoppProfile - Beginning Import
+	log.Printf("[DEBUG] %s: infraRsLeafCoppProfile - Beginning Import with parent DN", dn)
+	_, err = getAndSetReadRelationinfraRsLeafCoppProfile(aciClient, dn, d)
+	if err == nil {
+		log.Printf("[DEBUG] %s: infraRsLeafCoppProfile - Import finished successfully", d.Get("relation_infra_rs_leaf_copp_profile"))
+	}
+	// infraRsLeafCoppProfile - Import finished successfully
+
+	// infraRsLeafPGrpToCdpIfPol - Beginning Import
+	log.Printf("[DEBUG] %s: infraRsLeafPGrpToCdpIfPol - Beginning Import with parent DN", dn)
+	_, err = getAndSetReadRelationinfraRsLeafPGrpToCdpIfPol(aciClient, dn, d)
+	if err == nil {
+		log.Printf("[DEBUG] %s: infraRsLeafPGrpToCdpIfPol - Import finished successfully", d.Get("relation_infra_rs_leaf_p_grp_to_cdp_if_pol"))
+	}
+	// infraRsLeafPGrpToCdpIfPol - Import finished successfully
+
+	// infraRsLeafPGrpToLldpIfPol - Beginning Import
+	log.Printf("[DEBUG] %s: infraRsLeafPGrpToLldpIfPol - Beginning Import with parent DN", dn)
+	_, err = getAndSetReadRelationinfraRsLeafPGrpToLldpIfPol(aciClient, dn, d)
+	if err == nil {
+		log.Printf("[DEBUG] %s: infraRsLeafPGrpToLldpIfPol - Import finished successfully", d.Get("relation_infra_rs_leaf_p_grp_to_lldp_if_pol"))
+	}
+	// infraRsLeafPGrpToLldpIfPol - Import finished successfully
+
+	// infraRsMonNodeInfraPol - Beginning Import
+	log.Printf("[DEBUG] %s: infraRsMonNodeInfraPol - Beginning Import with parent DN", dn)
+	_, err = getAndSetReadRelationinfraRsMonNodeInfraPol(aciClient, dn, d)
+	if err == nil {
+		log.Printf("[DEBUG] %s: infraRsMonNodeInfraPol - Import finished successfully", d.Get("relation_infra_rs_mon_node_infra_pol"))
+	}
+	// infraRsMonNodeInfraPol - Import finished successfully
+
+	// infraRsMstInstPol - Beginning Import
+	log.Printf("[DEBUG] %s: infraRsMstInstPol - Beginning Import with parent DN", dn)
+	_, err = getAndSetReadRelationinfraRsMstInstPol(aciClient, dn, d)
+	if err == nil {
+		log.Printf("[DEBUG] %s: infraRsMstInstPol - Import finished successfully", d.Get("relation_infra_rs_mst_inst_pol"))
+	}
+	// infraRsMstInstPol - Import finished successfully
+
+	// infraRsNetflowNodePol - Beginning Import
+	log.Printf("[DEBUG] %s: infraRsNetflowNodePol - Beginning Import with parent DN", dn)
+	_, err = getAndSetReadRelationinfraRsNetflowNodePol(aciClient, dn, d)
+	if err == nil {
+		log.Printf("[DEBUG] %s: infraRsNetflowNodePol - Import finished successfully", d.Get("relation_infra_rs_netflow_node_pol"))
+	}
+	// infraRsNetflowNodePol - Import finished successfully
+
+	// infraRsPoeInstPol - Beginning Import
+	log.Printf("[DEBUG] %s: infraRsPoeInstPol - Beginning Import with parent DN", dn)
+	_, err = getAndSetReadRelationinfraRsPoeInstPol(aciClient, dn, d)
+	if err == nil {
+		log.Printf("[DEBUG] %s: infraRsPoeInstPol - Import finished successfully", d.Get("relation_infra_rs_poe_inst_pol"))
+	}
+	// infraRsPoeInstPol - Import finished successfully
+
+	// infraRsTopoctrlFastLinkFailoverInstPol - Beginning Import
+	log.Printf("[DEBUG] %s: infraRsTopoctrlFastLinkFailoverInstPol - Beginning Import with parent DN", dn)
+	_, err = getAndSetReadRelationinfraRsTopoctrlFastLinkFailoverInstPol(aciClient, dn, d)
+	if err == nil {
+		log.Printf("[DEBUG] %s: infraRsTopoctrlFastLinkFailoverInstPol - Import finished successfully", d.Get("relation_infra_rs_topoctrl_fast_link_failover_inst_pol"))
+	}
+	// infraRsTopoctrlFastLinkFailoverInstPol - Import finished successfully
+
+	// infraRsTopoctrlFwdScaleProfPol - Beginning Import
+	log.Printf("[DEBUG] %s: infraRsTopoctrlFwdScaleProfPol - Beginning Import with parent DN", dn)
+	_, err = getAndSetReadRelationinfraRsTopoctrlFwdScaleProfPol(aciClient, dn, d)
+	if err == nil {
+		log.Printf("[DEBUG] %s: infraRsTopoctrlFwdScaleProfPol - Import finished successfully", d.Get("relation_infra_rs_topoctrl_fwd_scale_prof_pol"))
+	}
+	// infraRsTopoctrlFwdScaleProfPol - Import finished successfully
+
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 	return []*schema.ResourceData{schemaFilled}, nil
 }
@@ -848,239 +1209,150 @@ func resourceAciAccessSwitchPolicyGroupRead(ctx context.Context, d *schema.Resou
 	}
 	setAccessSwitchPolicyGroupAttributes(infraAccNodePGrp, d)
 
-	infraRsBfdIpv4InstPolData, err := aciClient.ReadRelationinfraRsBfdIpv4InstPol(dn)
-	if err != nil {
-		log.Printf("[DEBUG] Error while reading relation infraRsBfdIpv4InstPol %v", err)
-		d.Set("relation_infra_rs_bfd_ipv4_inst_pol", "")
-	} else {
-		if _, ok := d.GetOk("relation_infra_rs_bfd_ipv4_inst_pol"); ok {
-			tfName := GetMOName(d.Get("relation_infra_rs_bfd_ipv4_inst_pol").(string))
-			if tfName != infraRsBfdIpv4InstPolData {
-				d.Set("relation_infra_rs_bfd_ipv4_inst_pol", "")
-			}
-		}
+	// infraRsBfdIpv4InstPol - Beginning Read
+	log.Printf("[DEBUG] %s: infraRsBfdIpv4InstPol - Beginning Read with parent DN", dn)
+	_, err = getAndSetReadRelationinfraRsBfdIpv4InstPol(aciClient, dn, d)
+	if err == nil {
+		log.Printf("[DEBUG] %s: infraRsBfdIpv4InstPol - Read finished successfully", d.Get("relation_infra_rs_bfd_ipv4_inst_pol"))
 	}
+	// infraRsBfdIpv4InstPol - Read finished successfully
 
-	infraRsBfdIpv6InstPolData, err := aciClient.ReadRelationinfraRsBfdIpv6InstPol(dn)
-	if err != nil {
-		log.Printf("[DEBUG] Error while reading relation infraRsBfdIpv6InstPol %v", err)
-		d.Set("relation_infra_rs_bfd_ipv6_inst_pol", "")
-	} else {
-		if _, ok := d.GetOk("relation_infra_rs_bfd_ipv6_inst_pol"); ok {
-			tfName := GetMOName(d.Get("relation_infra_rs_bfd_ipv6_inst_pol").(string))
-			if tfName != infraRsBfdIpv6InstPolData {
-				d.Set("relation_infra_rs_bfd_ipv6_inst_pol", "")
-			}
-		}
+	// infraRsBfdIpv6InstPol - Beginning Read
+	log.Printf("[DEBUG] %s: infraRsBfdIpv6InstPol - Beginning Read with parent DN", dn)
+	_, err = getAndSetReadRelationinfraRsBfdIpv6InstPol(aciClient, dn, d)
+	if err == nil {
+		log.Printf("[DEBUG] %s: infraRsBfdIpv6InstPol - Read finished successfully", d.Get("relation_infra_rs_bfd_ipv6_inst_pol"))
 	}
+	// infraRsBfdIpv6InstPol - Read finished successfully
 
-	infraRsBfdMhIpv4InstPolData, err := aciClient.ReadRelationinfraRsBfdMhIpv4InstPol(dn)
-	if err != nil {
-		log.Printf("[DEBUG] Error while reading relation infraRsBfdMhIpv4InstPol %v", err)
-		d.Set("relation_infra_rs_bfd_mh_ipv4_inst_pol", "")
-	} else {
-		if _, ok := d.GetOk("relation_infra_rs_bfd_mh_ipv4_inst_pol"); ok {
-			tfName := GetMOName(d.Get("relation_infra_rs_bfd_mh_ipv4_inst_pol").(string))
-			if tfName != infraRsBfdMhIpv4InstPolData {
-				d.Set("relation_infra_rs_bfd_mh_ipv4_inst_pol", "")
-			}
-		}
+	// infraRsBfdMhIpv4InstPol - Beginning Read
+	log.Printf("[DEBUG] %s: infraRsBfdMhIpv4InstPol - Beginning Read with parent DN", dn)
+	_, err = getAndSetReadRelationinfraRsBfdMhIpv4InstPol(aciClient, dn, d)
+	if err == nil {
+		log.Printf("[DEBUG] %s: infraRsBfdMhIpv4InstPol - Read finished successfully", d.Get("relation_infra_rs_bfd_mh_ipv4_inst_pol"))
 	}
+	// infraRsBfdMhIpv4InstPol - Read finished successfully
 
-	infraRsBfdMhIpv6InstPolData, err := aciClient.ReadRelationinfraRsBfdMhIpv6InstPol(dn)
-	if err != nil {
-		log.Printf("[DEBUG] Error while reading relation infraRsBfdMhIpv6InstPol %v", err)
-		d.Set("relation_infra_rs_bfd_mh_ipv6_inst_pol", "")
-	} else {
-		if _, ok := d.GetOk("relation_infra_rs_bfd_mh_ipv6_inst_pol"); ok {
-			tfName := GetMOName(d.Get("relation_infra_rs_bfd_mh_ipv6_inst_pol").(string))
-			if tfName != infraRsBfdMhIpv6InstPolData {
-				d.Set("relation_infra_rs_bfd_mh_ipv6_inst_pol", "")
-			}
-		}
+	// infraRsBfdMhIpv6InstPol - Beginning Read
+	log.Printf("[DEBUG] %s: infraRsBfdMhIpv6InstPol - Beginning Read with parent DN", dn)
+	_, err = getAndSetReadRelationinfraRsBfdMhIpv6InstPol(aciClient, dn, d)
+	if err == nil {
+		log.Printf("[DEBUG] %s: infraRsBfdMhIpv6InstPol - Read finished successfully", d.Get("relation_infra_rs_bfd_mh_ipv6_inst_pol"))
 	}
+	// infraRsBfdMhIpv6InstPol - Read finished successfully
 
-	infraRsEquipmentFlashConfigPolData, err := aciClient.ReadRelationinfraRsEquipmentFlashConfigPol(dn)
-	if err != nil {
-		log.Printf("[DEBUG] Error while reading relation infraRsEquipmentFlashConfigPol %v", err)
-		d.Set("relation_infra_rs_equipment_flash_config_pol", "")
-	} else {
-		if _, ok := d.GetOk("relation_infra_rs_equipment_flash_config_pol"); ok {
-			tfName := GetMOName(d.Get("relation_infra_rs_equipment_flash_config_pol").(string))
-			if tfName != infraRsEquipmentFlashConfigPolData {
-				d.Set("relation_infra_rs_equipment_flash_config_pol", "")
-			}
-		}
+	// infraRsEquipmentFlashConfigPol - Beginning Read
+	log.Printf("[DEBUG] %s: infraRsEquipmentFlashConfigPol - Beginning Read with parent DN", dn)
+	_, err = getAndSetReadRelationinfraRsEquipmentFlashConfigPol(aciClient, dn, d)
+	if err == nil {
+		log.Printf("[DEBUG] %s: infraRsEquipmentFlashConfigPol - Read finished successfully", d.Get("relation_infra_rs_equipment_flash_config_pol"))
 	}
+	// infraRsEquipmentFlashConfigPol - Read finished successfully
 
-	infraRsFcFabricPolData, err := aciClient.ReadRelationinfraRsFcFabricPol(dn)
-	if err != nil {
-		log.Printf("[DEBUG] Error while reading relation infraRsFcFabricPol %v", err)
-		d.Set("relation_infra_rs_fc_fabric_pol", "")
-	} else {
-		if _, ok := d.GetOk("relation_infra_rs_fc_fabric_pol"); ok {
-			tfName := GetMOName(d.Get("relation_infra_rs_fc_fabric_pol").(string))
-			if tfName != infraRsFcFabricPolData {
-				d.Set("relation_infra_rs_fc_fabric_pol", "")
-			}
-		}
+	// infraRsFcFabricPol - Beginning Read
+	log.Printf("[DEBUG] %s: infraRsFcFabricPol - Beginning Read with parent DN", dn)
+	_, err = getAndSetReadRelationinfraRsFcFabricPol(aciClient, dn, d)
+	if err == nil {
+		log.Printf("[DEBUG] %s: infraRsFcFabricPol - Read finished successfully", d.Get("relation_infra_rs_fc_fabric_pol"))
 	}
+	// infraRsFcFabricPol - Read finished successfully
 
-	infraRsFcInstPolData, err := aciClient.ReadRelationinfraRsFcInstPol(dn)
-	if err != nil {
-		log.Printf("[DEBUG] Error while reading relation infraRsFcInstPol %v", err)
-		d.Set("relation_infra_rs_fc_inst_pol", "")
-	} else {
-		if _, ok := d.GetOk("relation_infra_rs_fc_inst_pol"); ok {
-			tfName := GetMOName(d.Get("relation_infra_rs_fc_inst_pol").(string))
-			if tfName != infraRsFcInstPolData {
-				d.Set("relation_infra_rs_fc_inst_pol", "")
-			}
-		}
+	// infraRsFcInstPol - Beginning Read
+	log.Printf("[DEBUG] %s: infraRsFcInstPol - Beginning Read with parent DN", dn)
+	_, err = getAndSetReadRelationinfraRsFcInstPol(aciClient, dn, d)
+	if err == nil {
+		log.Printf("[DEBUG] %s: infraRsFcInstPol - Read finished successfully", d.Get("relation_infra_rs_fc_inst_pol"))
 	}
+	// infraRsFcInstPol - Read finished successfully
 
-	infraRsIaclLeafProfileData, err := aciClient.ReadRelationinfraRsIaclLeafProfile(dn)
-	if err != nil {
-		log.Printf("[DEBUG] Error while reading relation infraRsIaclLeafProfile %v", err)
-		d.Set("relation_infra_rs_iacl_leaf_profile", "")
-	} else {
-		if _, ok := d.GetOk("relation_infra_rs_iacl_leaf_profile"); ok {
-			tfName := GetMOName(d.Get("relation_infra_rs_iacl_leaf_profile").(string))
-			if tfName != infraRsIaclLeafProfileData {
-				d.Set("relation_infra_rs_iacl_leaf_profile", "")
-			}
-		}
+	// infraRsIaclLeafProfile - Beginning Read
+	log.Printf("[DEBUG] %s: infraRsIaclLeafProfile - Beginning Read with parent DN", dn)
+	_, err = getAndSetReadRelationinfraRsIaclLeafProfile(aciClient, dn, d)
+	if err == nil {
+		log.Printf("[DEBUG] %s: infraRsIaclLeafProfile - Read finished successfully", d.Get("relation_infra_rs_iacl_leaf_profile"))
 	}
+	// infraRsIaclLeafProfile - Read finished successfully
 
-	infraRsL2NodeAuthPolData, err := aciClient.ReadRelationinfraRsL2NodeAuthPol(dn)
-	if err != nil {
-		log.Printf("[DEBUG] Error while reading relation infraRsL2NodeAuthPol %v", err)
-		d.Set("relation_infra_rs_l2_node_auth_pol", "")
-	} else {
-		if _, ok := d.GetOk("relation_infra_rs_l2_node_auth_pol"); ok {
-			tfName := GetMOName(d.Get("relation_infra_rs_l2_node_auth_pol").(string))
-			if tfName != infraRsL2NodeAuthPolData {
-				d.Set("relation_infra_rs_l2_node_auth_pol", "")
-			}
-		}
+	// infraRsL2NodeAuthPol - Beginning Read
+	log.Printf("[DEBUG] %s: infraRsL2NodeAuthPol - Beginning Read with parent DN", dn)
+	_, err = getAndSetReadRelationinfraRsL2NodeAuthPol(aciClient, dn, d)
+	if err == nil {
+		log.Printf("[DEBUG] %s: infraRsL2NodeAuthPol - Read finished successfully", d.Get("relation_infra_rs_l2_node_auth_pol"))
 	}
+	// infraRsL2NodeAuthPol - Read finished successfully
 
-	infraRsLeafCoppProfileData, err := aciClient.ReadRelationinfraRsLeafCoppProfile(dn)
-	if err != nil {
-		log.Printf("[DEBUG] Error while reading relation infraRsLeafCoppProfile %v", err)
-		d.Set("relation_infra_rs_leaf_copp_profile", "")
-	} else {
-		if _, ok := d.GetOk("relation_infra_rs_leaf_copp_profile"); ok {
-			tfName := GetMOName(d.Get("relation_infra_rs_leaf_copp_profile").(string))
-			if tfName != infraRsLeafCoppProfileData {
-				d.Set("relation_infra_rs_leaf_copp_profile", "")
-			}
-		}
+	// infraRsLeafCoppProfile - Beginning Read
+	log.Printf("[DEBUG] %s: infraRsLeafCoppProfile - Beginning Read with parent DN", dn)
+	_, err = getAndSetReadRelationinfraRsLeafCoppProfile(aciClient, dn, d)
+	if err == nil {
+		log.Printf("[DEBUG] %s: infraRsLeafCoppProfile - Read finished successfully", d.Get("relation_infra_rs_leaf_copp_profile"))
 	}
+	// infraRsLeafCoppProfile - Read finished successfully
 
-	infraRsLeafPGrpToCdpIfPolData, err := aciClient.ReadRelationinfraRsLeafPGrpToCdpIfPol(dn)
-	if err != nil {
-		log.Printf("[DEBUG] Error while reading relation infraRsLeafPGrpToCdpIfPol %v", err)
-		d.Set("relation_infra_rs_leaf_p_grp_to_cdp_if_pol", "")
-	} else {
-		if _, ok := d.GetOk("relation_infra_rs_leaf_p_grp_to_cdp_if_pol"); ok {
-			tfName := GetMOName(d.Get("relation_infra_rs_leaf_p_grp_to_cdp_if_pol").(string))
-			if tfName != infraRsLeafPGrpToCdpIfPolData {
-				d.Set("relation_infra_rs_leaf_p_grp_to_cdp_if_pol", "")
-			}
-		}
+	// infraRsLeafPGrpToCdpIfPol - Beginning Read
+	log.Printf("[DEBUG] %s: infraRsLeafPGrpToCdpIfPol - Beginning Read with parent DN", dn)
+	_, err = getAndSetReadRelationinfraRsLeafPGrpToCdpIfPol(aciClient, dn, d)
+	if err == nil {
+		log.Printf("[DEBUG] %s: infraRsLeafPGrpToCdpIfPol - Read finished successfully", d.Get("relation_infra_rs_leaf_p_grp_to_cdp_if_pol"))
 	}
+	// infraRsLeafPGrpToCdpIfPol - Read finished successfully
 
-	infraRsLeafPGrpToLldpIfPolData, err := aciClient.ReadRelationinfraRsLeafPGrpToLldpIfPol(dn)
-	if err != nil {
-		log.Printf("[DEBUG] Error while reading relation infraRsLeafPGrpToLldpIfPol %v", err)
-		d.Set("relation_infra_rs_leaf_p_grp_to_lldp_if_pol", "")
-	} else {
-		if _, ok := d.GetOk("relation_infra_rs_leaf_p_grp_to_lldp_if_pol"); ok {
-			tfName := GetMOName(d.Get("relation_infra_rs_leaf_p_grp_to_lldp_if_pol").(string))
-			if tfName != infraRsLeafPGrpToLldpIfPolData {
-				d.Set("relation_infra_rs_leaf_p_grp_to_lldp_if_pol", "")
-			}
-		}
+	// infraRsLeafPGrpToLldpIfPol - Beginning Read
+	log.Printf("[DEBUG] %s: infraRsLeafPGrpToLldpIfPol - Beginning Read with parent DN", dn)
+	_, err = getAndSetReadRelationinfraRsLeafPGrpToLldpIfPol(aciClient, dn, d)
+	if err == nil {
+		log.Printf("[DEBUG] %s: infraRsLeafPGrpToLldpIfPol - Read finished successfully", d.Get("relation_infra_rs_leaf_p_grp_to_lldp_if_pol"))
 	}
+	// infraRsLeafPGrpToLldpIfPol - Read finished successfully
 
-	infraRsMonNodeInfraPolData, err := aciClient.ReadRelationinfraRsMonNodeInfraPol(dn)
-	if err != nil {
-		log.Printf("[DEBUG] Error while reading relation infraRsMonNodeInfraPol %v", err)
-		d.Set("relation_infra_rs_mon_node_infra_pol", "")
-	} else {
-		if _, ok := d.GetOk("relation_infra_rs_mon_node_infra_pol"); ok {
-			tfName := GetMOName(d.Get("relation_infra_rs_mon_node_infra_pol").(string))
-			if tfName != infraRsMonNodeInfraPolData {
-				d.Set("relation_infra_rs_mon_node_infra_pol", "")
-			}
-		}
+	// infraRsMonNodeInfraPol - Beginning Read
+	log.Printf("[DEBUG] %s: infraRsMonNodeInfraPol - Beginning Read with parent DN", dn)
+	_, err = getAndSetReadRelationinfraRsMonNodeInfraPol(aciClient, dn, d)
+	if err == nil {
+		log.Printf("[DEBUG] %s: infraRsMonNodeInfraPol - Read finished successfully", d.Get("relation_infra_rs_mon_node_infra_pol"))
 	}
+	// infraRsMonNodeInfraPol - Read finished successfully
 
-	infraRsMstInstPolData, err := aciClient.ReadRelationinfraRsMstInstPol(dn)
-	if err != nil {
-		log.Printf("[DEBUG] Error while reading relation infraRsMstInstPol %v", err)
-		d.Set("relation_infra_rs_mst_inst_pol", "")
-	} else {
-		if _, ok := d.GetOk("relation_infra_rs_mst_inst_pol"); ok {
-			tfName := GetMOName(d.Get("relation_infra_rs_mst_inst_pol").(string))
-			if tfName != infraRsMstInstPolData {
-				d.Set("relation_infra_rs_mst_inst_pol", "")
-			}
-		}
+	// infraRsMstInstPol - Beginning Read
+	log.Printf("[DEBUG] %s: infraRsMstInstPol - Beginning Read with parent DN", dn)
+	_, err = getAndSetReadRelationinfraRsMstInstPol(aciClient, dn, d)
+	if err == nil {
+		log.Printf("[DEBUG] %s: infraRsMstInstPol - Read finished successfully", d.Get("relation_infra_rs_mst_inst_pol"))
 	}
+	// infraRsMstInstPol - Read finished successfully
 
-	infraRsNetflowNodePolData, err := aciClient.ReadRelationinfraRsNetflowNodePol(dn)
-	if err != nil {
-		log.Printf("[DEBUG] Error while reading relation infraRsNetflowNodePol %v", err)
-		d.Set("relation_infra_rs_netflow_node_pol", "")
-	} else {
-		if _, ok := d.GetOk("relation_infra_rs_netflow_node_pol"); ok {
-			tfName := GetMOName(d.Get("relation_infra_rs_netflow_node_pol").(string))
-			if tfName != infraRsNetflowNodePolData {
-				d.Set("relation_infra_rs_netflow_node_pol", "")
-			}
-		}
+	// infraRsNetflowNodePol - Beginning Read
+	log.Printf("[DEBUG] %s: infraRsNetflowNodePol - Beginning Read with parent DN", dn)
+	_, err = getAndSetReadRelationinfraRsNetflowNodePol(aciClient, dn, d)
+	if err == nil {
+		log.Printf("[DEBUG] %s: infraRsNetflowNodePol - Read finished successfully", d.Get("relation_infra_rs_netflow_node_pol"))
 	}
+	// infraRsNetflowNodePol - Read finished successfully
 
-	infraRsPoeInstPolData, err := aciClient.ReadRelationinfraRsPoeInstPol(dn)
-	if err != nil {
-		log.Printf("[DEBUG] Error while reading relation infraRsPoeInstPol %v", err)
-		d.Set("relation_infra_rs_poe_inst_pol", "")
-	} else {
-		if _, ok := d.GetOk("relation_infra_rs_poe_inst_pol"); ok {
-			tfName := GetMOName(d.Get("relation_infra_rs_poe_inst_pol").(string))
-			if tfName != infraRsPoeInstPolData {
-				d.Set("relation_infra_rs_poe_inst_pol", "")
-			}
-		}
+	// infraRsPoeInstPol - Beginning Read
+	log.Printf("[DEBUG] %s: infraRsPoeInstPol - Beginning Read with parent DN", dn)
+	_, err = getAndSetReadRelationinfraRsPoeInstPol(aciClient, dn, d)
+	if err == nil {
+		log.Printf("[DEBUG] %s: infraRsPoeInstPol - Read finished successfully", d.Get("relation_infra_rs_poe_inst_pol"))
 	}
+	// infraRsPoeInstPol - Read finished successfully
 
-	infraRsTopoctrlFastLinkFailoverInstPolData, err := aciClient.ReadRelationinfraRsTopoctrlFastLinkFailoverInstPol(dn)
-	if err != nil {
-		log.Printf("[DEBUG] Error while reading relation infraRsTopoctrlFastLinkFailoverInstPol %v", err)
-		d.Set("relation_infra_rs_topoctrl_fast_link_failover_inst_pol", "")
-	} else {
-		if _, ok := d.GetOk("relation_infra_rs_topoctrl_fast_link_failover_inst_pol"); ok {
-			tfName := GetMOName(d.Get("relation_infra_rs_topoctrl_fast_link_failover_inst_pol").(string))
-			if tfName != infraRsTopoctrlFastLinkFailoverInstPolData {
-				d.Set("relation_infra_rs_topoctrl_fast_link_failover_inst_pol", "")
-			}
-		}
+	// infraRsTopoctrlFastLinkFailoverInstPol - Beginning Read
+	log.Printf("[DEBUG] %s: infraRsTopoctrlFastLinkFailoverInstPol - Beginning Read with parent DN", dn)
+	_, err = getAndSetReadRelationinfraRsTopoctrlFastLinkFailoverInstPol(aciClient, dn, d)
+	if err == nil {
+		log.Printf("[DEBUG] %s: infraRsTopoctrlFastLinkFailoverInstPol - Read finished successfully", d.Get("relation_infra_rs_topoctrl_fast_link_failover_inst_pol"))
 	}
+	// infraRsTopoctrlFastLinkFailoverInstPol - Read finished successfully
 
-	infraRsTopoctrlFwdScaleProfPolData, err := aciClient.ReadRelationinfraRsTopoctrlFwdScaleProfPol(dn)
-	if err != nil {
-		log.Printf("[DEBUG] Error while reading relation infraRsTopoctrlFwdScaleProfPol %v", err)
-		d.Set("relation_infra_rs_topoctrl_fwd_scale_prof_pol", "")
-	} else {
-		if _, ok := d.GetOk("relation_infra_rs_topoctrl_fwd_scale_prof_pol"); ok {
-			tfName := GetMOName(d.Get("relation_infra_rs_topoctrl_fwd_scale_prof_pol").(string))
-			if tfName != infraRsTopoctrlFwdScaleProfPolData {
-				d.Set("relation_infra_rs_topoctrl_fwd_scale_prof_pol", "")
-			}
-		}
+	// infraRsTopoctrlFwdScaleProfPol - Beginning Read
+	log.Printf("[DEBUG] %s: infraRsTopoctrlFwdScaleProfPol - Beginning Read with parent DN", dn)
+	_, err = getAndSetReadRelationinfraRsTopoctrlFwdScaleProfPol(aciClient, dn, d)
+	if err == nil {
+		log.Printf("[DEBUG] %s: infraRsTopoctrlFwdScaleProfPol - Read finished successfully", d.Get("relation_infra_rs_topoctrl_fwd_scale_prof_pol"))
 	}
+	// infraRsTopoctrlFwdScaleProfPol - Read finished successfully
+
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 	return nil
 }

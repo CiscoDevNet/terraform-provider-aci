@@ -93,7 +93,7 @@ Manages ACI Bridge Domain
 
 * `relation_fv_rs_bd_to_fhs` - (Optional) Relation First Hop Security Feature Policies (Point to class fhsBDPol). Requires unicast_route to be set to "yes". Cardinality - N_TO_ONE. Type - String.
 
-* `relation_fv_rs_bd_to_relay_p` - (Optional) Relation to DHCP Relay policy (Point to class dhcpRelayP). Cardinality - N_TO_ONE. Type - String.
+* `relation_fv_rs_bd_to_relay_p` - (Optional) Relation to DHCP Relay policy (Point to class dhcpRelayP). Cardinality - N_TO_ONE. Type - String. If the intent is to configure a DHCP Relay label please leverage the [aci_bd_dhcp_label](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/bd_dhcp_label) resource.
 
 * `relation_fv_rs_ctx` - (Optional) Relation to VRF (Point to class fvCtx). Cardinality - N_TO_ONE. Type - String.
 

@@ -9,8 +9,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/ciscoecosystem/aci-go-client/container"
+	"github.com/ciscoecosystem/aci-go-client/v2/client"
+	"github.com/ciscoecosystem/aci-go-client/v2/container"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
@@ -334,4 +334,21 @@ func allowEmpty(err error, allow bool) error {
 	} else {
 		return err
 	}
+}
+
+// getOldObjectsNotInNew returns elements that are in oldSet but not in newSet, based on the given keyName.
+func getOldObjectsNotInNew(keyName string, oldSet, newSet *schema.Set) (oldObjects []interface{}) {
+	for _, oldMap := range oldSet.List() {
+		found := false
+		for _, newMap := range newSet.List() {
+			if oldMap.(map[string]interface{})[keyName] == newMap.(map[string]interface{})[keyName] {
+				found = true
+				break
+			}
+		}
+		if !found {
+			oldObjects = append(oldObjects, oldMap)
+		}
+	}
+	return oldObjects
 }

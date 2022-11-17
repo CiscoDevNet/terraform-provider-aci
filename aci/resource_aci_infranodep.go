@@ -6,8 +6,8 @@ import (
 	"log"
 	"strings"
 
-	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/ciscoecosystem/aci-go-client/v2/client"
+	"github.com/ciscoecosystem/aci-go-client/v2/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
@@ -249,6 +249,30 @@ func setNodeBlockAttributesFromLeafP(nodeBlock *models.NodeBlock) (map[string]in
 	return nodeMap, nil
 }
 
+func getAndSetReadRelationinfraRsAccCardPFromLeafProfile(client *client.Client, dn string, d *schema.ResourceData) (*schema.ResourceData, error) {
+	infraRsAccCardPData, err := client.ReadRelationinfraRsAccCardPFromLeafProfile(dn)
+	if err != nil {
+		log.Printf("[DEBUG] Error while reading relation infraRsAccCardP %v", err)
+		d.Set("relation_infra_rs_acc_card_p", nil)
+		return d, err
+	} else {
+		d.Set("relation_infra_rs_acc_card_p", toStringList(infraRsAccCardPData.(*schema.Set).List()))
+	}
+	return d, nil
+}
+
+func getAndSetReadRelationinfraRsAccPortPFromLeafProfile(client *client.Client, dn string, d *schema.ResourceData) (*schema.ResourceData, error) {
+	infraRsAccPortPData, err := client.ReadRelationinfraRsAccPortPFromLeafProfile(dn)
+	if err != nil {
+		log.Printf("[DEBUG] Error while reading relation infraRsAccPortP %v", err)
+		d.Set("relation_infra_rs_acc_port_p", nil)
+		return d, err
+	} else {
+		d.Set("relation_infra_rs_acc_port_p", toStringList(infraRsAccPortPData.(*schema.Set).List()))
+	}
+	return d, nil
+}
+
 func resourceAciLeafProfileImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
 	log.Printf("[DEBUG] %s: Beginning Import", d.Id())
 	aciClient := m.(*client.Client)
@@ -264,6 +288,22 @@ func resourceAciLeafProfileImport(d *schema.ResourceData, m interface{}) ([]*sch
 	if err != nil {
 		return nil, err
 	}
+
+	// infraRsAccCardP - Beginning Import
+	log.Printf("[DEBUG] %s: infraRsAccCardP - Beginning Import with parent DN", dn)
+	_, err = getAndSetReadRelationinfraRsAccCardPFromLeafProfile(aciClient, dn, d)
+	if err == nil {
+		log.Printf("[DEBUG] %s: infraRsAccCardP - Import finished successfully", d.Get("relation_infra_rs_acc_card_p"))
+	}
+	// infraRsAccCardP - Import finished successfully
+
+	// infraRsAccPortP - Beginning Import
+	log.Printf("[DEBUG] %s: infraRsAccPortP - Beginning Import with parent DN", dn)
+	_, err = getAndSetReadRelationinfraRsAccPortPFromLeafProfile(aciClient, dn, d)
+	if err == nil {
+		log.Printf("[DEBUG] %s: infraRsAccPortP - Import finished successfully", d.Get("relation_infra_rs_acc_port_p"))
+	}
+	// infraRsAccPortP - Import finished successfully
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
@@ -642,22 +682,22 @@ func resourceAciLeafProfileRead(ctx context.Context, d *schema.ResourceData, m i
 		d.SetId("")
 		return nil
 	}
-	infraRsAccCardPData, err := aciClient.ReadRelationinfraRsAccCardPFromLeafProfile(dn)
-	log.Printf("[TRACE] infraRsAccCardP %v", infraRsAccCardPData)
-	if err != nil {
-		log.Printf("[DEBUG] Error while reading relation infraRsAccCardP %v", err)
-		setRelationAttribute(d, "relation_infra_rs_acc_card_p", make([]interface{}, 0, 1))
-	} else {
-		setRelationAttribute(d, "relation_infra_rs_acc_card_p", toStringList(infraRsAccCardPData.(*schema.Set).List()))
-	}
 
-	infraRsAccPortPData, err := aciClient.ReadRelationinfraRsAccPortPFromLeafProfile(dn)
-	if err != nil {
-		log.Printf("[DEBUG] Error while reading relation infraRsAccPortP %v", err)
-		setRelationAttribute(d, "relation_infra_rs_acc_port_p", make([]interface{}, 0, 1))
-	} else {
-		setRelationAttribute(d, "relation_infra_rs_acc_port_p", toStringList(infraRsAccPortPData.(*schema.Set).List()))
+	// infraRsAccCardP - Beginning Read
+	log.Printf("[DEBUG] %s: infraRsAccCardP - Beginning Read with parent DN", dn)
+	_, err = getAndSetReadRelationinfraRsAccCardPFromLeafProfile(aciClient, dn, d)
+	if err == nil {
+		log.Printf("[DEBUG] %s: infraRsAccCardP - Read finished successfully", d.Get("relation_infra_rs_acc_card_p"))
 	}
+	// infraRsAccCardP - Read finished successfully
+
+	// infraRsAccPortP - Beginning Read
+	log.Printf("[DEBUG] %s: infraRsAccPortP - Beginning Read with parent DN", dn)
+	_, err = getAndSetReadRelationinfraRsAccPortPFromLeafProfile(aciClient, dn, d)
+	if err == nil {
+		log.Printf("[DEBUG] %s: infraRsAccPortP - Read finished successfully", d.Get("relation_infra_rs_acc_port_p"))
+	}
+	// infraRsAccPortP - Read finished successfully
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 

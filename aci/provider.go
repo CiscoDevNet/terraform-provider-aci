@@ -5,7 +5,7 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/ciscoecosystem/aci-go-client/client"
+	"github.com/ciscoecosystem/aci-go-client/v2/client"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
@@ -117,6 +117,7 @@ func Provider() *schema.Provider {
 			"aci_interface_fc_policy":                      resourceAciInterfaceFCPolicy(),
 			"aci_l2_interface_policy":                      resourceAciL2InterfacePolicy(),
 			"aci_leaf_access_bundle_policy_group":          resourceAciPCVPCInterfacePolicyGroup(),
+			"aci_leaf_access_bundle_policy_sub_group":      resourceAciOverridePCVPCPolicyGroup(),
 			"aci_leaf_access_port_policy_group":            resourceAciLeafAccessPortPolicyGroup(),
 			"aci_lldp_interface_policy":                    resourceAciLLDPInterfacePolicy(),
 			"aci_miscabling_protocol_interface_policy":     resourceAciMiscablingProtocolInterfacePolicy(),
@@ -124,6 +125,7 @@ func Provider() *schema.Provider {
 			"aci_access_port_selector":                     resourceAciAccessPortSelector(),
 			"aci_access_port_block":                        resourceAciAccessPortBlock(),
 			"aci_lacp_policy":                              resourceAciLACPPolicy(),
+			"aci_lacp_member_policy":                       resourceAciLACPMemberPolicy(),
 			"aci_port_security_policy":                     resourceAciPortSecurityPolicy(),
 			"aci_leaf_profile":                             resourceAciLeafProfile(),
 			"aci_end_point_retention_policy":               resourceAciEndPointRetentionPolicy(),
@@ -142,6 +144,10 @@ func Provider() *schema.Provider {
 			"aci_cloud_endpoint_selector":                  resourceAciCloudEndpointSelector(),
 			"aci_cloud_external_epg":                       resourceAciCloudExternalEPg(),
 			"aci_cloud_subnet":                             resourceAciCloudSubnet(),
+			"aci_cloud_account":                            resourceAciCloudAccount(),
+			"aci_tenant_to_cloud_account":                  resourceAciTenantToCloudAccountAssociation(),
+			"aci_cloud_ad":                                 resourceAciCloudActiveDirectory(),
+			"aci_cloud_credentials":                        resourceAciCloudCredentials(),
 			"aci_local_user":                               resourceAciLocalUser(),
 			"aci_pod_maintenance_group":                    resourceAciPODMaintenanceGroup(),
 			"aci_maintenance_policy":                       resourceAciMaintenancePolicy(),
@@ -157,6 +163,8 @@ func Provider() *schema.Provider {
 			"aci_vlan_pool":                                resourceAciVLANPool(),
 			"aci_vxlan_pool":                               resourceAciVXLANPool(),
 			"aci_vsan_pool":                                resourceAciVSANPool(),
+			"aci_multicast_pool":                           resourceAciMulticastAddressPool(),
+			"aci_multicast_pool_block":                     resourceAciMulticastAddressBlock(),
 			"aci_firmware_group":                           resourceAciFirmwareGroup(),
 			"aci_firmware_policy":                          resourceAciFirmwarePolicy(),
 			"aci_firmware_download_task":                   resourceAciFirmwareDownloadTask(),
@@ -309,6 +317,9 @@ func Provider() *schema.Provider {
 			"aci_l4_l7_logical_interface":                  resourceAciLogicalInterface(),
 			"aci_l4_l7_redirect_health_group":              resourceAciL4L7RedirectHealthGroup(),
 			"aci_ip_sla_monitoring_policy":                 resourceAciIPSLAMonitoringPolicy(),
+			"aci_bulk_epg_to_static_path":                  resourceAciBulkStaticPath(),
+			"aci_vrf_leak_epg_bd_subnet":                   resourceAciLeakInternalSubnet(),
+			"aci_cloud_vrf_leak_routes":                    resourceAciLeakInternalPrefix(),
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
@@ -335,6 +346,7 @@ func Provider() *schema.Provider {
 			"aci_interface_fc_policy":                      dataSourceAciInterfaceFCPolicy(),
 			"aci_l2_interface_policy":                      dataSourceAciL2InterfacePolicy(),
 			"aci_leaf_access_bundle_policy_group":          dataSourceAciPCVPCInterfacePolicyGroup(),
+			"aci_leaf_access_bundle_policy_sub_group":      dataSourceAciOverridePCVPCPolicyGroup(),
 			"aci_leaf_access_port_policy_group":            dataSourceAciLeafAccessPortPolicyGroup(),
 			"aci_lldp_interface_policy":                    dataSourceAciLLDPInterfacePolicy(),
 			"aci_miscabling_protocol_interface_policy":     dataSourceAciMiscablingProtocolInterfacePolicy(),
@@ -342,6 +354,7 @@ func Provider() *schema.Provider {
 			"aci_access_port_selector":                     dataSourceAciAccessPortSelector(),
 			"aci_access_port_block":                        dataSourceAciAccessPortBlock(),
 			"aci_lacp_policy":                              dataSourceAciLACPPolicy(),
+			"aci_lacp_member_policy":                       dataSourceAciLACPMemberPolicy(),
 			"aci_port_security_policy":                     dataSourceAciPortSecurityPolicy(),
 			"aci_leaf_profile":                             dataSourceAciLeafProfile(),
 			"aci_end_point_retention_policy":               dataSourceAciEndPointRetentionPolicy(),
@@ -364,6 +377,10 @@ func Provider() *schema.Provider {
 			"aci_cloud_providers_region":                   dataSourceAciCloudProvidersRegion(),
 			"aci_cloud_subnet":                             dataSourceAciCloudSubnet(),
 			"aci_cloud_availability_zone":                  dataSourceAciCloudAvailabilityZone(),
+			"aci_cloud_account":                            dataSourceAciCloudAccount(),
+			"aci_tenant_to_cloud_account":                  dataSourceAciTenantToCloudAccountAssociation(),
+			"aci_cloud_ad":                                 dataSourceAciCloudActiveDirectory(),
+			"aci_cloud_credentials":                        dataSourceAciCloudCredentials(),
 			"aci_local_user":                               dataSourceAciLocalUser(),
 			"aci_pod_maintenance_group":                    dataSourceAciPODMaintenanceGroup(),
 			"aci_maintenance_policy":                       dataSourceAciMaintenancePolicy(),
@@ -379,6 +396,8 @@ func Provider() *schema.Provider {
 			"aci_vlan_pool":                                dataSourceAciVLANPool(),
 			"aci_vxlan_pool":                               dataSourceAciVXLANPool(),
 			"aci_vsan_pool":                                dataSourceAciVSANPool(),
+			"aci_multicast_pool":                           dataSourceAciMulticastAddressPool(),
+			"aci_multicast_pool_block":                     dataSourceAciMulticastAddressBlock(),
 			"aci_firmware_group":                           dataSourceAciFirmwareGroup(),
 			"aci_firmware_policy":                          dataSourceAciFirmwarePolicy(),
 			"aci_firmware_download_task":                   dataSourceAciFirmwareDownloadTask(),
@@ -540,6 +559,8 @@ func Provider() *schema.Provider {
 			"aci_l4_l7_redirect_health_group":              dataSourceAciL4L7RedirectHealthGroup(),
 			"aci_ip_sla_monitoring_policy":                 dataSourceAciIPSLAMonitoringPolicy(),
 			"aci_l4_l7_deployed_graph_connector_vlan":      dataSourceAciEPgDef(),
+			"aci_vrf_leak_epg_bd_subnet":                   dataSourceAciLeakInternalSubnet(),
+			"aci_cloud_vrf_leak_routes":                    dataSourceAciLeakInternalPrefix(),
 		},
 
 		ConfigureFunc: configureClient,

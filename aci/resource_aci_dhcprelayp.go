@@ -6,8 +6,8 @@ import (
 	"log"
 	"net"
 
-	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/ciscoecosystem/aci-go-client/v2/client"
+	"github.com/ciscoecosystem/aci-go-client/v2/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
@@ -29,7 +29,8 @@ func resourceAciDHCPRelayPolicy() *schema.Resource {
 		Schema: AppendBaseAttrSchema(map[string]*schema.Schema{
 			"tenant_dn": &schema.Schema{
 				Type:     schema.TypeString,
-				Required: true,
+				Default:  "uni/infra",
+				Optional: true,
 				ForceNew: true,
 			},
 

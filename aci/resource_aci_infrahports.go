@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/ciscoecosystem/aci-go-client/v2/client"
+	"github.com/ciscoecosystem/aci-go-client/v2/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
@@ -100,6 +100,18 @@ func setAccessPortSelectorAttributes(infraHPortS *models.AccessPortSelector, d *
 	return d, nil
 }
 
+func getAndSetReadRelationinfraRsAccBaseGrpFromAccessPortSelector(client *client.Client, dn string, d *schema.ResourceData) (*schema.ResourceData, error) {
+	infraRsAccBaseGrpData, err := client.ReadRelationinfraRsAccBaseGrpFromAccessPortSelector(dn)
+	if err != nil {
+		log.Printf("[DEBUG] Error while reading relation infraRsAccBaseGrp %v", err)
+		d.Set("relation_infra_rs_acc_base_grp", nil)
+		return d, err
+	} else {
+		d.Set("relation_infra_rs_acc_base_grp", infraRsAccBaseGrpData.(string))
+	}
+	return d, nil
+}
+
 func resourceAciAccessPortSelectorImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
 	log.Printf("[DEBUG] %s: Beginning Import", d.Id())
 	aciClient := m.(*client.Client)
@@ -124,6 +136,14 @@ func resourceAciAccessPortSelectorImport(d *schema.ResourceData, m interface{}) 
 	if err != nil {
 		return nil, err
 	}
+
+	// infraRsAccBaseGrp - Beginning Import
+	log.Printf("[DEBUG] %s: infraRsAccBaseGrp - Beginning Import with parent DN", dn)
+	_, err = getAndSetReadRelationinfraRsAccBaseGrpFromAccessPortSelector(aciClient, dn, d)
+	if err == nil {
+		log.Printf("[DEBUG] %s: infraRsAccBaseGrp - Import finished successfully", d.Get("relation_infra_rs_acc_base_grp"))
+	}
+	// infraRsAccBaseGrp - Import finished successfully
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
@@ -270,14 +290,13 @@ func resourceAciAccessPortSelectorRead(ctx context.Context, d *schema.ResourceDa
 		return nil
 	}
 
-	infraRsAccBaseGrpData, err := aciClient.ReadRelationinfraRsAccBaseGrpFromAccessPortSelector(dn)
-	if err != nil {
-		log.Printf("[DEBUG] Error while reading relation infraRsAccBaseGrp %v", err)
-		d.Set("relation_infra_rs_acc_base_grp", "")
-
-	} else {
-		setRelationAttribute(d, "relation_infra_rs_acc_base_grp", infraRsAccBaseGrpData.(string))
+	// infraRsAccBaseGrp - Beginning Read
+	log.Printf("[DEBUG] %s: infraRsAccBaseGrp - Beginning Read with parent DN", dn)
+	_, err = getAndSetReadRelationinfraRsAccBaseGrpFromAccessPortSelector(aciClient, dn, d)
+	if err == nil {
+		log.Printf("[DEBUG] %s: infraRsAccBaseGrp - Read finished successfully", d.Get("relation_infra_rs_acc_base_grp"))
 	}
+	// infraRsAccBaseGrp - Read finished successfully
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 

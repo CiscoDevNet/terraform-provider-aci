@@ -4,9 +4,10 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"strings"
 
-	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/ciscoecosystem/aci-go-client/v2/client"
+	"github.com/ciscoecosystem/aci-go-client/v2/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
@@ -24,8 +25,7 @@ func resourceAciFabricWideSettingsPolicy() *schema.Resource {
 		},
 
 		SchemaVersion: 1,
-		Schema: AppendBaseAttrSchema(AppendNameAliasAttrSchema(map[string]*schema.Schema{
-
+		Schema: AppendAttrSchemas(map[string]*schema.Schema{
 			"disable_ep_dampening": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -35,7 +35,15 @@ func resourceAciFabricWideSettingsPolicy() *schema.Resource {
 					"yes",
 				}, false),
 			},
-
+			"domain_validation": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"no",
+					"yes",
+				}, false),
+			},
 			"enable_mo_streaming": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -63,6 +71,24 @@ func resourceAciFabricWideSettingsPolicy() *schema.Resource {
 					"yes",
 				}, false),
 			},
+			"leaf_opflexp_authenticate_clients": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"no",
+					"yes",
+				}, false),
+			},
+			"leaf_opflexp_use_ssl": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"no",
+					"yes",
+				}, false),
+			},
 			"name": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -77,7 +103,38 @@ func resourceAciFabricWideSettingsPolicy() *schema.Resource {
 					"yes",
 				}, false),
 			},
+			"opflexp_ssl_protocols": &schema.Schema{
+				Type: schema.TypeList,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+					ValidateFunc: validation.StringInSlice([]string{
+						"TLSv1",
+						"TLSv1.1",
+						"TLSv1.2",
+					}, false),
+				},
+				Optional: true,
+				Computed: true,
+			},
 			"opflexp_use_ssl": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"no",
+					"yes",
+				}, false),
+			},
+			"policy_sync_node_bringup": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"no",
+					"yes",
+				}, false),
+			},
+			"reallocate_gipo": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
@@ -113,7 +170,7 @@ func resourceAciFabricWideSettingsPolicy() *schema.Resource {
 					"yes",
 				}, false),
 			},
-		})),
+		}, GetBaseAttrSchema(), GetNameAliasAttrSchema()),
 	}
 }
 
@@ -138,16 +195,22 @@ func setFabricWideSettingsPolicyAttributes(infraSetPol *models.FabricWideSetting
 	}
 	d.Set("annotation", infraSetPolMap["annotation"])
 	d.Set("disable_ep_dampening", infraSetPolMap["disableEpDampening"])
+	d.Set("domain_validation", infraSetPolMap["domainValidation"])
 	d.Set("enable_mo_streaming", infraSetPolMap["enableMoStreaming"])
 	d.Set("enable_remote_leaf_direct", infraSetPolMap["enableRemoteLeafDirect"])
 	d.Set("enforce_subnet_check", infraSetPolMap["enforceSubnetCheck"])
+	d.Set("leaf_opflexp_authenticate_clients", infraSetPolMap["leafOpflexpAuthenticateClients"])
+	d.Set("leaf_opflexp_use_ssl", infraSetPolMap["leafOpflexpUseSsl"])
 	d.Set("name", infraSetPolMap["name"])
+	d.Set("name_alias", infraSetPolMap["nameAlias"])
 	d.Set("opflexp_authenticate_clients", infraSetPolMap["opflexpAuthenticateClients"])
+	d.Set("opflexp_ssl_protocols", infraSetPolMap["opflexpSslProtocols"])
 	d.Set("opflexp_use_ssl", infraSetPolMap["opflexpUseSsl"])
+	d.Set("policy_sync_node_bringup", infraSetPolMap["policySyncNodeBringup"])
+	d.Set("reallocate_gipo", infraSetPolMap["reallocateGipo"])
 	d.Set("restrict_infra_vlan_traffic", infraSetPolMap["restrictInfraVLANTraffic"])
 	d.Set("unicast_xr_ep_learn_disable", infraSetPolMap["unicastXrEpLearnDisable"])
 	d.Set("validate_overlapping_vlans", infraSetPolMap["validateOverlappingVlans"])
-	d.Set("name_alias", infraSetPolMap["nameAlias"])
 	return d, nil
 }
 
@@ -198,12 +261,28 @@ func resourceAciFabricWideSettingsPolicyCreate(ctx context.Context, d *schema.Re
 		infraSetPolAttr.EnforceSubnetCheck = EnforceSubnetCheck.(string)
 	}
 
+	if LeafOpflexpAuthenticateClients, ok := d.GetOk("leaf_opflexp_authenticate_clients"); ok {
+		infraSetPolAttr.LeafOpflexpAuthenticateClients = LeafOpflexpAuthenticateClients.(string)
+	}
+
+	if LeafOpflexpUseSsl, ok := d.GetOk("leaf_opflexp_use_ssl"); ok {
+		infraSetPolAttr.LeafOpflexpUseSsl = LeafOpflexpUseSsl.(string)
+	}
+
 	if Name, ok := d.GetOk("name"); ok {
 		infraSetPolAttr.Name = Name.(string)
 	}
 
 	if OpflexpAuthenticateClients, ok := d.GetOk("opflexp_authenticate_clients"); ok {
 		infraSetPolAttr.OpflexpAuthenticateClients = OpflexpAuthenticateClients.(string)
+	}
+
+	if OpflexpSslProtocols, ok := d.GetOk("opflexp_ssl_protocols"); ok {
+		OpflexpSslProtocolsList := make([]string, 0, 1)
+		for _, value := range OpflexpSslProtocols.([]interface{}) {
+			OpflexpSslProtocolsList = append(OpflexpSslProtocolsList, value.(string))
+		}
+		infraSetPolAttr.OpflexpSslProtocols = strings.Join(OpflexpSslProtocolsList, ",")
 	}
 
 	if OpflexpUseSsl, ok := d.GetOk("opflexp_use_ssl"); ok {
@@ -221,6 +300,19 @@ func resourceAciFabricWideSettingsPolicyCreate(ctx context.Context, d *schema.Re
 	if ValidateOverlappingVlans, ok := d.GetOk("validate_overlapping_vlans"); ok {
 		infraSetPolAttr.ValidateOverlappingVlans = ValidateOverlappingVlans.(string)
 	}
+
+	if DomainValidation, ok := d.GetOk("domain_validation"); ok {
+		infraSetPolAttr.DomainValidation = DomainValidation.(string)
+	}
+
+	if ReallocateGipo, ok := d.GetOk("reallocate_gipo"); ok {
+		infraSetPolAttr.ReallocateGipo = ReallocateGipo.(string)
+	}
+
+	if PolicySyncNodeBringup, ok := d.GetOk("policy_sync_node_bringup"); ok {
+		infraSetPolAttr.PolicySyncNodeBringup = PolicySyncNodeBringup.(string)
+	}
+
 	infraSetPol := models.NewFabricWideSettingsPolicy(fmt.Sprintf("infra/settings"), "uni", desc, nameAlias, infraSetPolAttr)
 	infraSetPol.Status = "modified"
 	err := aciClient.Save(infraSetPol)
@@ -265,12 +357,28 @@ func resourceAciFabricWideSettingsPolicyUpdate(ctx context.Context, d *schema.Re
 		infraSetPolAttr.EnforceSubnetCheck = EnforceSubnetCheck.(string)
 	}
 
+	if LeafOpflexpAuthenticateClients, ok := d.GetOk("leaf_opflexp_authenticate_clients"); ok {
+		infraSetPolAttr.LeafOpflexpAuthenticateClients = LeafOpflexpAuthenticateClients.(string)
+	}
+
+	if LeafOpflexpUseSsl, ok := d.GetOk("leaf_opflexp_use_ssl"); ok {
+		infraSetPolAttr.LeafOpflexpUseSsl = LeafOpflexpUseSsl.(string)
+	}
+
 	if Name, ok := d.GetOk("name"); ok {
 		infraSetPolAttr.Name = Name.(string)
 	}
 
 	if OpflexpAuthenticateClients, ok := d.GetOk("opflexp_authenticate_clients"); ok {
 		infraSetPolAttr.OpflexpAuthenticateClients = OpflexpAuthenticateClients.(string)
+	}
+
+	if OpflexpSslProtocols, ok := d.GetOk("opflexp_ssl_protocols"); ok {
+		OpflexpSslProtocolsList := make([]string, 0, 1)
+		for _, value := range OpflexpSslProtocols.([]interface{}) {
+			OpflexpSslProtocolsList = append(OpflexpSslProtocolsList, value.(string))
+		}
+		infraSetPolAttr.OpflexpSslProtocols = strings.Join(OpflexpSslProtocolsList, ",")
 	}
 
 	if OpflexpUseSsl, ok := d.GetOk("opflexp_use_ssl"); ok {
@@ -288,6 +396,19 @@ func resourceAciFabricWideSettingsPolicyUpdate(ctx context.Context, d *schema.Re
 	if ValidateOverlappingVlans, ok := d.GetOk("validate_overlapping_vlans"); ok {
 		infraSetPolAttr.ValidateOverlappingVlans = ValidateOverlappingVlans.(string)
 	}
+
+	if DomainValidation, ok := d.GetOk("domain_validation"); ok {
+		infraSetPolAttr.DomainValidation = DomainValidation.(string)
+	}
+
+	if ReallocateGipo, ok := d.GetOk("reallocate_gipo"); ok {
+		infraSetPolAttr.ReallocateGipo = ReallocateGipo.(string)
+	}
+
+	if PolicySyncNodeBringup, ok := d.GetOk("policy_sync_node_bringup"); ok {
+		infraSetPolAttr.PolicySyncNodeBringup = PolicySyncNodeBringup.(string)
+	}
+
 	infraSetPol := models.NewFabricWideSettingsPolicy(fmt.Sprintf("infra/settings"), "uni", desc, nameAlias, infraSetPolAttr)
 	infraSetPol.Status = "modified"
 	err := aciClient.Save(infraSetPol)

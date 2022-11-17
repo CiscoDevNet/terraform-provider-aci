@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/ciscoecosystem/aci-go-client/v2/client"
+	"github.com/ciscoecosystem/aci-go-client/v2/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -89,6 +89,78 @@ func setSpineSwitchPolicyGroupAttributes(infraSpineAccNodePGrp *models.SpineSwit
 	return d, nil
 }
 
+func getAndSetReadRelationinfraRsIaclSpineProfile(client *client.Client, dn string, d *schema.ResourceData) (*schema.ResourceData, error) {
+	infraRsIaclSpineProfileData, err := client.ReadRelationinfraRsIaclSpineProfile(dn)
+	if err != nil {
+		log.Printf("[DEBUG] Error while reading relation infraRsIaclSpineProfile %v", err)
+		d.Set("relation_infra_rs_iacl_spine_profile", nil)
+		return d, err
+	} else {
+		d.Set("relation_infra_rs_iacl_spine_profile", infraRsIaclSpineProfileData.(string))
+	}
+	return d, nil
+}
+
+func getAndSetReadRelationinfraRsSpineBfdIpv4InstPol(client *client.Client, dn string, d *schema.ResourceData) (*schema.ResourceData, error) {
+	infraRsSpineBfdIpv4InstPolData, err := client.ReadRelationinfraRsSpineBfdIpv4InstPol(dn)
+	if err != nil {
+		log.Printf("[DEBUG] Error while reading relation infraRsSpineBfdIpv4InstPol %v", err)
+		d.Set("relation_infra_rs_spine_bfd_ipv4_inst_pol", nil)
+		return d, err
+	} else {
+		d.Set("relation_infra_rs_spine_bfd_ipv4_inst_pol", infraRsSpineBfdIpv4InstPolData.(string))
+	}
+	return d, nil
+}
+
+func getAndSetReadRelationinfraRsSpineBfdIpv6InstPol(client *client.Client, dn string, d *schema.ResourceData) (*schema.ResourceData, error) {
+	infraRsSpineBfdIpv6InstPolData, err := client.ReadRelationinfraRsSpineBfdIpv6InstPol(dn)
+	if err != nil {
+		log.Printf("[DEBUG] Error while reading relation infraRsSpineBfdIpv6InstPol %v", err)
+		d.Set("relation_infra_rs_spine_bfd_ipv6_inst_pol", nil)
+		return d, err
+	} else {
+		d.Set("relation_infra_rs_spine_bfd_ipv6_inst_pol", infraRsSpineBfdIpv6InstPolData.(string))
+	}
+	return d, nil
+}
+
+func getAndSetReadRelationinfraRsSpineCoppProfile(client *client.Client, dn string, d *schema.ResourceData) (*schema.ResourceData, error) {
+	infraRsSpineCoppProfileData, err := client.ReadRelationinfraRsSpineCoppProfile(dn)
+	if err != nil {
+		log.Printf("[DEBUG] Error while reading relation infraRsSpineCoppProfile %v", err)
+		d.Set("relation_infra_rs_spine_copp_profile", nil)
+		return d, err
+	} else {
+		d.Set("relation_infra_rs_spine_copp_profile", infraRsSpineCoppProfileData.(string))
+	}
+	return d, nil
+}
+
+func getAndSetReadRelationinfraRsSpinePGrpToCdpIfPol(client *client.Client, dn string, d *schema.ResourceData) (*schema.ResourceData, error) {
+	infraRsSpinePGrpToCdpIfPolData, err := client.ReadRelationinfraRsSpinePGrpToCdpIfPol(dn)
+	if err != nil {
+		log.Printf("[DEBUG] Error while reading relation infraRsSpinePGrpToCdpIfPol %v", err)
+		d.Set("relation_infra_rs_spine_p_grp_to_cdp_if_pol", nil)
+		return d, err
+	} else {
+		d.Set("relation_infra_rs_spine_p_grp_to_cdp_if_pol", infraRsSpinePGrpToCdpIfPolData.(string))
+	}
+	return d, nil
+}
+
+func getAndSetReadRelationinfraRsSpinePGrpToLldpIfPol(client *client.Client, dn string, d *schema.ResourceData) (*schema.ResourceData, error) {
+	infraRsSpinePGrpToLldpIfPolData, err := client.ReadRelationinfraRsSpinePGrpToLldpIfPol(dn)
+	if err != nil {
+		log.Printf("[DEBUG] Error while reading relation infraRsSpinePGrpToLldpIfPol %v", err)
+		d.Set("relation_infra_rs_spine_p_grp_to_lldp_if_pol", nil)
+		return d, err
+	} else {
+		d.Set("relation_infra_rs_spine_p_grp_to_lldp_if_pol", infraRsSpinePGrpToLldpIfPolData.(string))
+	}
+	return d, nil
+}
+
 func resourceAciSpineSwitchPolicyGroupImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
 	log.Printf("[DEBUG] %s: Beginning Import", d.Id())
 	aciClient := m.(*client.Client)
@@ -101,6 +173,55 @@ func resourceAciSpineSwitchPolicyGroupImport(d *schema.ResourceData, m interface
 	if err != nil {
 		return nil, err
 	}
+
+	// infraRsIaclSpineProfile - Beginning Import
+	log.Printf("[DEBUG] %s: infraRsIaclSpineProfile - Beginning Import with parent DN", dn)
+	_, err = getAndSetReadRelationinfraRsIaclSpineProfile(aciClient, dn, d)
+	if err == nil {
+		log.Printf("[DEBUG] %s: infraRsIaclSpineProfile - Import finished successfully", d.Get("relation_infra_rs_iacl_spine_profile"))
+	}
+	// infraRsIaclSpineProfile - Import finished successfully
+
+	// infraRsSpineBfdIpv4InstPol - Beginning Import
+	log.Printf("[DEBUG] %s: infraRsSpineBfdIpv4InstPol - Beginning Import with parent DN", dn)
+	_, err = getAndSetReadRelationinfraRsSpineBfdIpv4InstPol(aciClient, dn, d)
+	if err == nil {
+		log.Printf("[DEBUG] %s: infraRsSpineBfdIpv4InstPol - Import finished successfully", d.Get("relation_infra_rs_spine_bfd_ipv4_inst_pol"))
+	}
+	// infraRsSpineBfdIpv4InstPol - Import finished successfully
+
+	// infraRsSpineBfdIpv6InstPol - Beginning Import
+	log.Printf("[DEBUG] %s: infraRsSpineBfdIpv6InstPol - Beginning Import with parent DN", dn)
+	_, err = getAndSetReadRelationinfraRsSpineBfdIpv6InstPol(aciClient, dn, d)
+	if err == nil {
+		log.Printf("[DEBUG] %s: infraRsSpineBfdIpv6InstPol - Import finished successfully", d.Get("relation_infra_rs_spine_bfd_ipv6_inst_pol"))
+	}
+	// infraRsSpineBfdIpv6InstPol - Import finished successfully
+
+	// infraRsSpineCoppProfile - Beginning Import
+	log.Printf("[DEBUG] %s: infraRsSpineCoppProfile - Beginning Import with parent DN", dn)
+	_, err = getAndSetReadRelationinfraRsSpineCoppProfile(aciClient, dn, d)
+	if err == nil {
+		log.Printf("[DEBUG] %s: infraRsSpineCoppProfile - Import finished successfully", d.Get("relation_infra_rs_spine_copp_profile"))
+	}
+	// infraRsSpineCoppProfile - Import finished successfully
+
+	// infraRsSpinePGrpToCdpIfPol - Beginning Import
+	log.Printf("[DEBUG] %s: infraRsSpinePGrpToCdpIfPol - Beginning Import with parent DN", dn)
+	_, err = getAndSetReadRelationinfraRsSpinePGrpToCdpIfPol(aciClient, dn, d)
+	if err == nil {
+		log.Printf("[DEBUG] %s: infraRsSpinePGrpToCdpIfPol - Import finished successfully", d.Get("relation_infra_rs_spine_p_grp_to_cdp_if_pol"))
+	}
+	// infraRsSpinePGrpToCdpIfPol - Import finished successfully
+
+	// infraRsSpinePGrpToLldpIfPol - Beginning Import
+	log.Printf("[DEBUG] %s: infraRsSpinePGrpToLldpIfPol - Beginning Import with parent DN", dn)
+	_, err = getAndSetReadRelationinfraRsSpinePGrpToLldpIfPol(aciClient, dn, d)
+	if err == nil {
+		log.Printf("[DEBUG] %s: infraRsSpinePGrpToLldpIfPol - Import finished successfully", d.Get("relation_infra_rs_spine_p_grp_to_lldp_if_pol"))
+	}
+	// infraRsSpinePGrpToLldpIfPol - Import finished successfully
+
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 	return []*schema.ResourceData{schemaFilled}, nil
 }
@@ -391,83 +512,54 @@ func resourceAciSpineSwitchPolicyGroupRead(ctx context.Context, d *schema.Resour
 	}
 	setSpineSwitchPolicyGroupAttributes(infraSpineAccNodePGrp, d)
 
-	infraRsIaclSpineProfileData, err := aciClient.ReadRelationinfraRsIaclSpineProfile(dn)
-	if err != nil {
-		log.Printf("[DEBUG] Error while reading relation infraRsIaclSpineProfile %v", err)
-		d.Set("infra_rs_iacl_spine_profile", "")
-	} else {
-		if _, ok := d.GetOk("relation_infra_rs_iacl_spine_profile"); ok {
-			tfName := GetMOName(d.Get("relation_infra_rs_iacl_spine_profile").(string))
-			if tfName != infraRsIaclSpineProfileData {
-				d.Set("relation_infra_rs_iacl_spine_profile", "")
-			}
-		}
+	// infraRsIaclSpineProfile - Beginning Read
+	log.Printf("[DEBUG] %s: infraRsIaclSpineProfile - Beginning Read with parent DN", dn)
+	_, err = getAndSetReadRelationinfraRsIaclSpineProfile(aciClient, dn, d)
+	if err == nil {
+		log.Printf("[DEBUG] %s: infraRsIaclSpineProfile - Read finished successfully", d.Get("relation_infra_rs_iacl_spine_profile"))
 	}
+	// infraRsIaclSpineProfile - Read finished successfully
 
-	infraRsSpineBfdIpv4InstPolData, err := aciClient.ReadRelationinfraRsSpineBfdIpv4InstPol(dn)
-	if err != nil {
-		log.Printf("[DEBUG] Error while reading relation infraRsSpineBfdIpv4InstPol %v", err)
-		d.Set("infra_rs_spine_bfd_ipv4_inst_pol", "")
-	} else {
-		if _, ok := d.GetOk("relation_infra_rs_spine_bfd_ipv4_inst_pol"); ok {
-			tfName := GetMOName(d.Get("relation_infra_rs_spine_bfd_ipv4_inst_pol").(string))
-			if tfName != infraRsSpineBfdIpv4InstPolData {
-				d.Set("relation_infra_rs_spine_bfd_ipv4_inst_pol", "")
-			}
-		}
+	// infraRsSpineBfdIpv4InstPol - Beginning Read
+	log.Printf("[DEBUG] %s: infraRsSpineBfdIpv4InstPol - Beginning Read with parent DN", dn)
+	_, err = getAndSetReadRelationinfraRsSpineBfdIpv4InstPol(aciClient, dn, d)
+	if err == nil {
+		log.Printf("[DEBUG] %s: infraRsSpineBfdIpv4InstPol - Read finished successfully", d.Get("relation_infra_rs_spine_bfd_ipv4_inst_pol"))
 	}
+	// infraRsSpineBfdIpv4InstPol - Read finished successfully
 
-	infraRsSpineBfdIpv6InstPolData, err := aciClient.ReadRelationinfraRsSpineBfdIpv6InstPol(dn)
-	if err != nil {
-		log.Printf("[DEBUG] Error while reading relation infraRsSpineBfdIpv6InstPol %v", err)
-		d.Set("infra_rs_spine_bfd_ipv6_inst_pol", "")
-	} else {
-		if _, ok := d.GetOk("relation_infra_rs_spine_bfd_ipv6_inst_pol"); ok {
-			tfName := GetMOName(d.Get("relation_infra_rs_spine_bfd_ipv6_inst_pol").(string))
-			if tfName != infraRsSpineBfdIpv6InstPolData {
-				d.Set("relation_infra_rs_spine_bfd_ipv6_inst_pol", "")
-			}
-		}
+	// infraRsSpineBfdIpv6InstPol - Beginning Read
+	log.Printf("[DEBUG] %s: infraRsSpineBfdIpv6InstPol - Beginning Read with parent DN", dn)
+	_, err = getAndSetReadRelationinfraRsSpineBfdIpv6InstPol(aciClient, dn, d)
+	if err == nil {
+		log.Printf("[DEBUG] %s: infraRsSpineBfdIpv6InstPol - Read finished successfully", d.Get("relation_infra_rs_spine_bfd_ipv6_inst_pol"))
 	}
+	// infraRsSpineBfdIpv6InstPol - Read finished successfully
 
-	infraRsSpineCoppProfileData, err := aciClient.ReadRelationinfraRsSpineCoppProfile(dn)
-	if err != nil {
-		log.Printf("[DEBUG] Error while reading relation infraRsSpineCoppProfile %v", err)
-		d.Set("infra_rs_spine_copp_profile", "")
-	} else {
-		if _, ok := d.GetOk("relation_infra_rs_spine_copp_profile"); ok {
-			tfName := GetMOName(d.Get("relation_infra_rs_spine_copp_profile").(string))
-			if tfName != infraRsSpineCoppProfileData {
-				d.Set("relation_infra_rs_spine_copp_profile", "")
-			}
-		}
+	// infraRsSpineCoppProfile - Beginning Read
+	log.Printf("[DEBUG] %s: infraRsSpineCoppProfile - Beginning Read with parent DN", dn)
+	_, err = getAndSetReadRelationinfraRsSpineCoppProfile(aciClient, dn, d)
+	if err == nil {
+		log.Printf("[DEBUG] %s: infraRsSpineCoppProfile - Read finished successfully", d.Get("relation_infra_rs_spine_copp_profile"))
 	}
+	// infraRsSpineCoppProfile - Read finished successfully
 
-	infraRsSpinePGrpToCdpIfPolData, err := aciClient.ReadRelationinfraRsSpinePGrpToCdpIfPol(dn)
-	if err != nil {
-		log.Printf("[DEBUG] Error while reading relation infraRsSpinePGrpToCdpIfPol %v", err)
-		d.Set("infra_rs_spine_p_grp_to_cdp_if_pol", "")
-	} else {
-		if _, ok := d.GetOk("relation_infra_rs_spine_p_grp_to_cdp_if_pol"); ok {
-			tfName := GetMOName(d.Get("relation_infra_rs_spine_p_grp_to_cdp_if_pol").(string))
-			if tfName != infraRsSpinePGrpToCdpIfPolData {
-				d.Set("relation_infra_rs_spine_p_grp_to_cdp_if_pol", "")
-			}
-		}
+	// infraRsSpinePGrpToCdpIfPol - Beginning Read
+	log.Printf("[DEBUG] %s: infraRsSpinePGrpToCdpIfPol - Beginning Read with parent DN", dn)
+	_, err = getAndSetReadRelationinfraRsSpinePGrpToCdpIfPol(aciClient, dn, d)
+	if err == nil {
+		log.Printf("[DEBUG] %s: infraRsSpinePGrpToCdpIfPol - Read finished successfully", d.Get("relation_infra_rs_spine_p_grp_to_cdp_if_pol"))
 	}
+	// infraRsSpinePGrpToCdpIfPol - Read finished successfully
 
-	infraRsSpinePGrpToLldpIfPolData, err := aciClient.ReadRelationinfraRsSpinePGrpToLldpIfPol(dn)
-	if err != nil {
-		log.Printf("[DEBUG] Error while reading relation infraRsSpinePGrpToLldpIfPol %v", err)
-		d.Set("infra_rs_spine_p_grp_to_lldp_if_pol", "")
-	} else {
-		if _, ok := d.GetOk("relation_infra_rs_spine_p_grp_to_lldp_if_pol"); ok {
-			tfName := GetMOName(d.Get("relation_infra_rs_spine_p_grp_to_lldp_if_pol").(string))
-			if tfName != infraRsSpinePGrpToLldpIfPolData {
-				d.Set("relation_infra_rs_spine_p_grp_to_lldp_if_pol", "")
-			}
-		}
+	// infraRsSpinePGrpToLldpIfPol - Beginning Read
+	log.Printf("[DEBUG] %s: infraRsSpinePGrpToLldpIfPol - Beginning Read with parent DN", dn)
+	_, err = getAndSetReadRelationinfraRsSpinePGrpToLldpIfPol(aciClient, dn, d)
+	if err == nil {
+		log.Printf("[DEBUG] %s: infraRsSpinePGrpToLldpIfPol - Read finished successfully", d.Get("relation_infra_rs_spine_p_grp_to_lldp_if_pol"))
 	}
+	// infraRsSpinePGrpToLldpIfPol - Read finished successfully
+
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 	return nil
 }
