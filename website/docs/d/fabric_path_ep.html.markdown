@@ -8,7 +8,7 @@ description: |-
 ---
 
 # aci_fabric_path_ep #
-Data source for ACI Fabric Path End point
+Retrive the switch Path Attribute (used for EPG Static Path Binding) from the Leaf Interface Policy Group
 
 ## Example Usage ##
 
