@@ -68,6 +68,16 @@ func dataSourceAciCloudContextProfile() *schema.Resource {
 				Optional:    true,
 				Description: "hub network to enable transit gateway",
 			},
+			"cloud_brownfield": &schema.Schema{
+				Type:        schema.TypeString,
+				Optional:    true,
+				Description: "Import Brownfield Virtual Network",
+			},
+			"access_policy_type": &schema.Schema{
+				Type:        schema.TypeString,
+				Optional:    true,
+				Description: "Cloud context access policy type",
+			},
 		}),
 	}
 }
