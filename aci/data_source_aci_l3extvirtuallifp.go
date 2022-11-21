@@ -124,5 +124,8 @@ func dataSourceAciVirtualLogicalInterfaceProfileRead(ctx context.Context, d *sch
 	if err != nil {
 		return diag.FromErr(err)
 	}
+
+	getAndSetL3extRsDynPathAttFromLogicalInterfaceProfile(aciClient, dn, d)
+
 	return nil
 }

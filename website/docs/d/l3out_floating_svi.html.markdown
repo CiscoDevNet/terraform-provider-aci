@@ -30,15 +30,15 @@ data "aci_l3out_floating_svi" "check" {
 ## Attribute Reference
 
 - `id` - Attribute id set to the Dn of the Logical Interface Profile.
-- `addr` - Peer address for L3out floating SVI object.
-- `annotation` - Annotation for L3out floating SVI object.
-- `description` - Description for L3out floating SVI object.
-- `autostate` - Autostate for L3out floating SVI object.
-- `encap_scope` - Encap scope for L3out floating SVI object.
-- `if_inst_t` - Interface type for L3out floating SVI object.
-- `ipv6_dad` - IPv6 dad for L3out floating SVI object.
-- `ll_addr` - Link local address address for L3out floating SVI object.
-- `mac` - MAC address for L3out floating SVI object.
-- `mode` - BGP domain mode for L3out floating SVI object.
-- `mtu` - Administrative MTU port on the aggregated interface for L3out floating SVI object.
-- `target_dscp` - Target DSCP for L3out floating SVI object.
+- `addr` - (Optional) Peer address for L3out floating SVI object.
+- `annotation` - (Optional) Annotation for L3out floating SVI object.
+- `description` - (Optional) Description for L3out floating SVI object.
+- `autostate` - (Optional) Autostate for L3out floating SVI object.
+- `encap_scope` - (Optional) Encap scope for L3out floating SVI object.
+- `if_inst_t` - (Optional) Interface type for L3out floating SVI object.
+- `ipv6_dad` - (Optional) IPv6 dad for L3out floating SVI object.
+- `ll_addr` - (Optional) Link local address address for L3out floating SVI object.
+- `mac` - (Optional) MAC address for L3out floating SVI object.
+- `mode` - (Optional) BGP domain mode for L3out floating SVI object.
+- `mtu` -( Optional) Administrative MTU port on the aggregated interface for L3out floating SVI object.
+- `target_dscp` - (Optional) Target DSCP for L3out floating SVI object.
