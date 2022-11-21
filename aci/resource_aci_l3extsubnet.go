@@ -28,6 +28,24 @@ func resourceAciL3ExtSubnet() *schema.Resource {
 
 		SchemaVersion: 1,
 
+		CustomizeDiff: func(_ context.Context, diff *schema.ResourceDiff, v interface{}) error {
+			// workaround because ValidateFunc is not allowed on TypeSet
+			if diff.HasChange("relation_l3ext_rs_subnet_to_profile") {
+				_, new := diff.GetChange("relation_l3ext_rs_subnet_to_profile")
+				// validate that a direction type ( import/export ) is not defined more than once
+				err := validateDirection(new.(*schema.Set).List())
+				if err != nil {
+					return err
+				}
+				// validate that dn and name are not both defined
+				err2 := validateDnAndName(new.(*schema.Set).List())
+				if err2 != nil {
+					return err2
+				}
+			}
+			return nil
+		},
+
 		Schema: AppendBaseAttrSchema(map[string]*schema.Schema{
 			"external_network_instance_profile_dn": &schema.Schema{
 				Type:     schema.TypeString,
@@ -84,15 +102,21 @@ func resourceAciL3ExtSubnet() *schema.Resource {
 						"tn_rtctrl_profile_name": {
 							Type:       schema.TypeString,
 							Optional:   true,
+							Default:    "", // workaround to mimic computed behaviour, which does not work in TypeSet
 							Deprecated: "use tn_rtctrl_profile_dn instead",
 						},
 						"tn_rtctrl_profile_dn": {
 							Type:     schema.TypeString,
 							Optional: true,
+							Default:  "", // workaround to mimic computed behaviour, which does not work in TypeSet
 						},
 						"direction": {
 							Type:     schema.TypeString,
 							Required: true,
+							ValidateFunc: validation.StringInSlice([]string{
+								"export",
+								"import",
+							}, false),
 						},
 					},
 				},
@@ -105,6 +129,45 @@ func resourceAciL3ExtSubnet() *schema.Resource {
 		}),
 	}
 }
+
+func validateDirection(relationParamList []interface{}) error {
+	err := fmt.Errorf("duplicate directions not allowed in relation_l3ext_rs_subnet_to_profile")
+	if len(relationParamList) > 2 {
+		return err
+	}
+	validateDirection := ""
+	for _, relationParam := range relationParamList {
+		paramMap := relationParam.(map[string]interface{})
+		if paramMap["direction"].(string) != validateDirection {
+			validateDirection = paramMap["direction"].(string)
+		} else {
+			return err
+		}
+	}
+	return nil
+}
+
+func validateDnAndName(relationParamList []interface{}) error {
+	for _, relationParam := range relationParamList {
+		paramMap := relationParam.(map[string]interface{})
+		if paramMap["tn_rtctrl_profile_dn"] != "" && paramMap["tn_rtctrl_profile_name"] != "" {
+			return fmt.Errorf("Usage of both tn_rtctrl_profile_dn and tn_rtctrl_profile_name parameters is not supported. tn_rtctrl_profile_name parameter will be deprecated use tn_rtctrl_profile_dn instead.")
+		}
+		if paramMap["tn_rtctrl_profile_dn"] == "" && paramMap["tn_rtctrl_profile_name"] == "" {
+			return fmt.Errorf("tn_rtctrl_profile_dn is required to generate Route Control Profile")
+		}
+	}
+	return nil
+}
+
+func getTnRtctrlProfileName(paramMap map[string]interface{}) string {
+	if paramMap["tn_rtctrl_profile_dn"] != "" {
+		return GetMOName(paramMap["tn_rtctrl_profile_dn"].(string))
+	} else {
+		return paramMap["tn_rtctrl_profile_name"].(string)
+	}
+}
+
 func getRemoteL3ExtSubnet(client *client.Client, dn string) (*models.L3ExtSubnet, error) {
 	l3extSubnetCont, err := client.Get(dn)
 	if err != nil {
@@ -258,19 +321,8 @@ func resourceAciL3ExtSubnetCreate(ctx context.Context, d *schema.ResourceData, m
 		relationParamList := relationTol3extRsSubnetToProfile.(*schema.Set).List()
 		for _, relationParam := range relationParamList {
 			paramMap := relationParam.(map[string]interface{})
-
-			var relationParamName string
-			if paramMap["tn_rtctrl_profile_dn"] != "" && paramMap["tn_rtctrl_profile_name"] != "" {
-				return diag.FromErr(fmt.Errorf("Usage of both tn_rtctrl_profile_dn and tn_rtctrl_profile_name parameters is not supported. tn_rtctrl_profile_name parameter will be deprecated use tn_rtctrl_profile_dn instead."))
-			} else if paramMap["tn_rtctrl_profile_name"] != "" {
-				relationParamName = paramMap["tn_rtctrl_profile_name"].(string)
-			} else if paramMap["tn_rtctrl_profile_dn"] != "" {
-				relationParamName = GetMOName(paramMap["tn_rtctrl_profile_dn"].(string))
-			} else {
-				return diag.FromErr(fmt.Errorf("tn_rtctrl_profile_dn is required to generate Route Control Profile"))
-			}
+			relationParamName := getTnRtctrlProfileName(paramMap)
 			err = aciClient.CreateRelationl3extRsSubnetToProfileFromL3ExtSubnet(l3extSubnet.DistinguishedName, relationParamName, paramMap["direction"].(string))
-
 			if err != nil {
 				return diag.FromErr(err)
 			}
@@ -358,20 +410,20 @@ func resourceAciL3ExtSubnetUpdate(ctx context.Context, d *schema.ResourceData, m
 		newRelList := newRel.(*schema.Set).List()
 		for _, relationParam := range oldRelList {
 			paramMap := relationParam.(map[string]interface{})
-			err = aciClient.DeleteRelationl3extRsSubnetToProfileFromL3ExtSubnet(l3extSubnet.DistinguishedName, GetMOName(paramMap["tn_rtctrl_profile_name"].(string)), paramMap["direction"].(string))
+			relationParamName := getTnRtctrlProfileName(paramMap)
+			err = aciClient.DeleteRelationl3extRsSubnetToProfileFromL3ExtSubnet(l3extSubnet.DistinguishedName, relationParamName, paramMap["direction"].(string))
 			if err != nil {
 				return diag.FromErr(err)
 			}
-
 		}
 		for _, relationParam := range newRelList {
 			paramMap := relationParam.(map[string]interface{})
-			err = aciClient.CreateRelationl3extRsSubnetToProfileFromL3ExtSubnet(l3extSubnet.DistinguishedName, GetMOName(paramMap["tn_rtctrl_profile_name"].(string)), paramMap["direction"].(string))
+			relationParamName := getTnRtctrlProfileName(paramMap)
+			err = aciClient.CreateRelationl3extRsSubnetToProfileFromL3ExtSubnet(l3extSubnet.DistinguishedName, relationParamName, paramMap["direction"].(string))
 			if err != nil {
 				return diag.FromErr(err)
 			}
 		}
-
 	}
 	if d.HasChange("relation_l3ext_rs_subnet_to_rt_summ") {
 		_, newRelParam := d.GetChange("relation_l3ext_rs_subnet_to_rt_summ")
@@ -420,8 +472,9 @@ func resourceAciL3ExtSubnetRead(ctx context.Context, d *schema.ResourceData, m i
 		relParams := l3extRsSubnetToProfileData.([]map[string]string)
 		for _, obj := range relParams {
 			relParamList = append(relParamList, map[string]string{
-				"tn_rtctrl_profile_name": obj["tnRtctrlProfileName"],
-				"direction":              obj["direction"],
+				// obj["tnRtctrlProfileName"] is set to tDN in aci-go-client thus name is assigned to tn_rtctrl_profile_dn
+				"tn_rtctrl_profile_dn": obj["tnRtctrlProfileName"],
+				"direction":            obj["direction"],
 			})
 		}
 		d.Set("relation_l3ext_rs_subnet_to_profile", relParamList)

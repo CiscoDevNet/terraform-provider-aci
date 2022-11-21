@@ -41,7 +41,25 @@ resource "aci_external_network_instance_profile" "fooexternal_network_instance_p
   name_alias     = "alias_profile"
   pref_gr_memb   = "exclude"
   prio           = "level1"
-  target_dscp    = "exclude"
+  target_dscp    = "unspecified"
+}
+
+resource "aci_route_control_profile" "example" {
+  parent_dn                  = aci_l3_outside.fool3_outside.id
+  name                       = "one"
+  annotation                 = "example"
+  description                = "from terraform"
+  name_alias                 = "example"
+  route_control_profile_type = "global"
+}
+
+resource "aci_route_control_profile" "example2" {
+  parent_dn                  = aci_l3_outside.fool3_outside.id
+  name                       = "two"
+  annotation                 = "example2"
+  description                = "from terraform"
+  name_alias                 = "example"
+  route_control_profile_type = "global"
 }
 
 resource "aci_l3_ext_subnet" "foosubnet" {
@@ -52,4 +70,12 @@ resource "aci_l3_ext_subnet" "foosubnet" {
   annotation                           = "tag_ext_subnet"
   name_alias                           = "alias_ext_subnet"
   scope                                = ["import-security"]
+  relation_l3ext_rs_subnet_to_profile {
+    tn_rtctrl_profile_dn = aci_route_control_profile.example.id
+    direction = "import"
+  }
+  relation_l3ext_rs_subnet_to_profile {
+    tn_rtctrl_profile_dn = aci_route_control_profile.example2.id
+    direction = "export"
+  }
 }
