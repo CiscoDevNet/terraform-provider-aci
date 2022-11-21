@@ -50,3 +50,5 @@ data "aci_cloud_context_profile" "sample_prof" {
 * `hub_network` - Hub Network Dn which enables Transit Gateway.
 * `relation_cloud_rs_ctx_to_flow_log` - Relation to a AWS Flow Log Policy (class cloudAwsFlowLogPol).
 * `relation_cloud_rs_to_ctx` - Relation to a VRF (class fvCtx).
+* `cloud_brownfield` - ID of imported brownfield virtual network.
+* `access_policy_type` - Type of cloud context access policy.

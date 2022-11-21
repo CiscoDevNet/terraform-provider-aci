@@ -2,6 +2,7 @@ package aci
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log"
 	"regexp"
@@ -98,13 +99,30 @@ func resourceAciCloudContextProfile() *schema.Resource {
 				Optional:    true,
 				Description: "hub network to enable transit gateway",
 			},
+			"cloud_brownfield": &schema.Schema{
+				Type:        schema.TypeString,
+				Optional:    true,
+				Description: "Import Brownfield Virtual Network",
+				ForceNew:    true,
+			},
+			"access_policy_type": &schema.Schema{
+				Type:        schema.TypeString,
+				Optional:    true,
+				Description: "Cloud context access policy type",
+				ValidateFunc: validation.StringInSlice([]string{
+					"read-only",
+					"routing-only",
+					"inherited",
+					"routing-security",
+				}, false),
+			},
 		}),
 	}
 }
 
 func getRemoteCloudContextProfile(client *client.Client, dn string, d *schema.ResourceData) (*models.CloudContextProfile, error) {
 	baseurlStr := "/api/node/mo"
-	dnUrl := fmt.Sprintf("%s/%s.json?rsp-subtree=children", baseurlStr, dn)
+	dnUrl := fmt.Sprintf("%s/%s.json?rsp-subtree=full", baseurlStr, dn)
 	cloudCtxProfileCont, err := client.GetViaURL(dnUrl)
 	if err != nil {
 		return nil, err
@@ -162,6 +180,15 @@ func setRelationalAttributes(cloudCtxProfileCont *container.Container, d *schema
 			d.Set("relation_cloud_rs_ctx_to_flow_log", G(childCont.S("cloudRsCtxToFlowLog", "attributes"), "tDn"))
 		} else if childCont.Exists("cloudRsToCtx") {
 			d.Set("relation_cloud_rs_to_ctx", G(childCont.S("cloudRsToCtx", "attributes"), "tDn"))
+		} else if childCont.Exists("cloudBrownfield") {
+			var cloudProvider []string
+			err := json.Unmarshal([]byte(G(childCont.S("cloudBrownfield", "children", "cloudIDMapping", "attributes"), "cloudProviderId")), &cloudProvider)
+			if err != nil {
+				log.Printf("[DEBUG]: Failed to set relational attributes : %v", err)
+			}
+			d.Set("cloud_brownfield", cloudProvider[0])
+		} else if childCont.Exists("cloudRsCtxProfileToAccessPolicy") {
+			d.Set("access_policy_type", GetMOName(G(childCont.S("cloudRsCtxProfileToAccessPolicy", "attributes"), "tDn")))
 		}
 	}
 }
@@ -212,6 +239,11 @@ func resourceAciCloudContextProfileCreate(ctx context.Context, d *schema.Resourc
 		cloudCtxProfileAttr.Type = Type.(string)
 	}
 
+	cloudBrownfield := ""
+	if tmpVar, ok := d.GetOk("cloud_brownfield"); ok {
+		cloudBrownfield = tmpVar.(string)
+	}
+
 	PrimaryCIDR := d.Get("primary_cidr").(string)
 
 	Region := d.Get("region").(string)
@@ -232,6 +264,13 @@ func resourceAciCloudContextProfileCreate(ctx context.Context, d *schema.Resourc
 		checkDns = append(checkDns, temp.(string))
 	}
 
+	accessPolicy := ""
+	if tmpVar, ok := d.GetOk("access_policy_type"); ok {
+		accessPolicy = tmpVar.(string)
+		accessDn := fmt.Sprintf("uni/tn-infra/accesspolicy-%s", accessPolicy)
+		checkDns = append(checkDns, accessDn)
+	}
+
 	d.Partial(true)
 	err := checkTDn(aciClient, checkDns)
 	if err != nil {
@@ -250,7 +289,7 @@ func resourceAciCloudContextProfileCreate(ctx context.Context, d *schema.Resourc
 		return diag.FromErr(fmt.Errorf("Invalid Configuration relation_cloud_rs_to_ctx property cannot be empty for the Cloud APIC"))
 	}
 
-	cloudCtxProfile, err := aciClient.CreateCloudContextProfile(name, TenantDn, desc, cloudCtxProfileAttr, PrimaryCIDR, Region, vendor, cloudRsCtx)
+	cloudCtxProfile, err := aciClient.CreateCloudContextProfile(name, TenantDn, desc, cloudCtxProfileAttr, PrimaryCIDR, Region, vendor, cloudRsCtx, cloudBrownfield, accessPolicy)
 	if err != nil {
 		return diag.FromErr(err)
 	}
@@ -321,6 +360,11 @@ func resourceAciCloudContextProfileUpdate(ctx context.Context, d *schema.Resourc
 		checkDns = append(checkDns, newRelParam.(string))
 	}
 
+	if d.HasChange("access_policy_type") {
+		_, newRelParam := d.GetChange("access_policy_type")
+		checkDns = append(checkDns, fmt.Sprintf("uni/tn-infra/accesspolicy-%s", newRelParam.(string)))
+	}
+
 	d.Partial(true)
 	err := checkTDn(aciClient, checkDns)
 	if err != nil {
@@ -339,7 +383,17 @@ func resourceAciCloudContextProfileUpdate(ctx context.Context, d *schema.Resourc
 		return diag.FromErr(fmt.Errorf("Invalid Configuration relation_cloud_rs_to_ctx property cannot be empty for the Cloud APIC"))
 	}
 
-	cloudCtxProfile, err := aciClient.UpdateCloudContextProfile(name, TenantDn, desc, cloudCtxProfileAttr, PrimaryCIDR, Region, vendor, cloudRsCtx)
+	accessPolicy := ""
+	if tmpVar, ok := d.GetOk("access_policy_type"); ok {
+		accessPolicy = tmpVar.(string)
+	}
+
+	cloudBrownfield := ""
+	if tmpVar, ok := d.GetOk("cloud_brownfield"); ok {
+		cloudBrownfield = tmpVar.(string)
+	}
+
+	cloudCtxProfile, err := aciClient.UpdateCloudContextProfile(name, TenantDn, desc, cloudCtxProfileAttr, PrimaryCIDR, Region, vendor, cloudRsCtx, cloudBrownfield, accessPolicy)
 
 	if err != nil {
 		return diag.FromErr(err)
