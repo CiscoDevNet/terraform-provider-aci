@@ -36,6 +36,20 @@ resource "aci_cloud_context_profile" "foocloud_context_profile" {
 }
 ```
 
+```hcl
+resource "aci_cloud_context_profile" "foocloud_context_profile" {
+  name                     = "cloud_ctx_brownfield"
+  description              = "import brownfield vpc in aws"
+  tenant_dn                = aci_tenant.footenant.id
+  primary_cidr             = "10.230.231.1/16"
+  region                   = "us-west-1"
+  cloud_vendor             = "aws"
+  relation_cloud_rs_to_ctx = aci_vrf.example.id
+  cloud_brownfield         = "vpc-00a844d6354c53502"
+  access_policy_type       = "read-only"
+}
+```
+
 
 ## Argument Reference ##
 * `tenant_dn` - (Required) Distinguished name of the parent Tenant object.
@@ -50,3 +64,5 @@ resource "aci_cloud_context_profile" "foocloud_context_profile" {
 * `hub_network` - (Optional) Hub Network Dn which enables Transit Gateway.
 * `relation_cloud_rs_ctx_to_flow_log` - (Optional) Relation to a AWS Flow Log Policy (class cloudAwsFlowLogPol). Cardinality - N TO ONE. Type - String.
 * `relation_cloud_rs_to_ctx` - (Required) Relation to a VRF (class fvCtx). Cardinality - N TO ONE. Type - String.
+* `cloud_brownfield` - (Optional) Option to import brownfield virtual network from cloud provider. Type - String.
+* `access_policy_type` - (Optional) Type of cloud context access policy. Allowed values are "read-only", "routing-only", "inherited", "routing-security". Type - String.
