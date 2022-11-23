@@ -46,7 +46,7 @@ func resourceAciL3ExtSubnet() *schema.Resource {
 			return nil
 		},
 
-		Schema: AppendBaseAttrSchema(map[string]*schema.Schema{
+		Schema: AppendBaseAttrSchema(AppendNameAliasAttrSchema(map[string]*schema.Schema{
 			"external_network_instance_profile_dn": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
@@ -70,12 +70,6 @@ func resourceAciL3ExtSubnet() *schema.Resource {
 					"shared-rtctrl",
 					"none",
 				}, false, "none")),
-			},
-
-			"name_alias": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
 			},
 
 			"scope": &schema.Schema{
@@ -122,11 +116,11 @@ func resourceAciL3ExtSubnet() *schema.Resource {
 				},
 			},
 			"relation_l3ext_rs_subnet_to_rt_summ": &schema.Schema{
-				Type: schema.TypeString,
-
+				Type:     schema.TypeString,
+				Computed: true,
 				Optional: true,
 			},
-		}),
+		})),
 	}
 }
 
@@ -177,7 +171,7 @@ func getRemoteL3ExtSubnet(client *client.Client, dn string) (*models.L3ExtSubnet
 	l3extSubnet := models.L3ExtSubnetFromContainer(l3extSubnetCont)
 
 	if l3extSubnet.DistinguishedName == "" {
-		return nil, fmt.Errorf("Subnet %s not found", l3extSubnet.DistinguishedName)
+		return nil, fmt.Errorf("Subnet %s not found", dn)
 	}
 
 	return l3extSubnet, nil
@@ -232,6 +226,42 @@ func setL3ExtSubnetAttributes(l3extSubnet *models.L3ExtSubnet, d *schema.Resourc
 	return d, nil
 }
 
+func getAndSetl3extRsSubnetToProfileFromL3ExtSubnet(client *client.Client, dn string, d *schema.ResourceData) (*schema.ResourceData, error) {
+	l3extRsSubnetToProfileData, err := client.ReadRelationl3extRsSubnetToProfileFromL3ExtSubnet(dn)
+	if err != nil {
+		log.Printf("[DEBUG] Error while reading relation l3extRsSubnetToProfile %v", err)
+		d.Set("relation_l3ext_rs_subnet_to_profile", make([]map[string]string, 0, 1))
+		return nil, err
+	} else {
+		relParamList := make([]map[string]string, 0, 1)
+		relParams := l3extRsSubnetToProfileData.([]map[string]string)
+		for _, obj := range relParams {
+			relParamList = append(relParamList, map[string]string{
+				// obj["tnRtctrlProfileName"] is set to tDN in aci-go-client thus name is assigned to tn_rtctrl_profile_dn
+				"tn_rtctrl_profile_dn": obj["tnRtctrlProfileName"],
+				"direction":            obj["direction"],
+			})
+		}
+		d.Set("relation_l3ext_rs_subnet_to_profile", relParamList)
+		log.Printf("[DEBUG]: l3extRsSubnetToProfileData: %v finished successfully", relParamList)
+	}
+	return d, nil
+}
+
+func getAndSetl3extRsSubnetToRtSummFromL3ExtSubnet(client *client.Client, dn string, d *schema.ResourceData) (*schema.ResourceData, error) {
+	l3extRsSubnetToRtSummData, err := client.ReadRelationl3extRsSubnetToRtSummFromL3ExtSubnet(dn)
+	if err != nil {
+		log.Printf("[DEBUG] Error while reading relation l3extRsSubnetToRtSumm %v", err)
+		d.Set("relation_l3ext_rs_subnet_to_rt_summ", "")
+		return nil, err
+	} else {
+		d.Set("relation_l3ext_rs_subnet_to_rt_summ", l3extRsSubnetToRtSummData.(string))
+		log.Printf("[DEBUG]: l3extRsSubnetToRtSummData: %v finished successfully", l3extRsSubnetToRtSummData)
+	}
+	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
+	return d, nil
+}
+
 func resourceAciL3ExtSubnetImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
 	log.Printf("[DEBUG] %s: Beginning Import", d.Id())
 	aciClient := m.(*client.Client)
@@ -254,6 +284,10 @@ func resourceAciL3ExtSubnetImport(d *schema.ResourceData, m interface{}) ([]*sch
 	if err != nil {
 		return nil, err
 	}
+
+	getAndSetl3extRsSubnetToProfileFromL3ExtSubnet(aciClient, dn, d)
+	getAndSetl3extRsSubnetToRtSummFromL3ExtSubnet(aciClient, dn, d)
+
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
@@ -463,31 +497,8 @@ func resourceAciL3ExtSubnetRead(ctx context.Context, d *schema.ResourceData, m i
 		return nil
 	}
 
-	l3extRsSubnetToProfileData, err := aciClient.ReadRelationl3extRsSubnetToProfileFromL3ExtSubnet(dn)
-	if err != nil {
-		log.Printf("[DEBUG] Error while reading relation l3extRsSubnetToProfile %v", err)
-
-	} else {
-		relParamList := make([]map[string]string, 0, 1)
-		relParams := l3extRsSubnetToProfileData.([]map[string]string)
-		for _, obj := range relParams {
-			relParamList = append(relParamList, map[string]string{
-				// obj["tnRtctrlProfileName"] is set to tDN in aci-go-client thus name is assigned to tn_rtctrl_profile_dn
-				"tn_rtctrl_profile_dn": obj["tnRtctrlProfileName"],
-				"direction":            obj["direction"],
-			})
-		}
-		d.Set("relation_l3ext_rs_subnet_to_profile", relParamList)
-	}
-
-	l3extRsSubnetToRtSummData, err := aciClient.ReadRelationl3extRsSubnetToRtSummFromL3ExtSubnet(dn)
-	if err != nil {
-		log.Printf("[DEBUG] Error while reading relation l3extRsSubnetToRtSumm %v", err)
-		d.Set("relation_l3ext_rs_subnet_to_rt_summ", "")
-
-	} else {
-		setRelationAttribute(d, "relation_l3ext_rs_subnet_to_rt_summ", l3extRsSubnetToRtSummData.(string))
-	}
+	getAndSetl3extRsSubnetToProfileFromL3ExtSubnet(aciClient, dn, d)
+	getAndSetl3extRsSubnetToRtSummFromL3ExtSubnet(aciClient, dn, d)
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 
