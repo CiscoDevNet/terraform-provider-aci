@@ -46,26 +46,22 @@ Manages ACI l3 extension subnet
 
 ## Argument Reference ##
 
-* `external_network_instance_profile_dn` - (Required) Distinguished name of parent ExternalNetworkInstanceProfile object.
-* `ip` - (Required) ip of Object l3 extension subnet.
-* `aggregate` - (Optional) Aggregate Routes for l3 extension subnet. Allowed values are "import-rtctrl", "export-rtctrl","shared-rtctrl" and "none".
-* `annotation` - (Optional) annotation for object l3 extension subnet.
-* `description` - (Optional) Description for object l3 extension subnet.
-* `name_alias` - (Optional) name_alias for object l3 extension subnet.
+* `external_network_instance_profile_dn` - (Required) Distinguished name of the parent External Network Instance Profile object.
+* `ip` - (Required) ip of the L3 Extension Subnet object.
+* `aggregate` - (Optional) Aggregate Routes of the L3 Extension Subnet object. Allowed values are "import-rtctrl", "export-rtctrl", "shared-rtctrl" and "none".
+* `annotation` - (Optional) annotation of the L3 Extension Subnet object.
+* `description` - (Optional) Description of the L3 Extension Subnet object.
+* `name_alias` - (Optional) name_alias of the L3 Extension Subnet object.
 * `scope` - (Optional) The list of domain applicable to the capability. Allowed values are "import-rtctrl", "export-rtctrl", "import-security", "shared-security" and "shared-rtctrl". Default is "import-security".
 * `relation_l3ext_rs_subnet_to_profile` - (Optional) Relation to Route Control Profile (class rtctrlProfile). Type: Block.
-	* `relation_l3ext_rs_subnet_to_profile.tn_rtctrl_profile_name` - **Deprecated** (Optional) Associates the external EPGs with the route control profiles.
-	* `relation_l3ext_rs_subnet_to_profile.tn_rtctrl_profile_dn` - (Optional) Associates the external EPGs with the route control profiles.
+	* `relation_l3ext_rs_subnet_to_profile.tn_rtctrl_profile_name` - **Deprecated** (Optional) Associates the External EPGs with the Route Control Profiles.
+	* `relation_l3ext_rs_subnet_to_profile.tn_rtctrl_profile_dn` - (Optional) Associates the External EPGs with the Route Control Profiles.
 	* `relation_l3ext_rs_subnet_to_profile.direction` - (Required) Relation to configure route map for each BGP peer in the inbound and outbound directions.
 * `relation_l3ext_rs_subnet_to_rt_summ` - (Optional) Relation to class rtsumARtSummPol.
 
-## Attribute Reference ##
-
-The only attribute that this resource exports is the `id`, which is set to the Dn of the l3 extension subnet.
-
 ## Importing ##
 
-An existing Subnet can be [imported][docs-import] into this resource via its Dn, via the following command:
+An existing L3 Extension Subnet can be [imported][docs-import] into this resource via its Dn, via the following command:
 [docs-import]: https://www.terraform.io/docs/import/index.html
 
 ```
