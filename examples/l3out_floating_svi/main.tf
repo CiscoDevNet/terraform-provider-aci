@@ -30,7 +30,16 @@ resource "aci_logical_node_profile" "node_profile" {
 
 resource "aci_logical_interface_profile" "interface_profile" {
   logical_node_profile_dn = aci_logical_node_profile.node_profile.id
-  name                    = "demo_int_prof"
+  name = "demo_int_prof"
+}
+
+resource "aci_physical_domain" "example" {
+  name = "example"
+}
+
+resource "aci_vmm_domain" "example_vmm" {
+  provider_profile_dn = "uni/vmmp-VMware"
+  name                = "example"
 }
 
 resource "aci_l3out_floating_svi" "example" {
@@ -57,8 +66,8 @@ resource "aci_l3out_floating_svi" "example" {
     promiscuous_mode = "Disabled"
   }
   relation_l3ext_rs_dyn_path_att {
-    tdn              = aci_vmm_domain.example_vmm.id
-    floating_address = "10.20.30.254/16"
+    tdn                     = aci_vmm_domain.example_vmm.id
+    floating_address        = "10.20.30.254/16"
     enhanced_lag_policy_tdn = "uni/vmmp-VMware/dom-example/vswitchpolcont/enlacplagp-test"
   }
 }
@@ -76,13 +85,4 @@ resource "aci_l3out_floating_svi" "example2" {
     tdn              = aci_physical_domain.example.id
     floating_address = "10.21.30.254/16"
   }
-}
-
-resource "aci_physical_domain" "example" {
-  name = "example"
-}
-
-resource "aci_vmm_domain" "example_vmm" {
-  provider_profile_dn = "uni/vmmp-VMware"
-  name = "example"
 }

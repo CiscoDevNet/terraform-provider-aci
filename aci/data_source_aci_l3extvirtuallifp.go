@@ -38,12 +38,6 @@ func dataSourceAciVirtualLogicalInterfaceProfile() *schema.Resource {
 				Computed: true,
 			},
 
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
 			"autostate": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -96,6 +90,39 @@ func dataSourceAciVirtualLogicalInterfaceProfile() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+			},
+
+			"relation_l3ext_rs_dyn_path_att": &schema.Schema{
+				Type:     schema.TypeSet,
+				Optional: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"tdn": {
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"floating_address": {
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"forged_transmit": {
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"mac_change": {
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"promiscuous_mode": {
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"enhanced_lag_policy_tdn": {
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+					},
+				},
 			},
 		}),
 	}

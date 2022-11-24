@@ -213,7 +213,7 @@ func getRemoteVirtualLogicalInterfaceProfile(client *client.Client, dn string) (
 	l3extVirtualLIfP := models.VirtualLogicalInterfaceProfileFromContainer(l3extVirtualLIfPCont)
 
 	if l3extVirtualLIfP.DistinguishedName == "" {
-		return nil, fmt.Errorf("LogicalInterfaceProfile %s not found", l3extVirtualLIfP.DistinguishedName)
+		return nil, fmt.Errorf("LogicalInterfaceProfile %s not found", dn)
 	}
 
 	return l3extVirtualLIfP, nil
@@ -264,13 +264,13 @@ func getL3extRsVSwitchEnhancedLagPol(client *client.Client, dn, tDn string) stri
 
 func getAndSetL3extRsDynPathAttFromLogicalInterfaceProfile(client *client.Client, dn string, d *schema.ResourceData) (*schema.ResourceData, error) {
 	l3extRsDynPathAttData, err := client.ReadRelationl3extRsDynPathAttFromLogicalInterfaceProfile(dn)
+	l3extRsDynPaths := make([]map[string]string, 0)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation l3extRsDynPathAtt %v", err)
-		d.Set("relation_l3ext_rs_dyn_path_att", make([]interface{}, 0, 1))
+		d.Set("relation_l3ext_rs_dyn_path_att", l3extRsDynPaths)
 		return nil, err
 	} else {
 		l3extRsDynPathAttMap := l3extRsDynPathAttData.([]map[string]string)
-		st := make([]map[string]string, 0)
 		for _, l3extRsDynPathObj := range l3extRsDynPathAttMap {
 			obj := make(map[string]string, 0)
 			obj["tdn"] = l3extRsDynPathObj["tDn"]
@@ -279,10 +279,10 @@ func getAndSetL3extRsDynPathAttFromLogicalInterfaceProfile(client *client.Client
 			obj["mac_change"] = l3extRsDynPathObj["macChange"]
 			obj["promiscuous_mode"] = l3extRsDynPathObj["promMode"]
 			obj["enhanced_lag_policy_tdn"] = getL3extRsVSwitchEnhancedLagPol(client, dn, l3extRsDynPathObj["tDn"])
-			st = append(st, obj)
+			l3extRsDynPaths = append(l3extRsDynPaths, obj)
 		}
-		d.Set("relation_l3ext_rs_dyn_path_att", st)
-		log.Printf("[DEBUG]: l3extRsDynPathAtt: %v finished successfully", st)
+		d.Set("relation_l3ext_rs_dyn_path_att", l3extRsDynPaths)
+		log.Printf("[DEBUG]: l3extRsDynPathAtt: %v finished successfully", l3extRsDynPaths)
 	}
 	return d, nil
 }
