@@ -55,7 +55,7 @@ resource "aci_l3out_floating_svi" "example" {
   ipv6_dad                     = "disabled"
   ll_addr                      = "::"
   mac                          = "12:23:34:45:56:67"
-  mode                         = "untagged"
+  mode                         = "regular"
   mtu                          = "580"
   target_dscp                  = "CS1"
   relation_l3ext_rs_dyn_path_att {
