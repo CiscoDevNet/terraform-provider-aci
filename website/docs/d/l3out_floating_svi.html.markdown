@@ -45,7 +45,7 @@ data "aci_l3out_floating_svi" "check" {
 * `relation_l3ext_rs_dyn_path_att` - (Optional) A block representing the relation to a Domain (class infraDomP or vmmDomP). Type: Block.
   * `tdn` - (Required) The distinguished name of the target.
   * `floating_address` - (Optional) Floating address of the target.
-  * `forged_transmit` - (Optional) A configuration option that allows virtual machines to send frames with a mac address that is different from the one specified in the virtual-nic adapter configuration. Allowed values are "Disabled" and "Enabled". Default value is "Disabled".
-  * `mac_change` - (Optional) The status of the mac address change support of the port groups in an external VMM controller, such as a vCenter. Allowed values are "Disabled" and "Enabled". Default value is "Disabled".
-  * `promiscuous_mode` - (Optional) The status of the promiscuous mode support status of the port groups in an external VMM controller, such as a vCenter. This needs to be turned on only for service devices in the cloud, not for Enterprise AVE service deployments. Allowed values are "Disabled" and "Enabled". Default value is "Disabled".
+  * `forged_transmit` - (Optional) A configuration option that allows virtual machines to send frames with a mac address that is different from the one specified in the virtual-nic adapter configuration.
+  * `mac_change` - (Optional) The status of the mac address change support of the port groups in an external VMM controller, such as a vCenter.
+  * `promiscuous_mode` - (Optional) The status of the promiscuous mode support status of the port groups in an external VMM controller, such as a vCenter. This needs to be turned on only for service devices in the cloud, not for Enterprise AVE service deployments.
   * `enhanced_lag_policy_tdn` - (Optional) The distinguished name of the target enhanced lag policy (class lacpEnhancedLagPol).
