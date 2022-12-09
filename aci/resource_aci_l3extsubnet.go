@@ -237,8 +237,7 @@ func getAndSetl3extRsSubnetToProfileFromL3ExtSubnet(client *client.Client, dn st
 		relParams := l3extRsSubnetToProfileData.([]map[string]string)
 		for _, obj := range relParams {
 			relParamList = append(relParamList, map[string]string{
-				// obj["tnRtctrlProfileName"] is set to tDN in aci-go-client thus name is assigned to tn_rtctrl_profile_dn
-				"tn_rtctrl_profile_dn": obj["tnRtctrlProfileName"],
+				"tn_rtctrl_profile_dn": obj["tDn"],
 				"direction":            obj["direction"],
 			})
 		}
