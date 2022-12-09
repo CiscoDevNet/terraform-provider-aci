@@ -54,9 +54,9 @@ Manages ACI l3 extension subnet
 * `name_alias` - (Optional) name_alias of the L3 Extension Subnet object.
 * `scope` - (Optional) The list of domain applicable to the capability. Allowed values are "import-rtctrl", "export-rtctrl", "import-security", "shared-security" and "shared-rtctrl". Default is "import-security".
 * `relation_l3ext_rs_subnet_to_profile` - (Optional) Relation to Route Control Profile (class rtctrlProfile). Type: Block.
-	* `relation_l3ext_rs_subnet_to_profile.tn_rtctrl_profile_name` - **Deprecated** (Optional) Associates the External EPGs with the Route Control Profiles.
-	* `relation_l3ext_rs_subnet_to_profile.tn_rtctrl_profile_dn` - (Optional) Associates the External EPGs with the Route Control Profiles.
-	* `relation_l3ext_rs_subnet_to_profile.direction` - (Required) Relation to configure route map for each BGP peer in the inbound and outbound directions.
+	* `tn_rtctrl_profile_name` - **Deprecated** (Optional) Associates the External EPGs with the Route Control Profiles.
+	* `tn_rtctrl_profile_dn` - (Optional) Associates the External EPGs with the Route Control Profiles.
+	* `direction` - (Required) Relation to configure route map for each BGP peer in the inbound and outbound directions.
 * `relation_l3ext_rs_subnet_to_rt_summ` - (Optional) Relation to class rtsumARtSummPol.
 
 ## Importing ##

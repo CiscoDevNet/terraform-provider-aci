@@ -45,7 +45,7 @@ data "aci_l3_ext_subnet" "example" {
 * `name_alias` - (Optional) Name alias of the L3 Extension Subnet object.
 * `scope` - (Optional) The list of domain applicable to the capability.
 * `relation_l3ext_rs_subnet_to_profile` - (Optional) Relation to Route Control Profile (class rtctrlProfile). Type: Block.
-	* `relation_l3ext_rs_subnet_to_profile.tn_rtctrl_profile_name` - **Deprecated** (Optional) Associates the External EPGs with the Route Control Profiles.
-	* `relation_l3ext_rs_subnet_to_profile.tn_rtctrl_profile_dn` - (Optional) Associates the External EPGs with the Route Control Profiles.
-	* `relation_l3ext_rs_subnet_to_profile.direction` - (Optional) Relation to configure route map for each BGP peer in the inbound and outbound directions.
+	* `tn_rtctrl_profile_name` - **Deprecated** (Optional) Associates the External EPGs with the Route Control Profiles.
+	* `tn_rtctrl_profile_dn` - (Optional) Associates the External EPGs with the Route Control Profiles.
+	* `direction` - (Optional) Relation to configure route map for each BGP peer in the inbound and outbound directions.
 * `relation_l3ext_rs_subnet_to_rt_summ` - (Optional) Relation to class rtsumARtSummPol.
