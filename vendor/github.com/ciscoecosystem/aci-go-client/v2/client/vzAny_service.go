@@ -142,7 +142,7 @@ func (sm *ServiceManager) ReadRelationvzRsAnyToConsIfFromAny(parentDn string) (i
 	dnUrl := fmt.Sprintf("%s/%s/%s.json", baseurlStr, parentDn, "vzRsAnyToConsIf")
 	cont, err := sm.GetViaURL(dnUrl)
 
-	contList := models.ListFromContainer(cont, "tDn")
+	contList := models.ListFromContainer(cont, "vzRsAnyToConsIf")
 
 	st := &schema.Set{
 		F: schema.HashString,

@@ -26,8 +26,8 @@ func (sm *ServiceManager) ReadCloudTemplateforExternalNetwork(name string, infra
 	return cloudtemplateExtNetwork, nil
 }
 
-func (sm *ServiceManager) DeleteCloudTemplateforExternalNetwork(name string, infra_network_template string, tenant string) error {
-	dn := fmt.Sprintf(models.DncloudtemplateExtNetwork, tenant, infra_network_template, name)
+func (sm *ServiceManager) DeleteCloudTemplateforExternalNetwork(cloudtemplateExtNetworkRn string, parentDn string) error {
+	dn := fmt.Sprintf("%s/%s", parentDn, cloudtemplateExtNetworkRn)
 	return sm.DeleteByDn(dn, models.CloudtemplateextnetworkClassName)
 }
 
