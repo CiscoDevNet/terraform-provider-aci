@@ -25,7 +25,7 @@ func resourceAciExternalNetworkInstanceProfile() *schema.Resource {
 
 		SchemaVersion: 1,
 
-		Schema: AppendBaseAttrSchema(map[string]*schema.Schema{
+		Schema: AppendBaseAttrSchema(AppendNameAliasAttrSchema(map[string]*schema.Schema{
 			"l3_outside_dn": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
@@ -64,12 +64,6 @@ func resourceAciExternalNetworkInstanceProfile() *schema.Resource {
 					"AtmostOne",
 					"None",
 				}, false),
-			},
-
-			"name_alias": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
 			},
 
 			"pref_gr_memb": &schema.Schema{
@@ -167,15 +161,25 @@ func resourceAciExternalNetworkInstanceProfile() *schema.Resource {
 			"relation_l3ext_rs_inst_p_to_profile": &schema.Schema{
 				Type:     schema.TypeSet,
 				Optional: true,
+				MaxItems: 2,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"tn_rtctrl_profile_name": {
+							Type:       schema.TypeString,
+							Optional:   true,
+							Deprecated: "Use tn_rtctrl_profile_dn instead of tn_rtctrl_profile_name",
+						},
+						"tn_rtctrl_profile_dn": {
 							Type:     schema.TypeString,
-							Required: true,
+							Optional: true,
 						},
 						"direction": {
 							Type:     schema.TypeString,
-							Required: true,
+							Optional: true,
+							ValidateFunc: validation.StringInSlice([]string{
+								"export",
+								"import",
+							}, false),
 						},
 					},
 				},
@@ -199,21 +203,19 @@ func resourceAciExternalNetworkInstanceProfile() *schema.Resource {
 				Set:        schema.HashString,
 				Deprecated: "relation_fv_rs_intra_epg attribute is no longer available",
 			},
-		}),
+		})),
 	}
 }
+
 func getRemoteExternalNetworkInstanceProfile(client *client.Client, dn string) (*models.ExternalNetworkInstanceProfile, error) {
 	l3extInstPCont, err := client.Get(dn)
 	if err != nil {
 		return nil, err
 	}
-
 	l3extInstP := models.ExternalNetworkInstanceProfileFromContainer(l3extInstPCont)
-
 	if l3extInstP.DistinguishedName == "" {
-		return nil, fmt.Errorf("ExternalNetworkInstanceProfile %s not found", l3extInstP.DistinguishedName)
+		return nil, fmt.Errorf("External Network Instance Profile %s not found", dn)
 	}
-
 	return l3extInstP, nil
 }
 
@@ -229,7 +231,7 @@ func setExternalNetworkInstanceProfileAttributes(l3extInstP *models.ExternalNetw
 	if err != nil {
 		return d, err
 	}
-	d.Set("l3_outside_dn", GetParentDn(dn, fmt.Sprintf("/instP-%s", l3extInstPMap["name"])))
+	d.Set("l3_outside_dn", GetParentDn(dn, fmt.Sprintf("/%s", fmt.Sprintf(models.Rnl3extinstp, l3extInstPMap["name"]))))
 	d.Set("name", l3extInstPMap["name"])
 
 	d.Set("annotation", l3extInstPMap["annotation"])
@@ -240,6 +242,92 @@ func setExternalNetworkInstanceProfileAttributes(l3extInstP *models.ExternalNetw
 	d.Set("pref_gr_memb", l3extInstPMap["prefGrMemb"])
 	d.Set("prio", l3extInstPMap["prio"])
 	d.Set("target_dscp", l3extInstPMap["targetDscp"])
+	return d, nil
+}
+
+func getAndSetReadRelationfvRsProtByFromExternalNetworkInstanceProfile(client *client.Client, dn string, d *schema.ResourceData) (*schema.ResourceData, error) {
+	fvRsProtByData, err := client.ReadRelationfvRsProtByFromExternalNetworkInstanceProfile(dn)
+	if err != nil {
+		log.Printf("[DEBUG] Error while reading relation fvRsProtBy %v", err)
+		d.Set("relation_fv_rs_prot_by", make([]interface{}, 0, 1))
+		return nil, err
+	} else {
+		d.Set("relation_fv_rs_prot_by", toStringList(fvRsProtByData.(*schema.Set).List()))
+		log.Printf("[DEBUG]: fvRsProtBy: %s reading finished successfully", toStringList(fvRsProtByData.(*schema.Set).List()))
+	}
+	return d, nil
+}
+
+func getAndSetReadRelationfvRsConsFromExternalNetworkInstanceProfile(client *client.Client, dn string, d *schema.ResourceData) (*schema.ResourceData, error) {
+	fvRsConsData, err := client.ReadRelationfvRsConsFromExternalNetworkInstanceProfile(dn)
+	if err != nil {
+		log.Printf("[DEBUG] Error while reading relation fvRsCons %v", err)
+		d.Set("relation_fv_rs_cons", make([]interface{}, 0, 1))
+		return nil, err
+	} else {
+		d.Set("relation_fv_rs_cons", toStringList(fvRsConsData.(*schema.Set).List()))
+		log.Printf("[DEBUG]: fvRsCons: %s reading finished successfully", toStringList(fvRsConsData.(*schema.Set).List()))
+	}
+	return d, nil
+}
+
+func getAndSetReadRelationfvRsConsIfFromExternalNetworkInstanceProfile(client *client.Client, dn string, d *schema.ResourceData) (*schema.ResourceData, error) {
+	fvRsConsIfData, err := client.ReadRelationfvRsConsIfFromExternalNetworkInstanceProfile(dn)
+	if err != nil {
+		log.Printf("[DEBUG] Error while reading relation fvRsConsIf %v", err)
+		d.Set("relation_fv_rs_cons_if", make([]interface{}, 0, 1))
+		return nil, err
+	} else {
+		d.Set("relation_fv_rs_cons_if", toStringList(fvRsConsIfData.(*schema.Set).List()))
+		log.Printf("[DEBUG]: fvRsConsIf: %s reading finished successfully", toStringList(fvRsConsIfData.(*schema.Set).List()))
+	}
+	return d, nil
+}
+
+func getAndSetReadRelationfvRsProvFromExternalNetworkInstanceProfile(client *client.Client, dn string, d *schema.ResourceData) (*schema.ResourceData, error) {
+	fvRsProvData, err := client.ReadRelationfvRsProvFromExternalNetworkInstanceProfile(dn)
+	if err != nil {
+		log.Printf("[DEBUG] Error while reading relation fvRsProv %v", err)
+		d.Set("relation_fv_rs_prov", make([]interface{}, 0, 1))
+		return nil, err
+	} else {
+		d.Set("relation_fv_rs_prov", toStringList(fvRsProvData.(*schema.Set).List()))
+		log.Printf("[DEBUG]: fvRsProv: %s reading finished successfully", toStringList(fvRsProvData.(*schema.Set).List()))
+	}
+	return d, nil
+}
+
+func getAndSetReadRelationfvRsSecInheritedFromExternalNetworkInstanceProfile(client *client.Client, dn string, d *schema.ResourceData) (*schema.ResourceData, error) {
+	fvRsSecInheritedData, err := client.ReadRelationfvRsSecInheritedFromExternalNetworkInstanceProfile(dn)
+	if err != nil {
+		log.Printf("[DEBUG] Error while reading relation fvRsSecInherited %v", err)
+		d.Set("relation_fv_rs_sec_inherited", make([]interface{}, 0, 1))
+		return nil, err
+	} else {
+		d.Set("relation_fv_rs_sec_inherited", toStringList(fvRsSecInheritedData.(*schema.Set).List()))
+		log.Printf("[DEBUG]: fvRsSecInherited: %s reading finished successfully", toStringList(fvRsSecInheritedData.(*schema.Set).List()))
+	}
+	return d, nil
+}
+
+func getAndSetReadRelationl3extRsInstPToProfileFromExternalNetworkInstanceProfile(client *client.Client, dn string, d *schema.ResourceData) (*schema.ResourceData, error) {
+	l3extRsInstPToProfileData, err := client.ReadRelationl3extRsInstPToProfileFromExternalNetworkInstanceProfile(dn)
+	l3extRsInstPToProfileMap := make([]map[string]string, 0, 1)
+	if err != nil {
+		log.Printf("[DEBUG] Error while reading relation l3extRsInstPToProfile %v", err)
+		d.Set("relation_l3ext_rs_inst_p_to_profile", l3extRsInstPToProfileMap)
+		return nil, err
+	} else {
+		l3extRsInstPToProfileMap := make([]map[string]string, 0, 1)
+		for _, obj := range l3extRsInstPToProfileData.([]map[string]string) {
+			l3extRsInstPToProfileMap = append(l3extRsInstPToProfileMap, map[string]string{
+				"tn_rtctrl_profile_dn": obj["tDn"],
+				"direction":            obj["direction"],
+			})
+		}
+		d.Set("relation_l3ext_rs_inst_p_to_profile", l3extRsInstPToProfileMap)
+		log.Printf("[DEBUG]: l3extRsInstPToProfile: %s reading finished successfully", l3extRsInstPToProfileMap)
+	}
 	return d, nil
 }
 
@@ -259,12 +347,31 @@ func resourceAciExternalNetworkInstanceProfileImport(d *schema.ResourceData, m i
 		return nil, err
 	}
 	name := l3extInstPMap["name"]
-	pDN := GetParentDn(dn, fmt.Sprintf("/instP-%s", name))
+	pDN := GetParentDn(dn, fmt.Sprintf("/%s", fmt.Sprintf(models.Rnl3extinstp, name)))
 	d.Set("l3_outside_dn", pDN)
 	schemaFilled, err := setExternalNetworkInstanceProfileAttributes(l3extInstP, d)
 	if err != nil {
 		return nil, err
 	}
+
+	// Importing l3extRsInstPToProfile object
+	getAndSetReadRelationl3extRsInstPToProfileFromExternalNetworkInstanceProfile(aciClient, dn, d)
+
+	// Importing fvRsSecInherited object
+	getAndSetReadRelationfvRsSecInheritedFromExternalNetworkInstanceProfile(aciClient, dn, d)
+
+	// Importing fvRsProv object
+	getAndSetReadRelationfvRsProvFromExternalNetworkInstanceProfile(aciClient, dn, d)
+
+	// Importing fvRsConsIf object
+	getAndSetReadRelationfvRsConsIfFromExternalNetworkInstanceProfile(aciClient, dn, d)
+
+	// Importing fvRsCons object
+	getAndSetReadRelationfvRsConsFromExternalNetworkInstanceProfile(aciClient, dn, d)
+
+	// Importing fvRsProtBy object
+	getAndSetReadRelationfvRsProtByFromExternalNetworkInstanceProfile(aciClient, dn, d)
+
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
@@ -306,7 +413,7 @@ func resourceAciExternalNetworkInstanceProfileCreate(ctx context.Context, d *sch
 	if TargetDscp, ok := d.GetOk("target_dscp"); ok {
 		l3extInstPAttr.TargetDscp = TargetDscp.(string)
 	}
-	l3extInstP := models.NewExternalNetworkInstanceProfile(fmt.Sprintf("instP-%s", name), L3OutsideDn, desc, l3extInstPAttr)
+	l3extInstP := models.NewExternalNetworkInstanceProfile(fmt.Sprintf(models.Rnl3extinstp, name), L3OutsideDn, desc, l3extInstPAttr)
 
 	err := aciClient.Save(l3extInstP)
 
@@ -441,7 +548,8 @@ func resourceAciExternalNetworkInstanceProfileCreate(ctx context.Context, d *sch
 		relationParamList := relationTol3extRsInstPToProfile.(*schema.Set).List()
 		for _, relationParam := range relationParamList {
 			paramMap := relationParam.(map[string]interface{})
-			err = aciClient.CreateRelationl3extRsInstPToProfileFromExternalNetworkInstanceProfile(l3extInstP.DistinguishedName, GetMOName(paramMap["tn_rtctrl_profile_name"].(string)), paramMap["direction"].(string))
+			l3extRsInstPToProfileName := getTargetObjectName(paramMap, "tn_rtctrl_profile_dn", "tn_rtctrl_profile_name")
+			err = aciClient.CreateRelationl3extRsInstPToProfileFromExternalNetworkInstanceProfile(l3extInstP.DistinguishedName, l3extRsInstPToProfileName, paramMap["direction"].(string))
 			if err != nil {
 				return diag.FromErr(err)
 			}
@@ -525,9 +633,7 @@ func resourceAciExternalNetworkInstanceProfileUpdate(ctx context.Context, d *sch
 	if TargetDscp, ok := d.GetOk("target_dscp"); ok {
 		l3extInstPAttr.TargetDscp = TargetDscp.(string)
 	}
-	l3extInstP := models.NewExternalNetworkInstanceProfile(fmt.Sprintf("instP-%s", name), L3OutsideDn, desc, l3extInstPAttr)
-
-	l3extInstP.Status = "modified"
+	l3extInstP := models.NewExternalNetworkInstanceProfile(fmt.Sprintf(models.Rnl3extinstp, name), L3OutsideDn, desc, l3extInstPAttr)
 
 	err := aciClient.Save(l3extInstP)
 
@@ -738,7 +844,8 @@ func resourceAciExternalNetworkInstanceProfileUpdate(ctx context.Context, d *sch
 		newRelList := newRel.(*schema.Set).List()
 		for _, relationParam := range oldRelList {
 			paramMap := relationParam.(map[string]interface{})
-			err = aciClient.DeleteRelationl3extRsInstPToProfileFromExternalNetworkInstanceProfile(l3extInstP.DistinguishedName, GetMOName(paramMap["tn_rtctrl_profile_name"].(string)), paramMap["direction"].(string))
+			l3extRsInstPToProfileName := getTargetObjectName(paramMap, "tn_rtctrl_profile_dn", "tn_rtctrl_profile_name")
+			err = aciClient.DeleteRelationl3extRsInstPToProfileFromExternalNetworkInstanceProfile(l3extInstP.DistinguishedName, l3extRsInstPToProfileName, paramMap["direction"].(string))
 			if err != nil {
 				return diag.FromErr(err)
 			}
@@ -746,7 +853,8 @@ func resourceAciExternalNetworkInstanceProfileUpdate(ctx context.Context, d *sch
 		}
 		for _, relationParam := range newRelList {
 			paramMap := relationParam.(map[string]interface{})
-			err = aciClient.CreateRelationl3extRsInstPToProfileFromExternalNetworkInstanceProfile(l3extInstP.DistinguishedName, GetMOName(paramMap["tn_rtctrl_profile_name"].(string)), paramMap["direction"].(string))
+			l3extRsInstPToProfileName := getTargetObjectName(paramMap, "tn_rtctrl_profile_dn", "tn_rtctrl_profile_name")
+			err = aciClient.CreateRelationl3extRsInstPToProfileFromExternalNetworkInstanceProfile(l3extInstP.DistinguishedName, l3extRsInstPToProfileName, paramMap["direction"].(string))
 			if err != nil {
 				return diag.FromErr(err)
 			}
@@ -857,22 +965,6 @@ func resourceAciExternalNetworkInstanceProfileRead(ctx context.Context, d *schem
 		return nil
 	}
 
-	fvRsSecInheritedData, err := aciClient.ReadRelationfvRsSecInheritedFromExternalNetworkInstanceProfile(dn)
-	if err != nil {
-		log.Printf("[DEBUG] Error while reading relation fvRsSecInherited %v", err)
-		setRelationAttribute(d, "relation_fv_rs_sec_inherited", make([]interface{}, 0, 1))
-	} else {
-		setRelationAttribute(d, "relation_fv_rs_sec_inherited", toStringList(fvRsSecInheritedData.(*schema.Set).List()))
-	}
-
-	fvRsProvData, err := aciClient.ReadRelationfvRsProvFromExternalNetworkInstanceProfile(dn)
-	if err != nil {
-		log.Printf("[DEBUG] Error while reading relation fvRsProv %v", err)
-		setRelationAttribute(d, "relation_fv_rs_prov", make([]interface{}, 0, 1))
-	} else {
-		setRelationAttribute(d, "relation_fv_rs_prov", toStringList(fvRsProvData.(*schema.Set).List()))
-	}
-
 	l3extRsL3InstPToDomPData, err := aciClient.ReadRelationl3extRsL3InstPToDomPFromExternalNetworkInstanceProfile(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation l3extRsL3InstPToDomP %v", err)
@@ -891,14 +983,6 @@ func resourceAciExternalNetworkInstanceProfileRead(ctx context.Context, d *schem
 		setRelationAttribute(d, "relation_l3ext_rs_inst_p_to_nat_mapping_epg", l3extRsInstPToNatMappingEPgData.(string))
 	}
 
-	fvRsConsIfData, err := aciClient.ReadRelationfvRsConsIfFromExternalNetworkInstanceProfile(dn)
-	if err != nil {
-		log.Printf("[DEBUG] Error while reading relation fvRsConsIf %v", err)
-		setRelationAttribute(d, "relation_fv_rs_cons_if", make([]interface{}, 0, 1))
-	} else {
-		setRelationAttribute(d, "relation_fv_rs_cons_if", toStringList(fvRsConsIfData.(*schema.Set).List()))
-	}
-
 	fvRsCustQosPolData, err := aciClient.ReadRelationfvRsCustQosPolFromExternalNetworkInstanceProfile(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation fvRsCustQosPol %v", err)
@@ -908,38 +992,6 @@ func resourceAciExternalNetworkInstanceProfileRead(ctx context.Context, d *schem
 		setRelationAttribute(d, "relation_fv_rs_cust_qos_pol", fvRsCustQosPolData.(string))
 	}
 
-	l3extRsInstPToProfileData, err := aciClient.ReadRelationl3extRsInstPToProfileFromExternalNetworkInstanceProfile(dn)
-	if err != nil {
-		log.Printf("[DEBUG] Error while reading relation l3extRsInstPToProfile %v", err)
-
-	} else {
-		relMapList := make([]map[string]string, 0, 1)
-		relMaps := l3extRsInstPToProfileData.([]map[string]string)
-		for _, obj := range relMaps {
-			relMapList = append(relMapList, map[string]string{
-				"tn_rtctrl_profile_name": obj["tnRtctrlProfileName"],
-				"direction":              obj["direction"],
-			})
-		}
-		d.Set("relation_l3ext_rs_inst_p_to_profile", relMapList)
-	}
-
-	fvRsConsData, err := aciClient.ReadRelationfvRsConsFromExternalNetworkInstanceProfile(dn)
-	if err != nil {
-		log.Printf("[DEBUG] Error while reading relation fvRsCons %v", err)
-		setRelationAttribute(d, "relation_fv_rs_cons", make([]interface{}, 0, 1))
-	} else {
-		setRelationAttribute(d, "relation_fv_rs_cons", toStringList(fvRsConsData.(*schema.Set).List()))
-	}
-
-	fvRsProtByData, err := aciClient.ReadRelationfvRsProtByFromExternalNetworkInstanceProfile(dn)
-	if err != nil {
-		log.Printf("[DEBUG] Error while reading relation fvRsProtBy %v", err)
-		setRelationAttribute(d, "relation_fv_rs_prot_by", make([]interface{}, 0, 1))
-	} else {
-		setRelationAttribute(d, "relation_fv_rs_prot_by", toStringList(fvRsProtByData.(*schema.Set).List()))
-	}
-
 	fvRsIntraEpgData, err := aciClient.ReadRelationfvRsIntraEpgFromExternalNetworkInstanceProfile(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation fvRsIntraEpg %v", err)
@@ -947,6 +999,24 @@ func resourceAciExternalNetworkInstanceProfileRead(ctx context.Context, d *schem
 	} else {
 		setRelationAttribute(d, "relation_fv_rs_intra_epg", toStringList(fvRsIntraEpgData.(*schema.Set).List()))
 	}
+
+	// Importing l3extRsInstPToProfile object
+	getAndSetReadRelationl3extRsInstPToProfileFromExternalNetworkInstanceProfile(aciClient, dn, d)
+
+	// Importing fvRsSecInherited object
+	getAndSetReadRelationfvRsSecInheritedFromExternalNetworkInstanceProfile(aciClient, dn, d)
+
+	// Importing fvRsProv object
+	getAndSetReadRelationfvRsProvFromExternalNetworkInstanceProfile(aciClient, dn, d)
+
+	// Importing fvRsConsIf object
+	getAndSetReadRelationfvRsConsIfFromExternalNetworkInstanceProfile(aciClient, dn, d)
+
+	// Importing fvRsCons object
+	getAndSetReadRelationfvRsConsFromExternalNetworkInstanceProfile(aciClient, dn, d)
+
+	// Importing fvRsProtBy object
+	getAndSetReadRelationfvRsProtByFromExternalNetworkInstanceProfile(aciClient, dn, d)
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 
