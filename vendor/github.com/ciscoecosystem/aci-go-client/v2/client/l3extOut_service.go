@@ -9,15 +9,15 @@ import (
 )
 
 func (sm *ServiceManager) CreateL3Outside(name string, tenant string, description string, l3extOutattr models.L3OutsideAttributes) (*models.L3Outside, error) {
-	rn := fmt.Sprintf("out-%s", name)
-	parentDn := fmt.Sprintf("uni/tn-%s", tenant)
+	rn := fmt.Sprintf(models.Rnl3extOut, name)
+	parentDn := fmt.Sprintf(models.ParentDnl3extOut, tenant)
 	l3extOut := models.NewL3Outside(rn, parentDn, description, l3extOutattr)
 	err := sm.Save(l3extOut)
 	return l3extOut, err
 }
 
 func (sm *ServiceManager) ReadL3Outside(name string, tenant string) (*models.L3Outside, error) {
-	dn := fmt.Sprintf("uni/tn-%s/out-%s", tenant, name)
+	dn := fmt.Sprintf(models.Dnl3extOut, tenant, name)
 	cont, err := sm.Get(dn)
 	if err != nil {
 		return nil, err
@@ -28,13 +28,13 @@ func (sm *ServiceManager) ReadL3Outside(name string, tenant string) (*models.L3O
 }
 
 func (sm *ServiceManager) DeleteL3Outside(name string, tenant string) error {
-	dn := fmt.Sprintf("uni/tn-%s/out-%s", tenant, name)
+	dn := fmt.Sprintf(models.Dnl3extOut, tenant, name)
 	return sm.DeleteByDn(dn, models.L3extoutClassName)
 }
 
 func (sm *ServiceManager) UpdateL3Outside(name string, tenant string, description string, l3extOutattr models.L3OutsideAttributes) (*models.L3Outside, error) {
-	rn := fmt.Sprintf("out-%s", name)
-	parentDn := fmt.Sprintf("uni/tn-%s", tenant)
+	rn := fmt.Sprintf(models.Rnl3extOut, name)
+	parentDn := fmt.Sprintf(models.ParentDnl3extOut, tenant)
 	l3extOut := models.NewL3Outside(rn, parentDn, description, l3extOutattr)
 
 	l3extOut.Status = "modified"
@@ -98,7 +98,8 @@ func (sm *ServiceManager) ReadRelationl3extRsDampeningPolFromL3Outside(parentDn 
 
 	for _, contItem := range contList {
 		paramMap := make(map[string]string)
-		paramMap["tnRtctrlProfileName"] = models.G(contItem, "tDn")
+		paramMap["tDn"] = models.G(contItem, "tDn")
+		paramMap["tnRtctrlProfileName"] = models.G(contItem, "tnRtctrlProfileName")
 		paramMap["af"] = models.G(contItem, "af")
 
 		st = append(st, paramMap)

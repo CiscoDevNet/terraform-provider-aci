@@ -43,9 +43,7 @@ func (sm *ServiceManager) UpdateL3ExtSubnet(ip string, external_network_instance
 }
 
 func (sm *ServiceManager) ListL3L3ExtSubnet(external_network_instance_profile string, l3_outside string, tenant string) ([]*models.L3ExtSubnet, error) {
-
-	baseurlStr := "/api/node/class"
-	dnUrl := fmt.Sprintf("%s/uni/tn-%s/out-%s/instP-%s/l3extSubnet.json", baseurlStr, tenant, l3_outside, external_network_instance_profile)
+	dnUrl := fmt.Sprintf("%s/uni/tn-%s/out-%s/instP-%s/l3extSubnet.json", models.BaseurlStr, tenant, l3_outside, external_network_instance_profile)
 
 	cont, err := sm.GetViaURL(dnUrl)
 	list := models.L3ExtSubnetListFromContainer(cont)
@@ -87,8 +85,7 @@ func (sm *ServiceManager) DeleteRelationl3extRsSubnetToProfileFromL3ExtSubnet(pa
 }
 
 func (sm *ServiceManager) ReadRelationl3extRsSubnetToProfileFromL3ExtSubnet(parentDn string) (interface{}, error) {
-	baseurlStr := "/api/node/class"
-	dnUrl := fmt.Sprintf("%s/%s/%s.json", baseurlStr, parentDn, "l3extRsSubnetToProfile")
+	dnUrl := fmt.Sprintf("%s/%s/%s.json", models.BaseurlStr, parentDn, "l3extRsSubnetToProfile")
 	cont, err := sm.GetViaURL(dnUrl)
 
 	contList := models.ListFromContainer(cont, "l3extRsSubnetToProfile")
@@ -97,7 +94,8 @@ func (sm *ServiceManager) ReadRelationl3extRsSubnetToProfileFromL3ExtSubnet(pare
 
 	for _, contItem := range contList {
 		paramMap := make(map[string]string)
-		paramMap["tnRtctrlProfileName"] = models.G(contItem, "tDn")
+		paramMap["tDn"] = models.G(contItem, "tDn")
+		paramMap["tnRtctrlProfileName"] = models.G(contItem, "tnRtctrlProfileName")
 		paramMap["direction"] = models.G(contItem, "direction")
 
 		st = append(st, paramMap)
@@ -142,8 +140,7 @@ func (sm *ServiceManager) DeleteRelationl3extRsSubnetToRtSummFromL3ExtSubnet(par
 }
 
 func (sm *ServiceManager) ReadRelationl3extRsSubnetToRtSummFromL3ExtSubnet(parentDn string) (interface{}, error) {
-	baseurlStr := "/api/node/class"
-	dnUrl := fmt.Sprintf("%s/%s/%s.json", baseurlStr, parentDn, "l3extRsSubnetToRtSumm")
+	dnUrl := fmt.Sprintf("%s/%s/%s.json", models.BaseurlStr, parentDn, "l3extRsSubnetToRtSumm")
 	cont, err := sm.GetViaURL(dnUrl)
 
 	contList := models.ListFromContainer(cont, "l3extRsSubnetToRtSumm")
