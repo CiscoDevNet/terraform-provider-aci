@@ -4,12 +4,12 @@ layout: "aci"
 page_title: "ACI: aci_pbr_l1_l2_destination"
 sidebar_current: "docs-aci-resource-pbr_l1_l2_destination"
 description: |-
-  Manages ACI Destination of L1/L2 redirected traffic
+  Manages ACI Destination of L1/L2 Redirected Traffic
 ---
 
 # aci_pbr_l1_l2_destination #
 
-Manages ACI Destination of L1/L2 redirected traffic
+Manages ACI Destination of L1/L2 Redirected Traffic
 
 ## API Information ##
 
@@ -53,20 +53,20 @@ resource "aci_pbr_l1_l2_destination" "l1_l2_destination" {
 
 ## Argument Reference ##
 
-* `policy_based_redirect_dn` - (Required) Distinguished name of the parent Policy-Based Redirect object.
-* `dest_name` - (Required) Destination Name of the L1/L2 redirected traffic.
-* `annotation` - (Optional) Annotation of the L1/L2 redirected traffic.
-* `name_alias` - (Optional) Name Alias of the L1/L2 redirected traffic.
-* `name` - (Optional) Name of the L1/L2 redirected traffic.
-* `mac` - (Optional) MAC Address of the L1/L2 redirected traffic.
-* `pod_id` - (Optional) Pod Id of the L1/L2 redirected traffic. Allowed range is 1-255 and default value is "1".
-* `relation_vns_rs_l1_l2_redirect_health_group` - (Optional) Represents the relation to a L4-L7 Redirect Health Group (class vnsRedirectHealthGroup). Type: String.
-* `relation_vns_rs_to_c_if` - (Optional) Represents the relation to a Concrete Interface (class vnsCIf). Type: String.
+* `policy_based_redirect_dn` - (Required) Distinguished name of the parent Policy-Based (Redirect or Redirect Backup) object.
+* `dest_name` - (Required) Destination Name of the L1/L2 Redirected Traffic.
+* `annotation` - (Optional) Annotation of the L1/L2 Redirected Traffic.
+* `name_alias` - (Optional) Name Alias of the L1/L2 Redirected Traffic.
+* `name` - (Optional) Name of the L1/L2 Redirected Traffic.
+* `mac` - (Optional) MAC Address of the L1/L2 Redirected Traffic.
+* `pod_id` - (Optional) Pod Id of the L1/L2 Redirected Traffic. Allowed range is 1-255 and default value is "1".
+* `relation_vns_rs_l1_l2_redirect_health_group` - (Optional) Represents the relation to a L4-L7 Redirect Health Group (class vnsRedirectHealthGroup).
+* `relation_vns_rs_to_c_if` - (Optional) Represents the relation to a Concrete Interface (class vnsCIf).
 
 
 ## Importing ##
 
-An existing L1/L2 redirected traffic can be [imported][docs-import] into this resource via its Dn, via the following command:
+An existing L1/L2 Redirected Traffic can be [imported][docs-import] into this resource via its Dn, via the following command:
 [docs-import]: https://www.terraform.io/docs/import/index.html
 
 
