@@ -43,7 +43,7 @@ resource "aci_l3_domain_profile" "l3_domain_profile" {
 resource "aci_l3_outside" "foo_l3_outside" {
   tenant_dn      = aci_tenant.terraform_tenant.id
   name           = "foo_l3_outside"
-  enforce_rtctrl = "export,import"
+  enforce_rtctrl = ["export", "import"]
   target_dscp    = "unspecified"
 
   // Relation to Route Control for Dampening - can't configure multiple Dampening Policies for the same address-family.

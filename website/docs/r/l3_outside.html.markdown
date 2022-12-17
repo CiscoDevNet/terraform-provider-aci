@@ -26,7 +26,7 @@ Manages ACI L3 Outside
 resource "aci_l3_outside" "foo_l3_outside" {
   tenant_dn      = aci_tenant.terraform_tenant.id
   name           = "foo_l3_outside"
-  enforce_rtctrl = "export,import"
+  enforce_rtctrl = ["export", "import"]
   target_dscp    = "unspecified"
 
   // Relation to Route Control for Dampening
@@ -57,7 +57,7 @@ resource "aci_l3_outside" "foo_l3_outside" {
 * `name` - (Required) Name of the L3 Outside object.
 * `description`- (Optional) Description of the L3 Outside object.
 * `annotation` - (Optional) Annotation of the L3 Outside object.
-* `enforce_rtctrl` - (Optional) Enforce route control type. Allowed values are "import" and "export". Default is "export". (Multiple Comma-Delimited values are allowed. E.g., "export,import"). Type - String.
+* `enforce_rtctrl` - (Optional) Enforce route control type. Allowed values are "import" and "export". Default is "export". Type - String.
 * `name_alias` - (Optional) Name alias of the L3 Outside object.
 * `target_dscp` - (Optional) The target differentiated services code point (DSCP) of the path attached to the L3 Outside object. Allowed values are "CS0", "CS1", "AF11", "AF12", "AF13", "CS2", "AF21", "AF22", "AF23", "CS3", "AF31", "AF32", "AF33", "CS4", "AF41", "AF42", "AF43", "CS5", "VA", "EF", "CS6", "CS7" and "unspecified". Default is "unspecified".
 * `relation_l3ext_rs_dampening_pol` - (Optional) Relation to class rtctrlProfile. Can't configure multiple Dampening Policies for the same address-family. Cardinality - N_TO_M. Type - Block.

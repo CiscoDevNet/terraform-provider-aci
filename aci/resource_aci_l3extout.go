@@ -4,6 +4,9 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"reflect"
+	"sort"
+	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
 	"github.com/ciscoecosystem/aci-go-client/v2/models"
@@ -39,14 +42,17 @@ func resourceAciL3Outside() *schema.Resource {
 			},
 
 			"enforce_rtctrl": {
-				Type:     schema.TypeString,
+				Type:     schema.TypeList,
 				Optional: true,
 				Computed: true,
-				ValidateFunc: validation.StringInSlice([]string{
-					"export",
-					"import",
-					"export,import",
-				}, false),
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+					ValidateFunc: validation.StringInSlice([]string{
+						"export",
+						"import",
+					}, false),
+					Default: "export",
+				},
 			},
 
 			"target_dscp": &schema.Schema{
@@ -167,7 +173,27 @@ func setL3OutsideAttributes(l3extOut *models.L3Outside, d *schema.ResourceData) 
 	d.Set("name", l3extOutMap["name"])
 
 	d.Set("annotation", l3extOutMap["annotation"])
-	d.Set("enforce_rtctrl", l3extOutMap["enforceRtctrl"])
+
+	enforceRtctrlGet := make([]string, 0, 1)
+	for _, val := range strings.Split(l3extOutMap["enforceRtctrl"], ",") {
+		enforceRtctrlGet = append(enforceRtctrlGet, strings.Trim(val, " "))
+	}
+	sort.Strings(enforceRtctrlGet)
+	if enforceRtctrlIntr, ok := d.GetOk("enforce_rtctrl"); ok {
+		enforceRtctrlAct := make([]string, 0, 1)
+		for _, val := range enforceRtctrlIntr.([]interface{}) {
+			enforceRtctrlAct = append(enforceRtctrlAct, val.(string))
+		}
+		sort.Strings(enforceRtctrlAct)
+		if reflect.DeepEqual(enforceRtctrlAct, enforceRtctrlGet) {
+			d.Set("enforce_rtctrl", d.Get("enforce_rtctrl").([]interface{}))
+		} else {
+			d.Set("enforce_rtctrl", enforceRtctrlGet)
+		}
+	} else {
+		d.Set("enforce_rtctrl", enforceRtctrlGet)
+	}
+
 	d.Set("name_alias", l3extOutMap["nameAlias"])
 	d.Set("target_dscp", l3extOutMap["targetDscp"])
 	return d, nil
@@ -304,9 +330,23 @@ func resourceAciL3OutsideCreate(ctx context.Context, d *schema.ResourceData, m i
 	} else {
 		l3extOutAttr.Annotation = "{}"
 	}
+
 	if EnforceRtctrl, ok := d.GetOk("enforce_rtctrl"); ok {
-		l3extOutAttr.EnforceRtctrl = EnforceRtctrl.(string)
+		exportFlag := false
+		enforceRtctrlList := make([]string, 0, 1)
+		for _, val := range EnforceRtctrl.([]interface{}) {
+			enforceRtctrlList = append(enforceRtctrlList, val.(string))
+			if val.(string) == "export" {
+				exportFlag = true
+			}
+		}
+		if !exportFlag {
+			enforceRtctrlList = append(enforceRtctrlList, "export")
+		}
+		EnforceRtctrl := strings.Join(enforceRtctrlList, ",")
+		l3extOutAttr.EnforceRtctrl = EnforceRtctrl
 	}
+
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		l3extOutAttr.NameAlias = NameAlias.(string)
 	}
@@ -425,8 +465,21 @@ func resourceAciL3OutsideUpdate(ctx context.Context, d *schema.ResourceData, m i
 	} else {
 		l3extOutAttr.Annotation = "{}"
 	}
+
 	if EnforceRtctrl, ok := d.GetOk("enforce_rtctrl"); ok {
-		l3extOutAttr.EnforceRtctrl = EnforceRtctrl.(string)
+		exportFlag := false
+		enforceRtctrlList := make([]string, 0, 1)
+		for _, val := range EnforceRtctrl.([]interface{}) {
+			enforceRtctrlList = append(enforceRtctrlList, val.(string))
+			if val.(string) == "export" {
+				exportFlag = true
+			}
+		}
+		if !exportFlag {
+			enforceRtctrlList = append(enforceRtctrlList, "export")
+		}
+		EnforceRtctrl := strings.Join(enforceRtctrlList, ",")
+		l3extOutAttr.EnforceRtctrl = EnforceRtctrl
 	}
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		l3extOutAttr.NameAlias = NameAlias.(string)
@@ -435,6 +488,8 @@ func resourceAciL3OutsideUpdate(ctx context.Context, d *schema.ResourceData, m i
 		l3extOutAttr.TargetDscp = TargetDscp.(string)
 	}
 	l3extOut := models.NewL3Outside(fmt.Sprintf(models.Rnl3extOut, name), TenantDn, desc, l3extOutAttr)
+
+	l3extOut.Status = "modified"
 
 	err := aciClient.Save(l3extOut)
 

@@ -29,9 +29,12 @@ func dataSourceAciL3Outside() *schema.Resource {
 			},
 
 			"enforce_rtctrl": {
-				Type:     schema.TypeString,
+				Type:     schema.TypeList,
 				Optional: true,
 				Computed: true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
 			},
 
 			"target_dscp": &schema.Schema{
