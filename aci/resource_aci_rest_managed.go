@@ -22,7 +22,7 @@ var WriteOnlyAttr = []string{"childAction"}
 var FullClasses = []string{"firmwareFwGrp", "maintMaintGrp", "maintMaintP", "firmwareFwP"}
 
 // List of classes where an immediate GET following a POST might not reflect the created/updated object
-var NoReadClasses = []string{"firmwareFwGrp", "firmwareRsFwgrpp", "fabricNodeBlk"}
+var AllowEmptyReadClasses = []string{"firmwareFwGrp", "firmwareRsFwgrpp", "fabricNodeBlk"}
 
 // List of classes which do not support annotations
 var NoAnnotationClasses = []string{"tagTag"}
@@ -113,7 +113,7 @@ func getAciRestManaged(d *schema.ResourceData, c *container.Container, expectObj
 	restContent, ok := c.Search("imdata", className, "attributes").Index(0).Data().(map[string]interface{})
 
 	if !ok {
-		if expectObject && containsString(NoReadClasses, className) {
+		if expectObject && containsString(AllowEmptyReadClasses, className) {
 			return nil
 		}
 		return diag.Errorf("Failed to retrieve REST payload for class: %s.", className)
