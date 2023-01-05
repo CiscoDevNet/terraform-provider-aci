@@ -19,7 +19,7 @@ var IgnoreAttr = []string{"extMngdBy", "lcOwn", "modTs", "monPolDn", "uid", "dn"
 var WriteOnlyAttr = []string{"childAction"}
 
 // List of classes where 'rsp-prop-include=config-only' does not return the desired objects/properties
-var FullClasses = []string{"firmwareFwGrp", "maintMaintGrp", "maintMaintP", "firmwareFwP"}
+var FullClasses = []string{"firmwareFwGrp", "maintMaintGrp", "maintMaintP", "firmwareFwP", "pkiExportEncryptionKey"}
 
 // List of classes which do not support annotations
 var NoAnnotationClasses = []string{"tagTag"}
