@@ -16,7 +16,7 @@ func dataSourceAciL3outPathAttachmentSecondaryIp() *schema.Resource {
 
 		SchemaVersion: 1,
 
-		Schema: AppendBaseAttrSchema(map[string]*schema.Schema{
+		Schema: AppendBaseAttrSchema(AppendNameAliasAttrSchema(map[string]*schema.Schema{
 			"l3out_path_attachment_dn": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
@@ -31,13 +31,12 @@ func dataSourceAciL3outPathAttachmentSecondaryIp() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
-
-			"name_alias": &schema.Schema{
+			"dhcp_relay": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
 			},
-		}),
+		})),
 	}
 }
 
@@ -61,5 +60,9 @@ func dataSourceAciL3outPathAttachmentSecondaryIpRead(ctx context.Context, d *sch
 	if err != nil {
 		return diag.FromErr(err)
 	}
+
+	// Importing dhcpRelayGwExtIp
+	getAndSetReadUsetheexternalsecondaryaddressforDHCPrelaygateway(aciClient, dn, d)
+
 	return nil
 }

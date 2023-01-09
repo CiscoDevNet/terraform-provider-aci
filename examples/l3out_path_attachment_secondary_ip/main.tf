@@ -14,12 +14,35 @@ provider "aci" {
   insecure = true
 }
 
-resource "aci_l3out_path_attachment" "example" {
-  logical_interface_profile_dn = aci_logical_interface_profile.example.id
+resource "aci_tenant" "terraform_tenant" {
+  name = "terraform_tenant"
+}
+
+resource "aci_l3_outside" "l3_outside" {
+  tenant_dn = aci_tenant.terraform_tenant.id
+  name      = "l3_outside"
+}
+
+resource "aci_logical_node_profile" "logical_node_profile" {
+  l3_outside_dn = aci_l3_outside.l3_outside.id
+  name          = "logical_node_profile"
+  config_issues = "none"
+  tag           = "black"
+  target_dscp   = "unspecified"
+}
+
+resource "aci_logical_interface_profile" "logical_interface_profile" {
+  logical_node_profile_dn = aci_logical_node_profile.logical_node_profile.id
+  name                    = "logical_interface_profile"
+  prio                    = "unspecified"
+  tag                     = "black"
+}
+
+resource "aci_l3out_path_attachment" "l3out_path_attachment" {
+  logical_interface_profile_dn = aci_logical_interface_profile.logical_interface_profile.id
   target_dn                    = "topology/pod-1/paths-101/pathep-[eth1/1]"
   if_inst_t                    = "ext-svi"
   addr                         = "0.0.0.0"
-  annotation                   = "example"
   autostate                    = "disabled"
   encap                        = "vlan-1"
   encap_scope                  = "ctx"
@@ -31,10 +54,9 @@ resource "aci_l3out_path_attachment" "example" {
   target_dscp                  = "AF11"
 }
 
-resource "aci_l3out_path_attachment_secondary_ip" "example" {
-  l3out_path_attachment_dn = aci_l3out_path_attachment.example.id
+resource "aci_l3out_path_attachment_secondary_ip" "l3out_path_attachment_secondary_ip" {
+  l3out_path_attachment_dn = aci_l3out_path_attachment.l3out_path_attachment.id
   addr                     = "10.0.0.1/24"
-  annotation               = "example"
   ipv6_dad                 = "disabled"
-  name_alias               = "example"
+  dhcp_relay               = "enabled"
 }
