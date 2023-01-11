@@ -12,18 +12,18 @@ const (
 	DhcprelaygwextipClassName = "dhcpRelayGwExtIp"
 )
 
-type UsetheexternalsecondaryaddressforDHCPrelaygateway struct {
+type DhcpRelayGwExtIp struct {
 	BaseAttributes
-	UsetheexternalsecondaryaddressforDHCPrelaygatewayAttributes
+	DhcpRelayGwExtIpAttributes
 }
 
-type UsetheexternalsecondaryaddressforDHCPrelaygatewayAttributes struct {
+type DhcpRelayGwExtIpAttributes struct {
 	Name string `json:",omitempty"`
 }
 
-func NewUsetheexternalsecondaryaddressforDHCPrelaygateway(dhcpRelayGwExtIpRn, parentDn, description string, dhcpRelayGwExtIpAttr UsetheexternalsecondaryaddressforDHCPrelaygatewayAttributes) *UsetheexternalsecondaryaddressforDHCPrelaygateway {
+func NewDhcpRelayGwExtIp(dhcpRelayGwExtIpRn, parentDn, description string, dhcpRelayGwExtIpAttr DhcpRelayGwExtIpAttributes) *DhcpRelayGwExtIp {
 	dn := fmt.Sprintf("%s/%s", parentDn, dhcpRelayGwExtIpRn)
-	return &UsetheexternalsecondaryaddressforDHCPrelaygateway{
+	return &DhcpRelayGwExtIp{
 		BaseAttributes: BaseAttributes{
 			DistinguishedName: dn,
 			Description:       description,
@@ -31,11 +31,11 @@ func NewUsetheexternalsecondaryaddressforDHCPrelaygateway(dhcpRelayGwExtIpRn, pa
 			ClassName:         DhcprelaygwextipClassName,
 			Rn:                dhcpRelayGwExtIpRn,
 		},
-		UsetheexternalsecondaryaddressforDHCPrelaygatewayAttributes: dhcpRelayGwExtIpAttr,
+		DhcpRelayGwExtIpAttributes: dhcpRelayGwExtIpAttr,
 	}
 }
 
-func (dhcpRelayGwExtIp *UsetheexternalsecondaryaddressforDHCPrelaygateway) ToMap() (map[string]string, error) {
+func (dhcpRelayGwExtIp *DhcpRelayGwExtIp) ToMap() (map[string]string, error) {
 	dhcpRelayGwExtIpMap, err := dhcpRelayGwExtIp.BaseAttributes.ToMap()
 	if err != nil {
 		return nil, err
@@ -45,32 +45,32 @@ func (dhcpRelayGwExtIp *UsetheexternalsecondaryaddressforDHCPrelaygateway) ToMap
 	return dhcpRelayGwExtIpMap, err
 }
 
-func UsetheexternalsecondaryaddressforDHCPrelaygatewayFromContainerList(cont *container.Container, index int) *UsetheexternalsecondaryaddressforDHCPrelaygateway {
-	UsetheexternalsecondaryaddressforDHCPrelaygatewayCont := cont.S("imdata").Index(index).S(DhcprelaygwextipClassName, "attributes")
-	return &UsetheexternalsecondaryaddressforDHCPrelaygateway{
+func DhcpRelayGwExtIpFromContainerList(cont *container.Container, index int) *DhcpRelayGwExtIp {
+	DhcpRelayGwExtIpCont := cont.S("imdata").Index(index).S(DhcprelaygwextipClassName, "attributes")
+	return &DhcpRelayGwExtIp{
 		BaseAttributes{
-			DistinguishedName: G(UsetheexternalsecondaryaddressforDHCPrelaygatewayCont, "dn"),
-			Description:       G(UsetheexternalsecondaryaddressforDHCPrelaygatewayCont, "descr"),
-			Status:            G(UsetheexternalsecondaryaddressforDHCPrelaygatewayCont, "status"),
+			DistinguishedName: G(DhcpRelayGwExtIpCont, "dn"),
+			Description:       G(DhcpRelayGwExtIpCont, "descr"),
+			Status:            G(DhcpRelayGwExtIpCont, "status"),
 			ClassName:         DhcprelaygwextipClassName,
-			Rn:                G(UsetheexternalsecondaryaddressforDHCPrelaygatewayCont, "rn"),
+			Rn:                G(DhcpRelayGwExtIpCont, "rn"),
 		},
-		UsetheexternalsecondaryaddressforDHCPrelaygatewayAttributes{
-			Name: G(UsetheexternalsecondaryaddressforDHCPrelaygatewayCont, "name"),
+		DhcpRelayGwExtIpAttributes{
+			Name: G(DhcpRelayGwExtIpCont, "name"),
 		},
 	}
 }
 
-func UsetheexternalsecondaryaddressforDHCPrelaygatewayFromContainer(cont *container.Container) *UsetheexternalsecondaryaddressforDHCPrelaygateway {
-	return UsetheexternalsecondaryaddressforDHCPrelaygatewayFromContainerList(cont, 0)
+func DhcpRelayGwExtIpFromContainer(cont *container.Container) *DhcpRelayGwExtIp {
+	return DhcpRelayGwExtIpFromContainerList(cont, 0)
 }
 
-func UsetheexternalsecondaryaddressforDHCPrelaygatewayListFromContainer(cont *container.Container) []*UsetheexternalsecondaryaddressforDHCPrelaygateway {
+func DhcpRelayGwExtIpListFromContainer(cont *container.Container) []*DhcpRelayGwExtIp {
 	length, _ := strconv.Atoi(G(cont, "totalCount"))
-	arr := make([]*UsetheexternalsecondaryaddressforDHCPrelaygateway, length)
+	arr := make([]*DhcpRelayGwExtIp, length)
 
 	for i := 0; i < length; i++ {
-		arr[i] = UsetheexternalsecondaryaddressforDHCPrelaygatewayFromContainerList(cont, i)
+		arr[i] = DhcpRelayGwExtIpFromContainerList(cont, i)
 	}
 
 	return arr

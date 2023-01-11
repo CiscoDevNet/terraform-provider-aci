@@ -6,13 +6,13 @@ import (
 	"github.com/ciscoecosystem/aci-go-client/v2/models"
 )
 
-func (sm *ServiceManager) CreateUsetheexternalsecondaryaddressforDHCPrelaygateway(parentDn string, description string, dhcpRelayGwExtIpAttr models.UsetheexternalsecondaryaddressforDHCPrelaygatewayAttributes) (*models.UsetheexternalsecondaryaddressforDHCPrelaygateway, error) {
-	dhcpRelayGwExtIp := models.NewUsetheexternalsecondaryaddressforDHCPrelaygateway(models.RndhcpRelayGwExtIp, parentDn, description, dhcpRelayGwExtIpAttr)
+func (sm *ServiceManager) CreateDhcpRelayGwExtIp(parentDn string, description string, dhcpRelayGwExtIpAttr models.DhcpRelayGwExtIpAttributes) (*models.DhcpRelayGwExtIp, error) {
+	dhcpRelayGwExtIp := models.NewDhcpRelayGwExtIp(models.RndhcpRelayGwExtIp, parentDn, description, dhcpRelayGwExtIpAttr)
 	err := sm.Save(dhcpRelayGwExtIp)
 	return dhcpRelayGwExtIp, err
 }
 
-func (sm *ServiceManager) ReadUsetheexternalsecondaryaddressforDHCPrelaygateway(parentDn string) (*models.UsetheexternalsecondaryaddressforDHCPrelaygateway, error) {
+func (sm *ServiceManager) ReadDhcpRelayGwExtIp(parentDn string) (*models.DhcpRelayGwExtIp, error) {
 	dn := fmt.Sprintf("%s/%s", parentDn, models.RndhcpRelayGwExtIp)
 
 	cont, err := sm.Get(dn)
@@ -20,25 +20,25 @@ func (sm *ServiceManager) ReadUsetheexternalsecondaryaddressforDHCPrelaygateway(
 		return nil, err
 	}
 
-	dhcpRelayGwExtIp := models.UsetheexternalsecondaryaddressforDHCPrelaygatewayFromContainer(cont)
+	dhcpRelayGwExtIp := models.DhcpRelayGwExtIpFromContainer(cont)
 	return dhcpRelayGwExtIp, nil
 }
 
-func (sm *ServiceManager) DeleteUsetheexternalsecondaryaddressforDHCPrelaygateway(parentDn string) error {
+func (sm *ServiceManager) DeleteDhcpRelayGwExtIp(parentDn string) error {
 	dn := fmt.Sprintf("%s/%s", parentDn, models.RndhcpRelayGwExtIp)
 	return sm.DeleteByDn(dn, models.DhcprelaygwextipClassName)
 }
 
-func (sm *ServiceManager) UpdateUsetheexternalsecondaryaddressforDHCPrelaygateway(parentDn string, description string, dhcpRelayGwExtIpAttr models.UsetheexternalsecondaryaddressforDHCPrelaygatewayAttributes) (*models.UsetheexternalsecondaryaddressforDHCPrelaygateway, error) {
-	dhcpRelayGwExtIp := models.NewUsetheexternalsecondaryaddressforDHCPrelaygateway(models.RndhcpRelayGwExtIp, parentDn, description, dhcpRelayGwExtIpAttr)
+func (sm *ServiceManager) UpdateDhcpRelayGwExtIp(parentDn string, description string, dhcpRelayGwExtIpAttr models.DhcpRelayGwExtIpAttributes) (*models.DhcpRelayGwExtIp, error) {
+	dhcpRelayGwExtIp := models.NewDhcpRelayGwExtIp(models.RndhcpRelayGwExtIp, parentDn, description, dhcpRelayGwExtIpAttr)
 	dhcpRelayGwExtIp.Status = "modified"
 	err := sm.Save(dhcpRelayGwExtIp)
 	return dhcpRelayGwExtIp, err
 }
 
-func (sm *ServiceManager) ListUsetheexternalsecondaryaddressforDHCPrelaygateway(parentDn string) ([]*models.UsetheexternalsecondaryaddressforDHCPrelaygateway, error) {
+func (sm *ServiceManager) ListDhcpRelayGwExtIp(parentDn string) ([]*models.DhcpRelayGwExtIp, error) {
 	dnUrl := fmt.Sprintf("%s/%s/dhcpRelayGwExtIp.json", models.BaseurlStr, parentDn)
 	cont, err := sm.GetViaURL(dnUrl)
-	list := models.UsetheexternalsecondaryaddressforDHCPrelaygatewayListFromContainer(cont)
+	list := models.DhcpRelayGwExtIpListFromContainer(cont)
 	return list, err
 }

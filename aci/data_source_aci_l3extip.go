@@ -62,7 +62,7 @@ func dataSourceAciL3outPathAttachmentSecondaryIpRead(ctx context.Context, d *sch
 	}
 
 	// Importing dhcpRelayGwExtIp
-	getAndSetReadUsetheexternalsecondaryaddressforDHCPrelaygateway(aciClient, dn, d)
+	getAndSetReadDhcpRelayGwExtIp(aciClient, dn, d)
 
 	return nil
 }

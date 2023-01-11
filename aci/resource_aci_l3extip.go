@@ -96,8 +96,8 @@ func setL3outPathAttachmentSecondaryIpAttributes(l3extIp *models.L3outPathAttach
 	return d, nil
 }
 
-func getAndSetReadUsetheexternalsecondaryaddressforDHCPrelaygateway(client *client.Client, dn string, d *schema.ResourceData) (*schema.ResourceData, error) {
-	_, err := client.ReadUsetheexternalsecondaryaddressforDHCPrelaygateway(dn)
+func getAndSetReadDhcpRelayGwExtIp(client *client.Client, dn string, d *schema.ResourceData) (*schema.ResourceData, error) {
+	_, err := client.ReadDhcpRelayGwExtIp(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading DHCP relay gateway %v", err)
 		d.Set("dhcp_relay", "disabled")
@@ -126,7 +126,7 @@ func resourceAciL3outPathAttachmentSecondaryIpImport(d *schema.ResourceData, m i
 	}
 
 	// Importing dhcpRelayGwExtIp
-	getAndSetReadUsetheexternalsecondaryaddressforDHCPrelaygateway(aciClient, dn, d)
+	getAndSetReadDhcpRelayGwExtIp(aciClient, dn, d)
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
@@ -164,24 +164,15 @@ func resourceAciL3outPathAttachmentSecondaryIpCreate(ctx context.Context, d *sch
 		return diag.FromErr(err)
 	}
 
-	checkDns := make([]string, 0, 1)
-
-	d.Partial(true)
-	err = checkTDn(aciClient, checkDns)
-	if err != nil {
-		return diag.FromErr(err)
-	}
-	d.Partial(false)
-
 	d.SetId(l3extIp.DistinguishedName)
 
-	dhcp_relay := d.Get("dhcp_relay").(string)
-	if dhcp_relay == "enabled" {
-		dhcpRelayGwExtIpAttr := models.UsetheexternalsecondaryaddressforDHCPrelaygatewayAttributes{}
-		dhcpRelayGwExtIp := models.NewUsetheexternalsecondaryaddressforDHCPrelaygateway(models.RndhcpRelayGwExtIp, l3extIp.DistinguishedName, desc, dhcpRelayGwExtIpAttr)
-		dhcp_relay_err := aciClient.Save(dhcpRelayGwExtIp)
-		if dhcp_relay_err != nil {
-			return diag.FromErr(dhcp_relay_err)
+	dhcpRelay := d.Get("dhcp_relay").(string)
+	if dhcpRelay == "enabled" {
+		dhcpRelayGwExtIpAttr := models.DhcpRelayGwExtIpAttributes{}
+		dhcpRelayGwExtIp := models.NewDhcpRelayGwExtIp(models.RndhcpRelayGwExtIp, l3extIp.DistinguishedName, desc, dhcpRelayGwExtIpAttr)
+		dhcpRelayErr := aciClient.Save(dhcpRelayGwExtIp)
+		if dhcpRelayErr != nil {
+			return diag.FromErr(dhcpRelayErr)
 		}
 		log.Printf("[DEBUG] %s: DHCP Relay enabled successfully", dhcpRelayGwExtIp.DistinguishedName)
 	}
@@ -226,30 +217,21 @@ func resourceAciL3outPathAttachmentSecondaryIpUpdate(ctx context.Context, d *sch
 		return diag.FromErr(err)
 	}
 
-	checkDns := make([]string, 0, 1)
-
-	d.Partial(true)
-	err = checkTDn(aciClient, checkDns)
-	if err != nil {
-		return diag.FromErr(err)
-	}
-	d.Partial(false)
-
 	d.SetId(l3extIp.DistinguishedName)
 
 	if d.HasChange("dhcp_relay") {
-		dhcp_relay := d.Get("dhcp_relay").(string)
+		dhcpRelay := d.Get("dhcp_relay").(string)
 
-		if dhcp_relay == "enabled" {
-			dhcpRelayGwExtIpAttr := models.UsetheexternalsecondaryaddressforDHCPrelaygatewayAttributes{}
-			dhcpRelayGwExtIp := models.NewUsetheexternalsecondaryaddressforDHCPrelaygateway(models.RndhcpRelayGwExtIp, l3extIp.DistinguishedName, desc, dhcpRelayGwExtIpAttr)
-			dhcp_relay_err := aciClient.Save(dhcpRelayGwExtIp)
-			if dhcp_relay_err != nil {
-				return diag.FromErr(dhcp_relay_err)
+		if dhcpRelay == "enabled" {
+			dhcpRelayGwExtIpAttr := models.DhcpRelayGwExtIpAttributes{}
+			dhcpRelayGwExtIp := models.NewDhcpRelayGwExtIp(models.RndhcpRelayGwExtIp, l3extIp.DistinguishedName, desc, dhcpRelayGwExtIpAttr)
+			dhcpRelayErr := aciClient.Save(dhcpRelayGwExtIp)
+			if dhcpRelayErr != nil {
+				return diag.FromErr(dhcpRelayErr)
 			}
 			log.Printf("[DEBUG] %s: DHCP relay gateway enabled successfully", dhcpRelayGwExtIp.DistinguishedName)
-		} else if dhcp_relay == "disabled" {
-			aciClient.DeleteUsetheexternalsecondaryaddressforDHCPrelaygateway(l3extIp.DistinguishedName)
+		} else if dhcpRelay == "disabled" {
+			aciClient.DeleteDhcpRelayGwExtIp(l3extIp.DistinguishedName)
 			log.Printf("[DEBUG] %s: DHCP relay gateway disabled successfully", fmt.Sprintf("%s/%s", l3extIp.DistinguishedName, models.RndhcpRelayGwExtIp))
 		}
 	}
@@ -279,7 +261,7 @@ func resourceAciL3outPathAttachmentSecondaryIpRead(ctx context.Context, d *schem
 	}
 
 	// Importing dhcpRelayGwExtIp
-	getAndSetReadUsetheexternalsecondaryaddressforDHCPrelaygateway(aciClient, dn, d)
+	getAndSetReadDhcpRelayGwExtIp(aciClient, dn, d)
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 

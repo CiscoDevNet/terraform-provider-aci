@@ -4,7 +4,7 @@ github.com/agext/levenshtein
 github.com/apparentlymart/go-cidr/cidr
 # github.com/apparentlymart/go-textseg/v13 v13.0.0
 github.com/apparentlymart/go-textseg/v13/textseg
-# github.com/ciscoecosystem/aci-go-client/v2 v2.6.0
+# github.com/ciscoecosystem/aci-go-client/v2 v2.6.2
 github.com/ciscoecosystem/aci-go-client/v2/client
 github.com/ciscoecosystem/aci-go-client/v2/container
 github.com/ciscoecosystem/aci-go-client/v2/models
