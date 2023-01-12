@@ -34,8 +34,8 @@ func resourceAciOSPFInterfaceProfile() *schema.Resource {
 
 			"auth_key": &schema.Schema{
 				Type:     schema.TypeString,
-				Required: true,
-				ForceNew: true,
+				Optional: true,
+				Computed: true,
 			},
 
 			"auth_key_id": &schema.Schema{
