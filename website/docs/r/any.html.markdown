@@ -32,9 +32,9 @@ resource "aci_any" "example_vzany" {
 * `match_t` - (Optional) Represents the provider label match criteria. Allowed values are "All", "None", "AtmostOne" and "AtleastOne". Default value is "AtleastOne".
 * `name_alias` - (Optional) Name alias of the Any object.
 * `pref_gr_memb` - (Optional) Represents parameter used to determine if EPgs can be divided in a the context can be divided into two subgroups. Allowed values are "disabled" and "enabled". Default is "disabled".
-* `relation_vz_rs_any_to_cons` - (Optional) Relation to class vzBrCP.
-* `relation_vz_rs_any_to_cons_if` - (Optional) Relation to class vzCPIf.
-* `relation_vz_rs_any_to_prov` - (Optional) Relation to class vzBrCP.
+* `relation_vz_rs_any_to_cons` - (Optional) Relation to Consumed Contracts (vzBrCP class)
+* `relation_vz_rs_any_to_cons_if` - (Optional) Relation to Consumed Contract Interfaces (vzCPIf class)
+* `relation_vz_rs_any_to_prov` - (Optional) Relation to Provided Contracts (vzBrCP class).
 
 ## Attribute Reference
 

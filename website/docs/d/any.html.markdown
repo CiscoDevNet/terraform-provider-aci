@@ -31,6 +31,6 @@ data "aci_any" "dev_any" {
 * `match_t` - (Optional) Represents the provider label match criteria.
 * `name_alias` - (Optional) Name alias of the Any object.
 * `pref_gr_memb` - (Optional) Represents parameter used to determine if EPgs can be divided in a the context can be divided into two subgroups.
-* `relation_vz_rs_any_to_cons` - (Optional) Relation to class vzBrCP.
-* `relation_vz_rs_any_to_cons_if` - (Optional) Relation to class vzCPIf.
-* `relation_vz_rs_any_to_prov` - (Optional) Relation to class vzBrCP.
+* `relation_vz_rs_any_to_cons` - (Optional) Relation to Consumed Contracts (vzBrCP class)
+* `relation_vz_rs_any_to_cons_if` - (Optional) Relation to Consumed Contract Interfaces (vzCPIf class)
+* `relation_vz_rs_any_to_prov` - (Optional) Relation to Provided Contracts (vzBrCP class).

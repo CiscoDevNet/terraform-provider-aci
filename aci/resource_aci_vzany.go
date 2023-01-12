@@ -84,7 +84,7 @@ func getRemoteAny(client *client.Client, dn string) (*models.Any, error) {
 	vzAny := models.AnyFromContainer(vzAnyCont)
 
 	if vzAny.DistinguishedName == "" {
-		return nil, fmt.Errorf("any %s not found", dn)
+		return nil, fmt.Errorf("Any %s not found", dn)
 	}
 
 	return vzAny, nil
