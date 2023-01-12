@@ -31,7 +31,7 @@ resource "aci_l4_l7_device" "example1" {
   service_type     = "OTHERS"
   trunking         = "no"
   relation_vns_rs_al_dev_to_dom_p {
-    target_dn      = "uni/vmmp-VMware/dom-ESX0-leaf102-vds"
+    domain_dn      = "uni/vmmp-VMware/dom-ESX0-leaf102-vds"
     switching_mode = "AVE"
   }
 }
