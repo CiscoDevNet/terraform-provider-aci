@@ -30,7 +30,7 @@ resource "aci_logical_node_profile" "node_profile" {
 
 resource "aci_logical_interface_profile" "interface_profile" {
   logical_node_profile_dn = aci_logical_node_profile.node_profile.id
-  name = "demo_int_prof"
+  name                    = "demo_int_prof"
 }
 
 resource "aci_physical_domain" "example" {
@@ -68,7 +68,7 @@ resource "aci_l3out_floating_svi" "example" {
   relation_l3ext_rs_dyn_path_att {
     tdn                     = aci_vmm_domain.example_vmm.id
     floating_address        = "10.20.30.254/16"
-    enhanced_lag_policy_tdn = "uni/vmmp-VMware/dom-example/vswitchpolcont/enlacplagp-test"
+    enhanced_lag_policy_dn  = "uni/vmmp-VMware/dom-example/vswitchpolcont/enlacplagp-test"
   }
 }
 
