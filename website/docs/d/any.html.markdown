@@ -7,27 +7,30 @@ description: |-
   Data source for ACI Any
 ---
 
-# aci_any
+# aci_any #
 
 Data source for ACI Any
 
-## Example Usage
+## Example Usage ##
 
 ```hcl
 data "aci_any" "dev_any" {
-  vrf_dn  = aci_vrf.dev_vrf.id
+  vrf_dn = aci_vrf.dev_vrf.id
 }
 ```
 
-## Argument Reference
+## Argument Reference ##
 
-- `vrf_dn` - (Required) Distinguished name of parent VRF object.
+* `vrf_dn` - (Required) Distinguished name of the parent VRF object.
 
-## Attribute Reference
+## Attribute Reference ##
 
-- `id` - Attribute id set to the Dn of the Any.
-- `annotation` - (Optional) Annotation for object any.
-- `description` - (Optional) Description for object any.
-- `match_t` - (Optional) Represents the provider label match criteria.
-- `name_alias` - (Optional) Name alias for object any.
-- `pref_gr_memb` - (Optional) Represents parameter used to determine if EPgs can be divided in a the context can be divided into two subgroups.
+* `id` - Attribute id set to the Dn of the Any object.
+* `annotation` - (Optional) Annotation of the Any object.
+* `description` - (Optional) Description of the Any object.
+* `match_t` - (Optional) Represents the provider label match criteria.
+* `name_alias` - (Optional) Name alias of the Any object.
+* `pref_gr_memb` - (Optional) Represents parameter used to determine if EPgs can be divided in a the context can be divided into two subgroups.
+* `relation_vz_rs_any_to_cons` - (Optional) Relation to Consumed Contracts (vzBrCP class)
+* `relation_vz_rs_any_to_cons_if` - (Optional) Relation to Consumed Contract Interfaces (vzCPIf class)
+* `relation_vz_rs_any_to_prov` - (Optional) Relation to Provided Contracts (vzBrCP class).

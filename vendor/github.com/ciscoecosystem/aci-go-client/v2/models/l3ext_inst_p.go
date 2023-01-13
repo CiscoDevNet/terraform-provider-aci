@@ -7,7 +7,12 @@ import (
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
 )
 
-const L3extinstpClassName = "l3extInstP"
+const (
+	Dnl3extinstp        = "uni/tn-%s/out-%s/instP-%s"
+	Rnl3extinstp        = "instP-%s"
+	ParentDnl3extinstp  = "uni/tn-%s/out-%s"
+	L3extinstpClassName = "l3extInstP"
+)
 
 type ExternalNetworkInstanceProfile struct {
 	BaseAttributes
@@ -15,23 +20,16 @@ type ExternalNetworkInstanceProfile struct {
 }
 
 type ExternalNetworkInstanceProfileAttributes struct {
-	Name string `json:",omitempty"`
-
-	Annotation string `json:",omitempty"`
-
+	Name         string `json:",omitempty"`
+	Annotation   string `json:",omitempty"`
 	ExceptionTag string `json:",omitempty"`
-
 	FloodOnEncap string `json:",omitempty"`
-
-	MatchT string `json:",omitempty"`
-
-	NameAlias string `json:",omitempty"`
-
-	PrefGrMemb string `json:",omitempty"`
-
-	Prio string `json:",omitempty"`
-
-	TargetDscp string `json:",omitempty"`
+	MatchT       string `json:",omitempty"`
+	NameAlias    string `json:",omitempty"`
+	PrefGrMemb   string `json:",omitempty"`
+	Prio         string `json:",omitempty"`
+	TargetDscp   string `json:",omitempty"`
+	PcEnfPref    string `json:",omitempty"`
 }
 
 func NewExternalNetworkInstanceProfile(l3extInstPRn, parentDn, description string, l3extInstPattr ExternalNetworkInstanceProfileAttributes) *ExternalNetworkInstanceProfile {
@@ -56,22 +54,15 @@ func (l3extInstP *ExternalNetworkInstanceProfile) ToMap() (map[string]string, er
 	}
 
 	A(l3extInstPMap, "name", l3extInstP.Name)
-
 	A(l3extInstPMap, "annotation", l3extInstP.Annotation)
-
 	A(l3extInstPMap, "exceptionTag", l3extInstP.ExceptionTag)
-
 	A(l3extInstPMap, "floodOnEncap", l3extInstP.FloodOnEncap)
-
 	A(l3extInstPMap, "matchT", l3extInstP.MatchT)
-
 	A(l3extInstPMap, "nameAlias", l3extInstP.NameAlias)
-
 	A(l3extInstPMap, "prefGrMemb", l3extInstP.PrefGrMemb)
-
 	A(l3extInstPMap, "prio", l3extInstP.Prio)
-
 	A(l3extInstPMap, "targetDscp", l3extInstP.TargetDscp)
+	A(l3extInstPMap, "pcEnfPref", l3extInstP.PcEnfPref)
 
 	return l3extInstPMap, err
 }
@@ -89,24 +80,16 @@ func ExternalNetworkInstanceProfileFromContainerList(cont *container.Container, 
 		},
 
 		ExternalNetworkInstanceProfileAttributes{
-
-			Name: G(ExternalNetworkInstanceProfileCont, "name"),
-
-			Annotation: G(ExternalNetworkInstanceProfileCont, "annotation"),
-
+			Name:         G(ExternalNetworkInstanceProfileCont, "name"),
+			Annotation:   G(ExternalNetworkInstanceProfileCont, "annotation"),
 			ExceptionTag: G(ExternalNetworkInstanceProfileCont, "exceptionTag"),
-
 			FloodOnEncap: G(ExternalNetworkInstanceProfileCont, "floodOnEncap"),
-
-			MatchT: G(ExternalNetworkInstanceProfileCont, "matchT"),
-
-			NameAlias: G(ExternalNetworkInstanceProfileCont, "nameAlias"),
-
-			PrefGrMemb: G(ExternalNetworkInstanceProfileCont, "prefGrMemb"),
-
-			Prio: G(ExternalNetworkInstanceProfileCont, "prio"),
-
-			TargetDscp: G(ExternalNetworkInstanceProfileCont, "targetDscp"),
+			MatchT:       G(ExternalNetworkInstanceProfileCont, "matchT"),
+			NameAlias:    G(ExternalNetworkInstanceProfileCont, "nameAlias"),
+			PrefGrMemb:   G(ExternalNetworkInstanceProfileCont, "prefGrMemb"),
+			Prio:         G(ExternalNetworkInstanceProfileCont, "prio"),
+			TargetDscp:   G(ExternalNetworkInstanceProfileCont, "targetDscp"),
+			PcEnfPref:    G(ExternalNetworkInstanceProfileCont, "pcEnfPref"),
 		},
 	}
 }

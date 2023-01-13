@@ -25,7 +25,7 @@ func resourceAciAny() *schema.Resource {
 
 		SchemaVersion: 1,
 
-		Schema: AppendBaseAttrSchema(map[string]*schema.Schema{
+		Schema: AppendBaseAttrSchema(AppendNameAliasAttrSchema(map[string]*schema.Schema{
 			"vrf_dn": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
@@ -42,12 +42,6 @@ func resourceAciAny() *schema.Resource {
 					"AtmostOne",
 					"None",
 				}, false),
-			},
-
-			"name_alias": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
 			},
 
 			"pref_gr_memb": &schema.Schema{
@@ -78,7 +72,7 @@ func resourceAciAny() *schema.Resource {
 				Optional: true,
 				Set:      schema.HashString,
 			},
-		}),
+		})),
 	}
 }
 func getRemoteAny(client *client.Client, dn string) (*models.Any, error) {
@@ -90,7 +84,7 @@ func getRemoteAny(client *client.Client, dn string) (*models.Any, error) {
 	vzAny := models.AnyFromContainer(vzAnyCont)
 
 	if vzAny.DistinguishedName == "" {
-		return nil, fmt.Errorf("Any %s not found", vzAny.DistinguishedName)
+		return nil, fmt.Errorf("Any %s not found", dn)
 	}
 
 	return vzAny, nil
@@ -107,11 +101,50 @@ func setAnyAttributes(vzAny *models.Any, d *schema.ResourceData) (*schema.Resour
 	if err != nil {
 		return d, err
 	}
-	d.Set("vrf_dn", GetParentDn(vzAny.DistinguishedName, fmt.Sprintf("/any")))
+	d.Set("vrf_dn", GetParentDn(vzAny.DistinguishedName, "/any"))
 	d.Set("annotation", vzAnyMap["annotation"])
 	d.Set("match_t", vzAnyMap["matchT"])
 	d.Set("name_alias", vzAnyMap["nameAlias"])
 	d.Set("pref_gr_memb", vzAnyMap["prefGrMemb"])
+	return d, nil
+}
+
+func getAndSetVzRsAnyToConsFromAny(client *client.Client, dn string, d *schema.ResourceData) (*schema.ResourceData, error) {
+	vzRsAnyToConsData, err := client.ReadRelationvzRsAnyToConsFromAny(dn)
+	if err != nil {
+		log.Printf("[DEBUG] Error while reading relation vzRsAnyToCons %v", err)
+		d.Set("relation_vz_rs_any_to_cons", make([]interface{}, 0, 1))
+		return nil, err
+	} else {
+		d.Set("relation_vz_rs_any_to_cons", toStringList(vzRsAnyToConsData.(*schema.Set).List()))
+		log.Printf("[DEBUG]: vzRsAnyToConsData: %v finished successfully", toStringList(vzRsAnyToConsData.(*schema.Set).List()))
+	}
+	return d, nil
+}
+
+func getAndSetVzRsAnyToConsIfFromAny(client *client.Client, dn string, d *schema.ResourceData) (*schema.ResourceData, error) {
+	vzRsAnyToConsIfData, err := client.ReadRelationvzRsAnyToConsIfFromAny(dn)
+	if err != nil {
+		log.Printf("[DEBUG] Error while reading relation vzRsAnyToConsIf %v", err)
+		d.Set("relation_vz_rs_any_to_cons_if", make([]interface{}, 0, 1))
+		return nil, err
+	} else {
+		d.Set("relation_vz_rs_any_to_cons_if", toStringList(vzRsAnyToConsIfData.(*schema.Set).List()))
+		log.Printf("[DEBUG]: vzRsAnyToConsIfData: %v finished successfully", toStringList(vzRsAnyToConsIfData.(*schema.Set).List()))
+	}
+	return d, nil
+}
+
+func getAndSetVzRsAnyToProvFromAny(client *client.Client, dn string, d *schema.ResourceData) (*schema.ResourceData, error) {
+	vzRsAnyToProvData, err := client.ReadRelationvzRsAnyToProvFromAny(dn)
+	if err != nil {
+		log.Printf("[DEBUG] Error while reading relation vzRsAnyToProv %v", err)
+		d.Set("relation_vz_rs_any_to_prov", make([]interface{}, 0, 1))
+		return nil, err
+	} else {
+		d.Set("relation_vz_rs_any_to_prov", toStringList(vzRsAnyToProvData.(*schema.Set).List()))
+		log.Printf("[DEBUG]: vzRsAnyToProvData: %v finished successfully", toStringList(vzRsAnyToProvData.(*schema.Set).List()))
+	}
 	return d, nil
 }
 
@@ -126,12 +159,17 @@ func resourceAciAnyImport(d *schema.ResourceData, m interface{}) ([]*schema.Reso
 	if err != nil {
 		return nil, err
 	}
-	pDN := GetParentDn(dn, fmt.Sprintf("/any"))
+	pDN := GetParentDn(dn, "/any")
 	d.Set("vrf_dn", pDN)
 	schemaFilled, err := setAnyAttributes(vzAny, d)
 	if err != nil {
 		return nil, err
 	}
+
+	getAndSetVzRsAnyToConsFromAny(aciClient, dn, d)
+	getAndSetVzRsAnyToConsIfFromAny(aciClient, dn, d)
+	getAndSetVzRsAnyToProvFromAny(aciClient, dn, d)
+
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
@@ -158,7 +196,7 @@ func resourceAciAnyCreate(ctx context.Context, d *schema.ResourceData, m interfa
 	if PrefGrMemb, ok := d.GetOk("pref_gr_memb"); ok {
 		vzAnyAttr.PrefGrMemb = PrefGrMemb.(string)
 	}
-	vzAny := models.NewAny(fmt.Sprintf("any"), VRFDn, desc, vzAnyAttr)
+	vzAny := models.NewAny("any", VRFDn, desc, vzAnyAttr)
 	vzAny.Status = "modified"
 	err := aciClient.Save(vzAny)
 	if err != nil {
@@ -261,7 +299,7 @@ func resourceAciAnyUpdate(ctx context.Context, d *schema.ResourceData, m interfa
 	if PrefGrMemb, ok := d.GetOk("pref_gr_memb"); ok {
 		vzAnyAttr.PrefGrMemb = PrefGrMemb.(string)
 	}
-	vzAny := models.NewAny(fmt.Sprintf("any"), VRFDn, desc, vzAnyAttr)
+	vzAny := models.NewAny("any", VRFDn, desc, vzAnyAttr)
 
 	vzAny.Status = "modified"
 
@@ -417,32 +455,23 @@ func resourceAciAnyRead(ctx context.Context, d *schema.ResourceData, m interface
 		return nil
 	}
 
-	vzRsAnyToConsData, err := aciClient.ReadRelationvzRsAnyToConsFromAny(dn)
-	if err != nil {
-		log.Printf("[DEBUG] Error while reading relation vzRsAnyToCons %v", err)
-		setRelationAttribute(d, "relation_vz_rs_any_to_cons", make([]interface{}, 0, 1))
-	} else {
-		setRelationAttribute(d, "relation_vz_rs_any_to_cons", toStringList(vzRsAnyToConsData.(*schema.Set).List()))
-	}
-
-	vzRsAnyToConsIfData, err := aciClient.ReadRelationvzRsAnyToConsIfFromAny(dn)
-	if err != nil {
-		log.Printf("[DEBUG] Error while reading relation vzRsAnyToConsIf %v", err)
-		setRelationAttribute(d, "relation_vz_rs_any_to_cons_if", make([]interface{}, 0, 1))
-	} else {
-		setRelationAttribute(d, "relation_vz_rs_any_to_cons_if", toStringList(vzRsAnyToConsIfData.(*schema.Set).List()))
-	}
-
-	vzRsAnyToProvData, err := aciClient.ReadRelationvzRsAnyToProvFromAny(dn)
-	if err != nil {
-		log.Printf("[DEBUG] Error while reading relation vzRsAnyToProv %v", err)
-		setRelationAttribute(d, "relation_vz_rs_any_to_prov", make([]interface{}, 0, 1))
-	} else {
-		setRelationAttribute(d, "relation_vz_rs_any_to_prov", toStringList(vzRsAnyToProvData.(*schema.Set).List()))
-	}
+	getAndSetVzRsAnyToConsFromAny(aciClient, dn, d)
+	getAndSetVzRsAnyToConsIfFromAny(aciClient, dn, d)
+	getAndSetVzRsAnyToProvFromAny(aciClient, dn, d)
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 
+	return nil
+}
+
+func deleteRelationsFromVzAny(deleteFunc func(string, string) error, dn string, relationParamList []string) error {
+	for _, relDn := range relationParamList {
+		relDnName := GetMOName(relDn)
+		err := deleteFunc(dn, relDnName)
+		if err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
@@ -450,14 +479,33 @@ func resourceAciAnyDelete(ctx context.Context, d *schema.ResourceData, m interfa
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 
 	aciClient := m.(*client.Client)
+
 	dn := d.Id()
-	err := aciClient.DeleteByDn(dn, "vzAny")
-	if err != nil {
-		return diag.FromErr(err)
+
+	if relationTovzRsAnyToCons, ok := d.GetOk("relation_vz_rs_any_to_cons"); ok {
+		err := deleteRelationsFromVzAny(aciClient.DeleteRelationvzRsAnyToConsFromAny, dn, toStringList(relationTovzRsAnyToCons.(*schema.Set).List()))
+		if err != nil {
+			return diag.FromErr(err)
+		}
+	}
+
+	if relationTovzRsAnyToConsIf, ok := d.GetOk("relation_vz_rs_any_to_cons_if"); ok {
+		log.Printf("[DEBUG] VALUE OF relation_vz_rs_any_to_cons_if %v", toStringList(relationTovzRsAnyToConsIf.(*schema.Set).List()))
+		err := deleteRelationsFromVzAny(aciClient.DeleteRelationvzRsAnyToConsIfFromAny, dn, toStringList(relationTovzRsAnyToConsIf.(*schema.Set).List()))
+		if err != nil {
+			return diag.FromErr(err)
+		}
+	}
+
+	if relationTovzRsAnyToProv, ok := d.GetOk("relation_vz_rs_any_to_prov"); ok {
+		err := deleteRelationsFromVzAny(aciClient.DeleteRelationvzRsAnyToProvFromAny, dn, toStringList(relationTovzRsAnyToProv.(*schema.Set).List()))
+		if err != nil {
+			return diag.FromErr(err)
+		}
 	}
 
 	log.Printf("[DEBUG] %s: Destroy finished successfully", d.Id())
 
 	d.SetId("")
-	return diag.FromErr(err)
+	return diag.FromErr(nil)
 }

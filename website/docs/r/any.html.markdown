@@ -26,16 +26,15 @@ resource "aci_any" "example_vzany" {
 
 ## Argument Reference
 
-- `vrf_dn` - (Required) Distinguished name of parent VRF object.
-- `annotation` - (Optional) Annotation for object any.
-- `description` - (Optional) Description for object any.
-- `match_t` - (Optional) Represents the provider label match criteria. Allowed values are "All", "None", "AtmostOne" and "AtleastOne". Default value is "AtleastOne".
-- `name_alias` - (Optional) Name alias for object any.
-- `pref_gr_memb` - (Optional) Represents parameter used to determine if EPgs can be divided in a the context can be divided into two subgroups. Allowed values are "disabled" and "enabled". Default is "disabled".
-
-- `relation_vz_rs_any_to_cons` - (Optional) Relation to class vzBrCP. Cardinality - N_TO_M. Type - [Set of String].
-- `relation_vz_rs_any_to_cons_if` - (Optional) Relation to class vzCPIf. Cardinality - N_TO_M. Type - [Set of String].
-- `relation_vz_rs_any_to_prov` - (Optional) Relation to class vzBrCP. Cardinality - N_TO_M. Type - [Set of String].
+* `vrf_dn` - (Required) Distinguished name of the parent VRF object.
+* `annotation` - (Optional) Annotation of the Any object.
+* `description` - (Optional) Description of the Any object.
+* `match_t` - (Optional) Represents the provider label match criteria. Allowed values are "All", "None", "AtmostOne" and "AtleastOne". Default value is "AtleastOne".
+* `name_alias` - (Optional) Name alias of the Any object.
+* `pref_gr_memb` - (Optional) Represents parameter used to determine if EPgs can be divided in a the context can be divided into two subgroups. Allowed values are "disabled" and "enabled". Default is "disabled".
+* `relation_vz_rs_any_to_cons` - (Optional) Relation to Consumed Contracts (vzBrCP class)
+* `relation_vz_rs_any_to_cons_if` - (Optional) Relation to Consumed Contract Interfaces (vzCPIf class)
+* `relation_vz_rs_any_to_prov` - (Optional) Relation to Provided Contracts (vzBrCP class).
 
 ## Attribute Reference
 
@@ -44,7 +43,7 @@ Dn of the Any.
 
 ## Importing
 
-An existing Any can be [imported][docs-import] into this resource via its Dn, via the following command:
+An existing Any object can be [imported][docs-import] into this resource via its Dn, via the following command:
 [docs-import]: <https://www.terraform.io/docs/import/index.html>
 
 ```bash
