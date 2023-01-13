@@ -117,7 +117,7 @@ func dataSourceAciVirtualLogicalInterfaceProfile() *schema.Resource {
 							Type:     schema.TypeString,
 							Optional: true,
 						},
-						"enhanced_lag_policy_tdn": {
+						"enhanced_lag_policy_dn": {
 							Type:     schema.TypeString,
 							Optional: true,
 						},

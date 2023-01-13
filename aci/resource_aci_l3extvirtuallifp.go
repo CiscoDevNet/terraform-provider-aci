@@ -192,7 +192,7 @@ func resourceAciVirtualLogicalInterfaceProfile() *schema.Resource {
 							}, false),
 							Default: "Disabled",
 						},
-						"enhanced_lag_policy_tdn": {
+						"enhanced_lag_policy_dn": {
 							Type:     schema.TypeString,
 							Optional: true,
 							Default:  "",
@@ -278,7 +278,7 @@ func getAndSetL3extRsDynPathAttFromLogicalInterfaceProfile(client *client.Client
 			obj["forged_transmit"] = l3extRsDynPathObj["forgedTransmit"]
 			obj["mac_change"] = l3extRsDynPathObj["macChange"]
 			obj["promiscuous_mode"] = l3extRsDynPathObj["promMode"]
-			obj["enhanced_lag_policy_tdn"] = getL3extRsVSwitchEnhancedLagPol(client, dn, l3extRsDynPathObj["tDn"])
+			obj["enhanced_lag_policy_dn"] = getL3extRsVSwitchEnhancedLagPol(client, dn, l3extRsDynPathObj["tDn"])
 			l3extRsDynPaths = append(l3extRsDynPaths, obj)
 		}
 		d.Set("relation_l3ext_rs_dyn_path_att", l3extRsDynPaths)
@@ -392,9 +392,9 @@ func resourceAciVirtualLogicalInterfaceProfileCreate(ctx context.Context, d *sch
 			if err != nil {
 				return diag.FromErr(err)
 			}
-			if paramMap["enhanced_lag_policy_tdn"].(string) != "" {
+			if paramMap["enhanced_lag_policy_dn"].(string) != "" {
 				l3extVirtualLIfPLagPolAttDn := fmt.Sprintf("%s/rsdynPathAtt-[%s]/vlifplagpolatt", l3extVirtualLIfP.DistinguishedName, paramMap["tdn"].(string))
-				err = aciClient.CreateRelationl3extRsVSwitchEnhancedLagPol(l3extVirtualLIfPLagPolAttDn, paramMap["enhanced_lag_policy_tdn"].(string))
+				err = aciClient.CreateRelationl3extRsVSwitchEnhancedLagPol(l3extVirtualLIfPLagPolAttDn, paramMap["enhanced_lag_policy_dn"].(string))
 				if err != nil {
 					return diag.FromErr(err)
 				}
@@ -502,9 +502,9 @@ func resourceAciVirtualLogicalInterfaceProfileUpdate(ctx context.Context, d *sch
 			if err != nil {
 				return diag.FromErr(err)
 			}
-			if paramMap["enhanced_lag_policy_tdn"].(string) != "" {
+			if paramMap["enhanced_lag_policy_dn"].(string) != "" {
 				l3extVirtualLIfPLagPolAttDn := fmt.Sprintf("%s/rsdynPathAtt-[%s]/vlifplagpolatt", l3extVirtualLIfP.DistinguishedName, paramMap["tdn"].(string))
-				err = aciClient.CreateRelationl3extRsVSwitchEnhancedLagPol(l3extVirtualLIfPLagPolAttDn, paramMap["enhanced_lag_policy_tdn"].(string))
+				err = aciClient.CreateRelationl3extRsVSwitchEnhancedLagPol(l3extVirtualLIfPLagPolAttDn, paramMap["enhanced_lag_policy_dn"].(string))
 				if err != nil {
 					return diag.FromErr(err)
 				}
