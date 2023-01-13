@@ -16,7 +16,7 @@ func dataSourceAciL3ExtSubnet() *schema.Resource {
 
 		SchemaVersion: 1,
 
-		Schema: AppendBaseAttrSchema(map[string]*schema.Schema{
+		Schema: AppendBaseAttrSchema(AppendNameAliasAttrSchema(map[string]*schema.Schema{
 			"external_network_instance_profile_dn": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
@@ -33,12 +33,6 @@ func dataSourceAciL3ExtSubnet() *schema.Resource {
 				Computed: true,
 			},
 
-			"name_alias": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
 			"scope": &schema.Schema{
 				Type:     schema.TypeList,
 				Optional: true,
@@ -47,7 +41,33 @@ func dataSourceAciL3ExtSubnet() *schema.Resource {
 					Type: schema.TypeString,
 				},
 			},
-		}),
+
+			"relation_l3ext_rs_subnet_to_profile": &schema.Schema{
+				Type:     schema.TypeSet,
+				Optional: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"tn_rtctrl_profile_name": {
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"tn_rtctrl_profile_dn": {
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"direction": {
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+					},
+				},
+			},
+			"relation_l3ext_rs_subnet_to_rt_summ": &schema.Schema{
+				Type:     schema.TypeString,
+				Computed: true,
+				Optional: true,
+			},
+		})),
 	}
 }
 
@@ -71,5 +91,9 @@ func dataSourceAciL3ExtSubnetRead(ctx context.Context, d *schema.ResourceData, m
 	if err != nil {
 		return diag.FromErr(err)
 	}
+
+	getAndSetl3extRsSubnetToProfileFromL3ExtSubnet(aciClient, dn, d)
+	getAndSetl3extRsSubnetToRtSummFromL3ExtSubnet(aciClient, dn, d)
+
 	return nil
 }
