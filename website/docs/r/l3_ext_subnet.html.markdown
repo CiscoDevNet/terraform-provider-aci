@@ -4,12 +4,12 @@ layout: "aci"
 page_title: "ACI: aci_l3_ext_subnet"
 sidebar_current: "docs-aci-resource-l3_ext_subnet"
 description: |-
-  Manages ACI l3 extension subnet
+  Manages ACI External EPG Subnet
 ---
 
 # aci_l3_ext_subnet #
 
-Manages ACI l3 extension subnet
+Manages ACI External EPG Subnet
 
 ## API Information ##
 
@@ -47,21 +47,21 @@ Manages ACI l3 extension subnet
 ## Argument Reference ##
 
 * `external_network_instance_profile_dn` - (Required) Distinguished name of the parent External Network Instance Profile object.
-* `ip` - (Required) ip of the L3 Extension Subnet object.
-* `aggregate` - (Optional) Aggregate Routes of the L3 Extension Subnet object. Allowed values are "import-rtctrl", "export-rtctrl", "shared-rtctrl" and "none".
-* `annotation` - (Optional) annotation of the L3 Extension Subnet object.
-* `description` - (Optional) Description of the L3 Extension Subnet object.
-* `name_alias` - (Optional) name_alias of the L3 Extension Subnet object.
+* `ip` - (Required) ip of the External EPG Subnet object.
+* `aggregate` - (Optional) Aggregate Routes of the External EPG Subnet object. Allowed values are "import-rtctrl", "export-rtctrl", "shared-rtctrl" and "none".
+* `annotation` - (Optional) annotation of the External EPG Subnet object.
+* `description` - (Optional) Description of the External EPG Subnet object.
+* `name_alias` - (Optional) name_alias of the External EPG Subnet object.
 * `scope` - (Optional) The list of domain applicable to the capability. Allowed values are "import-rtctrl", "export-rtctrl", "import-security", "shared-security" and "shared-rtctrl". Default is "import-security".
 * `relation_l3ext_rs_subnet_to_profile` - (Optional) Relation to Route Control Profile (class rtctrlProfile). Type: Block.
 	* `tn_rtctrl_profile_name` - **Deprecated** (Optional) Associates the External EPGs with the Route Control Profiles.
 	* `tn_rtctrl_profile_dn` - (Optional) Associates the External EPGs with the Route Control Profiles.
 	* `direction` - (Required) Relation to configure route map for each BGP peer in the inbound and outbound directions.
-* `relation_l3ext_rs_subnet_to_rt_summ` - (Optional) Relation to class rtsumARtSummPol.
+* `relation_l3ext_rs_subnet_to_rt_summ` - (Optional) Relation to a Route Summarization Policy (class rtsumARtSummPol).
 
 ## Importing ##
 
-An existing L3 Extension Subnet can be [imported][docs-import] into this resource via its Dn, via the following command:
+An existing External EPG Subnet can be [imported][docs-import] into this resource via its Dn, via the following command:
 [docs-import]: https://www.terraform.io/docs/import/index.html
 
 ```

@@ -48,9 +48,8 @@ func dataSourceAciL3ExtSubnet() *schema.Resource {
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"tn_rtctrl_profile_name": {
-							Type:       schema.TypeString,
-							Optional:   true,
-							Deprecated: "use tn_rtctrl_profile_dn instead",
+							Type:     schema.TypeString,
+							Optional: true,
 						},
 						"tn_rtctrl_profile_dn": {
 							Type:     schema.TypeString,
