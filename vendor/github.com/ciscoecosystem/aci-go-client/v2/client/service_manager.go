@@ -98,9 +98,9 @@ func CheckForErrors(cont *container.Container, method string, skipLoggingPayload
 					log.Printf("[DEBUG] Exit from error 103 %v", cont)
 				}
 				return nil
-			} else if method == "DELETE" && (errorCode == "1" || errorCode == "107") { // Ignore errors of type "Cannot delete object"
+			} else if method == "DELETE" && (errorCode == "1" || errorCode == "107" || errorCode == "120") { // Ignore errors of type "Cannot delete object"
 				if !skipLoggingPayload {
-					log.Printf("[DEBUG] Exit from error 1 or 107 %v", cont)
+					log.Printf("[DEBUG] Exit from error 1, 107 or 120 %v", cont)
 				}
 				return nil
 			} else {
