@@ -217,7 +217,7 @@ func getRemoteVirtualLogicalInterfaceProfile(client *client.Client, dn string) (
 	l3extVirtualLIfP := models.VirtualLogicalInterfaceProfileFromContainer(l3extVirtualLIfPCont)
 
 	if l3extVirtualLIfP.DistinguishedName == "" {
-		return nil, fmt.Errorf("LogicalInterfaceProfile %s not found", dn)
+		return nil, fmt.Errorf("Logical Interface Profile %s not found", dn)
 	}
 
 	return l3extVirtualLIfP, nil
@@ -314,7 +314,7 @@ func resourceAciVirtualLogicalInterfaceProfileImport(d *schema.ResourceData, m i
 }
 
 func resourceAciVirtualLogicalInterfaceProfileCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	log.Printf("[DEBUG] LogicalInterfaceProfile: Beginning Creation")
+	log.Printf("[DEBUG] Logical Interface Profile: Beginning Creation")
 
 	aciClient := m.(*client.Client)
 
@@ -412,7 +412,7 @@ func resourceAciVirtualLogicalInterfaceProfileCreate(ctx context.Context, d *sch
 }
 
 func resourceAciVirtualLogicalInterfaceProfileUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	log.Printf("[DEBUG] LogicalInterfaceProfile: Beginning Update")
+	log.Printf("[DEBUG] Logical Interface Profile: Beginning Update")
 
 	aciClient := m.(*client.Client)
 
