@@ -12,6 +12,10 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
+const (
+	vlifplagpolattDnFromLogicalnterfaceProfileDn = "%s/rsdynPathAtt-[%s]/vlifplagpolatt"
+)
+
 func resourceAciVirtualLogicalInterfaceProfile() *schema.Resource {
 	return &schema.Resource{
 		CreateContext: resourceAciVirtualLogicalInterfaceProfileCreate,
@@ -163,8 +167,7 @@ func resourceAciVirtualLogicalInterfaceProfile() *schema.Resource {
 						},
 						"floating_address": {
 							Type:     schema.TypeString,
-							Optional: true,
-							Computed: true,
+							Required: true,
 						},
 						"forged_transmit": {
 							Type:     schema.TypeString,
@@ -193,6 +196,11 @@ func resourceAciVirtualLogicalInterfaceProfile() *schema.Resource {
 							}, false),
 							Default: "Disabled",
 						},
+						"enhanced_lag_policy_dn": {
+							Type:     schema.TypeString,
+							Optional: true,
+							Default:  "",
+						},
 					},
 				},
 			},
@@ -209,7 +217,7 @@ func getRemoteVirtualLogicalInterfaceProfile(client *client.Client, dn string) (
 	l3extVirtualLIfP := models.VirtualLogicalInterfaceProfileFromContainer(l3extVirtualLIfPCont)
 
 	if l3extVirtualLIfP.DistinguishedName == "" {
-		return nil, fmt.Errorf("LogicalInterfaceProfile %s not found", l3extVirtualLIfP.DistinguishedName)
+		return nil, fmt.Errorf("Logical Interface Profile %s not found", dn)
 	}
 
 	return l3extVirtualLIfP, nil
@@ -246,6 +254,42 @@ func setVirtualLogicalInterfaceProfileAttributes(l3extVirtualLIfP *models.Virtua
 	return d, nil
 }
 
+func getL3extRsVSwitchEnhancedLagPol(client *client.Client, dn, tDn string) string {
+	l3extVirtualLIfPLagPolAttDn := fmt.Sprintf(vlifplagpolattDnFromLogicalnterfaceProfileDn, dn, tDn)
+	l3extRsVSwitchEnhancedLagPol, err := client.ReadRelationl3extRsVSwitchEnhancedLagPol(l3extVirtualLIfPLagPolAttDn)
+	if err != nil {
+		log.Printf("[DEBUG] Error while reading relation l3extRsVSwitchEnhancedLagPol %v", l3extRsVSwitchEnhancedLagPol)
+		return ""
+	} else {
+		return l3extRsVSwitchEnhancedLagPol.(string)
+	}
+}
+
+func getAndSetL3extRsDynPathAttFromLogicalInterfaceProfile(client *client.Client, dn string, d *schema.ResourceData) (*schema.ResourceData, error) {
+	l3extRsDynPathAttData, err := client.ReadRelationl3extRsDynPathAttFromLogicalInterfaceProfile(dn)
+	l3extRsDynPaths := make([]map[string]string, 0)
+	if err != nil {
+		log.Printf("[DEBUG] Error while reading relation l3extRsDynPathAtt %v", err)
+		d.Set("relation_l3ext_rs_dyn_path_att", l3extRsDynPaths)
+		return nil, err
+	} else {
+		l3extRsDynPathAttMap := l3extRsDynPathAttData.([]map[string]string)
+		for _, l3extRsDynPathObj := range l3extRsDynPathAttMap {
+			obj := make(map[string]string, 0)
+			obj["tdn"] = l3extRsDynPathObj["tDn"]
+			obj["floating_address"] = l3extRsDynPathObj["floatingAddr"]
+			obj["forged_transmit"] = l3extRsDynPathObj["forgedTransmit"]
+			obj["mac_change"] = l3extRsDynPathObj["macChange"]
+			obj["promiscuous_mode"] = l3extRsDynPathObj["promMode"]
+			obj["enhanced_lag_policy_dn"] = getL3extRsVSwitchEnhancedLagPol(client, dn, l3extRsDynPathObj["tDn"])
+			l3extRsDynPaths = append(l3extRsDynPaths, obj)
+		}
+		d.Set("relation_l3ext_rs_dyn_path_att", l3extRsDynPaths)
+		log.Printf("[DEBUG]: l3extRsDynPathAtt: %v finished successfully", l3extRsDynPaths)
+	}
+	return d, nil
+}
+
 func resourceAciVirtualLogicalInterfaceProfileImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
 	log.Printf("[DEBUG] %s: Beginning Import", d.Id())
 	aciClient := m.(*client.Client)
@@ -262,13 +306,15 @@ func resourceAciVirtualLogicalInterfaceProfileImport(d *schema.ResourceData, m i
 		return nil, err
 	}
 
+	getAndSetL3extRsDynPathAttFromLogicalInterfaceProfile(aciClient, dn, d)
+
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
 func resourceAciVirtualLogicalInterfaceProfileCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	log.Printf("[DEBUG] LogicalInterfaceProfile: Beginning Creation")
+	log.Printf("[DEBUG] Logical Interface Profile: Beginning Creation")
 
 	aciClient := m.(*client.Client)
 
@@ -349,6 +395,13 @@ func resourceAciVirtualLogicalInterfaceProfileCreate(ctx context.Context, d *sch
 			if err != nil {
 				return diag.FromErr(err)
 			}
+			if paramMap["enhanced_lag_policy_dn"].(string) != "" {
+				l3extVirtualLIfPLagPolAttDn := fmt.Sprintf(vlifplagpolattDnFromLogicalnterfaceProfileDn, l3extVirtualLIfP.DistinguishedName, paramMap["tdn"].(string))
+				err = aciClient.CreateRelationl3extRsVSwitchEnhancedLagPol(l3extVirtualLIfPLagPolAttDn, paramMap["enhanced_lag_policy_dn"].(string))
+				if err != nil {
+					return diag.FromErr(err)
+				}
+			}
 		}
 	}
 
@@ -359,7 +412,7 @@ func resourceAciVirtualLogicalInterfaceProfileCreate(ctx context.Context, d *sch
 }
 
 func resourceAciVirtualLogicalInterfaceProfileUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	log.Printf("[DEBUG] LogicalInterfaceProfile: Beginning Update")
+	log.Printf("[DEBUG] Logical Interface Profile: Beginning Update")
 
 	aciClient := m.(*client.Client)
 
@@ -452,6 +505,13 @@ func resourceAciVirtualLogicalInterfaceProfileUpdate(ctx context.Context, d *sch
 			if err != nil {
 				return diag.FromErr(err)
 			}
+			if paramMap["enhanced_lag_policy_dn"].(string) != "" {
+				l3extVirtualLIfPLagPolAttDn := fmt.Sprintf(vlifplagpolattDnFromLogicalnterfaceProfileDn, l3extVirtualLIfP.DistinguishedName, paramMap["tdn"].(string))
+				err = aciClient.CreateRelationl3extRsVSwitchEnhancedLagPol(l3extVirtualLIfPLagPolAttDn, paramMap["enhanced_lag_policy_dn"].(string))
+				if err != nil {
+					return diag.FromErr(err)
+				}
+			}
 		}
 
 	}
@@ -481,24 +541,7 @@ func resourceAciVirtualLogicalInterfaceProfileRead(ctx context.Context, d *schem
 		return nil
 	}
 
-	l3extRsDynPathAttData, err := aciClient.ReadRelationl3extRsDynPathAttFromLogicalInterfaceProfile(dn)
-	if err != nil {
-		log.Printf("[DEBUG] Error while reading relation l3extRsDynPathAtt %v", err)
-		setRelationAttribute(d, "relation_l3ext_rs_dyn_path_att", make([]interface{}, 0, 1))
-	} else {
-		l3extRsDynPathAttMap := l3extRsDynPathAttData.([]map[string]string)
-		st := make([]map[string]string, 0)
-		for _, l3extRsDynPathObj := range l3extRsDynPathAttMap {
-			obj := make(map[string]string, 0)
-			obj["tdn"] = l3extRsDynPathObj["tDn"]
-			obj["floating_address"] = l3extRsDynPathObj["floatingAddr"]
-			obj["forged_transmit"] = l3extRsDynPathObj["forgedTransmit"]
-			obj["mac_change"] = l3extRsDynPathObj["macChange"]
-			obj["promiscuous_mode"] = l3extRsDynPathObj["promMode"]
-			st = append(st, obj)
-		}
-		setRelationAttribute(d, "relation_l3ext_rs_dyn_path_att", st)
-	}
+	getAndSetL3extRsDynPathAttFromLogicalInterfaceProfile(aciClient, dn, d)
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 
