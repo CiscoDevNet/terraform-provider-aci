@@ -12,6 +12,10 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
+const (
+	vlifplagpolattDnFromLogicalnterfaceProfileDn = "%s/rsdynPathAtt-[%s]/vlifplagpolatt"
+)
+
 func resourceAciVirtualLogicalInterfaceProfile() *schema.Resource {
 	return &schema.Resource{
 		CreateContext: resourceAciVirtualLogicalInterfaceProfileCreate,
@@ -251,8 +255,7 @@ func setVirtualLogicalInterfaceProfileAttributes(l3extVirtualLIfP *models.Virtua
 }
 
 func getL3extRsVSwitchEnhancedLagPol(client *client.Client, dn, tDn string) string {
-	l3extVirtualLIfPLagPolAttDn := fmt.Sprintf("%s/rsdynPathAtt-[%s]/vlifplagpolatt", dn, tDn)
-	log.Printf("[DEBUG] l3extVirtualLIfPLagPolAttDn %v", l3extVirtualLIfPLagPolAttDn)
+	l3extVirtualLIfPLagPolAttDn := fmt.Sprintf(vlifplagpolattDnFromLogicalnterfaceProfileDn, dn, tDn)
 	l3extRsVSwitchEnhancedLagPol, err := client.ReadRelationl3extRsVSwitchEnhancedLagPol(l3extVirtualLIfPLagPolAttDn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation l3extRsVSwitchEnhancedLagPol %v", l3extRsVSwitchEnhancedLagPol)
@@ -393,7 +396,7 @@ func resourceAciVirtualLogicalInterfaceProfileCreate(ctx context.Context, d *sch
 				return diag.FromErr(err)
 			}
 			if paramMap["enhanced_lag_policy_dn"].(string) != "" {
-				l3extVirtualLIfPLagPolAttDn := fmt.Sprintf("%s/rsdynPathAtt-[%s]/vlifplagpolatt", l3extVirtualLIfP.DistinguishedName, paramMap["tdn"].(string))
+				l3extVirtualLIfPLagPolAttDn := fmt.Sprintf(vlifplagpolattDnFromLogicalnterfaceProfileDn, l3extVirtualLIfP.DistinguishedName, paramMap["tdn"].(string))
 				err = aciClient.CreateRelationl3extRsVSwitchEnhancedLagPol(l3extVirtualLIfPLagPolAttDn, paramMap["enhanced_lag_policy_dn"].(string))
 				if err != nil {
 					return diag.FromErr(err)
@@ -503,7 +506,7 @@ func resourceAciVirtualLogicalInterfaceProfileUpdate(ctx context.Context, d *sch
 				return diag.FromErr(err)
 			}
 			if paramMap["enhanced_lag_policy_dn"].(string) != "" {
-				l3extVirtualLIfPLagPolAttDn := fmt.Sprintf("%s/rsdynPathAtt-[%s]/vlifplagpolatt", l3extVirtualLIfP.DistinguishedName, paramMap["tdn"].(string))
+				l3extVirtualLIfPLagPolAttDn := fmt.Sprintf(vlifplagpolattDnFromLogicalnterfaceProfileDn, l3extVirtualLIfP.DistinguishedName, paramMap["tdn"].(string))
 				err = aciClient.CreateRelationl3extRsVSwitchEnhancedLagPol(l3extVirtualLIfPLagPolAttDn, paramMap["enhanced_lag_policy_dn"].(string))
 				if err != nil {
 					return diag.FromErr(err)
