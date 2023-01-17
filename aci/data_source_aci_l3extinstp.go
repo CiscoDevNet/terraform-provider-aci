@@ -77,18 +77,6 @@ func dataSourceAciExternalNetworkInstanceProfile() *schema.Resource {
 				Set:      schema.HashString,
 				Computed: true,
 			},
-			"relation_l3ext_rs_l3_inst_p_to_dom_p": &schema.Schema{
-				Type:       schema.TypeString,
-				Computed:   true,
-				Optional:   true,
-				Deprecated: "relation_l3ext_rs_l3_inst_p_to_dom_p attribute is no longer available",
-			},
-			"relation_l3ext_rs_inst_p_to_nat_mapping_epg": &schema.Schema{
-				Type:       schema.TypeString,
-				Computed:   true,
-				Optional:   true,
-				Deprecated: "relation_l3ext_rs_inst_p_to_nat_mapping_epg attribute is no longer available",
-			},
 			"relation_fv_rs_cons_if": &schema.Schema{
 				Type:     schema.TypeSet,
 				Elem:     &schema.Schema{Type: schema.TypeString},
@@ -96,23 +84,11 @@ func dataSourceAciExternalNetworkInstanceProfile() *schema.Resource {
 				Set:      schema.HashString,
 				Computed: true,
 			},
-			"relation_fv_rs_cust_qos_pol": &schema.Schema{
-				Type:       schema.TypeString,
-				Computed:   true,
-				Optional:   true,
-				Deprecated: "relation_fv_rs_cust_qos_pol attribute is no longer available",
-			},
 			"relation_l3ext_rs_inst_p_to_profile": &schema.Schema{
 				Type:     schema.TypeSet,
 				Optional: true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
-						"tn_rtctrl_profile_name": {
-							Type:       schema.TypeString,
-							Optional:   true,
-							Computed:   true,
-							Deprecated: "Use tn_rtctrl_profile_dn instead of tn_rtctrl_profile_name",
-						},
 						"tn_rtctrl_profile_dn": {
 							Type:     schema.TypeString,
 							Optional: true,
@@ -139,14 +115,6 @@ func dataSourceAciExternalNetworkInstanceProfile() *schema.Resource {
 				Optional: true,
 				Set:      schema.HashString,
 				Computed: true,
-			},
-			"relation_fv_rs_intra_epg": &schema.Schema{
-				Type:       schema.TypeSet,
-				Elem:       &schema.Schema{Type: schema.TypeString},
-				Optional:   true,
-				Set:        schema.HashString,
-				Deprecated: "relation_fv_rs_intra_epg attribute is no longer available",
-				Computed:   true,
 			},
 		})),
 	}

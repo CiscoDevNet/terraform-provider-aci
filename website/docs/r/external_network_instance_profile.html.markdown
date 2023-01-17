@@ -61,18 +61,18 @@ resource "aci_external_network_instance_profile" "external_epg" {
 * `flood_on_encap` - (Optional) Control at EPG level if the traffic L2 Multicast/Broadcast and Link Local Layer should be flooded only on ENCAP or based on bridg-domain settings. Allowed values are "disabled" and "enabled". Default value is "disabled".
 * `match_t` - (Optional) The provider label match criteria of the External Network Instance Profile object. Allowed values are "All", "AtleastOne", "AtmostOne" and "None". Default is "AtleastOne".
 * `name_alias` - (Optional) Name alias of the External Network Instance Profile object.
-* `pref_gr_memb` - (Optional) Represents parameter used to determine if EPg is part of a group that does not a contract for communication. Allowed values are "include" and "exclude". Default is "exclude".
+* `pref_gr_memb` - (Optional) Represents parameter used to determine if an External EPG is part of a group that does not require a contract for communication. Allowed values are "include" and "exclude". Default is "exclude".
 * `prio` - (Optional) The QoS priority class identifier of the External Network Instance Profile object. Allowed values are "unspecified", "level1", "level2", "level3", "level4", "level5" and "level6". Default is "unspecified".
 * `target_dscp` - (Optional) The target differentiated services code point (DSCP) of the path attached to the layer 3 outside profile. Allowed values are "CS0", "CS1", "AF11", "AF12", "AF13", "CS2", "AF21", "AF22", "AF23", "CS3", "AF31", "AF32", "AF33", "CS4", "AF41", "AF42", "AF43", "CS5", "VA", "EF", "CS6", "CS7" and "unspecified". Default is "unspecified".
-* `relation_fv_rs_sec_inherited` - (Optional) Relation to class fvEPg. Cardinality - N_TO_M. Type - Set of String.
-* `relation_fv_rs_prov` - (Optional) Relation to class vzBrCP. Cardinality - N_TO_M. Type - Set of String.
-* `relation_fv_rs_cons_if` - (Optional) Relation to class vzCPIf. Cardinality - N_TO_M. Type - Set of String.
-* `relation_l3ext_rs_inst_p_to_profile` - (Optional) Relation to class rtctrlProfile. Every direction(export/import) allows only one object. Cardinality - N_TO_M. Type: Block.
+* `relation_fv_rs_sec_inherited` - (Optional) Relation to EPGs to be used as Contract Masters (class fvEPg). Cardinality - N_TO_M. Type - Set of String.
+* `relation_fv_rs_prov` - (Optional) Relation to Provided Contracts (class vzBrCP). Cardinality - N_TO_M. Type - Set of String.
+* `relation_fv_rs_cons_if` - (Optional) Relation to Provided Contract Interfaces (class vzCPIf). Cardinality - N_TO_M. Type - Set of String.
+* `relation_l3ext_rs_inst_p_to_profile` - (Optional) Relation to Route Control Profiles (class rtctrlProfile). Every direction(export/import) allows only one object. Cardinality - N_TO_M. Type: Block.
   * tn_rtctrl_profile_name - (Deprecated) Name of the Route map for import and export route control.
   * tn_rtctrl_profile_dn - (Optional) Distinguished name of the Route map for import and export route control.
   * direction - (Optional) Direction of the Route Control Profile. Allowed values are "export" and "import".
-* `relation_fv_rs_cons` - (Optional) Relation to class vzBrCP. Cardinality - N_TO_M. Type - Set of String.
-* `relation_fv_rs_prot_by` - (Optional) Relation to class vzTaboo. Cardinality - N_TO_M. Type - Set of String.
+* `relation_fv_rs_cons` - (Optional) Relation to Consumed Contracts (class vzBrCP). Cardinality - N_TO_M. Type - Set of String.
+* `relation_fv_rs_prot_by` - (Optional) Relation to Taboo Contracts (vzTaboo). Cardinality - N_TO_M. Type - Set of String.
 
 ## Attribute Reference
 
