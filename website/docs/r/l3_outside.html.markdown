@@ -60,14 +60,13 @@ resource "aci_l3_outside" "foo_l3_outside" {
 * `enforce_rtctrl` - (Optional) Enforce route control type. Allowed values are "import" and "export". Default is "export". Type - String.
 * `name_alias` - (Optional) Name alias of the L3 Outside object.
 * `target_dscp` - (Optional) The target differentiated services code point (DSCP) of the path attached to the L3 Outside object. Allowed values are "CS0", "CS1", "AF11", "AF12", "AF13", "CS2", "AF21", "AF22", "AF23", "CS3", "AF31", "AF32", "AF33", "CS4", "AF41", "AF42", "AF43", "CS5", "VA", "EF", "CS6", "CS7" and "unspecified". Default is "unspecified".
-* `relation_l3ext_rs_dampening_pol` - (Optional) Relation to class rtctrlProfile. Can't configure multiple Dampening Policies for the same address-family. Cardinality - N_TO_M. Type - Block.
+* `relation_l3ext_rs_dampening_pol` - (Optional) Relation to Route Control Profile for Dampening Policies (class rtctrlProfile). Can't configure multiple Dampening Policies for the same address-family. Cardinality - N_TO_M. Type - Block.
   * tn_rtctrl_profile_name - (Deprecated) Name of the Route Control Profile for Dampening Policies.
   * tn_rtctrl_profile_dn - (Optional) Distinguished name of the Route Control Profile for Dampening Policies.
   * af - (Optional) Address Family of the Dampening Policies. Allowed values are "ipv4-ucast" and "ipv6-ucast". Default is "ipv4-ucast".
-* `relation_l3ext_rs_ectx` - (Optional) Relation to class fvCtx. Target VRF object should belong to the parent tenant or be a shared object. Cardinality - N_TO_ONE. Type - String.
-* `relation_l3ext_rs_out_to_bd_public_subnet_holder` - (Optional) Relation to class fvBDPublicSubnetHolder. Create operation not allowed to the MO: l3extRsOutToBDPublicSubnetHolder. Cardinality - N_TO_M. Type - Set of String.
-* `relation_l3ext_rs_interleak_pol` - (Optional) Relation to class rtctrlProfile. Interleak Policy object should belong to the parent tenant or be a shared object. Cardinality - N_TO_ONE. Type - String.
-* `relation_l3ext_rs_l3_dom_att` - (Optional) Relation to class extnwDomP. Cardinality - N_TO_ONE. Type - String.
+* `relation_l3ext_rs_ectx` - (Optional) Relation to VRF (class fvCtx). Target VRF object should belong to the parent tenant or be a shared object. Cardinality - N_TO_ONE. Type - String.
+* `relation_l3ext_rs_interleak_pol` - (Optional) Relation to Route Profile for Interleak (class rtctrlProfile). Interleak Policy object should belong to the parent tenant or be a shared object. Cardinality - N_TO_ONE. Type - String.
+* `relation_l3ext_rs_l3_dom_att` - (Optional) Relation to a L3 Domain (class extnwDomP). Cardinality - N_TO_ONE. Type - String.
 
 ## Attribute Reference
 

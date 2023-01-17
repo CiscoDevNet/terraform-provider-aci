@@ -119,14 +119,6 @@ func resourceAciL3Outside() *schema.Resource {
 				Computed: true,
 				Optional: true,
 			},
-			// Create operation not allowed to the MO: l3extRsOutToBDPublicSubnetHolder
-			"relation_l3ext_rs_out_to_bd_public_subnet_holder": &schema.Schema{
-				Type:     schema.TypeSet,
-				Elem:     &schema.Schema{Type: schema.TypeString},
-				Optional: true,
-				Computed: true,
-				Set:      schema.HashString,
-			},
 			// Relation to Route Profile for Interleak - L3 Out Context Interleak Policy object should belong to the parent tenant or be a shared object.
 			"relation_l3ext_rs_interleak_pol": &schema.Schema{
 				Type:     schema.TypeString,
@@ -232,19 +224,6 @@ func getAndSetReadRelationl3extRsEctxFromL3Outside(client *client.Client, dn str
 	return d, nil
 }
 
-func getAndSetReadRelationl3extRsOutToBDPublicSubnetHolderFromL3Outside(client *client.Client, dn string, d *schema.ResourceData) (*schema.ResourceData, error) {
-	l3extRsOutToBDPublicSubnetHolderData, err := client.ReadRelationl3extRsOutToBDPublicSubnetHolderFromL3Outside(dn)
-	if err != nil {
-		log.Printf("[DEBUG] Error while reading relation l3extRsOutToBDPublicSubnetHolder %v", err)
-		d.Set("relation_l3ext_rs_out_to_bd_public_subnet_holder", make([]interface{}, 0))
-		return nil, err
-	} else {
-		d.Set("relation_l3ext_rs_out_to_bd_public_subnet_holder", toStringList(l3extRsOutToBDPublicSubnetHolderData.(*schema.Set).List()))
-		log.Printf("[DEBUG]: l3extRsOutToBDPublicSubnetHolder: %v reading finished successfully", toStringList(l3extRsOutToBDPublicSubnetHolderData.(*schema.Set).List()))
-	}
-	return d, nil
-}
-
 func getAndSetReadRelationl3extRsInterleakPolFromL3Outside(client *client.Client, dn string, d *schema.ResourceData) (*schema.ResourceData, error) {
 	l3extRsInterleakPolData, err := client.ReadRelationl3extRsInterleakPolFromL3Outside(dn)
 	if err != nil {
@@ -300,9 +279,6 @@ func resourceAciL3OutsideImport(d *schema.ResourceData, m interface{}) ([]*schem
 
 	// Importing l3extRsEctx object
 	getAndSetReadRelationl3extRsEctxFromL3Outside(aciClient, dn, d)
-
-	// Importing l3extRsOutToBDPublicSubnetHolder object
-	getAndSetReadRelationl3extRsOutToBDPublicSubnetHolderFromL3Outside(aciClient, dn, d)
 
 	// Importing l3extRsInterleakPol object
 	getAndSetReadRelationl3extRsInterleakPolFromL3Outside(aciClient, dn, d)
@@ -367,13 +343,6 @@ func resourceAciL3OutsideCreate(ctx context.Context, d *schema.ResourceData, m i
 		checkDns = append(checkDns, relationParam)
 	}
 
-	if relationTol3extRsOutToBDPublicSubnetHolder, ok := d.GetOk("relation_l3ext_rs_out_to_bd_public_subnet_holder"); ok {
-		relationParamList := toStringList(relationTol3extRsOutToBDPublicSubnetHolder.(*schema.Set).List())
-		for _, relationParam := range relationParamList {
-			checkDns = append(checkDns, relationParam)
-		}
-	}
-
 	if relationTol3extRsInterleakPol, ok := d.GetOk("relation_l3ext_rs_interleak_pol"); ok {
 		relationParam := relationTol3extRsInterleakPol.(string)
 		checkDns = append(checkDns, relationParam)
@@ -413,17 +382,6 @@ func resourceAciL3OutsideCreate(ctx context.Context, d *schema.ResourceData, m i
 			return diag.FromErr(err)
 		}
 
-	}
-	if relationTol3extRsOutToBDPublicSubnetHolder, ok := d.GetOk("relation_l3ext_rs_out_to_bd_public_subnet_holder"); ok {
-		relationParamList := toStringList(relationTol3extRsOutToBDPublicSubnetHolder.(*schema.Set).List())
-		for _, relationParam := range relationParamList {
-			err = aciClient.CreateRelationl3extRsOutToBDPublicSubnetHolderFromL3Outside(l3extOut.DistinguishedName, relationParam)
-
-			if err != nil {
-				return diag.FromErr(err)
-			}
-
-		}
 	}
 	if relationTol3extRsInterleakPol, ok := d.GetOk("relation_l3ext_rs_interleak_pol"); ok {
 		relationParam := relationTol3extRsInterleakPol.(string)
@@ -504,17 +462,6 @@ func resourceAciL3OutsideUpdate(ctx context.Context, d *schema.ResourceData, m i
 		checkDns = append(checkDns, newRelParam.(string))
 	}
 
-	if d.HasChange("relation_l3ext_rs_out_to_bd_public_subnet_holder") {
-		oldRel, newRel := d.GetChange("relation_l3ext_rs_out_to_bd_public_subnet_holder")
-		oldRelSet := oldRel.(*schema.Set)
-		newRelSet := newRel.(*schema.Set)
-		relToCreate := toStringList(newRelSet.Difference(oldRelSet).List())
-
-		for _, relDn := range relToCreate {
-			checkDns = append(checkDns, relDn)
-		}
-	}
-
 	if d.HasChange("relation_l3ext_rs_interleak_pol") {
 		_, newRelParam := d.GetChange("relation_l3ext_rs_interleak_pol")
 		checkDns = append(checkDns, newRelParam.(string))
@@ -543,7 +490,6 @@ func resourceAciL3OutsideUpdate(ctx context.Context, d *schema.ResourceData, m i
 			if err != nil {
 				return diag.FromErr(err)
 			}
-
 		}
 		for _, relationParam := range newRelList {
 			paramMap := relationParam.(map[string]interface{})
@@ -553,7 +499,6 @@ func resourceAciL3OutsideUpdate(ctx context.Context, d *schema.ResourceData, m i
 				return diag.FromErr(err)
 			}
 		}
-
 	}
 	if d.HasChange("relation_l3ext_rs_ectx") {
 		_, newRelParam := d.GetChange("relation_l3ext_rs_ectx")
@@ -562,22 +507,6 @@ func resourceAciL3OutsideUpdate(ctx context.Context, d *schema.ResourceData, m i
 		if err != nil {
 			return diag.FromErr(err)
 		}
-
-	}
-	if d.HasChange("relation_l3ext_rs_out_to_bd_public_subnet_holder") {
-		oldRel, newRel := d.GetChange("relation_l3ext_rs_out_to_bd_public_subnet_holder")
-		oldRelSet := oldRel.(*schema.Set)
-		newRelSet := newRel.(*schema.Set)
-		relToCreate := toStringList(newRelSet.Difference(oldRelSet).List())
-
-		for _, relDn := range relToCreate {
-			err = aciClient.CreateRelationl3extRsOutToBDPublicSubnetHolderFromL3Outside(l3extOut.DistinguishedName, relDn)
-			if err != nil {
-				return diag.FromErr(err)
-			}
-
-		}
-
 	}
 	if d.HasChange("relation_l3ext_rs_interleak_pol") {
 		_, newRelParam := d.GetChange("relation_l3ext_rs_interleak_pol")
@@ -590,7 +519,6 @@ func resourceAciL3OutsideUpdate(ctx context.Context, d *schema.ResourceData, m i
 		if err != nil {
 			return diag.FromErr(err)
 		}
-
 	}
 	if d.HasChange("relation_l3ext_rs_l3_dom_att") {
 		_, newRelParam := d.GetChange("relation_l3ext_rs_l3_dom_att")
@@ -602,7 +530,6 @@ func resourceAciL3OutsideUpdate(ctx context.Context, d *schema.ResourceData, m i
 		if err != nil {
 			return diag.FromErr(err)
 		}
-
 	}
 
 	d.SetId(l3extOut.DistinguishedName)
@@ -635,9 +562,6 @@ func resourceAciL3OutsideRead(ctx context.Context, d *schema.ResourceData, m int
 
 	// Importing l3extRsEctx object
 	getAndSetReadRelationl3extRsEctxFromL3Outside(aciClient, dn, d)
-
-	// Importing l3extRsOutToBDPublicSubnetHolder object
-	getAndSetReadRelationl3extRsOutToBDPublicSubnetHolderFromL3Outside(aciClient, dn, d)
 
 	// Importing l3extRsInterleakPol object
 	getAndSetReadRelationl3extRsInterleakPolFromL3Outside(aciClient, dn, d)

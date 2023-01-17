@@ -23,8 +23,8 @@ Data source for ACI L3 Outside
 
 ```hcl
 data "aci_l3_outside" "foo_l3_outside" {
-  tenant_dn      = aci_tenant.terraform_tenant.id
-  name           = "foo_l3_outside"
+  tenant_dn = aci_tenant.terraform_tenant.id
+  name      = "foo_l3_outside"
 }
 ```
 
@@ -40,11 +40,10 @@ data "aci_l3_outside" "foo_l3_outside" {
 * `enforce_rtctrl` - (Optional) Enforce route control type of the L3 Outside object. 
 * `name_alias` - (Optional) Name alias of the L3 Outside object.
 * `target_dscp` - (Optional) The target differentiated services code point (DSCP) of the path attached to the L3 Outside object.
-* `relation_l3ext_rs_dampening_pol` - (Optional) Relation to class rtctrlProfile. Cardinality - N_TO_M. Type - Block.
+* `relation_l3ext_rs_dampening_pol` - (Optional) Relation to Route Control Profile for Dampening Policies (class rtctrlProfile). Cardinality - N_TO_M. Type - Block.
   * tn_rtctrl_profile_name - (Deprecated) Name of the Route Control Profile for Dampening Policies.
   * tn_rtctrl_profile_dn - (Optional) Distinguished name of the Route Control Profile for Dampening Policies.
   * af - (Optional) Address Family of the Dampening Policies.
-* `relation_l3ext_rs_ectx` - (Optional) Relation to class fvCtx.
-* `relation_l3ext_rs_out_to_bd_public_subnet_holder` - (Optional) Relation to class fvBDPublicSubnetHolder.
-* `relation_l3ext_rs_interleak_pol` - (Optional) Relation to class rtctrlProfile.
-* `relation_l3ext_rs_l3_dom_att` - (Optional) Relation to class extnwDomP.
+* `relation_l3ext_rs_ectx` - (Optional) Relation to VRF (class fvCtx).
+* `relation_l3ext_rs_interleak_pol` - (Optional) Relation to Route Profile for Interleak (class rtctrlProfile).
+* `relation_l3ext_rs_l3_dom_att` - (Optional) Relation to a L3 Domain (class extnwDomP).

@@ -47,12 +47,6 @@ func dataSourceAciL3Outside() *schema.Resource {
 				Optional: true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
-						"tn_rtctrl_profile_name": {
-							Type:       schema.TypeString,
-							Optional:   true,
-							Computed:   true,
-							Deprecated: "Use tn_rtctrl_profile_dn instead of tn_rtctrl_profile_name",
-						},
 						"tn_rtctrl_profile_dn": {
 							Type:     schema.TypeString,
 							Optional: true,
@@ -70,12 +64,6 @@ func dataSourceAciL3Outside() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 				Optional: true,
-			},
-			"relation_l3ext_rs_out_to_bd_public_subnet_holder": &schema.Schema{
-				Type:     schema.TypeSet,
-				Elem:     &schema.Schema{Type: schema.TypeString},
-				Optional: true,
-				Set:      schema.HashString,
 			},
 			"relation_l3ext_rs_interleak_pol": &schema.Schema{
 				Type:     schema.TypeString,
@@ -117,9 +105,6 @@ func dataSourceAciL3OutsideRead(ctx context.Context, d *schema.ResourceData, m i
 
 	// Importing l3extRsEctx object
 	getAndSetReadRelationl3extRsEctxFromL3Outside(aciClient, dn, d)
-
-	// Importing l3extRsOutToBDPublicSubnetHolder object
-	getAndSetReadRelationl3extRsOutToBDPublicSubnetHolderFromL3Outside(aciClient, dn, d)
 
 	// Importing l3extRsInterleakPol object
 	getAndSetReadRelationl3extRsInterleakPolFromL3Outside(aciClient, dn, d)
