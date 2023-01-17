@@ -29,7 +29,7 @@ func resourceAciL1L2RedirectDestTraffic() *schema.Resource {
 				Required: true,
 				ForceNew: true,
 			},
-			"dest_name": &schema.Schema{
+			"destination_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
 				ForceNew: true,
@@ -84,7 +84,7 @@ func setL1L2RedirectDestTrafficAttributes(vnsL1L2RedirectDest *models.L1L2Redire
 	}
 	d.Set("policy_based_redirect_dn", GetParentDn(vnsL1L2RedirectDest.DistinguishedName, fmt.Sprintf("/%s", fmt.Sprintf(models.RnvnsL1L2RedirectDest, vnsL1L2RedirectDestMap["destName"]))))
 	d.Set("annotation", vnsL1L2RedirectDestMap["annotation"])
-	d.Set("dest_name", vnsL1L2RedirectDestMap["destName"])
+	d.Set("destination_name", vnsL1L2RedirectDestMap["destName"])
 	d.Set("mac", vnsL1L2RedirectDestMap["mac"])
 	d.Set("name", vnsL1L2RedirectDestMap["name"])
 	d.Set("pod_id", vnsL1L2RedirectDestMap["podId"])
@@ -145,7 +145,6 @@ func resourceAciL1L2RedirectDestTrafficCreate(ctx context.Context, d *schema.Res
 	log.Printf("[DEBUG] L1L2RedirectDestTraffic: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
-	destName := d.Get("dest_name").(string)
 	policyBasedRedirectDn := d.Get("policy_based_redirect_dn").(string)
 
 	vnsL1L2RedirectDestAttr := models.L1L2RedirectDestTrafficAttributes{}
@@ -161,7 +160,7 @@ func resourceAciL1L2RedirectDestTrafficCreate(ctx context.Context, d *schema.Res
 		vnsL1L2RedirectDestAttr.Annotation = "{}"
 	}
 
-	if DestName, ok := d.GetOk("dest_name"); ok {
+	if DestName, ok := d.GetOk("destination_name"); ok {
 		vnsL1L2RedirectDestAttr.DestName = DestName.(string)
 	}
 
@@ -176,7 +175,7 @@ func resourceAciL1L2RedirectDestTrafficCreate(ctx context.Context, d *schema.Res
 	if PodId, ok := d.GetOk("pod_id"); ok {
 		vnsL1L2RedirectDestAttr.PodId = PodId.(string)
 	}
-	vnsL1L2RedirectDest := models.NewL1L2RedirectDestTraffic(fmt.Sprintf(models.RnvnsL1L2RedirectDest, destName), policyBasedRedirectDn, desc, nameAlias, vnsL1L2RedirectDestAttr)
+	vnsL1L2RedirectDest := models.NewL1L2RedirectDestTraffic(fmt.Sprintf(models.RnvnsL1L2RedirectDest, vnsL1L2RedirectDestAttr.DestName), policyBasedRedirectDn, desc, nameAlias, vnsL1L2RedirectDestAttr)
 
 	err := aciClient.Save(vnsL1L2RedirectDest)
 	if err != nil {
@@ -232,7 +231,6 @@ func resourceAciL1L2RedirectDestTrafficUpdate(ctx context.Context, d *schema.Res
 	log.Printf("[DEBUG] L1L2RedirectDestTraffic: Beginning Update")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
-	destName := d.Get("dest_name").(string)
 	policyBasedRedirectDn := d.Get("policy_based_redirect_dn").(string)
 
 	vnsL1L2RedirectDestAttr := models.L1L2RedirectDestTrafficAttributes{}
@@ -248,7 +246,7 @@ func resourceAciL1L2RedirectDestTrafficUpdate(ctx context.Context, d *schema.Res
 		vnsL1L2RedirectDestAttr.Annotation = "{}"
 	}
 
-	if DestName, ok := d.GetOk("dest_name"); ok {
+	if DestName, ok := d.GetOk("destination_name"); ok {
 		vnsL1L2RedirectDestAttr.DestName = DestName.(string)
 	}
 
@@ -263,7 +261,7 @@ func resourceAciL1L2RedirectDestTrafficUpdate(ctx context.Context, d *schema.Res
 	if PodId, ok := d.GetOk("pod_id"); ok {
 		vnsL1L2RedirectDestAttr.PodId = PodId.(string)
 	}
-	vnsL1L2RedirectDest := models.NewL1L2RedirectDestTraffic(fmt.Sprintf(models.RnvnsL1L2RedirectDest, destName), policyBasedRedirectDn, desc, nameAlias, vnsL1L2RedirectDestAttr)
+	vnsL1L2RedirectDest := models.NewL1L2RedirectDestTraffic(fmt.Sprintf(models.RnvnsL1L2RedirectDest, vnsL1L2RedirectDestAttr.DestName), policyBasedRedirectDn, desc, nameAlias, vnsL1L2RedirectDestAttr)
 
 	err := aciClient.Save(vnsL1L2RedirectDest)
 	if err != nil {

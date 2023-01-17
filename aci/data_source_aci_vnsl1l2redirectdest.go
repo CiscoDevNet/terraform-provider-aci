@@ -19,7 +19,7 @@ func dataSourceAciL1L2RedirectDestTraffic() *schema.Resource {
 				Type:     schema.TypeString,
 				Required: true,
 			},
-			"dest_name": &schema.Schema{
+			"destination_name": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
 			},
@@ -56,7 +56,7 @@ func dataSourceAciL1L2RedirectDestTraffic() *schema.Resource {
 
 func dataSourceAciL1L2RedirectDestTrafficRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	aciClient := m.(*client.Client)
-	destName := d.Get("dest_name").(string)
+	destName := d.Get("destination_name").(string)
 	policyBasedRedirectDn := d.Get("policy_based_redirect_dn").(string)
 	rn := fmt.Sprintf(models.RnvnsL1L2RedirectDest, destName)
 	dn := fmt.Sprintf("%s/%s", policyBasedRedirectDn, rn)

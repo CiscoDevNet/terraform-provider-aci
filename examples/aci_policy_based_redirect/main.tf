@@ -86,7 +86,7 @@ resource "aci_service_redirect_policy" "l4_l7_pbr_without_ip_sla_l1_l2_dst" {
 
 resource "aci_pbr_l1_l2_destination" "l1_l2_destination" {
   policy_based_redirect_dn                    = aci_service_redirect_policy.l4_l7_pbr_without_ip_sla_l1_l2_dst.id
-  dest_name                                   = "l1_l2_destination"
+  destination_name                            = "l1_l2_destination"
   relation_vns_rs_to_c_if                     = aci_concrete_interface.concrete_interface.id
   relation_vns_rs_l1_l2_redirect_health_group = aci_l4_l7_redirect_health_group.l4_l7_health_group.id
 }
@@ -106,7 +106,7 @@ resource "aci_destination_of_redirected_traffic" "pbr_backup_l3_destinations" {
 # Service Redirect Backup Policy(L4-L7 PBR-Backup) - L1/L2 Destination
 resource "aci_pbr_l1_l2_destination" "pbr_backup_l1_l2_destinations" {
   policy_based_redirect_dn                    = aci_service_redirect_backup_policy.pbr_backup.id
-  dest_name                                   = "tf_l1_l2_dest"
+  destination_name                            = "tf_l1_l2_dest"
   name                                        = "tf_test"
   relation_vns_rs_to_c_if                     = aci_concrete_interface.concrete_interface.id
   relation_vns_rs_l1_l2_redirect_health_group = aci_l4_l7_redirect_health_group.l4_l7_health_group.id

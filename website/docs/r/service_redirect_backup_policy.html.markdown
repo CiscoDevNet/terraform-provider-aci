@@ -40,7 +40,7 @@ resource "aci_service_redirect_backup_policy" "pbr_backup_policy" {
 
 ## Importing ##
 
-An existing PBRBackupPolicy can be [imported][docs-import] into this resource via its Dn, via the following command:
+An existing PBR Backup Policy can be [imported][docs-import] into this resource via its Dn, via the following command:
 [docs-import]: https://www.terraform.io/docs/import/index.html
 
 
