@@ -352,3 +352,12 @@ func getOldObjectsNotInNew(keyName string, oldSet, newSet *schema.Set) (oldObjec
 	}
 	return oldObjects
 }
+
+// Return the name of the object based on the given Distinguished Name
+func getTargetObjectName(paramMap map[string]interface{}, targetDn, targetName string) string {
+	if paramMap[targetDn] != "" {
+		return GetMOName(paramMap[targetDn].(string))
+	} else {
+		return paramMap[targetName].(string)
+	}
+}

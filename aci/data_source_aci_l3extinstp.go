@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
+	"github.com/ciscoecosystem/aci-go-client/v2/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -16,7 +17,7 @@ func dataSourceAciExternalNetworkInstanceProfile() *schema.Resource {
 
 		SchemaVersion: 1,
 
-		Schema: AppendBaseAttrSchema(map[string]*schema.Schema{
+		Schema: AppendBaseAttrSchema(AppendNameAliasAttrSchema(map[string]*schema.Schema{
 			"l3_outside_dn": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
@@ -45,12 +46,6 @@ func dataSourceAciExternalNetworkInstanceProfile() *schema.Resource {
 				Computed: true,
 			},
 
-			"name_alias": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
 			"pref_gr_memb": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -68,7 +63,60 @@ func dataSourceAciExternalNetworkInstanceProfile() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
-		}),
+			"relation_fv_rs_sec_inherited": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Set:      schema.HashString,
+				Computed: true,
+			},
+			"relation_fv_rs_prov": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Set:      schema.HashString,
+				Computed: true,
+			},
+			"relation_fv_rs_cons_if": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Set:      schema.HashString,
+				Computed: true,
+			},
+			"relation_l3ext_rs_inst_p_to_profile": &schema.Schema{
+				Type:     schema.TypeSet,
+				Optional: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"tn_rtctrl_profile_dn": {
+							Type:     schema.TypeString,
+							Optional: true,
+							Computed: true,
+						},
+						"direction": {
+							Type:     schema.TypeString,
+							Optional: true,
+							Computed: true,
+						},
+					},
+				},
+			},
+			"relation_fv_rs_cons": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Set:      schema.HashString,
+				Computed: true,
+			},
+			"relation_fv_rs_prot_by": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Set:      schema.HashString,
+				Computed: true,
+			},
+		})),
 	}
 }
 
@@ -77,7 +125,7 @@ func dataSourceAciExternalNetworkInstanceProfileRead(ctx context.Context, d *sch
 
 	name := d.Get("name").(string)
 
-	rn := fmt.Sprintf("instP-%s", name)
+	rn := fmt.Sprintf(models.Rnl3extinstp, name)
 	L3OutsideDn := d.Get("l3_outside_dn").(string)
 
 	dn := fmt.Sprintf("%s/%s", L3OutsideDn, rn)
@@ -92,5 +140,24 @@ func dataSourceAciExternalNetworkInstanceProfileRead(ctx context.Context, d *sch
 	if err != nil {
 		return diag.FromErr(err)
 	}
+
+	// Importing l3extRsInstPToProfile object
+	getAndSetReadRelationl3extRsInstPToProfileFromExternalNetworkInstanceProfile(aciClient, dn, d)
+
+	// Importing fvRsSecInherited object
+	getAndSetReadRelationfvRsSecInheritedFromExternalNetworkInstanceProfile(aciClient, dn, d)
+
+	// Importing fvRsProv object
+	getAndSetReadRelationfvRsProvFromExternalNetworkInstanceProfile(aciClient, dn, d)
+
+	// Importing fvRsConsIf object
+	getAndSetReadRelationfvRsConsIfFromExternalNetworkInstanceProfile(aciClient, dn, d)
+
+	// Importing fvRsCons object
+	getAndSetReadRelationfvRsConsFromExternalNetworkInstanceProfile(aciClient, dn, d)
+
+	// Importing fvRsProtBy object
+	getAndSetReadRelationfvRsProtByFromExternalNetworkInstanceProfile(aciClient, dn, d)
+
 	return nil
 }
