@@ -101,7 +101,7 @@ func getRemoteTemplateforVPNNetwork(client *client.Client, dn string) (*models.C
 	}
 	cloudtemplateVpnNetwork := models.CloudTemplateforVPNNetworkFromContainer(cloudtemplateVpnNetworkCont)
 	if cloudtemplateVpnNetwork.DistinguishedName == "" {
-		return nil, fmt.Errorf("TemplateforVPNNetwork %s not found", cloudtemplateVpnNetwork.DistinguishedName)
+		return nil, fmt.Errorf("Template for VPN Network %s not found", dn)
 	}
 	return cloudtemplateVpnNetwork, nil
 }
@@ -218,10 +218,6 @@ func resourceAciCloudTemplateforVPNNetworkImport(d *schema.ResourceData, m inter
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func TypeOf(cloudIpSecTunnelAttMap map[string]interface{}) {
-	panic("unimplemented")
-}
-
 func resourceAciCloudTemplateforVPNNetworkCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] TemplateforVPNNetwork: Beginning Creation")
 	aciClient := m.(*client.Client)
@@ -265,7 +261,7 @@ func resourceAciCloudTemplateforVPNNetworkCreate(ctx context.Context, d *schema.
 			ipSecTunnels := val.(map[string]interface{})
 
 			cloudtemplateIpSecTunnelAttr := models.CloudTemplateforIpSectunnelAttributes{}
-			cloudtemplateIpSecTunnelAttr.Annotation = "{}"
+			cloudtemplateIpSecTunnelAttr.Annotation = cloudtemplateVpnNetworkAttr.Annotation
 			cloudtemplateIpSecTunnelAttr.IkeVersion = ipSecTunnels["ike_version"].(string)
 			cloudtemplateIpSecTunnelAttr.Poolname = ipSecTunnels["subnet_pool_name"].(string)
 			cloudtemplateIpSecTunnelAttr.PreSharedKey = ipSecTunnels["pre_shared_key"].(string)
@@ -361,7 +357,7 @@ func resourceAciCloudTemplateforVPNNetworkUpdate(ctx context.Context, d *schema.
 			ipSecTunnels := val.(map[string]interface{})
 
 			cloudtemplateIpSecTunnelAttr := models.CloudTemplateforIpSectunnelAttributes{}
-			cloudtemplateIpSecTunnelAttr.Annotation = "{}"
+			cloudtemplateIpSecTunnelAttr.Annotation = cloudtemplateVpnNetworkAttr.Annotation
 			cloudtemplateIpSecTunnelAttr.IkeVersion = ipSecTunnels["ike_version"].(string)
 			cloudtemplateIpSecTunnelAttr.Poolname = ipSecTunnels["subnet_pool_name"].(string)
 			cloudtemplateIpSecTunnelAttr.PreSharedKey = ipSecTunnels["pre_shared_key"].(string)

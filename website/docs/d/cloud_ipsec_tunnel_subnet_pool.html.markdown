@@ -28,15 +28,15 @@ Data source for the ACI Cloud Subnet Pool for IpSec Tunnels
 
 ```hcl
 data "aci_cloud_ipsec_tunnel_subnet_pool" "example" {
-  subnet_pool_name = "example"
-	subnet_pool = "160.254.10.0/16"
+  name = "example"
+	subnet_pool      = "160.254.10.0/16"
 }
 ```
 
 ## Argument Reference ##
 
-* `subnet_pool` - (Required) Subnetpool of the Subnet Pool for IpSec Tunnels object.
+* `subnet_pool` - (Required) Subnet of the Subnet Pool for IpSec Tunnels object.
 
 ## Attribute Reference ##
 * `annotation` - (Optional) Annotation of the Subnet Pool for IpSec Tunnels object.
-* `subnet_pool_name` - (Required) Subnet Pool Name of the Subnet Pool for IpSec Tunnels object.
+* `name` - (Required) Subnet Pool Name of the Subnet Pool for IpSec Tunnels object.

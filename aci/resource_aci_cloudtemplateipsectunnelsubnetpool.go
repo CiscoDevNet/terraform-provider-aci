@@ -24,7 +24,7 @@ func resourceAciSubnetPoolforIpSecTunnels() *schema.Resource {
 
 		SchemaVersion: 1,
 		Schema: AppendBaseAttrSchema(map[string]*schema.Schema{
-			"subnet_pool_name": {
+			"name": {
 				Type:     schema.TypeString,
 				Required: true,
 				ForceNew: true,
@@ -45,7 +45,7 @@ func getRemoteSubnetPoolforIpSecTunnels(client *client.Client, dn string) (*mode
 	}
 	cloudtemplateIpSecTunnelSubnetPool := models.SubnetPoolforIpSecTunnelsFromContainer(cloudtemplateIpSecTunnelSubnetPoolCont)
 	if cloudtemplateIpSecTunnelSubnetPool.DistinguishedName == "" {
-		return nil, fmt.Errorf("SubnetPoolforIpSecTunnels %s not found", cloudtemplateIpSecTunnelSubnetPool.DistinguishedName)
+		return nil, fmt.Errorf("Subnet Pool for IpSec Tunnels %s not found", dn)
 	}
 	return cloudtemplateIpSecTunnelSubnetPool, nil
 }
@@ -64,7 +64,7 @@ func setSubnetPoolforIpSecTunnelsAttributes(cloudtemplateIpSecTunnelSubnetPool *
 		d.Set("infra_network_template_dn", GetParentDn(dn, "/"+fmt.Sprintf(models.RncloudtemplateIpSecTunnelSubnetPool, cloudtemplateIpSecTunnelSubnetPoolMap["subnetpool"])))
 	}
 	d.Set("annotation", cloudtemplateIpSecTunnelSubnetPoolMap["annotation"])
-	d.Set("subnet_pool_name", cloudtemplateIpSecTunnelSubnetPoolMap["poolname"])
+	d.Set("name", cloudtemplateIpSecTunnelSubnetPoolMap["poolname"])
 	d.Set("subnet_pool", cloudtemplateIpSecTunnelSubnetPoolMap["subnetpool"])
 	return d, nil
 }
@@ -88,7 +88,6 @@ func resourceAciSubnetPoolforIpSecTunnelsImport(d *schema.ResourceData, m interf
 func resourceAciSubnetPoolforIpSecTunnelsCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] SubnetPoolforIpSecTunnels: Beginning Creation")
 	aciClient := m.(*client.Client)
-	CloudInfraNetworkTemplateDn := "uni/tn-infra/infranetwork-default"
 
 	cloudtemplateIpSecTunnelSubnetPoolAttr := models.SubnetPoolforIpSecTunnelsAttributes{}
 
@@ -98,14 +97,14 @@ func resourceAciSubnetPoolforIpSecTunnelsCreate(ctx context.Context, d *schema.R
 		cloudtemplateIpSecTunnelSubnetPoolAttr.Annotation = "{}"
 	}
 
-	if Poolname, ok := d.GetOk("subnet_pool_name"); ok {
+	if Poolname, ok := d.GetOk("name"); ok {
 		cloudtemplateIpSecTunnelSubnetPoolAttr.Poolname = Poolname.(string)
 	}
 
 	if Subnetpool, ok := d.GetOk("subnet_pool"); ok {
 		cloudtemplateIpSecTunnelSubnetPoolAttr.Subnetpool = Subnetpool.(string)
 	}
-	cloudtemplateIpSecTunnelSubnetPool := models.NewSubnetPoolforIpSecTunnels(fmt.Sprintf(models.RncloudtemplateIpSecTunnelSubnetPool, cloudtemplateIpSecTunnelSubnetPoolAttr.Subnetpool), CloudInfraNetworkTemplateDn, cloudtemplateIpSecTunnelSubnetPoolAttr)
+	cloudtemplateIpSecTunnelSubnetPool := models.NewSubnetPoolforIpSecTunnels(fmt.Sprintf(models.RncloudtemplateIpSecTunnelSubnetPool, cloudtemplateIpSecTunnelSubnetPoolAttr.Subnetpool), models.CloudInfraNetworkDefaultTemplateDn, cloudtemplateIpSecTunnelSubnetPoolAttr)
 
 	err := aciClient.Save(cloudtemplateIpSecTunnelSubnetPool)
 	if err != nil {
@@ -120,7 +119,6 @@ func resourceAciSubnetPoolforIpSecTunnelsCreate(ctx context.Context, d *schema.R
 func resourceAciSubnetPoolforIpSecTunnelsUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] SubnetPoolforIpSecTunnels: Beginning Update")
 	aciClient := m.(*client.Client)
-	CloudInfraNetworkTemplateDn := "uni/tn-infra/infranetwork-default"
 
 	cloudtemplateIpSecTunnelSubnetPoolAttr := models.SubnetPoolforIpSecTunnelsAttributes{}
 
@@ -130,14 +128,14 @@ func resourceAciSubnetPoolforIpSecTunnelsUpdate(ctx context.Context, d *schema.R
 		cloudtemplateIpSecTunnelSubnetPoolAttr.Annotation = "{}"
 	}
 
-	if Poolname, ok := d.GetOk("subnet_pool_name"); ok {
+	if Poolname, ok := d.GetOk("name"); ok {
 		cloudtemplateIpSecTunnelSubnetPoolAttr.Poolname = Poolname.(string)
 	}
 
 	if Subnetpool, ok := d.GetOk("subnet_pool"); ok {
 		cloudtemplateIpSecTunnelSubnetPoolAttr.Subnetpool = Subnetpool.(string)
 	}
-	cloudtemplateIpSecTunnelSubnetPool := models.NewSubnetPoolforIpSecTunnels(fmt.Sprintf("ipsecsubnetpool-[%s]", cloudtemplateIpSecTunnelSubnetPoolAttr.Subnetpool), CloudInfraNetworkTemplateDn, cloudtemplateIpSecTunnelSubnetPoolAttr)
+	cloudtemplateIpSecTunnelSubnetPool := models.NewSubnetPoolforIpSecTunnels(fmt.Sprintf("ipsecsubnetpool-[%s]", cloudtemplateIpSecTunnelSubnetPoolAttr.Subnetpool), models.CloudInfraNetworkDefaultTemplateDn, cloudtemplateIpSecTunnelSubnetPoolAttr)
 
 	cloudtemplateIpSecTunnelSubnetPool.Status = "modified"
 

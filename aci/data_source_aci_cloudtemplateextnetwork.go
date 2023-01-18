@@ -65,9 +65,8 @@ func dataSourceAciCloudTemplateforExternalNetwork() *schema.Resource {
 func dataSourceAciCloudTemplateforExternalNetworkRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	aciClient := m.(*client.Client)
 	name := d.Get("name").(string)
-	CloudInfraNetworkTemplateDn := "uni/tn-infra/infranetwork-default"
 	rn := fmt.Sprintf(models.RncloudtemplateExtNetwork, name)
-	dn := fmt.Sprintf("%s/%s", CloudInfraNetworkTemplateDn, rn)
+	dn := fmt.Sprintf("%s/%s", models.CloudInfraNetworkDefaultTemplateDn, rn)
 	log.Printf("[DEBUG] %s: Data Source - Beginning Read", dn)
 
 	cloudtemplateExtNetwork, err := getRemoteCloudTemplateforExternalNetwork(aciClient, dn)
@@ -88,7 +87,7 @@ func dataSourceAciCloudTemplateforExternalNetworkRead(ctx context.Context, d *sc
 		log.Printf("[DEBUG] : Data Source - Error while reading cloud Regions attributes %v", err)
 	}
 
-	RegionsList := make([]string, 0, 1)
+	regionsList := make([]string, 0, 1)
 	for _, regionValue := range regionsData {
 
 		regionsMap, err := setCloudProviderandRegionNamesAttributes(regionValue, make(map[string]string))
@@ -96,14 +95,14 @@ func dataSourceAciCloudTemplateforExternalNetworkRead(ctx context.Context, d *sc
 			d.SetId("")
 			return nil
 		}
-		RegionsList = append(RegionsList, regionsMap["region"])
+		regionsList = append(regionsList, regionsMap["region"])
 		d.Set("cloud_vendor", regionsMap["cloud_vendor"])
 		if regionsMap["cloud_vendor"] != "aws" {
 			d.Set("router_type", "")
 		}
 	}
 	log.Printf("[DEBUG] : Data Source -  Read cloud regions finished successfully")
-	d.Set("regions", RegionsList)
+	d.Set("regions", regionsList)
 
 	log.Printf("[DEBUG] %s: Data Source - Read finished successfully", dn)
 	return nil

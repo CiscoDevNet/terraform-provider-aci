@@ -23,7 +23,7 @@ resource "aci_vrf" "vrf" {
 }
 
 resource "aci_cloud_ipsec_tunnel_subnet_pool" "ipsec_tunnel_subnet_pool" {
-  subnet_pool_name = "cloud_pool"
+  name = "cloud_pool"
   subnet_pool      = "169.254.0.0/16"
 }
 

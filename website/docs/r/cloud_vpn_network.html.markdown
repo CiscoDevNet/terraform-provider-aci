@@ -4,12 +4,12 @@ layout: "aci"
 page_title: "ACI: aci_cloud_external_network_vpn_network"
 sidebar_current: "docs-aci-resource-aci_cloud_external_network_vpn_network"
 description: |-
-  Manages ACI Template for VPN Network
+  Manages ACI Cloud Template for VPN Network
 ---
 
 # aci_cloud_external_network_vpn_network #
 
-Manages ACI Template for VPN Network
+Manages ACI Cloud Template for VPN Network
 <b>Note: This resource is supported in Cloud APIC version > 25.0 only.</b>
 
 ## API Information ##
@@ -45,8 +45,8 @@ resource "aci_cloud_external_network_vpn_network" "example" {
 * `aci_cloud_external_network_dn` - (Required) Distinguished name of the parent TemplateforExternalNetwork object.
 * `name` - (Required) Name of the Cloud VPN Network object.
 * `remote_site_id` - (Optional) Remote Site ID. Allowed range is 0-1000 and default value is "0".
-* `remote_site_name` - (Optional) Remote Site Name.
-* `ipsec_tunnel` - (Optional) IPSec tunnel destination. Type: Block.
+* `remote_site_name` - (Optional) Name of the Remote Site.
+* `ipsec_tunnel` - (Optional) IPSec tunnel destination (cloudtemplateIpSecTunnelSourceInterface class). Type: Block.
     * `ike_version` - (Required) IKE version. Allowed values are "ikev1", "ikev2", and default value is "ikev2".
     * `public_ip_address` - (Required) Peer address of the Cloud IpSec tunnel object.
     * `subnet_pool_name` - (Required) Subnet Pool Name.

@@ -26,15 +26,16 @@ Manages ACI Cloud Subnet Pool for IpSec Tunnels
 
 ```hcl
 resource "aci_cloud_ipsec_tunnel_subnet_pool" "example" {
-  subnet_pool  = "160.254.10.0/16"
+  name = "subent_pool_1"
+  subnet_pool      = "160.254.10.0/16"
 }
-```
+``` 
 
 ## Argument Reference ##
 
+* `name` - (Required) Subnet Pool Name of the Subnet Pool for IpSec Tunnels object.
 * `subnet_pool` - (Required) Subnetpool address of the Subnet Pool for IpSec Tunnels object.
 * `annotation` - (Optional) Annotation of the Subnet Pool for IpSec Tunnels object.
-* `subnet_pool_name` - (Required) Subnet Pool Name of the Subnet Pool for IpSec Tunnels object.
 
 
 ## Importing ##

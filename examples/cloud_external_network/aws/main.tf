@@ -23,40 +23,8 @@ resource "aci_vrf" "vrf" {
 }
 
 resource "aci_cloud_ipsec_tunnel_subnet_pool" "ipsec_tunnel_subnet_pool" {
-  subnet_pool_name = "cloud_pool"
+  name = "cloud_pool"
   subnet_pool      = "169.254.0.0/16"
-}
-
-
-# AWS Cloud
-# all_regions is set to "yes" only in AWS Cloud
-# 
-# # router_type = "c8kv"
-resource "aci_cloud_external_network" "external_network_aws_c8kv" {
-  name         = "cloud_external_network"
-  vrf_dn       = aci_vrf.vrf.id
-  all_regions  = "yes"
-  cloud_vendor = "aws"
-  router_type  = "c8kv"
-}
-
-resource "aci_cloud_external_network_vpn_network" "vpn_network_c8kv" {
-  aci_cloud_external_network_dn = aci_cloud_external_network.external_network_aws_c8kv.id
-  name                          = "cloud_vpn_network"
-  ipsec_tunnel {
-    ike_version       = "ikev1"
-    public_ip_address = "10.10.10.2"
-    subnet_pool_name  = aci_cloud_ipsec_tunnel_subnet_pool.ipsec_tunnel_subnet_pool.subnet_pool_name
-    bgp_peer_asn      = "1002"
-    source_interfaces = ["gig2", "gig3", "gig4"] #source_interfaces available when router_type is "c8kv" in AWS cloud
-  }
-  ipsec_tunnel {
-    ike_version       = "ikev2"
-    public_ip_address = "10.10.10.7"
-    subnet_pool_name  = aci_cloud_ipsec_tunnel_subnet_pool.ipsec_tunnel_subnet_pool.subnet_pool_name
-    bgp_peer_asn      = "1005"
-    source_interfaces = ["gig2"] #source_interfaces available when router_type is "c8kv" in AWS cloud
-  }
 }
 
 # AWS Cloud
@@ -105,3 +73,34 @@ data "aci_cloud_external_network_vpn_network" "example" {
 output "vpn_network_output" {
   value = data.aci_cloud_external_network_vpn_network.example
 }
+
+# # AWS Cloud
+# # all_regions is set to "yes" only in AWS Cloud
+# # 
+# # # router_type = "c8kv"
+# resource "aci_cloud_external_network" "external_network_aws_c8kv" {
+#   name         = "cloud_external_network"
+#   vrf_dn       = aci_vrf.vrf.id
+#   all_regions  = "yes"
+#   cloud_vendor = "aws"
+#   router_type  = "c8kv"
+# }
+
+# resource "aci_cloud_external_network_vpn_network" "vpn_network_c8kv" {
+#   aci_cloud_external_network_dn = aci_cloud_external_network.external_network_aws_c8kv.id
+#   name                          = "cloud_vpn_network"
+#   ipsec_tunnel {
+#     ike_version       = "ikev1"
+#     public_ip_address = "10.10.10.2"
+#     subnet_pool_name  = aci_cloud_ipsec_tunnel_subnet_pool.ipsec_tunnel_subnet_pool.subnet_pool_name
+#     bgp_peer_asn      = "1002"
+#     source_interfaces = ["gig2", "gig3", "gig4"] #source_interfaces available when router_type is "c8kv" in AWS cloud
+#   }
+#   ipsec_tunnel {
+#     ike_version       = "ikev2"
+#     public_ip_address = "10.10.10.7"
+#     subnet_pool_name  = aci_cloud_ipsec_tunnel_subnet_pool.ipsec_tunnel_subnet_pool.subnet_pool_name
+#     bgp_peer_asn      = "1005"
+#     source_interfaces = ["gig2"] #source_interfaces available when router_type is "c8kv" in AWS cloud
+#   }
+# }

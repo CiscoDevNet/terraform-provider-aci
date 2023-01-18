@@ -835,7 +835,6 @@ func resourceAciContractUpdate(ctx context.Context, d *schema.ResourceData, m in
 
 			vzFilter := models.NewFilter(fmt.Sprintf("flt-%s", name), TenantDn, desc, vzFilterAttr)
 
-			// vzFilter.Status = "modified"
 			err := aciClient.Save(vzFilter)
 			if err != nil {
 				return diag.FromErr(err)

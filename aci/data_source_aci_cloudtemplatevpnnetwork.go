@@ -6,6 +6,7 @@ import (
 	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
+	"github.com/ciscoecosystem/aci-go-client/v2/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -79,7 +80,7 @@ func dataSourceAciCloudTemplateforVPNNetworkRead(ctx context.Context, d *schema.
 	aciClient := m.(*client.Client)
 	name := d.Get("name").(string)
 	TemplateforExternalNetworkDn := d.Get("aci_cloud_external_network_dn").(string)
-	rn := fmt.Sprintf("vpnnetwork-%s", name)
+	rn := fmt.Sprintf(models.RncloudtemplateVpnNetwork, name)
 	dn := fmt.Sprintf("%s/%s", TemplateforExternalNetworkDn, rn)
 	log.Printf("[DEBUG] %s: Data Source - Beginning Read", dn)
 
