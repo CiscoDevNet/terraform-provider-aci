@@ -77,10 +77,10 @@ resource "aci_l3_outside" "foo_l3_outside" {
   * tn_rtctrl_profile_name - (Deprecated) Name of the Route Control Profile for Dampening Policies.
   * tn_rtctrl_profile_dn - (Optional) Distinguished name of the Route Control Profile for Dampening Policies.
   * af - (Optional) Address Family of the Dampening Policies. Allowed values are "ipv4-ucast" and "ipv6-ucast". Default is "ipv4-ucast".
-* `relation_l3ext_rs_ectx` - (Optional) Relation to VRF (class fvCtx). Target VRF object should belong to the parent tenant or be a shared object. Cardinality - N_TO_ONE. Type - String.
+* `relation_l3ext_rs_ectx` - (Required) Relation to VRF (class fvCtx). Target VRF object should belong to the parent tenant or be a shared object. Cardinality - N_TO_ONE. Type - String.
 * `relation_l3ext_rs_interleak_pol` - (Optional) Relation to Route Profile for Interleak (class rtctrlProfile). Interleak Policy object should belong to the parent tenant or be a shared object. Cardinality - N_TO_ONE. Type - String.
 * `relation_l3ext_rs_l3_dom_att` - (Optional) Relation to a L3 Domain (class extnwDomP). Cardinality - N_TO_ONE. Type - String.
-* `relation_l3extrs_redistribute_pol` - (Optional) A block representing the relation to a Route Profile for Redistribution (class rtctrlProfile). Type: Block.
+* `relation_l3extrs_redistribute_pol` - (Optional) A block representing the relation to a Route Profile for Redistribution (class rtctrlProfile). Cardinality - N_TO_M. Type: Block.
   * `source` - (Optional) Route Map Source for the Route Profile for Redistribution. Allowed values are "attached-host", "direct", "static". Default value is "static".
   * `target_dn` - (Required) Distinguished name of the Route Control Profile for the Route Profile for Redistribution.
 ## Attribute Reference

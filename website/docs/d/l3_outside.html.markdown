@@ -45,9 +45,9 @@ data "aci_l3_outside" "foo_l3_outside" {
   * tn_rtctrl_profile_name - (Deprecated) Name of the Route Control Profile for Dampening Policies.
   * tn_rtctrl_profile_dn - (Optional) Distinguished name of the Route Control Profile for Dampening Policies.
   * af - (Optional) Address Family of the Dampening Policies.
-* `relation_l3ext_rs_ectx` - (Optional) Relation to VRF (class fvCtx).
-* `relation_l3ext_rs_interleak_pol` - (Optional) Relation to Route Profile for Interleak (class rtctrlProfile).
-* `relation_l3ext_rs_l3_dom_att` - (Optional) Relation to a L3 Domain (class extnwDomP).
-* `relation_l3extrs_redistribute_pol` - (Optional) A block representing the relation to a Route Profile for Redistribution (class rtctrlProfile). Type: Block.
+* `relation_l3ext_rs_ectx` - (Optional) Relation to VRF (class fvCtx). Cardinality - N_TO_ONE. Type - String.
+* `relation_l3ext_rs_interleak_pol` - (Optional) Relation to Route Profile for Interleak (class rtctrlProfile). Cardinality - N_TO_ONE. Type - String.
+* `relation_l3ext_rs_l3_dom_att` - (Optional) Relation to a L3 Domain (class extnwDomP). Cardinality - N_TO_ONE. Type - String.
+* `relation_l3extrs_redistribute_pol` - (Optional) A block representing the relation to a Route Profile for Redistribution (class rtctrlProfile). Cardinality - N_TO_M. Type: Block.
   * `source` - (Optional) Route Map Source for the Route Profile for Redistribution.
-  * `target_dn` - (Required) Distinguished name of the Route Control Profile for the Route Profile for Redistribution.
+  * `target_dn` - (Optional) Distinguished name of the Route Control Profile for the Route Profile for Redistribution.

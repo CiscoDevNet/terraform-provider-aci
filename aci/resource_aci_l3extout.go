@@ -126,7 +126,7 @@ func resourceAciL3Outside() *schema.Resource {
 			"relation_l3ext_rs_ectx": &schema.Schema{
 				Type:     schema.TypeString,
 				Computed: true,
-				Optional: true,
+				Required: true,
 			},
 			// Relation to Route Profile for Interleak - L3 Out Context Interleak Policy object should belong to the parent tenant or be a shared object.
 			"relation_l3ext_rs_interleak_pol": &schema.Schema{
