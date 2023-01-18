@@ -1,6 +1,7 @@
 package client
 
 import (
+	"encoding/json"
 	"fmt"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
@@ -295,4 +296,80 @@ func (sm *ServiceManager) ReadRelationl3extRsL3DomAttFromL3Outside(parentDn stri
 		return nil, err
 	}
 
+}
+
+func (sm *ServiceManager) CreateRelationl3extRsRedistributePol(parentDn, annotation, src string, tnRtctrlProfileName string) error {
+	dn := fmt.Sprintf("%s/rsredistributePol-[%s]-%s", parentDn, tnRtctrlProfileName, src)
+	containerJSON := []byte(fmt.Sprintf(`{
+		"%s": {
+			"attributes": {
+				"dn": "%s",
+				"annotation": "%s",
+				"tnRtctrlProfileName": "%s"
+			}
+		}
+	}`, "l3extRsRedistributePol", dn, annotation, tnRtctrlProfileName))
+
+	attributes := map[string]interface{}{
+		"src": src,
+	}
+	var output map[string]interface{}
+	err_output := json.Unmarshal([]byte(containerJSON), &output)
+	if err_output != nil {
+		return err_output
+	}
+	for _, mo := range output {
+		if mo_map, ok := mo.(map[string]interface{}); ok {
+			for _, mo_attributes := range mo_map {
+				if mo_attributes_map, ok := mo_attributes.(map[string]interface{}); ok {
+					for key, value := range attributes {
+						if value != "" {
+							mo_attributes_map[key] = value
+						}
+					}
+				}
+			}
+		}
+
+	}
+	input, out_err := json.Marshal(output)
+	if out_err != nil {
+		return out_err
+	}
+	jsonPayload, err := container.ParseJSON(input)
+	if err != nil {
+		return err
+	}
+
+	req, err := sm.client.MakeRestRequest("POST", fmt.Sprintf("%s.json", sm.MOURL), jsonPayload, true)
+	if err != nil {
+		return err
+	}
+	cont, _, err := sm.client.Do(req)
+	if err != nil {
+		return err
+	}
+	fmt.Printf("%+v", cont)
+	return nil
+}
+
+func (sm *ServiceManager) DeleteRelationl3extRsRedistributePol(parentDn, tnRtctrlProfileName, src string) error {
+	dn := fmt.Sprintf("%s/rsredistributePol-[%s]-%s", parentDn, tnRtctrlProfileName, src)
+	return sm.DeleteByDn(dn, "l3extRsRedistributePol")
+}
+
+func (sm *ServiceManager) ReadRelationl3extRsRedistributePol(parentDn string) (interface{}, error) {
+	dnUrl := fmt.Sprintf("%s/%s/%s.json", models.BaseurlStr, parentDn, "l3extRsRedistributePol")
+	cont, err := sm.GetViaURL(dnUrl)
+	contList := models.ListFromContainer(cont, "l3extRsRedistributePol")
+
+	st := make([]map[string]string, 0)
+	for _, contItem := range contList {
+		paramMap := make(map[string]string)
+		paramMap["tnRtctrlProfileName"] = models.G(contItem, "tnRtctrlProfileName")
+		paramMap["src"] = models.G(contItem, "src")
+		paramMap["tDn"] = models.G(contItem, "tDn")
+		st = append(st, paramMap)
+	}
+	return st, err
 }

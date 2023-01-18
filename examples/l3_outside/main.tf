@@ -45,7 +45,7 @@ resource "aci_l3_outside" "foo_l3_outside" {
   name           = "foo_l3_outside"
   enforce_rtctrl = ["export", "import"]
   target_dscp    = "unspecified"
-
+  mpls_enabled   = "yes"
   // Relation to Route Control for Dampening - can't configure multiple Dampening Policies for the same address-family.
   relation_l3ext_rs_dampening_pol {
     tn_rtctrl_profile_dn = data.aci_route_control_profile.shared_route_control_profile.id
@@ -65,4 +65,15 @@ resource "aci_l3_outside" "foo_l3_outside" {
 
   // Relation to L3 Domain
   relation_l3ext_rs_l3_dom_att = aci_l3_domain_profile.l3_domain_profile.id
+
+  // Relation to Route Profile for Redistribution
+  relation_l3extrs_redistribute_pol {
+    target_dn = data.aci_route_control_profile.shared_route_control_profile.id
+    source    = "static"
+  }
+
+  relation_l3extrs_redistribute_pol {
+    target_dn = data.aci_route_control_profile.shared_route_control_profile.id
+    source    = "direct"
+  }
 }

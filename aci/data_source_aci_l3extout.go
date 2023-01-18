@@ -42,6 +42,11 @@ func dataSourceAciL3Outside() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"mpls_enabled": {
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
 			"relation_l3ext_rs_dampening_pol": &schema.Schema{
 				Type:     schema.TypeSet,
 				Optional: true,
@@ -74,6 +79,25 @@ func dataSourceAciL3Outside() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 				Optional: true,
+			},
+			"relation_l3extrs_redistribute_pol": {
+				Type:        schema.TypeSet,
+				Optional:    true,
+				Description: "Create relation to rtctrlProfile",
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"source": {
+							Optional: true,
+							Type:     schema.TypeString,
+							Computed: true,
+						},
+						"target_dn": {
+							Optional: true,
+							Type:     schema.TypeString,
+							Computed: true,
+						},
+					},
+				},
 			},
 		})),
 	}
@@ -111,6 +135,9 @@ func dataSourceAciL3OutsideRead(ctx context.Context, d *schema.ResourceData, m i
 
 	// Importing l3extRsL3DomAtt object
 	getAndSetReadRelationl3extRsL3DomAttFromL3Outside(aciClient, dn, d)
+
+	// Importing l3extRsRedistributePol object
+	getAndSetReadRelationl3extRsRedistributePol(aciClient, dn, d)
 
 	return nil
 }

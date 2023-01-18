@@ -28,6 +28,7 @@ resource "aci_l3_outside" "foo_l3_outside" {
   name           = "foo_l3_outside"
   enforce_rtctrl = ["export", "import"]
   target_dscp    = "unspecified"
+  mpls_enabled   = "yes"
 
   // Relation to Route Control for Dampening
   relation_l3ext_rs_dampening_pol {
@@ -48,6 +49,17 @@ resource "aci_l3_outside" "foo_l3_outside" {
 
   // Relation to L3 Domain
   relation_l3ext_rs_l3_dom_att = aci_l3_domain_profile.l3_domain_profile.id
+
+  // Relation to Route Profile for Redistribution
+  relation_l3extrs_redistribute_pol {
+    target_dn = data.aci_route_control_profile.shared_route_control_profile.id
+    source    = "static"
+  }
+
+  relation_l3extrs_redistribute_pol {
+    target_dn = data.aci_route_control_profile.shared_route_control_profile.id
+    source    = "direct"
+  }
 }
 ```
 
@@ -60,6 +72,7 @@ resource "aci_l3_outside" "foo_l3_outside" {
 * `enforce_rtctrl` - (Optional) Enforce route control type. Allowed values are "import" and "export". Default is "export". Type - String.
 * `name_alias` - (Optional) Name alias of the L3 Outside object.
 * `target_dscp` - (Optional) The target differentiated services code point (DSCP) of the path attached to the L3 Outside object. Allowed values are "CS0", "CS1", "AF11", "AF12", "AF13", "CS2", "AF21", "AF22", "AF23", "CS3", "AF31", "AF32", "AF33", "CS4", "AF41", "AF42", "AF43", "CS5", "VA", "EF", "CS6", "CS7" and "unspecified". Default is "unspecified".
+* `mpls_enabled` - (Optional) Indiscate whether MPLS is enabled or not. Allowed values are "no", "yes". Default value is "no".
 * `relation_l3ext_rs_dampening_pol` - (Optional) Relation to Route Control Profile for Dampening Policies (class rtctrlProfile). Can't configure multiple Dampening Policies for the same address-family. Cardinality - N_TO_M. Type - Block.
   * tn_rtctrl_profile_name - (Deprecated) Name of the Route Control Profile for Dampening Policies.
   * tn_rtctrl_profile_dn - (Optional) Distinguished name of the Route Control Profile for Dampening Policies.
@@ -67,7 +80,9 @@ resource "aci_l3_outside" "foo_l3_outside" {
 * `relation_l3ext_rs_ectx` - (Optional) Relation to VRF (class fvCtx). Target VRF object should belong to the parent tenant or be a shared object. Cardinality - N_TO_ONE. Type - String.
 * `relation_l3ext_rs_interleak_pol` - (Optional) Relation to Route Profile for Interleak (class rtctrlProfile). Interleak Policy object should belong to the parent tenant or be a shared object. Cardinality - N_TO_ONE. Type - String.
 * `relation_l3ext_rs_l3_dom_att` - (Optional) Relation to a L3 Domain (class extnwDomP). Cardinality - N_TO_ONE. Type - String.
-
+* `relation_l3extrs_redistribute_pol` - (Optional) A block representing the relation to a Route Profile for Redistribution (class rtctrlProfile). Type: Block.
+  * `source` - (Optional) Route Map Source for the Route Profile for Redistribution. Allowed values are "attached-host", "direct", "static". Default value is "static".
+  * `target_dn` - (Required) Distinguished name of the Route Control Profile for the Route Profile for Redistribution.
 ## Attribute Reference
 
 The only attribute that this resource exports is the `id`, which is set to the

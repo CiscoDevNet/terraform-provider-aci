@@ -85,6 +85,15 @@ func resourceAciL3Outside() *schema.Resource {
 					"unspecified",
 				}, false),
 			},
+			"mpls_enabled": {
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"no",
+					"yes",
+				}, false),
+			},
 			// Relation to Route Control for Dampening
 			"relation_l3ext_rs_dampening_pol": &schema.Schema{
 				Type:     schema.TypeSet,
@@ -128,6 +137,29 @@ func resourceAciL3Outside() *schema.Resource {
 			"relation_l3ext_rs_l3_dom_att": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+			},
+			// Relation to Route Profile for Redistribution
+			"relation_l3extrs_redistribute_pol": {
+				Type:        schema.TypeSet,
+				Optional:    true,
+				Description: "Create relation to rtctrlProfile",
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"source": {
+							Optional: true,
+							Type:     schema.TypeString,
+							ValidateFunc: validation.StringInSlice([]string{
+								"attached-host",
+								"direct",
+								"static",
+							}, false),
+						},
+						"target_dn": {
+							Required: true,
+							Type:     schema.TypeString,
+						},
+					},
+				},
 			},
 		})),
 	}
@@ -188,6 +220,7 @@ func setL3OutsideAttributes(l3extOut *models.L3Outside, d *schema.ResourceData) 
 
 	d.Set("name_alias", l3extOutMap["nameAlias"])
 	d.Set("target_dscp", l3extOutMap["targetDscp"])
+	d.Set("mpls_enabled", l3extOutMap["mplsEnabled"])
 	return d, nil
 }
 
@@ -251,6 +284,25 @@ func getAndSetReadRelationl3extRsL3DomAttFromL3Outside(client *client.Client, dn
 	return d, nil
 }
 
+func getAndSetReadRelationl3extRsRedistributePol(client *client.Client, dn string, d *schema.ResourceData) (*schema.ResourceData, error) {
+	l3extRsRedistributePolData, err := client.ReadRelationl3extRsRedistributePol(dn)
+	if err != nil {
+		log.Printf("[DEBUG] Error while reading relation l3extRsRedistributePol %v", err)
+		d.Set("relation_l3extrs_redistribute_pol", make([]interface{}, 0, 1))
+	} else {
+		l3extRsRedistributePolResultData := make([]map[string]string, 0, 1)
+		for _, obj := range l3extRsRedistributePolData.([]map[string]string) {
+			l3extRsRedistributePolResultData = append(l3extRsRedistributePolResultData, map[string]string{
+				"source":    obj["src"],
+				"target_dn": obj["tDn"],
+			})
+		}
+		d.Set("relation_l3extrs_redistribute_pol", l3extRsRedistributePolResultData)
+		log.Printf("[DEBUG]: l3extRsRedistributePol: Reading finished successfully")
+	}
+	return d, nil
+}
+
 func resourceAciL3OutsideImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
 	log.Printf("[DEBUG] %s: Beginning Import", d.Id())
 	aciClient := m.(*client.Client)
@@ -285,6 +337,9 @@ func resourceAciL3OutsideImport(d *schema.ResourceData, m interface{}) ([]*schem
 
 	// Importing l3extRsL3DomAtt object
 	getAndSetReadRelationl3extRsL3DomAttFromL3Outside(aciClient, dn, d)
+
+	// Importing l3extRsRedistributePol object
+	getAndSetReadRelationl3extRsRedistributePol(aciClient, dn, d)
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
@@ -329,6 +384,11 @@ func resourceAciL3OutsideCreate(ctx context.Context, d *schema.ResourceData, m i
 	if TargetDscp, ok := d.GetOk("target_dscp"); ok {
 		l3extOutAttr.TargetDscp = TargetDscp.(string)
 	}
+
+	if MplsEnabled, ok := d.GetOk("mpls_enabled"); ok {
+		l3extOutAttr.MplsEnabled = MplsEnabled.(string)
+	}
+
 	l3extOut := models.NewL3Outside(fmt.Sprintf(models.Rnl3extOut, name), TenantDn, desc, l3extOutAttr)
 
 	err := aciClient.Save(l3extOut)
@@ -351,6 +411,13 @@ func resourceAciL3OutsideCreate(ctx context.Context, d *schema.ResourceData, m i
 	if relationTol3extRsL3DomAtt, ok := d.GetOk("relation_l3ext_rs_l3_dom_att"); ok {
 		relationParam := relationTol3extRsL3DomAtt.(string)
 		checkDns = append(checkDns, relationParam)
+	}
+
+	if relationTol3extRsRedistributePol, ok := d.GetOk("relation_l3extrs_redistribute_pol"); ok {
+		relationParamList := toStringList(relationTol3extRsRedistributePol.(*schema.Set).List())
+		for _, relationParam := range relationParamList {
+			checkDns = append(checkDns, relationParam)
+		}
 	}
 
 	d.Partial(true)
@@ -401,6 +468,18 @@ func resourceAciL3OutsideCreate(ctx context.Context, d *schema.ResourceData, m i
 
 	}
 
+	if relationTol3extRsRedistributePol, ok := d.GetOk("relation_l3extrs_redistribute_pol"); ok {
+		relationParamList := relationTol3extRsRedistributePol.(*schema.Set).List()
+		for _, relationParam := range relationParamList {
+			paramMap := relationParam.(map[string]interface{})
+
+			err = aciClient.CreateRelationl3extRsRedistributePol(l3extOut.DistinguishedName, l3extOutAttr.Annotation, paramMap["source"].(string), GetMOName(paramMap["target_dn"].(string)))
+			if err != nil {
+				return diag.FromErr(err)
+			}
+		}
+	}
+
 	d.SetId(l3extOut.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 
@@ -445,6 +524,11 @@ func resourceAciL3OutsideUpdate(ctx context.Context, d *schema.ResourceData, m i
 	if TargetDscp, ok := d.GetOk("target_dscp"); ok {
 		l3extOutAttr.TargetDscp = TargetDscp.(string)
 	}
+
+	if MplsEnabled, ok := d.GetOk("mpls_enabled"); ok {
+		l3extOutAttr.MplsEnabled = MplsEnabled.(string)
+	}
+
 	l3extOut := models.NewL3Outside(fmt.Sprintf(models.Rnl3extOut, name), TenantDn, desc, l3extOutAttr)
 
 	l3extOut.Status = "modified"
@@ -470,6 +554,16 @@ func resourceAciL3OutsideUpdate(ctx context.Context, d *schema.ResourceData, m i
 	if d.HasChange("relation_l3ext_rs_l3_dom_att") {
 		_, newRelParam := d.GetChange("relation_l3ext_rs_l3_dom_att")
 		checkDns = append(checkDns, newRelParam.(string))
+	}
+
+	if d.HasChange("relation_l3extrs_redistribute_pol") || d.HasChange("annotation") {
+		oldRel, newRel := d.GetChange("relation_l3extrs_redistribute_pol")
+		oldRelSet := oldRel.(*schema.Set)
+		newRelSet := newRel.(*schema.Set)
+		relToCreate := toStringList(newRelSet.Difference(oldRelSet).List())
+		for _, relDn := range relToCreate {
+			checkDns = append(checkDns, relDn)
+		}
 	}
 
 	d.Partial(true)
@@ -532,6 +626,28 @@ func resourceAciL3OutsideUpdate(ctx context.Context, d *schema.ResourceData, m i
 		}
 	}
 
+	if d.HasChange("relation_l3extrs_redistribute_pol") || d.HasChange("annotation") {
+		oldRel, newRel := d.GetChange("relation_l3extrs_redistribute_pol")
+		oldRelList := oldRel.(*schema.Set).List()
+		newRelList := newRel.(*schema.Set).List()
+		for _, relationParam := range oldRelList {
+			paramMap := relationParam.(map[string]interface{})
+
+			err = aciClient.DeleteRelationl3extRsRedistributePol(l3extOut.DistinguishedName, GetMOName(paramMap["target_dn"].(string)), paramMap["source"].(string))
+			if err != nil {
+				return diag.FromErr(err)
+			}
+		}
+		for _, relationParam := range newRelList {
+			paramMap := relationParam.(map[string]interface{})
+
+			err = aciClient.CreateRelationl3extRsRedistributePol(l3extOut.DistinguishedName, l3extOutAttr.Annotation, paramMap["source"].(string), GetMOName(paramMap["target_dn"].(string)))
+			if err != nil {
+				return diag.FromErr(err)
+			}
+		}
+	}
+
 	d.SetId(l3extOut.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 
@@ -568,6 +684,9 @@ func resourceAciL3OutsideRead(ctx context.Context, d *schema.ResourceData, m int
 
 	// Importing l3extRsL3DomAtt object
 	getAndSetReadRelationl3extRsL3DomAttFromL3Outside(aciClient, dn, d)
+
+	// Importing l3extRsRedistributePol object
+	getAndSetReadRelationl3extRsRedistributePol(aciClient, dn, d)
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 

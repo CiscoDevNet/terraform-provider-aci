@@ -40,6 +40,7 @@ data "aci_l3_outside" "foo_l3_outside" {
 * `enforce_rtctrl` - (Optional) Enforce route control type of the L3 Outside object. 
 * `name_alias` - (Optional) Name alias of the L3 Outside object.
 * `target_dscp` - (Optional) The target differentiated services code point (DSCP) of the path attached to the L3 Outside object.
+* `mpls_enabled` - (Optional) Indiscate whether MPLS is enabled or not.
 * `relation_l3ext_rs_dampening_pol` - (Optional) Relation to Route Control Profile for Dampening Policies (class rtctrlProfile). Cardinality - N_TO_M. Type - Block.
   * tn_rtctrl_profile_name - (Deprecated) Name of the Route Control Profile for Dampening Policies.
   * tn_rtctrl_profile_dn - (Optional) Distinguished name of the Route Control Profile for Dampening Policies.
@@ -47,3 +48,6 @@ data "aci_l3_outside" "foo_l3_outside" {
 * `relation_l3ext_rs_ectx` - (Optional) Relation to VRF (class fvCtx).
 * `relation_l3ext_rs_interleak_pol` - (Optional) Relation to Route Profile for Interleak (class rtctrlProfile).
 * `relation_l3ext_rs_l3_dom_att` - (Optional) Relation to a L3 Domain (class extnwDomP).
+* `relation_l3extrs_redistribute_pol` - (Optional) A block representing the relation to a Route Profile for Redistribution (class rtctrlProfile). Type: Block.
+  * `source` - (Optional) Route Map Source for the Route Profile for Redistribution.
+  * `target_dn` - (Required) Distinguished name of the Route Control Profile for the Route Profile for Redistribution.
