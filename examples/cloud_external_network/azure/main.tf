@@ -23,8 +23,8 @@ resource "aci_vrf" "vrf" {
 }
 
 resource "aci_cloud_ipsec_tunnel_subnet_pool" "ipsec_tunnel_subnet_pool" {
-  name = "cloud_pool"
-  subnet_pool      = "169.254.0.0/16"
+  name        = "cloud_pool"
+  subnet_pool = "169.254.0.0/16"
 }
 
 # Azure Cloud

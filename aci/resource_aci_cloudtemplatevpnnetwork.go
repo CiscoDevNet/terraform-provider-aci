@@ -179,10 +179,10 @@ func resourceAciCloudTemplateforVPNNetworkImport(d *schema.ResourceData, m inter
 		return nil, err
 	}
 
-	log.Printf("[DEBUG] Begining Import of cloud IPSec Tunnel attributes.")
+	log.Printf("[DEBUG] Begining Import of cloud IPsec Tunnel attributes.")
 	cloudtemplateIpSecTunnelData, err := aciClient.ListCloudTemplateforIpSectunnel(dn)
 	if err != nil {
-		log.Printf("[DEBUG] Error while importing cloud IPSec Tunnel attributes %v", err)
+		log.Printf("[DEBUG] Error while importing cloud IPsec Tunnel attributes %v", err)
 	}
 
 	cloudtemplateIpSecTunnelSet := make([]map[string]interface{}, 0, 1)
@@ -212,7 +212,7 @@ func resourceAciCloudTemplateforVPNNetworkImport(d *schema.ResourceData, m inter
 		cloudtemplateIpSecTunnelSet = append(cloudtemplateIpSecTunnelSet, cloudIpSecTunnelAttMap)
 	}
 	d.Set("ipsec_tunnel", cloudtemplateIpSecTunnelSet)
-	log.Printf("[DEBUG] Import of cloud IPSec Tunnel finished successfully.")
+	log.Printf("[DEBUG] Import of cloud IPsec Tunnel finished successfully.")
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 	return []*schema.ResourceData{schemaFilled}, nil
@@ -256,7 +256,7 @@ func resourceAciCloudTemplateforVPNNetworkCreate(ctx context.Context, d *schema.
 	}
 	if ipSecTunnelPeers, ok := d.GetOk("ipsec_tunnel"); ok {
 		clopudIpSecTunnels := ipSecTunnelPeers.(*schema.Set).List()
-		// Looping throught List of IPSec Tunnels
+		// Looping throught List of IPsec Tunnels
 		for _, val := range clopudIpSecTunnels {
 			ipSecTunnels := val.(map[string]interface{})
 
@@ -352,7 +352,7 @@ func resourceAciCloudTemplateforVPNNetworkUpdate(ctx context.Context, d *schema.
 
 	if ipSecTunnelPeers, ok := d.GetOk("ipsec_tunnel"); ok {
 		clopudIpSecTunnels := ipSecTunnelPeers.(*schema.Set).List()
-		// Looping throught List of IPSec Tunnels
+		// Looping throught List of IPsec Tunnels
 		for _, val := range clopudIpSecTunnels {
 			ipSecTunnels := val.(map[string]interface{})
 
@@ -424,10 +424,10 @@ func resourceAciCloudTemplateforVPNNetworkRead(ctx context.Context, d *schema.Re
 		return nil
 	}
 
-	log.Printf("[DEBUG] Begining Read of cloud IPSec Tunnel attributes.")
+	log.Printf("[DEBUG] Begining Read of cloud IPsec Tunnel attributes.")
 	cloudtemplateIpSecTunnelData, err := aciClient.ListCloudTemplateforIpSectunnel(dn)
 	if err != nil {
-		log.Printf("[DEBUG] Error while reading cloud IPSec Tunnel attributes %v", err)
+		log.Printf("[DEBUG] Error while reading cloud IPsec Tunnel attributes %v", err)
 	}
 
 	cloudtemplateIpSecTunnelSet := make([]map[string]interface{}, 0, 1)
@@ -454,10 +454,10 @@ func resourceAciCloudTemplateforVPNNetworkRead(ctx context.Context, d *schema.Re
 		}
 		log.Printf("[DEBUG] Read cloud BGP IPV4 Peer finished successfully.")
 
-		log.Printf("[DEBUG] Begining Read of cloud IPSec Tunnel Source Interface attributes.")
+		log.Printf("[DEBUG] Begining Read of cloud IPsec Tunnel Source Interface attributes.")
 		ipSectunnelSourceInterfaceData, err := aciClient.ListCloudTemplateforIpSectunnelSourceInterface(cloudtemplateIpSecTunnelDn)
 		if err != nil {
-			log.Printf("[DEBUG] Error while reading cloud IPSec Tunnel Source Interface  attributes %v", err)
+			log.Printf("[DEBUG] Error while reading cloud IPsec Tunnel Source Interface  attributes %v", err)
 		}
 
 		ipSectunnelSourceInterfaceList := make([]string, 0, 1)
@@ -471,12 +471,12 @@ func resourceAciCloudTemplateforVPNNetworkRead(ctx context.Context, d *schema.Re
 			ipSectunnelSourceInterfaceList = append(ipSectunnelSourceInterfaceList, ipSectunnelSourceInterfaceName)
 		}
 		cloudIpSecTunnelAttMap["source_interfaces"] = ipSectunnelSourceInterfaceList
-		log.Printf("[DEBUG] : Read cloud IPSec Tunnel Source Interface  finished successfully")
+		log.Printf("[DEBUG] : Read cloud IPsec Tunnel Source Interface  finished successfully")
 
 		cloudtemplateIpSecTunnelSet = append(cloudtemplateIpSecTunnelSet, cloudIpSecTunnelAttMap)
 	}
 	d.Set("ipsec_tunnel", cloudtemplateIpSecTunnelSet)
-	log.Printf("[DEBUG] Read cloud IPSec Tunnel finished successfully.")
+	log.Printf("[DEBUG] Read cloud IPsec Tunnel finished successfully.")
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 	return nil

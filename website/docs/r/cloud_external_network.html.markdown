@@ -33,16 +33,16 @@ resource "aci_cloud_external_network" "example" {
 
 # GCP cloud - all_regions is set to "no" and regions can be set only in GCP Cloud
 resource "aci_cloud_external_network" "external_network" {
-	name         = "cloud_external_network"
-	vrf_dn       = aci_vrf.vrf.id
+  name         = "cloud_external_network"
+  vrf_dn       = aci_vrf.vrf.id
   cloud_vendor = "gcp"
   regions      = ["europe-west3", "europe-west4"]
 }
 
 # Azure Cloud - all_regions is set to "yes" only in Azure Cloud
 resource "aci_cloud_external_network" "external_network" {
-	name        = "cloud_external_network"
-	vrf_dn      = aci_vrf.vrf.id
+  name        = "cloud_external_network"
+  vrf_dn      = aci_vrf.vrf.id
   all_regions = "yes"
 }
 ```

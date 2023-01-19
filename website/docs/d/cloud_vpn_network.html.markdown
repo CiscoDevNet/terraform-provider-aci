@@ -28,8 +28,8 @@ Data source for ACI Cloud Template for VPN Network
 
 ```hcl
 data "aci_cloud_external_network_vpn_network" "example" {
-  aci_cloud_external_network_dn  = aci_cloud_external_network.example.id
-  name  = "example"
+  aci_cloud_external_network_dn = aci_cloud_external_network.example.id
+  name                          = "example"
 }
 ```
 
@@ -42,12 +42,12 @@ data "aci_cloud_external_network_vpn_network" "example" {
 * `id` - Attribute id set to the Dn of the Cloud VPN Network.
 * `remote_site_id` - (Optional) Remote Site ID. 
 * `remote_site_name` - (Optional) Name of the Remote Site. 
-* `ipsec_tunnel` - (Optional) IPSec tunnel destination (cloudtemplateIpSecTunnelSourceInterface class). Type: Block.
+* `ipsec_tunnel` - (Optional) IPsec tunnel destination (cloudtemplateIpSecTunnelSourceInterface class). Type: Block.
     * `ike_version` - (Required) IKE version. Allowed values are "ikev1", "ikev2", and default value is "ikev2".
-    * `public_ip_address` - (Required) Peer address of the Cloud IPSec tunnel object.
+    * `public_ip_address` - (Required) Peer address of the Cloud IPsec tunnel object.
     * `subnet_pool_name` - (Required) Subnet Pool Name.
     * `pre_shared_key` - (Optional) Pre Shared Key for all tunnels to this peer address.
     * `bgp_peer_asn` - (Required) BGP ASN Number. A number that uniquely identifies an autonomous system.
-    * `source_interfaces` - (Optional) Source Interface Ids of the object for IPSec tunnel Source Interface. It is available only on Azure cAPIC.
+    * `source_interfaces` - (Optional) Source Interface Ids of the object for IPsec tunnel Source Interface. It is available only on Azure cAPIC.
 
 

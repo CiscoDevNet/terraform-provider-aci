@@ -45,7 +45,7 @@ func getRemoteSubnetPoolforIpSecTunnels(client *client.Client, dn string) (*mode
 	}
 	cloudtemplateIpSecTunnelSubnetPool := models.SubnetPoolforIpSecTunnelsFromContainer(cloudtemplateIpSecTunnelSubnetPoolCont)
 	if cloudtemplateIpSecTunnelSubnetPool.DistinguishedName == "" {
-		return nil, fmt.Errorf("Subnet Pool for IpSec Tunnels %s not found", dn)
+		return nil, fmt.Errorf("Subnet Pool for IPsec Tunnels %s not found", dn)
 	}
 	return cloudtemplateIpSecTunnelSubnetPool, nil
 }

@@ -96,10 +96,10 @@ func dataSourceAciCloudTemplateforVPNNetworkRead(ctx context.Context, d *schema.
 		return diag.FromErr(err)
 	}
 
-	log.Printf("[DEBUG] Data Source - Begining Read of cloud IPSec Tunnel attributes.")
+	log.Printf("[DEBUG] Data Source - Begining Read of cloud IPsec Tunnel attributes.")
 	cloudtemplateIpSecTunnelData, err := aciClient.ListCloudTemplateforIpSectunnel(dn)
 	if err != nil {
-		log.Printf("[DEBUG] Data Source - Error while reading cloud IPSec Tunnel attributes %v", err)
+		log.Printf("[DEBUG] Data Source - Error while reading cloud IPsec Tunnel attributes %v", err)
 	}
 
 	cloudtemplateIpSecTunnelSet := make([]map[string]interface{}, 0, 1)
@@ -126,10 +126,10 @@ func dataSourceAciCloudTemplateforVPNNetworkRead(ctx context.Context, d *schema.
 		}
 		log.Printf("[DEBUG] Data Source - Read cloud BGP IPV4 Peer finished successfully.")
 
-		log.Printf("[DEBUG] Data Source - Begining Read of cloud IPSec Tunnel Source Interface attributes.")
+		log.Printf("[DEBUG] Data Source - Begining Read of cloud IPsec Tunnel Source Interface attributes.")
 		ipSectunnelSourceInterfaceData, err := aciClient.ListCloudTemplateforIpSectunnelSourceInterface(cloudtemplateIpSecTunnelDn)
 		if err != nil {
-			log.Printf("[DEBUG] Data Source - Error while reading cloud IPSec Tunnel Source Interface  attributes %v", err)
+			log.Printf("[DEBUG] Data Source - Error while reading cloud IPsec Tunnel Source Interface  attributes %v", err)
 		}
 
 		ipSectunnelSourceInterfaceList := make([]string, 0, 1)
@@ -142,12 +142,12 @@ func dataSourceAciCloudTemplateforVPNNetworkRead(ctx context.Context, d *schema.
 			ipSectunnelSourceInterfaceList = append(ipSectunnelSourceInterfaceList, ipSectunnelSourceInterfaceName)
 		}
 		cloudIpSecTunnelAttMap["source_interfaces"] = ipSectunnelSourceInterfaceList
-		log.Printf("[DEBUG] : Data Source - Read cloud IPSec Tunnel Source Interface  finished successfully")
+		log.Printf("[DEBUG] : Data Source - Read cloud IPsec Tunnel Source Interface  finished successfully")
 
 		cloudtemplateIpSecTunnelSet = append(cloudtemplateIpSecTunnelSet, cloudIpSecTunnelAttMap)
 	}
 	d.Set("ipsec_tunnel", cloudtemplateIpSecTunnelSet)
-	log.Printf("[DEBUG] Data Source - Read cloud IPSec Tunnel finished successfully.")
+	log.Printf("[DEBUG] Data Source - Read cloud IPsec Tunnel finished successfully.")
 
 	log.Printf("[DEBUG] %s: Data Source - Read finished successfully", dn)
 	return nil

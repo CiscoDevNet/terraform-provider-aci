@@ -93,11 +93,11 @@ func testAccCheckAciSubnetPoolforIpSecTunnelsExists(name string, subnet_poolfor_
 		rs, ok := s.RootModule().Resources[name]
 
 		if !ok {
-			return fmt.Errorf("Subnet Pool for IpSec Tunnels %s not found", name)
+			return fmt.Errorf("Subnet Pool for IPsec Tunnels %s not found", name)
 		}
 
 		if rs.Primary.ID == "" {
-			return fmt.Errorf("No Subnet Pool for IpSec Tunnels dn was set")
+			return fmt.Errorf("No Subnet Pool for IPsec Tunnels dn was set")
 		}
 
 		client := testAccProvider.Meta().(*client.Client)
@@ -109,7 +109,7 @@ func testAccCheckAciSubnetPoolforIpSecTunnelsExists(name string, subnet_poolfor_
 
 		subnet_poolfor_ip_sec_tunnelsFound := models.SubnetPoolforIpSecTunnelsFromContainer(cont)
 		if subnet_poolfor_ip_sec_tunnelsFound.DistinguishedName != rs.Primary.ID {
-			return fmt.Errorf("Subnet Pool for IpSec Tunnels %s not found", rs.Primary.ID)
+			return fmt.Errorf("Subnet Pool for IPsec Tunnels %s not found", rs.Primary.ID)
 		}
 		*subnet_poolfor_ip_sec_tunnels = *subnet_poolfor_ip_sec_tunnelsFound
 		return nil
@@ -123,7 +123,7 @@ func testAccCheckAciSubnetPoolforIpSecTunnelsDestroy(s *terraform.State) error {
 			cont, err := client.Get(rs.Primary.ID)
 			subnet_poolfor_ip_sec_tunnels := models.SubnetPoolforIpSecTunnelsFromContainer(cont)
 			if err == nil {
-				return fmt.Errorf("Subnet Pool for IpSec Tunnels %s Still exists", subnet_poolfor_ip_sec_tunnels.DistinguishedName)
+				return fmt.Errorf("Subnet Pool for IPsec Tunnels %s Still exists", subnet_poolfor_ip_sec_tunnels.DistinguishedName)
 			}
 		} else {
 			continue
