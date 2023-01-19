@@ -41,7 +41,7 @@ data "aci_cloud_subnet" "dev_subnet" {
 * `description` - (Optional) Description of the Cloud Subnet object.
 * `annotation` - (Optional) Annotation of the Cloud Subnet object.
 * `name_alias` - (Optional) Name alias of the Cloud Subnet object.
-* `scope` - (Optional) The domain applicable to the capability.
+* `scope` - (Optional) List of domain applicable to the capability. Allowed values are "public", "private" and "shared". Default is ["private"].
 * `usage` - (Optional) The usage of the port. This property shows how the port is used.
 * `zone` - (Optional) Relation to a Cloud Resource Zone (class cloudRsZoneAttach). It is only applicable to the AWS vendor.
 * `relation_cloud_rs_subnet_to_flow_log` - (Optional) Relation to the AWS Flow Log Policy (class cloudAwsFlowLogPol).
