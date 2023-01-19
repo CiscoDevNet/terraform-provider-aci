@@ -657,12 +657,10 @@ func resourceAciContractCreate(ctx context.Context, d *schema.ResourceData, m in
 
 			if filter["filter_entry"] != nil {
 				vzfilterentries := filter["filter_entry"].([]interface{})
-				log.Println("Filter entries ... :", vzfilterentries)
 				for _, entry := range vzfilterentries {
 					vzEntryAttr := models.FilterEntryAttributes{}
 					vzEntry := entry.(map[string]interface{})
 
-					log.Println("Entries ......... :", vzEntry)
 					entryDesc := vzEntry["description"].(string)
 
 					entryName := vzEntry["filter_entry_name"].(string)
@@ -730,7 +728,6 @@ func resourceAciContractCreate(ctx context.Context, d *schema.ResourceData, m in
 			// fMap["id"] = vzFilter.DistinguishedName
 			filterIDS = append(filterIDS, vzFilter.DistinguishedName)
 		}
-		log.Println("Check ... :", filterIDS)
 		d.Set("filter_ids", filterIDS)
 		d.Set("filter_entry_ids", filterentryIDS)
 	} else {
@@ -838,7 +835,6 @@ func resourceAciContractUpdate(ctx context.Context, d *schema.ResourceData, m in
 
 			vzFilter := models.NewFilter(fmt.Sprintf("flt-%s", name), TenantDn, desc, vzFilterAttr)
 
-			// vzFilter.Status = "modified"
 			err := aciClient.Save(vzFilter)
 			if err != nil {
 				return diag.FromErr(err)
@@ -846,12 +842,10 @@ func resourceAciContractUpdate(ctx context.Context, d *schema.ResourceData, m in
 
 			if filter["filter_entry"] != nil {
 				vzfilterentries := filter["filter_entry"].([]interface{})
-				log.Println("Filter entries ... :", vzfilterentries)
 				for _, entry := range vzfilterentries {
 					vzEntryAttr := models.FilterEntryAttributes{}
 					vzEntry := entry.(map[string]interface{})
 
-					log.Println("Entries ......... :", vzEntry)
 					entryDesc := vzEntry["description"].(string)
 
 					entryName := vzEntry["filter_entry_name"].(string)
@@ -974,7 +968,6 @@ func resourceAciContractRead(ctx context.Context, d *schema.ResourceData, m inte
 		return nil
 	}
 	filters := d.Get("filter_ids").([]interface{})
-	log.Println("Check ... :", filters)
 
 	vzFilters := make([]*models.Filter, 0, 1)
 	vzEntries := make([]*models.FilterEntry, 0, 1)

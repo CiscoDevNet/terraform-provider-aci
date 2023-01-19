@@ -280,7 +280,6 @@ func setFilterEntryAttributes(vzEntry *models.FilterEntry, d *schema.ResourceDat
 	if err != nil {
 		return d, err
 	}
-	log.Println("Check .... :", d.Get("d_from_port"))
 
 	d.Set("filter_dn", GetParentDn(dn, fmt.Sprintf("/e-%s", vzEntryMap["name"])))
 

@@ -172,7 +172,6 @@ func resourceAciAccessPortBlockCreate(ctx context.Context, d *schema.ResourceDat
 			tp := models.G(contList[i], "name")
 			blkNames = append(blkNames, tp)
 		}
-		log.Println("check .. : ", blkNames)
 
 		cnt := contListLen + 1
 		for true {
