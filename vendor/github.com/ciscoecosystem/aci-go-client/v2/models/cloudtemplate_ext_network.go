@@ -8,10 +8,11 @@ import (
 )
 
 const (
-	DncloudtemplateExtNetwork        = "uni/tn-%s/infranetwork-%s/extnetwork-%s"
-	RncloudtemplateExtNetwork        = "extnetwork-%s"
-	ParentDncloudtemplateExtNetwork  = "uni/tn-%s/infranetwork-%s"
-	CloudtemplateextnetworkClassName = "cloudtemplateExtNetwork"
+	DncloudtemplateExtNetwork          = "uni/tn-%s/infranetwork-%s/extnetwork-%s"
+	RncloudtemplateExtNetwork          = "extnetwork-%s"
+	ParentDncloudtemplateExtNetwork    = "uni/tn-%s/infranetwork-%s"
+	CloudtemplateextnetworkClassName   = "cloudtemplateExtNetwork"
+	CloudInfraNetworkDefaultTemplateDn = "uni/tn-infra/infranetwork-default"
 )
 
 type CloudTemplateforExternalNetwork struct {
