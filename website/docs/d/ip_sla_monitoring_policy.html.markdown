@@ -7,7 +7,7 @@ description: |-
   Data source for ACI IP SLA Monitoring Policy
 ---
 
-# aci_ipsla_monitoring_policy #
+# aci_ip_sla_monitoring_policy #
 
 Data source for ACI IP SLA Monitoring Policy
 
