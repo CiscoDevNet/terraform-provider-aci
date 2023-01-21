@@ -7,7 +7,7 @@ description: |-
   Manages ACI IP SLA Monitoring Policy
 ---
 
-# aci_ipsla_monitoring_policy #
+# aci_ip_sla_monitoring_policy #
 
 Manages ACI IP SLA Monitoring Policy
 
@@ -23,7 +23,7 @@ Manages ACI IP SLA Monitoring Policy
 ## Example Usage ##
 
 ```hcl
-resource "aci_ipsla_monitoring_policy" "example" {
+resource "aci_ip_sla_monitoring_policy" "example" {
   tenant_dn             = aci_tenant.tf_tenant.id
   name                  = "example"
   http_uri              = "/index.html"

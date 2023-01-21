@@ -56,7 +56,7 @@ Allowed values: "bypass", "deny", "permit". Default value: "permit".
 Allowed values: "yes", "no". Default value: "no".
 
 * `relation_vns_rs_ipsla_monitoring_pol` - (Optional) Relation to class fvIPSLAMonitoringPol. Cardinality - N_TO_ONE. Type - String.
-                
+
 
 
 ## Attribute Reference
