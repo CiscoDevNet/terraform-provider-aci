@@ -1,9 +1,45 @@
+## 2.6.0 (January 21, 2023)
+DEPRECATIONS:
+- The filter.filter_entry.entry_description and filter.filter_entry.entry_annotation are deprecated. Use filter.filter_entry.description and filter.filter_entry.annotation instead.
+
+IMPROVEMENTS:
+- Add aci_cloud_ipsec_tunnel_subnet_pool, aci_cloud_external_network and aci_cloud_external_network_vpn_network resources and datasources for Cloud APIC (#948)
+- Add aci_cloud_account, aci_tenant_to_cloud_account, aci_cloud_ad and aci_cloud_credentials resources and datasources for Cloud APIC (#912)
+- Add aci_lacp_member_policy and aci_leaf_access_bundle_policy_sub_group resources and datasources (#927)
+- Add aci_multicast_pool and aci_multicast_pool_block resources and datasources
+- Add aci_cloud_vrf_leak_routes resource and data_source (#953)
+- Add Service Redirect Backup Policy (aci_service_redirect_backup_policy) and L1/L2 Destination (aci_pbr_l1_l2_destination) resources and datasources (#965)
+- Add support for GCP to the aci_cloud_context_profile resource (#931)
+- Add missing attributes for aci_fabric_wide_settings (#926)
+- Add support for creating global dhcp relay policy with aci_dhcp_relay_policy
+- Add mpls_enabled attribute to aci_l3_outside (#973)
+- Add enhanced lag policy support to l3out_floating_svi (#966)
+- Add DHCP relay gateway to aci_l3out_path_attachment_secondary_ip (#992)
+- Add ability to import brownfield virtual networks in aci_cloud_context_profile (#949)
+- Add Subnet Group Label to the aci_cloud_subnet resource (#943)
+
+BUG FIXES:
+- Fix relation_cloud_rs_to_ctx attribute not working in aci_cloud_context_profile resource (#950)
+- Fix IP lookup issue for aci_client_end_point datasource (#940)
+- Fix contract filter read issue
+- Fix resource aci_external_network_instance_profile idempotency and relationship attribute import issues (#976)
+- Fix relational attributes import issue accross multiple datasources and resources (#924)
+- Fix resource aci_l3_outside idempotency and relationship attribute import issues (#973)
+- Fix relational attribute import issue in aci_destination_of_redirected_traffic (#959)
+- Fix update function and validation for relationship attribute "relation_l3ext_rs_subnet_to_profile" in aci_l3_ext_subnet (#967)
+- Fix relationship removal issue in aci_any (#971)
+- Fix domain_dn in example for aci_l4_l7_device (#969)
+- Set attribute auth_key as optional in aci_l3out_ospf_interface_profile (#994)
+- Fix intermittent issue with delayed object updates in aci_rest_managed (#972)
+- Fix aci_rest_managed resource for pkiExportEncryptionKey class
+- Make mac attribute optional in aci_destination_of_redirected_traffic (#951)
+
 ## 2.5.2 (August 2, 2022)
-BUG FIX::
+BUG FIX:
 - Fix aci_bulk_epg_to_static_path idempotency and default values when optional attributes are not provided
 
 ## 2.5.1 (July 29, 2022)
-BUG FIX::
+BUG FIX:
 - Add documentation for aci_bulk_epg_to_static_path resource
 
 ## 2.5.0 (July 29, 2022)
