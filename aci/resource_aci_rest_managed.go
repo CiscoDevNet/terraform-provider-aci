@@ -22,7 +22,7 @@ var WriteOnlyAttr = []string{"childAction"}
 var FullClasses = []string{"firmwareFwGrp", "maintMaintGrp", "maintMaintP", "firmwareFwP", "pkiExportEncryptionKey"}
 
 // List of classes where an immediate GET following a POST might not reflect the created/updated object
-var AllowEmptyReadClasses = []string{"firmwareFwGrp", "firmwareRsFwgrpp", "fabricNodeBlk"}
+var AllowEmptyReadClasses = []string{"firmwareFwGrp", "firmwareRsFwgrpp", "firmwareFwP", "fabricNodeBlk"}
 
 // List of classes which do not support annotations
 var NoAnnotationClasses = []string{"tagTag"}
