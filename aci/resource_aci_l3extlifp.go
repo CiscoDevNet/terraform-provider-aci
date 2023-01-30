@@ -10,6 +10,7 @@ import (
 	"github.com/ciscoecosystem/aci-go-client/v2/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAciLogicalInterfaceProfile() *schema.Resource {
@@ -73,6 +74,11 @@ func resourceAciLogicalInterfaceProfile() *schema.Resource {
 						"flt_type": {
 							Type:     schema.TypeString,
 							Required: true,
+							ValidateFunc: validation.StringInSlice([]string{
+								"ipv4",
+								"ipv6",
+								"ce",
+							}, false),
 						},
 					},
 				},
@@ -130,7 +136,7 @@ func getRemoteLogicalInterfaceProfile(client *client.Client, dn string) (*models
 	l3extLIfP := models.LogicalInterfaceProfileFromContainer(l3extLIfPCont)
 
 	if l3extLIfP.DistinguishedName == "" {
-		return nil, fmt.Errorf("LogicalInterfaceProfile %s not found", l3extLIfP.DistinguishedName)
+		return nil, fmt.Errorf("Logical Interface Profile %s not found", dn)
 	}
 
 	return l3extLIfP, nil
@@ -162,7 +168,7 @@ func getTnNetflowMonitorPolName(paramMap map[string]interface{}) string {
 	if paramMap["tn_netflow_monitor_pol_dn"] != "" {
 		return GetMOName(paramMap["tn_netflow_monitor_pol_dn"].(string))
 	} else {
-		return paramMap["tn_netflow_monitor_pol_name"].(string)
+		return GetMOName(paramMap["tn_netflow_monitor_pol_name"].(string))
 	}
 }
 
@@ -513,6 +519,24 @@ func resourceAciLogicalInterfaceProfileRead(ctx context.Context, d *schema.Resou
 				"flt_type":                  obj["fltType"],
 			})
 		}
+		if relationTol3extRsLIfPToNetflowMonitorPol, ok := d.GetOk("relation_l3ext_rs_l_if_p_to_netflow_monitor_pol"); ok {
+			relationParamList := relationTol3extRsLIfPToNetflowMonitorPol.(*schema.Set).List()
+			for _, relationParam := range relationParamList {
+				paramMap := relationParam.(map[string]interface{})
+				if paramMap["tn_netflow_monitor_pol_dn"] == "" {
+					for _, sub_attributes_map_value := range relParamList {
+						for sub_attribute_key, _ := range sub_attributes_map_value {
+							if sub_attribute_key == "tn_netflow_monitor_pol_dn" {
+								sub_attributes_map_value["tn_netflow_monitor_pol_name"] = sub_attributes_map_value[sub_attribute_key]
+								delete(sub_attributes_map_value, sub_attribute_key)
+							}
+						}
+					}
+
+				}
+			}
+		}
+
 		d.Set("relation_l3ext_rs_l_if_p_to_netflow_monitor_pol", relParamList)
 	}
 
