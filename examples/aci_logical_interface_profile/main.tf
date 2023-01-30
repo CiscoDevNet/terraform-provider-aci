@@ -15,7 +15,7 @@ provider "aci" {
 
 resource "aci_tenant" "footenant" {
   description = "sample aci_tenant from terraform"
-  name        = "demo_tenant"
+  name        = "l3out_tf_tenant"
   annotation  = "tag_tenant"
   name_alias  = "alias_tenant"
 }
@@ -42,11 +42,19 @@ resource "aci_logical_node_profile" "foological_node_profile" {
 }
 
 resource "aci_logical_interface_profile" "foological_interface_profile" {
-  logical_node_profile_dn = aci_logical_node_profile.foological_node_profile.id
-  description             = "aci_logical_interface_profile from terraform"
-  name                    = "demo_int_prof"
-  annotation              = "tag_prof"
-  name_alias              = "alias_prof"
-  prio                    = "unspecified"
-  tag                     = "black"
+  logical_node_profile_dn               = aci_logical_node_profile.foological_node_profile.id
+  description                           = "aci_logical_interface_profile from terraform"
+  name                                  = "demo_int_prof"
+  annotation                            = "tag_prof"
+  name_alias                            = "alias_prof"
+  prio                                  = "unspecified"
+  tag                                   = "black"
+  relation_l3ext_rs_egress_qos_dpp_pol  = "uni/tn-l3out_tf_tenant/qosdpppol-egress_data_plane"
+  relation_l3ext_rs_ingress_qos_dpp_pol = "uni/tn-l3out_tf_tenant/qosdpppol-ingress_data_plane"
+  relation_l3ext_rs_l_if_p_cust_qos_pol = "uni/tn-l3out_tf_tenant/qoscustom-qos"
+  relation_l3ext_rs_nd_if_pol           = "uni/tn-l3out_tf_tenant/ndifpol-nd"
+  relation_l3ext_rs_l_if_p_to_netflow_monitor_pol {
+    tn_netflow_monitor_pol_dn = "uni/tn-l3out_tf_tenant/monitorpol-netflow"
+    flt_type                  = "ipv4"
+  }
 }
