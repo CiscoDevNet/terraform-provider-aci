@@ -260,12 +260,10 @@ func resourceAciContractSubject() *schema.Resource {
 
 			"relation_vz_rs_subj_graph_att": &schema.Schema{
 				Type:     schema.TypeString,
-				Computed: true,
 				Optional: true,
 			},
 			"relation_vz_rs_sdwan_pol": &schema.Schema{
 				Type:     schema.TypeString,
-				Computed: true,
 				Optional: true,
 			},
 			"relation_vz_rs_subj_filt_att": &schema.Schema{
