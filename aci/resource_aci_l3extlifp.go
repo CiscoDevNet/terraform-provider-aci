@@ -2,6 +2,7 @@ package aci
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log"
 
@@ -60,9 +61,14 @@ func resourceAciLogicalInterfaceProfile() *schema.Resource {
 				Optional: true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
+						"tn_netflow_monitor_pol_name": {
+							Type:       schema.TypeString,
+							Optional:   true,
+							Deprecated: "Use tn_netflow_monitor_pol_dn instead",
+						},
 						"tn_netflow_monitor_pol_dn": {
 							Type:     schema.TypeString,
-							Required: true,
+							Optional: true,
 						},
 						"flt_type": {
 							Type:     schema.TypeString,
@@ -98,6 +104,21 @@ func resourceAciLogicalInterfaceProfile() *schema.Resource {
 				Optional: true,
 			},
 		}),
+		CustomizeDiff: func(_ context.Context, diff *schema.ResourceDiff, v interface{}) error {
+			// Plan time validation.
+			if relation, ok := diff.GetOk("relation_l3ext_rs_l_if_p_to_netflow_monitor_pol"); ok {
+				for _, relationParam := range relation.(*schema.Set).List() {
+					paramMap := relationParam.(map[string]interface{})
+					if paramMap["tn_netflow_monitor_pol_dn"] != "" && paramMap["tn_netflow_monitor_pol_name"] != "" {
+						return errors.New("Both tn_netflow_monitor_pol_dn and tn_netflow_monitor_pol_name cannot be used together. Use tn_netflow_monitor_pol_dn instead because tn_netflow_monitor_pol_name will be deprecated")
+					}
+					if paramMap["tn_netflow_monitor_pol_dn"] == "" && paramMap["tn_netflow_monitor_pol_name"] == "" {
+						return errors.New("tn_netflow_monitor_pol_dn is required")
+					}
+				}
+			}
+			return nil
+		},
 	}
 }
 func getRemoteLogicalInterfaceProfile(client *client.Client, dn string) (*models.LogicalInterfaceProfile, error) {
@@ -135,6 +156,14 @@ func setLogicalInterfaceProfileAttributes(l3extLIfP *models.LogicalInterfaceProf
 	d.Set("prio", l3extLIfPMap["prio"])
 	d.Set("tag", l3extLIfPMap["tag"])
 	return d, nil
+}
+
+func getTnNetflowMonitorPolName(paramMap map[string]interface{}) string {
+	if paramMap["tn_netflow_monitor_pol_dn"] != "" {
+		return GetMOName(paramMap["tn_netflow_monitor_pol_dn"].(string))
+	} else {
+		return paramMap["tn_netflow_monitor_pol_name"].(string)
+	}
 }
 
 func resourceAciLogicalInterfaceProfileImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -236,7 +265,8 @@ func resourceAciLogicalInterfaceProfileCreate(ctx context.Context, d *schema.Res
 		relationParamList := relationTol3extRsLIfPToNetflowMonitorPol.(*schema.Set).List()
 		for _, relationParam := range relationParamList {
 			paramMap := relationParam.(map[string]interface{})
-			err = aciClient.CreateRelationl3extRsLIfPToNetflowMonitorPolFromLogicalInterfaceProfile(l3extLIfP.DistinguishedName, GetMOName(paramMap["tn_netflow_monitor_pol_dn"].(string)), paramMap["flt_type"].(string))
+			relationParamName := getTnNetflowMonitorPolName(paramMap)
+			err = aciClient.CreateRelationl3extRsLIfPToNetflowMonitorPolFromLogicalInterfaceProfile(l3extLIfP.DistinguishedName, relationParamName, paramMap["flt_type"].(string))
 			if err != nil {
 				return diag.FromErr(err)
 
@@ -378,7 +408,8 @@ func resourceAciLogicalInterfaceProfileUpdate(ctx context.Context, d *schema.Res
 		newRelList := newRel.(*schema.Set).List()
 		for _, relationParam := range oldRelList {
 			paramMap := relationParam.(map[string]interface{})
-			err = aciClient.DeleteRelationl3extRsLIfPToNetflowMonitorPolFromLogicalInterfaceProfile(l3extLIfP.DistinguishedName, GetMOName(paramMap["tn_netflow_monitor_pol_dn"].(string)), paramMap["flt_type"].(string))
+			relationParamName := getTnNetflowMonitorPolName(paramMap)
+			err = aciClient.DeleteRelationl3extRsLIfPToNetflowMonitorPolFromLogicalInterfaceProfile(l3extLIfP.DistinguishedName, relationParamName, paramMap["flt_type"].(string))
 			if err != nil {
 				return diag.FromErr(err)
 
@@ -387,7 +418,8 @@ func resourceAciLogicalInterfaceProfileUpdate(ctx context.Context, d *schema.Res
 		}
 		for _, relationParam := range newRelList {
 			paramMap := relationParam.(map[string]interface{})
-			err = aciClient.CreateRelationl3extRsLIfPToNetflowMonitorPolFromLogicalInterfaceProfile(l3extLIfP.DistinguishedName, GetMOName(paramMap["tn_netflow_monitor_pol_dn"].(string)), paramMap["flt_type"].(string))
+			relationParamName := getTnNetflowMonitorPolName(paramMap)
+			err = aciClient.CreateRelationl3extRsLIfPToNetflowMonitorPolFromLogicalInterfaceProfile(l3extLIfP.DistinguishedName, relationParamName, paramMap["flt_type"].(string))
 			if err != nil {
 				return diag.FromErr(err)
 
@@ -477,7 +509,7 @@ func resourceAciLogicalInterfaceProfileRead(ctx context.Context, d *schema.Resou
 		relParams := l3extRsLIfPToNetflowMonitorPolData.([]map[string]string)
 		for _, obj := range relParams {
 			relParamList = append(relParamList, map[string]string{
-				"tn_netflow_monitor_pol_dn": obj["tnNetflowMonitorPolName"],
+				"tn_netflow_monitor_pol_dn": obj["tDn"],
 				"flt_type":                  obj["fltType"],
 			})
 		}
