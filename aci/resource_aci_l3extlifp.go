@@ -520,23 +520,19 @@ func resourceAciLogicalInterfaceProfileRead(ctx context.Context, d *schema.Resou
 			})
 		}
 		if relationTol3extRsLIfPToNetflowMonitorPol, ok := d.GetOk("relation_l3ext_rs_l_if_p_to_netflow_monitor_pol"); ok {
-			relationParamList := relationTol3extRsLIfPToNetflowMonitorPol.(*schema.Set).List()
-			for _, relationParam := range relationParamList {
-				paramMap := relationParam.(map[string]interface{})
-				if paramMap["tn_netflow_monitor_pol_dn"] == "" {
-					for _, sub_attributes_map_value := range relParamList {
-						for sub_attribute_key, _ := range sub_attributes_map_value {
-							if sub_attribute_key == "tn_netflow_monitor_pol_dn" {
-								sub_attributes_map_value["tn_netflow_monitor_pol_name"] = sub_attributes_map_value[sub_attribute_key]
-								delete(sub_attributes_map_value, sub_attribute_key)
-							}
+			relationParamListUser := relationTol3extRsLIfPToNetflowMonitorPol.(*schema.Set).List()
+			for _, relationParamUser := range relationParamListUser {
+				paramMapUser := relationParamUser.(map[string]interface{})
+				if paramMapUser["tn_netflow_monitor_pol_dn"] == "" {
+					for _, sub_attributes_map_apic := range relParamList {
+						if sub_attribute_apic_key, ok := sub_attributes_map_apic["tn_netflow_monitor_pol_dn"]; ok {
+							sub_attributes_map_apic["tn_netflow_monitor_pol_name"] = sub_attribute_apic_key
+							delete(sub_attributes_map_apic, "tn_netflow_monitor_pol_dn")
 						}
 					}
-
 				}
 			}
 		}
-
 		d.Set("relation_l3ext_rs_l_if_p_to_netflow_monitor_pol", relParamList)
 	}
 
