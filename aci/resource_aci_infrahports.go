@@ -72,7 +72,7 @@ func getRemoteAccessPortSelector(client *client.Client, dn string) (*models.Acce
 	infraHPortS := models.AccessPortSelectorFromContainer(infraHPortSCont)
 
 	if infraHPortS.DistinguishedName == "" {
-		return nil, fmt.Errorf("AccessPortSelector %s not found", infraHPortS.DistinguishedName)
+		return nil, fmt.Errorf("Access Port Selector %s not found", dn)
 	}
 
 	return infraHPortS, nil
@@ -281,8 +281,7 @@ func resourceAciAccessPortSelectorRead(ctx context.Context, d *schema.ResourceDa
 	infraHPortS, err := getRemoteAccessPortSelector(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setAccessPortSelectorAttributes(infraHPortS, d)
 	if err != nil {

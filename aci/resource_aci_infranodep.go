@@ -152,7 +152,7 @@ func getRemoteLeafProfile(client *client.Client, dn string) (*models.LeafProfile
 	infraNodeP := models.LeafProfileFromContainer(infraNodePCont)
 
 	if infraNodeP.DistinguishedName == "" {
-		return nil, fmt.Errorf("LeafProfile %s not found", infraNodeP.DistinguishedName)
+		return nil, fmt.Errorf("Leaf Profile %s not found", dn)
 	}
 
 	return infraNodeP, nil
@@ -167,7 +167,7 @@ func getRemoteSwitchAssociationFromLeafP(client *client.Client, dn string) (*mod
 	infraLeafS := models.SwitchAssociationFromContainer(infraLeafSCont)
 
 	if infraLeafS.DistinguishedName == "" {
-		return nil, fmt.Errorf("SwitchAssociation %s not found", infraLeafS.DistinguishedName)
+		return nil, fmt.Errorf("Switch Association %s not found", dn)
 	}
 
 	return infraLeafS, nil
@@ -182,7 +182,7 @@ func getRemoteNodeBlockFromLeafP(client *client.Client, dn string) (*models.Node
 	infraNodeBlk := models.NodeBlockFromContainerBLK(infraNodeBlkCont)
 
 	if infraNodeBlk.DistinguishedName == "" {
-		return nil, fmt.Errorf("NodeBlock %s not found", infraNodeBlk.DistinguishedName)
+		return nil, fmt.Errorf("Node Block %s not found", dn)
 	}
 
 	return infraNodeBlk, nil
@@ -645,8 +645,7 @@ func resourceAciLeafProfileRead(ctx context.Context, d *schema.ResourceData, m i
 	infraNodeP, err := getRemoteLeafProfile(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setLeafProfileAttributes(infraNodeP, d)
 	if err != nil {

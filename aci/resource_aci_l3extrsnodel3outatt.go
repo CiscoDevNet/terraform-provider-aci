@@ -91,7 +91,7 @@ func getRemoteFabricNode(client *client.Client, dn string) (*models.FabricNode, 
 	l3extRsNodeL3OutAtt := models.FabricNodeFromContainer(l3extRsNodeL3OutAttCont)
 
 	if l3extRsNodeL3OutAtt.DistinguishedName == "" {
-		return nil, fmt.Errorf("FabricNode %s not found", l3extRsNodeL3OutAtt.DistinguishedName)
+		return nil, fmt.Errorf("Fabric Node %s not found", dn)
 	}
 
 	return l3extRsNodeL3OutAtt, nil
@@ -242,8 +242,7 @@ func resourceAciFabricNodeRead(ctx context.Context, d *schema.ResourceData, m in
 	l3extRsNodeL3OutAtt, err := getRemoteFabricNode(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setFabricNodeAttributes(l3extRsNodeL3OutAtt, d)
 

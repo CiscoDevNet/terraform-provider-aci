@@ -80,7 +80,7 @@ func getRemoteLogicalDeviceContext(client *client.Client, dn string) (*models.Lo
 	vnsLDevCtx := models.LogicalDeviceContextFromContainer(vnsLDevCtxCont)
 
 	if vnsLDevCtx.DistinguishedName == "" {
-		return nil, fmt.Errorf("LogicalDeviceContext %s not found", vnsLDevCtx.DistinguishedName)
+		return nil, fmt.Errorf("Logical Device Context %s not found", dn)
 	}
 
 	return vnsLDevCtx, nil
@@ -305,8 +305,7 @@ func resourceAciLogicalDeviceContextRead(ctx context.Context, d *schema.Resource
 	vnsLDevCtx, err := getRemoteLogicalDeviceContext(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setLogicalDeviceContextAttributes(vnsLDevCtx, d)
 	if err != nil {

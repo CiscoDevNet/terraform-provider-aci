@@ -94,7 +94,7 @@ func getRemoteQOSInstancePolicy(client *client.Client, dn string) (*models.QOSIn
 	}
 	qosInstPol := models.QOSInstancePolicyFromContainer(qosInstPolCont)
 	if qosInstPol.DistinguishedName == "" {
-		return nil, fmt.Errorf("QOSInstancePolicy %s not found", qosInstPol.DistinguishedName)
+		return nil, fmt.Errorf("QOS Instance Policy %s not found", dn)
 	}
 	return qosInstPol, nil
 }
@@ -276,8 +276,7 @@ func resourceAciQOSInstancePolicyRead(ctx context.Context, d *schema.ResourceDat
 	dn := d.Id()
 	qosInstPol, err := getRemoteQOSInstancePolicy(aciClient, dn)
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setQOSInstancePolicyAttributes(qosInstPol, d)
 	if err != nil {

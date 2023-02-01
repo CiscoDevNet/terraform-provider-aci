@@ -122,7 +122,7 @@ func getRemoteL4L7ServiceGraphTemplate(client *client.Client, dn string) (*model
 	vnsAbsGraph := models.L4L7ServiceGraphTemplateFromContainer(vnsAbsGraphCont)
 
 	if vnsAbsGraph.DistinguishedName == "" {
-		return nil, fmt.Errorf("L4L7ServiceGraphTemplate %s not found", vnsAbsGraph.DistinguishedName)
+		return nil, fmt.Errorf("L4L7 Service Graph Template %s not found", dn)
 	}
 
 	return vnsAbsGraph, nil
@@ -441,8 +441,7 @@ func resourceAciL4L7ServiceGraphTemplateRead(ctx context.Context, d *schema.Reso
 	vnsAbsGraph, err := getRemoteL4L7ServiceGraphTemplate(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setL4L7ServiceGraphTemplateAttributes(vnsAbsGraph, d)
 	if err != nil {

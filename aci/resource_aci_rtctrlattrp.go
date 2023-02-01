@@ -153,7 +153,7 @@ func getRemoteActionRuleProfile(client *client.Client, dn string) (*models.Actio
 	rtctrlAttrP := models.ActionRuleProfileFromContainer(rtctrlAttrPCont)
 
 	if rtctrlAttrP.DistinguishedName == "" {
-		return nil, fmt.Errorf("ActionRuleProfile %s not found", dn)
+		return nil, fmt.Errorf("Action Rule Profile %s not found", dn)
 	}
 
 	return rtctrlAttrP, nil
@@ -247,7 +247,7 @@ func getRemoteRtctrlSetRtMetric(client *client.Client, dn string) (*models.Rtctr
 	}
 	rtctrlSetRtMetric := models.RtctrlSetRtMetricFromContainer(rtctrlSetRtMetricCont)
 	if rtctrlSetRtMetric.DistinguishedName == "" {
-		return nil, fmt.Errorf("rtctrlSetRtMetric %s not found", dn)
+		return nil, fmt.Errorf("rtctrl Set RtMetric %s not found", dn)
 	}
 	return rtctrlSetRtMetric, nil
 }
@@ -268,7 +268,7 @@ func getRemoteRtctrlSetRtMetricType(client *client.Client, dn string) (*models.R
 	}
 	rtctrlSetRtMetricType := models.RtctrlSetRtMetricTypeFromContainer(rtctrlSetRtMetricTypeCont)
 	if rtctrlSetRtMetricType.DistinguishedName == "" {
-		return nil, fmt.Errorf("rtctrlSetRtMetricType %s not found", dn)
+		return nil, fmt.Errorf("rtctrl Set RtMetric Type %s not found", dn)
 	}
 	return rtctrlSetRtMetricType, nil
 }
@@ -289,7 +289,7 @@ func getRemoteRtctrlSetNh(client *client.Client, dn string) (*models.RtctrlSetNh
 	}
 	rtctrlSetNh := models.RtctrlSetNhFromContainer(rtctrlSetNhCont)
 	if rtctrlSetNh.DistinguishedName == "" {
-		return nil, fmt.Errorf("rtctrlSetNh %s not found", dn)
+		return nil, fmt.Errorf("rtctrl SetNh %s not found", dn)
 	}
 	return rtctrlSetNh, nil
 }
@@ -310,7 +310,7 @@ func getRemoteRtctrlSetComm(client *client.Client, dn string) (*models.RtctrlSet
 	}
 	rtctrlSetComm := models.RtctrlSetCommFromContainer(rtctrlSetCommCont)
 	if rtctrlSetComm.DistinguishedName == "" {
-		return nil, fmt.Errorf("rtctrlSetComm %s not found", dn)
+		return nil, fmt.Errorf("rtctrl Set Comm %s not found", dn)
 	}
 	return rtctrlSetComm, nil
 }
@@ -336,7 +336,7 @@ func getRemoteNexthopUnchangedAction(client *client.Client, dn string) (*models.
 	}
 	rtctrlSetNhUnchanged := models.NexthopUnchangedActionFromContainer(rtctrlSetNhUnchangedCont)
 	if rtctrlSetNhUnchanged.DistinguishedName == "" {
-		return nil, fmt.Errorf("NexthopUnchangedAction %s not found", dn)
+		return nil, fmt.Errorf("Next hop Unchanged Action %s not found", dn)
 	}
 	return rtctrlSetNhUnchanged, nil
 }
@@ -359,7 +359,7 @@ func getRemoteRtctrlSetRedistMultipath(client *client.Client, dn string) (*model
 	}
 	rtctrlSetRedistMultipath := models.RedistributeMultipathActionFromContainer(rtctrlSetRedistMultipathCont)
 	if rtctrlSetRedistMultipath.DistinguishedName == "" {
-		return nil, fmt.Errorf("rtctrlSetRedistMultipath %s not found", dn)
+		return nil, fmt.Errorf("rtctrl Set Redist Multipath %s not found", dn)
 	}
 	return rtctrlSetRedistMultipath, nil
 }
@@ -382,7 +382,7 @@ func getRemoteRtctrlSetASPath(client *client.Client, dn string) (*models.SetASPa
 	}
 	rtctrlSetASPath := models.SetASPathFromContainer(rtctrlSetASPathCont)
 	if rtctrlSetASPath.DistinguishedName == "" {
-		return nil, fmt.Errorf("RtctrlSetASPath %s not found", dn)
+		return nil, fmt.Errorf("Rtctrl Set AS Path %s not found", dn)
 	}
 	return rtctrlSetASPath, nil
 }
@@ -421,7 +421,7 @@ func getRemoteRtctrlSetDamp(client *client.Client, dn string) (*models.RtctrlSet
 	}
 	rtctrlSetDamp := models.RtctrlSetDampFromContainer(rtctrlSetDampCont)
 	if rtctrlSetDamp.DistinguishedName == "" {
-		return nil, fmt.Errorf("rtctrlSetDamp %s not found", dn)
+		return nil, fmt.Errorf("rtctrl Set Damp %s not found", dn)
 	}
 	return rtctrlSetDamp, nil
 }
@@ -1450,8 +1450,7 @@ func resourceAciActionRuleProfileRead(ctx context.Context, d *schema.ResourceDat
 	rtctrlAttrP, err := getRemoteActionRuleProfile(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setActionRuleProfileAttributes(rtctrlAttrP, d)
 	if err != nil {

@@ -65,7 +65,7 @@ func getRemoteMulticastAddressPool(client *client.Client, dn string) (*models.Mu
 	}
 	fvnsMcastAddrInstP := models.MulticastAddressPoolFromContainer(fvnsMcastAddrInstPCont)
 	if fvnsMcastAddrInstP.DistinguishedName == "" {
-		return nil, fmt.Errorf("MulticastAddressPool %s not found", dn)
+		return nil, fmt.Errorf("Multicast Address Pool %s not found", dn)
 	}
 	return fvnsMcastAddrInstP, nil
 }
@@ -271,8 +271,7 @@ func resourceAciMulticastAddressPoolRead(ctx context.Context, d *schema.Resource
 
 	fvnsMcastAddrInstP, err := getRemoteMulticastAddressPool(aciClient, dn)
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 
 	_, err = setMulticastAddressPoolAttributes(fvnsMcastAddrInstP, d)

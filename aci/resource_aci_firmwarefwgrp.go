@@ -67,7 +67,7 @@ func getRemoteFirmwareGroup(client *client.Client, dn string) (*models.FirmwareG
 	firmwareFwGrp := models.FirmwareGroupFromContainer(firmwareFwGrpCont)
 
 	if firmwareFwGrp.DistinguishedName == "" {
-		return nil, fmt.Errorf("FirmwareGroup %s not found", firmwareFwGrp.DistinguishedName)
+		return nil, fmt.Errorf("Firmware Group %s not found", dn)
 	}
 
 	return firmwareFwGrp, nil
@@ -230,8 +230,7 @@ func resourceAciFirmwareGroupRead(ctx context.Context, d *schema.ResourceData, m
 	firmwareFwGrp, err := getRemoteFirmwareGroup(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	setFirmwareGroupAttributes(firmwareFwGrp, d)
 

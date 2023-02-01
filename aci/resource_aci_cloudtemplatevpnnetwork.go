@@ -414,8 +414,7 @@ func resourceAciCloudTemplateforVPNNetworkRead(ctx context.Context, d *schema.Re
 
 	cloudtemplateVpnNetwork, err := getRemoteTemplateforVPNNetwork(aciClient, dn)
 	if err != nil {
-		d.SetId("")
-		return diag.FromErr(err)
+		return errorForObjectNotFound(err, dn, d)
 	}
 
 	_, err = setTemplateforVPNNetworkAttributes(cloudtemplateVpnNetwork, d)

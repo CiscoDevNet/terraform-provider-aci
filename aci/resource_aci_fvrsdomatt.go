@@ -255,7 +255,7 @@ func getRemoteDomain(client *client.Client, dn string) (*models.FVDomain, error)
 	fvRsDomAtt := models.FVDomainFromContainer(fvRsDomAttCont)
 
 	if fvRsDomAtt.DistinguishedName == "" {
-		return nil, fmt.Errorf("Domain %s not found", fvRsDomAtt.DistinguishedName)
+		return nil, fmt.Errorf("Domain %s not found", dn)
 	}
 
 	return fvRsDomAtt, nil
@@ -678,8 +678,7 @@ func resourceAciDomainRead(ctx context.Context, d *schema.ResourceData, m interf
 	fvRsDomAtt, err := getRemoteDomain(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setDomainAttributes(fvRsDomAtt, d)
 

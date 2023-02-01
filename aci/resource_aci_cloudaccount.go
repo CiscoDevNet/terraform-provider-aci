@@ -84,7 +84,7 @@ func getRemoteCloudAccount(client *client.Client, dn string) (*models.CloudAccou
 
 	cloudAccount := models.CloudAccountFromContainer(cloudAccountCont)
 	if cloudAccount.DistinguishedName == "" {
-		return nil, fmt.Errorf("Cloud Account %s not found", cloudAccount.DistinguishedName)
+		return nil, fmt.Errorf("Cloud Account %s not found", dn)
 	}
 	return cloudAccount, nil
 }
@@ -325,8 +325,7 @@ func resourceAciCloudAccountRead(ctx context.Context, d *schema.ResourceData, m 
 
 	cloudAccount, err := getRemoteCloudAccount(aciClient, dn)
 	if err != nil {
-		d.SetId("")
-		return diag.FromErr(err)
+		return errorForObjectNotFound(err, dn, d)
 	}
 
 	_, err = setCloudAccountAttributes(cloudAccount, d)

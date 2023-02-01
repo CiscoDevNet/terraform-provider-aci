@@ -49,7 +49,7 @@ func getRemoteSecurityDomain(client *client.Client, dn string) (*models.Security
 	aaaDomain := models.SecurityDomainFromContainer(aaaDomainCont)
 
 	if aaaDomain.DistinguishedName == "" {
-		return nil, fmt.Errorf("SecurityDomain %s not found", aaaDomain.DistinguishedName)
+		return nil, fmt.Errorf("Security Domain %s not found", dn)
 	}
 
 	return aaaDomain, nil
@@ -163,8 +163,7 @@ func resourceAciSecurityDomainRead(ctx context.Context, d *schema.ResourceData, 
 	aaaDomain, err := getRemoteSecurityDomain(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setSecurityDomainAttributes(aaaDomain, d)
 	if err != nil {

@@ -85,7 +85,7 @@ func getRemoteBGPTimersPolicy(client *client.Client, dn string) (*models.BGPTime
 	bgpCtxPol := models.BGPTimersPolicyFromContainer(bgpCtxPolCont)
 
 	if bgpCtxPol.DistinguishedName == "" {
-		return nil, fmt.Errorf("BGPTimersPolicy %s not found", bgpCtxPol.DistinguishedName)
+		return nil, fmt.Errorf("BGP Timers Policy %s not found", dn)
 	}
 
 	return bgpCtxPol, nil
@@ -243,8 +243,7 @@ func resourceAciBGPTimersPolicyRead(ctx context.Context, d *schema.ResourceData,
 	bgpCtxPol, err := getRemoteBGPTimersPolicy(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setBGPTimersPolicyAttributes(bgpCtxPol, d)
 	if err != nil {

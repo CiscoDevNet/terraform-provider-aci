@@ -49,7 +49,7 @@ func getRemoteLeafInterfaceProfile(client *client.Client, dn string) (*models.Le
 	infraAccPortP := models.LeafInterfaceProfileFromContainer(infraAccPortPCont)
 
 	if infraAccPortP.DistinguishedName == "" {
-		return nil, fmt.Errorf("LeafInterfaceProfile %s not found", infraAccPortP.DistinguishedName)
+		return nil, fmt.Errorf("Leaf Interface Profile %s not found", dn)
 	}
 
 	return infraAccPortP, nil
@@ -168,8 +168,7 @@ func resourceAciLeafInterfaceProfileRead(ctx context.Context, d *schema.Resource
 	infraAccPortP, err := getRemoteLeafInterfaceProfile(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 
 	_, err = setLeafInterfaceProfileAttributes(infraAccPortP, d)

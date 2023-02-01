@@ -168,7 +168,7 @@ func getRemoteCloudExternalEPg(client *client.Client, dn string) (*models.CloudE
 	cloudExtEPg := models.CloudExternalEPgFromContainer(cloudExtEPgCont)
 
 	if cloudExtEPg.DistinguishedName == "" {
-		return nil, fmt.Errorf("CloudExternalEPg %s not found", cloudExtEPg.DistinguishedName)
+		return nil, fmt.Errorf("Cloud External EPg %s not found", dn)
 	}
 
 	return cloudExtEPg, nil
@@ -740,8 +740,7 @@ func resourceAciCloudExternalEPgRead(ctx context.Context, d *schema.ResourceData
 	cloudExtEPg, err := getRemoteCloudExternalEPg(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setCloudExternalEPgAttributes(cloudExtEPg, d)
 

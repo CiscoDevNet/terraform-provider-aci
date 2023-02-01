@@ -100,7 +100,7 @@ func getRemoteLinkLevelPolicy(client *client.Client, dn string) (*models.LinkLev
 	fabricHIfPol := models.LinkLevelPolicyFromContainer(fabricHIfPolCont)
 
 	if fabricHIfPol.DistinguishedName == "" {
-		return nil, fmt.Errorf("LinkLevelPolicy %s not found", fabricHIfPol.DistinguishedName)
+		return nil, fmt.Errorf("Link Level Policy %s not found", dn)
 	}
 
 	return fabricHIfPol, nil
@@ -242,8 +242,7 @@ func resourceAciLinkLevelPolicyRead(ctx context.Context, d *schema.ResourceData,
 	fabricHIfPol, err := getRemoteLinkLevelPolicy(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setLinkLevelPolicyAttributes(fabricHIfPol, d)
 	if err != nil {

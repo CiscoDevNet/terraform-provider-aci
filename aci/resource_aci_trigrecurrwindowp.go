@@ -114,7 +114,7 @@ func getRemoteRecurringWindow(client *client.Client, dn string) (*models.Recurri
 	}
 	trigRecurrWindowP := models.RecurringWindowFromContainer(trigRecurrWindowPCont)
 	if trigRecurrWindowP.DistinguishedName == "" {
-		return nil, fmt.Errorf("RecurringWindow %s not found", trigRecurrWindowP.DistinguishedName)
+		return nil, fmt.Errorf("Recurring Window %s not found", dn)
 	}
 	return trigRecurrWindowP, nil
 }
@@ -291,10 +291,13 @@ func resourceAciRecurringWindowRead(ctx context.Context, d *schema.ResourceData,
 	dn := d.Id()
 	trigRecurrWindowP, err := getRemoteRecurringWindow(aciClient, dn)
 	if err != nil {
+		return errorForObjectNotFound(err, dn, d)
+	}
+	_, err = setRecurringWindowAttributes(trigRecurrWindowP, d)
+	if err != nil {
 		d.SetId("")
 		return nil
 	}
-	setRecurringWindowAttributes(trigRecurrWindowP, d)
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 	return nil

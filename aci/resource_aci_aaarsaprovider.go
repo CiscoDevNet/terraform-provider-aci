@@ -105,7 +105,7 @@ func getRemoteRSAProvider(client *client.Client, dn string) (*models.RSAProvider
 	}
 	aaaRsaProvider := models.RSAProviderFromContainer(aaaRsaProviderCont)
 	if aaaRsaProvider.DistinguishedName == "" {
-		return nil, fmt.Errorf("RSAProvider %s not found", aaaRsaProvider.DistinguishedName)
+		return nil, fmt.Errorf("RSA Provider %s not found", dn)
 	}
 	return aaaRsaProvider, nil
 }
@@ -364,8 +364,7 @@ func resourceAciRSAProviderRead(ctx context.Context, d *schema.ResourceData, m i
 	dn := d.Id()
 	aaaRsaProvider, err := getRemoteRSAProvider(aciClient, dn)
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setRSAProviderAttributes(aaaRsaProvider, d)
 	if err != nil {

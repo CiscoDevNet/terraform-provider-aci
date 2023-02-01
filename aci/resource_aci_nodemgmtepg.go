@@ -271,7 +271,7 @@ func getRemoteInBandManagementEPg(client *client.Client, dn string) (*models.InB
 	mgmtInB := models.InBandManagementEPgFromContainer(mgmtInBCont)
 
 	if mgmtInB.DistinguishedName == "" {
-		return nil, fmt.Errorf("InBandManagementEPg %s not found", mgmtInB.DistinguishedName)
+		return nil, fmt.Errorf("InBand Management EPg %s not found", dn)
 	}
 
 	return mgmtInB, nil
@@ -286,7 +286,7 @@ func getRemoteOutOfBandManagementEPg(client *client.Client, dn string) (*models.
 	mgmtOoB := models.OutOfBandManagementEPgFromContainer(mgmtOoBCont)
 
 	if mgmtOoB.DistinguishedName == "" {
-		return nil, fmt.Errorf("OutOfBandManagementEPg %s not found", mgmtOoB.DistinguishedName)
+		return nil, fmt.Errorf("Out Of Band Management EPg %s not found", dn)
 	}
 
 	return mgmtOoB, nil
@@ -1180,8 +1180,7 @@ func inBandManagementEPgRead(ctx context.Context, d *schema.ResourceData, m inte
 	mgmtInB, err := getRemoteInBandManagementEPg(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setInBandManagementEPgAttributes(mgmtInB, d)
 
@@ -1271,8 +1270,7 @@ func outOfBandManagementEPgRead(ctx context.Context, d *schema.ResourceData, m i
 	mgmtOoB, err := getRemoteOutOfBandManagementEPg(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setOutOfBandManagementEPgAttributes(mgmtOoB, d)
 

@@ -84,7 +84,7 @@ func getRemoteTACACSDestination(client *client.Client, dn string) (*models.TACAC
 	}
 	tacacsTacacsDest := models.TACACSDestinationFromContainer(tacacsTacacsDestCont)
 	if tacacsTacacsDest.DistinguishedName == "" {
-		return nil, fmt.Errorf("TACACSDestination %s not found", tacacsTacacsDest.DistinguishedName)
+		return nil, fmt.Errorf("TACACS Destination %s not found", dn)
 	}
 	return tacacsTacacsDest, nil
 }
@@ -314,8 +314,7 @@ func resourceAciTACACSDestinationRead(ctx context.Context, d *schema.ResourceDat
 	dn := d.Id()
 	tacacsTacacsDest, err := getRemoteTACACSDestination(aciClient, dn)
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setTACACSDestinationAttributes(tacacsTacacsDest, d)
 	if err != nil {

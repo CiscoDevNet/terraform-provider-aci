@@ -94,7 +94,7 @@ func getRemoteMiscablingProtocolInstancePolicy(client *client.Client, dn string)
 	}
 	mcpInstPol := models.MiscablingProtocolInstancePolicyFromContainer(mcpInstPolCont)
 	if mcpInstPol.DistinguishedName == "" {
-		return nil, fmt.Errorf("MiscablingProtocolInstancePolicy %s not found", mcpInstPol.DistinguishedName)
+		return nil, fmt.Errorf("Miscabling Protocol Instance Policy %s not found", dn)
 	}
 	return mcpInstPol, nil
 }
@@ -312,8 +312,7 @@ func resourceAciMiscablingProtocolInstancePolicyRead(ctx context.Context, d *sch
 	dn := d.Id()
 	mcpInstPol, err := getRemoteMiscablingProtocolInstancePolicy(aciClient, dn)
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setMiscablingProtocolInstancePolicyAttributes(mcpInstPol, d)
 	if err != nil {

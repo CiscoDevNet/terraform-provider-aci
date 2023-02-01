@@ -99,7 +99,7 @@ func getRemoteFCDomain(client *client.Client, dn string) (*models.FCDomain, erro
 	fcDomP := models.FCDomainFromContainer(fcDomPCont)
 
 	if fcDomP.DistinguishedName == "" {
-		return nil, fmt.Errorf("FCDomain %s not found", fcDomP.DistinguishedName)
+		return nil, fmt.Errorf("FC Domain %s not found", dn)
 	}
 
 	return fcDomP, nil
@@ -455,8 +455,7 @@ func resourceAciFCDomainRead(ctx context.Context, d *schema.ResourceData, m inte
 	fcDomP, err := getRemoteFCDomain(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setFCDomainAttributes(fcDomP, d)
 	if err != nil {

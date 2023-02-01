@@ -132,7 +132,7 @@ func getRemoteAccessSwitchPolicyGroup(client *client.Client, dn string) (*models
 	}
 	infraAccNodePGrp := models.AccessSwitchPolicyGroupFromContainer(infraAccNodePGrpCont)
 	if infraAccNodePGrp.DistinguishedName == "" {
-		return nil, fmt.Errorf("AccessSwitchPolicyGroup %s not found", infraAccNodePGrp.DistinguishedName)
+		return nil, fmt.Errorf("Access Switch Policy Group %s not found", dn)
 	}
 	return infraAccNodePGrp, nil
 }
@@ -1204,8 +1204,7 @@ func resourceAciAccessSwitchPolicyGroupRead(ctx context.Context, d *schema.Resou
 	dn := d.Id()
 	infraAccNodePGrp, err := getRemoteAccessSwitchPolicyGroup(aciClient, dn)
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	setAccessSwitchPolicyGroupAttributes(infraAccNodePGrp, d)
 

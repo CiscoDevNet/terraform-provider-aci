@@ -63,7 +63,7 @@ func getRemoteAccessAccessGroup(client *client.Client, dn string) (*models.Acces
 	infraRsAccBaseGrp := models.AccessAccessGroupFromContainer(infraRsAccBaseGrpCont)
 
 	if infraRsAccBaseGrp.DistinguishedName == "" {
-		return nil, fmt.Errorf("AccessAccessGroup %s not found", infraRsAccBaseGrp.DistinguishedName)
+		return nil, fmt.Errorf("Access Access Group %s not found", dn)
 	}
 
 	return infraRsAccBaseGrp, nil
@@ -184,8 +184,7 @@ func resourceAciAccessAccessGroupRead(ctx context.Context, d *schema.ResourceDat
 	infraRsAccBaseGrp, err := getRemoteAccessAccessGroup(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setAccessAccessGroupAttributes(infraRsAccBaseGrp, d)
 	if err != nil {

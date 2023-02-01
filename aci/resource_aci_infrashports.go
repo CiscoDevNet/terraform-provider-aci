@@ -65,7 +65,7 @@ func getRemoteSpineAccessPortSelector(client *client.Client, dn string) (*models
 	infraSHPortS := models.SpineAccessPortSelectorFromContainer(infraSHPortSCont)
 
 	if infraSHPortS.DistinguishedName == "" {
-		return nil, fmt.Errorf("SpineAccessPortSelector %s not found", infraSHPortS.DistinguishedName)
+		return nil, fmt.Errorf("Spine Access Port Selector %s not found", dn)
 	}
 
 	return infraSHPortS, nil
@@ -267,8 +267,7 @@ func resourceAciSpineAccessPortSelectorRead(ctx context.Context, d *schema.Resou
 	dn := d.Id()
 	infraSHPortS, err := getRemoteSpineAccessPortSelector(aciClient, dn)
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 
 	_, err = setSpineAccessPortSelectorAttributes(infraSHPortS, d)

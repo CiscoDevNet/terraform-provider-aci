@@ -118,7 +118,7 @@ func getRemoteConnection(client *client.Client, dn string) (*models.Connection, 
 	vnsAbsConnection := models.ConnectionFromContainer(vnsAbsConnectionCont)
 
 	if vnsAbsConnection.DistinguishedName == "" {
-		return nil, fmt.Errorf("Connection %s not found", vnsAbsConnection.DistinguishedName)
+		return nil, fmt.Errorf("Connection %s not found", dn)
 	}
 
 	return vnsAbsConnection, nil
@@ -401,8 +401,7 @@ func resourceAciConnectionRead(ctx context.Context, d *schema.ResourceData, m in
 	vnsAbsConnection, err := getRemoteConnection(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setConnectionAttributes(vnsAbsConnection, d)
 	if err != nil {

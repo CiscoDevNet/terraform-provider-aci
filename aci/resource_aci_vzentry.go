@@ -263,7 +263,7 @@ func getRemoteFilterEntry(client *client.Client, dn string) (*models.FilterEntry
 	vzEntry := models.FilterEntryFromContainer(vzEntryCont)
 
 	if vzEntry.DistinguishedName == "" {
-		return nil, fmt.Errorf("FilterEntry %s not found", vzEntry.DistinguishedName)
+		return nil, fmt.Errorf("Filter Entry %s not found", dn)
 	}
 
 	return vzEntry, nil
@@ -586,8 +586,7 @@ func resourceAciFilterEntryRead(ctx context.Context, d *schema.ResourceData, m i
 	vzEntry, err := getRemoteFilterEntry(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	d, err = portConversionCheck(vzEntry, d)
 	if err != nil {

@@ -72,7 +72,7 @@ func getRemoteL3outHSRPSecondaryVIP(client *client.Client, dn string) (*models.L
 	hsrpSecVip := models.L3outHSRPSecondaryVIPFromContainer(hsrpSecVipCont)
 
 	if hsrpSecVip.DistinguishedName == "" {
-		return nil, fmt.Errorf("L3outHSRPSecondaryVIP %s not found", hsrpSecVip.DistinguishedName)
+		return nil, fmt.Errorf("L3out HSRP Secondary VIP %s not found", dn)
 	}
 
 	return hsrpSecVip, nil
@@ -211,8 +211,7 @@ func resourceAciL3outHSRPSecondaryVIPRead(ctx context.Context, d *schema.Resourc
 	hsrpSecVip, err := getRemoteL3outHSRPSecondaryVIP(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setL3outHSRPSecondaryVIPAttributes(hsrpSecVip, d)
 	if err != nil {

@@ -54,7 +54,7 @@ func getRemoteLDAPGroupMapRule(client *client.Client, dn string) (*models.LDAPGr
 	}
 	aaaLdapGroupMapRule := models.LDAPGroupMapRuleFromContainer(aaaLdapGroupMapRuleCont)
 	if aaaLdapGroupMapRule.DistinguishedName == "" {
-		return nil, fmt.Errorf("LDAPGroupMapRule %s not found", aaaLdapGroupMapRule.DistinguishedName)
+		return nil, fmt.Errorf("LDAP Group Map Rule %s not found", dn)
 	}
 	return aaaLdapGroupMapRule, nil
 }
@@ -184,8 +184,7 @@ func resourceAciLDAPGroupMapRuleRead(ctx context.Context, d *schema.ResourceData
 	dn := d.Id()
 	aaaLdapGroupMapRule, err := getRemoteLDAPGroupMapRule(aciClient, dn)
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	ldap_group_map_rule := strings.Split(dn, "/")
 

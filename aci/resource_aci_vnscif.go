@@ -251,8 +251,7 @@ func resourceAciConcreteInterfaceRead(ctx context.Context, d *schema.ResourceDat
 
 	vnsCIf, err := getRemoteConcreteInterface(aciClient, dn)
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 
 	_, err = setConcreteInterfaceAttributes(vnsCIf, d)

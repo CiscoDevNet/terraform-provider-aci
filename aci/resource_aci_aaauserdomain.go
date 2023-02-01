@@ -45,7 +45,7 @@ func getRemoteUserDomain(client *client.Client, dn string) (*models.UserDomain, 
 	}
 	aaaUserDomain := models.UserDomainFromContainer(aaaUserDomainCont)
 	if aaaUserDomain.DistinguishedName == "" {
-		return nil, fmt.Errorf("UserDomain %s not found", aaaUserDomain.DistinguishedName)
+		return nil, fmt.Errorf("User Domain %s not found", dn)
 	}
 	return aaaUserDomain, nil
 }
@@ -153,8 +153,7 @@ func resourceAciUserDomainRead(ctx context.Context, d *schema.ResourceData, m in
 	dn := d.Id()
 	aaaUserDomain, err := getRemoteUserDomain(aciClient, dn)
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setUserDomainAttributes(aaaUserDomain, d)
 	if err != nil {

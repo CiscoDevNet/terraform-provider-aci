@@ -77,7 +77,7 @@ func getRemotePODMaintenanceGroup(client *client.Client, dn string) (*models.POD
 	maintMaintGrp := models.PODMaintenanceGroupFromContainer(maintMaintGrpCont)
 
 	if maintMaintGrp.DistinguishedName == "" {
-		return nil, fmt.Errorf("PODMaintenanceGroup %s not found", maintMaintGrp.DistinguishedName)
+		return nil, fmt.Errorf("POD Maintenance Group %s not found", dn)
 	}
 
 	return maintMaintGrp, nil
@@ -253,8 +253,7 @@ func resourceAciPODMaintenanceGroupRead(ctx context.Context, d *schema.ResourceD
 	maintMaintGrp, err := getRemotePODMaintenanceGroup(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setPODMaintenanceGroupAttributes(maintMaintGrp, d)
 	if err != nil {

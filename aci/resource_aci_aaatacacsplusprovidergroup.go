@@ -41,7 +41,7 @@ func getRemoteTACACSPlusProviderGroup(client *client.Client, dn string) (*models
 	}
 	aaaTacacsPlusProviderGroup := models.TACACSPlusProviderGroupFromContainer(aaaTacacsPlusProviderGroupCont)
 	if aaaTacacsPlusProviderGroup.DistinguishedName == "" {
-		return nil, fmt.Errorf("TACACSPlusProviderGroup %s not found", aaaTacacsPlusProviderGroup.DistinguishedName)
+		return nil, fmt.Errorf("TACACS Plus Provider Group %s not found", dn)
 	}
 	return aaaTacacsPlusProviderGroup, nil
 }
@@ -142,8 +142,7 @@ func resourceAciTACACSPlusProviderGroupRead(ctx context.Context, d *schema.Resou
 	dn := d.Id()
 	aaaTacacsPlusProviderGroup, err := getRemoteTACACSPlusProviderGroup(aciClient, dn)
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setTACACSPlusProviderGroupAttributes(aaaTacacsPlusProviderGroup, d)
 	if err != nil {

@@ -87,7 +87,7 @@ func getRemoteL3outStaticRoute(client *client.Client, dn string) (*models.L3outS
 	ipRouteP := models.L3outStaticRouteFromContainer(ipRoutePCont)
 
 	if ipRouteP.DistinguishedName == "" {
-		return nil, fmt.Errorf("L3outStaticRoute %s not found", ipRouteP.DistinguishedName)
+		return nil, fmt.Errorf("L3out Static Route %s not found", dn)
 	}
 
 	return ipRouteP, nil
@@ -289,8 +289,7 @@ func resourceAciL3outStaticRouteRead(ctx context.Context, d *schema.ResourceData
 	ipRouteP, err := getRemoteL3outStaticRoute(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setL3outStaticRouteAttributes(ipRouteP, d)
 	if err != nil {

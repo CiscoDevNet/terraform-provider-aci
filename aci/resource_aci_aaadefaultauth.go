@@ -73,7 +73,7 @@ func getRemoteDefaultAuthenticationMethodforallLogins(client *client.Client, dn 
 	}
 	aaaDefaultAuth := models.DefaultAuthenticationMethodforallLoginsFromContainer(aaaDefaultAuthCont)
 	if aaaDefaultAuth.DistinguishedName == "" {
-		return nil, fmt.Errorf("DefaultAuthenticationMethodforallLogins %s not found", aaaDefaultAuth.DistinguishedName)
+		return nil, fmt.Errorf("Default Authentication Method for all Logins %s not found", dn)
 	}
 	return aaaDefaultAuth, nil
 }
@@ -205,8 +205,7 @@ func resourceAciDefaultAuthenticationMethodforallLoginsRead(ctx context.Context,
 	dn := d.Id()
 	aaaDefaultAuth, err := getRemoteDefaultAuthenticationMethodforallLogins(aciClient, dn)
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setDefaultAuthenticationMethodforallLoginsAttributes(aaaDefaultAuth, d)
 	if err != nil {

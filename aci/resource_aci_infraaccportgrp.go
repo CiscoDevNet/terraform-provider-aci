@@ -194,7 +194,7 @@ func getRemoteLeafAccessPortPolicyGroup(client *client.Client, dn string) (*mode
 	infraAccPortGrp := models.LeafAccessPortPolicyGroupFromContainer(infraAccPortGrpCont)
 
 	if infraAccPortGrp.DistinguishedName == "" {
-		return nil, fmt.Errorf("LeafAccessPortPolicyGroup %s not found", infraAccPortGrp.DistinguishedName)
+		return nil, fmt.Errorf("Leaf Access Port Policy Group %s not found", dn)
 	}
 
 	return infraAccPortGrp, nil
@@ -1090,8 +1090,7 @@ func resourceAciLeafAccessPortPolicyGroupRead(ctx context.Context, d *schema.Res
 	infraAccPortGrp, err := getRemoteLeafAccessPortPolicyGroup(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setLeafAccessPortPolicyGroupAttributes(infraAccPortGrp, d)
 	if err != nil {

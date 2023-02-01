@@ -65,7 +65,7 @@ func getRemoteL3outBGPProtocolProfile(client *client.Client, dn string) (*models
 	bgpProtP := models.L3outBGPProtocolProfileFromContainer(bgpProtPCont)
 
 	if bgpProtP.DistinguishedName == "" {
-		return nil, fmt.Errorf("L3outBGPProtocolProfile %s not found", bgpProtP.DistinguishedName)
+		return nil, fmt.Errorf("L3out BGP Protocol Profile %s not found", dn)
 	}
 
 	return bgpProtP, nil
@@ -262,8 +262,7 @@ func resourceAciL3outBGPProtocolProfileRead(ctx context.Context, d *schema.Resou
 
 	bgpProtP, err := getRemoteL3outBGPProtocolProfile(aciClient, dn)
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setL3outBGPProtocolProfileAttributes(bgpProtP, d)
 	if err != nil {

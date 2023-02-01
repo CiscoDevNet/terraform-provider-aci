@@ -175,7 +175,7 @@ func getRemoteFunctionNode(client *client.Client, dn string) (*models.FunctionNo
 	vnsAbsNode := models.FunctionNodeFromContainer(vnsAbsNodeCont)
 
 	if vnsAbsNode.DistinguishedName == "" {
-		return nil, fmt.Errorf("FunctionNode %s not found", vnsAbsNode.DistinguishedName)
+		return nil, fmt.Errorf("Function Node %s not found", dn)
 	}
 
 	return vnsAbsNode, nil
@@ -552,10 +552,13 @@ func resourceAciFunctionNodeRead(ctx context.Context, d *schema.ResourceData, m 
 	vnsAbsNode, err := getRemoteFunctionNode(aciClient, dn)
 
 	if err != nil {
+		return errorForObjectNotFound(err, dn, d)
+	}
+	_, err = setFunctionNodeAttributes(vnsAbsNode, d)
+	if err != nil {
 		d.SetId("")
 		return nil
 	}
-	setFunctionNodeAttributes(vnsAbsNode, d)
 
 	consDn := d.Get("conn_consumer_dn").(string)
 	vnsAbsFuncConn, err := getRemoteFunctionConnector(aciClient, consDn)

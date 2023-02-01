@@ -54,13 +54,13 @@ func getRemoteSPANDestinationGroup(client *client.Client, dn string) (*models.SP
 	spanDestGrp := models.SPANDestinationGroupFromContainer(spanDestGrpCont)
 
 	if spanDestGrp.DistinguishedName == "" {
-		return nil, fmt.Errorf("SPANDestinationGroup %s not found", spanDestGrp.DistinguishedName)
+		return nil, fmt.Errorf("SPAN Destination Group %s not found", dn)
 	}
 
 	return spanDestGrp, nil
 }
 
-func setSPANDestinationGroupAttributes(spanDestGrp *models.SPANDestinationGroup, d *schema.ResourceData) *schema.ResourceData {
+func setSPANDestinationGroupAttributes(spanDestGrp *models.SPANDestinationGroup, d *schema.ResourceData) (*schema.ResourceData, error) {
 	dn := d.Id()
 	d.SetId(spanDestGrp.DistinguishedName)
 	d.Set("description", spanDestGrp.Description)
@@ -74,7 +74,7 @@ func setSPANDestinationGroupAttributes(spanDestGrp *models.SPANDestinationGroup,
 	d.Set("tenant_dn", GetParentDn(spanDestGrp.DistinguishedName, fmt.Sprintf("/destgrp-%s", spanDestGrpMap["name"])))
 	d.Set("annotation", spanDestGrpMap["annotation"])
 	d.Set("name_alias", spanDestGrpMap["nameAlias"])
-	return d
+	return d, nil
 }
 
 func resourceAciSPANDestinationGroupImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -92,8 +92,10 @@ func resourceAciSPANDestinationGroupImport(d *schema.ResourceData, m interface{}
 	name := spanDestGrpMap["name"]
 	pDN := GetParentDn(dn, fmt.Sprintf("/destgrp-%s", name))
 	d.Set("tenant_dn", pDN)
-	schemaFilled := setSPANDestinationGroupAttributes(spanDestGrp, d)
-
+	schemaFilled, err := setSPANDestinationGroupAttributes(spanDestGrp, d)
+	if err != nil {
+		return nil, err
+	}
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
@@ -175,10 +177,13 @@ func resourceAciSPANDestinationGroupRead(ctx context.Context, d *schema.Resource
 	spanDestGrp, err := getRemoteSPANDestinationGroup(aciClient, dn)
 
 	if err != nil {
+		return errorForObjectNotFound(err, dn, d)
+	}
+	_, err = setSPANDestinationGroupAttributes(spanDestGrp, d)
+	if err != nil {
 		d.SetId("")
 		return nil
 	}
-	setSPANDestinationGroupAttributes(spanDestGrp, d)
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 

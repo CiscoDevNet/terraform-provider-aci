@@ -81,7 +81,7 @@ func getRemoteStaticPath(client *client.Client, dn string) (*models.StaticPath, 
 	fvRsPathAtt := models.StaticPathFromContainer(fvRsPathAttCont)
 
 	if fvRsPathAtt.DistinguishedName == "" {
-		return nil, fmt.Errorf("StaticPath %s not found", fvRsPathAtt.DistinguishedName)
+		return nil, fmt.Errorf("Static Path %s not found", dn)
 	}
 
 	return fvRsPathAtt, nil
@@ -233,8 +233,7 @@ func resourceAciStaticPathRead(ctx context.Context, d *schema.ResourceData, m in
 	fvRsPathAtt, err := getRemoteStaticPath(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setStaticPathAttributes(fvRsPathAtt, d)
 

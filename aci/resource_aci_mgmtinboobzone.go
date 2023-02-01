@@ -142,7 +142,7 @@ func getRemoteInBManagedNodesZone(client *client.Client, dn string) (*models.InB
 	}
 	mgmtInBZone := models.InBManagedNodesZoneFromContainer(mgmtInBZoneCont)
 	if mgmtInBZone.DistinguishedName == "" {
-		return nil, fmt.Errorf("InBManagedNodesZone %s not found", mgmtInBZone.DistinguishedName)
+		return nil, fmt.Errorf("InB Managed Nodes Zone %s not found", dn)
 	}
 	return mgmtInBZone, nil
 }
@@ -154,7 +154,7 @@ func getRemoteOOBManagedNodesZone(client *client.Client, dn string) (*models.OOB
 	}
 	mgmtOobZone := models.OOBManagedNodesZoneFromContainer(mgmtOobZoneCont)
 	if mgmtOobZone.DistinguishedName == "" {
-		return nil, fmt.Errorf("InBManagedNodesZone %s not found", mgmtOobZone.DistinguishedName)
+		return nil, fmt.Errorf("OoB Managed Nodes Zone %s not found", dn)
 	}
 	return mgmtOobZone, nil
 }
@@ -596,8 +596,7 @@ func resourceAciInBManagedNodesZoneRead(ctx context.Context, d *schema.ResourceD
 	dn := d.Id()
 	mgmtInBZone, err := getRemoteInBManagedNodesZone(aciClient, dn)
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setInBManagedNodesZoneAttributes(mgmtInBZone, d)
 	if err != nil {
@@ -638,8 +637,7 @@ func resourceAciOOBManagedNodesZoneRead(ctx context.Context, d *schema.ResourceD
 	dn := d.Id()
 	mgmtOoBZone, err := getRemoteOOBManagedNodesZone(aciClient, dn)
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setOOBManagedNodesZoneAttributes(mgmtOoBZone, d)
 	if err != nil {

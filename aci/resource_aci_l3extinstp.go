@@ -956,8 +956,7 @@ func resourceAciExternalNetworkInstanceProfileRead(ctx context.Context, d *schem
 	l3extInstP, err := getRemoteExternalNetworkInstanceProfile(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setExternalNetworkInstanceProfileAttributes(l3extInstP, d)
 	if err != nil {

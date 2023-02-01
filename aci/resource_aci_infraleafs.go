@@ -72,13 +72,13 @@ func getRemoteSwitchAssociation(client *client.Client, dn string) (*models.Switc
 	infraLeafS := models.SwitchAssociationFromContainer(infraLeafSCont)
 
 	if infraLeafS.DistinguishedName == "" {
-		return nil, fmt.Errorf("SwitchAssociation %s not found", infraLeafS.DistinguishedName)
+		return nil, fmt.Errorf("Switch Association %s not found", dn)
 	}
 
 	return infraLeafS, nil
 }
 
-func setSwitchAssociationAttributes(infraLeafS *models.SwitchAssociation, d *schema.ResourceData) *schema.ResourceData {
+func setSwitchAssociationAttributes(infraLeafS *models.SwitchAssociation, d *schema.ResourceData) (*schema.ResourceData, error) {
 	dn := d.Id()
 	d.SetId(infraLeafS.DistinguishedName)
 	d.Set("description", infraLeafS.Description)
@@ -93,7 +93,7 @@ func setSwitchAssociationAttributes(infraLeafS *models.SwitchAssociation, d *sch
 	d.Set("leaf_profile_dn", GetParentDn(infraLeafS.DistinguishedName, fmt.Sprintf("/leaves-%s-typ-%s", infraLeafSMap["name"], infraLeafSMap["type"])))
 	d.Set("annotation", infraLeafSMap["annotation"])
 	d.Set("name_alias", infraLeafSMap["nameAlias"])
-	return d
+	return d, nil
 }
 
 func resourceAciSwitchAssociationImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -112,7 +112,10 @@ func resourceAciSwitchAssociationImport(d *schema.ResourceData, m interface{}) (
 	ltype := infraLeafSMap["type"]
 	pDN := GetParentDn(dn, fmt.Sprintf("/leaves-%s-typ-%s", name, ltype))
 	d.Set("leaf_profile_dn", pDN)
-	schemaFilled := setSwitchAssociationAttributes(infraLeafS, d)
+	schemaFilled, err := setSwitchAssociationAttributes(infraLeafS, d)
+	if err != nil {
+		return nil, err
+	}
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
@@ -255,10 +258,14 @@ func resourceAciSwitchAssociationRead(ctx context.Context, d *schema.ResourceDat
 	infraLeafS, err := getRemoteSwitchAssociation(aciClient, dn)
 
 	if err != nil {
+		return errorForObjectNotFound(err, dn, d)
+	}
+	_, err = setSwitchAssociationAttributes(infraLeafS, d)
+
+	if err != nil {
 		d.SetId("")
 		return nil
 	}
-	setSwitchAssociationAttributes(infraLeafS, d)
 
 	infraRsAccNodePGrpData, err := aciClient.ReadRelationinfraRsAccNodePGrpFromSwitchAssociation(dn)
 	if err != nil {

@@ -50,7 +50,7 @@ func getRemoteEndpointSecurityGroupEPgSelector(client *client.Client, dn string)
 	}
 	fvEPgSelector := models.EndpointSecurityGroupEPgSelectorFromContainer(fvEPgSelectorCont)
 	if fvEPgSelector.DistinguishedName == "" {
-		return nil, fmt.Errorf("EndpointSecurityGroupEPgSelector %s not found", fvEPgSelector.DistinguishedName)
+		return nil, fmt.Errorf("Endpoint Security Group EPg Selector %s not found", dn)
 	}
 	return fvEPgSelector, nil
 }
@@ -164,8 +164,7 @@ func resourceAciEndpointSecurityGroupEPgSelectorRead(ctx context.Context, d *sch
 	dn := d.Id()
 	fvEPgSelector, err := getRemoteEndpointSecurityGroupEPgSelector(aciClient, dn)
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setEndpointSecurityGroupEPgSelectorAttributes(fvEPgSelector, d)
 	if err != nil {

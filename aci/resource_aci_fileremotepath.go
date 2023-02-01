@@ -108,7 +108,7 @@ func getRemoteRemotePathofaFile(client *client.Client, dn string) (*models.Remot
 	}
 	fileRemotePath := models.RemotePathofaFileFromContainer(fileRemotePathCont)
 	if fileRemotePath.DistinguishedName == "" {
-		return nil, fmt.Errorf("RemotePathofaFile %s not found", fileRemotePath.DistinguishedName)
+		return nil, fmt.Errorf("Remote Path of a File %s not found", dn)
 	}
 	return fileRemotePath, nil
 }
@@ -410,8 +410,7 @@ func resourceAciRemotePathofaFileRead(ctx context.Context, d *schema.ResourceDat
 	dn := d.Id()
 	fileRemotePath, err := getRemoteRemotePathofaFile(aciClient, dn)
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	setRemotePathofaFileAttributes(fileRemotePath, d)
 

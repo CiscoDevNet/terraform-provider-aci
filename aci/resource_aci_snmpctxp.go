@@ -53,7 +53,7 @@ func getRemoteSNMPContextProfile(client *client.Client, dn string) (*models.SNMP
 	}
 	snmpCtxP := models.SNMPContextProfileFromContainer(snmpCtxPCont)
 	if snmpCtxP.DistinguishedName == "" {
-		return nil, fmt.Errorf("SNMPContextProfile %s not found", snmpCtxP.DistinguishedName)
+		return nil, fmt.Errorf("SNMP Context Profile %s not found", dn)
 	}
 	return snmpCtxP, nil
 }
@@ -156,8 +156,7 @@ func resourceAciSNMPContextProfileRead(ctx context.Context, d *schema.ResourceDa
 	dn := d.Id()
 	snmpCtxP, err := getRemoteSNMPContextProfile(aciClient, dn)
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setSNMPContextProfileAttributes(snmpCtxP, d)
 	if err != nil {

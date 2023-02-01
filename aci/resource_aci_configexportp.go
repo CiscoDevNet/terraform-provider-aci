@@ -123,7 +123,7 @@ func getRemoteConfigurationExportPolicy(client *client.Client, dn string) (*mode
 	configExportP := models.ConfigurationExportPolicyFromContainer(configExportPCont)
 
 	if configExportP.DistinguishedName == "" {
-		return nil, fmt.Errorf("ConfigurationExportPolicy %s not found", configExportP.DistinguishedName)
+		return nil, fmt.Errorf("Configuration Export Policy %s not found", dn)
 	}
 
 	return configExportP, nil
@@ -416,8 +416,7 @@ func resourceAciConfigurationExportPolicyRead(ctx context.Context, d *schema.Res
 	configExportP, err := getRemoteConfigurationExportPolicy(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setConfigurationExportPolicyAttributes(configExportP, d)
 	if err != nil {

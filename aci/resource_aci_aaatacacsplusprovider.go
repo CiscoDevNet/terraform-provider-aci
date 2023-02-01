@@ -104,7 +104,7 @@ func getRemoteTACACSProvider(client *client.Client, dn string) (*models.TACACSPr
 	}
 	aaaTacacsPlusProvider := models.TACACSProviderFromContainer(aaaTacacsPlusProviderCont)
 	if aaaTacacsPlusProvider.DistinguishedName == "" {
-		return nil, fmt.Errorf("TACACSProvider %s not found", aaaTacacsPlusProvider.DistinguishedName)
+		return nil, fmt.Errorf("TACACS Provider %s not found", dn)
 	}
 	return aaaTacacsPlusProvider, nil
 }
@@ -363,8 +363,7 @@ func resourceAciTACACSProviderRead(ctx context.Context, d *schema.ResourceData, 
 	dn := d.Id()
 	aaaTacacsPlusProvider, err := getRemoteTACACSProvider(aciClient, dn)
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setTACACSProviderAttributes(aaaTacacsPlusProvider, d)
 	if err != nil {

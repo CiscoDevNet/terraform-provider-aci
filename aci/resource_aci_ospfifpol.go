@@ -132,7 +132,7 @@ func getRemoteOSPFInterfacePolicy(client *client.Client, dn string) (*models.OSP
 	ospfIfPol := models.OSPFInterfacePolicyFromContainer(ospfIfPolCont)
 
 	if ospfIfPol.DistinguishedName == "" {
-		return nil, fmt.Errorf("OSPFInterfacePolicy %s not found", ospfIfPol.DistinguishedName)
+		return nil, fmt.Errorf("OSPF Interface Policy %s not found", dn)
 	}
 
 	return ospfIfPol, nil
@@ -363,8 +363,7 @@ func resourceAciOSPFInterfacePolicyRead(ctx context.Context, d *schema.ResourceD
 	ospfIfPol, err := getRemoteOSPFInterfacePolicy(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 
 	_, err = setOSPFInterfacePolicyAttributes(ospfIfPol, d)

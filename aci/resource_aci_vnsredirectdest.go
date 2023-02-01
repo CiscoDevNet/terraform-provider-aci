@@ -309,8 +309,7 @@ func resourceAciDestinationofredirectedtrafficRead(ctx context.Context, d *schem
 	vnsRedirectDest, err := getRemoteDestinationofredirectedtraffic(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setDestinationofredirectedtrafficAttributes(vnsRedirectDest, d)
 	if err != nil {

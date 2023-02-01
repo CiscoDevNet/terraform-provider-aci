@@ -199,7 +199,7 @@ func getRemoteLocalUser(client *client.Client, dn string) (*models.LocalUser, er
 	aaaUser := models.LocalUserFromContainer(aaaUserCont)
 
 	if aaaUser.DistinguishedName == "" {
-		return nil, fmt.Errorf("LocalUser %s not found", aaaUser.DistinguishedName)
+		return nil, fmt.Errorf("Local User %s not found", dn)
 	}
 
 	return aaaUser, nil
@@ -446,8 +446,7 @@ func resourceAciLocalUserRead(ctx context.Context, d *schema.ResourceData, m int
 	aaaUser, err := getRemoteLocalUser(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 
 	loginSuccess := false

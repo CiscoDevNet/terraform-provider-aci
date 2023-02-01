@@ -313,7 +313,7 @@ func getRemoteBridgeDomain(client *client.Client, dn string) (*models.BridgeDoma
 	fvBD := models.BridgeDomainFromContainer(fvBDCont)
 
 	if fvBD.DistinguishedName == "" {
-		return nil, fmt.Errorf("BridgeDomain %s not found", fvBD.DistinguishedName)
+		return nil, fmt.Errorf("Bridge Domain %s not found", dn)
 	}
 
 	return fvBD, nil
@@ -1180,8 +1180,7 @@ func resourceAciBridgeDomainRead(ctx context.Context, d *schema.ResourceData, m 
 	fvBD, err := getRemoteBridgeDomain(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 
 	if fvBD.EpMoveDetectMode == "" {

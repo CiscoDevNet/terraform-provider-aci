@@ -251,8 +251,7 @@ func resourceAciL3outPathAttachmentSecondaryIpRead(ctx context.Context, d *schem
 	l3extIp, err := getRemoteL3outPathAttachmentSecondaryIp(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setL3outPathAttachmentSecondaryIpAttributes(l3extIp, d)
 	if err != nil {

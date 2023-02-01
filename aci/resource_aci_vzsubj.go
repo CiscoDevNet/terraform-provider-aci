@@ -512,7 +512,7 @@ func getRemoteContractSubject(client *client.Client, dn string) (*models.Contrac
 	vzSubj := models.ContractSubjectFromContainer(vzSubjCont)
 
 	if vzSubj.DistinguishedName == "" {
-		return nil, fmt.Errorf("ContractSubject %s not found", vzSubj.DistinguishedName)
+		return nil, fmt.Errorf("Contract Subject %s not found", dn)
 	}
 
 	return vzSubj, nil
@@ -556,7 +556,7 @@ func getRemoteInTermSubject(client *client.Client, dn string) (*models.InTermSub
 	}
 	vzInTerm := models.InTermSubjectFromContainer(vzInTermCont)
 	if vzInTerm.DistinguishedName == "" {
-		return nil, fmt.Errorf("InTermSubject child of %s not found", dn)
+		return nil, fmt.Errorf("In Term Subject child of %s not found", dn)
 	}
 	return vzInTerm, nil
 }
@@ -587,7 +587,7 @@ func getRemoteOutTermSubject(client *client.Client, dn string) (*models.OutTermS
 	}
 	vzOutTerm := models.OutTermSubjectFromContainer(vzOutTermCont)
 	if vzOutTerm.DistinguishedName == "" {
-		return nil, fmt.Errorf("OutTermSubject child of %s not found", dn)
+		return nil, fmt.Errorf("Out Term Subject child of %s not found", dn)
 	}
 	return vzOutTerm, nil
 }
@@ -1246,8 +1246,7 @@ func resourceAciContractSubjectRead(ctx context.Context, d *schema.ResourceData,
 	vzSubj, err := getRemoteContractSubject(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setContractSubjectAttributes(vzSubj, d)
 	if err != nil {
@@ -1257,8 +1256,7 @@ func resourceAciContractSubjectRead(ctx context.Context, d *schema.ResourceData,
 
 	vzInTerm, err := getRemoteInTermSubject(aciClient, dn)
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 
 	if vzInTerm != nil {
@@ -1314,8 +1312,7 @@ func resourceAciContractSubjectRead(ctx context.Context, d *schema.ResourceData,
 
 	vzOutTerm, err := getRemoteOutTermSubject(aciClient, dn)
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	if vzOutTerm != nil {
 

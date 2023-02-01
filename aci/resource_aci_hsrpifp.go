@@ -65,7 +65,7 @@ func getRemoteL3outHSRPInterfaceProfile(client *client.Client, dn string) (*mode
 	hsrpIfP := models.L3outHSRPInterfaceProfileFromContainer(hsrpIfPCont)
 
 	if hsrpIfP.DistinguishedName == "" {
-		return nil, fmt.Errorf("L3outHSRPInterfaceProfile %s not found", hsrpIfP.DistinguishedName)
+		return nil, fmt.Errorf("L3out HSRP Interface Profile %s not found", dn)
 	}
 
 	return hsrpIfP, nil
@@ -237,8 +237,7 @@ func resourceAciL3outHSRPInterfaceProfileRead(ctx context.Context, d *schema.Res
 	hsrpIfP, err := getRemoteL3outHSRPInterfaceProfile(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setL3outHSRPInterfaceProfileAttributes(hsrpIfP, d)
 

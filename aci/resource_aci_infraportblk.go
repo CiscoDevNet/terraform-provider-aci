@@ -86,7 +86,7 @@ func getRemoteAccessPortBlock(client *client.Client, dn string) (*models.AccessP
 	infraPortBlk := models.AccessPortBlockFromContainer(infraPortBlkCont)
 
 	if infraPortBlk.DistinguishedName == "" {
-		return nil, fmt.Errorf("AccessPortBlock %s not found", infraPortBlk.DistinguishedName)
+		return nil, fmt.Errorf("Access Port Block %s not found", dn)
 	}
 
 	return infraPortBlk, nil
@@ -336,8 +336,7 @@ func resourceAciAccessPortBlockRead(ctx context.Context, d *schema.ResourceData,
 	infraPortBlk, err := getRemoteAccessPortBlock(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setAccessPortBlockAttributes(infraPortBlk, d)
 

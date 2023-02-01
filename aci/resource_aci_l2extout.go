@@ -97,7 +97,7 @@ func getRemoteL2Outside(client *client.Client, dn string) (*models.L2Outside, er
 	l2extOut := models.L2OutsideFromContainer(l2extOutCont)
 
 	if l2extOut.DistinguishedName == "" {
-		return nil, fmt.Errorf("L2Outside %s not found", l2extOut.DistinguishedName)
+		return nil, fmt.Errorf("L2 Outside %s not found", dn)
 	}
 
 	return l2extOut, nil
@@ -307,8 +307,7 @@ func resourceAciL2OutsideRead(ctx context.Context, d *schema.ResourceData, m int
 	l2extOut, err := getRemoteL2Outside(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setL2OutsideAttributes(l2extOut, d)
 	if err != nil {

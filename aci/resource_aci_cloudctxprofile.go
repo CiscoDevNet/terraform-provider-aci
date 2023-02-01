@@ -441,7 +441,7 @@ func resourceAciCloudContextProfileRead(ctx context.Context, d *schema.ResourceD
 	cloudCtxProfile, err := getRemoteCloudContextProfile(aciClient, dn, d)
 
 	if err != nil {
-		return diag.FromErr(err)
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setCloudContextProfileAttributes(cloudCtxProfile, d)
 

@@ -49,7 +49,7 @@ func getRemoteSpineInterfaceProfile(client *client.Client, dn string) (*models.S
 	infraSpAccPortP := models.SpineInterfaceProfileFromContainer(infraSpAccPortPCont)
 
 	if infraSpAccPortP.DistinguishedName == "" {
-		return nil, fmt.Errorf("SpineInterfaceProfile %s not found", infraSpAccPortP.DistinguishedName)
+		return nil, fmt.Errorf("Spine Interface Profile %s not found", dn)
 	}
 
 	return infraSpAccPortP, nil
@@ -162,8 +162,7 @@ func resourceAciSpineInterfaceProfileRead(ctx context.Context, d *schema.Resourc
 	infraSpAccPortP, err := getRemoteSpineInterfaceProfile(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 
 	_, err = setSpineInterfaceProfileAttributes(infraSpAccPortP, d)

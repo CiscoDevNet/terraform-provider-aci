@@ -76,7 +76,7 @@ func getRemoteCloudEndpointSelectorforExternalEPgs(client *client.Client, dn str
 	cloudExtEPSelector := models.CloudEndpointSelectorforExternalEPgsFromContainer(cloudExtEPSelectorCont)
 
 	if cloudExtEPSelector.DistinguishedName == "" {
-		return nil, fmt.Errorf("CloudEndpointSelectorforExternalEPgs %s not found", cloudExtEPSelector.DistinguishedName)
+		return nil, fmt.Errorf("Cloud Endpoint Selector for External EPgs %s not found", dn)
 	}
 
 	return cloudExtEPSelector, nil
@@ -230,8 +230,7 @@ func resourceAciCloudEndpointSelectorforExternalEPgsRead(ctx context.Context, d 
 	cloudExtEPSelector, err := getRemoteCloudEndpointSelectorforExternalEPgs(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setCloudEndpointSelectorforExternalEPgsAttributes(cloudExtEPSelector, d)
 	if err != nil {

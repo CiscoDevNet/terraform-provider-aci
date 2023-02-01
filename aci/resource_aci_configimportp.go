@@ -122,7 +122,7 @@ func getRemoteConfigurationImportPolicy(client *client.Client, dn string) (*mode
 	configImportP := models.ConfigurationImportPolicyFromContainer(configImportPCont)
 
 	if configImportP.DistinguishedName == "" {
-		return nil, fmt.Errorf("ConfigurationImportPolicy %s not found", configImportP.DistinguishedName)
+		return nil, fmt.Errorf("Configuration Import Policy %s not found", dn)
 	}
 
 	return configImportP, nil
@@ -388,8 +388,7 @@ func resourceAciConfigurationImportPolicyRead(ctx context.Context, d *schema.Res
 	configImportP, err := getRemoteConfigurationImportPolicy(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setConfigurationImportPolicyAttributes(configImportP, d)
 	if err != nil {

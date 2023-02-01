@@ -186,7 +186,7 @@ func getRemoteOSPFTimersPolicy(client *client.Client, dn string) (*models.OSPFTi
 	ospfCtxPol := models.OSPFTimersPolicyFromContainer(ospfCtxPolCont)
 
 	if ospfCtxPol.DistinguishedName == "" {
-		return nil, fmt.Errorf("OSPFTimersPolicy %s not found", ospfCtxPol.DistinguishedName)
+		return nil, fmt.Errorf("OSPF Timers Policy %s not found", dn)
 	}
 
 	return ospfCtxPol, nil
@@ -465,8 +465,7 @@ func resourceAciOSPFTimersPolicyRead(ctx context.Context, d *schema.ResourceData
 	ospfCtxPol, err := getRemoteOSPFTimersPolicy(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setOSPFTimersPolicyAttributes(ospfCtxPol, d)
 	if err != nil {

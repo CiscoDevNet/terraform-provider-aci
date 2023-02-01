@@ -65,7 +65,7 @@ func getRemotePortTracking(client *client.Client, dn string) (*models.PortTracki
 	}
 	infraPortTrackPol := models.PortTrackingFromContainer(infraPortTrackPolCont)
 	if infraPortTrackPol.DistinguishedName == "" {
-		return nil, fmt.Errorf("PortTracking %s not found", infraPortTrackPol.DistinguishedName)
+		return nil, fmt.Errorf("Port Tracking %s not found", dn)
 	}
 	return infraPortTrackPol, nil
 }
@@ -201,8 +201,7 @@ func resourceAciPortTrackingRead(ctx context.Context, d *schema.ResourceData, m 
 	dn := d.Id()
 	infraPortTrackPol, err := getRemotePortTracking(aciClient, dn)
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setPortTrackingAttributes(infraPortTrackPol, d)
 	if err != nil {

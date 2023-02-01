@@ -142,7 +142,7 @@ func getRemoteMaintenancePolicy(client *client.Client, dn string) (*models.Maint
 	maintMaintP := models.MaintenancePolicyFromContainer(maintMaintPCont)
 
 	if maintMaintP.DistinguishedName == "" {
-		return nil, fmt.Errorf("MaintenancePolicy %s not found", maintMaintP.DistinguishedName)
+		return nil, fmt.Errorf("Maintenance Policy %s not found", dn)
 	}
 
 	return maintMaintP, nil
@@ -416,8 +416,7 @@ func resourceAciMaintenancePolicyRead(ctx context.Context, d *schema.ResourceDat
 	maintMaintP, err := getRemoteMaintenancePolicy(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setMaintenancePolicyAttributes(maintMaintP, d)
 	if err != nil {

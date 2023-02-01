@@ -72,7 +72,7 @@ func getRemoteSwitchSpineAssociation(client *client.Client, dn string) (*models.
 	infraSpineS := models.SwitchSpineAssociationFromContainer(infraSpineSCont)
 
 	if infraSpineS.DistinguishedName == "" {
-		return nil, fmt.Errorf("SwitchAssociation %s not found", infraSpineS.DistinguishedName)
+		return nil, fmt.Errorf("Switch Association %s not found", dn)
 	}
 
 	return infraSpineS, nil
@@ -262,8 +262,7 @@ func resourceAciSwitchSpineAssociationRead(ctx context.Context, d *schema.Resour
 	infraSpineS, err := getRemoteSwitchSpineAssociation(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setSwitchSpineAssociationAttributes(infraSpineS, d)
 	if err != nil {

@@ -41,7 +41,7 @@ func getRemoteSAMLProviderGroup(client *client.Client, dn string) (*models.SAMLP
 	}
 	aaaSamlProviderGroup := models.SAMLProviderGroupFromContainer(aaaSamlProviderGroupCont)
 	if aaaSamlProviderGroup.DistinguishedName == "" {
-		return nil, fmt.Errorf("SAMLProviderGroup %s not found", aaaSamlProviderGroup.DistinguishedName)
+		return nil, fmt.Errorf("SAML Provider Group %s not found", dn)
 	}
 	return aaaSamlProviderGroup, nil
 }
@@ -141,8 +141,7 @@ func resourceAciSAMLProviderGroupRead(ctx context.Context, d *schema.ResourceDat
 	dn := d.Id()
 	aaaSamlProviderGroup, err := getRemoteSAMLProviderGroup(aciClient, dn)
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setSAMLProviderGroupAttributes(aaaSamlProviderGroup, d)
 	if err != nil {

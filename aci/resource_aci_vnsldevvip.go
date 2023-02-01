@@ -513,8 +513,7 @@ func resourceAciL4ToL7DevicesRead(ctx context.Context, d *schema.ResourceData, m
 
 	vnsLDevVip, err := getRemoteL4ToL7Devices(aciClient, dn)
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 
 	_, err = setL4ToL7DevicesAttributes(vnsLDevVip, d)

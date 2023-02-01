@@ -340,8 +340,7 @@ func resourceAciIPSLAMonitoringPolicyRead(ctx context.Context, d *schema.Resourc
 
 	fvIPSLAMonitoringPol, err := getRemoteIPSLAMonitoringPolicy(aciClient, dn)
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 
 	_, err = setIPSLAMonitoringPolicyAttributes(fvIPSLAMonitoringPol, d)

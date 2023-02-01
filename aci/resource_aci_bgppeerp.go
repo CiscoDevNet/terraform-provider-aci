@@ -210,7 +210,7 @@ func getRemoteBgpPeerConnectivityProfile(client *client.Client, dn string) (*mod
 	bgpPeerP := models.BgpPeerConnectivityProfileFromContainer(bgpPeerPCont)
 
 	if bgpPeerP.DistinguishedName == "" {
-		return nil, fmt.Errorf("BgpPeerConnectivityProfile %s not found", bgpPeerP.DistinguishedName)
+		return nil, fmt.Errorf("Bgp Peer Connectivity Profile %s not found", dn)
 	}
 
 	return bgpPeerP, nil
@@ -739,8 +739,7 @@ func resourceAciBgpPeerConnectivityProfileRead(ctx context.Context, d *schema.Re
 
 	bgpPeerP, err := getRemoteBgpPeerConnectivityProfile(aciClient, dn)
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setBgpPeerConnectivityProfileAttributes(bgpPeerP, d)
 	if err != nil {

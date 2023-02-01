@@ -67,7 +67,7 @@ func getRemoteFexBundleGroup(client *client.Client, dn string) (*models.FexBundl
 	infraFexBndlGrp := models.FexBundleGroupFromContainer(infraFexBndlGrpCont)
 
 	if infraFexBndlGrp.DistinguishedName == "" {
-		return nil, fmt.Errorf("FexBundleGroup %s not found", infraFexBndlGrp.DistinguishedName)
+		return nil, fmt.Errorf("Fex Bundle Group %s not found", dn)
 	}
 
 	return infraFexBndlGrp, nil
@@ -288,8 +288,7 @@ func resourceAciFexBundleGroupRead(ctx context.Context, d *schema.ResourceData, 
 	infraFexBndlGrp, err := getRemoteFexBundleGroup(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setFexBundleGroupAttributes(infraFexBndlGrp, d)
 	if err != nil {

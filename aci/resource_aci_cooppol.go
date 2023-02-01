@@ -46,7 +46,7 @@ func getRemoteCOOPGroupPolicy(client *client.Client, dn string) (*models.COOPGro
 	}
 	coopPol := models.COOPGroupPolicyFromContainer(coopPolCont)
 	if coopPol.DistinguishedName == "" {
-		return nil, fmt.Errorf("COOPGroupPolicy %s not found", coopPol.DistinguishedName)
+		return nil, fmt.Errorf("COOP Group Policy %s not found", dn)
 	}
 	return coopPol, nil
 }
@@ -153,8 +153,7 @@ func resourceAciCOOPGroupPolicyRead(ctx context.Context, d *schema.ResourceData,
 	dn := d.Id()
 	coopPol, err := getRemoteCOOPGroupPolicy(aciClient, dn)
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setCOOPGroupPolicyAttributes(coopPol, d)
 	if err != nil {

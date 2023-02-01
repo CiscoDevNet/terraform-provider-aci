@@ -157,7 +157,7 @@ func getRemoteCloudEPg(client *client.Client, dn string) (*models.CloudEPg, erro
 	cloudEPg := models.CloudEPgFromContainer(cloudEPgCont)
 
 	if cloudEPg.DistinguishedName == "" {
-		return nil, fmt.Errorf("CloudEPg %s not found", cloudEPg.DistinguishedName)
+		return nil, fmt.Errorf("Cloud EPg %s not found", dn)
 	}
 
 	return cloudEPg, nil
@@ -725,8 +725,7 @@ func resourceAciCloudEPgRead(ctx context.Context, d *schema.ResourceData, m inte
 	cloudEPg, err := getRemoteCloudEPg(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setCloudEPgAttributes(cloudEPg, d)
 	if err != nil {

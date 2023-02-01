@@ -50,7 +50,7 @@ func getRemoteInfraRsDomP(client *client.Client, dn string) (*models.InfraRsDomP
 	}
 	infraRsDomP := models.InfraRsDomPFromContainer(infraRsDomPCont)
 	if infraRsDomP.DistinguishedName == "" {
-		return nil, fmt.Errorf("InfraRsDomP %s not found", dn)
+		return nil, fmt.Errorf("Infra RsDomP %s not found", dn)
 	}
 	return infraRsDomP, nil
 }
@@ -153,8 +153,7 @@ func resourceAciInfraRsDomPRead(ctx context.Context, d *schema.ResourceData, m i
 
 	infraRsDomP, err := getRemoteInfraRsDomP(aciClient, dn)
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 
 	_, err = setInfraRsDomPAttributes(infraRsDomP, d)

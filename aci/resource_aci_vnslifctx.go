@@ -116,7 +116,7 @@ func getRemoteLogicalInterfaceContext(client *client.Client, dn string) (*models
 	vnsLIfCtx := models.LogicalInterfaceContextFromContainer(vnsLIfCtxCont)
 
 	if vnsLIfCtx.DistinguishedName == "" {
-		return nil, fmt.Errorf("LogicalInterfaceContext %s not found", vnsLIfCtx.DistinguishedName)
+		return nil, fmt.Errorf("Logical Interface Context %s not found", dn)
 	}
 
 	return vnsLIfCtx, nil
@@ -509,8 +509,7 @@ func resourceAciLogicalInterfaceContextRead(ctx context.Context, d *schema.Resou
 	vnsLIfCtx, err := getRemoteLogicalInterfaceContext(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setLogicalInterfaceContextAttributes(vnsLIfCtx, d)
 

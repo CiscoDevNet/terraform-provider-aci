@@ -76,7 +76,7 @@ func getRemotePhysicalDomain(client *client.Client, dn string) (*models.Physical
 	physDomP := models.PhysicalDomainFromContainer(physDomPCont)
 
 	if physDomP.DistinguishedName == "" {
-		return nil, fmt.Errorf("PhysicalDomain %s not found", physDomP.DistinguishedName)
+		return nil, fmt.Errorf("Physical Domain %s not found", dn)
 	}
 
 	return physDomP, nil
@@ -398,8 +398,7 @@ func resourceAciPhysicalDomainRead(ctx context.Context, d *schema.ResourceData, 
 	physDomP, err := getRemotePhysicalDomain(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setPhysicalDomainAttributes(physDomP, d)
 	if err != nil {

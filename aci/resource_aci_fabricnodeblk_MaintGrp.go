@@ -66,7 +66,7 @@ func getRemoteNodeBlockMG(client *client.Client, dn string) (*models.NodeBlockMG
 	fabricNodeBlk := models.NodeBlockFromContainerMG(fabricNodeBlkCont)
 
 	if fabricNodeBlk.DistinguishedName == "" {
-		return nil, fmt.Errorf("NodeBlock %s not found", fabricNodeBlk.DistinguishedName)
+		return nil, fmt.Errorf("Node Block %s not found", dn)
 	}
 
 	return fabricNodeBlk, nil
@@ -214,8 +214,7 @@ func resourceAciNodeBlockReadMG(ctx context.Context, d *schema.ResourceData, m i
 	fabricNodeBlk, err := getRemoteNodeBlockMG(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setNodeBlockAttributesMG(fabricNodeBlk, d)
 

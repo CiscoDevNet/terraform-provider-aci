@@ -71,7 +71,7 @@ func getRemoteSpineSwitchPolicyGroup(client *client.Client, dn string) (*models.
 	}
 	infraSpineAccNodePGrp := models.SpineSwitchPolicyGroupFromContainer(infraSpineAccNodePGrpCont)
 	if infraSpineAccNodePGrp.DistinguishedName == "" {
-		return nil, fmt.Errorf("SpineSwitchPolicyGroup %s not found", infraSpineAccNodePGrp.DistinguishedName)
+		return nil, fmt.Errorf("Spine Switch Policy Group %s not found", dn)
 	}
 	return infraSpineAccNodePGrp, nil
 }
@@ -507,10 +507,13 @@ func resourceAciSpineSwitchPolicyGroupRead(ctx context.Context, d *schema.Resour
 	dn := d.Id()
 	infraSpineAccNodePGrp, err := getRemoteSpineSwitchPolicyGroup(aciClient, dn)
 	if err != nil {
+		return errorForObjectNotFound(err, dn, d)
+	}
+	_, err = setSpineSwitchPolicyGroupAttributes(infraSpineAccNodePGrp, d)
+	if err != nil {
 		d.SetId("")
 		return nil
 	}
-	setSpineSwitchPolicyGroupAttributes(infraSpineAccNodePGrp, d)
 
 	// infraRsIaclSpineProfile - Beginning Read
 	log.Printf("[DEBUG] %s: infraRsIaclSpineProfile - Beginning Read with parent DN", dn)

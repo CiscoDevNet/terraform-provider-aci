@@ -532,8 +532,7 @@ func resourceAciVirtualLogicalInterfaceProfileRead(ctx context.Context, d *schem
 	l3extVirtualLIfP, err := getRemoteVirtualLogicalInterfaceProfile(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setVirtualLogicalInterfaceProfileAttributes(l3extVirtualLIfP, d)
 	if err != nil {

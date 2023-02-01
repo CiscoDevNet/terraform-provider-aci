@@ -183,8 +183,7 @@ func resourceAciRtctrlSetAddCommRead(ctx context.Context, d *schema.ResourceData
 
 	rtctrlSetAddComm, err := getRemoteRtctrlSetAddComm(aciClient, dn)
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 
 	_, err = setRtctrlSetAddCommAttributes(rtctrlSetAddComm, d)

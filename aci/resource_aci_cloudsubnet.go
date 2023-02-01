@@ -116,7 +116,7 @@ func getRemoteCloudSubnet(client *client.Client, dn string, d *schema.ResourceDa
 	setCloudSubnetRelationalAttributes(cloudSubnetCont, d)
 
 	if cloudSubnet.DistinguishedName == "" {
-		return nil, fmt.Errorf("CloudSubnet %s not found", dn)
+		return nil, fmt.Errorf("Cloud Subnet %s not found", dn)
 	}
 
 	return cloudSubnet, nil
@@ -382,8 +382,7 @@ func resourceAciCloudSubnetRead(ctx context.Context, d *schema.ResourceData, m i
 	cloudSubnet, err := getRemoteCloudSubnet(aciClient, dn, d)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setCloudSubnetAttributes(cloudSubnet, d)
 	if err != nil {

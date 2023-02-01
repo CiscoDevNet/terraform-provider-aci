@@ -106,7 +106,7 @@ func getRemoteDHCPRelayPolicy(client *client.Client, dn string) (*models.DHCPRel
 	dhcpRelayP := models.DHCPRelayPolicyFromContainer(dhcpRelayPCont)
 
 	if dhcpRelayP.DistinguishedName == "" {
-		return nil, fmt.Errorf("DHCPRelayPolicy %s not found", dhcpRelayP.DistinguishedName)
+		return nil, fmt.Errorf("DHCP Relay Policy %s not found", dn)
 	}
 
 	return dhcpRelayP, nil
@@ -314,8 +314,7 @@ func resourceAciDHCPRelayPolicyRead(ctx context.Context, d *schema.ResourceData,
 	dhcpRelayP, err := getRemoteDHCPRelayPolicy(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setDHCPRelayPolicyAttributes(dhcpRelayP, d)
 	if err != nil {
