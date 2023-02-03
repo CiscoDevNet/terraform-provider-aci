@@ -56,8 +56,8 @@ resource "aci_local_user" "example" {
 - `otpenable` - (Optional) flag to enable OTP for the user. Allowed values: "yes", "no". Default value is "no".
 - `otpkey` - (Optional) OTP-key for object user. Default value is "DISABLEDDISABLED".
 - `phone` - (Optional) Phone number of the local user.
-- `pwd` - (Optional) System user password
-- `pwd_life_time` - (Optional) The lifetime of the local user password.Allowed values are in range of 0-3650. Default value is "0".
+- `pwd` - (Optional) System user password.
+- `pwd_life_time` - (Optional) The lifetime of the local user password. Allowed values are in range of 0-3650. Default value is "0".
 - `pwd_update_required` - (Optional) A boolean value indicating whether this account needs password update. Allowed values: "yes", "no". Default value is "no".
 - `rbac_string` - (Optional) RBAC-string of the local user.
 - `unix_user_id` - (Optional) The UNIX identifier of the local user.
@@ -75,3 +75,5 @@ An existing Local User can be [imported][docs-import] into this resource via its
 ```
 terraform import aci_local_user.example <Dn>
 ```
+
+NOTE: The `pwd` attribute is not imported. The `pwd` attribute can only be set in state with the `terraform apply` command.
