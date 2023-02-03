@@ -1,3 +1,8 @@
+## 2.6.1 (February 3, 2023)
+BUG FIXES:
+- Fix issue in aci_cloud_context_profile when optional parameters cloud_brownfield and access_policy_type are not provided.
+- Allow for attributes to be set and idempotency when password has not changed in aci_local_user (#1001)
+
 ## 2.6.0 (January 21, 2023)
 DEPRECATIONS:
 - The filter.filter_entry.entry_description and filter.filter_entry.entry_annotation are deprecated. Use filter.filter_entry.description and filter.filter_entry.annotation instead.
