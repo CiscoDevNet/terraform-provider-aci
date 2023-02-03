@@ -7,7 +7,12 @@ import (
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
 )
 
-const L3extlifpClassName = "l3extLIfP"
+const (
+	Dnl3extlifp        = "uni/tn-%s/out-%s/lnodep-%s/lifp-%s"
+	Rnl3extlifp        = "lifp--%s"
+	ParentDnl3extlifp  = "uni/tn-%s/out-%s/lnodep-%s"
+	L3extlifpClassName = "l3extLIfP"
+)
 
 type LogicalInterfaceProfile struct {
 	BaseAttributes
