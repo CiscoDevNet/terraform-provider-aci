@@ -2,7 +2,6 @@ package client
 
 import (
 	"fmt"
-	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
 	"github.com/ciscoecosystem/aci-go-client/v2/models"
