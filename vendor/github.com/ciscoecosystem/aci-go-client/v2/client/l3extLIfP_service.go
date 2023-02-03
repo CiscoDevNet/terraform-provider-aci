@@ -9,15 +9,15 @@ import (
 )
 
 func (sm *ServiceManager) CreateLogicalInterfaceProfile(name string, logical_node_profile string, l3_outside string, tenant string, description string, l3extLIfPattr models.LogicalInterfaceProfileAttributes) (*models.LogicalInterfaceProfile, error) {
-	rn := fmt.Sprintf("lifp-%s", name)
-	parentDn := fmt.Sprintf("uni/tn-%s/out-%s/lnodep-%s", tenant, l3_outside, logical_node_profile)
+	rn := fmt.Sprintf(models.Rnl3extlifp, name)
+	parentDn := fmt.Sprintf(models.ParentDnl3extlifp, tenant, l3_outside, logical_node_profile)
 	l3extLIfP := models.NewLogicalInterfaceProfile(rn, parentDn, description, l3extLIfPattr)
 	err := sm.Save(l3extLIfP)
 	return l3extLIfP, err
 }
 
 func (sm *ServiceManager) ReadLogicalInterfaceProfile(name string, logical_node_profile string, l3_outside string, tenant string) (*models.LogicalInterfaceProfile, error) {
-	dn := fmt.Sprintf("uni/tn-%s/out-%s/lnodep-%s/lifp-%s", tenant, l3_outside, logical_node_profile, name)
+	dn := fmt.Sprintf(models.Dnl3extlifp, tenant, l3_outside, logical_node_profile, name)
 	cont, err := sm.Get(dn)
 	if err != nil {
 		return nil, err
@@ -28,13 +28,13 @@ func (sm *ServiceManager) ReadLogicalInterfaceProfile(name string, logical_node_
 }
 
 func (sm *ServiceManager) DeleteLogicalInterfaceProfile(name string, logical_node_profile string, l3_outside string, tenant string) error {
-	dn := fmt.Sprintf("uni/tn-%s/out-%s/lnodep-%s/lifp-%s", tenant, l3_outside, logical_node_profile, name)
+	dn := fmt.Sprintf(models.Dnl3extlifp, tenant, l3_outside, logical_node_profile, name)
 	return sm.DeleteByDn(dn, models.L3extlifpClassName)
 }
 
 func (sm *ServiceManager) UpdateLogicalInterfaceProfile(name string, logical_node_profile string, l3_outside string, tenant string, description string, l3extLIfPattr models.LogicalInterfaceProfileAttributes) (*models.LogicalInterfaceProfile, error) {
-	rn := fmt.Sprintf("lifp-%s", name)
-	parentDn := fmt.Sprintf("uni/tn-%s/out-%s/lnodep-%s", tenant, l3_outside, logical_node_profile)
+	rn := fmt.Sprintf(models.Rnl3extlifp, name)
+	parentDn := fmt.Sprintf(models.ParentDnl3extlifp, tenant, l3_outside, logical_node_profile)
 	l3extLIfP := models.NewLogicalInterfaceProfile(rn, parentDn, description, l3extLIfPattr)
 
 	l3extLIfP.Status = "modified"
@@ -44,9 +44,7 @@ func (sm *ServiceManager) UpdateLogicalInterfaceProfile(name string, logical_nod
 }
 
 func (sm *ServiceManager) ListLogicalInterfaceProfile(logical_node_profile string, l3_outside string, tenant string) ([]*models.LogicalInterfaceProfile, error) {
-
-	baseurlStr := "/api/node/class"
-	dnUrl := fmt.Sprintf("%s/uni/tn-%s/out-%s/lnodep-%s/l3extLIfP.json", baseurlStr, tenant, l3_outside, logical_node_profile)
+	dnUrl := fmt.Sprintf("%s/%s/%s.json", models.BaseurlStr, fmt.Sprintf(models.ParentDnl3extlifp, tenant, l3_outside, logical_node_profile), models.L3extlifpClassName)
 
 	cont, err := sm.GetViaURL(dnUrl)
 	list := models.LogicalInterfaceProfileListFromContainer(cont)
@@ -88,8 +86,7 @@ func (sm *ServiceManager) DeleteRelationl3extRsLIfPToNetflowMonitorPolFromLogica
 }
 
 func (sm *ServiceManager) ReadRelationl3extRsLIfPToNetflowMonitorPolFromLogicalInterfaceProfile(parentDn string) (interface{}, error) {
-	baseurlStr := "/api/node/class"
-	dnUrl := fmt.Sprintf("%s/%s/%s.json", baseurlStr, parentDn, "l3extRsLIfPToNetflowMonitorPol")
+	dnUrl := fmt.Sprintf("%s/%s/%s.json", models.BaseurlStr, parentDn, "l3extRsLIfPToNetflowMonitorPol")
 	cont, err := sm.GetViaURL(dnUrl)
 
 	contList := models.ListFromContainer(cont, "l3extRsLIfPToNetflowMonitorPol")
@@ -98,7 +95,7 @@ func (sm *ServiceManager) ReadRelationl3extRsLIfPToNetflowMonitorPolFromLogicalI
 
 	for _, contItem := range contList {
 		paramMap := make(map[string]string)
-		paramMap["tnNetflowMonitorPolName"] = models.G(contItem, "tDn")
+		paramMap["tDn"] = models.G(contItem, "tDn")
 		paramMap["fltType"] = models.G(contItem, "fltType")
 
 		st = append(st, paramMap)
@@ -142,8 +139,7 @@ func (sm *ServiceManager) DeleteRelationl3extRsPathL3OutAttFromLogicalInterfaceP
 }
 
 func (sm *ServiceManager) ReadRelationl3extRsPathL3OutAttFromLogicalInterfaceProfile(parentDn string) (interface{}, error) {
-	baseurlStr := "/api/node/class"
-	dnUrl := fmt.Sprintf("%s/%s/%s.json", baseurlStr, parentDn, "l3extRsPathL3OutAtt")
+	dnUrl := fmt.Sprintf("%s/%s/%s.json", models.BaseurlStr, parentDn, models.L3extrspathl3outattClassName)
 	cont, err := sm.GetViaURL(dnUrl)
 
 	contList := models.ListFromContainer(cont, "l3extRsPathL3OutAtt")
@@ -188,8 +184,7 @@ func (sm *ServiceManager) CreateRelationl3extRsEgressQosDppPolFromLogicalInterfa
 }
 
 func (sm *ServiceManager) ReadRelationl3extRsEgressQosDppPolFromLogicalInterfaceProfile(parentDn string) (interface{}, error) {
-	baseurlStr := "/api/node/class"
-	dnUrl := fmt.Sprintf("%s/%s/%s.json", baseurlStr, parentDn, "l3extRsEgressQosDppPol")
+	dnUrl := fmt.Sprintf("%s/%s/%s.json", models.BaseurlStr, parentDn, "l3extRsEgressQosDppPol")
 	cont, err := sm.GetViaURL(dnUrl)
 
 	contList := models.ListFromContainer(cont, "l3extRsEgressQosDppPol")
@@ -232,8 +227,7 @@ func (sm *ServiceManager) CreateRelationl3extRsIngressQosDppPolFromLogicalInterf
 }
 
 func (sm *ServiceManager) ReadRelationl3extRsIngressQosDppPolFromLogicalInterfaceProfile(parentDn string) (interface{}, error) {
-	baseurlStr := "/api/node/class"
-	dnUrl := fmt.Sprintf("%s/%s/%s.json", baseurlStr, parentDn, "l3extRsIngressQosDppPol")
+	dnUrl := fmt.Sprintf("%s/%s/%s.json", models.BaseurlStr, parentDn, "l3extRsIngressQosDppPol")
 	cont, err := sm.GetViaURL(dnUrl)
 
 	contList := models.ListFromContainer(cont, "l3extRsIngressQosDppPol")
@@ -276,8 +270,7 @@ func (sm *ServiceManager) CreateRelationl3extRsLIfPCustQosPolFromLogicalInterfac
 }
 
 func (sm *ServiceManager) ReadRelationl3extRsLIfPCustQosPolFromLogicalInterfaceProfile(parentDn string) (interface{}, error) {
-	baseurlStr := "/api/node/class"
-	dnUrl := fmt.Sprintf("%s/%s/%s.json", baseurlStr, parentDn, "l3extRsLIfPCustQosPol")
+	dnUrl := fmt.Sprintf("%s/%s/%s.json", models.BaseurlStr, parentDn, "l3extRsLIfPCustQosPol")
 	cont, err := sm.GetViaURL(dnUrl)
 
 	contList := models.ListFromContainer(cont, "l3extRsLIfPCustQosPol")
@@ -320,8 +313,7 @@ func (sm *ServiceManager) CreateRelationl3extRsArpIfPolFromLogicalInterfaceProfi
 }
 
 func (sm *ServiceManager) ReadRelationl3extRsArpIfPolFromLogicalInterfaceProfile(parentDn string) (interface{}, error) {
-	baseurlStr := "/api/node/class"
-	dnUrl := fmt.Sprintf("%s/%s/%s.json", baseurlStr, parentDn, "l3extRsArpIfPol")
+	dnUrl := fmt.Sprintf("%s/%s/%s.json", models.BaseurlStr, parentDn, "l3extRsArpIfPol")
 	cont, err := sm.GetViaURL(dnUrl)
 
 	contList := models.ListFromContainer(cont, "l3extRsArpIfPol")
@@ -364,8 +356,7 @@ func (sm *ServiceManager) CreateRelationl3extRsNdIfPolFromLogicalInterfaceProfil
 }
 
 func (sm *ServiceManager) ReadRelationl3extRsNdIfPolFromLogicalInterfaceProfile(parentDn string) (interface{}, error) {
-	baseurlStr := "/api/node/class"
-	dnUrl := fmt.Sprintf("%s/%s/%s.json", baseurlStr, parentDn, "l3extRsNdIfPol")
+	dnUrl := fmt.Sprintf("%s/%s/%s.json", models.BaseurlStr, parentDn, "l3extRsNdIfPol")
 	cont, err := sm.GetViaURL(dnUrl)
 
 	contList := models.ListFromContainer(cont, "l3extRsNdIfPol")

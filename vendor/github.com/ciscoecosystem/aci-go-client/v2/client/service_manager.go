@@ -104,9 +104,9 @@ func CheckForErrors(cont *container.Container, method string, skipLoggingPayload
 				}
 				return nil
 			} else {
-				if models.StripQuotes(imdata.Path("error.attributes.text").String()) == "" && errorCode == "403" {
+				if (models.StripQuotes(imdata.Path("error.attributes.text").String()) == "" && errorCode == "403") || (errorCode == "401") {
 					if !skipLoggingPayload {
-						log.Printf("[DEBUG] Exit from authentication error 403 %v", cont)
+						log.Printf("[DEBUG] Exit from authentication error %s %v", errorCode, cont)
 					}
 					return errors.New("Unable to authenticate. Please check your credentials")
 				}

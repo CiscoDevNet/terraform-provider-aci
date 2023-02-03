@@ -316,9 +316,9 @@ func (c *Client) useInsecureHTTPClient(insecure bool) *http.Transport {
 }
 
 // Takes raw payload and does the http request
-//  Used for login request
-//  passwords with special chars have issues when using container
-//  for encoding/decoding
+// - Used for login request
+// - Passwords with special chars have issues when using container
+// - For encoding/decoding
 func (c *Client) MakeRestRequestRaw(method string, rpath string, payload []byte, authenticated bool) (*http.Request, error) {
 
 	pathURL, err := url.Parse(rpath)
@@ -429,6 +429,11 @@ func (c *Client) MakeRestRequest(method string, rpath string, body *container.Co
 
 // Authenticate is used to
 func (c *Client) Authenticate() error {
+	// Setting skipLoggingPayloadState to preserve state during call of the method
+	skipLoggingPayloadState := c.skipLoggingPayload
+
+	log.Printf("[DEBUG] Begining Authentication method")
+
 	method := "POST"
 	path := "/api/aaaLogin.json"
 	authenticated := false
@@ -444,6 +449,7 @@ func (c *Client) Authenticate() error {
 		authenticated = true
 	}
 
+	// Setting skipLoggingPayload true so authentication details are not shown in logs
 	c.skipLoggingPayload = true
 
 	req, err := c.MakeRestRequestRaw(method, path, body, authenticated)
@@ -452,7 +458,9 @@ func (c *Client) Authenticate() error {
 	}
 
 	obj, _, err := c.Do(req)
-	c.skipLoggingPayload = false
+
+	c.skipLoggingPayload = skipLoggingPayloadState
+
 	if err != nil {
 		log.Printf("[DEBUG] Authentication ERROR: %s", err)
 		return err
@@ -680,11 +688,13 @@ func (c *Client) backoff(attempts int) bool {
 // <head>
 // <title>Error</title>
 // <style>
-//     body {
-//         width: 35em;
-//         margin: 0 auto;
-//         font-family: Tahoma, Verdana, Arial, sans-serif;
-//     }
+//
+//	body {
+//	    width: 35em;
+//	    margin: 0 auto;
+//	    font-family: Tahoma, Verdana, Arial, sans-serif;
+//	}
+//
 // </style>
 // </head>
 // <body>
@@ -700,7 +710,6 @@ func (c *Client) backoff(attempts int) bool {
 // Sample return error:
 // An error occurred. Sorry, the page you are looking for is currently unavailable. If you are the system administrator of this
 // resource then you should check the error log for details. Faithfully yours, nginx.
-//
 func (c *Client) checkHtmlResp(body string) error {
 	reader := strings.NewReader(body)
 	tokenizer := html.NewTokenizer(reader)

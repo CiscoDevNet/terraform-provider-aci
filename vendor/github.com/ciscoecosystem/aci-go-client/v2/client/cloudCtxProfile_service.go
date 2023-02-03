@@ -13,90 +13,103 @@ func (sm *ServiceManager) CreateCloudContextProfile(name string, tenant string, 
 	parentDn := tenant
 	cloudCtxProfile := models.NewCloudContextProfile(rn, parentDn, description, cloudCtxProfileattr)
 	jsonPayload, _, err := sm.PrepareModel(cloudCtxProfile)
+	jsonPayload.Array(cloudCtxProfile.ClassName, "children")
 
-	cidrJSON := []byte(fmt.Sprintf(`
-	{
-		"cloudCidr": {
-			"attributes": {
-				"addr": "%s",
-				"primary": "yes",
-				"status": "created,modified"
+	if primaryCidr != "" {
+		cidrJSON := []byte(fmt.Sprintf(`
+		{
+			"cloudCidr": {
+				"attributes": {
+					"addr": "%s",
+					"primary": "yes",
+					"status": "created,modified"
+				}
 			}
 		}
+		`, primaryCidr))
+		cidrCon, err := container.ParseJSON(cidrJSON)
+		if err != nil {
+			return nil, err
+		}
+		jsonPayload.ArrayAppend(cidrCon.Data(), cloudCtxProfile.ClassName, "children")
 	}
-	`, primaryCidr))
 
-	regionAttach := []byte(fmt.Sprintf(`
-	{
-		"cloudRsCtxProfileToRegion": {
-			"attributes": {
-				"status": "created,modified",
-				"tDn": "uni/clouddomp/provp-%s/region-%s"
+	if vendor != "" && region != "" {
+		regionAttach := []byte(fmt.Sprintf(`
+		{
+			"cloudRsCtxProfileToRegion": {
+				"attributes": {
+					"status": "created,modified",
+					"tDn": "uni/clouddomp/provp-%s/region-%s"
+				}
 			}
 		}
+		`, vendor, region))
+		regionCon, err := container.ParseJSON(regionAttach)
+		if err != nil {
+			return nil, err
+		}
+		jsonPayload.ArrayAppend(regionCon.Data(), cloudCtxProfile.ClassName, "children")
 	}
-	`, vendor, region))
 
-	ctxAttach := []byte(fmt.Sprintf(`
-	{
-		"cloudRsToCtx": {
-			"attributes": {
-				"tnFvCtxName": "%s"
+	if vrf != "" {
+		vrfAttach := []byte(fmt.Sprintf(`
+		{
+			"cloudRsToCtx": {
+				"attributes": {
+					"tnFvCtxName": "%s"
+				}
 			}
 		}
+		`, vrf))
+		vrfCon, err := container.ParseJSON(vrfAttach)
+		if err != nil {
+			return nil, err
+		}
+		jsonPayload.ArrayAppend(vrfCon.Data(), cloudCtxProfile.ClassName, "children")
 	}
-	`, vrf))
 
-	brownFieldAttach := []byte(fmt.Sprintf(`
-	{
-		"cloudBrownfield": {
-			"attributes": {},
-			"children": [
-				{
-					"cloudIDMapping": {
-						"attributes": {
-							"cloudProviderId": "%s"
+	if cloudBrownfield != "" {
+		brownFieldAttach := []byte(fmt.Sprintf(`
+		{
+			"cloudBrownfield": {
+				"attributes": {},
+				"children": [
+					{
+						"cloudIDMapping": {
+							"attributes": {
+								"cloudProviderId": "%s"
+							}
 						}
 					}
-				}
-			]
-		}
-	}
-	`, cloudBrownfield))
-
-	accessPolicyAttach := []byte(fmt.Sprintf(`
-	{
-		"cloudRsCtxProfileToAccessPolicy": {
-			"attributes": {
-				"tDn": "uni/tn-infra/accesspolicy-%s"
+				]
 			}
 		}
-	}
-	`, accessPolicy))
-
-	cidrCon, err := container.ParseJSON(cidrJSON)
-	regionCon, err := container.ParseJSON(regionAttach)
-	vrfCon, err := container.ParseJSON(ctxAttach)
-	brownFieldCon, err := container.ParseJSON(brownFieldAttach)
-	accessPolicyCon, err := container.ParseJSON(accessPolicyAttach)
-
-	if err != nil {
-		return nil, err
-	}
-	if err != nil {
-
+		`, cloudBrownfield))
+		brownFieldCon, err := container.ParseJSON(brownFieldAttach)
+		if err != nil {
+			return nil, err
+		}
+		jsonPayload.ArrayAppend(brownFieldCon.Data(), cloudCtxProfile.ClassName, "children")
 	}
 
-	log.Printf("\n\n\n[DEBUG]nknk %v", vrfCon.Data())
-	jsonPayload.Array(cloudCtxProfile.ClassName, "children")
-	jsonPayload.ArrayAppend(vrfCon.Data(), cloudCtxProfile.ClassName, "children")
+	if accessPolicy != "" {
+		accessPolicyAttach := []byte(fmt.Sprintf(`
+		{
+			"cloudRsCtxProfileToAccessPolicy": {
+				"attributes": {
+					"tDn": "uni/tn-infra/accesspolicy-%s"
+				}
+			}
+		}
+		`, accessPolicy))
+		accessPolicyCon, err := container.ParseJSON(accessPolicyAttach)
+		if err != nil {
+			return nil, err
+		}
+		jsonPayload.ArrayAppend(accessPolicyCon.Data(), cloudCtxProfile.ClassName, "children")
+	}
 
-	jsonPayload.ArrayAppend(cidrCon.Data(), cloudCtxProfile.ClassName, "children")
-	jsonPayload.ArrayAppend(regionCon.Data(), cloudCtxProfile.ClassName, "children")
-	jsonPayload.ArrayAppend(brownFieldCon.Data(), cloudCtxProfile.ClassName, "children")
-	jsonPayload.ArrayAppend(accessPolicyCon.Data(), cloudCtxProfile.ClassName, "children")
-
-	log.Printf("\n\n\n\n[DEBUG]nkdemo%s\n\n\n\n", jsonPayload.String())
 	jsonPayload.Set(name, cloudCtxProfile.ClassName, "attributes", "name")
 	if cloudCtxProfile.VpcGroup != "" {
 		jsonPayload.Set(cloudCtxProfile.VpcGroup, cloudCtxProfile.ClassName, "attributes", "vpcGroup")
