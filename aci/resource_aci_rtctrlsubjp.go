@@ -45,7 +45,7 @@ func getRemoteMatchRule(client *client.Client, dn string) (*models.MatchRule, er
 	}
 	rtctrlSubjP := models.MatchRuleFromContainer(rtctrlSubjPCont)
 	if rtctrlSubjP.DistinguishedName == "" {
-		return nil, fmt.Errorf("MatchRule %s not found", dn)
+		return nil, fmt.Errorf("Match Rule %s not found", dn)
 	}
 	return rtctrlSubjP, nil
 }

@@ -64,7 +64,7 @@ func getRemoteDefaultRadiusAuthenticationSettings(client *client.Client, dn stri
 	}
 	aaaPingEp := models.DefaultRadiusAuthenticationSettingsFromContainer(aaaPingEpCont)
 	if aaaPingEp.DistinguishedName == "" {
-		return nil, fmt.Errorf("DefaultRadiusAuthenticationSettings %s not found", dn)
+		return nil, fmt.Errorf("Default Radius Authentication Settings %s not found", dn)
 	}
 	return aaaPingEp, nil
 }

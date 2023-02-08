@@ -69,7 +69,7 @@ func getRemoteAESEncryptionPassphraseandKeysforConfigExportImport(client *client
 	}
 	pkiExportEncryptionKey := models.AESEncryptionPassphraseandKeysforConfigExportImportFromContainer(pkiExportEncryptionKeyCont)
 	if pkiExportEncryptionKey.DistinguishedName == "" {
-		return nil, fmt.Errorf("AES Encryption Passphrase and Keys for Config Export(and Import) %s not found", dn)
+		return nil, fmt.Errorf("AES Encryption Passphrase and Keys for Config Export and Import %s not found", dn)
 	}
 	return pkiExportEncryptionKey, nil
 }

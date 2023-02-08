@@ -247,7 +247,7 @@ func getRemoteRtctrlSetRtMetric(client *client.Client, dn string) (*models.Rtctr
 	}
 	rtctrlSetRtMetric := models.RtctrlSetRtMetricFromContainer(rtctrlSetRtMetricCont)
 	if rtctrlSetRtMetric.DistinguishedName == "" {
-		return nil, fmt.Errorf("rtctrl Set RtMetric %s not found", dn)
+		return nil, fmt.Errorf("Route Control Set Route Metric %s not found", dn)
 	}
 	return rtctrlSetRtMetric, nil
 }
@@ -268,7 +268,7 @@ func getRemoteRtctrlSetRtMetricType(client *client.Client, dn string) (*models.R
 	}
 	rtctrlSetRtMetricType := models.RtctrlSetRtMetricTypeFromContainer(rtctrlSetRtMetricTypeCont)
 	if rtctrlSetRtMetricType.DistinguishedName == "" {
-		return nil, fmt.Errorf("rtctrl Set RtMetric Type %s not found", dn)
+		return nil, fmt.Errorf("Route Control Set Route Metric Type %s not found", dn)
 	}
 	return rtctrlSetRtMetricType, nil
 }
@@ -289,7 +289,7 @@ func getRemoteRtctrlSetNh(client *client.Client, dn string) (*models.RtctrlSetNh
 	}
 	rtctrlSetNh := models.RtctrlSetNhFromContainer(rtctrlSetNhCont)
 	if rtctrlSetNh.DistinguishedName == "" {
-		return nil, fmt.Errorf("rtctrl SetNh %s not found", dn)
+		return nil, fmt.Errorf("Route Control Set Nexthop %s not found", dn)
 	}
 	return rtctrlSetNh, nil
 }
@@ -310,7 +310,7 @@ func getRemoteRtctrlSetComm(client *client.Client, dn string) (*models.RtctrlSet
 	}
 	rtctrlSetComm := models.RtctrlSetCommFromContainer(rtctrlSetCommCont)
 	if rtctrlSetComm.DistinguishedName == "" {
-		return nil, fmt.Errorf("rtctrl Set Comm %s not found", dn)
+		return nil, fmt.Errorf("Route Control Set Community %s not found", dn)
 	}
 	return rtctrlSetComm, nil
 }
@@ -359,7 +359,7 @@ func getRemoteRtctrlSetRedistMultipath(client *client.Client, dn string) (*model
 	}
 	rtctrlSetRedistMultipath := models.RedistributeMultipathActionFromContainer(rtctrlSetRedistMultipathCont)
 	if rtctrlSetRedistMultipath.DistinguishedName == "" {
-		return nil, fmt.Errorf("rtctrl Set Redist Multipath %s not found", dn)
+		return nil, fmt.Errorf("Route Control Set Redist Multipath %s not found", dn)
 	}
 	return rtctrlSetRedistMultipath, nil
 }
@@ -382,7 +382,7 @@ func getRemoteRtctrlSetASPath(client *client.Client, dn string) (*models.SetASPa
 	}
 	rtctrlSetASPath := models.SetASPathFromContainer(rtctrlSetASPathCont)
 	if rtctrlSetASPath.DistinguishedName == "" {
-		return nil, fmt.Errorf("Rtctrl Set AS Path %s not found", dn)
+		return nil, fmt.Errorf("Route Control Set AS Path %s not found", dn)
 	}
 	return rtctrlSetASPath, nil
 }
@@ -421,7 +421,7 @@ func getRemoteRtctrlSetDamp(client *client.Client, dn string) (*models.RtctrlSet
 	}
 	rtctrlSetDamp := models.RtctrlSetDampFromContainer(rtctrlSetDampCont)
 	if rtctrlSetDamp.DistinguishedName == "" {
-		return nil, fmt.Errorf("rtctrl Set Damp %s not found", dn)
+		return nil, fmt.Errorf("Route Control Set Damp %s not found", dn)
 	}
 	return rtctrlSetDamp, nil
 }

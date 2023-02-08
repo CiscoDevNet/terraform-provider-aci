@@ -142,7 +142,7 @@ func getRemoteInBManagedNodesZone(client *client.Client, dn string) (*models.InB
 	}
 	mgmtInBZone := models.InBManagedNodesZoneFromContainer(mgmtInBZoneCont)
 	if mgmtInBZone.DistinguishedName == "" {
-		return nil, fmt.Errorf("InB Managed Nodes Zone %s not found", dn)
+		return nil, fmt.Errorf("InBand Managed Nodes Zone %s not found", dn)
 	}
 	return mgmtInBZone, nil
 }
@@ -154,7 +154,7 @@ func getRemoteOOBManagedNodesZone(client *client.Client, dn string) (*models.OOB
 	}
 	mgmtOobZone := models.OOBManagedNodesZoneFromContainer(mgmtOobZoneCont)
 	if mgmtOobZone.DistinguishedName == "" {
-		return nil, fmt.Errorf("OoB Managed Nodes Zone %s not found", dn)
+		return nil, fmt.Errorf("OOB Managed Nodes Zone %s not found", dn)
 	}
 	return mgmtOobZone, nil
 }

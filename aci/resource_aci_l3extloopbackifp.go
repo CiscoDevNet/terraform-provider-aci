@@ -55,7 +55,7 @@ func getRemoteLoopBackInterfaceProfile(client *client.Client, dn string) (*model
 	l3extLoopBackIfP := models.LoopBackInterfaceProfileFromContainer(l3extLoopBackIfPCont)
 
 	if l3extLoopBackIfP.DistinguishedName == "" {
-		return nil, fmt.Errorf("Loop Back Interface Profile %s not found", dn)
+		return nil, fmt.Errorf("LoopBack Interface Profile %s not found", dn)
 	}
 
 	return l3extLoopBackIfP, nil

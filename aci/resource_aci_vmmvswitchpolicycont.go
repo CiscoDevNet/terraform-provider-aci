@@ -107,7 +107,7 @@ func getRemoteVSwitchPolicyGroup(client *client.Client, dn string) (*models.VSwi
 	}
 	vmmVSwitchPolicyCont := models.VSwitchPolicyGroupFromContainer(vmmVSwitchPolicyContCont)
 	if vmmVSwitchPolicyCont.DistinguishedName == "" {
-		return nil, fmt.Errorf("V Switch Policy Group %s not found", dn)
+		return nil, fmt.Errorf("vSwitch Policy Group %s not found", dn)
 	}
 	return vmmVSwitchPolicyCont, nil
 }

@@ -60,7 +60,7 @@ func getRemoteSPANSourcedestinationGroupMatchLabel(client *client.Client, dn str
 	spanSpanLbl := models.SPANSourcedestinationGroupMatchLabelFromContainer(spanSpanLblCont)
 
 	if spanSpanLbl.DistinguishedName == "" {
-		return nil, fmt.Errorf("SPANSourcedestinationGroupMatchLabel %s not found", dn)
+		return nil, fmt.Errorf("SPAN Source Destination Group Match Label %s not found", dn)
 	}
 
 	return spanSpanLbl, nil
