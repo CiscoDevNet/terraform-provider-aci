@@ -359,7 +359,7 @@ func getRemoteRtctrlSetRedistMultipath(client *client.Client, dn string) (*model
 	}
 	rtctrlSetRedistMultipath := models.RedistributeMultipathActionFromContainer(rtctrlSetRedistMultipathCont)
 	if rtctrlSetRedistMultipath.DistinguishedName == "" {
-		return nil, fmt.Errorf("Route Control Set Redist Multipath %s not found", dn)
+		return nil, fmt.Errorf("Route Control Set Redistribute Multipath %s not found", dn)
 	}
 	return rtctrlSetRedistMultipath, nil
 }
@@ -421,7 +421,7 @@ func getRemoteRtctrlSetDamp(client *client.Client, dn string) (*models.RtctrlSet
 	}
 	rtctrlSetDamp := models.RtctrlSetDampFromContainer(rtctrlSetDampCont)
 	if rtctrlSetDamp.DistinguishedName == "" {
-		return nil, fmt.Errorf("Route Control Set Damp %s not found", dn)
+		return nil, fmt.Errorf("Route Control Set Dampening %s not found", dn)
 	}
 	return rtctrlSetDamp, nil
 }
