@@ -493,7 +493,7 @@ func resourceAciDomainCreate(ctx context.Context, d *schema.ResourceData, m inte
 	d.Partial(false)
 
 	if relationTofvRsVmmVSwitchEnhancedLagPol, ok := d.GetOk("enhanced_lag_policy"); ok {
-		fvAEPgLagPolAtt := models.NewApplicationEPGLagPolicy(fmt.Sprintf(models.RnfvAEPgLagPolAtt), fvRsDomAtt.DistinguishedName, models.ApplicationEPGLagPolicyAttributes{})
+		fvAEPgLagPolAtt := models.NewApplicationEPGLagPolicy(models.RnfvAEPgLagPolAtt, fvRsDomAtt.DistinguishedName, models.ApplicationEPGLagPolicyAttributes{})
 
 		err := aciClient.Save(fvAEPgLagPolAtt)
 		if err != nil {
@@ -644,7 +644,7 @@ func resourceAciDomainUpdate(ctx context.Context, d *schema.ResourceData, m inte
 	d.Partial(false)
 
 	if d.HasChange("enhanced_lag_policy") || d.HasChange("annotation") {
-		fvAEPgLagPolAtt := models.NewApplicationEPGLagPolicy(fmt.Sprintf(models.RnfvAEPgLagPolAtt), fvRsDomAtt.DistinguishedName, models.ApplicationEPGLagPolicyAttributes{})
+		fvAEPgLagPolAtt := models.NewApplicationEPGLagPolicy(models.RnfvAEPgLagPolAtt, fvRsDomAtt.DistinguishedName, models.ApplicationEPGLagPolicyAttributes{})
 
 		err := aciClient.Save(fvAEPgLagPolAtt)
 		if err != nil {
