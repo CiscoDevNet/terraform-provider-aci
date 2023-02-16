@@ -9,7 +9,7 @@ import (
 
 const (
 	Dnl3extlifp        = "uni/tn-%s/out-%s/lnodep-%s/lifp-%s"
-	Rnl3extlifp        = "lifp--%s"
+	Rnl3extlifp        = "lifp-%s"
 	ParentDnl3extlifp  = "uni/tn-%s/out-%s/lnodep-%s"
 	L3extlifpClassName = "l3extLIfP"
 )
