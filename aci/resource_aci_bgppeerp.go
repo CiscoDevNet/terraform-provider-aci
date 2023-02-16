@@ -148,18 +148,20 @@ func resourceAciBgpPeerConnectivityProfile() *schema.Resource {
 			"as_number": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 
 			"local_asn": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 
 			"local_asn_propagate": &schema.Schema{
 				Type:         schema.TypeString,
 				Optional:     true,
 				RequiredWith: []string{"local_asn"},
-
+				Computed:     true,
 				ValidateFunc: validation.StringInSlice([]string{
 					"dual-as",
 					"no-prepend",
@@ -623,7 +625,7 @@ func resourceAciBgpPeerConnectivityProfileUpdate(ctx context.Context, d *schema.
 	PeerConnectivityProfileDn := bgpPeerP.DistinguishedName
 	if d.HasChange("local_asn") || d.HasChange("local_asn_propagate") {
 
-		err := aciClient.DeleteByDn(dn+"/localasn", "bgpLocalAsnP")
+		err := aciClient.DeleteByDn(fmt.Sprintf("%s/localasn", dn), models.BgplocalasnpClassName)
 		if err != nil {
 			return diag.FromErr(err)
 		}
@@ -649,7 +651,7 @@ func resourceAciBgpPeerConnectivityProfileUpdate(ctx context.Context, d *schema.
 
 	if d.HasChange("as_number") {
 
-		err := aciClient.DeleteByDn(dn+"/as", "bgpAsP")
+		err := aciClient.DeleteByDn(fmt.Sprintf("%s/as", dn), models.BgpaspClassName)
 		if err != nil {
 			return diag.FromErr(err)
 		}
@@ -658,8 +660,6 @@ func resourceAciBgpPeerConnectivityProfileUpdate(ctx context.Context, d *schema.
 
 		if Asn, ok := d.GetOk("as_number"); ok {
 			bgpAsPAttr.Asn = Asn.(string)
-		}
-		if _, ok := d.GetOk("as_number"); ok {
 			bgpAsP := models.NewBgpAutonomousSystemProfile(fmt.Sprintf("as"), PeerConnectivityProfileDn, desc, bgpAsPAttr)
 
 			err = aciClient.Save(bgpAsP)
