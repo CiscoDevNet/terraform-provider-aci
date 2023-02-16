@@ -45,22 +45,22 @@ resource "aci_logical_interface_profile" "foological_interface_profile" {
 ## Argument Reference
 
 - `logical_node_profile_dn` - (Required) Distinguished name of the parent Logical Node Profile object.
-- `name` - (Required) Name of the object logical interface profile.
-- `annotation` - (Optional) Annotation of the object logical interface profile.
-- `description` - (Optional) Description of the object logical interface profile.
-- `name_alias` - (Optional) Name alias of the object logical interface profile.
+- `name` - (Required) Name of the logical interface profile object.
+- `annotation` - (Optional) Annotation of the logical interface profile object.
+- `description` - (Optional) Description of the logical interface profile object.
+- `name_alias` - (Optional) Name alias of the logical interface profile object.
 - `prio` - (Optional) QoS priority class id. Allowed values are "unspecified", "level1", "level2", "level3", "level4", "level5" and "level6". Default is "unspecified.
 - `tag` - (Optional) Specifies the color of a policy label. Allowed values are "black", "navy", "dark-blue", "medium-blue", "blue", "dark-green", "green", "teal", "dark-cyan", "deep-sky-blue", "dark-turquoise", "medium-spring-green", "lime", "spring-green", "aqua", "cyan", "midnight-blue", "dodger-blue", "light-sea-green", "forest-green", "sea-green", "dark-slate-gray", "lime-green", "medium-sea-green", "turquoise", "royal-blue", "steel-blue", "dark-slate-blue", "medium-turquoise", "indigo", "dark-olive-green", "cadet-blue", "cornflower-blue", "medium-aquamarine", "dim-gray", "slate-blue", "olive-drab", "slate-gray", "light-slate-gray", "medium-slate-blue", "lawn-green", "chartreuse", "aquamarine", "maroon", "purple", "olive", "gray", "sky-blue", "light-sky-blue", "blue-violet", "dark-red", "dark-magenta", "saddle-brown", "dark-sea-green", "light-green", "medium-purple", "dark-violet", "pale-green", "dark-orchid", "yellow-green", "sienna", "brown", "dark-gray", "light-blue", "green-yellow", "pale-turquoise", "light-steel-blue", "powder-blue", "fire-brick", "dark-goldenrod", "medium-orchid", "rosy-brown", "dark-khaki", "silver", "medium-violet-red", "indian-red", "peru", "chocolate", "tan", "light-gray", "thistle", "orchid", "goldenrod", "pale-violet-red", "crimson", "gainsboro", "plum", "burlywood", "light-cyan", "lavender", "dark-salmon", "violet", "pale-goldenrod", "light-coral", "khaki", "alice-blue", "honeydew", "azure", "sandy-brown", "wheat", "beige", "white-smoke", "mint-cream", "ghost-white", "salmon", "antique-white", "linen", "light-goldenrod-yellow", "old-lace", "red", "fuchsia", "magenta", "deep-pink", "orange-red", "tomato", "hot-pink", "coral", "dark-orange", "light-salmon", "orange", "light-pink", "pink", "gold", "peachpuff", "navajo-white", "moccasin", "bisque", "misty-rose", "blanched-almond", "papaya-whip", "lavender-blush", "seashell", "cornsilk", "lemon-chiffon", "floral-white", "snow", "yellow", "light-yellow", "ivory" and "white".
 
-- `relation_l3ext_rs_l_if_p_to_netflow_monitor_pol` - (Optional) Relation to class netflowMonitorPol. Cardinality - N_TO_M. Type - Block.
+- `relation_l3ext_rs_l_if_p_to_netflow_monitor_pol` - (Optional) Relation to the Netflow Monitor Policy (class netflowMonitorPol). Cardinality - N_TO_M. Type - Block.
   - `tn_netflow_monitor_pol_name` - (Deprecated) Distinguished name of the target Netflow Monitor Policy.
 	- `tn_netflow_monitor_pol_dn` - (Required) Distinguished name of the target Netflow Monitor Policy.
 	- `flt_type` - (Required) Netflow IP filter type. Allowed values: "ce", "ipv4", "ipv6".
-- `relation_l3ext_rs_egress_qos_dpp_pol` - (Optional) Relation to class qosDppPol. Cardinality - N_TO_ONE. Type - String.
-- `relation_l3ext_rs_ingress_qos_dpp_pol` - (Optional) Relation to class qosDppPol. Cardinality - N_TO_ONE. Type - String.
-- `relation_l3ext_rs_l_if_p_cust_qos_pol` - (Optional) Relation to class qosCustomPol. Cardinality - N_TO_ONE. Type - String.
-- `relation_l3ext_rs_arp_if_pol` - (Optional) Relation to class arpIfPol. Cardinality - N_TO_ONE. Type - String.
-- `relation_l3ext_rs_nd_if_pol` - (Optional) Relation to class ndIfPol. Cardinality - N_TO_ONE. Type - String.
+- `relation_l3ext_rs_egress_qos_dpp_pol` - (Optional) Relation to the class qosDppPol. Cardinality - N_TO_ONE. Type - String.
+- `relation_l3ext_rs_ingress_qos_dpp_pol` - (Optional) Relation to the class qosDppPol. Cardinality - N_TO_ONE. Type - String.
+- `relation_l3ext_rs_l_if_p_cust_qos_pol` - (Optional) Relation to the class qosCustomPol. Cardinality - N_TO_ONE. Type - String.
+- `relation_l3ext_rs_arp_if_pol` - (Optional) Relation to the class arpIfPol. Cardinality - N_TO_ONE. Type - String.
+- `relation_l3ext_rs_nd_if_pol` - (Optional) Relation to the class ndIfPol. Cardinality - N_TO_ONE. Type - String.
 
 ## Attribute Reference
 
