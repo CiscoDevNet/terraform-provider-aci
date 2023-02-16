@@ -85,7 +85,7 @@ func getRemoteInbandStaticNode(client *client.Client, dn string) (*models.Inband
 	mgmtRsInBStNode := models.InbandStaticNodeFromContainer(mgmtRsInBStNodeCont)
 
 	if mgmtRsInBStNode.DistinguishedName == "" {
-		return nil, fmt.Errorf("In Band Static Node %s not found", dn)
+		return nil, fmt.Errorf("In-Band Static Node %s not found", dn)
 	}
 
 	return mgmtRsInBStNode, nil
@@ -100,7 +100,7 @@ func getRemoteOutofbandStaticNode(client *client.Client, dn string) (*models.Out
 	mgmtRsOoBStNode := models.OutofbandStaticNodeFromContainer(mgmtRsOoBStNodeCont)
 
 	if mgmtRsOoBStNode.DistinguishedName == "" {
-		return nil, fmt.Errorf("Out of Band Static Node %s not found", dn)
+		return nil, fmt.Errorf("Out-of-Band Static Node %s not found", dn)
 	}
 
 	return mgmtRsOoBStNode, nil

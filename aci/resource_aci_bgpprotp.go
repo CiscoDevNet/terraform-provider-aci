@@ -65,7 +65,7 @@ func getRemoteL3outBGPProtocolProfile(client *client.Client, dn string) (*models
 	bgpProtP := models.L3outBGPProtocolProfileFromContainer(bgpProtPCont)
 
 	if bgpProtP.DistinguishedName == "" {
-		return nil, fmt.Errorf("L3out BGP Protocol Profile %s not found", dn)
+		return nil, fmt.Errorf("L3Out BGP Protocol Profile %s not found", dn)
 	}
 
 	return bgpProtP, nil

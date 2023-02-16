@@ -48,7 +48,7 @@ func getRemoteL3outBgpExternalPolicy(client *client.Client, dn string) (*models.
 	bgpExtP := models.L3outBgpExternalPolicyFromContainer(bgpExtPCont)
 
 	if bgpExtP.DistinguishedName == "" {
-		return nil, fmt.Errorf("L3out Bgp External Policy %s not found", dn)
+		return nil, fmt.Errorf("L3Out BGP External Policy %s not found", dn)
 	}
 
 	return bgpExtP, nil

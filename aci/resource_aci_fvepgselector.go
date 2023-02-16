@@ -50,7 +50,7 @@ func getRemoteEndpointSecurityGroupEPgSelector(client *client.Client, dn string)
 	}
 	fvEPgSelector := models.EndpointSecurityGroupEPgSelectorFromContainer(fvEPgSelectorCont)
 	if fvEPgSelector.DistinguishedName == "" {
-		return nil, fmt.Errorf("Endpoint Security Group EPg Selector %s not found", dn)
+		return nil, fmt.Errorf("Endpoint Security Group EPG Selector %s not found", dn)
 	}
 	return fvEPgSelector, nil
 }

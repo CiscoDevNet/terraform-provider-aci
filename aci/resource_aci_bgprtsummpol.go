@@ -70,7 +70,7 @@ func getRemoteBgpRouteSummarization(client *client.Client, dn string) (*models.B
 	bgpRtSummPol := models.BgpRouteSummarizationFromContainer(bgpRtSummPolCont)
 
 	if bgpRtSummPol.DistinguishedName == "" {
-		return nil, fmt.Errorf("Bgp Route Summarization %s not found", dn)
+		return nil, fmt.Errorf("BGP Route Summarization %s not found", dn)
 	}
 
 	return bgpRtSummPol, nil

@@ -187,7 +187,7 @@ func getRemoteNlbEndpoint(client *client.Client, dn string) (*models.NlbEndpoint
 	}
 	fvEpNlb := models.NlbEndpointFromContainer(fvEpNlbCont)
 	if fvEpNlb.DistinguishedName == "" {
-		return nil, fmt.Errorf("Nlb Endpoint %s not found", dn)
+		return nil, fmt.Errorf("NLB Endpoint %s not found", dn)
 	}
 	return fvEpNlb, nil
 }

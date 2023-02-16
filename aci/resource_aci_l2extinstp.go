@@ -186,7 +186,7 @@ func getRemoteL2outExternalEpg(client *client.Client, dn string) (*models.L2outE
 	l2extInstP := models.L2outExternalEpgFromContainer(l2extInstPCont)
 
 	if l2extInstP.DistinguishedName == "" {
-		return nil, fmt.Errorf("L2out External Epg %s not found", dn)
+		return nil, fmt.Errorf("L2Out External EPG %s not found", dn)
 	}
 
 	return l2extInstP, nil

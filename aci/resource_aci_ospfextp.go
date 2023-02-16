@@ -143,7 +143,7 @@ func getRemoteL3outOspfExternalPolicy(client *client.Client, dn string) (*models
 	ospfExtP := models.L3outOspfExternalPolicyFromContainer(ospfExtPCont)
 
 	if ospfExtP.DistinguishedName == "" {
-		return nil, fmt.Errorf("L3out Ospf External Policy %s not found", dn)
+		return nil, fmt.Errorf("L3Out OSPF External Policy %s not found", dn)
 	}
 
 	return ospfExtP, nil

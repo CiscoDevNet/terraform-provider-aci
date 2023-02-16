@@ -48,7 +48,7 @@ func getRemoteVlanEncapsulationforVxlanTraffic(client *client.Client, dn string)
 	infraProvAcc := models.VlanEncapsulationforVxlanTrafficFromContainer(infraProvAccCont)
 
 	if infraProvAcc.DistinguishedName == "" {
-		return nil, fmt.Errorf("Vlan Encapsulation for Vxlan Traffic %s not found", dn)
+		return nil, fmt.Errorf("VLAN Encapsulation for Vxlan Traffic %s not found", dn)
 	}
 
 	return infraProvAcc, nil

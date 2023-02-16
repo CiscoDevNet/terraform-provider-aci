@@ -65,7 +65,7 @@ func getRemoteL3outHSRPInterfaceProfile(client *client.Client, dn string) (*mode
 	hsrpIfP := models.L3outHSRPInterfaceProfileFromContainer(hsrpIfPCont)
 
 	if hsrpIfP.DistinguishedName == "" {
-		return nil, fmt.Errorf("L3out HSRP Interface Profile %s not found", dn)
+		return nil, fmt.Errorf("L3Out HSRP Interface Profile %s not found", dn)
 	}
 
 	return hsrpIfP, nil

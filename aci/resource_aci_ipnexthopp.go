@@ -82,7 +82,7 @@ func getRemoteL3outStaticRouteNextHop(client *client.Client, dn string) (*models
 	ipNexthopP := models.L3outStaticRouteNextHopFromContainer(ipNexthopPCont)
 
 	if ipNexthopP.DistinguishedName == "" {
-		return nil, fmt.Errorf("L3out Static Route Next Hop %s not found", dn)
+		return nil, fmt.Errorf("L3Out Static Route Next Hop %s not found", dn)
 	}
 
 	return ipNexthopP, nil

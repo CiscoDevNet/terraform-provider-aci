@@ -76,7 +76,7 @@ func getRemoteCloudEndpointSelectorforExternalEPgs(client *client.Client, dn str
 	cloudExtEPSelector := models.CloudEndpointSelectorforExternalEPgsFromContainer(cloudExtEPSelectorCont)
 
 	if cloudExtEPSelector.DistinguishedName == "" {
-		return nil, fmt.Errorf("Cloud Endpoint Selector for External EPgs %s not found", dn)
+		return nil, fmt.Errorf("Cloud Endpoint Selector for External EPGs %s not found", dn)
 	}
 
 	return cloudExtEPSelector, nil

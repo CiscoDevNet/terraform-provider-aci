@@ -210,7 +210,7 @@ func getRemoteBgpPeerConnectivityProfile(client *client.Client, dn string) (*mod
 	bgpPeerP := models.BgpPeerConnectivityProfileFromContainer(bgpPeerPCont)
 
 	if bgpPeerP.DistinguishedName == "" {
-		return nil, fmt.Errorf("Bgp Peer Connectivity Profile %s not found", dn)
+		return nil, fmt.Errorf("BGP Peer Connectivity Profile %s not found", dn)
 	}
 
 	return bgpPeerP, nil

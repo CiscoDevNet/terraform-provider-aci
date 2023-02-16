@@ -163,7 +163,7 @@ func getRemoteL3outPathAttachment(client *client.Client, dn string) (*models.L3o
 	l3extRsPathL3OutAtt := models.L3outPathAttachmentFromContainer(l3extRsPathL3OutAttCont)
 
 	if l3extRsPathL3OutAtt.DistinguishedName == "" {
-		return nil, fmt.Errorf("L3out Path Attachment %s not found", dn)
+		return nil, fmt.Errorf("L3Out Path Attachment %s not found", dn)
 	}
 
 	return l3extRsPathL3OutAtt, nil

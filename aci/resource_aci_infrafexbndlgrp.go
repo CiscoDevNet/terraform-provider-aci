@@ -67,7 +67,7 @@ func getRemoteFexBundleGroup(client *client.Client, dn string) (*models.FexBundl
 	infraFexBndlGrp := models.FexBundleGroupFromContainer(infraFexBndlGrpCont)
 
 	if infraFexBndlGrp.DistinguishedName == "" {
-		return nil, fmt.Errorf("Fex Bundle Group %s not found", dn)
+		return nil, fmt.Errorf("FEX Bundle Group %s not found", dn)
 	}
 
 	return infraFexBndlGrp, nil

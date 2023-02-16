@@ -60,7 +60,7 @@ func getRemoteL3outRouteTagPolicy(client *client.Client, dn string) (*models.L3o
 	l3extRouteTagPol := models.L3outRouteTagPolicyFromContainer(l3extRouteTagPolCont)
 
 	if l3extRouteTagPol.DistinguishedName == "" {
-		return nil, fmt.Errorf("L3out Route Tag Policy %s not found", dn)
+		return nil, fmt.Errorf("L3Out Route Tag Policy %s not found", dn)
 	}
 
 	return l3extRouteTagPol, nil

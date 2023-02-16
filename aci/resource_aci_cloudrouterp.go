@@ -93,7 +93,7 @@ func getRemoteCloudVpnGateway(client *client.Client, dn string) (*models.CloudVp
 	cloudRouterP := models.CloudVpnGatewayFromContainer(cloudRouterPCont)
 
 	if cloudRouterP.DistinguishedName == "" {
-		return nil, fmt.Errorf("Cloud Vpn Gateway %s not found", dn)
+		return nil, fmt.Errorf("Cloud VPN Gateway %s not found", dn)
 	}
 
 	return cloudRouterP, nil

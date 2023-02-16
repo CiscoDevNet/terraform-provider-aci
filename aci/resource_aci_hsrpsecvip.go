@@ -72,7 +72,7 @@ func getRemoteL3outHSRPSecondaryVIP(client *client.Client, dn string) (*models.L
 	hsrpSecVip := models.L3outHSRPSecondaryVIPFromContainer(hsrpSecVipCont)
 
 	if hsrpSecVip.DistinguishedName == "" {
-		return nil, fmt.Errorf("L3out HSRP Secondary VIP %s not found", dn)
+		return nil, fmt.Errorf("L3Out HSRP Secondary VIP %s not found", dn)
 	}
 
 	return hsrpSecVip, nil
