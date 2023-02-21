@@ -635,11 +635,9 @@ func resourceAciBgpPeerConnectivityProfileUpdate(ctx context.Context, d *schema.
 		if AsnPropagate, ok := d.GetOk("local_asn_propagate"); ok {
 			bgpLocalAsnPAttr.AsnPropagate = AsnPropagate.(string)
 		}
+
 		if LocalAsn, ok := d.GetOk("local_asn"); ok {
 			bgpLocalAsnPAttr.LocalAsn = LocalAsn.(string)
-		}
-
-		if _, ok := d.GetOk("local_asn"); ok {
 			bgpLocalAsnP := models.NewLocalAutonomousSystemProfile(fmt.Sprintf("localasn"), PeerConnectivityProfileDn, desc, bgpLocalAsnPAttr)
 
 			err = aciClient.Save(bgpLocalAsnP)
