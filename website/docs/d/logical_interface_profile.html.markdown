@@ -14,7 +14,7 @@ Data source for ACI Logical Interface Profile
 ## API Information
 
 - `Class` - l3extLIfP
-- `Distinguished Name` - uni/tn-{tenant}/out-{l3out}/lnodep-{logical_node_profile}/lifp-{logical_interface_profile}
+- `Distinguished Name` - uni/tn-{tenant_name}/out-{l3out}/lnodep-{logical_node_profile}/lifp-{logical_interface_profile}
 
 ## GUI Information
 
