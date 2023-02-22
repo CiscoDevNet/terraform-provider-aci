@@ -64,7 +64,7 @@ func getRemoteBgpBestPathPolicy(client *client.Client, dn string) (*models.BgpBe
 	bgpBestPathCtrlPol := models.BgpBestPathPolicyFromContainer(bgpBestPathCtrlPolCont)
 
 	if bgpBestPathCtrlPol.DistinguishedName == "" {
-		return nil, fmt.Errorf("Bgp Best Path Policy %s not found", dn)
+		return nil, fmt.Errorf("BGP Best Path Policy %s not found", dn)
 	}
 
 	return bgpBestPathCtrlPol, nil

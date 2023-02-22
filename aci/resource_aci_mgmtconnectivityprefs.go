@@ -46,7 +46,7 @@ func getRemoteMgmtconnectivitypreference(client *client.Client, dn string) (*mod
 	}
 	mgmtConnectivityPrefs := models.MgmtconnectivitypreferenceFromContainer(mgmtConnectivityPrefsCont)
 	if mgmtConnectivityPrefs.DistinguishedName == "" {
-		return nil, fmt.Errorf("Mgmt connectivity preference %s not found", dn)
+		return nil, fmt.Errorf("Mgmt Connectivity Preference %s not found", dn)
 	}
 	return mgmtConnectivityPrefs, nil
 }

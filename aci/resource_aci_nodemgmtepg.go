@@ -286,7 +286,7 @@ func getRemoteOutOfBandManagementEPg(client *client.Client, dn string) (*models.
 	mgmtOoB := models.OutOfBandManagementEPgFromContainer(mgmtOoBCont)
 
 	if mgmtOoB.DistinguishedName == "" {
-		return nil, fmt.Errorf("Out-Of-Band Management EPG %s not found", dn)
+		return nil, fmt.Errorf("Out-of-Band Management EPG %s not found", dn)
 	}
 
 	return mgmtOoB, nil

@@ -168,7 +168,7 @@ func getRemoteCloudExternalEPg(client *client.Client, dn string) (*models.CloudE
 	cloudExtEPg := models.CloudExternalEPgFromContainer(cloudExtEPgCont)
 
 	if cloudExtEPg.DistinguishedName == "" {
-		return nil, fmt.Errorf("Cloud External EPg %s not found", dn)
+		return nil, fmt.Errorf("Cloud External EPG %s not found", dn)
 	}
 
 	return cloudExtEPg, nil

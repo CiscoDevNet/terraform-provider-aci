@@ -60,7 +60,7 @@ func getRemoteMatchRuleBasedonCommunityRegularExpression(client *client.Client, 
 	}
 	rtctrlMatchCommRegexTerm := models.MatchRuleBasedonCommunityRegularExpressionFromContainer(rtctrlMatchCommRegexTermCont)
 	if rtctrlMatchCommRegexTerm.DistinguishedName == "" {
-		return nil, fmt.Errorf("Match Rule Basedon Community Regular Expression %s not found", dn)
+		return nil, fmt.Errorf("Match Rule Based on Community Regular Expression %s not found", dn)
 	}
 	return rtctrlMatchCommRegexTerm, nil
 }

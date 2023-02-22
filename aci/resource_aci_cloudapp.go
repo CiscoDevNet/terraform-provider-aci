@@ -54,7 +54,7 @@ func getRemoteCloudApplicationcontainer(client *client.Client, dn string) (*mode
 	cloudApp := models.CloudApplicationcontainerFromContainer(cloudAppCont)
 
 	if cloudApp.DistinguishedName == "" {
-		return nil, fmt.Errorf("Cloud Application container %s not found", dn)
+		return nil, fmt.Errorf("Cloud Application Container %s not found", dn)
 	}
 
 	return cloudApp, nil

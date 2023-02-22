@@ -77,7 +77,7 @@ func getRemoteBDDHCPLabel(client *client.Client, dn string) (*models.BDDHCPLabel
 	dhcpLbl := models.BDDHCPLabelFromContainer(dhcpLblCont)
 
 	if dhcpLbl.DistinguishedName == "" {
-		return nil, fmt.Errorf("BDDHCP Label %s not found", dn)
+		return nil, fmt.Errorf("BD DHCP Label %s not found", dn)
 	}
 
 	return dhcpLbl, nil

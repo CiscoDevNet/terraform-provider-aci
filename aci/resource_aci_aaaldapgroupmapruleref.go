@@ -45,7 +45,7 @@ func getRemoteLDAPGroupMapruleref(client *client.Client, dn string) (*models.LDA
 	}
 	aaaLdapGroupMapRuleRef := models.LDAPGroupMaprulerefFromContainer(aaaLdapGroupMapRuleRefCont)
 	if aaaLdapGroupMapRuleRef.DistinguishedName == "" {
-		return nil, fmt.Errorf("LDAP Group Map rule ref %s not found", dn)
+		return nil, fmt.Errorf("LDAP Group Map Rule Ref %s not found", dn)
 	}
 	return aaaLdapGroupMapRuleRef, nil
 }
