@@ -56,11 +56,10 @@ resource "aci_logical_interface_profile" "foological_interface_profile" {
   - `tn_netflow_monitor_pol_name` - (Deprecated) Distinguished name of the target Netflow Monitor Policy.
 	- `tn_netflow_monitor_pol_dn` - (Required) Distinguished name of the target Netflow Monitor Policy.
 	- `flt_type` - (Required) Netflow IP filter type. Allowed values: "ce", "ipv4", "ipv6".
-- `relation_l3ext_rs_egress_qos_dpp_pol` - (Optional) Relation to the class qosDppPol. Cardinality - N_TO_ONE. Type - String.
-- `relation_l3ext_rs_ingress_qos_dpp_pol` - (Optional) Relation to the class qosDppPol. Cardinality - N_TO_ONE. Type - String.
-- `relation_l3ext_rs_l_if_p_cust_qos_pol` - (Optional) Relation to the class qosCustomPol. Cardinality - N_TO_ONE. Type - String.
-- `relation_l3ext_rs_arp_if_pol` - (Optional) Relation to the class arpIfPol. Cardinality - N_TO_ONE. Type - String.
-- `relation_l3ext_rs_nd_if_pol` - (Optional) Relation to the class ndIfPol. Cardinality - N_TO_ONE. Type - String.
+- `relation_l3ext_rs_egress_qos_dpp_pol` - (Optional) Relation to the Egress Data Plane Policing Policy (class qosDppPol). Cardinality - N_TO_ONE. Type - String.
+- `relation_l3ext_rs_ingress_qos_dpp_pol` - (Optional) Relation to the Ingress Data Plane Policing Policy (class qosDppPol). Cardinality - N_TO_ONE. Type - String.
+- `relation_l3ext_rs_l_if_p_cust_qos_pol` - (Optional) Relation to the Custom QoS Policy (class qosCustomPol). Cardinality - N_TO_ONE. Type - String.
+- `relation_l3ext_rs_nd_if_pol` - (Optional) Relation to the IPv6 ND policy (class ndIfPol). Cardinality - N_TO_ONE. Type - String.
 
 ## Attribute Reference
 
