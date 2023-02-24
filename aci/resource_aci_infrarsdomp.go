@@ -50,7 +50,7 @@ func getRemoteInfraRsDomP(client *client.Client, dn string) (*models.InfraRsDomP
 	}
 	infraRsDomP := models.InfraRsDomPFromContainer(infraRsDomPCont)
 	if infraRsDomP.DistinguishedName == "" {
-		return nil, fmt.Errorf("Infra RsDomP %s not found", dn)
+		return nil, fmt.Errorf("Relationship to Domain Profile %s not found", dn)
 	}
 	return infraRsDomP, nil
 }
