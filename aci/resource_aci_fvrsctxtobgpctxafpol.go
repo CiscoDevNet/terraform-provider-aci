@@ -55,7 +55,7 @@ func getRemoteBGPAddressFamilyContextPolicyRelationship(client *client.Client, d
 	}
 	fvRsCtxToBgpCtxAfPol := models.BGPAddressFamilyContextPolicyRelationshipFromContainer(fvRsCtxToBgpCtxAfPolCont)
 	if fvRsCtxToBgpCtxAfPol.DistinguishedName == "" {
-		return nil, fmt.Errorf("BGPAddressFamilyContextPolicyRelationship %s not found", fvRsCtxToBgpCtxAfPol.DistinguishedName)
+		return nil, fmt.Errorf("BGP Address Family Context Policy Relationship %s not found", dn)
 	}
 	return fvRsCtxToBgpCtxAfPol, nil
 }
@@ -163,8 +163,7 @@ func resourceAciBGPAddressFamilyContextPolicyRelationshipRead(ctx context.Contex
 
 	fvRsCtxToBgpCtxAfPol, err := getRemoteBGPAddressFamilyContextPolicyRelationship(aciClient, dn)
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 
 	_, err = setBGPAddressFamilyContextPolicyRelationshipAttributes(fvRsCtxToBgpCtxAfPol, d)

@@ -139,7 +139,7 @@ func getRemoteLDAPProvider(client *client.Client, dn string) (*models.LDAPProvid
 	}
 	aaaLdapProvider := models.LDAPProviderFromContainer(aaaLdapProviderCont)
 	if aaaLdapProvider.DistinguishedName == "" {
-		return nil, fmt.Errorf("LDAPProvider %s not found", aaaLdapProvider.DistinguishedName)
+		return nil, fmt.Errorf("LDAP Provider %s not found", dn)
 	}
 	return aaaLdapProvider, nil
 }
@@ -460,8 +460,7 @@ func resourceAciLDAPProviderRead(ctx context.Context, d *schema.ResourceData, m 
 	dn := d.Id()
 	aaaLdapProvider, err := getRemoteLDAPProvider(aciClient, dn)
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 
 	ldap_provider_group := strings.Split(dn, "/")

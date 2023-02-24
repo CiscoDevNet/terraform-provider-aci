@@ -487,8 +487,7 @@ func resourceAciL3ExtSubnetRead(ctx context.Context, d *schema.ResourceData, m i
 	l3extSubnet, err := getRemoteL3ExtSubnet(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setL3ExtSubnetAttributes(l3extSubnet, d)
 	if err != nil {

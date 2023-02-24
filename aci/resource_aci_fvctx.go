@@ -190,7 +190,7 @@ func getRemoteVRF(client *client.Client, dn string) (*models.VRF, error) {
 	fvCtx := models.VRFFromContainer(fvCtxCont)
 
 	if fvCtx.DistinguishedName == "" {
-		return nil, fmt.Errorf("VRF %s not found", fvCtx.DistinguishedName)
+		return nil, fmt.Errorf("VRF %s not found", dn)
 	}
 
 	return fvCtx, nil
@@ -695,8 +695,7 @@ func resourceAciVRFRead(ctx context.Context, d *schema.ResourceData, m interface
 	fvCtx, err := getRemoteVRF(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setVRFAttributes(fvCtx, d)
 	if err != nil {

@@ -52,7 +52,7 @@ func getRemoteProviderGroupMember(client *client.Client, dn string) (*models.Pro
 	}
 	aaaProviderRef := models.ProviderGroupMemberFromContainer(aaaProviderRefCont)
 	if aaaProviderRef.DistinguishedName == "" {
-		return nil, fmt.Errorf("ProviderGroupMember %s not found", aaaProviderRef.DistinguishedName)
+		return nil, fmt.Errorf("Provider Group Member %s not found", dn)
 	}
 	return aaaProviderRef, nil
 }
@@ -177,8 +177,7 @@ func resourceAciProviderGroupMemberRead(ctx context.Context, d *schema.ResourceD
 	dn := d.Id()
 	aaaProviderRef, err := getRemoteProviderGroupMember(aciClient, dn)
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setProviderGroupMemberAttributes(aaaProviderRef, d)
 	if err != nil {

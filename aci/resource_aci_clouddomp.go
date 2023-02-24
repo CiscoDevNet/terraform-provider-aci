@@ -48,7 +48,7 @@ func getRemoteCloudDomainProfile(client *client.Client, dn string) (*models.Clou
 	cloudDomP := models.CloudDomainProfileFromContainer(cloudDomPCont)
 
 	if cloudDomP.DistinguishedName == "" {
-		return nil, fmt.Errorf("CloudDomainProfile %s not found", cloudDomP.DistinguishedName)
+		return nil, fmt.Errorf("Cloud Domain Profile %s not found", dn)
 	}
 
 	return cloudDomP, nil
@@ -164,8 +164,7 @@ func resourceAciCloudDomainProfileRead(ctx context.Context, d *schema.ResourceDa
 	cloudDomP, err := getRemoteCloudDomainProfile(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setCloudDomainProfileAttributes(cloudDomP, d)
 	if err != nil {

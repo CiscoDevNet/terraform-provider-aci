@@ -285,7 +285,7 @@ func getRemoteVMMDomain(client *client.Client, dn string) (*models.VMMDomain, er
 	vmmDomP := models.VMMDomainFromContainer(vmmDomPCont)
 
 	if vmmDomP.DistinguishedName == "" {
-		return nil, fmt.Errorf("VMMDomain %s not found", vmmDomP.DistinguishedName)
+		return nil, fmt.Errorf("VMM Domain %s not found", dn)
 	}
 
 	return vmmDomP, nil
@@ -876,8 +876,7 @@ func resourceAciVMMDomainRead(ctx context.Context, d *schema.ResourceData, m int
 	vmmDomP, err := getRemoteVMMDomain(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setVMMDomainAttributes(vmmDomP, d)
 	if err != nil {

@@ -50,7 +50,7 @@ func getRemoteEndpointSecurityGroupSelector(client *client.Client, dn string) (*
 	}
 	fvEPSelector := models.EndpointSecurityGroupSelectorFromContainer(fvEPSelectorCont)
 	if fvEPSelector.DistinguishedName == "" {
-		return nil, fmt.Errorf("EndpointSecurityGroupSelector %s not found", fvEPSelector.DistinguishedName)
+		return nil, fmt.Errorf("Endpoint Security Group Selector %s not found", dn)
 	}
 	return fvEPSelector, nil
 }
@@ -167,8 +167,7 @@ func resourceAciEndpointSecurityGroupSelectorRead(ctx context.Context, d *schema
 	dn := d.Id()
 	fvEPSelector, err := getRemoteEndpointSecurityGroupSelector(aciClient, dn)
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setEndpointSecurityGroupSelectorAttributes(fvEPSelector, d)
 	if err != nil {

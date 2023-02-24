@@ -65,7 +65,7 @@ func getRemoteRouteControlProfile(client *client.Client, dn string) (*models.Rou
 	rtctrlProfile := models.RouteControlProfileFromContainer(rtctrlProfileCont)
 
 	if rtctrlProfile.DistinguishedName == "" {
-		return nil, fmt.Errorf("RouteControlProfile %s not found", rtctrlProfile.DistinguishedName)
+		return nil, fmt.Errorf("Route Control Profile %s not found", dn)
 	}
 
 	return rtctrlProfile, nil
@@ -195,8 +195,7 @@ func resourceAciRouteControlProfileRead(ctx context.Context, d *schema.ResourceD
 	rtctrlProfile, err := getRemoteRouteControlProfile(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setRouteControlProfileAttributes(rtctrlProfile, d)
 	if err != nil {

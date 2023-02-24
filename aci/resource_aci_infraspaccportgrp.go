@@ -74,7 +74,7 @@ func getRemoteSpineAccessPortPolicyGroup(client *client.Client, dn string) (*mod
 	infraSpAccPortGrp := models.SpineAccessPortPolicyGroupFromContainer(infraSpAccPortGrpCont)
 
 	if infraSpAccPortGrp.DistinguishedName == "" {
-		return nil, fmt.Errorf("SpineAccessPortPolicyGroup %s not found", infraSpAccPortGrp.DistinguishedName)
+		return nil, fmt.Errorf("Spine Access Port Policy Group %s not found", dn)
 	}
 
 	return infraSpAccPortGrp, nil
@@ -341,8 +341,7 @@ func resourceAciSpineAccessPortPolicyGroupRead(ctx context.Context, d *schema.Re
 	infraSpAccPortGrp, err := getRemoteSpineAccessPortPolicyGroup(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setSpineAccessPortPolicyGroupAttributes(infraSpAccPortGrp, d)
 	if err != nil {

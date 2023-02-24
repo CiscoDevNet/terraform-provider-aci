@@ -187,7 +187,7 @@ func getRemoteNlbEndpoint(client *client.Client, dn string) (*models.NlbEndpoint
 	}
 	fvEpNlb := models.NlbEndpointFromContainer(fvEpNlbCont)
 	if fvEpNlb.DistinguishedName == "" {
-		return nil, fmt.Errorf("NlbEndpoint %s not found", dn)
+		return nil, fmt.Errorf("NLB Endpoint %s not found", dn)
 	}
 	return fvEpNlb, nil
 }
@@ -907,8 +907,7 @@ func resourceAciSubnetRead(ctx context.Context, d *schema.ResourceData, m interf
 	fvSubnet, err := getRemoteSubnet(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setSubnetAttributes(fvSubnet, d)
 	if err != nil {

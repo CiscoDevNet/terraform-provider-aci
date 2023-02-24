@@ -55,7 +55,7 @@ func getRemoteAccessGeneric(client *client.Client, dn string) (*models.AccessGen
 	infraGeneric := models.AccessGenericFromContainer(infraGenericCont)
 
 	if infraGeneric.DistinguishedName == "" {
-		return nil, fmt.Errorf("AccessGeneric %s not found", infraGeneric.DistinguishedName)
+		return nil, fmt.Errorf("Access Generic %s not found", dn)
 	}
 
 	return infraGeneric, nil
@@ -185,8 +185,7 @@ func resourceAciAccessGenericRead(ctx context.Context, d *schema.ResourceData, m
 	infraGeneric, err := getRemoteAccessGeneric(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setAccessGenericAttributes(infraGeneric, d)
 	if err != nil {

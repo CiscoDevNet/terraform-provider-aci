@@ -65,7 +65,7 @@ func getRemoteCloudCIDRPool(client *client.Client, dn string) (*models.CloudCIDR
 	cloudCidr := models.CloudCIDRPoolFromContainer(cloudCidrCont)
 
 	if cloudCidr.DistinguishedName == "" {
-		return nil, fmt.Errorf("CloudCIDRPool %s not found", cloudCidr.DistinguishedName)
+		return nil, fmt.Errorf("Cloud CIDR Pool %s not found", dn)
 	}
 
 	return cloudCidr, nil
@@ -206,8 +206,7 @@ func resourceAciCloudCIDRPoolRead(ctx context.Context, d *schema.ResourceData, m
 	cloudCidr, err := getRemoteCloudCIDRPool(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setCloudCIDRPoolAttributes(cloudCidr, d)
 

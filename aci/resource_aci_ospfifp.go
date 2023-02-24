@@ -79,7 +79,7 @@ func getRemoteOSPFInterfaceProfile(client *client.Client, dn string) (*models.OS
 	ospfIfP := models.OSPFInterfaceProfileFromContainer(ospfIfPCont)
 
 	if ospfIfP.DistinguishedName == "" {
-		return nil, fmt.Errorf("InterfaceProfile %s not found", ospfIfP.DistinguishedName)
+		return nil, fmt.Errorf("Interface Profile %s not found", dn)
 	}
 
 	return ospfIfP, nil
@@ -264,8 +264,7 @@ func resourceAciOSPFInterfaceProfileRead(ctx context.Context, d *schema.Resource
 	ospfIfP, err := getRemoteOSPFInterfaceProfile(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setOSPFInterfaceProfileAttributes(ospfIfP, d)
 	if err != nil {

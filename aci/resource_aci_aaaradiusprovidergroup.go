@@ -41,7 +41,7 @@ func getRemoteRADIUSProviderGroup(client *client.Client, dn string) (*models.RAD
 	}
 	aaaRadiusProviderGroup := models.RADIUSProviderGroupFromContainer(aaaRadiusProviderGroupCont)
 	if aaaRadiusProviderGroup.DistinguishedName == "" {
-		return nil, fmt.Errorf("RADIUSProviderGroup %s not found", aaaRadiusProviderGroup.DistinguishedName)
+		return nil, fmt.Errorf("RADIUS Provider Group %s not found", dn)
 	}
 	return aaaRadiusProviderGroup, nil
 }
@@ -142,8 +142,7 @@ func resourceAciRADIUSProviderGroupRead(ctx context.Context, d *schema.ResourceD
 	dn := d.Id()
 	aaaRadiusProviderGroup, err := getRemoteRADIUSProviderGroup(aciClient, dn)
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setRADIUSProviderGroupAttributes(aaaRadiusProviderGroup, d)
 	if err != nil {

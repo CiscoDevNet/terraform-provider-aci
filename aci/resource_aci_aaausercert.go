@@ -60,7 +60,7 @@ func getRemoteX509Certificate(client *client.Client, dn string) (*models.X509Cer
 	aaaUserCert := models.X509CertificateFromContainer(aaaUserCertCont)
 
 	if aaaUserCert.DistinguishedName == "" {
-		return nil, fmt.Errorf("X509Certificate %s not found", aaaUserCert.DistinguishedName)
+		return nil, fmt.Errorf("X509 Certificate %s not found", dn)
 	}
 
 	return aaaUserCert, nil
@@ -70,7 +70,7 @@ func setX509CertificateAttributes(aaaUserCert *models.X509Certificate, d *schema
 	dn := d.Id()
 	d.SetId(aaaUserCert.DistinguishedName)
 	d.Set("description", aaaUserCert.Description)
-	// d.Set("local_user_dn", GetParentDn(aaaUserCert.DistinguishedName))
+
 	if dn != aaaUserCert.DistinguishedName {
 		d.Set("local_user_dn", "")
 	}
@@ -199,8 +199,7 @@ func resourceAciX509CertificateRead(ctx context.Context, d *schema.ResourceData,
 	aaaUserCert, err := getRemoteX509Certificate(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setX509CertificateAttributes(aaaUserCert, d)
 	if err != nil {

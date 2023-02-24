@@ -93,7 +93,7 @@ func getRemoteCloudVpnGateway(client *client.Client, dn string) (*models.CloudVp
 	cloudRouterP := models.CloudVpnGatewayFromContainer(cloudRouterPCont)
 
 	if cloudRouterP.DistinguishedName == "" {
-		return nil, fmt.Errorf("CloudVpnGateway %s not found", cloudRouterP.DistinguishedName)
+		return nil, fmt.Errorf("Cloud VPN Gateway %s not found", dn)
 	}
 
 	return cloudRouterP, nil
@@ -324,8 +324,7 @@ func resourceAciCloudVpnGatewayRead(ctx context.Context, d *schema.ResourceData,
 	cloudRouterP, err := getRemoteCloudVpnGateway(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setCloudVpnGatewayAttributes(cloudRouterP, d)
 

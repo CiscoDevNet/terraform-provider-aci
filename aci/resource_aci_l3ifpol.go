@@ -60,7 +60,7 @@ func getRemoteL3InterfacePolicy(client *client.Client, dn string) (*models.L3Int
 	l3IfPol := models.L3InterfacePolicyFromContainer(l3IfPolCont)
 
 	if l3IfPol.DistinguishedName == "" {
-		return nil, fmt.Errorf("L3InterfacePolicy %s not found", l3IfPol.DistinguishedName)
+		return nil, fmt.Errorf("L3 Interface Policy %s not found", dn)
 	}
 
 	return l3IfPol, nil
@@ -193,8 +193,7 @@ func resourceAciL3InterfacePolicyRead(ctx context.Context, d *schema.ResourceDat
 	l3IfPol, err := getRemoteL3InterfacePolicy(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	setL3InterfacePolicyAttributes(l3IfPol, d)
 

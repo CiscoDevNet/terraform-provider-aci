@@ -83,7 +83,7 @@ func getRemoteLeakInternalSubnet(client *client.Client, dn string) (*models.Leak
 	}
 	leakInternalSubnet := models.LeakInternalSubnetFromContainer(leakInternalSubnetCont)
 	if leakInternalSubnet.DistinguishedName == "" {
-		return nil, fmt.Errorf("LeakInternalSubnet %s not found", dn)
+		return nil, fmt.Errorf("Leak Internal Subnet %s not found", dn)
 	}
 	return leakInternalSubnet, nil
 }
@@ -339,8 +339,7 @@ func resourceAciLeakInternalSubnetRead(ctx context.Context, d *schema.ResourceDa
 
 	leakInternalSubnet, err := getRemoteLeakInternalSubnet(aciClient, dn)
 	if err != nil {
-		d.SetId("")
-		return diag.FromErr(err)
+		return errorForObjectNotFound(err, dn, d)
 	}
 
 	_, err = setLeakInternalSubnetAttributes(leakInternalSubnet, d)

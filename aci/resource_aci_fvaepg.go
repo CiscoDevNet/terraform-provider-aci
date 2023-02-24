@@ -237,7 +237,7 @@ func getRemoteApplicationEPG(client *client.Client, dn string) (*models.Applicat
 	fvAEPg := models.ApplicationEPGFromContainer(fvAEPgCont)
 
 	if fvAEPg.DistinguishedName == "" {
-		return nil, fmt.Errorf("ApplicationEPG %s not found", fvAEPg.DistinguishedName)
+		return nil, fmt.Errorf("Application EPG %s not found", dn)
 	}
 
 	return fvAEPg, nil
@@ -1145,8 +1145,7 @@ func resourceAciApplicationEPGRead(ctx context.Context, d *schema.ResourceData, 
 	fvAEPg, err := getRemoteApplicationEPG(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setApplicationEPGAttributes(fvAEPg, d)
 	if err != nil {

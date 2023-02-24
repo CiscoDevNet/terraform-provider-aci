@@ -62,7 +62,7 @@ func getRemoteOutofServiceFabricPath(client *client.Client, dn string) (*models.
 	}
 	fabricRsOosPath := models.OutofServiceFabricPathFromContainer(fabricRsOosPathCont)
 	if fabricRsOosPath.DistinguishedName == "" {
-		return nil, fmt.Errorf("Interface blacklist %s not found", fabricRsOosPath.DistinguishedName)
+		return nil, fmt.Errorf("Interface blacklist %s not found", dn)
 	}
 	return fabricRsOosPath, nil
 }
@@ -219,8 +219,7 @@ func resourceAciOutofServiceFabricPathRead(ctx context.Context, d *schema.Resour
 	dn := d.Id()
 	fabricRsOosPath, err := getRemoteOutofServiceFabricPath(aciClient, dn)
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setOutofServiceFabricPathAttributes(fabricRsOosPath, d)
 	if err != nil {

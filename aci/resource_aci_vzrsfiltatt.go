@@ -81,7 +81,7 @@ func getRemoteFilterRelationship(client *client.Client, dn string) (*models.Filt
 
 	vzRsFiltAtt := models.FilterRelationshipFromContainer(vzRsFiltAttCont)
 	if vzRsFiltAtt.DistinguishedName == "" {
-		return nil, fmt.Errorf("Filter %s not found", vzRsFiltAtt.DistinguishedName)
+		return nil, fmt.Errorf("Filter %s not found", dn)
 	}
 	return vzRsFiltAtt, nil
 }
@@ -229,9 +229,7 @@ func resourceAciFilterRelationshipRead(ctx context.Context, d *schema.ResourceDa
 
 	vzRsFiltAtt, err := getRemoteFilterRelationship(aciClient, dn)
 	if err != nil {
-		d.SetId("")
-		// return diag.FromErr(err)
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 
 	_, err = setFilterRelationshipAttributes(vzRsFiltAtt, d)

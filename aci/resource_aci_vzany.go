@@ -446,8 +446,7 @@ func resourceAciAnyRead(ctx context.Context, d *schema.ResourceData, m interface
 	vzAny, err := getRemoteAny(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setAnyAttributes(vzAny, d)
 	if err != nil {

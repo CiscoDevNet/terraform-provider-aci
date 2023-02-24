@@ -127,8 +127,7 @@ func resourceAciL4L7RedirectHealthGroupRead(ctx context.Context, d *schema.Resou
 
 	vnsRedirectHealthGroup, err := getRemoteL4L7RedirectHealthGroup(aciClient, dn)
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 
 	_, err = setL4L7RedirectHealthGroupAttributes(vnsRedirectHealthGroup, d)

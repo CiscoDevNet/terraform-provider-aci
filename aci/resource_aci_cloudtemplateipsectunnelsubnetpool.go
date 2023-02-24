@@ -156,8 +156,7 @@ func resourceAciSubnetPoolforIpSecTunnelsRead(ctx context.Context, d *schema.Res
 
 	cloudtemplateIpSecTunnelSubnetPool, err := getRemoteSubnetPoolforIpSecTunnels(aciClient, dn)
 	if err != nil {
-		d.SetId("")
-		return diag.FromErr(err)
+		return errorForObjectNotFound(err, dn, d)
 	}
 
 	_, err = setSubnetPoolforIpSecTunnelsAttributes(cloudtemplateIpSecTunnelSubnetPool, d)

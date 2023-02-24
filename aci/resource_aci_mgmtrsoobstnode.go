@@ -85,7 +85,7 @@ func getRemoteInbandStaticNode(client *client.Client, dn string) (*models.Inband
 	mgmtRsInBStNode := models.InbandStaticNodeFromContainer(mgmtRsInBStNodeCont)
 
 	if mgmtRsInBStNode.DistinguishedName == "" {
-		return nil, fmt.Errorf("In Band Static Node %s not found", mgmtRsInBStNode.DistinguishedName)
+		return nil, fmt.Errorf("In-Band Static Node %s not found", dn)
 	}
 
 	return mgmtRsInBStNode, nil
@@ -100,7 +100,7 @@ func getRemoteOutofbandStaticNode(client *client.Client, dn string) (*models.Out
 	mgmtRsOoBStNode := models.OutofbandStaticNodeFromContainer(mgmtRsOoBStNodeCont)
 
 	if mgmtRsOoBStNode.DistinguishedName == "" {
-		return nil, fmt.Errorf("Out of Band Static Node %s not found", mgmtRsOoBStNode.DistinguishedName)
+		return nil, fmt.Errorf("Out-of-Band Static Node %s not found", dn)
 	}
 
 	return mgmtRsOoBStNode, nil
@@ -372,8 +372,7 @@ func resourceAciMgmtStaticNodeRead(ctx context.Context, d *schema.ResourceData, 
 		mgmtRsInBStNode, err := getRemoteInbandStaticNode(aciClient, dn)
 
 		if err != nil {
-			d.SetId("")
-			return nil
+			return errorForObjectNotFound(err, dn, d)
 		}
 		_, err = setMgmtStaticNodeAttributes(nil, mgmtRsInBStNode, "in_band", d)
 
@@ -386,8 +385,7 @@ func resourceAciMgmtStaticNodeRead(ctx context.Context, d *schema.ResourceData, 
 		mgmtRsOoBStNode, err := getRemoteOutofbandStaticNode(aciClient, dn)
 
 		if err != nil {
-			d.SetId("")
-			return nil
+			return errorForObjectNotFound(err, dn, d)
 		}
 		_, err = setMgmtStaticNodeAttributes(mgmtRsOoBStNode, nil, "out_of_band", d)
 

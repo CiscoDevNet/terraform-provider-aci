@@ -124,7 +124,7 @@ func getRemoteHSRPGroupProfile(client *client.Client, dn string) (*models.HSRPGr
 	hsrpGroupP := models.HSRPGroupProfileFromContainer(hsrpGroupPCont)
 
 	if hsrpGroupP.DistinguishedName == "" {
-		return nil, fmt.Errorf("HSRPGroupProfile %s not found", hsrpGroupP.DistinguishedName)
+		return nil, fmt.Errorf("HSRP Group Profile %s not found", dn)
 	}
 
 	return hsrpGroupP, nil
@@ -350,8 +350,7 @@ func resourceAciHSRPGroupProfileRead(ctx context.Context, d *schema.ResourceData
 	hsrpGroupP, err := getRemoteHSRPGroupProfile(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setHSRPGroupProfileAttributes(hsrpGroupP, d)
 

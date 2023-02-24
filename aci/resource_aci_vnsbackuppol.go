@@ -168,8 +168,7 @@ func resourceAciPBRBackupPolicyRead(ctx context.Context, d *schema.ResourceData,
 
 	vnsBackupPol, err := getRemotePBRBackupPolicy(aciClient, dn)
 	if err != nil {
-		d.SetId("")
-		return diag.FromErr(err)
+		return errorForObjectNotFound(err, dn, d)
 	}
 
 	_, err = setPBRBackupPolicyAttributes(vnsBackupPol, d)

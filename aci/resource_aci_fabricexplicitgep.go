@@ -69,7 +69,7 @@ func getRemoteVPCExplicitProtectionGroup(client *client.Client, dn string) (*mod
 	fabricExplicitGEp := models.VPCExplicitProtectionGroupFromContainer(fabricExplicitGEpCont)
 
 	if fabricExplicitGEp.DistinguishedName == "" {
-		return nil, fmt.Errorf("VPCExplicitProtectionGroup %s not found", fabricExplicitGEp.DistinguishedName)
+		return nil, fmt.Errorf("VPC Explicit Protection Group %s not found", dn)
 	}
 
 	return fabricExplicitGEp, nil
@@ -214,8 +214,7 @@ func resourceAciVPCExplicitProtectionGroupRead(ctx context.Context, d *schema.Re
 	fabricExplicitGEp, err := getRemoteVPCExplicitProtectionGroup(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setVPCExplicitProtectionGroupAttributes(fabricExplicitGEp, d)
 	if err != nil {

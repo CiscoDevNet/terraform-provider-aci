@@ -85,7 +85,7 @@ func getRemoteL3DomainProfile(client *client.Client, dn string) (*models.L3Domai
 	l3extDomP := models.L3DomainProfileFromContainer(l3extDomPCont)
 
 	if l3extDomP.DistinguishedName == "" {
-		return nil, fmt.Errorf("L3DomainProfile %s not found", l3extDomP.DistinguishedName)
+		return nil, fmt.Errorf("L3 Domain Profile %s not found", dn)
 	}
 
 	return l3extDomP, nil
@@ -461,8 +461,7 @@ func resourceAciL3DomainProfileRead(ctx context.Context, d *schema.ResourceData,
 	dn := d.Id()
 	l3extDomP, err := getRemoteL3DomainProfile(aciClient, dn)
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 
 	_, err = setL3DomainProfileAttributes(l3extDomP, d)

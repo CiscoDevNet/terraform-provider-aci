@@ -46,7 +46,7 @@ func getRemoteIPAgingPolicy(client *client.Client, dn string) (*models.IPAgingPo
 	}
 	epIpAgingP := models.IPAgingPolicyFromContainer(epIpAgingPCont)
 	if epIpAgingP.DistinguishedName == "" {
-		return nil, fmt.Errorf("IPAgingPolicy %s not found", epIpAgingP.DistinguishedName)
+		return nil, fmt.Errorf("IP Aging Policy %s not found", dn)
 	}
 	return epIpAgingP, nil
 }
@@ -154,8 +154,7 @@ func resourceAciIPAgingPolicyRead(ctx context.Context, d *schema.ResourceData, m
 	dn := d.Id()
 	epIpAgingP, err := getRemoteIPAgingPolicy(aciClient, dn)
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setIPAgingPolicyAttributes(epIpAgingP, d)
 	if err != nil {

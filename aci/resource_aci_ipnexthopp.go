@@ -82,7 +82,7 @@ func getRemoteL3outStaticRouteNextHop(client *client.Client, dn string) (*models
 	ipNexthopP := models.L3outStaticRouteNextHopFromContainer(ipNexthopPCont)
 
 	if ipNexthopP.DistinguishedName == "" {
-		return nil, fmt.Errorf("L3outStaticRouteNextHop %s not found", ipNexthopP.DistinguishedName)
+		return nil, fmt.Errorf("L3Out Static Route Next Hop %s not found", dn)
 	}
 
 	return ipNexthopP, nil
@@ -299,8 +299,7 @@ func resourceAciL3outStaticRouteNextHopRead(ctx context.Context, d *schema.Resou
 	ipNexthopP, err := getRemoteL3outStaticRouteNextHop(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setL3outStaticRouteNextHopAttributes(ipNexthopP, d)
 

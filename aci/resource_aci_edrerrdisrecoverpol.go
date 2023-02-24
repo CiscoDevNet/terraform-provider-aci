@@ -105,7 +105,7 @@ func getRemoteErrorDisabledRecoveryPolicy(client *client.Client, dn string) (*mo
 	}
 	edrErrDisRecoverPol := models.ErrorDisabledRecoveryPolicyFromContainer(edrErrDisRecoverPolCont)
 	if edrErrDisRecoverPol.DistinguishedName == "" {
-		return nil, fmt.Errorf("ErrorDisabledRecoveryPolicy %s not found", edrErrDisRecoverPol.DistinguishedName)
+		return nil, fmt.Errorf("Error Disabled Recovery Policy %s not found", dn)
 	}
 	return edrErrDisRecoverPol, nil
 }
@@ -355,8 +355,7 @@ func resourceAciErrorDisabledRecoveryPolicyRead(ctx context.Context, d *schema.R
 	dn := d.Id()
 	edrErrDisRecoverPol, err := getRemoteErrorDisabledRecoveryPolicy(aciClient, dn)
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setErrorDisabledRecoveryPolicyAttributes(edrErrDisRecoverPol, d)
 	if err != nil {

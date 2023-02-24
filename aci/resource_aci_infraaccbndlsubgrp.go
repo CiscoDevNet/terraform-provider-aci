@@ -51,7 +51,7 @@ func getRemoteOverridePCVPCPolicyGroup(client *client.Client, dn string) (*model
 	}
 	infraAccBndlSubgrp := models.OverridePCVPCPolicyGroupFromContainer(infraAccBndlSubgrpCont)
 	if infraAccBndlSubgrp.DistinguishedName == "" {
-		return nil, fmt.Errorf("OverridePCVPCPolicyGroup %s not found", dn)
+		return nil, fmt.Errorf("Override PC/VPC Policy Group %s not found", dn)
 	}
 	return infraAccBndlSubgrp, nil
 }
@@ -245,8 +245,7 @@ func resourceAciOverridePCVPCPolicyGroupRead(ctx context.Context, d *schema.Reso
 
 	infraAccBndlSubgrp, err := getRemoteOverridePCVPCPolicyGroup(aciClient, dn)
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 
 	_, err = setOverridePCVPCPolicyGroupAttributes(infraAccBndlSubgrp, d)

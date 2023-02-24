@@ -45,7 +45,7 @@ func getRemoteTenantToCloudAccountAssociation(client *client.Client, dn string) 
 	}
 	fvRsCloudAccount := models.TenantToCloudAccountAssociationFromContainer(fvRsCloudAccountCont)
 	if fvRsCloudAccount.DistinguishedName == "" {
-		return nil, fmt.Errorf("Tenant To Cloud Account Association %s not found", fvRsCloudAccount.DistinguishedName)
+		return nil, fmt.Errorf("Tenant to Cloud Account association %s not found", dn)
 	}
 	return fvRsCloudAccount, nil
 }
@@ -159,8 +159,7 @@ func resourceAciTenantToCloudAccountAssociationRead(ctx context.Context, d *sche
 
 	fvRsCloudAccount, err := getRemoteTenantToCloudAccountAssociation(aciClient, dn)
 	if err != nil {
-		d.SetId("")
-		return diag.FromErr(err)
+		return errorForObjectNotFound(err, dn, d)
 	}
 
 	_, err = setTenantToCloudAccountAssociationAttributes(fvRsCloudAccount, d)

@@ -254,7 +254,7 @@ func getRemoteVMMController(client *client.Client, dn string) (*models.VMMContro
 	}
 	vmmCtrlrP := models.VMMControllerFromContainer(vmmCtrlrPCont)
 	if vmmCtrlrP.DistinguishedName == "" {
-		return nil, fmt.Errorf("VMMController %s not found", vmmCtrlrP.DistinguishedName)
+		return nil, fmt.Errorf("VMM Controller %s not found", dn)
 	}
 	return vmmCtrlrP, nil
 }
@@ -832,8 +832,7 @@ func resourceAciVMMControllerRead(ctx context.Context, d *schema.ResourceData, m
 	dn := d.Id()
 	vmmCtrlrP, err := getRemoteVMMController(aciClient, dn)
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setVMMControllerAttributes(vmmCtrlrP, d)
 	if err != nil {

@@ -663,8 +663,7 @@ func resourceAciL3OutsideRead(ctx context.Context, d *schema.ResourceData, m int
 	l3extOut, err := getRemoteL3Outside(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setL3OutsideAttributes(l3extOut, d)
 	if err != nil {

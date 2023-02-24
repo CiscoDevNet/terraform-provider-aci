@@ -60,7 +60,7 @@ func getRemoteLeakInternalPrefix(client *client.Client, dn string) (*models.Leak
 	}
 	leakInternalPrefix := models.LeakInternalPrefixFromContainer(leakInternalPrefixCont)
 	if leakInternalPrefix.DistinguishedName == "" {
-		return nil, fmt.Errorf("LeakInternalPrefix %s not found", dn)
+		return nil, fmt.Errorf("Leak Internal Prefix %s not found", dn)
 	}
 	return leakInternalPrefix, nil
 }
@@ -284,8 +284,7 @@ func resourceAciLeakInternalPrefixRead(ctx context.Context, d *schema.ResourceDa
 
 	leakInternalPrefix, err := getRemoteLeakInternalPrefix(aciClient, dn)
 	if err != nil {
-		d.SetId("")
-		return diag.FromErr(err)
+		return errorForObjectNotFound(err, dn, d)
 	}
 
 	_, err = setLeakInternalPrefixAttributes(leakInternalPrefix, d)

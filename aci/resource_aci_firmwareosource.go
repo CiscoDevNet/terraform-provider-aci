@@ -140,7 +140,7 @@ func getRemoteFirmwareDownloadTask(client *client.Client, dn string) (*models.Fi
 	firmwareOSource := models.FirmwareDownloadTaskFromContainer(firmwareOSourceCont)
 
 	if firmwareOSource.DistinguishedName == "" {
-		return nil, fmt.Errorf("FirmwareDownloadTask %s not found", firmwareOSource.DistinguishedName)
+		return nil, fmt.Errorf("Firmware Download Task %s not found", dn)
 	}
 
 	return firmwareOSource, nil
@@ -334,8 +334,7 @@ func resourceAciFirmwareDownloadTaskRead(ctx context.Context, d *schema.Resource
 	firmwareOSource, err := getRemoteFirmwareDownloadTask(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setFirmwareDownloadTaskAttributes(firmwareOSource, d)
 	if err != nil {

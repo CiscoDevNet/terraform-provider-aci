@@ -49,7 +49,7 @@ func getRemoteTriggerScheduler(client *client.Client, dn string) (*models.Trigge
 	trigSchedP := models.TriggerSchedulerFromContainer(trigSchedPCont)
 
 	if trigSchedP.DistinguishedName == "" {
-		return nil, fmt.Errorf("TriggerScheduler %s not found", trigSchedP.DistinguishedName)
+		return nil, fmt.Errorf("Trigger Scheduler %s not found", dn)
 	}
 
 	return trigSchedP, nil
@@ -165,8 +165,7 @@ func resourceAciTriggerSchedulerRead(ctx context.Context, d *schema.ResourceData
 	trigSchedP, err := getRemoteTriggerScheduler(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setTriggerSchedulerAttributes(trigSchedP, d)
 

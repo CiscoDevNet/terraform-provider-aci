@@ -192,7 +192,7 @@ func getRemoteEndpointSecurityGroup(client *client.Client, dn string) (*models.E
 	}
 	fvESg := models.EndpointSecurityGroupFromContainer(fvESgCont)
 	if fvESg.DistinguishedName == "" {
-		return nil, fmt.Errorf("EndpointSecurityGroup %s not found", fvESg.DistinguishedName)
+		return nil, fmt.Errorf("Endpoint Security Group %s not found", dn)
 	}
 	return fvESg, nil
 }
@@ -722,8 +722,7 @@ func resourceAciEndpointSecurityGroupRead(ctx context.Context, d *schema.Resourc
 	dn := d.Id()
 	fvESg, err := getRemoteEndpointSecurityGroup(aciClient, dn)
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setEndpointSecurityGroupAttributes(fvESg, d)
 	if err != nil {

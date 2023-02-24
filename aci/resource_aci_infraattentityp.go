@@ -56,7 +56,7 @@ func getRemoteAttachableAccessEntityProfile(client *client.Client, dn string) (*
 	infraAttEntityP := models.AttachableAccessEntityProfileFromContainer(infraAttEntityPCont)
 
 	if infraAttEntityP.DistinguishedName == "" {
-		return nil, fmt.Errorf("AttachableAccessEntityProfile %s not found", infraAttEntityP.DistinguishedName)
+		return nil, fmt.Errorf("Attachable Access Entity Profile %s not found", dn)
 	}
 
 	return infraAttEntityP, nil
@@ -265,8 +265,7 @@ func resourceAciAttachableAccessEntityProfileRead(ctx context.Context, d *schema
 	infraAttEntityP, err := getRemoteAttachableAccessEntityProfile(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setAttachableAccessEntityProfileAttributes(infraAttEntityP, d)
 

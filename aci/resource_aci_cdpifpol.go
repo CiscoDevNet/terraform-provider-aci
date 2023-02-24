@@ -60,7 +60,7 @@ func getRemoteCDPInterfacePolicy(client *client.Client, dn string) (*models.CDPI
 	cdpIfPol := models.CDPInterfacePolicyFromContainer(cdpIfPolCont)
 
 	if cdpIfPol.DistinguishedName == "" {
-		return nil, fmt.Errorf("CDPInterfacePolicy %s not found", cdpIfPol.DistinguishedName)
+		return nil, fmt.Errorf("CDP Interface Policy %s not found", dn)
 	}
 
 	return cdpIfPol, nil
@@ -179,8 +179,7 @@ func resourceAciCDPInterfacePolicyRead(ctx context.Context, d *schema.ResourceDa
 	cdpIfPol, err := getRemoteCDPInterfacePolicy(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setCDPInterfacePolicyAttributes(cdpIfPol, d)
 	if err != nil {

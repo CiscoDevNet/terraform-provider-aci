@@ -49,7 +49,7 @@ func getRemoteCloudActiveDirectory(client *client.Client, dn string) (*models.Cl
 	}
 	cloudAD := models.CloudActiveDirectoryFromContainer(cloudADCont)
 	if cloudAD.DistinguishedName == "" {
-		return nil, fmt.Errorf("ActiveDirectory %s not found", cloudAD.DistinguishedName)
+		return nil, fmt.Errorf("Active Directory %s not found", dn)
 	}
 	return cloudAD, nil
 }
@@ -174,8 +174,7 @@ func resourceAciCloudActiveDirectoryRead(ctx context.Context, d *schema.Resource
 
 	cloudAD, err := getRemoteCloudActiveDirectory(aciClient, dn)
 	if err != nil {
-		d.SetId("")
-		return diag.FromErr(err)
+		return errorForObjectNotFound(err, dn, d)
 	}
 
 	_, err = setCloudActiveDirectoryAttributes(cloudAD, d)

@@ -84,7 +84,7 @@ func getRemoteDuoProviderGroup(client *client.Client, dn string) (*models.DuoPro
 	}
 	aaaDuoProviderGroup := models.DuoProviderGroupFromContainer(aaaDuoProviderGroupCont)
 	if aaaDuoProviderGroup.DistinguishedName == "" {
-		return nil, fmt.Errorf("DuoProviderGroup %s not found", aaaDuoProviderGroup.DistinguishedName)
+		return nil, fmt.Errorf("Duo Provider Group %s not found", dn)
 	}
 	return aaaDuoProviderGroup, nil
 }
@@ -253,8 +253,7 @@ func resourceAciDuoProviderGroupRead(ctx context.Context, d *schema.ResourceData
 	dn := d.Id()
 	aaaDuoProviderGroup, err := getRemoteDuoProviderGroup(aciClient, dn)
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setDuoProviderGroupAttributes(aaaDuoProviderGroup, d)
 	if err != nil {

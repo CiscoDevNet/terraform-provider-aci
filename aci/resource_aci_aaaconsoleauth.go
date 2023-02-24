@@ -64,7 +64,7 @@ func getRemoteConsoleAuthenticationMethod(client *client.Client, dn string) (*mo
 	}
 	aaaConsoleAuth := models.ConsoleAuthenticationMethodFromContainer(aaaConsoleAuthCont)
 	if aaaConsoleAuth.DistinguishedName == "" {
-		return nil, fmt.Errorf("ConsoleAuthenticationMethod %s not found", aaaConsoleAuth.DistinguishedName)
+		return nil, fmt.Errorf("Console Authentication Method %s not found", dn)
 	}
 	return aaaConsoleAuth, nil
 }
@@ -181,8 +181,7 @@ func resourceAciConsoleAuthenticationMethodRead(ctx context.Context, d *schema.R
 	dn := d.Id()
 	aaaConsoleAuth, err := getRemoteConsoleAuthenticationMethod(aciClient, dn)
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setConsoleAuthenticationMethodAttributes(aaaConsoleAuth, d)
 	if err != nil {

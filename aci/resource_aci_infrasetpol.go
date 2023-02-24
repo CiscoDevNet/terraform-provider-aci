@@ -181,7 +181,7 @@ func getRemoteFabricWideSettingsPolicy(client *client.Client, dn string) (*model
 	}
 	infraSetPol := models.FabricWideSettingsPolicyFromContainer(infraSetPolCont)
 	if infraSetPol.DistinguishedName == "" {
-		return nil, fmt.Errorf("FabricWideSettingsPolicy %s not found", infraSetPol.DistinguishedName)
+		return nil, fmt.Errorf("Fabric Wide Settings Policy %s not found", dn)
 	}
 	return infraSetPol, nil
 }
@@ -427,8 +427,7 @@ func resourceAciFabricWideSettingsPolicyRead(ctx context.Context, d *schema.Reso
 	dn := d.Id()
 	infraSetPol, err := getRemoteFabricWideSettingsPolicy(aciClient, dn)
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setFabricWideSettingsPolicyAttributes(infraSetPol, d)
 	if err != nil {

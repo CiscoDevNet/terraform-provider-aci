@@ -55,7 +55,7 @@ func getRemoteLACPMemberPolicy(client *client.Client, dn string) (*models.LACPMe
 	}
 	lacpIfPol := models.LACPMemberPolicyFromContainer(lacpIfPolCont)
 	if lacpIfPol.DistinguishedName == "" {
-		return nil, fmt.Errorf("LACPMemberPolicy %s not found", dn)
+		return nil, fmt.Errorf("LACP Member Policy %s not found", dn)
 	}
 	return lacpIfPol, nil
 }
@@ -178,8 +178,7 @@ func resourceAciLACPMemberPolicyRead(ctx context.Context, d *schema.ResourceData
 
 	lacpIfPol, err := getRemoteLACPMemberPolicy(aciClient, dn)
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 
 	_, err = setLACPMemberPolicyAttributes(lacpIfPol, d)

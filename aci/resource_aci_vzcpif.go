@@ -58,7 +58,7 @@ func getRemoteImportedContract(client *client.Client, dn string) (*models.Import
 	vzCPIf := models.ImportedContractFromContainer(vzCPIfCont)
 
 	if vzCPIf.DistinguishedName == "" {
-		return nil, fmt.Errorf("ImportedContract %s not found", vzCPIf.DistinguishedName)
+		return nil, fmt.Errorf("Imported Contract %s not found", dn)
 	}
 
 	return vzCPIf, nil
@@ -251,8 +251,7 @@ func resourceAciImportedContractRead(ctx context.Context, d *schema.ResourceData
 	vzCPIf, err := getRemoteImportedContract(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setImportedContractAttributes(vzCPIf, d)
 	if err != nil {

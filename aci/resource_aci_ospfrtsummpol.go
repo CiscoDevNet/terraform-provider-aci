@@ -77,7 +77,7 @@ func getRemoteOspfRouteSummarization(client *client.Client, dn string) (*models.
 	ospfRtSummPol := models.OspfRouteSummarizationFromContainer(ospfRtSummPolCont)
 
 	if ospfRtSummPol.DistinguishedName == "" {
-		return nil, fmt.Errorf("OspfRouteSummarization %s not found", ospfRtSummPol.DistinguishedName)
+		return nil, fmt.Errorf("OSPF Route Summarization %s not found", dn)
 	}
 
 	return ospfRtSummPol, nil
@@ -219,8 +219,7 @@ func resourceAciOspfRouteSummarizationRead(ctx context.Context, d *schema.Resour
 	ospfRtSummPol, err := getRemoteOspfRouteSummarization(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setOspfRouteSummarizationAttributes(ospfRtSummPol, d)
 	if err != nil {

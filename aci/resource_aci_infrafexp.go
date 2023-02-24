@@ -50,7 +50,7 @@ func getRemoteFEXProfile(client *client.Client, dn string) (*models.FEXProfile, 
 	infraFexP := models.FEXProfileFromContainer(infraFexPCont)
 
 	if infraFexP.DistinguishedName == "" {
-		return nil, fmt.Errorf("FEXProfile %s not found", infraFexP.DistinguishedName)
+		return nil, fmt.Errorf("FEX Profile %s not found", dn)
 	}
 
 	return infraFexP, nil
@@ -166,8 +166,7 @@ func resourceAciFEXProfileRead(ctx context.Context, d *schema.ResourceData, m in
 	infraFexP, err := getRemoteFEXProfile(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setFEXProfileAttributes(infraFexP, d)
 	if err != nil {

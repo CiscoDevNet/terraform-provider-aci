@@ -163,7 +163,7 @@ func getRemoteL3outPathAttachment(client *client.Client, dn string) (*models.L3o
 	l3extRsPathL3OutAtt := models.L3outPathAttachmentFromContainer(l3extRsPathL3OutAttCont)
 
 	if l3extRsPathL3OutAtt.DistinguishedName == "" {
-		return nil, fmt.Errorf("L3outPathAttachment %s not found", l3extRsPathL3OutAtt.DistinguishedName)
+		return nil, fmt.Errorf("L3Out Path Attachment %s not found", dn)
 	}
 
 	return l3extRsPathL3OutAtt, nil
@@ -356,8 +356,7 @@ func resourceAciL3outPathAttachmentRead(ctx context.Context, d *schema.ResourceD
 	l3extRsPathL3OutAtt, err := getRemoteL3outPathAttachment(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setL3outPathAttachmentAttributes(l3extRsPathL3OutAtt, d)
 	if err != nil {

@@ -95,7 +95,7 @@ func getRemoteEndPointRetentionPolicy(client *client.Client, dn string) (*models
 	fvEpRetPol := models.EndPointRetentionPolicyFromContainer(fvEpRetPolCont)
 
 	if fvEpRetPol.DistinguishedName == "" {
-		return nil, fmt.Errorf("EndPointRetentionPolicy %s not found", fvEpRetPol.DistinguishedName)
+		return nil, fmt.Errorf("End Point Retention Policy %s not found", dn)
 	}
 
 	return fvEpRetPol, nil
@@ -268,8 +268,7 @@ func resourceAciEndPointRetentionPolicyRead(ctx context.Context, d *schema.Resou
 	fvEpRetPol, err := getRemoteEndPointRetentionPolicy(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setEndPointRetentionPolicyAttributes(fvEpRetPol, d)
 

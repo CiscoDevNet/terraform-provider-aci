@@ -70,7 +70,7 @@ func getRemoteLLDPInterfacePolicy(client *client.Client, dn string) (*models.LLD
 	lldpIfPol := models.LLDPInterfacePolicyFromContainer(lldpIfPolCont)
 
 	if lldpIfPol.DistinguishedName == "" {
-		return nil, fmt.Errorf("LLDPInterfacePolicy %s not found", lldpIfPol.DistinguishedName)
+		return nil, fmt.Errorf("LLDP Interface Policy %s not found", dn)
 	}
 
 	return lldpIfPol, nil
@@ -196,8 +196,7 @@ func resourceAciLLDPInterfacePolicyRead(ctx context.Context, d *schema.ResourceD
 	lldpIfPol, err := getRemoteLLDPInterfacePolicy(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setLLDPInterfacePolicyAttributes(lldpIfPol, d)
 	if err != nil {

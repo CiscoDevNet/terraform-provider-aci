@@ -81,7 +81,7 @@ func getRemoteL3outVPCMember(client *client.Client, dn string) (*models.L3outVPC
 	l3extMember := models.L3outVPCMemberFromContainer(l3extMemberCont)
 
 	if l3extMember.DistinguishedName == "" {
-		return nil, fmt.Errorf("L3outVPCMember %s not found", l3extMember.DistinguishedName)
+		return nil, fmt.Errorf("L3out VPC Member %s not found", dn)
 	}
 
 	return l3extMember, nil
@@ -222,8 +222,7 @@ func resourceAciL3outVPCMemberRead(ctx context.Context, d *schema.ResourceData, 
 	l3extMember, err := getRemoteL3outVPCMember(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setL3outVPCMemberAttributes(l3extMember, d)
 	if err != nil {

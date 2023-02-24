@@ -103,7 +103,7 @@ func getRemoteFabricNodeMember(client *client.Client, dn string) (*models.Fabric
 	fabricNodeIdentP := models.FabricNodeMemberFromContainer(fabricNodeIdentPCont)
 
 	if fabricNodeIdentP.DistinguishedName == "" {
-		return nil, fmt.Errorf("FabricNodeMember %s not found", fabricNodeIdentP.DistinguishedName)
+		return nil, fmt.Errorf("Fabric Node Member %s not found", dn)
 	}
 
 	return fabricNodeIdentP, nil
@@ -264,8 +264,7 @@ func resourceAciFabricNodeMemberRead(ctx context.Context, d *schema.ResourceData
 	fabricNodeIdentP, err := getRemoteFabricNodeMember(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setFabricNodeMemberAttributes(fabricNodeIdentP, d)
 	if err != nil {

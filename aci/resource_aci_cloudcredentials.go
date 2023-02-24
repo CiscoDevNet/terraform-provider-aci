@@ -80,7 +80,7 @@ func getRemoteCloudCredentials(client *client.Client, dn string) (*models.CloudC
 	}
 	cloudCredentials := models.CloudCredentialsFromContainer(cloudCredentialsCont)
 	if cloudCredentials.DistinguishedName == "" {
-		return nil, fmt.Errorf("CloudCredentials %s not found", cloudCredentials.DistinguishedName)
+		return nil, fmt.Errorf("Cloud Credentials %s not found", dn)
 	}
 	return cloudCredentials, nil
 }
@@ -295,8 +295,7 @@ func resourceAciCloudCredentialsRead(ctx context.Context, d *schema.ResourceData
 
 	cloudCredentials, err := getRemoteCloudCredentials(aciClient, dn)
 	if err != nil {
-		d.SetId("")
-		return diag.FromErr(err)
+		return errorForObjectNotFound(err, dn, d)
 	}
 
 	_, err = setCloudCredentialsAttributes(cloudCredentials, d)

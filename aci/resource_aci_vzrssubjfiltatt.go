@@ -80,7 +80,7 @@ func getRemoteSubjectFilter(client *client.Client, dn string) (*models.SubjectFi
 	}
 	vzRsSubjFiltAtt := models.SubjectFilterFromContainer(vzRsSubjFiltAttCont)
 	if vzRsSubjFiltAtt.DistinguishedName == "" {
-		return nil, fmt.Errorf("SubjectFilter %s not found", vzRsSubjFiltAtt.DistinguishedName)
+		return nil, fmt.Errorf("Subject Filter %s not found", dn)
 	}
 	return vzRsSubjFiltAtt, nil
 }
@@ -225,9 +225,7 @@ func resourceAciSubjectFilterRead(ctx context.Context, d *schema.ResourceData, m
 
 	vzRsSubjFiltAtt, err := getRemoteSubjectFilter(aciClient, dn)
 	if err != nil {
-		d.SetId("")
-		// return diag.FromErr(err)
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 
 	_, err = setSubjectFilterAttributes(vzRsSubjFiltAtt, d)

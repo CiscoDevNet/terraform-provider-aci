@@ -54,7 +54,7 @@ func getRemoteCloudApplicationcontainer(client *client.Client, dn string) (*mode
 	cloudApp := models.CloudApplicationcontainerFromContainer(cloudAppCont)
 
 	if cloudApp.DistinguishedName == "" {
-		return nil, fmt.Errorf("CloudApplicationcontainer %s not found", cloudApp.DistinguishedName)
+		return nil, fmt.Errorf("Cloud Application Container %s not found", dn)
 	}
 
 	return cloudApp, nil
@@ -185,8 +185,7 @@ func resourceAciCloudApplicationcontainerRead(ctx context.Context, d *schema.Res
 	cloudApp, err := getRemoteCloudApplicationcontainer(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setCloudApplicationcontainerAttributes(cloudApp, d)
 	if err != nil {

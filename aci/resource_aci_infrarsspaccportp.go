@@ -58,7 +58,7 @@ func getRemoteInterfaceProfile(client *client.Client, dn string) (*models.Interf
 	infraRsSpAccPortP := models.InterfaceProfileFromContainer(infraRsSpAccPortPCont)
 
 	if infraRsSpAccPortP.DistinguishedName == "" {
-		return nil, fmt.Errorf("InterfaceProfile %s not found", infraRsSpAccPortP.DistinguishedName)
+		return nil, fmt.Errorf("Interface Profile %s not found", dn)
 	}
 
 	return infraRsSpAccPortP, nil
@@ -181,8 +181,7 @@ func resourceAciInterfaceProfileRead(ctx context.Context, d *schema.ResourceData
 	infraRsSpAccPortP, err := getRemoteInterfaceProfile(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setInterfaceProfileAttributes(infraRsSpAccPortP, d)
 

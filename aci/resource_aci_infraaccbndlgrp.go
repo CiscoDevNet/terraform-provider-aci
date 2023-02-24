@@ -201,7 +201,7 @@ func getRemotePCVPCInterfacePolicyGroup(client *client.Client, dn string) (*mode
 	infraAccBndlGrp := models.PCVPCInterfacePolicyGroupFromContainer(infraAccBndlGrpCont)
 
 	if infraAccBndlGrp.DistinguishedName == "" {
-		return nil, fmt.Errorf("PCVPCInterfacePolicyGroup %s not found", infraAccBndlGrp.DistinguishedName)
+		return nil, fmt.Errorf("PC/VPC Interface Policy Group %s not found", dn)
 	}
 
 	return infraAccBndlGrp, nil
@@ -1563,8 +1563,7 @@ func resourceAciPCVPCInterfacePolicyGroupRead(ctx context.Context, d *schema.Res
 	infraAccBndlGrp, err := getRemotePCVPCInterfacePolicyGroup(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setPCVPCInterfacePolicyGroupAttributes(infraAccBndlGrp, d)
 	if err != nil {

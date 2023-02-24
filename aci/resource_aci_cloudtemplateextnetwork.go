@@ -388,8 +388,7 @@ func resourceAciCloudTemplateforExternalNetworkRead(ctx context.Context, d *sche
 
 	cloudtemplateExtNetwork, err := getRemoteCloudTemplateforExternalNetwork(aciClient, dn)
 	if err != nil {
-		d.SetId("")
-		return diag.FromErr(err)
+		return errorForObjectNotFound(err, dn, d)
 	}
 
 	_, err = setCloudTemplateforExternalNetworkAttributes(cloudtemplateExtNetwork, d)

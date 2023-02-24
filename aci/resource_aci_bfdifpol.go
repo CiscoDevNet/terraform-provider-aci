@@ -109,7 +109,7 @@ func getRemoteBFDInterfacePolicy(client *client.Client, dn string) (*models.BFDI
 	bfdIfPol := models.BFDInterfacePolicyFromContainer(bfdIfPolCont)
 
 	if bfdIfPol.DistinguishedName == "" {
-		return nil, fmt.Errorf("BFDInterfacePolicy %s not found", bfdIfPol.DistinguishedName)
+		return nil, fmt.Errorf("BFD Interface Policy %s not found", dn)
 	}
 
 	return bfdIfPol, nil
@@ -305,8 +305,7 @@ func resourceAciBFDInterfacePolicyRead(ctx context.Context, d *schema.ResourceDa
 	bfdIfPol, err := getRemoteBFDInterfacePolicy(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 
 	if bfdIfPol.Ctrl == "" {

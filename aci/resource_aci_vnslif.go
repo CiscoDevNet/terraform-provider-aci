@@ -62,7 +62,7 @@ func getRemoteLogicalInterface(client *client.Client, dn string) (*models.Logica
 	}
 	vnsLIf := models.LogicalInterfaceFromContainer(vnsLIfCont)
 	if vnsLIf.DistinguishedName == "" {
-		return nil, fmt.Errorf("LogicalInterface %s not found", dn)
+		return nil, fmt.Errorf("Logical Interface %s not found", dn)
 	}
 	return vnsLIf, nil
 }
@@ -271,8 +271,7 @@ func resourceAciLogicalInterfaceRead(ctx context.Context, d *schema.ResourceData
 
 	vnsLIf, err := getRemoteLogicalInterface(aciClient, dn)
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 
 	_, err = setLogicalInterfaceAttributes(vnsLIf, d)

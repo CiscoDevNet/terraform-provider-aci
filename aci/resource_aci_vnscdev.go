@@ -194,8 +194,7 @@ func resourceAciConcreteDeviceRead(ctx context.Context, d *schema.ResourceData, 
 
 	vnsCDev, err := getRemoteConcreteDevice(aciClient, dn)
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 
 	_, err = setConcreteDeviceAttributes(vnsCDev, d)

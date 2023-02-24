@@ -328,8 +328,7 @@ func resourceAciL1L2RedirectDestTrafficRead(ctx context.Context, d *schema.Resou
 
 	vnsL1L2RedirectDest, err := getRemoteL1L2RedirectDestTraffic(aciClient, dn)
 	if err != nil {
-		d.SetId("")
-		return diag.FromErr(err)
+		return errorForObjectNotFound(err, dn, d)
 	}
 
 	_, err = setL1L2RedirectDestTrafficAttributes(vnsL1L2RedirectDest, d)

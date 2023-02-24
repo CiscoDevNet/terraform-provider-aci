@@ -60,7 +60,7 @@ func getRemoteVLANPool(client *client.Client, dn string) (*models.VLANPool, erro
 	fvnsVlanInstP := models.VLANPoolFromContainer(fvnsVlanInstPCont)
 
 	if fvnsVlanInstP.DistinguishedName == "" {
-		return nil, fmt.Errorf("VLANPool %s not found", fvnsVlanInstP.DistinguishedName)
+		return nil, fmt.Errorf("VLAN Pool %s not found", dn)
 	}
 
 	return fvnsVlanInstP, nil
@@ -173,8 +173,7 @@ func resourceAciVLANPoolRead(ctx context.Context, d *schema.ResourceData, m inte
 	fvnsVlanInstP, err := getRemoteVLANPool(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	setVLANPoolAttributes(fvnsVlanInstP, d)
 

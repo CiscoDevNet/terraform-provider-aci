@@ -52,7 +52,7 @@ func getRemoteMulticastAddressBlock(client *client.Client, dn string) (*models.M
 	}
 	fvnsMcastAddrBlk := models.MulticastAddressBlockFromContainer(fvnsMcastAddrBlkCont)
 	if fvnsMcastAddrBlk.DistinguishedName == "" {
-		return nil, fmt.Errorf("MulticastAddressBlock %s not found", dn)
+		return nil, fmt.Errorf("Multicast Address Block %s not found", dn)
 	}
 	return fvnsMcastAddrBlk, nil
 }
@@ -194,8 +194,7 @@ func resourceAciMulticastAddressBlockRead(ctx context.Context, d *schema.Resourc
 
 	fvnsMcastAddrBlk, err := getRemoteMulticastAddressBlock(aciClient, dn)
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 
 	_, err = setMulticastAddressBlockAttributes(fvnsMcastAddrBlk, d)

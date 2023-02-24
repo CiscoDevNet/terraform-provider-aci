@@ -107,7 +107,7 @@ func getRemoteVSwitchPolicyGroup(client *client.Client, dn string) (*models.VSwi
 	}
 	vmmVSwitchPolicyCont := models.VSwitchPolicyGroupFromContainer(vmmVSwitchPolicyContCont)
 	if vmmVSwitchPolicyCont.DistinguishedName == "" {
-		return nil, fmt.Errorf("VSwitchPolicyGroup %s not found", vmmVSwitchPolicyCont.DistinguishedName)
+		return nil, fmt.Errorf("vSwitch Policy Group %s not found", dn)
 	}
 	return vmmVSwitchPolicyCont, nil
 }
@@ -514,8 +514,7 @@ func resourceAciVSwitchPolicyGroupRead(ctx context.Context, d *schema.ResourceDa
 	dn := d.Id()
 	vmmVSwitchPolicyCont, err := getRemoteVSwitchPolicyGroup(aciClient, dn)
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setVSwitchPolicyGroupAttributes(vmmVSwitchPolicyCont, d)
 	if err != nil {

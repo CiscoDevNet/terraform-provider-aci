@@ -441,7 +441,7 @@ func getRemoteContract(client *client.Client, dn string) (*models.Contract, erro
 	vzBrCP := models.ContractFromContainer(vzBrCPCont)
 
 	if vzBrCP.DistinguishedName == "" {
-		return nil, fmt.Errorf("Contract %s not found", vzBrCP.DistinguishedName)
+		return nil, fmt.Errorf("Contract %s not found", dn)
 	}
 
 	return vzBrCP, nil
@@ -456,7 +456,7 @@ func getRemoteFilterFromContract(client *client.Client, dn string) (*models.Filt
 	vzFilter := models.FilterFromContainer(vzFilterCont)
 
 	if vzFilter.DistinguishedName == "" {
-		return nil, fmt.Errorf("Filter %s not found", vzFilter.DistinguishedName)
+		return nil, fmt.Errorf("Filter %s not found", dn)
 	}
 
 	return vzFilter, nil
@@ -471,7 +471,7 @@ func getRemoteFilterEntryFromContract(client *client.Client, dn string) (*models
 	vzEntry := models.FilterEntryFromContainer(vzEntryCont)
 
 	if vzEntry.DistinguishedName == "" {
-		return nil, fmt.Errorf("FilterEntry %s not found", vzEntry.DistinguishedName)
+		return nil, fmt.Errorf("FilterEntry %s not found", dn)
 	}
 
 	return vzEntry, nil
@@ -1006,8 +1006,7 @@ func resourceAciContractRead(ctx context.Context, d *schema.ResourceData, m inte
 	vzBrCP, err := getRemoteContract(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setContractAttributes(vzBrCP, d)
 	if err != nil {

@@ -48,7 +48,7 @@ func getRemoteVlanEncapsulationforVxlanTraffic(client *client.Client, dn string)
 	infraProvAcc := models.VlanEncapsulationforVxlanTrafficFromContainer(infraProvAccCont)
 
 	if infraProvAcc.DistinguishedName == "" {
-		return nil, fmt.Errorf("VlanEncapsulationforVxlanTraffic %s not found", infraProvAcc.DistinguishedName)
+		return nil, fmt.Errorf("VLAN Encapsulation for Vxlan Traffic %s not found", dn)
 	}
 
 	return infraProvAcc, nil
@@ -169,8 +169,7 @@ func resourceAciVlanEncapsulationforVxlanTrafficRead(ctx context.Context, d *sch
 	infraProvAcc, err := getRemoteVlanEncapsulationforVxlanTraffic(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setVlanEncapsulationforVxlanTrafficAttributes(infraProvAcc, d)
 

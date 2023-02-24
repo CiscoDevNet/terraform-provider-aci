@@ -77,7 +77,7 @@ func getRemoteBDDHCPLabel(client *client.Client, dn string) (*models.BDDHCPLabel
 	dhcpLbl := models.BDDHCPLabelFromContainer(dhcpLblCont)
 
 	if dhcpLbl.DistinguishedName == "" {
-		return nil, fmt.Errorf("BDDHCPLabel %s not found", dhcpLbl.DistinguishedName)
+		return nil, fmt.Errorf("BD DHCP Label %s not found", dn)
 	}
 
 	return dhcpLbl, nil
@@ -262,8 +262,7 @@ func resourceAciBDDHCPLabelRead(ctx context.Context, d *schema.ResourceData, m i
 	dhcpLbl, err := getRemoteBDDHCPLabel(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 
 	_, err = setBDDHCPLabelAttributes(dhcpLbl, d)

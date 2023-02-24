@@ -497,8 +497,7 @@ func resourceAciLogicalInterfaceProfileRead(ctx context.Context, d *schema.Resou
 	l3extLIfP, err := getRemoteLogicalInterfaceProfile(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setLogicalInterfaceProfileAttributes(l3extLIfP, d)
 	if err != nil {

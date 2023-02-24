@@ -84,7 +84,7 @@ func getRemoteL2Domain(client *client.Client, dn string) (*models.L2Domain, erro
 	l2extDomP := models.L2DomainFromContainer(l2extDomPCont)
 
 	if l2extDomP.DistinguishedName == "" {
-		return nil, fmt.Errorf("L2Domain %s not found", l2extDomP.DistinguishedName)
+		return nil, fmt.Errorf("L2 Domain %s not found", dn)
 	}
 
 	return l2extDomP, nil
@@ -371,8 +371,7 @@ func resourceAciL2DomainRead(ctx context.Context, d *schema.ResourceData, m inte
 	l2extDomP, err := getRemoteL2Domain(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setL2DomainAttributes(l2extDomP, d)
 	if err != nil {

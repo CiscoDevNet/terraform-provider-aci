@@ -60,7 +60,7 @@ func getRemoteCloudEndpointSelector(client *client.Client, dn string) (*models.C
 	cloudEPSelector := models.CloudEndpointSelectorFromContainer(cloudEPSelectorCont)
 
 	if cloudEPSelector.DistinguishedName == "" {
-		return nil, fmt.Errorf("CloudEndpointSelector %s not found", cloudEPSelector.DistinguishedName)
+		return nil, fmt.Errorf("Cloud Endpoint Selector %s not found", dn)
 	}
 
 	return cloudEPSelector, nil
@@ -198,8 +198,7 @@ func resourceAciCloudEndpointSelectorRead(ctx context.Context, d *schema.Resourc
 	cloudEPSelector, err := getRemoteCloudEndpointSelector(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setCloudEndpointSelectorAttributes(cloudEPSelector, d)
 	if err != nil {
