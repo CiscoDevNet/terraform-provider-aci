@@ -11,6 +11,15 @@ description: |-
 
 Manages ACI L3out Floating SVI
 
+## API Information ##
+
+* `Class` - l3extVirtualLIfP
+* `Distinguished Name` - uni/tn-{tenant}/out-{l3out}/lnodep-{lnodep}/lifp-{lifp}/vlifp-[nodeDn]-[encap]
+
+## GUI Information ##
+
+* `Location` - Tenants -> Networking -> L3Outs -> Logical Node Profiles -> Logical Interface Profiles -> Floating SVI
+
 ## Example Usage
 
 ```hcl
@@ -31,11 +40,12 @@ resource "aci_l3out_floating_svi" "example" {
   mtu                          = "580"
   target_dscp                  = "CS1"
   relation_l3ext_rs_dyn_path_att {
-    tdn = data.aci_physical_domain.dom.id
+    tdn              = aci_physical_domain.dom.id
     floating_address = "10.21.0.254/24"
-    forged_transmit = "Disabled"
-    mac_change = "Disabled"
+    forged_transmit  = "Disabled"
+    mac_change       = "Disabled"
     promiscuous_mode = "Disabled"
+    encap            = "vlan-1"
   }
 }
 ```
@@ -64,6 +74,7 @@ resource "aci_l3out_floating_svi" "example" {
   * `mac_change` - (Optional) The status of the mac address change support of the port groups in an external VMM controller, such as a vCenter. Allowed values are "Disabled" and "Enabled". Default value is "Disabled".
   * `promiscuous_mode` - (Optional) The status of promiscuous mode support status of the port groups in an external VMM controller, such as a vCenter. This needs to be turned on only for service devices in the cloud, not for Enterprise AVE service deployments. Allowed values are "Disabled" and "Enabled". Default value is "Disabled".
   * `enhanced_lag_policy_dn` - (Optional) The distinguished name of the target enhanced lag policy (class lacpEnhancedLagPol).
+  * `encap` - (Optional) Access port encapsulation of the target. This feature can only be used when the Floating SVI has a physical domain.
 
 ## Attribute Reference
 

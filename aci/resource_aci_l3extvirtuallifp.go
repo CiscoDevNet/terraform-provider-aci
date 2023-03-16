@@ -201,6 +201,10 @@ func resourceAciVirtualLogicalInterfaceProfile() *schema.Resource {
 							Optional: true,
 							Default:  "",
 						},
+						"encap": {
+							Type:     schema.TypeString,
+							Optional: true,
+						},
 					},
 				},
 			},
@@ -281,6 +285,7 @@ func getAndSetL3extRsDynPathAttFromLogicalInterfaceProfile(client *client.Client
 			obj["forged_transmit"] = l3extRsDynPathObj["forgedTransmit"]
 			obj["mac_change"] = l3extRsDynPathObj["macChange"]
 			obj["promiscuous_mode"] = l3extRsDynPathObj["promMode"]
+			obj["encap"] = l3extRsDynPathObj["encap"]
 			obj["enhanced_lag_policy_dn"] = getL3extRsVSwitchEnhancedLagPol(client, dn, l3extRsDynPathObj["tDn"])
 			l3extRsDynPaths = append(l3extRsDynPaths, obj)
 		}
@@ -391,7 +396,7 @@ func resourceAciVirtualLogicalInterfaceProfileCreate(ctx context.Context, d *sch
 		relationParamList := relationTol3extRsDynPathAtt.(*schema.Set).List()
 		for _, relationParam := range relationParamList {
 			paramMap := relationParam.(map[string]interface{})
-			err = aciClient.CreateRelationl3extRsDynPathAttFromLogicalInterfaceProfile(l3extVirtualLIfP.DistinguishedName, paramMap["tdn"].(string), paramMap["floating_address"].(string), paramMap["forged_transmit"].(string), paramMap["mac_change"].(string), paramMap["promiscuous_mode"].(string))
+			err = aciClient.CreateRelationl3extRsDynPathAttFromLogicalInterfaceProfile(l3extVirtualLIfP.DistinguishedName, paramMap["tdn"].(string), paramMap["floating_address"].(string), paramMap["forged_transmit"].(string), paramMap["mac_change"].(string), paramMap["promiscuous_mode"].(string), paramMap["encap"].(string))
 			if err != nil {
 				return diag.FromErr(err)
 			}
@@ -501,7 +506,7 @@ func resourceAciVirtualLogicalInterfaceProfileUpdate(ctx context.Context, d *sch
 		}
 		for _, relationParam := range newRelList {
 			paramMap := relationParam.(map[string]interface{})
-			err = aciClient.CreateRelationl3extRsDynPathAttFromLogicalInterfaceProfile(l3extVirtualLIfP.DistinguishedName, paramMap["tdn"].(string), paramMap["floating_address"].(string), paramMap["forged_transmit"].(string), paramMap["mac_change"].(string), paramMap["promiscuous_mode"].(string))
+			err = aciClient.CreateRelationl3extRsDynPathAttFromLogicalInterfaceProfile(l3extVirtualLIfP.DistinguishedName, paramMap["tdn"].(string), paramMap["floating_address"].(string), paramMap["forged_transmit"].(string), paramMap["mac_change"].(string), paramMap["promiscuous_mode"].(string), paramMap["encap"].(string))
 			if err != nil {
 				return diag.FromErr(err)
 			}
