@@ -74,7 +74,7 @@ resource "aci_l3out_floating_svi" "example" {
   * `mac_change` - (Optional) The status of the mac address change support of the port groups in an external VMM controller, such as a vCenter. Allowed values are "Disabled" and "Enabled". Default value is "Disabled".
   * `promiscuous_mode` - (Optional) The status of promiscuous mode support status of the port groups in an external VMM controller, such as a vCenter. This needs to be turned on only for service devices in the cloud, not for Enterprise AVE service deployments. Allowed values are "Disabled" and "Enabled". Default value is "Disabled".
   * `enhanced_lag_policy_dn` - (Optional) The distinguished name of the target enhanced lag policy (class lacpEnhancedLagPol).
-  * `encap` - (Optional) Access port encapsulation of the target. This feature can only be used when the Floating SVI has a physical domain.
+  * `encap` - (Optional) Access port encapsulation (VLAN) of the target (format: vlan-101). This feature can only be used when the Floating SVI is associated to a physical domain (tdn points to infraDomP).
 
 ## Attribute Reference
 
