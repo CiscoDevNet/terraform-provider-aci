@@ -11,6 +11,15 @@ description: |-
 
 Data source for ACI L3out Floating SVI
 
+## API Information ##
+
+* `Class` - l3extVirtualLIfP
+* `Distinguished Name` - uni/tn-{tenant}/out-{l3out}/lnodep-{lnodep}/lifp-{lifp}/vlifp-[nodeDn]-[encap]
+
+## GUI Information ##
+
+* `Location` - Tenants -> Networking -> L3Outs -> Logical Node Profiles -> Logical Interface Profiles -> Floating SVI
+
 ## Example Usage
 
 ```hcl
@@ -49,3 +58,4 @@ data "aci_l3out_floating_svi" "check" {
   * `mac_change` - (Optional) The status of the mac address change support of the port groups in an external VMM controller, such as a vCenter.
   * `promiscuous_mode` - (Optional) The status of the promiscuous mode support status of the port groups in an external VMM controller, such as a vCenter. This needs to be turned on only for service devices in the cloud, not for Enterprise AVE service deployments.
   * `enhanced_lag_policy_dn` - (Optional) The distinguished name of the target enhanced lag policy (class lacpEnhancedLagPol).
+  * `encap` - (Optional) Access port encapsulation (VLAN) of the target (format: vlan-101).

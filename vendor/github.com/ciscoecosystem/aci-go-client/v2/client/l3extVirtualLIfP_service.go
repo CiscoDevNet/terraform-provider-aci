@@ -54,7 +54,7 @@ func (sm *ServiceManager) ListVirtualLogicalInterfaceProfile(logical_interface_p
 	return list, err
 }
 
-func (sm *ServiceManager) CreateRelationl3extRsDynPathAttFromLogicalInterfaceProfile(parentDn, tDn, addr, forgedTransmit, macChange, promMode string) error {
+func (sm *ServiceManager) CreateRelationl3extRsDynPathAttFromLogicalInterfaceProfile(parentDn, tDn, addr, forgedTransmit, macChange, promMode, encap string) error {
 	dn := fmt.Sprintf("%s/rsdynPathAtt-[%s]", parentDn, tDn)
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
@@ -85,6 +85,10 @@ func (sm *ServiceManager) CreateRelationl3extRsDynPathAttFromLogicalInterfacePro
 
 	if promMode != "" {
 		jsonPayload.Set(promMode, "l3extRsDynPathAtt", "attributes", "promMode")
+	}
+
+	if encap != "" {
+		jsonPayload.Set(encap, "l3extRsDynPathAtt", "attributes", "encap")
 	}
 
 	req, err := sm.client.MakeRestRequest("POST", fmt.Sprintf("%s.json", sm.MOURL), jsonPayload, true)
@@ -122,6 +126,7 @@ func (sm *ServiceManager) ReadRelationl3extRsDynPathAttFromLogicalInterfaceProfi
 		paramMap["forgedTransmit"] = models.G(contItem, "forgedTransmit")
 		paramMap["macChange"] = models.G(contItem, "macChange")
 		paramMap["promMode"] = models.G(contItem, "promMode")
+		paramMap["encap"] = models.G(contItem, "encap")
 
 		st = append(st, paramMap)
 	}

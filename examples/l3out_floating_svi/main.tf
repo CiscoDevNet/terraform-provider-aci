@@ -84,5 +84,6 @@ resource "aci_l3out_floating_svi" "example2" {
   relation_l3ext_rs_dyn_path_att {
     tdn              = aci_physical_domain.example.id
     floating_address = "10.21.30.254/16"
+    encap            = "vlan-1"
   }
 }
