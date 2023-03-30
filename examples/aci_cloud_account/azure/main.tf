@@ -55,7 +55,7 @@ resource "aci_cloud_account" "cloud_account" {
   account_id  = "example_account_id"
   name        = "azure_cloud"
   vendor      = "azure"
-# relation_cloud_rs_account_to_access_policy -> is only available in the most recent version of cloud APIC (>25.0.3)
+  # relation_cloud_rs_account_to_access_policy -> is only available in the most recent version of cloud APIC (>25.0.3)
 }
 
 resource "aci_tenant" "cloud_tenant" {
@@ -80,15 +80,32 @@ output "aci_cloud_account_output" {
   value = data.aci_cloud_account.aci_cloud_account_data
 }
 
-data "aci_tenant_to_cloud_account" "aci_tenant_to_cloud_account_data" {
-  tenant_dn        = aci_tenant_to_cloud_account.new_tenant_to_account.tenant_dn
-  cloud_account_dn = aci_tenant_to_cloud_account.new_tenant_to_account.cloud_account_dn
+resource "aci_tenant_to_cloud_account" "aci_tenant_to_cloud_account_data" {
+  tenant_dn        = aci_tenant.cloud_tenant.id
+  cloud_account_dn = data.aci_cloud_account.aci_cloud_account_data.id
 }
 
 output "aci_tenant_to_cloud_account_output" {
-  value = data.aci_tenant_to_cloud_account.aci_tenant_to_cloud_account_data
+  value = aci_tenant_to_cloud_account.aci_tenant_to_cloud_account_data
 }
 
+# 2.1.1 Shared Subscription (attaching the subscription id from another infra tenant)
+resource "aci_tenant" "terraform_tenant_shared" {
+  name        = "shared_tenant"
+  description = "This tenant has been created by Terraform"
+}
+
+# Shared Subscription - Infra tenant details
+data "aci_cloud_account" "aci_cloud_account_infra" {
+  tenant_dn  = "uni/tn-infra"
+  account_id = "infra_subscription_id"  # add substricption_id from existing ifra tenant.
+  vendor     = "azure"
+}
+
+resource "aci_tenant_to_cloud_account" "cloud_account_tenant_shared" {
+  tenant_dn        = aci_tenant.terraform_tenant_shared.id
+  cloud_account_dn = data.aci_cloud_account.aci_cloud_account_infra.id
+}
 
 # access_type = "credentials"
 resource "aci_tenant" "azure_cloud_tenant" {
@@ -97,25 +114,25 @@ resource "aci_tenant" "azure_cloud_tenant" {
 }
 
 resource "aci_cloud_ad" "azure_ad" {
-  tenant_dn   = aci_tenant.azure_cloud_tenant.id
+  tenant_dn           = aci_tenant.azure_cloud_tenant.id
   active_directory_id = "azure_ad_id"
   # name      = "azure_ad"
 }
 
 resource "aci_cloud_credentials" "azure_credentials" {
-  tenant_dn   = aci_cloud_ad.azure_ad.tenant_dn
-  key_id = "azure_cred_id"
+  tenant_dn = aci_cloud_ad.azure_ad.tenant_dn
+  key_id    = "azure_cred_id"
   name      = "test_cred"
   # key = "secretkey"  # client secret
-  relation_cloud_rs_ad= aci_cloud_ad.azure_ad.id
+  relation_cloud_rs_ad = aci_cloud_ad.azure_ad.id
 }
 
 resource "aci_cloud_account" "azure_cloud_account" {
-  depends_on               = [aci_cloud_credentials.azure_credentials]
-  tenant_dn   = aci_cloud_credentials.azure_credentials.tenant_dn
-  access_type = "credentials" 
-  account_id  = "example_id"
-  vendor      = "azure"
+  depends_on           = [aci_cloud_credentials.azure_credentials]
+  tenant_dn            = aci_cloud_credentials.azure_credentials.tenant_dn
+  access_type          = "credentials"
+  account_id           = "example_id"
+  vendor               = "azure"
   cloud_credentials_dn = aci_cloud_credentials.azure_credentials.id
 }
 
