@@ -325,6 +325,7 @@ func Provider() *schema.Provider {
 			"aci_cloud_vrf_leak_routes":                    resourceAciLeakInternalPrefix(),
 			"aci_service_redirect_backup_policy":           resourceAciPBRBackupPolicy(),
 			"aci_pbr_l1_l2_destination":                    resourceAciL1L2RedirectDestTraffic(),
+			"aci_interface_config":                         resourceAciInterfaceConfiguration(),
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
@@ -571,6 +572,7 @@ func Provider() *schema.Provider {
 			"aci_cloud_vrf_leak_routes":                    dataSourceAciLeakInternalPrefix(),
 			"aci_service_redirect_backup_policy":           dataSourceAciPBRBackupPolicy(),
 			"aci_pbr_l1_l2_destination":                    dataSourceAciL1L2RedirectDestTraffic(),
+			"aci_interface_config":                         dataSourceAciInterfaceConfiguration(),
 		},
 
 		ConfigureFunc: configureClient,
