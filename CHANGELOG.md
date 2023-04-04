@@ -1,3 +1,16 @@
+## 2.7.0 (April 3, 2023)
+DEPRECATIONS:
+- Changed tn_netflow_monitor_pol_name -> tn_netflow_monitor_pol_dn and add deprecation in aci_logical_interface_profile (#1005)
+
+IMPROVEMENTS:
+- Add encap attribute to the relation_l3ext_rs_dyn_path_att attribute of aci_l3out_floating_svi (#1027)
+
+BUG FIXES:
+- Fix issue with Client End Points when Endpoint is associated with an ESG
+- Fix issue where state was deleted if credentials to APIC were incorrect (#1006)
+- Fixed aci_bgp_peer_connectivity_profile update and read function to work when local_asn is added after creation (#1017)
+- Fix update issue when enhanced_lag_policy is modified outside of Terraform in aci_epg_to_domain (#1015)
+
 ## 2.6.1 (February 3, 2023)
 BUG FIXES:
 - Fix issue in aci_cloud_context_profile when optional parameters cloud_brownfield and access_policy_type are not provided.
