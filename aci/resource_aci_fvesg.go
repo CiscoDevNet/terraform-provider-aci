@@ -140,28 +140,29 @@ func resourceAciEndpointSecurityGroup() *schema.Resource {
 				Optional:    true,
 				Description: "Create relation to vzBrCP",
 				Elem: &schema.Resource{
-					Schema: map[string]*schema.Schema{"match_t": {
-						Optional: true,
-						Type:     schema.TypeString,
-						ValidateFunc: validation.StringInSlice([]string{
-							"All",
-							"AtleastOne",
-							"AtmostOne",
-							"None",
-						}, false),
-					}, "prio": {
-						Optional: true,
-						Type:     schema.TypeString,
-						ValidateFunc: validation.StringInSlice([]string{
-							"level1",
-							"level2",
-							"level3",
-							"level4",
-							"level5",
-							"level6",
-							"unspecified",
-						}, false),
-					},
+					Schema: map[string]*schema.Schema{
+						"match_t": {
+							Optional: true,
+							Type:     schema.TypeString,
+							ValidateFunc: validation.StringInSlice([]string{
+								"All",
+								"AtleastOne",
+								"AtmostOne",
+								"None",
+							}, false),
+						}, "prio": {
+							Optional: true,
+							Type:     schema.TypeString,
+							ValidateFunc: validation.StringInSlice([]string{
+								"level1",
+								"level2",
+								"level3",
+								"level4",
+								"level5",
+								"level6",
+								"unspecified",
+							}, false),
+						},
 						"target_dn": {
 							Required: true,
 							Type:     schema.TypeString,

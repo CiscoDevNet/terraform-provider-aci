@@ -54,6 +54,10 @@ data "aci_client_end_point" "check" {
 - `fvcep_objects.vrf_name` - Parent VRF name of the Client End Point object.
 - `fvcep_objects.application_profile_name` - Parent Application Profile name of the Client End Point object.
 - `fvcep_objects.epg_name` - Parent EPG name of the Client End Point object.
+- `fvcep_objects.esg_name` - Parent ESG name of the Client End Point object.
 - `fvcep_objects.l2out_name` - Parent L2Out name of the Client End Point object.
 - `fvcep_objects.instance_profile_name` - Parent Instance Profile name of the Client End Point object.
 - `fvcep_objects.endpoint_path` - List of endpoint paths associated with the Client End Point object.
+- `fvcep_objects.base_epg.tenant_name` - Name of the Tenant of the base EPG of the Client End Point object when the Client End Point is associated with an ESG.
+- `fvcep_objects.base_epg.application_profile_name` - Name of the Application Profile of the base EPG of the Client End Point object when the Client End Point is associated with an ESG.
+- `fvcep_objects.base_epg.epg_name` - Name of the base EPG of the Client End Point object when the Client End Point is associated with an ESG.

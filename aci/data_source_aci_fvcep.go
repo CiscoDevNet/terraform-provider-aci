@@ -102,6 +102,12 @@ func dataSourceAciClientEndPoint() *schema.Resource {
 							Computed: true,
 						},
 
+						"esg_name": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+							Computed: true,
+						},
+
 						"l2out_name": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
@@ -122,6 +128,14 @@ func dataSourceAciClientEndPoint() *schema.Resource {
 								Type: schema.TypeString,
 							},
 						},
+
+						"base_epg": &schema.Schema{
+							Type:     schema.TypeMap,
+							Optional: true,
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+						},
 					},
 				},
 			},
@@ -135,6 +149,10 @@ func extractInfo(con *container.Container) (obj map[string]interface{}, dn strin
 	infoMap["name"] = models.G(con, "name")
 	infoMap["mac"] = models.G(con, "mac")
 	infoMap["ip"] = models.G(con, "ip")
+	if infoMap["ip"] == "{}" {
+		infoMap["ip"] = ""
+	}
+
 	infoMap["vlan"] = models.G(con, "encap")
 
 	dnInfoList := strings.Split(dnString, "/")
@@ -152,6 +170,26 @@ func extractInfo(con *container.Container) (obj map[string]interface{}, dn strin
 			level3Info := regexp.MustCompile("-").Split(dnInfoList[3], 2)
 			if level3Info[0] == "epg" {
 				infoMap["epg_name"] = level3Info[1]
+			} else if level3Info[0] == "esg" {
+				infoMap["esg_name"] = level3Info[1]
+				baseEpgDnInfoList := strings.Split(models.G(con, "baseEpgDn"), "/")
+				baseEpgTenantInfo := regexp.MustCompile("-").Split(baseEpgDnInfoList[1], 2)
+				if baseEpgTenantInfo[0] == "tn" {
+					baseEpgTenantName := baseEpgTenantInfo[1]
+					baseEpgLevel2Info := regexp.MustCompile("-").Split(baseEpgDnInfoList[2], 2)
+					if baseEpgLevel2Info[0] == "ap" {
+						baseEpgApplicationProfileName := baseEpgLevel2Info[1]
+						baseEpgLevel3Info := regexp.MustCompile("-").Split(baseEpgDnInfoList[3], 2)
+						if baseEpgLevel3Info[0] == "epg" {
+							baseEpgEpgName := baseEpgLevel3Info[1]
+							infoMap["base_epg"] = map[string]interface{}{
+								"tenant_name":              baseEpgTenantName,
+								"application_profile_name": baseEpgApplicationProfileName,
+								"epg_name":                 baseEpgEpgName,
+							}
+						}
+					}
+				}
 			} else {
 				return nil, ""
 			}
@@ -205,7 +243,7 @@ func getRemoteClientEndPoint(client *client.Client, query string, allowEmptyResu
 	if query == "" {
 		duURL = fmt.Sprintf("%s/fvCEp.json", baseURL)
 	} else {
-		duURL = fmt.Sprintf("%s/fvCEp.json?query-target-filter=or(%s)&rsp-subtree=children&rsp-subtree-class=fvIp", baseURL, query)
+		duURL = fmt.Sprintf("%s/fvCEp.json?query-target-filter=and(%s)&rsp-subtree=children&rsp-subtree-class=fvIp", baseURL, query)
 	}
 
 	fvCEpCont, err := client.GetViaURL(duURL)
@@ -230,21 +268,24 @@ func getRemoteClientEndPoint(client *client.Client, query string, allowEmptyResu
 		objMap, dn := extractInfo(clientEndPointCont.S("fvCEp", "attributes"))
 
 		// Reading fvIp object properties
-		fvIpObjects, err := clientEndPointCont.S("fvCEp").Children()
-		if err != nil {
-			return nil, nil, err
-		}
-		ips := make([]string, 0, 1)
-
+		fvIpObjects, err := clientEndPointCont.S("fvCEp", "children").Children()
 		if err == nil {
-			for j := 0; j < len(fvIpObjects); j++ {
-				ips = append(ips, models.G(fvIpObjects[j].S("fvIp", "attributes"), "addr"))
-			}
-		}
+			ips := make([]string, 0, 1)
 
-		objMap["ips"] = ips
-		if len(ips) > 0 {
-			objMap["ip"] = ips[0]
+			if err == nil {
+				for j := 0; j < len(fvIpObjects); j++ {
+					ips = append(ips, models.G(fvIpObjects[j].S("fvIp", "attributes"), "addr"))
+				}
+			}
+
+			objMap["ips"] = ips
+			if len(ips) > 0 {
+				objMap["ip"] = ips[0]
+			}
+		} else {
+			if errors.Is(err, container.ErrNotObjOrArray) == false {
+				return nil, nil, err
+			}
 		}
 
 		if dn != "" {
@@ -266,6 +307,8 @@ func getRemoteClientEndPoint(client *client.Client, query string, allowEmptyResu
 
 func dataSourceAciClientEndPointRead(d *schema.ResourceData, m interface{}) error {
 	aciClient := m.(*client.Client)
+
+	allowEmptyResult := d.Get("allow_empty_result").(bool)
 
 	var queryString string
 	if mac, ok := d.GetOk("mac"); ok {
@@ -292,6 +335,13 @@ func dataSourceAciClientEndPointRead(d *schema.ResourceData, m interface{}) erro
 			} else {
 				queryString = tempQueryString
 			}
+		} else {
+			d.SetId("")
+			if allowEmptyResult {
+				return nil
+			} else {
+				return errors.New("Error retrieving Object: Object may not exists")
+			}
 		}
 		d.Set("ip", ip)
 	}
@@ -312,15 +362,21 @@ func dataSourceAciClientEndPointRead(d *schema.ResourceData, m interface{}) erro
 		}
 	}
 
-	allowEmptyResult := d.Get("allow_empty_result")
-
-	objects, dns, err := getRemoteClientEndPoint(aciClient, queryString, allowEmptyResult.(bool))
+	objects, dns, err := getRemoteClientEndPoint(aciClient, queryString, allowEmptyResult)
 	if err != nil {
 		return err
 	}
 
-	d.Set("fvcep_objects", objects)
-	d.SetId(strings.Join(dns, " "))
+	if objects != nil {
+		d.Set("fvcep_objects", objects)
+	}
+
+	if dns != nil {
+		d.SetId(strings.Join(dns, " "))
+	} else {
+		d.SetId("")
+	}
+
 	return nil
 }
 
