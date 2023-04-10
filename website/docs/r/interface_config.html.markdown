@@ -31,7 +31,6 @@ Manages ACI Access and Fabric Ports is only supported for ACI 5.2(5)+
 resource "aci_interface_config" "access_port_config_1001" {
   node         = 1001
   interface    = "1/1/1"
-  port_type    = "access"
   policy_group = aci_leaf_access_port_policy_group.leaf_access_port.id # Policy Group and Breakout cannot be configured togater
 }
 
@@ -39,7 +38,6 @@ resource "aci_interface_config" "access_port_config_1001" {
 resource "aci_interface_config" "access_port_config_1001_brkout" {
   node      = 1001
   interface = "1/1/1"
-  port_type = "access"
   breakout  = "100g-4x" # Policy Group and Breakout cannot be configured togater
 }
 
@@ -53,17 +51,17 @@ resource "aci_interface_config" "fabric_port_config" {
 
 ## Argument Reference ##
 
-* `node` - (Required) Node ID of the Port Configuration object. Type: Integer.
-* `interface` - (Required) Interface address of the Port Configuration object. The format of the interface value should be 1/1/1 (card/port_id/sub_port) or 1/1 (card/port_id). Type: String.
-* `port_type` - (Required) Type of the Port Configuration object. Allowed values are "access", "fabric". Type: String.
-* `role` - (Optional) Role of the Port Configuration object. Allowed values are "leaf", "spine". Default value is "leaf". Type: String.
-* `policy_group` - (Optional) The distinguished name of the Policy Group being associated with the Port Configuration object. The Policy Group and Breakout cannot be configured simultaneously. Type: String.
-* `breakout` - (Optional) Breakout Map of the Port Configuration object. Allowed values are "100g-2x", "100g-4x", "10g-4x", "25g-4x", "50g-8x", "none". The Policy Group and Breakout cannot be configured simultaneously. Type: String.
-* `admin_state` - (Optional) Admin State of the Port Configuration object. Allowed values are "up", "down". Default value is "up". Type: String.
-* `pc_member` - (Optional) The distinguished name of the Port Channel Member being associated with the Port Configuration object. Type: String.
-* `description` - (Optional) Description of the Port Configuration object. Type: String.
-* `annotation` - (Optional) Annotation of the Port Configuration object. Type: String.
-* `name_alias` - (Optional) Name Alias of the Port Configuration object. Type: String.
+* `node` - (Required) The Node ID of the Port Configuration object. Type: Integer.
+* `interface` - (Required) The Interface address of the Port Configuration object. The format of the interface value should be 1/1/1 (card/port_id/sub_port) or 1/1 (card/port_id). Type: String.
+* `port_type` - (Optional) The Type of the Port Configuration object. Allowed values are "access", "fabric". Default value is "access". Type: String.
+* `role` - (Optional) The Role of the Port Configuration object. Allowed values are "leaf", "spine". Default value is "leaf". Type: String.
+* `policy_group` - (Optional) The Distinguished Name of the Policy Group being associated with the Port Configuration object. The Policy Group and Breakout cannot be configured simultaneously. Type: String.
+* `breakout` - (Optional) The Breakout Map of the Port Configuration object. Allowed values are "100g-2x", "100g-4x", "10g-4x", "25g-4x", "50g-8x", "none". The Policy Group and Breakout cannot be configured simultaneously. Type: String.
+* `admin_state` - (Optional) The Admin State of the Port Configuration object. Allowed values are "up", "down". Default value is "up". Type: String.
+* `pc_member` - (Optional) The Distinguished Name of the Port Channel Member being associated with the Port Configuration object. Type: String.
+* `description` - (Optional) The Description of the Port Configuration object. Type: String.
+* `annotation` - (Optional) The Annotation of the Port Configuration object. Type: String.
+* `name_alias` - (Optional) The Name Alias of the Port Configuration object. Type: String.
 
 ## Importing ##
 

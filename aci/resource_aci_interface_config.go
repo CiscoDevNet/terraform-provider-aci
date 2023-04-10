@@ -39,16 +39,17 @@ func resourceAciInterfaceConfiguration() *schema.Resource {
 				Type:             schema.TypeString,
 				Required:         true,
 				ForceNew:         true,
-				StateFunc:        getInterfaceParts,
+				StateFunc:        getInterfaceVal,
 				ValidateDiagFunc: validateInterface,
 			},
 			"port_type": {
 				Type:     schema.TypeString,
-				Required: true,
+				Optional: true,
 				ValidateFunc: validation.StringInSlice([]string{
 					"access",
 					"fabric",
 				}, false),
+				Default: "access",
 			},
 			"role": {
 				Type:     schema.TypeString,
@@ -96,7 +97,7 @@ func resourceAciInterfaceConfiguration() *schema.Resource {
 	}
 }
 
-func getInterfaceParts(interfaceVal interface{}) string {
+func getInterfaceVal(interfaceVal interface{}) string {
 	interfaceParts := strings.Split(interfaceVal.(string), "/")
 	if len(interfaceParts) == 2 {
 		interfaceParts = append(interfaceParts, "0")
@@ -122,7 +123,7 @@ func validateInterface(value interface{}, path cty.Path) diag.Diagnostics {
 		var card, port, subPort int
 		interfaceParts := strings.Split(interfaceVal, "/")
 
-		if len(interfaceParts) >= 2 {
+		if len(interfaceParts) == 2 || len(interfaceParts) == 3 {
 			// Card ID validation
 			if card, err = strconv.Atoi(interfaceParts[0]); err != nil || !InBetween(card, 1, 64) {
 				errors = append(errors, map[string]string{
@@ -139,6 +140,7 @@ func validateInterface(value interface{}, path cty.Path) diag.Diagnostics {
 			}
 			// Appending Sub Port ID
 		} else {
+			// If the interfaceParts length is less than 2 or greater than 3, it returns error.
 			errors = append(errors, map[string]string{
 				"Summary": fmt.Sprintf("Interface: %v is invalid", interfaceVal),
 				"Detail":  "The format must be either card/port/sub_port(1/1/1) or card/port(1/1).",
@@ -160,6 +162,7 @@ func validateInterface(value interface{}, path cty.Path) diag.Diagnostics {
 			}
 		}
 	} else {
+		// If not interface, it returns error.
 		errors = append(errors, map[string]string{
 			"Summary": fmt.Sprintf("Interface: %v is invalid", interfaceVal),
 			"Detail":  "The format must be either card/port/sub_port(1/1/1) or card/port(1/1).",
@@ -254,7 +257,7 @@ func resourceAciInterfaceConfigurationCreate(ctx context.Context, d *schema.Reso
 	node := strconv.Itoa(d.Get("node").(int))
 	interfaceAttrMap := make(map[string]string)
 	portType := d.Get("port_type").(string)
-	parsedInterface := strings.Split(getInterfaceParts(d.Get("interface")), "/")
+	parsedInterface := strings.Split(getInterfaceVal(d.Get("interface")), "/")
 
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		interfaceAttrMap["Annotation"] = Annotation.(string)
@@ -273,14 +276,13 @@ func resourceAciInterfaceConfigurationCreate(ctx context.Context, d *schema.Reso
 	var err error
 	var interfaceDistinguishedName string
 
-	// Access Port configration
 	if portType == "access" {
 
 		breakout := d.Get("breakout").(string)
 		policyGroup := d.Get("policy_group").(string)
 
 		if breakout != "" && breakout != "none" && policyGroup != "" {
-			return diag.FromErr(fmt.Errorf("Policy Group: %s and Breakout: %s cannot be configured togater due to an invalid interface configuration.", policyGroup, breakout))
+			return diag.FromErr(fmt.Errorf("Policy Group: %s and Breakout: %s cannot be configured togater.", policyGroup, breakout))
 		} else if policyGroup != "" {
 			interfaceAttrMap["AssocGrp"] = policyGroup
 			interfaceAttrMap["BrkoutMap"] = "none"
@@ -295,7 +297,7 @@ func resourceAciInterfaceConfigurationCreate(ctx context.Context, d *schema.Reso
 		accessInterfaceConfig := models.NewInfraPortConfiguration(rn, models.ParentDnInfraPortConfig, interfaceAttrMap["Descr"], accessInterfaceAttr)
 		err = aciClient.Save(accessInterfaceConfig)
 		interfaceDistinguishedName = accessInterfaceConfig.DistinguishedName
-	} else if portType == "fabric" { // Fabric Port configration
+	} else if portType == "fabric" {
 		interfaceAttrMap["AssocGrp"] = d.Get("policy_group").(string)
 		fabricInterfaceAttr := models.FabricPortConfigurationAttributes{}
 		setModelAttributes(&fabricInterfaceAttr, interfaceAttrMap)
@@ -321,7 +323,7 @@ func resourceAciInterfaceConfigurationUpdate(ctx context.Context, d *schema.Reso
 	node := strconv.Itoa(d.Get("node").(int))
 	interfaceAttrMap := make(map[string]string)
 	portType := d.Get("port_type").(string)
-	parsedInterface := strings.Split(getInterfaceParts(d.Get("interface")), "/")
+	parsedInterface := strings.Split(getInterfaceVal(d.Get("interface")), "/")
 
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		interfaceAttrMap["Annotation"] = Annotation.(string)
@@ -340,14 +342,13 @@ func resourceAciInterfaceConfigurationUpdate(ctx context.Context, d *schema.Reso
 	var err error
 	var interfaceDistinguishedName string
 
-	// Access Port configration
 	if portType == "access" {
 
 		breakout := d.Get("breakout").(string)
 		policyGroup := d.Get("policy_group").(string)
 
 		if breakout != "" && breakout != "none" && policyGroup != "" {
-			return diag.FromErr(fmt.Errorf("Policy Group: %s and Breakout: %s cannot be configured togater due to an invalid interface configuration.", policyGroup, breakout))
+			return diag.FromErr(fmt.Errorf("Policy Group: %s and Breakout: %s cannot be configured togater.", policyGroup, breakout))
 		} else if (breakout == "" || breakout == "none") && policyGroup == "" {
 			interfaceAttrMap["AssocGrp"] = ""
 			interfaceAttrMap["BrkoutMap"] = "none"
@@ -366,7 +367,7 @@ func resourceAciInterfaceConfigurationUpdate(ctx context.Context, d *schema.Reso
 		accessInterfaceConfig.Status = "modified"
 		err = aciClient.Save(accessInterfaceConfig)
 		interfaceDistinguishedName = accessInterfaceConfig.DistinguishedName
-	} else if portType == "fabric" { // Fabric Port configration
+	} else if portType == "fabric" {
 		interfaceAttrMap["AssocGrp"] = d.Get("policy_group").(string)
 		fabricInterfaceAttr := models.FabricPortConfigurationAttributes{}
 		setModelAttributes(&fabricInterfaceAttr, interfaceAttrMap)

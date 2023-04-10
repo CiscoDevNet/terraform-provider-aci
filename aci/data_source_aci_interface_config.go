@@ -30,11 +30,12 @@ func dataSourceAciInterfaceConfiguration() *schema.Resource {
 			},
 			"port_type": {
 				Type:     schema.TypeString,
-				Required: true,
+				Optional: true,
 				ValidateFunc: validation.StringInSlice([]string{
 					"access",
 					"fabric",
 				}, false),
+				Default: "access",
 			},
 			"role": {
 				Type:     schema.TypeString,
@@ -76,7 +77,7 @@ func dataSourceAciInterfaceConfigurationRead(ctx context.Context, d *schema.Reso
 	aciClient := m.(*client.Client)
 	node := strconv.Itoa(d.Get("node").(int))
 	portType := d.Get("port_type").(string)
-	parsedInterface := strings.Split(getInterfaceParts(d.Get("interface")), "/")
+	parsedInterface := strings.Split(getInterfaceVal(d.Get("interface")), "/")
 	rn := fmt.Sprintf(models.RnInfraPortConfig, node, parsedInterface[0], parsedInterface[1], parsedInterface[2])
 	var dn string
 	if portType == "access" {
