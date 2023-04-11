@@ -118,7 +118,14 @@ func getAdminState(adminState string) string {
 func validateInterface(value interface{}, path cty.Path) diag.Diagnostics {
 	var diags diag.Diagnostics
 	errors := make([]map[string]string, 0)
-	if interfaceVal, flag := value.(string); flag {
+	interfaceVal, validInterface := value.(string)
+
+	invalidInterfaceError := map[string]string{
+		"Summary": fmt.Sprintf("Interface: %v is invalid", interfaceVal),
+		"Detail":  "The format must be either card/port/sub_port(1/1/1) or card/port(1/1).",
+	}
+
+	if validInterface {
 		var err error
 		var card, port, subPort int
 		interfaceParts := strings.Split(interfaceVal, "/")
@@ -140,8 +147,7 @@ func validateInterface(value interface{}, path cty.Path) diag.Diagnostics {
 			}
 			// Sub Port ID validation
 			if len(interfaceParts) == 3 {
-				subPort, err = strconv.Atoi(interfaceParts[2])
-				if err != nil || !InBetween(subPort, 0, 16) {
+				if subPort, err = strconv.Atoi(interfaceParts[2]); err != nil || !InBetween(subPort, 0, 16) {
 					errors = append(errors, map[string]string{
 						"Summary": fmt.Sprintf("Sub Port ID: %v is invalid", interfaceParts[2]),
 						"Detail":  "Sub Port ID must be in the range of 0 to 16.",
@@ -150,17 +156,11 @@ func validateInterface(value interface{}, path cty.Path) diag.Diagnostics {
 			}
 		} else {
 			// If the interfaceParts length is less than 2 or greater than 3, it returns error.
-			errors = append(errors, map[string]string{
-				"Summary": fmt.Sprintf("Interface: %v is invalid", interfaceVal),
-				"Detail":  "The format must be either card/port/sub_port(1/1/1) or card/port(1/1).",
-			})
+			errors = append(errors, invalidInterfaceError)
 		}
 	} else {
 		// If not interface, it returns error.
-		errors = append(errors, map[string]string{
-			"Summary": fmt.Sprintf("Interface: %v is invalid", interfaceVal),
-			"Detail":  "The format must be either card/port/sub_port(1/1/1) or card/port(1/1).",
-		})
+		errors = append(errors, invalidInterfaceError)
 	}
 	for _, error := range errors {
 		diags = append(diags, diag.Diagnostic{
