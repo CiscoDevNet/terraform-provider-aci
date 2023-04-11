@@ -138,28 +138,22 @@ func validateInterface(value interface{}, path cty.Path) diag.Diagnostics {
 					"Detail":  "Port ID must be in the range of 1 to 128.",
 				})
 			}
-			// Appending Sub Port ID
+			// Sub Port ID validation
+			if len(interfaceParts) == 3 {
+				subPort, err = strconv.Atoi(interfaceParts[2])
+				if err != nil || !InBetween(subPort, 0, 16) {
+					errors = append(errors, map[string]string{
+						"Summary": fmt.Sprintf("Sub Port ID: %v is invalid", interfaceParts[2]),
+						"Detail":  "Sub Port ID must be in the range of 0 to 16.",
+					})
+				}
+			}
 		} else {
 			// If the interfaceParts length is less than 2 or greater than 3, it returns error.
 			errors = append(errors, map[string]string{
 				"Summary": fmt.Sprintf("Interface: %v is invalid", interfaceVal),
 				"Detail":  "The format must be either card/port/sub_port(1/1/1) or card/port(1/1).",
 			})
-		}
-		if len(interfaceParts) == 3 {
-			// Sub Port ID validation
-			subPort, err = strconv.Atoi(interfaceParts[2])
-			if err != nil {
-				errors = append(errors, map[string]string{
-					"Summary": fmt.Sprintf("Sub Port ID: %v is invalid", interfaceParts[2]),
-					"Detail":  "Sub Port ID must be in the range of 0 to 16.",
-				})
-			} else if !InBetween(subPort, 0, 16) {
-				errors = append(errors, map[string]string{
-					"Summary": fmt.Sprintf("Sub Port ID: %v is invalid", interfaceParts[2]),
-					"Detail":  "Sub Port ID must be in the range of 0 to 16.",
-				})
-			}
 		}
 	} else {
 		// If not interface, it returns error.
