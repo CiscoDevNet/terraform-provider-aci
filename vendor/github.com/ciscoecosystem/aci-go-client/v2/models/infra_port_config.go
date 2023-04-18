@@ -65,6 +65,11 @@ func (infraPortConfig *InfraPortConfiguration) ToMap() (map[string]string, error
 	A(infraPortConfigMap, "role", infraPortConfig.Role)
 	A(infraPortConfigMap, "shutdown", infraPortConfig.Shutdown)
 	A(infraPortConfigMap, "subPort", infraPortConfig.SubPort)
+
+	if infraPortConfig.BrkoutMap != "" && infraPortConfig.BrkoutMap != "none" {
+		infraPortConfigMap["assocGrp"] = ""
+	}
+
 	return infraPortConfigMap, err
 }
 

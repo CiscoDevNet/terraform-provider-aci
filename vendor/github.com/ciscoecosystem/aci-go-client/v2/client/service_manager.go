@@ -125,7 +125,7 @@ func CheckForErrors(cont *container.Container, method string, skipLoggingPayload
 			log.Printf("[DEBUG] Exit from error (Empty response) %v", cont)
 		}
 
-		return errors.New("Error retrieving Object: Object may not exists")
+		return errors.New("Error retrieving Object: Object may not exist")
 	}
 	if !skipLoggingPayload {
 		log.Printf("[DEBUG] Exit from errors %v", cont)
