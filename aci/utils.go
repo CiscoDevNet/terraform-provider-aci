@@ -382,7 +382,7 @@ func getStringsFromListNotInOtherList(previousValueList interface{}, newValueLis
 }
 
 func errorForObjectNotFound(err error, dn string, d *schema.ResourceData) diag.Diagnostics {
-	if strings.HasSuffix(err.Error(), "not found") {
+	if strings.HasSuffix(err.Error(), "not found") || (err.Error() == "Error retrieving Object: Object may not exist") {
 		log.Printf("[WARN] %s, removing from state: %s", err, dn)
 		d.SetId("")
 		return nil
