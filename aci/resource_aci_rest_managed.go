@@ -275,7 +275,9 @@ func MakeAciRestManagedQuery(d *schema.ResourceData, m interface{}, method strin
 	if method == "POST" {
 		content := d.Get("content")
 		contentStrMap := make(map[string]string)
-		contentStrMap["annotation"] = "orchestrator:terraform"
+		if _, ok := contentStrMap["annotation"]; !ok {
+			contentStrMap["annotation"] = "orchestrator:terraform"
+		}
 		for k, v := range toStrMap(content.(map[string]interface{})) {
 			contentStrMap[k] = v
 		}
@@ -286,7 +288,9 @@ func MakeAciRestManagedQuery(d *schema.ResourceData, m interface{}, method strin
 			childMap := make(map[string]interface{})
 			childClassName := child.(map[string]interface{})["class_name"]
 			childContent := make(map[string]string)
-			childContent["annotation"] = "orchestrator:terraform"
+			if _, ok := childContent["annotation"]; !ok {
+				childContent["annotation"] = "orchestrator:terraform"
+			}
 			for k, v := range toStrMap(child.(map[string]interface{})["content"].(map[string]interface{})) {
 				childContent[k] = v
 			}
