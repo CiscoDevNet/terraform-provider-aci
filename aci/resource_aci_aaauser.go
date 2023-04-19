@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/ciscoecosystem/aci-go-client/v2/client"
+	"github.com/ciscoecosystem/aci-go-client/v2/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
@@ -157,6 +157,39 @@ func resourceAciLocalUser() *schema.Resource {
 		}),
 	}
 }
+
+func tryLogin(d *schema.ResourceData, aciClient *client.Client) bool {
+
+	authPayload := `{
+		"aaaUser" : {
+			"attributes" : {
+				"name" : "%s",
+				"pwd" : "%s"
+			}
+		}
+	}`
+
+	client.SkipLoggingPayload(true)(aciClient)
+
+	req, err := aciClient.MakeRestRequestRaw("POST", "/api/aaaLogin.json", []byte(fmt.Sprintf(authPayload, d.Get("name").(string), d.Get("pwd").(string))), false)
+	if err != nil {
+		log.Printf("[DEBUG] Creation of authentication request failed for local user: '%s'.", d.Get("name").(string))
+		return false
+	}
+
+	_, resp, _ := aciClient.Do(req)
+
+	client.SkipLoggingPayload(false)(aciClient)
+
+	if resp.StatusCode != 200 {
+		log.Printf("[DEBUG] Authentication failed for local user: '%s'.", d.Get("name").(string))
+		return false
+	}
+
+	log.Printf("[DEBUG] Authentication succceeded for local user: '%s'.", d.Get("name").(string))
+	return true
+}
+
 func getRemoteLocalUser(client *client.Client, dn string) (*models.LocalUser, error) {
 	aaaUserCont, err := client.Get(dn)
 	if err != nil {
@@ -166,13 +199,13 @@ func getRemoteLocalUser(client *client.Client, dn string) (*models.LocalUser, er
 	aaaUser := models.LocalUserFromContainer(aaaUserCont)
 
 	if aaaUser.DistinguishedName == "" {
-		return nil, fmt.Errorf("LocalUser %s not found", aaaUser.DistinguishedName)
+		return nil, fmt.Errorf("Local User %s not found", dn)
 	}
 
 	return aaaUser, nil
 }
 
-func setLocalUserAttributes(aaaUser *models.LocalUser, d *schema.ResourceData) (*schema.ResourceData, error) {
+func setLocalUserAttributes(aaaUser *models.LocalUser, d *schema.ResourceData, loginSuccess bool) (*schema.ResourceData, error) {
 	d.SetId(aaaUser.DistinguishedName)
 	d.Set("description", aaaUser.Description)
 	aaaUserMap, err := aaaUser.ToMap()
@@ -203,6 +236,11 @@ func setLocalUserAttributes(aaaUser *models.LocalUser, d *schema.ResourceData) (
 	d.Set("pwd_update_required", aaaUserMap["pwdUpdateRequired"])
 	d.Set("rbac_string", aaaUserMap["rbacString"])
 	d.Set("unix_user_id", aaaUserMap["unixUserId"])
+
+	if !loginSuccess {
+		d.Set("pwd", "")
+	}
+
 	return d, nil
 }
 
@@ -217,7 +255,7 @@ func resourceAciLocalUserImport(d *schema.ResourceData, m interface{}) ([]*schem
 	if err != nil {
 		return nil, err
 	}
-	schemaFilled, err := setLocalUserAttributes(aaaUser, d)
+	schemaFilled, err := setLocalUserAttributes(aaaUser, d, false)
 	if err != nil {
 		return nil, err
 	}
@@ -276,8 +314,12 @@ func resourceAciLocalUserCreate(ctx context.Context, d *schema.ResourceData, m i
 	if Phone, ok := d.GetOk("phone"); ok {
 		aaaUserAttr.Phone = Phone.(string)
 	}
-	if Pwd, ok := d.GetOk("pwd"); ok {
-		aaaUserAttr.Pwd = Pwd.(string)
+	if pwd, ok := d.GetOk("pwd"); ok {
+		loginSuccess := tryLogin(d, aciClient)
+		if !loginSuccess {
+			client.SkipLoggingPayload(true)(aciClient)
+			aaaUserAttr.Pwd = pwd.(string)
+		}
 	}
 	if PwdLifeTime, ok := d.GetOk("pwd_life_time"); ok {
 		aaaUserAttr.PwdLifeTime = PwdLifeTime.(string)
@@ -294,6 +336,8 @@ func resourceAciLocalUserCreate(ctx context.Context, d *schema.ResourceData, m i
 	aaaUser := models.NewLocalUser(fmt.Sprintf("userext/user-%s", name), "uni", desc, aaaUserAttr)
 
 	err := aciClient.Save(aaaUser)
+	client.SkipLoggingPayload(false)(aciClient)
+
 	if err != nil {
 		return diag.FromErr(err)
 	}
@@ -354,8 +398,14 @@ func resourceAciLocalUserUpdate(ctx context.Context, d *schema.ResourceData, m i
 	if Phone, ok := d.GetOk("phone"); ok {
 		aaaUserAttr.Phone = Phone.(string)
 	}
-	if Pwd, ok := d.GetOk("pwd"); ok {
-		aaaUserAttr.Pwd = Pwd.(string)
+	if d.HasChange("pwd") {
+		if pwd, ok := d.GetOk("pwd"); ok {
+			loginSuccess := tryLogin(d, aciClient)
+			if !loginSuccess {
+				client.SkipLoggingPayload(true)(aciClient)
+				aaaUserAttr.Pwd = pwd.(string)
+			}
+		}
 	}
 	if PwdLifeTime, ok := d.GetOk("pwd_life_time"); ok {
 		aaaUserAttr.PwdLifeTime = PwdLifeTime.(string)
@@ -374,6 +424,7 @@ func resourceAciLocalUserUpdate(ctx context.Context, d *schema.ResourceData, m i
 	aaaUser.Status = "modified"
 
 	err := aciClient.Save(aaaUser)
+	client.SkipLoggingPayload(false)(aciClient)
 
 	if err != nil {
 		return diag.FromErr(err)
@@ -395,10 +446,15 @@ func resourceAciLocalUserRead(ctx context.Context, d *schema.ResourceData, m int
 	aaaUser, err := getRemoteLocalUser(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
-	_, err = setLocalUserAttributes(aaaUser, d)
+
+	loginSuccess := false
+	if _, ok := d.GetOk("pwd"); ok {
+		loginSuccess = tryLogin(d, aciClient)
+	}
+
+	_, err = setLocalUserAttributes(aaaUser, d, loginSuccess)
 	if err != nil {
 		d.SetId("")
 		return nil

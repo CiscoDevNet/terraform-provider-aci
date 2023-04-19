@@ -4,7 +4,8 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/ciscoecosystem/aci-go-client/client"
+	"github.com/ciscoecosystem/aci-go-client/v2/client"
+	"github.com/ciscoecosystem/aci-go-client/v2/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -16,7 +17,7 @@ func dataSourceAciL3Outside() *schema.Resource {
 
 		SchemaVersion: 1,
 
-		Schema: AppendBaseAttrSchema(map[string]*schema.Schema{
+		Schema: AppendBaseAttrSchema(AppendNameAliasAttrSchema(map[string]*schema.Schema{
 			"tenant_dn": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
@@ -36,18 +37,69 @@ func dataSourceAciL3Outside() *schema.Resource {
 				},
 			},
 
-			"name_alias": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
 			"target_dscp": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
 			},
-		}),
+			"mpls_enabled": {
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+			"relation_l3ext_rs_dampening_pol": &schema.Schema{
+				Type:     schema.TypeSet,
+				Optional: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"tn_rtctrl_profile_dn": {
+							Type:     schema.TypeString,
+							Optional: true,
+							Computed: true,
+						},
+						"af": {
+							Type:     schema.TypeString,
+							Optional: true,
+							Computed: true,
+						},
+					},
+				},
+			},
+			"relation_l3ext_rs_ectx": &schema.Schema{
+				Type:     schema.TypeString,
+				Computed: true,
+				Optional: true,
+			},
+			"relation_l3ext_rs_interleak_pol": &schema.Schema{
+				Type:     schema.TypeString,
+				Computed: true,
+				Optional: true,
+			},
+			"relation_l3ext_rs_l3_dom_att": &schema.Schema{
+				Type:     schema.TypeString,
+				Computed: true,
+				Optional: true,
+			},
+			"relation_l3extrs_redistribute_pol": {
+				Type:        schema.TypeSet,
+				Optional:    true,
+				Description: "Create relation to rtctrlProfile",
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"source": {
+							Optional: true,
+							Type:     schema.TypeString,
+							Computed: true,
+						},
+						"target_dn": {
+							Optional: true,
+							Type:     schema.TypeString,
+							Computed: true,
+						},
+					},
+				},
+			},
+		})),
 	}
 }
 
@@ -56,7 +108,7 @@ func dataSourceAciL3OutsideRead(ctx context.Context, d *schema.ResourceData, m i
 
 	name := d.Get("name").(string)
 
-	rn := fmt.Sprintf("out-%s", name)
+	rn := fmt.Sprintf(models.Rnl3extOut, name)
 	TenantDn := d.Get("tenant_dn").(string)
 
 	dn := fmt.Sprintf("%s/%s", TenantDn, rn)
@@ -71,5 +123,21 @@ func dataSourceAciL3OutsideRead(ctx context.Context, d *schema.ResourceData, m i
 	if err != nil {
 		return diag.FromErr(err)
 	}
+
+	// Importing l3extRsDampeningPol object
+	getAndSetReadRelationl3extRsDampeningPolFromL3Outside(aciClient, dn, d)
+
+	// Importing l3extRsEctx object
+	getAndSetReadRelationl3extRsEctxFromL3Outside(aciClient, dn, d)
+
+	// Importing l3extRsInterleakPol object
+	getAndSetReadRelationl3extRsInterleakPolFromL3Outside(aciClient, dn, d)
+
+	// Importing l3extRsL3DomAtt object
+	getAndSetReadRelationl3extRsL3DomAttFromL3Outside(aciClient, dn, d)
+
+	// Importing l3extRsRedistributePol object
+	getAndSetReadRelationl3extRsRedistributePol(aciClient, dn, d)
+
 	return nil
 }

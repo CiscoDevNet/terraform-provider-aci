@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/ciscoecosystem/aci-go-client/v2/client"
+	"github.com/ciscoecosystem/aci-go-client/v2/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -60,7 +60,7 @@ func getRemoteCloudEndpointSelector(client *client.Client, dn string) (*models.C
 	cloudEPSelector := models.CloudEndpointSelectorFromContainer(cloudEPSelectorCont)
 
 	if cloudEPSelector.DistinguishedName == "" {
-		return nil, fmt.Errorf("CloudEndpointSelector %s not found", cloudEPSelector.DistinguishedName)
+		return nil, fmt.Errorf("Cloud Endpoint Selector %s not found", dn)
 	}
 
 	return cloudEPSelector, nil
@@ -198,8 +198,7 @@ func resourceAciCloudEndpointSelectorRead(ctx context.Context, d *schema.Resourc
 	cloudEPSelector, err := getRemoteCloudEndpointSelector(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setCloudEndpointSelectorAttributes(cloudEPSelector, d)
 	if err != nil {

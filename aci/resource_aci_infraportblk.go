@@ -6,8 +6,8 @@ import (
 	"log"
 	"strconv"
 
-	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/ciscoecosystem/aci-go-client/v2/client"
+	"github.com/ciscoecosystem/aci-go-client/v2/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -86,7 +86,7 @@ func getRemoteAccessPortBlock(client *client.Client, dn string) (*models.AccessP
 	infraPortBlk := models.AccessPortBlockFromContainer(infraPortBlkCont)
 
 	if infraPortBlk.DistinguishedName == "" {
-		return nil, fmt.Errorf("AccessPortBlock %s not found", infraPortBlk.DistinguishedName)
+		return nil, fmt.Errorf("Access Port Block %s not found", dn)
 	}
 
 	return infraPortBlk, nil
@@ -172,7 +172,6 @@ func resourceAciAccessPortBlockCreate(ctx context.Context, d *schema.ResourceDat
 			tp := models.G(contList[i], "name")
 			blkNames = append(blkNames, tp)
 		}
-		log.Println("check .. : ", blkNames)
 
 		cnt := contListLen + 1
 		for true {
@@ -337,8 +336,7 @@ func resourceAciAccessPortBlockRead(ctx context.Context, d *schema.ResourceData,
 	infraPortBlk, err := getRemoteAccessPortBlock(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setAccessPortBlockAttributes(infraPortBlk, d)
 

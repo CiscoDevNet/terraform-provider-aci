@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/ciscoecosystem/aci-go-client/v2/client"
+	"github.com/ciscoecosystem/aci-go-client/v2/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
@@ -64,7 +64,7 @@ func getRemoteConsoleAuthenticationMethod(client *client.Client, dn string) (*mo
 	}
 	aaaConsoleAuth := models.ConsoleAuthenticationMethodFromContainer(aaaConsoleAuthCont)
 	if aaaConsoleAuth.DistinguishedName == "" {
-		return nil, fmt.Errorf("ConsoleAuthenticationMethod %s not found", aaaConsoleAuth.DistinguishedName)
+		return nil, fmt.Errorf("Console Authentication Method %s not found", dn)
 	}
 	return aaaConsoleAuth, nil
 }
@@ -181,8 +181,7 @@ func resourceAciConsoleAuthenticationMethodRead(ctx context.Context, d *schema.R
 	dn := d.Id()
 	aaaConsoleAuth, err := getRemoteConsoleAuthenticationMethod(aciClient, dn)
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setConsoleAuthenticationMethodAttributes(aaaConsoleAuth, d)
 	if err != nil {

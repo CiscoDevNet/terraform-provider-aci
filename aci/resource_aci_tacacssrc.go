@@ -8,8 +8,8 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/ciscoecosystem/aci-go-client/v2/client"
+	"github.com/ciscoecosystem/aci-go-client/v2/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
@@ -83,7 +83,7 @@ func getRemoteTACACSSource(client *client.Client, dn string) (*models.TACACSSour
 	}
 	tacacsSrc := models.TACACSSourceFromContainer(tacacsSrcCont)
 	if tacacsSrc.DistinguishedName == "" {
-		return nil, fmt.Errorf("TACACSSource %s not found", tacacsSrc.DistinguishedName)
+		return nil, fmt.Errorf("TACACS Source %s not found", dn)
 	}
 	return tacacsSrc, nil
 }
@@ -297,8 +297,7 @@ func resourceAciTACACSSourceRead(ctx context.Context, d *schema.ResourceData, m 
 	dn := d.Id()
 	tacacsSrc, err := getRemoteTACACSSource(aciClient, dn)
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setTACACSSourceAttributes(tacacsSrc, d)
 	if err != nil {

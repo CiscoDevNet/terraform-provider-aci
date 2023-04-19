@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/ciscoecosystem/aci-go-client/v2/client"
+	"github.com/ciscoecosystem/aci-go-client/v2/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -47,7 +47,7 @@ func getRemoteSNMPCommunity(client *client.Client, dn string) (*models.SNMPCommu
 
 	snmpCommunityP := models.SNMPCommunityFromContainer(snmpCommunityPCont)
 	if snmpCommunityP.DistinguishedName == "" {
-		return nil, fmt.Errorf("SNMP Community %s not found", snmpCommunityP.DistinguishedName)
+		return nil, fmt.Errorf("SNMP Community %s not found", dn)
 	}
 
 	return snmpCommunityP, nil
@@ -174,8 +174,7 @@ func resourceAciSNMPCommunityRead(ctx context.Context, d *schema.ResourceData, m
 
 	snmpCommunityP, err := getRemoteSNMPCommunity(aciClient, dn)
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 
 	_, err = setSNMPCommunityAttributes(snmpCommunityP, d)

@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/ciscoecosystem/aci-go-client/client"
+	"github.com/ciscoecosystem/aci-go-client/v2/client"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -33,12 +33,6 @@ func dataSourceAciVirtualLogicalInterfaceProfile() *schema.Resource {
 			},
 
 			"addr": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
-			"annotation": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
@@ -97,6 +91,39 @@ func dataSourceAciVirtualLogicalInterfaceProfile() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+
+			"relation_l3ext_rs_dyn_path_att": &schema.Schema{
+				Type:     schema.TypeSet,
+				Optional: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"tdn": {
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"floating_address": {
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"forged_transmit": {
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"mac_change": {
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"promiscuous_mode": {
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"enhanced_lag_policy_dn": {
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+					},
+				},
+			},
 		}),
 	}
 }
@@ -124,5 +151,8 @@ func dataSourceAciVirtualLogicalInterfaceProfileRead(ctx context.Context, d *sch
 	if err != nil {
 		return diag.FromErr(err)
 	}
+
+	getAndSetL3extRsDynPathAttFromLogicalInterfaceProfile(aciClient, dn, d)
+
 	return nil
 }

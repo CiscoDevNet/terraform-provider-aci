@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/ciscoecosystem/aci-go-client/v2/client"
+	"github.com/ciscoecosystem/aci-go-client/v2/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
@@ -146,7 +146,7 @@ func getRemoteHSRPGroupPolicy(client *client.Client, dn string) (*models.HSRPGro
 	hsrpGroupPol := models.HSRPGroupPolicyFromContainer(hsrpGroupPolCont)
 
 	if hsrpGroupPol.DistinguishedName == "" {
-		return nil, fmt.Errorf("HSRPGroupPolicy %s not found", hsrpGroupPol.DistinguishedName)
+		return nil, fmt.Errorf("HSRP Group Policy %s not found", dn)
 	}
 
 	return hsrpGroupPol, nil
@@ -343,8 +343,7 @@ func resourceAciHSRPGroupPolicyRead(ctx context.Context, d *schema.ResourceData,
 	hsrpGroupPol, err := getRemoteHSRPGroupPolicy(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setHSRPGroupPolicyAttributes(hsrpGroupPol, d)
 

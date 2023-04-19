@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/ciscoecosystem/aci-go-client/v2/client"
+	"github.com/ciscoecosystem/aci-go-client/v2/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
@@ -46,7 +46,7 @@ func getRemoteMgmtconnectivitypreference(client *client.Client, dn string) (*mod
 	}
 	mgmtConnectivityPrefs := models.MgmtconnectivitypreferenceFromContainer(mgmtConnectivityPrefsCont)
 	if mgmtConnectivityPrefs.DistinguishedName == "" {
-		return nil, fmt.Errorf("Mgmtconnectivitypreference %s not found", mgmtConnectivityPrefs.DistinguishedName)
+		return nil, fmt.Errorf("Mgmt Connectivity Preference %s not found", dn)
 	}
 	return mgmtConnectivityPrefs, nil
 }
@@ -153,8 +153,7 @@ func resourceAciMgmtconnectivitypreferenceRead(ctx context.Context, d *schema.Re
 	dn := d.Id()
 	mgmtConnectivityPrefs, err := getRemoteMgmtconnectivitypreference(aciClient, dn)
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setMgmtconnectivitypreferenceAttributes(mgmtConnectivityPrefs, d)
 	if err != nil {

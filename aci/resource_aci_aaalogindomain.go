@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/ciscoecosystem/aci-go-client/v2/client"
+	"github.com/ciscoecosystem/aci-go-client/v2/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
@@ -70,7 +70,7 @@ func getRemoteAuthenticationMethodfortheDomain(client *client.Client, dn string)
 	}
 	aaaDomainAuth := models.AuthenticationMethodfortheDomainFromContainer(aaaDomainAuthCont)
 	if aaaDomainAuth.DistinguishedName == "" {
-		return nil, fmt.Errorf("AuthenticationMethodfortheDomain %s not found", aaaDomainAuth.DistinguishedName)
+		return nil, fmt.Errorf("Authentication Method for the Domain %s not found", dn)
 	}
 	return aaaDomainAuth, nil
 }
@@ -82,7 +82,7 @@ func getRemoteLoginDomain(client *client.Client, dn string) (*models.LoginDomain
 	}
 	aaaLoginDomain := models.LoginDomainFromContainer(aaaLoginDomainCont)
 	if aaaLoginDomain.DistinguishedName == "" {
-		return nil, fmt.Errorf("LoginDomain %s not found", aaaLoginDomain.DistinguishedName)
+		return nil, fmt.Errorf("Login Domain %s not found", dn)
 	}
 	return aaaLoginDomain, nil
 }
@@ -244,8 +244,7 @@ func resourceAciLoginDomainRead(ctx context.Context, d *schema.ResourceData, m i
 	log.Printf("%s", childDn)
 	aaaLoginDomain, err := getRemoteLoginDomain(aciClient, dn)
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setLoginDomainAttributes(aaaLoginDomain, d)
 	if err != nil {
@@ -255,8 +254,7 @@ func resourceAciLoginDomainRead(ctx context.Context, d *schema.ResourceData, m i
 
 	aaaDomainAuth, err := getRemoteAuthenticationMethodfortheDomain(aciClient, childDn)
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setAuthenticationMethodfortheDomainAttributes(aaaDomainAuth, d)
 	if err != nil {

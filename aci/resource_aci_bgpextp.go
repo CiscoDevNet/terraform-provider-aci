@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/ciscoecosystem/aci-go-client/v2/client"
+	"github.com/ciscoecosystem/aci-go-client/v2/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -48,7 +48,7 @@ func getRemoteL3outBgpExternalPolicy(client *client.Client, dn string) (*models.
 	bgpExtP := models.L3outBgpExternalPolicyFromContainer(bgpExtPCont)
 
 	if bgpExtP.DistinguishedName == "" {
-		return nil, fmt.Errorf("L3outBgpExternalPolicy %s not found", bgpExtP.DistinguishedName)
+		return nil, fmt.Errorf("L3Out BGP External Policy %s not found", dn)
 	}
 
 	return bgpExtP, nil
@@ -183,8 +183,7 @@ func resourceAciL3outBgpExternalPolicyRead(ctx context.Context, d *schema.Resour
 	bgpExtP, err := getRemoteL3outBgpExternalPolicy(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setL3outBgpExternalPolicyAttributes(bgpExtP, d)
 	if err != nil {

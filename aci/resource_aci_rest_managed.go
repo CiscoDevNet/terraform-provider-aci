@@ -6,8 +6,8 @@ import (
 	"log"
 	"strings"
 
-	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/ciscoecosystem/aci-go-client/container"
+	"github.com/ciscoecosystem/aci-go-client/v2/client"
+	"github.com/ciscoecosystem/aci-go-client/v2/container"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -19,7 +19,10 @@ var IgnoreAttr = []string{"extMngdBy", "lcOwn", "modTs", "monPolDn", "uid", "dn"
 var WriteOnlyAttr = []string{"childAction"}
 
 // List of classes where 'rsp-prop-include=config-only' does not return the desired objects/properties
-var FullClasses = []string{"firmwareFwGrp", "maintMaintGrp", "maintMaintP", "firmwareFwP"}
+var FullClasses = []string{"firmwareFwGrp", "maintMaintGrp", "maintMaintP", "firmwareFwP", "pkiExportEncryptionKey"}
+
+// List of classes where an immediate GET following a POST might not reflect the created/updated object
+var AllowEmptyReadClasses = []string{"firmwareFwGrp", "firmwareRsFwgrpp", "firmwareFwP", "fabricNodeBlk"}
 
 // List of classes which do not support annotations
 var NoAnnotationClasses = []string{"tagTag"}
@@ -99,7 +102,7 @@ func resourceAciRestManaged() *schema.Resource {
 	}
 }
 
-func getAciRestManaged(d *schema.ResourceData, c *container.Container) diag.Diagnostics {
+func getAciRestManaged(d *schema.ResourceData, c *container.Container, expectObject bool) diag.Diagnostics {
 	className := d.Get("class_name").(string)
 	dn := d.Get("dn").(string)
 	d.SetId(dn)
@@ -110,6 +113,9 @@ func getAciRestManaged(d *schema.ResourceData, c *container.Container) diag.Diag
 	restContent, ok := c.Search("imdata", className, "attributes").Index(0).Data().(map[string]interface{})
 
 	if !ok {
+		if expectObject && containsString(AllowEmptyReadClasses, className) {
+			return nil
+		}
 		return diag.Errorf("Failed to retrieve REST payload for class: %s.", className)
 	}
 
@@ -181,7 +187,7 @@ func resourceAciRestManagedReadHelper(ctx context.Context, d *schema.ResourceDat
 		return nil
 	}
 
-	diags = getAciRestManaged(d, cont)
+	diags = getAciRestManaged(d, cont, expectObject)
 	if diags.HasError() {
 		return diags
 	}

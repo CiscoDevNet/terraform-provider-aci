@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/ciscoecosystem/aci-go-client/v2/client"
+	"github.com/ciscoecosystem/aci-go-client/v2/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -99,7 +99,7 @@ func getRemoteFCDomain(client *client.Client, dn string) (*models.FCDomain, erro
 	fcDomP := models.FCDomainFromContainer(fcDomPCont)
 
 	if fcDomP.DistinguishedName == "" {
-		return nil, fmt.Errorf("FCDomain %s not found", fcDomP.DistinguishedName)
+		return nil, fmt.Errorf("FC Domain %s not found", dn)
 	}
 
 	return fcDomP, nil
@@ -455,8 +455,7 @@ func resourceAciFCDomainRead(ctx context.Context, d *schema.ResourceData, m inte
 	fcDomP, err := getRemoteFCDomain(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setFCDomainAttributes(fcDomP, d)
 	if err != nil {

@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/ciscoecosystem/aci-go-client/v2/client"
+	"github.com/ciscoecosystem/aci-go-client/v2/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -49,7 +49,7 @@ func getRemoteAnnotation(client *client.Client, dn string) (*models.Annotation, 
 	}
 	tagAnnotation := models.AnnotationFromContainer(tagAnnotationCont)
 	if tagAnnotation.DistinguishedName == "" {
-		return nil, fmt.Errorf("Annotation %s not found", tagAnnotation.DistinguishedName)
+		return nil, fmt.Errorf("Annotation %s not found", dn)
 	}
 	return tagAnnotation, nil
 }
@@ -143,8 +143,7 @@ func resourceAciAnnotationRead(ctx context.Context, d *schema.ResourceData, m in
 	dn := d.Id()
 	tagAnnotation, err := getRemoteAnnotation(aciClient, dn)
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setAnnotationAttributes(tagAnnotation, d)
 	if err != nil {

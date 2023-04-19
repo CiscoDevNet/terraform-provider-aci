@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/ciscoecosystem/aci-go-client/v2/client"
+	"github.com/ciscoecosystem/aci-go-client/v2/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -60,7 +60,7 @@ func getRemoteL3outRouteTagPolicy(client *client.Client, dn string) (*models.L3o
 	l3extRouteTagPol := models.L3outRouteTagPolicyFromContainer(l3extRouteTagPolCont)
 
 	if l3extRouteTagPol.DistinguishedName == "" {
-		return nil, fmt.Errorf("L3outRouteTagPolicy %s not found", l3extRouteTagPol.DistinguishedName)
+		return nil, fmt.Errorf("L3Out Route Tag Policy %s not found", dn)
 	}
 
 	return l3extRouteTagPol, nil
@@ -191,8 +191,7 @@ func resourceAciL3outRouteTagPolicyRead(ctx context.Context, d *schema.ResourceD
 	l3extRouteTagPol, err := getRemoteL3outRouteTagPolicy(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setL3outRouteTagPolicyAttributes(l3extRouteTagPol, d)
 

@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/ciscoecosystem/aci-go-client/client"
+	"github.com/ciscoecosystem/aci-go-client/v2/client"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -95,12 +95,6 @@ func dataSourceAciLocalUser() *schema.Resource {
 				Computed: true,
 			},
 
-			"pwd": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-
 			"pwd_life_time": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -142,7 +136,7 @@ func dataSourceAciLocalUserRead(ctx context.Context, d *schema.ResourceData, m i
 	if err != nil {
 		return diag.FromErr(err)
 	}
-	_, err = setLocalUserAttributes(aaaUser, d)
+	_, err = setLocalUserAttributes(aaaUser, d, false)
 	if err != nil {
 		return diag.FromErr(err)
 	}

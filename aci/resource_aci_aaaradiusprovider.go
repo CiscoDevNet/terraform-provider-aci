@@ -6,8 +6,8 @@ import (
 	"log"
 	"strings"
 
-	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/ciscoecosystem/aci-go-client/v2/client"
+	"github.com/ciscoecosystem/aci-go-client/v2/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
@@ -110,7 +110,7 @@ func getRemoteRADIUSProvider(client *client.Client, dn string) (*models.RADIUSPr
 	}
 	aaaRadiusProvider := models.RADIUSProviderFromContainer(aaaRadiusProviderCont)
 	if aaaRadiusProvider.DistinguishedName == "" {
-		return nil, fmt.Errorf("RADIUSProvider %s not found", aaaRadiusProvider.DistinguishedName)
+		return nil, fmt.Errorf("RADIUS Provider %s not found", dn)
 	}
 	return aaaRadiusProvider, nil
 }
@@ -394,8 +394,7 @@ func resourceAciRADIUSProviderRead(ctx context.Context, d *schema.ResourceData, 
 	dn := d.Id()
 	aaaRadiusProvider, err := getRemoteRADIUSProvider(aciClient, dn)
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 
 	radius_provider_group := strings.Split(dn, "/")

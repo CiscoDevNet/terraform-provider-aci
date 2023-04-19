@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/ciscoecosystem/aci-go-client/v2/client"
+	"github.com/ciscoecosystem/aci-go-client/v2/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
@@ -105,7 +105,7 @@ func getRemoteLogicalNodeProfile(client *client.Client, dn string) (*models.Logi
 	l3extLNodeP := models.LogicalNodeProfileFromContainer(l3extLNodePCont)
 
 	if l3extLNodeP.DistinguishedName == "" {
-		return nil, fmt.Errorf("LogicalNodeProfile %s not found", l3extLNodeP.DistinguishedName)
+		return nil, fmt.Errorf("Logical Node Profile %s not found", dn)
 	}
 
 	return l3extLNodeP, nil
@@ -296,8 +296,7 @@ func resourceAciLogicalNodeProfileRead(ctx context.Context, d *schema.ResourceDa
 	l3extLNodeP, err := getRemoteLogicalNodeProfile(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setLogicalNodeProfileAttributes(l3extLNodeP, d)
 	if err != nil {

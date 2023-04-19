@@ -43,8 +43,10 @@ Manages ACI Contract
 
 * `filter.filter_entry` - (Optional) To manage filter entries for particular filter from the contract resource. It has following attributes.
 * `filter.filter_entry.filter_entry_name` - (Required) Name of Object filter entry.
-* `filter.filter_entry.entry_annotation` - (Optional) Annotation for object filter entry.
-* `filter.filter_entry.entry_description` - (Optional) Description for the filter entry.
+* `filter.filter_entry.annotation` - (Optional) Annotation for object filter entry.
+* `filter.filter_entry.entry_annotation` - **Deprecated** (Optional) Annotation for object filter entry. Use `filter.filter_entry.annotation` instead.
+* `filter.filter_entry.description` - (Optional) Description for the filter entry.
+* `filter.filter_entry.entry_description` - **Deprecated** (Optional) Description for the filter entry. Use `filter.filter_entry.description` instead.
 * `filter.filter_entry.apply_to_frag` - (Optional) Flag to determine whether to apply changes to fragment. Allowed values are "yes" and "no". Default is "no".
 * `filter.filter_entry.arp_opc` - (Optional) Open peripheral codes. Allowed values are "unspecified", "req" and "reply". Default is "unspecified".
 * `filter.filter_entry.d_from_port` - (Optional) Destination From Port. Accepted values are any valid TCP/UDP port range. Default is "unspecified".

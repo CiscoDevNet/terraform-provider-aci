@@ -11,28 +11,38 @@ description: |-
 
 Manages ACI L3-out Path Attachment Secondary IP
 
+## API Information ##
+
+* `Class` - l3extIp
+* `Distinguished Name` - uni/tn-{tenant}/out-{l3out}/lnodep-{lnodep}/lifp-{lifp}/rspathL3OutAtt-[leaf_path_dn]/addr-[policy_ip_addr]
+
+## GUI Information ##
+
+* `Location` - Tenants -> Networking -> L3Outs -> Logical Node Profiles -> Logical Interface Profiles -> SVI -> IPv4 Secondary / IPv6 Additional Addresses
+
 ## Example Usage
 
 ```hcl
 resource "aci_l3out_path_attachment_secondary_ip" "example" {
-  l3out_path_attachment_dn  = aci_l3out_path_attachment.example.id
-  addr  = "10.0.0.1/24"
-  annotation  = "example"
-  description = "from terraform"
-  ipv6_dad = "disabled"
-  name_alias  = "example"
+  l3out_path_attachment_dn = aci_l3out_path_attachment.example.id
+  addr                     = "10.0.0.1/24"
+  annotation               = "example"
+  description              = "from terraform"
+  ipv6_dad                 = "disabled"
+  name_alias               = "example"
+  dhcp_relay               = "enabled"
 }
 ```
 
 ## Argument Reference
 
-- `l3out_path_attachment_dn` - (Required) Distinguished name of parent L3 out path attachment object.
-- `addr` - (Required) The peer IP address.
-- `description` - (Optional) Description for object L3 out path attachment secondary IP.
-- `annotation` - (Optional) Annotation for object L3 out path attachment secondary IP.
-- `ipv6_dad` - (Optional) IPv6 DAD for object L3 out path attachment secondary IP.  
-  Allowed values: "disabled", "enabled". Default value is "enabled".
-- `name_alias` - (Optional) Name alias for object L3 out path attachment secondary IP.
+- `l3out_path_attachment_dn` - (Required) Distinguished name of the parent L3-out Path Attachment object.
+- `addr` - (Required) The peer IP address of the L3-out Path Attachment Secondary IP object.
+- `description` - (Optional) Description of the L3-out Path Attachment Secondary IP object.
+- `annotation` - (Optional) Annotation of the L3-out Path Attachment Secondary IP object.
+- `ipv6_dad` - (Optional) IPv6 DAD of the L3-out Path Attachment Secondary IP object. Allowed values are "enabled" and "disabled". Default value is "enabled".
+- `name_alias` - (Optional) Name alias of the L3-out Path Attachment Secondary IP object.
+- `dhcp_relay` - (Optional) DHCP relay gateway of the L3-out Path Attachment Secondary IP object. Allowed values are "enabled" and "disabled". Default value is "disabled".
 
 ## Attribute Reference
 

@@ -8,8 +8,8 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/ciscoecosystem/aci-go-client/v2/client"
+	"github.com/ciscoecosystem/aci-go-client/v2/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
@@ -254,7 +254,7 @@ func getRemoteVMMController(client *client.Client, dn string) (*models.VMMContro
 	}
 	vmmCtrlrP := models.VMMControllerFromContainer(vmmCtrlrPCont)
 	if vmmCtrlrP.DistinguishedName == "" {
-		return nil, fmt.Errorf("VMMController %s not found", vmmCtrlrP.DistinguishedName)
+		return nil, fmt.Errorf("VMM Controller %s not found", dn)
 	}
 	return vmmCtrlrP, nil
 }
@@ -832,8 +832,7 @@ func resourceAciVMMControllerRead(ctx context.Context, d *schema.ResourceData, m
 	dn := d.Id()
 	vmmCtrlrP, err := getRemoteVMMController(aciClient, dn)
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setVMMControllerAttributes(vmmCtrlrP, d)
 	if err != nil {

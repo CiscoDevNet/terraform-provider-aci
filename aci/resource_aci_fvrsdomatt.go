@@ -6,8 +6,8 @@ import (
 	"log"
 	"regexp"
 
-	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/ciscoecosystem/aci-go-client/v2/client"
+	"github.com/ciscoecosystem/aci-go-client/v2/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
@@ -255,7 +255,7 @@ func getRemoteDomain(client *client.Client, dn string) (*models.FVDomain, error)
 	fvRsDomAtt := models.FVDomainFromContainer(fvRsDomAttCont)
 
 	if fvRsDomAtt.DistinguishedName == "" {
-		return nil, fmt.Errorf("Domain %s not found", fvRsDomAtt.DistinguishedName)
+		return nil, fmt.Errorf("Domain %s not found", dn)
 	}
 
 	return fvRsDomAtt, nil
@@ -493,7 +493,7 @@ func resourceAciDomainCreate(ctx context.Context, d *schema.ResourceData, m inte
 	d.Partial(false)
 
 	if relationTofvRsVmmVSwitchEnhancedLagPol, ok := d.GetOk("enhanced_lag_policy"); ok {
-		fvAEPgLagPolAtt := models.NewApplicationEPGLagPolicy(fmt.Sprintf(models.RnfvAEPgLagPolAtt), fvRsDomAtt.DistinguishedName, models.ApplicationEPGLagPolicyAttributes{})
+		fvAEPgLagPolAtt := models.NewApplicationEPGLagPolicy(models.RnfvAEPgLagPolAtt, fvRsDomAtt.DistinguishedName, models.ApplicationEPGLagPolicyAttributes{})
 
 		err := aciClient.Save(fvAEPgLagPolAtt)
 		if err != nil {
@@ -644,6 +644,12 @@ func resourceAciDomainUpdate(ctx context.Context, d *schema.ResourceData, m inte
 	d.Partial(false)
 
 	if d.HasChange("enhanced_lag_policy") || d.HasChange("annotation") {
+		fvAEPgLagPolAtt := models.NewApplicationEPGLagPolicy(models.RnfvAEPgLagPolAtt, fvRsDomAtt.DistinguishedName, models.ApplicationEPGLagPolicyAttributes{})
+
+		err := aciClient.Save(fvAEPgLagPolAtt)
+		if err != nil {
+			return diag.FromErr(err)
+		}
 		_, newRelParam := d.GetChange("enhanced_lag_policy")
 		err = aciClient.DeleteRelationfvRsVmmVSwitchEnhancedLagPol(fvRsDomAtt.DistinguishedName)
 		if err != nil {
@@ -672,8 +678,7 @@ func resourceAciDomainRead(ctx context.Context, d *schema.ResourceData, m interf
 	fvRsDomAtt, err := getRemoteDomain(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setDomainAttributes(fvRsDomAtt, d)
 

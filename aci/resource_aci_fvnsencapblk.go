@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/ciscoecosystem/aci-go-client/v2/client"
+	"github.com/ciscoecosystem/aci-go-client/v2/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
@@ -82,7 +82,7 @@ func getRemoteRanges(client *client.Client, dn string) (*models.Ranges, error) {
 	fvnsEncapBlk := models.RangesFromContainer(fvnsEncapBlkCont)
 
 	if fvnsEncapBlk.DistinguishedName == "" {
-		return nil, fmt.Errorf("Ranges %s not found", fvnsEncapBlk.DistinguishedName)
+		return nil, fmt.Errorf("Ranges %s not found", dn)
 	}
 
 	return fvnsEncapBlk, nil
@@ -246,8 +246,7 @@ func resourceAciRangesRead(ctx context.Context, d *schema.ResourceData, m interf
 	fvnsEncapBlk, err := getRemoteRanges(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setRangesAttributes(fvnsEncapBlk, d)
 	if err != nil {

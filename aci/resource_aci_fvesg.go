@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/ciscoecosystem/aci-go-client/v2/client"
+	"github.com/ciscoecosystem/aci-go-client/v2/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
@@ -140,28 +140,29 @@ func resourceAciEndpointSecurityGroup() *schema.Resource {
 				Optional:    true,
 				Description: "Create relation to vzBrCP",
 				Elem: &schema.Resource{
-					Schema: map[string]*schema.Schema{"match_t": {
-						Optional: true,
-						Type:     schema.TypeString,
-						ValidateFunc: validation.StringInSlice([]string{
-							"All",
-							"AtleastOne",
-							"AtmostOne",
-							"None",
-						}, false),
-					}, "prio": {
-						Optional: true,
-						Type:     schema.TypeString,
-						ValidateFunc: validation.StringInSlice([]string{
-							"level1",
-							"level2",
-							"level3",
-							"level4",
-							"level5",
-							"level6",
-							"unspecified",
-						}, false),
-					},
+					Schema: map[string]*schema.Schema{
+						"match_t": {
+							Optional: true,
+							Type:     schema.TypeString,
+							ValidateFunc: validation.StringInSlice([]string{
+								"All",
+								"AtleastOne",
+								"AtmostOne",
+								"None",
+							}, false),
+						}, "prio": {
+							Optional: true,
+							Type:     schema.TypeString,
+							ValidateFunc: validation.StringInSlice([]string{
+								"level1",
+								"level2",
+								"level3",
+								"level4",
+								"level5",
+								"level6",
+								"unspecified",
+							}, false),
+						},
 						"target_dn": {
 							Required: true,
 							Type:     schema.TypeString,
@@ -192,7 +193,7 @@ func getRemoteEndpointSecurityGroup(client *client.Client, dn string) (*models.E
 	}
 	fvESg := models.EndpointSecurityGroupFromContainer(fvESgCont)
 	if fvESg.DistinguishedName == "" {
-		return nil, fmt.Errorf("EndpointSecurityGroup %s not found", fvESg.DistinguishedName)
+		return nil, fmt.Errorf("Endpoint Security Group %s not found", dn)
 	}
 	return fvESg, nil
 }
@@ -722,8 +723,7 @@ func resourceAciEndpointSecurityGroupRead(ctx context.Context, d *schema.Resourc
 	dn := d.Id()
 	fvESg, err := getRemoteEndpointSecurityGroup(aciClient, dn)
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setEndpointSecurityGroupAttributes(fvESg, d)
 	if err != nil {

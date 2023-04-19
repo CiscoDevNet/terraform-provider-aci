@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/ciscoecosystem/aci-go-client/v2/client"
+	"github.com/ciscoecosystem/aci-go-client/v2/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -44,7 +44,7 @@ func getRemoteAaaDomainRelationship(client *client.Client, dn string) (*models.A
 	}
 	aaaDomainRef := models.AaaDomainRefFromContainer(aaaDomainRefCont)
 	if aaaDomainRef.DistinguishedName == "" {
-		return nil, fmt.Errorf("AaaDomainRef %s not found", aaaDomainRef.DistinguishedName)
+		return nil, fmt.Errorf("Aaa Domain Ref %s not found", dn)
 	}
 	return aaaDomainRef, nil
 }
@@ -119,8 +119,7 @@ func resourceAciDomainRelationshipRead(ctx context.Context, d *schema.ResourceDa
 
 	aaaDomainRef, err := getRemoteAaaDomainRelationship(aciClient, dn)
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 
 	_, err = setAaaDomainRelationshipAttributes(aaaDomainRef, d)

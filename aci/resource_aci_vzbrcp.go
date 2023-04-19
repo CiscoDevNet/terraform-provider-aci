@@ -6,8 +6,8 @@ import (
 	"log"
 	"strings"
 
-	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/ciscoecosystem/aci-go-client/v2/client"
+	"github.com/ciscoecosystem/aci-go-client/v2/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
@@ -26,7 +26,7 @@ func resourceAciContract() *schema.Resource {
 
 		SchemaVersion: 1,
 
-		Schema: AppendBaseAttrSchema(map[string]*schema.Schema{
+		Schema: AppendAttrSchemas(map[string]*schema.Schema{
 			"tenant_dn": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
@@ -114,7 +114,7 @@ func resourceAciContract() *schema.Resource {
 				Optional: true,
 				Computed: true,
 				Elem: &schema.Resource{
-					Schema: map[string]*schema.Schema{
+					Schema: AppendAttrSchemas(map[string]*schema.Schema{
 						"id": &schema.Schema{
 							Type:     schema.TypeString,
 							Computed: true,
@@ -123,18 +123,6 @@ func resourceAciContract() *schema.Resource {
 						"filter_name": &schema.Schema{
 							Type:     schema.TypeString,
 							Required: true,
-						},
-
-						"description": &schema.Schema{
-							Type:     schema.TypeString,
-							Optional: true,
-							Computed: true,
-						},
-
-						"annotation": &schema.Schema{
-							Type:     schema.TypeString,
-							Optional: true,
-							Computed: true,
 						},
 
 						"name_alias": &schema.Schema{
@@ -148,7 +136,7 @@ func resourceAciContract() *schema.Resource {
 							Optional: true,
 							Computed: true,
 							Elem: &schema.Resource{
-								Schema: map[string]*schema.Schema{
+								Schema: AppendAttrSchemas(map[string]*schema.Schema{
 									"id": &schema.Schema{
 										Type:     schema.TypeString,
 										Computed: true,
@@ -160,15 +148,17 @@ func resourceAciContract() *schema.Resource {
 									},
 
 									"entry_description": &schema.Schema{
-										Type:     schema.TypeString,
-										Optional: true,
-										Computed: true,
+										Type:       schema.TypeString,
+										Optional:   true,
+										Computed:   true,
+										Deprecated: "use filter_entry.description instead",
 									},
 
 									"entry_annotation": &schema.Schema{
-										Type:     schema.TypeString,
-										Optional: true,
-										Computed: true,
+										Type:       schema.TypeString,
+										Optional:   true,
+										Computed:   true,
+										Deprecated: "use filter_entry.annotation instead",
 									},
 
 									"apply_to_frag": &schema.Schema{
@@ -419,25 +409,27 @@ func resourceAciContract() *schema.Resource {
 											"rst",
 										}, false),
 									},
-								},
+								}, GetBaseAttrSchema()),
 							},
 						},
-					},
+					}, GetBaseAttrSchema()),
 				},
 			},
 
 			"filter_ids": &schema.Schema{
 				Type:     schema.TypeList,
 				Optional: true,
+				Computed: true,
 				Elem:     &schema.Schema{Type: schema.TypeString},
 			},
 
 			"filter_entry_ids": &schema.Schema{
 				Type:     schema.TypeList,
 				Optional: true,
+				Computed: true,
 				Elem:     &schema.Schema{Type: schema.TypeString},
 			},
-		}),
+		}, GetBaseAttrSchema()),
 	}
 }
 func getRemoteContract(client *client.Client, dn string) (*models.Contract, error) {
@@ -449,7 +441,7 @@ func getRemoteContract(client *client.Client, dn string) (*models.Contract, erro
 	vzBrCP := models.ContractFromContainer(vzBrCPCont)
 
 	if vzBrCP.DistinguishedName == "" {
-		return nil, fmt.Errorf("Contract %s not found", vzBrCP.DistinguishedName)
+		return nil, fmt.Errorf("Contract %s not found", dn)
 	}
 
 	return vzBrCP, nil
@@ -464,7 +456,7 @@ func getRemoteFilterFromContract(client *client.Client, dn string) (*models.Filt
 	vzFilter := models.FilterFromContainer(vzFilterCont)
 
 	if vzFilter.DistinguishedName == "" {
-		return nil, fmt.Errorf("Filter %s not found", vzFilter.DistinguishedName)
+		return nil, fmt.Errorf("Filter %s not found", dn)
 	}
 
 	return vzFilter, nil
@@ -479,7 +471,7 @@ func getRemoteFilterEntryFromContract(client *client.Client, dn string) (*models
 	vzEntry := models.FilterEntryFromContainer(vzEntryCont)
 
 	if vzEntry.DistinguishedName == "" {
-		return nil, fmt.Errorf("FilterEntry %s not found", vzEntry.DistinguishedName)
+		return nil, fmt.Errorf("FilterEntry %s not found", dn)
 	}
 
 	return vzEntry, nil
@@ -510,8 +502,6 @@ func setContractAttributes(vzBrCP *models.Contract, d *schema.ResourceData) (*sc
 }
 
 func setFilterAttributesFromContract(vzfilters []*models.Filter, vzEntries []*models.FilterEntry, d *schema.ResourceData) (*schema.ResourceData, error) {
-	log.Println("Check .... :", vzfilters)
-	log.Println("Check ... Filter :", vzEntries)
 	filterSet := make([]interface{}, 0, 1)
 	for _, filter := range vzfilters {
 		fMap := make(map[string]interface{})
@@ -539,7 +529,6 @@ func setFilterAttributesFromContract(vzfilters []*models.Filter, vzEntries []*mo
 		fMap["filter_entry"] = entrySet
 		filterSet = append(filterSet, fMap)
 	}
-	log.Println("Check ...:", filterSet)
 	d.Set("filter", filterSet)
 	return d, nil
 }
@@ -558,14 +547,16 @@ func setFilterEntryAttributesFromContract(vzentry *models.FilterEntry, d *schema
 		"unspecified": "0",
 	}
 	eMap["id"] = vzentry.DistinguishedName
-	eMap["entry_description"] = vzentry.Description
+	eMap["entry_description"] = vzentry.Description // Deprecated but left for backward compability until next major release
+	eMap["description"] = vzentry.Description
 
 	vzEntryMap, err := vzentry.ToMap()
 	if err != nil {
 		return eMap, err
 	}
 	eMap["filter_entry_name"] = vzEntryMap["name"]
-	eMap["entry_annotation"] = vzEntryMap["annotation"]
+	eMap["entry_annotation"] = vzEntryMap["annotation"] // Deprecated but left for backward compability until next major release
+	eMap["annotation"] = vzEntryMap["annotation"]
 	eMap["apply_to_frag"] = vzEntryMap["applyToFrag"]
 	eMap["arp_opc"] = vzEntryMap["arpOpc"]
 	eMap["ether_t"] = vzEntryMap["etherT"]
@@ -682,21 +673,26 @@ func resourceAciContractCreate(ctx context.Context, d *schema.ResourceData, m in
 
 			if filter["filter_entry"] != nil {
 				vzfilterentries := filter["filter_entry"].([]interface{})
-				log.Println("Filter entries ... :", vzfilterentries)
 				for _, entry := range vzfilterentries {
 					vzEntryAttr := models.FilterEntryAttributes{}
 					vzEntry := entry.(map[string]interface{})
 
-					log.Println("Entries ......... :", vzEntry)
-					entryDesc := vzEntry["entry_description"].(string)
+					entryDesc := ""
+					if vzEntry["description"] != nil && vzEntry["description"].(string) != "" {
+						entryDesc = vzEntry["description"].(string)
+					} else {
+						entryDesc = vzEntry["entry_description"].(string)
+					}
 
 					entryName := vzEntry["filter_entry_name"].(string)
 
 					filterDn := vzFilter.DistinguishedName
 
-					if vzEntry["entry_annotation"] != nil {
+					vzEntryAttr.Annotation = vzEntry["annotation"].(string)
+					if vzEntry["entry_annotation"] != nil && vzEntry["entry_annotation"].(string) != "" && vzEntry["annotation"] == "orchestrator:terraform" {
 						vzEntryAttr.Annotation = vzEntry["entry_annotation"].(string)
 					}
+
 					if vzEntry["apply_to_frag"] != nil {
 						vzEntryAttr.ApplyToFrag = vzEntry["apply_to_frag"].(string)
 					}
@@ -739,7 +735,6 @@ func resourceAciContractCreate(ctx context.Context, d *schema.ResourceData, m in
 					if vzEntry["tcp_rules"] != nil {
 						vzEntryAttr.TcpRules = vzEntry["tcp_rules"].(string)
 					}
-
 					vzFilterEntry := models.NewFilterEntry(fmt.Sprintf("e-%s", entryName), filterDn, entryDesc, vzEntryAttr)
 					err := aciClient.Save(vzFilterEntry)
 					if err != nil {
@@ -755,7 +750,6 @@ func resourceAciContractCreate(ctx context.Context, d *schema.ResourceData, m in
 			// fMap["id"] = vzFilter.DistinguishedName
 			filterIDS = append(filterIDS, vzFilter.DistinguishedName)
 		}
-		log.Println("Check ... :", filterIDS)
 		d.Set("filter_ids", filterIDS)
 		d.Set("filter_entry_ids", filterentryIDS)
 	} else {
@@ -840,11 +834,11 @@ func resourceAciContractUpdate(ctx context.Context, d *schema.ResourceData, m in
 				return diag.FromErr(err)
 			}
 		}
-
-		filters := d.Get("filter")
+		oldFilters, newFilters := d.GetChange("filter")
 		filterIDS := make([]string, 0, 1)
 		filterentryIDS := make([]string, 0, 1)
-		vzfilters := filters.([]interface{})
+		vzfilters := newFilters.([]interface{})
+		oldVzFilters := oldFilters.([]interface{})
 		for _, val := range vzfilters {
 			vzFilterAttr := models.FilterAttributes{}
 			filter := val.(map[string]interface{})
@@ -863,29 +857,52 @@ func resourceAciContractUpdate(ctx context.Context, d *schema.ResourceData, m in
 
 			vzFilter := models.NewFilter(fmt.Sprintf("flt-%s", name), TenantDn, desc, vzFilterAttr)
 
-			// vzFilter.Status = "modified"
 			err := aciClient.Save(vzFilter)
 			if err != nil {
 				return diag.FromErr(err)
 			}
 
+			var oldVzFilter map[string]interface{}
+			for _, oldFilterValue := range oldVzFilters {
+				oldFilter := oldFilterValue.(map[string]interface{})
+				if name == oldFilter["filter_name"].(string) {
+					oldVzFilter = oldFilter
+				}
+			}
+
 			if filter["filter_entry"] != nil {
-				vzfilterentries := filter["filter_entry"].([]interface{})
-				log.Println("Filter entries ... :", vzfilterentries)
-				for _, entry := range vzfilterentries {
+				vzFilterEntries := filter["filter_entry"].([]interface{})
+				oldVzFilterEntries := oldVzFilter["filter_entry"].([]interface{})
+				for _, entry := range vzFilterEntries {
 					vzEntryAttr := models.FilterEntryAttributes{}
 					vzEntry := entry.(map[string]interface{})
-
-					log.Println("Entries ......... :", vzEntry)
-					entryDesc := vzEntry["entry_description"].(string)
 
 					entryName := vzEntry["filter_entry_name"].(string)
 
 					filterDn := vzFilter.DistinguishedName
 
-					if vzEntry["entry_annotation"] != nil {
+					var oldVzFilterEntry map[string]interface{}
+					for _, oldEntryValue := range oldVzFilterEntries {
+						oldEntry := oldEntryValue.(map[string]interface{})
+						if entryName == oldEntry["filter_entry_name"].(string) {
+							oldVzFilterEntry = oldEntry
+						}
+					}
+
+					entryDesc := vzEntry["description"].(string)
+					if vzEntry["description"] != oldVzFilterEntry["description"] {
+						entryDesc = vzEntry["description"].(string)
+					} else if vzEntry["entry_description"] != oldVzFilterEntry["entry_description"] {
+						entryDesc = vzEntry["entry_description"].(string)
+					}
+
+					vzEntryAttr.Annotation = vzEntry["annotation"].(string)
+					if vzEntry["annotation"] != oldVzFilterEntry["annotation"] {
+						vzEntryAttr.Annotation = vzEntry["annotation"].(string)
+					} else if vzEntry["entry_annotation"] != oldVzFilterEntry["entry_annotation"] {
 						vzEntryAttr.Annotation = vzEntry["entry_annotation"].(string)
 					}
+
 					if vzEntry["apply_to_frag"] != nil {
 						vzEntryAttr.ApplyToFrag = vzEntry["apply_to_frag"].(string)
 					}
@@ -971,7 +988,6 @@ func resourceAciContractUpdate(ctx context.Context, d *schema.ResourceData, m in
 		if err != nil {
 			return diag.FromErr(err)
 		}
-
 	}
 
 	d.SetId(vzBrCP.DistinguishedName)
@@ -990,8 +1006,7 @@ func resourceAciContractRead(ctx context.Context, d *schema.ResourceData, m inte
 	vzBrCP, err := getRemoteContract(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setContractAttributes(vzBrCP, d)
 	if err != nil {
@@ -999,24 +1014,31 @@ func resourceAciContractRead(ctx context.Context, d *schema.ResourceData, m inte
 		return nil
 	}
 	filters := d.Get("filter_ids").([]interface{})
-	log.Println("Check ... :", filters)
+
 	vzFilters := make([]*models.Filter, 0, 1)
 	vzEntries := make([]*models.FilterEntry, 0, 1)
-	for _, val := range filters {
-		filterDN := val.(string)
-		vzfilter, err := getRemoteFilterFromContract(aciClient, filterDN)
-		if err == nil {
-			for _, entry := range d.Get("filter_entry_ids").([]interface{}) {
-				if strings.Contains(entry.(string), filterDN) {
-					vzentry, err := getRemoteFilterEntryFromContract(aciClient, entry.(string))
-					if err == nil {
-						vzEntries = append(vzEntries, vzentry)
+
+	if len(filters) == 0 {
+		d.Set("filter_ids", make([]string, 0, 1))
+		d.Set("filter_entry_ids", make([]string, 0, 1))
+	} else {
+		for _, val := range filters {
+			filterDN := val.(string)
+			vzfilter, err := getRemoteFilterFromContract(aciClient, filterDN)
+			if err == nil {
+				for _, entry := range d.Get("filter_entry_ids").([]interface{}) {
+					if strings.Contains(entry.(string), filterDN) {
+						vzentry, err := getRemoteFilterEntryFromContract(aciClient, entry.(string))
+						if err == nil {
+							vzEntries = append(vzEntries, vzentry)
+						}
 					}
 				}
+				vzFilters = append(vzFilters, vzfilter)
 			}
-			vzFilters = append(vzFilters, vzfilter)
 		}
 	}
+
 	_, err = setFilterAttributesFromContract(vzFilters, vzEntries, d)
 	if err != nil {
 		d.SetId("")

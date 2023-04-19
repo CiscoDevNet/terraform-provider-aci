@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/ciscoecosystem/aci-go-client/v2/client"
+	"github.com/ciscoecosystem/aci-go-client/v2/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -58,7 +58,7 @@ func getRemoteImportedContract(client *client.Client, dn string) (*models.Import
 	vzCPIf := models.ImportedContractFromContainer(vzCPIfCont)
 
 	if vzCPIf.DistinguishedName == "" {
-		return nil, fmt.Errorf("ImportedContract %s not found", vzCPIf.DistinguishedName)
+		return nil, fmt.Errorf("Imported Contract %s not found", dn)
 	}
 
 	return vzCPIf, nil
@@ -158,8 +158,7 @@ func resourceAciImportedContractCreate(ctx context.Context, d *schema.ResourceDa
 
 	if relationTovzRsIf, ok := d.GetOk("relation_vz_rs_if"); ok {
 		relationParam := relationTovzRsIf.(string)
-		relationParamName := GetMOName(relationParam)
-		err = aciClient.CreateRelationvzRsIfFromImportedContract(vzCPIf.DistinguishedName, relationParamName)
+		err = aciClient.CreateRelationvzRsIfFromImportedContract(vzCPIf.DistinguishedName, relationParam)
 		if err != nil {
 			return diag.FromErr(err)
 
@@ -223,12 +222,11 @@ func resourceAciImportedContractUpdate(ctx context.Context, d *schema.ResourceDa
 
 	if d.HasChange("relation_vz_rs_if") {
 		_, newRelParam := d.GetChange("relation_vz_rs_if")
-		newRelParamName := GetMOName(newRelParam.(string))
 		err = aciClient.DeleteRelationvzRsIfFromImportedContract(vzCPIf.DistinguishedName)
 		if err != nil {
 			return diag.FromErr(err)
 		}
-		err = aciClient.CreateRelationvzRsIfFromImportedContract(vzCPIf.DistinguishedName, newRelParamName)
+		err = aciClient.CreateRelationvzRsIfFromImportedContract(vzCPIf.DistinguishedName, newRelParam.(string))
 		if err != nil {
 			return diag.FromErr(err)
 		}
@@ -253,8 +251,7 @@ func resourceAciImportedContractRead(ctx context.Context, d *schema.ResourceData
 	vzCPIf, err := getRemoteImportedContract(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setImportedContractAttributes(vzCPIf, d)
 	if err != nil {

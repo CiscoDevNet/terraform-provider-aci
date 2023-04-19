@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/ciscoecosystem/aci-go-client/v2/client"
+	"github.com/ciscoecosystem/aci-go-client/v2/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -56,7 +56,7 @@ func getRemoteAttachableAccessEntityProfile(client *client.Client, dn string) (*
 	infraAttEntityP := models.AttachableAccessEntityProfileFromContainer(infraAttEntityPCont)
 
 	if infraAttEntityP.DistinguishedName == "" {
-		return nil, fmt.Errorf("AttachableAccessEntityProfile %s not found", infraAttEntityP.DistinguishedName)
+		return nil, fmt.Errorf("Attachable Access Entity Profile %s not found", dn)
 	}
 
 	return infraAttEntityP, nil
@@ -78,6 +78,18 @@ func setAttachableAccessEntityProfileAttributes(infraAttEntityP *models.Attachab
 	return d, nil
 }
 
+func getAndSetReadRelationinfraRsDomPFromAttachableAccessEntityProfile(client *client.Client, dn string, d *schema.ResourceData) (*schema.ResourceData, error) {
+	infraRsDomPData, err := client.ReadRelationinfraRsDomPFromAttachableAccessEntityProfile(dn)
+	if err != nil {
+		log.Printf("[DEBUG] Error while reading relation infraRsDomP %v", err)
+		d.Set("relation_infra_rs_dom_p", nil)
+		return d, err
+	} else {
+		d.Set("relation_infra_rs_dom_p", toStringList(infraRsDomPData.(*schema.Set).List()))
+	}
+	return d, nil
+}
+
 func resourceAciAttachableAccessEntityProfileImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
 	log.Printf("[DEBUG] %s: Beginning Import", d.Id())
 	aciClient := m.(*client.Client)
@@ -94,6 +106,14 @@ func resourceAciAttachableAccessEntityProfileImport(d *schema.ResourceData, m in
 	if err != nil {
 		return nil, err
 	}
+
+	// infraRsDomP - Beginning Import
+	log.Printf("[DEBUG] %s: infraRsDomP - Beginning Import with parent DN", dn)
+	_, err = getAndSetReadRelationinfraRsDomPFromAttachableAccessEntityProfile(aciClient, dn, d)
+	if err == nil {
+		log.Printf("[DEBUG] %s: infraRsDomP - Import finished successfully", d.Get("relation_infra_rs_dom_p"))
+	}
+	// infraRsDomP - Import finished successfully
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
@@ -245,8 +265,7 @@ func resourceAciAttachableAccessEntityProfileRead(ctx context.Context, d *schema
 	infraAttEntityP, err := getRemoteAttachableAccessEntityProfile(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setAttachableAccessEntityProfileAttributes(infraAttEntityP, d)
 
@@ -255,13 +274,13 @@ func resourceAciAttachableAccessEntityProfileRead(ctx context.Context, d *schema
 		return nil
 	}
 
-	infraRsDomPData, err := aciClient.ReadRelationinfraRsDomPFromAttachableAccessEntityProfile(dn)
-	if err != nil {
-		log.Printf("[DEBUG] Error while reading relation infraRsDomP %v", err)
-		setRelationAttribute(d, "relation_infra_rs_dom_p", make([]interface{}, 0, 1))
-	} else {
-		setRelationAttribute(d, "relation_infra_rs_dom_p", toStringList(infraRsDomPData.(*schema.Set).List()))
+	// infraRsDomP - Beginning Read
+	log.Printf("[DEBUG] %s: infraRsDomP - Beginning Read with parent DN", dn)
+	_, err = getAndSetReadRelationinfraRsDomPFromAttachableAccessEntityProfile(aciClient, dn, d)
+	if err == nil {
+		log.Printf("[DEBUG] %s: infraRsDomP - Read finished successfully", d.Get("relation_infra_rs_dom_p"))
 	}
+	// infraRsDomP - Read finished successfully
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 

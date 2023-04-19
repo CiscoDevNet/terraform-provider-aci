@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/ciscoecosystem/aci-go-client/v2/client"
+	"github.com/ciscoecosystem/aci-go-client/v2/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
@@ -94,7 +94,7 @@ func getRemoteQOSInstancePolicy(client *client.Client, dn string) (*models.QOSIn
 	}
 	qosInstPol := models.QOSInstancePolicyFromContainer(qosInstPolCont)
 	if qosInstPol.DistinguishedName == "" {
-		return nil, fmt.Errorf("QOSInstancePolicy %s not found", qosInstPol.DistinguishedName)
+		return nil, fmt.Errorf("QOS Instance Policy %s not found", dn)
 	}
 	return qosInstPol, nil
 }
@@ -276,8 +276,7 @@ func resourceAciQOSInstancePolicyRead(ctx context.Context, d *schema.ResourceDat
 	dn := d.Id()
 	qosInstPol, err := getRemoteQOSInstancePolicy(aciClient, dn)
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setQOSInstancePolicyAttributes(qosInstPol, d)
 	if err != nil {

@@ -9,8 +9,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/ciscoecosystem/aci-go-client/v2/client"
+	"github.com/ciscoecosystem/aci-go-client/v2/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
@@ -143,7 +143,7 @@ func getRemoteL3outOspfExternalPolicy(client *client.Client, dn string) (*models
 	ospfExtP := models.L3outOspfExternalPolicyFromContainer(ospfExtPCont)
 
 	if ospfExtP.DistinguishedName == "" {
-		return nil, fmt.Errorf("L3outOspfExternalPolicy %s not found", ospfExtP.DistinguishedName)
+		return nil, fmt.Errorf("L3Out OSPF External Policy %s not found", dn)
 	}
 
 	return ospfExtP, nil
@@ -327,8 +327,7 @@ func resourceAciL3outOspfExternalPolicyRead(ctx context.Context, d *schema.Resou
 	ospfExtP, err := getRemoteL3outOspfExternalPolicy(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setL3outOspfExternalPolicyAttributes(ospfExtP, d)
 	if err != nil {

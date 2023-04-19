@@ -1,3 +1,94 @@
+## 2.7.0 (April 3, 2023)
+DEPRECATIONS:
+- Changed tn_netflow_monitor_pol_name -> tn_netflow_monitor_pol_dn and add deprecation in aci_logical_interface_profile (#1005)
+
+IMPROVEMENTS:
+- Add encap attribute to the relation_l3ext_rs_dyn_path_att attribute of aci_l3out_floating_svi (#1027)
+
+BUG FIXES:
+- Fix issue with Client End Points when Endpoint is associated with an ESG
+- Fix issue where state was deleted if credentials to APIC were incorrect (#1006)
+- Fixed aci_bgp_peer_connectivity_profile update and read function to work when local_asn is added after creation (#1017)
+- Fix update issue when enhanced_lag_policy is modified outside of Terraform in aci_epg_to_domain (#1015)
+
+## 2.6.1 (February 3, 2023)
+BUG FIXES:
+- Fix issue in aci_cloud_context_profile when optional parameters cloud_brownfield and access_policy_type are not provided.
+- Allow for attributes to be set and idempotency when password has not changed in aci_local_user (#1001)
+
+## 2.6.0 (January 21, 2023)
+DEPRECATIONS:
+- The filter.filter_entry.entry_description and filter.filter_entry.entry_annotation are deprecated. Use filter.filter_entry.description and filter.filter_entry.annotation instead.
+
+IMPROVEMENTS:
+- Add aci_cloud_ipsec_tunnel_subnet_pool, aci_cloud_external_network and aci_cloud_external_network_vpn_network resources and datasources for Cloud APIC (#948)
+- Add aci_cloud_account, aci_tenant_to_cloud_account, aci_cloud_ad and aci_cloud_credentials resources and datasources for Cloud APIC (#912)
+- Add aci_lacp_member_policy and aci_leaf_access_bundle_policy_sub_group resources and datasources (#927)
+- Add aci_multicast_pool and aci_multicast_pool_block resources and datasources
+- Add aci_cloud_vrf_leak_routes resource and data_source (#953)
+- Add Service Redirect Backup Policy (aci_service_redirect_backup_policy) and L1/L2 Destination (aci_pbr_l1_l2_destination) resources and datasources (#965)
+- Add support for GCP to the aci_cloud_context_profile resource (#931)
+- Add missing attributes for aci_fabric_wide_settings (#926)
+- Add support for creating global dhcp relay policy with aci_dhcp_relay_policy
+- Add mpls_enabled attribute to aci_l3_outside (#973)
+- Add enhanced lag policy support to l3out_floating_svi (#966)
+- Add DHCP relay gateway to aci_l3out_path_attachment_secondary_ip (#992)
+- Add ability to import brownfield virtual networks in aci_cloud_context_profile (#949)
+- Add Subnet Group Label to the aci_cloud_subnet resource (#943)
+
+BUG FIXES:
+- Fix relation_cloud_rs_to_ctx attribute not working in aci_cloud_context_profile resource (#950)
+- Fix IP lookup issue for aci_client_end_point datasource (#940)
+- Fix contract filter read issue
+- Fix resource aci_external_network_instance_profile idempotency and relationship attribute import issues (#976)
+- Fix relational attributes import issue accross multiple datasources and resources (#924)
+- Fix resource aci_l3_outside idempotency and relationship attribute import issues (#973)
+- Fix relational attribute import issue in aci_destination_of_redirected_traffic (#959)
+- Fix update function and validation for relationship attribute "relation_l3ext_rs_subnet_to_profile" in aci_l3_ext_subnet (#967)
+- Fix relationship removal issue in aci_any (#971)
+- Fix domain_dn in example for aci_l4_l7_device (#969)
+- Set attribute auth_key as optional in aci_l3out_ospf_interface_profile (#994)
+- Fix intermittent issue with delayed object updates in aci_rest_managed (#972)
+- Fix aci_rest_managed resource for pkiExportEncryptionKey class
+- Make mac attribute optional in aci_destination_of_redirected_traffic (#951)
+
+## 2.5.2 (August 2, 2022)
+BUG FIX:
+- Fix aci_bulk_epg_to_static_path idempotency and default values when optional attributes are not provided
+
+## 2.5.1 (July 29, 2022)
+BUG FIX:
+- Add documentation for aci_bulk_epg_to_static_path resource
+
+## 2.5.0 (July 29, 2022)
+IMPROVEMENTS:
+- Add aci_vrf_leak_epg_bd_subnet resource and data source (leakRoutes, leakInternalSubnet and leakTo) (#900)
+- Add resource aci_bulk_epg_to_static_path for bulk static path creation (#896)
+
+## 2.4.0 (July 21, 2022)
+IMPROVEMENTS:
+- Allow nil return option for datasource aci_client_end_point (#893)
+- Add next_hop_addr, msnlb and anycast_mac attributes to resource aci_subnet (#895)
+
+BUG FIXES:
+- Fix aci_imported_contract relation_vz_rs_if to properly set the relationship tDn (#894)
+- Fix idempotency issues in aci_l3out_bgp_protocol_profile with relation_bgp_rs_best_path_ctrl_pol attribute (#904)
+- Add documentation for relation_bgp_rs_best_path_ctrl_pol attribute of the aci_l3out_bgp_protocol_profile resource
+- Improve unreachable error messages from aci-go-client
+
+## 2.3.0 (June 11, 2022)
+IMPROVEMENTS:
+- Add datasource aci_l4_l7_deployed_graph_connector_vlan
+- Add resource and datasource for aci_ip_sla_monitoring_policy (#881)
+- Add resources and datasources aci_contract_subject_filter and aci_contract_subject_one_way_filter and support for one-way contracts in aci_contract_subject (#839).
+- Add resources and datasources aci_l4_l7_redirect_health_group (vnsRedirectHealthGroup), aci_l4_l7_logical_interface (vnsLIf), aci_l4_l7_device (vnsLDevVip), aci_l4_l7_concrete_interface (vnsCIf) and aci_l4_l7_concrete_device (vnsCDev) (#861, #865, #866, #873, #877)
+- Add set_dampening block attribute to the aci_action_rule_profile resource and datasource (#857)
+- Add enable_vm_folder attribute to aci_vmm_domain (#888)
+
+BUG FIXES:
+- Add example for aci_user_security_domain and aci_security_domain_role
+- Set filter_ids and filter_entry_ids to computed in aci_contract to fix idempotency issue (#883)
+
 ## 2.2.1 (May 13, 2022)
 BUG FIXES:
 - Fix 71 resources to not fail if object does not exist when refreshing state.

@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/ciscoecosystem/aci-go-client/v2/client"
+	"github.com/ciscoecosystem/aci-go-client/v2/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -49,7 +49,7 @@ func getRemoteVXLANPool(client *client.Client, dn string) (*models.VXLANPool, er
 	fvnsVxlanInstP := models.VXLANPoolFromContainer(fvnsVxlanInstPCont)
 
 	if fvnsVxlanInstP.DistinguishedName == "" {
-		return nil, fmt.Errorf("VXLANPool %s not found", fvnsVxlanInstP.DistinguishedName)
+		return nil, fmt.Errorf("VXLAN Pool %s not found", dn)
 	}
 
 	return fvnsVxlanInstP, nil
@@ -157,8 +157,7 @@ func resourceAciVXLANPoolRead(ctx context.Context, d *schema.ResourceData, m int
 	fvnsVxlanInstP, err := getRemoteVXLANPool(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	setVXLANPoolAttributes(fvnsVxlanInstP, d)
 

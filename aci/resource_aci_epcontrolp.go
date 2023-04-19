@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/ciscoecosystem/aci-go-client/v2/client"
+	"github.com/ciscoecosystem/aci-go-client/v2/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
@@ -61,7 +61,7 @@ func getRemoteEndpointControlPolicy(client *client.Client, dn string) (*models.E
 	}
 	epControlP := models.EndpointControlPolicyFromContainer(epControlPCont)
 	if epControlP.DistinguishedName == "" {
-		return nil, fmt.Errorf("EndpointControlPolicy %s not found", epControlP.DistinguishedName)
+		return nil, fmt.Errorf("Endpoint Control Policy %s not found", dn)
 	}
 	return epControlP, nil
 }
@@ -195,8 +195,7 @@ func resourceAciEndpointControlPolicyRead(ctx context.Context, d *schema.Resourc
 	dn := d.Id()
 	epControlP, err := getRemoteEndpointControlPolicy(aciClient, dn)
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setEndpointControlPolicyAttributes(epControlP, d)
 	if err != nil {

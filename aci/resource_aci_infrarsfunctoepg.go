@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/ciscoecosystem/aci-go-client/v2/client"
+	"github.com/ciscoecosystem/aci-go-client/v2/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
@@ -91,7 +91,7 @@ func getRemoteEPGsUsingFunction(client *client.Client, dn string) (*models.EPGsU
 	infraRsFuncToEpg := models.EPGsUsingFunctionFromContainer(infraRsFuncToEpgCont)
 
 	if infraRsFuncToEpg.DistinguishedName == "" {
-		return nil, fmt.Errorf("EPGsUsingFunction %s not found", infraRsFuncToEpg.DistinguishedName)
+		return nil, fmt.Errorf("EPGs Using Function %s not found", dn)
 	}
 
 	return infraRsFuncToEpg, nil
@@ -242,8 +242,7 @@ func resourceAciEPGsUsingFunctionRead(ctx context.Context, d *schema.ResourceDat
 	infraRsFuncToEpg, err := getRemoteEPGsUsingFunction(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setEPGsUsingFunctionAttributes(infraRsFuncToEpg, d)
 

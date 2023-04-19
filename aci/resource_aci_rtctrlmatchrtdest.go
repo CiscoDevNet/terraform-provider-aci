@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/ciscoecosystem/aci-go-client/v2/client"
+	"github.com/ciscoecosystem/aci-go-client/v2/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
@@ -70,7 +70,7 @@ func getRemoteMatchRouteDestinationRule(client *client.Client, dn string) (*mode
 	}
 	rtctrlMatchRtDest := models.MatchRouteDestinationRuleFromContainer(rtctrlMatchRtDestCont)
 	if rtctrlMatchRtDest.DistinguishedName == "" {
-		return nil, fmt.Errorf("MatchRouteDestinationRule %s not found", rtctrlMatchRtDest.DistinguishedName)
+		return nil, fmt.Errorf("Match Route Destination Rule %s not found", dn)
 	}
 	return rtctrlMatchRtDest, nil
 }
@@ -213,8 +213,7 @@ func resourceAciMatchRouteDestinationRuleRead(ctx context.Context, d *schema.Res
 	dn := d.Id()
 	rtctrlMatchRtDest, err := getRemoteMatchRouteDestinationRule(aciClient, dn)
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setMatchRouteDestinationRuleAttributes(rtctrlMatchRtDest, d)
 	if err != nil {

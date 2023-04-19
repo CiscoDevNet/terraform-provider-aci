@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/ciscoecosystem/aci-go-client/v2/client"
+	"github.com/ciscoecosystem/aci-go-client/v2/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
@@ -71,13 +71,13 @@ func getRemoteSPANSourceGroup(client *client.Client, dn string) (*models.SPANSou
 	spanSrcGrp := models.SPANSourceGroupFromContainer(spanSrcGrpCont)
 
 	if spanSrcGrp.DistinguishedName == "" {
-		return nil, fmt.Errorf("SPANSourceGroup %s not found", spanSrcGrp.DistinguishedName)
+		return nil, fmt.Errorf("SPAN Source Group %s not found", dn)
 	}
 
 	return spanSrcGrp, nil
 }
 
-func setSPANSourceGroupAttributes(spanSrcGrp *models.SPANSourceGroup, d *schema.ResourceData) *schema.ResourceData {
+func setSPANSourceGroupAttributes(spanSrcGrp *models.SPANSourceGroup, d *schema.ResourceData) (*schema.ResourceData, error) {
 	dn := d.Id()
 	d.SetId(spanSrcGrp.DistinguishedName)
 	d.Set("description", spanSrcGrp.Description)
@@ -92,7 +92,7 @@ func setSPANSourceGroupAttributes(spanSrcGrp *models.SPANSourceGroup, d *schema.
 	d.Set("admin_st", spanSrcGrpMap["adminSt"])
 	d.Set("annotation", spanSrcGrpMap["annotation"])
 	d.Set("name_alias", spanSrcGrpMap["nameAlias"])
-	return d
+	return d, nil
 }
 
 func resourceAciSPANSourceGroupImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -110,7 +110,10 @@ func resourceAciSPANSourceGroupImport(d *schema.ResourceData, m interface{}) ([]
 	name := spanSrcGrpMap["name"]
 	pDN := GetParentDn(dn, fmt.Sprintf("/srcgrp-%s", name))
 	d.Set("tenant_dn", pDN)
-	schemaFilled := setSPANSourceGroupAttributes(spanSrcGrp, d)
+	schemaFilled, err := setSPANSourceGroupAttributes(spanSrcGrp, d)
+	if err != nil {
+		return nil, err
+	}
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
@@ -249,10 +252,13 @@ func resourceAciSPANSourceGroupRead(ctx context.Context, d *schema.ResourceData,
 	spanSrcGrp, err := getRemoteSPANSourceGroup(aciClient, dn)
 
 	if err != nil {
+		return errorForObjectNotFound(err, dn, d)
+	}
+	_, err = setSPANSourceGroupAttributes(spanSrcGrp, d)
+	if err != nil {
 		d.SetId("")
 		return nil
 	}
-	setSPANSourceGroupAttributes(spanSrcGrp, d)
 
 	spanRsSrcGrpToFilterGrpData, err := aciClient.ReadRelationspanRsSrcGrpToFilterGrpFromSPANSourceGroup(dn)
 	if err != nil {

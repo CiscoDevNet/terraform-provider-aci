@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/ciscoecosystem/aci-go-client/v2/client"
+	"github.com/ciscoecosystem/aci-go-client/v2/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -45,7 +45,7 @@ func getRemoteMatchRule(client *client.Client, dn string) (*models.MatchRule, er
 	}
 	rtctrlSubjP := models.MatchRuleFromContainer(rtctrlSubjPCont)
 	if rtctrlSubjP.DistinguishedName == "" {
-		return nil, fmt.Errorf("MatchRule %s not found", rtctrlSubjP.DistinguishedName)
+		return nil, fmt.Errorf("Match Rule %s not found", dn)
 	}
 	return rtctrlSubjP, nil
 }
@@ -152,8 +152,7 @@ func resourceAciMatchRuleRead(ctx context.Context, d *schema.ResourceData, m int
 	dn := d.Id()
 	rtctrlSubjP, err := getRemoteMatchRule(aciClient, dn)
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setMatchRuleAttributes(rtctrlSubjP, d)
 	if err != nil {

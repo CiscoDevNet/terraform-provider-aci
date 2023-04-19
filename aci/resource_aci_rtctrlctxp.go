@@ -8,8 +8,8 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/ciscoecosystem/aci-go-client/v2/client"
+	"github.com/ciscoecosystem/aci-go-client/v2/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
@@ -76,7 +76,7 @@ func getRemoteRouteControlContext(client *client.Client, dn string) (*models.Rou
 	}
 	rtctrlCtxP := models.RouteControlContextFromContainer(rtctrlCtxPCont)
 	if rtctrlCtxP.DistinguishedName == "" {
-		return nil, fmt.Errorf("RouteControlContext %s not found", rtctrlCtxP.DistinguishedName)
+		return nil, fmt.Errorf("Route Control Context %s not found", dn)
 	}
 	return rtctrlCtxP, nil
 }
@@ -335,8 +335,7 @@ func resourceAciRouteControlContextRead(ctx context.Context, d *schema.ResourceD
 	dn := d.Id()
 	rtctrlCtxP, err := getRemoteRouteControlContext(aciClient, dn)
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setRouteControlContextAttributes(rtctrlCtxP, d)
 	if err != nil {

@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/ciscoecosystem/aci-go-client/v2/client"
+	"github.com/ciscoecosystem/aci-go-client/v2/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -41,7 +41,7 @@ func getRemoteSAMLProviderGroup(client *client.Client, dn string) (*models.SAMLP
 	}
 	aaaSamlProviderGroup := models.SAMLProviderGroupFromContainer(aaaSamlProviderGroupCont)
 	if aaaSamlProviderGroup.DistinguishedName == "" {
-		return nil, fmt.Errorf("SAMLProviderGroup %s not found", aaaSamlProviderGroup.DistinguishedName)
+		return nil, fmt.Errorf("SAML Provider Group %s not found", dn)
 	}
 	return aaaSamlProviderGroup, nil
 }
@@ -141,8 +141,7 @@ func resourceAciSAMLProviderGroupRead(ctx context.Context, d *schema.ResourceDat
 	dn := d.Id()
 	aaaSamlProviderGroup, err := getRemoteSAMLProviderGroup(aciClient, dn)
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setSAMLProviderGroupAttributes(aaaSamlProviderGroup, d)
 	if err != nil {

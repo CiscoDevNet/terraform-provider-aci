@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/ciscoecosystem/aci-go-client/v2/client"
+	"github.com/ciscoecosystem/aci-go-client/v2/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
@@ -82,7 +82,7 @@ func getRemoteL3outStaticRouteNextHop(client *client.Client, dn string) (*models
 	ipNexthopP := models.L3outStaticRouteNextHopFromContainer(ipNexthopPCont)
 
 	if ipNexthopP.DistinguishedName == "" {
-		return nil, fmt.Errorf("L3outStaticRouteNextHop %s not found", ipNexthopP.DistinguishedName)
+		return nil, fmt.Errorf("L3Out Static Route Next Hop %s not found", dn)
 	}
 
 	return ipNexthopP, nil
@@ -299,8 +299,7 @@ func resourceAciL3outStaticRouteNextHopRead(ctx context.Context, d *schema.Resou
 	ipNexthopP, err := getRemoteL3outStaticRouteNextHop(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setL3outStaticRouteNextHopAttributes(ipNexthopP, d)
 

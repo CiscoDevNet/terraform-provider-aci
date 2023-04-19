@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/ciscoecosystem/aci-go-client/v2/client"
+	"github.com/ciscoecosystem/aci-go-client/v2/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -54,7 +54,7 @@ func getRemoteMonitoringPolicy(client *client.Client, dn string) (*models.Monito
 	monEPGPol := models.MonitoringPolicyFromContainer(monEPGPolCont)
 
 	if monEPGPol.DistinguishedName == "" {
-		return nil, fmt.Errorf("MonitoringPolicy %s not found", monEPGPol.DistinguishedName)
+		return nil, fmt.Errorf("Monitoring Policy %s not found", dn)
 	}
 
 	return monEPGPol, nil
@@ -182,8 +182,7 @@ func resourceAciMonitoringPolicyRead(ctx context.Context, d *schema.ResourceData
 	monEPGPol, err := getRemoteMonitoringPolicy(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setMonitoringPolicyAttributes(monEPGPol, d)
 

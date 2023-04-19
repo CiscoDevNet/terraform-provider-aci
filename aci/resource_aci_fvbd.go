@@ -6,8 +6,8 @@ import (
 	"log"
 	"strings"
 
-	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/ciscoecosystem/aci-go-client/v2/client"
+	"github.com/ciscoecosystem/aci-go-client/v2/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
@@ -313,7 +313,7 @@ func getRemoteBridgeDomain(client *client.Client, dn string) (*models.BridgeDoma
 	fvBD := models.BridgeDomainFromContainer(fvBDCont)
 
 	if fvBD.DistinguishedName == "" {
-		return nil, fmt.Errorf("BridgeDomain %s not found", fvBD.DistinguishedName)
+		return nil, fmt.Errorf("Bridge Domain %s not found", dn)
 	}
 
 	return fvBD, nil
@@ -1180,8 +1180,7 @@ func resourceAciBridgeDomainRead(ctx context.Context, d *schema.ResourceData, m 
 	fvBD, err := getRemoteBridgeDomain(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 
 	if fvBD.EpMoveDetectMode == "" {

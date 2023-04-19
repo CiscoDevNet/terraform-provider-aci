@@ -11,10 +11,18 @@ description: |-
 
 Manages ACI Subnet
 
+## API Information
+Class - fvSubnet
+- Distinguished Name - uni/tn-{tenant_name}/BD-{bd_name}/subnet-[{subnet_ip}]
+- Distinguished Name - uni/tn-{tenant_name}/ap-{ap_name}/epg-{epg_name}/subnet-[{subnet_ip}]
+
+## GUI Information
+- Location - Tenant > Networking > Bridge Domains > Subnets
+- Location - Tenant > Application Profiles > Application EPGs > Subnets
+
 ## Example Usage
 
 ```hcl
-
 	resource "aci_subnet" "foosubnet" {
 		parent_dn 		 = aci_bridge_domain.bd_for_subnet.id
 		description      = "subnet"
@@ -27,6 +35,74 @@ Manages ACI Subnet
 		virtual          = "yes"
 	}
 
+	# Create EP Reachability - Under AP -> EPG Subnet
+	resource "aci_subnet" "foo_epg_subnet_next_hop_addr" {
+		parent_dn     = aci_application_epg.foo_epg.id
+		ip            = "10.0.3.29/32"
+		scope         = ["private"]
+		description   = "This subject is created by terraform"
+		ctrl          = ["no-default-gateway"]
+		preferred     = "no"
+		virtual       = "yes"
+		next_hop_addr = "10.0.3.30"
+	}
+
+	# Create Anycast MAC - Under AP -> EPG Subnet
+	resource "aci_subnet" "foo_epg_subnet_anycast_mac" {
+		parent_dn   = aci_application_epg.foo_epg.id
+		ip          = "10.0.3.29/32"
+		scope       = ["private"]
+		description = "This subject is created by terraform"
+		ctrl        = ["no-default-gateway"]
+		preferred   = "no"
+		virtual     = "yes"
+		anycast_mac = "F0:1F:20:34:89:AB"
+	}
+
+	# Create MSNLB in IGMP mode - Under AP -> EPG Subnet
+	resource "aci_subnet" "foo_epg_subnet_msnlb_mcast_igmp" {
+		parent_dn   = aci_application_epg.foo_epg.id
+		ip          = "10.0.3.29/32"
+		scope       = ["private"]
+		description = "This subject is created by terraform"
+		ctrl        = ["no-default-gateway"]
+		preferred   = "no"
+		virtual     = "yes"
+		msnlb {
+			mode  = "mode-mcast-igmp"
+			group = "224.0.0.1" # The valid Multicast Address are 224.0.0.0 through 239.255.255.255.
+		}
+	}
+
+	# Create MSNLB in static multicast mode - Under AP -> EPG Subnet
+	resource "aci_subnet" "foo_epg_subnet_msnlb_mcast_static" {
+		parent_dn   = aci_application_epg.foo_epg.id
+		ip          = "10.0.3.29/32"
+		scope       = ["private"]
+		description = "This subject is created by terraform"
+		ctrl        = ["no-default-gateway"]
+		preferred   = "no"
+		virtual     = "yes"
+		msnlb {
+			mode  = "mode-mcast--static"
+			mac   = "03:1F:20:34:89:AA"
+		}
+	}
+
+	# Create MSNLB in unicast mode - Under AP -> EPG Subnet
+	resource "aci_subnet" "foo_epg_subnet_msnlb_mode_uc" {
+		parent_dn   = aci_application_epg.foo_epg.id
+		ip          = "10.0.3.29/32"
+		scope       = ["private"]
+		description = "This subject is created by terraform"
+		ctrl        = ["no-default-gateway"]
+		preferred   = "no"
+		virtual     = "yes"
+		msnlb {
+			mode  = "mode-uc"
+			mac   = "00:1F:20:34:89:AA"
+		}
+	}
 ```
 
 ## Argument Reference
@@ -44,7 +120,12 @@ Manages ACI Subnet
 - `relation_fv_rs_bd_subnet_to_out` - (Optional) Relation to class l3extOut. Cardinality - N_TO_M. Type - Set of String.
 - `relation_fv_rs_nd_pfx_pol` - (Optional) Relation to class ndPfxPol. Cardinality - N_TO_ONE. Type - String.
 - `relation_fv_rs_bd_subnet_to_profile` - (Optional) Relation to class rtctrlProfile. Cardinality - N_TO_ONE. Type - String.
-
+- `next_hop_addr` - (Optional) EP Reachability of the Application EPGs Subnet object. Type - String.
+- `msnlb` - (Optional) A block representing MSNLB of the Application EPGs Subnet object. Type: Block.
+   - `mode` - Mode of the MSNLB object, Allowed values are "mode-mcast--static", "mode-uc" and "mode-mcast-igmp". Default is "mode-uc".
+   - `group` - The IGMP mode group IP address of the MSNLB object. The valid Multicast Address are 224.0.0.0 through 239.255.255.255.
+   - `mac` - MAC address of the unicast and static multicast mode of the MSNLB object. The valid static multicast MAC address format is `03:XX:XX:XX:XX:XX`.
+- `anycast_mac` - Anycast MAC of the Application EPGs Subnet object. Type - String.
 ## Attribute Reference
 
 The only attribute that this resource exports is the `id`, which is set to the

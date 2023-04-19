@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/ciscoecosystem/aci-go-client/v2/client"
+	"github.com/ciscoecosystem/aci-go-client/v2/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -80,7 +80,7 @@ func getRemoteLogicalDeviceContext(client *client.Client, dn string) (*models.Lo
 	vnsLDevCtx := models.LogicalDeviceContextFromContainer(vnsLDevCtxCont)
 
 	if vnsLDevCtx.DistinguishedName == "" {
-		return nil, fmt.Errorf("LogicalDeviceContext %s not found", vnsLDevCtx.DistinguishedName)
+		return nil, fmt.Errorf("Logical Device Context %s not found", dn)
 	}
 
 	return vnsLDevCtx, nil
@@ -305,8 +305,7 @@ func resourceAciLogicalDeviceContextRead(ctx context.Context, d *schema.Resource
 	vnsLDevCtx, err := getRemoteLogicalDeviceContext(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setLogicalDeviceContextAttributes(vnsLDevCtx, d)
 	if err != nil {

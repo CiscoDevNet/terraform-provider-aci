@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/ciscoecosystem/aci-go-client/v2/client"
+	"github.com/ciscoecosystem/aci-go-client/v2/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -70,7 +70,7 @@ func getRemoteFilter(client *client.Client, dn string) (*models.Filter, error) {
 	vzFilter := models.FilterFromContainer(vzFilterCont)
 
 	if vzFilter.DistinguishedName == "" {
-		return nil, fmt.Errorf("Filter %s not found", vzFilter.DistinguishedName)
+		return nil, fmt.Errorf("Filter %s not found", dn)
 	}
 
 	return vzFilter, nil
@@ -299,8 +299,7 @@ func resourceAciFilterRead(ctx context.Context, d *schema.ResourceData, m interf
 	vzFilter, err := getRemoteFilter(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setFilterAttributes(vzFilter, d)
 	if err != nil {

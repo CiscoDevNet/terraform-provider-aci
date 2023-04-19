@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/ciscoecosystem/aci-go-client/v2/client"
+	"github.com/ciscoecosystem/aci-go-client/v2/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -69,7 +69,7 @@ func getRemoteVPCExplicitProtectionGroup(client *client.Client, dn string) (*mod
 	fabricExplicitGEp := models.VPCExplicitProtectionGroupFromContainer(fabricExplicitGEpCont)
 
 	if fabricExplicitGEp.DistinguishedName == "" {
-		return nil, fmt.Errorf("VPCExplicitProtectionGroup %s not found", fabricExplicitGEp.DistinguishedName)
+		return nil, fmt.Errorf("VPC Explicit Protection Group %s not found", dn)
 	}
 
 	return fabricExplicitGEp, nil
@@ -214,8 +214,7 @@ func resourceAciVPCExplicitProtectionGroupRead(ctx context.Context, d *schema.Re
 	fabricExplicitGEp, err := getRemoteVPCExplicitProtectionGroup(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setVPCExplicitProtectionGroupAttributes(fabricExplicitGEp, d)
 	if err != nil {

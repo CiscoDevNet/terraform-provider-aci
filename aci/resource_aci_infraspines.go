@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/ciscoecosystem/aci-go-client/v2/client"
+	"github.com/ciscoecosystem/aci-go-client/v2/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
@@ -72,7 +72,7 @@ func getRemoteSwitchSpineAssociation(client *client.Client, dn string) (*models.
 	infraSpineS := models.SwitchSpineAssociationFromContainer(infraSpineSCont)
 
 	if infraSpineS.DistinguishedName == "" {
-		return nil, fmt.Errorf("SwitchAssociation %s not found", infraSpineS.DistinguishedName)
+		return nil, fmt.Errorf("Switch Association %s not found", dn)
 	}
 
 	return infraSpineS, nil
@@ -262,8 +262,7 @@ func resourceAciSwitchSpineAssociationRead(ctx context.Context, d *schema.Resour
 	infraSpineS, err := getRemoteSwitchSpineAssociation(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setSwitchSpineAssociationAttributes(infraSpineS, d)
 	if err != nil {

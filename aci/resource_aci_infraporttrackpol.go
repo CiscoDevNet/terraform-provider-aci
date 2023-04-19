@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/ciscoecosystem/aci-go-client/v2/client"
+	"github.com/ciscoecosystem/aci-go-client/v2/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
@@ -65,7 +65,7 @@ func getRemotePortTracking(client *client.Client, dn string) (*models.PortTracki
 	}
 	infraPortTrackPol := models.PortTrackingFromContainer(infraPortTrackPolCont)
 	if infraPortTrackPol.DistinguishedName == "" {
-		return nil, fmt.Errorf("PortTracking %s not found", infraPortTrackPol.DistinguishedName)
+		return nil, fmt.Errorf("Port Tracking %s not found", dn)
 	}
 	return infraPortTrackPol, nil
 }
@@ -201,8 +201,7 @@ func resourceAciPortTrackingRead(ctx context.Context, d *schema.ResourceData, m 
 	dn := d.Id()
 	infraPortTrackPol, err := getRemotePortTracking(aciClient, dn)
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setPortTrackingAttributes(infraPortTrackPol, d)
 	if err != nil {

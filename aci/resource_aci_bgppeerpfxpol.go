@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/ciscoecosystem/aci-go-client/v2/client"
+	"github.com/ciscoecosystem/aci-go-client/v2/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
@@ -86,7 +86,7 @@ func getRemoteBGPPeerPrefixPolicy(client *client.Client, dn string) (*models.BGP
 	bgpPeerPfxPol := models.BGPPeerPrefixPolicyFromContainer(bgpPeerPfxPolCont)
 
 	if bgpPeerPfxPol.DistinguishedName == "" {
-		return nil, fmt.Errorf("BGPPeerPrefixPolicy %s not found", bgpPeerPfxPol.DistinguishedName)
+		return nil, fmt.Errorf("BGP Peer Prefix Policy %s not found", dn)
 	}
 
 	return bgpPeerPfxPol, nil
@@ -241,8 +241,7 @@ func resourceAciBGPPeerPrefixPolicyRead(ctx context.Context, d *schema.ResourceD
 	bgpPeerPfxPol, err := getRemoteBGPPeerPrefixPolicy(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setBGPPeerPrefixPolicyAttributes(bgpPeerPfxPol, d)
 

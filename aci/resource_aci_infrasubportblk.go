@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/ciscoecosystem/aci-go-client/v2/client"
+	"github.com/ciscoecosystem/aci-go-client/v2/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -90,7 +90,7 @@ func getRemoteAccessSubPortBlock(client *client.Client, dn string) (*models.Acce
 	infraSubPortBlk := models.AccessSubPortBlockFromContainer(infraSubPortBlkCont)
 
 	if infraSubPortBlk.DistinguishedName == "" {
-		return nil, fmt.Errorf("AccessSubPortBlock %s not found", infraSubPortBlk.DistinguishedName)
+		return nil, fmt.Errorf("Access Sub Port Block %s not found", dn)
 	}
 
 	return infraSubPortBlk, nil
@@ -256,8 +256,7 @@ func resourceAciAccessSubPortBlockRead(ctx context.Context, d *schema.ResourceDa
 	infraSubPortBlk, err := getRemoteAccessSubPortBlock(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setAccessSubPortBlockAttributes(infraSubPortBlk, d)
 	if err != nil {

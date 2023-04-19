@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/ciscoecosystem/aci-go-client/v2/client"
+	"github.com/ciscoecosystem/aci-go-client/v2/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -55,7 +55,7 @@ func getRemoteVMMCredential(client *client.Client, dn string) (*models.VMMCreden
 	}
 	vmmUsrAccP := models.VMMCredentialFromContainer(vmmUsrAccPCont)
 	if vmmUsrAccP.DistinguishedName == "" {
-		return nil, fmt.Errorf("VMMCredential %s not found", vmmUsrAccP.DistinguishedName)
+		return nil, fmt.Errorf("VMM Credential %s not found", dn)
 	}
 	return vmmUsrAccP, nil
 }
@@ -180,8 +180,7 @@ func resourceAciVMMCredentialRead(ctx context.Context, d *schema.ResourceData, m
 	dn := d.Id()
 	vmmUsrAccP, err := getRemoteVMMCredential(aciClient, dn)
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setVMMCredentialAttributes(vmmUsrAccP, d)
 	if err != nil {

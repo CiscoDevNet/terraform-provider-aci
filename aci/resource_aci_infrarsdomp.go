@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/ciscoecosystem/aci-go-client/v2/client"
+	"github.com/ciscoecosystem/aci-go-client/v2/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -50,7 +50,7 @@ func getRemoteInfraRsDomP(client *client.Client, dn string) (*models.InfraRsDomP
 	}
 	infraRsDomP := models.InfraRsDomPFromContainer(infraRsDomPCont)
 	if infraRsDomP.DistinguishedName == "" {
-		return nil, fmt.Errorf("InfraRsDomP %s not found", dn)
+		return nil, fmt.Errorf("Relationship to Domain Profile %s not found", dn)
 	}
 	return infraRsDomP, nil
 }
@@ -153,8 +153,7 @@ func resourceAciInfraRsDomPRead(ctx context.Context, d *schema.ResourceData, m i
 
 	infraRsDomP, err := getRemoteInfraRsDomP(aciClient, dn)
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 
 	_, err = setInfraRsDomPAttributes(infraRsDomP, d)

@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/ciscoecosystem/aci-go-client/v2/client"
+	"github.com/ciscoecosystem/aci-go-client/v2/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -49,7 +49,7 @@ func getRemoteTag(client *client.Client, dn string) (*models.Tag, error) {
 	}
 	tagTag := models.TagFromContainer(tagTagCont)
 	if tagTag.DistinguishedName == "" {
-		return nil, fmt.Errorf("Tag %s not found", tagTag.DistinguishedName)
+		return nil, fmt.Errorf("Tag %s not found", dn)
 	}
 	return tagTag, nil
 }
@@ -143,8 +143,7 @@ func resourceAciTagRead(ctx context.Context, d *schema.ResourceData, m interface
 	dn := d.Id()
 	tagTag, err := getRemoteTag(aciClient, dn)
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setTagAttributes(tagTag, d)
 	if err != nil {

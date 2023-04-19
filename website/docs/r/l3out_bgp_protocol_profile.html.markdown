@@ -27,7 +27,7 @@ resource "aci_l3out_bgp_protocol_profile" "example" {
 - `annotation` - (Optional) Annotation for object L3out BGP Protocol Profile.
 - `name_alias` - (Optional) Name alias for object L3out BGP Protocol Profile.
 - `relation_bgp_rs_bgp_node_ctx_pol` - (Optional) Relation to class bgpCtxPol. Cardinality - N_TO_ONE. Type - String.
-
+- `relation_bgp_rs_best_path_ctrl_pol` - (Optional) Relation to class bgpBestPathCtrlPol. Cardinality - N_TO_ONE. Type - String.
 ## Attribute Reference
 
 The only attribute that this resource exports is the `id`, which is set to the Dn of the L3out BGP Protocol Profile.

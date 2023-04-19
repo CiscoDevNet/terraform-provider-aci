@@ -8,8 +8,8 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/ciscoecosystem/aci-go-client/v2/client"
+	"github.com/ciscoecosystem/aci-go-client/v2/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
@@ -58,7 +58,7 @@ func getRemoteSpanningTreeInterfacePolicy(client *client.Client, dn string) (*mo
 	}
 	stpIfPol := models.SpanningTreeInterfacePolicyFromContainer(stpIfPolCont)
 	if stpIfPol.DistinguishedName == "" {
-		return nil, fmt.Errorf("SpanningTreeInterfacePolicy %s not found", stpIfPol.DistinguishedName)
+		return nil, fmt.Errorf("Spanning Tree Interface Policy %s not found", dn)
 	}
 	return stpIfPol, nil
 }
@@ -201,8 +201,7 @@ func resourceAciSpanningTreeInterfacePolicyRead(ctx context.Context, d *schema.R
 	dn := d.Id()
 	stpIfPol, err := getRemoteSpanningTreeInterfacePolicy(aciClient, dn)
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setSpanningTreeInterfacePolicyAttributes(stpIfPol, d)
 	if err != nil {

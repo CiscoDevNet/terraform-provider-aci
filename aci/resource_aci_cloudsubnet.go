@@ -7,8 +7,9 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/ciscoecosystem/aci-go-client/v2/client"
+	"github.com/ciscoecosystem/aci-go-client/v2/container"
+	"github.com/ciscoecosystem/aci-go-client/v2/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
@@ -64,6 +65,7 @@ func resourceAciCloudSubnet() *schema.Resource {
 						"shared",
 					}, false),
 				},
+				Description: "Use the sorted scope list to handle identical changes",
 			},
 
 			"usage": &schema.Schema{
@@ -79,10 +81,11 @@ func resourceAciCloudSubnet() *schema.Resource {
 			},
 
 			"zone": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-				ForceNew: true,
+				Type:        schema.TypeString,
+				Optional:    true,
+				Computed:    true,
+				ForceNew:    true,
+				Description: "Only applicable to the AWS vendor",
 			},
 
 			"relation_cloud_rs_subnet_to_flow_log": &schema.Schema{
@@ -90,19 +93,30 @@ func resourceAciCloudSubnet() *schema.Resource {
 
 				Optional: true,
 			},
+			"subnet_group_label": &schema.Schema{
+				Type:        schema.TypeString,
+				Optional:    true,
+				ForceNew:    true,
+				Description: "Only applicable to the GCP vendor",
+			},
 		}),
 	}
 }
-func getRemoteCloudSubnet(client *client.Client, dn string) (*models.CloudSubnet, error) {
-	cloudSubnetCont, err := client.Get(dn)
+func getRemoteCloudSubnet(client *client.Client, dn string, d *schema.ResourceData) (*models.CloudSubnet, error) {
+	dnUrl := fmt.Sprintf("%s/%s.json?rsp-subtree=children", client.MOURL, dn)
+
+	cloudSubnetCont, err := client.GetViaURL(dnUrl)
 	if err != nil {
 		return nil, err
 	}
 
 	cloudSubnet := models.CloudSubnetFromContainer(cloudSubnetCont)
 
+	// To set cloudSubnet relational attributes value
+	setCloudSubnetRelationalAttributes(cloudSubnetCont, d)
+
 	if cloudSubnet.DistinguishedName == "" {
-		return nil, fmt.Errorf("CloudSubnet %s not found", cloudSubnet.DistinguishedName)
+		return nil, fmt.Errorf("Cloud Subnet %s not found", dn)
 	}
 
 	return cloudSubnet, nil
@@ -135,7 +149,21 @@ func setCloudSubnetAttributes(cloudSubnet *models.CloudSubnet, d *schema.Resourc
 		d.Set("scope", scopeGet)
 	}
 	d.Set("usage", cloudSubnetMap["usage"])
+	d.Set("subnet_group_label", cloudSubnetMap["subnetGroup"])
 	return d, nil
+}
+
+func setCloudSubnetRelationalAttributes(cloudSubnetCont *container.Container, d *schema.ResourceData) {
+	ChildContList, err := cloudSubnetCont.S("imdata").Index(0).S(models.CloudsubnetClassName, "children").Children()
+	if err != nil {
+		log.Printf("[DEBUG]: Failed to set cloudSubnet relational attributes : %v", err)
+	}
+
+	for _, childCont := range ChildContList {
+		if childCont.Exists("cloudRsZoneAttach") {
+			d.Set("zone", G(childCont.S("cloudRsZoneAttach", "attributes"), "tDn"))
+		}
+	}
 }
 
 func resourceAciCloudSubnetImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -144,7 +172,7 @@ func resourceAciCloudSubnetImport(d *schema.ResourceData, m interface{}) ([]*sch
 
 	dn := d.Id()
 
-	cloudSubnet, err := getRemoteCloudSubnet(aciClient, dn)
+	cloudSubnet, err := getRemoteCloudSubnet(aciClient, dn, d)
 
 	if err != nil {
 		return nil, err
@@ -225,6 +253,10 @@ func resourceAciCloudSubnetCreate(ctx context.Context, d *schema.ResourceData, m
 		zoneDn = zone.(string)
 	} else {
 		zoneDn = ""
+	}
+
+	if subnetGroup, ok := d.GetOk("subnet_group_label"); ok {
+		cloudSubnetAttr.SubnetGroup = subnetGroup.(string)
 	}
 
 	cloudSubnet, err := aciClient.CreateCloudSubnet(ip, CloudCIDRPoolDn, desc, cloudSubnetAttr, zoneDn)
@@ -311,6 +343,10 @@ func resourceAciCloudSubnetUpdate(ctx context.Context, d *schema.ResourceData, m
 		zoneDn = ""
 	}
 
+	if subnetGroup, ok := d.GetOk("subnet_group_label"); ok {
+		cloudSubnetAttr.SubnetGroup = subnetGroup.(string)
+	}
+
 	cloudSubnet, err := aciClient.UpdateCloudSubnet(ip, CloudCIDRPoolDn, desc, cloudSubnetAttr, zoneDn)
 	if err != nil {
 		return diag.FromErr(err)
@@ -343,11 +379,10 @@ func resourceAciCloudSubnetRead(ctx context.Context, d *schema.ResourceData, m i
 	aciClient := m.(*client.Client)
 
 	dn := d.Id()
-	cloudSubnet, err := getRemoteCloudSubnet(aciClient, dn)
+	cloudSubnet, err := getRemoteCloudSubnet(aciClient, dn, d)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setCloudSubnetAttributes(cloudSubnet, d)
 	if err != nil {

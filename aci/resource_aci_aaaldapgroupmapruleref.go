@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/ciscoecosystem/aci-go-client/v2/client"
+	"github.com/ciscoecosystem/aci-go-client/v2/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -45,7 +45,7 @@ func getRemoteLDAPGroupMapruleref(client *client.Client, dn string) (*models.LDA
 	}
 	aaaLdapGroupMapRuleRef := models.LDAPGroupMaprulerefFromContainer(aaaLdapGroupMapRuleRefCont)
 	if aaaLdapGroupMapRuleRef.DistinguishedName == "" {
-		return nil, fmt.Errorf("LDAPGroupMapruleref %s not found", aaaLdapGroupMapRuleRef.DistinguishedName)
+		return nil, fmt.Errorf("LDAP Group Map Rule Ref %s not found", dn)
 	}
 	return aaaLdapGroupMapRuleRef, nil
 }
@@ -153,8 +153,7 @@ func resourceAciLDAPGroupMaprulerefRead(ctx context.Context, d *schema.ResourceD
 	dn := d.Id()
 	aaaLdapGroupMapRuleRef, err := getRemoteLDAPGroupMapruleref(aciClient, dn)
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setLDAPGroupMaprulerefAttributes(aaaLdapGroupMapRuleRef, d)
 	if err != nil {

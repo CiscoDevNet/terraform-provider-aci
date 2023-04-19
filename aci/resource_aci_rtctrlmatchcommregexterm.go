@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/ciscoecosystem/aci-go-client/v2/client"
+	"github.com/ciscoecosystem/aci-go-client/v2/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
@@ -60,7 +60,7 @@ func getRemoteMatchRuleBasedonCommunityRegularExpression(client *client.Client, 
 	}
 	rtctrlMatchCommRegexTerm := models.MatchRuleBasedonCommunityRegularExpressionFromContainer(rtctrlMatchCommRegexTermCont)
 	if rtctrlMatchCommRegexTerm.DistinguishedName == "" {
-		return nil, fmt.Errorf("MatchRuleBasedonCommunityRegularExpression %s not found", dn)
+		return nil, fmt.Errorf("Match Rule Based on Community Regular Expression %s not found", dn)
 	}
 	return rtctrlMatchCommRegexTerm, nil
 }
@@ -196,8 +196,7 @@ func resourceAciMatchRuleBasedonCommunityRegularExpressionRead(ctx context.Conte
 
 	rtctrlMatchCommRegexTerm, err := getRemoteMatchRuleBasedonCommunityRegularExpression(aciClient, dn)
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 
 	_, err = setMatchRuleBasedonCommunityRegularExpressionAttributes(rtctrlMatchCommRegexTerm, d)

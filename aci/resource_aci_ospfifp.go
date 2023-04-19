@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/ciscoecosystem/aci-go-client/v2/client"
+	"github.com/ciscoecosystem/aci-go-client/v2/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
@@ -34,8 +34,8 @@ func resourceAciOSPFInterfaceProfile() *schema.Resource {
 
 			"auth_key": &schema.Schema{
 				Type:     schema.TypeString,
-				Required: true,
-				ForceNew: true,
+				Optional: true,
+				Computed: true,
 			},
 
 			"auth_key_id": &schema.Schema{
@@ -79,7 +79,7 @@ func getRemoteOSPFInterfaceProfile(client *client.Client, dn string) (*models.OS
 	ospfIfP := models.OSPFInterfaceProfileFromContainer(ospfIfPCont)
 
 	if ospfIfP.DistinguishedName == "" {
-		return nil, fmt.Errorf("InterfaceProfile %s not found", ospfIfP.DistinguishedName)
+		return nil, fmt.Errorf("Interface Profile %s not found", dn)
 	}
 
 	return ospfIfP, nil
@@ -264,8 +264,7 @@ func resourceAciOSPFInterfaceProfileRead(ctx context.Context, d *schema.Resource
 	ospfIfP, err := getRemoteOSPFInterfaceProfile(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setOSPFInterfaceProfileAttributes(ospfIfP, d)
 	if err != nil {

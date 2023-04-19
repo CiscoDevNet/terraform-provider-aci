@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/ciscoecosystem/aci-go-client/v2/client"
+	"github.com/ciscoecosystem/aci-go-client/v2/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -66,7 +66,7 @@ func getRemoteNodeBlock(client *client.Client, dn string) (*models.NodeBlock, er
 	infraNodeBlk := models.NodeBlockFromContainerBLK(infraNodeBlkCont)
 
 	if infraNodeBlk.DistinguishedName == "" {
-		return nil, fmt.Errorf("NodeBlock %s not found", infraNodeBlk.DistinguishedName)
+		return nil, fmt.Errorf("Node Block %s not found", dn)
 	}
 
 	return infraNodeBlk, nil
@@ -210,8 +210,7 @@ func resourceAciNodeBlockRead(ctx context.Context, d *schema.ResourceData, m int
 	infraNodeBlk, err := getRemoteNodeBlock(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setNodeBlockAttributes(infraNodeBlk, d)
 	if err != nil {

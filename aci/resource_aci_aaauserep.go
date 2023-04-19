@@ -8,8 +8,8 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/ciscoecosystem/aci-go-client/v2/client"
+	"github.com/ciscoecosystem/aci-go-client/v2/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
@@ -141,7 +141,7 @@ func getRemoteUserManagement(client *client.Client, dn string) (*models.UserMana
 	}
 	aaaUserEp := models.UserManagementFromContainer(aaaUserEpCont)
 	if aaaUserEp.DistinguishedName == "" {
-		return nil, fmt.Errorf("UserManagement %s not found", aaaUserEp.DistinguishedName)
+		return nil, fmt.Errorf("User Management %s not found", dn)
 	}
 	return aaaUserEp, nil
 }
@@ -620,8 +620,7 @@ func resourceAciUserManagementRead(ctx context.Context, d *schema.ResourceData, 
 	dn := d.Id()
 	aaaUserEp, err := getRemoteUserManagement(aciClient, dn)
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setUserManagementAttributes(aaaUserEp, d)
 	if err != nil {

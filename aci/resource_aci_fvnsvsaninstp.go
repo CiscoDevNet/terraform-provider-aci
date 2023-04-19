@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/ciscoecosystem/aci-go-client/v2/client"
+	"github.com/ciscoecosystem/aci-go-client/v2/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
@@ -60,7 +60,7 @@ func getRemoteVSANPool(client *client.Client, dn string) (*models.VSANPool, erro
 	fvnsVsanInstP := models.VSANPoolFromContainer(fvnsVsanInstPCont)
 
 	if fvnsVsanInstP.DistinguishedName == "" {
-		return nil, fmt.Errorf("VSANPool %s not found", fvnsVsanInstP.DistinguishedName)
+		return nil, fmt.Errorf("VSAN Pool %s not found", dn)
 	}
 
 	return fvnsVsanInstP, nil
@@ -173,8 +173,7 @@ func resourceAciVSANPoolRead(ctx context.Context, d *schema.ResourceData, m inte
 	fvnsVsanInstP, err := getRemoteVSANPool(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	setVSANPoolAttributes(fvnsVsanInstP, d)
 

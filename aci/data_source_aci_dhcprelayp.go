@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/ciscoecosystem/aci-go-client/client"
+	"github.com/ciscoecosystem/aci-go-client/v2/client"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -19,7 +19,8 @@ func dataSourceAciDHCPRelayPolicy() *schema.Resource {
 		Schema: AppendBaseAttrSchema(map[string]*schema.Schema{
 			"tenant_dn": &schema.Schema{
 				Type:     schema.TypeString,
-				Required: true,
+				Default:  "uni/infra",
+				Optional: true,
 			},
 
 			"name": &schema.Schema{

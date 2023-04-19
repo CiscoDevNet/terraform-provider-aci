@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/ciscoecosystem/aci-go-client/v2/client"
+	"github.com/ciscoecosystem/aci-go-client/v2/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
@@ -172,7 +172,7 @@ func getRemoteSAMLProvider(client *client.Client, dn string) (*models.SAMLProvid
 	}
 	aaaSamlProvider := models.SAMLProviderFromContainer(aaaSamlProviderCont)
 	if aaaSamlProvider.DistinguishedName == "" {
-		return nil, fmt.Errorf("SAMLProvider %s not found", aaaSamlProvider.DistinguishedName)
+		return nil, fmt.Errorf("SAML Provider %s not found", dn)
 	}
 	return aaaSamlProvider, nil
 }
@@ -512,8 +512,7 @@ func resourceAciSAMLProviderRead(ctx context.Context, d *schema.ResourceData, m 
 	dn := d.Id()
 	aaaSamlProvider, err := getRemoteSAMLProvider(aciClient, dn)
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setSAMLProviderAttributes(aaaSamlProvider, d)
 	if err != nil {

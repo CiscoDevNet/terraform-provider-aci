@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/ciscoecosystem/aci-go-client/v2/client"
+	"github.com/ciscoecosystem/aci-go-client/v2/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -67,7 +67,7 @@ func getRemoteFexBundleGroup(client *client.Client, dn string) (*models.FexBundl
 	infraFexBndlGrp := models.FexBundleGroupFromContainer(infraFexBndlGrpCont)
 
 	if infraFexBndlGrp.DistinguishedName == "" {
-		return nil, fmt.Errorf("FexBundleGroup %s not found", infraFexBndlGrp.DistinguishedName)
+		return nil, fmt.Errorf("FEX Bundle Group %s not found", dn)
 	}
 
 	return infraFexBndlGrp, nil
@@ -288,8 +288,7 @@ func resourceAciFexBundleGroupRead(ctx context.Context, d *schema.ResourceData, 
 	infraFexBndlGrp, err := getRemoteFexBundleGroup(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setFexBundleGroupAttributes(infraFexBndlGrp, d)
 	if err != nil {

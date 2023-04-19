@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/ciscoecosystem/aci-go-client/v2/client"
+	"github.com/ciscoecosystem/aci-go-client/v2/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
@@ -237,7 +237,7 @@ func getRemoteApplicationEPG(client *client.Client, dn string) (*models.Applicat
 	fvAEPg := models.ApplicationEPGFromContainer(fvAEPgCont)
 
 	if fvAEPg.DistinguishedName == "" {
-		return nil, fmt.Errorf("ApplicationEPG %s not found", fvAEPg.DistinguishedName)
+		return nil, fmt.Errorf("Application EPG %s not found", dn)
 	}
 
 	return fvAEPg, nil
@@ -1145,8 +1145,7 @@ func resourceAciApplicationEPGRead(ctx context.Context, d *schema.ResourceData, 
 	fvAEPg, err := getRemoteApplicationEPG(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setApplicationEPGAttributes(fvAEPg, d)
 	if err != nil {

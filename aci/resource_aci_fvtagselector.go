@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/ciscoecosystem/aci-go-client/v2/client"
+	"github.com/ciscoecosystem/aci-go-client/v2/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
@@ -66,7 +66,7 @@ func getRemoteEndpointSecurityGroupTagSelector(client *client.Client, dn string)
 	}
 	fvTagSelector := models.EndpointSecurityGroupTagSelectorFromContainer(fvTagSelectorCont)
 	if fvTagSelector.DistinguishedName == "" {
-		return nil, fmt.Errorf("EndpointSecurityGroupTagSelector %s not found", fvTagSelector.DistinguishedName)
+		return nil, fmt.Errorf("Endpoint Security Group Tag Selector %s not found", dn)
 	}
 	return fvTagSelector, nil
 }
@@ -202,8 +202,7 @@ func resourceAciEndpointSecurityGroupTagSelectorRead(ctx context.Context, d *sch
 	dn := d.Id()
 	fvTagSelector, err := getRemoteEndpointSecurityGroupTagSelector(aciClient, dn)
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setEndpointSecurityGroupTagSelectorAttributes(fvTagSelector, d)
 	if err != nil {

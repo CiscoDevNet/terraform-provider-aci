@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/ciscoecosystem/aci-go-client/v2/client"
+	"github.com/ciscoecosystem/aci-go-client/v2/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
@@ -190,7 +190,7 @@ func getRemoteVRF(client *client.Client, dn string) (*models.VRF, error) {
 	fvCtx := models.VRFFromContainer(fvCtxCont)
 
 	if fvCtx.DistinguishedName == "" {
-		return nil, fmt.Errorf("VRF %s not found", fvCtx.DistinguishedName)
+		return nil, fmt.Errorf("VRF %s not found", dn)
 	}
 
 	return fvCtx, nil
@@ -695,8 +695,7 @@ func resourceAciVRFRead(ctx context.Context, d *schema.ResourceData, m interface
 	fvCtx, err := getRemoteVRF(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setVRFAttributes(fvCtx, d)
 	if err != nil {

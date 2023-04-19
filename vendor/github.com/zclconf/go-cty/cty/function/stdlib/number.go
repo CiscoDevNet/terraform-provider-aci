@@ -2,13 +2,16 @@ package stdlib
 
 import (
 	"fmt"
+	"math"
 	"math/big"
 
 	"github.com/zclconf/go-cty/cty"
 	"github.com/zclconf/go-cty/cty/function"
+	"github.com/zclconf/go-cty/cty/gocty"
 )
 
 var AbsoluteFunc = function.New(&function.Spec{
+	Description: `If the given number is negative then returns its positive equivalent, or otherwise returns the given number unchanged.`,
 	Params: []function.Parameter{
 		{
 			Name:             "num",
@@ -24,6 +27,7 @@ var AbsoluteFunc = function.New(&function.Spec{
 })
 
 var AddFunc = function.New(&function.Spec{
+	Description: `Returns the sum of the two given numbers.`,
 	Params: []function.Parameter{
 		{
 			Name:             "a",
@@ -57,6 +61,7 @@ var AddFunc = function.New(&function.Spec{
 })
 
 var SubtractFunc = function.New(&function.Spec{
+	Description: `Returns the difference between the two given numbers.`,
 	Params: []function.Parameter{
 		{
 			Name:             "a",
@@ -90,6 +95,7 @@ var SubtractFunc = function.New(&function.Spec{
 })
 
 var MultiplyFunc = function.New(&function.Spec{
+	Description: `Returns the product of the two given numbers.`,
 	Params: []function.Parameter{
 		{
 			Name:             "a",
@@ -124,6 +130,7 @@ var MultiplyFunc = function.New(&function.Spec{
 })
 
 var DivideFunc = function.New(&function.Spec{
+	Description: `Divides the first given number by the second.`,
 	Params: []function.Parameter{
 		{
 			Name:             "a",
@@ -158,6 +165,7 @@ var DivideFunc = function.New(&function.Spec{
 })
 
 var ModuloFunc = function.New(&function.Spec{
+	Description: `Divides the first given number by the second and then returns the remainder.`,
 	Params: []function.Parameter{
 		{
 			Name:             "a",
@@ -192,6 +200,7 @@ var ModuloFunc = function.New(&function.Spec{
 })
 
 var GreaterThanFunc = function.New(&function.Spec{
+	Description: `Returns true if and only if the second number is greater than the first.`,
 	Params: []function.Parameter{
 		{
 			Name:             "a",
@@ -213,6 +222,7 @@ var GreaterThanFunc = function.New(&function.Spec{
 })
 
 var GreaterThanOrEqualToFunc = function.New(&function.Spec{
+	Description: `Returns true if and only if the second number is greater than or equal to the first.`,
 	Params: []function.Parameter{
 		{
 			Name:             "a",
@@ -234,6 +244,7 @@ var GreaterThanOrEqualToFunc = function.New(&function.Spec{
 })
 
 var LessThanFunc = function.New(&function.Spec{
+	Description: `Returns true if and only if the second number is less than the first.`,
 	Params: []function.Parameter{
 		{
 			Name:             "a",
@@ -255,6 +266,7 @@ var LessThanFunc = function.New(&function.Spec{
 })
 
 var LessThanOrEqualToFunc = function.New(&function.Spec{
+	Description: `Returns true if and only if the second number is less than or equal to the first.`,
 	Params: []function.Parameter{
 		{
 			Name:             "a",
@@ -276,6 +288,7 @@ var LessThanOrEqualToFunc = function.New(&function.Spec{
 })
 
 var NegateFunc = function.New(&function.Spec{
+	Description: `Multiplies the given number by -1.`,
 	Params: []function.Parameter{
 		{
 			Name:             "num",
@@ -291,7 +304,8 @@ var NegateFunc = function.New(&function.Spec{
 })
 
 var MinFunc = function.New(&function.Spec{
-	Params: []function.Parameter{},
+	Description: `Returns the numerically smallest of all of the given numbers.`,
+	Params:      []function.Parameter{},
 	VarParam: &function.Parameter{
 		Name:             "numbers",
 		Type:             cty.Number,
@@ -315,7 +329,8 @@ var MinFunc = function.New(&function.Spec{
 })
 
 var MaxFunc = function.New(&function.Spec{
-	Params: []function.Parameter{},
+	Description: `Returns the numerically greatest of all of the given numbers.`,
+	Params:      []function.Parameter{},
 	VarParam: &function.Parameter{
 		Name:             "numbers",
 		Type:             cty.Number,
@@ -339,6 +354,7 @@ var MaxFunc = function.New(&function.Spec{
 })
 
 var IntFunc = function.New(&function.Spec{
+	Description: `Discards any fractional portion of the given number.`,
 	Params: []function.Parameter{
 		{
 			Name:             "num",
@@ -355,6 +371,208 @@ var IntFunc = function.New(&function.Spec{
 		bi, _ := bf.Int(nil)
 		bf = (&big.Float{}).SetInt(bi)
 		return cty.NumberVal(bf), nil
+	},
+})
+
+// CeilFunc is a function that returns the closest whole number greater
+// than or equal to the given value.
+var CeilFunc = function.New(&function.Spec{
+	Description: `Returns the smallest whole number that is greater than or equal to the given value.`,
+	Params: []function.Parameter{
+		{
+			Name: "num",
+			Type: cty.Number,
+		},
+	},
+	Type: function.StaticReturnType(cty.Number),
+	Impl: func(args []cty.Value, retType cty.Type) (ret cty.Value, err error) {
+		f := args[0].AsBigFloat()
+
+		if f.IsInf() {
+			return cty.NumberVal(f), nil
+		}
+
+		i, acc := f.Int(nil)
+		switch acc {
+		case big.Exact, big.Above:
+			// Done.
+		case big.Below:
+			i.Add(i, big.NewInt(1))
+		}
+
+		return cty.NumberVal(f.SetInt(i)), nil
+	},
+})
+
+// FloorFunc is a function that returns the closest whole number lesser
+// than or equal to the given value.
+var FloorFunc = function.New(&function.Spec{
+	Description: `Returns the greatest whole number that is less than or equal to the given value.`,
+	Params: []function.Parameter{
+		{
+			Name: "num",
+			Type: cty.Number,
+		},
+	},
+	Type: function.StaticReturnType(cty.Number),
+	Impl: func(args []cty.Value, retType cty.Type) (ret cty.Value, err error) {
+		f := args[0].AsBigFloat()
+
+		if f.IsInf() {
+			return cty.NumberVal(f), nil
+		}
+
+		i, acc := f.Int(nil)
+		switch acc {
+		case big.Exact, big.Below:
+			// Done.
+		case big.Above:
+			i.Sub(i, big.NewInt(1))
+		}
+
+		return cty.NumberVal(f.SetInt(i)), nil
+	},
+})
+
+// LogFunc is a function that returns the logarithm of a given number in a given base.
+var LogFunc = function.New(&function.Spec{
+	Description: `Returns the logarithm of the given number in the given base.`,
+	Params: []function.Parameter{
+		{
+			Name: "num",
+			Type: cty.Number,
+		},
+		{
+			Name: "base",
+			Type: cty.Number,
+		},
+	},
+	Type: function.StaticReturnType(cty.Number),
+	Impl: func(args []cty.Value, retType cty.Type) (ret cty.Value, err error) {
+		var num float64
+		if err := gocty.FromCtyValue(args[0], &num); err != nil {
+			return cty.UnknownVal(cty.String), err
+		}
+
+		var base float64
+		if err := gocty.FromCtyValue(args[1], &base); err != nil {
+			return cty.UnknownVal(cty.String), err
+		}
+
+		return cty.NumberFloatVal(math.Log(num) / math.Log(base)), nil
+	},
+})
+
+// PowFunc is a function that returns the logarithm of a given number in a given base.
+var PowFunc = function.New(&function.Spec{
+	Description: `Returns the given number raised to the given power (exponentiation).`,
+	Params: []function.Parameter{
+		{
+			Name: "num",
+			Type: cty.Number,
+		},
+		{
+			Name: "power",
+			Type: cty.Number,
+		},
+	},
+	Type: function.StaticReturnType(cty.Number),
+	Impl: func(args []cty.Value, retType cty.Type) (ret cty.Value, err error) {
+		var num float64
+		if err := gocty.FromCtyValue(args[0], &num); err != nil {
+			return cty.UnknownVal(cty.String), err
+		}
+
+		var power float64
+		if err := gocty.FromCtyValue(args[1], &power); err != nil {
+			return cty.UnknownVal(cty.String), err
+		}
+
+		return cty.NumberFloatVal(math.Pow(num, power)), nil
+	},
+})
+
+// SignumFunc is a function that determines the sign of a number, returning a
+// number between -1 and 1 to represent the sign..
+var SignumFunc = function.New(&function.Spec{
+	Description: `Returns 0 if the given number is zero, 1 if the given number is positive, or -1 if the given number is negative.`,
+	Params: []function.Parameter{
+		{
+			Name: "num",
+			Type: cty.Number,
+		},
+	},
+	Type: function.StaticReturnType(cty.Number),
+	Impl: func(args []cty.Value, retType cty.Type) (ret cty.Value, err error) {
+		var num int
+		if err := gocty.FromCtyValue(args[0], &num); err != nil {
+			return cty.UnknownVal(cty.String), err
+		}
+		switch {
+		case num < 0:
+			return cty.NumberIntVal(-1), nil
+		case num > 0:
+			return cty.NumberIntVal(+1), nil
+		default:
+			return cty.NumberIntVal(0), nil
+		}
+	},
+})
+
+// ParseIntFunc is a function that parses a string argument and returns an integer of the specified base.
+var ParseIntFunc = function.New(&function.Spec{
+	Description: `Parses the given string as a number of the given base, or raises an error if the string contains invalid characters.`,
+	Params: []function.Parameter{
+		{
+			Name: "number",
+			Type: cty.DynamicPseudoType,
+		},
+		{
+			Name: "base",
+			Type: cty.Number,
+		},
+	},
+
+	Type: func(args []cty.Value) (cty.Type, error) {
+		if !args[0].Type().Equals(cty.String) {
+			return cty.Number, function.NewArgErrorf(0, "first argument must be a string, not %s", args[0].Type().FriendlyName())
+		}
+		return cty.Number, nil
+	},
+
+	Impl: func(args []cty.Value, retType cty.Type) (cty.Value, error) {
+		var numstr string
+		var base int
+		var err error
+
+		if err = gocty.FromCtyValue(args[0], &numstr); err != nil {
+			return cty.UnknownVal(cty.String), function.NewArgError(0, err)
+		}
+
+		if err = gocty.FromCtyValue(args[1], &base); err != nil {
+			return cty.UnknownVal(cty.Number), function.NewArgError(1, err)
+		}
+
+		if base < 2 || base > 62 {
+			return cty.UnknownVal(cty.Number), function.NewArgErrorf(
+				1,
+				"base must be a whole number between 2 and 62 inclusive",
+			)
+		}
+
+		num, ok := (&big.Int{}).SetString(numstr, base)
+		if !ok {
+			return cty.UnknownVal(cty.Number), function.NewArgErrorf(
+				0,
+				"cannot parse %q as a base %d integer",
+				numstr,
+				base,
+			)
+		}
+
+		parsedNum := cty.NumberVal((&big.Float{}).SetInt(num))
+
+		return parsedNum, nil
 	},
 })
 
@@ -435,4 +653,35 @@ func Int(num cty.Value) (cty.Value, error) {
 		return cty.NilVal, fmt.Errorf("can't truncate infinity to an integer")
 	}
 	return IntFunc.Call([]cty.Value{num})
+}
+
+// Ceil returns the closest whole number greater than or equal to the given value.
+func Ceil(num cty.Value) (cty.Value, error) {
+	return CeilFunc.Call([]cty.Value{num})
+}
+
+// Floor returns the closest whole number lesser than or equal to the given value.
+func Floor(num cty.Value) (cty.Value, error) {
+	return FloorFunc.Call([]cty.Value{num})
+}
+
+// Log returns returns the logarithm of a given number in a given base.
+func Log(num, base cty.Value) (cty.Value, error) {
+	return LogFunc.Call([]cty.Value{num, base})
+}
+
+// Pow returns the logarithm of a given number in a given base.
+func Pow(num, power cty.Value) (cty.Value, error) {
+	return PowFunc.Call([]cty.Value{num, power})
+}
+
+// Signum determines the sign of a number, returning a number between -1 and
+// 1 to represent the sign.
+func Signum(num cty.Value) (cty.Value, error) {
+	return SignumFunc.Call([]cty.Value{num})
+}
+
+// ParseInt parses a string argument and returns an integer of the specified base.
+func ParseInt(num cty.Value, base cty.Value) (cty.Value, error) {
+	return ParseIntFunc.Call([]cty.Value{num, base})
 }

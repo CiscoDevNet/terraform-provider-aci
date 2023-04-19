@@ -8,8 +8,8 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/ciscoecosystem/aci-go-client/v2/client"
+	"github.com/ciscoecosystem/aci-go-client/v2/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
@@ -71,7 +71,7 @@ func getRemoteEPLoopProtectionPolicy(client *client.Client, dn string) (*models.
 	}
 	epLoopProtectP := models.EPLoopProtectionPolicyFromContainer(epLoopProtectPCont)
 	if epLoopProtectP.DistinguishedName == "" {
-		return nil, fmt.Errorf("EPLoopProtectionPolicy %s not found", epLoopProtectP.DistinguishedName)
+		return nil, fmt.Errorf("EP Loop Protection Policy %s not found", dn)
 	}
 	return epLoopProtectP, nil
 }
@@ -241,8 +241,7 @@ func resourceAciEPLoopProtectionPolicyRead(ctx context.Context, d *schema.Resour
 	dn := d.Id()
 	epLoopProtectP, err := getRemoteEPLoopProtectionPolicy(aciClient, dn)
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setEPLoopProtectionPolicyAttributes(epLoopProtectP, d)
 	if err != nil {

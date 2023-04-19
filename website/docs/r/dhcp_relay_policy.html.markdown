@@ -30,8 +30,8 @@ resource "aci_dhcp_relay_policy" "example" {
 ```
 
 ## Argument Reference
-- `tenant_dn` - (Required) Distinguished name of parent Tenant object.
 - `name` - (Required) Name of Object DHCP Relay Policy.
+- `tenant_dn` - (Optional) Distinguished name of parent Tenant object. Default Value is "uni/infra", which configures a global dhcp relay policy.
 - `annotation` - (Optional) Annotation for object DHCP Relay Policy.
 - `description` - (Optional) Description for object DHCP Relay Policy.
 - `mode` - (Optional) DHCP relay policy mode. Allowed Values are "visible" and "not-visible". Default Value is "visible".

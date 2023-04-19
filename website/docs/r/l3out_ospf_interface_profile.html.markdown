@@ -29,7 +29,7 @@ resource "aci_l3out_ospf_interface_profile" "example" {
 ## Argument Reference
 
 - `logical_interface_profile_dn` - (Required) Distinguished name of the parent logical interface profile object.
-- `auth_key` - (Required) OSPF authentication key for L3out OSPF interface profile object.
+- `auth_key` - (Optional) OSPF authentication key for L3out OSPF interface profile object.
 - `annotation` - (Optional) Annotation for L3out OSPF interface profile object.
 - `description` - (Optional) Description for L3out OSPF interface profile object.
 - `auth_key_id` - (Optional) Authentication key id for L3out OSPF interface profile object. Allowed ranges are from "1" to "255". The default value is "1".

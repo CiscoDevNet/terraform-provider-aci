@@ -7,8 +7,8 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/ciscoecosystem/aci-go-client/v2/client"
+	"github.com/ciscoecosystem/aci-go-client/v2/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
@@ -160,9 +160,8 @@ func resourceAciBgpPeerConnectivityProfile() *schema.Resource {
 			"local_asn_propagate": &schema.Schema{
 				Type:         schema.TypeString,
 				Optional:     true,
-				Computed:     true,
 				RequiredWith: []string{"local_asn"},
-
+				Computed:     true,
 				ValidateFunc: validation.StringInSlice([]string{
 					"dual-as",
 					"no-prepend",
@@ -211,7 +210,7 @@ func getRemoteBgpPeerConnectivityProfile(client *client.Client, dn string) (*mod
 	bgpPeerP := models.BgpPeerConnectivityProfileFromContainer(bgpPeerPCont)
 
 	if bgpPeerP.DistinguishedName == "" {
-		return nil, fmt.Errorf("BgpPeerConnectivityProfile %s not found", bgpPeerP.DistinguishedName)
+		return nil, fmt.Errorf("BGP Peer Connectivity Profile %s not found", dn)
 	}
 
 	return bgpPeerP, nil
@@ -539,6 +538,7 @@ func resourceAciBgpPeerConnectivityProfileCreate(ctx context.Context, d *schema.
 
 func resourceAciBgpPeerConnectivityProfileUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] BgpPeerConnectivityProfile: Beginning Update")
+	dn := d.Id()
 
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -623,38 +623,47 @@ func resourceAciBgpPeerConnectivityProfileUpdate(ctx context.Context, d *schema.
 	}
 
 	PeerConnectivityProfileDn := bgpPeerP.DistinguishedName
-	if _, ok := d.GetOk("local_asn"); ok {
+	if d.HasChange("local_asn") || d.HasChange("local_asn_propagate") {
+
+		err := aciClient.DeleteByDn(fmt.Sprintf("%s/localasn", dn), models.BgplocalasnpClassName)
+		if err != nil {
+			return diag.FromErr(err)
+		}
+
 		bgpLocalAsnPAttr := models.LocalAutonomousSystemProfileAttributes{}
 
 		if AsnPropagate, ok := d.GetOk("local_asn_propagate"); ok {
 			bgpLocalAsnPAttr.AsnPropagate = AsnPropagate.(string)
 		}
+
 		if LocalAsn, ok := d.GetOk("local_asn"); ok {
 			bgpLocalAsnPAttr.LocalAsn = LocalAsn.(string)
-		}
+			bgpLocalAsnP := models.NewLocalAutonomousSystemProfile(fmt.Sprintf("localasn"), PeerConnectivityProfileDn, desc, bgpLocalAsnPAttr)
 
-		bgpLocalAsnP := models.NewLocalAutonomousSystemProfile(fmt.Sprintf("localasn"), PeerConnectivityProfileDn, desc, bgpLocalAsnPAttr)
-		bgpLocalAsnP.Status = "modified"
-
-		err = aciClient.Save(bgpLocalAsnP)
-		if err != nil {
-			return diag.FromErr(err)
+			err = aciClient.Save(bgpLocalAsnP)
+			if err != nil {
+				return diag.FromErr(err)
+			}
 		}
 	}
 
-	if _, ok := d.GetOk("as_number"); ok {
+	if d.HasChange("as_number") {
+
+		err := aciClient.DeleteByDn(fmt.Sprintf("%s/as", dn), models.BgpaspClassName)
+		if err != nil {
+			return diag.FromErr(err)
+		}
+
 		bgpAsPAttr := models.BgpAutonomousSystemProfileAttributes{}
 
 		if Asn, ok := d.GetOk("as_number"); ok {
 			bgpAsPAttr.Asn = Asn.(string)
-		}
+			bgpAsP := models.NewBgpAutonomousSystemProfile(fmt.Sprintf("as"), PeerConnectivityProfileDn, desc, bgpAsPAttr)
 
-		bgpAsP := models.NewBgpAutonomousSystemProfile(fmt.Sprintf("as"), PeerConnectivityProfileDn, desc, bgpAsPAttr)
-		bgpAsP.Status = "modified"
-
-		err = aciClient.Save(bgpAsP)
-		if err != nil {
-			return diag.FromErr(err)
+			err = aciClient.Save(bgpAsP)
+			if err != nil {
+				return diag.FromErr(err)
+			}
 		}
 	}
 
@@ -730,8 +739,7 @@ func resourceAciBgpPeerConnectivityProfileRead(ctx context.Context, d *schema.Re
 
 	bgpPeerP, err := getRemoteBgpPeerConnectivityProfile(aciClient, dn)
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setBgpPeerConnectivityProfileAttributes(bgpPeerP, d)
 	if err != nil {
@@ -739,21 +747,20 @@ func resourceAciBgpPeerConnectivityProfileRead(ctx context.Context, d *schema.Re
 		return nil
 	}
 
-	if _, ok := d.GetOk("as_number"); ok {
-		bgpAsP, err := getRemoteBgpAutonomousSystemProfileFromBgpPeerConnectivityProfile(aciClient, fmt.Sprintf("%s/as", dn))
-		if err != nil {
-			d.SetId("")
-			return nil
-		}
+	bgpAsP, err := getRemoteBgpAutonomousSystemProfileFromBgpPeerConnectivityProfile(aciClient, fmt.Sprintf("%s/as", dn))
+	if err != nil {
+		log.Printf("[DEBUG] Error while reading bgpAsP %v", err)
+		d.Set("as_number", "")
+	} else {
 		setBgpAutonomousSystemProfileAttributesFromBgpPeerConnectivityProfile(bgpAsP, d)
 	}
 
-	if _, ok := d.GetOk("local_asn"); ok {
-		bgpLocalAsnP, err := getRemoteLocalAutonomousSystemProfileFromBgpPeerConnectivityProfile(aciClient, fmt.Sprintf("%s/localasn", dn))
-		if err != nil {
-			d.SetId("")
-			return nil
-		}
+	bgpLocalAsnP, err := getRemoteLocalAutonomousSystemProfileFromBgpPeerConnectivityProfile(aciClient, fmt.Sprintf("%s/localasn", dn))
+	if err != nil {
+		log.Printf("[DEBUG] Error while reading bgpLocalAsnP %v", err)
+		d.Set("local_asn", "")
+		d.Set("local_asn_propagate", "")
+	} else {
 		setLocalAutonomousSystemProfileAttributesFromBgpPeerConnectivityProfile(bgpLocalAsnP, d)
 	}
 

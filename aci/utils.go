@@ -9,8 +9,9 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/ciscoecosystem/aci-go-client/container"
+	"github.com/ciscoecosystem/aci-go-client/v2/client"
+	"github.com/ciscoecosystem/aci-go-client/v2/container"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
@@ -326,4 +327,66 @@ func containsString(s []string, e string) bool {
 		}
 	}
 	return false
+}
+
+func allowEmpty(err error, allow bool) error {
+	if allow && err.Error() == "Error retrieving Object: Object may not exists" {
+		return nil
+	} else {
+		return err
+	}
+}
+
+// getOldObjectsNotInNew returns elements that are in oldSet but not in newSet, based on the given keyName.
+func getOldObjectsNotInNew(keyName string, oldSet, newSet *schema.Set) (oldObjects []interface{}) {
+	for _, oldMap := range oldSet.List() {
+		found := false
+		for _, newMap := range newSet.List() {
+			if oldMap.(map[string]interface{})[keyName] == newMap.(map[string]interface{})[keyName] {
+				found = true
+				break
+			}
+		}
+		if !found {
+			oldObjects = append(oldObjects, oldMap)
+		}
+	}
+	return oldObjects
+}
+
+// Return the name of the object based on the given Distinguished Name
+func getTargetObjectName(paramMap map[string]interface{}, targetDn, targetName string) string {
+	if paramMap[targetDn] != "" {
+		return GetMOName(paramMap[targetDn].(string))
+	} else {
+		return paramMap[targetName].(string)
+	}
+}
+
+// Compares two list-of-strings and sends a new list-of-strings with only unique strings from the first list.
+// Reversing the two lists generates a new list with different outputs
+func getStringsFromListNotInOtherList(previousValueList interface{}, newValueList interface{}) (generatedList []interface{}) {
+	for _, oldValue := range previousValueList.([]interface{}) {
+		found := false
+		for _, newValue := range newValueList.([]interface{}) {
+			if oldValue == newValue {
+				found = true
+				break
+			}
+		}
+		if !found {
+			generatedList = append(generatedList, oldValue)
+		}
+	}
+	return generatedList
+}
+
+func errorForObjectNotFound(err error, dn string, d *schema.ResourceData) diag.Diagnostics {
+	if strings.HasSuffix(err.Error(), "not found") || (err.Error() == "Error retrieving Object: Object may not exist") {
+		log.Printf("[WARN] %s, removing from state: %s", err, dn)
+		d.SetId("")
+		return nil
+	} else {
+		return diag.FromErr(err)
+	}
 }

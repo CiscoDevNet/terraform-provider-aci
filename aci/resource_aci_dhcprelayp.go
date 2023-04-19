@@ -6,8 +6,8 @@ import (
 	"log"
 	"net"
 
-	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/ciscoecosystem/aci-go-client/v2/client"
+	"github.com/ciscoecosystem/aci-go-client/v2/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
@@ -29,7 +29,8 @@ func resourceAciDHCPRelayPolicy() *schema.Resource {
 		Schema: AppendBaseAttrSchema(map[string]*schema.Schema{
 			"tenant_dn": &schema.Schema{
 				Type:     schema.TypeString,
-				Required: true,
+				Default:  "uni/infra",
+				Optional: true,
 				ForceNew: true,
 			},
 
@@ -105,7 +106,7 @@ func getRemoteDHCPRelayPolicy(client *client.Client, dn string) (*models.DHCPRel
 	dhcpRelayP := models.DHCPRelayPolicyFromContainer(dhcpRelayPCont)
 
 	if dhcpRelayP.DistinguishedName == "" {
-		return nil, fmt.Errorf("DHCPRelayPolicy %s not found", dhcpRelayP.DistinguishedName)
+		return nil, fmt.Errorf("DHCP Relay Policy %s not found", dn)
 	}
 
 	return dhcpRelayP, nil
@@ -313,8 +314,7 @@ func resourceAciDHCPRelayPolicyRead(ctx context.Context, d *schema.ResourceData,
 	dhcpRelayP, err := getRemoteDHCPRelayPolicy(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setDHCPRelayPolicyAttributes(dhcpRelayP, d)
 	if err != nil {

@@ -6,8 +6,8 @@ import (
 	"log"
 	"reflect"
 
-	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/ciscoecosystem/aci-go-client/v2/client"
+	"github.com/ciscoecosystem/aci-go-client/v2/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -96,7 +96,7 @@ func getRemoteDHCPOptionPolicy(client *client.Client, dn string) (*models.DHCPOp
 	}
 	dhcpOptionPol := models.DHCPOptionPolicyFromContainer(dhcpOptionPolCont)
 	if dhcpOptionPol.DistinguishedName == "" {
-		return nil, fmt.Errorf("DHCPOptionPolicy %s not found", dn)
+		return nil, fmt.Errorf("DHCP Option Policy %s not found", dn)
 	}
 	return dhcpOptionPol, nil
 }
@@ -345,8 +345,7 @@ func resourceAciDHCPOptionPolicyRead(ctx context.Context, d *schema.ResourceData
 	dhcpOptionPol, err := getRemoteDHCPOptionPolicy(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setDHCPOptionPolicyAttributes(dhcpOptionPol, d)
 	if err != nil {

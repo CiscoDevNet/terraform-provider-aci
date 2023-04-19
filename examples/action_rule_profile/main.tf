@@ -42,6 +42,12 @@ resource "aci_action_rule_profile" "example" {
     order = 20
     asn   = 30
   }
+  set_dampening = {
+    half_life         = 10 # Half time must be at least 9% of the maximum suppress time
+    reuse             = 1
+    suppress          = 10  # Suppress limit must be larger than reuse limit
+    max_suppress_time = 100 # Max Suppress Time - should not be less than suppress limit
+  }
 }
 
 resource "aci_action_rule_profile" "example2" {

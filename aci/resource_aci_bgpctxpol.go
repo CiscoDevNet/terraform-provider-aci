@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/ciscoecosystem/aci-go-client/v2/client"
+	"github.com/ciscoecosystem/aci-go-client/v2/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -85,7 +85,7 @@ func getRemoteBGPTimersPolicy(client *client.Client, dn string) (*models.BGPTime
 	bgpCtxPol := models.BGPTimersPolicyFromContainer(bgpCtxPolCont)
 
 	if bgpCtxPol.DistinguishedName == "" {
-		return nil, fmt.Errorf("BGPTimersPolicy %s not found", bgpCtxPol.DistinguishedName)
+		return nil, fmt.Errorf("BGP Timers Policy %s not found", dn)
 	}
 
 	return bgpCtxPol, nil
@@ -243,8 +243,7 @@ func resourceAciBGPTimersPolicyRead(ctx context.Context, d *schema.ResourceData,
 	bgpCtxPol, err := getRemoteBGPTimersPolicy(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setBGPTimersPolicyAttributes(bgpCtxPol, d)
 	if err != nil {

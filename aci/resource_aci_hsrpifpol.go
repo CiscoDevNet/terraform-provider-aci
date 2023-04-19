@@ -7,8 +7,8 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/ciscoecosystem/aci-go-client/v2/client"
+	"github.com/ciscoecosystem/aci-go-client/v2/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
@@ -82,7 +82,7 @@ func getRemoteHSRPInterfacePolicy(client *client.Client, dn string) (*models.HSR
 	hsrpIfPol := models.HSRPInterfacePolicyFromContainer(hsrpIfPolCont)
 
 	if hsrpIfPol.DistinguishedName == "" {
-		return nil, fmt.Errorf("HSRPInterfacePolicy %s not found", hsrpIfPol.DistinguishedName)
+		return nil, fmt.Errorf("HSRP Interface Policy %s not found", dn)
 	}
 
 	return hsrpIfPol, nil
@@ -247,8 +247,7 @@ func resourceAciHSRPInterfacePolicyRead(ctx context.Context, d *schema.ResourceD
 	hsrpIfPol, err := getRemoteHSRPInterfacePolicy(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setHSRPInterfacePolicyAttributes(hsrpIfPol, d)
 

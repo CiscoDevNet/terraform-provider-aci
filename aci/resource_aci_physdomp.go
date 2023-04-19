@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/ciscoecosystem/aci-go-client/v2/client"
+	"github.com/ciscoecosystem/aci-go-client/v2/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -76,7 +76,7 @@ func getRemotePhysicalDomain(client *client.Client, dn string) (*models.Physical
 	physDomP := models.PhysicalDomainFromContainer(physDomPCont)
 
 	if physDomP.DistinguishedName == "" {
-		return nil, fmt.Errorf("PhysicalDomain %s not found", physDomP.DistinguishedName)
+		return nil, fmt.Errorf("Physical Domain %s not found", dn)
 	}
 
 	return physDomP, nil
@@ -96,6 +96,54 @@ func setPhysicalDomainAttributes(physDomP *models.PhysicalDomain, d *schema.Reso
 	return d, nil
 }
 
+func getAndSetRelationinfraRsVlanNsFromPhysicalDomain(client *client.Client, dn string, d *schema.ResourceData) (*schema.ResourceData, error) {
+	infraRsVlanNsData, err := client.ReadRelationinfraRsVlanNsFromPhysicalDomain(dn)
+	if err != nil {
+		log.Printf("[DEBUG] Error while reading relation infraRsVlanNs %v", err)
+		d.Set("relation_infra_rs_vlan_ns", "")
+		return d, err
+	} else {
+		d.Set("relation_infra_rs_vlan_ns", infraRsVlanNsData.(string))
+	}
+	return d, nil
+}
+
+func getAndSetRelationinfraRsVlanNsDefFromPhysicalDomain(client *client.Client, dn string, d *schema.ResourceData) (*schema.ResourceData, error) {
+	infraRsVlanNsDefData, err := client.ReadRelationinfraRsVlanNsDefFromPhysicalDomain(dn)
+	if err != nil {
+		log.Printf("[DEBUG] Error while reading relation infraRsVlanNsDef %v", err)
+		d.Set("relation_infra_rs_vlan_ns_def", "")
+		return d, err
+	} else {
+		d.Set("relation_infra_rs_vlan_ns_def", infraRsVlanNsDefData.(string))
+	}
+	return d, nil
+}
+
+func getAndSetRelationinfraRsVipAddrNsFromPhysicalDomain(client *client.Client, dn string, d *schema.ResourceData) (*schema.ResourceData, error) {
+	infraRsVipAddrNsData, err := client.ReadRelationinfraRsVipAddrNsFromPhysicalDomain(dn)
+	if err != nil {
+		log.Printf("[DEBUG] Error while reading relation infraRsVipAddrNs %v", err)
+		d.Set("relation_infra_rs_vip_addr_ns", "")
+		return d, err
+	} else {
+		d.Set("relation_infra_rs_vip_addr_ns", infraRsVipAddrNsData.(string))
+	}
+	return d, nil
+}
+
+func getAndSetRelationinfraRsDomVxlanNsDefFromPhysicalDomain(client *client.Client, dn string, d *schema.ResourceData) (*schema.ResourceData, error) {
+	infraRsDomVxlanNsDefData, err := client.ReadRelationinfraRsDomVxlanNsDefFromPhysicalDomain(dn)
+	if err != nil {
+		log.Printf("[DEBUG] Error while reading relation infraRsDomVxlanNsDef %v", err)
+		d.Set("relation_infra_rs_dom_vxlan_ns_def", "")
+		return d, err
+	} else {
+		d.Set("relation_infra_rs_dom_vxlan_ns_def", infraRsDomVxlanNsDefData.(string))
+	}
+	return d, nil
+}
+
 func resourceAciPhysicalDomainImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
 	log.Printf("[DEBUG] %s: Beginning Import", d.Id())
 	aciClient := m.(*client.Client)
@@ -111,6 +159,39 @@ func resourceAciPhysicalDomainImport(d *schema.ResourceData, m interface{}) ([]*
 	if err != nil {
 		return nil, err
 	}
+
+	// infraRsVlanNs - Beginning Import
+	log.Printf("[DEBUG] %s: infraRsVlanNs - Beginning Import with parent DN", dn)
+	_, err = getAndSetRelationinfraRsVlanNsFromPhysicalDomain(aciClient, dn, d)
+	if err == nil {
+		log.Printf("[DEBUG] %s: infraRsVlanNs - Import finished successfully", d.Get("relation_infra_rs_vlan_ns"))
+	}
+	// infraRsVlanNs - Import finished successfully
+
+	// infraRsVlanNsDef - Beginning Import
+	log.Printf("[DEBUG] %s: infraRsVlanNsDef - Beginning Import with parent DN", dn)
+	_, err = getAndSetRelationinfraRsVlanNsDefFromPhysicalDomain(aciClient, dn, d)
+	if err == nil {
+		log.Printf("[DEBUG] %s: infraRsVlanNsDef - Import finished successfully", d.Get("relation_infra_rs_vlan_ns_def"))
+	}
+	// infraRsVlanNsDef - Import finished successfully
+
+	// infraRsVipAddrNs - Beginning Import
+	log.Printf("[DEBUG] %s: infraRsVipAddrNs - Beginning Import with parent DN", dn)
+	_, err = getAndSetRelationinfraRsVipAddrNsFromPhysicalDomain(aciClient, dn, d)
+	if err == nil {
+		log.Printf("[DEBUG] %s: infraRsVipAddrNs - Import finished successfully", d.Get("relation_infra_rs_vip_addr_ns"))
+	}
+	// infraRsVipAddrNs - Import finished successfully
+
+	// infraRsDomVxlanNsDef - Beginning Import
+	log.Printf("[DEBUG] %s: infraRsDomVxlanNsDef - Beginning Import with parent DN", dn)
+	_, err = getAndSetRelationinfraRsDomVxlanNsDefFromPhysicalDomain(aciClient, dn, d)
+	if err == nil {
+		log.Printf("[DEBUG] %s: infraRsDomVxlanNsDef - Import finished successfully", d.Get("relation_infra_rs_dom_vxlan_ns_def"))
+	}
+	// infraRsDomVxlanNsDef - Import finished successfully
+
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
@@ -317,49 +398,45 @@ func resourceAciPhysicalDomainRead(ctx context.Context, d *schema.ResourceData, 
 	physDomP, err := getRemotePhysicalDomain(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setPhysicalDomainAttributes(physDomP, d)
 	if err != nil {
 		d.SetId("")
 		return nil
 	}
-	infraRsVlanNsData, err := aciClient.ReadRelationinfraRsVlanNsFromPhysicalDomain(dn)
-	if err != nil {
-		log.Printf("[DEBUG] Error while reading relation infraRsVlanNs %v", err)
-		d.Set("relation_infra_rs_vlan_ns", "")
 
-	} else {
-		setRelationAttribute(d, "relation_infra_rs_vlan_ns", infraRsVlanNsData.(string))
+	// infraRsVlanNs - Beginning Read
+	log.Printf("[DEBUG] %s: infraRsVlanNs - Beginning Read with parent DN", dn)
+	_, err = getAndSetRelationinfraRsVlanNsFromPhysicalDomain(aciClient, dn, d)
+	if err == nil {
+		log.Printf("[DEBUG] %s: infraRsVlanNs - Read finished successfully", d.Get("relation_infra_rs_vlan_ns"))
 	}
+	// infraRsVlanNs - Read finished successfully
 
-	infraRsVlanNsDefData, err := aciClient.ReadRelationinfraRsVlanNsDefFromPhysicalDomain(dn)
-	if err != nil {
-		log.Printf("[DEBUG] Error while reading relation infraRsVlanNsDef %v", err)
-		d.Set("relation_infra_rs_vlan_ns_def", "")
-
-	} else {
-		setRelationAttribute(d, "relation_infra_rs_vlan_ns_def", infraRsVlanNsDefData.(string))
+	// infraRsVlanNsDef - Beginning Read
+	log.Printf("[DEBUG] %s: infraRsVlanNsDef - Beginning Read with parent DN", dn)
+	_, err = getAndSetRelationinfraRsVlanNsDefFromPhysicalDomain(aciClient, dn, d)
+	if err == nil {
+		log.Printf("[DEBUG] %s: infraRsVlanNsDef - Read finished successfully", d.Get("relation_infra_rs_vlan_ns_def"))
 	}
+	// infraRsVlanNsDef - Read finished successfully
 
-	infraRsVipAddrNsData, err := aciClient.ReadRelationinfraRsVipAddrNsFromPhysicalDomain(dn)
-	if err != nil {
-		log.Printf("[DEBUG] Error while reading relation infraRsVipAddrNs %v", err)
-		d.Set("relation_infra_rs_vip_addr_ns", "")
-
-	} else {
-		setRelationAttribute(d, "relation_infra_rs_vip_addr_ns", infraRsVipAddrNsData.(string))
+	// infraRsVipAddrNs - Beginning Read
+	log.Printf("[DEBUG] %s: infraRsVipAddrNs - Beginning Read with parent DN", dn)
+	_, err = getAndSetRelationinfraRsVipAddrNsFromPhysicalDomain(aciClient, dn, d)
+	if err == nil {
+		log.Printf("[DEBUG] %s: infraRsVipAddrNs - Read finished successfully", d.Get("relation_infra_rs_vip_addr_ns"))
 	}
+	// infraRsVipAddrNs - Read finished successfully
 
-	infraRsDomVxlanNsDefData, err := aciClient.ReadRelationinfraRsDomVxlanNsDefFromPhysicalDomain(dn)
-	if err != nil {
-		log.Printf("[DEBUG] Error while reading relation infraRsDomVxlanNsDef %v", err)
-		d.Set("relation_infra_rs_dom_vxlan_ns_def", "")
-
-	} else {
-		setRelationAttribute(d, "relation_infra_rs_dom_vxlan_ns_def", infraRsDomVxlanNsDefData.(string))
+	// infraRsDomVxlanNsDef - Beginning Read
+	log.Printf("[DEBUG] %s: infraRsDomVxlanNsDef - Beginning Read with parent DN", dn)
+	_, err = getAndSetRelationinfraRsDomVxlanNsDefFromPhysicalDomain(aciClient, dn, d)
+	if err == nil {
+		log.Printf("[DEBUG] %s: infraRsDomVxlanNsDef - Read finished successfully", d.Get("relation_infra_rs_dom_vxlan_ns_def"))
 	}
+	// infraRsDomVxlanNsDef - Read finished successfully
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 

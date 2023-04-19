@@ -7,8 +7,8 @@ import (
 	"reflect"
 	"sort"
 
-	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/ciscoecosystem/aci-go-client/v2/client"
+	"github.com/ciscoecosystem/aci-go-client/v2/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
@@ -157,7 +157,7 @@ func getRemoteCloudEPg(client *client.Client, dn string) (*models.CloudEPg, erro
 	cloudEPg := models.CloudEPgFromContainer(cloudEPgCont)
 
 	if cloudEPg.DistinguishedName == "" {
-		return nil, fmt.Errorf("CloudEPg %s not found", cloudEPg.DistinguishedName)
+		return nil, fmt.Errorf("Cloud EPG %s not found", dn)
 	}
 
 	return cloudEPg, nil
@@ -725,8 +725,7 @@ func resourceAciCloudEPgRead(ctx context.Context, d *schema.ResourceData, m inte
 	cloudEPg, err := getRemoteCloudEPg(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setCloudEPgAttributes(cloudEPg, d)
 	if err != nil {

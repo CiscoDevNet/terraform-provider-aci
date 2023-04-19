@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/ciscoecosystem/aci-go-client/v2/client"
+	"github.com/ciscoecosystem/aci-go-client/v2/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
@@ -72,6 +72,7 @@ func testAccCheckAciVMMDomainConfig_basic(description, ctrl_knob string) string 
 		delimiter           = ""
 		enable_ave          = "no"
 		enable_tag          = "no"
+		enable_vm_folder    = "no"
 		encap_mode          = "unknown"
 		enf_pref            = "hw"
 		ep_inventory_type   = "on-link"
@@ -186,6 +187,10 @@ func testAccCheckAciVMMDomainAttributes(description, ctrl_knob string, vmm_domai
 
 		if "no" != vmm_domain.EnableTag {
 			return fmt.Errorf("Bad vmm_domain enable_tag %s", vmm_domain.EnableTag)
+		}
+
+		if "no" != vmm_domain.EnableVmFolder {
+			return fmt.Errorf("Bad vmm_domain enable_vm_folder %s", vmm_domain.EnableVmFolder)
 		}
 
 		if "unknown" != vmm_domain.EncapMode {

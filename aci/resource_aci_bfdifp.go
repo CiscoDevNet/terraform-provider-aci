@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/ciscoecosystem/aci-go-client/v2/client"
+	"github.com/ciscoecosystem/aci-go-client/v2/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
@@ -77,7 +77,7 @@ func getRemoteBFDInterfaceProfile(client *client.Client, dn string) (*models.BFD
 	bfdIfP := models.BFDInterfaceProfileFromContainer(bfdIfPCont)
 
 	if bfdIfP.DistinguishedName == "" {
-		return nil, fmt.Errorf("InterfaceProfile %s not found", bfdIfP.DistinguishedName)
+		return nil, fmt.Errorf("Interface Profile %s not found", dn)
 	}
 
 	return bfdIfP, nil
@@ -262,8 +262,7 @@ func resourceAciBFDInterfaceProfileRead(ctx context.Context, d *schema.ResourceD
 	bfdIfP, err := getRemoteBFDInterfaceProfile(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setBFDInterfaceProfileAttributes(bfdIfP, d)
 	if err != nil {

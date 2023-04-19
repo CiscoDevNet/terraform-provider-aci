@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/ciscoecosystem/aci-go-client/v2/client"
+	"github.com/ciscoecosystem/aci-go-client/v2/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
@@ -64,7 +64,7 @@ func getRemoteDefaultRadiusAuthenticationSettings(client *client.Client, dn stri
 	}
 	aaaPingEp := models.DefaultRadiusAuthenticationSettingsFromContainer(aaaPingEpCont)
 	if aaaPingEp.DistinguishedName == "" {
-		return nil, fmt.Errorf("DefaultRadiusAuthenticationSettings %s not found", aaaPingEp.DistinguishedName)
+		return nil, fmt.Errorf("Default Radius Authentication Settings %s not found", dn)
 	}
 	return aaaPingEp, nil
 }
@@ -76,7 +76,7 @@ func getRemoteAAAAuthentication(client *client.Client, dn string) (*models.AAAAu
 	}
 	aaaAuthRealm := models.AAAAuthenticationFromContainer(aaaAuthRealmCont)
 	if aaaAuthRealm.DistinguishedName == "" {
-		return nil, fmt.Errorf("AAAAuthentication %s not found", aaaAuthRealm.DistinguishedName)
+		return nil, fmt.Errorf("AAA Authentication %s not found", dn)
 	}
 	return aaaAuthRealm, nil
 }
@@ -244,12 +244,12 @@ func resourceAciAAAAuthenticationUpdate(ctx context.Context, d *schema.ResourceD
 
 func resourceAciAAAAuthenticationRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
+	dn := d.Id()
 	aciClient := m.(*client.Client)
 	dnauthrealm := "uni/userext/authrealm"
 	aaaAuthRealm, err := getRemoteAAAAuthentication(aciClient, dnauthrealm)
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setAAAAuthenticationAttributes(aaaAuthRealm, d)
 	if err != nil {
@@ -259,8 +259,7 @@ func resourceAciAAAAuthenticationRead(ctx context.Context, d *schema.ResourceDat
 	dnpingep := "uni/userext/pingext"
 	aaaPingEp, err := getRemoteDefaultRadiusAuthenticationSettings(aciClient, dnpingep)
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setDefaultRadiusAuthenticationSettingsAttributes(aaaPingEp, d)
 	if err != nil {

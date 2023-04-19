@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/ciscoecosystem/aci-go-client/v2/client"
+	"github.com/ciscoecosystem/aci-go-client/v2/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -60,13 +60,13 @@ func getRemoteSPANSourcedestinationGroupMatchLabel(client *client.Client, dn str
 	spanSpanLbl := models.SPANSourcedestinationGroupMatchLabelFromContainer(spanSpanLblCont)
 
 	if spanSpanLbl.DistinguishedName == "" {
-		return nil, fmt.Errorf("SPANSourcedestinationGroupMatchLabel %s not found", spanSpanLbl.DistinguishedName)
+		return nil, fmt.Errorf("SPAN Source Destination Group Match Label %s not found", dn)
 	}
 
 	return spanSpanLbl, nil
 }
 
-func setSPANSourcedestinationGroupMatchLabelAttributes(spanSpanLbl *models.SPANSourcedestinationGroupMatchLabel, d *schema.ResourceData) *schema.ResourceData {
+func setSPANSourcedestinationGroupMatchLabelAttributes(spanSpanLbl *models.SPANSourcedestinationGroupMatchLabel, d *schema.ResourceData) (*schema.ResourceData, error) {
 	dn := d.Id()
 	d.SetId(spanSpanLbl.DistinguishedName)
 	d.Set("description", spanSpanLbl.Description)
@@ -79,7 +79,7 @@ func setSPANSourcedestinationGroupMatchLabelAttributes(spanSpanLbl *models.SPANS
 	d.Set("annotation", spanSpanLblMap["annotation"])
 	d.Set("name_alias", spanSpanLblMap["nameAlias"])
 	d.Set("tag", spanSpanLblMap["tag"])
-	return d
+	return d, nil
 }
 
 func resourceAciSPANSourcedestinationGroupMatchLabelImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -97,7 +97,10 @@ func resourceAciSPANSourcedestinationGroupMatchLabelImport(d *schema.ResourceDat
 	name := spanSpanLblMap["name"]
 	pDN := GetParentDn(dn, fmt.Sprintf("/spanlbl-%s", name))
 	d.Set("span_source_group_dn", pDN)
-	schemaFilled := setSPANSourcedestinationGroupMatchLabelAttributes(spanSpanLbl, d)
+	schemaFilled, err := setSPANSourcedestinationGroupMatchLabelAttributes(spanSpanLbl, d)
+	if err != nil {
+		return nil, err
+	}
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
@@ -186,10 +189,13 @@ func resourceAciSPANSourcedestinationGroupMatchLabelRead(ctx context.Context, d 
 	spanSpanLbl, err := getRemoteSPANSourcedestinationGroupMatchLabel(aciClient, dn)
 
 	if err != nil {
+		return errorForObjectNotFound(err, dn, d)
+	}
+	_, err = setSPANSourcedestinationGroupMatchLabelAttributes(spanSpanLbl, d)
+	if err != nil {
 		d.SetId("")
 		return nil
 	}
-	setSPANSourcedestinationGroupMatchLabelAttributes(spanSpanLbl, d)
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 

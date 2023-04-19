@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/ciscoecosystem/aci-go-client/v2/client"
+	"github.com/ciscoecosystem/aci-go-client/v2/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -83,6 +83,13 @@ func dataSourceAciActionRuleProfile() *schema.Resource {
 							Type:     schema.TypeString,
 						},
 					},
+				},
+			},
+			"set_dampening": {
+				Optional: true,
+				Type:     schema.TypeMap,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
 				},
 			},
 		})),
@@ -229,6 +236,17 @@ func dataSourceAciActionRuleProfileRead(ctx context.Context, d *schema.ResourceD
 		return diag.FromErr(err)
 	}
 	// rtctrlSetASPathASN - Read finished successfully
+
+	// rtctrlSetDamp - Beginning of Read
+	setDampeningDn := rtctrlAttrP.DistinguishedName + fmt.Sprintf("/"+models.RnrtctrlSetDamp)
+	rtctrlSetDamp, err := getRemoteRtctrlSetDamp(aciClient, setDampeningDn)
+	if err == nil {
+		_, err = setRtctrlSetDampAttributes(rtctrlSetDamp, d)
+		if err != nil {
+			return diag.FromErr(err)
+		}
+	}
+	// rtctrlSetDamp - Read finished successfully
 
 	return nil
 }

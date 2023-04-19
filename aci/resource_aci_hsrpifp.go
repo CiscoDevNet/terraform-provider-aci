@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/ciscoecosystem/aci-go-client/v2/client"
+	"github.com/ciscoecosystem/aci-go-client/v2/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
@@ -65,7 +65,7 @@ func getRemoteL3outHSRPInterfaceProfile(client *client.Client, dn string) (*mode
 	hsrpIfP := models.L3outHSRPInterfaceProfileFromContainer(hsrpIfPCont)
 
 	if hsrpIfP.DistinguishedName == "" {
-		return nil, fmt.Errorf("L3outHSRPInterfaceProfile %s not found", hsrpIfP.DistinguishedName)
+		return nil, fmt.Errorf("L3Out HSRP Interface Profile %s not found", dn)
 	}
 
 	return hsrpIfP, nil
@@ -237,8 +237,7 @@ func resourceAciL3outHSRPInterfaceProfileRead(ctx context.Context, d *schema.Res
 	hsrpIfP, err := getRemoteL3outHSRPInterfaceProfile(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setL3outHSRPInterfaceProfileAttributes(hsrpIfP, d)
 

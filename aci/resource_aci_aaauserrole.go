@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/ciscoecosystem/aci-go-client/v2/client"
+	"github.com/ciscoecosystem/aci-go-client/v2/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
@@ -55,7 +55,7 @@ func getRemoteUserRole(client *client.Client, dn string) (*models.UserRole, erro
 	}
 	aaaUserRole := models.UserRoleFromContainer(aaaUserRoleCont)
 	if aaaUserRole.DistinguishedName == "" {
-		return nil, fmt.Errorf("UserRole %s not found", aaaUserRole.DistinguishedName)
+		return nil, fmt.Errorf("User Role %s not found", dn)
 	}
 	return aaaUserRole, nil
 }
@@ -170,8 +170,7 @@ func resourceAciUserRoleRead(ctx context.Context, d *schema.ResourceData, m inte
 	dn := d.Id()
 	aaaUserRole, err := getRemoteUserRole(aciClient, dn)
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setUserRoleAttributes(aaaUserRole, d)
 	if err != nil {

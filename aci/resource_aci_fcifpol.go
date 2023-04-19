@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/ciscoecosystem/aci-go-client/v2/client"
+	"github.com/ciscoecosystem/aci-go-client/v2/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
@@ -111,7 +111,7 @@ func getRemoteInterfaceFCPolicy(client *client.Client, dn string) (*models.Inter
 	fcIfPol := models.InterfaceFCPolicyFromContainer(fcIfPolCont)
 
 	if fcIfPol.DistinguishedName == "" {
-		return nil, fmt.Errorf("InterfaceFCPolicy %s not found", fcIfPol.DistinguishedName)
+		return nil, fmt.Errorf("Interface FC Policy %s not found", dn)
 	}
 
 	return fcIfPol, nil
@@ -265,8 +265,7 @@ func resourceAciInterfaceFCPolicyRead(ctx context.Context, d *schema.ResourceDat
 	fcIfPol, err := getRemoteInterfaceFCPolicy(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setInterfaceFCPolicyAttributes(fcIfPol, d)
 	if err != nil {

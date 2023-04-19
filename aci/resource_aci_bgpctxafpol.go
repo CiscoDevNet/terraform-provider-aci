@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/ciscoecosystem/aci-go-client/v2/client"
+	"github.com/ciscoecosystem/aci-go-client/v2/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
@@ -96,7 +96,7 @@ func getRemoteBGPAddressFamilyContextPolicy(client *client.Client, dn string) (*
 	bgpCtxAfPol := models.BGPAddressFamilyContextPolicyFromContainer(bgpCtxAfPolCont)
 
 	if bgpCtxAfPol.DistinguishedName == "" {
-		return nil, fmt.Errorf("BGPAddressFamilyContextPolicy %s not found", bgpCtxAfPol.DistinguishedName)
+		return nil, fmt.Errorf("BGP Address Family Context Policy %s not found", dn)
 	}
 
 	return bgpCtxAfPol, nil
@@ -270,8 +270,7 @@ func resourceAciBGPAddressFamilyContextPolicyRead(ctx context.Context, d *schema
 	bgpCtxAfPol, err := getRemoteBGPAddressFamilyContextPolicy(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 
 	if bgpCtxAfPol.Ctrl == "" {

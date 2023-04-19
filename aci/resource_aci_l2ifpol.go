@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/ciscoecosystem/aci-go-client/v2/client"
+	"github.com/ciscoecosystem/aci-go-client/v2/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
@@ -82,7 +82,7 @@ func getRemoteL2InterfacePolicy(client *client.Client, dn string) (*models.L2Int
 	l2IfPol := models.L2InterfacePolicyFromContainer(l2IfPolCont)
 
 	if l2IfPol.DistinguishedName == "" {
-		return nil, fmt.Errorf("L2InterfacePolicy %s not found", l2IfPol.DistinguishedName)
+		return nil, fmt.Errorf("L2 Interface Policy %s not found", dn)
 	}
 
 	return l2IfPol, nil
@@ -216,8 +216,7 @@ func resourceAciL2InterfacePolicyRead(ctx context.Context, d *schema.ResourceDat
 	l2IfPol, err := getRemoteL2InterfacePolicy(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setL2InterfacePolicyAttributes(l2IfPol, d)
 	if err != nil {

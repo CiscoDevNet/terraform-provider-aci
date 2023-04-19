@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/ciscoecosystem/aci-go-client/v2/client"
+	"github.com/ciscoecosystem/aci-go-client/v2/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
@@ -109,7 +109,7 @@ func getRemoteBFDInterfacePolicy(client *client.Client, dn string) (*models.BFDI
 	bfdIfPol := models.BFDInterfacePolicyFromContainer(bfdIfPolCont)
 
 	if bfdIfPol.DistinguishedName == "" {
-		return nil, fmt.Errorf("BFDInterfacePolicy %s not found", bfdIfPol.DistinguishedName)
+		return nil, fmt.Errorf("BFD Interface Policy %s not found", dn)
 	}
 
 	return bfdIfPol, nil
@@ -305,8 +305,7 @@ func resourceAciBFDInterfacePolicyRead(ctx context.Context, d *schema.ResourceDa
 	bfdIfPol, err := getRemoteBFDInterfacePolicy(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 
 	if bfdIfPol.Ctrl == "" {

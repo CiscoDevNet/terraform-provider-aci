@@ -54,3 +54,8 @@ data "aci_action_rule_profile" "example" {
 * `set_as_path_prepend_as` - (Optional) A block representing ASNs configured as Set As Path - Prepend AS of the Action Rule Profile object. Type: Block.
   * `asn` - ASN prepended to Set AS Path.
   * `order` - Order in which the ASN is prepended to Set AS Path.
+* `set_dampening` - (Optional) A block representing the attributes of Set Dampening object. Type: Block.
+  * `half_life` - Half Life of the Set Dampening object.
+  * `reuse` - Reuse Limit of the Set Dampening object.
+  * `suppress` - Suppress Limit of the Set Dampening object.
+  * `max_suppress_time` - Max Suppress Time of the Set Dampening object.

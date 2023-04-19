@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/ciscoecosystem/aci-go-client/v2/client"
+	"github.com/ciscoecosystem/aci-go-client/v2/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
@@ -111,7 +111,7 @@ func getRemoteCloudAWSProvider(client *client.Client, dn string) (*models.CloudA
 	cloudAwsProvider := models.CloudAWSProviderFromContainer(cloudAwsProviderCont)
 
 	if cloudAwsProvider.DistinguishedName == "" {
-		return nil, fmt.Errorf("CloudAWSProvider %s not found", cloudAwsProvider.DistinguishedName)
+		return nil, fmt.Errorf("Cloud AWS Provider %s not found", dn)
 	}
 
 	return cloudAwsProvider, nil
@@ -293,8 +293,7 @@ func resourceAciCloudAWSProviderRead(ctx context.Context, d *schema.ResourceData
 	cloudAwsProvider, err := getRemoteCloudAWSProvider(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setCloudAWSProviderAttributes(cloudAwsProvider, d)
 	if err != nil {

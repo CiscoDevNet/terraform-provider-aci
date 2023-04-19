@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/ciscoecosystem/aci-go-client/v2/client"
+	"github.com/ciscoecosystem/aci-go-client/v2/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -49,7 +49,7 @@ func getRemoteLeafInterfaceProfile(client *client.Client, dn string) (*models.Le
 	infraAccPortP := models.LeafInterfaceProfileFromContainer(infraAccPortPCont)
 
 	if infraAccPortP.DistinguishedName == "" {
-		return nil, fmt.Errorf("LeafInterfaceProfile %s not found", infraAccPortP.DistinguishedName)
+		return nil, fmt.Errorf("Leaf Interface Profile %s not found", dn)
 	}
 
 	return infraAccPortP, nil
@@ -168,8 +168,7 @@ func resourceAciLeafInterfaceProfileRead(ctx context.Context, d *schema.Resource
 	infraAccPortP, err := getRemoteLeafInterfaceProfile(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 
 	_, err = setLeafInterfaceProfileAttributes(infraAccPortP, d)

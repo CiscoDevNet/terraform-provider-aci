@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/ciscoecosystem/aci-go-client/v2/client"
+	"github.com/ciscoecosystem/aci-go-client/v2/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
@@ -61,7 +61,7 @@ func getRemoteFabricNodeControl(client *client.Client, dn string) (*models.Fabri
 	}
 	fabricNodeControl := models.FabricNodeControlFromContainer(fabricNodeControlCont)
 	if fabricNodeControl.DistinguishedName == "" {
-		return nil, fmt.Errorf("FabricNodeControl %s not found", fabricNodeControl.DistinguishedName)
+		return nil, fmt.Errorf("Fabric Node Control %s not found", dn)
 	}
 	return fabricNodeControl, nil
 }
@@ -189,8 +189,7 @@ func resourceAciFabricNodeControlRead(ctx context.Context, d *schema.ResourceDat
 	dn := d.Id()
 	fabricNodeControl, err := getRemoteFabricNodeControl(aciClient, dn)
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setFabricNodeControlAttributes(fabricNodeControl, d)
 	if err != nil {

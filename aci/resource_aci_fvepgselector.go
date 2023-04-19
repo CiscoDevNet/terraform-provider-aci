@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/ciscoecosystem/aci-go-client/v2/client"
+	"github.com/ciscoecosystem/aci-go-client/v2/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -50,7 +50,7 @@ func getRemoteEndpointSecurityGroupEPgSelector(client *client.Client, dn string)
 	}
 	fvEPgSelector := models.EndpointSecurityGroupEPgSelectorFromContainer(fvEPgSelectorCont)
 	if fvEPgSelector.DistinguishedName == "" {
-		return nil, fmt.Errorf("EndpointSecurityGroupEPgSelector %s not found", fvEPgSelector.DistinguishedName)
+		return nil, fmt.Errorf("Endpoint Security Group EPG Selector %s not found", dn)
 	}
 	return fvEPgSelector, nil
 }
@@ -164,8 +164,7 @@ func resourceAciEndpointSecurityGroupEPgSelectorRead(ctx context.Context, d *sch
 	dn := d.Id()
 	fvEPgSelector, err := getRemoteEndpointSecurityGroupEPgSelector(aciClient, dn)
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setEndpointSecurityGroupEPgSelectorAttributes(fvEPgSelector, d)
 	if err != nil {

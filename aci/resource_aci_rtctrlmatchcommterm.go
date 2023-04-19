@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/ciscoecosystem/aci-go-client/v2/client"
+	"github.com/ciscoecosystem/aci-go-client/v2/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
@@ -74,7 +74,7 @@ func getRemoteMatchCommunityTerm(client *client.Client, dn string) (*models.Matc
 	}
 	rtctrlMatchCommTerm := models.MatchCommunityTermFromContainer(rtctrlMatchCommTermCont)
 	if rtctrlMatchCommTerm.DistinguishedName == "" {
-		return nil, fmt.Errorf("MatchCommunityTerm %s not found", dn)
+		return nil, fmt.Errorf("Match Community Term %s not found", dn)
 	}
 	return rtctrlMatchCommTerm, nil
 }
@@ -311,8 +311,7 @@ func resourceAciMatchCommunityTermRead(ctx context.Context, d *schema.ResourceDa
 
 	rtctrlMatchCommTerm, err := getRemoteMatchCommunityTerm(aciClient, dn)
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 
 	_, err = setMatchCommunityTermAttributes(rtctrlMatchCommTerm, d)

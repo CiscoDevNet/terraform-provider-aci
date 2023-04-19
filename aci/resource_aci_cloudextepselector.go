@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/ciscoecosystem/aci-go-client/v2/client"
+	"github.com/ciscoecosystem/aci-go-client/v2/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
@@ -76,7 +76,7 @@ func getRemoteCloudEndpointSelectorforExternalEPgs(client *client.Client, dn str
 	cloudExtEPSelector := models.CloudEndpointSelectorforExternalEPgsFromContainer(cloudExtEPSelectorCont)
 
 	if cloudExtEPSelector.DistinguishedName == "" {
-		return nil, fmt.Errorf("CloudEndpointSelectorforExternalEPgs %s not found", cloudExtEPSelector.DistinguishedName)
+		return nil, fmt.Errorf("Cloud Endpoint Selector for External EPGs %s not found", dn)
 	}
 
 	return cloudExtEPSelector, nil
@@ -230,8 +230,7 @@ func resourceAciCloudEndpointSelectorforExternalEPgsRead(ctx context.Context, d 
 	cloudExtEPSelector, err := getRemoteCloudEndpointSelectorforExternalEPgs(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setCloudEndpointSelectorforExternalEPgsAttributes(cloudExtEPSelector, d)
 	if err != nil {

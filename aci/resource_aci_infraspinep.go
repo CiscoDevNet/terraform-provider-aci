@@ -6,8 +6,8 @@ import (
 	"log"
 	"strings"
 
-	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/ciscoecosystem/aci-go-client/v2/client"
+	"github.com/ciscoecosystem/aci-go-client/v2/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
@@ -146,7 +146,7 @@ func getRemoteSpineProfile(client *client.Client, dn string) (*models.SpineProfi
 	infraSpineP := models.SpineProfileFromContainer(infraSpinePCont)
 
 	if infraSpineP.DistinguishedName == "" {
-		return nil, fmt.Errorf("SpineProfile %s not found", infraSpineP.DistinguishedName)
+		return nil, fmt.Errorf("Spine Profile %s not found", dn)
 	}
 
 	return infraSpineP, nil
@@ -161,7 +161,7 @@ func getRemoteSwitchSpineAssociationFromSpineP(client *client.Client, dn string)
 	infraSpineS := models.SwitchSpineAssociationFromContainer(infraSpineSCont)
 
 	if infraSpineS.DistinguishedName == "" {
-		return nil, fmt.Errorf("SwitchSpineAssociation %s not found", infraSpineS.DistinguishedName)
+		return nil, fmt.Errorf("Switch Spine Association %s not found", dn)
 	}
 
 	return infraSpineS, nil
@@ -176,7 +176,7 @@ func getRemoteNodeBlockFromSpineP(client *client.Client, dn string) (*models.Nod
 	infraNodeBlk := models.NodeBlockFromContainerBLK(infraNodeBlkCont)
 
 	if infraNodeBlk.DistinguishedName == "" {
-		return nil, fmt.Errorf("NodeBlock %s not found", infraNodeBlk.DistinguishedName)
+		return nil, fmt.Errorf("Node Block %s not found", dn)
 	}
 
 	return infraNodeBlk, nil
@@ -527,8 +527,7 @@ func resourceAciSpineProfileRead(ctx context.Context, d *schema.ResourceData, m 
 	infraSpineP, err := getRemoteSpineProfile(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setSpineProfileAttributes(infraSpineP, d)
 	if err != nil {

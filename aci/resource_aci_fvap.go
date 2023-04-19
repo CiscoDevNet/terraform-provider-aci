@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/ciscoecosystem/aci-go-client/v2/client"
+	"github.com/ciscoecosystem/aci-go-client/v2/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
@@ -76,7 +76,7 @@ func getRemoteApplicationProfile(client *client.Client, dn string) (*models.Appl
 	fvAp := models.ApplicationProfileFromContainer(fvApCont)
 
 	if fvAp.DistinguishedName == "" {
-		return nil, fmt.Errorf("ApplicationProfile %s not found", fvAp.DistinguishedName)
+		return nil, fmt.Errorf("Application Profile %s not found", dn)
 	}
 
 	return fvAp, nil
@@ -265,8 +265,7 @@ func resourceAciApplicationProfileRead(ctx context.Context, d *schema.ResourceDa
 	fvAp, err := getRemoteApplicationProfile(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setApplicationProfileAttributes(fvAp, d)
 	if err != nil {

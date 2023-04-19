@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/ciscoecosystem/aci-go-client/v2/client"
+	"github.com/ciscoecosystem/aci-go-client/v2/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
@@ -73,7 +73,7 @@ func getRemoteDefaultAuthenticationMethodforallLogins(client *client.Client, dn 
 	}
 	aaaDefaultAuth := models.DefaultAuthenticationMethodforallLoginsFromContainer(aaaDefaultAuthCont)
 	if aaaDefaultAuth.DistinguishedName == "" {
-		return nil, fmt.Errorf("DefaultAuthenticationMethodforallLogins %s not found", aaaDefaultAuth.DistinguishedName)
+		return nil, fmt.Errorf("Default Authentication Method for all Logins %s not found", dn)
 	}
 	return aaaDefaultAuth, nil
 }
@@ -205,8 +205,7 @@ func resourceAciDefaultAuthenticationMethodforallLoginsRead(ctx context.Context,
 	dn := d.Id()
 	aaaDefaultAuth, err := getRemoteDefaultAuthenticationMethodforallLogins(aciClient, dn)
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setDefaultAuthenticationMethodforallLoginsAttributes(aaaDefaultAuth, d)
 	if err != nil {

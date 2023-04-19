@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/ciscoecosystem/aci-go-client/v2/client"
+	"github.com/ciscoecosystem/aci-go-client/v2/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
@@ -52,7 +52,7 @@ func getRemoteProviderGroupMember(client *client.Client, dn string) (*models.Pro
 	}
 	aaaProviderRef := models.ProviderGroupMemberFromContainer(aaaProviderRefCont)
 	if aaaProviderRef.DistinguishedName == "" {
-		return nil, fmt.Errorf("ProviderGroupMember %s not found", aaaProviderRef.DistinguishedName)
+		return nil, fmt.Errorf("Provider Group Member %s not found", dn)
 	}
 	return aaaProviderRef, nil
 }
@@ -177,8 +177,7 @@ func resourceAciProviderGroupMemberRead(ctx context.Context, d *schema.ResourceD
 	dn := d.Id()
 	aaaProviderRef, err := getRemoteProviderGroupMember(aciClient, dn)
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setProviderGroupMemberAttributes(aaaProviderRef, d)
 	if err != nil {

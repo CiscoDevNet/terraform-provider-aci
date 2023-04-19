@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/ciscoecosystem/aci-go-client/v2/client"
+	"github.com/ciscoecosystem/aci-go-client/v2/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -65,7 +65,7 @@ func getRemoteL3outBGPProtocolProfile(client *client.Client, dn string) (*models
 	bgpProtP := models.L3outBGPProtocolProfileFromContainer(bgpProtPCont)
 
 	if bgpProtP.DistinguishedName == "" {
-		return nil, fmt.Errorf("L3outBGPProtocolProfile %s not found", bgpProtP.DistinguishedName)
+		return nil, fmt.Errorf("L3Out BGP Protocol Profile %s not found", dn)
 	}
 
 	return bgpProtP, nil
@@ -262,8 +262,7 @@ func resourceAciL3outBGPProtocolProfileRead(ctx context.Context, d *schema.Resou
 
 	bgpProtP, err := getRemoteL3outBGPProtocolProfile(aciClient, dn)
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setL3outBGPProtocolProfileAttributes(bgpProtP, d)
 	if err != nil {
@@ -274,17 +273,17 @@ func resourceAciL3outBGPProtocolProfileRead(ctx context.Context, d *schema.Resou
 	bgpRsBestPathCtrlPolData, err := aciClient.ReadRelationbgpRsBestPathCtrlPol(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation bgpRsBestPathCtrlPol %v", err)
-		d.Set("relation_bgp_rs_best_path_ctrl_pol", "")
+		setRelationAttribute(d, "relation_bgp_rs_best_path_ctrl_pol", "")
 	} else {
-		d.Set("relation_bgp_rs_best_path_ctrl_pol", bgpRsBestPathCtrlPolData)
+		setRelationAttribute(d, "relation_bgp_rs_best_path_ctrl_pol", bgpRsBestPathCtrlPolData)
 	}
 
 	bgpRsBgpNodeCtxPolData, err := aciClient.ReadRelationbgpRsBgpNodeCtxPolFromL3outBGPProtocolProfile(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation bgpRsBgpNodeCtxPol %v", err)
-		d.Set("relation_bgp_rs_bgp_node_ctx_pol", "")
+		setRelationAttribute(d, "relation_bgp_rs_bgp_node_ctx_pol", "")
 	} else {
-		d.Set("relation_bgp_rs_bgp_node_ctx_pol", bgpRsBgpNodeCtxPolData)
+		setRelationAttribute(d, "relation_bgp_rs_bgp_node_ctx_pol", bgpRsBgpNodeCtxPolData)
 	}
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 	return nil

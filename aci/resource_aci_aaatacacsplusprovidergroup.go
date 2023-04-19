@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/ciscoecosystem/aci-go-client/v2/client"
+	"github.com/ciscoecosystem/aci-go-client/v2/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -41,7 +41,7 @@ func getRemoteTACACSPlusProviderGroup(client *client.Client, dn string) (*models
 	}
 	aaaTacacsPlusProviderGroup := models.TACACSPlusProviderGroupFromContainer(aaaTacacsPlusProviderGroupCont)
 	if aaaTacacsPlusProviderGroup.DistinguishedName == "" {
-		return nil, fmt.Errorf("TACACSPlusProviderGroup %s not found", aaaTacacsPlusProviderGroup.DistinguishedName)
+		return nil, fmt.Errorf("TACACS Plus Provider Group %s not found", dn)
 	}
 	return aaaTacacsPlusProviderGroup, nil
 }
@@ -142,8 +142,7 @@ func resourceAciTACACSPlusProviderGroupRead(ctx context.Context, d *schema.Resou
 	dn := d.Id()
 	aaaTacacsPlusProviderGroup, err := getRemoteTACACSPlusProviderGroup(aciClient, dn)
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setTACACSPlusProviderGroupAttributes(aaaTacacsPlusProviderGroup, d)
 	if err != nil {

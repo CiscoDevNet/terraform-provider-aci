@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/ciscoecosystem/aci-go-client/v2/client"
+	"github.com/ciscoecosystem/aci-go-client/v2/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
@@ -81,7 +81,7 @@ func getRemoteContractConsumer(client *client.Client, dn string) (*models.Contra
 	}
 	fvRsCons := models.ContractConsumerFromContainer(fvRsConsCont)
 	if fvRsCons.DistinguishedName == "" {
-		return nil, fmt.Errorf("ContractConsumer %s not found", fvRsCons.DistinguishedName)
+		return nil, fmt.Errorf("Contract Consumer %s not found", dn)
 	}
 
 	return fvRsCons, nil
@@ -96,7 +96,7 @@ func getRemoteContractProvider(client *client.Client, dn string) (*models.Contra
 	fvRsProv := models.ContractProviderFromContainer(fvRsProvCont)
 
 	if fvRsProv.DistinguishedName == "" {
-		return nil, fmt.Errorf("ContractProvider %s not found", fvRsProv.DistinguishedName)
+		return nil, fmt.Errorf("Contract Provider %s not found", dn)
 	}
 
 	return fvRsProv, nil
@@ -346,8 +346,7 @@ func resourceAciContractProviderRead(ctx context.Context, d *schema.ResourceData
 	if contractType == "provider" {
 		fvRsProv, err := getRemoteContractProvider(aciClient, dn)
 		if err != nil {
-			d.SetId("")
-			return nil
+			return errorForObjectNotFound(err, dn, d)
 		}
 		_, err = setContractProviderAttributes(fvRsProv, d)
 		if err != nil {
@@ -358,8 +357,7 @@ func resourceAciContractProviderRead(ctx context.Context, d *schema.ResourceData
 	} else if contractType == "consumer" {
 		fvRsCons, err := getRemoteContractConsumer(aciClient, dn)
 		if err != nil {
-			d.SetId("")
-			return nil
+			return errorForObjectNotFound(err, dn, d)
 		}
 		_, err = setContractConsumerAttributes(fvRsCons, d)
 		if err != nil {

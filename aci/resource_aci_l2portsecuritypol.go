@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/ciscoecosystem/aci-go-client/v2/client"
+	"github.com/ciscoecosystem/aci-go-client/v2/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
@@ -71,7 +71,7 @@ func getRemotePortSecurityPolicy(client *client.Client, dn string) (*models.Port
 	l2PortSecurityPol := models.PortSecurityPolicyFromContainer(l2PortSecurityPolCont)
 
 	if l2PortSecurityPol.DistinguishedName == "" {
-		return nil, fmt.Errorf("PortSecurityPolicy %s not found", l2PortSecurityPol.DistinguishedName)
+		return nil, fmt.Errorf("Port Security Policy %s not found", dn)
 	}
 
 	return l2PortSecurityPol, nil
@@ -204,8 +204,7 @@ func resourceAciPortSecurityPolicyRead(ctx context.Context, d *schema.ResourceDa
 	l2PortSecurityPol, err := getRemotePortSecurityPolicy(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setPortSecurityPolicyAttributes(l2PortSecurityPol, d)
 	if err != nil {

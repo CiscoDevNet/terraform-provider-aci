@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/ciscoecosystem/aci-go-client/v2/client"
+	"github.com/ciscoecosystem/aci-go-client/v2/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
@@ -146,7 +146,7 @@ func getRemoteServiceRedirectPolicy(client *client.Client, dn string) (*models.S
 	vnsSvcRedirectPol := models.ServiceRedirectPolicyFromContainer(vnsSvcRedirectPolCont)
 
 	if vnsSvcRedirectPol.DistinguishedName == "" {
-		return nil, fmt.Errorf("ServiceRedirectPolicy %s not found", vnsSvcRedirectPol.DistinguishedName)
+		return nil, fmt.Errorf("Service Redirect Policy %s not found", dn)
 	}
 
 	return vnsSvcRedirectPol, nil
@@ -390,8 +390,7 @@ func resourceAciServiceRedirectPolicyRead(ctx context.Context, d *schema.Resourc
 	vnsSvcRedirectPol, err := getRemoteServiceRedirectPolicy(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setServiceRedirectPolicyAttributes(vnsSvcRedirectPol, d)
 

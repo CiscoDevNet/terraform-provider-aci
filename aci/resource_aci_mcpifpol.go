@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/ciscoecosystem/aci-go-client/v2/client"
+	"github.com/ciscoecosystem/aci-go-client/v2/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
@@ -60,7 +60,7 @@ func getRemoteMiscablingProtocolInterfacePolicy(client *client.Client, dn string
 	mcpIfPol := models.MiscablingProtocolInterfacePolicyFromContainer(mcpIfPolCont)
 
 	if mcpIfPol.DistinguishedName == "" {
-		return nil, fmt.Errorf("MiscablingProtocolInterfacePolicy %s not found", mcpIfPol.DistinguishedName)
+		return nil, fmt.Errorf("Miscabling Protocol Interface Policy %s not found", dn)
 	}
 
 	return mcpIfPol, nil
@@ -182,8 +182,7 @@ func resourceAciMiscablingProtocolInterfacePolicyRead(ctx context.Context, d *sc
 	mcpIfPol, err := getRemoteMiscablingProtocolInterfacePolicy(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setMiscablingProtocolInterfacePolicyAttributes(mcpIfPol, d)
 	if err != nil {

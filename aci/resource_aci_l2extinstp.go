@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/ciscoecosystem/aci-go-client/v2/client"
+	"github.com/ciscoecosystem/aci-go-client/v2/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
@@ -186,7 +186,7 @@ func getRemoteL2outExternalEpg(client *client.Client, dn string) (*models.L2outE
 	l2extInstP := models.L2outExternalEpgFromContainer(l2extInstPCont)
 
 	if l2extInstP.DistinguishedName == "" {
-		return nil, fmt.Errorf("L2outExternalEpg %s not found", l2extInstP.DistinguishedName)
+		return nil, fmt.Errorf("L2Out External EPG %s not found", dn)
 	}
 
 	return l2extInstP, nil
@@ -745,8 +745,7 @@ func resourceAciL2outExternalEpgRead(ctx context.Context, d *schema.ResourceData
 	l2extInstP, err := getRemoteL2outExternalEpg(aciClient, dn)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setL2outExternalEpgAttributes(l2extInstP, d)
 	if err != nil {

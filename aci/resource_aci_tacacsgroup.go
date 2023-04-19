@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/ciscoecosystem/aci-go-client/client"
-	"github.com/ciscoecosystem/aci-go-client/models"
+	"github.com/ciscoecosystem/aci-go-client/v2/client"
+	"github.com/ciscoecosystem/aci-go-client/v2/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -41,7 +41,7 @@ func getRemoteTACACSMonitoringDestinationGroup(client *client.Client, dn string)
 	}
 	tacacsGroup := models.TACACSMonitoringDestinationGroupFromContainer(tacacsGroupCont)
 	if tacacsGroup.DistinguishedName == "" {
-		return nil, fmt.Errorf("TACACSMonitoringDestinationGroup %s not found", tacacsGroup.DistinguishedName)
+		return nil, fmt.Errorf("TACACS Monitoring Destination Group %s not found", dn)
 	}
 	return tacacsGroup, nil
 }
@@ -141,8 +141,7 @@ func resourceAciTACACSMonitoringDestinationGroupRead(ctx context.Context, d *sch
 	dn := d.Id()
 	tacacsGroup, err := getRemoteTACACSMonitoringDestinationGroup(aciClient, dn)
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 	_, err = setTACACSMonitoringDestinationGroupAttributes(tacacsGroup, d)
 	if err != nil {
