@@ -27,7 +27,7 @@ Manages ACI Access and Fabric Ports is only supported for ACI 5.2(5)+
 ```hcl
 data "aci_interface_config" "access_port_config_1001" {
   node         = 1001
-  interface    = "1/1/1"
+  interface    = "1/1"
 }
 
 data "aci_interface_config" "access_port_config_1003" {

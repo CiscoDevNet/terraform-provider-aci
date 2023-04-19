@@ -30,14 +30,14 @@ Manages ACI Access and Fabric Ports is only supported for ACI 5.2(5)+
 # Access Port Configuration
 resource "aci_interface_config" "access_port_config_1001" {
   node         = 1001
-  interface    = "1/1/1"
+  interface    = "1/1"
   policy_group = aci_leaf_access_port_policy_group.leaf_access_port.id # Policy Group and Breakout cannot be configured togater
 }
 
 # Breakout an Access Port Configuration
 resource "aci_interface_config" "access_port_config_1001_brkout" {
   node      = 1001
-  interface = "1/1/1"
+  interface = "1/1"
   breakout  = "100g-4x" # Policy Group and Breakout cannot be configured togater
 }
 
