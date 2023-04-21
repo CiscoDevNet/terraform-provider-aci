@@ -11,32 +11,38 @@ description: |-
 
 Manages ACI BGP Route Summarization
 
+## API Information ##
+
+* `Class` - bgpRtSummPol
+* `Distinguished Name` - uni/tn-{tenant_name}/bgprtsum-{bgp_rt_summ_pol_name}
+
+## GUI Information ##
+
+* `Location` - Tenants -> Policies -> Protocol -> BGP -> BGP Route Summarization
+
 ## Example Usage
 
 ```hcl
-resource "aci_bgp_route_summarization" "example" {
-
-  tenant_dn   = aci_tenant.example.id
-  name        = "example"
-  annotation  = "example"
-  description = "from terraform"
-  attrmap     = "example"
-  ctrl        = "as-set"
-  name_alias  = "example"
-
+resource "aci_bgp_route_summarization" "bgp_rt_summ_pol" {
+  tenant_dn             = aci_tenant.tf_tenant.id
+  name                  = "bgp_rt_summ_pol"
+  description           = "from terraform"
+  attrmap               = "sample attrmap"
+  ctrl                  = sort(["summary-only", "as-set"])                 # Use the sorted list to handle identical changes
+  address_type_controls = sort(["af-ucast", "af-mcast", "af-label-ucast"]) # Use the sorted list to handle identical changes
 }
 ```
 
 ## Argument Reference
 
-- `tenant_dn` - (Required) Distinguished name of parent tenant object.
-- `name` - (Required) Name of Object BGP route summarization.
-- `annotation` - (Optional) Annotation for object BGP route summarization.
-- `description` - (Optional) Description for object BGP route summarization.
-- `attrmap` - (Optional) Summary attribute map.
-- `ctrl` - (Optional) The control state.
-  Allowed values: "as-set", "none". Default value: "none".
-- `name_alias` - (Optional) Name alias for object BGP route summarization.
+- `tenant_dn` - (Required) Distinguished name of the parent Tenant object. Type: String.
+- `name` - (Required) Name of the BGP Route Summarization object. Type: String.
+- `annotation` - (Optional) Annotation of the BGP Route Summarization object. Type: String.
+- `description` - (Optional) Description of the BGP Route Summarization object. Type: String.
+- `attrmap` - (Optional) Route Map Summary of the BGP Route Summarization object. Type: String.
+- `ctrl` - (Optional) Control State of the BGP Route Summarization object. Allowed values are "as-set", "summary-only". Type: List.
+- `address_type_controls` - (Optional) Address Type Controls of the BGP Route Summarization object. Allowed values are "af-ucast", "af-mcast", "af-label-ucast". Default is "af-ucast". Type: List.
+- `name_alias` - (Optional) Name alias of the BGP Route Summarization object. Type: String.
 
 ## Attribute Reference
 
