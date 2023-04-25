@@ -41,7 +41,7 @@ resource "aci_bgp_route_summarization" "bgp_rt_summ_pol" {
 - `description` - (Optional) Description of the BGP Route Summarization object. Type: String.
 - `attrmap` - (Optional) Route Map Summary of the BGP Route Summarization object. Type: String.
 - `ctrl` - (Optional) Control State of the BGP Route Summarization object. Allowed values are "as-set", "summary-only". Type: List.
-- `address_type_controls` - (Optional) Address Type Controls of the BGP Route Summarization object. Allowed values are "af-ucast", "af-mcast", "af-label-ucast". Default is "af-ucast". Type: List.
+- `address_type_controls` - (Optional) Address Type Controls of the BGP Route Summarization object. Allowed values are "af-ucast", "af-mcast", "af-label-ucast". The APIC defaults to "af-ucast" when unset during creation. Type: List.
 - `name_alias` - (Optional) Name alias of the BGP Route Summarization object. Type: String.
 
 ## Attribute Reference
