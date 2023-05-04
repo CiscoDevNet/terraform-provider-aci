@@ -83,6 +83,17 @@ func ListFromContainer(cont *container.Container, klass string) []*container.Con
 
 }
 
+func ListFromContainer2(cont *container.Container, klass string) []*container.Container {
+	length, _ := strconv.Atoi(G(cont, "totalCount"))
+	arr := make([]*container.Container, length)
+	for i := 0; i < length; i++ {
+
+		arr[i] = cont.S("imdata").Index(i).S(klass, "children")
+	}
+	return arr
+
+}
+
 func CurlyBraces(value string) string {
 	if value == "{}" {
 		return ""

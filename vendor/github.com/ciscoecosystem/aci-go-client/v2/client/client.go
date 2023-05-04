@@ -79,6 +79,41 @@ type Client struct {
 // singleton implementation of a client
 var clientImpl *Client
 
+// Support for fastpath optimization
+type fvRsDescr struct {
+	Id      string
+	TypeSet bool
+}
+
+var fvRsClassesBD = [...]fvRsDescr{
+	{"fvRsBDToProfile", false}, {"fvRsMldsn", false}, {"fvRsABDPolMonPol", false}, {"fvRsBDToNdP", false},
+	{"fvRsBdFloodTo", true}, {"fvRsBDToFhs", false}, {"fvRsBDToRelayP", false}, {"fvRsCtx", false},
+	{"fvRsBDToNetflowMonitorPol", true}, {"fvRsIgmpsn", false}, {"fvRsBdToEpRet", false}, {"fvRsBDToOut", true}}
+
+var fvRsClassesBDFilter string
+
+var fvRsClassesEPG = [...]fvRsDescr{
+	{"fvRsBd", false}, {"fvRsCustQosPol", false}, {"fvRsFcPathAtt", true}, {"fvRsProv", true},
+	{"fvRsConsIf", true}, {"fvRsSecInherited", true}, {"fvRsNodeAtt", true}, {"fvRsDppPol", false},
+	{"fvRsCons", true}, {"fvRsProvDef", true}, {"fvRsTrustCtrl", false}, {"fvRsPathAtt", true},
+	{"fvRsProtBy", true}, {"fvRsAEPgMonPol", false}, {"fvRsIntraEpg", true}}
+
+var fvRsClassesEPGFilter string
+
+var maxSizeOfPOST int
+
+func init() {
+	for _, fvRsClassBD := range fvRsClassesBD {
+		fvRsClassesBDFilter += "&rsp-subtree-class=" + fvRsClassBD.Id
+	}
+
+	for _, fvRsClassEPG := range fvRsClassesEPG {
+		fvRsClassesEPGFilter += "&rsp-subtree-class=" + fvRsClassEPG.Id
+	}
+
+	maxSizeOfPOST = 1048576
+}
+
 type Option func(*Client)
 
 func Insecure(insecure bool) Option {

@@ -1,0 +1,15 @@
+erraform {
+  required_providers {
+    aci = {
+      source = "ciscodevnet/aci"
+    }
+  }
+}
+
+provider "aci" {
+  username = "admin"              # <APIC username>
+  password = "Redmoon0"           # <APIC pwd>
+  url      = "https://10.0.2.214" # <cloud APIC URL>
+  insecure = true
+}
+

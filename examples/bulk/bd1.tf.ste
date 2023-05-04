@@ -1,0 +1,52 @@
+resource "aci_bridge_domain" "bd_for_rel" {
+  count                          = 1
+  tenant_dn                      = aci_tenant.tenant_for_benchmark.id
+  name                           = "test_tf_bd_rel-${count.index+1}"
+  description                    = "This bridge domain is created by terraform ACI provider"
+  mac                            = "00:22:BD:F8:19:FF"
+  optimize_wan_bandwidth         = "no"
+  arp_flood                      = "yes"
+  ep_clear                       = "no"
+  ep_move_detect_mode            = "garp"
+  intersite_bum_traffic_allow    = "yes"
+  intersite_l2_stretch           = "yes"
+  ip_learning                    = "yes"
+  limit_ip_learn_to_subnets      = "yes"
+  mcast_allow                    = "yes"
+  multi_dst_pkt_act              = "bd-flood"
+  bridge_domain_type             = "regular"
+  unicast_route                  = "yes"
+  unk_mac_ucast_act              = "flood"
+  unk_mcast_act                  = "flood"
+  vmac                           = "not-applicable"
+  relation_fv_rs_ctx             = aci_vrf.test_tf_vrf-1.id              # relation to VRF
+  relation_fv_rs_bd_to_profile   = aci_route_control_profile.example.id  # Relation to L3Outs Route Map For Import and Export Route Control
+  relation_fv_rs_bd_to_relay_p   = aci_rest.rest_dhcp_RelayP.id          # Relation to DHCP Relay policy
+  relation_fv_rs_abd_pol_mon_pol = aci_rest.rest_mon_epg_pol.id          # Relation to Monitors policy
+  relation_fv_rs_bd_flood_to     = [aci_filter.bd_flood_filter.id, aci_filter.bd_flood_filter2.id]  # Relation to Contract Filters
+  relation_fv_rs_bd_to_fhs       = aci_rest.rest_fhs_bd_pol.id           # Relation to FHS policy. Requires unicast_route to be set to "yes"
+  
+  relation_fv_rs_bd_to_netflow_monitor_pol {
+    tn_netflow_monitor_pol_name = aci_rest.rest_net_flow_pol.id
+    flt_type                    = "ipv4"
+  }
+  
+  relation_fv_rs_bd_to_netflow_monitor_pol {
+    tn_netflow_monitor_pol_name = aci_rest.rest_net_flow_pol2.id
+    flt_type                    = "ipv6"
+  }
+
+  relation_fv_rs_bd_to_out = [aci_rest.rest_l3_ext_out.id, aci_rest.rest_l3_ext_out2.id] # Relation to L3Outs
+  
+  ###
+  
+  relation_fv_rs_mldsn          = aci_rest.rest_mld_snoop_pol.id
+  relation_fv_rs_igmpsn         = aci_rest.rest_igmp_snoop_pol.id
+  relation_fv_rs_bd_to_ep_ret   = aci_rest.rest_endpoint_ret_pol.id
+  relation_fv_rs_bd_to_nd_p     = aci_rest.rest_nd_if_pol.id    
+
+  bulk_create = true
+  bulk_read   = false
+  bulk_update = true
+}
+

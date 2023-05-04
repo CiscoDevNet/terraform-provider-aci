@@ -301,6 +301,21 @@ func resourceAciBridgeDomain() *schema.Resource {
 				Optional: true,
 				Set:      schema.HashString,
 			},
+			"bulk_create": &schema.Schema{
+				Type: schema.TypeBool,
+
+				Optional: true,
+			},
+			"bulk_read": &schema.Schema{
+				Type: schema.TypeBool,
+
+				Optional: true,
+			},
+			"bulk_update": &schema.Schema{
+				Type: schema.TypeBool,
+
+				Optional: true,
+			},
 		}),
 	}
 }
@@ -541,6 +556,342 @@ func checkForSubnetConflict(client *client.Client, bdDN, ctxRelation string) err
 }
 
 func resourceAciBridgeDomainCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+	if _, ok := d.GetOk("bulk_create"); ok {
+		return resourceAciBridgeDomainCreateBulk(ctx, d, m)
+	} else {
+		return resourceAciBridgeDomainCreateOrig(ctx, d, m)
+	}
+}
+
+func resourceAciBridgeDomainCreateBulk(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+	log.Printf("[DEBUG] BridgeDomain: Beginning Bulk Creation")
+	aciClient := m.(*client.Client)
+	desc := d.Get("description").(string)
+
+	name := d.Get("name").(string)
+
+	TenantDn := d.Get("tenant_dn").(string)
+
+	fvBDAttr := models.BridgeDomainAttributes{}
+	if OptimizeWanBandwidth, ok := d.GetOk("optimize_wan_bandwidth"); ok {
+		fvBDAttr.OptimizeWanBandwidth = OptimizeWanBandwidth.(string)
+	}
+	if Annotation, ok := d.GetOk("annotation"); ok {
+		fvBDAttr.Annotation = Annotation.(string)
+	} else {
+		fvBDAttr.Annotation = "{}"
+	}
+	if ArpFlood, ok := d.GetOk("arp_flood"); ok {
+		fvBDAttr.ArpFlood = ArpFlood.(string)
+	}
+	if EpClear, ok := d.GetOk("ep_clear"); ok {
+		fvBDAttr.EpClear = EpClear.(string)
+	}
+
+	if EpMoveDetectMode, ok := d.GetOk("ep_move_detect_mode"); ok {
+		if EpMoveDetectMode == "disable" {
+			fvBDAttr.EpMoveDetectMode = "{}"
+		} else {
+			fvBDAttr.EpMoveDetectMode = EpMoveDetectMode.(string)
+		}
+	}
+
+	if HostBasedRouting, ok := d.GetOk("host_based_routing"); ok {
+		fvBDAttr.HostBasedRouting = HostBasedRouting.(string)
+	}
+	if IntersiteBumTrafficAllow, ok := d.GetOk("intersite_bum_traffic_allow"); ok {
+		fvBDAttr.IntersiteBumTrafficAllow = IntersiteBumTrafficAllow.(string)
+	}
+	if IntersiteL2Stretch, ok := d.GetOk("intersite_l2_stretch"); ok {
+		fvBDAttr.IntersiteL2Stretch = IntersiteL2Stretch.(string)
+	}
+	if IpLearning, ok := d.GetOk("ip_learning"); ok {
+		fvBDAttr.IpLearning = IpLearning.(string)
+	}
+	if Ipv6McastAllow, ok := d.GetOk("ipv6_mcast_allow"); ok {
+		fvBDAttr.Ipv6McastAllow = Ipv6McastAllow.(string)
+	}
+	if LimitIpLearnToSubnets, ok := d.GetOk("limit_ip_learn_to_subnets"); ok {
+		fvBDAttr.LimitIpLearnToSubnets = LimitIpLearnToSubnets.(string)
+	}
+	if LlAddr, ok := d.GetOk("ll_addr"); ok {
+		fvBDAttr.LlAddr = LlAddr.(string)
+	}
+	if Mac, ok := d.GetOk("mac"); ok {
+		fvBDAttr.Mac = Mac.(string)
+	}
+	if McastAllow, ok := d.GetOk("mcast_allow"); ok {
+		fvBDAttr.McastAllow = McastAllow.(string)
+	}
+	if MultiDstPktAct, ok := d.GetOk("multi_dst_pkt_act"); ok {
+		fvBDAttr.MultiDstPktAct = MultiDstPktAct.(string)
+	}
+	if NameAlias, ok := d.GetOk("name_alias"); ok {
+		fvBDAttr.NameAlias = NameAlias.(string)
+	}
+	if BridgeDomain_type, ok := d.GetOk("bridge_domain_type"); ok {
+		fvBDAttr.BridgeDomain_type = BridgeDomain_type.(string)
+	}
+	if UnicastRoute, ok := d.GetOk("unicast_route"); ok {
+		fvBDAttr.UnicastRoute = UnicastRoute.(string)
+	}
+	if UnkMacUcastAct, ok := d.GetOk("unk_mac_ucast_act"); ok {
+		fvBDAttr.UnkMacUcastAct = UnkMacUcastAct.(string)
+	}
+	if UnkMcastAct, ok := d.GetOk("unk_mcast_act"); ok {
+		fvBDAttr.UnkMcastAct = UnkMcastAct.(string)
+	}
+	if V6unkMcastAct, ok := d.GetOk("v6unk_mcast_act"); ok {
+		fvBDAttr.V6unkMcastAct = V6unkMcastAct.(string)
+	}
+	if Vmac, ok := d.GetOk("vmac"); ok {
+		fvBDAttr.Vmac = Vmac.(string)
+	}
+	fvBD := models.NewBridgeDomain(fmt.Sprintf("BD-%s", name), TenantDn, desc, fvBDAttr)
+
+	err := aciClient.Save(fvBD)
+	if err != nil {
+		return diag.FromErr(err)
+	}
+
+	checkDns := make([]string, 0, 1)
+
+	if relationTofvRsBDToProfile, ok := d.GetOk("relation_fv_rs_bd_to_profile"); ok {
+		relationParam := relationTofvRsBDToProfile.(string)
+		checkDns = append(checkDns, relationParam)
+	}
+
+	if relationTofvRsMldsn, ok := d.GetOk("relation_fv_rs_mldsn"); ok {
+		relationParam := relationTofvRsMldsn.(string)
+		checkDns = append(checkDns, relationParam)
+	}
+
+	if relationTofvRsABDPolMonPol, ok := d.GetOk("relation_fv_rs_abd_pol_mon_pol"); ok {
+		relationParam := relationTofvRsABDPolMonPol.(string)
+		checkDns = append(checkDns, relationParam)
+	}
+
+	if relationTofvRsBDToNdP, ok := d.GetOk("relation_fv_rs_bd_to_nd_p"); ok {
+		relationParam := relationTofvRsBDToNdP.(string)
+		checkDns = append(checkDns, relationParam)
+	}
+
+	if relationTofvRsBdFloodTo, ok := d.GetOk("relation_fv_rs_bd_flood_to"); ok {
+		relationParamList := toStringList(relationTofvRsBdFloodTo.(*schema.Set).List())
+		for _, relationParam := range relationParamList {
+			checkDns = append(checkDns, relationParam)
+		}
+	}
+
+	if relationTofvRsBDToFhs, ok := d.GetOk("relation_fv_rs_bd_to_fhs"); ok {
+		relationParam := relationTofvRsBDToFhs.(string)
+		checkDns = append(checkDns, relationParam)
+	}
+
+	if relationTofvRsBDToRelayP, ok := d.GetOk("relation_fv_rs_bd_to_relay_p"); ok {
+		relationParam := relationTofvRsBDToRelayP.(string)
+		checkDns = append(checkDns, relationParam)
+	}
+
+	if relationTofvRsCtx, ok := d.GetOk("relation_fv_rs_ctx"); ok {
+		relationParam := relationTofvRsCtx.(string)
+		checkDns = append(checkDns, relationParam)
+	}
+
+	if relationTofvRsIgmpsn, ok := d.GetOk("relation_fv_rs_igmpsn"); ok {
+		relationParam := relationTofvRsIgmpsn.(string)
+		checkDns = append(checkDns, relationParam)
+	}
+
+	if relationTofvRsBdToEpRet, ok := d.GetOk("relation_fv_rs_bd_to_ep_ret"); ok {
+		relationParam := relationTofvRsBdToEpRet.(string)
+		checkDns = append(checkDns, relationParam)
+	}
+
+	if relationTofvRsBDToOut, ok := d.GetOk("relation_fv_rs_bd_to_out"); ok {
+		relationParamList := toStringList(relationTofvRsBDToOut.(*schema.Set).List())
+		for _, relationParam := range relationParamList {
+			checkDns = append(checkDns, relationParam)
+		}
+	}
+
+	d.Partial(true)
+	err = checkTDn(aciClient, checkDns)
+	if err != nil {
+		return diag.FromErr(err)
+	}
+	d.Partial(false)
+
+	var fvRsAllDataC [][]byte
+	var fvRs []byte
+
+	if relationTofvRsBDToProfile, ok := d.GetOk("relation_fv_rs_bd_to_profile"); ok {
+		relationParam := relationTofvRsBDToProfile.(string)
+		relationParamName := GetMOName(relationParam)
+		/*
+			err = aciClient.CreateRelationfvRsBDToProfileFromBridgeDomain(fvBD.DistinguishedName, relationParamName)
+				if err != nil {
+					return diag.FromErr(err)
+				}
+		*/
+		fvRs = aciClient.SetupCreateRelationfvRsBDToProfileFromBridgeDomain(fvBD.DistinguishedName, relationParamName)
+		fvRsAllDataC = append(fvRsAllDataC, fvRs)
+	}
+	if relationTofvRsMldsn, ok := d.GetOk("relation_fv_rs_mldsn"); ok {
+		relationParam := relationTofvRsMldsn.(string)
+		relationParamName := GetMOName(relationParam)
+		/*
+			err = aciClient.CreateRelationfvRsMldsnFromBridgeDomain(fvBD.DistinguishedName, relationParamName)
+				if err != nil {
+					return diag.FromErr(err)
+				}
+		*/
+		fvRs = aciClient.SetupCreateRelationfvRsMldsnFromBridgeDomain(fvBD.DistinguishedName, relationParamName)
+		fvRsAllDataC = append(fvRsAllDataC, fvRs)
+	}
+	if relationTofvRsABDPolMonPol, ok := d.GetOk("relation_fv_rs_abd_pol_mon_pol"); ok {
+		relationParam := relationTofvRsABDPolMonPol.(string)
+		relationParamName := GetMOName(relationParam)
+		/*
+			err = aciClient.CreateRelationfvRsABDPolMonPolFromBridgeDomain(fvBD.DistinguishedName, relationParamName)
+				if err != nil {
+					return diag.FromErr(err)
+				}
+		*/
+		fvRs = aciClient.SetupCreateRelationfvRsABDPolMonPolFromBridgeDomain(fvBD.DistinguishedName, relationParamName)
+		fvRsAllDataC = append(fvRsAllDataC, fvRs)
+	}
+	if relationTofvRsBDToNdP, ok := d.GetOk("relation_fv_rs_bd_to_nd_p"); ok {
+		relationParam := relationTofvRsBDToNdP.(string)
+		relationParamName := GetMOName(relationParam)
+		/*
+			err = aciClient.CreateRelationfvRsBDToNdPFromBridgeDomain(fvBD.DistinguishedName, relationParamName)
+				if err != nil {
+					return diag.FromErr(err)
+				}
+		*/
+		fvRs = aciClient.SetupCreateRelationfvRsBDToNdPFromBridgeDomain(fvBD.DistinguishedName, relationParamName)
+		fvRsAllDataC = append(fvRsAllDataC, fvRs)
+	}
+	if relationTofvRsBdFloodTo, ok := d.GetOk("relation_fv_rs_bd_flood_to"); ok {
+		relationParamList := toStringList(relationTofvRsBdFloodTo.(*schema.Set).List())
+		for _, relationParam := range relationParamList {
+			/*
+				err = aciClient.CreateRelationfvRsBdFloodToFromBridgeDomain(fvBD.DistinguishedName, relationParam)
+
+				if err != nil {
+					return diag.FromErr(err)
+				}
+			*/
+			fvRs = aciClient.SetupCreateRelationfvRsBdFloodToFromBridgeDomain(fvBD.DistinguishedName, relationParam)
+			fvRsAllDataC = append(fvRsAllDataC, fvRs)
+		}
+	}
+	if relationTofvRsBDToFhs, ok := d.GetOk("relation_fv_rs_bd_to_fhs"); ok {
+		relationParam := relationTofvRsBDToFhs.(string)
+		relationParamName := GetMOName(relationParam)
+		/*
+			err = aciClient.CreateRelationfvRsBDToFhsFromBridgeDomain(fvBD.DistinguishedName, relationParamName)
+				if err != nil {
+					return diag.FromErr(err)
+				}
+		*/
+		fvRs = aciClient.SetupCreateRelationfvRsBDToFhsFromBridgeDomain(fvBD.DistinguishedName, relationParamName)
+		fvRsAllDataC = append(fvRsAllDataC, fvRs)
+	}
+	if relationTofvRsBDToRelayP, ok := d.GetOk("relation_fv_rs_bd_to_relay_p"); ok {
+		relationParam := relationTofvRsBDToRelayP.(string)
+		relationParamName := GetMOName(relationParam)
+		/*
+			err = aciClient.CreateRelationfvRsBDToRelayPFromBridgeDomain(fvBD.DistinguishedName, relationParamName)
+			if err != nil {
+				return diag.FromErr(err)
+			}
+		*/
+		fvRs = aciClient.SetupCreateRelationfvRsBDToRelayPFromBridgeDomain(fvBD.DistinguishedName, relationParamName)
+		fvRsAllDataC = append(fvRsAllDataC, fvRs)
+	}
+	if relationTofvRsCtx, ok := d.GetOk("relation_fv_rs_ctx"); ok {
+		relationParam := relationTofvRsCtx.(string)
+		relationParamName := GetMOName(relationParam)
+		/*
+			err = aciClient.CreateRelationfvRsCtxFromBridgeDomain(fvBD.DistinguishedName, relationParamName)
+			if err != nil {
+				return diag.FromErr(err)
+			}
+		*/
+		fvRs = aciClient.SetupCreateRelationfvRsCtxFromBridgeDomain(fvBD.DistinguishedName, relationParamName)
+		fvRsAllDataC = append(fvRsAllDataC, fvRs)
+	}
+	if relationTofvRsBDToNetflowMonitorPol, ok := d.GetOk("relation_fv_rs_bd_to_netflow_monitor_pol"); ok {
+
+		relationParamList := relationTofvRsBDToNetflowMonitorPol.(*schema.Set).List()
+		for _, relationParam := range relationParamList {
+			paramMap := relationParam.(map[string]interface{})
+			/*
+				err = aciClient.CreateRelationfvRsBDToNetflowMonitorPolFromBridgeDomain(fvBD.DistinguishedName, GetMOName(paramMap["tn_netflow_monitor_pol_name"].(string)), paramMap["flt_type"].(string))
+				if err != nil {
+					return diag.FromErr(err)
+				}
+			*/
+			fvRs = aciClient.SetupCreateRelationfvRsBDToNetflowMonitorPolFromBridgeDomain(fvBD.DistinguishedName, GetMOName(paramMap["tn_netflow_monitor_pol_name"].(string)), paramMap["flt_type"].(string))
+			fvRsAllDataC = append(fvRsAllDataC, fvRs)
+		}
+	}
+	if relationTofvRsIgmpsn, ok := d.GetOk("relation_fv_rs_igmpsn"); ok {
+		relationParam := relationTofvRsIgmpsn.(string)
+		relationParamName := GetMOName(relationParam)
+		/*
+			err = aciClient.CreateRelationfvRsIgmpsnFromBridgeDomain(fvBD.DistinguishedName, relationParamName)
+			if err != nil {
+				return diag.FromErr(err)
+			}
+		*/
+		fvRs = aciClient.SetupCreateRelationfvRsIgmpsnFromBridgeDomain(fvBD.DistinguishedName, relationParamName)
+		fvRsAllDataC = append(fvRsAllDataC, fvRs)
+	}
+	if relationTofvRsBdToEpRet, ok := d.GetOk("relation_fv_rs_bd_to_ep_ret"); ok {
+		relationParam := relationTofvRsBdToEpRet.(string)
+		relationParamName := GetMOName(relationParam)
+		/*
+			err = aciClient.CreateRelationfvRsBdToEpRetFromBridgeDomain(fvBD.DistinguishedName, relationParamName)
+			if err != nil {
+				return diag.FromErr(err)
+			}
+		*/
+		fvRs = aciClient.SetupCreateRelationfvRsBdToEpRetFromBridgeDomain(fvBD.DistinguishedName, relationParamName)
+		fvRsAllDataC = append(fvRsAllDataC, fvRs)
+	}
+	if relationTofvRsBDToOut, ok := d.GetOk("relation_fv_rs_bd_to_out"); ok {
+		relationParamList := toStringList(relationTofvRsBDToOut.(*schema.Set).List())
+		for _, relationParam := range relationParamList {
+			relationParamName := GetMOName(relationParam)
+			/*
+				err = aciClient.CreateRelationfvRsBDToOutFromBridgeDomain(fvBD.DistinguishedName, relationParamName)
+
+				if err != nil {
+					return diag.FromErr(err)
+				}
+			*/
+			fvRs = aciClient.SetupCreateRelationfvRsBDToOutFromBridgeDomain(fvBD.DistinguishedName, relationParamName)
+			fvRsAllDataC = append(fvRsAllDataC, fvRs)
+		}
+	}
+
+	if len(fvRsAllDataC) > 0 {
+		err = aciClient.RenderRelationfvRsAllFromBridgeDomain(fvBD, fvRsAllDataC)
+		if err != nil {
+			return diag.FromErr(err)
+		}
+	}
+
+	d.SetId(fvBD.DistinguishedName)
+	log.Printf("[DEBUG] %s: Bulk Creation finished successfully", d.Id())
+
+	return resourceAciBridgeDomainRead(ctx, d, m)
+}
+
+func resourceAciBridgeDomainCreateOrig(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] BridgeDomain: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
@@ -821,6 +1172,445 @@ func resourceAciBridgeDomainCreate(ctx context.Context, d *schema.ResourceData, 
 }
 
 func resourceAciBridgeDomainUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+	if _, ok := d.GetOk("bulk_create"); ok {
+		return resourceAciBridgeDomainUpdateBulk(ctx, d, m)
+	} else {
+		return resourceAciBridgeDomainUpdateOrig(ctx, d, m)
+	}
+}
+
+func resourceAciBridgeDomainUpdateBulk(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+	log.Printf("[DEBUG] BridgeDomain: Beginning Bulk Update")
+
+	aciClient := m.(*client.Client)
+	desc := d.Get("description").(string)
+
+	name := d.Get("name").(string)
+
+	TenantDn := d.Get("tenant_dn").(string)
+
+	fvBDAttr := models.BridgeDomainAttributes{}
+	if OptimizeWanBandwidth, ok := d.GetOk("optimize_wan_bandwidth"); ok {
+		fvBDAttr.OptimizeWanBandwidth = OptimizeWanBandwidth.(string)
+	}
+	if Annotation, ok := d.GetOk("annotation"); ok {
+		fvBDAttr.Annotation = Annotation.(string)
+	} else {
+		fvBDAttr.Annotation = "{}"
+	}
+	if ArpFlood, ok := d.GetOk("arp_flood"); ok {
+		fvBDAttr.ArpFlood = ArpFlood.(string)
+	}
+	if EpClear, ok := d.GetOk("ep_clear"); ok {
+		fvBDAttr.EpClear = EpClear.(string)
+	}
+
+	if EpMoveDetectMode, ok := d.GetOk("ep_move_detect_mode"); ok {
+		if EpMoveDetectMode == "disable" {
+			fvBDAttr.EpMoveDetectMode = "{}"
+		} else {
+			fvBDAttr.EpMoveDetectMode = EpMoveDetectMode.(string)
+		}
+	}
+
+	if HostBasedRouting, ok := d.GetOk("host_based_routing"); ok {
+		fvBDAttr.HostBasedRouting = HostBasedRouting.(string)
+	}
+	if IntersiteBumTrafficAllow, ok := d.GetOk("intersite_bum_traffic_allow"); ok {
+		fvBDAttr.IntersiteBumTrafficAllow = IntersiteBumTrafficAllow.(string)
+	}
+	if IntersiteL2Stretch, ok := d.GetOk("intersite_l2_stretch"); ok {
+		fvBDAttr.IntersiteL2Stretch = IntersiteL2Stretch.(string)
+	}
+	if IpLearning, ok := d.GetOk("ip_learning"); ok {
+		fvBDAttr.IpLearning = IpLearning.(string)
+	}
+	if Ipv6McastAllow, ok := d.GetOk("ipv6_mcast_allow"); ok {
+		fvBDAttr.Ipv6McastAllow = Ipv6McastAllow.(string)
+	}
+	if LimitIpLearnToSubnets, ok := d.GetOk("limit_ip_learn_to_subnets"); ok {
+		fvBDAttr.LimitIpLearnToSubnets = LimitIpLearnToSubnets.(string)
+	}
+	if LlAddr, ok := d.GetOk("ll_addr"); ok {
+		fvBDAttr.LlAddr = LlAddr.(string)
+	}
+	if Mac, ok := d.GetOk("mac"); ok {
+		fvBDAttr.Mac = Mac.(string)
+	}
+	if McastAllow, ok := d.GetOk("mcast_allow"); ok {
+		fvBDAttr.McastAllow = McastAllow.(string)
+	}
+	if MultiDstPktAct, ok := d.GetOk("multi_dst_pkt_act"); ok {
+		fvBDAttr.MultiDstPktAct = MultiDstPktAct.(string)
+	}
+	if NameAlias, ok := d.GetOk("name_alias"); ok {
+		fvBDAttr.NameAlias = NameAlias.(string)
+	}
+	if BridgeDomain_type, ok := d.GetOk("bridge_domain_type"); ok {
+		fvBDAttr.BridgeDomain_type = BridgeDomain_type.(string)
+	}
+	if UnicastRoute, ok := d.GetOk("unicast_route"); ok {
+		fvBDAttr.UnicastRoute = UnicastRoute.(string)
+	}
+	if UnkMacUcastAct, ok := d.GetOk("unk_mac_ucast_act"); ok {
+		fvBDAttr.UnkMacUcastAct = UnkMacUcastAct.(string)
+	}
+	if UnkMcastAct, ok := d.GetOk("unk_mcast_act"); ok {
+		fvBDAttr.UnkMcastAct = UnkMcastAct.(string)
+	}
+	if V6unkMcastAct, ok := d.GetOk("v6unk_mcast_act"); ok {
+		fvBDAttr.V6unkMcastAct = V6unkMcastAct.(string)
+	}
+	if Vmac, ok := d.GetOk("vmac"); ok {
+		fvBDAttr.Vmac = Vmac.(string)
+	}
+	fvBD := models.NewBridgeDomain(fmt.Sprintf("BD-%s", name), TenantDn, desc, fvBDAttr)
+
+	fvBD.Status = "modified"
+
+	err := aciClient.Save(fvBD)
+
+	if err != nil {
+		return diag.FromErr(err)
+	}
+
+	checkDns := make([]string, 0, 1)
+
+	if d.HasChange("relation_fv_rs_bd_to_profile") {
+		_, newRelParam := d.GetChange("relation_fv_rs_bd_to_profile")
+		checkDns = append(checkDns, newRelParam.(string))
+	}
+
+	if d.HasChange("relation_fv_rs_mldsn") {
+		_, newRelParam := d.GetChange("relation_fv_rs_mldsn")
+		checkDns = append(checkDns, newRelParam.(string))
+	}
+
+	if d.HasChange("relation_fv_rs_abd_pol_mon_pol") {
+		_, newRelParam := d.GetChange("relation_fv_rs_abd_pol_mon_pol")
+		checkDns = append(checkDns, newRelParam.(string))
+	}
+
+	if d.HasChange("relation_fv_rs_bd_to_nd_p") {
+		_, newRelParam := d.GetChange("relation_fv_rs_bd_to_nd_p")
+		checkDns = append(checkDns, newRelParam.(string))
+	}
+
+	if d.HasChange("relation_fv_rs_bd_flood_to") {
+		oldRel, newRel := d.GetChange("relation_fv_rs_bd_flood_to")
+		oldRelSet := oldRel.(*schema.Set)
+		newRelSet := newRel.(*schema.Set)
+		relToCreate := toStringList(newRelSet.Difference(oldRelSet).List())
+
+		for _, relDn := range relToCreate {
+			checkDns = append(checkDns, relDn)
+		}
+	}
+
+	if d.HasChange("relation_fv_rs_bd_to_fhs") {
+		_, newRelParam := d.GetChange("relation_fv_rs_bd_to_fhs")
+		checkDns = append(checkDns, newRelParam.(string))
+	}
+
+	if d.HasChange("relation_fv_rs_bd_to_relay_p") {
+		_, newRelParam := d.GetChange("relation_fv_rs_bd_to_relay_p")
+		checkDns = append(checkDns, newRelParam.(string))
+	}
+
+	if d.HasChange("relation_fv_rs_ctx") {
+		_, newRelParam := d.GetChange("relation_fv_rs_ctx")
+		checkDns = append(checkDns, newRelParam.(string))
+	}
+
+	if d.HasChange("relation_fv_rs_igmpsn") {
+		_, newRelParam := d.GetChange("relation_fv_rs_igmpsn")
+		checkDns = append(checkDns, newRelParam.(string))
+	}
+
+	if d.HasChange("relation_fv_rs_bd_to_ep_ret") {
+		_, newRelParam := d.GetChange("relation_fv_rs_bd_to_ep_ret")
+		checkDns = append(checkDns, newRelParam.(string))
+	}
+
+	if d.HasChange("relation_fv_rs_bd_to_out") {
+		oldRel, newRel := d.GetChange("relation_fv_rs_bd_to_out")
+		oldRelSet := oldRel.(*schema.Set)
+		newRelSet := newRel.(*schema.Set)
+		relToCreate := toStringList(newRelSet.Difference(oldRelSet).List())
+
+		for _, relDn := range relToCreate {
+			checkDns = append(checkDns, relDn)
+		}
+	}
+
+	d.Partial(true)
+	err = checkTDn(aciClient, checkDns)
+	if err != nil {
+		return diag.FromErr(err)
+	}
+	d.Partial(false)
+
+	var fvRsAllDataD [][]byte
+	var fvRsAllDataC [][]byte
+	var fvRs []byte
+
+	if d.HasChange("relation_fv_rs_bd_to_profile") {
+		_, newRelParam := d.GetChange("relation_fv_rs_bd_to_profile")
+		newRelParamName := GetMOName(newRelParam.(string))
+		/*
+			err = aciClient.DeleteRelationfvRsBDToProfileFromBridgeDomain(fvBD.DistinguishedName)
+			if err != nil {
+				return diag.FromErr(err)
+			}
+		*/
+		fvRs = aciClient.SetupDeleteRelationfvRsBDToProfileFromBridgeDomain(fvBD.DistinguishedName)
+		fvRsAllDataD = append(fvRsAllDataD, fvRs)
+		/*
+			err = aciClient.CreateRelationfvRsBDToProfileFromBridgeDomain(fvBD.DistinguishedName, newRelParamName)
+			if err != nil {
+				return diag.FromErr(err)
+			}
+		*/
+		fvRs = aciClient.SetupCreateRelationfvRsBDToProfileFromBridgeDomain(fvBD.DistinguishedName, newRelParamName)
+		fvRsAllDataC = append(fvRsAllDataC, fvRs)
+	}
+	if d.HasChange("relation_fv_rs_mldsn") {
+		_, newRelParam := d.GetChange("relation_fv_rs_mldsn")
+		newRelParamName := GetMOName(newRelParam.(string))
+		/*
+			err = aciClient.CreateRelationfvRsMldsnFromBridgeDomain(fvBD.DistinguishedName, newRelParamName)
+			if err != nil {
+				return diag.FromErr(err)
+			}
+		*/
+		fvRs = aciClient.SetupCreateRelationfvRsMldsnFromBridgeDomain(fvBD.DistinguishedName, newRelParamName)
+		fvRsAllDataC = append(fvRsAllDataC, fvRs)
+	}
+	if d.HasChange("relation_fv_rs_abd_pol_mon_pol") {
+		_, newRelParam := d.GetChange("relation_fv_rs_abd_pol_mon_pol")
+		newRelParamName := GetMOName(newRelParam.(string))
+		/*
+			err = aciClient.DeleteRelationfvRsABDPolMonPolFromBridgeDomain(fvBD.DistinguishedName)
+			if err != nil {
+				return diag.FromErr(err)
+			}
+		*/
+		fvRs = aciClient.SetupDeleteRelationfvRsABDPolMonPolFromBridgeDomain(fvBD.DistinguishedName)
+		fvRsAllDataD = append(fvRsAllDataD, fvRs)
+		/*
+			err = aciClient.CreateRelationfvRsABDPolMonPolFromBridgeDomain(fvBD.DistinguishedName, newRelParamName)
+			if err != nil {
+				return diag.FromErr(err)
+			}
+		*/
+		fvRs = aciClient.SetupCreateRelationfvRsABDPolMonPolFromBridgeDomain(fvBD.DistinguishedName, newRelParamName)
+		fvRsAllDataC = append(fvRsAllDataC, fvRs)
+	}
+	if d.HasChange("relation_fv_rs_bd_to_nd_p") {
+		_, newRelParam := d.GetChange("relation_fv_rs_bd_to_nd_p")
+		newRelParamName := GetMOName(newRelParam.(string))
+		/*
+			err = aciClient.CreateRelationfvRsBDToNdPFromBridgeDomain(fvBD.DistinguishedName, newRelParamName)
+			if err != nil {
+				return diag.FromErr(err)
+			}
+		*/
+		fvRs = aciClient.SetupCreateRelationfvRsBDToNdPFromBridgeDomain(fvBD.DistinguishedName, newRelParamName)
+		fvRsAllDataC = append(fvRsAllDataC, fvRs)
+	}
+	if d.HasChange("relation_fv_rs_bd_flood_to") {
+		oldRel, newRel := d.GetChange("relation_fv_rs_bd_flood_to")
+		oldRelSet := oldRel.(*schema.Set)
+		newRelSet := newRel.(*schema.Set)
+		relToDelete := toStringList(oldRelSet.Difference(newRelSet).List())
+		relToCreate := toStringList(newRelSet.Difference(oldRelSet).List())
+
+		for _, relDn := range relToDelete {
+			/*
+				err = aciClient.DeleteRelationfvRsBdFloodToFromBridgeDomain(fvBD.DistinguishedName, relDn)
+				if err != nil {
+					return diag.FromErr(err)
+				}
+			*/
+			fvRs = aciClient.SetupDeleteRelationfvRsBdFloodToFromBridgeDomain(fvBD.DistinguishedName, relDn)
+			fvRsAllDataD = append(fvRsAllDataD, fvRs)
+		}
+
+		for _, relDn := range relToCreate {
+			/*
+				err = aciClient.CreateRelationfvRsBdFloodToFromBridgeDomain(fvBD.DistinguishedName, relDn)
+					if err != nil {
+						return diag.FromErr(err)
+					}
+			*/
+			fvRs = aciClient.SetupCreateRelationfvRsBdFloodToFromBridgeDomain(fvBD.DistinguishedName, relDn)
+			fvRsAllDataC = append(fvRsAllDataC, fvRs)
+		}
+
+	}
+	if d.HasChange("relation_fv_rs_bd_to_fhs") {
+		_, newRelParam := d.GetChange("relation_fv_rs_bd_to_fhs")
+		newRelParamName := GetMOName(newRelParam.(string))
+		/*
+			err = aciClient.DeleteRelationfvRsBDToFhsFromBridgeDomain(fvBD.DistinguishedName)
+			if err != nil {
+				return diag.FromErr(err)
+			}
+		*/
+		fvRs = aciClient.SetupDeleteRelationfvRsBDToFhsFromBridgeDomain(fvBD.DistinguishedName)
+		fvRsAllDataD = append(fvRsAllDataD, fvRs)
+		/*
+			err = aciClient.CreateRelationfvRsBDToFhsFromBridgeDomain(fvBD.DistinguishedName, newRelParamName)
+			if err != nil {
+				return diag.FromErr(err)
+			}
+		*/
+		fvRs = aciClient.SetupCreateRelationfvRsBDToFhsFromBridgeDomain(fvBD.DistinguishedName, newRelParamName)
+		fvRsAllDataC = append(fvRsAllDataC, fvRs)
+
+	}
+	if d.HasChange("relation_fv_rs_bd_to_relay_p") {
+		_, newRelParam := d.GetChange("relation_fv_rs_bd_to_relay_p")
+		newRelParamName := GetMOName(newRelParam.(string))
+		/*
+			err = aciClient.DeleteRelationfvRsBDToRelayPFromBridgeDomain(fvBD.DistinguishedName)
+			if err != nil {
+				return diag.FromErr(err)
+			}
+		*/
+		fvRs = aciClient.SetupDeleteRelationfvRsBDToRelayPFromBridgeDomain(fvBD.DistinguishedName)
+		fvRsAllDataD = append(fvRsAllDataD, fvRs)
+		/*
+			err = aciClient.CreateRelationfvRsBDToRelayPFromBridgeDomain(fvBD.DistinguishedName, newRelParamName)
+			if err != nil {
+				return diag.FromErr(err)
+			}
+		*/
+		fvRs = aciClient.SetupCreateRelationfvRsBDToRelayPFromBridgeDomain(fvBD.DistinguishedName, newRelParamName)
+		fvRsAllDataC = append(fvRsAllDataC, fvRs)
+	}
+	if d.HasChange("relation_fv_rs_ctx") {
+		_, newRelParam := d.GetChange("relation_fv_rs_ctx")
+		err := checkForSubnetConflict(aciClient, d.Id(), newRelParam.(string))
+		if err != nil {
+			return diag.FromErr(err)
+		}
+		newRelParamName := GetMOName(newRelParam.(string))
+		/*
+			err = aciClient.CreateRelationfvRsCtxFromBridgeDomain(fvBD.DistinguishedName, newRelParamName)
+			if err != nil {
+				return diag.FromErr(err)
+			}
+		*/
+		fvRs = aciClient.SetupCreateRelationfvRsCtxFromBridgeDomain(fvBD.DistinguishedName, newRelParamName)
+		fvRsAllDataC = append(fvRsAllDataC, fvRs)
+	}
+	if d.HasChange("relation_fv_rs_bd_to_netflow_monitor_pol") {
+		oldRel, newRel := d.GetChange("relation_fv_rs_bd_to_netflow_monitor_pol")
+		oldRelList := oldRel.(*schema.Set).List()
+		newRelList := newRel.(*schema.Set).List()
+		for _, relationParam := range oldRelList {
+			paramMap := relationParam.(map[string]interface{})
+			/*
+				err = aciClient.DeleteRelationfvRsBDToNetflowMonitorPolFromBridgeDomain(fvBD.DistinguishedName, GetMOName(paramMap["tn_netflow_monitor_pol_name"].(string)), paramMap["flt_type"].(string))
+				if err != nil {
+					return diag.FromErr(err)
+				}
+			*/
+			fvRs = aciClient.SetupDeleteRelationfvRsBDToNetflowMonitorPolFromBridgeDomain(fvBD.DistinguishedName, GetMOName(paramMap["tn_netflow_monitor_pol_name"].(string)), paramMap["flt_type"].(string))
+			fvRsAllDataD = append(fvRsAllDataD, fvRs)
+		}
+		for _, relationParam := range newRelList {
+			paramMap := relationParam.(map[string]interface{})
+			/*
+				err = aciClient.CreateRelationfvRsBDToNetflowMonitorPolFromBridgeDomain(fvBD.DistinguishedName, GetMOName(paramMap["tn_netflow_monitor_pol_name"].(string)), paramMap["flt_type"].(string))
+				if err != nil {
+					return diag.FromErr(err)
+				}
+			*/
+			fvRs = aciClient.SetupCreateRelationfvRsBDToNetflowMonitorPolFromBridgeDomain(fvBD.DistinguishedName, GetMOName(paramMap["tn_netflow_monitor_pol_name"].(string)), paramMap["flt_type"].(string))
+			fvRsAllDataC = append(fvRsAllDataC, fvRs)
+		}
+	}
+	if d.HasChange("relation_fv_rs_igmpsn") {
+		_, newRelParam := d.GetChange("relation_fv_rs_igmpsn")
+		newRelParamName := GetMOName(newRelParam.(string))
+		/*
+			err = aciClient.CreateRelationfvRsIgmpsnFromBridgeDomain(fvBD.DistinguishedName, newRelParamName)
+			if err != nil {
+				return diag.FromErr(err)
+			}
+		*/
+		fvRs = aciClient.SetupCreateRelationfvRsIgmpsnFromBridgeDomain(fvBD.DistinguishedName, newRelParamName)
+		fvRsAllDataC = append(fvRsAllDataC, fvRs)
+	}
+	if d.HasChange("relation_fv_rs_bd_to_ep_ret") {
+		_, newRelParam := d.GetChange("relation_fv_rs_bd_to_ep_ret")
+		newRelParamName := GetMOName(newRelParam.(string))
+		/*
+			err = aciClient.CreateRelationfvRsBdToEpRetFromBridgeDomain(fvBD.DistinguishedName, newRelParamName)
+			if err != nil {
+				return diag.FromErr(err)
+			}
+		*/
+		fvRs = aciClient.SetupCreateRelationfvRsBdToEpRetFromBridgeDomain(fvBD.DistinguishedName, newRelParamName)
+		fvRsAllDataC = append(fvRsAllDataC, fvRs)
+	}
+	if d.HasChange("relation_fv_rs_bd_to_out") {
+		oldRel, newRel := d.GetChange("relation_fv_rs_bd_to_out")
+		oldRelSet := oldRel.(*schema.Set)
+		newRelSet := newRel.(*schema.Set)
+		relToDelete := toStringList(oldRelSet.Difference(newRelSet).List())
+		relToCreate := toStringList(newRelSet.Difference(oldRelSet).List())
+
+		for _, relDn := range relToDelete {
+			relDnName := GetMOName(relDn)
+			/*
+				err = aciClient.DeleteRelationfvRsBDToOutFromBridgeDomain(fvBD.DistinguishedName, relDnName)
+				if err != nil {
+					return diag.FromErr(err)
+				}
+			*/
+			fvRs = aciClient.SetupDeleteRelationfvRsBDToOutFromBridgeDomain(fvBD.DistinguishedName, relDnName)
+			fvRsAllDataD = append(fvRsAllDataD, fvRs)
+		}
+
+		for _, relDn := range relToCreate {
+			relDnName := GetMOName(relDn)
+			/*
+				err = aciClient.CreateRelationfvRsBDToOutFromBridgeDomain(fvBD.DistinguishedName, relDnName)
+				if err != nil {
+					return diag.FromErr(err)
+				}
+			*/
+			fvRs = aciClient.SetupCreateRelationfvRsBDToOutFromBridgeDomain(fvBD.DistinguishedName, relDnName)
+			fvRsAllDataC = append(fvRsAllDataC, fvRs)
+		}
+
+	}
+
+	if len(fvRsAllDataD) > 0 {
+		err = aciClient.RenderRelationfvRsAllFromBridgeDomain(fvBD, fvRsAllDataD)
+		if err != nil {
+			return diag.FromErr(err)
+		}
+	}
+
+	if len(fvRsAllDataC) > 0 {
+		err = aciClient.RenderRelationfvRsAllFromBridgeDomain(fvBD, fvRsAllDataC)
+		if err != nil {
+			return diag.FromErr(err)
+		}
+	}
+
+	d.SetId(fvBD.DistinguishedName)
+	log.Printf("[DEBUG] %s: Bulk Update finished successfully", d.Id())
+
+	return resourceAciBridgeDomainRead(ctx, d, m)
+
+}
+
+func resourceAciBridgeDomainUpdateOrig(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] BridgeDomain: Beginning Update")
 
 	aciClient := m.(*client.Client)
@@ -1172,6 +1962,183 @@ func resourceAciBridgeDomainUpdate(ctx context.Context, d *schema.ResourceData, 
 }
 
 func resourceAciBridgeDomainRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+	if _, ok := d.GetOk("bulk_read"); ok {
+		return resourceAciBridgeDomainReadBulk(ctx, d, m)
+	} else {
+		return resourceAciBridgeDomainReadOrig(ctx, d, m)
+	}
+}
+
+func resourceAciBridgeDomainReadBulk(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+	log.Printf("[DEBUG] %s: Beginning Bulk Read", d.Id())
+
+	aciClient := m.(*client.Client)
+
+	dn := d.Id()
+	fvBD, err := getRemoteBridgeDomain(aciClient, dn)
+
+	if err != nil {
+		return errorForObjectNotFound(err, dn, d)
+	}
+
+	if fvBD.EpMoveDetectMode == "" {
+		fvBD.EpMoveDetectMode = "disable"
+	}
+
+	_, err = setBridgeDomainAttributes(fvBD, d)
+
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
+
+	fvRsAllDataR, err := aciClient.ReadRelationfvRsAllBridgeDomain(dn)
+
+	if len(fvRsAllDataR) > 0 {
+		//fvRsBDToProfileData, err := aciClient.ReadRelationfvRsBDToProfileFromBridgeDomain(dn)
+		//if err != nil {
+		fvRsBDToProfileData := fvRsAllDataR["fvRsBDToProfile"]
+		if fvRsBDToProfileData == nil {
+			log.Printf("[DEBUG] Error while reading relation fvRsBDToProfile %v", err)
+			d.Set("relation_fv_rs_bd_to_profile", "")
+
+		} else {
+			setRelationAttribute(d, "relation_fv_rs_bd_to_profile", fvRsBDToProfileData.(string))
+		}
+
+		//fvRsMldsnData, err := aciClient.ReadRelationfvRsMldsnFromBridgeDomain(dn)
+		//if err != nil {
+		fvRsMldsnData := fvRsAllDataR["fvRsMldsn"]
+		if fvRsMldsnData == nil {
+			log.Printf("[DEBUG] Error while reading relation fvRsMldsn %v", err)
+			d.Set("relation_fv_rs_mldsn", "")
+
+		} else {
+			setRelationAttribute(d, "relation_fv_rs_mldsn", fvRsMldsnData.(string))
+		}
+
+		//fvRsABDPolMonPolData, err := aciClient.ReadRelationfvRsABDPolMonPolFromBridgeDomain(dn)
+		//if err != nil {
+		fvRsABDPolMonPolData := fvRsAllDataR["fvRsABDPolMonPol"]
+		if fvRsABDPolMonPolData == nil {
+			log.Printf("[DEBUG] Error while reading relation fvRsABDPolMonPol %v", err)
+			d.Set("relation_fv_rs_abd_pol_mon_pol", "")
+
+		} else {
+			setRelationAttribute(d, "relation_fv_rs_abd_pol_mon_pol", fvRsABDPolMonPolData.(string))
+		}
+
+		//fvRsBDToNdPData, err := aciClient.ReadRelationfvRsBDToNdPFromBridgeDomain(dn)
+		//if err != nil {
+		fvRsBDToNdPData := fvRsAllDataR["fvRsBDToNdP"]
+		if fvRsBDToNdPData == nil {
+			log.Printf("[DEBUG] Error while reading relation fvRsBDToNdP %v", err)
+			d.Set("relation_fv_rs_bd_to_nd_p", "")
+
+		} else {
+			setRelationAttribute(d, "relation_fv_rs_bd_to_nd_p", fvRsBDToNdPData.(string))
+		}
+
+		//fvRsBdFloodToData, err := aciClient.ReadRelationfvRsBdFloodToFromBridgeDomain(dn)
+		//if err != nil {
+		fvRsBdFloodToData := fvRsAllDataR["fvRsBdFloodTo"]
+		if fvRsBdFloodToData == nil {
+			log.Printf("[DEBUG] Error while reading relation fvRsBdFloodTo %v", err)
+			setRelationAttribute(d, "relation_fv_rs_bd_flood_to", make([]interface{}, 0, 1))
+		} else {
+			setRelationAttribute(d, "relation_fv_rs_bd_flood_to", fvRsBdFloodToData)
+		}
+
+		//fvRsBDToFhsData, err := aciClient.ReadRelationfvRsBDToFhsFromBridgeDomain(dn)
+		//if err != nil {
+		fvRsBDToFhsData := fvRsAllDataR["fvRsBDToFhs"]
+		if fvRsBDToFhsData == nil {
+			log.Printf("[DEBUG] Error while reading relation fvRsBDToFhs %v", err)
+			d.Set("relation_fv_rs_bd_to_fhs", "")
+
+		} else {
+			setRelationAttribute(d, "relation_fv_rs_bd_to_fhs", fvRsBDToFhsData.(string))
+		}
+
+		//fvRsBDToRelayPData, err := aciClient.ReadRelationfvRsBDToRelayPFromBridgeDomain(dn)
+		//if err != nil {
+		fvRsBDToRelayPData := fvRsAllDataR["fvRsBDToRelayP"]
+		if fvRsBDToRelayPData == nil {
+			log.Printf("[DEBUG] Error while reading relation fvRsBDToRelayP %v", err)
+			d.Set("relation_fv_rs_bd_to_relay_p", "")
+
+		} else {
+			setRelationAttribute(d, "relation_fv_rs_bd_to_relay_p", fvRsBDToRelayPData.(string))
+		}
+
+		//fvRsCtxData, err := aciClient.ReadRelationfvRsCtxFromBridgeDomain(dn)
+		//if err != nil {
+		fvRsCtxData := fvRsAllDataR["fvRsCtx"]
+		if fvRsCtxData == nil {
+			log.Printf("[DEBUG] Error while reading relation fvRsCtx %v", err)
+			d.Set("relation_fv_rs_ctx", "")
+
+		} else {
+			setRelationAttribute(d, "relation_fv_rs_ctx", fvRsCtxData.(string))
+		}
+
+		//fvRsBDToNetflowMonitorPolData, err := aciClient.ReadRelationfvRsBDToNetflowMonitorPolFromBridgeDomain(dn)
+		//if err != nil {
+		fvRsBDToNetflowMonitorPolData := fvRsAllDataR["fvRsBDToNetflowMonitorPol"]
+		if fvRsBDToNetflowMonitorPolData == nil {
+			log.Printf("[DEBUG] Error while reading relation fvRsBDToNetflowMonitorPol %v", err)
+
+		} else {
+			listRelMap := make([]map[string]string, 0, 1)
+			listfvRsBDToNetflowMonitorPolData := fvRsBDToNetflowMonitorPolData.([]map[string]string)
+			for _, obj := range listfvRsBDToNetflowMonitorPolData {
+				listRelMap = append(listRelMap, map[string]string{
+					"tn_netflow_monitor_pol_name": obj["tnNetflowMonitorPolName"],
+					"flt_type":                    obj["fltType"],
+				})
+			}
+			d.Set("relation_fv_rs_bd_to_netflow_monitor_pol", listRelMap)
+		}
+
+		//fvRsIgmpsnData, err := aciClient.ReadRelationfvRsIgmpsnFromBridgeDomain(dn)
+		//if err != nil {
+		fvRsIgmpsnData := fvRsAllDataR["fvRsIgmpsn"]
+		if fvRsIgmpsnData == nil {
+			log.Printf("[DEBUG] Error while reading relation fvRsIgmpsn %v", err)
+			d.Set("relation_fv_rs_igmpsn", "")
+
+		} else {
+			setRelationAttribute(d, "relation_fv_rs_igmpsn", fvRsIgmpsnData.(string))
+		}
+
+		//fvRsBdToEpRetData, err := aciClient.ReadRelationfvRsBdToEpRetFromBridgeDomain(dn)
+		//if err != nil {
+		fvRsBdToEpRetData := fvRsAllDataR["fvRsBdToEpRet"]
+		if fvRsBdToEpRetData == nil {
+			log.Printf("[DEBUG] Error while reading relation fvRsBdToEpRet %v", err)
+			d.Set("relation_fv_rs_bd_to_ep_ret", "")
+
+		} else {
+			setRelationAttribute(d, "relation_fv_rs_bd_to_ep_ret", fvRsBdToEpRetData.(string))
+		}
+
+		//fvRsBDToOutData, err := aciClient.ReadRelationfvRsBDToOutFromBridgeDomain(dn)
+		//if err != nil {
+		fvRsBDToOutData := fvRsAllDataR["fvRsBDToOut"]
+		if fvRsBDToOutData == nil {
+			log.Printf("[DEBUG] Error while reading relation fvRsBDToOut %v", err)
+			setRelationAttribute(d, "relation_fv_rs_bd_to_out", make([]interface{}, 0, 1))
+		} else {
+			setRelationAttribute(d, "relation_fv_rs_bd_to_out", toStringList(fvRsBDToOutData.(*schema.Set).List()))
+		}
+	}
+
+	log.Printf("[DEBUG] %s: Bulk Read finished successfully", d.Id())
+
+	return nil
+}
+
+func resourceAciBridgeDomainReadOrig(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 
 	aciClient := m.(*client.Client)

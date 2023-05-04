@@ -206,6 +206,19 @@ func (sm *ServiceManager) GetViaURL(url string) (*container.Container, error) {
 
 }
 
+func (sm *ServiceManager) SetupDeleteByDn(dn, className string) []byte {
+	containerJSON := []byte(fmt.Sprintf(`{
+		"%s": {
+			"attributes": {
+				"dn": "%s",
+				"status": "deleted"
+			}
+		}
+	}`, className, dn))
+
+	return containerJSON
+}
+
 func (sm *ServiceManager) DeleteByDn(dn, className string) error {
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
