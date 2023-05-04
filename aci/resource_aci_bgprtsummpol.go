@@ -54,6 +54,7 @@ func resourceAciBgpRouteSummarization() *schema.Resource {
 						"summary-only",
 					}, false),
 				},
+				DiffSuppressFunc: suppressTypeListDiffFunc,
 			},
 			"address_type_controls": &schema.Schema{
 				Type:     schema.TypeList,
@@ -67,6 +68,7 @@ func resourceAciBgpRouteSummarization() *schema.Resource {
 						"af-label-ucast",
 					}, false),
 				},
+				DiffSuppressFunc: suppressTypeListDiffFunc,
 			},
 		})),
 		StateUpgraders: []schema.StateUpgrader{
