@@ -18,5 +18,5 @@ Both scripts report the start time and end time automatically.
 
 ## Warnings
 
-This plugin adds the fields related to bulk operations to the Terraform state file.
+This plugin adds the bulk operations fields to Terraform's state file.
 Bulk operations are experimental, be careful using them in production setups.
