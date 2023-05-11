@@ -52,6 +52,7 @@ func resourceAciBgpRouteSummarization() *schema.Resource {
 					ValidateFunc: validation.StringInSlice([]string{
 						"as-set",
 						"summary-only",
+						"none",
 					}, false),
 				},
 				DiffSuppressFunc: suppressTypeListDiffFunc,
@@ -106,6 +107,7 @@ func resourceAciBgpRouteSummarizationV0() *schema.Resource {
 				ValidateFunc: validation.StringInSlice([]string{
 					"as-set",
 					"summary-only",
+					"none",
 				}, false),
 			},
 			"name_alias": &schema.Schema{
