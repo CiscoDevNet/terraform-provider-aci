@@ -249,6 +249,35 @@ func suppressBitMaskDiffFunc() func(k, old, new string, d *schema.ResourceData) 
 	}
 }
 
+// suppressTypeListDiffFunc returns the bool value (true) when the old and new list is identical for a given key.
+// If the old and new list not is identical for a given key then it returns false.
+// The old and new list should be retrieved from the state and configuration file using GetChange.
+func suppressTypeListDiffFunc(key, oldValue, newValue string, d *schema.ResourceData) bool {
+	key = strings.Split(key, ".")[0]
+	oldData, newData := d.GetChange(key)
+
+	if oldData == nil || newData == nil {
+		return false
+	}
+
+	oldArray := oldData.([]interface{})
+	newArray := newData.([]interface{})
+	if len(oldArray) != len(newArray) {
+		// Items added or removed, always detect as changed
+		return false
+	}
+
+	oldArrayStr := fmt.Sprint(oldArray)
+	oldArrayStrList := strings.Split(oldArrayStr[1:len(oldArrayStr)-1], " ")
+	sort.Strings(oldArrayStrList)
+
+	newArrayStr := fmt.Sprint(newArray)
+	newArrayStrList := strings.Split(newArrayStr[1:len(newArrayStr)-1], " ")
+	sort.Strings(newArrayStrList)
+
+	return reflect.DeepEqual(oldArrayStrList, newArrayStrList)
+}
+
 func G(cont *container.Container, key string) string {
 	return StripQuotes(cont.S(key).String())
 }

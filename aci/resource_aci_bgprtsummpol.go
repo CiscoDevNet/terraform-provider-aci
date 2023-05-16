@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"sort"
+	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
 	"github.com/ciscoecosystem/aci-go-client/v2/models"
@@ -23,44 +25,105 @@ func resourceAciBgpRouteSummarization() *schema.Resource {
 			State: resourceAciBgpRouteSummarizationImport,
 		},
 
-		SchemaVersion: 1,
+		SchemaVersion: 2,
 
-		Schema: AppendBaseAttrSchema(map[string]*schema.Schema{
+		Schema: AppendBaseAttrSchema(AppendNameAliasAttrSchema(map[string]*schema.Schema{
 			"tenant_dn": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
 				ForceNew: true,
 			},
-
 			"name": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
 				ForceNew: true,
 			},
-
 			"attrmap": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
 			},
+			"ctrl": &schema.Schema{
+				Type:     schema.TypeList,
+				Optional: true,
+				Computed: true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+					ValidateFunc: validation.StringInSlice([]string{
+						"as-set",
+						"summary-only",
+						"none",
+					}, false),
+				},
+				DiffSuppressFunc: suppressTypeListDiffFunc,
+			},
+			"address_type_controls": &schema.Schema{
+				Type:     schema.TypeList,
+				Optional: true,
+				Computed: true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+					ValidateFunc: validation.StringInSlice([]string{
+						"af-ucast",
+						"af-mcast",
+						"af-label-ucast",
+					}, false),
+				},
+				DiffSuppressFunc: suppressTypeListDiffFunc,
+			},
+		})),
+		StateUpgraders: []schema.StateUpgrader{
+			{
+				Type:    resourceAciBgpRouteSummarizationV0().CoreConfigSchema().ImpliedType(),
+				Upgrade: resourceAciBgpRouteSummarizationUpgradeV0,
+				Version: 1,
+			},
+		},
+	}
+}
 
+func resourceAciBgpRouteSummarizationV0() *schema.Resource {
+	return &schema.Resource{
+		Schema: map[string]*schema.Schema{
+			"tenant_dn": &schema.Schema{
+				Type:     schema.TypeString,
+				Required: true,
+				ForceNew: true,
+			},
+			"name": &schema.Schema{
+				Type:     schema.TypeString,
+				Required: true,
+				ForceNew: true,
+			},
+			"attrmap": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
 			"ctrl": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
 				ValidateFunc: validation.StringInSlice([]string{
-					"as-set", "none",
+					"as-set",
+					"summary-only",
+					"none",
 				}, false),
 			},
-
 			"name_alias": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
 			},
-		}),
+		},
 	}
 }
+
+func resourceAciBgpRouteSummarizationUpgradeV0(ctx context.Context, rawState map[string]any, meta any) (map[string]any, error) {
+	rawState["ctrl"] = strings.Split(rawState["ctrl"].(string), ",")
+	return rawState, nil
+}
+
 func getRemoteBgpRouteSummarization(client *client.Client, dn string) (*models.BgpRouteSummarization, error) {
 	bgpRtSummPolCont, err := client.Get(dn)
 	if err != nil {
@@ -87,16 +150,29 @@ func setBgpRouteSummarizationAttributes(bgpRtSummPol *models.BgpRouteSummarizati
 	if err != nil {
 		return d, err
 	}
-	d.Set("tenant_dn", GetParentDn(dn, fmt.Sprintf("/bgprtsum-%s", bgpRtSummPolMap["name"])))
+	d.Set("tenant_dn", GetParentDn(dn, fmt.Sprintf("/%s", fmt.Sprintf(models.RnBgpRtSummPol, bgpRtSummPolMap["name"]))))
 
 	d.Set("name", bgpRtSummPolMap["name"])
 
 	d.Set("annotation", bgpRtSummPolMap["annotation"])
 	d.Set("attrmap", bgpRtSummPolMap["attrmap"])
-	d.Set("ctrl", bgpRtSummPolMap["ctrl"])
-	if bgpRtSummPolMap["ctrl"] == "" {
-		d.Set("ctrl", "none")
+
+	if bgpRtSummPolMap["ctrl"] != "" {
+		ctrlList := strings.Split(bgpRtSummPolMap["ctrl"], ",")
+		sort.Strings(ctrlList)
+		d.Set("ctrl", ctrlList)
+	} else {
+		d.Set("ctrl", nil)
 	}
+
+	if bgpRtSummPolMap["addrTCtrl"] != "" {
+		addrTCtrlList := strings.Split(bgpRtSummPolMap["addrTCtrl"], ",")
+		sort.Strings(addrTCtrlList)
+		d.Set("address_type_controls", addrTCtrlList)
+	} else {
+		d.Set("address_type_controls", nil)
+	}
+
 	d.Set("name_alias", bgpRtSummPolMap["nameAlias"])
 	return d, nil
 }
@@ -141,16 +217,27 @@ func resourceAciBgpRouteSummarizationCreate(ctx context.Context, d *schema.Resou
 	if Attrmap, ok := d.GetOk("attrmap"); ok {
 		bgpRtSummPolAttr.Attrmap = Attrmap.(string)
 	}
+
 	if Ctrl, ok := d.GetOk("ctrl"); ok {
-		bgpRtSummPolAttr.Ctrl = Ctrl.(string)
-		if Ctrl.(string) == "none" {
-			bgpRtSummPolAttr.Ctrl = "{}"
+		ctrlList := make([]string, 0)
+		for _, val := range Ctrl.([]interface{}) {
+			ctrlList = append(ctrlList, val.(string))
 		}
+		bgpRtSummPolAttr.Ctrl = strings.Join(ctrlList, ",")
 	}
+
+	if AddrTCtrl, ok := d.GetOk("address_type_controls"); ok {
+		AddrTCtrlList := make([]string, 0)
+		for _, val := range AddrTCtrl.([]interface{}) {
+			AddrTCtrlList = append(AddrTCtrlList, val.(string))
+		}
+		bgpRtSummPolAttr.AddrTCtrl = strings.Join(AddrTCtrlList, ",")
+	}
+
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		bgpRtSummPolAttr.NameAlias = NameAlias.(string)
 	}
-	bgpRtSummPol := models.NewBgpRouteSummarization(fmt.Sprintf("bgprtsum-%s", name), TenantDn, desc, bgpRtSummPolAttr)
+	bgpRtSummPol := models.NewBgpRouteSummarization(fmt.Sprintf(models.RnBgpRtSummPol, name), TenantDn, desc, bgpRtSummPolAttr)
 
 	err := aciClient.Save(bgpRtSummPol)
 	if err != nil {
@@ -191,16 +278,27 @@ func resourceAciBgpRouteSummarizationUpdate(ctx context.Context, d *schema.Resou
 	if Attrmap, ok := d.GetOk("attrmap"); ok {
 		bgpRtSummPolAttr.Attrmap = Attrmap.(string)
 	}
+
 	if Ctrl, ok := d.GetOk("ctrl"); ok {
-		bgpRtSummPolAttr.Ctrl = Ctrl.(string)
-		if Ctrl.(string) == "none" {
-			bgpRtSummPolAttr.Ctrl = "{}"
+		ctrlList := make([]string, 0)
+		for _, val := range Ctrl.([]interface{}) {
+			ctrlList = append(ctrlList, val.(string))
 		}
+		bgpRtSummPolAttr.Ctrl = strings.Join(ctrlList, ",")
 	}
+
+	if AddrTCtrl, ok := d.GetOk("address_type_controls"); ok {
+		AddrTCtrlList := make([]string, 0)
+		for _, val := range AddrTCtrl.([]interface{}) {
+			AddrTCtrlList = append(AddrTCtrlList, val.(string))
+		}
+		bgpRtSummPolAttr.AddrTCtrl = strings.Join(AddrTCtrlList, ",")
+	}
+
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		bgpRtSummPolAttr.NameAlias = NameAlias.(string)
 	}
-	bgpRtSummPol := models.NewBgpRouteSummarization(fmt.Sprintf("bgprtsum-%s", name), TenantDn, desc, bgpRtSummPolAttr)
+	bgpRtSummPol := models.NewBgpRouteSummarization(fmt.Sprintf(models.RnBgpRtSummPol, name), TenantDn, desc, bgpRtSummPolAttr)
 
 	bgpRtSummPol.Status = "modified"
 
