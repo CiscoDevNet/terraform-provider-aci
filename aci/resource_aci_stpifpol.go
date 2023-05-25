@@ -41,6 +41,7 @@ func resourceAciSpanningTreeInterfacePolicy() *schema.Resource {
 						"unspecified",
 					}, false),
 				},
+				DiffSuppressFunc: suppressTypeListDiffFunc,
 			},
 			"name": {
 				Type:     schema.TypeString,

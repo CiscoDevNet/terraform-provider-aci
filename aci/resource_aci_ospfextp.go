@@ -55,6 +55,7 @@ func resourceAciL3outOspfExternalPolicy() *schema.Resource {
 						"unspecified",
 					}, false),
 				},
+				DiffSuppressFunc: suppressTypeListDiffFunc,
 			},
 
 			"area_id": &schema.Schema{

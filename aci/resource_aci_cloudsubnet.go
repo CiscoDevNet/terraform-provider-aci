@@ -65,7 +65,7 @@ func resourceAciCloudSubnet() *schema.Resource {
 						"shared",
 					}, false),
 				},
-				Description: "Use the sorted scope list to handle identical changes",
+				DiffSuppressFunc: suppressTypeListDiffFunc,
 			},
 
 			"usage": &schema.Schema{

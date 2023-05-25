@@ -24,40 +24,32 @@ Manages ACI VMM Controller
 
 ```hcl
 resource "aci_vmm_controller" "example" {
-  vmm_domain_dn  = aci_vmm_domain.example.id
-  name  = "example"
-  annotation = "orchestrator:terraform"
-  dvs_version = "unmanaged"
-  host_or_ip = "10.10.10.10"
-  inventory_trig_st = "untriggered"
-  mode = "default"
-  msft_config_err_msg = "Error"
-  msft_config_issues = ["not-applicable"]
-  n1kv_stats_mode = "enabled"
-  port = "0"
-  root_cont_name = "vmmdc"
-  scope = "vm"
-  seq_num = "0"
-  stats_mode = "disabled"
-  vxlan_depl_pref = "vxlan"
-
-  relation_vmm_rs_acc = aci_vmm_credential.example.id
-
+  vmm_domain_dn                   = aci_vmm_domain.foovmm_domain.id
+  name                            = "example"
+  annotation                      = "orchestrator:terraform"
+  dvs_version                     = "unmanaged"
+  host_or_ip                      = "10.10.10.10"
+  inventory_trig_st               = "untriggered"
+  mode                            = "default"
+  msft_config_err_msg             = "Error"
+  msft_config_issues              = ["zero-mac-in-inventory", "aaacert-invalid"]
+  n1kv_stats_mode                 = "enabled"
+  port                            = "0"
+  root_cont_name                  = "vmmdc"
+  scope                           = "vm"
+  seq_num                         = "0"
+  stats_mode                      = "disabled"
+  vxlan_depl_pref                 = "vxlan"
+  relation_vmm_rs_acc             = aci_vmm_credential.example.id
   relation_vmm_rs_ctrlr_p_mon_pol = aci_resource.example.id
-
-  relation_vmm_rs_mcast_addr_ns = aci_resource.example.id
-
-  relation_vmm_rs_mgmt_e_pg = aci_application_epg.example.id
-
-  relation_vmm_rs_to_ext_dev_mgr = [aci_resource.example.id]
-
+  relation_vmm_rs_mcast_addr_ns   = aci_resource.example.id
+  relation_vmm_rs_mgmt_e_pg       = aci_application_epg.example.id
+  relation_vmm_rs_to_ext_dev_mgr  = [aci_resource.example.id]
   relation_vmm_rs_vmm_ctrlr_p {
     epg_depl_pref = "local"
-    target_dn = aci_vmm_controller.example_two.id
+    target_dn     = aci_vmm_controller.example_two.id
   }
-
-  relation_vmm_rs_vxlan_ns = aci_vxlan_pool.example.id
-
+  relation_vmm_rs_vxlan_ns     = aci_vxlan_pool.example.id
   relation_vmm_rs_vxlan_ns_def = aci_resource.example.id
 }
 ```

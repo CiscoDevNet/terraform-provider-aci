@@ -89,8 +89,9 @@ func resourceAciCloudTemplateforExternalNetwork() *schema.Resource {
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
 				},
-				Optional: true,
-				Computed: true,
+				DiffSuppressFunc: suppressTypeListDiffFunc,
+				Optional:         true,
+				Computed:         true,
 			},
 			"router_type": {
 				Type:        schema.TypeString,

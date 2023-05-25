@@ -47,6 +47,7 @@ func resourceAciTACACSSource() *schema.Resource {
 						"session",
 					}, false),
 				},
+				DiffSuppressFunc: suppressTypeListDiffFunc,
 			},
 			"min_sev": &schema.Schema{
 				Type:     schema.TypeString,

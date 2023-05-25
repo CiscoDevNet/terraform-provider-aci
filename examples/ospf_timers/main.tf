@@ -14,13 +14,17 @@ provider "aci" {
   insecure = true
 }
 
+resource "aci_tenant" "tenentcheck" {
+  name = "tenentcheck"
+}
+
 resource "aci_ospf_timers" "example" {
   tenant_dn           = aci_tenant.tenentcheck.id
   name                = "ospf_timers_1"
   annotation          = "ospf_timers_tag"
   description         = "from terraform"
   bw_ref              = "30000"
-  ctrl                = "name-lookup"
+  ctrl                = ["pfx-suppress", "name-lookup"]
   dist                = "200"
   gr_ctrl             = "helper"
   lsa_arrival_intvl   = "2000"

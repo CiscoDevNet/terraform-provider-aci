@@ -56,6 +56,7 @@ func resourceAciOSPFTimersPolicy() *schema.Resource {
 						"pfx-suppress",
 					}, false),
 				},
+				DiffSuppressFunc: suppressTypeListDiffFunc,
 			},
 
 			"dist": &schema.Schema{

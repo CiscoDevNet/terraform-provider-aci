@@ -61,6 +61,7 @@ func resourceAciOSPFInterfacePolicy() *schema.Resource {
 						"unspecified",
 					}, false),
 				},
+				DiffSuppressFunc: suppressTypeListDiffFunc,
 			},
 
 			"dead_intvl": &schema.Schema{

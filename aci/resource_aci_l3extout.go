@@ -51,8 +51,8 @@ func resourceAciL3Outside() *schema.Resource {
 						"export",
 						"import",
 					}, false),
-					Default: "export",
 				},
+				DiffSuppressFunc: suppressTypeListDiffFunc,
 			},
 
 			"target_dscp": &schema.Schema{

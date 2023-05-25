@@ -50,6 +50,7 @@ func resourceAciLACPPolicy() *schema.Resource {
 						"fast-sel-hot-stdby",
 					}, false),
 				},
+				DiffSuppressFunc: suppressTypeListDiffFunc,
 			},
 
 			"max_links": &schema.Schema{

@@ -49,6 +49,7 @@ func resourceAciMiscablingProtocolInstancePolicy() *schema.Resource {
 						"stateful-ha",
 					}, false),
 				},
+				DiffSuppressFunc: suppressTypeListDiffFunc,
 			},
 			"init_delay_time": &schema.Schema{
 				Type:     schema.TypeString,

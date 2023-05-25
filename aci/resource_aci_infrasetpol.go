@@ -113,8 +113,9 @@ func resourceAciFabricWideSettingsPolicy() *schema.Resource {
 						"TLSv1.2",
 					}, false),
 				},
-				Optional: true,
-				Computed: true,
+				DiffSuppressFunc: suppressTypeListDiffFunc,
+				Optional:         true,
+				Computed:         true,
 			},
 			"opflexp_use_ssl": &schema.Schema{
 				Type:     schema.TypeString,

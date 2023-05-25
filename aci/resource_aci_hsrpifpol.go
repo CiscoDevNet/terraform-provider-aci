@@ -50,6 +50,7 @@ func resourceAciHSRPInterfacePolicy() *schema.Resource {
 						"bia",
 					}, false),
 				},
+				DiffSuppressFunc: suppressTypeListDiffFunc,
 			},
 
 			"delay": &schema.Schema{

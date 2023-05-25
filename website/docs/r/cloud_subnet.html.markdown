@@ -30,7 +30,7 @@ resource "aci_cloud_subnet" "foocloud_subnet" {
   ip                 = "14.12.0.0/28"
   annotation         = "tag_subnet"
   name_alias         = "alias_subnet"
-  scope              = sort(["shared", "public"]) # Use the sorted scope list to handle identical changes
+  scope              = ["shared", "public"]
   usage              = "user"
   zone               = data.aci_cloud_availability_zone.aws_region_availability_zone.id # Only applicable to the AWS vendor
   subnet_group_label = "subnet_group_label" # Only applicable to the GCP vendor
@@ -45,7 +45,7 @@ resource "aci_cloud_subnet" "foocloud_subnet" {
 * `description` - (Optional) Description of the Cloud Subnet object.
 * `annotation` - (Optional) Annotation of the Cloud Subnet object.
 * `name_alias` - (Optional) Name alias of the Cloud Subnet object.
-* `scope` - (Optional) List of domain applicable to the capability. Allowed values are "public", "private" and "shared". Default is ["private"]. Use the sorted scope list to handle identical changes.
+* `scope` - (Optional) List of domain applicable to the capability. Allowed values are "public", "private" and "shared". Default is ["private"].
 * `usage` - (Optional) The usage of the port. This property shows how the port is used. Allowed values are "user", "gateway" and "infra-router". Default is "user". To make any subnet a Gateway subnet use `usage` = "gateway".	
 * `zone` - (Optional) [AWS Only] Availability zone where the subnet must be deployed. This property can carry both the actual zone or the ACI logical zone name. In the former case, the driver directly uses the value of this property. In the latter case, the Connector has to first resolve the mapping from ACI logical zone to the actual AWS zone. This parameter is required in APIC v5.0 or higher
 * `relation_cloud_rs_subnet_to_flow_log` - (Optional) Relation to class cloudAwsFlowLogPol. Cardinality - N_TO_ONE. Type - String.

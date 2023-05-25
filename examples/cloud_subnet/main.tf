@@ -60,13 +60,13 @@ resource "aci_cloud_subnet" "cloud_subnet" {
   ip                 = "10.0.1.0/24"
   usage              = "gateway"
   zone               = data.aci_cloud_availability_zone.aws_region_availability_zone.id # Only applicable to the AWS vendor
-  scope              = sort(["shared", "private", "public"])                            # Use the sorted scope list to handle identical changes
+  scope              = ["shared", "private", "public"]
 }
 
 resource "aci_cloud_subnet" "gcp_cloud_subnet" {
   cloud_cidr_pool_dn = aci_cloud_cidr_pool.cloud_cidr_pool.id
   ip                 = "10.0.2.0/24"
   usage              = "gateway"
-  subnet_group_label = "subnet_group_label"                  # Only applicable to the GCP vendor
-  scope              = sort(["shared", "private", "public"]) # Use the sorted scope list to handle identical changes
+  subnet_group_label = "subnet_group_label" # Only applicable to the GCP vendor
+  scope              = ["shared", "private", "public"]
 }
