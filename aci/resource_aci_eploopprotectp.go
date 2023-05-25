@@ -40,6 +40,7 @@ func resourceAciEPLoopProtectionPolicy() *schema.Resource {
 						"port-disable",
 					}, false),
 				},
+				DiffSuppressFunc: suppressTypeListDiffFunc,
 			},
 			"admin_st": &schema.Schema{
 				Type:     schema.TypeString,

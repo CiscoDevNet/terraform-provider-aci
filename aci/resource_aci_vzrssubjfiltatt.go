@@ -52,6 +52,7 @@ func resourceAciSubjectFilter() *schema.Resource {
 						"none",
 					}, false),
 				},
+				DiffSuppressFunc: suppressTypeListDiffFunc,
 			},
 			"priority_override": {
 				Type:     schema.TypeString,

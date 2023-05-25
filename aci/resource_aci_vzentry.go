@@ -231,6 +231,7 @@ func resourceAciFilterEntry() *schema.Resource {
 						"unspecified",
 					}, false),
 				},
+				DiffSuppressFunc: suppressTypeListDiffFunc,
 			},
 		}),
 	}

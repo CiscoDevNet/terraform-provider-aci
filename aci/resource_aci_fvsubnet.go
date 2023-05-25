@@ -66,6 +66,7 @@ func resourceAciSubnet() *schema.Resource {
 						"no-default-gateway",
 					}, false),
 				},
+				DiffSuppressFunc: suppressTypeListDiffFunc,
 			},
 
 			"name_alias": &schema.Schema{
@@ -96,6 +97,7 @@ func resourceAciSubnet() *schema.Resource {
 						"shared",
 					}, false),
 				},
+				DiffSuppressFunc: suppressTypeListDiffFunc,
 			},
 
 			"virtual": &schema.Schema{

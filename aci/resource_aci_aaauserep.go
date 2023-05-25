@@ -113,6 +113,7 @@ func resourceAciUserManagement() *schema.Resource {
 						"refresh",
 					}, false),
 				},
+				DiffSuppressFunc: suppressTypeListDiffFunc,
 			},
 			"ui_idle_timeout_seconds": &schema.Schema{
 				Type:     schema.TypeString,

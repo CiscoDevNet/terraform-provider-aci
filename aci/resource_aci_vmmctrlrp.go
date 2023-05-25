@@ -111,6 +111,7 @@ func resourceAciVMMController() *schema.Resource {
 						"zero-mac-in-inventory",
 					}, false),
 				},
+				DiffSuppressFunc: suppressTypeListDiffFunc,
 			},
 			"n1kv_stats_mode": {
 				Type:     schema.TypeString,

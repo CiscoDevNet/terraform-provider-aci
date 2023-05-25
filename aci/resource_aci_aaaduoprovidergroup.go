@@ -72,6 +72,7 @@ func resourceAciDuoProviderGroup() *schema.Resource {
 						"push",
 					}, false),
 				},
+				DiffSuppressFunc: suppressTypeListDiffFunc,
 			},
 		})),
 	}

@@ -86,6 +86,7 @@ func resourceAciL3ExtSubnet() *schema.Resource {
 						"shared-security",
 					}, false),
 				},
+				DiffSuppressFunc: suppressTypeListDiffFunc,
 			},
 
 			"relation_l3ext_rs_subnet_to_profile": &schema.Schema{

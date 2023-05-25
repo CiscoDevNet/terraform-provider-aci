@@ -58,6 +58,7 @@ func resourceAciBgpPeerConnectivityProfile() *schema.Resource {
 						"af-mcast",
 					}, false),
 				},
+				DiffSuppressFunc: suppressTypeListDiffFunc,
 			},
 
 			"admin_state": {
@@ -91,6 +92,7 @@ func resourceAciBgpPeerConnectivityProfile() *schema.Resource {
 						"send-ext-com",
 					}, false),
 				},
+				DiffSuppressFunc: suppressTypeListDiffFunc,
 			},
 
 			"name_alias": &schema.Schema{
@@ -117,6 +119,7 @@ func resourceAciBgpPeerConnectivityProfile() *schema.Resource {
 						"dis-conn-check",
 					}, false),
 				},
+				DiffSuppressFunc: suppressTypeListDiffFunc,
 			},
 
 			"private_a_sctrl": &schema.Schema{
@@ -131,6 +134,7 @@ func resourceAciBgpPeerConnectivityProfile() *schema.Resource {
 						"replace-as",
 					}, false),
 				},
+				DiffSuppressFunc: suppressTypeListDiffFunc,
 			},
 
 			"ttl": &schema.Schema{
