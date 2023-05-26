@@ -18,7 +18,7 @@ resource "aci_tenant" "interface_policy_tenant" {
   name = "interface_policy_tenant"
 }
 
-resource "aci_hsrp_interface_policy" "example" {
+resource "aci_hsrp_interface_policy" "hsrp_interface_policy" {
   tenant_dn    = aci_tenant.interface_policy_tenant.id
   name         = "one"
   annotation   = "example"

@@ -14,7 +14,7 @@ provider "aci" {
   insecure = true
 }
 
-resource "aci_vmm_domain" "foovmm_domain" {
+resource "aci_vmm_domain" "foo_vmm_domain" {
   provider_profile_dn = "uni/vmmp-VMware"
   name                = "demo_domp"
   access_mode         = "read-write"
@@ -39,7 +39,7 @@ resource "aci_vmm_domain" "foovmm_domain" {
 }
 
 resource "aci_vmm_controller" "example" {
-  vmm_domain_dn       = aci_vmm_domain.foovmm_domain.id
+  vmm_domain_dn       = aci_vmm_domain.foo_vmm_domain.id
   name                = "example"
   annotation          = "orchestrator:terraform"
   dvs_version         = "unmanaged"
