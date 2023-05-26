@@ -14,12 +14,12 @@ provider "aci" {
   insecure = true
 }
 
-resource "aci_tenant" "footenant" {
-  name = "demo_tenant"
+resource "aci_tenant" "foo_tenant" {
+  name = "foo_tenant"
 }
 
 resource "aci_vrf" "vrf1" {
-  tenant_dn          = aci_tenant.footenant.id
+  tenant_dn          = aci_tenant.foo_tenant.id
   bd_enforced_enable = "no"
   knw_mcast_act      = "permit"
   name               = "vrf1"
@@ -27,8 +27,8 @@ resource "aci_vrf" "vrf1" {
   pc_enf_pref        = "enforced"
 }
 
-resource "aci_l3_outside" "fool3_outside" {
-  tenant_dn              = aci_tenant.footenant.id
+resource "aci_l3_outside" "foo_l3_outside" {
+  tenant_dn              = aci_tenant.foo_tenant.id
   description            = "aci_l3_outside"
   name                   = "demo_l3out"
   annotation             = "tag_l3out"

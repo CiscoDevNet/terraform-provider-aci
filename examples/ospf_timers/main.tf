@@ -14,12 +14,12 @@ provider "aci" {
   insecure = true
 }
 
-resource "aci_tenant" "tenentcheck" {
-  name = "tenentcheck"
+resource "aci_tenant" "foo_tenant" {
+  name = "foo_tenant"
 }
 
 resource "aci_ospf_timers" "example" {
-  tenant_dn           = aci_tenant.tenentcheck.id
+  tenant_dn           = aci_tenant.foo_tenant.id
   name                = "ospf_timers_1"
   annotation          = "ospf_timers_tag"
   description         = "from terraform"
