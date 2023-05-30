@@ -237,8 +237,7 @@ func resourceAciAccessPortBlockCreate(ctx context.Context, d *schema.ResourceDat
 
 	if relationToinfraRsAccBndlSubgrp, ok := d.GetOk("relation_infra_rs_acc_bndl_subgrp"); ok {
 		relationParam := relationToinfraRsAccBndlSubgrp.(string)
-		relationParamName := GetMOName(relationParam)
-		err = aciClient.CreateRelationinfraRsAccBndlSubgrpFromAccessPortBlock(infraPortBlk.DistinguishedName, relationParamName)
+		err = aciClient.CreateRelationinfraRsAccBndlSubgrpFromAccessPortBlock(infraPortBlk.DistinguishedName, relationParam)
 		if err != nil {
 			return diag.FromErr(err)
 		}
@@ -308,12 +307,11 @@ func resourceAciAccessPortBlockUpdate(ctx context.Context, d *schema.ResourceDat
 
 	if d.HasChange("relation_infra_rs_acc_bndl_subgrp") {
 		_, newRelParam := d.GetChange("relation_infra_rs_acc_bndl_subgrp")
-		newRelParamName := GetMOName(newRelParam.(string))
 		err = aciClient.DeleteRelationinfraRsAccBndlSubgrpFromAccessPortBlock(infraPortBlk.DistinguishedName)
 		if err != nil {
 			return diag.FromErr(err)
 		}
-		err = aciClient.CreateRelationinfraRsAccBndlSubgrpFromAccessPortBlock(infraPortBlk.DistinguishedName, newRelParamName)
+		err = aciClient.CreateRelationinfraRsAccBndlSubgrpFromAccessPortBlock(infraPortBlk.DistinguishedName, newRelParam.(string))
 		if err != nil {
 			return diag.FromErr(err)
 		}
