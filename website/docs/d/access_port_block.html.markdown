@@ -46,3 +46,5 @@ data "aci_access_port_block" "dev_port_blk" {
 - `name_alias` - (Optional) Name alias of the Access Port Block object.
 - `to_card` - (Optional) The end (to-range) of the card range block for the leaf Access Port Block.
 - `to_port` - (Optional) The end (to-range) of the port range block for the leaf Access Port Block.
+
+- `relation_infra_rs_acc_bndl_subgrp` - (Optional) Relation to class infraAccBndlSubgrp. Cardinality - N_TO_ONE. Type - String.
