@@ -1,3 +1,12 @@
+## 2.8.0 (May 31, 2023)
+IMPROVEMENTS:
+- Add new interface configuration resource aci_interface_config (#1033)
+
+BUG FIXES:
+- Fix ctrl from string to list with state upgrader for aci_bgp_route_summarization (requires to update Terraform config for ctrl attribute to a list)
+- Ensure relational attribute relation_infra_rs_dom_p is not removed when not defined in configuration of resource aci_attachable_access_entity_profile (#1045)
+- Modified errorForObjectNotFound() to accommodate the change in state when the object does not exist (#1036)
+
 ## 2.7.0 (April 3, 2023)
 DEPRECATIONS:
 - Changed tn_netflow_monitor_pol_name -> tn_netflow_monitor_pol_dn and add deprecation in aci_logical_interface_profile (#1005)
