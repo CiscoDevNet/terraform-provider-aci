@@ -1254,9 +1254,16 @@ func resourceAciContractSubjectRead(ctx context.Context, d *schema.ResourceData,
 		return nil
 	}
 
-	vzInTerm, err := getRemoteInTermSubject(aciClient, dn)
-	if err != nil {
-		return errorForObjectNotFound(err, dn, d)
+	vzInTerm, vzInTermErr := getRemoteInTermSubject(aciClient, dn)
+	vzOutTerm, vzOutTermErr := getRemoteOutTermSubject(aciClient, dn)
+
+	if ApplyBothDirections, Ok := d.GetOk("apply_both_directions"); Ok && ApplyBothDirections == "no" {
+		if vzInTermErr != nil {
+			return errorForObjectNotFound(vzInTermErr, dn, d)
+		} else if vzOutTermErr != nil {
+			return errorForObjectNotFound(vzOutTermErr, dn, d)
+
+		}
 	}
 
 	if vzInTerm != nil {
@@ -1310,10 +1317,6 @@ func resourceAciContractSubjectRead(ctx context.Context, d *schema.ResourceData,
 		d.Set("consumer_to_provider", nil)
 	}
 
-	vzOutTerm, err := getRemoteOutTermSubject(aciClient, dn)
-	if err != nil {
-		return errorForObjectNotFound(err, dn, d)
-	}
 	if vzOutTerm != nil {
 
 		vzOutTermMap, err := setOutTermSubjectAttributes(vzOutTerm, d)
