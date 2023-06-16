@@ -91,6 +91,7 @@ func resourceAciCloudSubnet() *schema.Resource {
 			"relation_cloud_rs_subnet_to_flow_log": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 
 			"relation_cloud_rs_subnet_to_ctx": &schema.Schema{
@@ -262,8 +263,6 @@ func resourceAciCloudSubnetCreate(ctx context.Context, d *schema.ResourceData, m
 	var zoneDn string
 	if zone, ok := d.GetOk("zone"); ok {
 		zoneDn = zone.(string)
-	} else {
-		zoneDn = ""
 	}
 
 	if subnetGroup, ok := d.GetOk("subnet_group_label"); ok {
@@ -273,13 +272,10 @@ func resourceAciCloudSubnetCreate(ctx context.Context, d *schema.ResourceData, m
 	var cloudRsSubnetToCtx string
 	if relationTocloudRsSubnetToCtx, ok := d.GetOk("relation_cloud_rs_subnet_to_ctx"); ok {
 		cloudRsSubnetToCtx = GetMOName(relationTocloudRsSubnetToCtx.(string))
-	} else {
-		cloudRsSubnetToCtx = ""
 	}
 
 	cloudSubnet, err := aciClient.CreateCloudSubnet(ip, CloudCIDRPoolDn, desc, cloudSubnetAttr, zoneDn, cloudRsSubnetToCtx)
 	if err != nil {
-		log.Printf("HERE err %v", err)
 		return diag.FromErr(err)
 	}
 
@@ -363,8 +359,6 @@ func resourceAciCloudSubnetUpdate(ctx context.Context, d *schema.ResourceData, m
 	var zoneDn string
 	if zone, ok := d.GetOk("zone"); ok {
 		zoneDn = zone.(string)
-	} else {
-		zoneDn = ""
 	}
 
 	if subnetGroup, ok := d.GetOk("subnet_group_label"); ok {
@@ -374,8 +368,6 @@ func resourceAciCloudSubnetUpdate(ctx context.Context, d *schema.ResourceData, m
 	var cloudRsSubnetToCtx string
 	if relationTocloudRsSubnetToCtx, ok := d.GetOk("relation_cloud_rs_subnet_to_ctx"); ok {
 		cloudRsSubnetToCtx = GetMOName(relationTocloudRsSubnetToCtx.(string))
-	} else {
-		cloudRsSubnetToCtx = ""
 	}
 
 	cloudSubnet, err := aciClient.UpdateCloudSubnet(ip, CloudCIDRPoolDn, desc, cloudSubnetAttr, zoneDn, cloudRsSubnetToCtx)

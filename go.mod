@@ -1,4 +1,5 @@
 module github.com/terraform-providers/terraform-provider-aci
+replace github.com/ciscoecosystem/aci-go-client/v2 => /Users/ssrish/aci/aci-go-client
 
 go 1.18
 
