@@ -7,12 +7,12 @@ import (
 	"github.com/ciscoecosystem/aci-go-client/v2/models"
 )
 
-func (sm *ServiceManager) CreateCloudSubnet(ip string, cloud_cidr_pool_dn string, description string, cloudSubnetattr models.CloudSubnetAttributes, zoneDn string) (*models.CloudSubnet, error) {
+func (sm *ServiceManager) CreateCloudSubnet(ip string, cloud_cidr_pool_dn string, description string, cloudSubnetattr models.CloudSubnetAttributes, zoneDn, cloudRsSubnetToCtx string) (*models.CloudSubnet, error) {
 	rn := fmt.Sprintf("subnet-[%s]", ip)
-	// parentDn := fmt.Sprintf("uni/tn-%s/ctxprofile-%s/cidr-[%s]", tenant, cloud_context_profile, cloud_cidr_pool_addr)
 	parentDn := cloud_cidr_pool_dn
 	cloudSubnet := models.NewCloudSubnet(rn, parentDn, description, cloudSubnetattr)
 	jsonPayload, _, err := sm.PrepareModel(cloudSubnet)
+	jsonPayload.Array(cloudSubnet.ClassName, "children")
 
 	if zoneDn != "" {
 		rsZoneAttachJSON := []byte(fmt.Sprintf(`
@@ -20,19 +20,36 @@ func (sm *ServiceManager) CreateCloudSubnet(ip string, cloud_cidr_pool_dn string
 			"cloudRsZoneAttach": {
 				"attributes": {
 					"annotation": "orchestrator:terraform",
-					"dn": "%s/%s/rszoneAttach",
 					"tDn": "%s"
 				}
 			}
 		}
-		`, parentDn, rn, zoneDn))
+		`, zoneDn))
 		zoneCon, err := container.ParseJSON(rsZoneAttachJSON)
 		if err != nil {
 			return nil, err
 		}
 
-		jsonPayload.Array(cloudSubnet.ClassName, "children")
 		jsonPayload.ArrayAppend(zoneCon.Data(), cloudSubnet.ClassName, "children")
+	}
+
+	if cloudRsSubnetToCtx != "" {
+		cloudRsSubnetToCtxJSON := []byte(fmt.Sprintf(`
+		{
+			"cloudRsSubnetToCtx": {
+				"attributes": {
+					"annotation":"orchestrator:terraform",
+					"tnFvCtxName": "%s"	
+				}
+			}
+		}
+		`, cloudRsSubnetToCtx))
+
+		cloudRsSubnetToCtxCon, err := container.ParseJSON(cloudRsSubnetToCtxJSON)
+		if err != nil {
+			return nil, err
+		}
+		jsonPayload.ArrayAppend(cloudRsSubnetToCtxCon.Data(), cloudSubnet.ClassName, "children")
 	}
 	jsonPayload.Set(ip, cloudSubnet.ClassName, "attributes", "ip")
 
@@ -44,7 +61,6 @@ func (sm *ServiceManager) CreateCloudSubnet(ip string, cloud_cidr_pool_dn string
 	if err != nil {
 		return nil, err
 	}
-	// err := sm.Save(cloudSubnet)
 	return cloudSubnet, CheckForErrors(cont, "POST", sm.client.skipLoggingPayload)
 }
 
@@ -64,33 +80,52 @@ func (sm *ServiceManager) DeleteCloudSubnet(ip string, cloud_cidr_pool_addr stri
 	return sm.DeleteByDn(dn, models.CloudsubnetClassName)
 }
 
-func (sm *ServiceManager) UpdateCloudSubnet(ip string, cloud_cidr_pool_dn string, description string, cloudSubnetattr models.CloudSubnetAttributes, zoneDn string) (*models.CloudSubnet, error) {
+func (sm *ServiceManager) UpdateCloudSubnet(ip string, cloud_cidr_pool_dn string, description string, cloudSubnetattr models.CloudSubnetAttributes, zoneDn, cloudRsSubnetToCtx string) (*models.CloudSubnet, error) {
 	rn := fmt.Sprintf("subnet-[%s]", ip)
-	// parentDn := fmt.Sprintf("uni/tn-%s/ctxprofile-%s/cidr-[%s]", tenant, cloud_context_profile, cloud_cidr_pool_addr)
 	parentDn := cloud_cidr_pool_dn
 	cloudSubnet := models.NewCloudSubnet(rn, parentDn, description, cloudSubnetattr)
 	cloudSubnet.Status = "modified"
 
 	jsonPayload, _, err := sm.PrepareModel(cloudSubnet)
+	jsonPayload.Array(cloudSubnet.ClassName, "children")
 
-	rsZoneAttachJSON := []byte(fmt.Sprintf(`
-	{
-		"cloudRsZoneAttach": {
-			"attributes": {
-				"annotation": "orchestrator:terraform",
-				"dn": "%s/%s/rszoneAttach",
-				"tDn": "%s"
+	if zoneDn != "" {
+		rsZoneAttachJSON := []byte(fmt.Sprintf(`
+		{
+			"cloudRsZoneAttach": {
+				"attributes": {
+					"annotation": "orchestrator:terraform",
+					"tDn": "%s"
+				}
 			}
 		}
-	}
-	`, parentDn, rn, zoneDn))
-	zoneCon, err := container.ParseJSON(rsZoneAttachJSON)
-	if err != nil {
-		return nil, err
+		`, zoneDn))
+		zoneCon, err := container.ParseJSON(rsZoneAttachJSON)
+		if err != nil {
+			return nil, err
+		}
+
+		jsonPayload.ArrayAppend(zoneCon.Data(), cloudSubnet.ClassName, "children")
 	}
 
-	jsonPayload.Array(cloudSubnet.ClassName, "children")
-	jsonPayload.ArrayAppend(zoneCon.Data(), cloudSubnet.ClassName, "children")
+	if cloudRsSubnetToCtx != "" {
+		cloudRsSubnetToCtxJSON := []byte(fmt.Sprintf(`
+		{
+			"cloudRsSubnetToCtx": {
+				"attributes": {
+					"annotation":"orchestrator:terraform",	
+					"tnFvCtxName": "%s"	
+				}
+			}
+		}
+		`, cloudRsSubnetToCtx))
+
+		cloudRsSubnetToCtxCon, err := container.ParseJSON(cloudRsSubnetToCtxJSON)
+		if err != nil {
+			return nil, err
+		}
+		jsonPayload.ArrayAppend(cloudRsSubnetToCtxCon.Data(), cloudSubnet.ClassName, "children")
+	}
 	jsonPayload.Set(ip, cloudSubnet.ClassName, "attributes", "ip")
 
 	req, err := sm.client.MakeRestRequest("POST", fmt.Sprintf("/api/node/mo/%s/%s.json", parentDn, rn), jsonPayload, true)
@@ -101,9 +136,7 @@ func (sm *ServiceManager) UpdateCloudSubnet(ip string, cloud_cidr_pool_dn string
 	if err != nil {
 		return nil, err
 	}
-	// err := sm.Save(cloudSubnet)
 	return cloudSubnet, CheckForErrors(cont, "POST", sm.client.skipLoggingPayload)
-
 }
 
 func (sm *ServiceManager) ListCloudSubnet(cloud_cidr_pool_addr string, cloud_context_profile string, tenant string) ([]*models.CloudSubnet, error) {
@@ -213,5 +246,19 @@ func (sm *ServiceManager) ReadRelationcloudRsSubnetToFlowLogFromCloudSubnet(pare
 	} else {
 		return nil, err
 	}
+}
 
+func (sm *ServiceManager) ReadRelationcloudRsSubnetToCtx(parentDn string) (interface{}, error) {
+	baseurlStr := "/api/node/class"
+	dnUrl := fmt.Sprintf("%s/%s/%s.json", baseurlStr, parentDn, "cloudRsSubnetToCtx")
+	cont, err := sm.GetViaURL(dnUrl)
+
+	contList := models.ListFromContainer(cont, "cloudRsSubnetToCtx")
+
+	if len(contList) > 0 {
+		dat := models.G(contList[0], "tDn")
+		return dat, err
+	} else {
+		return nil, err
+	}
 }
