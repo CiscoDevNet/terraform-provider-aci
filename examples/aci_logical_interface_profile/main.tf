@@ -58,3 +58,18 @@ resource "aci_logical_interface_profile" "foological_interface_profile" {
     flt_type                  = "ipv4"
   }
 }
+
+resource "aci_pim_interface_profile" "pim_interface" {
+  logical_interface_profile_dn  = aci_logical_interface_profile.foological_interface_profile.id
+  name = "pim1"
+}
+
+resource "aci_pim_ipv6_interface_profile" "pimipv6_interface" {
+  logical_interface_profile_dn  = aci_logical_interface_profile.foological_interface_profile.id
+  name = "pimipv61"
+}
+
+resource "aci_igmp_interface_profile" "igmp_interface" {
+  logical_interface_profile_dn  = aci_logical_interface_profile.foological_interface_profile.id
+  name = "igmp1"
+}
