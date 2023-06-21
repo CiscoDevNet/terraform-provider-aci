@@ -55,15 +55,23 @@ func dataSourceAciCloudSubnet() *schema.Resource {
 			"zone": &schema.Schema{
 				Type:        schema.TypeString,
 				Optional:    true,
+				Computed:    true,
 				Description: "Only applicable to the AWS vendor",
 			},
 			"relation_cloud_rs_subnet_to_flow_log": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
+			},
+			"relation_cloud_rs_subnet_to_ctx": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
 			},
 			"subnet_group_label": &schema.Schema{
 				Type:        schema.TypeString,
 				Optional:    true,
+				Computed:    true,
 				Description: "Only applicable to the GCP vendor",
 			},
 		}),
