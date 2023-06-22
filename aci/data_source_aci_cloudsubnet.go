@@ -29,19 +29,16 @@ func dataSourceAciCloudSubnet() *schema.Resource {
 
 			"name": &schema.Schema{
 				Type:     schema.TypeString,
-				Optional: true,
 				Computed: true,
 			},
 
 			"name_alias": &schema.Schema{
 				Type:     schema.TypeString,
-				Optional: true,
 				Computed: true,
 			},
 
 			"scope": &schema.Schema{
 				Type:        schema.TypeList,
-				Optional:    true,
 				Computed:    true,
 				Elem:        &schema.Schema{Type: schema.TypeString},
 				Description: "Use the sorted scope list to handle identical changes",
@@ -49,28 +46,23 @@ func dataSourceAciCloudSubnet() *schema.Resource {
 
 			"usage": &schema.Schema{
 				Type:     schema.TypeString,
-				Optional: true,
 				Computed: true,
 			},
 			"zone": &schema.Schema{
 				Type:        schema.TypeString,
-				Optional:    true,
 				Computed:    true,
 				Description: "Only applicable to the AWS vendor",
 			},
 			"relation_cloud_rs_subnet_to_flow_log": &schema.Schema{
 				Type:     schema.TypeString,
-				Optional: true,
 				Computed: true,
 			},
 			"relation_cloud_rs_subnet_to_ctx": &schema.Schema{
 				Type:     schema.TypeString,
-				Optional: true,
 				Computed: true,
 			},
 			"subnet_group_label": &schema.Schema{
 				Type:        schema.TypeString,
-				Optional:    true,
 				Computed:    true,
 				Description: "Only applicable to the GCP vendor",
 			},
