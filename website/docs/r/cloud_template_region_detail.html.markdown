@@ -25,7 +25,7 @@ Manages ACI Cloud Template Region Detail
 ```hcl
 resource "aci_cloud_template_region_detail" "hub_network" {
   parent_dn      = "uni/tn-infra/infranetwork-default/intnetwork-default/provider-azure-region-westus"
-  hub_networking = "disable"
+  hub_networking = "disabled"
 }
 ```
 
