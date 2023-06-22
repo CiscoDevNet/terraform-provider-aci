@@ -65,7 +65,7 @@ func setCloudTemplateRegionAttributes(cloudTemplateRegionDetail *models.CloudTem
 	if dn != cloudTemplateRegionDetail.DistinguishedName {
 		d.Set("parent_dn", "")
 	} else {
-		d.Set("parent_dn", GetParentDn(cloudTemplateRegionDetail.DistinguishedName, fmt.Sprintf("/"+models.RnCloudTemplateRegionDetail)))
+		d.Set("parent_dn", GetParentDn(cloudTemplateRegionDetail.DistinguishedName, fmt.Sprintf("/"+models.RnCloudtemplateRegionDetail)))
 	}
 	d.Set("annotation", cloudTemplateRegionDetailMap["annotation"])
 	d.Set("hub_networking", toggleBetweenYesEnabledNoDisabled(cloudTemplateRegionDetailMap["hubNetworkingEnabled"]))
@@ -105,7 +105,7 @@ func resourceAciCloudTemplateRegionCreate(ctx context.Context, d *schema.Resourc
 	if HubNetworkingEnabled, ok := d.GetOk("hub_networking"); ok {
 		cloudTemplateRegionDetailAttr.HubNetworkingEnabled = toggleBetweenYesEnabledNoDisabled(HubNetworkingEnabled.(string))
 	}
-	cloudTemplateRegionDetail := models.NewCloudTemplateRegion(fmt.Sprintf(models.RnCloudTemplateRegionDetail), CloudProviderandRegionNamesDn, cloudTemplateRegionDetailAttr)
+	cloudTemplateRegionDetail := models.NewCloudTemplateRegion(fmt.Sprintf(models.RnCloudtemplateRegionDetail), CloudProviderandRegionNamesDn, cloudTemplateRegionDetailAttr)
 
 	err := aciClient.Save(cloudTemplateRegionDetail)
 	if err != nil {
@@ -132,7 +132,7 @@ func resourceAciCloudTemplateRegionUpdate(ctx context.Context, d *schema.Resourc
 	if HubNetworkingEnabled, ok := d.GetOk("hub_networking"); ok {
 		cloudTemplateRegionDetailAttr.HubNetworkingEnabled = toggleBetweenYesEnabledNoDisabled(HubNetworkingEnabled.(string))
 	}
-	cloudTemplateRegionDetail := models.NewCloudTemplateRegion(fmt.Sprintf(models.RnCloudTemplateRegionDetail), CloudProviderandRegionNamesDn, cloudTemplateRegionDetailAttr)
+	cloudTemplateRegionDetail := models.NewCloudTemplateRegion(fmt.Sprintf(models.RnCloudtemplateRegionDetail), CloudProviderandRegionNamesDn, cloudTemplateRegionDetailAttr)
 
 	cloudTemplateRegionDetail.Status = "modified"
 

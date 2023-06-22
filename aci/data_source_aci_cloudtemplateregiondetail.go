@@ -40,7 +40,7 @@ func dataSourceAciCloudTemplateRegionRead(ctx context.Context, d *schema.Resourc
 
 	d.SetId(dn)
 
-	_, err = setCloudTemplateRegionAttributes(cloudtemplateRegionDetail, d)
+	_, err = setCloudTemplateRegionAttributes(cloudTemplateRegionDetail, d)
 	if err != nil {
 		return nil
 	}
