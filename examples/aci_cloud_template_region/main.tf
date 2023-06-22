@@ -13,6 +13,12 @@ provider "aci" {
   insecure = true
 }
 
+# In order to add the cloud subnets in the azure cloud networking, hub networking needs to be disabled
+resource "aci_cloud_template_region_detail" "hub_network" {
+  parent_dn      = "uni/tn-infra/infranetwork-default/intnetwork-default/provider-azure-region-westus"
+  hub_networking = "disabled"
+}
+
 data "aci_cloud_context_profile" "hub_vnet" {
   tenant_dn  = "uni/tn-infra"
   name       = "ct_ctxprofile_westus"

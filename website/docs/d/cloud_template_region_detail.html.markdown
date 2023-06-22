@@ -36,4 +36,4 @@ data "aci_cloud_template_region_detail" "example" {
 ## Attribute Reference ##
 
 * `id` - Attribute id set to the Dn of the Cloud template region detail.
-* `hub_networking` - (Read-Only) Indicates if hub networking is enabled or disabled for a given region.
+* `hub_networking` - (Read-Only) Indicates if hub networking is "enabled" or "disabled" for a given region.

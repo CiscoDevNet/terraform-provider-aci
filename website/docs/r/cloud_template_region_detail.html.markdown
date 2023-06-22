@@ -32,7 +32,7 @@ resource "aci_cloud_template_region_detail" "hub_network" {
 ## Argument Reference ##
 
 * `parent_dn` - (Required) Distinguished name of the parent object.
-* `hub_networking` - (Optional) In order to add the cloud subnets to the cloud context profile associated with the infra tenant, this attribute needs to be explicitly "disabled". After the cloud subnets are added, `hub_networking` needs to be explicitly "enabled" again. Allowed values are "disable", "enable". Type: String.
+* `hub_networking` - (Optional) Disabling `hub_networking` blocks the traffic between VNets in the given region. In order to add the cloud subnets to the cloud context profile associated with the infra tenant, `hub_networking` needs to be explicitly "disabled". After the cloud subnets are added, `hub_networking` needs to be explicitly "enabled" again. Allowed values are "disabled", "enabled". Type: String.
 
 
 ## Importing ##

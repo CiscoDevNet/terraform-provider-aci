@@ -35,56 +35,40 @@ func resourceAciCloudTemplateRegion() *schema.Resource {
 				Optional: true,
 				Computed: true,
 				ValidateFunc: validation.StringInSlice([]string{
-					"disable",
-					"enable",
+					"disabled",
+					"enabled",
 				}, false),
 			},
 		})),
 	}
 }
 
-func getActualHubNetworkingValue(hub_networking string) string {
-	if hub_networking == "disable" {
-		return "no"
-	} else {
-		return "yes"
-	}
-}
-
-func setHubNetworkingValue(hub_networking string) string {
-	if hub_networking == "no" {
-		return "disable"
-	} else {
-		return "enable"
-	}
-}
-
 func getRemoteCloudTemplateRegion(client *client.Client, dn string) (*models.CloudTemplateRegion, error) {
-	cloudtemplateRegionDetailCont, err := client.Get(dn)
+	cloudTemplateRegionDetailCont, err := client.Get(dn)
 	if err != nil {
 		return nil, err
 	}
-	cloudtemplateRegionDetail := models.CloudTemplateRegionFromContainer(cloudtemplateRegionDetailCont)
-	if cloudtemplateRegionDetail.DistinguishedName == "" {
+	cloudTemplateRegionDetail := models.CloudTemplateRegionFromContainer(cloudTemplateRegionDetailCont)
+	if cloudTemplateRegionDetail.DistinguishedName == "" {
 		return nil, fmt.Errorf("Cloud Template Region %s not found", dn)
 	}
-	return cloudtemplateRegionDetail, nil
+	return cloudTemplateRegionDetail, nil
 }
 
-func setCloudTemplateRegionAttributes(cloudtemplateRegionDetail *models.CloudTemplateRegion, d *schema.ResourceData) (*schema.ResourceData, error) {
-	d.SetId(cloudtemplateRegionDetail.DistinguishedName)
-	cloudtemplateRegionDetailMap, err := cloudtemplateRegionDetail.ToMap()
+func setCloudTemplateRegionAttributes(cloudTemplateRegionDetail *models.CloudTemplateRegion, d *schema.ResourceData) (*schema.ResourceData, error) {
+	d.SetId(cloudTemplateRegionDetail.DistinguishedName)
+	cloudTemplateRegionDetailMap, err := cloudTemplateRegionDetail.ToMap()
 	if err != nil {
 		return d, err
 	}
 	dn := d.Id()
-	if dn != cloudtemplateRegionDetail.DistinguishedName {
+	if dn != cloudTemplateRegionDetail.DistinguishedName {
 		d.Set("parent_dn", "")
 	} else {
-		d.Set("parent_dn", GetParentDn(cloudtemplateRegionDetail.DistinguishedName, fmt.Sprintf("/"+models.RnCloudtemplateRegionDetail)))
+		d.Set("parent_dn", GetParentDn(cloudTemplateRegionDetail.DistinguishedName, fmt.Sprintf("/"+models.RnCloudTemplateRegionDetail)))
 	}
-	d.Set("annotation", cloudtemplateRegionDetailMap["annotation"])
-	d.Set("hub_networking", setHubNetworkingValue(cloudtemplateRegionDetailMap["hubNetworkingEnabled"]))
+	d.Set("annotation", cloudTemplateRegionDetailMap["annotation"])
+	d.Set("hub_networking", toggleBetweenYesEnabledNoDisabled(cloudTemplateRegionDetailMap["hubNetworkingEnabled"]))
 	return d, nil
 }
 
@@ -92,11 +76,11 @@ func resourceAciCloudTemplateRegionImport(d *schema.ResourceData, m interface{})
 	log.Printf("[DEBUG] %s: Beginning Import", d.Id())
 	aciClient := m.(*client.Client)
 	dn := d.Id()
-	cloudtemplateRegionDetail, err := getRemoteCloudTemplateRegion(aciClient, dn)
+	cloudTemplateRegionDetail, err := getRemoteCloudTemplateRegion(aciClient, dn)
 	if err != nil {
 		return nil, err
 	}
-	schemaFilled, err := setCloudTemplateRegionAttributes(cloudtemplateRegionDetail, d)
+	schemaFilled, err := setCloudTemplateRegionAttributes(cloudTemplateRegionDetail, d)
 	if err != nil {
 		return nil, err
 	}
@@ -110,25 +94,25 @@ func resourceAciCloudTemplateRegionCreate(ctx context.Context, d *schema.Resourc
 	aciClient := m.(*client.Client)
 	CloudProviderandRegionNamesDn := d.Get("parent_dn").(string)
 
-	cloudtemplateRegionDetailAttr := models.CloudTemplateRegionAttributes{}
+	cloudTemplateRegionDetailAttr := models.CloudTemplateRegionAttributes{}
 
 	if Annotation, ok := d.GetOk("annotation"); ok {
-		cloudtemplateRegionDetailAttr.Annotation = Annotation.(string)
+		cloudTemplateRegionDetailAttr.Annotation = Annotation.(string)
 	} else {
-		cloudtemplateRegionDetailAttr.Annotation = "{}"
+		cloudTemplateRegionDetailAttr.Annotation = "{}"
 	}
 
 	if HubNetworkingEnabled, ok := d.GetOk("hub_networking"); ok {
-		cloudtemplateRegionDetailAttr.HubNetworkingEnabled = getActualHubNetworkingValue(HubNetworkingEnabled.(string))
+		cloudTemplateRegionDetailAttr.HubNetworkingEnabled = toggleBetweenYesEnabledNoDisabled(HubNetworkingEnabled.(string))
 	}
-	cloudtemplateRegionDetail := models.NewCloudTemplateRegion(fmt.Sprintf(models.RnCloudtemplateRegionDetail), CloudProviderandRegionNamesDn, cloudtemplateRegionDetailAttr)
+	cloudTemplateRegionDetail := models.NewCloudTemplateRegion(fmt.Sprintf(models.RnCloudTemplateRegionDetail), CloudProviderandRegionNamesDn, cloudTemplateRegionDetailAttr)
 
-	err := aciClient.Save(cloudtemplateRegionDetail)
+	err := aciClient.Save(cloudTemplateRegionDetail)
 	if err != nil {
 		return diag.FromErr(err)
 	}
 
-	d.SetId(cloudtemplateRegionDetail.DistinguishedName)
+	d.SetId(cloudTemplateRegionDetail.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 	return resourceAciCloudTemplateRegionRead(ctx, d, m)
 }
@@ -137,27 +121,27 @@ func resourceAciCloudTemplateRegionUpdate(ctx context.Context, d *schema.Resourc
 	aciClient := m.(*client.Client)
 	CloudProviderandRegionNamesDn := d.Get("parent_dn").(string)
 
-	cloudtemplateRegionDetailAttr := models.CloudTemplateRegionAttributes{}
+	cloudTemplateRegionDetailAttr := models.CloudTemplateRegionAttributes{}
 
 	if Annotation, ok := d.GetOk("annotation"); ok {
-		cloudtemplateRegionDetailAttr.Annotation = Annotation.(string)
+		cloudTemplateRegionDetailAttr.Annotation = Annotation.(string)
 	} else {
-		cloudtemplateRegionDetailAttr.Annotation = "{}"
+		cloudTemplateRegionDetailAttr.Annotation = "{}"
 	}
 
 	if HubNetworkingEnabled, ok := d.GetOk("hub_networking"); ok {
-		cloudtemplateRegionDetailAttr.HubNetworkingEnabled = getActualHubNetworkingValue(HubNetworkingEnabled.(string))
+		cloudTemplateRegionDetailAttr.HubNetworkingEnabled = toggleBetweenYesEnabledNoDisabled(HubNetworkingEnabled.(string))
 	}
-	cloudtemplateRegionDetail := models.NewCloudTemplateRegion(fmt.Sprintf(models.RnCloudtemplateRegionDetail), CloudProviderandRegionNamesDn, cloudtemplateRegionDetailAttr)
+	cloudTemplateRegionDetail := models.NewCloudTemplateRegion(fmt.Sprintf(models.RnCloudTemplateRegionDetail), CloudProviderandRegionNamesDn, cloudTemplateRegionDetailAttr)
 
-	cloudtemplateRegionDetail.Status = "modified"
+	cloudTemplateRegionDetail.Status = "modified"
 
-	err := aciClient.Save(cloudtemplateRegionDetail)
+	err := aciClient.Save(cloudTemplateRegionDetail)
 	if err != nil {
 		return diag.FromErr(err)
 	}
 
-	d.SetId(cloudtemplateRegionDetail.DistinguishedName)
+	d.SetId(cloudTemplateRegionDetail.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 	return resourceAciCloudTemplateRegionRead(ctx, d, m)
 }
@@ -167,13 +151,13 @@ func resourceAciCloudTemplateRegionRead(ctx context.Context, d *schema.ResourceD
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 
-	cloudtemplateRegionDetail, err := getRemoteCloudTemplateRegion(aciClient, dn)
+	cloudTemplateRegionDetail, err := getRemoteCloudTemplateRegion(aciClient, dn)
 
 	if err != nil {
 		return errorForObjectNotFound(err, dn, d)
 	}
 
-	_, err = setCloudTemplateRegionAttributes(cloudtemplateRegionDetail, d)
+	_, err = setCloudTemplateRegionAttributes(cloudTemplateRegionDetail, d)
 	if err != nil {
 		d.SetId("")
 		return nil

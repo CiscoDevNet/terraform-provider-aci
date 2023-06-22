@@ -21,7 +21,6 @@ func dataSourceAciCloudTemplateRegion() *schema.Resource {
 			},
 			"hub_networking": {
 				Type:     schema.TypeString,
-				Optional: true,
 				Computed: true,
 			},
 		})),
@@ -34,7 +33,7 @@ func dataSourceAciCloudTemplateRegionRead(ctx context.Context, d *schema.Resourc
 	rn := fmt.Sprintf(models.RnCloudtemplateRegionDetail)
 	dn := fmt.Sprintf("%s/%s", CloudProviderandRegionNamesDn, rn)
 
-	cloudtemplateRegionDetail, err := getRemoteCloudTemplateRegion(aciClient, dn)
+	cloudTemplateRegionDetail, err := getRemoteCloudTemplateRegion(aciClient, dn)
 	if err != nil {
 		return nil
 	}
