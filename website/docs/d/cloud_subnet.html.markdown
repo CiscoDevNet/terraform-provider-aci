@@ -37,12 +37,13 @@ data "aci_cloud_subnet" "dev_subnet" {
 ## Attribute Reference
 
 * `id` - Dn of the Cloud Subnet object.
-* `name` - (Optional) Name of the Cloud Subnet object.
-* `description` - (Optional) Description of the Cloud Subnet object.
-* `annotation` - (Optional) Annotation of the Cloud Subnet object.
-* `name_alias` - (Optional) Name alias of the Cloud Subnet object.
-* `scope` - (Optional) List of domain applicable to the capability. Allowed values are "public", "private" and "shared". Default is ["private"].
-* `usage` - (Optional) The usage of the port. This property shows how the port is used.
-* `zone` - (Optional) Relation to a Cloud Resource Zone (class cloudRsZoneAttach). It is only applicable to the AWS vendor.
-* `relation_cloud_rs_subnet_to_flow_log` - (Optional) Relation to the AWS Flow Log Policy (class cloudAwsFlowLogPol).
-* `subnet_group_label` - (Optional) Subnet Group Label of the Cloud Subnet object. It is only applicable to the GCP vendor.
+* `name` - (Read-Only) Name of the Cloud Subnet object.
+* `description` - (Read-Only) Description of the Cloud Subnet object.
+* `annotation` - (Read-Only) Annotation of the Cloud Subnet object.
+* `name_alias` - (Read-Only) Name alias of the Cloud Subnet object.
+* `scope` - (Read-Only) List of domain applicable to the capability. Allowed values are "public", "private" and "shared".
+* `usage` - (Read-Only) The usage of the port. This property shows how the port is used.
+* `zone` - (Read-Only) Relation to a Cloud Resource Zone (class cloudRsZoneAttach). It is only applicable to the AWS vendor.
+* `relation_cloud_rs_subnet_to_flow_log` - (Read-Only) Relation to the AWS Flow Log Policy (class cloudAwsFlowLogPol).
+* `relation_cloud_rs_subnet_to_ctx` - (Read-Only) Relation to the class cloudRsSubnetToCtx.
+* `subnet_group_label` - (Read-Only) Subnet Group Label of the Cloud Subnet object. It is only applicable to the GCP vendor.
