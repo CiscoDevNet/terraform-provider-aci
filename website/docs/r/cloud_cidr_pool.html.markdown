@@ -4,12 +4,12 @@ layout: "aci"
 page_title: "ACI: aci_cloud_cidr_pool"
 sidebar_current: "docs-aci-resource-cloud_cidr_pool"
 description: |-
-  Manages ACI Cloud CIDR Pool
+  Manages Cloud Network Controller Cloud CIDR Pool
 ---
 
 # aci_cloud_cidr_pool #
-Manages ACI Cloud CIDR Pool
-Note: This resource is supported in Cloud APIC only.
+Manages Cloud Network Controller Cloud CIDR Pool
+Note: This resource is supported in Cloud Network Controller only.
 ## Example Usage ##
 
 ```hcl

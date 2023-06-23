@@ -4,13 +4,13 @@ layout: "aci"
 page_title: "ACI: aci_cloud_ad"
 sidebar_current: "docs-aci-data-source-cloud_ad"
 description: |-
-  Data source for ACI Cloud Active Directory
+  Data source for Cloud Network Controller Cloud Active Directory
 ---
 
 # aci_cloud_ad #
 
-Data source for ACI Cloud Active Directory
-Note: This data source is supported in Cloud APIC only.
+Data source for Cloud Network Controller Cloud Active Directory
+Note: This data source is supported in Cloud Network Controller only.
 
 ## API Information ##
 
@@ -19,7 +19,7 @@ Note: This data source is supported in Cloud APIC only.
 
 ## GUI Information ##
 
-* `Location` - Cloud APIC -> Application Management -> Tenants  -> {tenant_name}
+* `Location` - Cloud Network Controller -> Application Management -> Tenants  -> {tenant_name}
 
 
 

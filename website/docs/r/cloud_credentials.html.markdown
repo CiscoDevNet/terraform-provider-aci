@@ -4,13 +4,13 @@ layout: "aci"
 page_title: "ACI: aci_cloud_credentials"
 sidebar_current: "docs-aci-resource-aci_cloud_credentials"
 description: |-
-  Manages ACI Cloud Credential to manage the cloud resources
+  Manages Cloud Network Controller Cloud Credential to manage the cloud resources
 ---
 
 # aci_cloud_credentials #
 
-Manages ACI Cloud Credential to manage the cloud resources
-Note: This resource is supported in Cloud APIC only.
+Manages Cloud Network Controller Cloud Credential to manage the cloud resources
+Note: This resource is supported in Cloud Network Controller only.
 
 ## API Information ##
 
@@ -19,7 +19,7 @@ Note: This resource is supported in Cloud APIC only.
 
 ## GUI Information ##
 
-* `Location` - Cloud APIC -> Application Management -> Tenants  -> {tenant_name}
+* `Location` - Cloud Network Controller -> Application Management -> Tenants  -> {tenant_name}
 
 
 ## Example Usage ##

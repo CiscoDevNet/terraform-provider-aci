@@ -4,13 +4,13 @@ layout: "aci"
 page_title: "ACI: aci_cloud_endpoint_selector"
 sidebar_current: "docs-aci-resource-cloud_endpoint_selector"
 description: |-
-  Manages ACI Cloud Endpoint Selector
+  Manages Cloud Network Controller Cloud Endpoint Selector
 ---
 
 # aci_cloud_endpoint_selector
 
-Manages ACI Cloud Endpoint Selector  
-<b>Note: This resource is supported in Cloud APIC only.</b>
+Manages Cloud Network Controller Cloud Endpoint Selector  
+<b>Note: This resource is supported in Cloud Network Controller only.</b>
 
 ## Example Usage
 

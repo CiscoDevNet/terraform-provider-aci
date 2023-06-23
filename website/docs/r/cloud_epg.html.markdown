@@ -4,13 +4,13 @@ layout: "aci"
 page_title: "ACI: aci_cloud_epg"
 sidebar_current: "docs-aci-resource-cloud_epg"
 description: |-
-  Manages ACI Cloud EPg
+  Manages Cloud Network Controller Cloud EPg
 ---
 
 # aci_cloud_epg
 
-Manages ACI Cloud EPg  
-<b>Note: This resource is supported in Cloud APIC only.</b>
+Manages Cloud Network Controller Cloud EPg  
+<b>Note: This resource is supported in Cloud Network Controller only.</b>
 
 ## Example Usage
 

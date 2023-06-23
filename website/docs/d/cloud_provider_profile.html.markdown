@@ -4,13 +4,13 @@ layout: "aci"
 page_title: "ACI: aci_cloud_provider_profile"
 sidebar_current: "docs-aci-data-source-cloud_provider_profile"
 description: |-
-  Data source for ACI Cloud Provider Profile
+  Data source for Cloud Network Controller Cloud Provider Profile
 ---
 
 # aci_cloud_provider_profile
 
-Data source for ACI Cloud Provider Profile  
-<b>Note: This resource is supported in Cloud APIC only.</b>
+Data source for Cloud Network Controller Cloud Provider Profile  
+<b>Note: This resource is supported in Cloud Network Controller only.</b>
 
 ## Example Usage
 

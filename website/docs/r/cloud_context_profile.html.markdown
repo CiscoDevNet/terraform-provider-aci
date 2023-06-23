@@ -4,12 +4,12 @@ layout: "aci"
 page_title: "ACI: aci_cloud_context_profile"
 sidebar_current: "docs-aci-resource-cloud_context_profile"
 description: |-
-  Manages ACI Cloud Context Profile
+  Manages Cloud Network Controller Cloud Context Profile
 ---
 
 # aci_cloud_context_profile #
-Manages ACI Cloud Context Profile
-<b>Note: This resource is supported in Cloud APIC only. </b>
+Manages Cloud Network Controller Cloud Context Profile
+<b>Note: This resource is supported in Cloud Network Controller only. </b>
 ## API Information ##
 
 * `Class` - cloudCtxProfile

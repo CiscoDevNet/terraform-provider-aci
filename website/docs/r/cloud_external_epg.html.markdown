@@ -4,12 +4,12 @@ layout: "aci"
 page_title: "ACI: aci_cloud_external_epg"
 sidebar_current: "docs-aci-resource-cloud_external_epg"
 description: |-
-  Manages ACI Cloud External EPg
+  Manages Cloud Network Controller Cloud External EPg
 ---
 
 # aci_cloud_external_epg #
-Manages ACI Cloud External EPg
-<b>Note: This resource is supported in Cloud APIC only.</b>
+Manages Cloud Network Controller Cloud External EPg
+<b>Note: This resource is supported in Cloud Network Controller only.</b>
 ## Example Usage ##
 
 ```hcl

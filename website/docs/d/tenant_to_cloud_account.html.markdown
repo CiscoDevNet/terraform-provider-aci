@@ -10,7 +10,7 @@ description: |-
 # aci_tenant_to_cloud_account #
 
 Data source for ACI Tenant to Cloud Account association
-Note: This data source is supported in Cloud APIC only.
+Note: This data source is supported in Cloud Network Controller only.
 
 ## API Information ##
 
@@ -19,7 +19,7 @@ Note: This data source is supported in Cloud APIC only.
 
 ## GUI Information ##
 
-* `Location` - Cloud APIC -> Application Management -> Tenants -> {tenant_name}
+* `Location` - Cloud Network Controller -> Application Management -> Tenants -> {tenant_name}
 
 
 

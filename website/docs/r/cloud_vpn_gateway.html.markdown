@@ -4,14 +4,14 @@ layout: "aci"
 page_title: "ACI: aci_cloud_vpn_gateway"
 sidebar_current: "docs-aci-resource-cloud_vpn_gateway"
 description: |-
-  Manages ACI Cloud Vpn Gateway
+  Manages Cloud Network Controller Cloud Vpn Gateway
 ---
 
 # aci_cloud_vpn_gateway #
-Manages ACI Cloud Vpn Gateway.
+Manages Cloud Network Controller Cloud Vpn Gateway.
 
 
-Note: This resource is supported in Cloud APIC only.
+Note: This resource is supported in Cloud Network Controller only.
 
 ## Example Usage ##
 

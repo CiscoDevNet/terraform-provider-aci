@@ -4,13 +4,13 @@ layout: "aci"
 page_title: "ACI: aci_cloud_endpoint_selectorfor_external_epgs"
 sidebar_current: "docs-aci-data-source-cloud_endpoint_selectorfor_external_epgs"
 description: |-
-  Data source for ACI Cloud Endpoint Selector for External EPgs
+  Data source for Cloud Network Controller Cloud Endpoint Selector for External EPgs
 ---
 
 # aci_cloud_endpoint_selectorfor_external_epgs
 
-Data source for ACI Cloud Endpoint Selector for External EPgs  
-<b>Note: This resource is supported in Cloud APIC only.</b>
+Data source for Cloud Network Controller Cloud Endpoint Selector for External EPgs  
+<b>Note: This resource is supported in Cloud Network Controller only.</b>
 
 ## Example Usage
 

@@ -4,12 +4,12 @@ layout: "aci"
 page_title: "ACI: aci_cloud_applicationcontainer"
 sidebar_current: "docs-aci-data-source-cloud_applicationcontainer"
 description: |-
-  Data source for ACI Cloud Application container
+  Data source for Cloud Network Controller Cloud Application container
 ---
 
 # aci_cloud_applicationcontainer #
-Data source for ACI Cloud Application container  
-<b>Note: This resource is supported in Cloud APIC only. </b>
+Data source for Cloud Network Controller Cloud Application container  
+<b>Note: This resource is supported in Cloud Network Controller only. </b>
 ## Example Usage ##
 
 ```hcl

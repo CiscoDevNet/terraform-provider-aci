@@ -4,12 +4,12 @@ layout: "aci"
 page_title: "ACI: aci_cloud_external_epg"
 sidebar_current: "docs-aci-data-source-cloud_external_epg"
 description: |-
-  Data source for ACI Cloud External EPg
+  Data source for Cloud Network Controller Cloud External EPg
 ---
 
 # aci_cloud_external_epg #
-Data source for ACI Cloud External EPg  
-<b>Note: This resource is supported in Cloud APIC only.</b>
+Data source for Cloud Network Controller Cloud External EPg  
+<b>Note: This resource is supported in Cloud Network Controller only.</b>
 ## Example Usage ##
 
 ```hcl

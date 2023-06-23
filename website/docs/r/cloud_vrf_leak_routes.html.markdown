@@ -4,12 +4,12 @@ layout: "aci"
 page_title: "ACI: aci_cloud_vrf_leak_routes"
 sidebar_current: "docs-aci-resource-cloud_vrf_leak_routes"
 description: |-
-  Manages Cloud ACI Inter-VRF Leaked Routes
+  Manages Cloud Network Controller Inter-VRF Leaked Routes
 ---
 
 # aci_cloud_vrf_leak_routes #
 
-Manages Cloud ACI Inter-VRF Leaked Routes
+Manages Cloud Network Controller Inter-VRF Leaked Routes
 
 ## API Information ##
 
@@ -24,7 +24,7 @@ Manages Cloud ACI Inter-VRF Leaked Routes
 ## Example Usage ##
 
 ```hcl
-# Only for the Cloud APIC Version >= 25.0
+# Only for the Cloud Network Controller Version >= 25.0
 resource "aci_cloud_vrf_leak_routes" "cloud_internal_leak_routes" {
   vrf_dn = aci_vrf.src_vrf.id
   leak_to {

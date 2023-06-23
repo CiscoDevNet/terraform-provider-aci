@@ -4,12 +4,12 @@ layout: "aci"
 page_title: "ACI: aci_cloud_vrf_leak_routes"
 sidebar_current: "docs-aci-data-source-cloud_vrf_leak_routes"
 description: |-
-  Data source for Cloud ACI Inter-VRF Leaked Routes
+  Data source for Cloud Network Controller Inter-VRF Leaked Routes
 ---
 
 # aci_cloud_vrf_leak_routes #
 
-Data source for Cloud ACI Inter-VRF Leaked Routes
+Data source for Cloud Network Controller Inter-VRF Leaked Routes
 
 
 ## API Information ##

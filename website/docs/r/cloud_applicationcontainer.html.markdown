@@ -4,12 +4,12 @@ layout: "aci"
 page_title: "ACI: aci_cloud_applicationcontainer"
 sidebar_current: "docs-aci-resource-cloud_applicationcontainer"
 description: |-
-  Manages ACI Cloud Application container
+  Manages Cloud Network Controller Cloud Application container
 ---
 
 # aci_cloud_applicationcontainer #
-Manages ACI Cloud Application container
-Note: This resource is supported in Cloud APIC only.
+Manages Cloud Network Controller Cloud Application container
+Note: This resource is supported in Cloud Network Controller only.
 ## Example Usage ##
 
 ```hcl

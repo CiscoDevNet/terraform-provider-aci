@@ -4,13 +4,13 @@ layout: "aci"
 page_title: "ACI: aci_cloud_endpoint_selector"
 sidebar_current: "docs-aci-data-source-cloud_endpoint_selector"
 description: |-
-  Data source for ACI Cloud Endpoint Selector
+  Data source for Cloud Network Controller Cloud Endpoint Selector
 ---
 
 # aci_cloud_endpoint_selector
 
-Data source for ACI Cloud Endpoint Selector  
-<b>Note: This resource is supported in Cloud APIC only.</b>
+Data source for Cloud Network Controller Cloud Endpoint Selector  
+<b>Note: This resource is supported in Cloud Network Controller only.</b>
 
 ## Example Usage
 
