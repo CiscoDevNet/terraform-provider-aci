@@ -477,5 +477,9 @@ func toggleOptions(option string) string {
 		"yes":      "enabled",
 		"no":       "disabled",
 	}
-	return values[option]
+	if output, ok := values[option]; ok {
+		return output
+	} else {
+		return ""
+	}
 }
