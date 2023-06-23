@@ -470,14 +470,12 @@ func setModelAttributes(modelAttr interface{}, modelAttrMap map[string]string) e
 	return nil
 }
 
-func toggleBetweenYesEnabledNoDisabled(hub_networking string) string {
-	if hub_networking == "disabled" {
-		return "no"
-	} else if hub_networking == "no" {
-		return "disabled"
-	} else if hub_networking == "yes" {
-		return "enabled"
-	} else {
-		return "yes"
+func toggleOptions(option string) string {
+	var values = map[string]string{
+		"enabled":  "yes",
+		"disabled": "no",
+		"yes":      "enabled",
+		"no":       "disabled",
 	}
+	return values[option]
 }
