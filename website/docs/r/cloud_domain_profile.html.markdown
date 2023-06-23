@@ -4,13 +4,13 @@ layout: "aci"
 page_title: "ACI: aci_cloud_domain_profile"
 sidebar_current: "docs-aci-resource-cloud_domain_profile"
 description: |-
-  Manages ACI Cloud Domain Profile
+  Manages Cloud Network Controller Cloud Domain Profile
 ---
 
 # aci_cloud_domain_profile
 
-Manages ACI Cloud Domain Profile  
-<b>Note: This resource is supported in Cloud APIC only.</b>
+Manages Cloud Network Controller Cloud Domain Profile  
+<b>Note: This resource is supported in Cloud Network Controller only.</b>
 
 ## Example Usage
 

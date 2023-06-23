@@ -4,13 +4,13 @@ layout: "aci"
 page_title: "ACI: aci_cloud_ipsec_tunnel_subnet_pool"
 sidebar_current: "docs-aci-data-source-aci_cloud_ipsec_tunnel_subnet_pool"
 description: |-
-  Data source for the ACI Cloud Subnet Pool for IPsec Tunnels
+  Data source for the Cloud Network Controller Cloud Subnet Pool for IPsec Tunnels
 ---
 
 # aci_cloud_ipsec_tunnel_subnet_pool #
 
-Data source for the ACI Cloud Subnet Pool for IPsec Tunnels
-<b>Note: This resource is supported in Cloud APIC version > 25.0 only.</b>
+Data source for the Cloud Network Controller Cloud Subnet Pool for IPsec Tunnels
+<b>Note: This resource is supported in Cloud Network Controller version > 25.0 only.</b>
 
 
 ## API Information ##
@@ -20,7 +20,7 @@ Data source for the ACI Cloud Subnet Pool for IPsec Tunnels
 
 ## GUI Information ##
 
-* `Location` - Cloud APIC -> Infrastructure -> Inter-Site Connectivity -> Region Management
+* `Location` - Cloud Network Controller -> Infrastructure -> Inter-Site Connectivity -> Region Management
 
 
 

@@ -19,11 +19,11 @@ Manages ACI Inter-VRF Leaked EPG/BD Subnet
 ## GUI Information ##
 
 * `Location` - Tenants -> Networking -> VRFs -> Inter-VRF Leaked Routes for EPG -> EPG/BD Subnets
-* `Location` - Cloud APIC -> Application Management -> VRFs -> Leak Routes
+* `Location` - Cloud Network Controller -> Application Management -> VRFs -> Leak Routes
 
 ## Example Usage ##
 
-Note: `leak_to.*.allow_l3out_advertisement` -  Must be set as true for Cloud APIC
+Note: `leak_to.*.allow_l3out_advertisement` -  Must be set as true for Cloud Network Controller
 
 ```hcl
 resource "aci_vrf_leak_epg_bd_subnet" "vrf_leak_epg_bd_subnet" {
@@ -48,7 +48,7 @@ Tenant and VRF destination for Inter-VRF Leaked Routes
 * `allow_l3out_advertisement` - (Optional) Visibility of the Inter-VRF Leaked EPG/BD Subnet object. Allowed values are "true", "false" and default value is "false". Type: String.
 * `leak_to` - (Optional) A block representing the attributes of `Tenant and VRF Destinations` for the Inter-VRF Leaked Routes object. Type: Block.
   * `vrf_dn` - (Required) Distinguished name of the destination VRF object, which is mapped to the `Tenant and VRF Destinations` object.
-  * `allow_l3out_advertisement` - (Optional) Scope of the destination VRF object, which is mapped to the `Tenant and VRF Destinations` object. Allowed values are "inherit", "true", "false" and default value is "inherit". For Cloud APIC allow_l3out_advertisement must be set as true. Type: String.
+  * `allow_l3out_advertisement` - (Optional) Scope of the destination VRF object, which is mapped to the `Tenant and VRF Destinations` object. Allowed values are "inherit", "true", "false" and default value is "inherit". For Cloud Network Controller allow_l3out_advertisement must be set as true. Type: String.
 
 ## Importing ##
 

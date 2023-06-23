@@ -9,7 +9,7 @@ description: |-
 
 # aci_autonomous_system_profile #
 Data source for ACI Autonomous System Profile  
-<b>Note: This resource is supported in Cloud APIC only.
+<b>Note: This resource is supported in Cloud Network Controller only.
 
 
 ## Example Usage ##

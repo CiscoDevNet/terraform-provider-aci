@@ -4,12 +4,12 @@ layout: "aci"
 page_title: "ACI: aci_cloud_subnet"
 sidebar_current: "docs-aci-data-source-cloud_subnet"
 description: |-
-  Data source for ACI Cloud Subnet
+  Data source for Cloud Network Controller Cloud Subnet
 ---
 
 # aci_cloud_subnet #
-Data source for ACI Cloud Subnet  
-<b>Note: This resource is supported in Cloud APIC only.</b>
+Data source for Cloud Network Controller Cloud Subnet  
+<b>Note: This resource is supported in Cloud Network Controller only.</b>
 
 ## API Information ##
 

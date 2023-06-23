@@ -4,12 +4,12 @@ layout: "aci"
 page_title: "ACI: aci_cloud_aws_provider"
 sidebar_current: "docs-aci-data-source-cloud_aws_provider"
 description: |-
-  Data source for ACI Cloud AWS Provider
+  Data source for Cloud Network Controller Cloud AWS Provider
 ---
 
 # aci_cloud_aws_provider #
-Data source for ACI Cloud AWS Provider  
-<b>Note: This resource is supported in Cloud APIC only.</b>
+Data source for Cloud Network Controller Cloud AWS Provider  
+<b>Note: This resource is supported in Cloud Network Controller only.</b>
 ## Example Usage ##
 
 ```hcl
@@ -26,7 +26,7 @@ data "aci_cloud_aws_provider" "aws_prov" {
 
 * `id` - Attribute id set to the Dn of the Cloud AWS Provider.
 * `access_key_id` - (Optional) access_key_id for the AWS account provided in the account id field.
-* `account_id` - (Optional) AWS account-id to manage with cloud APIC.
+* `account_id` - (Optional) AWS account-id to manage with Cloud Network Controller.
 * `description` - (Optional) Description for object cloud aws provider.
 * `annotation` - (Optional) Annotation for object cloud aws provider.
 * `email` - (Optional) Email address of the local user.

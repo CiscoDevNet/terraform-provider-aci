@@ -4,13 +4,13 @@ layout: "aci"
 page_title: "ACI: aci_cloud_epg"
 sidebar_current: "docs-aci-data-source-cloud_epg"
 description: |-
-  Data source for ACI Cloud EPg
+  Data source for Cloud Network Controller Cloud EPg
 ---
 
 # aci_cloud_epg
 
-Data source for ACI Cloud EPg  
-<b>Note: This resource is supported in Cloud APIC only.</b>
+Data source for Cloud Network Controller Cloud EPg  
+<b>Note: This resource is supported in Cloud Network Controller only.</b>
 
 ## Example Usage
 

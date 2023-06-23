@@ -4,12 +4,12 @@ layout: "aci"
 page_title: "ACI: aci_cloud_availability_zone"
 sidebar_current: "docs-aci-data-source-cloud_availability_zone"
 description: |-
-  Data source for ACI Cloud Availability Zone
+  Data source for Cloud Network Controller Cloud Availability Zone
 ---
 
 # aci_cloud_availability_zone #
-Data source for ACI Cloud Availability Zone  
-<b>Note: This resource is supported in Cloud APIC only.</b>
+Data source for Cloud Network Controller Cloud Availability Zone  
+<b>Note: This resource is supported in Cloud Network Controller only.</b>
 ## Example Usage ##
 
 ```hcl

@@ -4,12 +4,12 @@ layout: "aci"
 page_title: "ACI: aci_cloud_cidr_pool"
 sidebar_current: "docs-aci-data-source-cloud_cidr_pool"
 description: |-
-  Data source for ACI Cloud CIDR Pool
+  Data source for Cloud Network Controller Cloud CIDR Pool
 ---
 
 # aci_cloud_cidr_pool #
-Data source for ACI Cloud CIDR Pool.  
-<b>Note: This resource is supported in Cloud APIC only.</b>
+Data source for Cloud Network Controller Cloud CIDR Pool.  
+<b>Note: This resource is supported in Cloud Network Controller only.</b>
 ## Example Usage ##
 
 ```hcl

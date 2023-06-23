@@ -4,12 +4,12 @@ layout: "aci"
 page_title: "ACI: aci_cloud_subnet"
 sidebar_current: "docs-aci-resource-cloud_subnet"
 description: |-
-  Manages ACI Cloud Subnet
+  Manages Cloud Network Controller Cloud Subnet
 ---
 
 # aci_cloud_subnet #
-Manages ACI Cloud Subnet
-<b>Note: This resource is supported in Cloud APIC only.</b>
+Manages Cloud Network Controller Cloud Subnet
+<b>Note: This resource is supported in Cloud Network Controller only.</b>
 
 ## API Information ##
 

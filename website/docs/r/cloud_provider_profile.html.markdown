@@ -4,12 +4,12 @@ layout: "aci"
 page_title: "ACI: aci_cloud_provider_profile"
 sidebar_current: "docs-aci-resource-cloud_provider_profile"
 description: |-
-  Manages ACI Cloud Provider Profile
+  Manages Cloud Network Controller Cloud Provider Profile
 ---
 
 # aci_cloud_provider_profile #
-Manages ACI Cloud Provider Profile
-<b>Note: This resource is supported in Cloud APIC only.</b>
+Manages Cloud Network Controller Cloud Provider Profile
+<b>Note: This resource is supported in Cloud Network Controller only.</b>
 ## Example Usage ##
 
 ```hcl

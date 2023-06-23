@@ -4,12 +4,12 @@ layout: "aci"
 page_title: "ACI: aci_cloud_providers_region"
 sidebar_current: "docs-aci-data-source-cloud_providers_region"
 description: |-
-  Data source for ACI Cloud Providers Region
+  Data source for Cloud Network Controller Cloud Providers Region
 ---
 
 # aci_cloud_providers_region #
-Data source for ACI Cloud Providers Region  
-<b>Note: This resource is supported in Cloud APIC only.</b>
+Data source for Cloud Network Controller Cloud Providers Region  
+<b>Note: This resource is supported in Cloud Network Controller only.</b>
 ## Example Usage ##
 
 ```hcl

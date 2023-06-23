@@ -4,13 +4,13 @@ layout: "aci"
 page_title: "ACI: aci_cloud_ad"
 sidebar_current: "docs-aci-resource-cloud_ad"
 description: |-
-  Manages ACI Cloud Active Directory
+  Manages Cloud Network Controller Cloud Active Directory
 ---
 
 # aci_cloud_ad #
 
-Manages ACI Cloud Active Directory
-Note: This resource is supported in Cloud APIC only.
+Manages Cloud Network Controller Cloud Active Directory
+Note: This resource is supported in Cloud Network Controller only.
 
 ## API Information ##
 
@@ -19,7 +19,7 @@ Note: This resource is supported in Cloud APIC only.
 
 ## GUI Information ##
 
-* `Location` - Cloud APIC -> Application Management -> Tenants  -> {tenant_name}
+* `Location` - Cloud Network Controller -> Application Management -> Tenants  -> {tenant_name}
 
 
 ## Example Usage ##

@@ -4,13 +4,13 @@ layout: "aci"
 page_title: "ACI: aci_cloud_context_profile"
 sidebar_current: "docs-aci-data-source-cloud_context_profile"
 description: |-
-  Data source for ACI Cloud Context Profile
+  Data source for Cloud Network Controller Cloud Context Profile
 ---
 
 # aci_cloud_context_profile
 
-Data source for ACI Cloud Context Profile
-<b>Note: This resource is supported in Cloud APIC only. </b>
+Data source for Cloud Network Controller Cloud Context Profile
+<b>Note: This resource is supported in Cloud Network Controller only. </b>
 
 ## API Information ##
 

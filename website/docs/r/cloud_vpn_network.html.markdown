@@ -4,13 +4,13 @@ layout: "aci"
 page_title: "ACI: aci_cloud_external_network_vpn_network"
 sidebar_current: "docs-aci-resource-aci_cloud_external_network_vpn_network"
 description: |-
-  Manages ACI Cloud Template for VPN Network
+  Manages Cloud Network Controller Cloud Template for VPN Network
 ---
 
 # aci_cloud_external_network_vpn_network #
 
-Manages ACI Cloud Template for VPN Network
-<b>Note: This resource is supported in Cloud APIC version > 25.0 only.</b>
+Manages Cloud Network Controller Cloud Template for VPN Network
+<b>Note: This resource is supported in Cloud Network Controller version > 25.0 only.</b>
 
 ## API Information ##
 
@@ -19,7 +19,7 @@ Manages ACI Cloud Template for VPN Network
 
 ## GUI Information ##
 
-* `Location` -  Cloud APIC -> Application Management -> External Networks -> VPN Networks
+* `Location` -  Cloud Network Controller -> Application Management -> External Networks -> VPN Networks
 
 
 ## Example Usage ##

@@ -4,13 +4,13 @@ layout: "aci"
 page_title: "ACI: aci_cloud_credentials"
 sidebar_current: "docs-aci-data-source-aci_cloud_credentials"
 description: |-
-  Data source for ACI Cloud Credential to manage the cloud resources
+  Data source for Cloud Network Controller Cloud Credential to manage the cloud resources
 ---
 
 # aci_cloud_credentials #
 
-Data source for ACI Cloud Credential to manage the cloud resources
-Note: This data source is supported in Cloud APIC only.
+Data source for Cloud Network Controller Cloud Credential to manage the cloud resources
+Note: This data source is supported in Cloud Network Controller only.
 
 ## API Information ##
 
@@ -19,7 +19,7 @@ Note: This data source is supported in Cloud APIC only.
 
 ## GUI Information ##
 
-* `Location` - Cloud APIC -> Application Management -> Tenants  -> {tenant_name}
+* `Location` - Cloud Network Controller -> Application Management -> Tenants  -> {tenant_name}
 
 
 
