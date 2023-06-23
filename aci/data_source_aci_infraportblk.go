@@ -3,6 +3,7 @@ package aci
 import (
 	"context"
 	"fmt"
+	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
@@ -56,6 +57,11 @@ func dataSourceAciAccessPortBlock() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+
+			"relation_infra_rs_acc_bndl_subgrp": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 		}),
 	}
 }
@@ -71,14 +77,22 @@ func dataSourceAciAccessPortBlockRead(ctx context.Context, d *schema.ResourceDat
 	dn := fmt.Sprintf("%s/%s", AccessPortSelectorDn, rn)
 
 	infraPortBlk, err := getRemoteAccessPortBlock(aciClient, dn)
-
 	if err != nil {
 		return diag.FromErr(err)
 	}
+
 	d.SetId(dn)
+
 	_, err = setAccessPortBlockAttributes(infraPortBlk, d)
 	if err != nil {
 		return diag.FromErr(err)
 	}
+
+	log.Printf("[DEBUG] %s: infraRsAccBndlSubgrp - Beginning Read with parent DN", dn)
+	_, err = getAndSetReadRelationinfraRsAccBndlSubgrp(aciClient, dn, d)
+	if err == nil {
+		log.Printf("[DEBUG] %s: infraRsAccBndlSubgrp - Read finished successfully", d.Get("relation_infra_rs_acc_bndl_subgrp"))
+	}
+
 	return nil
 }

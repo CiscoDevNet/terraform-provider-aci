@@ -70,8 +70,7 @@ func resourceAciAccessPortBlock() *schema.Resource {
 			},
 
 			"relation_infra_rs_acc_bndl_subgrp": &schema.Schema{
-				Type: schema.TypeString,
-
+				Type:     schema.TypeString,
 				Optional: true,
 			},
 		}),
@@ -117,6 +116,18 @@ func setAccessPortBlockAttributes(infraPortBlk *models.AccessPortBlock, d *schem
 	return d, nil
 }
 
+func getAndSetReadRelationinfraRsAccBndlSubgrp(client *client.Client, dn string, d *schema.ResourceData) (*schema.ResourceData, error) {
+	infraRsAccBndlSubgrp, err := client.ReadRelationinfraRsAccBndlSubgrpFromAccessPortBlock(dn)
+	if err != nil {
+		log.Printf("[DEBUG] Error while reading relation infraRsAccBndlSubgrp %v", err)
+		d.Set("relation_infra_rs_acc_bndl_subgrp", nil)
+		return d, err
+	} else {
+		d.Set("relation_infra_rs_acc_bndl_subgrp", infraRsAccBndlSubgrp.(string))
+	}
+	return d, nil
+}
+
 func resourceAciAccessPortBlockImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
 	log.Printf("[DEBUG] %s: Beginning Import", d.Id())
 	aciClient := m.(*client.Client)
@@ -124,21 +135,19 @@ func resourceAciAccessPortBlockImport(d *schema.ResourceData, m interface{}) ([]
 	dn := d.Id()
 
 	infraPortBlk, err := getRemoteAccessPortBlock(aciClient, dn)
-
-	if err != nil {
-		return nil, err
-	}
-	infraPortBlkMap, err := infraPortBlk.ToMap()
 	if err != nil {
 		return nil, err
 	}
 
-	name := infraPortBlkMap["name"]
-	pDN := GetParentDn(dn, fmt.Sprintf("/portblk-%s", name))
-	d.Set("access_port_selector_dn", pDN)
 	schemaFilled, err := setAccessPortBlockAttributes(infraPortBlk, d)
 	if err != nil {
 		return nil, err
+	}
+
+	log.Printf("[DEBUG] %s: infraRsAccBndlSubgrp - Beginning Import with parent DN", dn)
+	_, err = getAndSetReadRelationinfraRsAccBndlSubgrp(aciClient, dn, d)
+	if err == nil {
+		log.Printf("[DEBUG] %s: infraRsAccBndlSubgrp - Import finished successfully", d.Get("relation_infra_rs_acc_bndl_subgrp"))
 	}
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
@@ -237,8 +246,7 @@ func resourceAciAccessPortBlockCreate(ctx context.Context, d *schema.ResourceDat
 
 	if relationToinfraRsAccBndlSubgrp, ok := d.GetOk("relation_infra_rs_acc_bndl_subgrp"); ok {
 		relationParam := relationToinfraRsAccBndlSubgrp.(string)
-		relationParamName := GetMOName(relationParam)
-		err = aciClient.CreateRelationinfraRsAccBndlSubgrpFromAccessPortBlock(infraPortBlk.DistinguishedName, relationParamName)
+		err = aciClient.CreateRelationinfraRsAccBndlSubgrpFromAccessPortBlock(infraPortBlk.DistinguishedName, relationParam)
 		if err != nil {
 			return diag.FromErr(err)
 		}
@@ -308,12 +316,11 @@ func resourceAciAccessPortBlockUpdate(ctx context.Context, d *schema.ResourceDat
 
 	if d.HasChange("relation_infra_rs_acc_bndl_subgrp") {
 		_, newRelParam := d.GetChange("relation_infra_rs_acc_bndl_subgrp")
-		newRelParamName := GetMOName(newRelParam.(string))
 		err = aciClient.DeleteRelationinfraRsAccBndlSubgrpFromAccessPortBlock(infraPortBlk.DistinguishedName)
 		if err != nil {
 			return diag.FromErr(err)
 		}
-		err = aciClient.CreateRelationinfraRsAccBndlSubgrpFromAccessPortBlock(infraPortBlk.DistinguishedName, newRelParamName)
+		err = aciClient.CreateRelationinfraRsAccBndlSubgrpFromAccessPortBlock(infraPortBlk.DistinguishedName, newRelParam.(string))
 		if err != nil {
 			return diag.FromErr(err)
 		}
@@ -345,13 +352,10 @@ func resourceAciAccessPortBlockRead(ctx context.Context, d *schema.ResourceData,
 		return nil
 	}
 
-	infraRsAccBndlSubgrpData, err := aciClient.ReadRelationinfraRsAccBndlSubgrpFromAccessPortBlock(dn)
-	if err != nil {
-		log.Printf("[DEBUG] Error while reading relation infraRsAccBndlSubgrp %v", err)
-		setRelationAttribute(d, "relation_infra_rs_acc_bndl_subgrp", "")
-
-	} else {
-		setRelationAttribute(d, "relation_infra_rs_acc_bndl_subgrp", infraRsAccBndlSubgrpData.(string))
+	log.Printf("[DEBUG] %s: infraRsAccBndlSubgrp - Beginning Read with parent DN", dn)
+	_, err = getAndSetReadRelationinfraRsAccBndlSubgrp(aciClient, dn, d)
+	if err == nil {
+		log.Printf("[DEBUG] %s: infraRsAccBndlSubgrp - Read finished successfully", d.Get("relation_infra_rs_acc_bndl_subgrp"))
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
