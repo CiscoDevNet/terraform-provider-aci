@@ -45,5 +45,5 @@ data "aci_cloud_subnet" "dev_subnet" {
 * `usage` - (Read-Only) The usage of the port. This property shows how the port is used.
 * `zone` - (Read-Only) Relation to a Cloud Resource Zone (class cloudRsZoneAttach). It is only applicable to the AWS vendor.
 * `relation_cloud_rs_subnet_to_flow_log` - (Read-Only) Relation to the AWS Flow Log Policy (class cloudAwsFlowLogPol).
-* `relation_cloud_rs_subnet_to_ctx` - (Read-Only) Relation to the class cloudRsSubnetToCtx.
+* `relation_cloud_rs_subnet_to_ctx` - (Read-Only) Relation to associate the subnet with a secondary VRF (class cloudRsSubnetToCtx).
 * `subnet_group_label` - (Read-Only) Subnet Group Label of the Cloud Subnet object. It is only applicable to the GCP vendor.

@@ -344,7 +344,7 @@ func resourceAciCloudSubnetUpdate(ctx context.Context, d *schema.ResourceData, m
 		checkDns = append(checkDns, newRelParam.(string))
 	}
 
-	if d.HasChange("relation_cloud_rs_subnet_ctx") {
+	if d.HasChange("relation_cloud_rs_subnet_to_ctx") {
 		_, newRelParam := d.GetChange("relation_cloud_rs_subnet_to_ctx")
 		checkDns = append(checkDns, newRelParam.(string))
 	}
