@@ -4,7 +4,11 @@ github.com/agext/levenshtein
 # github.com/apparentlymart/go-textseg/v13 v13.0.0
 ## explicit; go 1.16
 github.com/apparentlymart/go-textseg/v13/textseg
+<<<<<<< HEAD
 # github.com/ciscoecosystem/aci-go-client/v2 v2.19.0
+=======
+# github.com/ciscoecosystem/aci-go-client/v2 v2.20.0
+>>>>>>> 947488ff ([minor_changes] Added new resource BFD Multihop Interface profile (object: bfdMhIfP).)
 ## explicit; go 1.12
 github.com/ciscoecosystem/aci-go-client/v2/client
 github.com/ciscoecosystem/aci-go-client/v2/container
