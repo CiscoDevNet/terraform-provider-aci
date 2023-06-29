@@ -1,9 +1,20 @@
+terraform {
+  required_providers {
+    aci = {
+      source = "ciscodevnet/aci"
+    }
+  }
+}
 
 provider "aci" {
   username = ""
   password = ""
   url      = ""
   insecure = true
+}
+
+resource "aci_tenant" "dev_tenant" {
+  name = "demo_tenant"
 }
 
 resource "aci_application_profile" "test_ap" {
