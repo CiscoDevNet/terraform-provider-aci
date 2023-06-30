@@ -103,7 +103,7 @@ func makeCloudTemplateRegion(ctx context.Context, d *schema.ResourceData, m inte
 	if HubNetworkingEnabled, ok := d.GetOk("hub_networking"); ok {
 		cloudTemplateRegionDetailAttr.HubNetworkingEnabled = toggleOptions(HubNetworkingEnabled.(string))
 	}
-	cloudTemplateRegionDetail := models.NewCloudTemplateRegion(fmt.Sprintf(models.RnCloudtemplateRegionDetail), cloudProviderandRegionNamesDn, cloudTemplateRegionDetailAttr)
+	cloudTemplateRegionDetail := models.NewCloudTemplateRegion(models.RnCloudtemplateRegionDetail, cloudProviderandRegionNamesDn, cloudTemplateRegionDetailAttr)
 
 	if method == "update" {
 		cloudTemplateRegionDetail.Status = "modified"
