@@ -29,9 +29,8 @@ func dataSourceAciCloudTemplateRegion() *schema.Resource {
 
 func dataSourceAciCloudTemplateRegionRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	aciClient := m.(*client.Client)
-	CloudProviderandRegionNamesDn := d.Get("parent_dn").(string)
-	rn := fmt.Sprintf(models.RnCloudtemplateRegionDetail)
-	dn := fmt.Sprintf("%s/%s", CloudProviderandRegionNamesDn, rn)
+	cloudProviderandRegionNamesDn := d.Get("parent_dn").(string)
+	dn := fmt.Sprintf("%s/%s", cloudProviderandRegionNamesDn, models.RnCloudtemplateRegionDetail)
 
 	cloudTemplateRegionDetail, err := getRemoteCloudTemplateRegion(aciClient, dn)
 	if err != nil {
