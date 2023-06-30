@@ -38,6 +38,6 @@ data "aci_bfd_multihop_interface_profile" "example" {
 * `id` - Attribute id set to the Dn of the BFD Multihop Interface Profile.
 * `annotation` - (Optional) Annotation of the BFD Multihop Interface Profile object.
 * `name_alias` - (Optional) Name Alias of the BFD Multihop Interface Profile object.
-* `key` - (Optional) Authentication Key. Authentication key
-* `key_id` - (Optional) Authentication Key ID. Authentication key id
-* `interface_profile_type` - (Optional) Authentication Type. Authentication type
+* `key` - (Optional) Authentication Key.
+* `key_id` - (Optional) Authentication Key ID.
+* `interface_profile_type` - (Optional) Authentication Type.

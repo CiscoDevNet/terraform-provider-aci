@@ -20,27 +20,22 @@ func dataSourceAciBfdMultihopInterfaceProfile() *schema.Resource {
 			},
 			"annotation": &schema.Schema{
 				Type:     schema.TypeString,
-				Optional: true,
 				Computed: true,
 			},
 			"key": &schema.Schema{
 				Type:     schema.TypeString,
-				Optional: true,
 				Computed: true,
 			},
 			"key_id": &schema.Schema{
 				Type:     schema.TypeString,
-				Optional: true,
 				Computed: true,
 			},
 			"name": &schema.Schema{
 				Type:     schema.TypeString,
-				Optional: true,
 				Computed: true,
 			},
 			"interface_profile_type": &schema.Schema{
 				Type:     schema.TypeString,
-				Optional: true,
 				Computed: true,
 			},
 		})),
@@ -50,8 +45,7 @@ func dataSourceAciBfdMultihopInterfaceProfile() *schema.Resource {
 func dataSourceAciBfdMultihopInterfaceProfileRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	aciClient := m.(*client.Client)
 	LogicalInterfaceProfileDn := d.Get("logical_interface_profile_dn").(string)
-	rn := fmt.Sprintf("bfdMhIfP")
-	dn := fmt.Sprintf("%s/%s", LogicalInterfaceProfileDn, rn)
+	dn := fmt.Sprintf("%s/%s", LogicalInterfaceProfileDn, fmt.Sprintf("bfdMhIfP"))
 
 	bfdMhIfP, err := getRemoteAciBfdMultihopInterfaceProfile(aciClient, dn)
 	if err != nil {

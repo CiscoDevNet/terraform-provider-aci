@@ -28,9 +28,7 @@ resource "aci_bfd_multihop_interface_profile" "example" {
   annotation = "orchestrator:terraform"
   key = 
   key_id = "1"
-
   interface_profile_type = "none"
-
   bfd_rs_mh_if_pol = aci_resource.example.id
 }
 ```
@@ -38,13 +36,10 @@ resource "aci_bfd_multihop_interface_profile" "example" {
 ## Argument Reference ##
 
 * `logical_interface_profile_dn` - (Required) Distinguished name of the parent LogicalInterfaceProfile object.
-
 * `annotation` - (Optional) Annotation of the BFD Multihop Interface Profile object.
-
-* `key` - (Optional) Authentication Key.Authentication key
-* `key_id` - (Optional) Authentication Key ID.Authentication key id Allowed range is 1-255 and default value is "1".
-* `interface_profile_type` - (Optional) Authentication Type.Authentication type Allowed values are "none", "sha1", and default value is "none". Type: String.
-
+* `key` - (Optional) Authentication key.
+* `key_id` - (Optional) Authentication Key ID. Allowed range is 1-255 and default value is "1".
+* `interface_profile_type` - (Optional) Authentication Type. Allowed values are "none", "sha1", and default value is "none". Type: String.
 * `relation_bfd_rs_mh_if_pol` - (Optional) Represents the relation to a Interface Policy (class bfdMhIfPol). Relationship to the BFD interface policy Type: String.
 
 

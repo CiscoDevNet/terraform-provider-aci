@@ -98,8 +98,7 @@ func setAciBfdMultihopInterfaceProfileAttributes(bfdMhIfP *models.AciBfdMultihop
 func resourceAciBfdMultihopInterfaceProfileImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
 	log.Printf("[DEBUG] Aci BFD Multihop Interface Profile %s: Beginning Import", d.Id())
 	aciClient := m.(*client.Client)
-	dn := d.Id()
-	bfdMhIfP, err := getRemoteAciBfdMultihopInterfaceProfile(aciClient, dn)
+	bfdMhIfP, err := getRemoteAciBfdMultihopInterfaceProfile(aciClient, d.Id())
 	if err != nil {
 		return nil, err
 	}
@@ -259,9 +258,8 @@ func resourceAciBfdMultihopInterfaceProfileUpdate(ctx context.Context, d *schema
 func resourceAciBfdMultihopInterfaceProfileRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] Aci BFD Multihop Interface Profile %s: Beginning Read", d.Id())
 	aciClient := m.(*client.Client)
-	dn := d.Id()
 
-	bfdMhIfP, err := getRemoteAciBfdMultihopInterfaceProfile(aciClient, dn)
+	bfdMhIfP, err := getRemoteAciBfdMultihopInterfaceProfile(aciClient, d.Id())
 	if err != nil {
 		d.SetId("")
 		return diag.FromErr(err)
@@ -273,7 +271,7 @@ func resourceAciBfdMultihopInterfaceProfileRead(ctx context.Context, d *schema.R
 		return nil
 	}
 
-	bfdRsMhIfPolData, err := aciClient.ReadRelationbfdRsMhIfPol(dn)
+	bfdRsMhIfPolData, err := aciClient.ReadRelationbfdRsMhIfPol(d.Id())
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation bfdRsMhIfPol %v", err)
 		d.Set("relation_bfd_rs_mh_if_pol", "")
@@ -292,9 +290,8 @@ func resourceAciBfdMultihopInterfaceProfileRead(ctx context.Context, d *schema.R
 func resourceAciBfdMultihopInterfaceProfileDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] Aci BFD Multihop Interface Profile %s: Beginning Destroy", d.Id())
 	aciClient := m.(*client.Client)
-	dn := d.Id()
 
-	err := aciClient.DeleteByDn(dn, "bfdMhIfP")
+	err := aciClient.DeleteByDn(d.Id(), "bfdMhIfP")
 	if err != nil {
 		return diag.FromErr(err)
 	}
