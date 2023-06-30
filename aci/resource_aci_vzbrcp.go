@@ -872,7 +872,12 @@ func resourceAciContractUpdate(ctx context.Context, d *schema.ResourceData, m in
 
 			if filter["filter_entry"] != nil {
 				vzFilterEntries := filter["filter_entry"].([]interface{})
-				oldVzFilterEntries := oldVzFilter["filter_entry"].([]interface{})
+
+				var oldVzFilterEntries []interface{}
+				if oldVzFilter["filter_entry"] != nil {
+					oldVzFilterEntries = oldVzFilter["filter_entry"].([]interface{})
+				}
+
 				for _, entry := range vzFilterEntries {
 					vzEntryAttr := models.FilterEntryAttributes{}
 					vzEntry := entry.(map[string]interface{})
