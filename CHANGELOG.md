@@ -1,3 +1,14 @@
+## 2.9.0 (July 1, 2023)
+IMPROVEMENTS:
+- Add the ability to associate subnets with a secondary vrf (relation_cloud_rs_subnet_to_ctx) to aci_cloud_subnet (#1058)
+
+BUG FIXES:
+- Fix relation_infra_rs_acc_bndl_subgrp attribute in aci_access_port_block to gather target dn instead of name
+- Enable computed to the relational attributes in the aci_external_network_instance_profile resource
+- Fix for the list element order mismatch issue on the TypeList attributes across different resources
+- Fix aci_contract_subject resource read function call issue
+- Fix type assertion crash in update when all filters are removed (manually or with aci_filter resource) from contract in aci_contract resource
+
 ## 2.8.0 (May 31, 2023)
 IMPROVEMENTS:
 - Add new interface configuration resource aci_interface_config (#1033)
