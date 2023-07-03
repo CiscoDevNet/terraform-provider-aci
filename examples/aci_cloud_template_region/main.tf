@@ -31,7 +31,7 @@ resource "aci_cloud_cidr_pool" "azure_cloud_cidr_pool" {
 }
 
 resource "aci_cloud_subnet" "azure_subnets" {
-  cloud_cidr_pool_dn              = aci_cloud_cidr_pool.cloud_cidr_pool.id
+  cloud_cidr_pool_dn              = aci_cloud_cidr_pool.azure_cloud_cidr_pool.id
   name                            = "test"
   ip                              = "10.8.0.3/25"
   relation_cloud_rs_subnet_to_ctx = "uni/tn-infra/ctx-ave-ctrl"

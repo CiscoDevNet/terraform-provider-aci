@@ -14,7 +14,7 @@ Manages ACI Cloud Template Region Detail
 ## API Information ##
 
 * `Class` - cloudtemplateRegionDetail
-* `Distinguished Name` - uni/tn-{name}/infranetwork-{name}/stats-{name}/provider-{provider}-region-{region}/regiondetail
+* `Distinguished Name` - uni/tn-{tenant_name}/infranetwork-{infra_name}/stats-{stats_name}/provider-{provider}-region-{region}/regiondetail
 
 ## GUI Information ##
 
