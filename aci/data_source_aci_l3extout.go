@@ -3,6 +3,7 @@ package aci
 import (
 	"context"
 	"fmt"
+	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
 	"github.com/ciscoecosystem/aci-go-client/v2/models"
@@ -30,7 +31,6 @@ func dataSourceAciL3Outside() *schema.Resource {
 
 			"enforce_rtctrl": {
 				Type:     schema.TypeList,
-				Optional: true,
 				Computed: true,
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
@@ -39,27 +39,28 @@ func dataSourceAciL3Outside() *schema.Resource {
 
 			"target_dscp": &schema.Schema{
 				Type:     schema.TypeString,
-				Optional: true,
 				Computed: true,
 			},
 			"mpls_enabled": {
 				Type:     schema.TypeString,
-				Optional: true,
+				Computed: true,
+			},
+			"pim": {
+				Type:     schema.TypeList,
 				Computed: true,
 			},
 			"relation_l3ext_rs_dampening_pol": &schema.Schema{
-				Type:     schema.TypeSet,
-				Optional: true,
+				Type: schema.TypeSet,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"tn_rtctrl_profile_dn": {
-							Type:     schema.TypeString,
-							Optional: true,
+							Type: schema.TypeString,
+
 							Computed: true,
 						},
 						"af": {
-							Type:     schema.TypeString,
-							Optional: true,
+							Type: schema.TypeString,
+
 							Computed: true,
 						},
 					},
@@ -68,17 +69,14 @@ func dataSourceAciL3Outside() *schema.Resource {
 			"relation_l3ext_rs_ectx": &schema.Schema{
 				Type:     schema.TypeString,
 				Computed: true,
-				Optional: true,
 			},
 			"relation_l3ext_rs_interleak_pol": &schema.Schema{
 				Type:     schema.TypeString,
 				Computed: true,
-				Optional: true,
 			},
 			"relation_l3ext_rs_l3_dom_att": &schema.Schema{
 				Type:     schema.TypeString,
 				Computed: true,
-				Optional: true,
 			},
 			"relation_l3extrs_redistribute_pol": {
 				Type:        schema.TypeSet,
@@ -87,12 +85,12 @@ func dataSourceAciL3Outside() *schema.Resource {
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"source": {
-							Optional: true,
+
 							Type:     schema.TypeString,
 							Computed: true,
 						},
 						"target_dn": {
-							Optional: true,
+
 							Type:     schema.TypeString,
 							Computed: true,
 						},
@@ -123,6 +121,13 @@ func dataSourceAciL3OutsideRead(ctx context.Context, d *schema.ResourceData, m i
 	if err != nil {
 		return diag.FromErr(err)
 	}
+
+	pimExtP, err := getRemotePIMExternalProfile(aciClient, fmt.Sprintf(dn+"/%s", models.RnPimExtP))
+	if err != nil {
+		log.Printf("[DEBUG] Error while reading pimExternalProfile %v", err)
+	}
+
+	setPIMExternalProfileAttributes(pimExtP, d)
 
 	// Importing l3extRsDampeningPol object
 	getAndSetReadRelationl3extRsDampeningPolFromL3Outside(aciClient, dn, d)

@@ -94,6 +94,18 @@ func resourceAciL3Outside() *schema.Resource {
 					"yes",
 				}, false),
 			},
+			"pim": {
+				Type:     schema.TypeList,
+				Optional: true,
+				Computed: true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+					ValidateFunc: validation.StringInSlice([]string{
+						"ipv4",
+						"ipv6",
+					}, false),
+				},
+			},
 			// Relation to Route Control for Dampening
 			"relation_l3ext_rs_dampening_pol": &schema.Schema{
 				Type:     schema.TypeSet,
@@ -223,6 +235,45 @@ func setL3OutsideAttributes(l3extOut *models.L3Outside, d *schema.ResourceData) 
 	return d, nil
 }
 
+func getRemotePIMExternalProfile(client *client.Client, dn string) (*models.PIMExternalProfile, error) {
+	pimExtPCont, err := client.Get(dn)
+	if err != nil {
+		return nil, err
+	}
+	pimExtP := models.PIMExternalProfileFromContainer(pimExtPCont)
+	if pimExtP.DistinguishedName == "" {
+		return nil, fmt.Errorf("External Profile %s not found", dn)
+	}
+	return pimExtP, nil
+}
+
+func setPIMExternalProfileAttributes(pimExtP *models.PIMExternalProfile, d *schema.ResourceData) (*schema.ResourceData, error) {
+	pimExtPMap, err := pimExtP.ToMap()
+	if err != nil {
+		return d, err
+	}
+	pimGet := make([]string, 0, 1)
+	for _, val := range strings.Split(pimExtPMap["enabledAf"], ",") {
+		pimGet = append(pimGet, strings.Trim(strings.Trim(val, "-mcast"), " "))
+	}
+	sort.Strings(pimGet)
+	if pimIntr, ok := d.GetOk("pim"); ok {
+		pimAct := make([]string, 0, 1)
+		for _, val := range pimIntr.([]interface{}) {
+			pimAct = append(pimAct, val.(string))
+		}
+		sort.Strings(pimAct)
+		if reflect.DeepEqual(pimAct, pimGet) {
+			d.Set("pim", d.Get("pim").([]interface{}))
+		} else {
+			d.Set("pim", pimGet)
+		}
+	} else {
+		d.Set("pim", pimGet)
+	}
+	return d, nil
+}
+
 func getAndSetReadRelationl3extRsDampeningPolFromL3Outside(client *client.Client, dn string, d *schema.ResourceData) (*schema.ResourceData, error) {
 	l3extRsDampeningPolData, err := client.ReadRelationl3extRsDampeningPolFromL3Outside(dn)
 	l3extRsDampeningPolList := make([]map[string]string, 0)
@@ -325,6 +376,13 @@ func resourceAciL3OutsideImport(d *schema.ResourceData, m interface{}) ([]*schem
 		return nil, err
 	}
 
+	pimExtP, err := getRemotePIMExternalProfile(aciClient, fmt.Sprintf(dn+"/%s", models.RnPimExtP))
+	if err != nil {
+		log.Printf("[DEBUG] Error while reading pimExternalProfile %v", err)
+	}
+
+	setPIMExternalProfileAttributes(pimExtP, d)
+
 	// Importing l3extRsDampeningPol object
 	getAndSetReadRelationl3extRsDampeningPolFromL3Outside(aciClient, dn, d)
 
@@ -393,6 +451,21 @@ func resourceAciL3OutsideCreate(ctx context.Context, d *schema.ResourceData, m i
 	err := aciClient.Save(l3extOut)
 	if err != nil {
 		return diag.FromErr(err)
+	}
+
+	if Pim, ok := d.GetOk("pim"); ok {
+		PimList := make([]string, 0, 1)
+		for _, val := range Pim.([]interface{}) {
+			PimList = append(PimList, val.(string)+"-mcast")
+		}
+		PimAttribute := models.PIMExternalProfileAttributes{}
+		newPimVal := strings.Join(PimList, ",")
+		PimAttribute.EnabledAf = newPimVal
+		pimExtP := models.NewPIMExternalProfile(models.RnPimExtP, l3extOut.DistinguishedName, "", PimAttribute)
+		err := aciClient.Save(pimExtP)
+		if err != nil {
+			return diag.FromErr(err)
+		}
 	}
 
 	checkDns := make([]string, 0, 1)
@@ -538,6 +611,23 @@ func resourceAciL3OutsideUpdate(ctx context.Context, d *schema.ResourceData, m i
 		return diag.FromErr(err)
 	}
 
+	if d.HasChange("pim") {
+		_, newPim := d.GetChange("pim")
+		PimList := make([]string, 0, 1)
+		for _, val := range newPim.([]interface{}) {
+			PimList = append(PimList, val.(string)+"-mcast")
+		}
+		PimAttribute := models.PIMExternalProfileAttributes{}
+		newPimVal := strings.Join(PimList, ",")
+		PimAttribute.EnabledAf = newPimVal
+		pimExtP := models.NewPIMExternalProfile(models.RnPimExtP, l3extOut.DistinguishedName, "", PimAttribute)
+		pimExtP.Status = "modified"
+		err := aciClient.Save(pimExtP)
+		if err != nil {
+			return diag.FromErr(err)
+		}
+	}
+
 	checkDns := make([]string, 0, 1)
 
 	if d.HasChange("relation_l3ext_rs_ectx") {
@@ -670,6 +760,13 @@ func resourceAciL3OutsideRead(ctx context.Context, d *schema.ResourceData, m int
 		d.SetId("")
 		return nil
 	}
+
+	pimExtP, err := getRemotePIMExternalProfile(aciClient, fmt.Sprintf(dn+"/%s", models.RnPimExtP))
+	if err != nil {
+		log.Printf("[DEBUG] Error while reading pimExternalProfile %v", err)
+	}
+
+	setPIMExternalProfileAttributes(pimExtP, d)
 
 	// Importing l3extRsDampeningPol object
 	getAndSetReadRelationl3extRsDampeningPolFromL3Outside(aciClient, dn, d)

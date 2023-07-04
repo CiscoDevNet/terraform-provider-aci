@@ -41,6 +41,41 @@ resource "aci_logical_node_profile" "foological_node_profile" {
   target_dscp   = "unspecified"
 }
 
+resource "aci_igmp_interface_policy" "example_igmp" {
+  tenant_dn          = aci_tenant.footenant.id
+  name               = "example_igmp"
+  grp_timeout        = "260"
+  last_mbr_cnt       = "2"
+  last_mbr_resp_time = "1"
+  querier_timeout    = "255"
+  query_intvl        = "125"
+  robust_fac         = "2"
+  rsp_intvl          = "10"
+  start_query_cnt    = "2"
+  start_query_intvl  = "31"
+  ver                = "v2"
+}
+
+resource "aci_pim_interface_policy" "example_ip" {
+  tenant_dn   = aci_tenant.footenant.id
+  name        = "example_ip"
+  auth_t      = "none"
+  dr_delay    = "3"
+  dr_prio     = "1"
+  hello_itvl  = "30000"
+  jp_interval = "60"
+}
+
+resource "aci_pim_interface_policy" "example_ipv6" {
+  tenant_dn   = aci_tenant.footenant.id
+  name        = "example_ipv6"
+  auth_t      = "none"
+  dr_delay    = "3"
+  dr_prio     = "1"
+  hello_itvl  = "30000"
+  jp_interval = "60"
+}
+
 resource "aci_logical_interface_profile" "foological_interface_profile" {
   logical_node_profile_dn               = aci_logical_node_profile.foological_node_profile.id
   description                           = "aci_logical_interface_profile from terraform"
@@ -49,6 +84,9 @@ resource "aci_logical_interface_profile" "foological_interface_profile" {
   name_alias                            = "alias_prof"
   prio                                  = "unspecified"
   tag                                   = "black"
+  relation_l3ext_rs_pim_ip_if_pol       = aci_pim_interface_policy.example_ip.id
+  relation_l3ext_rs_pim_ipv6_if_pol     = aci_pim_interface_policy.example_ipv6.id
+  relation_l3ext_rs_igmp_if_pol         = aci_igmp_interface_policy.example_igmp.id
   relation_l3ext_rs_egress_qos_dpp_pol  = "uni/tn-l3out_tf_tenant/qosdpppol-egress_data_plane"
   relation_l3ext_rs_ingress_qos_dpp_pol = "uni/tn-l3out_tf_tenant/qosdpppol-ingress_data_plane"
   relation_l3ext_rs_l_if_p_cust_qos_pol = "uni/tn-l3out_tf_tenant/qoscustom-qos"
@@ -57,19 +95,4 @@ resource "aci_logical_interface_profile" "foological_interface_profile" {
     tn_netflow_monitor_pol_dn = "uni/tn-l3out_tf_tenant/monitorpol-netflow"
     flt_type                  = "ipv4"
   }
-}
-
-resource "aci_pim_interface_profile" "pim_interface" {
-  logical_interface_profile_dn  = aci_logical_interface_profile.foological_interface_profile.id
-  name = "pim1"
-}
-
-resource "aci_pim_ipv6_interface_profile" "pimipv6_interface" {
-  logical_interface_profile_dn  = aci_logical_interface_profile.foological_interface_profile.id
-  name = "pimipv61"
-}
-
-resource "aci_igmp_interface_profile" "igmp_interface" {
-  logical_interface_profile_dn  = aci_logical_interface_profile.foological_interface_profile.id
-  name = "igmp1"
 }

@@ -146,7 +146,7 @@ func Provider() *schema.Provider {
 			"aci_cloud_endpoint_selectorfor_external_epgs": resourceAciCloudEndpointSelectorforExternalEPgs(),
 			"aci_cloud_endpoint_selector":                  resourceAciCloudEndpointSelector(),
 			"aci_cloud_external_epg":                       resourceAciCloudExternalEPg(),
-			//"aci_cloud_subnet":                             resourceAciCloudSubnet(),
+			"aci_cloud_subnet":                             resourceAciCloudSubnet(),
 			"aci_cloud_account":                            resourceAciCloudAccount(),
 			"aci_tenant_to_cloud_account":                  resourceAciTenantToCloudAccountAssociation(),
 			"aci_cloud_ad":                                 resourceAciCloudActiveDirectory(),
@@ -326,14 +326,8 @@ func Provider() *schema.Provider {
 			"aci_service_redirect_backup_policy":           resourceAciPBRBackupPolicy(),
 			"aci_pbr_l1_l2_destination":                    resourceAciL1L2RedirectDestTraffic(),
 			"aci_interface_config":                         resourceAciInterfaceConfiguration(),
-<<<<<<< HEAD
-			"aci_cloud_template_region_detail":             resourceAciCloudTemplateRegion(),
-=======
-			"aci_pim_external_profile":                     resourceAciExternalProfile(),
-			"aci_pim_interface_profile":                    resourceAciPimInterfaceProfile(),
-			"aci_pim_ipv6_interface_profile":               resourceAciPimIPv6InterfaceProfile(),
-			"aci_igmp_interface_profile":                   resourceAciIGMPInterfaceProfile(),
->>>>>>> bea46d3d ([minor_change] Added resources and data sources for PIM external, PIM, PIM IPv6 and IGMP interface profiles)
+			"aci_pim_interface_policy":                     resourceAciPIMInterfacePolicy(),
+			"aci_igmp_interface_policy":                    resourceAciIGMPInterfacePolicy(),
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
@@ -392,7 +386,7 @@ func Provider() *schema.Provider {
 			"aci_cloud_external_epg":                       dataSourceAciCloudExternalEPg(),
 			"aci_cloud_provider_profile":                   dataSourceAciCloudProviderProfile(),
 			"aci_cloud_providers_region":                   dataSourceAciCloudProvidersRegion(),
-			//"aci_cloud_subnet":                             dataSourceAciCloudSubnet(),
+			"aci_cloud_subnet":                             dataSourceAciCloudSubnet(),
 			"aci_cloud_availability_zone":                  dataSourceAciCloudAvailabilityZone(),
 			"aci_cloud_account":                            dataSourceAciCloudAccount(),
 			"aci_tenant_to_cloud_account":                  dataSourceAciTenantToCloudAccountAssociation(),
@@ -581,14 +575,8 @@ func Provider() *schema.Provider {
 			"aci_service_redirect_backup_policy":           dataSourceAciPBRBackupPolicy(),
 			"aci_pbr_l1_l2_destination":                    dataSourceAciL1L2RedirectDestTraffic(),
 			"aci_interface_config":                         dataSourceAciInterfaceConfiguration(),
-<<<<<<< HEAD
-			"aci_cloud_template_region_detail":             dataSourceAciCloudTemplateRegion(),
-=======
-			"aci_pim_external_profile":                     dataSourceAciExternalProfile(),
-			"aci_pim_interface_profile":                    dataSourceAciPimInterfaceProfile(),
-			"aci_pim_ipv6_interface_profile":               dataSourceAciPimIPv6InterfaceProfile(),
-			"aci_igmp_interface_profile":                   dataSourceAciIGMPInterfaceProfile(),
->>>>>>> bea46d3d ([minor_change] Added resources and data sources for PIM external, PIM, PIM IPv6 and IGMP interface profiles)
+			"aci_pim_interface_policy":                     dataSourceAciPIMInterfacePolicy(),
+			"aci_igmp_interface_policy":                    dataSourceAciIGMPInterfacePolicy(),
 		},
 
 		ConfigureFunc: configureClient,
