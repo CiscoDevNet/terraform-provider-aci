@@ -473,7 +473,7 @@ func resourceAciLogicalInterfaceProfileCreate(ctx context.Context, d *schema.Res
 
 	if relationTopimRsIfPol, ok := d.GetOk("relation_l3ext_rs_pim_ip_if_pol"); ok {
 
-		pimIfP := models.NewPIMInterfaceProfile(models.RnPimIfP, l3extLIfP.DistinguishedName, "", models.PIMInterfaceProfileAttributes{})
+		pimIfP := models.NewPIMInterfaceProfile(l3extLIfP.DistinguishedName, "", models.PIMInterfaceProfileAttributes{})
 		err := aciClient.Save(pimIfP)
 		if err != nil {
 			return diag.FromErr(err)
@@ -488,7 +488,7 @@ func resourceAciLogicalInterfaceProfileCreate(ctx context.Context, d *schema.Res
 	}
 
 	if relationTopimRsV6IfPol, ok := d.GetOk("relation_l3ext_rs_pim_ipv6_if_pol"); ok {
-		pimIPV6IfP := models.NewPIMIPv6InterfaceProfile(models.RnPimIPV6IfP, l3extLIfP.DistinguishedName, "", models.PIMIPv6InterfaceProfileAttributes{})
+		pimIPV6IfP := models.NewPIMIPv6InterfaceProfile(l3extLIfP.DistinguishedName, "", models.PIMIPv6InterfaceProfileAttributes{})
 		err := aciClient.Save(pimIPV6IfP)
 		if err != nil {
 			return diag.FromErr(err)
@@ -503,7 +503,7 @@ func resourceAciLogicalInterfaceProfileCreate(ctx context.Context, d *schema.Res
 	}
 
 	if relationToigmpRsIfPol, ok := d.GetOk("relation_l3ext_rs_igmp_if_pol"); ok {
-		igmpIfP := models.NewIGMPInterfaceProfile(models.RnIgmpIfP, l3extLIfP.DistinguishedName, "", models.IGMPInterfaceProfileAttributes{})
+		igmpIfP := models.NewIGMPInterfaceProfile(l3extLIfP.DistinguishedName, "", models.IGMPInterfaceProfileAttributes{})
 		err := aciClient.Save(igmpIfP)
 		if err != nil {
 			return diag.FromErr(err)
@@ -670,7 +670,7 @@ func resourceAciLogicalInterfaceProfileUpdate(ctx context.Context, d *schema.Res
 	}
 
 	if d.HasChange("relation_l3ext_rs_pim_ip_if_pol") {
-		pimIfP := models.NewPIMInterfaceProfile(models.RnPimIfP, l3extLIfP.DistinguishedName, "", models.PIMInterfaceProfileAttributes{})
+		pimIfP := models.NewPIMInterfaceProfile(l3extLIfP.DistinguishedName, "", models.PIMInterfaceProfileAttributes{})
 		pimIfP.Status = "modified"
 		err_ifp := aciClient.Save(pimIfP)
 		if err_ifp != nil {
@@ -685,7 +685,7 @@ func resourceAciLogicalInterfaceProfileUpdate(ctx context.Context, d *schema.Res
 	}
 
 	if d.HasChange("relation_l3ext_rs_pim_ipv6_if_pol") {
-		pimIPV6IfP := models.NewPIMIPv6InterfaceProfile(models.RnPimIPV6IfP, l3extLIfP.DistinguishedName, "", models.PIMIPv6InterfaceProfileAttributes{})
+		pimIPV6IfP := models.NewPIMIPv6InterfaceProfile(l3extLIfP.DistinguishedName, "", models.PIMIPv6InterfaceProfileAttributes{})
 		pimIPV6IfP.Status = "modified"
 		err_ifp := aciClient.Save(pimIPV6IfP)
 		if err_ifp != nil {
@@ -700,7 +700,7 @@ func resourceAciLogicalInterfaceProfileUpdate(ctx context.Context, d *schema.Res
 	}
 
 	if d.HasChange("relation_l3ext_rs_igmp_if_pol") {
-		igmpIfP := models.NewIGMPInterfaceProfile(models.RnIgmpIfP, l3extLIfP.DistinguishedName, "", models.IGMPInterfaceProfileAttributes{})
+		igmpIfP := models.NewIGMPInterfaceProfile(l3extLIfP.DistinguishedName, "", models.IGMPInterfaceProfileAttributes{})
 		igmpIfP.Status = "modified"
 		err_ifp := aciClient.Save(igmpIfP)
 		if err_ifp != nil {

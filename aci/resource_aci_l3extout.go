@@ -461,7 +461,7 @@ func resourceAciL3OutsideCreate(ctx context.Context, d *schema.ResourceData, m i
 		PimAttribute := models.PIMExternalProfileAttributes{}
 		newPimVal := strings.Join(PimList, ",")
 		PimAttribute.EnabledAf = newPimVal
-		pimExtP := models.NewPIMExternalProfile(models.RnPimExtP, l3extOut.DistinguishedName, "", PimAttribute)
+		pimExtP := models.NewPIMExternalProfile(l3extOut.DistinguishedName, "", PimAttribute)
 		err := aciClient.Save(pimExtP)
 		if err != nil {
 			return diag.FromErr(err)
@@ -620,7 +620,7 @@ func resourceAciL3OutsideUpdate(ctx context.Context, d *schema.ResourceData, m i
 		PimAttribute := models.PIMExternalProfileAttributes{}
 		newPimVal := strings.Join(PimList, ",")
 		PimAttribute.EnabledAf = newPimVal
-		pimExtP := models.NewPIMExternalProfile(models.RnPimExtP, l3extOut.DistinguishedName, "", PimAttribute)
+		pimExtP := models.NewPIMExternalProfile(l3extOut.DistinguishedName, "", PimAttribute)
 		pimExtP.Status = "modified"
 		err := aciClient.Save(pimExtP)
 		if err != nil {
