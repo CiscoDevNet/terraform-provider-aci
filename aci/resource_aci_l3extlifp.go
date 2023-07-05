@@ -473,13 +473,13 @@ func resourceAciLogicalInterfaceProfileCreate(ctx context.Context, d *schema.Res
 
 	if relationTopimRsIfPol, ok := d.GetOk("relation_l3ext_rs_pim_ip_if_pol"); ok {
 
-		pimIfP := models.NewPimInterfaceProfile(models.RnPimIfP, l3extLIfP.DistinguishedName, "", models.PimInterfaceProfileAttributes{})
+		pimIfP := models.NewPIMInterfaceProfile(models.RnPimIfP, l3extLIfP.DistinguishedName, "", models.PIMInterfaceProfileAttributes{})
 		err := aciClient.Save(pimIfP)
 		if err != nil {
 			return diag.FromErr(err)
 		}
 		relationParam := relationTopimRsIfPol.(string)
-		err = aciClient.CreateRelationPIMRsIfPol(pimIfP.DistinguishedName, relationParam)
+		err = aciClient.CreateRelationPIMRsIfPolFromLogicalInterfaceProfile(pimIfP.DistinguishedName, relationParam)
 
 		if err != nil {
 			return diag.FromErr(err)
@@ -488,13 +488,13 @@ func resourceAciLogicalInterfaceProfileCreate(ctx context.Context, d *schema.Res
 	}
 
 	if relationTopimRsV6IfPol, ok := d.GetOk("relation_l3ext_rs_pim_ipv6_if_pol"); ok {
-		pimIPV6IfP := models.NewPimIPv6InterfaceProfile(models.RnPimIPV6IfP, l3extLIfP.DistinguishedName, "", models.PimIPv6InterfaceProfileAttributes{})
+		pimIPV6IfP := models.NewPIMIPv6InterfaceProfile(models.RnPimIPV6IfP, l3extLIfP.DistinguishedName, "", models.PIMIPv6InterfaceProfileAttributes{})
 		err := aciClient.Save(pimIPV6IfP)
 		if err != nil {
 			return diag.FromErr(err)
 		}
 		relationParam := relationTopimRsV6IfPol.(string)
-		err = aciClient.CreateRelationPIMIPv6RsIfPol(pimIPV6IfP.DistinguishedName, relationParam)
+		err = aciClient.CreateRelationPIMIPv6RsIfPolFromLogicalInterfaceProfile(pimIPV6IfP.DistinguishedName, relationParam)
 
 		if err != nil {
 			return diag.FromErr(err)
@@ -509,7 +509,7 @@ func resourceAciLogicalInterfaceProfileCreate(ctx context.Context, d *schema.Res
 			return diag.FromErr(err)
 		}
 		relationParam := relationToigmpRsIfPol.(string)
-		err = aciClient.CreateRelationIGMPRsIfPol(igmpIfP.DistinguishedName, relationParam)
+		err = aciClient.CreateRelationIGMPRsIfPolFromLogicalInterfaceProfile(igmpIfP.DistinguishedName, relationParam)
 
 		if err != nil {
 			return diag.FromErr(err)
@@ -670,14 +670,14 @@ func resourceAciLogicalInterfaceProfileUpdate(ctx context.Context, d *schema.Res
 	}
 
 	if d.HasChange("relation_l3ext_rs_pim_ip_if_pol") {
-		pimIfP := models.NewPimInterfaceProfile(models.RnPimIfP, l3extLIfP.DistinguishedName, "", models.PimInterfaceProfileAttributes{})
+		pimIfP := models.NewPIMInterfaceProfile(models.RnPimIfP, l3extLIfP.DistinguishedName, "", models.PIMInterfaceProfileAttributes{})
 		pimIfP.Status = "modified"
 		err_ifp := aciClient.Save(pimIfP)
 		if err_ifp != nil {
 			return diag.FromErr(err)
 		}
 		_, newRelParam := d.GetChange("relation_l3ext_rs_pim_ip_if_pol")
-		err = aciClient.CreateRelationPIMRsIfPol(pimIfP.DistinguishedName, newRelParam.(string))
+		err = aciClient.CreateRelationPIMRsIfPolFromLogicalInterfaceProfile(pimIfP.DistinguishedName, newRelParam.(string))
 
 		if err != nil {
 			return diag.FromErr(err)
@@ -685,14 +685,14 @@ func resourceAciLogicalInterfaceProfileUpdate(ctx context.Context, d *schema.Res
 	}
 
 	if d.HasChange("relation_l3ext_rs_pim_ipv6_if_pol") {
-		pimIPV6IfP := models.NewPimIPv6InterfaceProfile(models.RnPimIPV6IfP, l3extLIfP.DistinguishedName, "", models.PimIPv6InterfaceProfileAttributes{})
+		pimIPV6IfP := models.NewPIMIPv6InterfaceProfile(models.RnPimIPV6IfP, l3extLIfP.DistinguishedName, "", models.PIMIPv6InterfaceProfileAttributes{})
 		pimIPV6IfP.Status = "modified"
 		err_ifp := aciClient.Save(pimIPV6IfP)
 		if err_ifp != nil {
 			return diag.FromErr(err)
 		}
 		_, newRelParam := d.GetChange("relation_l3ext_rs_pim_ipv6_if_pol")
-		err = aciClient.CreateRelationPIMIPv6RsIfPol(pimIPV6IfP.DistinguishedName, newRelParam.(string))
+		err = aciClient.CreateRelationPIMIPv6RsIfPolFromLogicalInterfaceProfile(pimIPV6IfP.DistinguishedName, newRelParam.(string))
 
 		if err != nil {
 			return diag.FromErr(err)
@@ -707,7 +707,7 @@ func resourceAciLogicalInterfaceProfileUpdate(ctx context.Context, d *schema.Res
 			return diag.FromErr(err)
 		}
 		_, newRelParam := d.GetChange("relation_l3ext_rs_igmp_if_pol")
-		err = aciClient.CreateRelationIGMPRsIfPol(igmpIfP.DistinguishedName, newRelParam.(string))
+		err = aciClient.CreateRelationIGMPRsIfPolFromLogicalInterfaceProfile(igmpIfP.DistinguishedName, newRelParam.(string))
 
 		if err != nil {
 			return diag.FromErr(err)
