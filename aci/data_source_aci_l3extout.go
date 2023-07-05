@@ -122,7 +122,7 @@ func dataSourceAciL3OutsideRead(ctx context.Context, d *schema.ResourceData, m i
 		return diag.FromErr(err)
 	}
 
-	pimExtP, err := getRemotePIMExternalProfile(aciClient, fmt.Sprintf(dn+"/%s", models.RnPimExtP))
+	pimExtP, err := getRemotePIMExternalProfile(aciClient, fmt.Sprintf("%s/%s", dn, models.RnPimExtP))
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading pimExternalProfile %v", err)
 	}

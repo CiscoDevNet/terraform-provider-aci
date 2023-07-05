@@ -101,7 +101,7 @@ func getRemotePIMInterfacePolicy(client *client.Client, dn string) (*models.PIMI
 	}
 	pimIfPol := models.PIMInterfacePolicyFromContainer(pimIfPolCont)
 	if pimIfPol.DistinguishedName == "" {
-		return nil, fmt.Errorf("PIMInterfacePolicy %s not found", dn)
+		return nil, fmt.Errorf("PIM Interface Policy %s not found", dn)
 	}
 	return pimIfPol, nil
 }
