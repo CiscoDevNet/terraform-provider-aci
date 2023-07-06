@@ -27,7 +27,7 @@ func NewCloudTemplateRegion(cloudtemplateRegionDetailRn, parentDn string, cloudt
 	return &CloudTemplateRegion{
 		BaseAttributes: BaseAttributes{
 			DistinguishedName: dn,
-			Status:            "modified",
+			Status:            "created, modified",
 			ClassName:         CloudtemplateRegionDetailClassName,
 			Rn:                cloudtemplateRegionDetailRn,
 		},
