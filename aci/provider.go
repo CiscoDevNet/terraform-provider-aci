@@ -326,6 +326,7 @@ func Provider() *schema.Provider {
 			"aci_service_redirect_backup_policy":           resourceAciPBRBackupPolicy(),
 			"aci_pbr_l1_l2_destination":                    resourceAciL1L2RedirectDestTraffic(),
 			"aci_interface_config":                         resourceAciInterfaceConfiguration(),
+			"aci_cloud_template_region_detail":             resourceAciCloudTemplateRegion(),
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
@@ -573,6 +574,7 @@ func Provider() *schema.Provider {
 			"aci_service_redirect_backup_policy":           dataSourceAciPBRBackupPolicy(),
 			"aci_pbr_l1_l2_destination":                    dataSourceAciL1L2RedirectDestTraffic(),
 			"aci_interface_config":                         dataSourceAciInterfaceConfiguration(),
+			"aci_cloud_template_region_detail":             dataSourceAciCloudTemplateRegion(),
 		},
 
 		ConfigureFunc: configureClient,

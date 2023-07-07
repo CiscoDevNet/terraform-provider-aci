@@ -469,3 +469,13 @@ func setModelAttributes(modelAttr interface{}, modelAttrMap map[string]string) e
 	}
 	return nil
 }
+
+func toggleOptions(option string) string {
+	var values = map[string]string{
+		"enabled":  "yes",
+		"disabled": "no",
+		"yes":      "enabled",
+		"no":       "disabled",
+	}
+	return values[option]
+}
