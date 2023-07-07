@@ -59,6 +59,7 @@ func resourceAciPIMInterfacePolicy() *schema.Resource {
 						"strict-rfc-compliant",
 					}, false),
 				},
+				DiffSuppressFunc: suppressTypeListDiffFunc,
 			},
 			"dr_delay": {
 				Type:     schema.TypeString,

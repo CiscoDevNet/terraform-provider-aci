@@ -50,6 +50,7 @@ func resourceAciIGMPInterfacePolicy() *schema.Resource {
 						"rep-ll",
 					}, false),
 				},
+				DiffSuppressFunc: suppressTypeListDiffFunc,
 			},
 			"last_mbr_cnt": {
 				Type:     schema.TypeString,
@@ -116,7 +117,7 @@ func getRemoteIGMPInterfacePolicy(client *client.Client, dn string) (*models.IGM
 	}
 	igmpIfPol := models.IGMPInterfacePolicyFromContainer(igmpIfPolCont)
 	if igmpIfPol.DistinguishedName == "" {
-		return nil, fmt.Errorf("IGMPInterfacePolicy %s not found", dn)
+		return nil, fmt.Errorf("IGMP Interface Policy %s not found", dn)
 	}
 	return igmpIfPol, nil
 }
@@ -377,7 +378,7 @@ func resourceAciIGMPInterfacePolicyDelete(ctx context.Context, d *schema.Resourc
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 
-	err := aciClient.DeleteByDn(dn, "igmpIfPol")
+	err := aciClient.DeleteByDn(dn, models.IgmpIfPolClassName)
 	if err != nil {
 		return diag.FromErr(err)
 	}
