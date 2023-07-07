@@ -793,7 +793,7 @@ func resourceAciL3OutsideDelete(ctx context.Context, d *schema.ResourceData, m i
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
-	err := aciClient.DeleteByDn(dn, "l3extOut")
+	err := aciClient.DeleteByDn(dn, models.L3extoutClassName)
 	if err != nil {
 		return diag.FromErr(err)
 	}

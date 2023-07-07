@@ -752,7 +752,7 @@ func resourceAciLogicalInterfaceProfileDelete(ctx context.Context, d *schema.Res
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
-	err := aciClient.DeleteByDn(dn, "l3extLIfP")
+	err := aciClient.DeleteByDn(dn, models.L3extlifpClassName)
 	if err != nil {
 		return diag.FromErr(err)
 

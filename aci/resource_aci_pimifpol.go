@@ -335,7 +335,7 @@ func resourceAciPIMInterfacePolicyDelete(ctx context.Context, d *schema.Resource
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 
-	err := aciClient.DeleteByDn(dn, "pimIfPol")
+	err := aciClient.DeleteByDn(dn, models.PimIfPolClassName)
 	if err != nil {
 		return diag.FromErr(err)
 	}

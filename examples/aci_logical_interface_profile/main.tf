@@ -20,14 +20,20 @@ resource "aci_tenant" "footenant" {
   name_alias  = "alias_tenant"
 }
 
+resource "aci_vrf" "vrf1" {
+  tenant_dn = aci_tenant.footenant.id
+  name      = "vrf1"
+}
+
 resource "aci_l3_outside" "fool3_outside" {
-  tenant_dn      = aci_tenant.footenant.id
-  description    = "sample aci_l3_outside"
-  name           = "demo_l3out"
-  annotation     = "tag_l3out"
-  enforce_rtctrl = ["export", "import"]
-  name_alias     = "alias_out"
-  target_dscp    = "unspecified"
+  tenant_dn              = aci_tenant.footenant.id
+  description            = "sample aci_l3_outside"
+  name                   = "demo_l3out"
+  annotation             = "tag_l3out"
+  enforce_rtctrl         = ["export", "import"]
+  name_alias             = "alias_out"
+  target_dscp            = "unspecified"
+  relation_l3ext_rs_ectx = aci_vrf.vrf1.id
 }
 
 resource "aci_logical_node_profile" "foological_node_profile" {

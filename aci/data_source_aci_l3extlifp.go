@@ -46,8 +46,19 @@ func dataSourceAciLogicalInterfaceProfile() *schema.Resource {
 			"relation_l3ext_rs_l_if_p_to_netflow_monitor_pol": &schema.Schema{
 				Type:     schema.TypeSet,
 				Computed: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"tn_netflow_monitor_pol_dn": {
+							Type:     schema.TypeString,
+							Computed: true,
+						},
+						"flt_type": {
+							Type:     schema.TypeString,
+							Computed: true,
+						},
+					},
+				},
 			},
-
 			"relation_l3ext_rs_egress_qos_dpp_pol": &schema.Schema{
 				Type:     schema.TypeString,
 				Computed: true,

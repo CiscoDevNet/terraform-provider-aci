@@ -1,5 +1,5 @@
 ---
-subcategory: -
+subcategory: - "Tenant Policies"
 layout: "aci"
 page_title: "ACI: aci_pim_interface_policy"
 sidebar_current: "docs-aci-data-source-pim_interface_policy"

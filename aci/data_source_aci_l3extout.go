@@ -48,19 +48,21 @@ func dataSourceAciL3Outside() *schema.Resource {
 			"pim": {
 				Type:     schema.TypeList,
 				Computed: true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
 			},
 			"relation_l3ext_rs_dampening_pol": &schema.Schema{
-				Type: schema.TypeSet,
+				Type:     schema.TypeSet,
+				Computed: true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"tn_rtctrl_profile_dn": {
-							Type: schema.TypeString,
-
+							Type:     schema.TypeString,
 							Computed: true,
 						},
 						"af": {
-							Type: schema.TypeString,
-
+							Type:     schema.TypeString,
 							Computed: true,
 						},
 					},
@@ -80,17 +82,15 @@ func dataSourceAciL3Outside() *schema.Resource {
 			},
 			"relation_l3extrs_redistribute_pol": {
 				Type:        schema.TypeSet,
-				Optional:    true,
+				Computed:    true,
 				Description: "Create relation to rtctrlProfile",
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"source": {
-
 							Type:     schema.TypeString,
 							Computed: true,
 						},
 						"target_dn": {
-
 							Type:     schema.TypeString,
 							Computed: true,
 						},
