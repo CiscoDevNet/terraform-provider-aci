@@ -1,5 +1,5 @@
 ---
-subcategory: - "Tenant Policies"
+subcategory: "Tenant Policies"
 layout: "aci"
 page_title: "ACI: aci_pim_interface_policy"
 sidebar_current: "docs-aci-resource-pim_interface_policy"
@@ -7,7 +7,7 @@ description: |-
   Manages ACI PIM Interface Policy
 ---
 
-# aci_piminterface_policy #
+# aci_pim_interface_policy #
 
 Manages ACI PIM Interface Policy
 
@@ -51,7 +51,7 @@ resource "aci_pim_interface_policy" "example_ip" {
 
 ## Importing ##
 
-An existing PIMInterfacePolicy can be [imported][docs-import] into this resource via its Dn, via the following command:
+An existing PIM Interface Policy can be [imported][docs-import] into this resource via its Dn, via the following command:
 [docs-import]: https://www.terraform.io/docs/import/index.html
 
 ```

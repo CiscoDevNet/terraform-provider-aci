@@ -1,5 +1,5 @@
 ---
-subcategory: - "Tenant Policies"
+subcategory: "Tenant Policies"
 layout: "aci"
 page_title: "ACI: aci_pim_interface_policy"
 sidebar_current: "docs-aci-data-source-pim_interface_policy"
@@ -7,7 +7,7 @@ description: |-
   Data source for ACI PIM Interface Policy
 ---
 
-# aci_piminterface_policy #
+# aci_pim_interface_policy #
 
 Data source for ACI PIM Interface Policy
 

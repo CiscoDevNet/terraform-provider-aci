@@ -1,5 +1,5 @@
 ---
-subcategory: - "Tenant Policies"
+subcategory: "Tenant Policies"
 layout: "aci"
 page_title: "ACI: aci_igmp_interface_policy"
 sidebar_current: "docs-aci-resource-igmp_interface_policy"
@@ -7,7 +7,7 @@ description: |-
   Manages ACI IGMP Interface Policy
 ---
 
-# aci_igmpinterface_policy #
+# aci_igmp_interface_policy #
 
 Manages ACI IGMP Interface Policy
 
@@ -60,7 +60,7 @@ resource "aci_igmp_interface_policy" "example_igmp" {
 
 ## Importing ##
 
-An existing IGMPInterfacePolicy can be [imported][docs-import] into this resource via its Dn, via the following command:
+An existing IGMP Interface Policy can be [imported][docs-import] into this resource via its Dn, via the following command:
 [docs-import]: https://www.terraform.io/docs/import/index.html
 
 ```
