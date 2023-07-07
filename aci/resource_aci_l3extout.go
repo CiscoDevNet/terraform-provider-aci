@@ -105,6 +105,7 @@ func resourceAciL3Outside() *schema.Resource {
 						"ipv6",
 					}, false),
 				},
+				DiffSuppressFunc: suppressTypeListDiffFunc,
 			},
 			// Relation to Route Control for Dampening
 			"relation_l3ext_rs_dampening_pol": &schema.Schema{
