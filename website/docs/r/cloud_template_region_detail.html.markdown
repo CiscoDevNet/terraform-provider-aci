@@ -1,5 +1,5 @@
 ---
-subcategory: -
+subcategory: "Cloud"
 layout: "aci"
 page_title: "ACI: aci_cloud_template_region_detail"
 sidebar_current: "docs-aci-resource-cloud_template_region_detail"
