@@ -670,13 +670,17 @@ func resourceAciLogicalInterfaceProfileUpdate(ctx context.Context, d *schema.Res
 	}
 
 	if d.HasChange("relation_l3ext_rs_pim_ip_if_pol") {
+		oldRelParam, newRelParam := d.GetChange("relation_l3ext_rs_pim_ip_if_pol")
 		pimIfP := models.NewPIMInterfaceProfile(l3extLIfP.DistinguishedName, "", models.PIMInterfaceProfileAttributes{})
-		pimIfP.Status = "modified"
+		if oldRelParam.(string) == "" {
+			pimIfP.Status = "created"
+		} else {
+			pimIfP.Status = "modified"
+		}
 		err_ifp := aciClient.Save(pimIfP)
 		if err_ifp != nil {
 			return diag.FromErr(err)
 		}
-		_, newRelParam := d.GetChange("relation_l3ext_rs_pim_ip_if_pol")
 		err = aciClient.CreateRelationPIMRsIfPolFromLogicalInterfaceProfile(pimIfP.DistinguishedName, newRelParam.(string))
 
 		if err != nil {
@@ -685,13 +689,17 @@ func resourceAciLogicalInterfaceProfileUpdate(ctx context.Context, d *schema.Res
 	}
 
 	if d.HasChange("relation_l3ext_rs_pim_ipv6_if_pol") {
+		oldRelParam, newRelParam := d.GetChange("relation_l3ext_rs_pim_ipv6_if_pol")
 		pimIPV6IfP := models.NewPIMIPv6InterfaceProfile(l3extLIfP.DistinguishedName, "", models.PIMIPv6InterfaceProfileAttributes{})
-		pimIPV6IfP.Status = "modified"
+		if oldRelParam.(string) == "" {
+			pimIPV6IfP.Status = "created"
+		} else {
+			pimIPV6IfP.Status = "modified"
+		}
 		err_ifp := aciClient.Save(pimIPV6IfP)
 		if err_ifp != nil {
 			return diag.FromErr(err)
 		}
-		_, newRelParam := d.GetChange("relation_l3ext_rs_pim_ipv6_if_pol")
 		err = aciClient.CreateRelationPIMIPv6RsIfPolFromLogicalInterfaceProfile(pimIPV6IfP.DistinguishedName, newRelParam.(string))
 
 		if err != nil {
@@ -700,13 +708,17 @@ func resourceAciLogicalInterfaceProfileUpdate(ctx context.Context, d *schema.Res
 	}
 
 	if d.HasChange("relation_l3ext_rs_igmp_if_pol") {
+		oldRelParam, newRelParam := d.GetChange("relation_l3ext_rs_igmp_if_pol")
 		igmpIfP := models.NewIGMPInterfaceProfile(l3extLIfP.DistinguishedName, "", models.IGMPInterfaceProfileAttributes{})
-		igmpIfP.Status = "modified"
+		if oldRelParam.(string) == "" {
+			igmpIfP.Status = "created"
+		} else {
+			igmpIfP.Status = "modified"
+		}
 		err_ifp := aciClient.Save(igmpIfP)
 		if err_ifp != nil {
 			return diag.FromErr(err)
 		}
-		_, newRelParam := d.GetChange("relation_l3ext_rs_igmp_if_pol")
 		err = aciClient.CreateRelationIGMPRsIfPolFromLogicalInterfaceProfile(igmpIfP.DistinguishedName, newRelParam.(string))
 
 		if err != nil {

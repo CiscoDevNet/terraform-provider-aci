@@ -125,9 +125,13 @@ func dataSourceAciL3OutsideRead(ctx context.Context, d *schema.ResourceData, m i
 	pimExtP, err := getRemotePIMExternalProfile(aciClient, fmt.Sprintf("%s/%s", dn, models.RnPimExtP))
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading pimExternalProfile %v", err)
+		d.Set("pim", make([]string, 0, 1))
+	} else {
+		_, err := setPIMExternalProfileAttributes(pimExtP, d)
+		if err != nil {
+			d.Set("pim", make([]string, 0, 1))
+		}
 	}
-
-	setPIMExternalProfileAttributes(pimExtP, d)
 
 	// Importing l3extRsDampeningPol object
 	getAndSetReadRelationl3extRsDampeningPolFromL3Outside(aciClient, dn, d)

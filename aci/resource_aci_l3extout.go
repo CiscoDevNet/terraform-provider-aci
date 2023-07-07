@@ -379,9 +379,13 @@ func resourceAciL3OutsideImport(d *schema.ResourceData, m interface{}) ([]*schem
 	pimExtP, err := getRemotePIMExternalProfile(aciClient, fmt.Sprintf("%s/%s", dn, models.RnPimExtP))
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading pimExternalProfile %v", err)
+		d.Set("pim", make([]string, 0, 1))
+	} else {
+		_, err := setPIMExternalProfileAttributes(pimExtP, d)
+		if err != nil {
+			d.Set("pim", make([]string, 0, 1))
+		}
 	}
-
-	setPIMExternalProfileAttributes(pimExtP, d)
 
 	// Importing l3extRsDampeningPol object
 	getAndSetReadRelationl3extRsDampeningPolFromL3Outside(aciClient, dn, d)
@@ -612,7 +616,7 @@ func resourceAciL3OutsideUpdate(ctx context.Context, d *schema.ResourceData, m i
 	}
 
 	if d.HasChange("pim") {
-		_, newPim := d.GetChange("pim")
+		oldPim, newPim := d.GetChange("pim")
 		PimList := make([]string, 0, 1)
 		for _, val := range newPim.([]interface{}) {
 			PimList = append(PimList, val.(string)+"-mcast")
@@ -621,7 +625,11 @@ func resourceAciL3OutsideUpdate(ctx context.Context, d *schema.ResourceData, m i
 		newPimVal := strings.Join(PimList, ",")
 		PimAttribute.EnabledAf = newPimVal
 		pimExtP := models.NewPIMExternalProfile(l3extOut.DistinguishedName, "", PimAttribute)
-		pimExtP.Status = "modified"
+		if len(oldPim.([]interface{})) == 0 {
+			pimExtP.Status = "created"
+		} else {
+			pimExtP.Status = "modified"
+		}
 		err := aciClient.Save(pimExtP)
 		if err != nil {
 			return diag.FromErr(err)
@@ -764,9 +772,13 @@ func resourceAciL3OutsideRead(ctx context.Context, d *schema.ResourceData, m int
 	pimExtP, err := getRemotePIMExternalProfile(aciClient, fmt.Sprintf("%s/%s", dn, models.RnPimExtP))
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading pimExternalProfile %v", err)
+		d.Set("pim", d.Set("pim", make([]string, 0, 1)))
+	} else {
+		_, err := setPIMExternalProfileAttributes(pimExtP, d)
+		if err != nil {
+			d.Set("pim", d.Set("pim", make([]string, 0, 1)))
+		}
 	}
-
-	setPIMExternalProfileAttributes(pimExtP, d)
 
 	// Importing l3extRsDampeningPol object
 	getAndSetReadRelationl3extRsDampeningPolFromL3Outside(aciClient, dn, d)
