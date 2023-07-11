@@ -23,6 +23,11 @@ data "aci_tenant" "infra_tenant" {
   name = "infra"
 }
 
+data "aci_cloud_context_profile" "hub_vnet" {
+  tenant_dn  = data.aci_tenant.infra_tenant.id
+  name       = "ct_ctxprofile_westus"
+}
+
 # Secondary VRF to host new CIDRs within Hub VNet.
 resource "aci_vrf" "services_vrf" {
   tenant_dn = data.aci_tenant.infra_tenant.id
