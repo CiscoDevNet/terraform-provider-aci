@@ -81,11 +81,10 @@ func resourceAciCloudSubnet() *schema.Resource {
 			},
 
 			"zone": &schema.Schema{
-				Type:        schema.TypeString,
-				Optional:    true,
-				Computed:    true,
-				ForceNew:    true,
-				Description: "Only applicable to the AWS vendor",
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+				ForceNew: true,
 			},
 
 			"relation_cloud_rs_subnet_to_flow_log": &schema.Schema{

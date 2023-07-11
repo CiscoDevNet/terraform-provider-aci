@@ -59,7 +59,7 @@ resource "aci_cloud_subnet" "cloud_subnet" {
   cloud_cidr_pool_dn = aci_cloud_cidr_pool.cloud_cidr_pool.id
   ip                 = "10.0.1.0/24"
   usage              = "gateway"
-  zone               = data.aci_cloud_availability_zone.aws_region_availability_zone.id # Only applicable to the AWS vendor
+  zone               = data.aci_cloud_availability_zone.aws_region_availability_zone.id
   scope              = ["shared", "private", "public"]
 }
 
