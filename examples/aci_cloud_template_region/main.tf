@@ -19,14 +19,13 @@ resource "aci_cloud_template_region_detail" "hub_network" {
   hub_networking = "disabled"
 }
 
-data "aci_cloud_context_profile" "hub_vnet" {
-  tenant_dn  = "uni/tn-infra"
-  name       = "ct_ctxprofile_westus"
+data "aci_tenant" "infra_tenant" {
+  name = "infra"
 }
 
 # Secondary VRF to host new CIDRs within Hub VNet.
 resource "aci_vrf" "services_vrf" {
-  tenant_dn = "uni/tn-infra" 
+  tenant_dn = data.aci_tenant.infra_tenant.id
   name      = "services_vrf"
 }
 
