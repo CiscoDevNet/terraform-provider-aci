@@ -43,18 +43,23 @@ resource "aci_logical_interface_profile" "foo_logical_interface_profile" {
   name                    = "demo_int_prof"
 }
 
+resource "aci_bfd_multihop_interface_policy" "foo_bfd_multihop_interface_policy" {
+  tenant_dn = aci_tenant.foo_tenant.id
+  name      = "bfd_mh_interface_policy"
+}
+
 resource "aci_bfd_multihop_interface_profile" "foo_bfd_multihop_interface_profile" {
   logical_interface_profile_dn = aci_logical_interface_profile.foo_logical_interface_profile.id
   interface_profile_type       = "sha1"
-  key                          = "k1"
+  key                          = "key123"
   key_id                       = "101"
-  relation_bfd_rs_mh_if_pol    = "uni/tn-terraform_test_tenant/bfdMhIfPol-test"
+  relation_bfd_rs_mh_if_pol    = aci_bfd_multihop_interface_policy.foo_bfd_multihop_interface_policy.id
 }
 
-data "aci_bfd_multihop_interface_profile" "data_bfd_multihop" {
+data "aci_bfd_multihop_interface_profile" "data_bfd_multihopinterface_profile" {
   logical_interface_profile_dn = aci_bfd_multihop_interface_profile.foo_bfd_multihop_interface_profile.logical_interface_profile_dn
 }
 
-output "bfd_multihop" {
-  value = data.aci_bfd_multihop_interface_profile.data_bfd_multihop
+output "bfd_multihopinterface_profile" {
+  value = data.aci_bfd_multihop_interface_profile.data_bfd_multihopinterface_profile
 }

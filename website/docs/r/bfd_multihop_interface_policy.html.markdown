@@ -24,14 +24,13 @@ Manages ACI BFD Multihop Interface Policy
 
 ```hcl
 resource "aci_bfd_multihop_interface_policy" "example" {
-  tenant_dn  = aci_tenant.example.id
-  name  = "example"
-  admin_state = "enabled"
-  annotation = "orchestrator:terraform"
-  detection_multiplier = "3"
+  tenant_dn             = aci_tenant.example.id
+  name                  = "example"
+  admin_state           = "enabled"
+  annotation            = "orchestrator: terraform"
+  detection_multiplier  = "3"
   min_transmit_interval = "250"
-  min_receive_interval = "250"
-
+  min_receive_interval  = "250"
 }
 ```
 

@@ -27,7 +27,7 @@ func TestAccAciBfdMultihopInterfaceProfile_Basic(t *testing.T) {
 			{
 				Config: testAccCheckAciBfdMultihopInterfaceProfileConfig_basic(fv_tenant_name, l3ext_out_name, l3ext_l_node_p_name, l3ext_l_if_p_name, bfd_mh_if_p_name),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAciBfdMultihopInterfaceProfileExists("aci_bfd_multihop_interface_profile.foointerface_profile", &bfd_multihop_interface_profile),
+					testAccCheckAciBfdMultihopInterfaceProfileExists("aci_bfd_multihop_interface_profile.foo_bfd_multihop_interface_profile", &bfd_multihop_interface_profile),
 					testAccCheckAciBfdMultihopInterfaceProfileAttributes(fv_tenant_name, l3ext_out_name, l3ext_l_node_p_name, l3ext_l_if_p_name, bfd_mh_if_p_name, description, &bfd_multihop_interface_profile),
 				),
 			},
@@ -52,14 +52,14 @@ func TestAccAciBfdMultihopInterfaceProfile_Update(t *testing.T) {
 			{
 				Config: testAccCheckAciBfdMultihopInterfaceProfileConfig_basic(fv_tenant_name, l3ext_out_name, l3ext_l_node_p_name, l3ext_l_if_p_name, bfd_mh_if_p_name),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAciBfdMultihopInterfaceProfileExists("aci_bfd_multihop_interface_profile.foointerface_profile", &bfd_multihop_interface_profile),
+					testAccCheckAciBfdMultihopInterfaceProfileExists("aci_bfd_multihop_interface_profile.foo_bfd_multihop_interface_profile", &bfd_multihop_interface_profile),
 					testAccCheckAciBfdMultihopInterfaceProfileAttributes(fv_tenant_name, l3ext_out_name, l3ext_l_node_p_name, l3ext_l_if_p_name, bfd_mh_if_p_name, description, &bfd_multihop_interface_profile),
 				),
 			},
 			{
 				Config: testAccCheckAciBfdMultihopInterfaceProfileConfig_basic(fv_tenant_name, l3ext_out_name, l3ext_l_node_p_name, l3ext_l_if_p_name, bfd_mh_if_p_name),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAciBfdMultihopInterfaceProfileExists("aci_bfd_multihop_interface_profile.foointerface_profile", &bfd_multihop_interface_profile),
+					testAccCheckAciBfdMultihopInterfaceProfileExists("aci_bfd_multihop_interface_profile.foo_bfd_multihop_interface_profile", &bfd_multihop_interface_profile),
 					testAccCheckAciBfdMultihopInterfaceProfileAttributes(fv_tenant_name, l3ext_out_name, l3ext_l_node_p_name, l3ext_l_if_p_name, bfd_mh_if_p_name, description, &bfd_multihop_interface_profile),
 				),
 			},
@@ -94,7 +94,7 @@ func testAccCheckAciBfdMultihopInterfaceProfileConfig_basic(fv_tenant_name, l3ex
 		logical_node_profile_dn = aci_logical_node_profile.foological_node_profile.id
 	}
 
-	resource "aci_bfd_multihop_interface_profile" "foointerface_profile" {
+	resource "aci_bfd_multihop_interface_profile" "foo_bfd_multihop_interface_profile" {
 		name 		= "%s"
 		description = "bfd_multihop_interface_profile created while acceptance testing"
 		logical_interface_profile_dn = aci_logical_interface_profile.foological_interface_profile.id
@@ -108,11 +108,11 @@ func testAccCheckAciBfdMultihopInterfaceProfileExists(name string, bfd_multihop_
 		rs, ok := s.RootModule().Resources[name]
 
 		if !ok {
-			return fmt.Errorf("Interface Profile %s not found", name)
+			return fmt.Errorf("ACI BFD Multihop Interface Profile %s not found", name)
 		}
 
 		if rs.Primary.ID == "" {
-			return fmt.Errorf("No Interface Profile dn was set")
+			return fmt.Errorf("No ACI BFD Multihop Interface Profile dn was set")
 		}
 
 		client := testAccProvider.Meta().(*client.Client)
@@ -124,7 +124,7 @@ func testAccCheckAciBfdMultihopInterfaceProfileExists(name string, bfd_multihop_
 
 		interface_profileFound := models.AciBfdMultihopInterfaceProfileFromContainer(cont)
 		if interface_profileFound.DistinguishedName != rs.Primary.ID {
-			return fmt.Errorf("Interface Profile %s not found", rs.Primary.ID)
+			return fmt.Errorf("ACI BFD Multihop Interface Profile %s not found", rs.Primary.ID)
 		}
 		*bfd_multihop_interface_profile = *interface_profileFound
 		return nil
@@ -138,7 +138,7 @@ func testAccCheckAciBfdMultihopInterfaceProfileDestroy(s *terraform.State) error
 			cont, err := client.Get(rs.Primary.ID)
 			bfd_multihop_interface_profile := models.AciBfdMultihopInterfaceProfileFromContainer(cont)
 			if err == nil {
-				return fmt.Errorf("Interface Profile %s Still exists", bfd_multihop_interface_profile.DistinguishedName)
+				return fmt.Errorf("ACI BFD Multihop Interface Profile %s Still exists", bfd_multihop_interface_profile.DistinguishedName)
 			}
 		} else {
 			continue
@@ -157,7 +157,7 @@ func testAccCheckAciBfdMultihopInterfaceProfileAttributes(fv_tenant_name, l3ext_
 			return fmt.Errorf(" Bad l3extl_if_p %s", GetMOName(GetParentDn(bfd_multihop_interface_profile.DistinguishedName)))
 		}
 		if description != bfd_multihop_interface_profile.Description {
-			return fmt.Errorf("Bad bfd_multihop_interface_profile Description %s", bfd_multihop_interface_profile.Description)
+			return fmt.Errorf("Bad ACI BFD Multihop Interface Profile Description %s", bfd_multihop_interface_profile.Description)
 		}
 		return nil
 	}

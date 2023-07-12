@@ -110,6 +110,15 @@ func resourceAciBfdMultihopInterfaceProfileImport(d *schema.ResourceData, m inte
 	if err != nil {
 		return nil, err
 	}
+
+	bfdRsMhIfPolData, err := aciClient.ReadRelationbfdRsMhIfPol(d.Id())
+	if err != nil {
+		log.Printf("[DEBUG] Error while reading relation bfdRsMhIfPol %v", err)
+		d.Set("relation_bfd_rs_mh_if_pol", "")
+	} else {
+		d.Set("relation_bfd_rs_mh_if_pol", bfdRsMhIfPolData)
+	}
+
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 	return []*schema.ResourceData{schemaFilled}, nil
 }
@@ -273,18 +282,12 @@ func resourceAciBfdMultihopInterfaceProfileRead(ctx context.Context, d *schema.R
 		return nil
 	}
 
-	bfdRsMhIfPolData, err := aciClient.ReadRelationbfdRsMhIfPol(d.Id())
+	_, err = aciClient.ReadRelationbfdRsMhIfPol(d.Id())
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation bfdRsMhIfPol %v", err)
 		d.Set("relation_bfd_rs_mh_if_pol", "")
-	} else {
-		if _, ok := d.GetOk("relation_bfd_rs_mh_if_pol"); ok {
-			tfName := GetMOName(d.Get("relation_bfd_rs_mh_if_pol").(string))
-			if tfName != bfdRsMhIfPolData {
-				d.Set("relation_bfd_rs_mh_if_pol", "")
-			}
-		}
 	}
+
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 	return nil
 }

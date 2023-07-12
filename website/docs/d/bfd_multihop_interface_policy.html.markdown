@@ -26,8 +26,8 @@ Data source for ACI BFD Multihop Interface Policy
 
 ```hcl
 data "aci_bfd_multihop_interface_policy" "example" {
-  tenant_dn  = aci_tenant.example.id
-  name  = "example"
+  tenant_dn = aci_tenant.example.id
+  name      = "example"
 }
 ```
 
