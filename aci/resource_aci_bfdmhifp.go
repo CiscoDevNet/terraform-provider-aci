@@ -31,9 +31,10 @@ func resourceAciBfdMultihopInterfaceProfile() *schema.Resource {
 				ForceNew: true,
 			},
 			"key": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
+				Type:      schema.TypeString,
+				Optional:  true,
+				Computed:  true,
+				Sensitive: true,
 			},
 			"key_id": &schema.Schema{
 				Type:     schema.TypeString,
@@ -69,7 +70,7 @@ func getRemoteAciBfdMultihopInterfaceProfile(client *client.Client, dn string) (
 	}
 	bfdMhIfP := models.AciBfdMultihopInterfaceProfileFromContainer(bfdMhIfPCont)
 	if bfdMhIfP.DistinguishedName == "" {
-		return nil, fmt.Errorf("Aci BFD Multihop Interface Profile %s not found", bfdMhIfP.DistinguishedName)
+		return nil, fmt.Errorf("Aci BFD Multihop Interface Profile %s not found", dn)
 	}
 	return bfdMhIfP, nil
 }
@@ -85,12 +86,15 @@ func setAciBfdMultihopInterfaceProfileAttributes(bfdMhIfP *models.AciBfdMultihop
 	if err != nil {
 		return d, err
 	}
-	d.Set("logical_interface_profile_dn", GetParentDn(dn, fmt.Sprintf("/bfdMhIfP")))
+	d.Set("logical_interface_profile_dn", GetParentDn(dn, fmt.Sprintf("/%s", models.RnbfdMhIfP)))
 	d.Set("annotation", bfdMhIfPMap["annotation"])
-	d.Set("key", bfdMhIfPMap["key"])
+	key := d.Get("key").(string)
+	if key != "" {
+		d.Set("key", key)
+	}
 	d.Set("key_id", bfdMhIfPMap["keyId"])
 	d.Set("name", bfdMhIfPMap["name"])
-	d.Set("interface_profile_type", bfdMhIfPMap["InterfaceProfile_type"])
+	d.Set("interface_profile_type", bfdMhIfPMap["type"])
 	d.Set("name_alias", bfdMhIfPMap["nameAlias"])
 	return d, nil
 }
@@ -155,7 +159,6 @@ func resourceAciBfdMultihopInterfaceProfileCreate(ctx context.Context, d *schema
 	if relationTobfdRsMhIfPol, ok := d.GetOk("relation_bfd_rs_mh_if_pol"); ok {
 		relationParam := relationTobfdRsMhIfPol.(string)
 		checkDns = append(checkDns, relationParam)
-
 	}
 
 	d.Partial(true)
@@ -171,7 +174,6 @@ func resourceAciBfdMultihopInterfaceProfileCreate(ctx context.Context, d *schema
 		if err != nil {
 			return diag.FromErr(err)
 		}
-
 	}
 
 	d.SetId(bfdMhIfP.DistinguishedName)
@@ -213,7 +215,7 @@ func resourceAciBfdMultihopInterfaceProfileUpdate(ctx context.Context, d *schema
 	if InterfaceProfile_type, ok := d.GetOk("interface_profile_type"); ok {
 		bfdMhIfPAttr.InterfaceProfile_type = InterfaceProfile_type.(string)
 	}
-	bfdMhIfP := models.NewAciBfdMultihopInterfaceProfile(fmt.Sprintf("bfdMhIfP"), LogicalInterfaceProfileDn, desc, nameAlias, bfdMhIfPAttr)
+	bfdMhIfP := models.NewAciBfdMultihopInterfaceProfile(models.RnbfdMhIfP, LogicalInterfaceProfileDn, desc, nameAlias, bfdMhIfPAttr)
 
 	bfdMhIfP.Status = "modified"
 
@@ -291,7 +293,7 @@ func resourceAciBfdMultihopInterfaceProfileDelete(ctx context.Context, d *schema
 	log.Printf("[DEBUG] Aci BFD Multihop Interface Profile %s: Beginning Destroy", d.Id())
 	aciClient := m.(*client.Client)
 
-	err := aciClient.DeleteByDn(d.Id(), "bfdMhIfP")
+	err := aciClient.DeleteByDn(d.Id(), models.RnbfdMhIfP)
 	if err != nil {
 		return diag.FromErr(err)
 	}

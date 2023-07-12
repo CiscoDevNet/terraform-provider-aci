@@ -19,13 +19,13 @@ resource "aci_tenant" "foo_tenant" {
 }
 
 resource "aci_vrf" "vrf1" {
-  tenant_dn          = aci_tenant.foo_tenant.id
-  name               = "vrf1"
+  tenant_dn = aci_tenant.foo_tenant.id
+  name      = "vrf1"
 }
 
 resource "aci_l3_outside" "foo_l3_outside" {
-  tenant_dn      = aci_tenant.foo_tenant.id
-  name      = "l3_outside"
+  tenant_dn              = aci_tenant.foo_tenant.id
+  name                   = "l3_outside"
   relation_l3ext_rs_ectx = aci_vrf.vrf1.id
 }
 
@@ -39,16 +39,20 @@ resource "aci_logical_node_profile" "foo_logical_node_profile" {
 }
 
 resource "aci_logical_interface_profile" "foo_logical_interface_profile" {
-  logical_node_profile_dn               = aci_logical_node_profile.foo_logical_node_profile.id
-  name                                  = "demo_int_prof"
+  logical_node_profile_dn = aci_logical_node_profile.foo_logical_node_profile.id
+  name                    = "demo_int_prof"
 }
 
 resource "aci_bfd_multihop_interface_profile" "foo_bfd_multihop_interface_profile" {
-    logical_interface_profile_dn = aci_logical_interface_profile.foo_logical_interface_profile.id
+  logical_interface_profile_dn = aci_logical_interface_profile.foo_logical_interface_profile.id
+  interface_profile_type       = "sha1"
+  key                          = "k1"
+  key_id                       = "101"
+  relation_bfd_rs_mh_if_pol    = "uni/tn-terraform_test_tenant/bfdMhIfPol-test"
 }
 
-data "aci_bfd_multihop_interface_profile" "data_bfd_multihop"{
-    logical_interface_profile_dn = aci_logical_interface_profile.foo_logical_interface_profile.id
+data "aci_bfd_multihop_interface_profile" "data_bfd_multihop" {
+  logical_interface_profile_dn = aci_bfd_multihop_interface_profile.foo_bfd_multihop_interface_profile.logical_interface_profile_dn
 }
 
 output "bfd_multihop" {

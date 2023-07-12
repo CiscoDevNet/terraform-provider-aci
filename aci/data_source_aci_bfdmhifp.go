@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
+	"github.com/ciscoecosystem/aci-go-client/v2/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -17,10 +18,6 @@ func dataSourceAciBfdMultihopInterfaceProfile() *schema.Resource {
 			"logical_interface_profile_dn": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
-			},
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Computed: true,
 			},
 			"key": &schema.Schema{
 				Type:     schema.TypeString,
@@ -45,7 +42,7 @@ func dataSourceAciBfdMultihopInterfaceProfile() *schema.Resource {
 func dataSourceAciBfdMultihopInterfaceProfileRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	aciClient := m.(*client.Client)
 	LogicalInterfaceProfileDn := d.Get("logical_interface_profile_dn").(string)
-	dn := fmt.Sprintf("%s/%s", LogicalInterfaceProfileDn, fmt.Sprintf("bfdMhIfP"))
+	dn := fmt.Sprintf("%s/%s", LogicalInterfaceProfileDn, models.RnbfdMhIfP)
 
 	bfdMhIfP, err := getRemoteAciBfdMultihopInterfaceProfile(aciClient, dn)
 	if err != nil {

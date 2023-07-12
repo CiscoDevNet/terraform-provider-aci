@@ -14,7 +14,7 @@ Data source for ACI BFD Multihop Interface Profile
 ## API Information ##
 
 * `Class` - bfdMhIfP
-* `Distinguished Name` - uni/tn-{name}/out-{name}/lnodep-{name}/lifp-{name}/bfdMhIfP
+* `Distinguished Name` - uni/tn-{tn_name}/out-{l3out_name}/lnodep-{ln_name}/lifp-{lifp_name}/bfdMhIfP
 
 ## GUI Information ##
 
@@ -26,7 +26,7 @@ Data source for ACI BFD Multihop Interface Profile
 
 ```hcl
 data "aci_bfd_multihop_interface_profile" "example" {
-  logical_interface_profile_dn  = aci_logical_interface_profile.example.id
+  logical_interface_profile_dn = aci_logical_interface_profile.example.id
 }
 ```
 
@@ -35,9 +35,9 @@ data "aci_bfd_multihop_interface_profile" "example" {
 * `logical_interface_profile_dn` - (Required) Distinguished name of parent LogicalInterfaceProfile object.
 
 ## Attribute Reference ##
-* `id` - Attribute id set to the Dn of the BFD Multihop Interface Profile.
-* `annotation` - (Optional) Annotation of the BFD Multihop Interface Profile object.
-* `name_alias` - (Optional) Name Alias of the BFD Multihop Interface Profile object.
-* `key` - (Optional) Authentication Key.
-* `key_id` - (Optional) Authentication Key ID.
-* `interface_profile_type` - (Optional) Authentication Type.
+* `id`                     - Attribute id set to the Dn of the BFD Multihop Interface Profile.
+* `annotation`             - (Read-Only) Annotation of the BFD Multihop Interface Profile object.
+* `name_alias`             - (Read-Only) Name Alias of the BFD Multihop Interface Profile object.
+* `key`                    - (Read-Only) Authentication Key.
+* `key_id`                 - (Read-Only) Authentication Key ID.
+* `interface_profile_type` - (Read-Only) Authentication Type.
