@@ -1,0 +1,70 @@
+package aci
+
+import (
+	"context"
+	"fmt"
+
+	"github.com/ciscoecosystem/aci-go-client/v2/client"
+	"github.com/ciscoecosystem/aci-go-client/v2/models"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+)
+
+func dataSourceAciSnmpUserProfile() *schema.Resource {
+	return &schema.Resource{
+		ReadContext:   dataSourceAciSnmpUserProfileRead,
+		SchemaVersion: 1,
+		Schema: AppendBaseAttrSchema(AppendNameAliasAttrSchema(map[string]*schema.Schema{
+			"snmp_policy_dn": {
+				Type:     schema.TypeString,
+				Required: true,
+			},
+			"authorization_key": {
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+			"authorization_type": {
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+			"name": {
+				Type:     schema.TypeString,
+				Required: true,
+			},
+			"privacy_key": {
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+			"privacy_type": {
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+		})),
+	}
+}
+
+func dataSourceAciSnmpUserProfileRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+	aciClient := m.(*client.Client)
+	name := d.Get("name").(string)
+	SNMPPolicyDn := d.Get("snmp_policy_dn").(string)
+	rn := fmt.Sprintf(models.RnSnmpUserP, name)
+	dn := fmt.Sprintf("%s/%s", SNMPPolicyDn, rn)
+
+	snmpUserP, err := getRemoteUserProfile(aciClient, dn)
+	if err != nil {
+		return nil
+	}
+
+	d.SetId(dn)
+
+	_, err = setUserProfileAttributes(snmpUserP, d)
+	if err != nil {
+		return nil
+	}
+
+	return nil
+}
