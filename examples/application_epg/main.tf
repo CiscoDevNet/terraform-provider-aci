@@ -44,6 +44,10 @@ resource "aci_application_epg" "fooapplication_epg" {
   shutdown               = "no"
 }
 
+/*
+The following depicts an example to create and associate an application EPG with the common Tenant's BD and VRF
+*/
+
 data "aci_tenant" "common_tenant" {
   name = "common"
 }
