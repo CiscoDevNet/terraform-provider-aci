@@ -31,9 +31,10 @@ func resourceAciSnmpUserProfile() *schema.Resource {
 				ForceNew: true,
 			},
 			"authorization_key": {
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
+				Type:      schema.TypeString,
+				Optional:  true,
+				Computed:  true,
+				Sensitive: true,
 			},
 			"authorization_type": {
 				Type:     schema.TypeString,
@@ -54,9 +55,10 @@ func resourceAciSnmpUserProfile() *schema.Resource {
 				ForceNew: true,
 			},
 			"privacy_key": {
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
+				Type:      schema.TypeString,
+				Optional:  true,
+				Computed:  true,
+				Sensitive: true,
 			},
 			"privacy_type": {
 				Type:     schema.TypeString,
@@ -79,7 +81,7 @@ func getRemoteUserProfile(client *client.Client, dn string) (*models.SnmpUserPro
 	}
 	snmpUserP := models.SnmpUserProfileFromContainer(snmpUserPCont)
 	if snmpUserP.DistinguishedName == "" {
-		return nil, fmt.Errorf("UserProfile %s not found", dn)
+		return nil, fmt.Errorf("SNMP User Profile %s not found", dn)
 	}
 	return snmpUserP, nil
 }
@@ -98,11 +100,17 @@ func setUserProfileAttributes(snmpUserP *models.SnmpUserProfile, d *schema.Resou
 		d.Set("snmp_policy_dn", GetParentDn(snmpUserP.DistinguishedName, fmt.Sprintf("/"+models.RnSnmpUserP, snmpUserPMap["name"])))
 	}
 	d.Set("annotation", snmpUserPMap["annotation"])
-	d.Set("authorization_key", snmpUserPMap["authKey"])
+	authKey := d.Get("authorization_key").(string)
+	if authKey != "" {
+		d.Set("authorization_key", snmpUserPMap["authKey"])
+	}
 	d.Set("authorization_type", snmpUserPMap["authType"])
 	d.Set("name", snmpUserPMap["name"])
 	d.Set("name_alias", snmpUserPMap["nameAlias"])
-	d.Set("privacy_key", snmpUserPMap["privKey"])
+	privKey := d.Get("privacy_key").(string)
+	if privKey != "" {
+		d.Set("privacy_key", snmpUserPMap["privKey"])
+	}
 	d.Set("privacy_type", snmpUserPMap["privType"])
 	return d, nil
 }
@@ -125,7 +133,7 @@ func resourceAciSnmpUserProfileImport(d *schema.ResourceData, m interface{}) ([]
 }
 
 func resourceAciSnmpUserProfileCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	log.Printf("[DEBUG] UserProfile: Beginning Creation")
+	log.Printf("[DEBUG] SNMP User Profile: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
 	name := d.Get("name").(string)
@@ -174,7 +182,7 @@ func resourceAciSnmpUserProfileCreate(ctx context.Context, d *schema.ResourceDat
 	return resourceAciSnmpUserProfileRead(ctx, d, m)
 }
 func resourceAciSnmpUserProfileUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	log.Printf("[DEBUG] UserProfile: Beginning Update")
+	log.Printf("[DEBUG] SNMP User Profile: Beginning Update")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
 	name := d.Get("name").(string)
@@ -232,8 +240,7 @@ func resourceAciSnmpUserProfileRead(ctx context.Context, d *schema.ResourceData,
 
 	snmpUserP, err := getRemoteUserProfile(aciClient, dn)
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 
 	_, err = setUserProfileAttributes(snmpUserP, d)

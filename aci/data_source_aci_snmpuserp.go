@@ -19,28 +19,16 @@ func dataSourceAciSnmpUserProfile() *schema.Resource {
 				Type:     schema.TypeString,
 				Required: true,
 			},
-			"authorization_key": {
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
 			"authorization_type": {
 				Type:     schema.TypeString,
-				Optional: true,
 				Computed: true,
 			},
 			"name": {
 				Type:     schema.TypeString,
 				Required: true,
 			},
-			"privacy_key": {
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
 			"privacy_type": {
 				Type:     schema.TypeString,
-				Optional: true,
 				Computed: true,
 			},
 		})),
