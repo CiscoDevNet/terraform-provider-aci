@@ -38,14 +38,19 @@ data "aci_igmp_interface_policy" "example" {
 * `id` - Attribute id set to the Dn of the IGMP Interface Policy.
 * `annotation` - (Read-Only) Annotation of the IGMP Interface Policy object.
 * `name_alias` - (Read-Only) Name Alias of the IGMP Interface Policy object.
-* `grp_timeout` - (Read-Only) Group Timeout.
-* `if_ctrl` - (Read-Only) Interface Control.
-* `last_mbr_cnt` - (Read-Only) Last member query count.
-* `last_mbr_resp_time` - (Read-Only) Last member response time.
-* `querier_timeout` - (Read-Only) Querier Timeout. 
-* `query_intvl` - (Read-Only) Query interval.
-* `robust_fac` - (Read-Only) Robustness factor.
-* `rsp_intvl` - (Read-Only) Query response interval.
-* `start_query_cnt` - (Read-Only) Startup query count.
-* `start_query_intvl` - (Read-Only) Startup query interval.
-* `ver` - (Read-Only) Interface version.
+* `group_timeout` - (Read-Only) Group timeout.
+* `control` - (Read-Only) Interface Control.
+* `last_member_count` - (Read-Only) Last member query count.
+* `last_member_response_time` - (Read-Only) Last member response time.
+* `querier_timeout` - (Read-Only) Querier timeout.
+* `query_interval` - (Read-Only) Query interval.
+* `robustness_variable` - (Read-Only) Robustness factor.
+* `response_interval` - (Read-Only) Query response interval.
+* `startup_query_count` - (Read-Only) Startup query count.
+* `startuo_query_interval` - (Read-Only) Startup query interval.
+* `version` - (Read-Only) Interface version.
+* `maximum_mulitcast_entries` - (Read-Only) Maximum Multicast Entries. Type: String.
+* `reserved_mulitcast_entries` - (Read-Only) Reserved Multicast Entries. Type: String.
+* `state_limit_route_map` - (Read-Only) State limit route map which represents the relation to a PIM Route Map Filter (class rtdmcARtMapPol).
+* `report_policy_route_map` - (Read-Only) Report policy route map which represents the relation to a PIM Route Map Filter (class rtdmcARtMapPol).
+* `static_report_route_map` - (Read-Only) Static report policy route map which represents the relationship to a PIM Route Map Filter (class rtdmcARtMapPol).

@@ -38,9 +38,12 @@ data "aci_pim_interface_policy" "example" {
 * `id` - Attribute id set to the Dn of the PIM Interface Policy.
 * `annotation` - (Read-Only) Annotation of the PIM Interface Policy object.
 * `name_alias` - (Read-Only) Name Alias of the PIM Interface Policy object.
-* `auth_t` - (Read-Only) Authentication Type. 
-* `ctrl` - (Read-Only) Interface Controls. 
-* `dr_delay` - (Read-Only) Designated Router Delay. 
-* `dr_prio` - (Read-Only) Designated Router Priority. 
-* `hello_itvl` - (Read-Only) Hello Traffic Policy
-* `jp_interval` - (Read-Only) JP Traffic Policy
+* `auth_type` - (Read-Only) Authentication type.
+* `control_state` - (Read-Only) Interface controls.
+* `designated_router_delay` - (Read-Only) Designated router delay.
+* `designated_router_priority` - (Read-Only) Designated router priority.
+* `hello_interval` - (Read-Only) Hello traffic policy.
+* `join_prune_interval` - (Read-Only) Join Prune Traffic Policy.
+* `inbound_join_prune_filter_policy` - (Read-Only) Inbound join prune filter policy which represents the relation to a PIM Route Map Filter (class rtdmcARtMapPol).
+* `outbound_join_prune_filter_policy` - (Read-Only) Outbound join prune filter policy which represents the relation to a PIM Route Map Filter (class rtdmcARtMapPol).
+* `neighbor_filter_policy` - (Read-Only) Neighbor filter policy which represents the relation to a PIM Route Map Filter (class rtdmcARtMapPol).

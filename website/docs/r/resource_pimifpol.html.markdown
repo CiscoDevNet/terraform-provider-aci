@@ -24,13 +24,13 @@ Manages ACI PIM Interface Policy
 
 ```hcl
 resource "aci_pim_interface_policy" "example_ip" {
-  tenant_dn   = aci_tenant.example.id
-  name        = "examplei"
-  auth_t      = "none"
-  dr_delay    = "3"
-  dr_prio     = "1"
-  hello_itvl  = "30000"
-  jp_interval = "60"
+  tenant_dn                  = aci_tenant.example.id
+  name                       = "example_ip"
+  designated_router_delay    = "3"
+  designated_router_priority = "1"
+  hello_interval             = "30000"
+  join_prune_interval        = "60"
+  control_state              = ["border"]
 }
 ```
 
@@ -45,7 +45,10 @@ resource "aci_pim_interface_policy" "example_ip" {
 * `designated_router_delay` - (Optional) Designated router delay. Allowed range is "1-65535" and the default value is "3".
 * `designated_router_priority` - (Optional) Designated router priority. Allowed range is "1-4294967295" and the default value is "1".
 * `hello_interval` - (Optional) Hello traffic policy. Allowed range is "1-18724286" and the default value is "30000".
-* `join_prune_interval` - (Optional) JP Traffic Policy. Allowed range is "60-65520" and the default value is "60".
+* `join_prune_interval` - (Optional) Join Prune Traffic Policy. Allowed range is "60-65520" and the default value is "60".
+* `inbound_join_prune_filter_policy` - (Optional) Inbound join prune filter policy which represents the relation to a PIM Route Map Filter (class rtdmcARtMapPol). Type: String.
+* `outbound_join_prune_filter_policy` - (Optional) Outbound join prune filter policy which represents the relation to a PIM Route Map Filter (class rtdmcARtMapPol). Type: String.
+* `neighbor_filter_policy` - (Optional) Neighbor filter policy which represents the relation to a PIM Route Map Filter (class rtdmcARtMapPol). Type: String.
 
 ## Importing ##
 
