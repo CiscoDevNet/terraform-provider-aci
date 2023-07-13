@@ -33,12 +33,12 @@ data "aci_snmp_user" "example" {
 
 ## Argument Reference ##
 
-* `snmp_policy_dn` - (Required) Distinguished name of the parent SNMPPolicy object.
-* `name` - (Required) Name of the User Profile object.
+* `snmp_policy_dn` - (Required) Distinguished name of the parent SNMP Policy object.
+* `name` - (Required) Name of the SNMP User object.
 
 ## Attribute Reference ##
-* `id` - Attribute id set to the Dn of the User Profile.
-* `annotation` - (Read-Only) Annotation of the User Profile object.
-* `name_alias` - (Read-Only) Name Alias of the User Profile object.
-* `authorization_type` - (Read-Only) Authentication Type. The authentication type for the user profile. The authentication type is a message authentication code (MAC) that is used between two parties sharing a secret key to validate information transmitted between them. HMAC (Hash MAC) is based on cryptographic hash functions. It can be used in combination with any iterated cryptographic hash function. HMAC MD5 and HMAC SHA1 are two constructs of the HMAC using the MD5 hash function and the SHA1 hash function. HMAC also uses a secret key for calculation and verification of the message authentication values.
-* `privacy_type` - (Read-Only) Privacy. The encryption type for the user profile.
+* `id` - Attribute id set to the Dn of the SNMP User.
+* `annotation` - (Read-Only) Annotation of the SNMP User object.
+* `name_alias` - (Read-Only) Name Alias of the SNMP User object.
+* `authorization_type` - (Read-Only) Authentication Type. The authentication type for the SNMP user. The authentication type is a message authentication code (MAC) that is used between two parties sharing a secret key to validate information transmitted between them. HMAC (Hash MAC) is based on cryptographic hash functions. It can be used in combination with any iterated cryptographic hash function. HMAC MD5 and HMAC SHA1 are two constructs of the HMAC using the MD5 hash function and the SHA1 hash function. HMAC also uses a secret key for calculation and verification of the message authentication values.
+* `privacy_type` - (Read-Only) Privacy. The encryption type for the SNMP user.
