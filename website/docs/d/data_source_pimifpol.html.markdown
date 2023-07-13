@@ -38,11 +38,9 @@ data "aci_pim_interface_policy" "example" {
 * `id` - Attribute id set to the Dn of the PIM Interface Policy.
 * `annotation` - (Read-Only) Annotation of the PIM Interface Policy object.
 * `name_alias` - (Read-Only) Name Alias of the PIM Interface Policy object.
-* `auth_key` - (Read-Only) Authentication Key.
 * `auth_t` - (Read-Only) Authentication Type. 
 * `ctrl` - (Read-Only) Interface Controls. 
 * `dr_delay` - (Read-Only) Designated Router Delay. 
 * `dr_prio` - (Read-Only) Designated Router Priority. 
 * `hello_itvl` - (Read-Only) Hello Traffic Policy
 * `jp_interval` - (Read-Only) JP Traffic Policy
-* `secure_auth_key` - (Read-Only) Secure Authentication key

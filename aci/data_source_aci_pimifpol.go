@@ -3,6 +3,7 @@ package aci
 import (
 	"context"
 	"fmt"
+	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
 	"github.com/ciscoecosystem/aci-go-client/v2/models"
@@ -19,32 +20,29 @@ func dataSourceAciPIMInterfacePolicy() *schema.Resource {
 				Type:     schema.TypeString,
 				Required: true,
 			},
-			"auth_key": {
+			"auth_type": {
 				Type:     schema.TypeString,
 				Computed: true,
+				Elem:     &schema.Schema{Type: schema.TypeString},
 			},
-			"auth_t": {
-				Type:     schema.TypeString,
-				Computed: true,
-			},
-			"ctrl": {
+			"control_state": {
 				Type:     schema.TypeList,
 				Computed: true,
 				Elem:     &schema.Schema{Type: schema.TypeString},
 			},
-			"dr_delay": {
+			"designated_router_delay": {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-			"dr_prio": {
+			"designated_router_priority": {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-			"hello_itvl": {
+			"hello_interval": {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-			"jp_interval": {
+			"join_prune_interval": {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
@@ -52,7 +50,15 @@ func dataSourceAciPIMInterfacePolicy() *schema.Resource {
 				Type:     schema.TypeString,
 				Required: true,
 			},
-			"secure_auth_key": {
+			"inbound_join_prune_filter_policy": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"outbound_join_prune_filter_policy": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"neighbor_filter_policy": {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
@@ -77,6 +83,11 @@ func dataSourceAciPIMInterfacePolicyRead(ctx context.Context, d *schema.Resource
 	_, err = setPIMInterfacePolicyAttributes(pimIfPol, d)
 	if err != nil {
 		return nil
+	}
+
+	_, err = getandSetPIMIfPolRelationshipAttributes(aciClient, dn, d)
+	if err == nil {
+		log.Printf("[DEBUG] PimIfPol Relationship Attributes - Read finished successfully")
 	}
 
 	return nil

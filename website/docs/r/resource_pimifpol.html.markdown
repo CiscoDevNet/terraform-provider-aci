@@ -40,14 +40,12 @@ resource "aci_pim_interface_policy" "example_ip" {
 * `name` - (Required) Name of the PIM Interface Policy object.
 * `annotation` - (Optional) Annotation of the PIM Interface Policy object.
 * `name_alias` - (Optional) Name Alias of the PIM Interface Policy object.
-* `auth_key` - (Optional) Authentication Key.
-* `auth_t` - (Optional) Authentication type. Allowed values are "ah-md5", "none" and the default value is "none". Type: String.
-* `ctrl` - (Optional) Interface controls. Allowed values are "border", "passive" and "strict-rfc-compliant". Type: List.
-* `dr_delay` - (Optional) Designated router delay. Allowed range is "1-65535" and the default value is "3".
-* `dr_prio` - (Optional) Designated router priority. Allowed range is "1-4294967295" and the default value is "1".
-* `hello_itvl` - (Optional) Hello traffic policy. Allowed range is "1-18724286" and the default value is "30000".
-* `jp_interval` - (Optional) JP Traffic Policy. Allowed range is "60-65520" and the default value is "60".
-* `secure_auth_key` - (Optional) Secure Authentication key.
+* `auth_type` - (Optional) Authentication type. Allowed values are "ah-md5", "none" and the default value is "none". Type: String.
+* `control_state` - (Optional) Interface controls. Allowed values are "border", "passive" and "strict-rfc-compliant". Type: List.
+* `designated_router_delay` - (Optional) Designated router delay. Allowed range is "1-65535" and the default value is "3".
+* `designated_router_priority` - (Optional) Designated router priority. Allowed range is "1-4294967295" and the default value is "1".
+* `hello_interval` - (Optional) Hello traffic policy. Allowed range is "1-18724286" and the default value is "30000".
+* `join_prune_interval` - (Optional) JP Traffic Policy. Allowed range is "60-65520" and the default value is "60".
 
 ## Importing ##
 

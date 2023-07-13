@@ -382,20 +382,17 @@ func resourceAciLogicalInterfaceProfileCreate(ctx context.Context, d *schema.Res
 	}
 
 	if relationTopimRsIfPol, ok := d.GetOk("relation_l3ext_rs_pim_ip_if_pol"); ok {
-		relationParam := relationTopimRsIfPol.(string)
-		checkDns = append(checkDns, relationParam)
+		checkDns = append(checkDns, relationTopimRsIfPol.(string))
 
 	}
 
 	if relationTopimRsV6IfPol, ok := d.GetOk("relation_l3ext_rs_pim_ipv6_if_pol"); ok {
-		relationParam := relationTopimRsV6IfPol.(string)
-		checkDns = append(checkDns, relationParam)
+		checkDns = append(checkDns, relationTopimRsV6IfPol.(string))
 
 	}
 
 	if relationToigmpRsIfPol, ok := d.GetOk("relation_l3ext_rs_igmp_if_pol"); ok {
-		relationParam := relationToigmpRsIfPol.(string)
-		checkDns = append(checkDns, relationParam)
+		checkDns = append(checkDns, relationToigmpRsIfPol.(string))
 
 	}
 
@@ -588,6 +585,23 @@ func resourceAciLogicalInterfaceProfileUpdate(ctx context.Context, d *schema.Res
 		checkDns = append(checkDns, newRelParam.(string))
 	}
 
+	if d.HasChange("relation_l3ext_rs_pim_ip_if_pol") {
+		_, newRelParam := d.GetChange("relation_l3ext_rs_pim_ip_if_pol")
+		checkDns = append(checkDns, newRelParam.(string))
+
+	}
+
+	if d.HasChange("relation_l3ext_rs_pim_ipv6_if_pol") {
+		_, newRelParam := d.GetChange("relation_l3ext_rs_pim_ipv6_if_pol")
+		checkDns = append(checkDns, newRelParam.(string))
+	}
+
+	if d.HasChange("relation_l3ext_rs_igmp_if_pol") {
+		_, newRelParam := d.GetChange("relation_l3ext_rs_igmp_if_pol")
+		checkDns = append(checkDns, newRelParam.(string))
+
+	}
+
 	d.Partial(true)
 	err = checkTDn(aciClient, checkDns)
 	if err != nil {
@@ -670,13 +684,11 @@ func resourceAciLogicalInterfaceProfileUpdate(ctx context.Context, d *schema.Res
 	}
 
 	if d.HasChange("relation_l3ext_rs_pim_ip_if_pol") {
-		oldRelParam, newRelParam := d.GetChange("relation_l3ext_rs_pim_ip_if_pol")
+		_, newRelParam := d.GetChange("relation_l3ext_rs_pim_ip_if_pol")
 		pimIfP := models.NewPIMInterfaceProfile(l3extLIfP.DistinguishedName, "", models.PIMInterfaceProfileAttributes{})
-		if oldRelParam.(string) == "" {
-			pimIfP.Status = "created"
-		} else {
-			pimIfP.Status = "modified"
-		}
+
+		pimIfP.Status = "created,modified"
+
 		err_ifp := aciClient.Save(pimIfP)
 		if err_ifp != nil {
 			return diag.FromErr(err)
@@ -689,13 +701,11 @@ func resourceAciLogicalInterfaceProfileUpdate(ctx context.Context, d *schema.Res
 	}
 
 	if d.HasChange("relation_l3ext_rs_pim_ipv6_if_pol") {
-		oldRelParam, newRelParam := d.GetChange("relation_l3ext_rs_pim_ipv6_if_pol")
+		_, newRelParam := d.GetChange("relation_l3ext_rs_pim_ipv6_if_pol")
 		pimIPV6IfP := models.NewPIMIPv6InterfaceProfile(l3extLIfP.DistinguishedName, "", models.PIMIPv6InterfaceProfileAttributes{})
-		if oldRelParam.(string) == "" {
-			pimIPV6IfP.Status = "created"
-		} else {
-			pimIPV6IfP.Status = "modified"
-		}
+
+		pimIPV6IfP.Status = "created,modified"
+
 		err_ifp := aciClient.Save(pimIPV6IfP)
 		if err_ifp != nil {
 			return diag.FromErr(err)
@@ -708,13 +718,11 @@ func resourceAciLogicalInterfaceProfileUpdate(ctx context.Context, d *schema.Res
 	}
 
 	if d.HasChange("relation_l3ext_rs_igmp_if_pol") {
-		oldRelParam, newRelParam := d.GetChange("relation_l3ext_rs_igmp_if_pol")
+		_, newRelParam := d.GetChange("relation_l3ext_rs_igmp_if_pol")
 		igmpIfP := models.NewIGMPInterfaceProfile(l3extLIfP.DistinguishedName, "", models.IGMPInterfaceProfileAttributes{})
-		if oldRelParam.(string) == "" {
-			igmpIfP.Status = "created"
-		} else {
-			igmpIfP.Status = "modified"
-		}
+
+		igmpIfP.Status = "created,modified"
+
 		err_ifp := aciClient.Save(igmpIfP)
 		if err_ifp != nil {
 			return diag.FromErr(err)

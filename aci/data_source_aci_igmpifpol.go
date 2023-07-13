@@ -3,6 +3,7 @@ package aci
 import (
 	"context"
 	"fmt"
+	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
 	"github.com/ciscoecosystem/aci-go-client/v2/models"
@@ -19,20 +20,20 @@ func dataSourceAciIGMPInterfacePolicy() *schema.Resource {
 				Type:     schema.TypeString,
 				Required: true,
 			},
-			"grp_timeout": {
+			"group_timeout": {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-			"if_ctrl": {
+			"control": {
 				Type:     schema.TypeList,
 				Computed: true,
 				Elem:     &schema.Schema{Type: schema.TypeString},
 			},
-			"last_mbr_cnt": {
+			"last_member_count": {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-			"last_mbr_resp_time": {
+			"last_member_response_time": {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
@@ -44,27 +45,47 @@ func dataSourceAciIGMPInterfacePolicy() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-			"query_intvl": {
+			"query_interval": {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-			"robust_fac": {
+			"robustness_variable": {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-			"rsp_intvl": {
+			"response_interval": {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-			"start_query_cnt": {
+			"startup_query_count": {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-			"start_query_intvl": {
+			"startup_query_interval": {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-			"ver": {
+			"version": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"maximum_mulitcast_entries": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"reserved_mulitcast_entries": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"state_limit_route_map": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"report_policy_route_map": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"static_report_route_map": {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
@@ -89,6 +110,11 @@ func dataSourceAciIGMPInterfacePolicyRead(ctx context.Context, d *schema.Resourc
 	_, err = setIGMPInterfacePolicyAttributes(igmpIfPol, d)
 	if err != nil {
 		return nil
+	}
+
+	_, err = getandSetIGMPIfPolRelationshipAttributes(aciClient, dn, d)
+	if err == nil {
+		log.Printf("[DEBUG] IGMPIfPol Relationship Attributes - Read finished successfully")
 	}
 
 	return nil

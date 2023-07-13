@@ -33,12 +33,7 @@ func resourceAciPIMInterfacePolicy() *schema.Resource {
 				Required: true,
 				ForceNew: true,
 			},
-			"auth_key": {
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-			"auth_t": {
+			"auth_type": {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
@@ -47,7 +42,7 @@ func resourceAciPIMInterfacePolicy() *schema.Resource {
 					"none",
 				}, false),
 			},
-			"ctrl": {
+			"control_state": {
 				Type:     schema.TypeList,
 				Optional: true,
 				Computed: true,
@@ -61,22 +56,22 @@ func resourceAciPIMInterfacePolicy() *schema.Resource {
 				},
 				DiffSuppressFunc: suppressTypeListDiffFunc,
 			},
-			"dr_delay": {
+			"designated_router_delay": {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
 			},
-			"dr_prio": {
+			"designated_router_priority": {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
 			},
-			"hello_itvl": {
+			"hello_interval": {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
 			},
-			"jp_interval": {
+			"join_prune_interval": {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
@@ -86,10 +81,20 @@ func resourceAciPIMInterfacePolicy() *schema.Resource {
 				Required: true,
 				ForceNew: true,
 			},
-			"secure_auth_key": {
+			"inbound_join_prune_filter_policy": {
 				Type:     schema.TypeString,
-				Optional: true,
 				Computed: true,
+				Optional: true,
+			},
+			"outbound_join_prune_filter_policy": {
+				Type:     schema.TypeString,
+				Computed: true,
+				Optional: true,
+			},
+			"neighbor_filter_policy": {
+				Type:     schema.TypeString,
+				Computed: true,
+				Optional: true,
 			},
 		})),
 	}
@@ -121,34 +126,59 @@ func setPIMInterfacePolicyAttributes(pimIfPol *models.PIMInterfacePolicy, d *sch
 		d.Set("tenant_dn", GetParentDn(pimIfPol.DistinguishedName, fmt.Sprintf("/"+models.RnPimIfPol, pimIfPolMap["name"])))
 	}
 	d.Set("annotation", pimIfPolMap["annotation"])
-	d.Set("auth_key", pimIfPolMap["authKey"])
-	d.Set("auth_t", pimIfPolMap["authT"])
-	ctrlGet := make([]string, 0, 1)
+	d.Set("auth_type", pimIfPolMap["authT"])
+	control_stateGet := make([]string, 0, 1)
 	for _, val := range strings.Split(pimIfPolMap["ctrl"], ",") {
-		ctrlGet = append(ctrlGet, strings.Trim(val, " "))
+		control_stateGet = append(control_stateGet, strings.Trim(val, " "))
 	}
-	sort.Strings(ctrlGet)
-	if ctrlIntr, ok := d.GetOk("ctrl"); ok {
-		ctrlAct := make([]string, 0, 1)
-		for _, val := range ctrlIntr.([]interface{}) {
-			ctrlAct = append(ctrlAct, val.(string))
+	sort.Strings(control_stateGet)
+	if control_stateIntr, ok := d.GetOk("control_state"); ok {
+		control_stateAct := make([]string, 0, 1)
+		for _, val := range control_stateIntr.([]interface{}) {
+			control_stateAct = append(control_stateAct, val.(string))
 		}
-		sort.Strings(ctrlAct)
-		if reflect.DeepEqual(ctrlAct, ctrlGet) {
-			d.Set("ctrl", d.Get("ctrl").([]interface{}))
+		sort.Strings(control_stateAct)
+		if reflect.DeepEqual(control_stateAct, control_stateGet) {
+			d.Set("control_state", d.Get("control_state").([]interface{}))
 		} else {
-			d.Set("ctrl", ctrlGet)
+			d.Set("control_state", control_stateGet)
 		}
 	} else {
-		d.Set("ctrl", ctrlGet)
+		d.Set("control_state", control_stateGet)
 	}
-	d.Set("dr_delay", pimIfPolMap["drDelay"])
-	d.Set("dr_prio", pimIfPolMap["drPrio"])
-	d.Set("hello_itvl", pimIfPolMap["helloItvl"])
-	d.Set("jp_interval", pimIfPolMap["jpInterval"])
+	d.Set("designated_router_delay", pimIfPolMap["drDelay"])
+	d.Set("designated_router_priority", pimIfPolMap["drPrio"])
+	d.Set("hello_interval", pimIfPolMap["helloItvl"])
+	d.Set("join_prune_interval", pimIfPolMap["jpInterval"])
 	d.Set("name", pimIfPolMap["name"])
 	d.Set("name_alias", pimIfPolMap["nameAlias"])
-	d.Set("secure_auth_key", pimIfPolMap["secureAuthKey"])
+	return d, nil
+}
+
+func getandSetPIMIfPolRelationshipAttributes(aciClient *client.Client, dn string, d *schema.ResourceData) (*schema.ResourceData, error) {
+	jpInbFilterPolData, err := aciClient.ReadRelationPIMJPInbFilterPolrtdmcRsFilterToRtMapPol(fmt.Sprintf("%s/%s", dn, models.RnPimJPInbFilterPol))
+	if err != nil {
+		log.Printf("[DEBUG] Error while reading relation jpInbFilterPolData %v", err)
+		d.Set("inbound_join_prune_filter_policy", "")
+	} else {
+		d.Set("inbound_join_prune_filter_policy", jpInbFilterPolData.(string))
+	}
+
+	jpOutbFilterPolData, err := aciClient.ReadRelationPIMJPOutbFilterPolrtdmcRsFilterToRtMapPol(fmt.Sprintf("%s/%s", dn, models.RnPimJPOutbFilterPol))
+	if err != nil {
+		log.Printf("[DEBUG] Error while reading relation jpOutbFilterPol %v", err)
+		d.Set("outbound_join_prune_filter_policy", "")
+	} else {
+		d.Set("outbound_join_prune_filter_policy", jpOutbFilterPolData.(string))
+	}
+
+	neighborFilterPolData, err := aciClient.ReadRelationPIMNbrFilterPolrtdmcRsFilterToRtMapPol(fmt.Sprintf("%s/%s", dn, models.RnPimNbrFilterPol))
+	if err != nil {
+		log.Printf("[DEBUG] Error while reading relation neighborFilterPol %v", err)
+		d.Set("neighbor_filter_policy", "")
+	} else {
+		d.Set("neighbor_filter_policy", neighborFilterPolData.(string))
+	}
 	return d, nil
 }
 
@@ -163,6 +193,11 @@ func resourceAciPIMInterfacePolicyImport(d *schema.ResourceData, m interface{}) 
 	schemaFilled, err := setPIMInterfacePolicyAttributes(pimIfPol, d)
 	if err != nil {
 		return nil, err
+	}
+
+	_, err = getandSetPIMIfPolRelationshipAttributes(aciClient, dn, d)
+	if err == nil {
+		log.Printf("[DEBUG] PimIfPol Relationship Attributes - Read finished successfully")
 	}
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
@@ -184,36 +219,32 @@ func resourceAciPIMInterfacePolicyCreate(ctx context.Context, d *schema.Resource
 		pimIfPolAttr.Annotation = "{}"
 	}
 
-	if AuthKey, ok := d.GetOk("auth_key"); ok {
-		pimIfPolAttr.AuthKey = AuthKey.(string)
-	}
-
-	if AuthT, ok := d.GetOk("auth_t"); ok {
+	if AuthT, ok := d.GetOk("auth_type"); ok {
 		pimIfPolAttr.AuthT = AuthT.(string)
 	}
 
-	if Ctrl, ok := d.GetOk("ctrl"); ok {
-		ctrlList := make([]string, 0, 1)
-		for _, val := range Ctrl.([]interface{}) {
-			ctrlList = append(ctrlList, val.(string))
+	if Control_state, ok := d.GetOk("control_state"); ok {
+		control_stateList := make([]string, 0, 1)
+		for _, val := range Control_state.([]interface{}) {
+			control_stateList = append(control_stateList, val.(string))
 		}
-		Ctrl := strings.Join(ctrlList, ",")
-		pimIfPolAttr.Ctrl = Ctrl
+		Control_state := strings.Join(control_stateList, ",")
+		pimIfPolAttr.Ctrl = Control_state
 	}
 
-	if DrDelay, ok := d.GetOk("dr_delay"); ok {
+	if DrDelay, ok := d.GetOk("designated_router_delay"); ok {
 		pimIfPolAttr.DrDelay = DrDelay.(string)
 	}
 
-	if DrPrio, ok := d.GetOk("dr_prio"); ok {
+	if DrPrio, ok := d.GetOk("designated_router_priority"); ok {
 		pimIfPolAttr.DrPrio = DrPrio.(string)
 	}
 
-	if HelloItvl, ok := d.GetOk("hello_itvl"); ok {
+	if HelloItvl, ok := d.GetOk("hello_interval"); ok {
 		pimIfPolAttr.HelloItvl = HelloItvl.(string)
 	}
 
-	if JpInterval, ok := d.GetOk("jp_interval"); ok {
+	if JpInterval, ok := d.GetOk("join_prune_interval"); ok {
 		pimIfPolAttr.JpInterval = JpInterval.(string)
 	}
 
@@ -225,9 +256,6 @@ func resourceAciPIMInterfacePolicyCreate(ctx context.Context, d *schema.Resource
 		pimIfPolAttr.NameAlias = NameAlias.(string)
 	}
 
-	if SecureAuthKey, ok := d.GetOk("secure_auth_key"); ok {
-		pimIfPolAttr.SecureAuthKey = SecureAuthKey.(string)
-	}
 	pimIfPol := models.NewPIMInterfacePolicy(fmt.Sprintf(models.RnPimIfPol, name), TenantDn, desc, pimIfPolAttr)
 
 	err := aciClient.Save(pimIfPol)
@@ -235,10 +263,67 @@ func resourceAciPIMInterfacePolicyCreate(ctx context.Context, d *schema.Resource
 		return diag.FromErr(err)
 	}
 
+	checkDns := make([]string, 0, 1)
+	if jpInboundFilterPolMap, ok := d.GetOk("inbound_join_prune_filter_policy"); ok {
+		checkDns = append(checkDns, jpInboundFilterPolMap.(string))
+	}
+
+	if jpOutboundFilterPolMap, ok := d.GetOk("outbound_join_prune_filter_policy"); ok {
+		checkDns = append(checkDns, jpOutboundFilterPolMap.(string))
+	}
+
+	if neighborFilterPolMap, ok := d.GetOk("neighbor_filter_policy"); ok {
+		checkDns = append(checkDns, neighborFilterPolMap.(string))
+	}
+
+	d.Partial(true)
+	err = checkTDn(aciClient, checkDns)
+	if err != nil {
+		return diag.FromErr(err)
+	}
+	d.Partial(false)
+
+	if jpInboundFilterPolMap, ok := d.GetOk("inbound_join_prune_filter_policy"); ok {
+		jpInboundFilterPol := models.NewPIMJPInboundFilterPolicy(pimIfPol.DistinguishedName, "", models.PIMJPInboundFilterPolicyAttributes{})
+		err := aciClient.Save(jpInboundFilterPol)
+		if err != nil {
+			return diag.FromErr(err)
+		}
+		err = aciClient.CreateRelationPIMJPInbFilterPolrtdmcRsFilterToRtMapPol(jpInboundFilterPol.DistinguishedName, jpInboundFilterPolMap.(string))
+		if err != nil {
+			return diag.FromErr(err)
+		}
+	}
+
+	if jpOutboundFilterPolMap, ok := d.GetOk("outbound_join_prune_filter_policy"); ok {
+		jpOutboundFilterPol := models.NewPIMJPOutboundFilterPolicy(pimIfPol.DistinguishedName, "", models.PIMJPOutboundFilterPolicyAttributes{})
+		err := aciClient.Save(jpOutboundFilterPol)
+		if err != nil {
+			return diag.FromErr(err)
+		}
+		err = aciClient.CreateRelationPIMJPOutbFilterPolrtdmcRsFilterToRtMapPol(jpOutboundFilterPol.DistinguishedName, jpOutboundFilterPolMap.(string))
+		if err != nil {
+			return diag.FromErr(err)
+		}
+	}
+
+	if neighborFilterPolMap, ok := d.GetOk("neighbor_filter_policy"); ok {
+		neighborFilterPol := models.NewPIMNeighborFiterPolicy(pimIfPol.DistinguishedName, "", models.PIMNeighborFiterPolicyAttributes{})
+		err := aciClient.Save(neighborFilterPol)
+		if err != nil {
+			return diag.FromErr(err)
+		}
+		err = aciClient.CreateRelationPIMNbrFilterPolrtdmcRsFilterToRtMapPol(neighborFilterPol.DistinguishedName, neighborFilterPolMap.(string))
+		if err != nil {
+			return diag.FromErr(err)
+		}
+	}
+
 	d.SetId(pimIfPol.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 	return resourceAciPIMInterfacePolicyRead(ctx, d, m)
 }
+
 func resourceAciPIMInterfacePolicyUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] PIMInterfacePolicy: Beginning Update")
 	aciClient := m.(*client.Client)
@@ -254,35 +339,31 @@ func resourceAciPIMInterfacePolicyUpdate(ctx context.Context, d *schema.Resource
 		pimIfPolAttr.Annotation = "{}"
 	}
 
-	if AuthKey, ok := d.GetOk("auth_key"); ok {
-		pimIfPolAttr.AuthKey = AuthKey.(string)
-	}
-
-	if AuthT, ok := d.GetOk("auth_t"); ok {
+	if AuthT, ok := d.GetOk("auth_type"); ok {
 		pimIfPolAttr.AuthT = AuthT.(string)
 	}
-	if Ctrl, ok := d.GetOk("ctrl"); ok {
-		ctrlList := make([]string, 0, 1)
-		for _, val := range Ctrl.([]interface{}) {
-			ctrlList = append(ctrlList, val.(string))
+	if Control_state, ok := d.GetOk("control_state"); ok {
+		control_stateList := make([]string, 0, 1)
+		for _, val := range Control_state.([]interface{}) {
+			control_stateList = append(control_stateList, val.(string))
 		}
-		Ctrl := strings.Join(ctrlList, ",")
-		pimIfPolAttr.Ctrl = Ctrl
+		Control_state := strings.Join(control_stateList, ",")
+		pimIfPolAttr.Ctrl = Control_state
 	}
 
-	if DrDelay, ok := d.GetOk("dr_delay"); ok {
+	if DrDelay, ok := d.GetOk("designated_router_delay"); ok {
 		pimIfPolAttr.DrDelay = DrDelay.(string)
 	}
 
-	if DrPrio, ok := d.GetOk("dr_prio"); ok {
+	if DrPrio, ok := d.GetOk("designated_router_priority"); ok {
 		pimIfPolAttr.DrPrio = DrPrio.(string)
 	}
 
-	if HelloItvl, ok := d.GetOk("hello_itvl"); ok {
+	if HelloItvl, ok := d.GetOk("hello_interval"); ok {
 		pimIfPolAttr.HelloItvl = HelloItvl.(string)
 	}
 
-	if JpInterval, ok := d.GetOk("jp_interval"); ok {
+	if JpInterval, ok := d.GetOk("join_prune_interval"); ok {
 		pimIfPolAttr.JpInterval = JpInterval.(string)
 	}
 
@@ -294,9 +375,6 @@ func resourceAciPIMInterfacePolicyUpdate(ctx context.Context, d *schema.Resource
 		pimIfPolAttr.NameAlias = NameAlias.(string)
 	}
 
-	if SecureAuthKey, ok := d.GetOk("secure_auth_key"); ok {
-		pimIfPolAttr.SecureAuthKey = SecureAuthKey.(string)
-	}
 	pimIfPol := models.NewPIMInterfacePolicy(fmt.Sprintf(models.RnPimIfPol, name), TenantDn, desc, pimIfPolAttr)
 
 	pimIfPol.Status = "modified"
@@ -304,6 +382,73 @@ func resourceAciPIMInterfacePolicyUpdate(ctx context.Context, d *schema.Resource
 	err := aciClient.Save(pimIfPol)
 	if err != nil {
 		return diag.FromErr(err)
+	}
+
+	checkDns := make([]string, 0, 1)
+	if d.HasChange("inbound_join_prune_filter_policy") {
+		_, newRelParam := d.GetChange("inbound_join_prune_filter_policy")
+		checkDns = append(checkDns, newRelParam.(string))
+	}
+
+	if d.HasChange("outbound_join_prune_filter_policy") {
+		_, newRelParam := d.GetChange("outbound_join_prune_filter_policy")
+		checkDns = append(checkDns, newRelParam.(string))
+	}
+
+	if d.HasChange("neighbor_filter_policy") {
+		_, newRelParam := d.GetChange("neighbor_filter_policy")
+		checkDns = append(checkDns, newRelParam.(string))
+	}
+
+	d.Partial(true)
+	err = checkTDn(aciClient, checkDns)
+	if err != nil {
+		return diag.FromErr(err)
+	}
+	d.Partial(false)
+
+	if d.HasChange("inbound_join_prune_filter_policy") {
+		_, newRelParam := d.GetChange("inbound_join_prune_filter_policy")
+		jpInboundFilterPol := models.NewPIMJPInboundFilterPolicy(pimIfPol.DistinguishedName, "", models.PIMJPInboundFilterPolicyAttributes{})
+		jpInboundFilterPol.Status = "created,modified"
+		err := aciClient.Save(jpInboundFilterPol)
+		if err != nil {
+			return diag.FromErr(err)
+		}
+
+		err = aciClient.CreateRelationPIMJPInbFilterPolrtdmcRsFilterToRtMapPol(jpInboundFilterPol.DistinguishedName, newRelParam.(string))
+		if err != nil {
+			return diag.FromErr(err)
+		}
+	}
+
+	if d.HasChange("outbound_join_prune_filter_policy") {
+		_, newRelParam := d.GetChange("outbound_join_prune_filter_policy")
+		jpOutboundFilterPol := models.NewPIMJPOutboundFilterPolicy(pimIfPol.DistinguishedName, "", models.PIMJPOutboundFilterPolicyAttributes{})
+		jpOutboundFilterPol.Status = "created,modified"
+		err := aciClient.Save(jpOutboundFilterPol)
+		if err != nil {
+			return diag.FromErr(err)
+		}
+		err = aciClient.CreateRelationPIMJPOutbFilterPolrtdmcRsFilterToRtMapPol(jpOutboundFilterPol.DistinguishedName, newRelParam.(string))
+
+		if err != nil {
+			return diag.FromErr(err)
+		}
+	}
+
+	if d.HasChange("neighbor_filter_policy") {
+		_, newRelParam := d.GetChange("neighbor_filter_policy")
+		neighborFilterPol := models.NewPIMNeighborFiterPolicy(pimIfPol.DistinguishedName, "", models.PIMNeighborFiterPolicyAttributes{})
+		neighborFilterPol.Status = "created,modified"
+		err := aciClient.Save(neighborFilterPol)
+		if err != nil {
+			return diag.FromErr(err)
+		}
+		err = aciClient.CreateRelationPIMNbrFilterPolrtdmcRsFilterToRtMapPol(neighborFilterPol.DistinguishedName, newRelParam.(string))
+		if err != nil {
+			return diag.FromErr(err)
+		}
 	}
 
 	d.SetId(pimIfPol.DistinguishedName)
@@ -325,6 +470,11 @@ func resourceAciPIMInterfacePolicyRead(ctx context.Context, d *schema.ResourceDa
 	if err != nil {
 		d.SetId("")
 		return nil
+	}
+
+	_, err = getandSetPIMIfPolRelationshipAttributes(aciClient, dn, d)
+	if err == nil {
+		log.Printf("[DEBUG] PimIfPol Relationship Attributes - Read finished successfully")
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())

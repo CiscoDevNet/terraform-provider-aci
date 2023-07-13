@@ -48,6 +48,10 @@ func dataSourceAciLogicalInterfaceProfile() *schema.Resource {
 				Computed: true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
+						"tn_netflow_monitor_pol_name": {
+							Type:     schema.TypeString,
+							Computed: true,
+						},
 						"tn_netflow_monitor_pol_dn": {
 							Type:     schema.TypeString,
 							Computed: true,
