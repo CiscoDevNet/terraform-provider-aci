@@ -33,7 +33,6 @@ resource "aci_power_supply_redundancy_policy" "example" {
 
 ## Argument Reference ##
 
-
 * `name` - (Required) Name of the Power Supply Redundancy Policy object.
 * `annotation` - (Optional) Annotation of the Power Supply Redundancy Policy object.
 * `name_alias` - (Optional) Name Alias of the Power Supply Redundancy Policy object.
@@ -43,7 +42,6 @@ resource "aci_power_supply_redundancy_policy" "example" {
 
 An existing PowerSupplyRedundancyPolicy can be [imported][docs-import] into this resource via its Dn, via the following command:
 [docs-import]: https://www.terraform.io/docs/import/index.html
-
 
 ```
 terraform import aci_power_supply_redundancy_policy.example <Dn>
