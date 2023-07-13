@@ -128,6 +128,7 @@ func resourceAciPowerSupplyRedundancyPolicyCreate(ctx context.Context, d *schema
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 	return resourceAciPowerSupplyRedundancyPolicyRead(ctx, d, m)
 }
+
 func resourceAciPowerSupplyRedundancyPolicyUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] PowerSupplyRedundancyPolicy: Beginning Update")
 	aciClient := m.(*client.Client)
@@ -173,8 +174,7 @@ func resourceAciPowerSupplyRedundancyPolicyRead(ctx context.Context, d *schema.R
 
 	psuInstPol, err := getRemotePowerSupplyRedundancyPolicy(aciClient, dn)
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 
 	_, err = setPowerSupplyRedundancyPolicyAttributes(psuInstPol, d)

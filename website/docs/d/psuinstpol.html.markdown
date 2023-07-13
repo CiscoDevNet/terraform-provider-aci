@@ -11,7 +11,6 @@ description: |-
 
 Data source for ACI Power Supply Redundancy Policy
 
-
 ## API Information ##
 
 * `Class` - psuInstPol
@@ -21,12 +20,10 @@ Data source for ACI Power Supply Redundancy Policy
 
 * `Location` - Fabric -> Fabric Policies -> Policies -> Switch -> Power Supply Redundancy
 
-
 ## Example Usage ##
 
 ```hcl
 data "aci_power_supply_redundancy_policy" "example" {
-
   name  = "example"
 }
 ```
@@ -37,6 +34,6 @@ data "aci_power_supply_redundancy_policy" "example" {
 
 ## Attribute Reference ##
 * `id` - Attribute id set to the Dn of the Power Supply Redundancy Policy.
-* `annotation` - (Optional) Annotation of the Power Supply Redundancy Policy object.
-* `name_alias` - (Optional) Name Alias of the Power Supply Redundancy Policy object.
-* `admin_rdn_m` - (Optional) Admin Redundancy Mode. The administrative state of the power supply policy.
+* `annotation` - (Read-Only) Annotation of the Power Supply Redundancy Policy object.
+* `name_alias` - (Read-Only) Name Alias of the Power Supply Redundancy Policy object.
+* `admin_rdn_m` - (Read-Only) Admin Redundancy Mode. The administrative state of the power supply policy.

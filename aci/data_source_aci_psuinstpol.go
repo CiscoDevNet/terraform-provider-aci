@@ -16,7 +16,6 @@ func dataSourceAciPowerSupplyRedundancyPolicy() *schema.Resource {
 		Schema: AppendBaseAttrSchema(AppendNameAliasAttrSchema(map[string]*schema.Schema{
 			"admin_rdn_m": {
 				Type:     schema.TypeString,
-				Optional: true,
 				Computed: true,
 			},
 			"name": {
