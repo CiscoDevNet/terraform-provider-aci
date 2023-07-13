@@ -40,6 +40,7 @@ resource "aci_pim_interface_policy" "example_ip" {
 * `name` - (Required) Name of the PIM Interface Policy object.
 * `annotation` - (Optional) Annotation of the PIM Interface Policy object.
 * `name_alias` - (Optional) Name Alias of the PIM Interface Policy object.
+* `auth_key` - (Optional) Secure authentication key.
 * `auth_type` - (Optional) Authentication type. Allowed values are "ah-md5", "none" and the default value is "none". Type: String.
 * `control_state` - (Optional) Interface controls. Allowed values are "border", "passive" and "strict-rfc-compliant". Type: List.
 * `designated_router_delay` - (Optional) Designated router delay. Allowed range is "1-65535" and the default value is "3".

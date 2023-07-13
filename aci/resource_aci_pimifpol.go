@@ -33,6 +33,12 @@ func resourceAciPIMInterfacePolicy() *schema.Resource {
 				Required: true,
 				ForceNew: true,
 			},
+			"auth_key": {
+				Type:      schema.TypeString,
+				Optional:  true,
+				Computed:  true,
+				Sensitive: true,
+			},
 			"auth_type": {
 				Type:     schema.TypeString,
 				Optional: true,
@@ -152,6 +158,10 @@ func setPIMInterfacePolicyAttributes(pimIfPol *models.PIMInterfacePolicy, d *sch
 	d.Set("join_prune_interval", pimIfPolMap["jpInterval"])
 	d.Set("name", pimIfPolMap["name"])
 	d.Set("name_alias", pimIfPolMap["nameAlias"])
+	authKey := d.Get("auth_key").(string)
+	if authKey != "" {
+		d.Set("auth_key", pimIfPolMap["secureAuthKey"])
+	}
 	return d, nil
 }
 
@@ -256,6 +266,9 @@ func resourceAciPIMInterfacePolicyCreate(ctx context.Context, d *schema.Resource
 		pimIfPolAttr.NameAlias = NameAlias.(string)
 	}
 
+	if SecureAuthKey, ok := d.GetOk("auth_key"); ok {
+		pimIfPolAttr.SecureAuthKey = SecureAuthKey.(string)
+	}
 	pimIfPol := models.NewPIMInterfacePolicy(fmt.Sprintf(models.RnPimIfPol, name), TenantDn, desc, pimIfPolAttr)
 
 	err := aciClient.Save(pimIfPol)
@@ -342,6 +355,7 @@ func resourceAciPIMInterfacePolicyUpdate(ctx context.Context, d *schema.Resource
 	if AuthT, ok := d.GetOk("auth_type"); ok {
 		pimIfPolAttr.AuthT = AuthT.(string)
 	}
+
 	if Control_state, ok := d.GetOk("control_state"); ok {
 		control_stateList := make([]string, 0, 1)
 		for _, val := range Control_state.([]interface{}) {
@@ -375,6 +389,9 @@ func resourceAciPIMInterfacePolicyUpdate(ctx context.Context, d *schema.Resource
 		pimIfPolAttr.NameAlias = NameAlias.(string)
 	}
 
+	if SecureAuthKey, ok := d.GetOk("auth_key"); ok {
+		pimIfPolAttr.SecureAuthKey = SecureAuthKey.(string)
+	}
 	pimIfPol := models.NewPIMInterfacePolicy(fmt.Sprintf(models.RnPimIfPol, name), TenantDn, desc, pimIfPolAttr)
 
 	pimIfPol.Status = "modified"
