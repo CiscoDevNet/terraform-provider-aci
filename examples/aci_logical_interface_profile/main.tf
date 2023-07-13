@@ -48,38 +48,38 @@ resource "aci_logical_node_profile" "foological_node_profile" {
 }
 
 resource "aci_igmp_interface_policy" "example_igmp" {
-  tenant_dn          = aci_tenant.footenant.id
-  name               = "example_igmp"
-  grp_timeout        = "260"
-  last_mbr_cnt       = "2"
-  last_mbr_resp_time = "1"
-  querier_timeout    = "255"
-  query_intvl        = "125"
-  robust_fac         = "2"
-  rsp_intvl          = "10"
-  start_query_cnt    = "2"
-  start_query_intvl  = "31"
-  ver                = "v2"
+  tenant_dn                  = aci_tenant.footenant.id
+  name                       = "example_igmp"
+  group_timeout              = "260"
+  last_member_count          = "2"
+  last_member_response_time  = "1"
+  querier_timeout            = "255"
+  query_interval             = "125"
+  robustness_variable        = "2"
+  response_interval          = "10"
+  startup_query_count        = "2"
+  startup_query_interval     = "31"
+  version                    = "v2"
 }
 
 resource "aci_pim_interface_policy" "example_ip" {
-  tenant_dn   = aci_tenant.footenant.id
-  name        = "example_ip"
-  auth_t      = "none"
-  dr_delay    = "3"
-  dr_prio     = "1"
-  hello_itvl  = "30000"
-  jp_interval = "60"
+  tenant_dn                  = aci_tenant.footenant.id
+  name                       = "example_ip"
+  designated_router_delay    = "3"
+  designated_router_priority = "1"
+  hello_interval             = "30000"
+  join_prune_interval        = "60"
+  control_state              = ["border"]
 }
 
 resource "aci_pim_interface_policy" "example_ipv6" {
-  tenant_dn   = aci_tenant.footenant.id
-  name        = "example_ipv6"
-  auth_t      = "none"
-  dr_delay    = "3"
-  dr_prio     = "1"
-  hello_itvl  = "30000"
-  jp_interval = "60"
+  tenant_dn                  = aci_tenant.footenant.id
+  name                       = "example_ipv6"
+  designated_router_delay    = "3"
+  designated_router_priority = "1"
+  hello_interval             = "30000"
+  join_prune_interval        = "60"
+  control_state              = ["border"]
 }
 
 resource "aci_logical_interface_profile" "foological_interface_profile" {
