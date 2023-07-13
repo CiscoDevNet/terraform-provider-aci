@@ -3,6 +3,7 @@ package aci
 import (
 	"context"
 	"fmt"
+	"log"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
 	"github.com/ciscoecosystem/aci-go-client/v2/models"
@@ -19,10 +20,6 @@ func dataSourceAciBfdMultihopInterfaceProfile() *schema.Resource {
 				Type:     schema.TypeString,
 				Required: true,
 			},
-			"key": &schema.Schema{
-				Type:     schema.TypeString,
-				Computed: true,
-			},
 			"key_id": &schema.Schema{
 				Type:     schema.TypeString,
 				Computed: true,
@@ -35,11 +32,17 @@ func dataSourceAciBfdMultihopInterfaceProfile() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
+			"relation_bfd_rs_mh_if_pol": &schema.Schema{
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "Create relation to bfd:MhIfPol",
+			},
 		})),
 	}
 }
 
 func dataSourceAciBfdMultihopInterfaceProfileRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+	log.Printf("[DEBUG] Begining data source.")
 	aciClient := m.(*client.Client)
 	LogicalInterfaceProfileDn := d.Get("logical_interface_profile_dn").(string)
 	dn := fmt.Sprintf("%s/%s", LogicalInterfaceProfileDn, models.RnbfdMhIfP)
@@ -54,6 +57,14 @@ func dataSourceAciBfdMultihopInterfaceProfileRead(ctx context.Context, d *schema
 	_, err = setAciBfdMultihopInterfaceProfileAttributes(bfdMhIfP, d)
 	if err != nil {
 		return diag.FromErr(err)
+	}
+
+	bfdRsMhIfPolData, err := aciClient.ReadRelationbfdRsMhIfPol(dn)
+	if err != nil {
+		log.Printf("[DEBUG] Error while reading relation bfdRsMhIfPol %v", err)
+		d.Set("relation_bfd_rs_mh_if_pol", "")
+	} else {
+		d.Set("relation_bfd_rs_mh_if_pol", bfdRsMhIfPolData.(string))
 	}
 
 	return nil

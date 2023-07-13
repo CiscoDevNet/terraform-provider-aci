@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
+	"github.com/ciscoecosystem/aci-go-client/v2/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -19,10 +20,6 @@ func dataSourceAciBfdMultihopInterfacePolicy() *schema.Resource {
 				Required: true,
 			},
 			"admin_state": {
-				Type:     schema.TypeString,
-				Computed: true,
-			},
-			"annotation": {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
@@ -54,7 +51,7 @@ func dataSourceAciBfdMultihopInterfacePolicyRead(ctx context.Context, d *schema.
 	aciClient := m.(*client.Client)
 	name := d.Get("name").(string)
 	TenantDn := d.Get("tenant_dn").(string)
-	rn := fmt.Sprintf("bfdMhIfPol-%s", name)
+	rn := fmt.Sprintf(models.RnbfdMhIfPol, name)
 	dn := fmt.Sprintf("%s/%s", TenantDn, rn)
 
 	bfdMhIfPol, err := getAciBfdMultihopInterfacePolicy(aciClient, dn)

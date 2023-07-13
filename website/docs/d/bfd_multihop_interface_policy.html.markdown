@@ -41,6 +41,6 @@ data "aci_bfd_multihop_interface_policy" "example" {
 * `annotation` - (Optional) Annotation of the BFD Multihop Interface Policy object.
 * `name_alias` - (Optional) Name Alias of the BFD Multihop Interface Policy object.
 * `admin_state` - (Optional) Enable Disable sessions. The administrative state of the object or policy.
-* `detection_multiplier` - (Optional) Detection Multiplier. Detection multiplier.
-* `min_rx_intvl` - (Optional) Required Minimum RX Interval. Required minimum rx interval.
-* `min_transmit_interval` - (Optional) Desired Minimum TX Interval. Desired minimum tx interval.
+* `detection_multiplier` - (Optional) Detection Multiplier.
+* `min_receive_interval` - (Optional) Required Minimum Rx Interval.
+* `min_transmit_interval` - (Optional) Desired Minimum Tx Interval.

@@ -88,9 +88,12 @@ func setAciBfdMultihopInterfaceProfileAttributes(bfdMhIfP *models.AciBfdMultihop
 	}
 	d.Set("logical_interface_profile_dn", GetParentDn(dn, fmt.Sprintf("/%s", models.RnbfdMhIfP)))
 	d.Set("annotation", bfdMhIfPMap["annotation"])
-	key := d.Get("key").(string)
-	if key != "" {
-		d.Set("key", key)
+	key := d.Get("key")
+	if key != nil {
+		keyValue := key.(string)
+		if keyValue != "" {
+			d.Set("key", keyValue)
+		}
 	}
 	d.Set("key_id", bfdMhIfPMap["keyId"])
 	d.Set("name", bfdMhIfPMap["name"])
