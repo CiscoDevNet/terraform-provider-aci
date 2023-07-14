@@ -87,7 +87,7 @@ func dataSourceAciPIMInterfacePolicyRead(ctx context.Context, d *schema.Resource
 
 	_, err = getandSetPIMIfPolRelationshipAttributes(aciClient, dn, d)
 	if err == nil {
-		log.Printf("[DEBUG] PimIfPol Relationship Attributes - Read finished successfully")
+		log.Printf("[DEBUG] PIM Interface Policy Relationship Attributes - Read finished successfully")
 	}
 
 	return nil

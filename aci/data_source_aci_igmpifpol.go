@@ -114,7 +114,7 @@ func dataSourceAciIGMPInterfacePolicyRead(ctx context.Context, d *schema.Resourc
 
 	_, err = getandSetIGMPIfPolRelationshipAttributes(aciClient, dn, d)
 	if err == nil {
-		log.Printf("[DEBUG] IGMPIfPol Relationship Attributes - Read finished successfully")
+		log.Printf("[DEBUG] IGMP Interface Policy Relationship Attributes - Read finished successfully")
 	}
 
 	return nil

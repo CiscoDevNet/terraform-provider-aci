@@ -168,7 +168,7 @@ func setPIMInterfacePolicyAttributes(pimIfPol *models.PIMInterfacePolicy, d *sch
 func getandSetPIMIfPolRelationshipAttributes(aciClient *client.Client, dn string, d *schema.ResourceData) (*schema.ResourceData, error) {
 	jpInbFilterPolData, err := aciClient.ReadRelationPIMJPInbFilterPolrtdmcRsFilterToRtMapPol(fmt.Sprintf("%s/%s", dn, models.RnPimJPInbFilterPol))
 	if err != nil {
-		log.Printf("[DEBUG] Error while reading relation jpInbFilterPolData %v", err)
+		log.Printf("[DEBUG] Error while reading relation inbound join prune filter policy %v", err)
 		d.Set("inbound_join_prune_filter_policy", "")
 	} else {
 		d.Set("inbound_join_prune_filter_policy", jpInbFilterPolData.(string))
@@ -176,7 +176,7 @@ func getandSetPIMIfPolRelationshipAttributes(aciClient *client.Client, dn string
 
 	jpOutbFilterPolData, err := aciClient.ReadRelationPIMJPOutbFilterPolrtdmcRsFilterToRtMapPol(fmt.Sprintf("%s/%s", dn, models.RnPimJPOutbFilterPol))
 	if err != nil {
-		log.Printf("[DEBUG] Error while reading relation jpOutbFilterPol %v", err)
+		log.Printf("[DEBUG] Error while reading relation outbound join prune filter policy %v", err)
 		d.Set("outbound_join_prune_filter_policy", "")
 	} else {
 		d.Set("outbound_join_prune_filter_policy", jpOutbFilterPolData.(string))
@@ -184,7 +184,7 @@ func getandSetPIMIfPolRelationshipAttributes(aciClient *client.Client, dn string
 
 	neighborFilterPolData, err := aciClient.ReadRelationPIMNbrFilterPolrtdmcRsFilterToRtMapPol(fmt.Sprintf("%s/%s", dn, models.RnPimNbrFilterPol))
 	if err != nil {
-		log.Printf("[DEBUG] Error while reading relation neighborFilterPol %v", err)
+		log.Printf("[DEBUG] Error while reading relation neighbor filter policy %v", err)
 		d.Set("neighbor_filter_policy", "")
 	} else {
 		d.Set("neighbor_filter_policy", neighborFilterPolData.(string))
@@ -207,7 +207,7 @@ func resourceAciPIMInterfacePolicyImport(d *schema.ResourceData, m interface{}) 
 
 	_, err = getandSetPIMIfPolRelationshipAttributes(aciClient, dn, d)
 	if err == nil {
-		log.Printf("[DEBUG] PimIfPol Relationship Attributes - Read finished successfully")
+		log.Printf("[DEBUG] PIM interface policy Relationship Attributes - Read finished successfully")
 	}
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
@@ -491,7 +491,7 @@ func resourceAciPIMInterfacePolicyRead(ctx context.Context, d *schema.ResourceDa
 
 	_, err = getandSetPIMIfPolRelationshipAttributes(aciClient, dn, d)
 	if err == nil {
-		log.Printf("[DEBUG] PimIfPol Relationship Attributes - Read finished successfully")
+		log.Printf("[DEBUG] PIM interface policy Relationship Attributes - Read finished successfully")
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())

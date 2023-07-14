@@ -379,7 +379,7 @@ func resourceAciL3OutsideImport(d *schema.ResourceData, m interface{}) ([]*schem
 
 	pimExtP, err := getRemotePIMExternalProfile(aciClient, fmt.Sprintf("%s/%s", dn, models.RnPimExtP))
 	if err != nil {
-		log.Printf("[DEBUG] Error while reading pimExternalProfile %v", err)
+		log.Printf("[DEBUG] Error while reading PIM External Profile %v", err)
 		d.Set("pim", make([]string, 0, 1))
 	} else {
 		_, err := setPIMExternalProfileAttributes(pimExtP, d)
@@ -770,7 +770,7 @@ func resourceAciL3OutsideRead(ctx context.Context, d *schema.ResourceData, m int
 
 	pimExtP, err := getRemotePIMExternalProfile(aciClient, fmt.Sprintf("%s/%s", dn, models.RnPimExtP))
 	if err != nil {
-		log.Printf("[DEBUG] Error while reading pimExternalProfile %v", err)
+		log.Printf("[DEBUG] Error while reading PIM External Profile %v", err)
 		d.Set("pim", d.Set("pim", make([]string, 0, 1)))
 	} else {
 		_, err := setPIMExternalProfileAttributes(pimExtP, d)

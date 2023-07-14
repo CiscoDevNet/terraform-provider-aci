@@ -244,7 +244,7 @@ func resourceAciIGMPInterfacePolicyImport(d *schema.ResourceData, m interface{})
 
 	_, err = getandSetIGMPIfPolRelationshipAttributes(aciClient, dn, d)
 	if err == nil {
-		log.Printf("[DEBUG] IGMPIfPol Relationship Attributes - Read finished successfully")
+		log.Printf("[DEBUG] IGMP Interface Policy Relationship Attributes - Read finished successfully")
 	}
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
@@ -252,7 +252,7 @@ func resourceAciIGMPInterfacePolicyImport(d *schema.ResourceData, m interface{})
 }
 
 func resourceAciIGMPInterfacePolicyCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	log.Printf("[DEBUG] IGMPInterfacePolicy: Beginning Creation")
+	log.Printf("[DEBUG] IGMP Interface Policy: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
 	name := d.Get("name").(string)
@@ -410,7 +410,7 @@ func resourceAciIGMPInterfacePolicyCreate(ctx context.Context, d *schema.Resourc
 	return resourceAciIGMPInterfacePolicyRead(ctx, d, m)
 }
 func resourceAciIGMPInterfacePolicyUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	log.Printf("[DEBUG] IGMPInterfacePolicy: Beginning Update")
+	log.Printf("[DEBUG] IGMP Interface Policy: Beginning Update")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
 	name := d.Get("name").(string)
@@ -603,7 +603,7 @@ func resourceAciIGMPInterfacePolicyRead(ctx context.Context, d *schema.ResourceD
 
 	_, err = getandSetIGMPIfPolRelationshipAttributes(aciClient, dn, d)
 	if err == nil {
-		log.Printf("[DEBUG] IGMPIfPol Relationship Attributes - Read finished successfully")
+		log.Printf("[DEBUG] IGMP Interface Policy Relationship Attributes - Read finished successfully")
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
