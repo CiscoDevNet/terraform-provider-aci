@@ -43,7 +43,7 @@ resource "aci_snmp_user" "example" {
 * `authorization_key` - (Optional) Authorization Key. The authorization key for the SNMP User. The key can be any case-sensitive alphanumeric string up to 64 chars.
 * `authorization_type` - (Optional) Authorization Type. The authorization type for the SNMP User. The authorization type is a message authentication code (MAC) that is used between two parties sharing a secret key to validate information transmitted between them. HMAC (Hash MAC) is based on cryptographic hash functions. It can be used in combination with any iterated cryptographic hash function. HMAC MD5 and HMAC SHA1 are two constructs of the HMAC using the MD5 hash function and the SHA1 hash function. HMAC also uses a secret key for calculation and verification of the message authentication values. Allowed values are "hmac-md5-96", "hmac-sha1-96", "hmac-sha2-224", "hmac-sha2-256", "hmac-sha2-384", "hmac-sha2-512", and default value is "hmac-sha1-96". Type: String.
 * `privacy_key` - (Optional) Privacy Key. The privacy key for the SNMP User.
-* `privacy_type` - (Optional) Privacy. The encryption type for the SNMP User. Allowed values are "aes-128", "des", "none", and default value is "none". Type: String.
+* `privacy_type` - (Optional) Privacy Type. The encryption type for the SNMP User. Allowed values are "aes-128", "des", "none", and default value is "none". Type: String.
 
 
 ## Importing ##
@@ -53,5 +53,5 @@ An existing UserProfile can be [imported][docs-import] into this resource via it
 
 
 ```
-terraform import aci_user_profile.example <Dn>
+terraform import aci_snmp_user.example <Dn>
 ```
