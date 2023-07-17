@@ -15,7 +15,7 @@ Data source for ACI SNMP User
 ## API Information ##
 
 * `Class` - snmpUserP
-* `Distinguished Name` - uni/fabric/snmppol-{name}/user-{name}
+* `Distinguished Name` - uni/fabric/snmppol-{snmp_policy_name}/user-{name}
 
 ## GUI Information ##
 

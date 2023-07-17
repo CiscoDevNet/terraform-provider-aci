@@ -258,7 +258,7 @@ func resourceAciSnmpUserProfileDelete(ctx context.Context, d *schema.ResourceDat
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 
-	err := aciClient.DeleteByDn(dn, "snmpUserP")
+	err := aciClient.DeleteByDn(dn, models.SnmpUserPClassName)
 	if err != nil {
 		return diag.FromErr(err)
 	}
