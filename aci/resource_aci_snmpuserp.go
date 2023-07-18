@@ -35,6 +35,7 @@ func resourceAciSnmpUserProfile() *schema.Resource {
 				Optional:  true,
 				Computed:  true,
 				Sensitive: true,
+				ForceNew:  true,
 			},
 			"authorization_type": {
 				Type:     schema.TypeString,

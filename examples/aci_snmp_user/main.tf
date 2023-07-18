@@ -7,9 +7,9 @@ terraform {
 }
 
 provider "aci" {
-  username = "ansible_github_ci"
-  password = "sJ94G92#8dq2hx*K4qh"
-  url      = "https://173.36.219.68"
+  username = ""
+  password = ""
+  url      = ""
   insecure = true
 }
 
