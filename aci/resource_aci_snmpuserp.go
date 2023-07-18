@@ -41,6 +41,7 @@ func resourceAciSnmpUserProfile() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ForceNew: true,
 				ValidateFunc: validation.StringInSlice([]string{
 					"hmac-md5-96",
 					"hmac-sha1-96",
@@ -60,11 +61,13 @@ func resourceAciSnmpUserProfile() *schema.Resource {
 				Optional:  true,
 				Computed:  true,
 				Sensitive: true,
+				ForceNew:  true,
 			},
 			"privacy_type": {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ForceNew: true,
 				ValidateFunc: validation.StringInSlice([]string{
 					"aes-128",
 					"des",
