@@ -63,6 +63,7 @@ resource "aci_interface_config" "fabric_port_config" {
 * `annotation` - (Optional) The Annotation of the Port Configuration object. Type: String.
 * `name_alias` - (Optional) The Name Alias of the Port Configuration object. Type: String.
 * `operational_associated_group` - (Read-Only) The Distinguished Name of the Operational Associated Group.
+* `operational_associated_sub_group` - (Read-Only) The Distinguished Name of the Operational Associated Sub Group. This is only applicable when `port_type` is "access".
 * `port_dn` - (Read-Only) The Distinguished Name of the Port.
 * `pc_port_dn` - (Read-Only) The Distinguished Name of the Port Channel Port. This is only applicable when `port_type` is "access".
 

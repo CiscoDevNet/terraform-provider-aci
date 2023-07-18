@@ -97,6 +97,10 @@ func resourceAciInterfaceConfiguration() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
+			"operational_associated_sub_group": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
 			"port_dn": {
 				Type:     schema.TypeString,
 				Computed: true,
@@ -204,6 +208,7 @@ func getAndSetRemoteInterfaceConfiguration(dn string, client *client.Client, d *
 		} else {
 			d.Set("breakout", interfaceConfigMap["brkoutMap"])
 		}
+		d.Set("operational_associated_sub_group", interfaceConfigMap["operationalAssocSubGrp"])
 		d.Set("pc_port_dn", interfaceConfigMap["pcPortDn"])
 		d.Set("pc_member", interfaceConfigMap["pcMember"])
 	} else if portType == "fabric" {

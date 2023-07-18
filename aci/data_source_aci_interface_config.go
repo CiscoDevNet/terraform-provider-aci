@@ -73,6 +73,10 @@ func dataSourceAciInterfaceConfiguration() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
+			"operational_associated_sub_group": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
 			"port_dn": {
 				Type:     schema.TypeString,
 				Computed: true,
