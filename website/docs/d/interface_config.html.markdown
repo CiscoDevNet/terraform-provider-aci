@@ -54,6 +54,6 @@ data "aci_interface_config" "access_port_config_1003" {
 * `name_alias` - (Read-Only) The Name Alias of the Port Configuration object. Type: String.
 * `operational_associated_group` - (Read-Only) The Distinguished Name of the Operational Associated Group.
  `operational_associated_sub_group` - (Read-Only) The Distinguished Name of the Operational Associated Sub Group. This is only applicable when `port_type` is "access".
-* `port_dn` - (Read-Only) The Distinguished Name of the Port.
-* `pc_port_dn` - (Read-Only) The Distinguished Name of the Port Channel Port. This is only applicable when `port_type` is "access".
+* `port_dn` - (Read-Only) The Distinguished Name of the Port. This DN can be used as a reference to the static path resources.
+* `pc_port_dn` - (Read-Only) The Distinguished Name of the Port Channel Port. This contains the VPC Path DN when two switches in a VPC pair have multiple ports that are in the same Policy Group. This DN can be used as a reference to the static path resources and is only applicable when `port_type` is "access".
 
