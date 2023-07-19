@@ -46,6 +46,7 @@ resource "aci_l3_outside" "foo_l3_outside" {
   enforce_rtctrl = ["export", "import"]
   target_dscp    = "unspecified"
   mpls_enabled   = "yes"
+  pim            = ["ipv4", "ipv6"]
   // Relation to Route Control for Dampening - can't configure multiple Dampening Policies for the same address-family.
   relation_l3ext_rs_dampening_pol {
     tn_rtctrl_profile_dn = data.aci_route_control_profile.shared_route_control_profile.id

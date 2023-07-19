@@ -73,6 +73,7 @@ resource "aci_l3_outside" "foo_l3_outside" {
 * `name_alias` - (Optional) Name alias of the L3 Outside object.
 * `target_dscp` - (Optional) The target differentiated services code point (DSCP) of the path attached to the L3 Outside object. Allowed values are "CS0", "CS1", "AF11", "AF12", "AF13", "CS2", "AF21", "AF22", "AF23", "CS3", "AF31", "AF32", "AF33", "CS4", "AF41", "AF42", "AF43", "CS5", "VA", "EF", "CS6", "CS7" and "unspecified". Default is "unspecified".
 * `mpls_enabled` - (Optional) Indiscate whether MPLS is enabled or not. Allowed values are "no", "yes". Default value is "no".
+* `pim` - (Optional) Enable Multicast Address Families. Allowed values are "ipv4", "ipv6". Type: List.
 * `relation_l3ext_rs_dampening_pol` - (Optional) Relation to Route Control Profile for Dampening Policies (class rtctrlProfile). Can't configure multiple Dampening Policies for the same address-family. Cardinality - N_TO_M. Type - Block.
   * tn_rtctrl_profile_name - (Deprecated) Name of the Route Control Profile for Dampening Policies.
   * tn_rtctrl_profile_dn - (Optional) Distinguished name of the Route Control Profile for Dampening Policies.

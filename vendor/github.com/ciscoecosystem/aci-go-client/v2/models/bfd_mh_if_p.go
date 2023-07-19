@@ -64,7 +64,7 @@ func (bfdMhIfP *AciBfdMultihopInterfaceProfile) ToMap() (map[string]string, erro
 	A(bfdMhIfPMap, "key", bfdMhIfP.Key)
 	A(bfdMhIfPMap, "keyId", bfdMhIfP.KeyId)
 	A(bfdMhIfPMap, "name", bfdMhIfP.Name)
-	A(bfdMhIfPMap, "InterfaceProfile_type", bfdMhIfP.InterfaceProfile_type)
+	A(bfdMhIfPMap, "type", bfdMhIfP.InterfaceProfile_type)
 	return bfdMhIfPMap, err
 }
 
@@ -86,7 +86,7 @@ func AciBfdMultihopInterfaceProfileFromContainerList(cont *container.Container, 
 			Key:                   G(AciBfdMultihopInterfaceProfileCont, "key"),
 			KeyId:                 G(AciBfdMultihopInterfaceProfileCont, "keyId"),
 			Name:                  G(AciBfdMultihopInterfaceProfileCont, "name"),
-			InterfaceProfile_type: G(AciBfdMultihopInterfaceProfileCont, "InterfaceProfile_type"),
+			InterfaceProfile_type: G(AciBfdMultihopInterfaceProfileCont, "type"),
 		},
 	}
 }
