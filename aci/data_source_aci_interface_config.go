@@ -39,34 +39,42 @@ func dataSourceAciInterfaceConfiguration() *schema.Resource {
 			},
 			"role": {
 				Type:     schema.TypeString,
-				Optional: true,
 				Computed: true,
 			},
 			"policy_group": {
-				Type:          schema.TypeString,
-				Optional:      true,
-				Computed:      true,
-				ConflictsWith: []string{"breakout"},
+				Type:     schema.TypeString,
+				Computed: true,
 			},
 			"breakout": {
-				Type:          schema.TypeString,
-				Optional:      true,
-				Computed:      true,
-				ConflictsWith: []string{"policy_group"},
+				Type:     schema.TypeString,
+				Computed: true,
 			},
 			"admin_state": {
 				Type:     schema.TypeString,
-				Optional: true,
 				Computed: true,
 			},
 			"pc_member": {
 				Type:     schema.TypeString,
-				Optional: true,
 				Computed: true,
 			},
 			"description": {
 				Type:     schema.TypeString,
-				Optional: true,
+				Computed: true,
+			},
+			"operational_associated_group": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"operational_associated_sub_group": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"port_dn": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"pc_port_dn": {
+				Type:     schema.TypeString,
 				Computed: true,
 			},
 		})),

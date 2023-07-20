@@ -20,15 +20,17 @@ type FabricPortConfiguration struct {
 }
 
 type FabricPortConfigurationAttributes struct {
-	Annotation string `json:",omitempty"`
-	AssocGrp   string `json:",omitempty"`
-	Card       string `json:",omitempty"`
-	Descr      string `json:",omitempty"`
-	Node       string `json:",omitempty"`
-	Port       string `json:",omitempty"`
-	Role       string `json:",omitempty"`
-	Shutdown   string `json:",omitempty"`
-	SubPort    string `json:",omitempty"`
+	Annotation          string `json:",omitempty"`
+	AssocGrp            string `json:",omitempty"`
+	Card                string `json:",omitempty"`
+	Descr               string `json:",omitempty"`
+	Node                string `json:",omitempty"`
+	Port                string `json:",omitempty"`
+	Role                string `json:",omitempty"`
+	Shutdown            string `json:",omitempty"`
+	SubPort             string `json:",omitempty"`
+	OperationalAssocGrp string `json:",omitempty"`
+	PortDn              string `json:",omitempty"`
 }
 
 func NewFabricPortConfiguration(fabricPortConfigRn, parentDn, description string, fabricPortConfigAttr FabricPortConfigurationAttributes) *FabricPortConfiguration {
@@ -59,6 +61,8 @@ func (fabricPortConfig *FabricPortConfiguration) ToMap() (map[string]string, err
 	A(fabricPortConfigMap, "role", fabricPortConfig.Role)
 	A(fabricPortConfigMap, "shutdown", fabricPortConfig.Shutdown)
 	A(fabricPortConfigMap, "subPort", fabricPortConfig.SubPort)
+	A(fabricPortConfigMap, "operationalAssocGrp", fabricPortConfig.OperationalAssocGrp)
+	A(fabricPortConfigMap, "portDn", fabricPortConfig.PortDn)
 	return fabricPortConfigMap, err
 }
 
@@ -72,15 +76,17 @@ func FabricPortConfigurationFromContainerList(cont *container.Container, index i
 			Rn:                G(FabricPortConfigurationCont, "rn"),
 		},
 		FabricPortConfigurationAttributes{
-			Annotation: G(FabricPortConfigurationCont, "annotation"),
-			AssocGrp:   G(FabricPortConfigurationCont, "assocGrp"),
-			Card:       G(FabricPortConfigurationCont, "card"),
-			Descr:      G(FabricPortConfigurationCont, "description"),
-			Node:       G(FabricPortConfigurationCont, "node"),
-			Port:       G(FabricPortConfigurationCont, "port"),
-			Role:       G(FabricPortConfigurationCont, "role"),
-			Shutdown:   G(FabricPortConfigurationCont, "shutdown"),
-			SubPort:    G(FabricPortConfigurationCont, "subPort"),
+			Annotation:          G(FabricPortConfigurationCont, "annotation"),
+			AssocGrp:            G(FabricPortConfigurationCont, "assocGrp"),
+			Card:                G(FabricPortConfigurationCont, "card"),
+			Descr:               G(FabricPortConfigurationCont, "description"),
+			Node:                G(FabricPortConfigurationCont, "node"),
+			Port:                G(FabricPortConfigurationCont, "port"),
+			Role:                G(FabricPortConfigurationCont, "role"),
+			Shutdown:            G(FabricPortConfigurationCont, "shutdown"),
+			SubPort:             G(FabricPortConfigurationCont, "subPort"),
+			OperationalAssocGrp: G(FabricPortConfigurationCont, "operationalAssocGrp"),
+			PortDn:              G(FabricPortConfigurationCont, "portDn"),
 		},
 	}
 }
