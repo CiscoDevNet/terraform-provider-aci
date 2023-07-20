@@ -66,7 +66,7 @@ func testAccCheckAciUserProfileConfig_basic(snmp_pol_name, snmp_user_p_name stri
 
 	resource "aci_snmppolicy" "foo_snmppolicy" {
 		name 		= "%s"
-		description = "snmppolicy created while acceptance testing"
+		description = "SNMP policy created while acceptance testing"
 
 	}
 
