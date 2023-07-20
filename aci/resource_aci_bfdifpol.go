@@ -25,7 +25,7 @@ func resourceAciBFDInterfacePolicy() *schema.Resource {
 
 		SchemaVersion: 1,
 
-		Schema: AppendBaseAttrSchema(map[string]*schema.Schema{
+		Schema: AppendBaseAttrSchema(AppendNameAliasAttrSchema(map[string]*schema.Schema{
 			"tenant_dn": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
@@ -91,13 +91,7 @@ func resourceAciBFDInterfacePolicy() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
-
-			"name_alias": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
-		}),
+		})),
 	}
 }
 func getRemoteBFDInterfacePolicy(client *client.Client, dn string) (*models.BFDInterfacePolicy, error) {

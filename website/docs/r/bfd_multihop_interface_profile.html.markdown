@@ -1,4 +1,5 @@
 ---
+subcategory: "L3Out"
 layout: "aci"
 page_title: "ACI: aci_bfd_multihop_interface_profile"
 sidebar_current: "docs-aci-resource-bfd_multihop_interface_profile"
@@ -25,7 +26,6 @@ Manages ACI BFD Multihop Interface Profile
 ```hcl
 resource "aci_bfd_multihop_interface_profile" "example" {
   logical_interface_profile_dn = aci_logical_interface_profile.example.id
-  annotation                   = "orchestrator: terraform"
   key                          = "SomeAuthKey"
   key_id                       = "1"
   interface_profile_type       = "none"
@@ -35,16 +35,14 @@ resource "aci_bfd_multihop_interface_profile" "example" {
 
 ## Argument Reference ##
 
-* `logical_interface_profile_dn` - (Required) Distinguished name of the parent BFD Multihop Logical Interface Profile object.
-* `annotation`                   - (Optional) Annotation of the BFD Multihop Interface Profile object.
-* `key`                          - (Optional) Authentication key.
+* `logical_interface_profile_dn` - (Required) Distinguished name of the parent BFD Multihop Logical Interface Profile object. Type: String.
+* `annotation`                   - (Optional) Annotation of the BFD Multihop Interface Profile object. Type: String.
+* `name_alias`                   - (Optional) Name Alias of the BFD Multihop Interface Profile object. Type: String.
+* `name`                         - (Optional) Name of the BFD Multihop Interface Profile object. Type: String.
+* `key`                          - (Optional) Authentication Key. Type: String.
 * `key_id`                       - (Optional) Authentication Key ID. Allowed range is 1-255 and default value is "1". Type: String.
 * `interface_profile_type`       - (Optional) Authentication Type. Allowed values are "none", "sha1", and default value is "none". Type: String.
 * `relation_bfd_rs_mh_if_pol`    - (Optional) Represents the relation to the BFD interface policy (class bfdMhIfPol). Type: String.
-* `detection_multiplier`        - (Optional) Detection multiplier. Allowed range is 1-50 and default value is "3".
-* `min_receive_interval`        - (Optional) Required minimum Rx interval. Allowed range is 250-999 and default value is "250".
-* `min_transmit_interval`       - (Optional) Desired Minimum Tx interval. Allowed range is 250-999 and default value is "250".
-* `admin_state`                 - (Optional) The administrative state of the object or policy. Allowed values are "disabled", "enabled", and default value is "enabled". Type: String.
 
 ## Importing ##
 

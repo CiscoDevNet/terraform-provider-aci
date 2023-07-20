@@ -39,10 +39,6 @@ func dataSourceAciBfdMultihopInterfacePolicy() *schema.Resource {
 				Type:     schema.TypeString,
 				Required: true,
 			},
-			"descr": {
-				Type:     schema.TypeString,
-				Computed: true,
-			},
 		})),
 	}
 }
@@ -50,9 +46,9 @@ func dataSourceAciBfdMultihopInterfacePolicy() *schema.Resource {
 func dataSourceAciBfdMultihopInterfacePolicyRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	aciClient := m.(*client.Client)
 	name := d.Get("name").(string)
-	TenantDn := d.Get("tenant_dn").(string)
+	tenantDn := d.Get("tenant_dn").(string)
 	rn := fmt.Sprintf(models.RnbfdMhIfPol, name)
-	dn := fmt.Sprintf("%s/%s", TenantDn, rn)
+	dn := fmt.Sprintf("%s/%s", tenantDn, rn)
 
 	bfdMhIfPol, err := getAciBfdMultihopInterfacePolicy(aciClient, dn)
 	if err != nil {

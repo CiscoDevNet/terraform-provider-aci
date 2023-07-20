@@ -44,8 +44,8 @@ func dataSourceAciBfdMultihopInterfaceProfile() *schema.Resource {
 func dataSourceAciBfdMultihopInterfaceProfileRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] Begining data source.")
 	aciClient := m.(*client.Client)
-	LogicalInterfaceProfileDn := d.Get("logical_interface_profile_dn").(string)
-	dn := fmt.Sprintf("%s/%s", LogicalInterfaceProfileDn, models.RnbfdMhIfP)
+	logicalInterfaceProfileDn := d.Get("logical_interface_profile_dn").(string)
+	dn := fmt.Sprintf("%s/%s", logicalInterfaceProfileDn, models.RnbfdMhIfP)
 
 	bfdMhIfP, err := getRemoteAciBfdMultihopInterfaceProfile(aciClient, dn)
 	if err != nil {
@@ -59,13 +59,7 @@ func dataSourceAciBfdMultihopInterfaceProfileRead(ctx context.Context, d *schema
 		return diag.FromErr(err)
 	}
 
-	bfdRsMhIfPolData, err := aciClient.ReadRelationbfdRsMhIfPol(dn)
-	if err != nil {
-		log.Printf("[DEBUG] Error while reading relation bfdRsMhIfPol %v", err)
-		d.Set("relation_bfd_rs_mh_if_pol", "")
-	} else {
-		d.Set("relation_bfd_rs_mh_if_pol", bfdRsMhIfPolData.(string))
-	}
+	getAndSetRelationAciBfdMultihopInterfacePolicy(aciClient, d.Id(), d)
 
 	return nil
 }

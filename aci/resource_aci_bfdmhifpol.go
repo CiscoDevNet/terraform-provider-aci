@@ -59,11 +59,6 @@ func resourceAciBfdMultihopInterfacePolicy() *schema.Resource {
 				Required: true,
 				ForceNew: true,
 			},
-			"descr": {
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
 		})),
 	}
 }
@@ -122,15 +117,11 @@ func resourceAciBfdMultihopInterfacePolicyCreate(ctx context.Context, d *schema.
 	log.Printf("[DEBUG] Aci BFD Multihop Interface Policy: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
+	nameAlias := d.Get("name_alias").(string)
 	name := d.Get("name").(string)
-	TenantDn := d.Get("tenant_dn").(string)
+	tenantDn := d.Get("tenant_dn").(string)
 
 	bfdMhIfPolAttr := models.AciBfdMultihopInterfacePolicyAttributes{}
-
-	nameAlias := ""
-	if NameAlias, ok := d.GetOk("name_alias"); ok {
-		nameAlias = NameAlias.(string)
-	}
 
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		bfdMhIfPolAttr.Annotation = Annotation.(string)
@@ -157,7 +148,7 @@ func resourceAciBfdMultihopInterfacePolicyCreate(ctx context.Context, d *schema.
 	if Name, ok := d.GetOk("name"); ok {
 		bfdMhIfPolAttr.Name = Name.(string)
 	}
-	bfdMhIfPol := models.NewAciBfdMultihopInterfacePolicy(fmt.Sprintf(models.RnbfdMhIfPol, name), TenantDn, desc, nameAlias, bfdMhIfPolAttr)
+	bfdMhIfPol := models.NewAciBfdMultihopInterfacePolicy(fmt.Sprintf(models.RnbfdMhIfPol, name), tenantDn, desc, nameAlias, bfdMhIfPolAttr)
 
 	err := aciClient.Save(bfdMhIfPol)
 	if err != nil {
@@ -173,15 +164,11 @@ func resourceAciBfdMultihopInterfacePolicyUpdate(ctx context.Context, d *schema.
 	log.Printf("[DEBUG] Aci BFD Multihop Interface Policy: Beginning Update")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
+	nameAlias := d.Get("name_alias").(string)
 	name := d.Get("name").(string)
-	TenantDn := d.Get("tenant_dn").(string)
+	tenantDn := d.Get("tenant_dn").(string)
 
 	bfdMhIfPolAttr := models.AciBfdMultihopInterfacePolicyAttributes{}
-
-	nameAlias := ""
-	if NameAlias, ok := d.GetOk("name_alias"); ok {
-		nameAlias = NameAlias.(string)
-	}
 
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		bfdMhIfPolAttr.Annotation = Annotation.(string)
@@ -208,7 +195,7 @@ func resourceAciBfdMultihopInterfacePolicyUpdate(ctx context.Context, d *schema.
 	if Name, ok := d.GetOk("name"); ok {
 		bfdMhIfPolAttr.Name = Name.(string)
 	}
-	bfdMhIfPol := models.NewAciBfdMultihopInterfacePolicy(fmt.Sprintf(models.RnbfdMhIfPol, name), TenantDn, desc, nameAlias, bfdMhIfPolAttr)
+	bfdMhIfPol := models.NewAciBfdMultihopInterfacePolicy(fmt.Sprintf(models.RnbfdMhIfPol, name), tenantDn, desc, nameAlias, bfdMhIfPolAttr)
 
 	bfdMhIfPol.Status = "modified"
 
@@ -229,8 +216,7 @@ func resourceAciBfdMultihopInterfacePolicyRead(ctx context.Context, d *schema.Re
 
 	bfdMhIfPol, err := getAciBfdMultihopInterfacePolicy(aciClient, dn)
 	if err != nil {
-		d.SetId("")
-		return diag.FromErr(err)
+		return errorForObjectNotFound(err, dn, d)
 	}
 
 	_, err = setAciBfdMultihopInterfacePolicyAttributes(bfdMhIfPol, d)

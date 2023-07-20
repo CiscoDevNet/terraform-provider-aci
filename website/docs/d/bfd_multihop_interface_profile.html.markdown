@@ -1,4 +1,5 @@
 ---
+subcategory: "L3Out"
 layout: "aci"
 page_title: "ACI: aci_bfd_multihop_interface_profile"
 sidebar_current: "docs-aci-data-source-aci_bfd_multihop_interface_profile"
@@ -32,12 +33,14 @@ data "aci_bfd_multihop_interface_profile" "example" {
 
 ## Argument Reference ##
 
-* `logical_interface_profile_dn` - (Required) Distinguished name of parent LogicalInterfaceProfile object.
+* `logical_interface_profile_dn` - (Required) Distinguished name of parent Logical Interface Profile object.  Type: String.
 
 ## Attribute Reference ##
-* `id`                     - Attribute id set to the Dn of the BFD Multihop Interface Profile.
-* `annotation`             - (Read-Only) Annotation of the BFD Multihop Interface Profile object.
-* `name_alias`             - (Read-Only) Name Alias of the BFD Multihop Interface Profile object.
-* `key`                    - (Read-Only) Authentication Key.
-* `key_id`                 - (Read-Only) Authentication Key ID.
-* `interface_profile_type` - (Read-Only) Authentication Type.
+* `id`                           - (Read-Only) Attribute id set to the Dn of the BFD Multihop Interface Profile. Type: String.
+* `annotation`                   - (Read-Only) Annotation of the BFD Multihop Interface Profile object. Type: String.
+* `name_alias`                   - (Read-Only) Name Alias of the BFD Multihop Interface Profile object. Type: String.
+* `name`                         - (Read-Only) Name of the BFD Multihop Interface Profile object. Type: String.
+* `key`                          - (Read-Only) Authentication Key. Type: String.
+* `key_id`                       - (Read-Only) Authentication Key ID. Type: String.
+* `interface_profile_type`       - (Read-Only) Authentication Type. Type: String.
+* `relation_bfd_rs_mh_if_pol`    - (Read-Only) Represents the relation to the BFD interface policy (class bfdMhIfPol). Type: String.

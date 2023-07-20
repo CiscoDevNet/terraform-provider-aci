@@ -1,4 +1,5 @@
 ---
+subcategory: "Tenant Policies"
 layout: "aci"
 page_title: "ACI: aci_bfd_multihop_interface_policy"
 sidebar_current: "docs-aci-data-source-bfd_multihop_interface_policy"
@@ -33,14 +34,15 @@ data "aci_bfd_multihop_interface_policy" "example" {
 
 ## Argument Reference ##
 
-* `tenant_dn` - (Required) Distinguished name of the parent Tenant object.
-* `name` - (Required) Name of the  BFD Multihop Interface Policy object.
+* `tenant_dn` - (Required) Distinguished name of the parent Tenant object. Type: String.
+* `name` - (Required) Name of the  BFD Multihop Interface Policy object. Type: String.
 
 ## Attribute Reference ##
-* `id` - Attribute id set to the Dn of the BFD Multihop Interface Policy object.
-* `annotation` - (Optional) Annotation of the BFD Multihop Interface Policy object.
-* `name_alias` - (Optional) Name Alias of the BFD Multihop Interface Policy object.
-* `admin_state` - (Optional) Enable Disable sessions. The administrative state of the object or policy.
-* `detection_multiplier` - (Optional) Detection Multiplier.
-* `min_receive_interval` - (Optional) Required Minimum Rx Interval.
-* `min_transmit_interval` - (Optional) Desired Minimum Tx Interval.
+* `id` - (Read-Only) Attribute id set to the Dn of the BFD Multihop Interface Policy object. Type: String.
+* `annotation` - (Read-Only) Annotation of the BFD Multihop Interface Policy object. Type: String.
+* `name_alias` - (Read-Only) Name Alias of the BFD Multihop Interface Policy object. Type: String.
+* `admin_state` - (Read-Only) The administrative state of the object or policy. Type: String.
+* `description` - (Read-Only) Description for the BFD Multihop Interface Policy object. Type: String.
+* `detection_multiplier` - (Read-Only) Detection Multiplier. Type: String.
+* `min_receive_interval` - (Read-Only) Required Minimum Rx Interval.  Type: String.
+* `min_transmit_interval` - (Read-Only) Desired Minimum Tx Interval. Type: String.

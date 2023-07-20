@@ -102,6 +102,19 @@ func setAciBfdMultihopInterfaceProfileAttributes(bfdMhIfP *models.AciBfdMultihop
 	return d, nil
 }
 
+func getAndSetRelationAciBfdMultihopInterfacePolicy(client *client.Client, dn string, d *schema.ResourceData) (*schema.ResourceData, error) {
+	bfdRsMhIfPolData, err := client.ReadRelationbfdRsMhIfPol(dn)
+	if err != nil {
+		log.Printf("[DEBUG] Error while reading relation bfdRsMhIfPol %v", err)
+		d.Set("relation_bfd_rs_mh_if_pol", "")
+		return nil, err
+	} else {
+		d.Set("relation_bfd_rs_mh_if_pol", bfdRsMhIfPolData.(string))
+		log.Printf("[DEBUG] Reading relation bfdRsMhIfPol: %s finished successfully", bfdRsMhIfPolData.(string))
+	}
+	return d, nil
+}
+
 func resourceAciBfdMultihopInterfaceProfileImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
 	log.Printf("[DEBUG] Aci BFD Multihop Interface Profile %s: Beginning Import", d.Id())
 	aciClient := m.(*client.Client)
@@ -114,13 +127,7 @@ func resourceAciBfdMultihopInterfaceProfileImport(d *schema.ResourceData, m inte
 		return nil, err
 	}
 
-	bfdRsMhIfPolData, err := aciClient.ReadRelationbfdRsMhIfPol(d.Id())
-	if err != nil {
-		log.Printf("[DEBUG] Error while reading relation bfdRsMhIfPol %v", err)
-		d.Set("relation_bfd_rs_mh_if_pol", "")
-	} else {
-		d.Set("relation_bfd_rs_mh_if_pol", bfdRsMhIfPolData)
-	}
+	getAndSetRelationAciBfdMultihopInterfacePolicy(aciClient, d.Id(), d)
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 	return []*schema.ResourceData{schemaFilled}, nil
@@ -130,14 +137,10 @@ func resourceAciBfdMultihopInterfaceProfileCreate(ctx context.Context, d *schema
 	log.Printf("[DEBUG] Aci BFD Multihop Interface Profile: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
-	LogicalInterfaceProfileDn := d.Get("logical_interface_profile_dn").(string)
+	nameAlias := d.Get("name_alias").(string)
+	logicalInterfaceProfileDn := d.Get("logical_interface_profile_dn").(string)
 
 	bfdMhIfPAttr := models.AciBfdMultihopInterfaceProfileAttributes{}
-
-	nameAlias := ""
-	if NameAlias, ok := d.GetOk("name_alias"); ok {
-		nameAlias = NameAlias.(string)
-	}
 
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		bfdMhIfPAttr.Annotation = Annotation.(string)
@@ -160,7 +163,7 @@ func resourceAciBfdMultihopInterfaceProfileCreate(ctx context.Context, d *schema
 	if InterfaceProfile_type, ok := d.GetOk("interface_profile_type"); ok {
 		bfdMhIfPAttr.InterfaceProfile_type = InterfaceProfile_type.(string)
 	}
-	bfdMhIfP := models.NewAciBfdMultihopInterfaceProfile(fmt.Sprintf(models.RnbfdMhIfP), LogicalInterfaceProfileDn, desc, nameAlias, bfdMhIfPAttr)
+	bfdMhIfP := models.NewAciBfdMultihopInterfaceProfile(fmt.Sprintf(models.RnbfdMhIfP), logicalInterfaceProfileDn, desc, nameAlias, bfdMhIfPAttr)
 
 	err := aciClient.Save(bfdMhIfP)
 	if err != nil {
@@ -197,14 +200,10 @@ func resourceAciBfdMultihopInterfaceProfileUpdate(ctx context.Context, d *schema
 	log.Printf("[DEBUG] Aci BFD Multihop Interface Profile: Beginning Update")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
-	LogicalInterfaceProfileDn := d.Get("logical_interface_profile_dn").(string)
+	nameAlias := d.Get("name_alias").(string)
+	logicalInterfaceProfileDn := d.Get("logical_interface_profile_dn").(string)
 
 	bfdMhIfPAttr := models.AciBfdMultihopInterfaceProfileAttributes{}
-
-	nameAlias := ""
-	if NameAlias, ok := d.GetOk("name_alias"); ok {
-		nameAlias = NameAlias.(string)
-	}
 
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		bfdMhIfPAttr.Annotation = Annotation.(string)
@@ -227,7 +226,7 @@ func resourceAciBfdMultihopInterfaceProfileUpdate(ctx context.Context, d *schema
 	if InterfaceProfile_type, ok := d.GetOk("interface_profile_type"); ok {
 		bfdMhIfPAttr.InterfaceProfile_type = InterfaceProfile_type.(string)
 	}
-	bfdMhIfP := models.NewAciBfdMultihopInterfaceProfile(models.RnbfdMhIfP, LogicalInterfaceProfileDn, desc, nameAlias, bfdMhIfPAttr)
+	bfdMhIfP := models.NewAciBfdMultihopInterfaceProfile(models.RnbfdMhIfP, logicalInterfaceProfileDn, desc, nameAlias, bfdMhIfPAttr)
 
 	bfdMhIfP.Status = "modified"
 
@@ -275,8 +274,7 @@ func resourceAciBfdMultihopInterfaceProfileRead(ctx context.Context, d *schema.R
 
 	bfdMhIfP, err := getRemoteAciBfdMultihopInterfaceProfile(aciClient, d.Id())
 	if err != nil {
-		d.SetId("")
-		return diag.FromErr(err)
+		return errorForObjectNotFound(err, d.Id(), d)
 	}
 
 	_, err = setAciBfdMultihopInterfaceProfileAttributes(bfdMhIfP, d)
@@ -285,11 +283,7 @@ func resourceAciBfdMultihopInterfaceProfileRead(ctx context.Context, d *schema.R
 		return nil
 	}
 
-	_, err = aciClient.ReadRelationbfdRsMhIfPol(d.Id())
-	if err != nil {
-		log.Printf("[DEBUG] Error while reading relation bfdRsMhIfPol %v", err)
-		d.Set("relation_bfd_rs_mh_if_pol", "")
-	}
+	getAndSetRelationAciBfdMultihopInterfacePolicy(aciClient, d.Id(), d)
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
 	return nil

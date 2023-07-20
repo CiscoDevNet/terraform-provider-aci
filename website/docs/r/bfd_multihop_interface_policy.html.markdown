@@ -1,4 +1,5 @@
 ---
+subcategory: "Tenant Policies"
 layout: "aci"
 page_title: "ACI: aci_bfd_multihop_interface_policy"
 sidebar_current: "docs-aci-resource-bfd_multihop_interface_policy"
@@ -27,7 +28,6 @@ resource "aci_bfd_multihop_interface_policy" "example" {
   tenant_dn             = aci_tenant.example.id
   name                  = "example"
   admin_state           = "enabled"
-  annotation            = "orchestrator: terraform"
   detection_multiplier  = "3"
   min_transmit_interval = "250"
   min_receive_interval  = "250"
@@ -36,14 +36,15 @@ resource "aci_bfd_multihop_interface_policy" "example" {
 
 ## Argument Reference ##
 
-* `tenant_dn` - (Required) Distinguished name of the parent Tenant object.
-* `name` - (Required) Name of the BFD Multihop Interface Policy object.
-* `annotation` - (Optional) Annotation of the BFD Multihop Interface Policy object.
-* `admin_state` - (Optional) Enable Disable sessions.The administrative state of the object or policy. Allowed values are "disabled", "enabled", and default value is "enabled". Type: String.
-
-* `detection_multiplier` - (Optional) Detection Multiplier.Detection multiplier. Allowed range is 1-50 and default value is "3".
-* `min_receive_interval` - (Optional) Required Minimum RX Interval.Required minimum rx interval. Allowed range is 250-999 and default value is "250".
-* `min_transmit_interval` - (Optional) Desired Minimum TX Interval.Desired minimum tx interval. Allowed range is 250-999 and default value is "250".
+* `tenant_dn` - (Required) Distinguished name of the parent Tenant object. Type: String.
+* `name` - (Required) Name of the BFD Multihop Interface Policy object. Type: String.
+* `name_alias` - (Optional) Name Alias of the BFD Multihop Interface Policy object. Type: String.
+* `annotation` - (Optional) Annotation of the BFD Multihop Interface Policy object. Type: String.
+* `admin_state` - (Optional) The administrative state of the object or policy. Allowed values are "disabled", "enabled", and default value is "enabled". Type: String.
+* `description` - (Optional) Description for the BFD Multihop Interface Policy object. Type: String.
+* `detection_multiplier` - (Optional) Detection Multiplier. Allowed range is 1-50 and default value is "3".  Type: String.
+* `min_receive_interval` - (Optional) Required Minimum Rx Interval. Allowed range is 250-999 and default value is "250".  Type: String.
+* `min_transmit_interval` - (Optional) Desired Minimum Tx Interval. Allowed range is 250-999 and default value is "250".  Type: String.
 
 
 ## Importing ##
