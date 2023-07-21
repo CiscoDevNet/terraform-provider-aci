@@ -42,14 +42,14 @@ func dataSourceAciSnmpUserProfileRead(ctx context.Context, d *schema.ResourceDat
 	rn := fmt.Sprintf(models.RnSnmpUserP, name)
 	dn := fmt.Sprintf("%s/%s", SNMPPolicyDn, rn)
 
-	snmpUserP, err := getRemoteUserProfile(aciClient, dn)
+	snmpUserP, err := getRemoteSnmpUserProfile(aciClient, dn)
 	if err != nil {
 		return nil
 	}
 
 	d.SetId(dn)
 
-	_, err = setUserProfileAttributes(snmpUserP, d)
+	_, err = setSnmpUserProfileAttributes(snmpUserP, d)
 	if err != nil {
 		return nil
 	}

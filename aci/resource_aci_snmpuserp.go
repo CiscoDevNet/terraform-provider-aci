@@ -33,14 +33,12 @@ func resourceAciSnmpUserProfile() *schema.Resource {
 			"authorization_key": {
 				Type:      schema.TypeString,
 				Required:  true,
-				Computed:  true,
 				Sensitive: true,
 				ForceNew:  true,
 			},
 			"authorization_type": {
 				Type:     schema.TypeString,
 				Required: true,
-				Computed: true,
 				ForceNew: true,
 				ValidateFunc: validation.StringInSlice([]string{
 					"hmac-md5-96",
