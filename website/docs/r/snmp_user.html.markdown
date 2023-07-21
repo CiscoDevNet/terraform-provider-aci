@@ -25,12 +25,12 @@ Manages ACI SNMP User
 
 ```hcl
 resource "aci_snmp_user" "example" {
-  snmp_policy_dn  = "uni/fabric/snmppol-default"
-  name  = "example"
-  authorization_key = "my_authorization_key"
-  authorization_type = "hmac-sha1-96"
-  privacy_key = "my_privacy_key"
-  privacy_type = "none"
+  snmp_policy_dn      = "uni/fabric/snmppol-default"
+  name                = "example"
+  authorization_key   = "my_authorization_key"
+  authorization_type  = "hmac-sha1-96"
+  privacy_key         = "my_privacy_key"
+  privacy_type        = "none"
 }
 ```
 

@@ -27,7 +27,7 @@ Data source for ACI SNMP User
 ```hcl
 data "aci_snmp_user" "example" {
   snmp_policy_dn  = "uni/fabric/snmppol-default"
-  name  = "example"
+  name            = "example"
 }
 ```
 
