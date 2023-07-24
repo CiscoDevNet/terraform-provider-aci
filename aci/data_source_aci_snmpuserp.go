@@ -38,9 +38,9 @@ func dataSourceAciSnmpUserProfile() *schema.Resource {
 func dataSourceAciSnmpUserProfileRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	aciClient := m.(*client.Client)
 	name := d.Get("name").(string)
-	SNMPPolicyDn := d.Get("snmp_policy_dn").(string)
+	snmpPolicyDn := d.Get("snmp_policy_dn").(string)
 	rn := fmt.Sprintf(models.RnSnmpUserP, name)
-	dn := fmt.Sprintf("%s/%s", SNMPPolicyDn, rn)
+	dn := fmt.Sprintf("%s/%s", snmpPolicyDn, rn)
 
 	snmpUserP, err := getRemoteSnmpUserProfile(aciClient, dn)
 	if err != nil {

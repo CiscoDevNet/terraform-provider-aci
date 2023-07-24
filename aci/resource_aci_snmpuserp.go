@@ -139,7 +139,7 @@ func resourceAciSnmpUserProfileCreate(ctx context.Context, d *schema.ResourceDat
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
 	name := d.Get("name").(string)
-	SNMPPolicyDn := d.Get("snmp_policy_dn").(string)
+	snmpPolicyDn := d.Get("snmp_policy_dn").(string)
 
 	snmpUserPAttr := models.SnmpUserProfileAttributes{}
 
@@ -172,7 +172,7 @@ func resourceAciSnmpUserProfileCreate(ctx context.Context, d *schema.ResourceDat
 	if PrivType, ok := d.GetOk("privacy_type"); ok {
 		snmpUserPAttr.PrivType = PrivType.(string)
 	}
-	snmpUserP := models.NewSnmpUserProfile(fmt.Sprintf(models.RnSnmpUserP, name), SNMPPolicyDn, desc, snmpUserPAttr)
+	snmpUserP := models.NewSnmpUserProfile(fmt.Sprintf(models.RnSnmpUserP, name), snmpPolicyDn, desc, snmpUserPAttr)
 
 	err := aciClient.Save(snmpUserP)
 	if err != nil {
@@ -188,7 +188,7 @@ func resourceAciSnmpUserProfileUpdate(ctx context.Context, d *schema.ResourceDat
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
 	name := d.Get("name").(string)
-	SNMPPolicyDn := d.Get("snmp_policy_dn").(string)
+	snmpPolicyDn := d.Get("snmp_policy_dn").(string)
 
 	snmpUserPAttr := models.SnmpUserProfileAttributes{}
 
@@ -221,7 +221,7 @@ func resourceAciSnmpUserProfileUpdate(ctx context.Context, d *schema.ResourceDat
 	if PrivType, ok := d.GetOk("privacy_type"); ok {
 		snmpUserPAttr.PrivType = PrivType.(string)
 	}
-	snmpUserP := models.NewSnmpUserProfile(fmt.Sprintf(models.RnSnmpUserP, name), SNMPPolicyDn, desc, snmpUserPAttr)
+	snmpUserP := models.NewSnmpUserProfile(fmt.Sprintf(models.RnSnmpUserP, name), snmpPolicyDn, desc, snmpUserPAttr)
 
 	snmpUserP.Status = "modified"
 
