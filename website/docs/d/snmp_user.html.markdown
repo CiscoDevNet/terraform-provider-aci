@@ -33,11 +33,11 @@ data "aci_snmp_user" "example" {
 
 ## Argument Reference ##
 
-* `snmp_policy_dn` - (Required) Distinguished name of the parent SNMP Policy object.
-* `name` - (Required) Name of the SNMP User object.
+* `snmp_policy_dn` - (Required) Distinguished name of the parent SNMP Policy object. Type: String.
+* `name` - (Required) Name of the SNMP User object. Type: String.
 
 ## Attribute Reference ##
-* `id` - Attribute id set to the Dn of the SNMP User.
+* `id` - Attribute id set to the Dn of the SNMP User. Type: String.
 * `annotation` - (Read-Only) Annotation of the SNMP User object.
 * `name_alias` - (Read-Only) Name Alias of the SNMP User object.
 * `authorization_type` - (Read-Only) Authorization Type. The authorization type for the SNMP user. The authorization type is a message authentication code (MAC) that is used between two parties sharing a secret key to validate information transmitted between them. HMAC (Hash MAC) is based on cryptographic hash functions. It can be used in combination with any iterated cryptographic hash function. HMAC MD5 and HMAC SHA1 are two constructs of the HMAC using the MD5 hash function and the SHA1 hash function. HMAC also uses a secret key for calculation and verification of the message authentication values.
