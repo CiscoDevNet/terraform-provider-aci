@@ -39,8 +39,7 @@ func dataSourceAciSnmpUserProfileRead(ctx context.Context, d *schema.ResourceDat
 	aciClient := m.(*client.Client)
 	name := d.Get("name").(string)
 	snmpPolicyDn := d.Get("snmp_policy_dn").(string)
-	rn := fmt.Sprintf(models.RnSnmpUserP, name)
-	dn := fmt.Sprintf("%s/%s", snmpPolicyDn, rn)
+	dn := fmt.Sprintf("%s/%s", snmpPolicyDn, fmt.Sprintf(models.RnSnmpUserP, name))
 
 	snmpUserP, err := getRemoteSnmpUserProfile(aciClient, dn)
 	if err != nil {
