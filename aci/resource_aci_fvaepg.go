@@ -276,7 +276,7 @@ func getRemoteApplicationEPG(client *client.Client, dn string) (*models.Applicat
 
 	fvAEPg := models.ApplicationEPGFromContainer(fvAEPgCont)
 
-	if fvAEPg.DistinguishedName == "" || fvAEPg.DistinguishedName == "{}" {
+	if fvAEPg.DistinguishedName == "" {
 		return nil, fmt.Errorf("Application EPG %s not found", dn)
 	}
 
