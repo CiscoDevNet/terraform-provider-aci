@@ -30,6 +30,8 @@ github.com/census-instrumentation/opencensus-proto v0.2.1/go.mod h1:f6KPmirojxKA
 github.com/cespare/xxhash/v2 v2.1.1/go.mod h1:VGX0DQ3Q6kWi7AoAeZDth3/j3BFtOZR5XLFGgcrjCOs=
 github.com/ciscoecosystem/aci-go-client/v2 v2.12.0 h1:aF3f3YdI7VPxIHaIQ5mubkljqV9rUV09kwlq8Qih2No=
 github.com/ciscoecosystem/aci-go-client/v2 v2.12.0/go.mod h1:0uk5hiHANgXo+0h+Z8dFBriB7hHnI0PSGVUm7/20bt4=
+github.com/ciscoecosystem/aci-go-client/v2 v2.20.0 h1:uppt3YyI70JTz0XqApW1c1F9ooxSO588FpEgYyLNXu0=
+github.com/ciscoecosystem/aci-go-client/v2 v2.20.0/go.mod h1:0uk5hiHANgXo+0h+Z8dFBriB7hHnI0PSGVUm7/20bt4=
 github.com/client9/misspell v0.3.4/go.mod h1:qj6jICC3Q7zFZvVWo7KLAzC3yx5G7kyvSDkc90ppPyw=
 github.com/cncf/udpa/go v0.0.0-20191209042840-269d4d468f6f/go.mod h1:M8M6+tZqaGXZJjfX53e64911xZQV5JYwmTeXPW+k8Sc=
 github.com/cncf/udpa/go v0.0.0-20201120205902-5459f2c99403/go.mod h1:WmhPx2Nbnhtbo57+VJT5O0JRkEi1Wbu0z5j0R8u5Hbk=
