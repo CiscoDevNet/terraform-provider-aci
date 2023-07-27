@@ -31,6 +31,13 @@ resource "aci_application_epg" "fooapplication_epg" {
     prio  				        	= "unspecified"
     shutdown  		      		= "no"
     relation_fv_rs_bd       = aci_bridge_domain.example.id
+    relation_fv_rs_node_att {
+      node_dn              = "topology/pod-1/node-108"
+      encap                = "vlan-100"
+      description          = "this is desc for static leaf"
+      deployment_immediacy = "lazy"
+      mode                 = "regular"
+    }
 }
 ```
 
@@ -64,7 +71,14 @@ resource "aci_application_epg" "fooapplication_epg" {
 
 * `relation_fv_rs_sec_inherited` - (Optional) Relation represents that the EPG is inheriting security configuration from other EPGs (Point to class fvEPg). Cardinality - N_TO_M. Type - Set of String.
 
-* `relation_fv_rs_node_att` - (Optional) Relation used to define a Static Leaf binding (Point to class fabricNode). Cardinality - N_TO_M. Type - Set of String.
+* `relation_fv_rs_node_att` - (Required) A block representing the relation to a Static Leaf binding (Point to class fabricNode). Cardinality - N_TO_M. Type: Block.
+
+  - `node_dn` - (Required) Distinguished name of the node. Type: String.
+  - `encap` - (Required) The port encapsulation. Type: String.
+  - `description` - (Optional) Description for relation_fv_rs_node_att. Type: String.
+  - `deployment_immediacy` - (Optional) Deployment immediacy of the Static Path. Allowed values: "immediate", "lazy". Default value: "lazy". Type: String.
+  - `mode` - (Optional) Application EPG mode. Type: String.
+  - `primary_encap` - (Optional) Primary encap for Application EPG. Type: String.
 <!-- tenant -> Application Profile -> EPG ->Static Leaf -->
 
 * `relation_fv_rs_dpp_pol` - (Optional) Relation to define a Data Plane Policing policy (Point to class qosDppPol). Cardinality - N_TO_ONE. Type - String.

@@ -26,6 +26,11 @@ resource "aci_application_profile" "test_ap" {
   prio        = "level1"
 }
 
+resource "aci_bridge_domain" "terraform_bd" {
+    tenant_dn          = aci_tenant.terraform_tenant.id
+    name               = "test_bd"
+}
+
 resource "aci_application_epg" "fooapplication_epg" {
   application_profile_dn = aci_application_profile.test_ap.id
   name                   = "demo_epg"
@@ -41,6 +46,7 @@ resource "aci_application_epg" "fooapplication_epg" {
   pref_gr_memb           = "exclude"
   prio                   = "unspecified"
   shutdown               = "no"
+  relation_fv_rs_bd      = aci_bridge_domain.terraform_bd.id
   relation_fv_rs_node_att {
     node_dn              = "topology/pod-1/node-108"
     encap                = "vlan-100"
