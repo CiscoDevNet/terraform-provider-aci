@@ -14,7 +14,7 @@ Manages ACI Application EPG
 ## Example Usage
 
 ```hcl
-resource "aci_application_epg" "fooapplication_epg" {
+resource "aci_application_epg" "example" {
     application_profile_dn  = aci_application_profile.app_profile_for_epg.id
     name  					        = "demo_epg"
     description 			      = "from terraform"
