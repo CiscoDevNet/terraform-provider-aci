@@ -90,14 +90,13 @@ Dn of the Application EPG.
 
 ## Importing
 
-An existing Application EPG can be [imported][docs-import] into this resource via its Dn, via the following command:
-[docs-import]: https://www.terraform.io/docs/import/index.html
+An existing Application EPG can be [imported](https://www.terraform.io/docs/import/index.html) into this resource via its Dn, via the following command:
 
 ```
-terraform import aci_application_epg.example <Dn>
+terraform import aci_application_epg.example "<Dn>"
 ```
 
-Starting in Terraform version 1.5, you can use [import blocks](https://developer.hashicorp.com/terraform/language/import) to import an existing Application EPG via the following configuration:
+Starting in Terraform version 1.5, an existing EPG can be imported using [import blocks](https://developer.hashicorp.com/terraform/language/import) via the following configuration:
 
  ```
  import {

@@ -43,10 +43,10 @@ An existing Tenant can be [imported][docs-import] into this resource via its Dn,
 [docs-import]: https://www.terraform.io/docs/import/index.html
 
 ```
-terraform import aci_tenant.example <Dn>
+terraform import aci_tenant.example "<Dn>"
 ```
 
-Starting in Terraform version 1.5, you can use [import blocks](https://developer.hashicorp.com/terraform/language/import) to import an existing Tenant via the following configuration:
+Starting in Terraform version 1.5, an existing Tenant can be imported using [import blocks](https://developer.hashicorp.com/terraform/language/import) via the following configuration:
 
 ```code
 import {
