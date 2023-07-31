@@ -98,7 +98,7 @@ terraform import aci_application_epg.example "<Dn>"
 
 Starting in Terraform version 1.5, an existing EPG can be imported using [import blocks](https://developer.hashicorp.com/terraform/language/import) via the following configuration:
 
- ```
+ ```hcl
  import {
     id = "<Dn>"
     to = aci_aci_application_epg.example
