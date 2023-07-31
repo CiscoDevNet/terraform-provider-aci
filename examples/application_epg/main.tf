@@ -79,4 +79,11 @@ resource "aci_application_epg" "test_epg_common" {
   application_profile_dn = aci_application_profile.test_ap.id
   name                   = "common_test_epg"
   relation_fv_rs_bd      = aci_bridge_domain.test_bd.id
+  relation_fv_rs_node_att {
+    node_dn              = "topology/pod-1/node-108"
+    encap                = "vlan-100"
+    description          = "this is desc for static leaf"
+    deployment_immediacy = "lazy"
+    mode                 = "regular"
+  }
 }

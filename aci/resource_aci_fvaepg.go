@@ -173,7 +173,7 @@ func resourceAciApplicationEPG() *schema.Resource {
 				Optional: true,
 				Set:      schema.HashString,
 			},
-			"relation_fv_rs_node_att": &schema.Schema{ 
+			"relation_fv_rs_node_att": &schema.Schema{
 				Type:     schema.TypeSet,
 				Required: true,
 				Elem: &schema.Resource{
@@ -190,7 +190,7 @@ func resourceAciApplicationEPG() *schema.Resource {
 						"description": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
-							Default:  "",
+							Computed: true,
 						},
 						"deployment_immediacy": &schema.Schema{
 							Type:     schema.TypeString,
