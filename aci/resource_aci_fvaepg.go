@@ -570,7 +570,7 @@ func resourceAciApplicationEPGCreate(ctx context.Context, d *schema.ResourceData
 		relationParamList := relationTofvRsNodeAtt.(*schema.Set).List()
 		for _, relationParam := range relationParamList {
 			paramMap := relationParam.(map[string]interface{})
-			err = aciClient.CreateRelationfvRsNodeAtt(fvAEPg.DistinguishedName, paramMap["encap"].(string), paramMap["mode"].(string), paramMap["description"].(string), paramMap["deployment_immediacy"].(string), paramMap["node_dn"].(string))
+			err = aciClient.CreateRelationfvRsNodeAtt(fvAEPg.DistinguishedName, paramMap["encap"].(string), paramMap["mode"].(string), paramMap["description"].(string), paramMap["deployment_immediacy"].(string), paramMap["primary_encap"].(string), paramMap["node_dn"].(string))
 
 			if err != nil {
 				return diag.FromErr(err)
@@ -1002,7 +1002,7 @@ func resourceAciApplicationEPGUpdate(ctx context.Context, d *schema.ResourceData
 		}
 		for _, relationParam := range newRelList {
 			paramMap := relationParam.(map[string]interface{})
-			err = aciClient.CreateRelationfvRsNodeAtt(fvAEPg.DistinguishedName, paramMap["encap"].(string), paramMap["mode"].(string), paramMap["description"].(string), paramMap["deployment_immediacy"].(string), paramMap["node_dn"].(string))
+			err = aciClient.CreateRelationfvRsNodeAtt(fvAEPg.DistinguishedName, paramMap["encap"].(string), paramMap["mode"].(string), paramMap["description"].(string), paramMap["deployment_immediacy"].(string), paramMap["primary_encap"].(string), paramMap["node_dn"].(string))
 
 			if err != nil {
 				return diag.FromErr(err)
@@ -1251,6 +1251,7 @@ func resourceAciApplicationEPGRead(ctx context.Context, d *schema.ResourceData, 
 				"description":          obj["descr"],
 				"deployment_immediacy": obj["instrImedcy"],
 				"mode":                 obj["mode"],
+				"primary_encap":        obj["primaryEncap"],
 			})
 		}
 		d.Set("relation_fv_rs_node_att", relParams)
