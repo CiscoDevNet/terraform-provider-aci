@@ -531,6 +531,8 @@ func (sm *ServiceManager) ReadRelationfvRsNodeAtt(parentDn string) (interface{},
 	st := make([]map[string]string, 0, 1)
 	for _, contItem := range contList {
 		paramMap := make(map[string]string)
+		paramMap["primaryEncap"] = models.G(contItem, "primaryEncap")
+		paramMap["tDn"] = models.G(contItem, "tDn")
 		paramMap["encap"] = models.G(contItem, "encap")
 		paramMap["instrImedcy"] = models.G(contItem, "instrImedcy")
 		paramMap["mode"] = models.G(contItem, "mode")
