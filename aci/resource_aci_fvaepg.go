@@ -1247,7 +1247,7 @@ func resourceAciApplicationEPGRead(ctx context.Context, d *schema.ResourceData, 
 		relParamsList := fvRsNodeAttData.([]map[string]string)
 		for _, obj := range relParamsList {
 			relParams = append(relParams, map[string]string{
-				"node_dn":				obj["tDn"],
+				"node_dn":              obj["tDn"],
 				"encap":                obj["encap"],
 				"description":          obj["descr"],
 				"deployment_immediacy": obj["instrImedcy"],
