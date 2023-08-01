@@ -63,6 +63,10 @@ func G(cont *container.Container, key string) string {
 	return StripQuotes(cont.S(key).String())
 }
 
+func GetDnFromContainer(cont *container.Container) string {
+	return CurlyBraces(StripQuotes(cont.S("dn").String()))
+}
+
 func GetMOName(dn string) string {
 	arr := strings.Split(dn, "/")
 	hashedName := arr[len(arr)-1]
