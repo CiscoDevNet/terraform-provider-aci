@@ -64,7 +64,7 @@ resource "aci_application_epg" "fooapplication_epg" {
 
 * `relation_fv_rs_sec_inherited` - (Optional) Relation represents that the EPG is inheriting security configuration from other EPGs (Point to class fvEPg). Cardinality - N_TO_M. Type - Set of String.
 
-* `relation_fv_rs_node_att` - (Required) A block representing the relation to a Static Leaf binding (Point to class fabricNode). Cardinality - N_TO_M. Type: Block.
+* `relation_fv_rs_node_att` - (Optional) A block representing the relation to a Static Leaf binding (Point to class fabricNode). Cardinality - N_TO_M. Type: Block.
 
   - `node_dn` - (Required) The Distinguished Name of the Node object. Type: String.
   - `encap` - (Required) The port encapsulation of the Node Object. Type: String.

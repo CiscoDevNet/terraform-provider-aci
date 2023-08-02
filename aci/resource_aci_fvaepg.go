@@ -175,7 +175,7 @@ func resourceAciApplicationEPG() *schema.Resource {
 			},
 			"relation_fv_rs_node_att": &schema.Schema{
 				Type:     schema.TypeSet,
-				Required: true,
+				Optional: true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 
