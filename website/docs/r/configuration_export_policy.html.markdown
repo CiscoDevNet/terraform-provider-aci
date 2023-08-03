@@ -46,7 +46,7 @@ resource "aci_configuration_export_policy" "example" {
   Allowed values: "no", "yes"Default value is "no".
 - `target_dn` - (Optional) Target export object. The distinguished name of the object to be exported.
 
-- `relation_config_rs_export_destination` - (Optional) Relation to class fileRemotePath. Cardinality - ONE_TO_ONE. Type - String.
+- `relation_config_rs_export_destination` - (Optional) **Deprecated** Relation to class fileRemotePath. Use `relation_config_rs_remote_path` instead. Cardinality - ONE_TO_ONE. Type - String.
 - `relation_trig_rs_triggerable` - (Optional) Relation to class trigTriggerable. Cardinality - ONE_TO_ONE. Type - String.
 - `relation_config_rs_remote_path` - (Optional) Relation to class fileRemotePath. Cardinality - N_TO_ONE. Type - String.
 - `relation_config_rs_export_scheduler` - (Optional) Relation to class trigSchedP. Cardinality - ONE_TO_ONE. Type - String.
