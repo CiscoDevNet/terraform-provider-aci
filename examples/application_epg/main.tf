@@ -7,9 +7,9 @@ terraform {
 }
 
 provider "aci" {
-  username = ""
-  password = ""
-  url      = ""
+  username = "ansible_github_ci"
+  password = "sJ94G92#8dq2hx*K4qh"
+  url      = "https://173.36.219.70"
   insecure = true
 }
 
@@ -21,7 +21,7 @@ resource "aci_tenant" "terraform_tenant" {
 resource "aci_application_profile" "test_ap" {
   tenant_dn   = aci_tenant.terraform_tenant.id
   name        = "test"
-  description = "from terraform"
+  description  =  "This application profile is created by terraform"
   name_alias  = "test_ap"
   prio        = "level1"
 }
@@ -29,6 +29,7 @@ resource "aci_application_profile" "test_ap" {
 resource "aci_bridge_domain" "terraform_bd" {
   tenant_dn = aci_tenant.terraform_tenant.id
   name      = "test_bd"
+  description  =  "This bridge domain is created by terraform"
 }
 
 resource "aci_rest" "rest_qos_custom_pol" {
@@ -36,7 +37,7 @@ resource "aci_rest" "rest_qos_custom_pol" {
   class_name = "qosCustomPol"
 
   content = {
-    "name" = "testpol"
+    "name" = "test_pol"
   }
 }
 
@@ -52,6 +53,7 @@ resource "aci_contract" "rs_prov_contract" {
 resource "aci_imported_contract" "rest_vz_cons_if" {
   tenant_dn = aci_tenant.terraform_tenant.id
   name      = "testcontract"
+  description = "This contract is created by terraform ACI provider"
 }
 
 resource "aci_application_epg" "inherit_epg" {
@@ -97,11 +99,13 @@ resource "aci_rest" "rest_trust_ctrl_pol" {
 resource "aci_taboo_contract" "rest_taboo_con" {
   tenant_dn = aci_tenant.terraform_tenant.id
   name      = "testcon"
+  description = "This contract is created by terraform ACI provider"
 }
 
 resource "aci_monitoring_policy" "rest_mon_epg_pol" {
   tenant_dn = aci_tenant.terraform_tenant.id
   name      = "testpol"
+  description = "This policy is created by terraform ACI provider"
 }
 
 resource "aci_contract" "intra_epg_contract" {
@@ -122,7 +126,7 @@ resource "aci_contract" "intra_epg_contract" {
 resource "aci_application_epg" "fooapplication_epg" {
   application_profile_dn      = aci_application_profile.test_ap.id
   name                        = "demo_epg"
-  description                 = "from terraform"
+  description                 = "This application is created by terraform"
   exception_tag               = "0"
   flood_on_encap              = "disabled"
   fwd_ctrl                    = "none"
@@ -164,16 +168,19 @@ The following depicts an example to create and associate an application EPG with
 
 data "aci_tenant" "common_tenant" {
   name = "common"
+  description  =  "This tenant is created by terraform"
 }
 
 data "aci_vrf" "default_vrf" {
   tenant_dn = data.aci_tenant.common_tenant.id
   name      = "default"
+  description  =  "This vrf is created by terraform"
 }
 
 resource "aci_bridge_domain" "test_bd" {
   tenant_dn          = data.aci_tenant.common_tenant.id
   name               = "common_test_bd"
+  description        = "This bridge domain is created by terraform ACI provider"
   relation_fv_rs_ctx = data.aci_vrf.default_vrf.id
 }
 
@@ -181,6 +188,7 @@ resource "aci_application_epg" "test_epg_common" {
   application_profile_dn = aci_application_profile.test_ap.id
   name                   = "common_test_epg"
   relation_fv_rs_bd      = aci_bridge_domain.test_bd.id
+  description            = "This application is created by terraform ACI provider"
   relation_fv_rs_node_att {
     node_dn              = "topology/pod-1/node-108"
     encap                = "vlan-100"
