@@ -94,8 +94,8 @@ func resourceAciConfigurationExportPolicy() *schema.Resource {
 			"relation_config_rs_export_destination": &schema.Schema{
 				Type: schema.TypeString,
 
-				Optional: true,
-				Deprecated: "use relation_config_rs_remote_path instead"
+				Optional:   true,
+				Deprecated: "use relation_config_rs_remote_path instead",
 			},
 			"relation_trig_rs_triggerable": &schema.Schema{
 				Type: schema.TypeString,
