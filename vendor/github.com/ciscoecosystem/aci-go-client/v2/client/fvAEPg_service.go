@@ -498,6 +498,40 @@ func (sm *ServiceManager) CreateRelationfvRsNodeAtt(parentDn, encap, mode, descr
 	return nil
 }
 
+func (sm *ServiceManager) CreateRelationfvRsNodeAtt(parentDn, encap, mode, description, deploymentImmediacy, tDn string) error {
+	dn := fmt.Sprintf("%s/rsnodeAtt-[%s]", parentDn, tDn)
+	containerJSON := []byte(fmt.Sprintf(`{
+		"%s": {
+			"attributes": {
+				"dn": "%s",
+				"encap": "%s",
+				"mode": "%s", 
+				"descr": "%s",
+				"instrImedcy": "%s",
+				"tDn": "%s",
+				"annotation":"orchestrator:terraform"
+			}
+		}
+	}`, "fvRsNodeAtt", dn, encap, mode, description, deploymentImmediacy, tDn))
+
+	jsonPayload, err := container.ParseJSON(containerJSON)
+	if err != nil {
+		return err
+	}
+
+	req, err := sm.client.MakeRestRequest("POST", fmt.Sprintf("%s.json", sm.MOURL), jsonPayload, true)
+	if err != nil {
+		return err
+	}
+
+	_, _, err = sm.client.Do(req)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (sm *ServiceManager) DeleteRelationfvRsNodeAttFromApplicationEPG(parentDn, tDn string) error {
 	dn := fmt.Sprintf("%s/rsnodeAtt-[%s]", parentDn, tDn)
 	return sm.DeleteByDn(dn, "fvRsNodeAtt")
@@ -530,7 +564,6 @@ func (sm *ServiceManager) ReadRelationfvRsNodeAtt(parentDn string) (interface{},
 	st := make([]map[string]string, 0, 1)
 	for _, contItem := range contList {
 		paramMap := make(map[string]string)
-		paramMap["tDn"] = models.G(contItem, "tDn")
 		paramMap["encap"] = models.G(contItem, "encap")
 		paramMap["instrImedcy"] = models.G(contItem, "instrImedcy")
 		paramMap["mode"] = models.G(contItem, "mode")
