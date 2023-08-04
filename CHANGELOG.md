@@ -1,3 +1,7 @@
+## 2.10.1 (August 4, 2023)
+DEPRECATIONS:
+- Deprecate relation_config_rs_export_destination attribute of aci_configuration_export_policy. Use relation_config_rs_remote_path instead. (#1088)
+
 ## 2.10.0 (July 31, 2023)
 IMPROVEMENTS:
 - Add aci_snmp_user resource (#1077)
