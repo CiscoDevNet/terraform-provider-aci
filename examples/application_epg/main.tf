@@ -7,9 +7,9 @@ terraform {
 }
 
 provider "aci" {
-  username = ""
-  password = ""
-  url      = ""
+  username = "ansible_github_ci"
+  password = "sJ94G92#8dq2hx*K4qh"
+  url      = "https://173.36.219.70"
   insecure = true
 }
 
@@ -33,7 +33,7 @@ resource "aci_bridge_domain" "terraform_bd" {
 }
 
 resource "aci_rest" "rest_qos_custom_pol" {
-  path       = "api/node/mo/${aci_tenant.terraform_tenant.id}/qoscustom-testpol.json"
+  path       = "api/node/mo/${aci_tenant.terraform_tenant.id}/qoscustom-test_pol.json"
   class_name = "qosCustomPol"
 
   content = {
