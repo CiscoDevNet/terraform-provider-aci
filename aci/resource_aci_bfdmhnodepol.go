@@ -223,8 +223,7 @@ func resourceAciBFDMultihopNodePolicyRead(ctx context.Context, d *schema.Resourc
 
 	bfdMhNodePol, err := getRemoteBFDMultihopNodePolicy(aciClient, dn)
 	if err != nil {
-		d.SetId("")
-		return nil
+		return errorForObjectNotFound(err, dn, d)
 	}
 
 	_, err = setBFDMultihopNodePolicyAttributes(bfdMhNodePol, d)

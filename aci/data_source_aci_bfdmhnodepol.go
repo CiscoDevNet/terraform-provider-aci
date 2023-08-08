@@ -21,22 +21,18 @@ func dataSourceAciBFDMultihopNodePolicy() *schema.Resource {
 			},
 			"admin_state": {
 				Type:     schema.TypeString,
-				Optional: true,
 				Computed: true,
 			},
 			"detection_multiplier": {
 				Type:     schema.TypeString,
-				Optional: true,
 				Computed: true,
 			},
 			"min_rx_interval": {
 				Type:     schema.TypeString,
-				Optional: true,
 				Computed: true,
 			},
 			"min_tx_interval": {
 				Type:     schema.TypeString,
-				Optional: true,
 				Computed: true,
 			},
 			"name": {

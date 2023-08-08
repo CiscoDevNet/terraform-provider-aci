@@ -18,7 +18,7 @@ Manages ACI BFD Multihop Node Policy
 
 ## GUI Information ##
 
-* `Location` - 
+* `Location` - Tenant -> Policies -> Protocol -> BFD Multihop -> Node Policies
 
 
 ## Example Usage ##
@@ -43,7 +43,7 @@ resource "aci_bfdmultihop_node_policy" "example" {
 * `name` - (Required) Name of the BFD Multihop Node Policy object. Type: String.
 * `annotation` - (Optional) Annotation of the BFD Multihop Node Policy object. Type: String.
 * `name_alias` - (Optional) Name Alias of the BFD Multihop Node Policy object. Type: String.
-* `admin_st` - (Optional) Enable Disable sessions.The administrative state of the object or policy. Allowed values are "disabled", "enabled", and default value is "enabled". Type: String.
+* `admin_st` - (Optional) Administrative state of the object or policy. Allowed values are "disabled", "enabled", and default value is "enabled". Type: String.
 * `detect_mult` - (Optional) Detection Multiplier. Allowed range is 1-50 and default value is "3". Type: String.
 * `min_rx_intvl` - (Optional) Required Minimum RX Interval. Allowed range is 250-999 and default value is "250". Type: String.
 * `min_tx_intvl` - (Optional) Desired Minimum TX Interval. Allowed range is 250-999 and default value is "250". Type: String.
@@ -57,5 +57,5 @@ An existing BFDMultihopNodePolicy can be [imported][docs-import] into this resou
 
 
 ```
-terraform import aci_bfdmultihop_node_policy.example <Dn>
+terraform import aci_bfd_multihop_node_policy.example <Dn>
 ```

@@ -19,7 +19,7 @@ Data source for ACI BFD Multihop Node Policy
 
 ## GUI Information ##
 
-* `Location` - 
+* `Location` - Tenant -> Policies -> Protocol -> BFD Multihop -> Node Policies
 
 
 ## Example Usage ##
@@ -38,9 +38,9 @@ data "aci_bfdmultihop_node_policy" "example" {
 
 ## Attribute Reference ##
 * `id` - Attribute id set to the Dn of the BFD Multihop Node Policy. Type: String.
-* `annotation` - (Optional) Annotation of the BFD Multihop Node Policy object. Type: String.
-* `name_alias` - (Optional) Name Alias of the BFD Multihop Node Policy object. Type: String.
-* `admin_state` - (Optional) Enable Disable sessions. The administrative state of the object or policy. Type: String.
-* `detection_multiplier` - (Optional) Detection Multiplier. Allowed range is 1-50 and default value is "3". Type: String.
-* `min_rx_intverval` - (Optional) Required Minimum RX Interval. Allowed range is 250-999 and default value is "250". Type: String.
-* `min_tx_interval` - (Optional) Desired Minimum TX Interval. Allowed range is 250-999 and default value is "250". Type: String.
+* `annotation` - (Read-Only) Annotation of the BFD Multihop Node Policy object. Type: String.
+* `name_alias` - (Read-Only) Name Alias of the BFD Multihop Node Policy object. Type: String.
+* `admin_state` - (Read-Only) Administrative state of the object or policy. Type: String.
+* `detection_multiplier` - (Read-Only) Detection Multiplier. Type: String.
+* `min_rx_intverval` - (Read-Only) Required Minimum RX Interval. Type: String.
+* `min_tx_interval` - (Read-Only) Desired Minimum TX Interval. Type: String.
