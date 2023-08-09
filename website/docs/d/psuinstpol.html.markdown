@@ -33,7 +33,7 @@ data "aci_power_supply_redundancy_policy" "example" {
 * `name` - (Required) Name of the Power Supply Redundancy Policy object.
 
 ## Attribute Reference ##
-* `id` - Attribute id set to the Dn of the Power Supply Redundancy Policy.
-* `annotation` - (Read-Only) Annotation of the Power Supply Redundancy Policy object.
-* `name_alias` - (Read-Only) Name Alias of the Power Supply Redundancy Policy object.
-* `admin_rdn_m` - (Read-Only) Admin Redundancy Mode. The administrative state of the power supply policy.
+* `id` - (Read-Only) Attribute id set to the Dn of the Power Supply Redundancy Policy. Type: String
+* `annotation` - (Read-Only) Annotation of the Power Supply Redundancy Policy object. Type: String
+* `name_alias` - (Read-Only) Name Alias of the Power Supply Redundancy Policy object. Type: String
+* `admin_rdn_m` - (Read-Only) Admin Redundancy Mode. The administrative state of the power supply policy. Type: String

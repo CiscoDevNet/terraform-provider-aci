@@ -33,9 +33,9 @@ resource "aci_power_supply_redundancy_policy" "example" {
 
 ## Argument Reference ##
 
-* `name` - (Required) Name of the Power Supply Redundancy Policy object.
-* `annotation` - (Optional) Annotation of the Power Supply Redundancy Policy object.
-* `name_alias` - (Optional) Name Alias of the Power Supply Redundancy Policy object.
+* `name` - (Required) Name of the Power Supply Redundancy Policy object. Type: String
+* `annotation` - (Optional) Annotation of the Power Supply Redundancy Policy object. Type: String
+* `name_alias` - (Optional) Name Alias of the Power Supply Redundancy Policy object. Type: String
 * `admin_rdn_m` - (Optional) Admin Redundancy Mode. The administrative state of the power supply policy. Allowed values are "comb", "insrc-rdn", "n-rdn", "not-supp", "ps-rdn", "rdn", "sinin-rdn", "unknown", and default value is "comb". Type: String.
 
 ## Importing ##
