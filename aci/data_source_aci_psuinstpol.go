@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
+	"github.com/ciscoecosystem/aci-go-client/v2/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -30,8 +31,7 @@ func dataSourceAciPowerSupplyRedundancyPolicyRead(ctx context.Context, d *schema
 	aciClient := m.(*client.Client)
 	name := d.Get("name").(string)
 
-	rn := fmt.Sprintf("fabric/psuInstP-%s", name)
-	dn := fmt.Sprintf("uni/%s", rn)
+	dn := fmt.Sprintf(models.DnPsuInstPol, name)
 
 	psuInstPol, err := getRemotePowerSupplyRedundancyPolicy(aciClient, dn)
 	if err != nil {

@@ -67,7 +67,7 @@ func setPowerSupplyRedundancyPolicyAttributes(psuInstPol *models.PsuInstPol, d *
 	d.Set("description", psuInstPol.Description)
 	psuInstPolMap, err := psuInstPol.ToMap()
 	if err != nil {
-		return d, err
+		return nil, err
 	}
 
 	d.Set("admin_rdn_m", psuInstPolMap["adminRdnM"])
@@ -118,7 +118,7 @@ func resourceAciPowerSupplyRedundancyPolicyCreate(ctx context.Context, d *schema
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		psuInstPolAttr.NameAlias = NameAlias.(string)
 	}
-	psuInstPol := models.NewPowerSupplyRedundancyPolicy(fmt.Sprintf("psuInstP-%s", name), desc, psuInstPolAttr)
+	psuInstPol := models.NewPowerSupplyRedundancyPolicy(fmt.Sprintf(models.RnPsuInstPol, name), desc, psuInstPolAttr)
 	err := aciClient.Save(psuInstPol)
 	if err != nil {
 		return diag.FromErr(err)
@@ -154,7 +154,7 @@ func resourceAciPowerSupplyRedundancyPolicyUpdate(ctx context.Context, d *schema
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		psuInstPolAttr.NameAlias = NameAlias.(string)
 	}
-	psuInstPol := models.NewPowerSupplyRedundancyPolicy(fmt.Sprintf("psuInstP-%s", name), desc, psuInstPolAttr)
+	psuInstPol := models.NewPowerSupplyRedundancyPolicy(fmt.Sprintf(models.RnPsuInstPol, name), desc, psuInstPolAttr)
 	psuInstPol.Status = "modified"
 
 	err := aciClient.Save(psuInstPol)
@@ -192,7 +192,7 @@ func resourceAciPowerSupplyRedundancyPolicyDelete(ctx context.Context, d *schema
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 
-	err := aciClient.DeleteByDn(dn, "psuInstPol")
+	err := aciClient.DeleteByDn(dn, models.PsuInstPolClassName)
 	if err != nil {
 		return diag.FromErr(err)
 	}
