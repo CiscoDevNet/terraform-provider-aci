@@ -1,3 +1,16 @@
+## 2.10.1 (August 4, 2023)
+DEPRECATIONS:
+- Deprecate relation_config_rs_export_destination attribute of aci_configuration_export_policy. Use relation_config_rs_remote_path instead. (#1088)
+
+## 2.10.0 (July 31, 2023)
+IMPROVEMENTS:
+- Add aci_snmp_user resource (#1077)
+- Add aci_bfd_multihop_interface_policy and aci_bfd_multihop_interface_profile resources (#1066)
+- Add aci_pim_interface_policy and aci_igmp_interface_policy resources and data sources (#1061)
+- Add relationship attributes for PIM/IGMP/Multicast into aci_l3_outside and aci_logical_interface_profile (#1061)
+- Add read-only attributes operational_associated_group, operational_associated_sub_group, port_dn, pc_port_dn in aci_interface_config (#1081)
+- Add the ability to disable/enable hub network peering for Azure with aci_cloud_template_region_detail (#1063)
+
 ## 2.9.0 (July 1, 2023)
 IMPROVEMENTS:
 - Add the ability to associate subnets with a secondary vrf (relation_cloud_rs_subnet_to_ctx) to aci_cloud_subnet (#1058)

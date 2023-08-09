@@ -20,18 +20,22 @@ type InfraPortConfiguration struct {
 }
 
 type InfraPortConfigurationAttributes struct {
-	Annotation   string `json:",omitempty"`
-	AssocGrp     string `json:",omitempty"`
-	BrkoutMap    string `json:",omitempty"`
-	Card         string `json:",omitempty"`
-	ConnectedFex string `json:",omitempty"`
-	Descr        string `json:",omitempty"`
-	Node         string `json:",omitempty"`
-	PcMember     string `json:",omitempty"`
-	Port         string `json:",omitempty"`
-	Role         string `json:",omitempty"`
-	Shutdown     string `json:",omitempty"`
-	SubPort      string `json:",omitempty"`
+	Annotation             string `json:",omitempty"`
+	AssocGrp               string `json:",omitempty"`
+	BrkoutMap              string `json:",omitempty"`
+	Card                   string `json:",omitempty"`
+	ConnectedFex           string `json:",omitempty"`
+	Descr                  string `json:",omitempty"`
+	Node                   string `json:",omitempty"`
+	PcMember               string `json:",omitempty"`
+	Port                   string `json:",omitempty"`
+	Role                   string `json:",omitempty"`
+	Shutdown               string `json:",omitempty"`
+	SubPort                string `json:",omitempty"`
+	OperationalAssocGrp    string `json:",omitempty"`
+	OperationalAssocSubGrp string `json:",omitempty"`
+	PortDn                 string `json:",omitempty"`
+	PcPortDn               string `json:",omitempty"`
 }
 
 func NewInfraPortConfiguration(infraPortConfigRn, parentDn, description string, infraPortConfigAttr InfraPortConfigurationAttributes) *InfraPortConfiguration {
@@ -65,6 +69,10 @@ func (infraPortConfig *InfraPortConfiguration) ToMap() (map[string]string, error
 	A(infraPortConfigMap, "role", infraPortConfig.Role)
 	A(infraPortConfigMap, "shutdown", infraPortConfig.Shutdown)
 	A(infraPortConfigMap, "subPort", infraPortConfig.SubPort)
+	A(infraPortConfigMap, "operationalAssocGrp", infraPortConfig.OperationalAssocGrp)
+	A(infraPortConfigMap, "operationalAssocSubGrp", infraPortConfig.OperationalAssocSubGrp)
+	A(infraPortConfigMap, "portDn", infraPortConfig.PortDn)
+	A(infraPortConfigMap, "pcPortDn", infraPortConfig.PcPortDn)
 
 	if infraPortConfig.BrkoutMap != "" && infraPortConfig.BrkoutMap != "none" {
 		infraPortConfigMap["assocGrp"] = ""
@@ -83,18 +91,22 @@ func InfraPortConfigurationFromContainerList(cont *container.Container, index in
 			Rn:                G(InfraPortConfigurationCont, "rn"),
 		},
 		InfraPortConfigurationAttributes{
-			Annotation:   G(InfraPortConfigurationCont, "annotation"),
-			AssocGrp:     G(InfraPortConfigurationCont, "assocGrp"),
-			BrkoutMap:    G(InfraPortConfigurationCont, "brkoutMap"),
-			Card:         G(InfraPortConfigurationCont, "card"),
-			ConnectedFex: G(InfraPortConfigurationCont, "connectedFex"),
-			Descr:        G(InfraPortConfigurationCont, "description"),
-			Node:         G(InfraPortConfigurationCont, "node"),
-			PcMember:     G(InfraPortConfigurationCont, "pcMember"),
-			Port:         G(InfraPortConfigurationCont, "port"),
-			Role:         G(InfraPortConfigurationCont, "role"),
-			Shutdown:     G(InfraPortConfigurationCont, "shutdown"),
-			SubPort:      G(InfraPortConfigurationCont, "subPort"),
+			Annotation:             G(InfraPortConfigurationCont, "annotation"),
+			AssocGrp:               G(InfraPortConfigurationCont, "assocGrp"),
+			BrkoutMap:              G(InfraPortConfigurationCont, "brkoutMap"),
+			Card:                   G(InfraPortConfigurationCont, "card"),
+			ConnectedFex:           G(InfraPortConfigurationCont, "connectedFex"),
+			Descr:                  G(InfraPortConfigurationCont, "description"),
+			Node:                   G(InfraPortConfigurationCont, "node"),
+			PcMember:               G(InfraPortConfigurationCont, "pcMember"),
+			Port:                   G(InfraPortConfigurationCont, "port"),
+			Role:                   G(InfraPortConfigurationCont, "role"),
+			Shutdown:               G(InfraPortConfigurationCont, "shutdown"),
+			SubPort:                G(InfraPortConfigurationCont, "subPort"),
+			OperationalAssocGrp:    G(InfraPortConfigurationCont, "operationalAssocGrp"),
+			OperationalAssocSubGrp: G(InfraPortConfigurationCont, "operationalAssocSubGrp"),
+			PortDn:                 G(InfraPortConfigurationCont, "portDn"),
+			PcPortDn:               G(InfraPortConfigurationCont, "pcPortDn"),
 		},
 	}
 }

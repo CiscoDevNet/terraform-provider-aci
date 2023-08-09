@@ -87,7 +87,7 @@ func (sm *ServiceManager) ReadRelationbfdRsMhIfPol(parentDn string) (interface{}
 	contList := models.ListFromContainer(cont, "bfdRsMhIfPol")
 
 	if len(contList) > 0 {
-		dat := models.G(contList[0], "tnBfdMhIfPolName")
+		dat := models.G(contList[0], "tDn")
 		return dat, err
 	} else {
 		return nil, err
