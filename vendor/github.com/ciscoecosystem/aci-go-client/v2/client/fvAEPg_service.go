@@ -464,7 +464,7 @@ func (sm *ServiceManager) CreateRelationfvRsNodeAttFromApplicationEPG(parentDn, 
 	return nil
 }
 
-func (sm *ServiceManager) CreateRelationfvRsNodeAtt(parentDn, encap, mode, description, deploymentImmediacy, primaryEncap, tDn string) error {
+func (sm *ServiceManager) CreateRelationfvRsNodeAtt(parentDn, encap, mode, description, deploymentImmediacy, tDn string) error {
 	dn := fmt.Sprintf("%s/rsnodeAtt-[%s]", parentDn, tDn)
 	containerJSON := []byte(fmt.Sprintf(`{
 		"%s": {
@@ -474,12 +474,11 @@ func (sm *ServiceManager) CreateRelationfvRsNodeAtt(parentDn, encap, mode, descr
 				"mode": "%s", 
 				"descr": "%s",
 				"instrImedcy": "%s",
-				"primaryEncap": "%s",
 				"tDn": "%s",
 				"annotation":"orchestrator:terraform"
 			}
 		}
-	}`, "fvRsNodeAtt", dn, encap, mode, description, deploymentImmediacy, primaryEncap, tDn))
+	}`, "fvRsNodeAtt", dn, encap, mode, description, deploymentImmediacy, tDn))
 
 	jsonPayload, err := container.ParseJSON(containerJSON)
 	if err != nil {
@@ -531,7 +530,6 @@ func (sm *ServiceManager) ReadRelationfvRsNodeAtt(parentDn string) (interface{},
 	st := make([]map[string]string, 0, 1)
 	for _, contItem := range contList {
 		paramMap := make(map[string]string)
-		paramMap["primaryEncap"] = models.G(contItem, "primaryEncap")
 		paramMap["tDn"] = models.G(contItem, "tDn")
 		paramMap["encap"] = models.G(contItem, "encap")
 		paramMap["instrImedcy"] = models.G(contItem, "instrImedcy")

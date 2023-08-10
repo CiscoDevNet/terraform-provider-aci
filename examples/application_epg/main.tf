@@ -7,9 +7,9 @@ terraform {
 }
 
 provider "aci" {
-  username = "ansible_github_ci"
-  password = "sJ94G92#8dq2hx*K4qh"
-  url      = "https://173.36.219.70"
+  username = ""
+  password = ""
+  url      = ""
   insecure = true
 }
 
@@ -136,7 +136,7 @@ resource "aci_application_epg" "fooapplication_epg" {
   name_alias                  = "alias_epg"
   pc_enf_pref                 = "unenforced"
   pref_gr_memb                = "exclude"
-  prio                        = "unspecified"
+  prio                        = "level1"
   shutdown                    = "no"
   relation_fv_rs_bd           = aci_bridge_domain.terraform_bd.id
   relation_fv_rs_cust_qos_pol = aci_rest.rest_qos_custom_pol.id
@@ -155,7 +155,7 @@ resource "aci_application_epg" "fooapplication_epg" {
   relation_fv_rs_intra_epg     = [aci_contract.intra_epg_contract.id]
   relation_fv_rs_node_att {
     node_dn              = "topology/pod-1/node-108"
-    encap                = "vlan-100"
+    encap                = "vlan-101"
     description          = "this is desc for static leaf"
     deployment_immediacy = "lazy"
     mode                 = "regular"
@@ -191,7 +191,7 @@ resource "aci_application_epg" "test_epg_common" {
   description            = "This application is created by terraform ACI provider"
   relation_fv_rs_node_att {
     node_dn              = "topology/pod-1/node-108"
-    encap                = "vlan-100"
+    encap                = "vlan-102"
     description          = "this is desc for static leaf"
     deployment_immediacy = "lazy"
     mode                 = "regular"
