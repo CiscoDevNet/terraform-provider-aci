@@ -11,7 +11,6 @@ description: |-
 
 Data source for ACI BFD Multihop Node Policy
 
-
 ## API Information ##
 
 * `Class` - bfdMhNodePol
@@ -20,7 +19,6 @@ Data source for ACI BFD Multihop Node Policy
 ## GUI Information ##
 
 * `Location` - Tenant -> Policies -> Protocol -> BFD Multihop -> Node Policies
-
 
 ## Example Usage ##
 
@@ -33,11 +31,11 @@ data "aci_bfdmultihop_node_policy" "example" {
 
 ## Argument Reference ##
 
-* `tenant_dn` - (Required) Distinguished name of the parent Tenant object.
-* `name` - (Required) Name of the BFD Multihop Node Policy object.
+* `tenant_dn` - (Required) Distinguished name of the parent Tenant object. Type: String.
+* `name` - (Required) Name of the BFD Multihop Node Policy object. Type: String
 
 ## Attribute Reference ##
-* `id` - Attribute id set to the Dn of the BFD Multihop Node Policy. Type: String.
+* `id` - (Read-Only) Attribute id set to the Dn of the BFD Multihop Node Policy. Type: String.
 * `annotation` - (Read-Only) Annotation of the BFD Multihop Node Policy object. Type: String.
 * `name_alias` - (Read-Only) Name Alias of the BFD Multihop Node Policy object. Type: String.
 * `admin_state` - (Read-Only) Administrative state of the object or policy. Type: String.

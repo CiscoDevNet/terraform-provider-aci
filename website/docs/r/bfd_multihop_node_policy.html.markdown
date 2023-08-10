@@ -20,7 +20,6 @@ Manages ACI BFD Multihop Node Policy
 
 * `Location` - Tenant -> Policies -> Protocol -> BFD Multihop -> Node Policies
 
-
 ## Example Usage ##
 
 ```hcl
@@ -32,7 +31,6 @@ resource "aci_bfdmultihop_node_policy" "example" {
   detect_mult = "3"
   min_rx_intvl = "250"
   min_tx_intvl = "250"
-
   name_alias = 
 }
 ```
@@ -48,14 +46,21 @@ resource "aci_bfdmultihop_node_policy" "example" {
 * `min_rx_intvl` - (Optional) Required Minimum RX Interval. Allowed range is 250-999 and default value is "250". Type: String.
 * `min_tx_intvl` - (Optional) Desired Minimum TX Interval. Allowed range is 250-999 and default value is "250". Type: String.
 
-
-
 ## Importing ##
 
-An existing BFDMultihopNodePolicy can be [imported][docs-import] into this resource via its Dn, via the following command:
+An existing BFD Multihop Node Policy can be [imported][docs-import] into this resource via its Dn, via the following command:
 [docs-import]: https://www.terraform.io/docs/import/index.html
-
 
 ```
 terraform import aci_bfd_multihop_node_policy.example <Dn>
+```
+
+Starting in Terraform version 1.5, an existing BFD Multihop Node Policy can be imported 
+using [import blocks](https://developer.hashicorp.com/terraform/language/import) via the following configuration:
+
+```
+import {
+  id = "<Dn>"
+  to = aci_bfd_multihop_node_policy.example
+}
 ```
