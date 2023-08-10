@@ -710,14 +710,10 @@ func resourceAciApplicationEPGCreate(ctx context.Context, d *schema.ResourceData
 
 		}
 	}
-	log.Printf("check")
 	if relationTofvRsNodeAtt, ok := d.GetOk("relation_fv_rs_node_att"); ok {
-		log.Printf("second check")
 		relationParamList := relationTofvRsNodeAtt.(*schema.Set).List()
-		log.Printf(relationParamList)
 		for _, relationParam := range relationParamList {
 			paramMap := relationParam.(map[string]interface{})
-			log.Printf(paramMap)
 			err = aciClient.CreateRelationfvRsNodeAtt(fvAEPg.DistinguishedName, paramMap["encap"].(string), paramMap["mode"].(string), paramMap["description"].(string), paramMap["deployment_immediacy"].(string), paramMap["node_dn"].(string))
 
 			if err != nil {
