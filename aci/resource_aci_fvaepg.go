@@ -175,9 +175,44 @@ func resourceAciApplicationEPG() *schema.Resource {
 			},
 			"relation_fv_rs_node_att": &schema.Schema{
 				Type:     schema.TypeSet,
-				Elem:     &schema.Schema{Type: schema.TypeString},
 				Optional: true,
-				Set:      schema.HashString,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+
+						"node_dn": &schema.Schema{
+							Type:     schema.TypeString,
+							Required: true,
+						},
+						"encap": &schema.Schema{
+							Type:     schema.TypeString,
+							Required: true,
+						},
+						"description": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+							Computed: true,
+						},
+						"deployment_immediacy": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+							ValidateFunc: validation.StringInSlice([]string{
+								"immediate",
+								"lazy",
+							}, false),
+							Default: "lazy",
+						},
+						"mode": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+							ValidateFunc: validation.StringInSlice([]string{
+								"regular",
+								"native",
+								"untagged",
+							}, false),
+							Default: "regular",
+						},
+					},
+				},
 			},
 			"relation_fv_rs_dpp_pol": &schema.Schema{
 				Type: schema.TypeString,
@@ -300,6 +335,141 @@ func resourceAciApplicationEPGImport(d *schema.ResourceData, m interface{}) ([]*
 	if err != nil {
 		return nil, err
 	}
+	fvRsBdData, err := aciClient.ReadRelationfvRsBdFromApplicationEPG(dn)
+	if err != nil {
+		log.Printf("[DEBUG] Error while reading relation fvRsBd %v", err)
+		d.Set("relation_fv_rs_bd", "")
+
+	} else {
+		d.Set("relation_fv_rs_bd", fvRsBdData.(string))
+	}
+
+	fvRsCustQosPolData, err := aciClient.ReadRelationfvRsCustQosPolFromApplicationEPG(dn)
+	if err != nil {
+		log.Printf("[DEBUG] Error while reading relation fvRsCustQosPol %v", err)
+		d.Set("relation_fv_rs_cust_qos_pol", "")
+
+	} else {
+		d.Set("relation_fv_rs_cust_qos_pol", fvRsCustQosPolData.(string))
+	}
+
+	fvRsFcPathAttData, err := aciClient.ReadRelationfvRsFcPathAttFromApplicationEPG(dn)
+	if err != nil {
+		log.Printf("[DEBUG] Error while reading relation fvRsFcPathAtt %v", err)
+		setRelationAttribute(d, "relation_fv_rs_fc_path_att", make([]interface{}, 0, 1))
+	} else {
+		d.Set("relation_fv_rs_fc_path_att", toStringList(fvRsFcPathAttData.(*schema.Set).List()))
+	}
+
+	fvRsProvData, err := aciClient.ReadRelationfvRsProvFromApplicationEPG(dn)
+	if err != nil {
+		log.Printf("[DEBUG] Error while reading relation fvRsProv %v", err)
+		setRelationAttribute(d, "relation_fv_rs_prov", make([]interface{}, 0, 1))
+	} else {
+		d.Set("relation_fv_rs_prov", toStringList(fvRsProvData.(*schema.Set).List()))
+	}
+
+	fvRsConsIfData, err := aciClient.ReadRelationfvRsConsIfFromApplicationEPG(dn)
+	if err != nil {
+		log.Printf("[DEBUG] Error while reading relation fvRsConsIf %v", err)
+		setRelationAttribute(d, "relation_fv_rs_cons_if", make([]interface{}, 0, 1))
+	} else {
+		d.Set("relation_fv_rs_cons_if", toStringList(fvRsConsIfData.(*schema.Set).List()))
+	}
+
+	fvRsSecInheritedData, err := aciClient.ReadRelationfvRsSecInheritedFromApplicationEPG(dn)
+	if err != nil {
+		log.Printf("[DEBUG] Error while reading relation fvRsSecInherited %v", err)
+		setRelationAttribute(d, "relation_fv_rs_sec_inherited", make([]interface{}, 0, 1))
+	} else {
+		d.Set("relation_fv_rs_sec_inherited", toStringList(fvRsSecInheritedData.(*schema.Set).List()))
+	}
+
+	fvRsNodeAttData, err := aciClient.ReadRelationfvRsNodeAtt(dn)
+	if err != nil {
+		log.Printf("[DEBUG] Error while reading relation fvRsNodeAtt %v", err)
+	} else {
+		relParams := make([]map[string]string, 0, 1)
+		relParamsList := fvRsNodeAttData.([]map[string]string)
+		for _, obj := range relParamsList {
+			relParams = append(relParams, map[string]string{
+				"node_dn":              obj["tDn"],
+				"encap":                obj["encap"],
+				"description":          obj["descr"],
+				"deployment_immediacy": obj["instrImedcy"],
+				"mode":                 obj["mode"],
+			})
+		}
+		d.Set("relation_fv_rs_node_att", relParams)
+	}
+
+	fvRsDppPolData, err := aciClient.ReadRelationfvRsDppPolFromApplicationEPG(dn)
+	if err != nil {
+		log.Printf("[DEBUG] Error while reading relation fvRsDppPol %v", err)
+		d.Set("relation_fv_rs_dpp_pol", "")
+
+	} else {
+		d.Set("relation_fv_rs_dpp_pol", fvRsDppPolData.(string))
+	}
+
+	fvRsConsData, err := aciClient.ReadRelationfvRsConsFromApplicationEPG(dn)
+	if err != nil {
+		log.Printf("[DEBUG] Error while reading relation fvRsCons %v", err)
+		setRelationAttribute(d, "relation_fv_rs_cons", make([]interface{}, 0, 1))
+	} else {
+		d.Set("relation_fv_rs_cons", toStringList(fvRsConsData.(*schema.Set).List()))
+	}
+
+	fvRsProvDefData, err := aciClient.ReadRelationfvRsProvDefFromApplicationEPG(dn)
+	if err != nil {
+		log.Printf("[DEBUG] Error while reading relation fvRsProvDef %v", err)
+		setRelationAttribute(d, "relation_fv_rs_prov_def", make([]interface{}, 0, 1))
+	} else {
+		d.Set("relation_fv_rs_prov_def", toStringList(fvRsProvDefData.(*schema.Set).List()))
+	}
+
+	fvRsTrustCtrlData, err := aciClient.ReadRelationfvRsTrustCtrlFromApplicationEPG(dn)
+	if err != nil {
+		log.Printf("[DEBUG] Error while reading relation fvRsTrustCtrl %v", err)
+		d.Set("relation_fv_rs_trust_ctrl", "")
+
+	} else {
+		d.Set("relation_fv_rs_trust_ctrl", fvRsTrustCtrlData.(string))
+	}
+
+	fvRsPathAttData, err := aciClient.ReadRelationfvRsPathAttFromApplicationEPG(dn)
+	if err != nil {
+		log.Printf("[DEBUG] Error while reading relation fvRsPathAtt %v", err)
+		setRelationAttribute(d, "relation_fv_rs_path_att", make([]interface{}, 0, 1))
+	} else {
+		d.Set("relation_fv_rs_path_att", toStringList(fvRsPathAttData.(*schema.Set).List()))
+	}
+
+	fvRsProtByData, err := aciClient.ReadRelationfvRsProtByFromApplicationEPG(dn)
+	if err != nil {
+		log.Printf("[DEBUG] Error while reading relation fvRsProtBy %v", err)
+		setRelationAttribute(d, "relation_fv_rs_prot_by", make([]interface{}, 0, 1))
+	} else {
+		d.Set("relation_fv_rs_prot_by", toStringList(fvRsProtByData.(*schema.Set).List()))
+	}
+
+	fvRsAEPgMonPolData, err := aciClient.ReadRelationfvRsAEPgMonPolFromApplicationEPG(dn)
+	if err != nil {
+		log.Printf("[DEBUG] Error while reading relation fvRsAEPgMonPol %v", err)
+		d.Set("relation_fv_rs_aepg_mon_pol", "")
+
+	} else {
+		d.Set("relation_fv_rs_aepg_mon_pol", fvRsAEPgMonPolData.(string))
+	}
+
+	fvRsIntraEpgData, err := aciClient.ReadRelationfvRsIntraEpgFromApplicationEPG(dn)
+	if err != nil {
+		log.Printf("[DEBUG] Error while reading relation fvRsIntraEpg %v", err)
+		setRelationAttribute(d, "relation_fv_rs_intra_epg", make([]interface{}, 0, 1))
+	} else {
+		d.Set("relation_fv_rs_intra_epg", toStringList(fvRsIntraEpgData.(*schema.Set).List()))
+	}
+
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
@@ -527,14 +697,14 @@ func resourceAciApplicationEPGCreate(ctx context.Context, d *schema.ResourceData
 		}
 	}
 	if relationTofvRsNodeAtt, ok := d.GetOk("relation_fv_rs_node_att"); ok {
-		relationParamList := toStringList(relationTofvRsNodeAtt.(*schema.Set).List())
+		relationParamList := relationTofvRsNodeAtt.(*schema.Set).List()
 		for _, relationParam := range relationParamList {
-			err = aciClient.CreateRelationfvRsNodeAttFromApplicationEPG(fvAEPg.DistinguishedName, relationParam)
+			paramMap := relationParam.(map[string]interface{})
+			err = aciClient.CreateRelationfvRsNodeAtt(fvAEPg.DistinguishedName, paramMap["encap"].(string), paramMap["mode"].(string), paramMap["description"].(string), paramMap["deployment_immediacy"].(string), paramMap["node_dn"].(string))
 
 			if err != nil {
 				return diag.FromErr(err)
 			}
-
 		}
 	}
 	if relationTofvRsDppPol, ok := d.GetOk("relation_fv_rs_dpp_pol"); ok {
@@ -950,27 +1120,24 @@ func resourceAciApplicationEPGUpdate(ctx context.Context, d *schema.ResourceData
 	}
 	if d.HasChange("relation_fv_rs_node_att") {
 		oldRel, newRel := d.GetChange("relation_fv_rs_node_att")
-		oldRelSet := oldRel.(*schema.Set)
-		newRelSet := newRel.(*schema.Set)
-		relToDelete := toStringList(oldRelSet.Difference(newRelSet).List())
-		relToCreate := toStringList(newRelSet.Difference(oldRelSet).List())
+		oldRelList := oldRel.(*schema.Set).List()
+		newRelList := newRel.(*schema.Set).List()
+		for _, relationParam := range oldRelList {
+			paramMap := relationParam.(map[string]interface{})
+			err = aciClient.DeleteRelationfvRsNodeAttFromApplicationEPG(fvAEPg.DistinguishedName, paramMap["node_dn"].(string))
 
-		for _, relDn := range relToDelete {
-			err = aciClient.DeleteRelationfvRsNodeAttFromApplicationEPG(fvAEPg.DistinguishedName, relDn)
 			if err != nil {
 				return diag.FromErr(err)
 			}
-
 		}
+		for _, relationParam := range newRelList {
+			paramMap := relationParam.(map[string]interface{})
+			err = aciClient.CreateRelationfvRsNodeAtt(fvAEPg.DistinguishedName, paramMap["encap"].(string), paramMap["mode"].(string), paramMap["description"].(string), paramMap["deployment_immediacy"].(string), paramMap["node_dn"].(string))
 
-		for _, relDn := range relToCreate {
-			err = aciClient.CreateRelationfvRsNodeAttFromApplicationEPG(fvAEPg.DistinguishedName, relDn)
 			if err != nil {
 				return diag.FromErr(err)
 			}
-
 		}
-
 	}
 	if d.HasChange("relation_fv_rs_dpp_pol") {
 		_, newRelParam := d.GetChange("relation_fv_rs_dpp_pol")
@@ -1202,12 +1369,22 @@ func resourceAciApplicationEPGRead(ctx context.Context, d *schema.ResourceData, 
 		setRelationAttribute(d, "relation_fv_rs_sec_inherited", toStringList(fvRsSecInheritedData.(*schema.Set).List()))
 	}
 
-	fvRsNodeAttData, err := aciClient.ReadRelationfvRsNodeAttFromApplicationEPG(dn)
+	fvRsNodeAttData, err := aciClient.ReadRelationfvRsNodeAtt(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation fvRsNodeAtt %v", err)
-		setRelationAttribute(d, "relation_fv_rs_node_att", make([]interface{}, 0, 1))
 	} else {
-		setRelationAttribute(d, "relation_fv_rs_node_att", toStringList(fvRsNodeAttData.(*schema.Set).List()))
+		relParams := make([]map[string]string, 0, 1)
+		relParamsList := fvRsNodeAttData.([]map[string]string)
+		for _, obj := range relParamsList {
+			relParams = append(relParams, map[string]string{
+				"node_dn":              obj["tDn"],
+				"encap":                obj["encap"],
+				"description":          obj["descr"],
+				"deployment_immediacy": obj["instrImedcy"],
+				"mode":                 obj["mode"],
+			})
+		}
+		d.Set("relation_fv_rs_node_att", relParams)
 	}
 
 	fvRsDppPolData, err := aciClient.ReadRelationfvRsDppPolFromApplicationEPG(dn)

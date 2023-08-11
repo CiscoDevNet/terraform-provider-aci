@@ -97,7 +97,7 @@ func ApplicationEPGFromContainerList(cont *container.Container, index int) *Appl
 	ApplicationEPGCont := cont.S("imdata").Index(index).S(FvaepgClassName, "attributes")
 	return &ApplicationEPG{
 		BaseAttributes{
-			DistinguishedName: G(ApplicationEPGCont, "dn"),
+			DistinguishedName: GetDnFromContainer(ApplicationEPGCont),
 			Description:       G(ApplicationEPGCont, "descr"),
 			Status:            G(ApplicationEPGCont, "status"),
 			ClassName:         FvaepgClassName,
