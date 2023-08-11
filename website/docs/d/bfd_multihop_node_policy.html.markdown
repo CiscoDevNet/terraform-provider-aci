@@ -32,7 +32,7 @@ data "aci_bfdmultihop_node_policy" "example" {
 ## Argument Reference ##
 
 * `tenant_dn` - (Required) Distinguished name of the parent Tenant object. Type: String.
-* `name` - (Required) Name of the BFD Multihop Node Policy object. Type: String
+* `name` - (Required) Name of the BFD Multihop Node Policy object. Type: String.
 
 ## Attribute Reference ##
 * `id` - (Read-Only) Attribute id set to the Dn of the BFD Multihop Node Policy. Type: String.
