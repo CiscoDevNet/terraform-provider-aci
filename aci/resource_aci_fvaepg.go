@@ -342,7 +342,6 @@ func resourceAciApplicationEPGImport(d *schema.ResourceData, m interface{}) ([]*
 
 	} else {
 		d.Set("relation_fv_rs_bd", fvRsBdData.(string))
-		//setRelationAttribute(d, "relation_fv_rs_bd", fvRsBdData.(string))
 	}
 
 	fvRsCustQosPolData, err := aciClient.ReadRelationfvRsCustQosPolFromApplicationEPG(dn)
@@ -352,7 +351,6 @@ func resourceAciApplicationEPGImport(d *schema.ResourceData, m interface{}) ([]*
 
 	} else {
 		d.Set("relation_fv_rs_cust_qos_pol", fvRsCustQosPolData.(string))
-		//setRelationAttribute(d, "relation_fv_rs_cust_qos_pol", fvRsCustQosPolData.(string))
 	}
 
 	fvRsFcPathAttData, err := aciClient.ReadRelationfvRsFcPathAttFromApplicationEPG(dn)
@@ -361,7 +359,6 @@ func resourceAciApplicationEPGImport(d *schema.ResourceData, m interface{}) ([]*
 		setRelationAttribute(d, "relation_fv_rs_fc_path_att", make([]interface{}, 0, 1))
 	} else {
 		d.Set("relation_fv_rs_fc_path_att", toStringList(fvRsFcPathAttData.(*schema.Set).List()))
-		//setRelationAttribute(d, "relation_fv_rs_fc_path_att", toStringList(fvRsFcPathAttData.(*schema.Set).List()))
 	}
 
 	fvRsProvData, err := aciClient.ReadRelationfvRsProvFromApplicationEPG(dn)
@@ -370,7 +367,6 @@ func resourceAciApplicationEPGImport(d *schema.ResourceData, m interface{}) ([]*
 		setRelationAttribute(d, "relation_fv_rs_prov", make([]interface{}, 0, 1))
 	} else {
 		d.Set("relation_fv_rs_prov", toStringList(fvRsProvData.(*schema.Set).List()))
-		//setRelationAttribute(d, "relation_fv_rs_prov", toStringList(fvRsProvData.(*schema.Set).List()))
 	}
 
 	fvRsConsIfData, err := aciClient.ReadRelationfvRsConsIfFromApplicationEPG(dn)
@@ -379,7 +375,6 @@ func resourceAciApplicationEPGImport(d *schema.ResourceData, m interface{}) ([]*
 		setRelationAttribute(d, "relation_fv_rs_cons_if", make([]interface{}, 0, 1))
 	} else {
 		d.Set("relation_fv_rs_cons_if", toStringList(fvRsConsIfData.(*schema.Set).List()))
-		//setRelationAttribute(d, "relation_fv_rs_cons_if", toStringList(fvRsConsIfData.(*schema.Set).List()))
 	}
 
 	fvRsSecInheritedData, err := aciClient.ReadRelationfvRsSecInheritedFromApplicationEPG(dn)
@@ -388,7 +383,6 @@ func resourceAciApplicationEPGImport(d *schema.ResourceData, m interface{}) ([]*
 		setRelationAttribute(d, "relation_fv_rs_sec_inherited", make([]interface{}, 0, 1))
 	} else {
 		d.Set("relation_fv_rs_sec_inherited", toStringList(fvRsSecInheritedData.(*schema.Set).List()))
-		//setRelationAttribute(d, "relation_fv_rs_sec_inherited", toStringList(fvRsSecInheritedData.(*schema.Set).List()))
 	}
 
 	fvRsNodeAttData, err := aciClient.ReadRelationfvRsNodeAtt(dn)
@@ -416,7 +410,6 @@ func resourceAciApplicationEPGImport(d *schema.ResourceData, m interface{}) ([]*
 
 	} else {
 		d.Set("relation_fv_rs_dpp_pol", fvRsDppPolData.(string))
-		//setRelationAttribute(d, "relation_fv_rs_dpp_pol", fvRsDppPolData.(string))
 	}
 
 	fvRsConsData, err := aciClient.ReadRelationfvRsConsFromApplicationEPG(dn)
@@ -425,7 +418,6 @@ func resourceAciApplicationEPGImport(d *schema.ResourceData, m interface{}) ([]*
 		setRelationAttribute(d, "relation_fv_rs_cons", make([]interface{}, 0, 1))
 	} else {
 		d.Set("relation_fv_rs_cons", toStringList(fvRsConsData.(*schema.Set).List()))
-		//setRelationAttribute(d, "relation_fv_rs_cons", toStringList(fvRsConsData.(*schema.Set).List()))
 	}
 
 	fvRsProvDefData, err := aciClient.ReadRelationfvRsProvDefFromApplicationEPG(dn)
@@ -434,7 +426,6 @@ func resourceAciApplicationEPGImport(d *schema.ResourceData, m interface{}) ([]*
 		setRelationAttribute(d, "relation_fv_rs_prov_def", make([]interface{}, 0, 1))
 	} else {
 		d.Set("relation_fv_rs_prov_def", toStringList(fvRsProvDefData.(*schema.Set).List()))
-		//setRelationAttribute(d, "relation_fv_rs_prov_def", toStringList(fvRsProvDefData.(*schema.Set).List()))
 	}
 
 	fvRsTrustCtrlData, err := aciClient.ReadRelationfvRsTrustCtrlFromApplicationEPG(dn)
@@ -444,7 +435,6 @@ func resourceAciApplicationEPGImport(d *schema.ResourceData, m interface{}) ([]*
 
 	} else {
 		d.Set("relation_fv_rs_trust_ctrl", fvRsTrustCtrlData.(string))
-		//setRelationAttribute(d, "relation_fv_rs_trust_ctrl", fvRsTrustCtrlData.(string))
 	}
 
 	fvRsPathAttData, err := aciClient.ReadRelationfvRsPathAttFromApplicationEPG(dn)
@@ -453,7 +443,6 @@ func resourceAciApplicationEPGImport(d *schema.ResourceData, m interface{}) ([]*
 		setRelationAttribute(d, "relation_fv_rs_path_att", make([]interface{}, 0, 1))
 	} else {
 		d.Set("relation_fv_rs_path_att", toStringList(fvRsPathAttData.(*schema.Set).List()))
-		//setRelationAttribute(d, "relation_fv_rs_path_att", toStringList(fvRsPathAttData.(*schema.Set).List()))
 	}
 
 	fvRsProtByData, err := aciClient.ReadRelationfvRsProtByFromApplicationEPG(dn)
@@ -462,7 +451,6 @@ func resourceAciApplicationEPGImport(d *schema.ResourceData, m interface{}) ([]*
 		setRelationAttribute(d, "relation_fv_rs_prot_by", make([]interface{}, 0, 1))
 	} else {
 		d.Set("relation_fv_rs_prot_by", toStringList(fvRsProtByData.(*schema.Set).List()))
-		//setRelationAttribute(d, "relation_fv_rs_prot_by", toStringList(fvRsProtByData.(*schema.Set).List()))
 	}
 
 	fvRsAEPgMonPolData, err := aciClient.ReadRelationfvRsAEPgMonPolFromApplicationEPG(dn)
@@ -472,7 +460,6 @@ func resourceAciApplicationEPGImport(d *schema.ResourceData, m interface{}) ([]*
 
 	} else {
 		d.Set("relation_fv_rs_aepg_mon_pol", fvRsAEPgMonPolData.(string))
-		//setRelationAttribute(d, "relation_fv_rs_aepg_mon_pol", fvRsAEPgMonPolData.(string))
 	}
 
 	fvRsIntraEpgData, err := aciClient.ReadRelationfvRsIntraEpgFromApplicationEPG(dn)
@@ -481,7 +468,6 @@ func resourceAciApplicationEPGImport(d *schema.ResourceData, m interface{}) ([]*
 		setRelationAttribute(d, "relation_fv_rs_intra_epg", make([]interface{}, 0, 1))
 	} else {
 		d.Set("relation_fv_rs_intra_epg", toStringList(fvRsIntraEpgData.(*schema.Set).List()))
-		//setRelationAttribute(d, "relation_fv_rs_intra_epg", toStringList(fvRsIntraEpgData.(*schema.Set).List()))
 	}
 
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
@@ -1333,7 +1319,7 @@ func resourceAciApplicationEPGRead(ctx context.Context, d *schema.ResourceData, 
 		d.SetId("")
 		return nil
 	}
-	fvRsBdData, err := aciClient.ReadRelationfvRsBdFromApplicationEPG(dn) // look here to 1328
+	fvRsBdData, err := aciClient.ReadRelationfvRsBdFromApplicationEPG(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation fvRsBd %v", err)
 		d.Set("relation_fv_rs_bd", "")
