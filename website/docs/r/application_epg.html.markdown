@@ -16,40 +16,40 @@ Manages ACI Application EPG
 ```hcl
 resource "aci_application_epg" "fooapplication_epg" {
     application_profile_dn  = aci_application_profile.app_profile_for_epg.id
-    name  					        = "demo_epg"
-    description 			      = "from terraform"
-    annotation  			      = "tag_epg"
-    exception_tag 		    	= "0"
-    flood_on_encap  	      = "disabled"
-    fwd_ctrl  			      	= "none"
-    has_mcast_source     		= "no"
-    is_attr_based_epg     	= "no"
-    match_t  				        = "AtleastOne"
-    name_alias  		      	= "alias_epg"
-    pc_enf_pref  		      	= "unenforced"
-    pref_gr_memb  	    		= "exclude"
-    prio  				        	= "unspecified"
-    shutdown  		      		= "no"
-    relation_fv_rs_bd       = aci_bridge_domain.example.id
+    name  = "demo_epg"
+    description = "from terraform"
+    annotation = "tag_epg"
+    exception_tag = "0"
+    flood_on_encap = "disabled"
+    fwd_ctrl = "none"
+    has_mcast_source = "no"
+    is_attr_based_epg = "no"
+    match_t = "AtleastOne"
+    name_alias = "alias_epg"
+    pc_enf_pref = "unenforced"
+    pref_gr_memb = "exclude"
+    prio = "unspecified"
+    shutdown = "no"
+    relation_fv_rs_bd = aci_bridge_domain.example.id
 }
 ```
 
 ## Argument Reference ##
-* `application_profile_dn` - (Required) Distinguished Name of the parent application profile.
-* `name` - (Required) Name of Object application epg.
-* `annotation` - (Optional) Annotation for object application epg.
-* `description` - (Optional) Description for object application epg.
-* `exception_tag` - (Optional) Exception tag for object application epg. Range: "0" - "512" .
-* `flood_on_encap` - (Optional) Control at EPG level if the traffic L2 Multicast/Broadcast and Link Local Layer should be flooded only on ENCAP or based on bridg-domain settings. Allowed values are "disabled" and "enabled". Default is "disabled".
-* `fwd_ctrl` - (Optional) Forwarding control at EPG level. Allowed values are "none" and "proxy-arp". Default is "none".
-* `has_mcast_source` - (Optional) If the source for the EPG is multicast or not. Allowed values are "yes" and "no". Default values is "no".
-* `is_attr_based_epg` - (Optional) If the EPG is attribute based or not. Allowed values are "yes" and "no". Default is "no".
-* `match_t` - (Optional) The provider label match criteria for EPG. Allowed values are "All", "AtleastOne", "AtmostOne", "None". Default is "AtleastOne".
-* `name_alias` - (Optional) Name alias for object application epg.
-* `pc_enf_pref` - (Optional) The preferred policy control. Allowed values are "unenforced" and "enforced". Default is "unenforced".
-* `pref_gr_memb` - (Optional) Represents parameter used to determine if EPg is part of a group that does not a contract for communication. Allowed values are "exclude" and "include". Default is "exclude".
-* `prio` - (Optional) QoS priority class id. Allowed values are "unspecified", "level1", "level2", "level3", "level4","level5" and "level6". By default the value is inherited from the parent application profile.
-* `shutdown` - (Optional) Shutdown for object application epg. Allowed values are "yes" and "no". Default is "no".
+* `application_profile_dn` - (Required) Distinguished Name of the parent application profile. Type - String.
+* `name` - (Required) Name of Object application epg. Type - String.
+* `annotation` - (Optional) Annotation for object application epg. Type - String.
+* `description` - (Optional) Description for object application epg. Type - String.
+* `exception_tag` - (Optional) Exception tag for object application epg. Range: "0" - "512" . Type - String.
+* `flood_on_encap` - (Optional) Control at EPG level if the traffic L2 Multicast/Broadcast and Link Local Layer should be flooded only on ENCAP or based on bridg-domain settings. Allowed values are "disabled" and "enabled". Default is "disabled". Type - String.
+* `fwd_ctrl` - (Optional) Forwarding control at EPG level. Allowed values are "none" and "proxy-arp". Default is "none". Type - String.
+* `has_mcast_source` - (Optional) If the source for the EPG is multicast or not. Allowed values are "yes" and "no". Default values is "no". Type - String.
+* `is_attr_based_epg` - (Optional) If the EPG is attribute based or not. Allowed values are "yes" and "no". Default is "no". Type - String.
+* `match_t` - (Optional) The provider label match criteria for EPG. Allowed values are "All", "AtleastOne", "AtmostOne", "None". Default is "AtleastOne". Type - String.
+* `name_alias` - (Optional) Name alias for object application epg. Type - String.
+* `pc_enf_pref` - (Optional) The preferred policy control. Allowed values are "unenforced" and "enforced". Default is "unenforced". Type - String.
+* `pref_gr_memb` - (Optional) Represents parameter used to determine if EPg is part of a group that does not a contract for communication. Allowed values are "exclude" and "include". Default is "exclude". Type - String.
+* `prio` - (Optional) QoS priority class id. Allowed values are "unspecified", "level1", "level2", "level3", "level4","level5" and "level6". By default the value is inherited from the parent application profile. Type - String.
+* `shutdown` - (Optional) Shutdown for object application epg. Allowed values are "yes" and "no". Default is "no". Type - String.
 
 * `relation_fv_rs_bd` - (Optional) Relation to the Bridge domain associated with EPG (Point to class fvBD). This attribute is optional because the ACI API does not mandate it **but it is necessary for correct function of the resource.** Cardinality - N_TO_ONE. Type - String.
 
@@ -71,7 +71,6 @@ resource "aci_application_epg" "fooapplication_epg" {
   - `description` - (Optional) The description for relation_fv_rs_node_att of the Node Object. Type: String.
   - `deployment_immediacy` - (Optional) The deployment immediacy of the Static Path of the Node Object. Allowed values: "immediate", "lazy". Default value: "lazy". Type: String.
   - `mode` - (Optional) The Application EPG mode of the Node Object. Allowed values: "regular", "native", "untagged". Default value: "regular". Type: String.
-  - `primary_encap` - (Optional) The primary encap for Application EPG of the Node Object. Default value: "unkown". Type: String.
 <!-- tenant -> Application Profile -> EPG ->Static Leaf -->
 
 * `relation_fv_rs_dpp_pol` - (Optional) Relation to define a Data Plane Policing policy (Point to class qosDppPol). Cardinality - N_TO_ONE. Type - String.
