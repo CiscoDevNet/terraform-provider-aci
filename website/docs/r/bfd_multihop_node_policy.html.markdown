@@ -31,7 +31,6 @@ resource "aci_bfdmultihop_node_policy" "example" {
   detect_mult = "3"
   min_rx_intvl = "250"
   min_tx_intvl = "250"
-  name_alias = 
 }
 ```
 

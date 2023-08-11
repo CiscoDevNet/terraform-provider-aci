@@ -70,7 +70,7 @@ func getRemoteBFDMultihopNodePolicy(client *client.Client, dn string) (*models.B
 	}
 	bfdMhNodePol := models.BFDMultihopNodePolicyFromContainer(bfdMhNodePolCont)
 	if bfdMhNodePol.DistinguishedName == "" {
-		return nil, fmt.Errorf("BFDMultihopNodePolicy %s not found", dn)
+		return nil, fmt.Errorf("BFD Multihop Node Policy %s not found", dn)
 	}
 	return bfdMhNodePol, nil
 }
@@ -116,7 +116,7 @@ func resourceAciBFDMultihopNodePolicyImport(d *schema.ResourceData, m interface{
 }
 
 func resourceAciBFDMultihopNodePolicyCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	log.Printf("[DEBUG] BFDMultihopNodePolicy: Beginning Creation")
+	log.Printf("[DEBUG] BFD Multihop Node Policy: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
 	name := d.Get("name").(string)
@@ -165,7 +165,7 @@ func resourceAciBFDMultihopNodePolicyCreate(ctx context.Context, d *schema.Resou
 	return resourceAciBFDMultihopNodePolicyRead(ctx, d, m)
 }
 func resourceAciBFDMultihopNodePolicyUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	log.Printf("[DEBUG] BFDMultihopNodePolicy: Beginning Update")
+	log.Printf("[DEBUG] BFD Multihop Node Policy: Beginning Update")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
 	name := d.Get("name").(string)
