@@ -100,7 +100,7 @@ An existing Application EPG can be [imported][docs-import] into this resource vi
 [docs-import]: https://www.terraform.io/docs/import/index.html
 
 ```
-terraform import aci_application_epg.example <Dn>
+terraform import aci_application_epg.example "<Dn>"
 ```
 Starting in Terraform version 1.5, an existing EPG can be imported using [import blocks](https://developer.hashicorp.com/terraform/language/import) via the following configuration:
 
