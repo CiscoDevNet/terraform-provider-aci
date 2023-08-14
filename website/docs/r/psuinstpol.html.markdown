@@ -40,7 +40,7 @@ resource "aci_power_supply_redundancy_policy" "example" {
 
 ## Importing ##
 
-An existing PowerSupplyRedundancyPolicy can be [imported][docs-import] into this resource via its Dn, via the following command:
+An existing Power Supply Redundancy Policy can be [imported][docs-import] into this resource via its Dn, via the following command:
 [docs-import]: https://www.terraform.io/docs/import/index.html
 
 ```

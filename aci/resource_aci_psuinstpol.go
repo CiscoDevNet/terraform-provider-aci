@@ -57,7 +57,7 @@ func getRemotePowerSupplyRedundancyPolicy(client *client.Client, dn string) (*mo
 	}
 	psuInstPol := models.PsuInstPolFromContainer(psuInstPolCont)
 	if psuInstPol.DistinguishedName == "" {
-		return nil, fmt.Errorf("PowerSupplyRedundancyPolicy %s not found", dn)
+		return nil, fmt.Errorf("Power Supply Redundancy Policy %s not found", dn)
 	}
 	return psuInstPol, nil
 }
@@ -95,7 +95,7 @@ func resourceAciPowerSupplyRedundancyPolicyImport(d *schema.ResourceData, m inte
 }
 
 func resourceAciPowerSupplyRedundancyPolicyCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	log.Printf("[DEBUG] PowerSupplyRedundancyPolicy: Beginning Creation")
+	log.Printf("[DEBUG] Power Supply Redundancy Policy: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
 	name := d.Get("name").(string)
@@ -130,7 +130,7 @@ func resourceAciPowerSupplyRedundancyPolicyCreate(ctx context.Context, d *schema
 }
 
 func resourceAciPowerSupplyRedundancyPolicyUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	log.Printf("[DEBUG] PowerSupplyRedundancyPolicy: Beginning Update")
+	log.Printf("[DEBUG] Power Supply Redundancy Policy: Beginning Update")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
 	name := d.Get("name").(string)
