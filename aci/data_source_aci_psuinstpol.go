@@ -15,7 +15,7 @@ func dataSourceAciPowerSupplyRedundancyPolicy() *schema.Resource {
 		ReadContext:   dataSourceAciPowerSupplyRedundancyPolicyRead,
 		SchemaVersion: 1,
 		Schema: AppendBaseAttrSchema(AppendNameAliasAttrSchema(map[string]*schema.Schema{
-			"admin_rdn_m": {
+			"administrative_state": {
 				Type:     schema.TypeString,
 				Computed: true,
 			},

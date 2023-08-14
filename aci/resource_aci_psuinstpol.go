@@ -26,7 +26,7 @@ func resourceAciPowerSupplyRedundancyPolicy() *schema.Resource {
 		SchemaVersion: 1,
 		Schema: AppendBaseAttrSchema(AppendNameAliasAttrSchema(map[string]*schema.Schema{
 
-			"admin_rdn_m": {
+			"administrative_state": {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
@@ -70,7 +70,7 @@ func setPowerSupplyRedundancyPolicyAttributes(psuInstPol *models.PsuInstPol, d *
 		return nil, err
 	}
 
-	d.Set("admin_rdn_m", psuInstPolMap["adminRdnM"])
+	d.Set("administrative_state", psuInstPolMap["adminRdnM"])
 	d.Set("annotation", psuInstPolMap["annotation"])
 	d.Set("name", psuInstPolMap["name"])
 	d.Set("name_alias", psuInstPolMap["nameAlias"])
@@ -107,7 +107,7 @@ func resourceAciPowerSupplyRedundancyPolicyCreate(ctx context.Context, d *schema
 		psuInstPolAttr.Annotation = "{}"
 	}
 
-	if AdminRdnM, ok := d.GetOk("admin_rdn_m"); ok {
+	if AdminRdnM, ok := d.GetOk("administrative_state"); ok {
 		psuInstPolAttr.AdminRdnM = AdminRdnM.(string)
 	}
 
@@ -143,7 +143,7 @@ func resourceAciPowerSupplyRedundancyPolicyUpdate(ctx context.Context, d *schema
 		psuInstPolAttr.Annotation = "{}"
 	}
 
-	if AdminRdnM, ok := d.GetOk("admin_rdn_m"); ok {
+	if AdminRdnM, ok := d.GetOk("administrative_state"); ok {
 		psuInstPolAttr.AdminRdnM = AdminRdnM.(string)
 	}
 
