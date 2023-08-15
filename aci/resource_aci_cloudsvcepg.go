@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"reflect"
 	"sort"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
