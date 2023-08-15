@@ -241,7 +241,7 @@ func resourceAciBFDMultihopNodePolicyDelete(ctx context.Context, d *schema.Resou
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 
-	err := aciClient.DeleteByDn(dn, "bfdMhNodePol")
+	err := aciClient.DeleteByDn(dn, models.BfdMhNodePolClassName)
 	if err != nil {
 		return diag.FromErr(err)
 	}

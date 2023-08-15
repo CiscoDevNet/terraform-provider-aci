@@ -14,7 +14,7 @@ Data source for ACI BFD Multihop Node Policy
 ## API Information ##
 
 * `Class` - bfdMhNodePol
-* `Distinguished Name` - uni/tn-{name}/bfdMhNodePol-{name}
+* `Distinguished Name` - uni/tn-{tenant_name}/bfdMhNodePol-{name}
 
 ## GUI Information ##
 
@@ -23,9 +23,9 @@ Data source for ACI BFD Multihop Node Policy
 ## Example Usage ##
 
 ```hcl
-data "aci_bfdmultihop_node_policy" "example" {
-  tenant_dn  = aci_tenant.example.id
-  name  = "example"
+data "aci_bfd_multihop_node_policy" "example" {
+  tenant_dn = aci_tenant.example.id
+  name      = "example"
 }
 ```
 
@@ -40,5 +40,5 @@ data "aci_bfdmultihop_node_policy" "example" {
 * `name_alias` - (Read-Only) Name Alias of the BFD Multihop Node Policy object. Type: String.
 * `admin_state` - (Read-Only) Administrative state of the object or policy. Type: String.
 * `detection_multiplier` - (Read-Only) Detection Multiplier. Type: String.
-* `min_rx_intverval` - (Read-Only) Required Minimum RX Interval. Type: String.
-* `min_tx_interval` - (Read-Only) Desired Minimum TX Interval. Type: String.
+* `min_rx_interval` - (Read-Only) Required Minimum Rx Interval. Type: String.
+* `min_tx_interval` - (Read-Only) Desired Minimum Tx Interval. Type: String.
