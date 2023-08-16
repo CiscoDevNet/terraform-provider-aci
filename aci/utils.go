@@ -479,3 +479,40 @@ func toggleOptions(option string) string {
 	}
 	return values[option]
 }
+
+// deleteEmptyKeysFromMap deletes empty keys from a map of string values.
+//
+// If the value associated with the key is either an empty string or "{}". If
+// the value matches either of the conditions, the key-value pair is removed
+// from the map.
+func deleteEmptyKeysFromMap(data map[string]string) {
+	for key := range data {
+		if data[key] == "{}" || data[key] == "" {
+			delete(data, key)
+		}
+	}
+}
+
+// mapListOfAaaDomainAttrs generates a list of AAA domain attributes based on the given status and AAA domain DN list.
+//
+// Parameters:
+// - status: a string representing the status.
+// - aaaDomainDnList: a list of strings representing the AAA domain DNs.
+//
+// Return:
+// - aaaDomainAttrsList: a list of interface{} containing the generated AAA domain attributes.
+func mapListOfAaaDomainAttrs(status string, aaaDomainDnList []string) []interface{} {
+	aaaDomainAttrsList := make([]interface{}, len(aaaDomainDnList))
+	for index, aaaDomainDn := range aaaDomainDnList {
+		aaaDomainDnMap := map[string]interface{}{
+			"aaaRbacAnnotation": map[string]interface{}{
+				"attributes": map[string]string{
+					"domain": GetMOName(aaaDomainDn),
+					"status": status,
+				},
+			},
+		}
+		aaaDomainAttrsList[index] = aaaDomainDnMap
+	}
+	return aaaDomainAttrsList
+}
