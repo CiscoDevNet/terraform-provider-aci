@@ -56,3 +56,5 @@ require (
 	google.golang.org/protobuf v1.28.1 // indirect
 	gopkg.in/yaml.v2 v2.3.0 // indirect
 )
+
+replace github.com/ciscoecosystem/aci-go-client/v2 => /Users/gmicol/Documents/terraform/ACI/aci-go-client
