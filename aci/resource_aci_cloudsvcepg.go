@@ -310,7 +310,7 @@ func setCloudServiceEPgAttributes(cloudSvcEPg *models.CloudServiceEPg, d *schema
 	d.Set("name_alias", cloudSvcEPgMap["nameAlias"])
 	d.Set("pref_gr_memb", cloudSvcEPgMap["prefGrMemb"])
 	d.Set("prio", cloudSvcEPgMap["prio"])
-	d.Set("cloud_service_epg_type", cloudSvcEPgMap["CloudServiceEPg_type"])
+	d.Set("cloud_service_epg_type", cloudSvcEPgMap["type"])
 	return d, nil
 }
 
@@ -318,7 +318,7 @@ func getAndSetCloudServiceEPgRelationalAttributes(client *client.Client, dn stri
 
 	log.Printf("[DEBUG] cloudRsCloudEPgCtx: Beginning Read")
 
-	cloudRsCloudEPgCtxData, err := client.ReadRelationcloudRsCloudEPgCtx(dn)
+	cloudRsCloudEPgCtxData, err := client.ReadRelationcloudRsCloudEPgCtxFromCloudServiceEpg(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation cloudRsCloudEPgCtx %v", err)
 		d.Set("relation_cloudrs_cloud_epg_ctx", "")
@@ -329,7 +329,7 @@ func getAndSetCloudServiceEPgRelationalAttributes(client *client.Client, dn stri
 
 	log.Printf("[DEBUG] fvRsCons: Beginning Read")
 
-	fvRsConsData, err := client.ReadRelationfvRsCons(dn)
+	fvRsConsData, err := client.ReadRelationfvRsConsFromCloudServiceEpg(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation fvRsCons %v", err)
 		d.Set("relation_fvrs_cons", make([]interface{}, 0, 1))
@@ -347,7 +347,7 @@ func getAndSetCloudServiceEPgRelationalAttributes(client *client.Client, dn stri
 
 	log.Printf("[DEBUG] fvRsConsIf: Beginning Read")
 
-	fvRsConsIfData, err := client.ReadRelationfvRsConsIf(dn)
+	fvRsConsIfData, err := client.ReadRelationfvRsConsIfFromCloudServiceEpg(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation fvRsConsIf %v", err)
 		d.Set("relation_fvrs_cons_if", make([]interface{}, 0, 1))
@@ -365,7 +365,7 @@ func getAndSetCloudServiceEPgRelationalAttributes(client *client.Client, dn stri
 
 	log.Printf("[DEBUG] fvRsCustQosPol: Beginning Read")
 
-	fvRsCustQosPolData, err := client.ReadRelationfvRsCustQosPol(dn)
+	fvRsCustQosPolData, err := client.ReadRelationfvRsCustQosPolFromCloudServiceEpg(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation fvRsCustQosPol %v", err)
 		d.Set("relation_fvrs_cust_qos_pol", "")
@@ -375,7 +375,7 @@ func getAndSetCloudServiceEPgRelationalAttributes(client *client.Client, dn stri
 	}
 
 	log.Printf("[DEBUG] fvRsGraphDef: Beginning Read")
-	fvRsGraphDefData, err := client.ReadRelationfvRsGraphDef(dn)
+	fvRsGraphDefData, err := client.ReadRelationfvRsGraphDefFromCloudServiceEpg(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation fvRsGraphDef %v", err)
 		d.Set("relation_fvrs_graph_def", make([]string, 0, 1))
@@ -390,7 +390,7 @@ func getAndSetCloudServiceEPgRelationalAttributes(client *client.Client, dn stri
 	}
 
 	log.Printf("[DEBUG] fvRsIntraEpg: Beginning Read")
-	fvRsIntraEpgData, err := client.ReadRelationfvRsIntraEpg(dn)
+	fvRsIntraEpgData, err := client.ReadRelationfvRsIntraEpgFromCloudServiceEpg(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation fvRsIntraEpg %v", err)
 		d.Set("relation_fvrs_intra_epg", make([]string, 0, 1))
@@ -405,7 +405,7 @@ func getAndSetCloudServiceEPgRelationalAttributes(client *client.Client, dn stri
 	}
 
 	log.Printf("[DEBUG] fvRsProtBy: Beginning Read")
-	fvRsProtByData, err := client.ReadRelationfvRsProtBy(dn)
+	fvRsProtByData, err := client.ReadRelationfvRsProtByFromCloudServiceEpg(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation fvRsProtBy %v", err)
 		d.Set("relation_fvrs_prot_by", make([]string, 0, 1))
@@ -421,7 +421,7 @@ func getAndSetCloudServiceEPgRelationalAttributes(client *client.Client, dn stri
 
 	log.Printf("[DEBUG] fvRsProv: Beginning Read")
 
-	fvRsProvData, err := client.ReadRelationfvRsProv(dn)
+	fvRsProvData, err := client.ReadRelationfvRsProvFromCloudServiceEpg(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation fvRsProv %v", err)
 		d.Set("relation_fvrs_prov", make([]interface{}, 0, 1))
@@ -439,7 +439,7 @@ func getAndSetCloudServiceEPgRelationalAttributes(client *client.Client, dn stri
 	}
 
 	log.Printf("[DEBUG] fvRsProvDef: Beginning Read")
-	fvRsProvDefData, err := client.ReadRelationfvRsProvDef(dn)
+	fvRsProvDefData, err := client.ReadRelationfvRsProvDefFromCloudServiceEpg(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation fvRsProvDef %v", err)
 		d.Set("relation_fvrs_prov_def", make([]string, 0, 1))
@@ -454,7 +454,7 @@ func getAndSetCloudServiceEPgRelationalAttributes(client *client.Client, dn stri
 	}
 
 	log.Printf("[DEBUG] fvRsSecInherited: Beginning Read")
-	fvRsSecInheritedData, err := client.ReadRelationfvRsSecInherited(dn)
+	fvRsSecInheritedData, err := client.ReadRelationfvRsSecInheritedFromCloudServiceEpg(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation fvRsSecInherited %v", err)
 		d.Set("relation_fvrs_sec_inherited", make([]string, 0, 1))

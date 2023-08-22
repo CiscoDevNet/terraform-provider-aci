@@ -11,15 +11,15 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
-func resourceAciPrivateLinkLabelfortheserviceEPg() *schema.Resource {
+func resourceAciCloudPrivateLinkLabel() *schema.Resource {
 	return &schema.Resource{
-		CreateContext: resourceAciPrivateLinkLabelfortheserviceEPgCreate,
-		UpdateContext: resourceAciPrivateLinkLabelfortheserviceEPgUpdate,
-		ReadContext:   resourceAciPrivateLinkLabelfortheserviceEPgRead,
-		DeleteContext: resourceAciPrivateLinkLabelfortheserviceEPgDelete,
+		CreateContext: resourceAciCloudPrivateLinkLabelCreate,
+		UpdateContext: resourceAciCloudPrivateLinkLabelUpdate,
+		ReadContext:   resourceAciCloudPrivateLinkLabelRead,
+		DeleteContext: resourceAciCloudPrivateLinkLabelDelete,
 
 		Importer: &schema.ResourceImporter{
-			State: resourceAciPrivateLinkLabelfortheserviceEPgImport,
+			State: resourceAciCloudPrivateLinkLabelImport,
 		},
 
 		SchemaVersion: 1,
@@ -38,19 +38,19 @@ func resourceAciPrivateLinkLabelfortheserviceEPg() *schema.Resource {
 	}
 }
 
-func getRemotePrivateLinkLabelfortheserviceEPg(client *client.Client, dn string) (*models.PrivateLinkLabelfortheserviceEPg, error) {
+func getRemoteCloudPrivateLinkLabel(client *client.Client, dn string) (*models.CloudPrivateLinkLabel, error) {
 	cloudPrivateLinkLabelCont, err := client.Get(dn)
 	if err != nil {
 		return nil, err
 	}
-	cloudPrivateLinkLabel := models.PrivateLinkLabelfortheserviceEPgFromContainer(cloudPrivateLinkLabelCont)
+	cloudPrivateLinkLabel := models.CloudPrivateLinkLabelFromContainer(cloudPrivateLinkLabelCont)
 	if cloudPrivateLinkLabel.DistinguishedName == "" {
-		return nil, fmt.Errorf("PrivateLinkLabelfortheserviceEPg %s not found", dn)
+		return nil, fmt.Errorf("CloudPrivateLinkLabel %s not found", dn)
 	}
 	return cloudPrivateLinkLabel, nil
 }
 
-func setPrivateLinkLabelfortheserviceEPgAttributes(cloudPrivateLinkLabel *models.PrivateLinkLabelfortheserviceEPg, d *schema.ResourceData) (*schema.ResourceData, error) {
+func setCloudPrivateLinkLabelAttributes(cloudPrivateLinkLabel *models.CloudPrivateLinkLabel, d *schema.ResourceData) (*schema.ResourceData, error) {
 	d.SetId(cloudPrivateLinkLabel.DistinguishedName)
 	d.Set("description", cloudPrivateLinkLabel.Description)
 	cloudPrivateLinkLabelMap, err := cloudPrivateLinkLabel.ToMap()
@@ -69,15 +69,15 @@ func setPrivateLinkLabelfortheserviceEPgAttributes(cloudPrivateLinkLabel *models
 	return d, nil
 }
 
-func resourceAciPrivateLinkLabelfortheserviceEPgImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
+func resourceAciCloudPrivateLinkLabelImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
 	log.Printf("[DEBUG] %s: Beginning Import", d.Id())
 	aciClient := m.(*client.Client)
 	dn := d.Id()
-	cloudPrivateLinkLabel, err := getRemotePrivateLinkLabelfortheserviceEPg(aciClient, dn)
+	cloudPrivateLinkLabel, err := getRemoteCloudPrivateLinkLabel(aciClient, dn)
 	if err != nil {
 		return nil, err
 	}
-	schemaFilled, err := setPrivateLinkLabelfortheserviceEPgAttributes(cloudPrivateLinkLabel, d)
+	schemaFilled, err := setCloudPrivateLinkLabelAttributes(cloudPrivateLinkLabel, d)
 	if err != nil {
 		return nil, err
 	}
@@ -86,14 +86,14 @@ func resourceAciPrivateLinkLabelfortheserviceEPgImport(d *schema.ResourceData, m
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciPrivateLinkLabelfortheserviceEPgCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	log.Printf("[DEBUG] PrivateLinkLabelfortheserviceEPg: Beginning Creation")
+func resourceAciCloudPrivateLinkLabelCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+	log.Printf("[DEBUG] CloudPrivateLinkLabel: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
 	name := d.Get("name").(string)
 	CloudServiceEPgDn := d.Get("cloud_service_epg_dn").(string)
 
-	cloudPrivateLinkLabelAttr := models.PrivateLinkLabelfortheserviceEPgAttributes{}
+	cloudPrivateLinkLabelAttr := models.CloudPrivateLinkLabelAttributes{}
 
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		cloudPrivateLinkLabelAttr.Annotation = Annotation.(string)
@@ -108,7 +108,7 @@ func resourceAciPrivateLinkLabelfortheserviceEPgCreate(ctx context.Context, d *s
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		cloudPrivateLinkLabelAttr.NameAlias = NameAlias.(string)
 	}
-	cloudPrivateLinkLabel := models.NewPrivateLinkLabelfortheserviceEPg(fmt.Sprintf(models.RnCloudPrivateLinkLabel, name), CloudServiceEPgDn, desc, cloudPrivateLinkLabelAttr)
+	cloudPrivateLinkLabel := models.NewCloudPrivateLinkLabel(fmt.Sprintf(models.RnCloudPrivateLinkLabel, name), CloudServiceEPgDn, desc, cloudPrivateLinkLabelAttr)
 
 	err := aciClient.Save(cloudPrivateLinkLabel)
 	if err != nil {
@@ -117,16 +117,16 @@ func resourceAciPrivateLinkLabelfortheserviceEPgCreate(ctx context.Context, d *s
 
 	d.SetId(cloudPrivateLinkLabel.DistinguishedName)
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
-	return resourceAciPrivateLinkLabelfortheserviceEPgRead(ctx, d, m)
+	return resourceAciCloudPrivateLinkLabelRead(ctx, d, m)
 }
-func resourceAciPrivateLinkLabelfortheserviceEPgUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	log.Printf("[DEBUG] PrivateLinkLabelfortheserviceEPg: Beginning Update")
+func resourceAciCloudPrivateLinkLabelUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+	log.Printf("[DEBUG] CloudPrivateLinkLabel: Beginning Update")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
 	name := d.Get("name").(string)
 	CloudServiceEPgDn := d.Get("cloud_service_epg_dn").(string)
 
-	cloudPrivateLinkLabelAttr := models.PrivateLinkLabelfortheserviceEPgAttributes{}
+	cloudPrivateLinkLabelAttr := models.CloudPrivateLinkLabelAttributes{}
 
 	if Annotation, ok := d.GetOk("annotation"); ok {
 		cloudPrivateLinkLabelAttr.Annotation = Annotation.(string)
@@ -141,7 +141,7 @@ func resourceAciPrivateLinkLabelfortheserviceEPgUpdate(ctx context.Context, d *s
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		cloudPrivateLinkLabelAttr.NameAlias = NameAlias.(string)
 	}
-	cloudPrivateLinkLabel := models.NewPrivateLinkLabelfortheserviceEPg(fmt.Sprintf(models.RnCloudPrivateLinkLabel, name), CloudServiceEPgDn, desc, cloudPrivateLinkLabelAttr)
+	cloudPrivateLinkLabel := models.NewCloudPrivateLinkLabel(fmt.Sprintf(models.RnCloudPrivateLinkLabel, name), CloudServiceEPgDn, desc, cloudPrivateLinkLabelAttr)
 
 	cloudPrivateLinkLabel.Status = "modified"
 
@@ -152,20 +152,20 @@ func resourceAciPrivateLinkLabelfortheserviceEPgUpdate(ctx context.Context, d *s
 
 	d.SetId(cloudPrivateLinkLabel.DistinguishedName)
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
-	return resourceAciPrivateLinkLabelfortheserviceEPgRead(ctx, d, m)
+	return resourceAciCloudPrivateLinkLabelRead(ctx, d, m)
 }
 
-func resourceAciPrivateLinkLabelfortheserviceEPgRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceAciCloudPrivateLinkLabelRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Read", d.Id())
 	aciClient := m.(*client.Client)
 	dn := d.Id()
 
-	cloudPrivateLinkLabel, err := getRemotePrivateLinkLabelfortheserviceEPg(aciClient, dn)
+	cloudPrivateLinkLabel, err := getRemoteCloudPrivateLinkLabel(aciClient, dn)
 	if err != nil {
 		return errorForObjectNotFound(err, dn, d)
 	}
 
-	_, err = setPrivateLinkLabelfortheserviceEPgAttributes(cloudPrivateLinkLabel, d)
+	_, err = setCloudPrivateLinkLabelAttributes(cloudPrivateLinkLabel, d)
 	if err != nil {
 		d.SetId("")
 		return nil
@@ -175,7 +175,7 @@ func resourceAciPrivateLinkLabelfortheserviceEPgRead(ctx context.Context, d *sch
 	return nil
 }
 
-func resourceAciPrivateLinkLabelfortheserviceEPgDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceAciCloudPrivateLinkLabelDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] %s: Beginning Destroy", d.Id())
 	aciClient := m.(*client.Client)
 	dn := d.Id()
