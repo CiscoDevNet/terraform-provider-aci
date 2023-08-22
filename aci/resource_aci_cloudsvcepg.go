@@ -642,7 +642,7 @@ func resourceAciCloudServiceEPgCreate(ctx context.Context, d *schema.ResourceDat
 
 	if relationTocloudRsCloudEPgCtx, ok := d.GetOk("relation_cloudrs_cloud_epg_ctx"); ok {
 		relationParam := relationTocloudRsCloudEPgCtx.(string)
-		err = aciClient.CreateRelationcloudRsCloudEPgCtx(cloudSvcEPg.DistinguishedName, cloudSvcEPgAttr.Annotation, GetMOName(relationParam))
+		err = aciClient.CreateRelationcloudRsCloudEPgCtxFromCloudServiceEpg(cloudSvcEPg.DistinguishedName, cloudSvcEPgAttr.Annotation, GetMOName(relationParam))
 		if err != nil {
 			return diag.FromErr(err)
 		}
@@ -654,7 +654,7 @@ func resourceAciCloudServiceEPgCreate(ctx context.Context, d *schema.ResourceDat
 		for _, relationParam := range relationParamList {
 			paramMap := relationParam.(map[string]interface{})
 
-			err = aciClient.CreateRelationfvRsCons(cloudSvcEPg.DistinguishedName, cloudSvcEPgAttr.Annotation, paramMap["prio"].(string), GetMOName(paramMap["target_dn"].(string)))
+			err = aciClient.CreateRelationfvRsConsFromCloudServiceEpg(cloudSvcEPg.DistinguishedName, cloudSvcEPgAttr.Annotation, paramMap["prio"].(string), GetMOName(paramMap["target_dn"].(string)))
 			if err != nil {
 				return diag.FromErr(err)
 			}
@@ -666,7 +666,7 @@ func resourceAciCloudServiceEPgCreate(ctx context.Context, d *schema.ResourceDat
 		for _, relationParam := range relationParamList {
 			paramMap := relationParam.(map[string]interface{})
 
-			err = aciClient.CreateRelationfvRsConsIf(cloudSvcEPg.DistinguishedName, cloudSvcEPgAttr.Annotation, paramMap["prio"].(string), GetMOName(paramMap["target_dn"].(string)))
+			err = aciClient.CreateRelationfvRsConsIfFromCloudServiceEpg(cloudSvcEPg.DistinguishedName, cloudSvcEPgAttr.Annotation, paramMap["prio"].(string), GetMOName(paramMap["target_dn"].(string)))
 			if err != nil {
 				return diag.FromErr(err)
 			}
@@ -675,7 +675,7 @@ func resourceAciCloudServiceEPgCreate(ctx context.Context, d *schema.ResourceDat
 
 	if relationTofvRsCustQosPol, ok := d.GetOk("relation_fvrs_cust_qos_pol"); ok {
 		relationParam := relationTofvRsCustQosPol.(string)
-		err = aciClient.CreateRelationfvRsCustQosPol(cloudSvcEPg.DistinguishedName, cloudSvcEPgAttr.Annotation, GetMOName(relationParam))
+		err = aciClient.CreateRelationfvRsCustQosPolFromCloudServiceEpg(cloudSvcEPg.DistinguishedName, cloudSvcEPgAttr.Annotation, GetMOName(relationParam))
 		if err != nil {
 			return diag.FromErr(err)
 		}
@@ -685,7 +685,7 @@ func resourceAciCloudServiceEPgCreate(ctx context.Context, d *schema.ResourceDat
 	if relationTofvRsGraphDef, ok := d.GetOk("relation_fvrs_graph_def"); ok {
 		relationParamList := toStringList(relationTofvRsGraphDef.(*schema.Set).List())
 		for _, relationParam := range relationParamList {
-			err = aciClient.CreateRelationfvRsGraphDef(cloudSvcEPg.DistinguishedName, cloudSvcEPgAttr.Annotation, relationParam)
+			err = aciClient.CreateRelationfvRsGraphDefFromCloudServiceEpg(cloudSvcEPg.DistinguishedName, cloudSvcEPgAttr.Annotation, relationParam)
 
 			if err != nil {
 				return diag.FromErr(err)
@@ -696,7 +696,7 @@ func resourceAciCloudServiceEPgCreate(ctx context.Context, d *schema.ResourceDat
 	if relationTofvRsIntraEpg, ok := d.GetOk("relation_fvrs_intra_epg"); ok {
 		relationParamList := toStringList(relationTofvRsIntraEpg.(*schema.Set).List())
 		for _, relationParam := range relationParamList {
-			err = aciClient.CreateRelationfvRsIntraEpg(cloudSvcEPg.DistinguishedName, cloudSvcEPgAttr.Annotation, GetMOName(relationParam))
+			err = aciClient.CreateRelationfvRsIntraEpgFromCloudServiceEpg(cloudSvcEPg.DistinguishedName, cloudSvcEPgAttr.Annotation, GetMOName(relationParam))
 			if err != nil {
 				return diag.FromErr(err)
 			}
@@ -706,7 +706,7 @@ func resourceAciCloudServiceEPgCreate(ctx context.Context, d *schema.ResourceDat
 	if relationTofvRsProtBy, ok := d.GetOk("relation_fvrs_prot_by"); ok {
 		relationParamList := toStringList(relationTofvRsProtBy.(*schema.Set).List())
 		for _, relationParam := range relationParamList {
-			err = aciClient.CreateRelationfvRsProtBy(cloudSvcEPg.DistinguishedName, cloudSvcEPgAttr.Annotation, GetMOName(relationParam))
+			err = aciClient.CreateRelationfvRsProtByFromCloudServiceEpg(cloudSvcEPg.DistinguishedName, cloudSvcEPgAttr.Annotation, GetMOName(relationParam))
 			if err != nil {
 				return diag.FromErr(err)
 			}
@@ -718,7 +718,7 @@ func resourceAciCloudServiceEPgCreate(ctx context.Context, d *schema.ResourceDat
 		for _, relationParam := range relationParamList {
 			paramMap := relationParam.(map[string]interface{})
 
-			err = aciClient.CreateRelationfvRsProv(cloudSvcEPg.DistinguishedName, cloudSvcEPgAttr.Annotation, paramMap["label_match_criteria"].(string), paramMap["prio"].(string), GetMOName(paramMap["target_dn"].(string)))
+			err = aciClient.CreateRelationfvRsProvFromCloudServiceEpg(cloudSvcEPg.DistinguishedName, cloudSvcEPgAttr.Annotation, paramMap["label_match_criteria"].(string), paramMap["prio"].(string), GetMOName(paramMap["target_dn"].(string)))
 			if err != nil {
 				return diag.FromErr(err)
 			}
@@ -728,7 +728,7 @@ func resourceAciCloudServiceEPgCreate(ctx context.Context, d *schema.ResourceDat
 	if relationTofvRsProvDef, ok := d.GetOk("relation_fvrs_prov_def"); ok {
 		relationParamList := toStringList(relationTofvRsProvDef.(*schema.Set).List())
 		for _, relationParam := range relationParamList {
-			err = aciClient.CreateRelationfvRsProvDef(cloudSvcEPg.DistinguishedName, cloudSvcEPgAttr.Annotation, relationParam)
+			err = aciClient.CreateRelationfvRsProvDefFromCloudServiceEpg(cloudSvcEPg.DistinguishedName, cloudSvcEPgAttr.Annotation, relationParam)
 
 			if err != nil {
 				return diag.FromErr(err)
@@ -739,7 +739,7 @@ func resourceAciCloudServiceEPgCreate(ctx context.Context, d *schema.ResourceDat
 	if relationTofvRsSecInherited, ok := d.GetOk("relation_fvrs_sec_inherited"); ok {
 		relationParamList := toStringList(relationTofvRsSecInherited.(*schema.Set).List())
 		for _, relationParam := range relationParamList {
-			err = aciClient.CreateRelationfvRsSecInherited(cloudSvcEPg.DistinguishedName, cloudSvcEPgAttr.Annotation, relationParam)
+			err = aciClient.CreateRelationfvRsSecInheritedFromCloudServiceEpg(cloudSvcEPg.DistinguishedName, cloudSvcEPgAttr.Annotation, relationParam)
 
 			if err != nil {
 				return diag.FromErr(err)
@@ -921,11 +921,11 @@ func resourceAciCloudServiceEPgUpdate(ctx context.Context, d *schema.ResourceDat
 
 	if d.HasChange("relation_cloudrs_cloud_epg_ctx") || d.HasChange("annotation") {
 		_, newRelParam := d.GetChange("relation_cloudrs_cloud_epg_ctx")
-		err = aciClient.DeleteRelationcloudRsCloudEPgCtx(cloudSvcEPg.DistinguishedName)
+		err = aciClient.DeleteRelationcloudRsCloudEPgCtxFromCloudServiceEpg(cloudSvcEPg.DistinguishedName)
 		if err != nil {
 			return diag.FromErr(err)
 		}
-		err = aciClient.CreateRelationcloudRsCloudEPgCtx(cloudSvcEPg.DistinguishedName, cloudSvcEPgAttr.Annotation, GetMOName(newRelParam.(string)))
+		err = aciClient.CreateRelationcloudRsCloudEPgCtxFromCloudServiceEpg(cloudSvcEPg.DistinguishedName, cloudSvcEPgAttr.Annotation, GetMOName(newRelParam.(string)))
 		if err != nil {
 			return diag.FromErr(err)
 		}
@@ -938,7 +938,7 @@ func resourceAciCloudServiceEPgUpdate(ctx context.Context, d *schema.ResourceDat
 		for _, relationParam := range oldRelList {
 			paramMap := relationParam.(map[string]interface{})
 
-			err = aciClient.DeleteRelationfvRsCons(cloudSvcEPg.DistinguishedName, GetMOName(paramMap["target_dn"].(string)))
+			err = aciClient.DeleteRelationfvRsConsFromCloudServiceEpg(cloudSvcEPg.DistinguishedName, GetMOName(paramMap["target_dn"].(string)))
 			if err != nil {
 				return diag.FromErr(err)
 			}
@@ -946,7 +946,7 @@ func resourceAciCloudServiceEPgUpdate(ctx context.Context, d *schema.ResourceDat
 		for _, relationParam := range newRelList {
 			paramMap := relationParam.(map[string]interface{})
 
-			err = aciClient.CreateRelationfvRsCons(cloudSvcEPg.DistinguishedName, cloudSvcEPgAttr.Annotation, paramMap["prio"].(string), GetMOName(paramMap["target_dn"].(string)))
+			err = aciClient.CreateRelationfvRsConsFromCloudServiceEpg(cloudSvcEPg.DistinguishedName, cloudSvcEPgAttr.Annotation, paramMap["prio"].(string), GetMOName(paramMap["target_dn"].(string)))
 			if err != nil {
 				return diag.FromErr(err)
 			}
@@ -959,7 +959,7 @@ func resourceAciCloudServiceEPgUpdate(ctx context.Context, d *schema.ResourceDat
 		for _, relationParam := range oldRelList {
 			paramMap := relationParam.(map[string]interface{})
 
-			err = aciClient.DeleteRelationfvRsConsIf(cloudSvcEPg.DistinguishedName, GetMOName(paramMap["target_dn"].(string)))
+			err = aciClient.DeleteRelationfvRsConsIfFromCloudServiceEpg(cloudSvcEPg.DistinguishedName, GetMOName(paramMap["target_dn"].(string)))
 			if err != nil {
 				return diag.FromErr(err)
 			}
@@ -967,7 +967,7 @@ func resourceAciCloudServiceEPgUpdate(ctx context.Context, d *schema.ResourceDat
 		for _, relationParam := range newRelList {
 			paramMap := relationParam.(map[string]interface{})
 
-			err = aciClient.CreateRelationfvRsConsIf(cloudSvcEPg.DistinguishedName, cloudSvcEPgAttr.Annotation, paramMap["prio"].(string), GetMOName(paramMap["target_dn"].(string)))
+			err = aciClient.CreateRelationfvRsConsIfFromCloudServiceEpg(cloudSvcEPg.DistinguishedName, cloudSvcEPgAttr.Annotation, paramMap["prio"].(string), GetMOName(paramMap["target_dn"].(string)))
 			if err != nil {
 				return diag.FromErr(err)
 			}
@@ -975,11 +975,11 @@ func resourceAciCloudServiceEPgUpdate(ctx context.Context, d *schema.ResourceDat
 	}
 	if d.HasChange("relation_fvrs_cust_qos_pol") || d.HasChange("annotation") {
 		_, newRelParam := d.GetChange("relation_fvrs_cust_qos_pol")
-		err = aciClient.DeleteRelationfvRsCustQosPol(cloudSvcEPg.DistinguishedName)
+		err = aciClient.DeleteRelationfvRsCustQosPolFromCloudServiceEpg(cloudSvcEPg.DistinguishedName)
 		if err != nil {
 			return diag.FromErr(err)
 		}
-		err = aciClient.CreateRelationfvRsCustQosPol(cloudSvcEPg.DistinguishedName, cloudSvcEPgAttr.Annotation, GetMOName(newRelParam.(string)))
+		err = aciClient.CreateRelationfvRsCustQosPolFromCloudServiceEpg(cloudSvcEPg.DistinguishedName, cloudSvcEPgAttr.Annotation, GetMOName(newRelParam.(string)))
 		if err != nil {
 			return diag.FromErr(err)
 		}
@@ -993,14 +993,14 @@ func resourceAciCloudServiceEPgUpdate(ctx context.Context, d *schema.ResourceDat
 		relToCreate := toStringList(newRelSet.Difference(oldRelSet).List())
 
 		for _, relDn := range relToDelete {
-			err = aciClient.DeleteRelationfvRsGraphDef(cloudSvcEPg.DistinguishedName, relDn)
+			err = aciClient.DeleteRelationfvRsGraphDefFromCloudServiceEpg(cloudSvcEPg.DistinguishedName, relDn)
 
 			if err != nil {
 				return diag.FromErr(err)
 			}
 		}
 		for _, relDn := range relToCreate {
-			err = aciClient.CreateRelationfvRsGraphDef(cloudSvcEPg.DistinguishedName, cloudSvcEPgAttr.Annotation, relDn)
+			err = aciClient.CreateRelationfvRsGraphDefFromCloudServiceEpg(cloudSvcEPg.DistinguishedName, cloudSvcEPgAttr.Annotation, relDn)
 
 			if err != nil {
 				return diag.FromErr(err)
@@ -1015,13 +1015,13 @@ func resourceAciCloudServiceEPgUpdate(ctx context.Context, d *schema.ResourceDat
 		relToCreate := toStringList(newRelSet.Difference(oldRelSet).List())
 
 		for _, relDn := range relToDelete {
-			err = aciClient.DeleteRelationfvRsIntraEpg(cloudSvcEPg.DistinguishedName, GetMOName(relDn))
+			err = aciClient.DeleteRelationfvRsIntraEpgFromCloudServiceEpg(cloudSvcEPg.DistinguishedName, GetMOName(relDn))
 			if err != nil {
 				return diag.FromErr(err)
 			}
 		}
 		for _, relDn := range relToCreate {
-			err = aciClient.CreateRelationfvRsIntraEpg(cloudSvcEPg.DistinguishedName, cloudSvcEPgAttr.Annotation, GetMOName(relDn))
+			err = aciClient.CreateRelationfvRsIntraEpgFromCloudServiceEpg(cloudSvcEPg.DistinguishedName, cloudSvcEPgAttr.Annotation, GetMOName(relDn))
 			if err != nil {
 				return diag.FromErr(err)
 			}
@@ -1035,13 +1035,13 @@ func resourceAciCloudServiceEPgUpdate(ctx context.Context, d *schema.ResourceDat
 		relToCreate := toStringList(newRelSet.Difference(oldRelSet).List())
 
 		for _, relDn := range relToDelete {
-			err = aciClient.DeleteRelationfvRsProtBy(cloudSvcEPg.DistinguishedName, GetMOName(relDn))
+			err = aciClient.DeleteRelationfvRsProtByFromCloudServiceEpg(cloudSvcEPg.DistinguishedName, GetMOName(relDn))
 			if err != nil {
 				return diag.FromErr(err)
 			}
 		}
 		for _, relDn := range relToCreate {
-			err = aciClient.CreateRelationfvRsProtBy(cloudSvcEPg.DistinguishedName, cloudSvcEPgAttr.Annotation, GetMOName(relDn))
+			err = aciClient.CreateRelationfvRsProtByFromCloudServiceEpg(cloudSvcEPg.DistinguishedName, cloudSvcEPgAttr.Annotation, GetMOName(relDn))
 			if err != nil {
 				return diag.FromErr(err)
 			}
@@ -1054,7 +1054,7 @@ func resourceAciCloudServiceEPgUpdate(ctx context.Context, d *schema.ResourceDat
 		for _, relationParam := range oldRelList {
 			paramMap := relationParam.(map[string]interface{})
 
-			err = aciClient.DeleteRelationfvRsProv(cloudSvcEPg.DistinguishedName, GetMOName(paramMap["target_dn"].(string)))
+			err = aciClient.DeleteRelationfvRsProvFromCloudServiceEpg(cloudSvcEPg.DistinguishedName, GetMOName(paramMap["target_dn"].(string)))
 			if err != nil {
 				return diag.FromErr(err)
 			}
@@ -1062,7 +1062,7 @@ func resourceAciCloudServiceEPgUpdate(ctx context.Context, d *schema.ResourceDat
 		for _, relationParam := range newRelList {
 			paramMap := relationParam.(map[string]interface{})
 
-			err = aciClient.CreateRelationfvRsProv(cloudSvcEPg.DistinguishedName, cloudSvcEPgAttr.Annotation, paramMap["label_match_criteria"].(string), paramMap["prio"].(string), GetMOName(paramMap["target_dn"].(string)))
+			err = aciClient.CreateRelationfvRsProvFromCloudServiceEpg(cloudSvcEPg.DistinguishedName, cloudSvcEPgAttr.Annotation, paramMap["label_match_criteria"].(string), paramMap["prio"].(string), GetMOName(paramMap["target_dn"].(string)))
 			if err != nil {
 				return diag.FromErr(err)
 			}
@@ -1076,14 +1076,14 @@ func resourceAciCloudServiceEPgUpdate(ctx context.Context, d *schema.ResourceDat
 		relToCreate := toStringList(newRelSet.Difference(oldRelSet).List())
 
 		for _, relDn := range relToDelete {
-			err = aciClient.DeleteRelationfvRsProvDef(cloudSvcEPg.DistinguishedName, relDn)
+			err = aciClient.DeleteRelationfvRsProvDefFromCloudServiceEpg(cloudSvcEPg.DistinguishedName, relDn)
 
 			if err != nil {
 				return diag.FromErr(err)
 			}
 		}
 		for _, relDn := range relToCreate {
-			err = aciClient.CreateRelationfvRsProvDef(cloudSvcEPg.DistinguishedName, cloudSvcEPgAttr.Annotation, relDn)
+			err = aciClient.CreateRelationfvRsProvDefFromCloudServiceEpg(cloudSvcEPg.DistinguishedName, cloudSvcEPgAttr.Annotation, relDn)
 
 			if err != nil {
 				return diag.FromErr(err)
@@ -1098,14 +1098,14 @@ func resourceAciCloudServiceEPgUpdate(ctx context.Context, d *schema.ResourceDat
 		relToCreate := toStringList(newRelSet.Difference(oldRelSet).List())
 
 		for _, relDn := range relToDelete {
-			err = aciClient.DeleteRelationfvRsSecInherited(cloudSvcEPg.DistinguishedName, relDn)
+			err = aciClient.DeleteRelationfvRsSecInheritedFromCloudServiceEpg(cloudSvcEPg.DistinguishedName, relDn)
 
 			if err != nil {
 				return diag.FromErr(err)
 			}
 		}
 		for _, relDn := range relToCreate {
-			err = aciClient.CreateRelationfvRsSecInherited(cloudSvcEPg.DistinguishedName, cloudSvcEPgAttr.Annotation, relDn)
+			err = aciClient.CreateRelationfvRsSecInheritedFromCloudServiceEpg(cloudSvcEPg.DistinguishedName, cloudSvcEPgAttr.Annotation, relDn)
 
 			if err != nil {
 				return diag.FromErr(err)
