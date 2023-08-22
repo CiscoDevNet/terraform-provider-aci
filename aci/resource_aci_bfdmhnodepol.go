@@ -120,7 +120,7 @@ func resourceAciBFDMultihopNodePolicyCreate(ctx context.Context, d *schema.Resou
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
 	name := d.Get("name").(string)
-	TenantDn := d.Get("tenant_dn").(string)
+	tenantDn := d.Get("tenant_dn").(string)
 
 	bfdMhNodePolAttr := models.BFDMultihopNodePolicyAttributes{}
 
@@ -153,7 +153,7 @@ func resourceAciBFDMultihopNodePolicyCreate(ctx context.Context, d *schema.Resou
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		bfdMhNodePolAttr.NameAlias = NameAlias.(string)
 	}
-	bfdMhNodePol := models.NewBFDMultihopNodePolicy(fmt.Sprintf(models.RnBfdMhNodePol, name), TenantDn, desc, bfdMhNodePolAttr)
+	bfdMhNodePol := models.NewBFDMultihopNodePolicy(fmt.Sprintf(models.RnBfdMhNodePol, name), tenantDn, desc, bfdMhNodePolAttr)
 
 	err := aciClient.Save(bfdMhNodePol)
 	if err != nil {
@@ -169,7 +169,7 @@ func resourceAciBFDMultihopNodePolicyUpdate(ctx context.Context, d *schema.Resou
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
 	name := d.Get("name").(string)
-	TenantDn := d.Get("tenant_dn").(string)
+	tenantDn := d.Get("tenant_dn").(string)
 
 	bfdMhNodePolAttr := models.BFDMultihopNodePolicyAttributes{}
 
@@ -202,7 +202,7 @@ func resourceAciBFDMultihopNodePolicyUpdate(ctx context.Context, d *schema.Resou
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		bfdMhNodePolAttr.NameAlias = NameAlias.(string)
 	}
-	bfdMhNodePol := models.NewBFDMultihopNodePolicy(fmt.Sprintf(models.RnBfdMhNodePol, name), TenantDn, desc, bfdMhNodePolAttr)
+	bfdMhNodePol := models.NewBFDMultihopNodePolicy(fmt.Sprintf(models.RnBfdMhNodePol, name), tenantDn, desc, bfdMhNodePolAttr)
 
 	bfdMhNodePol.Status = "modified"
 

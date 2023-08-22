@@ -46,9 +46,9 @@ func dataSourceAciBFDMultihopNodePolicy() *schema.Resource {
 func dataSourceAciBFDMultihopNodePolicyRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	aciClient := m.(*client.Client)
 	name := d.Get("name").(string)
-	TenantDn := d.Get("tenant_dn").(string)
+	tenantDn := d.Get("tenant_dn").(string)
 	rn := fmt.Sprintf(models.RnBfdMhNodePol, name)
-	dn := fmt.Sprintf("%s/%s", TenantDn, rn)
+	dn := fmt.Sprintf("%s/%s", tenantDn, rn)
 
 	bfdMhNodePol, err := getRemoteBFDMultihopNodePolicy(aciClient, dn)
 	if err != nil {
