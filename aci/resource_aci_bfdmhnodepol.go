@@ -115,8 +115,7 @@ func resourceAciBFDMultihopNodePolicyImport(d *schema.ResourceData, m interface{
 	return []*schema.ResourceData{schemaFilled}, nil
 }
 
-func resourceAciBFDMultihopNodePolicyCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	log.Printf("[DEBUG] BFD Multihop Node Policy: Beginning Creation")
+func makeAciBFDMultihopNodePolicy(ctx context.Context, d *schema.ResourceData, m interface{}, method string) diag.Diagnostics {
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
 	name := d.Get("name").(string)
@@ -155,63 +154,28 @@ func resourceAciBFDMultihopNodePolicyCreate(ctx context.Context, d *schema.Resou
 	}
 	bfdMhNodePol := models.NewBFDMultihopNodePolicy(fmt.Sprintf(models.RnBfdMhNodePol, name), tenantDn, desc, bfdMhNodePolAttr)
 
+	if method == "update" {
+		bfdMhNodePol.Status = "modified"
+	}
+
 	err := aciClient.Save(bfdMhNodePol)
 	if err != nil {
 		return diag.FromErr(err)
 	}
 
 	d.SetId(bfdMhNodePol.DistinguishedName)
+	return nil
+}
+
+func resourceAciBFDMultihopNodePolicyCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+	log.Printf("[DEBUG] BFD Multihop Node Policy: Beginning Creation")
+	makeAciBFDMultihopNodePolicy(ctx, d, m, "create")
 	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
 	return resourceAciBFDMultihopNodePolicyRead(ctx, d, m)
 }
 func resourceAciBFDMultihopNodePolicyUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Printf("[DEBUG] BFD Multihop Node Policy: Beginning Update")
-	aciClient := m.(*client.Client)
-	desc := d.Get("description").(string)
-	name := d.Get("name").(string)
-	tenantDn := d.Get("tenant_dn").(string)
-
-	bfdMhNodePolAttr := models.BFDMultihopNodePolicyAttributes{}
-
-	if Annotation, ok := d.GetOk("annotation"); ok {
-		bfdMhNodePolAttr.Annotation = Annotation.(string)
-	} else {
-		bfdMhNodePolAttr.Annotation = "{}"
-	}
-
-	if AdminSt, ok := d.GetOk("admin_state"); ok {
-		bfdMhNodePolAttr.AdminSt = AdminSt.(string)
-	}
-
-	if DetectMult, ok := d.GetOk("detection_multiplier"); ok {
-		bfdMhNodePolAttr.DetectMult = DetectMult.(string)
-	}
-
-	if MinRxIntvl, ok := d.GetOk("min_rx_interval"); ok {
-		bfdMhNodePolAttr.MinRxIntvl = MinRxIntvl.(string)
-	}
-
-	if MinTxIntvl, ok := d.GetOk("min_tx_interval"); ok {
-		bfdMhNodePolAttr.MinTxIntvl = MinTxIntvl.(string)
-	}
-
-	if Name, ok := d.GetOk("name"); ok {
-		bfdMhNodePolAttr.Name = Name.(string)
-	}
-
-	if NameAlias, ok := d.GetOk("name_alias"); ok {
-		bfdMhNodePolAttr.NameAlias = NameAlias.(string)
-	}
-	bfdMhNodePol := models.NewBFDMultihopNodePolicy(fmt.Sprintf(models.RnBfdMhNodePol, name), tenantDn, desc, bfdMhNodePolAttr)
-
-	bfdMhNodePol.Status = "modified"
-
-	err := aciClient.Save(bfdMhNodePol)
-	if err != nil {
-		return diag.FromErr(err)
-	}
-
-	d.SetId(bfdMhNodePol.DistinguishedName)
+	makeAciBFDMultihopNodePolicy(ctx, d, m, "update")
 	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
 	return resourceAciBFDMultihopNodePolicyRead(ctx, d, m)
 }
