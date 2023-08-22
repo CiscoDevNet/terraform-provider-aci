@@ -42,12 +42,12 @@ func resourceAciCloudServiceEPg() *schema.Resource {
 					"Unknown",
 				}, false),
 			},
-			"az_private_endpoint": {
+			"azure_private_endpoint": {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
 			},
-			"custom_svc_type": {
+			"custom_service_type": {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
@@ -64,6 +64,11 @@ func resourceAciCloudServiceEPg() *schema.Resource {
 					"Unknown",
 				}, false),
 			},
+			"exception_tag": {
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
 			"flood_on_encap": {
 				Type:     schema.TypeString,
 				Optional: true,
@@ -73,7 +78,7 @@ func resourceAciCloudServiceEPg() *schema.Resource {
 					"enabled",
 				}, false),
 			},
-			"match_t": {
+			"label_match_criteria": {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
@@ -89,7 +94,7 @@ func resourceAciCloudServiceEPg() *schema.Resource {
 				Required: true,
 				ForceNew: true,
 			},
-			"pref_gr_memb": {
+			"preferred_group_member": {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
@@ -227,7 +232,7 @@ func resourceAciCloudServiceEPg() *schema.Resource {
 				Description: "Create relation to vzBrCP",
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
-						"match_t": {
+						"label_match_criteria": {
 							Optional: true,
 							Type:     schema.TypeString,
 							ValidateFunc: validation.StringInSlice([]string{
@@ -301,14 +306,15 @@ func setCloudServiceEPgAttributes(cloudSvcEPg *models.CloudServiceEPg, d *schema
 	}
 	d.Set("access_type", cloudSvcEPgMap["accessType"])
 	d.Set("annotation", cloudSvcEPgMap["annotation"])
-	d.Set("az_private_endpoint", cloudSvcEPgMap["azPrivateEndpoint"])
-	d.Set("custom_svc_type", cloudSvcEPgMap["customSvcType"])
+	d.Set("azure_private_endpoint", cloudSvcEPgMap["azPrivateEndpoint"])
+	d.Set("custom_service_type", cloudSvcEPgMap["customSvcType"])
 	d.Set("deployment_type", cloudSvcEPgMap["deploymentType"])
+	d.Set("exception_tag", cloudSvcEPgMap["exceptionTag"])
 	d.Set("flood_on_encap", cloudSvcEPgMap["floodOnEncap"])
-	d.Set("match_t", cloudSvcEPgMap["matchT"])
+	d.Set("label_match_criteria", cloudSvcEPgMap["matchT"])
 	d.Set("name", cloudSvcEPgMap["name"])
 	d.Set("name_alias", cloudSvcEPgMap["nameAlias"])
-	d.Set("pref_gr_memb", cloudSvcEPgMap["prefGrMemb"])
+	d.Set("preferred_group_member", cloudSvcEPgMap["prefGrMemb"])
 	d.Set("prio", cloudSvcEPgMap["prio"])
 	d.Set("cloud_service_epg_type", cloudSvcEPgMap["type"])
 	return d, nil
@@ -429,9 +435,9 @@ func getAndSetCloudServiceEPgRelationalAttributes(client *client.Client, dn stri
 		fvRsProvResultData := make([]map[string]string, 0, 1)
 		for _, obj := range fvRsProvData.([]map[string]string) {
 			fvRsProvResultData = append(fvRsProvResultData, map[string]string{
-				"match_t":   obj["matchT"],
-				"prio":      obj["prio"],
-				"target_dn": obj["tDn"],
+				"label_match_criteria": obj["matchT"],
+				"prio":                 obj["prio"],
+				"target_dn":            obj["tDn"],
 			})
 		}
 		d.Set("relation_fvrs_prov", fvRsProvResultData)
@@ -508,11 +514,11 @@ func resourceAciCloudServiceEPgCreate(ctx context.Context, d *schema.ResourceDat
 		cloudSvcEPgAttr.AccessType = AccessType.(string)
 	}
 
-	if AzPrivateEndpoint, ok := d.GetOk("az_private_endpoint"); ok {
+	if AzPrivateEndpoint, ok := d.GetOk("azure_private_endpoint"); ok {
 		cloudSvcEPgAttr.AzPrivateEndpoint = AzPrivateEndpoint.(string)
 	}
 
-	if CustomSvcType, ok := d.GetOk("custom_svc_type"); ok {
+	if CustomSvcType, ok := d.GetOk("custom_service_type"); ok {
 		cloudSvcEPgAttr.CustomSvcType = CustomSvcType.(string)
 	}
 
@@ -520,11 +526,15 @@ func resourceAciCloudServiceEPgCreate(ctx context.Context, d *schema.ResourceDat
 		cloudSvcEPgAttr.DeploymentType = DeploymentType.(string)
 	}
 
+	if ExceptionTag, ok := d.GetOk("exception_tag"); ok {
+		cloudSvcEPgAttr.ExceptionTag = ExceptionTag.(string)
+	}
+
 	if FloodOnEncap, ok := d.GetOk("flood_on_encap"); ok {
 		cloudSvcEPgAttr.FloodOnEncap = FloodOnEncap.(string)
 	}
 
-	if MatchT, ok := d.GetOk("match_t"); ok {
+	if MatchT, ok := d.GetOk("label_match_criteria"); ok {
 		cloudSvcEPgAttr.MatchT = MatchT.(string)
 	}
 
@@ -536,7 +546,7 @@ func resourceAciCloudServiceEPgCreate(ctx context.Context, d *schema.ResourceDat
 		cloudSvcEPgAttr.NameAlias = NameAlias.(string)
 	}
 
-	if PrefGrMemb, ok := d.GetOk("pref_gr_memb"); ok {
+	if PrefGrMemb, ok := d.GetOk("preferred_group_member"); ok {
 		cloudSvcEPgAttr.PrefGrMemb = PrefGrMemb.(string)
 	}
 
@@ -708,7 +718,7 @@ func resourceAciCloudServiceEPgCreate(ctx context.Context, d *schema.ResourceDat
 		for _, relationParam := range relationParamList {
 			paramMap := relationParam.(map[string]interface{})
 
-			err = aciClient.CreateRelationfvRsProv(cloudSvcEPg.DistinguishedName, cloudSvcEPgAttr.Annotation, paramMap["match_t"].(string), paramMap["prio"].(string), GetMOName(paramMap["target_dn"].(string)))
+			err = aciClient.CreateRelationfvRsProv(cloudSvcEPg.DistinguishedName, cloudSvcEPgAttr.Annotation, paramMap["label_match_criteria"].(string), paramMap["prio"].(string), GetMOName(paramMap["target_dn"].(string)))
 			if err != nil {
 				return diag.FromErr(err)
 			}
@@ -760,11 +770,11 @@ func resourceAciCloudServiceEPgUpdate(ctx context.Context, d *schema.ResourceDat
 		cloudSvcEPgAttr.AccessType = AccessType.(string)
 	}
 
-	if AzPrivateEndpoint, ok := d.GetOk("az_private_endpoint"); ok {
+	if AzPrivateEndpoint, ok := d.GetOk("azure_private_endpoint"); ok {
 		cloudSvcEPgAttr.AzPrivateEndpoint = AzPrivateEndpoint.(string)
 	}
 
-	if CustomSvcType, ok := d.GetOk("custom_svc_type"); ok {
+	if CustomSvcType, ok := d.GetOk("custom_service_type"); ok {
 		cloudSvcEPgAttr.CustomSvcType = CustomSvcType.(string)
 	}
 
@@ -776,7 +786,7 @@ func resourceAciCloudServiceEPgUpdate(ctx context.Context, d *schema.ResourceDat
 		cloudSvcEPgAttr.FloodOnEncap = FloodOnEncap.(string)
 	}
 
-	if MatchT, ok := d.GetOk("match_t"); ok {
+	if MatchT, ok := d.GetOk("label_match_criteria"); ok {
 		cloudSvcEPgAttr.MatchT = MatchT.(string)
 	}
 
@@ -788,7 +798,7 @@ func resourceAciCloudServiceEPgUpdate(ctx context.Context, d *schema.ResourceDat
 		cloudSvcEPgAttr.NameAlias = NameAlias.(string)
 	}
 
-	if PrefGrMemb, ok := d.GetOk("pref_gr_memb"); ok {
+	if PrefGrMemb, ok := d.GetOk("preferred_group_member"); ok {
 		cloudSvcEPgAttr.PrefGrMemb = PrefGrMemb.(string)
 	}
 
@@ -1052,7 +1062,7 @@ func resourceAciCloudServiceEPgUpdate(ctx context.Context, d *schema.ResourceDat
 		for _, relationParam := range newRelList {
 			paramMap := relationParam.(map[string]interface{})
 
-			err = aciClient.CreateRelationfvRsProv(cloudSvcEPg.DistinguishedName, cloudSvcEPgAttr.Annotation, paramMap["match_t"].(string), paramMap["prio"].(string), GetMOName(paramMap["target_dn"].(string)))
+			err = aciClient.CreateRelationfvRsProv(cloudSvcEPg.DistinguishedName, cloudSvcEPgAttr.Annotation, paramMap["label_match_criteria"].(string), paramMap["prio"].(string), GetMOName(paramMap["target_dn"].(string)))
 			if err != nil {
 				return diag.FromErr(err)
 			}

@@ -23,11 +23,11 @@ func dataSourceAciCloudServiceEPg() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-			"az_private_endpoint": {
+			"azure_private_endpoint": {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-			"custom_svc_type": {
+			"custom_service_type": {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
@@ -35,11 +35,15 @@ func dataSourceAciCloudServiceEPg() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
+			"exception_tag": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
 			"flood_on_encap": {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-			"match_t": {
+			"label_match_criteria": {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
@@ -47,7 +51,7 @@ func dataSourceAciCloudServiceEPg() *schema.Resource {
 				Type:     schema.TypeString,
 				Required: true,
 			},
-			"pref_gr_memb": {
+			"preferred_group_member": {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
