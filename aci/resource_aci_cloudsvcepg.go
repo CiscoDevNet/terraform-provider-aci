@@ -330,6 +330,8 @@ func getAndSetCloudServiceEPgRelationalAttributes(client *client.Client, dn stri
 		d.Set("relation_cloudrs_cloud_epg_ctx", make([]string, 0, 1))
 	} else {
 		cloudRsCloudEPgCtxResultData := make([]string, 0, 1)
+		log.Printf("[Gaspard] checking variable type %T", cloudRsCloudEPgCtxData)
+		log.Printf("[Gaspard] checking variable %v", cloudRsCloudEPgCtxData)
 		for _, obj := range cloudRsCloudEPgCtxData.([]map[string]string) {
 			cloudRsCloudEPgCtxResultData = append(cloudRsCloudEPgCtxResultData, obj["tDn"])
 		}
