@@ -1,15 +1,15 @@
 ---
-subcategory: -
+subcategory: - "Cloud"
 layout: "aci"
 page_title: "ACI: aci_cloud_service_epg"
 sidebar_current: "docs-aci-resource-cloud_service_epg"
 description: |-
-  Manages ACI Cloud Service EPg
+  Manages ACI Cloud Service EPG
 ---
 
 # aci_cloud_service_epg #
 
-Manages ACI Cloud Service EPg
+Manages ACI Cloud Service EPG
 
 ## API Information ##
 
@@ -74,10 +74,11 @@ resource "aci_cloud_service_epg" "example" {
 
 ## Argument Reference ##
 
-* `cloud_applicationcontainer_dn` - (Required) Distinguished name of the parent CloudApplicationcontainer object.
-* `name` - (Required) Name of the Cloud Service EPg object.
+* `cloud_applicationcontainer_dn` - (Required) Distinguished name of the parent Cloud Application container object.
+* `name` - (Required) Name of the Cloud Service EPG object.
 * `annotation` - (Optional) Annotation of the Cloud Service EPg object.
-* `name_alias` - (Optional) Name Alias of the Cloud Service EPg object.* `access_type` - (Optional) cloud service access type.accessType refers to the type of connectivity to the
+* `name_alias` - (Optional) Name Alias of the Cloud Service EPg object.
+* `access_type` - (Optional) cloud service access type.accessType refers to the type of connectivity to the
                     service. It could be a public or private connectivity. Allowed values are "Private", "Public", "PublicAndPrivate", "Unknown", and default value is "Public". Type: String.
 
 * `az_private_endpoint` - (Optional) Naming for Azure Private Endpoint created from the SvcEPg.naming override for any Azure Private Endpoint

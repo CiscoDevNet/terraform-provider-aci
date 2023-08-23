@@ -400,6 +400,7 @@ func Provider() *schema.Provider {
 			"aci_cloud_provider_profile":                   dataSourceAciCloudProviderProfile(),
 			"aci_cloud_providers_region":                   dataSourceAciCloudProvidersRegion(),
 			"aci_cloud_service_epg":                        dataSourceAciCloudServiceEPg(),
+			"aci_cloud_service_endpoint_selector":          dataSourceAciCloudServiceEndpointSelector(),
 			"aci_cloud_subnet":                             dataSourceAciCloudSubnet(),
 			"aci_cloud_availability_zone":                  dataSourceAciCloudAvailabilityZone(),
 			"aci_cloud_account":                            dataSourceAciCloudAccount(),
