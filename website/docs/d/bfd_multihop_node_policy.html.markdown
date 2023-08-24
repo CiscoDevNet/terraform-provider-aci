@@ -7,7 +7,7 @@ description: |-
   Data source for ACI BFD Multihop Node Policy
 ---
 
-# aci_bfdmultihop_node_policy #
+# aci_bfd_multihop_node_policy #
 
 Data source for ACI BFD Multihop Node Policy
 

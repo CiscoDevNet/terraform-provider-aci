@@ -7,7 +7,7 @@ description: |-
   Manages ACI BFD Multihop Node Policy
 ---
 
-# aci_bfdmultihop_node_policy #
+# aci_bfd_multihop_node_policy #
 
 Manages ACI BFD Multihop Node Policy
 
@@ -26,7 +26,7 @@ Manages ACI BFD Multihop Node Policy
 resource "aci_bfd_multihop_node_policy" "example" {
   tenant_dn            = aci_tenant.example.id
   name                 = "example"
-  admin_st             = "enabled"
+  admin_state          = "enabled"
   annotation           = "orchestrator:terraform"
   detection_multiplier = "3"
   min_rx_interval      = "250"
