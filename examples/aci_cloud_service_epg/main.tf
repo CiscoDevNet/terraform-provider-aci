@@ -19,13 +19,19 @@ resource "aci_tenant" "azure_cloud_tenant_tf_test" {
 
 resource "aci_cloud_applicationcontainer" "azure_cloud_app_tf_test" {
   tenant_dn = aci_tenant.azure_cloud_tenant_tf_test.id
-  name = "azure_terraform_test_app_svc_epg"
+  name      = "azure_terraform_test_app_svc_epg"
 }
 
-resource "aci_cloud_service_epg" "azure_cloud_svc_epg_tf_test"{
+resource "aci_vrf" "azure_cloud_vrf_tf_test" {
+  tenant_dn = aci_tenant.azure_cloud_tenant_tf_test.id
+  name      = "azure_terraform_test_vrf_svc_epg"
+}
+
+resource "aci_cloud_service_epg" "azure_cloud_svc_epg_tf_test" {
   cloud_applicationcontainer_dn = aci_cloud_applicationcontainer.azure_cloud_app_tf_test.id
-  name =  "azure_terraform_test_cloud_svc_epg"
-  access_type = "Public"
-  deployment_type = "CloudNative"
-  cloud_service_epg_type = "Azure-SqlServer"
+  name                          = "azure_terraform_test_cloud_svc_epg"
+  access_type                   = "Public"
+  deployment_type               = "CloudNative"
+  cloud_service_epg_type        = "Azure-SqlServer"
+  relation_cloudrs_cloud_epg_ctx   = aci_vrf.azure_cloud_vrf_tf_test.id
 }

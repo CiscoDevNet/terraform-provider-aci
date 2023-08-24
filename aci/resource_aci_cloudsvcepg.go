@@ -329,7 +329,7 @@ func getAndSetCloudServiceEPgRelationalAttributes(client *client.Client, dn stri
 		log.Printf("[DEBUG] Error while reading relation cloudRsCloudEPgCtx %v", err)
 		d.Set("relation_cloudrs_cloud_epg_ctx", "")
 	} else {
-		d.Set("relation_cloudrs_cloud_epg_ctx", cloudRsCloudEPgCtxData["tDn"])
+		d.Set("relation_cloudrs_cloud_epg_ctx", cloudRsCloudEPgCtxData.(map[string]string)["tDn"])
 		log.Printf("[DEBUG]: cloudRsCloudEPgCtx: Reading finished successfully")
 	}
 
@@ -376,7 +376,7 @@ func getAndSetCloudServiceEPgRelationalAttributes(client *client.Client, dn stri
 		log.Printf("[DEBUG] Error while reading relation fvRsCustQosPol %v", err)
 		d.Set("relation_fvrs_cust_qos_pol", "")
 	} else {
-		d.Set("relation_fvrs_cust_qos_pol", fvRsCustQosPolData["tDn"])
+		d.Set("relation_fvrs_cust_qos_pol", fvRsCustQosPolData.(map[string]string)["tDn"])
 		log.Printf("[DEBUG]: fvRsCustQosPol: Reading finished successfully")
 	}
 
