@@ -7,7 +7,7 @@ PKG_NAME=aci
 default: build
 
 build: fmtcheck
-	go install -mod=mod
+	go install
 
 test: fmtcheck
 	go test -i $(TEST) || exit 1
