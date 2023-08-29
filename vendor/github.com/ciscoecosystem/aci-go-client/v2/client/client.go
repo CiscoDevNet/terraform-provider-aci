@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"crypto/tls"
 	"encoding/base64"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io/ioutil"
@@ -741,4 +742,35 @@ func (c *Client) checkHtmlResp(body string) error {
 	}
 	log.Printf("[DEBUG] HTML Error Parsing Result: %s", errStr)
 	return fmt.Errorf(errStr)
+}
+
+// PostObjectConfig is a function that posts an object configuration to the ACI controller.
+//
+// It takes the following parameters:
+// - objectDn: a string representing the object DN.
+// - objectMap: a map[string]interface{} representing the object map.
+//
+// It returns an error if there is any issue during the post operation.
+func (client *Client) PostObjectConfig(objectDn string, objectMap map[string]interface{}) error {
+	objectMapByteStr, err := json.Marshal(objectMap)
+	if err != nil {
+		return err
+	}
+
+	objectContainer, err := container.ParseJSON(objectMapByteStr)
+	if err != nil {
+		return err
+	}
+
+	httpRequestPayload, err := client.MakeRestRequest("POST", fmt.Sprintf("%s/%s.json", client.MOURL, objectDn), objectContainer, true)
+	if err != nil {
+		return err
+	}
+
+	respCont, _, err := client.Do(httpRequestPayload)
+	if err != nil {
+		return err
+	}
+
+	return CheckForErrors(respCont, "POST", false)
 }
