@@ -141,15 +141,16 @@ func resourceAciCloudServiceEPg() *schema.Resource {
 				}, false),
 			},
 
-			"relation_cloudrs_cloud_epg_ctx": {
-				Type: schema.TypeString,
-
+			"relation_cloud_rs_cloud_epg_ctx": {
+				Type:        schema.TypeString,
 				Optional:    true,
+				Computed:    true,
 				Description: "Create relation to fv:Ctx",
 			},
-			"relation_fvrs_cons": {
+			"relation_fv_rs_cons": {
 				Type:        schema.TypeSet,
 				Optional:    true,
+				Computed:    true,
 				Description: "Create relation to vzBrCP",
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
@@ -173,9 +174,10 @@ func resourceAciCloudServiceEPg() *schema.Resource {
 					},
 				},
 			},
-			"relation_fvrs_cons_if": {
+			"relation_fv_rs_cons_if": {
 				Type:        schema.TypeSet,
 				Optional:    true,
+				Computed:    true,
 				Description: "Create relation to vzCPIf",
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
@@ -199,36 +201,40 @@ func resourceAciCloudServiceEPg() *schema.Resource {
 					},
 				},
 			},
-			"relation_fvrs_cust_qos_pol": {
-				Type: schema.TypeString,
-
+			"relation_fv_rs_cust_qos_pol": {
+				Type:        schema.TypeString,
 				Optional:    true,
+				Computed:    true,
 				Description: "Create relation to qos:CustomPol",
 			},
-			"relation_fvrs_graph_def": {
+			"relation_fv_rs_graph_def": {
 				Type:        schema.TypeSet,
 				Elem:        &schema.Schema{Type: schema.TypeString},
 				Optional:    true,
+				Computed:    true,
 				Description: "Create relation to vz:GraphCont",
 				Set:         schema.HashString,
 			},
-			"relation_fvrs_intra_epg": {
+			"relation_fv_rs_intra_epg": {
 				Type:        schema.TypeSet,
 				Elem:        &schema.Schema{Type: schema.TypeString},
 				Optional:    true,
+				Computed:    true,
 				Description: "Create relation to vz:BrCP",
 				Set:         schema.HashString,
 			},
-			"relation_fvrs_prot_by": {
+			"relation_fv_rs_prot_by": {
 				Type:        schema.TypeSet,
 				Elem:        &schema.Schema{Type: schema.TypeString},
 				Optional:    true,
+				Computed:    true,
 				Description: "Create relation to vz:Taboo",
 				Set:         schema.HashString,
 			},
-			"relation_fvrs_prov": {
+			"relation_fv_rs_prov": {
 				Type:        schema.TypeSet,
 				Optional:    true,
+				Computed:    true,
 				Description: "Create relation to vzBrCP",
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
@@ -262,17 +268,19 @@ func resourceAciCloudServiceEPg() *schema.Resource {
 					},
 				},
 			},
-			"relation_fvrs_prov_def": {
+			"relation_fv_rs_prov_def": {
 				Type:        schema.TypeSet,
 				Elem:        &schema.Schema{Type: schema.TypeString},
 				Optional:    true,
+				Computed:    true,
 				Description: "Create relation to vz:CtrctEPgCont",
 				Set:         schema.HashString,
 			},
-			"relation_fvrs_sec_inherited": {
+			"relation_fv_rs_sec_inherited": {
 				Type:        schema.TypeSet,
 				Elem:        &schema.Schema{Type: schema.TypeString},
 				Optional:    true,
+				Computed:    true,
 				Description: "Create relation to fv:EPg",
 				Set:         schema.HashString,
 			}})),
@@ -327,9 +335,9 @@ func getAndSetCloudServiceEPgRelationalAttributes(client *client.Client, dn stri
 	cloudRsCloudEPgCtxData, err := client.ReadRelationcloudRsCloudEPgCtxFromCloudServiceEpg(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation cloudRsCloudEPgCtx %v", err)
-		d.Set("relation_cloudrs_cloud_epg_ctx", "")
+		d.Set("relation_cloud_rs_cloud_epg_ctx", "")
 	} else {
-		d.Set("relation_cloudrs_cloud_epg_ctx", cloudRsCloudEPgCtxData.(map[string]string)["tDn"])
+		d.Set("relation_cloud_rs_cloud_epg_ctx", cloudRsCloudEPgCtxData.(map[string]string)["tDn"])
 		log.Printf("[DEBUG]: cloudRsCloudEPgCtx: Reading finished successfully")
 	}
 
@@ -338,7 +346,7 @@ func getAndSetCloudServiceEPgRelationalAttributes(client *client.Client, dn stri
 	fvRsConsData, err := client.ReadRelationfvRsConsFromCloudServiceEpg(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation fvRsCons %v", err)
-		d.Set("relation_fvrs_cons", make([]interface{}, 0, 1))
+		d.Set("relation_fv_rs_cons", make([]interface{}, 0, 1))
 	} else {
 		fvRsConsResultData := make([]map[string]string, 0, 1)
 		for _, obj := range fvRsConsData.([]map[string]string) {
@@ -347,7 +355,7 @@ func getAndSetCloudServiceEPgRelationalAttributes(client *client.Client, dn stri
 				"target_dn": obj["tDn"],
 			})
 		}
-		d.Set("relation_fvrs_cons", fvRsConsResultData)
+		d.Set("relation_fv_rs_cons", fvRsConsResultData)
 		log.Printf("[DEBUG]: fvRsCons: Reading finished successfully")
 	}
 
@@ -356,7 +364,7 @@ func getAndSetCloudServiceEPgRelationalAttributes(client *client.Client, dn stri
 	fvRsConsIfData, err := client.ReadRelationfvRsConsIfFromCloudServiceEpg(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation fvRsConsIf %v", err)
-		d.Set("relation_fvrs_cons_if", make([]interface{}, 0, 1))
+		d.Set("relation_fv_rs_cons_if", make([]interface{}, 0, 1))
 	} else {
 		fvRsConsIfResultData := make([]map[string]string, 0, 1)
 		for _, obj := range fvRsConsIfData.([]map[string]string) {
@@ -365,7 +373,7 @@ func getAndSetCloudServiceEPgRelationalAttributes(client *client.Client, dn stri
 				"target_dn": obj["tDn"],
 			})
 		}
-		d.Set("relation_fvrs_cons_if", fvRsConsIfResultData)
+		d.Set("relation_fv_rs_cons_if", fvRsConsIfResultData)
 		log.Printf("[DEBUG]: fvRsConsIf: Reading finished successfully")
 	}
 
@@ -374,9 +382,9 @@ func getAndSetCloudServiceEPgRelationalAttributes(client *client.Client, dn stri
 	fvRsCustQosPolData, err := client.ReadRelationfvRsCustQosPolFromCloudServiceEpg(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation fvRsCustQosPol %v", err)
-		d.Set("relation_fvrs_cust_qos_pol", "")
+		d.Set("relation_fv_rs_cust_qos_pol", "")
 	} else {
-		d.Set("relation_fvrs_cust_qos_pol", fvRsCustQosPolData.(map[string]string)["tDn"])
+		d.Set("relation_fv_rs_cust_qos_pol", fvRsCustQosPolData.(map[string]string)["tDn"])
 		log.Printf("[DEBUG]: fvRsCustQosPol: Reading finished successfully")
 	}
 
@@ -384,14 +392,14 @@ func getAndSetCloudServiceEPgRelationalAttributes(client *client.Client, dn stri
 	fvRsGraphDefData, err := client.ReadRelationfvRsGraphDefFromCloudServiceEpg(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation fvRsGraphDef %v", err)
-		d.Set("relation_fvrs_graph_def", make([]string, 0, 1))
+		d.Set("relation_fv_rs_graph_def", make([]string, 0, 1))
 	} else {
 		fvRsGraphDefResultData := make([]string, 0, 1)
 		for _, obj := range fvRsGraphDefData.([]map[string]string) {
 			fvRsGraphDefResultData = append(fvRsGraphDefResultData, obj["tDn"])
 		}
 		sort.Strings(fvRsGraphDefResultData)
-		d.Set("relation_fvrs_graph_def", fvRsGraphDefResultData)
+		d.Set("relation_fv_rs_graph_def", fvRsGraphDefResultData)
 		log.Printf("[DEBUG]: fvRsGraphDef: Reading finished successfully")
 	}
 
@@ -399,14 +407,14 @@ func getAndSetCloudServiceEPgRelationalAttributes(client *client.Client, dn stri
 	fvRsIntraEpgData, err := client.ReadRelationfvRsIntraEpgFromCloudServiceEpg(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation fvRsIntraEpg %v", err)
-		d.Set("relation_fvrs_intra_epg", make([]string, 0, 1))
+		d.Set("relation_fv_rs_intra_epg", make([]string, 0, 1))
 	} else {
 		fvRsIntraEpgResultData := make([]string, 0, 1)
 		for _, obj := range fvRsIntraEpgData.([]map[string]string) {
 			fvRsIntraEpgResultData = append(fvRsIntraEpgResultData, obj["tDn"])
 		}
 		sort.Strings(fvRsIntraEpgResultData)
-		d.Set("relation_fvrs_intra_epg", fvRsIntraEpgResultData)
+		d.Set("relation_fv_rs_intra_epg", fvRsIntraEpgResultData)
 		log.Printf("[DEBUG]: fvRsIntraEpg: Reading finished successfully")
 	}
 
@@ -414,14 +422,14 @@ func getAndSetCloudServiceEPgRelationalAttributes(client *client.Client, dn stri
 	fvRsProtByData, err := client.ReadRelationfvRsProtByFromCloudServiceEpg(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation fvRsProtBy %v", err)
-		d.Set("relation_fvrs_prot_by", make([]string, 0, 1))
+		d.Set("relation_fv_rs_prot_by", make([]string, 0, 1))
 	} else {
 		fvRsProtByResultData := make([]string, 0, 1)
 		for _, obj := range fvRsProtByData.([]map[string]string) {
 			fvRsProtByResultData = append(fvRsProtByResultData, obj["tDn"])
 		}
 		sort.Strings(fvRsProtByResultData)
-		d.Set("relation_fvrs_prot_by", fvRsProtByResultData)
+		d.Set("relation_fv_rs_prot_by", fvRsProtByResultData)
 		log.Printf("[DEBUG]: fvRsProtBy: Reading finished successfully")
 	}
 
@@ -430,7 +438,7 @@ func getAndSetCloudServiceEPgRelationalAttributes(client *client.Client, dn stri
 	fvRsProvData, err := client.ReadRelationfvRsProvFromCloudServiceEpg(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation fvRsProv %v", err)
-		d.Set("relation_fvrs_prov", make([]interface{}, 0, 1))
+		d.Set("relation_fv_rs_prov", make([]interface{}, 0, 1))
 	} else {
 		fvRsProvResultData := make([]map[string]string, 0, 1)
 		for _, obj := range fvRsProvData.([]map[string]string) {
@@ -440,7 +448,7 @@ func getAndSetCloudServiceEPgRelationalAttributes(client *client.Client, dn stri
 				"target_dn":            obj["tDn"],
 			})
 		}
-		d.Set("relation_fvrs_prov", fvRsProvResultData)
+		d.Set("relation_fv_rs_prov", fvRsProvResultData)
 		log.Printf("[DEBUG]: fvRsProv: Reading finished successfully")
 	}
 
@@ -448,14 +456,14 @@ func getAndSetCloudServiceEPgRelationalAttributes(client *client.Client, dn stri
 	fvRsProvDefData, err := client.ReadRelationfvRsProvDefFromCloudServiceEpg(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation fvRsProvDef %v", err)
-		d.Set("relation_fvrs_prov_def", make([]string, 0, 1))
+		d.Set("relation_fv_rs_prov_def", make([]string, 0, 1))
 	} else {
 		fvRsProvDefResultData := make([]string, 0, 1)
 		for _, obj := range fvRsProvDefData.([]map[string]string) {
 			fvRsProvDefResultData = append(fvRsProvDefResultData, obj["tDn"])
 		}
 		sort.Strings(fvRsProvDefResultData)
-		d.Set("relation_fvrs_prov_def", fvRsProvDefResultData)
+		d.Set("relation_fv_rs_prov_def", fvRsProvDefResultData)
 		log.Printf("[DEBUG]: fvRsProvDef: Reading finished successfully")
 	}
 
@@ -463,14 +471,14 @@ func getAndSetCloudServiceEPgRelationalAttributes(client *client.Client, dn stri
 	fvRsSecInheritedData, err := client.ReadRelationfvRsSecInheritedFromCloudServiceEpg(dn)
 	if err != nil {
 		log.Printf("[DEBUG] Error while reading relation fvRsSecInherited %v", err)
-		d.Set("relation_fvrs_sec_inherited", make([]string, 0, 1))
+		d.Set("relation_fv_rs_sec_inherited", make([]string, 0, 1))
 	} else {
 		fvRsSecInheritedResultData := make([]string, 0, 1)
 		for _, obj := range fvRsSecInheritedData.([]map[string]string) {
 			fvRsSecInheritedResultData = append(fvRsSecInheritedResultData, obj["tDn"])
 		}
 		sort.Strings(fvRsSecInheritedResultData)
-		d.Set("relation_fvrs_sec_inherited", fvRsSecInheritedResultData)
+		d.Set("relation_fv_rs_sec_inherited", fvRsSecInheritedResultData)
 		log.Printf("[DEBUG]: fvRsSecInherited: Reading finished successfully")
 	}
 }
@@ -565,68 +573,68 @@ func resourceAciCloudServiceEPgCreate(ctx context.Context, d *schema.ResourceDat
 	}
 	checkDns := make([]string, 0, 1)
 
-	if relationTocloudRsCloudEPgCtx, ok := d.GetOk("relation_cloudrs_cloud_epg_ctx"); ok {
+	if relationTocloudRsCloudEPgCtx, ok := d.GetOk("relation_cloud_rs_cloud_epg_ctx"); ok {
 		relationParam := relationTocloudRsCloudEPgCtx.(string)
 		checkDns = append(checkDns, relationParam)
 
 	}
 
-	if relationTofvRsCons, ok := d.GetOk("relation_fvrs_cons"); ok {
+	if relationTofvRsCons, ok := d.GetOk("relation_fv_rs_cons"); ok {
 		relationParamList := toStringList(relationTofvRsCons.(*schema.Set).List())
 		for _, relationParam := range relationParamList {
 			checkDns = append(checkDns, relationParam)
 		}
 	}
 
-	if relationTofvRsConsIf, ok := d.GetOk("relation_fvrs_cons_if"); ok {
+	if relationTofvRsConsIf, ok := d.GetOk("relation_fv_rs_cons_if"); ok {
 		relationParamList := toStringList(relationTofvRsConsIf.(*schema.Set).List())
 		for _, relationParam := range relationParamList {
 			checkDns = append(checkDns, relationParam)
 		}
 	}
 
-	if relationTofvRsCustQosPol, ok := d.GetOk("relation_fvrs_cust_qos_pol"); ok {
+	if relationTofvRsCustQosPol, ok := d.GetOk("relation_fv_rs_cust_qos_pol"); ok {
 		relationParam := relationTofvRsCustQosPol.(string)
 		checkDns = append(checkDns, relationParam)
 
 	}
 
-	if relationTofvRsGraphDef, ok := d.GetOk("relation_fvrs_graph_def"); ok {
+	if relationTofvRsGraphDef, ok := d.GetOk("relation_fv_rs_graph_def"); ok {
 		relationParamList := toStringList(relationTofvRsGraphDef.(*schema.Set).List())
 		for _, relationParam := range relationParamList {
 			checkDns = append(checkDns, relationParam)
 		}
 	}
 
-	if relationTofvRsIntraEpg, ok := d.GetOk("relation_fvrs_intra_epg"); ok {
+	if relationTofvRsIntraEpg, ok := d.GetOk("relation_fv_rs_intra_epg"); ok {
 		relationParamList := toStringList(relationTofvRsIntraEpg.(*schema.Set).List())
 		for _, relationParam := range relationParamList {
 			checkDns = append(checkDns, relationParam)
 		}
 	}
 
-	if relationTofvRsProtBy, ok := d.GetOk("relation_fvrs_prot_by"); ok {
+	if relationTofvRsProtBy, ok := d.GetOk("relation_fv_rs_prot_by"); ok {
 		relationParamList := toStringList(relationTofvRsProtBy.(*schema.Set).List())
 		for _, relationParam := range relationParamList {
 			checkDns = append(checkDns, relationParam)
 		}
 	}
 
-	if relationTofvRsProv, ok := d.GetOk("relation_fvrs_prov"); ok {
+	if relationTofvRsProv, ok := d.GetOk("relation_fv_rs_prov"); ok {
 		relationParamList := toStringList(relationTofvRsProv.(*schema.Set).List())
 		for _, relationParam := range relationParamList {
 			checkDns = append(checkDns, relationParam)
 		}
 	}
 
-	if relationTofvRsProvDef, ok := d.GetOk("relation_fvrs_prov_def"); ok {
+	if relationTofvRsProvDef, ok := d.GetOk("relation_fv_rs_prov_def"); ok {
 		relationParamList := toStringList(relationTofvRsProvDef.(*schema.Set).List())
 		for _, relationParam := range relationParamList {
 			checkDns = append(checkDns, relationParam)
 		}
 	}
 
-	if relationTofvRsSecInherited, ok := d.GetOk("relation_fvrs_sec_inherited"); ok {
+	if relationTofvRsSecInherited, ok := d.GetOk("relation_fv_rs_sec_inherited"); ok {
 		relationParamList := toStringList(relationTofvRsSecInherited.(*schema.Set).List())
 		for _, relationParam := range relationParamList {
 			checkDns = append(checkDns, relationParam)
@@ -640,7 +648,7 @@ func resourceAciCloudServiceEPgCreate(ctx context.Context, d *schema.ResourceDat
 	}
 	d.Partial(false)
 
-	if relationTocloudRsCloudEPgCtx, ok := d.GetOk("relation_cloudrs_cloud_epg_ctx"); ok {
+	if relationTocloudRsCloudEPgCtx, ok := d.GetOk("relation_cloud_rs_cloud_epg_ctx"); ok {
 		relationParam := relationTocloudRsCloudEPgCtx.(string)
 		err = aciClient.CreateRelationcloudRsCloudEPgCtxFromCloudServiceEpg(cloudSvcEPg.DistinguishedName, cloudSvcEPgAttr.Annotation, GetMOName(relationParam))
 		if err != nil {
@@ -649,7 +657,7 @@ func resourceAciCloudServiceEPgCreate(ctx context.Context, d *schema.ResourceDat
 
 	}
 
-	if relationTofvRsCons, ok := d.GetOk("relation_fvrs_cons"); ok {
+	if relationTofvRsCons, ok := d.GetOk("relation_fv_rs_cons"); ok {
 		relationParamList := relationTofvRsCons.(*schema.Set).List()
 		for _, relationParam := range relationParamList {
 			paramMap := relationParam.(map[string]interface{})
@@ -661,7 +669,7 @@ func resourceAciCloudServiceEPgCreate(ctx context.Context, d *schema.ResourceDat
 		}
 	}
 
-	if relationTofvRsConsIf, ok := d.GetOk("relation_fvrs_cons_if"); ok {
+	if relationTofvRsConsIf, ok := d.GetOk("relation_fv_rs_cons_if"); ok {
 		relationParamList := relationTofvRsConsIf.(*schema.Set).List()
 		for _, relationParam := range relationParamList {
 			paramMap := relationParam.(map[string]interface{})
@@ -673,7 +681,7 @@ func resourceAciCloudServiceEPgCreate(ctx context.Context, d *schema.ResourceDat
 		}
 	}
 
-	if relationTofvRsCustQosPol, ok := d.GetOk("relation_fvrs_cust_qos_pol"); ok {
+	if relationTofvRsCustQosPol, ok := d.GetOk("relation_fv_rs_cust_qos_pol"); ok {
 		relationParam := relationTofvRsCustQosPol.(string)
 		err = aciClient.CreateRelationfvRsCustQosPolFromCloudServiceEpg(cloudSvcEPg.DistinguishedName, cloudSvcEPgAttr.Annotation, GetMOName(relationParam))
 		if err != nil {
@@ -682,7 +690,7 @@ func resourceAciCloudServiceEPgCreate(ctx context.Context, d *schema.ResourceDat
 
 	}
 
-	if relationTofvRsGraphDef, ok := d.GetOk("relation_fvrs_graph_def"); ok {
+	if relationTofvRsGraphDef, ok := d.GetOk("relation_fv_rs_graph_def"); ok {
 		relationParamList := toStringList(relationTofvRsGraphDef.(*schema.Set).List())
 		for _, relationParam := range relationParamList {
 			err = aciClient.CreateRelationfvRsGraphDefFromCloudServiceEpg(cloudSvcEPg.DistinguishedName, cloudSvcEPgAttr.Annotation, relationParam)
@@ -693,7 +701,7 @@ func resourceAciCloudServiceEPgCreate(ctx context.Context, d *schema.ResourceDat
 		}
 	}
 
-	if relationTofvRsIntraEpg, ok := d.GetOk("relation_fvrs_intra_epg"); ok {
+	if relationTofvRsIntraEpg, ok := d.GetOk("relation_fv_rs_intra_epg"); ok {
 		relationParamList := toStringList(relationTofvRsIntraEpg.(*schema.Set).List())
 		for _, relationParam := range relationParamList {
 			err = aciClient.CreateRelationfvRsIntraEpgFromCloudServiceEpg(cloudSvcEPg.DistinguishedName, cloudSvcEPgAttr.Annotation, GetMOName(relationParam))
@@ -703,7 +711,7 @@ func resourceAciCloudServiceEPgCreate(ctx context.Context, d *schema.ResourceDat
 		}
 	}
 
-	if relationTofvRsProtBy, ok := d.GetOk("relation_fvrs_prot_by"); ok {
+	if relationTofvRsProtBy, ok := d.GetOk("relation_fv_rs_prot_by"); ok {
 		relationParamList := toStringList(relationTofvRsProtBy.(*schema.Set).List())
 		for _, relationParam := range relationParamList {
 			err = aciClient.CreateRelationfvRsProtByFromCloudServiceEpg(cloudSvcEPg.DistinguishedName, cloudSvcEPgAttr.Annotation, GetMOName(relationParam))
@@ -713,7 +721,7 @@ func resourceAciCloudServiceEPgCreate(ctx context.Context, d *schema.ResourceDat
 		}
 	}
 
-	if relationTofvRsProv, ok := d.GetOk("relation_fvrs_prov"); ok {
+	if relationTofvRsProv, ok := d.GetOk("relation_fv_rs_prov"); ok {
 		relationParamList := relationTofvRsProv.(*schema.Set).List()
 		for _, relationParam := range relationParamList {
 			paramMap := relationParam.(map[string]interface{})
@@ -725,7 +733,7 @@ func resourceAciCloudServiceEPgCreate(ctx context.Context, d *schema.ResourceDat
 		}
 	}
 
-	if relationTofvRsProvDef, ok := d.GetOk("relation_fvrs_prov_def"); ok {
+	if relationTofvRsProvDef, ok := d.GetOk("relation_fv_rs_prov_def"); ok {
 		relationParamList := toStringList(relationTofvRsProvDef.(*schema.Set).List())
 		for _, relationParam := range relationParamList {
 			err = aciClient.CreateRelationfvRsProvDefFromCloudServiceEpg(cloudSvcEPg.DistinguishedName, cloudSvcEPgAttr.Annotation, relationParam)
@@ -736,7 +744,7 @@ func resourceAciCloudServiceEPgCreate(ctx context.Context, d *schema.ResourceDat
 		}
 	}
 
-	if relationTofvRsSecInherited, ok := d.GetOk("relation_fvrs_sec_inherited"); ok {
+	if relationTofvRsSecInherited, ok := d.GetOk("relation_fv_rs_sec_inherited"); ok {
 		relationParamList := toStringList(relationTofvRsSecInherited.(*schema.Set).List())
 		for _, relationParam := range relationParamList {
 			err = aciClient.CreateRelationfvRsSecInheritedFromCloudServiceEpg(cloudSvcEPg.DistinguishedName, cloudSvcEPgAttr.Annotation, relationParam)
@@ -820,14 +828,14 @@ func resourceAciCloudServiceEPgUpdate(ctx context.Context, d *schema.ResourceDat
 
 	checkDns := make([]string, 0, 1)
 
-	if d.HasChange("relation_cloudrs_cloud_epg_ctx") || d.HasChange("annotation") {
-		_, newRelParam := d.GetChange("relation_cloudrs_cloud_epg_ctx")
+	if d.HasChange("relation_cloud_rs_cloud_epg_ctx") || d.HasChange("annotation") {
+		_, newRelParam := d.GetChange("relation_cloud_rs_cloud_epg_ctx")
 		checkDns = append(checkDns, newRelParam.(string))
 
 	}
 
-	if d.HasChange("relation_fvrs_cons") || d.HasChange("annotation") {
-		oldRel, newRel := d.GetChange("relation_fvrs_cons")
+	if d.HasChange("relation_fv_rs_cons") || d.HasChange("annotation") {
+		oldRel, newRel := d.GetChange("relation_fv_rs_cons")
 		oldRelSet := oldRel.(*schema.Set)
 		newRelSet := newRel.(*schema.Set)
 		relToCreate := toStringList(newRelSet.Difference(oldRelSet).List())
@@ -836,8 +844,8 @@ func resourceAciCloudServiceEPgUpdate(ctx context.Context, d *schema.ResourceDat
 		}
 	}
 
-	if d.HasChange("relation_fvrs_cons_if") || d.HasChange("annotation") {
-		oldRel, newRel := d.GetChange("relation_fvrs_cons_if")
+	if d.HasChange("relation_fv_rs_cons_if") || d.HasChange("annotation") {
+		oldRel, newRel := d.GetChange("relation_fv_rs_cons_if")
 		oldRelSet := oldRel.(*schema.Set)
 		newRelSet := newRel.(*schema.Set)
 		relToCreate := toStringList(newRelSet.Difference(oldRelSet).List())
@@ -846,14 +854,14 @@ func resourceAciCloudServiceEPgUpdate(ctx context.Context, d *schema.ResourceDat
 		}
 	}
 
-	if d.HasChange("relation_fvrs_cust_qos_pol") || d.HasChange("annotation") {
-		_, newRelParam := d.GetChange("relation_fvrs_cust_qos_pol")
+	if d.HasChange("relation_fv_rs_cust_qos_pol") || d.HasChange("annotation") {
+		_, newRelParam := d.GetChange("relation_fv_rs_cust_qos_pol")
 		checkDns = append(checkDns, newRelParam.(string))
 
 	}
 
-	if d.HasChange("relation_fvrs_graph_def") || d.HasChange("annotation") {
-		oldRel, newRel := d.GetChange("relation_fvrs_graph_def")
+	if d.HasChange("relation_fv_rs_graph_def") || d.HasChange("annotation") {
+		oldRel, newRel := d.GetChange("relation_fv_rs_graph_def")
 		oldRelSet := oldRel.(*schema.Set)
 		newRelSet := newRel.(*schema.Set)
 		relToCreate := toStringList(newRelSet.Difference(oldRelSet).List())
@@ -862,8 +870,8 @@ func resourceAciCloudServiceEPgUpdate(ctx context.Context, d *schema.ResourceDat
 		}
 	}
 
-	if d.HasChange("relation_fvrs_intra_epg") || d.HasChange("annotation") {
-		oldRel, newRel := d.GetChange("relation_fvrs_intra_epg")
+	if d.HasChange("relation_fv_rs_intra_epg") || d.HasChange("annotation") {
+		oldRel, newRel := d.GetChange("relation_fv_rs_intra_epg")
 		oldRelSet := oldRel.(*schema.Set)
 		newRelSet := newRel.(*schema.Set)
 		relToCreate := toStringList(newRelSet.Difference(oldRelSet).List())
@@ -872,8 +880,8 @@ func resourceAciCloudServiceEPgUpdate(ctx context.Context, d *schema.ResourceDat
 		}
 	}
 
-	if d.HasChange("relation_fvrs_prot_by") || d.HasChange("annotation") {
-		oldRel, newRel := d.GetChange("relation_fvrs_prot_by")
+	if d.HasChange("relation_fv_rs_prot_by") || d.HasChange("annotation") {
+		oldRel, newRel := d.GetChange("relation_fv_rs_prot_by")
 		oldRelSet := oldRel.(*schema.Set)
 		newRelSet := newRel.(*schema.Set)
 		relToCreate := toStringList(newRelSet.Difference(oldRelSet).List())
@@ -882,8 +890,8 @@ func resourceAciCloudServiceEPgUpdate(ctx context.Context, d *schema.ResourceDat
 		}
 	}
 
-	if d.HasChange("relation_fvrs_prov") || d.HasChange("annotation") {
-		oldRel, newRel := d.GetChange("relation_fvrs_prov")
+	if d.HasChange("relation_fv_rs_prov") || d.HasChange("annotation") {
+		oldRel, newRel := d.GetChange("relation_fv_rs_prov")
 		oldRelSet := oldRel.(*schema.Set)
 		newRelSet := newRel.(*schema.Set)
 		relToCreate := toStringList(newRelSet.Difference(oldRelSet).List())
@@ -892,8 +900,8 @@ func resourceAciCloudServiceEPgUpdate(ctx context.Context, d *schema.ResourceDat
 		}
 	}
 
-	if d.HasChange("relation_fvrs_prov_def") || d.HasChange("annotation") {
-		oldRel, newRel := d.GetChange("relation_fvrs_prov_def")
+	if d.HasChange("relation_fv_rs_prov_def") || d.HasChange("annotation") {
+		oldRel, newRel := d.GetChange("relation_fv_rs_prov_def")
 		oldRelSet := oldRel.(*schema.Set)
 		newRelSet := newRel.(*schema.Set)
 		relToCreate := toStringList(newRelSet.Difference(oldRelSet).List())
@@ -902,8 +910,8 @@ func resourceAciCloudServiceEPgUpdate(ctx context.Context, d *schema.ResourceDat
 		}
 	}
 
-	if d.HasChange("relation_fvrs_sec_inherited") || d.HasChange("annotation") {
-		oldRel, newRel := d.GetChange("relation_fvrs_sec_inherited")
+	if d.HasChange("relation_fv_rs_sec_inherited") || d.HasChange("annotation") {
+		oldRel, newRel := d.GetChange("relation_fv_rs_sec_inherited")
 		oldRelSet := oldRel.(*schema.Set)
 		newRelSet := newRel.(*schema.Set)
 		relToCreate := toStringList(newRelSet.Difference(oldRelSet).List())
@@ -919,8 +927,8 @@ func resourceAciCloudServiceEPgUpdate(ctx context.Context, d *schema.ResourceDat
 	}
 	d.Partial(false)
 
-	if d.HasChange("relation_cloudrs_cloud_epg_ctx") || d.HasChange("annotation") {
-		_, newRelParam := d.GetChange("relation_cloudrs_cloud_epg_ctx")
+	if d.HasChange("relation_cloud_rs_cloud_epg_ctx") || d.HasChange("annotation") {
+		_, newRelParam := d.GetChange("relation_cloud_rs_cloud_epg_ctx")
 		err = aciClient.DeleteRelationcloudRsCloudEPgCtxFromCloudServiceEpg(cloudSvcEPg.DistinguishedName)
 		if err != nil {
 			return diag.FromErr(err)
@@ -931,8 +939,8 @@ func resourceAciCloudServiceEPgUpdate(ctx context.Context, d *schema.ResourceDat
 		}
 
 	}
-	if d.HasChange("relation_fvrs_cons") || d.HasChange("annotation") {
-		oldRel, newRel := d.GetChange("relation_fvrs_cons")
+	if d.HasChange("relation_fv_rs_cons") || d.HasChange("annotation") {
+		oldRel, newRel := d.GetChange("relation_fv_rs_cons")
 		oldRelList := oldRel.(*schema.Set).List()
 		newRelList := newRel.(*schema.Set).List()
 		for _, relationParam := range oldRelList {
@@ -952,8 +960,8 @@ func resourceAciCloudServiceEPgUpdate(ctx context.Context, d *schema.ResourceDat
 			}
 		}
 	}
-	if d.HasChange("relation_fvrs_cons_if") || d.HasChange("annotation") {
-		oldRel, newRel := d.GetChange("relation_fvrs_cons_if")
+	if d.HasChange("relation_fv_rs_cons_if") || d.HasChange("annotation") {
+		oldRel, newRel := d.GetChange("relation_fv_rs_cons_if")
 		oldRelList := oldRel.(*schema.Set).List()
 		newRelList := newRel.(*schema.Set).List()
 		for _, relationParam := range oldRelList {
@@ -973,8 +981,8 @@ func resourceAciCloudServiceEPgUpdate(ctx context.Context, d *schema.ResourceDat
 			}
 		}
 	}
-	if d.HasChange("relation_fvrs_cust_qos_pol") || d.HasChange("annotation") {
-		_, newRelParam := d.GetChange("relation_fvrs_cust_qos_pol")
+	if d.HasChange("relation_fv_rs_cust_qos_pol") || d.HasChange("annotation") {
+		_, newRelParam := d.GetChange("relation_fv_rs_cust_qos_pol")
 		err = aciClient.DeleteRelationfvRsCustQosPolFromCloudServiceEpg(cloudSvcEPg.DistinguishedName)
 		if err != nil {
 			return diag.FromErr(err)
@@ -985,8 +993,8 @@ func resourceAciCloudServiceEPgUpdate(ctx context.Context, d *schema.ResourceDat
 		}
 
 	}
-	if d.HasChange("relation_fvrs_graph_def") || d.HasChange("annotation") {
-		oldRel, newRel := d.GetChange("relation_fvrs_graph_def")
+	if d.HasChange("relation_fv_rs_graph_def") || d.HasChange("annotation") {
+		oldRel, newRel := d.GetChange("relation_fv_rs_graph_def")
 		oldRelSet := oldRel.(*schema.Set)
 		newRelSet := newRel.(*schema.Set)
 		relToDelete := toStringList(oldRelSet.Difference(newRelSet).List())
@@ -1007,8 +1015,8 @@ func resourceAciCloudServiceEPgUpdate(ctx context.Context, d *schema.ResourceDat
 			}
 		}
 	}
-	if d.HasChange("relation_fvrs_intra_epg") || d.HasChange("annotation") {
-		oldRel, newRel := d.GetChange("relation_fvrs_intra_epg")
+	if d.HasChange("relation_fv_rs_intra_epg") || d.HasChange("annotation") {
+		oldRel, newRel := d.GetChange("relation_fv_rs_intra_epg")
 		oldRelSet := oldRel.(*schema.Set)
 		newRelSet := newRel.(*schema.Set)
 		relToDelete := toStringList(oldRelSet.Difference(newRelSet).List())
@@ -1027,8 +1035,8 @@ func resourceAciCloudServiceEPgUpdate(ctx context.Context, d *schema.ResourceDat
 			}
 		}
 	}
-	if d.HasChange("relation_fvrs_prot_by") || d.HasChange("annotation") {
-		oldRel, newRel := d.GetChange("relation_fvrs_prot_by")
+	if d.HasChange("relation_fv_rs_prot_by") || d.HasChange("annotation") {
+		oldRel, newRel := d.GetChange("relation_fv_rs_prot_by")
 		oldRelSet := oldRel.(*schema.Set)
 		newRelSet := newRel.(*schema.Set)
 		relToDelete := toStringList(oldRelSet.Difference(newRelSet).List())
@@ -1047,8 +1055,8 @@ func resourceAciCloudServiceEPgUpdate(ctx context.Context, d *schema.ResourceDat
 			}
 		}
 	}
-	if d.HasChange("relation_fvrs_prov") || d.HasChange("annotation") {
-		oldRel, newRel := d.GetChange("relation_fvrs_prov")
+	if d.HasChange("relation_fv_rs_prov") || d.HasChange("annotation") {
+		oldRel, newRel := d.GetChange("relation_fv_rs_prov")
 		oldRelList := oldRel.(*schema.Set).List()
 		newRelList := newRel.(*schema.Set).List()
 		for _, relationParam := range oldRelList {
@@ -1068,8 +1076,8 @@ func resourceAciCloudServiceEPgUpdate(ctx context.Context, d *schema.ResourceDat
 			}
 		}
 	}
-	if d.HasChange("relation_fvrs_prov_def") || d.HasChange("annotation") {
-		oldRel, newRel := d.GetChange("relation_fvrs_prov_def")
+	if d.HasChange("relation_fv_rs_prov_def") || d.HasChange("annotation") {
+		oldRel, newRel := d.GetChange("relation_fv_rs_prov_def")
 		oldRelSet := oldRel.(*schema.Set)
 		newRelSet := newRel.(*schema.Set)
 		relToDelete := toStringList(oldRelSet.Difference(newRelSet).List())
@@ -1090,8 +1098,8 @@ func resourceAciCloudServiceEPgUpdate(ctx context.Context, d *schema.ResourceDat
 			}
 		}
 	}
-	if d.HasChange("relation_fvrs_sec_inherited") || d.HasChange("annotation") {
-		oldRel, newRel := d.GetChange("relation_fvrs_sec_inherited")
+	if d.HasChange("relation_fv_rs_sec_inherited") || d.HasChange("annotation") {
+		oldRel, newRel := d.GetChange("relation_fv_rs_sec_inherited")
 		oldRelSet := oldRel.(*schema.Set)
 		newRelSet := newRel.(*schema.Set)
 		relToDelete := toStringList(oldRelSet.Difference(newRelSet).List())
