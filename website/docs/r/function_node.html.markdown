@@ -61,8 +61,8 @@ resource "aci_function_node" "example" {
 - `sequence_number` - (Optional) Internal property incremented when aaa user logs in.
 - `share_encap` - (Optional) Enables encap sharing on node.
   Allowed values: "yes", "no". Default value: "no".
-- `l4_l7_device_interface_consumer_name` - (Optional) The device interface is used to map with a service graph Function Node Connector consumer object.
-- `l4_l7_device_interface_provider_name` - (Optional) The device interface is used to map with a service graph Function Node Connector provider object.
+- `l4_l7_device_interface_consumer_name` - (Optional) The device interface is used to map with a service graph Function Node Connector consumer object. Type: String.
+- `l4_l7_device_interface_provider_name` - (Optional) The device interface is used to map with a service graph Function Node Connector provider object. Type: String.
 - `relation_vns_rs_node_to_abs_func_prof` - (Optional) Relation to class vnsAbsFuncProf. Cardinality - N_TO_ONE. Type - String.
 - `relation_vns_rs_node_to_l_dev` - (Optional) Relation to class vnsALDevIf. Cardinality - N_TO_ONE. Type - String.
 - `relation_vns_rs_node_to_m_func` - (Optional) Relation to class vnsMFunc. Cardinality - N_TO_ONE. Type - String.
@@ -83,3 +83,12 @@ An existing Function Node can be [imported][docs-import] into this resource via 
 ```
 terraform import aci_function_node.example <Dn>
 ```
+
+Starting in Terraform version 1.5, an existing Application Profile can be imported using [import blocks](https://developer.hashicorp.com/terraform/language/import) via the following configuration:
+
+ ```
+ import {
+    id = "<Dn>"
+    to = aci_function_node.example
+ }
+ ```

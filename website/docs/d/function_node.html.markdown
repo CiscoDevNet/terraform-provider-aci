@@ -47,8 +47,8 @@ data "aci_function_node" "example" {
 - `routing_mode` - (Read-Only) Routing mode of the Function Node object.
 - `sequence_number` - (Read-Only) Internal property incremented when aaa user logs in.
 - `share_encap` - (Read-Only) Enables encap sharing on node.
-- `l4_l7_device_interface_consumer_name` - (Read-Only) The device interface is used to map with a service graph Function Node Connector consumer object.
-- `l4_l7_device_interface_provider_name` - (Read-Only) The device interface is used to map with a service graph Function Node Connector provider object.
+- `l4_l7_device_interface_consumer_name` - (Read-Only) The device interface is used to map with a service graph Function Node Connector consumer object. Type: String.
+- `l4_l7_device_interface_provider_name` - (Read-Only) The device interface is used to map with a service graph Function Node Connector provider object. Type: String.
 - `conn_consumer_dn` - (Read-Only) Dn of the Function Node Connector consumer object.
 - `conn_provider_dn` - (Read-Only) Dn of the Function Node Connector provider object.
 - `relation_vns_rs_node_to_abs_func_prof` - (Read-Only) Relation to class vnsAbsFuncProf. Cardinality - N_TO_ONE. Type - String.
