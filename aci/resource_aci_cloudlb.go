@@ -30,15 +30,7 @@ func resourceAciCloudL4L7LoadBalancer() *schema.Resource {
 		},
 
 		SchemaVersion: 1,
-		Schema: AppendNameAliasAttrSchema(map[string]*schema.Schema{
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-				DefaultFunc: func() (interface{}, error) {
-					return "orchestrator:terraform", nil
-				},
-			},
+		Schema: AppendAttrSchemas(map[string]*schema.Schema{
 			"tenant_dn": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
@@ -176,11 +168,7 @@ func resourceAciCloudL4L7LoadBalancer() *schema.Resource {
 			},
 			"mode": &schema.Schema{
 				Type:     schema.TypeString,
-				Optional: true,
 				Computed: true,
-				ValidateFunc: validation.StringInSlice([]string{
-					"legacy-Mode",
-				}, false),
 			},
 			"name": &schema.Schema{
 				Type:     schema.TypeString,
@@ -289,7 +277,7 @@ func resourceAciCloudL4L7LoadBalancer() *schema.Resource {
 				Optional: true,
 				Set:      schema.HashString,
 			},
-		}),
+		}, GetNameAliasAttrSchema(), GetAnnotationAttrSchema()),
 	}
 }
 
@@ -312,7 +300,6 @@ func mapCloudL4L7LoadBalancerAttrs(annotation, status string, d *schema.Resource
 		"managed":                            d.Get("managed").(string),
 		"maxInstanceCount":                   d.Get("max_instance_count").(string),
 		"minInstanceCount":                   d.Get("min_instance_count").(string),
-		"mode":                               d.Get("mode").(string),
 		"name":                               d.Get("name").(string),
 		"nameAlias":                          d.Get("name_alias").(string),
 		"nativeLBName":                       d.Get("native_lb_name").(string),
@@ -438,13 +425,7 @@ func resourceAciCloudL4L7LoadBalancerCreate(ctx context.Context, d *schema.Resou
 	log.Printf("[DEBUG] Cloud L4-L7 Load Balancer: Beginning Creation")
 	aciClient := m.(*client.Client)
 
-	var annotation string
-	if Annotation, ok := d.GetOk("annotation"); ok {
-		annotation = Annotation.(string)
-	} else {
-		annotation = "{}"
-	}
-
+	annotation := d.Get("annotation").(string)
 	checkDns := make([]string, 0, 1)
 	if relationTocloudRsLDevToCloudSubnet, ok := d.GetOk("relation_cloud_rs_ldev_to_cloud_subnet"); ok {
 		checkDns = append(checkDns, toStringList(relationTocloudRsLDevToCloudSubnet.(*schema.Set).List())...)
@@ -471,7 +452,7 @@ func resourceAciCloudL4L7LoadBalancerCreate(ctx context.Context, d *schema.Resou
 	}
 
 	cloudLBMapAttrs := mapCloudL4L7LoadBalancerAttrs(annotation, "created", d)
-	deleteEmptyKeysFromMap(cloudLBMapAttrs)
+	deleteEmptyValuesfromMap(cloudLBMapAttrs)
 	cloudLBMap := map[string]interface{}{
 		CloudLBClassName: map[string]interface{}{
 			"attributes": cloudLBMapAttrs,
@@ -493,12 +474,7 @@ func resourceAciCloudL4L7LoadBalancerUpdate(ctx context.Context, d *schema.Resou
 	log.Printf("[DEBUG] Cloud L4-L7 Load Balancer: Beginning Update")
 	aciClient := m.(*client.Client)
 
-	var annotation string
-	if Annotation, ok := d.GetOk("annotation"); ok {
-		annotation = Annotation.(string)
-	} else {
-		annotation = "{}"
-	}
+	annotation := d.Get("annotation").(string)
 
 	checkDns := make([]string, 0, 1)
 
@@ -546,7 +522,7 @@ func resourceAciCloudL4L7LoadBalancerUpdate(ctx context.Context, d *schema.Resou
 	}
 
 	cloudLBMapAttrs := mapCloudL4L7LoadBalancerAttrs(annotation, "modified", d)
-	deleteEmptyKeysFromMap(cloudLBMapAttrs)
+	deleteEmptyValuesfromMap(cloudLBMapAttrs)
 	cloudLBMap := map[string]interface{}{
 		CloudLBClassName: map[string]interface{}{
 			"attributes": cloudLBMapAttrs,

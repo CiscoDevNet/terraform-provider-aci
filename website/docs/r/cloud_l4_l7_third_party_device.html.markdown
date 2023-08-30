@@ -37,7 +37,6 @@ resource "aci_cloud_l4_l7_third_party_device" "example" {
   is_copy          = "no"
   is_instantiation = "no"
   managed          = "yes"
-  mode             = "legacy-Mode"
   prom_mode        = "no"
   service_type     = "FW"
   target_mode      = "unspecified"
@@ -79,7 +78,7 @@ resource "aci_cloud_l4_l7_third_party_device" "example" {
 * `l4l7_device_application_security_group` - (Optional) Naming for the Third Party Device Application Security Group of the Cloud L4-L7 Third Party Device object. Type: String.
 * `l4l7_third_party_device` - (Optional) Naming for the Third Party Device of the Cloud L4-L7 Third Party Device object. Type: String.
 * `managed` - (Optional) Is the device is managed. Allowed values are "no", "yes", and default value is "yes". Type: String.
-* `mode` - (Optional) Mode of the Cloud L4-L7 Third Party Device object. The value for specifying if the device is legacy (classical VLAN/VXLAN) or supports service tag switching (STS). Allowed values are "legacy-Mode", and default value is "legacy-Mode". Type: String.
+* `mode` - (Read-Only) Mode of the Cloud L4-L7 Third Party Device object. The value for specifying if the device is legacy (classical VLAN/VXLAN) or supports service tag switching (STS). Type: String.
 * `package_model` - (Optional) Package Model of the Cloud L4-L7 Third Party Device object. Type: String.
 * `prom_mode` - (Optional) Promiscuous Mode of the Cloud L4-L7 Third Party Device object. Allowed values are "no", "yes", and default value is "no". Type: String.
 * `service_type` - (Optional) Service Type of the Cloud L4-L7 Third Party Device object. Allowed values are "ADC", "COPY", "FW", "NATIVELB", "OTHERS", and default value is "FW". Type: String.

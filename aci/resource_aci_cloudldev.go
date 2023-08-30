@@ -33,15 +33,7 @@ func resourceAciCloudL4L7Device() *schema.Resource {
 		},
 
 		SchemaVersion: 1,
-		Schema: AppendNameAliasAttrSchema(map[string]*schema.Schema{
-			"annotation": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-				DefaultFunc: func() (interface{}, error) {
-					return "orchestrator:terraform", nil
-				},
-			},
+		Schema: AppendAttrSchemas(map[string]*schema.Schema{
 			"tenant_dn": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
@@ -141,11 +133,7 @@ func resourceAciCloudL4L7Device() *schema.Resource {
 			},
 			"mode": &schema.Schema{
 				Type:     schema.TypeString,
-				Optional: true,
 				Computed: true,
-				ValidateFunc: validation.StringInSlice([]string{
-					"legacy-Mode",
-				}, false),
 			},
 			"name": &schema.Schema{
 				Type:     schema.TypeString,
@@ -250,7 +238,7 @@ func resourceAciCloudL4L7Device() *schema.Resource {
 					}),
 				},
 			},
-		}),
+		}, GetNameAliasAttrSchema(), GetAnnotationAttrSchema()),
 	}
 }
 
@@ -269,7 +257,6 @@ func mapCloudL4L7DeviceAttrs(annotation, nameAlias, status string, d *schema.Res
 		"l4L7DeviceApplicationSecurityGroup": d.Get("l4l7_device_application_security_group").(string),
 		"l4L7ThirdPartyDevice":               d.Get("l4l7_third_party_device").(string),
 		"managed":                            d.Get("managed").(string),
-		"mode":                               d.Get("mode").(string),
 		"name":                               d.Get("name").(string),
 		"nameAlias":                          nameAlias,
 		"packageModel":                       d.Get("package_model").(string),
@@ -441,12 +428,7 @@ func resourceAciCloudL4L7DeviceCreate(ctx context.Context, d *schema.ResourceDat
 
 	aciClient := m.(*client.Client)
 
-	var annotation string
-	if Annotation, ok := d.GetOk("annotation"); ok {
-		annotation = Annotation.(string)
-	} else {
-		annotation = "{}"
-	}
+	annotation := d.Get("annotation").(string)
 
 	nameAlias := d.Get("name_alias").(string)
 
@@ -479,7 +461,7 @@ func resourceAciCloudL4L7DeviceCreate(ctx context.Context, d *schema.ResourceDat
 	}
 
 	cloudLDevMapAttrs := mapCloudL4L7DeviceAttrs(annotation, nameAlias, "created", d)
-	deleteEmptyKeysFromMap(cloudLDevMapAttrs)
+	deleteEmptyValuesfromMap(cloudLDevMapAttrs)
 	cloudLDevMap := map[string]interface{}{
 		CloudLDevClassName: map[string]interface{}{
 			"attributes": cloudLDevMapAttrs,
@@ -500,12 +482,7 @@ func resourceAciCloudL4L7DeviceUpdate(ctx context.Context, d *schema.ResourceDat
 	log.Printf("[DEBUG] CloudL4L7Device: Beginning Update")
 	aciClient := m.(*client.Client)
 
-	var annotation string
-	if Annotation, ok := d.GetOk("annotation"); ok {
-		annotation = Annotation.(string)
-	} else {
-		annotation = "{}"
-	}
+	annotation := d.Get("annotation").(string)
 
 	nameAlias := d.Get("name_alias").(string)
 
@@ -608,7 +585,7 @@ func resourceAciCloudL4L7DeviceUpdate(ctx context.Context, d *schema.ResourceDat
 	}
 
 	cloudLDevMapAttrs := mapCloudL4L7DeviceAttrs(annotation, nameAlias, "created,modified", d)
-	deleteEmptyKeysFromMap(cloudLDevMapAttrs)
+	deleteEmptyValuesfromMap(cloudLDevMapAttrs)
 
 	cloudLDevMap := map[string]interface{}{
 		CloudLDevClassName: map[string]interface{}{

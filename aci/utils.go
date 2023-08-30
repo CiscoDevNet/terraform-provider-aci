@@ -487,7 +487,7 @@ func toggleOptions(option string) string {
 // from the map.
 func deleteEmptyValuesfromMap(data map[string]string) {
 	for key := range data {
-		if data[key] == "{}" || data[key] == "" {
+		if data[key] == "" {
 			delete(data, key)
 		}
 	}

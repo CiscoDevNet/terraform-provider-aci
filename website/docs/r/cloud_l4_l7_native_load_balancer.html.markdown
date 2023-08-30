@@ -46,7 +46,6 @@ resource "aci_cloud_l4_l7_native_load_balancer" "example" {
   is_instantiation              = "no"
   is_static_ip                  = "no"
   managed                       = "no"
-  mode                          = "legacy-Mode"
   prom_mode                     = "no"
   scheme                        = "internal"
   size                          = "medium"
@@ -84,7 +83,7 @@ resource "aci_cloud_l4_l7_native_load_balancer" "example" {
 * `managed` - (Optional) Is the device is managed. Allowed values are "no", "yes", and default value is "yes". Type: String.
 * `max_instance_count` - (Optional) Maximum Instance Count of the Cloud L4-L7 Native Load Balancer object. Default value is "10". Type: String.
 * `min_instance_count` - (Optional) Minimum Instance Count of the Cloud L4-L7 Native Load Balancer object. Default value is "0". Type: String.
-* `mode` - (Optional) Mode of the Cloud L4-L7 Native Load Balancer object. The value for specifying if the device is legacy (classical VLAN/VXLAN) or supports service tag switching (STS). Allowed values are "legacy-Mode", and default value is "legacy-Mode". Type: String.
+* `mode` - (Read-Only) Mode of the Cloud L4-L7 Native Load Balancer object. The value for specifying if the device is legacy (classical VLAN/VXLAN) or supports service tag switching (STS). Type: String.
 * `native_lb_name` - (Optional) Naming for the Native Load Balancer Devices of the Cloud L4-L7 Native Load Balancer object. Type: String.
 * `package_model` - (Optional) Package Model of the Cloud L4-L7 Native Load Balancer object. Type: String.
 * `prom_mode` - (Optional) Promiscuous Mode of the Cloud L4-L7 Native Load Balancer object. Allowed values are "no", "yes", and default value is "no". Type: String.
