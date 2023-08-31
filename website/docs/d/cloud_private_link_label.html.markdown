@@ -1,13 +1,13 @@
 ---
-subcategory: -
+subcategory: - "Cloud"
 layout: "aci"
-page_title: "ACI: aci_private_link_labelfortheservice_epg"
-sidebar_current: "docs-aci-data-source-private_link_labelfortheservice_epg"
+page_title: "ACI: aci_cloud_private_link_label"
+sidebar_current: "docs-aci-data-source-cloud_private_link_label"
 description: |-
   Data source for ACI Private Link Label for the service EPg
 ---
 
-# aci_private_link_labelfortheservice_epg #
+# aci_cloud_private_link_label #
 
 Data source for ACI Private Link Label for the service EPg
 
@@ -19,7 +19,7 @@ Data source for ACI Private Link Label for the service EPg
 
 ## GUI Information ##
 
-* `Location` - 
+* `Location` - Application Management -> EPGs
 
 
 ## Example Usage ##
@@ -27,16 +27,16 @@ Data source for ACI Private Link Label for the service EPg
 ```hcl
 data "aci_private_link_labelfortheservice_epg" "example" {
   cloud_service_epg_dn  = aci_cloud_service_epg.example.id
-  name  = "example"
+  name                  = "example"
 }
 ```
 
 ## Argument Reference ##
 
 * `cloud_service_epg_dn` - (Required) Distinguished name of the parent CloudServiceEPg object.
-* `name` - (Required) Name of the Private Link Label for the service EPg object.
+* `name` - (Required) Name of the Private Link Label for the service EPG object.
 
 ## Attribute Reference ##
-* `id` - (Read-Only) Attribute id set to the Dn of the Private Link Label for the service EPg.
-* `annotation` - (Read-Only) Annotation of the Private Link Label for the service EPg object.
-* `name_alias` - (Read-Only) Name Alias of the Private Link Label for the service EPg object.
+* `id` - (Read-Only) Attribute id set to the Dn of the Private Link Label for the service EPG.
+* `annotation` - (Read-Only) Annotation of the Private Link Label for the service EPG object.
+* `name_alias` - (Read-Only) Name Alias of the Private Link Label for the service EPG object.

@@ -1,5 +1,5 @@
 ---
-subcategory: -
+subcategory: - "Cloud"
 layout: "aci"
 page_title: "ACI: aci_cloud_service_endpoint_selector"
 sidebar_current: "docs-aci-data-source-cloud_service_endpoint_selector"
@@ -19,7 +19,7 @@ Note: This resource is supported in Cloud APIC only.
 
 ## GUI Information ##
 
-* `Location` - 
+* `Location` - Application Management -> EPGs
 
 
 ## Example Usage ##
@@ -27,7 +27,7 @@ Note: This resource is supported in Cloud APIC only.
 ```hcl
 data "aci_cloud_service_endpoint_selector" "example" {
   cloud_service_epg_dn  = aci_cloud_service_epg.example.id
-  name  = "example"
+  name                  = "example"
 }
 ```
 
@@ -40,4 +40,4 @@ data "aci_cloud_service_endpoint_selector" "example" {
 * `id` - (Read-Only) Attribute id set to the Dn of the Cloud Service Endpoint Selector.
 * `annotation` - (Read-Only) Annotation of the Cloud Service Endpoint Selector object.
 * `name_alias` - (Read-Only) Name Alias of the Cloud Service Endpoint Selector object.
-* `match_expression` - (Read-Only) Expression used to define matching tagTags. 
+* `match_expression` - (Read-Only) Expression used to define matching tag. 

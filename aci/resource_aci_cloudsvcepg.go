@@ -64,11 +64,6 @@ func resourceAciCloudServiceEPg() *schema.Resource {
 					"Unknown",
 				}, false),
 			},
-			"exception_tag": {
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-			},
 			"flood_on_encap": {
 				Type:     schema.TypeString,
 				Optional: true,
@@ -317,7 +312,6 @@ func setCloudServiceEPgAttributes(cloudSvcEPg *models.CloudServiceEPg, d *schema
 	d.Set("azure_private_endpoint", cloudSvcEPgMap["azPrivateEndpoint"])
 	d.Set("custom_service_type", cloudSvcEPgMap["customSvcType"])
 	d.Set("deployment_type", cloudSvcEPgMap["deploymentType"])
-	d.Set("exception_tag", cloudSvcEPgMap["exceptionTag"])
 	d.Set("flood_on_encap", cloudSvcEPgMap["floodOnEncap"])
 	d.Set("label_match_criteria", cloudSvcEPgMap["matchT"])
 	d.Set("name", cloudSvcEPgMap["name"])
@@ -532,10 +526,6 @@ func resourceAciCloudServiceEPgCreate(ctx context.Context, d *schema.ResourceDat
 
 	if DeploymentType, ok := d.GetOk("deployment_type"); ok {
 		cloudSvcEPgAttr.DeploymentType = DeploymentType.(string)
-	}
-
-	if ExceptionTag, ok := d.GetOk("exception_tag"); ok {
-		cloudSvcEPgAttr.ExceptionTag = ExceptionTag.(string)
 	}
 
 	if FloodOnEncap, ok := d.GetOk("flood_on_encap"); ok {

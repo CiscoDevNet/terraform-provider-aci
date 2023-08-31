@@ -7,9 +7,9 @@ terraform {
 }
 
 provider "aci" {
-  username = "ansible_github_ci"
-  password = "sJ94G92#8dq2hx*K4qh"
-  url      = "https://20.245.236.136"
+  username = ""
+  password = ""
+  url      = ""
   insecure = true
 }
 
@@ -33,7 +33,7 @@ resource "aci_cloud_service_epg" "azure_cloud_svc_epg_tf_test_1" {
   access_type                   = "Public"
   deployment_type               = "CloudNative"
   cloud_service_epg_type        = "Azure-SqlServer"
-  relation_cloudrs_cloud_epg_ctx   = aci_vrf.azure_cloud_vrf_tf_test.id
+  relation_cloud_rs_cloud_epg_ctx   = aci_vrf.azure_cloud_vrf_tf_test.id
 }
 
 resource "aci_cloud_context_profile" "azure_cloud_ctxt_profile_tf_test" {
@@ -87,5 +87,5 @@ resource "aci_cloud_private_link_label" "azure_cloud_private_link_tf_test" {
 resource "aci_cloud_service_endpoint_selector" "azure_cloud_svc_ep_selector_tf_test_2" {
   cloud_service_epg_dn = aci_cloud_service_epg.azure_cloud_svc_epg_tf_test_3.id
   name = "azure_terraform_test_cloud_svc_ep_selector_2"
-  match_expression = "URL=='https://google.com'"
+  match_expression = "URL=='https://cisco.com'"
 }

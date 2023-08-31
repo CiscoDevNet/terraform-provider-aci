@@ -35,10 +35,6 @@ func dataSourceAciCloudServiceEPg() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-			"exception_tag": {
-				Type:     schema.TypeString,
-				Computed: true,
-			},
 			"flood_on_encap": {
 				Type:     schema.TypeString,
 				Computed: true,

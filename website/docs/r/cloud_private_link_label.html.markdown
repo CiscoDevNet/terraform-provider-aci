@@ -1,15 +1,15 @@
 ---
-subcategory: -
+subcategory: - "Cloud"
 layout: "aci"
-page_title: "ACI: aci_private_link_labelfortheservice_epg"
-sidebar_current: "docs-aci-resource-private_link_labelfortheservice_epg"
+page_title: "ACI: aci__cloud_private_link_label"
+sidebar_current: "docs-aci-resource-cloud_private_link_label"
 description: |-
   Manages ACI Private Link Label for the service EPg
 ---
 
-# aci_private_link_labelfortheservice_epg #
+# aci_cloud_private_link_label #
 
-Manages ACI Private Link Label for the service EPg
+Manages ACI Private Link Label for the service EPG
 
 ## API Information ##
 
@@ -18,7 +18,7 @@ Manages ACI Private Link Label for the service EPg
 
 ## GUI Information ##
 
-* `Location` - 
+* `Location` - Application Management -> EPGs
 
 
 ## Example Usage ##
@@ -28,8 +28,6 @@ resource "aci_private_link_labelfortheservice_epg" "example" {
   cloud_service_epg_dn  = aci_cloud_service_epg.example.id
   name  = "example"
   annotation = "orchestrator:terraform"
-
-  name_alias = 
 }
 ```
 
@@ -37,8 +35,8 @@ resource "aci_private_link_labelfortheservice_epg" "example" {
 
 * `cloud_service_epg_dn` - (Required) Distinguished name of the parent CloudServiceEPg object.
 * `name` - (Required) Name of the Private Link Label for the service EPg object.
-* `annotation` - (Optional) Annotation of the Private Link Label for the service EPg object.
-* `name_alias` - (Optional) Name Alias of the Private Link Label for the service EPg object.
+* `annotation` - (Optional) Annotation of the Private Link Label for the service EPG object.
+* `name_alias` - (Optional) Name Alias of the Private Link Label for the service EPG object.
 
 
 

@@ -1,5 +1,5 @@
 ---
-subcategory: -
+subcategory: - "Cloud"
 layout: "aci"
 page_title: "ACI: aci_cloud_service_endpoint_selector"
 sidebar_current: "docs-aci-resource-cloud_service_endpoint_selector"
@@ -18,7 +18,7 @@ Manages ACI Cloud Service Endpoint Selector
 
 ## GUI Information ##
 
-* `Location` - 
+* `Location` - Application Management -> EPGs
 
 
 ## Example Usage ##
@@ -26,11 +26,9 @@ Manages ACI Cloud Service Endpoint Selector
 ```hcl
 resource "aci_cloud_service_endpoint_selector" "example" {
   cloud_service_epg_dn  = aci_cloud_service_epg.example.id
-  name  = "example"
-  annotation = "orchestrator:terraform"
-  match_expression = 
-
-  name_alias = 
+  name                  = "example"
+  annotation            = "orchestrator:terraform"
+  match_expression      = "IP=='7.1.0.0/24'"
 }
 ```
 
@@ -40,7 +38,7 @@ resource "aci_cloud_service_endpoint_selector" "example" {
 * `name` - (Required) Name of the Cloud Service Endpoint Selector object.
 * `annotation` - (Optional) Annotation of the Cloud Service Endpoint Selector object.
 * `name_alias` - (Optional) Name Alias of the Cloud Service Endpoint Selector object.
-* `match_expression` - (Optional) Expression used to define matching tagTags.
+* `match_expression` - (Optional) Expression used to define matching tag.
 
 
 
