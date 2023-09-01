@@ -14,6 +14,7 @@ resource "aci_rest_managed" "fvTenant1" {
 resource "aci_rest_managed" "mgmtConnectivityPrefs" {
   dn         = "uni/fabric/connectivityPrefs"
   class_name = "mgmtConnectivityPrefs"
+  annotation = "orchestrator:example"
   content = {
     interfacePref = "ooband"
   }
@@ -24,6 +25,7 @@ resource "aci_rest_managed" "fvTenant2" {
   class_name = "fvTenant"
   content = {
     name = "EXAMPLE_TENANT2"
+    annotation = "orchestrator:class"
   }
 
   child {
@@ -31,6 +33,7 @@ resource "aci_rest_managed" "fvTenant2" {
     class_name = "fvCtx"
     content = {
       name = "VRF1"
+      annotation = "orchestrator:child"
     }
   }
 }

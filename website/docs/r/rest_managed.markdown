@@ -15,7 +15,7 @@ Manages ACI Model Objects via REST API calls. This resource can only manage a si
 ## Example Usage
 
 ```terraform
-resource "aci_rest_managed" "fvTenant" {
+resource "aci_rest_managed" "fvTenant1" {
   dn         = "uni/tn-EXAMPLE_TENANT"
   class_name = "fvTenant"
   content = {
@@ -27,16 +27,18 @@ resource "aci_rest_managed" "fvTenant" {
 resource "aci_rest_managed" "mgmtConnectivityPrefs" {
   dn         = "uni/fabric/connectivityPrefs"
   class_name = "mgmtConnectivityPrefs"
+  annotation = "orchestrator:example"
   content = {
     interfacePref = "ooband"
   }
 }
 
-resource "aci_rest_managed" "fvTenant" {
-  dn         = "uni/tn-EXAMPLE_TENANT"
+resource "aci_rest_managed" "fvTenant2" {
+  dn         = "uni/tn-EXAMPLE_TENANT2"
   class_name = "fvTenant"
   content = {
-    name = "EXAMPLE_TENANT"
+    name = "EXAMPLE_TENANT2"
+    annotation = "orchestrator:class"
   }
 
   child {
@@ -44,6 +46,7 @@ resource "aci_rest_managed" "fvTenant" {
     class_name = "fvCtx"
     content = {
       name = "VRF1"
+      annotation = "orchestrator:child"
     }
   }
 }
@@ -59,6 +62,7 @@ resource "aci_rest_managed" "fvTenant" {
 
 ### Optional
 
+- **annotation** (String) Annotation for the class object that is being created. When annotation is provided in content this will take precedence. Defaults to "orchestrator:terraform" when not provided.
 - **child** (Block Set) List of children. (see [below for nested schema](#nestedblock--child))
 - **content** (Map of String) Map of key-value pairs those needed to be passed to the Model object as parameters. Make sure the key name matches the name with the object parameter in ACI.
 
@@ -79,6 +83,8 @@ Optional:
 - **content** (Map of String) Map of key-value pairs which represents the attributes for the child object.
 
 ## Import
+
+Note: Import is not supported for child configuration objects.
 
 Import is supported using the following syntax:
 
