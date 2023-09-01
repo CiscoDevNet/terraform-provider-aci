@@ -13,7 +13,7 @@ import (
 )
 
 // List of attributes to be not stored in state
-var IgnoreAttr = []string{"extMngdBy", "lcOwn", "modTs", "monPolDn", "uid", "dn", "rn", "configQual", "configSt", "virtualIp", "annotation"}
+var IgnoreAttr = []string{"extMngdBy", "lcOwn", "modTs", "monPolDn", "uid", "dn", "rn", "configQual", "configSt", "virtualIp"}
 
 // List of attributes to be only written to state from config
 var WriteOnlyAttr = []string{"childAction"}
