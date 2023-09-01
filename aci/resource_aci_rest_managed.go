@@ -119,9 +119,16 @@ func getAciRestManaged(d *schema.ResourceData, c *container.Container, expectObj
 		return diag.Errorf("Failed to retrieve REST payload for class: %s.", className)
 	}
 
+	var setContentAnnotation bool
+	if _, ok := contentStrMap["annotation"]; ok {
+		setContentAnnotation = true
+	}
+
 	for attr, value := range restContent {
 		// Ignore certain attributes
-		if !containsString(IgnoreAttr, attr) {
+		if attr == "annotation" && setContentAnnotation {
+			newContent[attr] = value.(string)
+		} else if attr != "annotation" && !containsString(IgnoreAttr, attr) {
 			newContent[attr] = value.(string)
 		}
 	}
@@ -272,11 +279,15 @@ func MakeAciRestManagedQuery(d *schema.ResourceData, m interface{}, method strin
 	}
 	var cont *container.Container = nil
 	var err error
+	var contentStrMap map[string]string
+	content := d.Get("content").(map[string]interface{})
 
 	if method == "POST" {
-		content := d.Get("content").(map[string]interface{})
-		content["annotation"] = annotation
-		contentStrMap := toStrMap(content)
+
+		contentStrMap = toStrMap(content)
+		if val, ok := contentStrMap["annotation"]; val == "" || !ok {
+			contentStrMap["annotation"] = annotation
+		}
 
 		childrenSet := make([]interface{}, 0, 1)
 
@@ -285,7 +296,9 @@ func MakeAciRestManagedQuery(d *schema.ResourceData, m interface{}, method strin
 			childMap := make(map[string]interface{})
 			childClassName := child.(map[string]interface{})["class_name"]
 			childContent := child.(map[string]interface{})["content"].(map[string]interface{})
-			childContent["annotation"] = annotation
+			if val, ok := childContent["annotation"]; val == "" || !ok {
+				childContent["annotation"] = annotation
+			}
 			childMap["class_name"] = childClassName.(string)
 			childMap["content"] = toStrMap(childContent)
 			childrenSet = append(childrenSet, childMap)
@@ -294,7 +307,7 @@ func MakeAciRestManagedQuery(d *schema.ResourceData, m interface{}, method strin
 		if len(childList) > 0 {
 			var configOnlyCont, configOnlyRespCont *container.Container
 			configOnlyKeys := []string{}
-			configOnlyPath := "/api/mo/" + d.Get("dn").(string) + ".json?rsp-subtree=children&rsp-prop-include=config-only"
+			configOnlyPath := "/api/mo/" + d.Get("dn").(string) + ".json?rsp-prop-include=config-only"
 			configOnlyRespCont, err = doRestRequest(aciClient, "GET", configOnlyPath, configOnlyCont)
 			if err != nil {
 				return configOnlyRespCont, diag.FromErr(err)
