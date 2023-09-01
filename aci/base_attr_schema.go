@@ -47,3 +47,16 @@ func AppendAttrSchemas(attrs map[string]*schema.Schema, mapsToAppend ...map[stri
 	}
 	return attrs
 }
+
+func GetAnnotationAttrSchema() map[string]*schema.Schema {
+	return map[string]*schema.Schema{
+		"annotation": &schema.Schema{
+			Type:     schema.TypeString,
+			Optional: true,
+			Computed: true,
+			DefaultFunc: func() (interface{}, error) {
+				return "orchestrator:terraform", nil
+			},
+		},
+	}
+}
