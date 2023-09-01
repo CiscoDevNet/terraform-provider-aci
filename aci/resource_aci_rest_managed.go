@@ -280,7 +280,8 @@ func MakeAciRestManagedQuery(d *schema.ResourceData, m interface{}, method strin
 
 		childrenSet := make([]interface{}, 0, 1)
 
-		for _, child := range d.Get("child").(*schema.Set).List() {
+		childList := d.Get("child").(*schema.Set).List()
+		for _, child := range childList {
 			childMap := make(map[string]interface{})
 			childClassName := child.(map[string]interface{})["class_name"]
 			childContent := child.(map[string]interface{})["content"].(map[string]interface{})
@@ -290,30 +291,64 @@ func MakeAciRestManagedQuery(d *schema.ResourceData, m interface{}, method strin
 			childrenSet = append(childrenSet, childMap)
 		}
 
+		if len(childList) > 0 {
+			var configOnlyCont, configOnlyRespCont *container.Container
+			configOnlyKeys := []string{}
+			configOnlyPath := "/api/mo/" + d.Get("dn").(string) + ".json?rsp-subtree=children&rsp-prop-include=config-only"
+			configOnlyRespCont, err = doRestRequest(aciClient, "GET", configOnlyPath, configOnlyCont)
+			if err != nil {
+				return configOnlyRespCont, diag.FromErr(err)
+			}
+			if configOnlyRespCont != nil {
+				attributes := configOnlyRespCont.S("imdata").Index(0).S(className).S("attributes").Data().(map[string]interface{})
+				for key := range attributes {
+					configOnlyKeys = append(configOnlyKeys, key)
+				}
+				for key := range contentStrMap {
+					if !containsString(configOnlyKeys, key) {
+						delete(contentStrMap, key)
+					}
+				}
+			}
+		}
+
 		cont, err = preparePayload(className, contentStrMap, childrenSet)
 		if err != nil {
 			return nil, diag.FromErr(err)
 		}
 	}
 
+	respCont, err := doRestRequest(aciClient, method, path, cont)
+	if err != nil {
+		return respCont, diag.FromErr(err)
+	} else if respCont == nil {
+		return nil, nil
+	}
+
+	if method == "POST" {
+		return cont, nil
+	} else {
+		return respCont, nil
+	}
+}
+
+func doRestRequest(aciClient *client.Client, method, path string, cont *container.Container) (*container.Container, error) {
+
 	req, err := aciClient.MakeRestRequest(method, path, cont, true)
 	if err != nil {
-		return nil, diag.FromErr(err)
+		return nil, err
 	}
 	respCont, _, err := aciClient.Do(req)
 	if err != nil {
-		return respCont, diag.FromErr(err)
+		return respCont, err
 	}
 	if respCont.S("imdata").Index(0).String() == "{}" {
 		return nil, nil
 	}
 	err = client.CheckForErrors(respCont, method, false)
 	if err != nil {
-		return respCont, diag.FromErr(err)
+		return respCont, err
 	}
-	if method == "POST" {
-		return cont, nil
-	} else {
-		return respCont, nil
-	}
+	return respCont, nil
+
 }
