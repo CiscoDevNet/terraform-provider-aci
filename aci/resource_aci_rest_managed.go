@@ -39,7 +39,7 @@ func resourceAciRestManaged() *schema.Resource {
 			StateContext: resourceAciRestManagedImport,
 		},
 
-		Schema: map[string]*schema.Schema{
+		Schema: AppendAttrSchemas(map[string]*schema.Schema{
 			"id": {
 				Description: "The distinguished name of the object.",
 				Type:        schema.TypeString,
@@ -98,7 +98,7 @@ func resourceAciRestManaged() *schema.Resource {
 					},
 				},
 			},
-		},
+		}, GetAnnotationAttrSchema()),
 	}
 }
 
@@ -262,6 +262,7 @@ func MakeAciRestManagedQuery(d *schema.ResourceData, m interface{}, method strin
 	aciClient := m.(*client.Client)
 	path := "/api/mo/" + d.Get("dn").(string) + ".json"
 	className := d.Get("class_name").(string)
+	annotation := d.Get("annotation").(string)
 	if method == "GET" {
 		if children {
 			path += "?rsp-subtree=children"
@@ -273,17 +274,19 @@ func MakeAciRestManagedQuery(d *schema.ResourceData, m interface{}, method strin
 	var err error
 
 	if method == "POST" {
-		content := d.Get("content")
-		contentStrMap := toStrMap(content.(map[string]interface{}))
+		content := d.Get("content").(map[string]interface{})
+		content["annotation"] = annotation
+		contentStrMap := toStrMap(content)
 
 		childrenSet := make([]interface{}, 0, 1)
 
 		for _, child := range d.Get("child").(*schema.Set).List() {
 			childMap := make(map[string]interface{})
 			childClassName := child.(map[string]interface{})["class_name"]
-			childContent := child.(map[string]interface{})["content"]
+			childContent := child.(map[string]interface{})["content"].(map[string]interface{})
+			childContent["annotation"] = annotation
 			childMap["class_name"] = childClassName.(string)
-			childMap["content"] = toStrMap(childContent.(map[string]interface{}))
+			childMap["content"] = toStrMap(childContent)
 			childrenSet = append(childrenSet, childMap)
 		}
 
