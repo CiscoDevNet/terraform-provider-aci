@@ -103,7 +103,7 @@ An existing Cloud L4-L7 Third Party Device can be [imported][docs-import] into t
 terraform import aci_cloud_l4_l7_third_party_device.example <Dn>
 ```
 
-Starting in Terraform version 1.5, an existing Application Profile can be imported using [import blocks](https://developer.hashicorp.com/terraform/language/import) via the following configuration:
+Starting in Terraform version 1.5, an existing Cloud L4-L7 Third Party Device can be imported using [import blocks](https://developer.hashicorp.com/terraform/language/import) via the following configuration:
 
  ```
  import {

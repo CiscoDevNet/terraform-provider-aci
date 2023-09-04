@@ -84,7 +84,7 @@ An existing Function Node can be [imported][docs-import] into this resource via 
 terraform import aci_function_node.example <Dn>
 ```
 
-Starting in Terraform version 1.5, an existing Application Profile can be imported using [import blocks](https://developer.hashicorp.com/terraform/language/import) via the following configuration:
+Starting in Terraform version 1.5, an existing Function Node can be imported using [import blocks](https://developer.hashicorp.com/terraform/language/import) via the following configuration:
 
  ```
  import {

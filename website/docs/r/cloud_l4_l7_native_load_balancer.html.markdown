@@ -108,7 +108,7 @@ An existing Cloud L4-L7 Native Load Balancer can be [imported][docs-import] into
 terraform import aci_cloud_l4_l7_native_load_balancer.example <Dn>
 ```
 
-Starting in Terraform version 1.5, an existing Application Profile can be imported using [import blocks](https://developer.hashicorp.com/terraform/language/import) via the following configuration:
+Starting in Terraform version 1.5, an existing Cloud L4-L7 Native Load Balancer can be imported using [import blocks](https://developer.hashicorp.com/terraform/language/import) via the following configuration:
 
  ```
  import {

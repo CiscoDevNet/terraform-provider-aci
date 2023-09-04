@@ -281,11 +281,11 @@ func resourceAciCloudL4L7LoadBalancer() *schema.Resource {
 	}
 }
 
-func mapCloudL4L7LoadBalancerAttrs(annotation, status string, d *schema.ResourceData) map[string]string {
+func mapCloudL4L7LoadBalancerAttrs(status string, d *schema.ResourceData) map[string]string {
 	return map[string]string{
 		"activeActive":                       d.Get("active_active").(string),
 		"allowAll":                           d.Get("allow_all").(string),
-		"annotation":                         annotation,
+		"annotation":                         d.Get("annotation").(string),
 		"autoScaling":                        d.Get("auto_scaling").(string),
 		"contextAware":                       d.Get("context_aware").(string),
 		"customRG":                           d.Get("custom_rg").(string),
@@ -451,7 +451,7 @@ func resourceAciCloudL4L7LoadBalancerCreate(ctx context.Context, d *schema.Resou
 		cloudLBChildList = append(cloudLBChildList, mapListOfAaaDomainAttrs("created", toStringList(aaaDomainDn.(*schema.Set).List()))...)
 	}
 
-	cloudLBMapAttrs := mapCloudL4L7LoadBalancerAttrs(annotation, "created", d)
+	cloudLBMapAttrs := mapCloudL4L7LoadBalancerAttrs("created", d)
 	deleteEmptyValuesfromMap(cloudLBMapAttrs)
 	cloudLBMap := map[string]interface{}{
 		CloudLBClassName: map[string]interface{}{
@@ -521,7 +521,7 @@ func resourceAciCloudL4L7LoadBalancerUpdate(ctx context.Context, d *schema.Resou
 		cloudLBChildList = append(cloudLBChildList, mapListOfAaaDomainAttrs("created, modified", relToCreate)...)
 	}
 
-	cloudLBMapAttrs := mapCloudL4L7LoadBalancerAttrs(annotation, "modified", d)
+	cloudLBMapAttrs := mapCloudL4L7LoadBalancerAttrs("modified", d)
 	deleteEmptyValuesfromMap(cloudLBMapAttrs)
 	cloudLBMap := map[string]interface{}{
 		CloudLBClassName: map[string]interface{}{

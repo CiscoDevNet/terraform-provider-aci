@@ -242,9 +242,9 @@ func resourceAciCloudL4L7Device() *schema.Resource {
 	}
 }
 
-func mapCloudL4L7DeviceAttrs(annotation, nameAlias, status string, d *schema.ResourceData) map[string]string {
+func mapCloudL4L7DeviceAttrs(status string, d *schema.ResourceData) map[string]string {
 	return map[string]string{
-		"annotation":                         annotation,
+		"annotation":                         d.Get("annotation").(string),
 		"Version":                            d.Get("version").(string),
 		"activeActive":                       d.Get("active_active").(string),
 		"contextAware":                       d.Get("context_aware").(string),
@@ -258,7 +258,7 @@ func mapCloudL4L7DeviceAttrs(annotation, nameAlias, status string, d *schema.Res
 		"l4L7ThirdPartyDevice":               d.Get("l4l7_third_party_device").(string),
 		"managed":                            d.Get("managed").(string),
 		"name":                               d.Get("name").(string),
-		"nameAlias":                          nameAlias,
+		"nameAlias":                          d.Get("name_alias").(string),
 		"packageModel":                       d.Get("package_model").(string),
 		"promMode":                           d.Get("prom_mode").(string),
 		"svcType":                            d.Get("service_type").(string),
@@ -430,8 +430,6 @@ func resourceAciCloudL4L7DeviceCreate(ctx context.Context, d *schema.ResourceDat
 
 	annotation := d.Get("annotation").(string)
 
-	nameAlias := d.Get("name_alias").(string)
-
 	checkDns := make([]string, 0, 1)
 	if relationCloudRsLDevToCtx, ok := d.GetOk("relation_cloud_rs_ldev_to_ctx"); ok {
 		checkDns = append(checkDns, relationCloudRsLDevToCtx.(string))
@@ -460,7 +458,7 @@ func resourceAciCloudL4L7DeviceCreate(ctx context.Context, d *schema.ResourceDat
 		cloudLDevChildList = append(cloudLDevChildList, mapCloudInterfaceSelectorAttrs(annotation, "created", interfaceSelectors.(*schema.Set).List())...)
 	}
 
-	cloudLDevMapAttrs := mapCloudL4L7DeviceAttrs(annotation, nameAlias, "created", d)
+	cloudLDevMapAttrs := mapCloudL4L7DeviceAttrs("created", d)
 	deleteEmptyValuesfromMap(cloudLDevMapAttrs)
 	cloudLDevMap := map[string]interface{}{
 		CloudLDevClassName: map[string]interface{}{
@@ -483,8 +481,6 @@ func resourceAciCloudL4L7DeviceUpdate(ctx context.Context, d *schema.ResourceDat
 	aciClient := m.(*client.Client)
 
 	annotation := d.Get("annotation").(string)
-
-	nameAlias := d.Get("name_alias").(string)
 
 	checkDns := make([]string, 0, 1)
 
@@ -584,7 +580,7 @@ func resourceAciCloudL4L7DeviceUpdate(ctx context.Context, d *schema.ResourceDat
 		cloudLDevChildList = append(cloudLDevChildList, newInfPayload...)
 	}
 
-	cloudLDevMapAttrs := mapCloudL4L7DeviceAttrs(annotation, nameAlias, "created,modified", d)
+	cloudLDevMapAttrs := mapCloudL4L7DeviceAttrs("created,modified", d)
 	deleteEmptyValuesfromMap(cloudLDevMapAttrs)
 
 	cloudLDevMap := map[string]interface{}{
