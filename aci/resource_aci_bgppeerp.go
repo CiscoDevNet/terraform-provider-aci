@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"net"
 	"sort"
 	"strings"
 
@@ -45,6 +46,16 @@ func resourceAciBgpPeerConnectivityProfile() *schema.Resource {
 				Type:     schema.TypeString,
 				Required: true,
 				ForceNew: true,
+				StateFunc: func(val interface{}) string {
+					splitVal := strings.Split(val.(string), "/")
+					if len(splitVal) <= 1 {
+						ip := net.ParseIP(val.(string))
+						return ip.String()
+					} else {
+						ip := net.ParseIP(splitVal[0])
+						return ip.String() + "/" + splitVal[1]
+					}
+				},
 			},
 
 			"addr_t_ctrl": &schema.Schema{
