@@ -31,28 +31,26 @@ data "aci_function_node" "example" {
 
 ## Argument Reference
 
-- `l4_l7_service_graph_template_dn` - (Required) Distinguished name of parent L4-L7 Service Graph Template object.
-- `name` - (Required) Name of the Function Node object.
+- `l4_l7_service_graph_template_dn` - (Required) Distinguished name of parent L4-L7 Service Graph Template object. Type: String.
+- `name` - (Required) Name of the Function Node object. Type: String.
 
 ## Attribute Reference
 
-- `id` - Attribute id set to the Dn of the Function Node object.
-- `annotation` - (Read-Only) Annotation of the Function Node object.
-- `description` - (Read-Only) Description of the Function Node object.
-- `func_template_type` - (Read-Only) Function Template type of the Function Node object.
-- `func_type` - (Read-Only) A function type. A GoThrough node is a transparent device, where a packet goes through without being addressed to the device, and the endpoints are not aware of that device. A GoTo device has a specific destination.
-- `is_copy` - (Read-Only) If the device is a copy device.
-- `managed` - (Read-Only) Specified if the function is using a managed device.
-- `name_alias` - (Read-Only) Name alias of the Function Node object.
-- `routing_mode` - (Read-Only) Routing mode of the Function Node object.
-- `sequence_number` - (Read-Only) Internal property incremented when aaa user logs in.
-- `share_encap` - (Read-Only) Enables encap sharing on node.
+- `id` - (Read-Only) Attribute id set to the Dn of the Function Node object. Type: String.
+- `annotation` - (Read-Only) Annotation of the Function Node object. Type: String.
+- `description` - (Read-Only) Description of the Function Node object. Type: String.
+- `func_template_type` - (Read-Only) Function Template type of the Function Node object. Type: String.
+- `func_type` - (Read-Only) A function type. A GoThrough node is a transparent device, where a packet goes through without being addressed to the device, and the endpoints are not aware of that device. A GoTo device has a specific destination. Type: String.
+- `is_copy` - (Read-Only) If the device is a copy device. Type: String.
+- `managed` - (Read-Only) Specified if the function is using a managed device. Type: String.
+- `name_alias` - (Read-Only) Name alias of the Function Node object. Type: String.
+- `routing_mode` - (Read-Only) Routing mode of the Function Node object. Type: String.
+- `sequence_number` - (Read-Only) Internal property incremented when aaa user logs in. Type: String.
+- `share_encap` - (Read-Only) Enables encap sharing on node. Type: String.
 - `l4_l7_device_interface_consumer_name` - (Read-Only) The device interface is used to map with a service graph Function Node Connector consumer object. Type: String.
 - `l4_l7_device_interface_provider_name` - (Read-Only) The device interface is used to map with a service graph Function Node Connector provider object. Type: String.
-- `conn_consumer_dn` - (Read-Only) Dn of the Function Node Connector consumer object.
-- `conn_provider_dn` - (Read-Only) Dn of the Function Node Connector provider object.
-- `relation_vns_rs_node_to_abs_func_prof` - (Read-Only) Relation to class vnsAbsFuncProf. Cardinality - N_TO_ONE. Type - String.
-- `relation_vns_rs_node_to_l_dev` - (Read-Only) Relation to class vnsALDevIf. Cardinality - N_TO_ONE. Type - String.
-- `relation_vns_rs_node_to_m_func` - (Read-Only) Relation to class vnsMFunc. Cardinality - N_TO_ONE. Type - String.
-- `relation_vns_rs_default_scope_to_term` - (Read-Only) Relation to class vnsATerm. Cardinality - ONE_TO_ONE. Type - String.
-- `relation_vns_rs_node_to_cloud_l_dev` - (Read-Only) Relation to class cloudALDev. Cardinality - N_TO_ONE. Type - String.
+- `relation_vns_rs_node_to_abs_func_prof` - (Read-Only) Represents the relation to L4-L7 Services Function Profile (class vnsAbsFuncProf). Type: String.
+- `relation_vns_rs_node_to_l_dev` - (Read-Only) Represents the relation to Logical Device Abstraction (class vnsALDevIf). Type: String.
+- `relation_vns_rs_node_to_m_func` - (Read-Only) Represents the relation to Meta Function (class vnsMFunc). Type: String.
+- `relation_vns_rs_default_scope_to_term` - (Read-Only) Represents the relation to Terminal Abstract Class (class vnsATerm). Type: String.
+- `relation_vns_rs_node_to_cloud_l_dev` - (Read-Only) Represents the relation to Cloud L4-L7 Abstract Devices (class cloudALDev). Type: String.

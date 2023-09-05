@@ -43,31 +43,25 @@ resource "aci_function_node" "example" {
 
 ## Argument Reference
 
-- `l4_l7_service_graph_template_dn` - (Required) Distinguished name of parent L4-L7 Service Graph Template object.
-- `name` - (Required) Name of the Function Node object.
-- `annotation` - (Optional) Annotation of the Function Node object.
-- `description` - (Optional) Description of the Function Node object.
-- `func_template_type` - (Optional) Function Template type of the Function Node object.
-  Allowed values: "OTHER", "FW_TRANS", "FW_ROUTED", "CLOUD_VENDOR_LB", "CLOUD_VENDOR_FW", "CLOUD_NATIVE_LB", "CLOUD_NATIVE_FW", "ADC_TWO_ARM", "ADC_ONE_ARM". Default value: "OTHER".
-- `func_type` - (Optional) A function type. A GoThrough node is a transparent device, where a packet goes through without being addressed to the device, and the endpoints are not aware of that device. A GoTo device has a specific destination.
-  Allowed values: "GoThrough", "GoTo", "L1", "L2", "None". Default value: "GoTo".
-- `is_copy` - (Optional) If the device is a copy device.
-  Allowed values: "yes", "no". Default value: "no".
-- `managed` - (Optional) Specified if the function is using a managed device.
-  Allowed values: "yes", "no". Default value: "yes". In ACI version: 5.2 and greater, `managed` is not supported so we need to set it to "no".
-- `name_alias` - (Optional) Name alias of the Function Node object.
-- `routing_mode` - (Optional) Routing mode of the Function Node object.
-  Allowed values: "Redirect", "unspecified". Default value: "unspecified".
-- `sequence_number` - (Optional) Internal property incremented when aaa user logs in.
-- `share_encap` - (Optional) Enables encap sharing on node.
-  Allowed values: "yes", "no". Default value: "no".
+- `l4_l7_service_graph_template_dn` - (Required) Distinguished name of parent L4-L7 Service Graph Template object. Type: String.
+- `name` - (Required) Name of the Function Node object. Type: String.
+- `annotation` - (Optional) Annotation of the Function Node object. Type: String.
+- `description` - (Optional) Description of the Function Node object. Type: String.
+- `func_template_type` - (Optional) Function Template type of the Function Node object. Allowed values: "OTHER", "FW_TRANS", "FW_ROUTED", "CLOUD_VENDOR_LB", "CLOUD_VENDOR_FW", "CLOUD_NATIVE_LB", "CLOUD_NATIVE_FW", "ADC_TWO_ARM", "ADC_ONE_ARM". Default value: "OTHER". Type: String.
+- `func_type` - (Optional) A function type. A GoThrough node is a transparent device, where a packet goes through without being addressed to the device, and the endpoints are not aware of that device. A GoTo device has a specific destination. Allowed values: "GoThrough", "GoTo", "L1", "L2", "None". Default value: "GoTo". Type: String.
+- `is_copy` - (Optional) If the device is a copy device. Allowed values: "yes", "no". Default value: "no". Type: String.
+- `managed` - (Optional) Specified if the function is using a managed device. Allowed values: "yes", "no". Default value: "yes". In ACI version: 5.2 and greater, `managed` is not supported so we need to set it to "no". Type: String.
+- `name_alias` - (Optional) Name alias of the Function Node object. Type: String.
+- `routing_mode` - (Optional) Routing mode of the Function Node object. Allowed values: "Redirect", "unspecified". Default value: "unspecified". Type: String.
+- `sequence_number` - (Optional) Internal property incremented when aaa user logs in. Type: String.
+- `share_encap` - (Optional) Enables encap sharing on node. Allowed values: "yes", "no". Default value: "no". Type: String.
 - `l4_l7_device_interface_consumer_name` - (Optional) The device interface is used to map with a service graph Function Node Connector consumer object. Type: String.
 - `l4_l7_device_interface_provider_name` - (Optional) The device interface is used to map with a service graph Function Node Connector provider object. Type: String.
-- `relation_vns_rs_node_to_abs_func_prof` - (Optional) Relation to class vnsAbsFuncProf. Cardinality - N_TO_ONE. Type - String.
-- `relation_vns_rs_node_to_l_dev` - (Optional) Relation to class vnsALDevIf. Cardinality - N_TO_ONE. Type - String.
-- `relation_vns_rs_node_to_m_func` - (Optional) Relation to class vnsMFunc. Cardinality - N_TO_ONE. Type - String.
-- `relation_vns_rs_default_scope_to_term` - (Optional) Relation to class vnsATerm. Cardinality - ONE_TO_ONE. Type - String.
-- `relation_vns_rs_node_to_cloud_l_dev` - (Optional) Relation to class cloudALDev. Cardinality - N_TO_ONE. Type - String.
+- `relation_vns_rs_node_to_abs_func_prof` - (Optional) Represents the relation to L4-L7 Services Function Profile (class vnsAbsFuncProf). Type: String.
+- `relation_vns_rs_node_to_l_dev` - (Optional) Represents the relation to Logical Device Abstraction (class vnsALDevIf). Type: String.
+- `relation_vns_rs_node_to_m_func` - (Optional) Represents the relation to Meta Function (class vnsMFunc). Type: String.
+- `relation_vns_rs_default_scope_to_term` - (Optional) Represents the relation to Terminal Abstract Class (class vnsATerm). Type: String.
+- `relation_vns_rs_node_to_cloud_l_dev` - (Optional) Represents the relation to Cloud L4-L7 Abstract Devices (class cloudALDev). Type: String.
 
 ## Attribute Reference
 
