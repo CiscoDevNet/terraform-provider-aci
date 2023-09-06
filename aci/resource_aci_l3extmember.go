@@ -98,6 +98,9 @@ func setL3outVPCMemberAttributes(l3extMember *models.L3outVPCMember, d *schema.R
 	if err != nil {
 		return d, err
 	}
+
+	d.Set("leaf_port_dn", GetParentDn(dn, fmt.Sprintf("/mem-%s", l3extMemberMap["side"])))
+
 	d.Set("side", l3extMemberMap["side"])
 
 	d.Set("addr", l3extMemberMap["addr"])
@@ -119,6 +122,13 @@ func resourceAciL3outVPCMemberImport(d *schema.ResourceData, m interface{}) ([]*
 	if err != nil {
 		return nil, err
 	}
+
+	l3extMemberMap, err := l3extMember.ToMap()
+	if err != nil {
+		return nil, err
+	}
+	d.Set("leaf_port_dn", GetParentDn(dn, fmt.Sprintf("/mem-%s", l3extMemberMap["side"])))
+
 	schemaFilled, err := setL3outVPCMemberAttributes(l3extMember, d)
 	if err != nil {
 		return nil, err

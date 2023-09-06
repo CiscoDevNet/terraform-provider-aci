@@ -8,9 +8,9 @@ terraform {
 }
 
 provider "aci" {
-  username = ""
-  password = ""
-  url      = ""
+  username = "ansible_github_ci"
+  password = "sJ94G92#8dq2hx*K4qh"
+  url      = "https://173.36.219.70"
   insecure = true
 }
 
@@ -18,9 +18,15 @@ resource "aci_tenant" "example" {
   name = "tf_tenant_l3out"
 }
 
+resource "aci_vrf" "vrf_example_tf" {
+  tenant_dn = aci_tenant.example.id
+  name = "tf_vrf_l3out"
+}
+
 resource "aci_l3_outside" "example" {
   tenant_dn = aci_tenant.example.id
   name      = "demo_l3out"
+  relation_l3ext_rs_ectx = aci_vrf.vrf_example_tf.id
 }
 
 resource "aci_logical_node_profile" "node_profile" {
