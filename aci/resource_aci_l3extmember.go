@@ -123,12 +123,6 @@ func resourceAciL3outVPCMemberImport(d *schema.ResourceData, m interface{}) ([]*
 		return nil, err
 	}
 
-	l3extMemberMap, err := l3extMember.ToMap()
-	if err != nil {
-		return nil, err
-	}
-	d.Set("leaf_port_dn", GetParentDn(dn, fmt.Sprintf("/mem-%s", l3extMemberMap["side"])))
-
 	schemaFilled, err := setL3outVPCMemberAttributes(l3extMember, d)
 	if err != nil {
 		return nil, err
