@@ -73,10 +73,20 @@ resource "aci_cloud_service_epg" "example" {
 
 ## Importing ##
 
-An existing CloudServiceEPg can be [imported][docs-import] into this resource via its Dn, via the following command:
+An existing Cloud Service EPG can be [imported][docs-import] into this resource via its Dn, via the following command:
 [docs-import]: https://www.terraform.io/docs/import/index.html
 
 
 ```
 terraform import aci_cloud_service_epg.example <Dn>
+```
+
+Starting in Terraform version 1.5, an existing Cloud Service EPG can be imported 
+using [import blocks](https://developer.hashicorp.com/terraform/language/import) via the following configuration:
+
+```
+import {
+  id = "<Dn>"
+  to = aci_cloud_service_epg.example
+}
 ```
