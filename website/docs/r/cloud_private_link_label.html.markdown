@@ -47,7 +47,7 @@ An existing Private Link Label can be [imported][docs-import] into this resource
 
 
 ```
-terraform import aci_private_link_labelfortheservice_epg.example <Dn>
+terraform import aci_cloud_private_link_label.example <Dn>
 ```
 
 Starting in Terraform version 1.5, an existing Private Link Label can be imported 
