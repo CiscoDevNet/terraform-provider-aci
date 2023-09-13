@@ -25,7 +25,7 @@ Data source for ACI Private Link Label
 ## Example Usage ##
 
 ```hcl
-data "aci_private_link_labelfortheservice_epg" "example" {
+data "aci_cloud_private_link_label" "example" {
   parent_dn  = aci_cloud_service_epg.example.id
   name                  = "example"
 }
