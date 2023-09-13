@@ -9,7 +9,7 @@ description: |-
 
 # aci_cloud_private_link_label #
 
-Manages ACI Private Link Label for the service EPG
+Manages ACI Private Link Label
 
 ## API Information ##
 
@@ -25,7 +25,7 @@ Manages ACI Private Link Label for the service EPG
 
 ```hcl
 resource "aci_cloud_private_link_label" "example" {
-  cloud_service_epg_dn  = aci_cloud_service_epg.example.id
+  parent_dn  = aci_cloud_service_epg.example.id
   name  = "example"
   annotation = "orchestrator:terraform"
 }
@@ -33,7 +33,7 @@ resource "aci_cloud_private_link_label" "example" {
 
 ## Argument Reference ##
 
-* `cloud_service_epg_dn` - (Required) Distinguished name of the parent Cloud Service EPG or Cloud Subnet object.
+* `parent_dn` - (Required) Distinguished name of the parent Cloud Service EPG or Cloud Subnet object.
 * `name` - (Required) Name of the Private Link Label.
 * `annotation` - (Optional) Annotation of the Private Link Label.
 * `name_alias` - (Optional) Name Alias of the Private Link Label.

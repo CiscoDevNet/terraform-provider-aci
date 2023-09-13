@@ -24,7 +24,7 @@ func resourceAciCloudPrivateLinkLabel() *schema.Resource {
 
 		SchemaVersion: 1,
 		Schema: AppendBaseAttrSchema(AppendNameAliasAttrSchema(map[string]*schema.Schema{
-			"cloud_service_epg_dn": {
+			"parent_dn": {
 				Type:     schema.TypeString,
 				Required: true,
 				ForceNew: true,
@@ -59,9 +59,9 @@ func setCloudPrivateLinkLabelAttributes(cloudPrivateLinkLabel *models.CloudPriva
 	}
 	dn := d.Id()
 	if dn != cloudPrivateLinkLabel.DistinguishedName {
-		d.Set("cloud_service_epg_dn", "")
+		d.Set("parent_dn", "")
 	} else {
-		d.Set("cloud_service_epg_dn", GetParentDn(cloudPrivateLinkLabel.DistinguishedName, fmt.Sprintf("/"+models.RnCloudPrivateLinkLabel, cloudPrivateLinkLabelMap["name"])))
+		d.Set("parent_dn", GetParentDn(cloudPrivateLinkLabel.DistinguishedName, fmt.Sprintf("/"+models.RnCloudPrivateLinkLabel, cloudPrivateLinkLabelMap["name"])))
 	}
 	d.Set("annotation", cloudPrivateLinkLabelMap["annotation"])
 	d.Set("name", cloudPrivateLinkLabelMap["name"])
@@ -91,7 +91,7 @@ func resourceAciCloudPrivateLinkLabelCreate(ctx context.Context, d *schema.Resou
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
 	name := d.Get("name").(string)
-	CloudServiceEPgDn := d.Get("cloud_service_epg_dn").(string)
+	CloudServiceEPgDn := d.Get("parent_dn").(string)
 
 	cloudPrivateLinkLabelAttr := models.CloudPrivateLinkLabelAttributes{}
 
@@ -124,7 +124,7 @@ func resourceAciCloudPrivateLinkLabelUpdate(ctx context.Context, d *schema.Resou
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
 	name := d.Get("name").(string)
-	CloudServiceEPgDn := d.Get("cloud_service_epg_dn").(string)
+	CloudServiceEPgDn := d.Get("parent_dn").(string)
 
 	cloudPrivateLinkLabelAttr := models.CloudPrivateLinkLabelAttributes{}
 

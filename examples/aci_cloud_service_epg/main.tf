@@ -7,11 +7,13 @@ terraform {
 }
 
 provider "aci" {
-  username = "ansible_github_ci"
-  password = "sJ94G92#8dq2hx*K4qh"
-  url      = "https://20.245.236.136"
+  username = ""
+  password = ""
+  url      = ""
   insecure = true
 }
+
+// Prerequisite class objects for all cloud service EPG's dployment type
 
 resource "aci_tenant" "azure_cloud_tenant_tf_test" {
   name = "azure_terraform_test_tenant_svc_epg"
@@ -27,14 +29,7 @@ resource "aci_vrf" "azure_cloud_vrf_tf_test" {
   name      = "azure_terraform_test_vrf_svc_epg"
 }
 
-resource "aci_cloud_service_epg" "azure_cloud_svc_epg_tf_test_1" {
-  cloud_applicationcontainer_dn = aci_cloud_applicationcontainer.azure_cloud_app_tf_test.id
-  name                          = "azure_terraform_test_cloud_svc_epg_1"
-  access_type                   = "Public"
-  deployment_type               = "CloudNative"
-  cloud_service_epg_type        = "Azure-SqlServer"
-  relation_cloud_rs_cloud_epg_ctx   = aci_vrf.azure_cloud_vrf_tf_test.id
-}
+// Prerequisite class objects for Cloud Native Managed and all Third-Party deployment types
 
 resource "aci_cloud_context_profile" "azure_cloud_ctxt_profile_tf_test" {
   tenant_dn = aci_tenant.azure_cloud_tenant_tf_test.id
@@ -55,10 +50,18 @@ resource "aci_cloud_subnet" "azure_cloud_subnet_tf_test" {
   ip = "7.1.0.0/24"
 }
 
-resource "aci_cloud_private_link_label" "azure_cloud_private_link_subnet_tf_test" {
-  cloud_service_epg_dn = aci_cloud_subnet.azure_cloud_subnet_tf_test.id
-  name = "azure_terraform_test_cloud_svc_private_link_label"
+// Cloud Native service EPG
+
+resource "aci_cloud_service_epg" "azure_cloud_svc_epg_tf_test_1" {
+  cloud_applicationcontainer_dn = aci_cloud_applicationcontainer.azure_cloud_app_tf_test.id
+  name                          = "azure_terraform_test_cloud_svc_epg_1"
+  access_type                   = "Public"
+  deployment_type               = "CloudNative"
+  cloud_service_epg_type        = "Azure-SqlServer"
+  relation_cloud_rs_cloud_epg_ctx   = aci_vrf.azure_cloud_vrf_tf_test.id
 }
+
+// Cloud Native Managed service EPG
 
 resource "aci_cloud_service_epg" "azure_cloud_svc_epg_tf_test_2" {
   cloud_applicationcontainer_dn = aci_cloud_applicationcontainer.azure_cloud_app_tf_test.id
@@ -75,6 +78,8 @@ resource "aci_cloud_service_endpoint_selector" "azure_cloud_svc_ep_selector_tf_t
   match_expression = "IP=='7.1.0.0/24'"
 }
 
+// Third-party service EPG - two private link label with the same name are needed (one for the service epg one and one for the subnet)
+
 resource "aci_cloud_service_epg" "azure_cloud_svc_epg_tf_test_3" {
   cloud_applicationcontainer_dn = aci_cloud_applicationcontainer.azure_cloud_app_tf_test.id
   name                          = "azure_terraform_test_cloud_svc_epg_3"
@@ -84,8 +89,13 @@ resource "aci_cloud_service_epg" "azure_cloud_svc_epg_tf_test_3" {
   relation_cloud_rs_cloud_epg_ctx   = aci_vrf.azure_cloud_vrf_tf_test.id
 }
 
+resource "aci_cloud_private_link_label" "azure_cloud_private_link_subnet_tf_test" {
+  parent_dn = aci_cloud_subnet.azure_cloud_subnet_tf_test.id
+  name = "azure_terraform_test_cloud_svc_private_link_label"
+}
+
 resource "aci_cloud_private_link_label" "azure_cloud_private_link_svc_tf_test" {
-  cloud_service_epg_dn = aci_cloud_service_epg.azure_cloud_svc_epg_tf_test_3.id
+  parent_dn = aci_cloud_service_epg.azure_cloud_svc_epg_tf_test_3.id
   name = "azure_terraform_test_cloud_svc_private_link_label"
 }
 

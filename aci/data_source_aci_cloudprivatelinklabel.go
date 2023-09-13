@@ -15,7 +15,7 @@ func dataSourceAciCloudPrivateLinkLabel() *schema.Resource {
 		ReadContext:   dataSourceAciCloudPrivateLinkLabelRead,
 		SchemaVersion: 1,
 		Schema: AppendBaseAttrSchema(AppendNameAliasAttrSchema(map[string]*schema.Schema{
-			"cloud_service_epg_dn": {
+			"parent_dn": {
 				Type:     schema.TypeString,
 				Required: true,
 			},
@@ -30,7 +30,7 @@ func dataSourceAciCloudPrivateLinkLabel() *schema.Resource {
 func dataSourceAciCloudPrivateLinkLabelRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	aciClient := m.(*client.Client)
 	name := d.Get("name").(string)
-	CloudServiceEPgDn := d.Get("cloud_service_epg_dn").(string)
+	CloudServiceEPgDn := d.Get("parent_dn").(string)
 	rn := fmt.Sprintf(models.RnCloudPrivateLinkLabel, name)
 	dn := fmt.Sprintf("%s/%s", CloudServiceEPgDn, rn)
 
