@@ -38,7 +38,7 @@ resource "aci_contract" "complex_contract" {
     filter_name = "complex_contract_filter"
     filter_entry {
       filter_entry_name = "complex_contract_filter_entry"
-      description = "My complex entry description from Terraform"
+      description       = "My complex entry description from Terraform"
     }
   }
 }

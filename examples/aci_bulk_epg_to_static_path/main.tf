@@ -39,8 +39,8 @@ data "aci_fabric_path_ep" "vpc_example" {
 resource "aci_bulk_epg_to_static_path" "example" {
   application_epg_dn = aci_application_epg.terraform_epg.id
   static_path {
-    interface_dn         = "topology/pod-1/paths-129/pathep-[eth1/5]"
-    encap                = "vlan-1000"
+    interface_dn = "topology/pod-1/paths-129/pathep-[eth1/5]"
+    encap        = "vlan-1000"
   }
   static_path {
     interface_dn         = "topology/pod-1/paths-129/pathep-[eth1/6]"

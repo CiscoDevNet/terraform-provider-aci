@@ -14,8 +14,8 @@ provider "aci" {
 }
 
 resource "aci_endpoint_ip_aging_profile" "example" {
-  admin_st = "disabled"
-  annotation = "orchestrator:terraform"
+  admin_st    = "disabled"
+  annotation  = "orchestrator:terraform"
   description = "from terraform"
-  name_alias = "example_name_alias"
+  name_alias  = "example_name_alias"
 }

@@ -14,8 +14,8 @@ provider "aci" {
 }
 
 resource "aci_lacp_member_policy" "example" {
-  name        = "example"
-  description = "This policy member is created by terraform"
-  priority = "32768"
+  name          = "example"
+  description   = "This policy member is created by terraform"
+  priority      = "32768"
   transmit_rate = "normal"
 }

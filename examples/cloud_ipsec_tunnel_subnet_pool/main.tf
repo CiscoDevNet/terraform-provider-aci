@@ -14,8 +14,8 @@ provider "aci" {
 }
 
 resource "aci_cloud_ipsec_tunnel_subnet_pool" "ipsec_tunnel_subnet_pool" {
-  name = "test"
-  subnet_pool      = "160.254.10.0/16"
+  name        = "test"
+  subnet_pool = "160.254.10.0/16"
 }
 
 data "aci_cloud_ipsec_tunnel_subnet_pool" "example" {

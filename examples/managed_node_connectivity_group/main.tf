@@ -14,6 +14,6 @@ provider "aci" {
 }
 
 resource "aci_managed_node_connectivity_group" "example" {
-  name  = "example"
+  name       = "example"
   annotation = "test_annotation"
 }

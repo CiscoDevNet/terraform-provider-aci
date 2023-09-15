@@ -48,18 +48,18 @@ resource "aci_logical_node_profile" "foological_node_profile" {
 }
 
 resource "aci_igmp_interface_policy" "example_igmp" {
-  tenant_dn                  = aci_tenant.footenant.id
-  name                       = "example_igmp"
-  group_timeout              = "260"
-  last_member_count          = "2"
-  last_member_response_time  = "1"
-  querier_timeout            = "255"
-  query_interval             = "125"
-  robustness_variable        = "2"
-  response_interval          = "10"
-  startup_query_count        = "2"
-  startup_query_interval     = "31"
-  version                    = "v2"
+  tenant_dn                 = aci_tenant.footenant.id
+  name                      = "example_igmp"
+  group_timeout             = "260"
+  last_member_count         = "2"
+  last_member_response_time = "1"
+  querier_timeout           = "255"
+  query_interval            = "125"
+  robustness_variable       = "2"
+  response_interval         = "10"
+  startup_query_count       = "2"
+  startup_query_interval    = "31"
+  version                   = "v2"
 }
 
 resource "aci_pim_interface_policy" "example_ip" {

@@ -98,7 +98,7 @@ resource "aci_tenant" "terraform_tenant_shared" {
 # Shared Subscription - Infra tenant details
 data "aci_cloud_account" "aci_cloud_account_infra" {
   tenant_dn  = "uni/tn-infra"
-  account_id = "infra_subscription_id"  # add substricption_id from existing ifra tenant.
+  account_id = "infra_subscription_id" # add substricption_id from existing ifra tenant.
   vendor     = "azure"
 }
 

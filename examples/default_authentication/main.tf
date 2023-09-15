@@ -14,10 +14,10 @@ provider "aci" {
 }
 
 resource "aci_default_authentication" "example" {
-  annotation = "orchestrator:terraform"
+  annotation     = "orchestrator:terraform"
   fallback_check = "false"
-  realm = "local"
+  realm          = "local"
   realm_sub_type = "default"
-  name_alias = "example_name_alias"
-  description = "from terraform"
+  name_alias     = "example_name_alias"
+  description    = "from terraform"
 }

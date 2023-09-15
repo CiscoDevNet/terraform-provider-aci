@@ -14,9 +14,9 @@ provider "aci" {
 }
 
 resource "aci_vpc_domain_policy" "example" {
-  name  = "example"
-  annotation = "orchestrator:terraform"
-  dead_intvl = "200"
-  name_alias = "example"
+  name        = "example"
+  annotation  = "orchestrator:terraform"
+  dead_intvl  = "200"
+  name_alias  = "example"
   description = "from terraform"
 }

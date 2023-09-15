@@ -1,5 +1,5 @@
 data "aci_tenant" "tenant_for_contract" {
-  name        = "common"
+  name = "common"
 }
 
 resource "aci_l4_l7_service_graph_template" "rest_abs_graph" {

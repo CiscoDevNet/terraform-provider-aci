@@ -14,9 +14,9 @@ provider "aci" {
 }
 
 resource "aci_spine_switch_policy_group" "example" {
-  name  = "example"
-  annotation = "orchestrator:terraform"
-  name_alias = "example"
+  name        = "example"
+  annotation  = "orchestrator:terraform"
+  name_alias  = "example"
   description = "from terraform"
 
 }

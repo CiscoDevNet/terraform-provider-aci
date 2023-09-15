@@ -15,11 +15,11 @@ provider "aci" {
 }
 
 resource "aci_authentication_properties" "example" {
-  annotation = "orchestrator:terraform"
-  name_alias = "example_name_alias"
-  description = "from terraform"
+  annotation      = "orchestrator:terraform"
+  name_alias      = "example_name_alias"
+  description     = "from terraform"
   def_role_policy = "no-login"
-  ping_check = "true"
-  retries = "1"
-  timeout = "5"
+  ping_check      = "true"
+  retries         = "1"
+  timeout         = "5"
 }

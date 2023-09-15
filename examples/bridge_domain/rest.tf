@@ -8,8 +8,8 @@ resource "aci_rest" "rest_l3_ext_out" {
 }
 
 resource "aci_route_control_profile" "example" {
-  parent_dn                  = aci_tenant.tenant_for_bridge_domain.id
-  name                       = "testprof"
+  parent_dn = aci_tenant.tenant_for_bridge_domain.id
+  name      = "testprof"
 }
 
 resource "aci_rest" "rest_dhcp_RelayP" {

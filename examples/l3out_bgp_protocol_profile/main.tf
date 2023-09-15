@@ -15,19 +15,19 @@ provider "aci" {
 }
 
 resource "aci_tenant" "footenant" {
-	name 		= "tenant_bgp_protp"
-	description = "tenant created while acceptance testing"
+  name        = "tenant_bgp_protp"
+  description = "tenant created while acceptance testing"
 }
 
 resource "aci_l3_outside" "fool3_outside" {
-  name 		= "l3_bgp_protp"
+  name        = "l3_bgp_protp"
   description = "l3_outside created while acceptance testing"
-  tenant_dn = aci_tenant.footenant.id
+  tenant_dn   = aci_tenant.footenant.id
 }
 
 resource "aci_logical_node_profile" "foological_node_profile" {
-  name 		= "logical_node_profile"
-  description = "logical_node_profile created while acceptance testing"
+  name          = "logical_node_profile"
+  description   = "logical_node_profile created while acceptance testing"
   l3_outside_dn = aci_l3_outside.fool3_outside.id
 }
 
@@ -52,10 +52,10 @@ resource "aci_bgp_timers" "foobgp_timer" {
 }
 
 resource "aci_l3out_bgp_protocol_profile" "foolbgp_protp" {
-  logical_node_profile_dn = aci_logical_node_profile.foological_node_profile.id
-  annotation              = "bgp_protp_annotation"
-  name_alias              = "bgp_protp_name_alias"
-  name = "bgp_protp_test"
+  logical_node_profile_dn            = aci_logical_node_profile.foological_node_profile.id
+  annotation                         = "bgp_protp_annotation"
+  name_alias                         = "bgp_protp_name_alias"
+  name                               = "bgp_protp_test"
   relation_bgp_rs_best_path_ctrl_pol = aci_bgp_best_path_policy.foobgp_best_path_policy.id
-  relation_bgp_rs_bgp_node_ctx_pol = aci_bgp_timers.foobgp_timer.id
+  relation_bgp_rs_bgp_node_ctx_pol   = aci_bgp_timers.foobgp_timer.id
 }
