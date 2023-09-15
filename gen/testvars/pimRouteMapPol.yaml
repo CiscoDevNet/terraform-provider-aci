@@ -1,0 +1,32 @@
+default:
+  annotation: "orchestrator:terraform"
+  description: ""
+  name_alias: ""
+  owner_key: ""
+  owner_tag: ""
+
+datasource_required:
+  name: "test_pim_route_map_policy"
+
+resource_required:
+  name: "test_pim_route_map_policy"
+
+all:
+  annotation: "test_annotation"
+  description: "test_descr"
+  name_alias: "test_name_alias"
+  owner_key: "test_owner_key"
+  owner_tag: "test_owner_tag"
+
+children:
+  annotations:
+    - key: "test_key_1"
+      value: "test_value_1"
+    - key: "test_key_2"
+      value: "test_value_2"
+
+parents:
+  - class_name: "fvTenant"
+    parent_dependency: ""
+    parent_dn: "aci_tenant.test.id"
+    relationship_in_parent: false
