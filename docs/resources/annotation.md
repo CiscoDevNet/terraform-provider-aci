@@ -59,6 +59,7 @@ resource "aci_annotation" "example" {
 
 * `parent_dn` - (string) The distinquised name (DN) of the parent object, possible resources:
   - `aci_application_epg` (class: fvAEPg)
+  - `aci_contract_interface` (class: fvRsConsIf)
   - `aci_tenant` (class: fvTenant)
   - `aci_l3out_consumer_label` (class: l3extConsLbl)
   - `aci_l3_outside` (class: l3extOut)

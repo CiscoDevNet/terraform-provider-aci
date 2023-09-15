@@ -1,0 +1,26 @@
+default:
+  annotation: "orchestrator:terraform"
+  priority: "unspecified"
+
+datasource_required:
+  contract_interface_name: "test_contract_interface"
+
+resource_required:
+  contract_interface_name: "test_contract_interface"
+
+all:
+  annotation: "test_annotation"
+  priority: "level1"
+
+children:
+  annotations:
+    - key: "test_key_1"
+      value: "test_value_1"
+    - key: "test_key_2"
+      value: "test_value_2"
+
+parents:
+  - class_name: "fvAEPg"
+    parent_dependency: ""
+    parent_dn: "aci_application_epg.test.id"
+    relationship_in_parent: false
