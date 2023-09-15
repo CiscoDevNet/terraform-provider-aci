@@ -151,6 +151,7 @@ func resourceAciCloudServiceEPg() *schema.Resource {
 					Schema: map[string]*schema.Schema{
 						"prio": {
 							Optional: true,
+							Computed: true,
 							Type:     schema.TypeString,
 							ValidateFunc: validation.StringInSlice([]string{
 								"level1",
@@ -178,6 +179,7 @@ func resourceAciCloudServiceEPg() *schema.Resource {
 					Schema: map[string]*schema.Schema{
 						"prio": {
 							Optional: true,
+							Computed: true,
 							Type:     schema.TypeString,
 							ValidateFunc: validation.StringInSlice([]string{
 								"level1",
@@ -235,6 +237,7 @@ func resourceAciCloudServiceEPg() *schema.Resource {
 					Schema: map[string]*schema.Schema{
 						"label_match_criteria": {
 							Optional: true,
+							Computed: true,
 							Type:     schema.TypeString,
 							ValidateFunc: validation.StringInSlice([]string{
 								"All",
@@ -245,6 +248,7 @@ func resourceAciCloudServiceEPg() *schema.Resource {
 						},
 						"prio": {
 							Optional: true,
+							Computed: true,
 							Type:     schema.TypeString,
 							ValidateFunc: validation.StringInSlice([]string{
 								"level1",
@@ -289,7 +293,7 @@ func getRemoteCloudServiceEPg(client *client.Client, dn string) (*models.CloudSe
 	}
 	cloudSvcEPg := models.CloudServiceEPgFromContainer(cloudSvcEPgCont)
 	if cloudSvcEPg.DistinguishedName == "" {
-		return nil, fmt.Errorf("CloudServiceEPg %s not found", dn)
+		return nil, fmt.Errorf("Cloud Service EPG %s not found", dn)
 	}
 	return cloudSvcEPg, nil
 }
@@ -498,7 +502,7 @@ func resourceAciCloudServiceEPgImport(d *schema.ResourceData, m interface{}) ([]
 }
 
 func resourceAciCloudServiceEPgCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	log.Printf("[DEBUG] CloudServiceEPg: Beginning Creation")
+	log.Printf("[DEBUG] Cloud Service EPG: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
 	name := d.Get("name").(string)
@@ -750,7 +754,7 @@ func resourceAciCloudServiceEPgCreate(ctx context.Context, d *schema.ResourceDat
 	return resourceAciCloudServiceEPgRead(ctx, d, m)
 }
 func resourceAciCloudServiceEPgUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	log.Printf("[DEBUG] CloudServiceEPg: Beginning Update")
+	log.Printf("[DEBUG] Cloud Service EPG: Beginning Update")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
 	name := d.Get("name").(string)

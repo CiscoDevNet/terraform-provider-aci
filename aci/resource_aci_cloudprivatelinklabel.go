@@ -45,7 +45,7 @@ func getRemoteCloudPrivateLinkLabel(client *client.Client, dn string) (*models.C
 	}
 	cloudPrivateLinkLabel := models.CloudPrivateLinkLabelFromContainer(cloudPrivateLinkLabelCont)
 	if cloudPrivateLinkLabel.DistinguishedName == "" {
-		return nil, fmt.Errorf("CloudPrivateLinkLabel %s not found", dn)
+		return nil, fmt.Errorf("Cloud Private Link Label %s not found", dn)
 	}
 	return cloudPrivateLinkLabel, nil
 }
@@ -87,7 +87,7 @@ func resourceAciCloudPrivateLinkLabelImport(d *schema.ResourceData, m interface{
 }
 
 func resourceAciCloudPrivateLinkLabelCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	log.Printf("[DEBUG] CloudPrivateLinkLabel: Beginning Creation")
+	log.Printf("[DEBUG] Cloud Private Link Label: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
 	name := d.Get("name").(string)
@@ -120,7 +120,7 @@ func resourceAciCloudPrivateLinkLabelCreate(ctx context.Context, d *schema.Resou
 	return resourceAciCloudPrivateLinkLabelRead(ctx, d, m)
 }
 func resourceAciCloudPrivateLinkLabelUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	log.Printf("[DEBUG] CloudPrivateLinkLabel: Beginning Update")
+	log.Printf("[DEBUG] Cloud Private Link Label: Beginning Update")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
 	name := d.Get("name").(string)

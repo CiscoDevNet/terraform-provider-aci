@@ -14,7 +14,7 @@ Manages ACI Cloud Service Endpoint Selector
 ## API Information ##
 
 * `Class` - cloudSvcEPSelector
-* `Distinguished Name` - uni/tn-{name}/cloudapp-{name}/cloudsvcepg-{name}/svcepselector-{name}
+* `Distinguished Name` - uni/tn-{tenant_name}/cloudapp-{application_name}/cloudsvcepg-{cloud_service_epg_name}/svcepselector-{name}
 
 ## GUI Information ##
 
@@ -28,7 +28,7 @@ resource "aci_cloud_service_endpoint_selector" "example" {
   cloud_service_epg_dn  = aci_cloud_service_epg.example.id
   name                  = "example"
   annotation            = "orchestrator:terraform"
-  match_expression      = "IP=='7.1.0.0/24'"
+  match_expression      = "IP=='11.11.11.0/24'"
 }
 ```
 

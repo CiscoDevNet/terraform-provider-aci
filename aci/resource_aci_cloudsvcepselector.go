@@ -50,7 +50,7 @@ func getRemoteCloudServiceEndpointSelector(client *client.Client, dn string) (*m
 	}
 	cloudSvcEPSelector := models.CloudServiceEndpointSelectorFromContainer(cloudSvcEPSelectorCont)
 	if cloudSvcEPSelector.DistinguishedName == "" {
-		return nil, fmt.Errorf("CloudServiceEndpointSelector %s not found", dn)
+		return nil, fmt.Errorf("Cloud Service Endpoint Selector %s not found", dn)
 	}
 	return cloudSvcEPSelector, nil
 }
@@ -93,7 +93,7 @@ func resourceAciCloudServiceEndpointSelectorImport(d *schema.ResourceData, m int
 }
 
 func resourceAciCloudServiceEndpointSelectorCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	log.Printf("[DEBUG] CloudServiceEndpointSelector: Beginning Creation")
+	log.Printf("[DEBUG] Cloud Service Endpoint Selector: Beginning Creation")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
 	name := d.Get("name").(string)
@@ -130,7 +130,7 @@ func resourceAciCloudServiceEndpointSelectorCreate(ctx context.Context, d *schem
 	return resourceAciCloudServiceEndpointSelectorRead(ctx, d, m)
 }
 func resourceAciCloudServiceEndpointSelectorUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	log.Printf("[DEBUG] CloudServiceEndpointSelector: Beginning Update")
+	log.Printf("[DEBUG] Cloud Service Endpoint Selector: Beginning Update")
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
 	name := d.Get("name").(string)

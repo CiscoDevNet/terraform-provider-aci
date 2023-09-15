@@ -14,7 +14,7 @@ Manages ACI Private Link Label
 ## API Information ##
 
 * `Class` - cloudPrivateLinkLabel
-* `Distinguished Name` - uni/tn-{name}/cloudapp-{name}/cloudsvcepg-{name}/privatelinklabel-{name}
+* `Distinguished Name` - uni/tn-{tenant_name}/cloudapp-{application_name}/cloudsvcepg-{cloud_service_epg_name}/privatelinklabel-{name}
 
 ## GUI Information ##
 
@@ -26,7 +26,7 @@ Manages ACI Private Link Label
 ```hcl
 resource "aci_cloud_private_link_label" "example" {
   parent_dn  = aci_cloud_service_epg.example.id
-  name  = "example"
+  name       = "example"
   annotation = "orchestrator:terraform"
 }
 ```

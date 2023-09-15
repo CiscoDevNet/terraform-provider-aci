@@ -15,7 +15,7 @@ Note: This resource is supported in Cloud APIC only.
 ## API Information ##
 
 * `Class` - cloudSvcEPSelector
-* `Distinguished Name` - uni/tn-{name}/cloudapp-{name}/cloudsvcepg-{name}/svcepselector-{name}
+* `Distinguished Name` - uni/tn-{tenant_name}/cloudapp-{application_name}/cloudsvcepg-{cloud_service_epg_name}/svcepselector-{name}
 
 ## GUI Information ##
 
@@ -33,7 +33,7 @@ data "aci_cloud_service_endpoint_selector" "example" {
 
 ## Argument Reference ##
 
-* `cloud_service_epg_dn` - (Required) Distinguished name of the parent CloudServiceEPg object.
+* `cloud_service_epg_dn` - (Required) Distinguished name of the parent Cloud Service EPG object.
 * `name` - (Required) Name of the Cloud Service Endpoint Selector object.
 
 ## Attribute Reference ##
