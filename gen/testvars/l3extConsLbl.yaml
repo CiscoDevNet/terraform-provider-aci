@@ -1,0 +1,36 @@
+default:
+  annotation: "orchestrator:terraform"
+  description: ""
+  name_alias: ""
+  owner_key: ""
+  owner_tag: ""
+  owner: "infra"
+  tag: "yellow-green"
+
+datasource_required:
+  name: "test_l3out_consumer_label"
+
+resource_required:
+  name: "test_l3out_consumer_label"
+
+all:
+  annotation: "test_annotation"
+  description: "test_description"
+  name_alias: "test_name_alias"
+  owner_key: "test_owner_key"
+  owner_tag: "test_owner_tag"
+  owner: "tenant"
+  tag: "burlywood"
+
+children:
+  annotations:
+    - key: "test_key_1"
+      value: "test_value_1"
+    - key: "test_key_2"
+      value: "test_value_2"
+
+parents:
+  - class_name: "l3extOut"
+    parent_dependency: ""
+    parent_dn: "aci_l3_outside.test.id"
+    relationship_in_parent: false
