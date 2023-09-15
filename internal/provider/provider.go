@@ -195,18 +195,26 @@ func (p *AciProvider) Configure(ctx context.Context, req provider.ConfigureReque
 func (p *AciProvider) Resources(ctx context.Context) []func() resource.Resource {
 	return []func() resource.Resource{
 		NewL3extConsLblResource,
+		NewMgmtInstPResource,
+		NewMgmtRsOoBConsResource,
+		NewMgmtSubnetResource,
 		NewPimRouteMapEntryResource,
 		NewPimRouteMapPolResource,
 		NewTagAnnotationResource,
+		NewVzOOBBrCPResource,
 	}
 }
 
 func (p *AciProvider) DataSources(ctx context.Context) []func() datasource.DataSource {
 	return []func() datasource.DataSource{
 		NewL3extConsLblDataSource,
+		NewMgmtInstPDataSource,
+		NewMgmtRsOoBConsDataSource,
+		NewMgmtSubnetDataSource,
 		NewPimRouteMapEntryDataSource,
 		NewPimRouteMapPolDataSource,
 		NewTagAnnotationDataSource,
+		NewVzOOBBrCPDataSource,
 	}
 }
 

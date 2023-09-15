@@ -1,0 +1,19 @@
+default:
+  annotation: "orchestrator:terraform"
+  priority: "unspecified"
+
+datasource_required:
+  contract_name: "test_l3out_management_network_contract"
+
+resource_required:
+  contract_name: "test_l3out_management_network_contract"
+
+all:
+  annotation: "test_annotation"
+  priority: "level1"
+
+parents:
+  - class_name: "mgmtInstP"
+    parent_dependency: ""
+    parent_dn: "aci_l3out_management_network_instance_profile.test.id"
+    relationship_in_parent: false

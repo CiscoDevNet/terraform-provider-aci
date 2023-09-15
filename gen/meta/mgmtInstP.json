@@ -1,0 +1,1084 @@
+{
+        "mgmt:InstP": {
+            "contains": {
+                "aaa:RbacAnnotation": "",
+                "fault:Counts": "",
+                "fault:Delegate": "",
+                "fault:Inst": "",
+                "fv:RInfoHolder": "",
+                "fv:RtARemoteHostToEpg": "",
+                "fv:RtDcProfToEpg": "",
+                "fv:RtDcToEpg": "",
+                "fv:RtEpg": "",
+                "fv:RtNtpProvToEpg": "",
+                "fv:RtProfileToEpg": "",
+                "fv:RtSecProvToEpg": "",
+                "health:Inst": "",
+                "mgmt:RsInstPCtx": "",
+                "mgmt:RsOoBCons": "",
+                "mgmt:Subnet": "",
+                "tag:AliasDelInst": "",
+                "tag:AliasInst": "",
+                "tag:Annotation": "",
+                "tag:ExtMngdInst": "",
+                "tag:Inst": "",
+                "tag:Tag": ""
+            },
+            "rnMap": {
+                "alias": "tag:AliasInst",
+                "aliasdel-": "tag:AliasDelInst",
+                "annotationKey-": "tag:Annotation",
+                "extmngd": "tag:ExtMngdInst",
+                "fault-": "fault:Inst",
+                "fd-": "fault:Delegate",
+                "fltCnts": "fault:Counts",
+                "health": "health:Inst",
+                "rbacDom-": "aaa:RbacAnnotation",
+                "rsinstPCtx": "mgmt:RsInstPCtx",
+                "rsooBCons-": "mgmt:RsOoBCons",
+                "rtaaaSecProvToEpg-": "fv:RtSecProvToEpg",
+                "rtdatetimeNtpProvToEpg-": "fv:RtNtpProvToEpg",
+                "rtdcProfToEpg": "fv:RtDcProfToEpg",
+                "rtdcToEpg": "fv:RtDcToEpg",
+                "rtdnsProfileToEpg-": "fv:RtProfileToEpg",
+                "rtfileARemoteHostToEpg-": "fv:RtARemoteHostToEpg",
+                "rtsnmpEpg-": "fv:RtEpg",
+                "subnet-": "mgmt:Subnet",
+                "tag-": "tag:Inst",
+                "tagKey-": "tag:Tag",
+                "to-": "fv:RInfoHolder"
+            },
+            "identifiedBy": [
+                "name"
+            ],
+            "rnFormat": "instp-{name}",
+            "containedBy": {
+                "mgmt:ExtMgmtEntity": ""
+            },
+            "superClasses": [
+                "fv:ATg",
+                "fv:Comp",
+                "pol:Comp",
+                "pol:Obj",
+                "naming:NamedObject"
+            ],
+            "subClasses": {
+
+            },
+            "relationFrom": {
+                "fv:RtARemoteHostToEpg": "file:ARemoteHost",
+                "fv:RtDcProfToEpg": "intersight:SwitchConnectivityProfile",
+                "fv:RtDcToEpg": "intersight:DeviceConnectorInst",
+                "fv:RtEpg": "snmp:ClientGrpP",
+                "fv:RtNtpProvToEpg": "datetime:NtpProv",
+                "fv:RtProfileToEpg": "dns:Profile",
+                "fv:RtSecProvToEpg": "aaa:AProvider"
+            },
+            "relationTo": {
+                "mgmt:RsInstPCtx": "fv:Ctx",
+                "mgmt:RsOoBCons": "vz:OOBBrCP"
+            },
+            "dnFormats": [
+                "uni/tn-{name}/extmgmt-{name}/instp-{name}"
+            ],
+            "writeAccess": [
+                "admin",
+                "tenant-connectivity",
+                "tenant-epg",
+                "tenant-network-profile"
+            ],
+            "readAccess": [
+                "aaa",
+                "admin",
+                "fabric-protocol",
+                "ops",
+                "tenant-connectivity",
+                "tenant-epg",
+                "tenant-network-profile"
+            ],
+            "faults": {
+
+            },
+            "events": {
+                "E4212617": "creation||mgmt:InstP",
+                "E4212618": "modification||mgmt:InstP",
+                "E4212619": "deletion||mgmt:InstP"
+            },
+            "stats": {
+
+            },
+            "isAbstract": false,
+            "isConfigurable": true,
+            "isContextRoot": false,
+            "isDeprecated": false,
+            "isHidden": false,
+            "isEncrypted": false,
+            "isExportable": true,
+            "isPersistent": true,
+            "isSubjectToQuota": false,
+            "isObservable": true,
+            "hasStats": false,
+            "isStat": false,
+            "isFaultable": true,
+            "isDomainable": false,
+            "isHealthScorable": true,
+            "shouldCollectHealthStats": false,
+            "healthCollectionSource": "faults",
+            "hasEventRules": false,
+            "abstractionLayer": "logical",
+            "apicNxProcessing": false,
+            "monitoringPolicySource": "Parent",
+            "isCreatableDeletable": "always",
+            "platformFlavors": [
+
+            ],
+            "classId": "2183",
+            "className": "InstP",
+            "classPkg": "mgmt",
+            "featureTag": "",
+            "moCategory": "Regular",
+            "label": "External Management Network Instance Profile",
+            "comment": [
+                "The external management entity instance profile communicates with nodes that are part of out-of-band management endpoint group. To enable this communication, a contract is required between the instance profile and the out-of-band management endpoint group."
+            ],
+            "properties": {
+                "annotation": {
+                    "comment": [
+                         "User annotation. Suggested format orchestrator:value"
+                    ],
+                    "isConfigurable": true,
+                    "propGlobalId": "37694",
+                    "propLocalId": "8719",
+                    "label": "Annotation",
+                    "baseType": "string:Basic",
+                    "modelType": "mo:Annotation",
+                    "needsPropDelimiters": false,
+                    "uitype": "string",
+                    "createOnly": false,
+                    "readWrite": true,
+                    "readOnly": false,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": false,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "validators": [
+                         {"min" : 0, "max": 128,
+                             "regexs": [
+                                 {"regex" : "^[a-zA-Z0-9_.:-]+$", "type": "include"}
+                             ]
+                         }
+                    ],
+                    "platformFlavors": [
+
+                    ],
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "childAction": {
+                    "comment": [
+                         "Delete or ignore. For internal use only."
+                    ],
+                    "isConfigurable": false,
+                    "propGlobalId": "4",
+                    "propLocalId": "5",
+                    "label": "childAction",
+                    "baseType": "scalar:Bitmask32",
+                    "modelType": "mo:ModificationChildAction",
+                    "needsPropDelimiters": false,
+                    "uitype": "bitmask",
+                    "createOnly": false,
+                    "readWrite": false,
+                    "readOnly": true,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": true,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "validValues": [
+                         { "value": "16384", "localName": "deleteAll",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "deleteAll "},
+                         { "value": "8192", "localName": "deleteNonPresent",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "deleteNonPresent "},
+                         { "value": "4096", "localName": "ignore",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "ignore "}
+                    ],
+                    "platformFlavors": [
+
+                    ],
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "configIssues": {
+                    "comment": [
+                         "Bitmask representation of the configuration issues found during the endpoint group deployment."
+                    ],
+                    "isConfigurable": false,
+                    "propGlobalId": "1715",
+                    "propLocalId": "153",
+                    "label": "Config Issues",
+                    "baseType": "scalar:Bitmask64",
+                    "modelType": "fv:ConfigIssues",
+                    "needsPropDelimiters": false,
+                    "uitype": "bitmask",
+                    "createOnly": false,
+                    "readWrite": false,
+                    "readOnly": true,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": true,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "validValues": [
+                         { "value": "2048", "localName": "allow-useg-inconsistent",
+                             "platformFlavors": [
+
+                             ],
+                             "comment": [
+                                 "allow useg Validations"
+                             ],
+                             "label": "allow-useg flag inconsistent across vmm domain (DVS) attaches "},
+                         { "value": "256", "localName": "bd-id-not-allocated",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "BD IDs Not Allocated "},
+                         { "value": "1", "localName": "bd-not-present",
+                             "platformFlavors": [
+
+                             ],
+                             "comment": [
+                                 "BD Validations"
+                             ],
+                             "label": "BD Not present "},
+                         { "value": "512", "localName": "context-id-not-allocated",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Context IDs Not Allocated "},
+                         { "value": "2", "localName": "context-not-present",
+                             "platformFlavors": [
+
+                             ],
+                             "comment": [
+                                 "Context Validations"
+                             ],
+                             "label": "Context Not present. Configure Context and/or attach Context to Bridge-group domain for application EPG or attach Context to ESG for security group. "},
+                         { "value": "none", "localName": "defaultValue",
+                             "platformFlavors": [
+
+                             ],
+                             "label": " "},
+                         { "value": "8", "localName": "encap-assignment",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Encapsulation Not Valid "},
+                         { "value": "0x4000", "localName": "esg-association-contract-inheritance-present",
+                             "platformFlavors": [
+
+                             ],
+                             "comment": [
+                                 "EPgSelector Contract Inheritance Validations"
+                             ],
+                             "label": "Security features (contract inheritance) present on the EPG mapped to an ESG via an EPG Selector (fvEPgSelector). Once appropriate contract configuration is done on the ESG, delete any contract association on this EPG. "},
+                         { "value": "0x2000", "localName": "esg-association-contract-present",
+                             "platformFlavors": [
+
+                             ],
+                             "comment": [
+                                 "EPgSelector Contract Validations"
+                             ],
+                             "label": "Security features (contract association) present on the EPG mapped to an ESG via an EPG Selector (fvEPgSelector). Once appropriate contract configuration is done on the ESG, delete any contract association on this EPG. "},
+                         { "value": "0x8000", "localName": "esg-association-contract-taboo-present",
+                             "platformFlavors": [
+
+                             ],
+                             "comment": [
+                                 "EPgSelector Taboo Contract Validations"
+                             ],
+                             "label": "Security features (Taboo contract) present on the EPG mapped to an ESG via an EPG Selector (fvEPgSelector). Once appropriate contract configuration is done on the ESG, delete any contract association on this EPG. "},
+                         { "value": "0x10000", "localName": "esg-tag-selector-match-obj-not-associated",
+                             "platformFlavors": [
+
+                             ],
+                             "comment": [
+                                 "ESG TagSelector Duplicate Detected"
+                             ],
+                             "label": "a Tag Selector is matching an object, but the object is not associated to this ESG since it is matching multiple ESG Tag Selectors at the same time. Check under ESG - > Operational -> Tag Selectors tab for further information "},
+                         { "value": "4", "localName": "id-not-allocated",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "IDs Not Allocated "},
+                         { "value": "1024", "localName": "instrimedcy-unsupported",
+                             "platformFlavors": [
+
+                             ],
+                             "comment": [
+                                 "Deployment Immediacy Validation"
+                             ],
+                             "label": "On-Demand deployment immediacy is not supported for uSeg EPG associated to VMware DVS domain "},
+                         { "value": "32", "localName": "invalid-rel-to-rtctrlProfile",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Invalid Association to Route Control Policy "},
+                         { "value": "128", "localName": "l3port-and-sub-interface-on-path",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "L3 Port and Sub-Interface Not Allowed on Same Path "},
+                         { "value": "4096", "localName": "no-conslbl-association",
+                             "platformFlavors": [
+
+                             ],
+                             "comment": [
+                                 "MPLS InstP Validations"
+                             ],
+                             "label": "No consumer label association for the MPLS external EPG "},
+                         { "value": "0", "localName": "none",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "none "},
+                         { "value": "64", "localName": "not-associated-with-mgmt-zone",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Not Associated With Management Zone "}
+                    ],
+                    "default": "none",
+                    "platformFlavors": [
+
+                    ],
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "configSt": {
+                    "comment": [
+                         "The configuration state of the endpoint group."
+                    ],
+                    "isConfigurable": false,
+                    "propGlobalId": "1714",
+                    "propLocalId": "474",
+                    "label": "Deployment Status",
+                    "baseType": "scalar:Enum8",
+                    "modelType": "pol:ConfigSt",
+                    "needsPropDelimiters": false,
+                    "uitype": "enum",
+                    "createOnly": false,
+                    "readWrite": false,
+                    "readOnly": true,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": true,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "validValues": [
+                         { "value": "2", "localName": "applied",
+                             "platformFlavors": [
+
+                             ],
+                             "comment": [
+                                 "Configuration applied."
+                             ],
+                             "label": "applied "},
+                         { "value": "1", "localName": "applying",
+                             "platformFlavors": [
+
+                             ],
+                             "comment": [
+                                 "Configuration is getting applied."
+                             ],
+                             "label": "applying "},
+                         { "value": "not-applied", "localName": "defaultValue",
+                             "platformFlavors": [
+
+                             ],
+                             "label": " "},
+                         { "value": "3", "localName": "failed-to-apply",
+                             "platformFlavors": [
+
+                             ],
+                             "comment": [
+                                 "Failed to apply configuration"
+                             ],
+                             "label": "failed-to-apply "},
+                         { "value": "0", "localName": "not-applied",
+                             "platformFlavors": [
+
+                             ],
+                             "comment": [
+                                 "Configuration is not applied."
+                             ],
+                             "label": "not-applied "},
+                         { "value": "4", "localName": "temp-failed-to-apply",
+                             "platformFlavors": [
+
+                             ],
+                             "comment": [
+                                 "Temporary failure. No faults are raised for this kind of failure."
+                             ],
+                             "label": "temp-failed-to-apply "}
+                    ],
+                    "default": "not-applied",
+                    "platformFlavors": [
+
+                    ],
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "descr": {
+                    "comment": [
+                         "Specifies the description of a policy component."
+                    ],
+                    "isConfigurable": true,
+                    "propGlobalId": "5582",
+                    "propLocalId": "28",
+                    "label": "Description",
+                    "baseType": "string:Basic",
+                    "modelType": "naming:Descr",
+                    "needsPropDelimiters": false,
+                    "uitype": "string",
+                    "createOnly": false,
+                    "readWrite": true,
+                    "readOnly": false,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": false,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": true,
+                    "likeProp": "naming:Described:descr",
+                    "validators": [
+                         {"min" : 0, "max": 128,
+                             "regexs": [
+                                 {"regex" : "^[a-zA-Z0-9\\\\!#$%()*,-./:;@ _{|}~?&+]+$", "type": "include"}
+                             ]
+                         }
+                    ],
+                    "platformFlavors": [
+
+                    ],
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "dn": {
+                    "comment": [
+                         "A tag or metadata is a non-hierarchical keyword or term assigned to the fabric module."
+                    ],
+                    "isConfigurable": false,
+                    "propGlobalId": "1",
+                    "propLocalId": "2",
+                    "label": "dn",
+                    "baseType": "reference:BinRef",
+                    "modelType": "reference:BinRef",
+                    "needsPropDelimiters": true,
+                    "uitype": "auto",
+                    "createOnly": false,
+                    "readWrite": false,
+                    "readOnly": true,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": true,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "platformFlavors": [
+
+                    ],
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "extMngdBy": {
+                    "comment": [
+                         "Indicates which orchestrator is managing this MO"
+                    ],
+                    "isConfigurable": false,
+                    "propGlobalId": "39833",
+                    "propLocalId": "8023",
+                    "label": "Managed By",
+                    "baseType": "scalar:Bitmask32",
+                    "modelType": "mo:ExtMngdByType",
+                    "needsPropDelimiters": false,
+                    "uitype": "bitmask",
+                    "createOnly": false,
+                    "readWrite": false,
+                    "readOnly": true,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": true,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "validValues": [
+                         { "value": "undefined", "localName": "defaultValue",
+                             "platformFlavors": [
+
+                             ],
+                             "label": " "},
+                         { "value": "1", "localName": "msc",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "msc "},
+                         { "value": "0", "localName": "undefined",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "undefined "}
+                    ],
+                    "default": "undefined",
+                    "platformFlavors": [
+
+                    ],
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "lcOwn": {
+                    "comment": [
+                         "A value that indicates how this object was created. For internal use only."
+                    ],
+                    "isConfigurable": false,
+                    "propGlobalId": "9",
+                    "propLocalId": "9",
+                    "label": "lcOwn",
+                    "baseType": "scalar:Enum8",
+                    "modelType": "mo:Owner",
+                    "needsPropDelimiters": false,
+                    "uitype": "enum",
+                    "createOnly": false,
+                    "readWrite": false,
+                    "readOnly": true,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": true,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "validValues": [
+                         { "value": "local", "localName": "defaultValue",
+                             "platformFlavors": [
+
+                             ],
+                             "label": " "},
+                         { "value": "4", "localName": "implicit",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Implicit "},
+                         { "value": "0", "localName": "local",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Local "},
+                         { "value": "1", "localName": "policy",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Policy "},
+                         { "value": "2", "localName": "replica",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Replica "},
+                         { "value": "3", "localName": "resolveOnBehalf",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "ResolvedOnBehalf "}
+                    ],
+                    "default": "local",
+                    "platformFlavors": [
+
+                    ],
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "modTs": {
+                    "comment": [
+                         "The time when this object was last modified."
+                    ],
+                    "isConfigurable": false,
+                    "propGlobalId": "7",
+                    "propLocalId": "7",
+                    "label": "modTs",
+                    "baseType": "scalar:Date",
+                    "modelType": "mo:TStamp",
+                    "needsPropDelimiters": false,
+                    "uitype": "auto",
+                    "createOnly": false,
+                    "readWrite": false,
+                    "readOnly": true,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": true,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "validValues": [
+                         { "value": "never", "localName": "defaultValue",
+                             "platformFlavors": [
+
+                             ],
+                             "label": " "},
+                         { "value": "0", "localName": "never",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "never "}
+                    ],
+                    "default": "never",
+                    "platformFlavors": [
+
+                    ],
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "monPolDn": {
+                    "comment": [
+                         "The monitoring policy attached to this observable object."
+                    ],
+                    "isConfigurable": false,
+                    "propGlobalId": "14348",
+                    "propLocalId": "228",
+                    "label": "Monitoring policy",
+                    "baseType": "reference:BinRef",
+                    "modelType": "reference:BinRef",
+                    "needsPropDelimiters": true,
+                    "uitype": "auto",
+                    "createOnly": false,
+                    "readWrite": false,
+                    "readOnly": true,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": true,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "platformFlavors": [
+
+                    ],
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "name": {
+                    "comment": [
+                         "The external management entity instance profile name. This name can be up to 64 alphanumeric characters."
+                    ],
+                    "isConfigurable": true,
+                    "propGlobalId": "6927",
+                    "propLocalId": "13",
+                    "label": "Name",
+                    "baseType": "string:Basic",
+                    "modelType": "naming:Name",
+                    "needsPropDelimiters": false,
+                    "uitype": "string",
+                    "createOnly": false,
+                    "readWrite": false,
+                    "readOnly": false,
+                    "isNaming": true,
+                    "secure": false,
+                    "implicit": false,
+                    "mandatory": false,
+                    "isOverride": true,
+                    "isLike": false,
+                    "validators": [
+                         {"min" : 1, "max": 64,
+                             "regexs": [
+                                 {"regex" : "^[a-zA-Z0-9_.:-]+$", "type": "include"}
+                             ]
+                         }
+                    ],
+                    "platformFlavors": [
+
+                    ],
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "nameAlias": {
+                    "isConfigurable": true,
+                    "propGlobalId": "28417",
+                    "propLocalId": "6719",
+                    "label": "Display Name",
+                    "baseType": "string:Basic",
+                    "modelType": "naming:NameAlias",
+                    "needsPropDelimiters": false,
+                    "uitype": "string",
+                    "createOnly": false,
+                    "readWrite": true,
+                    "readOnly": false,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": false,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "validators": [
+                         {"min" : 0, "max": 63,
+                             "regexs": [
+                                 {"regex" : "^[a-zA-Z0-9_.-]+$", "type": "include"}
+                             ]
+                         }
+                    ],
+                    "platformFlavors": [
+
+                    ],
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "pcTag": {
+                    "comment": [
+                         "The classification tag used for policy enforcement and zoning."
+                    ],
+                    "isConfigurable": false,
+                    "propGlobalId": "1717",
+                    "propLocalId": "551",
+                    "label": "Policy Enforcement Tag",
+                    "baseType": "scalar:Uint32",
+                    "modelType": "vz:GPCTag",
+                    "needsPropDelimiters": false,
+                    "uitype": "auto",
+                    "createOnly": false,
+                    "readWrite": false,
+                    "readOnly": true,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": true,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "validValues": [
+                         { "value": "0", "localName": "any",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "any "}
+                    ],
+                    "platformFlavors": [
+
+                    ],
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "pcTagAllocSrc": {
+                    "isConfigurable": false,
+                    "propGlobalId": "63907",
+                    "propLocalId": "14043",
+                    "label": "pcTag Allocation Source",
+                    "baseType": "scalar:Enum8",
+                    "modelType": "fv:PcTagAllocationSource",
+                    "needsPropDelimiters": false,
+                    "uitype": "enum",
+                    "createOnly": false,
+                    "readWrite": false,
+                    "readOnly": true,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": true,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "validValues": [
+                         { "value": "idmanager", "localName": "defaultValue",
+                             "platformFlavors": [
+
+                             ],
+                             "label": " "},
+                         { "value": "1", "localName": "esg",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "ESG "},
+                         { "value": "0", "localName": "idmanager",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "ID Manager "},
+                         { "value": "2", "localName": "mso",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "MSO "}
+                    ],
+                    "default": "idmanager",
+                    "platformFlavors": [
+
+                    ],
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "prio": {
+                    "comment": [
+                         "The QoS priority class identifier."
+                    ],
+                    "isConfigurable": true,
+                    "propGlobalId": "1718",
+                    "propLocalId": "172",
+                    "label": "QOS Class",
+                    "baseType": "scalar:Enum8",
+                    "modelType": "qos:TenantPrio",
+                    "needsPropDelimiters": false,
+                    "uitype": "enum",
+                    "createOnly": false,
+                    "readWrite": true,
+                    "readOnly": false,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": false,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "validators": [
+                         {"min" : 0, "max": 9 }
+                    ],
+                    "validValues": [
+                         { "value": "unspecified", "localName": "defaultValue",
+                             "platformFlavors": [
+
+                             ],
+                             "label": " "},
+                         { "value": "3", "localName": "level1",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Level1 "},
+                         { "value": "2", "localName": "level2",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Level2 "},
+                         { "value": "1", "localName": "level3",
+                             "platformFlavors": [
+
+                             ],
+                             "comment": [
+                                 "User configurable classes"
+                             ],
+                             "label": "Level3 (Default) "},
+                         { "value": "9", "localName": "level4",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Level4 "},
+                         { "value": "8", "localName": "level5",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Level5 "},
+                         { "value": "7", "localName": "level6",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Level6 "},
+                         { "value": "0", "localName": "unspecified",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Unspecified "}
+                    ],
+                    "default": "unspecified",
+                    "platformFlavors": [
+
+                    ],
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "rn": {
+                    "comment": [
+                         "Identifies an object from its siblings within the context of its parent object. The distinguished name contains a sequence of relative names."
+                    ],
+                    "isConfigurable": false,
+                    "propGlobalId": "2",
+                    "propLocalId": "3",
+                    "label": "rn",
+                    "baseType": "reference:BinRN",
+                    "modelType": "reference:BinRN",
+                    "needsPropDelimiters": true,
+                    "uitype": "auto",
+                    "createOnly": false,
+                    "readWrite": false,
+                    "readOnly": true,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": true,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "platformFlavors": [
+
+                    ],
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "scope": {
+                    "comment": [
+                         ""
+                    ],
+                    "isConfigurable": false,
+                    "propGlobalId": "1716",
+                    "propLocalId": "1",
+                    "label": "scope",
+                    "baseType": "scalar:Uint32",
+                    "modelType": "fv:ScopeId",
+                    "needsPropDelimiters": false,
+                    "uitype": "auto",
+                    "createOnly": false,
+                    "readWrite": false,
+                    "readOnly": true,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": true,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "validValues": [
+                         { "value": "0", "localName": "defaultValue",
+                             "platformFlavors": [
+
+                             ],
+                             "label": " "}
+                    ],
+                    "default": "0",
+                    "platformFlavors": [
+
+                    ],
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "status": {
+                    "comment": [
+                         "The upgrade status. This property is for internal use only."
+                    ],
+                    "isConfigurable": false,
+                    "propGlobalId": "3",
+                    "propLocalId": "4",
+                    "label": "status",
+                    "baseType": "scalar:Bitmask32",
+                    "modelType": "mo:ModificationStatus",
+                    "needsPropDelimiters": false,
+                    "uitype": "bitmask",
+                    "createOnly": false,
+                    "readWrite": false,
+                    "readOnly": true,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": true,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "validValues": [
+                         { "value": "2", "localName": "created",
+                             "platformFlavors": [
+
+                             ],
+                             "comment": [
+                                 "In a setter method: specifies that an object should be created. An error is returned if the object already exists.  \nIn the return value of a setter method: indicates that an object has been created.  \n"
+                             ],
+                             "label": "created "},
+                         { "value": "8", "localName": "deleted",
+                             "platformFlavors": [
+
+                             ],
+                             "comment": [
+                                 "In a setter method: specifies that an object should be deleted.  \nIn the return value of a setter method: indicates that an object has been deleted.\n"
+                             ],
+                             "label": "deleted "},
+                         { "value": "4", "localName": "modified",
+                             "platformFlavors": [
+
+                             ],
+                             "comment": [
+                                 "In a setter method: specifies that an object should be modified  \nIn the return value of a setter method: indicates that an object has been modified.\n"
+                             ],
+                             "label": "modified "}
+                    ],
+                    "platformFlavors": [
+
+                    ],
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "uid": {
+                    "comment": [
+                         "A unique identifier for this object."
+                    ],
+                    "isConfigurable": false,
+                    "propGlobalId": "8",
+                    "propLocalId": "8",
+                    "label": "uid",
+                    "baseType": "scalar:Uint16",
+                    "modelType": "scalar:Uint16",
+                    "needsPropDelimiters": false,
+                    "uitype": "auto",
+                    "createOnly": false,
+                    "readWrite": false,
+                    "readOnly": true,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": true,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "platformFlavors": [
+
+                    ],
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "userdom": {
+                    "isConfigurable": true,
+                    "propGlobalId": "60657",
+                    "propLocalId": "13244",
+                    "label": "userdom",
+                    "baseType": "string:Basic",
+                    "modelType": "mo:UserDomType",
+                    "needsPropDelimiters": false,
+                    "uitype": "string",
+                    "createOnly": false,
+                    "readWrite": true,
+                    "readOnly": false,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": false,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "validators": [
+                         {"min" : 0, "max": 1024,
+                             "regexs": [
+                                 {"regex" : "^[a-zA-Z0-9_.:-]+$", "type": "include"}
+                             ]
+                         }
+                    ],
+                    "validValues": [
+                         { "value": "all", "localName": "defaultValue",
+                             "platformFlavors": [
+
+                             ],
+                             "label": " "}
+                    ],
+                    "default": "all",
+                    "platformFlavors": [
+
+                    ],
+                    "isDeprecated": false,
+                    "isHidden": false
+                }
+            }
+        }
+}
