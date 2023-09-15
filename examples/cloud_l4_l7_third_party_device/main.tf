@@ -45,7 +45,7 @@ resource "aci_cloud_l4_l7_third_party_device" "cloud_third_party_fw" {
   is_instantiation = "no"
   managed          = "yes"
   mode             = "legacy-Mode"
-  prom_mode        = "no"
+  promiscuous_mode = "no"
   service_type     = "FW"
   target_mode      = "unspecified"
   trunking         = "no"

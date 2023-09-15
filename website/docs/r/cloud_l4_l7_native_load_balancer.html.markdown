@@ -46,7 +46,7 @@ resource "aci_cloud_l4_l7_native_load_balancer" "example" {
   is_instantiation              = "no"
   is_static_ip                  = "no"
   managed                       = "no"
-  prom_mode                     = "no"
+  promiscuous_mode              = "no"
   scheme                        = "internal"
   size                          = "medium"
   sku                           = "standard"
@@ -71,22 +71,22 @@ resource "aci_cloud_l4_l7_native_load_balancer" "example" {
 * `allow_all` - (Optional) Allow-All of the Cloud L4-L7 Native Load Balancer object. Allowed values are "no", "yes", and default value is "no". Type: String.
 * `auto_scaling` - (Optional) Auto-Scaling of the Cloud L4-L7 Native Load Balancer object. Allowed values are "no", "yes", and default value is "no". Type: String.
 * `context_aware` - (Optional) A value to determine if the L4-L7 device cluster supports multiple contexts (VRFs). Allowed values are "multi-Context", "single-Context", and default value is "single-Context". Type: String.
-* `custom_rg` - (Optional) Custom RG of the Cloud L4-L7 Native Load Balancer object. Type: String.
+* `custom_resource_group` - (Optional) Custom Resource Group of the Cloud L4-L7 Native Load Balancer object. Type: String.
 * `device_type` - (Optional) Device Type of the Cloud L4-L7 Native Load Balancer object. Allowed values are "CLOUD", "PHYSICAL", "VIRTUAL", and default value is "CLOUD". Type: String.
 * `function_type` - (Optional) Function Type of the Cloud L4-L7 Native Load Balancer object. Allowed values are "GoThrough", "GoTo", "L1", "L2", "None", and default value is "GoTo". Type: String.
 * `instance_count` - (Optional) Instance Count of the Cloud L4-L7 Native Load Balancer object. Default value is "2". Type: String.
-* `is_copy` - (Optional) Is the device is a copy device. Allowed values are "no", "yes", and default value is "no". Type: String.
-* `is_instantiation` - (Optional) Is Instantiation of the Cloud L4-L7 Native Load Balancer object. Allowed values are "no", "yes", and default value is "no". Type: String.
-* `is_static_ip` - (Optional) Is Static IP of the Cloud L4-L7 Native Load Balancer object. Allowed values are "no", "yes", and default value is "no". Type: String.
+* `is_copy` - (Optional) Enables the device to be a copy device. Allowed values are "no", "yes", and default value is "no". Type: String.
+* `is_instantiation` - (Optional) Enables Instantiation of the Cloud L4-L7 Native Load Balancer object. Allowed values are "no", "yes", and default value is "no". Type: String.
+* `is_static_ip` - (Optional) Enables Static IP of the Cloud L4-L7 Native Load Balancer object. Allowed values are "no", "yes", and default value is "no". Type: String.
 * `l4l7_device_application_security_group` - (Optional) Naming for the Third Party Device Application Security Group of the Cloud L4-L7 Native Load Balancer object. Type: String.
 * `l4l7_third_party_device` - (Optional) Naming for the Third Party Device of the Cloud L4-L7 Native Load Balancer object. Type: String.
-* `managed` - (Optional) Is the device is managed. Allowed values are "no", "yes", and default value is "yes". Type: String.
+* `managed` - (Optional) Enables the device to be a managed device. Allowed values are "no", "yes", and default value is "yes". Type: String.
 * `max_instance_count` - (Optional) Maximum Instance Count of the Cloud L4-L7 Native Load Balancer object. Default value is "10". Type: String.
 * `min_instance_count` - (Optional) Minimum Instance Count of the Cloud L4-L7 Native Load Balancer object. Default value is "0". Type: String.
 * `mode` - (Read-Only) Mode of the Cloud L4-L7 Native Load Balancer object. The value for specifying if the device is legacy (classical VLAN/VXLAN) or supports service tag switching (STS). Type: String.
 * `native_lb_name` - (Optional) Naming for the Native Load Balancer Devices of the Cloud L4-L7 Native Load Balancer object. Type: String.
 * `package_model` - (Optional) Package Model of the Cloud L4-L7 Native Load Balancer object. Type: String.
-* `prom_mode` - (Optional) Promiscuous Mode of the Cloud L4-L7 Native Load Balancer object. Allowed values are "no", "yes", and default value is "no". Type: String.
+* `promiscuous_mode` - (Optional) Promiscuous Mode of the Cloud L4-L7 Native Load Balancer object. Allowed values are "no", "yes", and default value is "no". Type: String.
 * `scheme` - (Optional) Scheme of the Cloud L4-L7 Native Load Balancer object. Allowed values are "internal", "internet", and default value is "internet". Type: String.
 * `size` - (Optional) Size of the Cloud L4-L7 Native Load Balancer object. Allowed values are "large", "medium", "small", "v2", and default value is "medium". Type: String.
 * `sku` - (Optional) SKU of the Cloud L4-L7 Native Load Balancer object. Allowed values are "WAF", "WAF_v2", "standard", "standard_v2", and default value is "standard". Type: String.

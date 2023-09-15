@@ -63,12 +63,6 @@ resource "aci_function_node" "example" {
 - `relation_vns_rs_default_scope_to_term` - (Optional) Represents the relation to Terminal Abstract Class (class vnsATerm). Type: String.
 - `relation_vns_rs_node_to_cloud_l_dev` - (Optional) Represents the relation to Cloud L4-L7 Abstract Devices (class cloudALDev). Type: String.
 
-## Attribute Reference
-
-- `id` - Dn of the function node.
-- `conn_consumer_dn` - Dn of the Function Node Connector consumer object.
-- `conn_provider_dn` - Dn of the Function Node Connector provider object.
-
 ## Importing
 
 An existing Function Node can be [imported][docs-import] into this resource via its Dn, via the following command:

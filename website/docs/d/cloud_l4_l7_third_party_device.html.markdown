@@ -43,18 +43,18 @@ data "aci_cloud_l4_l7_third_party_device" "example" {
 * `version` - (Read-Only) Version of the Cloud L4-L7 Third Party Device object. Type: String.
 * `active_active` - (Read-Only) Active-Active mode of the Cloud L4-L7 Third Party Device object. Type: String.
 * `context_aware` - (Read-Only) A value to determine if the L4-L7 device cluster supports multiple contexts (VRFs). Type: String.
-* `custom_rg` - (Read-Only) Custom RG of the Cloud L4-L7 Third Party Device object. Type: String.
+* `custom_resource_group` - (Read-Only) Custom Resource Group of the Cloud L4-L7 Third Party Device object. Type: String.
 * `device_type` - (Read-Only) Device Type of the Cloud L4-L7 Third Party Device object. Type: String.
 * `function_type` - (Read-Only) Function Type of the Cloud L4-L7 Third Party Device object. Type: String.
 * `instance_count` - (Read-Only) Instance Count of the Cloud L4-L7 Third Party Device object. Type: String.
-* `is_copy` - (Read-Only) Is the device is a copy device. Type: String.
-* `is_instantiation` - (Read-Only) Is Instantiation of the Cloud L4-L7 Third Party Device object. Type: String.
+* `is_copy` - (Read-Only) Enables the device to be a copy device. Type: String.
+* `is_instantiation` - (Read-Only) Enables Instantiation of the Cloud L4-L7 Third Party Device object. Type: String.
 * `l4l7_device_application_security_group` - (Read-Only) Naming for the Third Party Device Application Security Group of the Cloud L4-L7 Third Party Device object. Type: String.
 * `l4l7_third_party_device` - (Read-Only) Naming for the Third Party Device of the Cloud L4-L7 Third Party Device object. Type: String.
-* `managed` - (Read-Only) Is the device is managed. Type: String.
+* `managed` - (Read-Only) Enables the device to be a managed device. Type: String.
 * `mode` - (Read-Only) Mode of the Cloud L4-L7 Third Party Device object. The value for specifying if the device is legacy (classical VLAN/VXLAN) or supports service tag switching (STS). Type: String.
 * `package_model` - (Read-Only) Package Model of the Cloud L4-L7 Third Party Device object. Type: String.
-* `prom_mode` - (Read-Only) Promiscuous Mode of the Cloud L4-L7 Third Party Device object. Type: String.
+* `promiscuous_mode` - (Read-Only) Promiscuous Mode of the Cloud L4-L7 Third Party Device object. Type: String.
 * `service_type` - (Read-Only) Service Type of the Cloud L4-L7 Third Party Device object. Type: String.
 * `target_mode` - (Read-Only) Target Mode of the Cloud L4-L7 Third Party Device object. Type: String.
 * `trunking` - (Read-Only) For virtual devices, if a trunking port group is to be used. Type: String.

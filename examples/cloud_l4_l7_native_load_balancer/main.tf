@@ -91,7 +91,7 @@ resource "aci_cloud_l4_l7_native_load_balancer" "cloud_native_alb" {
   is_static_ip                  = "no"
   managed                       = "no"
   mode                          = "legacy-Mode"
-  prom_mode                     = "no"
+  promiscuous_mode              = "no"
   scheme                        = "internal"
   size                          = "medium"
   sku                           = "standard"

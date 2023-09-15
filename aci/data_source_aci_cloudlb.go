@@ -42,7 +42,7 @@ func dataSourceAciCloudL4L7LoadBalancer() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-			"custom_rg": &schema.Schema{
+			"custom_resource_group": &schema.Schema{
 				Type:     schema.TypeString,
 				Computed: true,
 			},
@@ -106,7 +106,7 @@ func dataSourceAciCloudL4L7LoadBalancer() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-			"prom_mode": &schema.Schema{
+			"promiscuous_mode": &schema.Schema{
 				Type:     schema.TypeString,
 				Computed: true,
 			},

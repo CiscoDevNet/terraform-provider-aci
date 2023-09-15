@@ -62,7 +62,7 @@ func resourceAciCloudL4L7Device() *schema.Resource {
 					"single-Context",
 				}, false),
 			},
-			"custom_rg": &schema.Schema{
+			"custom_resource_group": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
@@ -145,7 +145,7 @@ func resourceAciCloudL4L7Device() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
-			"prom_mode": &schema.Schema{
+			"promiscuous_mode": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
@@ -248,7 +248,7 @@ func mapCloudL4L7DeviceAttrs(status string, d *schema.ResourceData) map[string]s
 		"Version":                            d.Get("version").(string),
 		"activeActive":                       d.Get("active_active").(string),
 		"contextAware":                       d.Get("context_aware").(string),
-		"customRG":                           d.Get("custom_rg").(string),
+		"customRG":                           d.Get("custom_resource_group").(string),
 		"devtype":                            d.Get("device_type").(string),
 		"funcType":                           d.Get("function_type").(string),
 		"instanceCount":                      d.Get("instance_count").(string),
@@ -260,7 +260,7 @@ func mapCloudL4L7DeviceAttrs(status string, d *schema.ResourceData) map[string]s
 		"name":                               d.Get("name").(string),
 		"nameAlias":                          d.Get("name_alias").(string),
 		"packageModel":                       d.Get("package_model").(string),
-		"promMode":                           d.Get("prom_mode").(string),
+		"promMode":                           d.Get("promiscuous_mode").(string),
 		"svcType":                            d.Get("service_type").(string),
 		"targetMode":                         d.Get("target_mode").(string),
 		"trunking":                           d.Get("trunking").(string),
@@ -335,7 +335,7 @@ func getAndSetRemoteCloudL4L7DeviceAttributes(client *client.Client, dn string, 
 	d.Set("annotation", models.StripQuotes(cloudLDevAttrs.S("annotation").String()))
 	d.Set("active_active", models.StripQuotes(cloudLDevAttrs.S("activeActive").String()))
 	d.Set("context_aware", models.StripQuotes(cloudLDevAttrs.S("contextAware").String()))
-	d.Set("custom_rg", models.StripQuotes(cloudLDevAttrs.S("customRG").String()))
+	d.Set("custom_resource_group", models.StripQuotes(cloudLDevAttrs.S("customRG").String()))
 	d.Set("device_type", models.StripQuotes(cloudLDevAttrs.S("devtype").String()))
 	d.Set("function_type", models.StripQuotes(cloudLDevAttrs.S("funcType").String()))
 	d.Set("instance_count", models.StripQuotes(cloudLDevAttrs.S("instanceCount").String()))
@@ -348,7 +348,7 @@ func getAndSetRemoteCloudL4L7DeviceAttributes(client *client.Client, dn string, 
 	d.Set("name", models.StripQuotes(cloudLDevAttrs.S("name").String()))
 	d.Set("name_alias", models.StripQuotes(cloudLDevAttrs.S("nameAlias").String()))
 	d.Set("package_model", models.StripQuotes(cloudLDevAttrs.S("packageModel").String()))
-	d.Set("prom_mode", models.StripQuotes(cloudLDevAttrs.S("promMode").String()))
+	d.Set("promiscuous_mode", models.StripQuotes(cloudLDevAttrs.S("promMode").String()))
 	d.Set("service_type", models.StripQuotes(cloudLDevAttrs.S("svcType").String()))
 	d.Set("target_mode", models.StripQuotes(cloudLDevAttrs.S("targetMode").String()))
 	d.Set("trunking", models.StripQuotes(cloudLDevAttrs.S("trunking").String()))

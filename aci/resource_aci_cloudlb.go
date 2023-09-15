@@ -78,7 +78,7 @@ func resourceAciCloudL4L7LoadBalancer() *schema.Resource {
 					"single-Context",
 				}, false),
 			},
-			"custom_rg": &schema.Schema{
+			"custom_resource_group": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
@@ -185,7 +185,7 @@ func resourceAciCloudL4L7LoadBalancer() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
-			"prom_mode": &schema.Schema{
+			"promiscuous_mode": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
@@ -288,7 +288,7 @@ func mapCloudL4L7LoadBalancerAttrs(status string, d *schema.ResourceData) map[st
 		"annotation":                         d.Get("annotation").(string),
 		"autoScaling":                        d.Get("auto_scaling").(string),
 		"contextAware":                       d.Get("context_aware").(string),
-		"customRG":                           d.Get("custom_rg").(string),
+		"customRG":                           d.Get("custom_resource_group").(string),
 		"devtype":                            d.Get("device_type").(string),
 		"funcType":                           d.Get("function_type").(string),
 		"instanceCount":                      d.Get("instance_count").(string),
@@ -304,7 +304,7 @@ func mapCloudL4L7LoadBalancerAttrs(status string, d *schema.ResourceData) map[st
 		"nameAlias":                          d.Get("name_alias").(string),
 		"nativeLBName":                       d.Get("native_lb_name").(string),
 		"packageModel":                       d.Get("package_model").(string),
-		"promMode":                           d.Get("prom_mode").(string),
+		"promMode":                           d.Get("promiscuous_mode").(string),
 		"scheme":                             d.Get("scheme").(string),
 		"size":                               d.Get("size").(string),
 		"sku":                                d.Get("sku").(string),
@@ -354,7 +354,7 @@ func getAndSetRemoteCloudL4L7LoadBalancerAttributes(client *client.Client, dn st
 	d.Set("annotation", models.StripQuotes(cloudLBAttrs.S("annotation").String()))
 	d.Set("auto_scaling", models.StripQuotes(cloudLBAttrs.S("autoScaling").String()))
 	d.Set("context_aware", models.StripQuotes(cloudLBAttrs.S("contextAware").String()))
-	d.Set("custom_rg", models.StripQuotes(cloudLBAttrs.S("customRG").String()))
+	d.Set("custom_resource_group", models.StripQuotes(cloudLBAttrs.S("customRG").String()))
 	d.Set("device_type", models.StripQuotes(cloudLBAttrs.S("devtype").String()))
 	d.Set("function_type", models.StripQuotes(cloudLBAttrs.S("funcType").String()))
 	d.Set("instance_count", models.StripQuotes(cloudLBAttrs.S("instanceCount").String()))
@@ -370,7 +370,7 @@ func getAndSetRemoteCloudL4L7LoadBalancerAttributes(client *client.Client, dn st
 	d.Set("name", models.StripQuotes(cloudLBAttrs.S("name").String()))
 	d.Set("native_lb_name", models.StripQuotes(cloudLBAttrs.S("nativeLBName").String()))
 	d.Set("package_model", models.StripQuotes(cloudLBAttrs.S("packageModel").String()))
-	d.Set("prom_mode", models.StripQuotes(cloudLBAttrs.S("promMode").String()))
+	d.Set("promiscuous_mode", models.StripQuotes(cloudLBAttrs.S("promMode").String()))
 	d.Set("scheme", models.StripQuotes(cloudLBAttrs.S("scheme").String()))
 	d.Set("size", models.StripQuotes(cloudLBAttrs.S("size").String()))
 	d.Set("sku", models.StripQuotes(cloudLBAttrs.S("sku").String()))
