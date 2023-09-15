@@ -1,0 +1,34 @@
+global:
+  documentation:
+    # %s will be replaced with the object name
+    annotation: "The annotation of the %s object."
+    name: "The name of the %s object."
+    nameAlias: "The name alias of the %s object."
+    descr: "The description of the %s object."
+  overwrites:
+    count: "apic_count" # count is a terraform reserved schema entry
+    provider: "prov" # provider is a terraform reserved schema entry
+    t_dn: "target_dn"
+    ctx_name: "vrf_name"
+    id: "id_attribute" # id is a terraform reserved schema entry and needed in struct
+    prio: "priority"
+    descr: "description"
+  ignores:
+  - "userdom"
+
+mgmtRsOoBCons:
+  overwrites:
+    tn_vz_oob_br_cp_name: "contract_name"
+
+l3extRsRedistributePol:
+  overwrites:
+    tn_rtctrl_profile_name: "route_profile_name"
+
+fvRsConsIf:
+  overwrites:
+    tn_vz_cp_if_name: "contract_interface_name"
+
+# fvAp:
+#   documentation:
+#     name: "The name of the Application Profile object."
+#     descr: "The description of the Application Profile object."

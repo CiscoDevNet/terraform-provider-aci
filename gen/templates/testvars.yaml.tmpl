@@ -1,0 +1,51 @@
+default:
+  {{- range .Properties}}
+    {{- if overwriteProperty .PkgName .SnakeCaseName $.Definitions | eq "annotation"}}
+  {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}: "orchestrator:terraform"
+    {{- else if .DefaultValue}}
+  {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}: "{{.DefaultValue}}"
+    {{- else if not .IsNaming}}
+  {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}: ""
+    {{- end}}
+  {{- end}}
+
+datasource_required:{{$name := .ResourceName}}
+  {{- range .Properties}}
+    {{- if .IsNaming}}
+  {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}: "test_{{$name}}"
+    {{- end}}
+  {{- end}}
+
+resource_required:
+  {{- range .Properties}}
+    {{- if .IsNaming}}
+  {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}: "test_{{$name}}"
+    {{- end}}
+  {{- end}}
+
+all:
+  {{- range .Properties}}
+    {{- if overwriteProperty .PkgName .SnakeCaseName $.Definitions | eq "annotation"}}
+  {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}: "test_annotation"
+    {{- else if .DefaultValue}}
+  {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}: {{$length := len .ValidValues}}{{if eq $length 0}}"{{ .DefaultValue }}"{{else}}"{{ index .ValidValues 0 }}"{{- end}}
+    {{- else if not .IsNaming}}
+  {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}: "test_{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}"{{- end}}
+    {{- end}}
+{{ if .Children}}
+children:
+  {{- range $key, $value := $.Children}}{{$name := .ResourceName}}{{$noAnnotation := removeAnnotationFromProperties .Properties}}
+  {{snakeCase .ResourceName}}s:
+    - {{ range $noAnnotation}}{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}: {{if .DefaultValue}}{{$length := len .ValidValues}}{{if eq $length 0}}"{{.DefaultValue }}"{{else}}"{{ index .ValidValues 0 }}"{{- end}}{{else if not .IsNaming}}"test_{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}"{{else}}"test_{{$name}}_1"{{- end}}
+      {{ end}}
+    - {{ range .Properties}}{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}: {{if .DefaultValue}}{{$length := len .ValidValues}}{{if eq $length 0}}"{{.DefaultValue }}"{{ else if ge $length 2}}"{{ index .ValidValues 1 }}"{{else}}"{{ index .ValidValues 0 }}"{{- end}}{{else if not .IsNaming}}"test_{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}"{{- else if .DefaultValue}}foo{{else}}"test_{{$name}}_2"{{- end}}
+      {{ end}}{{- end}}{{- end}}
+{{- if .ContainedBy}}{{$name := .ResourceName}}
+parents:
+    {{- range $key := .DocumentationExamples}}
+  - class_name: "{{ $key }}"
+    parent_dependency: ""
+    parent_dn: "{{createParentDnValue $key "test" $.Definitions}}"
+    relationship_in_parent: false
+    {{- end}}
+{{- end}}

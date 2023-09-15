@@ -1,0 +1,124 @@
+---
+subcategory: "{{ .SubCategory}}"
+layout: "aci"
+page_title: "ACI: {{ .ResourceName}}"
+sidebar_current: "docs-aci-resource-{{ .ResourceName}}"
+description: |-
+  Manages ACI {{getResourceNameAsDescription .ResourceName}}
+---
+
+# aci_{{ .ResourceName}} #
+
+Manages ACI {{getResourceNameAsDescription .ResourceName}}
+
+## API Information ##
+
+* `Class` - {{ .PkgName}}
+
+* `Distinguished Name Formats`
+    {{- range .DocumentationDnFormats}}
+  - {{ . }}
+    {{- end}}
+
+## GUI Information ##
+
+* `Location` - {{ .UiLocation}}
+
+## Example Usage ##
+
+```hcl
+{{ .Example }}```
+
+## Schema
+
+### Required
+{{ if .HasParent}}
+* `parent_dn` - (string) The distinquised name (DN) of the parent object, possible resources:
+  {{- range .DocumentationParentDns}}
+  - {{ . }}
+  {{- end}}
+{{- end}}
+{{- range .Properties}}
+    {{- if .IsNaming}}
+* `{{- overwriteProperty .PkgName .SnakeCaseName $.Definitions}}` - (string) {{.Comment}}
+      {{- if .ValidValues }}{{$i := 1}}{{$length := len .ValidValues}}
+  - Valid Values:{{ range .ValidValues}} `{{ . }}`{{ if ne $length $i}}{{$i = add $i 1}}, {{- else}}.{{- end}}{{- end}}
+      {{- end}}
+    {{- end}}
+{{- end}}
+
+### Read-Only
+
+* `id` - (string) The distinquised name (DN) of the {{getResourceNameAsDescription .ResourceName}} object.
+
+### Optional
+{{ range .Properties}}
+    {{- if not .IsNaming}}
+        {{- if eq .ValueType "bitmask"}}
+* `{{- overwriteProperty .PkgName .SnakeCaseName $.Definitions}}` - (list) {{.Comment}}
+          {{- if .DefaultValue }}
+  - Default: `{{ .DefaultValue }}`.
+          {{- end}}
+        {{- else}}
+* `{{- overwriteProperty .PkgName .SnakeCaseName $.Definitions}}` - (string) {{.Comment}}
+      {{- if .DefaultValue }}
+  - Default: `{{ .DefaultValue }}`
+      {{- end}}
+      {{- if .ValidValues }}{{$i := 1}}{{$length := len .ValidValues}}
+  - Valid Values:{{ range .ValidValues}} `{{ . }}`{{ if ne $length $i}}{{$i = add $i 1}}, {{- else}}.{{- end}}{{- end}}
+      {{- end}}
+        {{- end}}
+    {{- end}}
+{{- end}}
+{{ range .Children }}
+    {{- if ne .RelationshipClass ""}}
+* `{{- snakeCase .ResourceName}}{{- if .IdentifiedBy}}s{{- end}}` - (list) A list of {{getResourceNameAsDescription .ResourceName}} relationship objects ({{.PkgName}}) pointing to the {{getResourceNameAsDescription .RelationshipResourceName}} ({{.RelationshipClass}}) which can be configured using the `aci_{{.RelationshipResourceName}}` resource.
+    {{- else}}
+* `{{- snakeCase .ResourceName}}{{- if .IdentifiedBy}}s{{- end}}` - (list) A list of {{getResourceNameAsDescription .ResourceName}} objects ({{.PkgName}}) which can also be configured using the `aci_{{.ResourceName}}` resource.
+    {{- end}}
+  #### Required
+  {{ range .Properties}}
+      {{- if .IsNaming}}
+          {{- if eq .ValueType "bitmask"}}
+  * `{{- overwriteProperty .PkgName .SnakeCaseName $.Definitions}}` - (list) {{.Comment}}
+          {{- else}}
+  * `{{- overwriteProperty .PkgName .SnakeCaseName $.Definitions}}` - (string) {{.Comment}}
+          {{- end}}
+      {{- end}}
+  {{- end}}
+
+  #### Optional
+  {{ range .Properties}}
+      {{- if not .IsNaming}}
+        {{- if eq .ValueType "bitmask"}}
+  * `{{- overwriteProperty .PkgName .SnakeCaseName $.Definitions}}` - (list) {{.Comment}}
+        {{- else}}
+  * `{{- overwriteProperty .PkgName .SnakeCaseName $.Definitions}}` - (string) {{.Comment}}
+        {{- end}}
+        {{- if .DefaultValue }}
+    - Default: `{{ .DefaultValue }}`
+        {{- end}}
+        {{- if .ValidValues }}{{$i := 1}}{{$length := len .ValidValues}}
+    - Valid Values:{{ range .ValidValues}} `{{ . }}`{{ if ne $length $i}}{{$i = add $i 1}}, {{- else}}.{{- end}}{{- end}}
+        {{- end}}
+      {{- end}}
+  {{- end}}
+{{- end}}
+
+## Importing ##
+
+An existing {{getResourceNameAsDescription .ResourceName}} can be [imported](https://www.terraform.io/docs/import/index.html) into this resource via its distinquised name (DN), via the following command:
+
+```
+terraform import aci_{{- .ResourceName}}.example {{ index .DnFormats 0 }}
+```
+
+Starting in Terraform version 1.5, an existing BFD Multihop Node Policy can be imported 
+using [import blocks](https://developer.hashicorp.com/terraform/language/import) via the following configuration:
+
+```
+import {
+  id = "{{ index .DnFormats 0 }}"
+  to = aci_{{ .ResourceName}}.example
+}
+```

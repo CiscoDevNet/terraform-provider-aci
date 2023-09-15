@@ -1,0 +1,35 @@
+{{- if .DocumentationExamples}}
+{{ range $key := .DocumentationExamples}}resource "aci_{{$.ResourceName}}" "example" { 
+  {{- if $.HasParent}}
+  parent_dn = {{createParentDnValue $key "example" $.Definitions}}
+  {{- end}}
+  {{- range $.Properties}}{{- if .IsNaming}}
+  {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}} = "{{lookupTestValue .PkgName .SnakeCaseName $.TestVars $.Definitions}}"{{- end}}
+  {{- end}}
+  {{- range $key, $value := $.Children}}
+  {{- if .HasNaming}}
+  {{snakeCase .ResourceName}}s = [
+    { {{- range .Properties}}{{- if .IsNaming}}
+      {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}} = "{{lookupTestValue .PkgName .SnakeCaseName $value.TestVars $.Definitions}}"{{- end}}{{ end}}
+    },
+  ]
+  {{- end}}
+  {{- end}}
+}
+
+{{ end}}
+{{- else}}resource "aci_{{$.ResourceName}}" "example" {
+  {{- range $.Properties}}{{- if .IsNaming}}
+  {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}} = "{{lookupTestValue .PkgName .SnakeCaseName $.TestVars $.Definitions}}"{{- end}}
+  {{- end}}
+  {{- range $key, $value := $.Children}}
+  {{- if .HasNaming}}
+  {{snakeCase .ResourceName}}s = [
+    { {{- range .Properties}}{{- if .IsNaming}}
+      {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}} = "{{lookupTestValue .PkgName .SnakeCaseName $value.TestVars $.Definitions}}"{{- end}}{{ end}}
+    },
+  ]
+  {{- end}}
+  {{- end}}
+}
+{{ end}}

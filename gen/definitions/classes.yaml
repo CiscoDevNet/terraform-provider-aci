@@ -1,0 +1,81 @@
+global:
+  contained_by_excludes:
+    - "polUni"
+    - "fabricInst"
+  docs_examples_amount: 2
+  docs_parent_dn_amount: 20
+
+fvTenant:
+  resource_name: "tenant"
+
+fvAEPg:
+  resource_name: "application_epg"
+
+vzOOBBrCP:
+  resource_name: "out_of_band_contract"
+  ui_location: "Tenants (mgmt) -> Contracts -> Out-Of-Band Contracts"
+  sub_category: "Contract"
+  contained_by:
+    - "polUni"
+  rn_prepend: "tn-mgmt/"
+  dn_formats:
+    - "uni/tn-mgmt/oobbrc-{name}"
+  children:
+    - "tagAnnotation"
+
+pimRouteMapPol:
+  ui_location: "Tenants -> Policies -> Protocol -> Route Maps for Multicast"
+  sub_category: "Multicast"
+  children:
+    - "tagAnnotation"
+
+pimRouteMapEntry:
+  ui_location: "Tenants -> Policies -> Protocol -> Route Maps for Multicast -> Route Maps"
+  sub_category: "Multicast"
+  children:
+    - "tagAnnotation"
+
+mgmtInstP:
+  resource_name: "l3out_management_network_instance_profile"
+  ui_location: "Tenants (mgmt) -> External Management Network Instance Profiles"
+  sub_category: "L3Out"
+  contained_by:
+    - "polUni"
+  rn_prepend: "tn-mgmt/extmgmt-default"
+  dn_formats:
+    - "uni/tn-mgmt/extmgmt-default/instp-{name}"
+
+mgmtSubnet:
+  resource_name: "l3out_management_network_subnet"
+  ui_location: "Tenants (mgmt) -> External Management Network Instance Profiles -> Subnets"
+  sub_category: "L3Out"
+  dn_formats:
+    - "uni/tn-mgmt/extmgmt-default/instp-{name}/subnet-[{ip}]"
+
+mgmtRsOoBCons:
+  resource_name: "l3out_management_network_oob_contract"
+  ui_location: "Tenants (mgmt) -> External Management Network Instance Profiles -> Contracts"
+  sub_category: "L3Out"
+
+l3extOut:
+  resource_name: "l3_outside"
+
+l3extConsLbl:
+  resource_name: "l3out_consumer_label"
+  ui_location: "Tenants -> Networking -> L3Outs"
+  sub_category: "L3Out"
+  children:
+    - "tagAnnotation"
+
+l3extRsRedistributePol:
+  resource_name: "l3out_redistribute_policy"
+  ui_location: "Tenants -> Networking -> L3Outs -> Redistribute Policies"
+  sub_category: "L3Out"
+  children:
+    - "tagAnnotation"
+
+fvRsConsIf:
+  ui_location: "Tenants -> ... determine for muliple DN formats ..."
+  sub_category: "Contract"
+  children:
+    - "tagAnnotation"

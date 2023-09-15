@@ -1,0 +1,20 @@
+default:
+  value: ""
+
+datasource_required:
+  key: "test_annotation"
+
+resource_required:
+  key: "test_annotation"
+
+all:
+  value: "test_value"
+
+not_default_after_reset:
+  - "value"
+
+parents:
+  - class_name: "fvAEPg"
+    parent_dependency: ""
+    parent_dn: "aci_application_epg.test.id"
+    relationship_in_parent: false

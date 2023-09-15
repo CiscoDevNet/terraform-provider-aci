@@ -1,0 +1,73 @@
+---
+subcategory: "{{ .SubCategory}}"
+layout: "aci"
+page_title: "ACI: {{ .ResourceName}}"
+sidebar_current: "docs-aci-data-source-{{ .ResourceName}}"
+description: |-
+  Data source for {{getResourceNameAsDescription .ResourceName}}
+---
+
+# aci_{{ .ResourceName}} #
+
+Data source for {{getResourceNameAsDescription .ResourceName}}
+
+## API Information ##
+
+* `Class` - {{ .PkgName}}
+
+* `Distinguished Name Formats`
+    {{- range .DocumentationDnFormats}}
+  - {{ . }}
+    {{- end}}
+
+## GUI Information ##
+
+* `Location` - {{ .UiLocation}}
+
+## Example Usage ##
+
+```hcl
+{{ .Example }}```
+
+## Schema
+
+### Required
+{{ if .HasParent}}
+* `parent_dn` - (string) The distinquised name (DN) of the parent object, possible resources:
+  {{- range .DocumentationParentDns}}
+  - {{ . }}
+  {{- end}}
+{{- end}}
+{{- range .Properties}}
+    {{- if .IsNaming}}
+* `{{- overwriteProperty .PkgName .SnakeCaseName $.Definitions}}` - (string) {{.Comment}}
+    {{- end}}
+{{- end}}
+
+### Read-Only
+
+* `id` - (string) The distinquised name (DN) of the {{getResourceNameAsDescription .ResourceName}} object.
+{{- range .Properties}}
+    {{- if not .IsNaming}}
+        {{- if eq .ValueType "bitmask"}}
+* `{{- overwriteProperty .PkgName .SnakeCaseName $.Definitions}}` - (list) {{.Comment}}
+        {{- else}}
+* `{{- overwriteProperty .PkgName .SnakeCaseName $.Definitions}}` - (string) {{.Comment}}
+        {{- end}}
+    {{- end}}
+{{- end}}
+{{ range .Children }}
+    {{- if ne .RelationshipClass ""}}
+* `{{- snakeCase .ResourceName}}{{- if .IdentifiedBy}}s{{- end}}` - (list) A list of {{getResourceNameAsDescription .ResourceName}} relationship objects ({{.PkgName}}) pointing to the {{getResourceNameAsDescription .RelationshipResourceName}} ({{.RelationshipClass}}) object.
+    {{- else}}
+* `{{- snakeCase .ResourceName}}{{- if .IdentifiedBy}}s{{- end}}` - (list) A list of {{getResourceNameAsDescription .ResourceName}} objects ({{.PkgName}}).
+    {{- end}}
+
+  {{- range .Properties}}
+    {{- if eq .ValueType "bitmask"}}
+  * `{{- overwriteProperty .PkgName .SnakeCaseName $.Definitions}}` - (list) {{.Comment}}
+    {{- else}}
+  * `{{- overwriteProperty .PkgName .SnakeCaseName $.Definitions}}` - (string) {{.Comment}}
+    {{- end}}  
+  {{- end}}
+{{- end}}
