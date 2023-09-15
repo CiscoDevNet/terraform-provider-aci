@@ -196,6 +196,7 @@ func (p *AciProvider) Resources(ctx context.Context) []func() resource.Resource 
 	return []func() resource.Resource{
 		NewFvRsConsIfResource,
 		NewL3extConsLblResource,
+		NewL3extRsRedistributePolResource,
 		NewMgmtInstPResource,
 		NewMgmtRsOoBConsResource,
 		NewMgmtSubnetResource,
@@ -210,6 +211,7 @@ func (p *AciProvider) DataSources(ctx context.Context) []func() datasource.DataS
 	return []func() datasource.DataSource{
 		NewFvRsConsIfDataSource,
 		NewL3extConsLblDataSource,
+		NewL3extRsRedistributePolDataSource,
 		NewMgmtInstPDataSource,
 		NewMgmtRsOoBConsDataSource,
 		NewMgmtSubnetDataSource,
