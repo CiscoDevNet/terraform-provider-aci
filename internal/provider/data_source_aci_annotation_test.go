@@ -18,8 +18,8 @@ func TestAccDataSourceTagAnnotationWithFvAEPg(t *testing.T) {
 				Config:             testConfigTagAnnotationDataSourceDependencyWithFvAEPg,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("data.aci_annotation.test", "key", "test_annotation"),
-					resource.TestCheckResourceAttr("data.aci_annotation.test", "value", ""),
+					resource.TestCheckResourceAttr("data.aci_annotation.test", "key", "test_key"),
+					resource.TestCheckResourceAttr("data.aci_annotation.test", "value", "test_value"),
 				),
 			},
 		},
@@ -29,7 +29,7 @@ func TestAccDataSourceTagAnnotationWithFvAEPg(t *testing.T) {
 const testConfigTagAnnotationDataSourceDependencyWithFvAEPg = testConfigTagAnnotationMinDependencyWithFvAEPg + `
 data "aci_annotation" "test" {
   parent_dn = aci_application_epg.test.id
-  key = "test_annotation"
+  key = "test_key"
   depends_on = [aci_annotation.test]
 }
 `

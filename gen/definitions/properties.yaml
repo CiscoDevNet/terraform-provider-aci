@@ -23,12 +23,57 @@ mgmtRsOoBCons:
 l3extRsRedistributePol:
   overwrites:
     tn_rtctrl_profile_name: "route_profile_name"
+  test_values:
+    resource_required:
+      src: "direct"
+    datasource_required:
+      src: "direct"
+    all:
+      src: "direct"
+    default:
+      src: "direct"
+  parents:
+    - parent_dependency: "fvTenant"
+      class_in_parent: true
 
 fvRsConsIf:
   overwrites:
     tn_vz_cp_if_name: "contract_interface_name"
 
-# fvAp:
-#   documentation:
-#     name: "The name of the Application Profile object."
-#     descr: "The description of the Application Profile object."
+mgmtSubnet:
+  test_values:
+    resource_required:
+      ip: "1.1.1.0/24"
+    datasource_required:
+      ip: "1.1.1.0/24"
+
+l3extConsLbl:
+  test_values:
+    default:
+      tag: "yellow-green"
+    all:
+      tag: "lemon-chiffon"
+
+pimRouteMapEntry:
+  test_values:
+    default:
+      grp: "0.0.0.0"
+      rp: "0.0.0.0"
+      src: "0.0.0.0"
+    resource_required:
+      order: "1"
+    datasource_required:
+      order: "1"
+    all:
+      grp: "0.0.0.0"
+      rp: "0.0.0.0"
+      src: "1.1.1.1/30"
+  parents:
+    - parent_dependency: "fvTenant"
+
+tagAnnotation:
+  resource_required:
+    - "value"
+  test_values:
+    default:
+      value: "test_value"

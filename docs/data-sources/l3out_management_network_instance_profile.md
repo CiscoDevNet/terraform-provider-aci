@@ -26,7 +26,7 @@ Data source for L3out Management Network Instance Profile
 
 ```hcl
 data "aci_l3out_management_network_instance_profile" "example" {
-  name = "test_l3out_management_network_instance_profile"
+  name = "test_name"
 }
 ```
 

@@ -73,9 +73,12 @@ var templateFuncs = template.FuncMap{
 	"validatorString":                ValidatorString,
 	"listToString":                   ListToString,
 	"overwriteProperty":              GetOverwriteAttributeName,
+	"overwritePropertyValue":         GetOverwriteAttributeValue,
+	"createTestValue":                func(val string) string { return fmt.Sprintf("test_%s", val) },
+	"getParentTestDependencies":      GetParentTestDependencies,
 	"fromInterfacesToString":         FromInterfacesToString,
 	"containsNoneAttributeValue":     ContainsNoneAttributeValue,
-	"containsStringAttributeValue":   ContainsStringAttributeValue,
+	"definedInMap":                   DefinedInMap,
 	"add":                            func(val1, val2 int) int { return val1 + val2 },
 	"lookupTestValue":                LookupTestValue,
 	"createParentDnValue":            CreateParentDnValue,
@@ -88,6 +91,7 @@ var templateFuncs = template.FuncMap{
 var labels = []string{"dns_provider", "filter_entry"}
 var duplicateLabels = []string{}
 var resourceNames = map[string]string{}
+var relationalClasses = []string{}
 
 // Global variable used to determine if a class is defined in a parent resource
 // During testing this is required to determine if test step expects non empty plan states
@@ -158,11 +162,9 @@ func ContainsNoneAttributeValue(values []string) bool {
 	return false
 }
 
-func ContainsStringAttributeValue(s string, values []interface{}) bool {
-	for _, value := range values {
-		if s == value.(string) {
-			return true
-		}
+func DefinedInMap(s string, values map[interface{}]interface{}) bool {
+	if _, ok := values[s]; ok {
+		return true
 	}
 	return false
 }
@@ -326,6 +328,7 @@ func cleanDirectories() {
 	cleanDirectory(providerPath)
 	cleanDirectory(resourcesDocsPath)
 	cleanDirectory(datasourcesDocsPath)
+	cleanDirectory(testVarsPath)
 
 	// The *ExamplesPath directories are removed and recreated to ensure all previously rendered files are removed
 	// The provider example file is not removed because it contains static provider configuration
@@ -356,14 +359,9 @@ func main() {
 		// Only render resources and datasources when the class has a unique identifier or is marked as include in the classes definitions YAML file
 		if len(model.IdentifiedBy) > 0 || model.Include {
 			model.ResourceName = GetResourceName(model.PkgName, definitions)
-			setDocumentationData(&model, definitions)
 
-			// Check if the testVars file exists, if not create it with generic values that might need to manually adjusted
-			// When manual adjustment is needed the code needs to be regenerated
-			_, err := os.Stat(fmt.Sprintf("%s/%s.yaml", testVarsPath, model.PkgName))
-			if err != nil && os.IsNotExist(err) {
-				renderTemplate("testvars.yaml.tmpl", fmt.Sprintf("%s.yaml", model.PkgName), testVarsPath, model)
-			}
+			setDocumentationData(&model, definitions)
+			renderTemplate("testvars.yaml.tmpl", fmt.Sprintf("%s.yaml", model.PkgName), testVarsPath, model)
 
 			testVarsMap, err := getTestVars(model)
 			if err != nil {
@@ -396,10 +394,8 @@ func main() {
 			model.Example = string(hclwrite.Format(getExampleCode(fmt.Sprintf("%s/%s_%s/data-source.tf", datasourcesExamplesPath, providerName, model.ResourceName))))
 			renderTemplate("datasource.md.tmpl", fmt.Sprintf("%s.md", model.ResourceName), datasourcesDocsPath, model)
 
-			if model.TestVars != nil {
-				renderTemplate("resource_test.go.tmpl", fmt.Sprintf("resource_%s_%s_test.go", providerName, model.ResourceName), providerPath, model)
-				renderTemplate("datasource_test.go.tmpl", fmt.Sprintf("data_source_%s_%s_test.go", providerName, model.ResourceName), providerPath, model)
-			}
+			renderTemplate("resource_test.go.tmpl", fmt.Sprintf("resource_%s_%s_test.go", providerName, model.ResourceName), providerPath, model)
+			renderTemplate("datasource_test.go.tmpl", fmt.Sprintf("data_source_%s_%s_test.go", providerName, model.ResourceName), providerPath, model)
 		}
 	}
 
@@ -448,6 +444,7 @@ type Model struct {
 	HasValidValues            bool
 	HasChildWithoutIdentifier bool
 	HasNaming                 bool
+	HasOptionalProperties     bool
 	Include                   bool
 }
 
@@ -470,6 +467,7 @@ type Property struct {
 	// Below booleans are used during template rendering to determine correct rendering the go code
 	IsNaming   bool
 	CreateOnly bool
+	IsRequired bool
 }
 
 // A Definitions represents the ACI class and property definitions as defined in the definitions YAML files
@@ -549,16 +547,16 @@ func (m *Model) setClassModel(metaPath string, child bool, definitions Definitio
 func (m *Model) SetClassLabel(classDetails interface{}, child bool) {
 	m.Label = cleanLabel(classDetails.(map[string]interface{})["label"].(string))
 
-	if !child {
-		if slices.Contains(labels, m.Label) || m.Label == "" {
-			if !slices.Contains(duplicateLabels, m.Label) {
-				duplicateLabels = append(duplicateLabels, m.Label)
-			}
-			resourceNames[m.PkgName] = inflection.Underscore(m.PkgName)
-		} else {
-			labels = append(labels, m.Label)
-			resourceNames[m.PkgName] = m.Label
+	if slices.Contains(labels, m.Label) || m.Label == "" {
+		if !slices.Contains(duplicateLabels, m.Label) {
+			duplicateLabels = append(duplicateLabels, m.Label)
 		}
+		if _, ok := resourceNames[m.PkgName]; !ok {
+			resourceNames[m.PkgName] = inflection.Underscore(m.PkgName)
+		}
+	} else {
+		labels = append(labels, m.Label)
+		resourceNames[m.PkgName] = m.Label
 	}
 
 }
@@ -762,6 +760,14 @@ func (m *Model) SetClassProperties(classDetails interface{}) {
 				CreateOnly:        propertyValue.(map[string]interface{})["createOnly"].(bool),
 			}
 
+			if requiredProperty(propertyName, m.PkgName, m.Definitions) || property.IsNaming == true {
+				property.IsRequired = true
+			}
+
+			if property.IsRequired == false {
+				m.HasOptionalProperties = true
+			}
+
 			if property.ValueType == "bitmask" {
 				m.HasBitmask = true
 			}
@@ -886,6 +892,30 @@ func ignoreProperty(propertyName, classPkgName string, definitions Definitions) 
 }
 
 /*
+Determine if a property should be required as defined in the properties.yaml file
+Precendence order is:
+ 1. class level from properties.yaml
+ 2. global level from properties.yaml
+*/
+func requiredProperty(propertyName, classPkgName string, definitions Definitions) bool {
+	precedenceList := []string{classPkgName, "global"}
+	for _, precedence := range precedenceList {
+		if classDetails, ok := definitions.Properties[precedence]; ok {
+			for key, value := range classDetails.(map[interface{}]interface{}) {
+				if key.(string) == "resource_required" {
+					for _, v := range value.([]interface{}) {
+						if v.(string) == propertyName {
+							return true
+						}
+					}
+				}
+			}
+		}
+	}
+	return false
+}
+
+/*
 Determine if a attribute name in terraform configuration should be overwritten by a attribute name overwrite in the properties.yaml file
 Precendence order is:
  1. class level from properties.yaml
@@ -908,6 +938,55 @@ func GetOverwriteAttributeName(classPkgName, propertyName string, definitions De
 		}
 	}
 	return propertyName
+}
+
+/*
+Determine if a attribute value in testvars should be overwritten by a attribute value overwrite in the properties.yaml file
+Precendence order is:
+ 1. class level from properties.yaml
+*/
+func GetOverwriteAttributeValue(classPkgName, propertyName, propertyValue, testType string, definitions Definitions) string {
+
+	if classDetails, ok := definitions.Properties[classPkgName]; ok {
+		for key, value := range classDetails.(map[interface{}]interface{}) {
+			if key.(string) == "test_values" {
+				for test_type, test_type_values := range value.(map[interface{}]interface{}) {
+					if test_type.(string) == testType {
+						for k, v := range test_type_values.(map[interface{}]interface{}) {
+							if k.(string) == propertyName {
+								return v.(string)
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	return propertyValue
+}
+
+func GetParentTestDependencies(classPkgName string, index int, definitions Definitions) map[string]interface{} {
+
+	parentDependency := ""
+	classInParent := false
+	if classDetails, ok := definitions.Properties[classPkgName]; ok {
+		for key, value := range classDetails.(map[interface{}]interface{}) {
+			if key.(string) == "parents" {
+				if len(value.([]interface{})) > index {
+					parentMap := value.([]interface{})[index].(map[interface{}]interface{})
+					if pd, ok := parentMap["parent_dependency"]; ok {
+						parentDependency = pd.(string)
+					}
+					if cip, ok := parentMap["class_in_parent"]; ok {
+						classInParent = cip.(bool)
+					}
+				}
+			}
+		}
+	}
+
+	return map[string]interface{}{"parent_dependency": parentDependency, "class_in_parent": classInParent}
 }
 
 // Determine if possible parent classes in terraform configuration should be overwritten by contained_by from the classes.yaml file

@@ -6,27 +6,28 @@ default:
   owner_tag: ""
 
 datasource_required:
-  name: "test_pim_route_map_policy"
+  name: "test_name"
 
 resource_required:
-  name: "test_pim_route_map_policy"
+  name: "test_name"
 
 all:
-  annotation: "test_annotation"
-  description: "test_descr"
-  name_alias: "test_name_alias"
-  owner_key: "test_owner_key"
-  owner_tag: "test_owner_tag"
+  annotation: "annotation"
+  description: "description"
+  name_alias: "name_alias"
+  owner_key: "owner_key"
+  owner_tag: "owner_tag"
 
 children:
   annotations:
-    - key: "test_key_1"
-      value: "test_value_1"
-    - key: "test_key_2"
-      value: "test_value_2"
-
+    - key: "annotation_1"
+      value: "value"
+      
+    - key: "annotation_2"
+      value: "value"
+      
 parents:
   - class_name: "fvTenant"
     parent_dependency: ""
     parent_dn: "aci_tenant.test.id"
-    relationship_in_parent: false
+    class_in_parent: false

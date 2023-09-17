@@ -193,8 +193,7 @@ func (r *VzOOBBrCPResource) Schema(ctx context.Context, req resource.SchemaReque
 							MarkdownDescription: `The key or password used to uniquely identify this configuration object.`,
 						},
 						"value": schema.StringAttribute{
-							Optional: true,
-							Computed: true,
+							Required: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
 							},

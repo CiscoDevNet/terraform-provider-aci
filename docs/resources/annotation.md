@@ -48,7 +48,8 @@ Manages ACI Annotation
 
 resource "aci_annotation" "example" {
   parent_dn = aci_application_epg.example.id
-  key       = "test_annotation"
+  key       = "test_key"
+  value     = "test_value"
 }
 
 ```
@@ -72,15 +73,11 @@ resource "aci_annotation" "example" {
   - `aci_out_of_band_contract` (class: vzOOBBrCP)
   - Too many classes to display, see model documentation for all possible classes.
 * `key` - (string) The key or password used to uniquely identify this configuration object.
+* `value` - (string) The value of the property.
 
 ### Read-Only
 
 * `id` - (string) The distinquised name (DN) of the Annotation object.
-
-### Optional
-
-* `value` - (string) The value of the property.
-
 
 ## Importing ##
 

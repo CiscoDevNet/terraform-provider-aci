@@ -18,7 +18,7 @@ func TestAccDataSourceFvRsConsIfWithFvAEPg(t *testing.T) {
 				Config:             testConfigFvRsConsIfDataSourceDependencyWithFvAEPg,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("data.aci_contract_interface.test", "contract_interface_name", "test_contract_interface"),
+					resource.TestCheckResourceAttr("data.aci_contract_interface.test", "contract_interface_name", "test_tn_vz_cp_if_name"),
 					resource.TestCheckResourceAttr("data.aci_contract_interface.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("data.aci_contract_interface.test", "priority", "unspecified"),
 				),
@@ -30,7 +30,7 @@ func TestAccDataSourceFvRsConsIfWithFvAEPg(t *testing.T) {
 const testConfigFvRsConsIfDataSourceDependencyWithFvAEPg = testConfigFvRsConsIfMinDependencyWithFvAEPg + `
 data "aci_contract_interface" "test" {
   parent_dn = aci_application_epg.test.id
-  contract_interface_name = "test_contract_interface"
+  contract_interface_name = "test_tn_vz_cp_if_name"
   depends_on = [aci_contract_interface.test]
 }
 `

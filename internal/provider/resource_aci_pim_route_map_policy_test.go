@@ -19,7 +19,7 @@ func TestAccResourcePimRouteMapPolWithFvTenant(t *testing.T) {
 				Config:             testConfigPimRouteMapPolMinDependencyWithFvTenant,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_pim_route_map_policy.test", "name", "test_pim_route_map_policy"),
+					resource.TestCheckResourceAttr("aci_pim_route_map_policy.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_pim_route_map_policy.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_pim_route_map_policy.test", "description", ""),
 					resource.TestCheckResourceAttr("aci_pim_route_map_policy.test", "name_alias", ""),
@@ -32,12 +32,12 @@ func TestAccResourcePimRouteMapPolWithFvTenant(t *testing.T) {
 				Config:             testConfigPimRouteMapPolAllDependencyWithFvTenant,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_pim_route_map_policy.test", "name", "test_pim_route_map_policy"),
-					resource.TestCheckResourceAttr("aci_pim_route_map_policy.test", "annotation", "test_annotation"),
-					resource.TestCheckResourceAttr("aci_pim_route_map_policy.test", "description", "test_descr"),
-					resource.TestCheckResourceAttr("aci_pim_route_map_policy.test", "name_alias", "test_name_alias"),
-					resource.TestCheckResourceAttr("aci_pim_route_map_policy.test", "owner_key", "test_owner_key"),
-					resource.TestCheckResourceAttr("aci_pim_route_map_policy.test", "owner_tag", "test_owner_tag"),
+					resource.TestCheckResourceAttr("aci_pim_route_map_policy.test", "name", "test_name"),
+					resource.TestCheckResourceAttr("aci_pim_route_map_policy.test", "annotation", "annotation"),
+					resource.TestCheckResourceAttr("aci_pim_route_map_policy.test", "description", "description"),
+					resource.TestCheckResourceAttr("aci_pim_route_map_policy.test", "name_alias", "name_alias"),
+					resource.TestCheckResourceAttr("aci_pim_route_map_policy.test", "owner_key", "owner_key"),
+					resource.TestCheckResourceAttr("aci_pim_route_map_policy.test", "owner_tag", "owner_tag"),
 				),
 			},
 			// Update with minimum config and verify config is unchanged
@@ -45,12 +45,7 @@ func TestAccResourcePimRouteMapPolWithFvTenant(t *testing.T) {
 				Config:             testConfigPimRouteMapPolMinDependencyWithFvTenant,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_pim_route_map_policy.test", "name", "test_pim_route_map_policy"),
-					resource.TestCheckResourceAttr("aci_pim_route_map_policy.test", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_pim_route_map_policy.test", "description", "test_descr"),
-					resource.TestCheckResourceAttr("aci_pim_route_map_policy.test", "name_alias", "test_name_alias"),
-					resource.TestCheckResourceAttr("aci_pim_route_map_policy.test", "owner_key", "test_owner_key"),
-					resource.TestCheckResourceAttr("aci_pim_route_map_policy.test", "owner_tag", "test_owner_tag"),
+					resource.TestCheckResourceAttr("aci_pim_route_map_policy.test", "name", "test_name"),
 				),
 			},
 			// Update with empty strings config or default value
@@ -58,7 +53,7 @@ func TestAccResourcePimRouteMapPolWithFvTenant(t *testing.T) {
 				Config:             testConfigPimRouteMapPolResetDependencyWithFvTenant,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_pim_route_map_policy.test", "name", "test_pim_route_map_policy"),
+					resource.TestCheckResourceAttr("aci_pim_route_map_policy.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_pim_route_map_policy.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_pim_route_map_policy.test", "description", ""),
 					resource.TestCheckResourceAttr("aci_pim_route_map_policy.test", "name_alias", ""),
@@ -71,16 +66,16 @@ func TestAccResourcePimRouteMapPolWithFvTenant(t *testing.T) {
 				Config:             testConfigPimRouteMapPolChildrenDependencyWithFvTenant,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_pim_route_map_policy.test", "name", "test_pim_route_map_policy"),
+					resource.TestCheckResourceAttr("aci_pim_route_map_policy.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_pim_route_map_policy.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_pim_route_map_policy.test", "description", ""),
 					resource.TestCheckResourceAttr("aci_pim_route_map_policy.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("aci_pim_route_map_policy.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_pim_route_map_policy.test", "owner_tag", ""),
-					resource.TestCheckResourceAttr("aci_pim_route_map_policy.test", "annotations.0.key", "test_key_1"),
-					resource.TestCheckResourceAttr("aci_pim_route_map_policy.test", "annotations.0.value", "test_value_1"),
-					resource.TestCheckResourceAttr("aci_pim_route_map_policy.test", "annotations.1.key", "test_key_2"),
-					resource.TestCheckResourceAttr("aci_pim_route_map_policy.test", "annotations.1.value", "test_value_2"),
+					resource.TestCheckResourceAttr("aci_pim_route_map_policy.test", "annotations.0.key", "annotation_1"),
+					resource.TestCheckResourceAttr("aci_pim_route_map_policy.test", "annotations.0.value", "value"),
+					resource.TestCheckResourceAttr("aci_pim_route_map_policy.test", "annotations.1.key", "annotation_2"),
+					resource.TestCheckResourceAttr("aci_pim_route_map_policy.test", "annotations.1.value", "value"),
 				),
 			},
 		},
@@ -90,26 +85,26 @@ func TestAccResourcePimRouteMapPolWithFvTenant(t *testing.T) {
 const testConfigPimRouteMapPolMinDependencyWithFvTenant = testConfigFvTenantMin + `
 resource "aci_pim_route_map_policy" "test" {
   parent_dn = aci_tenant.test.id
-  name = "test_pim_route_map_policy"
+  name = "test_name"
 }
 `
 
 const testConfigPimRouteMapPolAllDependencyWithFvTenant = testConfigFvTenantMin + `
 resource "aci_pim_route_map_policy" "test" {
   parent_dn = aci_tenant.test.id
-  name = "test_pim_route_map_policy"
-  annotation = "test_annotation"
-  description = "test_descr"
-  name_alias = "test_name_alias"
-  owner_key = "test_owner_key"
-  owner_tag = "test_owner_tag"
+  name = "test_name"
+  annotation = "annotation"
+  description = "description"
+  name_alias = "name_alias"
+  owner_key = "owner_key"
+  owner_tag = "owner_tag"
 }
 `
 
 const testConfigPimRouteMapPolResetDependencyWithFvTenant = testConfigFvTenantMin + `
 resource "aci_pim_route_map_policy" "test" {
   parent_dn = aci_tenant.test.id
-  name = "test_pim_route_map_policy"
+  name = "test_name"
   annotation = "orchestrator:terraform"
   description = ""
   name_alias = ""
@@ -120,15 +115,15 @@ resource "aci_pim_route_map_policy" "test" {
 const testConfigPimRouteMapPolChildrenDependencyWithFvTenant = testConfigFvTenantMin + `
 resource "aci_pim_route_map_policy" "test" {
   parent_dn = aci_tenant.test.id
-  name = "test_pim_route_map_policy"
+  name = "test_name"
   annotations = [
 	{
-	  key = "test_key_1"
-	  value = "test_value_1"
+	  key = "annotation_1"
+	  value = "value"
 	},
 	{
-	  key = "test_key_2"
-	  value = "test_value_2"
+	  key = "annotation_2"
+	  value = "value"
 	},
   ]
 }

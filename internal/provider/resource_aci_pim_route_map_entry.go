@@ -184,8 +184,7 @@ func (r *PimRouteMapEntryResource) Schema(ctx context.Context, req resource.Sche
 							MarkdownDescription: `The key or password used to uniquely identify this configuration object.`,
 						},
 						"value": schema.StringAttribute{
-							Optional: true,
-							Computed: true,
+							Required: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
 							},

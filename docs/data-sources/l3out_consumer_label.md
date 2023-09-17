@@ -28,7 +28,7 @@ Data source for L3out Consumer Label
 
 data "aci_l3out_consumer_label" "example" {
   parent_dn = aci_l3_outside.example.id
-  name      = "test_l3out_consumer_label"
+  name      = "test_name"
 }
 
 ```

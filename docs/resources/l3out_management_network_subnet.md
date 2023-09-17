@@ -46,13 +46,12 @@ resource "aci_l3out_management_network_subnet" "example" {
 * `id` - (string) The distinquised name (DN) of the L3out Management Network Subnet object.
 
 ### Optional
-
+  
 * `annotation` - (string) The annotation of the L3out Management Network Subnet object.
   - Default: `orchestrator:terraform`
 * `description` - (string) The description of the L3out Management Network Subnet object.
 * `name` - (string) The name of the L3out Management Network Subnet object.
 * `name_alias` - (string) The name alias of the L3out Management Network Subnet object.
-
 
 ## Importing ##
 

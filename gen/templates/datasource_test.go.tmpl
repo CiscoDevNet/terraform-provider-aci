@@ -18,7 +18,7 @@ func TestAccDataSource{{$.resourceClassName}}With{{capitalize .class_name}} (t *
 		Steps: []resource.TestStep{
 			{
 				Config: testConfig{{$.resourceClassName}}DataSourceDependencyWith{{capitalize .class_name}} ,
-				ExpectNonEmptyPlan: {{.relationship_in_parent}},
+				ExpectNonEmptyPlan: {{.class_in_parent}},
 				Check: resource.ComposeAggregateTestCheckFunc(
 					{{- range $key, $value := $.datasource_required}}
 					resource.TestCheckResourceAttr("data.aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),

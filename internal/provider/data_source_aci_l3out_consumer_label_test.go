@@ -18,7 +18,7 @@ func TestAccDataSourceL3extConsLblWithL3extOut(t *testing.T) {
 				Config:             testConfigL3extConsLblDataSourceDependencyWithL3extOut,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("data.aci_l3out_consumer_label.test", "name", "test_l3out_consumer_label"),
+					resource.TestCheckResourceAttr("data.aci_l3out_consumer_label.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("data.aci_l3out_consumer_label.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("data.aci_l3out_consumer_label.test", "description", ""),
 					resource.TestCheckResourceAttr("data.aci_l3out_consumer_label.test", "name_alias", ""),
@@ -35,7 +35,7 @@ func TestAccDataSourceL3extConsLblWithL3extOut(t *testing.T) {
 const testConfigL3extConsLblDataSourceDependencyWithL3extOut = testConfigL3extConsLblMinDependencyWithL3extOut + `
 data "aci_l3out_consumer_label" "test" {
   parent_dn = aci_l3_outside.test.id
-  name = "test_l3out_consumer_label"
+  name = "test_name"
   depends_on = [aci_l3out_consumer_label.test]
 }
 `

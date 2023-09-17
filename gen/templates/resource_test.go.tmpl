@@ -19,10 +19,12 @@ func TestAccResource{{$.resourceClassName}}With{{capitalize .class_name}}(t *tes
 			// Create with minimum config and verify default APIC values
 			{
 				Config: testConfig{{$.resourceClassName}}MinDependencyWith{{capitalize .class_name}},
-				ExpectNonEmptyPlan: {{.relationship_in_parent}},
+				ExpectNonEmptyPlan: {{.class_in_parent}},
 				Check: resource.ComposeAggregateTestCheckFunc(
-		{{- range $key, $value := $.resource_required}}
+		{{- range $key, $value := $.resource_required}}{{$contains := definedInMap $key $.default}}
+			{{- if not $contains}}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
+			{{- end}}
 		{{- end}}
 		{{- range $key, $value := $.default}}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
@@ -32,36 +34,35 @@ func TestAccResource{{$.resourceClassName}}With{{capitalize .class_name}}(t *tes
 			// Update with all config and verify default APIC values
 			{
 				Config: testConfig{{$.resourceClassName}}AllDependencyWith{{capitalize .class_name}},
-				ExpectNonEmptyPlan: {{.relationship_in_parent}},
+				ExpectNonEmptyPlan: {{.class_in_parent}},
 				Check: resource.ComposeAggregateTestCheckFunc(
-		{{- range $key, $value := $.resource_required}}
+		{{- range $key, $value := $.resource_required}}{{$contains := definedInMap $key $.all}}
+			{{- if not $contains}}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
+			{{- end}}
 		{{- end}}
 		{{- range $key, $value := $.all}}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
-		{{- end}}
-		{{- range $key, $value := $.all_sets}}
-			{{- range $child_index, $child := $value}}
-					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.{{$child_index}}", "{{$child}}"),
-			{{- end}}
 		{{- end}}
 				),
 			},
 			// Update with minimum config and verify config is unchanged
 			{
 				Config: testConfig{{$.resourceClassName}}MinDependencyWith{{capitalize .class_name}},
-				ExpectNonEmptyPlan: {{.relationship_in_parent}},
+				ExpectNonEmptyPlan: {{.class_in_parent}},
 				Check: resource.ComposeAggregateTestCheckFunc(
 		{{- range $key, $value := $.resource_required}}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
 		{{- end}}
-		{{- range $key, $value := $.all}}
-			{{- if ne $key "annotation"}}
+		{{- range $key, $value := $.all}}{{$contains := definedInMap $key $.all}}
+			{{- if not $contains}}
+				{{- if ne $key "annotation"}}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
-			{{- else}}
-				{{- range $dkey, $dvalue := $.default}}
-					{{- if eq $dkey "annotation"}}
+				{{- else}}
+					{{- range $dkey, $dvalue := $.default}}
+						{{- if eq $dkey "annotation"}}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$dkey}}", "{{$dvalue}}"),
+						{{- end}}
 					{{- end}}
 				{{- end}}
 			{{- end}}
@@ -71,20 +72,14 @@ func TestAccResource{{$.resourceClassName}}With{{capitalize .class_name}}(t *tes
 			// Update with empty strings config or default value
 			{
 				Config: testConfig{{$.resourceClassName}}ResetDependencyWith{{capitalize .class_name}},
-				ExpectNonEmptyPlan: {{.relationship_in_parent}},
+				ExpectNonEmptyPlan: {{.class_in_parent}},
 				Check: resource.ComposeAggregateTestCheckFunc(
 		{{- range $key, $value := $.resource_required}}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
 		{{- end}}
-		{{- if $.reset}}
-			{{- range $key, $value := $.reset}}
+		{{- range $key, $value := $.default}}{{$contains := definedInMap $key $.resource_required}}
+			{{- if not $contains}}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
-			{{- end}}
-		{{- else}}
-			{{- range $key, $value := $.default}}{{$contains := containsStringAttributeValue $key $.not_default_after_reset}}
-				{{- if not $contains}}
-					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
-				{{- end}}
 			{{- end}}
 		{{- end}}
 				),
@@ -93,12 +88,12 @@ func TestAccResource{{$.resourceClassName}}With{{capitalize .class_name}}(t *tes
 			// Update with children
 			{
 				Config: testConfig{{$.resourceClassName}}ChildrenDependencyWith{{capitalize .class_name}},
-				ExpectNonEmptyPlan: {{.relationship_in_parent}},
+				ExpectNonEmptyPlan: {{.class_in_parent}},
 				Check: resource.ComposeAggregateTestCheckFunc(
 		{{- range $key, $value := $.resource_required}}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
 		{{- end}}
-			{{- range $key, $value := $.default}}{{$contains := containsStringAttributeValue $key $.not_default_after_reset}}
+			{{- range $key, $value := $.default}}{{$contains := definedInMap $key $.resource_required}}
 				{{- if not $contains}}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
 				{{- end}}
@@ -128,8 +123,10 @@ func TestAccResource{{.resourceClassName}}(t *testing.T) {
 			{
 				Config: testConfig{{.resourceClassName}}Min,
 				Check: resource.ComposeAggregateTestCheckFunc(
-	{{- range $key, $value := .min}}
+	{{- range $key, $value := .resource_required}}{{$contains := definedInMap $key $.default}}
+		{{- if not $contains}}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
+		{{- end}}
 	{{- end}}
 	{{- range $key, $value := .default}}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
@@ -140,16 +137,13 @@ func TestAccResource{{.resourceClassName}}(t *testing.T) {
 			{
 				Config: testConfig{{.resourceClassName}}All,
 				Check: resource.ComposeAggregateTestCheckFunc(
-	{{- range $key, $value := .min}}
+	{{- range $key, $value := .resource_required}}{{$contains := definedInMap $key $.all}}
+		{{- if not $contains}}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
+		{{- end}}
 	{{- end}}
 	{{- range $key, $value := .all}}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
-	{{- end}}
-	{{- range $key, $value := $.all_sets}}
-		{{- range $child_index, $child := $value}}
-					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.{{$child_index}}", "{{$child}}"),
-		{{- end}}
 	{{- end}}
 				),
 			},
@@ -157,8 +151,10 @@ func TestAccResource{{.resourceClassName}}(t *testing.T) {
 			{
 				Config: testConfig{{.resourceClassName}}Min,
 				Check: resource.ComposeAggregateTestCheckFunc(
-	{{- range $key, $value := .min}}
+	{{- range $key, $value := .resource_required}}{{$contains := definedInMap $key $.all}}
+		{{- if not $contains}}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
+		{{- end}}
 	{{- end}}
 	{{- range $key, $value := .all}}
 		{{- if ne $key "annotation"}}
@@ -180,15 +176,9 @@ func TestAccResource{{.resourceClassName}}(t *testing.T) {
 	{{- range $key, $value := $.resource_required}}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
 	{{- end}}
-	{{- if $.reset}}
-		{{- range $key, $value := $.reset}}
-					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
-		{{- end}}
-	{{- else}}
-		{{- range $key, $value := $.default}}{{$contains := containsStringAttributeValue $key $.not_default_after_reset}}
-				{{- if not $contains}}
-					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
-			{{- end}}
+	{{- range $key, $value := $.default}}{{$contains := definedInMap $key $.resource_required}}
+		{{- if not $contains}}
+			resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
 		{{- end}}
 	{{- end}}
 				),
@@ -201,7 +191,7 @@ func TestAccResource{{.resourceClassName}}(t *testing.T) {
 		{{- range $key, $value := .min}}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
 		{{- end}}
-		{{- range $key, $value := .default}}{{$contains := containsStringAttributeValue $key $.not_default_after_reset}}
+		{{- range $key, $value := .default}}{{$contains := definedInMap $key $.resource_required}}
 				{{- if not $contains}}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
 			{{- end}}
@@ -236,37 +226,28 @@ resource "aci_{{$.resourceName}}" "test" {
 const testConfig{{$.resourceClassName}}AllDependencyWith{{capitalize .class_name}} = testConfig{{capitalize .class_name}}Min{{- if ne .parent_dependency ""}}DependencyWith{{capitalize .parent_dependency}}{{- end}} + `
 resource "aci_{{$.resourceName}}" "test" {
   parent_dn = {{.parent_dn}}
-		{{- range $key, $value := $.resource_required}}
+		{{- range $key, $value := $.resource_required}}{{$contains := definedInMap $key $.all}}
+			{{- if not $contains}}
   {{$key}} = "{{$value}}"
+			{{- end}}
 		{{- end}}
 		{{- range $key, $value := $.all}}
   {{$key}} = "{{$value}}"
 		{{- end}}
-		{{- range $key, $value := $.all_sets}}
-  {{$key}} = [{{- range $child := $value}}
-  	"{{$child}}",{{ end}}
-  ]
-  		{{- end}}
 }
 `
 
 const testConfig{{$.resourceClassName}}ResetDependencyWith{{capitalize .class_name}} = testConfig{{capitalize .class_name}}Min{{- if ne .parent_dependency ""}}DependencyWith{{capitalize .parent_dependency}}{{- end}} + `
 resource "aci_{{$.resourceName}}" "test" {
   parent_dn = {{.parent_dn}}
-		{{- range $key, $value := $.resource_required}}
+		{{- range $key, $value := $.resource_required}}{{$contains := definedInMap $key $.default}}
+			{{- if not $contains}}
+  {{$key}} = "{{$value}}"
+			{{- end}}
+		{{- end}}
+		{{- range $key, $value := $.default}}
   {{$key}} = "{{$value}}"
 		{{- end}}
-		{{- if $.reset}}
-			{{- range $key, $value := $.reset}}
-  {{$key}} = "{{$value}}"
-			{{- end}}	
-  		{{- else}}
-			{{- range $key, $value := $.default}}{{$contains := containsStringAttributeValue $key $.not_default_after_reset}}
-				{{- if not $contains}}
-  {{$key}} = "{{$value}}"
-				{{- end}}
-			{{- end}}
-  		{{- end}}
 }
 `
 
@@ -303,29 +284,26 @@ resource "aci_{{$.resourceName}}" "test" {
 
 const testConfig{{.resourceClassName}}All = `
 resource "aci_{{$.resourceName}}" "test" {
-  	{{- range $key, $value := $.resource_required}}
+  	{{- range $key, $value := $.resource_required}}{{$contains := definedInMap $key $.all}}
+		{{- if not $contains}}
   {{$key}} = "{{$value}}"
+		{{- end}}
   	{{- end}}
   	{{- range $key, $value := $.all}}
   {{$key}} = "{{$value}}"
-  	{{- end}}
-  	{{- range $key, $value := $.all_sets}}
-  {{$key}} = [{{- range $child := $value}}
-  	"{{$child}}",{{ end}}
-  ]
   	{{- end}}
 }
 `
 
 const testConfig{{.resourceClassName}}Reset = `
 resource "aci_{{$.resourceName}}" "test" {
-  	{{- range $key, $value := $.resource_required}}
-  {{$key}} = "{{$value}}"
-  	{{- end}}
-  	{{- range $key, $value := $.default}}{{$contains := containsStringAttributeValue $key $.not_default_after_reset}}
+  	{{- range $key, $value := $.resource_required}}{{$contains := definedInMap $key $.default}}
 		{{- if not $contains}}
   {{$key}} = "{{$value}}"
 		{{- end}}
+  	{{- end}}
+  	{{- range $key, $value := $.default}}
+  {{$key}} = "{{$value}}"
   	{{- end}}
 }
 `

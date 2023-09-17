@@ -1,5 +1,6 @@
 default:
   annotation: "orchestrator:terraform"
+  src: "direct"
 
 datasource_required:
   src: "direct"
@@ -10,18 +11,19 @@ resource_required:
   route_profile_name: "test_tn_rtctrl_profile_name"
 
 all:
-  annotation: "test_annotation"
+  annotation: "annotation"
+  src: "direct"
 
 children:
   annotations:
-    - key: "test_key_1"
-      value: "test_value_1"
-    - key: "test_key_2"
-      value: "test_value_2"
-
+    - key: "annotation_1"
+      value: "value"
+      
+    - key: "annotation_2"
+      value: "value"
+      
 parents:
   - class_name: "l3extOut"
     parent_dependency: "fvTenant"
     parent_dn: "aci_l3_outside.test.id"
-    relationship_in_parent: true
-
+    class_in_parent: true

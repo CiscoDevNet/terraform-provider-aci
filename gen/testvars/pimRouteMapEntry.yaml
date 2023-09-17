@@ -16,23 +16,24 @@ resource_required:
 
 all:
   action: "deny"
-  annotation: "test_annotation"
-  description: "test_descr"
+  annotation: "annotation"
+  description: "description"
   grp: "0.0.0.0"
-  name: "test_name"
-  name_alias: "test_name_alias"
+  name: "name"
+  name_alias: "name_alias"
   rp: "0.0.0.0"
   src: "1.1.1.1/30"
 
 children:
   annotations:
-    - key: "test_key_1"
-      value: "test_value_1"
-    - key: "test_key_2"
-      value: "test_value_2"
-
+    - key: "annotation_1"
+      value: "value"
+      
+    - key: "annotation_2"
+      value: "value"
+      
 parents:
   - class_name: "pimRouteMapPol"
     parent_dependency: "fvTenant"
     parent_dn: "aci_pim_route_map_policy.test.id"
-    relationship_in_parent: false
+    class_in_parent: false

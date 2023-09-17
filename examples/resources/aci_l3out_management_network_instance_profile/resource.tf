@@ -1,8 +1,8 @@
 resource "aci_l3out_management_network_instance_profile" "example" {
-  name = "test_l3out_management_network_instance_profile"
+  name = "test_name"
   l3out_management_network_oob_contracts = [
     {
-      contract_name = "test_l3out_management_network_contract"
+      contract_name = "foo"
     },
   ]
 }

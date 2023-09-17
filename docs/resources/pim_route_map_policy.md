@@ -28,10 +28,11 @@ Manages ACI Pim Route Map Policy
 
 resource "aci_pim_route_map_policy" "example" {
   parent_dn = aci_tenant.example.id
-  name      = "test_pim_route_map_policy"
+  name      = "test_name"
   annotations = [
     {
-      key = "test_annotation"
+      key   = "test_key"
+      value = "test_value"
     },
   ]
 }
@@ -51,7 +52,7 @@ resource "aci_pim_route_map_policy" "example" {
 * `id` - (string) The distinquised name (DN) of the Pim Route Map Policy object.
 
 ### Optional
-
+  
 * `annotation` - (string) The annotation of the Pim Route Map Policy object.
   - Default: `orchestrator:terraform`
 * `description` - (string) The description of the Pim Route Map Policy object.
@@ -60,12 +61,10 @@ resource "aci_pim_route_map_policy" "example" {
 * `owner_tag` - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
 
 * `annotations` - (list) A list of Annotation objects (tagAnnotation) which can also be configured using the `aci_annotation` resource.
+    
   #### Required
   
   * `key` - (string) The key or password used to uniquely identify this configuration object.
-
-  #### Optional
-  
   * `value` - (string) The value of the property.
 
 ## Importing ##

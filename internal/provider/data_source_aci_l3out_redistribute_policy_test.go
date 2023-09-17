@@ -21,6 +21,7 @@ func TestAccDataSourceL3extRsRedistributePolWithL3extOut(t *testing.T) {
 					resource.TestCheckResourceAttr("data.aci_l3out_redistribute_policy.test", "route_profile_name", "test_tn_rtctrl_profile_name"),
 					resource.TestCheckResourceAttr("data.aci_l3out_redistribute_policy.test", "src", "direct"),
 					resource.TestCheckResourceAttr("data.aci_l3out_redistribute_policy.test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("data.aci_l3out_redistribute_policy.test", "src", "direct"),
 				),
 			},
 		},

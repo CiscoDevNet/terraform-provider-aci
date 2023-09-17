@@ -19,7 +19,7 @@ func TestAccResourceL3extConsLblWithL3extOut(t *testing.T) {
 				Config:             testConfigL3extConsLblMinDependencyWithL3extOut,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "name", "test_l3out_consumer_label"),
+					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "description", ""),
 					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "name_alias", ""),
@@ -34,14 +34,14 @@ func TestAccResourceL3extConsLblWithL3extOut(t *testing.T) {
 				Config:             testConfigL3extConsLblAllDependencyWithL3extOut,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "name", "test_l3out_consumer_label"),
-					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "annotation", "test_annotation"),
-					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "description", "test_description"),
-					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "name_alias", "test_name_alias"),
-					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "owner", "tenant"),
-					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "owner_key", "test_owner_key"),
-					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "owner_tag", "test_owner_tag"),
-					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "tag", "burlywood"),
+					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "name", "test_name"),
+					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "annotation", "annotation"),
+					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "description", "description"),
+					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "name_alias", "name_alias"),
+					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "owner", "infra"),
+					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "owner_key", "owner_key"),
+					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "owner_tag", "owner_tag"),
+					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "tag", "lemon-chiffon"),
 				),
 			},
 			// Update with minimum config and verify config is unchanged
@@ -49,14 +49,7 @@ func TestAccResourceL3extConsLblWithL3extOut(t *testing.T) {
 				Config:             testConfigL3extConsLblMinDependencyWithL3extOut,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "name", "test_l3out_consumer_label"),
-					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "description", "test_description"),
-					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "name_alias", "test_name_alias"),
-					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "owner", "tenant"),
-					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "owner_key", "test_owner_key"),
-					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "owner_tag", "test_owner_tag"),
-					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "tag", "burlywood"),
+					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "name", "test_name"),
 				),
 			},
 			// Update with empty strings config or default value
@@ -64,7 +57,7 @@ func TestAccResourceL3extConsLblWithL3extOut(t *testing.T) {
 				Config:             testConfigL3extConsLblResetDependencyWithL3extOut,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "name", "test_l3out_consumer_label"),
+					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "description", ""),
 					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "name_alias", ""),
@@ -79,7 +72,7 @@ func TestAccResourceL3extConsLblWithL3extOut(t *testing.T) {
 				Config:             testConfigL3extConsLblChildrenDependencyWithL3extOut,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "name", "test_l3out_consumer_label"),
+					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "description", ""),
 					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "name_alias", ""),
@@ -87,10 +80,10 @@ func TestAccResourceL3extConsLblWithL3extOut(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "owner_tag", ""),
 					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "tag", "yellow-green"),
-					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "annotations.0.key", "test_key_1"),
-					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "annotations.0.value", "test_value_1"),
-					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "annotations.1.key", "test_key_2"),
-					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "annotations.1.value", "test_value_2"),
+					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "annotations.0.key", "annotation_1"),
+					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "annotations.0.value", "value"),
+					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "annotations.1.key", "annotation_2"),
+					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "annotations.1.value", "value"),
 				),
 			},
 		},
@@ -100,28 +93,28 @@ func TestAccResourceL3extConsLblWithL3extOut(t *testing.T) {
 const testConfigL3extConsLblMinDependencyWithL3extOut = testConfigL3extOutMin + `
 resource "aci_l3out_consumer_label" "test" {
   parent_dn = aci_l3_outside.test.id
-  name = "test_l3out_consumer_label"
+  name = "test_name"
 }
 `
 
 const testConfigL3extConsLblAllDependencyWithL3extOut = testConfigL3extOutMin + `
 resource "aci_l3out_consumer_label" "test" {
   parent_dn = aci_l3_outside.test.id
-  name = "test_l3out_consumer_label"
-  annotation = "test_annotation"
-  description = "test_description"
-  name_alias = "test_name_alias"
-  owner = "tenant"
-  owner_key = "test_owner_key"
-  owner_tag = "test_owner_tag"
-  tag = "burlywood"
+  name = "test_name"
+  annotation = "annotation"
+  description = "description"
+  name_alias = "name_alias"
+  owner = "infra"
+  owner_key = "owner_key"
+  owner_tag = "owner_tag"
+  tag = "lemon-chiffon"
 }
 `
 
 const testConfigL3extConsLblResetDependencyWithL3extOut = testConfigL3extOutMin + `
 resource "aci_l3out_consumer_label" "test" {
   parent_dn = aci_l3_outside.test.id
-  name = "test_l3out_consumer_label"
+  name = "test_name"
   annotation = "orchestrator:terraform"
   description = ""
   name_alias = ""
@@ -134,15 +127,15 @@ resource "aci_l3out_consumer_label" "test" {
 const testConfigL3extConsLblChildrenDependencyWithL3extOut = testConfigL3extOutMin + `
 resource "aci_l3out_consumer_label" "test" {
   parent_dn = aci_l3_outside.test.id
-  name = "test_l3out_consumer_label"
+  name = "test_name"
   annotations = [
 	{
-	  key = "test_key_1"
-	  value = "test_value_1"
+	  key = "annotation_1"
+	  value = "value"
 	},
 	{
-	  key = "test_key_2"
-	  value = "test_value_2"
+	  key = "annotation_2"
+	  value = "value"
 	},
   ]
 }

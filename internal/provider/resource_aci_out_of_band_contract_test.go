@@ -18,6 +18,7 @@ func TestAccResourceVzOOBBrCP(t *testing.T) {
 			{
 				Config: testConfigVzOOBBrCPMin,
 				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "description", ""),
 					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "intent", "install"),
@@ -33,12 +34,13 @@ func TestAccResourceVzOOBBrCP(t *testing.T) {
 			{
 				Config: testConfigVzOOBBrCPAll,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "annotation", "test_annotation"),
-					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "description", "test_descr"),
+					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "name", "test_name"),
+					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "annotation", "annotation"),
+					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "description", "description"),
 					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "intent", "estimate_add"),
-					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "name_alias", "test_name_alias"),
-					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "owner_key", "test_owner_key"),
-					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "owner_tag", "test_owner_tag"),
+					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "name_alias", "name_alias"),
+					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "owner_key", "owner_key"),
+					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "owner_tag", "owner_tag"),
 					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "priority", "level1"),
 					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "scope", "application-profile"),
 					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "target_dscp", "AF11"),
@@ -48,12 +50,13 @@ func TestAccResourceVzOOBBrCP(t *testing.T) {
 			{
 				Config: testConfigVzOOBBrCPMin,
 				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "description", "test_descr"),
+					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "description", "description"),
 					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "intent", "estimate_add"),
-					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "name_alias", "test_name_alias"),
-					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "owner_key", "test_owner_key"),
-					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "owner_tag", "test_owner_tag"),
+					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "name_alias", "name_alias"),
+					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "owner_key", "owner_key"),
+					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "owner_tag", "owner_tag"),
 					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "priority", "level1"),
 					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "scope", "application-profile"),
 					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "target_dscp", "AF11"),
@@ -63,7 +66,7 @@ func TestAccResourceVzOOBBrCP(t *testing.T) {
 			{
 				Config: testConfigVzOOBBrCPReset,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "name", "test_out_of_band_contract"),
+					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "description", ""),
 					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "intent", "install"),
@@ -88,10 +91,10 @@ func TestAccResourceVzOOBBrCP(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "priority", "unspecified"),
 					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "scope", "context"),
 					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "target_dscp", "unspecified"),
-					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "annotations.0.key", "test_key_1"),
-					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "annotations.0.value", "test_value_1"),
-					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "annotations.1.key", "test_key_2"),
-					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "annotations.1.value", "test_value_2"),
+					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "annotations.0.key", "annotation_1"),
+					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "annotations.0.value", "value"),
+					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "annotations.1.key", "annotation_2"),
+					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "annotations.1.value", "value"),
 				),
 			},
 		},
@@ -100,19 +103,19 @@ func TestAccResourceVzOOBBrCP(t *testing.T) {
 
 const testConfigVzOOBBrCPMin = `
 resource "aci_out_of_band_contract" "test" {
-  name = "test_out_of_band_contract"
+  name = "test_name"
 }
 `
 
 const testConfigVzOOBBrCPAll = `
 resource "aci_out_of_band_contract" "test" {
-  name = "test_out_of_band_contract"
-  annotation = "test_annotation"
-  description = "test_descr"
+  name = "test_name"
+  annotation = "annotation"
+  description = "description"
   intent = "estimate_add"
-  name_alias = "test_name_alias"
-  owner_key = "test_owner_key"
-  owner_tag = "test_owner_tag"
+  name_alias = "name_alias"
+  owner_key = "owner_key"
+  owner_tag = "owner_tag"
   priority = "level1"
   scope = "application-profile"
   target_dscp = "AF11"
@@ -121,7 +124,7 @@ resource "aci_out_of_band_contract" "test" {
 
 const testConfigVzOOBBrCPReset = `
 resource "aci_out_of_band_contract" "test" {
-  name = "test_out_of_band_contract"
+  name = "test_name"
   annotation = "orchestrator:terraform"
   description = ""
   intent = "install"
@@ -135,15 +138,15 @@ resource "aci_out_of_band_contract" "test" {
 `
 const testConfigVzOOBBrCPChildren = `
 resource "aci_out_of_band_contract" "test" {
-  name = "test_out_of_band_contract"
+  name = "test_name"
   annotations = [
 	{
-	  key = "test_key_1"
-	  value = "test_value_1"
+	  key = "annotation_1"
+	  value = "value"
 	},
 	{
-	  key = "test_key_2"
-	  value = "test_value_2"
+	  key = "annotation_2"
+	  value = "value"
 	},
   ]
 }

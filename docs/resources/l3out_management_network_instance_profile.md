@@ -26,10 +26,10 @@ Manages ACI L3out Management Network Instance Profile
 
 ```hcl
 resource "aci_l3out_management_network_instance_profile" "example" {
-  name = "test_l3out_management_network_instance_profile"
+  name = "test_name"
   l3out_management_network_oob_contracts = [
     {
-      contract_name = "test_l3out_management_network_contract"
+      contract_name = "foo"
     },
   ]
 }
@@ -46,7 +46,7 @@ resource "aci_l3out_management_network_instance_profile" "example" {
 * `id` - (string) The distinquised name (DN) of the L3out Management Network Instance Profile object.
 
 ### Optional
-
+  
 * `annotation` - (string) The annotation of the L3out Management Network Instance Profile object.
   - Default: `orchestrator:terraform`
 * `description` - (string) The description of the L3out Management Network Instance Profile object.
@@ -61,7 +61,7 @@ resource "aci_l3out_management_network_instance_profile" "example" {
   * `contract_name` - (string) An out-of-band management endpoint group contract consists of switches (leaves/spines) and APICs that are part of the associated out-of-band management zone. Each node in the group is assigned an IP address that is dynamically allocated from the address pool associated with the corresponding out-of-band management zone.
 
   #### Optional
-  
+    
   * `annotation` - (string) The annotation of the L3out Management Network Oob Contract object.
     - Default: `orchestrator:terraform`
   * `priority` - (string) The Quality of service (QoS) priority class ID. QoS refers to the capability of a network to provide better service to selected network traffic over various technologies. The primary goal of QoS is to provide priority including dedicated bandwidth, controlled jitter and latency (required by some real-time and interactive traffic), and improved loss characteristics. You can configure the bandwidth of each QoS level using QoS profiles.

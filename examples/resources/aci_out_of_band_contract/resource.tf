@@ -1,8 +1,9 @@
 resource "aci_out_of_band_contract" "example" {
-  name = "test_out_of_band_contract"
+  name = "test_name"
   annotations = [
     {
-      key = "test_annotation"
+      key   = "test_key"
+      value = "test_value"
     },
   ]
 }

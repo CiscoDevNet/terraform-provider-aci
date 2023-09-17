@@ -39,7 +39,7 @@ Manages ACI {{getResourceNameAsDescription .ResourceName}}
   {{- end}}
 {{- end}}
 {{- range .Properties}}
-    {{- if .IsNaming}}
+    {{- if or .IsNaming .IsRequired}}
 * `{{- overwriteProperty .PkgName .SnakeCaseName $.Definitions}}` - (string) {{.Comment}}
       {{- if .ValidValues }}{{$i := 1}}{{$length := len .ValidValues}}
   - Valid Values:{{ range .ValidValues}} `{{ . }}`{{ if ne $length $i}}{{$i = add $i 1}}, {{- else}}.{{- end}}{{- end}}
@@ -50,35 +50,37 @@ Manages ACI {{getResourceNameAsDescription .ResourceName}}
 ### Read-Only
 
 * `id` - (string) The distinquised name (DN) of the {{getResourceNameAsDescription .ResourceName}} object.
+{{- if .HasOptionalProperties}}
 
 ### Optional
-{{ range .Properties}}
-    {{- if not .IsNaming}}
-        {{- if eq .ValueType "bitmask"}}
+  {{ range .Properties}}
+    {{- if and (not .IsNaming) (not .IsRequired)}}
+      {{- if eq .ValueType "bitmask"}}
 * `{{- overwriteProperty .PkgName .SnakeCaseName $.Definitions}}` - (list) {{.Comment}}
-          {{- if .DefaultValue }}
+        {{- if .DefaultValue }}
   - Default: `{{ .DefaultValue }}`.
-          {{- end}}
-        {{- else}}
-* `{{- overwriteProperty .PkgName .SnakeCaseName $.Definitions}}` - (string) {{.Comment}}
-      {{- if .DefaultValue }}
-  - Default: `{{ .DefaultValue }}`
-      {{- end}}
-      {{- if .ValidValues }}{{$i := 1}}{{$length := len .ValidValues}}
-  - Valid Values:{{ range .ValidValues}} `{{ . }}`{{ if ne $length $i}}{{$i = add $i 1}}, {{- else}}.{{- end}}{{- end}}
-      {{- end}}
         {{- end}}
+      {{- else}}
+* `{{- overwriteProperty .PkgName .SnakeCaseName $.Definitions}}` - (string) {{.Comment}}
+        {{- if .DefaultValue }}
+  - Default: `{{ .DefaultValue }}`
+        {{- end}}
+        {{- if .ValidValues }}{{$i := 1}}{{$length := len .ValidValues}}
+  - Valid Values:{{ range .ValidValues}} `{{ . }}`{{ if ne $length $i}}{{$i = add $i 1}}, {{- else}}.{{- end}}{{- end}}
+        {{- end}}
+      {{- end}}
     {{- end}}
+  {{- end}}
 {{- end}}
 {{ range .Children }}
     {{- if ne .RelationshipClass ""}}
 * `{{- snakeCase .ResourceName}}{{- if .IdentifiedBy}}s{{- end}}` - (list) A list of {{getResourceNameAsDescription .ResourceName}} relationship objects ({{.PkgName}}) pointing to the {{getResourceNameAsDescription .RelationshipResourceName}} ({{.RelationshipClass}}) which can be configured using the `aci_{{.RelationshipResourceName}}` resource.
     {{- else}}
 * `{{- snakeCase .ResourceName}}{{- if .IdentifiedBy}}s{{- end}}` - (list) A list of {{getResourceNameAsDescription .ResourceName}} objects ({{.PkgName}}) which can also be configured using the `aci_{{.ResourceName}}` resource.
-    {{- end}}
+    {{ end}}
   #### Required
   {{ range .Properties}}
-      {{- if .IsNaming}}
+      {{- if or .IsNaming .IsRequired}}
           {{- if eq .ValueType "bitmask"}}
   * `{{- overwriteProperty .PkgName .SnakeCaseName $.Definitions}}` - (list) {{.Comment}}
           {{- else}}
@@ -86,10 +88,11 @@ Manages ACI {{getResourceNameAsDescription .ResourceName}}
           {{- end}}
       {{- end}}
   {{- end}}
+  {{- if .HasOptionalProperties}}
 
   #### Optional
-  {{ range .Properties}}
-      {{- if not .IsNaming}}
+    {{ range .Properties}}
+      {{- if and (not .IsNaming) (not .IsRequired)}}
         {{- if eq .ValueType "bitmask"}}
   * `{{- overwriteProperty .PkgName .SnakeCaseName $.Definitions}}` - (list) {{.Comment}}
         {{- else}}
@@ -102,9 +105,9 @@ Manages ACI {{getResourceNameAsDescription .ResourceName}}
     - Valid Values:{{ range .ValidValues}} `{{ . }}`{{ if ne $length $i}}{{$i = add $i 1}}, {{- else}}.{{- end}}{{- end}}
         {{- end}}
       {{- end}}
+    {{- end}}
   {{- end}}
-{{- end}}
-
+{{ end}}
 ## Importing ##
 
 An existing {{getResourceNameAsDescription .ResourceName}} can be [imported](https://www.terraform.io/docs/import/index.html) into this resource via its distinquised name (DN), via the following command:

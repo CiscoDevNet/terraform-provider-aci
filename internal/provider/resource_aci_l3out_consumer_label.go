@@ -178,8 +178,7 @@ func (r *L3extConsLblResource) Schema(ctx context.Context, req resource.SchemaRe
 							MarkdownDescription: `The key or password used to uniquely identify this configuration object.`,
 						},
 						"value": schema.StringAttribute{
-							Optional: true,
-							Computed: true,
+							Required: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
 							},

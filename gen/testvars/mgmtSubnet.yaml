@@ -11,13 +11,13 @@ resource_required:
   ip: "1.1.1.0/24"
 
 all:
-  annotation: "test_annotation"
-  description: "test_descr"
-  name: "test_name"
-  name_alias: "test_name_alias"
+  annotation: "annotation"
+  description: "description"
+  name: "name"
+  name_alias: "name_alias"
 
 parents:
   - class_name: "mgmtInstP"
     parent_dependency: ""
     parent_dn: "aci_l3out_management_network_instance_profile.test.id"
-    relationship_in_parent: false
+    class_in_parent: false

@@ -31,7 +31,8 @@ resource "aci_pim_route_map_entry" "example" {
   order     = "1"
   annotations = [
     {
-      key = "test_annotation"
+      key   = "test_key"
+      value = "test_value"
     },
   ]
 }
@@ -51,7 +52,7 @@ resource "aci_pim_route_map_entry" "example" {
 * `id` - (string) The distinquised name (DN) of the Pim Route Map Entry object.
 
 ### Optional
-
+  
 * `action` - (string) route action.
   - Default: `permit`
   - Valid Values: `deny`, `permit`.
@@ -65,12 +66,10 @@ resource "aci_pim_route_map_entry" "example" {
 * `src` - (string) Multicast Source Ip.
 
 * `annotations` - (list) A list of Annotation objects (tagAnnotation) which can also be configured using the `aci_annotation` resource.
+    
   #### Required
   
   * `key` - (string) The key or password used to uniquely identify this configuration object.
-
-  #### Optional
-  
   * `value` - (string) The value of the property.
 
 ## Importing ##

@@ -48,10 +48,11 @@ Manages ACI Contract Interface
 
 resource "aci_contract_interface" "example" {
   parent_dn               = aci_application_epg.example.id
-  contract_interface_name = "test_contract_interface"
+  contract_interface_name = "test_tn_vz_cp_if_name"
   annotations = [
     {
-      key = "test_annotation"
+      key   = "test_key"
+      value = "test_value"
     },
   ]
 }
@@ -90,7 +91,7 @@ resource "aci_contract_interface" "example" {
 * `id` - (string) The distinquised name (DN) of the Contract Interface object.
 
 ### Optional
-
+  
 * `annotation` - (string) The annotation of the Contract Interface object.
   - Default: `orchestrator:terraform`
 * `priority` - (string) The contract interface priority.
@@ -98,12 +99,10 @@ resource "aci_contract_interface" "example" {
   - Valid Values: `level1`, `level2`, `level3`, `level4`, `level5`, `level6`, `unspecified`.
 
 * `annotations` - (list) A list of Annotation objects (tagAnnotation) which can also be configured using the `aci_annotation` resource.
+    
   #### Required
   
   * `key` - (string) The key or password used to uniquely identify this configuration object.
-
-  #### Optional
-  
   * `value` - (string) The value of the property.
 
 ## Importing ##

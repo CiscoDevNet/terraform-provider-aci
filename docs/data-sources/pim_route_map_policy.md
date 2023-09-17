@@ -28,7 +28,7 @@ Data source for Pim Route Map Policy
 
 data "aci_pim_route_map_policy" "example" {
   parent_dn = aci_tenant.example.id
-  name      = "test_pim_route_map_policy"
+  name      = "test_name"
 }
 
 ```

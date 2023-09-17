@@ -19,7 +19,7 @@ func TestAccResourceFvRsConsIfWithFvAEPg(t *testing.T) {
 				Config:             testConfigFvRsConsIfMinDependencyWithFvAEPg,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_contract_interface.test", "contract_interface_name", "test_contract_interface"),
+					resource.TestCheckResourceAttr("aci_contract_interface.test", "contract_interface_name", "test_tn_vz_cp_if_name"),
 					resource.TestCheckResourceAttr("aci_contract_interface.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_contract_interface.test", "priority", "unspecified"),
 				),
@@ -29,8 +29,8 @@ func TestAccResourceFvRsConsIfWithFvAEPg(t *testing.T) {
 				Config:             testConfigFvRsConsIfAllDependencyWithFvAEPg,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_contract_interface.test", "contract_interface_name", "test_contract_interface"),
-					resource.TestCheckResourceAttr("aci_contract_interface.test", "annotation", "test_annotation"),
+					resource.TestCheckResourceAttr("aci_contract_interface.test", "contract_interface_name", "test_tn_vz_cp_if_name"),
+					resource.TestCheckResourceAttr("aci_contract_interface.test", "annotation", "annotation"),
 					resource.TestCheckResourceAttr("aci_contract_interface.test", "priority", "level1"),
 				),
 			},
@@ -39,9 +39,7 @@ func TestAccResourceFvRsConsIfWithFvAEPg(t *testing.T) {
 				Config:             testConfigFvRsConsIfMinDependencyWithFvAEPg,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_contract_interface.test", "contract_interface_name", "test_contract_interface"),
-					resource.TestCheckResourceAttr("aci_contract_interface.test", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_contract_interface.test", "priority", "level1"),
+					resource.TestCheckResourceAttr("aci_contract_interface.test", "contract_interface_name", "test_tn_vz_cp_if_name"),
 				),
 			},
 			// Update with empty strings config or default value
@@ -49,7 +47,7 @@ func TestAccResourceFvRsConsIfWithFvAEPg(t *testing.T) {
 				Config:             testConfigFvRsConsIfResetDependencyWithFvAEPg,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_contract_interface.test", "contract_interface_name", "test_contract_interface"),
+					resource.TestCheckResourceAttr("aci_contract_interface.test", "contract_interface_name", "test_tn_vz_cp_if_name"),
 					resource.TestCheckResourceAttr("aci_contract_interface.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_contract_interface.test", "priority", "unspecified"),
 				),
@@ -59,13 +57,13 @@ func TestAccResourceFvRsConsIfWithFvAEPg(t *testing.T) {
 				Config:             testConfigFvRsConsIfChildrenDependencyWithFvAEPg,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_contract_interface.test", "contract_interface_name", "test_contract_interface"),
+					resource.TestCheckResourceAttr("aci_contract_interface.test", "contract_interface_name", "test_tn_vz_cp_if_name"),
 					resource.TestCheckResourceAttr("aci_contract_interface.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_contract_interface.test", "priority", "unspecified"),
-					resource.TestCheckResourceAttr("aci_contract_interface.test", "annotations.0.key", "test_key_1"),
-					resource.TestCheckResourceAttr("aci_contract_interface.test", "annotations.0.value", "test_value_1"),
-					resource.TestCheckResourceAttr("aci_contract_interface.test", "annotations.1.key", "test_key_2"),
-					resource.TestCheckResourceAttr("aci_contract_interface.test", "annotations.1.value", "test_value_2"),
+					resource.TestCheckResourceAttr("aci_contract_interface.test", "annotations.0.key", "annotation_1"),
+					resource.TestCheckResourceAttr("aci_contract_interface.test", "annotations.0.value", "value"),
+					resource.TestCheckResourceAttr("aci_contract_interface.test", "annotations.1.key", "annotation_2"),
+					resource.TestCheckResourceAttr("aci_contract_interface.test", "annotations.1.value", "value"),
 				),
 			},
 		},
@@ -75,15 +73,15 @@ func TestAccResourceFvRsConsIfWithFvAEPg(t *testing.T) {
 const testConfigFvRsConsIfMinDependencyWithFvAEPg = testConfigFvAEPgMin + `
 resource "aci_contract_interface" "test" {
   parent_dn = aci_application_epg.test.id
-  contract_interface_name = "test_contract_interface"
+  contract_interface_name = "test_tn_vz_cp_if_name"
 }
 `
 
 const testConfigFvRsConsIfAllDependencyWithFvAEPg = testConfigFvAEPgMin + `
 resource "aci_contract_interface" "test" {
   parent_dn = aci_application_epg.test.id
-  contract_interface_name = "test_contract_interface"
-  annotation = "test_annotation"
+  contract_interface_name = "test_tn_vz_cp_if_name"
+  annotation = "annotation"
   priority = "level1"
 }
 `
@@ -91,7 +89,7 @@ resource "aci_contract_interface" "test" {
 const testConfigFvRsConsIfResetDependencyWithFvAEPg = testConfigFvAEPgMin + `
 resource "aci_contract_interface" "test" {
   parent_dn = aci_application_epg.test.id
-  contract_interface_name = "test_contract_interface"
+  contract_interface_name = "test_tn_vz_cp_if_name"
   annotation = "orchestrator:terraform"
   priority = "unspecified"
 }
@@ -99,15 +97,15 @@ resource "aci_contract_interface" "test" {
 const testConfigFvRsConsIfChildrenDependencyWithFvAEPg = testConfigFvAEPgMin + `
 resource "aci_contract_interface" "test" {
   parent_dn = aci_application_epg.test.id
-  contract_interface_name = "test_contract_interface"
+  contract_interface_name = "test_tn_vz_cp_if_name"
   annotations = [
 	{
-	  key = "test_key_1"
-	  value = "test_value_1"
+	  key = "annotation_1"
+	  value = "value"
 	},
 	{
-	  key = "test_key_2"
-	  value = "test_value_2"
+	  key = "annotation_2"
+	  value = "value"
 	},
   ]
 }

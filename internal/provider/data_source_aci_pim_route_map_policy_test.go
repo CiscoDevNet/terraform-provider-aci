@@ -18,7 +18,7 @@ func TestAccDataSourcePimRouteMapPolWithFvTenant(t *testing.T) {
 				Config:             testConfigPimRouteMapPolDataSourceDependencyWithFvTenant,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("data.aci_pim_route_map_policy.test", "name", "test_pim_route_map_policy"),
+					resource.TestCheckResourceAttr("data.aci_pim_route_map_policy.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("data.aci_pim_route_map_policy.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("data.aci_pim_route_map_policy.test", "description", ""),
 					resource.TestCheckResourceAttr("data.aci_pim_route_map_policy.test", "name_alias", ""),
@@ -33,7 +33,7 @@ func TestAccDataSourcePimRouteMapPolWithFvTenant(t *testing.T) {
 const testConfigPimRouteMapPolDataSourceDependencyWithFvTenant = testConfigPimRouteMapPolMinDependencyWithFvTenant + `
 data "aci_pim_route_map_policy" "test" {
   parent_dn = aci_tenant.test.id
-  name = "test_pim_route_map_policy"
+  name = "test_name"
   depends_on = [aci_pim_route_map_policy.test]
 }
 `

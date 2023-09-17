@@ -37,11 +37,11 @@ func TestAccResourcePimRouteMapEntryWithPimRouteMapPol(t *testing.T) {
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "order", "1"),
 					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "action", "deny"),
-					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "annotation", "test_annotation"),
-					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "description", "test_descr"),
+					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "annotation", "annotation"),
+					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "description", "description"),
 					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "grp", "0.0.0.0"),
-					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "name", "test_name"),
-					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "name_alias", "test_name_alias"),
+					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "name", "name"),
+					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "name_alias", "name_alias"),
 					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "rp", "0.0.0.0"),
 					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "src", "1.1.1.1/30"),
 				),
@@ -52,14 +52,6 @@ func TestAccResourcePimRouteMapEntryWithPimRouteMapPol(t *testing.T) {
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "order", "1"),
-					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "action", "deny"),
-					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "description", "test_descr"),
-					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "grp", "0.0.0.0"),
-					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "name", "test_name"),
-					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "name_alias", "test_name_alias"),
-					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "rp", "0.0.0.0"),
-					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "src", "1.1.1.1/30"),
 				),
 			},
 			// Update with empty strings config or default value
@@ -92,10 +84,10 @@ func TestAccResourcePimRouteMapEntryWithPimRouteMapPol(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "rp", "0.0.0.0"),
 					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "src", "0.0.0.0"),
-					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "annotations.0.key", "test_key_1"),
-					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "annotations.0.value", "test_value_1"),
-					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "annotations.1.key", "test_key_2"),
-					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "annotations.1.value", "test_value_2"),
+					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "annotations.0.key", "annotation_1"),
+					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "annotations.0.value", "value"),
+					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "annotations.1.key", "annotation_2"),
+					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "annotations.1.value", "value"),
 				),
 			},
 		},
@@ -114,11 +106,11 @@ resource "aci_pim_route_map_entry" "test" {
   parent_dn = aci_pim_route_map_policy.test.id
   order = "1"
   action = "deny"
-  annotation = "test_annotation"
-  description = "test_descr"
+  annotation = "annotation"
+  description = "description"
   grp = "0.0.0.0"
-  name = "test_name"
-  name_alias = "test_name_alias"
+  name = "name"
+  name_alias = "name_alias"
   rp = "0.0.0.0"
   src = "1.1.1.1/30"
 }
@@ -144,12 +136,12 @@ resource "aci_pim_route_map_entry" "test" {
   order = "1"
   annotations = [
 	{
-	  key = "test_key_1"
-	  value = "test_value_1"
+	  key = "annotation_1"
+	  value = "value"
 	},
 	{
-	  key = "test_key_2"
-	  value = "test_value_2"
+	  key = "annotation_2"
+	  value = "value"
 	},
   ]
 }

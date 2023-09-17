@@ -5,22 +5,24 @@ default:
   priority: "unspecified"
 
 datasource_required:
-  name: "test_l3out_management_network_instance_profile"
+  name: "test_name"
 
 resource_required:
-  name: "test_l3out_management_network_instance_profile"
+  name: "test_name"
 
 all:
-  annotation: "test_annotation"
-  description: "test_descr"
-  name_alias: "test_name_alias"
+  annotation: "annotation"
+  description: "description"
+  name_alias: "name_alias"
   priority: "level1"
 
 children:
   l3out_management_network_oob_contracts:
-    - priority: "level1"
-      contract_name: "test_l3out_management_network_contract_1"
+    - annotation: "orchestrator:terraform"
+      priority: "level1"
+      contract_name: "l3out_management_network_oob_contract_1"
+      
     - annotation: "orchestrator:terraform"
       priority: "level2"
-      contract_name: "test_l3out_management_network_contract_2"
+      contract_name: "l3out_management_network_oob_contract_2"
       

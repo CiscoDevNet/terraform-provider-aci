@@ -1,10 +1,11 @@
 
 resource "aci_l3out_consumer_label" "example" {
   parent_dn = aci_l3_outside.example.id
-  name      = "test_l3out_consumer_label"
+  name      = "test_name"
   annotations = [
     {
-      key = "test_annotation"
+      key   = "test_key"
+      value = "test_value"
     },
   ]
 }

@@ -146,7 +146,7 @@ func (r *{{.ResourceClassName}}Resource) Schema(ctx context.Context, req resourc
 			},
 				{{- else}}
 			"{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}": schema.StringAttribute{
-					{{- if .IsNaming}}
+					{{- if or .IsNaming .IsRequired}}
 				Required:            true,
 					{{- else }}
 				Optional:            true,
@@ -206,7 +206,7 @@ func (r *{{.ResourceClassName}}Resource) Schema(ctx context.Context, req resourc
 						},
 						{{- else}}
 						"{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}": schema.StringAttribute{
-							{{- if .IsNaming}}
+							{{- if or .IsNaming .IsRequired}}
 							Required:            true,
 							{{- else }}
 							Optional:            true,

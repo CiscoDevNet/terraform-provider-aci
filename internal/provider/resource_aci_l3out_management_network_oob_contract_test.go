@@ -19,7 +19,7 @@ func TestAccResourceMgmtRsOoBConsWithMgmtInstP(t *testing.T) {
 				Config:             testConfigMgmtRsOoBConsMinDependencyWithMgmtInstP,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_l3out_management_network_oob_contract.test", "contract_name", "test_l3out_management_network_contract"),
+					resource.TestCheckResourceAttr("aci_l3out_management_network_oob_contract.test", "contract_name", "test_tn_vz_oob_br_cp_name"),
 					resource.TestCheckResourceAttr("aci_l3out_management_network_oob_contract.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_l3out_management_network_oob_contract.test", "priority", "unspecified"),
 				),
@@ -29,8 +29,8 @@ func TestAccResourceMgmtRsOoBConsWithMgmtInstP(t *testing.T) {
 				Config:             testConfigMgmtRsOoBConsAllDependencyWithMgmtInstP,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_l3out_management_network_oob_contract.test", "contract_name", "test_l3out_management_network_contract"),
-					resource.TestCheckResourceAttr("aci_l3out_management_network_oob_contract.test", "annotation", "test_annotation"),
+					resource.TestCheckResourceAttr("aci_l3out_management_network_oob_contract.test", "contract_name", "test_tn_vz_oob_br_cp_name"),
+					resource.TestCheckResourceAttr("aci_l3out_management_network_oob_contract.test", "annotation", "annotation"),
 					resource.TestCheckResourceAttr("aci_l3out_management_network_oob_contract.test", "priority", "level1"),
 				),
 			},
@@ -39,9 +39,7 @@ func TestAccResourceMgmtRsOoBConsWithMgmtInstP(t *testing.T) {
 				Config:             testConfigMgmtRsOoBConsMinDependencyWithMgmtInstP,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_l3out_management_network_oob_contract.test", "contract_name", "test_l3out_management_network_contract"),
-					resource.TestCheckResourceAttr("aci_l3out_management_network_oob_contract.test", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_l3out_management_network_oob_contract.test", "priority", "level1"),
+					resource.TestCheckResourceAttr("aci_l3out_management_network_oob_contract.test", "contract_name", "test_tn_vz_oob_br_cp_name"),
 				),
 			},
 			// Update with empty strings config or default value
@@ -49,7 +47,7 @@ func TestAccResourceMgmtRsOoBConsWithMgmtInstP(t *testing.T) {
 				Config:             testConfigMgmtRsOoBConsResetDependencyWithMgmtInstP,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_l3out_management_network_oob_contract.test", "contract_name", "test_l3out_management_network_contract"),
+					resource.TestCheckResourceAttr("aci_l3out_management_network_oob_contract.test", "contract_name", "test_tn_vz_oob_br_cp_name"),
 					resource.TestCheckResourceAttr("aci_l3out_management_network_oob_contract.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_l3out_management_network_oob_contract.test", "priority", "unspecified"),
 				),
@@ -61,15 +59,15 @@ func TestAccResourceMgmtRsOoBConsWithMgmtInstP(t *testing.T) {
 const testConfigMgmtRsOoBConsMinDependencyWithMgmtInstP = testConfigMgmtInstPMin + `
 resource "aci_l3out_management_network_oob_contract" "test" {
   parent_dn = aci_l3out_management_network_instance_profile.test.id
-  contract_name = "test_l3out_management_network_contract"
+  contract_name = "test_tn_vz_oob_br_cp_name"
 }
 `
 
 const testConfigMgmtRsOoBConsAllDependencyWithMgmtInstP = testConfigMgmtInstPMin + `
 resource "aci_l3out_management_network_oob_contract" "test" {
   parent_dn = aci_l3out_management_network_instance_profile.test.id
-  contract_name = "test_l3out_management_network_contract"
-  annotation = "test_annotation"
+  contract_name = "test_tn_vz_oob_br_cp_name"
+  annotation = "annotation"
   priority = "level1"
 }
 `
@@ -77,7 +75,7 @@ resource "aci_l3out_management_network_oob_contract" "test" {
 const testConfigMgmtRsOoBConsResetDependencyWithMgmtInstP = testConfigMgmtInstPMin + `
 resource "aci_l3out_management_network_oob_contract" "test" {
   parent_dn = aci_l3out_management_network_instance_profile.test.id
-  contract_name = "test_l3out_management_network_contract"
+  contract_name = "test_tn_vz_oob_br_cp_name"
   annotation = "orchestrator:terraform"
   priority = "unspecified"
 }

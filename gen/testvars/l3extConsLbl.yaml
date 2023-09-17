@@ -2,35 +2,36 @@ default:
   annotation: "orchestrator:terraform"
   description: ""
   name_alias: ""
+  owner: "infra"
   owner_key: ""
   owner_tag: ""
-  owner: "infra"
   tag: "yellow-green"
 
 datasource_required:
-  name: "test_l3out_consumer_label"
+  name: "test_name"
 
 resource_required:
-  name: "test_l3out_consumer_label"
+  name: "test_name"
 
 all:
-  annotation: "test_annotation"
-  description: "test_description"
-  name_alias: "test_name_alias"
-  owner_key: "test_owner_key"
-  owner_tag: "test_owner_tag"
-  owner: "tenant"
-  tag: "burlywood"
+  annotation: "annotation"
+  description: "description"
+  name_alias: "name_alias"
+  owner: "infra"
+  owner_key: "owner_key"
+  owner_tag: "owner_tag"
+  tag: "lemon-chiffon"
 
 children:
   annotations:
-    - key: "test_key_1"
-      value: "test_value_1"
-    - key: "test_key_2"
-      value: "test_value_2"
-
+    - key: "annotation_1"
+      value: "value"
+      
+    - key: "annotation_2"
+      value: "value"
+      
 parents:
   - class_name: "l3extOut"
     parent_dependency: ""
     parent_dn: "aci_l3_outside.test.id"
-    relationship_in_parent: false
+    class_in_parent: false

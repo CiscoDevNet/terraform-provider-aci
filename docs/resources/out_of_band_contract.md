@@ -26,10 +26,11 @@ Manages ACI Out Of Band Contract
 
 ```hcl
 resource "aci_out_of_band_contract" "example" {
-  name = "test_out_of_band_contract"
+  name = "test_name"
   annotations = [
     {
-      key = "test_annotation"
+      key   = "test_key"
+      value = "test_value"
     },
   ]
 }
@@ -46,7 +47,7 @@ resource "aci_out_of_band_contract" "example" {
 * `id` - (string) The distinquised name (DN) of the Out Of Band Contract object.
 
 ### Optional
-
+  
 * `annotation` - (string) The annotation of the Out Of Band Contract object.
   - Default: `orchestrator:terraform`
 * `description` - (string) The description of the Out Of Band Contract object.
@@ -67,12 +68,10 @@ resource "aci_out_of_band_contract" "example" {
   - Valid Values: `AF11`, `AF12`, `AF13`, `AF21`, `AF22`, `AF23`, `AF31`, `AF32`, `AF33`, `AF41`, `AF42`, `AF43`, `CS0`, `CS1`, `CS2`, `CS3`, `CS4`, `CS5`, `CS6`, `CS7`, `EF`, `VA`, `unspecified`.
 
 * `annotations` - (list) A list of Annotation objects (tagAnnotation) which can also be configured using the `aci_annotation` resource.
+    
   #### Required
   
   * `key` - (string) The key or password used to uniquely identify this configuration object.
-
-  #### Optional
-  
   * `value` - (string) The value of the property.
 
 ## Importing ##

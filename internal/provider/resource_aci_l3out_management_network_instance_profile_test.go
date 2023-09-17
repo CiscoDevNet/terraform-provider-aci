@@ -18,6 +18,7 @@ func TestAccResourceMgmtInstP(t *testing.T) {
 			{
 				Config: testConfigMgmtInstPMin,
 				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_l3out_management_network_instance_profile.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_l3out_management_network_instance_profile.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_l3out_management_network_instance_profile.test", "description", ""),
 					resource.TestCheckResourceAttr("aci_l3out_management_network_instance_profile.test", "name_alias", ""),
@@ -28,9 +29,10 @@ func TestAccResourceMgmtInstP(t *testing.T) {
 			{
 				Config: testConfigMgmtInstPAll,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_l3out_management_network_instance_profile.test", "annotation", "test_annotation"),
-					resource.TestCheckResourceAttr("aci_l3out_management_network_instance_profile.test", "description", "test_descr"),
-					resource.TestCheckResourceAttr("aci_l3out_management_network_instance_profile.test", "name_alias", "test_name_alias"),
+					resource.TestCheckResourceAttr("aci_l3out_management_network_instance_profile.test", "name", "test_name"),
+					resource.TestCheckResourceAttr("aci_l3out_management_network_instance_profile.test", "annotation", "annotation"),
+					resource.TestCheckResourceAttr("aci_l3out_management_network_instance_profile.test", "description", "description"),
+					resource.TestCheckResourceAttr("aci_l3out_management_network_instance_profile.test", "name_alias", "name_alias"),
 					resource.TestCheckResourceAttr("aci_l3out_management_network_instance_profile.test", "priority", "level1"),
 				),
 			},
@@ -38,9 +40,10 @@ func TestAccResourceMgmtInstP(t *testing.T) {
 			{
 				Config: testConfigMgmtInstPMin,
 				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_l3out_management_network_instance_profile.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_l3out_management_network_instance_profile.test", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_l3out_management_network_instance_profile.test", "description", "test_descr"),
-					resource.TestCheckResourceAttr("aci_l3out_management_network_instance_profile.test", "name_alias", "test_name_alias"),
+					resource.TestCheckResourceAttr("aci_l3out_management_network_instance_profile.test", "description", "description"),
+					resource.TestCheckResourceAttr("aci_l3out_management_network_instance_profile.test", "name_alias", "name_alias"),
 					resource.TestCheckResourceAttr("aci_l3out_management_network_instance_profile.test", "priority", "level1"),
 				),
 			},
@@ -48,7 +51,7 @@ func TestAccResourceMgmtInstP(t *testing.T) {
 			{
 				Config: testConfigMgmtInstPReset,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_l3out_management_network_instance_profile.test", "name", "test_l3out_management_network_instance_profile"),
+					resource.TestCheckResourceAttr("aci_l3out_management_network_instance_profile.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_l3out_management_network_instance_profile.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_l3out_management_network_instance_profile.test", "description", ""),
 					resource.TestCheckResourceAttr("aci_l3out_management_network_instance_profile.test", "name_alias", ""),
@@ -63,10 +66,11 @@ func TestAccResourceMgmtInstP(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_l3out_management_network_instance_profile.test", "description", ""),
 					resource.TestCheckResourceAttr("aci_l3out_management_network_instance_profile.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("aci_l3out_management_network_instance_profile.test", "priority", "unspecified"),
-					resource.TestCheckResourceAttr("aci_l3out_management_network_instance_profile.test", "l3out_management_network_oob_contracts.0.contract_name", "test_l3out_management_network_contract_1"),
+					resource.TestCheckResourceAttr("aci_l3out_management_network_instance_profile.test", "l3out_management_network_oob_contracts.0.annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_l3out_management_network_instance_profile.test", "l3out_management_network_oob_contracts.0.contract_name", "l3out_management_network_oob_contract_1"),
 					resource.TestCheckResourceAttr("aci_l3out_management_network_instance_profile.test", "l3out_management_network_oob_contracts.0.priority", "level1"),
 					resource.TestCheckResourceAttr("aci_l3out_management_network_instance_profile.test", "l3out_management_network_oob_contracts.1.annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_l3out_management_network_instance_profile.test", "l3out_management_network_oob_contracts.1.contract_name", "test_l3out_management_network_contract_2"),
+					resource.TestCheckResourceAttr("aci_l3out_management_network_instance_profile.test", "l3out_management_network_oob_contracts.1.contract_name", "l3out_management_network_oob_contract_2"),
 					resource.TestCheckResourceAttr("aci_l3out_management_network_instance_profile.test", "l3out_management_network_oob_contracts.1.priority", "level2"),
 				),
 			},
@@ -76,23 +80,23 @@ func TestAccResourceMgmtInstP(t *testing.T) {
 
 const testConfigMgmtInstPMin = `
 resource "aci_l3out_management_network_instance_profile" "test" {
-  name = "test_l3out_management_network_instance_profile"
+  name = "test_name"
 }
 `
 
 const testConfigMgmtInstPAll = `
 resource "aci_l3out_management_network_instance_profile" "test" {
-  name = "test_l3out_management_network_instance_profile"
-  annotation = "test_annotation"
-  description = "test_descr"
-  name_alias = "test_name_alias"
+  name = "test_name"
+  annotation = "annotation"
+  description = "description"
+  name_alias = "name_alias"
   priority = "level1"
 }
 `
 
 const testConfigMgmtInstPReset = `
 resource "aci_l3out_management_network_instance_profile" "test" {
-  name = "test_l3out_management_network_instance_profile"
+  name = "test_name"
   annotation = "orchestrator:terraform"
   description = ""
   name_alias = ""
@@ -101,15 +105,16 @@ resource "aci_l3out_management_network_instance_profile" "test" {
 `
 const testConfigMgmtInstPChildren = `
 resource "aci_l3out_management_network_instance_profile" "test" {
-  name = "test_l3out_management_network_instance_profile"
+  name = "test_name"
   l3out_management_network_oob_contracts = [
 	{
-	  contract_name = "test_l3out_management_network_contract_1"
+	  annotation = "orchestrator:terraform"
+	  contract_name = "l3out_management_network_oob_contract_1"
 	  priority = "level1"
 	},
 	{
 	  annotation = "orchestrator:terraform"
-	  contract_name = "test_l3out_management_network_contract_2"
+	  contract_name = "l3out_management_network_oob_contract_2"
 	  priority = "level2"
 	},
   ]

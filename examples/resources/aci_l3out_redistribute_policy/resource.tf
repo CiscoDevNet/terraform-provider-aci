@@ -5,7 +5,8 @@ resource "aci_l3out_redistribute_policy" "example" {
   route_profile_name = "test_tn_rtctrl_profile_name"
   annotations = [
     {
-      key = "test_annotation"
+      key   = "test_key"
+      value = "test_value"
     },
   ]
 }

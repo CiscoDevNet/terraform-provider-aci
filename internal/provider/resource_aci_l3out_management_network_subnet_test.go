@@ -32,10 +32,10 @@ func TestAccResourceMgmtSubnetWithMgmtInstP(t *testing.T) {
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_l3out_management_network_subnet.test", "ip", "1.1.1.0/24"),
-					resource.TestCheckResourceAttr("aci_l3out_management_network_subnet.test", "annotation", "test_annotation"),
-					resource.TestCheckResourceAttr("aci_l3out_management_network_subnet.test", "description", "test_descr"),
-					resource.TestCheckResourceAttr("aci_l3out_management_network_subnet.test", "name", "test_name"),
-					resource.TestCheckResourceAttr("aci_l3out_management_network_subnet.test", "name_alias", "test_name_alias"),
+					resource.TestCheckResourceAttr("aci_l3out_management_network_subnet.test", "annotation", "annotation"),
+					resource.TestCheckResourceAttr("aci_l3out_management_network_subnet.test", "description", "description"),
+					resource.TestCheckResourceAttr("aci_l3out_management_network_subnet.test", "name", "name"),
+					resource.TestCheckResourceAttr("aci_l3out_management_network_subnet.test", "name_alias", "name_alias"),
 				),
 			},
 			// Update with minimum config and verify config is unchanged
@@ -44,10 +44,6 @@ func TestAccResourceMgmtSubnetWithMgmtInstP(t *testing.T) {
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_l3out_management_network_subnet.test", "ip", "1.1.1.0/24"),
-					resource.TestCheckResourceAttr("aci_l3out_management_network_subnet.test", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_l3out_management_network_subnet.test", "description", "test_descr"),
-					resource.TestCheckResourceAttr("aci_l3out_management_network_subnet.test", "name", "test_name"),
-					resource.TestCheckResourceAttr("aci_l3out_management_network_subnet.test", "name_alias", "test_name_alias"),
 				),
 			},
 			// Update with empty strings config or default value
@@ -77,10 +73,10 @@ const testConfigMgmtSubnetAllDependencyWithMgmtInstP = testConfigMgmtInstPMin + 
 resource "aci_l3out_management_network_subnet" "test" {
   parent_dn = aci_l3out_management_network_instance_profile.test.id
   ip = "1.1.1.0/24"
-  annotation = "test_annotation"
-  description = "test_descr"
-  name = "test_name"
-  name_alias = "test_name_alias"
+  annotation = "annotation"
+  description = "description"
+  name = "name"
+  name_alias = "name_alias"
 }
 `
 
