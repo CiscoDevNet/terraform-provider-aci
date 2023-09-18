@@ -17,7 +17,7 @@ func dataSourceAciContractProvider() *schema.Resource {
 
 		SchemaVersion: 1,
 
-		Schema: AppendAttrSchemas(map[string]*schema.Schema{
+		Schema: map[string]*schema.Schema{
 			"application_epg_dn": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
@@ -46,7 +46,7 @@ func dataSourceAciContractProvider() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-		}),
+		},
 	}
 }
 
