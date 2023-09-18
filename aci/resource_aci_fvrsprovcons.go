@@ -169,11 +169,11 @@ func resourceAciContractProviderImport(d *schema.ResourceData, m interface{}) ([
 	aciClient := m.(*client.Client)
 
 	dn := d.Id()
-	rn_value := models.GetMORnPrefix(dn)
+	rnValue := models.GetMORnPrefix(dn)
 
 	var schemaFilled *schema.ResourceData
 
-	if rn_value == "rsprov" {
+	if rnValue == "rsprov" {
 		fvRsProv, err := getRemoteContractProvider(aciClient, dn)
 
 		if err != nil {
@@ -187,7 +187,7 @@ func resourceAciContractProviderImport(d *schema.ResourceData, m interface{}) ([
 		if err != nil {
 			return nil, err
 		}
-	} else if rn_value == "rscons" {
+	} else if rnValue == "rscons" {
 		fvRsCons, err := getRemoteContractConsumer(aciClient, dn)
 
 		if err != nil {
@@ -338,9 +338,9 @@ func resourceAciContractProviderRead(ctx context.Context, d *schema.ResourceData
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
-	rn_value := models.GetMORnPrefix(dn)
+	rnValue := models.GetMORnPrefix(dn)
 
-	if rn_value == "rsprov" {
+	if rnValue == "rsprov" {
 		fvRsProv, err := getRemoteContractProvider(aciClient, dn)
 		if err != nil {
 			return errorForObjectNotFound(err, dn, d)
@@ -350,7 +350,7 @@ func resourceAciContractProviderRead(ctx context.Context, d *schema.ResourceData
 			d.SetId("")
 			return nil
 		}
-	} else if rn_value == "rscons" {
+	} else if rnValue == "rscons" {
 		fvRsCons, err := getRemoteContractConsumer(aciClient, dn)
 		if err != nil {
 			return errorForObjectNotFound(err, dn, d)
@@ -372,9 +372,9 @@ func resourceAciContractProviderDelete(ctx context.Context, d *schema.ResourceDa
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
-	rn_value := models.GetMORnPrefix(dn)
+	rnValue := models.GetMORnPrefix(dn)
 
-	if rn_value == "rsprov" {
+	if rnValue == "rsprov" {
 		err := aciClient.DeleteByDn(dn, "fvRsProv")
 		if err != nil {
 			return diag.FromErr(err)
@@ -384,7 +384,7 @@ func resourceAciContractProviderDelete(ctx context.Context, d *schema.ResourceDa
 		d.SetId("")
 		return diag.FromErr(err)
 
-	} else if rn_value == "rscons" {
+	} else if rnValue == "rscons" {
 		err := aciClient.DeleteByDn(dn, "fvRsCons")
 		if err != nil {
 			return diag.FromErr(err)

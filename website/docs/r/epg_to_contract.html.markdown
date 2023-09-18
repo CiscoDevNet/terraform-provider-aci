@@ -15,8 +15,8 @@ Manages ACI EPG to contract relationship.
 
 ```hcl
 resource "aci_epg_to_contract" "example" {
-  application_epg_dn = aci_application_epg.demo.id
-  contract_dn        = aci_contract.demo_contract.id
+  application_epg_dn = aci_application_epg.example.id
+  contract_dn        = aci_contract.example.id
   contract_type      = "provider"
   annotation         = "terraform"
   match_t            = "AtleastOne"
@@ -26,16 +26,15 @@ resource "aci_epg_to_contract" "example" {
 
 ## Argument Reference
 
-- `application_epg_dn` - (Required) Distinguished name of Parent EPG.
-- `contract_dn` - (Required) Distinguished name of the Contract object to attach.
-- `contract_type` - (Required) Type of the EPG to contract relationship object. Allowed values are "consumer" and "provider".
-- `annotation` - (Optional) Annotation of the EPG to contract relationship object.
-- `match_t` - (Optional) Matching criteria of the EPG to contract relationship object, only supported for `contract_type` "provider". Allowed values: "All", "AtleastOne", "AtmostOne", "None". Default value: "AtleastOne".
-- `prio` - (Optional) Priority of the EPG to contract relationship object. Allowed values: "unspecified", "level1", "level2", "level3", "level4", "level5", "level6". Default value: "unspecified".
-
+- `application_epg_dn` - (Required) Distinguished name of Parent EPG. Type: String.
+- `contract_dn` - (Required) Distinguished name of the Contract object to attach. Type: String.
+- `contract_type` - (Required) Type of the EPG to contract relationship object. Allowed values are "consumer" and "provider". Type: String.
+- `annotation` - (Optional) Annotation of the EPG to contract relationship object. Type: String.
+- `match_t` - (Optional) Matching criteria of the EPG to contract relationship object, only supported for `contract_type` "provider". Allowed values are "All", "AtleastOne", "AtmostOne", "None" and default value is "AtleastOne". Type: String.
+- `prio` - (Optional) Priority of the EPG to contract relationship object. Allowed values are "unspecified", "level1", "level2", "level3", "level4", "level5", "level6" and default value is "unspecified". Type: String.
 ## Attribute Reference
 
-- `id` - Attribute id set to the Dn of the provider/consumer contract.
+- `id` - Attribute id set to the Dn of the provider/consumer contract. Type: String.
 
 ## Importing ##
 
