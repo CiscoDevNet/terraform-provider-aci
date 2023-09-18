@@ -75,7 +75,6 @@ func resourceAciContractProvider() *schema.Resource {
 				}, false),
 			},
 		}, GetAnnotationAttrSchema()),
-		// To handle the plan time validation
 		CustomizeDiff: func(_ context.Context, diff *schema.ResourceDiff, v interface{}) error {
 			contractType := diff.Get("contract_type").(string)
 			matchT := diff.Get("match_t").(string)
@@ -247,10 +246,6 @@ func resourceAciContractProviderCreate(ctx context.Context, d *schema.ResourceDa
 	} else if contractType == "consumer" {
 		log.Printf("[DEBUG] ContractConsumer: Beginning Creation")
 
-		if MatchT != "" {
-			return diag.FromErr(fmt.Errorf("MatchT is not supported for consumer contracts"))
-		}
-
 		fvRsConsAttr := models.ContractConsumerAttributes{}
 		if Annotation, ok := d.GetOk("annotation"); ok {
 			fvRsConsAttr.Annotation = Annotation.(string)
@@ -312,9 +307,7 @@ func resourceAciContractProviderUpdate(ctx context.Context, d *schema.ResourceDa
 		d.SetId(fvRsProv.DistinguishedName)
 	} else if contractType == "consumer" {
 		log.Printf("[DEBUG] ContractConsumer: Beginning Update")
-		if MatchT != "" {
-			return diag.FromErr(fmt.Errorf("MatchT is not supported for consumer contracts"))
-		}
+
 		fvRsConsAttr := models.ContractConsumerAttributes{}
 		if Annotation, ok := d.GetOk("annotation"); ok {
 			fvRsConsAttr.Annotation = Annotation.(string)

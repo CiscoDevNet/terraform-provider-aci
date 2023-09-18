@@ -63,7 +63,7 @@ func dataSourceAciContractProviderRead(ctx context.Context, d *schema.ResourceDa
 
 		fvRsProv, err := getRemoteContractProvider(aciClient, dn)
 		if err != nil {
-			return errorForObjectNotFound(err, dn, d)
+			return diag.FromErr(err)
 		}
 		fvRsProvMap, _ := fvRsProv.ToMap()
 		name := fvRsProvMap["tnVzBrCPName"]
@@ -82,7 +82,7 @@ func dataSourceAciContractProviderRead(ctx context.Context, d *schema.ResourceDa
 
 		fvRsCons, err := getRemoteContractConsumer(aciClient, dn)
 		if err != nil {
-			return errorForObjectNotFound(err, dn, d)
+			return diag.FromErr(err)
 		}
 		_, err = setContractConsumerAttributes(fvRsCons, d)
 		if err != nil {
