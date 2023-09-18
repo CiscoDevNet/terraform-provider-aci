@@ -20,7 +20,7 @@ resource "aci_tenant" "tf_tenant" {
 # Cloud Subnet setup part
 resource "aci_vrf" "vrf1" {
   tenant_dn = aci_tenant.tf_tenant.id
-  name      = "vrf-1"
+  name      = "vrf_1"
 }
 
 resource "aci_cloud_context_profile" "ctx1" {

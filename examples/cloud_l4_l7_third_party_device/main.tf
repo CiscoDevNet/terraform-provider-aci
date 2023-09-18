@@ -20,7 +20,7 @@ resource "aci_tenant" "tf_tenant" {
 # VRF setup part
 resource "aci_vrf" "vrf1" {
   tenant_dn = aci_tenant.tf_tenant.id
-  name      = "vrf-1"
+  name      = "vrf_1"
 }
 
 # AAA Domain setup part
@@ -58,50 +58,50 @@ resource "aci_cloud_l4_l7_third_party_device" "cloud_third_party_fw" {
 
   interface_selectors {
     allow_all = "no"
-    name      = "Interface_1"
+    name      = "interface_1"
     end_point_selectors {
       match_expression = "IP=='1.1.1.21/24'"
-      name             = "Interface_1_ep_1"
+      name             = "interface_1_ep_1"
     }
     end_point_selectors {
       match_expression = "custom:Name1=='admin-ep1'"
-      name             = "Interface_1_ep_2"
+      name             = "interface_1_ep_2"
     }
   }
   interface_selectors {
     allow_all = "no"
-    name      = "Interface_2"
+    name      = "interface_2"
     end_point_selectors {
       match_expression = "IP=='1.1.1.21/24'"
-      name             = "Interface_2_ep_1"
+      name             = "interface_2_ep_1"
     }
     end_point_selectors {
       match_expression = "custom:Name1=='admin-ep1'"
-      name             = "Interface_2_ep_2"
+      name             = "interface_2_ep_2"
     }
   }
   interface_selectors {
     allow_all = "no"
-    name      = "Interface_3"
+    name      = "interface_3"
     end_point_selectors {
       match_expression = "IP=='1.1.1.21/24'"
-      name             = "Interface_3_ep_1"
+      name             = "interface_3_ep_1"
     }
     end_point_selectors {
       match_expression = "custom:Name1=='admin-ep1'"
-      name             = "Interface_3_ep_2"
+      name             = "interface_3_ep_2"
     }
   }
   interface_selectors {
     allow_all = "no"
-    name      = "Interface_4"
+    name      = "interface_4"
     end_point_selectors {
       match_expression = "IP=='1.1.1.21/24'"
-      name             = "Interface_4_ep_1"
+      name             = "interface_4_ep_1"
     }
     end_point_selectors {
       match_expression = "custom:Name1=='admin-ep1'"
-      name             = "Interface_4_ep_2"
+      name             = "interface_4_ep_2"
     }
   }
 }
@@ -120,14 +120,14 @@ resource "aci_cloud_l4_l7_third_party_device" "cloud_third_party_lb" {
 
   interface_selectors {
     allow_all = "no"
-    name      = "Interface_1"
+    name      = "interface_1"
     end_point_selectors {
       match_expression = "IP=='1.1.1.21/24'"
-      name             = "Interface_1_ep_1"
+      name             = "interface_1_ep_1"
     }
     end_point_selectors {
       match_expression = "custom:Name1=='admin-ep1'"
-      name             = "Interface_1_ep_2"
+      name             = "interface_1_ep_2"
     }
   }
 }
