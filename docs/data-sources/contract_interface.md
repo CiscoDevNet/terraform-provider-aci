@@ -86,6 +86,6 @@ data "aci_contract_interface" "example" {
 * `annotation` - (string) The annotation of the Contract Interface object.
 * `priority` - (string) The contract interface priority.
 
-* `annotations` - (list) A list of Annotation objects (tagAnnotation).
+* `annotations` - (list) A list of Annotations objects (tagAnnotation).
   * `key` - (string) The key or password used to uniquely identify this configuration object.
   * `value` - (string) The value of the property.

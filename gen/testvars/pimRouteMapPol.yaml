@@ -20,11 +20,11 @@ all:
 
 children:
   annotations:
-    - key: "annotation_1"
-      value: "value"
+    - key: "annotations_1"
+      value: "value_1"
       
-    - key: "annotation_2"
-      value: "value"
+    - key: "annotations_2"
+      value: "value_2"
       
 parents:
   - class_name: "fvTenant"

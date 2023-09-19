@@ -58,9 +58,9 @@ Data source for {{getResourceNameAsDescription .ResourceName}}
 {{- end}}
 {{ range .Children }}
     {{- if ne .RelationshipClass ""}}
-* `{{- snakeCase .ResourceName}}{{- if .IdentifiedBy}}s{{- end}}` - (list) A list of {{getResourceNameAsDescription .ResourceName}} relationship objects ({{.PkgName}}) pointing to the {{getResourceNameAsDescription .RelationshipResourceName}} ({{.RelationshipClass}}) object.
+* `{{- .ResourceName}}` - (list) A list of {{getResourceNameAsDescription .ResourceName}} relationship objects ({{.PkgName}}) pointing to the {{getResourceNameAsDescription .RelationshipResourceName}} ({{.RelationshipClass}}) object.
     {{- else}}
-* `{{- snakeCase .ResourceName}}{{- if .IdentifiedBy}}s{{- end}}` - (list) A list of {{getResourceNameAsDescription .ResourceName}} objects ({{.PkgName}}).
+* `{{- .ResourceName}}` - (list) A list of {{getResourceNameAsDescription .ResourceName}} objects ({{.PkgName}}).
     {{- end}}
 
   {{- range .Properties}}

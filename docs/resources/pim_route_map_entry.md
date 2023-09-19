@@ -31,9 +31,9 @@ resource "aci_pim_route_map_entry" "example" {
   order     = "1"
   annotations = [
     {
-      key   = "test_key"
-      value = "test_value"
-    },
+      key   = "annotations_1"
+      value = "value_1"
+    }
   ]
 }
 
@@ -65,8 +65,8 @@ resource "aci_pim_route_map_entry" "example" {
 * `rp` - (string) Multicast RP Ip.
 * `src` - (string) Multicast Source Ip.
 
-* `annotations` - (list) A list of Annotation objects (tagAnnotation) which can also be configured using the `aci_annotation` resource.
-    
+* `annotations` - (list) A list of Annotations objects (tagAnnotation) which can also be configured using the `aci_annotation` resource.
+  
   #### Required
   
   * `key` - (string) The key or password used to uniquely identify this configuration object.

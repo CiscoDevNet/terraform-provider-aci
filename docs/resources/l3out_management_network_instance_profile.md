@@ -29,8 +29,8 @@ resource "aci_l3out_management_network_instance_profile" "example" {
   name = "test_name"
   l3out_management_network_oob_contracts = [
     {
-      contract_name = "foo"
-    },
+      contract_name = "l3out_management_network_oob_contracts_1"
+    }
   ]
 }
 ```
@@ -55,7 +55,8 @@ resource "aci_l3out_management_network_instance_profile" "example" {
   - Default: `unspecified`
   - Valid Values: `level1`, `level2`, `level3`, `level4`, `level5`, `level6`, `unspecified`.
 
-* `l3out_management_network_oob_contracts` - (list) A list of L3out Management Network Oob Contract relationship objects (mgmtRsOoBCons) pointing to the Out Of Band Contract (vzOOBBrCP) which can be configured using the `aci_out_of_band_contract` resource.
+* `l3out_management_network_oob_contracts` - (list) A list of L3out Management Network Oob Contracts relationship objects (mgmtRsOoBCons) pointing to the Out Of Band Contract (vzOOBBrCP) which can be configured using the `aci_out_of_band_contract` resource.
+  
   #### Required
   
   * `contract_name` - (string) An out-of-band management endpoint group contract consists of switches (leaves/spines) and APICs that are part of the associated out-of-band management zone. Each node in the group is assigned an IP address that is dynamically allocated from the address pool associated with the corresponding out-of-band management zone.

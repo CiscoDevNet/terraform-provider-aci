@@ -91,10 +91,10 @@ func TestAccResourceVzOOBBrCP(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "priority", "unspecified"),
 					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "scope", "context"),
 					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "target_dscp", "unspecified"),
-					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "annotations.0.key", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "annotations.0.value", "value"),
-					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "annotations.1.key", "annotation_2"),
-					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "annotations.1.value", "value"),
+					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "annotations.0.key", "annotations_1"),
+					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "annotations.0.value", "value_1"),
+					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "annotations.1.key", "annotations_2"),
+					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "annotations.1.value", "value_2"),
 				),
 			},
 		},
@@ -141,12 +141,12 @@ resource "aci_out_of_band_contract" "test" {
   name = "test_name"
   annotations = [
 	{
-	  key = "annotation_1"
-	  value = "value"
+	  key = "annotations_1"
+	  value = "value_1"
 	},
 	{
-	  key = "annotation_2"
-	  value = "value"
+	  key = "annotations_2"
+	  value = "value_2"
 	},
   ]
 }

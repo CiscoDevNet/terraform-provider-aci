@@ -4,9 +4,9 @@ resource "aci_pim_route_map_entry" "example" {
   order     = "1"
   annotations = [
     {
-      key   = "test_key"
-      value = "test_value"
-    },
+      key   = "annotations_1"
+      value = "value_1"
+    }
   ]
 }
 

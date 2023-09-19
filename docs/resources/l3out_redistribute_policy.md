@@ -32,9 +32,9 @@ resource "aci_l3out_redistribute_policy" "example" {
   route_profile_name = "test_tn_rtctrl_profile_name"
   annotations = [
     {
-      key   = "test_key"
-      value = "test_value"
-    },
+      key   = "annotations_1"
+      value = "value_1"
+    }
   ]
 }
 
@@ -59,8 +59,8 @@ resource "aci_l3out_redistribute_policy" "example" {
 * `annotation` - (string) The annotation of the L3out Redistribute Policy object.
   - Default: `orchestrator:terraform`
 
-* `annotations` - (list) A list of Annotation objects (tagAnnotation) which can also be configured using the `aci_annotation` resource.
-    
+* `annotations` - (list) A list of Annotations objects (tagAnnotation) which can also be configured using the `aci_annotation` resource.
+  
   #### Required
   
   * `key` - (string) The key or password used to uniquely identify this configuration object.

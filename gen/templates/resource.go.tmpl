@@ -67,7 +67,7 @@ type {{.ResourceClassName}}ResourceModel struct {
 		{{- end}}
 	{{- end}}
 	{{- range .Children}}
-	{{ .ResourceClassName }} types.Set `tfsdk:"{{- snakeCase .ResourceName}}{{- if .IdentifiedBy}}s{{- end}}"`
+	{{ .ResourceClassName }} types.Set `tfsdk:"{{- .ResourceName}}"`
 	{{- end}}
 }
 
@@ -171,7 +171,7 @@ func (r *{{.ResourceClassName}}Resource) Schema(ctx context.Context, req resourc
 				{{- end}}
 			{{- end}}
 			{{- range .Children}}
-			"{{.ResourceName}}{{- if .IdentifiedBy}}s{{- end}}": schema.SetNestedAttribute{
+			"{{- .ResourceName}}": schema.SetNestedAttribute{
 				MarkdownDescription: `{{.Comment}}`,
 				Optional:            true,
 				Computed:            true,

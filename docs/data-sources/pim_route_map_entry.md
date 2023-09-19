@@ -53,6 +53,6 @@ data "aci_pim_route_map_entry" "example" {
 * `rp` - (string) Multicast RP Ip.
 * `src` - (string) Multicast Source Ip.
 
-* `annotations` - (list) A list of Annotation objects (tagAnnotation).
+* `annotations` - (list) A list of Annotations objects (tagAnnotation).
   * `key` - (string) The key or password used to uniquely identify this configuration object.
   * `value` - (string) The value of the property.

@@ -67,7 +67,7 @@ func (d *{{.ResourceClassName}}DataSource) Schema(ctx context.Context, req datas
 			},{{- end}}
 			{{- end}}
 			{{- range .Children}}
-			"{{.ResourceName}}{{- if .IdentifiedBy}}s{{- end}}": schema.SetNestedAttribute{
+			"{{.ResourceName}}": schema.SetNestedAttribute{
 				MarkdownDescription: `{{.Comment}}`,
 				Computed:            true,
 				NestedObject: schema.NestedAttributeObject{

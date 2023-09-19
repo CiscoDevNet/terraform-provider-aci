@@ -4,9 +4,9 @@ resource "aci_l3out_consumer_label" "example" {
   name      = "test_name"
   annotations = [
     {
-      key   = "test_key"
-      value = "test_value"
-    },
+      key   = "annotations_1"
+      value = "value_1"
+    }
   ]
 }
 

@@ -60,10 +60,10 @@ func TestAccResourceFvRsConsIfWithFvAEPg(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_contract_interface.test", "contract_interface_name", "test_tn_vz_cp_if_name"),
 					resource.TestCheckResourceAttr("aci_contract_interface.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_contract_interface.test", "priority", "unspecified"),
-					resource.TestCheckResourceAttr("aci_contract_interface.test", "annotations.0.key", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_contract_interface.test", "annotations.0.value", "value"),
-					resource.TestCheckResourceAttr("aci_contract_interface.test", "annotations.1.key", "annotation_2"),
-					resource.TestCheckResourceAttr("aci_contract_interface.test", "annotations.1.value", "value"),
+					resource.TestCheckResourceAttr("aci_contract_interface.test", "annotations.0.key", "annotations_1"),
+					resource.TestCheckResourceAttr("aci_contract_interface.test", "annotations.0.value", "value_1"),
+					resource.TestCheckResourceAttr("aci_contract_interface.test", "annotations.1.key", "annotations_2"),
+					resource.TestCheckResourceAttr("aci_contract_interface.test", "annotations.1.value", "value_2"),
 				),
 			},
 		},
@@ -100,12 +100,12 @@ resource "aci_contract_interface" "test" {
   contract_interface_name = "test_tn_vz_cp_if_name"
   annotations = [
 	{
-	  key = "annotation_1"
-	  value = "value"
+	  key = "annotations_1"
+	  value = "value_1"
 	},
 	{
-	  key = "annotation_2"
-	  value = "value"
+	  key = "annotations_2"
+	  value = "value_2"
 	},
   ]
 }

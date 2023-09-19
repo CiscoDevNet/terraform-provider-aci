@@ -72,10 +72,10 @@ func TestAccResourcePimRouteMapPolWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_pim_route_map_policy.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("aci_pim_route_map_policy.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_pim_route_map_policy.test", "owner_tag", ""),
-					resource.TestCheckResourceAttr("aci_pim_route_map_policy.test", "annotations.0.key", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_pim_route_map_policy.test", "annotations.0.value", "value"),
-					resource.TestCheckResourceAttr("aci_pim_route_map_policy.test", "annotations.1.key", "annotation_2"),
-					resource.TestCheckResourceAttr("aci_pim_route_map_policy.test", "annotations.1.value", "value"),
+					resource.TestCheckResourceAttr("aci_pim_route_map_policy.test", "annotations.0.key", "annotations_1"),
+					resource.TestCheckResourceAttr("aci_pim_route_map_policy.test", "annotations.0.value", "value_1"),
+					resource.TestCheckResourceAttr("aci_pim_route_map_policy.test", "annotations.1.key", "annotations_2"),
+					resource.TestCheckResourceAttr("aci_pim_route_map_policy.test", "annotations.1.value", "value_2"),
 				),
 			},
 		},
@@ -118,12 +118,12 @@ resource "aci_pim_route_map_policy" "test" {
   name = "test_name"
   annotations = [
 	{
-	  key = "annotation_1"
-	  value = "value"
+	  key = "annotations_1"
+	  value = "value_1"
 	},
 	{
-	  key = "annotation_2"
-	  value = "value"
+	  key = "annotations_2"
+	  value = "value_2"
 	},
   ]
 }

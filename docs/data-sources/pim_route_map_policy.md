@@ -50,6 +50,6 @@ data "aci_pim_route_map_policy" "example" {
 * `owner_key` - (string) The key for enabling clients to own their data for entity correlation.
 * `owner_tag` - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
 
-* `annotations` - (list) A list of Annotation objects (tagAnnotation).
+* `annotations` - (list) A list of Annotations objects (tagAnnotation).
   * `key` - (string) The key or password used to uniquely identify this configuration object.
   * `value` - (string) The value of the property.

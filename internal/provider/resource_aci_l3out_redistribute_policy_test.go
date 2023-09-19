@@ -61,10 +61,10 @@ func TestAccResourceL3extRsRedistributePolWithL3extOut(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.test", "route_profile_name", "test_tn_rtctrl_profile_name"),
 					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.test", "src", "direct"),
 					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.test", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.test", "annotations.0.key", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.test", "annotations.0.value", "value"),
-					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.test", "annotations.1.key", "annotation_2"),
-					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.test", "annotations.1.value", "value"),
+					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.test", "annotations.0.key", "annotations_1"),
+					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.test", "annotations.0.value", "value_1"),
+					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.test", "annotations.1.key", "annotations_2"),
+					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.test", "annotations.1.value", "value_2"),
 				),
 			},
 		},
@@ -103,12 +103,12 @@ resource "aci_l3out_redistribute_policy" "test" {
   src = "direct"
   annotations = [
 	{
-	  key = "annotation_1"
-	  value = "value"
+	  key = "annotations_1"
+	  value = "value_1"
 	},
 	{
-	  key = "annotation_2"
-	  value = "value"
+	  key = "annotations_2"
+	  value = "value_2"
 	},
   ]
 }

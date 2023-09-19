@@ -7,11 +7,11 @@
   {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}} = "{{lookupTestValue .PkgName .SnakeCaseName $.TestVars $.Definitions}}"{{- end}}
   {{- end}}
   {{- range $key, $value := $.Children}}
-  {{- if .HasNaming}}
-  {{snakeCase .ResourceName}}s = [
+  {{- if .HasNaming}}{{$ChildResourceName := .ResourceName}}
+  {{$ChildResourceName}} = [
     { {{- range .Properties}}{{- if .IsRequired}}
-      {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}} = "{{lookupTestValue .PkgName .SnakeCaseName $value.TestVars $.Definitions}}"{{- end}}{{ end}}
-    },
+      {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}} = "{{lookupChildTestValue .PkgName $ChildResourceName .SnakeCaseName $.TestVars $.Definitions}}"{{- end}}{{ end}}
+    }
   ]
   {{- end}}
   {{- end}}
@@ -23,11 +23,11 @@
   {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}} = "{{lookupTestValue .PkgName .SnakeCaseName $.TestVars $.Definitions}}"{{- end}}
   {{- end}}
   {{- range $key, $value := $.Children}}
-  {{- if .HasNaming}}
-  {{snakeCase .ResourceName}}s = [
+  {{- if .HasNaming}}{{$ChildResourceName := .ResourceName}}
+  {{$ChildResourceName}} = [
     { {{- range .Properties}}{{- if .IsRequired}}
-      {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}} = "{{lookupTestValue .PkgName .SnakeCaseName $value.TestVars $.Definitions}}"{{- end}}{{ end}}
-    },
+      {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}} = "{{lookupChildTestValue .PkgName $ChildResourceName .SnakeCaseName $.TestVars $.Definitions}}"{{- end}}{{ end}}
+    }
   ]
   {{- end}}
   {{- end}}

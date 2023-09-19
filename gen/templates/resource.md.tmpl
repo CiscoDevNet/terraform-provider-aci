@@ -74,10 +74,11 @@ Manages ACI {{getResourceNameAsDescription .ResourceName}}
 {{- end}}
 {{ range .Children }}
     {{- if ne .RelationshipClass ""}}
-* `{{- snakeCase .ResourceName}}{{- if .IdentifiedBy}}s{{- end}}` - (list) A list of {{getResourceNameAsDescription .ResourceName}} relationship objects ({{.PkgName}}) pointing to the {{getResourceNameAsDescription .RelationshipResourceName}} ({{.RelationshipClass}}) which can be configured using the `aci_{{.RelationshipResourceName}}` resource.
+* `{{- .ResourceName}}` - (list) A list of {{getResourceNameAsDescription .ResourceName}} relationship objects ({{.PkgName}}) pointing to the {{getResourceNameAsDescription .RelationshipResourceName}} ({{.RelationshipClass}}) which can be configured using the `aci_{{.RelationshipResourceName}}` resource.
     {{- else}}
-* `{{- snakeCase .ResourceName}}{{- if .IdentifiedBy}}s{{- end}}` - (list) A list of {{getResourceNameAsDescription .ResourceName}} objects ({{.PkgName}}) which can also be configured using the `aci_{{.ResourceName}}` resource.
-    {{ end}}
+* `{{- .ResourceName}}` - (list) A list of {{getResourceNameAsDescription .ResourceName}} objects ({{.PkgName}}) which can also be configured using the `aci_{{.ChildResourceName}}` resource.
+    {{- end}}
+  
   #### Required
   {{ range .Properties}}
       {{- if or .IsNaming .IsRequired}}

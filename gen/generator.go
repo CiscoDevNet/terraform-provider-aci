@@ -10,13 +10,19 @@ The code assumes that the following directories with content exist in the curren
 - ./templates (contains the Go templates used to generate the full provider code)
 	- provider.go.tmpl (the template used to generate the provider.go file in the ../internal/provider directory)
 	- index.md.tmpl (the template used to generate the index (provider) documentation file in the ../docs directory)
+	- testvars.yaml.tmpl (the template used to generate test variables in the ../testvars directory)
+
 	- resource.go.tmpl (the template used to generate the resource_*.go files in the ../internal/provider directory)
 	- resource.md.tmpl (the template used to generate the *.md files in the ../docs/resources directory)
+	- resource_test.go.tmpl (the templates used to generate the *_test.go files in the ../internal/provider directory)
+	- resource_test_example.go.tmpl (the templates used to generate the example files used in the documentation which is auto generated with in the ../examples directory)
+
 	- data_source.go.tmpl (the template used to generate the data_source_*.go files in the ../internal/provider directory)
 	- data_source.md.tmpl (the template used to generate the *.md files in the ../docs/data-sources directory)
-	- *_test.go.tmpl (the templates used to generate the *_test.go files in the ../internal/provider directory)
-	- *_example.go.tmpl (the templates used to generate the example files used in the documentation which is auto generated with tfplugindocs in the ../examples directory)
-- ./testVars (contains the manually created YAML files with the test variables used in the *_test.go and example files)
+	- data_source_test.go.tmpl (the templates used to generate the *_test.go files in the ../internal/provider directory)
+	- data_source_example.go.tmpl (the templates used to generate the example files used in the documentation which is auto generated in the ../examples directory)
+
+- ./testvars (contains the manually created YAML files with the test variables used in the *_test.go and example files)
 
 Usage:
 	go run generate.go
@@ -69,22 +75,22 @@ const providerName = "aci"
 // The map contains a key which is the name of the function used in the template and a value which is the function itself
 // The functions itself are defined in the current file
 var templateFuncs = template.FuncMap{
-	"snakeCase":                      inflection.Underscore,
-	"validatorString":                ValidatorString,
-	"listToString":                   ListToString,
-	"overwriteProperty":              GetOverwriteAttributeName,
-	"overwritePropertyValue":         GetOverwriteAttributeValue,
-	"createTestValue":                func(val string) string { return fmt.Sprintf("test_%s", val) },
-	"getParentTestDependencies":      GetParentTestDependencies,
-	"fromInterfacesToString":         FromInterfacesToString,
-	"containsNoneAttributeValue":     ContainsNoneAttributeValue,
-	"definedInMap":                   DefinedInMap,
-	"add":                            func(val1, val2 int) int { return val1 + val2 },
-	"lookupTestValue":                LookupTestValue,
-	"createParentDnValue":            CreateParentDnValue,
-	"getResourceNameAsDescription":   GetResourceNameAsDescription,
-	"capitalize":                     Capitalize,
-	"removeAnnotationFromProperties": RemoveAnnotationFromProperties,
+	"snakeCase":                    inflection.Underscore,
+	"validatorString":              ValidatorString,
+	"listToString":                 ListToString,
+	"overwriteProperty":            GetOverwriteAttributeName,
+	"overwritePropertyValue":       GetOverwriteAttributeValue,
+	"createTestValue":              func(val string) string { return fmt.Sprintf("test_%s", val) },
+	"getParentTestDependencies":    GetParentTestDependencies,
+	"fromInterfacesToString":       FromInterfacesToString,
+	"containsNoneAttributeValue":   ContainsNoneAttributeValue,
+	"definedInMap":                 DefinedInMap,
+	"add":                          func(val1, val2 int) int { return val1 + val2 },
+	"lookupTestValue":              LookupTestValue,
+	"lookupChildTestValue":         LookupChildTestValue,
+	"createParentDnValue":          CreateParentDnValue,
+	"getResourceNameAsDescription": GetResourceNameAsDescription,
+	"capitalize":                   Capitalize,
 }
 
 // Global variables used for unique resource name setting based on label from meta data
@@ -99,17 +105,6 @@ var nestedClasses = []string{}
 
 func GetResourceNameAsDescription(s string) string {
 	return cases.Title(language.English).String(strings.ReplaceAll(s, "_", " "))
-}
-
-func RemoveAnnotationFromProperties(properties map[string]Property) map[string]Property {
-
-	cleanedProperties := make(map[string]Property)
-	for propertyName, property := range properties {
-		if propertyName != "annotation" {
-			cleanedProperties[propertyName] = property
-		}
-	}
-	return cleanedProperties
 }
 
 func Capitalize(s string) string {
@@ -133,9 +128,9 @@ func CreateParentDnValue(className, caller string, definitions Definitions) stri
 }
 
 // Retrieves a value for a attribute of a aci class when defined in the testVars YAML file of the class
-// Returns "foo" if no value is defined in the testVars YAML file
+// Returns "test_value" if no value is defined in the testVars YAML file
 func LookupTestValue(classPkgName, propertyName string, testVars map[string]interface{}, definitions Definitions) string {
-	lookupValue := "foo"
+	lookupValue := "test_value"
 	propertyName = GetOverwriteAttributeName(classPkgName, propertyName, definitions)
 	_, ok := testVars["all"]
 	if ok {
@@ -154,7 +149,21 @@ func LookupTestValue(classPkgName, propertyName string, testVars map[string]inte
 	return lookupValue
 }
 
-// Determins if a list of values contains the value "none"
+// Retrieves a value for a attribute of a aci class when defined in the testVars YAML file of the class
+// Returns "test_value_for_child" if no value is defined in the testVars YAML file
+func LookupChildTestValue(classPkgName, childResourceName, propertyName string, testVars map[string]interface{}, definitions Definitions) string {
+	lookupValue := "test_value_for_child"
+	propertyName = GetOverwriteAttributeName(classPkgName, propertyName, definitions)
+	_, ok := testVars["children"]
+	if ok {
+		val, ok := testVars["children"].(map[interface{}]interface{})[childResourceName].([]interface{})[0].(map[interface{}]interface{})[propertyName]
+		if ok {
+			lookupValue = val.(string)
+		}
+	}
+	return lookupValue
+}
+
 func ContainsNoneAttributeValue(values []string) bool {
 	if slices.Contains(values, "none") {
 		return true
@@ -170,14 +179,12 @@ func DefinedInMap(s string, values map[interface{}]interface{}) bool {
 }
 
 // Create a string from a list of interfaces
-// Error handling is not implemented because the identifiedBy interfaces are known to be strings
-// TODO rewrite to generic function with error handling
 func FromInterfacesToString(identifiedBy []interface{}) string {
 	var identifiers []string
 	for _, identifier := range identifiedBy {
 		identifiers = append(identifiers, identifier.(string))
 	}
-	return fmt.Sprintf("\"%s\"", strings.Join(identifiers, "\", \"")) // TODO similar return used in the templateFunc validatorString could be combined
+	return fmt.Sprintf("\"%s\"", strings.Join(identifiers, "\", \""))
 }
 
 // Renders the templates and writes a file to the output directory
@@ -186,7 +193,6 @@ func renderTemplate(templateName, outputFileName, outputPath string, outputData 
 	if err != nil {
 		panic(err)
 	}
-
 	var buffer bytes.Buffer
 	tmpl := template.Must(template.New("").Funcs(templateFuncs).Parse(string(templateData)))
 	// The templates have a different data structure, thus based on the template name the output data is casted to the correct type
@@ -199,11 +205,9 @@ func renderTemplate(templateName, outputFileName, outputPath string, outputData 
 	} else {
 		err = tmpl.Execute(&buffer, outputData.(Model))
 	}
-
 	if err != nil {
 		panic(err)
 	}
-
 	bytes := buffer.Bytes()
 	if strings.Contains(templateName, "go.tmpl") {
 		bytes, err = format.Source(buffer.Bytes())
@@ -214,7 +218,6 @@ func renderTemplate(templateName, outputFileName, outputPath string, outputData 
 			panic(err)
 		}
 	}
-
 	outputFile, err := os.Create(fmt.Sprintf("%s/%s", outputPath, outputFileName))
 	if err != nil {
 		panic(err)
@@ -228,9 +231,7 @@ func getClassModels(definitions Definitions) map[string]Model {
 	if err != nil {
 		panic(err)
 	}
-
 	classModels := make(map[string]Model)
-
 	pkgNames := []string{}
 	for _, file := range files {
 		if path.Ext(file.Name()) != ".json" {
@@ -238,7 +239,6 @@ func getClassModels(definitions Definitions) map[string]Model {
 		}
 		pkgNames = append(pkgNames, strings.TrimSuffix(file.Name(), path.Ext(file.Name())))
 	}
-
 	for _, pkgName := range pkgNames {
 
 		classModel := Model{PkgName: pkgName}
@@ -251,17 +251,14 @@ func getClassModels(definitions Definitions) map[string]Model {
 // Retrieves the testVars for a model from the testVars YAML file
 func getTestVars(model Model) (map[string]interface{}, error) {
 	testVarsMap := make(map[string]interface{})
-
 	testVars, err := os.ReadFile(fmt.Sprintf("%s/%s.yaml", testVarsPath, model.PkgName))
 	if err != nil {
 		return nil, nil
 	}
-
 	err = yaml.Unmarshal([]byte(testVars), &testVarsMap)
 	if err != nil {
 		return nil, err
 	}
-
 	// Adds the resource name and resource class name to the testVars map to be used in test template rendering
 	testVarsMap["resourceName"] = model.ResourceName
 	testVarsMap["resourceClassName"] = model.ResourceClassName
@@ -270,14 +267,11 @@ func getTestVars(model Model) (map[string]interface{}, error) {
 
 // Retrieves the property and classs overwrite definitions from the definitions YAML files
 func getDefinitions() Definitions {
-
 	definitions := Definitions{}
-
 	files, err := os.ReadDir(definitionsPath)
 	if err != nil {
 		panic(err)
 	}
-
 	for _, file := range files {
 		if path.Ext(file.Name()) != ".yaml" {
 			continue
@@ -297,7 +291,6 @@ func getDefinitions() Definitions {
 			definitions.Properties = definitionMap
 		}
 	}
-
 	return definitions
 }
 
@@ -338,6 +331,7 @@ func cleanDirectories() {
 	os.Mkdir(datasourcesExamplesPath, 0755)
 }
 
+// Retrieves the example from the example file to be used in the resource and datasource documentation
 func getExampleCode(filePath string) []byte {
 	content, err := os.ReadFile(filePath)
 	if err != nil {
@@ -358,39 +352,50 @@ func main() {
 
 		// Only render resources and datasources when the class has a unique identifier or is marked as include in the classes definitions YAML file
 		if len(model.IdentifiedBy) > 0 || model.Include {
+
+			// All classmodels have been read, thus now the model, child and relational resources names can be set
+			// When done before additional files would need to be opened and read which would slow down the generation process
 			model.ResourceName = GetResourceName(model.PkgName, definitions)
+			model.RelationshipResourceName = GetResourceName(model.RelationshipClass, definitions)
+			childMap := make(map[string]Model, 0)
+			for childName, childModel := range model.Children {
+				childModel.ChildResourceName = GetResourceName(childModel.PkgName, definitions)
+				if len(childModel.IdentifiedBy) > 0 {
+					// TODO add logic to determine the naming for plural child resources
+					childModel.ResourceName = fmt.Sprintf("%ss", childModel.ChildResourceName)
+				} else {
+					childModel.ResourceName = childModel.ChildResourceName
+				}
+				childModel.RelationshipResourceName = GetResourceName(childModel.RelationshipClass, definitions)
+				childMap[childName] = childModel
+			}
+			model.Children = childMap
 
+			// Set the documentation specific information for the resource
+			// This is done to ensure references can be made to parent/child resources and output amounts can be restricted
 			setDocumentationData(&model, definitions)
-			renderTemplate("testvars.yaml.tmpl", fmt.Sprintf("%s.yaml", model.PkgName), testVarsPath, model)
 
+			// Render the testvars file for the resource
+			// First generate run would not mean the file is correct from beginning since some testvars would need to be manually overwritten in the properties definitions YAML file
+			renderTemplate("testvars.yaml.tmpl", fmt.Sprintf("%s.yaml", model.PkgName), testVarsPath, model)
 			testVarsMap, err := getTestVars(model)
 			if err != nil {
 				panic(err)
 			}
 			model.TestVars = testVarsMap
 
-			childMap := make(map[string]Model, 0)
-			for childName, childModel := range model.Children {
-				childModel.ResourceName = GetResourceName(childModel.PkgName, definitions)
-				testVarsMap, err := getTestVars(childModel)
-				if err != nil {
-					panic(err)
-				}
-				childModel.TestVars = testVarsMap
-				childMap[childName] = childModel
-			}
-			model.Children = childMap
-
 			renderTemplate("resource.go.tmpl", fmt.Sprintf("resource_%s_%s.go", providerName, model.ResourceName), providerPath, model)
 			renderTemplate("datasource.go.tmpl", fmt.Sprintf("data_source_%s_%s.go", providerName, model.ResourceName), providerPath, model)
 
 			os.Mkdir(fmt.Sprintf("%s/%s_%s", resourcesExamplesPath, providerName, model.ResourceName), 0755)
 			renderTemplate("resource_example.tf.tmpl", fmt.Sprintf("%s_%s/resource.tf", providerName, model.ResourceName), resourcesExamplesPath, model)
+			// Leverage the hclwrite package to format the example code
 			model.Example = string(hclwrite.Format(getExampleCode(fmt.Sprintf("%s/%s_%s/resource.tf", resourcesExamplesPath, providerName, model.ResourceName))))
 			renderTemplate("resource.md.tmpl", fmt.Sprintf("%s.md", model.ResourceName), resourcesDocsPath, model)
 
 			os.Mkdir(fmt.Sprintf("%s/%s_%s", datasourcesExamplesPath, providerName, model.ResourceName), 0755)
 			renderTemplate("datasource_example.tf.tmpl", fmt.Sprintf("%s_%s/data-source.tf", providerName, model.ResourceName), datasourcesExamplesPath, model)
+			// Leverage the hclwrite package to format the example code
 			model.Example = string(hclwrite.Format(getExampleCode(fmt.Sprintf("%s/%s_%s/data-source.tf", datasourcesExamplesPath, providerName, model.ResourceName))))
 			renderTemplate("datasource.md.tmpl", fmt.Sprintf("%s.md", model.ResourceName), datasourcesDocsPath, model)
 
@@ -416,6 +421,7 @@ type Model struct {
 	Comment                  string
 	ResourceClassName        string
 	ResourceName             string
+	ChildResourceName        string
 	Example                  string
 	SubCategory              string
 	UiLocation               string
@@ -426,11 +432,11 @@ type Model struct {
 	DocumentationDnFormats   []string
 	DocumentationParentDns   []string
 	DocumentationExamples    []string
+	Parents                  []string
 	IdentifiedBy             []interface{}
 	DnFormats                []interface{}
 	Properties               map[string]Property
 	Children                 map[string]Model
-	Parents                  []string
 	Configuration            map[string]interface{}
 	TestVars                 map[string]interface{}
 	Definitions              Definitions
@@ -462,8 +468,8 @@ type Property struct {
 	DefaultValue       string
 	ValidValues        []string
 	IdentifiedBy       []interface{}
-	IdentifyProperties []Property
 	Validators         []interface{}
+	IdentifyProperties []Property
 	// Below booleans are used during template rendering to determine correct rendering the go code
 	IsNaming   bool
 	CreateOnly bool
@@ -546,7 +552,6 @@ func (m *Model) setClassModel(metaPath string, child bool, definitions Definitio
 
 func (m *Model) SetClassLabel(classDetails interface{}, child bool) {
 	m.Label = cleanLabel(classDetails.(map[string]interface{})["label"].(string))
-
 	if slices.Contains(labels, m.Label) || m.Label == "" {
 		if !slices.Contains(duplicateLabels, m.Label) {
 			duplicateLabels = append(duplicateLabels, m.Label)
@@ -558,9 +563,9 @@ func (m *Model) SetClassLabel(classDetails interface{}, child bool) {
 		labels = append(labels, m.Label)
 		resourceNames[m.PkgName] = m.Label
 	}
-
 }
 
+// Remove duplicates from a slice of interfaces
 func uniqueInterfaceSlice(interfaceSlice []interface{}) []interface{} {
 	keys := make(map[interface{}]bool)
 	result := []interface{}{}
@@ -573,6 +578,7 @@ func uniqueInterfaceSlice(interfaceSlice []interface{}) []interface{} {
 	return result
 }
 
+// Remove duplicates from a slice of strings
 func uniqueStringSlice(stringSlice []string) []string {
 	slices.Sort[[]string](stringSlice)
 	return slices.Compact[[]string, string](stringSlice)
@@ -604,7 +610,6 @@ func cleanLabel(label string) string {
 
 func (m *Model) SetClassName(classDetails interface{}) {
 	m.Name = classDetails.(map[string]interface{})["className"].(string)
-	m.ResourceName = GetResourceName(m.PkgName, m.Definitions)
 }
 
 func (m *Model) SetClassRnFormat(classDetails interface{}) {
@@ -612,7 +617,6 @@ func (m *Model) SetClassRnFormat(classDetails interface{}) {
 	if strings.HasPrefix(m.RnFormat, "rs") {
 		toMo := classDetails.(map[string]interface{})["relationInfo"].(map[string]interface{})["toMo"].(string)
 		m.RelationshipClass = strings.Replace(toMo, ":", "", 1)
-		m.RelationshipResourceName = GetResourceName(m.RelationshipClass, m.Definitions)
 	}
 }
 
@@ -621,7 +625,6 @@ func (m *Model) SetClassDnFormats(classDetails interface{}) {
 		m.DnFormats = append(m.DnFormats, dnFormat.(string))
 		m.DocumentationDnFormats = append(m.DocumentationDnFormats, dnFormat.(string))
 	}
-
 	m.DnFormats = uniqueInterfaceSlice(m.DnFormats)
 	m.DocumentationDnFormats = uniqueStringSlice(m.DocumentationDnFormats)
 	sort.Strings(m.DocumentationDnFormats)
@@ -646,7 +649,6 @@ func (m *Model) SetClassChildren(classDetails interface{}, pkgNames []string) {
 			notAddedFromRnMap = append(notAddedFromRnMap, strings.ReplaceAll(className.(string), ":", ""))
 		}
 	}
-
 	if classDetails, ok := m.Definitions.Classes[m.PkgName]; ok {
 		for key, value := range classDetails.(map[interface{}]interface{}) {
 			if key.(string) == "children" {
@@ -658,9 +660,7 @@ func (m *Model) SetClassChildren(classDetails interface{}, pkgNames []string) {
 			}
 		}
 	}
-
 	m.ChildClasses = uniqueStringSlice(childClasses)
-
 }
 
 func (m *Model) SetClassInclude() {
@@ -697,11 +697,9 @@ func AllowClassDelete(classPkgName string, definitions Definitions) bool {
 }
 
 func (m *Model) SetClassContainedByAndParent(classDetails interface{}, parents, pkgNames []string) {
-
 	// Do not include polUni because is excluded because the parent tree in the provider will start at a child of polUni
 	// - example fvTenant is contained by polUni, but we want the parent tree to start at fvTenant
 	containedExcludes := m.Configuration["contained_by_excludes"].([]string)
-
 	for className := range GetOverwriteContainedBy(classDetails, m.PkgName, m.Definitions) {
 		containedclassName := strings.ReplaceAll(className, ":", "")
 		if !slices.Contains(containedExcludes, containedclassName) {
@@ -711,16 +709,13 @@ func (m *Model) SetClassContainedByAndParent(classDetails interface{}, parents, 
 			parents = append(parents, containedclassName)
 		}
 	}
-
 	m.ContainedBy = uniqueStringSlice(m.ContainedBy)
-
 	sort.Strings(m.ContainedBy)
 	if len(m.ContainedBy) == 0 {
 		m.HasParent = false
 	} else {
 		m.HasParent = true
 	}
-
 }
 
 func (m *Model) SetClassComment(classDetails interface{}) {
@@ -946,7 +941,6 @@ Precendence order is:
  1. class level from properties.yaml
 */
 func GetOverwriteAttributeValue(classPkgName, propertyName, propertyValue, testType string, definitions Definitions) string {
-
 	if classDetails, ok := definitions.Properties[classPkgName]; ok {
 		for key, value := range classDetails.(map[interface{}]interface{}) {
 			if key.(string) == "test_values" {
@@ -962,12 +956,10 @@ func GetOverwriteAttributeValue(classPkgName, propertyName, propertyValue, testT
 			}
 		}
 	}
-
 	return propertyValue
 }
 
 func GetParentTestDependencies(classPkgName string, index int, definitions Definitions) map[string]interface{} {
-
 	parentDependency := ""
 	classInParent := false
 	if classDetails, ok := definitions.Properties[classPkgName]; ok {
@@ -985,13 +977,11 @@ func GetParentTestDependencies(classPkgName string, index int, definitions Defin
 			}
 		}
 	}
-
 	return map[string]interface{}{"parent_dependency": parentDependency, "class_in_parent": classInParent}
 }
 
 // Determine if possible parent classes in terraform configuration should be overwritten by contained_by from the classes.yaml file
 func GetOverwriteContainedBy(classDetails interface{}, classPkgName string, definitions Definitions) map[string]interface{} {
-
 	containedBy := make(map[string]interface{})
 	if v, ok := definitions.Classes[classPkgName]; ok {
 		for key, value := range v.(map[interface{}]interface{}) {
@@ -1002,18 +992,15 @@ func GetOverwriteContainedBy(classDetails interface{}, classPkgName string, defi
 			}
 		}
 	}
-
 	if len(containedBy) == 0 {
 		return classDetails.(map[string]interface{})["containedBy"].(map[string]interface{})
 	} else {
 		return containedBy
 	}
-
 }
 
 // Determine if a reformat in terraform configuration should be prepended with a rn from the classes.yaml file
 func GetOverwriteRnPrepend(rnFormat, classPkgName string, definitions Definitions) string {
-
 	if v, ok := definitions.Classes[classPkgName]; ok {
 		for key, value := range v.(map[interface{}]interface{}) {
 			if key.(string) == "rn_prepend" {
@@ -1026,7 +1013,6 @@ func GetOverwriteRnPrepend(rnFormat, classPkgName string, definitions Definition
 
 // Determine if possible dn formats in terraform documentation should be overwritten by dn formats from the classes.yaml file
 func GetOverwriteDnFormats(dnFormats []interface{}, classPkgName string, definitions Definitions) []interface{} {
-
 	if v, ok := definitions.Classes[classPkgName]; ok {
 		for key, value := range v.(map[interface{}]interface{}) {
 			if key.(string) == "dn_formats" {
@@ -1034,9 +1020,7 @@ func GetOverwriteDnFormats(dnFormats []interface{}, classPkgName string, definit
 			}
 		}
 	}
-
 	return dnFormats
-
 }
 
 // Set variables that are used during the rendering of the example and documentation templates

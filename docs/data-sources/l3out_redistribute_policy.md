@@ -48,6 +48,6 @@ data "aci_l3out_redistribute_policy" "example" {
 * `id` - (string) The distinquised name (DN) of the L3out Redistribute Policy object.
 * `annotation` - (string) The annotation of the L3out Redistribute Policy object.
 
-* `annotations` - (list) A list of Annotation objects (tagAnnotation).
+* `annotations` - (list) A list of Annotations objects (tagAnnotation).
   * `key` - (string) The key or password used to uniquely identify this configuration object.
   * `value` - (string) The value of the property.

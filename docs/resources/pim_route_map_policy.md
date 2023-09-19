@@ -31,9 +31,9 @@ resource "aci_pim_route_map_policy" "example" {
   name      = "test_name"
   annotations = [
     {
-      key   = "test_key"
-      value = "test_value"
-    },
+      key   = "annotations_1"
+      value = "value_1"
+    }
   ]
 }
 
@@ -60,8 +60,8 @@ resource "aci_pim_route_map_policy" "example" {
 * `owner_key` - (string) The key for enabling clients to own their data for entity correlation.
 * `owner_tag` - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
 
-* `annotations` - (list) A list of Annotation objects (tagAnnotation) which can also be configured using the `aci_annotation` resource.
-    
+* `annotations` - (list) A list of Annotations objects (tagAnnotation) which can also be configured using the `aci_annotation` resource.
+  
   #### Required
   
   * `key` - (string) The key or password used to uniquely identify this configuration object.
