@@ -99,27 +99,17 @@ func GetMORnPrefix(DistinguishedName string) string {
 	if DistinguishedName != "" {
 		bracketIndex := 0
 		rnIndex := 0
-		reversedDistinguishedName := reverseString(DistinguishedName)
-		for i, v := range reversedDistinguishedName {
-			stringValue := string(v)
-			if stringValue == "]" {
+		for i := len(DistinguishedName) - 1; i >= 0; i-- {
+			if string(DistinguishedName[i]) == "]" {
 				bracketIndex = bracketIndex + 1
-			} else if stringValue == "[" {
+			} else if string(DistinguishedName[i]) == "[" {
 				bracketIndex = bracketIndex - 1
-			} else if stringValue == "/" && bracketIndex == 0 {
+			} else if string(DistinguishedName[i]) == "/" && bracketIndex == 0 {
 				rnIndex = i
 				break
 			}
 		}
-		return strings.Split(reverseString(reversedDistinguishedName[0:rnIndex]), "-")[0]
+		return strings.Split(string(DistinguishedName[rnIndex+1:]), "-")[0]
 	}
 	return DistinguishedName
-}
-
-func reverseString(s string) string {
-	reverse := ""
-	for i := len(s) - 1; i >= 0; i-- {
-		reverse += string(s[i])
-	}
-	return reverse
 }
