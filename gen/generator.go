@@ -35,6 +35,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"go/format"
+	"io"
 	"log"
 	"os"
 	"path"
@@ -218,6 +219,14 @@ func renderTemplate(templateName, outputFileName, outputPath string, outputData 
 			panic(err)
 		}
 	}
+
+	// check if file already exists because all files generated should not exist and cleaned during the cleanDirectories functions
+	// when a file already exists, the generation process is stopped to prevent overwriting existing files (main use case is to prevent overwriting migrated documentation files)
+	_, error := os.Stat(fmt.Sprintf("%s/%s", outputPath, outputFileName))
+	if error == nil {
+		panic(fmt.Sprintf("File %s already exists", fmt.Sprintf("%s/%s", outputPath, outputFileName)))
+	}
+
 	outputFile, err := os.Create(fmt.Sprintf("%s/%s", outputPath, outputFileName))
 	if err != nil {
 		panic(err)
@@ -294,34 +303,82 @@ func getDefinitions() Definitions {
 	return definitions
 }
 
-// Remove all files in a directory except when the file contains the string "provider_test.go" in the name
-func cleanDirectory(dir string) error {
+// Remove all files in a directory except when the files that do not match the ignore list
+func cleanDirectory(dir string, ignores []string) {
 	d, err := os.Open(dir)
 	if err != nil {
-		return err
+		panic(err)
 	}
 	defer d.Close()
 	names, err := d.Readdirnames(-1)
 	if err != nil {
-		return err
+		panic(err)
 	}
 	for _, name := range names {
-		if !slices.Contains([]string{"provider_test.go", "test_constants.go"}, name) {
+		if !slices.Contains(ignores, name) {
 			err = os.RemoveAll(filepath.Join(dir, name))
 			if err != nil {
-				return err
+				panic(err)
 			}
 		}
 	}
-	return nil
+}
+
+// One time function used to migrate the legacy documentation to the new documentation structure
+//   - can be removed when legacy documentation is no longer present and no changes
+//   - un-generated resources should be updated in old (renamed) documentation location
+func migrateLegacyDocumentation() {
+
+	dirPaths := []string{"./legacy-docs/docs/r", "./legacy-docs/docs/d"}
+
+	for _, dirPath := range dirPaths {
+
+		newDirPath := datasourcesDocsPath
+		if dirPath == "./legacy-docs/docs/r" {
+			newDirPath = resourcesDocsPath
+		}
+
+		d, err := os.Open(dirPath)
+		if err != nil {
+			panic(err)
+		}
+
+		defer d.Close()
+		names, err := d.Readdirnames(-1)
+		if err != nil {
+			panic(err)
+		}
+
+		for _, name := range names {
+			newName := strings.Replace(name, ".html.markdown", ".md", 1)
+
+			source, err := os.Open(filepath.Join(dirPath, name))
+			if err != nil {
+				panic(err)
+			}
+			defer source.Close()
+
+			destination, err := os.Create(filepath.Join(newDirPath, newName))
+			if err != nil {
+				panic(err)
+			}
+			defer destination.Close()
+			_, err = io.Copy(destination, source)
+			if err != nil {
+				panic(err)
+			}
+		}
+	}
+
 }
 
 // Container function to clean all directories properly
 func cleanDirectories() {
-	cleanDirectory(providerPath)
-	cleanDirectory(resourcesDocsPath)
-	cleanDirectory(datasourcesDocsPath)
-	cleanDirectory(testVarsPath)
+	cleanDirectory(docsPath, []string{"resources", "data-sources"})
+	cleanDirectory(providerPath, []string{"provider_test.go", "test_constants.go"})
+	cleanDirectory(resourcesDocsPath, []string{})
+	cleanDirectory(datasourcesDocsPath, []string{})
+	cleanDirectory(testVarsPath, []string{})
 
 	// The *ExamplesPath directories are removed and recreated to ensure all previously rendered files are removed
 	// The provider example file is not removed because it contains static provider configuration
@@ -329,6 +386,9 @@ func cleanDirectories() {
 	os.Mkdir(resourcesExamplesPath, 0755)
 	os.RemoveAll(datasourcesExamplesPath)
 	os.Mkdir(datasourcesExamplesPath, 0755)
+
+	// Migrate legacy documentation directory ( /website/docs ) format ( .html.markdown ) to new documentation directory ( /docs ) and format ( .md )
+	migrateLegacyDocumentation()
 }
 
 // Retrieves the example from the example file to be used in the resource and datasource documentation
