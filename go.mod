@@ -3,7 +3,7 @@ module github.com/CiscoDevNet/terraform-provider-aci/v2
 go 1.18
 
 require (
-	github.com/ciscoecosystem/aci-go-client/v2 v2.25.1
+	github.com/ciscoecosystem/aci-go-client/v2 v2.25.2
 	github.com/ghodss/yaml v1.0.0
 	github.com/hashicorp/go-cty v1.4.1-0.20200414143053-d3edf31b6320
 	github.com/hashicorp/terraform-plugin-sdk/v2 v2.25.0
