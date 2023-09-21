@@ -53,7 +53,7 @@ resource "aci_cloud_subnet" "azure_cloud_subnet_tf_test" {
 // Cloud Native service EPG
 
 resource "aci_cloud_service_epg" "azure_cloud_svc_epg_tf_test_1" {
-  cloud_applicationcontainer_dn   = aci_cloud_applicationcontainer.azure_cloud_app_tf_test.id
+  cloud_application_container_dn  = aci_cloud_applicationcontainer.azure_cloud_app_tf_test.id
   name                            = "azure_terraform_test_cloud_svc_epg_1"
   access_type                     = "Public"
   deployment_type                 = "CloudNative"
@@ -64,7 +64,7 @@ resource "aci_cloud_service_epg" "azure_cloud_svc_epg_tf_test_1" {
 // Cloud Native Managed service EPG
 
 resource "aci_cloud_service_epg" "azure_cloud_svc_epg_tf_test_2" {
-  cloud_applicationcontainer_dn   = aci_cloud_applicationcontainer.azure_cloud_app_tf_test.id
+  cloud_application_container_dn  = aci_cloud_applicationcontainer.azure_cloud_app_tf_test.id
   name                            = "azure_terraform_test_cloud_svc_epg_2"
   access_type                     = "Private"
   deployment_type                 = "CloudNativeManaged"
@@ -81,7 +81,7 @@ resource "aci_cloud_service_endpoint_selector" "azure_cloud_svc_ep_selector_tf_t
 // Third-party service EPG - two private link label with the same name are needed (one for the service epg one and one for the subnet)
 
 resource "aci_cloud_service_epg" "azure_cloud_svc_epg_tf_test_3" {
-  cloud_applicationcontainer_dn   = aci_cloud_applicationcontainer.azure_cloud_app_tf_test.id
+  cloud_application_container_dn   = aci_cloud_applicationcontainer.azure_cloud_app_tf_test.id
   name                            = "azure_terraform_test_cloud_svc_epg_3"
   access_type                     = "Private"
   deployment_type                 = "Third-party"

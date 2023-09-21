@@ -25,24 +25,24 @@ Manages ACI Cloud Service EPG
 
 ```hcl
 resource "aci_cloud_service_epg" "example" {
-  cloud_applicationcontainer_dn  = aci_cloud_applicationcontainer.example.id
-  name                           = "example"
-  access_type                    = "Public"
-  annotation                     = "orchestrator:terraform"
-  deployment_type                = "CloudNative"
-  flood_on_encap                 = "disabled"
-  label_match_criteria           = "AtleastOne"
-  cloud_service_epg_type         = "Azure-SqlServer"
-  cloud_rs_cloud_epg_ctx         = aci_vrf.example.id
+  cloud_application_container_dn  = aci_cloud_applicationcontainer.example.id
+  name                            = "example"
+  access_type                     = "Public"
+  annotation                      = "orchestrator:terraform"
+  deployment_type                 = "CloudNative"
+  flood_on_encap                  = "disabled"
+  label_match_criteria            = "AtleastOne"
+  cloud_service_epg_type          = "Azure-SqlServer"
+  cloud_rs_cloud_epg_ctx          = aci_vrf.example.id
 }
 ```
 
 ## Argument Reference ##
 
-* `cloud_applicationcontainer_dn` - (Required) Distinguished name of the parent Cloud Application container object.
-* `name` - (Required) Name of the Cloud Service EPG object.
-* `annotation` - (Optional) Annotation of the Cloud Service EPG object.
-* `name_alias` - (Optional) Name Alias of the Cloud Service EPG object.
+* `cloud_application_container_dn` - (Required) Distinguished name of the parent Cloud Application container object. Type: String.
+* `name` - (Required) Name of the Cloud Service EPG object. Type: String.
+* `annotation` - (Optional) Annotation of the Cloud Service EPG object. Type: String.
+* `name_alias` - (Optional) Name Alias of the Cloud Service EPG object. Type: String.
 * `access_type` - (Optional) This refers to the type of connectivity to the service. It could be a public or private connectivity. Allowed values are "Private", "Public", "PublicAndPrivate", "Unknown", and default value is "Public". Type: String.
 * `azure_private_endpoint` - (Optional) Naming for Azure Private Endpoint created from the Service Cloud EPG. Naming override for any Azure Private Endpoint that gets created from this service EPG. The set of variable supported by the naming override is the same of those supported in the global naming policy. However, there is no mandatory variable enforced by validations. Type: String.
 * `custom_service_type` - (Optional) Custom Service type. A custom service type used when this EPG is use as custom service EPG with public or private access. As an e.g. this is used to provide the service tag for an Azure service. Type: string

@@ -26,20 +26,20 @@ Note: This resource is supported in Cloud APIC only.
 
 ```hcl
 data "aci_cloud_service_epg" "example" {
-  cloud_applicationcontainer_dn  = aci_cloud_applicationcontainer.example.id
-  name                           = "example"
+  cloud_application_container_dn  = aci_cloud_applicationcontainer.example.id
+  name                            = "example"
 }
 ```
 
 ## Argument Reference ##
 
-* `cloud_applicationcontainer_dn` - (Required) Distinguished name of the parent Cloud Application Container object.
-* `name` - (Required) Name of the Cloud Service EPG object.
+* `cloud_application_container_dn` - (Required) Distinguished name of the parent Cloud Application Container object. Type: String.
+* `name` - (Required) Name of the Cloud Service EPG object. Type: String.
 
 ## Attribute Reference ##
-* `id` - (Read-Only) Attribute id set to the Dn of the Cloud Service EPG.
-* `annotation` - (Read-Only) Annotation of the Cloud Service EPG object.
-* `name_alias` - (Read-Only) Name Alias of the Cloud Service EPG object.
+* `id` - (Read-Only) Attribute id set to the Dn of the Cloud Service EPG. Type: String.
+* `annotation` - (Read-Only) Annotation of the Cloud Service EPG object. Type: String.
+* `name_alias` - (Read-Only) Name Alias of the Cloud Service EPG object. Type: String.
 * `access_type` - (Read-Only) This refers to the type of connectivity to the service. It could be a public or private connectivity. Allowed values are "Private", "Public", "PublicAndPrivate", "Unknown", and default value is "Public". Type: String.
 * `azure_private_endpoint` - (Read-Only) Naming for Azure Private Endpoint created from the Service Cloud EPG. Naming override for any Azure Private Endpoint that gets created from this service EPG. The set of variable supported by the naming override is the same of those supported in the global naming policy. However, there is no mandatory variable enforced by validations. Type: String.
 * `custom_service_type` - (Read-Only) Custom Service type. A custom service type used when this EPG is use as custom service EPG with public or private access. As an e.g. this is used to provide the service tag for an Azure service. Type: string

@@ -26,7 +26,7 @@ func resourceAciCloudServiceEPg() *schema.Resource {
 
 		SchemaVersion: 1,
 		Schema: AppendBaseAttrSchema(AppendNameAliasAttrSchema(map[string]*schema.Schema{
-			"cloud_applicationcontainer_dn": {
+			"cloud_application_container_dn": {
 				Type:     schema.TypeString,
 				Required: true,
 				ForceNew: true,
@@ -307,9 +307,9 @@ func setCloudServiceEPgAttributes(cloudSvcEPg *models.CloudServiceEPg, d *schema
 	}
 	dn := d.Id()
 	if dn != cloudSvcEPg.DistinguishedName {
-		d.Set("cloud_applicationcontainer_dn", "")
+		d.Set("cloud_application_container_dn", "")
 	} else {
-		d.Set("cloud_applicationcontainer_dn", GetParentDn(cloudSvcEPg.DistinguishedName, fmt.Sprintf("/"+models.RnCloudSvcEPg, cloudSvcEPgMap["name"])))
+		d.Set("cloud_application_container_dn", GetParentDn(cloudSvcEPg.DistinguishedName, fmt.Sprintf("/"+models.RnCloudSvcEPg, cloudSvcEPgMap["name"])))
 	}
 	d.Set("access_type", cloudSvcEPgMap["accessType"])
 	d.Set("annotation", cloudSvcEPgMap["annotation"])
@@ -506,7 +506,7 @@ func resourceAciCloudServiceEPgCreate(ctx context.Context, d *schema.ResourceDat
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
 	name := d.Get("name").(string)
-	CloudApplicationcontainerDn := d.Get("cloud_applicationcontainer_dn").(string)
+	CloudApplicationcontainerDn := d.Get("cloud_application_container_dn").(string)
 
 	cloudSvcEPgAttr := models.CloudServiceEPgAttributes{}
 
@@ -758,7 +758,7 @@ func resourceAciCloudServiceEPgUpdate(ctx context.Context, d *schema.ResourceDat
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
 	name := d.Get("name").(string)
-	CloudApplicationcontainerDn := d.Get("cloud_applicationcontainer_dn").(string)
+	CloudApplicationcontainerDn := d.Get("cloud_application_container_dn").(string)
 
 	cloudSvcEPgAttr := models.CloudServiceEPgAttributes{}
 

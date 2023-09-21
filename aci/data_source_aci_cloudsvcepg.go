@@ -15,7 +15,7 @@ func dataSourceAciCloudServiceEPg() *schema.Resource {
 		ReadContext:   dataSourceAciCloudServiceEPgRead,
 		SchemaVersion: 1,
 		Schema: AppendBaseAttrSchema(AppendNameAliasAttrSchema(map[string]*schema.Schema{
-			"cloud_applicationcontainer_dn": {
+			"cloud_application_container_dn": {
 				Type:     schema.TypeString,
 				Required: true,
 			},
@@ -168,7 +168,7 @@ func dataSourceAciCloudServiceEPg() *schema.Resource {
 func dataSourceAciCloudServiceEPgRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	aciClient := m.(*client.Client)
 	name := d.Get("name").(string)
-	CloudApplicationcontainerDn := d.Get("cloud_applicationcontainer_dn").(string)
+	CloudApplicationcontainerDn := d.Get("cloud_application_container_dn").(string)
 	rn := fmt.Sprintf(models.RnCloudSvcEPg, name)
 	dn := fmt.Sprintf("%s/%s", CloudApplicationcontainerDn, rn)
 

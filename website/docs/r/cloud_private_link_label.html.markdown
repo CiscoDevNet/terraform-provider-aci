@@ -33,10 +33,10 @@ resource "aci_cloud_private_link_label" "example" {
 
 ## Argument Reference ##
 
-* `parent_dn` - (Required) Distinguished name of the parent Cloud Service EPG or Cloud Subnet object.
-* `name` - (Required) Name of the Private Link Label.
-* `annotation` - (Optional) Annotation of the Private Link Label.
-* `name_alias` - (Optional) Name Alias of the Private Link Label.
+* `parent_dn` - (Required) Distinguished name of the parent Cloud Service EPG or Cloud Subnet object. Type: String.
+* `name` - (Required) Name of the Private Link Label. Type: String.
+* `annotation` - (Optional) Annotation of the Private Link Label. Type: String.
+* `name_alias` - (Optional) Name Alias of the Private Link Label. Type: String.
 
 
 
