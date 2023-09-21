@@ -55,7 +55,7 @@ resource "aci_l3out_management_network_instance_profile" "example" {
   - Default: `unspecified`
   - Valid Values: `level1`, `level2`, `level3`, `level4`, `level5`, `level6`, `unspecified`.
 
-* `l3out_management_network_oob_contracts` - (list) A list of L3out Management Network Oob Contracts relationship objects (mgmtRsOoBCons) pointing to the Out Of Band Contract (vzOOBBrCP) which can be configured using the `aci_out_of_band_contract` resource.
+* `l3out_management_network_oob_contracts` - (list) A list of L3out Management Network Oob Contracts relationship objects `mgmtRsOoBCons` pointing to the Out Of Band Contract `vzOOBBrCP` which can be configured using the [aci_out_of_band_contract](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/out_of_band_contract) resource.
   
   #### Required
   

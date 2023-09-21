@@ -1133,12 +1133,12 @@ func setDocumentationData(m *Model, definitions Definitions) {
 
 	if len(resourcesFound) > docsParentDnAmount {
 		for _, resourceDetails := range resourcesFound[0:docsParentDnAmount] {
-			m.DocumentationParentDns = append(m.DocumentationParentDns, fmt.Sprintf("`%s_%s` (class: %s)", providerName, resourceDetails[0], resourceDetails[1]))
+			m.DocumentationParentDns = append(m.DocumentationParentDns, fmt.Sprintf("[%s_%s](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/%s) (`%s`)", providerName, resourceDetails[0], resourceDetails[0], resourceDetails[1]))
 		}
 		m.DocumentationParentDns = append(m.DocumentationParentDns, "Too many parent DNs to display, see model documentation for all possible parents.")
 	} else {
 		for _, resourceDetails := range resourcesFound {
-			m.DocumentationParentDns = append(m.DocumentationParentDns, fmt.Sprintf("`%s_%s` (class: %s)", providerName, resourceDetails[0], resourceDetails[1]))
+			m.DocumentationParentDns = append(m.DocumentationParentDns, fmt.Sprintf("[%s_%s](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/%s) (`%s`)", providerName, resourceDetails[0], resourceDetails[0], resourceDetails[1]))
 		}
 	}
 

@@ -39,7 +39,7 @@ data "aci_l3out_redistribute_policy" "example" {
 ### Required
 
 * `parent_dn` - (string) The distinquised name (DN) of the parent object, possible resources:
-  - `aci_l3_outside` (class: l3extOut)
+  - [aci_l3_outside](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/l3_outside) (`l3extOut`)
 * `src` - (string) The source IP address.
 * `route_control_profile_name` - (string) The name of the route profile associated with this object.
 
@@ -48,6 +48,6 @@ data "aci_l3out_redistribute_policy" "example" {
 * `id` - (string) The distinquised name (DN) of the L3out Redistribute Policy object.
 * `annotation` - (string) The annotation of the L3out Redistribute Policy object.
 
-* `annotations` - (list) A list of Annotations objects (tagAnnotation).
+* `annotations` - (list) A list of Annotations objects `tagAnnotation`.
   * `key` - (string) The key or password used to uniquely identify this configuration object.
   * `value` - (string) The value of the property.

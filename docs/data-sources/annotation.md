@@ -58,20 +58,20 @@ data "aci_annotation" "example" {
 ### Required
 
 * `parent_dn` - (string) The distinquised name (DN) of the parent object, possible resources:
-  - `aci_application_epg` (class: fvAEPg)
-  - `aci_contract_interface` (class: fvRsConsIf)
-  - `aci_tenant` (class: fvTenant)
-  - `aci_l3out_consumer_label` (class: l3extConsLbl)
-  - `aci_l3_outside` (class: l3extOut)
-  - `aci_l3out_redistribute_policy` (class: l3extRsRedistributePol)
-  - `aci_l3out_management_network_instance_profile` (class: mgmtInstP)
-  - `aci_l3out_management_network_oob_contract` (class: mgmtRsOoBCons)
-  - `aci_l3out_management_network_subnet` (class: mgmtSubnet)
-  - `aci_pim_route_map_entry` (class: pimRouteMapEntry)
-  - `aci_pim_route_map_policy` (class: pimRouteMapPol)
-  - `aci_route_control_profile` (class: rtctrlProfile)
-  - `aci_contract_interface` (class: vzCPIf)
-  - `aci_out_of_band_contract` (class: vzOOBBrCP)
+  - [aci_application_epg](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/application_epg) (`fvAEPg`)
+  - [aci_contract_interface](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/contract_interface) (`fvRsConsIf`)
+  - [aci_tenant](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tenant) (`fvTenant`)
+  - [aci_l3out_consumer_label](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/l3out_consumer_label) (`l3extConsLbl`)
+  - [aci_l3_outside](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/l3_outside) (`l3extOut`)
+  - [aci_l3out_redistribute_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/l3out_redistribute_policy) (`l3extRsRedistributePol`)
+  - [aci_l3out_management_network_instance_profile](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/l3out_management_network_instance_profile) (`mgmtInstP`)
+  - [aci_l3out_management_network_oob_contract](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/l3out_management_network_oob_contract) (`mgmtRsOoBCons`)
+  - [aci_l3out_management_network_subnet](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/l3out_management_network_subnet) (`mgmtSubnet`)
+  - [aci_pim_route_map_entry](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/pim_route_map_entry) (`pimRouteMapEntry`)
+  - [aci_pim_route_map_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/pim_route_map_policy) (`pimRouteMapPol`)
+  - [aci_route_control_profile](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/route_control_profile) (`rtctrlProfile`)
+  - [aci_contract_interface](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/contract_interface) (`vzCPIf`)
+  - [aci_out_of_band_contract](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/out_of_band_contract) (`vzOOBBrCP`)
   - Too many classes to display, see model documentation for all possible classes.
 * `key` - (string) The key or password used to uniquely identify this configuration object.
 

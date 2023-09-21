@@ -38,7 +38,7 @@ data "aci_l3out_management_network_oob_contract" "example" {
 ### Required
 
 * `parent_dn` - (string) The distinquised name (DN) of the parent object, possible resources:
-  - `aci_l3out_management_network_instance_profile` (class: mgmtInstP)
+  - [aci_l3out_management_network_instance_profile](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/l3out_management_network_instance_profile) (`mgmtInstP`)
 * `out_of_band_contract_name` - (string) An out-of-band management endpoint group contract consists of switches (leaves/spines) and APICs that are part of the associated out-of-band management zone. Each node in the group is assigned an IP address that is dynamically allocated from the address pool associated with the corresponding out-of-band management zone.
 
 ### Read-Only

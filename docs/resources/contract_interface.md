@@ -64,7 +64,7 @@ resource "aci_contract_interface" "example" {
 ### Required
 
 * `parent_dn` - (string) The distinquised name (DN) of the parent object, possible resources:
-  - `aci_application_epg` (class: fvAEPg)
+  - [aci_application_epg](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/application_epg) (`fvAEPg`)
   - The distinquised name (DN) of classes below can be used but currently there is no available resource for it:
     - `cloudEPg`
     - `cloudExtEPg`
@@ -98,7 +98,7 @@ resource "aci_contract_interface" "example" {
   - Default: `unspecified`
   - Valid Values: `level1`, `level2`, `level3`, `level4`, `level5`, `level6`, `unspecified`.
 
-* `annotations` - (list) A list of Annotations objects (tagAnnotation) which can also be configured using the `aci_annotation` resource.
+* `annotations` - (list) A list of Annotations objects `tagAnnotation` which can also be configured using the  `` which can be configured using the [aci_](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/) resource.
   
   #### Required
   

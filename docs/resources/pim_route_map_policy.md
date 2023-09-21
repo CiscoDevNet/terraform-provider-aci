@@ -44,7 +44,7 @@ resource "aci_pim_route_map_policy" "example" {
 ### Required
 
 * `parent_dn` - (string) The distinquised name (DN) of the parent object, possible resources:
-  - `aci_tenant` (class: fvTenant)
+  - [aci_tenant](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tenant) (`fvTenant`)
 * `name` - (string) The name of the Pim Route Map Policy object.
 
 ### Read-Only
@@ -60,7 +60,7 @@ resource "aci_pim_route_map_policy" "example" {
 * `owner_key` - (string) The key for enabling clients to own their data for entity correlation.
 * `owner_tag` - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
 
-* `annotations` - (list) A list of Annotations objects (tagAnnotation) which can also be configured using the `aci_annotation` resource.
+* `annotations` - (list) A list of Annotations objects `tagAnnotation` which can also be configured using the  `` which can be configured using the [aci_](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/) resource.
   
   #### Required
   

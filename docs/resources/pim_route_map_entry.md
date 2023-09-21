@@ -44,7 +44,7 @@ resource "aci_pim_route_map_entry" "example" {
 ### Required
 
 * `parent_dn` - (string) The distinquised name (DN) of the parent object, possible resources:
-  - `aci_pim_route_map_policy` (class: pimRouteMapPol)
+  - [aci_pim_route_map_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/pim_route_map_policy) (`pimRouteMapPol`)
 * `order` - (string) PIM route map entry order.
 
 ### Read-Only
@@ -65,7 +65,7 @@ resource "aci_pim_route_map_entry" "example" {
 * `rp` - (string) Multicast RP Ip.
 * `src` - (string) Multicast Source Ip.
 
-* `annotations` - (list) A list of Annotations objects (tagAnnotation) which can also be configured using the `aci_annotation` resource.
+* `annotations` - (list) A list of Annotations objects `tagAnnotation` which can also be configured using the  `` which can be configured using the [aci_](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/) resource.
   
   #### Required
   
