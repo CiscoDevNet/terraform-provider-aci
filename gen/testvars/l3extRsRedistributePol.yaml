@@ -4,11 +4,11 @@ default:
 
 datasource_required:
   src: "direct"
-  route_profile_name: "test_tn_rtctrl_profile_name"
+  route_control_profile_name: "test_tn_rtctrl_profile_name"
 
 resource_required:
   src: "direct"
-  route_profile_name: "test_tn_rtctrl_profile_name"
+  route_control_profile_name: "test_tn_rtctrl_profile_name"
 
 all:
   annotation: "annotation"

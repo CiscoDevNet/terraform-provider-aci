@@ -53,7 +53,7 @@ func (d *L3extRsRedistributePolDataSource) Schema(ctx context.Context, req datas
 				Required:            true,
 				MarkdownDescription: `The source IP address.`,
 			},
-			"route_profile_name": schema.StringAttribute{
+			"route_control_profile_name": schema.StringAttribute{
 				Required:            true,
 				MarkdownDescription: `The name of the route profile associated with this object.`,
 			},

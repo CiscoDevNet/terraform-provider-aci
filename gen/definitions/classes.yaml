@@ -11,6 +11,12 @@ fvTenant:
 fvAEPg:
   resource_name: "application_epg"
 
+vzCPIf:
+  resource_name: "contract_interface"
+
+rtctrlProfile:
+  resource_name: "route_control_profile"
+
 vzOOBBrCP:
   resource_name: "out_of_band_contract"
   ui_location: "Tenants (mgmt) -> Contracts -> Out-Of-Band Contracts"

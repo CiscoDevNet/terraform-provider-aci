@@ -16,13 +16,7 @@ global:
   ignores:
   - "userdom"
 
-mgmtRsOoBCons:
-  overwrites:
-    tn_vz_oob_br_cp_name: "contract_name"
-
 l3extRsRedistributePol:
-  overwrites:
-    tn_rtctrl_profile_name: "route_profile_name"
   test_values:
     resource_required:
       src: "direct"
@@ -35,10 +29,6 @@ l3extRsRedistributePol:
   parents:
     - parent_dependency: "fvTenant"
       class_in_parent: true
-
-fvRsConsIf:
-  overwrites:
-    tn_vz_cp_if_name: "contract_interface_name"
 
 mgmtSubnet:
   test_values:

@@ -27,9 +27,9 @@ Manages ACI L3out Redistribute Policy
 ```hcl
 
 resource "aci_l3out_redistribute_policy" "example" {
-  parent_dn          = aci_l3_outside.example.id
-  src                = "direct"
-  route_profile_name = "test_tn_rtctrl_profile_name"
+  parent_dn                  = aci_l3_outside.example.id
+  src                        = "direct"
+  route_control_profile_name = "test_tn_rtctrl_profile_name"
   annotations = [
     {
       key   = "annotations_1"
@@ -48,7 +48,7 @@ resource "aci_l3out_redistribute_policy" "example" {
   - `aci_l3_outside` (class: l3extOut)
 * `src` - (string) The source IP address.
   - Valid Values: `attached-host`, `direct`, `static`.
-* `route_profile_name` - (string) The name of the route profile associated with this object.
+* `route_control_profile_name` - (string) The name of the route profile associated with this object.
 
 ### Read-Only
 

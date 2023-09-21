@@ -18,7 +18,7 @@ func TestAccDataSourceMgmtRsOoBConsWithMgmtInstP(t *testing.T) {
 				Config:             testConfigMgmtRsOoBConsDataSourceDependencyWithMgmtInstP,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("data.aci_l3out_management_network_oob_contract.test", "contract_name", "test_tn_vz_oob_br_cp_name"),
+					resource.TestCheckResourceAttr("data.aci_l3out_management_network_oob_contract.test", "out_of_band_contract_name", "test_tn_vz_oob_br_cp_name"),
 					resource.TestCheckResourceAttr("data.aci_l3out_management_network_oob_contract.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("data.aci_l3out_management_network_oob_contract.test", "priority", "unspecified"),
 				),
@@ -30,7 +30,7 @@ func TestAccDataSourceMgmtRsOoBConsWithMgmtInstP(t *testing.T) {
 const testConfigMgmtRsOoBConsDataSourceDependencyWithMgmtInstP = testConfigMgmtRsOoBConsMinDependencyWithMgmtInstP + `
 data "aci_l3out_management_network_oob_contract" "test" {
   parent_dn = aci_l3out_management_network_instance_profile.test.id
-  contract_name = "test_tn_vz_oob_br_cp_name"
+  out_of_band_contract_name = "test_tn_vz_oob_br_cp_name"
   depends_on = [aci_l3out_management_network_oob_contract.test]
 }
 `

@@ -43,7 +43,7 @@ type MgmtRsOoBConsResourceModel struct {
 	ParentDn        types.String `tfsdk:"parent_dn"`
 	Annotation      types.String `tfsdk:"annotation"`
 	Prio            types.String `tfsdk:"priority"`
-	TnVzOOBBrCPName types.String `tfsdk:"contract_name"`
+	TnVzOOBBrCPName types.String `tfsdk:"out_of_band_contract_name"`
 }
 
 type MgmtRsOoBConsIdentifier struct {
@@ -97,7 +97,7 @@ func (r *MgmtRsOoBConsResource) Schema(ctx context.Context, req resource.SchemaR
 				},
 				MarkdownDescription: `The Quality of service (QoS) priority class ID. QoS refers to the capability of a network to provide better service to selected network traffic over various technologies. The primary goal of QoS is to provide priority including dedicated bandwidth, controlled jitter and latency (required by some real-time and interactive traffic), and improved loss characteristics. You can configure the bandwidth of each QoS level using QoS profiles.`,
 			},
-			"contract_name": schema.StringAttribute{
+			"out_of_band_contract_name": schema.StringAttribute{
 				Required: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),

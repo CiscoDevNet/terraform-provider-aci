@@ -44,7 +44,7 @@ type L3extRsRedistributePolResourceModel struct {
 	ParentDn            types.String `tfsdk:"parent_dn"`
 	Annotation          types.String `tfsdk:"annotation"`
 	Src                 types.String `tfsdk:"src"`
-	TnRtctrlProfileName types.String `tfsdk:"route_profile_name"`
+	TnRtctrlProfileName types.String `tfsdk:"route_control_profile_name"`
 	TagAnnotation       types.Set    `tfsdk:"annotations"`
 }
 
@@ -106,7 +106,7 @@ func (r *L3extRsRedistributePolResource) Schema(ctx context.Context, req resourc
 				},
 				MarkdownDescription: `The source IP address.`,
 			},
-			"route_profile_name": schema.StringAttribute{
+			"route_control_profile_name": schema.StringAttribute{
 				Required: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),

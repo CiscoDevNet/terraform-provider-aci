@@ -70,6 +70,8 @@ resource "aci_annotation" "example" {
   - `aci_l3out_management_network_subnet` (class: mgmtSubnet)
   - `aci_pim_route_map_entry` (class: pimRouteMapEntry)
   - `aci_pim_route_map_policy` (class: pimRouteMapPol)
+  - `aci_route_control_profile` (class: rtctrlProfile)
+  - `aci_contract_interface` (class: vzCPIf)
   - `aci_out_of_band_contract` (class: vzOOBBrCP)
   - Too many classes to display, see model documentation for all possible classes.
 * `key` - (string) The key or password used to uniquely identify this configuration object.

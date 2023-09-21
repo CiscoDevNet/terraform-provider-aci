@@ -19,7 +19,7 @@ func TestAccResourceL3extRsRedistributePolWithL3extOut(t *testing.T) {
 				Config:             testConfigL3extRsRedistributePolMinDependencyWithL3extOut,
 				ExpectNonEmptyPlan: true,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.test", "route_profile_name", "test_tn_rtctrl_profile_name"),
+					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.test", "route_control_profile_name", "test_tn_rtctrl_profile_name"),
 					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.test", "src", "direct"),
 				),
@@ -29,7 +29,7 @@ func TestAccResourceL3extRsRedistributePolWithL3extOut(t *testing.T) {
 				Config:             testConfigL3extRsRedistributePolAllDependencyWithL3extOut,
 				ExpectNonEmptyPlan: true,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.test", "route_profile_name", "test_tn_rtctrl_profile_name"),
+					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.test", "route_control_profile_name", "test_tn_rtctrl_profile_name"),
 					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.test", "annotation", "annotation"),
 					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.test", "src", "direct"),
 				),
@@ -39,7 +39,7 @@ func TestAccResourceL3extRsRedistributePolWithL3extOut(t *testing.T) {
 				Config:             testConfigL3extRsRedistributePolMinDependencyWithL3extOut,
 				ExpectNonEmptyPlan: true,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.test", "route_profile_name", "test_tn_rtctrl_profile_name"),
+					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.test", "route_control_profile_name", "test_tn_rtctrl_profile_name"),
 					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.test", "src", "direct"),
 				),
 			},
@@ -48,7 +48,7 @@ func TestAccResourceL3extRsRedistributePolWithL3extOut(t *testing.T) {
 				Config:             testConfigL3extRsRedistributePolResetDependencyWithL3extOut,
 				ExpectNonEmptyPlan: true,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.test", "route_profile_name", "test_tn_rtctrl_profile_name"),
+					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.test", "route_control_profile_name", "test_tn_rtctrl_profile_name"),
 					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.test", "src", "direct"),
 					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.test", "annotation", "orchestrator:terraform"),
 				),
@@ -58,7 +58,7 @@ func TestAccResourceL3extRsRedistributePolWithL3extOut(t *testing.T) {
 				Config:             testConfigL3extRsRedistributePolChildrenDependencyWithL3extOut,
 				ExpectNonEmptyPlan: true,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.test", "route_profile_name", "test_tn_rtctrl_profile_name"),
+					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.test", "route_control_profile_name", "test_tn_rtctrl_profile_name"),
 					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.test", "src", "direct"),
 					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.test", "annotations.0.key", "annotations_1"),
@@ -74,7 +74,7 @@ func TestAccResourceL3extRsRedistributePolWithL3extOut(t *testing.T) {
 const testConfigL3extRsRedistributePolMinDependencyWithL3extOut = testConfigL3extOutMinDependencyWithFvTenant + `
 resource "aci_l3out_redistribute_policy" "test" {
   parent_dn = aci_l3_outside.test.id
-  route_profile_name = "test_tn_rtctrl_profile_name"
+  route_control_profile_name = "test_tn_rtctrl_profile_name"
   src = "direct"
 }
 `
@@ -82,7 +82,7 @@ resource "aci_l3out_redistribute_policy" "test" {
 const testConfigL3extRsRedistributePolAllDependencyWithL3extOut = testConfigL3extOutMinDependencyWithFvTenant + `
 resource "aci_l3out_redistribute_policy" "test" {
   parent_dn = aci_l3_outside.test.id
-  route_profile_name = "test_tn_rtctrl_profile_name"
+  route_control_profile_name = "test_tn_rtctrl_profile_name"
   annotation = "annotation"
   src = "direct"
 }
@@ -91,7 +91,7 @@ resource "aci_l3out_redistribute_policy" "test" {
 const testConfigL3extRsRedistributePolResetDependencyWithL3extOut = testConfigL3extOutMinDependencyWithFvTenant + `
 resource "aci_l3out_redistribute_policy" "test" {
   parent_dn = aci_l3_outside.test.id
-  route_profile_name = "test_tn_rtctrl_profile_name"
+  route_control_profile_name = "test_tn_rtctrl_profile_name"
   annotation = "orchestrator:terraform"
   src = "direct"
 }
@@ -99,7 +99,7 @@ resource "aci_l3out_redistribute_policy" "test" {
 const testConfigL3extRsRedistributePolChildrenDependencyWithL3extOut = testConfigL3extOutMinDependencyWithFvTenant + `
 resource "aci_l3out_redistribute_policy" "test" {
   parent_dn = aci_l3_outside.test.id
-  route_profile_name = "test_tn_rtctrl_profile_name"
+  route_control_profile_name = "test_tn_rtctrl_profile_name"
   src = "direct"
   annotations = [
 	{

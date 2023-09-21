@@ -53,7 +53,7 @@ func (d *MgmtRsOoBConsDataSource) Schema(ctx context.Context, req datasource.Sch
 				Computed:            true,
 				MarkdownDescription: `The Quality of service (QoS) priority class ID. QoS refers to the capability of a network to provide better service to selected network traffic over various technologies. The primary goal of QoS is to provide priority including dedicated bandwidth, controlled jitter and latency (required by some real-time and interactive traffic), and improved loss characteristics. You can configure the bandwidth of each QoS level using QoS profiles.`,
 			},
-			"contract_name": schema.StringAttribute{
+			"out_of_band_contract_name": schema.StringAttribute{
 				Required:            true,
 				MarkdownDescription: `An out-of-band management endpoint group contract consists of switches (leaves/spines) and APICs that are part of the associated out-of-band management zone. Each node in the group is assigned an IP address that is dynamically allocated from the address pool associated with the corresponding out-of-band management zone.`,
 			},

@@ -29,7 +29,7 @@ resource "aci_l3out_management_network_instance_profile" "example" {
   name = "test_name"
   l3out_management_network_oob_contracts = [
     {
-      contract_name = "l3out_management_network_oob_contracts_1"
+      out_of_band_contract_name = "l3out_management_network_oob_contracts_1"
     }
   ]
 }
@@ -59,7 +59,7 @@ resource "aci_l3out_management_network_instance_profile" "example" {
   
   #### Required
   
-  * `contract_name` - (string) An out-of-band management endpoint group contract consists of switches (leaves/spines) and APICs that are part of the associated out-of-band management zone. Each node in the group is assigned an IP address that is dynamically allocated from the address pool associated with the corresponding out-of-band management zone.
+  * `out_of_band_contract_name` - (string) An out-of-band management endpoint group contract consists of switches (leaves/spines) and APICs that are part of the associated out-of-band management zone. Each node in the group is assigned an IP address that is dynamically allocated from the address pool associated with the corresponding out-of-band management zone.
 
   #### Optional
     

@@ -67,10 +67,10 @@ func TestAccResourceMgmtInstP(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_l3out_management_network_instance_profile.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("aci_l3out_management_network_instance_profile.test", "priority", "unspecified"),
 					resource.TestCheckResourceAttr("aci_l3out_management_network_instance_profile.test", "l3out_management_network_oob_contracts.0.annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_l3out_management_network_instance_profile.test", "l3out_management_network_oob_contracts.0.contract_name", "l3out_management_network_oob_contracts_1"),
+					resource.TestCheckResourceAttr("aci_l3out_management_network_instance_profile.test", "l3out_management_network_oob_contracts.0.out_of_band_contract_name", "l3out_management_network_oob_contracts_1"),
 					resource.TestCheckResourceAttr("aci_l3out_management_network_instance_profile.test", "l3out_management_network_oob_contracts.0.priority", "level1"),
 					resource.TestCheckResourceAttr("aci_l3out_management_network_instance_profile.test", "l3out_management_network_oob_contracts.1.annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_l3out_management_network_instance_profile.test", "l3out_management_network_oob_contracts.1.contract_name", "l3out_management_network_oob_contracts_2"),
+					resource.TestCheckResourceAttr("aci_l3out_management_network_instance_profile.test", "l3out_management_network_oob_contracts.1.out_of_band_contract_name", "l3out_management_network_oob_contracts_2"),
 					resource.TestCheckResourceAttr("aci_l3out_management_network_instance_profile.test", "l3out_management_network_oob_contracts.1.priority", "level2"),
 				),
 			},
@@ -109,12 +109,12 @@ resource "aci_l3out_management_network_instance_profile" "test" {
   l3out_management_network_oob_contracts = [
 	{
 	  annotation = "orchestrator:terraform"
-	  contract_name = "l3out_management_network_oob_contracts_1"
+	  out_of_band_contract_name = "l3out_management_network_oob_contracts_1"
 	  priority = "level1"
 	},
 	{
 	  annotation = "orchestrator:terraform"
-	  contract_name = "l3out_management_network_oob_contracts_2"
+	  out_of_band_contract_name = "l3out_management_network_oob_contracts_2"
 	  priority = "level2"
 	},
   ]
