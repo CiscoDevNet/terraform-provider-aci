@@ -32,11 +32,13 @@ package main
 
 import (
 	"bytes"
+	"crypto/tls"
 	"encoding/json"
 	"fmt"
 	"go/format"
 	"io"
 	"log"
+	"net/http"
 	"os"
 	"path"
 	"path/filepath"
@@ -45,6 +47,7 @@ import (
 	"sort"
 	"strings"
 	"text/template"
+	"unicode"
 
 	"github.com/buxizhizhoum/inflection"
 	"golang.org/x/exp/slices"
@@ -393,9 +396,50 @@ func getExampleCode(filePath string) []byte {
 	return content
 }
 
+// When GEN_HOST and GEN_CLASSES environment variables are set, the class metadata is retrieved from the APIC and stored in the meta directory.
+func getClassMetadata() {
+
+	host := os.Getenv("GEN_HOST")
+	classNames := os.Getenv("GEN_CLASSES")
+
+	if host != "" && classNames != "" {
+		var nameSpace, name string
+		classNameList := strings.Split(classNames, ",")
+		for _, className := range classNameList {
+
+			for index, character := range className {
+				if unicode.IsUpper(character) {
+					nameSpace = className[:index]
+					name = className[index:]
+					break
+				}
+			}
+
+			client := &http.Client{Transport: &http.Transport{TLSClientConfig: &tls.Config{InsecureSkipVerify: true}}}
+			res, err := client.Get(fmt.Sprintf("https://%s/doc/jsonmeta/%s/%s.json", host, nameSpace, name))
+			if err != nil {
+				panic(err)
+			}
+
+			resBody, err := io.ReadAll(res.Body)
+			if err != nil {
+				panic(err)
+			}
+
+			outputFile, err := os.Create(fmt.Sprintf("%s/%s.json", metaPath, className))
+			if err != nil {
+				panic(err)
+			}
+			outputFile.Write(resBody)
+		}
+	}
+}
+
 func main() {
 
+	getClassMetadata()
 	cleanDirectories()
+
 	definitions := getDefinitions()
 	classModels := getClassModels(definitions)
 
