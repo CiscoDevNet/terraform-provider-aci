@@ -72,6 +72,49 @@ func TestAccResourceMgmtInstP(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_l3out_management_network_instance_profile.test", "l3out_management_network_oob_contracts.1.annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_l3out_management_network_instance_profile.test", "l3out_management_network_oob_contracts.1.out_of_band_contract_name", "l3out_management_network_oob_contracts_2"),
 					resource.TestCheckResourceAttr("aci_l3out_management_network_instance_profile.test", "l3out_management_network_oob_contracts.1.priority", "level2"),
+					resource.TestCheckResourceAttr("aci_l3out_management_network_instance_profile.test", "l3out_management_network_oob_contracts.#", "2"),
+				),
+			},
+			// Update with children removed from config
+			{
+				Config: testConfigMgmtInstPChildrenRemoveFromConfig,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_l3out_management_network_instance_profile.test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_l3out_management_network_instance_profile.test", "description", ""),
+					resource.TestCheckResourceAttr("aci_l3out_management_network_instance_profile.test", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_l3out_management_network_instance_profile.test", "priority", "unspecified"),
+					resource.TestCheckResourceAttr("aci_l3out_management_network_instance_profile.test", "l3out_management_network_oob_contracts.0.annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_l3out_management_network_instance_profile.test", "l3out_management_network_oob_contracts.0.out_of_band_contract_name", "l3out_management_network_oob_contracts_1"),
+					resource.TestCheckResourceAttr("aci_l3out_management_network_instance_profile.test", "l3out_management_network_oob_contracts.0.priority", "level1"),
+					resource.TestCheckResourceAttr("aci_l3out_management_network_instance_profile.test", "l3out_management_network_oob_contracts.1.annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_l3out_management_network_instance_profile.test", "l3out_management_network_oob_contracts.1.out_of_band_contract_name", "l3out_management_network_oob_contracts_2"),
+					resource.TestCheckResourceAttr("aci_l3out_management_network_instance_profile.test", "l3out_management_network_oob_contracts.1.priority", "level2"),
+					resource.TestCheckResourceAttr("aci_l3out_management_network_instance_profile.test", "l3out_management_network_oob_contracts.#", "2"),
+				),
+			},
+			// Update with children first child removed
+			{
+				Config: testConfigMgmtInstPChildrenRemoveOne,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_l3out_management_network_instance_profile.test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_l3out_management_network_instance_profile.test", "description", ""),
+					resource.TestCheckResourceAttr("aci_l3out_management_network_instance_profile.test", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_l3out_management_network_instance_profile.test", "priority", "unspecified"),
+					resource.TestCheckResourceAttr("aci_l3out_management_network_instance_profile.test", "l3out_management_network_oob_contracts.0.annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_l3out_management_network_instance_profile.test", "l3out_management_network_oob_contracts.0.out_of_band_contract_name", "l3out_management_network_oob_contracts_2"),
+					resource.TestCheckResourceAttr("aci_l3out_management_network_instance_profile.test", "l3out_management_network_oob_contracts.0.priority", "level2"),
+					resource.TestCheckResourceAttr("aci_l3out_management_network_instance_profile.test", "l3out_management_network_oob_contracts.#", "1"),
+				),
+			},
+			// Update with all children removed
+			{
+				Config: testConfigMgmtInstPChildrenRemoveAll,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_l3out_management_network_instance_profile.test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_l3out_management_network_instance_profile.test", "description", ""),
+					resource.TestCheckResourceAttr("aci_l3out_management_network_instance_profile.test", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_l3out_management_network_instance_profile.test", "priority", "unspecified"),
+					resource.TestCheckResourceAttr("aci_l3out_management_network_instance_profile.test", "l3out_management_network_oob_contracts.#", "0"),
 				),
 			},
 		},
@@ -118,5 +161,31 @@ resource "aci_l3out_management_network_instance_profile" "test" {
 	  priority = "level2"
 	},
   ]
+}
+`
+
+const testConfigMgmtInstPChildrenRemoveFromConfig = `
+resource "aci_l3out_management_network_instance_profile" "test" {
+  name = "test_name"
+}
+`
+
+const testConfigMgmtInstPChildrenRemoveOne = `
+resource "aci_l3out_management_network_instance_profile" "test" {
+  name = "test_name"
+  l3out_management_network_oob_contracts = [ 
+	{
+	  annotation = "orchestrator:terraform"
+	  out_of_band_contract_name = "l3out_management_network_oob_contracts_2"
+	  priority = "level2"
+	},
+  ]
+}
+`
+
+const testConfigMgmtInstPChildrenRemoveAll = `
+resource "aci_l3out_management_network_instance_profile" "test" {
+  name = "test_name"
+  l3out_management_network_oob_contracts = []
 }
 `

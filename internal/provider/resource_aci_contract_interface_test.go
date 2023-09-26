@@ -66,6 +66,36 @@ func TestAccResourceFvRsConsIfWithFvAEPg(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_contract_interface.test", "annotations.1.value", "value_2"),
 				),
 			},
+			// Update with children removed from config
+			{
+				Config:             testConfigFvRsConsIfChildrenRemoveFromConfigDependencyWithFvAEPg,
+				ExpectNonEmptyPlan: false,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_contract_interface.test", "annotations.0.key", "annotations_1"),
+					resource.TestCheckResourceAttr("aci_contract_interface.test", "annotations.0.value", "value_1"),
+					resource.TestCheckResourceAttr("aci_contract_interface.test", "annotations.1.key", "annotations_2"),
+					resource.TestCheckResourceAttr("aci_contract_interface.test", "annotations.1.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_contract_interface.test", "annotations.#", "2"),
+				),
+			},
+			// Update with children first child removed
+			{
+				Config:             testConfigFvRsConsIfChildrenRemoveOneDependencyWithFvAEPg,
+				ExpectNonEmptyPlan: false,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_contract_interface.test", "annotations.0.key", "annotations_2"),
+					resource.TestCheckResourceAttr("aci_contract_interface.test", "annotations.0.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_contract_interface.test", "annotations.#", "1"),
+				),
+			},
+			// Update with all children removed
+			{
+				Config:             testConfigFvRsConsIfChildrenRemoveAllDependencyWithFvAEPg,
+				ExpectNonEmptyPlan: false,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_contract_interface.test", "annotations.#", "0"),
+				),
+			},
 		},
 	})
 }
@@ -108,5 +138,33 @@ resource "aci_contract_interface" "test" {
 	  value = "value_2"
 	},
   ]
+}
+`
+
+const testConfigFvRsConsIfChildrenRemoveFromConfigDependencyWithFvAEPg = testConfigFvAEPgMin + `
+resource "aci_contract_interface" "test" {
+  parent_dn = aci_application_epg.test.id
+  contract_interface_name = "test_tn_vz_cp_if_name"
+}
+`
+
+const testConfigFvRsConsIfChildrenRemoveOneDependencyWithFvAEPg = testConfigFvAEPgMin + `
+resource "aci_contract_interface" "test" {
+  parent_dn = aci_application_epg.test.id
+  contract_interface_name = "test_tn_vz_cp_if_name"
+  annotations = [ 
+	{
+	  key = "annotations_2"
+	  value = "value_2"
+	},
+  ]
+}
+`
+
+const testConfigFvRsConsIfChildrenRemoveAllDependencyWithFvAEPg = testConfigFvAEPgMin + `
+resource "aci_contract_interface" "test" {
+  parent_dn = aci_application_epg.test.id
+  contract_interface_name = "test_tn_vz_cp_if_name"
+  annotations = []
 }
 `

@@ -90,6 +90,36 @@ func TestAccResourcePimRouteMapEntryWithPimRouteMapPol(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "annotations.1.value", "value_2"),
 				),
 			},
+			// Update with children removed from config
+			{
+				Config:             testConfigPimRouteMapEntryChildrenRemoveFromConfigDependencyWithPimRouteMapPol,
+				ExpectNonEmptyPlan: false,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "annotations.0.key", "annotations_1"),
+					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "annotations.0.value", "value_1"),
+					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "annotations.1.key", "annotations_2"),
+					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "annotations.1.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "annotations.#", "2"),
+				),
+			},
+			// Update with children first child removed
+			{
+				Config:             testConfigPimRouteMapEntryChildrenRemoveOneDependencyWithPimRouteMapPol,
+				ExpectNonEmptyPlan: false,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "annotations.0.key", "annotations_2"),
+					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "annotations.0.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "annotations.#", "1"),
+				),
+			},
+			// Update with all children removed
+			{
+				Config:             testConfigPimRouteMapEntryChildrenRemoveAllDependencyWithPimRouteMapPol,
+				ExpectNonEmptyPlan: false,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "annotations.#", "0"),
+				),
+			},
 		},
 	})
 }
@@ -144,5 +174,33 @@ resource "aci_pim_route_map_entry" "test" {
 	  value = "value_2"
 	},
   ]
+}
+`
+
+const testConfigPimRouteMapEntryChildrenRemoveFromConfigDependencyWithPimRouteMapPol = testConfigPimRouteMapPolMinDependencyWithFvTenant + `
+resource "aci_pim_route_map_entry" "test" {
+  parent_dn = aci_pim_route_map_policy.test.id
+  order = "1"
+}
+`
+
+const testConfigPimRouteMapEntryChildrenRemoveOneDependencyWithPimRouteMapPol = testConfigPimRouteMapPolMinDependencyWithFvTenant + `
+resource "aci_pim_route_map_entry" "test" {
+  parent_dn = aci_pim_route_map_policy.test.id
+  order = "1"
+  annotations = [ 
+	{
+	  key = "annotations_2"
+	  value = "value_2"
+	},
+  ]
+}
+`
+
+const testConfigPimRouteMapEntryChildrenRemoveAllDependencyWithPimRouteMapPol = testConfigPimRouteMapPolMinDependencyWithFvTenant + `
+resource "aci_pim_route_map_entry" "test" {
+  parent_dn = aci_pim_route_map_policy.test.id
+  order = "1"
+  annotations = []
 }
 `

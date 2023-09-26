@@ -86,6 +86,36 @@ func TestAccResourceL3extConsLblWithL3extOut(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "annotations.1.value", "value_2"),
 				),
 			},
+			// Update with children removed from config
+			{
+				Config:             testConfigL3extConsLblChildrenRemoveFromConfigDependencyWithL3extOut,
+				ExpectNonEmptyPlan: false,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "annotations.0.key", "annotations_1"),
+					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "annotations.0.value", "value_1"),
+					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "annotations.1.key", "annotations_2"),
+					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "annotations.1.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "annotations.#", "2"),
+				),
+			},
+			// Update with children first child removed
+			{
+				Config:             testConfigL3extConsLblChildrenRemoveOneDependencyWithL3extOut,
+				ExpectNonEmptyPlan: false,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "annotations.0.key", "annotations_2"),
+					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "annotations.0.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "annotations.#", "1"),
+				),
+			},
+			// Update with all children removed
+			{
+				Config:             testConfigL3extConsLblChildrenRemoveAllDependencyWithL3extOut,
+				ExpectNonEmptyPlan: false,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "annotations.#", "0"),
+				),
+			},
 		},
 	})
 }
@@ -138,5 +168,33 @@ resource "aci_l3out_consumer_label" "test" {
 	  value = "value_2"
 	},
   ]
+}
+`
+
+const testConfigL3extConsLblChildrenRemoveFromConfigDependencyWithL3extOut = testConfigL3extOutMin + `
+resource "aci_l3out_consumer_label" "test" {
+  parent_dn = aci_l3_outside.test.id
+  name = "test_name"
+}
+`
+
+const testConfigL3extConsLblChildrenRemoveOneDependencyWithL3extOut = testConfigL3extOutMin + `
+resource "aci_l3out_consumer_label" "test" {
+  parent_dn = aci_l3_outside.test.id
+  name = "test_name"
+  annotations = [ 
+	{
+	  key = "annotations_2"
+	  value = "value_2"
+	},
+  ]
+}
+`
+
+const testConfigL3extConsLblChildrenRemoveAllDependencyWithL3extOut = testConfigL3extOutMin + `
+resource "aci_l3out_consumer_label" "test" {
+  parent_dn = aci_l3_outside.test.id
+  name = "test_name"
+  annotations = []
 }
 `

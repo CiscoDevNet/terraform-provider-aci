@@ -78,6 +78,36 @@ func TestAccResourcePimRouteMapPolWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_pim_route_map_policy.test", "annotations.1.value", "value_2"),
 				),
 			},
+			// Update with children removed from config
+			{
+				Config:             testConfigPimRouteMapPolChildrenRemoveFromConfigDependencyWithFvTenant,
+				ExpectNonEmptyPlan: false,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_pim_route_map_policy.test", "annotations.0.key", "annotations_1"),
+					resource.TestCheckResourceAttr("aci_pim_route_map_policy.test", "annotations.0.value", "value_1"),
+					resource.TestCheckResourceAttr("aci_pim_route_map_policy.test", "annotations.1.key", "annotations_2"),
+					resource.TestCheckResourceAttr("aci_pim_route_map_policy.test", "annotations.1.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_pim_route_map_policy.test", "annotations.#", "2"),
+				),
+			},
+			// Update with children first child removed
+			{
+				Config:             testConfigPimRouteMapPolChildrenRemoveOneDependencyWithFvTenant,
+				ExpectNonEmptyPlan: false,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_pim_route_map_policy.test", "annotations.0.key", "annotations_2"),
+					resource.TestCheckResourceAttr("aci_pim_route_map_policy.test", "annotations.0.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_pim_route_map_policy.test", "annotations.#", "1"),
+				),
+			},
+			// Update with all children removed
+			{
+				Config:             testConfigPimRouteMapPolChildrenRemoveAllDependencyWithFvTenant,
+				ExpectNonEmptyPlan: false,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_pim_route_map_policy.test", "annotations.#", "0"),
+				),
+			},
 		},
 	})
 }
@@ -126,5 +156,33 @@ resource "aci_pim_route_map_policy" "test" {
 	  value = "value_2"
 	},
   ]
+}
+`
+
+const testConfigPimRouteMapPolChildrenRemoveFromConfigDependencyWithFvTenant = testConfigFvTenantMin + `
+resource "aci_pim_route_map_policy" "test" {
+  parent_dn = aci_tenant.test.id
+  name = "test_name"
+}
+`
+
+const testConfigPimRouteMapPolChildrenRemoveOneDependencyWithFvTenant = testConfigFvTenantMin + `
+resource "aci_pim_route_map_policy" "test" {
+  parent_dn = aci_tenant.test.id
+  name = "test_name"
+  annotations = [ 
+	{
+	  key = "annotations_2"
+	  value = "value_2"
+	},
+  ]
+}
+`
+
+const testConfigPimRouteMapPolChildrenRemoveAllDependencyWithFvTenant = testConfigFvTenantMin + `
+resource "aci_pim_route_map_policy" "test" {
+  parent_dn = aci_tenant.test.id
+  name = "test_name"
+  annotations = []
 }
 `

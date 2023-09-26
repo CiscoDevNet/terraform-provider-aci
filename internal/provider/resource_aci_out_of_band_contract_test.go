@@ -95,6 +95,61 @@ func TestAccResourceVzOOBBrCP(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "annotations.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "annotations.1.key", "annotations_2"),
 					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "annotations.1.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "annotations.#", "2"),
+				),
+			},
+			// Update with children removed from config
+			{
+				Config: testConfigVzOOBBrCPChildrenRemoveFromConfig,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "description", ""),
+					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "intent", "install"),
+					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "owner_key", ""),
+					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "owner_tag", ""),
+					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "priority", "unspecified"),
+					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "scope", "context"),
+					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "target_dscp", "unspecified"),
+					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "annotations.0.key", "annotations_1"),
+					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "annotations.0.value", "value_1"),
+					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "annotations.1.key", "annotations_2"),
+					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "annotations.1.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "annotations.#", "2"),
+				),
+			},
+			// Update with children first child removed
+			{
+				Config: testConfigVzOOBBrCPChildrenRemoveOne,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "description", ""),
+					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "intent", "install"),
+					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "owner_key", ""),
+					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "owner_tag", ""),
+					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "priority", "unspecified"),
+					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "scope", "context"),
+					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "target_dscp", "unspecified"),
+					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "annotations.0.key", "annotations_2"),
+					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "annotations.0.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "annotations.#", "1"),
+				),
+			},
+			// Update with all children removed
+			{
+				Config: testConfigVzOOBBrCPChildrenRemoveAll,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "description", ""),
+					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "intent", "install"),
+					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "owner_key", ""),
+					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "owner_tag", ""),
+					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "priority", "unspecified"),
+					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "scope", "context"),
+					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "target_dscp", "unspecified"),
+					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "annotations.#", "0"),
 				),
 			},
 		},
@@ -149,5 +204,30 @@ resource "aci_out_of_band_contract" "test" {
 	  value = "value_2"
 	},
   ]
+}
+`
+
+const testConfigVzOOBBrCPChildrenRemoveFromConfig = `
+resource "aci_out_of_band_contract" "test" {
+  name = "test_name"
+}
+`
+
+const testConfigVzOOBBrCPChildrenRemoveOne = `
+resource "aci_out_of_band_contract" "test" {
+  name = "test_name"
+  annotations = [ 
+	{
+	  key = "annotations_2"
+	  value = "value_2"
+	},
+  ]
+}
+`
+
+const testConfigVzOOBBrCPChildrenRemoveAll = `
+resource "aci_out_of_band_contract" "test" {
+  name = "test_name"
+  annotations = []
 }
 `

@@ -107,6 +107,68 @@ func TestAccResource{{$.resourceClassName}}With{{capitalize .class_name}}(t *tes
 			{{- end}}
 				),
 			},
+			// Update with children removed from config
+			{
+				Config: testConfig{{$.resourceClassName}}ChildrenRemoveFromConfigDependencyWith{{capitalize .class_name}},
+				ExpectNonEmptyPlan: {{.class_in_parent}},
+				Check: resource.ComposeAggregateTestCheckFunc(
+		{{- range $key, $value := .min}}
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
+		{{- end}}
+		{{- range $key, $value := .default}}{{$contains := definedInMap $key $.resource_required}}
+				{{- if not $contains}}
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
+			{{- end}}
+		{{- end}}
+		{{- range $key, $value := $.children}}
+			{{- range $child_index, $child := $value}}
+				{{- range $child_key, $child_value := $child}}
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.{{$child_index}}.{{$child_key}}", "{{$child_value}}"),
+				{{- end}}
+			{{- end}}
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.#", "2"),
+		{{- end}}
+				),
+			},
+			// Update with children first child removed
+			{
+				Config: testConfig{{$.resourceClassName}}ChildrenRemoveOneDependencyWith{{capitalize .class_name}},
+				ExpectNonEmptyPlan: {{.class_in_parent}},
+				Check: resource.ComposeAggregateTestCheckFunc(
+		{{- range $key, $value := .min}}
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
+		{{- end}}
+		{{- range $key, $value := .default}}{{$contains := definedInMap $key $.resource_required}}
+				{{- if not $contains}}
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
+			{{- end}}
+		{{- end}}
+		{{- range $key, $value := $.children}}{{$child := index $value 1 }}
+			{{- range $child_key, $child_value := $child}}
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.0.{{$child_key}}", "{{$child_value}}"),
+			{{- end}}
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.#", "1"),
+		{{- end}}
+				),
+			},
+			// Update with all children removed
+			{
+				Config: testConfig{{$.resourceClassName}}ChildrenRemoveAllDependencyWith{{capitalize .class_name}},
+				ExpectNonEmptyPlan: {{.class_in_parent}},
+				Check: resource.ComposeAggregateTestCheckFunc(
+		{{- range $key, $value := .min}}
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
+		{{- end}}
+		{{- range $key, $value := .default}}{{$contains := definedInMap $key $.resource_required}}
+				{{- if not $contains}}
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
+			{{- end}}
+		{{- end}}
+		{{- range $key, $value := $.children}}
+				resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.#", "0"),
+		{{- end}}
+				),
+			},
 		{{- end}}
 		},
 	})
@@ -202,6 +264,66 @@ func TestAccResource{{.resourceClassName}}(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.{{$child_index}}.{{$child_key}}", "{{$child_value}}"),
 				{{- end}}
 			{{- end}}
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.#", "2"),
+		{{- end}}
+				),
+			},
+			// Update with children removed from config
+			{
+				Config: testConfig{{.resourceClassName}}ChildrenRemoveFromConfig,
+				Check: resource.ComposeAggregateTestCheckFunc(
+		{{- range $key, $value := .min}}
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
+		{{- end}}
+		{{- range $key, $value := .default}}{{$contains := definedInMap $key $.resource_required}}
+				{{- if not $contains}}
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
+			{{- end}}
+		{{- end}}
+		{{- range $key, $value := $.children}}
+			{{- range $child_index, $child := $value}}
+				{{- range $child_key, $child_value := $child}}
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.{{$child_index}}.{{$child_key}}", "{{$child_value}}"),
+				{{- end}}
+			{{- end}}
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.#", "2"),
+		{{- end}}
+				),
+			},
+			// Update with children first child removed
+			{
+				Config: testConfig{{.resourceClassName}}ChildrenRemoveOne,
+				Check: resource.ComposeAggregateTestCheckFunc(
+		{{- range $key, $value := .min}}
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
+		{{- end}}
+		{{- range $key, $value := .default}}{{$contains := definedInMap $key $.resource_required}}
+				{{- if not $contains}}
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
+			{{- end}}
+		{{- end}}
+		{{- range $key, $value := $.children}}{{$child := index $value 1 }}
+			{{- range $child_key, $child_value := $child}}
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.0.{{$child_key}}", "{{$child_value}}"),
+			{{- end}}
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.#", "1"),
+		{{- end}}
+				),
+			},
+			// Update with all children removed
+			{
+				Config: testConfig{{.resourceClassName}}ChildrenRemoveAll,
+				Check: resource.ComposeAggregateTestCheckFunc(
+		{{- range $key, $value := .min}}
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
+		{{- end}}
+		{{- range $key, $value := .default}}{{$contains := definedInMap $key $.resource_required}}
+				{{- if not $contains}}
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
+			{{- end}}
+		{{- end}}
+		{{- range $key, $value := $.children}}
+				resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.#", "0"),
 		{{- end}}
 				),
 			},
@@ -271,6 +393,45 @@ resource "aci_{{$.resourceName}}" "test" {
   			{{- end}}
 }
 `
+
+const testConfig{{$.resourceClassName}}ChildrenRemoveFromConfigDependencyWith{{capitalize .class_name}} = testConfig{{capitalize .class_name}}Min{{- if ne .parent_dependency ""}}DependencyWith{{capitalize .parent_dependency}}{{- end}} + `
+resource "aci_{{$.resourceName}}" "test" {
+  parent_dn = {{.parent_dn}}
+  		{{- range $key, $value := $.resource_required}}
+  {{$key}} = "{{$value}}"
+  		{{- end}}
+}
+`
+
+const testConfig{{$.resourceClassName}}ChildrenRemoveOneDependencyWith{{capitalize .class_name}} = testConfig{{capitalize .class_name}}Min{{- if ne .parent_dependency ""}}DependencyWith{{capitalize .parent_dependency}}{{- end}} + `
+resource "aci_{{$.resourceName}}" "test" {
+  parent_dn = {{.parent_dn}}
+    	{{- range $key, $value := $.resource_required}}
+  {{$key}} = "{{$value}}"
+  		{{- end}}
+  		{{- range $key, $value := $.children}}
+  {{$key}} = [ {{$child := index $value 1 }}
+	{
+	  		{{- range $child_key, $child_value := $child}}
+	  {{$child_key}} = "{{$child_value}}"
+			{{- end}}
+	},
+  ]
+		{{- end}}
+}
+`
+
+const testConfig{{$.resourceClassName}}ChildrenRemoveAllDependencyWith{{capitalize .class_name}} = testConfig{{capitalize .class_name}}Min{{- if ne .parent_dependency ""}}DependencyWith{{capitalize .parent_dependency}}{{- end}} + `
+resource "aci_{{$.resourceName}}" "test" {
+  parent_dn = {{.parent_dn}}
+    	{{- range $key, $value := $.resource_required}}
+  {{$key}} = "{{$value}}"
+  		{{- end}}
+  		{{- range $key, $value := $.children}}
+  {{$key}} = []
+		{{- end}}
+}
+`
 		{{- end}}
 	{{- end}}
 {{else}}
@@ -327,5 +488,42 @@ resource "aci_{{$.resourceName}}" "test" {
   		{{- end}}
 }
 `
+
+const testConfig{{.resourceClassName}}ChildrenRemoveFromConfig = `
+resource "aci_{{$.resourceName}}" "test" {
+  		{{- range $key, $value := $.resource_required}}
+  {{$key}} = "{{$value}}"
+  		{{- end}}
+}
+`
+
+const testConfig{{.resourceClassName}}ChildrenRemoveOne = `
+resource "aci_{{$.resourceName}}" "test" {
+    	{{- range $key, $value := $.resource_required}}
+  {{$key}} = "{{$value}}"
+  		{{- end}}
+  		{{- range $key, $value := $.children}}
+  {{$key}} = [ {{$child := index $value 1 }}
+	{
+	  		{{- range $child_key, $child_value := $child}}
+	  {{$child_key}} = "{{$child_value}}"
+			{{- end}}
+	},
+  ]
+		{{- end}}
+}
+`
+
+const testConfig{{.resourceClassName}}ChildrenRemoveAll = `
+resource "aci_{{$.resourceName}}" "test" {
+    	{{- range $key, $value := $.resource_required}}
+  {{$key}} = "{{$value}}"
+  		{{- end}}
+  		{{- range $key, $value := $.children}}
+  {{$key}} = []
+		{{- end}}
+}
+`
+
 	{{- end}}
 {{- end}}
