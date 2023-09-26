@@ -9,7 +9,8 @@ description: |-
 
 # aci_cloud_service_endpoint_selector #
 
-Manages ACI Cloud Service Endpoint Selector
+Manages ACI Cloud Service Endpoint Selector.
+Note: This resource is supported in Cloud APIC only.
 
 ## API Information ##
 
@@ -18,7 +19,7 @@ Manages ACI Cloud Service Endpoint Selector
 
 ## GUI Information ##
 
-* `Location` - Application Management -> EPGs
+* `Location` - Application Management -> EPGs -> Actions -> Create EPG
 
 
 ## Example Usage ##
@@ -27,7 +28,6 @@ Manages ACI Cloud Service Endpoint Selector
 resource "aci_cloud_service_endpoint_selector" "example" {
   cloud_service_epg_dn  = aci_cloud_service_epg.example.id
   name                  = "example"
-  annotation            = "orchestrator:terraform"
   match_expression      = "IP=='11.11.11.0/24'"
 }
 ```

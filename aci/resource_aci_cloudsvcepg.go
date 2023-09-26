@@ -506,60 +506,60 @@ func resourceAciCloudServiceEPgCreate(ctx context.Context, d *schema.ResourceDat
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
 	name := d.Get("name").(string)
-	CloudApplicationcontainerDn := d.Get("cloud_application_container_dn").(string)
+	cloudApplicationcontainerDn := d.Get("cloud_application_container_dn").(string)
 
 	cloudSvcEPgAttr := models.CloudServiceEPgAttributes{}
 
-	if Annotation, ok := d.GetOk("annotation"); ok {
-		cloudSvcEPgAttr.Annotation = Annotation.(string)
+	if annotation, ok := d.GetOk("annotation"); ok {
+		cloudSvcEPgAttr.Annotation = annotation.(string)
 	} else {
 		cloudSvcEPgAttr.Annotation = "{}"
 	}
 
-	if AccessType, ok := d.GetOk("access_type"); ok {
-		cloudSvcEPgAttr.AccessType = AccessType.(string)
+	if accessType, ok := d.GetOk("access_type"); ok {
+		cloudSvcEPgAttr.AccessType = accessType.(string)
 	}
 
-	if AzPrivateEndpoint, ok := d.GetOk("azure_private_endpoint"); ok {
-		cloudSvcEPgAttr.AzPrivateEndpoint = AzPrivateEndpoint.(string)
+	if azPrivateEndpoint, ok := d.GetOk("azure_private_endpoint"); ok {
+		cloudSvcEPgAttr.AzPrivateEndpoint = azPrivateEndpoint.(string)
 	}
 
-	if CustomSvcType, ok := d.GetOk("custom_service_type"); ok {
-		cloudSvcEPgAttr.CustomSvcType = CustomSvcType.(string)
+	if customSvcType, ok := d.GetOk("custom_service_type"); ok {
+		cloudSvcEPgAttr.CustomSvcType = customSvcType.(string)
 	}
 
-	if DeploymentType, ok := d.GetOk("deployment_type"); ok {
-		cloudSvcEPgAttr.DeploymentType = DeploymentType.(string)
+	if deploymentType, ok := d.GetOk("deployment_type"); ok {
+		cloudSvcEPgAttr.DeploymentType = deploymentType.(string)
 	}
 
-	if FloodOnEncap, ok := d.GetOk("flood_on_encap"); ok {
-		cloudSvcEPgAttr.FloodOnEncap = FloodOnEncap.(string)
+	if floodOnEncap, ok := d.GetOk("flood_on_encap"); ok {
+		cloudSvcEPgAttr.FloodOnEncap = floodOnEncap.(string)
 	}
 
-	if MatchT, ok := d.GetOk("label_match_criteria"); ok {
-		cloudSvcEPgAttr.MatchT = MatchT.(string)
+	if matchT, ok := d.GetOk("label_match_criteria"); ok {
+		cloudSvcEPgAttr.MatchT = matchT.(string)
 	}
 
-	if Name, ok := d.GetOk("name"); ok {
-		cloudSvcEPgAttr.Name = Name.(string)
+	if name, ok := d.GetOk("name"); ok {
+		cloudSvcEPgAttr.Name = name.(string)
 	}
 
-	if NameAlias, ok := d.GetOk("name_alias"); ok {
-		cloudSvcEPgAttr.NameAlias = NameAlias.(string)
+	if nameAlias, ok := d.GetOk("name_alias"); ok {
+		cloudSvcEPgAttr.NameAlias = nameAlias.(string)
 	}
 
-	if PrefGrMemb, ok := d.GetOk("preferred_group_member"); ok {
-		cloudSvcEPgAttr.PrefGrMemb = PrefGrMemb.(string)
+	if prefGrMemb, ok := d.GetOk("preferred_group_member"); ok {
+		cloudSvcEPgAttr.PrefGrMemb = prefGrMemb.(string)
 	}
 
-	if Prio, ok := d.GetOk("prio"); ok {
-		cloudSvcEPgAttr.Prio = Prio.(string)
+	if prio, ok := d.GetOk("prio"); ok {
+		cloudSvcEPgAttr.Prio = prio.(string)
 	}
 
-	if CloudServiceEPg_type, ok := d.GetOk("cloud_service_epg_type"); ok {
-		cloudSvcEPgAttr.CloudServiceEPg_type = CloudServiceEPg_type.(string)
+	if cloudServiceEPg_type, ok := d.GetOk("cloud_service_epg_type"); ok {
+		cloudSvcEPgAttr.CloudServiceEPg_type = cloudServiceEPg_type.(string)
 	}
-	cloudSvcEPg := models.NewCloudServiceEPg(fmt.Sprintf(models.RnCloudSvcEPg, name), CloudApplicationcontainerDn, desc, cloudSvcEPgAttr)
+	cloudSvcEPg := models.NewCloudServiceEPg(fmt.Sprintf(models.RnCloudSvcEPg, name), cloudApplicationcontainerDn, desc, cloudSvcEPgAttr)
 
 	err := aciClient.Save(cloudSvcEPg)
 	if err != nil {
@@ -758,60 +758,60 @@ func resourceAciCloudServiceEPgUpdate(ctx context.Context, d *schema.ResourceDat
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
 	name := d.Get("name").(string)
-	CloudApplicationcontainerDn := d.Get("cloud_application_container_dn").(string)
+	cloudApplicationcontainerDn := d.Get("cloud_application_container_dn").(string)
 
 	cloudSvcEPgAttr := models.CloudServiceEPgAttributes{}
 
-	if Annotation, ok := d.GetOk("annotation"); ok {
-		cloudSvcEPgAttr.Annotation = Annotation.(string)
+	if annotation, ok := d.GetOk("annotation"); ok {
+		cloudSvcEPgAttr.Annotation = annotation.(string)
 	} else {
 		cloudSvcEPgAttr.Annotation = "{}"
 	}
 
-	if AccessType, ok := d.GetOk("access_type"); ok {
-		cloudSvcEPgAttr.AccessType = AccessType.(string)
+	if accessType, ok := d.GetOk("access_type"); ok {
+		cloudSvcEPgAttr.AccessType = accessType.(string)
 	}
 
-	if AzPrivateEndpoint, ok := d.GetOk("azure_private_endpoint"); ok {
-		cloudSvcEPgAttr.AzPrivateEndpoint = AzPrivateEndpoint.(string)
+	if azPrivateEndpoint, ok := d.GetOk("azure_private_endpoint"); ok {
+		cloudSvcEPgAttr.AzPrivateEndpoint = azPrivateEndpoint.(string)
 	}
 
-	if CustomSvcType, ok := d.GetOk("custom_service_type"); ok {
-		cloudSvcEPgAttr.CustomSvcType = CustomSvcType.(string)
+	if customSvcType, ok := d.GetOk("custom_service_type"); ok {
+		cloudSvcEPgAttr.CustomSvcType = customSvcType.(string)
 	}
 
-	if DeploymentType, ok := d.GetOk("deployment_type"); ok {
-		cloudSvcEPgAttr.DeploymentType = DeploymentType.(string)
+	if deploymentType, ok := d.GetOk("deployment_type"); ok {
+		cloudSvcEPgAttr.DeploymentType = deploymentType.(string)
 	}
 
-	if FloodOnEncap, ok := d.GetOk("flood_on_encap"); ok {
-		cloudSvcEPgAttr.FloodOnEncap = FloodOnEncap.(string)
+	if floodOnEncap, ok := d.GetOk("flood_on_encap"); ok {
+		cloudSvcEPgAttr.FloodOnEncap = floodOnEncap.(string)
 	}
 
-	if MatchT, ok := d.GetOk("label_match_criteria"); ok {
-		cloudSvcEPgAttr.MatchT = MatchT.(string)
+	if matchT, ok := d.GetOk("label_match_criteria"); ok {
+		cloudSvcEPgAttr.MatchT = matchT.(string)
 	}
 
-	if Name, ok := d.GetOk("name"); ok {
-		cloudSvcEPgAttr.Name = Name.(string)
+	if name, ok := d.GetOk("name"); ok {
+		cloudSvcEPgAttr.Name = name.(string)
 	}
 
-	if NameAlias, ok := d.GetOk("name_alias"); ok {
-		cloudSvcEPgAttr.NameAlias = NameAlias.(string)
+	if nameAlias, ok := d.GetOk("name_alias"); ok {
+		cloudSvcEPgAttr.NameAlias = nameAlias.(string)
 	}
 
-	if PrefGrMemb, ok := d.GetOk("preferred_group_member"); ok {
-		cloudSvcEPgAttr.PrefGrMemb = PrefGrMemb.(string)
+	if prefGrMemb, ok := d.GetOk("preferred_group_member"); ok {
+		cloudSvcEPgAttr.PrefGrMemb = prefGrMemb.(string)
 	}
 
-	if Prio, ok := d.GetOk("prio"); ok {
-		cloudSvcEPgAttr.Prio = Prio.(string)
+	if prio, ok := d.GetOk("prio"); ok {
+		cloudSvcEPgAttr.Prio = prio.(string)
 	}
 
-	if CloudServiceEPg_type, ok := d.GetOk("cloud_service_epg_type"); ok {
-		cloudSvcEPgAttr.CloudServiceEPg_type = CloudServiceEPg_type.(string)
+	if cloudServiceEPg_type, ok := d.GetOk("cloud_service_epg_type"); ok {
+		cloudSvcEPgAttr.CloudServiceEPg_type = cloudServiceEPg_type.(string)
 	}
-	cloudSvcEPg := models.NewCloudServiceEPg(fmt.Sprintf(models.RnCloudSvcEPg, name), CloudApplicationcontainerDn, desc, cloudSvcEPgAttr)
+	cloudSvcEPg := models.NewCloudServiceEPg(fmt.Sprintf(models.RnCloudSvcEPg, name), cloudApplicationcontainerDn, desc, cloudSvcEPgAttr)
 
 	cloudSvcEPg.Status = "modified"
 

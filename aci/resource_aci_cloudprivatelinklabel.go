@@ -91,24 +91,24 @@ func resourceAciCloudPrivateLinkLabelCreate(ctx context.Context, d *schema.Resou
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
 	name := d.Get("name").(string)
-	CloudServiceEPgDn := d.Get("parent_dn").(string)
+	parentDn := d.Get("parent_dn").(string)
 
 	cloudPrivateLinkLabelAttr := models.CloudPrivateLinkLabelAttributes{}
 
-	if Annotation, ok := d.GetOk("annotation"); ok {
-		cloudPrivateLinkLabelAttr.Annotation = Annotation.(string)
+	if annotation, ok := d.GetOk("annotation"); ok {
+		cloudPrivateLinkLabelAttr.Annotation = annotation.(string)
 	} else {
 		cloudPrivateLinkLabelAttr.Annotation = "{}"
 	}
 
-	if Name, ok := d.GetOk("name"); ok {
-		cloudPrivateLinkLabelAttr.Name = Name.(string)
+	if name, ok := d.GetOk("name"); ok {
+		cloudPrivateLinkLabelAttr.Name = name.(string)
 	}
 
-	if NameAlias, ok := d.GetOk("name_alias"); ok {
-		cloudPrivateLinkLabelAttr.NameAlias = NameAlias.(string)
+	if nameAlias, ok := d.GetOk("name_alias"); ok {
+		cloudPrivateLinkLabelAttr.NameAlias = nameAlias.(string)
 	}
-	cloudPrivateLinkLabel := models.NewCloudPrivateLinkLabel(fmt.Sprintf(models.RnCloudPrivateLinkLabel, name), CloudServiceEPgDn, desc, cloudPrivateLinkLabelAttr)
+	cloudPrivateLinkLabel := models.NewCloudPrivateLinkLabel(fmt.Sprintf(models.RnCloudPrivateLinkLabel, name), parentDn, desc, cloudPrivateLinkLabelAttr)
 
 	err := aciClient.Save(cloudPrivateLinkLabel)
 	if err != nil {
@@ -124,24 +124,24 @@ func resourceAciCloudPrivateLinkLabelUpdate(ctx context.Context, d *schema.Resou
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
 	name := d.Get("name").(string)
-	CloudServiceEPgDn := d.Get("parent_dn").(string)
+	parentDn := d.Get("parent_dn").(string)
 
 	cloudPrivateLinkLabelAttr := models.CloudPrivateLinkLabelAttributes{}
 
-	if Annotation, ok := d.GetOk("annotation"); ok {
-		cloudPrivateLinkLabelAttr.Annotation = Annotation.(string)
+	if annotation, ok := d.GetOk("annotation"); ok {
+		cloudPrivateLinkLabelAttr.Annotation = annotation.(string)
 	} else {
 		cloudPrivateLinkLabelAttr.Annotation = "{}"
 	}
 
-	if Name, ok := d.GetOk("name"); ok {
-		cloudPrivateLinkLabelAttr.Name = Name.(string)
+	if name, ok := d.GetOk("name"); ok {
+		cloudPrivateLinkLabelAttr.Name = name.(string)
 	}
 
-	if NameAlias, ok := d.GetOk("name_alias"); ok {
-		cloudPrivateLinkLabelAttr.NameAlias = NameAlias.(string)
+	if nameAlias, ok := d.GetOk("name_alias"); ok {
+		cloudPrivateLinkLabelAttr.NameAlias = nameAlias.(string)
 	}
-	cloudPrivateLinkLabel := models.NewCloudPrivateLinkLabel(fmt.Sprintf(models.RnCloudPrivateLinkLabel, name), CloudServiceEPgDn, desc, cloudPrivateLinkLabelAttr)
+	cloudPrivateLinkLabel := models.NewCloudPrivateLinkLabel(fmt.Sprintf(models.RnCloudPrivateLinkLabel, name), parentDn, desc, cloudPrivateLinkLabelAttr)
 
 	cloudPrivateLinkLabel.Status = "modified"
 

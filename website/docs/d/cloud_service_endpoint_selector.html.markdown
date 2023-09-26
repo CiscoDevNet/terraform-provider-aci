@@ -10,7 +10,7 @@ description: |-
 # aci_cloud_service_endpoint_selector #
 
 Data source for ACI Cloud Service Endpoint Selector
-Note: This resource is supported in Cloud APIC only.
+Note: This datasource is supported in Cloud APIC only.
 
 ## API Information ##
 
@@ -19,7 +19,7 @@ Note: This resource is supported in Cloud APIC only.
 
 ## GUI Information ##
 
-* `Location` - Application Management -> EPGs
+* `Location` - Application Management -> EPGs -> Actions -> Create EPG
 
 
 ## Example Usage ##

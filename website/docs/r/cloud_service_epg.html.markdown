@@ -10,6 +10,7 @@ description: |-
 # aci_cloud_service_epg #
 
 Manages ACI Cloud Service EPG
+Note: This resource is supported in Cloud APIC only.
 
 ## API Information ##
 
@@ -28,7 +29,6 @@ resource "aci_cloud_service_epg" "example" {
   cloud_application_container_dn  = aci_cloud_applicationcontainer.example.id
   name                            = "example"
   access_type                     = "Public"
-  annotation                      = "orchestrator:terraform"
   deployment_type                 = "CloudNative"
   flood_on_encap                  = "disabled"
   label_match_criteria            = "AtleastOne"

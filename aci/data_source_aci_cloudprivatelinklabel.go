@@ -30,9 +30,9 @@ func dataSourceAciCloudPrivateLinkLabel() *schema.Resource {
 func dataSourceAciCloudPrivateLinkLabelRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	aciClient := m.(*client.Client)
 	name := d.Get("name").(string)
-	CloudServiceEPgDn := d.Get("parent_dn").(string)
+	parentDn := d.Get("parent_dn").(string)
 	rn := fmt.Sprintf(models.RnCloudPrivateLinkLabel, name)
-	dn := fmt.Sprintf("%s/%s", CloudServiceEPgDn, rn)
+	dn := fmt.Sprintf("%s/%s", parentDn, rn)
 
 	cloudPrivateLinkLabel, err := getRemoteCloudPrivateLinkLabel(aciClient, dn)
 	if err != nil {

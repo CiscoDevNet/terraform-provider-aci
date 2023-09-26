@@ -168,9 +168,9 @@ func dataSourceAciCloudServiceEPg() *schema.Resource {
 func dataSourceAciCloudServiceEPgRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	aciClient := m.(*client.Client)
 	name := d.Get("name").(string)
-	CloudApplicationcontainerDn := d.Get("cloud_application_container_dn").(string)
+	cloudApplicationcontainerDn := d.Get("cloud_application_container_dn").(string)
 	rn := fmt.Sprintf(models.RnCloudSvcEPg, name)
-	dn := fmt.Sprintf("%s/%s", CloudApplicationcontainerDn, rn)
+	dn := fmt.Sprintf("%s/%s", cloudApplicationcontainerDn, rn)
 
 	cloudSvcEPg, err := getRemoteCloudServiceEPg(aciClient, dn)
 	if err != nil {

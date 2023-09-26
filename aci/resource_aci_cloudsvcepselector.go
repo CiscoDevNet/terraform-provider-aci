@@ -97,28 +97,28 @@ func resourceAciCloudServiceEndpointSelectorCreate(ctx context.Context, d *schem
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
 	name := d.Get("name").(string)
-	CloudServiceEPgDn := d.Get("cloud_service_epg_dn").(string)
+	cloudServiceEPgDn := d.Get("cloud_service_epg_dn").(string)
 
 	cloudSvcEPSelectorAttr := models.CloudServiceEndpointSelectorAttributes{}
 
-	if Annotation, ok := d.GetOk("annotation"); ok {
-		cloudSvcEPSelectorAttr.Annotation = Annotation.(string)
+	if annotation, ok := d.GetOk("annotation"); ok {
+		cloudSvcEPSelectorAttr.Annotation = annotation.(string)
 	} else {
 		cloudSvcEPSelectorAttr.Annotation = "{}"
 	}
 
-	if MatchExpression, ok := d.GetOk("match_expression"); ok {
-		cloudSvcEPSelectorAttr.MatchExpression = MatchExpression.(string)
+	if matchExpression, ok := d.GetOk("match_expression"); ok {
+		cloudSvcEPSelectorAttr.MatchExpression = matchExpression.(string)
 	}
 
-	if Name, ok := d.GetOk("name"); ok {
-		cloudSvcEPSelectorAttr.Name = Name.(string)
+	if name, ok := d.GetOk("name"); ok {
+		cloudSvcEPSelectorAttr.Name = name.(string)
 	}
 
-	if NameAlias, ok := d.GetOk("name_alias"); ok {
-		cloudSvcEPSelectorAttr.NameAlias = NameAlias.(string)
+	if nameAlias, ok := d.GetOk("name_alias"); ok {
+		cloudSvcEPSelectorAttr.NameAlias = nameAlias.(string)
 	}
-	cloudSvcEPSelector := models.NewCloudServiceEndpointSelector(fmt.Sprintf(models.RnCloudSvcEPSelector, name), CloudServiceEPgDn, desc, cloudSvcEPSelectorAttr)
+	cloudSvcEPSelector := models.NewCloudServiceEndpointSelector(fmt.Sprintf(models.RnCloudSvcEPSelector, name), cloudServiceEPgDn, desc, cloudSvcEPSelectorAttr)
 
 	err := aciClient.Save(cloudSvcEPSelector)
 	if err != nil {
@@ -134,28 +134,28 @@ func resourceAciCloudServiceEndpointSelectorUpdate(ctx context.Context, d *schem
 	aciClient := m.(*client.Client)
 	desc := d.Get("description").(string)
 	name := d.Get("name").(string)
-	CloudServiceEPgDn := d.Get("cloud_service_epg_dn").(string)
+	cloudServiceEPgDn := d.Get("cloud_service_epg_dn").(string)
 
 	cloudSvcEPSelectorAttr := models.CloudServiceEndpointSelectorAttributes{}
 
-	if Annotation, ok := d.GetOk("annotation"); ok {
-		cloudSvcEPSelectorAttr.Annotation = Annotation.(string)
+	if annotation, ok := d.GetOk("annotation"); ok {
+		cloudSvcEPSelectorAttr.Annotation = annotation.(string)
 	} else {
 		cloudSvcEPSelectorAttr.Annotation = "{}"
 	}
 
-	if MatchExpression, ok := d.GetOk("match_expression"); ok {
-		cloudSvcEPSelectorAttr.MatchExpression = MatchExpression.(string)
+	if matchExpression, ok := d.GetOk("match_expression"); ok {
+		cloudSvcEPSelectorAttr.MatchExpression = matchExpression.(string)
 	}
 
-	if Name, ok := d.GetOk("name"); ok {
-		cloudSvcEPSelectorAttr.Name = Name.(string)
+	if name, ok := d.GetOk("name"); ok {
+		cloudSvcEPSelectorAttr.Name = name.(string)
 	}
 
-	if NameAlias, ok := d.GetOk("name_alias"); ok {
-		cloudSvcEPSelectorAttr.NameAlias = NameAlias.(string)
+	if nameAlias, ok := d.GetOk("name_alias"); ok {
+		cloudSvcEPSelectorAttr.NameAlias = nameAlias.(string)
 	}
-	cloudSvcEPSelector := models.NewCloudServiceEndpointSelector(fmt.Sprintf(models.RnCloudSvcEPSelector, name), CloudServiceEPgDn, desc, cloudSvcEPSelectorAttr)
+	cloudSvcEPSelector := models.NewCloudServiceEndpointSelector(fmt.Sprintf(models.RnCloudSvcEPSelector, name), cloudServiceEPgDn, desc, cloudSvcEPSelectorAttr)
 
 	cloudSvcEPSelector.Status = "modified"
 

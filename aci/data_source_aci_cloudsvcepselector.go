@@ -34,9 +34,9 @@ func dataSourceAciCloudServiceEndpointSelector() *schema.Resource {
 func dataSourceAciCloudServiceEndpointSelectorRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	aciClient := m.(*client.Client)
 	name := d.Get("name").(string)
-	CloudServiceEPgDn := d.Get("cloud_service_epg_dn").(string)
+	cloudServiceEPgDn := d.Get("cloud_service_epg_dn").(string)
 	rn := fmt.Sprintf(models.RnCloudSvcEPSelector, name)
-	dn := fmt.Sprintf("%s/%s", CloudServiceEPgDn, rn)
+	dn := fmt.Sprintf("%s/%s", cloudServiceEPgDn, rn)
 
 	cloudSvcEPSelector, err := getRemoteCloudServiceEndpointSelector(aciClient, dn)
 	if err != nil {

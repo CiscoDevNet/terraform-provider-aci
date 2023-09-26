@@ -4,12 +4,13 @@ layout: "aci"
 page_title: "ACI: aci_cloud_private_link_label"
 sidebar_current: "docs-aci-resource-cloud_private_link_label"
 description: |-
-  Manages ACI Private Link Label 
+  Manages ACI Cloud Private Link Label 
 ---
 
 # aci_cloud_private_link_label #
 
-Manages ACI Private Link Label
+Manages ACI Cloud Private Link Label
+Note: This resource is supported in Cloud APIC only.
 
 ## API Information ##
 
@@ -18,7 +19,8 @@ Manages ACI Private Link Label
 
 ## GUI Information ##
 
-* `Location` - Application Management -> EPGs
+* `Location` - Application Management -> EPGs -> Actions -> Create EPG
+             - Application Management -> Application Profiles -> Actions -> Create Application Profile
 
 
 ## Example Usage ##
@@ -27,16 +29,15 @@ Manages ACI Private Link Label
 resource "aci_cloud_private_link_label" "example" {
   parent_dn  = aci_cloud_service_epg.example.id
   name       = "example"
-  annotation = "orchestrator:terraform"
 }
 ```
 
 ## Argument Reference ##
 
 * `parent_dn` - (Required) Distinguished name of the parent Cloud Service EPG or Cloud Subnet object. Type: String.
-* `name` - (Required) Name of the Private Link Label. Type: String.
-* `annotation` - (Optional) Annotation of the Private Link Label. Type: String.
-* `name_alias` - (Optional) Name Alias of the Private Link Label. Type: String.
+* `name` - (Required) Name of the Cloud Private Link Label. Type: String.
+* `annotation` - (Optional) Annotation of the Cloud Private Link Label. Type: String.
+* `name_alias` - (Optional) Name Alias of the Cloud Private Link Label. Type: String.
 
 
 
