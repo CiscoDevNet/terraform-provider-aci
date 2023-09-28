@@ -59,7 +59,7 @@ data "aci_cloud_service_epg" "example" {
 * `relation_fv_rs_cust_qos_pol` - (Read-Only) Represents the relation to a Custom QOS Policy (class qosCustomPol) that enables different levels of service to be assigned to network traffic, including specifications for the Differentiated Services Code Point (DSCP) value(s) and the 802.1p priority. Type: String.
 * `relation_fv_rs_graph_def` - (Read-Only) Represents the relation to a Graph Container (class vzGraphCont). Type: Block.
 * `relation_fv_rs_intra_epg` - (Read-Only) Represents the relation to an Intra EPG Contract (class vzBrCP). It also represents that the EPG is moving from "allow all within epg" mode to a "deny all within epg" mode. The only type of traffic allowed between EPs in this EPG is the one specified by contracts EPG associated with this relation. Type: Block.
-* `relation_fv_rs_prot_by` - (Read-Only) Represents the relation to a Taboo Contract Association (class vzTaboo) where the EPG will be a provider and consumer to the contract. Type: Set.
+* `relation_fv_rs_prot_by` - (Read-Only) Represents the relation to a Taboo Contract Association (class vzTaboo) where the EPG will be a provider and consumer to the contract. Type: Block.
 * `relation_fv_rs_prov` - (Read-Only) A block representing the relation to a Contract Provider (class vzBrCP). This relationship allows the EPG to be the contract's provider. Type: Block.
   * `match_t` - (Read-Only) The matched EPG type. Type: String.
   * `prio` - (Read-Only) The system class determines the quality of service and priority for the consumer traffic. Type: String.
