@@ -13,7 +13,7 @@ provider "aci" {
   insecure = true
 }
 
-// Prerequisite class objects for all cloud service EPG's dployment type
+// Prerequisite class objects for all cloud service EPG's deployment type
 
 resource "aci_tenant" "azure_cloud_tenant_tf_test" {
   name = "azure_terraform_test_tenant_svc_epg"
