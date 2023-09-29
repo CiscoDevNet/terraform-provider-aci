@@ -74,7 +74,7 @@ An existing L3out Redistribute Policy can be [imported](https://www.terraform.io
 terraform import aci_l3out_redistribute_policy.example uni/tn-{name}/out-{name}/rsredistributePol-[{tnRtctrlProfileName}]-{src}
 ```
 
-Starting in Terraform version 1.5, an existing BFD Multihop Node Policy can be imported 
+Starting in Terraform version 1.5, an existing L3out Redistribute Policy can be imported 
 using [import blocks](https://developer.hashicorp.com/terraform/language/import) via the following configuration:
 
 ```

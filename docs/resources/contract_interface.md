@@ -113,7 +113,7 @@ An existing Contract Interface can be [imported](https://www.terraform.io/docs/i
 terraform import aci_contract_interface.example uni/tn-{name}/cloudapp-{name}/cloudsvcepg-{name}/rsconsIf-{tnVzCPIfName}
 ```
 
-Starting in Terraform version 1.5, an existing BFD Multihop Node Policy can be imported 
+Starting in Terraform version 1.5, an existing Contract Interface can be imported 
 using [import blocks](https://developer.hashicorp.com/terraform/language/import) via the following configuration:
 
 ```

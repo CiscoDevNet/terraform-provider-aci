@@ -89,7 +89,7 @@ An existing Annotation can be [imported](https://www.terraform.io/docs/import/in
 terraform import aci_annotation.example uni/fabric/dcswitchconnprof/rsdcProfToEpg/annotationKey-[{key}]
 ```
 
-Starting in Terraform version 1.5, an existing BFD Multihop Node Policy can be imported 
+Starting in Terraform version 1.5, an existing Annotation can be imported 
 using [import blocks](https://developer.hashicorp.com/terraform/language/import) via the following configuration:
 
 ```

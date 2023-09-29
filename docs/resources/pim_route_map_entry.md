@@ -80,7 +80,7 @@ An existing Pim Route Map Entry can be [imported](https://www.terraform.io/docs/
 terraform import aci_pim_route_map_entry.example uni/tn-{name}/rtmap-{name}/rtmapentry-{order}
 ```
 
-Starting in Terraform version 1.5, an existing BFD Multihop Node Policy can be imported 
+Starting in Terraform version 1.5, an existing Pim Route Map Entry can be imported 
 using [import blocks](https://developer.hashicorp.com/terraform/language/import) via the following configuration:
 
 ```

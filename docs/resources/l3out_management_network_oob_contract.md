@@ -61,7 +61,7 @@ An existing L3out Management Network Oob Contract can be [imported](https://www.
 terraform import aci_l3out_management_network_oob_contract.example uni/tn-{name}/extmgmt-{name}/instp-{name}/rsooBCons-{tnVzOOBBrCPName}
 ```
 
-Starting in Terraform version 1.5, an existing BFD Multihop Node Policy can be imported 
+Starting in Terraform version 1.5, an existing L3out Management Network Oob Contract can be imported 
 using [import blocks](https://developer.hashicorp.com/terraform/language/import) via the following configuration:
 
 ```

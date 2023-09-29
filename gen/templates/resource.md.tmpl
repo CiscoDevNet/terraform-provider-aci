@@ -117,7 +117,7 @@ An existing {{getResourceNameAsDescription .ResourceName}} can be [imported](htt
 terraform import aci_{{- .ResourceName}}.example {{ index .DnFormats 0 }}
 ```
 
-Starting in Terraform version 1.5, an existing BFD Multihop Node Policy can be imported 
+Starting in Terraform version 1.5, an existing {{getResourceNameAsDescription .ResourceName}} can be imported 
 using [import blocks](https://developer.hashicorp.com/terraform/language/import) via the following configuration:
 
 ```

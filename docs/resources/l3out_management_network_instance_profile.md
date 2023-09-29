@@ -77,7 +77,7 @@ An existing L3out Management Network Instance Profile can be [imported](https://
 terraform import aci_l3out_management_network_instance_profile.example uni/tn-mgmt/extmgmt-default/instp-{name}
 ```
 
-Starting in Terraform version 1.5, an existing BFD Multihop Node Policy can be imported 
+Starting in Terraform version 1.5, an existing L3out Management Network Instance Profile can be imported 
 using [import blocks](https://developer.hashicorp.com/terraform/language/import) via the following configuration:
 
 ```

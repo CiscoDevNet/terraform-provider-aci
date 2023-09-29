@@ -61,7 +61,7 @@ An existing L3out Management Network Subnet can be [imported](https://www.terraf
 terraform import aci_l3out_management_network_subnet.example uni/tn-mgmt/extmgmt-default/instp-{name}/subnet-[{ip}]
 ```
 
-Starting in Terraform version 1.5, an existing BFD Multihop Node Policy can be imported 
+Starting in Terraform version 1.5, an existing L3out Management Network Subnet can be imported 
 using [import blocks](https://developer.hashicorp.com/terraform/language/import) via the following configuration:
 
 ```

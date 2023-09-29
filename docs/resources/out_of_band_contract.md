@@ -82,7 +82,7 @@ An existing Out Of Band Contract can be [imported](https://www.terraform.io/docs
 terraform import aci_out_of_band_contract.example uni/tn-mgmt/oobbrc-{name}
 ```
 
-Starting in Terraform version 1.5, an existing BFD Multihop Node Policy can be imported 
+Starting in Terraform version 1.5, an existing Out Of Band Contract can be imported 
 using [import blocks](https://developer.hashicorp.com/terraform/language/import) via the following configuration:
 
 ```

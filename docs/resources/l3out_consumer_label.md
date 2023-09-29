@@ -80,7 +80,7 @@ An existing L3out Consumer Label can be [imported](https://www.terraform.io/docs
 terraform import aci_l3out_consumer_label.example uni/tn-{name}/out-{name}/conslbl-{name}
 ```
 
-Starting in Terraform version 1.5, an existing BFD Multihop Node Policy can be imported 
+Starting in Terraform version 1.5, an existing L3out Consumer Label can be imported 
 using [import blocks](https://developer.hashicorp.com/terraform/language/import) via the following configuration:
 
 ```
