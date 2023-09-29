@@ -57,7 +57,7 @@ data "aci_contract_interface" "example" {
 
 ### Required
 
-* `parent_dn` - (string) The distinquised name (DN) of the parent object, possible resources:
+* `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
   - [aci_application_epg](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/application_epg) (`fvAEPg`)
   - The distinquised name (DN) of classes below can be used but currently there is no available resource for it:
     - `cloudEPg`
@@ -82,7 +82,7 @@ data "aci_contract_interface" "example" {
 
 ### Read-Only
 
-* `id` - (string) The distinquised name (DN) of the Contract Interface object.
+* `id` - (string) The distinguished name (DN) of the Contract Interface object.
 * `annotation` - (string) The annotation of the Contract Interface object.
 * `priority` - (string) The contract interface priority.
 

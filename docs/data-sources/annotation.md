@@ -57,7 +57,7 @@ data "aci_annotation" "example" {
 
 ### Required
 
-* `parent_dn` - (string) The distinquised name (DN) of the parent object, possible resources:
+* `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
   - [aci_application_epg](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/application_epg) (`fvAEPg`)
   - [aci_contract_interface](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/contract_interface) (`fvRsConsIf`)
   - [aci_tenant](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tenant) (`fvTenant`)
@@ -77,5 +77,5 @@ data "aci_annotation" "example" {
 
 ### Read-Only
 
-* `id` - (string) The distinquised name (DN) of the Annotation object.
+* `id` - (string) The distinguished name (DN) of the Annotation object.
 * `value` - (string) The value of the property.

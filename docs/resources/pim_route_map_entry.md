@@ -43,13 +43,13 @@ resource "aci_pim_route_map_entry" "example" {
 
 ### Required
 
-* `parent_dn` - (string) The distinquised name (DN) of the parent object, possible resources:
+* `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
   - [aci_pim_route_map_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/pim_route_map_policy) (`pimRouteMapPol`)
 * `order` - (string) PIM route map entry order.
 
 ### Read-Only
 
-* `id` - (string) The distinquised name (DN) of the Pim Route Map Entry object.
+* `id` - (string) The distinguished name (DN) of the Pim Route Map Entry object.
 
 ### Optional
   
@@ -74,7 +74,7 @@ resource "aci_pim_route_map_entry" "example" {
 
 ## Importing ##
 
-An existing Pim Route Map Entry can be [imported](https://www.terraform.io/docs/import/index.html) into this resource via its distinquised name (DN), via the following command:
+An existing Pim Route Map Entry can be [imported](https://www.terraform.io/docs/import/index.html) into this resource via its distinguished name (DN), via the following command:
 
 ```
 terraform import aci_pim_route_map_entry.example uni/tn-{name}/rtmap-{name}/rtmapentry-{order}

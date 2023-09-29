@@ -38,7 +38,7 @@ data "aci_out_of_band_contract" "example" {
 
 ### Read-Only
 
-* `id` - (string) The distinquised name (DN) of the Out Of Band Contract object.
+* `id` - (string) The distinguished name (DN) of the Out Of Band Contract object.
 * `annotation` - (string) The annotation of the Out Of Band Contract object.
 * `description` - (string) The description of the Out Of Band Contract object.
 * `intent` - (string) Install Rules or Estimate Nummber of Rules.

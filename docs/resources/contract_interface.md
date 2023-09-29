@@ -63,7 +63,7 @@ resource "aci_contract_interface" "example" {
 
 ### Required
 
-* `parent_dn` - (string) The distinquised name (DN) of the parent object, possible resources:
+* `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
   - [aci_application_epg](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/application_epg) (`fvAEPg`)
   - The distinquised name (DN) of classes below can be used but currently there is no available resource for it:
     - `cloudEPg`
@@ -88,7 +88,7 @@ resource "aci_contract_interface" "example" {
 
 ### Read-Only
 
-* `id` - (string) The distinquised name (DN) of the Contract Interface object.
+* `id` - (string) The distinguished name (DN) of the Contract Interface object.
 
 ### Optional
   
@@ -107,7 +107,7 @@ resource "aci_contract_interface" "example" {
 
 ## Importing ##
 
-An existing Contract Interface can be [imported](https://www.terraform.io/docs/import/index.html) into this resource via its distinquised name (DN), via the following command:
+An existing Contract Interface can be [imported](https://www.terraform.io/docs/import/index.html) into this resource via its distinguished name (DN), via the following command:
 
 ```
 terraform import aci_contract_interface.example uni/tn-{name}/cloudapp-{name}/cloudsvcepg-{name}/rsconsIf-{tnVzCPIfName}

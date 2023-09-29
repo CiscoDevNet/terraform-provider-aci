@@ -37,13 +37,13 @@ data "aci_pim_route_map_policy" "example" {
 
 ### Required
 
-* `parent_dn` - (string) The distinquised name (DN) of the parent object, possible resources:
+* `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
   - [aci_tenant](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tenant) (`fvTenant`)
 * `name` - (string) The name of the Pim Route Map Policy object.
 
 ### Read-Only
 
-* `id` - (string) The distinquised name (DN) of the Pim Route Map Policy object.
+* `id` - (string) The distinguished name (DN) of the Pim Route Map Policy object.
 * `annotation` - (string) The annotation of the Pim Route Map Policy object.
 * `description` - (string) The description of the Pim Route Map Policy object.
 * `name_alias` - (string) The name alias of the Pim Route Map Policy object.

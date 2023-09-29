@@ -37,13 +37,13 @@ resource "aci_l3out_management_network_oob_contract" "example" {
 
 ### Required
 
-* `parent_dn` - (string) The distinquised name (DN) of the parent object, possible resources:
+* `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
   - [aci_l3out_management_network_instance_profile](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/l3out_management_network_instance_profile) (`mgmtInstP`)
 * `out_of_band_contract_name` - (string) An out-of-band management endpoint group contract consists of switches (leaves/spines) and APICs that are part of the associated out-of-band management zone. Each node in the group is assigned an IP address that is dynamically allocated from the address pool associated with the corresponding out-of-band management zone.
 
 ### Read-Only
 
-* `id` - (string) The distinquised name (DN) of the L3out Management Network Oob Contract object.
+* `id` - (string) The distinguished name (DN) of the L3out Management Network Oob Contract object.
 
 ### Optional
   
@@ -55,7 +55,7 @@ resource "aci_l3out_management_network_oob_contract" "example" {
 
 ## Importing ##
 
-An existing L3out Management Network Oob Contract can be [imported](https://www.terraform.io/docs/import/index.html) into this resource via its distinquised name (DN), via the following command:
+An existing L3out Management Network Oob Contract can be [imported](https://www.terraform.io/docs/import/index.html) into this resource via its distinguished name (DN), via the following command:
 
 ```
 terraform import aci_l3out_management_network_oob_contract.example uni/tn-{name}/extmgmt-{name}/instp-{name}/rsooBCons-{tnVzOOBBrCPName}

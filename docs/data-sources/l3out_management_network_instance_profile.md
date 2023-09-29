@@ -38,7 +38,7 @@ data "aci_l3out_management_network_instance_profile" "example" {
 
 ### Read-Only
 
-* `id` - (string) The distinquised name (DN) of the L3out Management Network Instance Profile object.
+* `id` - (string) The distinguished name (DN) of the L3out Management Network Instance Profile object.
 * `annotation` - (string) The annotation of the L3out Management Network Instance Profile object.
 * `description` - (string) The description of the L3out Management Network Instance Profile object.
 * `name_alias` - (string) The name alias of the L3out Management Network Instance Profile object.

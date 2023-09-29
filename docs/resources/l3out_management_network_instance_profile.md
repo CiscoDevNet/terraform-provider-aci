@@ -43,7 +43,7 @@ resource "aci_l3out_management_network_instance_profile" "example" {
 
 ### Read-Only
 
-* `id` - (string) The distinquised name (DN) of the L3out Management Network Instance Profile object.
+* `id` - (string) The distinguished name (DN) of the L3out Management Network Instance Profile object.
 
 ### Optional
   
@@ -71,7 +71,7 @@ resource "aci_l3out_management_network_instance_profile" "example" {
 
 ## Importing ##
 
-An existing L3out Management Network Instance Profile can be [imported](https://www.terraform.io/docs/import/index.html) into this resource via its distinquised name (DN), via the following command:
+An existing L3out Management Network Instance Profile can be [imported](https://www.terraform.io/docs/import/index.html) into this resource via its distinguished name (DN), via the following command:
 
 ```
 terraform import aci_l3out_management_network_instance_profile.example uni/tn-mgmt/extmgmt-default/instp-{name}

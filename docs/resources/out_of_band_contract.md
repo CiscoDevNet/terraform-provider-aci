@@ -44,7 +44,7 @@ resource "aci_out_of_band_contract" "example" {
 
 ### Read-Only
 
-* `id` - (string) The distinquised name (DN) of the Out Of Band Contract object.
+* `id` - (string) The distinguished name (DN) of the Out Of Band Contract object.
 
 ### Optional
   
@@ -76,7 +76,7 @@ resource "aci_out_of_band_contract" "example" {
 
 ## Importing ##
 
-An existing Out Of Band Contract can be [imported](https://www.terraform.io/docs/import/index.html) into this resource via its distinquised name (DN), via the following command:
+An existing Out Of Band Contract can be [imported](https://www.terraform.io/docs/import/index.html) into this resource via its distinguished name (DN), via the following command:
 
 ```
 terraform import aci_out_of_band_contract.example uni/tn-mgmt/oobbrc-{name}

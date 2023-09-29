@@ -43,13 +43,13 @@ resource "aci_l3out_consumer_label" "example" {
 
 ### Required
 
-* `parent_dn` - (string) The distinquised name (DN) of the parent object, possible resources:
+* `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
   - [aci_l3_outside](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/l3_outside) (`l3extOut`)
 * `name` - (string) The name of the L3out Consumer Label object.
 
 ### Read-Only
 
-* `id` - (string) The distinquised name (DN) of the L3out Consumer Label object.
+* `id` - (string) The distinguished name (DN) of the L3out Consumer Label object.
 
 ### Optional
   
@@ -74,7 +74,7 @@ resource "aci_l3out_consumer_label" "example" {
 
 ## Importing ##
 
-An existing L3out Consumer Label can be [imported](https://www.terraform.io/docs/import/index.html) into this resource via its distinquised name (DN), via the following command:
+An existing L3out Consumer Label can be [imported](https://www.terraform.io/docs/import/index.html) into this resource via its distinguished name (DN), via the following command:
 
 ```
 terraform import aci_l3out_consumer_label.example uni/tn-{name}/out-{name}/conslbl-{name}

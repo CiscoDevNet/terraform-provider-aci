@@ -37,13 +37,13 @@ data "aci_l3out_management_network_subnet" "example" {
 
 ### Required
 
-* `parent_dn` - (string) The distinquised name (DN) of the parent object, possible resources:
+* `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
   - [aci_l3out_management_network_instance_profile](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/l3out_management_network_instance_profile) (`mgmtInstP`)
 * `ip` - (string) The external subnet IP address and subnet mask. This IP address is used for creating an external management entity. The subnet mask for the IP address to be imported from the outside into the fabric. The contracts associated with its parent instance profile (l3ext:InstP) are applied to the subnet.
 
 ### Read-Only
 
-* `id` - (string) The distinquised name (DN) of the L3out Management Network Subnet object.
+* `id` - (string) The distinguished name (DN) of the L3out Management Network Subnet object.
 * `annotation` - (string) The annotation of the L3out Management Network Subnet object.
 * `description` - (string) The description of the L3out Management Network Subnet object.
 * `name` - (string) The name of the L3out Management Network Subnet object.

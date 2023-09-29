@@ -58,7 +58,7 @@ resource "aci_annotation" "example" {
 
 ### Required
 
-* `parent_dn` - (string) The distinquised name (DN) of the parent object, possible resources:
+* `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
   - [aci_application_epg](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/application_epg) (`fvAEPg`)
   - [aci_contract_interface](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/contract_interface) (`fvRsConsIf`)
   - [aci_tenant](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tenant) (`fvTenant`)
@@ -79,11 +79,11 @@ resource "aci_annotation" "example" {
 
 ### Read-Only
 
-* `id` - (string) The distinquised name (DN) of the Annotation object.
+* `id` - (string) The distinguished name (DN) of the Annotation object.
 
 ## Importing ##
 
-An existing Annotation can be [imported](https://www.terraform.io/docs/import/index.html) into this resource via its distinquised name (DN), via the following command:
+An existing Annotation can be [imported](https://www.terraform.io/docs/import/index.html) into this resource via its distinguished name (DN), via the following command:
 
 ```
 terraform import aci_annotation.example uni/fabric/dcswitchconnprof/rsdcProfToEpg/annotationKey-[{key}]
