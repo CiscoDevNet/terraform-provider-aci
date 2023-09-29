@@ -13,14 +13,14 @@ Manages ACI L3out Redistribute Policy
 
 ## API Information ##
 
-* `Class` - l3extRsRedistributePol
+* `Class` - `l3extRsRedistributePol`
 
 * `Distinguished Name Formats`
-  - uni/tn-{name}/out-{name}/rsredistributePol-[{tnRtctrlProfileName}]-{src}
+  - `uni/tn-{name}/out-{name}/rsredistributePol-[{tnRtctrlProfileName}]-{src}`
 
 ## GUI Information ##
 
-* `Location` - Tenants -> Networking -> L3Outs -> Redistribute Policies
+* `Location` - `Tenants -> Networking -> L3Outs -> Redistribute Policies`
 
 ## Example Usage ##
 

@@ -13,14 +13,14 @@ Data source for L3out Management Network Subnet
 
 ## API Information ##
 
-* `Class` - mgmtSubnet
+* `Class` - `mgmtSubnet`
 
 * `Distinguished Name Formats`
-  - uni/tn-mgmt/extmgmt-default/instp-{name}/subnet-[{ip}]
+  - `uni/tn-mgmt/extmgmt-default/instp-{name}/subnet-[{ip}]`
 
 ## GUI Information ##
 
-* `Location` - Tenants (mgmt) -> External Management Network Instance Profiles -> Subnets
+* `Location` - `Tenants (mgmt) -> External Management Network Instance Profiles -> Subnets`
 
 ## Example Usage ##
 

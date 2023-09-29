@@ -13,14 +13,14 @@ Data source for Pim Route Map Entry
 
 ## API Information ##
 
-* `Class` - pimRouteMapEntry
+* `Class` - `pimRouteMapEntry`
 
 * `Distinguished Name Formats`
-  - uni/tn-{name}/rtmap-{name}/rtmapentry-{order}
+  - `uni/tn-{name}/rtmap-{name}/rtmapentry-{order}`
 
 ## GUI Information ##
 
-* `Location` - Tenants -> Policies -> Protocol -> Route Maps for Multicast -> Route Maps
+* `Location` - `Tenants -> Policies -> Protocol -> Route Maps for Multicast -> Route Maps`
 
 ## Example Usage ##
 

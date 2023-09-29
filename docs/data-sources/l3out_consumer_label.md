@@ -13,14 +13,14 @@ Data source for L3out Consumer Label
 
 ## API Information ##
 
-* `Class` - l3extConsLbl
+* `Class` - `l3extConsLbl`
 
 * `Distinguished Name Formats`
-  - uni/tn-{name}/out-{name}/conslbl-{name}
+  - `uni/tn-{name}/out-{name}/conslbl-{name}`
 
 ## GUI Information ##
 
-* `Location` - Tenants -> Networking -> L3Outs
+* `Location` - `Tenants -> Networking -> L3Outs`
 
 ## Example Usage ##
 

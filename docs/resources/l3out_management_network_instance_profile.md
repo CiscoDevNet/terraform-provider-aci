@@ -13,14 +13,14 @@ Manages ACI L3out Management Network Instance Profile
 
 ## API Information ##
 
-* `Class` - mgmtInstP
+* `Class` - `mgmtInstP`
 
 * `Distinguished Name Formats`
-  - uni/tn-mgmt/extmgmt-default/instp-{name}
+  - `uni/tn-mgmt/extmgmt-default/instp-{name}`
 
 ## GUI Information ##
 
-* `Location` - Tenants (mgmt) -> External Management Network Instance Profiles
+* `Location` - `Tenants (mgmt) -> External Management Network Instance Profiles`
 
 ## Example Usage ##
 

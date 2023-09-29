@@ -13,34 +13,34 @@ Data source for Annotation
 
 ## API Information ##
 
-* `Class` - tagAnnotation
+* `Class` - `tagAnnotation`
 
 * `Distinguished Name Formats`
-  - TaskDeployCsr/annotationKey-[{key}]
-  - TaskDeployCtx/annotationKey-[{key}]
-  - TaskDeploySg/annotationKey-[{key}]
-  - TaskDeploySgRule/annotationKey-[{key}]
-  - TaskPolicyUpdate/annotationKey-[{key}]
-  - TaskResourceMap/annotationKey-[{key}]
-  - acct-[{name}]/acctoper/fault-{code}/annotationKey-[{key}]
-  - acct-[{name}]/adds/annotationKey-[{key}]
-  - acct-[{name}]/apigw/annotationKey-[{key}]
-  - acct-[{name}]/certstore-{store}/cert-[{name}]/certificateoper/fault-{code}/annotationKey-[{key}]
-  - acct-[{name}]/cloudsvc-[{name}]-typ-[{type}]-rg-{rg}/adds/annotationKey-[{key}]
-  - acct-[{name}]/cloudsvc-[{name}]-typ-[{type}]-rg-{rg}/apigw/annotationKey-[{key}]
-  - acct-[{name}]/cloudsvc-[{name}]-typ-[{type}]-rg-{rg}/cntreg/annotationKey-[{key}]
-  - acct-[{name}]/cloudsvc-[{name}]-typ-[{type}]-rg-{rg}/cosmosdb/annotationKey-[{key}]
-  - acct-[{name}]/cloudsvc-[{name}]-typ-[{type}]-rg-{rg}/dbricks/annotationKey-[{key}]
-  - acct-[{name}]/cloudsvc-[{name}]-typ-[{type}]-rg-{rg}/dbricks/rsbricksToPubSubnet/annotationKey-[{key}]
-  - acct-[{name}]/cloudsvc-[{name}]-typ-[{type}]-rg-{rg}/dbricks/rsbricksToPubSubnet/fault-{code}/annotationKey-[{key}]
-  - acct-[{name}]/cloudsvc-[{name}]-typ-[{type}]-rg-{rg}/dbricks/rsbricksToPvtSubnet/annotationKey-[{key}]
-  - acct-[{name}]/cloudsvc-[{name}]-typ-[{type}]-rg-{rg}/dbricks/rsbricksToPvtSubnet/fault-{code}/annotationKey-[{key}]
-  - acct-[{name}]/cloudsvc-[{name}]-typ-[{type}]-rg-{rg}/keyvault/annotationKey-[{key}]
-  - Too many DN formats to display, see model documentation for all possible parents.
+  - `TaskDeployCsr/annotationKey-[{key}]`
+  - `TaskDeployCtx/annotationKey-[{key}]`
+  - `TaskDeploySg/annotationKey-[{key}]`
+  - `TaskDeploySgRule/annotationKey-[{key}]`
+  - `TaskPolicyUpdate/annotationKey-[{key}]`
+  - `TaskResourceMap/annotationKey-[{key}]`
+  - `acct-[{name}]/acctoper/fault-{code}/annotationKey-[{key}]`
+  - `acct-[{name}]/adds/annotationKey-[{key}]`
+  - `acct-[{name}]/apigw/annotationKey-[{key}]`
+  - `acct-[{name}]/certstore-{store}/cert-[{name}]/certificateoper/fault-{code}/annotationKey-[{key}]`
+  - `acct-[{name}]/cloudsvc-[{name}]-typ-[{type}]-rg-{rg}/adds/annotationKey-[{key}]`
+  - `acct-[{name}]/cloudsvc-[{name}]-typ-[{type}]-rg-{rg}/apigw/annotationKey-[{key}]`
+  - `acct-[{name}]/cloudsvc-[{name}]-typ-[{type}]-rg-{rg}/cntreg/annotationKey-[{key}]`
+  - `acct-[{name}]/cloudsvc-[{name}]-typ-[{type}]-rg-{rg}/cosmosdb/annotationKey-[{key}]`
+  - `acct-[{name}]/cloudsvc-[{name}]-typ-[{type}]-rg-{rg}/dbricks/annotationKey-[{key}]`
+  - `acct-[{name}]/cloudsvc-[{name}]-typ-[{type}]-rg-{rg}/dbricks/rsbricksToPubSubnet/annotationKey-[{key}]`
+  - `acct-[{name}]/cloudsvc-[{name}]-typ-[{type}]-rg-{rg}/dbricks/rsbricksToPubSubnet/fault-{code}/annotationKey-[{key}]`
+  - `acct-[{name}]/cloudsvc-[{name}]-typ-[{type}]-rg-{rg}/dbricks/rsbricksToPvtSubnet/annotationKey-[{key}]`
+  - `acct-[{name}]/cloudsvc-[{name}]-typ-[{type}]-rg-{rg}/dbricks/rsbricksToPvtSubnet/fault-{code}/annotationKey-[{key}]`
+  - `acct-[{name}]/cloudsvc-[{name}]-typ-[{type}]-rg-{rg}/keyvault/annotationKey-[{key}]`
+  - `Too many DN formats to display, see model documentation for all possible parents.`
 
 ## GUI Information ##
 
-* `Location` - Generic
+* `Location` - `Generic`
 
 ## Example Usage ##
 

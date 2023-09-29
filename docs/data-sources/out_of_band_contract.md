@@ -13,14 +13,14 @@ Data source for Out Of Band Contract
 
 ## API Information ##
 
-* `Class` - vzOOBBrCP
+* `Class` - `vzOOBBrCP`
 
 * `Distinguished Name Formats`
-  - uni/tn-mgmt/oobbrc-{name}
+  - `uni/tn-mgmt/oobbrc-{name}`
 
 ## GUI Information ##
 
-* `Location` - Tenants (mgmt) -> Contracts -> Out-Of-Band Contracts
+* `Location` - `Tenants (mgmt) -> Contracts -> Out-Of-Band Contracts`
 
 ## Example Usage ##
 

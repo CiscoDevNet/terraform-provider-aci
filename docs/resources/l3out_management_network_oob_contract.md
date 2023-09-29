@@ -13,14 +13,14 @@ Manages ACI L3out Management Network Oob Contract
 
 ## API Information ##
 
-* `Class` - mgmtRsOoBCons
+* `Class` - `mgmtRsOoBCons`
 
 * `Distinguished Name Formats`
-  - uni/tn-{name}/extmgmt-{name}/instp-{name}/rsooBCons-{tnVzOOBBrCPName}
+  - `uni/tn-{name}/extmgmt-{name}/instp-{name}/rsooBCons-{tnVzOOBBrCPName}`
 
 ## GUI Information ##
 
-* `Location` - Tenants (mgmt) -> External Management Network Instance Profiles -> Contracts
+* `Location` - `Tenants (mgmt) -> External Management Network Instance Profiles -> Contracts`
 
 ## Example Usage ##
 
