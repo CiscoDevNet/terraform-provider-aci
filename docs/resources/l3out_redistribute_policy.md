@@ -59,7 +59,7 @@ resource "aci_l3out_redistribute_policy" "example" {
 * `annotation` - (string) The annotation of the L3out Redistribute Policy object.
   - Default: `orchestrator:terraform`
 
-* `annotations` - (list) A list of Annotations objects `tagAnnotation` which can also be configured using the  `` which can be configured using the [aci_](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/) resource.
+* `annotations` - (list) A list of Annotations objects `tagAnnotation` which can be configured using the [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.
   
   #### Required
   

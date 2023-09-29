@@ -459,6 +459,7 @@ func main() {
 				childModel.ChildResourceName = GetResourceName(childModel.PkgName, definitions)
 				if len(childModel.IdentifiedBy) > 0 {
 					// TODO add logic to determine the naming for plural child resources
+					childModel.ResourceNameDocReference = childModel.ChildResourceName
 					childModel.ResourceName = fmt.Sprintf("%ss", childModel.ChildResourceName)
 				} else {
 					childModel.ResourceName = childModel.ChildResourceName
@@ -518,6 +519,7 @@ type Model struct {
 	Comment                  string
 	ResourceClassName        string
 	ResourceName             string
+	ResourceNameDocReference string
 	ChildResourceName        string
 	Example                  string
 	SubCategory              string

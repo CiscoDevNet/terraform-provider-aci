@@ -65,7 +65,7 @@ resource "aci_pim_route_map_entry" "example" {
 * `rp` - (string) Multicast RP Ip.
 * `src` - (string) Multicast Source Ip.
 
-* `annotations` - (list) A list of Annotations objects `tagAnnotation` which can also be configured using the  `` which can be configured using the [aci_](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/) resource.
+* `annotations` - (list) A list of Annotations objects `tagAnnotation` which can be configured using the [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.
   
   #### Required
   

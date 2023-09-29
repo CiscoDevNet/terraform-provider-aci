@@ -76,7 +76,7 @@ Manages ACI {{getResourceNameAsDescription .ResourceName}}
     {{- if ne .RelationshipClass ""}}
 * `{{- .ResourceName}}` - (list) A list of {{getResourceNameAsDescription .ResourceName}} relationship objects `{{.PkgName}}` pointing to the {{getResourceNameAsDescription .RelationshipResourceName}} `{{.RelationshipClass}}` which can be configured using the [aci_{{.RelationshipResourceName}}](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/{{.RelationshipResourceName}}) resource.
     {{- else}}
-* `{{- .ResourceName}}` - (list) A list of {{getResourceNameAsDescription .ResourceName}} objects `{{.PkgName}}` which can also be configured using the {{getResourceNameAsDescription .RelationshipResourceName}} `{{.RelationshipClass}}` which can be configured using the [aci_{{.RelationshipResourceName}}](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/{{.RelationshipResourceName}}) resource.
+* `{{- .ResourceName}}` - (list) A list of {{getResourceNameAsDescription .ResourceName}} objects `{{.PkgName}}` which can be configured using the [aci_{{.ResourceNameDocReference}}](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/{{.ResourceNameDocReference}}) resource.
     {{- end}}
   
   #### Required
