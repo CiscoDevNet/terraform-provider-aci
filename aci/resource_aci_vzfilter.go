@@ -44,19 +44,21 @@ func resourceAciFilter() *schema.Resource {
 			},
 
 			"relation_vz_rs_filt_graph_att": &schema.Schema{
-				Type: schema.TypeString,
-
+				Type:     schema.TypeString,
+				Computed: true,
 				Optional: true,
 			},
 			"relation_vz_rs_fwd_r_flt_p_att": &schema.Schema{
-				Type: schema.TypeString,
-
-				Optional: true,
+				Type:       schema.TypeString,
+				Computed:   true,
+				Optional:   true,
+				Deprecated: "vzRsFwdRFltPAtt should not be configured",
 			},
 			"relation_vz_rs_rev_r_flt_p_att": &schema.Schema{
-				Type: schema.TypeString,
-
-				Optional: true,
+				Type:       schema.TypeString,
+				Computed:   true,
+				Optional:   true,
+				Deprecated: "vzRsRevRFltPAtt should not be configured",
 			},
 		}),
 	}
