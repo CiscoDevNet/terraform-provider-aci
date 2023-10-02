@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 	"strconv"
+	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -620,6 +621,8 @@ func (c Config) Valid() error {
 
 	if c.URL == "" {
 		return fmt.Errorf("The URL must be provided for the ACI provider")
+	} else if !strings.HasPrefix(c.URL, "http://") && !strings.HasPrefix(c.URL, "https://") {
+		return fmt.Errorf(fmt.Sprintf("The URL '%s' must start with 'http://' or 'https://'", c.URL))
 	}
 
 	if c.MaxRetries < 0 || c.MaxRetries > 9 {

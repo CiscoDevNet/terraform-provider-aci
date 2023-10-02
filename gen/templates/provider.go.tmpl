@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"os"
 	"strconv"
+	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
 
@@ -164,6 +165,11 @@ func (p *AciProvider) Configure(ctx context.Context, req provider.ConfigureReque
 		resp.Diagnostics.AddError(
 			"url not provided",
 			"url must be provided for the ACI provider",
+		)
+	} else if !strings.HasPrefix(url, "http://") && !strings.HasPrefix(url, "https://") {
+		resp.Diagnostics.AddError(
+			"incorrect url prefix",
+			fmt.Sprintf("url '%s' must start with 'http://' or 'https://'", url),
 		)
 	}
 
