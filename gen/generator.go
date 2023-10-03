@@ -608,7 +608,7 @@ func (m *Model) setClassModel(metaPath string, child bool, definitions Definitio
 		m.SetClassIdentifiers(classDetails)
 		m.SetClassInclude()
 		m.SetClassAllowDelete(classDetails)
-		m.SetClassContainedByAndParent(classDetails, parents, pkgNames)
+		m.SetClassContainedByAndParent(classDetails, parents)
 		m.SetClassContains(classDetails)
 		m.SetClassComment(classDetails)
 		m.SetClassProperties(classDetails)
@@ -798,7 +798,7 @@ func AllowClassDelete(classPkgName string, definitions Definitions) bool {
 	return true
 }
 
-func (m *Model) SetClassContainedByAndParent(classDetails interface{}, parents, pkgNames []string) {
+func (m *Model) SetClassContainedByAndParent(classDetails interface{}, parents []string) {
 	// Do not include polUni because is excluded because the parent tree in the provider will start at a child of polUni
 	// - example fvTenant is contained by polUni, but we want the parent tree to start at fvTenant
 	containedExcludes := m.Configuration["contained_by_excludes"].([]string)
