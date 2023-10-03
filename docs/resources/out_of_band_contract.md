@@ -91,7 +91,3 @@ import {
   to = aci_out_of_band_contract.example
 }
 ```
-
-## Child Resources
-  
-  - [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation)

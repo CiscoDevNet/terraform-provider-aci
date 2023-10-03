@@ -89,7 +89,3 @@ import {
   to = aci_pim_route_map_entry.example
 }
 ```
-
-## Child Resources
-  
-  - [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation)

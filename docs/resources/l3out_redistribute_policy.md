@@ -83,7 +83,3 @@ import {
   to = aci_l3out_redistribute_policy.example
 }
 ```
-
-## Child Resources
-  
-  - [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation)

@@ -1228,7 +1228,7 @@ func setDocumentationData(m *Model, definitions Definitions) {
 		match, _ := regexp.MatchString("[Rs][A-Z][^\r\n\t\f\v]", child) // match all Rs classes
 		if !match {
 			resourceName := GetResourceName(child, definitions)
-			if resourceName != "" {
+			if resourceName != "" && resourceName != "annotation" { // exclude anotation children since they will be included into the resource when possible
 				m.DocumentationChildren = append(m.DocumentationChildren, fmt.Sprintf("[%s_%s](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/%s)", providerName, resourceName, resourceName))
 			}
 		}

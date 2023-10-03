@@ -89,7 +89,3 @@ import {
   to = aci_l3out_consumer_label.example
 }
 ```
-
-## Child Resources
-  
-  - [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation)
