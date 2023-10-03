@@ -53,7 +53,7 @@ resource "aci_l3out_management_network_subnet" "example" {
 * `name` - (string) The name of the L3out Management Network Subnet object.
 * `name_alias` - (string) The name alias of the L3out Management Network Subnet object.
 
-## Importing ##
+## Importing
 
 An existing L3out Management Network Subnet can be [imported](https://www.terraform.io/docs/import/index.html) into this resource via its distinguished name (DN), via the following command:
 
@@ -70,3 +70,7 @@ import {
   to = aci_l3out_management_network_subnet.example
 }
 ```
+
+## Child Resources
+  
+  - [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation)

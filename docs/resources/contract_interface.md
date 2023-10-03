@@ -105,7 +105,7 @@ resource "aci_contract_interface" "example" {
   * `key` - (string) The key or password used to uniquely identify this configuration object.
   * `value` - (string) The value of the property.
 
-## Importing ##
+## Importing
 
 An existing Contract Interface can be [imported](https://www.terraform.io/docs/import/index.html) into this resource via its distinguished name (DN), via the following command:
 
@@ -122,3 +122,7 @@ import {
   to = aci_contract_interface.example
 }
 ```
+
+## Child Resources
+  
+  - [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation)

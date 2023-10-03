@@ -72,7 +72,7 @@ resource "aci_l3out_consumer_label" "example" {
   * `key` - (string) The key or password used to uniquely identify this configuration object.
   * `value` - (string) The value of the property.
 
-## Importing ##
+## Importing
 
 An existing L3out Consumer Label can be [imported](https://www.terraform.io/docs/import/index.html) into this resource via its distinguished name (DN), via the following command:
 
@@ -89,3 +89,7 @@ import {
   to = aci_l3out_consumer_label.example
 }
 ```
+
+## Child Resources
+  
+  - [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation)

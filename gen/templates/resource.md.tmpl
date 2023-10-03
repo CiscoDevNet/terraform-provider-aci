@@ -109,7 +109,7 @@ Manages ACI {{getResourceNameAsDescription .ResourceName}}
     {{- end}}
   {{- end}}
 {{ end}}
-## Importing ##
+## Importing
 
 An existing {{getResourceNameAsDescription .ResourceName}} can be [imported](https://www.terraform.io/docs/import/index.html) into this resource via its distinguished name (DN), via the following command:
 
@@ -126,3 +126,9 @@ import {
   to = aci_{{ .ResourceName}}.example
 }
 ```
+{{ if .DocumentationChildren}}
+## Child Resources
+  {{range .DocumentationChildren}}
+  - {{ . }}
+  {{- end}}
+{{- end}}

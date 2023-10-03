@@ -81,7 +81,7 @@ resource "aci_annotation" "example" {
 
 * `id` - (string) The distinguished name (DN) of the Annotation object.
 
-## Importing ##
+## Importing
 
 An existing Annotation can be [imported](https://www.terraform.io/docs/import/index.html) into this resource via its distinguished name (DN), via the following command:
 

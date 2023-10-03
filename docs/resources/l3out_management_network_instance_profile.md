@@ -69,7 +69,7 @@ resource "aci_l3out_management_network_instance_profile" "example" {
     - Default: `unspecified`
     - Valid Values: `level1`, `level2`, `level3`, `level4`, `level5`, `level6`, `unspecified`.
 
-## Importing ##
+## Importing
 
 An existing L3out Management Network Instance Profile can be [imported](https://www.terraform.io/docs/import/index.html) into this resource via its distinguished name (DN), via the following command:
 
@@ -86,3 +86,9 @@ import {
   to = aci_l3out_management_network_instance_profile.example
 }
 ```
+
+## Child Resources
+  
+  - [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation)
+  - [aci_l3out_management_network_oob_contract](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/l3out_management_network_oob_contract)
+  - [aci_l3out_management_network_subnet](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/l3out_management_network_subnet)

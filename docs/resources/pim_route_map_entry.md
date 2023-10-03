@@ -72,7 +72,7 @@ resource "aci_pim_route_map_entry" "example" {
   * `key` - (string) The key or password used to uniquely identify this configuration object.
   * `value` - (string) The value of the property.
 
-## Importing ##
+## Importing
 
 An existing Pim Route Map Entry can be [imported](https://www.terraform.io/docs/import/index.html) into this resource via its distinguished name (DN), via the following command:
 
@@ -89,3 +89,7 @@ import {
   to = aci_pim_route_map_entry.example
 }
 ```
+
+## Child Resources
+  
+  - [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation)

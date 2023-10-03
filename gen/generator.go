@@ -528,9 +528,11 @@ type Model struct {
 	RelationshipResourceName string
 	ChildClasses             []string
 	ContainedBy              []string
+	Contains                 []string
 	DocumentationDnFormats   []string
 	DocumentationParentDns   []string
 	DocumentationExamples    []string
+	DocumentationChildren    []string
 	Parents                  []string
 	IdentifiedBy             []interface{}
 	DnFormats                []interface{}
@@ -607,6 +609,7 @@ func (m *Model) setClassModel(metaPath string, child bool, definitions Definitio
 		m.SetClassInclude()
 		m.SetClassAllowDelete(classDetails)
 		m.SetClassContainedByAndParent(classDetails, parents, pkgNames)
+		m.SetClassContains(classDetails)
 		m.SetClassComment(classDetails)
 		m.SetClassProperties(classDetails)
 		m.SetClassChildren(classDetails, pkgNames)
@@ -815,6 +818,15 @@ func (m *Model) SetClassContainedByAndParent(classDetails interface{}, parents, 
 	} else {
 		m.HasParent = true
 	}
+}
+
+func (m *Model) SetClassContains(classDetails interface{}) {
+	for className := range classDetails.(map[string]interface{})["contains"].(map[string]interface{}) {
+		containclassName := strings.ReplaceAll(className, ":", "")
+		m.Contains = append(m.Contains, containclassName)
+	}
+	m.Contains = uniqueStringSlice(m.Contains)
+	sort.Strings(m.Contains)
 }
 
 func (m *Model) SetClassComment(classDetails interface{}) {
@@ -1201,7 +1213,6 @@ func setDocumentationData(m *Model, definitions Definitions) {
 
 	// TODO add overwrite to provide which documentation examples to be included
 	docsExampleAmount := m.Configuration["docs_examples_amount"].(int)
-
 	if len(m.ContainedBy) >= docsExampleAmount {
 		for _, resourceDetails := range resourcesFound[0 : docsExampleAmount-1] {
 			m.DocumentationExamples = append(m.DocumentationExamples, resourceDetails[1])
@@ -1211,6 +1222,15 @@ func setDocumentationData(m *Model, definitions Definitions) {
 			m.DocumentationExamples = append(m.DocumentationExamples, resourceDetails[1])
 		}
 	}
+
+	// Add child class references to documentation when resource name is known
+	for _, child := range m.Contains {
+		resourceName := GetResourceName(child, definitions)
+		if resourceName != "" {
+			m.DocumentationChildren = append(m.DocumentationChildren, fmt.Sprintf("[%s_%s](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/%s)", providerName, resourceName, resourceName))
+		}
+	}
+	sort.Strings(m.DocumentationChildren)
 }
 
 // Determine if a resource / datasource name in terraform configuration should be overwritten by a resource name overwrite in the classes.yaml file
