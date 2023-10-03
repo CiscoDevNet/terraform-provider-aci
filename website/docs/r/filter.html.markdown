@@ -32,8 +32,8 @@ resource "aci_filter" "example" {
 * `name_alias` - (Optional) Name alias for object filter.
 * `relation_vz_rs_filt_graph_att` - (Optional) Relation to class vnsInTerm. Type: String.
                 
-* `relation_vz_rs_fwd_r_flt_p_att` - (Optional) **Deprecated** Relation to class vzRsFwdRFltPAtt. Type: String.      
-* `relation_vz_rs_rev_r_flt_p_att` - (Optional) **Deprecated** Relation to class vzRsRevRFltPAtt. Type: String.
+* `relation_vz_rs_fwd_r_flt_p_att` - (Optional) **Deprecated** Relation to class vzAFilterableUnit. Type: String.      
+* `relation_vz_rs_rev_r_flt_p_att` - (Optional) **Deprecated** Relation to class vzAFilterableUnit. Type: String.
 
 ## Attribute Reference
 
@@ -47,3 +47,10 @@ An existing Filter can be [imported][docs-import] into this resource via its Dn,
 ```
 terraform import aci_filter.example <Dn>
 ```
+
+Starting in Terraform version 1.5, an existing Filter can be imported using [import blocks](https://developer.hashicorp.com/terraform/language/import) via the following configuration:
+
+import {
+  id = "<Dn>"
+  to = aci_filter.example
+}
