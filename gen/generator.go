@@ -1225,9 +1225,12 @@ func setDocumentationData(m *Model, definitions Definitions) {
 
 	// Add child class references to documentation when resource name is known
 	for _, child := range m.Contains {
-		resourceName := GetResourceName(child, definitions)
-		if resourceName != "" {
-			m.DocumentationChildren = append(m.DocumentationChildren, fmt.Sprintf("[%s_%s](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/%s)", providerName, resourceName, resourceName))
+		match, _ := regexp.MatchString("[Rs][A-Z][^\r\n\t\f\v]", child) // match all Rs classes
+		if !match {
+			resourceName := GetResourceName(child, definitions)
+			if resourceName != "" {
+				m.DocumentationChildren = append(m.DocumentationChildren, fmt.Sprintf("[%s_%s](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/%s)", providerName, resourceName, resourceName))
+			}
 		}
 	}
 	sort.Strings(m.DocumentationChildren)
