@@ -102,7 +102,6 @@ var templateFuncs = template.FuncMap{
 var labels = []string{"dns_provider", "filter_entry"}
 var duplicateLabels = []string{}
 var resourceNames = map[string]string{}
-var relationalClasses = []string{}
 var targetRelationalPropertyClasses = map[string]string{}
 
 func GetResourceNameAsDescription(s string) string {
