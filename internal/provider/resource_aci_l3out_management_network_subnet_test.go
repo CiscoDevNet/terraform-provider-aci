@@ -58,6 +58,52 @@ func TestAccResourceMgmtSubnetWithMgmtInstP(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_l3out_management_network_subnet.test", "name_alias", ""),
 				),
 			},
+			// Update with children
+			{
+				Config:             testConfigMgmtSubnetChildrenDependencyWithMgmtInstP,
+				ExpectNonEmptyPlan: false,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_l3out_management_network_subnet.test", "ip", "1.1.1.0/24"),
+					resource.TestCheckResourceAttr("aci_l3out_management_network_subnet.test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_l3out_management_network_subnet.test", "description", ""),
+					resource.TestCheckResourceAttr("aci_l3out_management_network_subnet.test", "name", ""),
+					resource.TestCheckResourceAttr("aci_l3out_management_network_subnet.test", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_l3out_management_network_subnet.test", "annotations.0.key", "annotations_1"),
+					resource.TestCheckResourceAttr("aci_l3out_management_network_subnet.test", "annotations.0.value", "value_1"),
+					resource.TestCheckResourceAttr("aci_l3out_management_network_subnet.test", "annotations.1.key", "annotations_2"),
+					resource.TestCheckResourceAttr("aci_l3out_management_network_subnet.test", "annotations.1.value", "value_2"),
+				),
+			},
+			// Update with children removed from config
+			{
+				Config:             testConfigMgmtSubnetChildrenRemoveFromConfigDependencyWithMgmtInstP,
+				ExpectNonEmptyPlan: false,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_l3out_management_network_subnet.test", "annotations.0.key", "annotations_1"),
+					resource.TestCheckResourceAttr("aci_l3out_management_network_subnet.test", "annotations.0.value", "value_1"),
+					resource.TestCheckResourceAttr("aci_l3out_management_network_subnet.test", "annotations.1.key", "annotations_2"),
+					resource.TestCheckResourceAttr("aci_l3out_management_network_subnet.test", "annotations.1.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_l3out_management_network_subnet.test", "annotations.#", "2"),
+				),
+			},
+			// Update with children first child removed
+			{
+				Config:             testConfigMgmtSubnetChildrenRemoveOneDependencyWithMgmtInstP,
+				ExpectNonEmptyPlan: false,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_l3out_management_network_subnet.test", "annotations.0.key", "annotations_2"),
+					resource.TestCheckResourceAttr("aci_l3out_management_network_subnet.test", "annotations.0.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_l3out_management_network_subnet.test", "annotations.#", "1"),
+				),
+			},
+			// Update with all children removed
+			{
+				Config:             testConfigMgmtSubnetChildrenRemoveAllDependencyWithMgmtInstP,
+				ExpectNonEmptyPlan: false,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_l3out_management_network_subnet.test", "annotations.#", "0"),
+				),
+			},
 		},
 	})
 }
@@ -88,5 +134,49 @@ resource "aci_l3out_management_network_subnet" "test" {
   description = ""
   name = ""
   name_alias = ""
+}
+`
+const testConfigMgmtSubnetChildrenDependencyWithMgmtInstP = testConfigMgmtInstPMin + `
+resource "aci_l3out_management_network_subnet" "test" {
+  parent_dn = aci_l3out_management_network_instance_profile.test.id
+  ip = "1.1.1.0/24"
+  annotations = [
+	{
+	  key = "annotations_1"
+	  value = "value_1"
+	},
+	{
+	  key = "annotations_2"
+	  value = "value_2"
+	},
+  ]
+}
+`
+
+const testConfigMgmtSubnetChildrenRemoveFromConfigDependencyWithMgmtInstP = testConfigMgmtInstPMin + `
+resource "aci_l3out_management_network_subnet" "test" {
+  parent_dn = aci_l3out_management_network_instance_profile.test.id
+  ip = "1.1.1.0/24"
+}
+`
+
+const testConfigMgmtSubnetChildrenRemoveOneDependencyWithMgmtInstP = testConfigMgmtInstPMin + `
+resource "aci_l3out_management_network_subnet" "test" {
+  parent_dn = aci_l3out_management_network_instance_profile.test.id
+  ip = "1.1.1.0/24"
+  annotations = [ 
+	{
+	  key = "annotations_2"
+	  value = "value_2"
+	},
+  ]
+}
+`
+
+const testConfigMgmtSubnetChildrenRemoveAllDependencyWithMgmtInstP = testConfigMgmtInstPMin + `
+resource "aci_l3out_management_network_subnet" "test" {
+  parent_dn = aci_l3out_management_network_instance_profile.test.id
+  ip = "1.1.1.0/24"
+  annotations = []
 }
 `

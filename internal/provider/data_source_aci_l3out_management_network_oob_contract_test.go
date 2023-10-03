@@ -16,7 +16,7 @@ func TestAccDataSourceMgmtRsOoBConsWithMgmtInstP(t *testing.T) {
 		Steps: []resource.TestStep{
 			{
 				Config:             testConfigMgmtRsOoBConsDataSourceDependencyWithMgmtInstP,
-				ExpectNonEmptyPlan: false,
+				ExpectNonEmptyPlan: true,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("data.aci_l3out_management_network_oob_contract.test", "out_of_band_contract_name", "test_tn_vz_oob_br_cp_name"),
 					resource.TestCheckResourceAttr("data.aci_l3out_management_network_oob_contract.test", "annotation", "orchestrator:terraform"),

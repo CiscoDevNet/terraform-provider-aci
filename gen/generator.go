@@ -119,7 +119,7 @@ func ValidatorString(stringList []string) string {
 
 func ListToString(stringList []string) string {
 	sort.Strings(stringList)
-	return fmt.Sprintf("%s", strings.Join(stringList, ", "))
+	return fmt.Sprintf("%s", strings.Join(stringList, ","))
 }
 
 // Creates a parent dn value for the resources and datasources in the example files
@@ -730,17 +730,14 @@ func (m *Model) SetClassIdentifiers(classDetails interface{}) {
 
 func (m *Model) SetClassChildren(classDetails interface{}, pkgNames []string) {
 	childClasses := []string{}
-	notAddedFromRnMap := []string{}
 	rnMap := classDetails.(map[string]interface{})["rnMap"].(map[string]interface{})
 	for rn, className := range rnMap {
 		// TODO check if this condition is correct since there might be cases where that we should exclude
-		if !strings.HasSuffix(rn, "-") || strings.HasPrefix(rn, "rs") {
+		if !strings.HasSuffix(rn, "-") || strings.HasPrefix(rn, "rs") || className.(string) == "tag:Annotation" {
 			pkgName := strings.ReplaceAll(className.(string), ":", "")
 			if slices.Contains(pkgNames, pkgName) {
 				childClasses = append(childClasses, pkgName)
 			}
-		} else {
-			notAddedFromRnMap = append(notAddedFromRnMap, strings.ReplaceAll(className.(string), ":", ""))
 		}
 	}
 	if classDetails, ok := m.Definitions.Classes[m.PkgName]; ok {

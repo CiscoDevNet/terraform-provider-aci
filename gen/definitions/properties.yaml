@@ -30,6 +30,10 @@ l3extRsRedistributePol:
     - parent_dependency: "fvTenant"
       class_in_parent: true
 
+mgmtRsOoBCons:
+  parents:
+    - class_in_parent: true
+
 mgmtSubnet:
   test_values:
     resource_required:

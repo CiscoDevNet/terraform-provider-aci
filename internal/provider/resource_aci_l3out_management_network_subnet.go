@@ -15,6 +15,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/setplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringdefault"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/types"
@@ -37,13 +38,20 @@ type MgmtSubnetResource struct {
 
 // MgmtSubnetResourceModel describes the resource data model.
 type MgmtSubnetResourceModel struct {
-	Id         types.String `tfsdk:"id"`
-	ParentDn   types.String `tfsdk:"parent_dn"`
-	Annotation types.String `tfsdk:"annotation"`
-	Descr      types.String `tfsdk:"description"`
-	Ip         types.String `tfsdk:"ip"`
-	Name       types.String `tfsdk:"name"`
-	NameAlias  types.String `tfsdk:"name_alias"`
+	Id            types.String `tfsdk:"id"`
+	ParentDn      types.String `tfsdk:"parent_dn"`
+	Annotation    types.String `tfsdk:"annotation"`
+	Descr         types.String `tfsdk:"description"`
+	Ip            types.String `tfsdk:"ip"`
+	Name          types.String `tfsdk:"name"`
+	NameAlias     types.String `tfsdk:"name_alias"`
+	TagAnnotation types.Set    `tfsdk:"annotations"`
+}
+
+// TagAnnotationMgmtSubnetResourceModel describes the resource data model for the children without relation ships.
+type TagAnnotationMgmtSubnetResourceModel struct {
+	Key   types.String `tfsdk:"key"`
+	Value types.String `tfsdk:"value"`
 }
 
 type MgmtSubnetIdentifier struct {
@@ -118,6 +126,32 @@ func (r *MgmtSubnetResource) Schema(ctx context.Context, req resource.SchemaRequ
 				},
 				MarkdownDescription: `The name alias of the L3out Management Network Subnet object.`,
 			},
+			"annotations": schema.SetNestedAttribute{
+				MarkdownDescription: ``,
+				Optional:            true,
+				Computed:            true,
+				PlanModifiers: []planmodifier.Set{
+					setplanmodifier.UseStateForUnknown(),
+				},
+				NestedObject: schema.NestedAttributeObject{
+					Attributes: map[string]schema.Attribute{
+						"key": schema.StringAttribute{
+							Required: true,
+							PlanModifiers: []planmodifier.String{
+								stringplanmodifier.UseStateForUnknown(),
+							},
+							MarkdownDescription: `The key or password used to uniquely identify this configuration object.`,
+						},
+						"value": schema.StringAttribute{
+							Required: true,
+							PlanModifiers: []planmodifier.String{
+								stringplanmodifier.UseStateForUnknown(),
+							},
+							MarkdownDescription: `The value of the property.`,
+						},
+					},
+				},
+			},
 		},
 	}
 }
@@ -146,6 +180,14 @@ func (r *MgmtSubnetResource) Configure(ctx context.Context, req resource.Configu
 
 func (r *MgmtSubnetResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
 	tflog.Trace(ctx, "start create of resource: aci_l3out_management_network_subnet")
+	// On create retrieve information on current state prior to making any changes in order to determine child delete operations
+	var stateData *MgmtSubnetResourceModel
+	resp.Diagnostics.Append(req.Plan.Get(ctx, &stateData)...)
+	setMgmtSubnetId(ctx, stateData)
+	messageMap := setMgmtSubnetAttributes(ctx, r.client, stateData)
+	if messageMap != nil {
+		resp.Diagnostics.AddError(messageMap.(map[string]string)["message"], messageMap.(map[string]string)["messageDetail"])
+	}
 
 	var data *MgmtSubnetResourceModel
 
@@ -160,7 +202,10 @@ func (r *MgmtSubnetResource) Create(ctx context.Context, req resource.CreateRequ
 
 	tflog.Trace(ctx, fmt.Sprintf("create of resource aci_l3out_management_network_subnet with id '%s'", data.Id.ValueString()))
 
-	jsonPayload, message, messageDetail := getMgmtSubnetCreateJsonPayload(ctx, data)
+	var tagAnnotationPlan, tagAnnotationState []TagAnnotationMgmtSubnetResourceModel
+	data.TagAnnotation.ElementsAs(ctx, &tagAnnotationPlan, false)
+	stateData.TagAnnotation.ElementsAs(ctx, &tagAnnotationState, false)
+	jsonPayload, message, messageDetail := getMgmtSubnetCreateJsonPayload(ctx, data, tagAnnotationPlan, tagAnnotationState)
 
 	if jsonPayload == nil {
 		resp.Diagnostics.AddError(message, messageDetail)
@@ -173,7 +218,7 @@ func (r *MgmtSubnetResource) Create(ctx context.Context, req resource.CreateRequ
 		return
 	}
 
-	messageMap := setMgmtSubnetAttributes(ctx, r.client, data)
+	messageMap = setMgmtSubnetAttributes(ctx, r.client, data)
 	if messageMap != nil {
 		resp.Diagnostics.AddError(messageMap.(map[string]string)["message"], messageMap.(map[string]string)["messageDetail"])
 	}
@@ -209,9 +254,11 @@ func (r *MgmtSubnetResource) Read(ctx context.Context, req resource.ReadRequest,
 func (r *MgmtSubnetResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
 	tflog.Trace(ctx, "start update of resource: aci_l3out_management_network_subnet")
 	var data *MgmtSubnetResourceModel
+	var stateData *MgmtSubnetResourceModel
 
 	// Read Terraform plan data into the model
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &data)...)
+	resp.Diagnostics.Append(req.State.Get(ctx, &stateData)...)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -219,7 +266,10 @@ func (r *MgmtSubnetResource) Update(ctx context.Context, req resource.UpdateRequ
 
 	tflog.Trace(ctx, fmt.Sprintf("update of resource aci_l3out_management_network_subnet with id '%s'", data.Id.ValueString()))
 
-	jsonPayload, message, messageDetail := getMgmtSubnetCreateJsonPayload(ctx, data)
+	var tagAnnotationPlan, tagAnnotationState []TagAnnotationMgmtSubnetResourceModel
+	data.TagAnnotation.ElementsAs(ctx, &tagAnnotationPlan, false)
+	stateData.TagAnnotation.ElementsAs(ctx, &tagAnnotationState, false)
+	jsonPayload, message, messageDetail := getMgmtSubnetCreateJsonPayload(ctx, data, tagAnnotationPlan, tagAnnotationState)
 
 	if jsonPayload == nil {
 		resp.Diagnostics.AddError(message, messageDetail)
@@ -272,7 +322,7 @@ func (r *MgmtSubnetResource) ImportState(ctx context.Context, req resource.Impor
 }
 
 func setMgmtSubnetAttributes(ctx context.Context, client *client.Client, data *MgmtSubnetResourceModel) interface{} {
-	requestData, message, messageDetail := doMgmtSubnetRequest(ctx, client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "GET", nil)
+	requestData, message, messageDetail := doMgmtSubnetRequest(ctx, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=children&rsp-subtree-class=%s", data.Id.ValueString(), "mgmtSubnet,tagAnnotation"), "GET", nil)
 
 	if requestData == nil {
 		return map[string]string{"message": message, "messageDetail": messageDetail}
@@ -301,6 +351,32 @@ func setMgmtSubnetAttributes(ctx context.Context, client *client.Client, data *M
 				if attributeName == "nameAlias" {
 					data.NameAlias = basetypes.NewStringValue(attributeValue.(string))
 				}
+			}
+			TagAnnotationMgmtSubnetList := make([]TagAnnotationMgmtSubnetResourceModel, 0)
+			_, ok := classReadInfo[0].(map[string]interface{})["children"]
+			if ok {
+				children := classReadInfo[0].(map[string]interface{})["children"].([]interface{})
+				for _, child := range children {
+					for childClassName, childClassDetails := range child.(map[string]interface{}) {
+						childAttributes := childClassDetails.(map[string]interface{})["attributes"].(map[string]interface{})
+						if childClassName == "tagAnnotation" {
+							TagAnnotationMgmtSubnet := TagAnnotationMgmtSubnetResourceModel{}
+							for childAttributeName, childAttributeValue := range childAttributes {
+								if childAttributeName == "key" {
+									TagAnnotationMgmtSubnet.Key = basetypes.NewStringValue(childAttributeValue.(string))
+								}
+								if childAttributeName == "value" {
+									TagAnnotationMgmtSubnet.Value = basetypes.NewStringValue(childAttributeValue.(string))
+								}
+							}
+							TagAnnotationMgmtSubnetList = append(TagAnnotationMgmtSubnetList, TagAnnotationMgmtSubnet)
+						}
+					}
+				}
+			}
+			if len(TagAnnotationMgmtSubnetList) > 0 {
+				tagAnnotationSet, _ := types.SetValueFrom(ctx, data.TagAnnotation.ElementType(ctx), TagAnnotationMgmtSubnetList)
+				data.TagAnnotation = tagAnnotationSet
 			}
 		} else {
 			return map[string]string{
@@ -332,9 +408,58 @@ func setMgmtSubnetId(ctx context.Context, data *MgmtSubnetResourceModel) {
 	data.Id = types.StringValue(fmt.Sprintf("%s/%s", data.ParentDn.ValueString(), rn))
 }
 
-func getMgmtSubnetCreateJsonPayload(ctx context.Context, data *MgmtSubnetResourceModel) (*container.Container, string, string) {
+func getMgmtSubnetTagAnnotationChildPayloads(ctx context.Context, data *MgmtSubnetResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationMgmtSubnetResourceModel) ([]map[string]interface{}, string, string) {
+
+	childPayloads := []map[string]interface{}{}
+	if !data.TagAnnotation.IsUnknown() {
+		tagAnnotationIdentifiers := []TagAnnotationIdentifier{}
+		for _, tagAnnotation := range tagAnnotationPlan {
+			childMap := map[string]map[string]interface{}{"attributes": {}}
+			if !tagAnnotation.Key.IsUnknown() {
+				childMap["attributes"]["key"] = tagAnnotation.Key.ValueString()
+			}
+			if !tagAnnotation.Value.IsUnknown() {
+				childMap["attributes"]["value"] = tagAnnotation.Value.ValueString()
+			}
+			childPayloads = append(childPayloads, map[string]interface{}{"tagAnnotation": childMap})
+			tagAnnotationIdentifier := TagAnnotationIdentifier{}
+			tagAnnotationIdentifier.Key = tagAnnotation.Key
+			tagAnnotationIdentifiers = append(tagAnnotationIdentifiers, tagAnnotationIdentifier)
+		}
+		for _, tagAnnotation := range tagAnnotationState {
+			delete := true
+			for _, tagAnnotationIdentifier := range tagAnnotationIdentifiers {
+				if tagAnnotationIdentifier.Key == tagAnnotation.Key {
+					delete = false
+					break
+				}
+			}
+			if delete {
+				childMap := map[string]map[string]interface{}{"attributes": {}}
+				childMap["attributes"]["status"] = "deleted"
+				childMap["attributes"]["key"] = tagAnnotation.Key.ValueString()
+				childPayloads = append(childPayloads, map[string]interface{}{"tagAnnotation": childMap})
+			}
+		}
+	} else {
+		data.TagAnnotation = types.SetNull(data.TagAnnotation.ElementType(ctx))
+	}
+
+	return childPayloads, "", ""
+}
+
+func getMgmtSubnetCreateJsonPayload(ctx context.Context, data *MgmtSubnetResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationMgmtSubnetResourceModel) (*container.Container, string, string) {
 	payloadMap := map[string]interface{}{}
 	payloadMap["attributes"] = map[string]string{}
+	childPayloads := []map[string]interface{}{}
+
+	TagAnnotationchildPayloads, errMessage, errMessageDetail := getMgmtSubnetTagAnnotationChildPayloads(ctx, data, tagAnnotationPlan, tagAnnotationState)
+	if TagAnnotationchildPayloads == nil {
+		return nil, errMessage, errMessageDetail
+	}
+	childPayloads = append(childPayloads, TagAnnotationchildPayloads...)
+
+	payloadMap["children"] = childPayloads
 	if !data.Annotation.IsNull() && !data.Annotation.IsUnknown() {
 		payloadMap["attributes"].(map[string]string)["annotation"] = data.Annotation.ValueString()
 	}

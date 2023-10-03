@@ -26,20 +26,14 @@ vzOOBBrCP:
   rn_prepend: "tn-mgmt/"
   dn_formats:
     - "uni/tn-mgmt/oobbrc-{name}"
-  children:
-    - "tagAnnotation"
 
 pimRouteMapPol:
   ui_location: "Tenants -> Policies -> Protocol -> Route Maps for Multicast"
   sub_category: "Multicast"
-  children:
-    - "tagAnnotation"
 
 pimRouteMapEntry:
   ui_location: "Tenants -> Policies -> Protocol -> Route Maps for Multicast -> Route Maps"
   sub_category: "Multicast"
-  children:
-    - "tagAnnotation"
 
 mgmtInstP:
   resource_name: "l3out_management_network_instance_profile"
@@ -70,18 +64,12 @@ l3extConsLbl:
   resource_name: "l3out_consumer_label"
   ui_location: "Tenants -> Networking -> L3Outs"
   sub_category: "L3Out"
-  children:
-    - "tagAnnotation"
 
 l3extRsRedistributePol:
   resource_name: "l3out_redistribute_policy"
   ui_location: "Tenants -> Networking -> L3Outs -> Redistribute Policies"
   sub_category: "L3Out"
-  children:
-    - "tagAnnotation"
 
 fvRsConsIf:
   ui_location: "Tenants -> ... determine for muliple DN formats ..."
   sub_category: "Contract"
-  children:
-    - "tagAnnotation"

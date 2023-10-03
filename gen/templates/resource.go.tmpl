@@ -432,7 +432,7 @@ func (r *{{.ResourceClassName}}Resource) ImportState(ctx context.Context, req re
 
 func set{{.ResourceClassName}}Attributes(ctx context.Context, client *client.Client, data *{{.ResourceClassName}}ResourceModel) interface{} {
 	{{- if .HasChild}}
-	requestData, message, messageDetail := do{{.ResourceClassName}}Request(ctx, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=children&rsp-subtree-class=%s", data.Id.ValueString(), "{{- .PkgName}}, {{- listToString .ChildClasses}}"), "GET", nil)
+	requestData, message, messageDetail := do{{.ResourceClassName}}Request(ctx, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=children&rsp-subtree-class=%s", data.Id.ValueString(), "{{- .PkgName}},{{- listToString .ChildClasses}}"), "GET", nil)
 	{{- else}}
 	requestData, message, messageDetail := do{{.ResourceClassName}}Request(ctx, client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "GET", nil)
 	{{- end}}

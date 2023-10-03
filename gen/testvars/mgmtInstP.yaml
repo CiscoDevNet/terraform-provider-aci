@@ -26,3 +26,10 @@ children:
       priority: "level2"
       out_of_band_contract_name: "l3out_management_network_oob_contracts_2"
       
+  annotations:
+    - key: "annotations_1"
+      value: "value_1"
+      
+    - key: "annotations_2"
+      value: "value_2"
+      

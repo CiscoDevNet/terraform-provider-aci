@@ -46,3 +46,7 @@ data "aci_l3out_management_network_oob_contract" "example" {
 * `id` - (string) The distinguished name (DN) of the L3out Management Network Oob Contract object.
 * `annotation` - (string) The annotation of the L3out Management Network Oob Contract object.
 * `priority` - (string) The Quality of service (QoS) priority class ID. QoS refers to the capability of a network to provide better service to selected network traffic over various technologies. The primary goal of QoS is to provide priority including dedicated bandwidth, controlled jitter and latency (required by some real-time and interactive traffic), and improved loss characteristics. You can configure the bandwidth of each QoS level using QoS profiles.
+
+* `annotations` - (list) A list of Annotations objects `tagAnnotation`.
+  * `key` - (string) The key or password used to uniquely identify this configuration object.
+  * `value` - (string) The value of the property.

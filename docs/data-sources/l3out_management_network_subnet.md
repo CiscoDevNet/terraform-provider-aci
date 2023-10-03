@@ -48,3 +48,7 @@ data "aci_l3out_management_network_subnet" "example" {
 * `description` - (string) The description of the L3out Management Network Subnet object.
 * `name` - (string) The name of the L3out Management Network Subnet object.
 * `name_alias` - (string) The name alias of the L3out Management Network Subnet object.
+
+* `annotations` - (list) A list of Annotations objects `tagAnnotation`.
+  * `key` - (string) The key or password used to uniquely identify this configuration object.
+  * `value` - (string) The value of the property.

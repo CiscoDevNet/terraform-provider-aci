@@ -16,6 +16,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/setplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringdefault"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
@@ -44,6 +45,13 @@ type MgmtRsOoBConsResourceModel struct {
 	Annotation      types.String `tfsdk:"annotation"`
 	Prio            types.String `tfsdk:"priority"`
 	TnVzOOBBrCPName types.String `tfsdk:"out_of_band_contract_name"`
+	TagAnnotation   types.Set    `tfsdk:"annotations"`
+}
+
+// TagAnnotationMgmtRsOoBConsResourceModel describes the resource data model for the children without relation ships.
+type TagAnnotationMgmtRsOoBConsResourceModel struct {
+	Key   types.String `tfsdk:"key"`
+	Value types.String `tfsdk:"value"`
 }
 
 type MgmtRsOoBConsIdentifier struct {
@@ -105,6 +113,32 @@ func (r *MgmtRsOoBConsResource) Schema(ctx context.Context, req resource.SchemaR
 				},
 				MarkdownDescription: `An out-of-band management endpoint group contract consists of switches (leaves/spines) and APICs that are part of the associated out-of-band management zone. Each node in the group is assigned an IP address that is dynamically allocated from the address pool associated with the corresponding out-of-band management zone.`,
 			},
+			"annotations": schema.SetNestedAttribute{
+				MarkdownDescription: ``,
+				Optional:            true,
+				Computed:            true,
+				PlanModifiers: []planmodifier.Set{
+					setplanmodifier.UseStateForUnknown(),
+				},
+				NestedObject: schema.NestedAttributeObject{
+					Attributes: map[string]schema.Attribute{
+						"key": schema.StringAttribute{
+							Required: true,
+							PlanModifiers: []planmodifier.String{
+								stringplanmodifier.UseStateForUnknown(),
+							},
+							MarkdownDescription: `The key or password used to uniquely identify this configuration object.`,
+						},
+						"value": schema.StringAttribute{
+							Required: true,
+							PlanModifiers: []planmodifier.String{
+								stringplanmodifier.UseStateForUnknown(),
+							},
+							MarkdownDescription: `The value of the property.`,
+						},
+					},
+				},
+			},
 		},
 	}
 }
@@ -133,6 +167,14 @@ func (r *MgmtRsOoBConsResource) Configure(ctx context.Context, req resource.Conf
 
 func (r *MgmtRsOoBConsResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
 	tflog.Trace(ctx, "start create of resource: aci_l3out_management_network_oob_contract")
+	// On create retrieve information on current state prior to making any changes in order to determine child delete operations
+	var stateData *MgmtRsOoBConsResourceModel
+	resp.Diagnostics.Append(req.Plan.Get(ctx, &stateData)...)
+	setMgmtRsOoBConsId(ctx, stateData)
+	messageMap := setMgmtRsOoBConsAttributes(ctx, r.client, stateData)
+	if messageMap != nil {
+		resp.Diagnostics.AddError(messageMap.(map[string]string)["message"], messageMap.(map[string]string)["messageDetail"])
+	}
 
 	var data *MgmtRsOoBConsResourceModel
 
@@ -147,7 +189,10 @@ func (r *MgmtRsOoBConsResource) Create(ctx context.Context, req resource.CreateR
 
 	tflog.Trace(ctx, fmt.Sprintf("create of resource aci_l3out_management_network_oob_contract with id '%s'", data.Id.ValueString()))
 
-	jsonPayload, message, messageDetail := getMgmtRsOoBConsCreateJsonPayload(ctx, data)
+	var tagAnnotationPlan, tagAnnotationState []TagAnnotationMgmtRsOoBConsResourceModel
+	data.TagAnnotation.ElementsAs(ctx, &tagAnnotationPlan, false)
+	stateData.TagAnnotation.ElementsAs(ctx, &tagAnnotationState, false)
+	jsonPayload, message, messageDetail := getMgmtRsOoBConsCreateJsonPayload(ctx, data, tagAnnotationPlan, tagAnnotationState)
 
 	if jsonPayload == nil {
 		resp.Diagnostics.AddError(message, messageDetail)
@@ -160,7 +205,7 @@ func (r *MgmtRsOoBConsResource) Create(ctx context.Context, req resource.CreateR
 		return
 	}
 
-	messageMap := setMgmtRsOoBConsAttributes(ctx, r.client, data)
+	messageMap = setMgmtRsOoBConsAttributes(ctx, r.client, data)
 	if messageMap != nil {
 		resp.Diagnostics.AddError(messageMap.(map[string]string)["message"], messageMap.(map[string]string)["messageDetail"])
 	}
@@ -196,9 +241,11 @@ func (r *MgmtRsOoBConsResource) Read(ctx context.Context, req resource.ReadReque
 func (r *MgmtRsOoBConsResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
 	tflog.Trace(ctx, "start update of resource: aci_l3out_management_network_oob_contract")
 	var data *MgmtRsOoBConsResourceModel
+	var stateData *MgmtRsOoBConsResourceModel
 
 	// Read Terraform plan data into the model
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &data)...)
+	resp.Diagnostics.Append(req.State.Get(ctx, &stateData)...)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -206,7 +253,10 @@ func (r *MgmtRsOoBConsResource) Update(ctx context.Context, req resource.UpdateR
 
 	tflog.Trace(ctx, fmt.Sprintf("update of resource aci_l3out_management_network_oob_contract with id '%s'", data.Id.ValueString()))
 
-	jsonPayload, message, messageDetail := getMgmtRsOoBConsCreateJsonPayload(ctx, data)
+	var tagAnnotationPlan, tagAnnotationState []TagAnnotationMgmtRsOoBConsResourceModel
+	data.TagAnnotation.ElementsAs(ctx, &tagAnnotationPlan, false)
+	stateData.TagAnnotation.ElementsAs(ctx, &tagAnnotationState, false)
+	jsonPayload, message, messageDetail := getMgmtRsOoBConsCreateJsonPayload(ctx, data, tagAnnotationPlan, tagAnnotationState)
 
 	if jsonPayload == nil {
 		resp.Diagnostics.AddError(message, messageDetail)
@@ -259,7 +309,7 @@ func (r *MgmtRsOoBConsResource) ImportState(ctx context.Context, req resource.Im
 }
 
 func setMgmtRsOoBConsAttributes(ctx context.Context, client *client.Client, data *MgmtRsOoBConsResourceModel) interface{} {
-	requestData, message, messageDetail := doMgmtRsOoBConsRequest(ctx, client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "GET", nil)
+	requestData, message, messageDetail := doMgmtRsOoBConsRequest(ctx, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=children&rsp-subtree-class=%s", data.Id.ValueString(), "mgmtRsOoBCons,tagAnnotation"), "GET", nil)
 
 	if requestData == nil {
 		return map[string]string{"message": message, "messageDetail": messageDetail}
@@ -282,6 +332,32 @@ func setMgmtRsOoBConsAttributes(ctx context.Context, client *client.Client, data
 				if attributeName == "tnVzOOBBrCPName" {
 					data.TnVzOOBBrCPName = basetypes.NewStringValue(attributeValue.(string))
 				}
+			}
+			TagAnnotationMgmtRsOoBConsList := make([]TagAnnotationMgmtRsOoBConsResourceModel, 0)
+			_, ok := classReadInfo[0].(map[string]interface{})["children"]
+			if ok {
+				children := classReadInfo[0].(map[string]interface{})["children"].([]interface{})
+				for _, child := range children {
+					for childClassName, childClassDetails := range child.(map[string]interface{}) {
+						childAttributes := childClassDetails.(map[string]interface{})["attributes"].(map[string]interface{})
+						if childClassName == "tagAnnotation" {
+							TagAnnotationMgmtRsOoBCons := TagAnnotationMgmtRsOoBConsResourceModel{}
+							for childAttributeName, childAttributeValue := range childAttributes {
+								if childAttributeName == "key" {
+									TagAnnotationMgmtRsOoBCons.Key = basetypes.NewStringValue(childAttributeValue.(string))
+								}
+								if childAttributeName == "value" {
+									TagAnnotationMgmtRsOoBCons.Value = basetypes.NewStringValue(childAttributeValue.(string))
+								}
+							}
+							TagAnnotationMgmtRsOoBConsList = append(TagAnnotationMgmtRsOoBConsList, TagAnnotationMgmtRsOoBCons)
+						}
+					}
+				}
+			}
+			if len(TagAnnotationMgmtRsOoBConsList) > 0 {
+				tagAnnotationSet, _ := types.SetValueFrom(ctx, data.TagAnnotation.ElementType(ctx), TagAnnotationMgmtRsOoBConsList)
+				data.TagAnnotation = tagAnnotationSet
 			}
 		} else {
 			return map[string]string{
@@ -313,9 +389,58 @@ func setMgmtRsOoBConsId(ctx context.Context, data *MgmtRsOoBConsResourceModel) {
 	data.Id = types.StringValue(fmt.Sprintf("%s/%s", data.ParentDn.ValueString(), rn))
 }
 
-func getMgmtRsOoBConsCreateJsonPayload(ctx context.Context, data *MgmtRsOoBConsResourceModel) (*container.Container, string, string) {
+func getMgmtRsOoBConsTagAnnotationChildPayloads(ctx context.Context, data *MgmtRsOoBConsResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationMgmtRsOoBConsResourceModel) ([]map[string]interface{}, string, string) {
+
+	childPayloads := []map[string]interface{}{}
+	if !data.TagAnnotation.IsUnknown() {
+		tagAnnotationIdentifiers := []TagAnnotationIdentifier{}
+		for _, tagAnnotation := range tagAnnotationPlan {
+			childMap := map[string]map[string]interface{}{"attributes": {}}
+			if !tagAnnotation.Key.IsUnknown() {
+				childMap["attributes"]["key"] = tagAnnotation.Key.ValueString()
+			}
+			if !tagAnnotation.Value.IsUnknown() {
+				childMap["attributes"]["value"] = tagAnnotation.Value.ValueString()
+			}
+			childPayloads = append(childPayloads, map[string]interface{}{"tagAnnotation": childMap})
+			tagAnnotationIdentifier := TagAnnotationIdentifier{}
+			tagAnnotationIdentifier.Key = tagAnnotation.Key
+			tagAnnotationIdentifiers = append(tagAnnotationIdentifiers, tagAnnotationIdentifier)
+		}
+		for _, tagAnnotation := range tagAnnotationState {
+			delete := true
+			for _, tagAnnotationIdentifier := range tagAnnotationIdentifiers {
+				if tagAnnotationIdentifier.Key == tagAnnotation.Key {
+					delete = false
+					break
+				}
+			}
+			if delete {
+				childMap := map[string]map[string]interface{}{"attributes": {}}
+				childMap["attributes"]["status"] = "deleted"
+				childMap["attributes"]["key"] = tagAnnotation.Key.ValueString()
+				childPayloads = append(childPayloads, map[string]interface{}{"tagAnnotation": childMap})
+			}
+		}
+	} else {
+		data.TagAnnotation = types.SetNull(data.TagAnnotation.ElementType(ctx))
+	}
+
+	return childPayloads, "", ""
+}
+
+func getMgmtRsOoBConsCreateJsonPayload(ctx context.Context, data *MgmtRsOoBConsResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationMgmtRsOoBConsResourceModel) (*container.Container, string, string) {
 	payloadMap := map[string]interface{}{}
 	payloadMap["attributes"] = map[string]string{}
+	childPayloads := []map[string]interface{}{}
+
+	TagAnnotationchildPayloads, errMessage, errMessageDetail := getMgmtRsOoBConsTagAnnotationChildPayloads(ctx, data, tagAnnotationPlan, tagAnnotationState)
+	if TagAnnotationchildPayloads == nil {
+		return nil, errMessage, errMessageDetail
+	}
+	childPayloads = append(childPayloads, TagAnnotationchildPayloads...)
+
+	payloadMap["children"] = childPayloads
 	if !data.Annotation.IsNull() && !data.Annotation.IsUnknown() {
 		payloadMap["attributes"].(map[string]string)["annotation"] = data.Annotation.ValueString()
 	}

@@ -29,6 +29,12 @@ Manages ACI L3out Management Network Oob Contract
 resource "aci_l3out_management_network_oob_contract" "example" {
   parent_dn                 = aci_l3out_management_network_instance_profile.example.id
   out_of_band_contract_name = "test_tn_vz_oob_br_cp_name"
+  annotations = [
+    {
+      key   = "annotations_1"
+      value = "value_1"
+    }
+  ]
 }
 
 ```
@@ -52,6 +58,13 @@ resource "aci_l3out_management_network_oob_contract" "example" {
 * `priority` - (string) The Quality of service (QoS) priority class ID. QoS refers to the capability of a network to provide better service to selected network traffic over various technologies. The primary goal of QoS is to provide priority including dedicated bandwidth, controlled jitter and latency (required by some real-time and interactive traffic), and improved loss characteristics. You can configure the bandwidth of each QoS level using QoS profiles.
   - Default: `unspecified`
   - Valid Values: `level1`, `level2`, `level3`, `level4`, `level5`, `level6`, `unspecified`.
+
+* `annotations` - (list) A list of Annotations objects `tagAnnotation` which can be configured using the [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.
+  
+  #### Required
+  
+  * `key` - (string) The key or password used to uniquely identify this configuration object.
+  * `value` - (string) The value of the property.
 
 ## Importing
 

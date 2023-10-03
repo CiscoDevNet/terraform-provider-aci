@@ -17,7 +17,7 @@ func TestAccResourceMgmtRsOoBConsWithMgmtInstP(t *testing.T) {
 			// Create with minimum config and verify default APIC values
 			{
 				Config:             testConfigMgmtRsOoBConsMinDependencyWithMgmtInstP,
-				ExpectNonEmptyPlan: false,
+				ExpectNonEmptyPlan: true,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_l3out_management_network_oob_contract.test", "out_of_band_contract_name", "test_tn_vz_oob_br_cp_name"),
 					resource.TestCheckResourceAttr("aci_l3out_management_network_oob_contract.test", "annotation", "orchestrator:terraform"),
@@ -27,7 +27,7 @@ func TestAccResourceMgmtRsOoBConsWithMgmtInstP(t *testing.T) {
 			// Update with all config and verify default APIC values
 			{
 				Config:             testConfigMgmtRsOoBConsAllDependencyWithMgmtInstP,
-				ExpectNonEmptyPlan: false,
+				ExpectNonEmptyPlan: true,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_l3out_management_network_oob_contract.test", "out_of_band_contract_name", "test_tn_vz_oob_br_cp_name"),
 					resource.TestCheckResourceAttr("aci_l3out_management_network_oob_contract.test", "annotation", "annotation"),
@@ -37,7 +37,7 @@ func TestAccResourceMgmtRsOoBConsWithMgmtInstP(t *testing.T) {
 			// Update with minimum config and verify config is unchanged
 			{
 				Config:             testConfigMgmtRsOoBConsMinDependencyWithMgmtInstP,
-				ExpectNonEmptyPlan: false,
+				ExpectNonEmptyPlan: true,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_l3out_management_network_oob_contract.test", "out_of_band_contract_name", "test_tn_vz_oob_br_cp_name"),
 				),
@@ -45,11 +45,55 @@ func TestAccResourceMgmtRsOoBConsWithMgmtInstP(t *testing.T) {
 			// Update with empty strings config or default value
 			{
 				Config:             testConfigMgmtRsOoBConsResetDependencyWithMgmtInstP,
-				ExpectNonEmptyPlan: false,
+				ExpectNonEmptyPlan: true,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_l3out_management_network_oob_contract.test", "out_of_band_contract_name", "test_tn_vz_oob_br_cp_name"),
 					resource.TestCheckResourceAttr("aci_l3out_management_network_oob_contract.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_l3out_management_network_oob_contract.test", "priority", "unspecified"),
+				),
+			},
+			// Update with children
+			{
+				Config:             testConfigMgmtRsOoBConsChildrenDependencyWithMgmtInstP,
+				ExpectNonEmptyPlan: true,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_l3out_management_network_oob_contract.test", "out_of_band_contract_name", "test_tn_vz_oob_br_cp_name"),
+					resource.TestCheckResourceAttr("aci_l3out_management_network_oob_contract.test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_l3out_management_network_oob_contract.test", "priority", "unspecified"),
+					resource.TestCheckResourceAttr("aci_l3out_management_network_oob_contract.test", "annotations.0.key", "annotations_1"),
+					resource.TestCheckResourceAttr("aci_l3out_management_network_oob_contract.test", "annotations.0.value", "value_1"),
+					resource.TestCheckResourceAttr("aci_l3out_management_network_oob_contract.test", "annotations.1.key", "annotations_2"),
+					resource.TestCheckResourceAttr("aci_l3out_management_network_oob_contract.test", "annotations.1.value", "value_2"),
+				),
+			},
+			// Update with children removed from config
+			{
+				Config:             testConfigMgmtRsOoBConsChildrenRemoveFromConfigDependencyWithMgmtInstP,
+				ExpectNonEmptyPlan: true,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_l3out_management_network_oob_contract.test", "annotations.0.key", "annotations_1"),
+					resource.TestCheckResourceAttr("aci_l3out_management_network_oob_contract.test", "annotations.0.value", "value_1"),
+					resource.TestCheckResourceAttr("aci_l3out_management_network_oob_contract.test", "annotations.1.key", "annotations_2"),
+					resource.TestCheckResourceAttr("aci_l3out_management_network_oob_contract.test", "annotations.1.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_l3out_management_network_oob_contract.test", "annotations.#", "2"),
+				),
+			},
+			// Update with children first child removed
+			{
+				Config:             testConfigMgmtRsOoBConsChildrenRemoveOneDependencyWithMgmtInstP,
+				ExpectNonEmptyPlan: true,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_l3out_management_network_oob_contract.test", "annotations.0.key", "annotations_2"),
+					resource.TestCheckResourceAttr("aci_l3out_management_network_oob_contract.test", "annotations.0.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_l3out_management_network_oob_contract.test", "annotations.#", "1"),
+				),
+			},
+			// Update with all children removed
+			{
+				Config:             testConfigMgmtRsOoBConsChildrenRemoveAllDependencyWithMgmtInstP,
+				ExpectNonEmptyPlan: true,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_l3out_management_network_oob_contract.test", "annotations.#", "0"),
 				),
 			},
 		},
@@ -78,5 +122,49 @@ resource "aci_l3out_management_network_oob_contract" "test" {
   out_of_band_contract_name = "test_tn_vz_oob_br_cp_name"
   annotation = "orchestrator:terraform"
   priority = "unspecified"
+}
+`
+const testConfigMgmtRsOoBConsChildrenDependencyWithMgmtInstP = testConfigMgmtInstPMin + `
+resource "aci_l3out_management_network_oob_contract" "test" {
+  parent_dn = aci_l3out_management_network_instance_profile.test.id
+  out_of_band_contract_name = "test_tn_vz_oob_br_cp_name"
+  annotations = [
+	{
+	  key = "annotations_1"
+	  value = "value_1"
+	},
+	{
+	  key = "annotations_2"
+	  value = "value_2"
+	},
+  ]
+}
+`
+
+const testConfigMgmtRsOoBConsChildrenRemoveFromConfigDependencyWithMgmtInstP = testConfigMgmtInstPMin + `
+resource "aci_l3out_management_network_oob_contract" "test" {
+  parent_dn = aci_l3out_management_network_instance_profile.test.id
+  out_of_band_contract_name = "test_tn_vz_oob_br_cp_name"
+}
+`
+
+const testConfigMgmtRsOoBConsChildrenRemoveOneDependencyWithMgmtInstP = testConfigMgmtInstPMin + `
+resource "aci_l3out_management_network_oob_contract" "test" {
+  parent_dn = aci_l3out_management_network_instance_profile.test.id
+  out_of_band_contract_name = "test_tn_vz_oob_br_cp_name"
+  annotations = [ 
+	{
+	  key = "annotations_2"
+	  value = "value_2"
+	},
+  ]
+}
+`
+
+const testConfigMgmtRsOoBConsChildrenRemoveAllDependencyWithMgmtInstP = testConfigMgmtInstPMin + `
+resource "aci_l3out_management_network_oob_contract" "test" {
+  parent_dn = aci_l3out_management_network_instance_profile.test.id
+  out_of_band_contract_name = "test_tn_vz_oob_br_cp_name"
+  annotations = []
 }
 `

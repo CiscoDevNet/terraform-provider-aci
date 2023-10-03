@@ -47,6 +47,7 @@ type MgmtInstPResourceModel struct {
 	NameAlias     types.String `tfsdk:"name_alias"`
 	Prio          types.String `tfsdk:"priority"`
 	MgmtRsOoBCons types.Set    `tfsdk:"l3out_management_network_oob_contracts"`
+	TagAnnotation types.Set    `tfsdk:"annotations"`
 }
 
 // MgmtRsOoBConsMgmtInstPResourceModel describes the resource data model for the children without relation ships.
@@ -54,6 +55,12 @@ type MgmtRsOoBConsMgmtInstPResourceModel struct {
 	Annotation      types.String `tfsdk:"annotation"`
 	Prio            types.String `tfsdk:"priority"`
 	TnVzOOBBrCPName types.String `tfsdk:"out_of_band_contract_name"`
+}
+
+// TagAnnotationMgmtInstPResourceModel describes the resource data model for the children without relation ships.
+type TagAnnotationMgmtInstPResourceModel struct {
+	Key   types.String `tfsdk:"key"`
+	Value types.String `tfsdk:"value"`
 }
 
 type MgmtInstPIdentifier struct {
@@ -161,6 +168,32 @@ func (r *MgmtInstPResource) Schema(ctx context.Context, req resource.SchemaReque
 					},
 				},
 			},
+			"annotations": schema.SetNestedAttribute{
+				MarkdownDescription: ``,
+				Optional:            true,
+				Computed:            true,
+				PlanModifiers: []planmodifier.Set{
+					setplanmodifier.UseStateForUnknown(),
+				},
+				NestedObject: schema.NestedAttributeObject{
+					Attributes: map[string]schema.Attribute{
+						"key": schema.StringAttribute{
+							Required: true,
+							PlanModifiers: []planmodifier.String{
+								stringplanmodifier.UseStateForUnknown(),
+							},
+							MarkdownDescription: `The key or password used to uniquely identify this configuration object.`,
+						},
+						"value": schema.StringAttribute{
+							Required: true,
+							PlanModifiers: []planmodifier.String{
+								stringplanmodifier.UseStateForUnknown(),
+							},
+							MarkdownDescription: `The value of the property.`,
+						},
+					},
+				},
+			},
 		},
 	}
 }
@@ -214,7 +247,10 @@ func (r *MgmtInstPResource) Create(ctx context.Context, req resource.CreateReque
 	var mgmtRsOoBConsPlan, mgmtRsOoBConsState []MgmtRsOoBConsMgmtInstPResourceModel
 	data.MgmtRsOoBCons.ElementsAs(ctx, &mgmtRsOoBConsPlan, false)
 	stateData.MgmtRsOoBCons.ElementsAs(ctx, &mgmtRsOoBConsState, false)
-	jsonPayload, message, messageDetail := getMgmtInstPCreateJsonPayload(ctx, data, mgmtRsOoBConsPlan, mgmtRsOoBConsState)
+	var tagAnnotationPlan, tagAnnotationState []TagAnnotationMgmtInstPResourceModel
+	data.TagAnnotation.ElementsAs(ctx, &tagAnnotationPlan, false)
+	stateData.TagAnnotation.ElementsAs(ctx, &tagAnnotationState, false)
+	jsonPayload, message, messageDetail := getMgmtInstPCreateJsonPayload(ctx, data, mgmtRsOoBConsPlan, mgmtRsOoBConsState, tagAnnotationPlan, tagAnnotationState)
 
 	if jsonPayload == nil {
 		resp.Diagnostics.AddError(message, messageDetail)
@@ -278,7 +314,10 @@ func (r *MgmtInstPResource) Update(ctx context.Context, req resource.UpdateReque
 	var mgmtRsOoBConsPlan, mgmtRsOoBConsState []MgmtRsOoBConsMgmtInstPResourceModel
 	data.MgmtRsOoBCons.ElementsAs(ctx, &mgmtRsOoBConsPlan, false)
 	stateData.MgmtRsOoBCons.ElementsAs(ctx, &mgmtRsOoBConsState, false)
-	jsonPayload, message, messageDetail := getMgmtInstPCreateJsonPayload(ctx, data, mgmtRsOoBConsPlan, mgmtRsOoBConsState)
+	var tagAnnotationPlan, tagAnnotationState []TagAnnotationMgmtInstPResourceModel
+	data.TagAnnotation.ElementsAs(ctx, &tagAnnotationPlan, false)
+	stateData.TagAnnotation.ElementsAs(ctx, &tagAnnotationState, false)
+	jsonPayload, message, messageDetail := getMgmtInstPCreateJsonPayload(ctx, data, mgmtRsOoBConsPlan, mgmtRsOoBConsState, tagAnnotationPlan, tagAnnotationState)
 
 	if jsonPayload == nil {
 		resp.Diagnostics.AddError(message, messageDetail)
@@ -331,7 +370,7 @@ func (r *MgmtInstPResource) ImportState(ctx context.Context, req resource.Import
 }
 
 func setMgmtInstPAttributes(ctx context.Context, client *client.Client, data *MgmtInstPResourceModel) interface{} {
-	requestData, message, messageDetail := doMgmtInstPRequest(ctx, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=children&rsp-subtree-class=%s", data.Id.ValueString(), "mgmtInstP,mgmtRsOoBCons"), "GET", nil)
+	requestData, message, messageDetail := doMgmtInstPRequest(ctx, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=children&rsp-subtree-class=%s", data.Id.ValueString(), "mgmtInstP,mgmtRsOoBCons,tagAnnotation"), "GET", nil)
 
 	if requestData == nil {
 		return map[string]string{"message": message, "messageDetail": messageDetail}
@@ -361,6 +400,7 @@ func setMgmtInstPAttributes(ctx context.Context, client *client.Client, data *Mg
 				}
 			}
 			MgmtRsOoBConsMgmtInstPList := make([]MgmtRsOoBConsMgmtInstPResourceModel, 0)
+			TagAnnotationMgmtInstPList := make([]TagAnnotationMgmtInstPResourceModel, 0)
 			_, ok := classReadInfo[0].(map[string]interface{})["children"]
 			if ok {
 				children := classReadInfo[0].(map[string]interface{})["children"].([]interface{})
@@ -382,12 +422,28 @@ func setMgmtInstPAttributes(ctx context.Context, client *client.Client, data *Mg
 							}
 							MgmtRsOoBConsMgmtInstPList = append(MgmtRsOoBConsMgmtInstPList, MgmtRsOoBConsMgmtInstP)
 						}
+						if childClassName == "tagAnnotation" {
+							TagAnnotationMgmtInstP := TagAnnotationMgmtInstPResourceModel{}
+							for childAttributeName, childAttributeValue := range childAttributes {
+								if childAttributeName == "key" {
+									TagAnnotationMgmtInstP.Key = basetypes.NewStringValue(childAttributeValue.(string))
+								}
+								if childAttributeName == "value" {
+									TagAnnotationMgmtInstP.Value = basetypes.NewStringValue(childAttributeValue.(string))
+								}
+							}
+							TagAnnotationMgmtInstPList = append(TagAnnotationMgmtInstPList, TagAnnotationMgmtInstP)
+						}
 					}
 				}
 			}
 			if len(MgmtRsOoBConsMgmtInstPList) > 0 {
 				mgmtRsOoBConsSet, _ := types.SetValueFrom(ctx, data.MgmtRsOoBCons.ElementType(ctx), MgmtRsOoBConsMgmtInstPList)
 				data.MgmtRsOoBCons = mgmtRsOoBConsSet
+			}
+			if len(TagAnnotationMgmtInstPList) > 0 {
+				tagAnnotationSet, _ := types.SetValueFrom(ctx, data.TagAnnotation.ElementType(ctx), TagAnnotationMgmtInstPList)
+				data.TagAnnotation = tagAnnotationSet
 			}
 		} else {
 			return map[string]string{
@@ -458,8 +514,47 @@ func getMgmtInstPMgmtRsOoBConsChildPayloads(ctx context.Context, data *MgmtInstP
 
 	return childPayloads, "", ""
 }
+func getMgmtInstPTagAnnotationChildPayloads(ctx context.Context, data *MgmtInstPResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationMgmtInstPResourceModel) ([]map[string]interface{}, string, string) {
 
-func getMgmtInstPCreateJsonPayload(ctx context.Context, data *MgmtInstPResourceModel, mgmtRsOoBConsPlan, mgmtRsOoBConsState []MgmtRsOoBConsMgmtInstPResourceModel) (*container.Container, string, string) {
+	childPayloads := []map[string]interface{}{}
+	if !data.TagAnnotation.IsUnknown() {
+		tagAnnotationIdentifiers := []TagAnnotationIdentifier{}
+		for _, tagAnnotation := range tagAnnotationPlan {
+			childMap := map[string]map[string]interface{}{"attributes": {}}
+			if !tagAnnotation.Key.IsUnknown() {
+				childMap["attributes"]["key"] = tagAnnotation.Key.ValueString()
+			}
+			if !tagAnnotation.Value.IsUnknown() {
+				childMap["attributes"]["value"] = tagAnnotation.Value.ValueString()
+			}
+			childPayloads = append(childPayloads, map[string]interface{}{"tagAnnotation": childMap})
+			tagAnnotationIdentifier := TagAnnotationIdentifier{}
+			tagAnnotationIdentifier.Key = tagAnnotation.Key
+			tagAnnotationIdentifiers = append(tagAnnotationIdentifiers, tagAnnotationIdentifier)
+		}
+		for _, tagAnnotation := range tagAnnotationState {
+			delete := true
+			for _, tagAnnotationIdentifier := range tagAnnotationIdentifiers {
+				if tagAnnotationIdentifier.Key == tagAnnotation.Key {
+					delete = false
+					break
+				}
+			}
+			if delete {
+				childMap := map[string]map[string]interface{}{"attributes": {}}
+				childMap["attributes"]["status"] = "deleted"
+				childMap["attributes"]["key"] = tagAnnotation.Key.ValueString()
+				childPayloads = append(childPayloads, map[string]interface{}{"tagAnnotation": childMap})
+			}
+		}
+	} else {
+		data.TagAnnotation = types.SetNull(data.TagAnnotation.ElementType(ctx))
+	}
+
+	return childPayloads, "", ""
+}
+
+func getMgmtInstPCreateJsonPayload(ctx context.Context, data *MgmtInstPResourceModel, mgmtRsOoBConsPlan, mgmtRsOoBConsState []MgmtRsOoBConsMgmtInstPResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationMgmtInstPResourceModel) (*container.Container, string, string) {
 	payloadMap := map[string]interface{}{}
 	payloadMap["attributes"] = map[string]string{}
 	childPayloads := []map[string]interface{}{}
@@ -469,6 +564,12 @@ func getMgmtInstPCreateJsonPayload(ctx context.Context, data *MgmtInstPResourceM
 		return nil, errMessage, errMessageDetail
 	}
 	childPayloads = append(childPayloads, MgmtRsOoBConschildPayloads...)
+
+	TagAnnotationchildPayloads, errMessage, errMessageDetail := getMgmtInstPTagAnnotationChildPayloads(ctx, data, tagAnnotationPlan, tagAnnotationState)
+	if TagAnnotationchildPayloads == nil {
+		return nil, errMessage, errMessageDetail
+	}
+	childPayloads = append(childPayloads, TagAnnotationchildPayloads...)
 
 	payloadMap["children"] = childPayloads
 	if !data.Annotation.IsNull() && !data.Annotation.IsUnknown() {

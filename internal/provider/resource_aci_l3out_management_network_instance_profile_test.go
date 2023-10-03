@@ -66,6 +66,11 @@ func TestAccResourceMgmtInstP(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_l3out_management_network_instance_profile.test", "description", ""),
 					resource.TestCheckResourceAttr("aci_l3out_management_network_instance_profile.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("aci_l3out_management_network_instance_profile.test", "priority", "unspecified"),
+					resource.TestCheckResourceAttr("aci_l3out_management_network_instance_profile.test", "annotations.0.key", "annotations_1"),
+					resource.TestCheckResourceAttr("aci_l3out_management_network_instance_profile.test", "annotations.0.value", "value_1"),
+					resource.TestCheckResourceAttr("aci_l3out_management_network_instance_profile.test", "annotations.1.key", "annotations_2"),
+					resource.TestCheckResourceAttr("aci_l3out_management_network_instance_profile.test", "annotations.1.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_l3out_management_network_instance_profile.test", "annotations.#", "2"),
 					resource.TestCheckResourceAttr("aci_l3out_management_network_instance_profile.test", "l3out_management_network_oob_contracts.0.annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_l3out_management_network_instance_profile.test", "l3out_management_network_oob_contracts.0.out_of_band_contract_name", "l3out_management_network_oob_contracts_1"),
 					resource.TestCheckResourceAttr("aci_l3out_management_network_instance_profile.test", "l3out_management_network_oob_contracts.0.priority", "level1"),
@@ -83,6 +88,11 @@ func TestAccResourceMgmtInstP(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_l3out_management_network_instance_profile.test", "description", ""),
 					resource.TestCheckResourceAttr("aci_l3out_management_network_instance_profile.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("aci_l3out_management_network_instance_profile.test", "priority", "unspecified"),
+					resource.TestCheckResourceAttr("aci_l3out_management_network_instance_profile.test", "annotations.0.key", "annotations_1"),
+					resource.TestCheckResourceAttr("aci_l3out_management_network_instance_profile.test", "annotations.0.value", "value_1"),
+					resource.TestCheckResourceAttr("aci_l3out_management_network_instance_profile.test", "annotations.1.key", "annotations_2"),
+					resource.TestCheckResourceAttr("aci_l3out_management_network_instance_profile.test", "annotations.1.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_l3out_management_network_instance_profile.test", "annotations.#", "2"),
 					resource.TestCheckResourceAttr("aci_l3out_management_network_instance_profile.test", "l3out_management_network_oob_contracts.0.annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_l3out_management_network_instance_profile.test", "l3out_management_network_oob_contracts.0.out_of_band_contract_name", "l3out_management_network_oob_contracts_1"),
 					resource.TestCheckResourceAttr("aci_l3out_management_network_instance_profile.test", "l3out_management_network_oob_contracts.0.priority", "level1"),
@@ -100,6 +110,9 @@ func TestAccResourceMgmtInstP(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_l3out_management_network_instance_profile.test", "description", ""),
 					resource.TestCheckResourceAttr("aci_l3out_management_network_instance_profile.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("aci_l3out_management_network_instance_profile.test", "priority", "unspecified"),
+					resource.TestCheckResourceAttr("aci_l3out_management_network_instance_profile.test", "annotations.0.key", "annotations_2"),
+					resource.TestCheckResourceAttr("aci_l3out_management_network_instance_profile.test", "annotations.0.value", "value_2"),
+					resource.TestCheckResourceAttr("aci_l3out_management_network_instance_profile.test", "annotations.#", "1"),
 					resource.TestCheckResourceAttr("aci_l3out_management_network_instance_profile.test", "l3out_management_network_oob_contracts.0.annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_l3out_management_network_instance_profile.test", "l3out_management_network_oob_contracts.0.out_of_band_contract_name", "l3out_management_network_oob_contracts_2"),
 					resource.TestCheckResourceAttr("aci_l3out_management_network_instance_profile.test", "l3out_management_network_oob_contracts.0.priority", "level2"),
@@ -114,6 +127,7 @@ func TestAccResourceMgmtInstP(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_l3out_management_network_instance_profile.test", "description", ""),
 					resource.TestCheckResourceAttr("aci_l3out_management_network_instance_profile.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("aci_l3out_management_network_instance_profile.test", "priority", "unspecified"),
+					resource.TestCheckResourceAttr("aci_l3out_management_network_instance_profile.test", "annotations.#", "0"),
 					resource.TestCheckResourceAttr("aci_l3out_management_network_instance_profile.test", "l3out_management_network_oob_contracts.#", "0"),
 				),
 			},
@@ -149,6 +163,16 @@ resource "aci_l3out_management_network_instance_profile" "test" {
 const testConfigMgmtInstPChildren = `
 resource "aci_l3out_management_network_instance_profile" "test" {
   name = "test_name"
+  annotations = [
+	{
+	  key = "annotations_1"
+	  value = "value_1"
+	},
+	{
+	  key = "annotations_2"
+	  value = "value_2"
+	},
+  ]
   l3out_management_network_oob_contracts = [
 	{
 	  annotation = "orchestrator:terraform"
@@ -173,6 +197,12 @@ resource "aci_l3out_management_network_instance_profile" "test" {
 const testConfigMgmtInstPChildrenRemoveOne = `
 resource "aci_l3out_management_network_instance_profile" "test" {
   name = "test_name"
+  annotations = [ 
+	{
+	  key = "annotations_2"
+	  value = "value_2"
+	},
+  ]
   l3out_management_network_oob_contracts = [ 
 	{
 	  annotation = "orchestrator:terraform"
@@ -186,6 +216,7 @@ resource "aci_l3out_management_network_instance_profile" "test" {
 const testConfigMgmtInstPChildrenRemoveAll = `
 resource "aci_l3out_management_network_instance_profile" "test" {
   name = "test_name"
+  annotations = []
   l3out_management_network_oob_contracts = []
 }
 `

@@ -16,6 +16,14 @@ all:
   name: "name"
   name_alias: "name_alias"
 
+children:
+  annotations:
+    - key: "annotations_1"
+      value: "value_1"
+      
+    - key: "annotations_2"
+      value: "value_2"
+      
 parents:
   - class_name: "mgmtInstP"
     parent_dependency: ""

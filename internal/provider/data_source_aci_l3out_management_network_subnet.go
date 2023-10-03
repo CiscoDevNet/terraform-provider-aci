@@ -65,6 +65,22 @@ func (d *MgmtSubnetDataSource) Schema(ctx context.Context, req datasource.Schema
 				Computed:            true,
 				MarkdownDescription: `The name alias of the L3out Management Network Subnet object.`,
 			},
+			"annotations": schema.SetNestedAttribute{
+				MarkdownDescription: ``,
+				Computed:            true,
+				NestedObject: schema.NestedAttributeObject{
+					Attributes: map[string]schema.Attribute{
+						"key": schema.StringAttribute{
+							Computed:            true,
+							MarkdownDescription: `The key or password used to uniquely identify this configuration object.`,
+						},
+						"value": schema.StringAttribute{
+							Computed:            true,
+							MarkdownDescription: `The value of the property.`,
+						},
+					},
+				},
+			},
 		},
 	}
 }

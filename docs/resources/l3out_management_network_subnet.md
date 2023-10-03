@@ -29,6 +29,12 @@ Manages ACI L3out Management Network Subnet
 resource "aci_l3out_management_network_subnet" "example" {
   parent_dn = aci_l3out_management_network_instance_profile.example.id
   ip        = "1.1.1.0/24"
+  annotations = [
+    {
+      key   = "annotations_1"
+      value = "value_1"
+    }
+  ]
 }
 
 ```
@@ -52,6 +58,13 @@ resource "aci_l3out_management_network_subnet" "example" {
 * `description` - (string) The description of the L3out Management Network Subnet object.
 * `name` - (string) The name of the L3out Management Network Subnet object.
 * `name_alias` - (string) The name alias of the L3out Management Network Subnet object.
+
+* `annotations` - (list) A list of Annotations objects `tagAnnotation` which can be configured using the [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.
+  
+  #### Required
+  
+  * `key` - (string) The key or password used to uniquely identify this configuration object.
+  * `value` - (string) The value of the property.
 
 ## Importing
 
