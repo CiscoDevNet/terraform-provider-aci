@@ -19,7 +19,7 @@ Note: This resource is supported in Cloud APIC only.
 
 ## GUI Information ##
 
-* `Location` - Application Management -> EPGs -> Actions -> Create EPG
+* `Location` - Application Management -> EPGs -> Create EPG
 
 
 ## Example Usage ##

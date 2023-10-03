@@ -19,8 +19,9 @@ Note: This resource is supported in Cloud APIC only.
 
 ## GUI Information ##
 
-* `Location` - Application Management -> EPGs -> Actions -> Create EPG
-             - Application Management -> Application Profiles -> Actions -> Create Application Profile
+* `Location` 
+  - Application Management -> EPGs -> Create EPG
+  - Application Management -> Application Profiles -> Create Application Profile
 
 
 ## Example Usage ##
