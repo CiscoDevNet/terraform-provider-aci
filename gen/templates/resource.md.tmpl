@@ -100,10 +100,10 @@ Manages ACI {{getResourceNameAsDescription .ResourceName}}
   * `{{- overwriteProperty .PkgName .SnakeCaseName $.Definitions}}` - (string) {{.Comment}}
         {{- end}}
         {{- if .DefaultValue }}
-    - Default: `{{ .DefaultValue }}`
+      - Default: `{{ .DefaultValue }}`
         {{- end}}
         {{- if .ValidValues }}{{$i := 1}}{{$length := len .ValidValues}}
-    - Valid Values:{{ range .ValidValues}} `{{ . }}`{{ if ne $length $i}}{{$i = add $i 1}}, {{- else}}.{{- end}}{{- end}}
+      - Valid Values:{{ range .ValidValues}} `{{ . }}`{{ if ne $length $i}}{{$i = add $i 1}}, {{- else}}.{{- end}}{{- end}}
         {{- end}}
       {{- end}}
     {{- end}}
