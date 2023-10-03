@@ -104,10 +104,6 @@ var resourceNames = map[string]string{}
 var relationalClasses = []string{}
 var targetRelationalPropertyClasses = map[string]string{}
 
-// Global variable used to determine if a class is defined in a parent resource
-// During testing this is required to determine if test step expects non empty plan states
-var nestedClasses = []string{}
-
 func GetResourceNameAsDescription(s string) string {
 	return cases.Title(language.English).String(strings.ReplaceAll(s, "_", " "))
 }
@@ -644,10 +640,6 @@ func (m *Model) setClassModel(metaPath string, child bool, definitions Definitio
 			}
 		} else {
 			m.HasChild = false
-		}
-	} else {
-		if !slices.Contains(nestedClasses, m.PkgName) {
-			nestedClasses = append(nestedClasses, m.PkgName)
 		}
 	}
 }
