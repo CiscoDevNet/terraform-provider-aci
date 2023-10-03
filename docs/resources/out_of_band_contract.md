@@ -13,7 +13,7 @@ Manages ACI Out Of Band Contract
 
 ## API Information ##
 
-* `Class` - `vzOOBBrCP`
+* `Class` - [vzOOBBrCP](https://pubhub.devnetcloud.com/media/model-doc-521/docs/app/index.html#/objects/vzOOBBrCP/overview)
 
 * `Distinguished Name Formats`
   - `uni/tn-mgmt/oobbrc-{name}`
@@ -67,7 +67,7 @@ resource "aci_out_of_band_contract" "example" {
   - Default: `unspecified`
   - Valid Values: `AF11`, `AF12`, `AF13`, `AF21`, `AF22`, `AF23`, `AF31`, `AF32`, `AF33`, `AF41`, `AF42`, `AF43`, `CS0`, `CS1`, `CS2`, `CS3`, `CS4`, `CS5`, `CS6`, `CS7`, `EF`, `VA`, `unspecified`.
 
-* `annotations` - (list) A list of Annotations objects `tagAnnotation` which can be configured using the [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.
+* `annotations` - (list) A list of Annotations objects ([tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-521/docs/app/index.html#/objects/tagAnnotation/overview)) which can be configured using the [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.
   
   #### Required
   

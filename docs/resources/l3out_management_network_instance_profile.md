@@ -13,7 +13,7 @@ Manages ACI L3out Management Network Instance Profile
 
 ## API Information ##
 
-* `Class` - `mgmtInstP`
+* `Class` - [mgmtInstP](https://pubhub.devnetcloud.com/media/model-doc-521/docs/app/index.html#/objects/mgmtInstP/overview)
 
 * `Distinguished Name Formats`
   - `uni/tn-mgmt/extmgmt-default/instp-{name}`
@@ -61,7 +61,7 @@ resource "aci_l3out_management_network_instance_profile" "example" {
   - Default: `unspecified`
   - Valid Values: `level1`, `level2`, `level3`, `level4`, `level5`, `level6`, `unspecified`.
 
-* `l3out_management_network_oob_contracts` - (list) A list of L3out Management Network Oob Contracts relationship objects `mgmtRsOoBCons` pointing to the Out Of Band Contract `vzOOBBrCP` which can be configured using the [aci_out_of_band_contract](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/out_of_band_contract) resource.
+* `l3out_management_network_oob_contracts` - (list) A list of L3out Management Network Oob Contracts relationship objects ([mgmtRsOoBCons](https://pubhub.devnetcloud.com/media/model-doc-521/docs/app/index.html#/objects/mgmtRsOoBCons/overview)) pointing to the Out Of Band Contract ([vzOOBBrCP](https://pubhub.devnetcloud.com/media/model-doc-521/docs/app/index.html#/objects/vzOOBBrCP/overview)) which can be configured using the [aci_out_of_band_contract](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/out_of_band_contract) resource.
   
   #### Required
   
@@ -75,7 +75,7 @@ resource "aci_l3out_management_network_instance_profile" "example" {
     - Default: `unspecified`
     - Valid Values: `level1`, `level2`, `level3`, `level4`, `level5`, `level6`, `unspecified`.
 
-* `annotations` - (list) A list of Annotations objects `tagAnnotation` which can be configured using the [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.
+* `annotations` - (list) A list of Annotations objects ([tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-521/docs/app/index.html#/objects/tagAnnotation/overview)) which can be configured using the [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.
   
   #### Required
   

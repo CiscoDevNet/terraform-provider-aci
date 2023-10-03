@@ -13,7 +13,7 @@ Manages ACI {{getResourceNameAsDescription .ResourceName}}
 
 ## API Information ##
 
-* `Class` - `{{ .PkgName}}`
+* `Class` - {{getDevnetDocForClass .PkgName}}
 
 * `Distinguished Name Formats`
     {{- range .DocumentationDnFormats}}
@@ -74,9 +74,9 @@ Manages ACI {{getResourceNameAsDescription .ResourceName}}
 {{- end}}
 {{ range .Children }}
     {{- if ne .RelationshipClass ""}}
-* `{{- .ResourceName}}` - (list) A list of {{getResourceNameAsDescription .ResourceName}} relationship objects `{{.PkgName}}` pointing to the {{getResourceNameAsDescription .RelationshipResourceName}} `{{.RelationshipClass}}` which can be configured using the [aci_{{.RelationshipResourceName}}](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/{{.RelationshipResourceName}}) resource.
+* `{{- .ResourceName}}` - (list) A list of {{getResourceNameAsDescription .ResourceName}} relationship objects ({{getDevnetDocForClass .PkgName}}) pointing to the {{getResourceNameAsDescription .RelationshipResourceName}} ({{getDevnetDocForClass .RelationshipClass}}) which can be configured using the [aci_{{.RelationshipResourceName}}](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/{{.RelationshipResourceName}}) resource.
     {{- else}}
-* `{{- .ResourceName}}` - (list) A list of {{getResourceNameAsDescription .ResourceName}} objects `{{.PkgName}}` which can be configured using the [aci_{{.ResourceNameDocReference}}](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/{{.ResourceNameDocReference}}) resource.
+* `{{- .ResourceName}}` - (list) A list of {{getResourceNameAsDescription .ResourceName}} objects ({{getDevnetDocForClass .PkgName}}) which can be configured using the [aci_{{.ResourceNameDocReference}}](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/{{.ResourceNameDocReference}}) resource.
     {{- end}}
   
   #### Required

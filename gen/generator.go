@@ -95,6 +95,7 @@ var templateFuncs = template.FuncMap{
 	"createParentDnValue":          CreateParentDnValue,
 	"getResourceNameAsDescription": GetResourceNameAsDescription,
 	"capitalize":                   Capitalize,
+	"getDevnetDocForClass":         GetDevnetDocForClass,
 }
 
 // Global variables used for unique resource name setting based on label from meta data
@@ -106,6 +107,10 @@ var targetRelationalPropertyClasses = map[string]string{}
 
 func GetResourceNameAsDescription(s string) string {
 	return cases.Title(language.English).String(strings.ReplaceAll(s, "_", " "))
+}
+
+func GetDevnetDocForClass(className string) string {
+	return fmt.Sprintf("[%s](https://pubhub.devnetcloud.com/media/model-doc-521/docs/app/index.html#/objects/%s/overview)", className, className)
 }
 
 func Capitalize(s string) string {
@@ -1180,12 +1185,12 @@ func setDocumentationData(m *Model, definitions Definitions) {
 
 	if len(resourcesFound) > docsParentDnAmount {
 		for _, resourceDetails := range resourcesFound[0:docsParentDnAmount] {
-			m.DocumentationParentDns = append(m.DocumentationParentDns, fmt.Sprintf("[%s_%s](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/%s) (`%s`)", providerName, resourceDetails[0], resourceDetails[0], resourceDetails[1]))
+			m.DocumentationParentDns = append(m.DocumentationParentDns, fmt.Sprintf("[%s_%s](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/%s) (%s)", providerName, resourceDetails[0], resourceDetails[0], GetDevnetDocForClass(resourceDetails[1])))
 		}
 		m.DocumentationParentDns = append(m.DocumentationParentDns, "Too many parent DNs to display, see model documentation for all possible parents.")
 	} else {
 		for _, resourceDetails := range resourcesFound {
-			m.DocumentationParentDns = append(m.DocumentationParentDns, fmt.Sprintf("[%s_%s](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/%s) (`%s`)", providerName, resourceDetails[0], resourceDetails[0], resourceDetails[1]))
+			m.DocumentationParentDns = append(m.DocumentationParentDns, fmt.Sprintf("[%s_%s](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/%s) (%s)", providerName, resourceDetails[0], resourceDetails[0], GetDevnetDocForClass(resourceDetails[1])))
 		}
 	}
 
@@ -1195,8 +1200,11 @@ func setDocumentationData(m *Model, definitions Definitions) {
 			resourcesNotFound = resourcesNotFound[0:(docsParentDnAmount - len(resourcesFound))]
 			m.DocumentationParentDns = append(m.DocumentationParentDns, "Too many classes to display, see model documentation for all possible classes.")
 		} else {
-			resourceDetails := strings.Join(resourcesNotFound, "`\n    - `")
-			m.DocumentationParentDns = append(m.DocumentationParentDns, fmt.Sprintf("The distinquised name (DN) of classes below can be used but currently there is no available resource for it:\n    - `%s` ", resourceDetails))
+			var resourceDetails string
+			for _, resource := range resourcesNotFound {
+				resourceDetails = fmt.Sprintf("%s    - %s\n", resourceDetails, GetDevnetDocForClass(resource))
+			}
+			m.DocumentationParentDns = append(m.DocumentationParentDns, fmt.Sprintf("The distinquised name (DN) of classes below can be used but currently there is no available resource for it:\n%s", resourceDetails))
 		}
 	}
 

@@ -13,7 +13,7 @@ Manages ACI Contract Interface
 
 ## API Information ##
 
-* `Class` - `fvRsConsIf`
+* `Class` - [fvRsConsIf](https://pubhub.devnetcloud.com/media/model-doc-521/docs/app/index.html#/objects/fvRsConsIf/overview)
 
 * `Distinguished Name Formats`
   - `outdefcont-{id}/rsoutDefContToOut-[{tDn}]/outdef-{name}/instPdef-{name}/rsconsIf-{tnVzCPIfName}`
@@ -64,26 +64,27 @@ resource "aci_contract_interface" "example" {
 ### Required
 
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
-  - [aci_application_epg](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/application_epg) (`fvAEPg`)
+  - [aci_application_epg](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/application_epg) ([fvAEPg](https://pubhub.devnetcloud.com/media/model-doc-521/docs/app/index.html#/objects/fvAEPg/overview))
   - The distinquised name (DN) of classes below can be used but currently there is no available resource for it:
-    - `cloudEPg`
-    - `cloudExtEPg`
-    - `cloudISvcEPg`
-    - `cloudSvcEPg`
-    - `dhcpCRelPg`
-    - `dhcpPRelPg`
-    - `fvESg`
-    - `fvTnlEPg`
-    - `infraCEPg`
-    - `infraPEPg`
-    - `l2extInstP`
-    - `l3extInstP`
-    - `l3extInstPDef`
-    - `mgmtInB`
-    - `vnsEPpInfo`
-    - `vnsREPpInfo`
-    - `vnsSDEPpInfo`
-    - `vnsSHEPpInfo` 
+    - [cloudEPg](https://pubhub.devnetcloud.com/media/model-doc-521/docs/app/index.html#/objects/cloudEPg/overview)
+    - [cloudExtEPg](https://pubhub.devnetcloud.com/media/model-doc-521/docs/app/index.html#/objects/cloudExtEPg/overview)
+    - [cloudISvcEPg](https://pubhub.devnetcloud.com/media/model-doc-521/docs/app/index.html#/objects/cloudISvcEPg/overview)
+    - [cloudSvcEPg](https://pubhub.devnetcloud.com/media/model-doc-521/docs/app/index.html#/objects/cloudSvcEPg/overview)
+    - [dhcpCRelPg](https://pubhub.devnetcloud.com/media/model-doc-521/docs/app/index.html#/objects/dhcpCRelPg/overview)
+    - [dhcpPRelPg](https://pubhub.devnetcloud.com/media/model-doc-521/docs/app/index.html#/objects/dhcpPRelPg/overview)
+    - [fvESg](https://pubhub.devnetcloud.com/media/model-doc-521/docs/app/index.html#/objects/fvESg/overview)
+    - [fvTnlEPg](https://pubhub.devnetcloud.com/media/model-doc-521/docs/app/index.html#/objects/fvTnlEPg/overview)
+    - [infraCEPg](https://pubhub.devnetcloud.com/media/model-doc-521/docs/app/index.html#/objects/infraCEPg/overview)
+    - [infraPEPg](https://pubhub.devnetcloud.com/media/model-doc-521/docs/app/index.html#/objects/infraPEPg/overview)
+    - [l2extInstP](https://pubhub.devnetcloud.com/media/model-doc-521/docs/app/index.html#/objects/l2extInstP/overview)
+    - [l3extInstP](https://pubhub.devnetcloud.com/media/model-doc-521/docs/app/index.html#/objects/l3extInstP/overview)
+    - [l3extInstPDef](https://pubhub.devnetcloud.com/media/model-doc-521/docs/app/index.html#/objects/l3extInstPDef/overview)
+    - [mgmtInB](https://pubhub.devnetcloud.com/media/model-doc-521/docs/app/index.html#/objects/mgmtInB/overview)
+    - [vnsEPpInfo](https://pubhub.devnetcloud.com/media/model-doc-521/docs/app/index.html#/objects/vnsEPpInfo/overview)
+    - [vnsREPpInfo](https://pubhub.devnetcloud.com/media/model-doc-521/docs/app/index.html#/objects/vnsREPpInfo/overview)
+    - [vnsSDEPpInfo](https://pubhub.devnetcloud.com/media/model-doc-521/docs/app/index.html#/objects/vnsSDEPpInfo/overview)
+    - [vnsSHEPpInfo](https://pubhub.devnetcloud.com/media/model-doc-521/docs/app/index.html#/objects/vnsSHEPpInfo/overview)
+
 * `contract_interface_name` - (string) The contract interface name.
 
 ### Read-Only
@@ -98,7 +99,7 @@ resource "aci_contract_interface" "example" {
   - Default: `unspecified`
   - Valid Values: `level1`, `level2`, `level3`, `level4`, `level5`, `level6`, `unspecified`.
 
-* `annotations` - (list) A list of Annotations objects `tagAnnotation` which can be configured using the [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.
+* `annotations` - (list) A list of Annotations objects ([tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-521/docs/app/index.html#/objects/tagAnnotation/overview)) which can be configured using the [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.
   
   #### Required
   

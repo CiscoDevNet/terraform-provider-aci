@@ -13,7 +13,7 @@ Data source for L3out Consumer Label
 
 ## API Information ##
 
-* `Class` - `l3extConsLbl`
+* `Class` - [l3extConsLbl](https://pubhub.devnetcloud.com/media/model-doc-521/docs/app/index.html#/objects/l3extConsLbl/overview)
 
 * `Distinguished Name Formats`
   - `uni/tn-{name}/out-{name}/conslbl-{name}`
@@ -38,7 +38,7 @@ data "aci_l3out_consumer_label" "example" {
 ### Required
 
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
-  - [aci_l3_outside](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/l3_outside) (`l3extOut`)
+  - [aci_l3_outside](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/l3_outside) ([l3extOut](https://pubhub.devnetcloud.com/media/model-doc-521/docs/app/index.html#/objects/l3extOut/overview))
 * `name` - (string) The name of the L3out Consumer Label object.
 
 ### Read-Only
@@ -52,6 +52,6 @@ data "aci_l3out_consumer_label" "example" {
 * `owner_tag` - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
 * `tag` - (string) Specifies the color of a policy label.
 
-* `annotations` - (list) A list of Annotations objects `tagAnnotation`.
+* `annotations` - (list) A list of Annotations objects ([tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-521/docs/app/index.html#/objects/tagAnnotation/overview)).
   * `key` - (string) The key or password used to uniquely identify this configuration object.
   * `value` - (string) The value of the property.

@@ -13,7 +13,7 @@ Data source for {{getResourceNameAsDescription .ResourceName}}
 
 ## API Information ##
 
-* `Class` - `{{ .PkgName}}`
+* `Class` - {{getDevnetDocForClass .PkgName}}
 
 * `Distinguished Name Formats`
     {{- range .DocumentationDnFormats}}
@@ -58,9 +58,9 @@ Data source for {{getResourceNameAsDescription .ResourceName}}
 {{- end}}
 {{ range .Children }}
     {{- if ne .RelationshipClass ""}}
-* `{{- .ResourceName}}` - (list) A list of {{getResourceNameAsDescription .ResourceName}} relationship objects `{{.PkgName}}` pointing to the {{getResourceNameAsDescription .RelationshipResourceName}} `{{.RelationshipClass}}` object.
+* `{{- .ResourceName}}` - (list) A list of {{getResourceNameAsDescription .ResourceName}} relationship objects ({{getDevnetDocForClass .PkgName}}) pointing to the {{getResourceNameAsDescription .RelationshipResourceName}} ({{getDevnetDocForClass .RelationshipClass}}) object.
     {{- else}}
-* `{{- .ResourceName}}` - (list) A list of {{getResourceNameAsDescription .ResourceName}} objects `{{.PkgName}}`.
+* `{{- .ResourceName}}` - (list) A list of {{getResourceNameAsDescription .ResourceName}} objects ({{getDevnetDocForClass .PkgName}}).
     {{- end}}
 
   {{- range .Properties}}

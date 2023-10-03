@@ -13,7 +13,7 @@ Manages ACI L3out Management Network Subnet
 
 ## API Information ##
 
-* `Class` - `mgmtSubnet`
+* `Class` - [mgmtSubnet](https://pubhub.devnetcloud.com/media/model-doc-521/docs/app/index.html#/objects/mgmtSubnet/overview)
 
 * `Distinguished Name Formats`
   - `uni/tn-mgmt/extmgmt-default/instp-{name}/subnet-[{ip}]`
@@ -44,7 +44,7 @@ resource "aci_l3out_management_network_subnet" "example" {
 ### Required
 
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
-  - [aci_l3out_management_network_instance_profile](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/l3out_management_network_instance_profile) (`mgmtInstP`)
+  - [aci_l3out_management_network_instance_profile](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/l3out_management_network_instance_profile) ([mgmtInstP](https://pubhub.devnetcloud.com/media/model-doc-521/docs/app/index.html#/objects/mgmtInstP/overview))
 * `ip` - (string) The external subnet IP address and subnet mask. This IP address is used for creating an external management entity. The subnet mask for the IP address to be imported from the outside into the fabric. The contracts associated with its parent instance profile (l3ext:InstP) are applied to the subnet.
 
 ### Read-Only
@@ -59,7 +59,7 @@ resource "aci_l3out_management_network_subnet" "example" {
 * `name` - (string) The name of the L3out Management Network Subnet object.
 * `name_alias` - (string) The name alias of the L3out Management Network Subnet object.
 
-* `annotations` - (list) A list of Annotations objects `tagAnnotation` which can be configured using the [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.
+* `annotations` - (list) A list of Annotations objects ([tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-521/docs/app/index.html#/objects/tagAnnotation/overview)) which can be configured using the [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.
   
   #### Required
   

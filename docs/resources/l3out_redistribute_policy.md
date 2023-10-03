@@ -13,7 +13,7 @@ Manages ACI L3out Redistribute Policy
 
 ## API Information ##
 
-* `Class` - `l3extRsRedistributePol`
+* `Class` - [l3extRsRedistributePol](https://pubhub.devnetcloud.com/media/model-doc-521/docs/app/index.html#/objects/l3extRsRedistributePol/overview)
 
 * `Distinguished Name Formats`
   - `uni/tn-{name}/out-{name}/rsredistributePol-[{tnRtctrlProfileName}]-{src}`
@@ -45,7 +45,7 @@ resource "aci_l3out_redistribute_policy" "example" {
 ### Required
 
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
-  - [aci_l3_outside](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/l3_outside) (`l3extOut`)
+  - [aci_l3_outside](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/l3_outside) ([l3extOut](https://pubhub.devnetcloud.com/media/model-doc-521/docs/app/index.html#/objects/l3extOut/overview))
 * `src` - (string) The source IP address.
   - Valid Values: `attached-host`, `direct`, `static`.
 * `route_control_profile_name` - (string) The name of the route profile associated with this object.
@@ -59,7 +59,7 @@ resource "aci_l3out_redistribute_policy" "example" {
 * `annotation` - (string) The annotation of the L3out Redistribute Policy object.
   - Default: `orchestrator:terraform`
 
-* `annotations` - (list) A list of Annotations objects `tagAnnotation` which can be configured using the [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.
+* `annotations` - (list) A list of Annotations objects ([tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-521/docs/app/index.html#/objects/tagAnnotation/overview)) which can be configured using the [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.
   
   #### Required
   

@@ -13,7 +13,7 @@ Manages ACI Pim Route Map Policy
 
 ## API Information ##
 
-* `Class` - `pimRouteMapPol`
+* `Class` - [pimRouteMapPol](https://pubhub.devnetcloud.com/media/model-doc-521/docs/app/index.html#/objects/pimRouteMapPol/overview)
 
 * `Distinguished Name Formats`
   - `uni/tn-{name}/rtmap-{name}`
@@ -44,7 +44,7 @@ resource "aci_pim_route_map_policy" "example" {
 ### Required
 
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
-  - [aci_tenant](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tenant) (`fvTenant`)
+  - [aci_tenant](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tenant) ([fvTenant](https://pubhub.devnetcloud.com/media/model-doc-521/docs/app/index.html#/objects/fvTenant/overview))
 * `name` - (string) The name of the Pim Route Map Policy object.
 
 ### Read-Only
@@ -60,7 +60,7 @@ resource "aci_pim_route_map_policy" "example" {
 * `owner_key` - (string) The key for enabling clients to own their data for entity correlation.
 * `owner_tag` - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
 
-* `annotations` - (list) A list of Annotations objects `tagAnnotation` which can be configured using the [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.
+* `annotations` - (list) A list of Annotations objects ([tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-521/docs/app/index.html#/objects/tagAnnotation/overview)) which can be configured using the [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.
   
   #### Required
   

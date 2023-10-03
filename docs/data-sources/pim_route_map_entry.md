@@ -13,7 +13,7 @@ Data source for Pim Route Map Entry
 
 ## API Information ##
 
-* `Class` - `pimRouteMapEntry`
+* `Class` - [pimRouteMapEntry](https://pubhub.devnetcloud.com/media/model-doc-521/docs/app/index.html#/objects/pimRouteMapEntry/overview)
 
 * `Distinguished Name Formats`
   - `uni/tn-{name}/rtmap-{name}/rtmapentry-{order}`
@@ -38,7 +38,7 @@ data "aci_pim_route_map_entry" "example" {
 ### Required
 
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
-  - [aci_pim_route_map_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/pim_route_map_policy) (`pimRouteMapPol`)
+  - [aci_pim_route_map_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/pim_route_map_policy) ([pimRouteMapPol](https://pubhub.devnetcloud.com/media/model-doc-521/docs/app/index.html#/objects/pimRouteMapPol/overview))
 * `order` - (string) PIM route map entry order.
 
 ### Read-Only
@@ -53,6 +53,6 @@ data "aci_pim_route_map_entry" "example" {
 * `rp` - (string) Multicast RP Ip.
 * `src` - (string) Multicast Source Ip.
 
-* `annotations` - (list) A list of Annotations objects `tagAnnotation`.
+* `annotations` - (list) A list of Annotations objects ([tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-521/docs/app/index.html#/objects/tagAnnotation/overview)).
   * `key` - (string) The key or password used to uniquely identify this configuration object.
   * `value` - (string) The value of the property.
