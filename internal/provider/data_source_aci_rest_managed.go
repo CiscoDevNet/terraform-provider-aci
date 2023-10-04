@@ -8,6 +8,7 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 )
 
@@ -51,11 +52,19 @@ func (d *AciRestManagedDataSource) Schema(ctx context.Context, req datasource.Sc
 				MarkdownDescription: "Map of key-value pairs those needed to be passed to the Model object as parameters. Make sure the key name matches the name with the object parameter in ACI.",
 				Optional:            true,
 				Computed:            true,
+				ElementType:         types.StringType,
 			},
-			"child": schema.SetNestedAttribute{
+			"annotation": schema.StringAttribute{
 				Optional:            true,
+				Computed:            true,
+				MarkdownDescription: `The annotation of the ACI object.`,
+			},
+		},
+		Blocks: map[string]schema.Block{
+			"child": schema.SetNestedBlock{
+				//Optional:            true,
 				MarkdownDescription: "List of children.",
-				NestedObject: schema.NestedAttributeObject{
+				NestedObject: schema.NestedBlockObject{
 					Attributes: map[string]schema.Attribute{
 						"rn": schema.StringAttribute{
 							MarkdownDescription: "The relative name of the child object.",
@@ -70,20 +79,15 @@ func (d *AciRestManagedDataSource) Schema(ctx context.Context, req datasource.Sc
 							MarkdownDescription: "Map of key-value pairs which represents the attributes for the child object.",
 							Optional:            true,
 							Computed:            true,
+							ElementType:         types.StringType,
 						},
 					},
 				},
 			},
-			"annotation": schema.StringAttribute{
-				Optional: true,
-				Computed: true,
-				MarkdownDescription: `The annotation of the ACI object.`,
-			},
 		},
 	}
 }
-        
-		
+
 func (d *AciRestManagedDataSource) Configure(ctx context.Context, req datasource.ConfigureRequest, resp *datasource.ConfigureResponse) {
 	tflog.Trace(ctx, "start configure of datasource: aci_rest_managed")
 	// Prevent panic if the provider has not been configured.
@@ -116,8 +120,8 @@ func (d *AciRestManagedDataSource) Read(ctx context.Context, req datasource.Read
 	if resp.Diagnostics.HasError() {
 		return
 	}
-	//TODO CHECK IF NEEDED
-	//setAciRestManagedId(ctx, data)
+
+	setAciRestManagedId(ctx, data)
 
 	tflog.Trace(ctx, fmt.Sprintf("read of datasource aci_rest_managed with id '%s'", data.Id.ValueString()))
 

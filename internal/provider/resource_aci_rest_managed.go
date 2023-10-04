@@ -8,6 +8,7 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
+	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
@@ -52,8 +53,8 @@ type ChildAciRestManagedResourceModel struct {
 }
 
 type AciRestManagedChildIdentifier struct {
-	Rn         types.String
-	ClassName  types.String
+	Rn        types.String
+	ClassName types.String
 }
 
 // List of attributes to be not stored in state
@@ -81,7 +82,6 @@ func (r *AciRestManagedResource) Schema(ctx context.Context, req resource.Schema
 	resp.Schema = schema.Schema{
 		// This description is used by the documentation generator and the language server.
 		MarkdownDescription: "Manages ACI Model Objects via REST API calls. This resource can only manage a single API object and its direct children. It is able to read the state and therefore reconcile configuration drift.",
-
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed:            true,
@@ -92,7 +92,7 @@ func (r *AciRestManagedResource) Schema(ctx context.Context, req resource.Schema
 			},
 			"dn": schema.StringAttribute{
 				Required:            true,
-				MarkdownDescription: "The distinquised name (DN) of the parent object. e.g. uni/tn-EXAMPLE_TENANT",
+				MarkdownDescription: "Distinguished name of object being managed including its relative name, e.g. uni/tn-EXAMPLE_TENANT.",
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 					stringplanmodifier.RequiresReplace(),
@@ -110,6 +110,7 @@ func (r *AciRestManagedResource) Schema(ctx context.Context, req resource.Schema
 				MarkdownDescription: "Map of key-value pairs those needed to be passed to the Model object as parameters. Make sure the key name matches the name with the object parameter in ACI.",
 				Optional:            true,
 				Computed:            true,
+				ElementType:         types.StringType,
 				PlanModifiers: []planmodifier.Map{
 					mapplanmodifier.UseStateForUnknown(),
 				},
@@ -123,13 +124,24 @@ func (r *AciRestManagedResource) Schema(ctx context.Context, req resource.Schema
 				// 	return true
 				// },
 			},
-			"child": schema.SetNestedAttribute{
-				Optional:            true,
+			"annotation": schema.StringAttribute{
+				Optional: true,
+				Computed: true,
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.UseStateForUnknown(),
+				},
+				Default:             stringdefault.StaticString(globalAnnotation),
+				MarkdownDescription: `The annotation of the ACI object.`,
+			},
+		},
+		Blocks: map[string]schema.Block{
+			"child": schema.SetNestedBlock{
+				//Optional:            true,
 				MarkdownDescription: "List of children.",
 				PlanModifiers: []planmodifier.Set{
 					setplanmodifier.UseStateForUnknown(),
 				},
-				NestedObject: schema.NestedAttributeObject{
+				NestedObject: schema.NestedBlockObject{
 					Attributes: map[string]schema.Attribute{
 						"rn": schema.StringAttribute{
 							MarkdownDescription: "The relative name of the child object.",
@@ -150,21 +162,13 @@ func (r *AciRestManagedResource) Schema(ctx context.Context, req resource.Schema
 							MarkdownDescription: "Map of key-value pairs which represents the attributes for the child object.",
 							Optional:            true,
 							Computed:            true,
+							ElementType:         types.StringType,
 							PlanModifiers: []planmodifier.Map{
 								mapplanmodifier.UseStateForUnknown(),
 							},
 						},
 					},
 				},
-			},
-			"annotation": schema.StringAttribute{
-				Optional: true,
-				Computed: true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
-				},
-				Default:             stringdefault.StaticString(globalAnnotation),
-				MarkdownDescription: `The annotation of the ACI object.`,
 			},
 		},
 	}
@@ -197,6 +201,7 @@ func (r *AciRestManagedResource) Create(ctx context.Context, req resource.Create
 	// On create retrieve information on current state prior to making any changes in order to determine child delete operations
 	var stateData *AciRestManagedResourceModel
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &stateData)...)
+	setAciRestManagedId(ctx, stateData)
 	messageMap := setAciRestManagedAttributes(ctx, r.client, stateData)
 	if messageMap != nil {
 		resp.Diagnostics.AddError(messageMap.(map[string]string)["message"], messageMap.(map[string]string)["messageDetail"])
@@ -210,6 +215,8 @@ func (r *AciRestManagedResource) Create(ctx context.Context, req resource.Create
 	if resp.Diagnostics.HasError() {
 		return
 	}
+
+	setAciRestManagedId(ctx, data)
 
 	tflog.Trace(ctx, fmt.Sprintf("create of resource aci_rest_managed with id '%s'", data.Id.ValueString()))
 
@@ -338,31 +345,35 @@ func setAciRestManagedAttributes(ctx context.Context, client *client.Client, dat
 	if requestData == nil {
 		return map[string]string{"message": message, "messageDetail": messageDetail}
 	}
-	// TODO Get class name so we can check the correct api data
-	if requestData.Search("imdata").Search("TODO").Data() != nil {
-		classReadInfo := requestData.Search("imdata").Search("TODO").Data().([]interface{})
+
+	if requestData.Search("imdata").Index(0).Data() == nil {
+		return nil
+	}
+
+	classData := requestData.Search("imdata").Index(0).Data().(map[string]interface{})
+	for className := range classData {
+		tflog.Trace(ctx, fmt.Sprintf("Setting ClassName to %s", className))
+		data.ClassName = basetypes.NewStringValue(className)
+		break
+	}
+
+	if requestData.Search("imdata").Search(data.ClassName.ValueString()).Data() != nil {
+		classReadInfo := requestData.Search("imdata").Search(data.ClassName.ValueString()).Data().([]interface{})
 		if len(classReadInfo) == 1 {
 			attributes := classReadInfo[0].(map[string]interface{})["attributes"].(map[string]interface{})
+			contents := map[string]attr.Value{}
 			for attributeName, attributeValue := range attributes {
 				if attributeName == "dn" {
 					dn := attributeValue.(string)
-					dn_parts := strings.Split(dn, "/")
-					parent := strings.Join(dn_parts[:len(dn_parts)-1], "/")
 					data.Id = basetypes.NewStringValue(dn)
-					data.Dn = basetypes.NewStringValue(parent)
-				}
-				if attributeName == "annotation" {
+					data.Dn = basetypes.NewStringValue(dn)
+				} else if attributeName == "annotation" {
 					data.Annotation = basetypes.NewStringValue(attributeValue.(string))
-				}
-				if attributeName == "class_name" {
-					// TODO GET CLASS NAME
-					//data.ClassName = basetypes.NewStringValue(attributeValue.(string))
-				}
-				if attributeName == "content" {
-					// TODO set content map
-					//data.Content = basetypes.NewStringValue(attributeValue.(string))
+				} else if !containsString(IgnoreAttr, attributeName) {
+					contents[attributeName] = basetypes.NewStringValue(attributeValue.(string))
 				}
 			}
+			data.Content, _ = types.MapValue(types.StringType, contents)
 			ChildAciRestManagedResourceList := make([]ChildAciRestManagedResourceModel, 0)
 			_, ok := classReadInfo[0].(map[string]interface{})["children"]
 			if ok {
@@ -386,6 +397,7 @@ func setAciRestManagedAttributes(ctx context.Context, client *client.Client, dat
 				}
 			}
 			if len(ChildAciRestManagedResourceList) > 0 {
+				tflog.Trace(ctx, "Setting Child Set Data")
 				childSet, _ := types.SetValueFrom(ctx, data.Child.ElementType(ctx), ChildAciRestManagedResourceList)
 				data.Child = childSet
 			}
@@ -397,6 +409,10 @@ func setAciRestManagedAttributes(ctx context.Context, client *client.Client, dat
 		}
 	}
 	return nil
+}
+
+func setAciRestManagedId(ctx context.Context, data *AciRestManagedResourceModel) {
+	data.Id = types.StringValue(data.Dn.ValueString())
 }
 
 // TODO This needs more attention
@@ -427,7 +443,7 @@ func getAciRestManagedChildPayloads(ctx context.Context, data *AciRestManagedRes
 		for _, child := range childState {
 			delete := true
 			for _, childIdentifier := range childIdentifiers {
-				if childIdentifier.Rn == child.Rn && childIdentifier.ClassName == child.ClassName{
+				if childIdentifier.Rn == child.Rn && childIdentifier.ClassName == child.ClassName {
 					delete = false
 					break
 				}
@@ -448,9 +464,6 @@ func getAciRestManagedChildPayloads(ctx context.Context, data *AciRestManagedRes
 	return childPayloads, "", ""
 }
 
-
-
-// TODO FIX THIS ONE!
 func getAciRestManagedCreateJsonPayload(ctx context.Context, data *AciRestManagedResourceModel, childPlan, childState []ChildAciRestManagedResourceModel) (*container.Container, string, string) {
 	payloadMap := map[string]interface{}{}
 	payloadMap["attributes"] = map[string]string{}
@@ -467,10 +480,10 @@ func getAciRestManagedCreateJsonPayload(ctx context.Context, data *AciRestManage
 		payloadMap["attributes"].(map[string]string)["annotation"] = data.Annotation.ValueString()
 	}
 	if !data.Content.IsNull() && !data.Content.IsUnknown() {
-		// TODO append data.Contents to payloadMap["attributes"]
-		//payloadMap["attributes"].append()
+		for k, v := range data.Content.Elements() {
+			payloadMap["attributes"].(map[string]string)[k] = v.(basetypes.StringValue).ValueString()
+		}
 	}
-	
 
 	payload, err := json.Marshal(map[string]interface{}{data.ClassName.ValueString(): payloadMap})
 	if err != nil {
@@ -524,6 +537,15 @@ func doAciRestManagedRequest(ctx context.Context, client *client.Client, path, m
 	}
 
 	return cont, "", ""
+}
+
+func containsString(s []string, e string) bool {
+	for _, a := range s {
+		if a == e {
+			return true
+		}
+	}
+	return false
 }
 
 // // OLD CODE BELOW THIS LINE
