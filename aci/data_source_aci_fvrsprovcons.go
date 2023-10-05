@@ -22,6 +22,11 @@ func dataSourceAciContractProvider() *schema.Resource {
 				Type:     schema.TypeString,
 				Required: true,
 			},
+			"contract_name": &schema.Schema{
+				Type:       schema.TypeString,
+				Optional:   true,
+				Deprecated: "Use `contract_dn` instead",
+			},
 			"contract_dn": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
@@ -54,7 +59,13 @@ func dataSourceAciContractProviderRead(ctx context.Context, d *schema.ResourceDa
 	aciClient := m.(*client.Client)
 	contractType := d.Get("contract_type").(string)
 	ApplicationEPGDn := d.Get("application_epg_dn").(string)
-	tnVzBrCPName := GetMOName(d.Get("contract_dn").(string))
+
+	tnVzBrCPName := ""
+	if ContractDN, ok := d.GetOk("contract_dn"); ok {
+		tnVzBrCPName = GetMOName(ContractDN.(string))
+	} else if ContractName, ok := d.GetOk("contract_name"); ok {
+		tnVzBrCPName = ContractName.(string)
+	}
 
 	if contractType == "provider" {
 
