@@ -60,31 +60,31 @@ func (d *AciRestManagedDataSource) Schema(ctx context.Context, req datasource.Sc
 				MarkdownDescription: `The annotation of the ACI object.`,
 			},
 		},
-		Blocks: map[string]schema.Block{
-			"child": schema.SetNestedBlock{
-				//Optional:            true,
-				MarkdownDescription: "List of children.",
-				NestedObject: schema.NestedBlockObject{
-					Attributes: map[string]schema.Attribute{
-						"rn": schema.StringAttribute{
-							MarkdownDescription: "The relative name of the child object.",
-							Required:            true,
-						},
-						"class_name": schema.StringAttribute{
-							MarkdownDescription: "Class name of child object.",
-							Optional:            true,
-							Computed:            true,
-						},
-						"content": schema.MapAttribute{
-							MarkdownDescription: "Map of key-value pairs which represents the attributes for the child object.",
-							Optional:            true,
-							Computed:            true,
-							ElementType:         types.StringType,
-						},
-					},
-				},
-			},
-		},
+		// Blocks: map[string]schema.Block{
+		// 	"child": schema.SetNestedBlock{
+		// 		//Optional:            true,
+		// 		MarkdownDescription: "List of children.",
+		// 		NestedObject: schema.NestedBlockObject{
+		// 			Attributes: map[string]schema.Attribute{
+		// 				"rn": schema.StringAttribute{
+		// 					MarkdownDescription: "The relative name of the child object.",
+		// 					Required:            true,
+		// 				},
+		// 				"class_name": schema.StringAttribute{
+		// 					MarkdownDescription: "Class name of child object.",
+		// 					Optional:            true,
+		// 					Computed:            true,
+		// 				},
+		// 				"content": schema.MapAttribute{
+		// 					MarkdownDescription: "Map of key-value pairs which represents the attributes for the child object.",
+		// 					Optional:            true,
+		// 					Computed:            true,
+		// 					ElementType:         types.StringType,
+		// 				},
+		// 			},
+		// 		},
+		// 	},
+		// },
 	}
 }
 
