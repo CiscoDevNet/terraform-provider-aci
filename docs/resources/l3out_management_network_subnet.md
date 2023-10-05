@@ -24,11 +24,29 @@ Manages ACI L3out Management Network Subnet
 
 ## Example Usage ##
 
+The configuration snippet below creates a L3out Management Network Subnet with only required attributes.
+
 ```hcl
 
 resource "aci_l3out_management_network_subnet" "example" {
   parent_dn = aci_l3out_management_network_instance_profile.example.id
   ip        = "1.1.1.0/24"
+}
+  ```
+
+The configuration snippet below below shows all possible attributes of the L3out Management Network Subnet.
+
+!> This example might not be valid configuration and is only used to show all possible attributes.
+
+```hcl
+
+resource "aci_l3out_management_network_subnet" "example" {
+  parent_dn   = aci_l3out_management_network_instance_profile.example.id
+  annotation  = "annotation"
+  description = "description"
+  ip          = "1.1.1.0/24"
+  name        = "name"
+  name_alias  = "name_alias"
   annotations = [
     {
       key   = "annotations_1"
@@ -38,6 +56,8 @@ resource "aci_l3out_management_network_subnet" "example" {
 }
 
 ```
+
+All examples for the L3out Management Network Subnet resource can be found in the [examples](https://github.com/CiscoDevNet/terraform-provider-aci/examples/resources/aci_l3out_management_network_subnet) folder.
 
 ## Schema
 

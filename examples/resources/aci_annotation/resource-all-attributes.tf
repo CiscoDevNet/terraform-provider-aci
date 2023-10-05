@@ -4,4 +4,4 @@ resource "aci_annotation" "example" {
   key       = "test_key"
   value     = "test_value"
 }
-  
+

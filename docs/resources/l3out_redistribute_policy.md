@@ -24,10 +24,26 @@ Manages ACI L3out Redistribute Policy
 
 ## Example Usage ##
 
+The configuration snippet below creates a L3out Redistribute Policy with only required attributes.
+
 ```hcl
 
 resource "aci_l3out_redistribute_policy" "example" {
   parent_dn                  = aci_l3_outside.example.id
+  src                        = "direct"
+  route_control_profile_name = "test_tn_rtctrl_profile_name"
+}
+  ```
+
+The configuration snippet below below shows all possible attributes of the L3out Redistribute Policy.
+
+!> This example might not be valid configuration and is only used to show all possible attributes.
+
+```hcl
+
+resource "aci_l3out_redistribute_policy" "example" {
+  parent_dn                  = aci_l3_outside.example.id
+  annotation                 = "annotation"
   src                        = "direct"
   route_control_profile_name = "test_tn_rtctrl_profile_name"
   annotations = [
@@ -39,6 +55,8 @@ resource "aci_l3out_redistribute_policy" "example" {
 }
 
 ```
+
+All examples for the L3out Redistribute Policy resource can be found in the [examples](https://github.com/CiscoDevNet/terraform-provider-aci/examples/resources/aci_l3out_redistribute_policy) folder.
 
 ## Schema
 

@@ -24,11 +24,29 @@ Manages ACI L3out Management Network Instance Profile
 
 ## Example Usage ##
 
+The configuration snippet below creates a L3out Management Network Instance Profile with only required attributes.
+
 ```hcl
 resource "aci_l3out_management_network_instance_profile" "example" {
   name = "test_name"
+}
+```
+
+The configuration snippet below below shows all possible attributes of the L3out Management Network Instance Profile.
+
+!> This example might not be valid configuration and is only used to show all possible attributes.
+
+```hcl
+resource "aci_l3out_management_network_instance_profile" "example" {
+  annotation  = "annotation"
+  description = "description"
+  name        = "test_name"
+  name_alias  = "name_alias"
+  priority    = "level1"
   l3out_management_network_oob_contracts = [
     {
+      annotation                = "orchestrator:terraform"
+      priority                  = "level1"
       out_of_band_contract_name = "l3out_management_network_oob_contracts_1"
     }
   ]
@@ -40,6 +58,8 @@ resource "aci_l3out_management_network_instance_profile" "example" {
   ]
 }
 ```
+
+All examples for the L3out Management Network Instance Profile resource can be found in the [examples](https://github.com/CiscoDevNet/terraform-provider-aci/examples/resources/aci_l3out_management_network_instance_profile) folder.
 
 ## Schema
 

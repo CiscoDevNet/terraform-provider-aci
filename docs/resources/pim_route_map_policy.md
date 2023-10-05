@@ -24,11 +24,30 @@ Manages ACI Pim Route Map Policy
 
 ## Example Usage ##
 
+The configuration snippet below creates a Pim Route Map Policy with only required attributes.
+
 ```hcl
 
 resource "aci_pim_route_map_policy" "example" {
   parent_dn = aci_tenant.example.id
   name      = "test_name"
+}
+  ```
+
+The configuration snippet below below shows all possible attributes of the Pim Route Map Policy.
+
+!> This example might not be valid configuration and is only used to show all possible attributes.
+
+```hcl
+
+resource "aci_pim_route_map_policy" "example" {
+  parent_dn   = aci_tenant.example.id
+  annotation  = "annotation"
+  description = "description"
+  name        = "test_name"
+  name_alias  = "name_alias"
+  owner_key   = "owner_key"
+  owner_tag   = "owner_tag"
   annotations = [
     {
       key   = "annotations_1"
@@ -38,6 +57,8 @@ resource "aci_pim_route_map_policy" "example" {
 }
 
 ```
+
+All examples for the Pim Route Map Policy resource can be found in the [examples](https://github.com/CiscoDevNet/terraform-provider-aci/examples/resources/aci_pim_route_map_policy) folder.
 
 ## Schema
 

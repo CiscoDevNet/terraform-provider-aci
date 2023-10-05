@@ -487,14 +487,16 @@ func main() {
 
 			os.Mkdir(fmt.Sprintf("%s/%s_%s", resourcesExamplesPath, providerName, model.ResourceName), 0755)
 			renderTemplate("resource_example.tf.tmpl", fmt.Sprintf("%s_%s/resource.tf", providerName, model.ResourceName), resourcesExamplesPath, model)
+			renderTemplate("resource_example_all_attributes.tf.tmpl", fmt.Sprintf("%s_%s/resource-all-attributes.tf", providerName, model.ResourceName), resourcesExamplesPath, model)
 			// Leverage the hclwrite package to format the example code
-			model.Example = string(hclwrite.Format(getExampleCode(fmt.Sprintf("%s/%s_%s/resource.tf", resourcesExamplesPath, providerName, model.ResourceName))))
+			model.ExampleResource = string(hclwrite.Format(getExampleCode(fmt.Sprintf("%s/%s_%s/resource.tf", resourcesExamplesPath, providerName, model.ResourceName))))
+			model.ExampleResourceFull = string(hclwrite.Format(getExampleCode(fmt.Sprintf("%s/%s_%s/resource-all-attributes.tf", resourcesExamplesPath, providerName, model.ResourceName))))
 			renderTemplate("resource.md.tmpl", fmt.Sprintf("%s.md", model.ResourceName), resourcesDocsPath, model)
 
 			os.Mkdir(fmt.Sprintf("%s/%s_%s", datasourcesExamplesPath, providerName, model.ResourceName), 0755)
 			renderTemplate("datasource_example.tf.tmpl", fmt.Sprintf("%s_%s/data-source.tf", providerName, model.ResourceName), datasourcesExamplesPath, model)
 			// Leverage the hclwrite package to format the example code
-			model.Example = string(hclwrite.Format(getExampleCode(fmt.Sprintf("%s/%s_%s/data-source.tf", datasourcesExamplesPath, providerName, model.ResourceName))))
+			model.ExampleDataSource = string(hclwrite.Format(getExampleCode(fmt.Sprintf("%s/%s_%s/data-source.tf", datasourcesExamplesPath, providerName, model.ResourceName))))
 			renderTemplate("datasource.md.tmpl", fmt.Sprintf("%s.md", model.ResourceName), datasourcesDocsPath, model)
 
 			renderTemplate("resource_test.go.tmpl", fmt.Sprintf("resource_%s_%s_test.go", providerName, model.ResourceName), providerPath, model)
@@ -521,7 +523,9 @@ type Model struct {
 	ResourceName             string
 	ResourceNameDocReference string
 	ChildResourceName        string
-	Example                  string
+	ExampleDataSource        string
+	ExampleResource          string
+	ExampleResourceFull      string
 	SubCategory              string
 	UiLocation               string
 	RelationshipClass        string

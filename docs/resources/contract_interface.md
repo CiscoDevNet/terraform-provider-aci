@@ -44,10 +44,26 @@ Manages ACI Contract Interface
 
 ## Example Usage ##
 
+The configuration snippet below creates a Contract Interface with only required attributes.
+
 ```hcl
 
 resource "aci_contract_interface" "example" {
   parent_dn               = aci_application_epg.example.id
+  contract_interface_name = "test_tn_vz_cp_if_name"
+}
+  ```
+
+The configuration snippet below below shows all possible attributes of the Contract Interface.
+
+!> This example might not be valid configuration and is only used to show all possible attributes.
+
+```hcl
+
+resource "aci_contract_interface" "example" {
+  parent_dn               = aci_application_epg.example.id
+  annotation              = "annotation"
+  priority                = "level1"
   contract_interface_name = "test_tn_vz_cp_if_name"
   annotations = [
     {
@@ -58,6 +74,8 @@ resource "aci_contract_interface" "example" {
 }
 
 ```
+
+All examples for the Contract Interface resource can be found in the [examples](https://github.com/CiscoDevNet/terraform-provider-aci/examples/resources/aci_contract_interface) folder.
 
 ## Schema
 

@@ -24,9 +24,30 @@ Manages ACI Out Of Band Contract
 
 ## Example Usage ##
 
+The configuration snippet below creates a Out Of Band Contract with only required attributes.
+
 ```hcl
 resource "aci_out_of_band_contract" "example" {
   name = "test_name"
+}
+```
+
+The configuration snippet below below shows all possible attributes of the Out Of Band Contract.
+
+!> This example might not be valid configuration and is only used to show all possible attributes.
+
+```hcl
+resource "aci_out_of_band_contract" "example" {
+  annotation  = "annotation"
+  description = "description"
+  intent      = "estimate_add"
+  name        = "test_name"
+  name_alias  = "name_alias"
+  owner_key   = "owner_key"
+  owner_tag   = "owner_tag"
+  priority    = "level1"
+  scope       = "application-profile"
+  target_dscp = "AF11"
   annotations = [
     {
       key   = "annotations_1"
@@ -35,6 +56,8 @@ resource "aci_out_of_band_contract" "example" {
   ]
 }
 ```
+
+All examples for the Out Of Band Contract resource can be found in the [examples](https://github.com/CiscoDevNet/terraform-provider-aci/examples/resources/aci_out_of_band_contract) folder.
 
 ## Schema
 

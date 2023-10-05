@@ -24,11 +24,32 @@ Manages ACI L3out Consumer Label
 
 ## Example Usage ##
 
+The configuration snippet below creates a L3out Consumer Label with only required attributes.
+
 ```hcl
 
 resource "aci_l3out_consumer_label" "example" {
   parent_dn = aci_l3_outside.example.id
   name      = "test_name"
+}
+  ```
+
+The configuration snippet below below shows all possible attributes of the L3out Consumer Label.
+
+!> This example might not be valid configuration and is only used to show all possible attributes.
+
+```hcl
+
+resource "aci_l3out_consumer_label" "example" {
+  parent_dn   = aci_l3_outside.example.id
+  annotation  = "annotation"
+  description = "description"
+  name        = "test_name"
+  name_alias  = "name_alias"
+  owner       = "infra"
+  owner_key   = "owner_key"
+  owner_tag   = "owner_tag"
+  tag         = "lemon-chiffon"
   annotations = [
     {
       key   = "annotations_1"
@@ -38,6 +59,8 @@ resource "aci_l3out_consumer_label" "example" {
 }
 
 ```
+
+All examples for the L3out Consumer Label resource can be found in the [examples](https://github.com/CiscoDevNet/terraform-provider-aci/examples/resources/aci_l3out_consumer_label) folder.
 
 ## Schema
 

@@ -44,6 +44,21 @@ Manages ACI Annotation
 
 ## Example Usage ##
 
+The configuration snippet below creates a Annotation with only required attributes.
+
+```hcl
+
+resource "aci_annotation" "example" {
+  parent_dn = aci_application_epg.example.id
+  key       = "test_key"
+  value     = "test_value"
+}
+  ```
+
+The configuration snippet below below shows all possible attributes of the Annotation.
+
+!> This example might not be valid configuration and is only used to show all possible attributes.
+
 ```hcl
 
 resource "aci_annotation" "example" {
@@ -53,6 +68,8 @@ resource "aci_annotation" "example" {
 }
 
 ```
+
+All examples for the Annotation resource can be found in the [examples](https://github.com/CiscoDevNet/terraform-provider-aci/examples/resources/aci_annotation) folder.
 
 ## Schema
 

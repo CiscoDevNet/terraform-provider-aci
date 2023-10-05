@@ -26,8 +26,19 @@ Manages ACI {{getResourceNameAsDescription .ResourceName}}
 
 ## Example Usage ##
 
+The configuration snippet below creates a {{getResourceNameAsDescription .ResourceName}} with only required attributes.
+
 ```hcl
-{{ .Example }}```
+{{ .ExampleResource }}```
+
+The configuration snippet below below shows all possible attributes of the {{getResourceNameAsDescription .ResourceName}}.
+
+!> This example might not be valid configuration and is only used to show all possible attributes.
+
+```hcl
+{{ .ExampleResourceFull }}```
+
+All examples for the {{getResourceNameAsDescription .ResourceName}} resource can be found in the [examples](https://github.com/CiscoDevNet/terraform-provider-aci/examples/resources/aci_{{.ResourceName}}) folder.
 
 ## Schema
 

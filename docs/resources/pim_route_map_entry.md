@@ -24,11 +24,33 @@ Manages ACI Pim Route Map Entry
 
 ## Example Usage ##
 
+The configuration snippet below creates a Pim Route Map Entry with only required attributes.
+
 ```hcl
 
 resource "aci_pim_route_map_entry" "example" {
   parent_dn = aci_pim_route_map_policy.example.id
   order     = "1"
+}
+  ```
+
+The configuration snippet below below shows all possible attributes of the Pim Route Map Entry.
+
+!> This example might not be valid configuration and is only used to show all possible attributes.
+
+```hcl
+
+resource "aci_pim_route_map_entry" "example" {
+  parent_dn   = aci_pim_route_map_policy.example.id
+  action      = "deny"
+  annotation  = "annotation"
+  description = "description"
+  grp         = "0.0.0.0"
+  name        = "name"
+  name_alias  = "name_alias"
+  order       = "1"
+  rp          = "0.0.0.0"
+  src         = "1.1.1.1/30"
   annotations = [
     {
       key   = "annotations_1"
@@ -38,6 +60,8 @@ resource "aci_pim_route_map_entry" "example" {
 }
 
 ```
+
+All examples for the Pim Route Map Entry resource can be found in the [examples](https://github.com/CiscoDevNet/terraform-provider-aci/examples/resources/aci_pim_route_map_entry) folder.
 
 ## Schema
 
