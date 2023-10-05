@@ -16,7 +16,7 @@ Data source for ACI EPG to contract relationship.
 ```hcl
 data "aci_epg_to_contract" "example" {
   application_epg_dn = aci_application_epg.example.id
-  contract_dn        = "example"
+  contract_dn        = aci_contract.example.id
   contract_type      = "consumer"
 }
 ```
@@ -24,6 +24,7 @@ data "aci_epg_to_contract" "example" {
 ## Argument Reference
 
 - `application_epg_dn` - (Required) Distinguished name of Parent EPG. Type: String.
+- `contract_name` - (Deprecated) Name of the Contract object to attach. Type: String.
 - `contract_dn` - (Required) Distinguished name of the Contract object to attach. Type: String.
 - `contract_type` - (Required) Type of the EPG to contract relationship object. Allowed values are "consumer" and "provider". Type: String.
 
