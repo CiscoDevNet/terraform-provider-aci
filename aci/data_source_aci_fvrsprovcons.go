@@ -29,7 +29,7 @@ func dataSourceAciContractProvider() *schema.Resource {
 			},
 			"contract_dn": &schema.Schema{
 				Type:     schema.TypeString,
-				Required: true,
+				Optional: true,
 			},
 			"contract_type": &schema.Schema{
 				Type:     schema.TypeString,
