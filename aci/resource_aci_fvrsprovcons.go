@@ -210,127 +210,11 @@ func resourceAciContractProviderImport(d *schema.ResourceData, m interface{}) ([
 }
 
 func resourceAciContractProviderCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-
-	aciClient := m.(*client.Client)
-
-	tnVzBrCPName := GetMOName(d.Get("contract_dn").(string))
-
-	contractType := d.Get("contract_type").(string)
-
-	ApplicationEPGDn := d.Get("application_epg_dn").(string)
-	MatchT := d.Get("match_t").(string)
-
-	if contractType == "provider" {
-		log.Printf("[DEBUG] ContractProvider: Beginning Creation")
-
-		fvRsProvAttr := models.ContractProviderAttributes{}
-		if Annotation, ok := d.GetOk("annotation"); ok {
-			fvRsProvAttr.Annotation = Annotation.(string)
-		} else {
-			fvRsProvAttr.Annotation = "{}"
-		}
-		if MatchT != "" {
-			fvRsProvAttr.MatchT = MatchT
-		}
-		if Prio, ok := d.GetOk("prio"); ok {
-			fvRsProvAttr.Prio = Prio.(string)
-		}
-		fvRsProvAttr.TnVzBrCPName = tnVzBrCPName
-		fvRsProv := models.NewContractProvider(fmt.Sprintf("rsprov-%s", tnVzBrCPName), ApplicationEPGDn, fvRsProvAttr)
-
-		err := aciClient.Save(fvRsProv)
-		if err != nil {
-			return diag.FromErr(err)
-		}
-		d.SetId(fvRsProv.DistinguishedName)
-	} else if contractType == "consumer" {
-		log.Printf("[DEBUG] ContractConsumer: Beginning Creation")
-
-		fvRsConsAttr := models.ContractConsumerAttributes{}
-		if Annotation, ok := d.GetOk("annotation"); ok {
-			fvRsConsAttr.Annotation = Annotation.(string)
-		} else {
-			fvRsConsAttr.Annotation = "{}"
-		}
-		if Prio, ok := d.GetOk("prio"); ok {
-			fvRsConsAttr.Prio = Prio.(string)
-		}
-		fvRsConsAttr.TnVzBrCPName = tnVzBrCPName
-		fvRsCons := models.NewContractConsumer(fmt.Sprintf("rscons-%s", tnVzBrCPName), ApplicationEPGDn, fvRsConsAttr)
-
-		err := aciClient.Save(fvRsCons)
-		if err != nil {
-			return diag.FromErr(err)
-		}
-		d.SetId(fvRsCons.DistinguishedName)
-	}
-	log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
-	return resourceAciContractProviderRead(ctx, d, m)
+	return postContractConfig(ctx, "", d, m)
 }
 
 func resourceAciContractProviderUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-
-	aciClient := m.(*client.Client)
-
-	tnVzBrCPName := GetMOName(d.Get("contract_dn").(string))
-
-	contractType := d.Get("contract_type").(string)
-
-	ApplicationEPGDn := d.Get("application_epg_dn").(string)
-	MatchT := d.Get("match_t").(string)
-
-	if contractType == "provider" {
-		log.Printf("[DEBUG] ContractProvider: Beginning Update")
-
-		fvRsProvAttr := models.ContractProviderAttributes{}
-		if Annotation, ok := d.GetOk("annotation"); ok {
-			fvRsProvAttr.Annotation = Annotation.(string)
-		} else {
-			fvRsProvAttr.Annotation = "{}"
-		}
-		if MatchT != "" {
-			fvRsProvAttr.MatchT = MatchT
-		}
-		if Prio, ok := d.GetOk("prio"); ok {
-			fvRsProvAttr.Prio = Prio.(string)
-		}
-		fvRsProvAttr.TnVzBrCPName = tnVzBrCPName
-		fvRsProv := models.NewContractProvider(fmt.Sprintf("rsprov-%s", tnVzBrCPName), ApplicationEPGDn, fvRsProvAttr)
-
-		fvRsProv.Status = "modified"
-
-		err := aciClient.Save(fvRsProv)
-
-		if err != nil {
-			return diag.FromErr(err)
-		}
-		d.SetId(fvRsProv.DistinguishedName)
-	} else if contractType == "consumer" {
-		log.Printf("[DEBUG] ContractConsumer: Beginning Update")
-
-		fvRsConsAttr := models.ContractConsumerAttributes{}
-		if Annotation, ok := d.GetOk("annotation"); ok {
-			fvRsConsAttr.Annotation = Annotation.(string)
-		} else {
-			fvRsConsAttr.Annotation = "{}"
-		}
-		if Prio, ok := d.GetOk("prio"); ok {
-			fvRsConsAttr.Prio = Prio.(string)
-		}
-		fvRsConsAttr.TnVzBrCPName = tnVzBrCPName
-		fvRsCons := models.NewContractConsumer(fmt.Sprintf("rscons-%s", tnVzBrCPName), ApplicationEPGDn, fvRsConsAttr)
-
-		fvRsCons.Status = "modified"
-
-		err := aciClient.Save(fvRsCons)
-
-		if err != nil {
-			return diag.FromErr(err)
-		}
-		d.SetId(fvRsCons.DistinguishedName)
-	}
-	log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
-	return resourceAciContractProviderRead(ctx, d, m)
+	return postContractConfig(ctx, "modified", d, m)
 }
 
 func resourceAciContractProviderRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
@@ -338,9 +222,9 @@ func resourceAciContractProviderRead(ctx context.Context, d *schema.ResourceData
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
-	rnValue := models.GetMORnPrefix(dn)
+	contractType := d.Get("contract_type").(string)
 
-	if rnValue == "rsprov" {
+	if contractType == "provider" {
 		fvRsProv, err := getRemoteContractProvider(aciClient, dn)
 		if err != nil {
 			return errorForObjectNotFound(err, dn, d)
@@ -350,7 +234,7 @@ func resourceAciContractProviderRead(ctx context.Context, d *schema.ResourceData
 			d.SetId("")
 			return nil
 		}
-	} else if rnValue == "rscons" {
+	} else if contractType == "consumer" {
 		fvRsCons, err := getRemoteContractConsumer(aciClient, dn)
 		if err != nil {
 			return errorForObjectNotFound(err, dn, d)
@@ -372,9 +256,9 @@ func resourceAciContractProviderDelete(ctx context.Context, d *schema.ResourceDa
 
 	aciClient := m.(*client.Client)
 	dn := d.Id()
-	rnValue := models.GetMORnPrefix(dn)
+	contractType := d.Get("contract_type").(string)
 
-	if rnValue == "rsprov" {
+	if contractType == "provider" {
 		err := aciClient.DeleteByDn(dn, "fvRsProv")
 		if err != nil {
 			return diag.FromErr(err)
@@ -384,7 +268,7 @@ func resourceAciContractProviderDelete(ctx context.Context, d *schema.ResourceDa
 		d.SetId("")
 		return diag.FromErr(err)
 
-	} else if rnValue == "rscons" {
+	} else if contractType == "consumer" {
 		err := aciClient.DeleteByDn(dn, "fvRsCons")
 		if err != nil {
 			return diag.FromErr(err)
@@ -395,4 +279,79 @@ func resourceAciContractProviderDelete(ctx context.Context, d *schema.ResourceDa
 		return diag.FromErr(err)
 	}
 	return nil
+}
+
+func postContractConfig(ctx context.Context, status string, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+	contractOperation := ""
+	if status == "modified" {
+		contractOperation = "Update"
+	} else {
+		contractOperation = "Create"
+	}
+
+	aciClient := m.(*client.Client)
+
+	tnVzBrCPName := GetMOName(d.Get("contract_dn").(string))
+
+	contractType := d.Get("contract_type").(string)
+
+	ApplicationEPGDn := d.Get("application_epg_dn").(string)
+
+	if contractType == "provider" {
+		log.Printf("[DEBUG] ContractProvider: Beginning %s", contractOperation)
+
+		MatchT := d.Get("match_t").(string)
+		fvRsProvAttr := models.ContractProviderAttributes{}
+		if Annotation, ok := d.GetOk("annotation"); ok {
+			fvRsProvAttr.Annotation = Annotation.(string)
+		} else {
+			fvRsProvAttr.Annotation = "{}"
+		}
+		if MatchT != "" {
+			fvRsProvAttr.MatchT = MatchT
+		}
+		if Prio, ok := d.GetOk("prio"); ok {
+			fvRsProvAttr.Prio = Prio.(string)
+		}
+		fvRsProvAttr.TnVzBrCPName = tnVzBrCPName
+		fvRsProv := models.NewContractProvider(fmt.Sprintf("rsprov-%s", tnVzBrCPName), ApplicationEPGDn, fvRsProvAttr)
+
+		fvRsProv.Status = status
+
+		err := aciClient.Save(fvRsProv)
+
+		if err != nil {
+			return diag.FromErr(err)
+		}
+		d.SetId(fvRsProv.DistinguishedName)
+	} else if contractType == "consumer" {
+		log.Printf("[DEBUG] ContractConsumer: Beginning %s", contractOperation)
+
+		fvRsConsAttr := models.ContractConsumerAttributes{}
+		if Annotation, ok := d.GetOk("annotation"); ok {
+			fvRsConsAttr.Annotation = Annotation.(string)
+		} else {
+			fvRsConsAttr.Annotation = "{}"
+		}
+		if Prio, ok := d.GetOk("prio"); ok {
+			fvRsConsAttr.Prio = Prio.(string)
+		}
+		fvRsConsAttr.TnVzBrCPName = tnVzBrCPName
+		fvRsCons := models.NewContractConsumer(fmt.Sprintf("rscons-%s", tnVzBrCPName), ApplicationEPGDn, fvRsConsAttr)
+
+		fvRsCons.Status = status
+
+		err := aciClient.Save(fvRsCons)
+
+		if err != nil {
+			return diag.FromErr(err)
+		}
+		d.SetId(fvRsCons.DistinguishedName)
+	}
+	if status == "modified" {
+		log.Printf("[DEBUG] %s: Update finished successfully", d.Id())
+	} else {
+		log.Printf("[DEBUG] %s: Creation finished successfully", d.Id())
+	}
+	return resourceAciContractProviderRead(ctx, d, m)
 }
