@@ -8,8 +8,7 @@ import (
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
 	"github.com/ciscoecosystem/aci-go-client/v2/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/acctest"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
+	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 )
 
 func TestAccAciRestManaged_tenant(t *testing.T) {
@@ -17,7 +16,7 @@ func TestAccAciRestManaged_tenant(t *testing.T) {
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:          func() { testAccPreCheck(t) },
-		ProviderFactories: providerFactories,
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		CheckDestroy:      testAccCheckAciRestManagedDestroy,
 		Steps: []resource.TestStep{
 			{
@@ -45,7 +44,7 @@ func TestAccAciRestManaged_tenant(t *testing.T) {
 func TestAccAciRestManaged_connPref(t *testing.T) {
 	resource.Test(t, resource.TestCase{
 		PreCheck:          func() { testAccPreCheck(t) },
-		ProviderFactories: providerFactories,
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		CheckDestroy:      testAccCheckAciRestManagedStillExists,
 		Steps: []resource.TestStep{
 			{
@@ -73,7 +72,7 @@ func TestAccAciRestManaged_connPref(t *testing.T) {
 func TestAccAciRestManaged_noContent(t *testing.T) {
 	resource.Test(t, resource.TestCase{
 		PreCheck:          func() { testAccPreCheck(t) },
-		ProviderFactories: providerFactories,
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		CheckDestroy:      testAccCheckAciRestManagedStillExists,
 		Steps: []resource.TestStep{
 			{
@@ -97,7 +96,7 @@ func TestAccAciRestManaged_tenantVrf(t *testing.T) {
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:          func() { testAccPreCheck(t) },
-		ProviderFactories: providerFactories,
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		CheckDestroy:      testAccCheckAciRestManagedDestroy,
 		Steps: []resource.TestStep{
 			{
