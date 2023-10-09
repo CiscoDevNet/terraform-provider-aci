@@ -103,6 +103,17 @@ Class - fvSubnet
 			mac   = "00:1F:20:34:89:AA"
 		}
 	}
+
+	# Disable IP Dataplane Learning for Host(/32) - Under AP -> EPG Subnet
+	resource "aci_subnet" "foo_epg_subnet_disable_dp_learning" {
+	  	parent_dn              = aci_application_epg.foo_epg.id
+	  	ip                     = "10.0.3.29/32"
+	  	scope                  = ["private"]
+	  	description            = "This subject is created by terraform"
+	  	ctrl                   = ["no-default-gateway"]
+	  	anycast_mac            = "F0:1F:20:34:89:AB"
+	  	ip_data_plane_learning = "disabled"
+	}
 ```
 
 ## Argument Reference
@@ -112,6 +123,7 @@ Class - fvSubnet
 - `annotation` - (Optional) Annotation for object subnet.
 - `description` - (Optional) Description for object subnet.
 - `ctrl` - (Optional) The list of subnet control state. The control can be specific protocols applied to the subnet such as IGMP Snooping. Allowed values are "unspecified", "querier", "nd" and "no-default-gateway". Default is "nd". NOTE: "unspecified" should't be used along with other values.
+- `ip_data_plane_learning` - (Optional) Knob to disable IP Dataplane Learning for Host(/32, /128) and for BD Subnet. Type - String.
 - `name_alias` - (Optional) Name alias for object subnet.
 - `preferred` - (Optional) Indicates if the subnet is preferred (primary) over the available alternatives. Only one preferred subnet is allowed. Allowed values are "yes" and "no". Default is "no".
 - `scope` - (Optional) The List of network visibility of the subnet. Allowed values are "private", "public" and "shared". Default is "private".

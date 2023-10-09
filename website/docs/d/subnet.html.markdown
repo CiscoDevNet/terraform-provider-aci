@@ -40,6 +40,7 @@ data "aci_subnet" "dev_subnet" {
 - `annotation` - (Optional) Annotation for object subnet.
 - `description` - (Optional) Description for object subnet.
 - `ctrl` - (Optional) The list of subnet control state. The control can be specific protocols applied to the subnet such as IGMP Snooping.
+- `ip_data_plane_learning` - (Optional) Knob to disable IP Dataplane Learning for Host(/32, /128) and for BD Subnet. Type - String.
 - `name_alias` - (Optional) Name alias for object subnet.
 - `preferred` - (Optional) Indicates if the subnet is preferred (primary) over the available alternatives. Only one preferred subnet is allowed.
 - `scope` - (Optional) The List of network visibility of the subnet.
