@@ -94,3 +94,22 @@ func CurlyBraces(value string) string {
 		return value
 	}
 }
+
+func GetMORnPrefix(DistinguishedName string) string {
+	if DistinguishedName != "" {
+		bracketIndex := 0
+		rnIndex := 0
+		for i := len(DistinguishedName) - 1; i >= 0; i-- {
+			if string(DistinguishedName[i]) == "]" {
+				bracketIndex = bracketIndex + 1
+			} else if string(DistinguishedName[i]) == "[" {
+				bracketIndex = bracketIndex - 1
+			} else if string(DistinguishedName[i]) == "/" && bracketIndex == 0 {
+				rnIndex = i
+				break
+			}
+		}
+		return strings.Split(string(DistinguishedName[rnIndex+1:]), "-")[0]
+	}
+	return DistinguishedName
+}
