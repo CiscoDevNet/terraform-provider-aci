@@ -69,6 +69,16 @@ func resourceAciSubnet() *schema.Resource {
 				DiffSuppressFunc: suppressTypeListDiffFunc,
 			},
 
+			"ip_data_plane_learning": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"enabled",
+					"disabled",
+				}, false),
+			},
+
 			"name_alias": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -253,6 +263,7 @@ func setSubnetAttributes(fvSubnet *models.Subnet, d *schema.ResourceData) (*sche
 
 	d.Set("ip", fvSubnetMap["ip"])
 	d.Set("annotation", fvSubnetMap["annotation"])
+	d.Set("ip_data_plane_learning", fvSubnetMap["ipDPLearning"])
 	d.Set("name_alias", fvSubnetMap["nameAlias"])
 	d.Set("preferred", fvSubnetMap["preferred"])
 
@@ -471,6 +482,9 @@ func resourceAciSubnetCreate(ctx context.Context, d *schema.ResourceData, m inte
 	if Ip, ok := d.GetOk("ip"); ok {
 		fvSubnetAttr.Ip = Ip.(string)
 	}
+	if IpDataPlaneLearning, ok := d.GetOk("ip_data_plane_learning"); ok {
+		fvSubnetAttr.IpDataPlaneLearning = IpDataPlaneLearning.(string)
+	}
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		fvSubnetAttr.NameAlias = NameAlias.(string)
 	}
@@ -651,6 +665,9 @@ func resourceAciSubnetUpdate(ctx context.Context, d *schema.ResourceData, m inte
 	}
 	if Ip, ok := d.GetOk("ip"); ok {
 		fvSubnetAttr.Ip = Ip.(string)
+	}
+	if IpDataPlaneLearning, ok := d.GetOk("ip_data_plane_learning"); ok {
+		fvSubnetAttr.IpDataPlaneLearning = IpDataPlaneLearning.(string)
 	}
 	if NameAlias, ok := d.GetOk("name_alias"); ok {
 		fvSubnetAttr.NameAlias = NameAlias.(string)

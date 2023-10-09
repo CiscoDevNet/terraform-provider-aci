@@ -38,6 +38,12 @@ func dataSourceAciSubnet() *schema.Resource {
 				},
 			},
 
+			"ip_data_plane_learning": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+
 			"name_alias": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
