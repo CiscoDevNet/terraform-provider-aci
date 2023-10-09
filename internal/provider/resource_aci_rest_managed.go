@@ -14,7 +14,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/mapplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
-	//"github.com/hashicorp/terraform-plugin-framework/resource/schema/setplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/setplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringdefault"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/types"
@@ -41,7 +41,7 @@ type AciRestManagedResourceModel struct {
 	Dn         types.String `tfsdk:"dn"`
 	ClassName  types.String `tfsdk:"class_name"`
 	Content    types.Map    `tfsdk:"content"`
-	//Child      types.Set    `tfsdk:"child"`
+	Child      types.Set    `tfsdk:"child"`
 	Annotation types.String `tfsdk:"annotation"`
 }
 
@@ -128,44 +128,43 @@ func (r *AciRestManagedResource) Schema(ctx context.Context, req resource.Schema
 				MarkdownDescription: `The annotation of the ACI object.`,
 			},
 		},
-		// TODO Fix the support child blocks
-		// Blocks: map[string]schema.Block{
-		// 	"child": schema.SetNestedBlock{
-		// 		//Optional:            true,
-		// 		MarkdownDescription: "List of children.",
-		// 		PlanModifiers: []planmodifier.Set{
-		// 			setplanmodifier.UseStateForUnknown(),
-		// 		},
-		// 		NestedObject: schema.NestedBlockObject{
-		// 			Attributes: map[string]schema.Attribute{
-		// 				"rn": schema.StringAttribute{
-		// 					MarkdownDescription: "The relative name of the child object.",
-		// 					Required:            true,
-		// 					PlanModifiers: []planmodifier.String{
-		// 						stringplanmodifier.UseStateForUnknown(),
-		// 					},
-		// 				},
-		// 				"class_name": schema.StringAttribute{
-		// 					MarkdownDescription: "Class name of child object.",
-		// 					Optional:            true,
-		// 					Computed:            true,
-		// 					PlanModifiers: []planmodifier.String{
-		// 						stringplanmodifier.UseStateForUnknown(),
-		// 					},
-		// 				},
-		// 				"content": schema.MapAttribute{
-		// 					MarkdownDescription: "Map of key-value pairs which represents the attributes for the child object.",
-		// 					Optional:            true,
-		// 					Computed:            true,
-		// 					ElementType:         types.StringType,
-		// 					PlanModifiers: []planmodifier.Map{
-		// 						mapplanmodifier.UseStateForUnknown(),
-		// 					},
-		// 				},
-		// 			},
-		// 		},
-		// 	},
-		// },
+		Blocks: map[string]schema.Block{
+			"child": schema.SetNestedBlock{
+				//Optional:            true,
+				MarkdownDescription: "List of children.",
+				PlanModifiers: []planmodifier.Set{
+					setplanmodifier.UseStateForUnknown(),
+				},
+				NestedObject: schema.NestedBlockObject{
+					Attributes: map[string]schema.Attribute{
+						"rn": schema.StringAttribute{
+							MarkdownDescription: "The relative name of the child object.",
+							Required:            true,
+							PlanModifiers: []planmodifier.String{
+								stringplanmodifier.UseStateForUnknown(),
+							},
+						},
+						"class_name": schema.StringAttribute{
+							MarkdownDescription: "Class name of child object.",
+							Optional:            true,
+							Computed:            true,
+							PlanModifiers: []planmodifier.String{
+								stringplanmodifier.UseStateForUnknown(),
+							},
+						},
+						"content": schema.MapAttribute{
+							MarkdownDescription: "Map of key-value pairs which represents the attributes for the child object.",
+							Optional:            true,
+							Computed:            true,
+							ElementType:         types.StringType,
+							PlanModifiers: []planmodifier.Map{
+								mapplanmodifier.UseStateForUnknown(),
+							},
+						},
+					},
+				},
+			},
+		},
 	}
 }
 
@@ -216,8 +215,8 @@ func (r *AciRestManagedResource) Create(ctx context.Context, req resource.Create
 	tflog.Trace(ctx, fmt.Sprintf("create of resource aci_rest_managed with id '%s'", data.Id.ValueString()))
 
 	var childPlan, childState []ChildAciRestManagedResourceModel
-	//data.Child.ElementsAs(ctx, &childPlan, false)
-	//stateData.Child.ElementsAs(ctx, &childState, false)
+	data.Child.ElementsAs(ctx, &childPlan, false)
+	stateData.Child.ElementsAs(ctx, &childState, false)
 	jsonPayload, message, messageDetail := getAciRestManagedCreateJsonPayload(ctx, data, childPlan, childState)
 
 	if jsonPayload == nil {
@@ -280,8 +279,8 @@ func (r *AciRestManagedResource) Update(ctx context.Context, req resource.Update
 	tflog.Trace(ctx, fmt.Sprintf("update of resource aci_rest_managed with id '%s'", data.Id.ValueString()))
 
 	var childPlan, childState []ChildAciRestManagedResourceModel
-	//data.Child.ElementsAs(ctx, &childPlan, false)
-	//stateData.Child.ElementsAs(ctx, &childState, false)
+	data.Child.ElementsAs(ctx, &childPlan, false)
+	stateData.Child.ElementsAs(ctx, &childState, false)
 	jsonPayload, message, messageDetail := getAciRestManagedCreateJsonPayload(ctx, data, childPlan, childState)
 
 	if jsonPayload == nil {
@@ -353,9 +352,22 @@ func setAciRestManagedAttributes(ctx context.Context, client *client.Client, dat
 	}
 
 	// Only attributes set in the content should be saved into state
-	contentKeys := make([]string, 0, 5)
+	contentKeys := make([]string, 0)
 	for k := range data.Content.Elements(){
 		contentKeys = append(contentKeys, k)
+	}
+
+	// Only configured children and child attributes should be saved into state
+	var children []ChildAciRestManagedResourceModel
+	childClasses := make([]string, 0)
+	childContentKeys := make(map[string][]string, 0)
+	data.Child.ElementsAs(ctx, &children, false)
+	for _, child := range children {
+		rn := child.Rn.ValueString()
+		childClasses = append(childClasses, child.ClassName.ValueString())
+		for k := range child.Content.Elements() {
+			childContentKeys[rn] = append(childContentKeys[rn], k)
+		}
 	}
 
 	if requestData.Search("imdata").Search(data.ClassName.ValueString()).Data() != nil {
@@ -375,37 +387,45 @@ func setAciRestManagedAttributes(ctx context.Context, client *client.Client, dat
 				}
 			}
 			data.Content, _ = types.MapValue(types.StringType, contents)
-			// ChildAciRestManagedResourceList := make([]ChildAciRestManagedResourceModel, 0)
-			// _, ok := classReadInfo[0].(map[string]interface{})["children"]
-			// if ok {
-			// 	children := classReadInfo[0].(map[string]interface{})["children"].([]interface{})
-			// 	for _, child := range children {
-			// 		for childClassName, childClassDetails := range child.(map[string]interface{}) {
-			// 			childAttributes := childClassDetails.(map[string]interface{})["attributes"].(map[string]interface{})
-			// 			ChildAciRestManaged := ChildAciRestManagedResourceModel{}
-			// 			ChildAciRestManaged.ClassName = basetypes.NewStringValue(childClassName)
-			// 			for childAttributeName, childAttributeValue := range childAttributes {
-			// 				if childAttributeName == "rn" {
-			// 					ChildAciRestManaged.Rn = basetypes.NewStringValue(childAttributeValue.(string))
-			// 				}
-			// 				if childAttributeName == "content" {
-			// 					// TODO set child content map
-			// 					//ChildAciRestManaged.Content = basetypes.NewStringValue(childAttributeValue.(string))
-			// 				}
-			// 			}
-			// 			ChildAciRestManagedResourceList = append(ChildAciRestManagedResourceList, ChildAciRestManaged)
-			// 		}
-			// 	}
-			// }
-			// if len(ChildAciRestManagedResourceList) > 0 {
-			// 	tflog.Trace(ctx, "Setting Child Set Data")
-			// 	childSet, _ := types.SetValueFrom(ctx, data.Child.ElementType(ctx), ChildAciRestManagedResourceList)
-			// 	data.Child = childSet
-			// }
+			ChildAciRestManagedResourceList := make([]ChildAciRestManagedResourceModel, 0)
+			_, ok := classReadInfo[0].(map[string]interface{})["children"]
+			if ok {
+				children := classReadInfo[0].(map[string]interface{})["children"].([]interface{})
+				for _, child := range children {
+					for childClassName, childClassDetails := range child.(map[string]interface{}) {
+						if containsString(childClasses, childClassName){
+							childAttributes := childClassDetails.(map[string]interface{})["attributes"].(map[string]interface{})
+							childContents := map[string]attr.Value{}
+							ChildAciRestManaged := ChildAciRestManagedResourceModel{}
+							ChildAciRestManaged.ClassName = basetypes.NewStringValue(childClassName)
+							// Find rn first
+							rn := ""
+							for childAttributeName, childAttributeValue := range childAttributes {
+								if childAttributeName == "rn" {
+									rn = childAttributeValue.(string)
+									ChildAciRestManaged.Rn = basetypes.NewStringValue(rn)
+									break
+								}
+							}
+							for childAttributeName, childAttributeValue := range childAttributes {
+								if childAttributeName != "rn" && containsString(childContentKeys[rn], childAttributeName) {
+									childContents[childAttributeName] = basetypes.NewStringValue(childAttributeValue.(string))
+								}
+							}
+							ChildAciRestManaged.Content, _ = types.MapValue(types.StringType, childContents)
+							ChildAciRestManagedResourceList = append(ChildAciRestManagedResourceList, ChildAciRestManaged)
+						}
+					}
+				}
+			}
+			if len(ChildAciRestManagedResourceList) > 0 {
+				childSet, _ := types.SetValueFrom(ctx, data.Child.ElementType(ctx), ChildAciRestManagedResourceList)
+				data.Child = childSet
+			}
 		} else {
 			return map[string]string{
 				"message":       "too many results in response",
-				"messageDetail": fmt.Sprintf("%v matches returned for class 'l3extConsLbl'. Please report this issue to the provider developers.", len(classReadInfo)),
+				"messageDetail": fmt.Sprintf("%v matches returned for class '%s'. Please report this issue to the provider developers.", len(classReadInfo), data.ClassName),
 			}
 		}
 	}
@@ -416,66 +436,59 @@ func setAciRestManagedId(ctx context.Context, data *AciRestManagedResourceModel)
 	data.Id = types.StringValue(data.Dn.ValueString())
 }
 
-// TODO This needs more attention
-// Child payloads may not be in the correct format
-// func getAciRestManagedChildPayloads(ctx context.Context, data *AciRestManagedResourceModel, childPlan, childState []ChildAciRestManagedResourceModel) ([]map[string]interface{}, string, string) {
-// 	childPayloads := []map[string]interface{}{}
-// 	if !data.Child.IsUnknown() {
-// 		childIdentifiers := []AciRestManagedChildIdentifier{}
-// 		for _, child := range childPlan {
-// 			childMap := map[string]map[string]interface{}{"attributes": {}}
-// 			if !child.Rn.IsUnknown() {
-// 				childMap["attributes"]["rn"] = child.Rn.ValueString()
-// 			}
-// 			if !child.ClassName.IsUnknown() {
-// 				childMap["attributes"]["class_name"] = child.ClassName.ValueString()
-// 			}
-// 			if !child.Content.IsUnknown() {
-// 				// TODO This will need to be fixed
-// 				// Because child contents should be the actual attributes.
-// 				childMap["attributes"]["content"] = child.Content.Elements()
-// 			}
-// 			childPayloads = append(childPayloads, map[string]interface{}{"children": childMap})
-// 			childIdentifier := AciRestManagedChildIdentifier{}
-// 			childIdentifier.Rn = child.Rn
-// 			childIdentifier.ClassName = child.ClassName
-// 			childIdentifiers = append(childIdentifiers, childIdentifier)
-// 		}
-// 		for _, child := range childState {
-// 			delete := true
-// 			for _, childIdentifier := range childIdentifiers {
-// 				if childIdentifier.Rn == child.Rn && childIdentifier.ClassName == child.ClassName {
-// 					delete = false
-// 					break
-// 				}
-// 			}
-// 			if delete {
-// 				// TODO check if this works
-// 				// Changing the RN or ClassName should delete previous objects
-// 				childMap := map[string]map[string]interface{}{"attributes": {}}
-// 				childMap["attributes"]["status"] = "deleted"
-// 				childMap["attributes"]["rn"] = child.Rn.ValueString()
-// 				childPayloads = append(childPayloads, map[string]interface{}{"children": childMap})
-// 			}
-// 		}
-// 	} else {
-// 		data.Child = types.SetNull(data.Child.ElementType(ctx))
-// 	}
+func getAciRestManagedChildPayloads(ctx context.Context, data *AciRestManagedResourceModel, childPlan, childState []ChildAciRestManagedResourceModel) ([]interface{}, string, string) {
+	childPayloads := []interface{}{}
+	if !data.Child.IsUnknown() {
+		childIdentifiers := []AciRestManagedChildIdentifier{}
+		for _, child := range childPlan {
+			childMap := map[string]map[string]string{"attributes": {}}
+			if !child.Rn.IsUnknown() {
+				childMap["attributes"]["rn"] = child.Rn.ValueString()
+			}
+			if !child.Content.IsNull() && !child.Content.IsUnknown() {
+				for k, v := range child.Content.Elements() {
+					childMap["attributes"][k] = v.(basetypes.StringValue).ValueString()
+				}
+			}
+			childPayloads = append(childPayloads, map[string]interface{}{child.ClassName.ValueString(): childMap})
+			childIdentifier := AciRestManagedChildIdentifier{}
+			childIdentifier.Rn = child.Rn
+			childIdentifier.ClassName = child.ClassName
+			childIdentifiers = append(childIdentifiers, childIdentifier)
+		}
+		for _, child := range childState {
+			delete := true
+			for _, childIdentifier := range childIdentifiers {
+				if childIdentifier.Rn == child.Rn && childIdentifier.ClassName == child.ClassName {
+					delete = false
+					break
+				}
+			}
+			if delete {
+				// TODO check if this works
+				// Changing the RN or ClassName should delete previous objects
+				childMap := map[string]map[string]interface{}{"attributes": {}}
+				childMap["attributes"]["status"] = "deleted"
+				childMap["attributes"]["rn"] = child.Rn.ValueString()
+				childPayloads = append(childPayloads, map[string]interface{}{child.ClassName.ValueString(): childMap})
+			}
+		}
+	} else {
+		data.Child = types.SetNull(data.Child.ElementType(ctx))
+	}
 
-// 	return childPayloads, "", ""
-// }
+	return childPayloads, "", ""
+}
 
 func getAciRestManagedCreateJsonPayload(ctx context.Context, data *AciRestManagedResourceModel, childPlan, childState []ChildAciRestManagedResourceModel) (*container.Container, string, string) {
 	payloadMap := map[string]interface{}{}
 	payloadMap["attributes"] = map[string]string{}
 
-	// childPayloads := []map[string]interface{}{}
-	// ChildPayloads, errMessage, errMessageDetail := getAciRestManagedChildPayloads(ctx, data, childPlan, childState)
-	// if ChildPayloads == nil {
-	// 	return nil, errMessage, errMessageDetail
-	// }
-	// childPayloads = append(childPayloads, ChildPayloads...)
-	// payloadMap["children"] = childPayloads
+	childPayloads, errMessage, errMessageDetail := getAciRestManagedChildPayloads(ctx, data, childPlan, childState)
+	if childPayloads == nil {
+		return nil, errMessage, errMessageDetail
+	}
+	payloadMap["children"] = childPayloads
 
 	if !data.Annotation.IsNull() && !data.Annotation.IsUnknown() {
 		payloadMap["attributes"].(map[string]string)["annotation"] = data.Annotation.ValueString()
