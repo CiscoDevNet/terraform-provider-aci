@@ -204,6 +204,7 @@ func resourceAciVirtualLogicalInterfaceProfile() *schema.Resource {
 						"encap": {
 							Type:     schema.TypeString,
 							Optional: true,
+							Default:  "unknown",
 						},
 					},
 				},
