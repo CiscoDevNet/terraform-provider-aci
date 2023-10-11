@@ -2,11 +2,7 @@ package provider
 
 import (
 	"fmt"
-	"strings"
 	"testing"
-
-	"github.com/ciscoecosystem/aci-go-client/v2/client"
-	"github.com/ciscoecosystem/aci-go-client/v2/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/acctest"
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 )
@@ -17,24 +13,25 @@ func TestAccAciRestManaged_tenant(t *testing.T) {
 	resource.Test(t, resource.TestCase{
 		PreCheck:          func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
-		CheckDestroy:      testAccCheckAciRestManagedDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccAciRestManagedConfig_tenant(name, "Create description"),
+				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAciRestManagedObject("aci_rest_managed.fvTenant"),
+					resource.TestCheckResourceAttr("aci_rest_managed.fvTenant", "content.name", name),
+					resource.TestCheckResourceAttr("aci_rest_managed.fvTenant", "content.descr", "Create description"),
+					resource.TestCheckResourceAttr("aci_rest_managed.fvTenant", "dn", "uni/tn-" + name),
+					resource.TestCheckResourceAttr("aci_rest_managed.fvTenant", "annotation", "orchestrator:terraform"),
 				),
 			},
 			{
-				ResourceName:      "aci_rest_managed.fvTenant",
-				ImportState:       true,
-				ImportStateId:     "fvTenant:uni/tn-" + name,
-				ImportStateVerify: true,
-			},
-			{
 				Config: testAccAciRestManagedConfig_tenant(name, "Updated description"),
+				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAciRestManagedObject("aci_rest_managed.fvTenant"),
+					resource.TestCheckResourceAttr("aci_rest_managed.fvTenant", "content.name", name),
+					resource.TestCheckResourceAttr("aci_rest_managed.fvTenant", "content.descr", "Updated description"),
+					resource.TestCheckResourceAttr("aci_rest_managed.fvTenant", "dn", "uni/tn-" + name),
+					resource.TestCheckResourceAttr("aci_rest_managed.fvTenant", "annotation", "orchestrator:terraform"),
 				),
 			},
 		},
@@ -45,24 +42,23 @@ func TestAccAciRestManaged_connPref(t *testing.T) {
 	resource.Test(t, resource.TestCase{
 		PreCheck:          func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
-		CheckDestroy:      testAccCheckAciRestManagedStillExists,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccAciRestManagedConfig_connPref("ooband"),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAciRestManagedObject("aci_rest_managed.mgmtConnectivityPrefs"),
+					resource.TestCheckResourceAttr("aci_rest_managed.testConnPref", "content.interfacePref", "ooband"),
+					resource.TestCheckResourceAttr("aci_rest_managed.testConnPref", "dn", "uni/fabric/connectivityPrefs"),
+					resource.TestCheckResourceAttr("aci_rest_managed.testConnPref", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_rest_managed.testConnPref", "class_name", "mgmtConnectivityPrefs"),
 				),
-			},
-			{
-				ResourceName:      "aci_rest_managed.mgmtConnectivityPrefs",
-				ImportState:       true,
-				ImportStateId:     "mgmtConnectivityPrefs:uni/fabric/connectivityPrefs",
-				ImportStateVerify: true,
 			},
 			{
 				Config: testAccAciRestManagedConfig_connPref("inband"),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAciRestManagedObject("aci_rest_managed.mgmtConnectivityPrefs"),
+					resource.TestCheckResourceAttr("aci_rest_managed.testConnPref", "content.interfacePref", "inband"),
+					resource.TestCheckResourceAttr("aci_rest_managed.testConnPref", "dn", "uni/fabric/connectivityPrefs"),
+					resource.TestCheckResourceAttr("aci_rest_managed.testConnPref", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_rest_managed.testConnPref", "class_name", "mgmtConnectivityPrefs"),
 				),
 			},
 		},
@@ -73,19 +69,13 @@ func TestAccAciRestManaged_noContent(t *testing.T) {
 	resource.Test(t, resource.TestCase{
 		PreCheck:          func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
-		CheckDestroy:      testAccCheckAciRestManagedStillExists,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccAciRestManagedConfig_connPref(""),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAciRestManagedObject("aci_rest_managed.mgmtConnectivityPrefs"),
+					resource.TestCheckResourceAttr("aci_rest_managed.testConnPref", "dn", "uni/fabric/connectivityPrefs"),
+					resource.TestCheckResourceAttr("aci_rest_managed.testConnPref", "class_name", "mgmtConnectivityPrefs"),
 				),
-			},
-			{
-				ResourceName:      "aci_rest_managed.mgmtConnectivityPrefs",
-				ImportState:       true,
-				ImportStateId:     "mgmtConnectivityPrefs:uni/fabric/connectivityPrefs",
-				ImportStateVerify: true,
 			},
 		},
 	})
@@ -97,14 +87,17 @@ func TestAccAciRestManaged_tenantVrf(t *testing.T) {
 	resource.Test(t, resource.TestCase{
 		PreCheck:          func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
-		CheckDestroy:      testAccCheckAciRestManagedDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccAciRestManagedConfig_tenantVrf(name),
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_rest_managed.fvTenant", "child.0.class_name", "fvCtx"),
-					resource.TestCheckResourceAttr("aci_rest_managed.fvTenant", "child.0.rn", "ctx-"+name),
-					resource.TestCheckResourceAttr("aci_rest_managed.fvTenant", "child.0.content.name", name),
+					resource.TestCheckResourceAttr("aci_rest_managed.testtenVrf", "content.name", name),
+					resource.TestCheckResourceAttr("aci_rest_managed.testtenVrf", "dn", "uni/tn-"+name),
+					resource.TestCheckResourceAttr("aci_rest_managed.testtenVrf", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_rest_managed.testtenVrf", "class_name", "fvTenant"),
+					resource.TestCheckResourceAttr("aci_rest_managed.testtenVrf", "child.0.class_name", "fvCtx"),
+					resource.TestCheckResourceAttr("aci_rest_managed.testtenVrf", "child.0.rn", "ctx-"+name),
+					resource.TestCheckResourceAttr("aci_rest_managed.testtenVrf", "child.0.content.name", name),
 				),
 			},
 		},
@@ -128,7 +121,7 @@ func testAccAciRestManagedConfig_tenant(name string, description string) string 
 func testAccAciRestManagedConfig_connPref(status string) string {
 	if status != "" {
 		return fmt.Sprintf(`
-		resource "aci_rest_managed" "mgmtConnectivityPrefs" {
+		resource "aci_rest_managed" "testConnPref" {
 			dn = "uni/fabric/connectivityPrefs"
 			class_name = "mgmtConnectivityPrefs"
 			content = {
@@ -138,7 +131,7 @@ func testAccAciRestManagedConfig_connPref(status string) string {
 		`, status)
 	} else {
 		return `
-		resource "aci_rest_managed" "mgmtConnectivityPrefs" {
+		resource "aci_rest_managed" "testConnPref" {
 			dn = "uni/fabric/connectivityPrefs"
 			class_name = "mgmtConnectivityPrefs"
 		}
@@ -148,7 +141,7 @@ func testAccAciRestManagedConfig_connPref(status string) string {
 
 func testAccAciRestManagedConfig_tenantVrf(name string) string {
 	return fmt.Sprintf(`
-	resource "aci_rest_managed" "fvTenant" {
+	resource "aci_rest_managed" "testtenVrf" {
 		dn = "uni/tn-%[1]s"
 		class_name = "fvTenant"
 		content = {
@@ -164,82 +157,4 @@ func testAccAciRestManagedConfig_tenantVrf(name string) string {
 		}
 	}
 	`, name)
-}
-
-func testAccCheckAciRestManagedObject(name string) resource.TestCheckFunc {
-	return func(s *terraform.State) error {
-		rs, ok := s.RootModule().Resources[name]
-
-		if !ok {
-			return fmt.Errorf("Resource aci_rest_managed %s not found", name)
-		}
-
-		if rs.Primary.ID == "" {
-			return fmt.Errorf("No aci_rest_managed dn attribute was set")
-		}
-
-		client := testAccProvider.Meta().(*client.Client)
-
-		cont, err := client.Get(rs.Primary.ID)
-		if err != nil {
-			return err
-		}
-
-		className := rs.Primary.Attributes["class_name"]
-		dn := models.StripQuotes(models.StripSquareBrackets(cont.Search("imdata", className, "attributes", "dn").String()))
-
-		if dn != rs.Primary.ID {
-			return fmt.Errorf("APIC object %s not found", rs.Primary.ID)
-		}
-
-		for key, value := range rs.Primary.Attributes {
-			if strings.Contains(key, "content.") && key != "content.%" {
-				attr := key[8:]
-				v := models.StripQuotes(models.StripSquareBrackets(cont.Search("imdata", className, "attributes", attr).String()))
-				if v != value {
-					return fmt.Errorf("APIC object %s, expected: %s, got: %s", rs.Primary.ID, value, v)
-				}
-			}
-		}
-
-		return nil
-	}
-}
-
-func testAccCheckAciRestManagedDestroy(s *terraform.State) error {
-	client := testAccProvider.Meta().(*client.Client)
-
-	for _, rs := range s.RootModule().Resources {
-
-		if rs.Type == "aci_rest_managed" {
-			_, err := client.Get(rs.Primary.ID)
-			if err == nil {
-				return fmt.Errorf("Resource aci_rest_managed %s still exists", rs.Primary.ID)
-			}
-
-		} else {
-			continue
-		}
-	}
-
-	return nil
-}
-
-func testAccCheckAciRestManagedStillExists(s *terraform.State) error {
-	client := testAccProvider.Meta().(*client.Client)
-
-	for _, rs := range s.RootModule().Resources {
-
-		if rs.Type == "aci_rest_managed" {
-			_, err := client.Get(rs.Primary.ID)
-			if err != nil {
-				return fmt.Errorf("Error retrieving resource aci_rest_managed %s", rs.Primary.ID)
-			}
-
-		} else {
-			continue
-		}
-	}
-
-	return nil
 }

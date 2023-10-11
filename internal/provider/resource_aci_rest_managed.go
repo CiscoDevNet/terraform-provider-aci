@@ -66,6 +66,8 @@ var AllowEmptyReadClasses = []string{"firmwareFwGrp", "firmwareRsFwgrpp", "firmw
 // List of classes which do not support annotations
 var NoAnnotationClasses = []string{"tagTag"}
 
+var UnableToDelete = "unable to delete"
+
 func (r *AciRestManagedResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
 	tflog.Trace(ctx, "start schema of resource: aci_rest_managed")
 	resp.TypeName = req.ProviderTypeName + "_rest_managed"
@@ -323,7 +325,11 @@ func (r *AciRestManagedResource) Delete(ctx context.Context, req resource.Delete
 	}
 	requestData, message, messageDetail := doAciRestManagedRequest(ctx, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
 	if requestData == nil {
-		resp.Diagnostics.AddError(message, messageDetail)
+		if message == UnableToDelete {
+			resp.Diagnostics.AddWarning(message, messageDetail)
+		} else {
+			resp.Diagnostics.AddError(message, messageDetail)
+		}
 		return
 	}
 	tflog.Trace(ctx, "end delete of resource: aci_rest_managed")
@@ -528,7 +534,6 @@ func getAciRestManagedDeleteJsonPayload(ctx context.Context, data *AciRestManage
 	return jsonPayload, "", ""
 }
 
-// TODO make this a generic function in the generator.
 func doAciRestManagedRequest(ctx context.Context, client *client.Client, path, method string, payload *container.Container) (*container.Container, string, string) {
 
 	restRequest, err := client.MakeRestRequest(method, path, payload, true)
@@ -540,9 +545,22 @@ func doAciRestManagedRequest(ctx context.Context, client *client.Client, path, m
 
 	cont, restResponse, err := client.Do(restRequest)
 
+	// Check for unable to delete class error
+	if restResponse != nil && restResponse.StatusCode == 400 {
+		errData := cont.S("imdata").S("error").S("attributes").Index(0).S("text").Data()
+		if errData != nil {
+			errText := errData.(string)
+			if strings.Contains(errText, "Cannot delete object of class") {
+				message := UnableToDelete
+				messageDetail := errText
+				return nil, message, messageDetail
+			}
+		}
+	}
+
 	if restResponse != nil && restResponse.StatusCode != 200 {
 		message := fmt.Sprintf("%s rest request failed", strings.ToLower(method))
-		messageDetail := fmt.Sprintf("Response: %s, err: %s. Please report this issue to the provider developers.", cont.Data().(map[string]interface{})["imdata"], err)
+		messageDetail := fmt.Sprintf("Code: %d Response: %s, err: %s. Please report this issue to the provider developers.", restResponse.StatusCode, cont.Data().(map[string]interface{})["imdata"], err)
 		return nil, message, messageDetail
 	} else if err != nil {
 		message := fmt.Sprintf("%s rest request failed", strings.ToLower(method))
