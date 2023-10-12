@@ -109,7 +109,7 @@ func GetResourceNameAsDescription(s string) string {
 }
 
 func GetDevnetDocForClass(className string) string {
-	return fmt.Sprintf("[%s](https://pubhub.devnetcloud.com/media/model-doc-521/docs/app/index.html#/objects/%s/overview)", className, className)
+	return fmt.Sprintf("[%s](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/%s/overview)", className, className)
 }
 
 func Capitalize(s string) string {

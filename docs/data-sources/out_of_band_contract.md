@@ -13,7 +13,7 @@ Data source for Out Of Band Contract
 
 ## API Information ##
 
-* `Class` - [vzOOBBrCP](https://pubhub.devnetcloud.com/media/model-doc-521/docs/app/index.html#/objects/vzOOBBrCP/overview)
+* `Class` - [vzOOBBrCP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vzOOBBrCP/overview)
 
 * `Distinguished Name Formats`
   - `uni/tn-mgmt/oobbrc-{name}`
@@ -49,6 +49,6 @@ data "aci_out_of_band_contract" "example" {
 * `scope` - (string) Represents the scope of this contract. If the scope is set as application-profile, the epg can only communicate with epgs in the same application-profile.
 * `target_dscp` - (string) contract level dscp value.
 
-* `annotations` - (list) A list of Annotations objects ([tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-521/docs/app/index.html#/objects/tagAnnotation/overview)).
+* `annotations` - (list) A list of Annotations objects ([tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)).
   * `key` - (string) The key or password used to uniquely identify this configuration object.
   * `value` - (string) The value of the property.

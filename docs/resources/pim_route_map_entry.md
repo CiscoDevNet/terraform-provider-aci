@@ -13,7 +13,7 @@ Manages ACI Pim Route Map Entry
 
 ## API Information ##
 
-* `Class` - [pimRouteMapEntry](https://pubhub.devnetcloud.com/media/model-doc-521/docs/app/index.html#/objects/pimRouteMapEntry/overview)
+* `Class` - [pimRouteMapEntry](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/pimRouteMapEntry/overview)
 
 * `Distinguished Name Formats`
   - `uni/tn-{name}/rtmap-{name}/rtmapentry-{order}`
@@ -68,7 +68,7 @@ All examples for the Pim Route Map Entry resource can be found in the [examples]
 ### Required
 
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
-  - [aci_pim_route_map_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/pim_route_map_policy) ([pimRouteMapPol](https://pubhub.devnetcloud.com/media/model-doc-521/docs/app/index.html#/objects/pimRouteMapPol/overview))
+  - [aci_pim_route_map_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/pim_route_map_policy) ([pimRouteMapPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/pimRouteMapPol/overview))
 * `order` - (string) PIM route map entry order.
 
 ### Read-Only
@@ -89,7 +89,7 @@ All examples for the Pim Route Map Entry resource can be found in the [examples]
 * `rp` - (string) Multicast RP Ip.
 * `src` - (string) Multicast Source Ip.
 
-* `annotations` - (list) A list of Annotations objects ([tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-521/docs/app/index.html#/objects/tagAnnotation/overview)) which can be configured using the [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.
+* `annotations` - (list) A list of Annotations objects ([tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can be configured using the [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.
   
   #### Required
   
