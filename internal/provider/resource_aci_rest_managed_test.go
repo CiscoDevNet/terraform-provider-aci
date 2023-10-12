@@ -2,35 +2,35 @@ package provider
 
 import (
 	"fmt"
-	"testing"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/acctest"
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
+	"testing"
 )
 
 func TestAccAciRestManaged_tenant(t *testing.T) {
 	name := acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum)
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:          func() { testAccPreCheck(t) },
+		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccAciRestManagedConfig_tenant(name, "Create description"),
+				Config:             testAccAciRestManagedConfig_tenant(name, "Create description"),
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_rest_managed.fvTenant", "content.name", name),
 					resource.TestCheckResourceAttr("aci_rest_managed.fvTenant", "content.descr", "Create description"),
-					resource.TestCheckResourceAttr("aci_rest_managed.fvTenant", "dn", "uni/tn-" + name),
+					resource.TestCheckResourceAttr("aci_rest_managed.fvTenant", "dn", "uni/tn-"+name),
 					resource.TestCheckResourceAttr("aci_rest_managed.fvTenant", "annotation", "non-default:value"),
 				),
 			},
 			{
-				Config: testAccAciRestManagedConfig_tenant(name, "Updated description"),
+				Config:             testAccAciRestManagedConfig_tenant(name, "Updated description"),
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_rest_managed.fvTenant", "content.name", name),
 					resource.TestCheckResourceAttr("aci_rest_managed.fvTenant", "content.descr", "Updated description"),
-					resource.TestCheckResourceAttr("aci_rest_managed.fvTenant", "dn", "uni/tn-" + name),
+					resource.TestCheckResourceAttr("aci_rest_managed.fvTenant", "dn", "uni/tn-"+name),
 					resource.TestCheckResourceAttr("aci_rest_managed.fvTenant", "annotation", "non-default:value"),
 				),
 			},
@@ -40,7 +40,7 @@ func TestAccAciRestManaged_tenant(t *testing.T) {
 
 func TestAccAciRestManaged_connPref(t *testing.T) {
 	resource.Test(t, resource.TestCase{
-		PreCheck:          func() { testAccPreCheck(t) },
+		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
@@ -67,7 +67,7 @@ func TestAccAciRestManaged_connPref(t *testing.T) {
 
 func TestAccAciRestManaged_noContent(t *testing.T) {
 	resource.Test(t, resource.TestCase{
-		PreCheck:          func() { testAccPreCheck(t) },
+		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
@@ -85,7 +85,7 @@ func TestAccAciRestManaged_tenantVrf(t *testing.T) {
 	name := acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum)
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:          func() { testAccPreCheck(t) },
+		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
@@ -108,15 +108,15 @@ func TestAccAciRestManaged_tagTag(t *testing.T) {
 	name := acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum)
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:          func() { testAccPreCheck(t) },
+		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccAciRestManagedConfig_tagTag(name),
+				Config:             testAccAciRestManagedConfig_tagTag(name),
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_rest_managed.testTag", "content.value", "test"),
-					resource.TestCheckResourceAttr("aci_rest_managed.testTag", "dn", "uni/fabric/connectivityPrefs/tagKey-" + name),
+					resource.TestCheckResourceAttr("aci_rest_managed.testTag", "dn", "uni/fabric/connectivityPrefs/tagKey-"+name),
 					resource.TestCheckNoResourceAttr("aci_rest_managed.testTag", "annotation"),
 				),
 			},
@@ -124,41 +124,41 @@ func TestAccAciRestManaged_tagTag(t *testing.T) {
 	})
 }
 
-// step 1 - create a tenant with no children 
+// step 1 - create a tenant with no children
 // step 2 - update same tenant with child vrf
-// step 3 - Update tenant again and remove children 
+// step 3 - Update tenant again and remove children
 func TestAccAciRestManaged_tenantChildren(t *testing.T) {
-	 name := acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum)
-	 
-	 resource.Test(t, resource.TestCase{
-		PreCheck:          func() { testAccPreCheck(t) },
+	name := acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum)
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccAciRestManagedConfig_tenant(name, "Create description"),
+				Config:             testAccAciRestManagedConfig_tenant(name, "Create description"),
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_rest_managed.fvTenant", "child.#", "0"),
-					resource.TestCheckResourceAttr("aci_rest_managed.fvTenant", "dn", "uni/tn-" + name),
+					resource.TestCheckResourceAttr("aci_rest_managed.fvTenant", "dn", "uni/tn-"+name),
 					resource.TestCheckResourceAttr("aci_rest_managed.fvTenant", "content.name", name),
 					resource.TestCheckResourceAttr("aci_rest_managed.fvTenant", "content.descr", "Create description"),
 				),
 			},
 			{
-				Config: testAccAciRestManagedConfig_tenantVrf(name, "fvTenant"),
+				Config:             testAccAciRestManagedConfig_tenantVrf(name, "fvTenant"),
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_rest_managed.fvTenant", "dn", "uni/tn-" + name),
+					resource.TestCheckResourceAttr("aci_rest_managed.fvTenant", "dn", "uni/tn-"+name),
 					resource.TestCheckResourceAttr("aci_rest_managed.fvTenant", "child.0.content.name", name),
 					resource.TestCheckNoResourceAttr("aci_rest_managed.fvTenant", "content.descr"),
 				),
 			},
 			{
-				Config: testAccAciRestManagedConfig_tenant(name, "Removed children"),
+				Config:             testAccAciRestManagedConfig_tenant(name, "Removed children"),
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_rest_managed.fvTenant", "child.#", "0"),
-					resource.TestCheckResourceAttr("aci_rest_managed.fvTenant", "dn", "uni/tn-" + name),
+					resource.TestCheckResourceAttr("aci_rest_managed.fvTenant", "dn", "uni/tn-"+name),
 					resource.TestCheckResourceAttr("aci_rest_managed.fvTenant", "content.name", name),
 					resource.TestCheckResourceAttr("aci_rest_managed.fvTenant", "content.descr", "Removed children"),
 				),
@@ -166,7 +166,6 @@ func TestAccAciRestManaged_tenantChildren(t *testing.T) {
 		},
 	})
 
-	
 }
 
 func testAccAciRestManagedConfig_tenant(name string, description string) string {

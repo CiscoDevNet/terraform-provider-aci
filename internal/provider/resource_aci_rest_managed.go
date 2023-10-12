@@ -357,7 +357,7 @@ func setAciRestManagedAttributes(ctx context.Context, client *client.Client, dat
 
 	// Only attributes set in the content should be saved into state
 	contentKeys := make([]string, 0)
-	for k := range data.Content.Elements(){
+	for k := range data.Content.Elements() {
 		contentKeys = append(contentKeys, k)
 	}
 
@@ -397,7 +397,7 @@ func setAciRestManagedAttributes(ctx context.Context, client *client.Client, dat
 				children := classReadInfo[0].(map[string]interface{})["children"].([]interface{})
 				for _, child := range children {
 					for childClassName, childClassDetails := range child.(map[string]interface{}) {
-						if containsString(childClasses, childClassName){
+						if containsString(childClasses, childClassName) {
 							childAttributes := childClassDetails.(map[string]interface{})["attributes"].(map[string]interface{})
 							childContents := map[string]attr.Value{}
 							ChildAciRestManaged := ChildAciRestManagedResourceModel{}
@@ -442,7 +442,7 @@ func setAciRestManagedProperties(data *AciRestManagedResourceModel) {
 	// Remove annotation when unsupported
 	if containsString(NoAnnotationClasses, data.ClassName.ValueString()) {
 		data.Annotation = types.StringNull()
-	// Add default annotation is not set
+		// Add default annotation is not set
 	} else if data.Annotation.IsNull() || data.Annotation.IsUnknown() {
 		data.Annotation = types.StringValue(globalAnnotation)
 	}
