@@ -121,7 +121,7 @@ func (d *AciRestManagedDataSource) Read(ctx context.Context, req datasource.Read
 		return
 	}
 
-	setAciRestManagedId(ctx, data)
+	setAciRestManagedProperties(data)
 
 	tflog.Trace(ctx, fmt.Sprintf("read of datasource aci_rest_managed with id '%s'", data.Id.ValueString()))
 

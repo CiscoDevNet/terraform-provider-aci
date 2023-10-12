@@ -15,7 +15,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/mapplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/setplanmodifier"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringdefault"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
@@ -126,7 +125,6 @@ func (r *AciRestManagedResource) Schema(ctx context.Context, req resource.Schema
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 				},
-				Default:             stringdefault.StaticString(globalAnnotation),
 				MarkdownDescription: `The annotation of the ACI object.`,
 			},
 		},
@@ -197,7 +195,7 @@ func (r *AciRestManagedResource) Create(ctx context.Context, req resource.Create
 	// On create retrieve information on current state prior to making any changes in order to determine child delete operations
 	var stateData *AciRestManagedResourceModel
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &stateData)...)
-	setAciRestManagedId(ctx, stateData)
+	setAciRestManagedProperties(stateData)
 	messageMap := setAciRestManagedAttributes(ctx, r.client, stateData)
 	if messageMap != nil {
 		resp.Diagnostics.AddError(messageMap.(map[string]string)["message"], messageMap.(map[string]string)["messageDetail"])
@@ -212,7 +210,7 @@ func (r *AciRestManagedResource) Create(ctx context.Context, req resource.Create
 		return
 	}
 
-	setAciRestManagedId(ctx, data)
+	setAciRestManagedProperties(data)
 
 	tflog.Trace(ctx, fmt.Sprintf("create of resource aci_rest_managed with id '%s'", data.Id.ValueString()))
 
@@ -438,8 +436,16 @@ func setAciRestManagedAttributes(ctx context.Context, client *client.Client, dat
 	return nil
 }
 
-func setAciRestManagedId(ctx context.Context, data *AciRestManagedResourceModel) {
+func setAciRestManagedProperties(data *AciRestManagedResourceModel) {
+	// Set Id
 	data.Id = types.StringValue(data.Dn.ValueString())
+	// Remove annotation when unsupported
+	if containsString(NoAnnotationClasses, data.ClassName.ValueString()) {
+		data.Annotation = types.StringNull()
+	// Add default annotation is not set
+	} else if data.Annotation.IsNull() || data.Annotation.IsUnknown() {
+		data.Annotation = types.StringValue(globalAnnotation)
+	}
 }
 
 func getAciRestManagedChildPayloads(ctx context.Context, data *AciRestManagedResourceModel, childPlan, childState []ChildAciRestManagedResourceModel) ([]interface{}, string, string) {
@@ -546,7 +552,7 @@ func doAciRestManagedRequest(ctx context.Context, client *client.Client, path, m
 	cont, restResponse, err := client.Do(restRequest)
 
 	// Check for unable to delete class error
-	if restResponse != nil && restResponse.StatusCode == 400 {
+	if restResponse != nil && cont.Data() != nil && restResponse.StatusCode == 400 {
 		errData := cont.S("imdata").S("error").S("attributes").Index(0).S("text").Data()
 		if errData != nil {
 			errText := errData.(string)
@@ -558,7 +564,7 @@ func doAciRestManagedRequest(ctx context.Context, client *client.Client, path, m
 		}
 	}
 
-	if restResponse != nil && restResponse.StatusCode != 200 {
+	if restResponse != nil && cont.Data() != nil && restResponse.StatusCode != 200 {
 		message := fmt.Sprintf("%s rest request failed", strings.ToLower(method))
 		messageDetail := fmt.Sprintf("Code: %d Response: %s, err: %s. Please report this issue to the provider developers.", restResponse.StatusCode, cont.Data().(map[string]interface{})["imdata"], err)
 		return nil, message, messageDetail
