@@ -159,6 +159,7 @@ func resourceAciVirtualLogicalInterfaceProfile() *schema.Resource {
 			"relation_l3ext_rs_dyn_path_att": &schema.Schema{
 				Type:     schema.TypeSet,
 				Optional: true,
+				Computed: true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"tdn": {
@@ -204,13 +205,37 @@ func resourceAciVirtualLogicalInterfaceProfile() *schema.Resource {
 						"encap": {
 							Type:     schema.TypeString,
 							Optional: true,
-							Default:  "unknown",
 						},
 					},
 				},
 			},
 		}),
+		CustomizeDiff: func(ctx context.Context, diff *schema.ResourceDiff, m interface{}) error {
+			configOld, configNew := diff.GetChange("relation_l3ext_rs_dyn_path_att")
+			updatedConfig := compareConfigs(configOld.(*schema.Set).List(), configNew.(*schema.Set).List())
+			diff.SetNew("relation_l3ext_rs_dyn_path_att", updatedConfig)
+			return nil
+		},
 	}
+}
+
+func compareConfigs(old []interface{}, new []interface{}) []interface{} {
+	for _, old_map := range old {
+		for _, new_map := range new {
+			if old_map.(map[string]interface{})["tdn"] == new_map.(map[string]interface{})["tdn"] {
+				for key, value_old := range old_map.(map[string]interface{}) {
+					value_new, _ := new_map.(map[string]interface{})[key]
+					if key == "encap" {
+						if value_old == "unknown" && value_new == "" {
+							new_map.(map[string]interface{})["encap"] = "unknown"
+							break
+						}
+					}
+				}
+			}
+		}
+	}
+	return new
 }
 
 func getRemoteVirtualLogicalInterfaceProfile(client *client.Client, dn string) (*models.VirtualLogicalInterfaceProfile, error) {
