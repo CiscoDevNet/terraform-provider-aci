@@ -212,14 +212,14 @@ func resourceAciVirtualLogicalInterfaceProfile() *schema.Resource {
 		}),
 		CustomizeDiff: func(ctx context.Context, diff *schema.ResourceDiff, m interface{}) error {
 			configOld, configNew := diff.GetChange("relation_l3ext_rs_dyn_path_att")
-			updatedConfig := compareConfigs(configOld.(*schema.Set).List(), configNew.(*schema.Set).List())
+			updatedConfig := compareL3ExtRsDynPathAtt(configOld.(*schema.Set).List(), configNew.(*schema.Set).List())
 			diff.SetNew("relation_l3ext_rs_dyn_path_att", updatedConfig)
 			return nil
 		},
 	}
 }
 
-func compareConfigs(old []interface{}, new []interface{}) []interface{} {
+func compareL3ExtRsDynPathAtt(old []interface{}, new []interface{}) []interface{} {
 	for _, old_map := range old {
 		for _, new_map := range new {
 			if old_map.(map[string]interface{})["tdn"] == new_map.(map[string]interface{})["tdn"] {
