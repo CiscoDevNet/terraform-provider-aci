@@ -34,9 +34,7 @@ func resourceAciFabricNodeMember() *schema.Resource {
 			},
 
 			"name": &schema.Schema{
-				Type: schema.TypeString,
-				// Required: true,
-				// ForceNew: true,
+				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
 			},
@@ -45,12 +43,14 @@ func resourceAciFabricNodeMember() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ForceNew: true,
 			},
 
 			"fabric_id": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ForceNew: true,
 			},
 
 			"name_alias": &schema.Schema{
@@ -63,12 +63,14 @@ func resourceAciFabricNodeMember() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ForceNew: true,
 			},
 
 			"node_type": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ForceNew: true,
 				ValidateFunc: validation.StringInSlice([]string{
 					"unspecified",
 					"remote-leaf-wan",
@@ -79,12 +81,14 @@ func resourceAciFabricNodeMember() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ForceNew: true,
 			},
 
 			"role": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+				ForceNew: true,
 				ValidateFunc: validation.StringInSlice([]string{
 					"unspecified",
 					"leaf",
