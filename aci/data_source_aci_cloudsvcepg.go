@@ -60,13 +60,13 @@ func dataSourceAciCloudServiceEPg() *schema.Resource {
 				Computed: true,
 			},
 
-			"relation_cloudrs_cloud_epg_ctx": {
+			"relation_cloud_rs_cloud_epg_ctx": {
 				Type: schema.TypeString,
 
 				Computed:    true,
 				Description: "Query fv:Ctx relationship object",
 			},
-			"relation_fvrs_cons": {
+			"relation_fv_rs_cons": {
 				Type:        schema.TypeSet,
 				Computed:    true,
 				Description: "Query vzBrCP relationship object",
@@ -83,7 +83,7 @@ func dataSourceAciCloudServiceEPg() *schema.Resource {
 					},
 				},
 			},
-			"relation_fvrs_cons_if": {
+			"relation_fv_rs_cons_if": {
 				Type:        schema.TypeSet,
 				Computed:    true,
 				Description: "Query vzCPIf relationship object",
@@ -100,40 +100,40 @@ func dataSourceAciCloudServiceEPg() *schema.Resource {
 					},
 				},
 			},
-			"relation_fvrs_cust_qos_pol": {
+			"relation_fv_rs_cust_qos_pol": {
 				Type: schema.TypeString,
 
 				Computed:    true,
 				Description: "Query qos:CustomPol relationship object",
 			},
-			"relation_fvrs_graph_def": {
+			"relation_fv_rs_graph_def": {
 				Type:        schema.TypeSet,
 				Elem:        &schema.Schema{Type: schema.TypeString},
 				Computed:    true,
 				Description: "Query vz:GraphCont relationship object",
 				Set:         schema.HashString,
 			},
-			"relation_fvrs_intra_epg": {
+			"relation_fv_rs_intra_epg": {
 				Type:        schema.TypeSet,
 				Elem:        &schema.Schema{Type: schema.TypeString},
 				Computed:    true,
 				Description: "Query vz:BrCP relationship object",
 				Set:         schema.HashString,
 			},
-			"relation_fvrs_prot_by": {
+			"relation_fv_rs_prot_by": {
 				Type:        schema.TypeSet,
 				Elem:        &schema.Schema{Type: schema.TypeString},
 				Computed:    true,
 				Description: "Query vz:Taboo relationship object",
 				Set:         schema.HashString,
 			},
-			"relation_fvrs_prov": {
+			"relation_fv_rs_prov": {
 				Type:        schema.TypeSet,
 				Computed:    true,
 				Description: "Query vzBrCP relationship object",
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
-						"match_t": {
+						"label_match_criteria": {
 							Computed: true,
 							Type:     schema.TypeString,
 						},
@@ -148,14 +148,14 @@ func dataSourceAciCloudServiceEPg() *schema.Resource {
 					},
 				},
 			},
-			"relation_fvrs_prov_def": {
+			"relation_fv_rs_prov_def": {
 				Type:        schema.TypeSet,
 				Elem:        &schema.Schema{Type: schema.TypeString},
 				Computed:    true,
 				Description: "Query vz:CtrctEPgCont relationship object",
 				Set:         schema.HashString,
 			},
-			"relation_fvrs_sec_inherited": {
+			"relation_fv_rs_sec_inherited": {
 				Type:        schema.TypeSet,
 				Elem:        &schema.Schema{Type: schema.TypeString},
 				Computed:    true,

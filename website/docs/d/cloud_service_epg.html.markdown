@@ -61,7 +61,7 @@ data "aci_cloud_service_epg" "example" {
 * `relation_fv_rs_intra_epg` - (Read-Only) Represents the relation to an Intra EPG Contract (class vzBrCP). It also represents that the EPG is moving from "allow all within epg" mode to a "deny all within epg" mode. The only type of traffic allowed between EPs in this EPG is the one specified by contracts EPG associated with this relation. Type: Block.
 * `relation_fv_rs_prot_by` - (Read-Only) Represents the relation to a Taboo Contract Association (class vzTaboo) where the EPG will be a provider and consumer to the contract. Type: Block.
 * `relation_fv_rs_prov` - (Read-Only) A block representing the relation to a Contract Provider (class vzBrCP). This relationship allows the EPG to be the contract's provider. Type: Block.
-  * `match_t` - (Read-Only) The matched EPG type. Type: String.
+  * `label_match_criteria` - (Read-Only) The matched EPG type. Type: String.
   * `prio` - (Read-Only) The system class determines the quality of service and priority for the consumer traffic. Type: String.
   * `target_dn` - (Read-Only) The distinguished name of the target. Type: String
 * `relation_fv_rs_prov_def` - (Read-Only) Represents the relation to a Contract EPG Container (class vzCtrctEPgCont). Type: Block.
