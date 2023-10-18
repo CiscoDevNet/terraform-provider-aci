@@ -219,18 +219,14 @@ func resourceAciVirtualLogicalInterfaceProfile() *schema.Resource {
 	}
 }
 
-func compareConfigRsDynPathAttEncapBetweenUnknownEmpty(old []interface{}, new []interface{}) []interface{} {
-	for _, old_map := range old {
-		for _, new_map := range new {
-			if old_map.(map[string]interface{})["tdn"] == new_map.(map[string]interface{})["tdn"] {
-				for key, value_old := range old_map.(map[string]interface{}) {
-					if key == "encap" {
-						if value_old == "unknown" && new_map.(map[string]interface{})[key] == "" {
-							new_map.(map[string]interface{})["encap"] = "unknown"
-							break
-						}
-					}
-				}
+func compareConfigRsDynPathAttEncapBetweenUnknownEmpty(old, new []interface{}) []interface{} {
+	for _, oldItem := range old {
+		oldMap := oldItem.(map[string]interface{})
+		for _, newItem := range new {
+			newMap := newItem.(map[string]interface{})
+			if oldMap["tdn"] == newMap["tdn"] && oldMap["encap"] == "unknown" && newMap["encap"] == "" {
+				newMap["encap"] = "unknown"
+				break
 			}
 		}
 	}
