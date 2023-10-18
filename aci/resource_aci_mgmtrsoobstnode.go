@@ -108,6 +108,7 @@ func getRemoteOutofbandStaticNode(client *client.Client, dn string) (*models.Out
 
 func setMgmtStaticNodeAttributes(mgmtRsOoBStNode *models.OutofbandStaticNode, mgmtRsInBStNode *models.InbandStaticNode, bandType string, d *schema.ResourceData) (*schema.ResourceData, error) {
 	dn := d.Id()
+	d.Set("type", bandType)
 
 	if bandType == "in_band" {
 		d.SetId(mgmtRsInBStNode.DistinguishedName)
