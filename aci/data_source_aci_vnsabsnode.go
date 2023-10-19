@@ -21,63 +21,80 @@ func dataSourceAciFunctionNode() *schema.Resource {
 				Type:     schema.TypeString,
 				Required: true,
 			},
-
 			"name": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
 			},
-
+			"l4_l7_device_interface_consumer_name": &schema.Schema{
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"l4_l7_device_interface_provider_name": &schema.Schema{
+				Type:     schema.TypeString,
+				Computed: true,
+			},
 			"annotation": &schema.Schema{
 				Type:     schema.TypeString,
-				Optional: true,
 				Computed: true,
 			},
-
 			"func_template_type": &schema.Schema{
 				Type:     schema.TypeString,
-				Optional: true,
 				Computed: true,
 			},
-
 			"func_type": &schema.Schema{
 				Type:     schema.TypeString,
-				Optional: true,
 				Computed: true,
 			},
-
 			"is_copy": &schema.Schema{
 				Type:     schema.TypeString,
-				Optional: true,
 				Computed: true,
 			},
-
 			"managed": &schema.Schema{
 				Type:     schema.TypeString,
-				Optional: true,
 				Computed: true,
 			},
-
 			"name_alias": &schema.Schema{
 				Type:     schema.TypeString,
-				Optional: true,
 				Computed: true,
 			},
-
 			"routing_mode": &schema.Schema{
 				Type:     schema.TypeString,
-				Optional: true,
 				Computed: true,
 			},
-
 			"sequence_number": &schema.Schema{
 				Type:     schema.TypeString,
-				Optional: true,
 				Computed: true,
 			},
-
+			"conn_consumer_dn": &schema.Schema{
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"conn_provider_dn": &schema.Schema{
+				Type:     schema.TypeString,
+				Computed: true,
+			},
 			"share_encap": &schema.Schema{
 				Type:     schema.TypeString,
-				Optional: true,
+				Computed: true,
+			},
+			"relation_vns_rs_node_to_abs_func_prof": &schema.Schema{
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"relation_vns_rs_node_to_l_dev": &schema.Schema{
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"relation_vns_rs_node_to_m_func": &schema.Schema{
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"relation_vns_rs_default_scope_to_term": &schema.Schema{
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"relation_vns_rs_node_to_cloud_l_dev": &schema.Schema{
+				Type:     schema.TypeString,
 				Computed: true,
 			},
 		}),
@@ -104,5 +121,11 @@ func dataSourceAciFunctionNodeRead(ctx context.Context, d *schema.ResourceData, 
 	if err != nil {
 		return diag.FromErr(err)
 	}
+
+	err = getAndSetFunctionNodeRelationalAttributes(aciClient, dn, d)
+	if err != nil {
+		return diag.FromErr(err)
+	}
+
 	return nil
 }

@@ -334,6 +334,8 @@ func Provider() *schema.Provider {
 			"aci_power_supply_redundancy_policy":           resourceAciPowerSupplyRedundancyPolicy(),
 			"aci_pim_interface_policy":                     resourceAciPIMInterfacePolicy(),
 			"aci_igmp_interface_policy":                    resourceAciIGMPInterfacePolicy(),
+			"aci_cloud_l4_l7_native_load_balancer":         resourceAciCloudL4L7LoadBalancer(),
+			"aci_cloud_l4_l7_third_party_device":           resourceAciCloudL4L7Device(),
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
@@ -589,6 +591,8 @@ func Provider() *schema.Provider {
 			"aci_power_supply_redundancy_policy":           dataSourceAciPowerSupplyRedundancyPolicy(),
 			"aci_pim_interface_policy":                     dataSourceAciPIMInterfacePolicy(),
 			"aci_igmp_interface_policy":                    dataSourceAciIGMPInterfacePolicy(),
+			"aci_cloud_l4_l7_native_load_balancer":         dataSourceAciCloudL4L7LoadBalancer(),
+			"aci_cloud_l4_l7_third_party_device":           dataSourceAciCloudL4L7Device(),
 		},
 
 		ConfigureFunc: configureClient,
