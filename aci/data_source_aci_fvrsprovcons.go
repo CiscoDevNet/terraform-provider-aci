@@ -65,6 +65,8 @@ func dataSourceAciContractProviderRead(ctx context.Context, d *schema.ResourceDa
 		tnVzBrCPName = GetMOName(ContractDN.(string))
 	} else if ContractName, ok := d.GetOk("contract_name"); ok {
 		tnVzBrCPName = ContractName.(string)
+	} else {
+		return diag.FromErr(fmt.Errorf("contract_dn is required"))
 	}
 
 	if contractType == "provider" {
