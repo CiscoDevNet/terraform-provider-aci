@@ -159,6 +159,7 @@ func resourceAciVirtualLogicalInterfaceProfile() *schema.Resource {
 			"relation_l3ext_rs_dyn_path_att": &schema.Schema{
 				Type:     schema.TypeSet,
 				Optional: true,
+				Computed: true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"tdn": {
@@ -209,7 +210,27 @@ func resourceAciVirtualLogicalInterfaceProfile() *schema.Resource {
 				},
 			},
 		}),
+		CustomizeDiff: func(ctx context.Context, diff *schema.ResourceDiff, m interface{}) error {
+			configOld, configNew := diff.GetChange("relation_l3ext_rs_dyn_path_att")
+			updatedConfig := compareConfigRsDynPathAttEncapBetweenUnknownEmpty(configOld.(*schema.Set).List(), configNew.(*schema.Set).List())
+			diff.SetNew("relation_l3ext_rs_dyn_path_att", updatedConfig)
+			return nil
+		},
 	}
+}
+
+func compareConfigRsDynPathAttEncapBetweenUnknownEmpty(old, new []interface{}) []interface{} {
+	for _, oldItem := range old {
+		oldMap := oldItem.(map[string]interface{})
+		for _, newItem := range new {
+			newMap := newItem.(map[string]interface{})
+			if oldMap["tdn"] == newMap["tdn"] && oldMap["encap"] == "unknown" && newMap["encap"] == "" {
+				newMap["encap"] = "unknown"
+				break
+			}
+		}
+	}
+	return new
 }
 
 func getRemoteVirtualLogicalInterfaceProfile(client *client.Client, dn string) (*models.VirtualLogicalInterfaceProfile, error) {
