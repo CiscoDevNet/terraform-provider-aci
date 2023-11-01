@@ -39,7 +39,7 @@ func (d *VzOOBBrCPDataSource) Schema(ctx context.Context, req datasource.SchemaR
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: "The distinquised name (DN) of the Out Of Band Contract object.",
+				MarkdownDescription: "The distinguished name (DN) of the Out Of Band Contract object.",
 			},
 			"annotation": schema.StringAttribute{
 				Computed:            true,

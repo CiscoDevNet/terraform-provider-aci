@@ -39,11 +39,11 @@ func (d *L3extConsLblDataSource) Schema(ctx context.Context, req datasource.Sche
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: "The distinquised name (DN) of the L3out Consumer Label object.",
+				MarkdownDescription: "The distinguished name (DN) of the L3out Consumer Label object.",
 			},
 			"parent_dn": schema.StringAttribute{
 				Required:            true,
-				MarkdownDescription: "The distinquised name (DN) of the parent object.",
+				MarkdownDescription: "The distinguished name (DN) of the parent object.",
 			},
 			"annotation": schema.StringAttribute{
 				Computed:            true,

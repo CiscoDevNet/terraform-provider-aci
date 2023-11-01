@@ -81,7 +81,7 @@ func (r *MgmtInstPResource) Schema(ctx context.Context, req resource.SchemaReque
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: "The distinquised name (DN) of the L3out Management Network Instance Profile object.",
+				MarkdownDescription: "The distinguished name (DN) of the L3out Management Network Instance Profile object.",
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 				},

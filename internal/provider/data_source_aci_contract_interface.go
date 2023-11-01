@@ -39,11 +39,11 @@ func (d *FvRsConsIfDataSource) Schema(ctx context.Context, req datasource.Schema
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: "The distinquised name (DN) of the Contract Interface object.",
+				MarkdownDescription: "The distinguished name (DN) of the Contract Interface object.",
 			},
 			"parent_dn": schema.StringAttribute{
 				Required:            true,
-				MarkdownDescription: "The distinquised name (DN) of the parent object.",
+				MarkdownDescription: "The distinguished name (DN) of the parent object.",
 			},
 			"annotation": schema.StringAttribute{
 				Computed:            true,

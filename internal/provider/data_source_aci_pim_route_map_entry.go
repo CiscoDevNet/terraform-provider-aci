@@ -39,11 +39,11 @@ func (d *PimRouteMapEntryDataSource) Schema(ctx context.Context, req datasource.
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: "The distinquised name (DN) of the Pim Route Map Entry object.",
+				MarkdownDescription: "The distinguished name (DN) of the Pim Route Map Entry object.",
 			},
 			"parent_dn": schema.StringAttribute{
 				Required:            true,
-				MarkdownDescription: "The distinquised name (DN) of the parent object.",
+				MarkdownDescription: "The distinguished name (DN) of the parent object.",
 			},
 			"action": schema.StringAttribute{
 				Computed:            true,

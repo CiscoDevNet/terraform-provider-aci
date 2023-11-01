@@ -39,11 +39,11 @@ func (d *L3extRsRedistributePolDataSource) Schema(ctx context.Context, req datas
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: "The distinquised name (DN) of the L3out Redistribute Policy object.",
+				MarkdownDescription: "The distinguished name (DN) of the L3out Redistribute Policy object.",
 			},
 			"parent_dn": schema.StringAttribute{
 				Required:            true,
-				MarkdownDescription: "The distinquised name (DN) of the parent object.",
+				MarkdownDescription: "The distinguished name (DN) of the parent object.",
 			},
 			"annotation": schema.StringAttribute{
 				Computed:            true,
