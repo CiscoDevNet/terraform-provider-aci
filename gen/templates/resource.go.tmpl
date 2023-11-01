@@ -97,12 +97,13 @@ type {{.ResourceClassName}}Identifier struct {
 {{- end}}
 
 func (r *{{.ResourceClassName}}Resource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
-	tflog.Trace(ctx, "start schema of resource: aci_{{.ResourceName}}")
+	tflog.Trace(ctx, "Start metadata of resource: aci_{{.ResourceName}}")
 	resp.TypeName = req.ProviderTypeName + "_{{.ResourceName}}"
-	tflog.Trace(ctx, "end schema of resource: aci_{{.ResourceName}}")
+	tflog.Trace(ctx, "End metadata of resource: aci_{{.ResourceName}}")
 }
 
 func (r *{{.ResourceClassName}}Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
+	tflog.Trace(ctx, "Start schema of resource: aci_{{.ResourceName}}")
 	resp.Schema = schema.Schema{
 		// This description is used by the documentation generator and the language server.
 		MarkdownDescription: "The {{.ResourceName}} resource for the '{{.PkgName}}' class",
@@ -230,10 +231,11 @@ func (r *{{.ResourceClassName}}Resource) Schema(ctx context.Context, req resourc
 			{{- end}}
 		},
 	}
+	tflog.Trace(ctx, "End schema of resource: aci_{{.ResourceName}}")
 }
 
 func (r *{{.ResourceClassName}}Resource) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
-	tflog.Trace(ctx, "start configure of resource: aci_{{.ResourceName}}")
+	tflog.Trace(ctx, "Start configure of resource: aci_{{.ResourceName}}")
 	// Prevent panic if the provider has not been configured.
 	if req.ProviderData == nil {
 		return
@@ -251,11 +253,11 @@ func (r *{{.ResourceClassName}}Resource) Configure(ctx context.Context, req reso
 	}
 
 	r.client = client
-	tflog.Trace(ctx, "end configure of resource: aci_{{.ResourceName}}")
+	tflog.Trace(ctx, "End configure of resource: aci_{{.ResourceName}}")
 }
 
 func (r *{{.ResourceClassName}}Resource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
-	tflog.Trace(ctx, "start create of resource: aci_{{.ResourceName}}")
+	tflog.Trace(ctx, "Start create of resource: aci_{{.ResourceName}}")
 	
 	{{- if .HasChild}}
 	// On create retrieve information on current state prior to making any changes in order to determine child delete operations
@@ -279,7 +281,7 @@ func (r *{{.ResourceClassName}}Resource) Create(ctx context.Context, req resourc
 	
 	set{{.ResourceClassName}}Id(ctx, data)
 
-	tflog.Trace(ctx, fmt.Sprintf("create of resource aci_{{.ResourceName}} with id '%s'", data.Id.ValueString()))
+	tflog.Trace(ctx, fmt.Sprintf("Create of resource aci_{{.ResourceName}} with id '%s'", data.Id.ValueString()))
 
 	{{ if .HasChild}}
 		{{- range .Children}}
@@ -310,11 +312,11 @@ func (r *{{.ResourceClassName}}Resource) Create(ctx context.Context, req resourc
 
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
-	tflog.Trace(ctx, "end create of resource: aci_{{.ResourceName}}")
+	tflog.Trace(ctx, "End create of resource: aci_{{.ResourceName}}")
 }
 
 func (r *{{.ResourceClassName}}Resource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
-	tflog.Trace(ctx, "start read of resource: aci_{{.ResourceName}}")
+	tflog.Trace(ctx, "Start read of resource: aci_{{.ResourceName}}")
 	var data *{{.ResourceClassName}}ResourceModel
 
 	// Read Terraform prior state data into the model
@@ -324,7 +326,7 @@ func (r *{{.ResourceClassName}}Resource) Read(ctx context.Context, req resource.
 		return
 	}
 
-	tflog.Trace(ctx, fmt.Sprintf("read of resource aci_{{.ResourceName}} with id '%s'", data.Id.ValueString()))
+	tflog.Trace(ctx, fmt.Sprintf("Read of resource aci_{{.ResourceName}} with id '%s'", data.Id.ValueString()))
 
 	messageMap := set{{.ResourceClassName}}Attributes(ctx, r.client, data)
 	if messageMap != nil {
@@ -333,11 +335,11 @@ func (r *{{.ResourceClassName}}Resource) Read(ctx context.Context, req resource.
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
-	tflog.Trace(ctx, "end read of resource: aci_{{.ResourceName}}")
+	tflog.Trace(ctx, "End read of resource: aci_{{.ResourceName}}")
 }
 
 func (r *{{.ResourceClassName}}Resource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
-	tflog.Trace(ctx, "start update of resource: aci_{{.ResourceName}}")
+	tflog.Trace(ctx, "Start update of resource: aci_{{.ResourceName}}")
 	var data *{{.ResourceClassName}}ResourceModel
 	{{- if .HasChild}}
 	var stateData *{{.ResourceClassName}}ResourceModel
@@ -353,7 +355,7 @@ func (r *{{.ResourceClassName}}Resource) Update(ctx context.Context, req resourc
 		return
 	}
 
-	tflog.Trace(ctx, fmt.Sprintf("update of resource aci_{{.ResourceName}} with id '%s'", data.Id.ValueString()))
+	tflog.Trace(ctx, fmt.Sprintf("Update of resource aci_{{.ResourceName}} with id '%s'", data.Id.ValueString()))
 	
 	{{ if .HasChild}}
 		{{- range .Children}}
@@ -384,11 +386,11 @@ func (r *{{.ResourceClassName}}Resource) Update(ctx context.Context, req resourc
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
-	tflog.Trace(ctx, "end update of resource: aci_{{.ResourceName}}")
+	tflog.Trace(ctx, "End update of resource: aci_{{.ResourceName}}")
 }
 
 func (r *{{.ResourceClassName}}Resource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
-	tflog.Trace(ctx, "start delete of resource: aci_{{.ResourceName}}")
+	tflog.Trace(ctx, "Start delete of resource: aci_{{.ResourceName}}")
 	var data *{{.ResourceClassName}}ResourceModel
 
 	// Read Terraform prior state data into the model
@@ -398,7 +400,7 @@ func (r *{{.ResourceClassName}}Resource) Delete(ctx context.Context, req resourc
 		return
 	}
 
-	tflog.Trace(ctx, fmt.Sprintf("delete of resource aci_{{.ResourceName}} with id '%s'", data.Id.ValueString()))
+	tflog.Trace(ctx, fmt.Sprintf("Delete of resource aci_{{.ResourceName}} with id '%s'", data.Id.ValueString()))
 
 	{{- if .AllowDelete}}
 	jsonPayload, message, messageDetail := get{{.ResourceClassName}}DeleteJsonPayload(ctx, data)
@@ -423,7 +425,7 @@ func (r *{{.ResourceClassName}}Resource) Delete(ctx context.Context, req resourc
 	messageDetail := fmt.Sprintf("Only removing resource from state because apic does not allow deletion of class '{{.PkgName}}' objects. %s", parentDnMessage)
 	resp.Diagnostics.AddWarning(message, messageDetail)
 	{{- end}}
-	tflog.Trace(ctx, "end delete of resource: aci_{{.ResourceName}}")
+	tflog.Trace(ctx, "End delete of resource: aci_{{.ResourceName}}")
 }
 
 func (r *{{.ResourceClassName}}Resource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
@@ -707,16 +709,16 @@ func get{{.ResourceClassName}}CreateJsonPayload(ctx context.Context, data *{{.Re
 
 	payload, err := json.Marshal(map[string]interface{}{"{{.PkgName}}": payloadMap})
 	if err != nil {
-		errMessage := "marshalling of json payload failed"
-		errMessageDetail := fmt.Sprintf("err: %s. Please report this issue to the provider developers.", err)
+		errMessage := "Marshalling of json payload failed"
+		errMessageDetail := fmt.Sprintf("Err: %s. Please report this issue to the provider developers.", err)
 		return nil, errMessage, errMessageDetail
 	}
 
 	jsonPayload, err := container.ParseJSON(payload)
 
 	if err != nil {
-		errMessage := "construction of json payload failed"
-		errMessageDetail := fmt.Sprintf("err: %s. Please report this issue to the provider developers.", err)
+		errMessage := "Construction of json payload failed"
+		errMessageDetail := fmt.Sprintf("Err: %s. Please report this issue to the provider developers.", err)
 		return nil, errMessage, errMessageDetail
 	}
 	return jsonPayload, "", ""
@@ -727,8 +729,8 @@ func get{{.ResourceClassName}}DeleteJsonPayload(ctx context.Context, data *{{.Re
 	jsonString := fmt.Sprintf(`{"{{.PkgName}}":{"attributes":{"dn": "%s","status": "deleted"}}}`, data.Id.ValueString())
 	jsonPayload, err := container.ParseJSON([]byte(jsonString))
 	if err != nil {
-		errMessage := "construction of json payload failed"
-		errMessageDetail := fmt.Sprintf("err: %s. Please report this issue to the provider developers.", err)
+		errMessage := "Construction of json payload failed"
+		errMessageDetail := fmt.Sprintf("Err: %s. Please report this issue to the provider developers.", err)
 		return nil, errMessage, errMessageDetail
 	}
 	return jsonPayload, "", ""
@@ -738,7 +740,7 @@ func do{{.ResourceClassName}}Request(ctx context.Context, client *client.Client,
 
 	restRequest, err := client.MakeRestRequest(method, path, payload, true)
 	if err != nil {
-		message := fmt.Sprintf("creation of %s rest request failed", strings.ToLower(method))
+		message := fmt.Sprintf("Creation of %s rest request failed", strings.ToLower(method))
 		messageDetail := fmt.Sprintf("Err: %s. Please report this issue to the provider developers.", err)
 		return nil, message, messageDetail
 	}
@@ -746,11 +748,11 @@ func do{{.ResourceClassName}}Request(ctx context.Context, client *client.Client,
 	cont, restResponse, err := client.Do(restRequest)
 
 	if restResponse != nil && restResponse.StatusCode != 200 {
-		message := fmt.Sprintf("%s rest request failed", strings.ToLower(method))
+		message := fmt.Sprintf("The %s rest request failed", strings.ToLower(method))
 		messageDetail := fmt.Sprintf("Response: %s, err: %s. Please report this issue to the provider developers.", cont.Data().(map[string]interface{})["imdata"], err)
 		return nil, message, messageDetail
 	} else if err != nil {
-		message := fmt.Sprintf("%s rest request failed", strings.ToLower(method))
+		message := fmt.Sprintf("The %s rest request failed", strings.ToLower(method))
 		messageDetail := fmt.Sprintf("Err: %s. Please report this issue to the provider developers.", err)
 		return nil, message, messageDetail
 	}

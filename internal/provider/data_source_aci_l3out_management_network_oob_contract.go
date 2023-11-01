@@ -26,12 +26,13 @@ type MgmtRsOoBConsDataSource struct {
 }
 
 func (d *MgmtRsOoBConsDataSource) Metadata(ctx context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
-	tflog.Trace(ctx, "start schema of datasource: aci_l3out_management_network_oob_contract")
+	tflog.Trace(ctx, "Start metadata of datasource: aci_l3out_management_network_oob_contract")
 	resp.TypeName = req.ProviderTypeName + "_l3out_management_network_oob_contract"
-	tflog.Trace(ctx, "end schema of datasource: aci_l3out_management_network_oob_contract")
+	tflog.Trace(ctx, "End metadata of datasource: aci_l3out_management_network_oob_contract")
 }
 
 func (d *MgmtRsOoBConsDataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
+	tflog.Trace(ctx, "Start schema of datasource: aci_l3out_management_network_oob_contract")
 	resp.Schema = schema.Schema{
 		// This description is used by the documentation generator and the language server.
 		MarkdownDescription: "The l3out_management_network_oob_contract datasource for the 'mgmtRsOoBCons' class",
@@ -75,10 +76,11 @@ func (d *MgmtRsOoBConsDataSource) Schema(ctx context.Context, req datasource.Sch
 			},
 		},
 	}
+	tflog.Trace(ctx, "End schema of datasource: aci_l3out_management_network_oob_contract")
 }
 
 func (d *MgmtRsOoBConsDataSource) Configure(ctx context.Context, req datasource.ConfigureRequest, resp *datasource.ConfigureResponse) {
-	tflog.Trace(ctx, "start configure of datasource: aci_l3out_management_network_oob_contract")
+	tflog.Trace(ctx, "Start configure of datasource: aci_l3out_management_network_oob_contract")
 	// Prevent panic if the provider has not been configured.
 	if req.ProviderData == nil {
 		return
@@ -96,11 +98,11 @@ func (d *MgmtRsOoBConsDataSource) Configure(ctx context.Context, req datasource.
 	}
 
 	d.client = client
-	tflog.Trace(ctx, "end configure of datasource: aci_l3out_management_network_oob_contract")
+	tflog.Trace(ctx, "End configure of datasource: aci_l3out_management_network_oob_contract")
 }
 
 func (d *MgmtRsOoBConsDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
-	tflog.Trace(ctx, "start read of datasource: aci_l3out_management_network_oob_contract")
+	tflog.Trace(ctx, "Start read of datasource: aci_l3out_management_network_oob_contract")
 	var data *MgmtRsOoBConsResourceModel
 
 	// Read Terraform configuration data into the model
@@ -121,5 +123,5 @@ func (d *MgmtRsOoBConsDataSource) Read(ctx context.Context, req datasource.ReadR
 
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
-	tflog.Trace(ctx, "end read of datasource: aci_l3out_management_network_oob_contract")
+	tflog.Trace(ctx, "End read of datasource: aci_l3out_management_network_oob_contract")
 }

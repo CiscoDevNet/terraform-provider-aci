@@ -26,12 +26,13 @@ type PimRouteMapEntryDataSource struct {
 }
 
 func (d *PimRouteMapEntryDataSource) Metadata(ctx context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
-	tflog.Trace(ctx, "start schema of datasource: aci_pim_route_map_entry")
+	tflog.Trace(ctx, "Start metadata of datasource: aci_pim_route_map_entry")
 	resp.TypeName = req.ProviderTypeName + "_pim_route_map_entry"
-	tflog.Trace(ctx, "end schema of datasource: aci_pim_route_map_entry")
+	tflog.Trace(ctx, "End metadata of datasource: aci_pim_route_map_entry")
 }
 
 func (d *PimRouteMapEntryDataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
+	tflog.Trace(ctx, "Start schema of datasource: aci_pim_route_map_entry")
 	resp.Schema = schema.Schema{
 		// This description is used by the documentation generator and the language server.
 		MarkdownDescription: "The pim_route_map_entry datasource for the 'pimRouteMapEntry' class",
@@ -99,10 +100,11 @@ func (d *PimRouteMapEntryDataSource) Schema(ctx context.Context, req datasource.
 			},
 		},
 	}
+	tflog.Trace(ctx, "End schema of datasource: aci_pim_route_map_entry")
 }
 
 func (d *PimRouteMapEntryDataSource) Configure(ctx context.Context, req datasource.ConfigureRequest, resp *datasource.ConfigureResponse) {
-	tflog.Trace(ctx, "start configure of datasource: aci_pim_route_map_entry")
+	tflog.Trace(ctx, "Start configure of datasource: aci_pim_route_map_entry")
 	// Prevent panic if the provider has not been configured.
 	if req.ProviderData == nil {
 		return
@@ -120,11 +122,11 @@ func (d *PimRouteMapEntryDataSource) Configure(ctx context.Context, req datasour
 	}
 
 	d.client = client
-	tflog.Trace(ctx, "end configure of datasource: aci_pim_route_map_entry")
+	tflog.Trace(ctx, "End configure of datasource: aci_pim_route_map_entry")
 }
 
 func (d *PimRouteMapEntryDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
-	tflog.Trace(ctx, "start read of datasource: aci_pim_route_map_entry")
+	tflog.Trace(ctx, "Start read of datasource: aci_pim_route_map_entry")
 	var data *PimRouteMapEntryResourceModel
 
 	// Read Terraform configuration data into the model
@@ -145,5 +147,5 @@ func (d *PimRouteMapEntryDataSource) Read(ctx context.Context, req datasource.Re
 
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
-	tflog.Trace(ctx, "end read of datasource: aci_pim_route_map_entry")
+	tflog.Trace(ctx, "End read of datasource: aci_pim_route_map_entry")
 }
