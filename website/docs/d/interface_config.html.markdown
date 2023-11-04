@@ -4,12 +4,12 @@ layout: "aci"
 page_title: "ACI: aci_interface_config"
 sidebar_current: "docs-aci-data-source-interface_config"
 description: |-
-  Manages ACI Access and Fabric Ports is only supported for ACI 5.2(5)+
+  Manages ACI Access and Fabric Ports is only supported for ACI 5.2(7)+
 ---
 
 # aci_interface_config #
 
-Manages ACI Access and Fabric Ports is only supported for ACI 5.2(5)+
+Manages ACI Access and Fabric Ports is only supported for ACI 5.2(7)+
 
 ## API Information ##
 
