@@ -138,7 +138,7 @@ func (d *MgmtInstPDataSource) Read(ctx context.Context, req datasource.ReadReque
 
 	setMgmtInstPId(ctx, data)
 
-	tflog.Trace(ctx, fmt.Sprintf("read of datasource aci_l3out_management_network_instance_profile with id '%s'", data.Id.ValueString()))
+	tflog.Trace(ctx, fmt.Sprintf("Read of datasource aci_l3out_management_network_instance_profile with id '%s'", data.Id.ValueString()))
 
 	messageMap := setMgmtInstPAttributes(ctx, d.client, data)
 	if messageMap != nil {

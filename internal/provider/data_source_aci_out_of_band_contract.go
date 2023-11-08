@@ -138,7 +138,7 @@ func (d *VzOOBBrCPDataSource) Read(ctx context.Context, req datasource.ReadReque
 
 	setVzOOBBrCPId(ctx, data)
 
-	tflog.Trace(ctx, fmt.Sprintf("read of datasource aci_out_of_band_contract with id '%s'", data.Id.ValueString()))
+	tflog.Trace(ctx, fmt.Sprintf("Read of datasource aci_out_of_band_contract with id '%s'", data.Id.ValueString()))
 
 	messageMap := setVzOOBBrCPAttributes(ctx, d.client, data)
 	if messageMap != nil {

@@ -138,7 +138,7 @@ func (d *PimRouteMapEntryDataSource) Read(ctx context.Context, req datasource.Re
 
 	setPimRouteMapEntryId(ctx, data)
 
-	tflog.Trace(ctx, fmt.Sprintf("read of datasource aci_pim_route_map_entry with id '%s'", data.Id.ValueString()))
+	tflog.Trace(ctx, fmt.Sprintf("Read of datasource aci_pim_route_map_entry with id '%s'", data.Id.ValueString()))
 
 	messageMap := setPimRouteMapEntryAttributes(ctx, d.client, data)
 	if messageMap != nil {

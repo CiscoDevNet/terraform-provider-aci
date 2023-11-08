@@ -122,7 +122,7 @@ func (d *MgmtSubnetDataSource) Read(ctx context.Context, req datasource.ReadRequ
 
 	setMgmtSubnetId(ctx, data)
 
-	tflog.Trace(ctx, fmt.Sprintf("read of datasource aci_l3out_management_network_subnet with id '%s'", data.Id.ValueString()))
+	tflog.Trace(ctx, fmt.Sprintf("Read of datasource aci_l3out_management_network_subnet with id '%s'", data.Id.ValueString()))
 
 	messageMap := setMgmtSubnetAttributes(ctx, d.client, data)
 	if messageMap != nil {

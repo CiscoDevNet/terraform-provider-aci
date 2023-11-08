@@ -114,7 +114,7 @@ func (d *FvRsConsIfDataSource) Read(ctx context.Context, req datasource.ReadRequ
 
 	setFvRsConsIfId(ctx, data)
 
-	tflog.Trace(ctx, fmt.Sprintf("read of datasource aci_contract_interface with id '%s'", data.Id.ValueString()))
+	tflog.Trace(ctx, fmt.Sprintf("Read of datasource aci_contract_interface with id '%s'", data.Id.ValueString()))
 
 	messageMap := setFvRsConsIfAttributes(ctx, d.client, data)
 	if messageMap != nil {

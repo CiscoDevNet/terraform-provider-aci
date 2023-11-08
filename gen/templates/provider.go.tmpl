@@ -149,35 +149,35 @@ func (p *AciProvider) Configure(ctx context.Context, req provider.ConfigureReque
 
 	if username == "" {
 		resp.Diagnostics.AddError(
-			"username not provided",
-			"username must be provided for the ACI provider",
+			"Username not provided",
+			"Username must be provided for the ACI provider",
 		)
 	}
 
 	if password == "" && (privateKey == "" || certName == "") {
 		resp.Diagnostics.AddError(
-			"authentication details not provided",
-			"either 'password' OR 'private_key' and 'cert_name' must be provided for the ACI provider",
+			"Authentication details not provided",
+			"Either 'password' OR 'private_key' and 'cert_name' must be provided for the ACI provider",
 		)
 	}
 
 	if url == "" {
 		resp.Diagnostics.AddError(
-			"url not provided",
-			"url must be provided for the ACI provider",
+			"Url not provided",
+			"Url must be provided for the ACI provider",
 		)
 	} else if !strings.HasPrefix(url, "http://") && !strings.HasPrefix(url, "https://") {
 		resp.Diagnostics.AddError(
-			"incorrect url prefix",
-			fmt.Sprintf("url '%s' must start with 'http://' or 'https://'", url),
+			"Incorrect url prefix",
+			fmt.Sprintf("Url '%s' must start with 'http://' or 'https://'", url),
 		)
 	}
 
 	// temporary conditional until muxing is removed and the correct retries schema attribute is used
 	if maxRetries < 0 || maxRetries > 9 {
 		resp.Diagnostics.AddError(
-			"incorrect retry amount",
-			fmt.Sprintf("retries must be between 0 and 9 inclusive, got: %d", maxRetries),
+			"Incorrect retry amount",
+			fmt.Sprintf("Retries must be between 0 and 9 inclusive, got: %d", maxRetries),
 		)
 	}
 
@@ -248,8 +248,8 @@ func getBoolAttribute(resp *provider.ConfigureResponse, attribute basetypes.Bool
 		boolValue, err := strconv.ParseBool(envValue)
 		if err != nil {
 			resp.Diagnostics.AddError(
-				fmt.Sprintf("invalid input '%s'", envValue),
-				fmt.Sprintf("a boolean value must be provided for %s", envKey),
+				fmt.Sprintf("Invalid input '%s'", envValue),
+				fmt.Sprintf("A boolean value must be provided for %s", envKey),
 			)
 		}
 		return boolValue
@@ -269,8 +269,8 @@ func getIntAttribute(resp *provider.ConfigureResponse, attribute basetypes.Int64
 		intValue, err := strconv.Atoi(envValue)
 		if err != nil {
 			resp.Diagnostics.AddError(
-				fmt.Sprintf("invalid input '%s'", envValue),
-				fmt.Sprintf("a integere value must be provided for %s", envKey),
+				fmt.Sprintf("Invalid input '%s'", envValue),
+				fmt.Sprintf("A integer value must be provided for %s", envKey),
 			)
 		}
 		return intValue
@@ -285,8 +285,8 @@ func stringToBool(resp *provider.ConfigureResponse, attributeName, stringValue s
 		boolValue, err = strconv.ParseBool(stringValue)
 		if err != nil {
 			resp.Diagnostics.AddError(
-				fmt.Sprintf("invalid input '%s'", stringValue),
-				fmt.Sprintf("a boolean value must be provided for the %s attribute", attributeName),
+				fmt.Sprintf("Invalid input '%s'", stringValue),
+				fmt.Sprintf("A boolean value must be provided for the %s attribute", attributeName),
 			)
 		}
 	}
@@ -300,8 +300,8 @@ func stringToInt(resp *provider.ConfigureResponse, attributeName, stringValue st
 		intValue, err = strconv.Atoi(stringValue)
 		if err != nil {
 			resp.Diagnostics.AddError(
-				fmt.Sprintf("invalid input '%s'", stringValue),
-				fmt.Sprintf("a integer must be provided for the %s attribute", attributeName),
+				fmt.Sprintf("Invalid input '%s'", stringValue),
+				fmt.Sprintf("A integer must be provided for the %s attribute", attributeName),
 			)
 		}
 	}

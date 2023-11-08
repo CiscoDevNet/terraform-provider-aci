@@ -94,7 +94,7 @@ func (d *TagAnnotationDataSource) Read(ctx context.Context, req datasource.ReadR
 
 	setTagAnnotationId(ctx, data)
 
-	tflog.Trace(ctx, fmt.Sprintf("read of datasource aci_annotation with id '%s'", data.Id.ValueString()))
+	tflog.Trace(ctx, fmt.Sprintf("Read of datasource aci_annotation with id '%s'", data.Id.ValueString()))
 
 	messageMap := setTagAnnotationAttributes(ctx, d.client, data)
 	if messageMap != nil {

@@ -114,7 +114,7 @@ func (d *L3extRsRedistributePolDataSource) Read(ctx context.Context, req datasou
 
 	setL3extRsRedistributePolId(ctx, data)
 
-	tflog.Trace(ctx, fmt.Sprintf("read of datasource aci_l3out_redistribute_policy with id '%s'", data.Id.ValueString()))
+	tflog.Trace(ctx, fmt.Sprintf("Read of datasource aci_l3out_redistribute_policy with id '%s'", data.Id.ValueString()))
 
 	messageMap := setL3extRsRedistributePolAttributes(ctx, d.client, data)
 	if messageMap != nil {

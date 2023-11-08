@@ -114,7 +114,7 @@ func (d *MgmtRsOoBConsDataSource) Read(ctx context.Context, req datasource.ReadR
 
 	setMgmtRsOoBConsId(ctx, data)
 
-	tflog.Trace(ctx, fmt.Sprintf("read of datasource aci_l3out_management_network_oob_contract with id '%s'", data.Id.ValueString()))
+	tflog.Trace(ctx, fmt.Sprintf("Read of datasource aci_l3out_management_network_oob_contract with id '%s'", data.Id.ValueString()))
 
 	messageMap := setMgmtRsOoBConsAttributes(ctx, d.client, data)
 	if messageMap != nil {

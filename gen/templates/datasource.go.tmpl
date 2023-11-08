@@ -129,7 +129,7 @@ func (d *{{.ResourceClassName}}DataSource) Read(ctx context.Context, req datasou
 
 	set{{.ResourceClassName}}Id(ctx, data)
 
-	tflog.Trace(ctx, fmt.Sprintf("read of datasource aci_{{.ResourceName}} with id '%s'", data.Id.ValueString()))
+	tflog.Trace(ctx, fmt.Sprintf("Read of datasource aci_{{.ResourceName}} with id '%s'", data.Id.ValueString()))
 
 	messageMap := set{{.ResourceClassName}}Attributes(ctx, d.client, data)
 	if messageMap != nil {

@@ -134,7 +134,7 @@ func (d *L3extConsLblDataSource) Read(ctx context.Context, req datasource.ReadRe
 
 	setL3extConsLblId(ctx, data)
 
-	tflog.Trace(ctx, fmt.Sprintf("read of datasource aci_l3out_consumer_label with id '%s'", data.Id.ValueString()))
+	tflog.Trace(ctx, fmt.Sprintf("Read of datasource aci_l3out_consumer_label with id '%s'", data.Id.ValueString()))
 
 	messageMap := setL3extConsLblAttributes(ctx, d.client, data)
 	if messageMap != nil {
