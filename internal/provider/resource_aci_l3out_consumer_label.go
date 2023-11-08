@@ -198,6 +198,10 @@ func (r *L3extConsLblResource) Configure(ctx context.Context, req resource.Confi
 	tflog.Trace(ctx, "Start configure of resource: aci_l3out_consumer_label")
 	// Prevent panic if the provider has not been configured.
 	if req.ProviderData == nil {
+		resp.Diagnostics.AddError(
+			"Provider has not been configured",
+			"The req.ProviderData is nil. Please report this issue to the provider developers.",
+		)
 		return
 	}
 
@@ -208,7 +212,6 @@ func (r *L3extConsLblResource) Configure(ctx context.Context, req resource.Confi
 			"Unexpected Resource Configure Type",
 			fmt.Sprintf("Expected *client.Client, got: %T. Please report this issue to the provider developers.", req.ProviderData),
 		)
-
 		return
 	}
 

@@ -91,6 +91,10 @@ func (d *MgmtSubnetDataSource) Configure(ctx context.Context, req datasource.Con
 	tflog.Trace(ctx, "Start configure of datasource: aci_l3out_management_network_subnet")
 	// Prevent panic if the provider has not been configured.
 	if req.ProviderData == nil {
+		resp.Diagnostics.AddError(
+			"Provider has not been configured",
+			"The req.ProviderData is nil. Please report this issue to the provider developers.",
+		)
 		return
 	}
 
@@ -101,7 +105,6 @@ func (d *MgmtSubnetDataSource) Configure(ctx context.Context, req datasource.Con
 			"Unexpected Data Source Configure Type",
 			fmt.Sprintf("Expected *client.Client, got: %T. Please report this issue to the provider developers.", req.ProviderData),
 		)
-
 		return
 	}
 
