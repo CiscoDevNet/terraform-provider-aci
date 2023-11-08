@@ -116,10 +116,7 @@ func (d *MgmtRsOoBConsDataSource) Read(ctx context.Context, req datasource.ReadR
 
 	tflog.Trace(ctx, fmt.Sprintf("Read of datasource aci_l3out_management_network_oob_contract with id '%s'", data.Id.ValueString()))
 
-	messageMap := setMgmtRsOoBConsAttributes(ctx, d.client, data)
-	if messageMap != nil {
-		resp.Diagnostics.AddError(messageMap.(map[string]string)["message"], messageMap.(map[string]string)["messageDetail"])
-	}
+	setMgmtRsOoBConsAttributes(ctx, &resp.Diagnostics, d.client, data)
 
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)

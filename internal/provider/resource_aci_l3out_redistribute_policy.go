@@ -12,6 +12,7 @@ import (
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
+	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
@@ -174,10 +175,7 @@ func (r *L3extRsRedistributePolResource) Create(ctx context.Context, req resourc
 	var stateData *L3extRsRedistributePolResourceModel
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &stateData)...)
 	setL3extRsRedistributePolId(ctx, stateData)
-	messageMap := setL3extRsRedistributePolAttributes(ctx, r.client, stateData)
-	if messageMap != nil {
-		resp.Diagnostics.AddError(messageMap.(map[string]string)["message"], messageMap.(map[string]string)["messageDetail"])
-	}
+	setL3extRsRedistributePolAttributes(ctx, &resp.Diagnostics, r.client, stateData)
 
 	var data *L3extRsRedistributePolResourceModel
 
@@ -195,23 +193,18 @@ func (r *L3extRsRedistributePolResource) Create(ctx context.Context, req resourc
 	var tagAnnotationPlan, tagAnnotationState []TagAnnotationL3extRsRedistributePolResourceModel
 	data.TagAnnotation.ElementsAs(ctx, &tagAnnotationPlan, false)
 	stateData.TagAnnotation.ElementsAs(ctx, &tagAnnotationState, false)
-	jsonPayload, message, messageDetail := getL3extRsRedistributePolCreateJsonPayload(ctx, data, tagAnnotationPlan, tagAnnotationState)
+	jsonPayload := getL3extRsRedistributePolCreateJsonPayload(ctx, &resp.Diagnostics, data, tagAnnotationPlan, tagAnnotationState)
 
-	if jsonPayload == nil {
-		resp.Diagnostics.AddError(message, messageDetail)
+	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	requestData, message, messageDetail := doL3extRsRedistributePolRequest(ctx, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
-	if requestData == nil {
-		resp.Diagnostics.AddError(message, messageDetail)
+	doL3extRsRedistributePolRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
+	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	messageMap = setL3extRsRedistributePolAttributes(ctx, r.client, data)
-	if messageMap != nil {
-		resp.Diagnostics.AddError(messageMap.(map[string]string)["message"], messageMap.(map[string]string)["messageDetail"])
-	}
+	setL3extRsRedistributePolAttributes(ctx, &resp.Diagnostics, r.client, data)
 
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
@@ -231,10 +224,7 @@ func (r *L3extRsRedistributePolResource) Read(ctx context.Context, req resource.
 
 	tflog.Trace(ctx, fmt.Sprintf("Read of resource aci_l3out_redistribute_policy with id '%s'", data.Id.ValueString()))
 
-	messageMap := setL3extRsRedistributePolAttributes(ctx, r.client, data)
-	if messageMap != nil {
-		resp.Diagnostics.AddError(messageMap.(map[string]string)["message"], messageMap.(map[string]string)["messageDetail"])
-	}
+	setL3extRsRedistributePolAttributes(ctx, &resp.Diagnostics, r.client, data)
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
@@ -259,23 +249,19 @@ func (r *L3extRsRedistributePolResource) Update(ctx context.Context, req resourc
 	var tagAnnotationPlan, tagAnnotationState []TagAnnotationL3extRsRedistributePolResourceModel
 	data.TagAnnotation.ElementsAs(ctx, &tagAnnotationPlan, false)
 	stateData.TagAnnotation.ElementsAs(ctx, &tagAnnotationState, false)
-	jsonPayload, message, messageDetail := getL3extRsRedistributePolCreateJsonPayload(ctx, data, tagAnnotationPlan, tagAnnotationState)
+	jsonPayload := getL3extRsRedistributePolCreateJsonPayload(ctx, &resp.Diagnostics, data, tagAnnotationPlan, tagAnnotationState)
 
-	if jsonPayload == nil {
-		resp.Diagnostics.AddError(message, messageDetail)
+	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	requestData, message, messageDetail := doL3extRsRedistributePolRequest(ctx, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
-	if requestData == nil {
-		resp.Diagnostics.AddError(message, messageDetail)
+	doL3extRsRedistributePolRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
+
+	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	messageMap := setL3extRsRedistributePolAttributes(ctx, r.client, data)
-	if messageMap != nil {
-		resp.Diagnostics.AddError(messageMap.(map[string]string)["message"], messageMap.(map[string]string)["messageDetail"])
-	}
+	setL3extRsRedistributePolAttributes(ctx, &resp.Diagnostics, r.client, data)
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
@@ -294,14 +280,12 @@ func (r *L3extRsRedistributePolResource) Delete(ctx context.Context, req resourc
 	}
 
 	tflog.Trace(ctx, fmt.Sprintf("Delete of resource aci_l3out_redistribute_policy with id '%s'", data.Id.ValueString()))
-	jsonPayload, message, messageDetail := getL3extRsRedistributePolDeleteJsonPayload(ctx, data)
-	if jsonPayload == nil {
-		resp.Diagnostics.AddError(message, messageDetail)
+	jsonPayload := getL3extRsRedistributePolDeleteJsonPayload(ctx, &resp.Diagnostics, data)
+	if resp.Diagnostics.HasError() {
 		return
 	}
-	requestData, message, messageDetail := doL3extRsRedistributePolRequest(ctx, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
-	if requestData == nil {
-		resp.Diagnostics.AddError(message, messageDetail)
+	doL3extRsRedistributePolRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
+	if resp.Diagnostics.HasError() {
 		return
 	}
 	tflog.Trace(ctx, "End delete of resource: aci_l3out_redistribute_policy")
@@ -311,11 +295,11 @@ func (r *L3extRsRedistributePolResource) ImportState(ctx context.Context, req re
 	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
 }
 
-func setL3extRsRedistributePolAttributes(ctx context.Context, client *client.Client, data *L3extRsRedistributePolResourceModel) interface{} {
-	requestData, message, messageDetail := doL3extRsRedistributePolRequest(ctx, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=children&rsp-subtree-class=%s", data.Id.ValueString(), "l3extRsRedistributePol,tagAnnotation"), "GET", nil)
+func setL3extRsRedistributePolAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *L3extRsRedistributePolResourceModel) {
+	requestData := doL3extRsRedistributePolRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=children&rsp-subtree-class=%s", data.Id.ValueString(), "l3extRsRedistributePol,tagAnnotation"), "GET", nil)
 
-	if requestData == nil {
-		return map[string]string{"message": message, "messageDetail": messageDetail}
+	if diags.HasError() {
+		return
 	}
 	if requestData.Search("imdata").Search("l3extRsRedistributePol").Data() != nil {
 		classReadInfo := requestData.Search("imdata").Search("l3extRsRedistributePol").Data().([]interface{})
@@ -363,13 +347,12 @@ func setL3extRsRedistributePolAttributes(ctx context.Context, client *client.Cli
 				data.TagAnnotation = tagAnnotationSet
 			}
 		} else {
-			return map[string]string{
-				"message":       "too many results in response",
-				"messageDetail": fmt.Sprintf("%v matches returned for class 'l3extRsRedistributePol'. Please report this issue to the provider developers.", len(classReadInfo)),
-			}
+			diags.AddError(
+				"too many results in response",
+				fmt.Sprintf("%v matches returned for class 'l3extRsRedistributePol'. Please report this issue to the provider developers.", len(classReadInfo)),
+			)
 		}
 	}
-	return nil
 }
 
 func getL3extRsRedistributePolRn(ctx context.Context, data *L3extRsRedistributePolResourceModel) string {
@@ -392,7 +375,7 @@ func setL3extRsRedistributePolId(ctx context.Context, data *L3extRsRedistributeP
 	data.Id = types.StringValue(fmt.Sprintf("%s/%s", data.ParentDn.ValueString(), rn))
 }
 
-func getL3extRsRedistributePolTagAnnotationChildPayloads(ctx context.Context, data *L3extRsRedistributePolResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationL3extRsRedistributePolResourceModel) ([]map[string]interface{}, string, string) {
+func getL3extRsRedistributePolTagAnnotationChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *L3extRsRedistributePolResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationL3extRsRedistributePolResourceModel) []map[string]interface{} {
 
 	childPayloads := []map[string]interface{}{}
 	if !data.TagAnnotation.IsUnknown() {
@@ -429,17 +412,17 @@ func getL3extRsRedistributePolTagAnnotationChildPayloads(ctx context.Context, da
 		data.TagAnnotation = types.SetNull(data.TagAnnotation.ElementType(ctx))
 	}
 
-	return childPayloads, "", ""
+	return childPayloads
 }
 
-func getL3extRsRedistributePolCreateJsonPayload(ctx context.Context, data *L3extRsRedistributePolResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationL3extRsRedistributePolResourceModel) (*container.Container, string, string) {
+func getL3extRsRedistributePolCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, data *L3extRsRedistributePolResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationL3extRsRedistributePolResourceModel) *container.Container {
 	payloadMap := map[string]interface{}{}
 	payloadMap["attributes"] = map[string]string{}
 	childPayloads := []map[string]interface{}{}
 
-	TagAnnotationchildPayloads, errMessage, errMessageDetail := getL3extRsRedistributePolTagAnnotationChildPayloads(ctx, data, tagAnnotationPlan, tagAnnotationState)
+	TagAnnotationchildPayloads := getL3extRsRedistributePolTagAnnotationChildPayloads(ctx, diags, data, tagAnnotationPlan, tagAnnotationState)
 	if TagAnnotationchildPayloads == nil {
-		return nil, errMessage, errMessageDetail
+		return nil
 	}
 	childPayloads = append(childPayloads, TagAnnotationchildPayloads...)
 
@@ -456,53 +439,65 @@ func getL3extRsRedistributePolCreateJsonPayload(ctx context.Context, data *L3ext
 
 	payload, err := json.Marshal(map[string]interface{}{"l3extRsRedistributePol": payloadMap})
 	if err != nil {
-		errMessage := "Marshalling of json payload failed"
-		errMessageDetail := fmt.Sprintf("Err: %s. Please report this issue to the provider developers.", err)
-		return nil, errMessage, errMessageDetail
+		diags.AddError(
+			"Marshalling of json payload failed",
+			fmt.Sprintf("Err: %s. Please report this issue to the provider developers.", err),
+		)
+		return nil
 	}
 
 	jsonPayload, err := container.ParseJSON(payload)
 
 	if err != nil {
-		errMessage := "Construction of json payload failed"
-		errMessageDetail := fmt.Sprintf("Err: %s. Please report this issue to the provider developers.", err)
-		return nil, errMessage, errMessageDetail
+		diags.AddError(
+			"Construction of json payload failed",
+			fmt.Sprintf("Err: %s. Please report this issue to the provider developers.", err),
+		)
+		return nil
 	}
-	return jsonPayload, "", ""
+	return jsonPayload
 }
 
-func getL3extRsRedistributePolDeleteJsonPayload(ctx context.Context, data *L3extRsRedistributePolResourceModel) (*container.Container, string, string) {
+func getL3extRsRedistributePolDeleteJsonPayload(ctx context.Context, diags *diag.Diagnostics, data *L3extRsRedistributePolResourceModel) *container.Container {
 
 	jsonString := fmt.Sprintf(`{"l3extRsRedistributePol":{"attributes":{"dn": "%s","status": "deleted"}}}`, data.Id.ValueString())
 	jsonPayload, err := container.ParseJSON([]byte(jsonString))
 	if err != nil {
-		errMessage := "Construction of json payload failed"
-		errMessageDetail := fmt.Sprintf("Err: %s. Please report this issue to the provider developers.", err)
-		return nil, errMessage, errMessageDetail
+		diags.AddError(
+			"Construction of json payload failed",
+			fmt.Sprintf("Err: %s. Please report this issue to the provider developers.", err),
+		)
+		return nil
 	}
-	return jsonPayload, "", ""
+	return jsonPayload
 }
 
-func doL3extRsRedistributePolRequest(ctx context.Context, client *client.Client, path, method string, payload *container.Container) (*container.Container, string, string) {
+func doL3extRsRedistributePolRequest(ctx context.Context, diags *diag.Diagnostics, client *client.Client, path, method string, payload *container.Container) *container.Container {
 
 	restRequest, err := client.MakeRestRequest(method, path, payload, true)
 	if err != nil {
-		message := fmt.Sprintf("Creation of %s rest request failed", strings.ToLower(method))
-		messageDetail := fmt.Sprintf("Err: %s. Please report this issue to the provider developers.", err)
-		return nil, message, messageDetail
+		diags.AddError(
+			"Creation of rest request failed",
+			fmt.Sprintf("Err: %s. Please report this issue to the provider developers.", err),
+		)
+		return nil
 	}
 
 	cont, restResponse, err := client.Do(restRequest)
 
 	if restResponse != nil && restResponse.StatusCode != 200 {
-		message := fmt.Sprintf("The %s rest request failed", strings.ToLower(method))
-		messageDetail := fmt.Sprintf("Response: %s, err: %s. Please report this issue to the provider developers.", cont.Data().(map[string]interface{})["imdata"], err)
-		return nil, message, messageDetail
+		diags.AddError(
+			fmt.Sprintf("The %s rest request failed", strings.ToLower(method)),
+			fmt.Sprintf("Response: %s, err: %s. Please report this issue to the provider developers.", cont.Data().(map[string]interface{})["imdata"], err),
+		)
+		return nil
 	} else if err != nil {
-		message := fmt.Sprintf("The %s rest request failed", strings.ToLower(method))
-		messageDetail := fmt.Sprintf("Err: %s. Please report this issue to the provider developers.", err)
-		return nil, message, messageDetail
+		diags.AddError(
+			fmt.Sprintf("The %s rest request failed", strings.ToLower(method)),
+			fmt.Sprintf("Err: %s. Please report this issue to the provider developers.", err),
+		)
+		return nil
 	}
 
-	return cont, "", ""
+	return cont
 }

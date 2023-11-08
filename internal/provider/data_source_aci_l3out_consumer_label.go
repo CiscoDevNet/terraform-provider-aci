@@ -136,10 +136,7 @@ func (d *L3extConsLblDataSource) Read(ctx context.Context, req datasource.ReadRe
 
 	tflog.Trace(ctx, fmt.Sprintf("Read of datasource aci_l3out_consumer_label with id '%s'", data.Id.ValueString()))
 
-	messageMap := setL3extConsLblAttributes(ctx, d.client, data)
-	if messageMap != nil {
-		resp.Diagnostics.AddError(messageMap.(map[string]string)["message"], messageMap.(map[string]string)["messageDetail"])
-	}
+	setL3extConsLblAttributes(ctx, &resp.Diagnostics, d.client, data)
 
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)

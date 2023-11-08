@@ -11,6 +11,7 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
+	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
@@ -195,10 +196,7 @@ func (r *PimRouteMapPolResource) Create(ctx context.Context, req resource.Create
 	var stateData *PimRouteMapPolResourceModel
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &stateData)...)
 	setPimRouteMapPolId(ctx, stateData)
-	messageMap := setPimRouteMapPolAttributes(ctx, r.client, stateData)
-	if messageMap != nil {
-		resp.Diagnostics.AddError(messageMap.(map[string]string)["message"], messageMap.(map[string]string)["messageDetail"])
-	}
+	setPimRouteMapPolAttributes(ctx, &resp.Diagnostics, r.client, stateData)
 
 	var data *PimRouteMapPolResourceModel
 
@@ -216,23 +214,18 @@ func (r *PimRouteMapPolResource) Create(ctx context.Context, req resource.Create
 	var tagAnnotationPlan, tagAnnotationState []TagAnnotationPimRouteMapPolResourceModel
 	data.TagAnnotation.ElementsAs(ctx, &tagAnnotationPlan, false)
 	stateData.TagAnnotation.ElementsAs(ctx, &tagAnnotationState, false)
-	jsonPayload, message, messageDetail := getPimRouteMapPolCreateJsonPayload(ctx, data, tagAnnotationPlan, tagAnnotationState)
+	jsonPayload := getPimRouteMapPolCreateJsonPayload(ctx, &resp.Diagnostics, data, tagAnnotationPlan, tagAnnotationState)
 
-	if jsonPayload == nil {
-		resp.Diagnostics.AddError(message, messageDetail)
+	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	requestData, message, messageDetail := doPimRouteMapPolRequest(ctx, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
-	if requestData == nil {
-		resp.Diagnostics.AddError(message, messageDetail)
+	doPimRouteMapPolRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
+	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	messageMap = setPimRouteMapPolAttributes(ctx, r.client, data)
-	if messageMap != nil {
-		resp.Diagnostics.AddError(messageMap.(map[string]string)["message"], messageMap.(map[string]string)["messageDetail"])
-	}
+	setPimRouteMapPolAttributes(ctx, &resp.Diagnostics, r.client, data)
 
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
@@ -252,10 +245,7 @@ func (r *PimRouteMapPolResource) Read(ctx context.Context, req resource.ReadRequ
 
 	tflog.Trace(ctx, fmt.Sprintf("Read of resource aci_pim_route_map_policy with id '%s'", data.Id.ValueString()))
 
-	messageMap := setPimRouteMapPolAttributes(ctx, r.client, data)
-	if messageMap != nil {
-		resp.Diagnostics.AddError(messageMap.(map[string]string)["message"], messageMap.(map[string]string)["messageDetail"])
-	}
+	setPimRouteMapPolAttributes(ctx, &resp.Diagnostics, r.client, data)
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
@@ -280,23 +270,19 @@ func (r *PimRouteMapPolResource) Update(ctx context.Context, req resource.Update
 	var tagAnnotationPlan, tagAnnotationState []TagAnnotationPimRouteMapPolResourceModel
 	data.TagAnnotation.ElementsAs(ctx, &tagAnnotationPlan, false)
 	stateData.TagAnnotation.ElementsAs(ctx, &tagAnnotationState, false)
-	jsonPayload, message, messageDetail := getPimRouteMapPolCreateJsonPayload(ctx, data, tagAnnotationPlan, tagAnnotationState)
+	jsonPayload := getPimRouteMapPolCreateJsonPayload(ctx, &resp.Diagnostics, data, tagAnnotationPlan, tagAnnotationState)
 
-	if jsonPayload == nil {
-		resp.Diagnostics.AddError(message, messageDetail)
+	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	requestData, message, messageDetail := doPimRouteMapPolRequest(ctx, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
-	if requestData == nil {
-		resp.Diagnostics.AddError(message, messageDetail)
+	doPimRouteMapPolRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
+
+	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	messageMap := setPimRouteMapPolAttributes(ctx, r.client, data)
-	if messageMap != nil {
-		resp.Diagnostics.AddError(messageMap.(map[string]string)["message"], messageMap.(map[string]string)["messageDetail"])
-	}
+	setPimRouteMapPolAttributes(ctx, &resp.Diagnostics, r.client, data)
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
@@ -315,14 +301,12 @@ func (r *PimRouteMapPolResource) Delete(ctx context.Context, req resource.Delete
 	}
 
 	tflog.Trace(ctx, fmt.Sprintf("Delete of resource aci_pim_route_map_policy with id '%s'", data.Id.ValueString()))
-	jsonPayload, message, messageDetail := getPimRouteMapPolDeleteJsonPayload(ctx, data)
-	if jsonPayload == nil {
-		resp.Diagnostics.AddError(message, messageDetail)
+	jsonPayload := getPimRouteMapPolDeleteJsonPayload(ctx, &resp.Diagnostics, data)
+	if resp.Diagnostics.HasError() {
 		return
 	}
-	requestData, message, messageDetail := doPimRouteMapPolRequest(ctx, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
-	if requestData == nil {
-		resp.Diagnostics.AddError(message, messageDetail)
+	doPimRouteMapPolRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
+	if resp.Diagnostics.HasError() {
 		return
 	}
 	tflog.Trace(ctx, "End delete of resource: aci_pim_route_map_policy")
@@ -332,11 +316,11 @@ func (r *PimRouteMapPolResource) ImportState(ctx context.Context, req resource.I
 	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
 }
 
-func setPimRouteMapPolAttributes(ctx context.Context, client *client.Client, data *PimRouteMapPolResourceModel) interface{} {
-	requestData, message, messageDetail := doPimRouteMapPolRequest(ctx, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=children&rsp-subtree-class=%s", data.Id.ValueString(), "pimRouteMapPol,tagAnnotation"), "GET", nil)
+func setPimRouteMapPolAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *PimRouteMapPolResourceModel) {
+	requestData := doPimRouteMapPolRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=children&rsp-subtree-class=%s", data.Id.ValueString(), "pimRouteMapPol,tagAnnotation"), "GET", nil)
 
-	if requestData == nil {
-		return map[string]string{"message": message, "messageDetail": messageDetail}
+	if diags.HasError() {
+		return
 	}
 	if requestData.Search("imdata").Search("pimRouteMapPol").Data() != nil {
 		classReadInfo := requestData.Search("imdata").Search("pimRouteMapPol").Data().([]interface{})
@@ -393,13 +377,12 @@ func setPimRouteMapPolAttributes(ctx context.Context, client *client.Client, dat
 				data.TagAnnotation = tagAnnotationSet
 			}
 		} else {
-			return map[string]string{
-				"message":       "too many results in response",
-				"messageDetail": fmt.Sprintf("%v matches returned for class 'pimRouteMapPol'. Please report this issue to the provider developers.", len(classReadInfo)),
-			}
+			diags.AddError(
+				"too many results in response",
+				fmt.Sprintf("%v matches returned for class 'pimRouteMapPol'. Please report this issue to the provider developers.", len(classReadInfo)),
+			)
 		}
 	}
-	return nil
 }
 
 func getPimRouteMapPolRn(ctx context.Context, data *PimRouteMapPolResourceModel) string {
@@ -422,7 +405,7 @@ func setPimRouteMapPolId(ctx context.Context, data *PimRouteMapPolResourceModel)
 	data.Id = types.StringValue(fmt.Sprintf("%s/%s", data.ParentDn.ValueString(), rn))
 }
 
-func getPimRouteMapPolTagAnnotationChildPayloads(ctx context.Context, data *PimRouteMapPolResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationPimRouteMapPolResourceModel) ([]map[string]interface{}, string, string) {
+func getPimRouteMapPolTagAnnotationChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *PimRouteMapPolResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationPimRouteMapPolResourceModel) []map[string]interface{} {
 
 	childPayloads := []map[string]interface{}{}
 	if !data.TagAnnotation.IsUnknown() {
@@ -459,17 +442,17 @@ func getPimRouteMapPolTagAnnotationChildPayloads(ctx context.Context, data *PimR
 		data.TagAnnotation = types.SetNull(data.TagAnnotation.ElementType(ctx))
 	}
 
-	return childPayloads, "", ""
+	return childPayloads
 }
 
-func getPimRouteMapPolCreateJsonPayload(ctx context.Context, data *PimRouteMapPolResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationPimRouteMapPolResourceModel) (*container.Container, string, string) {
+func getPimRouteMapPolCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, data *PimRouteMapPolResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationPimRouteMapPolResourceModel) *container.Container {
 	payloadMap := map[string]interface{}{}
 	payloadMap["attributes"] = map[string]string{}
 	childPayloads := []map[string]interface{}{}
 
-	TagAnnotationchildPayloads, errMessage, errMessageDetail := getPimRouteMapPolTagAnnotationChildPayloads(ctx, data, tagAnnotationPlan, tagAnnotationState)
+	TagAnnotationchildPayloads := getPimRouteMapPolTagAnnotationChildPayloads(ctx, diags, data, tagAnnotationPlan, tagAnnotationState)
 	if TagAnnotationchildPayloads == nil {
-		return nil, errMessage, errMessageDetail
+		return nil
 	}
 	childPayloads = append(childPayloads, TagAnnotationchildPayloads...)
 
@@ -495,53 +478,65 @@ func getPimRouteMapPolCreateJsonPayload(ctx context.Context, data *PimRouteMapPo
 
 	payload, err := json.Marshal(map[string]interface{}{"pimRouteMapPol": payloadMap})
 	if err != nil {
-		errMessage := "Marshalling of json payload failed"
-		errMessageDetail := fmt.Sprintf("Err: %s. Please report this issue to the provider developers.", err)
-		return nil, errMessage, errMessageDetail
+		diags.AddError(
+			"Marshalling of json payload failed",
+			fmt.Sprintf("Err: %s. Please report this issue to the provider developers.", err),
+		)
+		return nil
 	}
 
 	jsonPayload, err := container.ParseJSON(payload)
 
 	if err != nil {
-		errMessage := "Construction of json payload failed"
-		errMessageDetail := fmt.Sprintf("Err: %s. Please report this issue to the provider developers.", err)
-		return nil, errMessage, errMessageDetail
+		diags.AddError(
+			"Construction of json payload failed",
+			fmt.Sprintf("Err: %s. Please report this issue to the provider developers.", err),
+		)
+		return nil
 	}
-	return jsonPayload, "", ""
+	return jsonPayload
 }
 
-func getPimRouteMapPolDeleteJsonPayload(ctx context.Context, data *PimRouteMapPolResourceModel) (*container.Container, string, string) {
+func getPimRouteMapPolDeleteJsonPayload(ctx context.Context, diags *diag.Diagnostics, data *PimRouteMapPolResourceModel) *container.Container {
 
 	jsonString := fmt.Sprintf(`{"pimRouteMapPol":{"attributes":{"dn": "%s","status": "deleted"}}}`, data.Id.ValueString())
 	jsonPayload, err := container.ParseJSON([]byte(jsonString))
 	if err != nil {
-		errMessage := "Construction of json payload failed"
-		errMessageDetail := fmt.Sprintf("Err: %s. Please report this issue to the provider developers.", err)
-		return nil, errMessage, errMessageDetail
+		diags.AddError(
+			"Construction of json payload failed",
+			fmt.Sprintf("Err: %s. Please report this issue to the provider developers.", err),
+		)
+		return nil
 	}
-	return jsonPayload, "", ""
+	return jsonPayload
 }
 
-func doPimRouteMapPolRequest(ctx context.Context, client *client.Client, path, method string, payload *container.Container) (*container.Container, string, string) {
+func doPimRouteMapPolRequest(ctx context.Context, diags *diag.Diagnostics, client *client.Client, path, method string, payload *container.Container) *container.Container {
 
 	restRequest, err := client.MakeRestRequest(method, path, payload, true)
 	if err != nil {
-		message := fmt.Sprintf("Creation of %s rest request failed", strings.ToLower(method))
-		messageDetail := fmt.Sprintf("Err: %s. Please report this issue to the provider developers.", err)
-		return nil, message, messageDetail
+		diags.AddError(
+			"Creation of rest request failed",
+			fmt.Sprintf("Err: %s. Please report this issue to the provider developers.", err),
+		)
+		return nil
 	}
 
 	cont, restResponse, err := client.Do(restRequest)
 
 	if restResponse != nil && restResponse.StatusCode != 200 {
-		message := fmt.Sprintf("The %s rest request failed", strings.ToLower(method))
-		messageDetail := fmt.Sprintf("Response: %s, err: %s. Please report this issue to the provider developers.", cont.Data().(map[string]interface{})["imdata"], err)
-		return nil, message, messageDetail
+		diags.AddError(
+			fmt.Sprintf("The %s rest request failed", strings.ToLower(method)),
+			fmt.Sprintf("Response: %s, err: %s. Please report this issue to the provider developers.", cont.Data().(map[string]interface{})["imdata"], err),
+		)
+		return nil
 	} else if err != nil {
-		message := fmt.Sprintf("The %s rest request failed", strings.ToLower(method))
-		messageDetail := fmt.Sprintf("Err: %s. Please report this issue to the provider developers.", err)
-		return nil, message, messageDetail
+		diags.AddError(
+			fmt.Sprintf("The %s rest request failed", strings.ToLower(method)),
+			fmt.Sprintf("Err: %s. Please report this issue to the provider developers.", err),
+		)
+		return nil
 	}
 
-	return cont, "", ""
+	return cont
 }

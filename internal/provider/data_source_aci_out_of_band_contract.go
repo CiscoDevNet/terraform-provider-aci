@@ -140,10 +140,7 @@ func (d *VzOOBBrCPDataSource) Read(ctx context.Context, req datasource.ReadReque
 
 	tflog.Trace(ctx, fmt.Sprintf("Read of datasource aci_out_of_band_contract with id '%s'", data.Id.ValueString()))
 
-	messageMap := setVzOOBBrCPAttributes(ctx, d.client, data)
-	if messageMap != nil {
-		resp.Diagnostics.AddError(messageMap.(map[string]string)["message"], messageMap.(map[string]string)["messageDetail"])
-	}
+	setVzOOBBrCPAttributes(ctx, &resp.Diagnostics, d.client, data)
 
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)

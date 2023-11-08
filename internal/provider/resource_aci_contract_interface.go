@@ -12,6 +12,7 @@ import (
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
+	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
@@ -173,10 +174,7 @@ func (r *FvRsConsIfResource) Create(ctx context.Context, req resource.CreateRequ
 	var stateData *FvRsConsIfResourceModel
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &stateData)...)
 	setFvRsConsIfId(ctx, stateData)
-	messageMap := setFvRsConsIfAttributes(ctx, r.client, stateData)
-	if messageMap != nil {
-		resp.Diagnostics.AddError(messageMap.(map[string]string)["message"], messageMap.(map[string]string)["messageDetail"])
-	}
+	setFvRsConsIfAttributes(ctx, &resp.Diagnostics, r.client, stateData)
 
 	var data *FvRsConsIfResourceModel
 
@@ -194,23 +192,18 @@ func (r *FvRsConsIfResource) Create(ctx context.Context, req resource.CreateRequ
 	var tagAnnotationPlan, tagAnnotationState []TagAnnotationFvRsConsIfResourceModel
 	data.TagAnnotation.ElementsAs(ctx, &tagAnnotationPlan, false)
 	stateData.TagAnnotation.ElementsAs(ctx, &tagAnnotationState, false)
-	jsonPayload, message, messageDetail := getFvRsConsIfCreateJsonPayload(ctx, data, tagAnnotationPlan, tagAnnotationState)
+	jsonPayload := getFvRsConsIfCreateJsonPayload(ctx, &resp.Diagnostics, data, tagAnnotationPlan, tagAnnotationState)
 
-	if jsonPayload == nil {
-		resp.Diagnostics.AddError(message, messageDetail)
+	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	requestData, message, messageDetail := doFvRsConsIfRequest(ctx, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
-	if requestData == nil {
-		resp.Diagnostics.AddError(message, messageDetail)
+	doFvRsConsIfRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
+	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	messageMap = setFvRsConsIfAttributes(ctx, r.client, data)
-	if messageMap != nil {
-		resp.Diagnostics.AddError(messageMap.(map[string]string)["message"], messageMap.(map[string]string)["messageDetail"])
-	}
+	setFvRsConsIfAttributes(ctx, &resp.Diagnostics, r.client, data)
 
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
@@ -230,10 +223,7 @@ func (r *FvRsConsIfResource) Read(ctx context.Context, req resource.ReadRequest,
 
 	tflog.Trace(ctx, fmt.Sprintf("Read of resource aci_contract_interface with id '%s'", data.Id.ValueString()))
 
-	messageMap := setFvRsConsIfAttributes(ctx, r.client, data)
-	if messageMap != nil {
-		resp.Diagnostics.AddError(messageMap.(map[string]string)["message"], messageMap.(map[string]string)["messageDetail"])
-	}
+	setFvRsConsIfAttributes(ctx, &resp.Diagnostics, r.client, data)
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
@@ -258,23 +248,19 @@ func (r *FvRsConsIfResource) Update(ctx context.Context, req resource.UpdateRequ
 	var tagAnnotationPlan, tagAnnotationState []TagAnnotationFvRsConsIfResourceModel
 	data.TagAnnotation.ElementsAs(ctx, &tagAnnotationPlan, false)
 	stateData.TagAnnotation.ElementsAs(ctx, &tagAnnotationState, false)
-	jsonPayload, message, messageDetail := getFvRsConsIfCreateJsonPayload(ctx, data, tagAnnotationPlan, tagAnnotationState)
+	jsonPayload := getFvRsConsIfCreateJsonPayload(ctx, &resp.Diagnostics, data, tagAnnotationPlan, tagAnnotationState)
 
-	if jsonPayload == nil {
-		resp.Diagnostics.AddError(message, messageDetail)
+	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	requestData, message, messageDetail := doFvRsConsIfRequest(ctx, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
-	if requestData == nil {
-		resp.Diagnostics.AddError(message, messageDetail)
+	doFvRsConsIfRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
+
+	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	messageMap := setFvRsConsIfAttributes(ctx, r.client, data)
-	if messageMap != nil {
-		resp.Diagnostics.AddError(messageMap.(map[string]string)["message"], messageMap.(map[string]string)["messageDetail"])
-	}
+	setFvRsConsIfAttributes(ctx, &resp.Diagnostics, r.client, data)
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
@@ -293,14 +279,12 @@ func (r *FvRsConsIfResource) Delete(ctx context.Context, req resource.DeleteRequ
 	}
 
 	tflog.Trace(ctx, fmt.Sprintf("Delete of resource aci_contract_interface with id '%s'", data.Id.ValueString()))
-	jsonPayload, message, messageDetail := getFvRsConsIfDeleteJsonPayload(ctx, data)
-	if jsonPayload == nil {
-		resp.Diagnostics.AddError(message, messageDetail)
+	jsonPayload := getFvRsConsIfDeleteJsonPayload(ctx, &resp.Diagnostics, data)
+	if resp.Diagnostics.HasError() {
 		return
 	}
-	requestData, message, messageDetail := doFvRsConsIfRequest(ctx, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
-	if requestData == nil {
-		resp.Diagnostics.AddError(message, messageDetail)
+	doFvRsConsIfRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
+	if resp.Diagnostics.HasError() {
 		return
 	}
 	tflog.Trace(ctx, "End delete of resource: aci_contract_interface")
@@ -310,11 +294,11 @@ func (r *FvRsConsIfResource) ImportState(ctx context.Context, req resource.Impor
 	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
 }
 
-func setFvRsConsIfAttributes(ctx context.Context, client *client.Client, data *FvRsConsIfResourceModel) interface{} {
-	requestData, message, messageDetail := doFvRsConsIfRequest(ctx, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=children&rsp-subtree-class=%s", data.Id.ValueString(), "fvRsConsIf,tagAnnotation"), "GET", nil)
+func setFvRsConsIfAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *FvRsConsIfResourceModel) {
+	requestData := doFvRsConsIfRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=children&rsp-subtree-class=%s", data.Id.ValueString(), "fvRsConsIf,tagAnnotation"), "GET", nil)
 
-	if requestData == nil {
-		return map[string]string{"message": message, "messageDetail": messageDetail}
+	if diags.HasError() {
+		return
 	}
 	if requestData.Search("imdata").Search("fvRsConsIf").Data() != nil {
 		classReadInfo := requestData.Search("imdata").Search("fvRsConsIf").Data().([]interface{})
@@ -362,13 +346,12 @@ func setFvRsConsIfAttributes(ctx context.Context, client *client.Client, data *F
 				data.TagAnnotation = tagAnnotationSet
 			}
 		} else {
-			return map[string]string{
-				"message":       "too many results in response",
-				"messageDetail": fmt.Sprintf("%v matches returned for class 'fvRsConsIf'. Please report this issue to the provider developers.", len(classReadInfo)),
-			}
+			diags.AddError(
+				"too many results in response",
+				fmt.Sprintf("%v matches returned for class 'fvRsConsIf'. Please report this issue to the provider developers.", len(classReadInfo)),
+			)
 		}
 	}
-	return nil
 }
 
 func getFvRsConsIfRn(ctx context.Context, data *FvRsConsIfResourceModel) string {
@@ -391,7 +374,7 @@ func setFvRsConsIfId(ctx context.Context, data *FvRsConsIfResourceModel) {
 	data.Id = types.StringValue(fmt.Sprintf("%s/%s", data.ParentDn.ValueString(), rn))
 }
 
-func getFvRsConsIfTagAnnotationChildPayloads(ctx context.Context, data *FvRsConsIfResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationFvRsConsIfResourceModel) ([]map[string]interface{}, string, string) {
+func getFvRsConsIfTagAnnotationChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *FvRsConsIfResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationFvRsConsIfResourceModel) []map[string]interface{} {
 
 	childPayloads := []map[string]interface{}{}
 	if !data.TagAnnotation.IsUnknown() {
@@ -428,17 +411,17 @@ func getFvRsConsIfTagAnnotationChildPayloads(ctx context.Context, data *FvRsCons
 		data.TagAnnotation = types.SetNull(data.TagAnnotation.ElementType(ctx))
 	}
 
-	return childPayloads, "", ""
+	return childPayloads
 }
 
-func getFvRsConsIfCreateJsonPayload(ctx context.Context, data *FvRsConsIfResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationFvRsConsIfResourceModel) (*container.Container, string, string) {
+func getFvRsConsIfCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, data *FvRsConsIfResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationFvRsConsIfResourceModel) *container.Container {
 	payloadMap := map[string]interface{}{}
 	payloadMap["attributes"] = map[string]string{}
 	childPayloads := []map[string]interface{}{}
 
-	TagAnnotationchildPayloads, errMessage, errMessageDetail := getFvRsConsIfTagAnnotationChildPayloads(ctx, data, tagAnnotationPlan, tagAnnotationState)
+	TagAnnotationchildPayloads := getFvRsConsIfTagAnnotationChildPayloads(ctx, diags, data, tagAnnotationPlan, tagAnnotationState)
 	if TagAnnotationchildPayloads == nil {
-		return nil, errMessage, errMessageDetail
+		return nil
 	}
 	childPayloads = append(childPayloads, TagAnnotationchildPayloads...)
 
@@ -455,53 +438,65 @@ func getFvRsConsIfCreateJsonPayload(ctx context.Context, data *FvRsConsIfResourc
 
 	payload, err := json.Marshal(map[string]interface{}{"fvRsConsIf": payloadMap})
 	if err != nil {
-		errMessage := "Marshalling of json payload failed"
-		errMessageDetail := fmt.Sprintf("Err: %s. Please report this issue to the provider developers.", err)
-		return nil, errMessage, errMessageDetail
+		diags.AddError(
+			"Marshalling of json payload failed",
+			fmt.Sprintf("Err: %s. Please report this issue to the provider developers.", err),
+		)
+		return nil
 	}
 
 	jsonPayload, err := container.ParseJSON(payload)
 
 	if err != nil {
-		errMessage := "Construction of json payload failed"
-		errMessageDetail := fmt.Sprintf("Err: %s. Please report this issue to the provider developers.", err)
-		return nil, errMessage, errMessageDetail
+		diags.AddError(
+			"Construction of json payload failed",
+			fmt.Sprintf("Err: %s. Please report this issue to the provider developers.", err),
+		)
+		return nil
 	}
-	return jsonPayload, "", ""
+	return jsonPayload
 }
 
-func getFvRsConsIfDeleteJsonPayload(ctx context.Context, data *FvRsConsIfResourceModel) (*container.Container, string, string) {
+func getFvRsConsIfDeleteJsonPayload(ctx context.Context, diags *diag.Diagnostics, data *FvRsConsIfResourceModel) *container.Container {
 
 	jsonString := fmt.Sprintf(`{"fvRsConsIf":{"attributes":{"dn": "%s","status": "deleted"}}}`, data.Id.ValueString())
 	jsonPayload, err := container.ParseJSON([]byte(jsonString))
 	if err != nil {
-		errMessage := "Construction of json payload failed"
-		errMessageDetail := fmt.Sprintf("Err: %s. Please report this issue to the provider developers.", err)
-		return nil, errMessage, errMessageDetail
+		diags.AddError(
+			"Construction of json payload failed",
+			fmt.Sprintf("Err: %s. Please report this issue to the provider developers.", err),
+		)
+		return nil
 	}
-	return jsonPayload, "", ""
+	return jsonPayload
 }
 
-func doFvRsConsIfRequest(ctx context.Context, client *client.Client, path, method string, payload *container.Container) (*container.Container, string, string) {
+func doFvRsConsIfRequest(ctx context.Context, diags *diag.Diagnostics, client *client.Client, path, method string, payload *container.Container) *container.Container {
 
 	restRequest, err := client.MakeRestRequest(method, path, payload, true)
 	if err != nil {
-		message := fmt.Sprintf("Creation of %s rest request failed", strings.ToLower(method))
-		messageDetail := fmt.Sprintf("Err: %s. Please report this issue to the provider developers.", err)
-		return nil, message, messageDetail
+		diags.AddError(
+			"Creation of rest request failed",
+			fmt.Sprintf("Err: %s. Please report this issue to the provider developers.", err),
+		)
+		return nil
 	}
 
 	cont, restResponse, err := client.Do(restRequest)
 
 	if restResponse != nil && restResponse.StatusCode != 200 {
-		message := fmt.Sprintf("The %s rest request failed", strings.ToLower(method))
-		messageDetail := fmt.Sprintf("Response: %s, err: %s. Please report this issue to the provider developers.", cont.Data().(map[string]interface{})["imdata"], err)
-		return nil, message, messageDetail
+		diags.AddError(
+			fmt.Sprintf("The %s rest request failed", strings.ToLower(method)),
+			fmt.Sprintf("Response: %s, err: %s. Please report this issue to the provider developers.", cont.Data().(map[string]interface{})["imdata"], err),
+		)
+		return nil
 	} else if err != nil {
-		message := fmt.Sprintf("The %s rest request failed", strings.ToLower(method))
-		messageDetail := fmt.Sprintf("Err: %s. Please report this issue to the provider developers.", err)
-		return nil, message, messageDetail
+		diags.AddError(
+			fmt.Sprintf("The %s rest request failed", strings.ToLower(method)),
+			fmt.Sprintf("Err: %s. Please report this issue to the provider developers.", err),
+		)
+		return nil
 	}
 
-	return cont, "", ""
+	return cont
 }

@@ -12,6 +12,7 @@ import (
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
+	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
@@ -236,10 +237,7 @@ func (r *VzOOBBrCPResource) Create(ctx context.Context, req resource.CreateReque
 	var stateData *VzOOBBrCPResourceModel
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &stateData)...)
 	setVzOOBBrCPId(ctx, stateData)
-	messageMap := setVzOOBBrCPAttributes(ctx, r.client, stateData)
-	if messageMap != nil {
-		resp.Diagnostics.AddError(messageMap.(map[string]string)["message"], messageMap.(map[string]string)["messageDetail"])
-	}
+	setVzOOBBrCPAttributes(ctx, &resp.Diagnostics, r.client, stateData)
 
 	var data *VzOOBBrCPResourceModel
 
@@ -257,23 +255,18 @@ func (r *VzOOBBrCPResource) Create(ctx context.Context, req resource.CreateReque
 	var tagAnnotationPlan, tagAnnotationState []TagAnnotationVzOOBBrCPResourceModel
 	data.TagAnnotation.ElementsAs(ctx, &tagAnnotationPlan, false)
 	stateData.TagAnnotation.ElementsAs(ctx, &tagAnnotationState, false)
-	jsonPayload, message, messageDetail := getVzOOBBrCPCreateJsonPayload(ctx, data, tagAnnotationPlan, tagAnnotationState)
+	jsonPayload := getVzOOBBrCPCreateJsonPayload(ctx, &resp.Diagnostics, data, tagAnnotationPlan, tagAnnotationState)
 
-	if jsonPayload == nil {
-		resp.Diagnostics.AddError(message, messageDetail)
+	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	requestData, message, messageDetail := doVzOOBBrCPRequest(ctx, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
-	if requestData == nil {
-		resp.Diagnostics.AddError(message, messageDetail)
+	doVzOOBBrCPRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
+	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	messageMap = setVzOOBBrCPAttributes(ctx, r.client, data)
-	if messageMap != nil {
-		resp.Diagnostics.AddError(messageMap.(map[string]string)["message"], messageMap.(map[string]string)["messageDetail"])
-	}
+	setVzOOBBrCPAttributes(ctx, &resp.Diagnostics, r.client, data)
 
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
@@ -293,10 +286,7 @@ func (r *VzOOBBrCPResource) Read(ctx context.Context, req resource.ReadRequest, 
 
 	tflog.Trace(ctx, fmt.Sprintf("Read of resource aci_out_of_band_contract with id '%s'", data.Id.ValueString()))
 
-	messageMap := setVzOOBBrCPAttributes(ctx, r.client, data)
-	if messageMap != nil {
-		resp.Diagnostics.AddError(messageMap.(map[string]string)["message"], messageMap.(map[string]string)["messageDetail"])
-	}
+	setVzOOBBrCPAttributes(ctx, &resp.Diagnostics, r.client, data)
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
@@ -321,23 +311,19 @@ func (r *VzOOBBrCPResource) Update(ctx context.Context, req resource.UpdateReque
 	var tagAnnotationPlan, tagAnnotationState []TagAnnotationVzOOBBrCPResourceModel
 	data.TagAnnotation.ElementsAs(ctx, &tagAnnotationPlan, false)
 	stateData.TagAnnotation.ElementsAs(ctx, &tagAnnotationState, false)
-	jsonPayload, message, messageDetail := getVzOOBBrCPCreateJsonPayload(ctx, data, tagAnnotationPlan, tagAnnotationState)
+	jsonPayload := getVzOOBBrCPCreateJsonPayload(ctx, &resp.Diagnostics, data, tagAnnotationPlan, tagAnnotationState)
 
-	if jsonPayload == nil {
-		resp.Diagnostics.AddError(message, messageDetail)
+	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	requestData, message, messageDetail := doVzOOBBrCPRequest(ctx, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
-	if requestData == nil {
-		resp.Diagnostics.AddError(message, messageDetail)
+	doVzOOBBrCPRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
+
+	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	messageMap := setVzOOBBrCPAttributes(ctx, r.client, data)
-	if messageMap != nil {
-		resp.Diagnostics.AddError(messageMap.(map[string]string)["message"], messageMap.(map[string]string)["messageDetail"])
-	}
+	setVzOOBBrCPAttributes(ctx, &resp.Diagnostics, r.client, data)
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
@@ -356,14 +342,12 @@ func (r *VzOOBBrCPResource) Delete(ctx context.Context, req resource.DeleteReque
 	}
 
 	tflog.Trace(ctx, fmt.Sprintf("Delete of resource aci_out_of_band_contract with id '%s'", data.Id.ValueString()))
-	jsonPayload, message, messageDetail := getVzOOBBrCPDeleteJsonPayload(ctx, data)
-	if jsonPayload == nil {
-		resp.Diagnostics.AddError(message, messageDetail)
+	jsonPayload := getVzOOBBrCPDeleteJsonPayload(ctx, &resp.Diagnostics, data)
+	if resp.Diagnostics.HasError() {
 		return
 	}
-	requestData, message, messageDetail := doVzOOBBrCPRequest(ctx, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
-	if requestData == nil {
-		resp.Diagnostics.AddError(message, messageDetail)
+	doVzOOBBrCPRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
+	if resp.Diagnostics.HasError() {
 		return
 	}
 	tflog.Trace(ctx, "End delete of resource: aci_out_of_band_contract")
@@ -373,11 +357,11 @@ func (r *VzOOBBrCPResource) ImportState(ctx context.Context, req resource.Import
 	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
 }
 
-func setVzOOBBrCPAttributes(ctx context.Context, client *client.Client, data *VzOOBBrCPResourceModel) interface{} {
-	requestData, message, messageDetail := doVzOOBBrCPRequest(ctx, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=children&rsp-subtree-class=%s", data.Id.ValueString(), "vzOOBBrCP,tagAnnotation"), "GET", nil)
+func setVzOOBBrCPAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *VzOOBBrCPResourceModel) {
+	requestData := doVzOOBBrCPRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=children&rsp-subtree-class=%s", data.Id.ValueString(), "vzOOBBrCP,tagAnnotation"), "GET", nil)
 
-	if requestData == nil {
-		return map[string]string{"message": message, "messageDetail": messageDetail}
+	if diags.HasError() {
+		return
 	}
 	if requestData.Search("imdata").Search("vzOOBBrCP").Data() != nil {
 		classReadInfo := requestData.Search("imdata").Search("vzOOBBrCP").Data().([]interface{})
@@ -445,13 +429,12 @@ func setVzOOBBrCPAttributes(ctx context.Context, client *client.Client, data *Vz
 				data.TagAnnotation = tagAnnotationSet
 			}
 		} else {
-			return map[string]string{
-				"message":       "too many results in response",
-				"messageDetail": fmt.Sprintf("%v matches returned for class 'vzOOBBrCP'. Please report this issue to the provider developers.", len(classReadInfo)),
-			}
+			diags.AddError(
+				"too many results in response",
+				fmt.Sprintf("%v matches returned for class 'vzOOBBrCP'. Please report this issue to the provider developers.", len(classReadInfo)),
+			)
 		}
 	}
-	return nil
 }
 
 func getVzOOBBrCPRn(ctx context.Context, data *VzOOBBrCPResourceModel) string {
@@ -469,7 +452,7 @@ func setVzOOBBrCPId(ctx context.Context, data *VzOOBBrCPResourceModel) {
 	data.Id = types.StringValue(fmt.Sprintf("%s/%s", strings.Split([]string{"uni/tn-mgmt/oobbrc-{name}"}[0], "/")[0], rn))
 }
 
-func getVzOOBBrCPTagAnnotationChildPayloads(ctx context.Context, data *VzOOBBrCPResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationVzOOBBrCPResourceModel) ([]map[string]interface{}, string, string) {
+func getVzOOBBrCPTagAnnotationChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *VzOOBBrCPResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationVzOOBBrCPResourceModel) []map[string]interface{} {
 
 	childPayloads := []map[string]interface{}{}
 	if !data.TagAnnotation.IsUnknown() {
@@ -506,17 +489,17 @@ func getVzOOBBrCPTagAnnotationChildPayloads(ctx context.Context, data *VzOOBBrCP
 		data.TagAnnotation = types.SetNull(data.TagAnnotation.ElementType(ctx))
 	}
 
-	return childPayloads, "", ""
+	return childPayloads
 }
 
-func getVzOOBBrCPCreateJsonPayload(ctx context.Context, data *VzOOBBrCPResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationVzOOBBrCPResourceModel) (*container.Container, string, string) {
+func getVzOOBBrCPCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, data *VzOOBBrCPResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationVzOOBBrCPResourceModel) *container.Container {
 	payloadMap := map[string]interface{}{}
 	payloadMap["attributes"] = map[string]string{}
 	childPayloads := []map[string]interface{}{}
 
-	TagAnnotationchildPayloads, errMessage, errMessageDetail := getVzOOBBrCPTagAnnotationChildPayloads(ctx, data, tagAnnotationPlan, tagAnnotationState)
+	TagAnnotationchildPayloads := getVzOOBBrCPTagAnnotationChildPayloads(ctx, diags, data, tagAnnotationPlan, tagAnnotationState)
 	if TagAnnotationchildPayloads == nil {
-		return nil, errMessage, errMessageDetail
+		return nil
 	}
 	childPayloads = append(childPayloads, TagAnnotationchildPayloads...)
 
@@ -554,53 +537,65 @@ func getVzOOBBrCPCreateJsonPayload(ctx context.Context, data *VzOOBBrCPResourceM
 
 	payload, err := json.Marshal(map[string]interface{}{"vzOOBBrCP": payloadMap})
 	if err != nil {
-		errMessage := "Marshalling of json payload failed"
-		errMessageDetail := fmt.Sprintf("Err: %s. Please report this issue to the provider developers.", err)
-		return nil, errMessage, errMessageDetail
+		diags.AddError(
+			"Marshalling of json payload failed",
+			fmt.Sprintf("Err: %s. Please report this issue to the provider developers.", err),
+		)
+		return nil
 	}
 
 	jsonPayload, err := container.ParseJSON(payload)
 
 	if err != nil {
-		errMessage := "Construction of json payload failed"
-		errMessageDetail := fmt.Sprintf("Err: %s. Please report this issue to the provider developers.", err)
-		return nil, errMessage, errMessageDetail
+		diags.AddError(
+			"Construction of json payload failed",
+			fmt.Sprintf("Err: %s. Please report this issue to the provider developers.", err),
+		)
+		return nil
 	}
-	return jsonPayload, "", ""
+	return jsonPayload
 }
 
-func getVzOOBBrCPDeleteJsonPayload(ctx context.Context, data *VzOOBBrCPResourceModel) (*container.Container, string, string) {
+func getVzOOBBrCPDeleteJsonPayload(ctx context.Context, diags *diag.Diagnostics, data *VzOOBBrCPResourceModel) *container.Container {
 
 	jsonString := fmt.Sprintf(`{"vzOOBBrCP":{"attributes":{"dn": "%s","status": "deleted"}}}`, data.Id.ValueString())
 	jsonPayload, err := container.ParseJSON([]byte(jsonString))
 	if err != nil {
-		errMessage := "Construction of json payload failed"
-		errMessageDetail := fmt.Sprintf("Err: %s. Please report this issue to the provider developers.", err)
-		return nil, errMessage, errMessageDetail
+		diags.AddError(
+			"Construction of json payload failed",
+			fmt.Sprintf("Err: %s. Please report this issue to the provider developers.", err),
+		)
+		return nil
 	}
-	return jsonPayload, "", ""
+	return jsonPayload
 }
 
-func doVzOOBBrCPRequest(ctx context.Context, client *client.Client, path, method string, payload *container.Container) (*container.Container, string, string) {
+func doVzOOBBrCPRequest(ctx context.Context, diags *diag.Diagnostics, client *client.Client, path, method string, payload *container.Container) *container.Container {
 
 	restRequest, err := client.MakeRestRequest(method, path, payload, true)
 	if err != nil {
-		message := fmt.Sprintf("Creation of %s rest request failed", strings.ToLower(method))
-		messageDetail := fmt.Sprintf("Err: %s. Please report this issue to the provider developers.", err)
-		return nil, message, messageDetail
+		diags.AddError(
+			"Creation of rest request failed",
+			fmt.Sprintf("Err: %s. Please report this issue to the provider developers.", err),
+		)
+		return nil
 	}
 
 	cont, restResponse, err := client.Do(restRequest)
 
 	if restResponse != nil && restResponse.StatusCode != 200 {
-		message := fmt.Sprintf("The %s rest request failed", strings.ToLower(method))
-		messageDetail := fmt.Sprintf("Response: %s, err: %s. Please report this issue to the provider developers.", cont.Data().(map[string]interface{})["imdata"], err)
-		return nil, message, messageDetail
+		diags.AddError(
+			fmt.Sprintf("The %s rest request failed", strings.ToLower(method)),
+			fmt.Sprintf("Response: %s, err: %s. Please report this issue to the provider developers.", cont.Data().(map[string]interface{})["imdata"], err),
+		)
+		return nil
 	} else if err != nil {
-		message := fmt.Sprintf("The %s rest request failed", strings.ToLower(method))
-		messageDetail := fmt.Sprintf("Err: %s. Please report this issue to the provider developers.", err)
-		return nil, message, messageDetail
+		diags.AddError(
+			fmt.Sprintf("The %s rest request failed", strings.ToLower(method)),
+			fmt.Sprintf("Err: %s. Please report this issue to the provider developers.", err),
+		)
+		return nil
 	}
 
-	return cont, "", ""
+	return cont
 }

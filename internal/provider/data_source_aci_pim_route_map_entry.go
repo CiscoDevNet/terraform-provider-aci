@@ -140,10 +140,7 @@ func (d *PimRouteMapEntryDataSource) Read(ctx context.Context, req datasource.Re
 
 	tflog.Trace(ctx, fmt.Sprintf("Read of datasource aci_pim_route_map_entry with id '%s'", data.Id.ValueString()))
 
-	messageMap := setPimRouteMapEntryAttributes(ctx, d.client, data)
-	if messageMap != nil {
-		resp.Diagnostics.AddError(messageMap.(map[string]string)["message"], messageMap.(map[string]string)["messageDetail"])
-	}
+	setPimRouteMapEntryAttributes(ctx, &resp.Diagnostics, d.client, data)
 
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)

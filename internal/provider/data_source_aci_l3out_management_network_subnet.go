@@ -124,10 +124,7 @@ func (d *MgmtSubnetDataSource) Read(ctx context.Context, req datasource.ReadRequ
 
 	tflog.Trace(ctx, fmt.Sprintf("Read of datasource aci_l3out_management_network_subnet with id '%s'", data.Id.ValueString()))
 
-	messageMap := setMgmtSubnetAttributes(ctx, d.client, data)
-	if messageMap != nil {
-		resp.Diagnostics.AddError(messageMap.(map[string]string)["message"], messageMap.(map[string]string)["messageDetail"])
-	}
+	setMgmtSubnetAttributes(ctx, &resp.Diagnostics, d.client, data)
 
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)

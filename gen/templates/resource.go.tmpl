@@ -19,6 +19,7 @@ import (
 	{{- if .HasValidValues}}
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	{{- end}}
+	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	{{- if or .HasAnnotation}}
@@ -264,10 +265,7 @@ func (r *{{.ResourceClassName}}Resource) Create(ctx context.Context, req resourc
 	var stateData *{{.ResourceClassName}}ResourceModel
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &stateData)...)
 	set{{.ResourceClassName}}Id(ctx, stateData)
-	messageMap := set{{.ResourceClassName}}Attributes(ctx, r.client, stateData)
-	if messageMap != nil {
-		resp.Diagnostics.AddError(messageMap.(map[string]string)["message"], messageMap.(map[string]string)["messageDetail"])
-	}
+	set{{.ResourceClassName}}Attributes(ctx, &resp.Diagnostics, r.client, stateData)
 	{{- end}}
 
 	var data *{{.ResourceClassName}}ResourceModel
@@ -289,26 +287,21 @@ func (r *{{.ResourceClassName}}Resource) Create(ctx context.Context, req resourc
 	data.{{ .ResourceClassName }}.ElementsAs(ctx, &{{.PkgName}}Plan, false)
 	stateData.{{ .ResourceClassName }}.ElementsAs(ctx, &{{.PkgName}}State, false)
 		{{- end}}
-	jsonPayload, message, messageDetail := get{{.ResourceClassName}}CreateJsonPayload(ctx, data{{- range .Children}}, {{.PkgName}}Plan, {{.PkgName}}State{{- end}})	
+	jsonPayload := get{{.ResourceClassName}}CreateJsonPayload(ctx, &resp.Diagnostics, data{{- range .Children}}, {{.PkgName}}Plan, {{.PkgName}}State{{- end}})	
 	{{- else}}
-	jsonPayload, message, messageDetail := get{{.ResourceClassName}}CreateJsonPayload(ctx, data)
+	jsonPayload := get{{.ResourceClassName}}CreateJsonPayload(ctx, &resp.Diagnostics, data)
 	{{- end}}
 
-	if jsonPayload == nil {
-		resp.Diagnostics.AddError(message, messageDetail)
+	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	requestData, message, messageDetail := do{{.ResourceClassName}}Request(ctx, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
-	if requestData == nil {
-		resp.Diagnostics.AddError(message, messageDetail)
+	do{{.ResourceClassName}}Request(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
+	if resp.Diagnostics.HasError() {
 		return
 	}
 	
-	messageMap {{- if .HasChild}}={{- else}}:={{- end}} set{{.ResourceClassName}}Attributes(ctx, r.client, data)
-	if messageMap != nil {
-		resp.Diagnostics.AddError(messageMap.(map[string]string)["message"], messageMap.(map[string]string)["messageDetail"])
-	}
+	set{{.ResourceClassName}}Attributes(ctx, &resp.Diagnostics, r.client, data)
 
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
@@ -328,10 +321,7 @@ func (r *{{.ResourceClassName}}Resource) Read(ctx context.Context, req resource.
 
 	tflog.Trace(ctx, fmt.Sprintf("Read of resource aci_{{.ResourceName}} with id '%s'", data.Id.ValueString()))
 
-	messageMap := set{{.ResourceClassName}}Attributes(ctx, r.client, data)
-	if messageMap != nil {
-		resp.Diagnostics.AddError(messageMap.(map[string]string)["message"], messageMap.(map[string]string)["messageDetail"])
-	}
+	set{{.ResourceClassName}}Attributes(ctx, &resp.Diagnostics, r.client, data)
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
@@ -363,26 +353,22 @@ func (r *{{.ResourceClassName}}Resource) Update(ctx context.Context, req resourc
 	data.{{ .ResourceClassName }}.ElementsAs(ctx, &{{.PkgName}}Plan, false)
 	stateData.{{ .ResourceClassName }}.ElementsAs(ctx, &{{.PkgName}}State, false)
 		{{- end}}
-	jsonPayload, message, messageDetail := get{{.ResourceClassName}}CreateJsonPayload(ctx, data{{- range .Children}}, {{.PkgName}}Plan, {{.PkgName}}State{{- end}})	
+	jsonPayload := get{{.ResourceClassName}}CreateJsonPayload(ctx, &resp.Diagnostics, data{{- range .Children}}, {{.PkgName}}Plan, {{.PkgName}}State{{- end}})	
 	{{- else}}
-	jsonPayload, message, messageDetail := get{{.ResourceClassName}}CreateJsonPayload(ctx, data)
+	jsonPayload := get{{.ResourceClassName}}CreateJsonPayload(ctx, &resp.Diagnostics, data)
 	{{- end}}
 	
-	if jsonPayload == nil {
-		resp.Diagnostics.AddError(message, messageDetail)
+	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	requestData, message, messageDetail := do{{.ResourceClassName}}Request(ctx, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
-	if requestData == nil {
-		resp.Diagnostics.AddError(message, messageDetail)
+	do{{.ResourceClassName}}Request(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
+	
+	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	messageMap := set{{.ResourceClassName}}Attributes(ctx, r.client, data)
-	if messageMap != nil {
-		resp.Diagnostics.AddError(messageMap.(map[string]string)["message"], messageMap.(map[string]string)["messageDetail"])
-	}
+	set{{.ResourceClassName}}Attributes(ctx, &resp.Diagnostics, r.client, data)
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
@@ -403,14 +389,12 @@ func (r *{{.ResourceClassName}}Resource) Delete(ctx context.Context, req resourc
 	tflog.Trace(ctx, fmt.Sprintf("Delete of resource aci_{{.ResourceName}} with id '%s'", data.Id.ValueString()))
 
 	{{- if .AllowDelete}}
-	jsonPayload, message, messageDetail := get{{.ResourceClassName}}DeleteJsonPayload(ctx, data)
-	if jsonPayload == nil {
-		resp.Diagnostics.AddError(message, messageDetail)
+	jsonPayload := get{{.ResourceClassName}}DeleteJsonPayload(ctx, &resp.Diagnostics, data)
+	if resp.Diagnostics.HasError() {
 		return
 	}
-	requestData, message, messageDetail := do{{.ResourceClassName}}Request(ctx, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
-	if requestData == nil {
-		resp.Diagnostics.AddError(message, messageDetail)
+	do{{.ResourceClassName}}Request(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
+	if resp.Diagnostics.HasError() {
 		return
 	}
 	{{- else}}
@@ -432,15 +416,15 @@ func (r *{{.ResourceClassName}}Resource) ImportState(ctx context.Context, req re
 	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
 }
 
-func set{{.ResourceClassName}}Attributes(ctx context.Context, client *client.Client, data *{{.ResourceClassName}}ResourceModel) interface{} {
+func set{{.ResourceClassName}}Attributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *{{.ResourceClassName}}ResourceModel) {
 	{{- if .HasChild}}
-	requestData, message, messageDetail := do{{.ResourceClassName}}Request(ctx, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=children&rsp-subtree-class=%s", data.Id.ValueString(), "{{- .PkgName}},{{- listToString .ChildClasses}}"), "GET", nil)
+	requestData := do{{.ResourceClassName}}Request(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=children&rsp-subtree-class=%s", data.Id.ValueString(), "{{- .PkgName}},{{- listToString .ChildClasses}}"), "GET", nil)
 	{{- else}}
-	requestData, message, messageDetail := do{{.ResourceClassName}}Request(ctx, client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "GET", nil)
+	requestData := do{{.ResourceClassName}}Request(ctx, diags, client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "GET", nil)
 	{{- end}}
 	
-	if requestData == nil {
-		return map[string]string{"message": message, "messageDetail": messageDetail}
+	if diags.HasError() {
+		return
 	}
 	if requestData.Search("imdata").Search("{{.PkgName}}").Data() != nil {
 		classReadInfo := requestData.Search("imdata").Search("{{.PkgName}}").Data().([]interface{})
@@ -556,13 +540,12 @@ func set{{.ResourceClassName}}Attributes(ctx context.Context, client *client.Cli
 				{{- end}}
 			{{- end}}
 		} else {
-			return map[string]string{
-				"message":       "too many results in response",
-				"messageDetail": fmt.Sprintf("%v matches returned for class '{{.PkgName}}'. Please report this issue to the provider developers.", len(classReadInfo)),
-			}
+			diags.AddError(
+				"too many results in response",
+				fmt.Sprintf("%v matches returned for class '{{.PkgName}}'. Please report this issue to the provider developers.", len(classReadInfo)),
+			)
 		}
 	}
-	return nil
 }
 
 func get{{.ResourceClassName}}Rn(ctx context.Context, data *{{.ResourceClassName}}ResourceModel) string {
@@ -596,7 +579,7 @@ func set{{.ResourceClassName}}Id(ctx context.Context, data *{{.ResourceClassName
 }
 
 {{ range .Children}}
-func get{{$.ResourceClassName}}{{ .ResourceClassName }}ChildPayloads(ctx context.Context, data *{{$.ResourceClassName}}ResourceModel, {{.PkgName}}Plan, {{.PkgName}}State []{{.ResourceClassName}}{{$.ResourceClassName}}ResourceModel) ([]map[string]interface{}, string, string) {
+func get{{$.ResourceClassName}}{{ .ResourceClassName }}ChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *{{$.ResourceClassName}}ResourceModel, {{.PkgName}}Plan, {{.PkgName}}State []{{.ResourceClassName}}{{$.ResourceClassName}}ResourceModel) []map[string]interface{} {
 	
 	childPayloads := []map[string]interface{}{}
 	if !data.{{ .ResourceClassName }}.IsUnknown() {
@@ -663,9 +646,11 @@ func get{{$.ResourceClassName}}{{ .ResourceClassName }}ChildPayloads(ctx context
 			childMap["attributes"]["status"] = "deleted"
 			childPayloads = append(childPayloads, map[string]interface{}{"{{ .PkgName }}": childMap})
 			{{- else}}
-			errMessage := "{{ .PkgName }} object cannot be deleted"
-			errMessageDetail := "deletion of child is only possible upon deletion of the parent"
-			return nil, errMessage, errMessageDetail
+			diags.AddError(
+				"{{ .ResourceClassName }} object cannot be deleted",
+				"deletion of child is only possible upon deletion of the parent",
+			)
+			return nil
 			{{- end }}
 		}
 		{{- end}}
@@ -673,19 +658,19 @@ func get{{$.ResourceClassName}}{{ .ResourceClassName }}ChildPayloads(ctx context
 		data.{{ .ResourceClassName }} = types.SetNull(data.{{ .ResourceClassName }}.ElementType(ctx))
 	}
 
-	return childPayloads, "", ""
+	return childPayloads
 }
 {{- end}}
 
-func get{{.ResourceClassName}}CreateJsonPayload(ctx context.Context, data *{{.ResourceClassName}}ResourceModel{{- range .Children}}, {{.PkgName}}Plan, {{.PkgName}}State []{{.ResourceClassName}}{{$.ResourceClassName}}ResourceModel{{- end}}) (*container.Container, string, string) {
+func get{{.ResourceClassName}}CreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, data *{{.ResourceClassName}}ResourceModel{{- range .Children}}, {{.PkgName}}Plan, {{.PkgName}}State []{{.ResourceClassName}}{{$.ResourceClassName}}ResourceModel{{- end}}) *container.Container {
 	payloadMap := map[string]interface{}{}
 	payloadMap["attributes"] = map[string]string{}
 	{{- if .HasChild}}
 	childPayloads := []map[string]interface{}{}
 		{{ range .Children}}
-	{{ .ResourceClassName }}childPayloads, errMessage, errMessageDetail := get{{$.ResourceClassName}}{{ .ResourceClassName }}ChildPayloads(ctx, data, {{.PkgName}}Plan, {{.PkgName}}State)
+	{{ .ResourceClassName }}childPayloads := get{{$.ResourceClassName}}{{ .ResourceClassName }}ChildPayloads(ctx, diags, data, {{.PkgName}}Plan, {{.PkgName}}State)
 	if {{ .ResourceClassName }}childPayloads == nil {
-		return nil, errMessage, errMessageDetail
+		return nil
 	}
 	childPayloads = append(childPayloads, {{ .ResourceClassName }}childPayloads...)
 
@@ -709,53 +694,65 @@ func get{{.ResourceClassName}}CreateJsonPayload(ctx context.Context, data *{{.Re
 
 	payload, err := json.Marshal(map[string]interface{}{"{{.PkgName}}": payloadMap})
 	if err != nil {
-		errMessage := "Marshalling of json payload failed"
-		errMessageDetail := fmt.Sprintf("Err: %s. Please report this issue to the provider developers.", err)
-		return nil, errMessage, errMessageDetail
+		diags.AddError(
+			"Marshalling of json payload failed",
+			fmt.Sprintf("Err: %s. Please report this issue to the provider developers.", err),
+		)
+		return nil
 	}
 
 	jsonPayload, err := container.ParseJSON(payload)
 
 	if err != nil {
-		errMessage := "Construction of json payload failed"
-		errMessageDetail := fmt.Sprintf("Err: %s. Please report this issue to the provider developers.", err)
-		return nil, errMessage, errMessageDetail
+		diags.AddError(
+			"Construction of json payload failed",
+			fmt.Sprintf("Err: %s. Please report this issue to the provider developers.", err),
+		)
+		return nil
 	}
-	return jsonPayload, "", ""
+	return jsonPayload
 }
 
-func get{{.ResourceClassName}}DeleteJsonPayload(ctx context.Context, data *{{.ResourceClassName}}ResourceModel) (*container.Container, string, string) {
+func get{{.ResourceClassName}}DeleteJsonPayload(ctx context.Context, diags *diag.Diagnostics, data *{{.ResourceClassName}}ResourceModel) *container.Container {
 
 	jsonString := fmt.Sprintf(`{"{{.PkgName}}":{"attributes":{"dn": "%s","status": "deleted"}}}`, data.Id.ValueString())
 	jsonPayload, err := container.ParseJSON([]byte(jsonString))
 	if err != nil {
-		errMessage := "Construction of json payload failed"
-		errMessageDetail := fmt.Sprintf("Err: %s. Please report this issue to the provider developers.", err)
-		return nil, errMessage, errMessageDetail
+		diags.AddError(
+			"Construction of json payload failed",
+			fmt.Sprintf("Err: %s. Please report this issue to the provider developers.", err),
+		)
+		return nil
 	}
-	return jsonPayload, "", ""
+	return jsonPayload
 }
 
-func do{{.ResourceClassName}}Request(ctx context.Context, client *client.Client, path, method string, payload *container.Container) (*container.Container, string, string) {
+func do{{.ResourceClassName}}Request(ctx context.Context, diags *diag.Diagnostics, client *client.Client, path, method string, payload *container.Container) *container.Container {
 
 	restRequest, err := client.MakeRestRequest(method, path, payload, true)
 	if err != nil {
-		message := fmt.Sprintf("Creation of %s rest request failed", strings.ToLower(method))
-		messageDetail := fmt.Sprintf("Err: %s. Please report this issue to the provider developers.", err)
-		return nil, message, messageDetail
+		diags.AddError(
+			"Creation of rest request failed",
+			fmt.Sprintf("Err: %s. Please report this issue to the provider developers.", err),
+		)
+		return nil
 	}
 
 	cont, restResponse, err := client.Do(restRequest)
 
 	if restResponse != nil && restResponse.StatusCode != 200 {
-		message := fmt.Sprintf("The %s rest request failed", strings.ToLower(method))
-		messageDetail := fmt.Sprintf("Response: %s, err: %s. Please report this issue to the provider developers.", cont.Data().(map[string]interface{})["imdata"], err)
-		return nil, message, messageDetail
+		diags.AddError(
+			fmt.Sprintf("The %s rest request failed", strings.ToLower(method)),
+			fmt.Sprintf("Response: %s, err: %s. Please report this issue to the provider developers.", cont.Data().(map[string]interface{})["imdata"], err),
+		)
+		return nil
 	} else if err != nil {
-		message := fmt.Sprintf("The %s rest request failed", strings.ToLower(method))
-		messageDetail := fmt.Sprintf("Err: %s. Please report this issue to the provider developers.", err)
-		return nil, message, messageDetail
+		diags.AddError(
+			fmt.Sprintf("The %s rest request failed", strings.ToLower(method)),
+			fmt.Sprintf("Err: %s. Please report this issue to the provider developers.", err),
+		)
+		return nil
 	}
 
-	return cont, "", ""
+	return cont
 }
