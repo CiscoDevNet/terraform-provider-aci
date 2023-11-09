@@ -74,6 +74,7 @@ const (
 )
 
 const providerName = "aci"
+const pubhupDevnetBaseUrl = "https://pubhub.devnetcloud.com/media/model-doc-latest/docs"
 
 // Function map used during template rendering in order to call functions from the template
 // The map contains a key which is the name of the function used in the template and a value which is the function itself
@@ -109,7 +110,7 @@ func GetResourceNameAsDescription(s string) string {
 }
 
 func GetDevnetDocForClass(className string) string {
-	return fmt.Sprintf("[%s](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/%s/overview)", className, className)
+	return fmt.Sprintf("[%s](%s/app/index.html#/objects/%s/overview)", className, pubhupDevnetBaseUrl, className)
 }
 
 func Capitalize(s string) string {
@@ -396,14 +397,13 @@ func getExampleCode(filePath string) []byte {
 	return content
 }
 
-// When GEN_HOST and GEN_CLASSES environment variables are set, the class metadata is retrieved from the APIC and stored in the meta directory.
+// When GEN_CLASSES environment variable is set, the class metadata is retrieved from the APIC or devnet docs and stored in the meta directory.
 func getClassMetadata() {
 
-	host := os.Getenv("GEN_HOST")
 	classNames := os.Getenv("GEN_CLASSES")
 
-	if host != "" && classNames != "" {
-		var nameSpace, name string
+	if classNames != "" {
+		var name, nameSpace, url string
 		classNameList := strings.Split(classNames, ",")
 		for _, className := range classNameList {
 
@@ -415,8 +415,15 @@ func getClassMetadata() {
 				}
 			}
 
+			host := os.Getenv("GEN_HOST")
+			if host == "" {
+				url = fmt.Sprintf("%s/doc/jsonmeta/%s/%s.json", pubhupDevnetBaseUrl, nameSpace, name)
+			} else {
+				url = fmt.Sprintf("https://%s/doc/jsonmeta/%s/%s.json", host, nameSpace, name)
+			}
+
 			client := &http.Client{Transport: &http.Transport{TLSClientConfig: &tls.Config{InsecureSkipVerify: true}}}
-			res, err := client.Get(fmt.Sprintf("https://%s/doc/jsonmeta/%s/%s.json", host, nameSpace, name))
+			res, err := client.Get(url)
 			if err != nil {
 				panic(err)
 			}

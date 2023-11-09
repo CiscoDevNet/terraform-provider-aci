@@ -174,7 +174,7 @@ The below steps should be followed for developing `terraform-plugin-framework` r
   * `tagAnnotation` is added to children when this is allowed to be configure under the class 
 
 5. Copy new meta file(s) or replace existing with newer version of the meta file(s) to the [meta](https://github.com/CiscoDevNet/terraform-provider-aci/tree/master/examples/gen/meta) directory in the following format: `<classname>.json`. Assure that all relationship classes are also added to the `meta` directory. The `GEN_HOST` and `GEN_CLASSES` environment variables can be leveraged to retrieve the classes automatically before rendering the code.
-  * `GEN_HOST` should be set to a resolvable host, example: `173.36.219.70`
+  * `GEN_HOST` should be set to a resolvable host, example: `173.36.219.70`. When not provided the devnet documentation will be retrieved.
   * `GEN_CLASSES` should be set to a comma-separated string of classes, example: `fvTenant` or `fvTenant,fvBD`
 
 6. Run `go generate` in the root of the local repository where the `main.go` is located. The following files should be created or updated:
