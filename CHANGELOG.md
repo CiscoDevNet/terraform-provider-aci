@@ -1,3 +1,7 @@
+## 2.11.1 (November 10, 2023)
+BUG FIXES:
+- Add missing annotation attribute to aci_rest_managed datasource
+
 ## 2.11.0 (November 7, 2023)
 DEPRECATIONS:
 - Deprecated relation_vz_rs_fwd_r_flt_p_att and relation_vz_rs_rev_r_flt_p_att for aci_filter
