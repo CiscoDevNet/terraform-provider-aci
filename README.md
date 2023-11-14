@@ -174,7 +174,7 @@ The below steps should be followed for developing `terraform-plugin-framework` r
   * `tagAnnotation` is added to children when this is allowed to be configure under the class 
 
 5. Copy new meta file(s) or replace existing with newer version of the meta file(s) to the [meta](https://github.com/CiscoDevNet/terraform-provider-aci/tree/master/examples/gen/meta) directory in the following format: `<classname>.json`. Assure that all relationship classes are also added to the `meta` directory. The `GEN_HOST` and `GEN_CLASSES` environment variables can be leveraged to retrieve the classes automatically before rendering the code.
-  * `GEN_HOST` should be set to a resolvable host, example: `173.36.219.70`. When not provided the devnet documentation will be retrieved.
+  * `GEN_HOST` should be set to a resolvable APIC host, example: `192.158.1.38`. When not provided the devnet documentation will be retrieved.
   * `GEN_CLASSES` should be set to a comma-separated string of classes, example: `fvTenant` or `fvTenant,fvBD`
 
 6. Run `go generate` in the root of the local repository where the `main.go` is located. The following files should be created or updated:
@@ -203,6 +203,56 @@ The below steps should be followed for developing `terraform-plugin-framework` r
 9. Create PR for the code and request review from active maintainers.
 
 10. Review process
+
+### Troubleshooting 
+
+#### Go Generate Fail
+
+If you encounter an error message while generating the resources using go generate, a few steps can be followed:
+
+1. Make sure that you're running the latest version of Go
+
+2. Update dependencies and populate the vendor directory: If you're using Go modules, you can update your dependencies and populate your vendor directory by running the following commands in your terminal:
+
+```sh
+go mod tidy
+go mod vendor
+```
+
+The go mod tidy command will clean up unused dependencies and add missing ones. The go mod vendor command will copy all dependencies into the vendor directory.
+
+3. Disable vendor mode (if necessary): If the error still persists, consider disabling vendor mode by setting GOFLAGS="-mod=mod", and then run go get again:
+
+```sh
+export GOFLAGS="-mod=mod"
+```
+
+This will force Go to fetch the package directly, regardless of the vendor directory. After the package is downloaded, you can switch back to vendor mode if needed.
+
+#### Missing packages
+
+If you encounter an error indicating that the golang.org/x/text/language package is missing from your vendor directory, you can fetch it by following these steps:
+
+1. Disable vendor mode: Go operates in vendor mode when the -mod=vendor flag is set. You'll need to disable vendor mode to fetch packages directly. Run the following command in your terminal:
+
+```sh
+export GOFLAGS="-mod=mod"
+```
+
+2. Fetch the missing package: Now that vendor mode is disabled, you can fetch the missing package by running:
+
+```sh
+go get golang.org/x/text/language
+```
+
+This command tells Go to fetch the golang.org/x/text/language package directly, regardless of the vendor directory
+
+3. Re-enable vendor mode (if necessary): If you wish to switch back to vendor mode, you can do so by running:
+
+```sh
+export GOFLAGS="-mod=vendor"
+```
+
 
 ### Compiling
 
