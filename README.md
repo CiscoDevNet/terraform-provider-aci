@@ -1,3 +1,4 @@
+
 # Cisco ACI Provider
 
 ## Requirements
@@ -193,7 +194,7 @@ The below steps should be followed for developing `terraform-plugin-framework` r
   * documentation contains the example and all information is correct
   * Run `go generate` again until the files are generated as preferred. When you are not achieving the desired outputs, reource, data-source, example and/or documentation templates should be adjusted.
 
-8. Test the generated code of your resources and dat-sources
+8. Test the generated code of your resources and data-sources
   * Execute the tests for all your generated resources and data-sources
   * The following command can be used `go test internal/provider/* -v -run <test-name>`, where the test name can be found in the `resource_<resource-name>_test.go` and `data_source_<resource-name>_test.go` files.
   * Adjust generated test_values in case incorrect values are used. All test values are resolved by estimating the values. Some values are hard to resolve with and thus need to be overwritten in [properties.yaml](https://github.com/CiscoDevNet/terraform-provider-aci/tree/master/examples/gen/definitions/properties.yaml) file under the class specific test_values.
