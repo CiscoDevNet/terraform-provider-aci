@@ -107,10 +107,6 @@ func (d *VzOOBBrCPDataSource) Configure(ctx context.Context, req datasource.Conf
 	tflog.Debug(ctx, "Start configure of datasource: aci_out_of_band_contract")
 	// Prevent panic if the provider has not been configured.
 	if req.ProviderData == nil {
-		resp.Diagnostics.AddError(
-			"Provider has not been configured",
-			"The req.ProviderData is nil. Please report this issue to the provider developers.",
-		)
 		return
 	}
 
@@ -121,6 +117,7 @@ func (d *VzOOBBrCPDataSource) Configure(ctx context.Context, req datasource.Conf
 			"Unexpected Data Source Configure Type",
 			fmt.Sprintf("Expected *client.Client, got: %T. Please report this issue to the provider developers.", req.ProviderData),
 		)
+
 		return
 	}
 

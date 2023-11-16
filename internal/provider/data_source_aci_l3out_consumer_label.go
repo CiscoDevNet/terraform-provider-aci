@@ -103,10 +103,6 @@ func (d *L3extConsLblDataSource) Configure(ctx context.Context, req datasource.C
 	tflog.Debug(ctx, "Start configure of datasource: aci_l3out_consumer_label")
 	// Prevent panic if the provider has not been configured.
 	if req.ProviderData == nil {
-		resp.Diagnostics.AddError(
-			"Provider has not been configured",
-			"The req.ProviderData is nil. Please report this issue to the provider developers.",
-		)
 		return
 	}
 
@@ -117,6 +113,7 @@ func (d *L3extConsLblDataSource) Configure(ctx context.Context, req datasource.C
 			"Unexpected Data Source Configure Type",
 			fmt.Sprintf("Expected *client.Client, got: %T. Please report this issue to the provider developers.", req.ProviderData),
 		)
+
 		return
 	}
 

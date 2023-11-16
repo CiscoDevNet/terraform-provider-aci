@@ -150,10 +150,6 @@ func (r *MgmtRsOoBConsResource) Configure(ctx context.Context, req resource.Conf
 	tflog.Debug(ctx, "Start configure of resource: aci_l3out_management_network_oob_contract")
 	// Prevent panic if the provider has not been configured.
 	if req.ProviderData == nil {
-		resp.Diagnostics.AddError(
-			"Provider has not been configured",
-			"The req.ProviderData is nil. Please report this issue to the provider developers.",
-		)
 		return
 	}
 
@@ -164,6 +160,7 @@ func (r *MgmtRsOoBConsResource) Configure(ctx context.Context, req resource.Conf
 			"Unexpected Resource Configure Type",
 			fmt.Sprintf("Expected *client.Client, got: %T. Please report this issue to the provider developers.", req.ProviderData),
 		)
+
 		return
 	}
 
