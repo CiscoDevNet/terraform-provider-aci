@@ -26,13 +26,13 @@ type VzOOBBrCPDataSource struct {
 }
 
 func (d *VzOOBBrCPDataSource) Metadata(ctx context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
-	tflog.Trace(ctx, "Start metadata of datasource: aci_out_of_band_contract")
+	tflog.Debug(ctx, "Start metadata of datasource: aci_out_of_band_contract")
 	resp.TypeName = req.ProviderTypeName + "_out_of_band_contract"
-	tflog.Trace(ctx, "End metadata of datasource: aci_out_of_band_contract")
+	tflog.Debug(ctx, "End metadata of datasource: aci_out_of_band_contract")
 }
 
 func (d *VzOOBBrCPDataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
-	tflog.Trace(ctx, "Start schema of datasource: aci_out_of_band_contract")
+	tflog.Debug(ctx, "Start schema of datasource: aci_out_of_band_contract")
 	resp.Schema = schema.Schema{
 		// This description is used by the documentation generator and the language server.
 		MarkdownDescription: "The out_of_band_contract datasource for the 'vzOOBBrCP' class",
@@ -100,11 +100,11 @@ func (d *VzOOBBrCPDataSource) Schema(ctx context.Context, req datasource.SchemaR
 			},
 		},
 	}
-	tflog.Trace(ctx, "End schema of datasource: aci_out_of_band_contract")
+	tflog.Debug(ctx, "End schema of datasource: aci_out_of_band_contract")
 }
 
 func (d *VzOOBBrCPDataSource) Configure(ctx context.Context, req datasource.ConfigureRequest, resp *datasource.ConfigureResponse) {
-	tflog.Trace(ctx, "Start configure of datasource: aci_out_of_band_contract")
+	tflog.Debug(ctx, "Start configure of datasource: aci_out_of_band_contract")
 	// Prevent panic if the provider has not been configured.
 	if req.ProviderData == nil {
 		resp.Diagnostics.AddError(
@@ -125,11 +125,11 @@ func (d *VzOOBBrCPDataSource) Configure(ctx context.Context, req datasource.Conf
 	}
 
 	d.client = client
-	tflog.Trace(ctx, "End configure of datasource: aci_out_of_band_contract")
+	tflog.Debug(ctx, "End configure of datasource: aci_out_of_band_contract")
 }
 
 func (d *VzOOBBrCPDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
-	tflog.Trace(ctx, "Start read of datasource: aci_out_of_band_contract")
+	tflog.Debug(ctx, "Start read of datasource: aci_out_of_band_contract")
 	var data *VzOOBBrCPResourceModel
 
 	// Read Terraform configuration data into the model
@@ -147,5 +147,5 @@ func (d *VzOOBBrCPDataSource) Read(ctx context.Context, req datasource.ReadReque
 
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
-	tflog.Trace(ctx, "End read of datasource: aci_out_of_band_contract")
+	tflog.Debug(ctx, "End read of datasource: aci_out_of_band_contract")
 }

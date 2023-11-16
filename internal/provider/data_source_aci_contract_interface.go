@@ -26,13 +26,13 @@ type FvRsConsIfDataSource struct {
 }
 
 func (d *FvRsConsIfDataSource) Metadata(ctx context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
-	tflog.Trace(ctx, "Start metadata of datasource: aci_contract_interface")
+	tflog.Debug(ctx, "Start metadata of datasource: aci_contract_interface")
 	resp.TypeName = req.ProviderTypeName + "_contract_interface"
-	tflog.Trace(ctx, "End metadata of datasource: aci_contract_interface")
+	tflog.Debug(ctx, "End metadata of datasource: aci_contract_interface")
 }
 
 func (d *FvRsConsIfDataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
-	tflog.Trace(ctx, "Start schema of datasource: aci_contract_interface")
+	tflog.Debug(ctx, "Start schema of datasource: aci_contract_interface")
 	resp.Schema = schema.Schema{
 		// This description is used by the documentation generator and the language server.
 		MarkdownDescription: "The contract_interface datasource for the 'fvRsConsIf' class",
@@ -76,11 +76,11 @@ func (d *FvRsConsIfDataSource) Schema(ctx context.Context, req datasource.Schema
 			},
 		},
 	}
-	tflog.Trace(ctx, "End schema of datasource: aci_contract_interface")
+	tflog.Debug(ctx, "End schema of datasource: aci_contract_interface")
 }
 
 func (d *FvRsConsIfDataSource) Configure(ctx context.Context, req datasource.ConfigureRequest, resp *datasource.ConfigureResponse) {
-	tflog.Trace(ctx, "Start configure of datasource: aci_contract_interface")
+	tflog.Debug(ctx, "Start configure of datasource: aci_contract_interface")
 	// Prevent panic if the provider has not been configured.
 	if req.ProviderData == nil {
 		resp.Diagnostics.AddError(
@@ -101,11 +101,11 @@ func (d *FvRsConsIfDataSource) Configure(ctx context.Context, req datasource.Con
 	}
 
 	d.client = client
-	tflog.Trace(ctx, "End configure of datasource: aci_contract_interface")
+	tflog.Debug(ctx, "End configure of datasource: aci_contract_interface")
 }
 
 func (d *FvRsConsIfDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
-	tflog.Trace(ctx, "Start read of datasource: aci_contract_interface")
+	tflog.Debug(ctx, "Start read of datasource: aci_contract_interface")
 	var data *FvRsConsIfResourceModel
 
 	// Read Terraform configuration data into the model
@@ -123,5 +123,5 @@ func (d *FvRsConsIfDataSource) Read(ctx context.Context, req datasource.ReadRequ
 
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
-	tflog.Trace(ctx, "End read of datasource: aci_contract_interface")
+	tflog.Debug(ctx, "End read of datasource: aci_contract_interface")
 }

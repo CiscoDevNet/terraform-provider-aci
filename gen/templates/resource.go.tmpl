@@ -98,13 +98,13 @@ type {{.ResourceClassName}}Identifier struct {
 {{- end}}
 
 func (r *{{.ResourceClassName}}Resource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
-	tflog.Trace(ctx, "Start metadata of resource: aci_{{.ResourceName}}")
+	tflog.Debug(ctx, "Start metadata of resource: aci_{{.ResourceName}}")
 	resp.TypeName = req.ProviderTypeName + "_{{.ResourceName}}"
-	tflog.Trace(ctx, "End metadata of resource: aci_{{.ResourceName}}")
+	tflog.Debug(ctx, "End metadata of resource: aci_{{.ResourceName}}")
 }
 
 func (r *{{.ResourceClassName}}Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
-	tflog.Trace(ctx, "Start schema of resource: aci_{{.ResourceName}}")
+	tflog.Debug(ctx, "Start schema of resource: aci_{{.ResourceName}}")
 	resp.Schema = schema.Schema{
 		// This description is used by the documentation generator and the language server.
 		MarkdownDescription: "The {{.ResourceName}} resource for the '{{.PkgName}}' class",
@@ -232,11 +232,11 @@ func (r *{{.ResourceClassName}}Resource) Schema(ctx context.Context, req resourc
 			{{- end}}
 		},
 	}
-	tflog.Trace(ctx, "End schema of resource: aci_{{.ResourceName}}")
+	tflog.Debug(ctx, "End schema of resource: aci_{{.ResourceName}}")
 }
 
 func (r *{{.ResourceClassName}}Resource) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
-	tflog.Trace(ctx, "Start configure of resource: aci_{{.ResourceName}}")
+	tflog.Debug(ctx, "Start configure of resource: aci_{{.ResourceName}}")
 	// Prevent panic if the provider has not been configured.
 	if req.ProviderData == nil {
 		resp.Diagnostics.AddError(
@@ -257,11 +257,11 @@ func (r *{{.ResourceClassName}}Resource) Configure(ctx context.Context, req reso
 	}
 
 	r.client = client
-	tflog.Trace(ctx, "End configure of resource: aci_{{.ResourceName}}")
+	tflog.Debug(ctx, "End configure of resource: aci_{{.ResourceName}}")
 }
 
 func (r *{{.ResourceClassName}}Resource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
-	tflog.Trace(ctx, "Start create of resource: aci_{{.ResourceName}}")
+	tflog.Debug(ctx, "Start create of resource: aci_{{.ResourceName}}")
 	
 	{{- if .HasChild}}
 	// On create retrieve information on current state prior to making any changes in order to determine child delete operations
@@ -308,11 +308,11 @@ func (r *{{.ResourceClassName}}Resource) Create(ctx context.Context, req resourc
 
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
-	tflog.Trace(ctx, "End create of resource: aci_{{.ResourceName}}")
+	tflog.Debug(ctx, "End create of resource: aci_{{.ResourceName}}")
 }
 
 func (r *{{.ResourceClassName}}Resource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
-	tflog.Trace(ctx, "Start read of resource: aci_{{.ResourceName}}")
+	tflog.Debug(ctx, "Start read of resource: aci_{{.ResourceName}}")
 	var data *{{.ResourceClassName}}ResourceModel
 
 	// Read Terraform prior state data into the model
@@ -328,11 +328,11 @@ func (r *{{.ResourceClassName}}Resource) Read(ctx context.Context, req resource.
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
-	tflog.Trace(ctx, "End read of resource: aci_{{.ResourceName}}")
+	tflog.Debug(ctx, "End read of resource: aci_{{.ResourceName}}")
 }
 
 func (r *{{.ResourceClassName}}Resource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
-	tflog.Trace(ctx, "Start update of resource: aci_{{.ResourceName}}")
+	tflog.Debug(ctx, "Start update of resource: aci_{{.ResourceName}}")
 	var data *{{.ResourceClassName}}ResourceModel
 	{{- if .HasChild}}
 	var stateData *{{.ResourceClassName}}ResourceModel
@@ -375,11 +375,11 @@ func (r *{{.ResourceClassName}}Resource) Update(ctx context.Context, req resourc
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
-	tflog.Trace(ctx, "End update of resource: aci_{{.ResourceName}}")
+	tflog.Debug(ctx, "End update of resource: aci_{{.ResourceName}}")
 }
 
 func (r *{{.ResourceClassName}}Resource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
-	tflog.Trace(ctx, "Start delete of resource: aci_{{.ResourceName}}")
+	tflog.Debug(ctx, "Start delete of resource: aci_{{.ResourceName}}")
 	var data *{{.ResourceClassName}}ResourceModel
 
 	// Read Terraform prior state data into the model
@@ -412,7 +412,7 @@ func (r *{{.ResourceClassName}}Resource) Delete(ctx context.Context, req resourc
 	messageDetail := fmt.Sprintf("Only removing resource from state because apic does not allow deletion of class '{{.PkgName}}' objects. %s", parentDnMessage)
 	resp.Diagnostics.AddWarning(message, messageDetail)
 	{{- end}}
-	tflog.Trace(ctx, "End delete of resource: aci_{{.ResourceName}}")
+	tflog.Debug(ctx, "End delete of resource: aci_{{.ResourceName}}")
 }
 
 func (r *{{.ResourceClassName}}Resource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {

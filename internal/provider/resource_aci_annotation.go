@@ -48,13 +48,13 @@ type TagAnnotationIdentifier struct {
 }
 
 func (r *TagAnnotationResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
-	tflog.Trace(ctx, "Start metadata of resource: aci_annotation")
+	tflog.Debug(ctx, "Start metadata of resource: aci_annotation")
 	resp.TypeName = req.ProviderTypeName + "_annotation"
-	tflog.Trace(ctx, "End metadata of resource: aci_annotation")
+	tflog.Debug(ctx, "End metadata of resource: aci_annotation")
 }
 
 func (r *TagAnnotationResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
-	tflog.Trace(ctx, "Start schema of resource: aci_annotation")
+	tflog.Debug(ctx, "Start schema of resource: aci_annotation")
 	resp.Schema = schema.Schema{
 		// This description is used by the documentation generator and the language server.
 		MarkdownDescription: "The annotation resource for the 'tagAnnotation' class",
@@ -92,11 +92,11 @@ func (r *TagAnnotationResource) Schema(ctx context.Context, req resource.SchemaR
 			},
 		},
 	}
-	tflog.Trace(ctx, "End schema of resource: aci_annotation")
+	tflog.Debug(ctx, "End schema of resource: aci_annotation")
 }
 
 func (r *TagAnnotationResource) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
-	tflog.Trace(ctx, "Start configure of resource: aci_annotation")
+	tflog.Debug(ctx, "Start configure of resource: aci_annotation")
 	// Prevent panic if the provider has not been configured.
 	if req.ProviderData == nil {
 		resp.Diagnostics.AddError(
@@ -117,11 +117,11 @@ func (r *TagAnnotationResource) Configure(ctx context.Context, req resource.Conf
 	}
 
 	r.client = client
-	tflog.Trace(ctx, "End configure of resource: aci_annotation")
+	tflog.Debug(ctx, "End configure of resource: aci_annotation")
 }
 
 func (r *TagAnnotationResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
-	tflog.Trace(ctx, "Start create of resource: aci_annotation")
+	tflog.Debug(ctx, "Start create of resource: aci_annotation")
 
 	var data *TagAnnotationResourceModel
 
@@ -151,11 +151,11 @@ func (r *TagAnnotationResource) Create(ctx context.Context, req resource.CreateR
 
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
-	tflog.Trace(ctx, "End create of resource: aci_annotation")
+	tflog.Debug(ctx, "End create of resource: aci_annotation")
 }
 
 func (r *TagAnnotationResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
-	tflog.Trace(ctx, "Start read of resource: aci_annotation")
+	tflog.Debug(ctx, "Start read of resource: aci_annotation")
 	var data *TagAnnotationResourceModel
 
 	// Read Terraform prior state data into the model
@@ -171,11 +171,11 @@ func (r *TagAnnotationResource) Read(ctx context.Context, req resource.ReadReque
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
-	tflog.Trace(ctx, "End read of resource: aci_annotation")
+	tflog.Debug(ctx, "End read of resource: aci_annotation")
 }
 
 func (r *TagAnnotationResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
-	tflog.Trace(ctx, "Start update of resource: aci_annotation")
+	tflog.Debug(ctx, "Start update of resource: aci_annotation")
 	var data *TagAnnotationResourceModel
 
 	// Read Terraform plan data into the model
@@ -203,11 +203,11 @@ func (r *TagAnnotationResource) Update(ctx context.Context, req resource.UpdateR
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
-	tflog.Trace(ctx, "End update of resource: aci_annotation")
+	tflog.Debug(ctx, "End update of resource: aci_annotation")
 }
 
 func (r *TagAnnotationResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
-	tflog.Trace(ctx, "Start delete of resource: aci_annotation")
+	tflog.Debug(ctx, "Start delete of resource: aci_annotation")
 	var data *TagAnnotationResourceModel
 
 	// Read Terraform prior state data into the model
@@ -226,7 +226,7 @@ func (r *TagAnnotationResource) Delete(ctx context.Context, req resource.DeleteR
 	if resp.Diagnostics.HasError() {
 		return
 	}
-	tflog.Trace(ctx, "End delete of resource: aci_annotation")
+	tflog.Debug(ctx, "End delete of resource: aci_annotation")
 }
 
 func (r *TagAnnotationResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
