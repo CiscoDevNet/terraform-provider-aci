@@ -81,7 +81,7 @@ resource "aci_cloud_service_endpoint_selector" "azure_cloud_svc_ep_selector_tf_t
 // Third-party service EPG - two private link labels with the same name are needed (one for the service epg one and one for the subnet)
 
 resource "aci_cloud_service_epg" "azure_cloud_svc_epg_tf_test_3" {
-  cloud_application_container_dn   = aci_cloud_applicationcontainer.azure_cloud_app_tf_test.id
+  cloud_application_container_dn  = aci_cloud_applicationcontainer.azure_cloud_app_tf_test.id
   name                            = "azure_terraform_test_cloud_svc_epg_3"
   access_type                     = "Private"
   deployment_type                 = "Third-party"
