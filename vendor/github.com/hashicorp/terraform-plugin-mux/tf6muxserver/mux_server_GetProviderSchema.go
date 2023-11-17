@@ -21,16 +21,13 @@ func (s *muxServer) GetProviderSchema(ctx context.Context, req *tfprotov6.GetPro
 	ctx = logging.InitContext(ctx)
 	ctx = logging.RpcContext(ctx, rpc)
 
-	resp := &tfprotov6.GetProviderSchemaResponse{
-		DataSourceSchemas: make(map[string]*tfprotov6.Schema),
-		ResourceSchemas:   make(map[string]*tfprotov6.Schema),
+	s.serverDiscoveryMutex.Lock()
+	defer s.serverDiscoveryMutex.Unlock()
 
-		// Always announce all ServerCapabilities. Individual capabilities are
-		// handled in their respective RPCs to protect downstream servers if
-		// they are not compatible with a capability.
-		ServerCapabilities: &tfprotov6.ServerCapabilities{
-			PlanDestroy: true,
-		},
+	resp := &tfprotov6.GetProviderSchemaResponse{
+		DataSourceSchemas:  make(map[string]*tfprotov6.Schema),
+		ResourceSchemas:    make(map[string]*tfprotov6.Schema),
+		ServerCapabilities: serverCapabilities,
 	}
 
 	for _, server := range s.servers {
@@ -56,7 +53,6 @@ func (s *muxServer) GetProviderSchema(ctx context.Context, req *tfprotov6.GetPro
 						"Provider schema difference: " + schemaDiff(serverResp.Provider, resp.Provider),
 				})
 			} else {
-				s.providerSchema = serverResp.Provider
 				resp.Provider = serverResp.Provider
 			}
 		}
@@ -78,38 +74,29 @@ func (s *muxServer) GetProviderSchema(ctx context.Context, req *tfprotov6.GetPro
 
 		for resourceType, schema := range serverResp.ResourceSchemas {
 			if _, ok := resp.ResourceSchemas[resourceType]; ok {
-				resp.Diagnostics = append(resp.Diagnostics, &tfprotov6.Diagnostic{
-					Severity: tfprotov6.DiagnosticSeverityError,
-					Summary:  "Invalid Provider Server Combination",
-					Detail: "The combined provider has multiple implementations of the same resource type across providers. " +
-						"Resource types must be implemented by only one provider. " +
-						"This is always an issue in the provider implementation and should be reported to the provider developers.\n\n" +
-						"Duplicate resource type: " + resourceType,
-				})
-			} else {
-				s.resources[resourceType] = server
-				resp.ResourceSchemas[resourceType] = schema
+				resp.Diagnostics = append(resp.Diagnostics, resourceDuplicateError(resourceType))
+
+				continue
 			}
 
+			s.resources[resourceType] = server
 			s.resourceCapabilities[resourceType] = serverResp.ServerCapabilities
+			resp.ResourceSchemas[resourceType] = schema
 		}
 
 		for dataSourceType, schema := range serverResp.DataSourceSchemas {
 			if _, ok := resp.DataSourceSchemas[dataSourceType]; ok {
-				resp.Diagnostics = append(resp.Diagnostics, &tfprotov6.Diagnostic{
-					Severity: tfprotov6.DiagnosticSeverityError,
-					Summary:  "Invalid Provider Server Combination",
-					Detail: "The combined provider has multiple implementations of the same data source type across providers. " +
-						"Data source types must be implemented by only one provider. " +
-						"This is always an issue in the provider implementation and should be reported to the provider developers.\n\n" +
-						"Duplicate data source type: " + dataSourceType,
-				})
-			} else {
-				s.dataSources[dataSourceType] = server
-				resp.DataSourceSchemas[dataSourceType] = schema
+				resp.Diagnostics = append(resp.Diagnostics, dataSourceDuplicateError(dataSourceType))
+
+				continue
 			}
+
+			s.dataSources[dataSourceType] = server
+			resp.DataSourceSchemas[dataSourceType] = schema
 		}
 	}
+
+	s.serverDiscoveryComplete = true
 
 	return resp, nil
 }

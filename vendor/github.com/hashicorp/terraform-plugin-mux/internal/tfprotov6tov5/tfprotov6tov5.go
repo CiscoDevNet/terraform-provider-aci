@@ -62,6 +62,12 @@ func ConfigureProviderResponse(in *tfprotov6.ConfigureProviderResponse) *tfproto
 	}
 }
 
+func DataSourceMetadata(in tfprotov6.DataSourceMetadata) tfprotov5.DataSourceMetadata {
+	return tfprotov5.DataSourceMetadata{
+		TypeName: in.TypeName,
+	}
+}
+
 func Diagnostics(in []*tfprotov6.Diagnostic) []*tfprotov5.Diagnostic {
 	if in == nil {
 		return nil
@@ -95,6 +101,37 @@ func DynamicValue(in *tfprotov6.DynamicValue) *tfprotov5.DynamicValue {
 		JSON:    in.JSON,
 		MsgPack: in.MsgPack,
 	}
+}
+
+func GetMetadataRequest(in *tfprotov6.GetMetadataRequest) *tfprotov5.GetMetadataRequest {
+	if in == nil {
+		return nil
+	}
+
+	return &tfprotov5.GetMetadataRequest{}
+}
+
+func GetMetadataResponse(in *tfprotov6.GetMetadataResponse) *tfprotov5.GetMetadataResponse {
+	if in == nil {
+		return nil
+	}
+
+	resp := &tfprotov5.GetMetadataResponse{
+		DataSources:        make([]tfprotov5.DataSourceMetadata, 0, len(in.DataSources)),
+		Diagnostics:        Diagnostics(in.Diagnostics),
+		Resources:          make([]tfprotov5.ResourceMetadata, 0, len(in.Resources)),
+		ServerCapabilities: ServerCapabilities(in.ServerCapabilities),
+	}
+
+	for _, datasource := range in.DataSources {
+		resp.DataSources = append(resp.DataSources, DataSourceMetadata(datasource))
+	}
+
+	for _, resource := range in.Resources {
+		resp.Resources = append(resp.Resources, ResourceMetadata(resource))
+	}
+
+	return resp
 }
 
 func GetProviderSchemaRequest(in *tfprotov6.GetProviderSchemaRequest) *tfprotov5.GetProviderSchemaRequest {
@@ -307,6 +344,12 @@ func ReadResourceResponse(in *tfprotov6.ReadResourceResponse) *tfprotov5.ReadRes
 	}
 }
 
+func ResourceMetadata(in tfprotov6.ResourceMetadata) tfprotov5.ResourceMetadata {
+	return tfprotov5.ResourceMetadata{
+		TypeName: in.TypeName,
+	}
+}
+
 func Schema(in *tfprotov6.Schema) (*tfprotov5.Schema, error) {
 	if in == nil {
 		return nil, nil
@@ -411,6 +454,17 @@ func SchemaNestedBlock(in *tfprotov6.SchemaNestedBlock) (*tfprotov5.SchemaNested
 		Nesting:  tfprotov5.SchemaNestedBlockNestingMode(in.Nesting),
 		TypeName: in.TypeName,
 	}, nil
+}
+
+func ServerCapabilities(in *tfprotov6.ServerCapabilities) *tfprotov5.ServerCapabilities {
+	if in == nil {
+		return nil
+	}
+
+	return &tfprotov5.ServerCapabilities{
+		GetProviderSchemaOptional: in.GetProviderSchemaOptional,
+		PlanDestroy:               in.PlanDestroy,
+	}
 }
 
 func StopProviderRequest(in *tfprotov6.StopProviderRequest) *tfprotov5.StopProviderRequest {

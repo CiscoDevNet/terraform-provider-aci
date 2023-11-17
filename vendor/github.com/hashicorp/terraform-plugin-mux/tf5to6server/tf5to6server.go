@@ -54,6 +54,17 @@ func (s v5tov6Server) ConfigureProvider(ctx context.Context, req *tfprotov6.Conf
 	return tfprotov5tov6.ConfigureProviderResponse(v5Resp), nil
 }
 
+func (s v5tov6Server) GetMetadata(ctx context.Context, req *tfprotov6.GetMetadataRequest) (*tfprotov6.GetMetadataResponse, error) {
+	v5Req := tfprotov6tov5.GetMetadataRequest(req)
+	v5Resp, err := s.v5Server.GetMetadata(ctx, v5Req)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return tfprotov5tov6.GetMetadataResponse(v5Resp), nil
+}
+
 func (s v5tov6Server) GetProviderSchema(ctx context.Context, req *tfprotov6.GetProviderSchemaRequest) (*tfprotov6.GetProviderSchemaResponse, error) {
 	v5Req := tfprotov6tov5.GetProviderSchemaRequest(req)
 	v5Resp, err := s.v5Server.GetProviderSchema(ctx, v5Req)

@@ -83,9 +83,13 @@ type Server struct {
 	// access from race conditions.
 	providerMetaSchemaMutex sync.Mutex
 
-	// providerTypeName is the type name of the provider, if the provider
-	// implemented the Metadata method.
+	// providerTypeName is the cached type name of the provider, if the provider
+	// implemented the Metadata method. Access this field with the Provider.ProviderTypeName() method.
 	providerTypeName string
+
+	// providerTypeNameMutex is a mutex to protect concurrent providerTypeName
+	// access from race conditions.
+	providerTypeNameMutex sync.Mutex
 
 	// resourceSchemas is the cached Resource Schemas for RPCs that need to
 	// convert configuration data from the protocol. If not found, it will be
@@ -140,6 +144,7 @@ func (s *Server) DataSourceFuncs(ctx context.Context) (map[string]func() datasou
 		return s.dataSourceFuncs, s.dataSourceTypesDiags
 	}
 
+	providerTypeName := s.ProviderTypeName(ctx)
 	s.dataSourceFuncs = make(map[string]func() datasource.DataSource)
 
 	logging.FrameworkTrace(ctx, "Calling provider defined Provider DataSources")
@@ -150,7 +155,7 @@ func (s *Server) DataSourceFuncs(ctx context.Context) (map[string]func() datasou
 		dataSource := dataSourceFunc()
 
 		dataSourceTypeNameReq := datasource.MetadataRequest{
-			ProviderTypeName: s.providerTypeName,
+			ProviderTypeName: providerTypeName,
 		}
 		dataSourceTypeNameResp := datasource.MetadataResponse{}
 
@@ -181,6 +186,22 @@ func (s *Server) DataSourceFuncs(ctx context.Context) (map[string]func() datasou
 	}
 
 	return s.dataSourceFuncs, s.dataSourceTypesDiags
+}
+
+// DataSourceMetadatas returns a slice of DataSourceMetadata for the GetMetadata
+// RPC.
+func (s *Server) DataSourceMetadatas(ctx context.Context) ([]DataSourceMetadata, diag.Diagnostics) {
+	datasourceFuncs, diags := s.DataSourceFuncs(ctx)
+
+	datasourceMetadatas := make([]DataSourceMetadata, 0, len(datasourceFuncs))
+
+	for typeName := range datasourceFuncs {
+		datasourceMetadatas = append(datasourceMetadatas, DataSourceMetadata{
+			TypeName: typeName,
+		})
+	}
+
+	return datasourceMetadatas, diags
 }
 
 // DataSourceSchema returns the DataSource Schema for the given type name and
@@ -267,6 +288,28 @@ func (s *Server) DataSourceSchemas(ctx context.Context) (map[string]fwschema.Sch
 	}
 
 	return dataSourceSchemas, diags
+}
+
+// ProviderTypeName returns the TypeName associated with the Provider. The TypeName is cached on first use.
+func (s *Server) ProviderTypeName(ctx context.Context) string {
+	logging.FrameworkTrace(ctx, "Checking ProviderTypeName lock")
+	s.providerTypeNameMutex.Lock()
+	defer s.providerTypeNameMutex.Unlock()
+
+	if s.providerTypeName != "" {
+		return s.providerTypeName
+	}
+
+	metadataReq := provider.MetadataRequest{}
+	metadataResp := provider.MetadataResponse{}
+
+	logging.FrameworkTrace(ctx, "Calling provider defined Provider Metadata")
+	s.Provider.Metadata(ctx, metadataReq, &metadataResp)
+	logging.FrameworkTrace(ctx, "Called provider defined Provider Metadata")
+
+	s.providerTypeName = metadataResp.TypeName
+
+	return s.providerTypeName
 }
 
 // ProviderSchema returns the Schema associated with the Provider. The Schema
@@ -358,6 +401,7 @@ func (s *Server) ResourceFuncs(ctx context.Context) (map[string]func() resource.
 		return s.resourceFuncs, s.resourceTypesDiags
 	}
 
+	providerTypeName := s.ProviderTypeName(ctx)
 	s.resourceFuncs = make(map[string]func() resource.Resource)
 
 	logging.FrameworkTrace(ctx, "Calling provider defined Provider Resources")
@@ -368,7 +412,7 @@ func (s *Server) ResourceFuncs(ctx context.Context) (map[string]func() resource.
 		res := resourceFunc()
 
 		resourceTypeNameReq := resource.MetadataRequest{
-			ProviderTypeName: s.providerTypeName,
+			ProviderTypeName: providerTypeName,
 		}
 		resourceTypeNameResp := resource.MetadataResponse{}
 
@@ -399,6 +443,22 @@ func (s *Server) ResourceFuncs(ctx context.Context) (map[string]func() resource.
 	}
 
 	return s.resourceFuncs, s.resourceTypesDiags
+}
+
+// ResourceMetadatas returns a slice of ResourceMetadata for the GetMetadata
+// RPC.
+func (s *Server) ResourceMetadatas(ctx context.Context) ([]ResourceMetadata, diag.Diagnostics) {
+	resourceFuncs, diags := s.ResourceFuncs(ctx)
+
+	resourceMetadatas := make([]ResourceMetadata, 0, len(resourceFuncs))
+
+	for typeName := range resourceFuncs {
+		resourceMetadatas = append(resourceMetadatas, ResourceMetadata{
+			TypeName: typeName,
+		})
+	}
+
+	return resourceMetadatas, diags
 }
 
 // ResourceSchema returns the Resource Schema for the given type name and

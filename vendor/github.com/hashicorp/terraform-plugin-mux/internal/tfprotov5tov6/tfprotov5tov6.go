@@ -57,6 +57,12 @@ func ConfigureProviderResponse(in *tfprotov5.ConfigureProviderResponse) *tfproto
 	}
 }
 
+func DataSourceMetadata(in tfprotov5.DataSourceMetadata) tfprotov6.DataSourceMetadata {
+	return tfprotov6.DataSourceMetadata{
+		TypeName: in.TypeName,
+	}
+}
+
 func Diagnostics(in []*tfprotov5.Diagnostic) []*tfprotov6.Diagnostic {
 	if in == nil {
 		return nil
@@ -92,6 +98,37 @@ func DynamicValue(in *tfprotov5.DynamicValue) *tfprotov6.DynamicValue {
 	}
 }
 
+func GetMetadataRequest(in *tfprotov5.GetMetadataRequest) *tfprotov6.GetMetadataRequest {
+	if in == nil {
+		return nil
+	}
+
+	return &tfprotov6.GetMetadataRequest{}
+}
+
+func GetMetadataResponse(in *tfprotov5.GetMetadataResponse) *tfprotov6.GetMetadataResponse {
+	if in == nil {
+		return nil
+	}
+
+	resp := &tfprotov6.GetMetadataResponse{
+		DataSources:        make([]tfprotov6.DataSourceMetadata, 0, len(in.DataSources)),
+		Diagnostics:        Diagnostics(in.Diagnostics),
+		Resources:          make([]tfprotov6.ResourceMetadata, 0, len(in.Resources)),
+		ServerCapabilities: ServerCapabilities(in.ServerCapabilities),
+	}
+
+	for _, datasource := range in.DataSources {
+		resp.DataSources = append(resp.DataSources, DataSourceMetadata(datasource))
+	}
+
+	for _, resource := range in.Resources {
+		resp.Resources = append(resp.Resources, ResourceMetadata(resource))
+	}
+
+	return resp
+}
+
 func GetProviderSchemaRequest(in *tfprotov5.GetProviderSchemaRequest) *tfprotov6.GetProviderSchemaRequest {
 	if in == nil {
 		return nil
@@ -118,11 +155,12 @@ func GetProviderSchemaResponse(in *tfprotov5.GetProviderSchemaResponse) *tfproto
 	}
 
 	return &tfprotov6.GetProviderSchemaResponse{
-		DataSourceSchemas: dataSourceSchemas,
-		Diagnostics:       Diagnostics(in.Diagnostics),
-		Provider:          Schema(in.Provider),
-		ProviderMeta:      Schema(in.ProviderMeta),
-		ResourceSchemas:   resourceSchemas,
+		DataSourceSchemas:  dataSourceSchemas,
+		Diagnostics:        Diagnostics(in.Diagnostics),
+		Provider:           Schema(in.Provider),
+		ProviderMeta:       Schema(in.ProviderMeta),
+		ResourceSchemas:    resourceSchemas,
+		ServerCapabilities: ServerCapabilities(in.ServerCapabilities),
 	}
 }
 
@@ -258,6 +296,12 @@ func ReadResourceResponse(in *tfprotov5.ReadResourceResponse) *tfprotov6.ReadRes
 	}
 }
 
+func ResourceMetadata(in tfprotov5.ResourceMetadata) tfprotov6.ResourceMetadata {
+	return tfprotov6.ResourceMetadata{
+		TypeName: in.TypeName,
+	}
+}
+
 func Schema(in *tfprotov5.Schema) *tfprotov6.Schema {
 	if in == nil {
 		return nil
@@ -333,6 +377,17 @@ func SchemaNestedBlock(in *tfprotov5.SchemaNestedBlock) *tfprotov6.SchemaNestedB
 		MinItems: in.MinItems,
 		Nesting:  tfprotov6.SchemaNestedBlockNestingMode(in.Nesting),
 		TypeName: in.TypeName,
+	}
+}
+
+func ServerCapabilities(in *tfprotov5.ServerCapabilities) *tfprotov6.ServerCapabilities {
+	if in == nil {
+		return nil
+	}
+
+	return &tfprotov6.ServerCapabilities{
+		GetProviderSchemaOptional: in.GetProviderSchemaOptional,
+		PlanDestroy:               in.PlanDestroy,
 	}
 }
 

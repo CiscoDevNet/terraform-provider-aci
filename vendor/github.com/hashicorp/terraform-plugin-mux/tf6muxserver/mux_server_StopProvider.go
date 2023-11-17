@@ -16,7 +16,7 @@ import (
 // with the muxServer, one at a time. All Error fields will be joined
 // together and returned, but will not prevent the rest of the providers'
 // StopProvider methods from being called.
-func (s muxServer) StopProvider(ctx context.Context, req *tfprotov6.StopProviderRequest) (*tfprotov6.StopProviderResponse, error) {
+func (s *muxServer) StopProvider(ctx context.Context, req *tfprotov6.StopProviderRequest) (*tfprotov6.StopProviderResponse, error) {
 	rpc := "StopProvider"
 	ctx = logging.InitContext(ctx)
 	ctx = logging.RpcContext(ctx, rpc)
