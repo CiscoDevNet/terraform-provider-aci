@@ -49,7 +49,6 @@ import (
 	"text/template"
 	"unicode"
 
-	"github.com/buxizhizhoum/inflection"
 	"golang.org/x/exp/slices"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
@@ -80,7 +79,7 @@ const pubhupDevnetBaseUrl = "https://pubhub.devnetcloud.com/media/model-doc-late
 // The map contains a key which is the name of the function used in the template and a value which is the function itself
 // The functions itself are defined in the current file
 var templateFuncs = template.FuncMap{
-	"snakeCase":                    inflection.Underscore,
+	"snakeCase":                    Underscore,
 	"validatorString":              ValidatorString,
 	"listToString":                 ListToString,
 	"overwriteProperty":            GetOverwriteAttributeName,
@@ -115,6 +114,15 @@ func GetDevnetDocForClass(className string) string {
 
 func Capitalize(s string) string {
 	return fmt.Sprintf("%s%s", strings.ToUpper(s[:1]), s[1:])
+}
+
+// Reused from https://github.com/buxizhizhoum/inflection/blob/master/inflection.go#L8 to avoid importing the whole package
+func Underscore(s string) string {
+	for _, reStr := range []string{`([A-Z]+)([A-Z][a-z])`, `([a-z\d])([A-Z])`} {
+		re := regexp.MustCompile(reStr)
+		s = re.ReplaceAllString(s, "${1}_${2}")
+	}
+	return strings.ToLower(s)
 }
 
 func ValidatorString(stringList []string) string {
@@ -666,7 +674,7 @@ func (m *Model) SetClassLabel(classDetails interface{}, child bool) {
 			duplicateLabels = append(duplicateLabels, m.Label)
 		}
 		if _, ok := resourceNames[m.PkgName]; !ok {
-			resourceNames[m.PkgName] = inflection.Underscore(m.PkgName)
+			resourceNames[m.PkgName] = Underscore(m.PkgName)
 		}
 	} else {
 		labels = append(labels, m.Label)
@@ -714,7 +722,7 @@ func cleanLabel(label string) string {
 	}
 
 	// Remove all capital letters from the label and convert to snake case
-	return inflection.Underscore(returnLabel)
+	return Underscore(returnLabel)
 }
 
 func (m *Model) SetClassName(classDetails interface{}) {
@@ -860,7 +868,7 @@ func (m *Model) SetClassProperties(classDetails interface{}) {
 			property := Property{
 				Name:              fmt.Sprintf("%s%s", strings.ToUpper(propertyName[0:1]), propertyName[1:]),
 				PropertyName:      propertyName,
-				SnakeCaseName:     inflection.Underscore(propertyName),
+				SnakeCaseName:     Underscore(propertyName),
 				ResourceClassName: strings.ToUpper(m.PkgName[:1]) + m.PkgName[1:],
 				PkgName:           m.PkgName,
 				IdentifiedBy:      m.IdentifiedBy,
