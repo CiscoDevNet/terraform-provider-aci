@@ -235,7 +235,7 @@ func (r *L3extConsLblResource) Create(ctx context.Context, req resource.CreateRe
 
 	setL3extConsLblId(ctx, data)
 
-	tflog.Trace(ctx, fmt.Sprintf("Create of resource aci_l3out_consumer_label with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_l3out_consumer_label with id '%s'", data.Id.ValueString()))
 
 	var tagAnnotationPlan, tagAnnotationState []TagAnnotationL3extConsLblResourceModel
 	data.TagAnnotation.ElementsAs(ctx, &tagAnnotationPlan, false)
@@ -269,12 +269,18 @@ func (r *L3extConsLblResource) Read(ctx context.Context, req resource.ReadReques
 		return
 	}
 
-	tflog.Trace(ctx, fmt.Sprintf("Read of resource aci_l3out_consumer_label with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("Read of resource aci_l3out_consumer_label with id '%s'", data.Id.ValueString()))
 
 	setL3extConsLblAttributes(ctx, &resp.Diagnostics, r.client, data)
 
 	// Save updated data into Terraform state
-	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	if data.Id.IsNull() {
+		var emptyData *L3extConsLblResourceModel
+		resp.Diagnostics.Append(resp.State.Set(ctx, &emptyData)...)
+	} else {
+		resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	}
+
 	tflog.Debug(ctx, "End read of resource: aci_l3out_consumer_label")
 }
 
@@ -291,7 +297,7 @@ func (r *L3extConsLblResource) Update(ctx context.Context, req resource.UpdateRe
 		return
 	}
 
-	tflog.Trace(ctx, fmt.Sprintf("Update of resource aci_l3out_consumer_label with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("Update of resource aci_l3out_consumer_label with id '%s'", data.Id.ValueString()))
 
 	var tagAnnotationPlan, tagAnnotationState []TagAnnotationL3extConsLblResourceModel
 	data.TagAnnotation.ElementsAs(ctx, &tagAnnotationPlan, false)
@@ -326,7 +332,7 @@ func (r *L3extConsLblResource) Delete(ctx context.Context, req resource.DeleteRe
 		return
 	}
 
-	tflog.Trace(ctx, fmt.Sprintf("Delete of resource aci_l3out_consumer_label with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("Delete of resource aci_l3out_consumer_label with id '%s'", data.Id.ValueString()))
 	jsonPayload := getL3extConsLblDeleteJsonPayload(ctx, &resp.Diagnostics, data)
 	if resp.Diagnostics.HasError() {
 		return
@@ -339,7 +345,14 @@ func (r *L3extConsLblResource) Delete(ctx context.Context, req resource.DeleteRe
 }
 
 func (r *L3extConsLblResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
+	tflog.Debug(ctx, "Start import state of resource: aci_l3out_consumer_label")
 	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
+
+	var stateData *L3extConsLblResourceModel
+	resp.Diagnostics.Append(resp.State.Get(ctx, &stateData)...)
+	tflog.Debug(ctx, fmt.Sprintf("Import state of resource aci_l3out_consumer_label with id '%s'", stateData.Id.ValueString()))
+
+	tflog.Debug(ctx, "End import of state resource: aci_l3out_consumer_label")
 }
 
 func setL3extConsLblAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *L3extConsLblResourceModel) {
@@ -414,6 +427,8 @@ func setL3extConsLblAttributes(ctx context.Context, diags *diag.Diagnostics, cli
 				fmt.Sprintf("%v matches returned for class 'l3extConsLbl'. Please report this issue to the provider developers.", len(classReadInfo)),
 			)
 		}
+	} else {
+		data.Id = basetypes.NewStringNull()
 	}
 }
 

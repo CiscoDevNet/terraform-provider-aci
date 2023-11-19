@@ -126,9 +126,20 @@ func (d *PimRouteMapPolDataSource) Read(ctx context.Context, req datasource.Read
 
 	setPimRouteMapPolId(ctx, data)
 
-	tflog.Trace(ctx, fmt.Sprintf("Read of datasource aci_pim_route_map_policy with id '%s'", data.Id.ValueString()))
+	// Create a copy of the Id for when not found during setPimRouteMapPolAttributes
+	cachedId := data.Id.ValueString()
+
+	tflog.Debug(ctx, fmt.Sprintf("Read of datasource aci_pim_route_map_policy with id '%s'", data.Id.ValueString()))
 
 	setPimRouteMapPolAttributes(ctx, &resp.Diagnostics, d.client, data)
+
+	if data.Id.IsNull() {
+		resp.Diagnostics.AddError(
+			"Failed to read aci_pim_route_map_policy data source",
+			fmt.Sprintf("The aci_pim_route_map_policy data source with id '%s' has not been found", cachedId),
+		)
+		return
+	}
 
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)

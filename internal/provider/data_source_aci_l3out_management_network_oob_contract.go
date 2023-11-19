@@ -114,9 +114,20 @@ func (d *MgmtRsOoBConsDataSource) Read(ctx context.Context, req datasource.ReadR
 
 	setMgmtRsOoBConsId(ctx, data)
 
-	tflog.Trace(ctx, fmt.Sprintf("Read of datasource aci_l3out_management_network_oob_contract with id '%s'", data.Id.ValueString()))
+	// Create a copy of the Id for when not found during setMgmtRsOoBConsAttributes
+	cachedId := data.Id.ValueString()
+
+	tflog.Debug(ctx, fmt.Sprintf("Read of datasource aci_l3out_management_network_oob_contract with id '%s'", data.Id.ValueString()))
 
 	setMgmtRsOoBConsAttributes(ctx, &resp.Diagnostics, d.client, data)
+
+	if data.Id.IsNull() {
+		resp.Diagnostics.AddError(
+			"Failed to read aci_l3out_management_network_oob_contract data source",
+			fmt.Sprintf("The aci_l3out_management_network_oob_contract data source with id '%s' has not been found", cachedId),
+		)
+		return
+	}
 
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)

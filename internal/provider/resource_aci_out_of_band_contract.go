@@ -250,7 +250,7 @@ func (r *VzOOBBrCPResource) Create(ctx context.Context, req resource.CreateReque
 
 	setVzOOBBrCPId(ctx, data)
 
-	tflog.Trace(ctx, fmt.Sprintf("Create of resource aci_out_of_band_contract with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_out_of_band_contract with id '%s'", data.Id.ValueString()))
 
 	var tagAnnotationPlan, tagAnnotationState []TagAnnotationVzOOBBrCPResourceModel
 	data.TagAnnotation.ElementsAs(ctx, &tagAnnotationPlan, false)
@@ -284,12 +284,18 @@ func (r *VzOOBBrCPResource) Read(ctx context.Context, req resource.ReadRequest, 
 		return
 	}
 
-	tflog.Trace(ctx, fmt.Sprintf("Read of resource aci_out_of_band_contract with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("Read of resource aci_out_of_band_contract with id '%s'", data.Id.ValueString()))
 
 	setVzOOBBrCPAttributes(ctx, &resp.Diagnostics, r.client, data)
 
 	// Save updated data into Terraform state
-	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	if data.Id.IsNull() {
+		var emptyData *VzOOBBrCPResourceModel
+		resp.Diagnostics.Append(resp.State.Set(ctx, &emptyData)...)
+	} else {
+		resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	}
+
 	tflog.Debug(ctx, "End read of resource: aci_out_of_band_contract")
 }
 
@@ -306,7 +312,7 @@ func (r *VzOOBBrCPResource) Update(ctx context.Context, req resource.UpdateReque
 		return
 	}
 
-	tflog.Trace(ctx, fmt.Sprintf("Update of resource aci_out_of_band_contract with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("Update of resource aci_out_of_band_contract with id '%s'", data.Id.ValueString()))
 
 	var tagAnnotationPlan, tagAnnotationState []TagAnnotationVzOOBBrCPResourceModel
 	data.TagAnnotation.ElementsAs(ctx, &tagAnnotationPlan, false)
@@ -341,7 +347,7 @@ func (r *VzOOBBrCPResource) Delete(ctx context.Context, req resource.DeleteReque
 		return
 	}
 
-	tflog.Trace(ctx, fmt.Sprintf("Delete of resource aci_out_of_band_contract with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("Delete of resource aci_out_of_band_contract with id '%s'", data.Id.ValueString()))
 	jsonPayload := getVzOOBBrCPDeleteJsonPayload(ctx, &resp.Diagnostics, data)
 	if resp.Diagnostics.HasError() {
 		return
@@ -354,7 +360,14 @@ func (r *VzOOBBrCPResource) Delete(ctx context.Context, req resource.DeleteReque
 }
 
 func (r *VzOOBBrCPResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
+	tflog.Debug(ctx, "Start import state of resource: aci_out_of_band_contract")
 	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
+
+	var stateData *VzOOBBrCPResourceModel
+	resp.Diagnostics.Append(resp.State.Get(ctx, &stateData)...)
+	tflog.Debug(ctx, fmt.Sprintf("Import state of resource aci_out_of_band_contract with id '%s'", stateData.Id.ValueString()))
+
+	tflog.Debug(ctx, "End import of state resource: aci_out_of_band_contract")
 }
 
 func setVzOOBBrCPAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *VzOOBBrCPResourceModel) {
@@ -434,6 +447,8 @@ func setVzOOBBrCPAttributes(ctx context.Context, diags *diag.Diagnostics, client
 				fmt.Sprintf("%v matches returned for class 'vzOOBBrCP'. Please report this issue to the provider developers.", len(classReadInfo)),
 			)
 		}
+	} else {
+		data.Id = basetypes.NewStringNull()
 	}
 }
 

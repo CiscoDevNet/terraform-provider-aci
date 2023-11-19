@@ -187,7 +187,7 @@ func (r *MgmtRsOoBConsResource) Create(ctx context.Context, req resource.CreateR
 
 	setMgmtRsOoBConsId(ctx, data)
 
-	tflog.Trace(ctx, fmt.Sprintf("Create of resource aci_l3out_management_network_oob_contract with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_l3out_management_network_oob_contract with id '%s'", data.Id.ValueString()))
 
 	var tagAnnotationPlan, tagAnnotationState []TagAnnotationMgmtRsOoBConsResourceModel
 	data.TagAnnotation.ElementsAs(ctx, &tagAnnotationPlan, false)
@@ -221,12 +221,18 @@ func (r *MgmtRsOoBConsResource) Read(ctx context.Context, req resource.ReadReque
 		return
 	}
 
-	tflog.Trace(ctx, fmt.Sprintf("Read of resource aci_l3out_management_network_oob_contract with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("Read of resource aci_l3out_management_network_oob_contract with id '%s'", data.Id.ValueString()))
 
 	setMgmtRsOoBConsAttributes(ctx, &resp.Diagnostics, r.client, data)
 
 	// Save updated data into Terraform state
-	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	if data.Id.IsNull() {
+		var emptyData *MgmtRsOoBConsResourceModel
+		resp.Diagnostics.Append(resp.State.Set(ctx, &emptyData)...)
+	} else {
+		resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	}
+
 	tflog.Debug(ctx, "End read of resource: aci_l3out_management_network_oob_contract")
 }
 
@@ -243,7 +249,7 @@ func (r *MgmtRsOoBConsResource) Update(ctx context.Context, req resource.UpdateR
 		return
 	}
 
-	tflog.Trace(ctx, fmt.Sprintf("Update of resource aci_l3out_management_network_oob_contract with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("Update of resource aci_l3out_management_network_oob_contract with id '%s'", data.Id.ValueString()))
 
 	var tagAnnotationPlan, tagAnnotationState []TagAnnotationMgmtRsOoBConsResourceModel
 	data.TagAnnotation.ElementsAs(ctx, &tagAnnotationPlan, false)
@@ -278,7 +284,7 @@ func (r *MgmtRsOoBConsResource) Delete(ctx context.Context, req resource.DeleteR
 		return
 	}
 
-	tflog.Trace(ctx, fmt.Sprintf("Delete of resource aci_l3out_management_network_oob_contract with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("Delete of resource aci_l3out_management_network_oob_contract with id '%s'", data.Id.ValueString()))
 	jsonPayload := getMgmtRsOoBConsDeleteJsonPayload(ctx, &resp.Diagnostics, data)
 	if resp.Diagnostics.HasError() {
 		return
@@ -291,7 +297,14 @@ func (r *MgmtRsOoBConsResource) Delete(ctx context.Context, req resource.DeleteR
 }
 
 func (r *MgmtRsOoBConsResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
+	tflog.Debug(ctx, "Start import state of resource: aci_l3out_management_network_oob_contract")
 	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
+
+	var stateData *MgmtRsOoBConsResourceModel
+	resp.Diagnostics.Append(resp.State.Get(ctx, &stateData)...)
+	tflog.Debug(ctx, fmt.Sprintf("Import state of resource aci_l3out_management_network_oob_contract with id '%s'", stateData.Id.ValueString()))
+
+	tflog.Debug(ctx, "End import of state resource: aci_l3out_management_network_oob_contract")
 }
 
 func setMgmtRsOoBConsAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *MgmtRsOoBConsResourceModel) {
@@ -351,6 +364,8 @@ func setMgmtRsOoBConsAttributes(ctx context.Context, diags *diag.Diagnostics, cl
 				fmt.Sprintf("%v matches returned for class 'mgmtRsOoBCons'. Please report this issue to the provider developers.", len(classReadInfo)),
 			)
 		}
+	} else {
+		data.Id = basetypes.NewStringNull()
 	}
 }
 

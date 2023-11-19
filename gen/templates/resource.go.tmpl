@@ -279,7 +279,7 @@ func (r *{{.ResourceClassName}}Resource) Create(ctx context.Context, req resourc
 	
 	set{{.ResourceClassName}}Id(ctx, data)
 
-	tflog.Trace(ctx, fmt.Sprintf("Create of resource aci_{{.ResourceName}} with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_{{.ResourceName}} with id '%s'", data.Id.ValueString()))
 
 	{{ if .HasChild}}
 		{{- range .Children}}
@@ -319,12 +319,18 @@ func (r *{{.ResourceClassName}}Resource) Read(ctx context.Context, req resource.
 		return
 	}
 
-	tflog.Trace(ctx, fmt.Sprintf("Read of resource aci_{{.ResourceName}} with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("Read of resource aci_{{.ResourceName}} with id '%s'", data.Id.ValueString()))
 
 	set{{.ResourceClassName}}Attributes(ctx, &resp.Diagnostics, r.client, data)
 
 	// Save updated data into Terraform state
-	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	if data.Id.IsNull() {
+		var emptyData *{{.ResourceClassName}}ResourceModel
+		resp.Diagnostics.Append(resp.State.Set(ctx, &emptyData)...)
+	} else {
+		resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	}
+
 	tflog.Debug(ctx, "End read of resource: aci_{{.ResourceName}}")
 }
 
@@ -345,7 +351,7 @@ func (r *{{.ResourceClassName}}Resource) Update(ctx context.Context, req resourc
 		return
 	}
 
-	tflog.Trace(ctx, fmt.Sprintf("Update of resource aci_{{.ResourceName}} with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("Update of resource aci_{{.ResourceName}} with id '%s'", data.Id.ValueString()))
 	
 	{{ if .HasChild}}
 		{{- range .Children}}
@@ -386,7 +392,7 @@ func (r *{{.ResourceClassName}}Resource) Delete(ctx context.Context, req resourc
 		return
 	}
 
-	tflog.Trace(ctx, fmt.Sprintf("Delete of resource aci_{{.ResourceName}} with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("Delete of resource aci_{{.ResourceName}} with id '%s'", data.Id.ValueString()))
 
 	{{- if .AllowDelete}}
 	jsonPayload := get{{.ResourceClassName}}DeleteJsonPayload(ctx, &resp.Diagnostics, data)
@@ -413,7 +419,14 @@ func (r *{{.ResourceClassName}}Resource) Delete(ctx context.Context, req resourc
 }
 
 func (r *{{.ResourceClassName}}Resource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
+	tflog.Debug(ctx, "Start import state of resource: aci_{{.ResourceName}}")
 	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
+	
+	var stateData *{{.ResourceClassName}}ResourceModel
+	resp.Diagnostics.Append(resp.State.Get(ctx, &stateData)...)
+	tflog.Debug(ctx, fmt.Sprintf("Import state of resource aci_{{.ResourceName}} with id '%s'", stateData.Id.ValueString()))
+
+	tflog.Debug(ctx, "End import of state resource: aci_{{.ResourceName}}")
 }
 
 func set{{.ResourceClassName}}Attributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *{{.ResourceClassName}}ResourceModel) {
@@ -545,6 +558,8 @@ func set{{.ResourceClassName}}Attributes(ctx context.Context, diags *diag.Diagno
 				fmt.Sprintf("%v matches returned for class '{{.PkgName}}'. Please report this issue to the provider developers.", len(classReadInfo)),
 			)
 		}
+	} else {
+		data.Id = basetypes.NewStringNull()
 	}
 }
 

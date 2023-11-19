@@ -200,7 +200,7 @@ func (r *MgmtSubnetResource) Create(ctx context.Context, req resource.CreateRequ
 
 	setMgmtSubnetId(ctx, data)
 
-	tflog.Trace(ctx, fmt.Sprintf("Create of resource aci_l3out_management_network_subnet with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_l3out_management_network_subnet with id '%s'", data.Id.ValueString()))
 
 	var tagAnnotationPlan, tagAnnotationState []TagAnnotationMgmtSubnetResourceModel
 	data.TagAnnotation.ElementsAs(ctx, &tagAnnotationPlan, false)
@@ -234,12 +234,18 @@ func (r *MgmtSubnetResource) Read(ctx context.Context, req resource.ReadRequest,
 		return
 	}
 
-	tflog.Trace(ctx, fmt.Sprintf("Read of resource aci_l3out_management_network_subnet with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("Read of resource aci_l3out_management_network_subnet with id '%s'", data.Id.ValueString()))
 
 	setMgmtSubnetAttributes(ctx, &resp.Diagnostics, r.client, data)
 
 	// Save updated data into Terraform state
-	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	if data.Id.IsNull() {
+		var emptyData *MgmtSubnetResourceModel
+		resp.Diagnostics.Append(resp.State.Set(ctx, &emptyData)...)
+	} else {
+		resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	}
+
 	tflog.Debug(ctx, "End read of resource: aci_l3out_management_network_subnet")
 }
 
@@ -256,7 +262,7 @@ func (r *MgmtSubnetResource) Update(ctx context.Context, req resource.UpdateRequ
 		return
 	}
 
-	tflog.Trace(ctx, fmt.Sprintf("Update of resource aci_l3out_management_network_subnet with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("Update of resource aci_l3out_management_network_subnet with id '%s'", data.Id.ValueString()))
 
 	var tagAnnotationPlan, tagAnnotationState []TagAnnotationMgmtSubnetResourceModel
 	data.TagAnnotation.ElementsAs(ctx, &tagAnnotationPlan, false)
@@ -291,7 +297,7 @@ func (r *MgmtSubnetResource) Delete(ctx context.Context, req resource.DeleteRequ
 		return
 	}
 
-	tflog.Trace(ctx, fmt.Sprintf("Delete of resource aci_l3out_management_network_subnet with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("Delete of resource aci_l3out_management_network_subnet with id '%s'", data.Id.ValueString()))
 	jsonPayload := getMgmtSubnetDeleteJsonPayload(ctx, &resp.Diagnostics, data)
 	if resp.Diagnostics.HasError() {
 		return
@@ -304,7 +310,14 @@ func (r *MgmtSubnetResource) Delete(ctx context.Context, req resource.DeleteRequ
 }
 
 func (r *MgmtSubnetResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
+	tflog.Debug(ctx, "Start import state of resource: aci_l3out_management_network_subnet")
 	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
+
+	var stateData *MgmtSubnetResourceModel
+	resp.Diagnostics.Append(resp.State.Get(ctx, &stateData)...)
+	tflog.Debug(ctx, fmt.Sprintf("Import state of resource aci_l3out_management_network_subnet with id '%s'", stateData.Id.ValueString()))
+
+	tflog.Debug(ctx, "End import of state resource: aci_l3out_management_network_subnet")
 }
 
 func setMgmtSubnetAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *MgmtSubnetResourceModel) {
@@ -370,6 +383,8 @@ func setMgmtSubnetAttributes(ctx context.Context, diags *diag.Diagnostics, clien
 				fmt.Sprintf("%v matches returned for class 'mgmtSubnet'. Please report this issue to the provider developers.", len(classReadInfo)),
 			)
 		}
+	} else {
+		data.Id = basetypes.NewStringNull()
 	}
 }
 

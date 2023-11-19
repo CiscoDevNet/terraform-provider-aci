@@ -94,9 +94,20 @@ func (d *TagAnnotationDataSource) Read(ctx context.Context, req datasource.ReadR
 
 	setTagAnnotationId(ctx, data)
 
-	tflog.Trace(ctx, fmt.Sprintf("Read of datasource aci_annotation with id '%s'", data.Id.ValueString()))
+	// Create a copy of the Id for when not found during setTagAnnotationAttributes
+	cachedId := data.Id.ValueString()
+
+	tflog.Debug(ctx, fmt.Sprintf("Read of datasource aci_annotation with id '%s'", data.Id.ValueString()))
 
 	setTagAnnotationAttributes(ctx, &resp.Diagnostics, d.client, data)
+
+	if data.Id.IsNull() {
+		resp.Diagnostics.AddError(
+			"Failed to read aci_annotation data source",
+			fmt.Sprintf("The aci_annotation data source with id '%s' has not been found", cachedId),
+		)
+		return
+	}
 
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)

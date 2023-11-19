@@ -188,7 +188,7 @@ func (r *L3extRsRedistributePolResource) Create(ctx context.Context, req resourc
 
 	setL3extRsRedistributePolId(ctx, data)
 
-	tflog.Trace(ctx, fmt.Sprintf("Create of resource aci_l3out_redistribute_policy with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_l3out_redistribute_policy with id '%s'", data.Id.ValueString()))
 
 	var tagAnnotationPlan, tagAnnotationState []TagAnnotationL3extRsRedistributePolResourceModel
 	data.TagAnnotation.ElementsAs(ctx, &tagAnnotationPlan, false)
@@ -222,12 +222,18 @@ func (r *L3extRsRedistributePolResource) Read(ctx context.Context, req resource.
 		return
 	}
 
-	tflog.Trace(ctx, fmt.Sprintf("Read of resource aci_l3out_redistribute_policy with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("Read of resource aci_l3out_redistribute_policy with id '%s'", data.Id.ValueString()))
 
 	setL3extRsRedistributePolAttributes(ctx, &resp.Diagnostics, r.client, data)
 
 	// Save updated data into Terraform state
-	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	if data.Id.IsNull() {
+		var emptyData *L3extRsRedistributePolResourceModel
+		resp.Diagnostics.Append(resp.State.Set(ctx, &emptyData)...)
+	} else {
+		resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	}
+
 	tflog.Debug(ctx, "End read of resource: aci_l3out_redistribute_policy")
 }
 
@@ -244,7 +250,7 @@ func (r *L3extRsRedistributePolResource) Update(ctx context.Context, req resourc
 		return
 	}
 
-	tflog.Trace(ctx, fmt.Sprintf("Update of resource aci_l3out_redistribute_policy with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("Update of resource aci_l3out_redistribute_policy with id '%s'", data.Id.ValueString()))
 
 	var tagAnnotationPlan, tagAnnotationState []TagAnnotationL3extRsRedistributePolResourceModel
 	data.TagAnnotation.ElementsAs(ctx, &tagAnnotationPlan, false)
@@ -279,7 +285,7 @@ func (r *L3extRsRedistributePolResource) Delete(ctx context.Context, req resourc
 		return
 	}
 
-	tflog.Trace(ctx, fmt.Sprintf("Delete of resource aci_l3out_redistribute_policy with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("Delete of resource aci_l3out_redistribute_policy with id '%s'", data.Id.ValueString()))
 	jsonPayload := getL3extRsRedistributePolDeleteJsonPayload(ctx, &resp.Diagnostics, data)
 	if resp.Diagnostics.HasError() {
 		return
@@ -292,7 +298,14 @@ func (r *L3extRsRedistributePolResource) Delete(ctx context.Context, req resourc
 }
 
 func (r *L3extRsRedistributePolResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
+	tflog.Debug(ctx, "Start import state of resource: aci_l3out_redistribute_policy")
 	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
+
+	var stateData *L3extRsRedistributePolResourceModel
+	resp.Diagnostics.Append(resp.State.Get(ctx, &stateData)...)
+	tflog.Debug(ctx, fmt.Sprintf("Import state of resource aci_l3out_redistribute_policy with id '%s'", stateData.Id.ValueString()))
+
+	tflog.Debug(ctx, "End import of state resource: aci_l3out_redistribute_policy")
 }
 
 func setL3extRsRedistributePolAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *L3extRsRedistributePolResourceModel) {
@@ -352,6 +365,8 @@ func setL3extRsRedistributePolAttributes(ctx context.Context, diags *diag.Diagno
 				fmt.Sprintf("%v matches returned for class 'l3extRsRedistributePol'. Please report this issue to the provider developers.", len(classReadInfo)),
 			)
 		}
+	} else {
+		data.Id = basetypes.NewStringNull()
 	}
 }
 

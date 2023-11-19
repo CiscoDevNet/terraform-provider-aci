@@ -114,9 +114,20 @@ func (d *FvRsConsIfDataSource) Read(ctx context.Context, req datasource.ReadRequ
 
 	setFvRsConsIfId(ctx, data)
 
-	tflog.Trace(ctx, fmt.Sprintf("Read of datasource aci_contract_interface with id '%s'", data.Id.ValueString()))
+	// Create a copy of the Id for when not found during setFvRsConsIfAttributes
+	cachedId := data.Id.ValueString()
+
+	tflog.Debug(ctx, fmt.Sprintf("Read of datasource aci_contract_interface with id '%s'", data.Id.ValueString()))
 
 	setFvRsConsIfAttributes(ctx, &resp.Diagnostics, d.client, data)
+
+	if data.Id.IsNull() {
+		resp.Diagnostics.AddError(
+			"Failed to read aci_contract_interface data source",
+			fmt.Sprintf("The aci_contract_interface data source with id '%s' has not been found", cachedId),
+		)
+		return
+	}
 
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)

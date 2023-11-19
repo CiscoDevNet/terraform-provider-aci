@@ -122,9 +122,20 @@ func (d *MgmtSubnetDataSource) Read(ctx context.Context, req datasource.ReadRequ
 
 	setMgmtSubnetId(ctx, data)
 
-	tflog.Trace(ctx, fmt.Sprintf("Read of datasource aci_l3out_management_network_subnet with id '%s'", data.Id.ValueString()))
+	// Create a copy of the Id for when not found during setMgmtSubnetAttributes
+	cachedId := data.Id.ValueString()
+
+	tflog.Debug(ctx, fmt.Sprintf("Read of datasource aci_l3out_management_network_subnet with id '%s'", data.Id.ValueString()))
 
 	setMgmtSubnetAttributes(ctx, &resp.Diagnostics, d.client, data)
+
+	if data.Id.IsNull() {
+		resp.Diagnostics.AddError(
+			"Failed to read aci_l3out_management_network_subnet data source",
+			fmt.Sprintf("The aci_l3out_management_network_subnet data source with id '%s' has not been found", cachedId),
+		)
+		return
+	}
 
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)

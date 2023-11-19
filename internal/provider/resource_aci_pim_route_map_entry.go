@@ -241,7 +241,7 @@ func (r *PimRouteMapEntryResource) Create(ctx context.Context, req resource.Crea
 
 	setPimRouteMapEntryId(ctx, data)
 
-	tflog.Trace(ctx, fmt.Sprintf("Create of resource aci_pim_route_map_entry with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_pim_route_map_entry with id '%s'", data.Id.ValueString()))
 
 	var tagAnnotationPlan, tagAnnotationState []TagAnnotationPimRouteMapEntryResourceModel
 	data.TagAnnotation.ElementsAs(ctx, &tagAnnotationPlan, false)
@@ -275,12 +275,18 @@ func (r *PimRouteMapEntryResource) Read(ctx context.Context, req resource.ReadRe
 		return
 	}
 
-	tflog.Trace(ctx, fmt.Sprintf("Read of resource aci_pim_route_map_entry with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("Read of resource aci_pim_route_map_entry with id '%s'", data.Id.ValueString()))
 
 	setPimRouteMapEntryAttributes(ctx, &resp.Diagnostics, r.client, data)
 
 	// Save updated data into Terraform state
-	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	if data.Id.IsNull() {
+		var emptyData *PimRouteMapEntryResourceModel
+		resp.Diagnostics.Append(resp.State.Set(ctx, &emptyData)...)
+	} else {
+		resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	}
+
 	tflog.Debug(ctx, "End read of resource: aci_pim_route_map_entry")
 }
 
@@ -297,7 +303,7 @@ func (r *PimRouteMapEntryResource) Update(ctx context.Context, req resource.Upda
 		return
 	}
 
-	tflog.Trace(ctx, fmt.Sprintf("Update of resource aci_pim_route_map_entry with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("Update of resource aci_pim_route_map_entry with id '%s'", data.Id.ValueString()))
 
 	var tagAnnotationPlan, tagAnnotationState []TagAnnotationPimRouteMapEntryResourceModel
 	data.TagAnnotation.ElementsAs(ctx, &tagAnnotationPlan, false)
@@ -332,7 +338,7 @@ func (r *PimRouteMapEntryResource) Delete(ctx context.Context, req resource.Dele
 		return
 	}
 
-	tflog.Trace(ctx, fmt.Sprintf("Delete of resource aci_pim_route_map_entry with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("Delete of resource aci_pim_route_map_entry with id '%s'", data.Id.ValueString()))
 	jsonPayload := getPimRouteMapEntryDeleteJsonPayload(ctx, &resp.Diagnostics, data)
 	if resp.Diagnostics.HasError() {
 		return
@@ -345,7 +351,14 @@ func (r *PimRouteMapEntryResource) Delete(ctx context.Context, req resource.Dele
 }
 
 func (r *PimRouteMapEntryResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
+	tflog.Debug(ctx, "Start import state of resource: aci_pim_route_map_entry")
 	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
+
+	var stateData *PimRouteMapEntryResourceModel
+	resp.Diagnostics.Append(resp.State.Get(ctx, &stateData)...)
+	tflog.Debug(ctx, fmt.Sprintf("Import state of resource aci_pim_route_map_entry with id '%s'", stateData.Id.ValueString()))
+
+	tflog.Debug(ctx, "End import of state resource: aci_pim_route_map_entry")
 }
 
 func setPimRouteMapEntryAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *PimRouteMapEntryResourceModel) {
@@ -423,6 +436,8 @@ func setPimRouteMapEntryAttributes(ctx context.Context, diags *diag.Diagnostics,
 				fmt.Sprintf("%v matches returned for class 'pimRouteMapEntry'. Please report this issue to the provider developers.", len(classReadInfo)),
 			)
 		}
+	} else {
+		data.Id = basetypes.NewStringNull()
 	}
 }
 

@@ -131,7 +131,7 @@ func (r *TagAnnotationResource) Create(ctx context.Context, req resource.CreateR
 
 	setTagAnnotationId(ctx, data)
 
-	tflog.Trace(ctx, fmt.Sprintf("Create of resource aci_annotation with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_annotation with id '%s'", data.Id.ValueString()))
 
 	jsonPayload := getTagAnnotationCreateJsonPayload(ctx, &resp.Diagnostics, data)
 
@@ -162,12 +162,18 @@ func (r *TagAnnotationResource) Read(ctx context.Context, req resource.ReadReque
 		return
 	}
 
-	tflog.Trace(ctx, fmt.Sprintf("Read of resource aci_annotation with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("Read of resource aci_annotation with id '%s'", data.Id.ValueString()))
 
 	setTagAnnotationAttributes(ctx, &resp.Diagnostics, r.client, data)
 
 	// Save updated data into Terraform state
-	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	if data.Id.IsNull() {
+		var emptyData *TagAnnotationResourceModel
+		resp.Diagnostics.Append(resp.State.Set(ctx, &emptyData)...)
+	} else {
+		resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	}
+
 	tflog.Debug(ctx, "End read of resource: aci_annotation")
 }
 
@@ -182,7 +188,7 @@ func (r *TagAnnotationResource) Update(ctx context.Context, req resource.UpdateR
 		return
 	}
 
-	tflog.Trace(ctx, fmt.Sprintf("Update of resource aci_annotation with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("Update of resource aci_annotation with id '%s'", data.Id.ValueString()))
 
 	jsonPayload := getTagAnnotationCreateJsonPayload(ctx, &resp.Diagnostics, data)
 
@@ -214,7 +220,7 @@ func (r *TagAnnotationResource) Delete(ctx context.Context, req resource.DeleteR
 		return
 	}
 
-	tflog.Trace(ctx, fmt.Sprintf("Delete of resource aci_annotation with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("Delete of resource aci_annotation with id '%s'", data.Id.ValueString()))
 	jsonPayload := getTagAnnotationDeleteJsonPayload(ctx, &resp.Diagnostics, data)
 	if resp.Diagnostics.HasError() {
 		return
@@ -227,7 +233,14 @@ func (r *TagAnnotationResource) Delete(ctx context.Context, req resource.DeleteR
 }
 
 func (r *TagAnnotationResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
+	tflog.Debug(ctx, "Start import state of resource: aci_annotation")
 	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
+
+	var stateData *TagAnnotationResourceModel
+	resp.Diagnostics.Append(resp.State.Get(ctx, &stateData)...)
+	tflog.Debug(ctx, fmt.Sprintf("Import state of resource aci_annotation with id '%s'", stateData.Id.ValueString()))
+
+	tflog.Debug(ctx, "End import of state resource: aci_annotation")
 }
 
 func setTagAnnotationAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *TagAnnotationResourceModel) {
@@ -258,6 +271,8 @@ func setTagAnnotationAttributes(ctx context.Context, diags *diag.Diagnostics, cl
 				fmt.Sprintf("%v matches returned for class 'tagAnnotation'. Please report this issue to the provider developers.", len(classReadInfo)),
 			)
 		}
+	} else {
+		data.Id = basetypes.NewStringNull()
 	}
 }
 
