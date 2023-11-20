@@ -87,6 +87,23 @@ func TestAccResourceMgmtSubnetWithMgmtInstP(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_l3out_management_network_subnet.test", "annotations.1.value", "value_2"),
 				),
 			},
+			// Import testing with children
+			{
+				ResourceName:      "aci_l3out_management_network_subnet.test",
+				ImportState:       true,
+				ImportStateVerify: true,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_l3out_management_network_subnet.test", "ip", "1.1.1.0/24"),
+					resource.TestCheckResourceAttr("aci_l3out_management_network_subnet.test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_l3out_management_network_subnet.test", "description", ""),
+					resource.TestCheckResourceAttr("aci_l3out_management_network_subnet.test", "name", ""),
+					resource.TestCheckResourceAttr("aci_l3out_management_network_subnet.test", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_l3out_management_network_subnet.test", "annotations.0.key", "annotations_1"),
+					resource.TestCheckResourceAttr("aci_l3out_management_network_subnet.test", "annotations.0.value", "value_1"),
+					resource.TestCheckResourceAttr("aci_l3out_management_network_subnet.test", "annotations.1.key", "annotations_2"),
+					resource.TestCheckResourceAttr("aci_l3out_management_network_subnet.test", "annotations.1.value", "value_2"),
+				),
+			},
 			// Update with children removed from config
 			{
 				Config:             testConfigMgmtSubnetChildrenRemoveFromConfigDependencyWithMgmtInstP,

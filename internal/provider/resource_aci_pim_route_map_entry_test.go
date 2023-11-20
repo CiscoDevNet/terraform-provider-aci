@@ -107,6 +107,27 @@ func TestAccResourcePimRouteMapEntryWithPimRouteMapPol(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "annotations.1.value", "value_2"),
 				),
 			},
+			// Import testing with children
+			{
+				ResourceName:      "aci_pim_route_map_entry.test",
+				ImportState:       true,
+				ImportStateVerify: true,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "order", "1"),
+					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "action", "permit"),
+					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "description", ""),
+					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "grp", "0.0.0.0"),
+					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "name", ""),
+					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "rp", "0.0.0.0"),
+					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "src", "0.0.0.0"),
+					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "annotations.0.key", "annotations_1"),
+					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "annotations.0.value", "value_1"),
+					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "annotations.1.key", "annotations_2"),
+					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "annotations.1.value", "value_2"),
+				),
+			},
 			// Update with children removed from config
 			{
 				Config:             testConfigPimRouteMapEntryChildrenRemoveFromConfigDependencyWithPimRouteMapPol,

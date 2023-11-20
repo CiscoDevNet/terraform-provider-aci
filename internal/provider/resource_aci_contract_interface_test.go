@@ -77,6 +77,21 @@ func TestAccResourceFvRsConsIfWithFvAEPg(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_contract_interface.test", "annotations.1.value", "value_2"),
 				),
 			},
+			// Import testing with children
+			{
+				ResourceName:      "aci_contract_interface.test",
+				ImportState:       true,
+				ImportStateVerify: true,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_contract_interface.test", "contract_interface_name", "test_tn_vz_cp_if_name"),
+					resource.TestCheckResourceAttr("aci_contract_interface.test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_contract_interface.test", "priority", "unspecified"),
+					resource.TestCheckResourceAttr("aci_contract_interface.test", "annotations.0.key", "annotations_1"),
+					resource.TestCheckResourceAttr("aci_contract_interface.test", "annotations.0.value", "value_1"),
+					resource.TestCheckResourceAttr("aci_contract_interface.test", "annotations.1.key", "annotations_2"),
+					resource.TestCheckResourceAttr("aci_contract_interface.test", "annotations.1.value", "value_2"),
+				),
+			},
 			// Update with children removed from config
 			{
 				Config:             testConfigFvRsConsIfChildrenRemoveFromConfigDependencyWithFvAEPg,

@@ -123,6 +123,29 @@ func TestAccResource{{$.resourceClassName}}With{{capitalize .class_name}}(t *tes
 			{{- end}}
 				),
 			},
+			// Import testing with children
+			{	
+				ResourceName:      "aci_{{$.resourceName}}.test",
+				ImportState:       true,
+				ImportStateVerify: true,
+				Check: resource.ComposeAggregateTestCheckFunc(
+		{{- range $key, $value := $.resource_required}}
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
+		{{- end}}
+			{{- range $key, $value := $.default}}{{$contains := definedInMap $key $.resource_required}}
+				{{- if not $contains}}
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
+				{{- end}}
+			{{- end}}
+			{{- range $key, $value := $.children}}
+				{{- range $child_index, $child := $value}}
+					{{- range $child_key, $child_value := $child}}
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}.{{$child_index}}.{{$child_key}}", "{{$child_value}}"),
+					{{- end}}
+				{{- end}}
+			{{- end}}
+				),
+			},
 			// Update with children removed from config
 			{
 				Config: testConfig{{$.resourceClassName}}ChildrenRemoveFromConfigDependencyWith{{capitalize .class_name}},
