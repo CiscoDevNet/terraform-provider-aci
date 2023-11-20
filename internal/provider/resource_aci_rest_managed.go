@@ -330,19 +330,11 @@ func (r *AciRestManagedResource) Delete(ctx context.Context, req resource.Delete
 
 func (r *AciRestManagedResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
 	tflog.Debug(ctx, "Start import state of resource: aci_rest_managed")
-	parts := strings.Split(req.ID, ":")
+	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
 
-	tflog.Debug(ctx, fmt.Sprintf("Import state of resource aci_rest_managed with id '%s'", req.ID))
-
-	if len(parts) != 2 || parts[0] == "" || parts[1] == "" {
-		resp.Diagnostics.AddError(
-			fmt.Sprintf("Unexpected import format of ID: %s", req.ID),
-			"Expected notation <class_name>:<dn> (fvTenant:uni/tn-example_tenant) for import.",
-		)
-		return
-	}
-
-	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("id"), parts[1])...)
+	var stateData *AciRestManagedResourceModel
+	resp.Diagnostics.Append(resp.State.Get(ctx, &stateData)...)
+	tflog.Debug(ctx, fmt.Sprintf("Import state of resource aci_annotation with id '%s'", stateData.Id.ValueString()))
 
 	tflog.Debug(ctx, "End import of state resource: aci_rest_managed")
 }

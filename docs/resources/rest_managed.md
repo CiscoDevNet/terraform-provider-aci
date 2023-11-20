@@ -89,5 +89,5 @@ Note: Import is not supported for child configuration objects.
 Import is supported using the following syntax:
 
 ```shell
-terraform import aci_rest_managed.fvTenant fvTenant:uni/tn-EXAMPLE_TENANT
+terraform import aci_rest_managed.fvTenant uni/tn-EXAMPLE_TENANT
 ```

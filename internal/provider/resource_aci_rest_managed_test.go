@@ -2,9 +2,10 @@ package provider
 
 import (
 	"fmt"
+	"testing"
+
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/acctest"
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
-	"testing"
 )
 
 func TestAccAciRestManaged_tenant(t *testing.T) {
@@ -32,6 +33,16 @@ func TestAccAciRestManaged_tenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_rest_managed.fvTenant", "content.descr", "Updated description"),
 					resource.TestCheckResourceAttr("aci_rest_managed.fvTenant", "dn", "uni/tn-"+name),
 					resource.TestCheckResourceAttr("aci_rest_managed.fvTenant", "annotation", "non-default:value"),
+				),
+			},
+			// Import testing
+			{
+				ResourceName: "aci_rest_managed.fvTenant",
+				ImportState:  true,
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_rest_managed.fvTenant", "dn", "uni/tn-"+name),
+					resource.TestCheckResourceAttr("aci_rest_managed.fvTenant", "annotation", "non-default:value"),
+					resource.TestCheckResourceAttr("aci_rest_managed.fvTenant", "class_name", "fvTenant"),
 				),
 			},
 		},
