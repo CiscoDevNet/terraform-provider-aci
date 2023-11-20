@@ -452,8 +452,19 @@ func getPimRouteMapEntryRn(ctx context.Context, data *PimRouteMapEntryResourceMo
 }
 
 func setPimRouteMapEntryParentDn(ctx context.Context, dn string, data *PimRouteMapEntryResourceModel) {
-	rn := getPimRouteMapEntryRn(ctx, data)
-	data.ParentDn = basetypes.NewStringValue(strings.ReplaceAll(dn, fmt.Sprintf("/%s", rn), ""))
+	bracketIndex := 0
+	rnIndex := 0
+	for i := len(dn) - 1; i >= 0; i-- {
+		if string(dn[i]) == "]" {
+			bracketIndex = bracketIndex + 1
+		} else if string(dn[i]) == "[" {
+			bracketIndex = bracketIndex - 1
+		} else if string(dn[i]) == "/" && bracketIndex == 0 {
+			rnIndex = i
+			break
+		}
+	}
+	data.ParentDn = basetypes.NewStringValue(dn[:rnIndex])
 }
 
 func setPimRouteMapEntryId(ctx context.Context, data *PimRouteMapEntryResourceModel) {

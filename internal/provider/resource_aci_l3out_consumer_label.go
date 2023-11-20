@@ -443,8 +443,19 @@ func getL3extConsLblRn(ctx context.Context, data *L3extConsLblResourceModel) str
 }
 
 func setL3extConsLblParentDn(ctx context.Context, dn string, data *L3extConsLblResourceModel) {
-	rn := getL3extConsLblRn(ctx, data)
-	data.ParentDn = basetypes.NewStringValue(strings.ReplaceAll(dn, fmt.Sprintf("/%s", rn), ""))
+	bracketIndex := 0
+	rnIndex := 0
+	for i := len(dn) - 1; i >= 0; i-- {
+		if string(dn[i]) == "]" {
+			bracketIndex = bracketIndex + 1
+		} else if string(dn[i]) == "[" {
+			bracketIndex = bracketIndex - 1
+		} else if string(dn[i]) == "/" && bracketIndex == 0 {
+			rnIndex = i
+			break
+		}
+	}
+	data.ParentDn = basetypes.NewStringValue(dn[:rnIndex])
 }
 
 func setL3extConsLblId(ctx context.Context, data *L3extConsLblResourceModel) {
