@@ -53,6 +53,17 @@ func TestAccResourceL3extRsRedistributePolWithL3extOut(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.test", "annotation", "orchestrator:terraform"),
 				),
 			},
+			// Import testing
+			{
+				ResourceName:      "aci_l3out_redistribute_policy.test",
+				ImportState:       true,
+				ImportStateVerify: true,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.test", "route_control_profile_name", "test_tn_rtctrl_profile_name"),
+					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.test", "src", "direct"),
+					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.test", "annotation", "orchestrator:terraform"),
+				),
+			},
 			// Update with children
 			{
 				Config:             testConfigL3extRsRedistributePolChildrenDependencyWithL3extOut,

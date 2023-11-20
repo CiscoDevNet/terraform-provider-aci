@@ -58,6 +58,19 @@ func TestAccResourceMgmtSubnetWithMgmtInstP(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_l3out_management_network_subnet.test", "name_alias", ""),
 				),
 			},
+			// Import testing
+			{
+				ResourceName:      "aci_l3out_management_network_subnet.test",
+				ImportState:       true,
+				ImportStateVerify: true,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_l3out_management_network_subnet.test", "ip", "1.1.1.0/24"),
+					resource.TestCheckResourceAttr("aci_l3out_management_network_subnet.test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_l3out_management_network_subnet.test", "description", ""),
+					resource.TestCheckResourceAttr("aci_l3out_management_network_subnet.test", "name", ""),
+					resource.TestCheckResourceAttr("aci_l3out_management_network_subnet.test", "name_alias", ""),
+				),
+			},
 			// Update with children
 			{
 				Config:             testConfigMgmtSubnetChildrenDependencyWithMgmtInstP,

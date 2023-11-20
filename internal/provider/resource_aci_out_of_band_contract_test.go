@@ -78,6 +78,24 @@ func TestAccResourceVzOOBBrCP(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "target_dscp", "unspecified"),
 				),
 			},
+			// Import testing
+			{
+				ResourceName:      "aci_out_of_band_contract.test",
+				ImportState:       true,
+				ImportStateVerify: true,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "name", "test_name"),
+					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "description", ""),
+					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "intent", "install"),
+					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "owner_key", ""),
+					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "owner_tag", ""),
+					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "priority", "unspecified"),
+					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "scope", "context"),
+					resource.TestCheckResourceAttr("aci_out_of_band_contract.test", "target_dscp", "unspecified"),
+				),
+			},
 			// Update with children
 			{
 				Config: testConfigVzOOBBrCPChildren,

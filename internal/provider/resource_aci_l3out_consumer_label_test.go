@@ -67,6 +67,22 @@ func TestAccResourceL3extConsLblWithL3extOut(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "tag", "yellow-green"),
 				),
 			},
+			// Import testing
+			{
+				ResourceName:      "aci_l3out_consumer_label.test",
+				ImportState:       true,
+				ImportStateVerify: true,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "name", "test_name"),
+					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "description", ""),
+					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "owner", "infra"),
+					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "owner_key", ""),
+					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "owner_tag", ""),
+					resource.TestCheckResourceAttr("aci_l3out_consumer_label.test", "tag", "yellow-green"),
+				),
+			},
 			// Update with children
 			{
 				Config:             testConfigL3extConsLblChildrenDependencyWithL3extOut,

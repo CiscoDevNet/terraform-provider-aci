@@ -52,6 +52,17 @@ func TestAccResourceMgmtRsOoBConsWithMgmtInstP(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_l3out_management_network_oob_contract.test", "priority", "unspecified"),
 				),
 			},
+			// Import testing
+			{
+				ResourceName:      "aci_l3out_management_network_oob_contract.test",
+				ImportState:       true,
+				ImportStateVerify: true,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_l3out_management_network_oob_contract.test", "out_of_band_contract_name", "test_tn_vz_oob_br_cp_name"),
+					resource.TestCheckResourceAttr("aci_l3out_management_network_oob_contract.test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_l3out_management_network_oob_contract.test", "priority", "unspecified"),
+				),
+			},
 			// Update with children
 			{
 				Config:             testConfigMgmtRsOoBConsChildrenDependencyWithMgmtInstP,

@@ -61,6 +61,20 @@ func TestAccResourcePimRouteMapPolWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_pim_route_map_policy.test", "owner_tag", ""),
 				),
 			},
+			// Import testing
+			{
+				ResourceName:      "aci_pim_route_map_policy.test",
+				ImportState:       true,
+				ImportStateVerify: true,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_pim_route_map_policy.test", "name", "test_name"),
+					resource.TestCheckResourceAttr("aci_pim_route_map_policy.test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_pim_route_map_policy.test", "description", ""),
+					resource.TestCheckResourceAttr("aci_pim_route_map_policy.test", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_pim_route_map_policy.test", "owner_key", ""),
+					resource.TestCheckResourceAttr("aci_pim_route_map_policy.test", "owner_tag", ""),
+				),
+			},
 			// Update with children
 			{
 				Config:             testConfigPimRouteMapPolChildrenDependencyWithFvTenant,

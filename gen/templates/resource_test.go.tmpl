@@ -84,6 +84,22 @@ func TestAccResource{{$.resourceClassName}}With{{capitalize .class_name}}(t *tes
 		{{- end}}
 				),
 			},
+			// Import testing
+			{
+				ResourceName:      "aci_{{$.resourceName}}.test",
+				ImportState:       true,
+        		ImportStateVerify: true,
+				Check: resource.ComposeAggregateTestCheckFunc(
+		{{- range $key, $value := $.resource_required}}
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
+		{{- end}}
+		{{- range $key, $value := $.default}}{{$contains := definedInMap $key $.resource_required}}
+			{{- if not $contains}}
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
+			{{- end}}
+		{{- end}}
+				),
+			},
 		{{- if $.children}}
 			// Update with children
 			{
@@ -234,6 +250,22 @@ func TestAccResource{{.resourceClassName}}(t *testing.T) {
 			// Update with empty strings config or default value
 			{
 				Config: testConfig{{.resourceClassName}}Reset,
+				Check: resource.ComposeAggregateTestCheckFunc(
+	{{- range $key, $value := $.resource_required}}
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
+	{{- end}}
+	{{- range $key, $value := $.default}}{{$contains := definedInMap $key $.resource_required}}
+		{{- if not $contains}}
+			resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
+		{{- end}}
+	{{- end}}
+				),
+			},
+			// Import testing
+			{
+				ResourceName:      "aci_{{$.resourceName}}.test",
+				ImportState:       true,
+        		ImportStateVerify: true,
 				Check: resource.ComposeAggregateTestCheckFunc(
 	{{- range $key, $value := $.resource_required}}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),

@@ -52,6 +52,17 @@ func TestAccResourceFvRsConsIfWithFvAEPg(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_contract_interface.test", "priority", "unspecified"),
 				),
 			},
+			// Import testing
+			{
+				ResourceName:      "aci_contract_interface.test",
+				ImportState:       true,
+				ImportStateVerify: true,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_contract_interface.test", "contract_interface_name", "test_tn_vz_cp_if_name"),
+					resource.TestCheckResourceAttr("aci_contract_interface.test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_contract_interface.test", "priority", "unspecified"),
+				),
+			},
 			// Update with children
 			{
 				Config:             testConfigFvRsConsIfChildrenDependencyWithFvAEPg,
