@@ -9,6 +9,13 @@ default:
     {{- end}}
   {{- end}}
 
+datasource_non_existing:
+  {{- range .Properties}}{{$testValue := createNonExistingValue .SnakeCaseName}}
+    {{- if or .IsNaming }}
+  {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}: "{{overwritePropertyValue .PkgName .SnakeCaseName $testValue "datasource_non_existing" $.Definitions}}"
+    {{- end}}
+  {{- end}}
+
 datasource_required:
   {{- range .Properties}}{{$testValue := createTestValue .SnakeCaseName}}
     {{- if or .IsNaming }}

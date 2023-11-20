@@ -3,6 +3,7 @@
 package provider
 
 import (
+	"regexp"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
@@ -22,6 +23,10 @@ func TestAccDataSourceTagAnnotationWithFvAEPg(t *testing.T) {
 					resource.TestCheckResourceAttr("data.aci_annotation.test", "value", "test_value"),
 				),
 			},
+			{
+				Config:      testConfigTagAnnotationNotExisting,
+				ExpectError: regexp.MustCompile("Failed to read aci_annotation data source"),
+			},
 		},
 	})
 }
@@ -30,6 +35,14 @@ const testConfigTagAnnotationDataSourceDependencyWithFvAEPg = testConfigTagAnnot
 data "aci_annotation" "test" {
   parent_dn = aci_application_epg.test.id
   key = "test_key"
+  depends_on = [aci_annotation.test]
+}
+`
+
+const testConfigTagAnnotationNotExisting = testConfigTagAnnotationMinDependencyWithFvAEPg + `
+data "aci_annotation" "test_non_existing" {
+  parent_dn = aci_application_epg.test.id
+  key = "non_existing_key"
   depends_on = [aci_annotation.test]
 }
 `

@@ -3,6 +3,7 @@
 package provider
 
 import (
+	"regexp"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
@@ -25,6 +26,10 @@ func TestAccDataSourceMgmtSubnetWithMgmtInstP(t *testing.T) {
 					resource.TestCheckResourceAttr("data.aci_l3out_management_network_subnet.test", "name_alias", ""),
 				),
 			},
+			{
+				Config:      testConfigMgmtSubnetNotExisting,
+				ExpectError: regexp.MustCompile("Failed to read aci_l3out_management_network_subnet data source"),
+			},
 		},
 	})
 }
@@ -33,6 +38,14 @@ const testConfigMgmtSubnetDataSourceDependencyWithMgmtInstP = testConfigMgmtSubn
 data "aci_l3out_management_network_subnet" "test" {
   parent_dn = aci_l3out_management_network_instance_profile.test.id
   ip = "1.1.1.0/24"
+  depends_on = [aci_l3out_management_network_subnet.test]
+}
+`
+
+const testConfigMgmtSubnetNotExisting = testConfigMgmtSubnetMinDependencyWithMgmtInstP + `
+data "aci_l3out_management_network_subnet" "test_non_existing" {
+  parent_dn = aci_l3out_management_network_instance_profile.test.id
+  ip = "2.2.2.0/24"
   depends_on = [aci_l3out_management_network_subnet.test]
 }
 `

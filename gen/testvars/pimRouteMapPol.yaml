@@ -7,6 +7,9 @@ default:
   owner_key: ""
   owner_tag: ""
 
+datasource_non_existing:
+  name: "non_existing_name"
+
 datasource_required:
   name: "test_name"
 

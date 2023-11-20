@@ -4,6 +4,9 @@ default:
   annotation: "orchestrator:terraform"
   priority: "unspecified"
 
+datasource_non_existing:
+  contract_interface_name: "non_existing_tn_vz_cp_if_name"
+
 datasource_required:
   contract_interface_name: "test_tn_vz_cp_if_name"
 

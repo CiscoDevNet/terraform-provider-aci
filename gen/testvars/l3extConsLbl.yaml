@@ -9,6 +9,9 @@ default:
   owner_tag: ""
   tag: "yellow-green"
 
+datasource_non_existing:
+  name: "non_existing_name"
+
 datasource_required:
   name: "test_name"
 

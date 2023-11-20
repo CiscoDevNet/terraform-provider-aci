@@ -4,6 +4,10 @@ default:
   annotation: "orchestrator:terraform"
   src: "direct"
 
+datasource_non_existing:
+  src: "static"
+  route_control_profile_name: "non_existing_tn_rtctrl_profile_name"
+
 datasource_required:
   src: "direct"
   route_control_profile_name: "test_tn_rtctrl_profile_name"

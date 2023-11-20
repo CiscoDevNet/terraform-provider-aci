@@ -11,6 +11,9 @@ default:
   scope: "context"
   target_dscp: "unspecified"
 
+datasource_non_existing:
+  name: "non_existing_name"
+
 datasource_required:
   name: "test_name"
 

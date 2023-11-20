@@ -3,6 +3,7 @@
 package provider
 
 import (
+	"regexp"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
@@ -24,6 +25,10 @@ func TestAccDataSourceL3extRsRedistributePolWithL3extOut(t *testing.T) {
 					resource.TestCheckResourceAttr("data.aci_l3out_redistribute_policy.test", "src", "direct"),
 				),
 			},
+			{
+				Config:      testConfigL3extRsRedistributePolNotExisting,
+				ExpectError: regexp.MustCompile("Failed to read aci_l3out_redistribute_policy data source"),
+			},
 		},
 	})
 }
@@ -33,6 +38,15 @@ data "aci_l3out_redistribute_policy" "test" {
   parent_dn = aci_l3_outside.test.id
   route_control_profile_name = "test_tn_rtctrl_profile_name"
   src = "direct"
+  depends_on = [aci_l3out_redistribute_policy.test]
+}
+`
+
+const testConfigL3extRsRedistributePolNotExisting = testConfigL3extRsRedistributePolMinDependencyWithL3extOut + `
+data "aci_l3out_redistribute_policy" "test_non_existing" {
+  parent_dn = aci_l3_outside.test.id
+  route_control_profile_name = "non_existing_tn_rtctrl_profile_name"
+  src = "static"
   depends_on = [aci_l3out_redistribute_policy.test]
 }
 `

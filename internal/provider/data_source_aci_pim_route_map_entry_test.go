@@ -3,6 +3,7 @@
 package provider
 
 import (
+	"regexp"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
@@ -29,6 +30,10 @@ func TestAccDataSourcePimRouteMapEntryWithPimRouteMapPol(t *testing.T) {
 					resource.TestCheckResourceAttr("data.aci_pim_route_map_entry.test", "src", "0.0.0.0"),
 				),
 			},
+			{
+				Config:      testConfigPimRouteMapEntryNotExisting,
+				ExpectError: regexp.MustCompile("Failed to read aci_pim_route_map_entry data source"),
+			},
 		},
 	})
 }
@@ -37,6 +42,14 @@ const testConfigPimRouteMapEntryDataSourceDependencyWithPimRouteMapPol = testCon
 data "aci_pim_route_map_entry" "test" {
   parent_dn = aci_pim_route_map_policy.test.id
   order = "1"
+  depends_on = [aci_pim_route_map_entry.test]
+}
+`
+
+const testConfigPimRouteMapEntryNotExisting = testConfigPimRouteMapEntryMinDependencyWithPimRouteMapPol + `
+data "aci_pim_route_map_entry" "test_non_existing" {
+  parent_dn = aci_pim_route_map_policy.test.id
+  order = "2"
   depends_on = [aci_pim_route_map_entry.test]
 }
 `

@@ -3,6 +3,7 @@
 package provider
 
 import (
+	"regexp"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
@@ -23,6 +24,10 @@ func TestAccDataSourceMgmtRsOoBConsWithMgmtInstP(t *testing.T) {
 					resource.TestCheckResourceAttr("data.aci_l3out_management_network_oob_contract.test", "priority", "unspecified"),
 				),
 			},
+			{
+				Config:      testConfigMgmtRsOoBConsNotExisting,
+				ExpectError: regexp.MustCompile("Failed to read aci_l3out_management_network_oob_contract data source"),
+			},
 		},
 	})
 }
@@ -31,6 +36,14 @@ const testConfigMgmtRsOoBConsDataSourceDependencyWithMgmtInstP = testConfigMgmtR
 data "aci_l3out_management_network_oob_contract" "test" {
   parent_dn = aci_l3out_management_network_instance_profile.test.id
   out_of_band_contract_name = "test_tn_vz_oob_br_cp_name"
+  depends_on = [aci_l3out_management_network_oob_contract.test]
+}
+`
+
+const testConfigMgmtRsOoBConsNotExisting = testConfigMgmtRsOoBConsMinDependencyWithMgmtInstP + `
+data "aci_l3out_management_network_oob_contract" "test_non_existing" {
+  parent_dn = aci_l3out_management_network_instance_profile.test.id
+  out_of_band_contract_name = "non_existing_tn_vz_oob_br_cp_name"
   depends_on = [aci_l3out_management_network_oob_contract.test]
 }
 `

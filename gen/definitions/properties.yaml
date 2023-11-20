@@ -22,6 +22,8 @@ l3extRsRedistributePol:
       src: "direct"
     datasource_required:
       src: "direct"
+    datasource_non_existing:
+      src: "static"
     all:
       src: "direct"
     default:
@@ -40,6 +42,8 @@ mgmtSubnet:
       ip: "1.1.1.0/24"
     datasource_required:
       ip: "1.1.1.0/24"
+    datasource_non_existing:
+      ip: "2.2.2.0/24"
 
 l3extConsLbl:
   test_values:
@@ -58,6 +62,8 @@ pimRouteMapEntry:
       order: "1"
     datasource_required:
       order: "1"
+    datasource_non_existing:
+      order: "2"
     all:
       grp: "0.0.0.0"
       rp: "0.0.0.0"

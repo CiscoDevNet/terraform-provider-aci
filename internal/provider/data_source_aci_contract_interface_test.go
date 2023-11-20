@@ -3,6 +3,7 @@
 package provider
 
 import (
+	"regexp"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
@@ -23,6 +24,10 @@ func TestAccDataSourceFvRsConsIfWithFvAEPg(t *testing.T) {
 					resource.TestCheckResourceAttr("data.aci_contract_interface.test", "priority", "unspecified"),
 				),
 			},
+			{
+				Config:      testConfigFvRsConsIfNotExisting,
+				ExpectError: regexp.MustCompile("Failed to read aci_contract_interface data source"),
+			},
 		},
 	})
 }
@@ -31,6 +36,14 @@ const testConfigFvRsConsIfDataSourceDependencyWithFvAEPg = testConfigFvRsConsIfM
 data "aci_contract_interface" "test" {
   parent_dn = aci_application_epg.test.id
   contract_interface_name = "test_tn_vz_cp_if_name"
+  depends_on = [aci_contract_interface.test]
+}
+`
+
+const testConfigFvRsConsIfNotExisting = testConfigFvRsConsIfMinDependencyWithFvAEPg + `
+data "aci_contract_interface" "test_non_existing" {
+  parent_dn = aci_application_epg.test.id
+  contract_interface_name = "non_existing_tn_vz_cp_if_name"
   depends_on = [aci_contract_interface.test]
 }
 `

@@ -85,6 +85,7 @@ var templateFuncs = template.FuncMap{
 	"overwriteProperty":            GetOverwriteAttributeName,
 	"overwritePropertyValue":       GetOverwriteAttributeValue,
 	"createTestValue":              func(val string) string { return fmt.Sprintf("test_%s", val) },
+	"createNonExistingValue":       func(val string) string { return fmt.Sprintf("non_existing_%s", val) },
 	"getParentTestDependencies":    GetParentTestDependencies,
 	"fromInterfacesToString":       FromInterfacesToString,
 	"containsNoneAttributeValue":   ContainsNoneAttributeValue,

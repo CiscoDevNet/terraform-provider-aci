@@ -3,6 +3,7 @@
 package provider
 
 import (
+	"regexp"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
@@ -28,6 +29,10 @@ func TestAccDataSourceL3extConsLblWithL3extOut(t *testing.T) {
 					resource.TestCheckResourceAttr("data.aci_l3out_consumer_label.test", "tag", "yellow-green"),
 				),
 			},
+			{
+				Config:      testConfigL3extConsLblNotExisting,
+				ExpectError: regexp.MustCompile("Failed to read aci_l3out_consumer_label data source"),
+			},
 		},
 	})
 }
@@ -36,6 +41,14 @@ const testConfigL3extConsLblDataSourceDependencyWithL3extOut = testConfigL3extCo
 data "aci_l3out_consumer_label" "test" {
   parent_dn = aci_l3_outside.test.id
   name = "test_name"
+  depends_on = [aci_l3out_consumer_label.test]
+}
+`
+
+const testConfigL3extConsLblNotExisting = testConfigL3extConsLblMinDependencyWithL3extOut + `
+data "aci_l3out_consumer_label" "test_non_existing" {
+  parent_dn = aci_l3_outside.test.id
+  name = "non_existing_name"
   depends_on = [aci_l3out_consumer_label.test]
 }
 `

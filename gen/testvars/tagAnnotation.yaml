@@ -3,6 +3,9 @@
 default:
   value: "test_value"
 
+datasource_non_existing:
+  key: "non_existing_key"
+
 datasource_required:
   key: "test_key"
 

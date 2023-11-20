@@ -3,6 +3,7 @@
 package provider
 
 import (
+	"regexp"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
@@ -28,6 +29,10 @@ func TestAccDataSourceVzOOBBrCP(t *testing.T) {
 					resource.TestCheckResourceAttr("data.aci_out_of_band_contract.test", "target_dscp", "AF11"),
 				),
 			},
+			{
+				Config:      testConfigVzOOBBrCPNotExisting,
+				ExpectError: regexp.MustCompile("Failed to read aci_out_of_band_contract data source"),
+			},
 		},
 	})
 }
@@ -35,6 +40,13 @@ func TestAccDataSourceVzOOBBrCP(t *testing.T) {
 const testConfigVzOOBBrCPDataSource = testConfigVzOOBBrCPAll + `
 data "aci_out_of_band_contract" "test" {
   name = "test_name"
+  depends_on = [aci_out_of_band_contract.test]
+}
+`
+
+const testConfigVzOOBBrCPNotExisting = testConfigVzOOBBrCPAll + `
+data "aci_out_of_band_contract" "test" {
+  name = "non_existing_name"
   depends_on = [aci_out_of_band_contract.test]
 }
 `

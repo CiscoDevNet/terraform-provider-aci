@@ -10,6 +10,9 @@ default:
   rp: "0.0.0.0"
   src: "0.0.0.0"
 
+datasource_non_existing:
+  order: "2"
+
 datasource_required:
   order: "1"
 

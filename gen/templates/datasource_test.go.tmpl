@@ -4,6 +4,7 @@ package provider
 
 import (
 	"testing"
+	"regexp"
 
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 )
@@ -28,6 +29,10 @@ func TestAccDataSource{{$.resourceClassName}}With{{capitalize .class_name}} (t *
 					{{- end}}
 				),
 			},
+			{
+				Config:      testConfig{{$.resourceClassName}}NotExisting,
+				ExpectError: regexp.MustCompile("Failed to read aci_{{$.resourceName}} data source"),
+			},
 		},
 	})
 }
@@ -50,6 +55,10 @@ func TestAccDataSource{{.resourceClassName}}(t *testing.T) {
 					{{- end}}
 				),
 			},
+			{
+				Config:      testConfig{{.resourceClassName}}NotExisting,
+				ExpectError: regexp.MustCompile("Failed to read aci_{{$.resourceName}} data source"),
+			},
 		},
 	})
 }
@@ -66,11 +75,30 @@ data "aci_{{$.resourceName}}" "test" {
   depends_on = [aci_{{$.resourceName}}.test]
 }
 `
+
+const testConfig{{$.resourceClassName}}NotExisting  = testConfig{{$.resourceClassName}}MinDependencyWith{{capitalize .class_name}}  + `
+data "aci_{{$.resourceName}}" "test_non_existing" {
+  parent_dn = {{.parent_dn}}
+  {{- range $key, $value := $.datasource_non_existing}}
+  {{$key}} = "{{$value}}"
+  {{- end}}
+  depends_on = [aci_{{$.resourceName}}.test]
+}
+`
 	{{- end}}
 {{- else}}
 const testConfig{{.resourceClassName}}DataSource = testConfig{{.resourceClassName}}All + `
 data "aci_{{$.resourceName}}" "test" {
   {{- range $key, $value := $.datasource_required}}
+  {{$key}} = "{{$value}}"
+  {{- end}}
+  depends_on = [aci_{{$.resourceName}}.test]
+}
+`
+
+const testConfig{{$.resourceClassName}}NotExisting = testConfig{{.resourceClassName}}All + `
+data "aci_{{$.resourceName}}" "test" {
+  {{- range $key, $value := $.datasource_non_existing}}
   {{$key}} = "{{$value}}"
   {{- end}}
   depends_on = [aci_{{$.resourceName}}.test]

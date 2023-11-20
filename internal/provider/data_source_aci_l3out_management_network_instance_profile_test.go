@@ -3,6 +3,7 @@
 package provider
 
 import (
+	"regexp"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
@@ -23,6 +24,10 @@ func TestAccDataSourceMgmtInstP(t *testing.T) {
 					resource.TestCheckResourceAttr("data.aci_l3out_management_network_instance_profile.test", "priority", "level1"),
 				),
 			},
+			{
+				Config:      testConfigMgmtInstPNotExisting,
+				ExpectError: regexp.MustCompile("Failed to read aci_l3out_management_network_instance_profile data source"),
+			},
 		},
 	})
 }
@@ -30,6 +35,13 @@ func TestAccDataSourceMgmtInstP(t *testing.T) {
 const testConfigMgmtInstPDataSource = testConfigMgmtInstPAll + `
 data "aci_l3out_management_network_instance_profile" "test" {
   name = "test_name"
+  depends_on = [aci_l3out_management_network_instance_profile.test]
+}
+`
+
+const testConfigMgmtInstPNotExisting = testConfigMgmtInstPAll + `
+data "aci_l3out_management_network_instance_profile" "test" {
+  name = "non_existing_name"
   depends_on = [aci_l3out_management_network_instance_profile.test]
 }
 `

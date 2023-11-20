@@ -6,6 +6,9 @@ default:
   name_alias: ""
   priority: "unspecified"
 
+datasource_non_existing:
+  name: "non_existing_name"
+
 datasource_required:
   name: "test_name"
 
