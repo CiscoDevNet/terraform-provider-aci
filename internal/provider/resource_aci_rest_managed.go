@@ -9,6 +9,7 @@ import (
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
@@ -68,9 +69,9 @@ var NoAnnotationClasses = []string{"tagTag"}
 var UnableToDelete = "unable to delete"
 
 func (r *AciRestManagedResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
-	tflog.Trace(ctx, "start schema of resource: aci_rest_managed")
+	tflog.Debug(ctx, "Start schema of resource: aci_rest_managed")
 	resp.TypeName = req.ProviderTypeName + "_rest_managed"
-	tflog.Trace(ctx, "end schema of resource: aci_rest_managed")
+	tflog.Debug(ctx, "End schema of resource: aci_rest_managed")
 }
 
 func (r *AciRestManagedResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
@@ -169,7 +170,7 @@ func (r *AciRestManagedResource) Schema(ctx context.Context, req resource.Schema
 }
 
 func (r *AciRestManagedResource) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
-	tflog.Trace(ctx, "start configure of resource: aci_rest_managed")
+	tflog.Debug(ctx, "Start configure of resource: aci_rest_managed")
 	// Prevent panic if the provider has not been configured.
 	if req.ProviderData == nil {
 		return
@@ -187,16 +188,16 @@ func (r *AciRestManagedResource) Configure(ctx context.Context, req resource.Con
 	}
 
 	r.client = client
-	tflog.Trace(ctx, "end configure of resource: aci_rest_managed")
+	tflog.Debug(ctx, "End configure of resource: aci_rest_managed")
 }
 
 func (r *AciRestManagedResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
-	tflog.Trace(ctx, "start create of resource: aci_rest_managed")
+	tflog.Debug(ctx, "Start create of resource: aci_rest_managed")
 	// On create retrieve information on current state prior to making any changes in order to determine child delete operations
 	var stateData *AciRestManagedResourceModel
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &stateData)...)
 	setAciRestManagedProperties(stateData)
-	messageMap := setAciRestManagedAttributes(ctx, r.client, stateData)
+	messageMap := setAciRestManagedAttributes(ctx, &resp.Diagnostics, r.client, stateData)
 	if messageMap != nil {
 		resp.Diagnostics.AddError(messageMap.(map[string]string)["message"], messageMap.(map[string]string)["messageDetail"])
 	}
@@ -212,36 +213,34 @@ func (r *AciRestManagedResource) Create(ctx context.Context, req resource.Create
 
 	setAciRestManagedProperties(data)
 
-	tflog.Trace(ctx, fmt.Sprintf("create of resource aci_rest_managed with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("create of resource aci_rest_managed with id '%s'", data.Id.ValueString()))
 
 	var childPlan, childState []ChildAciRestManagedResourceModel
 	data.Child.ElementsAs(ctx, &childPlan, false)
 	stateData.Child.ElementsAs(ctx, &childState, false)
-	jsonPayload, message, messageDetail := getAciRestManagedCreateJsonPayload(ctx, data, childPlan, childState)
+	jsonPayload := getAciRestManagedCreateJsonPayload(ctx, &resp.Diagnostics, data, childPlan, childState)
 
-	if jsonPayload == nil {
-		resp.Diagnostics.AddError(message, messageDetail)
+	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	requestData, message, messageDetail := doAciRestManagedRequest(ctx, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
-	if requestData == nil {
-		resp.Diagnostics.AddError(message, messageDetail)
+	doAciRestManagedRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
+	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	messageMap = setAciRestManagedAttributes(ctx, r.client, data)
+	messageMap = setAciRestManagedAttributes(ctx, &resp.Diagnostics, r.client, data)
 	if messageMap != nil {
 		resp.Diagnostics.AddError(messageMap.(map[string]string)["message"], messageMap.(map[string]string)["messageDetail"])
 	}
 
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
-	tflog.Trace(ctx, "end create of resource: aci_rest_managed")
+	tflog.Debug(ctx, "End create of resource: aci_rest_managed")
 }
 
 func (r *AciRestManagedResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
-	tflog.Trace(ctx, "start read of resource: aci_rest_managed")
+	tflog.Debug(ctx, "Start read of resource: aci_rest_managed")
 	var data *AciRestManagedResourceModel
 
 	// Read Terraform prior state data into the model
@@ -251,20 +250,23 @@ func (r *AciRestManagedResource) Read(ctx context.Context, req resource.ReadRequ
 		return
 	}
 
-	tflog.Trace(ctx, fmt.Sprintf("read of resource aci_rest_managed with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("read of resource aci_rest_managed with id '%s'", data.Id.ValueString()))
 
-	messageMap := setAciRestManagedAttributes(ctx, r.client, data)
-	if messageMap != nil {
-		resp.Diagnostics.AddError(messageMap.(map[string]string)["message"], messageMap.(map[string]string)["messageDetail"])
-	}
+	setAciRestManagedAttributes(ctx, &resp.Diagnostics, r.client, data)
 
 	// Save updated data into Terraform state
-	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
-	tflog.Trace(ctx, "end read of resource: aci_rest_managed")
+	if data.Id.IsNull() {
+		var emptyData *TagAnnotationResourceModel
+		resp.Diagnostics.Append(resp.State.Set(ctx, &emptyData)...)
+	} else {
+		resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	}
+
+	tflog.Debug(ctx, "End read of resource: aci_rest_managed")
 }
 
 func (r *AciRestManagedResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
-	tflog.Trace(ctx, "start update of resource: aci_rest_managed")
+	tflog.Debug(ctx, "Start update of resource: aci_rest_managed")
 	var data *AciRestManagedResourceModel
 	var stateData *AciRestManagedResourceModel
 
@@ -276,36 +278,34 @@ func (r *AciRestManagedResource) Update(ctx context.Context, req resource.Update
 		return
 	}
 
-	tflog.Trace(ctx, fmt.Sprintf("update of resource aci_rest_managed with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("update of resource aci_rest_managed with id '%s'", data.Id.ValueString()))
 
 	var childPlan, childState []ChildAciRestManagedResourceModel
 	data.Child.ElementsAs(ctx, &childPlan, false)
 	stateData.Child.ElementsAs(ctx, &childState, false)
-	jsonPayload, message, messageDetail := getAciRestManagedCreateJsonPayload(ctx, data, childPlan, childState)
+	jsonPayload := getAciRestManagedCreateJsonPayload(ctx, &resp.Diagnostics, data, childPlan, childState)
 
-	if jsonPayload == nil {
-		resp.Diagnostics.AddError(message, messageDetail)
+	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	requestData, message, messageDetail := doAciRestManagedRequest(ctx, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
-	if requestData == nil {
-		resp.Diagnostics.AddError(message, messageDetail)
+	doAciRestManagedRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
+	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	messageMap := setAciRestManagedAttributes(ctx, r.client, data)
-	if messageMap != nil {
-		resp.Diagnostics.AddError(messageMap.(map[string]string)["message"], messageMap.(map[string]string)["messageDetail"])
+	setAciRestManagedAttributes(ctx, &resp.Diagnostics, r.client, data)
+	if resp.Diagnostics.HasError() {
+		return
 	}
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
-	tflog.Trace(ctx, "end update of resource: aci_rest_managed")
+	tflog.Debug(ctx, "End update of resource: aci_rest_managed")
 }
 
 func (r *AciRestManagedResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
-	tflog.Trace(ctx, "start delete of resource: aci_rest_managed")
+	tflog.Debug(ctx, "Start delete of resource: aci_rest_managed")
 	var data *AciRestManagedResourceModel
 
 	// Read Terraform prior state data into the model
@@ -315,42 +315,53 @@ func (r *AciRestManagedResource) Delete(ctx context.Context, req resource.Delete
 		return
 	}
 
-	tflog.Trace(ctx, fmt.Sprintf("delete of resource aci_rest_managed with id '%s'", data.Id.ValueString()))
-	jsonPayload, message, messageDetail := getAciRestManagedDeleteJsonPayload(ctx, data)
-	if jsonPayload == nil {
-		resp.Diagnostics.AddError(message, messageDetail)
+	tflog.Debug(ctx, fmt.Sprintf("delete of resource aci_rest_managed with id '%s'", data.Id.ValueString()))
+	jsonPayload := getAciRestManagedDeleteJsonPayload(ctx, &resp.Diagnostics, data)
+	if resp.Diagnostics.HasError() {
 		return
 	}
-	requestData, message, messageDetail := doAciRestManagedRequest(ctx, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
-	if requestData == nil {
-		if message == UnableToDelete {
-			resp.Diagnostics.AddWarning(message, messageDetail)
-		} else {
-			resp.Diagnostics.AddError(message, messageDetail)
-		}
+
+	doAciRestManagedRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
+	if resp.Diagnostics.HasError() {
 		return
 	}
-	tflog.Trace(ctx, "end delete of resource: aci_rest_managed")
+	tflog.Debug(ctx, "End delete of resource: aci_rest_managed")
 }
 
 func (r *AciRestManagedResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
-	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
+	tflog.Debug(ctx, "Start import state of resource: aci_rest_managed")
+	parts := strings.Split(req.ID, ":")
+
+	tflog.Debug(ctx, fmt.Sprintf("Import state of resource aci_rest_managed with id '%s'", req.ID))
+
+	if len(parts) != 2 || parts[0] == "" || parts[1] == "" {
+		resp.Diagnostics.AddError(
+			fmt.Sprintf("Unexpected import format of ID: %s", req.ID),
+			"Expected notation <class_name>:<dn> (fvTenant:uni/tn-example_tenant) for import.",
+		)
+		return
+	}
+
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("id"), parts[1])...)
+
+	tflog.Debug(ctx, "End import of state resource: aci_rest_managed")
 }
 
-func setAciRestManagedAttributes(ctx context.Context, client *client.Client, data *AciRestManagedResourceModel) interface{} {
-	requestData, message, messageDetail := doAciRestManagedRequest(ctx, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=children", data.Id.ValueString()), "GET", nil)
+func setAciRestManagedAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *AciRestManagedResourceModel) interface{} {
+	requestData := doAciRestManagedRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=children", data.Id.ValueString()), "GET", nil)
 
-	if requestData == nil {
-		return map[string]string{"message": message, "messageDetail": messageDetail}
+	if diags.HasError() {
+		return nil
 	}
 
 	if requestData.Search("imdata").Index(0).Data() == nil {
+		data.Id = basetypes.NewStringNull()
 		return nil
 	}
 
 	classData := requestData.Search("imdata").Index(0).Data().(map[string]interface{})
 	for className := range classData {
-		tflog.Trace(ctx, fmt.Sprintf("Setting ClassName to %s", className))
+		tflog.Debug(ctx, fmt.Sprintf("Setting ClassName to %s", className))
 		data.ClassName = basetypes.NewStringValue(className)
 		break
 	}
@@ -427,11 +438,13 @@ func setAciRestManagedAttributes(ctx context.Context, client *client.Client, dat
 				data.Child = childSet
 			}
 		} else {
-			return map[string]string{
-				"message":       "too many results in response",
-				"messageDetail": fmt.Sprintf("%v matches returned for class '%s'. Please report this issue to the provider developers.", len(classReadInfo), data.ClassName),
-			}
+			diags.AddError(
+				"too many results in response",
+				fmt.Sprintf("%v matches returned for class '%s'. Please report this issue to the provider developers.", len(classReadInfo), data.ClassName),
+			)
 		}
+	} else {
+		data.Id = basetypes.NewStringNull()
 	}
 	return nil
 }
@@ -448,7 +461,7 @@ func setAciRestManagedProperties(data *AciRestManagedResourceModel) {
 	}
 }
 
-func getAciRestManagedChildPayloads(ctx context.Context, data *AciRestManagedResourceModel, childPlan, childState []ChildAciRestManagedResourceModel) ([]interface{}, string, string) {
+func getAciRestManagedChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *AciRestManagedResourceModel, childPlan, childState []ChildAciRestManagedResourceModel) []interface{} {
 	childPayloads := []interface{}{}
 	if !data.Child.IsUnknown() {
 		childIdentifiers := []AciRestManagedChildIdentifier{}
@@ -489,17 +502,18 @@ func getAciRestManagedChildPayloads(ctx context.Context, data *AciRestManagedRes
 		data.Child = types.SetNull(data.Child.ElementType(ctx))
 	}
 
-	return childPayloads, "", ""
+	return childPayloads
 }
 
-func getAciRestManagedCreateJsonPayload(ctx context.Context, data *AciRestManagedResourceModel, childPlan, childState []ChildAciRestManagedResourceModel) (*container.Container, string, string) {
+func getAciRestManagedCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, data *AciRestManagedResourceModel, childPlan, childState []ChildAciRestManagedResourceModel) *container.Container {
 	payloadMap := map[string]interface{}{}
 	payloadMap["attributes"] = map[string]string{}
 
-	childPayloads, errMessage, errMessageDetail := getAciRestManagedChildPayloads(ctx, data, childPlan, childState)
-	if childPayloads == nil {
-		return nil, errMessage, errMessageDetail
+	childPayloads := getAciRestManagedChildPayloads(ctx, diags, data, childPlan, childState)
+	if diags.HasError() {
+		return nil
 	}
+
 	payloadMap["children"] = childPayloads
 
 	if !data.Annotation.IsNull() && !data.Annotation.IsUnknown() {
@@ -512,41 +526,50 @@ func getAciRestManagedCreateJsonPayload(ctx context.Context, data *AciRestManage
 	}
 
 	payload, err := json.Marshal(map[string]interface{}{data.ClassName.ValueString(): payloadMap})
+
 	if err != nil {
-		errMessage := "marshalling of json payload failed"
-		errMessageDetail := fmt.Sprintf("err: %s. Please report this issue to the provider developers.", err)
-		return nil, errMessage, errMessageDetail
+		diags.AddError(
+			"marshalling of json payload failed",
+			fmt.Sprintf("err: %s. Please report this issue to the provider developers.", err),
+		)
+		return nil
 	}
 
 	jsonPayload, err := container.ParseJSON(payload)
 
 	if err != nil {
-		errMessage := "construction of json payload failed"
-		errMessageDetail := fmt.Sprintf("err: %s. Please report this issue to the provider developers.", err)
-		return nil, errMessage, errMessageDetail
+		diags.AddError(
+			"construction of json payload failed",
+			fmt.Sprintf("err: %s. Please report this issue to the provider developers.", err),
+		)
+		return nil
 	}
-	return jsonPayload, "", ""
+	return jsonPayload
 }
 
-func getAciRestManagedDeleteJsonPayload(ctx context.Context, data *AciRestManagedResourceModel) (*container.Container, string, string) {
+func getAciRestManagedDeleteJsonPayload(ctx context.Context, diags *diag.Diagnostics, data *AciRestManagedResourceModel) *container.Container {
 
 	jsonString := fmt.Sprintf(`{"%s":{"attributes":{"dn": "%s","status": "deleted"}}}`, data.ClassName.ValueString(), data.Id.ValueString())
 	jsonPayload, err := container.ParseJSON([]byte(jsonString))
 	if err != nil {
-		errMessage := "construction of json payload failed"
-		errMessageDetail := fmt.Sprintf("err: %s. Please report this issue to the provider developers.", err)
-		return nil, errMessage, errMessageDetail
+		diags.AddError(
+			"construction of json payload failed",
+			fmt.Sprintf("err: %s. Please report this issue to the provider developers.", err),
+		)
+		return nil
 	}
-	return jsonPayload, "", ""
+	return jsonPayload
 }
 
-func doAciRestManagedRequest(ctx context.Context, client *client.Client, path, method string, payload *container.Container) (*container.Container, string, string) {
+func doAciRestManagedRequest(ctx context.Context, diags *diag.Diagnostics, client *client.Client, path, method string, payload *container.Container) *container.Container {
 
 	restRequest, err := client.MakeRestRequest(method, path, payload, true)
 	if err != nil {
-		message := fmt.Sprintf("creation of %s rest request failed", strings.ToLower(method))
-		messageDetail := fmt.Sprintf("Err: %s. Please report this issue to the provider developers.", err)
-		return nil, message, messageDetail
+		diags.AddError(
+			fmt.Sprintf("creation of %s rest request failed", strings.ToLower(method)),
+			fmt.Sprintf("err: %s. Please report this issue to the provider developers.", err),
+		)
+		return nil
 	}
 
 	cont, restResponse, err := client.Do(restRequest)
@@ -557,24 +580,27 @@ func doAciRestManagedRequest(ctx context.Context, client *client.Client, path, m
 		if errData != nil {
 			errText := errData.(string)
 			if strings.Contains(errText, "Cannot delete object of class") {
-				message := UnableToDelete
-				messageDetail := errText
-				return nil, message, messageDetail
+				diags.AddWarning(UnableToDelete, errText)
+				return nil
 			}
 		}
 	}
 
 	if restResponse != nil && cont.Data() != nil && restResponse.StatusCode != 200 {
-		message := fmt.Sprintf("%s rest request failed", strings.ToLower(method))
-		messageDetail := fmt.Sprintf("Code: %d Response: %s, err: %s. Please report this issue to the provider developers.", restResponse.StatusCode, cont.Data().(map[string]interface{})["imdata"], err)
-		return nil, message, messageDetail
+		diags.AddError(
+			fmt.Sprintf("%s rest request failed", strings.ToLower(method)),
+			fmt.Sprintf("Code: %d Response: %s, err: %s. Please report this issue to the provider developers.", restResponse.StatusCode, cont.Data().(map[string]interface{})["imdata"], err),
+		)
+		return nil
 	} else if err != nil {
-		message := fmt.Sprintf("%s rest request failed", strings.ToLower(method))
-		messageDetail := fmt.Sprintf("Err: %s. Please report this issue to the provider developers.", err)
-		return nil, message, messageDetail
+		diags.AddError(
+			fmt.Sprintf("%s rest request failed", strings.ToLower(method)),
+			fmt.Sprintf("Err: %s. Please report this issue to the provider developers.", err),
+		)
+		return nil
 	}
 
-	return cont, "", ""
+	return cont
 }
 
 func containsString(s []string, e string) bool {

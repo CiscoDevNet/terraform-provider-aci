@@ -25,9 +25,9 @@ type AciRestManagedDataSource struct {
 }
 
 func (d *AciRestManagedDataSource) Metadata(ctx context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
-	tflog.Trace(ctx, "start schema of datasource: aci_rest_managed")
+	tflog.Debug(ctx, "Start schema of datasource: aci_rest_managed")
 	resp.TypeName = req.ProviderTypeName + "_rest_managed"
-	tflog.Trace(ctx, "end schema of datasource: aci_rest_managed")
+	tflog.Debug(ctx, "End schema of datasource: aci_rest_managed")
 }
 
 func (d *AciRestManagedDataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
@@ -89,7 +89,7 @@ func (d *AciRestManagedDataSource) Schema(ctx context.Context, req datasource.Sc
 }
 
 func (d *AciRestManagedDataSource) Configure(ctx context.Context, req datasource.ConfigureRequest, resp *datasource.ConfigureResponse) {
-	tflog.Trace(ctx, "start configure of datasource: aci_rest_managed")
+	tflog.Debug(ctx, "Start configure of datasource: aci_rest_managed")
 	// Prevent panic if the provider has not been configured.
 	if req.ProviderData == nil {
 		return
@@ -107,11 +107,11 @@ func (d *AciRestManagedDataSource) Configure(ctx context.Context, req datasource
 	}
 
 	d.client = client
-	tflog.Trace(ctx, "end configure of datasource: aci_rest_managed")
+	tflog.Debug(ctx, "End configure of datasource: aci_rest_managed")
 }
 
 func (d *AciRestManagedDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
-	tflog.Trace(ctx, "start read of datasource: aci_rest_managed")
+	tflog.Debug(ctx, "Start read of datasource: aci_rest_managed")
 	var data *AciRestManagedResourceModel
 
 	// Read Terraform configuration data into the model
@@ -123,14 +123,22 @@ func (d *AciRestManagedDataSource) Read(ctx context.Context, req datasource.Read
 
 	setAciRestManagedProperties(data)
 
-	tflog.Trace(ctx, fmt.Sprintf("read of datasource aci_rest_managed with id '%s'", data.Id.ValueString()))
+	// Create a copy of the Id for when not found during setAciRestManagedAttributes
+	cachedId := data.Id.ValueString()
 
-	messageMap := setAciRestManagedAttributes(ctx, d.client, data)
-	if messageMap != nil {
-		resp.Diagnostics.AddError(messageMap.(map[string]string)["message"], messageMap.(map[string]string)["messageDetail"])
+	tflog.Debug(ctx, fmt.Sprintf("read of datasource aci_rest_managed with id '%s'", data.Id.ValueString()))
+
+	setAciRestManagedAttributes(ctx, &resp.Diagnostics, d.client, data)
+
+	if data.Id.IsNull() {
+		resp.Diagnostics.AddError(
+			"Failed to read aci_rest_managed data source",
+			fmt.Sprintf("The aci_rest_managed data source with id '%s' has not been found", cachedId),
+		)
+		return
 	}
 
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
-	tflog.Trace(ctx, "end read of datasource: aci_rest_managed")
+	tflog.Debug(ctx, "End read of datasource: aci_rest_managed")
 }

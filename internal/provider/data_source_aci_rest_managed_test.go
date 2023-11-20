@@ -1,6 +1,7 @@
 package provider
 
 import (
+	"regexp"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
@@ -21,6 +22,10 @@ func TestAccDataSourceAciRestManaged_tenant(t *testing.T) {
 					resource.TestCheckResourceAttr("data.aci_rest_managed.infra", "child.0.content.name", "infra"),
 				),
 			},
+			{
+				Config:      testConfigRestManagedNotExisting,
+				ExpectError: regexp.MustCompile("Failed to read aci_rest_managed data source"),
+			},
 		},
 	})
 }
@@ -38,6 +43,16 @@ data "aci_rest_managed" "infra" {
 	content = {
 		name = "infra"
 	}
+  }
+}
+`
+
+const testConfigRestManagedNotExisting = `
+data "aci_rest_managed" "not_existing" {
+  dn = "uni/tn-not_existing"
+  class_name = "fvTenant"
+  content = {
+	name = "not_existing"
   }
 }
 `
