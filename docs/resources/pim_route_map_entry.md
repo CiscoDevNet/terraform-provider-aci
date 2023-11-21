@@ -35,7 +35,7 @@ resource "aci_pim_route_map_entry" "example" {
 }
   ```
 
-The configuration snippet below below shows all possible attributes of the Pim Route Map Entry.
+The configuration snippet below shows all possible attributes of the Pim Route Map Entry.
 
 !> This example might not be valid configuration and is only used to show all possible attributes.
 

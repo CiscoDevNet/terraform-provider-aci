@@ -55,7 +55,7 @@ resource "aci_contract_interface" "example" {
 }
   ```
 
-The configuration snippet below below shows all possible attributes of the Contract Interface.
+The configuration snippet below shows all possible attributes of the Contract Interface.
 
 !> This example might not be valid configuration and is only used to show all possible attributes.
 

@@ -36,7 +36,7 @@ resource "aci_l3out_redistribute_policy" "example" {
 }
   ```
 
-The configuration snippet below below shows all possible attributes of the L3out Redistribute Policy.
+The configuration snippet below shows all possible attributes of the L3out Redistribute Policy.
 
 !> This example might not be valid configuration and is only used to show all possible attributes.
 

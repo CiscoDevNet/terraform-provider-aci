@@ -33,7 +33,7 @@ resource "aci_out_of_band_contract" "example" {
 }
 ```
 
-The configuration snippet below below shows all possible attributes of the Out Of Band Contract.
+The configuration snippet below shows all possible attributes of the Out Of Band Contract.
 
 !> This example might not be valid configuration and is only used to show all possible attributes.
 

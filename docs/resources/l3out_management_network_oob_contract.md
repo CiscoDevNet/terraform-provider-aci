@@ -35,7 +35,7 @@ resource "aci_l3out_management_network_oob_contract" "example" {
 }
   ```
 
-The configuration snippet below below shows all possible attributes of the L3out Management Network Oob Contract.
+The configuration snippet below shows all possible attributes of the L3out Management Network Oob Contract.
 
 !> This example might not be valid configuration and is only used to show all possible attributes.
 

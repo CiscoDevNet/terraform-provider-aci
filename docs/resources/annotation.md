@@ -56,7 +56,7 @@ resource "aci_annotation" "example" {
 }
   ```
 
-The configuration snippet below below shows all possible attributes of the Annotation.
+The configuration snippet below shows all possible attributes of the Annotation.
 
 !> This example might not be valid configuration and is only used to show all possible attributes.
 
