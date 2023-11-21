@@ -1,5 +1,5 @@
 ---
-subcategory: - "Cloud"
+subcategory: "Cloud"
 layout: "aci"
 page_title: "ACI: aci_cloud_service_endpoint_selector"
 sidebar_current: "docs-aci-resource-cloud_service_endpoint_selector"
