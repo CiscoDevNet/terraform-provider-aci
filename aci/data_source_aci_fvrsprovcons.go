@@ -5,9 +5,9 @@ import (
 	"fmt"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
-	"github.com/ciscoecosystem/aci-go-client/v2/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func dataSourceAciContractProvider() *schema.Resource {
@@ -17,45 +17,57 @@ func dataSourceAciContractProvider() *schema.Resource {
 
 		SchemaVersion: 1,
 
-		Schema: AppendBaseAttrSchema(map[string]*schema.Schema{
+		Schema: map[string]*schema.Schema{
 			"application_epg_dn": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
-				ForceNew: true,
 			},
-
 			"contract_name": &schema.Schema{
-				Type:     schema.TypeString,
-				Required: true,
-				ForceNew: true,
+				Type:       schema.TypeString,
+				Optional:   true,
+				Deprecated: "Use `contract_dn` instead",
 			},
-
+			"contract_dn": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 			"contract_type": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
-				ForceNew: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"consumer",
+					"provider",
+				}, false),
 			},
-
 			"match_t": &schema.Schema{
 				Type:     schema.TypeString,
-				Optional: true,
 				Computed: true,
 			},
-
 			"prio": &schema.Schema{
 				Type:     schema.TypeString,
-				Optional: true,
 				Computed: true,
 			},
-		}),
+			"annotation": &schema.Schema{
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+		},
 	}
 }
 
 func dataSourceAciContractProviderRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	aciClient := m.(*client.Client)
 	contractType := d.Get("contract_type").(string)
-	tnVzBrCPName := d.Get("contract_name").(string)
 	ApplicationEPGDn := d.Get("application_epg_dn").(string)
+
+	tnVzBrCPName := ""
+	if ContractDN, ok := d.GetOk("contract_dn"); ok {
+		tnVzBrCPName = GetMOName(ContractDN.(string))
+	} else if ContractName, ok := d.GetOk("contract_name"); ok {
+		tnVzBrCPName = ContractName.(string)
+	} else {
+		return diag.FromErr(fmt.Errorf("contract_dn is required"))
+	}
 
 	if contractType == "provider" {
 
@@ -64,13 +76,18 @@ func dataSourceAciContractProviderRead(ctx context.Context, d *schema.ResourceDa
 
 		fvRsProv, err := getRemoteContractProvider(aciClient, dn)
 		if err != nil {
+			return diag.FromErr(err)
+		}
+		fvRsProvMap, _ := fvRsProv.ToMap()
+		name := fvRsProvMap["tnVzBrCPName"]
+		pDN := GetParentDn(dn, fmt.Sprintf("/rsprov-%s", name))
+		d.Set("application_epg_dn", pDN)
+		_, err = setContractProviderAttributes(fvRsProv, d)
+		if err != nil {
+			d.SetId("")
 			return nil
 		}
 		d.SetId(dn)
-		_, err = setContractProviderDataAttributes(fvRsProv, d)
-		if err != nil {
-			return nil
-		}
 
 	} else if contractType == "consumer" {
 		rn := fmt.Sprintf("rscons-%s", tnVzBrCPName)
@@ -78,49 +95,15 @@ func dataSourceAciContractProviderRead(ctx context.Context, d *schema.ResourceDa
 
 		fvRsCons, err := getRemoteContractConsumer(aciClient, dn)
 		if err != nil {
+			return diag.FromErr(err)
+		}
+		_, err = setContractConsumerAttributes(fvRsCons, d)
+		if err != nil {
+			d.SetId("")
 			return nil
 		}
 		d.SetId(dn)
-		_, err = setContractConsumerDataAttributes(fvRsCons, d)
-		if err != nil {
-			return nil
-		}
-
-	} else {
-		return diag.Errorf("Contract Type: Value must be from [provider, consumer]")
 	}
 
 	return nil
-}
-
-func setContractConsumerDataAttributes(fvRsCons *models.ContractConsumer, d *schema.ResourceData) (*schema.ResourceData, error) {
-	d.SetId(fvRsCons.DistinguishedName)
-
-	// d.Set("application_epg_dn", GetParentDn(fvRsCons.DistinguishedName))
-	fvRsConsMap, err := fvRsCons.ToMap()
-	if err != nil {
-		return d, err
-	}
-
-	d.Set("contract_name", fvRsConsMap["tnVzBrCPName"])
-
-	d.Set("annotation", fvRsConsMap["annotation"])
-	d.Set("prio", fvRsConsMap["prio"])
-	return d, nil
-}
-
-func setContractProviderDataAttributes(fvRsProv *models.ContractProvider, d *schema.ResourceData) (*schema.ResourceData, error) {
-	d.SetId(fvRsProv.DistinguishedName)
-
-	// d.Set("application_epg_dn", GetParentDn(fvRsProv.DistinguishedName))
-	fvRsProvMap, err := fvRsProv.ToMap()
-	if err != nil {
-		return d, err
-	}
-	d.Set("contract_name", fvRsProvMap["tnVzBrCPName"])
-
-	d.Set("annotation", fvRsProvMap["annotation"])
-	d.Set("match_t", fvRsProvMap["matchT"])
-	d.Set("prio", fvRsProvMap["prio"])
-	return d, nil
 }

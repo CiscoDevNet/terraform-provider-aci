@@ -31,7 +31,6 @@ func dataSourceAciSubnet() *schema.Resource {
 
 			"ctrl": &schema.Schema{
 				Type:     schema.TypeList,
-				Optional: true,
 				Computed: true,
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
@@ -40,25 +39,21 @@ func dataSourceAciSubnet() *schema.Resource {
 
 			"ip_data_plane_learning": &schema.Schema{
 				Type:     schema.TypeString,
-				Optional: true,
 				Computed: true,
 			},
 
 			"name_alias": &schema.Schema{
 				Type:     schema.TypeString,
-				Optional: true,
 				Computed: true,
 			},
 
 			"preferred": &schema.Schema{
 				Type:     schema.TypeString,
-				Optional: true,
 				Computed: true,
 			},
 
 			"scope": &schema.Schema{
 				Type:     schema.TypeList,
-				Optional: true,
 				Computed: true,
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
@@ -67,7 +62,6 @@ func dataSourceAciSubnet() *schema.Resource {
 
 			"virtual": &schema.Schema{
 				Type:     schema.TypeString,
-				Optional: true,
 				Computed: true,
 			},
 			// EP Reachability

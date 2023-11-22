@@ -37,19 +37,19 @@ data "aci_subnet" "dev_subnet" {
 ## Attribute Reference
 
 - `id` - Attribute id set to the Dn of the Subnet.
-- `annotation` - (Optional) Annotation for object subnet.
-- `description` - (Optional) Description for object subnet.
-- `ctrl` - (Optional) The list of subnet control state. The control can be specific protocols applied to the subnet such as IGMP Snooping.
-- `ip_data_plane_learning` - (Optional) Knob to disable IP Dataplane Learning for Host(/32, /128) and for BD Subnet. Type - String.
-- `name_alias` - (Optional) Name alias for object subnet.
-- `preferred` - (Optional) Indicates if the subnet is preferred (primary) over the available alternatives. Only one preferred subnet is allowed.
-- `scope` - (Optional) The List of network visibility of the subnet.
-- `virtual` - (Optional) Treated as virtual IP address. Used in case of BD extended to multiple sites.
-- `relation_fv_rs_bd_subnet_to_out` - (Optional) Relation to class l3extOut. Cardinality - N_TO_M. Type - Set of String.
-- `relation_fv_rs_nd_pfx_pol` - (Optional) Relation to class ndPfxPol. Cardinality - N_TO_ONE. Type - String.
-- `relation_fv_rs_bd_subnet_to_profile` - (Optional) Relation to class rtctrlProfile. Cardinality - N_TO_ONE. Type - String.
-- `next_hop_addr` - (Optional) EP Reachability of the Application EPGs Subnet object. Type - String.
-- `msnlb` - (Optional) A block representing MSNLB of the Application EPGs Subnet object. Type - Block.
+- `annotation` - (Read-Only) Annotation for object subnet.
+- `description` - (Read-Only) Description for object subnet.
+- `ctrl` - (Read-Only) The list of subnet control state. The control can be specific protocols applied to the subnet such as IGMP Snooping.
+- `ip_data_plane_learning` - (Read-Only) Flag to enable/disable ip-data-plane learning for the Subnet object. Allowed values are "enabled" and "disabled" and default value is "enabled". Type: String.
+- `name_alias` - (Read-Only) Name alias for object subnet.
+- `preferred` - (Read-Only) Indicates if the subnet is preferred (primary) over the available alternatives. Only one preferred subnet is allowed.
+- `scope` - (Read-Only) The List of network visibility of the subnet.
+- `virtual` - (Read-Only) Treated as virtual IP address. Used in case of BD extended to multiple sites.
+- `relation_fv_rs_bd_subnet_to_out` - (Read-Only) Relation to class l3extOut. Cardinality - N_TO_M. Type - Set of String.
+- `relation_fv_rs_nd_pfx_pol` - (Read-Only) Relation to class ndPfxPol. Cardinality - N_TO_ONE. Type - String.
+- `relation_fv_rs_bd_subnet_to_profile` - (Read-Only) Relation to class rtctrlProfile. Cardinality - N_TO_ONE. Type - String.
+- `next_hop_addr` - (Read-Only) EP Reachability of the Application EPGs Subnet object. Type - String.
+- `msnlb` - (Read-Only) A block representing MSNLB of the Application EPGs Subnet object. Type - Block.
    - `mode` - Mode of the MSNLB object.
    - `group` - The IGMP mode group IP address of the MSNLB object.
    - `mac` - MAC address of the unicast and static multicast mode of the MSNLB object.

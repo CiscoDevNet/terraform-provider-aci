@@ -39,23 +39,23 @@ data "aci_l3out_floating_svi" "check" {
 ## Attribute Reference
 
 * `id` - Attribute id set to the Dn of the Logical Interface Profile.
-* `addr` - (Optional) Peer address of the L3out floating SVI object.
-* `annotation` - (Optional) Annotation of the L3out floating SVI object.
-* `description` - (Optional) Description of the L3out floating SVI object.
-* `autostate` - (Optional) Autostate of the L3out floating SVI object.
-* `encap_scope` - (Optional) Encap scope of the L3out floating SVI object.
-* `if_inst_t` - (Optional) Interface type of the L3out floating SVI object.
-* `ipv6_dad` - (Optional) IPv6 dad of the L3out floating SVI object.
-* `ll_addr` - (Optional) Link local address address of the L3out floating SVI object.
-* `mac` - (Optional) MAC address of the L3out floating SVI object.
-* `mode` - (Optional) BGP domain mode of the L3out floating SVI object.
-* `mtu` -( Optional) Administrative MTU port on the aggregated interface of the L3out floating SVI object.
-* `target_dscp` - (Optional) Target DSCP of the L3out floating SVI object.
-* `relation_l3ext_rs_dyn_path_att` - (Optional) A block representing the relation to a Domain (class infraDomP or vmmDomP). Type: Block.
-  * `tdn` - (Required) The distinguished name of the target.
-  * `floating_address` - (Optional) Floating address of the target.
-  * `forged_transmit` - (Optional) A configuration option that allows virtual machines to send frames with a mac address that is different from the one specified in the virtual-nic adapter configuration.
-  * `mac_change` - (Optional) The status of the mac address change support of the port groups in an external VMM controller, such as a vCenter.
-  * `promiscuous_mode` - (Optional) The status of the promiscuous mode support status of the port groups in an external VMM controller, such as a vCenter. This needs to be turned on only for service devices in the cloud, not for Enterprise AVE service deployments.
-  * `enhanced_lag_policy_dn` - (Optional) The distinguished name of the target enhanced lag policy (class lacpEnhancedLagPol).
-  * `encap` - (Optional) Access port encapsulation (VLAN) of the target (format: vlan-101).
+* `addr` - (Read-Only) Peer address of the L3out floating SVI object.
+* `annotation` - (Read-Only) Annotation of the L3out floating SVI object.
+* `description` - (Read-Only) Description of the L3out floating SVI object.
+* `autostate` - (Read-Only) Autostate of the L3out floating SVI object.
+* `encap_scope` - (Read-Only) Encap scope of the L3out floating SVI object.
+* `if_inst_t` - (Read-Only) Interface type of the L3out floating SVI object.
+* `ipv6_dad` - (Read-Only) IPv6 dad of the L3out floating SVI object.
+* `ll_addr` - (Read-Only) Link local address address of the L3out floating SVI object.
+* `mac` - (Read-Only) MAC address of the L3out floating SVI object.
+* `mode` - (Read-Only) BGP domain mode of the L3out floating SVI object.
+* `mtu` - (Read-Only) Administrative MTU port on the aggregated interface of the L3out floating SVI object.
+* `target_dscp` - (Read-Only) Target DSCP of the L3out floating SVI object.
+* `relation_l3ext_rs_dyn_path_att` - (Read-Only) A block representing the relation to a Domain (class infraDomP or vmmDomP). Type: Block.
+  * `tdn` - (Read-Only) The distinguished name of the target.
+  * `floating_address` - (Read-Only) Floating address of the target.
+  * `forged_transmit` - (Read-Only) A configuration option that allows virtual machines to send frames with a mac address that is different from the one specified in the virtual-nic adapter configuration.
+  * `mac_change` - (Read-Only) The status of the mac address change support of the port groups in an external VMM controller, such as a vCenter.
+  * `promiscuous_mode` - (Read-Only) The status of the promiscuous mode support status of the port groups in an external VMM controller, such as a vCenter. This needs to be turned on only for service devices in the cloud, not for Enterprise AVE service deployments.
+  * `enhanced_lag_policy_dn` - (Read-Only) The distinguished name of the target enhanced lag policy (class lacpEnhancedLagPol).
+  * `encap` - (Read-Only) Access port encapsulation (VLAN) of the target (format: vlan-101).

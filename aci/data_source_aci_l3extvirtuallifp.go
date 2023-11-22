@@ -34,92 +34,86 @@ func dataSourceAciVirtualLogicalInterfaceProfile() *schema.Resource {
 
 			"addr": &schema.Schema{
 				Type:     schema.TypeString,
-				Optional: true,
 				Computed: true,
 			},
 
 			"autostate": &schema.Schema{
 				Type:     schema.TypeString,
-				Optional: true,
 				Computed: true,
 			},
 
 			"encap_scope": &schema.Schema{
 				Type:     schema.TypeString,
-				Optional: true,
 				Computed: true,
 			},
 
 			"if_inst_t": &schema.Schema{
 				Type:     schema.TypeString,
-				Optional: true,
 				Computed: true,
 			},
 
 			"ipv6_dad": &schema.Schema{
 				Type:     schema.TypeString,
-				Optional: true,
 				Computed: true,
 			},
 
 			"ll_addr": &schema.Schema{
 				Type:     schema.TypeString,
-				Optional: true,
 				Computed: true,
 			},
 
 			"mac": &schema.Schema{
 				Type:     schema.TypeString,
-				Optional: true,
 				Computed: true,
 			},
 
 			"mode": &schema.Schema{
 				Type:     schema.TypeString,
-				Optional: true,
 				Computed: true,
 			},
 
 			"mtu": &schema.Schema{
 				Type:     schema.TypeString,
-				Optional: true,
 				Computed: true,
 			},
 
 			"target_dscp": &schema.Schema{
 				Type:     schema.TypeString,
-				Optional: true,
 				Computed: true,
 			},
 
 			"relation_l3ext_rs_dyn_path_att": &schema.Schema{
 				Type:     schema.TypeSet,
-				Optional: true,
+				Computed: true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"tdn": {
 							Type:     schema.TypeString,
-							Optional: true,
+							Computed: true,
 						},
 						"floating_address": {
 							Type:     schema.TypeString,
-							Optional: true,
+							Computed: true,
 						},
 						"forged_transmit": {
 							Type:     schema.TypeString,
-							Optional: true,
+							Computed: true,
 						},
 						"mac_change": {
 							Type:     schema.TypeString,
-							Optional: true,
+							Computed: true,
 						},
 						"promiscuous_mode": {
 							Type:     schema.TypeString,
-							Optional: true,
+							Computed: true,
 						},
 						"enhanced_lag_policy_dn": {
 							Type:     schema.TypeString,
-							Optional: true,
+							Computed: true,
+						},
+						"encap": {
+							Type:     schema.TypeString,
+							Computed: true,
 						},
 					},
 				},

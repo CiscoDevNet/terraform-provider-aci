@@ -1,3 +1,29 @@
+## 2.11.1 (November 10, 2023)
+BUG FIXES:
+- Add missing annotation attribute to aci_rest_managed datasource
+
+## 2.11.0 (November 7, 2023)
+DEPRECATIONS:
+- Deprecated relation_vz_rs_fwd_r_flt_p_att and relation_vz_rs_rev_r_flt_p_att for aci_filter
+
+IMPROVEMENTS:
+- Add aci_cloud_service_epg, aci_cloud_service_endpoint_selector and aci_cloud_private_link_label resources and datasources (#1096)
+- Add Cloud L4-L7 device resources (aci_cloud_l4_l7_native_load_balancer and aci_cloud_l4_l7_third_party_device) (#1097)
+- Add bfd_multihop_node_policy resource and data source (#1092)
+- Add aci_power_supply_redundancy_policy (psuInstPol) resource and data source (#1070)
+- Add default annotation when annotation is not provided for aci_rest_managed
+- Add forceNew to createOnly attributes to allow for object replacement in resource aci_fabric_node_member
+
+BUG FIXES:
+- Set type attribute for import operation of aci_static_node_mgmt_address
+- Fixed aci_epg_to_contract import issue and updated documentation
+- Ignore changes to relation_l3ext_rs_dyn_path_att.encap when going from unknown to empty to fix idempotency issue in 'l3out_floating_svi' (#1114)
+- Remove non configurable properties from POST payload when child configuration is present for aci_rest_managed
+- Fix import issue with leaf_port_dn attribute for aci_l3out_vpc_member.
+- Modify resource for aci_bgp_peer_connectivity_profile to normalize IPv6 different formats. (#1101)
+- Fix relation_fv_rs_node_att by changing it to a block and fix relationship attribute import in aci_application_epg  (#1083)
+- Fix aci_filter null update by setting the relationships to computed
+
 ## 2.10.1 (August 4, 2023)
 DEPRECATIONS:
 - Deprecate relation_config_rs_export_destination attribute of aci_configuration_export_policy. Use relation_config_rs_remote_path instead. (#1088)

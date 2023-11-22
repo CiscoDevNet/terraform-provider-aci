@@ -15,7 +15,7 @@ func dataSourceAciRestManaged() *schema.Resource {
 
 		ReadContext: dataSourceAciRestManagedRead,
 
-		Schema: map[string]*schema.Schema{
+		Schema: AppendAttrSchemas(map[string]*schema.Schema{
 			"id": {
 				Description: "The distinguished name of the object.",
 				Type:        schema.TypeString,
@@ -55,7 +55,7 @@ func dataSourceAciRestManaged() *schema.Resource {
 					},
 				},
 			},
-		},
+		}, GetAnnotationAttrSchema()),
 	}
 }
 

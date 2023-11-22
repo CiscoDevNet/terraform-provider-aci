@@ -37,7 +37,16 @@ func resourceAciFunctionNode() *schema.Resource {
 				Required: true,
 				ForceNew: true,
 			},
-
+			"l4_l7_device_interface_consumer_name": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+			"l4_l7_device_interface_provider_name": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
 			"annotation": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -209,19 +218,73 @@ func setFunctionNodeAttributes(vnsAbsNode *models.FunctionNode, d *schema.Resour
 	return d, nil
 }
 
-func getRemoteFunctionConnector(client *client.Client, dn string) (*models.FunctionConnector, error) {
-	vnsAbsFuncConnCont, err := client.Get(dn)
+func getAndSetFunctionNodeRelationalAttributes(client *client.Client, dn string, d *schema.ResourceData) error {
+	// Consumer Part
+	consDn := fmt.Sprintf("%s/AbsFConn-consumer", dn)
+	vnsAbsFuncConnCont, err := client.Get(consDn)
 	if err != nil {
-		return nil, err
+		return err
 	}
-
 	vnsAbsFuncConn := models.FunctionConnectorFromContainer(vnsAbsFuncConnCont)
-
 	if vnsAbsFuncConn.DistinguishedName == "" {
-		return nil, fmt.Errorf("Function Connector %s not found", vnsAbsFuncConn.DistinguishedName)
+		return fmt.Errorf("Function Connector %s not found", consDn)
+	}
+	d.Set("conn_consumer_dn", vnsAbsFuncConn.DistinguishedName)
+	d.Set("l4_l7_device_interface_consumer_name", vnsAbsFuncConn.DeviceLIfName)
+
+	// Provider Part
+	provDn := fmt.Sprintf("%s/AbsFConn-provider", dn)
+	vnsAbsFuncConnCont, err = client.Get(provDn)
+	if err != nil {
+		return err
+	}
+	vnsAbsFuncConn = models.FunctionConnectorFromContainer(vnsAbsFuncConnCont)
+	if vnsAbsFuncConn.DistinguishedName == "" {
+		return fmt.Errorf("Function Connector %s not found", provDn)
+	}
+	d.Set("conn_provider_dn", vnsAbsFuncConn.DistinguishedName)
+	d.Set("l4_l7_device_interface_provider_name", vnsAbsFuncConn.DeviceLIfName)
+
+	vnsRsNodeToAbsFuncProfData, err := client.ReadRelationvnsRsNodeToAbsFuncProfFromFunctionNode(dn)
+	if err != nil {
+		log.Printf("[DEBUG] Error while reading relation vnsRsNodeToAbsFuncProf %v", err)
+		d.Set("relation_vns_rs_node_to_abs_func_prof", "")
+	} else {
+		d.Set("relation_vns_rs_node_to_abs_func_prof", vnsRsNodeToAbsFuncProfData.(string))
 	}
 
-	return vnsAbsFuncConn, nil
+	vnsRsNodeToLDevData, err := client.ReadRelationvnsRsNodeToLDevFromFunctionNode(dn)
+	if err != nil {
+		log.Printf("[DEBUG] Error while reading relation vnsRsNodeToLDev %v", err)
+		d.Set("relation_vns_rs_node_to_l_dev", "")
+	} else {
+		d.Set("relation_vns_rs_node_to_l_dev", vnsRsNodeToLDevData.(string))
+	}
+
+	vnsRsNodeToMFuncData, err := client.ReadRelationvnsRsNodeToMFuncFromFunctionNode(dn)
+	if err != nil {
+		log.Printf("[DEBUG] Error while reading relation vnsRsNodeToMFunc %v", err)
+		d.Set("relation_vns_rs_node_to_m_func", "")
+	} else {
+		d.Set("relation_vns_rs_node_to_m_func", vnsRsNodeToMFuncData.(string))
+	}
+
+	vnsRsDefaultScopeToTermData, err := client.ReadRelationvnsRsDefaultScopeToTermFromFunctionNode(dn)
+	if err != nil {
+		log.Printf("[DEBUG] Error while reading relation vnsRsDefaultScopeToTerm %v", err)
+		d.Set("relation_vns_rs_default_scope_to_term", "")
+	} else {
+		d.Set("relation_vns_rs_default_scope_to_term", vnsRsDefaultScopeToTermData.(string))
+	}
+
+	vnsRsNodeToCloudLDevData, err := client.ReadRelationvnsRsNodeToCloudLDevFromFunctionNode(dn)
+	if err != nil {
+		log.Printf("[DEBUG] Error while reading relation vnsRsNodeToCloudLDev %v", err)
+		d.Set("relation_vns_rs_node_to_cloud_l_dev", "")
+	} else {
+		d.Set("relation_vns_rs_node_to_cloud_l_dev", vnsRsNodeToCloudLDevData.(string))
+	}
+	return nil
 }
 
 func resourceAciFunctionNodeImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
@@ -240,6 +303,10 @@ func resourceAciFunctionNodeImport(d *schema.ResourceData, m interface{}) ([]*sc
 		return nil, err
 	}
 
+	err = getAndSetFunctionNodeRelationalAttributes(aciClient, dn, d)
+	if err != nil {
+		return nil, err
+	}
 	log.Printf("[DEBUG] %s: Import finished successfully", d.Id())
 
 	return []*schema.ResourceData{schemaFilled}, nil
@@ -293,6 +360,7 @@ func resourceAciFunctionNodeCreate(ctx context.Context, d *schema.ResourceData, 
 
 	vnsAbsFuncConnAttr := models.FunctionConnectorAttributes{}
 	vnsAbsFuncConnAttr.Annotation = "{}"
+	vnsAbsFuncConnAttr.DeviceLIfName = d.Get("l4_l7_device_interface_consumer_name").(string)
 	vnsAbsFuncConn := models.NewFunctionConnector(fmt.Sprintf("AbsFConn-%s", "consumer"), vnsAbsNode.DistinguishedName, "", vnsAbsFuncConnAttr)
 	err = aciClient.Save(vnsAbsFuncConn)
 	if err != nil {
@@ -300,6 +368,7 @@ func resourceAciFunctionNodeCreate(ctx context.Context, d *schema.ResourceData, 
 	}
 	d.Set("conn_consumer_dn", vnsAbsFuncConn.DistinguishedName)
 
+	vnsAbsFuncConnAttr.DeviceLIfName = d.Get("l4_l7_device_interface_provider_name").(string)
 	vnsAbsFuncConn = models.NewFunctionConnector(fmt.Sprintf("AbsFConn-%s", "provider"), vnsAbsNode.DistinguishedName, "", vnsAbsFuncConnAttr)
 	err = aciClient.Save(vnsAbsFuncConn)
 	if err != nil {
@@ -436,6 +505,30 @@ func resourceAciFunctionNodeUpdate(ctx context.Context, d *schema.ResourceData, 
 		return diag.FromErr(err)
 	}
 
+	if d.HasChange("l4_l7_device_interface_consumer_name") {
+		vnsAbsFuncConnAttr := models.FunctionConnectorAttributes{}
+		vnsAbsFuncConnAttr.Annotation = "{}"
+		vnsAbsFuncConnAttr.DeviceLIfName = d.Get("l4_l7_device_interface_consumer_name").(string)
+		vnsAbsFuncConn := models.NewFunctionConnector(fmt.Sprintf("AbsFConn-%s", "consumer"), vnsAbsNode.DistinguishedName, "", vnsAbsFuncConnAttr)
+		err = aciClient.Save(vnsAbsFuncConn)
+		if err != nil {
+			return diag.FromErr(err)
+		}
+		d.Set("conn_consumer_dn", vnsAbsFuncConn.DistinguishedName)
+	}
+
+	if d.HasChange("l4_l7_device_interface_provider_name") {
+		vnsAbsFuncConnAttr := models.FunctionConnectorAttributes{}
+		vnsAbsFuncConnAttr.Annotation = "{}"
+		vnsAbsFuncConnAttr.DeviceLIfName = d.Get("l4_l7_device_interface_provider_name").(string)
+		vnsAbsFuncConn := models.NewFunctionConnector(fmt.Sprintf("AbsFConn-%s", "provider"), vnsAbsNode.DistinguishedName, "", vnsAbsFuncConnAttr)
+		err = aciClient.Save(vnsAbsFuncConn)
+		if err != nil {
+			return diag.FromErr(err)
+		}
+		d.Set("conn_provider_dn", vnsAbsFuncConn.DistinguishedName)
+	}
+
 	if d.HasChange("conn_consumer_dn") || d.HasChange("conn_provider_dn") {
 		consOld, _ := d.GetChange("conn_consumer_dn")
 		d.Set("conn_consumer_dn", consOld.(string))
@@ -560,64 +653,12 @@ func resourceAciFunctionNodeRead(ctx context.Context, d *schema.ResourceData, m 
 		return nil
 	}
 
-	consDn := d.Get("conn_consumer_dn").(string)
-	vnsAbsFuncConn, err := getRemoteFunctionConnector(aciClient, consDn)
+	err = getAndSetFunctionNodeRelationalAttributes(aciClient, dn, d)
 	if err != nil {
-		d.Set("conn_consumer_dn", "")
-	} else {
-		d.Set("conn_consumer_dn", vnsAbsFuncConn.DistinguishedName)
-	}
-
-	provDn := d.Get("conn_provider_dn").(string)
-	vnsAbsFuncConn, err = getRemoteFunctionConnector(aciClient, provDn)
-	if err != nil {
-		d.Set("conn_provider_dn", "")
-	} else {
-		d.Set("conn_provider_dn", vnsAbsFuncConn.DistinguishedName)
-	}
-
-	vnsRsNodeToAbsFuncProfData, err := aciClient.ReadRelationvnsRsNodeToAbsFuncProfFromFunctionNode(dn)
-	if err != nil {
-		log.Printf("[DEBUG] Error while reading relation vnsRsNodeToAbsFuncProf %v", err)
-		d.Set("relation_vns_rs_node_to_abs_func_prof", "")
-	} else {
-		setRelationAttribute(d, "relation_vns_rs_node_to_abs_func_prof", vnsRsNodeToAbsFuncProfData.(string))
-	}
-
-	vnsRsNodeToLDevData, err := aciClient.ReadRelationvnsRsNodeToLDevFromFunctionNode(dn)
-	if err != nil {
-		log.Printf("[DEBUG] Error while reading relation vnsRsNodeToLDev %v", err)
-		d.Set("relation_vns_rs_node_to_l_dev", "")
-	} else {
-		setRelationAttribute(d, "relation_vns_rs_node_to_l_dev", vnsRsNodeToLDevData.(string))
-	}
-
-	vnsRsNodeToMFuncData, err := aciClient.ReadRelationvnsRsNodeToMFuncFromFunctionNode(dn)
-	if err != nil {
-		log.Printf("[DEBUG] Error while reading relation vnsRsNodeToMFunc %v", err)
-		d.Set("relation_vns_rs_node_to_m_func", "")
-	} else {
-		setRelationAttribute(d, "relation_vns_rs_node_to_m_func", vnsRsNodeToMFuncData.(string))
-	}
-
-	vnsRsDefaultScopeToTermData, err := aciClient.ReadRelationvnsRsDefaultScopeToTermFromFunctionNode(dn)
-	if err != nil {
-		log.Printf("[DEBUG] Error while reading relation vnsRsDefaultScopeToTerm %v", err)
-		d.Set("relation_vns_rs_default_scope_to_term", "")
-	} else {
-		setRelationAttribute(d, "relation_vns_rs_default_scope_to_term", vnsRsDefaultScopeToTermData.(string))
-	}
-
-	vnsRsNodeToCloudLDevData, err := aciClient.ReadRelationvnsRsNodeToCloudLDevFromFunctionNode(dn)
-	if err != nil {
-		log.Printf("[DEBUG] Error while reading relation vnsRsNodeToCloudLDev %v", err)
-		d.Set("relation_vns_rs_node_to_cloud_l_dev", "")
-	} else {
-		setRelationAttribute(d, "relation_vns_rs_node_to_cloud_l_dev", vnsRsNodeToCloudLDevData.(string))
+		return diag.FromErr(err)
 	}
 
 	log.Printf("[DEBUG] %s: Read finished successfully", d.Id())
-
 	return nil
 }
 
