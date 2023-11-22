@@ -65,9 +65,9 @@ All examples for the L3out Redistribute Policy resource can be found in the [exa
 
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
   - [aci_l3_outside](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/l3_outside) ([l3extOut](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/l3extOut/overview))
-* `src` - (string) The source IP address.
+* `src` (src) - (string) The source IP address.
   - Valid Values: `attached-host`, `direct`, `static`.
-* `route_control_profile_name` - (string) The name of the route profile associated with this object.
+* `route_control_profile_name` (tnRtctrlProfileName) - (string) The name of the route profile associated with this object.
 
 ### Read-Only
 
@@ -75,15 +75,15 @@ All examples for the L3out Redistribute Policy resource can be found in the [exa
 
 ### Optional
   
-* `annotation` - (string) The annotation of the L3out Redistribute Policy object.
+* `annotation` (annotation) - (string) The annotation of the L3out Redistribute Policy object.
   - Default: `orchestrator:terraform`
 
 * `annotations` - (list) A list of Annotations objects ([tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can be configured using the [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.
   
   #### Required
   
-  * `key` - (string) The key or password used to uniquely identify this configuration object.
-  * `value` - (string) The value of the property.
+  * `key` (key) - (string) The key or password used to uniquely identify this configuration object.
+  * `value` (value) - (string) The value of the property.
 
 ## Importing
 

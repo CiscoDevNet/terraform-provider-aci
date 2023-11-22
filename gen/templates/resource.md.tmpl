@@ -52,7 +52,7 @@ All examples for the {{getResourceNameAsDescription .ResourceName}} resource can
 {{- end}}
 {{- range .Properties}}
     {{- if or .IsNaming .IsRequired}}
-* `{{- overwriteProperty .PkgName .SnakeCaseName $.Definitions}}` - (string) {{.Comment}}
+* `{{- overwriteProperty .PkgName .SnakeCaseName $.Definitions}}` ({{- .PropertyName}}) - (string) {{.Comment}}
       {{- if .ValidValues }}{{$i := 1}}{{$length := len .ValidValues}}
   - Valid Values:{{ range .ValidValues}} `{{ . }}`{{ if ne $length $i}}{{$i = add $i 1}}, {{- else}}.{{- end}}{{- end}}
       {{- end}}
@@ -68,12 +68,12 @@ All examples for the {{getResourceNameAsDescription .ResourceName}} resource can
   {{ range .Properties}}
     {{- if and (not .IsNaming) (not .IsRequired)}}
       {{- if eq .ValueType "bitmask"}}
-* `{{- overwriteProperty .PkgName .SnakeCaseName $.Definitions}}` - (list) {{.Comment}}
+* `{{- overwriteProperty .PkgName .SnakeCaseName $.Definitions}} ({{- .PropertyName}}) - (list) {{.Comment}}
         {{- if .DefaultValue }}
   - Default: `{{ .DefaultValue }}`.
         {{- end}}
       {{- else}}
-* `{{- overwriteProperty .PkgName .SnakeCaseName $.Definitions}}` - (string) {{.Comment}}
+* `{{- overwriteProperty .PkgName .SnakeCaseName $.Definitions}}` ({{- .PropertyName}}) - (string) {{.Comment}}
         {{- if .DefaultValue }}
   - Default: `{{ .DefaultValue }}`
         {{- end}}
@@ -95,9 +95,9 @@ All examples for the {{getResourceNameAsDescription .ResourceName}} resource can
   {{ range .Properties}}
       {{- if or .IsNaming .IsRequired}}
           {{- if eq .ValueType "bitmask"}}
-  * `{{- overwriteProperty .PkgName .SnakeCaseName $.Definitions}}` - (list) {{.Comment}}
+  * `{{- overwriteProperty .PkgName .SnakeCaseName $.Definitions}}` ({{- .PropertyName}}) - (list) {{.Comment}}
           {{- else}}
-  * `{{- overwriteProperty .PkgName .SnakeCaseName $.Definitions}}` - (string) {{.Comment}}
+  * `{{- overwriteProperty .PkgName .SnakeCaseName $.Definitions}}` ({{- .PropertyName}}) - (string) {{.Comment}}
           {{- end}}
       {{- end}}
   {{- end}}
@@ -107,9 +107,9 @@ All examples for the {{getResourceNameAsDescription .ResourceName}} resource can
     {{ range .Properties}}
       {{- if and (not .IsNaming) (not .IsRequired)}}
         {{- if eq .ValueType "bitmask"}}
-  * `{{- overwriteProperty .PkgName .SnakeCaseName $.Definitions}}` - (list) {{.Comment}}
+  * `{{- overwriteProperty .PkgName .SnakeCaseName $.Definitions}}` ({{- .PropertyName}}) - (list) {{.Comment}}
         {{- else}}
-  * `{{- overwriteProperty .PkgName .SnakeCaseName $.Definitions}}` - (string) {{.Comment}}
+  * `{{- overwriteProperty .PkgName .SnakeCaseName $.Definitions}}` ({{- .PropertyName}}) - (string) {{.Comment}}
         {{- end}}
         {{- if .DefaultValue }}
       - Default: `{{ .DefaultValue }}`

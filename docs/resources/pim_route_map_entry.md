@@ -70,7 +70,7 @@ All examples for the Pim Route Map Entry resource can be found in the [examples]
 
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
   - [aci_pim_route_map_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/pim_route_map_policy) ([pimRouteMapPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/pimRouteMapPol/overview))
-* `order` - (string) PIM route map entry order.
+* `order` (order) - (string) PIM route map entry order.
 
 ### Read-Only
 
@@ -78,24 +78,24 @@ All examples for the Pim Route Map Entry resource can be found in the [examples]
 
 ### Optional
   
-* `action` - (string) route action.
+* `action` (action) - (string) route action.
   - Default: `permit`
   - Valid Values: `deny`, `permit`.
-* `annotation` - (string) The annotation of the Pim Route Map Entry object.
+* `annotation` (annotation) - (string) The annotation of the Pim Route Map Entry object.
   - Default: `orchestrator:terraform`
-* `description` - (string) The description of the Pim Route Map Entry object.
-* `grp` - (string) Multicast group ip/prefix.
-* `name` - (string) The name of the Pim Route Map Entry object.
-* `name_alias` - (string) The name alias of the Pim Route Map Entry object.
-* `rp` - (string) Multicast RP Ip.
-* `src` - (string) Multicast Source Ip.
+* `description` (descr) - (string) The description of the Pim Route Map Entry object.
+* `grp` (grp) - (string) Multicast group ip/prefix.
+* `name` (name) - (string) The name of the Pim Route Map Entry object.
+* `name_alias` (nameAlias) - (string) The name alias of the Pim Route Map Entry object.
+* `rp` (rp) - (string) Multicast RP Ip.
+* `src` (src) - (string) Multicast Source Ip.
 
 * `annotations` - (list) A list of Annotations objects ([tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can be configured using the [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.
   
   #### Required
   
-  * `key` - (string) The key or password used to uniquely identify this configuration object.
-  * `value` - (string) The value of the property.
+  * `key` (key) - (string) The key or password used to uniquely identify this configuration object.
+  * `value` (value) - (string) The value of the property.
 
 ## Importing
 

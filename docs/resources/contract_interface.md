@@ -104,7 +104,7 @@ All examples for the Contract Interface resource can be found in the [examples](
     - [vnsSDEPpInfo](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vnsSDEPpInfo/overview)
     - [vnsSHEPpInfo](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vnsSHEPpInfo/overview)
 
-* `contract_interface_name` - (string) The contract interface name.
+* `contract_interface_name` (tnVzCPIfName) - (string) The contract interface name.
 
 ### Read-Only
 
@@ -112,9 +112,9 @@ All examples for the Contract Interface resource can be found in the [examples](
 
 ### Optional
   
-* `annotation` - (string) The annotation of the Contract Interface object.
+* `annotation` (annotation) - (string) The annotation of the Contract Interface object.
   - Default: `orchestrator:terraform`
-* `priority` - (string) The contract interface priority.
+* `priority` (prio) - (string) The contract interface priority.
   - Default: `unspecified`
   - Valid Values: `level1`, `level2`, `level3`, `level4`, `level5`, `level6`, `unspecified`.
 
@@ -122,8 +122,8 @@ All examples for the Contract Interface resource can be found in the [examples](
   
   #### Required
   
-  * `key` - (string) The key or password used to uniquely identify this configuration object.
-  * `value` - (string) The value of the property.
+  * `key` (key) - (string) The key or password used to uniquely identify this configuration object.
+  * `value` (value) - (string) The value of the property.
 
 ## Importing
 

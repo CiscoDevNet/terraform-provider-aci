@@ -66,7 +66,7 @@ All examples for the L3out Management Network Subnet resource can be found in th
 
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
   - [aci_l3out_management_network_instance_profile](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/l3out_management_network_instance_profile) ([mgmtInstP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/mgmtInstP/overview))
-* `ip` - (string) The external subnet IP address and subnet mask. This IP address is used for creating an external management entity. The subnet mask for the IP address to be imported from the outside into the fabric. The contracts associated with its parent instance profile (l3ext:InstP) are applied to the subnet.
+* `ip` (ip) - (string) The external subnet IP address and subnet mask. This IP address is used for creating an external management entity. The subnet mask for the IP address to be imported from the outside into the fabric. The contracts associated with its parent instance profile (l3ext:InstP) are applied to the subnet.
 
 ### Read-Only
 
@@ -74,18 +74,18 @@ All examples for the L3out Management Network Subnet resource can be found in th
 
 ### Optional
   
-* `annotation` - (string) The annotation of the L3out Management Network Subnet object.
+* `annotation` (annotation) - (string) The annotation of the L3out Management Network Subnet object.
   - Default: `orchestrator:terraform`
-* `description` - (string) The description of the L3out Management Network Subnet object.
-* `name` - (string) The name of the L3out Management Network Subnet object.
-* `name_alias` - (string) The name alias of the L3out Management Network Subnet object.
+* `description` (descr) - (string) The description of the L3out Management Network Subnet object.
+* `name` (name) - (string) The name of the L3out Management Network Subnet object.
+* `name_alias` (nameAlias) - (string) The name alias of the L3out Management Network Subnet object.
 
 * `annotations` - (list) A list of Annotations objects ([tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can be configured using the [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.
   
   #### Required
   
-  * `key` - (string) The key or password used to uniquely identify this configuration object.
-  * `value` - (string) The value of the property.
+  * `key` (key) - (string) The key or password used to uniquely identify this configuration object.
+  * `value` (value) - (string) The value of the property.
 
 ## Importing
 

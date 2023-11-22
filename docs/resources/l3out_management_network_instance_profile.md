@@ -66,7 +66,7 @@ All examples for the L3out Management Network Instance Profile resource can be f
 
 ### Required
 
-* `name` - (string) The name of the L3out Management Network Instance Profile object.
+* `name` (name) - (string) The name of the L3out Management Network Instance Profile object.
 
 ### Read-Only
 
@@ -74,11 +74,11 @@ All examples for the L3out Management Network Instance Profile resource can be f
 
 ### Optional
   
-* `annotation` - (string) The annotation of the L3out Management Network Instance Profile object.
+* `annotation` (annotation) - (string) The annotation of the L3out Management Network Instance Profile object.
   - Default: `orchestrator:terraform`
-* `description` - (string) The description of the L3out Management Network Instance Profile object.
-* `name_alias` - (string) The name alias of the L3out Management Network Instance Profile object.
-* `priority` - (string) The QoS priority class identifier.
+* `description` (descr) - (string) The description of the L3out Management Network Instance Profile object.
+* `name_alias` (nameAlias) - (string) The name alias of the L3out Management Network Instance Profile object.
+* `priority` (prio) - (string) The QoS priority class identifier.
   - Default: `unspecified`
   - Valid Values: `level1`, `level2`, `level3`, `level4`, `level5`, `level6`, `unspecified`.
 
@@ -86,13 +86,13 @@ All examples for the L3out Management Network Instance Profile resource can be f
   
   #### Required
   
-  * `out_of_band_contract_name` - (string) An out-of-band management endpoint group contract consists of switches (leaves/spines) and APICs that are part of the associated out-of-band management zone. Each node in the group is assigned an IP address that is dynamically allocated from the address pool associated with the corresponding out-of-band management zone.
+  * `out_of_band_contract_name` (tnVzOOBBrCPName) - (string) An out-of-band management endpoint group contract consists of switches (leaves/spines) and APICs that are part of the associated out-of-band management zone. Each node in the group is assigned an IP address that is dynamically allocated from the address pool associated with the corresponding out-of-band management zone.
 
   #### Optional
     
-  * `annotation` - (string) The annotation of the L3out Management Network Oob Contract object.
+  * `annotation` (annotation) - (string) The annotation of the L3out Management Network Oob Contract object.
       - Default: `orchestrator:terraform`
-  * `priority` - (string) The Quality of service (QoS) priority class ID. QoS refers to the capability of a network to provide better service to selected network traffic over various technologies. The primary goal of QoS is to provide priority including dedicated bandwidth, controlled jitter and latency (required by some real-time and interactive traffic), and improved loss characteristics. You can configure the bandwidth of each QoS level using QoS profiles.
+  * `priority` (prio) - (string) The Quality of service (QoS) priority class ID. QoS refers to the capability of a network to provide better service to selected network traffic over various technologies. The primary goal of QoS is to provide priority including dedicated bandwidth, controlled jitter and latency (required by some real-time and interactive traffic), and improved loss characteristics. You can configure the bandwidth of each QoS level using QoS profiles.
       - Default: `unspecified`
       - Valid Values: `level1`, `level2`, `level3`, `level4`, `level5`, `level6`, `unspecified`.
 
@@ -100,8 +100,8 @@ All examples for the L3out Management Network Instance Profile resource can be f
   
   #### Required
   
-  * `key` - (string) The key or password used to uniquely identify this configuration object.
-  * `value` - (string) The value of the property.
+  * `key` (key) - (string) The key or password used to uniquely identify this configuration object.
+  * `value` (value) - (string) The value of the property.
 
 ## Importing
 

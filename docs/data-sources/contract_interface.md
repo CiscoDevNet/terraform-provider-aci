@@ -80,14 +80,14 @@ data "aci_contract_interface" "example" {
     - [vnsSDEPpInfo](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vnsSDEPpInfo/overview)
     - [vnsSHEPpInfo](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vnsSHEPpInfo/overview)
 
-* `contract_interface_name` - (string) The contract interface name.
+* `contract_interface_name` (tnVzCPIfName) - (string) The contract interface name.
 
 ### Read-Only
 
 * `id` - (string) The distinguished name (DN) of the Contract Interface object.
-* `annotation` - (string) The annotation of the Contract Interface object.
-* `priority` - (string) The contract interface priority.
+* `annotation` (annotation) - (string) The annotation of the Contract Interface object.
+* `priority` (prio) - (string) The contract interface priority.
 
 * `annotations` - (list) A list of Annotations objects ([tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)).
-  * `key` - (string) The key or password used to uniquely identify this configuration object.
-  * `value` - (string) The value of the property.
+  * `key` (key) - (string) The key or password used to uniquely identify this configuration object.
+  * `value` (value) - (string) The value of the property.

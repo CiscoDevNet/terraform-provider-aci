@@ -41,7 +41,7 @@ Data source for {{getResourceNameAsDescription .ResourceName}}
 {{- end}}
 {{- range .Properties}}
     {{- if .IsNaming}}
-* `{{- overwriteProperty .PkgName .SnakeCaseName $.Definitions}}` - (string) {{.Comment}}
+* `{{- overwriteProperty .PkgName .SnakeCaseName $.Definitions}}` ({{- .PropertyName}}) - (string) {{.Comment}}
     {{- end}}
 {{- end}}
 
@@ -51,9 +51,9 @@ Data source for {{getResourceNameAsDescription .ResourceName}}
 {{- range .Properties}}
     {{- if not .IsNaming}}
         {{- if eq .ValueType "bitmask"}}
-* `{{- overwriteProperty .PkgName .SnakeCaseName $.Definitions}}` - (list) {{.Comment}}
+* `{{- overwriteProperty .PkgName .SnakeCaseName $.Definitions}}` ({{- .PropertyName}}) - (list) {{.Comment}}
         {{- else}}
-* `{{- overwriteProperty .PkgName .SnakeCaseName $.Definitions}}` - (string) {{.Comment}}
+* `{{- overwriteProperty .PkgName .SnakeCaseName $.Definitions}}` ({{- .PropertyName}}) - (string) {{.Comment}}
         {{- end}}
     {{- end}}
 {{- end}}
@@ -66,9 +66,9 @@ Data source for {{getResourceNameAsDescription .ResourceName}}
 
   {{- range .Properties}}
     {{- if eq .ValueType "bitmask"}}
-  * `{{- overwriteProperty .PkgName .SnakeCaseName $.Definitions}}` - (list) {{.Comment}}
+  * `{{- overwriteProperty .PkgName .SnakeCaseName $.Definitions}}` ({{- .PropertyName}}) - (list) {{.Comment}}
     {{- else}}
-  * `{{- overwriteProperty .PkgName .SnakeCaseName $.Definitions}}` - (string) {{.Comment}}
+  * `{{- overwriteProperty .PkgName .SnakeCaseName $.Definitions}}` ({{- .PropertyName}}) - (string) {{.Comment}}
     {{- end}}  
   {{- end}}
 {{- end}}
