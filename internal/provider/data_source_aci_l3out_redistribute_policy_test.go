@@ -20,9 +20,9 @@ func TestAccDataSourceL3extRsRedistributePolWithL3extOut(t *testing.T) {
 				ExpectNonEmptyPlan: true,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("data.aci_l3out_redistribute_policy.test", "route_control_profile_name", "test_tn_rtctrl_profile_name"),
-					resource.TestCheckResourceAttr("data.aci_l3out_redistribute_policy.test", "src", "direct"),
+					resource.TestCheckResourceAttr("data.aci_l3out_redistribute_policy.test", "source", "direct"),
 					resource.TestCheckResourceAttr("data.aci_l3out_redistribute_policy.test", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("data.aci_l3out_redistribute_policy.test", "src", "direct"),
+					resource.TestCheckResourceAttr("data.aci_l3out_redistribute_policy.test", "source", "direct"),
 				),
 			},
 			{
@@ -37,7 +37,7 @@ const testConfigL3extRsRedistributePolDataSourceDependencyWithL3extOut = testCon
 data "aci_l3out_redistribute_policy" "test" {
   parent_dn = aci_l3_outside.test.id
   route_control_profile_name = "test_tn_rtctrl_profile_name"
-  src = "direct"
+  source = "direct"
   depends_on = [aci_l3out_redistribute_policy.test]
 }
 `
@@ -46,7 +46,7 @@ const testConfigL3extRsRedistributePolNotExisting = testConfigL3extRsRedistribut
 data "aci_l3out_redistribute_policy" "test_non_existing" {
   parent_dn = aci_l3_outside.test.id
   route_control_profile_name = "non_existing_tn_rtctrl_profile_name"
-  src = "static"
+  source = "static"
   depends_on = [aci_l3out_redistribute_policy.test]
 }
 `

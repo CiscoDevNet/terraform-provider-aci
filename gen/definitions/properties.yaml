@@ -17,6 +17,10 @@ global:
   - "userdom"
 
 l3extRsRedistributePol:
+  overwrites:
+    src: "source"
+  documentation:
+    src: "The source of the %s object."
   test_values:
     resource_required:
       src: "direct"
@@ -31,6 +35,11 @@ l3extRsRedistributePol:
   parents:
     - parent_dependency: "fvTenant"
       class_in_parent: true
+
+vzOOBBrCP:
+  documentation:
+    prio: "The priority of the %s object."
+    targetDscp: "The target DSCP value of the %s object."
 
 mgmtRsOoBCons:
   parents:
@@ -53,6 +62,15 @@ l3extConsLbl:
       tag: "lemon-chiffon"
 
 pimRouteMapEntry:
+  overwrites:
+    grp: "group_ip"
+    src: "source_ip"
+    rp: "rendezvous_point_ip"
+  documentation:
+    src: "The source ip of the %s object."
+    grp: "The group ip of the %s object."
+    rp: "The rendezvous point ip of the %s object."
+    action: "The route action of the %s object."
   test_values:
     default:
       grp: "0.0.0.0"

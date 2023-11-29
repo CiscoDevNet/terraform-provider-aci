@@ -46,12 +46,12 @@ type PimRouteMapEntryResourceModel struct {
 	Action        types.String `tfsdk:"action"`
 	Annotation    types.String `tfsdk:"annotation"`
 	Descr         types.String `tfsdk:"description"`
-	Grp           types.String `tfsdk:"grp"`
+	Grp           types.String `tfsdk:"group_ip"`
 	Name          types.String `tfsdk:"name"`
 	NameAlias     types.String `tfsdk:"name_alias"`
 	Order         types.String `tfsdk:"order"`
-	Rp            types.String `tfsdk:"rp"`
-	Src           types.String `tfsdk:"src"`
+	Rp            types.String `tfsdk:"rendezvous_point_ip"`
+	Src           types.String `tfsdk:"source_ip"`
 	TagAnnotation types.Set    `tfsdk:"annotations"`
 }
 
@@ -102,7 +102,7 @@ func (r *PimRouteMapEntryResource) Schema(ctx context.Context, req resource.Sche
 				Validators: []validator.String{
 					stringvalidator.OneOf("deny", "permit"),
 				},
-				MarkdownDescription: `route action.`,
+				MarkdownDescription: `The route action of the Pim Route Map Entry object.`,
 			},
 			"annotation": schema.StringAttribute{
 				Optional: true,
@@ -121,13 +121,13 @@ func (r *PimRouteMapEntryResource) Schema(ctx context.Context, req resource.Sche
 				},
 				MarkdownDescription: `The description of the Pim Route Map Entry object.`,
 			},
-			"grp": schema.StringAttribute{
+			"group_ip": schema.StringAttribute{
 				Optional: true,
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 				},
-				MarkdownDescription: `Multicast group ip/prefix.`,
+				MarkdownDescription: `The group ip of the Pim Route Map Entry object.`,
 			},
 			"name": schema.StringAttribute{
 				Optional: true,
@@ -153,21 +153,21 @@ func (r *PimRouteMapEntryResource) Schema(ctx context.Context, req resource.Sche
 				},
 				MarkdownDescription: `PIM route map entry order.`,
 			},
-			"rp": schema.StringAttribute{
+			"rendezvous_point_ip": schema.StringAttribute{
 				Optional: true,
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 				},
-				MarkdownDescription: `Multicast RP Ip.`,
+				MarkdownDescription: `The rendezvous point ip of the Pim Route Map Entry object.`,
 			},
-			"src": schema.StringAttribute{
+			"source_ip": schema.StringAttribute{
 				Optional: true,
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 				},
-				MarkdownDescription: `Multicast Source Ip.`,
+				MarkdownDescription: `The source ip of the Pim Route Map Entry object.`,
 			},
 			"annotations": schema.SetNestedAttribute{
 				MarkdownDescription: ``,

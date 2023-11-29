@@ -48,7 +48,7 @@ func (d *PimRouteMapEntryDataSource) Schema(ctx context.Context, req datasource.
 			},
 			"action": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `route action.`,
+				MarkdownDescription: `The route action of the Pim Route Map Entry object.`,
 			},
 			"annotation": schema.StringAttribute{
 				Computed:            true,
@@ -58,9 +58,9 @@ func (d *PimRouteMapEntryDataSource) Schema(ctx context.Context, req datasource.
 				Computed:            true,
 				MarkdownDescription: `The description of the Pim Route Map Entry object.`,
 			},
-			"grp": schema.StringAttribute{
+			"group_ip": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `Multicast group ip/prefix.`,
+				MarkdownDescription: `The group ip of the Pim Route Map Entry object.`,
 			},
 			"name": schema.StringAttribute{
 				Computed:            true,
@@ -74,13 +74,13 @@ func (d *PimRouteMapEntryDataSource) Schema(ctx context.Context, req datasource.
 				Required:            true,
 				MarkdownDescription: `PIM route map entry order.`,
 			},
-			"rp": schema.StringAttribute{
+			"rendezvous_point_ip": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `Multicast RP Ip.`,
+				MarkdownDescription: `The rendezvous point ip of the Pim Route Map Entry object.`,
 			},
-			"src": schema.StringAttribute{
+			"source_ip": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `Multicast Source Ip.`,
+				MarkdownDescription: `The source ip of the Pim Route Map Entry object.`,
 			},
 			"annotations": schema.SetNestedAttribute{
 				MarkdownDescription: ``,

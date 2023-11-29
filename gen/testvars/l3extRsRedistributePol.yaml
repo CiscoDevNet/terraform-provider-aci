@@ -2,23 +2,23 @@
 
 default:
   annotation: "orchestrator:terraform"
-  src: "direct"
+  source: "direct"
 
 datasource_non_existing:
-  src: "static"
+  source: "static"
   route_control_profile_name: "non_existing_tn_rtctrl_profile_name"
 
 datasource_required:
-  src: "direct"
+  source: "direct"
   route_control_profile_name: "test_tn_rtctrl_profile_name"
 
 resource_required:
-  src: "direct"
+  source: "direct"
   route_control_profile_name: "test_tn_rtctrl_profile_name"
 
 all:
   annotation: "annotation"
-  src: "direct"
+  source: "direct"
 
 children:
   annotations:

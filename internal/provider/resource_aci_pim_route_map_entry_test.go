@@ -23,11 +23,11 @@ func TestAccResourcePimRouteMapEntryWithPimRouteMapPol(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "action", "permit"),
 					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "description", ""),
-					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "grp", "0.0.0.0"),
+					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "group_ip", "0.0.0.0"),
 					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "name", ""),
 					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "name_alias", ""),
-					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "rp", "0.0.0.0"),
-					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "src", "0.0.0.0"),
+					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "rendezvous_point_ip", "0.0.0.0"),
+					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "source_ip", "0.0.0.0"),
 				),
 			},
 			// Update with all config and verify default APIC values
@@ -39,11 +39,11 @@ func TestAccResourcePimRouteMapEntryWithPimRouteMapPol(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "action", "deny"),
 					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "annotation", "annotation"),
 					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "description", "description"),
-					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "grp", "0.0.0.0"),
+					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "group_ip", "0.0.0.0"),
 					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "name", "name"),
 					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "name_alias", "name_alias"),
-					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "rp", "0.0.0.0"),
-					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "src", "1.1.1.1/30"),
+					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "rendezvous_point_ip", "0.0.0.0"),
+					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "source_ip", "1.1.1.1/30"),
 				),
 			},
 			// Update with minimum config and verify config is unchanged
@@ -63,11 +63,11 @@ func TestAccResourcePimRouteMapEntryWithPimRouteMapPol(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "action", "permit"),
 					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "description", ""),
-					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "grp", "0.0.0.0"),
+					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "group_ip", "0.0.0.0"),
 					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "name", ""),
 					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "name_alias", ""),
-					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "rp", "0.0.0.0"),
-					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "src", "0.0.0.0"),
+					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "rendezvous_point_ip", "0.0.0.0"),
+					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "source_ip", "0.0.0.0"),
 				),
 			},
 			// Import testing
@@ -80,11 +80,11 @@ func TestAccResourcePimRouteMapEntryWithPimRouteMapPol(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "action", "permit"),
 					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "description", ""),
-					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "grp", "0.0.0.0"),
+					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "group_ip", "0.0.0.0"),
 					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "name", ""),
 					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "name_alias", ""),
-					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "rp", "0.0.0.0"),
-					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "src", "0.0.0.0"),
+					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "rendezvous_point_ip", "0.0.0.0"),
+					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "source_ip", "0.0.0.0"),
 				),
 			},
 			// Update with children
@@ -96,11 +96,11 @@ func TestAccResourcePimRouteMapEntryWithPimRouteMapPol(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "action", "permit"),
 					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "description", ""),
-					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "grp", "0.0.0.0"),
+					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "group_ip", "0.0.0.0"),
 					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "name", ""),
 					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "name_alias", ""),
-					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "rp", "0.0.0.0"),
-					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "src", "0.0.0.0"),
+					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "rendezvous_point_ip", "0.0.0.0"),
+					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "source_ip", "0.0.0.0"),
 					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "annotations.0.key", "annotations_1"),
 					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "annotations.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "annotations.1.key", "annotations_2"),
@@ -117,11 +117,11 @@ func TestAccResourcePimRouteMapEntryWithPimRouteMapPol(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "action", "permit"),
 					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "description", ""),
-					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "grp", "0.0.0.0"),
+					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "group_ip", "0.0.0.0"),
 					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "name", ""),
 					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "name_alias", ""),
-					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "rp", "0.0.0.0"),
-					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "src", "0.0.0.0"),
+					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "rendezvous_point_ip", "0.0.0.0"),
+					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "source_ip", "0.0.0.0"),
 					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "annotations.0.key", "annotations_1"),
 					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "annotations.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "annotations.1.key", "annotations_2"),
@@ -176,11 +176,11 @@ resource "aci_pim_route_map_entry" "test" {
   action = "deny"
   annotation = "annotation"
   description = "description"
-  grp = "0.0.0.0"
+  group_ip = "0.0.0.0"
   name = "name"
   name_alias = "name_alias"
-  rp = "0.0.0.0"
-  src = "1.1.1.1/30"
+  rendezvous_point_ip = "0.0.0.0"
+  source_ip = "1.1.1.1/30"
 }
 `
 
@@ -191,11 +191,11 @@ resource "aci_pim_route_map_entry" "test" {
   action = "permit"
   annotation = "orchestrator:terraform"
   description = ""
-  grp = "0.0.0.0"
+  group_ip = "0.0.0.0"
   name = ""
   name_alias = ""
-  rp = "0.0.0.0"
-  src = "0.0.0.0"
+  rendezvous_point_ip = "0.0.0.0"
+  source_ip = "0.0.0.0"
 }
 `
 const testConfigPimRouteMapEntryChildrenDependencyWithPimRouteMapPol = testConfigPimRouteMapPolMinDependencyWithFvTenant + `

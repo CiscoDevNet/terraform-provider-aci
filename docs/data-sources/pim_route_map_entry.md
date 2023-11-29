@@ -45,14 +45,14 @@ data "aci_pim_route_map_entry" "example" {
 ### Read-Only
 
 * `id` - (string) The distinguished name (DN) of the Pim Route Map Entry object.
-* `action` (action) - (string) route action.
+* `action` (action) - (string) The route action of the Pim Route Map Entry object.
 * `annotation` (annotation) - (string) The annotation of the Pim Route Map Entry object.
 * `description` (descr) - (string) The description of the Pim Route Map Entry object.
-* `grp` (grp) - (string) Multicast group ip/prefix.
+* `group_ip` (grp) - (string) The group ip of the Pim Route Map Entry object.
 * `name` (name) - (string) The name of the Pim Route Map Entry object.
 * `name_alias` (nameAlias) - (string) The name alias of the Pim Route Map Entry object.
-* `rp` (rp) - (string) Multicast RP Ip.
-* `src` (src) - (string) Multicast Source Ip.
+* `rendezvous_point_ip` (rp) - (string) The rendezvous point ip of the Pim Route Map Entry object.
+* `source_ip` (src) - (string) The source ip of the Pim Route Map Entry object.
 
 * `annotations` - (list) A list of Annotations objects ([tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)).
   * `key` (key) - (string) The key or password used to uniquely identify this configuration object.

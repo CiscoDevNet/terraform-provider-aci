@@ -1,5 +1,5 @@
 ---
-subcategory: "L4-L7 Services"
+subcategory: "Cloud"
 layout: "aci"
 page_title: "ACI: aci_cloud_l4_l7_third_party_device"
 sidebar_current: "docs-aci-resource-cloud_l4_l7_third_party_device"

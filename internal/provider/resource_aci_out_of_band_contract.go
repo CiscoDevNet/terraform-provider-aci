@@ -154,7 +154,7 @@ func (r *VzOOBBrCPResource) Schema(ctx context.Context, req resource.SchemaReque
 				Validators: []validator.String{
 					stringvalidator.OneOf("level1", "level2", "level3", "level4", "level5", "level6", "unspecified"),
 				},
-				MarkdownDescription: `null.`,
+				MarkdownDescription: `The priority of the Out Of Band Contract object.`,
 			},
 			"scope": schema.StringAttribute{
 				Optional: true,
@@ -176,7 +176,7 @@ func (r *VzOOBBrCPResource) Schema(ctx context.Context, req resource.SchemaReque
 				Validators: []validator.String{
 					stringvalidator.OneOf("AF11", "AF12", "AF13", "AF21", "AF22", "AF23", "AF31", "AF32", "AF33", "AF41", "AF42", "AF43", "CS0", "CS1", "CS2", "CS3", "CS4", "CS5", "CS6", "CS7", "EF", "VA", "unspecified"),
 				},
-				MarkdownDescription: `contract level dscp value.`,
+				MarkdownDescription: `The target DSCP value of the Out Of Band Contract object.`,
 			},
 			"annotations": schema.SetNestedAttribute{
 				MarkdownDescription: ``,

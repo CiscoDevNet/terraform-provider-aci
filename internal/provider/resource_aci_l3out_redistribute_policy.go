@@ -44,7 +44,7 @@ type L3extRsRedistributePolResourceModel struct {
 	Id                  types.String `tfsdk:"id"`
 	ParentDn            types.String `tfsdk:"parent_dn"`
 	Annotation          types.String `tfsdk:"annotation"`
-	Src                 types.String `tfsdk:"src"`
+	Src                 types.String `tfsdk:"source"`
 	TnRtctrlProfileName types.String `tfsdk:"route_control_profile_name"`
 	TagAnnotation       types.Set    `tfsdk:"annotations"`
 }
@@ -97,7 +97,7 @@ func (r *L3extRsRedistributePolResource) Schema(ctx context.Context, req resourc
 				Default:             stringdefault.StaticString(globalAnnotation),
 				MarkdownDescription: `The annotation of the L3out Redistribute Policy object.`,
 			},
-			"src": schema.StringAttribute{
+			"source": schema.StringAttribute{
 				Required: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
@@ -106,7 +106,7 @@ func (r *L3extRsRedistributePolResource) Schema(ctx context.Context, req resourc
 				Validators: []validator.String{
 					stringvalidator.OneOf("attached-host", "direct", "static"),
 				},
-				MarkdownDescription: `The source IP address.`,
+				MarkdownDescription: `The source of the L3out Redistribute Policy object.`,
 			},
 			"route_control_profile_name": schema.StringAttribute{
 				Required: true,

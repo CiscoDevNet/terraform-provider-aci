@@ -50,9 +50,9 @@ func (d *L3extRsRedistributePolDataSource) Schema(ctx context.Context, req datas
 				Computed:            true,
 				MarkdownDescription: `The annotation of the L3out Redistribute Policy object.`,
 			},
-			"src": schema.StringAttribute{
+			"source": schema.StringAttribute{
 				Required:            true,
-				MarkdownDescription: `The source IP address.`,
+				MarkdownDescription: `The source of the L3out Redistribute Policy object.`,
 			},
 			"route_control_profile_name": schema.StringAttribute{
 				Required:            true,

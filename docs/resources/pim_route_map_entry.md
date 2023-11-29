@@ -42,16 +42,16 @@ The configuration snippet below shows all possible attributes of the Pim Route M
 ```hcl
 
 resource "aci_pim_route_map_entry" "example" {
-  parent_dn   = aci_pim_route_map_policy.example.id
-  action      = "deny"
-  annotation  = "annotation"
-  description = "description"
-  grp         = "0.0.0.0"
-  name        = "name"
-  name_alias  = "name_alias"
-  order       = "1"
-  rp          = "0.0.0.0"
-  src         = "1.1.1.1/30"
+  parent_dn           = aci_pim_route_map_policy.example.id
+  action              = "deny"
+  annotation          = "annotation"
+  description         = "description"
+  group_ip            = "0.0.0.0"
+  name                = "name"
+  name_alias          = "name_alias"
+  order               = "1"
+  rendezvous_point_ip = "0.0.0.0"
+  source_ip           = "1.1.1.1/30"
   annotations = [
     {
       key   = "annotations_1"
@@ -78,17 +78,17 @@ All examples for the Pim Route Map Entry resource can be found in the [examples]
 
 ### Optional
   
-* `action` (action) - (string) route action.
+* `action` (action) - (string) The route action of the Pim Route Map Entry object.
   - Default: `permit`
   - Valid Values: `deny`, `permit`.
 * `annotation` (annotation) - (string) The annotation of the Pim Route Map Entry object.
   - Default: `orchestrator:terraform`
 * `description` (descr) - (string) The description of the Pim Route Map Entry object.
-* `grp` (grp) - (string) Multicast group ip/prefix.
+* `group_ip` (grp) - (string) The group ip of the Pim Route Map Entry object.
 * `name` (name) - (string) The name of the Pim Route Map Entry object.
 * `name_alias` (nameAlias) - (string) The name alias of the Pim Route Map Entry object.
-* `rp` (rp) - (string) Multicast RP Ip.
-* `src` (src) - (string) Multicast Source Ip.
+* `rendezvous_point_ip` (rp) - (string) The rendezvous point ip of the Pim Route Map Entry object.
+* `source_ip` (src) - (string) The source ip of the Pim Route Map Entry object.
 
 * `annotations` - (list) A list of Annotations objects ([tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can be configured using the [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.
   

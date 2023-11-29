@@ -72,7 +72,7 @@ func (d *VzOOBBrCPDataSource) Schema(ctx context.Context, req datasource.SchemaR
 			},
 			"priority": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `null.`,
+				MarkdownDescription: `The priority of the Out Of Band Contract object.`,
 			},
 			"scope": schema.StringAttribute{
 				Computed:            true,
@@ -80,7 +80,7 @@ func (d *VzOOBBrCPDataSource) Schema(ctx context.Context, req datasource.SchemaR
 			},
 			"target_dscp": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `contract level dscp value.`,
+				MarkdownDescription: `The target DSCP value of the Out Of Band Contract object.`,
 			},
 			"annotations": schema.SetNestedAttribute{
 				MarkdownDescription: ``,

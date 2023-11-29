@@ -31,7 +31,7 @@ The configuration snippet below creates a L3out Redistribute Policy with only re
 
 resource "aci_l3out_redistribute_policy" "example" {
   parent_dn                  = aci_l3_outside.example.id
-  src                        = "direct"
+  source                     = "direct"
   route_control_profile_name = "test_tn_rtctrl_profile_name"
 }
   ```
@@ -45,7 +45,7 @@ The configuration snippet below shows all possible attributes of the L3out Redis
 resource "aci_l3out_redistribute_policy" "example" {
   parent_dn                  = aci_l3_outside.example.id
   annotation                 = "annotation"
-  src                        = "direct"
+  source                     = "direct"
   route_control_profile_name = "test_tn_rtctrl_profile_name"
   annotations = [
     {
@@ -65,7 +65,7 @@ All examples for the L3out Redistribute Policy resource can be found in the [exa
 
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
   - [aci_l3_outside](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/l3_outside) ([l3extOut](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/l3extOut/overview))
-* `src` (src) - (string) The source IP address.
+* `source` (src) - (string) The source of the L3out Redistribute Policy object.
   - Valid Values: `attached-host`, `direct`, `static`.
 * `route_control_profile_name` (tnRtctrlProfileName) - (string) The name of the route profile associated with this object.
 

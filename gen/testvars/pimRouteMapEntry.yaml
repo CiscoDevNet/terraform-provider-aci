@@ -4,11 +4,11 @@ default:
   action: "permit"
   annotation: "orchestrator:terraform"
   description: ""
-  grp: "0.0.0.0"
+  group_ip: "0.0.0.0"
   name: ""
   name_alias: ""
-  rp: "0.0.0.0"
-  src: "0.0.0.0"
+  rendezvous_point_ip: "0.0.0.0"
+  source_ip: "0.0.0.0"
 
 datasource_non_existing:
   order: "2"
@@ -23,11 +23,11 @@ all:
   action: "deny"
   annotation: "annotation"
   description: "description"
-  grp: "0.0.0.0"
+  group_ip: "0.0.0.0"
   name: "name"
   name_alias: "name_alias"
-  rp: "0.0.0.0"
-  src: "1.1.1.1/30"
+  rendezvous_point_ip: "0.0.0.0"
+  source_ip: "1.1.1.1/30"
 
 children:
   annotations:
