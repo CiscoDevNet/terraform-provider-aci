@@ -21,6 +21,8 @@ type SubnetAttributes struct {
 
 	Ctrl string `json:",omitempty"`
 
+	IpDataPlaneLearning string `json:",omitempty"`
+
 	NameAlias string `json:",omitempty"`
 
 	Preferred string `json:",omitempty"`
@@ -57,6 +59,8 @@ func (fvSubnet *Subnet) ToMap() (map[string]string, error) {
 
 	A(fvSubnetMap, "ctrl", fvSubnet.Ctrl)
 
+	A(fvSubnetMap, "ipDPLearning", fvSubnet.IpDataPlaneLearning)
+
 	A(fvSubnetMap, "nameAlias", fvSubnet.NameAlias)
 
 	A(fvSubnetMap, "preferred", fvSubnet.Preferred)
@@ -87,6 +91,8 @@ func SubnetFromContainerList(cont *container.Container, index int) *Subnet {
 			Annotation: G(SubnetCont, "annotation"),
 
 			Ctrl: G(SubnetCont, "ctrl"),
+
+			IpDataPlaneLearning: G(SubnetCont, "ipDPLearning"),
 
 			NameAlias: G(SubnetCont, "nameAlias"),
 
