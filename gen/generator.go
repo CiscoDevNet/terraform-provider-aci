@@ -503,6 +503,7 @@ func main() {
 			renderTemplate("datasource.go.tmpl", fmt.Sprintf("data_source_%s_%s.go", providerName, model.ResourceName), providerPath, model)
 
 			os.Mkdir(fmt.Sprintf("%s/%s_%s", resourcesExamplesPath, providerName, model.ResourceName), 0755)
+			renderTemplate("provider_example.tf.tmpl", fmt.Sprintf("%s_%s/provider.tf", providerName, model.ResourceName), resourcesExamplesPath, model)
 			renderTemplate("resource_example.tf.tmpl", fmt.Sprintf("%s_%s/resource.tf", providerName, model.ResourceName), resourcesExamplesPath, model)
 			renderTemplate("resource_example_all_attributes.tf.tmpl", fmt.Sprintf("%s_%s/resource-all-attributes.tf", providerName, model.ResourceName), resourcesExamplesPath, model)
 			// Leverage the hclwrite package to format the example code
@@ -511,6 +512,7 @@ func main() {
 			renderTemplate("resource.md.tmpl", fmt.Sprintf("%s.md", model.ResourceName), resourcesDocsPath, model)
 
 			os.Mkdir(fmt.Sprintf("%s/%s_%s", datasourcesExamplesPath, providerName, model.ResourceName), 0755)
+			renderTemplate("provider_example.tf.tmpl", fmt.Sprintf("%s_%s/provider.tf", providerName, model.ResourceName), datasourcesExamplesPath, model)
 			renderTemplate("datasource_example.tf.tmpl", fmt.Sprintf("%s_%s/data-source.tf", providerName, model.ResourceName), datasourcesExamplesPath, model)
 			// Leverage the hclwrite package to format the example code
 			model.ExampleDataSource = string(hclwrite.Format(getExampleCode(fmt.Sprintf("%s/%s_%s/data-source.tf", datasourcesExamplesPath, providerName, model.ResourceName))))
@@ -518,6 +520,7 @@ func main() {
 
 			renderTemplate("resource_test.go.tmpl", fmt.Sprintf("resource_%s_%s_test.go", providerName, model.ResourceName), providerPath, model)
 			renderTemplate("datasource_test.go.tmpl", fmt.Sprintf("data_source_%s_%s_test.go", providerName, model.ResourceName), providerPath, model)
+
 		}
 	}
 
