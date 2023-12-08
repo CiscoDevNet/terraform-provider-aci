@@ -94,6 +94,7 @@ var templateFuncs = template.FuncMap{
 	"lookupTestValue":              LookupTestValue,
 	"lookupChildTestValue":         LookupChildTestValue,
 	"createParentDnValue":          CreateParentDnValue,
+	"getResourceName":              GetResourceName,
 	"getResourceNameAsDescription": GetResourceNameAsDescription,
 	"capitalize":                   Capitalize,
 	"getDevnetDocForClass":         GetDevnetDocForClass,

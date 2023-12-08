@@ -38,7 +38,7 @@ The configuration snippet below shows all possible attributes of the L3out Manag
 !> This example might not be valid configuration and is only used to show all possible attributes.
 
 ```hcl
-resource "aci_l3out_management_network_instance_profile" "example" {
+resource "aci_l3out_management_network_instance_profile" "full_example" {
   annotation  = "annotation"
   description = "description"
   name        = "test_name"

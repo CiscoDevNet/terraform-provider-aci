@@ -41,7 +41,7 @@ The configuration snippet below shows all possible attributes of the L3out Consu
 
 ```hcl
 
-resource "aci_l3out_consumer_label" "example" {
+resource "aci_l3out_consumer_label" "full_example_l3_outside" {
   parent_dn   = aci_l3_outside.example.id
   annotation  = "annotation"
   description = "description"

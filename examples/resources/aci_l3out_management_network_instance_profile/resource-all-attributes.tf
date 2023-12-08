@@ -1,4 +1,4 @@
-resource "aci_l3out_management_network_instance_profile" "example" {
+resource "aci_l3out_management_network_instance_profile" "full_example" {
   annotation  = "annotation"
   description = "description"
   name        = "test_name"

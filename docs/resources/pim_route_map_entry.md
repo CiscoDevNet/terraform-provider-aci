@@ -41,7 +41,7 @@ The configuration snippet below shows all possible attributes of the Pim Route M
 
 ```hcl
 
-resource "aci_pim_route_map_entry" "example" {
+resource "aci_pim_route_map_entry" "full_example_pim_route_map_policy" {
   parent_dn           = aci_pim_route_map_policy.example.id
   action              = "deny"
   annotation          = "annotation"

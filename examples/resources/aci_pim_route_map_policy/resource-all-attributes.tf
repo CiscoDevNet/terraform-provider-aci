@@ -1,5 +1,5 @@
 
-resource "aci_pim_route_map_policy" "example" {
+resource "aci_pim_route_map_policy" "full_example_tenant" {
   parent_dn   = aci_tenant.example.id
   annotation  = "annotation"
   description = "description"

@@ -41,7 +41,7 @@ The configuration snippet below shows all possible attributes of the L3out Manag
 
 ```hcl
 
-resource "aci_l3out_management_network_oob_contract" "example" {
+resource "aci_l3out_management_network_oob_contract" "full_example_l3out_management_network_instance_profile" {
   parent_dn                 = aci_l3out_management_network_instance_profile.example.id
   annotation                = "annotation"
   priority                  = "level1"
