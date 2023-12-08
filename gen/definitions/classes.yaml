@@ -29,11 +29,11 @@ vzOOBBrCP:
 
 pimRouteMapPol:
   ui_location: "Tenants -> Policies -> Protocol -> Route Maps for Multicast"
-  sub_category: "Multicast"
+  sub_category: "Tenant Policies"
 
 pimRouteMapEntry:
   ui_location: "Tenants -> Policies -> Protocol -> Route Maps for Multicast -> Route Maps"
-  sub_category: "Multicast"
+  sub_category: "Tenant Policies"
 
 mgmtInstP:
   resource_name: "l3out_management_network_instance_profile"
@@ -69,7 +69,3 @@ l3extRsRedistributePol:
   resource_name: "l3out_redistribute_policy"
   ui_location: "Tenants -> Networking -> L3Outs -> Redistribute Policies"
   sub_category: "L3Out"
-
-fvRsConsIf:
-  ui_location: "Tenants -> ... determine for muliple DN formats ..."
-  sub_category: "Contract"
