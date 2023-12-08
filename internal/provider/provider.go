@@ -200,7 +200,6 @@ func (p *AciProvider) Configure(ctx context.Context, req provider.ConfigureReque
 
 func (p *AciProvider) Resources(ctx context.Context) []func() resource.Resource {
 	return []func() resource.Resource{
-		NewFvRsConsIfResource,
 		NewL3extConsLblResource,
 		NewL3extRsRedistributePolResource,
 		NewMgmtInstPResource,
@@ -216,7 +215,6 @@ func (p *AciProvider) Resources(ctx context.Context) []func() resource.Resource 
 
 func (p *AciProvider) DataSources(ctx context.Context) []func() datasource.DataSource {
 	return []func() datasource.DataSource{
-		NewFvRsConsIfDataSource,
 		NewL3extConsLblDataSource,
 		NewL3extRsRedistributePolDataSource,
 		NewMgmtInstPDataSource,
