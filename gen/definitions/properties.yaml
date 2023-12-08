@@ -40,6 +40,7 @@ vzOOBBrCP:
   documentation:
     prio: "The priority of the %s object."
     targetDscp: "The target DSCP value of the %s object."
+    intent: "The Install Rules or Estimate Number of Rules"
 
 mgmtRsOoBCons:
   parents:

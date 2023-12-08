@@ -52,7 +52,7 @@ func (d *VzOOBBrCPDataSource) Schema(ctx context.Context, req datasource.SchemaR
 			},
 			"intent": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `Install Rules or Estimate Nummber of Rules.`,
+				MarkdownDescription: `The Install Rules or Estimate Number of Rules.`,
 			},
 			"name": schema.StringAttribute{
 				Required:            true,

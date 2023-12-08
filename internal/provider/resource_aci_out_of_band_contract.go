@@ -111,7 +111,7 @@ func (r *VzOOBBrCPResource) Schema(ctx context.Context, req resource.SchemaReque
 				Validators: []validator.String{
 					stringvalidator.OneOf("estimate_add", "estimate_delete", "install"),
 				},
-				MarkdownDescription: `Install Rules or Estimate Nummber of Rules.`,
+				MarkdownDescription: `The Install Rules or Estimate Number of Rules.`,
 			},
 			"name": schema.StringAttribute{
 				Required: true,

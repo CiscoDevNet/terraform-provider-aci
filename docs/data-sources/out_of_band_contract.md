@@ -42,7 +42,7 @@ data "aci_out_of_band_contract" "example" {
 * `id` - (string) The distinguished name (DN) of the Out Of Band Contract object.
 * `annotation` (annotation) - (string) The annotation of the Out Of Band Contract object.
 * `description` (descr) - (string) The description of the Out Of Band Contract object.
-* `intent` (intent) - (string) Install Rules or Estimate Nummber of Rules.
+* `intent` (intent) - (string) The Install Rules or Estimate Number of Rules.
 * `name_alias` (nameAlias) - (string) The name alias of the Out Of Band Contract object.
 * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
 * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.

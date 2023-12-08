@@ -75,7 +75,7 @@ All examples for the Out Of Band Contract resource can be found in the [examples
 * `annotation` (annotation) - (string) The annotation of the Out Of Band Contract object.
   - Default: `orchestrator:terraform`
 * `description` (descr) - (string) The description of the Out Of Band Contract object.
-* `intent` (intent) - (string) Install Rules or Estimate Nummber of Rules.
+* `intent` (intent) - (string) The Install Rules or Estimate Number of Rules.
   - Default: `install`
   - Valid Values: `estimate_add`, `estimate_delete`, `install`.
 * `name_alias` (nameAlias) - (string) The name alias of the Out Of Band Contract object.
