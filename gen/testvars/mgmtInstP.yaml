@@ -22,14 +22,14 @@ all:
   priority: "level1"
 
 children:
-  l3out_management_network_oob_contracts:
+  external_management_network_oob_contracts:
     - annotation: "orchestrator:terraform"
       priority: "level1"
-      out_of_band_contract_name: "l3out_management_network_oob_contracts_1"
+      out_of_band_contract_name: "external_management_network_oob_contracts_1"
       
     - annotation: "orchestrator:terraform"
       priority: "level2"
-      out_of_band_contract_name: "l3out_management_network_oob_contracts_2"
+      out_of_band_contract_name: "external_management_network_oob_contracts_2"
       
   annotations:
     - key: "annotations_1"

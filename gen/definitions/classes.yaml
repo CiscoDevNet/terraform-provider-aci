@@ -36,9 +36,9 @@ pimRouteMapEntry:
   sub_category: "Tenant Policies"
 
 mgmtInstP:
-  resource_name: "l3out_management_network_instance_profile"
+  resource_name: "external_management_network_instance_profile"
   ui_location: "Tenants (mgmt) -> External Management Network Instance Profiles"
-  sub_category: "L3Out"
+  sub_category: "Node Management"
   contained_by:
     - "polUni"
   rn_prepend: "tn-mgmt/extmgmt-default"
@@ -46,16 +46,16 @@ mgmtInstP:
     - "uni/tn-mgmt/extmgmt-default/instp-{name}"
 
 mgmtSubnet:
-  resource_name: "l3out_management_network_subnet"
+  resource_name: "external_management_network_subnet"
   ui_location: "Tenants (mgmt) -> External Management Network Instance Profiles -> Subnets"
-  sub_category: "L3Out"
+  sub_category: "Node Management"
   dn_formats:
     - "uni/tn-mgmt/extmgmt-default/instp-{name}/subnet-[{ip}]"
 
 mgmtRsOoBCons:
-  resource_name: "l3out_management_network_oob_contract"
+  resource_name: "external_management_network_oob_contract"
   ui_location: "Tenants (mgmt) -> External Management Network Instance Profiles -> Contracts"
-  sub_category: "L3Out"
+  sub_category: "Node Management"
 
 l3extOut:
   resource_name: "l3_outside"

@@ -32,5 +32,5 @@ children:
 parents:
   - class_name: "mgmtInstP"
     parent_dependency: ""
-    parent_dn: "aci_l3out_management_network_instance_profile.test.id"
+    parent_dn: "aci_external_management_network_instance_profile.test.id"
     class_in_parent: false
