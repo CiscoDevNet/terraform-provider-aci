@@ -64,7 +64,7 @@ func (d *L3extConsLblDataSource) Schema(ctx context.Context, req datasource.Sche
 			},
 			"owner": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `The owner of the target relay. The DHCP relay is any host that forwards DHCP packets between clients and servers. The relays are used to forward requests and replies between clients and servers when they are not on the same physical subnet.`,
+				MarkdownDescription: `The owner of the L3out Consumer Label object.`,
 			},
 			"owner_key": schema.StringAttribute{
 				Computed:            true,

@@ -5,6 +5,7 @@ global:
     name: "The name of the %s object."
     nameAlias: "The name alias of the %s object."
     descr: "The description of the %s object."
+    owner: "The owner of the %s object."
   overwrites:
     count: "apic_count" # count is a terraform reserved schema entry
     provider: "prov" # provider is a terraform reserved schema entry

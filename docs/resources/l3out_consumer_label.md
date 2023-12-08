@@ -81,7 +81,7 @@ All examples for the L3out Consumer Label resource can be found in the [examples
   - Default: `orchestrator:terraform`
 * `description` (descr) - (string) The description of the L3out Consumer Label object.
 * `name_alias` (nameAlias) - (string) The name alias of the L3out Consumer Label object.
-* `owner` (owner) - (string) The owner of the target relay. The DHCP relay is any host that forwards DHCP packets between clients and servers. The relays are used to forward requests and replies between clients and servers when they are not on the same physical subnet.
+* `owner` (owner) - (string) The owner of the L3out Consumer Label object.
   - Default: `infra`
   - Valid Values: `infra`, `tenant`.
 * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.

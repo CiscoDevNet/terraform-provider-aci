@@ -48,7 +48,7 @@ data "aci_l3out_consumer_label" "example" {
 * `annotation` (annotation) - (string) The annotation of the L3out Consumer Label object.
 * `description` (descr) - (string) The description of the L3out Consumer Label object.
 * `name_alias` (nameAlias) - (string) The name alias of the L3out Consumer Label object.
-* `owner` (owner) - (string) The owner of the target relay. The DHCP relay is any host that forwards DHCP packets between clients and servers. The relays are used to forward requests and replies between clients and servers when they are not on the same physical subnet.
+* `owner` (owner) - (string) The owner of the L3out Consumer Label object.
 * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
 * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
 * `tag` (tag) - (string) Specifies the color of a policy label.
