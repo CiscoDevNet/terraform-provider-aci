@@ -51,5 +51,5 @@ data "aci_out_of_band_contract" "example" {
 * `target_dscp` (targetDscp) - (string) The target DSCP value of the Out Of Band Contract object.
 
 * `annotations` - (list) A list of Annotations objects ([tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)).
-  * `key` (key) - (string) The key or password used to uniquely identify this configuration object.
+  * `key` (key) - (string) The key used to uniquely identify this configuration object.
   * `value` (value) - (string) The value of the property.

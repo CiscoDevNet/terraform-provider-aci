@@ -48,7 +48,7 @@ func (d *TagAnnotationDataSource) Schema(ctx context.Context, req datasource.Sch
 			},
 			"key": schema.StringAttribute{
 				Required:            true,
-				MarkdownDescription: `The key or password used to uniquely identify this configuration object.`,
+				MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 			},
 			"value": schema.StringAttribute{
 				Computed:            true,

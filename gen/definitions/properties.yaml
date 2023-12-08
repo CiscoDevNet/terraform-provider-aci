@@ -91,6 +91,8 @@ pimRouteMapEntry:
     - parent_dependency: "fvTenant"
 
 tagAnnotation:
+  documentation:
+    key: "The key used to uniquely identify this configuration object."
   resource_required:
     - "value"
   test_values:

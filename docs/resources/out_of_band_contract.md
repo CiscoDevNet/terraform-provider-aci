@@ -95,7 +95,7 @@ All examples for the Out Of Band Contract resource can be found in the [examples
   
   #### Required
   
-  * `key` (key) - (string) The key or password used to uniquely identify this configuration object.
+  * `key` (key) - (string) The key used to uniquely identify this configuration object.
   * `value` (value) - (string) The value of the property.
 
 ## Importing

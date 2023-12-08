@@ -73,7 +73,7 @@ data "aci_annotation" "example" {
   - [aci_contract_interface](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/contract_interface) ([vzCPIf](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vzCPIf/overview))
   - [aci_out_of_band_contract](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/out_of_band_contract) ([vzOOBBrCP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vzOOBBrCP/overview))
   - Too many classes to display, see model documentation for all possible classes.
-* `key` (key) - (string) The key or password used to uniquely identify this configuration object.
+* `key` (key) - (string) The key used to uniquely identify this configuration object.
 
 ### Read-Only
 

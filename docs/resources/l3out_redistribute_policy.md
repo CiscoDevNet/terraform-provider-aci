@@ -82,7 +82,7 @@ All examples for the L3out Redistribute Policy resource can be found in the [exa
   
   #### Required
   
-  * `key` (key) - (string) The key or password used to uniquely identify this configuration object.
+  * `key` (key) - (string) The key used to uniquely identify this configuration object.
   * `value` (value) - (string) The value of the property.
 
 ## Importing
