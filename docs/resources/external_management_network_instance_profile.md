@@ -43,11 +43,11 @@ resource "aci_external_management_network_instance_profile" "full_example" {
   name        = "test_name"
   name_alias  = "name_alias"
   priority    = "level1"
-  external_management_network_oob_contracts = [
+  relation_to_consumed_out_of_band_contracts = [
     {
       annotation                = "orchestrator:terraform"
       priority                  = "level1"
-      out_of_band_contract_name = "external_management_network_oob_contracts_1"
+      out_of_band_contract_name = "relation_to_consumed_out_of_band_contracts_1"
     }
   ]
   annotations = [
@@ -81,7 +81,7 @@ All examples for the External Management Network Instance Profile resource can b
   - Default: `unspecified`
   - Valid Values: `level1`, `level2`, `level3`, `level4`, `level5`, `level6`, `unspecified`.
 
-* `external_management_network_oob_contracts` - (list) A list of External Management Network Oob Contracts relationship objects ([mgmtRsOoBCons](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/mgmtRsOoBCons/overview)) pointing to the Out Of Band Contract ([vzOOBBrCP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vzOOBBrCP/overview)) which can be configured using the [aci_out_of_band_contract](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/out_of_band_contract) resource.
+* `relation_to_consumed_out_of_band_contracts` - (list) A list of Relation To Consumed Out Of Band Contracts relationship objects ([mgmtRsOoBCons](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/mgmtRsOoBCons/overview)) pointing to the Out Of Band Contract ([vzOOBBrCP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vzOOBBrCP/overview)) which can be configured using the [aci_out_of_band_contract](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/out_of_band_contract) resource.
   
   #### Required
   
@@ -89,7 +89,7 @@ All examples for the External Management Network Instance Profile resource can b
 
   #### Optional
     
-  * `annotation` (annotation) - (string) The annotation of the External Management Network Oob Contract object.
+  * `annotation` (annotation) - (string) The annotation of the Relation To Consumed Out Of Band Contract object.
       - Default: `orchestrator:terraform`
   * `priority` (prio) - (string) The Quality of service (QoS) priority class ID. QoS refers to the capability of a network to provide better service to selected network traffic over various technologies. The primary goal of QoS is to provide priority including dedicated bandwidth, controlled jitter and latency (required by some real-time and interactive traffic), and improved loss characteristics. You can configure the bandwidth of each QoS level using QoS profiles.
       - Default: `unspecified`

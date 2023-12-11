@@ -84,13 +84,13 @@ func TestAccResourceMgmtInstP(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "annotations.1.key", "annotations_2"),
 					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "annotations.1.value", "value_2"),
 					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "external_management_network_oob_contracts.0.annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "external_management_network_oob_contracts.0.out_of_band_contract_name", "external_management_network_oob_contracts_1"),
-					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "external_management_network_oob_contracts.0.priority", "level1"),
-					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "external_management_network_oob_contracts.1.annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "external_management_network_oob_contracts.1.out_of_band_contract_name", "external_management_network_oob_contracts_2"),
-					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "external_management_network_oob_contracts.1.priority", "level2"),
-					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "external_management_network_oob_contracts.#", "2"),
+					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "relation_to_consumed_out_of_band_contracts.0.annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "relation_to_consumed_out_of_band_contracts.0.out_of_band_contract_name", "relation_to_consumed_out_of_band_contracts_1"),
+					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "relation_to_consumed_out_of_band_contracts.0.priority", "level1"),
+					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "relation_to_consumed_out_of_band_contracts.1.annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "relation_to_consumed_out_of_band_contracts.1.out_of_band_contract_name", "relation_to_consumed_out_of_band_contracts_2"),
+					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "relation_to_consumed_out_of_band_contracts.1.priority", "level2"),
+					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "relation_to_consumed_out_of_band_contracts.#", "2"),
 				),
 			},
 			// Update with children removed from config
@@ -106,13 +106,13 @@ func TestAccResourceMgmtInstP(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "annotations.1.key", "annotations_2"),
 					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "annotations.1.value", "value_2"),
 					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "external_management_network_oob_contracts.0.annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "external_management_network_oob_contracts.0.out_of_band_contract_name", "external_management_network_oob_contracts_1"),
-					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "external_management_network_oob_contracts.0.priority", "level1"),
-					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "external_management_network_oob_contracts.1.annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "external_management_network_oob_contracts.1.out_of_band_contract_name", "external_management_network_oob_contracts_2"),
-					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "external_management_network_oob_contracts.1.priority", "level2"),
-					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "external_management_network_oob_contracts.#", "2"),
+					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "relation_to_consumed_out_of_band_contracts.0.annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "relation_to_consumed_out_of_band_contracts.0.out_of_band_contract_name", "relation_to_consumed_out_of_band_contracts_1"),
+					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "relation_to_consumed_out_of_band_contracts.0.priority", "level1"),
+					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "relation_to_consumed_out_of_band_contracts.1.annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "relation_to_consumed_out_of_band_contracts.1.out_of_band_contract_name", "relation_to_consumed_out_of_band_contracts_2"),
+					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "relation_to_consumed_out_of_band_contracts.1.priority", "level2"),
+					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "relation_to_consumed_out_of_band_contracts.#", "2"),
 				),
 			},
 			// Update with children first child removed
@@ -126,10 +126,10 @@ func TestAccResourceMgmtInstP(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "annotations.0.key", "annotations_2"),
 					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "annotations.0.value", "value_2"),
 					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "annotations.#", "1"),
-					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "external_management_network_oob_contracts.0.annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "external_management_network_oob_contracts.0.out_of_band_contract_name", "external_management_network_oob_contracts_2"),
-					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "external_management_network_oob_contracts.0.priority", "level2"),
-					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "external_management_network_oob_contracts.#", "1"),
+					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "relation_to_consumed_out_of_band_contracts.0.annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "relation_to_consumed_out_of_band_contracts.0.out_of_band_contract_name", "relation_to_consumed_out_of_band_contracts_2"),
+					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "relation_to_consumed_out_of_band_contracts.0.priority", "level2"),
+					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "relation_to_consumed_out_of_band_contracts.#", "1"),
 				),
 			},
 			// Update with all children removed
@@ -141,7 +141,7 @@ func TestAccResourceMgmtInstP(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "priority", "unspecified"),
 					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "annotations.#", "0"),
-					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "external_management_network_oob_contracts.#", "0"),
+					resource.TestCheckResourceAttr("aci_external_management_network_instance_profile.test", "relation_to_consumed_out_of_band_contracts.#", "0"),
 				),
 			},
 		},
@@ -186,15 +186,15 @@ resource "aci_external_management_network_instance_profile" "test" {
 	  value = "value_2"
 	},
   ]
-  external_management_network_oob_contracts = [
+  relation_to_consumed_out_of_band_contracts = [
 	{
 	  annotation = "orchestrator:terraform"
-	  out_of_band_contract_name = "external_management_network_oob_contracts_1"
+	  out_of_band_contract_name = "relation_to_consumed_out_of_band_contracts_1"
 	  priority = "level1"
 	},
 	{
 	  annotation = "orchestrator:terraform"
-	  out_of_band_contract_name = "external_management_network_oob_contracts_2"
+	  out_of_band_contract_name = "relation_to_consumed_out_of_band_contracts_2"
 	  priority = "level2"
 	},
   ]
@@ -216,10 +216,10 @@ resource "aci_external_management_network_instance_profile" "test" {
 	  value = "value_2"
 	},
   ]
-  external_management_network_oob_contracts = [ 
+  relation_to_consumed_out_of_band_contracts = [ 
 	{
 	  annotation = "orchestrator:terraform"
-	  out_of_band_contract_name = "external_management_network_oob_contracts_2"
+	  out_of_band_contract_name = "relation_to_consumed_out_of_band_contracts_2"
 	  priority = "level2"
 	},
   ]
@@ -230,6 +230,6 @@ const testConfigMgmtInstPChildrenRemoveAll = `
 resource "aci_external_management_network_instance_profile" "test" {
   name = "test_name"
   annotations = []
-  external_management_network_oob_contracts = []
+  relation_to_consumed_out_of_band_contracts = []
 }
 `

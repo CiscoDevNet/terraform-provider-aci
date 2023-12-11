@@ -21,7 +21,7 @@ Manages ACI L3out Consumer Label
 
 ## GUI Information ##
 
-* `Location` - `Tenants -> Networking -> L3Outs`
+* `Location` - `Tenants -> Networking -> SR MPLS VRF L3Outs -> SR-MPLS Infra L3Outs`
 
 ## Example Usage ##
 

@@ -19,31 +19,31 @@ func TestAccDataSourceMgmtRsOoBConsWithMgmtInstP(t *testing.T) {
 				Config:             testConfigMgmtRsOoBConsDataSourceDependencyWithMgmtInstP,
 				ExpectNonEmptyPlan: true,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("data.aci_external_management_network_oob_contract.test", "out_of_band_contract_name", "test_tn_vz_oob_br_cp_name"),
-					resource.TestCheckResourceAttr("data.aci_external_management_network_oob_contract.test", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("data.aci_external_management_network_oob_contract.test", "priority", "unspecified"),
+					resource.TestCheckResourceAttr("data.aci_relation_to_consumed_out_of_band_contract.test", "out_of_band_contract_name", "test_tn_vz_oob_br_cp_name"),
+					resource.TestCheckResourceAttr("data.aci_relation_to_consumed_out_of_band_contract.test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("data.aci_relation_to_consumed_out_of_band_contract.test", "priority", "unspecified"),
 				),
 			},
 			{
 				Config:      testConfigMgmtRsOoBConsNotExisting,
-				ExpectError: regexp.MustCompile("Failed to read aci_external_management_network_oob_contract data source"),
+				ExpectError: regexp.MustCompile("Failed to read aci_relation_to_consumed_out_of_band_contract data source"),
 			},
 		},
 	})
 }
 
 const testConfigMgmtRsOoBConsDataSourceDependencyWithMgmtInstP = testConfigMgmtRsOoBConsMinDependencyWithMgmtInstP + `
-data "aci_external_management_network_oob_contract" "test" {
+data "aci_relation_to_consumed_out_of_band_contract" "test" {
   parent_dn = aci_external_management_network_instance_profile.test.id
   out_of_band_contract_name = "test_tn_vz_oob_br_cp_name"
-  depends_on = [aci_external_management_network_oob_contract.test]
+  depends_on = [aci_relation_to_consumed_out_of_band_contract.test]
 }
 `
 
 const testConfigMgmtRsOoBConsNotExisting = testConfigMgmtRsOoBConsMinDependencyWithMgmtInstP + `
-data "aci_external_management_network_oob_contract" "test_non_existing" {
+data "aci_relation_to_consumed_out_of_band_contract" "test_non_existing" {
   parent_dn = aci_external_management_network_instance_profile.test.id
   out_of_band_contract_name = "non_existing_tn_vz_oob_br_cp_name"
-  depends_on = [aci_external_management_network_oob_contract.test]
+  depends_on = [aci_relation_to_consumed_out_of_band_contract.test]
 }
 `

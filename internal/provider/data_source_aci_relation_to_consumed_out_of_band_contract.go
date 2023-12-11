@@ -26,21 +26,21 @@ type MgmtRsOoBConsDataSource struct {
 }
 
 func (d *MgmtRsOoBConsDataSource) Metadata(ctx context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
-	tflog.Debug(ctx, "Start metadata of datasource: aci_external_management_network_oob_contract")
-	resp.TypeName = req.ProviderTypeName + "_external_management_network_oob_contract"
-	tflog.Debug(ctx, "End metadata of datasource: aci_external_management_network_oob_contract")
+	tflog.Debug(ctx, "Start metadata of datasource: aci_relation_to_consumed_out_of_band_contract")
+	resp.TypeName = req.ProviderTypeName + "_relation_to_consumed_out_of_band_contract"
+	tflog.Debug(ctx, "End metadata of datasource: aci_relation_to_consumed_out_of_band_contract")
 }
 
 func (d *MgmtRsOoBConsDataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
-	tflog.Debug(ctx, "Start schema of datasource: aci_external_management_network_oob_contract")
+	tflog.Debug(ctx, "Start schema of datasource: aci_relation_to_consumed_out_of_band_contract")
 	resp.Schema = schema.Schema{
 		// This description is used by the documentation generator and the language server.
-		MarkdownDescription: "The external_management_network_oob_contract datasource for the 'mgmtRsOoBCons' class",
+		MarkdownDescription: "The relation_to_consumed_out_of_band_contract datasource for the 'mgmtRsOoBCons' class",
 
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: "The distinguished name (DN) of the External Management Network Oob Contract object.",
+				MarkdownDescription: "The distinguished name (DN) of the Relation To Consumed Out Of Band Contract object.",
 			},
 			"parent_dn": schema.StringAttribute{
 				Required:            true,
@@ -48,7 +48,7 @@ func (d *MgmtRsOoBConsDataSource) Schema(ctx context.Context, req datasource.Sch
 			},
 			"annotation": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `The annotation of the External Management Network Oob Contract object.`,
+				MarkdownDescription: `The annotation of the Relation To Consumed Out Of Band Contract object.`,
 			},
 			"priority": schema.StringAttribute{
 				Computed:            true,
@@ -76,11 +76,11 @@ func (d *MgmtRsOoBConsDataSource) Schema(ctx context.Context, req datasource.Sch
 			},
 		},
 	}
-	tflog.Debug(ctx, "End schema of datasource: aci_external_management_network_oob_contract")
+	tflog.Debug(ctx, "End schema of datasource: aci_relation_to_consumed_out_of_band_contract")
 }
 
 func (d *MgmtRsOoBConsDataSource) Configure(ctx context.Context, req datasource.ConfigureRequest, resp *datasource.ConfigureResponse) {
-	tflog.Debug(ctx, "Start configure of datasource: aci_external_management_network_oob_contract")
+	tflog.Debug(ctx, "Start configure of datasource: aci_relation_to_consumed_out_of_band_contract")
 	// Prevent panic if the provider has not been configured.
 	if req.ProviderData == nil {
 		return
@@ -98,11 +98,11 @@ func (d *MgmtRsOoBConsDataSource) Configure(ctx context.Context, req datasource.
 	}
 
 	d.client = client
-	tflog.Debug(ctx, "End configure of datasource: aci_external_management_network_oob_contract")
+	tflog.Debug(ctx, "End configure of datasource: aci_relation_to_consumed_out_of_band_contract")
 }
 
 func (d *MgmtRsOoBConsDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
-	tflog.Debug(ctx, "Start read of datasource: aci_external_management_network_oob_contract")
+	tflog.Debug(ctx, "Start read of datasource: aci_relation_to_consumed_out_of_band_contract")
 	var data *MgmtRsOoBConsResourceModel
 
 	// Read Terraform configuration data into the model
@@ -117,19 +117,19 @@ func (d *MgmtRsOoBConsDataSource) Read(ctx context.Context, req datasource.ReadR
 	// Create a copy of the Id for when not found during setMgmtRsOoBConsAttributes
 	cachedId := data.Id.ValueString()
 
-	tflog.Debug(ctx, fmt.Sprintf("Read of datasource aci_external_management_network_oob_contract with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("Read of datasource aci_relation_to_consumed_out_of_band_contract with id '%s'", data.Id.ValueString()))
 
 	setMgmtRsOoBConsAttributes(ctx, &resp.Diagnostics, d.client, data)
 
 	if data.Id.IsNull() {
 		resp.Diagnostics.AddError(
-			"Failed to read aci_external_management_network_oob_contract data source",
-			fmt.Sprintf("The aci_external_management_network_oob_contract data source with id '%s' has not been found", cachedId),
+			"Failed to read aci_relation_to_consumed_out_of_band_contract data source",
+			fmt.Sprintf("The aci_relation_to_consumed_out_of_band_contract data source with id '%s' has not been found", cachedId),
 		)
 		return
 	}
 
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
-	tflog.Debug(ctx, "End read of datasource: aci_external_management_network_oob_contract")
+	tflog.Debug(ctx, "End read of datasource: aci_relation_to_consumed_out_of_band_contract")
 }

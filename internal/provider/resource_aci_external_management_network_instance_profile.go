@@ -47,7 +47,7 @@ type MgmtInstPResourceModel struct {
 	Name          types.String `tfsdk:"name"`
 	NameAlias     types.String `tfsdk:"name_alias"`
 	Prio          types.String `tfsdk:"priority"`
-	MgmtRsOoBCons types.Set    `tfsdk:"external_management_network_oob_contracts"`
+	MgmtRsOoBCons types.Set    `tfsdk:"relation_to_consumed_out_of_band_contracts"`
 	TagAnnotation types.Set    `tfsdk:"annotations"`
 }
 
@@ -132,7 +132,7 @@ func (r *MgmtInstPResource) Schema(ctx context.Context, req resource.SchemaReque
 				},
 				MarkdownDescription: `The QoS priority class identifier.`,
 			},
-			"external_management_network_oob_contracts": schema.SetNestedAttribute{
+			"relation_to_consumed_out_of_band_contracts": schema.SetNestedAttribute{
 				MarkdownDescription: `An external management entity instance profile to an out-of-band binary contract profile. The instance profiles of external management entities can communicate with nodes that are part of out-of-band management endpoint group. To enable this communication, a contract is required between the instance profile and the out-of-band management endpoint group.`,
 				Optional:            true,
 				Computed:            true,
@@ -147,7 +147,7 @@ func (r *MgmtInstPResource) Schema(ctx context.Context, req resource.SchemaReque
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
 							},
-							MarkdownDescription: `The annotation of the External Management Network Oob Contract object.`,
+							MarkdownDescription: `The annotation of the Relation To Consumed Out Of Band Contract object.`,
 						},
 						"priority": schema.StringAttribute{
 							Optional: true,
