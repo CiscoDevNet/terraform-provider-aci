@@ -2,7 +2,7 @@
 subcategory: "Tenant Policies"
 layout: "aci"
 page_title: "ACI: aci_bgp_peer_prefix"
-sidebar_current: "docs-aci-resource-bgp_peer_prefix"
+sidebar_current: "docs-aci-resource-aci_bgp_peer_prefix"
 description: |-
   Manages ACI BGP Peer Prefix
 ---

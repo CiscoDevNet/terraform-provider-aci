@@ -2,7 +2,7 @@
 subcategory: "AAA"
 layout: "aci"
 page_title: "ACI: aci_default_authentication"
-sidebar_current: "docs-aci-resource-default_authentication"
+sidebar_current: "docs-aci-resource-aci_default_authentication"
 description: |-
   Manages ACI Default Authentication Method for all Logins
 ---

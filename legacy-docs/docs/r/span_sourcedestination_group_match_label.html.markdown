@@ -2,7 +2,7 @@
 subcategory: "Monitoring"
 layout: "aci"
 page_title: "ACI: aci_span_sourcedestination_group_match_label"
-sidebar_current: "docs-aci-resource-span_sourcedestination_group_match_label"
+sidebar_current: "docs-aci-resource-aci_span_sourcedestination_group_match_label"
 description: |-
   Manages ACI SPAN Source-destination Group Match Label
 ---

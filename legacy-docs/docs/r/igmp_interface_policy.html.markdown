@@ -2,7 +2,7 @@
 subcategory: "Tenant Policies"
 layout: "aci"
 page_title: "ACI: aci_igmp_interface_policy"
-sidebar_current: "docs-aci-resource-igmp_interface_policy"
+sidebar_current: "docs-aci-resource-aci_igmp_interface_policy"
 description: |-
   Manages ACI IGMP Interface Policy
 ---

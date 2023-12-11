@@ -1,7 +1,7 @@
 ---
 layout: "aci"
 page_title: "ACI: aci_rest"
-sidebar_current: "docs-aci-data-source-rest"
+sidebar_current: "docs-aci-data-source-aci_rest"
 description: |-
   Data source for ACI Rest
 ---

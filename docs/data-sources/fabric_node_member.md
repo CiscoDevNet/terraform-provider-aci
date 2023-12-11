@@ -2,7 +2,7 @@
 subcategory: "Fabric Inventory"
 layout: "aci"
 page_title: "ACI: aci_fabric_node_member"
-sidebar_current: "docs-aci-data-source-fabric_node_member"
+sidebar_current: "docs-aci-data-source-aci_fabric_node_member"
 description: |-
   Data source for ACI Fabric Node Member
 ---

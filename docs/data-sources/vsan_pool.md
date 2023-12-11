@@ -2,7 +2,7 @@
 subcategory: "Access Policies"
 layout: "aci"
 page_title: "ACI: aci_vsan_pool"
-sidebar_current: "docs-aci-data-source-vsan_pool"
+sidebar_current: "docs-aci-data-source-aci_vsan_pool"
 description: |-
   Data source for ACI VSAN Pool
 ---

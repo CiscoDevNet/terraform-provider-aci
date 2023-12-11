@@ -2,7 +2,7 @@
 subcategory: "Access Policies"
 layout: "aci"
 page_title: "ACI: aci_access_switch_policy_group"
-sidebar_current: "docs-aci-resource-access_switch_policy_group"
+sidebar_current: "docs-aci-resource-aci_access_switch_policy_group"
 description: |-
   Manages ACI Access Switch Policy Group
 ---

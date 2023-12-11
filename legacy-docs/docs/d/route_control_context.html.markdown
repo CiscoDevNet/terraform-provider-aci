@@ -2,7 +2,7 @@
 subcategory: "Tenant Policies"
 layout: "aci"
 page_title: "ACI: aci_route_control_context"
-sidebar_current: "docs-aci-data-source-route_control_context"
+sidebar_current: "docs-aci-data-source-aci_route_control_context"
 description: |-
   Data source for ACI Route Control Context
 ---

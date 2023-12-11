@@ -2,7 +2,7 @@
 subcategory: "L3Out"
 layout: "aci"
 page_title: "ACI: aci_logical_node_to_fabric_node"
-sidebar_current: "docs-aci-resource-logical_node_to_fabric_node"
+sidebar_current: "docs-aci-resource-aci_logical_node_to_fabric_node"
 description: |-
   Manages ACI Logical Node to Fabric Node
 ---

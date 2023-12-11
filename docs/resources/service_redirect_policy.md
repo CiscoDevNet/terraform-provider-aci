@@ -2,7 +2,7 @@
 subcategory: "L4-L7 Services"
 layout: "aci"
 page_title: "ACI: aci_service_redirect_policy"
-sidebar_current: "docs-aci-resource-service_redirect_policy"
+sidebar_current: "docs-aci-resource-aci_service_redirect_policy"
 description: |-
   Manages ACI Service Redirect Policy
 ---

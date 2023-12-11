@@ -1,7 +1,7 @@
 ---
 layout: "aci"
 page_title: "ACI: aci_tag"
-sidebar_current: "docs-aci-resource-tag"
+sidebar_current: "docs-aci-resource-aci_tag"
 description: |-
   Manages ACI Tag
 ---

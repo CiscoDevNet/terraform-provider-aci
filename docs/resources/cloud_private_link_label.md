@@ -2,7 +2,7 @@
 subcategory: "Cloud"
 layout: "aci"
 page_title: "ACI: aci_cloud_private_link_label"
-sidebar_current: "docs-aci-resource-cloud_private_link_label"
+sidebar_current: "docs-aci-resource-aci_cloud_private_link_label"
 description: |-
   Manages ACI Cloud Private Link Label 
 ---

@@ -2,7 +2,7 @@
 subcategory: "L2Out"
 layout: "aci"
 page_title: "ACI: aci_l2out_extepg"
-sidebar_current: "docs-aci-data-source-l2out_extepg"
+sidebar_current: "docs-aci-data-source-aci_l2out_extepg"
 description: |-
   Data source for ACI L2-Out External EPg
 ---

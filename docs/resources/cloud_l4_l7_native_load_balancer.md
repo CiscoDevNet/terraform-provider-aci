@@ -2,7 +2,7 @@
 subcategory: "Cloud"
 layout: "aci"
 page_title: "ACI: aci_cloud_l4_l7_native_load_balancer"
-sidebar_current: "docs-aci-resource-cloud_l4_l7_native_load_balancer"
+sidebar_current: "docs-aci-resource-aci_cloud_l4_l7_native_load_balancer"
 description: |-
   Manages ACI Cloud L4-L7 Native Load Balancer
 ---

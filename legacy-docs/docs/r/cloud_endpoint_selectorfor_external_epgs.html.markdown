@@ -2,7 +2,7 @@
 subcategory: "Cloud"
 layout: "aci"
 page_title: "ACI: aci_cloud_endpoint_selectorfor_external_epgs"
-sidebar_current: "docs-aci-resource-cloud_endpoint_selectorfor_external_epgs"
+sidebar_current: "docs-aci-resource-aci_cloud_endpoint_selectorfor_external_epgs"
 description: |-
   Manages Cloud Network Controller Cloud Endpoint Selector for External EPgs
 ---

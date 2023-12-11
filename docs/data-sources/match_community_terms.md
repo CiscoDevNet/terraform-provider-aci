@@ -2,7 +2,7 @@
 subcategory: "Tenant Policies"
 layout: "aci"
 page_title: "ACI: aci_match_community_terms"
-sidebar_current: "docs-aci-data-source-match_community_terms"
+sidebar_current: "docs-aci-data-source-aci_match_community_terms"
 description: |-
   Data source for ACI Match Community Term
 ---

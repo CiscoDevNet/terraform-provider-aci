@@ -2,7 +2,7 @@
 subcategory: "Application Management"
 layout: "aci"
 page_title: "ACI: aci_application_epg"
-sidebar_current: "docs-aci-resource-application_epg"
+sidebar_current: "docs-aci-resource-aci_application_epg"
 description: |-
   Manages ACI Application EPG
 ---

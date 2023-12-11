@@ -2,7 +2,7 @@
 subcategory: "Access Policies"
 layout: "aci"
 page_title: "ACI: aci_leaf_breakout_port_group"
-sidebar_current: "docs-aci-resource-leaf_breakout_port_group"
+sidebar_current: "docs-aci-resource-aci_leaf_breakout_port_group"
 description: |-
   Manages ACI Leaf Breakout Port Group
 ---

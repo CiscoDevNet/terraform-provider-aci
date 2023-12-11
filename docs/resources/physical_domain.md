@@ -2,7 +2,7 @@
 subcategory: "Access Policies"
 layout: "aci"
 page_title: "ACI: aci_physical_domain"
-sidebar_current: "docs-aci-resource-physical_domain"
+sidebar_current: "docs-aci-resource-aci_physical_domain"
 description: |-
   Manages ACI Physical Domain
 ---

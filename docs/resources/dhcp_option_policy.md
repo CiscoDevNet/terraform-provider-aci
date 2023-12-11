@@ -2,7 +2,7 @@
 subcategory: "Tenant Policies"
 layout: "aci"
 page_title: "ACI: aci_dhcp_option_policy"
-sidebar_current: "docs-aci-resource-dhcp_option_policy"
+sidebar_current: "docs-aci-resource-aci_dhcp_option_policy"
 description: |-
   Manages ACI DHCP Option Policy
 ---

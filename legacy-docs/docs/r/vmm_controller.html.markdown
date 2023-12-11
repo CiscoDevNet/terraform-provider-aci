@@ -2,7 +2,7 @@
 subcategory: "Virtual Networking"
 layout: "aci"
 page_title: "ACI: aci_vmm_controller"
-sidebar_current: "docs-aci-resource-vmm_controller"
+sidebar_current: "docs-aci-resource-aci_vmm_controller"
 description: |-
   Manages ACI VMM Controller
 ---

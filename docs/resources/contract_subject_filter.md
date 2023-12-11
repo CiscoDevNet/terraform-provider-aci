@@ -2,7 +2,7 @@
 subcategory: "Contract"
 layout: "aci"
 page_title: "ACI: aci_contract_subject_filter"
-sidebar_current: "docs-aci-resource-contract_subject_filter"
+sidebar_current: "docs-aci-resource-aci_contract_subject_filter"
 description: |-
   Manages ACI Contract Subject Filter
 ---

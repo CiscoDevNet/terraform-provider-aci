@@ -2,7 +2,7 @@
 subcategory: "Access Policies"
 layout: "aci"
 page_title: "ACI: aci_node_block"
-sidebar_current: "docs-aci-data-source-node_block"
+sidebar_current: "docs-aci-data-source-aci_node_block"
 description: |-
   Data source for ACI Node Block
 ---

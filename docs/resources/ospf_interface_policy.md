@@ -2,7 +2,7 @@
 subcategory: "Tenant Policies"
 layout: "aci"
 page_title: "ACI: aci_ospf_interface_policy"
-sidebar_current: "docs-aci-resource-ospf_interface_policy"
+sidebar_current: "docs-aci-resource-aci_ospf_interface_policy"
 description: |-
   Manages ACI OSPF Interface Policy
 ---

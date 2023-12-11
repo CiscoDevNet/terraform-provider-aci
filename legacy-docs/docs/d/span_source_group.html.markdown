@@ -2,7 +2,7 @@
 subcategory: "Monitoring"
 layout: "aci"
 page_title: "ACI: aci_span_source_group"
-sidebar_current: "docs-aci-data-source-span_source_group"
+sidebar_current: "docs-aci-data-source-aci_span_source_group"
 description: |-
   Data source for ACI SPAN Source Group
 ---

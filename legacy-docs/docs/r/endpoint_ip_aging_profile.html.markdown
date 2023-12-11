@@ -2,7 +2,7 @@
 subcategory: "System Settings"
 layout: "aci"
 page_title: "ACI: aci_endpoint_ip_aging_profile"
-sidebar_current: "docs-aci-resource-endpoint_ip_aging_profile"
+sidebar_current: "docs-aci-resource-aci_endpoint_ip_aging_profile"
 description: |-
   Manages ACI Endpoint IP Aging Profile
 ---

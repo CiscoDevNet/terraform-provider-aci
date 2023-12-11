@@ -2,7 +2,7 @@
 subcategory: "L3Out"
 layout: "aci"
 page_title: "ACI: aci_l3out_hsrp_secondary_vip"
-sidebar_current: "docs-aci-resource-l3out_hsrp_secondary_vip"
+sidebar_current: "docs-aci-resource-aci_l3out_hsrp_secondary_vip"
 description: |-
   Manages ACI L3out HSRP Secondary VIP
 ---

@@ -2,7 +2,7 @@
 subcategory: "Cloud"
 layout: "aci"
 page_title: "ACI: aci_cloud_vpn_gateway"
-sidebar_current: "docs-aci-resource-cloud_vpn_gateway"
+sidebar_current: "docs-aci-resource-aci_cloud_vpn_gateway"
 description: |-
   Manages Cloud Network Controller Cloud Vpn Gateway
 ---

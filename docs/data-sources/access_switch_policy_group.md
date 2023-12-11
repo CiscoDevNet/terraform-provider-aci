@@ -2,7 +2,7 @@
 subcategory: "Access Policies"
 layout: "aci"
 page_title: "ACI: aci_access_switch_policy_group"
-sidebar_current: "docs-aci-data-source-access_switch_policy_group"
+sidebar_current: "docs-aci-data-source-aci_access_switch_policy_group"
 description: |-
   Data source for ACI Access Switch Policy Group
 ---

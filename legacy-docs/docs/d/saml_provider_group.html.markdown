@@ -2,7 +2,7 @@
 subcategory: "AAA"
 layout: "aci"
 page_title: "ACI: aci_saml_provider_group"
-sidebar_current: "docs-aci-data-source-saml_provider_group"
+sidebar_current: "docs-aci-data-source-aci_saml_provider_group"
 description: |-
   Data source for ACI SAML Provider Group
 ---

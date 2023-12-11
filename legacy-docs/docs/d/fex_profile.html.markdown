@@ -2,7 +2,7 @@
 subcategory: "Access Policies"
 layout: "aci"
 page_title: "ACI: aci_fex_profile"
-sidebar_current: "docs-aci-data-source-fex_profile"
+sidebar_current: "docs-aci-data-source-aci_fex_profile"
 description: |-
   Data source for ACI FEX Profile
 ---

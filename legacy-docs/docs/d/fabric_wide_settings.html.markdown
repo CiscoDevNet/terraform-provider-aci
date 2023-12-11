@@ -2,7 +2,7 @@
 subcategory: "System Settings"
 layout: "aci"
 page_title: "ACI: aci_fabric_wide_settings"
-sidebar_current: "docs-aci-data-source-fabric_wide_settings"
+sidebar_current: "docs-aci-data-source-aci_fabric_wide_settings"
 description: |-
   Data source for ACI Fabric-Wide Settings Policy
 ---

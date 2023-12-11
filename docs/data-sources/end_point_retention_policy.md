@@ -2,7 +2,7 @@
 subcategory: "Tenant Policies"
 layout: "aci"
 page_title: "ACI: aci_end_point_retention_policy"
-sidebar_current: "docs-aci-data-source-end_point_retention_policy"
+sidebar_current: "docs-aci-data-source-aci_end_point_retention_policy"
 description: |-
   Data source for ACI End Point Retention Policy
 ---

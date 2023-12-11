@@ -2,7 +2,7 @@
 subcategory: "Access Policies"
 layout: "aci"
 page_title: "ACI: aci_spine_profile"
-sidebar_current: "docs-aci-resource-spine_profile"
+sidebar_current: "docs-aci-resource-aci_spine_profile"
 description: |-
   Manages ACI Spine Profile
 ---

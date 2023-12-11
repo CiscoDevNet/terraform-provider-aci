@@ -1,7 +1,7 @@
 ---
 layout: "aci"
 page_title: "ACI: aci_rest"
-sidebar_current: "docs-aci-resource-rest"
+sidebar_current: "docs-aci-resource-aci_rest"
 description: |-
   Manages ACI Model Objects via REST API calls. Any Model Object that is not supported by provider can be created/managed using this resource.
 ---

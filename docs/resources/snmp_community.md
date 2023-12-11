@@ -2,7 +2,7 @@
 subcategory: ""
 layout: "aci"
 page_title: "ACI: aci_snmp_community"
-sidebar_current: "docs-aci-resource-snmp_community"
+sidebar_current: "docs-aci-resource-aci_snmp_community"
 description: |-
   Manages ACI SNMP Community
 ---

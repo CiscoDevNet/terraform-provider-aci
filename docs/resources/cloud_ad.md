@@ -2,7 +2,7 @@
 subcategory: "Cloud"
 layout: "aci"
 page_title: "ACI: aci_cloud_ad"
-sidebar_current: "docs-aci-resource-cloud_ad"
+sidebar_current: "docs-aci-resource-aci_cloud_ad"
 description: |-
   Manages Cloud Network Controller Cloud Active Directory
 ---

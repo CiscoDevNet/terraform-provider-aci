@@ -2,7 +2,7 @@
 subcategory: "Virtual Networking"
 layout: "aci"
 page_title: "ACI: aci_vswitch_policy"
-sidebar_current: "docs-aci-resource-vswitch_policy"
+sidebar_current: "docs-aci-resource-aci_vswitch_policy"
 description: |-
   Manages ACI VSwitch Policy
 ---

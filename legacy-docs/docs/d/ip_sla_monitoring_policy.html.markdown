@@ -2,7 +2,7 @@
 subcategory: "Tenant Policies"
 layout: "aci"
 page_title: "ACI: aci_ip_sla_monitoring_policy"
-sidebar_current: "docs-aci-data-source-ip_sla_monitoring_policy"
+sidebar_current: "docs-aci-data-source-aci_ip_sla_monitoring_policy"
 description: |-
   Data source for ACI IP SLA Monitoring Policy
 ---

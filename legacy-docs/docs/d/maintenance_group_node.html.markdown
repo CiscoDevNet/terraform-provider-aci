@@ -2,7 +2,7 @@
 subcategory: "Firmware"
 layout: "aci"
 page_title: "ACI: aci_maintenance_group_node"
-sidebar_current: "docs-aci-data-source-maintenance_group_node"
+sidebar_current: "docs-aci-data-source-aci_maintenance_group_node"
 description: |-
   Data source for ACI Maintenance Group Node
 ---

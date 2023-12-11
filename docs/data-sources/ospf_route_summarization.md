@@ -2,7 +2,7 @@
 subcategory: "Tenant Policies"
 layout: "aci"
 page_title: "ACI: aci_ospf_route_summarization"
-sidebar_current: "docs-aci-data-source-ospf_route_summarization"
+sidebar_current: "docs-aci-data-source-aci_ospf_route_summarization"
 description: |-
   Data source for ACI OSPF Route Summarization
 ---

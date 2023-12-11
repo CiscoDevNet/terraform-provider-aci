@@ -2,7 +2,7 @@
 subcategory: "Access Policies"
 layout: "aci"
 page_title: "ACI: aci_l2_domain"
-sidebar_current: "docs-aci-resource-l2_domain"
+sidebar_current: "docs-aci-resource-aci_l2_domain"
 description: |-
   Manages ACI L2 Domain
 ---

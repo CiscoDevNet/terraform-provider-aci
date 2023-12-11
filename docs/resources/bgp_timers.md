@@ -2,7 +2,7 @@
 subcategory: "Tenant Policies"
 layout: "aci"
 page_title: "ACI: aci_bgp_timers"
-sidebar_current: "docs-aci-resource-bgp_timers"
+sidebar_current: "docs-aci-resource-aci_bgp_timers"
 description: |-
   Manages ACI BGP Timers
 ---

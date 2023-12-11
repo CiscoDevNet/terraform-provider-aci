@@ -2,7 +2,7 @@
 subcategory: "Cloud"
 layout: "aci"
 page_title: "ACI: aci_cloud_service_epg"
-sidebar_current: "docs-aci-resource-cloud_service_epg"
+sidebar_current: "docs-aci-resource-aci_cloud_service_epg"
 description: |-
   Manages ACI Cloud Service EPG
 ---

@@ -2,7 +2,7 @@
 subcategory: "AAA"
 layout: "aci"
 page_title: "ACI: aci_ldap_group_map"
-sidebar_current: "docs-aci-data-source-ldap_group_map"
+sidebar_current: "docs-aci-data-source-aci_ldap_group_map"
 description: |-
   Data source for ACI LDAP Group Map
 ---

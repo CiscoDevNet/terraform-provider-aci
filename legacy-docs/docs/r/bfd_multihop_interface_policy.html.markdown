@@ -2,7 +2,7 @@
 subcategory: "Tenant Policies"
 layout: "aci"
 page_title: "ACI: aci_bfd_multihop_interface_policy"
-sidebar_current: "docs-aci-resource-bfd_multihop_interface_policy"
+sidebar_current: "docs-aci-resource-aci_bfd_multihop_interface_policy"
 description: |-
   Manages ACI BFD Multihop Interface Policy
 ---

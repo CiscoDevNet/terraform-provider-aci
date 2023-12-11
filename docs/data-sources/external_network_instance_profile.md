@@ -2,7 +2,7 @@
 subcategory: "L3Out"
 layout: "aci"
 page_title: "ACI: aci_external_network_instance_profile"
-sidebar_current: "docs-aci-data-source-external_network_instance_profile"
+sidebar_current: "docs-aci-data-source-aci_external_network_instance_profile"
 description: |-
   Data source for ACI External Network Instance Profile
 ---

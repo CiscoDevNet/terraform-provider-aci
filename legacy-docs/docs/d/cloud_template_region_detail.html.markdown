@@ -2,7 +2,7 @@
 subcategory: "Cloud"
 layout: "aci"
 page_title: "ACI: aci_cloud_template_region_detail"
-sidebar_current: "docs-aci-data-source-cloud_template_region_detail"
+sidebar_current: "docs-aci-data-source-aci_cloud_template_region_detail"
 description: |-
   Data source for ACI Cloud Template Region Detail
 ---

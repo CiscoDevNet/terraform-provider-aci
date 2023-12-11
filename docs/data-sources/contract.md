@@ -2,7 +2,7 @@
 subcategory: "Contract"
 layout: "aci"
 page_title: "ACI: aci_contract"
-sidebar_current: "docs-aci-data-source-contract"
+sidebar_current: "docs-aci-data-source-aci_contract"
 description: |-
   Data source for ACI Contract
 ---

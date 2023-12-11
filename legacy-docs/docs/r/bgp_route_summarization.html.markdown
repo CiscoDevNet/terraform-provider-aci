@@ -2,7 +2,7 @@
 subcategory: "Tenant Policies"
 layout: "aci"
 page_title: "ACI: aci_bgp_route_summarization"
-sidebar_current: "docs-aci-resource-bgp_route_summarization"
+sidebar_current: "docs-aci-resource-aci_bgp_route_summarization"
 description: |-
   Manages ACI BGP Route Summarization
 ---

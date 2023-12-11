@@ -2,7 +2,7 @@
 subcategory: "AAA"
 layout: "aci"
 page_title: "ACI: aci_tacacs_accounting_destination"
-sidebar_current: "docs-aci-resource-tacacs_accounting_destination"
+sidebar_current: "docs-aci-resource-aci_tacacs_accounting_destination"
 description: |-
   Manages ACI TACACS Accounting Destination
 ---

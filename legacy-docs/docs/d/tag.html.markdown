@@ -1,7 +1,8 @@
 ---
 layout: "aci"
 page_title: "ACI: aci_tag"
-sidebar_current: "docs-aci-data-source-tag"
+sidebar_current: "docs-aci-data-source-aci_tag"
+subcategory: "Generic"
 description: |-
   Data source for ACI Tag
 ---

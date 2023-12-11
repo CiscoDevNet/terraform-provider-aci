@@ -2,7 +2,7 @@
 subcategory: "Firmware"
 layout: "aci"
 page_title: "ACI: aci_firmware_policy"
-sidebar_current: "docs-aci-resource-firmware_policy"
+sidebar_current: "docs-aci-resource-aci_firmware_policy"
 description: |-
   Manages ACI Firmware Policy
 ---

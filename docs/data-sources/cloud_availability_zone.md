@@ -2,7 +2,7 @@
 subcategory: "Cloud"
 layout: "aci"
 page_title: "ACI: aci_cloud_availability_zone"
-sidebar_current: "docs-aci-data-source-cloud_availability_zone"
+sidebar_current: "docs-aci-data-source-aci_cloud_availability_zone"
 description: |-
   Data source for Cloud Network Controller Cloud Availability Zone
 ---

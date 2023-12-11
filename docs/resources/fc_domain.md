@@ -2,7 +2,7 @@
 subcategory: "Access Policies"
 layout: "aci"
 page_title: "ACI: aci_fc_domain"
-sidebar_current: "docs-aci-resource-fc_domain"
+sidebar_current: "docs-aci-resource-aci_fc_domain"
 description: |-
   Manages ACI FC Domain
 ---

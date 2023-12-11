@@ -2,7 +2,7 @@
 subcategory: "L3Out"
 layout: "aci"
 page_title: "ACI: aci_bgp_peer_connectivity_profile"
-sidebar_current: "docs-aci-data-source-bgp_peer_connectivity_profile"
+sidebar_current: "docs-aci-data-source-aci_bgp_peer_connectivity_profile"
 description: |-
   Data source for ACI BGP Peer Connectivity Profile
 ---

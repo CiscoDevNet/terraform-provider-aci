@@ -2,7 +2,7 @@
 subcategory: "L4-L7 Services"
 layout: "aci"
 page_title: "ACI: aci_concrete_interface"
-sidebar_current: "docs-aci-resource-concrete_interface"
+sidebar_current: "docs-aci-resource-aci_concrete_interface"
 description: |-
   Manages ACI Concrete Interface
 ---

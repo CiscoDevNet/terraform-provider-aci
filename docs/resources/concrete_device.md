@@ -2,7 +2,7 @@
 subcategory: "L4-L7 Services"
 layout: "aci"
 page_title: "ACI: aci_concrete_device"
-sidebar_current: "docs-aci-resource-concrete_device"
+sidebar_current: "docs-aci-resource-aci_concrete_device"
 description: |-
   Manages ACI Concrete Device
 ---

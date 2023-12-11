@@ -2,7 +2,7 @@
 subcategory: "Access Policies"
 layout: "aci"
 page_title: "ACI: aci_error_disable_recovery"
-sidebar_current: "docs-aci-resource-error_disable_recovery"
+sidebar_current: "docs-aci-resource-aci_error_disable_recovery"
 description: |-
   Manages ACI Error Disable Recovery
 ---

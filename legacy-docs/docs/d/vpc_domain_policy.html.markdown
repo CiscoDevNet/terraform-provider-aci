@@ -2,7 +2,7 @@
 subcategory: "Access Policies"
 layout: "aci"
 page_title: "ACI: aci_vpc_domain_policy"
-sidebar_current: "docs-aci-data-source-vpc_domain_policy"
+sidebar_current: "docs-aci-data-source-aci_vpc_domain_policy"
 description: |-
   Data source for ACI VPC Domain Policy
 ---

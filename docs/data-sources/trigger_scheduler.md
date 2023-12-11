@@ -2,7 +2,7 @@
 subcategory: "Scheduler"
 layout: "aci"
 page_title: "ACI: aci_trigger_scheduler"
-sidebar_current: "docs-aci-data-source-trigger_scheduler"
+sidebar_current: "docs-aci-data-source-aci_trigger_scheduler"
 description: |-
   Data source for ACI Trigger Scheduler
 ---

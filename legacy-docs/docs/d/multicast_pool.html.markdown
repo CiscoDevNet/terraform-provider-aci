@@ -2,7 +2,7 @@
 subcategory: "Access Policies"
 layout: "aci"
 page_title: "ACI: aci_multicast_pool"
-sidebar_current: "docs-aci-data-source-multicast_pool"
+sidebar_current: "docs-aci-data-source-aci_multicast_pool"
 description: |-
   Data source for the ACI Multicast Address Pool
 ---

@@ -2,7 +2,7 @@
 subcategory: "Networking"
 layout: "aci"
 page_title: "ACI: aci_vrf_to_bgp_address_family_context"
-sidebar_current: "docs-aci-data-source-vrf_to_bgp_address_family_context"
+sidebar_current: "docs-aci-data-source-aci_vrf_to_bgp_address_family_context"
 description: |-
   Data source for the ACI Relationship object between VRF and the BGP Address Family Context Policy
 ---

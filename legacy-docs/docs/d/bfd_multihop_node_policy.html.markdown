@@ -2,7 +2,7 @@
 subcategory: "Tenant Policies"
 layout: "aci"
 page_title: "ACI: aci_bfd_multihop_node_policy"
-sidebar_current: "docs-aci-data-source-bfd_multihop_node_policy"
+sidebar_current: "docs-aci-data-source-aci_bfd_multihop_node_policy"
 description: |-
   Data source for ACI BFD Multihop Node Policy
 ---

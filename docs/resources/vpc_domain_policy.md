@@ -2,7 +2,7 @@
 subcategory: "Access Policies"
 layout: "aci"
 page_title: "ACI: aci_vpc_domain_policy"
-sidebar_current: "docs-aci-resource-vpc_domain_policy"
+sidebar_current: "docs-aci-resource-aci_vpc_domain_policy"
 description: |-
   Manages ACI VPC Domain Policy
 ---

@@ -2,7 +2,7 @@
 subcategory: "L3Out"
 layout: "aci"
 page_title: "ACI: aci_l3out_static_route_next_hop"
-sidebar_current: "docs-aci-data-source-l3out_static_route_next_hop"
+sidebar_current: "docs-aci-data-source-aci_l3out_static_route_next_hop"
 description: |-
   Data source for ACI L3out Static Route Next Hop
 ---

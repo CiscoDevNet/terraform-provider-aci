@@ -2,7 +2,7 @@
 subcategory: "Cloud"
 layout: "aci"
 page_title: "ACI: aci_cloud_account"
-sidebar_current: "docs-aci-resource--cloud-account"
+sidebar_current: "docs-aci-resource-aci_-cloud-account"
 description: |-
   Manages Cloud Network Controller Cloud Account
 ---

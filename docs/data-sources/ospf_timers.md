@@ -2,7 +2,7 @@
 subcategory: "Tenant Policies"
 layout: "aci"
 page_title: "ACI: aci_ospf_timers"
-sidebar_current: "docs-aci-data-source-ospf_timers"
+sidebar_current: "docs-aci-data-source-aci_ospf_timers"
 description: |-
   Data source for ACI OSPF Timers
 ---

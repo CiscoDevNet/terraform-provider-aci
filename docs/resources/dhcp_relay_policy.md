@@ -2,7 +2,7 @@
 subcategory: "Tenant Policies"
 layout: "aci"
 page_title: "ACI: aci_dhcp_relay_policy"
-sidebar_current: "docs-aci-resource-dhcp_relay_policy"
+sidebar_current: "docs-aci-resource-aci_dhcp_relay_policy"
 description: |-
   Manages ACI DHCP Relay Policy
 ---

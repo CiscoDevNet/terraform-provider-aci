@@ -2,7 +2,7 @@
 subcategory: "L4-L7 Services"
 layout: "aci"
 page_title: "ACI: aci_logical_interface_context"
-sidebar_current: "docs-aci-resource-logical_interface_context"
+sidebar_current: "docs-aci-resource-aci_logical_interface_context"
 description: |-
   Manages ACI Logical Interface Context.
 ---

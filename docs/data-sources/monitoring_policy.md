@@ -2,7 +2,7 @@
 subcategory: "Tenant Policies"
 layout: "aci"
 page_title: "ACI: aci_monitoring_policy"
-sidebar_current: "docs-aci-data-source-monitoring_policy"
+sidebar_current: "docs-aci-data-source-aci_monitoring_policy"
 description: |-
   Data source for ACI Monitoring Policy
 ---

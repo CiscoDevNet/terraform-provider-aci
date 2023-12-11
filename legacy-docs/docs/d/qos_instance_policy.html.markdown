@@ -2,7 +2,7 @@
 subcategory: "Access Policies"
 layout: "aci"
 page_title: "ACI: aci_qos_instance_policy"
-sidebar_current: "docs-aci-data-source-qos_instance_policy"
+sidebar_current: "docs-aci-data-source-aci_qos_instance_policy"
 description: |-
   Data source for ACI QOS Instance Policy
 ---

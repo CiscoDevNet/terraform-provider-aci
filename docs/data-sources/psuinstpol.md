@@ -2,7 +2,7 @@
 subcategory: "Fabric Policies"
 layout: "aci"
 page_title: "ACI: aci_power_supply_redundancy_policy"
-sidebar_current: "docs-aci-data-source-power_supply_redundancy_policy"
+sidebar_current: "docs-aci-data-source-aci_power_supply_redundancy_policy"
 description: |-
   Data source for ACI Power Supply Redundancy Policy
 ---

@@ -2,7 +2,7 @@
 subcategory: "Cloud"
 layout: "aci"
 page_title: "ACI: aci_cloud_endpoint_selector"
-sidebar_current: "docs-aci-resource-cloud_endpoint_selector"
+sidebar_current: "docs-aci-resource-aci_cloud_endpoint_selector"
 description: |-
   Manages Cloud Network Controller Cloud Endpoint Selector
 ---

@@ -2,7 +2,7 @@
 subcategory: "L4-L7 Services"
 layout: "aci"
 page_title: "ACI: aci_function_node"
-sidebar_current: "docs-aci-resource-function_node"
+sidebar_current: "docs-aci-resource-aci_function_node"
 description: |-
   Manages ACI Function Node
 ---

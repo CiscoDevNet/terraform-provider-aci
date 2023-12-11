@@ -2,7 +2,7 @@
 subcategory: "Scheduler"
 layout: "aci"
 page_title: "ACI: aci_recurring_window"
-sidebar_current: "docs-aci-resource-recurring_window"
+sidebar_current: "docs-aci-resource-aci_recurring_window"
 description: |-
   Manages ACI Recurring Window
 ---

@@ -2,7 +2,7 @@
 subcategory: "L4-L7 Services"
 layout: "aci"
 page_title: "ACI: aci_service_redirect_backup_policy"
-sidebar_current: "docs-aci-data-source-service_redirect_backup_policy"
+sidebar_current: "docs-aci-data-source-aci_service_redirect_backup_policy"
 description: |-
   Data source for ACI PBR Backup Policy
 ---

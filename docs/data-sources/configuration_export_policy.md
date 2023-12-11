@@ -2,7 +2,7 @@
 subcategory: "Import/Export"
 layout: "aci"
 page_title: "ACI: aci_configuration_export_policy"
-sidebar_current: "docs-aci-data-source-configuration_export_policy"
+sidebar_current: "docs-aci-data-source-aci_configuration_export_policy"
 description: |-
   Data source for ACI Configuration Export Policy
 ---

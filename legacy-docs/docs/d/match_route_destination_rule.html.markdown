@@ -2,7 +2,7 @@
 subcategory: "Tenant Policies"
 layout: "aci"
 page_title: "ACI: aci_match_route_destination_rule"
-sidebar_current: "docs-aci-data-source-match_route_destination_rule"
+sidebar_current: "docs-aci-data-source-aci_match_route_destination_rule"
 description: |-
   Data source for ACI Match Route Destination Rule
 ---

@@ -2,7 +2,7 @@
 subcategory: "Firmware"
 layout: "aci"
 page_title: "ACI: aci_firmware_group"
-sidebar_current: "docs-aci-resource-firmware_group"
+sidebar_current: "docs-aci-resource-aci_firmware_group"
 description: |-
   Manages ACI Firmware Group
 ---

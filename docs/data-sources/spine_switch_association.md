@@ -2,7 +2,7 @@
 subcategory: "Access Policies"
 layout: "aci"
 page_title: "ACI: aci_spine_switch_association"
-sidebar_current: "docs-aci-data-source-spine_switch_association"
+sidebar_current: "docs-aci-data-source-aci_spine_switch_association"
 description: |-
   Data source for ACI Spine Switch Association
 ---

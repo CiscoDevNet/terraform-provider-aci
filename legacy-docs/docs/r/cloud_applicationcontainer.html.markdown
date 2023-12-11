@@ -2,7 +2,7 @@
 subcategory: "Cloud"
 layout: "aci"
 page_title: "ACI: aci_cloud_applicationcontainer"
-sidebar_current: "docs-aci-resource-cloud_applicationcontainer"
+sidebar_current: "docs-aci-resource-aci_cloud_applicationcontainer"
 description: |-
   Manages Cloud Network Controller Cloud Application container
 ---

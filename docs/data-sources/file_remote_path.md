@@ -2,7 +2,7 @@
 subcategory: "Import/Export"
 layout: "aci"
 page_title: "ACI: aci_file_remote_path"
-sidebar_current: "docs-aci-data-source-file_remote_path"
+sidebar_current: "docs-aci-data-source-aci_file_remote_path"
 description: |-
   Data source for ACI Remote Path of a File
 ---

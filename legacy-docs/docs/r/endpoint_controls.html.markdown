@@ -2,7 +2,7 @@
 subcategory: "System Settings"
 layout: "aci"
 page_title: "ACI: aci_endpoint_controls"
-sidebar_current: "docs-aci-resource-endpoint_controls"
+sidebar_current: "docs-aci-resource-aci_endpoint_controls"
 description: |-
   Manages ACI Endpoint Control 
 ---

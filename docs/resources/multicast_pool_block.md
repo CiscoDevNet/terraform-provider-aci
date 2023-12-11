@@ -2,7 +2,7 @@
 subcategory: "Access Policies"
 layout: "aci"
 page_title: "ACI: aci_multicast_pool_block"
-sidebar_current: "docs-aci-resource-multicast_pool_block"
+sidebar_current: "docs-aci-resource-aci_multicast_pool_block"
 description: |-
   Manages the ACI Multicast Address Pool Block
 ---

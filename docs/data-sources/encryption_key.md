@@ -2,7 +2,7 @@
 subcategory: "System Settings"
 layout: "aci"
 page_title: "ACI: aci_encryption_key"
-sidebar_current: "docs-aci-data-source-encryption_key"
+sidebar_current: "docs-aci-data-source-aci_encryption_key"
 description: |-
   Data source for ACI AES Encryption Passphrase and Keys for Config Export and Import
 ---

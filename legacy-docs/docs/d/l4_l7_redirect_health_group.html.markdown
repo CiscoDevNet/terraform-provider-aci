@@ -2,7 +2,7 @@
 subcategory: "L4-L7 Services"
 layout: "aci"
 page_title: "ACI: aci_l4_l7_redirect_health_group"
-sidebar_current: "docs-aci-data-source-l4_l7_redirect_health_group"
+sidebar_current: "docs-aci-data-source-aci_l4_l7_redirect_health_group"
 description: |-
   Data source for ACI L4-L7 Redirect Health Group
 ---

@@ -2,7 +2,7 @@
 subcategory: "Firmware"
 layout: "aci"
 page_title: "ACI: aci_firmware_group"
-sidebar_current: "docs-aci-data-source-firmware_group"
+sidebar_current: "docs-aci-data-source-aci_firmware_group"
 description: |-
   Data source for ACI Firmware Group
 ---

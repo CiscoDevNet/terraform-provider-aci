@@ -2,7 +2,7 @@
 subcategory: "Cloud"
 layout: "aci"
 page_title: "ACI: aci_cloud_aws_provider"
-sidebar_current: "docs-aci-resource-cloud_aws_provider"
+sidebar_current: "docs-aci-resource-aci_cloud_aws_provider"
 description: |-
   Manages Cloud Network Controller Cloud AWS Provider
 ---

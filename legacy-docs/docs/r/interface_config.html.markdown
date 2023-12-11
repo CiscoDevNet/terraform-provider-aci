@@ -2,7 +2,7 @@
 subcategory: Fabric Access Policies
 layout: "aci"
 page_title: "ACI: aci_interface_config"
-sidebar_current: "docs-aci-resource-interface_config"
+sidebar_current: "docs-aci-resource-aci_interface_config"
 description: |-
   Manages ACI Access and Fabric Ports is only supported for ACI 5.2(7)+
 ---

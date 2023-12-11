@@ -2,7 +2,7 @@
 subcategory: "AAA"
 layout: "aci"
 page_title: "ACI: aci_authentication_properties"
-sidebar_current: "docs-aci-resource-authentication_properties"
+sidebar_current: "docs-aci-resource-aci_authentication_properties"
 description: |-
   Manages ACI AAA Authentication Properties and Default Radius Authentication Settings
 ---

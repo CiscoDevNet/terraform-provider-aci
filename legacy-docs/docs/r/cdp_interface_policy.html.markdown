@@ -2,7 +2,7 @@
 subcategory: "Access Policies"
 layout: "aci"
 page_title: "ACI: aci_cdp_interface_policy"
-sidebar_current: "docs-aci-resource-cdp_interface_policy"
+sidebar_current: "docs-aci-resource-aci_cdp_interface_policy"
 description: |-
   Manages ACI CDP Interface Policy
 ---

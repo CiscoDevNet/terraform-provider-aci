@@ -2,7 +2,7 @@
 subcategory: "Networking"
 layout: "aci"
 page_title: "ACI: aci_bd_dhcp_label"
-sidebar_current: "docs-aci-data-source-bd_dhcp_label"
+sidebar_current: "docs-aci-data-source-aci_bd_dhcp_label"
 description: |-
   Data source for ACI BD DHCP Label
 ---

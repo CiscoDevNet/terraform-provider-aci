@@ -2,7 +2,7 @@
 subcategory: "Tenant Policies"
 layout: "aci"
 page_title: "ACI: aci_hsrp_group_policy"
-sidebar_current: "docs-aci-data-source-hsrp_group_policy"
+sidebar_current: "docs-aci-data-source-aci_hsrp_group_policy"
 description: |-
   Data source for ACI HSRP Group Policy
 ---

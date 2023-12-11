@@ -2,7 +2,7 @@
 subcategory: "Access Policies"
 layout: "aci"
 page_title: "ACI: aci_l2_interface_policy"
-sidebar_current: "docs-aci-resource-l2_interface_policy"
+sidebar_current: "docs-aci-resource-aci_l2_interface_policy"
 description: |-
   Manages ACI L2 Interface Policy
 ---

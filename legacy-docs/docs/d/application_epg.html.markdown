@@ -2,7 +2,7 @@
 subcategory: "Application Management"
 layout: "aci"
 page_title: "ACI: aci_application_epg"
-sidebar_current: "docs-aci-data-source-application_epg"
+sidebar_current: "docs-aci-data-source-aci_application_epg"
 description: |-
   Data source for ACI Application EPG
 ---

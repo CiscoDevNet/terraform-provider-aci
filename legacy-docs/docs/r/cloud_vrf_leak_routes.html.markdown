@@ -2,7 +2,7 @@
 subcategory: "Cloud"
 layout: "aci"
 page_title: "ACI: aci_cloud_vrf_leak_routes"
-sidebar_current: "docs-aci-resource-cloud_vrf_leak_routes"
+sidebar_current: "docs-aci-resource-aci_cloud_vrf_leak_routes"
 description: |-
   Manages Cloud Network Controller Inter-VRF Leaked Routes
 ---

@@ -2,7 +2,7 @@
 subcategory: "Access Policies"
 layout: "aci"
 page_title: "ACI: aci_attachable_access_entity_profile"
-sidebar_current: "docs-aci-resource-attachable_access_entity_profile"
+sidebar_current: "docs-aci-resource-aci_attachable_access_entity_profile"
 description: |-
   Manages ACI Attachable Access Entity Profile
 ---

@@ -2,7 +2,7 @@
 subcategory: "L4-L7 Services"
 layout: "aci"
 page_title: "ACI: aci_destination_of_redirected_traffic"
-sidebar_current: "docs-aci-data-source-destination_of_redirected_traffic"
+sidebar_current: "docs-aci-data-source-aci_destination_of_redirected_traffic"
 description: |-
   Data source for ACI Destination of redirected traffic
 ---

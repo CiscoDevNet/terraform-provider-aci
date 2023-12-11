@@ -2,7 +2,7 @@
 subcategory: "Cloud"
 layout: "aci"
 page_title: "ACI: aci_cloud_subnet"
-sidebar_current: "docs-aci-resource-cloud_subnet"
+sidebar_current: "docs-aci-resource-aci_cloud_subnet"
 description: |-
   Manages Cloud Network Controller Cloud Subnet
 ---

@@ -2,7 +2,7 @@
 subcategory: "AAA"
 layout: "aci"
 page_title: "ACI: aci_console_authentication"
-sidebar_current: "docs-aci-resource-console_authentication"
+sidebar_current: "docs-aci-resource-aci_console_authentication"
 description: |-
   Manages ACI Console Authentication
 ---

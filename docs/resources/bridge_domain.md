@@ -2,7 +2,7 @@
 subcategory: "Networking"
 layout: "aci"
 page_title: "ACI: aci_bridge_domain"
-sidebar_current: "docs-aci-resource-bridge_domain"
+sidebar_current: "docs-aci-resource-aci_bridge_domain"
 description: |-
   Manages ACI Bridge Domain
 ---

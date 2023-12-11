@@ -2,7 +2,7 @@
 subcategory: "Access Policies"
 layout: "aci"
 page_title: "ACI: aci_miscabling_protocol_interface_policy"
-sidebar_current: "docs-aci-data-source-miscabling_protocol_interface_policy"
+sidebar_current: "docs-aci-data-source-aci_miscabling_protocol_interface_policy"
 description: |-
   Data source for ACI Mis-cabling Protocol Interface Policy
 ---

@@ -2,7 +2,7 @@
 subcategory: "System Settings"
 layout: "aci"
 page_title: "ACI: aci_endpoint_loop_protection"
-sidebar_current: "docs-aci-resource-endpoint_loop_protection"
+sidebar_current: "docs-aci-resource-aci_endpoint_loop_protection"
 description: |-
   Manages ACI Endpoint Loop Protection
 ---

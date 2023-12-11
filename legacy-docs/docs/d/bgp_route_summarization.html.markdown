@@ -2,7 +2,7 @@
 subcategory: "Tenant Policies"
 layout: "aci"
 page_title: "ACI: aci_bgp_route_summarization"
-sidebar_current: "docs-aci-data-source-bgp_route_summarization"
+sidebar_current: "docs-aci-data-source-aci_bgp_route_summarization"
 description: |-
   Data source for ACI BGP Route Summarization
 ---

@@ -2,7 +2,7 @@
 subcategory: "AAA"
 layout: "aci"
 page_title: "ACI: aci_user_security_domain_role"
-sidebar_current: "docs-aci-data-source-user_security_domain_role"
+sidebar_current: "docs-aci-data-source-aci_user_security_domain_role"
 description: |-
   Data source for ACI User Security Domain Role
 ---

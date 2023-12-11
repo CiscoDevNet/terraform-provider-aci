@@ -2,7 +2,7 @@
 subcategory: "Access Policies"
 layout: "aci"
 page_title: "ACI: aci_vlan_pool"
-sidebar_current: "docs-aci-resource-vlan_pool"
+sidebar_current: "docs-aci-resource-aci_vlan_pool"
 description: |-
   Manages ACI VLAN Pool
 ---

@@ -2,7 +2,7 @@
 subcategory: "Application Management"
 layout: "aci"
 page_title: "ACI: aci_epg_to_contract"
-sidebar_current: "docs-aci-resource-epg_to_contract"
+sidebar_current: "docs-aci-resource-aci_epg_to_contract"
 description: |-
   Manages ACI EPG to contract relationship.
 ---

@@ -2,7 +2,7 @@
 subcategory: "L4-L7 Services"
 layout: "aci"
 page_title: "ACI: aci_pbr_l1_l2_destination"
-sidebar_current: "docs-aci-resource-pbr_l1_l2_destination"
+sidebar_current: "docs-aci-resource-aci_pbr_l1_l2_destination"
 description: |-
   Manages ACI Destination of L1/L2 Redirected Traffic
 ---

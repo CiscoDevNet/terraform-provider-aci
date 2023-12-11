@@ -2,7 +2,7 @@
 subcategory: "AAA"
 layout: "aci"
 page_title: "ACI: aci_global_security"
-sidebar_current: "docs-aci-data-source-user_management"
+sidebar_current: "docs-aci-data-source-aci_user_management"
 description: |-
   Data source for ACI Global Security
 ---

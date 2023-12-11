@@ -2,7 +2,7 @@
 subcategory: "Access Policies"
 layout: "aci"
 page_title: "ACI: aci_spine_access_port_selector"
-sidebar_current: "docs-aci-data-source-spine_access_port_selector"
+sidebar_current: "docs-aci-data-source-aci_spine_access_port_selector"
 description: |-
   Data source for ACI Spine Access Port Selector
 ---

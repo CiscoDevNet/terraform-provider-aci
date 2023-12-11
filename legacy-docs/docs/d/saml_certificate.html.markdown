@@ -2,7 +2,7 @@
 subcategory: "AAA"
 layout: "aci"
 page_title: "ACI: aci_saml_certificate"
-sidebar_current: "docs-aci-data-source-saml_certificate"
+sidebar_current: "docs-aci-data-source-aci_saml_certificate"
 description: |-
   Data source for ACI SAML Encryption Certificate
 ---

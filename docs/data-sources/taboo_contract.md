@@ -2,7 +2,7 @@
 subcategory: "Contract"
 layout: "aci"
 page_title: "ACI: aci_taboo_contract"
-sidebar_current: "docs-aci-data-source-taboo_contract"
+sidebar_current: "docs-aci-data-source-aci_taboo_contract"
 description: |-
   Data source for ACI Taboo Contract
 ---

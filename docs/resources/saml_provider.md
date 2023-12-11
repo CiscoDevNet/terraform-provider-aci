@@ -2,7 +2,7 @@
 subcategory: "AAA"
 layout: "aci"
 page_title: "ACI: aci_saml_provider"
-sidebar_current: "docs-aci-resource-saml_provider"
+sidebar_current: "docs-aci-resource-aci_saml_provider"
 description: |-
   Manages ACI SAML Provider
 ---

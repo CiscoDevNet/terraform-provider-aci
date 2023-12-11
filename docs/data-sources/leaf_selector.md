@@ -2,7 +2,7 @@
 subcategory: "Access Policies"
 layout: "aci"
 page_title: "ACI: aci_leaf_selector"
-sidebar_current: "docs-aci-data-source-leaf_selector"
+sidebar_current: "docs-aci-data-source-aci_leaf_selector"
 description: |-
   Data source for ACI Leaf Selector
 ---

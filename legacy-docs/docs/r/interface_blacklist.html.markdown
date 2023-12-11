@@ -2,7 +2,7 @@
 subcategory: "Fabric Inventory"
 layout: "aci"
 page_title: "ACI: aci_interface_blacklist"
-sidebar_current: "docs-aci-resource-interface_blacklist"
+sidebar_current: "docs-aci-resource-aci_interface_blacklist"
 description: |-
   Manages ACI Out of Service Fabric Path
 ---

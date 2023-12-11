@@ -2,7 +2,7 @@
 subcategory: "Access Policies"
 layout: "aci"
 page_title: "ACI: aci_fex_bundle_group"
-sidebar_current: "docs-aci-data-source-fex_bundle_group"
+sidebar_current: "docs-aci-data-source-aci_fex_bundle_group"
 description: |-
   Data source for ACI Fex Bundle Group
 ---

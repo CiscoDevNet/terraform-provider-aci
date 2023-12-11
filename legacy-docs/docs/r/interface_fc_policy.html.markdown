@@ -2,7 +2,7 @@
 subcategory: "Access Policies"
 layout: "aci"
 page_title: "ACI: aci_interface_fc_policy"
-sidebar_current: "docs-aci-resource-interface_fc_policy"
+sidebar_current: "docs-aci-resource-aci_interface_fc_policy"
 description: |-
   Manages ACI Interface FC Policy
 ---

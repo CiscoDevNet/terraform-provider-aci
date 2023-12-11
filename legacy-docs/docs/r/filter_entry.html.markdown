@@ -2,7 +2,7 @@
 subcategory: "Contract"
 layout: "aci"
 page_title: "ACI: aci_filter_entry"
-sidebar_current: "docs-aci-resource-filter_entry"
+sidebar_current: "docs-aci-resource-aci_filter_entry"
 description: |-
   Manages ACI Filter Entry
 ---

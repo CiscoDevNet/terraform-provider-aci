@@ -2,7 +2,7 @@
 subcategory: "Access Policies"
 layout: "aci"
 page_title: "ACI: aci_port_security_policy"
-sidebar_current: "docs-aci-data-source-port_security_policy"
+sidebar_current: "docs-aci-data-source-aci_port_security_policy"
 description: |-
   Data source for ACI Port Security Policy
 ---

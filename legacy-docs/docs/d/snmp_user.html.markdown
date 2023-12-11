@@ -2,7 +2,7 @@
 subcategory: "Fabric Policies"
 layout: "aci"
 page_title: "ACI: aci_snmp_user"
-sidebar_current: "docs-aci-data-source-snmp_user"
+sidebar_current: "docs-aci-data-source-aci_snmp_user"
 description: |-
   Data source for ACI SNMP User
 ---

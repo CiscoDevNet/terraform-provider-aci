@@ -2,7 +2,7 @@
 subcategory: "System Settings"
 layout: "aci"
 page_title: "ACI: aci_isis_domain_policy"
-sidebar_current: "docs-aci-resource-isis_domain_policy"
+sidebar_current: "docs-aci-resource-aci_isis_domain_policy"
 description: |-
   Manages ACI ISIS Domain Policy and ISIS Level
 ---

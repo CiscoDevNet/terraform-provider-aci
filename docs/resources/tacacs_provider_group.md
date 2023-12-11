@@ -2,7 +2,7 @@
 subcategory: "AAA"
 layout: "aci"
 page_title: "ACI: aci_tacacs_provider_group"
-sidebar_current: "docs-aci-resource-tacacs_provider_group"
+sidebar_current: "docs-aci-resource-aci_tacacs_provider_group"
 description: |-
   Manages ACI TACACS + Provider Group
 ---

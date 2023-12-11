@@ -2,7 +2,7 @@
 subcategory: "Application Management"
 layout: "aci"
 page_title: "ACI: aci_bulk_epg_to_static_path"
-sidebar_current: "docs-aci-resource-bulk_epg_to_static_path"
+sidebar_current: "docs-aci-resource-aci_bulk_epg_to_static_path"
 description: |-
   Manages ACI EPG to Static Paths in bulk
 ---

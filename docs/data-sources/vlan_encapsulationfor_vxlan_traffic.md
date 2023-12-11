@@ -2,7 +2,7 @@
 subcategory: "Access Policies"
 layout: "aci"
 page_title: "ACI: aci_vlan_encapsulationfor_vxlan_traffic"
-sidebar_current: "docs-aci-data-source-vlan_encapsulationfor_vxlan_traffic"
+sidebar_current: "docs-aci-data-source-aci_vlan_encapsulationfor_vxlan_traffic"
 description: |-
   Data source for ACI Vlan Encapsulation for Vxlan Traffic
 ---

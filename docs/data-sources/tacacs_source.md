@@ -2,7 +2,7 @@
 subcategory: "AAA"
 layout: "aci"
 page_title: "ACI: aci_tacacs_source"
-sidebar_current: "docs-aci-data-source-tacacs_source"
+sidebar_current: "docs-aci-data-source-aci_tacacs_source"
 description: |-
   Data source for ACI TACACS Source
 ---

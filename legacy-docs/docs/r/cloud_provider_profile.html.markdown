@@ -2,7 +2,7 @@
 subcategory: "Cloud"
 layout: "aci"
 page_title: "ACI: aci_cloud_provider_profile"
-sidebar_current: "docs-aci-resource-cloud_provider_profile"
+sidebar_current: "docs-aci-resource-aci_cloud_provider_profile"
 description: |-
   Manages Cloud Network Controller Cloud Provider Profile
 ---

@@ -2,7 +2,7 @@
 subcategory: "Tenant Policies"
 layout: "aci"
 page_title: "ACI: aci_bgp_address_family_context"
-sidebar_current: "docs-aci-data-source-bgp_address_family_context"
+sidebar_current: "docs-aci-data-source-aci_bgp_address_family_context"
 description: |-
   Data source for ACI BGP Address Family Context
 ---

@@ -2,7 +2,7 @@
 subcategory: "Tenant Policies"
 layout: "aci"
 page_title: "ACI: aci_l3out_route_tag_policy"
-sidebar_current: "docs-aci-resource-l3out_route_tag_policy"
+sidebar_current: "docs-aci-resource-aci_l3out_route_tag_policy"
 description: |-
   Manages ACI L3out Route Tag Policy
 ---

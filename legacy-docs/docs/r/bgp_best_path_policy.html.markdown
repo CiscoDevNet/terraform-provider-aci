@@ -2,7 +2,7 @@
 subcategory: "Tenant Policies"
 layout: "aci"
 page_title: "ACI: aci_bgp_best_path_policy"
-sidebar_current: "docs-aci-resource-bgp_best_path_policy"
+sidebar_current: "docs-aci-resource-aci_bgp_best_path_policy"
 description: |-
   Manages ACI BGP Best Path Policy
 ---

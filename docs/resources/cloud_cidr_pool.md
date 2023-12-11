@@ -2,7 +2,7 @@
 subcategory: "Cloud"
 layout: "aci"
 page_title: "ACI: aci_cloud_cidr_pool"
-sidebar_current: "docs-aci-resource-cloud_cidr_pool"
+sidebar_current: "docs-aci-resource-aci_cloud_cidr_pool"
 description: |-
   Manages Cloud Network Controller Cloud CIDR Pool
 ---

@@ -2,7 +2,7 @@
 subcategory: "Access Policies"
 layout: "aci"
 page_title: "ACI: aci_fc_domain"
-sidebar_current: "docs-aci-data-source-fc_domain"
+sidebar_current: "docs-aci-data-source-aci_fc_domain"
 description: |-
   Data source for ACI FC Domain
 ---

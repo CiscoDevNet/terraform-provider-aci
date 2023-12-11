@@ -2,7 +2,7 @@
 subcategory: "Fabric Policies"
 layout: "aci"
 page_title: "ACI: aci_l3_interface_policy"
-sidebar_current: "docs-aci-resource-l3_interface_policy"
+sidebar_current: "docs-aci-resource-aci_l3_interface_policy"
 description: |-
   Manages ACI L3 Interface Policy
 ---

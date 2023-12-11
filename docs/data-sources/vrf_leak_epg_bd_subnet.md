@@ -2,7 +2,7 @@
 subcategory: "Networking"
 layout: "aci"
 page_title: "ACI: aci_vrf_leak_epg_bd_subnet"
-sidebar_current: "docs-aci-data-source-vrf_leak_epg_bd_subnet"
+sidebar_current: "docs-aci-data-source-aci_vrf_leak_epg_bd_subnet"
 description: |-
   Data source for ACI Inter-VRF Leaked EPG/BD Subnet
 ---

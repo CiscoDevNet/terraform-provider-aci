@@ -2,7 +2,7 @@
 subcategory: "Scheduler"
 layout: "aci"
 page_title: "ACI: aci_recurring_window"
-sidebar_current: "docs-aci-data-source-recurring_window"
+sidebar_current: "docs-aci-data-source-aci_recurring_window"
 description: |-
   Data source for ACI Recurring Window
 ---

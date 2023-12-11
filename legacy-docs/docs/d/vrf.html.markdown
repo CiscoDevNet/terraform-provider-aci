@@ -2,7 +2,7 @@
 subcategory: "Networking"
 layout: "aci"
 page_title: "ACI: aci_vrf"
-sidebar_current: "docs-aci-data-source-vrf"
+sidebar_current: "docs-aci-data-source-aci_vrf"
 description: |-
   Data source for ACI VRF
 ---

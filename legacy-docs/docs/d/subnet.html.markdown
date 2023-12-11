@@ -2,7 +2,7 @@
 subcategory: "Networking"
 layout: "aci"
 page_title: "ACI: aci_subnet"
-sidebar_current: "docs-aci-data-source-subnet"
+sidebar_current: "docs-aci-data-source-aci_subnet"
 description: |-
   Data source for ACI Subnet
 ---

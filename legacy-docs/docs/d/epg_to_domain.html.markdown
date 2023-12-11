@@ -2,7 +2,7 @@
 subcategory: "Application Management"
 layout: "aci"
 page_title: "ACI: aci_epg_to_domain"
-sidebar_current: "docs-aci-data-source-epg_to_domain"
+sidebar_current: "docs-aci-data-source-aci_epg_to_domain"
 description: |-
   Data source for ACI epg to Domain
 ---

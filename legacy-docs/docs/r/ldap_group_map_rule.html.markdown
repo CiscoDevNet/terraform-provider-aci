@@ -2,7 +2,7 @@
 subcategory: "AAA"
 layout: "aci"
 page_title: "ACI: aci_ldap_group_map_rule"
-sidebar_current: "docs-aci-resource-ldap_group_map_rule"
+sidebar_current: "docs-aci-resource-aci_ldap_group_map_rule"
 description: |-
   Manages ACI LDAP Group Map Rule
 ---

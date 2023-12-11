@@ -2,7 +2,7 @@
 subcategory: "Application Management"
 layout: "aci"
 page_title: "ACI: aci_epg_to_contract_interface"
-sidebar_current: "docs-aci-resource-epg_to_contract_interface"
+sidebar_current: "docs-aci-resource-aci_epg_to_contract_interface"
 description: |-
   Data source for ACI Contract Interface Relationship
 ---

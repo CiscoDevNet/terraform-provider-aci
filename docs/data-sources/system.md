@@ -2,7 +2,7 @@
 subcategory: "Fabric Inventory"
 layout: "aci"
 page_title: "ACI: aci_system"
-sidebar_current: "docs-aci-data-source-system"
+sidebar_current: "docs-aci-data-source-aci_system"
 description: |-
   Data source for ACI System
 ---

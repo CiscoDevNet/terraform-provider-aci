@@ -2,7 +2,7 @@
 subcategory: ""
 layout: "aci"
 page_title: "ACI: aci_snmp_community"
-sidebar_current: "docs-aci-data-source-snmp_community"
+sidebar_current: "docs-aci-data-source-aci_snmp_community"
 description: |-
   Data source for ACI SNMP Community
 ---

@@ -2,7 +2,7 @@
 subcategory: "AAA"
 layout: "aci"
 page_title: "ACI: aci_ldap_provider"
-sidebar_current: "docs-aci-data-source-ldap_provider"
+sidebar_current: "docs-aci-data-source-aci_ldap_provider"
 description: |-
   Data source for ACI LDAP Provider
 ---

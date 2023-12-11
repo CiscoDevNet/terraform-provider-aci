@@ -2,7 +2,7 @@
 subcategory: "Access Policies"
 layout: "aci"
 page_title: "ACI: aci_spine_port_policy_group"
-sidebar_current: "docs-aci-resource-spine_port_policy_group"
+sidebar_current: "docs-aci-resource-aci_spine_port_policy_group"
 description: |-
   Manages ACI Spine Port Policy Group
 ---

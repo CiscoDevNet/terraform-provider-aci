@@ -2,7 +2,7 @@
 subcategory: "Networking"
 layout: "aci"
 page_title: "ACI: aci_vrf"
-sidebar_current: "docs-aci-resource-vrf"
+sidebar_current: "docs-aci-resource-aci_vrf"
 description: |-
   Manages ACI VRF
 ---

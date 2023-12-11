@@ -2,7 +2,7 @@
 subcategory: "L4-L7 Services"
 layout: "aci"
 page_title: "ACI: aci_connection"
-sidebar_current: "docs-aci-resource-connection"
+sidebar_current: "docs-aci-resource-aci_connection"
 description: |-
   Manages ACI Connection
 ---

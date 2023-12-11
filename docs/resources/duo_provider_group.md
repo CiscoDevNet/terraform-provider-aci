@@ -2,7 +2,7 @@
 subcategory: "AAA"
 layout: "aci"
 page_title: "ACI: aci_duo_provider_group"
-sidebar_current: "docs-aci-resource-duo_provider_group"
+sidebar_current: "docs-aci-resource-aci_duo_provider_group"
 description: |-
   Manages ACI Duo Provider Group
 ---

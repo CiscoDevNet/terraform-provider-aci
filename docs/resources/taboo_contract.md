@@ -2,7 +2,7 @@
 subcategory: "Contract"
 layout: "aci"
 page_title: "ACI: aci_taboo_contract"
-sidebar_current: "docs-aci-resource-taboo_contract"
+sidebar_current: "docs-aci-resource-aci_taboo_contract"
 description: |-
   Manages ACI Taboo Contract
 ---

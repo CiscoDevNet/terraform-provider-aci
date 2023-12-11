@@ -2,7 +2,7 @@
 subcategory: "Access Policies"
 layout: "aci"
 page_title: "ACI: aci_access_sub_port_block"
-sidebar_current: "docs-aci-data-source-access_sub_port_block"
+sidebar_current: "docs-aci-data-source-aci_access_sub_port_block"
 description: |-
   Data source for ACI Access Sub Port Block
 ---

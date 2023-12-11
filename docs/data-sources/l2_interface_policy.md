@@ -2,7 +2,7 @@
 subcategory: "Access Policies"
 layout: "aci"
 page_title: "ACI: aci_l2_interface_policy"
-sidebar_current: "docs-aci-data-source-l2_interface_policy"
+sidebar_current: "docs-aci-data-source-aci_l2_interface_policy"
 description: |-
   Data source for ACI L2 Interface Policy
 ---

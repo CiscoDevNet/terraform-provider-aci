@@ -2,7 +2,7 @@
 subcategory: "AAA"
 layout: "aci"
 page_title: "ACI: aci_x509_certificate"
-sidebar_current: "docs-aci-resource-x509_certificate"
+sidebar_current: "docs-aci-resource-aci_x509_certificate"
 description: |-
   Manages ACI X509 Certificate
 ---

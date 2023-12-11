@@ -2,7 +2,7 @@
 subcategory: "System Settings"
 layout: "aci"
 page_title: "ACI: aci_mgmt_preference"
-sidebar_current: "docs-aci-resource-mgmt_preference"
+sidebar_current: "docs-aci-resource-aci_mgmt_preference"
 description: |-
   Manages ACI Mgmt Preference
 ---

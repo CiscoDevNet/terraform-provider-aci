@@ -2,7 +2,7 @@
 subcategory: "Networking"
 layout: "aci"
 page_title: "ACI: aci_subnet"
-sidebar_current: "docs-aci-resource-subnet"
+sidebar_current: "docs-aci-resource-aci_subnet"
 description: |-
   Manages ACI Subnet
 ---

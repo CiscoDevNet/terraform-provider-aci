@@ -2,7 +2,7 @@
 subcategory: "L3Out"
 layout: "aci"
 page_title: "ACI: aci_l3_outside"
-sidebar_current: "docs-aci-resource-l3_outside"
+sidebar_current: "docs-aci-resource-aci_l3_outside"
 description: |-
   Manages ACI L3 Outside
 ---

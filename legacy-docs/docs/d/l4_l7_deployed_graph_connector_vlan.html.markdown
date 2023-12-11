@@ -2,7 +2,7 @@
 subcategory: "L4-L7 Services"
 layout: "aci"
 page_title: "ACI: aci_l4_l7_deployed_graph_connector_vlan"
-sidebar_current: "docs-aci-data-source-l4_l7_deployed_graph_connector_vlan"
+sidebar_current: "docs-aci-data-source-aci_l4_l7_deployed_graph_connector_vlan"
 description: |-
   Data Source for ACI L4-L7 Deployed Graph Connector VLAN
 ---

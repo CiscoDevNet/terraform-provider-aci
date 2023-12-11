@@ -2,7 +2,7 @@
 subcategory: "Access Policies"
 layout: "aci"
 page_title: "ACI: aci_aaep_to_domain"
-sidebar_current: "docs-aci-resource-aaep-to-domain"
+sidebar_current: "docs-aci-resource-aci_aaep-to-domain"
 description: |-
   Manages the ACI Attachable Access Entity Profile (AAEP) to domain (VMM, Physical or External domain) relationship.
 ---

@@ -2,7 +2,7 @@
 subcategory: "Application Management"
 layout: "aci"
 page_title: "ACI: aci_endpoint_security_group_selector"
-sidebar_current: "docs-aci-resource-endpoint_security_group_selector"
+sidebar_current: "docs-aci-resource-aci_endpoint_security_group_selector"
 description: |-
   Manages ACI Endpoint Security Group Selector
 ---

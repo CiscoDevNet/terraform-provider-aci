@@ -2,7 +2,7 @@
 subcategory: "Access Policies"
 layout: "aci"
 page_title: "ACI: aci_mcp_instance_policy"
-sidebar_current: "docs-aci-resource-mcp_protocol_instance_policy"
+sidebar_current: "docs-aci-resource-aci_mcp_protocol_instance_policy"
 description: |-
   Manages ACI MCP Instance Policy
 ---

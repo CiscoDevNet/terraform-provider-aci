@@ -2,7 +2,7 @@
 subcategory: "AAA"
 layout: "aci"
 page_title: "ACI: aci_local_user"
-sidebar_current: "docs-aci-data-source-local_user"
+sidebar_current: "docs-aci-data-source-aci_local_user"
 description: |-
   Data source for ACI Local User
 ---

@@ -2,7 +2,7 @@
 subcategory: "System Settings"
 layout: "aci"
 page_title: "ACI: aci_coop_policy"
-sidebar_current: "docs-aci-data-source-coop_policy"
+sidebar_current: "docs-aci-data-source-aci_coop_policy"
 description: |-
   Data source for ACI COOP Policy
 ---

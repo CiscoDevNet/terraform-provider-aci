@@ -2,7 +2,7 @@
 subcategory: "L4-L7 Services"
 layout: "aci"
 page_title: "ACI: aci_l4_l7_redirect_health_group"
-sidebar_current: "docs-aci-resource-l4_l7_redirect_health_group"
+sidebar_current: "docs-aci-resource-aci_l4_l7_redirect_health_group"
 description: |-
   Manages ACI L4-L7 Redirect Health Group
 ---

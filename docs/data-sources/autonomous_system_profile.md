@@ -2,7 +2,7 @@
 subcategory: "Cloud"
 layout: "aci"
 page_title: "ACI: aci_autonomous_system_profile"
-sidebar_current: "docs-aci-data-source-autonomous_system_profile"
+sidebar_current: "docs-aci-data-source-aci_autonomous_system_profile"
 description: |-
   Data source for ACI Autonomous System Profile
 ---

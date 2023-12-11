@@ -2,7 +2,7 @@
 subcategory: "Cloud"
 layout: "aci"
 page_title: "ACI: aci_tenant_to_cloud_account"
-sidebar_current: "docs-aci-resource-tenant-to-cloud-account"
+sidebar_current: "docs-aci-resource-aci_tenant-to-cloud-account"
 description: |-
   Manages ACI Tenant to Cloud Account association
 ---

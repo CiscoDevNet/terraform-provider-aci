@@ -2,7 +2,7 @@
 subcategory: "Firmware"
 layout: "aci"
 page_title: "ACI: aci_pod_maintenance_group"
-sidebar_current: "docs-aci-data-source-pod_maintenance_group"
+sidebar_current: "docs-aci-data-source-aci_pod_maintenance_group"
 description: |-
   Data source for ACI POD Maintenance Group
 ---

@@ -2,7 +2,7 @@
 subcategory: "Networking"
 layout: "aci"
 page_title: "ACI: aci_vrf_snmp_context_community"
-sidebar_current: "docs-aci-resource-vrf_snmp_context_community"
+sidebar_current: "docs-aci-resource-aci_vrf_snmp_context_community"
 description: |-
   Manages ACI SNMP Community
 ---

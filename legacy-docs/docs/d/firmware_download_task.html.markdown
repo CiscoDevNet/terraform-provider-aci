@@ -2,7 +2,7 @@
 subcategory: "Firmware"
 layout: "aci"
 page_title: "ACI: aci_firmware_download_task"
-sidebar_current: "docs-aci-data-source-firmware_download_task"
+sidebar_current: "docs-aci-data-source-aci_firmware_download_task"
 description: |-
   Data source for ACI Firmware Download Task
 ---

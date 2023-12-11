@@ -2,7 +2,7 @@
 subcategory: "Node Management"
 layout: "aci"
 page_title: "ACI: aci_mgmt_zone"
-sidebar_current: "docs-aci-resource-in_b_managed_nodes_zone"
+sidebar_current: "docs-aci-resource-aci_in_b_managed_nodes_zone"
 description: |-
   Manages ACI Management Zone
 ---

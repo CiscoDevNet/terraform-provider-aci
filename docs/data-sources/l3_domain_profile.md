@@ -2,7 +2,7 @@
 subcategory: "Access Policies"
 layout: "aci"
 page_title: "ACI: aci_l3_domain_profile"
-sidebar_current: "docs-aci-data-source-l3_domain_profile"
+sidebar_current: "docs-aci-data-source-aci_l3_domain_profile"
 description: |-
   Data source for ACI L3 Domain Profile
 ---

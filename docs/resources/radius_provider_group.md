@@ -2,7 +2,7 @@
 subcategory: "AAA"
 layout: "aci"
 page_title: "ACI: aci_radius_provider_group"
-sidebar_current: "docs-aci-resource-radius_provider_group"
+sidebar_current: "docs-aci-resource-aci_radius_provider_group"
 description: |-
   Manages ACI RADIUS Provider Group
 ---

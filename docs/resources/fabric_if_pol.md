@@ -2,7 +2,7 @@
 subcategory: "Access Policies"
 layout: "aci"
 page_title: "ACI: aci_fabric_if_pol"
-sidebar_current: "docs-aci-resource-fabric_if_pol"
+sidebar_current: "docs-aci-resource-aci_fabric_if_pol"
 description: |-
   Manages ACI fabric if pol
 ---

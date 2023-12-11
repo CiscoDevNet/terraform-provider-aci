@@ -2,7 +2,7 @@
 subcategory: "Access Policies"
 layout: "aci"
 page_title: "ACI: aci_lldp_interface_policy"
-sidebar_current: "docs-aci-resource-lldp_interface_policy"
+sidebar_current: "docs-aci-resource-aci_lldp_interface_policy"
 description: |-
   Manages ACI LLDP Interface Policy
 ---

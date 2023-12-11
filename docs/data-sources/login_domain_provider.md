@@ -2,7 +2,7 @@
 subcategory: "AAA"
 layout: "aci"
 page_title: "ACI: aci_login_domain_provider"
-sidebar_current: "docs-aci-data-source-login_domain_provider"
+sidebar_current: "docs-aci-data-source-aci_login_domain_provider"
 description: |-
   Data source for ACI Login Domain Provider
 ---

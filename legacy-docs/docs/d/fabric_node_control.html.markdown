@@ -2,7 +2,7 @@
 subcategory: "Fabric Policies"
 layout: "aci"
 page_title: "ACI: aci_fabric_node_control"
-sidebar_current: "docs-aci-data-source-fabric_node_control"
+sidebar_current: "docs-aci-data-source-aci_fabric_node_control"
 description: |-
   Data source for ACI Fabric Node Control
 ---

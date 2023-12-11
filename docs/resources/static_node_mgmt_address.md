@@ -2,7 +2,7 @@
 subcategory: "Node Management"
 layout: "aci"
 page_title: "ACI: aci_static_node_mgmt_address"
-sidebar_current: "docs-aci-resource-static_node_mgmt_address"
+sidebar_current: "docs-aci-resource-aci_static_node_mgmt_address"
 description: |-
   Manages ACI Management Static Node
 ---

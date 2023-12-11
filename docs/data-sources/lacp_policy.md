@@ -2,7 +2,7 @@
 subcategory: "Access Policies"
 layout: "aci"
 page_title: "ACI: aci_lacp_policy"
-sidebar_current: "docs-aci-data-source-lacp_policy"
+sidebar_current: "docs-aci-data-source-aci_lacp_policy"
 description: |-
   Data source for ACI LACP Policy
 ---

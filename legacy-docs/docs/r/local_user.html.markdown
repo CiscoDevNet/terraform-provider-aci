@@ -2,7 +2,7 @@
 subcategory: "AAA"
 layout: "aci"
 page_title: "ACI: aci_local_user"
-sidebar_current: "docs-aci-resource-local_user"
+sidebar_current: "docs-aci-resource-aci_local_user"
 description: |-
   Manages ACI Local User
 ---

@@ -2,7 +2,7 @@
 subcategory: "Tenant Policies"
 layout: "aci"
 page_title: "ACI: aci_action_rule_profile"
-sidebar_current: "docs-aci-resource-action_rule_profile"
+sidebar_current: "docs-aci-resource-aci_action_rule_profile"
 description: |-
   Manages ACI Action Rule Profile
 ---

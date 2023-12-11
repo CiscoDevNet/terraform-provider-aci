@@ -2,7 +2,7 @@
 subcategory: "AAA"
 layout: "aci"
 page_title: "ACI: aci_global_security"
-sidebar_current: "docs-aci-resource-user_management"
+sidebar_current: "docs-aci-resource-aci_user_management"
 description: |-
   Manages ACI Global Security
 ---

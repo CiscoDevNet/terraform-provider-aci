@@ -2,7 +2,7 @@
 subcategory: "Access Policies"
 layout: "aci"
 page_title: "ACI: aci_spanning_tree_interface_policy"
-sidebar_current: "docs-aci-resource-spanning_tree_interface_policy"
+sidebar_current: "docs-aci-resource-aci_spanning_tree_interface_policy"
 description: |-
   Manages ACI Spanning Tree Interface Policy
 ---

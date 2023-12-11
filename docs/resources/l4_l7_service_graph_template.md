@@ -2,7 +2,7 @@
 subcategory: "L4-L7 Services"
 layout: "aci"
 page_title: "ACI: aci_l4_l7_service_graph_template"
-sidebar_current: "docs-aci-resource-l4_l7_service_graph_template"
+sidebar_current: "docs-aci-resource-aci_l4_l7_service_graph_template"
 description: |-
   Manages ACI L4-L7 Service Graph Template
 ---

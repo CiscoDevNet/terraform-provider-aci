@@ -2,7 +2,7 @@
 subcategory: "L2Out"
 layout: "aci"
 page_title: "ACI: aci_l2_outside"
-sidebar_current: "docs-aci-data-source-l2_outside"
+sidebar_current: "docs-aci-data-source-aci_l2_outside"
 description: |-
   Data source for ACI L2 Outside
 ---

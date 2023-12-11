@@ -2,7 +2,7 @@
 subcategory: "Cloud"
 layout: "aci"
 page_title: "ACI: aci_cloud_context_profile"
-sidebar_current: "docs-aci-resource-cloud_context_profile"
+sidebar_current: "docs-aci-resource-aci_cloud_context_profile"
 description: |-
   Manages Cloud Network Controller Cloud Context Profile
 ---

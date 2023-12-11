@@ -2,7 +2,7 @@
 subcategory: "AAA"
 layout: "aci"
 page_title: "ACI: aci_console_authentication"
-sidebar_current: "docs-aci-data-source-console_authentication"
+sidebar_current: "docs-aci-data-source-aci_console_authentication"
 description: |-
   Data source for ACI Console Authentication
 ---

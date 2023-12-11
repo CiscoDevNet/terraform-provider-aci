@@ -2,7 +2,7 @@
 subcategory: "L3Out"
 layout: "aci"
 page_title: "ACI: aci_logical_interface_profile"
-sidebar_current: "docs-aci-resource-logical_interface_profile"
+sidebar_current: "docs-aci-resource-aci_logical_interface_profile"
 description: |-
   Manages ACI Logical Interface Profile
 ---

@@ -2,7 +2,7 @@
 subcategory: "L3Out"
 layout: "aci"
 page_title: "ACI: aci_bfd_multihop_interface_profile"
-sidebar_current: "docs-aci-resource-bfd_multihop_interface_profile"
+sidebar_current: "docs-aci-resource-aci_bfd_multihop_interface_profile"
 description: |-
   Manages ACI BFD Multihop Interface Profile
 ---

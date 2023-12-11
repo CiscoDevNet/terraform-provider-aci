@@ -2,7 +2,7 @@
 subcategory: "Cloud"
 layout: "aci"
 page_title: "ACI: aci_cloud_provider_profile"
-sidebar_current: "docs-aci-data-source-cloud_provider_profile"
+sidebar_current: "docs-aci-data-source-aci_cloud_provider_profile"
 description: |-
   Data source for Cloud Network Controller Cloud Provider Profile
 ---

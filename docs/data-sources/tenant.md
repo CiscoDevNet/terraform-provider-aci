@@ -2,7 +2,7 @@
 subcategory: "Application Management"
 layout: "aci"
 page_title: "ACI: aci_tenant"
-sidebar_current: "docs-aci-data-source-tenant"
+sidebar_current: "docs-aci-data-source-aci_tenant"
 description: |-
   Data source for ACI Tenant
 ---

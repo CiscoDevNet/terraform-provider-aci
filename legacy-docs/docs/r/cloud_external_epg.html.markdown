@@ -2,7 +2,7 @@
 subcategory: "Cloud"
 layout: "aci"
 page_title: "ACI: aci_cloud_external_epg"
-sidebar_current: "docs-aci-resource-cloud_external_epg"
+sidebar_current: "docs-aci-resource-aci_cloud_external_epg"
 description: |-
   Manages Cloud Network Controller Cloud External EPg
 ---

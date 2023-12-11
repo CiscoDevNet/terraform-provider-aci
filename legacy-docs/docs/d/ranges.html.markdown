@@ -2,7 +2,7 @@
 subcategory: "Access Policies"
 layout: "aci"
 page_title: "ACI: aci_ranges"
-sidebar_current: "docs-aci-data-source-ranges"
+sidebar_current: "docs-aci-data-source-aci_ranges"
 description: |-
   Data source for ACI VLAN Pool Ranges
 ---

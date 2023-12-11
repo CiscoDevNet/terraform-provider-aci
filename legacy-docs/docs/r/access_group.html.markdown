@@ -2,7 +2,7 @@
 subcategory: "Access Policies"
 layout: "aci"
 page_title: "ACI: aci_access_group"
-sidebar_current: "docs-aci-resource-access_group"
+sidebar_current: "docs-aci-resource-aci_access_group"
 description: |-
   Manages ACI Access Group
 ---

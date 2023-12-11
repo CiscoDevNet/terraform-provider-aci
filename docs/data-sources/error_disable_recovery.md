@@ -2,7 +2,7 @@
 subcategory: "System Settings"
 layout: "aci"
 page_title: "ACI: aci_error_disable_recovery"
-sidebar_current: "docs-aci-data-source-error_disable_recovery"
+sidebar_current: "docs-aci-data-source-aci_error_disable_recovery"
 description: |-
   Data source for ACI Error Disable Recovery
 ---

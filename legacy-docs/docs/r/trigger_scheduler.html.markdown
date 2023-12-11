@@ -2,7 +2,7 @@
 subcategory: "Scheduler"
 layout: "aci"
 page_title: "ACI: aci_trigger_scheduler"
-sidebar_current: "docs-aci-resource-trigger_scheduler"
+sidebar_current: "docs-aci-resource-aci_trigger_scheduler"
 description: |-
   Manages ACI Trigger Scheduler
 ---

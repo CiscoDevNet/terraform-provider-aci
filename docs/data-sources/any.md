@@ -2,7 +2,7 @@
 subcategory: "Networking"
 layout: "aci"
 page_title: "ACI: aci_any"
-sidebar_current: "docs-aci-data-source-any"
+sidebar_current: "docs-aci-data-source-aci_any"
 description: |-
   Data source for ACI Any
 ---

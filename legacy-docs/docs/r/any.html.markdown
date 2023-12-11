@@ -2,7 +2,7 @@
 subcategory: "Networking"
 layout: "aci"
 page_title: "ACI: aci_any"
-sidebar_current: "docs-aci-resource-any"
+sidebar_current: "docs-aci-resource-aci_any"
 description: |-
   Manages ACI Any
 ---

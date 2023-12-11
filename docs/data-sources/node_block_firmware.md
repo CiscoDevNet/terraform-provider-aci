@@ -2,7 +2,7 @@
 subcategory: "Firmware"
 layout: "aci"
 page_title: "ACI: aci_node_block_firmware"
-sidebar_current: "docs-aci-data-source-node_block_firmware"
+sidebar_current: "docs-aci-data-source-aci_node_block_firmware"
 description: |-
   Data source for ACI Node Block
 ---

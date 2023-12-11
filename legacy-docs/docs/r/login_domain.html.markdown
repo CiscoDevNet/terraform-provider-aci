@@ -2,7 +2,7 @@
 subcategory: "AAA"
 layout: "aci"
 page_title: "ACI: aci_login_domain"
-sidebar_current: "docs-aci-resource-login_domain"
+sidebar_current: "docs-aci-resource-aci_login_domain"
 description: |-
   Manages ACI Login Domain
 ---

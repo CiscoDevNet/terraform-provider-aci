@@ -2,7 +2,7 @@
 subcategory: "System Settings"
 layout: "aci"
 page_title: "ACI: aci_coop_policy"
-sidebar_current: "docs-aci-resource-coop_policy"
+sidebar_current: "docs-aci-resource-aci_coop_policy"
 description: |-
   Manages ACI COOP Policy
 ---

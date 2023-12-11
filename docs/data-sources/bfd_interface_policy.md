@@ -2,7 +2,7 @@
 subcategory: "Tenant Policies"
 layout: "aci"
 page_title: "ACI: aci_bfd_interface_policy"
-sidebar_current: "docs-aci-data-source-bfd_interface_policy"
+sidebar_current: "docs-aci-data-source-aci_bfd_interface_policy"
 description: |-
   Data source for ACI BFD Interface Policy
 ---

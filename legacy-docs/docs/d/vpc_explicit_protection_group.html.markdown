@@ -2,7 +2,7 @@
 subcategory: "Access Policies"
 layout: "aci"
 page_title: "ACI: aci_vpc_explicit_protection_group"
-sidebar_current: "docs-aci-data-source-vpc_explicit_protection_group"
+sidebar_current: "docs-aci-data-source-aci_vpc_explicit_protection_group"
 description: |-
   Data source for ACI VPC Explicit Protection Group
 ---

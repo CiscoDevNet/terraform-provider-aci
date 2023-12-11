@@ -2,7 +2,7 @@
 subcategory: "AAA"
 layout: "aci"
 page_title: "ACI: aci_ldap_provider"
-sidebar_current: "docs-aci-resource-ldap_provider"
+sidebar_current: "docs-aci-resource-aci_ldap_provider"
 description: |-
   Manages ACI LDAP Provider
 ---

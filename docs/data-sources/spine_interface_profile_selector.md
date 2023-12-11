@@ -2,7 +2,7 @@
 subcategory: "Access Policies"
 layout: "aci"
 page_title: "ACI: aci_spine_interface_profile_selector"
-sidebar_current: "docs-aci-data-source-spine_interface_profile_selector"
+sidebar_current: "docs-aci-data-source-aci_spine_interface_profile_selector"
 description: |-
   Data source for ACI Spine Interface Profile Selector
 ---

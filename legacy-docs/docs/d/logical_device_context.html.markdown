@@ -2,7 +2,7 @@
 subcategory: "L4-L7 Services"
 layout: "aci"
 page_title: "ACI: aci_logical_device_context"
-sidebar_current: "docs-aci-data-source-logical_device_context"
+sidebar_current: "docs-aci-data-source-aci_logical_device_context"
 description: |-
   Data source for ACI Logical Device Context
 ---

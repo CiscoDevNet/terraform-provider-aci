@@ -2,7 +2,7 @@
 subcategory: "Access Policies"
 layout: "aci"
 page_title: "ACI: aci_leaf_profile"
-sidebar_current: "docs-aci-resource-leaf_profile"
+sidebar_current: "docs-aci-resource-aci_leaf_profile"
 description: |-
   Manages ACI Leaf Profile
 ---

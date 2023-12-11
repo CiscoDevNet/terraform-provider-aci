@@ -2,7 +2,7 @@
 subcategory: "AAA"
 layout: "aci"
 page_title: "ACI: aci_user_security_domain"
-sidebar_current: "docs-aci-data-source-user_security_domain"
+sidebar_current: "docs-aci-data-source-aci_user_security_domain"
 description: |-
   Data source for ACI User Security Domain
 ---

@@ -2,7 +2,7 @@
 subcategory: "Contract"
 layout: "aci"
 page_title: "ACI: aci_contract"
-sidebar_current: "docs-aci-resource-contract"
+sidebar_current: "docs-aci-resource-aci_contract"
 description: |-
   Manages ACI Contract
 ---

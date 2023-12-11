@@ -2,7 +2,7 @@
 subcategory: "Firmware"
 layout: "aci"
 page_title: "ACI: aci_maintenance_policy"
-sidebar_current: "docs-aci-data-source-maintenance_policy"
+sidebar_current: "docs-aci-data-source-aci_maintenance_policy"
 description: |-
   Data source for ACI Maintenance Policy
 ---

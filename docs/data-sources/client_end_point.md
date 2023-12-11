@@ -2,7 +2,7 @@
 subcategory: "Networking"
 layout: "aci"
 page_title: "ACI: aci_client_end_point"
-sidebar_current: "docs-aci-data-source-client_end_point"
+sidebar_current: "docs-aci-data-source-aci_client_end_point"
 description: |-
   Data source for ACI Client End Point
 ---

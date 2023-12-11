@@ -2,7 +2,7 @@
 subcategory: "L3Out"
 layout: "aci"
 page_title: "ACI: aci_l3out_bgp_external_policy"
-sidebar_current: "docs-aci-resource-l3out_bgp_external_policy"
+sidebar_current: "docs-aci-resource-aci_l3out_bgp_external_policy"
 description: |-
   Manages ACI L3-out BGP External Policy
 ---

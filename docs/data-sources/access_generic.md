@@ -2,7 +2,7 @@
 subcategory: "Access Policies"
 layout: "aci"
 page_title: "ACI: aci_access_generic"
-sidebar_current: "docs-aci-data-source-access_generic"
+sidebar_current: "docs-aci-data-source-aci_access_generic"
 description: |-
   Data source for ACI Access Generic
 ---

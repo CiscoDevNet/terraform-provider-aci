@@ -2,7 +2,7 @@
 subcategory: "Access Policies"
 layout: "aci"
 page_title: "ACI: aci_epgs_using_function"
-sidebar_current: "docs-aci-data-source-epgs_using_function"
+sidebar_current: "docs-aci-data-source-aci_epgs_using_function"
 description: |-
   Data source for ACI EPGs Using Function
 ---
