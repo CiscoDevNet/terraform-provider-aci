@@ -34,7 +34,6 @@ resource "aci_l3out_consumer_label" "example" {
   name      = "test_name"
 }
   ```
-
 The configuration snippet below shows all possible attributes of the L3out Consumer Label.
 
 !> This example might not be valid configuration and is only used to show all possible attributes.

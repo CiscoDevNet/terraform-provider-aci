@@ -32,12 +32,14 @@ The configuration snippet below creates a {{getResourceNameAsDescription .Resour
 ```hcl
 {{ .ExampleResource }}```
 
+{{- if not .HasOnlyRequiredProperties}}
 The configuration snippet below shows all possible attributes of the {{getResourceNameAsDescription .ResourceName}}.
 
 !> This example might not be valid configuration and is only used to show all possible attributes.
 
 ```hcl
 {{ .ExampleResourceFull }}```
+{{- end}}
 
 All examples for the {{getResourceNameAsDescription .ResourceName}} resource can be found in the [examples](https://github.com/CiscoDevNet/terraform-provider-aci/examples/resources/aci_{{.ResourceName}}) folder.
 

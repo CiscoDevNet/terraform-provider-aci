@@ -34,7 +34,6 @@ resource "aci_pim_route_map_policy" "example" {
   name      = "test_name"
 }
   ```
-
 The configuration snippet below shows all possible attributes of the Pim Route Map Policy.
 
 !> This example might not be valid configuration and is only used to show all possible attributes.

@@ -35,7 +35,6 @@ resource "aci_l3out_redistribute_policy" "example" {
   route_control_profile_name = "test_tn_rtctrl_profile_name"
 }
   ```
-
 The configuration snippet below shows all possible attributes of the L3out Redistribute Policy.
 
 !> This example might not be valid configuration and is only used to show all possible attributes.

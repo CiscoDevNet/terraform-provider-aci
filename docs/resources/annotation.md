@@ -41,20 +41,6 @@ resource "aci_annotation" "example" {
 }
   ```
 
-The configuration snippet below shows all possible attributes of the Annotation.
-
-!> This example might not be valid configuration and is only used to show all possible attributes.
-
-```hcl
-
-resource "aci_annotation" "full_example_application_epg" {
-  parent_dn = aci_application_epg.example.id
-  key       = "test_key"
-  value     = "test_value"
-}
-
-```
-
 All examples for the Annotation resource can be found in the [examples](https://github.com/CiscoDevNet/terraform-provider-aci/examples/resources/aci_annotation) folder.
 
 ## Schema

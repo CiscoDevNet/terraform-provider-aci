@@ -32,7 +32,6 @@ resource "aci_external_management_network_instance_profile" "example" {
   name = "test_name"
 }
 ```
-
 The configuration snippet below shows all possible attributes of the External Management Network Instance Profile.
 
 !> This example might not be valid configuration and is only used to show all possible attributes.

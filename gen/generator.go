@@ -576,6 +576,7 @@ type Model struct {
 	HasChildWithoutIdentifier bool
 	HasNaming                 bool
 	HasOptionalProperties     bool
+	HasOnlyRequiredProperties bool
 	Include                   bool
 }
 
@@ -861,6 +862,7 @@ func (m *Model) SetClassComment(classDetails interface{}) {
 func (m *Model) SetClassProperties(classDetails interface{}) {
 
 	properties := make(map[string]Property)
+	requiredCount := 0
 
 	for propertyName, propertyValue := range classDetails.(map[string]interface{})["properties"].(map[string]interface{}) {
 
@@ -896,6 +898,7 @@ func (m *Model) SetClassProperties(classDetails interface{}) {
 
 			if requiredProperty(propertyName, m.PkgName, m.Definitions) || property.IsNaming == true {
 				property.IsRequired = true
+				requiredCount += 1
 			}
 
 			if property.IsRequired == false {
@@ -972,6 +975,9 @@ func (m *Model) SetClassProperties(classDetails interface{}) {
 	}
 
 	m.Properties = properties
+	if requiredCount == len(properties) {
+		m.HasOnlyRequiredProperties = true
+	}
 }
 
 /*
