@@ -56,7 +56,7 @@ func (d *MgmtRsOoBConsDataSource) Schema(ctx context.Context, req datasource.Sch
 			},
 			"out_of_band_contract_name": schema.StringAttribute{
 				Required:            true,
-				MarkdownDescription: `An out-of-band management endpoint group contract consists of switches (leaves/spines) and APICs that are part of the associated out-of-band management zone. Each node in the group is assigned an IP address that is dynamically allocated from the address pool associated with the corresponding out-of-band management zone.`,
+				MarkdownDescription: `The name of the Out Of Band Contract object.`,
 			},
 			"annotations": schema.SetNestedAttribute{
 				MarkdownDescription: ``,

@@ -86,7 +86,7 @@ All examples for the External Management Network Instance Profile resource can b
   
   #### Required
   
-  * `out_of_band_contract_name` (tnVzOOBBrCPName) - (string) An out-of-band management endpoint group contract consists of switches (leaves/spines) and APICs that are part of the associated out-of-band management zone. Each node in the group is assigned an IP address that is dynamically allocated from the address pool associated with the corresponding out-of-band management zone.
+  * `out_of_band_contract_name` (tnVzOOBBrCPName) - (string) The name of the Out Of Band Contract object.
 
   #### Optional
     
