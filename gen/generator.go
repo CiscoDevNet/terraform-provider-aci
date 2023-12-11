@@ -1202,15 +1202,14 @@ func setDocumentationData(m *Model, definitions Definitions) {
 	docsParentDnAmount := m.Configuration["docs_parent_dn_amount"].(int)
 
 	if len(m.DocumentationDnFormats) > docsParentDnAmount {
-		m.DocumentationDnFormats = m.DocumentationDnFormats[0:docsParentDnAmount]
-		m.DocumentationDnFormats = append(m.DocumentationDnFormats, "Too many DN formats to display, see model documentation for all possible parents.")
+		m.DocumentationDnFormats = append([]string{"Too many DN formats to display, see model documentation for all possible parents."}, m.DocumentationDnFormats[0:docsParentDnAmount]...)
 	}
 
 	if len(resourcesFound) > docsParentDnAmount {
 		for _, resourceDetails := range resourcesFound[0:docsParentDnAmount] {
 			m.DocumentationParentDns = append(m.DocumentationParentDns, fmt.Sprintf("[%s_%s](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/%s) (%s)", providerName, resourceDetails[0], resourceDetails[0], GetDevnetDocForClass(resourceDetails[1])))
 		}
-		m.DocumentationParentDns = append(m.DocumentationParentDns, "Too many parent DNs to display, see model documentation for all possible parents.")
+		m.DocumentationParentDns = append([]string{"Too many parent DNs to display, see model documentation for all possible parents."}, m.DocumentationParentDns...)
 	} else {
 		for _, resourceDetails := range resourcesFound {
 			m.DocumentationParentDns = append(m.DocumentationParentDns, fmt.Sprintf("[%s_%s](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/%s) (%s)", providerName, resourceDetails[0], resourceDetails[0], GetDevnetDocForClass(resourceDetails[1])))

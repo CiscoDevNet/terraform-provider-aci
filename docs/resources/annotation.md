@@ -17,27 +17,12 @@ Manages ACI Annotation
 * `Class` - [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)
 
 * `Distinguished Name Formats`
-  - `TaskDeployCsr/annotationKey-[{key}]`
-  - `TaskDeployCtx/annotationKey-[{key}]`
-  - `TaskDeploySg/annotationKey-[{key}]`
-  - `TaskDeploySgRule/annotationKey-[{key}]`
-  - `TaskPolicyUpdate/annotationKey-[{key}]`
-  - `TaskResourceMap/annotationKey-[{key}]`
-  - `acct-[{name}]/acctoper/fault-{code}/annotationKey-[{key}]`
-  - `acct-[{name}]/adds/annotationKey-[{key}]`
-  - `acct-[{name}]/apigw/annotationKey-[{key}]`
-  - `acct-[{name}]/certstore-{store}/cert-[{name}]/certificateoper/fault-{code}/annotationKey-[{key}]`
-  - `acct-[{name}]/cloudsvc-[{name}]-typ-[{type}]-rg-{rg}/adds/annotationKey-[{key}]`
-  - `acct-[{name}]/cloudsvc-[{name}]-typ-[{type}]-rg-{rg}/apigw/annotationKey-[{key}]`
-  - `acct-[{name}]/cloudsvc-[{name}]-typ-[{type}]-rg-{rg}/cntreg/annotationKey-[{key}]`
-  - `acct-[{name}]/cloudsvc-[{name}]-typ-[{type}]-rg-{rg}/cosmosdb/annotationKey-[{key}]`
-  - `acct-[{name}]/cloudsvc-[{name}]-typ-[{type}]-rg-{rg}/dbricks/annotationKey-[{key}]`
-  - `acct-[{name}]/cloudsvc-[{name}]-typ-[{type}]-rg-{rg}/dbricks/rsbricksToPubSubnet/annotationKey-[{key}]`
-  - `acct-[{name}]/cloudsvc-[{name}]-typ-[{type}]-rg-{rg}/dbricks/rsbricksToPubSubnet/fault-{code}/annotationKey-[{key}]`
-  - `acct-[{name}]/cloudsvc-[{name}]-typ-[{type}]-rg-{rg}/dbricks/rsbricksToPvtSubnet/annotationKey-[{key}]`
-  - `acct-[{name}]/cloudsvc-[{name}]-typ-[{type}]-rg-{rg}/dbricks/rsbricksToPvtSubnet/fault-{code}/annotationKey-[{key}]`
-  - `acct-[{name}]/cloudsvc-[{name}]-typ-[{type}]-rg-{rg}/keyvault/annotationKey-[{key}]`
   - `Too many DN formats to display, see model documentation for all possible parents.`
+  - `uni/tn-{name}/BD-{name}/annotationKey-[{key}]`
+  - `uni/tn-{name}/annotationKey-[{key}]`
+  - `uni/tn-{name}/ap-{name}/annotationKey-[{key}]`
+  - `uni/tn-{name}/ap-{name}/epg-{name}/annotationKey-[{key}]`
+  - `uni/tn-{name}/ctx-{name}/annotationKey-[{key}]`
 
 ## GUI Information ##
 
@@ -103,7 +88,7 @@ All examples for the Annotation resource can be found in the [examples](https://
 An existing Annotation can be [imported](https://www.terraform.io/docs/import/index.html) into this resource via its distinguished name (DN), via the following command:
 
 ```
-terraform import aci_annotation.example uni/fabric/dcswitchconnprof/rsdcProfToEpg/annotationKey-[{key}]
+terraform import aci_annotation.example uni/tn-{name}/annotationKey-[{key}]
 ```
 
 Starting in Terraform version 1.5, an existing Annotation can be imported 
@@ -111,7 +96,7 @@ using [import blocks](https://developer.hashicorp.com/terraform/language/import)
 
 ```
 import {
-  id = "uni/fabric/dcswitchconnprof/rsdcProfToEpg/annotationKey-[{key}]"
+  id = "uni/tn-{name}/annotationKey-[{key}]"
   to = aci_annotation.example
 }
 ```

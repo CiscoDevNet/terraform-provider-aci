@@ -69,3 +69,12 @@ l3extRsRedistributePol:
   resource_name: "l3out_redistribute_policy"
   ui_location: "Tenants -> Networking -> L3Outs -> Redistribute Policies"
   sub_category: "L3Out"
+
+tagAnnotation:
+  dn_formats:
+    - "uni/tn-{name}/annotationKey-[{key}]"
+    - "uni/tn-{name}/ap-{name}/annotationKey-[{key}]"
+    - "uni/tn-{name}/ap-{name}/epg-{name}/annotationKey-[{key}]"
+    - "uni/tn-{name}/BD-{name}/annotationKey-[{key}]"
+    - "uni/tn-{name}/ctx-{name}/annotationKey-[{key}]"
+    - "Too many DN formats to display, see model documentation for all possible parents."
