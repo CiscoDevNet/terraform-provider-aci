@@ -13,4 +13,3 @@ resource "aci_external_management_network_subnet" "full_example_external_managem
     }
   ]
 }
-

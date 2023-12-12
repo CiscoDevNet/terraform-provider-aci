@@ -11,4 +11,3 @@ resource "aci_relation_to_consumed_out_of_band_contract" "full_example_external_
     }
   ]
 }
-

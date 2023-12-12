@@ -30,7 +30,7 @@ func TestAccDataSource{{$.resourceClassName}}With{{capitalize .class_name}} (t *
 				),
 			},
 			{
-				Config:      testConfig{{$.resourceClassName}}NotExisting,
+				Config:      testConfig{{$.resourceClassName}}NotExisting{{capitalize .class_name}},
 				ExpectError: regexp.MustCompile("Failed to read aci_{{$.resourceName}} data source"),
 			},
 		},
@@ -76,7 +76,7 @@ data "aci_{{$.resourceName}}" "test" {
 }
 `
 
-const testConfig{{$.resourceClassName}}NotExisting  = testConfig{{$.resourceClassName}}MinDependencyWith{{capitalize .class_name}}  + `
+const testConfig{{$.resourceClassName}}NotExisting{{capitalize .class_name}}  = testConfig{{$.resourceClassName}}MinDependencyWith{{capitalize .class_name}}  + `
 data "aci_{{$.resourceName}}" "test_non_existing" {
   parent_dn = {{.parent_dn}}
   {{- range $key, $value := $.datasource_non_existing}}

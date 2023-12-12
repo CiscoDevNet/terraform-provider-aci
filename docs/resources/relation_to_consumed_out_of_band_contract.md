@@ -31,11 +31,12 @@ The configuration snippet below creates a Relation To Consumed Out Of Band Contr
 
 ```hcl
 
-resource "aci_relation_to_consumed_out_of_band_contract" "example" {
+resource "aci_relation_to_consumed_out_of_band_contract" "example_external_management_network_instance_profile" {
   parent_dn                 = aci_external_management_network_instance_profile.example.id
   out_of_band_contract_name = "test_tn_vz_oob_br_cp_name"
 }
-  ```
+
+```
 The configuration snippet below shows all possible attributes of the Relation To Consumed Out Of Band Contract.
 
 !> This example might not be valid configuration and is only used to show all possible attributes.
@@ -97,7 +98,7 @@ All examples for the Relation To Consumed Out Of Band Contract resource can be f
 An existing Relation To Consumed Out Of Band Contract can be [imported](https://www.terraform.io/docs/import/index.html) into this resource via its distinguished name (DN), via the following command:
 
 ```
-terraform import aci_relation_to_consumed_out_of_band_contract.example uni/tn-{name}/extmgmt-{name}/instp-{name}/rsooBCons-{tnVzOOBBrCPName}
+terraform import aci_relation_to_consumed_out_of_band_contract.example_external_management_network_instance_profile uni/tn-{name}/extmgmt-{name}/instp-{name}/rsooBCons-{tnVzOOBBrCPName}
 ```
 
 Starting in Terraform version 1.5, an existing Relation To Consumed Out Of Band Contract can be imported 
@@ -106,6 +107,6 @@ using [import blocks](https://developer.hashicorp.com/terraform/language/import)
 ```
 import {
   id = "uni/tn-{name}/extmgmt-{name}/instp-{name}/rsooBCons-{tnVzOOBBrCPName}"
-  to = aci_relation_to_consumed_out_of_band_contract.example
+  to = aci_relation_to_consumed_out_of_band_contract.example_external_management_network_instance_profile
 }
 ```

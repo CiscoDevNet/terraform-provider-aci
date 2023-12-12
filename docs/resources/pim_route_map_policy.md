@@ -31,11 +31,12 @@ The configuration snippet below creates a Pim Route Map Policy with only require
 
 ```hcl
 
-resource "aci_pim_route_map_policy" "example" {
+resource "aci_pim_route_map_policy" "example_tenant" {
   parent_dn = aci_tenant.example.id
   name      = "test_name"
 }
-  ```
+
+```
 The configuration snippet below shows all possible attributes of the Pim Route Map Policy.
 
 !> This example might not be valid configuration and is only used to show all possible attributes.
@@ -104,7 +105,7 @@ All examples for the Pim Route Map Policy resource can be found in the [examples
 An existing Pim Route Map Policy can be [imported](https://www.terraform.io/docs/import/index.html) into this resource via its distinguished name (DN), via the following command:
 
 ```
-terraform import aci_pim_route_map_policy.example uni/tn-{name}/rtmap-{name}
+terraform import aci_pim_route_map_policy.example_tenant uni/tn-{name}/rtmap-{name}
 ```
 
 Starting in Terraform version 1.5, an existing Pim Route Map Policy can be imported 
@@ -113,7 +114,7 @@ using [import blocks](https://developer.hashicorp.com/terraform/language/import)
 ```
 import {
   id = "uni/tn-{name}/rtmap-{name}"
-  to = aci_pim_route_map_policy.example
+  to = aci_pim_route_map_policy.example_tenant
 }
 ```
 

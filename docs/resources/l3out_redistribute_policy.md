@@ -31,12 +31,13 @@ The configuration snippet below creates a L3out Redistribute Policy with only re
 
 ```hcl
 
-resource "aci_l3out_redistribute_policy" "example" {
+resource "aci_l3out_redistribute_policy" "example_l3_outside" {
   parent_dn                  = aci_l3_outside.example.id
   source                     = "direct"
   route_control_profile_name = "test_tn_rtctrl_profile_name"
 }
-  ```
+
+```
 The configuration snippet below shows all possible attributes of the L3out Redistribute Policy.
 
 !> This example might not be valid configuration and is only used to show all possible attributes.
@@ -97,7 +98,7 @@ All examples for the L3out Redistribute Policy resource can be found in the [exa
 An existing L3out Redistribute Policy can be [imported](https://www.terraform.io/docs/import/index.html) into this resource via its distinguished name (DN), via the following command:
 
 ```
-terraform import aci_l3out_redistribute_policy.example uni/tn-{name}/out-{name}/rsredistributePol-[{tnRtctrlProfileName}]-{src}
+terraform import aci_l3out_redistribute_policy.example_l3_outside uni/tn-{name}/out-{name}/rsredistributePol-[{tnRtctrlProfileName}]-{src}
 ```
 
 Starting in Terraform version 1.5, an existing L3out Redistribute Policy can be imported 
@@ -106,6 +107,6 @@ using [import blocks](https://developer.hashicorp.com/terraform/language/import)
 ```
 import {
   id = "uni/tn-{name}/out-{name}/rsredistributePol-[{tnRtctrlProfileName}]-{src}"
-  to = aci_l3out_redistribute_policy.example
+  to = aci_l3out_redistribute_policy.example_l3_outside
 }
 ```

@@ -28,7 +28,7 @@ func TestAccDataSourcePimRouteMapPolWithFvTenant(t *testing.T) {
 				),
 			},
 			{
-				Config:      testConfigPimRouteMapPolNotExisting,
+				Config:      testConfigPimRouteMapPolNotExistingFvTenant,
 				ExpectError: regexp.MustCompile("Failed to read aci_pim_route_map_policy data source"),
 			},
 		},
@@ -43,7 +43,7 @@ data "aci_pim_route_map_policy" "test" {
 }
 `
 
-const testConfigPimRouteMapPolNotExisting = testConfigPimRouteMapPolMinDependencyWithFvTenant + `
+const testConfigPimRouteMapPolNotExistingFvTenant = testConfigPimRouteMapPolMinDependencyWithFvTenant + `
 data "aci_pim_route_map_policy" "test_non_existing" {
   parent_dn = aci_tenant.test.id
   name = "non_existing_name"

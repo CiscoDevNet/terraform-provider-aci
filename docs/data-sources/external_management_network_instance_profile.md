@@ -28,9 +28,11 @@ Data source for External Management Network Instance Profile
 ## Example Usage ##
 
 ```hcl
+
 data "aci_external_management_network_instance_profile" "example" {
   name = "test_name"
 }
+
 ```
 
 ## Schema
@@ -52,7 +54,7 @@ data "aci_external_management_network_instance_profile" "example" {
 * `priority` (prio) - (string) The QoS priority class identifier.
   - Supported ACI Versions: `1.0(1e)-latest`
 
-* `relation_to_consumed_out_of_band_contracts` - (list) A list of Relation To Consumed Out Of Band Contracts relationship objects ([mgmtRsOoBCons](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/mgmtRsOoBCons/overview)) pointing to the Out Of Band Contract ([vzOOBBrCP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vzOOBBrCP/overview)) object.
+* `relation_to_consumed_out_of_band_contracts` - (list) A list of Relation To Consumed Out Of Band Contracts objects ([mgmtRsOoBCons](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/mgmtRsOoBCons/overview)) pointing to the Out Of Band Contract ([vzOOBBrCP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vzOOBBrCP/overview)) object.
   - Supported ACI Versions: `1.0(1e)-latest`
   * `annotation` (annotation) - (string) The annotation of the Relation To Consumed Out Of Band Contract object.
     - Supported ACI Versions: `1.0(1e)-latest`

@@ -16,4 +16,3 @@ resource "aci_l3out_consumer_label" "full_example_l3_outside" {
     }
   ]
 }
-

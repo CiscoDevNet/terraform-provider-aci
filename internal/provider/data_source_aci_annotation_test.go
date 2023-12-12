@@ -24,7 +24,28 @@ func TestAccDataSourceTagAnnotationWithFvAEPg(t *testing.T) {
 				),
 			},
 			{
-				Config:      testConfigTagAnnotationNotExisting,
+				Config:      testConfigTagAnnotationNotExistingFvAEPg,
+				ExpectError: regexp.MustCompile("Failed to read aci_annotation data source"),
+			},
+		},
+	})
+}
+func TestAccDataSourceTagAnnotationWithFvTenant(t *testing.T) {
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				Config:             testConfigTagAnnotationDataSourceDependencyWithFvTenant,
+				ExpectNonEmptyPlan: false,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("data.aci_annotation.test", "key", "test_key"),
+					resource.TestCheckResourceAttr("data.aci_annotation.test", "value", "test_value"),
+				),
+			},
+			{
+				Config:      testConfigTagAnnotationNotExistingFvTenant,
 				ExpectError: regexp.MustCompile("Failed to read aci_annotation data source"),
 			},
 		},
@@ -39,9 +60,24 @@ data "aci_annotation" "test" {
 }
 `
 
-const testConfigTagAnnotationNotExisting = testConfigTagAnnotationMinDependencyWithFvAEPg + `
+const testConfigTagAnnotationNotExistingFvAEPg = testConfigTagAnnotationMinDependencyWithFvAEPg + `
 data "aci_annotation" "test_non_existing" {
   parent_dn = aci_application_epg.test.id
+  key = "non_existing_key"
+  depends_on = [aci_annotation.test]
+}
+`
+const testConfigTagAnnotationDataSourceDependencyWithFvTenant = testConfigTagAnnotationMinDependencyWithFvTenant + `
+data "aci_annotation" "test" {
+  parent_dn = aci_tenant.test.id
+  key = "test_key"
+  depends_on = [aci_annotation.test]
+}
+`
+
+const testConfigTagAnnotationNotExistingFvTenant = testConfigTagAnnotationMinDependencyWithFvTenant + `
+data "aci_annotation" "test_non_existing" {
+  parent_dn = aci_tenant.test.id
   key = "non_existing_key"
   depends_on = [aci_annotation.test]
 }

@@ -31,11 +31,12 @@ The configuration snippet below creates a External Management Network Subnet wit
 
 ```hcl
 
-resource "aci_external_management_network_subnet" "example" {
+resource "aci_external_management_network_subnet" "example_external_management_network_instance_profile" {
   parent_dn = aci_external_management_network_instance_profile.example.id
   ip        = "1.1.1.0/24"
 }
-  ```
+
+```
 The configuration snippet below shows all possible attributes of the External Management Network Subnet.
 
 !> This example might not be valid configuration and is only used to show all possible attributes.
@@ -101,7 +102,7 @@ All examples for the External Management Network Subnet resource can be found in
 An existing External Management Network Subnet can be [imported](https://www.terraform.io/docs/import/index.html) into this resource via its distinguished name (DN), via the following command:
 
 ```
-terraform import aci_external_management_network_subnet.example uni/tn-mgmt/extmgmt-default/instp-{name}/subnet-[{ip}]
+terraform import aci_external_management_network_subnet.example_external_management_network_instance_profile uni/tn-mgmt/extmgmt-default/instp-{name}/subnet-[{ip}]
 ```
 
 Starting in Terraform version 1.5, an existing External Management Network Subnet can be imported 
@@ -110,6 +111,6 @@ using [import blocks](https://developer.hashicorp.com/terraform/language/import)
 ```
 import {
   id = "uni/tn-mgmt/extmgmt-default/instp-{name}/subnet-[{ip}]"
-  to = aci_external_management_network_subnet.example
+  to = aci_external_management_network_subnet.example_external_management_network_instance_profile
 }
 ```

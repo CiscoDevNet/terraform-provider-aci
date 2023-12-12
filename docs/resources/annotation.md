@@ -36,12 +36,19 @@ The configuration snippet below creates a Annotation with only required attribut
 
 ```hcl
 
-resource "aci_annotation" "example" {
+resource "aci_annotation" "example_application_epg" {
   parent_dn = aci_application_epg.example.id
   key       = "test_key"
   value     = "test_value"
 }
-  ```
+
+resource "aci_annotation" "example_tenant" {
+  parent_dn = aci_tenant.example.id
+  key       = "test_key"
+  value     = "test_value"
+}
+
+```
 
 All examples for the Annotation resource can be found in the [examples](https://github.com/CiscoDevNet/terraform-provider-aci/examples/resources/aci_annotation) folder.
 
@@ -78,7 +85,7 @@ All examples for the Annotation resource can be found in the [examples](https://
 An existing Annotation can be [imported](https://www.terraform.io/docs/import/index.html) into this resource via its distinguished name (DN), via the following command:
 
 ```
-terraform import aci_annotation.example uni/tn-{name}/annotationKey-[{key}]
+terraform import aci_annotation.example_application_epg uni/tn-{name}/annotationKey-[{key}]
 ```
 
 Starting in Terraform version 1.5, an existing Annotation can be imported 
@@ -87,6 +94,6 @@ using [import blocks](https://developer.hashicorp.com/terraform/language/import)
 ```
 import {
   id = "uni/tn-{name}/annotationKey-[{key}]"
-  to = aci_annotation.example
+  to = aci_annotation.example_application_epg
 }
 ```

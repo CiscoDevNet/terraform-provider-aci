@@ -14,4 +14,3 @@ resource "aci_pim_route_map_policy" "full_example_tenant" {
     }
   ]
 }
-

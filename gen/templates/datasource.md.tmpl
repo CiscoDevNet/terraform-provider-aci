@@ -30,7 +30,8 @@ Data source for {{getResourceNameAsDescription .ResourceName}}
 ## Example Usage ##
 
 ```hcl
-{{ .ExampleDataSource }}```
+{{ .ExampleDataSource }}
+```
 
 ## Schema
 
@@ -64,7 +65,7 @@ Data source for {{getResourceNameAsDescription .ResourceName}}
 {{- end}}
 {{ range .Children }}
     {{- if ne .RelationshipClass ""}}
-* `{{- .ResourceName}}` - (list) A list of {{getResourceNameAsDescription .ResourceName}} relationship objects ({{getDevnetDocForClass .PkgName}}) pointing to the {{getResourceNameAsDescription .RelationshipResourceName}} ({{getDevnetDocForClass .RelationshipClass}}) object.
+* `{{- .ResourceName}}` - (list) A list of {{getResourceNameAsDescription .ResourceName}} objects ({{getDevnetDocForClass .PkgName}}) pointing to the {{getResourceNameAsDescription .RelationshipResourceName}} ({{getDevnetDocForClass .RelationshipClass}}) object.
   - Supported ACI Versions: `{{ .Versions}}`
     {{- else}}
 * `{{- .ResourceName}}` - (list) A list of {{getResourceNameAsDescription .ResourceName}} objects ({{getDevnetDocForClass .PkgName}}).

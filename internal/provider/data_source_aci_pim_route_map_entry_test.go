@@ -31,7 +31,7 @@ func TestAccDataSourcePimRouteMapEntryWithPimRouteMapPol(t *testing.T) {
 				),
 			},
 			{
-				Config:      testConfigPimRouteMapEntryNotExisting,
+				Config:      testConfigPimRouteMapEntryNotExistingPimRouteMapPol,
 				ExpectError: regexp.MustCompile("Failed to read aci_pim_route_map_entry data source"),
 			},
 		},
@@ -46,7 +46,7 @@ data "aci_pim_route_map_entry" "test" {
 }
 `
 
-const testConfigPimRouteMapEntryNotExisting = testConfigPimRouteMapEntryMinDependencyWithPimRouteMapPol + `
+const testConfigPimRouteMapEntryNotExistingPimRouteMapPol = testConfigPimRouteMapEntryMinDependencyWithPimRouteMapPol + `
 data "aci_pim_route_map_entry" "test_non_existing" {
   parent_dn = aci_pim_route_map_policy.test.id
   order = "2"

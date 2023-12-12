@@ -11,4 +11,3 @@ resource "aci_l3out_redistribute_policy" "full_example_l3_outside" {
     }
   ]
 }
-

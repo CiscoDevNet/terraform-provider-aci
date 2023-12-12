@@ -30,15 +30,18 @@ Manages ACI External Management Network Instance Profile
 The configuration snippet below creates a External Management Network Instance Profile with only required attributes.
 
 ```hcl
+
 resource "aci_external_management_network_instance_profile" "example" {
   name = "test_name"
 }
+
 ```
 The configuration snippet below shows all possible attributes of the External Management Network Instance Profile.
 
 !> This example might not be valid configuration and is only used to show all possible attributes.
 
 ```hcl
+
 resource "aci_external_management_network_instance_profile" "full_example" {
   annotation  = "annotation"
   description = "description"
@@ -59,6 +62,7 @@ resource "aci_external_management_network_instance_profile" "full_example" {
     }
   ]
 }
+
 ```
 
 All examples for the External Management Network Instance Profile resource can be found in the [examples](https://github.com/CiscoDevNet/terraform-provider-aci/examples/resources/aci_external_management_network_instance_profile) folder.
@@ -88,7 +92,7 @@ All examples for the External Management Network Instance Profile resource can b
   - Default: `unspecified`
   - Valid Values: `level1`, `level2`, `level3`, `level4`, `level5`, `level6`, `unspecified`.
 
-* `relation_to_consumed_out_of_band_contracts` - (list) A list of Relation To Consumed Out Of Band Contracts relationship objects ([mgmtRsOoBCons](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/mgmtRsOoBCons/overview)) pointing to the Out Of Band Contract ([vzOOBBrCP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vzOOBBrCP/overview)) which can be configured using the [aci_out_of_band_contract](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/out_of_band_contract) resource.
+* `relation_to_consumed_out_of_band_contracts` - (list) A list of Relation To Consumed Out Of Band Contracts objects ([mgmtRsOoBCons](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/mgmtRsOoBCons/overview)) pointing to the Out Of Band Contract ([vzOOBBrCP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vzOOBBrCP/overview)) which can be configured using the [aci_out_of_band_contract](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/out_of_band_contract) resource.
   - Supported ACI Versions: `1.0(1e)-latest`
   
   #### Required

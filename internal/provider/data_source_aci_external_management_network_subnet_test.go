@@ -27,7 +27,7 @@ func TestAccDataSourceMgmtSubnetWithMgmtInstP(t *testing.T) {
 				),
 			},
 			{
-				Config:      testConfigMgmtSubnetNotExisting,
+				Config:      testConfigMgmtSubnetNotExistingMgmtInstP,
 				ExpectError: regexp.MustCompile("Failed to read aci_external_management_network_subnet data source"),
 			},
 		},
@@ -42,7 +42,7 @@ data "aci_external_management_network_subnet" "test" {
 }
 `
 
-const testConfigMgmtSubnetNotExisting = testConfigMgmtSubnetMinDependencyWithMgmtInstP + `
+const testConfigMgmtSubnetNotExistingMgmtInstP = testConfigMgmtSubnetMinDependencyWithMgmtInstP + `
 data "aci_external_management_network_subnet" "test_non_existing" {
   parent_dn = aci_external_management_network_instance_profile.test.id
   ip = "2.2.2.0/24"

@@ -30,7 +30,7 @@ func TestAccDataSourceL3extConsLblWithL3extOut(t *testing.T) {
 				),
 			},
 			{
-				Config:      testConfigL3extConsLblNotExisting,
+				Config:      testConfigL3extConsLblNotExistingL3extOut,
 				ExpectError: regexp.MustCompile("Failed to read aci_l3out_consumer_label data source"),
 			},
 		},
@@ -45,7 +45,7 @@ data "aci_l3out_consumer_label" "test" {
 }
 `
 
-const testConfigL3extConsLblNotExisting = testConfigL3extConsLblMinDependencyWithL3extOut + `
+const testConfigL3extConsLblNotExistingL3extOut = testConfigL3extConsLblMinDependencyWithL3extOut + `
 data "aci_l3out_consumer_label" "test_non_existing" {
   parent_dn = aci_l3_outside.test.id
   name = "non_existing_name"

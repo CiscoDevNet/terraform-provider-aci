@@ -30,15 +30,18 @@ Manages ACI Out Of Band Contract
 The configuration snippet below creates a Out Of Band Contract with only required attributes.
 
 ```hcl
+
 resource "aci_out_of_band_contract" "example" {
   name = "test_name"
 }
+
 ```
 The configuration snippet below shows all possible attributes of the Out Of Band Contract.
 
 !> This example might not be valid configuration and is only used to show all possible attributes.
 
 ```hcl
+
 resource "aci_out_of_band_contract" "full_example" {
   annotation  = "annotation"
   description = "description"
@@ -57,6 +60,7 @@ resource "aci_out_of_band_contract" "full_example" {
     }
   ]
 }
+
 ```
 
 All examples for the Out Of Band Contract resource can be found in the [examples](https://github.com/CiscoDevNet/terraform-provider-aci/examples/resources/aci_out_of_band_contract) folder.

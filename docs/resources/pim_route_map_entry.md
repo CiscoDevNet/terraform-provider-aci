@@ -31,11 +31,12 @@ The configuration snippet below creates a Pim Route Map Entry with only required
 
 ```hcl
 
-resource "aci_pim_route_map_entry" "example" {
+resource "aci_pim_route_map_entry" "example_pim_route_map_policy" {
   parent_dn = aci_pim_route_map_policy.example.id
   order     = "1"
 }
-  ```
+
+```
 The configuration snippet below shows all possible attributes of the Pim Route Map Entry.
 
 !> This example might not be valid configuration and is only used to show all possible attributes.
@@ -115,7 +116,7 @@ All examples for the Pim Route Map Entry resource can be found in the [examples]
 An existing Pim Route Map Entry can be [imported](https://www.terraform.io/docs/import/index.html) into this resource via its distinguished name (DN), via the following command:
 
 ```
-terraform import aci_pim_route_map_entry.example uni/tn-{name}/rtmap-{name}/rtmapentry-{order}
+terraform import aci_pim_route_map_entry.example_pim_route_map_policy uni/tn-{name}/rtmap-{name}/rtmapentry-{order}
 ```
 
 Starting in Terraform version 1.5, an existing Pim Route Map Entry can be imported 
@@ -124,6 +125,6 @@ using [import blocks](https://developer.hashicorp.com/terraform/language/import)
 ```
 import {
   id = "uni/tn-{name}/rtmap-{name}/rtmapentry-{order}"
-  to = aci_pim_route_map_entry.example
+  to = aci_pim_route_map_entry.example_pim_route_map_policy
 }
 ```

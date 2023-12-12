@@ -1274,7 +1274,7 @@ func setDocumentationData(m *Model, definitions Definitions) {
 	// TODO add overwrite to provide which documentation examples to be included
 	docsExampleAmount := m.Configuration["docs_examples_amount"].(int)
 	if len(m.ContainedBy) >= docsExampleAmount {
-		for _, resourceDetails := range resourcesFound[0 : docsExampleAmount-1] {
+		for _, resourceDetails := range resourcesFound[0:docsExampleAmount] {
 			m.DocumentationExamples = append(m.DocumentationExamples, resourceDetails[1])
 		}
 	} else {

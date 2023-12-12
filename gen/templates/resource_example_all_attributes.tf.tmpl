@@ -1,5 +1,5 @@
-{{- if .DocumentationExamples}}
-{{ range $key := .DocumentationExamples}}resource "aci_{{$.ResourceName}}" "full_example_{{getResourceName $key $.Definitions}}" { 
+{{- if .DocumentationExamples}}{{- range $key := .DocumentationExamples}}
+resource "aci_{{$.ResourceName}}" "full_example_{{getResourceName $key $.Definitions}}" { 
   {{- if $.HasParent}}
   parent_dn = {{createParentDnValue $key "example" $.Definitions}}
   {{- end}}
@@ -14,9 +14,9 @@
   ]
   {{- end}}
 }
-
 {{ end}}
-{{- else}}resource "aci_{{$.ResourceName}}" "full_example" {
+{{- else}}
+resource "aci_{{$.ResourceName}}" "full_example" {
   {{- range $.Properties}}
   {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}} = "{{lookupTestValue .PkgName .SnakeCaseName $.TestVars $.Definitions}}"
   {{- end}}

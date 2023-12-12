@@ -17,4 +17,3 @@ resource "aci_pim_route_map_entry" "full_example_pim_route_map_policy" {
     }
   ]
 }
-

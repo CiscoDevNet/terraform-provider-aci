@@ -25,7 +25,7 @@ func TestAccDataSourceMgmtRsOoBConsWithMgmtInstP(t *testing.T) {
 				),
 			},
 			{
-				Config:      testConfigMgmtRsOoBConsNotExisting,
+				Config:      testConfigMgmtRsOoBConsNotExistingMgmtInstP,
 				ExpectError: regexp.MustCompile("Failed to read aci_relation_to_consumed_out_of_band_contract data source"),
 			},
 		},
@@ -40,7 +40,7 @@ data "aci_relation_to_consumed_out_of_band_contract" "test" {
 }
 `
 
-const testConfigMgmtRsOoBConsNotExisting = testConfigMgmtRsOoBConsMinDependencyWithMgmtInstP + `
+const testConfigMgmtRsOoBConsNotExistingMgmtInstP = testConfigMgmtRsOoBConsMinDependencyWithMgmtInstP + `
 data "aci_relation_to_consumed_out_of_band_contract" "test_non_existing" {
   parent_dn = aci_external_management_network_instance_profile.test.id
   out_of_band_contract_name = "non_existing_tn_vz_oob_br_cp_name"

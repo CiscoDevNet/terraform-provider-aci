@@ -31,11 +31,12 @@ The configuration snippet below creates a L3out Consumer Label with only require
 
 ```hcl
 
-resource "aci_l3out_consumer_label" "example" {
+resource "aci_l3out_consumer_label" "example_l3_outside" {
   parent_dn = aci_l3_outside.example.id
   name      = "test_name"
 }
-  ```
+
+```
 The configuration snippet below shows all possible attributes of the L3out Consumer Label.
 
 !> This example might not be valid configuration and is only used to show all possible attributes.
@@ -113,7 +114,7 @@ All examples for the L3out Consumer Label resource can be found in the [examples
 An existing L3out Consumer Label can be [imported](https://www.terraform.io/docs/import/index.html) into this resource via its distinguished name (DN), via the following command:
 
 ```
-terraform import aci_l3out_consumer_label.example uni/tn-{name}/out-{name}/conslbl-{name}
+terraform import aci_l3out_consumer_label.example_l3_outside uni/tn-{name}/out-{name}/conslbl-{name}
 ```
 
 Starting in Terraform version 1.5, an existing L3out Consumer Label can be imported 
@@ -122,6 +123,6 @@ using [import blocks](https://developer.hashicorp.com/terraform/language/import)
 ```
 import {
   id = "uni/tn-{name}/out-{name}/conslbl-{name}"
-  to = aci_l3out_consumer_label.example
+  to = aci_l3out_consumer_label.example_l3_outside
 }
 ```

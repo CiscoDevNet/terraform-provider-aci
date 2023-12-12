@@ -1,3 +1,4 @@
+
 resource "aci_out_of_band_contract" "full_example" {
   annotation  = "annotation"
   description = "description"
