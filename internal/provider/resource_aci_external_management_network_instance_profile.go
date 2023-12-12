@@ -75,7 +75,7 @@ func (r *MgmtInstPResource) ModifyPlan(ctx context.Context, req resource.ModifyP
 		var planData *MgmtInstPResourceModel
 		resp.Diagnostics.Append(req.Plan.Get(ctx, &planData)...)
 
-		var MgmtRsOoBConsPlan, MgmtRsOoBConsUpdate []MgmtRsOoBConsMgmtInstPResourceModel
+		var MgmtRsOoBConsPlan, MgmtRsOoBConsUpdate []MgmtRsOoBConsResourceModel
 		planData.MgmtRsOoBCons.ElementsAs(ctx, &MgmtRsOoBConsPlan, false)
 		if len(MgmtRsOoBConsPlan) > 0 {
 			for _, MgmtRsOoBCons := range MgmtRsOoBConsPlan {

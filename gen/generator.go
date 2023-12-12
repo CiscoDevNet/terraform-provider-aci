@@ -580,6 +580,7 @@ type Model struct {
 	HasOptionalProperties     bool
 	HasOnlyRequiredProperties bool
 	HasNamedProperties        bool
+	HasChildNamedProperties   bool
 	Include                   bool
 }
 
@@ -673,6 +674,7 @@ func (m *Model) setClassModel(metaPath string, child bool, definitions Definitio
 				}
 				if childModel.HasNamedProperties {
 					m.HasNamedProperties = true
+					m.HasChildNamedProperties = true
 				}
 			}
 		} else {

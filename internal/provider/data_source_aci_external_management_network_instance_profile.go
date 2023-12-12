@@ -10,6 +10,8 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 )
 
@@ -134,6 +136,20 @@ func (d *MgmtInstPDataSource) Read(ctx context.Context, req datasource.ReadReque
 
 	if resp.Diagnostics.HasError() {
 		return
+	}
+
+	var MgmtRsOoBConsPlan, MgmtRsOoBConsUpdate []MgmtRsOoBConsResourceModel
+	data.MgmtRsOoBCons.ElementsAs(ctx, &MgmtRsOoBConsPlan, false)
+	if len(MgmtRsOoBConsPlan) > 0 {
+		for _, MgmtRsOoBCons := range MgmtRsOoBConsPlan {
+			if d.client.ValidateRelationDn {
+				CheckDn(ctx, d.client, MgmtRsOoBCons.TnVzOOBBrCPName.ValueString(), &resp.Diagnostics)
+			}
+			MgmtRsOoBCons.TnVzOOBBrCPName = basetypes.NewStringValue(GetMOName(MgmtRsOoBCons.TnVzOOBBrCPName.ValueString()))
+			MgmtRsOoBConsUpdate = append(MgmtRsOoBConsUpdate, MgmtRsOoBCons)
+		}
+		MgmtRsOoBConsSet, _ := types.SetValueFrom(ctx, data.MgmtRsOoBCons.ElementType(ctx), MgmtRsOoBConsUpdate)
+		data.MgmtRsOoBCons = MgmtRsOoBConsSet
 	}
 
 	setMgmtInstPId(ctx, data)

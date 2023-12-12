@@ -114,7 +114,7 @@ func (r *{{.ResourceClassName}}Resource) ModifyPlan(ctx context.Context, req res
 
 		{{- range .Children}}
 			{{- range .NamedProperties}}
-		var {{.ResourceClassName}}Plan, {{.ResourceClassName}}Update []MgmtRsOoBConsMgmtInstPResourceModel
+		var {{.ResourceClassName}}Plan, {{.ResourceClassName}}Update []{{.ResourceClassName}}ResourceModel
 		planData.MgmtRsOoBCons.ElementsAs(ctx, &{{.ResourceClassName}}Plan, false)
 		if len({{.ResourceClassName}}Plan) > 0 {
 			for _, {{.ResourceClassName}} := range {{.ResourceClassName}}Plan {
