@@ -76,9 +76,11 @@
             "stats": {
 
             },
+            "versions": "2.0(1m)-",
             "isAbstract": false,
             "isConfigurable": true,
             "isContextRoot": false,
+            "isNxosConverged": false,
             "isDeprecated": false,
             "isHidden": false,
             "isEncrypted": false,
@@ -112,6 +114,7 @@
             ],
             "properties": {
                 "annotation": {
+                    "versions": "3.2(1l)-",
                     "comment": [
                          "User annotation. Suggested format orchestrator:value"
                     ],
@@ -142,10 +145,12 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "childAction": {
+                    "versions": "1.0(1e)-",
                     "comment": [
                          "Delete or ignore. For internal use only."
                     ],
@@ -186,10 +191,12 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "configIssues": {
+                    "versions": "5.0(1k)-",
                     "comment": [
                          "Bitmask representation of the configuration issues found during the endpoint group deployment."
                     ],
@@ -317,10 +324,12 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "descr": {
+                    "versions": "1.0(1e)-",
                     "comment": [
                          "Specifies a description of the policy definition."
                     ],
@@ -352,10 +361,12 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "dn": {
+                    "versions": "1.0(1e)-",
                     "comment": [
                          "A tag or metadata is a non-hierarchical keyword or term assigned to the fabric module."
                     ],
@@ -379,10 +390,12 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "extMngdBy": {
+                    "versions": "3.2(1l)-",
                     "comment": [
                          "Indicates which orchestrator is managing this MO"
                     ],
@@ -424,10 +437,12 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "lcOwn": {
+                    "versions": "1.0(1e)-",
                     "comment": [
                          "A value that indicates how this object was created. For internal use only."
                     ],
@@ -484,10 +499,12 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "modTs": {
+                    "versions": "1.0(1e)-",
                     "comment": [
                          "The time when this object was last modified."
                     ],
@@ -524,10 +541,12 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "monPolDn": {
+                    "versions": "5.0(1k)-",
                     "comment": [
                          "The monitoring policy attached to this observable object."
                     ],
@@ -551,10 +570,12 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "name": {
+                    "versions": "2.0(1m)-",
                     "comment": [
                          "The name of the object."
                     ],
@@ -585,10 +606,12 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "nameAlias": {
+                    "versions": "2.2(1k)-",
                     "isConfigurable": true,
                     "propGlobalId": "28417",
                     "propLocalId": "6719",
@@ -616,10 +639,12 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "owner": {
+                    "versions": "2.0(1m)-",
                     "comment": [
                          "The owner of the target relay. The DHCP relay is any host that forwards DHCP packets between clients and servers. The relays are used to forward requests and replies between clients and servers when they are not on the same physical subnet."
                     ],
@@ -667,10 +692,12 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "ownerKey": {
+                    "versions": "1.0(1e)-",
                     "comment": [
                          "The key for enabling clients to own their data for entity correlation."
                     ],
@@ -701,10 +728,12 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "ownerTag": {
+                    "versions": "1.0(1e)-",
                     "comment": [
                          "A tag for enabling clients to add their own data. For example, to indicate who created this object."
                     ],
@@ -735,10 +764,12 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "rn": {
+                    "versions": "1.0(1e)-",
                     "comment": [
                          "Identifies an object from its siblings within the context of its parent object. The distinguished name contains a sequence of relative names."
                     ],
@@ -762,10 +793,12 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "status": {
+                    "versions": "1.0(1e)-",
                     "comment": [
                          "The upgrade status. This property is for internal use only."
                     ],
@@ -815,10 +848,12 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "tag": {
+                    "versions": "1.0(1e)-",
                     "comment": [
                          "Specifies the color of a policy label."
                     ],
@@ -1544,10 +1579,12 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "uid": {
+                    "versions": "1.0(1e)-",
                     "comment": [
                          "A unique identifier for this object."
                     ],
@@ -1571,10 +1608,12 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "usedFor": {
+                    "versions": "5.0(1k)-",
                     "comment": [
                          "usage type of the consumer label"
                     ],
@@ -1622,10 +1661,12 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "userdom": {
+                    "versions": "5.0(1k)-",
                     "isConfigurable": true,
                     "propGlobalId": "60657",
                     "propLocalId": "13244",
@@ -1661,6 +1702,7 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 }

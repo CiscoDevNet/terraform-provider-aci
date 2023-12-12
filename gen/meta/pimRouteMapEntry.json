@@ -56,9 +56,11 @@
             "stats": {
 
             },
+            "versions": "2.0(1m)-",
             "isAbstract": false,
             "isConfigurable": true,
             "isContextRoot": false,
+            "isNxosConverged": false,
             "isDeprecated": false,
             "isHidden": false,
             "isEncrypted": false,
@@ -92,6 +94,7 @@
             ],
             "properties": {
                 "action": {
+                    "versions": "2.0(1m)-",
                     "comment": [
                          "route action"
                     ],
@@ -133,10 +136,12 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "annotation": {
+                    "versions": "3.2(1l)-",
                     "comment": [
                          "User annotation. Suggested format orchestrator:value"
                     ],
@@ -167,10 +172,12 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "childAction": {
+                    "versions": "1.0(1e)-",
                     "comment": [
                          "Delete or ignore. For internal use only."
                     ],
@@ -211,10 +218,12 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "descr": {
+                    "versions": "1.0(1e)-",
                     "comment": [
                          "Specifies the description of a policy component."
                     ],
@@ -246,10 +255,12 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "dn": {
+                    "versions": "1.0(1e)-",
                     "comment": [
                          "A tag or metadata is a non-hierarchical keyword or term assigned to the fabric module."
                     ],
@@ -273,10 +284,12 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "extMngdBy": {
+                    "versions": "3.2(1l)-",
                     "comment": [
                          "Indicates which orchestrator is managing this MO"
                     ],
@@ -318,10 +331,12 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "grp": {
+                    "versions": "2.0(1m)-",
                     "comment": [
                          "Multicast group ip/prefix"
                     ],
@@ -346,10 +361,12 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "lcOwn": {
+                    "versions": "1.0(1e)-",
                     "comment": [
                          "A value that indicates how this object was created. For internal use only."
                     ],
@@ -406,10 +423,12 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "modTs": {
+                    "versions": "1.0(1e)-",
                     "comment": [
                          "The time when this object was last modified."
                     ],
@@ -446,10 +465,12 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "name": {
+                    "versions": "1.0(1e)-",
                     "comment": [
                          "null"
                     ],
@@ -480,10 +501,12 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "nameAlias": {
+                    "versions": "2.2(1k)-",
                     "isConfigurable": true,
                     "propGlobalId": "28417",
                     "propLocalId": "6719",
@@ -511,10 +534,12 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "order": {
+                    "versions": "2.0(1m)-",
                     "comment": [
                          "PIM route map entry order"
                     ],
@@ -538,10 +563,12 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "rn": {
+                    "versions": "1.0(1e)-",
                     "comment": [
                          "Identifies an object from its siblings within the context of its parent object. The distinguished name contains a sequence of relative names."
                     ],
@@ -565,10 +592,12 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "rp": {
+                    "versions": "2.0(1m)-",
                     "comment": [
                          "Multicast RP Ip"
                     ],
@@ -593,10 +622,12 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "src": {
+                    "versions": "2.0(1m)-",
                     "comment": [
                          "Multicast Source Ip"
                     ],
@@ -621,10 +652,12 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "status": {
+                    "versions": "1.0(1e)-",
                     "comment": [
                          "The upgrade status. This property is for internal use only."
                     ],
@@ -674,10 +707,12 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "uid": {
+                    "versions": "1.0(1e)-",
                     "comment": [
                          "A unique identifier for this object."
                     ],
@@ -701,10 +736,12 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "userdom": {
+                    "versions": "5.0(1k)-",
                     "isConfigurable": true,
                     "propGlobalId": "60657",
                     "propLocalId": "13244",
@@ -740,6 +777,7 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 }

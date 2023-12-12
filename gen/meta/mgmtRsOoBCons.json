@@ -69,9 +69,11 @@
             "stats": {
 
             },
+            "versions": "1.0(1e)-",
             "isAbstract": false,
             "isConfigurable": true,
             "isContextRoot": false,
+            "isNxosConverged": false,
             "isDeprecated": false,
             "isHidden": false,
             "isEncrypted": false,
@@ -105,6 +107,7 @@
             ],
             "properties": {
                 "annotation": {
+                    "versions": "3.2(1l)-",
                     "comment": [
                          "User annotation. Suggested format orchestrator:value"
                     ],
@@ -135,10 +138,12 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "childAction": {
+                    "versions": "1.0(1e)-",
                     "comment": [
                          "Delete or ignore. For internal use only."
                     ],
@@ -179,10 +184,12 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "deplInfo": {
+                    "versions": "1.0(1e)-",
                     "comment": [
                          ""
                     ],
@@ -233,10 +240,12 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "dn": {
+                    "versions": "1.0(1e)-",
                     "comment": [
                          "A tag or metadata is a non-hierarchical keyword or term assigned to the fabric module."
                     ],
@@ -260,10 +269,12 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "extMngdBy": {
+                    "versions": "3.2(1l)-",
                     "comment": [
                          "Indicates which orchestrator is managing this MO"
                     ],
@@ -305,10 +316,12 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "forceResolve": {
+                    "versions": "1.0(1e)-",
                     "comment": [
                          "Whether the relation should force pull the target."
                     ],
@@ -350,10 +363,12 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "lcOwn": {
+                    "versions": "1.0(1e)-",
                     "comment": [
                          "A value that indicates how this object was created. For internal use only."
                     ],
@@ -410,10 +425,12 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "modTs": {
+                    "versions": "1.0(1e)-",
                     "comment": [
                          "The time when this object was last modified."
                     ],
@@ -450,10 +467,12 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "monPolDn": {
+                    "versions": "1.0(1e)-",
                     "comment": [
                          "The monitoring policy attached to this observable object."
                     ],
@@ -477,10 +496,12 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "prio": {
+                    "versions": "1.0(1e)-",
                     "comment": [
                          "The Quality of service (QoS) priority class ID. QoS refers to the capability of a network to provide better service to selected network traffic over various technologies. The primary goal of QoS is to provide priority including dedicated bandwidth, controlled jitter and latency (required by some real-time and interactive traffic), and improved loss characteristics. You can configure the bandwidth of each QoS level using QoS profiles."
                     ],
@@ -553,10 +574,12 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "rType": {
+                    "versions": "1.0(1e)-",
                     "comment": [
                          "Represents the type of resolver."
                     ],
@@ -603,10 +626,12 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "rn": {
+                    "versions": "1.0(1e)-",
                     "comment": [
                          "Identifies an object from its siblings within the context of its parent object. The distinguished name contains a sequence of relative names."
                     ],
@@ -630,10 +655,12 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "state": {
+                    "versions": "1.0(1e)-",
                     "comment": [
                          "Represents the state of the relationship."
                     ],
@@ -705,10 +732,12 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "stateQual": {
+                    "versions": "1.0(1e)-",
                     "comment": [
                          "Represents the state qualifier of the relationship."
                     ],
@@ -764,10 +793,12 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "status": {
+                    "versions": "1.0(1e)-",
                     "comment": [
                          "The upgrade status. This property is for internal use only."
                     ],
@@ -817,10 +848,12 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "tCl": {
+                    "versions": "1.0(1e)-",
                     "comment": [
                          "null"
                     ],
@@ -862,10 +895,12 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "tContextDn": {
+                    "versions": "1.0(1e)-",
                     "comment": [
                          "Specifies the target context distinguished name."
                     ],
@@ -889,10 +924,12 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "tDn": {
+                    "versions": "1.0(1e)-",
                     "comment": [
                          "The distinguished name of the target."
                     ],
@@ -916,10 +953,12 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "tRn": {
+                    "versions": "1.0(1e)-",
                     "comment": [
                          "Specifies the target's related name."
                     ],
@@ -943,10 +982,12 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "tType": {
+                    "versions": "1.0(1e)-",
                     "comment": [
                          "Represents the type of target. The target type for this object is named."
                     ],
@@ -993,10 +1034,12 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "tnVzOOBBrCPName": {
+                    "versions": "1.0(1e)-",
                     "comment": [
                          "An out-of-band management endpoint group contract consists of switches (leaves/spines) and APICs that are part of the associated out-of-band management zone. Each node in the group is assigned an IP address that is dynamically allocated from the address pool associated with the corresponding out-of-band management zone."
                     ],
@@ -1027,10 +1070,12 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "triggerSt": {
+                    "versions": "1.0(1e)-",
                     "comment": [
                          ""
                     ],
@@ -1072,10 +1117,12 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "uid": {
+                    "versions": "1.0(1e)-",
                     "comment": [
                          "A unique identifier for this object."
                     ],
@@ -1099,10 +1146,12 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "userdom": {
+                    "versions": "5.0(1k)-",
                     "isConfigurable": true,
                     "propGlobalId": "60657",
                     "propLocalId": "13244",
@@ -1138,6 +1187,7 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 }

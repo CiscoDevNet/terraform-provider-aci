@@ -64,9 +64,11 @@
             "stats": {
 
             },
+            "versions": "4.2(1i)-",
             "isAbstract": false,
             "isConfigurable": true,
             "isContextRoot": false,
+            "isNxosConverged": false,
             "isDeprecated": false,
             "isHidden": false,
             "isEncrypted": false,
@@ -97,6 +99,7 @@
             "label": "Context Policy for OSPF, EIGRP or Static Routes Redistribution",
             "properties": {
                 "annotation": {
+                    "versions": "4.2(1i)-",
                     "comment": [
                          "User annotation. Suggested format orchestrator:value"
                     ],
@@ -127,10 +130,12 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "childAction": {
+                    "versions": "1.0(1e)-",
                     "comment": [
                          "Delete or ignore. For internal use only."
                     ],
@@ -171,10 +176,12 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "dn": {
+                    "versions": "1.0(1e)-",
                     "comment": [
                          "A tag or metadata is a non-hierarchical keyword or term assigned to the fabric module."
                     ],
@@ -198,10 +205,12 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "extMngdBy": {
+                    "versions": "4.2(1i)-",
                     "comment": [
                          "Indicates which orchestrator is managing this MO"
                     ],
@@ -243,10 +252,12 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "forceResolve": {
+                    "versions": "1.0(1e)-",
                     "comment": [
                          "Whether the relation should force pull the target."
                     ],
@@ -288,10 +299,12 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "lcOwn": {
+                    "versions": "1.0(1e)-",
                     "comment": [
                          "A value that indicates how this object was created. For internal use only."
                     ],
@@ -348,10 +361,12 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "modTs": {
+                    "versions": "1.0(1e)-",
                     "comment": [
                          "The time when this object was last modified."
                     ],
@@ -388,10 +403,12 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "monPolDn": {
+                    "versions": "4.2(1i)-",
                     "comment": [
                          "The monitoring policy attached to this observable object."
                     ],
@@ -415,10 +432,12 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "rType": {
+                    "versions": "1.0(1e)-",
                     "comment": [
                          "Represents the type of resolver."
                     ],
@@ -465,10 +484,12 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "rn": {
+                    "versions": "1.0(1e)-",
                     "comment": [
                          "Identifies an object from its siblings within the context of its parent object. The distinguished name contains a sequence of relative names."
                     ],
@@ -492,10 +513,12 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "src": {
+                    "versions": "4.2(1i)-",
                     "comment": [
                          "The source IP address."
                     ],
@@ -545,10 +568,12 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "state": {
+                    "versions": "1.0(1e)-",
                     "comment": [
                          "Represents the state of the relationship."
                     ],
@@ -620,10 +645,12 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "stateQual": {
+                    "versions": "1.0(1e)-",
                     "comment": [
                          "Represents the state qualifier of the relationship."
                     ],
@@ -679,10 +706,12 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "status": {
+                    "versions": "1.0(1e)-",
                     "comment": [
                          "The upgrade status. This property is for internal use only."
                     ],
@@ -732,10 +761,12 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "tCl": {
+                    "versions": "4.2(1i)-",
                     "comment": [
                          "The class ID of the target object. This property is managed internally and should not be modified by the user."
                     ],
@@ -777,10 +808,12 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "tContextDn": {
+                    "versions": "1.0(1e)-",
                     "comment": [
                          "Specifies the target context distinguished name."
                     ],
@@ -804,10 +837,12 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "tDn": {
+                    "versions": "1.0(1e)-",
                     "comment": [
                          "The distinguished name of the target."
                     ],
@@ -831,10 +866,12 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "tRn": {
+                    "versions": "1.0(1e)-",
                     "comment": [
                          "Specifies the target's related name."
                     ],
@@ -858,10 +895,12 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "tType": {
+                    "versions": "1.0(1e)-",
                     "comment": [
                          "Represents the type of target. The target type for this object is named."
                     ],
@@ -908,10 +947,12 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "tnRtctrlProfileName": {
+                    "versions": "4.2(1i)-",
                     "comment": [
                          "The name of the route profile associated with this object."
                     ],
@@ -942,10 +983,12 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "uid": {
+                    "versions": "1.0(1e)-",
                     "comment": [
                          "A unique identifier for this object."
                     ],
@@ -969,10 +1012,12 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "userdom": {
+                    "versions": "5.0(1k)-",
                     "isConfigurable": true,
                     "propGlobalId": "60657",
                     "propLocalId": "13244",
@@ -1008,6 +1053,7 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 }

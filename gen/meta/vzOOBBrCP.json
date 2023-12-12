@@ -90,9 +90,11 @@
             "stats": {
 
             },
+            "versions": "1.0(1e)-",
             "isAbstract": false,
             "isConfigurable": true,
             "isContextRoot": false,
+            "isNxosConverged": false,
             "isDeprecated": false,
             "isHidden": false,
             "isEncrypted": false,
@@ -126,6 +128,7 @@
             ],
             "properties": {
                 "annotation": {
+                    "versions": "3.2(1l)-",
                     "comment": [
                          "User annotation. Suggested format orchestrator:value"
                     ],
@@ -156,10 +159,12 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "childAction": {
+                    "versions": "1.0(1e)-",
                     "comment": [
                          "Delete or ignore. For internal use only."
                     ],
@@ -200,10 +205,12 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "configIssues": {
+                    "versions": "1.0(1e)-",
                     "comment": [
                          "Bitmask representation of the configuration issues found during the endpoint group deployment."
                     ],
@@ -260,10 +267,12 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "descr": {
+                    "versions": "1.0(1e)-",
                     "comment": [
                          "Specifies a description of the policy definition."
                     ],
@@ -295,10 +304,12 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "dn": {
+                    "versions": "1.0(1e)-",
                     "comment": [
                          "A tag or metadata is a non-hierarchical keyword or term assigned to the fabric module."
                     ],
@@ -322,10 +333,12 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "extMngdBy": {
+                    "versions": "3.2(1l)-",
                     "comment": [
                          "Indicates which orchestrator is managing this MO"
                     ],
@@ -367,10 +380,12 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "intent": {
+                    "versions": "4.2(1i)-",
                     "isConfigurable": true,
                     "propGlobalId": "55648",
                     "propLocalId": "12600",
@@ -414,10 +429,12 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "lcOwn": {
+                    "versions": "1.0(1e)-",
                     "comment": [
                          "A value that indicates how this object was created. For internal use only."
                     ],
@@ -474,10 +491,12 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "modTs": {
+                    "versions": "1.0(1e)-",
                     "comment": [
                          "The time when this object was last modified."
                     ],
@@ -514,10 +533,12 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "monPolDn": {
+                    "versions": "1.0(1e)-",
                     "comment": [
                          ""
                     ],
@@ -541,10 +562,12 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "name": {
+                    "versions": "1.0(1e)-",
                     "comment": [
                          "The name of an out-of-band binary contract profile. This name can be up to 64 alphanumeric characters. Note that you cannot change this name after the object has been saved."
                     ],
@@ -575,10 +598,12 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "nameAlias": {
+                    "versions": "2.2(1k)-",
                     "isConfigurable": true,
                     "propGlobalId": "28417",
                     "propLocalId": "6719",
@@ -606,10 +631,12 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "ownerKey": {
+                    "versions": "1.0(1e)-",
                     "comment": [
                          "The key for enabling clients to own their data for entity correlation."
                     ],
@@ -640,10 +667,12 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "ownerTag": {
+                    "versions": "1.0(1e)-",
                     "comment": [
                          "A tag for enabling clients to add their own data. For example, to indicate who created this object."
                     ],
@@ -674,10 +703,12 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "prio": {
+                    "versions": "1.0(1e)-",
                     "comment": [
                          "null"
                     ],
@@ -750,10 +781,12 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "reevaluateAll": {
+                    "versions": "1.0(2j)-",
                     "comment": [
                          ""
                     ],
@@ -795,10 +828,12 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "rn": {
+                    "versions": "1.0(1e)-",
                     "comment": [
                          "Identifies an object from its siblings within the context of its parent object. The distinguished name contains a sequence of relative names."
                     ],
@@ -822,10 +857,12 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "scope": {
+                    "versions": "1.0(1e)-",
                     "comment": [
                          "Represents the scope of this contract. If the scope is set as application-profile, the epg can only communicate with epgs in the same application-profile"
                     ],
@@ -877,10 +914,12 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "status": {
+                    "versions": "1.0(1e)-",
                     "comment": [
                          "The upgrade status. This property is for internal use only."
                     ],
@@ -930,10 +969,12 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "targetDscp": {
+                    "versions": "1.2(2g)-",
                     "comment": [
                          "contract level dscp value"
                     ],
@@ -1152,10 +1193,12 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "uid": {
+                    "versions": "1.0(1e)-",
                     "comment": [
                          "A unique identifier for this object."
                     ],
@@ -1179,10 +1222,12 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "userdom": {
+                    "versions": "5.0(1k)-",
                     "isConfigurable": true,
                     "propGlobalId": "60657",
                     "propLocalId": "13244",
@@ -1218,6 +1263,7 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 }

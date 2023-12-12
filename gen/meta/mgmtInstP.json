@@ -107,9 +107,11 @@
             "stats": {
 
             },
+            "versions": "1.0(1e)-",
             "isAbstract": false,
             "isConfigurable": true,
             "isContextRoot": false,
+            "isNxosConverged": false,
             "isDeprecated": false,
             "isHidden": false,
             "isEncrypted": false,
@@ -143,6 +145,7 @@
             ],
             "properties": {
                 "annotation": {
+                    "versions": "3.2(1l)-",
                     "comment": [
                          "User annotation. Suggested format orchestrator:value"
                     ],
@@ -173,10 +176,12 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "childAction": {
+                    "versions": "1.0(1e)-",
                     "comment": [
                          "Delete or ignore. For internal use only."
                     ],
@@ -217,10 +222,12 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "configIssues": {
+                    "versions": "1.0(1e)-",
                     "comment": [
                          "Bitmask representation of the configuration issues found during the endpoint group deployment."
                     ],
@@ -364,10 +371,12 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "configSt": {
+                    "versions": "1.0(1e)-",
                     "comment": [
                          "The configuration state of the endpoint group."
                     ],
@@ -439,10 +448,12 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "descr": {
+                    "versions": "1.0(1e)-",
                     "comment": [
                          "Specifies the description of a policy component."
                     ],
@@ -474,10 +485,12 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "dn": {
+                    "versions": "1.0(1e)-",
                     "comment": [
                          "A tag or metadata is a non-hierarchical keyword or term assigned to the fabric module."
                     ],
@@ -501,10 +514,12 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "extMngdBy": {
+                    "versions": "3.2(1l)-",
                     "comment": [
                          "Indicates which orchestrator is managing this MO"
                     ],
@@ -546,10 +561,12 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "lcOwn": {
+                    "versions": "1.0(1e)-",
                     "comment": [
                          "A value that indicates how this object was created. For internal use only."
                     ],
@@ -606,10 +623,12 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "modTs": {
+                    "versions": "1.0(1e)-",
                     "comment": [
                          "The time when this object was last modified."
                     ],
@@ -646,10 +665,12 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "monPolDn": {
+                    "versions": "1.0(1e)-",
                     "comment": [
                          "The monitoring policy attached to this observable object."
                     ],
@@ -673,10 +694,12 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "name": {
+                    "versions": "1.0(1e)-",
                     "comment": [
                          "The external management entity instance profile name. This name can be up to 64 alphanumeric characters."
                     ],
@@ -707,10 +730,12 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "nameAlias": {
+                    "versions": "2.2(1k)-",
                     "isConfigurable": true,
                     "propGlobalId": "28417",
                     "propLocalId": "6719",
@@ -738,10 +763,12 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "pcTag": {
+                    "versions": "1.0(1e)-",
                     "comment": [
                          "The classification tag used for policy enforcement and zoning."
                     ],
@@ -772,10 +799,12 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "pcTagAllocSrc": {
+                    "versions": "5.2(1g)-",
                     "isConfigurable": false,
                     "propGlobalId": "63907",
                     "propLocalId": "14043",
@@ -819,10 +848,12 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "prio": {
+                    "versions": "1.0(1e)-",
                     "comment": [
                          "The QoS priority class identifier."
                     ],
@@ -895,10 +926,12 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "rn": {
+                    "versions": "1.0(1e)-",
                     "comment": [
                          "Identifies an object from its siblings within the context of its parent object. The distinguished name contains a sequence of relative names."
                     ],
@@ -922,10 +955,12 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "scope": {
+                    "versions": "1.0(1e)-",
                     "comment": [
                          ""
                     ],
@@ -957,10 +992,12 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "status": {
+                    "versions": "1.0(1e)-",
                     "comment": [
                          "The upgrade status. This property is for internal use only."
                     ],
@@ -1010,10 +1047,12 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "uid": {
+                    "versions": "1.0(1e)-",
                     "comment": [
                          "A unique identifier for this object."
                     ],
@@ -1037,10 +1076,12 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 },
                 "userdom": {
+                    "versions": "5.0(1k)-",
                     "isConfigurable": true,
                     "propGlobalId": "60657",
                     "propLocalId": "13244",
@@ -1076,6 +1117,7 @@
                     "platformFlavors": [
 
                     ],
+                    "isNxosConverged": false,
                     "isDeprecated": false,
                     "isHidden": false
                 }
