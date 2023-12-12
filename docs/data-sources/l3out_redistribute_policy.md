@@ -16,6 +16,8 @@ Data source for L3out Redistribute Policy
 
 * `Class` - [l3extRsRedistributePol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/l3extRsRedistributePol/overview)
 
+* `Supported ACI Versions` - `4.2(1i)-latest`
+
 * `Distinguished Name Formats`
   - `uni/tn-{name}/out-{name}/rsredistributePol-[{tnRtctrlProfileName}]-{src}`
 
@@ -42,13 +44,19 @@ data "aci_l3out_redistribute_policy" "example" {
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
   - [aci_l3_outside](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/l3_outside) ([l3extOut](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/l3extOut/overview))
 * `source` (src) - (string) The source of the L3out Redistribute Policy object.
+  - Supported ACI Versions: `4.2(1i)-latest`
 * `route_control_profile_name` (tnRtctrlProfileName) - (string) The name of the route profile associated with this object.
+  - Supported ACI Versions: `4.2(1i)-latest`
 
 ### Read-Only
 
 * `id` - (string) The distinguished name (DN) of the L3out Redistribute Policy object.
 * `annotation` (annotation) - (string) The annotation of the L3out Redistribute Policy object.
+  - Supported ACI Versions: `4.2(1i)-latest`
 
 * `annotations` - (list) A list of Annotations objects ([tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)).
+  - Supported ACI Versions: `3.2(1l)-latest`
   * `key` (key) - (string) The key used to uniquely identify this configuration object.
+    - Supported ACI Versions: `3.2(1l)-latest`
   * `value` (value) - (string) The value of the property.
+    - Supported ACI Versions: `3.2(1l)-latest`

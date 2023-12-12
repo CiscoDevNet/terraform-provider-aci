@@ -16,6 +16,8 @@ Data source for External Management Network Instance Profile
 
 * `Class` - [mgmtInstP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/mgmtInstP/overview)
 
+* `Supported ACI Versions` - `1.0(1e)-latest`
+
 * `Distinguished Name Formats`
   - `uni/tn-mgmt/extmgmt-default/instp-{name}`
 
@@ -36,19 +38,31 @@ data "aci_external_management_network_instance_profile" "example" {
 ### Required
 
 * `name` (name) - (string) The name of the External Management Network Instance Profile object.
+  - Supported ACI Versions: `1.0(1e)-latest`
 
 ### Read-Only
 
 * `id` - (string) The distinguished name (DN) of the External Management Network Instance Profile object.
 * `annotation` (annotation) - (string) The annotation of the External Management Network Instance Profile object.
+  - Supported ACI Versions: `1.0(1e)-latest`
 * `description` (descr) - (string) The description of the External Management Network Instance Profile object.
+  - Supported ACI Versions: `1.0(1e)-latest`
 * `name_alias` (nameAlias) - (string) The name alias of the External Management Network Instance Profile object.
+  - Supported ACI Versions: `1.0(1e)-latest`
 * `priority` (prio) - (string) The QoS priority class identifier.
+  - Supported ACI Versions: `1.0(1e)-latest`
 
 * `relation_to_consumed_out_of_band_contracts` - (list) A list of Relation To Consumed Out Of Band Contracts relationship objects ([mgmtRsOoBCons](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/mgmtRsOoBCons/overview)) pointing to the Out Of Band Contract ([vzOOBBrCP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vzOOBBrCP/overview)) object.
+  - Supported ACI Versions: `1.0(1e)-latest`
   * `annotation` (annotation) - (string) The annotation of the Relation To Consumed Out Of Band Contract object.
+    - Supported ACI Versions: `1.0(1e)-latest`
   * `priority` (prio) - (string) The Quality of service (QoS) priority class ID. QoS refers to the capability of a network to provide better service to selected network traffic over various technologies. The primary goal of QoS is to provide priority including dedicated bandwidth, controlled jitter and latency (required by some real-time and interactive traffic), and improved loss characteristics. You can configure the bandwidth of each QoS level using QoS profiles.
+    - Supported ACI Versions: `1.0(1e)-latest`
   * `out_of_band_contract_name` (tnVzOOBBrCPName) - (string) The name of the Out Of Band Contract object.
+    - Supported ACI Versions: `1.0(1e)-latest`
 * `annotations` - (list) A list of Annotations objects ([tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)).
+  - Supported ACI Versions: `3.2(1l)-latest`
   * `key` (key) - (string) The key used to uniquely identify this configuration object.
+    - Supported ACI Versions: `3.2(1l)-latest`
   * `value` (value) - (string) The value of the property.
+    - Supported ACI Versions: `3.2(1l)-latest`

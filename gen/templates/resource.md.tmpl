@@ -16,6 +16,8 @@ Manages ACI {{getResourceNameAsDescription .ResourceName}}
 
 * `Class` - {{getDevnetDocForClass .PkgName}}
 
+* `Supported ACI Versions` - `{{ .Versions}}`
+
 * `Distinguished Name Formats`
     {{- range .DocumentationDnFormats}}
   - `{{ . }}`
@@ -55,6 +57,7 @@ All examples for the {{getResourceNameAsDescription .ResourceName}} resource can
 {{- range .Properties}}
     {{- if or .IsNaming .IsRequired}}
 * `{{- overwriteProperty .PkgName .SnakeCaseName $.Definitions}}` ({{- .PropertyName}}) - (string) {{.Comment}}
+  - Supported ACI Versions: `{{ .Versions}}`
       {{- if .ValidValues }}{{$i := 1}}{{$length := len .ValidValues}}
   - Valid Values:{{ range .ValidValues}} `{{ . }}`{{ if ne $length $i}}{{$i = add $i 1}}, {{- else}}.{{- end}}{{- end}}
       {{- end}}
@@ -71,11 +74,13 @@ All examples for the {{getResourceNameAsDescription .ResourceName}} resource can
     {{- if and (not .IsNaming) (not .IsRequired)}}
       {{- if eq .ValueType "bitmask"}}
 * `{{- overwriteProperty .PkgName .SnakeCaseName $.Definitions}} ({{- .PropertyName}}) - (list) {{.Comment}}
+  - Supported ACI Versions: `{{ .Versions}}`
         {{- if .DefaultValue }}
   - Default: `{{ .DefaultValue }}`.
         {{- end}}
       {{- else}}
 * `{{- overwriteProperty .PkgName .SnakeCaseName $.Definitions}}` ({{- .PropertyName}}) - (string) {{.Comment}}
+  - Supported ACI Versions: `{{ .Versions}}`
         {{- if .DefaultValue }}
   - Default: `{{ .DefaultValue }}`
         {{- end}}
@@ -89,8 +94,10 @@ All examples for the {{getResourceNameAsDescription .ResourceName}} resource can
 {{ range .Children }}
     {{- if ne .RelationshipClass ""}}
 * `{{- .ResourceName}}` - (list) A list of {{getResourceNameAsDescription .ResourceName}} relationship objects ({{getDevnetDocForClass .PkgName}}) pointing to the {{getResourceNameAsDescription .RelationshipResourceName}} ({{getDevnetDocForClass .RelationshipClass}}) which can be configured using the [aci_{{.RelationshipResourceName}}](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/{{.RelationshipResourceName}}) resource.
+  - Supported ACI Versions: `{{ .Versions}}`
     {{- else}}
 * `{{- .ResourceName}}` - (list) A list of {{getResourceNameAsDescription .ResourceName}} objects ({{getDevnetDocForClass .PkgName}}) which can be configured using the [aci_{{.ResourceNameDocReference}}](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/{{.ResourceNameDocReference}}) resource.
+  - Supported ACI Versions: `{{ .Versions}}`
     {{- end}}
   
   #### Required
@@ -98,8 +105,10 @@ All examples for the {{getResourceNameAsDescription .ResourceName}} resource can
       {{- if or .IsNaming .IsRequired}}
           {{- if eq .ValueType "bitmask"}}
   * `{{- overwriteProperty .PkgName .SnakeCaseName $.Definitions}}` ({{- .PropertyName}}) - (list) {{.Comment}}
+      - Supported ACI Versions: `{{ .Versions}}`
           {{- else}}
   * `{{- overwriteProperty .PkgName .SnakeCaseName $.Definitions}}` ({{- .PropertyName}}) - (string) {{.Comment}}
+      - Supported ACI Versions: `{{ .Versions}}`
           {{- end}}
       {{- end}}
   {{- end}}
@@ -110,8 +119,10 @@ All examples for the {{getResourceNameAsDescription .ResourceName}} resource can
       {{- if and (not .IsNaming) (not .IsRequired)}}
         {{- if eq .ValueType "bitmask"}}
   * `{{- overwriteProperty .PkgName .SnakeCaseName $.Definitions}}` ({{- .PropertyName}}) - (list) {{.Comment}}
+      - Supported ACI Versions: `{{ .Versions}}`
         {{- else}}
   * `{{- overwriteProperty .PkgName .SnakeCaseName $.Definitions}}` ({{- .PropertyName}}) - (string) {{.Comment}}
+      - Supported ACI Versions: `{{ .Versions}}`
         {{- end}}
         {{- if .DefaultValue }}
       - Default: `{{ .DefaultValue }}`

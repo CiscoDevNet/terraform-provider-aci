@@ -16,6 +16,8 @@ Manages ACI Pim Route Map Policy
 
 * `Class` - [pimRouteMapPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/pimRouteMapPol/overview)
 
+* `Supported ACI Versions` - `2.0(1m)-latest`
+
 * `Distinguished Name Formats`
   - `uni/tn-{name}/rtmap-{name}`
 
@@ -67,6 +69,7 @@ All examples for the Pim Route Map Policy resource can be found in the [examples
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
   - [aci_tenant](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tenant) ([fvTenant](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvTenant/overview))
 * `name` (name) - (string) The name of the Pim Route Map Policy object.
+  - Supported ACI Versions: `2.0(1m)-latest`
 
 ### Read-Only
 
@@ -75,18 +78,26 @@ All examples for the Pim Route Map Policy resource can be found in the [examples
 ### Optional
   
 * `annotation` (annotation) - (string) The annotation of the Pim Route Map Policy object.
+  - Supported ACI Versions: `2.0(1m)-latest`
   - Default: `orchestrator:terraform`
 * `description` (descr) - (string) The description of the Pim Route Map Policy object.
+  - Supported ACI Versions: `2.0(1m)-latest`
 * `name_alias` (nameAlias) - (string) The name alias of the Pim Route Map Policy object.
+  - Supported ACI Versions: `2.0(1m)-latest`
 * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
+  - Supported ACI Versions: `2.0(1m)-latest`
 * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
+  - Supported ACI Versions: `2.0(1m)-latest`
 
 * `annotations` - (list) A list of Annotations objects ([tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can be configured using the [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.
+  - Supported ACI Versions: `3.2(1l)-latest`
   
   #### Required
   
   * `key` (key) - (string) The key used to uniquely identify this configuration object.
+      - Supported ACI Versions: `3.2(1l)-latest`
   * `value` (value) - (string) The value of the property.
+      - Supported ACI Versions: `3.2(1l)-latest`
 
 ## Importing
 

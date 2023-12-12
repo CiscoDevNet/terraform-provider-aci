@@ -550,6 +550,7 @@ type Model struct {
 	UiLocation               string
 	RelationshipClass        string
 	RelationshipResourceName string
+	Versions                 string
 	ChildClasses             []string
 	ContainedBy              []string
 	Contains                 []string
@@ -594,6 +595,7 @@ type Property struct {
 	Label              string
 	Comment            string
 	DefaultValue       string
+	Versions           string
 	ValidValues        []string
 	IdentifiedBy       []interface{}
 	Validators         []interface{}
@@ -638,6 +640,7 @@ func (m *Model) setClassModel(metaPath string, child bool, definitions Definitio
 		m.SetClassContainedByAndParent(classDetails, parents)
 		m.SetClassContains(classDetails)
 		m.SetClassComment(classDetails)
+		m.SetClassVersions(classDetails)
 		m.SetClassProperties(classDetails)
 		m.SetClassChildren(classDetails, pkgNames)
 	}
@@ -863,6 +866,22 @@ func (m *Model) SetClassComment(classDetails interface{}) {
 	m.Comment = comment
 }
 
+func (m *Model) SetClassVersions(classDetails interface{}) {
+	versions, ok := classDetails.(map[string]interface{})["versions"]
+	if ok {
+		m.Versions = isActiveVersion(versions.(string))
+	} else {
+		m.Versions = "Version Unknown"
+	}
+}
+
+func isActiveVersion(versions string) string {
+	if versions[len(versions)-1:] == "-" {
+		return fmt.Sprintf("%slatest", versions)
+	}
+	return versions
+}
+
 // Construct a property map for the class, that contains all details of the property that will be used during the rendering of the template
 func (m *Model) SetClassProperties(classDetails interface{}) {
 
@@ -961,6 +980,13 @@ func (m *Model) SetClassProperties(classDetails interface{}) {
 				} else {
 					log.Fatal(fmt.Sprintf("Reflect type %s not not defined. Define in SetClassProperties function.", reflect.TypeOf(val).String()))
 				}
+			}
+
+			versions, ok := classDetails.(map[string]interface{})["versions"]
+			if ok {
+				property.Versions = isActiveVersion(versions.(string))
+			} else {
+				property.Versions = "Version Unknown"
 			}
 
 			// The targetRelationalPropertyClasses map is used to store the class name of a named relational property

@@ -16,6 +16,8 @@ Data source for {{getResourceNameAsDescription .ResourceName}}
 
 * `Class` - {{getDevnetDocForClass .PkgName}}
 
+* `Supported ACI Versions` - `{{ .Versions}}`
+
 * `Distinguished Name Formats`
     {{- range .DocumentationDnFormats}}
   - `{{ . }}`
@@ -42,6 +44,7 @@ Data source for {{getResourceNameAsDescription .ResourceName}}
 {{- range .Properties}}
     {{- if .IsNaming}}
 * `{{- overwriteProperty .PkgName .SnakeCaseName $.Definitions}}` ({{- .PropertyName}}) - (string) {{.Comment}}
+  - Supported ACI Versions: `{{ .Versions}}`
     {{- end}}
 {{- end}}
 
@@ -52,23 +55,29 @@ Data source for {{getResourceNameAsDescription .ResourceName}}
     {{- if not .IsNaming}}
         {{- if eq .ValueType "bitmask"}}
 * `{{- overwriteProperty .PkgName .SnakeCaseName $.Definitions}}` ({{- .PropertyName}}) - (list) {{.Comment}}
+  - Supported ACI Versions: `{{ .Versions}}`
         {{- else}}
 * `{{- overwriteProperty .PkgName .SnakeCaseName $.Definitions}}` ({{- .PropertyName}}) - (string) {{.Comment}}
+  - Supported ACI Versions: `{{ .Versions}}`
         {{- end}}
     {{- end}}
 {{- end}}
 {{ range .Children }}
     {{- if ne .RelationshipClass ""}}
 * `{{- .ResourceName}}` - (list) A list of {{getResourceNameAsDescription .ResourceName}} relationship objects ({{getDevnetDocForClass .PkgName}}) pointing to the {{getResourceNameAsDescription .RelationshipResourceName}} ({{getDevnetDocForClass .RelationshipClass}}) object.
+  - Supported ACI Versions: `{{ .Versions}}`
     {{- else}}
 * `{{- .ResourceName}}` - (list) A list of {{getResourceNameAsDescription .ResourceName}} objects ({{getDevnetDocForClass .PkgName}}).
+  - Supported ACI Versions: `{{ .Versions}}`
     {{- end}}
 
   {{- range .Properties}}
     {{- if eq .ValueType "bitmask"}}
   * `{{- overwriteProperty .PkgName .SnakeCaseName $.Definitions}}` ({{- .PropertyName}}) - (list) {{.Comment}}
+    - Supported ACI Versions: `{{ .Versions}}`
     {{- else}}
   * `{{- overwriteProperty .PkgName .SnakeCaseName $.Definitions}}` ({{- .PropertyName}}) - (string) {{.Comment}}
+    - Supported ACI Versions: `{{ .Versions}}`
     {{- end}}  
   {{- end}}
 {{- end}}

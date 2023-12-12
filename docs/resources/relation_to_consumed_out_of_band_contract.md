@@ -16,6 +16,8 @@ Manages ACI Relation To Consumed Out Of Band Contract
 
 * `Class` - [mgmtRsOoBCons](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/mgmtRsOoBCons/overview)
 
+* `Supported ACI Versions` - `1.0(1e)-latest`
+
 * `Distinguished Name Formats`
   - `uni/tn-{name}/extmgmt-{name}/instp-{name}/rsooBCons-{tnVzOOBBrCPName}`
 
@@ -64,6 +66,7 @@ All examples for the Relation To Consumed Out Of Band Contract resource can be f
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
   - [aci_external_management_network_instance_profile](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/external_management_network_instance_profile) ([mgmtInstP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/mgmtInstP/overview))
 * `out_of_band_contract_name` (tnVzOOBBrCPName) - (string) The name of the Out Of Band Contract object.
+  - Supported ACI Versions: `1.0(1e)-latest`
 
 ### Read-Only
 
@@ -72,17 +75,22 @@ All examples for the Relation To Consumed Out Of Band Contract resource can be f
 ### Optional
   
 * `annotation` (annotation) - (string) The annotation of the Relation To Consumed Out Of Band Contract object.
+  - Supported ACI Versions: `1.0(1e)-latest`
   - Default: `orchestrator:terraform`
 * `priority` (prio) - (string) The Quality of service (QoS) priority class ID. QoS refers to the capability of a network to provide better service to selected network traffic over various technologies. The primary goal of QoS is to provide priority including dedicated bandwidth, controlled jitter and latency (required by some real-time and interactive traffic), and improved loss characteristics. You can configure the bandwidth of each QoS level using QoS profiles.
+  - Supported ACI Versions: `1.0(1e)-latest`
   - Default: `unspecified`
   - Valid Values: `level1`, `level2`, `level3`, `level4`, `level5`, `level6`, `unspecified`.
 
 * `annotations` - (list) A list of Annotations objects ([tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can be configured using the [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.
+  - Supported ACI Versions: `3.2(1l)-latest`
   
   #### Required
   
   * `key` (key) - (string) The key used to uniquely identify this configuration object.
+      - Supported ACI Versions: `3.2(1l)-latest`
   * `value` (value) - (string) The value of the property.
+      - Supported ACI Versions: `3.2(1l)-latest`
 
 ## Importing
 
