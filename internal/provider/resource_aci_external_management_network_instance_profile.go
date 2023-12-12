@@ -68,6 +68,32 @@ type MgmtInstPIdentifier struct {
 	Name types.String
 }
 
+func (r *MgmtInstPResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanRequest, resp *resource.ModifyPlanResponse) {
+	tflog.Debug(ctx, "Start plan modification of resource: aci_external_management_network_instance_profile")
+
+	if !req.Plan.Raw.IsNull() {
+		var planData *MgmtInstPResourceModel
+		resp.Diagnostics.Append(req.Plan.Get(ctx, &planData)...)
+
+		var MgmtRsOoBConsPlan, MgmtRsOoBConsUpdate []MgmtRsOoBConsMgmtInstPResourceModel
+		planData.MgmtRsOoBCons.ElementsAs(ctx, &MgmtRsOoBConsPlan, false)
+		if len(MgmtRsOoBConsPlan) > 0 {
+			for _, MgmtRsOoBCons := range MgmtRsOoBConsPlan {
+				if r.client.ValidateRelationDn {
+					CheckDn(ctx, r.client, MgmtRsOoBCons.TnVzOOBBrCPName.ValueString(), &resp.Diagnostics)
+				}
+				MgmtRsOoBCons.TnVzOOBBrCPName = basetypes.NewStringValue(GetMOName(MgmtRsOoBCons.TnVzOOBBrCPName.ValueString()))
+				MgmtRsOoBConsUpdate = append(MgmtRsOoBConsUpdate, MgmtRsOoBCons)
+			}
+			MgmtRsOoBConsSet, _ := types.SetValueFrom(ctx, planData.MgmtRsOoBCons.ElementType(ctx), MgmtRsOoBConsUpdate)
+			planData.MgmtRsOoBCons = MgmtRsOoBConsSet
+		}
+
+		resp.Plan.Set(ctx, planData)
+	}
+	tflog.Debug(ctx, "End plan modification of resource: aci_external_management_network_instance_profile")
+}
+
 func (r *MgmtInstPResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
 	tflog.Debug(ctx, "Start metadata of resource: aci_external_management_network_instance_profile")
 	resp.TypeName = req.ProviderTypeName + "_external_management_network_instance_profile"

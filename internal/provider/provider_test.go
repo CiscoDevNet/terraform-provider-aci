@@ -3,6 +3,7 @@ package provider
 import (
 	"context"
 	"os"
+	"strconv"
 	"testing"
 
 	"github.com/CiscoDevNet/terraform-provider-aci/v2/aci"
@@ -51,5 +52,12 @@ func testAccPreCheck(t *testing.T) {
 	}
 	if v := os.Getenv("ACI_URL"); v == "" {
 		t.Fatal("ACI_URL must be set for acceptance tests")
+	}
+	if v := os.Getenv("ACI_VAL_REL_DN"); v == "" {
+		t.Fatal("ACI_VAL_REL_DN must be set for acceptance tests")
+		boolValue, err := strconv.ParseBool(v)
+		if err != nil || boolValue == true {
+			t.Fatal("ACI_VAL_REL_DN must be a 'false' boolean value")
+		}
 	}
 }

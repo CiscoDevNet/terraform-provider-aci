@@ -382,7 +382,7 @@ func migrateLegacyDocumentation() {
 // Container function to clean all directories properly
 func cleanDirectories() {
 	cleanDirectory(docsPath, []string{"resources", "data-sources"})
-	cleanDirectory(providerPath, []string{"provider_test.go", "test_constants.go", "resource_aci_rest_managed.go", "resource_aci_rest_managed_test.go", "data_source_aci_rest_managed.go", "data_source_aci_rest_managed_test.go"})
+	cleanDirectory(providerPath, []string{"provider_test.go", "utils.go", "test_constants.go", "resource_aci_rest_managed.go", "resource_aci_rest_managed_test.go", "data_source_aci_rest_managed.go", "data_source_aci_rest_managed_test.go"})
 	cleanDirectory(resourcesDocsPath, []string{})
 	cleanDirectory(datasourcesDocsPath, []string{})
 	cleanDirectory(testVarsPath, []string{})
@@ -561,6 +561,7 @@ type Model struct {
 	IdentifiedBy             []interface{}
 	DnFormats                []interface{}
 	Properties               map[string]Property
+	NamedProperties          map[string]Property
 	Children                 map[string]Model
 	Configuration            map[string]interface{}
 	TestVars                 map[string]interface{}
@@ -577,6 +578,7 @@ type Model struct {
 	HasNaming                 bool
 	HasOptionalProperties     bool
 	HasOnlyRequiredProperties bool
+	HasNamedProperties        bool
 	Include                   bool
 }
 
@@ -665,6 +667,9 @@ func (m *Model) setClassModel(metaPath string, child bool, definitions Definitio
 				}
 				if childModel.HasBitmask {
 					m.HasBitmask = true
+				}
+				if childModel.HasNamedProperties {
+					m.HasNamedProperties = true
 				}
 			}
 		} else {
@@ -862,6 +867,7 @@ func (m *Model) SetClassComment(classDetails interface{}) {
 func (m *Model) SetClassProperties(classDetails interface{}) {
 
 	properties := make(map[string]Property)
+	namedProperties := make(map[string]Property)
 	requiredCount := 0
 
 	for propertyName, propertyValue := range classDetails.(map[string]interface{})["properties"].(map[string]interface{}) {
@@ -883,17 +889,6 @@ func (m *Model) SetClassProperties(classDetails interface{}) {
 				Label:             propertyValue.(map[string]interface{})["label"].(string),
 				IsNaming:          propertyValue.(map[string]interface{})["isNaming"].(bool),
 				CreateOnly:        propertyValue.(map[string]interface{})["createOnly"].(bool),
-			}
-
-			// The targetRelationalPropertyClasses map is used to store the class name of a named relational property
-			// This is stored because in order to determine the correct overwrite property name, the resouce name of the target class is needed
-			// The resource name of the target class could be unknown at this point, thus the class name is stored and the resource name is determined later
-			// Chose to do this way to prevent constant opening and closing of files to retrieve the resource name
-			if strings.HasPrefix(propertyName, "tn") && strings.HasSuffix(propertyName, "Name") {
-				// Get the class name and covert to start with lower case for resource name lookup.
-				// - Example: tnVzOOBBrCPName -> VzOOBBrCP -> vzOOBBrCP
-				className := propertyName[2 : len(propertyName)-4]
-				targetRelationalPropertyClasses[property.SnakeCaseName] = strings.ToLower(className[:1]) + className[1:]
 			}
 
 			if requiredProperty(propertyName, m.PkgName, m.Definitions) || property.IsNaming == true {
@@ -968,6 +963,19 @@ func (m *Model) SetClassProperties(classDetails interface{}) {
 				}
 			}
 
+			// The targetRelationalPropertyClasses map is used to store the class name of a named relational property
+			// This is stored because in order to determine the correct overwrite property name, the resouce name of the target class is needed
+			// The resource name of the target class could be unknown at this point, thus the class name is stored and the resource name is determined later
+			// Chose to do this way to prevent constant opening and closing of files to retrieve the resource name
+			if strings.HasPrefix(propertyName, "tn") && strings.HasSuffix(propertyName, "Name") {
+				// Get the class name and covert to start with lower case for resource name lookup.
+				// - Example: tnVzOOBBrCPName -> VzOOBBrCP -> vzOOBBrCP
+				className := propertyName[2 : len(propertyName)-4]
+				targetRelationalPropertyClasses[property.SnakeCaseName] = strings.ToLower(className[:1]) + className[1:]
+				namedProperties[propertyName] = property
+				m.HasNamedProperties = true
+			}
+
 			properties[propertyName] = property
 
 		}
@@ -975,6 +983,7 @@ func (m *Model) SetClassProperties(classDetails interface{}) {
 	}
 
 	m.Properties = properties
+	m.NamedProperties = namedProperties
 	if requiredCount == len(properties) {
 		m.HasOnlyRequiredProperties = true
 	}

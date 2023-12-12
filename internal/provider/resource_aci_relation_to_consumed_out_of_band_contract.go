@@ -59,6 +59,23 @@ type MgmtRsOoBConsIdentifier struct {
 	TnVzOOBBrCPName types.String
 }
 
+func (r *MgmtRsOoBConsResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanRequest, resp *resource.ModifyPlanResponse) {
+	tflog.Debug(ctx, "Start plan modification of resource: aci_relation_to_consumed_out_of_band_contract")
+
+	if !req.Plan.Raw.IsNull() {
+		var planData *MgmtRsOoBConsResourceModel
+		resp.Diagnostics.Append(req.Plan.Get(ctx, &planData)...)
+
+		if r.client.ValidateRelationDn {
+			CheckDn(ctx, r.client, planData.TnVzOOBBrCPName.ValueString(), &resp.Diagnostics)
+		}
+		planData.TnVzOOBBrCPName = basetypes.NewStringValue(GetMOName(planData.TnVzOOBBrCPName.ValueString()))
+
+		resp.Plan.Set(ctx, planData)
+	}
+	tflog.Debug(ctx, "End plan modification of resource: aci_relation_to_consumed_out_of_band_contract")
+}
+
 func (r *MgmtRsOoBConsResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
 	tflog.Debug(ctx, "Start metadata of resource: aci_relation_to_consumed_out_of_band_contract")
 	resp.TypeName = req.ProviderTypeName + "_relation_to_consumed_out_of_band_contract"
