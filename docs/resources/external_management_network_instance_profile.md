@@ -52,7 +52,7 @@ resource "aci_external_management_network_instance_profile" "full_example" {
     {
       annotation                = "orchestrator:terraform"
       priority                  = "level1"
-      out_of_band_contract_name = "relation_to_consumed_out_of_band_contracts_1"
+      out_of_band_contract_name = aci_out_of_band_contract.example.name
     }
   ]
   annotations = [

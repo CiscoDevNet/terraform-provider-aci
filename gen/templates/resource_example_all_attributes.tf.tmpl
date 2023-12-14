@@ -3,13 +3,17 @@ resource "aci_{{$.ResourceName}}" "full_example_{{getResourceName $key $.Definit
   {{- if $.HasParent}}
   parent_dn = {{createParentDnValue $key "example" $.Definitions}}
   {{- end}}
-  {{- range $.Properties}}
+  {{- range $.Properties}}{{- if ne .NamedPropertyClass ""}}
+  {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}} = aci_{{getResourceName .NamedPropertyClass $.Definitions}}.example.name
+    {{- else}}
   {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}} = "{{lookupTestValue .PkgName .SnakeCaseName $.TestVars $.Definitions}}"
-  {{- end}}
+  {{- end}}{{- end}}
   {{- range $key, $value := $.Children}}{{$ChildResourceName := .ResourceName}}
   {{$ChildResourceName}} = [
-    { {{- range .Properties}}
-      {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}} = "{{lookupChildTestValue .PkgName $ChildResourceName .SnakeCaseName $.TestVars $.Definitions}}"{{ end}}
+    { {{- range .Properties}}{{- if ne .NamedPropertyClass ""}}
+      {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}} = aci_{{getResourceName .NamedPropertyClass $.Definitions}}.example.name
+        {{- else}}
+      {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}} = "{{lookupChildTestValue .PkgName $ChildResourceName .SnakeCaseName $.TestVars $.Definitions}}"{{- end}}{{ end}}
     }
   ]
   {{- end}}
@@ -17,13 +21,17 @@ resource "aci_{{$.ResourceName}}" "full_example_{{getResourceName $key $.Definit
 {{ end}}
 {{- else}}
 resource "aci_{{$.ResourceName}}" "full_example" {
-  {{- range $.Properties}}
+  {{- range $.Properties}}{{- if ne .NamedPropertyClass ""}}
+  {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}} = aci_{{getResourceName .NamedPropertyClass $.Definitions}}.example.name
+    {{- else}}
   {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}} = "{{lookupTestValue .PkgName .SnakeCaseName $.TestVars $.Definitions}}"
-  {{- end}}
+  {{- end}}{{- end}}
   {{- range $key, $value := $.Children}}{{$ChildResourceName := .ResourceName}}
   {{$ChildResourceName}} = [
-    { {{- range .Properties}}
-      {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}} = "{{lookupChildTestValue .PkgName $ChildResourceName .SnakeCaseName $.TestVars $.Definitions}}"{{ end}}
+    { {{- range .Properties}}{{- if ne .NamedPropertyClass ""}}
+      {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}} = aci_{{getResourceName .NamedPropertyClass $.Definitions}}.example.name
+        {{- else}}
+      {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}} = "{{lookupChildTestValue .PkgName $ChildResourceName .SnakeCaseName $.TestVars $.Definitions}}"{{- end}}{{ end}}
     }
   ]
   {{- end}}

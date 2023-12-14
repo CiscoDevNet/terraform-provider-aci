@@ -597,6 +597,7 @@ type Property struct {
 	Comment            string
 	DefaultValue       string
 	Versions           string
+	NamedPropertyClass string
 	ValidValues        []string
 	IdentifiedBy       []interface{}
 	Validators         []interface{}
@@ -999,7 +1000,9 @@ func (m *Model) SetClassProperties(classDetails interface{}) {
 				// Get the class name and covert to start with lower case for resource name lookup.
 				// - Example: tnVzOOBBrCPName -> VzOOBBrCP -> vzOOBBrCP
 				className := propertyName[2 : len(propertyName)-4]
-				targetRelationalPropertyClasses[property.SnakeCaseName] = strings.ToLower(className[:1]) + className[1:]
+				namedClassName := strings.ToLower(className[:1]) + className[1:]
+				property.NamedPropertyClass = namedClassName
+				targetRelationalPropertyClasses[property.SnakeCaseName] = namedClassName
 				namedProperties[propertyName] = property
 				m.HasNamedProperties = true
 			}
