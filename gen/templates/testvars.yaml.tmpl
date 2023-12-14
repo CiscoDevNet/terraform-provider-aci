@@ -47,9 +47,9 @@ all:
 children:
   {{- range $key, $value := .Children}}{{$name := .ResourceName}}
   {{.ResourceName}}:
-    - {{ range .Properties}}{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}: {{if .DefaultValue}}{{$length := len .ValidValues}}{{if eq $length 0}}"{{.DefaultValue }}"{{else}}"{{ index .ValidValues 0 }}"{{- end}}{{else if not .IsNaming}}"{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}_1"{{else}}"{{$name}}_1"{{- end}}
+    - {{ range .Properties}}{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}: {{$length := len .ValidValues}}{{if ne $length 0}}"{{ index .ValidValues 0 }}"{{else if not .IsNaming}}"{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}_1"{{- else}}"{{$name}}_1"{{- end}}
       {{ end}}
-    - {{ range .Properties}}{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}: {{if .DefaultValue}}{{$length := len .ValidValues}}{{if eq $length 0}}"{{.DefaultValue }}"{{ else if ge $length 2}}"{{ index .ValidValues 1 }}"{{else}}"{{ index .ValidValues 0 }}"{{- end}}{{else if not .IsNaming}}"{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}_2"{{- else }}"{{$name}}_2"{{- end}}
+    - {{ range .Properties}}{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}: {{$length := len .ValidValues}}{{if ge $length 2}}"{{ index .ValidValues 1 }}"{{else if not .IsNaming}}"{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}_2"{{- else}}"{{$name}}_2"{{- end}}
       {{ end}}{{- end}}{{- end}}
 {{- if .ContainedBy}}
 parents:
