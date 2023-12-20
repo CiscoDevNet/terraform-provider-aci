@@ -23,7 +23,7 @@ Data source for Pim Route Map Policy
 
 ## GUI Information ##
 
-* `Location` - `Tenants -> Policies -> Protocol -> Route Maps for Multicast`
+* Location: Tenants -> Policies -> Protocol -> Route Maps for Multicast
 
 ## Example Usage ##
 

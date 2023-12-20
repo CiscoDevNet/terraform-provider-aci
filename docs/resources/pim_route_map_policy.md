@@ -23,7 +23,7 @@ Manages ACI Pim Route Map Policy
 
 ## GUI Information ##
 
-* `Location` - `Tenants -> Policies -> Protocol -> Route Maps for Multicast`
+* Location: Tenants -> Policies -> Protocol -> Route Maps for Multicast
 
 ## Example Usage ##
 

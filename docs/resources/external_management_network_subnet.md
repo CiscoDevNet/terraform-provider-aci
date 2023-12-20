@@ -23,7 +23,7 @@ Manages ACI External Management Network Subnet
 
 ## GUI Information ##
 
-* `Location` - `Tenants (mgmt) -> External Management Network Instance Profiles -> Subnets`
+* Location: Tenants (mgmt) -> External Management Network Instance Profiles -> Subnets
 
 ## Example Usage ##
 

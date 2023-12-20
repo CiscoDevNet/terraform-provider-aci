@@ -28,7 +28,7 @@ Manages ACI Annotation
 
 ## GUI Information ##
 
-* `Location` - `Generic`
+* Location: Generic
 
 ## Example Usage ##
 

@@ -23,7 +23,7 @@ Manages ACI External Management Network Instance Profile
 
 ## GUI Information ##
 
-* `Location` - `Tenants (mgmt) -> External Management Network Instance Profiles`
+* Location: Tenants (mgmt) -> External Management Network Instance Profiles
 
 ## Example Usage ##
 

@@ -23,7 +23,7 @@ Manages ACI L3out Redistribute Policy
 
 ## GUI Information ##
 
-* `Location` - `Tenants -> Networking -> L3Outs -> Policy -> Main -> Route Profile for Redistribution`
+* Location: Tenants -> Networking -> L3Outs -> Policy -> Main -> Route Profile for Redistribution
 
 ## Example Usage ##
 

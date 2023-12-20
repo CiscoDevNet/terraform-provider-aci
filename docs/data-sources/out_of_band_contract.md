@@ -23,7 +23,7 @@ Data source for Out Of Band Contract
 
 ## GUI Information ##
 
-* `Location` - `Tenants (mgmt) -> Contracts -> Out-Of-Band Contracts`
+* Location: Tenants (mgmt) -> Contracts -> Out-Of-Band Contracts
 
 ## Example Usage ##
 

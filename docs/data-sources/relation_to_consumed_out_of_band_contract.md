@@ -23,7 +23,7 @@ Data source for Relation To Consumed Out Of Band Contract
 
 ## GUI Information ##
 
-* `Location` - `Tenants (mgmt) -> External Management Network Instance Profiles -> Contracts`
+* Location: Tenants (mgmt) -> External Management Network Instance Profiles -> Contracts
 
 ## Example Usage ##
 
