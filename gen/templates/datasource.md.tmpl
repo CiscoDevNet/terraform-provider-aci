@@ -14,11 +14,11 @@ Data source for {{getResourceNameAsDescription .ResourceName}}
 
 ## API Information ##
 
-* `Class` - {{getDevnetDocForClass .PkgName}}
+* Class: {{getDevnetDocForClass .PkgName}}
 
-* `Supported ACI Versions` - `{{ .Versions}}`
+* Supported in ACI versions: {{ .Versions}}
 
-* `Distinguished Name Formats`
+* Distinguished Name Formats
     {{- range .DocumentationDnFormats}}
   - `{{ . }}`
     {{- end}}
@@ -44,8 +44,7 @@ Data source for {{getResourceNameAsDescription .ResourceName}}
 {{- end}}
 {{- range .Properties}}
     {{- if .IsNaming}}
-* `{{- overwriteProperty .PkgName .SnakeCaseName $.Definitions}}` ({{- .PropertyName}}) - (string) {{.Comment}}
-  - Supported ACI Versions: `{{ .Versions}}`
+* `{{- overwriteProperty .PkgName .SnakeCaseName $.Definitions}}` ({{- .PropertyName}}) - (string) {{.Comment}}{{if ne $.Versions .Versions}} This attribute is supported in ACI versions: {{ .Versions}}{{- end}}
     {{- end}}
 {{- end}}
 
@@ -55,30 +54,24 @@ Data source for {{getResourceNameAsDescription .ResourceName}}
 {{- range .Properties}}
     {{- if not .IsNaming}}
         {{- if eq .ValueType "bitmask"}}
-* `{{- overwriteProperty .PkgName .SnakeCaseName $.Definitions}}` ({{- .PropertyName}}) - (list) {{.Comment}}
-  - Supported ACI Versions: `{{ .Versions}}`
+* `{{- overwriteProperty .PkgName .SnakeCaseName $.Definitions}}` ({{- .PropertyName}}) - (list) {{.Comment}}{{if ne $.Versions .Versions}} This attribute is supported in ACI versions: {{ .Versions}}{{- end}}
         {{- else}}
-* `{{- overwriteProperty .PkgName .SnakeCaseName $.Definitions}}` ({{- .PropertyName}}) - (string) {{.Comment}}
-  - Supported ACI Versions: `{{ .Versions}}`
+* `{{- overwriteProperty .PkgName .SnakeCaseName $.Definitions}}` ({{- .PropertyName}}) - (string) {{.Comment}}{{if ne $.Versions .Versions}} This attribute is supported in ACI versions: {{ .Versions}}{{- end}}
         {{- end}}
     {{- end}}
 {{- end}}
-{{ range .Children }}
+{{ range .Children }}{{$childVersion := .Versions}}
     {{- if ne .RelationshipClass ""}}
-* `{{- .ResourceName}}` - (list) A list of {{getResourceNameAsDescription .ResourceName}} objects ({{getDevnetDocForClass .PkgName}}) pointing to the {{getResourceNameAsDescription .RelationshipResourceName}} ({{getDevnetDocForClass .RelationshipClass}}) object.
-  - Supported ACI Versions: `{{ .Versions}}`
+* `{{- .ResourceName}}` - (list) A list of {{getResourceNameAsDescription .ResourceName}} objects ({{getDevnetDocForClass .PkgName}}) pointing to the {{getResourceNameAsDescription .RelationshipResourceName}} ({{getDevnetDocForClass .RelationshipClass}}) object.{{if ne $.Versions .Versions}} This attribute is supported in ACI versions: {{ .Versions}}{{- end}}
     {{- else}}
-* `{{- .ResourceName}}` - (list) A list of {{getResourceNameAsDescription .ResourceName}} objects ({{getDevnetDocForClass .PkgName}}).
-  - Supported ACI Versions: `{{ .Versions}}`
+* `{{- .ResourceName}}` - (list) A list of {{getResourceNameAsDescription .ResourceName}} objects ({{getDevnetDocForClass .PkgName}}).{{if ne $.Versions .Versions}} This attribute is supported in ACI versions: {{ .Versions}}{{- end}}
     {{- end}}
 
   {{- range .Properties}}
     {{- if eq .ValueType "bitmask"}}
-  * `{{- overwriteProperty .PkgName .SnakeCaseName $.Definitions}}` ({{- .PropertyName}}) - (list) {{.Comment}}
-    - Supported ACI Versions: `{{ .Versions}}`
+  * `{{- overwriteProperty .PkgName .SnakeCaseName $.Definitions}}` ({{- .PropertyName}}) - (list) {{.Comment}}{{if ne $childVersion .Versions}} This attribute is supported in ACI versions: {{ .Versions}}{{- end}}
     {{- else}}
-  * `{{- overwriteProperty .PkgName .SnakeCaseName $.Definitions}}` ({{- .PropertyName}}) - (string) {{.Comment}}
-    - Supported ACI Versions: `{{ .Versions}}`
+  * `{{- overwriteProperty .PkgName .SnakeCaseName $.Definitions}}` ({{- .PropertyName}}) - (string) {{.Comment}}{{if ne $childVersion .Versions}} This attribute is supported in ACI versions: {{ .Versions}}{{- end}}
     {{- end}}  
   {{- end}}
-{{- end}}
+{{ end}}

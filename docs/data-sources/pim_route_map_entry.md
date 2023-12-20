@@ -14,11 +14,11 @@ Data source for Pim Route Map Entry
 
 ## API Information ##
 
-* `Class` - [pimRouteMapEntry](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/pimRouteMapEntry/overview)
+* Class: [pimRouteMapEntry](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/pimRouteMapEntry/overview)
 
-* `Supported ACI Versions` - `2.0(1m)-latest`
+* Supported in ACI versions: 2.0(1m) and later.
 
-* `Distinguished Name Formats`
+* Distinguished Name Formats
   - `uni/tn-{name}/rtmap-{name}/rtmapentry-{order}`
 
 ## GUI Information ##
@@ -43,31 +43,19 @@ data "aci_pim_route_map_entry" "example_pim_route_map_policy" {
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
   - [aci_pim_route_map_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/pim_route_map_policy) ([pimRouteMapPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/pimRouteMapPol/overview))
 * `order` (order) - (string) PIM route map entry order.
-  - Supported ACI Versions: `2.0(1m)-latest`
 
 ### Read-Only
 
 * `id` - (string) The distinguished name (DN) of the Pim Route Map Entry object.
 * `action` (action) - (string) The route action of the Pim Route Map Entry object.
-  - Supported ACI Versions: `2.0(1m)-latest`
 * `annotation` (annotation) - (string) The annotation of the Pim Route Map Entry object.
-  - Supported ACI Versions: `2.0(1m)-latest`
 * `description` (descr) - (string) The description of the Pim Route Map Entry object.
-  - Supported ACI Versions: `2.0(1m)-latest`
 * `group_ip` (grp) - (string) The group ip of the Pim Route Map Entry object.
-  - Supported ACI Versions: `2.0(1m)-latest`
 * `name` (name) - (string) The name of the Pim Route Map Entry object.
-  - Supported ACI Versions: `2.0(1m)-latest`
 * `name_alias` (nameAlias) - (string) The name alias of the Pim Route Map Entry object.
-  - Supported ACI Versions: `2.0(1m)-latest`
 * `rendezvous_point_ip` (rp) - (string) The rendezvous point ip of the Pim Route Map Entry object.
-  - Supported ACI Versions: `2.0(1m)-latest`
 * `source_ip` (src) - (string) The source ip of the Pim Route Map Entry object.
-  - Supported ACI Versions: `2.0(1m)-latest`
 
-* `annotations` - (list) A list of Annotations objects ([tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)).
-  - Supported ACI Versions: `3.2(1l)-latest`
+* `annotations` - (list) A list of Annotations objects ([tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
   * `key` (key) - (string) The key used to uniquely identify this configuration object.
-    - Supported ACI Versions: `3.2(1l)-latest`
   * `value` (value) - (string) The value of the property.
-    - Supported ACI Versions: `3.2(1l)-latest`

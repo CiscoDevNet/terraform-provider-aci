@@ -14,11 +14,11 @@ Manages ACI L3out Redistribute Policy
 
 ## API Information ##
 
-* `Class` - [l3extRsRedistributePol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/l3extRsRedistributePol/overview)
+* Class: [l3extRsRedistributePol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/l3extRsRedistributePol/overview)
 
-* `Supported ACI Versions` - `4.2(1i)-latest`
+* Supported in ACI versions: 4.2(1i) and later.
 
-* `Distinguished Name Formats`
+* Distinguished Name Formats
   - `uni/tn-{name}/out-{name}/rsredistributePol-[{tnRtctrlProfileName}]-{src}`
 
 ## GUI Information ##
@@ -68,10 +68,8 @@ All examples for the L3out Redistribute Policy resource can be found in the [exa
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
   - [aci_l3_outside](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/l3_outside) ([l3extOut](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/l3extOut/overview))
 * `source` (src) - (string) The source of the L3out Redistribute Policy object.
-  - Supported ACI Versions: `4.2(1i)-latest`
   - Valid Values: `attached-host`, `direct`, `static`.
 * `route_control_profile_name` (tnRtctrlProfileName) - (string) The name of the route profile associated with this object.
-  - Supported ACI Versions: `4.2(1i)-latest`
 
 ### Read-Only
 
@@ -80,18 +78,14 @@ All examples for the L3out Redistribute Policy resource can be found in the [exa
 ### Optional
   
 * `annotation` (annotation) - (string) The annotation of the L3out Redistribute Policy object.
-  - Supported ACI Versions: `4.2(1i)-latest`
   - Default: `orchestrator:terraform`
 
-* `annotations` - (list) A list of Annotations objects ([tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can be configured using the [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.
-  - Supported ACI Versions: `3.2(1l)-latest`
+* `annotations` - (list) A list of Annotations objects ([tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can be configured using the [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   
   #### Required
   
-  * `key` (key) - (string) The key used to uniquely identify this configuration object.
-      - Supported ACI Versions: `3.2(1l)-latest`
-  * `value` (value) - (string) The value of the property.
-      - Supported ACI Versions: `3.2(1l)-latest`
+  * `key` (key) - (string) The key used to uniquely identify this configuration object. 
+  * `value` (value) - (string) The value of the property. 
 
 ## Importing
 

@@ -14,11 +14,11 @@ Manages ACI Annotation
 
 ## API Information ##
 
-* `Class` - [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)
+* Class: [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)
 
-* `Supported ACI Versions` - `3.2(1l)-latest`
+* Supported in ACI versions: 3.2(1l) and later.
 
-* `Distinguished Name Formats`
+* Distinguished Name Formats
   - `Too many DN formats to display, see model documentation for all possible parents.`
   - `uni/tn-{name}/BD-{name}/annotationKey-[{key}]`
   - `uni/tn-{name}/annotationKey-[{key}]`
@@ -72,9 +72,7 @@ All examples for the Annotation resource can be found in the [examples](https://
   - [aci_out_of_band_contract](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/out_of_band_contract) ([vzOOBBrCP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vzOOBBrCP/overview))
   - Too many classes to display, see model documentation for all possible classes.
 * `key` (key) - (string) The key used to uniquely identify this configuration object.
-  - Supported ACI Versions: `3.2(1l)-latest`
 * `value` (value) - (string) The value of the property.
-  - Supported ACI Versions: `3.2(1l)-latest`
 
 ### Read-Only
 

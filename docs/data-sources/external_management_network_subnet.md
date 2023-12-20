@@ -14,11 +14,11 @@ Data source for External Management Network Subnet
 
 ## API Information ##
 
-* `Class` - [mgmtSubnet](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/mgmtSubnet/overview)
+* Class: [mgmtSubnet](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/mgmtSubnet/overview)
 
-* `Supported ACI Versions` - `1.0(1e)-latest`
+* Supported in ACI versions: 1.0(1e) and later.
 
-* `Distinguished Name Formats`
+* Distinguished Name Formats
   - `uni/tn-mgmt/extmgmt-default/instp-{name}/subnet-[{ip}]`
 
 ## GUI Information ##
@@ -43,23 +43,15 @@ data "aci_external_management_network_subnet" "example_external_management_netwo
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
   - [aci_external_management_network_instance_profile](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/external_management_network_instance_profile) ([mgmtInstP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/mgmtInstP/overview))
 * `ip` (ip) - (string) The external subnet IP address and subnet mask. This IP address is used for creating an external management entity. The subnet mask for the IP address to be imported from the outside into the fabric. The contracts associated with its parent instance profile (l3ext:InstP) are applied to the subnet.
-  - Supported ACI Versions: `1.0(1e)-latest`
 
 ### Read-Only
 
 * `id` - (string) The distinguished name (DN) of the External Management Network Subnet object.
 * `annotation` (annotation) - (string) The annotation of the External Management Network Subnet object.
-  - Supported ACI Versions: `1.0(1e)-latest`
 * `description` (descr) - (string) The description of the External Management Network Subnet object.
-  - Supported ACI Versions: `1.0(1e)-latest`
 * `name` (name) - (string) The name of the External Management Network Subnet object.
-  - Supported ACI Versions: `1.0(1e)-latest`
 * `name_alias` (nameAlias) - (string) The name alias of the External Management Network Subnet object.
-  - Supported ACI Versions: `1.0(1e)-latest`
 
-* `annotations` - (list) A list of Annotations objects ([tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)).
-  - Supported ACI Versions: `3.2(1l)-latest`
+* `annotations` - (list) A list of Annotations objects ([tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
   * `key` (key) - (string) The key used to uniquely identify this configuration object.
-    - Supported ACI Versions: `3.2(1l)-latest`
   * `value` (value) - (string) The value of the property.
-    - Supported ACI Versions: `3.2(1l)-latest`

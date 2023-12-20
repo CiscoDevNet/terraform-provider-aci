@@ -14,11 +14,11 @@ Data source for L3out Consumer Label
 
 ## API Information ##
 
-* `Class` - [l3extConsLbl](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/l3extConsLbl/overview)
+* Class: [l3extConsLbl](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/l3extConsLbl/overview)
 
-* `Supported ACI Versions` - `2.0(1m)-latest`
+* Supported in ACI versions: 2.0(1m) and later.
 
-* `Distinguished Name Formats`
+* Distinguished Name Formats
   - `uni/tn-{name}/out-{name}/conslbl-{name}`
 
 ## GUI Information ##
@@ -43,29 +43,18 @@ data "aci_l3out_consumer_label" "example_l3_outside" {
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
   - [aci_l3_outside](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/l3_outside) ([l3extOut](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/l3extOut/overview))
 * `name` (name) - (string) The name of the L3out Consumer Label object.
-  - Supported ACI Versions: `2.0(1m)-latest`
 
 ### Read-Only
 
 * `id` - (string) The distinguished name (DN) of the L3out Consumer Label object.
 * `annotation` (annotation) - (string) The annotation of the L3out Consumer Label object.
-  - Supported ACI Versions: `2.0(1m)-latest`
 * `description` (descr) - (string) The description of the L3out Consumer Label object.
-  - Supported ACI Versions: `2.0(1m)-latest`
 * `name_alias` (nameAlias) - (string) The name alias of the L3out Consumer Label object.
-  - Supported ACI Versions: `2.0(1m)-latest`
 * `owner` (owner) - (string) The owner of the L3out Consumer Label object.
-  - Supported ACI Versions: `2.0(1m)-latest`
 * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
-  - Supported ACI Versions: `2.0(1m)-latest`
 * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
-  - Supported ACI Versions: `2.0(1m)-latest`
 * `tag` (tag) - (string) Specifies the color of a policy label.
-  - Supported ACI Versions: `2.0(1m)-latest`
 
-* `annotations` - (list) A list of Annotations objects ([tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)).
-  - Supported ACI Versions: `3.2(1l)-latest`
+* `annotations` - (list) A list of Annotations objects ([tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
   * `key` (key) - (string) The key used to uniquely identify this configuration object.
-    - Supported ACI Versions: `3.2(1l)-latest`
   * `value` (value) - (string) The value of the property.
-    - Supported ACI Versions: `3.2(1l)-latest`

@@ -14,11 +14,11 @@ Data source for Out Of Band Contract
 
 ## API Information ##
 
-* `Class` - [vzOOBBrCP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vzOOBBrCP/overview)
+* Class: [vzOOBBrCP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vzOOBBrCP/overview)
 
-* `Supported ACI Versions` - `1.0(1e)-latest`
+* Supported in ACI versions: 1.0(1e) and later.
 
-* `Distinguished Name Formats`
+* Distinguished Name Formats
   - `uni/tn-mgmt/oobbrc-{name}`
 
 ## GUI Information ##
@@ -40,33 +40,20 @@ data "aci_out_of_band_contract" "example" {
 ### Required
 
 * `name` (name) - (string) The name of the Out Of Band Contract object.
-  - Supported ACI Versions: `1.0(1e)-latest`
 
 ### Read-Only
 
 * `id` - (string) The distinguished name (DN) of the Out Of Band Contract object.
 * `annotation` (annotation) - (string) The annotation of the Out Of Band Contract object.
-  - Supported ACI Versions: `1.0(1e)-latest`
 * `description` (descr) - (string) The description of the Out Of Band Contract object.
-  - Supported ACI Versions: `1.0(1e)-latest`
 * `intent` (intent) - (string) The Install Rules or Estimate Number of Rules.
-  - Supported ACI Versions: `1.0(1e)-latest`
 * `name_alias` (nameAlias) - (string) The name alias of the Out Of Band Contract object.
-  - Supported ACI Versions: `1.0(1e)-latest`
 * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
-  - Supported ACI Versions: `1.0(1e)-latest`
 * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
-  - Supported ACI Versions: `1.0(1e)-latest`
 * `priority` (prio) - (string) The priority of the Out Of Band Contract object.
-  - Supported ACI Versions: `1.0(1e)-latest`
 * `scope` (scope) - (string) Represents the scope of this contract. If the scope is set as application-profile, the epg can only communicate with epgs in the same application-profile.
-  - Supported ACI Versions: `1.0(1e)-latest`
 * `target_dscp` (targetDscp) - (string) The target DSCP value of the Out Of Band Contract object.
-  - Supported ACI Versions: `1.0(1e)-latest`
 
-* `annotations` - (list) A list of Annotations objects ([tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)).
-  - Supported ACI Versions: `3.2(1l)-latest`
+* `annotations` - (list) A list of Annotations objects ([tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
   * `key` (key) - (string) The key used to uniquely identify this configuration object.
-    - Supported ACI Versions: `3.2(1l)-latest`
   * `value` (value) - (string) The value of the property.
-    - Supported ACI Versions: `3.2(1l)-latest`

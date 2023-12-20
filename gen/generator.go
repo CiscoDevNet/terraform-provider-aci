@@ -872,17 +872,17 @@ func (m *Model) SetClassComment(classDetails interface{}) {
 func (m *Model) SetClassVersions(classDetails interface{}) {
 	versions, ok := classDetails.(map[string]interface{})["versions"]
 	if ok {
-		m.Versions = isActiveVersion(versions.(string))
-	} else {
-		m.Versions = "Version Unknown"
+		m.Versions = formatVersion(versions.(string))
 	}
 }
 
-func isActiveVersion(versions string) string {
+func formatVersion(versions string) string {
 	if versions[len(versions)-1:] == "-" {
-		return fmt.Sprintf("%slatest", versions)
+		versions = fmt.Sprintf("%s and later.", versions[:len(versions)-1])
 	}
-	return versions
+
+	return strings.ReplaceAll(strings.ReplaceAll(versions, ",", ", "), "-", " to ")
+
 }
 
 // Construct a property map for the class, that contains all details of the property that will be used during the rendering of the template
@@ -987,9 +987,7 @@ func (m *Model) SetClassProperties(classDetails interface{}) {
 
 			versions, ok := classDetails.(map[string]interface{})["versions"]
 			if ok {
-				property.Versions = isActiveVersion(versions.(string))
-			} else {
-				property.Versions = "Version Unknown"
+				property.Versions = formatVersion(versions.(string))
 			}
 
 			// The targetRelationalPropertyClasses map is used to store the class name of a named relational property

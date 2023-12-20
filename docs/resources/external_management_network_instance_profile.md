@@ -14,11 +14,11 @@ Manages ACI External Management Network Instance Profile
 
 ## API Information ##
 
-* `Class` - [mgmtInstP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/mgmtInstP/overview)
+* Class: [mgmtInstP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/mgmtInstP/overview)
 
-* `Supported ACI Versions` - `1.0(1e)-latest`
+* Supported in ACI versions: 1.0(1e) and later.
 
-* `Distinguished Name Formats`
+* Distinguished Name Formats
   - `uni/tn-mgmt/extmgmt-default/instp-{name}`
 
 ## GUI Information ##
@@ -72,7 +72,6 @@ All examples for the External Management Network Instance Profile resource can b
 ### Required
 
 * `name` (name) - (string) The name of the External Management Network Instance Profile object.
-  - Supported ACI Versions: `1.0(1e)-latest`
 
 ### Read-Only
 
@@ -81,44 +80,33 @@ All examples for the External Management Network Instance Profile resource can b
 ### Optional
   
 * `annotation` (annotation) - (string) The annotation of the External Management Network Instance Profile object.
-  - Supported ACI Versions: `1.0(1e)-latest`
   - Default: `orchestrator:terraform`
 * `description` (descr) - (string) The description of the External Management Network Instance Profile object.
-  - Supported ACI Versions: `1.0(1e)-latest`
 * `name_alias` (nameAlias) - (string) The name alias of the External Management Network Instance Profile object.
-  - Supported ACI Versions: `1.0(1e)-latest`
 * `priority` (prio) - (string) The QoS priority class identifier.
-  - Supported ACI Versions: `1.0(1e)-latest`
   - Default: `unspecified`
   - Valid Values: `level1`, `level2`, `level3`, `level4`, `level5`, `level6`, `unspecified`.
 
 * `relation_to_consumed_out_of_band_contracts` - (list) A list of Relation To Consumed Out Of Band Contracts objects ([mgmtRsOoBCons](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/mgmtRsOoBCons/overview)) pointing to the Out Of Band Contract ([vzOOBBrCP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vzOOBBrCP/overview)) which can be configured using the [aci_out_of_band_contract](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/out_of_band_contract) resource.
-  - Supported ACI Versions: `1.0(1e)-latest`
   
   #### Required
   
-  * `out_of_band_contract_name` (tnVzOOBBrCPName) - (string) The name of the Out Of Band Contract object.
-      - Supported ACI Versions: `1.0(1e)-latest`
+  * `out_of_band_contract_name` (tnVzOOBBrCPName) - (string) The name of the Out Of Band Contract object. 
 
   #### Optional
     
-  * `annotation` (annotation) - (string) The annotation of the Relation To Consumed Out Of Band Contract object.
-      - Supported ACI Versions: `1.0(1e)-latest`
+  * `annotation` (annotation) - (string) The annotation of the Relation To Consumed Out Of Band Contract object. 
       - Default: `orchestrator:terraform`
-  * `priority` (prio) - (string) The Quality of service (QoS) priority class ID. QoS refers to the capability of a network to provide better service to selected network traffic over various technologies. The primary goal of QoS is to provide priority including dedicated bandwidth, controlled jitter and latency (required by some real-time and interactive traffic), and improved loss characteristics. You can configure the bandwidth of each QoS level using QoS profiles.
-      - Supported ACI Versions: `1.0(1e)-latest`
+  * `priority` (prio) - (string) The Quality of service (QoS) priority class ID. QoS refers to the capability of a network to provide better service to selected network traffic over various technologies. The primary goal of QoS is to provide priority including dedicated bandwidth, controlled jitter and latency (required by some real-time and interactive traffic), and improved loss characteristics. You can configure the bandwidth of each QoS level using QoS profiles. 
       - Default: `unspecified`
       - Valid Values: `level1`, `level2`, `level3`, `level4`, `level5`, `level6`, `unspecified`.
 
-* `annotations` - (list) A list of Annotations objects ([tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can be configured using the [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.
-  - Supported ACI Versions: `3.2(1l)-latest`
+* `annotations` - (list) A list of Annotations objects ([tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can be configured using the [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   
   #### Required
   
-  * `key` (key) - (string) The key used to uniquely identify this configuration object.
-      - Supported ACI Versions: `3.2(1l)-latest`
-  * `value` (value) - (string) The value of the property.
-      - Supported ACI Versions: `3.2(1l)-latest`
+  * `key` (key) - (string) The key used to uniquely identify this configuration object. 
+  * `value` (value) - (string) The value of the property. 
 
 ## Importing
 

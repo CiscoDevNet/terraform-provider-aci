@@ -14,11 +14,11 @@ Manages ACI {{getResourceNameAsDescription .ResourceName}}
 
 ## API Information ##
 
-* `Class` - {{getDevnetDocForClass .PkgName}}
+* Class: {{getDevnetDocForClass .PkgName}}
 
-* `Supported ACI Versions` - `{{ .Versions}}`
+* Supported in ACI versions: {{ .Versions}}
 
-* `Distinguished Name Formats`
+* Distinguished Name Formats
     {{- range .DocumentationDnFormats}}
   - `{{ . }}`
     {{- end}}
@@ -58,8 +58,7 @@ All examples for the {{getResourceNameAsDescription .ResourceName}} resource can
 {{- end}}
 {{- range .Properties}}
     {{- if or .IsNaming .IsRequired}}
-* `{{- overwriteProperty .PkgName .SnakeCaseName $.Definitions}}` ({{- .PropertyName}}) - (string) {{.Comment}}
-  - Supported ACI Versions: `{{ .Versions}}`
+* `{{- overwriteProperty .PkgName .SnakeCaseName $.Definitions}}` ({{- .PropertyName}}) - (string) {{.Comment}}{{if ne $.Versions .Versions}} This attribute is supported in ACI versions: {{ .Versions}}{{- end}}
       {{- if .ValidValues }}{{$i := 1}}{{$length := len .ValidValues}}
   - Valid Values:{{ range .ValidValues}} `{{ . }}`{{ if ne $length $i}}{{$i = add $i 1}}, {{- else}}.{{- end}}{{- end}}
       {{- end}}
@@ -75,14 +74,12 @@ All examples for the {{getResourceNameAsDescription .ResourceName}} resource can
   {{ range .Properties}}
     {{- if and (not .IsNaming) (not .IsRequired)}}
       {{- if eq .ValueType "bitmask"}}
-* `{{- overwriteProperty .PkgName .SnakeCaseName $.Definitions}} ({{- .PropertyName}}) - (list) {{.Comment}}
-  - Supported ACI Versions: `{{ .Versions}}`
+* `{{- overwriteProperty .PkgName .SnakeCaseName $.Definitions}} ({{- .PropertyName}}) - (list) {{.Comment}}{{if ne $.Versions .Versions}} This attribute is supported in ACI versions: {{ .Versions}}{{- end}}
         {{- if .DefaultValue }}
   - Default: `{{ .DefaultValue }}`.
         {{- end}}
       {{- else}}
-* `{{- overwriteProperty .PkgName .SnakeCaseName $.Definitions}}` ({{- .PropertyName}}) - (string) {{.Comment}}
-  - Supported ACI Versions: `{{ .Versions}}`
+* `{{- overwriteProperty .PkgName .SnakeCaseName $.Definitions}}` ({{- .PropertyName}}) - (string) {{.Comment}}{{if ne $.Versions .Versions}} This attribute is supported in ACI versions: {{ .Versions}}{{- end}}
         {{- if .DefaultValue }}
   - Default: `{{ .DefaultValue }}`
         {{- end}}
@@ -93,24 +90,20 @@ All examples for the {{getResourceNameAsDescription .ResourceName}} resource can
     {{- end}}
   {{- end}}
 {{- end}}
-{{ range .Children }}
+{{ range .Children }}{{$childVersion := .Versions}}
     {{- if ne .RelationshipClass ""}}
-* `{{- .ResourceName}}` - (list) A list of {{getResourceNameAsDescription .ResourceName}} objects ({{getDevnetDocForClass .PkgName}}) pointing to the {{getResourceNameAsDescription .RelationshipResourceName}} ({{getDevnetDocForClass .RelationshipClass}}) which can be configured using the [aci_{{.RelationshipResourceName}}](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/{{.RelationshipResourceName}}) resource.
-  - Supported ACI Versions: `{{ .Versions}}`
+* `{{- .ResourceName}}` - (list) A list of {{getResourceNameAsDescription .ResourceName}} objects ({{getDevnetDocForClass .PkgName}}) pointing to the {{getResourceNameAsDescription .RelationshipResourceName}} ({{getDevnetDocForClass .RelationshipClass}}) which can be configured using the [aci_{{.RelationshipResourceName}}](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/{{.RelationshipResourceName}}) resource.{{if ne $.Versions .Versions}} This attribute is supported in ACI versions: {{ .Versions}}{{- end}}
     {{- else}}
-* `{{- .ResourceName}}` - (list) A list of {{getResourceNameAsDescription .ResourceName}} objects ({{getDevnetDocForClass .PkgName}}) which can be configured using the [aci_{{.ResourceNameDocReference}}](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/{{.ResourceNameDocReference}}) resource.
-  - Supported ACI Versions: `{{ .Versions}}`
+* `{{- .ResourceName}}` - (list) A list of {{getResourceNameAsDescription .ResourceName}} objects ({{getDevnetDocForClass .PkgName}}) which can be configured using the [aci_{{.ResourceNameDocReference}}](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/{{.ResourceNameDocReference}}) resource.{{if ne $.Versions .Versions}} This attribute is supported in ACI versions: {{ .Versions}}{{- end}}
     {{- end}}
   
   #### Required
   {{ range .Properties}}
       {{- if or .IsNaming .IsRequired}}
           {{- if eq .ValueType "bitmask"}}
-  * `{{- overwriteProperty .PkgName .SnakeCaseName $.Definitions}}` ({{- .PropertyName}}) - (list) {{.Comment}}
-      - Supported ACI Versions: `{{ .Versions}}`
+  * `{{- overwriteProperty .PkgName .SnakeCaseName $.Definitions}}` ({{- .PropertyName}}) - (list) {{.Comment}} {{if ne $childVersion .Versions}}This attribute is supported in ACI versions: {{ .Versions}}{{- end}}
           {{- else}}
-  * `{{- overwriteProperty .PkgName .SnakeCaseName $.Definitions}}` ({{- .PropertyName}}) - (string) {{.Comment}}
-      - Supported ACI Versions: `{{ .Versions}}`
+  * `{{- overwriteProperty .PkgName .SnakeCaseName $.Definitions}}` ({{- .PropertyName}}) - (string) {{.Comment}} {{if ne $childVersion .Versions}}This attribute is supported in ACI versions: {{ .Versions}}{{- end}}
           {{- end}}
       {{- end}}
   {{- end}}
@@ -120,11 +113,9 @@ All examples for the {{getResourceNameAsDescription .ResourceName}} resource can
     {{ range .Properties}}
       {{- if and (not .IsNaming) (not .IsRequired)}}
         {{- if eq .ValueType "bitmask"}}
-  * `{{- overwriteProperty .PkgName .SnakeCaseName $.Definitions}}` ({{- .PropertyName}}) - (list) {{.Comment}}
-      - Supported ACI Versions: `{{ .Versions}}`
+  * `{{- overwriteProperty .PkgName .SnakeCaseName $.Definitions}}` ({{- .PropertyName}}) - (list) {{.Comment}} {{if ne $childVersion .Versions}}This attribute is supported in ACI versions: {{ .Versions}}{{- end}}
         {{- else}}
-  * `{{- overwriteProperty .PkgName .SnakeCaseName $.Definitions}}` ({{- .PropertyName}}) - (string) {{.Comment}}
-      - Supported ACI Versions: `{{ .Versions}}`
+  * `{{- overwriteProperty .PkgName .SnakeCaseName $.Definitions}}` ({{- .PropertyName}}) - (string) {{.Comment}} {{if ne $childVersion .Versions}}This attribute is supported in ACI versions: {{ .Versions}}{{- end}}
         {{- end}}
         {{- if .DefaultValue }}
       - Default: `{{ .DefaultValue }}`
