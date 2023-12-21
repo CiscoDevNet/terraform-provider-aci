@@ -1251,14 +1251,14 @@ func setDocumentationData(m *Model, definitions Definitions) {
 	docsParentDnAmount := m.Configuration["docs_parent_dn_amount"].(int)
 
 	if len(m.DocumentationDnFormats) > docsParentDnAmount {
-		m.DocumentationDnFormats = append([]string{"Too many DN formats to display, see model documentation for all possible parents."}, m.DocumentationDnFormats[0:docsParentDnAmount]...)
+		m.DocumentationDnFormats = append([]string{fmt.Sprintf("Too many DN formats to display, see model documentation for all possible parents of %s.", GetDevnetDocForClass(m.PkgName))}, m.DocumentationDnFormats[0:docsParentDnAmount]...)
 	}
 
 	if len(resourcesFound) > docsParentDnAmount {
 		for _, resourceDetails := range resourcesFound[0:docsParentDnAmount] {
 			m.DocumentationParentDns = append(m.DocumentationParentDns, fmt.Sprintf("[%s_%s](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/%s) (%s)", providerName, resourceDetails[0], resourceDetails[0], GetDevnetDocForClass(resourceDetails[1])))
 		}
-		m.DocumentationParentDns = append([]string{"Too many parent DNs to display, see model documentation for all possible parents."}, m.DocumentationParentDns...)
+		m.DocumentationParentDns = append([]string{fmt.Sprintf("Too many parent DNs to display, see model documentation for all possible parents of %s.", GetDevnetDocForClass(m.PkgName))}, m.DocumentationParentDns...)
 	} else {
 		for _, resourceDetails := range resourcesFound {
 			m.DocumentationParentDns = append(m.DocumentationParentDns, fmt.Sprintf("[%s_%s](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/%s) (%s)", providerName, resourceDetails[0], resourceDetails[0], GetDevnetDocForClass(resourceDetails[1])))
@@ -1269,7 +1269,7 @@ func setDocumentationData(m *Model, definitions Definitions) {
 		if len(resourcesNotFound) > docsParentDnAmount-len(resourcesFound) {
 			// TODO catch default classes and add to documentation
 			resourcesNotFound = resourcesNotFound[0:(docsParentDnAmount - len(resourcesFound))]
-			m.DocumentationParentDns = append(m.DocumentationParentDns, "Too many classes to display, see model documentation for all possible classes.")
+			m.DocumentationParentDns = append(m.DocumentationParentDns, fmt.Sprintf("Too many classes to display, see model documentation for all possible classes of %s.", GetDevnetDocForClass(m.PkgName)))
 		} else {
 			var resourceDetails string
 			for _, resource := range resourcesNotFound {

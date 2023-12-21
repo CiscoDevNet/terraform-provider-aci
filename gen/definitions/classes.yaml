@@ -86,4 +86,4 @@ tagAnnotation:
     - "uni/tn-{name}/ap-{name}/epg-{name}/annotationKey-[{key}]"
     - "uni/tn-{name}/BD-{name}/annotationKey-[{key}]"
     - "uni/tn-{name}/ctx-{name}/annotationKey-[{key}]"
-    - "Too many DN formats to display, see model documentation for all possible parents."
+    - "Too many DN formats to display, see model documentation for all possible parents of [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)."

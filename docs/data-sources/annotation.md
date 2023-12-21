@@ -21,7 +21,7 @@ Data source for Annotation
 * Supported in ACI versions: 3.2(1l) and later.
 
 * Distinguished Name Formats:
-  - `Too many DN formats to display, see model documentation for all possible parents.`
+  - `Too many DN formats to display, see model documentation for all possible parents of [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview).`
   - `uni/tn-{name}/BD-{name}/annotationKey-[{key}]`
   - `uni/tn-{name}/annotationKey-[{key}]`
   - `uni/tn-{name}/ap-{name}/annotationKey-[{key}]`
@@ -66,7 +66,7 @@ data "aci_annotation" "example_tenant" {
   - [aci_route_control_profile](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/route_control_profile) ([rtctrlProfile](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/rtctrlProfile/overview))
   - [aci_contract_interface](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/contract_interface) ([vzCPIf](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vzCPIf/overview))
   - [aci_out_of_band_contract](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/out_of_band_contract) ([vzOOBBrCP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vzOOBBrCP/overview))
-  - Too many classes to display, see model documentation for all possible classes.
+  - Too many classes to display, see model documentation for all possible classes of [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview).
 * `key` (key) - (string) The key used to uniquely identify this configuration object.
 
 ### Read-Only
