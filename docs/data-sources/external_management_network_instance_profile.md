@@ -18,8 +18,7 @@ Data source for External Management Network Instance Profile
 
 * Supported in ACI versions: 1.0(1e) and later.
 
-* Distinguished Name Formats
-  - `uni/tn-mgmt/extmgmt-default/instp-{name}`
+* Distinguished Name Format: uni/tn-mgmt/extmgmt-default/instp-{name}
 
 ## GUI Information ##
 

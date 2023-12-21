@@ -18,12 +18,13 @@ Data source for L3out Consumer Label
 
 * Supported in ACI versions: 2.0(1m) and later.
 
-* Distinguished Name Formats
-  - `uni/tn-{name}/out-{name}/conslbl-{name}`
+* Distinguished Name Format: uni/tn-{name}/out-{name}/conslbl-{name}
 
 ## GUI Information ##
 
-* Location: Tenants -> Networking -> SR MPLS VRF L3Outs -> SR-MPLS Infra L3Outs
+* Locations:
+  - `Tenants -> Networking -> L3Outs -> Consumer Label`
+  - `Tenants -> Networking -> SR MPLS VRF L3Outs -> SR-MPLS Infra L3Outs`
 
 ## Example Usage ##
 

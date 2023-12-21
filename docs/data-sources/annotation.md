@@ -18,7 +18,7 @@ Data source for Annotation
 
 * Supported in ACI versions: 3.2(1l) and later.
 
-* Distinguished Name Formats
+* Distinguished Name Formats:
   - `Too many DN formats to display, see model documentation for all possible parents.`
   - `uni/tn-{name}/BD-{name}/annotationKey-[{key}]`
   - `uni/tn-{name}/annotationKey-[{key}]`

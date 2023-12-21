@@ -15,17 +15,23 @@ Data source for {{getResourceNameAsDescription .ResourceName}}
 ## API Information ##
 
 * Class: {{getDevnetDocForClass .PkgName}}
-
+{{if ne .Versions ""}}
 * Supported in ACI versions: {{ .Versions}}
+{{- end}}
 
-* Distinguished Name Formats
+{{$length := len .DocumentationDnFormats}}{{if eq $length 1}}* Distinguished Name Format: {{index .DocumentationDnFormats 0}}{{else}}* Distinguished Name Formats:
     {{- range .DocumentationDnFormats}}
   - `{{ . }}`
     {{- end}}
+{{- end}}
 
 ## GUI Information ##
 
-* Location: {{ .UiLocation}}
+{{$length := len .UiLocations}}{{if eq $length 1}}* Location: {{ index .UiLocations 0}}{{else}}* Locations:
+    {{- range .UiLocations}}
+  - `{{ . }}`
+    {{- end}}
+{{- end}}
 
 ## Example Usage ##
 

@@ -547,7 +547,6 @@ type Model struct {
 	ExampleResource          string
 	ExampleResourceFull      string
 	SubCategory              string
-	UiLocation               string
 	RelationshipClass        string
 	RelationshipResourceName string
 	Versions                 string
@@ -559,6 +558,7 @@ type Model struct {
 	DocumentationExamples    []string
 	DocumentationChildren    []string
 	Parents                  []string
+	UiLocations              []string
 	IdentifiedBy             []interface{}
 	DnFormats                []interface{}
 	Properties               map[string]Property
@@ -1218,18 +1218,23 @@ func GetOverwriteDnFormats(dnFormats []interface{}, classPkgName string, definit
 
 // Set variables that are used during the rendering of the example and documentation templates
 func setDocumentationData(m *Model, definitions Definitions) {
-	UiLocation := "Generic"
+	UiLocations := []string{}
 	SubCategory := "Generic"
 	if v, ok := definitions.Classes[m.PkgName]; ok {
 		for key, value := range v.(map[interface{}]interface{}) {
-			if key.(string) == "ui_location" {
-				UiLocation = value.(string)
+			if key.(string) == "ui_locations" {
+				for _, UiLocation := range value.([]interface{}) {
+					UiLocations = append(UiLocations, UiLocation.(string))
+				}
 			} else if key.(string) == "sub_category" {
 				SubCategory = value.(string)
 			}
 		}
 	}
-	m.UiLocation = UiLocation
+	if len(UiLocations) == 0 {
+		UiLocations = append(UiLocations, "Generic")
+	}
+	m.UiLocations = UiLocations
 	m.SubCategory = SubCategory
 
 	resourcesFound := [][]string{}

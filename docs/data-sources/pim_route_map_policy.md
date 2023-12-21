@@ -18,8 +18,7 @@ Data source for Pim Route Map Policy
 
 * Supported in ACI versions: 2.0(1m) and later.
 
-* Distinguished Name Formats
-  - `uni/tn-{name}/rtmap-{name}`
+* Distinguished Name Format: uni/tn-{name}/rtmap-{name}
 
 ## GUI Information ##
 
