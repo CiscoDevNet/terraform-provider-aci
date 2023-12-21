@@ -55,7 +55,7 @@ Data source for {{getResourceNameAsDescription .ResourceName}}
 {{- end}}
 {{- range .Properties}}
     {{- if .IsNaming}}
-* `{{- overwriteProperty .PkgName .SnakeCaseName $.Definitions}}` ({{- .PropertyName}}) - (string) {{.Comment}}{{if and (ne $.Versions .Versions) (ne .Versions "")}} This attribute is supported in ACI versions: {{ .Versions}}{{- end}}
+* `{{- overwriteProperty .PkgName .SnakeCaseName $.Definitions}}` ({{- .PropertyName}}) - (string) {{.Comment}}{{if ne .NamedPropertyClass ""}}{{$RName := getResourceName .NamedPropertyClass $.Definitions}} Optionally a Distinguished Name (DN) of the {{getResourceNameAsDescription $RName}} can be provided ({{getDevnetDocForClass .NamedPropertyClass}}) manually or by using the `id` attribute of the [aci_{{$RName}}](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/{{$RName}}) resource or datasource.{{end}}{{if and (ne $.Versions .Versions) (ne .Versions "")}} This attribute is supported in ACI versions: {{ .Versions}}{{- end}}
       {{- if .ValidValues }}{{$i := 1}}{{$length := len .ValidValues}}
   - Valid Values:{{ range .ValidValues}} `{{ . }}`{{ if ne $length $i}}{{$i = add $i 1}}, {{- else}}.{{- end}}{{- end}}
       {{- end}}

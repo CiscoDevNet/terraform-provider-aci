@@ -24,7 +24,7 @@ vzOOBBrCP:
   sub_category: "Contract"
   contained_by:
     - "polUni"
-  rn_prepend: "tn-mgmt/"
+  rn_prepend: "tn-mgmt"
   dn_formats:
     - "uni/tn-mgmt/oobbrc-{name}"
 
@@ -80,7 +80,7 @@ l3extRsRedistributePol:
   sub_category: "L3Out"
 
 tagAnnotation:
-  notes:
+  resource_notes:
     - "This resource should not be used in combination with resources that configure `tagAnnotation` as nested attributes. Doing so will result in unexpected behaviour."
   dn_formats:
     - "uni/tn-{name}/annotationKey-[{key}]"

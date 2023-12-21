@@ -7,6 +7,7 @@ global:
     descr: "The description of the %s object."
     owner: "The owner of the %s object."
     tnVzOOBBrCPName: "The name of the Out Of Band Contract object."
+    tnRtctrlProfileName: "The name of the Route Control Profile object."
   overwrites:
     count: "apic_count" # count is a terraform reserved schema entry
     provider: "prov" # provider is a terraform reserved schema entry

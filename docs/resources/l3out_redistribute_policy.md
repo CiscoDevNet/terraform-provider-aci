@@ -72,7 +72,7 @@ All examples for the L3out Redistribute Policy resource can be found in the [exa
   - [aci_l3_outside](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/l3_outside) ([l3extOut](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/l3extOut/overview))
 * `source` (src) - (string) The source of the L3out Redistribute Policy object.
   - Valid Values: `attached-host`, `direct`, `static`.
-* `route_control_profile_name` (tnRtctrlProfileName) - (string) The name of the route profile associated with this object.
+* `route_control_profile_name` (tnRtctrlProfileName) - (string) The name of the Route Control Profile object. Optionally a Distinguished Name (DN) of the Route Control Profile can be provided ([rtctrlProfile](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/rtctrlProfile/overview)) manually or by using the `id` attribute of the [aci_route_control_profile](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/route_control_profile) resource or datasource.
 
 ### Read-Only
 

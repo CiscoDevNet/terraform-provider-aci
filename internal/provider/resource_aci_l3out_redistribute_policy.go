@@ -133,7 +133,7 @@ func (r *L3extRsRedistributePolResource) Schema(ctx context.Context, req resourc
 					stringplanmodifier.UseStateForUnknown(),
 					stringplanmodifier.RequiresReplace(),
 				},
-				MarkdownDescription: `The name of the route profile associated with this object.`,
+				MarkdownDescription: `The name of the Route Control Profile object.`,
 			},
 			"annotations": schema.SetNestedAttribute{
 				MarkdownDescription: ``,

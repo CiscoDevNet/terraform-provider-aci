@@ -42,7 +42,7 @@ data "aci_relation_to_consumed_out_of_band_contract" "example_external_managemen
 
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
   - [aci_external_management_network_instance_profile](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/external_management_network_instance_profile) ([mgmtInstP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/mgmtInstP/overview))
-* `out_of_band_contract_name` (tnVzOOBBrCPName) - (string) The name of the Out Of Band Contract object.
+* `out_of_band_contract_name` (tnVzOOBBrCPName) - (string) The name of the Out Of Band Contract object. Optionally a Distinguished Name (DN) of the Out Of Band Contract can be provided ([vzOOBBrCP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vzOOBBrCP/overview)) manually or by using the `id` attribute of the [aci_out_of_band_contract](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/out_of_band_contract) resource or datasource.
 
 ### Read-Only
 

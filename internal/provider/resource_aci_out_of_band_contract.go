@@ -455,7 +455,7 @@ func getAndSetVzOOBBrCPAttributes(ctx context.Context, diags *diag.Diagnostics, 
 }
 
 func getVzOOBBrCPRn(ctx context.Context, data *VzOOBBrCPResourceModel) string {
-	rn := "tn-mgmt//oobbrc-{name}"
+	rn := "tn-mgmt/oobbrc-{name}"
 	for _, identifier := range []string{"name"} {
 		fieldName := fmt.Sprintf("%s%s", strings.ToUpper(identifier[:1]), identifier[1:])
 		fieldValue := reflect.ValueOf(data).Elem().FieldByName(fieldName).Interface().(basetypes.StringValue).ValueString()

@@ -59,7 +59,7 @@ func (d *L3extRsRedistributePolDataSource) Schema(ctx context.Context, req datas
 			},
 			"route_control_profile_name": schema.StringAttribute{
 				Required:            true,
-				MarkdownDescription: `The name of the route profile associated with this object.`,
+				MarkdownDescription: `The name of the Route Control Profile object.`,
 			},
 			"annotations": schema.SetNestedAttribute{
 				MarkdownDescription: ``,

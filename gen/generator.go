@@ -546,6 +546,7 @@ type Model struct {
 	Label                    string
 	Name                     string
 	RnFormat                 string
+	RnPrepend                string
 	Comment                  string
 	ResourceClassName        string
 	ResourceName             string
@@ -565,8 +566,10 @@ type Model struct {
 	DocumentationParentDns   []string
 	DocumentationExamples    []string
 	DocumentationChildren    []string
-	DocumentationNotes       []string
-	DocumentationWarnings    []string
+	ResourceNotes            []string
+	ResourceWarnings         []string
+	DatasourceNotes          []string
+	DatasourceWarnings       []string
 	Parents                  []string
 	UiLocations              []string
 	IdentifiedBy             []interface{}
@@ -655,7 +658,7 @@ func (m *Model) setClassModel(metaPath string, child bool, definitions Definitio
 		m.SetClassVersions(classDetails)
 		m.SetClassProperties(classDetails)
 		m.SetClassChildren(classDetails, pkgNames)
-		m.SetDocumentationNotesAndWarnigns(m.PkgName, definitions)
+		m.SetResourceNotesAndWarnigns(m.PkgName, definitions)
 	}
 
 	/*
@@ -758,7 +761,8 @@ func (m *Model) SetClassName(classDetails interface{}) {
 }
 
 func (m *Model) SetClassRnFormat(classDetails interface{}) {
-	m.RnFormat = GetOverwriteRnPrepend(classDetails.(map[string]interface{})["rnFormat"].(string), m.PkgName, m.Definitions)
+	m.RnPrepend = classDetails.(map[string]interface{})["rnFormat"].(string)
+	m.RnFormat = GetOverwriteRnFormat(classDetails.(map[string]interface{})["rnFormat"].(string), m.PkgName, m.Definitions)
 	if strings.HasPrefix(m.RnFormat, "rs") {
 		toMo := classDetails.(map[string]interface{})["relationInfo"].(map[string]interface{})["toMo"].(string)
 		m.RelationshipClass = strings.Replace(toMo, ":", "", 1)
@@ -827,17 +831,27 @@ func (m *Model) SetClassAllowDelete(classDetails interface{}) {
 
 // Determine if a class is allowed to be deleted as defined in the classes.yaml file
 // Flag created to ensure classes that only classes allowed to be deleted are deleted
-func (m *Model) SetDocumentationNotesAndWarnigns(classPkgName string, definitions Definitions) {
+func (m *Model) SetResourceNotesAndWarnigns(classPkgName string, definitions Definitions) {
 	if classDetails, ok := definitions.Classes[classPkgName]; ok {
 		for key, value := range classDetails.(map[interface{}]interface{}) {
-			if key.(string) == "notes" {
+			if key.(string) == "resource_notes" {
 				for _, note := range value.([]interface{}) {
-					m.DocumentationNotes = append(m.DocumentationNotes, note.(string))
+					m.ResourceNotes = append(m.ResourceNotes, note.(string))
 				}
 			}
-			if key.(string) == "warnings" {
+			if key.(string) == "resource_warnings" {
 				for _, note := range value.([]interface{}) {
-					m.DocumentationWarnings = append(m.DocumentationWarnings, note.(string))
+					m.ResourceWarnings = append(m.ResourceWarnings, note.(string))
+				}
+			}
+			if key.(string) == "datasource_notes" {
+				for _, note := range value.([]interface{}) {
+					m.DatasourceNotes = append(m.DatasourceNotes, note.(string))
+				}
+			}
+			if key.(string) == "datasource_warnings" {
+				for _, note := range value.([]interface{}) {
+					m.DatasourceWarnings = append(m.DatasourceWarnings, note.(string))
 				}
 			}
 		}
@@ -1223,7 +1237,7 @@ func GetOverwriteContainedBy(classDetails interface{}, classPkgName string, defi
 }
 
 // Determine if a reformat in terraform configuration should be prepended with a rn from the classes.yaml file
-func GetOverwriteRnPrepend(rnFormat, classPkgName string, definitions Definitions) string {
+func GetOverwriteRnFormat(rnFormat, classPkgName string, definitions Definitions) string {
 	if v, ok := definitions.Classes[classPkgName]; ok {
 		for key, value := range v.(map[interface{}]interface{}) {
 			if key.(string) == "rn_prepend" {
