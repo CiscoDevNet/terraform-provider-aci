@@ -66,7 +66,7 @@ All examples for the {{getResourceNameAsDescription .ResourceName}} resource can
 {{- end}}
 {{- range .Properties}}
     {{- if or .IsNaming .IsRequired}}
-* `{{- overwriteProperty .PkgName .SnakeCaseName $.Definitions}}` ({{- .PropertyName}}) - (string) {{.Comment}}{{if ne $.Versions .Versions}} This attribute is supported in ACI versions: {{ .Versions}}{{- end}}
+* `{{- overwriteProperty .PkgName .SnakeCaseName $.Definitions}}` ({{- .PropertyName}}) - (string) {{.Comment}}{{if and (ne $.Versions .Versions) (ne .Versions "")}} This attribute is supported in ACI versions: {{ .Versions}}{{- end}}
       {{- if .ValidValues }}{{$i := 1}}{{$length := len .ValidValues}}
   - Valid Values:{{ range .ValidValues}} `{{ . }}`{{ if ne $length $i}}{{$i = add $i 1}}, {{- else}}.{{- end}}{{- end}}
       {{- end}}
@@ -82,12 +82,12 @@ All examples for the {{getResourceNameAsDescription .ResourceName}} resource can
   {{ range .Properties}}
     {{- if and (not .IsNaming) (not .IsRequired)}}
       {{- if eq .ValueType "bitmask"}}
-* `{{- overwriteProperty .PkgName .SnakeCaseName $.Definitions}} ({{- .PropertyName}}) - (list) {{.Comment}}{{if ne $.Versions .Versions}} This attribute is supported in ACI versions: {{ .Versions}}{{- end}}
+* `{{- overwriteProperty .PkgName .SnakeCaseName $.Definitions}} ({{- .PropertyName}}) - (list) {{.Comment}}{{if and (ne $.Versions .Versions) (ne .Versions "")}} This attribute is supported in ACI versions: {{ .Versions}}{{- end}}
         {{- if .DefaultValue }}
   - Default: `{{ .DefaultValue }}`.
         {{- end}}
       {{- else}}
-* `{{- overwriteProperty .PkgName .SnakeCaseName $.Definitions}}` ({{- .PropertyName}}) - (string) {{.Comment}}{{if ne $.Versions .Versions}} This attribute is supported in ACI versions: {{ .Versions}}{{- end}}
+* `{{- overwriteProperty .PkgName .SnakeCaseName $.Definitions}}` ({{- .PropertyName}}) - (string) {{.Comment}}{{if and (ne $.Versions .Versions) (ne .Versions "")}} This attribute is supported in ACI versions: {{ .Versions}}{{- end}}
         {{- if .DefaultValue }}
   - Default: `{{ .DefaultValue }}`
         {{- end}}
@@ -100,9 +100,9 @@ All examples for the {{getResourceNameAsDescription .ResourceName}} resource can
 {{- end}}
 {{ range .Children }}{{$childVersion := .Versions}}
     {{- if ne .RelationshipClass ""}}
-* `{{- .ResourceName}}` - (list) A list of {{getResourceNameAsDescription .ResourceName}} objects ({{getDevnetDocForClass .PkgName}}) pointing to the {{getResourceNameAsDescription .RelationshipResourceName}} ({{getDevnetDocForClass .RelationshipClass}}) which can be configured using the [aci_{{.RelationshipResourceName}}](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/{{.RelationshipResourceName}}) resource.{{if ne $.Versions .Versions}} This attribute is supported in ACI versions: {{ .Versions}}{{- end}}
+* `{{- .ResourceName}}` - (list) A list of {{getResourceNameAsDescription .ResourceName}} objects ({{getDevnetDocForClass .PkgName}}) pointing to the {{getResourceNameAsDescription .RelationshipResourceName}} ({{getDevnetDocForClass .RelationshipClass}}) which can be configured using the [aci_{{.RelationshipResourceName}}](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/{{.RelationshipResourceName}}) resource.{{if and (ne $.Versions .Versions) (ne .Versions "")}} This attribute is supported in ACI versions: {{ .Versions}}{{- end}}
     {{- else}}
-* `{{- .ResourceName}}` - (list) A list of {{getResourceNameAsDescription .ResourceName}} objects ({{getDevnetDocForClass .PkgName}}) which can be configured using the [aci_{{.ResourceNameDocReference}}](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/{{.ResourceNameDocReference}}) resource.{{if ne $.Versions .Versions}} This attribute is supported in ACI versions: {{ .Versions}}{{- end}}
+* `{{- .ResourceName}}` - (list) A list of {{getResourceNameAsDescription .ResourceName}} objects ({{getDevnetDocForClass .PkgName}}) which can be configured using the [aci_{{.ResourceNameDocReference}}](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/{{.ResourceNameDocReference}}) resource.{{if and (ne $.Versions .Versions) (ne .Versions "")}} This attribute is supported in ACI versions: {{ .Versions}}{{- end}}
     {{- end}}
   
   #### Required
