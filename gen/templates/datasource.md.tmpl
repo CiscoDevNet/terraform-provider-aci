@@ -53,6 +53,9 @@ Data source for {{getResourceNameAsDescription .ResourceName}}
 {{- range .Properties}}
     {{- if .IsNaming}}
 * `{{- overwriteProperty .PkgName .SnakeCaseName $.Definitions}}` ({{- .PropertyName}}) - (string) {{.Comment}}{{if ne $.Versions .Versions}} This attribute is supported in ACI versions: {{ .Versions}}{{- end}}
+      {{- if .ValidValues }}{{$i := 1}}{{$length := len .ValidValues}}
+  - Valid Values:{{ range .ValidValues}} `{{ . }}`{{ if ne $length $i}}{{$i = add $i 1}}, {{- else}}.{{- end}}{{- end}}
+      {{- end}}
     {{- end}}
 {{- end}}
 

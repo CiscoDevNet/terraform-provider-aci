@@ -45,6 +45,7 @@ data "aci_l3out_redistribute_policy" "example_l3_outside" {
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
   - [aci_l3_outside](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/l3_outside) ([l3extOut](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/l3extOut/overview))
 * `source` (src) - (string) The source of the L3out Redistribute Policy object.
+  - Valid Values: `attached-host`, `direct`, `static`.
 * `route_control_profile_name` (tnRtctrlProfileName) - (string) The name of the route profile associated with this object.
 
 ### Read-Only
