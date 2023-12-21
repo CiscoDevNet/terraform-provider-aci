@@ -239,7 +239,7 @@ func (r *VzOOBBrCPResource) Create(ctx context.Context, req resource.CreateReque
 	var stateData *VzOOBBrCPResourceModel
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &stateData)...)
 	setVzOOBBrCPId(ctx, stateData)
-	setVzOOBBrCPAttributes(ctx, &resp.Diagnostics, r.client, stateData)
+	getAndSetVzOOBBrCPAttributes(ctx, &resp.Diagnostics, r.client, stateData)
 
 	var data *VzOOBBrCPResourceModel
 
@@ -268,11 +268,11 @@ func (r *VzOOBBrCPResource) Create(ctx context.Context, req resource.CreateReque
 		return
 	}
 
-	setVzOOBBrCPAttributes(ctx, &resp.Diagnostics, r.client, data)
+	getAndSetVzOOBBrCPAttributes(ctx, &resp.Diagnostics, r.client, data)
 
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
-	tflog.Debug(ctx, "End create of resource: aci_out_of_band_contract")
+	tflog.Debug(ctx, fmt.Sprintf("End create of resource aci_out_of_band_contract with id '%s'", data.Id.ValueString()))
 }
 
 func (r *VzOOBBrCPResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
@@ -288,7 +288,7 @@ func (r *VzOOBBrCPResource) Read(ctx context.Context, req resource.ReadRequest, 
 
 	tflog.Debug(ctx, fmt.Sprintf("Read of resource aci_out_of_band_contract with id '%s'", data.Id.ValueString()))
 
-	setVzOOBBrCPAttributes(ctx, &resp.Diagnostics, r.client, data)
+	getAndSetVzOOBBrCPAttributes(ctx, &resp.Diagnostics, r.client, data)
 
 	// Save updated data into Terraform state
 	if data.Id.IsNull() {
@@ -298,7 +298,7 @@ func (r *VzOOBBrCPResource) Read(ctx context.Context, req resource.ReadRequest, 
 		resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
 	}
 
-	tflog.Debug(ctx, "End read of resource: aci_out_of_band_contract")
+	tflog.Debug(ctx, fmt.Sprintf("End read of resource aci_out_of_band_contract with id '%s'", data.Id.ValueString()))
 }
 
 func (r *VzOOBBrCPResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
@@ -331,11 +331,11 @@ func (r *VzOOBBrCPResource) Update(ctx context.Context, req resource.UpdateReque
 		return
 	}
 
-	setVzOOBBrCPAttributes(ctx, &resp.Diagnostics, r.client, data)
+	getAndSetVzOOBBrCPAttributes(ctx, &resp.Diagnostics, r.client, data)
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
-	tflog.Debug(ctx, "End update of resource: aci_out_of_band_contract")
+	tflog.Debug(ctx, fmt.Sprintf("End update of resource aci_out_of_band_contract with id '%s'", data.Id.ValueString()))
 }
 
 func (r *VzOOBBrCPResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
@@ -358,7 +358,7 @@ func (r *VzOOBBrCPResource) Delete(ctx context.Context, req resource.DeleteReque
 	if resp.Diagnostics.HasError() {
 		return
 	}
-	tflog.Debug(ctx, "End delete of resource: aci_out_of_band_contract")
+	tflog.Debug(ctx, fmt.Sprintf("End delete of resource aci_out_of_band_contract with id '%s'", data.Id.ValueString()))
 }
 
 func (r *VzOOBBrCPResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
@@ -372,7 +372,7 @@ func (r *VzOOBBrCPResource) ImportState(ctx context.Context, req resource.Import
 	tflog.Debug(ctx, "End import of state resource: aci_out_of_band_contract")
 }
 
-func setVzOOBBrCPAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *VzOOBBrCPResourceModel) {
+func getAndSetVzOOBBrCPAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *VzOOBBrCPResourceModel) {
 	requestData := doVzOOBBrCPRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=children&rsp-subtree-class=%s", data.Id.ValueString(), "vzOOBBrCP,tagAnnotation"), "GET", nil)
 
 	if diags.HasError() {

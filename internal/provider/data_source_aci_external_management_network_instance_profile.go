@@ -156,12 +156,12 @@ func (d *MgmtInstPDataSource) Read(ctx context.Context, req datasource.ReadReque
 
 	setMgmtInstPId(ctx, data)
 
-	// Create a copy of the Id for when not found during setMgmtInstPAttributes
+	// Create a copy of the Id for when not found during getAndSetMgmtInstPAttributes
 	cachedId := data.Id.ValueString()
 
 	tflog.Debug(ctx, fmt.Sprintf("Read of datasource aci_external_management_network_instance_profile with id '%s'", data.Id.ValueString()))
 
-	setMgmtInstPAttributes(ctx, &resp.Diagnostics, d.client, data)
+	getAndSetMgmtInstPAttributes(ctx, &resp.Diagnostics, d.client, data)
 
 	if data.Id.IsNull() {
 		resp.Diagnostics.AddError(
@@ -173,5 +173,5 @@ func (d *MgmtInstPDataSource) Read(ctx context.Context, req datasource.ReadReque
 
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
-	tflog.Debug(ctx, "End read of datasource: aci_external_management_network_instance_profile")
+	tflog.Debug(ctx, fmt.Sprintf("End read of datasource aci_external_management_network_instance_profile with id '%s'", data.Id.ValueString()))
 }

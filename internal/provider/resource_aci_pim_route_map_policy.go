@@ -198,7 +198,7 @@ func (r *PimRouteMapPolResource) Create(ctx context.Context, req resource.Create
 	var stateData *PimRouteMapPolResourceModel
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &stateData)...)
 	setPimRouteMapPolId(ctx, stateData)
-	setPimRouteMapPolAttributes(ctx, &resp.Diagnostics, r.client, stateData)
+	getAndSetPimRouteMapPolAttributes(ctx, &resp.Diagnostics, r.client, stateData)
 
 	var data *PimRouteMapPolResourceModel
 
@@ -227,11 +227,11 @@ func (r *PimRouteMapPolResource) Create(ctx context.Context, req resource.Create
 		return
 	}
 
-	setPimRouteMapPolAttributes(ctx, &resp.Diagnostics, r.client, data)
+	getAndSetPimRouteMapPolAttributes(ctx, &resp.Diagnostics, r.client, data)
 
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
-	tflog.Debug(ctx, "End create of resource: aci_pim_route_map_policy")
+	tflog.Debug(ctx, fmt.Sprintf("End create of resource aci_pim_route_map_policy with id '%s'", data.Id.ValueString()))
 }
 
 func (r *PimRouteMapPolResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
@@ -247,7 +247,7 @@ func (r *PimRouteMapPolResource) Read(ctx context.Context, req resource.ReadRequ
 
 	tflog.Debug(ctx, fmt.Sprintf("Read of resource aci_pim_route_map_policy with id '%s'", data.Id.ValueString()))
 
-	setPimRouteMapPolAttributes(ctx, &resp.Diagnostics, r.client, data)
+	getAndSetPimRouteMapPolAttributes(ctx, &resp.Diagnostics, r.client, data)
 
 	// Save updated data into Terraform state
 	if data.Id.IsNull() {
@@ -257,7 +257,7 @@ func (r *PimRouteMapPolResource) Read(ctx context.Context, req resource.ReadRequ
 		resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
 	}
 
-	tflog.Debug(ctx, "End read of resource: aci_pim_route_map_policy")
+	tflog.Debug(ctx, fmt.Sprintf("End read of resource aci_pim_route_map_policy with id '%s'", data.Id.ValueString()))
 }
 
 func (r *PimRouteMapPolResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
@@ -290,11 +290,11 @@ func (r *PimRouteMapPolResource) Update(ctx context.Context, req resource.Update
 		return
 	}
 
-	setPimRouteMapPolAttributes(ctx, &resp.Diagnostics, r.client, data)
+	getAndSetPimRouteMapPolAttributes(ctx, &resp.Diagnostics, r.client, data)
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
-	tflog.Debug(ctx, "End update of resource: aci_pim_route_map_policy")
+	tflog.Debug(ctx, fmt.Sprintf("End update of resource aci_pim_route_map_policy with id '%s'", data.Id.ValueString()))
 }
 
 func (r *PimRouteMapPolResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
@@ -317,7 +317,7 @@ func (r *PimRouteMapPolResource) Delete(ctx context.Context, req resource.Delete
 	if resp.Diagnostics.HasError() {
 		return
 	}
-	tflog.Debug(ctx, "End delete of resource: aci_pim_route_map_policy")
+	tflog.Debug(ctx, fmt.Sprintf("End delete of resource aci_pim_route_map_policy with id '%s'", data.Id.ValueString()))
 }
 
 func (r *PimRouteMapPolResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
@@ -331,7 +331,7 @@ func (r *PimRouteMapPolResource) ImportState(ctx context.Context, req resource.I
 	tflog.Debug(ctx, "End import of state resource: aci_pim_route_map_policy")
 }
 
-func setPimRouteMapPolAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *PimRouteMapPolResourceModel) {
+func getAndSetPimRouteMapPolAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *PimRouteMapPolResourceModel) {
 	requestData := doPimRouteMapPolRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=children&rsp-subtree-class=%s", data.Id.ValueString(), "pimRouteMapPol,tagAnnotation"), "GET", nil)
 
 	if diags.HasError() {

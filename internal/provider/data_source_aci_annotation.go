@@ -96,12 +96,12 @@ func (d *TagAnnotationDataSource) Read(ctx context.Context, req datasource.ReadR
 
 	setTagAnnotationId(ctx, data)
 
-	// Create a copy of the Id for when not found during setTagAnnotationAttributes
+	// Create a copy of the Id for when not found during getAndSetTagAnnotationAttributes
 	cachedId := data.Id.ValueString()
 
 	tflog.Debug(ctx, fmt.Sprintf("Read of datasource aci_annotation with id '%s'", data.Id.ValueString()))
 
-	setTagAnnotationAttributes(ctx, &resp.Diagnostics, d.client, data)
+	getAndSetTagAnnotationAttributes(ctx, &resp.Diagnostics, d.client, data)
 
 	if data.Id.IsNull() {
 		resp.Diagnostics.AddError(
@@ -113,5 +113,5 @@ func (d *TagAnnotationDataSource) Read(ctx context.Context, req datasource.ReadR
 
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
-	tflog.Debug(ctx, "End read of datasource: aci_annotation")
+	tflog.Debug(ctx, fmt.Sprintf("End read of datasource aci_annotation with id '%s'", data.Id.ValueString()))
 }

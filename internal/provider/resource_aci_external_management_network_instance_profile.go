@@ -257,7 +257,7 @@ func (r *MgmtInstPResource) Create(ctx context.Context, req resource.CreateReque
 	var stateData *MgmtInstPResourceModel
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &stateData)...)
 	setMgmtInstPId(ctx, stateData)
-	setMgmtInstPAttributes(ctx, &resp.Diagnostics, r.client, stateData)
+	getAndSetMgmtInstPAttributes(ctx, &resp.Diagnostics, r.client, stateData)
 
 	var data *MgmtInstPResourceModel
 
@@ -289,11 +289,11 @@ func (r *MgmtInstPResource) Create(ctx context.Context, req resource.CreateReque
 		return
 	}
 
-	setMgmtInstPAttributes(ctx, &resp.Diagnostics, r.client, data)
+	getAndSetMgmtInstPAttributes(ctx, &resp.Diagnostics, r.client, data)
 
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
-	tflog.Debug(ctx, "End create of resource: aci_external_management_network_instance_profile")
+	tflog.Debug(ctx, fmt.Sprintf("End create of resource aci_external_management_network_instance_profile with id '%s'", data.Id.ValueString()))
 }
 
 func (r *MgmtInstPResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
@@ -309,7 +309,7 @@ func (r *MgmtInstPResource) Read(ctx context.Context, req resource.ReadRequest, 
 
 	tflog.Debug(ctx, fmt.Sprintf("Read of resource aci_external_management_network_instance_profile with id '%s'", data.Id.ValueString()))
 
-	setMgmtInstPAttributes(ctx, &resp.Diagnostics, r.client, data)
+	getAndSetMgmtInstPAttributes(ctx, &resp.Diagnostics, r.client, data)
 
 	// Save updated data into Terraform state
 	if data.Id.IsNull() {
@@ -319,7 +319,7 @@ func (r *MgmtInstPResource) Read(ctx context.Context, req resource.ReadRequest, 
 		resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
 	}
 
-	tflog.Debug(ctx, "End read of resource: aci_external_management_network_instance_profile")
+	tflog.Debug(ctx, fmt.Sprintf("End read of resource aci_external_management_network_instance_profile with id '%s'", data.Id.ValueString()))
 }
 
 func (r *MgmtInstPResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
@@ -355,11 +355,11 @@ func (r *MgmtInstPResource) Update(ctx context.Context, req resource.UpdateReque
 		return
 	}
 
-	setMgmtInstPAttributes(ctx, &resp.Diagnostics, r.client, data)
+	getAndSetMgmtInstPAttributes(ctx, &resp.Diagnostics, r.client, data)
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
-	tflog.Debug(ctx, "End update of resource: aci_external_management_network_instance_profile")
+	tflog.Debug(ctx, fmt.Sprintf("End update of resource aci_external_management_network_instance_profile with id '%s'", data.Id.ValueString()))
 }
 
 func (r *MgmtInstPResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
@@ -382,7 +382,7 @@ func (r *MgmtInstPResource) Delete(ctx context.Context, req resource.DeleteReque
 	if resp.Diagnostics.HasError() {
 		return
 	}
-	tflog.Debug(ctx, "End delete of resource: aci_external_management_network_instance_profile")
+	tflog.Debug(ctx, fmt.Sprintf("End delete of resource aci_external_management_network_instance_profile with id '%s'", data.Id.ValueString()))
 }
 
 func (r *MgmtInstPResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
@@ -396,7 +396,7 @@ func (r *MgmtInstPResource) ImportState(ctx context.Context, req resource.Import
 	tflog.Debug(ctx, "End import of state resource: aci_external_management_network_instance_profile")
 }
 
-func setMgmtInstPAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *MgmtInstPResourceModel) {
+func getAndSetMgmtInstPAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *MgmtInstPResourceModel) {
 	requestData := doMgmtInstPRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=children&rsp-subtree-class=%s", data.Id.ValueString(), "mgmtInstP,mgmtRsOoBCons,tagAnnotation"), "GET", nil)
 
 	if diags.HasError() {

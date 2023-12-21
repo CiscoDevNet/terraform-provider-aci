@@ -189,7 +189,7 @@ func (r *MgmtSubnetResource) Create(ctx context.Context, req resource.CreateRequ
 	var stateData *MgmtSubnetResourceModel
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &stateData)...)
 	setMgmtSubnetId(ctx, stateData)
-	setMgmtSubnetAttributes(ctx, &resp.Diagnostics, r.client, stateData)
+	getAndSetMgmtSubnetAttributes(ctx, &resp.Diagnostics, r.client, stateData)
 
 	var data *MgmtSubnetResourceModel
 
@@ -218,11 +218,11 @@ func (r *MgmtSubnetResource) Create(ctx context.Context, req resource.CreateRequ
 		return
 	}
 
-	setMgmtSubnetAttributes(ctx, &resp.Diagnostics, r.client, data)
+	getAndSetMgmtSubnetAttributes(ctx, &resp.Diagnostics, r.client, data)
 
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
-	tflog.Debug(ctx, "End create of resource: aci_external_management_network_subnet")
+	tflog.Debug(ctx, fmt.Sprintf("End create of resource aci_external_management_network_subnet with id '%s'", data.Id.ValueString()))
 }
 
 func (r *MgmtSubnetResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
@@ -238,7 +238,7 @@ func (r *MgmtSubnetResource) Read(ctx context.Context, req resource.ReadRequest,
 
 	tflog.Debug(ctx, fmt.Sprintf("Read of resource aci_external_management_network_subnet with id '%s'", data.Id.ValueString()))
 
-	setMgmtSubnetAttributes(ctx, &resp.Diagnostics, r.client, data)
+	getAndSetMgmtSubnetAttributes(ctx, &resp.Diagnostics, r.client, data)
 
 	// Save updated data into Terraform state
 	if data.Id.IsNull() {
@@ -248,7 +248,7 @@ func (r *MgmtSubnetResource) Read(ctx context.Context, req resource.ReadRequest,
 		resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
 	}
 
-	tflog.Debug(ctx, "End read of resource: aci_external_management_network_subnet")
+	tflog.Debug(ctx, fmt.Sprintf("End read of resource aci_external_management_network_subnet with id '%s'", data.Id.ValueString()))
 }
 
 func (r *MgmtSubnetResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
@@ -281,11 +281,11 @@ func (r *MgmtSubnetResource) Update(ctx context.Context, req resource.UpdateRequ
 		return
 	}
 
-	setMgmtSubnetAttributes(ctx, &resp.Diagnostics, r.client, data)
+	getAndSetMgmtSubnetAttributes(ctx, &resp.Diagnostics, r.client, data)
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
-	tflog.Debug(ctx, "End update of resource: aci_external_management_network_subnet")
+	tflog.Debug(ctx, fmt.Sprintf("End update of resource aci_external_management_network_subnet with id '%s'", data.Id.ValueString()))
 }
 
 func (r *MgmtSubnetResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
@@ -308,7 +308,7 @@ func (r *MgmtSubnetResource) Delete(ctx context.Context, req resource.DeleteRequ
 	if resp.Diagnostics.HasError() {
 		return
 	}
-	tflog.Debug(ctx, "End delete of resource: aci_external_management_network_subnet")
+	tflog.Debug(ctx, fmt.Sprintf("End delete of resource aci_external_management_network_subnet with id '%s'", data.Id.ValueString()))
 }
 
 func (r *MgmtSubnetResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
@@ -322,7 +322,7 @@ func (r *MgmtSubnetResource) ImportState(ctx context.Context, req resource.Impor
 	tflog.Debug(ctx, "End import of state resource: aci_external_management_network_subnet")
 }
 
-func setMgmtSubnetAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *MgmtSubnetResourceModel) {
+func getAndSetMgmtSubnetAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *MgmtSubnetResourceModel) {
 	requestData := doMgmtSubnetRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=children&rsp-subtree-class=%s", data.Id.ValueString(), "mgmtSubnet,tagAnnotation"), "GET", nil)
 
 	if diags.HasError() {

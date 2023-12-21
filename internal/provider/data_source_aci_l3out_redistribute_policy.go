@@ -122,12 +122,12 @@ func (d *L3extRsRedistributePolDataSource) Read(ctx context.Context, req datasou
 
 	setL3extRsRedistributePolId(ctx, data)
 
-	// Create a copy of the Id for when not found during setL3extRsRedistributePolAttributes
+	// Create a copy of the Id for when not found during getAndSetL3extRsRedistributePolAttributes
 	cachedId := data.Id.ValueString()
 
 	tflog.Debug(ctx, fmt.Sprintf("Read of datasource aci_l3out_redistribute_policy with id '%s'", data.Id.ValueString()))
 
-	setL3extRsRedistributePolAttributes(ctx, &resp.Diagnostics, d.client, data)
+	getAndSetL3extRsRedistributePolAttributes(ctx, &resp.Diagnostics, d.client, data)
 
 	if data.Id.IsNull() {
 		resp.Diagnostics.AddError(
@@ -139,5 +139,5 @@ func (d *L3extRsRedistributePolDataSource) Read(ctx context.Context, req datasou
 
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
-	tflog.Debug(ctx, "End read of datasource: aci_l3out_redistribute_policy")
+	tflog.Debug(ctx, fmt.Sprintf("End read of datasource aci_l3out_redistribute_policy with id '%s'", data.Id.ValueString()))
 }

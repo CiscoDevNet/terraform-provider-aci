@@ -193,7 +193,7 @@ func (r *MgmtRsOoBConsResource) Create(ctx context.Context, req resource.CreateR
 	var stateData *MgmtRsOoBConsResourceModel
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &stateData)...)
 	setMgmtRsOoBConsId(ctx, stateData)
-	setMgmtRsOoBConsAttributes(ctx, &resp.Diagnostics, r.client, stateData)
+	getAndSetMgmtRsOoBConsAttributes(ctx, &resp.Diagnostics, r.client, stateData)
 
 	var data *MgmtRsOoBConsResourceModel
 
@@ -222,11 +222,11 @@ func (r *MgmtRsOoBConsResource) Create(ctx context.Context, req resource.CreateR
 		return
 	}
 
-	setMgmtRsOoBConsAttributes(ctx, &resp.Diagnostics, r.client, data)
+	getAndSetMgmtRsOoBConsAttributes(ctx, &resp.Diagnostics, r.client, data)
 
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
-	tflog.Debug(ctx, "End create of resource: aci_relation_to_consumed_out_of_band_contract")
+	tflog.Debug(ctx, fmt.Sprintf("End create of resource aci_relation_to_consumed_out_of_band_contract with id '%s'", data.Id.ValueString()))
 }
 
 func (r *MgmtRsOoBConsResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
@@ -242,7 +242,7 @@ func (r *MgmtRsOoBConsResource) Read(ctx context.Context, req resource.ReadReque
 
 	tflog.Debug(ctx, fmt.Sprintf("Read of resource aci_relation_to_consumed_out_of_band_contract with id '%s'", data.Id.ValueString()))
 
-	setMgmtRsOoBConsAttributes(ctx, &resp.Diagnostics, r.client, data)
+	getAndSetMgmtRsOoBConsAttributes(ctx, &resp.Diagnostics, r.client, data)
 
 	// Save updated data into Terraform state
 	if data.Id.IsNull() {
@@ -252,7 +252,7 @@ func (r *MgmtRsOoBConsResource) Read(ctx context.Context, req resource.ReadReque
 		resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
 	}
 
-	tflog.Debug(ctx, "End read of resource: aci_relation_to_consumed_out_of_band_contract")
+	tflog.Debug(ctx, fmt.Sprintf("End read of resource aci_relation_to_consumed_out_of_band_contract with id '%s'", data.Id.ValueString()))
 }
 
 func (r *MgmtRsOoBConsResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
@@ -285,11 +285,11 @@ func (r *MgmtRsOoBConsResource) Update(ctx context.Context, req resource.UpdateR
 		return
 	}
 
-	setMgmtRsOoBConsAttributes(ctx, &resp.Diagnostics, r.client, data)
+	getAndSetMgmtRsOoBConsAttributes(ctx, &resp.Diagnostics, r.client, data)
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
-	tflog.Debug(ctx, "End update of resource: aci_relation_to_consumed_out_of_band_contract")
+	tflog.Debug(ctx, fmt.Sprintf("End update of resource aci_relation_to_consumed_out_of_band_contract with id '%s'", data.Id.ValueString()))
 }
 
 func (r *MgmtRsOoBConsResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
@@ -312,7 +312,7 @@ func (r *MgmtRsOoBConsResource) Delete(ctx context.Context, req resource.DeleteR
 	if resp.Diagnostics.HasError() {
 		return
 	}
-	tflog.Debug(ctx, "End delete of resource: aci_relation_to_consumed_out_of_band_contract")
+	tflog.Debug(ctx, fmt.Sprintf("End delete of resource aci_relation_to_consumed_out_of_band_contract with id '%s'", data.Id.ValueString()))
 }
 
 func (r *MgmtRsOoBConsResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
@@ -326,7 +326,7 @@ func (r *MgmtRsOoBConsResource) ImportState(ctx context.Context, req resource.Im
 	tflog.Debug(ctx, "End import of state resource: aci_relation_to_consumed_out_of_band_contract")
 }
 
-func setMgmtRsOoBConsAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *MgmtRsOoBConsResourceModel) {
+func getAndSetMgmtRsOoBConsAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *MgmtRsOoBConsResourceModel) {
 	requestData := doMgmtRsOoBConsRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=children&rsp-subtree-class=%s", data.Id.ValueString(), "mgmtRsOoBCons,tagAnnotation"), "GET", nil)
 
 	if diags.HasError() {

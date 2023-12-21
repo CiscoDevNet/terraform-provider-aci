@@ -140,12 +140,12 @@ func (d *PimRouteMapEntryDataSource) Read(ctx context.Context, req datasource.Re
 
 	setPimRouteMapEntryId(ctx, data)
 
-	// Create a copy of the Id for when not found during setPimRouteMapEntryAttributes
+	// Create a copy of the Id for when not found during getAndSetPimRouteMapEntryAttributes
 	cachedId := data.Id.ValueString()
 
 	tflog.Debug(ctx, fmt.Sprintf("Read of datasource aci_pim_route_map_entry with id '%s'", data.Id.ValueString()))
 
-	setPimRouteMapEntryAttributes(ctx, &resp.Diagnostics, d.client, data)
+	getAndSetPimRouteMapEntryAttributes(ctx, &resp.Diagnostics, d.client, data)
 
 	if data.Id.IsNull() {
 		resp.Diagnostics.AddError(
@@ -157,5 +157,5 @@ func (d *PimRouteMapEntryDataSource) Read(ctx context.Context, req datasource.Re
 
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
-	tflog.Debug(ctx, "End read of datasource: aci_pim_route_map_entry")
+	tflog.Debug(ctx, fmt.Sprintf("End read of datasource aci_pim_route_map_entry with id '%s'", data.Id.ValueString()))
 }

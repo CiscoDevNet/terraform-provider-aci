@@ -224,7 +224,7 @@ func (r *L3extConsLblResource) Create(ctx context.Context, req resource.CreateRe
 	var stateData *L3extConsLblResourceModel
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &stateData)...)
 	setL3extConsLblId(ctx, stateData)
-	setL3extConsLblAttributes(ctx, &resp.Diagnostics, r.client, stateData)
+	getAndSetL3extConsLblAttributes(ctx, &resp.Diagnostics, r.client, stateData)
 
 	var data *L3extConsLblResourceModel
 
@@ -253,11 +253,11 @@ func (r *L3extConsLblResource) Create(ctx context.Context, req resource.CreateRe
 		return
 	}
 
-	setL3extConsLblAttributes(ctx, &resp.Diagnostics, r.client, data)
+	getAndSetL3extConsLblAttributes(ctx, &resp.Diagnostics, r.client, data)
 
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
-	tflog.Debug(ctx, "End create of resource: aci_l3out_consumer_label")
+	tflog.Debug(ctx, fmt.Sprintf("End create of resource aci_l3out_consumer_label with id '%s'", data.Id.ValueString()))
 }
 
 func (r *L3extConsLblResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
@@ -273,7 +273,7 @@ func (r *L3extConsLblResource) Read(ctx context.Context, req resource.ReadReques
 
 	tflog.Debug(ctx, fmt.Sprintf("Read of resource aci_l3out_consumer_label with id '%s'", data.Id.ValueString()))
 
-	setL3extConsLblAttributes(ctx, &resp.Diagnostics, r.client, data)
+	getAndSetL3extConsLblAttributes(ctx, &resp.Diagnostics, r.client, data)
 
 	// Save updated data into Terraform state
 	if data.Id.IsNull() {
@@ -283,7 +283,7 @@ func (r *L3extConsLblResource) Read(ctx context.Context, req resource.ReadReques
 		resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
 	}
 
-	tflog.Debug(ctx, "End read of resource: aci_l3out_consumer_label")
+	tflog.Debug(ctx, fmt.Sprintf("End read of resource aci_l3out_consumer_label with id '%s'", data.Id.ValueString()))
 }
 
 func (r *L3extConsLblResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
@@ -316,11 +316,11 @@ func (r *L3extConsLblResource) Update(ctx context.Context, req resource.UpdateRe
 		return
 	}
 
-	setL3extConsLblAttributes(ctx, &resp.Diagnostics, r.client, data)
+	getAndSetL3extConsLblAttributes(ctx, &resp.Diagnostics, r.client, data)
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
-	tflog.Debug(ctx, "End update of resource: aci_l3out_consumer_label")
+	tflog.Debug(ctx, fmt.Sprintf("End update of resource aci_l3out_consumer_label with id '%s'", data.Id.ValueString()))
 }
 
 func (r *L3extConsLblResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
@@ -343,7 +343,7 @@ func (r *L3extConsLblResource) Delete(ctx context.Context, req resource.DeleteRe
 	if resp.Diagnostics.HasError() {
 		return
 	}
-	tflog.Debug(ctx, "End delete of resource: aci_l3out_consumer_label")
+	tflog.Debug(ctx, fmt.Sprintf("End delete of resource aci_l3out_consumer_label with id '%s'", data.Id.ValueString()))
 }
 
 func (r *L3extConsLblResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
@@ -357,7 +357,7 @@ func (r *L3extConsLblResource) ImportState(ctx context.Context, req resource.Imp
 	tflog.Debug(ctx, "End import of state resource: aci_l3out_consumer_label")
 }
 
-func setL3extConsLblAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *L3extConsLblResourceModel) {
+func getAndSetL3extConsLblAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *L3extConsLblResourceModel) {
 	requestData := doL3extConsLblRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=children&rsp-subtree-class=%s", data.Id.ValueString(), "l3extConsLbl,tagAnnotation"), "GET", nil)
 
 	if diags.HasError() {

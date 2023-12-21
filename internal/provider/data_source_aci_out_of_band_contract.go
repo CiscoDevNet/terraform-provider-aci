@@ -140,12 +140,12 @@ func (d *VzOOBBrCPDataSource) Read(ctx context.Context, req datasource.ReadReque
 
 	setVzOOBBrCPId(ctx, data)
 
-	// Create a copy of the Id for when not found during setVzOOBBrCPAttributes
+	// Create a copy of the Id for when not found during getAndSetVzOOBBrCPAttributes
 	cachedId := data.Id.ValueString()
 
 	tflog.Debug(ctx, fmt.Sprintf("Read of datasource aci_out_of_band_contract with id '%s'", data.Id.ValueString()))
 
-	setVzOOBBrCPAttributes(ctx, &resp.Diagnostics, d.client, data)
+	getAndSetVzOOBBrCPAttributes(ctx, &resp.Diagnostics, d.client, data)
 
 	if data.Id.IsNull() {
 		resp.Diagnostics.AddError(
@@ -157,5 +157,5 @@ func (d *VzOOBBrCPDataSource) Read(ctx context.Context, req datasource.ReadReque
 
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
-	tflog.Debug(ctx, "End read of datasource: aci_out_of_band_contract")
+	tflog.Debug(ctx, fmt.Sprintf("End read of datasource aci_out_of_band_contract with id '%s'", data.Id.ValueString()))
 }

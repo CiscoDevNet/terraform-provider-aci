@@ -122,12 +122,12 @@ func (d *MgmtRsOoBConsDataSource) Read(ctx context.Context, req datasource.ReadR
 
 	setMgmtRsOoBConsId(ctx, data)
 
-	// Create a copy of the Id for when not found during setMgmtRsOoBConsAttributes
+	// Create a copy of the Id for when not found during getAndSetMgmtRsOoBConsAttributes
 	cachedId := data.Id.ValueString()
 
 	tflog.Debug(ctx, fmt.Sprintf("Read of datasource aci_relation_to_consumed_out_of_band_contract with id '%s'", data.Id.ValueString()))
 
-	setMgmtRsOoBConsAttributes(ctx, &resp.Diagnostics, d.client, data)
+	getAndSetMgmtRsOoBConsAttributes(ctx, &resp.Diagnostics, d.client, data)
 
 	if data.Id.IsNull() {
 		resp.Diagnostics.AddError(
@@ -139,5 +139,5 @@ func (d *MgmtRsOoBConsDataSource) Read(ctx context.Context, req datasource.ReadR
 
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
-	tflog.Debug(ctx, "End read of datasource: aci_relation_to_consumed_out_of_band_contract")
+	tflog.Debug(ctx, fmt.Sprintf("End read of datasource aci_relation_to_consumed_out_of_band_contract with id '%s'", data.Id.ValueString()))
 }

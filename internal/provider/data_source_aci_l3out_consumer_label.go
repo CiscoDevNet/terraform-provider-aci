@@ -136,12 +136,12 @@ func (d *L3extConsLblDataSource) Read(ctx context.Context, req datasource.ReadRe
 
 	setL3extConsLblId(ctx, data)
 
-	// Create a copy of the Id for when not found during setL3extConsLblAttributes
+	// Create a copy of the Id for when not found during getAndSetL3extConsLblAttributes
 	cachedId := data.Id.ValueString()
 
 	tflog.Debug(ctx, fmt.Sprintf("Read of datasource aci_l3out_consumer_label with id '%s'", data.Id.ValueString()))
 
-	setL3extConsLblAttributes(ctx, &resp.Diagnostics, d.client, data)
+	getAndSetL3extConsLblAttributes(ctx, &resp.Diagnostics, d.client, data)
 
 	if data.Id.IsNull() {
 		resp.Diagnostics.AddError(
@@ -153,5 +153,5 @@ func (d *L3extConsLblDataSource) Read(ctx context.Context, req datasource.ReadRe
 
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
-	tflog.Debug(ctx, "End read of datasource: aci_l3out_consumer_label")
+	tflog.Debug(ctx, fmt.Sprintf("End read of datasource aci_l3out_consumer_label with id '%s'", data.Id.ValueString()))
 }

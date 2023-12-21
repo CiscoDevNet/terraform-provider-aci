@@ -194,7 +194,7 @@ func (r *L3extRsRedistributePolResource) Create(ctx context.Context, req resourc
 	var stateData *L3extRsRedistributePolResourceModel
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &stateData)...)
 	setL3extRsRedistributePolId(ctx, stateData)
-	setL3extRsRedistributePolAttributes(ctx, &resp.Diagnostics, r.client, stateData)
+	getAndSetL3extRsRedistributePolAttributes(ctx, &resp.Diagnostics, r.client, stateData)
 
 	var data *L3extRsRedistributePolResourceModel
 
@@ -223,11 +223,11 @@ func (r *L3extRsRedistributePolResource) Create(ctx context.Context, req resourc
 		return
 	}
 
-	setL3extRsRedistributePolAttributes(ctx, &resp.Diagnostics, r.client, data)
+	getAndSetL3extRsRedistributePolAttributes(ctx, &resp.Diagnostics, r.client, data)
 
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
-	tflog.Debug(ctx, "End create of resource: aci_l3out_redistribute_policy")
+	tflog.Debug(ctx, fmt.Sprintf("End create of resource aci_l3out_redistribute_policy with id '%s'", data.Id.ValueString()))
 }
 
 func (r *L3extRsRedistributePolResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
@@ -243,7 +243,7 @@ func (r *L3extRsRedistributePolResource) Read(ctx context.Context, req resource.
 
 	tflog.Debug(ctx, fmt.Sprintf("Read of resource aci_l3out_redistribute_policy with id '%s'", data.Id.ValueString()))
 
-	setL3extRsRedistributePolAttributes(ctx, &resp.Diagnostics, r.client, data)
+	getAndSetL3extRsRedistributePolAttributes(ctx, &resp.Diagnostics, r.client, data)
 
 	// Save updated data into Terraform state
 	if data.Id.IsNull() {
@@ -253,7 +253,7 @@ func (r *L3extRsRedistributePolResource) Read(ctx context.Context, req resource.
 		resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
 	}
 
-	tflog.Debug(ctx, "End read of resource: aci_l3out_redistribute_policy")
+	tflog.Debug(ctx, fmt.Sprintf("End read of resource aci_l3out_redistribute_policy with id '%s'", data.Id.ValueString()))
 }
 
 func (r *L3extRsRedistributePolResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
@@ -286,11 +286,11 @@ func (r *L3extRsRedistributePolResource) Update(ctx context.Context, req resourc
 		return
 	}
 
-	setL3extRsRedistributePolAttributes(ctx, &resp.Diagnostics, r.client, data)
+	getAndSetL3extRsRedistributePolAttributes(ctx, &resp.Diagnostics, r.client, data)
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
-	tflog.Debug(ctx, "End update of resource: aci_l3out_redistribute_policy")
+	tflog.Debug(ctx, fmt.Sprintf("End update of resource aci_l3out_redistribute_policy with id '%s'", data.Id.ValueString()))
 }
 
 func (r *L3extRsRedistributePolResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
@@ -313,7 +313,7 @@ func (r *L3extRsRedistributePolResource) Delete(ctx context.Context, req resourc
 	if resp.Diagnostics.HasError() {
 		return
 	}
-	tflog.Debug(ctx, "End delete of resource: aci_l3out_redistribute_policy")
+	tflog.Debug(ctx, fmt.Sprintf("End delete of resource aci_l3out_redistribute_policy with id '%s'", data.Id.ValueString()))
 }
 
 func (r *L3extRsRedistributePolResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
@@ -327,7 +327,7 @@ func (r *L3extRsRedistributePolResource) ImportState(ctx context.Context, req re
 	tflog.Debug(ctx, "End import of state resource: aci_l3out_redistribute_policy")
 }
 
-func setL3extRsRedistributePolAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *L3extRsRedistributePolResourceModel) {
+func getAndSetL3extRsRedistributePolAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *L3extRsRedistributePolResourceModel) {
 	requestData := doL3extRsRedistributePolRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=children&rsp-subtree-class=%s", data.Id.ValueString(), "l3extRsRedistributePol,tagAnnotation"), "GET", nil)
 
 	if diags.HasError() {
