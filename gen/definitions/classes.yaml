@@ -80,6 +80,8 @@ l3extRsRedistributePol:
   sub_category: "L3Out"
 
 tagAnnotation:
+  notes:
+    - "This resource should not be used in combination with resources that configure `tagAnnotation` as nested attributes. Doing so will result in unexpected behaviour."
   dn_formats:
     - "uni/tn-{name}/annotationKey-[{key}]"
     - "uni/tn-{name}/ap-{name}/annotationKey-[{key}]"

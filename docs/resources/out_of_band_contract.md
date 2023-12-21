@@ -14,6 +14,8 @@ description: |-
 
 Manages ACI Out Of Band Contract
 
+
+
 ## API Information ##
 
 * Class: [vzOOBBrCP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vzOOBBrCP/overview)

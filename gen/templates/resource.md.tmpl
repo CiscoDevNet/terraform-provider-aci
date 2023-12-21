@@ -13,6 +13,12 @@ description: |-
 # aci_{{ .ResourceName}} #
 
 Manages ACI {{getResourceNameAsDescription .ResourceName}}
+{{ range .DocumentationNotes}}
+  !> {{ . }}
+{{- end}}
+{{ range .DocumentationWarnings}}
+  !> {{ . }}
+{{- end}}
 
 ## API Information ##
 
@@ -23,7 +29,11 @@ Manages ACI {{getResourceNameAsDescription .ResourceName}}
 
 {{$length := len .DocumentationDnFormats}}{{if eq $length 1}}* Distinguished Name Format: {{index .DocumentationDnFormats 0}}{{else}}* Distinguished Name Formats:
     {{- range .DocumentationDnFormats}}
+        {{- if containsString . "Too many"}}
+  - {{ . }}
+        {{- else}}
   - `{{ . }}`
+        {{- end}}
     {{- end}}
 {{- end}}
 

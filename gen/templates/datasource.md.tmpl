@@ -23,10 +23,13 @@ Data source for {{getResourceNameAsDescription .ResourceName}}
 
 {{$length := len .DocumentationDnFormats}}{{if eq $length 1}}* Distinguished Name Format: {{index .DocumentationDnFormats 0}}{{else}}* Distinguished Name Formats:
     {{- range .DocumentationDnFormats}}
+        {{- if containsString . "Too many"}}
+  - {{ . }}
+        {{- else}}
   - `{{ . }}`
+        {{- end}}
     {{- end}}
 {{- end}}
-
 ## GUI Information ##
 
 {{$length := len .UiLocations}}{{if eq $length 1}}* Location: {{ index .UiLocations 0}}{{else}}* Locations:

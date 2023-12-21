@@ -81,6 +81,7 @@ const pubhupDevnetBaseUrl = "https://pubhub.devnetcloud.com/media/model-doc-late
 var templateFuncs = template.FuncMap{
 	"snakeCase":                    Underscore,
 	"validatorString":              ValidatorString,
+	"containsString":               ContainsString,
 	"listToString":                 ListToString,
 	"overwriteProperty":            GetOverwriteAttributeName,
 	"overwritePropertyValue":       GetOverwriteAttributeValue,
@@ -116,6 +117,13 @@ func GetDevnetDocForClass(className string) string {
 
 func Capitalize(s string) string {
 	return fmt.Sprintf("%s%s", strings.ToUpper(s[:1]), s[1:])
+}
+
+func ContainsString(s, sub string) bool {
+	if strings.Contains(s, sub) {
+		return true
+	}
+	return false
 }
 
 // Reused from https://github.com/buxizhizhoum/inflection/blob/master/inflection.go#L8 to avoid importing the whole package
@@ -557,6 +565,8 @@ type Model struct {
 	DocumentationParentDns   []string
 	DocumentationExamples    []string
 	DocumentationChildren    []string
+	DocumentationNotes       []string
+	DocumentationWarnings    []string
 	Parents                  []string
 	UiLocations              []string
 	IdentifiedBy             []interface{}
@@ -645,6 +655,7 @@ func (m *Model) setClassModel(metaPath string, child bool, definitions Definitio
 		m.SetClassVersions(classDetails)
 		m.SetClassProperties(classDetails)
 		m.SetClassChildren(classDetails, pkgNames)
+		m.SetDocumentationNotesAndWarnigns(m.PkgName, definitions)
 	}
 
 	/*
@@ -811,6 +822,25 @@ func (m *Model) SetClassAllowDelete(classDetails interface{}) {
 		m.AllowDelete = false
 	} else {
 		m.AllowDelete = true
+	}
+}
+
+// Determine if a class is allowed to be deleted as defined in the classes.yaml file
+// Flag created to ensure classes that only classes allowed to be deleted are deleted
+func (m *Model) SetDocumentationNotesAndWarnigns(classPkgName string, definitions Definitions) {
+	if classDetails, ok := definitions.Classes[classPkgName]; ok {
+		for key, value := range classDetails.(map[interface{}]interface{}) {
+			if key.(string) == "notes" {
+				for _, note := range value.([]interface{}) {
+					m.DocumentationNotes = append(m.DocumentationNotes, note.(string))
+				}
+			}
+			if key.(string) == "warnings" {
+				for _, note := range value.([]interface{}) {
+					m.DocumentationWarnings = append(m.DocumentationWarnings, note.(string))
+				}
+			}
+		}
 	}
 }
 

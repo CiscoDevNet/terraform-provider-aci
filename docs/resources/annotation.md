@@ -14,6 +14,9 @@ description: |-
 
 Manages ACI Annotation
 
+  !> This resource should not be used in combination with resources that configure `tagAnnotation` as nested attributes. Doing so will result in unexpected behaviour.
+
+
 ## API Information ##
 
 * Class: [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)
@@ -21,7 +24,7 @@ Manages ACI Annotation
 * Supported in ACI versions: 3.2(1l) and later.
 
 * Distinguished Name Formats:
-  - `Too many DN formats to display, see model documentation for all possible parents of [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview).`
+  - Too many DN formats to display, see model documentation for all possible parents of [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview).
   - `uni/tn-{name}/BD-{name}/annotationKey-[{key}]`
   - `uni/tn-{name}/annotationKey-[{key}]`
   - `uni/tn-{name}/ap-{name}/annotationKey-[{key}]`
