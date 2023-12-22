@@ -62,7 +62,7 @@ resource "aci_l3out_redistribute_policy" "full_example_l3_outside" {
 
 ```
 
-All examples for the L3out Redistribute Policy resource can be found in the [examples](https://github.com/CiscoDevNet/terraform-provider-aci/examples/resources/aci_l3out_redistribute_policy) folder.
+All examples for the L3out Redistribute Policy resource can be found in the [examples](https://github.com/CiscoDevNet/terraform-provider-aci/tree/master/examples/resources/aci_l3out_redistribute_policy) folder.
 
 ## Schema ##
 

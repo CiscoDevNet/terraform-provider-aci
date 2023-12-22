@@ -68,7 +68,7 @@ resource "aci_l3out_consumer_label" "full_example_l3_outside" {
 
 ```
 
-All examples for the L3out Consumer Label resource can be found in the [examples](https://github.com/CiscoDevNet/terraform-provider-aci/examples/resources/aci_l3out_consumer_label) folder.
+All examples for the L3out Consumer Label resource can be found in the [examples](https://github.com/CiscoDevNet/terraform-provider-aci/tree/master/examples/resources/aci_l3out_consumer_label) folder.
 
 ## Schema ##
 
