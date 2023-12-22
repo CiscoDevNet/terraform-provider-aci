@@ -67,7 +67,7 @@ resource "aci_pim_route_map_entry" "full_example_pim_route_map_policy" {
 
 ```
 
-All examples for the Pim Route Map Entry resource can be found in the [examples](https://github.com/CiscoDevNet/terraform-provider-aci/examples/resources/aci_pim_route_map_entry) folder.
+All examples for the Pim Route Map Entry resource can be found in the [examples](https://github.com/CiscoDevNet/terraform-provider-aci/tree/master/examples/resources/aci_pim_route_map_entry) folder.
 
 ## Schema ##
 

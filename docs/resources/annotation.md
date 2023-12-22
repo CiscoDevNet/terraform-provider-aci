@@ -55,7 +55,7 @@ resource "aci_annotation" "example_tenant" {
 
 ```
 
-All examples for the Annotation resource can be found in the [examples](https://github.com/CiscoDevNet/terraform-provider-aci/examples/resources/aci_annotation) folder.
+All examples for the Annotation resource can be found in the [examples](https://github.com/CiscoDevNet/terraform-provider-aci/tree/master/examples/resources/aci_annotation) folder.
 
 ## Schema ##
 

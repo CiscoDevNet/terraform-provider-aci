@@ -64,7 +64,7 @@ resource "aci_pim_route_map_policy" "full_example_tenant" {
 
 ```
 
-All examples for the Pim Route Map Policy resource can be found in the [examples](https://github.com/CiscoDevNet/terraform-provider-aci/examples/resources/aci_pim_route_map_policy) folder.
+All examples for the Pim Route Map Policy resource can be found in the [examples](https://github.com/CiscoDevNet/terraform-provider-aci/tree/master/examples/resources/aci_pim_route_map_policy) folder.
 
 ## Schema ##
 

@@ -63,7 +63,7 @@ resource "aci_external_management_network_subnet" "full_example_external_managem
 
 ```
 
-All examples for the External Management Network Subnet resource can be found in the [examples](https://github.com/CiscoDevNet/terraform-provider-aci/examples/resources/aci_external_management_network_subnet) folder.
+All examples for the External Management Network Subnet resource can be found in the [examples](https://github.com/CiscoDevNet/terraform-provider-aci/tree/master/examples/resources/aci_external_management_network_subnet) folder.
 
 ## Schema ##
 

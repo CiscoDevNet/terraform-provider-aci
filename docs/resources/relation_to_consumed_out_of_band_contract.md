@@ -61,7 +61,7 @@ resource "aci_relation_to_consumed_out_of_band_contract" "full_example_external_
 
 ```
 
-All examples for the Relation To Consumed Out Of Band Contract resource can be found in the [examples](https://github.com/CiscoDevNet/terraform-provider-aci/examples/resources/aci_relation_to_consumed_out_of_band_contract) folder.
+All examples for the Relation To Consumed Out Of Band Contract resource can be found in the [examples](https://github.com/CiscoDevNet/terraform-provider-aci/tree/master/examples/resources/aci_relation_to_consumed_out_of_band_contract) folder.
 
 ## Schema ##
 

@@ -66,7 +66,7 @@ resource "aci_out_of_band_contract" "full_example" {
 
 ```
 
-All examples for the Out Of Band Contract resource can be found in the [examples](https://github.com/CiscoDevNet/terraform-provider-aci/examples/resources/aci_out_of_band_contract) folder.
+All examples for the Out Of Band Contract resource can be found in the [examples](https://github.com/CiscoDevNet/terraform-provider-aci/tree/master/examples/resources/aci_out_of_band_contract) folder.
 
 ## Schema ##
 
