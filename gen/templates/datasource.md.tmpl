@@ -44,9 +44,9 @@ Data source for {{getResourceNameAsDescription .ResourceName}}
 {{ .ExampleDataSource }}
 ```
 
-## Schema
+## Schema ##
 
-### Required
+### Required ###
 {{ if .HasParent}}
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
   {{- range .DocumentationParentDns}}
@@ -62,7 +62,7 @@ Data source for {{getResourceNameAsDescription .ResourceName}}
     {{- end}}
 {{- end}}
 
-### Read-Only
+### Read-Only ###
 
 * `id` - (string) The distinguished name (DN) of the {{getResourceNameAsDescription .ResourceName}} object.
 {{- range .Properties}}

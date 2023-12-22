@@ -64,7 +64,7 @@ var FullClasses = []string{"firmwareFwGrp", "maintMaintGrp", "maintMaintP", "fir
 var AllowEmptyReadClasses = []string{"firmwareFwGrp", "firmwareRsFwgrpp", "firmwareFwP", "fabricNodeBlk"}
 
 // List of classes which do not support annotations
-var NoAnnotationClasses = []string{"tagTag"}
+var NoAnnotationClasses = UnsupportedAnnotationClasses()
 
 var UnableToDelete = "unable to delete"
 

@@ -65,19 +65,19 @@ resource "aci_external_management_network_subnet" "full_example_external_managem
 
 All examples for the External Management Network Subnet resource can be found in the [examples](https://github.com/CiscoDevNet/terraform-provider-aci/examples/resources/aci_external_management_network_subnet) folder.
 
-## Schema
+## Schema ##
 
-### Required
+### Required ###
 
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
   - [aci_external_management_network_instance_profile](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/external_management_network_instance_profile) ([mgmtInstP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/mgmtInstP/overview))
 * `ip` (ip) - (string) The external subnet IP address and subnet mask. This IP address is used for creating an external management entity. The subnet mask for the IP address to be imported from the outside into the fabric. The contracts associated with its parent instance profile (l3ext:InstP) are applied to the subnet.
 
-### Read-Only
+### Read-Only ###
 
 * `id` - (string) The distinguished name (DN) of the External Management Network Subnet object.
 
-### Optional
+### Optional ###
   
 * `annotation` (annotation) - (string) The annotation of the External Management Network Subnet object.
   - Default: `orchestrator:terraform`
@@ -87,14 +87,14 @@ All examples for the External Management Network Subnet resource can be found in
 
 * `annotations` - (list) A list of Annotations objects ([tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can be configured using the [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   
-  #### Required
+  #### Required ####
   
   * `key` (key) - (string) The key used to uniquely identify this configuration object.
   * `value` (value) - (string) The value of the property.
 
 ## Importing
 
-An existing External Management Network Subnet can be [imported](https://www.terraform.io/docs/import/index.html) into this resource via its distinguished name (DN), via the following command:
+An existing External Management Network Subnet can be [imported](https://www.terraform.io/docs/import/index.html) into this resource with its distinguished name (DN), via the following command:
 
 ```
 terraform import aci_external_management_network_subnet.example_external_management_network_instance_profile uni/tn-mgmt/extmgmt-default/instp-{name}/subnet-[{ip}]

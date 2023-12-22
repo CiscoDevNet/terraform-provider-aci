@@ -35,13 +35,13 @@ data "aci_out_of_band_contract" "example" {
 
 ```
 
-## Schema
+## Schema ##
 
-### Required
+### Required ###
 
 * `name` (name) - (string) The name of the Out Of Band Contract object.
 
-### Read-Only
+### Read-Only ###
 
 * `id` - (string) The distinguished name (DN) of the Out Of Band Contract object.
 * `annotation` (annotation) - (string) The annotation of the Out Of Band Contract object.

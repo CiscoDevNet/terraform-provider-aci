@@ -63,19 +63,19 @@ resource "aci_relation_to_consumed_out_of_band_contract" "full_example_external_
 
 All examples for the Relation To Consumed Out Of Band Contract resource can be found in the [examples](https://github.com/CiscoDevNet/terraform-provider-aci/examples/resources/aci_relation_to_consumed_out_of_band_contract) folder.
 
-## Schema
+## Schema ##
 
-### Required
+### Required ###
 
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
   - [aci_external_management_network_instance_profile](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/external_management_network_instance_profile) ([mgmtInstP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/mgmtInstP/overview))
 * `out_of_band_contract_name` (tnVzOOBBrCPName) - (string) The name of the Out Of Band Contract object. This attribute can be referenced from a [resource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/out_of_band_contract) with `aci_out_of_band_contract.example.name` or from a [datasource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/data-sources/out_of_band_contract) with `data.aci_out_of_band_contract.example.name`.
 
-### Read-Only
+### Read-Only ###
 
 * `id` - (string) The distinguished name (DN) of the Relation To Consumed Out Of Band Contract object.
 
-### Optional
+### Optional ###
   
 * `annotation` (annotation) - (string) The annotation of the Relation To Consumed Out Of Band Contract object.
   - Default: `orchestrator:terraform`
@@ -85,14 +85,14 @@ All examples for the Relation To Consumed Out Of Band Contract resource can be f
 
 * `annotations` - (list) A list of Annotations objects ([tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can be configured using the [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   
-  #### Required
+  #### Required ####
   
   * `key` (key) - (string) The key used to uniquely identify this configuration object.
   * `value` (value) - (string) The value of the property.
 
 ## Importing
 
-An existing Relation To Consumed Out Of Band Contract can be [imported](https://www.terraform.io/docs/import/index.html) into this resource via its distinguished name (DN), via the following command:
+An existing Relation To Consumed Out Of Band Contract can be [imported](https://www.terraform.io/docs/import/index.html) into this resource with its distinguished name (DN), via the following command:
 
 ```
 terraform import aci_relation_to_consumed_out_of_band_contract.example_external_management_network_instance_profile uni/tn-{name}/extmgmt-{name}/instp-{name}/rsooBCons-{tnVzOOBBrCPName}

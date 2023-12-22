@@ -70,17 +70,17 @@ resource "aci_external_management_network_instance_profile" "full_example" {
 
 All examples for the External Management Network Instance Profile resource can be found in the [examples](https://github.com/CiscoDevNet/terraform-provider-aci/examples/resources/aci_external_management_network_instance_profile) folder.
 
-## Schema
+## Schema ##
 
-### Required
+### Required ###
 
 * `name` (name) - (string) The name of the External Management Network Instance Profile object.
 
-### Read-Only
+### Read-Only ###
 
 * `id` - (string) The distinguished name (DN) of the External Management Network Instance Profile object.
 
-### Optional
+### Optional ###
   
 * `annotation` (annotation) - (string) The annotation of the External Management Network Instance Profile object.
   - Default: `orchestrator:terraform`
@@ -92,11 +92,11 @@ All examples for the External Management Network Instance Profile resource can b
 
 * `relation_to_consumed_out_of_band_contracts` - (list) A list of Relation To Consumed Out Of Band Contracts objects ([mgmtRsOoBCons](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/mgmtRsOoBCons/overview)) pointing to the Out Of Band Contract ([vzOOBBrCP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vzOOBBrCP/overview)) which can be configured using the [aci_out_of_band_contract](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/out_of_band_contract) resource.
   
-  #### Required
+  #### Required ####
   
   * `out_of_band_contract_name` (tnVzOOBBrCPName) - (string) The name of the Out Of Band Contract object. This attribute can be referenced from a [resource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/out_of_band_contract) with `aci_out_of_band_contract.example.name` or from a [datasource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/data-sources/out_of_band_contract) with `data.aci_out_of_band_contract.example.name`.
 
-  #### Optional
+  #### Optional ####
     
   * `annotation` (annotation) - (string) The annotation of the Relation To Consumed Out Of Band Contract object.
       - Default: `orchestrator:terraform`
@@ -106,14 +106,14 @@ All examples for the External Management Network Instance Profile resource can b
 
 * `annotations` - (list) A list of Annotations objects ([tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can be configured using the [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   
-  #### Required
+  #### Required ####
   
   * `key` (key) - (string) The key used to uniquely identify this configuration object.
   * `value` (value) - (string) The value of the property.
 
 ## Importing
 
-An existing External Management Network Instance Profile can be [imported](https://www.terraform.io/docs/import/index.html) into this resource via its distinguished name (DN), via the following command:
+An existing External Management Network Instance Profile can be [imported](https://www.terraform.io/docs/import/index.html) into this resource with its distinguished name (DN), via the following command:
 
 ```
 terraform import aci_external_management_network_instance_profile.example uni/tn-mgmt/extmgmt-default/instp-{name}

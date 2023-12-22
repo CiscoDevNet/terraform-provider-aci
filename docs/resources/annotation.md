@@ -57,9 +57,9 @@ resource "aci_annotation" "example_tenant" {
 
 All examples for the Annotation resource can be found in the [examples](https://github.com/CiscoDevNet/terraform-provider-aci/examples/resources/aci_annotation) folder.
 
-## Schema
+## Schema ##
 
-### Required
+### Required ###
 
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
   - [aci_application_epg](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/application_epg) ([fvAEPg](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvAEPg/overview))
@@ -79,13 +79,13 @@ All examples for the Annotation resource can be found in the [examples](https://
 * `key` (key) - (string) The key used to uniquely identify this configuration object.
 * `value` (value) - (string) The value of the property.
 
-### Read-Only
+### Read-Only ###
 
 * `id` - (string) The distinguished name (DN) of the Annotation object.
 
 ## Importing
 
-An existing Annotation can be [imported](https://www.terraform.io/docs/import/index.html) into this resource via its distinguished name (DN), via the following command:
+An existing Annotation can be [imported](https://www.terraform.io/docs/import/index.html) into this resource with its distinguished name (DN), via the following command:
 
 ```
 terraform import aci_annotation.example_application_epg uni/tn-{name}/annotationKey-[{key}]

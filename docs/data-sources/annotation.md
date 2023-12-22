@@ -47,9 +47,9 @@ data "aci_annotation" "example_tenant" {
 
 ```
 
-## Schema
+## Schema ##
 
-### Required
+### Required ###
 
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
   - [aci_application_epg](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/application_epg) ([fvAEPg](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvAEPg/overview))
@@ -68,7 +68,7 @@ data "aci_annotation" "example_tenant" {
   - Too many classes to display, see model documentation for all possible classes of [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview).
 * `key` (key) - (string) The key used to uniquely identify this configuration object.
 
-### Read-Only
+### Read-Only ###
 
 * `id` - (string) The distinguished name (DN) of the Annotation object.
 * `value` (value) - (string) The value of the property.

@@ -1,5 +1,5 @@
 ---
-subcategory: ""
+subcategory: "Fabric Policies"
 layout: "aci"
 page_title: "ACI: aci_snmp_community"
 sidebar_current: "docs-aci-resource-aci_snmp_community"

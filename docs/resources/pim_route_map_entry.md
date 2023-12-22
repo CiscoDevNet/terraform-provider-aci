@@ -69,19 +69,19 @@ resource "aci_pim_route_map_entry" "full_example_pim_route_map_policy" {
 
 All examples for the Pim Route Map Entry resource can be found in the [examples](https://github.com/CiscoDevNet/terraform-provider-aci/examples/resources/aci_pim_route_map_entry) folder.
 
-## Schema
+## Schema ##
 
-### Required
+### Required ###
 
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
   - [aci_pim_route_map_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/pim_route_map_policy) ([pimRouteMapPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/pimRouteMapPol/overview))
 * `order` (order) - (string) PIM route map entry order.
 
-### Read-Only
+### Read-Only ###
 
 * `id` - (string) The distinguished name (DN) of the Pim Route Map Entry object.
 
-### Optional
+### Optional ###
   
 * `action` (action) - (string) The route action of the Pim Route Map Entry object.
   - Default: `permit`
@@ -97,14 +97,14 @@ All examples for the Pim Route Map Entry resource can be found in the [examples]
 
 * `annotations` - (list) A list of Annotations objects ([tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can be configured using the [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   
-  #### Required
+  #### Required ####
   
   * `key` (key) - (string) The key used to uniquely identify this configuration object.
   * `value` (value) - (string) The value of the property.
 
 ## Importing
 
-An existing Pim Route Map Entry can be [imported](https://www.terraform.io/docs/import/index.html) into this resource via its distinguished name (DN), via the following command:
+An existing Pim Route Map Entry can be [imported](https://www.terraform.io/docs/import/index.html) into this resource with its distinguished name (DN), via the following command:
 
 ```
 terraform import aci_pim_route_map_entry.example_pim_route_map_policy uni/tn-{name}/rtmap-{name}/rtmapentry-{order}

@@ -66,19 +66,19 @@ resource "aci_pim_route_map_policy" "full_example_tenant" {
 
 All examples for the Pim Route Map Policy resource can be found in the [examples](https://github.com/CiscoDevNet/terraform-provider-aci/examples/resources/aci_pim_route_map_policy) folder.
 
-## Schema
+## Schema ##
 
-### Required
+### Required ###
 
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
   - [aci_tenant](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tenant) ([fvTenant](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvTenant/overview))
 * `name` (name) - (string) The name of the Pim Route Map Policy object.
 
-### Read-Only
+### Read-Only ###
 
 * `id` - (string) The distinguished name (DN) of the Pim Route Map Policy object.
 
-### Optional
+### Optional ###
   
 * `annotation` (annotation) - (string) The annotation of the Pim Route Map Policy object.
   - Default: `orchestrator:terraform`
@@ -89,14 +89,14 @@ All examples for the Pim Route Map Policy resource can be found in the [examples
 
 * `annotations` - (list) A list of Annotations objects ([tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can be configured using the [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   
-  #### Required
+  #### Required ####
   
   * `key` (key) - (string) The key used to uniquely identify this configuration object.
   * `value` (value) - (string) The value of the property.
 
 ## Importing
 
-An existing Pim Route Map Policy can be [imported](https://www.terraform.io/docs/import/index.html) into this resource via its distinguished name (DN), via the following command:
+An existing Pim Route Map Policy can be [imported](https://www.terraform.io/docs/import/index.html) into this resource with its distinguished name (DN), via the following command:
 
 ```
 terraform import aci_pim_route_map_policy.example_tenant uni/tn-{name}/rtmap-{name}
