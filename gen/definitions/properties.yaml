@@ -1,0 +1,103 @@
+global:
+  documentation:
+    # %s will be replaced with the object name
+    annotation: "The annotation of the %s object."
+    name: "The name of the %s object."
+    nameAlias: "The name alias of the %s object."
+    descr: "The description of the %s object."
+    owner: "The owner of the %s object."
+    tnVzOOBBrCPName: "The name of the Out Of Band Contract object."
+    tnRtctrlProfileName: "The name of the Route Control Profile object."
+  overwrites:
+    count: "apic_count" # count is a terraform reserved schema entry
+    provider: "prov" # provider is a terraform reserved schema entry
+    t_dn: "target_dn"
+    ctx_name: "vrf_name"
+    id: "id_attribute" # id is a terraform reserved schema entry and needed in struct
+    prio: "priority"
+    descr: "description"
+  ignores:
+  - "userdom"
+
+l3extRsRedistributePol:
+  overwrites:
+    src: "source"
+  documentation:
+    src: "The source of the %s object."
+  test_values:
+    resource_required:
+      src: "direct"
+    datasource_required:
+      src: "direct"
+    datasource_non_existing:
+      src: "static"
+    all:
+      src: "direct"
+    default:
+      src: "direct"
+  parents:
+    - parent_dependency: "fvTenant"
+      class_in_parent: true
+
+vzOOBBrCP:
+  documentation:
+    prio: "The priority of the %s object."
+    targetDscp: "The target DSCP value of the %s object."
+    intent: "The Install Rules or Estimate Number of Rules"
+
+mgmtRsOoBCons:
+  parents:
+    - class_in_parent: true
+
+mgmtSubnet:
+  test_values:
+    resource_required:
+      ip: "1.1.1.0/24"
+    datasource_required:
+      ip: "1.1.1.0/24"
+    datasource_non_existing:
+      ip: "2.2.2.0/24"
+
+l3extConsLbl:
+  test_values:
+    default:
+      tag: "yellow-green"
+    all:
+      tag: "lemon-chiffon"
+
+pimRouteMapEntry:
+  overwrites:
+    grp: "group_ip"
+    src: "source_ip"
+    rp: "rendezvous_point_ip"
+  documentation:
+    src: "The source ip of the %s object."
+    grp: "The group ip of the %s object."
+    rp: "The rendezvous point ip of the %s object."
+    action: "The route action of the %s object."
+  test_values:
+    default:
+      grp: "0.0.0.0"
+      rp: "0.0.0.0"
+      src: "0.0.0.0"
+    resource_required:
+      order: "1"
+    datasource_required:
+      order: "1"
+    datasource_non_existing:
+      order: "2"
+    all:
+      grp: "0.0.0.0"
+      rp: "0.0.0.0"
+      src: "1.1.1.1/30"
+  parents:
+    - parent_dependency: "fvTenant"
+
+tagAnnotation:
+  documentation:
+    key: "The key used to uniquely identify this configuration object."
+  resource_required:
+    - "value"
+  test_values:
+    default:
+      value: "test_value"

@@ -19,13 +19,13 @@ resource "aci_tenant" "tenant_for_epg_contract" {
 }
 
 resource "aci_contract" "tenant_contract" {
-  tenant_dn   = aci_tenant.tenant_for_epg_contract.id
-  name        = "tenant_contract"
+  tenant_dn = aci_tenant.tenant_for_epg_contract.id
+  name      = "tenant_contract"
 }
 
 resource "aci_application_profile" "tenant_ap" {
-  tenant_dn   = aci_tenant.tenant_for_epg_contract.id
-  name        = "AP"
+  tenant_dn = aci_tenant.tenant_for_epg_contract.id
+  name      = "AP"
 }
 
 resource "aci_application_epg" "application_epg" {

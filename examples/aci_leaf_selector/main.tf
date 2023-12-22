@@ -14,10 +14,10 @@ provider "aci" {
 }
 
 resource "aci_leaf_selector" "example" {
-  leaf_profile_dn         = aci_leaf_profile.example.id
-  name                    = "example_leaf_selector"
-  switch_association_type = "range"
-  description             = "from terraform"
+  leaf_profile_dn                  = aci_leaf_profile.example.id
+  name                             = "example_leaf_selector"
+  switch_association_type          = "range"
+  description                      = "from terraform"
   relation_infra_rs_acc_node_p_grp = aci_access_switch_policy_group.example.id
 }
 
@@ -40,6 +40,6 @@ resource "aci_leaf_interface_profile" "example" {
 }
 
 resource "aci_access_switch_policy_group" "example" {
-  name  = "policy-group-example"
+  name        = "policy-group-example"
   description = "example"
 }

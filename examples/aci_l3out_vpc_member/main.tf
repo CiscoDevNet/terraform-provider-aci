@@ -20,12 +20,12 @@ resource "aci_tenant" "example" {
 
 resource "aci_vrf" "vrf_example_tf" {
   tenant_dn = aci_tenant.example.id
-  name = "tf_vrf_l3out"
+  name      = "tf_vrf_l3out"
 }
 
 resource "aci_l3_outside" "example" {
-  tenant_dn = aci_tenant.example.id
-  name      = "demo_l3out"
+  tenant_dn              = aci_tenant.example.id
+  name                   = "demo_l3out"
   relation_l3ext_rs_ectx = aci_vrf.vrf_example_tf.id
 }
 

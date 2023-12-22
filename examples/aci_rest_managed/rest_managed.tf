@@ -24,7 +24,7 @@ resource "aci_rest_managed" "fvTenant2" {
   dn         = "uni/tn-EXAMPLE_TENANT2"
   class_name = "fvTenant"
   content = {
-    name = "EXAMPLE_TENANT2"
+    name       = "EXAMPLE_TENANT2"
     annotation = "orchestrator:class"
   }
 
@@ -32,7 +32,7 @@ resource "aci_rest_managed" "fvTenant2" {
     rn         = "ctx-VRF1"
     class_name = "fvCtx"
     content = {
-      name = "VRF1"
+      name       = "VRF1"
       annotation = "orchestrator:child"
     }
   }

@@ -35,8 +35,8 @@ resource "aci_vrf" "vrf1" {
 }
 
 data "aci_vrf" "common_default" {
-  tenant_dn          = data.aci_tenant.common.id
-  name               = "default"
+  tenant_dn = data.aci_tenant.common.id
+  name      = "default"
 }
 
 resource "aci_bgp_address_family_context" "one" {
@@ -63,25 +63,25 @@ resource "aci_bgp_address_family_context" "two" {
 
 
 resource "aci_vrf_to_bgp_address_family_context" "example_v4" {
-  vrf_dn  = data.aci_vrf.common_default.id
+  vrf_dn                        = data.aci_vrf.common_default.id
   bgp_address_family_context_dn = aci_bgp_address_family_context.two.id
-  address_family  = "ipv4-ucast"
+  address_family                = "ipv4-ucast"
 }
 
 resource "aci_vrf_to_bgp_address_family_context" "example_v6" {
-  vrf_dn  = data.aci_vrf.common_default.id
+  vrf_dn                        = data.aci_vrf.common_default.id
   bgp_address_family_context_dn = aci_bgp_address_family_context.two.id
-  address_family  = "ipv6-ucast"
+  address_family                = "ipv6-ucast"
 }
 
 data "aci_vrf_to_bgp_address_family_context" "example_v4" {
-  vrf_dn  = aci_vrf_to_bgp_address_family_context.example_v4.vrf_dn
-  bgp_address_family_context_dn  = aci_bgp_address_family_context.two.id
-  address_family  = "ipv4-ucast"
+  vrf_dn                        = aci_vrf_to_bgp_address_family_context.example_v4.vrf_dn
+  bgp_address_family_context_dn = aci_bgp_address_family_context.two.id
+  address_family                = "ipv4-ucast"
 }
 
 data "aci_vrf_to_bgp_address_family_context" "example_v6" {
-  vrf_dn  = aci_vrf_to_bgp_address_family_context.example_v6.vrf_dn
-  bgp_address_family_context_dn  = aci_bgp_address_family_context.two.id
-  address_family  = "ipv6-ucast"
+  vrf_dn                        = aci_vrf_to_bgp_address_family_context.example_v6.vrf_dn
+  bgp_address_family_context_dn = aci_bgp_address_family_context.two.id
+  address_family                = "ipv6-ucast"
 }

@@ -36,16 +36,16 @@ resource "aci_tenant" "gcp_tenant" {
 }
 
 resource "aci_cloud_account" "gcp_cloud_account" {
-  tenant_dn   = aci_cloud_credentials.gcp_credentials.tenant_dn
-  access_type = "credentials" //credentials or managed
-  account_id  = "example_id"
-  vendor      = "gcp"
+  tenant_dn            = aci_cloud_credentials.gcp_credentials.tenant_dn
+  access_type          = "credentials" //credentials or managed
+  account_id           = "example_id"
+  vendor               = "gcp"
   cloud_credentials_dn = aci_cloud_credentials.gcp_credentials.id
 }
 
 resource "aci_cloud_credentials" "gcp_credentials" {
-  tenant_dn   = aci_tenant.gcp_tenant.id
-  key_id = "gcp_cred_id"
+  tenant_dn = aci_tenant.gcp_tenant.id
+  key_id    = "gcp_cred_id"
   name      = "gcp_test_cred"
-  email= "anvjain@cisco.com"
+  email     = "anvjain@cisco.com"
 }

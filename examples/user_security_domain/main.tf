@@ -14,9 +14,9 @@ provider "aci" {
 }
 
 resource "aci_user_security_domain" "example" {
-  local_user_dn  = aci_local_user.example.id
-  name  = "example"
-  annotation = "orchestrator:terraform"
-  name_alias = "example_name_alias"
-  description = "from Terraform"
+  local_user_dn = aci_local_user.example.id
+  name          = "example"
+  annotation    = "orchestrator:terraform"
+  name_alias    = "example_name_alias"
+  description   = "from Terraform"
 }

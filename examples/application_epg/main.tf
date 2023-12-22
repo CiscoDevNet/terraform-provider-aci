@@ -21,15 +21,15 @@ resource "aci_tenant" "terraform_tenant" {
 resource "aci_application_profile" "test_ap" {
   tenant_dn   = aci_tenant.terraform_tenant.id
   name        = "test"
-  description  =  "This application profile is created by terraform"
+  description = "This application profile is created by terraform"
   name_alias  = "test_ap"
   prio        = "level1"
 }
 
 resource "aci_bridge_domain" "terraform_bd" {
-  tenant_dn = aci_tenant.terraform_tenant.id
-  name      = "test_bd"
-  description  =  "This bridge domain is created by terraform"
+  tenant_dn   = aci_tenant.terraform_tenant.id
+  name        = "test_bd"
+  description = "This bridge domain is created by terraform"
 }
 
 resource "aci_rest" "rest_qos_custom_pol" {
@@ -51,8 +51,8 @@ resource "aci_contract" "rs_prov_contract" {
 }
 
 resource "aci_imported_contract" "rest_vz_cons_if" {
-  tenant_dn = aci_tenant.terraform_tenant.id
-  name      = "testcontract"
+  tenant_dn   = aci_tenant.terraform_tenant.id
+  name        = "testcontract"
   description = "This contract is created by terraform ACI provider"
 }
 
@@ -97,14 +97,14 @@ resource "aci_rest" "rest_trust_ctrl_pol" {
 }
 
 resource "aci_taboo_contract" "rest_taboo_con" {
-  tenant_dn = aci_tenant.terraform_tenant.id
-  name      = "testcon"
+  tenant_dn   = aci_tenant.terraform_tenant.id
+  name        = "testcon"
   description = "This contract is created by terraform ACI provider"
 }
 
 resource "aci_monitoring_policy" "rest_mon_epg_pol" {
-  tenant_dn = aci_tenant.terraform_tenant.id
-  name      = "testpol"
+  tenant_dn   = aci_tenant.terraform_tenant.id
+  name        = "testpol"
   description = "This policy is created by terraform ACI provider"
 }
 
@@ -167,14 +167,14 @@ The following depicts an example to create and associate an application EPG with
 */
 
 data "aci_tenant" "common_tenant" {
-  name = "common"
-  description  =  "This tenant is created by terraform"
+  name        = "common"
+  description = "This tenant is created by terraform"
 }
 
 data "aci_vrf" "default_vrf" {
-  tenant_dn = data.aci_tenant.common_tenant.id
-  name      = "default"
-  description  =  "This vrf is created by terraform"
+  tenant_dn   = data.aci_tenant.common_tenant.id
+  name        = "default"
+  description = "This vrf is created by terraform"
 }
 
 resource "aci_bridge_domain" "test_bd" {

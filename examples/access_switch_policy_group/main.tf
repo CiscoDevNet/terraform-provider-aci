@@ -14,8 +14,8 @@ provider "aci" {
 }
 
 resource "aci_access_switch_policy_group" "example" {
-  name  = "example"
-  annotation = "example"
+  name        = "example"
+  annotation  = "example"
   description = "example"
-  name_alias = "example"
+  name_alias  = "example"
 }

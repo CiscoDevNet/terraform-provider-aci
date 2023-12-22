@@ -19,6 +19,6 @@ resource "aci_tenant" "terraform_tenant" {
 }
 
 resource "aci_l4_l7_redirect_health_group" "example" {
-  tenant_dn  = aci_tenant.terraform_tenant.id
-  name       = "example"
+  tenant_dn = aci_tenant.terraform_tenant.id
+  name      = "example"
 }

@@ -35,4 +35,4 @@ resource "aci_vmm_domain" "foovmm_domain" {
   mode                = "default"
   name_alias          = "alias_dom"
   pref_encap_mode     = "unspecified"
-} 
+}
