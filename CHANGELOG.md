@@ -1,3 +1,12 @@
+## 2.12.0 (December 22, 2023)
+This release is the first release of a muxed provider including resources created using the new terraform-plugin-framework.
+New resources will be created using the new approach based on terraform-plugin-framework.
+
+IMPROVEMENTS:
+- Mux existing provider with terraform-plugin-framework base for new provider
+- Migrate aci_annotation resource and datasource to framework provider
+- Add aci_external_management_network_instance_profile, aci_external_management_network_subnet, aci_l3out_consumer_label, aci_l3out_redistribute_policy, aci_out_of_band_contract, aci_pim_route_map_entry, aci_pim_route_map_policy and aci_relation_to_consumed_out_of_band_contract resources and data sources.
+
 ## 2.11.1 (November 10, 2023)
 BUG FIXES:
 - Add missing annotation attribute to aci_rest_managed datasource
