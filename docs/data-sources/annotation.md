@@ -30,7 +30,7 @@ Data source for Annotation
 
 ## GUI Information ##
 
-* Location: Generic
+* Location: `Generic`
 
 ## Example Usage ##
 

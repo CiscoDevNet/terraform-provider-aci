@@ -22,11 +22,11 @@ Manages ACI External Management Network Instance Profile
 
 * Supported in ACI versions: 1.0(1e) and later.
 
-* Distinguished Name Format: uni/tn-mgmt/extmgmt-default/instp-{name}
+* Distinguished Name Format: `uni/tn-mgmt/extmgmt-default/instp-{name}`
 
 ## GUI Information ##
 
-* Location: Tenants (mgmt) -> External Management Network Instance Profiles
+* Location: `Tenants (mgmt) -> External Management Network Instance Profiles`
 
 ## Example Usage ##
 

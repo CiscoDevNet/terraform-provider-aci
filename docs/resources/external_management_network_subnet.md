@@ -22,11 +22,11 @@ Manages ACI External Management Network Subnet
 
 * Supported in ACI versions: 1.0(1e) and later.
 
-* Distinguished Name Format: uni/tn-mgmt/extmgmt-default/instp-{name}/subnet-[{ip}]
+* Distinguished Name Format: `uni/tn-mgmt/extmgmt-default/instp-{name}/subnet-[{ip}]`
 
 ## GUI Information ##
 
-* Location: Tenants (mgmt) -> External Management Network Instance Profiles -> Subnets
+* Location: `Tenants (mgmt) -> External Management Network Instance Profiles -> Subnets`
 
 ## Example Usage ##
 

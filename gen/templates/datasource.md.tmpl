@@ -21,7 +21,7 @@ Data source for {{getResourceNameAsDescription .ResourceName}}
 * Supported in ACI versions: {{ .Versions}}
 {{- end}}
 
-{{$length := len .DocumentationDnFormats}}{{if eq $length 1}}* Distinguished Name Format: {{index .DocumentationDnFormats 0}}{{else}}* Distinguished Name Formats:
+{{$length := len .DocumentationDnFormats}}{{if eq $length 1}}* Distinguished Name Format: `{{index .DocumentationDnFormats 0}}`{{else}}* Distinguished Name Formats:
     {{- range .DocumentationDnFormats}}
         {{- if containsString . "Too many"}}
   - {{ . }}
@@ -33,7 +33,7 @@ Data source for {{getResourceNameAsDescription .ResourceName}}
 
 ## GUI Information ##
 
-{{$length := len .UiLocations}}{{if eq $length 1}}* Location: {{ index .UiLocations 0}}{{else}}* Locations:
+{{$length := len .UiLocations}}{{if eq $length 1}}* Location: `{{ index .UiLocations 0}}`{{else}}* Locations:
     {{- range .UiLocations}}
   - `{{ . }}`
     {{- end}}

@@ -20,11 +20,11 @@ Data source for Relation To Consumed Out Of Band Contract
 
 * Supported in ACI versions: 1.0(1e) and later.
 
-* Distinguished Name Format: uni/tn-{name}/extmgmt-{name}/instp-{name}/rsooBCons-{tnVzOOBBrCPName}
+* Distinguished Name Format: `uni/tn-{name}/extmgmt-{name}/instp-{name}/rsooBCons-{tnVzOOBBrCPName}`
 
 ## GUI Information ##
 
-* Location: Tenants (mgmt) -> External Management Network Instance Profiles -> Contracts
+* Location: `Tenants (mgmt) -> External Management Network Instance Profiles -> Contracts`
 
 ## Example Usage ##
 

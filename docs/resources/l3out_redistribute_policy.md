@@ -22,11 +22,11 @@ Manages ACI L3out Redistribute Policy
 
 * Supported in ACI versions: 4.2(1i) and later.
 
-* Distinguished Name Format: uni/tn-{name}/out-{name}/rsredistributePol-[{tnRtctrlProfileName}]-{src}
+* Distinguished Name Format: `uni/tn-{name}/out-{name}/rsredistributePol-[{tnRtctrlProfileName}]-{src}`
 
 ## GUI Information ##
 
-* Location: Tenants -> Networking -> L3Outs -> Policy -> Main -> Route Profile for Redistribution
+* Location: `Tenants -> Networking -> L3Outs -> Policy -> Main -> Route Profile for Redistribution`
 
 ## Example Usage ##
 

@@ -22,7 +22,7 @@ Manages ACI L3out Consumer Label
 
 * Supported in ACI versions: 2.0(1m) and later.
 
-* Distinguished Name Format: uni/tn-{name}/out-{name}/conslbl-{name}
+* Distinguished Name Format: `uni/tn-{name}/out-{name}/conslbl-{name}`
 
 ## GUI Information ##
 

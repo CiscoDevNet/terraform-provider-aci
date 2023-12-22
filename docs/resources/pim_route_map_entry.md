@@ -22,11 +22,11 @@ Manages ACI Pim Route Map Entry
 
 * Supported in ACI versions: 2.0(1m) and later.
 
-* Distinguished Name Format: uni/tn-{name}/rtmap-{name}/rtmapentry-{order}
+* Distinguished Name Format: `uni/tn-{name}/rtmap-{name}/rtmapentry-{order}`
 
 ## GUI Information ##
 
-* Location: Tenants -> Policies -> Protocol -> Route Maps for Multicast -> Route Maps
+* Location: `Tenants -> Policies -> Protocol -> Route Maps for Multicast -> Route Maps`
 
 ## Example Usage ##
 
