@@ -207,7 +207,6 @@ func (p *AciProvider) Resources(ctx context.Context) []func() resource.Resource 
 		New{{.ResourceClassName}}Resource,
 			{{- end }}
 		{{- end }}
-		NewAciRestManagedResource,
 	}
 }
 
@@ -218,7 +217,6 @@ func (p *AciProvider) DataSources(ctx context.Context) []func() datasource.DataS
 		New{{.ResourceClassName}}DataSource,
 			{{- end }}
 		{{- end }}
-		NewAciRestManagedDataSource,
 	}
 }
 
