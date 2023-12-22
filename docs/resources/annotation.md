@@ -14,7 +14,7 @@ description: |-
 
 Manages ACI Annotation
 
-  -> This resource should not be used in combination with resources that configure `tagAnnotation` as nested attributes. Doing so will result in unexpected behaviour.
+  -> This resource should not be used in combination with the `annotations` nested attributes of other resources for the same object. Doing so will result in unexpected behaviour.
 
 
 ## API Information ##

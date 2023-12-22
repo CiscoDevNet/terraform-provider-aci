@@ -21,6 +21,7 @@ Data source for Out Of Band Contract
 * Supported in ACI versions: 1.0(1e) and later.
 
 * Distinguished Name Format: uni/tn-mgmt/oobbrc-{name}
+
 ## GUI Information ##
 
 * Location: Tenants (mgmt) -> Contracts -> Out-Of-Band Contracts
