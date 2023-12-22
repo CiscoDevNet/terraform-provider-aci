@@ -62,23 +62,6 @@ type L3extRsRedistributePolIdentifier struct {
 	TnRtctrlProfileName types.String
 }
 
-func (r *L3extRsRedistributePolResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanRequest, resp *resource.ModifyPlanResponse) {
-	tflog.Debug(ctx, "Start plan modification of resource: aci_l3out_redistribute_policy")
-
-	if !req.Plan.Raw.IsNull() {
-		var planData *L3extRsRedistributePolResourceModel
-		resp.Diagnostics.Append(req.Plan.Get(ctx, &planData)...)
-
-		if r.client.ValidateRelationDn {
-			CheckDn(ctx, r.client, planData.TnRtctrlProfileName.ValueString(), &resp.Diagnostics)
-		}
-		planData.TnRtctrlProfileName = basetypes.NewStringValue(GetMOName(planData.TnRtctrlProfileName.ValueString()))
-
-		resp.Plan.Set(ctx, planData)
-	}
-	tflog.Debug(ctx, "End plan modification of resource: aci_l3out_redistribute_policy")
-}
-
 func (r *L3extRsRedistributePolResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
 	tflog.Debug(ctx, "Start metadata of resource: aci_l3out_redistribute_policy")
 	resp.TypeName = req.ProviderTypeName + "_l3out_redistribute_policy"

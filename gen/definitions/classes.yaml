@@ -16,6 +16,7 @@ vzCPIf:
 
 rtctrlProfile:
   resource_name: "route_control_profile"
+  rn_format: "/prof-{name}"
 
 vzOOBBrCP:
   resource_name: "out_of_band_contract"

@@ -89,8 +89,8 @@ All examples for the External Management Network Subnet resource can be found in
   
   #### Required
   
-  * `key` (key) - (string) The key used to uniquely identify this configuration object. 
-  * `value` (value) - (string) The value of the property. 
+  * `key` (key) - (string) The key used to uniquely identify this configuration object.
+  * `value` (value) - (string) The value of the property.
 
 ## Importing
 

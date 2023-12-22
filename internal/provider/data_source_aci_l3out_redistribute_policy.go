@@ -12,7 +12,6 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
-	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 )
 
@@ -114,11 +113,6 @@ func (d *L3extRsRedistributePolDataSource) Read(ctx context.Context, req datasou
 	if resp.Diagnostics.HasError() {
 		return
 	}
-
-	if d.client.ValidateRelationDn {
-		CheckDn(ctx, d.client, data.TnRtctrlProfileName.ValueString(), &resp.Diagnostics)
-	}
-	data.TnRtctrlProfileName = basetypes.NewStringValue(GetMOName(data.TnRtctrlProfileName.ValueString()))
 
 	setL3extRsRedistributePolId(ctx, data)
 

@@ -85,6 +85,7 @@ var templateFuncs = template.FuncMap{
 	"listToString":                 ListToString,
 	"overwriteProperty":            GetOverwriteAttributeName,
 	"overwritePropertyValue":       GetOverwriteAttributeValue,
+	"getRnPrefix":                  GetRnPrefix,
 	"createTestValue":              func(val string) string { return fmt.Sprintf("test_%s", val) },
 	"createNonExistingValue":       func(val string) string { return fmt.Sprintf("non_existing_%s", val) },
 	"getParentTestDependencies":    GetParentTestDependencies,
@@ -105,10 +106,22 @@ var templateFuncs = template.FuncMap{
 var labels = []string{"dns_provider", "filter_entry"}
 var duplicateLabels = []string{}
 var resourceNames = map[string]string{}
+var rnPrefix = map[string]string{}
 var targetRelationalPropertyClasses = map[string]string{}
 
 func GetResourceNameAsDescription(s string) string {
 	return cases.Title(language.English).String(strings.ReplaceAll(s, "_", " "))
+}
+
+func GetRnPrefix(s string, definitions Definitions) string {
+	if v, ok := definitions.Classes[s]; ok {
+		for key, value := range v.(map[interface{}]interface{}) {
+			if key.(string) == "rn_format" {
+				SetRnPrefix(s, value.(string))
+			}
+		}
+	}
+	return rnPrefix[s]
 }
 
 func GetDevnetDocForClass(className string) string {
@@ -546,7 +559,6 @@ type Model struct {
 	Label                    string
 	Name                     string
 	RnFormat                 string
-	RnPrepend                string
 	Comment                  string
 	ResourceClassName        string
 	ResourceName             string
@@ -761,12 +773,28 @@ func (m *Model) SetClassName(classDetails interface{}) {
 }
 
 func (m *Model) SetClassRnFormat(classDetails interface{}) {
-	m.RnPrepend = classDetails.(map[string]interface{})["rnFormat"].(string)
 	m.RnFormat = GetOverwriteRnFormat(classDetails.(map[string]interface{})["rnFormat"].(string), m.PkgName, m.Definitions)
 	if strings.HasPrefix(m.RnFormat, "rs") {
 		toMo := classDetails.(map[string]interface{})["relationInfo"].(map[string]interface{})["toMo"].(string)
 		m.RelationshipClass = strings.Replace(toMo, ":", "", 1)
 	}
+	SetRnPrefix(m.PkgName, m.RnFormat)
+}
+
+func SetRnPrefix(className, rnFormat string) {
+	bracketIndex := 0
+	rnIndex := 0
+	for i := len(rnFormat) - 1; i >= 0; i-- {
+		if string(rnFormat[i]) == "]" {
+			bracketIndex = bracketIndex + 1
+		} else if string(rnFormat[i]) == "[" {
+			bracketIndex = bracketIndex - 1
+		} else if string(rnFormat[i]) == "/" && bracketIndex == 0 {
+			rnIndex = i
+			break
+		}
+	}
+	rnPrefix[className] = fmt.Sprintf("%s-", strings.Split(rnFormat[rnIndex:], "-")[0])
 }
 
 func (m *Model) SetClassDnFormats(classDetails interface{}) {

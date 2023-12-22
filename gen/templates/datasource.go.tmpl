@@ -12,11 +12,8 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
-	{{- if or .HasBitmask .HasChildNamedProperties}}
+	{{- if or .HasBitmask }}
 	"github.com/hashicorp/terraform-plugin-framework/types"
-	{{- end}}
-	{{- if .HasNamedProperties}}
-	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
 	{{- end}}
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 )
@@ -131,32 +128,6 @@ func (d *{{.ResourceClassName}}DataSource) Read(ctx context.Context, req datasou
 	if resp.Diagnostics.HasError() {
 		return
 	}
-
-	{{- if .HasNamedProperties}}
-	{{ range .NamedProperties}}
-	if d.client.ValidateRelationDn {
-		CheckDn(ctx, d.client, data.{{.Name}}.ValueString(), &resp.Diagnostics)
-	}
-	data.{{.Name}} = basetypes.NewStringValue(GetMOName(data.{{.Name}}.ValueString()))
-	{{- end}}
-		{{- range .Children}}
-			{{- range .NamedProperties}}
-	var {{.ResourceClassName}}Plan, {{.ResourceClassName}}Update []{{.ResourceClassName}}ResourceModel
-	data.MgmtRsOoBCons.ElementsAs(ctx, &{{.ResourceClassName}}Plan, false)
-	if len({{.ResourceClassName}}Plan) > 0 {
-		for _, {{.ResourceClassName}} := range {{.ResourceClassName}}Plan {
-			if d.client.ValidateRelationDn {
-				CheckDn(ctx, d.client, {{.ResourceClassName}}.{{.Name}}.ValueString(), &resp.Diagnostics)
-			}
-			{{.ResourceClassName}}.{{.Name}} = basetypes.NewStringValue(GetMOName({{.ResourceClassName}}.{{.Name}}.ValueString()))
-			{{.ResourceClassName}}Update = append({{.ResourceClassName}}Update, {{.ResourceClassName}})
-		}
-		{{.ResourceClassName}}Set, _ := types.SetValueFrom(ctx, data.{{.ResourceClassName}}.ElementType(ctx), {{.ResourceClassName}}Update)
-		data.{{.ResourceClassName}} = {{.ResourceClassName}}Set
-	}
-			{{- end}}
-		{{- end}}
-	{{- end}}
 
 	set{{.ResourceClassName}}Id(ctx, data)
 

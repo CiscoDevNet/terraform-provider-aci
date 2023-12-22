@@ -99,45 +99,6 @@ type {{.ResourceClassName}}Identifier struct {
 }
 {{- end}}
 
-{{- if .HasNamedProperties}}
-func (r *{{.ResourceClassName}}Resource) ModifyPlan(ctx context.Context, req resource.ModifyPlanRequest, resp *resource.ModifyPlanResponse) {
-	tflog.Debug(ctx, "Start plan modification of resource: aci_{{.ResourceName}}")
-
-	if !req.Plan.Raw.IsNull() {
-		var planData *{{.ResourceClassName}}ResourceModel
-		resp.Diagnostics.Append(req.Plan.Get(ctx, &planData)...)
-
-		{{ range .NamedProperties}}
-		if r.client.ValidateRelationDn {
-			CheckDn(ctx, r.client, planData.{{.Name}}.ValueString(), &resp.Diagnostics)
-		}
-		planData.{{.Name}} = basetypes.NewStringValue(GetMOName(planData.{{.Name}}.ValueString()))
-		{{- end}}
-
-		{{- range .Children}}
-			{{- range .NamedProperties}}
-		var {{.ResourceClassName}}Plan, {{.ResourceClassName}}Update []{{.ResourceClassName}}ResourceModel
-		planData.MgmtRsOoBCons.ElementsAs(ctx, &{{.ResourceClassName}}Plan, false)
-		if len({{.ResourceClassName}}Plan) > 0 {
-			for _, {{.ResourceClassName}} := range {{.ResourceClassName}}Plan {
-				if r.client.ValidateRelationDn {
-					CheckDn(ctx, r.client, {{.ResourceClassName}}.{{.Name}}.ValueString(), &resp.Diagnostics)
-				}
-				{{.ResourceClassName}}.{{.Name}} = basetypes.NewStringValue(GetMOName({{.ResourceClassName}}.{{.Name}}.ValueString()))
-				{{.ResourceClassName}}Update = append({{.ResourceClassName}}Update, {{.ResourceClassName}})
-			}
-			{{.ResourceClassName}}Set, _ := types.SetValueFrom(ctx, planData.{{.ResourceClassName}}.ElementType(ctx), {{.ResourceClassName}}Update)
-			planData.{{.ResourceClassName}} = {{.ResourceClassName}}Set
-		}
-			{{- end}}
-		{{- end}}
-
-		resp.Plan.Set(ctx, planData)
-	}
-	tflog.Debug(ctx, "End plan modification of resource: aci_{{.ResourceName}}")
-}
-{{- end}}
-
 func (r *{{.ResourceClassName}}Resource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
 	tflog.Debug(ctx, "Start metadata of resource: aci_{{.ResourceName}}")
 	resp.TypeName = req.ProviderTypeName + "_{{.ResourceName}}"
