@@ -22,8 +22,8 @@ resource "aci_vrf_snmp_context_community" "example" {
 }
 
 resource "aci_vrf_snmp_context" "example" {
-  vrf_dn     = aci_vrf.example.id
-  name       = "example"
+  vrf_dn = aci_vrf.example.id
+  name   = "example"
 }
 
 resource "aci_tenant" "example" {

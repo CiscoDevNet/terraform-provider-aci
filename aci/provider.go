@@ -2,8 +2,10 @@ package aci
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"strconv"
+	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -14,80 +16,58 @@ func Provider() *schema.Provider {
 		Schema: map[string]*schema.Schema{
 			"username": &schema.Schema{
 				Type:        schema.TypeString,
-				Required:    true,
-				DefaultFunc: schema.EnvDefaultFunc("ACI_USERNAME", nil),
+				Optional:    true,
 				Description: "Username for the APIC Account. This can also be set as the ACI_USERNAME environment variable.",
 			},
 			"password": &schema.Schema{
 				Type:        schema.TypeString,
 				Optional:    true,
-				DefaultFunc: schema.EnvDefaultFunc("ACI_PASSWORD", nil),
 				Description: "Password for the APIC Account. This can also be set as the ACI_PASSWORD environment variable.",
 			},
 			"url": &schema.Schema{
 				Type:        schema.TypeString,
-				Required:    true,
-				DefaultFunc: schema.EnvDefaultFunc("ACI_URL", nil),
+				Optional:    true,
 				Description: "URL of the Cisco ACI web interface. This can also be set as the ACI_URL environment variable.",
 			},
 			"insecure": &schema.Schema{
-				Type:     schema.TypeBool,
-				Optional: true,
-				DefaultFunc: func() (interface{}, error) {
-					if v := os.Getenv("ACI_INSECURE"); v != "" {
-						return strconv.ParseBool(v)
-					}
-					return true, nil
-				},
+				Type:        schema.TypeString,
+				Optional:    true,
 				Description: "Allow insecure HTTPS client. This can also be set as the ACI_INSECURE environment variable. Defaults to `true`.",
 			},
 			"private_key": &schema.Schema{
 				Type:        schema.TypeString,
 				Optional:    true,
-				DefaultFunc: schema.EnvDefaultFunc("ACI_PRIVATE_KEY", nil),
 				Description: "Private key path for signature calculation. This can also be set as the ACI_PRIVATE_KEY environment variable.",
 			},
 			"cert_name": &schema.Schema{
 				Type:        schema.TypeString,
 				Optional:    true,
-				DefaultFunc: schema.EnvDefaultFunc("ACI_CERT_NAME", nil),
 				Description: "Certificate name for the User in Cisco ACI. This can also be set as the ACI_CERT_NAME environment variable.",
 			},
 			"proxy_url": &schema.Schema{
 				Type:        schema.TypeString,
 				Optional:    true,
-				DefaultFunc: schema.EnvDefaultFunc("ACI_PROXY_URL", nil),
 				Description: "Proxy Server URL with port number. This can also be set as the ACI_PROXY_URL environment variable.",
 			},
 			"proxy_creds": &schema.Schema{
 				Type:        schema.TypeString,
 				Optional:    true,
-				DefaultFunc: schema.EnvDefaultFunc("ACI_PROXY_CREDS", nil),
 				Description: "Proxy server credentials in the form of username:password. This can also be set as the ACI_PROXY_CREDS environment variable.",
 			},
 			"validate_relation_dn": &schema.Schema{
-				Type:        schema.TypeBool,
+				Type:        schema.TypeString,
 				Optional:    true,
-				Default:     true,
 				Description: "Flag to validate if a object with entered relation Dn exists in the APIC. Defaults to `true`.",
 			},
 			"retries": {
-				Type:     schema.TypeInt,
-				Optional: true,
-				DefaultFunc: func() (interface{}, error) {
-					if v := os.Getenv("ACI_RETRIES"); v != "" {
-						return strconv.Atoi(v)
-					}
-					return 2, nil
-				},
-				ValidateFunc: func(val interface{}, key string) (warns []string, errs []error) {
-					v := val.(int)
-					if v < 0 || v > 9 {
-						errs = append(errs, fmt.Errorf("%q must be between 0 and 9 inclusive, got: %d", key, v))
-					}
-					return
-				},
+				Type:        schema.TypeString,
+				Optional:    true,
 				Description: "Number of retries for REST API calls. This can also be set as the ACI_RETRIES environment variable. Defaults to `2`.",
+			},
+			"annotation": &schema.Schema{
+				Type:        schema.TypeString,
+				Optional:    true,
+				Description: "Global annotation for the provider. This can also be set as the ACI_ANNOTATION environment variable.",
 			},
 		},
 
@@ -315,7 +295,6 @@ func Provider() *schema.Provider {
 			"aci_match_community_terms":                    resourceAciMatchCommunityTerm(),
 			"aci_match_regex_community_terms":              resourceAciMatchRuleBasedonCommunityRegularExpression(),
 			"aci_match_route_destination_rule":             resourceAciMatchRouteDestinationRule(),
-			"aci_annotation":                               resourceAciAnnotation(),
 			"aci_tag":                                      resourceAciTag(),
 			"aci_spine_access_port_selector":               resourceAciSpineAccessPortSelector(),
 			"aci_aaa_domain_relationship":                  resourceAciDomainRelationship(),
@@ -575,7 +554,6 @@ func Provider() *schema.Provider {
 			"aci_match_community_terms":                    dataSourceAciMatchCommunityTerm(),
 			"aci_match_regex_community_terms":              dataSourceAciMatchRuleBasedonCommunityRegularExpression(),
 			"aci_match_route_destination_rule":             dataSourceAciMatchRouteDestinationRule(),
-			"aci_annotation":                               dataSourceAciAnnotation(),
 			"aci_tag":                                      dataSourceAciTag(),
 			"aci_spine_access_port_selector":               dataSourceAciSpineAccessPortSelector(),
 			"aci_aaa_domain_relationship":                  dataSourceAciDomainRelationship(),
@@ -606,17 +584,18 @@ func Provider() *schema.Provider {
 }
 
 func configureClient(d *schema.ResourceData) (interface{}, error) {
+
 	config := Config{
-		Username:           d.Get("username").(string),
-		Password:           d.Get("password").(string),
-		URL:                d.Get("url").(string),
-		IsInsecure:         d.Get("insecure").(bool),
-		PrivateKey:         d.Get("private_key").(string),
-		Certname:           d.Get("cert_name").(string),
-		ProxyUrl:           d.Get("proxy_url").(string),
-		ProxyCreds:         d.Get("proxy_creds").(string),
-		ValidateRelationDn: d.Get("validate_relation_dn").(bool),
-		MaxRetries:         d.Get("retries").(int),
+		Username:           getStringAttribute(d, "username", "ACI_USERNAME"),
+		Password:           getStringAttribute(d, "password", "ACI_PASSWORD"),
+		URL:                getStringAttribute(d, "url", "ACI_URL"),
+		IsInsecure:         getBoolAttribute(d, "insecure", "ACI_INSECURE", true),
+		PrivateKey:         getStringAttribute(d, "private_key", "ACI_PRIVATE_KEY"),
+		Certname:           getStringAttribute(d, "cert_name", "ACI_CERT_NAME"),
+		ProxyUrl:           getStringAttribute(d, "proxy_url", "ACI_PROXY_URL"),
+		ProxyCreds:         getStringAttribute(d, "proxy_creds", "ACI_PROXY_CREDS"),
+		ValidateRelationDn: getBoolAttribute(d, "validate_relation_dn", "ACI_VAL_REL_DN", true),
+		MaxRetries:         getIntAttribute(d, "retries", "ACI_RETRIES", 2),
 	}
 
 	if err := config.Valid(); err != nil {
@@ -634,7 +613,6 @@ func (c Config) Valid() error {
 
 	if c.Password == "" {
 		if c.PrivateKey == "" && c.Certname == "" {
-
 			return fmt.Errorf("Either of private_key/cert_name or password is required")
 		} else if c.PrivateKey == "" || c.Certname == "" {
 			return fmt.Errorf("private_key and cert_name both must be provided")
@@ -643,6 +621,12 @@ func (c Config) Valid() error {
 
 	if c.URL == "" {
 		return fmt.Errorf("The URL must be provided for the ACI provider")
+	} else if !strings.HasPrefix(c.URL, "http://") && !strings.HasPrefix(c.URL, "https://") {
+		return fmt.Errorf(fmt.Sprintf("The URL '%s' must start with 'http://' or 'https://'", c.URL))
+	}
+
+	if c.MaxRetries < 0 || c.MaxRetries > 9 {
+		return fmt.Errorf("retries must be between 0 and 9 inclusive, got: %d", c.MaxRetries)
 	}
 
 	return nil
@@ -671,4 +655,50 @@ type Config struct {
 	ProxyCreds         string
 	ValidateRelationDn bool
 	MaxRetries         int
+}
+
+func getStringAttribute(d *schema.ResourceData, attributeName, envKey string) string {
+
+	if envValue := os.Getenv(envKey); envValue != "" {
+		return envValue
+	}
+	return d.Get(attributeName).(string)
+}
+
+func getBoolAttribute(d *schema.ResourceData, attributeName, envKey string, defaultValue bool) bool {
+
+	var err error
+	var boolValue = defaultValue
+
+	if tmpBoolValue, ok := d.GetOk(attributeName); ok {
+		boolValue, err = strconv.ParseBool(tmpBoolValue.(string))
+		if err != nil {
+			log.Fatal(err)
+		}
+	} else if envValue := os.Getenv(envKey); envValue != "" {
+		boolValue, err = strconv.ParseBool(envValue)
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
+	return boolValue
+}
+
+func getIntAttribute(d *schema.ResourceData, attributeName, envKey string, defaultValue int) int {
+
+	var err error
+	var intValue = defaultValue
+
+	if tmpIntValue, ok := d.GetOk(attributeName); ok {
+		intValue, err = strconv.Atoi(tmpIntValue.(string))
+		if err != nil {
+			log.Fatal(err)
+		}
+	} else if envValue := os.Getenv(envKey); envValue != "" {
+		intValue, err = strconv.Atoi(envValue)
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
+	return intValue
 }

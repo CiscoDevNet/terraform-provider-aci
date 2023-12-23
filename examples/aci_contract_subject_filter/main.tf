@@ -19,8 +19,8 @@ resource "aci_tenant" "tenant_for_contract_filter" {
 }
 
 resource "aci_contract" "test_contract" {
-  tenant_dn                = aci_tenant.tenant_for_contract_filter.id
-  name                     = "test_tf_contract"
+  tenant_dn = aci_tenant.tenant_for_contract_filter.id
+  name      = "test_tf_contract"
 }
 
 resource "aci_contract_subject" "contract_subject" {
@@ -37,15 +37,15 @@ resource "aci_filter" "test_filter" {
 
 resource "aci_contract_subject_filter" "contract_subject_filter" {
   contract_subject_dn = aci_contract_subject.contract_subject.id
-  action = "permit"
-  directives = ["log"]
-  priority_override = "default"
-  filter_dn = aci_filter.test_filter.id
+  action              = "permit"
+  directives          = ["log"]
+  priority_override   = "default"
+  filter_dn           = aci_filter.test_filter.id
 }
 
 data "aci_contract_subject_filter" "example" {
-  contract_subject_dn  = aci_contract_subject_filter.contract_subject_filter.contract_subject_dn
-  filter_dn  = aci_contract_subject_filter.contract_subject_filter.filter_dn
+  contract_subject_dn = aci_contract_subject_filter.contract_subject_filter.contract_subject_dn
+  filter_dn           = aci_contract_subject_filter.contract_subject_filter.filter_dn
 }
 
 output "name" {

@@ -1,0 +1,92 @@
+global:
+  contained_by_excludes:
+    - "polUni"
+    - "fabricInst"
+  docs_examples_amount: 2
+  docs_parent_dn_amount: 20
+
+fvTenant:
+  resource_name: "tenant"
+
+fvAEPg:
+  resource_name: "application_epg"
+
+vzCPIf:
+  resource_name: "contract_interface"
+
+rtctrlProfile:
+  resource_name: "route_control_profile"
+  rn_format: "/prof-{name}"
+
+vzOOBBrCP:
+  resource_name: "out_of_band_contract"
+  ui_locations:
+    - "Tenants (mgmt) -> Contracts -> Out-Of-Band Contracts"
+  sub_category: "Contract"
+  contained_by:
+    - "polUni"
+  rn_prepend: "tn-mgmt"
+  dn_formats:
+    - "uni/tn-mgmt/oobbrc-{name}"
+
+pimRouteMapPol:
+  ui_locations:
+    - "Tenants -> Policies -> Protocol -> Route Maps for Multicast"
+  sub_category: "Tenant Policies"
+
+pimRouteMapEntry:
+  ui_locations:
+    - "Tenants -> Policies -> Protocol -> Route Maps for Multicast -> Route Maps"
+  sub_category: "Tenant Policies"
+
+mgmtInstP:
+  resource_name: "external_management_network_instance_profile"
+  ui_locations:
+    - "Tenants (mgmt) -> External Management Network Instance Profiles"
+  sub_category: "Node Management"
+  contained_by:
+    - "polUni"
+  rn_prepend: "tn-mgmt/extmgmt-default"
+  dn_formats:
+    - "uni/tn-mgmt/extmgmt-default/instp-{name}"
+
+mgmtSubnet:
+  resource_name: "external_management_network_subnet"
+  ui_locations:
+    - "Tenants (mgmt) -> External Management Network Instance Profiles -> Subnets"
+  sub_category: "Node Management"
+  dn_formats:
+    - "uni/tn-mgmt/extmgmt-default/instp-{name}/subnet-[{ip}]"
+
+mgmtRsOoBCons:
+  resource_name: "relation_to_consumed_out_of_band_contract"
+  ui_locations:
+    - "Tenants (mgmt) -> External Management Network Instance Profiles -> Contracts"
+  sub_category: "Node Management"
+
+l3extOut:
+  resource_name: "l3_outside"
+
+l3extConsLbl:
+  resource_name: "l3out_consumer_label"
+  ui_locations:
+    - "Tenants -> Networking -> L3Outs -> Consumer Label"
+    - "Tenants -> Networking -> SR MPLS VRF L3Outs -> SR-MPLS Infra L3Outs"
+  sub_category: "L3Out"
+
+l3extRsRedistributePol:
+  resource_name: "l3out_redistribute_policy"
+  ui_locations:
+    - "Tenants -> Networking -> L3Outs -> Policy -> Main -> Route Profile for Redistribution"
+  sub_category: "L3Out"
+
+tagAnnotation:
+  resource_notes:
+    - "This resource should not be used in combination with the `annotations` nested attributes of other resources for the same object. Doing so will result in unexpected behaviour."
+  dn_formats:
+    - "uni/tn-{name}/annotationKey-[{key}]"
+    - "uni/tn-{name}/ap-{name}/annotationKey-[{key}]"
+    - "uni/tn-{name}/ap-{name}/epg-{name}/annotationKey-[{key}]"
+    - "uni/tn-{name}/BD-{name}/annotationKey-[{key}]"
+    - "uni/tn-{name}/ctx-{name}/annotationKey-[{key}]"
+    - "Too many DN formats to display, see model documentation for all possible parents of [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)."

@@ -53,8 +53,8 @@ resource "aci_application_epg" "provider_epg" {
 }
 
 data "aci_vmm_domain" "vmm_dom" {
-  provider_profile_dn  = "uni/vmmp-VMware"
-  name                 = "VMware-VMM"
+  provider_profile_dn = "uni/vmmp-VMware"
+  name                = "VMware-VMM"
 }
 
 resource "aci_epg_to_domain" "consumer_epg" {

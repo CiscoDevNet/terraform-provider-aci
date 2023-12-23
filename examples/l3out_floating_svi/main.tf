@@ -66,9 +66,9 @@ resource "aci_l3out_floating_svi" "example" {
     promiscuous_mode = "Disabled"
   }
   relation_l3ext_rs_dyn_path_att {
-    tdn                     = aci_vmm_domain.example_vmm.id
-    floating_address        = "10.20.30.254/16"
-    enhanced_lag_policy_dn  = "uni/vmmp-VMware/dom-example/vswitchpolcont/enlacplagp-test"
+    tdn                    = aci_vmm_domain.example_vmm.id
+    floating_address       = "10.20.30.254/16"
+    enhanced_lag_policy_dn = "uni/vmmp-VMware/dom-example/vswitchpolcont/enlacplagp-test"
   }
 }
 

@@ -20,8 +20,8 @@ resource "aci_tenant" "tenant_for_route_control" {
 }
 
 resource "aci_l3_outside" "example" {
-  tenant_dn      = aci_tenant.tenant_for_route_control.id
-  name           = "example_l3out"
+  tenant_dn = aci_tenant.tenant_for_route_control.id
+  name      = "example_l3out"
 }
 
 resource "aci_route_control_profile" "example" {

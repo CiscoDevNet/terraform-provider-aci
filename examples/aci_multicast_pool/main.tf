@@ -22,12 +22,12 @@ resource "aci_multicast_pool" "test-tf-pool-1-resource" {
   description = "This multicast pool is created by terraform with multicast_address_block argument"
   multicast_address_block {
     from = "224.0.0.40"
-    to = "224.0.0.44"
+    to   = "224.0.0.44"
     name = "testing-1"
   }
   multicast_address_block {
     from = "224.0.0.50"
-    to = "224.0.0.54"
+    to   = "224.0.0.54"
     name = "testing-2"
   }
 }
@@ -41,16 +41,16 @@ resource "aci_multicast_pool" "test-tf-pool-X-resources" {
 
 resource "aci_multicast_pool_block" "test-tf-pool-block-1" {
   multicast_pool_dn = aci_multicast_pool.test-tf-pool-X-resources.id
-  name                      = "test-tf-pool-block-1"
-  description               = "This multicast block is created by terraform using the aci_multicast_pool resource"
-  from                      = "224.0.0.0"
-  to                        = "224.0.0.10"
+  name              = "test-tf-pool-block-1"
+  description       = "This multicast block is created by terraform using the aci_multicast_pool resource"
+  from              = "224.0.0.0"
+  to                = "224.0.0.10"
 }
 
 resource "aci_multicast_pool_block" "test-tf-pool-block-2" {
-  multicast_pool_dn         = aci_multicast_pool.test-tf-pool-X-resources.id
-  name                      = "test-tf-pool-block-2"
-  description               = "This multicast block is created by terraform using the aci_multicast_pool resource"
-  from                      = "224.0.0.11"
-  to                        = "224.0.0.20"
+  multicast_pool_dn = aci_multicast_pool.test-tf-pool-X-resources.id
+  name              = "test-tf-pool-block-2"
+  description       = "This multicast block is created by terraform using the aci_multicast_pool resource"
+  from              = "224.0.0.11"
+  to                = "224.0.0.20"
 }
