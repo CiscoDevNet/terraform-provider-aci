@@ -201,7 +201,7 @@ func (r *L3extRsRedistributePolResource) Create(ctx context.Context, req resourc
 		return
 	}
 
-	doL3extRsRedistributePolRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
+	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -263,7 +263,7 @@ func (r *L3extRsRedistributePolResource) Update(ctx context.Context, req resourc
 		return
 	}
 
-	doL3extRsRedistributePolRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
+	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -288,11 +288,11 @@ func (r *L3extRsRedistributePolResource) Delete(ctx context.Context, req resourc
 	}
 
 	tflog.Debug(ctx, fmt.Sprintf("Delete of resource aci_l3out_redistribute_policy with id '%s'", data.Id.ValueString()))
-	jsonPayload := getL3extRsRedistributePolDeleteJsonPayload(ctx, &resp.Diagnostics, data)
+	jsonPayload := GetDeleteJsonPayload(ctx, &resp.Diagnostics, "l3extRsRedistributePol", data.Id.ValueString())
 	if resp.Diagnostics.HasError() {
 		return
 	}
-	doL3extRsRedistributePolRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
+	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -311,7 +311,7 @@ func (r *L3extRsRedistributePolResource) ImportState(ctx context.Context, req re
 }
 
 func getAndSetL3extRsRedistributePolAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *L3extRsRedistributePolResourceModel) {
-	requestData := doL3extRsRedistributePolRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=children&rsp-subtree-class=%s", data.Id.ValueString(), "l3extRsRedistributePol,tagAnnotation"), "GET", nil)
+	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=children&rsp-subtree-class=%s", data.Id.ValueString(), "l3extRsRedistributePol,tagAnnotation"), "GET", nil)
 
 	if diags.HasError() {
 		return
@@ -484,48 +484,4 @@ func getL3extRsRedistributePolCreateJsonPayload(ctx context.Context, diags *diag
 		return nil
 	}
 	return jsonPayload
-}
-
-func getL3extRsRedistributePolDeleteJsonPayload(ctx context.Context, diags *diag.Diagnostics, data *L3extRsRedistributePolResourceModel) *container.Container {
-
-	jsonString := fmt.Sprintf(`{"l3extRsRedistributePol":{"attributes":{"dn": "%s","status": "deleted"}}}`, data.Id.ValueString())
-	jsonPayload, err := container.ParseJSON([]byte(jsonString))
-	if err != nil {
-		diags.AddError(
-			"Construction of json payload failed",
-			fmt.Sprintf("Err: %s. Please report this issue to the provider developers.", err),
-		)
-		return nil
-	}
-	return jsonPayload
-}
-
-func doL3extRsRedistributePolRequest(ctx context.Context, diags *diag.Diagnostics, client *client.Client, path, method string, payload *container.Container) *container.Container {
-
-	restRequest, err := client.MakeRestRequest(method, path, payload, true)
-	if err != nil {
-		diags.AddError(
-			"Creation of rest request failed",
-			fmt.Sprintf("Err: %s. Please report this issue to the provider developers.", err),
-		)
-		return nil
-	}
-
-	cont, restResponse, err := client.Do(restRequest)
-
-	if restResponse != nil && restResponse.StatusCode != 200 {
-		diags.AddError(
-			fmt.Sprintf("The %s rest request failed", strings.ToLower(method)),
-			fmt.Sprintf("Response: %s, err: %s. Please report this issue to the provider developers.", cont.Data().(map[string]interface{})["imdata"], err),
-		)
-		return nil
-	} else if err != nil {
-		diags.AddError(
-			fmt.Sprintf("The %s rest request failed", strings.ToLower(method)),
-			fmt.Sprintf("Err: %s. Please report this issue to the provider developers.", err),
-		)
-		return nil
-	}
-
-	return cont
 }

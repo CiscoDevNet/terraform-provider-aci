@@ -200,7 +200,7 @@ func (r *MgmtRsOoBConsResource) Create(ctx context.Context, req resource.CreateR
 		return
 	}
 
-	doMgmtRsOoBConsRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
+	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -262,7 +262,7 @@ func (r *MgmtRsOoBConsResource) Update(ctx context.Context, req resource.UpdateR
 		return
 	}
 
-	doMgmtRsOoBConsRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
+	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -287,11 +287,11 @@ func (r *MgmtRsOoBConsResource) Delete(ctx context.Context, req resource.DeleteR
 	}
 
 	tflog.Debug(ctx, fmt.Sprintf("Delete of resource aci_relation_to_consumed_out_of_band_contract with id '%s'", data.Id.ValueString()))
-	jsonPayload := getMgmtRsOoBConsDeleteJsonPayload(ctx, &resp.Diagnostics, data)
+	jsonPayload := GetDeleteJsonPayload(ctx, &resp.Diagnostics, "mgmtRsOoBCons", data.Id.ValueString())
 	if resp.Diagnostics.HasError() {
 		return
 	}
-	doMgmtRsOoBConsRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
+	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -310,7 +310,7 @@ func (r *MgmtRsOoBConsResource) ImportState(ctx context.Context, req resource.Im
 }
 
 func getAndSetMgmtRsOoBConsAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *MgmtRsOoBConsResourceModel) {
-	requestData := doMgmtRsOoBConsRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=children&rsp-subtree-class=%s", data.Id.ValueString(), "mgmtRsOoBCons,tagAnnotation"), "GET", nil)
+	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=children&rsp-subtree-class=%s", data.Id.ValueString(), "mgmtRsOoBCons,tagAnnotation"), "GET", nil)
 
 	if diags.HasError() {
 		return
@@ -483,48 +483,4 @@ func getMgmtRsOoBConsCreateJsonPayload(ctx context.Context, diags *diag.Diagnost
 		return nil
 	}
 	return jsonPayload
-}
-
-func getMgmtRsOoBConsDeleteJsonPayload(ctx context.Context, diags *diag.Diagnostics, data *MgmtRsOoBConsResourceModel) *container.Container {
-
-	jsonString := fmt.Sprintf(`{"mgmtRsOoBCons":{"attributes":{"dn": "%s","status": "deleted"}}}`, data.Id.ValueString())
-	jsonPayload, err := container.ParseJSON([]byte(jsonString))
-	if err != nil {
-		diags.AddError(
-			"Construction of json payload failed",
-			fmt.Sprintf("Err: %s. Please report this issue to the provider developers.", err),
-		)
-		return nil
-	}
-	return jsonPayload
-}
-
-func doMgmtRsOoBConsRequest(ctx context.Context, diags *diag.Diagnostics, client *client.Client, path, method string, payload *container.Container) *container.Container {
-
-	restRequest, err := client.MakeRestRequest(method, path, payload, true)
-	if err != nil {
-		diags.AddError(
-			"Creation of rest request failed",
-			fmt.Sprintf("Err: %s. Please report this issue to the provider developers.", err),
-		)
-		return nil
-	}
-
-	cont, restResponse, err := client.Do(restRequest)
-
-	if restResponse != nil && restResponse.StatusCode != 200 {
-		diags.AddError(
-			fmt.Sprintf("The %s rest request failed", strings.ToLower(method)),
-			fmt.Sprintf("Response: %s, err: %s. Please report this issue to the provider developers.", cont.Data().(map[string]interface{})["imdata"], err),
-		)
-		return nil
-	} else if err != nil {
-		diags.AddError(
-			fmt.Sprintf("The %s rest request failed", strings.ToLower(method)),
-			fmt.Sprintf("Err: %s. Please report this issue to the provider developers.", err),
-		)
-		return nil
-	}
-
-	return cont
 }

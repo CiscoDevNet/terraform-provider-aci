@@ -298,7 +298,7 @@ func (r *{{.ResourceClassName}}Resource) Create(ctx context.Context, req resourc
 		return
 	}
 
-	do{{.ResourceClassName}}Request(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
+	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -370,7 +370,7 @@ func (r *{{.ResourceClassName}}Resource) Update(ctx context.Context, req resourc
 		return
 	}
 
-	do{{.ResourceClassName}}Request(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
+	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
 	
 	if resp.Diagnostics.HasError() {
 		return
@@ -397,11 +397,11 @@ func (r *{{.ResourceClassName}}Resource) Delete(ctx context.Context, req resourc
 	tflog.Debug(ctx, fmt.Sprintf("Delete of resource aci_{{.ResourceName}} with id '%s'", data.Id.ValueString()))
 
 	{{- if .AllowDelete}}
-	jsonPayload := get{{.ResourceClassName}}DeleteJsonPayload(ctx, &resp.Diagnostics, data)
+	jsonPayload := GetDeleteJsonPayload(ctx, &resp.Diagnostics, "{{.PkgName}}", data.Id.ValueString())
 	if resp.Diagnostics.HasError() {
 		return
 	}
-	do{{.ResourceClassName}}Request(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
+	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -433,9 +433,9 @@ func (r *{{.ResourceClassName}}Resource) ImportState(ctx context.Context, req re
 
 func getAndSet{{.ResourceClassName}}Attributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *{{.ResourceClassName}}ResourceModel) {
 	{{- if .HasChild}}
-	requestData := do{{.ResourceClassName}}Request(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=children&rsp-subtree-class=%s", data.Id.ValueString(), "{{- .PkgName}},{{- listToString .ChildClasses}}"), "GET", nil)
+	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=children&rsp-subtree-class=%s", data.Id.ValueString(), "{{- .PkgName}},{{- listToString .ChildClasses}}"), "GET", nil)
 	{{- else}}
-	requestData := do{{.ResourceClassName}}Request(ctx, diags, client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "GET", nil)
+	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "GET", nil)
 	{{- end}}
 	
 	if diags.HasError() {
@@ -739,48 +739,4 @@ func get{{.ResourceClassName}}CreateJsonPayload(ctx context.Context, diags *diag
 		return nil
 	}
 	return jsonPayload
-}
-
-func get{{.ResourceClassName}}DeleteJsonPayload(ctx context.Context, diags *diag.Diagnostics, data *{{.ResourceClassName}}ResourceModel) *container.Container {
-
-	jsonString := fmt.Sprintf(`{"{{.PkgName}}":{"attributes":{"dn": "%s","status": "deleted"}}}`, data.Id.ValueString())
-	jsonPayload, err := container.ParseJSON([]byte(jsonString))
-	if err != nil {
-		diags.AddError(
-			"Construction of json payload failed",
-			fmt.Sprintf("Err: %s. Please report this issue to the provider developers.", err),
-		)
-		return nil
-	}
-	return jsonPayload
-}
-
-func do{{.ResourceClassName}}Request(ctx context.Context, diags *diag.Diagnostics, client *client.Client, path, method string, payload *container.Container) *container.Container {
-
-	restRequest, err := client.MakeRestRequest(method, path, payload, true)
-	if err != nil {
-		diags.AddError(
-			"Creation of rest request failed",
-			fmt.Sprintf("Err: %s. Please report this issue to the provider developers.", err),
-		)
-		return nil
-	}
-
-	cont, restResponse, err := client.Do(restRequest)
-
-	if restResponse != nil && restResponse.StatusCode != 200 {
-		diags.AddError(
-			fmt.Sprintf("The %s rest request failed", strings.ToLower(method)),
-			fmt.Sprintf("Response: %s, err: %s. Please report this issue to the provider developers.", cont.Data().(map[string]interface{})["imdata"], err),
-		)
-		return nil
-	} else if err != nil {
-		diags.AddError(
-			fmt.Sprintf("The %s rest request failed", strings.ToLower(method)),
-			fmt.Sprintf("Err: %s. Please report this issue to the provider developers.", err),
-		)
-		return nil
-	}
-
-	return cont
 }

@@ -213,7 +213,7 @@ func (r *MgmtSubnetResource) Create(ctx context.Context, req resource.CreateRequ
 		return
 	}
 
-	doMgmtSubnetRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
+	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -275,7 +275,7 @@ func (r *MgmtSubnetResource) Update(ctx context.Context, req resource.UpdateRequ
 		return
 	}
 
-	doMgmtSubnetRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
+	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -300,11 +300,11 @@ func (r *MgmtSubnetResource) Delete(ctx context.Context, req resource.DeleteRequ
 	}
 
 	tflog.Debug(ctx, fmt.Sprintf("Delete of resource aci_external_management_network_subnet with id '%s'", data.Id.ValueString()))
-	jsonPayload := getMgmtSubnetDeleteJsonPayload(ctx, &resp.Diagnostics, data)
+	jsonPayload := GetDeleteJsonPayload(ctx, &resp.Diagnostics, "mgmtSubnet", data.Id.ValueString())
 	if resp.Diagnostics.HasError() {
 		return
 	}
-	doMgmtSubnetRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
+	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -323,7 +323,7 @@ func (r *MgmtSubnetResource) ImportState(ctx context.Context, req resource.Impor
 }
 
 func getAndSetMgmtSubnetAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *MgmtSubnetResourceModel) {
-	requestData := doMgmtSubnetRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=children&rsp-subtree-class=%s", data.Id.ValueString(), "mgmtSubnet,tagAnnotation"), "GET", nil)
+	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=children&rsp-subtree-class=%s", data.Id.ValueString(), "mgmtSubnet,tagAnnotation"), "GET", nil)
 
 	if diags.HasError() {
 		return
@@ -508,48 +508,4 @@ func getMgmtSubnetCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics
 		return nil
 	}
 	return jsonPayload
-}
-
-func getMgmtSubnetDeleteJsonPayload(ctx context.Context, diags *diag.Diagnostics, data *MgmtSubnetResourceModel) *container.Container {
-
-	jsonString := fmt.Sprintf(`{"mgmtSubnet":{"attributes":{"dn": "%s","status": "deleted"}}}`, data.Id.ValueString())
-	jsonPayload, err := container.ParseJSON([]byte(jsonString))
-	if err != nil {
-		diags.AddError(
-			"Construction of json payload failed",
-			fmt.Sprintf("Err: %s. Please report this issue to the provider developers.", err),
-		)
-		return nil
-	}
-	return jsonPayload
-}
-
-func doMgmtSubnetRequest(ctx context.Context, diags *diag.Diagnostics, client *client.Client, path, method string, payload *container.Container) *container.Container {
-
-	restRequest, err := client.MakeRestRequest(method, path, payload, true)
-	if err != nil {
-		diags.AddError(
-			"Creation of rest request failed",
-			fmt.Sprintf("Err: %s. Please report this issue to the provider developers.", err),
-		)
-		return nil
-	}
-
-	cont, restResponse, err := client.Do(restRequest)
-
-	if restResponse != nil && restResponse.StatusCode != 200 {
-		diags.AddError(
-			fmt.Sprintf("The %s rest request failed", strings.ToLower(method)),
-			fmt.Sprintf("Response: %s, err: %s. Please report this issue to the provider developers.", cont.Data().(map[string]interface{})["imdata"], err),
-		)
-		return nil
-	} else if err != nil {
-		diags.AddError(
-			fmt.Sprintf("The %s rest request failed", strings.ToLower(method)),
-			fmt.Sprintf("Err: %s. Please report this issue to the provider developers.", err),
-		)
-		return nil
-	}
-
-	return cont
 }
