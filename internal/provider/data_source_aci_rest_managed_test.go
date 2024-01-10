@@ -1,15 +1,16 @@
-package aci
+package provider
 
 import (
+	"regexp"
 	"testing"
 
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 )
 
 func TestAccDataSourceAciRestManaged_tenant(t *testing.T) {
 	resource.Test(t, resource.TestCase{
-		PreCheck:          func() { testAccPreCheck(t) },
-		ProviderFactories: providerFactories,
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccDataSourceAciRestManagedConfigTenant,
@@ -21,6 +22,10 @@ func TestAccDataSourceAciRestManaged_tenant(t *testing.T) {
 					resource.TestCheckResourceAttr("data.aci_rest_managed.infra", "child.0.content.name", "infra"),
 				),
 			},
+			{
+				Config:      testConfigRestManagedNotExisting,
+				ExpectError: regexp.MustCompile("Failed to read aci_rest_managed data source"),
+			},
 		},
 	})
 }
@@ -28,5 +33,26 @@ func TestAccDataSourceAciRestManaged_tenant(t *testing.T) {
 const testAccDataSourceAciRestManagedConfigTenant = `
 data "aci_rest_managed" "infra" {
   dn = "uni/tn-infra"
+  class_name = "fvTenant"
+  content = {
+	name = "infra"
+  }
+  child {
+	class_name = "aaaDomainRef"
+	rn = "domain-infra"
+	content = {
+		name = "infra"
+	}
+  }
+}
+`
+
+const testConfigRestManagedNotExisting = `
+data "aci_rest_managed" "not_existing" {
+  dn = "uni/tn-not_existing"
+  class_name = "fvTenant"
+  content = {
+	name = "not_existing"
+  }
 }
 `
