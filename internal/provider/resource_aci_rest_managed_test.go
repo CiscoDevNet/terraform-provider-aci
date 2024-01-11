@@ -179,6 +179,154 @@ func TestAccAciRestManaged_tenantChildren(t *testing.T) {
 
 }
 
+func TestAccAciRestManaged_globalAnnotation(t *testing.T) {
+	name := acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum)
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				Config:             testAccAciRestManagedConfig_globalAnnotation(name),
+				ExpectNonEmptyPlan: false,
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_rest_managed.fvTenant", "child.#", "0"),
+					resource.TestCheckResourceAttr("aci_rest_managed.fvTenant", "dn", "uni/tn-"+name),
+					resource.TestCheckResourceAttr("aci_rest_managed.fvTenant", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_rest_managed.fvTenant", "content.name", name),
+				),
+			},
+		},
+	})
+
+	setGlobalAnnotationEnvVariable(t, "orchestrator:from_env")
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				Config:             testAccAciRestManagedConfig_globalAnnotation(name),
+				ExpectNonEmptyPlan: false,
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_rest_managed.fvTenant", "child.#", "0"),
+					resource.TestCheckResourceAttr("aci_rest_managed.fvTenant", "dn", "uni/tn-"+name),
+					resource.TestCheckResourceAttr("aci_rest_managed.fvTenant", "annotation", "orchestrator:from_env"),
+					resource.TestCheckResourceAttr("aci_rest_managed.fvTenant", "content.name", name),
+				),
+			},
+			{
+				Config:             testAccAciRestManagedConfig_globalAnnotationResourceOverwrite(name),
+				ExpectNonEmptyPlan: false,
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_rest_managed.fvTenant", "child.#", "0"),
+					resource.TestCheckResourceAttr("aci_rest_managed.fvTenant", "dn", "uni/tn-"+name),
+					resource.TestCheckResourceAttr("aci_rest_managed.fvTenant", "annotation", "orchestrator:from_resource"),
+					resource.TestCheckResourceAttr("aci_rest_managed.fvTenant", "content.name", name),
+				),
+			},
+			{
+				Config:             testAccAciRestManagedConfig_globalAnnotation(name),
+				ExpectNonEmptyPlan: false,
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_rest_managed.fvTenant", "child.#", "0"),
+					resource.TestCheckResourceAttr("aci_rest_managed.fvTenant", "dn", "uni/tn-"+name),
+					resource.TestCheckResourceAttr("aci_rest_managed.fvTenant", "annotation", "orchestrator:from_env"),
+					resource.TestCheckResourceAttr("aci_rest_managed.fvTenant", "content.name", name),
+				),
+			},
+		},
+	})
+
+}
+
+func TestAccAciRestManaged_undeletableClass(t *testing.T) {
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				Config:             testAccAciRestManagedConfig_undeletableClass(),
+				ExpectNonEmptyPlan: true,
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_rest_managed.mcpInstPol", "child.#", "0"),
+					resource.TestCheckResourceAttr("aci_rest_managed.mcpInstPol", "dn", "uni/infra/mcpInstP-default"),
+					resource.TestCheckResourceAttr("aci_rest_managed.mcpInstPol", "content.adminSt", "disabled"),
+					resource.TestCheckResourceAttr("aci_rest_managed.mcpInstPol", "content.loopProtectAct", "port-disable"),
+					resource.TestCheckResourceAttr("aci_rest_managed.mcpInstPol", "content.key", "test"),
+					resource.TestCheckResourceAttr("aci_rest_managed.mcpInstPol", "content.%", "3"),
+				),
+			},
+			{
+				Config:             testAccAciRestManagedConfig_ignoreKeyChange(),
+				ExpectNonEmptyPlan: false,
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_rest_managed.mcpInstPol", "child.#", "0"),
+					resource.TestCheckResourceAttr("aci_rest_managed.mcpInstPol", "dn", "uni/infra/mcpInstP-default"),
+					resource.TestCheckResourceAttr("aci_rest_managed.mcpInstPol", "content.adminSt", "disabled"),
+					resource.TestCheckResourceAttr("aci_rest_managed.mcpInstPol", "content.loopProtectAct", "port-disable"),
+					resource.TestCheckResourceAttr("aci_rest_managed.mcpInstPol", "content.%", "3"),
+				),
+			},
+		},
+	})
+}
+
+func TestAccAciRestManaged_explicitNull(t *testing.T) {
+	name := acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum)
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				Config:             testAccAciRestManagedConfig_null(name),
+				ExpectNonEmptyPlan: false,
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_rest_managed.fvTenant", "child.#", "0"),
+					resource.TestCheckResourceAttr("aci_rest_managed.fvTenant", "dn", "uni/tn-"+name),
+					resource.TestCheckResourceAttr("aci_rest_managed.fvTenant", "content.name", name),
+					// content is 2 because description exists in state but is set to null which type is not testable is TestCheckResourceAttr
+					resource.TestCheckResourceAttr("aci_rest_managed.fvTenant", "content.%", "2"),
+				),
+			},
+			{
+				Config:             testAccAciRestManagedConfig_notNull(name),
+				ExpectNonEmptyPlan: false,
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_rest_managed.fvTenant", "child.#", "0"),
+					resource.TestCheckResourceAttr("aci_rest_managed.fvTenant", "dn", "uni/tn-"+name),
+					resource.TestCheckResourceAttr("aci_rest_managed.fvTenant", "content.name", name),
+					resource.TestCheckResourceAttr("aci_rest_managed.fvTenant", "content.descr", "non_null_description"),
+					resource.TestCheckResourceAttr("aci_rest_managed.fvTenant", "content.%", "2"),
+				),
+			},
+			{
+				Config:             testAccAciRestManagedConfig_null(name),
+				ExpectNonEmptyPlan: false,
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_rest_managed.fvTenant", "child.#", "0"),
+					resource.TestCheckResourceAttr("aci_rest_managed.fvTenant", "dn", "uni/tn-"+name),
+					resource.TestCheckResourceAttr("aci_rest_managed.fvTenant", "content.name", name),
+					// content is 2 because description exists in state but is set to null which type is not testable is TestCheckResourceAttr
+					resource.TestCheckResourceAttr("aci_rest_managed.fvTenant", "content.%", "2"),
+				),
+			},
+			{
+				Config:             testAccAciRestManagedConfig_notDefined(name),
+				ExpectNonEmptyPlan: false,
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_rest_managed.fvTenant", "child.#", "0"),
+					resource.TestCheckResourceAttr("aci_rest_managed.fvTenant", "dn", "uni/tn-"+name),
+					resource.TestCheckResourceAttr("aci_rest_managed.fvTenant", "content.name", name),
+					resource.TestCheckResourceAttr("aci_rest_managed.fvTenant", "content.%", "1"),
+					resource.TestCheckNoResourceAttr("aci_rest_managed.fvTenant", "content.descr"),
+				),
+			},
+		},
+	})
+
+}
+
 func testAccAciRestManagedConfig_tenant(name string, description string) string {
 	return fmt.Sprintf(`
 	resource "aci_rest_managed" "fvTenant" {
@@ -242,6 +390,100 @@ func testAccAciRestManagedConfig_tagTag(name string) string {
 		class_name = "tagTag"
 		content = {
 			value = "test"
+		}
+	}
+	`, name)
+}
+
+func testAccAciRestManagedConfig_globalAnnotation(name string) string {
+	return fmt.Sprintf(`
+	resource "aci_rest_managed" "fvTenant" {
+		dn = "uni/tn-%[1]s"
+		class_name = "fvTenant"
+		content = {
+			name = "%[1]s"
+		}
+	}
+	`, name)
+}
+
+func testAccAciRestManagedConfig_globalAnnotationResourceOverwrite(name string) string {
+	return fmt.Sprintf(`
+	resource "aci_rest_managed" "fvTenant" {
+		dn = "uni/tn-%[1]s"
+		class_name = "fvTenant"
+		annotation = "orchestrator:from_resource"
+		content = {
+			name = "%[1]s"
+		}
+	}
+	`, name)
+}
+
+func testAccAciRestManagedConfig_undeletableClass() string {
+	return `
+	resource "aci_rest_managed" "mcpInstPol" {
+		dn         = "uni/infra/mcpInstP-default"
+		class_name = "mcpInstPol"
+		content = {
+		  adminSt        = "disabled"
+		  key            = "test"
+		  loopProtectAct = "port-disable"
+		}
+	} 
+	`
+}
+
+func testAccAciRestManagedConfig_ignoreKeyChange() string {
+	return `
+	resource "aci_rest_managed" "mcpInstPol" {
+		dn         = "uni/infra/mcpInstP-default"
+		class_name = "mcpInstPol"
+		content = {
+		  adminSt        = "disabled"
+		  key            = "test"
+		  loopProtectAct = "port-disable"
+		}
+		lifecycle {
+			ignore_changes = [content["key"]]
+		}
+	}
+	`
+}
+
+func testAccAciRestManagedConfig_null(name string) string {
+	return fmt.Sprintf(`
+	resource "aci_rest_managed" "fvTenant" {
+		dn = "uni/tn-%[1]s"
+		class_name = "fvTenant"
+		content = {
+			name = "%[1]s"
+			descr = null
+		}
+	}
+	`, name)
+}
+
+func testAccAciRestManagedConfig_notNull(name string) string {
+	return fmt.Sprintf(`
+	resource "aci_rest_managed" "fvTenant" {
+		dn = "uni/tn-%[1]s"
+		class_name = "fvTenant"
+		content = {
+			name = "%[1]s"
+			descr = "non_null_description"
+		}
+	}
+	`, name)
+}
+
+func testAccAciRestManagedConfig_notDefined(name string) string {
+	return fmt.Sprintf(`
+	resource "aci_rest_managed" "fvTenant" {
+		dn = "uni/tn-%[1]s"
+		class_name = "fvTenant"
+		content = {
+			name = "%[1]s"
 		}
 	}
 	`, name)
