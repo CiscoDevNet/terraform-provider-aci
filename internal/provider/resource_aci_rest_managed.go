@@ -74,6 +74,20 @@ func (r *AciRestManagedResource) Metadata(ctx context.Context, req resource.Meta
 	tflog.Debug(ctx, "End schema of resource: aci_rest_managed")
 }
 
+func (r *AciRestManagedResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanRequest, resp *resource.ModifyPlanResponse) {
+	tflog.Trace(ctx, "Start plan modification of resource: aci_rest_managed")
+	if !req.Plan.Raw.IsNull() {
+		var planData *AciRestManagedResourceModel
+		resp.Diagnostics.Append(req.Plan.Get(ctx, &planData)...)
+		// modify the plan when annotation is not a property of class
+		if ContainsString(NoAnnotationClasses, planData.ClassName.ValueString()) {
+			planData.Annotation = types.StringNull()
+			resp.Plan.Set(ctx, planData)
+		}
+	}
+	tflog.Trace(ctx, "End plan modification of resource: aci_rest_managed")
+}
+
 func (r *AciRestManagedResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		// This description is used by the documentation generator and the language server.
@@ -195,7 +209,7 @@ func (r *AciRestManagedResource) Create(ctx context.Context, req resource.Create
 		return
 	}
 
-	setAciRestManagedProperties(data)
+	data.Id = types.StringValue(data.Dn.ValueString())
 
 	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_rest_managed with id '%s'", data.Id.ValueString()))
 
@@ -263,7 +277,7 @@ func (r *AciRestManagedResource) Update(ctx context.Context, req resource.Update
 
 	tflog.Debug(ctx, fmt.Sprintf("Update of resource aci_rest_managed with id '%s'", data.Id.ValueString()))
 
-	setAciRestManagedProperties(data)
+	data.Id = types.StringValue(data.Dn.ValueString())
 
 	var childPlan, childState []ChildAciRestManagedResourceModel
 	data.Child.ElementsAs(ctx, &childPlan, false)
@@ -410,18 +424,6 @@ func findChildClass(childClass map[string]interface{}, child *ChildAciRestManage
 		}
 	}
 	return nil
-}
-
-func setAciRestManagedProperties(data *AciRestManagedResourceModel) {
-	// Set Id
-	data.Id = types.StringValue(data.Dn.ValueString())
-	// Remove annotation when unsupported
-	if ContainsString(NoAnnotationClasses, data.ClassName.ValueString()) {
-		data.Annotation = types.StringNull()
-		// Add default annotation is not set
-	} else if data.Annotation.IsNull() || data.Annotation.IsUnknown() {
-		data.Annotation = types.StringValue(globalAnnotation)
-	}
 }
 
 func getAciRestManagedChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *AciRestManagedResourceModel, childPlan, childState []ChildAciRestManagedResourceModel) []interface{} {
