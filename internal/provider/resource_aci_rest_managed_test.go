@@ -225,6 +225,17 @@ func TestAccAciRestManaged_globalAnnotation(t *testing.T) {
 				),
 			},
 			{
+				Config:             testAccAciRestManagedConfig_globalAnnotationResourceOverwriteFromContent(name),
+				ExpectNonEmptyPlan: false,
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_rest_managed.fvTenant", "child.#", "0"),
+					resource.TestCheckResourceAttr("aci_rest_managed.fvTenant", "dn", "uni/tn-"+name),
+					resource.TestCheckResourceAttr("aci_rest_managed.fvTenant", "annotation", "orchestrator:from_resource"),
+					resource.TestCheckResourceAttr("aci_rest_managed.fvTenant", "content.name", name),
+					resource.TestCheckResourceAttr("aci_rest_managed.fvTenant", "content.annotation", "orchestrator:from_content"),
+				),
+			},
+			{
 				Config:             testAccAciRestManagedConfig_globalAnnotation(name),
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeTestCheckFunc(
@@ -415,6 +426,20 @@ func testAccAciRestManagedConfig_globalAnnotationResourceOverwrite(name string) 
 		annotation = "orchestrator:from_resource"
 		content = {
 			name = "%[1]s"
+		}
+	}
+	`, name)
+}
+
+func testAccAciRestManagedConfig_globalAnnotationResourceOverwriteFromContent(name string) string {
+	return fmt.Sprintf(`
+	resource "aci_rest_managed" "fvTenant" {
+		dn = "uni/tn-%[1]s"
+		class_name = "fvTenant"
+		annotation = "orchestrator:from_resource"
+		content = {
+			name = "%[1]s"
+			annotation = "orchestrator:from_content"
 		}
 	}
 	`, name)
