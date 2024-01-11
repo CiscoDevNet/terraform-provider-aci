@@ -197,7 +197,7 @@ func (r *AciRestManagedResource) Create(ctx context.Context, req resource.Create
 
 	setAciRestManagedProperties(data)
 
-	tflog.Debug(ctx, fmt.Sprintf("create of resource aci_rest_managed with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_rest_managed with id '%s'", data.Id.ValueString()))
 
 	var childPlan, childState []ChildAciRestManagedResourceModel
 	data.Child.ElementsAs(ctx, &childPlan, false)
@@ -214,7 +214,7 @@ func (r *AciRestManagedResource) Create(ctx context.Context, req resource.Create
 
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
-	tflog.Debug(ctx, "End create of resource: aci_rest_managed")
+	tflog.Debug(ctx, fmt.Sprintf("End create of resource aci_rest_managed with id '%s'", data.Id.ValueString()))
 }
 
 func (r *AciRestManagedResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
@@ -228,7 +228,7 @@ func (r *AciRestManagedResource) Read(ctx context.Context, req resource.ReadRequ
 		return
 	}
 
-	tflog.Debug(ctx, fmt.Sprintf("read of resource aci_rest_managed with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("Read of resource aci_rest_managed with id '%s'", data.Id.ValueString()))
 
 	setAciRestManagedAttributes(ctx, &resp.Diagnostics, r.client, data)
 
@@ -236,19 +236,16 @@ func (r *AciRestManagedResource) Read(ctx context.Context, req resource.ReadRequ
 		return
 	}
 
-	tflog.Debug(ctx, fmt.Sprintf("AKINI DATA: '%s'", data))
-
 	// Save updated data into Terraform state
 	if data.Id.IsNull() {
 		var emptyData *AciRestManagedResourceModel
 		resp.Diagnostics.Append(resp.State.Set(ctx, &emptyData)...)
 	} else {
-		tflog.Debug(ctx, fmt.Sprintf("AKINI DATA NOT NULL: '%s'", data))
 		resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
 
 	}
 
-	tflog.Debug(ctx, "End read of resource: aci_rest_managed")
+	tflog.Debug(ctx, fmt.Sprintf("End read of resource aci_rest_managed with id '%s'", data.Id.ValueString()))
 }
 
 func (r *AciRestManagedResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
@@ -284,7 +281,7 @@ func (r *AciRestManagedResource) Update(ctx context.Context, req resource.Update
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
-	tflog.Debug(ctx, "End update of resource: aci_rest_managed")
+	tflog.Debug(ctx, fmt.Sprintf("End update of resource aci_rest_managed with id '%s'", data.Id.ValueString()))
 }
 
 func (r *AciRestManagedResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
@@ -308,7 +305,7 @@ func (r *AciRestManagedResource) Delete(ctx context.Context, req resource.Delete
 	if resp.Diagnostics.HasError() {
 		return
 	}
-	tflog.Debug(ctx, "End delete of resource: aci_rest_managed")
+	tflog.Debug(ctx, fmt.Sprintf("End delete of resource aci_rest_managed with id '%s'", data.Id.ValueString()))
 }
 
 func (r *AciRestManagedResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {

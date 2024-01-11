@@ -203,7 +203,8 @@ func (d *AciRestManagedDataSource) Read(ctx context.Context, req datasource.Read
 
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
-	tflog.Debug(ctx, "End read of datasource: aci_rest_managed")
+	tflog.Debug(ctx, fmt.Sprintf("End read of datasource aci_rest_managed with id '%s'", data.Id.ValueString()))
+
 }
 
 func dataSourceRestManagedNotFoundError(diags *diag.Diagnostics, data *AciRestManagedResourceModel) {
