@@ -23,109 +23,120 @@ Class - fvSubnet
 ## Example Usage
 
 ```hcl
-	resource "aci_subnet" "foosubnet" {
-		parent_dn 		 = aci_bridge_domain.bd_for_subnet.id
-		description      = "subnet"
-		ip               = "10.0.3.28/27"
-		annotation       = "tag_subnet"
-		ctrl             = ["querier", "nd"]
-		name_alias       = "alias_subnet"
-		preferred        = "no"
-		scope            = ["private", "shared"]
-		virtual          = "yes"
-	}
+resource "aci_subnet" "foosubnet" {
+  parent_dn   = aci_bridge_domain.bd_for_subnet.id
+  description = "subnet"
+  ip          = "10.0.3.28/27"
+  annotation  = "tag_subnet"
+  ctrl        = ["querier", "nd"]
+  name_alias  = "alias_subnet"
+  preferred   = "no"
+  scope       = ["private", "shared"]
+  virtual     = "yes"
+}
 
-	# Create EP Reachability - Under AP -> EPG Subnet
-	resource "aci_subnet" "foo_epg_subnet_next_hop_addr" {
-		parent_dn     = aci_application_epg.foo_epg.id
-		ip            = "10.0.3.29/32"
-		scope         = ["private"]
-		description   = "This subject is created by terraform"
-		ctrl          = ["no-default-gateway"]
-		preferred     = "no"
-		virtual       = "yes"
-		next_hop_addr = "10.0.3.30"
-	}
+# Create EP Reachability - Under AP -> EPG Subnet
+resource "aci_subnet" "foo_epg_subnet_next_hop_addr" {
+  parent_dn     = aci_application_epg.foo_epg.id
+  ip            = "10.0.3.29/32"
+  scope         = ["private"]
+  description   = "This subject is created by terraform"
+  ctrl          = ["no-default-gateway"]
+  preferred     = "no"
+  virtual       = "yes"
+  next_hop_addr = "10.0.3.30"
+}
 
-	# Create Anycast MAC - Under AP -> EPG Subnet
-	resource "aci_subnet" "foo_epg_subnet_anycast_mac" {
-		parent_dn   = aci_application_epg.foo_epg.id
-		ip          = "10.0.3.29/32"
-		scope       = ["private"]
-		description = "This subject is created by terraform"
-		ctrl        = ["no-default-gateway"]
-		preferred   = "no"
-		virtual     = "yes"
-		anycast_mac = "F0:1F:20:34:89:AB"
-	}
+# Create Anycast MAC - Under AP -> EPG Subnet
+resource "aci_subnet" "foo_epg_subnet_anycast_mac" {
+  parent_dn   = aci_application_epg.foo_epg.id
+  ip          = "10.0.3.29/32"
+  scope       = ["private"]
+  description = "This subject is created by terraform"
+  ctrl        = ["no-default-gateway"]
+  preferred   = "no"
+  virtual     = "yes"
+  anycast_mac = "F0:1F:20:34:89:AB"
+}
 
-	# Create MSNLB in IGMP mode - Under AP -> EPG Subnet
-	resource "aci_subnet" "foo_epg_subnet_msnlb_mcast_igmp" {
-		parent_dn   = aci_application_epg.foo_epg.id
-		ip          = "10.0.3.29/32"
-		scope       = ["private"]
-		description = "This subject is created by terraform"
-		ctrl        = ["no-default-gateway"]
-		preferred   = "no"
-		virtual     = "yes"
-		msnlb {
-			mode  = "mode-mcast-igmp"
-			group = "224.0.0.1" # The valid Multicast Address are 224.0.0.0 through 239.255.255.255.
-		}
-	}
+# Create MSNLB in IGMP mode - Under AP -> EPG Subnet
+resource "aci_subnet" "foo_epg_subnet_msnlb_mcast_igmp" {
+  parent_dn   = aci_application_epg.foo_epg.id
+  ip          = "10.0.3.29/32"
+  scope       = ["private"]
+  description = "This subject is created by terraform"
+  ctrl        = ["no-default-gateway"]
+  preferred   = "no"
+  virtual     = "yes"
+  msnlb {
+    mode  = "mode-mcast-igmp"
+    group = "224.0.0.1" # The valid Multicast Address are 224.0.0.0 through 239.255.255.255.
+  }
+}
 
-	# Create MSNLB in static multicast mode - Under AP -> EPG Subnet
-	resource "aci_subnet" "foo_epg_subnet_msnlb_mcast_static" {
-		parent_dn   = aci_application_epg.foo_epg.id
-		ip          = "10.0.3.29/32"
-		scope       = ["private"]
-		description = "This subject is created by terraform"
-		ctrl        = ["no-default-gateway"]
-		preferred   = "no"
-		virtual     = "yes"
-		msnlb {
-			mode  = "mode-mcast--static"
-			mac   = "03:1F:20:34:89:AA"
-		}
-	}
+# Create MSNLB in static multicast mode - Under AP -> EPG Subnet
+resource "aci_subnet" "foo_epg_subnet_msnlb_mcast_static" {
+  parent_dn   = aci_application_epg.foo_epg.id
+  ip          = "10.0.3.29/32"
+  scope       = ["private"]
+  description = "This subject is created by terraform"
+  ctrl        = ["no-default-gateway"]
+  preferred   = "no"
+  virtual     = "yes"
+  msnlb {
+    mode = "mode-mcast--static"
+    mac  = "03:1F:20:34:89:AA"
+  }
+}
 
-	# Create MSNLB in unicast mode - Under AP -> EPG Subnet
-	resource "aci_subnet" "foo_epg_subnet_msnlb_mode_uc" {
-		parent_dn   = aci_application_epg.foo_epg.id
-		ip          = "10.0.3.29/32"
-		scope       = ["private"]
-		description = "This subject is created by terraform"
-		ctrl        = ["no-default-gateway"]
-		preferred   = "no"
-		virtual     = "yes"
-		msnlb {
-			mode  = "mode-uc"
-			mac   = "00:1F:20:34:89:AA"
-		}
-	}
+# Create MSNLB in unicast mode - Under AP -> EPG Subnet
+resource "aci_subnet" "foo_epg_subnet_msnlb_mode_uc" {
+  parent_dn   = aci_application_epg.foo_epg.id
+  ip          = "10.0.3.29/32"
+  scope       = ["private"]
+  description = "This subject is created by terraform"
+  ctrl        = ["no-default-gateway"]
+  preferred   = "no"
+  virtual     = "yes"
+  msnlb {
+    mode = "mode-uc"
+    mac  = "00:1F:20:34:89:AA"
+  }
+}
+# Disable IP Dataplane Learning for Host(/32) - Under AP -> EPG Subnet
+resource "aci_subnet" "foo_epg_subnet_disable_dp_learning" {
+  parent_dn              = aci_application_epg.foo_epg.id
+  ip                     = "10.0.3.29/32"
+  scope                  = ["private"]
+  description            = "This subject is created by terraform"
+  ctrl                   = ["no-default-gateway"]
+  anycast_mac            = "F0:1F:20:34:89:AB"
+  ip_data_plane_learning = "disabled"
+}
 ```
 
 ## Argument Reference
 
-- `parent_dn` - (Required) Distinguished name of parent object.
-- `ip` - (Required) The IP address and mask of the default gateway.
-- `annotation` - (Optional) Annotation for object subnet.
-- `description` - (Optional) Description for object subnet.
-- `ctrl` - (Optional) The list of subnet control state. The control can be specific protocols applied to the subnet such as IGMP Snooping. Allowed values are "unspecified", "querier", "nd" and "no-default-gateway". Default is "nd". NOTE: "unspecified" should't be used along with other values.
-- `name_alias` - (Optional) Name alias for object subnet.
-- `preferred` - (Optional) Indicates if the subnet is preferred (primary) over the available alternatives. Only one preferred subnet is allowed. Allowed values are "yes" and "no". Default is "no".
-- `scope` - (Optional) The List of network visibility of the subnet. Allowed values are "private", "public" and "shared". Default is "private".
-- `virtual` - (Optional) Treated as virtual IP address. Used in case of BD extended to multiple sites. Allowed values are "yes" and "no". Default is "no".
+- `parent_dn` - (Required) Distinguished name of parent object. Type: String
+- `ip` - (Required) The IP address and mask of the default gateway. Type: String
+- `annotation` - (Optional) Annotation for object subnet. Type: String
+- `description` - (Optional) Description for object subnet. Type: String
+- `ctrl` - (Optional) The list of subnet control state. The control can be specific protocols applied to the subnet such as IGMP Snooping. Allowed values are "unspecified", "querier", "nd" and "no-default-gateway". Default is "nd". NOTE: "unspecified" should't be used along with other values. Type: List
+- `ip_data_plane_learning` (Optional) Flag to enable/disable ip-data-plane learning for the Subnet object. Allowed values are "enabled" and "disabled" and default value is "enabled". This argument is supported starting from version 5.2(1g). Type: String.
+- `name_alias` - (Optional) Name alias for object subnet. Type: String
+- `preferred` - (Optional) Indicates if the subnet is preferred (primary) over the available alternatives. Only one preferred subnet is allowed. Allowed values are "yes" and "no". Default is "no". Type: String
+- `scope` - (Optional) The List of network visibility of the subnet. Allowed values are "private", "public" and "shared". Default is "private". Type: List
+- `virtual` - (Optional) Treated as virtual IP address. Used in case of BD extended to multiple sites. Allowed values are "yes" and "no". Default is "no". Type: String
 
-- `relation_fv_rs_bd_subnet_to_out` - (Optional) Relation to class l3extOut. Cardinality - N_TO_M. Type - Set of String.
-- `relation_fv_rs_nd_pfx_pol` - (Optional) Relation to class ndPfxPol. Cardinality - N_TO_ONE. Type - String.
-- `relation_fv_rs_bd_subnet_to_profile` - (Optional) Relation to class rtctrlProfile. Cardinality - N_TO_ONE. Type - String.
-- `next_hop_addr` - (Optional) EP Reachability of the Application EPGs Subnet object. Type - String.
+- `relation_fv_rs_bd_subnet_to_out` - (Optional) Relation to class l3extOut. Cardinality - N_TO_M. Type: List
+- `relation_fv_rs_nd_pfx_pol` - (Optional) Relation to class ndPfxPol. Cardinality - N_TO_ONE. Type: String.
+- `relation_fv_rs_bd_subnet_to_profile` - (Optional) Relation to class rtctrlProfile. Cardinality - N_TO_ONE. Type: String.
+- `next_hop_addr` - (Optional) EP Reachability of the Application EPGs Subnet object. Type: String.
 - `msnlb` - (Optional) A block representing MSNLB of the Application EPGs Subnet object. Type: Block.
-   - `mode` - Mode of the MSNLB object, Allowed values are "mode-mcast--static", "mode-uc" and "mode-mcast-igmp". Default is "mode-uc".
-   - `group` - The IGMP mode group IP address of the MSNLB object. The valid Multicast Address are 224.0.0.0 through 239.255.255.255.
-   - `mac` - MAC address of the unicast and static multicast mode of the MSNLB object. The valid static multicast MAC address format is `03:XX:XX:XX:XX:XX`.
-- `anycast_mac` - Anycast MAC of the Application EPGs Subnet object. Type - String.
+   - `mode` - Mode of the MSNLB object, Allowed values are "mode-mcast--static", "mode-uc" and "mode-mcast-igmp". Default is "mode-uc". Type: String
+   - `group` - The IGMP mode group IP address of the MSNLB object. The valid Multicast Address are 224.0.0.0 through 239.255.255.255. Type: String
+   - `mac` - MAC address of the unicast and static multicast mode of the MSNLB object. The valid static multicast MAC address format is `03:XX:XX:XX:XX:XX`. Type: String
+- `anycast_mac` - Anycast MAC of the Application EPGs Subnet object. Type: String.
 ## Attribute Reference
 
 The only attribute that this resource exports is the `id`, which is set to the
