@@ -65,7 +65,6 @@ func (d *AciRestManagedDataSource) Schema(ctx context.Context, req datasource.Sc
 		},
 		Blocks: map[string]schema.Block{
 			"child": schema.SetNestedBlock{
-				//Optional:            true,
 				MarkdownDescription: "List of children.",
 				NestedObject: schema.NestedBlockObject{
 					Attributes: map[string]schema.Attribute{
