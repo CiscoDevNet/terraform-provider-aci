@@ -137,7 +137,6 @@ func (r *AciRestManagedResource) Schema(ctx context.Context, req resource.Schema
 		},
 		Blocks: map[string]schema.Block{
 			"child": schema.SetNestedBlock{
-				//Optional:            true,
 				MarkdownDescription: "List of children.",
 				PlanModifiers: []planmodifier.Set{
 					setplanmodifier.UseStateForUnknown(),
