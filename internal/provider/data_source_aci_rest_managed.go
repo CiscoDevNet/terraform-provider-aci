@@ -41,11 +41,11 @@ func (d *AciRestManagedDataSource) Schema(ctx context.Context, req datasource.Sc
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: "The distinquised name (DN) of the object.",
+				MarkdownDescription: "The distinguished name (DN) of the object.",
 			},
 			"dn": schema.StringAttribute{
 				Required:            true,
-				MarkdownDescription: "The distinquised name (DN) of the parent object. e.g. uni/tn-EXAMPLE_TENANT",
+				MarkdownDescription: "The distinguished name (DN) of the parent object. e.g. uni/tn-EXAMPLE_TENANT",
 			},
 			"class_name": schema.StringAttribute{
 				Required:            true,
