@@ -24,33 +24,33 @@ Class - fvSubnet
 
 ```hcl
 data "aci_subnet" "dev_subnet" {
-  parent_dn         = aci_bridge_domain.example.id
-  ip                = "10.0.3.28/27"
+  parent_dn = aci_bridge_domain.example.id
+  ip        = "10.0.3.28/27"
 }
 ```
 
 ## Argument Reference
 
-- `parent_dn` - (Required) Distinguished name of parent bridge domain object.
-- `ip` - (Required) The IP address and mask of the default gateway.
+- `parent_dn` - (Required) Distinguished name of parent bridge domain object. Type: String
+- `ip` - (Required) The IP address and mask of the default gateway. Type: String
 
 ## Attribute Reference
 
-- `id` - Attribute id set to the Dn of the Subnet.
-- `annotation` - (Read-Only) Annotation for object subnet.
-- `description` - (Read-Only) Description for object subnet.
-- `ctrl` - (Read-Only) The list of subnet control state. The control can be specific protocols applied to the subnet such as IGMP Snooping.
+- `id` - (Read-Only) Attribute id set to the Dn of the Subnet. Type: String
+- `annotation` - (Read-Only) Annotation for object subnet. Type: String
+- `description` - (Read-Only) Description for object subnet. Type: String
+- `ctrl` - (Read-Only) The list of subnet control state. The control can be specific protocols applied to the subnet such as IGMP Snooping. Type: List
 - `ip_data_plane_learning` - (Read-Only) Flag to enable/disable ip-data-plane learning for the Subnet object. Allowed values are "enabled" and "disabled" and default value is "enabled". Type: String.
-- `name_alias` - (Read-Only) Name alias for object subnet.
-- `preferred` - (Read-Only) Indicates if the subnet is preferred (primary) over the available alternatives. Only one preferred subnet is allowed.
-- `scope` - (Read-Only) The List of network visibility of the subnet.
-- `virtual` - (Read-Only) Treated as virtual IP address. Used in case of BD extended to multiple sites.
-- `relation_fv_rs_bd_subnet_to_out` - (Read-Only) Relation to class l3extOut. Cardinality - N_TO_M. Type - Set of String.
-- `relation_fv_rs_nd_pfx_pol` - (Read-Only) Relation to class ndPfxPol. Cardinality - N_TO_ONE. Type - String.
-- `relation_fv_rs_bd_subnet_to_profile` - (Read-Only) Relation to class rtctrlProfile. Cardinality - N_TO_ONE. Type - String.
-- `next_hop_addr` - (Read-Only) EP Reachability of the Application EPGs Subnet object. Type - String.
-- `msnlb` - (Read-Only) A block representing MSNLB of the Application EPGs Subnet object. Type - Block.
-   - `mode` - Mode of the MSNLB object.
-   - `group` - The IGMP mode group IP address of the MSNLB object.
-   - `mac` - MAC address of the unicast and static multicast mode of the MSNLB object.
-- `anycast_mac` - Anycast MAC of the Application EPGs Subnet object. Type - String.
+- `name_alias` - (Read-Only) Name alias for object subnet. Type: String
+- `preferred` - (Read-Only) Indicates if the subnet is preferred (primary) over the available alternatives. Only one preferred subnet is allowed. Type: String
+- `scope` - (Read-Only) The List of network visibility of the subnet. Type: List
+- `virtual` - (Read-Only) Treated as virtual IP address. Used in case of BD extended to multiple sites. Type: String
+- `relation_fv_rs_bd_subnet_to_out` - (Read-Only) Relation to class l3extOut. Cardinality - N_TO_M. Type: List
+- `relation_fv_rs_nd_pfx_pol` - (Read-Only) Relation to class ndPfxPol. Cardinality - N_TO_ONE. Type: List.
+- `relation_fv_rs_bd_subnet_to_profile` - (Read-Only) Relation to class rtctrlProfile. Cardinality - N_TO_ONE. Type: List.
+- `next_hop_addr` - (Read-Only) EP Reachability of the Application EPGs Subnet object. Type: String.
+- `msnlb` - (Read-Only) A block representing MSNLB of the Application EPGs Subnet object. Type: Block.
+   - `mode` - (Read-Only) Mode of the MSNLB object. Type: String
+   - `group` - (Read-Only) The IGMP mode group IP address of the MSNLB object. Type: String
+   - `mac` - (Read-Only) MAC address of the unicast and static multicast mode of the MSNLB object. Type: String
+- `anycast_mac` - (Read-Only) Anycast MAC of the Application EPGs Subnet object. Type - String. Type: String
