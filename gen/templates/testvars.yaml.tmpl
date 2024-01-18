@@ -55,7 +55,7 @@ children:
       {{ end}}{{- end}}{{- end}}
 {{- if .ContainedBy}}
 parents:
-    {{- range $key := .DocumentationExamples}}{{$index := 0}}{{$parentDependency := getParentTestDependencies $.PkgName $index $.Definitions}}
+    {{- $index := 0}}{{- range $key := .DocumentationExamples}}{{$parentDependency := getParentTestDependencies $.PkgName $index $.Definitions}}
   - class_name: "{{ $key }}"
     parent_dependency: "{{$parentDependency.parent_dependency}}"
     parent_dn: "{{createParentDnValue $key "test" $.Definitions}}"

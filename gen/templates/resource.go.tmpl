@@ -195,8 +195,8 @@ func (r *{{.ResourceClassName}}Resource) Schema(ctx context.Context, req resourc
 							MarkdownDescription: `{{.Comment}}`,
 							Optional:            true,
 							Computed:            true,
-							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+							PlanModifiers: []planmodifier.Set{
+								setplanmodifier.UseStateForUnknown(),
 							},
 							{{- if .ValidValues}}
 							Validators: []validator.Set{

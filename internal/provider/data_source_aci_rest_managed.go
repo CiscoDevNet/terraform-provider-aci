@@ -48,17 +48,15 @@ func (d *AciRestManagedDataSource) Schema(ctx context.Context, req datasource.Sc
 				MarkdownDescription: "The distinguished name (DN) of the parent object. e.g. uni/tn-EXAMPLE_TENANT",
 			},
 			"class_name": schema.StringAttribute{
-				Required:            true,
+				Computed:            true,
 				MarkdownDescription: "Which class object is being created. (Make sure there is no colon in the classname)",
 			},
 			"content": schema.MapAttribute{
 				MarkdownDescription: "Map of key-value pairs those needed to be passed to the Model object as parameters. Make sure the key name matches the name with the object parameter in ACI.",
-				Optional:            true,
 				Computed:            true,
 				ElementType:         types.StringType,
 			},
 			"annotation": schema.StringAttribute{
-				Optional:            true,
 				Computed:            true,
 				MarkdownDescription: `The annotation of the ACI object.`,
 			},
@@ -70,16 +68,14 @@ func (d *AciRestManagedDataSource) Schema(ctx context.Context, req datasource.Sc
 					Attributes: map[string]schema.Attribute{
 						"rn": schema.StringAttribute{
 							MarkdownDescription: "The relative name of the child object.",
-							Required:            true,
+							Computed:            true,
 						},
 						"class_name": schema.StringAttribute{
 							MarkdownDescription: "Class name of child object.",
-							Optional:            true,
 							Computed:            true,
 						},
 						"content": schema.MapAttribute{
 							MarkdownDescription: "Map of key-value pairs which represents the attributes for the child object.",
-							Optional:            true,
 							Computed:            true,
 							ElementType:         types.StringType,
 						},
