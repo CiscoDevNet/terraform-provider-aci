@@ -79,30 +79,35 @@ resource "aci_rest_managed" "example_tenant_with_child" {
 
 ### Optional ###
 
-* `annotation` - (string) Annotation for the class object that is being created. When annotation is provided in content this will take precedence.
+* `annotation` - (string) Annotation for the class object that is being created.
   - Default: `orchestrator:terraform`
 * `content` (map) Map of key-value pairs those needed to be passed to the Model object as parameters. Make sure the key name matches the name with the object parameter in ACI.
 
+  !> The annotation property is not allowed to be set in the content map of the resource.
 
 * `child` - (list) A list of child objects.
 
   #### Required ####
 
   * `rn` - (string) The Relative Name of the child object.
+  * `class_name` - (string) Class name of child object.
 
   #### Optional ###
 
-  * `class_name` - (string) Class name of child object.
-  * `content` (map) Map of key-value pairs which represents the attributes for the child object.
+  * `content` (map) Map of key-value pairs which represents the attributes for the child object. When annotation is provided in the content of the child it will take precedence over the annotation set at the parent level.
 
 ## Importing ##
-
--> Import is not supported for child configuration objects.
 
 An existing object can be [imported](https://www.terraform.io/docs/import/index.html) into this resource via its distinguished name (DN), via the following command:
 
 ```
 terraform import aci_rest_managed.example_tenant uni/tn-{name}
+```
+
+When children need to be imported they must be specified by appending them to the distinguished name (DN) with the below format:
+
+```
+terraform import aci_rest_managed.example_tenant uni/tn-{name}:{child-rn-1},{child-rn-N}
 ```
 
 Starting in Terraform version 1.5, an existing object can be imported using [import blocks](https://developer.hashicorp.com/terraform/language/import) via the following configuration:

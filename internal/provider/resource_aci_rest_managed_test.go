@@ -2,6 +2,7 @@ package provider
 
 import (
 	"fmt"
+	"regexp"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/acctest"
@@ -115,6 +116,117 @@ func TestAccAciRestManaged_tenantVrf(t *testing.T) {
 	})
 }
 
+func TestAccAciRestManaged_import(t *testing.T) {
+	name := acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum)
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				Config: testAccAciRestManagedConfig_import(name, "import"),
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_rest_managed.import", "content.name", name),
+					resource.TestCheckResourceAttr("aci_rest_managed.import", "dn", "uni/tn-"+name),
+					resource.TestCheckResourceAttr("aci_rest_managed.import", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_rest_managed.import", "class_name", "fvTenant"),
+				),
+			},
+			{
+				ImportState:   true,
+				ImportStateId: fmt.Sprintf("uni/tn-%s", name),
+				ResourceName:  "aci_rest_managed.import",
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_rest_managed.import", "content.name", name),
+					resource.TestCheckResourceAttr("aci_rest_managed.import", "dn", "uni/tn-"+name),
+					resource.TestCheckResourceAttr("aci_rest_managed.import", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_rest_managed.import", "class_name", "fvTenant"),
+				),
+			},
+			{
+				Config: testAccAciRestManagedConfig_importWithChild(name, "import"),
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_rest_managed.import", "content.name", name),
+					resource.TestCheckResourceAttr("aci_rest_managed.import", "dn", "uni/tn-"+name),
+					resource.TestCheckResourceAttr("aci_rest_managed.import", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_rest_managed.import", "class_name", "fvTenant"),
+					resource.TestCheckResourceAttr("aci_rest_managed.import", "child.0.class_name", "fvCtx"),
+					resource.TestCheckResourceAttr("aci_rest_managed.import", "child.0.rn", "ctx-VRF1"),
+					resource.TestCheckResourceAttr("aci_rest_managed.import", "child.0.content.name", "VRF1"),
+					resource.TestCheckResourceAttr("aci_rest_managed.import", "child.#", "1"),
+				),
+			},
+			{
+				ImportState:   true,
+				ImportStateId: fmt.Sprintf("uni/tn-%s:ctx-VRF1", name),
+				ResourceName:  "aci_rest_managed.import",
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_rest_managed.import", "content.name", name),
+					resource.TestCheckResourceAttr("aci_rest_managed.import", "dn", "uni/tn-"+name),
+					resource.TestCheckResourceAttr("aci_rest_managed.import", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_rest_managed.import", "class_name", "fvTenant"),
+					resource.TestCheckResourceAttr("aci_rest_managed.import", "child.0.class_name", "fvCtx"),
+					resource.TestCheckResourceAttr("aci_rest_managed.import", "child.0.rn", "ctx-VRF1"),
+					resource.TestCheckResourceAttr("aci_rest_managed.import", "child.0.content.name", "VRF1"),
+					resource.TestCheckResourceAttr("aci_rest_managed.import", "child.#", "1"),
+				),
+			},
+			{
+				ImportState:   true,
+				ImportStateId: fmt.Sprintf("uni/tn-%s:ctx-VRF1,ctx-VRF2", name),
+				ResourceName:  "aci_rest_managed.import",
+				ExpectError:   regexp.MustCompile("Import Failed"),
+			},
+			{
+				ImportState:   true,
+				ImportStateId: fmt.Sprintf("uni/tn-%s:ctx-VRF1:ctx-VRF2", name),
+				ResourceName:  "aci_rest_managed.import",
+				ExpectError:   regexp.MustCompile("Unexpected Import Identifier"),
+			},
+			{
+				Config: testAccAciRestManagedConfig_importWithMultipleChildren(name, "import"),
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_rest_managed.import", "content.name", name),
+					resource.TestCheckResourceAttr("aci_rest_managed.import", "dn", "uni/tn-"+name),
+					resource.TestCheckResourceAttr("aci_rest_managed.import", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_rest_managed.import", "class_name", "fvTenant"),
+					resource.TestCheckResourceAttr("aci_rest_managed.import", "child.0.class_name", "fvAp"),
+					resource.TestCheckResourceAttr("aci_rest_managed.import", "child.0.rn", "ap-AP1"),
+					resource.TestCheckResourceAttr("aci_rest_managed.import", "child.0.content.name", "AP1"),
+					resource.TestCheckResourceAttr("aci_rest_managed.import", "child.1.class_name", "fvCtx"),
+					resource.TestCheckResourceAttr("aci_rest_managed.import", "child.1.rn", "ctx-VRF1"),
+					resource.TestCheckResourceAttr("aci_rest_managed.import", "child.1.content.name", "VRF1"),
+					resource.TestCheckResourceAttr("aci_rest_managed.import", "child.2.class_name", "fvCtx"),
+					resource.TestCheckResourceAttr("aci_rest_managed.import", "child.2.rn", "ctx-VRF2"),
+					resource.TestCheckResourceAttr("aci_rest_managed.import", "child.2.content.name", "VRF2"),
+					resource.TestCheckResourceAttr("aci_rest_managed.import", "child.#", "3"),
+				),
+			},
+			{
+				ImportState:   true,
+				ImportStateId: fmt.Sprintf("uni/tn-%s:ctx-VRF1,ctx-VRF2,ap-AP1", name),
+				ResourceName:  "aci_rest_managed.import",
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_rest_managed.import", "content.name", name),
+					resource.TestCheckResourceAttr("aci_rest_managed.import", "dn", "uni/tn-"+name),
+					resource.TestCheckResourceAttr("aci_rest_managed.import", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_rest_managed.import", "class_name", "fvTenant"),
+					resource.TestCheckResourceAttr("aci_rest_managed.import", "child.0.class_name", "fvAp"),
+					resource.TestCheckResourceAttr("aci_rest_managed.import", "child.0.rn", "ap-AP1"),
+					resource.TestCheckResourceAttr("aci_rest_managed.import", "child.0.content.name", "AP1"),
+					resource.TestCheckResourceAttr("aci_rest_managed.import", "child.1.class_name", "fvCtx"),
+					resource.TestCheckResourceAttr("aci_rest_managed.import", "child.1.rn", "ctx-VRF1"),
+					resource.TestCheckResourceAttr("aci_rest_managed.import", "child.1.content.name", "VRF1"),
+					resource.TestCheckResourceAttr("aci_rest_managed.import", "child.2.class_name", "fvCtx"),
+					resource.TestCheckResourceAttr("aci_rest_managed.import", "child.2.rn", "ctx-VRF2"),
+					resource.TestCheckResourceAttr("aci_rest_managed.import", "child.2.content.name", "VRF2"),
+					resource.TestCheckResourceAttr("aci_rest_managed.import", "child.#", "2"),
+				),
+			},
+		},
+	})
+}
+
 func TestAccAciRestManaged_tagTag(t *testing.T) {
 	name := acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum)
 
@@ -215,7 +327,7 @@ func TestAccAciRestManaged_globalAnnotation(t *testing.T) {
 				),
 			},
 			{
-				Config:             testAccAciRestManagedConfig_globalAnnotationResourceOverwrite(name),
+				Config:             testAccAciRestManagedConfig_globalAnnotationOverwriteResource(name),
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_rest_managed.fvTenant", "child.#", "0"),
@@ -225,14 +337,31 @@ func TestAccAciRestManaged_globalAnnotation(t *testing.T) {
 				),
 			},
 			{
-				Config:             testAccAciRestManagedConfig_globalAnnotationResourceOverwriteFromContent(name),
+				Config:      testAccAciRestManagedConfig_globalAnnotationResourceAndContent(name),
+				ExpectError: regexp.MustCompile("Annotation not supported in content"),
+			},
+			{
+				Config:      testAccAciRestManagedConfig_globalAnnotationOverwriteFromContent(name),
+				ExpectError: regexp.MustCompile("Annotation not supported in content"),
+			},
+			{
+				Config:             testAccAciRestManagedConfig_globalAnnotationOverwriteResourceOverwriteFromContentNull(name),
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_rest_managed.fvTenant", "child.#", "0"),
 					resource.TestCheckResourceAttr("aci_rest_managed.fvTenant", "dn", "uni/tn-"+name),
 					resource.TestCheckResourceAttr("aci_rest_managed.fvTenant", "annotation", "orchestrator:from_resource"),
 					resource.TestCheckResourceAttr("aci_rest_managed.fvTenant", "content.name", name),
-					resource.TestCheckResourceAttr("aci_rest_managed.fvTenant", "content.annotation", "orchestrator:from_content"),
+				),
+			},
+			{
+				Config:             testAccAciRestManagedConfig_globalAnnotationOverwriteFromContentNull(name),
+				ExpectNonEmptyPlan: false,
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_rest_managed.fvTenant", "child.#", "0"),
+					resource.TestCheckResourceAttr("aci_rest_managed.fvTenant", "dn", "uni/tn-"+name),
+					resource.TestCheckResourceAttr("aci_rest_managed.fvTenant", "annotation", "orchestrator:from_env"),
+					resource.TestCheckResourceAttr("aci_rest_managed.fvTenant", "content.name", name),
 				),
 			},
 			{
@@ -388,6 +517,71 @@ func testAccAciRestManagedConfig_tenantVrf(name string, resource string) string 
 			class_name = "fvCtx"
 			content = {
 			  name = "%[1]s"
+			  description = null
+			}
+		}
+	}
+	`, name, resource)
+}
+
+func testAccAciRestManagedConfig_import(name string, resource string) string {
+	return fmt.Sprintf(`
+	resource "aci_rest_managed" "%[2]s" {
+		dn = "uni/tn-%[1]s"
+		class_name = "fvTenant"
+		content = {
+			name = "%[1]s"
+		}
+	}
+	`, name, resource)
+}
+
+func testAccAciRestManagedConfig_importWithChild(name string, resource string) string {
+	return fmt.Sprintf(`
+	resource "aci_rest_managed" "%[2]s" {
+		dn = "uni/tn-%[1]s"
+		class_name = "fvTenant"
+		content = {
+			name = "%[1]s"
+		}
+		child {
+			rn         = "ctx-VRF1"
+			class_name = "fvCtx"
+			content = {
+				name = "VRF1"
+			}
+		}
+	}
+	`, name, resource)
+}
+
+func testAccAciRestManagedConfig_importWithMultipleChildren(name string, resource string) string {
+	return fmt.Sprintf(`
+	resource "aci_rest_managed" "%[2]s" {
+		dn = "uni/tn-%[1]s"
+		class_name = "fvTenant"
+		content = {
+			name = "%[1]s"
+		}
+		child {
+			rn         = "ctx-VRF1"
+			class_name = "fvCtx"
+			content = {
+				name = "VRF1"
+			}
+		}
+		child {
+			rn         = "ctx-VRF2"
+			class_name = "fvCtx"
+			content = {
+				name = "VRF2"
+			}
+		}
+		child {
+			rn         = "ap-AP1"
+			class_name = "fvAp"
+			content = {
+				name = "AP1"
 			}
 		}
 	}
@@ -418,7 +612,7 @@ func testAccAciRestManagedConfig_globalAnnotation(name string) string {
 	`, name)
 }
 
-func testAccAciRestManagedConfig_globalAnnotationResourceOverwrite(name string) string {
+func testAccAciRestManagedConfig_globalAnnotationOverwriteResource(name string) string {
 	return fmt.Sprintf(`
 	resource "aci_rest_managed" "fvTenant" {
 		dn = "uni/tn-%[1]s"
@@ -431,7 +625,7 @@ func testAccAciRestManagedConfig_globalAnnotationResourceOverwrite(name string) 
 	`, name)
 }
 
-func testAccAciRestManagedConfig_globalAnnotationResourceOverwriteFromContent(name string) string {
+func testAccAciRestManagedConfig_globalAnnotationResourceAndContent(name string) string {
 	return fmt.Sprintf(`
 	resource "aci_rest_managed" "fvTenant" {
 		dn = "uni/tn-%[1]s"
@@ -440,6 +634,46 @@ func testAccAciRestManagedConfig_globalAnnotationResourceOverwriteFromContent(na
 		content = {
 			name = "%[1]s"
 			annotation = "orchestrator:from_content"
+		}
+	}
+	`, name)
+}
+
+func testAccAciRestManagedConfig_globalAnnotationOverwriteFromContent(name string) string {
+	return fmt.Sprintf(`
+	resource "aci_rest_managed" "fvTenant" {
+		dn = "uni/tn-%[1]s"
+		class_name = "fvTenant"
+		content = {
+			name = "%[1]s"
+			annotation = "orchestrator:from_content"
+		}
+	}
+	`, name)
+}
+
+func testAccAciRestManagedConfig_globalAnnotationOverwriteFromContentNull(name string) string {
+	return fmt.Sprintf(`
+	resource "aci_rest_managed" "fvTenant" {
+		dn = "uni/tn-%[1]s"
+		class_name = "fvTenant"
+		content = {
+			name = "%[1]s"
+			annotation = null
+		}
+	}
+	`, name)
+}
+
+func testAccAciRestManagedConfig_globalAnnotationOverwriteResourceOverwriteFromContentNull(name string) string {
+	return fmt.Sprintf(`
+	resource "aci_rest_managed" "fvTenant" {
+		dn = "uni/tn-%[1]s"
+		class_name = "fvTenant"
+		annotation = "orchestrator:from_resource"
+		content = {
+			name = "%[1]s"
+			annotation = null
 		}
 	}
 	`, name)

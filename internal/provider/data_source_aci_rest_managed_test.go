@@ -33,26 +33,11 @@ func TestAccDataSourceAciRestManaged_tenant(t *testing.T) {
 const testAccDataSourceAciRestManagedConfigTenant = `
 data "aci_rest_managed" "infra" {
   dn = "uni/tn-infra"
-  class_name = "fvTenant"
-  content = {
-	name = "infra"
-  }
-  child {
-	class_name = "aaaDomainRef"
-	rn = "domain-infra"
-	content = {
-		name = "infra"
-	}
-  }
 }
 `
 
 const testConfigRestManagedNotExisting = `
 data "aci_rest_managed" "not_existing" {
   dn = "uni/tn-not_existing"
-  class_name = "fvTenant"
-  content = {
-	name = "not_existing"
-  }
 }
 `

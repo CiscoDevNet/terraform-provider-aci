@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
@@ -57,6 +58,9 @@ type AciRestManagedChildIdentifier struct {
 	ClassName types.String
 }
 
+// List of attributes to be not stored in state
+var IgnoreAttr = []string{"extMngdBy", "lcOwn", "modTs", "monPolDn", "uid", "dn", "rn", "configQual", "configSt", "virtualIp", "status", "childAction", "annotation"}
+
 // List of classes where 'rsp-prop-include=config-only' does not return the desired objects/properties
 var FullClasses = []string{"firmwareFwGrp", "maintMaintGrp", "maintMaintP", "firmwareFwP", "pkiExportEncryptionKey"}
 
@@ -75,17 +79,26 @@ func (r *AciRestManagedResource) Metadata(ctx context.Context, req resource.Meta
 }
 
 func (r *AciRestManagedResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanRequest, resp *resource.ModifyPlanResponse) {
-	tflog.Trace(ctx, "Start plan modification of resource: aci_rest_managed")
+	tflog.Debug(ctx, "Start plan modification of resource: aci_rest_managed")
 	if !req.Plan.Raw.IsNull() {
 		var planData *AciRestManagedResourceModel
 		resp.Diagnostics.Append(req.Plan.Get(ctx, &planData)...)
+
 		// modify the plan when annotation is not a property of class
 		if ContainsString(NoAnnotationClasses, planData.ClassName.ValueString()) {
-			planData.Annotation = types.StringNull()
-			resp.Plan.Set(ctx, planData)
+			planData.Annotation = basetypes.NewStringNull()
+		} else if !planData.Content.IsNull() && !planData.Content.IsUnknown() && planData.Content.Elements()["annotation"] != nil {
+			if !planData.Content.Elements()["annotation"].IsNull() {
+				resp.Diagnostics.AddError(
+					"Annotation not supported in content",
+					"Annotation is not supported in content, please remove annotation from content and specify at resource level",
+				)
+			}
 		}
+
+		resp.Plan.Set(ctx, planData)
 	}
-	tflog.Trace(ctx, "End plan modification of resource: aci_rest_managed")
+	tflog.Debug(ctx, "End plan modification of resource: aci_rest_managed")
 }
 
 func (r *AciRestManagedResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
@@ -152,8 +165,7 @@ func (r *AciRestManagedResource) Schema(ctx context.Context, req resource.Schema
 						},
 						"class_name": schema.StringAttribute{
 							MarkdownDescription: "Class name of child object.",
-							Optional:            true,
-							Computed:            true,
+							Required:            true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
 							},
@@ -209,6 +221,7 @@ func (r *AciRestManagedResource) Create(ctx context.Context, req resource.Create
 	}
 
 	data.Id = types.StringValue(data.Dn.ValueString())
+	// setAciRestManagedProperties(data)
 
 	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_rest_managed with id '%s'", data.Id.ValueString()))
 
@@ -243,7 +256,24 @@ func (r *AciRestManagedResource) Read(ctx context.Context, req resource.ReadRequ
 
 	tflog.Debug(ctx, fmt.Sprintf("Read of resource aci_rest_managed with id '%s'", data.Id.ValueString()))
 
-	setAciRestManagedAttributes(ctx, &resp.Diagnostics, r.client, data)
+	// Retrive the import rn values from private state when set during import operation
+	value, diags := req.Private.GetKey(ctx, "import_rn")
+	resp.Diagnostics.Append(diags...)
+	rn_values := []string{}
+	if value != nil {
+		rnMap := make(map[string]string, 0)
+		err := json.Unmarshal(value, &rnMap)
+		if err != nil {
+			resp.Diagnostics.AddError(
+				"Unable to parse import_rn",
+				fmt.Sprintf("Err: %s. Please report this issue to the provider developers.", err),
+			)
+			return
+		}
+		rn_values = strings.Split(rnMap["rn_values"], ",")
+	}
+
+	setAciRestManagedAttributes(ctx, &resp.Diagnostics, r.client, data, rn_values)
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -277,6 +307,7 @@ func (r *AciRestManagedResource) Update(ctx context.Context, req resource.Update
 	tflog.Debug(ctx, fmt.Sprintf("Update of resource aci_rest_managed with id '%s'", data.Id.ValueString()))
 
 	data.Id = types.StringValue(data.Dn.ValueString())
+	// setAciRestManagedProperties(data)
 
 	var childPlan, childState []ChildAciRestManagedResourceModel
 	data.Child.ElementsAs(ctx, &childPlan, false)
@@ -323,17 +354,34 @@ func (r *AciRestManagedResource) Delete(ctx context.Context, req resource.Delete
 
 func (r *AciRestManagedResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
 	tflog.Debug(ctx, "Start import state of resource: aci_rest_managed")
-	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
 
-	var stateData *AciRestManagedResourceModel
-	resp.Diagnostics.Append(resp.State.Get(ctx, &stateData)...)
-	tflog.Debug(ctx, fmt.Sprintf("Import state of resource aci_annotation with id '%s'", stateData.Id.ValueString()))
+	idParts := strings.Split(req.ID, ":")
+
+	if len(idParts) == 0 || len(idParts) > 2 {
+		resp.Diagnostics.AddError(
+			"Unexpected Import Identifier",
+			fmt.Sprintf("Expected import identifier with format: <DN>:<RN-CHILD>,... Got: %q", req.ID),
+		)
+		return
+	}
+
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("id"), idParts[0])...)
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("dn"), idParts[0])...)
+
+	// Set the import rn values in private state to be used in read
+	if len(idParts) == 2 {
+		value := []byte(fmt.Sprintf(`{"rn_values": "%s"}`, idParts[1]))
+		diags := resp.Private.SetKey(ctx, "import_rn", value)
+		resp.Diagnostics.Append(diags...)
+	}
+
+	tflog.Debug(ctx, fmt.Sprintf("Import state of resource aci_annotation with id '%s'", idParts[0]))
 
 	tflog.Debug(ctx, "End import of state resource: aci_rest_managed")
 }
 
-func setAciRestManagedAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *AciRestManagedResourceModel) {
-	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=children", data.Id.ValueString()), "GET", nil)
+func setAciRestManagedAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *AciRestManagedResourceModel, rnValues []string) {
+	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=children", data.Dn.ValueString()), "GET", nil)
 
 	if diags.HasError() {
 		return
@@ -347,6 +395,15 @@ func setAciRestManagedAttributes(ctx context.Context, diags *diag.Diagnostics, c
 	for className := range requestData.Search("imdata").Index(0).Data().(map[string]interface{}) {
 		tflog.Debug(ctx, fmt.Sprintf("Setting ClassName to %s", className))
 		data.ClassName = basetypes.NewStringValue(className)
+		if val, ok := requestData.Search("imdata").Index(0).Data().(map[string]interface{})[className].(map[string]interface{})["attributes"]; ok {
+			if dn, ok := val.(map[string]interface{})["dn"]; ok {
+				data.Dn = basetypes.NewStringValue(dn.(string))
+				data.Id = basetypes.NewStringValue(dn.(string))
+			}
+			if annotation, ok := val.(map[string]interface{})["annotation"]; ok {
+				data.Annotation = basetypes.NewStringValue(annotation.(string))
+			}
+		}
 		break
 	}
 
@@ -368,13 +425,22 @@ func setAciRestManagedAttributes(ctx context.Context, diags *diag.Diagnostics, c
 	}
 
 	content := make(map[string]attr.Value, 0)
-	for contentKey := range data.Content.Elements() {
-		if val, ok := classAttributes[contentKey]; ok && !data.Content.Elements()[contentKey].IsNull() {
-			content[contentKey] = basetypes.NewStringValue(val.(string))
-		} else {
-			content[contentKey] = basetypes.NewStringNull()
+	if !data.Content.IsNull() {
+		for contentKey := range data.Content.Elements() {
+			if val, ok := classAttributes[contentKey]; ok && !data.Content.Elements()[contentKey].IsNull() && !ContainsString(IgnoreAttr, contentKey) {
+				content[contentKey] = basetypes.NewStringValue(val.(string))
+			} else {
+				content[contentKey] = basetypes.NewStringNull()
+			}
+		}
+	} else {
+		for attributeName, attributeValue := range classAttributes {
+			if !ContainsString(IgnoreAttr, attributeName) {
+				content[attributeName] = basetypes.NewStringValue(attributeValue.(string))
+			}
 		}
 	}
+
 	data.Content, _ = types.MapValue(types.StringType, content)
 
 	var children, foundChildren []ChildAciRestManagedResourceModel
@@ -393,6 +459,11 @@ func setAciRestManagedAttributes(ctx context.Context, diags *diag.Diagnostics, c
 			}
 		}
 
+		// continue if child is not found so it can be recreated in the update
+		if childClassDetails == nil {
+			continue
+		}
+
 		childContent := make(map[string]attr.Value, 0)
 		for contentKey := range child.Content.Elements() {
 			if val, ok := childClassDetails["attributes"].(map[string]interface{})[contentKey]; ok && !child.Content.Elements()[contentKey].IsNull() {
@@ -403,6 +474,41 @@ func setAciRestManagedAttributes(ctx context.Context, diags *diag.Diagnostics, c
 		}
 		aciRestManagedChild.Content, _ = types.MapValue(types.StringType, childContent)
 		foundChildren = append(foundChildren, aciRestManagedChild)
+	}
+
+	if len(rnValues) > 0 && len(foundChildren) == 0 {
+		for _, rn := range rnValues {
+			aciRestManagedChild := ChildAciRestManagedResourceModel{}
+			aciRestManagedChild.Rn = basetypes.NewStringValue(rn)
+
+			var childClassDetails map[string]interface{}
+
+			for _, childClass := range classChildren {
+				childClassDetails = findChildClass(childClass.(map[string]interface{}), &aciRestManagedChild)
+				if childClassDetails != nil {
+					break
+				}
+			}
+
+			// err if child is not found because imported rn should be present to import
+			if childClassDetails == nil {
+				diags.AddError(
+					"Import Failed",
+					fmt.Sprintf("Unable to find specified child '%s'", rn),
+				)
+				return
+			}
+
+			childContent := make(map[string]attr.Value, 0)
+			for attributeName, attributeValue := range childClassDetails["attributes"].(map[string]interface{}) {
+				if !ContainsString(IgnoreAttr, attributeName) || attributeName == "annotation" {
+					childContent[attributeName] = basetypes.NewStringValue(attributeValue.(string))
+				}
+			}
+
+			aciRestManagedChild.Content, _ = types.MapValue(types.StringType, childContent)
+			foundChildren = append(foundChildren, aciRestManagedChild)
+		}
 	}
 
 	if len(foundChildren) > 0 {
@@ -434,6 +540,9 @@ func getAciRestManagedChildPayloads(ctx context.Context, diags *diag.Diagnostics
 			if !child.Rn.IsUnknown() {
 				childMap["attributes"]["rn"] = child.Rn.ValueString()
 			}
+			if !data.Annotation.IsNull() && !data.Annotation.IsUnknown() {
+				childMap["attributes"]["annotation"] = data.Annotation.ValueString()
+			}
 			if !child.Content.IsNull() && !child.Content.IsUnknown() {
 				for k, v := range child.Content.Elements() {
 					if !v.(basetypes.StringValue).IsNull() && !v.(basetypes.StringValue).IsUnknown() {
@@ -456,8 +565,6 @@ func getAciRestManagedChildPayloads(ctx context.Context, diags *diag.Diagnostics
 				}
 			}
 			if delete {
-				// TODO check if this works
-				// Changing the RN or ClassName should delete previous objects
 				childMap := map[string]map[string]interface{}{"attributes": {}}
 				childMap["attributes"]["status"] = "deleted"
 				childMap["attributes"]["rn"] = child.Rn.ValueString()
@@ -489,6 +596,9 @@ func getAciRestManagedCreateJsonPayload(ctx context.Context, diags *diag.Diagnos
 		for k, v := range data.Content.Elements() {
 			if !v.(basetypes.StringValue).IsNull() && !v.(basetypes.StringValue).IsUnknown() {
 				payloadMap["attributes"].(map[string]string)[k] = v.(basetypes.StringValue).ValueString()
+				if k == "annotation" {
+					data.Annotation = v.(basetypes.StringValue)
+				}
 			}
 		}
 	} else {
