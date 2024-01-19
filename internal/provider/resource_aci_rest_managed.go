@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"regexp"
 	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
@@ -59,10 +60,11 @@ type AciRestManagedChildIdentifier struct {
 }
 
 // List of attributes to be not stored in state
-var IgnoreAttr = []string{"extMngdBy", "lcOwn", "modTs", "monPolDn", "uid", "dn", "rn", "configQual", "configSt", "virtualIp", "status", "childAction", "annotation"}
+var IgnoreAttr = []string{"dn", "configQual", "configSt", "virtualIp", "annotation"}
 
 // List of classes where 'rsp-prop-include=config-only' does not return the desired objects/properties
-var FullClasses = []string{"firmwareFwGrp", "maintMaintGrp", "maintMaintP", "firmwareFwP", "pkiExportEncryptionKey"}
+// var FullClasses = []string{"firmwareFwGrp", "maintMaintGrp", "maintMaintP", "firmwareFwP", "pkiExportEncryptionKey"}
+var ConfigOnlyDns = []string{"uni/fabric/fwgrp-", "uni/fabric/maintgrp-", "uni/fabric/maintpol-", "uni/fabric/fwpol-", "uni/exportcryptkey"}
 
 // List of classes where an immediate GET following a POST might not reflect the created/updated object
 var AllowEmptyReadClasses = []string{"firmwareFwGrp", "firmwareRsFwgrpp", "firmwareFwP", "fabricNodeBlk"}
@@ -394,7 +396,25 @@ func (r *AciRestManagedResource) ImportState(ctx context.Context, req resource.I
 }
 
 func setAciRestManagedAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *AciRestManagedResourceModel, rnValues []string) {
-	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=children", data.Dn.ValueString()), "GET", nil)
+
+	// 'rsp-prop-include=config-only' does not return the desired objects/properties for certain rn
+	// in that case ?rsp-prop-include=config-only should not be set
+	var paramString string
+	var match bool
+	for _, configOnlyDn := range ConfigOnlyDns {
+		match, _ = regexp.MatchString(fmt.Sprintf("%s[a-zA-Z0-9_.:-]+$[^/]*$", configOnlyDn), data.Dn.ValueString())
+		if match {
+			break
+		}
+	}
+
+	if !data.Child.IsNull() && !data.Child.IsUnknown() || len(rnValues) > 0 {
+		paramString = "?rsp-subtree=children"
+	} else if !match {
+		paramString = "?rsp-prop-include=config-only"
+	}
+
+	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json%s", data.Dn.ValueString(), paramString), "GET", nil)
 
 	if diags.HasError() {
 		return
@@ -420,19 +440,51 @@ func setAciRestManagedAttributes(ctx context.Context, diags *diag.Diagnostics, c
 		break
 	}
 
-	classData := requestData.Search("imdata").Search(data.ClassName.ValueString()).Data().([]interface{})
+	classData := requestData.Search("imdata").Search(data.ClassName.ValueString()).Data()
 
 	var classAttributes map[string]interface{}
 	var classChildren []interface{}
-	if len(classData) == 1 {
-		classAttributes = classData[0].(map[string]interface{})["attributes"].(map[string]interface{})
-		if classData[0].(map[string]interface{})["children"] != nil {
-			classChildren = classData[0].(map[string]interface{})["children"].([]interface{})
+	if classData == nil {
+		// plugin framework will error automatically when import is not found
+		// Error: Cannot import non-existent remote object
+		return
+	} else if len(classData.([]interface{})) == 1 {
+		if paramString == "?rsp-subtree=children" {
+			requestDataConfigOnly := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-prop-include=config-only", data.Dn.ValueString()), "GET", nil)
+			if diags.HasError() {
+				return
+			}
+			if requestDataConfigOnly.Search("imdata").Index(0).Data() == nil {
+				data.Id = basetypes.NewStringNull()
+				return
+			}
+			classDataConfigOnly := requestDataConfigOnly.Search("imdata").Search(data.ClassName.ValueString()).Data()
+			if classDataConfigOnly == nil {
+				// plugin framework will error automatically when import is not found
+				// Error: Cannot import non-existent remote object
+				return
+			} else if len(classDataConfigOnly.([]interface{})) == 1 {
+				classAttributes = classDataConfigOnly.([]interface{})[0].(map[string]interface{})["attributes"].(map[string]interface{})
+				if classData.([]interface{})[0].(map[string]interface{})["children"] != nil {
+					classChildren = classData.([]interface{})[0].(map[string]interface{})["children"].([]interface{})
+				}
+			} else {
+				diags.AddError(
+					"Too many results in response",
+					fmt.Sprintf("%v matches returned for class '%s'. Please report this issue to the provider developers.", len(classDataConfigOnly.([]interface{})), data.ClassName),
+				)
+				return
+			}
+		} else {
+			classAttributes = classData.([]interface{})[0].(map[string]interface{})["attributes"].(map[string]interface{})
+			if classData.([]interface{})[0].(map[string]interface{})["children"] != nil {
+				classChildren = classData.([]interface{})[0].(map[string]interface{})["children"].([]interface{})
+			}
 		}
 	} else {
 		diags.AddError(
 			"Too many results in response",
-			fmt.Sprintf("%v matches returned for class '%s'. Please report this issue to the provider developers.", len(classData), data.ClassName),
+			fmt.Sprintf("%v matches returned for class '%s'. Please report this issue to the provider developers.", len(classData.([]interface{})), data.ClassName),
 		)
 		return
 	}
@@ -477,14 +529,27 @@ func setAciRestManagedAttributes(ctx context.Context, diags *diag.Diagnostics, c
 			continue
 		}
 
+		childRequestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s/%s.json?rsp-prop-include=config-only", data.Dn.ValueString(), child.Rn.ValueString()), "GET", nil)
+		childClassData := childRequestData.Search("imdata").Search(aciRestManagedChild.ClassName.ValueString()).Data()
+		if childClassData == nil {
+			continue
+		} else if len(childClassData.([]interface{})) != 1 {
+			diags.AddError(
+				"Too many results in response",
+				fmt.Sprintf("%v matches returned for rn '%s'. Please report this issue to the provider developers.", len(childClassData.([]interface{})), child.Rn.ValueString()),
+			)
+			return
+		}
+
 		childContent := make(map[string]attr.Value, 0)
 		for contentKey := range child.Content.Elements() {
-			if val, ok := childClassDetails["attributes"].(map[string]interface{})[contentKey]; ok && !child.Content.Elements()[contentKey].IsNull() {
+			if val, ok := childClassData.([]interface{})[0].(map[string]interface{})["attributes"].(map[string]interface{})[contentKey]; ok && !child.Content.Elements()[contentKey].IsNull() {
 				childContent[contentKey] = basetypes.NewStringValue(val.(string))
 			} else {
 				childContent[contentKey] = basetypes.NewStringNull()
 			}
 		}
+
 		aciRestManagedChild.Content, _ = types.MapValue(types.StringType, childContent)
 		foundChildren = append(foundChildren, aciRestManagedChild)
 	}
@@ -512,13 +577,29 @@ func setAciRestManagedAttributes(ctx context.Context, diags *diag.Diagnostics, c
 				return
 			}
 
+			childRequestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s/%s.json?rsp-prop-include=config-only", data.Dn.ValueString(), rn), "GET", nil)
+			childClassData := childRequestData.Search("imdata").Search(aciRestManagedChild.ClassName.ValueString()).Data()
 			childContent := make(map[string]attr.Value, 0)
-			for attributeName, attributeValue := range childClassDetails["attributes"].(map[string]interface{}) {
+			if childClassDetails == nil {
+				// this is not tested because it would involve importing a child corner case
+				// deleting the child between the GET of parent with children and the config-only GET for child
+				diags.AddError(
+					"Import Failed",
+					fmt.Sprintf("Unable to find specified child '%s'", rn),
+				)
+				return
+			} else if len(childClassData.([]interface{})) != 1 {
+				diags.AddError(
+					"Too many results in response",
+					fmt.Sprintf("%v matches returned for rn '%s'. Please report this issue to the provider developers.", len(childClassData.([]interface{})), rn))
+				return
+			}
+
+			for attributeName, attributeValue := range childClassData.([]interface{})[0].(map[string]interface{})["attributes"].(map[string]interface{}) {
 				if !ContainsString(IgnoreAttr, attributeName) || attributeName == "annotation" {
 					childContent[attributeName] = basetypes.NewStringValue(attributeValue.(string))
 				}
 			}
-
 			aciRestManagedChild.Content, _ = types.MapValue(types.StringType, childContent)
 			foundChildren = append(foundChildren, aciRestManagedChild)
 		}
