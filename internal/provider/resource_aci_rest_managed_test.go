@@ -144,6 +144,39 @@ func TestAccAciRestManaged_import(t *testing.T) {
 				),
 			},
 			{
+				ImportState:   true,
+				ImportStateId: fmt.Sprintf("fvTenant:uni/tn-%s", name),
+				ResourceName:  "aci_rest_managed.import",
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_rest_managed.import", "content.name", name),
+					resource.TestCheckResourceAttr("aci_rest_managed.import", "dn", "uni/tn-"+name),
+					resource.TestCheckResourceAttr("aci_rest_managed.import", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_rest_managed.import", "class_name", "fvTenant"),
+				),
+			},
+			{
+				ImportState:   true,
+				ImportStateId: fmt.Sprintf("polUni:uni/tn-%s", name),
+				ResourceName:  "aci_rest_managed.import",
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_rest_managed.import", "content.name", name),
+					resource.TestCheckResourceAttr("aci_rest_managed.import", "dn", "uni/tn-"+name),
+					resource.TestCheckResourceAttr("aci_rest_managed.import", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_rest_managed.import", "class_name", "fvTenant"),
+				),
+			},
+			{
+				ImportState:   true,
+				ImportStateId: fmt.Sprintf("uni/tn-%s", name),
+				ResourceName:  "aci_rest_managed.import",
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_rest_managed.import", "content.name", name),
+					resource.TestCheckResourceAttr("aci_rest_managed.import", "dn", "uni/tn-"+name),
+					resource.TestCheckResourceAttr("aci_rest_managed.import", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_rest_managed.import", "class_name", "fvTenant"),
+				),
+			},
+			{
 				Config: testAccAciRestManagedConfig_importWithChild(name, "import"),
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_rest_managed.import", "content.name", name),
@@ -179,7 +212,13 @@ func TestAccAciRestManaged_import(t *testing.T) {
 			},
 			{
 				ImportState:   true,
-				ImportStateId: fmt.Sprintf("uni/tn-%s:ctx-VRF1:ctx-VRF2", name),
+				ImportStateId: fmt.Sprintf("polUni:uni/tn-%s:ctx-VRF1,ctx-VRF2", name),
+				ResourceName:  "aci_rest_managed.import",
+				ExpectError:   regexp.MustCompile("Import Failed"),
+			},
+			{
+				ImportState:   true,
+				ImportStateId: fmt.Sprintf("polUni:uni/tn-%s:ctx-VRF1:ctx-VRF2", name),
 				ResourceName:  "aci_rest_managed.import",
 				ExpectError:   regexp.MustCompile("Unexpected Import Identifier"),
 			},
@@ -205,6 +244,27 @@ func TestAccAciRestManaged_import(t *testing.T) {
 			{
 				ImportState:   true,
 				ImportStateId: fmt.Sprintf("uni/tn-%s:ctx-VRF1,ctx-VRF2,ap-AP1", name),
+				ResourceName:  "aci_rest_managed.import",
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_rest_managed.import", "content.name", name),
+					resource.TestCheckResourceAttr("aci_rest_managed.import", "dn", "uni/tn-"+name),
+					resource.TestCheckResourceAttr("aci_rest_managed.import", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_rest_managed.import", "class_name", "fvTenant"),
+					resource.TestCheckResourceAttr("aci_rest_managed.import", "child.0.class_name", "fvAp"),
+					resource.TestCheckResourceAttr("aci_rest_managed.import", "child.0.rn", "ap-AP1"),
+					resource.TestCheckResourceAttr("aci_rest_managed.import", "child.0.content.name", "AP1"),
+					resource.TestCheckResourceAttr("aci_rest_managed.import", "child.1.class_name", "fvCtx"),
+					resource.TestCheckResourceAttr("aci_rest_managed.import", "child.1.rn", "ctx-VRF1"),
+					resource.TestCheckResourceAttr("aci_rest_managed.import", "child.1.content.name", "VRF1"),
+					resource.TestCheckResourceAttr("aci_rest_managed.import", "child.2.class_name", "fvCtx"),
+					resource.TestCheckResourceAttr("aci_rest_managed.import", "child.2.rn", "ctx-VRF2"),
+					resource.TestCheckResourceAttr("aci_rest_managed.import", "child.2.content.name", "VRF2"),
+					resource.TestCheckResourceAttr("aci_rest_managed.import", "child.#", "2"),
+				),
+			},
+			{
+				ImportState:   true,
+				ImportStateId: fmt.Sprintf("polUni:uni/tn-%s:ctx-VRF1,ctx-VRF2,ap-AP1", name),
 				ResourceName:  "aci_rest_managed.import",
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_rest_managed.import", "content.name", name),
