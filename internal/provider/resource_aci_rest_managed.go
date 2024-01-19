@@ -221,7 +221,6 @@ func (r *AciRestManagedResource) Create(ctx context.Context, req resource.Create
 	}
 
 	data.Id = types.StringValue(data.Dn.ValueString())
-	// setAciRestManagedProperties(data)
 
 	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_rest_managed with id '%s'", data.Id.ValueString()))
 
@@ -307,7 +306,6 @@ func (r *AciRestManagedResource) Update(ctx context.Context, req resource.Update
 	tflog.Debug(ctx, fmt.Sprintf("Update of resource aci_rest_managed with id '%s'", data.Id.ValueString()))
 
 	data.Id = types.StringValue(data.Dn.ValueString())
-	// setAciRestManagedProperties(data)
 
 	var childPlan, childState []ChildAciRestManagedResourceModel
 	data.Child.ElementsAs(ctx, &childPlan, false)
@@ -357,20 +355,35 @@ func (r *AciRestManagedResource) ImportState(ctx context.Context, req resource.I
 
 	idParts := strings.Split(req.ID, ":")
 
-	if len(idParts) == 0 || len(idParts) > 2 {
+	if len(idParts) == 0 || len(idParts) > 3 {
 		resp.Diagnostics.AddError(
 			"Unexpected Import Identifier",
-			fmt.Sprintf("Expected import identifier with format: <DN>:<RN-CHILD>,... Got: %q", req.ID),
+			fmt.Sprintf("Expected import identifier with format: <DN>:<RN-CHILD>,... or <CLASS_NAME>:<DN>:<RN-CHILD>,... Got: %q", req.ID),
 		)
 		return
 	}
 
-	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("id"), idParts[0])...)
-	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("dn"), idParts[0])...)
+	var dn, rnValues string
+	if len(idParts) == 1 {
+		dn = idParts[0]
+	} else if len(idParts) == 2 {
+		if strings.Contains(idParts[0], "uni/") {
+			dn = idParts[0]
+			rnValues = idParts[1]
+		} else {
+			dn = idParts[1]
+		}
+	} else if len(idParts) == 3 {
+		dn = idParts[1]
+		rnValues = idParts[2]
+	}
+
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("id"), dn)...)
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("dn"), dn)...)
 
 	// Set the import rn values in private state to be used in read
-	if len(idParts) == 2 {
-		value := []byte(fmt.Sprintf(`{"rn_values": "%s"}`, idParts[1]))
+	if rnValues != "" {
+		value := []byte(fmt.Sprintf(`{"rn_values": "%s"}`, rnValues))
 		diags := resp.Private.SetKey(ctx, "import_rn", value)
 		resp.Diagnostics.Append(diags...)
 	}
