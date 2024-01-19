@@ -124,6 +124,13 @@ func TestAccAciRestManaged_import(t *testing.T) {
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
+				Config:        testAccAciRestManagedConfig_import(name, "import"),
+				ImportState:   true,
+				ImportStateId: "uni/tn-non-existent",
+				ResourceName:  "aci_rest_managed.import",
+				ExpectError:   regexp.MustCompile("Cannot import non-existent remote object"),
+			},
+			{
 				Config: testAccAciRestManagedConfig_import(name, "import"),
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_rest_managed.import", "content.name", name),
@@ -141,6 +148,7 @@ func TestAccAciRestManaged_import(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_rest_managed.import", "dn", "uni/tn-"+name),
 					resource.TestCheckResourceAttr("aci_rest_managed.import", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_rest_managed.import", "class_name", "fvTenant"),
+					resource.TestCheckNoResourceAttr("aci_rest_managed.import", "content.status"),
 				),
 			},
 			{
@@ -187,6 +195,7 @@ func TestAccAciRestManaged_import(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_rest_managed.import", "child.0.rn", "ctx-VRF1"),
 					resource.TestCheckResourceAttr("aci_rest_managed.import", "child.0.content.name", "VRF1"),
 					resource.TestCheckResourceAttr("aci_rest_managed.import", "child.#", "1"),
+					resource.TestCheckNoResourceAttr("aci_rest_managed.import", "child.0.content.status"),
 				),
 			},
 			{
