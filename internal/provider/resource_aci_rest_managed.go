@@ -125,7 +125,7 @@ func (r *AciRestManagedResource) Schema(ctx context.Context, req resource.Schema
 			},
 			"class_name": schema.StringAttribute{
 				Required:            true,
-				MarkdownDescription: "Which class object is being created. (Make sure there is no colon in the classname)",
+				MarkdownDescription: "Which class object is being created, eg. fvTenant. (Make sure there is no colon in the classname)",
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 					stringplanmodifier.RequiresReplace(),
