@@ -14,7 +14,7 @@ import (
 func TestAccResourceNetflowRsMonitorToExporterWithNetflowMonitorPol(t *testing.T) {
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
+		PreCheck:                 func() { testAccPreCheck(t, "both", "3.2(1l)") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
@@ -187,6 +187,9 @@ func TestAccResourceNetflowRsMonitorToExporterWithNetflowMonitorPol(t *testing.T
 				),
 			},
 		},
+		CheckDestroy: resource.ComposeAggregateTestCheckFunc(
+			testCheckResourceDestroy,
+		),
 	})
 }
 
@@ -263,16 +266,16 @@ resource "aci_relation_to_netflow_exporter" "test" {
   parent_dn = aci_netflow_monitor_policy.test.id
   netflow_exporter_policy_name = "test_tn_netflow_exporter_pol_name"
   annotations = [ 
-	{
+    {
 	  key = "key_1"
 	  value = "value_2"
-	},
+    },
   ]
   tags = [ 
-	{
+    {
 	  key = "key_1"
 	  value = "value_2"
-	},
+    },
   ]
 }
 `

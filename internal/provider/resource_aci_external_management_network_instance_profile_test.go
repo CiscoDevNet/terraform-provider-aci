@@ -14,7 +14,7 @@ import (
 func TestAccResourceMgmtInstP(t *testing.T) {
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
+		PreCheck:                 func() { testAccPreCheck(t, "both", "3.2(1l)") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
@@ -222,6 +222,9 @@ func TestAccResourceMgmtInstP(t *testing.T) {
 				),
 			},
 		},
+		CheckDestroy: resource.ComposeAggregateTestCheckFunc(
+			testCheckResourceDestroy,
+		),
 	})
 }
 
@@ -264,37 +267,37 @@ const testConfigMgmtInstPChildren = `
 resource "aci_external_management_network_instance_profile" "test" {
   name = "test_name"
   annotations = [
-	{
-	  key = "key_0"
-	  value = "value_1"
-	},
-	{
-	  key = "key_1"
-	  value = "value_2"
-	},
-  ]
+  {
+	 key = "key_0"
+	 value = "value_1"
+  },
+  {
+	 key = "key_1"
+	 value = "value_2"
+  },
+ ]
   relation_to_consumed_out_of_band_contracts = [
-	{
-	  annotation = "annotation_1"
-	  out_of_band_contract_name = "out_of_band_contract_name_0"
-	  priority = "level1"
-	},
-	{
-	  annotation = "annotation_2"
-	  out_of_band_contract_name = "out_of_band_contract_name_1"
-	  priority = "level2"
-	},
-  ]
+  {
+	 annotation = "annotation_1"
+	 out_of_band_contract_name = "out_of_band_contract_name_0"
+	 priority = "level1"
+  },
+  {
+	 annotation = "annotation_2"
+	 out_of_band_contract_name = "out_of_band_contract_name_1"
+	 priority = "level2"
+  },
+ ]
   tags = [
-	{
-	  key = "key_0"
-	  value = "value_1"
-	},
-	{
-	  key = "key_1"
-	  value = "value_2"
-	},
-  ]
+  {
+	 key = "key_0"
+	 value = "value_1"
+  },
+  {
+	 key = "key_1"
+	 value = "value_2"
+  },
+ ]
 }
 `
 
@@ -308,24 +311,24 @@ const testConfigMgmtInstPChildrenRemoveOne = `
 resource "aci_external_management_network_instance_profile" "test" {
   name = "test_name"
   annotations = [ 
-	{
-	  key = "key_1"
-	  value = "value_2"
-	},
-  ]
+    {
+      key = "key_1"
+      value = "value_2"
+    },
+   ]
   relation_to_consumed_out_of_band_contracts = [ 
-	{
-	  annotation = "annotation_2"
-	  out_of_band_contract_name = "out_of_band_contract_name_1"
-	  priority = "level2"
-	},
-  ]
+    {
+      annotation = "annotation_2"
+      out_of_band_contract_name = "out_of_band_contract_name_1"
+      priority = "level2"
+    },
+   ]
   tags = [ 
-	{
-	  key = "key_1"
-	  value = "value_2"
-	},
-  ]
+    {
+      key = "key_1"
+      value = "value_2"
+    },
+   ]
 }
 `
 

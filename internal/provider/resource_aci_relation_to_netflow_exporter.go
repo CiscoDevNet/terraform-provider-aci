@@ -123,6 +123,7 @@ func (r *NetflowRsMonitorToExporterResource) Schema(ctx context.Context, req res
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Default:             stringdefault.StaticString(globalAnnotation),
 				MarkdownDescription: `The annotation of the Relation To Netflow Exporter object.`,
@@ -131,6 +132,7 @@ func (r *NetflowRsMonitorToExporterResource) Schema(ctx context.Context, req res
 				Required: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 					stringplanmodifier.RequiresReplace(),
 				},
 				MarkdownDescription: `Name.`,
@@ -148,6 +150,7 @@ func (r *NetflowRsMonitorToExporterResource) Schema(ctx context.Context, req res
 							Required: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
+								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 						},
@@ -155,6 +158,7 @@ func (r *NetflowRsMonitorToExporterResource) Schema(ctx context.Context, req res
 							Required: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
+								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							MarkdownDescription: `The value of the property.`,
 						},
@@ -174,6 +178,7 @@ func (r *NetflowRsMonitorToExporterResource) Schema(ctx context.Context, req res
 							Required: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
+								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 						},
@@ -181,6 +186,7 @@ func (r *NetflowRsMonitorToExporterResource) Schema(ctx context.Context, req res
 							Required: true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
+								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							MarkdownDescription: `The value of the property.`,
 						},
@@ -259,6 +265,7 @@ func (r *NetflowRsMonitorToExporterResource) Create(ctx context.Context, req res
 	}
 
 	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
+
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -391,6 +398,12 @@ func getAndSetNetflowRsMonitorToExporterAttributes(ctx context.Context, diags *d
 				if attributeName == "tnNetflowExporterPolName" {
 					data.TnNetflowExporterPolName = basetypes.NewStringValue(attributeValue.(string))
 				}
+			}
+			if data.Annotation.IsUnknown() {
+				data.Annotation = types.StringNull()
+			}
+			if data.TnNetflowExporterPolName.IsUnknown() {
+				data.TnNetflowExporterPolName = types.StringNull()
 			}
 			TagAnnotationNetflowRsMonitorToExporterList := make([]TagAnnotationNetflowRsMonitorToExporterResourceModel, 0)
 			TagTagNetflowRsMonitorToExporterList := make([]TagTagNetflowRsMonitorToExporterResourceModel, 0)
@@ -580,7 +593,6 @@ func getNetflowRsMonitorToExporterCreateJsonPayload(ctx context.Context, diags *
 	if !data.TnNetflowExporterPolName.IsNull() && !data.TnNetflowExporterPolName.IsUnknown() {
 		payloadMap["attributes"].(map[string]string)["tnNetflowExporterPolName"] = data.TnNetflowExporterPolName.ValueString()
 	}
-
 	payload, err := json.Marshal(map[string]interface{}{"netflowRsMonitorToExporter": payloadMap})
 	if err != nil {
 		diags.AddError(

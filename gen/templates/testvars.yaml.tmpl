@@ -102,9 +102,9 @@ children:
       {{ end}}
     - {{ range .Properties}}{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}: {{$length := len .ValidValues}}{{if ge $length 2}}"{{ index .ValidValues 1 }}"{{else if not .IsNaming}}"{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}_2"{{- else}}"{{lookupChildTestValue .PkgName $.ResourceName .SnakeCaseName $.TestVars 1 $.Definitions}}"{{- end}}
       {{ end}}{{- end}}{{- end}}{{- end}}
-{{- if .ContainedBy}}
+{{- if and .ContainedBy (not .MultiParentFormats)}}
 parents:
-    {{- $index := 0}}{{- range $key := .DocumentationExamples}}{{$parentDependency := getParentTestDependencies $.PkgName $index $.Definitions}}{{$index = add $index 1}}
+    {{- $index := 0}}{{- range $key := .DocumentationExamples}}{{$parentDependency := getParentTestDependencies $.PkgName $index $.Definitions}}{{$index = add $index 1}}{{$testType := getTestType $key}}
   - class_name: "{{ $key }}"
     parent_dependency: "{{$parentDependency.parent_dependency}}"
     parent_dn: "{{createParentDnValue $key "test" $.Definitions}}"
@@ -116,6 +116,14 @@ parents:
     target_classes:
         {{- range $parentDependency.target_classes}}
         - "{{ . }}"
+    {{$test := getTestType $.PkgName}}
+      {{- if $test -}}
+    test_type: {{$test}}
+      {{- else -}}
+    test_type: both
+      {{- end}}
+    test_applicable_from_version: {{$.TestApplicableFromVersion}}
+    {{- end}}
         {{- end}}
       {{- end}}
     {{- end}}
@@ -153,4 +161,47 @@ child_targets:
             {{- end }}
         {{- end }}
     {{- end }}
-{{- end}}
+
+{{- if .MultiParentFormats}}
+parents:
+{{- $topContext := . -}}
+{{- range $key, $value := .MultiParentFormats }}{{$parentDependency := getParentTestDependencies $topContext.PkgName 0 $topContext.Definitions}}
+  - class_name: "{{ $value.ContainedBy }}"
+    parent_dependency: "{{ $parentDependency.parent_dependency }}"
+    parent_dn: {{ if eq $key "default" }}""{{ else }}"{{ createParentDnValue $value.ContainedBy "test" $topContext.Definitions }}"{{ end }}
+    class_in_parent: false
+    {{- $testType := $value.TestType }}
+    {{- if $testType }}
+    test_type: {{ $testType }}
+    {{- else }}
+    test_type: both
+    {{- end }}
+    test_applicable_from_version: {{$topContext.TestApplicableFromVersion}}
+{{- end }}
+{{- end }}
+{{- if and (not .ContainedBy) (not .MultiParentFormats) -}}
+  {{$testType := getTestType $.PkgName}}
+  {{- if $testType }}
+test_type: {{ $testType }}
+  {{- else }}
+test_type: both
+  {{- end }}
+test_applicable_from_version: {{.TestApplicableFromVersion}}
+{{- end }}
+{{ $exists_exclude := false -}}
+{{- range .Properties }}
+  {{- if or (eq .ValueType "password") (getDefaultValues .PkgName "parent_dn" $.Definitions) }}
+    {{- $exists_exclude = true -}}
+  {{- end }}
+{{- end }}
+{{- if $exists_exclude }}
+exclude_attributes:
+  {{- range .Properties }}
+    {{- if eq .ValueType "password" }}
+  - "{{ overwriteProperty .PkgName .SnakeCaseName $.Definitions }}"
+    {{- end }}
+  {{- end }}
+  {{- if getDefaultValues .PkgName "parent_dn" $.Definitions}}
+  - "parent_dn"
+  {{- end }}
+{{- end }}

@@ -827,9 +827,14 @@ func (r *{{.ResourceClassName}}Resource) Schema(ctx context.Context, req resourc
 			"{{$OverwritePropertyName}}": schema.SetAttribute{
 				MarkdownDescription: `{{.Comment}}`,
 				Optional:            true,
+				{{- if ne .ValueType "password"}}
 				Computed:            true,
+				{{- else}}
+				Sensitive:           true,
+				{{- end}}
 				PlanModifiers: []planmodifier.Set{
 					setplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 					{{- if .ValidValues}}
 				Validators: []validator.Set{
@@ -852,10 +857,15 @@ func (r *{{.ResourceClassName}}Resource) Schema(ctx context.Context, req resourc
 						{{- end}}
 					{{- else }}
 				Optional:            true,
+				{{- if ne .ValueType "password"}}
 				Computed:            true,
+				{{- else}}
+				Sensitive:            true,
+				{{- end}}
 					{{- end}}
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 					{{- if or .IsNaming .CreateOnly}}
 					stringplanmodifier.RequiresReplace(),
 					{{- end}}
@@ -899,7 +909,11 @@ func (r *{{.ResourceClassName}}Resource) Schema(ctx context.Context, req resourc
 						"{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}": schema.SetAttribute{
 							MarkdownDescription: `{{.Comment}}`,
 							Optional:            true,
+							{{- if ne .ValueType "password"}}
 							Computed:            true,
+							{{- else}}
+							Sensitive:            true,
+							{{- end}}
 							PlanModifiers: []planmodifier.Set{
 								setplanmodifier.UseStateForUnknown(),
 							},
@@ -919,10 +933,15 @@ func (r *{{.ResourceClassName}}Resource) Schema(ctx context.Context, req resourc
 							Required:            true,
 							{{- else }}
 							Optional:            true,
+							{{- if ne .ValueType "password"}}
 							Computed:            true,
+							{{- else}}
+							Sensitive:            true,
+							{{- end}}
 							{{- end}}
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseStateForUnknown(),
+								SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 							},
 							{{- if .ValidValues}}
 							Validators: []validator.String{
@@ -1017,9 +1036,9 @@ func (r *{{.ResourceClassName}}Resource) Configure(ctx context.Context, req reso
 func (r *{{.ResourceClassName}}Resource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
 	tflog.Debug(ctx, "Start create of resource: aci_{{.ResourceName}}")
 	
-	{{- if .HasChild}}
+	{{- if .HasChild }}
 	// On create retrieve information on current state prior to making any changes in order to determine child delete operations
-	var stateData *{{.ResourceClassName}}ResourceModel
+	var stateData *{{ .ResourceClassName }}ResourceModel
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &stateData)...)
 	if stateData.Id.IsUnknown() || stateData.Id.IsNull() {
 		set{{.ResourceClassName}}Id(ctx, stateData)
@@ -1034,7 +1053,7 @@ func (r *{{.ResourceClassName}}Resource) Create(ctx context.Context, req resourc
 	} 
 	{{- end}}
 
-	var data *{{.ResourceClassName}}ResourceModel
+	var data *{{ .ResourceClassName }}ResourceModel
 
 	// Read Terraform plan data into the model
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &data)...)
@@ -1047,8 +1066,9 @@ func (r *{{.ResourceClassName}}Resource) Create(ctx context.Context, req resourc
 		set{{.ResourceClassName}}Id(ctx, data)
 	}
 
-	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_{{.ResourceName}} with id '%s'", data.Id.ValueString()))
+	set{{ .ResourceClassName }}Id(ctx, data)
 
+	{{ if not .MultiParentFormats }}
 	{{ if .HasChild}}
 		{{- range .Children}}
 	var {{.PkgName}}Plan, {{.PkgName}}State []{{.ResourceClassName}}{{$.ResourceClassName}}ResourceModel
@@ -1065,10 +1085,38 @@ func (r *{{.ResourceClassName}}Resource) Create(ctx context.Context, req resourc
 	}
 
 	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
+	{{- else }}
+	{{- if .HasChild }}
+			{{- range .Children }}
+	var {{ .PkgName }}Plan, {{ .PkgName }}State []{{ .ResourceClassName }}{{ $.ResourceClassName }}ResourceModel
+	data.{{ .ResourceClassName }}.ElementsAs(ctx, &{{ .PkgName }}Plan, false)
+	stateData.{{ .ResourceClassName }}.ElementsAs(ctx, &{{ .PkgName }}State, false)
+			{{- end }}
+	jsonPayload := get{{ .ResourceClassName }}CreateJsonPayload(ctx, &resp.Diagnostics, data, stateData{{- range .Children }}, {{ .PkgName }}Plan, {{ .PkgName }}State{{- end }})    
+		{{- else }}
+	jsonPayload := get{{ .ResourceClassName }}CreateJsonPayload(ctx, &resp.Diagnostics, data, stateData)
+		{{- end }}
+
 	if resp.Diagnostics.HasError() {
 		return
 	}
-	
+
+	wrapperClassMap := map[string]string{ {{- range $key, $value := .MultiParentFormats }} "{{ $value.RnPrepend }}": "{{ $value.WrapperClass }}", {{- end }} }
+	for rnPrepend, wrapperClass := range wrapperClassMap {
+		if strings.Contains(data.Id.ValueString(), rnPrepend) && wrapperClass != "" {
+			DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s%s.json", strings.Split(data.Id.ValueString(), rnPrepend)[0], rnPrepend), "POST", jsonPayload)
+			break
+		} else if strings.Contains(data.Id.ValueString(), rnPrepend) && wrapperClass == "" {
+			DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
+			break
+		}
+	}
+	{{- end }}
+
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
 	getAndSet{{.ResourceClassName}}Attributes(ctx, &resp.Diagnostics, r.client, data)
 
 	// Save data into Terraform state
@@ -1105,15 +1153,71 @@ func (r *{{.ResourceClassName}}Resource) Read(ctx context.Context, req resource.
 func (r *{{.ResourceClassName}}Resource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
 	tflog.Debug(ctx, "Start update of resource: aci_{{.ResourceName}}")
 	var data *{{.ResourceClassName}}ResourceModel
-	{{- if .HasChild}}
-	var stateData *{{.ResourceClassName}}ResourceModel
-	{{- end}}
+		{{- if .HasChild }}
+    var stateData *{{ .ResourceClassName }}ResourceModel
+		{{- end }}
 
-	// Read Terraform plan data into the model
-	resp.Diagnostics.Append(req.Plan.Get(ctx, &data)...)
-	{{- if .HasChild}}
-	resp.Diagnostics.Append(req.State.Get(ctx, &stateData)...)
-	{{- end}}
+// Read Terraform plan data into the model
+resp.Diagnostics.Append(req.Plan.Get(ctx, &data)...)
+
+{{- if .HasChild }}
+    resp.Diagnostics.Append(req.State.Get(ctx, &stateData)...)
+{{- end }}
+
+if resp.Diagnostics.HasError() {
+    return
+}
+
+tflog.Debug(ctx, fmt.Sprintf("Update of resource aci_{{ .ResourceName }} with id '%s'", data.Id.ValueString()))
+
+{{ if not .MultiParentFormats }}
+	{{- if .HasChild }}
+        {{- range .Children }}
+    var {{ .PkgName }}Plan, {{ .PkgName }}State []{{ .ResourceClassName }}{{ $.ResourceClassName }}ResourceModel
+    data.{{ .ResourceClassName }}.ElementsAs(ctx, &{{ .PkgName }}Plan, false)
+    stateData.{{ .ResourceClassName }}.ElementsAs(ctx, &{{ .PkgName }}State, false)
+        {{- end }}
+    jsonPayload := get{{ .ResourceClassName }}CreateJsonPayload(ctx, &resp.Diagnostics, data{{- range .Children }}, {{ .PkgName }}Plan, {{ .PkgName }}State{{- end }})
+    {{- else }}
+    jsonPayload := get{{ .ResourceClassName }}CreateJsonPayload(ctx, &resp.Diagnostics, data)
+    {{- end }}
+
+    if resp.Diagnostics.HasError() {
+        return
+    }
+
+    DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
+{{- else }}
+	{{- if .HasChild }}
+        {{- range .Children }}
+    var {{ .PkgName }}Plan, {{ .PkgName }}State []{{ .ResourceClassName }}{{ $.ResourceClassName }}ResourceModel
+    data.{{ .ResourceClassName }}.ElementsAs(ctx, &{{ .PkgName }}Plan, false)
+    stateData.{{ .ResourceClassName }}.ElementsAs(ctx, &{{ .PkgName }}State, false)
+        {{- end }}
+    jsonPayload := get{{ .ResourceClassName }}CreateJsonPayload(ctx, &resp.Diagnostics, data, stateData{{- range .Children }}, {{ .PkgName }}Plan, {{ .PkgName }}State{{- end }})
+    {{- else }}
+    jsonPayload := get{{ .ResourceClassName }}CreateJsonPayload(ctx, &resp.Diagnostics, data, stateData)
+    {{- end }}
+
+    if resp.Diagnostics.HasError() {
+        return
+    }
+
+    wrapperClassMap := map[string]string{
+        {{- range $key, $value := .MultiParentFormats }}
+        "{{ $value.RnPrepend }}": "{{ $value.WrapperClass }}",
+        {{- end }}
+    }
+    for rnPrepend, wrapperClass := range wrapperClassMap {
+        if strings.Contains(data.Id.ValueString(), rnPrepend) && wrapperClass != "" {
+            DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s%s.json", strings.Split(data.Id.ValueString(), rnPrepend)[0], rnPrepend), "POST", jsonPayload)
+			break
+        } else if strings.Contains(data.Id.ValueString(), rnPrepend) && wrapperClass == "" {
+            DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
+			break
+        }
+    }
+{{- end }}
 
 	if resp.Diagnostics.HasError() {
 		return
@@ -1243,7 +1347,13 @@ func getAndSet{{.ResourceClassName}}Attributes(ctx context.Context, diags *diag.
 					{{- end}}
 				{{- end}}
 			}
-			
+
+			{{- range .Properties}}
+			if data.{{.Name}}.IsUnknown() {
+				data.{{.Name}} = types.StringNull()
+			}
+			{{- end}}
+
 			{{- if .HasChild}}
 				{{- range .Children}}
 					{{- if .IdentifiedBy}}
@@ -1352,7 +1462,23 @@ func set{{.ResourceClassName}}ParentDn(ctx context.Context, dn string, data *{{.
 			break
 		}
 	}
-	{{- if eq .RnPrepend ""}}
+	{{- if .MultiParentFormats }}
+	parentDn := dn[:rnIndex]
+    rnMap := map[string]string{
+        {{- range $key, $value := .MultiParentFormats }}
+            {{- if ne $key "default" }}
+        "{{ $key }}": "{{ $value.RnPrepend }}",
+            {{- end }}
+        {{- end }}
+    }
+    for parent_identifier, rn_prepend := range rnMap {
+        if strings.Contains(parentDn, parent_identifier) {
+            parentDn = parentDn[:strings.Index(parentDn, fmt.Sprintf("/%s", rn_prepend))]
+            data.ParentDn = basetypes.NewStringValue(parentDn)
+			break
+        }
+    }
+	{{- else if eq .RnPrepend ""}}
 	data.ParentDn = basetypes.NewStringValue(dn[:rnIndex])
 	{{- else}}
 	parentDn := dn[:rnIndex]
@@ -1364,10 +1490,27 @@ func set{{.ResourceClassName}}ParentDn(ctx context.Context, dn string, data *{{.
 
 func set{{.ResourceClassName}}Id(ctx context.Context, data *{{.ResourceClassName}}ResourceModel) {
 	rn := get{{.ResourceClassName}}Rn(ctx, data)
-	{{- if .HasParent}}
+	{{- if .MultiParentFormats }}
+	rnMap := map[string]string{
+        {{- range $key, $value := .MultiParentFormats }}
+			{{- if ne $key "default" }}
+        "{{ $key }}": "{{ $value.RnPrepend }}",
+			{{- end }}
+        {{- end }}
+    }
 	data.Id =  types.StringValue(fmt.Sprintf("%s/%s", data.ParentDn.ValueString(), rn))
-	{{- else}}
+    for parent_identifier, rn_prepend := range rnMap {
+         if strings.Contains(data.ParentDn.ValueString(), parent_identifier) {
+            data.Id = types.StringValue(fmt.Sprintf("%s/%s/%s", data.ParentDn.ValueString(), rn_prepend, rn))
+			break
+        }
+    }
+	{{- else }}
+		{{- if .HasParent}}
+	data.Id =  types.StringValue(fmt.Sprintf("%s/%s", data.ParentDn.ValueString(), rn))
+		{{- else}}
 	data.Id =  types.StringValue(fmt.Sprintf("%s/%s", strings.Split([]string{ {{- fromInterfacesToString .DnFormats}} }[0], "/")[0], rn))
+		{{- end}}
 	{{- end}}
 }
 
@@ -1455,6 +1598,7 @@ func get{{$.ResourceClassName}}{{ .ResourceClassName }}ChildPayloads(ctx context
 }
 {{- end}}
 
+{{ if not .MultiParentFormats }}
 func get{{.ResourceClassName}}CreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, createType bool, data *{{.ResourceClassName}}ResourceModel{{- range .Children}}, {{.PkgName}}Plan, {{.PkgName}}State []{{.ResourceClassName}}{{$.ResourceClassName}}ResourceModel{{- end}}) *container.Container {
 	payloadMap := map[string]interface{}{}
 	payloadMap["attributes"] = map[string]string{}
@@ -1489,8 +1633,33 @@ func get{{.ResourceClassName}}CreateJsonPayload(ctx context.Context, diags *diag
 	}
 		{{- end}}
 	{{- end}}
+	{{- if .MultiParentFormats }}
+	wrapperClassMap := map[string]string{
+        {{- range $key, $value := .MultiParentFormats }}
+        "{{ $value.RnPrepend }}": "{{ $value.WrapperClass }}",
+        {{- end }}
+    }
 
+    var payload []byte
+    var err error
+    for rnPrepend, wrapperClass := range wrapperClassMap {
+        if strings.Contains(data.Id.ValueString(), rnPrepend) && wrapperClass != "" && stateData.Id.ValueString() == "" {
+            wrapperPayloadMap := map[string]interface{}{
+                wrapperClass: map[string]interface{}{
+                    "attributes": map[string]interface{}{},
+                    "children":   []interface{}{map[string]interface{}{"{{ .PkgName }}": payloadMap}},
+                },
+            }
+            payload, err = json.Marshal(wrapperPayloadMap)
+			break
+        } else if (strings.Contains(data.Id.ValueString(), rnPrepend) && wrapperClass == "") || stateData.Id.ValueString() != "" {
+            payload, err = json.Marshal(map[string]interface{}{"{{ .PkgName }}": payloadMap})
+			break
+        }
+    }
+	{{- else }}
 	payload, err := json.Marshal(map[string]interface{}{"{{.PkgName}}": payloadMap})
+	{{- end}}
 	if err != nil {
 		diags.AddError(
 			"Marshalling of json payload failed",
@@ -1510,3 +1679,79 @@ func get{{.ResourceClassName}}CreateJsonPayload(ctx context.Context, diags *diag
 	}
 	return jsonPayload
 }
+{{- else }}
+func get{{ .ResourceClassName }}CreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, data, stateData *{{ .ResourceClassName }}ResourceModel{{- range .Children }}, {{ .PkgName }}Plan, {{ .PkgName }}State []{{ .ResourceClassName }}{{ $.ResourceClassName }}ResourceModel{{- end }}) *container.Container {
+    payloadMap := map[string]interface{}{
+        "attributes": map[string]string{},
+    }
+
+    {{- if .HasChild }}
+    childPayloads := []map[string]interface{}{}
+    	{{- range .Children }}
+    {{ .ResourceClassName }}childPayloads := get{{ $.ResourceClassName }}{{ .ResourceClassName }}ChildPayloads(ctx, diags, data, {{ .PkgName }}Plan, {{ .PkgName }}State)
+    if {{ .ResourceClassName }}childPayloads == nil {
+        return nil
+    }
+    childPayloads = append(childPayloads, {{ .ResourceClassName }}childPayloads...)
+    	{{- end }}
+    payloadMap["children"] = childPayloads
+    {{- end }}
+
+    {{- range .Properties }}
+        {{- if eq .ValueType "bitmask" }}
+    if !data.{{ .Name }}.IsNull() && !data.{{ .Name }}.IsUnknown() {
+        var tmp{{ .Name }} []string
+        data.{{ .Name }}.ElementsAs(ctx, &tmp{{ .Name }}, false)
+        payloadMap["attributes"].(map[string]string)["{{ .PropertyName }}"] = strings.Join(tmp{{ .Name }}, ",")
+    }
+        {{- else }}
+    if !data.{{- if eq .Name "Id" }}{{ .ResourceClassName }}{{ .Name }}{{- else }}{{ .Name }}{{- end }}.IsNull() && !data.{{- if eq .Name "Id" }}{{ .ResourceClassName }}{{ .Name }}{{- else }}{{ .Name }}{{- end }}.IsUnknown() {
+        payloadMap["attributes"].(map[string]string)["{{ .PropertyName }}"] = data.{{- if eq .Name "Id" }}{{ .ResourceClassName }}{{ .Name }}{{- else }}{{ .Name }}{{- end }}.ValueString()
+    }
+        {{- end }}
+    {{- end }}
+
+    wrapperClassMap := map[string]string{
+        {{- range $key, $value := .MultiParentFormats }}
+        "{{ $value.RnPrepend }}": "{{ $value.WrapperClass }}",
+        {{- end }}
+    }
+
+    var payload []byte
+    var err error
+    for rnPrepend, wrapperClass := range wrapperClassMap {
+        if strings.Contains(data.Id.ValueString(), rnPrepend) && wrapperClass != "" && stateData.Id.ValueString() == "" {
+            wrapperPayloadMap := map[string]interface{}{
+                wrapperClass: map[string]interface{}{
+                    "attributes": map[string]interface{}{},
+                    "children":   []interface{}{map[string]interface{}{"{{ .PkgName }}": payloadMap}},
+                },
+            }
+            payload, err = json.Marshal(wrapperPayloadMap)
+			break
+        } else if (strings.Contains(data.Id.ValueString(), rnPrepend) && wrapperClass == "") || stateData.Id.ValueString() != "" {
+            payload, err = json.Marshal(map[string]interface{}{"{{ .PkgName }}": payloadMap})
+			break
+        }
+    }
+
+    if err != nil {
+        diags.AddError(
+            "Marshalling of json payload failed",
+            fmt.Sprintf("Err: %s. Please report this issue to the provider developers.", err),
+        )
+        return nil
+    }
+
+    jsonPayload, err := container.ParseJSON(payload)
+    if err != nil {
+        diags.AddError(
+            "Construction of json payload failed",
+            fmt.Sprintf("Err: %s. Please report this issue to the provider developers.", err),
+        )
+        return nil
+    }
+
+    return jsonPayload
+}
+{{- end}}

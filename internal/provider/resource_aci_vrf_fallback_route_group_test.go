@@ -14,7 +14,7 @@ import (
 func TestAccResourceFvFBRGroupWithFvCtx(t *testing.T) {
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
+		PreCheck:                 func() { testAccPreCheck(t, "both", "5.2(4d)") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
@@ -263,6 +263,9 @@ func TestAccResourceFvFBRGroupWithFvCtx(t *testing.T) {
 				),
 			},
 		},
+		CheckDestroy: resource.ComposeAggregateTestCheckFunc(
+			testCheckResourceDestroy,
+		),
 	})
 }
 
@@ -368,25 +371,25 @@ resource "aci_vrf_fallback_route_group" "test" {
   parent_dn = aci_vrf.test.id
   name = "fallback_route_group"
   annotations = [ 
-	{
+    {
 	  key = "key_1"
 	  value = "value_2"
-	},
+    },
   ]
   tags = [ 
-	{
+    {
 	  key = "key_1"
 	  value = "value_2"
-	},
+    },
   ]
   vrf_fallback_route_group_members = [ 
-	{
+    {
 	  annotation = "annotation_2"
 	  description = "description_2"
 	  fallback_member = "2.2.2.3"
 	  name = "name_2"
 	  name_alias = "name_alias_2"
-	},
+    },
   ]
   vrf_fallback_routes = []
 }
