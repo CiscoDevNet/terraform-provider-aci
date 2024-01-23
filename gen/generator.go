@@ -102,6 +102,10 @@ var templateFuncs = template.FuncMap{
 	"capitalize":                   Capitalize,
 	"getTestConfigVariableName":    GetTestConfigVariableName,
 	"getDevnetDocForClass":         GetDevnetDocForClass,
+	"spaceToNewLine":               SpaceToNewline,
+	"contains":                     strings.Contains,
+	"appendNewLine":                AppendNewline,
+	"hasKey":                       HasKey,
 }
 
 // Global variables used for unique resource name setting based on label from meta data
@@ -123,6 +127,37 @@ func GetResourceNameAsDescription(s string, definitions Definitions) string {
 
 func GetDevnetDocForClass(className string) string {
 	return fmt.Sprintf("[%s](%s/app/index.html#/objects/%s/overview)", className, pubhupDevnetBaseUrl, className)
+}
+
+func SpaceToNewline(s string) string {
+	s = strings.ReplaceAll(s, " ", "\n")
+	s = strings.ReplaceAll(s, "_", " ")
+	return s
+}
+
+func AppendNewline(s string) string {
+	s = strings.ReplaceAll(s, "<<EOT", "")
+	s = strings.ReplaceAll(s, "EOT", "")
+
+	trimmed := strings.TrimSpace(s)
+	words := strings.Split(trimmed, " ")
+	replaced := strings.Join(words, "\\n")
+
+	if strings.HasPrefix(s, " ") {
+		replaced = "" + replaced
+	}
+
+	if strings.HasSuffix(s, " ") {
+		replaced = replaced + "\\n"
+	}
+
+	s = strings.ReplaceAll(replaced, "_", " ")
+	return s
+}
+
+func HasKey(dict map[interface{}]interface{}, key string) bool {
+	_, ok := dict[key]
+	return ok
 }
 
 func Capitalize(s string) string {
@@ -574,6 +609,7 @@ func main() {
 			// Set the documentation specific information for the resource
 			// This is done to ensure references can be made to parent/child resources and output amounts can be restricted
 			setDocumentationData(&model, definitions)
+			setExplicitParentDns(&model)
 
 			// Render the testvars file for the resource
 			// First generate run would not mean the file is correct from beginning since some testvars would need to be manually overwritten in the properties definitions YAML file
