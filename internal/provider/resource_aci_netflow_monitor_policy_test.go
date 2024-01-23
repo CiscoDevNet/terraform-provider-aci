@@ -14,7 +14,7 @@ import (
 func TestAccResourceNetflowMonitorPolWithFvTenant(t *testing.T) {
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
+		PreCheck:                 func() { testAccPreCheck(t, "both", "3.2(1l)") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
@@ -41,7 +41,7 @@ func TestAccResourceNetflowMonitorPolWithFvTenant(t *testing.T) {
 
 	setEnvVariable(t, "ACI_ALLOW_EXISTING_ON_CREATE", "false")
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
+		PreCheck:                 func() { testAccPreCheck(t, "both", "3.2(1l)") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
@@ -54,7 +54,7 @@ func TestAccResourceNetflowMonitorPolWithFvTenant(t *testing.T) {
 
 	setEnvVariable(t, "ACI_ALLOW_EXISTING_ON_CREATE", "true")
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
+		PreCheck:                 func() { testAccPreCheck(t, "both", "3.2(1l)") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
@@ -80,7 +80,7 @@ func TestAccResourceNetflowMonitorPolWithFvTenant(t *testing.T) {
 	})
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
+		PreCheck:                 func() { testAccPreCheck(t, "both", "3.2(1l)") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
@@ -132,9 +132,10 @@ func TestAccResourceNetflowMonitorPolWithFvTenant(t *testing.T) {
 			},
 			// Import testing
 			{
-				ResourceName:      "aci_netflow_monitor_policy.test",
-				ImportState:       true,
-				ImportStateVerify: true,
+				ResourceName:            "aci_netflow_monitor_policy.test",
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{"parent_dn"},
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_netflow_monitor_policy.test", "name", "netfow_monitor"),
 					resource.TestCheckResourceAttr("aci_netflow_monitor_policy.test", "annotation", "orchestrator:terraform"),
@@ -173,11 +174,17 @@ func TestAccResourceNetflowMonitorPolWithFvTenant(t *testing.T) {
 			},
 			// Import testing with children
 			{
-				ResourceName:      "aci_netflow_monitor_policy.test",
-				ImportState:       true,
-				ImportStateVerify: true,
+				ResourceName:            "aci_netflow_monitor_policy.test",
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{"parent_dn"},
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_netflow_monitor_policy.test", "name", "netfow_monitor"),
+					resource.TestCheckResourceAttr("aci_netflow_monitor_policy.test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_netflow_monitor_policy.test", "description", ""),
+					resource.TestCheckResourceAttr("aci_netflow_monitor_policy.test", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_netflow_monitor_policy.test", "owner_key", ""),
+					resource.TestCheckResourceAttr("aci_netflow_monitor_policy.test", "owner_tag", ""),
 					resource.TestCheckResourceAttr("aci_netflow_monitor_policy.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_netflow_monitor_policy.test", "description", ""),
 					resource.TestCheckResourceAttr("aci_netflow_monitor_policy.test", "name_alias", ""),
@@ -257,6 +264,9 @@ func TestAccResourceNetflowMonitorPolWithFvTenant(t *testing.T) {
 				),
 			},
 		},
+		CheckDestroy: resource.ComposeAggregateTestCheckFunc(
+			testCheckResourceDestroy,
+		),
 	})
 }
 

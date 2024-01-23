@@ -127,6 +127,7 @@ func (r *FvRsProvResource) Schema(ctx context.Context, req resource.SchemaReques
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Default:             stringdefault.StaticString(globalAnnotation),
 				MarkdownDescription: `The annotation of the Relation To Provided Contract object.`,
@@ -136,6 +137,7 @@ func (r *FvRsProvResource) Schema(ctx context.Context, req resource.SchemaReques
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Validators: []validator.String{
 					stringvalidator.OneOf("All", "AtleastOne", "AtmostOne", "None"),
@@ -147,6 +149,7 @@ func (r *FvRsProvResource) Schema(ctx context.Context, req resource.SchemaReques
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Validators: []validator.String{
 					stringvalidator.OneOf("level1", "level2", "level3", "level4", "level5", "level6", "unspecified"),
@@ -157,6 +160,7 @@ func (r *FvRsProvResource) Schema(ctx context.Context, req resource.SchemaReques
 				Required: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 					stringplanmodifier.RequiresReplace(),
 				},
 				MarkdownDescription: `The provider contract name.`,
@@ -285,6 +289,7 @@ func (r *FvRsProvResource) Create(ctx context.Context, req resource.CreateReques
 	}
 
 	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
+
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -423,6 +428,18 @@ func getAndSetFvRsProvAttributes(ctx context.Context, diags *diag.Diagnostics, c
 				if attributeName == "tnVzBrCPName" {
 					data.TnVzBrCPName = basetypes.NewStringValue(attributeValue.(string))
 				}
+			}
+			if data.Annotation.IsUnknown() {
+				data.Annotation = types.StringNull()
+			}
+			if data.MatchT.IsUnknown() {
+				data.MatchT = types.StringNull()
+			}
+			if data.Prio.IsUnknown() {
+				data.Prio = types.StringNull()
+			}
+			if data.TnVzBrCPName.IsUnknown() {
+				data.TnVzBrCPName = types.StringNull()
 			}
 			TagAnnotationFvRsProvList := make([]TagAnnotationFvRsProvResourceModel, 0)
 			TagTagFvRsProvList := make([]TagTagFvRsProvResourceModel, 0)
@@ -618,7 +635,6 @@ func getFvRsProvCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, 
 	if !data.TnVzBrCPName.IsNull() && !data.TnVzBrCPName.IsUnknown() {
 		payloadMap["attributes"].(map[string]string)["tnVzBrCPName"] = data.TnVzBrCPName.ValueString()
 	}
-
 	payload, err := json.Marshal(map[string]interface{}{"fvRsProv": payloadMap})
 	if err != nil {
 		diags.AddError(

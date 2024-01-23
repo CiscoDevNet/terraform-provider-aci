@@ -14,7 +14,7 @@ import (
 func TestAccResourceL3extRsRedistributePolWithL3extOut(t *testing.T) {
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
+		PreCheck:                 func() { testAccPreCheck(t, "both", "4.2(1i)") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
@@ -35,7 +35,7 @@ func TestAccResourceL3extRsRedistributePolWithL3extOut(t *testing.T) {
 
 	setEnvVariable(t, "ACI_ALLOW_EXISTING_ON_CREATE", "false")
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
+		PreCheck:                 func() { testAccPreCheck(t, "both", "4.2(1i)") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
@@ -48,7 +48,7 @@ func TestAccResourceL3extRsRedistributePolWithL3extOut(t *testing.T) {
 
 	setEnvVariable(t, "ACI_ALLOW_EXISTING_ON_CREATE", "true")
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
+		PreCheck:                 func() { testAccPreCheck(t, "both", "4.2(1i)") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
@@ -68,7 +68,7 @@ func TestAccResourceL3extRsRedistributePolWithL3extOut(t *testing.T) {
 	})
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
+		PreCheck:                 func() { testAccPreCheck(t, "both", "4.2(1i)") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
@@ -148,6 +148,7 @@ func TestAccResourceL3extRsRedistributePolWithL3extOut(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.test", "route_control_profile_name", "test_tn_rtctrl_profile_name"),
 					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.test", "source", "direct"),
 					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.test", "annotations.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.test", "annotations.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_l3out_redistribute_policy.test", "annotations.1.key", "key_1"),
@@ -198,6 +199,9 @@ func TestAccResourceL3extRsRedistributePolWithL3extOut(t *testing.T) {
 				),
 			},
 		},
+		CheckDestroy: resource.ComposeAggregateTestCheckFunc(
+			testCheckResourceDestroy,
+		),
 	})
 }
 

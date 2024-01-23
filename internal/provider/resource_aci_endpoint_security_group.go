@@ -1034,6 +1034,7 @@ func (r *FvESgResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Default:             stringdefault.StaticString(globalAnnotation),
 				MarkdownDescription: `The annotation of the Endpoint Security Group object.`,
@@ -1043,6 +1044,7 @@ func (r *FvESgResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				MarkdownDescription: `The description of the Endpoint Security Group object.`,
 			},
@@ -1051,6 +1053,7 @@ func (r *FvESgResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				MarkdownDescription: `Contract Exception Tag.`,
 			},
@@ -1059,6 +1062,7 @@ func (r *FvESgResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Validators: []validator.String{
 					stringvalidator.OneOf("All", "AtleastOne", "AtmostOne", "None"),
@@ -1069,6 +1073,7 @@ func (r *FvESgResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 				Required: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 					stringplanmodifier.RequiresReplace(),
 				},
 				MarkdownDescription: `The name of the Endpoint Security Group object.`,
@@ -1078,6 +1083,7 @@ func (r *FvESgResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				MarkdownDescription: `The name alias of the Endpoint Security Group object.`,
 			},
@@ -1086,6 +1092,7 @@ func (r *FvESgResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Validators: []validator.String{
 					stringvalidator.OneOf("enforced", "unenforced"),
@@ -1097,6 +1104,7 @@ func (r *FvESgResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Validators: []validator.String{
 					stringvalidator.OneOf("exclude", "include"),
@@ -1108,6 +1116,7 @@ func (r *FvESgResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Validators: []validator.String{
 					stringvalidator.OneOf("no", "yes"),
@@ -1560,6 +1569,7 @@ func (r *FvESgResource) Create(ctx context.Context, req resource.CreateRequest, 
 	}
 
 	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
+
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -1731,6 +1741,33 @@ func getAndSetFvESgAttributes(ctx context.Context, diags *diag.Diagnostics, clie
 				if attributeName == "shutdown" {
 					data.Shutdown = basetypes.NewStringValue(attributeValue.(string))
 				}
+			}
+			if data.Annotation.IsUnknown() {
+				data.Annotation = types.StringNull()
+			}
+			if data.Descr.IsUnknown() {
+				data.Descr = types.StringNull()
+			}
+			if data.ExceptionTag.IsUnknown() {
+				data.ExceptionTag = types.StringNull()
+			}
+			if data.MatchT.IsUnknown() {
+				data.MatchT = types.StringNull()
+			}
+			if data.Name.IsUnknown() {
+				data.Name = types.StringNull()
+			}
+			if data.NameAlias.IsUnknown() {
+				data.NameAlias = types.StringNull()
+			}
+			if data.PcEnfPref.IsUnknown() {
+				data.PcEnfPref = types.StringNull()
+			}
+			if data.PrefGrMemb.IsUnknown() {
+				data.PrefGrMemb = types.StringNull()
+			}
+			if data.Shutdown.IsUnknown() {
+				data.Shutdown = types.StringNull()
 			}
 			FvRsConsFvESgList := make([]FvRsConsFvESgResourceModel, 0)
 			FvRsConsIfFvESgList := make([]FvRsConsIfFvESgResourceModel, 0)
@@ -2326,7 +2363,6 @@ func getFvESgCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, cre
 	if !data.Shutdown.IsNull() && !data.Shutdown.IsUnknown() {
 		payloadMap["attributes"].(map[string]string)["shutdown"] = data.Shutdown.ValueString()
 	}
-
 	payload, err := json.Marshal(map[string]interface{}{"fvESg": payloadMap})
 	if err != nil {
 		diags.AddError(

@@ -23,7 +23,12 @@ parents:
     parent_dependency: ""
     parent_dn: "aci_tenant.test.id"
     class_in_parent: false
+    test_type: both
+    test_applicable_from_version: 3.2(1l)
   - class_name: "fvAEPg"
     parent_dependency: ""
     parent_dn: "aci_application_epg.test.id"
     class_in_parent: false
+    test_type: both
+    test_applicable_from_version: 3.2(1l)
+

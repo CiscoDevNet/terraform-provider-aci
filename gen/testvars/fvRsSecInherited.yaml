@@ -39,12 +39,16 @@ parents:
     class_in_parent: false
     target_classes:
         - "fvAEPg"
+    test_type: both
+    test_applicable_from_version: 3.2(1l)
   - class_name: "fvESg"
     parent_dependency: "fvAp"
     parent_dn: "aci_endpoint_security_group.test.id"
     class_in_parent: false
     target_classes:
         - "fvESg"
+    test_type: both
+    test_applicable_from_version: 3.2(1l)
 targets:
   - class_name: "fvESg"
     target_dn: "uni/tn-test_tenant/ap-test_ap/esg-esg_0"
@@ -86,3 +90,4 @@ targets:
     parent_dn_key: "application_profile_dn"
     properties:
         name: "epg_3"
+

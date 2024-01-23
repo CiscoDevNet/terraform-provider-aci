@@ -10,6 +10,8 @@ import (
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
 	"github.com/ciscoecosystem/aci-go-client/v2/models"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 )
 
@@ -40,7 +42,7 @@ func CheckDn(ctx context.Context, diags *diag.Diagnostics, client *client.Client
 	}
 }
 
-func DoRestRequestEscapeHtml(ctx context.Context, diags *diag.Diagnostics, client *client.Client, path, method string, payload *container.Container, escapeHtml bool) *container.Container {
+func DoRestRequestEscapeHtml(ctx context.Context, diags *diag.Diagnostics, aciClient *client.Client, path, method string, payload *container.Container, escapeHtml bool) *container.Container {
 
 	// Ensure path starts with a slash to assure signature is created correctly
 	if !strings.HasPrefix("/", path) {
@@ -49,9 +51,9 @@ func DoRestRequestEscapeHtml(ctx context.Context, diags *diag.Diagnostics, clien
 	var restRequest *http.Request
 	var err error
 	if escapeHtml {
-		restRequest, err = client.MakeRestRequest(method, path, payload, true)
+		restRequest, err = aciClient.MakeRestRequest(method, path, payload, true)
 	} else {
-		restRequest, err = client.MakeRestRequestRaw(method, path, payload.EncodeJSON(), true)
+		restRequest, err = aciClient.MakeRestRequestRaw(method, path, payload.EncodeJSON(), true)
 	}
 	if err != nil {
 		diags.AddError(
@@ -61,24 +63,36 @@ func DoRestRequestEscapeHtml(ctx context.Context, diags *diag.Diagnostics, clien
 		return nil
 	}
 
-	cont, restResponse, err := client.Do(restRequest)
+	cont, restResponse, err := aciClient.Do(restRequest)
+
+	if err != nil {
+		diags.AddError(
+			fmt.Sprintf("The %s rest request failed", strings.ToLower(method)),
+			fmt.Sprintf("err: %s. Please report this issue to the provider developers.", err),
+		)
+		return nil
+	}
 
 	if restResponse != nil && cont.Data() != nil && restResponse.StatusCode != 200 {
 		errCode := models.StripQuotes(models.StripSquareBrackets(cont.Search("imdata", "error", "attributes", "code").String()))
-		if errCode != "1" && errCode != "103" && errCode != "107" && errCode != "120" {
+		errText := models.StripQuotes(models.StripSquareBrackets(cont.Search("imdata", "error", "attributes", "text").String()))
+		// Ignore errors of type "Cannot create object", "Cannot delete object", "Request in progress" and error text containing "can not be deleted." when the error code is 120
+		if errCode == "103" || errCode == "107" || errCode == "202" || (errCode == "120" && strings.HasSuffix(errText, "can not be deleted.")) {
+			tflog.Debug(ctx, fmt.Sprintf("Exiting from error: Code: %s, Message: %s", errCode, errText))
+			return nil
+		} else if (errText == "" && errCode == "403") || errCode == "401" {
+			diags.AddError(
+				"Unable to authenticate. Please check your credentials",
+				fmt.Sprintf("Response Status Code: %d, Error Code: %s, Error Message: %s.", restResponse.StatusCode, errCode, errText),
+			)
+			return nil
+		} else {
 			diags.AddError(
 				fmt.Sprintf("The %s rest request failed", strings.ToLower(method)),
-				fmt.Sprintf("Code: %d Response: %s, err: %s.", restResponse.StatusCode, cont.Data().(map[string]interface{})["imdata"], err),
+				fmt.Sprintf("Response Status Code: %d, Error Code: %s, Error Message: %s.", restResponse.StatusCode, errCode, errText),
 			)
 			return nil
 		}
-		tflog.Debug(ctx, models.StripQuotes(models.StripSquareBrackets(cont.Search("imdata", "error", "attributes", "text").String())))
-	} else if err != nil {
-		diags.AddError(
-			fmt.Sprintf("The %s rest request failed", strings.ToLower(method)),
-			fmt.Sprintf("Err: %s. Please report this issue to the provider developers.", err),
-		)
-		return nil
 	}
 
 	return cont
@@ -100,4 +114,50 @@ func GetDeleteJsonPayload(ctx context.Context, diags *diag.Diagnostics, classNam
 		return nil
 	}
 	return jsonPayload
+}
+
+type setToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate struct{}
+
+func SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate() planmodifier.String {
+	return setToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate{}
+}
+
+func (m setToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate) Description(_ context.Context) string {
+	return "During the update phase, set the value of this attribute to StringNull when the state value is null and the plan value is unknown."
+}
+
+func (m setToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate) MarkdownDescription(_ context.Context) string {
+	return "During the update phase, set the value of this attribute to StringNull when the state value is null and the plan value is unknown."
+}
+
+// Custom plan modifier to set the plan value to null under certain conditions
+func (m setToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate) PlanModifyString(ctx context.Context, req planmodifier.StringRequest, resp *planmodifier.StringResponse) {
+	// Set the plan value to StringType null when state value is null and plan value is unknown during an Update
+	if !req.State.Raw.IsNull() && req.StateValue.IsNull() && req.PlanValue.IsUnknown() {
+		resp.PlanValue = types.StringNull()
+	}
+	return
+}
+
+type setToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate struct{}
+
+func SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate() planmodifier.Set {
+	return setToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate{}
+}
+
+func (m setToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate) Description(_ context.Context) string {
+	return "During the update phase, set the value of this attribute to StringNull when the state value is null and the plan value is unknown."
+}
+
+func (m setToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate) MarkdownDescription(_ context.Context) string {
+	return "During the update phase, set the value of this attribute to StringNull when the state value is null and the plan value is unknown."
+}
+
+// Custom plan modifier to set the plan value to null under certain conditions
+func (m setToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate) PlanModifySet(ctx context.Context, req planmodifier.SetRequest, resp *planmodifier.SetResponse) {
+	// Set the plan value to SetType null when state value is null and plan value is unknown during an Update
+	if !req.State.Raw.IsNull() && req.StateValue.IsNull() && req.PlanValue.IsUnknown() {
+		resp.PlanValue = types.SetNull(req.StateValue.ElementType(ctx))
+	}
+	return
 }

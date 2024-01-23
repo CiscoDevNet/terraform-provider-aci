@@ -14,7 +14,7 @@ import (
 func TestAccResourceL3extProvLblWithL3extOut(t *testing.T) {
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
+		PreCheck:                 func() { testAccPreCheck(t, "both", "3.2(1l)") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
@@ -43,7 +43,7 @@ func TestAccResourceL3extProvLblWithL3extOut(t *testing.T) {
 
 	setEnvVariable(t, "ACI_ALLOW_EXISTING_ON_CREATE", "false")
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
+		PreCheck:                 func() { testAccPreCheck(t, "both", "3.2(1l)") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
@@ -56,7 +56,7 @@ func TestAccResourceL3extProvLblWithL3extOut(t *testing.T) {
 
 	setEnvVariable(t, "ACI_ALLOW_EXISTING_ON_CREATE", "true")
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
+		PreCheck:                 func() { testAccPreCheck(t, "both", "3.2(1l)") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
@@ -84,7 +84,7 @@ func TestAccResourceL3extProvLblWithL3extOut(t *testing.T) {
 	})
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
+		PreCheck:                 func() { testAccPreCheck(t, "both", "3.2(1l)") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
@@ -187,6 +187,12 @@ func TestAccResourceL3extProvLblWithL3extOut(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_l3out_provider_label.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_l3out_provider_label.test", "owner_tag", ""),
 					resource.TestCheckResourceAttr("aci_l3out_provider_label.test", "tag", "yellow-green"),
+					resource.TestCheckResourceAttr("aci_l3out_provider_label.test", "annotation", "orchestrator:terraform"),
+					resource.TestCheckResourceAttr("aci_l3out_provider_label.test", "description", ""),
+					resource.TestCheckResourceAttr("aci_l3out_provider_label.test", "name_alias", ""),
+					resource.TestCheckResourceAttr("aci_l3out_provider_label.test", "owner_key", ""),
+					resource.TestCheckResourceAttr("aci_l3out_provider_label.test", "owner_tag", ""),
+					resource.TestCheckResourceAttr("aci_l3out_provider_label.test", "tag", "yellow-green"),
 					resource.TestCheckResourceAttr("aci_l3out_provider_label.test", "annotations.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_l3out_provider_label.test", "annotations.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_l3out_provider_label.test", "annotations.1.key", "key_1"),
@@ -237,6 +243,9 @@ func TestAccResourceL3extProvLblWithL3extOut(t *testing.T) {
 				),
 			},
 		},
+		CheckDestroy: resource.ComposeAggregateTestCheckFunc(
+			testCheckResourceDestroy,
+		),
 	})
 }
 
