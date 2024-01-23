@@ -15,6 +15,7 @@ import (
 const (
 	CloudLBClassName                  = "cloudLB"
 	CloudRsLDevToCloudSubnetClassName = "cloudRsLDevToCloudSubnet"
+	CloudFrontendIPv4AddrClassName    = "cloudFrontendIPv4Addr"
 	RnCloudLB                         = "clb-%s"
 )
 
@@ -277,6 +278,12 @@ func resourceAciCloudL4L7LoadBalancer() *schema.Resource {
 				Optional: true,
 				Set:      schema.HashString,
 			},
+			"static_ip_address": &schema.Schema{
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Set:      schema.HashString,
+			},
 		}, GetNameAliasAttrSchema(), GetAnnotationAttrSchema()),
 	}
 }
@@ -325,6 +332,23 @@ func mapCloudRsLDevToCloudSubnetAttrs(annotation, status string, subnetTargetDnL
 				"attributes": map[string]string{
 					"annotation": annotation,
 					"tDn":        endPointSelector,
+					"status":     status,
+				},
+			},
+		}
+		cloudSubnetAttrsList[index] = cloudSubnetAttrsMap
+	}
+	return cloudSubnetAttrsList
+}
+
+func mapCloudFrontendIPv4AddrAttrs(annotation, status string, subnetStaticIPList []string) []interface{} {
+	cloudSubnetAttrsList := make([]interface{}, len(subnetStaticIPList))
+	for index, ip := range subnetStaticIPList {
+		cloudSubnetAttrsMap := map[string]interface{}{
+			CloudFrontendIPv4AddrClassName: map[string]interface{}{
+				"attributes": map[string]string{
+					"annotation": annotation,
+					"ip":         ip,
 					"status":     status,
 				},
 			},
@@ -386,12 +410,18 @@ func getAndSetRemoteCloudL4L7LoadBalancerAttributes(client *client.Client, dn st
 
 	cloudLBChildSubnetList := make([]string, 0)
 	cloudLBChildAaaDomainList := make([]string, 0)
+	cloudLBChildStaticIPList := make([]string, 0)
 
 	cloudLBChild := cloudLBCont.S("imdata").Index(0).S(CloudLBClassName).S("children")
 	for i := 0; i < cloudLBChildCount; i++ {
 		cloudSubnetTDn := models.StripQuotes(cloudLBChild.Index(i).S(CloudRsLDevToCloudSubnetClassName).S("attributes").S("tDn").String())
 		if cloudSubnetTDn != "{}" {
 			cloudLBChildSubnetList = append(cloudLBChildSubnetList, cloudSubnetTDn)
+			continue
+		}
+		staticIPAddress := models.StripQuotes(cloudLBChild.Index(i).S(CloudFrontendIPv4AddrClassName).S("attributes").S("ip").String())
+		if staticIPAddress != "{}" {
+			cloudLBChildStaticIPList = append(cloudLBChildStaticIPList, staticIPAddress)
 			continue
 		}
 		aaaDomainName := models.StripQuotes(cloudLBChild.Index(i).S("aaaRbacAnnotation").S("attributes").S("domain").String())
@@ -401,6 +431,7 @@ func getAndSetRemoteCloudL4L7LoadBalancerAttributes(client *client.Client, dn st
 		}
 	}
 	d.Set("relation_cloud_rs_ldev_to_cloud_subnet", cloudLBChildSubnetList)
+	d.Set("static_ip_address", cloudLBChildStaticIPList)
 	d.Set("aaa_domain_dn", cloudLBChildAaaDomainList)
 
 	d.SetId(cloudLBDistinguishedName)
@@ -449,6 +480,11 @@ func resourceAciCloudL4L7LoadBalancerCreate(ctx context.Context, d *schema.Resou
 
 	if aaaDomainDn, ok := d.GetOk("aaa_domain_dn"); ok {
 		cloudLBChildList = append(cloudLBChildList, mapListOfAaaDomainAttrs("created", toStringList(aaaDomainDn.(*schema.Set).List()))...)
+	}
+
+	if staticIPAddress, ok := d.GetOk("static_ip_address"); ok {
+		cloudLBChildList = append(cloudLBChildList, mapCloudFrontendIPv4AddrAttrs(annotation, "created", toStringList(staticIPAddress.(*schema.Set).List())))
+
 	}
 
 	cloudLBMapAttrs := mapCloudL4L7LoadBalancerAttrs("created", d)
@@ -509,6 +545,16 @@ func resourceAciCloudL4L7LoadBalancerUpdate(ctx context.Context, d *schema.Resou
 		relToCreate := toStringList(newRelSet.Difference(oldRelSet).List())
 		cloudLBChildList = append(cloudLBChildList, mapCloudRsLDevToCloudSubnetAttrs(annotation, "deleted", relToDelete)...)
 		cloudLBChildList = append(cloudLBChildList, mapCloudRsLDevToCloudSubnetAttrs(annotation, "created, modified", relToCreate)...)
+	}
+
+	if d.HasChange("static_ip_address") {
+		oldRel, newRel := d.GetChange("static_ip_address")
+		oldRelSet := oldRel.(*schema.Set)
+		newRelSet := newRel.(*schema.Set)
+		relToDelete := toStringList(oldRelSet.Difference(newRelSet).List())
+		relToCreate := toStringList(newRelSet.Difference(oldRelSet).List())
+		cloudLBChildList = append(cloudLBChildList, mapCloudFrontendIPv4AddrAttrs(annotation, "deleted", relToDelete)...)
+		cloudLBChildList = append(cloudLBChildList, mapCloudFrontendIPv4AddrAttrs(annotation, "created, modified", relToCreate)...)
 	}
 
 	if d.HasChange("aaa_domain_dn") {
